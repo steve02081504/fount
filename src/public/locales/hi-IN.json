@@ -1,6 +1,264 @@
 {
 	"lang": "hi-IN",
 	"name": "हिन्दी",
+	"channels": {
+		"title": "चैनल",
+		"description": "चैनल प्रबंधन",
+		"create": "चैनल बनाएँ",
+		"subscribe": "सदस्यता लें",
+		"unsubscribe": "सदस्यता रद्द करें",
+		"settings": "चैनल सेटिंग",
+		"list": "चैनल सूची",
+		"members": "सदस्य",
+		"messages": "संदेश",
+		"permissions": "अनुमति सेटिंग",
+		"type": {
+			"announcement": "घोषणा",
+			"news": "समाचार",
+			"updates": "अपडेट"
+		},
+		"role": {
+			"owner": "मालिक",
+			"admin": "प्रशासक",
+			"moderator": "मॉडरेटर",
+			"member": "सदस्य",
+			"subscriber": "सब्सक्राइबर"
+		},
+		"errors": {
+			"notFound": "चैनल मौजूद नहीं है",
+			"noPermission": "अपर्याप्त अनुमतियाँ",
+			"alreadySubscribed": "इस चैनल को पहले ही सब्सक्राइब कर लिया गया है",
+			"notSubscribed": "इस चैनल की सदस्यता नहीं ली गई है"
+		},
+		"success": {
+			"created": "चैनल सफलतापूर्वक बनाया गया",
+			"updated": "चैनल सफलतापूर्वक अपडेट किया गया",
+			"deleted": "चैनल सफलतापूर्वक हटा दिया गया",
+			"subscribed": "सदस्यता लें सफल",
+			"unsubscribed": "सदस्यता रद्द करें सफल",
+			"posted": "संदेश सफलतापूर्वक प्रकाशित हुआ"
+		}
+	},
+	"profile": {
+		"title": "प्रोफ़ाइल",
+		"description": "चैट और सोशल में अपनी सार्वजनिक उपस्थिति प्रबंधित करें।",
+		"settingsEyebrow": "खाता सेटिंग",
+		"accountAtGlance": "खाता अवलोकन",
+		"advancedKicker": "ज़रूरत पड़ने पर करें",
+		"advancedSettings": "उन्नत सेटिंग",
+		"advancedDescription": "दैनिक उपयोग के लिए किसी समायोजन की आवश्यकता नहीं है।",
+		"edit": "प्रोफ़ाइल संपादित करें",
+		"save": "सहेजें",
+		"cancel": "रद्द करें",
+		"displayName": "प्रदर्शन नाम",
+		"name": "नाम",
+		"bio": "परिचय",
+		"descriptionLabel": "परिचय (मार्कडाउन)",
+		"email": "ईमेल",
+		"status": "स्थिति",
+		"customStatusLabel": "कस्टम स्थिति",
+		"avatarLabel": "अवतार",
+		"themeColorLabel": "थीम रंग",
+		"uploadAvatar": "अवतार अपलोड करें",
+		"ownerTitle": "मेरा मालिक",
+		"ownerSummary": "प्रतिनिधि सेटिंग",
+		"ownerDescription": "सेटअप करने के बाद, स्वामी आपकी ओर से आपके चैट संदेशों, सामाजिक पोस्ट और प्रोफ़ाइल को संपादित या हटा सकता है; सामग्री को असुरक्षित मार्कडाउन (स्क्रिप्ट शामिल हो सकते हैं) का उपयोग करके स्थानीय रूप से प्रस्तुत किया जाएगा। किसी भी इकाई हैश को किसी भी समय भरा और साफ़ किया जा सकता है।",
+		"ownerEntityHashLabel": "मालिक इकाई हैश (128 हेक्स)",
+		"ownerSave": "मालिक सहेजें",
+		"ownerClear": "मालिक हटाएँ",
+		"ownerSaved": "स्वामी को अद्यतन कर दिया गया है",
+		"ownerCleared": "मालिक हटा दिया गया",
+		"ownerSaveFailed": "सहेजना विफल: ${error}",
+		"ownerConfirmTitle": "सेटिंग मालिक की पुष्टि करें?",
+		"ownerConfirmWarningTitle": "उच्च जोखिम वाला ऑपरेशन, कृपया ध्यानपूर्वक पढ़ें",
+		"ownerConfirmEditBody": "सेट करने के बाद दूसरा पक्ष आपकी सहमति के बिना आपकी ओर से चैट संदेश, सोशल पोस्ट और प्रोफ़ाइल संपादित या हटा सकता है। गलती से या धोखे से मालिक सेट करना = तुरंत सामग्री नियंत्रण सौंपना।",
+		"ownerConfirmRenderBody": "दूसरे पक्ष के चैट संदेश और सोशल पोस्ट आपके ब्राउज़र में पूर्ण Markdown (HTML/स्क्रिप्ट सहित) में रेंडर होंगे। यह उन्हें आपकी सहमति के बिना आपके कंप्यूटर पर कोड चलाने की अनुमति देता है। केवल पूर्ण भरोसे पर आगे बढ़ें।",
+		"ownerConfirmCooldown": "मैंने जोखिम पढ़ लिया है(${seconds})",
+		"ownerConfirmFirst": "मैं जोखिमों को समझता हूं, जारी रखें",
+		"ownerConfirmSecond": "अंतिम रूप देने के लिए दोबारा क्लिक करें",
+		"ownerConfirmCancel": "रद्द करें",
+		"federationTitle": "फ़ेडरेशन और सिंक",
+		"federationSummary": "रिले सर्वर और कम पावर मोड",
+		"federationDescription": "Nostr रिले यूआरएल और पावर सेविंग मोड कॉन्फ़िगर करें। जब आप पहली बार किसी को आमंत्रित करते हैं या फ़ेडरेशन निजी संदेश बनाते हैं तो किसी समूह के लिए फ़ेडरेशन सिंक्रोनाइज़ेशन स्वचालित रूप से सक्षम हो जाता है।",
+		"federationAdvanced": "उन्नत विकल्प",
+		"federationRelayUrlsLabel": "रिले सर्वर (प्रति पंक्ति एक, डिफ़ॉल्ट का उपयोग करने के लिए खाली छोड़ें)",
+		"federationBatterySaverLabel": "कम पावर मोड",
+		"federationSave": "नेटवर्क सेटिंग सहेजें",
+		"federationResetDefault": "डिफ़ॉल्ट अनुशंसित कॉन्फ़िगरेशन पुनर्स्थापित करें",
+		"federationSaved": "सहेजा गया",
+		"federationResetOk": "डिफ़ॉल्ट अनुशंसित कॉन्फ़िगरेशन पुनर्स्थापित किया गया",
+		"federationSaveFailed": "सहेजना विफल: ${error}",
+		"preferences": "प्राथमिकताएँ",
+		"language": "भाषा",
+		"theme": "थीम",
+		"notifications": "अधिसूचना सेटिंग्स",
+		"emailNotifications": "ईमेल सूचना",
+		"pushNotifications": "पुश सूचनाएँ",
+		"soundNotifications": "ध्वनि सूचना",
+		"social": "सोशल लिंक",
+		"website": "वेबसाइट",
+		"github": "GitHub",
+		"twitter": "ट्विटर",
+		"stats": "आँकड़े",
+		"joinedAt": "सम्मिलित होने का समय",
+		"messageCount": "संदेशों की संख्या",
+		"groupCount": "समूहों की संख्या",
+		"channelCount": "चैनलों की संख्या",
+		"privacy": "गोपनीयता सेटिंग",
+		"showEmail": "ईमेल दिखाएँ",
+		"showStats": "आँकड़े दिखाएं",
+		"allowDirectMessages": "निजी संदेशों की अनुमति दें",
+		"statusOptions": {
+			"online": "ऑनलाइन",
+			"away": "दूर",
+			"busy": "व्यस्त",
+			"offline": "ऑफ़लाइन"
+		},
+		"themeOptions": {
+			"auto": "स्वचालित",
+			"light": "हल्का",
+			"dark": "गहरा"
+		},
+		"languageOptions": {
+			"zh-CN": "सरलीकृत चीनी",
+			"en-US": "अंग्रेज़ी"
+		},
+		"notifEmail": "ईमेल",
+		"notifPush": "पुश",
+		"notifSound": "आवाज़",
+		"notifsAllOff": "सभी बंद",
+		"bioEmpty": "यह व्यक्ति आलसी है और उसने कुछ भी नहीं लिखा है…",
+		"noSocialLinks": "अभी तक कोई सामाजिक लिंक नहीं",
+		"emailVisible": "दृश्यमान",
+		"emailHidden": "छिपाएँ",
+		"customStatus": {
+			"placeholder": "आप क्या कर रहे हो…"
+		},
+		"avatar": {
+			"alt": "अवतार"
+		},
+		"avatarPreview": {
+			"alt": "अवतार पूर्वावलोकन"
+		},
+		"myGroups": "मेरे समूह",
+		"myChannels": "मेरे चैनल",
+		"noGroups": "अभी तक किसी ग्रुप में शामिल नहीं हुआ हूं",
+		"noChannels": "अभी तक कोई चैनल नहीं",
+		"overview": "उपयोगकर्ता अवलोकन",
+		"summaryUserId": "उपयोगकर्ता पहचान",
+		"summaryAccountStatus": "खाता स्थिति",
+		"summaryEmailVisibility": "ईमेल दृश्यता",
+		"summaryThemePref": "विषय प्राथमिकता",
+		"summaryLanguagePref": "भाषा प्राथमिकता",
+		"summarySocialCount": "सोशल लिंकों की संख्या",
+		"summaryLinksCount": "बाहरी लिंक की संख्या",
+		"groupDescriptionEmpty": "अभी तक कोई विवरण नहीं",
+		"groupMembers": "${members} सदस्य · ${channels} चैनल",
+		"channelPrivate": "· निजी",
+		"channelTypeText": "टेक्स्ट चैनल",
+		"channelTypeList": "सूची चैनल",
+		"channelTypeVoice": "आवाज चैनल",
+		"channelTypeStreaming": "स्ट्रीमिंग चैनल",
+		"errors": {
+			"loadFailed": "प्रोफ़ाइल लोड करने में विफल",
+			"saveFailed": "प्रोफ़ाइल सहेजने में विफल",
+			"uploadFailed": "अवतार अपलोड करें विफल",
+			"invalidUserData": "उपयोगकर्ता डेटा प्रारूप त्रुटि",
+			"identityRequired": "नोड पहचान अभी तैयार नहीं है, कृपया पृष्ठ ताज़ा करें; यदि यह अभी भी विफल रहता है, तो कृपया नीचे दी गई P2P सेटिंग्स में फ़ेडरेशन कॉन्फ़िगरेशन को सहेजें",
+			"fetchUserFailed": "उपयोगकर्ता विवरण प्राप्त करने में विफल",
+			"operationFailed": "ऑपरेशन विफल: ${error}"
+		},
+		"success": {
+			"saved": "डेटा सफलतापूर्वक सहेजा गया",
+			"avatarUploaded": "अवतार सफलतापूर्वक अपलोड हो गया"
+		},
+		"ownerEntityHash": {
+			"placeholder": "स्वामी की इकाई हैश दर्ज करें"
+		}
+	},
+	"stickers": {
+		"title": "स्टिकर स्टोर",
+		"description": "स्टिकर और इमोजी प्रबंधन",
+		"back": {
+			"title": "वापस"
+		},
+		"packs": "स्टीकर पैक",
+		"create": "एक स्टिकर पैक बनाएं",
+		"upload": "स्टिकर अपलोड करें",
+		"install": "इंस्टॉल करें",
+		"uninstall": "अनइंस्टॉल करें",
+		"close": "बंद करें",
+		"cancel": "रद्द करें",
+		"installed": "स्थापित",
+		"myPacks": "मेरे स्टिकर पैक",
+		"tabAll": "सभी",
+		"store": "स्टिकर स्टोर",
+		"favorites": "सेव किए",
+		"recent": "हाल ही में प्रयोग किया गया",
+		"search": {
+			"placeholder": "स्टिकर पैक खोजें…"
+		},
+		"emptyPacks": "अभी तक कोई स्टिकर पैक नहीं है",
+		"packNameLabel": "स्टीकर पैक का नाम",
+		"packName": {
+			"placeholder": "स्टिकर पैक का नाम दर्ज करें"
+		},
+		"packDescriptionLabel": "विवरण",
+		"packDescription": {
+			"placeholder": "विवरण दर्ज करें"
+		},
+		"stickerNameLabel": "स्टीकर नाम",
+		"stickerName": {
+			"placeholder": "स्टिकर नाम दर्ज करें"
+		},
+		"selectPack": "एक स्टिकर पैक चुनें",
+		"selectPackOption": {
+			"textContent": "कृपया एक स्टिकर पैक चुनें"
+		},
+		"selectImage": "चित्र चुनें",
+		"tagsLabel": "टैग (अल्पविराम से अनलिंक)",
+		"tags": {
+			"placeholder": "उदाहरण के लिए: प्यारा, इमोटिकॉन, जानवर"
+		},
+		"author": "लेखक",
+		"authorLabel": "लेखक: ${author}",
+		"stickerCount": "${count} स्टिकर",
+		"badgeMine": "मेरा",
+		"noDescription": "अभी तक कोई विवरण नहीं",
+		"noStickersInPack": "अभी तक कोई स्टिकर नहीं",
+		"deletePack": "स्टीकर पैक हटाएँ",
+		"public": "सार्वजनिक",
+		"private": "निजी",
+		"animated": "एनिमेटेड",
+		"static": "स्थिर",
+		"addTag": "जोड़ें लेबल",
+		"defaultPackName": "डिफ़ॉल्ट इमोटिकॉन सुइट",
+		"defaultPackDescription": "इमोटिकॉन स्टिकर डिफ़ॉल्ट रूप से सिस्टम द्वारा प्रदान किए जाते हैं",
+		"unnamedPack": "अनाम स्टीकर पैक",
+		"importPackName": "मेरा संग्रह",
+		"importPackDescription": "संदेशों से स्टिकर सहेजे गए",
+		"nameRequired": "कृपया स्टिकर पैक का नाम दर्ज करें",
+		"stickerNameRequired": "कृपया स्टिकर नाम दर्ज करें",
+		"selectPackRequired": "कृपया एक स्टिकर पैक चुनें",
+		"fileRequired": "कृपया छवि फ़ाइल चुनें",
+		"loadDetailFailed": "स्टिकर पैक विवरण लोड करने में विफल",
+		"deleteConfirm": "क्या आप वाकई इस स्टिकर पैक को स्थायी रूप से हटाना चाहते हैं? सभी स्टिकर हटा दिए जाएंगे और यह कार्रवाई अपरिवर्तनीय है।",
+		"errors": {
+			"loadFailed": "स्टीकर पैक लोड करने में विफल",
+			"uploadFailed": "स्टिकर अपलोड करने में विफल",
+			"installFailed": "इंस्टॉल करें विफल",
+			"uninstallFailed": "अनइंस्टॉल करें विफल",
+			"createFailed": "स्टीकर पैक बनाने में विफल",
+			"deleteFailed": "हटाएँ विफल"
+		},
+		"success": {
+			"uploaded": "स्टिकर सफलतापूर्वक अपलोड हो गए",
+			"installed": "इंस्टॉल करें सफल",
+			"uninstalled": "अनइंस्टॉल करें सफल",
+			"created": "स्टिकर पैक सफलतापूर्वक बनाया गया",
+			"deleted": "हटाएँ सफल"
+		}
+	},
 	"fountConsole": {
 		"server": {
 			"start": "सर्वर शुरू किया जा रहा है",
@@ -116,6 +374,186 @@
 		"logViewer": {
 			"replHint": "Enter दबाकर चलाएँ · Shift+Enter नई पंक्ति"
 		},
+		"test": {
+			"help": "उपयोग: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\nसमूह सिंटैक्स (स्पेस से अलग कई समूह):\n  manifest                    उस manifest की सभी suite\n  manifest:suite              निर्दिष्ट suite (कॉमा से अलग; manifest/suite भी)\n  manifest:suite:subtest      उप-परीक्षण (frontend आदि पंजीकृत subtests; manifest/suite/subtest भी)\n  manifest:suite:file         pure/integration (serial.mjs) में *.test.mjs stem से फ़िल्टर\n  PowerShell में टोकन टूटने पर बाद के टोकन वर्तमान समूह में जुड़ जाते हैं\n\nmanifest id प्रत्येक test/manifest.json के शीर्ष \"id\" से।\nसटीक मिलान न होने पर स्वतः \"<नाम>/*\" विस्तार (जैसे shells → shells/chat,shells/social); glob (*, ?, **) भी।\nsuite नाम suite की id या name से मिलान; न होने पर \"<नाम>*\"/\"<नाम>_*\" विस्तार; glob भी।\n\nडिफ़ॉल्ट (नंगा fount test): पहले विफल/अधूरे (suite में विफल फ़ाइलें प्राथमिक; विफल समूह पूरा चलाकर बाहर), सब हरा होने पर stale; कोई राउंड विफल → exit 1, एक कॉल में दोबारा नहीं। कभी पूर्ण नहीं (--all से)।\nस्थिति data/test/state/main.json; विफलता लॉग हरा होने तक। प्रत्येक रन data/test/report.md और report.json अपडेट।\nfrontend आदि subtests पंजीकृत कर सकते हैं (अलग trigger); एक व्यू फ़ाइल बदलने से केवल वह subtest stale।\npure/integration में subtests न हों तो तीसरा खंड *.test.mjs stem (जैसे shells/chat:pure:channel_archive)।\nनिर्भरता (manifest.json dependsOn) विफल → ऊपरी स्तर blocked।\n\n--all         सीमा में सभी suite लक्ष्य (--force के बिना हरे पुन: उपयोग)\n--no-parallel suite क्रमिक, stdout/stderr स्ट्रीम; डिफ़ॉल्ट संसाधन गेट से समानांतर\n--force       पुन: उपयोग बंद; --force वास्तविक रन\n\nउदाहरण:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"passed": "पास: ${label}",
+			"passedWithNoise": "उत्तीर्ण: ${label} (शोर शामिल है)",
+			"failed": "विफल: ${label}",
+			"failedWithCode": "विफल: ${label} (निकास कोड ${code})",
+			"passedLabel": "पास",
+			"failedLabel": "विफल",
+			"noiseHits": "(शोर: ${hits})",
+			"unknownManifestId": "अज्ञात manifest आईडी: ${ids}",
+			"unknownSuiteSelector": "अज्ञात suite: ${ids}",
+			"unknownSubtestFilter": "अज्ञात उपपरीक्षण फ़िल्टरिंग: ${suite} → ${names}",
+			"unknownFileFilter": "अज्ञात परीक्षण फ़ाइल फ़िल्टरिंग: ${suite} → ${names}",
+			"unsupportedSubtestFilter": "सुइट सबटेस्ट/फ़ाइल फ़िल्टरिंग का समर्थन नहीं करता: ${suite}(${names})",
+			"available": "उपलब्ध आइटम: ${ids}",
+			"manifestMatched": "प्रकट मिलान परिणाम: ${ids}",
+			"selectedSuites": "${selected}/${total} परीक्षण सुइट चयनित",
+			"planSlotSummary": "योजना: वास्तविक रन ${run}, पुन: उपयोग ${reuse}, अवरुद्ध ${blocked}",
+			"noMatchingSuites": "कोई ईमेल खाता परीक्षण सूट नहीं.",
+			"reportPath": "रिपोर्ट: ${path}",
+			"reportPathFinal": "रिपोर्ट: ${path}",
+			"statePathFinal": "वर्तमान स्थिति: ${path}",
+			"blocked": "अवरुद्ध: ${label} (निर्भरता पारित नहीं हुई: ${deps})",
+			"speculativeDiscard": "पूर्वानुमान परिणाम खारिज करें: ${label} (निर्भरता पारित नहीं हुई: ${deps})",
+			"continueImperfect": "विफलता/शोर/अपूर्ण तरंगें: ${count} सुइट",
+			"outdatedSelected": "समाप्त तरंगें: ${count} पुरानी/न चली सुइट",
+			"runningSuite": {
+				"base": ">>> ${manifestId}:${name} चल रहा है",
+				"speculative": "सट्टा समानांतर",
+				"heavy": "भारी",
+				"expected": "अपेक्षित ${expected}"
+			},
+			"reusedSuite": ">>> पुन: उपयोग करें ${manifestId}:${name} (ट्रिगर अपरिवर्तित रहता है, अंतिम ${status} का उपयोग किया जाता है)",
+			"noisyOnlyRemain": "वहाँ अभी भी ${count} सुइट्स गुजर रहे हैं लेकिन शोर के साथ: ${suites}",
+			"estimatedRun": "अनुमान है कि इस दौड़ में ≈ ${eta} लगेगा (अनुमानित समानांतर दर ${rate})",
+			"estimatedRunSerial": "इस रन में ≈ ${eta} (सीरियल) लगने की उम्मीद है",
+			"estimatedRunSkipped": "ऐसे ${reused} टुकड़े भी हैं जिनका दोबारा उपयोग किया जाता है और ${blocked} टुकड़े भी हैं जिनके अवरुद्ध होने की उम्मीद है (अनुमान में शामिल नहीं)",
+			"noRealRunPlanned": "इस बार चलाने की कोई आवश्यकता नहीं है: ${reused} का पुन: उपयोग किया जाता है और ${blocked} के अवरुद्ध होने की उम्मीद है (ट्रिगर अपरिवर्तित रहता है)",
+			"allReusedHint": "इस बार वास्तव में कोई सुइट नहीं चलाया गया है: विफलता विरासत में मिला अंतिम परिणाम है, और रुकावट का समाधान नहीं हुआ है (संबंधित फ़ाइलें अपरिवर्तित रहती हैं)। प्रासंगिक फ़ाइलों की मरम्मत करें और पुनः चलाएँ, या वास्तविक रन को बाध्य करने के लिए fount test --force का उपयोग करें।",
+			"estimatedRemaining": "अनुमानित शेष समय ≈ ${eta} (${completed}/${total} सुइट)",
+			"estimatedRunSerialHint": "यदि समानता अपेक्षित है ≈ ${eta} (समानांतर दर ${rate}), बचत ≈ ${savings} (हटाएं --no-parallel नहीं)",
+			"failuresSaved": "सहेजी गई विफलता सूची: ${path} (${count} सुइट)",
+			"failuresCleared": "मैनिफ़ेस्ट ${manifestId} सभी पास हो गए हैं और विफलता सूची साफ़ कर दी गई है।",
+			"terminated": "समय समाप्ति समाप्ति: ${label} — ${reason}",
+			"terminateIdle": "निरस्त ${label}: ${minutes} मिनट से अधिक के लिए कोई stdall आउटपुट नहीं (${idleSec} सेकंड के लिए निष्क्रिय, ${elapsed} चलाएँ)",
+			"terminateDuration": "समाप्त ${label}: वॉचडॉग बेसलाइन समय से अधिक लिया गया (${elapsed} चल रहा है, बेसलाइन ${baseline}, ऊपरी सीमा ${limit})",
+			"terminateDurationDefault": "समाप्त ${label}: बिताया गया समय डिफ़ॉल्ट वॉचडॉग अवधि सीमा से अधिक है (${elapsed} चल रहा है, ऊपरी सीमा ${limit})",
+			"terminateMarker": "[समाप्ति का कारण: ${reason}]",
+			"terminateUnknown": "समाप्त ${label}: परीक्षण बाधित",
+			"terminateSpeculative": "समाप्त ${label}: सट्टा निर्भरता समाप्त नहीं हुई है, प्रारंभिक रोक रद्द कर दी गई है",
+			"nothingToContinue": "सभी हरे और कोई समय सीमा समाप्त वस्तु नहीं, दोबारा चलाने की कोई आवश्यकता नहीं।",
+			"triggerNoMatch": "ट्रिगर किसी फ़ाइल से ईमेल नहीं खाता: ${scope} — ${pattern}",
+			"triggerNoMatchSummary": "कुल ${count} ट्रिगर किसी भी रिपॉज़िटरी फ़ाइल से ईमेल नहीं खाते (विवरण के लिए report.md देखें)",
+			"unknownSuite": "अज्ञात सुइट: ${name}",
+			"federationCleanupPre": "फ़ेडरेटेड परीक्षण क्लीनअप (चलाने से पहले) विफल: ${output}",
+			"federationCleanupPost": "फ़ेडरेटेड परीक्षण क्लीनअप (चलाने के बाद) विफल: ${output}",
+			"suiteHeader": "=== सुइट ${name} ===",
+			"heapSnapshotSaved": "परीक्षण नोड निकट-ओओएम हीप स्नैपशॉट: ${path}",
+			"liveUsage": "उपयोग: --suite <नाम> | --list",
+			"serialUsage": "उपयोग: serial.mjs <डेनो-टेस्ट-पाथ> […]",
+			"silentPassedOne": "1 परीक्षण फ़ाइल उत्तीर्ण हुई.",
+			"silentPassedMany": "${count} परीक्षण फ़ाइलें उत्तीर्ण हुईं।",
+			"ciNoDiffFallback": "सीआई: अंतर का पता नहीं चला, पूर्ण सुइट चलाने के लिए फ़ॉलबैक",
+			"noFrontendPhasesMatched": "FOUNT_TEST_ONLY से ईमेल खाने वाला कोई फ्रंट-एंड परीक्षण चरण नहीं है",
+			"denoPanic": {
+				"detected": "डेनो क्रैश का पता चला: ${label} (स्थान ${signature})",
+				"alreadyReported": "इस डेनो दुर्घटना की सूचना दी गई है, छोड़ दिया गया: ${signature}",
+				"ghUnavailable": "gh अनुपलब्ध है या लॉग इन नहीं है, केवल स्थानीय रूप से लॉग इन है डेनो क्रैश: ${signature}",
+				"published": "डेनो को एक क्रैश समस्या सबमिट कर दी गई है: ${url}",
+				"duplicate": "अपस्ट्रीम में बार-बार दुर्घटना हुई है, रिपोर्टिंग छोड़ें: ${upstream}",
+				"publishFailed": "डेनो क्रैश समस्या प्रकाशन विफल: ${signature}"
+			},
+			"nodeWorker": {
+				"dataPathRequired": "परीक्षण नोड कार्यकर्ता: अनुपलब्ध --data-path",
+				"portRequired": "परीक्षण नोड कार्यकर्ता: अनुपलब्ध --port (कृपया launch.mjs के माध्यम से लॉन्च करें)",
+				"keyRequired": "परीक्षण नोड कार्यकर्ता: अनुपलब्ध --key (कृपया launch.mjs के माध्यम से लॉन्च करें)",
+				"userRequired": "परीक्षण नोड कार्यकर्ता: अनुपलब्ध --user",
+				"error": "परीक्षण नोड कार्यकर्ता त्रुटि: ${error}"
+			},
+			"ws": {
+				"pass": "पास: ${detail}",
+				"fail": "विफल: ${detail}"
+			},
+			"report": {
+				"title": "fount परीक्षण रिपोर्ट",
+				"tableHeaderItem": "आइटम",
+				"tableHeaderValue": "मान",
+				"fieldRunId": "आईडी चलाएँ",
+				"fieldCommand": "आदेश",
+				"fieldExit": "निकास स्थिति",
+				"fieldProgress": "प्रगति",
+				"fieldSuites": "सुइट",
+				"fieldFailed": "विफलताओं की संख्या",
+				"fieldNoisyPassed": "पास लेकिन शोर-शराबा हुआ",
+				"fieldReused": "पुन: उपयोग की संख्या",
+				"fieldSuiteSumDuration": "सुइट पर बिताया गया कुल समय",
+				"fieldWallClock": "बिताया गया कुल समय",
+				"fieldParallelRate": "समानता",
+				"fieldEstimatedRemaining": "अनुमानित शेष समय",
+				"fieldEstimatedParallelRate": "अनुमानित समानता दर",
+				"estimatePoint": "≈ ${eta}",
+				"pendingEstimate": "अनुमानित शेष समय ≈ ${eta}",
+				"pendingParallelEstimate": "अनुमानित समानांतर समय खपत ≈ ${eta} (अनुमानित समानांतर दर ${rate})",
+				"pendingSavings": "अनुमानित बचत ≈ ${savings}",
+				"pendingItemExpected": "अपेक्षित ${expected}",
+				"fieldDuration": "समय",
+				"commandDefault": "(डिफ़ॉल्ट)",
+				"exitPassed": "पास",
+				"exitFailed": "विफल",
+				"exitInProgress": "चल रहा है",
+				"progressFormat": "${completed}/${total} सुइट",
+				"suitesFormat": "${passed}/${completed} उत्तीर्ण",
+				"artifacts": "उत्पाद निर्देशिका: `${path}`",
+				"sectionFailed": "विफल सुइट",
+				"sectionNoisyPassed": "पास लेकिन शोर-शराबा हुआ",
+				"sectionSilentPassed": "पास",
+				"sectionPending": "चलाया जाना है",
+				"sectionContinue": "अधूरे काम जारी रखें",
+				"sectionReplay": "विफल आइटम पुनः चलाएँ",
+				"sectionReplayImperfect": "अपूर्ण पुन:प्रदर्शन",
+				"columnSuite": "सुइट",
+				"columnDuration": "समय",
+				"labelReused": "(पुन: उपयोग)",
+				"labelExpectedBlocked": "(अपेक्षित अवरोधन)",
+				"labelDuration": "समय",
+				"labelLog": "लॉग",
+				"labelNoise": "शोर",
+				"labelFailedFiles": "विफलता फ़ाइल",
+				"labelTerminateReason": "समाप्ति का कारण",
+				"sectionContinueReasons": "ट्रिगर कारण",
+				"continueReasonsLink": "ट्रिगर कारण: विवरण के लिए [${path}](${path}) देखें",
+				"labelContinueReason": "कारण",
+				"reasonImperfectFailed": "ऐतिहासिक विफलता",
+				"reasonImperfectNoisy": "पहले पास लेकिन लेकिन शोर के साथ",
+				"reasonImperfectBlocked": "इतिहास अवरुद्ध है",
+				"reasonImperfectDependent": "अपस्ट्रीम विफल हो जाता है और एक लेयर डाउनस्ट्रीम विफल हो जाता है",
+				"reasonMissingRecord": "स्थिति कोई रिकॉर्ड नहीं, स्वचालित मेक-अप",
+				"reasonStaleContent": "सामग्री बदल गई है और इसे फिर से चलाने की आवश्यकता है।",
+				"reasonTriggerHashDrift": "ट्रिगर फ़िंगरप्रिंट बहाव (कोई पथ हिट नहीं)",
+				"reasonExplicitSelected": "स्पष्ट नामकरण",
+				"reasonDependencyRequired": "निर्भरता खींचती है",
+				"labelRootCause": "मूल कारण",
+				"labelDirectRequiredBy": "सीधे शामिल पार्टी",
+				"labelInclusionPath": "समावेशन श्रृंखला",
+				"labelPullUpstream": "अपस्ट्रीम पुल: ${requiredBy} की निर्भरता हरी नहीं है",
+				"labelPullDownstream": "डाउनस्ट्रीम पुल: ${requiredBy} सही नहीं है, और इसे एक साथ शामिल किया जाएगा",
+				"labelGateReason": "चलाने का कारण",
+				"labelCommitRange": "commit दायरा",
+				"labelUncommittedHashRange": "डाइजेस्ट प्रस्तुत नहीं किया गया",
+				"labelMatchedTriggers": "मिले trigger",
+				"labelMatchedTriggerSets": "हिट ट्रिगर सेट",
+				"labelMatchedPaths": "हिट पथ",
+				"labelTriggerHashDrift": "ट्रिगर फ़िंगरप्रिंट वर्तमान कार्यस्थान के साथ असंगत है (गंदे→नेट पर ध्यान नहीं दिया गया)",
+				"sectionDeadTriggers": "अमान्य ट्रिगर",
+				"deadTriggersHint": "निम्नलिखित ग्लोब रिपॉजिटरी के भीतर किसी भी फाइल से ईमेल नहीं खाता है (गिट ट्रैक किया गया + अनदेखा नहीं किया गया):",
+				"durationMs": "${ms} मिलीसेकंड",
+				"durationUnitSec": "${n} सेकंड",
+				"durationUnitMin": "${n} मि",
+				"durationUnitMinute": "${n} मिनट",
+				"durationUnitHour": "${n} घंटे",
+				"durationUnitDay": "${n} दिन"
+			},
+			"state": {
+				"title": "fount परीक्षण स्थिति",
+				"artifacts": "वर्तमान निर्देशिका: `${path}`",
+				"sectionDependencyTree": "निर्भरता वृक्ष",
+				"sectionOverview": "प्रत्येक सुइट की वर्तमान स्थिति",
+				"sectionBlocked": "अवरुद्ध सुइट",
+				"columnSuite": "सुइट",
+				"columnStatus": "स्थिति",
+				"columnCommit": "commit",
+				"columnRanAt": "आखरी बार",
+				"columnDuration": "समय",
+				"columnLog": "लॉग",
+				"columnBlocked": "अवरोधन की संख्या",
+				"labelBlockedBy": "में अवरुद्ध",
+				"statusUnknown": "नहीं चल रहा है",
+				"statusOutdated": "अप्रचलित"
+			}
+		},
 		"path": {
 			"protocol": {
 				"description": "यूआरएल:फाउंड प्रोटोकॉल",
@@ -144,7 +582,7 @@
 				"localBranchAhead": "स्थानीय शाखा दूरस्थ शाखा से आगे है. किसी अद्यतन की आवश्यकता नहीं है.",
 				"branchesDiverged": "स्थानीय और दूरस्थ शाखाओं को विभाजित कर दिया गया है। जबरन अद्यतन प्रगति पर है...",
 				"notOnBranch": "शाखा पर नहीं, 'मास्टर' पर स्विच करें...",
-				"noUpstreamBranch": "चेतावनी: शाखा '${branch}' के लिए कोई अपस्ट्रीम शाखा कॉन्फ़िगर नहीं की गई है। अपस्ट्रीम को 'ओरिजिन/मास्टर' पर सेट करना।",
+				"noUpstreamBranch": "चेतावनी: शाखा '${branch}' के लिए कोई अपस्ट्रीम शाखा कॉन्फ़िगर नहीं की गई है, '${remote}' का उपयोग करें।",
 				"dirtyWorkingDirectory": "चेतावनी: कार्यशील निर्देशिका साफ़ नहीं है. कृपया अद्यतन करने से पहले अपने परिवर्तन stage या commit करें।",
 				"notInstalled": "Git स्थापित नहीं है, स्थापित करने का प्रयास कर रहा हूँ...",
 				"notInstalledSkippingPull": "Git स्थापित नहीं है, `git pull` छोड़ें",
@@ -727,6 +1165,513 @@
 			}
 		}
 	},
+	"social": {
+		"title": "फ़ीड",
+		"description": "P2P सोशल पोस्ट, फ़ॉलो और फ़ाइल शेयरिंग",
+		"bootstrapFailed": "सामाजिक इंटरफ़ेस आरंभीकरण विफल: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "फ़ीड"
+			}
+		},
+		"nav": {
+			"feed": "होम",
+			"explore": "एक्सप्लोर",
+			"notifications": "इनबॉक्स",
+			"saved": "सेव किए",
+			"drafts": "ड्राफ़्ट",
+			"profile": "मेरा",
+			"videos": "शॉर्ट वीडियो",
+			"live": "लाइव"
+		},
+		"settings": {
+			"title": "सोशल सेटिंग",
+			"back": {
+				"aria-label": "प्रोफ़ाइल पर वापस करें"
+			},
+			"privacyTitle": "गोपनीयता और खोज",
+			"privacyHint": "नियंत्रित करता है कि खाते डिस्कवरी और अनुशंसाओं में दिखाई देंगे या नहीं।",
+			"tasteTitle": "सिफ़ारिशें और प्राथमिकताएँ",
+			"tasteHint": "गोपनीयता सीमाओं और \"आपके लिए अनुशंसित\" के लेबल नामकरण को समायोजित करें।",
+			"mutedKeywordsTitle": "शब्दों और टैग को ब्लॉक करें",
+			"mutedKeywordsHint": "जो पोस्ट मुख्य पाठ, सामग्री चेतावनियों, या लेबल पर आते हैं, उन्हें स्ट्रीम, एक्सप्लोर, खोज और सूचनाओं से छिपा दिया जाएगा। केवल स्थानीय स्तर पर सहेजा गया.",
+			"mutedKeywordsMatchTags": "एक ही समय में टैग का मिलान करें",
+			"mutedKeywordsAdd": "जोड़ें",
+			"mutedKeywordsRemove": {
+				"title": "अवरुद्ध शब्द हटाएँ"
+			},
+			"mutedKeywordsEmpty": "अभी तक कोई अवरोधक शब्द नहीं जोड़ा गया",
+			"autoTranslateTitle": "स्वचालित अनुवाद",
+			"autoTranslateHint": "चालू होने पर, विदेशी भाषा पोस्ट स्वचालित रूप से अनुवाद का अनुरोध करेंगे और उन्हें मूल पाठ पर स्विच किया जा सकता है।",
+			"autoTranslateEnable": "अपनी भाषा के अलावा अन्य भाषाओं में पोस्ट का स्वचालित रूप से अनुवाद करें",
+			"safetyTitle": "सुरक्षा और ब्लॉकलिस्ट",
+			"safetyHint": "अवरुद्ध और छिपी हुई सूचियाँ प्रबंधित करें।",
+			"mutedKeywords": {
+				"placeholder": "कीवर्ड या #टैग दर्ज करें"
+			}
+		},
+		"composer": {
+			"placeholder": "आप किस बारे में सोच रहे हैं? मार्कडाउन (फ़ॉउंट बोली) का समर्थन करें, उल्लेख करने के लिए @ दर्ज करें",
+			"publish": "प्रकाशित करें",
+			"saveDraft": "ड्राफ़्ट सहेजें",
+			"fab": {
+				"title": "पोस्ट लिखें",
+				"aria-label": "पोस्ट लिखें"
+			},
+			"contentWarning": {
+				"placeholder": "सामग्री चेतावनी (वैकल्पिक)"
+			},
+			"sensitiveMedia": "मीडिया संवेदनशील मीडिया मास्क",
+			"editImage": "संपादित करें",
+			"editCrop": "क्रॉप",
+			"editMosaic": "मोज़ेक",
+			"editBrush": "ब्रश",
+			"editApply": "लागू करें",
+			"editCancel": "रद्द करें",
+			"replyPolicyEveryone": "कोई भी उत्तर दे सकता है",
+			"replyPolicyFollowers7d": "7 दिन से ज्यादा समय से फॉलोअर्स",
+			"replyPolicyAuthorFollows": "जिन लोगों को मैं फ़ॉलो करता हूं",
+			"replyPolicyLabel": "कौन जवाब दे सकता है",
+			"replyDisplayAll": "सभी उत्तर दिखाएँ",
+			"replyDisplayFeaturedOnly": "केवल चयनित उत्तर",
+			"replyDisplayLabel": "दिखाने के लिए उत्तर दें",
+			"scheduleLabel": "शेड्यूल करें",
+			"scheduleSuccess": "पोस्ट को निर्धारित कतार में जोड़ दिया गया है",
+			"emojiButton": {
+				"title": "इमोजी",
+				"aria-label": "इमोजी"
+			},
+			"mediaButton": {
+				"title": "मीडिया जोड़ें",
+				"aria-label": "मीडिया जोड़ें"
+			},
+			"pollButton": {
+				"title": "मतदान शुरू करें",
+				"aria-label": "मतदान शुरू करें"
+			},
+			"cwToggle": {
+				"title": "सामग्री चेतावनी",
+				"aria-label": "सामग्री चेतावनी"
+			},
+			"advancedToggle": {
+				"title": "अधिक विकल्प",
+				"aria-label": "अधिक विकल्प"
+			},
+			"media": {
+				"placeholder": "छवि विवरण (ऑल्ट)"
+			}
+		},
+		"visibility": {
+			"label": "दृश्यमान सीमा",
+			"public": "सार्वजनिक",
+			"unlisted": "सार्वजनिक रूप से सूचीबद्ध नहीं",
+			"followers": "केवल फ़ॉलोअर्स",
+			"followers7d": "7 दिन तक फॉलो करने के बाद दिखाई देगा",
+			"followers30d": "30 दिन तक फॉलो करने के बाद दिखेगा",
+			"selected": "निर्दिष्ट लोगों के लिए दृश्यमान",
+			"private": "केवल अपने आप को दिखाई देता है",
+			"allowLabel": "दर्शनीय लोग",
+			"exceptLabel": "लोगों को बाहर करें",
+			"allow": {
+				"placeholder": "दृश्यमान लोगों को इकाई हैश, स्थान या अल्पविराम से अनलिंक किया गया"
+			},
+			"except": {
+				"placeholder": "इसे किसे नहीं दिखाना चाहिए (वैकल्पिक)"
+			}
+		},
+		"albums": {
+			"create": "नया एल्बम बनाएं",
+			"edit": "एल्बम संपादित करें",
+			"save": "सहेजें",
+			"cancel": "रद्द करें",
+			"back": "एल्बम पर लौटें",
+			"empty": "अभी तक कोई एल्बम नहीं",
+			"emptyPosts": "एल्बम में अभी तक कोई पोस्ट नहीं है",
+			"name": "एल्बम नाम",
+			"description": "एल्बम विवरण",
+			"deleteLinks": "एल्बम हटाएं (पोस्ट रखें)",
+			"deleteWithPosts": "एल्बम हटाएं और पोस्ट हटाएं",
+			"pickerLabel": "एल्बम में जोड़ें",
+			"defaultName": "डिफ़ॉल्ट एल्बम"
+		},
+		"feed": {
+			"refresh": "पोस्ट रीफ़्रेश करें",
+			"newPosts": "नई खबर है, देखने के लिए क्लिक करें",
+			"tabLatest": "नवीनतम",
+			"tabForYou": "आपके लिए",
+			"repostedBy": "${author} ने रीट्वीट किया",
+			"decryptFailed": "इस पोस्ट को डिक्रिप्ट करने में असमर्थ",
+			"revealContent": "सामग्री दिखाएँ",
+			"sensitiveMedia": "संवेदनशील मीडिया",
+			"showMore": "और देखें",
+			"showLess": "कम देखें",
+			"replayDivider": "पढ़ना समाप्त करें, पुनः ब्राउज़ करें"
+		},
+		"taste": {
+			"rebuild": "प्राथमिकताओं का पुनर्निर्माण करें",
+			"privacyPublishPreferences": "सार्वजनिक टैग नामकरण और मर्ज खोज",
+			"privacyPublishPreferencesHint": "बंद करने के बाद, मित्र आपके टैग नामकरण और मर्ज स्टेटमेंट नहीं देख पाएंगे, और वे आम सहमति में योगदान नहीं कर पाएंगे।",
+			"privacyPublishReactions": "जनता की पसंद और नापसंद",
+			"privacyPublishReactionsHint": "बंद करने के बाद, पोस्टर को आपकी पसंद/नापसंद नहीं मिलेगी, आपकी प्रतिक्रियाएँ दूसरों की अनुशंसाओं में शामिल नहीं की जाएंगी, और आप पोस्ट को दोबारा फैलाने के लिए प्रचारित नहीं करेंगे।",
+			"empty": "अभी तक कोई वरीयता टैग नहीं है, अधिक पसंद/नापसंद के बाद यह स्वचालित रूप से क्लस्टर हो जाएगा",
+			"weight": "वजन ${weight}",
+			"save": "सहेजें",
+			"name": {
+				"placeholder": "स्थानीय प्रदर्शन नाम"
+			}
+		},
+		"trending": {
+			"title": "ट्रेंडिंग विषय",
+			"postCount": {
+				"title": "${n} पोस्ट"
+			},
+			"scopeLocal": "इस डिवाइस",
+			"scopeNearby": "आस-पास",
+			"empty": "अभी तक कोई गर्म विषय नहीं है"
+		},
+		"search": {
+			"placeholder": "अपडेट, उपयोगकर्ता या #विषय खोजें (न्यूनतम 2 शब्द)",
+			"open": {
+				"aria-label": "खोजें"
+			},
+			"submit": "खोजें",
+			"clear": "साफ़ करें",
+			"empty": "कोई ईमेल खाती पोस्ट नहीं",
+			"tooShort": "कृपया कम से कम 2 अक्षर दर्ज करें",
+			"usersTitle": "उपयोगकर्ता",
+			"postsTitle": "पोस्ट",
+			"usersEmpty": "कोई ईमेल खाता उपयोगकर्ता नहीं",
+			"pinAlias": "उपनाम के रूप में सेट करें",
+			"trustScore": "${score} पर भरोसा करें",
+			"viewTitle": "खोजें",
+			"loading": "खोज रहे हैं…",
+			"filterAuthor": {
+				"placeholder": "लेखक"
+			},
+			"filterMediaAll": "सभी मीडिया",
+			"filterMediaImage": "छवि",
+			"filterMediaVideo": "वीडियो",
+			"filterTag": {
+				"placeholder": "#लेबल"
+			},
+			"sortRecent": "नवीनतम",
+			"sortPopular": "ट्रेंडिंग",
+			"scopeLocal": "इस डिवाइस",
+			"scopeNearby": "आस-पास"
+		},
+		"profile": {
+			"edit": "प्रोफ़ाइल संपादित करें",
+			"viewPosts": "सोशल प्रोफ़ाइल देखें",
+			"settingsBtn": {
+				"aria-label": "सोशल सेटिंग"
+			},
+			"mediaOnly": "[मीडिया]",
+			"hideFromExplore": "एक्सप्लोर पेज से खाता छुपाएं",
+			"tabPosts": "पोस्ट",
+			"tabAlbums": "एल्बम",
+			"tabLikes": "लाइक",
+			"tabCabinets": "फ़ाइल कैबिनेट",
+			"tabsLabel": {
+				"aria-label": "प्रोफ़ाइल टैब"
+			},
+			"cabinetsEmpty": "वर्तमान में कोई सार्वजनिक फाइलिंग कैबिनेट नहीं हैं",
+			"cabinetsFailed": "फ़ाइल कैबिनेट लोडिंग विफल: ${error}",
+			"statsGroup": {
+				"aria-label": "आँकड़े"
+			},
+			"statsPosts": "पोस्ट",
+			"statsFollowing": "फ़ॉलोइंग",
+			"statsFollowers": "फ़ॉलोअर्स",
+			"followingTitle": "फ़ॉलोइंग",
+			"followersTitle": "फ़ॉलोअर्स"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "बंद करें"
+			}
+		},
+		"actions": {
+			"like": "लाइक",
+			"unlike": "लाइक हटाएँ",
+			"dislike": "डिसलाइक",
+			"undislike": "डिसलाइक हटाएँ",
+			"repost": "रीपोस्ट",
+			"quote": "कोट",
+			"delete": "हटाएँ",
+			"edit": "संपादित करें",
+			"save": "सेव करें",
+			"saved": "सेव किया",
+			"translate": "अनुवाद",
+			"dm": "निजी संदेश भेजें",
+			"block": "ब्लॉक करें",
+			"hide": "छिपाएँ",
+			"mute": "म्यूट करें",
+			"follow": "फ़ॉलो करें",
+			"following": "फ़ॉलो किया",
+			"care": "विशेष फ़ॉलो",
+			"careRemove": "विशेष फ़ॉलो रद्द करें",
+			"careAdded": "पहले ही विशेष फ़ॉलो जोड़ दी गई है",
+			"careRemoved": "विशेष फ़ॉलो रद्द",
+			"setAlias": "उपनाम सेट करें",
+			"setAliasPrompt": "स्थानीय उपनाम सेट करें (साफ़ करने के लिए ख़ाली छोड़ें):",
+			"aliasSaved": "उपनाम अपडेट किया गया",
+			"replies": "टिप्पणी",
+			"copyLink": "लिंक की प्रतिलिपि करें",
+			"downloadHtml": "एचटीएमएल डाउनलोड करें",
+			"copied": "कॉपी किया",
+			"more": {
+				"aria-label": "और"
+			},
+			"share": "शेयर करें",
+			"likeFailed": "पसंद करने में विफल: ${error}",
+			"dislikeFailed": "आगे बढ़ने में विफल: ${error}",
+			"repostFailed": "अग्रेषण विफल: ${error}",
+			"replyFailed": "उत्तर विफल: ${error}",
+			"followFailed": "फ़ॉलो विफल: ${error}",
+			"saveFailed": "संग्रह विफल: ${error}",
+			"blockFailed": "ब्लॉक करने में विफल: ${error}",
+			"hideFailed": "छिपाने में विफल: ${error}",
+			"muteFailed": "म्यूट विफल: ${error}",
+			"deleteFailed": "हटाना विफल: ${error}"
+		},
+		"post": {
+			"edited": "संपादित",
+			"editPrompt": "पोस्ट टेक्स्ट संपादित करें",
+			"editHistory": "इतिहास संपादित करें",
+			"editHistoryEmpty": "कोई पूर्व संस्करण नहीं",
+			"loading": "लोड हो रहा है…",
+			"notFound": "पोस्ट मौजूद नहीं है या दिखाई नहीं दे रही है",
+			"loadFailed": "लोडिंग विफल रही, कृपया बाद में पुनः प्रयास करें",
+			"detailTitle": "पोस्ट",
+			"back": "वापस"
+		},
+		"reply": {
+			"context": "उत्तर दें ${author}"
+		},
+		"notes": {
+			"label": "पाठक का अनुपूरक",
+			"add": "पूरक नोट",
+			"prompt": "एक पाठक अनुपूरक लिखें (सामुदायिक नोट)",
+			"listTitle": "सभी पूरक नोट",
+			"helpful": "उपयोगी",
+			"unhelpful": "अनुपयोगी",
+			"more": "सभी ${n} आइटम",
+			"empty": "अभी कोई पूरक नोट नहीं"
+		},
+		"poll": {
+			"multi": "एकाधिक चयन की अनुमति दें",
+			"apply": "मतदान लागू करें",
+			"closed": "मतदान समाप्त हो गया है",
+			"deadline": "समयसीमा: ${deadline}",
+			"options": {
+				"placeholder": "प्रति पंक्ति एक विकल्प (न्यूनतम 2 आइटम)"
+			}
+		},
+		"aside": {
+			"suggested": "फ़ॉलो सुझाव करें"
+		},
+		"explore": {
+			"accounts": "सुझाए गए खाते",
+			"posts": "नवीनतम पोस्ट",
+			"mediaOnly": "केवल मीडिया"
+		},
+		"groupRef": {
+			"linking": "चैट समूह कनेक्ट करें",
+			"clear": "अनलिंक",
+			"pick": "चैट समूह/चैनल कनेक्ट करें…"
+		},
+		"notifications": {
+			"reply": "${author} ने आपकी पोस्ट का उत्तर दिया",
+			"mention": "${author} ने आपको फ़ीड में @ किया",
+			"like": "${author} को आपकी पोस्ट पसंद आई",
+			"repost": "${author} ने आपकी पोस्ट को रीट्वीट किया",
+			"follow": "${author} आपका फ़ॉलो करता है",
+			"care_post": "${author} ने एक नया अपडेट पोस्ट किया (विशेष फ़ॉलो का विषय)",
+			"poll_closed": "${author} के लिए मतदान समाप्त हो गया",
+			"post_note": "${author} ने आपकी पोस्ट पर पूरक नोट जोड़ा",
+			"live_started": "${author} ने लाइव स्ट्रीमिंग शुरू की",
+			"view": "देखें",
+			"markAllRead": "सभी को पढ़ा हुआ मार्क करें"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "इनबॉक्स फ़िल्टरिंग"
+			},
+			"tabs": {
+				"all": "सभी",
+				"mention": "उल्लेख",
+				"reply": "उत्तर",
+				"like": "प्रशंसा",
+				"follow": "फ़ॉलो",
+				"repost": "रीपोस्ट"
+			},
+			"aggregated": {
+				"like": "${author1}, ${author2} और ${count} लोगों को आपकी पोस्ट पसंद आई",
+				"likeTwo": "${author1} और ${author2} को आपकी पोस्ट पसंद आई",
+				"repost": "${author1}, ${author2} और ${count} लोगों ने आपकी पोस्ट को रीट्वीट किया",
+				"repostTwo": "${author1} और ${author2} ने आपकी पोस्ट को रीट्वीट किया",
+				"follow": "${author1}, ${author2} और ${count} लोग आपका फ़ॉलो करते हैं",
+				"followTwo": "${author1} और ${author2} आपका फ़ॉलो करते हैं"
+			}
+		},
+		"replies": {
+			"placeholder": "उत्तर लिखें…",
+			"submit": "उत्तर",
+			"empty": "अभी तक कोई उत्तर नहीं",
+			"emptyHint": "आइए पहला लेख लिखें और चर्चा शुरू करें"
+		},
+		"repost": {
+			"placeholder": "रीट्वीट टिप्पणी जोड़ें (वैकल्पिक)…",
+			"submit": "अग्रेषित करने की पुष्टि करें"
+		},
+		"quote": {
+			"quoting": "का हवाला देते हुए",
+			"clear": "भिन्नता",
+			"viewOriginal": "मूल पोस्ट देखें"
+		},
+		"a11y": {
+			"linkGroupSelect": "किसी चैट समूह या चैनल से कनेक्ट करें",
+			"postVisibility": "दृश्यमान सीमा",
+			"postLang": "सामग्री भाषा",
+			"trendingHashtags": "ट्रेंडिंग विषय",
+			"saveFolderSelect": "पसंदीदा फ़ोल्डर"
+		},
+		"blocklist": {
+			"title": "ब्लॉक करें सूची",
+			"hiddenTitle": "छिपाएँ सूची",
+			"empty": "अभी तक कोई अवरुद्ध या छिपी हुई प्रविष्टियाँ नहीं",
+			"unblock": "अनब्लॉक",
+			"unhide": "अनहाइड",
+			"scopeEntity": "इकाई",
+			"scopeSubject": "विषय"
+		},
+		"translate": {
+			"label": "अनुवाद:"
+		},
+		"saved": {
+			"all": "सभी",
+			"unfiled": "अनफ़ाइल्ड",
+			"createFolder": {
+				"title": "नया फ़ोल्डर बनाएं",
+				"aria-label": "नया फ़ोल्डर बनाएं"
+			},
+			"createFolderPrompt": "फ़ोल्डर का नाम",
+			"pickFolderTitle": "पसंदीदा में जोड़े",
+			"confirm": "पुष्टि करें",
+			"cancel": "रद्द करें",
+			"remove": "सेव हटाएँ",
+			"renameFolder": "नाम बदलें",
+			"renameFolderPrompt": "नये फ़ोल्डर का नाम",
+			"deleteFolder": "फ़ोल्डर हटाएँ",
+			"deleteFolderConfirm": "फ़ोल्डर हटाएं? वहां मौजूद पोस्टों को \"अनआर्काइव्ड\" में ले जाया जाएगा।",
+			"searchEmpty": "कोई ईमेल खाता संग्रह नहीं",
+			"folderEmpty": "यह फ़ोल्डर खाली है",
+			"emptyHint": "पोस्ट को यहां सहेजने के लिए ब्राउज़ करते समय बुकमार्क पर क्लिक करें",
+			"search": {
+				"placeholder": "पसंदीदा खोजें…"
+			}
+		},
+		"drafts": {
+			"untitled": "(कोई मसौदा पाठ नहीं)",
+			"emptyHint": "पोस्ट बॉक्स में कुछ सामग्री लिखें और अगली बार संपादन जारी रखने के लिए \"ड्राफ़्ट सहेजें\" पर क्लिक करें",
+			"saved": "ड्राफ्ट सहेजा गया",
+			"deleted": "ड्राफ्ट हटा दिया गया",
+			"delete": "ड्राफ्ट हटाएं",
+			"empty": "ड्राफ्ट खाली है",
+			"saveFailed": "ड्राफ्ट सहेजने में विफल: ${error}",
+			"loadFailed": "ड्राफ्ट खोलने में विफल: ${error}",
+			"deleteFailed": "ड्राफ्ट हटाने में विफल: ${error}"
+		},
+		"time": {
+			"justNow": "अभी",
+			"minutesAgo": "${n} मिनट पहले",
+			"hoursAgo": "${n} घंटे पहले"
+		},
+		"empty": {
+			"feed": "अभी कोई अपडेट नहीं हैं। कुछ लोगों का फ़ॉलो करें.",
+			"profilePosts": "अभी तक कोई खबर नहीं",
+			"following": "अभी तक किसी को फ़ॉलो नहीं कर रहा हूँ",
+			"followers": "अभी तक कोई प्रशंसक नहीं",
+			"notifications": "अभी तक कोई अधिसूचना नहीं",
+			"saved": "अभी तक कोई पसंदीदा नहीं",
+			"drafts": "अभी तक कोई ड्राफ्ट नहीं है",
+			"exploreAccounts": "वर्तमान में कोई सुझाए गए खाते नहीं है",
+			"explorePosts": "अभी तक कोई अन्वेषण पोस्ट नहीं हैं",
+			"likedPosts": "अभी तक कोई लाइक नहीं",
+			"noIdentity": "कृपया सोशल का उपयोग करने से पहले चैट में फ़ेडरेटेड पहचान कॉन्फ़िगर करें"
+		},
+		"topic": {
+			"follow": "सदस्यता लें",
+			"unfollow": "सदस्यता रद्द करें",
+			"empty": "इस विषय पर अभी तक कोई पोस्ट नहीं है"
+		},
+		"video": {
+			"view": {
+				"aria-label": "शॉर्ट वीडियो"
+			},
+			"empty": "अभी तक कोई लघु वीडियो नहीं",
+			"emptyHint": "निम्नलिखित लोगों या सार्वजनिक चौराहों पर वीडियो के साथ कोई पोस्ट नहीं हैं। वीडियो अपडेट पोस्ट करने का प्रयास करें?",
+			"compose": "वीडियो पोस्ट पोस्ट करो",
+			"back": {
+				"aria-label": "पोस्ट पर वापस"
+			},
+			"mute": {
+				"aria-label": "म्यूट करें"
+			},
+			"unmute": {
+				"aria-label": "अनम्यूट करें"
+			},
+			"unavailable": "वीडियो चलाया नहीं जा सकता",
+			"closeReplies": {
+				"aria-label": "टिप्पणियाँ बंद करें"
+			}
+		},
+		"live": {
+			"empty": "अभी तक कोई लाइव नहीं",
+			"viewers": "${n} लोगों ने देखा",
+			"likes": "${n} पसंद है",
+			"local": "इस डिवाइस",
+			"hall": "लाइव प्रसारण हॉल",
+			"back": {
+				"title": "पोस्ट पर वापस",
+				"aria-label": "पोस्ट पर वापस"
+			},
+			"danmakuSend": "भेजें",
+			"postWatch": "लाइव प्रसारण दर्ज करें",
+			"postEnded": "लाइव प्रसारण समाप्त हो गया है",
+			"postEndedStats": "${viewers} द्वारा देखा गया · ${likes} पसंद किया गया · ${duration}",
+			"link": {
+				"invite": "कनेक्शन आमंत्रित करें",
+				"needPeer": "कृपया पीयर एंटिटी हैश: लाइवआईडी भरें",
+				"invited": "ऑनलाइन आमंत्रण भेजा गया है",
+				"linked": "कनेक्टेड",
+				"peer": {
+					"placeholder": "पीयर एंटिटीहैश: लाइवआईडी"
+				}
+			},
+			"broadcast": {
+				"title": "लाइव शुरू करें",
+				"open": "लाइव शुरू करें",
+				"mediaAv": "ऑडियो-वीडियो",
+				"mediaAudio": "केवल ऑडियो",
+				"mediaVideo": "केवल वीडियो",
+				"mediaWhip": "WHIP पुश स्ट्रीमिंग (जैसे ओबीएस)",
+				"whipUrl": "WHIP पता",
+				"whipToken": "Bearer Token",
+				"whipWaiting": "WHIP स्ट्रीमिंग कनेक्शन की प्रतीक्षा में (OBS जैसे स्ट्रीमिंग सॉफ़्टवेयर का उपयोग किया जा सकता है)…",
+				"start": "लाइव शुरू करें",
+				"stop": "लाइव बंद करें",
+				"started": "लाइव शुरू हो गया है",
+				"stopped": "लाइव प्रसारण बंद हो गया है",
+				"titleInput": {
+					"placeholder": "लाइव शीर्षक (वैकल्पिक)"
+				}
+			},
+			"danmaku": {
+				"placeholder": "कुछ लिखें…"
+			}
+		}
+	},
 	"chat": {
 		"title": "चैट",
 		"description": "जहां शब्द उड़ान भरते हैं और कहानियां सामने आती हैं। अपने एआई साथियों के साथ जुड़ें, कथा को आकार दें, और डिजिटल संवाद के उतार-चढ़ाव में खुद को खो दें। फव्वारे का दिल यहाँ धड़कता है।",
@@ -738,7 +1683,1453 @@
 			"isTyping": "${names} टाइप कर रहा है...",
 			"multipleMembers": "अनेक सदस्य टाइप कर रहे हैं..."
 		},
+		"emoji": {
+			"pickerTitle": "इमोटिकॉन चुनें",
+			"categoryFace": "इमोजी",
+			"categoryGesture": "हावभाव",
+			"categoryHeart": "दिल",
+			"categoryAnimal": "जानवर",
+			"categoryFood": "भोजन",
+			"categoryObject": "वस्तुएँ"
+		},
+		"unicodeEmojiGroups": {
+			"Smileys_and_Emotion": {
+				"title": "मुस्कुराते चेहरे और भावनाएं"
+			},
+			"People_and_Body": {
+				"title": "आँकड़े और शरीर"
+			},
+			"Animals_and_Nature": {
+				"title": "जानवर और प्रकृति"
+			},
+			"Food_and_Drink": {
+				"title": "खाद्य और पेय"
+			},
+			"Travel_and_Places": {
+				"title": "यात्रा और स्थान"
+			},
+			"Activities": {
+				"title": "गतिविधि"
+			},
+			"Objects": {
+				"title": "वस्तुएँ"
+			},
+			"Symbols": {
+				"title": "प्रतीक"
+			},
+			"Flags": {
+				"title": "झंडे"
+			},
+			"Component": {
+				"title": "घटक"
+			}
+		},
+		"sessionSettings": {
+			"unnamedTitle": "अनाम समूह चैट",
+			"modeGroup": "समूह चैट",
+			"modeSingle": "एकल भूमिका",
+			"modeEmpty": "खाली समूह",
+			"subtitleRoles": "इस चैट में ${count} अक्षर हैं",
+			"statusSaved": "सहेजा गया",
+			"statusSaving": "सहेजा जा रहा है…",
+			"statusDirty": "सहेजे न गए परिवर्तन हैं",
+			"statusSaveFailed": "सहेजें विफल",
+			"saveSuccess": "समूह चैट सेटिंग सहेजी गईं",
+			"saveFailed": "समूह चैट सेटिंग सहेजने में असमर्थ"
+		},
+		"group": {
+			"defaults": {
+				"groupMetaName": "अनाम समूह",
+				"defaultChannelName": "सामान्य",
+				"dmChatName": "चैट",
+				"dmDmName": "निजी चैट",
+				"threadName": "थ्रेड"
+			},
+			"settingsPage": {
+				"title": "समूह सेटिंग",
+				"kicker": "समूह प्रबंधन",
+				"subtitle": "समूह की जानकारी, सदस्यों और सामान्य कार्यों को प्रबंधित करें। कम-आवृत्ति अनुमतियाँ, भंडारण और ऑडिटिंग उपकरण उन्नत सेटिंग्स में केंद्रीकृत हैं।",
+				"backToChat": "चैट पर वापस",
+				"navigationLabel": "समूह सेटिंग्स फ़ीडीकरण",
+				"advancedNavigationLabel": "उन्नत सेटिंग्स श्रेणी",
+				"tabGeneral": "सामान्य",
+				"tabPermissions": "भूमिका अनुमतियाँ",
+				"tabMembers": "सदस्य",
+				"tabAudit": "ऑडिट लॉग",
+				"tabEmojis": "इमोजी",
+				"tabAdvanced": "उन्नत",
+				"tabStorage": "स्टोरेज और आर्काइव",
+				"tabChannelPermissions": "चैनल अनुमतियाँ",
+				"advancedHubTitle": "उन्नत सेटिंग",
+				"advancedHubDescription": "ये सुविधाएँ समूह की अनुमति संरचना, ऐतिहासिक डेटा या शासन रिकॉर्ड को बदल देती हैं; केवल तभी समायोजित करें जब स्पष्ट रूप से आवश्यकता हो।",
+				"channelPermsHint": "विशिष्ट चैनलों के लिए भूमिका अनुमति ओवरराइड सेट करें। उजागर किए गए आइटम समूह भूमिका अनुमतियाँ प्राप्त करते हैं।",
+				"channelPermsSelectChannel": "चैनल",
+				"channelPermsAddRole": "भूमिका ओवरराइड जोड़ें",
+				"channelPermsRemoveRole": "इस भूमिका ओवरराइड को हटाएँ",
+				"channelPermsStateNeutral": "विरासत में",
+				"channelPermsStateAllow": "अनुमति",
+				"channelPermsStateDeny": "अस्वीकार",
+				"channelPermsUpdated": "चैनल अनुमतियाँ अपडेट की गईं",
+				"channelPermsUpdateFailed": "चैनल अनुमतियाँ अद्यतन करने में विफल: ${error}",
+				"channelPermsNoChannels": "फ़िलहाल कॉन्फ़िगर करने के लिए कोई चैनल नहीं है",
+				"emojisTitle": "समूह कस्टम इमोजीयाँ",
+				"emojisHint": "सदस्य इन इमोटिकॉन्स को चैट में सम्मिलित या भेज सकते हैं; अनइंस्टॉल की गई छवियां फ़ेडरेटेड नोड्स के माध्यम से मांग पर खींची जाती हैं।",
+				"emojisUpload": "इमोटिकॉन्स अपलोड करें",
+				"emojisDelete": "इमोटिकॉन हटाएँ",
+				"emojisEmpty": "अभी तक कोई समूह अभिव्यक्ति नहीं",
+				"emojisUploadOk": "अभिव्यक्ति अपलोड कर दी गई है",
+				"emojisUploadFailed": "अपलोड विफल: ${error}",
+				"emojisDeleteConfirm": "क्या आप वाकई इमोटिकॉन्स के इस समूह को हटाना चाहते हैं?",
+				"emojisDeleteOk": "इमोटिकॉन हटा दिया गया है",
+				"emojisDeleteFailed": "हटाना विफल: ${error}",
+				"membersTitle": "सदस्य सूची",
+				"overviewTitle": "समूह अवलोकन",
+				"overviewHint": "केवल पढ़ने योग्य। शासन अनुमति होने पर आप «सामान्य» में समूह प्रोफ़ाइल और नीतियाँ संपादित कर सकते हैं।",
+				"channelArchiveTitle": "चैनल संग्रह",
+				"channelArchiveHint": "संपूर्ण चैनल JSON संग्रह को आयात करने से इस समूह में एक नया सामान्य टेक्स्ट चैनल बन जाएगा और इतिहास पुनर्स्थापित हो जाएगा (आपके द्वारा पुनः हस्ताक्षरित; अनुलग्नक केवल मेटाडेटा बनाए रखेंगे)।",
+				"channelArchiveImport": "चैनल JSON आयात करें",
+				"channelArchiveImportOk": "आयातित ${count} संदेश, नया चैनल खोल रहा हूँ…",
+				"channelArchiveImportFailed": "आयात विफल: ${error}",
+				"governanceHint": "डीएजी की समूह-स्तरीय नीति लिखें; व्यवस्थापक या MANAGE_ADMINS अनुमतियाँ आवश्यक हैं.",
+				"governanceDenied": "आपके पास समूह प्रशासन सेटिंग्स को संशोधित करने की अनुमति नहीं है।",
+				"rolesDenied": "आपके पास भूमिकाएँ संपादित करने की MANAGE_ROLES अनुमति नहीं है.",
+				"channelPermsDenied": "आपके पास चैनल अनुमति ओवरराइड को संपादित करने के लिए MANAGE_CHANNELS अनुमति नहीं है।",
+				"notMember": "अब आप इस समूह के सदस्य नहीं हैं; ग्रुप छोड़ने के बाद इस ग्रुप का डेटा अपने आप क्लियर हो गया है.",
+				"basicTitle": "समूह शासन",
+				"profileSectionTitle": "समूह प्रोफ़ाइल",
+				"profileSectionHint": "समूह मेटाडेटा में नाम, परिचय और समूह में शामिल होने की विधि लिखी जाएगी।",
+				"behaviorSectionTitle": "भागो व्यवहार",
+				"networkSectionTitle": "फेडरेशन और कनेक्शन",
+				"retentionSectionTitle": "रिजर्व और दर सीमा",
+				"mediaSectionTitle": "कॉल और फ़ाइलें",
+				"nameLabel": "समूह नाम",
+				"descriptionLabel": "समूह विवरण",
+				"joinPolicyLabel": "समूह प्रवेश रणनीति",
+				"joinInviteOnly": "केवल आमंत्रित",
+				"joinPow": "पीओडब्ल्यू की आवश्यकता है",
+				"powDifficultyLabel": "पीओडब्ल्यू कठिनाई",
+				"advancedTitle": "उन्नत सेटिंग",
+				"advancedDescription": "नेटवर्क, भंडारण, गति सीमा और एन्क्रिप्शन पैरामीटर; यदि आप अनिश्चित हैं तो कृपया डिफ़ॉल्ट रखें",
+				"securityAdvancedTitle": "सुरक्षा और समूह स्वामी संचालन",
+				"securityAdvancedDescription": "कुंजी रोटेशन और समूह नेता उत्तराधिकार; गलत संचालन सदस्य पहुंच को प्रभावित कर सकता है",
+				"powDifficultyTip": "कार्य कठिनाई का प्रमाण. मूल्य जितना अधिक होगा, अजनबियों को सार्वजनिक समूह में शामिल होने के लिए गणना में उतना ही अधिक समय लगेगा।",
+				"maxDagPayloadTip": "किसी एकल समूह ईवेंट द्वारा डेटा ले जाने की अनुमति की ऊपरी सीमा। यदि यह बहुत बड़ा है, तो यह सिंक्रोनाइज़ेशन मेमोरी और नेटवर्क ओवरहेड को बढ़ा देगा।",
+				"trustedPeersTip": "उच्च-प्रतिष्ठित फ़ेडरेशन पड़ोसियों की संख्या जिन्हें जुड़े रहने के लिए प्राथमिकता दी गई है।",
+				"gossipTtlTip": "संघीय नोड्स की अधिकतम संख्या जिसके माध्यम से संदेश अग्रेषित किया जा सकता है। इसे बढ़ाने से कवरेज बढ़ती है और ट्रैफिक भी बढ़ता है।",
+				"hlcTip": "दूरस्थ नोड की घड़ी को स्थानीय नोड की घड़ी की तुलना में तेज़ होने की अधिकतम समयावधि का उपयोग असामान्य भविष्य की घटनाओं को अस्वीकार करने के लिए किया जाता है।",
+				"sfuTip": "वैकल्पिक बाहरी ऑडियो और वीडियो अग्रेषण सेवा पता। अंतर्निहित पॉइंट-टू-पॉइंट/रिले कॉलिंग का उपयोग करने के लिए खाली छोड़ दें।",
+				"iceTip": "WebRTC को राउटर में प्रवेश करने में सहायता करें; जब सीधा कनेक्शन विफल हो जाता है, तो TURN अपनी ओर से ऑडियो, वीडियो और फ़ेडरेटेड ट्रैफ़िक को अग्रेषित करेगा।",
+				"fileEncryptionTip": "अभिसारी एन्क्रिप्शन डुप्लिकेट को हटा देता है लेकिन इस तथ्य को उजागर करता है कि फ़ाइलें समान हैं; यादृच्छिक कुंजियाँ अधिक निजी होती हैं लेकिन अधिक स्थान लेती हैं।",
+				"keyManagementTitle": "महतवपूर्ण प्रबंधन",
+				"keyManagementTip": "रोटेशन के बाद सदस्यों को नई कुंजियाँ पुनः वितरित करने की आवश्यकता होती है। मैन्युअल कार्रवाई केवल तभी की जानी चाहिए जब आपको संदेह हो कि किसी कुंजी के साथ छेड़छाड़ की गई है।",
+				"allowDangerousHtml": "विश्वसनीय लेखक संदेश इनलाइन HTML की अनुमति देते हैं",
+				"deleteGroup": "समूह हटाएँ",
+				"save": "सहेजें सेटिंग",
+				"inviteTitle": "आमंत्रण",
+				"inviteHint": "एक अल्पकालिक आमंत्रण कोड जनरेट करें (डिफ़ॉल्ट 1 घंटा)। दूसरा पक्ष \"समूह में शामिल हों\" में समूह आईडी और आमंत्रण कोड भरता है।",
+				"inviteMint": "आमंत्रण कोड जनरेट करें",
+				"inviteGroupId": "ग्रुप आईडी",
+				"inviteCode": "आमंत्रण कोड",
+				"inviteExpires": "समाप्ति: ${date}",
+				"inviteCopy": "शामिल होने की जानकारी कॉपी करें",
+				"inviteCopied": "शामिल होने की जानकारी कॉपी हो गई",
+				"inviteCopyFailed": "प्रतिलिपि विफल",
+				"inviteClipboard": "समूह आईडी: ${groupId}\nआमंत्रण कोड: ${code}\nशामिल हों: ${url}",
+				"loadFailed": "समूह सेटिंग लोड करने में विफल: ${error}",
+				"saveSuccess": "समूह सेटिंग सहेजी गईं",
+				"saveFailed": "सेटिंग सहेजने में विफल: ${error}",
+				"deleteConfirm": "क्या आप वाकई इस समूह को हटाना चाहते हैं? यह क्रिया अपरिवर्तनीय है और सभी संदेश और सदस्य डेटा स्थायी रूप से हटा दिए जाएंगे।",
+				"deleteSuccess": "समूह हटा दिया गया",
+				"deleteFailed": "समूह को हटाने में विफल: ${error}",
+				"rolesTitle": "भूमिकाएँ और अनुमतियाँ",
+				"createRole": "एक भूमिका बनाएँ",
+				"roleDefault": "डिफ़ॉल्ट",
+				"deleteRole": "भूमिका हटाएँ",
+				"deleteRoleConfirm": "क्या आप वाकई यह भूमिका हटाना चाहते हैं?",
+				"deleteRoleSuccess": "भूमिका हटा दी गई",
+				"deleteRoleFailed": "भूमिका हटाने में विफल: ${error}",
+				"createRolePrompt": "चरित्र का नाम दर्ज करें:",
+				"createRoleSuccess": "भूमिका बनाई गई",
+				"createRoleFailed": "भूमिका बनाने में विफल: ${error}",
+				"permissionUpdated": "अनुमतियाँ अद्यतन की गईं",
+				"permissionUpdateFailed": "अनुमतियाँ अद्यतन करने में विफल: ${error}",
+				"noMembers": "अभी तक कोई सदस्य नहीं",
+				"memberRoles": "भूमिका:",
+				"kick": "बाहर निकाल देना",
+				"ban": "प्रतिबंध",
+				"kickConfirm": "क्या आप वाकई सदस्य ${name} को लात मारना चाहते हैं?",
+				"kickSelfNodeWarning": "चेतावनी: यह सदस्य आपके जैसी ही नोड पहचान का उपयोग करता है। आपको ग्रुप से बाहर निकालने के साथ ही बाहर भी कर दिया जायेगा. क्या आप वाकई जारी रखना चाहते हैं?",
+				"kickSuccess": "सदस्य को बाहर निकाल दिया गया",
+				"kickFailed": "सदस्य को बाहर निकालने में विफल: ${error}",
+				"banConfirm": "क्या आप वाकई सदस्य ${name} पर प्रतिबंध लगाना चाहते हैं?",
+				"banSuccess": "सदस्य पर प्रतिबंध लगा दिया गया है",
+				"banFailed": "सदस्य पर प्रतिबंध लगाने में विफल: ${error}",
+				"bannedTitle": "प्रतिबंधित सदस्य",
+				"unban": "अनब्लॉक",
+				"unbanConfirm": "क्या आप वाकई सदस्य ${name} को अनब्लॉक चाहते हैं?",
+				"unbanSuccess": "सदस्य को अनब्लॉक कर दिया गया है",
+				"unbanFailed": "अनब्लॉक विफल: ${error}",
+				"keyRotate": "समूह फ़ाइल मालिक कुंजी घुमाएँ",
+				"keyRotateConfirm": "क्या आप वाकई इस समूह फ़ाइल की मालिक कुंजी को मैन्युअल रूप से घुमाना चाहते हैं? नए सदस्यों को इतिहास फ़ाइल कुंजी को पुन: सिंक्रनाइज़ करने की आवश्यकता है।",
+				"keyRotateOk": "कुंजी घुमा दी गई है",
+				"keyRotateFailed": "कुंजी घुमाना विफल: ${error}",
+				"gshGenerationRetentionHint": "वर्तमान में फ़ाइल मालिक कुंजी इतिहास की केवल नवीनतम 64 पीढ़ियों को ही बरकरार रखा गया है। सबसे पुरानी ऐतिहासिक फ़ाइलों की सीमा पार हो जाने के बाद उन्हें डिक्रिप्ट नहीं किया जा सकता है, और महत्वपूर्ण डेटा को नियमित रूप से संग्रहित करने की अनुशंसा की जाती है।",
+				"gshGenerationNearLimit": "वर्तमान में ${generation} फ़ाइल मालिक कुंजियों (${maxGenerations} पीढ़ियों तक) उत्पन्न करने के लिए घुमाया गया है। बार-बार घूमने से सबसे पुरानी ऐतिहासिक कुंजियाँ ख़त्म हो जाएँगी।",
+				"ownerSuccession": "समूह नेता उत्तराधिकार",
+				"ownerSuccessionOk": "समूह नेता उत्तराधिकार प्रभावी हो गया है",
+				"ownerSuccessionFailed": "समूह लीडर उत्तराधिकार विफल: ${error}",
+				"permVIEW_CHANNEL": "चैनल देखें",
+				"permSEND_MESSAGES": "मेसेज भेजें",
+				"permSEND_STICKERS": "स्टिकर भेजें",
+				"permADD_REACTIONS": "प्रतिक्रिया जोड़ें",
+				"permMANAGE_MESSAGES": "प्रबंधन संदेश",
+				"permMANAGE_CHANNELS": "चैनल प्रबंधित करें",
+				"permKICK_MEMBERS": "सदस्य को लात मारो",
+				"permBAN_MEMBERS": "सदस्य पर प्रतिबंध लगाएं",
+				"permMANAGE_ROLES": "प्रबंधन भूमिका",
+				"permINVITE_MEMBERS": "सदस्यों को आमंत्रित करो",
+				"permSTREAM": "आवाज़",
+				"permCREATE_THREADS": "उपचैनल बनाएं",
+				"permUPLOAD_FILES": "फाइलें अपलोड करें",
+				"permMANAGE_FILES": "फ़ाइलें प्रबंधित करें",
+				"permPIN_MESSAGES": "पिन किया गया संदेश",
+				"permADMIN": "प्रशासक",
+				"permBYPASS_RATE_LIMIT": "संदेश दर सीमा को बायपास करें"
+			},
+			"auditLog": {
+				"title": "ग्रुप ऑडिट लॉग",
+				"hint": "वर्तमान अंगीकरण शासन शाखा पर सदस्यों, भूमिकाओं, चैनलों और मॉडरेशन घटनाओं को प्रदर्शित करता है; केवल प्रशासकों को दृश्यमान।",
+				"filterLabel": "घटना प्रकार",
+				"refresh": "ताज़ा",
+				"filterAll": "सभी प्रकार के",
+				"loadMore": "पुराने रिकॉर्ड लोड करें",
+				"empty": "अभी तक कोई ऑडिट रिकॉर्ड नहीं",
+				"loadFailed": "ऑडिट लॉग लोड करने में विफल: ${error}",
+				"colTime": "समय",
+				"colType": "प्रकार",
+				"colActor": "ऑपरेटर",
+				"colSummary": "सारांश",
+				"type": {
+					"member_join": "सदस्य शामिल होते हैं",
+					"member_leave": "सदस्य चले जाते हैं",
+					"member_kick": "सदस्य को लात मारो",
+					"member_ban": "सदस्य पर प्रतिबंध लगाएं",
+					"member_unban": "अनब्लॉ",
+					"role_create": "एक भूमिका बनाएँ",
+					"role_update": "भूमिका अद्यतन करें",
+					"role_delete": "भूमिका हटाएँ",
+					"role_assign": "भूमिकाएँ सौंपें",
+					"role_revoke": "भूमिका निरस्त करें",
+					"channel_create": "चैनल बनाएँ",
+					"channel_update": "चैनल अपडेट करें",
+					"channel_delete": "चैनल हटाएँ",
+					"channel_permissions_update": "चैनल अनुमतियाँ",
+					"group_meta_update": "समूह प्रोफ़ाइल",
+					"group_settings_update": "समूह सेटिंग",
+					"reputation_slash": "प्रतिष्ठा कटौती",
+					"reputation_reset": "प्रतिष्ठा रीसेट",
+					"file_master_key_rotate": "समूह फ़ाइल मालिक कुंजी रोटेशन",
+					"peer_invite": "सहकर्मी से सहकर्मी आमंत्रण",
+					"dag_tip_merge": "DAG कांटे मर्ज करें",
+					"message_delete": "संदेश को हटाएं",
+					"pin_message": "पिन किया गया संदेश",
+					"unpin_message": "अनपिन",
+					"file_upload": "फाइलें अपलोड करें",
+					"file_delete": "फाइलों को नष्ट"
+				},
+				"event": {
+					"member_join": "सदस्य ${target} समूह में शामिल होता है",
+					"member_leave": "सदस्य समूह छोड़ देता है",
+					"member_kick": "सदस्य को किक करें ${target}",
+					"member_ban": "सदस्य ${target} पर प्रतिबंध लगाएं",
+					"member_unban": "${target} को अनब्लॉक करें",
+					"role_create": "भूमिका बनाएं ${roleName}",
+					"role_update": "भूमिका अपडेट करें ${roleName}",
+					"role_delete": "भूमिका हटाएं ${roleName}",
+					"role_assign": "${target} को ${roleName} में भूमिका निर्दिष्ट करें",
+					"role_revoke": "भूमिका ${target} को ${roleName} से निरस्त करें",
+					"channel_create": "चैनल बनाएं ${channelName}",
+					"channel_update": "चैनल अपडेट करें ${channelName}",
+					"channel_delete": "चैनल हटाएं ${channelName}",
+					"channel_permissions_update": "चैनल ${channelName} के लिए अनुमतियाँ अपडेट करें",
+					"group_meta_update": "समूह प्रोफ़ाइल अपडेट: ${name}",
+					"group_settings_update": "समूह सेटिंग अपडेट करें",
+					"reputation_slash": "${target} पर प्रतिष्ठा (${claim}) घटाएं",
+					"reputation_reset": "${target} की प्रतिष्ठा रीसेट करें",
+					"file_master_key_rotate": "समूह फ़ाइल मालिक कुंजी घुमाएँ",
+					"channel_key_rotate": "चैनल ${channelName} E2E कुंजी रोटेशन",
+					"peer_invite": "सहकर्मी नोड को आमंत्रित करें ${target}",
+					"dag_tip_merge": "डीएजी शासन फोर्क्स को मर्ज करें",
+					"message_delete": "संदेश हटाएँ ${targetEventId}",
+					"pin_message": "${channelName} को ${targetEventId} पर पिन करें",
+					"unpin_message": "${channelName} पर ${targetEventId} को अनपिन करें",
+					"file_upload": "फ़ाइल अपलोड करें ${fileName}",
+					"file_delete": "फ़ाइल ${fileName} हटाएँ"
+				}
+			},
+			"messagePrefixSticker": "कँटिया",
+			"membersEmpty": "(अभी तक कोई सदस्य नहीं)",
+			"channelEncryptionGsh": "चैनल कुंजी एंड-टू-एंड एन्क्रिप्शन (सीकेजी)",
+			"ownerSuccession": "उत्तराधिकार वोट आरंभ करें",
+			"ownerSuccessionDescription": "समूह के सर्वोच्च प्रशासनिक प्राधिकारी (MANAGE_ADMINS) को निर्दिष्ट सदस्य को हस्तांतरित करें। केवल प्रशासक ही कार्य कर सकते हैं.",
+			"ownerSuccessionAutoSignHint": "सबमिट करने के बाद, मशीन निजी कुंजी दर्ज किए बिना समूह के हस्ताक्षर बीज पर स्वचालित रूप से हस्ताक्षर कर देगी। एक बहु-प्रशासक समूह में, आधे से अधिक प्रशासकों को स्थानीय स्तर पर एक ही मतपत्र (समान मतपत्र और उम्मीदवार) जमा करना होगा।",
+			"ownerSuccessionCandidateLabel": "उत्तराधिकारी सार्वजनिक कुंजी हैश",
+			"ownerSuccessionSelfButton": "स्वयं को नामांकित करें",
+			"ownerSuccessionSubmitted": "आपका हस्ताक्षर उत्तराधिकार मतपत्र पर दर्ज किया गया है।",
+			"ownerSuccessionNeedHash": "कृपया उत्तराधिकारी की सार्वजनिक कुंजी हैश भरें",
+			"ownerSuccessionFailed": "उत्तराधिकार वोट जमा करने में विफल रहा",
+			"e2eDecryptUnavailable": "संदेश एन्क्रिप्ट किया गया है और वर्तमान डिवाइस द्वारा डिक्रिप्ट नहीं किया जा सकता है",
+			"contentRefBodyPending": "बाहरी लिंक टेक्स्ट (content_ref, सत्यापन के लिए अभी तक नहीं निकाला गया)",
+			"contentRefHashMismatch": "बाहरी लिंक टेक्स्ट भंडारण सत्यापन के साथ असंगत है (हैश ईमेल नहीं खाता)",
+			"streamGenerationFailed": "एआई पीढ़ी का समय समाप्त हो गया और पूरा नहीं हुआ, अपडेट रोक दिए गए हैं।",
+			"convergentEncryptWarn": "समूह फ़ाइलें अभिसरण एन्क्रिप्शन का उपयोग करती हैं: यदि हमलावर किसी फ़ाइल का प्लेनटेक्स्ट जानता है, तो वह कुंजी प्राप्त कर सकता है और संबंधित सिफरटेक्स्ट ब्लॉक को डिक्रिप्ट कर सकता है। अत्यधिक संवेदनशील और विशिष्ट निजी दस्तावेज़ों की सुरक्षा के लिए केवल समूह एन्क्रिप्शन पर निर्भर न रहें।",
+			"settingsStreamGeneratingIdle": "एआई जनित प्लेसहोल्डर निष्क्रिय टाइमआउट (मिलीसेकंड)",
+			"settingsAutoReplyFrequency": "भूमिका उत्तरों को स्वचालित रूप से ट्रिगर करें (प्रत्येक एन उपयोगकर्ता संदेश के बाद, 0 बंद है)",
+			"settingsAutoReplyFrequencyHint": "0 का मतलब बंद है; @उल्लेख अभी भी तुरंत ट्रिगर होंगे",
+			"settingsMaxDagPayload": "किसी एकल ईवेंट के लिए DAG बाइट्स की अधिकतम संख्या",
+			"settingsBatterySaver": "कम पावर मोड (संकुचित फेडरेशन कनेक्शन पूल और रिले)",
+			"settingsDiscoveryPublic": "इस समूह को फ़ेडरेटेड खोज में उजागर करें (समूह कुंजी में शामिल हुए बिना)",
+			"settingsDiscoveryTitle": "खोज सूची शीर्षक (वैकल्पिक)",
+			"settingsDiscoveryBlurb": "डिस्कवरी परिचय (वैकल्पिक)",
+			"settingsTrustedPeers": "पड़ोसी स्लॉट पर भरोसा करें (टॉप-के)",
+			"settingsExplorePeers": "पड़ोसी स्लॉट का अन्वेषण करें",
+			"settingsMaxPeers": "फेडरेशन कनेक्शन कैप",
+			"settingsGossipTtl": "गपशप अग्रेषण टीटीएल (हॉप गिनती)",
+			"settingsWantIdsBudget": "सिंगल वांटेडआईडी बजट",
+			"settingsHlcMaxSkew": "एचएलसी भविष्य ऑफसेट ऊपरी सीमा (मिलीसेकंड)",
+			"dagForkDetected": "असंबद्ध डीएजी कांटा का पता चला",
+			"mergeDagTips": "DAG कांटे मर्ज करें",
+			"mergeDagTipsOk": "कांटा विलीन हो गया",
+			"mergeDagTipsFailed": "मर्ज कांटा विफल रहा",
+			"settingsStreamingSfu": "स्ट्रीमिंग एसएफयू वेबसॉकेट पता (वैकल्पिक)",
+			"settingsMessageRetention": "संदेश पाठ स्वचालित रूप से हटा दिया जाता है",
+			"settingsMessageRetentionForever": "स्थायी प्रतिधारण (केवल संपीड़ित DAG घटनाएँ)",
+			"settingsMessageRetention30d": "30 दिन पहले",
+			"settingsMessageRetention90d": "90 दिन पहले",
+			"settingsMessageRetention1y": "1 साल पहले",
+			"settingsMessageRetentionHint": "दृश्यमान इतिहास डिफ़ॉल्ट रूप से स्वचालित रूप से हटाया नहीं जाता है। सक्षम होने पर, केवल स्थानीय संदेश हॉट कैश को काटा जाएगा; अंतिम संदेशों को कोल्ड आर्काइव और चेकपॉइंट में रखा जाएगा।",
+			"settingsHotLatest": "हॉट ज़ोन प्रतिधारण (प्रति चैनल पोस्ट की नवीनतम संख्या)",
+			"settingsPinContext": "शीर्ष पड़ोस (±N पड़ोसी)",
+			"settingsHotWindowHint": "हॉट ज़ोन पोस्ट को चेकपॉइंट और संदेश कैश में रखा जाता है; शेष पोस्टों को भौतिकीकरण के बाद मासिक कोल्ड आर्काइव में लिखा जाता है, और फिर डीएजी प्रक्रिया घटनाओं से संक्षिप्त कर दिया जाता है।",
+			"settingsArchiveTitle": "भंडारण और शीत संग्रहण",
+			"settingsArchiveHint": "कोल्ड आर्काइव स्थानीय स्पष्ट टेक्स्ट पोस्ट (महीने से विभाजित फ़ाइलें) की अंतिम स्थिति है। संग्रह को हटाने से DAG नहीं बदलेगा; यदि इतिहास गायब है, तो इसे संघीय पड़ोसियों से लिया जा सकता है।",
+			"settingsArchiveFilesTitle": "संग्रहीत फ़ाइलें",
+			"settingsArchiveEmpty": "अभी तक कोई कोल्ड आर्काइव फ़ाइलें नहीं हैं.",
+			"settingsArchiveColChannel": "चैनल",
+			"settingsArchiveColMonth": "महीना",
+			"settingsArchiveColSize": "आकार",
+			"settingsArchiveDeleteBefore": "इस महीने पहले हटाएँ",
+			"settingsArchiveDeleteButton": "कोल्ड आर्काइव हटाएँ",
+			"settingsArchiveDeleteHint": "केवल स्थानीय संग्रह/*.jsonl हटाया गया है; हॉटस्पॉट और डीएजी एंकर प्रभावित नहीं होते हैं।",
+			"settingsArchiveAdminOnly": "इस मशीन में अभी तक इस समूह के लिए कोल्ड आर्काइव डेटा नहीं है।",
+			"settingsArchiveDeleteInvalidMonth": "कृपया एक वैध महीना YYYY-MM चुनें।",
+			"settingsArchiveDeleteConfirm": "क्या आप वाकई {माह} से पुरानी सभी कोल्ड आर्काइव फ़ाइलें हटाना चाहते हैं? यह ऑपरेशन अपरिवर्तनीय है.",
+			"settingsArchiveDeleteOk": "{फ़ाइलें} संग्रह फ़ाइलें हटा दी गईं।",
+			"settingsArchiveDeleteFailed": "संग्रह हटाने में विफल: {त्रुटि}",
+			"settingsEventRetentionDepth": "DAG घटना अवधारण गहराई",
+			"settingsEventRetentionMs": "DAG इवेंट अवधारण समय",
+			"settingsCompactTriggerDepth": "भौतिकीकृत संपीड़न ट्रिगर गहराई",
+			"settingsMessageRateLimit": "संदेश दर सीमा (संदेश/मिनट/इकाई)",
+			"settingsAutoReplyTokenBucket": "स्वचालित उत्तर दबाव शेड्यूलिंग (टोकन बाल्टी)",
+			"settingsAutoReplyTokenBucketHint": "सक्षम होने के बाद, प्रत्येक वर्ण चैनल द्वारा एक टोकन बकेट बनाए रखता है; बकेट खाली होने पर ऑनमैसेज अस्थायी रूप से ट्रिगर नहीं होता है, जो पीक अवधि के दौरान निरंतर स्क्रीन रिफ्रेश को बाधित कर सकता है।",
+			"settingsIceServers": "आईसीई/टर्न सर्वर",
+			"settingsIceServersAdd": "सर्वर जोड़ें",
+			"settingsIceServersHint": "WebRTC और फ़ेडरेटेड P2P नेटवर्किंग के लिए; TURN क्रेडेंशियल केवल इस डिवाइस पर सहेजे जाते हैं, फ़ेडरेशन पर प्रसारित नहीं होते।",
+			"settingsFileCeMode": "फ़ाइल एन्क्रिप्शन मोड",
+			"settingsFileCeModeConvergent": "अभिसारी एन्क्रिप्शन (डुप्लिकेट हटा सकते हैं)",
+			"settingsFileCeModeRandom": "उच्च गोपनीयता मोड (यादृच्छिक कुंजियाँ, कोई डुप्लिकेशन नहीं)",
+			"settingsFileCeModeHint": "उच्च गोपनीयता मोड प्रत्येक ब्लॉक के लिए यादृच्छिक contentKey का उपयोग करता है और ceMode=random; इससे प्लेनटेक्स्ट के अनुमान लगाने योग्य होने का जोखिम कम हो जाता है, लेकिन भंडारण और बैंडविड्थ उपयोग बढ़ जाता है।",
+			"channelsTitle": "चैनल",
+			"createGroup": "नया समूह बनाएं",
+			"members": "सदस्य",
+			"membersHint": "सदस्य सूची चेकपॉइंट (प्लेसहोल्डर) द्वारा सिंक्रनाइज़ की जाती है",
+			"send": "भेजें",
+			"streamTest": "मीडिया उपकरणों का परीक्षण करें",
+			"messageInput": {
+				"placeholder": "समूह संदेश… Ctrl+Enter भेजें"
+			},
+			"loadError": "समूह लोड करने में विफल",
+			"remoteNodeTimeout": "रिमोट नोड प्रतिक्रिया नहीं दे रहा है, कृपया बाद में पुनः प्रयास करें।",
+			"remoteUnavailable": "दूरस्थ घटक अनुपलब्ध है या RPC को रूट नहीं कर सकता",
+			"messagesLoadFailed": "संदेश लोड करने में विफल रहा",
+			"sendFailed": "भेजें विफल",
+			"chatNotLoaded": "मुख्य चैट लोड नहीं हुई है: कृपया मुख्य इंटरफ़ेस पर समूह के समान आईडी के साथ वार्तालाप खोलें और पुनः प्रयास करें।",
+			"createFailed": "समूह बनाने में विफल",
+			"newGroupName": "नया समूह",
+			"streamOk": "मीडिया स्ट्रीम अधिग्रहीत (रोका गया, प्रसारित नहीं)",
+			"remoteUnsafe": "यह संदेश किसी दूरस्थ स्थान से आता है और लेखक स्थानीय ट्रस्ट सूची में नहीं है। रिच टेक्स्ट रेंडरिंग अक्षम कर दी गई है.",
+			"trustAuthor": {
+				"textContent": "विश्वास",
+				"title": "इस लेखक पर भरोसा करें (खतरनाक HTML की अनुमति दें)"
+			},
+			"trustAuthorOk": "इस लेखक पर भरोसा किया गया है और यह समृद्ध पाठ प्रस्तुत करता है",
+			"voteCast": "मतदान",
+			"listEmpty": "(अभी तक कोई नेविगेशन आइटम नहीं है, व्यवस्थापक एपीआई के माध्यम से सूची-आइटम अपडेट कर सकते हैं)",
+			"listChannelReadonly": {
+				"placeholder": "सूची चैनल केवल नेविगेशन कार्ड प्रदर्शित करते हैं और संदेश नहीं भेजते हैं"
+			},
+			"streamNoEmbed": {
+				"textContent": "स्ट्रीमिंग पता एक एम्बेड करने योग्य https:// पेज होना चाहिए, या देखने का टोकन प्राप्त करने के लिए समूह सेटिंग्स को पहले कॉन्फ़िगर किया जाना चाहिए और ताज़ा किया जाना चाहिए।"
+			},
+			"streamNoSfu": {
+				"textContent": "स्ट्रीमिंगSfuWss कॉन्फ़िगर नहीं है; व्यवस्थापक समूह सेटिंग में LiveKit/mediasoup देखने का पता भर सकते हैं।"
+			},
+			"messageDeleted": "संदेश हटा दिया गया",
+			"messageDeletedBracket": "[संदेश हटा दिया गया]",
+			"messageWithAttachments": "${text} (${n} अनुलग्नक)",
+			"voteBlockHeading": "[${prefix}] ${question}",
+			"voteBlockHeadingTagged": "[वोट] ${question}",
+			"voteCastLine": "[${prefix}] वोट: ${choice}",
+			"voteCastLineTagged": "[वोट] वोट: ${choice}",
+			"voteOptionsPreview": "[${prefix}] ${options}",
+			"voteOptionsPreviewTagged": "[वोट] ${options}",
+			"voteDeadlineLineOpen": "समयसीमा: ${date}",
+			"voteDeadlineLineClosed": "समाप्ति: ${date} [समाप्त]",
+			"pinMessageLine": "[शीर्ष] ${targetId}",
+			"unpinMessageLine": "[अनपिन] ${targetId}",
+			"stickerPrefixLine": "[${label}]",
+			"stickerPrefixLineTagged": "[स्टिकर]",
+			"feedbackDagLine": "[${label}]",
+			"feedbackDagLineWithNote": "[${label}] ${note}",
+			"feedbackPreviewLine": "${tag}${sep}${note}",
+			"feedbackPreviewTaggedNote": "${tag} ${note}",
+			"mentionHandle": "@${name}",
+			"mentionInsert": "@${name}",
+			"feedbackUp": "प्रशंसा",
+			"feedbackDown": "डिसलाइक",
+			"attachmentsHint": "(${n} संलग्नक)",
+			"pinMessage": "शीर्ष पर पिन करें",
+			"unpinMessage": "अनपिन",
+			"pinThisMessage": "इस लेख को डीएजी को लिखें और इसे शीर्ष पर पिन करें",
+			"pinAction": {
+				"textContent": "शीर्ष पर पिन करें",
+				"title": "इस लेख को डीएजी को लिखें और इसे शीर्ष पर पिन करें"
+			},
+			"unpinAction": {
+				"textContent": "अनपिन",
+				"title": "अनपिन"
+			},
+			"pinOk": "रिकॉर्ड किया गया और पिन किया गया",
+			"unpinOk": "अनपिन किया गया",
+			"pinFailed": "पिन विफल",
+			"menuCopyText": "पाठ की प्रतिलिपि बनाएँ",
+			"menuExportHtml": "HTML में निर्यात करें",
+			"menuCopyId": "संदेश आईडी कॉपी करें",
+			"copied": "कॉपी किया",
+			"addBookmark": {
+				"title": "वर्तमान चैनल को बुकमार्क करें"
+			},
+			"bookmarkExists": "बुकमार्क पहले से मौजूद है",
+			"bookmarkAdded": "बुकमार्क",
+			"bookmarkSaveFailed": "बुकमार्क सहेजने में विफल",
+			"remoteTyping": "${name} टाइप कर रहा है…",
+			"remoteTypingTwo": "${name1}, ${name2} प्रवेश कर रहा हूँ…",
+			"remoteTypingMany": "${name} और ${count} अन्य लोग टाइप कर रहे हैं…",
+			"mentionEmpty": "(कोई ईमेल खाता सदस्य नहीं)",
+			"localAiLabel": "मूल भूमिका:",
+			"forceTriggerOne": {
+				"title": "${name} को बोलने के लिए बाध्य करें"
+			},
+			"forceTriggerAllLocal": "सभी को ट्रिगर करें",
+			"forceTriggerAllLocalTitle": {
+				"title": "सभी स्थानीय पात्रों को बोलने के लिए बाध्य करें"
+			},
+			"messageRefAnchor": "उद्धरण संदेश: ${id}",
+			"settingsFedPartition": "संघीय प्रभागों की संख्या",
+			"settingsRtcBudget": "आरटीसी कनेक्शन बजट",
+			"settingsRtcJoinRate": "आरटीसी ने प्रति मिनट की सीमा जोड़ी",
+			"settingsFedTuningHint": "DAG समूह सेटिंग लिखें; संशोधन के बाद, फेडरेशन रूम को दोबारा जोड़ने की सिफारिश की गई है।",
+			"settingsAutoChannelGc": "मूक चैनलों को स्वचालित रूप से साफ़ करें",
+			"settingsAutoChannelGcHint": "अधिकतम 2 पृथक द्वीप चैनल जो ≥30 दिनों से शांत हैं और पहुंच योग्य नहीं हैं, उन्हें मूर्त रूप दिए जाने पर हटा दिया जाएगा।",
+			"quoteHeader": "> **${sender}**${sep}${time}",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}",
+			"quoteHeaderWithoutTime": "> **${sender}**",
+			"stopGenerating": "उत्पादन बंद करो",
+			"messageAborted": "बाधित",
+			"avStart": "मीडिया प्रारंभ करें",
+			"avMute": "म्यूट करें",
+			"avSwap": "होम स्क्रीन",
+			"avStop": "रुकना",
+			"avNeedStreamChannel": "कृपया \"स्ट्रीमिंग मीडिया\" प्रकार के चैनलों में ऑडियो और वीडियो का उपयोग करें",
+			"reactionAdd": {
+				"title": "प्रतिक्रिया जोड़ें"
+			},
+			"reactionRemove": {
+				"title": "प्रतिक्रिया वापस लें"
+			},
+			"addReaction": {
+				"title": "इमोटिकॉन्स जोड़ें"
+			},
+			"reactionPrompt": "इमोजी दर्ज करें (यूनिकोड)",
+			"channelTypeLabel": "चैनल प्रकार",
+			"channelTypeText": "चैट चैनल",
+			"channelTypeList": "सूची/फोरम चैनल",
+			"channelTypeStreaming": "स्ट्रीमिंग चैनल",
+			"convertToText": "चैट चैनल में कनवर्ट करें",
+			"convertToList": "सूची/फ़ोरम चैनल में कनवर्ट करें",
+			"setAsDefault": "समूह डिफ़ॉल्ट चैनल के रूप में सेट करें",
+			"isDefault": "वर्तमान डिफ़ॉल्ट",
+			"defaultChannelSet": "डिफ़ॉल्ट चैनल के रूप में सेट करें",
+			"defaultChannelSetFailed": "डिफ़ॉल्ट चैनल सेट करने में विफल रहा",
+			"channelUpdateFailed": "चैनल अद्यतन विफल रहा",
+			"voteCreate": "मतदान शुरू करें",
+			"votePromptDeadline": "समय सीमा (बिना किसी समय सीमा के खाली छोड़ें, प्रारूप 2026-01-01 23:59)",
+			"voteTooFewOptions": "कम से कम दो विकल्प आवश्यक हैं",
+			"voteCreateFailed": "पोल बनाने में विफल",
+			"voteFor": "निवेश ${option}",
+			"voteDeadline": "अंतिम तारीख",
+			"voteEnded": "समाप्त",
+			"voteTotal": "कुल ${n} वोट",
+			"record": "रिकॉर्डिंग",
+			"fileDownload": {
+				"title": "डाउनलोड फ़ाइल"
+			},
+			"clickToLoad": "लोड करने के लिए क्लिक करें",
+			"unknownFile": "अज्ञात फ़ाइल",
+			"blockSender": {
+				"title": "प्रेषक को ब्लॉक करें"
+			},
+			"blockConfirm": "क्या आप वाकई \"${sender}\" को ब्लॉक करना चाहते हैं?",
+			"blockAdded": "अवरोधित",
+			"saveSticker": {
+				"title": "स्टिकर/इमोटिकॉन को पसंदीदा में सहेजें"
+			},
+			"stickerSaved": "स्टिकर लाइब्रेरी में सहेजा गया",
+			"stickerDefaultName": "कँटिया",
+			"deleteMessage": {
+				"title": "संदेश को हटाएं"
+			},
+			"deleteConfirm": "इस संदेश को हटाने की पुष्टि करें?",
+			"editMessage": {
+				"title": "संदेश संपादित करें"
+			},
+			"saveEdit": "सहेजें",
+			"cancelEdit": "रद्द करें",
+			"editingMessage": "संपादन",
+			"editConfirm": "पुष्टि करें (Ctrl+Enter)",
+			"editCancel": "रद्द करें (Esc)",
+			"editHint": "Ctrl+Enter पुष्टि करें · Esc रद्द करें",
+			"editedLabel": "(संपादित)",
+			"editEmptyText": "संदेश सामग्री खाली नहीं हो सकती",
+			"createGroupTitle": "नया समूह बनाएं",
+			"groupNameLabel": "समूह नाम",
+			"groupName": {
+				"placeholder": "मेरे समूह"
+			},
+			"defaultChannelLabel": "डिफ़ॉल्ट चैनल",
+			"defaultChannel": {
+				"placeholder": "सामान्य"
+			},
+			"createGroupFailed": "समूह बनाने में विफल",
+			"createChannelFailed": "चैनल बनाएँ विफल",
+			"moreActions": {
+				"title": "अधिक क्रियाएं"
+			},
+			"thread": "थ्रेड",
+			"threadBack": "वापस",
+			"threadBreadcrumbRootTitle": "पथ आरंभिक बिंदु पर जाएं (प्रथम स्तर)",
+			"threadBreadcrumbMiddleTitle": "मध्य परत का विस्तार करें और उस स्तर का चयन करें जिस पर आप कूदना चाहते हैं",
+			"threadBreadcrumbMiddleSummary": "मध्य ${count} परत",
+			"menuShareExternal": "बाहरी लिंक पर साझा करें",
+			"shareExternalOk": "लिंक अपलोड और कॉपी किया गया",
+			"shareExternalFailed": "अपलोड विफल रहा, कृपया नेटवर्क जांचें"
+		},
+		"hub": {
+			"title": "चैट",
+			"redirectToHub": "चैट हब में प्रवेश किया जा रहा है…",
+			"homeTooltip": {
+				"title": "होम पेज पर लौटें",
+				"tip": "होम पेज पर लौटें"
+			},
+			"charsTooltip": {
+				"title": "भूमिका",
+				"tip": "भूमिका"
+			},
+			"friendsTooltip": {
+				"title": "दोस्त",
+				"tip": "दोस्त"
+			},
+			"inboxTooltip": {
+				"title": "इनबॉक्स",
+				"tip": "क्रॉस-ग्रुप इनबॉक्स"
+			},
+			"inbox": {
+				"title": "इनबॉक्स",
+				"filtersLabel": "इनबॉक्स संदेशों को फ़िल्टर करें",
+				"tabMention": "उल्लेख",
+				"tabMessage": "सभी पोस्ट",
+				"tabCare": "विशेष फ़ॉलो",
+				"tabVoteClosed": "मतदान ख़त्म",
+				"emptyMentionTitle": "अभी तक किसी ने आपका जिक्र नहीं किया है",
+				"emptyMentionDescription": "जब समूह चैट में अन्य सदस्य आपको @ करेंगे, तो संदेश यहां प्रदर्शित होंगे।",
+				"emptyMessageTitle": "इनबॉक्स खाली है",
+				"emptyMessageDescription": "विहटाएँ समूह चैट और चैनलों से संदेश अपडेट यहां दिखाई देंगे।",
+				"emptyCareTitle": "विशेष फ़ॉलो: अभी तक कोई खबर नहीं",
+				"emptyCareDescription": "जब उन सदस्यों से नए संदेश भेजे जाते हैं जिनकी आप विशेष रूप से परवाह करते हैं, तो आप उन्हें यथाशीघ्र यहां देख सकते हैं।",
+				"emptyVoteTitle": "कोई मतदान बंद नहीं हुआ",
+				"emptyVoteDescription": "एक बार जब भाग लेने वाले मतदान बंद हो जाएंगे, तो परिणाम यहां संक्षेप में प्रस्तुत किए जाएंगे।",
+				"rowLabel": {
+					"aria-label": "${author} ने ${group} के ${channel} में कहा: ${preview}"
+				},
+				"sidebarHint": "सभी समूहों में @ आपके संदेश दाईं ओर सूची में दिखाई देंगे",
+				"badgeFetchFailed": "अपठित बैज रीफ़्रेश करने में विफल: ${error}",
+				"loadFailed": "इनबॉक्स लोडिंग विफल: ${error}",
+				"markSeenFailed": "इनबॉक्स पढ़ने की स्थिति अपडेट विफल: ${error}",
+				"jumpFailed": "यह संदेश खोलने में असमर्थ: ${error}"
+			},
+			"notifyPrefs": {
+				"title": "अधिसूचना सेटिंग्स",
+				"mode": "अधिसूचना मोड",
+				"modeAll": "सभी पोस्ट",
+				"modeMentions": "केवल @ और उल्लेख",
+				"modeNothing": "बिना सूचना के",
+				"suppressEveryone": "@हर किसी और @यहाँ पर ध्यान न दें",
+				"suppressRoles": "भूमिका समूह पर ध्यान न दें @",
+				"mute": "म्यूट करें",
+				"muteOff": "बंद करें",
+				"mute1h": "1 घंटा",
+				"mute8h": "8 घंटे",
+				"muteForever": "जब तक मैन्युअल रूप से चालू न हो जाए",
+				"saved": "अधिसूचना सेटिंग सहेजी गईं"
+			},
+			"voteClosed": "समाप्त",
+			"discoveryTooltip": {
+				"title": "समूह खोज",
+				"tip": "समूह खोज"
+			},
+			"prefsTooltip": {
+				"title": "सेटिंग",
+				"tip": "अनुवाद और फ़ेडरेटेड P2P सेटिंग्स"
+			},
+			"prefsSubtitle": "अनुवाद और फेडरेशन कनेक्शन",
+			"federationTooltip": {
+				"title": "फ़ेडरेटेड P2P सेटिंग्स",
+				"tip": "फ़ेडरेटेड P2P सेटिंग्स"
+			},
+			"federationTitle": "फ़ेडरेटेड P2P सेटिंग्स",
+			"federationSubtitle": "क्रॉस-डिवाइस कनेक्शन नियंत्रित करें; अधिकांश मामलों में डिफ़ॉल्ट को छोड़ दें",
+			"federationLoadFailed": "लोडिंग विफल: ${error}",
+			"fedConnectionTitle": "कनेक्ट करें और खोजें",
+			"discoveryRefresh": "खोज सूची ताज़ा करें",
+			"fedRelayUrlsLabel": "नेटवर्क रिले पता",
+			"fedRelayUrlsTip": "इंटरनेट पर उपकरणों को एक-दूसरे को खोजने में सहायता करें। प्रति पंक्ति एक wss:// पता भरें; डिफ़ॉल्ट रिले का उपयोग करने के लिए खाली छोड़ दें।",
+			"fedBatterySaverLabel": "कम पावर मोड",
+			"fedBatterySaverTip": "पृष्ठभूमि कनेक्शन और नेटवर्क गतिविधि की संख्या कम करने से संदेश सिंक्रनाइज़ेशन थोड़ा धीमा हो सकता है।",
+			"fedAdvancedTitle": "उन्नत सेटिंग",
+			"fedAdvancedDescription": "बग समाधान, प्रतिष्ठा प्रबंधन और मैन्युअल लिंक जारी करना",
+			"fedGroupRecoveryTitle": "समूह कनेक्शन ठीक करें",
+			"fedGroupRecoveryTip": "केवल तभी उपयोग किया जाता है जब आमंत्रण लीक हो जाता है या नया डिवाइस इतिहास को सिंक नहीं कर पाता है।",
+			"fedRotateRoomSecret": "ग्रुप रूम पासवर्ड घुमाएँ",
+			"fedRotateRoomSecretConfirm": "रोटेशन के बाद, पुराने रूम पासवर्ड का उपयोग करने वाले निमंत्रण कनेक्ट नहीं हो पाएंगे। क्या आप वाकई जारी रखना चाहते हैं?",
+			"fedRotateRoomSecretOk": "कमरे का पासवर्ड घुमा दिया गया है",
+			"fedRepairJoinSnapshot": "पड़ोसियों से समूह स्नैपशॉट मरम्मत में शामिल होने का अनुरोध",
+			"fedRepairJoinSnapshotOk": "समूह स्नैपशॉट लागू (${channels} चैनल इतिहास)",
+			"fedRepairJoinSnapshotFailed": "समूह स्नैपशॉट सुधारने में विफल: ${error}",
+			"fedRepTitle": "इस समूह की व्यक्तिपरक विश्वसनीयता",
+			"fedRepTip": "फ़ेडरेटेड नोड व्यवहार के आधार पर मूल रूप से गणना की गई कनेक्शन वरीयता स्कोर समूह के सदस्यों की सार्वजनिक रेटिंग नहीं हैं।",
+			"fedRepEmpty": "(व्यर्थ)",
+			"fedSlashTitle": "प्रतिष्ठा दंड",
+			"fedSlashTip": "समूह ईवेंट ग्राफ़ में एक नोड के बारे में एक नकारात्मक प्रतिष्ठा कथन लिखता है। केवल उन प्रशासकों द्वारा उपयोग के लिए जो फ़ेडरेशन प्रोटोकॉल को समझते हैं।",
+			"fedSlashTargetLabel": "लक्ष्य पबकीहैश(64 हेक्स)",
+			"fedSlashTarget": {
+				"placeholder": "सदस्य सार्वजनिक कुंजी हैश"
+			},
+			"fedSlashClaimLabel": "दावे की ताकत का दावा (0-1)",
+			"fedSlashVerifiedLabel": "सत्यापन योग्य (प्रमाण इवेंट आईडी आवश्यक)",
+			"fedSlashProofLabel": "सबूत.इवेंट आईडी (वैकल्पिक)",
+			"fedSlashProof": {
+				"placeholder": "64 हेक्स ईवेंट आईडी"
+			},
+			"fedSlashSubmitLabel": "पोस्ट प्रतिष्ठा_स्लैश",
+			"fedResetSubmitLabel": "लक्ष्य प्रतिष्ठा रीसेट करें",
+			"fedSlashNeedHash": "64-बिट हेक्स पबकीहैश की आवश्यकता है",
+			"fedSlashOk": "प्रतिष्ठा_स्लैश डीएजी को लिखा गया",
+			"fedResetOk": "प्रतिष्ठा_रीसेट लिखा गया है",
+			"fedDmLinkTitle": "मैन्युअल रूप से मित्र लिंक जारी करें",
+			"fedDmLinkTip": "मूल पहचान कुंजी का उपयोग करके हस्ताक्षर करना आवश्यक है। निजी कुंजी केवल इस पृष्ठ पर स्थानीय सेवा को सबमिट की जाती है और अन्य नोड्स पर नहीं भेजी जाएगी।",
+			"fedDmLinkDescription": "डिबगिंग या मैन्युअल पहचान माइग्रेशन के लिए उपयुक्त; दैनिक आधार पर मित्रों को जोड़ते समय इन फ़ील्ड को भरने की कोई आवश्यकता नहीं है।",
+			"fedDmPubKeyLabel": "सार्वजनिक कुंजी हेक्स(64)",
+			"fedDmSecretLabel": "निजी कुंजी बीज हेक्स(64)",
+			"fedDmNodeLabel": "वैकल्पिक नोड यूआरएल",
+			"fedDmInvalidateTitle": "पुराने रेफरल लिंक को समाप्त होने दें",
+			"fedDmInvalidateDescription": "निष्पादन के बाद, पहले जारी किए गए सभी मित्र-जोड़ने वाले लिंक तुरंत अमान्य हो जाएंगे और उन्हें रद्द नहीं किया जा सकेगा।",
+			"fedDmRotateLabel": "पुराने लिंक अमान्य करें",
+			"fedDmRotateConfirm": "पहले जारी किए गए सभी मित्र-जोड़ने वाले लिंक तुरंत अमान्य हो जाएंगे और उन्हें पुनर्स्थापित नहीं किया जा सकेगा। क्या आप वाकई जारी रखना चाहते हैं?",
+			"fedDmIssueLabel": "डीएम लिंक जारी करें",
+			"fedDmNeedPubKey": "64 हेक्स सार्वजनिक कुंजी की आवश्यकता है",
+			"fedDmNeedSecretKey": "64 हेक्स निजी कुंजी बीज की आवश्यकता है",
+			"fedDmIssued": "डीएम लिंक पर हस्ताक्षर किए गए और क्लिपबोर्ड पर कॉपी किया गया",
+			"fedNonceRotated": "बिना घुमाए (${nonce}…)",
+			"fedSaved": "सहेजा गया",
+			"addServerTooltip": {
+				"title": "एक समूह बनाएं या उसमें शामिल हों",
+				"tip": "एक समूह बनाएं या उसमें शामिल हों"
+			},
+			"pinsTitle": "शीर्ष पर पिन करें",
+			"bookmarksTitle": "बुकमार्क",
+			"pinsButton": {
+				"title": "पिन किया गया संदेश"
+			},
+			"bookmarksButton": {
+				"title": "बुकमार्क"
+			},
+			"search": {
+				"placeholder": "संदेश खोजें…",
+				"noResults": "कोई परिणाम नहीं",
+				"failed": "खोजें विफल",
+				"scopeGroup": "यह समूह",
+				"scopeAll": "सभी समूह"
+			},
+			"membersTitle": {
+				"title": "सदस्य"
+			},
+			"backToNav": {
+				"title": "वापस सूची",
+				"aria-label": "वापस सूची"
+			},
+			"moreActions": {
+				"title": "और",
+				"aria-label": "अधिक क्रियाएं"
+			},
+			"composerMore": {
+				"title": "अधिक सहायक उपकरण",
+				"aria-label": "अधिक सहायक उपकरण"
+			},
+			"settingsTitle": {
+				"title": "सेटिंग"
+			},
+			"filesTitle": {
+				"title": "समूह फ़ाइल"
+			},
+			"filesDrawerTitle": "समूह फ़ाइल",
+			"filesLoading": "समूह फ़ाइलें लोड हो रही हैं…",
+			"filesLoadFailed": "समूह फ़ाइल लोड करने में विफल: ${error}",
+			"filesNoGroup": "कृपया पहले एक समूह चुनें",
+			"filesNoCabinets": "वर्तमान भूमिका के लिए कोई फ़ाइल कैबिनेट पहुंच योग्य नहीं है",
+			"filesBindCabinet": "एक फाइलिंग कैबिनेट जोड़ें",
+			"filesNoChannel": "कृपया पहले टेक्स्ट चैनल दर्ज करें जहां आप संदेश भेज सकते हैं",
+			"filesUploadTo": "पर अपलोड करें",
+			"filesRootFolder": "मूल निर्देशिका",
+			"filesNewFolder": "नया फ़ोल्डर बनाएं",
+			"filesNewFolderPrompt": "फ़ोल्डर का नाम",
+			"filesRename": "नाम बदलें",
+			"filesRenameFolderPrompt": "फ़ोल्डर का नाम बदलें \"${name}\":",
+			"filesDeleteFolderConfirm": "क्या आप वाकई इस फ़ोल्डर को हटाना चाहते हैं? फ़ोल्डर में फ़ाइलें स्वचालित रूप से हटाई नहीं जाएंगी.",
+			"filesUpload": "अपलोड करें",
+			"filesDownload": "डाउनलोड करना",
+			"filesDelete": "हटाएँ",
+			"filesDeleteConfirm": "क्या आप द्वारा इस फाइल को हटाया जाना सुनिश्चित है?",
+			"filesFoldersTitle": "फ़ोल्डर",
+			"filesListTitle": "दस्तावेज़",
+			"filesEmpty": "इस निर्देशिका में फिलहाल कोई फ़ाइल नहीं है",
+			"filesNoFolders": "अभी तक कोई सबफ़ोल्डर नहीं",
+			"uploadTitle": {
+				"title": "फाइलें अपलोड करें"
+			},
+			"emojiTitle": {
+				"title": "इमोजी"
+			},
+			"voteTitle": {
+				"title": "मतदान शुरू करें"
+			},
+			"shareGroupTitle": {
+				"title": "समूह लिंक साझा करें"
+			},
+			"shareGroupOk": "साझा समूह आमंत्रण कार्ड",
+			"messageActionFailed": "ऑपरेशन विफल: ${error}",
+			"inviteJoinButton": "समूह में शामिल",
+			"inviteLinkNeedsRoomSecret": "इस समूह ने अभी तक फ़ेडरेटेड सिंक्रनाइज़ेशन सक्षम नहीं किया है. कृपया साझा करने से पहले आमंत्रण लिंक पुनः जनरेट करें।",
+			"inviteCardMembers": "${count} सदस्य",
+			"syncFailed": "फ़ेडरेशन सिंक्रनाइज़ेशन विफल: ${error}",
+			"syncRateLimited": "संघीय सिंक्रनाइज़ेशन गति सीमा जारी है, कृपया बाद में पुनः प्रयास करें।",
+			"syncIncomplete": "${missing}/${total} ईवेंट अनसिंक्ड रहते हैं",
+			"syncNoPeers": "फ़ेडरेटेड पड़ोसी से जुड़े नहीं, ऐतिहासिक संदेशों को अस्थायी रूप से सिंक्रनाइज़ नहीं किया जा सकता है; कृपया पूर्ण आमंत्रण लिंक का उपयोग करें और बाद में पुनः प्रयास करें",
+			"attachmentLoadFailed": "अनुलग्नक लोडिंग विफल रही",
+			"messageEditUpload": "अनुलग्नक अपलोड करें",
+			"timeToday": "आज ${time}",
+			"timeYesterday": "कल ${time}",
+			"stickerTitle": {
+				"title": "कँटिया"
+			},
+			"sendTitle": {
+				"title": "भेजें (Ctrl+Enter)"
+			},
+			"stopGenerateTitle": {
+				"title": "उत्पादन बंद करो"
+			},
+			"charTyping": "प्रवेश कर रहा हूँ…",
+			"messageActionPrev": {
+				"title": "पिछली समयरेखा"
+			},
+			"messageActionNext": {
+				"title": "अगली समयरेखा"
+			},
+			"messageActionRegen": {
+				"title": "पुनः जेनरेट"
+			},
+			"messageActionEdit": {
+				"title": "संदेश संपादित करें"
+			},
+			"messageActionFeedbackUp": {
+				"title": "लाइक"
+			},
+			"messageActionFeedbackDown": {
+				"title": "नापसंद करने के लिए क्लिक करें"
+			},
+			"messageActionDelete": {
+				"title": "संदेश को हटाएं"
+			},
+			"confirmDeleteLong": "यह संदेश काफ़ी लंबा है। क्या आप इसे हटाना चाहते हैं?",
+			"messageActionCopyHtml": {
+				"title": "HTML कॉपी करें"
+			},
+			"forceReply": "ज़बरदस्ती जवाब दो",
+			"removeChar": "चरित्र हटाएँ",
+			"loadMore": "पुराने पोस्ट लोड हो रहे हैं…",
+			"charChatsTitle": "${name} के साथ ऐतिहासिक बातचीत",
+			"newGroupWith": "+ ${name} के साथ एक नया वार्तालाप बनाएं",
+			"messageActionBookmark": {
+				"title": "बुकमार्क"
+			},
+			"messageActionPin": {
+				"title": "शीर्ष पर पिन करें"
+			},
+			"messageActionUnpin": {
+				"title": "अनपिन"
+			},
+			"blockAuthor": {
+				"title": "इस लेखक को ब्लॉक करें"
+			},
+			"pinUnpinSidebar": {
+				"title": "अनपिन"
+			},
+			"meAuthor": "मैं",
+			"messageEditSave": "सहेजें",
+			"messageEditCancel": "रद्द करें",
+			"feedbackReasonPrompt": "अस्वीकृति का कारण (वैकल्पिक)",
+			"feedbackReasonInput": {
+				"placeholder": "अस्वीकृति का कारण (वैकल्पिक)"
+			},
+			"messageFeedbackSubmit": "प्रतिक्रिया सबमिट करें",
+			"stickersPanelTitle": "कँटिया",
+			"stickersManage": "स्टिकर प्रबंधित करें →",
+			"stickersLoading": "लोड हो रहा है…",
+			"recentEmojiTab": {
+				"title": "आमतौर पर इस्तेमाल हुआ"
+			},
+			"recentEmojisEmpty": "जो इमोटिकॉन्स भेजे गए हैं उन्हें उनके उपयोग की संख्या के अनुसार यहां प्रदर्शित किया जाएगा।",
+			"currentGroupEmojiTab": {
+				"title": "वर्तमान समूह इमोटिकॉन्स"
+			},
+			"groupEmojiTab": {
+				"title": "समूह"
+			},
+			"groupEmojisEmpty": "वर्तमान में कोई समूह इमोटिकॉन्स नहीं हैं. आप उन्हें ग्रुप सेटिंग में अपलोड कर सकते हैं.",
+			"groupEmojisLoadFailed": "समूह इमोटिकॉन्स लोड करने में विफल",
+			"profileLinkTitle": {
+				"title": "प्रोफ़ाइल",
+				"textContent": "प्रोफ़ाइल"
+			},
+			"userLoading": "लोड हो रहा है…",
+			"status": {
+				"online": "ऑनलाइन",
+				"idle": "आराम",
+				"dnd": "परेशान मत करो",
+				"invisible": "चुपके से",
+				"offline": "ऑफ़लाइन"
+			},
+			"changeStatusTitle": "स्थिति बदलें",
+			"aboutSection": "के बारे में",
+			"bioEmpty": "इस उपयोगकर्ता के पास अभी तक कोई प्रोफ़ाइल नहीं है.",
+			"statusOffline": {
+				"title": "ऑफ़लाइन",
+				"textContent": "ऑफ़लाइन"
+			},
+			"statusOnline": {
+				"title": "ऑनलाइन",
+				"textContent": "ऑनलाइन"
+			},
+			"statusIdle": {
+				"title": "दूर",
+				"textContent": "दूर"
+			},
+			"statusDnd": {
+				"title": "परेशान मत करो",
+				"textContent": "परेशान मत करो"
+			},
+			"banners": {
+				"gshBuffer": "कुंजी घुमाने के बाद ${total} संदेश डिक्रिप्ट होने की प्रतीक्षा कर रहे हैं",
+				"plaintextSidecar": "यह चैनल मांग पर सिंक्रनाइज़ किया जाता है; स्थानीय संदेश साइडकार स्पष्ट पाठ में सामग्री को कैश करता है।",
+				"quarantine": "घड़ी के विचलन के कारण ${count} फ़ेडरेशन ईवेंट अस्थायी रूप से संगरोध क्षेत्र में संग्रहीत हैं, और सिस्टम समय बहाल होने के बाद स्वचालित रूप से फिर से चलाए जाएंगे।",
+				"mailboxPending": "ऑफ़लाइन ईमेल में ${count} संदेश डिलीवर होने की प्रतीक्षा कर रहे हैं।",
+				"syncing": "संघीय पड़ोसियों के साथ समन्वय…",
+				"archiveCoverageIncomplete": "कुछ माह के कोल्ड अभिलेख अभी तक फेडरेशन से सिंक्रोनाइज नहीं हुए हैं।",
+				"archiveSyncButton": "समकालिक संग्रह",
+				"forkGovernance": "अनुमतियाँ रिकॉर्ड में एक कांटा है और यह वर्तमान में स्थानीय दृश्य में है।",
+				"forkTips": "${count} असंबद्ध शाखाओं का पता चला, संदेश क्रम असंगत हो सकता है।",
+				"forkTipLabel": "डीएजी पत्ता",
+				"forkTipScore": "${short} · प्रतिष्ठा ${score}",
+				"applyBranch": "अनुप्रयोग शासन शाखा",
+				"autoBranch": "प्रतिष्ठा स्वचालित चयन",
+				"mergeDag": "कांटे मर्ज करें",
+				"splitFork": "नए समूह में विभाजित",
+				"blockOpposing": "विरोधी शाखाएँ दुर्गम हैं",
+				"suspectedRemoved": "हो सकता है कि आपको इस समूह से हटा दिया गया हो: आपने सत्यापन के लिए ${count} ज्ञात नोड्स मांगे हों, लेकिन उन सभी को अस्वीकार कर दिया गया है। आप स्थानीय इतिहास को स्मरण कर सकते हैं या इस समूह प्रति को हटा सकते हैं।",
+				"suspectedRemovedKeep": "एक स्मारिका ले लो",
+				"suspectedRemovedLeave": "समूह हटाएँ"
+			},
+			"blockOpposingConfirm": "उन शासन जारीकर्ताओं को ब्लॉकलिस्ट में जोड़ें जो वर्तमान चुनाव में नहीं हैं और फेडरेशन रिले के इस समूह को अस्वीकार कर दें। जारी रखना?",
+			"blockOpposingOk": "${count} विषयों को पहुंच योग्य नहीं के रूप में चिह्नित किया गया",
+			"blockOpposingFailed": "चिह्नित करना विफल: ${error}",
+			"applyBranchOk": "शासन शाखा लागू",
+			"applyBranchFailed": "शाखा लागू करना विफल: ${error}",
+			"autoBranchOk": "प्रतिष्ठा बहाल होने के बाद स्वचालित चयन",
+			"autoBranchFailed": "स्वचालित चयन विफल: ${error}",
+			"saveEmoji": {
+				"title": "इमोटिकॉन्स सहेजें"
+			},
+			"saveEmojiOk": "इमोटिकॉन को डेटाबेस में सहेजा गया है",
+			"saveEmojiFailed": "इमोटिकॉन सहेजने में विफल: ${error}",
+			"saveSticker": {
+				"title": "स्टिकर सहेजें"
+			},
+			"saveStickerOk": "स्टिकर को आपकी स्टिकर लाइब्रेरी में जोड़ दिया गया है",
+			"saveStickerFailed": "स्टिकर सहेजने में विफल: ${error}",
+			"revealRemoteMd": "पूर्ण पाठ का विस्तार करें",
+			"voteModalTitle": "मतदान शुरू करें",
+			"voteModalSubmit": "पोल बनाएं",
+			"voteCreateFailed": "मतदान बनाने में विफल: ${error}",
+			"composer": {
+				"placeholder": "#${channel} पर भेजें"
+			},
+			"composerSuspectedRemoved": {
+				"placeholder": "हो सकता है कि आपको इस समूह से हटा दिया गया हो और आप संदेश भेजना जारी नहीं रख सकते।"
+			},
+			"channelReadonlyList": {
+				"placeholder": "सूची चैनल केवल पढ़ने के लिए"
+			},
+			"channelReadonlyStream": {
+				"placeholder": "स्ट्रीमिंग चैनल केवल पढ़ने के लिए"
+			},
+			"noChannels": "अभी तक कोई बातचीत नहीं हुई",
+			"noMembers": "अभी तक कोई सदस्य नहीं",
+			"noPins": "अभी तक कोई पिन नहीं",
+			"noBookmarks": "अभी तक कोई बुकमार्क नहीं",
+			"adminSection": "प्रशासक",
+			"memberSection": "सदस्य",
+			"membersDigestOk": "सदस्य मर्कले सर्वसम्मत · ${root}",
+			"membersDigestOkPaged": "सदस्य मर्कले सर्वसम्मति (${pages} पेज) · ${root}",
+			"membersDigestMismatch": "असंगत सदस्य डाइजेस्ट · ${root}",
+			"membersDigestPending": "सदस्य सारांश जांचें…",
+			"membersDigestFetchFailed": "सदस्यों को पृष्ठ के आधार पर खींचने में विफल",
+			"copyEntityId": "इकाई आईडी कॉपी करें",
+			"copyEntityIdOk": "इकाई आईडी की प्रतिलिपि बनाई गई",
+			"memberJoined": "बातचीत में शामिल हुए",
+			"remoteBadge": {
+				"textContent": "दूर",
+				"title": "फ़ेडरेटेड दूरस्थ लेखक"
+			},
+			"trustAuthor": {
+				"textContent": "विश्वास",
+				"title": "इस लेखक पर भरोसा करें (खतरनाक HTML की अनुमति दें)"
+			},
+			"stickerInline": "कँटिया",
+			"voteDeadline": "समयसीमा: ${date}",
+			"voteNoOptions": "कोई विकल्प नहीं",
+			"voteTotal": "कुल ${total} वोट",
+			"voteCount": "${count} टिकट · ${pct}%",
+			"loadGroupFailed": "समूह लोड करने में विफल: ${error}",
+			"groupJoinRequired": "समूह खोला नहीं जा सकता, कृपया शामिल होने के लिए आमंत्रण लिंक या आमंत्रण कोड का उपयोग करें",
+			"sendFailed": "भेजना विफल: ${error}",
+			"sendFailedPending": "भेजें विफल",
+			"markdownRenderFailed": "संदेश प्रतिपादन विफल रहा",
+			"retrySend": "पुनः प्रयास करें",
+			"sendImageFailed": "चित्र भेजने में विफल: ${error}",
+			"sendStickerFailed": "स्टिकर भेजने में विफल: ${error}",
+			"voteMinOptions": "कम से कम 2 विकल्पों की आवश्यकता है",
+			"mergeDagOk": "कांटा विलीन हो गया",
+			"mergeDagFailed": "मर्ज विफल: ${error}",
+			"forkSplitFailed": "विभाजन विफल: ${error}",
+			"forkSplitPrompt": "नया समूह नाम (खाली छोड़ा जा सकता है)",
+			"forkSplitModalTitle": "नए समूह में विभाजित",
+			"forkSplitModalSubmit": "बनाएं",
+			"typing": "${names} टाइप कर रहा है…",
+			"charsHeader": "भूमिका",
+			"friendsHeader": "दोस्त",
+			"settingsModalTitle": "सेटिंग",
+			"modalClose": "बंद करें",
+			"groupTag": "समूह",
+			"groupUnnamed": "अनाम समूह ·${suffix}",
+			"groupHeaderMenu": {
+				"title": "समूह मेनू: सेटिंग्स, निमंत्रण, आदि।"
+			},
+			"groupDescriptionEmpty": "इस समूह के लिए अभी तक कोई प्रोफ़ाइल नहीं है.",
+			"serverActionPickerTitle": "समूह",
+			"serverActionPickerSubtitle": "एक नया समूह बनाएं या आईडी के आधार पर किसी मौजूदा समूह में शामिल हों",
+			"serverActionPickerCreate": "समूह बनाना",
+			"serverActionPickerCreateDescription": "बिल्कुल नए सिरे से शुरुआत करें और दोस्तों को आमंत्रित करें",
+			"serverActionPickerJoin": "समूह में शामिल",
+			"serverActionPickerJoinDescription": "समूह आईडी का प्रयोग करें",
+			"cancel": "रद्द करें",
+			"folderDefault": "फ़ोल्डर",
+			"folderRename": "फ़ोल्डर का नाम बदलें",
+			"folderRenamePrompt": "फ़ोल्डर का नाम बदलें \"${name}\":",
+			"folderCollapse": "फ़ोल्डर संक्षिप्त करें",
+			"folderExpand": "फ़ोल्डर का विस्तार करें",
+			"folderDissolve": "फ़ोल्डर ख़ारिज करें",
+			"bookmarkLocal": "स्थानीय",
+			"groupsSection": "समूह",
+			"ungrouped": "समूहीकृत नहीं",
+			"defaultCategory": "वार्ता",
+			"bookmarkFallback": "बुकमार्क",
+			"bookmarkRemove": {
+				"title": "बुकमार्क हटाएँ",
+				"aria-label": "बुकमार्क हटाएँ"
+			},
+			"loadMessagesFailed": "संदेश लोड करने में विफल: ${error}",
+			"unreadDivider": "नई खबर",
+			"noUsername": "उपयोगकर्ता नाम प्राप्त नहीं हुआ",
+			"stickersEmpty": "अभी तक कोई स्टिकर नहीं",
+			"stickersMarketLink": "इंस्टॉल करने के लिए स्टिकर स्क्वायर पर जाएं",
+			"stickersLoadFailed": "लोडिंग विफल: ${error}",
+			"noChars": "अभी तक कोई भूमिकाएँ नहीं हैं, कृपया पहले कुछ स्थापित करें।",
+			"noFriends": "अभी तक कोई निजी चैट नहीं",
+			"friendsEmptyTitle": "एक नई बातचीत शुरू करें",
+			"friendsEmptyDescription": "स्थानीय भूमिका या अन्य नोड्स पर उपयोगकर्ताओं को खोजें, और निजी संदेश आरंभ करने के लिए आप समूह चैट में सदस्य प्रोफ़ाइल कार्ड भी खोल सकते हैं।",
+			"friendsEmptyAction": "कोई भूमिका या उपयोगकर्ता खोजें",
+			"friendsSearchEmpty": "कोई ईमेल खाती भूमिका या उपयोगकर्ता नहीं",
+			"friendsSearchTooShort": "कृपया कम से कम 2 अक्षर दर्ज करें",
+			"friendsSearchDm": "निजी संदेश भेजें",
+			"friendsSearchChat": "एक बातचीत शुरू",
+			"friendsSearchLocalChar": "स्थानीय भूमिका",
+			"friendsSearchPin": "उपनाम के रूप में सेट करें",
+			"charCount": "${count} भूमिकाएँ",
+			"friendsCount": "${count} मित्र",
+			"charTag": "भूमिका",
+			"friendsTag": "दोस्त",
+			"backToFriends": "दोस्तों के पास लौटें",
+			"dmTopicsTitle": "विषय",
+			"friendsContextNewChat": "नई चैट",
+			"friendsRestartConfirm": "\"${name}\" वाली निजी चैट अनबाउंड हो जाएगी और एक नई बातचीत बनाई जाएगी। क्या आपको यकीन है?",
+			"friendsRestartOk": "एक नई निजी चैट खोली गई है",
+			"friendsRestartFailed": "नई निजी चैट बनाने में विफल: ${error}",
+			"charDescriptionEmpty": "पात्र ने अभी तक अपना परिचय नहीं दिया है।",
+			"charIntro": "परिचय देना",
+			"participants": "प्रतिभागियों",
+			"charTagSolo": "पात्र · 1:1 संवाद",
+			"startChatWith": "💬 ${name} से चैट करना प्रारंभ करें",
+			"loading": "लोड हो रहा है…",
+			"charChatStart": "${name} से बातचीत शुरू करें",
+			"charChatEmpty": "अभी तक कोई संदेश नहीं है, अपनी पहली चैट शुरू करें!",
+			"loadCharChatFailed": "संदेश लोड करने में विफल रहा",
+			"createChatFailed": "सत्र बनाने में विफल: ${error}",
+			"charChatComposer": {
+				"placeholder": "${name} पर एक संदेश भेजें (भेजने के लिए Ctrl+Enter)"
+			},
+			"friendChatComposer": {
+				"placeholder": "संदेश भेजें (भेजने के लिए Ctrl+Enter)"
+			},
+			"trustOk": "इस लेखक पर भरोसा किया गया है",
+			"trustAuthorDialog": {
+				"title": "इस लेखक पर भरोसा रखें",
+				"subtitle": "लेखक: ${author}",
+				"warningTitle": "उच्च जोखिम वाले ऑपरेशन",
+				"warningBody": "एक बार भरोसा हो जाने पर, इस लेखक द्वारा भेजे गए संदेश आपके ब्राउज़र में पूर्ण Markdown (HTML/स्क्रिप्ट सहित) के रूप में रेंडर होंगे। यदि दूसरा पक्ष अपने चल रहे fount इंस्टेंस पर दुर्भावनापूर्ण सामग्री बनाता है, तो संदेश देखते समय यह आपकी इस डिवाइस को नुकसान पहुँचा सकता है। कृपया केवल उन फ़ेडरेटेड नोड्स पर भरोसा करें जिन्हें आप स्पष्ट रूप से जानते हैं और जोखिम लेने को तैयार हैं।",
+				"durationLabel": "विश्वास अवधि",
+				"duration3h": "3 घंटे",
+				"duration7d": "7 दिन",
+				"duration1Month": "1 महीना",
+				"durationForever": "स्थायी",
+				"confirmCooldown": "मैंने जोखिम पढ़ लिया है(${seconds})",
+				"confirmFirst": "मैं जोखिमों को समझता हूं, जारी रखें",
+				"confirmSecond": "अंतिम रूप देने के लिए दोबारा क्लिक करें",
+				"cancel": "रद्द करें"
+			},
+			"blockConfirm": "इस व्यक्ति को ब्लॉकलिस्ट में जोड़ें? इस समूह का महासंघ इसके रिले को अस्वीकार कर देगा.",
+			"blockOk": "अवरोधित",
+			"charChatSettings": "चरित्र चैट सेटिंग्स",
+			"charChatSubtitle": "${name} के साथ सत्र",
+			"sessionInfo": "सत्र विवरण",
+			"sessionRole": "भूमिका",
+			"sessionId": "सत्र आईडी",
+			"sessionMessages": "संदेशों की संख्या",
+			"quickActions": "त्वरित संचालन",
+			"advancedSettings": "उन्नत सेटिंग्स (अक्षर/विश्व/प्लगइन्स)",
+			"advancedSettingsDescription": "हब में समूह के लिए पूर्ण सेटिंग्स को एक नए टैब में खोलें",
+			"dangerZone": "ख़तरे का क्षेत्र",
+			"unbindFriendDescription": "अनबाइंडिंग के बाद, बातचीत बाईं ओर समूह सूची में वापस आ जाएगी और संदेश रिकॉर्ड बनाए रखा जाएगा।",
+			"unbindFriend": "अनबाइंड",
+			"unbindFriendConfirm": "क्या आप निश्चित रूप से ${name} के साथ निजी चैट को अनबाइंड करना चाहते हैं? बातचीत को वापस समूह सूची में ले जाया जाएगा.",
+			"unbindFriendOk": "अबाध",
+			"unbindFriendFailed": "अनबाइंडिंग विफल: ${error}",
+			"deleteSessionDescription": "इस वार्तालाप को हटाने से सभी संदेश स्थायी रूप से हट जाएंगे और यह अपरिवर्तनीय है।",
+			"deleteSession": "सत्र हटाएँ",
+			"deleteSessionConfirm": "क्या आप वाकई ${name} वाला सत्र हटाना चाहते हैं? यह ऑपरेशन अपरिवर्तनीय है.",
+			"sessionDeleted": "वार्तालाप हटा दिया गया",
+			"sessionDeleteFailed": "हटाना विफल: ${error}",
+			"streamTokenFailed": "देखने का टोकन जारी करने में असमर्थ",
+			"streamAvJoin": "आवाज/वीडियो जोड़ें",
+			"streamAvLeave": "दूर",
+			"streamAvMute": "म्यूट करें",
+			"streamAvUnmute": "अनम्यूट करें",
+			"streamAvVideo": "कैमरा बंद करें",
+			"streamAvVideoOn": "कैमरा चालू करें",
+			"streamAvYou": "आप",
+			"streamAvJoinFailed": "कॉल प्रारंभ करने में असमर्थ: ${error}",
+			"streamAvNoCodecs": "यह ब्राउज़र WebCodecs का समर्थन नहीं करता (Chrome 94+ / Edge 94+ / Firefox 130+ की आवश्यकता है)",
+			"streamAvPeers": "${count} लोग ऑनलाइन",
+			"streamAvPresetThumb": "संक्षिप्त रूप में 64kbps",
+			"streamAvPresetLow": "निम्न गुणवत्ता 200kbps",
+			"streamAvPresetMed": "मध्यम 600kbps",
+			"streamAvPresetHigh": "उच्च गुणवत्ता 1.5 एमबीपीएस",
+			"callButton": {
+				"title": "कॉल प्रारंभ करें या शामिल हों",
+				"aria-label": "कॉल प्रारंभ करें या शामिल हों"
+			},
+			"callInProgress": "कॉल प्रगति पर है",
+			"callEnded": "कॉल समाप्त हो गई है",
+			"callJoin": "कॉल में शामिल हों",
+			"callHangup": "लटकाओ",
+			"callScreenShare": "स्क्रीन साझा करना",
+			"callScreenStop": "साझा करना बंद",
+			"callJumpBack": "कॉल चैनल पर लौटें",
+			"callJoinFailed": "कॉल में शामिल होने में असमर्थ: ${error}",
+			"callScreenFailed": "स्क्रीन साझाकरण विफल: ${error}",
+			"callStartedAt": "${time} पर प्रारंभ हुआ",
+			"callDuration": "अवधि ${duration}",
+			"callParticipants": "${n} लोग",
+			"callPeerCount": "${n}",
+			"callNoParticipants": "अभी तक कोई प्रतिभागी नहीं",
+			"listChannelEmpty": "सूची खाली है.",
+			"listItemUntitled": "अज्ञात",
+			"listEditorTitle": "सूची आइटम संपादित करें (JSON सरणी)",
+			"listSaveToDag": "डीएजी में सहेजें",
+			"listJsonInvalid": "अमान्य JSON: ${message}",
+			"listSaved": "सहेजा गया",
+			"listSaveFailed": "सहेजें विफल",
+			"streamDefaultName": "स्ट्रीमिंग मीडिया",
+			"streamRefreshToken": "घड़ी टोकन ताज़ा करें",
+			"streamEmbedHttpsRequired": "स्ट्रीमिंग पता एक एम्बेड करने योग्य https:// पेज होना चाहिए, या देखने का टोकन प्राप्त करने के लिए समूह सेटिंग्स को पहले कॉन्फ़िगर किया जाना चाहिए और ताज़ा किया जाना चाहिए।",
+			"streamWebRtcHint": "कोई बाहरी एसएफयू कॉन्फ़िगर नहीं किया गया है; यह चैनल इन-ग्रुप WebRTC (कोई स्ट्रीमिंगSfuWss आवश्यक नहीं) का उपयोग करेगा।",
+			"pinPreviewSticker": "[स्टिकर]",
+			"pinPreviewVote": "[वोट] ${question}",
+			"pinPreviewInvite": "[आमंत्रित करें] ${groupName}",
+			"reactionRemovePrompt": "किसका ${emoji} हटाना है?\n${candidates}",
+			"ariaDagTip": {
+				"aria-label": "डीएजी कांटा टिप"
+			},
+			"ariaClose": {
+				"aria-label": "बंद करें"
+			},
+			"membersDigestPagesTitle": {
+				"title": "${expected}\n${pages} पेज"
+			},
+			"discoveryTitle": "समूह खोज",
+			"discoveryEyebrow": "समुदाय का अन्वेषण करें",
+			"discoveryDescription": "फ़ेडरेशन नेटवर्क से सार्वजनिक समूह ब्राउज़ करें, रुचि का समुदाय चुनें और शामिल हों।",
+			"discoverySidebarHint": "दाईं ओर सार्वजनिक समूहों को ब्राउज़ करें और उनसे जुड़ें",
+			"discoveryEmptyTitle": "अभी तक कोई सार्वजनिक समूह नहीं मिला",
+			"discoveryEmpty": "वर्तमान में कोई अनुशंसित समूह नहीं है; फ़ेडरेशन सिंक्रोनाइज़ेशन चालू करने के बाद, खोज सूची पड़ोसियों से सिंक्रोनाइज़ हो जाएगी।",
+			"discoveryNoDescription": "समूह स्वामी ने अभी तक प्रोफ़ाइल नहीं भरी है.",
+			"discoverySourceCount": "${count} फ़ेडरेटेड स्रोत",
+			"discoveryJoin": "समूह में शामिल",
+			"discoveryOpen": "समूह खोलें",
+			"discoveryLoadFailed": "खोज सूची लोड करने में विफल: ${message}",
+			"operationFailed": "ऑपरेशन विफल: ${error}",
+			"shareGroupFailed": "समूह लिंक साझा करने में विफल: ${error}",
+			"blockAuthorTitle": "इस लेखक को ब्लॉक करें",
+			"configTitle": "वार्तालाप विन्यास",
+			"configSaved": "सहेजा गया",
+			"configSaveFailed": "सहेजना विफल: ${error}",
+			"configLoadFailed": "कॉन्फ़िगरेशन लोड करने में विफल: ${error}",
+			"noActiveChat": "कृपया भाग को खींचने से पहले एक सत्र खोलें",
+			"groupContext": {
+				"manage": "प्रबंधन समूह",
+				"notifyPrefs": "अधिसूचना सेटिंग्स",
+				"invite": "दूसरों को आमंत्रित करें",
+				"inviteCopied": "आमंत्रण लिंक क्लिपबोर्ड पर कॉपी किया गया",
+				"addChar": "भूमिका जोड़ें",
+				"addCharLabel": "भूमिका चुनें",
+				"addCharSubmit": "जोड़ें",
+				"noChars": "कोई भूमिका उपलब्ध नहीं है",
+				"setAlias": "समूह उपनाम सेट करें",
+				"setAliasPrompt": "\"${name}\" के लिए एक स्थानीय उपनाम सेट करें (साफ करने के लिए खाली छोड़ें):",
+				"aliasSaved": "समूह उपनाम अद्यतन किया गया",
+				"leave": "समूह से बाहर निकलें",
+				"leaveConfirm": "क्या आप वाकई समूह \"${name}\" छोड़ना चाहते हैं? अब आप इस समूह में संदेश नहीं देख पाएंगे.",
+				"leaveOk": "समूह छोड़ दिया",
+				"leaveBatch": "चयनित समूह से बाहर निकलें (${count})",
+				"leaveConfirmBatch": "क्या आप वाकई ${count} चयनित समूहों को छोड़ना चाहते हैं? मशीन अब इन समूहों के लिए डेटा बरकरार नहीं रखेगी।",
+				"leaveBatchPending": "${count} समूहों को सूची से हटा दिया गया है, पृष्ठभूमि में बाहर निकल रहा है…",
+				"leaveBatchOk": "${count} समूहों से बाहर निकल गए",
+				"leaveBatchPartial": "${failed} / ${total} समूह बाहर निकलने में विफल रहे, सूची ताज़ा कर दी गई है"
+			},
+			"replyInline": {
+				"title": "उत्तर"
+			},
+			"replyClear": {
+				"title": "भिन्नता"
+			},
+			"replyInThread": {
+				"title": "चाइल्ड थ्रेड में उत्तर दें"
+			},
+			"syncTruncated": "DAG वेतन वृद्धि पूर्ण नहीं है. आप बाद में पुनः प्रयास कर सकते हैं या सीमा बढ़ा सकते हैं।",
+			"syncTruncatedHint": "डीएजी का इतिहास बहुत लंबा है. आप बाद में पुनः प्रयास कर सकते हैं या सीमा बढ़ा सकते हैं।",
+			"newChannelButton": "नया चैनल बनाएं",
+			"newChannelSuccess": "चैनल बनाया गया",
+			"newChannelFailed": "चैनल बनाएँ विफल",
+			"newChannelTitle": "नया चैनल बनाएं",
+			"channelName": "चैनल नाम",
+			"channelType": "चैनल प्रकार",
+			"channelTypeText": "चैट चैनल",
+			"channelTypeList": "सूची/फोरम चैनल",
+			"channelTypeStreaming": "स्ट्रीमिंग चैनल",
+			"channelNameInput": {
+				"placeholder": "सामान्य"
+			},
+			"localMaterializedView": "यह वर्तमान में एक स्थानीय भौतिक दृश्य है, और अनुमतियाँ और इतिहास अन्य नोड्स के साथ असंगत हो सकते हैं।",
+			"convergentEncryptWarn": "समूह फ़ाइलें अभिसरण एन्क्रिप्शन का उपयोग करती हैं: यदि हमलावर किसी फ़ाइल का प्लेनटेक्स्ट जानता है, तो वह कुंजी प्राप्त कर सकता है और संबंधित सिफरटेक्स्ट ब्लॉक को डिक्रिप्ट कर सकता है। अत्यधिक संवेदनशील और विशिष्ट निजी दस्तावेज़ों की सुरक्षा के लिए केवल समूह एन्क्रिप्शन पर निर्भर न रहें।",
+			"votePromptQuestion": "मतदान शीर्षक",
+			"votePromptOptions": "विकल्प (कम से कम दो, अल्पविराम से अनलिंक)",
+			"voteOptionDefault": "सहमत, विरोध",
+			"votePromptDeadlineHours": "समय सीमा (घंटे, खाली छोड़ें = कोई समय सीमा नहीं)",
+			"messagePrefixVote": "मतदान",
+			"threadCreated": "चाइल्ड थ्रेड बनाया गया है",
+			"threadCreateFailed": "चाइल्ड थ्रेड बनाने में विफल, कृपया बाद में पुनः प्रयास करें",
+			"threadDrawer": {
+				"aria-label": "थ्रेड"
+			},
+			"threadClose": {
+				"title": "चाइल्ड थ्रेड बंद करें"
+			},
+			"reputationSlashAlert": "सदस्य ${target}… की प्रतिष्ठा कटौती की याद दिलाती है।",
+			"profileEdit": {
+				"previewHint": "परिवर्तन तुरंत पूर्वावलोकन में दिखाई देते हैं और चैट और सोशल में सहेजे और समन्वयित किए जाते हैं।",
+				"livePreview": "लाइव पूर्वावलोकन",
+				"languageVersion": "भाषा संस्करण",
+				"localeHint": "कोड बदलने या संपादित करने के लिए लेबल पर क्लिक करें; इसे नई भाषा में कॉपी करने के लिए अंत में इनपुट बॉक्स में Enter दबाएँ।",
+				"themeColorHint": "जब कोई कस्टम झंडे न हो तो बनावट उत्पन्न करने के लिए उपयोग किया जाता है, और लाइव ध्वनि तरंग लूप के लिए भी उपयोग किया जाता है",
+				"bannerLabel": "झंडे पृष्ठभूमि",
+				"bannerHint": "आप छवि यूआरएल भर सकते हैं या फ़ाइल अपलोड कर सकते हैं; आप किसी भी समय टेक्सचर बनाना फिर से शुरू कर सकते हैं",
+				"bannerClear": "झंडे निर्माण फिर से शुरू करें",
+				"linksPreview": "${count} सार्वजनिक लिंक",
+				"unsavedHint": "विंडो बंद करने से सहेजे न गए परिवर्तन हट जाएंगे",
+				"tagsLabel": "लेबल",
+				"tagAdd": "जोड़ें",
+				"tagRemove": "हटाएँ लेबल",
+				"linksLabel": "जोड़ना",
+				"linkAdd": "लिंक जोड़ें",
+				"linkRemove": "लिंक हटाएँ",
+				"handleLabel": "कस्टम आईडी",
+				"handleHint": "नेटवर्क में अन्य नोड्स द्वारा खोजा जा सकता है; विशिष्टता की गारंटी नहीं है, और विश्वास सूची के अनुसार विवादों को स्पष्ट किया जाएगा।",
+				"resetFromPart": "चरित्र भाग से रीसेट करें",
+				"resetFromPartConfirm": "वर्तमान प्रोफ़ाइल भूमिका part की info से ओवरराइट हो जाएगी। जारी रखें?",
+				"resetFromPartDone": "चरित्र भागों से प्रोफ़ाइल का पुनर्निर्माण किया गया",
+				"resetFromPartFailed": "पुनर्निर्माण विफल: ${error}",
+				"newLocale": {
+					"placeholder": "नया भाषा कोड, जैसे एन-यूके"
+				},
+				"avatarUrl": {
+					"placeholder": "अवतार छवि URL, या नीचे फ़ाइल अपलोड करें"
+				},
+				"bannerUrl": {
+					"placeholder": "झंडे छवि यूआरएल, या नीचे फ़ाइल अपलोड करें"
+				},
+				"tag": {
+					"placeholder": "टैग डालने के बाद जोड़ें"
+				},
+				"linkName": {
+					"placeholder": "पाठ दिखाएँ"
+				},
+				"linkUrl": {
+					"placeholder": "https://… या फ़ॉन्ट://…"
+				},
+				"handle": {
+					"placeholder": "उदाहरण के लिए स्टीव (2-32 लोअरकेस अल्फ़ान्यूमेरिक वर्ण।_-)"
+				}
+			},
+			"profilePopup": {
+				"close": {
+					"title": "डेटा कार्ड बंद करें"
+				},
+				"editSaved": "प्रोफ़ाइल सहेजा गया",
+				"editQueued": "प्रकाशित, दूसरे नोड द्वारा इसे खींचने की प्रतीक्षा की जा रही है",
+				"dmChar": "किसी पात्र के साथ निजी तौर पर चैट करें",
+				"dmUser": "निजी संदेश भेजें",
+				"dmFed": "संघीय निजी संदेश",
+				"noFedIdentity": "कृपया पहले फ़ेडरेशन सेटिंग्स में मूल सक्रियPubKeyHex को कॉन्फ़िगर करें",
+				"peerNoIdentity": "दूसरे पक्ष के पास संघीय दर्जा नहीं है और वह संघीय निजी संदेश आरंभ नहीं कर सकता।",
+				"dmFailed": "निजी संदेश खोलने में असमर्थ: ${error}",
+				"care": "विशेष फ़ॉलो",
+				"careRemove": "विशेष फ़ॉलो रद्द करें",
+				"setAlias": "उपनाम सेट करें",
+				"setAliasPrompt": "\"${name}\" के लिए एक स्थानीय उपनाम सेट करें (साफ करने के लिए खाली छोड़ें):"
+			},
+			"channelContext": {
+				"copyLinkDone": "चैनल लिंक कॉपी किया गया",
+				"notifyPrefs": "चैनल अधिसूचना सेटिंग्स",
+				"rename": "चैनल का नाम बदलें",
+				"renameOk": "चैनल का नाम बदल दिया गया है",
+				"delete": "चैनल हटाएँ",
+				"deleteOk": "चैनल हटा दिया गया",
+				"deleteConfirm": "क्या आप वाकई चैनल \"${name}\" को हटाना चाहते हैं? इस एक्शन को वापस नहीं किया जा सकता।",
+				"setDefault": "डिफ़ॉल्ट चैनल के रूप में सेट करें",
+				"setDefaultOk": "डिफ़ॉल्ट चैनल के रूप में पहले से ही सेट है",
+				"copyLink": "चैनल लिंक कॉपी करें",
+				"exportJson": "JSON निर्यात करें",
+				"exportOk": "चैनल संग्रह डाउनलोड किया गया",
+				"exportFailed": "निर्यात विफल: ${error}"
+			},
+			"memberContext": {
+				"copyName": "प्रदर्शन नाम कॉपी करें",
+				"mention": "उल्लेख",
+				"care": "विशेष फ़ॉलो",
+				"careAdded": "पहले ही विशेष फ़ॉलो जोड़ दी गई है",
+				"careRemoved": "विशेष फ़ॉलो रद्द",
+				"setAlias": "उपनाम सेट करें",
+				"setAliasPrompt": "\"${name}\" के लिए एक स्थानीय उपनाम सेट करें (साफ करने के लिए खाली छोड़ें):",
+				"aliasSaved": "उपनाम अपडेट किया गया",
+				"copyPubKey": "सार्वजनिक कुंजी हैश कॉपी करें",
+				"copyEntityId": "इकाई आईडी कॉपी करें",
+				"dm": "निजी संदेश भेजें",
+				"kick": "सदस्य को लात मारो",
+				"kickSelfNodeWarning": "चेतावनी: यह सदस्य आपके जैसी ही नोड पहचान का उपयोग करता है। आपको ग्रुप से बाहर निकालने के साथ ही बाहर भी कर दिया जायेगा. क्या आप वाकई जारी रखना चाहते हैं?",
+				"ban": "प्रतिबंध…",
+				"personalBlock": "व्यक्तिगत ब्लॉक",
+				"personalBlockConfirm": "अपनी ब्लॉक सूची में ${name} जोड़ें? जो लोग आपका फ़ॉलो करते हैं वे इस संकेत को समझेंगे और उन पर भरोसा कम कर सकते हैं।",
+				"personalBlockSuccess": "पहले से ही ब्लॉकलिस्ट में जोड़ा गया है",
+				"banTitle": "प्रतिबंध सीमा का चयन करें",
+				"banEntity": "प्रतिबंधित इकाइयाँ (128-बिट एंटिटीहैश)",
+				"banNode": "प्रतिबंध नोड (homeNodeHash)"
+			},
+			"messageContext": {
+				"edit": "संदेश संपादित करें",
+				"delete": "संदेश को हटाएं"
+			},
+			"charStreaming": "उत्पन्न हो रहा है…",
+			"gshDecryptPending": "चैनल कुंजी की प्रतीक्षा की जा रही है (पीढ़ी ${gen})",
+			"gshDecryptFailed": "चैनल कुंजी के बिना इस संदेश को डिक्रिप्ट करने में असमर्थ",
+			"fileDecryptFailed": "फ़ाइल कुंजी के बिना इस फ़ाइल तक पहुंचने में असमर्थ",
+			"reactionFailed": "प्रतिक्रिया कार्रवाई विफल रही",
+			"fileUploadChecking": "यह देखने के लिए जाँच की जा रही है कि क्या वही सामग्री पहले से मौजूद है…",
+			"fileUploadingChunk": "एन्क्रिप्टेड ब्लॉक अपलोड हो रहे हैं…",
+			"fileUploadRegistering": "फ़ाइलें पंजीकृत हो रही हैं…",
+			"fileUploaded": "फ़ाइल सफलतापूर्वक अपलोड की गई",
+			"fileUploadFailed": "फ़ाइल अपलोड विफल रहा",
+			"fileSkippedDedup": "डुप्लिकेट ब्लॉक स्थानांतरण छोड़ दिया गया",
+			"fileDownloadFailed": "फ़ाइल डाउनलोड विफल रहा",
+			"fileNoKey": "डिक्रिप्ट करने में असमर्थ (कुंजी गुम)",
+			"fileLoadFailed": "फ़ाइल लोडिंग विफल रही",
+			"createModal": {
+				"title": "समूह बनाना",
+				"subtitle": "समूह आपके और आपके दोस्तों के लिए एक साथ बातचीत करने के लिए निजी स्थान हैं",
+				"basicSection": "मूल विवरण",
+				"nameLabel": "समूह नाम",
+				"name": {
+					"placeholder": "अपने समूह को एक नाम दें"
+				},
+				"descriptionLabel": "समूह विवरण",
+				"description": {
+					"placeholder": "(वैकल्पिक) इस समूह का परिचय दें"
+				},
+				"joinSection": "कौन शामिल हो सकता है",
+				"joinInviteOnly": "केवल आमंत्रित",
+				"joinInviteOnlyDescription": "शामिल होने के लिए एक आमंत्रण कोड आवश्यक है",
+				"joinPow": "कार्य का प्रमाण",
+				"joinPowDescription": "शामिल होने से पहले आपको PoW चुनौती पूरी करनी होगी",
+				"cancel": "वापस",
+				"submit": "समूह बनाना",
+				"failed": "समूह बनाने में विफल: ${error}"
+			},
+			"joinModal": {
+				"title": "समूह में शामिल",
+				"subtitle": "संबंधित चैट में शामिल होने के लिए समूह आईडी दर्ज करें",
+				"groupIdLabel": "ग्रुप आईडी",
+				"groupId": {
+					"placeholder": "समूह_1776941580949_xxxx"
+				},
+				"inviteLabel": "आमंत्रण कोड (वैकल्पिक)",
+				"invite": {
+					"placeholder": "समूह स्वामी द्वारा उत्पन्न अल्पकालिक आमंत्रण कोड"
+				},
+				"hint": "समूह आईडी समूह स्वामियों द्वारा साझा की जाती हैं। आमंत्रण-आधारित समूहों को एक वैध आमंत्रण कोड भरना होगा (सेटिंग्स पृष्ठ पर उत्पन्न किया जा सकता है)।",
+				"cancel": "वापस",
+				"submit": "समूह में शामिल"
+			},
+			"menuCopy": "कॉपी",
+			"menuMD": "markdown",
+			"menuTXT": "सादे पाठ",
+			"menuHTML": "एचटीएमएल",
+			"menuDownload": "एचटीएमएल डाउनलोड करें",
+			"menuDelete": "हटाएँ",
+			"menuShareGroup": "लिंक शेयर करें",
+			"menuPrev": "पिछला लेख",
+			"menuNext": "अगला लेख",
+			"menuShare": {
+				"1h": "1 घंटे का लिंक साझा करें",
+				"12h": "12 घंटे का लिंक साझा करें",
+				"24h": "24 घंटे लिंक साझा करें",
+				"72h": "72 घंटे का लिंक साझा करें"
+			},
+			"noGroups": "अभी तक कोई समूह नहीं",
+			"myGroups": "मेरे समूह",
+			"joinGroup": "समूह में शामिल",
+			"createGroup": "नया समूह बनाएं",
+			"noDescription": "अभी तक कोई विवरण नहीं",
+			"memberCountLabel": "${count} सदस्य",
+			"loadListFailed": "समूह सूची लोड करने में विफल: ${error}",
+			"contentWarning": "सामग्री चेतावनी",
+			"sensitiveMedia": "संवेदनशील मीडिया",
+			"revealContent": "सामग्री दिखाएँ",
+			"revealMedia": "प्रदर्शन मीडिया",
+			"copyShareLink": "कॉपी शेयर लिंक",
+			"forward": "रीपोस्ट",
+			"forwardedFrom": "से अग्रेषित किया गया",
+			"forwardDialog": {
+				"title": "अग्रेषित संदेश",
+				"selectGroup": "लक्ष्य समूह का चयन करें",
+				"selectChannel": "लक्ष्य चैनल चुनें",
+				"confirm": "रीपोस्ट",
+				"cancel": "रद्द करें",
+				"success": "अग्रेषित",
+				"failed": "रीपोस्ट विफल"
+			},
+			"deliverySending": "भेजा जा रहा है",
+			"deliverySent": "भेजा",
+			"deliveryRead": "पढ़ना",
+			"translate": "अनुवाद",
+			"translating": "अनुवाद हो रहा है…",
+			"translateShowOriginal": "मूल पाठ दिखाएँ",
+			"translateShowTranslation": "अनुवाद दिखाएँ",
+			"translateLabel": "अनुवाद",
+			"translateFailed": "अनुवाद विफल",
+			"editImage": "चित्र संपादित करें",
+			"draftRestored": "ड्राफ्ट बहाल किया गया",
+			"queuedOffline": "भेजे जाने की प्रतीक्षा में (ऑफ़लाइन)",
+			"translationPrefs": {
+				"title": "अनुवाद सेटिंग्स",
+				"textContent": "अनुवाद सेटिंग्स",
+				"autoTranslate": "विदेशी भाषा संदेशों का स्वचालित रूप से अनुवाद करें",
+				"hint": "चालू होने पर, विहटाएँ भाषाओं और इंटरफ़ेस वाले संदेश स्वचालित रूप से अनुवाद का अनुरोध करेंगे।",
+				"save": "सहेजें",
+				"saved": "अनुवाद सेटिंग सहेजी गईं",
+				"saveFailed": "सहेजना विफल: ${error}"
+			},
+			"friendsSearch": {
+				"placeholder": "स्थानीय भूमिका/कस्टम आईडी/नाम खोजें…"
+			},
+			"threadComposer": {
+				"placeholder": "सबथ्रेड में उत्तर दें…"
+			},
+			"altImage": {
+				"placeholder": "छवि में विवरण जोड़ें…",
+				"label": "छवि विवरण (ऑल्ट)"
+			}
+		},
 		"sidebar": {
+			"settings": {
+				"title": "समूह सेटिंग"
+			},
 			"noSelection": "कुछ नहीं चुना गया।",
 			"noDescription": "कोई विवरण नहीं।",
 			"world": {
@@ -780,6 +3171,16 @@
 						"alt": "प्लगइन जोड़ें आइकन"
 					}
 				}
+			},
+			"dataMgmt": {
+				"title": "डेटा प्रबंधन",
+				"compact": "चेकपॉइंट उत्पन्न करें",
+				"prune": "फसल काटने का इतिहास",
+				"compactSuccess": "चेकप्वाइंट सफलतापूर्वक उत्पन्न हुआ",
+				"compactError": "चेकप्वाइंट निर्माण विफल रहा",
+				"pruneSuccess": "ऐतिहासिक संदेश की कतरन पूरी हुई",
+				"pruneError": "क्रॉप विफल",
+				"invalidN": "आरक्षित आइटमओं की संख्या अमान्य है (न्यूनतम 10 आइटमएँ)"
 			}
 		},
 		"rightSidebar": {
@@ -951,7 +3352,11 @@
 			}
 		},
 		"messageGenerating": {
-			"stop": "रोकें",
+			"tips": "भूमिका एक उत्तर उत्पन्न कर रही है, कृपया प्रतीक्षा करें…",
+			"stop": {
+				"textContent": "रोकें",
+				"title": "उत्पादन बंद करो"
+			},
 			"stopIcon": {
 				"alt": "रोकें चिह्न"
 			}
@@ -1036,53 +3441,9 @@
 			}
 		},
 		"home_function_buttons": {
-			"viewHistory": {
-				"title": "इतिहास देखें"
+			"chatHub": {
+				"title": "चैट"
 			}
-		}
-	},
-	"chat_history": {
-		"title": "चैट इतिहास",
-		"pageTitle": "चैट इतिहास",
-		"description": "संवादों के माध्यम से अतीत की यात्रा. यहां, बातचीत की यादें ताज़ा रहती हैं - अपने एआई साथियों के साथ बुनी गई कहानियों को क्रमबद्ध करें, फ़िल्टर करें और फिर से देखें। डिजिटल गूँज की एक शांत लाइब्रेरी।",
-		"filterInput": {
-			"placeholder": "खोजें..."
-		},
-		"sortOptions": {
-			"time_desc": "समय (नवीनतम पहले)",
-			"time_asc": "समय (सबसे पुराना पहले)"
-		},
-		"sortBy": {
-			"aria-label": "इसके अनुसार क्रमबद्ध करें"
-		},
-		"selectAll": "सभी चुनें",
-		"buttons": {
-			"reverseSelect": "चयन पलटें",
-			"deleteSelected": "चुने हुए हटाएँ",
-			"exportSelected": "चुने हुए निर्यात करें",
-			"import": "आयात करें"
-		},
-		"chatItemButtons": {
-			"continue": "जारी रखें",
-			"copy": "कॉपी करें",
-			"export": "निर्यात करें",
-			"delete": "हटाएँ"
-		},
-		"confirmDeleteChat": "क्या आप वाकई ${chars} के साथ चैट इतिहास हटाना चाहते हैं?",
-		"confirmDeleteMultiChats": "क्या आप वाकई चुने हुए ${count} चैट इतिहास हटाना चाहते हैं?",
-		"alerts": {
-			"noChatSelectedForDeletion": "कृपया हटाने के लिए चैट इतिहास चुनें।",
-			"noChatSelectedForExport": "कृपया निर्यात करने के लिए चैट इतिहास चुनें।",
-			"copyError": "कॉपी विफल।",
-			"deleteError": "हटाना विफल रहा।",
-			"exportError": "निर्यात विफल रहा।",
-			"dragExportError": "ड्रैग एंड ड्रॉप द्वारा निर्यात करते समय त्रुटि हुई",
-			"importSuccess": "आयात सफल",
-			"importError": "आयात विफल",
-			"invalidImportFile": "अमान्य आयात फ़ाइल"
-		},
-		"select_checkbox": {
-			"aria-label": "${chars} के साथ चैट का चयन करें"
 		}
 	},
 	"easynew": {
@@ -1415,11 +3776,11 @@
 			"creationDateLabel": "खाता बनाने की तिथि:",
 			"folderSizeLabel": "उपयोगकर्ता डेटा आकार:",
 			"folderPathLabel": "उपयोगकर्ता डेटा पथ:",
-			"copyPathBtn": {
+			"copyPathButton": {
 				"title": "प्रतिलिपि पथ"
 			},
-			"copyPathBtnIcon": {
-				"alt": "प्रतिलिपि पथ"
+			"copyPathButtonIcon": {
+				"alt": "कॉपी आइकन"
 			},
 			"copiedAlert": "पथ क्लिपबोर्ड पर कॉपी कर दिया गया है!",
 			"copyPathFailed": "पथ को क्लिपबोर्ड पर कॉपी करने में असमर्थ."
@@ -1624,7 +3985,6 @@
 			"title": "कोड निष्पादन",
 			"description": "चयनित एक्सटेंशन पर जावास्क्रिप्ट कोड निष्पादित करें",
 			"selectSubfountLabel": "Subfount चुनें",
-			"selectSubfountPlaceholder": "कृपया कोड निष्पादित करने के लिए Subfount का चयन करें...",
 			"hostOption": "होस्ट (आईडी: ${id})",
 			"subfountOption": "एक्सटेंशन ${id}${deviceId}",
 			"scriptLabel": "जावास्क्रिप्ट कोड",
@@ -1633,7 +3993,8 @@
 			"noSubfountSelected": "कृपया पहले एक Subfount चुनें",
 			"noScriptProvided": "कृपया निष्पादित करने के लिए कोड दर्ज करें",
 			"executionSuccess": "कोड निष्पादन सफल",
-			"executionFailed": "कोड निष्पादन विफल: ${message}"
+			"executionFailed": "कोड निष्पादन विफल: ${message}",
+			"selectSubfount": "कृपया कोड निष्पादित करने के लिए सबफ़ाउंट का चयन करें…"
 		},
 		"downloadClient": {
 			"title": "सब-फ़ाउंट क्लाइंट डाउनलोड करें",
@@ -1900,9 +4261,6 @@
 			"copyModelIdTooltip": "मॉडल आईडी कॉपी करने के लिए क्लिक करें",
 			"loadModelsFailed": "मॉडल लोड करने में विफल: ${message}",
 			"modelSearchTitle": "मॉडल कैटलॉग देखें",
-			"modelSearchPlaceholder": {
-				"placeholder": "मॉडल नाम, प्रदाता या क्षमताओं से खोजें…"
-			},
 			"modelSearchHint": "परिणाम चुनने पर URL और मॉडल नाम स्वतः भर जाएँगे",
 			"modelsDevLoading": "कैटलॉग लोड हो रहा है…",
 			"modelsDevLoadFailed": "कैटलॉग लोड करने में विफल: ${message}",
@@ -1921,7 +4279,10 @@
 			"metaOpenWeights": "ओपन वेट",
 			"metaKnowledge": "ज्ञान सीमा: ${knowledge}",
 			"metaReleaseDate": "रिलीज़ तिथि: ${date}",
-			"providerDocLink": "[प्रदाता दस्तावेज़ देखें](${url})"
+			"providerDocLink": "[प्रदाता दस्तावेज़ देखें](${url})",
+			"modelSearch": {
+				"placeholder": "मॉडल का नाम, निर्माता, क्षमताएं खोजें…"
+			}
 		},
 		"prompts": {
 			"newFileName": "कृपया नया सेवा स्रोत फ़ाइल नाम दर्ज करें (प्रत्यय शामिल न करें):"
@@ -1998,7 +4359,6 @@
 				"botToken": "टेलीग्राम बॉट टोकन",
 				"config": "कॉन्फ़िगरेशन"
 			},
-			"charSelectPlaceholder": "कैरेक्टर चुनें",
 			"botTokenInput": {
 				"placeholder": "टेलीग्राम बॉट टोकन दर्ज करें"
 			},
@@ -2012,6 +4372,9 @@
 				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
 				"startBot": "शुरू करें",
 				"stopBot": "बंद करें"
+			},
+			"charSelect": {
+				"placeholder": "भूमिका चुनें"
 			}
 		},
 		"prompts": {
@@ -2075,7 +4438,6 @@
 				"botToken": "iLink बॉट टोकन",
 				"config": "कॉन्फ़िगरेशन"
 			},
-			"charSelectPlaceholder": "भूमिका चुनें",
 			"apiBaseUrlInput": {
 				"placeholder": "डिफ़ॉल्ट https://ilinkai.weixin.qq.com के लिए खाली छोड़ें"
 			},
@@ -2092,6 +4454,9 @@
 				"saveConfig": "सहेजें",
 				"startBot": "प्रारंभ",
 				"stopBot": "रोकें"
+			},
+			"charSelect": {
+				"placeholder": "भूमिका चुनें"
 			}
 		},
 		"prompts": {
@@ -2163,7 +4528,6 @@
 				"apiKey": "डिस्कॉर्ड API कुंजी",
 				"config": "कॉन्फ़िगरेशन"
 			},
-			"charSelectPlaceholder": "कैरेक्टर चुनें",
 			"apiKeyInput": {
 				"placeholder": "API कुंजी दर्ज करें"
 			},
@@ -2177,6 +4541,9 @@
 				"saveConfig": "कॉन्फ़िगरेशन सहेजें",
 				"startBot": "शुरू करें",
 				"stopBot": "बंद करें"
+			},
+			"charSelect": {
+				"placeholder": "भूमिका चुनें"
 			}
 		},
 		"prompts": {
@@ -2463,10 +4830,8 @@
 		"acpTitle": "फव्वारा एसीपी स्क्रिप्ट कॉन्फ़िगर करें",
 		"acpDesc": "fount एसीपी स्क्रिप्ट को कॉन्फ़िगर करने के लिए निम्नलिखित उदाहरण देखें:",
 		"acpCharLabel": "भूमिका",
-		"acpCharPlaceholder": "भूमिका चुनें",
 		"charListError": "भूमिका सूची प्राप्त करने में विफल",
 		"acpScriptLabel": "एसीपी स्क्रिप्ट यूआरएल",
-		"acpConfigPlaceholder": "कृपया एक भूमिका चुनें और पहले एक एपीआई कुंजी तैयार करें",
 		"acpConfigSample": "कॉन्फ़िगरेशन उदाहरण:",
 		"acpConfigHint": "भूमिका आईडी इस पृष्ठ पर भूमिका ड्रॉप-डाउन में दिखाई गई है, और एपीआई कुंजी को उपयोगकर्ता सेटिंग्स में प्रबंधित किया जा सकता है।",
 		"copyButton": "कॉपी",
@@ -2491,7 +4856,9 @@
 				"description": "पहली बार, जेड, जेटब्रेन, नियोविम और अन्य जैसे एसीपी-सक्षम संपादकों में प्रोग्रामिंग में सहायता के लिए fount भूमिकाओं का उपयोग करें।",
 				"locked_description": "बाहरी आईडीई में fount भूमिका से कनेक्ट करें और एक सत्र पूरा करें।"
 			}
-		}
+		},
+		"acpChar": "भूमिका चुनें",
+		"acpConfig": "कृपया एक भूमिका चुनें और पहले एक एपीआई कुंजी तैयार करें"
 	},
 	"achievements": {
 		"title": "उपलब्धि",
@@ -2757,5 +5124,97 @@
 		"search": {
 			"placeholder": "खोजें..."
 		}
+	},
+	"common": {
+		"cancel": "रद्द करें",
+		"create": "बनाएं",
+		"save": "सहेजें",
+		"delete": "हटाएँ",
+		"confirm": "पुष्टि करें",
+		"close": "बंद करें",
+		"translate": {
+			"showOriginal": "मूल पाठ दिखाएँ",
+			"showTranslation": "अनुवाद दिखाएँ"
+		}
+	},
+	"cabinet": {
+		"title": "फ़ाइल कैबिनेट",
+		"description": "P2P व्यक्तिगत और साझा फ़ाइल कैबिनेट",
+		"openCabinets": {
+			"title": "फ़ाइल कैबिनेट सूची खोलें",
+			"aria-label": "फ़ाइल कैबिनेट सूची खोलें"
+		},
+		"closeCabinets": {
+			"title": "बंद करें",
+			"aria-label": "बंद करें"
+		},
+		"bootstrapFailed": "फ़ाइल कैबिनेट आरंभीकरण विफल: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "फ़ाइल कैबिनेट"
+			}
+		},
+		"upload": "अपलोड करें",
+		"uploadFolder": "फ़ोल्डर अपलोड करें",
+		"newFolder": "नया फ़ोल्डर बनाएं",
+		"open": "खुला",
+		"download": "डाउनलोड करना",
+		"downloadZip": "डाउनलोड फ़ोल्डर",
+		"rename": "नाम बदलें",
+		"copy": "कॉपी",
+		"cut": "काटना",
+		"paste": "पेस्ट करें",
+		"pasteLink": "लिंक के रूप में चिपकाएँ",
+		"selectAll": "सबका चयन करें",
+		"invert": "प्रति चुनाव",
+		"properties": "संपत्ति",
+		"delete": "हटाएँ",
+		"back": {
+			"title": "पिछली स्थिति पर लौटें",
+			"aria-label": "पिछली स्थिति पर लौटें"
+		},
+		"cancel": "रद्द करें",
+		"save": "सहेजें",
+		"showHidden": "छिपा हुया दिखाओ",
+		"name": "नाम",
+		"descriptionField": "विवरण",
+		"attrHidden": "छिपाएँ",
+		"attrSystem": "सिस्टम (हटाने के लिए पुष्टि की आवश्यकता है)",
+		"previewUrl": "यूआरएल का पूर्वावलोकन करें",
+		"deletePreviewWithFile": "फ़ाइल हटाते समय पूर्वावलोकन हटाएँ",
+		"folderPassword": "फ़ोल्डर पासवर्ड (खाली छोड़ें, एन्क्रिप्शन सक्षम करने के लिए भरें)",
+		"unlockFolder": "एन्क्रिप्टेड फ़ोल्डर अनलॉक करें",
+		"unlock": "अनलॉक",
+		"unlockFailed": "अनलॉक विफल: ${error}",
+		"previewFailed": "पूर्वावलोकन जनरेशन विफल: ${error}",
+		"created": "बनाएं: ${stamp}",
+		"modified": "संशोधित करें: ${stamp}",
+		"statusCount": "${count} आइटम, ${selected} चयनित",
+		"newCabinetPrompt": "नई फ़ाइल कैबिनेट का नाम",
+		"newFolderPrompt": "नये फ़ोल्डर का नाम",
+		"renamePrompt": "नया नाम",
+		"visibilityPrompt": "दृश्यता (सार्वजनिक/असूचीबद्ध/फ़ॉलोअर्स/निजी/चयनित)",
+		"cabinetActionPrompt": "क्रिया: नाम बदलें/हटाएं/दृश्यता",
+		"confirmDeleteCabinet": "क्या आप वाकई इस फ़ाइल कैबिनेट को हटाना चाहते हैं?",
+		"confirmDelete": "चयनित आइटम हटाने की पुष्टि करें?",
+		"confirmDeleteSystem": "चयनित सिस्टम फ़ाइलें शामिल हैं. क्या आप निश्चित रूप से उन्हें हटाना चाहते हैं?",
+		"copied": "कॉपी किया",
+		"cutDone": "काटना",
+		"undo": "रद्द करना",
+		"redo": "फिर से करना",
+		"newWindow": "नई विंडो खोलेंवर्तमान स्थान",
+		"goUp": "पिछले स्तर पर लौटें",
+		"brokenLink": "लिंक टूटा हुआ है: ${reason}",
+		"noDownload": "कोई डाउनलोड करने योग्य सामग्री नहीं",
+		"groupDownloadHint": "कृपया संदेश अनुलग्नकों या बाद के डाउनलोड लिंक के माध्यम से समूह फ़ाइलें प्राप्त करें।",
+		"remoteEntity": "दूरस्थ इकाई"
+	},
+	"entityProfile": {
+		"attributionMismatch": "प्रदर्शन पहचान संदेश हस्ताक्षरकर्ता से ईमेल नहीं खाती (उदाहरण के लिए आयात इतिहास आयातक द्वारा पुनः हस्ताक्षरित किया गया था)। इस प्रदर्शन नाम को क्रिप्टोग्राफ़िक पहचान न समझें।",
+		"attributionMismatchShort": {
+			"title": "हस्ताक्षर एट्रिब्यूशन बेईमेल",
+			"aria-label": "हस्ताक्षर एट्रिब्यूशन बेईमेल"
+		},
+		"ownedBy": "यह इकाई ${owner} के स्वामित्व में है"
 	}
 }
