@@ -37,7 +37,7 @@ export async function ensureBridgeGroup(username, { platform, platformChatId, ch
 		if (botname) {
 			const { state } = await getState(username, mapping.groupId)
 			const current = state.groupSettings?.bridge
-			if (current && String(current.botname || '') !== String(botname)) 
+			if (current && String(current.botname || '') !== String(botname))
 				await appendSignedLocalEvent(username, mapping.groupId, {
 					type: 'group_settings_update',
 					timestamp: Date.now(),
@@ -48,7 +48,7 @@ export async function ensureBridgeGroup(username, { platform, platformChatId, ch
 						},
 					},
 				})
-			
+
 		}
 		return { groupId: mapping.groupId, mapping }
 	}
@@ -89,7 +89,7 @@ export async function resolveBridgeChannel(username, { platform, platformChatId,
 	const mapping = doc.mappings[key]
 	if (!mapping?.groupId) throw new Error(`bridge group not mapped: ${key}`)
 
-	const threadKey = platformThreadId && String(platformThreadId).trim() || 'default'
+	const threadKey = (platformThreadId != null) && String(platformThreadId).trim() || 'default'
 
 	let channelId = mapping.channels?.[threadKey]
 	if (channelId) return { groupId: mapping.groupId, channelId }
