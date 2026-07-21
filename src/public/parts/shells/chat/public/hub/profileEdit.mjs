@@ -24,7 +24,7 @@ import {
 	renderLocaleTabs,
 	renderTagsEditor,
 } from '../src/profileLocaleEditor.mjs'
-import { ensureLocaleEntry, renameLocaleEntry } from '../src/profileLocaleState.mjs'
+import { ensureLocaleEntry, renameLocaleEntry } from '../shared/profileLocaleState.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
 import { applyProfileAvatarToHost } from './core/avatarCover.mjs'

@@ -8,7 +8,7 @@ import { renderSuggestedAccountRows } from '../lib/suggestedAccounts.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state } from '../state.mjs'
 import { renderTemplate } from '/scripts/features/template.mjs'
-import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
+import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 /** @type {(() => void) | null} */
@@ -93,13 +93,19 @@ async function replayFeedItems() {
 	if (!items?.length) return
 	const list = document.getElementById('feedList')
 	if (!list) return
-	const divider = document.createElement('div')
-	divider.className = 'feed-replay-divider text-center text-sm opacity-50 py-3'
-	divider.dataset.i18n = 'social.feed.replayDivider'
-	list.appendChild(divider)
-	await appendFeedItemsWithThreads(list, items, item => buildPostCard(item).catch(() => null))
-	// 只把哨兵挪到尾部，不重绑 observer——否则哨兵仍在视口内时会立刻再触发形成死循环
+	// 确保哨兵在尾；追加走 [data-scroll-sentinel] 约定，不重绑 observer
 	ensureScrollSentinel(list, 'feedScrollSentinel')
+	list.dataset.feedReplaying = '1'
+	try {
+		const divider = document.createElement('div')
+		divider.className = 'feed-replay-divider text-center text-sm opacity-50 py-3'
+		divider.dataset.i18n = 'social.feed.replayDivider'
+		insertBeforeScrollSentinel(list, divider)
+		await appendFeedItemsWithThreads(list, items, item => buildPostCard(item).catch(() => null))
+	}
+	finally {
+		delete list.dataset.feedReplaying
+	}
 }
 
 /**

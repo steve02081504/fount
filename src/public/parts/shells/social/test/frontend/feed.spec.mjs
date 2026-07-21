@@ -159,14 +159,10 @@ test.describe('Social feed', () => {
 			await page.waitForTimeout(250)
 		}
 		await expect(page.locator('.feed-replay-divider')).toBeVisible({ timeout: 15_000 })
-		// 分隔线先于卡片追加出现；等本轮重放追加完成后再取稳定计数
-		await expect(async () => {
-			const n = await page.locator('#feedList [data-post-id]').count()
-			expect(n).toBeGreaterThan(before)
-			await page.waitForTimeout(400)
-			expect(await page.locator('#feedList [data-post-id]').count()).toBe(n)
-		}).toPass({ timeout: 15_000 })
+		// data-feed-replaying 覆盖整轮追加；残留帖多时 buildPostCard 较慢
+		await expect(page.locator('#feedList')).not.toHaveAttribute('data-feed-replaying', { timeout: 60_000 })
 		const afterReplay = await page.locator('#feedList [data-post-id]').count()
+		expect(afterReplay).toBeGreaterThan(before)
 		// 重放完成后计数应稳定，不再因 observer 重绑而死循环膨胀
 		await page.waitForTimeout(1500)
 		expect(await page.locator('#feedList [data-post-id]').count()).toBe(afterReplay)
