@@ -38,7 +38,7 @@ import {
 	restoreSharedEntries,
 	updateSharedEntry,
 	uploadSharedAndRegister,
-} from './shared/ops.mjs'
+} from './shared/entries.mjs'
 import { issueUnlockToken, resolveFolderUnlock, resolveUnlockToken } from './unlockTokens.mjs'
 
 /**
@@ -197,11 +197,18 @@ export async function updateEntry(username, entityHash, cabinetId, entryId, patc
 	if (patch.set_password != null) {
 		if (entry.kind !== 'folder') throw new Error('only folders support passwords')
 		const encryption = createFolderEncryption(String(patch.set_password))
-		const children = index.entries.filter(row => row.parent_id === entryId)
-		const encEntries = children.map(child => normalizeEntry({ ...child, parent_id: null }, entityHash))
-		index.entries = index.entries.filter(row => row.parent_id !== entryId)
-		entry = patchEntry(entry, { encryption }, entityHash)
-		index.entries[idx] = entry
+		const subtree = collectSubtreeIds(index.entries, entryId)
+		subtree.delete(entryId)
+		const descendants = index.entries.filter(row => subtree.has(row.id))
+		const encEntries = descendants.map(child => normalizeEntry({
+			...child,
+			parent_id: child.parent_id === entryId ? null : child.parent_id,
+		}, entityHash))
+		index.entries = index.entries.filter(row => !subtree.has(row.id))
+		const folderIdx = index.entries.findIndex(row => row.id === entryId)
+		if (folderIdx < 0) throw new Error('entry not found')
+		entry = patchEntry(index.entries[folderIdx], { encryption }, entityHash)
+		index.entries[folderIdx] = entry
 		await savePersonalIndex(username, entityHash, cabinetId, index)
 		const folderKey = unlockFolderKey(String(patch.set_password), encryption)
 		await saveEncryptedFolderIndex(username, entityHash, cabinetId, entryId, folderKey, {

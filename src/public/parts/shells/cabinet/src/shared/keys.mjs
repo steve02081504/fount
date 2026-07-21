@@ -151,7 +151,7 @@ export function readKeyForGen(keys, gen) {
 }
 
 /**
- * 升代：生成新读密钥，可选丢弃旧写私钥以外的历史（保留旧代读密钥以便读历史 op）。
+ * 升代：生成新读密钥，可选丢弃旧写私钥以外的历史（保留旧代读密钥以便读历史操作）。
  * @param {string} username 用户
  * @param {string} cabinetId 柜
  * @returns {Promise<{ gen: number, key: string }>} 新代

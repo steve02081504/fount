@@ -27,18 +27,30 @@ import { generateUploadPreview } from './uploadPreview.mjs'
  */
 export async function promptUnlock(folderId) {
 	const dialog = document.getElementById('passwordDialog')
+	const submit = document.getElementById('unlockSubmit')
 	dialog.showModal()
 	await new Promise(resolve => {
+		let settled = false
 		/**
 		 *
 		 */
-		document.getElementById('unlockSubmit').onclick = async () => {
+		const settle = () => {
+			if (settled) return
+			settled = true
+			submit.onclick = null
+			dialog.removeEventListener('close', settle)
+			resolve()
+		}
+		dialog.addEventListener('close', settle)
+		/**
+		 *
+		 */
+		submit.onclick = async () => {
 			try {
 				const password = document.getElementById('unlockPassword').value
 				const result = await cabinetApi('POST', '/unlock', { folder_id: folderId, password }, { unlock: undefined })
 				cabinetStore.unlockTokens.set(folderId, result.unlock_token)
 				dialog.close()
-				resolve()
 				await refreshEntries()
 			}
 			catch (error) {
@@ -124,15 +136,21 @@ export async function uploadFiles(files) {
 	/** @type {string[]} */
 	const createdIds = []
 	for (const file of files) {
-		const previewBlob = await generateUploadPreview(file)
+		/** @type {{ url: string, delete_with_file: boolean } | undefined} */
 		let preview
-		if (previewBlob) {
-			const uploaded = await cabinetApi('POST', '/preview', {
-				plaintext_base64: await blobToBase64(previewBlob),
-				name: `preview.${previewBlob.type.includes('avif') ? 'avif' : 'webp'}`,
-				mime_type: previewBlob.type,
-			})
-			preview = { url: uploaded.url, delete_with_file: true }
+		try {
+			const previewBlob = await generateUploadPreview(file)
+			if (previewBlob) {
+				const uploaded = await cabinetApi('POST', '/preview', {
+					plaintext_base64: await blobToBase64(previewBlob),
+					name: `preview.${previewBlob.type.includes('avif') ? 'avif' : 'webp'}`,
+					mime_type: previewBlob.type,
+				})
+				preview = { url: uploaded.url, delete_with_file: true }
+			}
+		}
+		catch (error) {
+			showToastI18n('error', 'cabinet.previewFailed', { error: error.message })
 		}
 		const { entry } = await cabinetApi('POST', '/entries', {
 			plaintext_base64: arrayBufferToBase64(await file.arrayBuffer()),

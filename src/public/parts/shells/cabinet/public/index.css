@@ -39,7 +39,7 @@
 .cabinet-breadcrumb li:not(:last-child, .breadcrumb-back)::after {
 	content: "›";
 	margin-left: 0.25rem;
-	color: color-mix(in oklch, currentColor 35%, transparent);
+	color: color-mix(in oklch, currentcolor 35%, transparent);
 	font-size: 1.15rem;
 }
 .cabinet-breadcrumb button,
@@ -53,11 +53,11 @@
 }
 .cabinet-breadcrumb button {
 	cursor: pointer;
-	color: color-mix(in oklch, currentColor 72%, transparent);
+	color: color-mix(in oklch, currentcolor 72%, transparent);
 }
 .cabinet-breadcrumb button:hover {
 	background: oklch(var(--b2));
-	color: currentColor;
+	color: currentcolor;
 }
 .cabinet-breadcrumb button:focus-visible {
 	outline: 2px solid oklch(var(--p));

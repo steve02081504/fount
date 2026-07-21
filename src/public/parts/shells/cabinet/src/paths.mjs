@@ -123,10 +123,10 @@ export function sharedCabinetKeysPath(username, cabinetId) {
 /**
  * @param {string} username 用户
  * @param {string} cabinetId 柜 id
- * @returns {string} ops.jsonl
+ * @returns {string} operations.jsonl
  */
-export function sharedCabinetOpsPath(username, cabinetId) {
-	return sharedCabinetFile(username, cabinetId, 'ops.jsonl')
+export function sharedCabinetOperationsPath(username, cabinetId) {
+	return sharedCabinetFile(username, cabinetId, 'operations.jsonl')
 }
 
 /**

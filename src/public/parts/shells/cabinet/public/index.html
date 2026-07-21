@@ -96,8 +96,8 @@
 	</dialog>
 	<dialog id="passwordDialog" class="modal">
 		<div class="modal-box space-y-3 w-11/12 max-w-lg">
-			<h3 class="font-bold text-lg" data-i18n="cabinet.unlockFolder"></h3>
-			<input id="unlockPassword" type="password" class="input input-bordered w-full" />
+			<h3 id="unlockPasswordLabel" class="font-bold text-lg" data-i18n="cabinet.unlockFolder"></h3>
+			<input id="unlockPassword" type="password" class="input input-bordered w-full" aria-labelledby="unlockPasswordLabel" />
 			<div class="modal-action">
 				<form method="dialog"><button class="btn" data-i18n="cabinet.cancel"></button></form>
 				<button id="unlockSubmit" type="button" class="btn btn-primary" data-i18n="cabinet.unlock"></button>
