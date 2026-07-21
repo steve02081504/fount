@@ -1,3 +1,5 @@
+import { completionsUrlCandidates } from './completionsUrl.mjs'
+
 /**
  * 创建带重试的聊天补全请求函数。
  * @param {object} config - 服务配置（会在 URL 自动修正时被更新）。
@@ -249,23 +251,16 @@ export function createFetchChatCompletionWithRetry(config, { SaveConfig }) {
 	 */
 	return async function fetchChatCompletionWithRetry(messages, options = {}) {
 		const errors = []
-		let retryConfigs = [
-			{},
-			{ urlSuffix: '/v1/chat/completions' },
-			{ urlSuffix: '/chat/completions' },
-		]
-		if (config.url.endsWith('/chat/completions'))
-			retryConfigs = retryConfigs.filter(retry => !retry?.urlSuffix?.endsWith?.('/chat/completions'))
+		const urls = completionsUrlCandidates(config.url)
 
-		for (const retryConfig of retryConfigs) {
-			const currentConfig = { ...config }
-			if (retryConfig.urlSuffix) currentConfig.url += retryConfig.urlSuffix
+		for (const url of urls) {
+			const currentConfig = { ...config, url }
 
 			try {
 				const result = await fetchChatCompletion(messages, currentConfig, options)
 
-				if (retryConfig.urlSuffix) {
-					console.warn(`the api url of ${config.model} need to change from ${config.url} to ${currentConfig.url}`)
+				if (url !== config.url) {
+					console.warn(`the api url of ${config.model} need to change from ${config.url} to ${url}`)
 					Object.assign(config, currentConfig)
 					SaveConfig()
 				}

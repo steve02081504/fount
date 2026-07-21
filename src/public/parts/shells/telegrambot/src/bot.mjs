@@ -1,7 +1,7 @@
 import { on_shutdown } from 'npm:on-shutdown' // 用于注册进程关闭时的回调
 import { Telegraf } from 'npm:telegraf@^4.16.3' // 引入 Telegraf
 
-import { console } from '../../../../../scripts/i18n/index.mjs' // 国际化
+import { console } from '../../../../../scripts/i18n/bare.mjs' // 国际化
 import { getAllUserNames } from '../../../../../server/auth/index.mjs' // 获取所有用户名
 import { events } from '../../../../../server/events.mjs'
 import { EndJob, StartJob } from '../../../../../server/jobs.mjs' // fount 的任务管理
@@ -15,6 +15,20 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
  */
 
 /**
+ * char 可只挂 FormatOutboundReply 等钩子；缺 BotSetup 时合并 default 壳层接口。
+ * @param {CharAPI_t} char 角色 API
+ * @param {string} username replica
+ * @param {string} charname 角色名
+ * @returns {Promise<void>}
+ */
+async function ensureTelegramBotInterface(char, username, charname) {
+	if (char.interfaces.telegram?.BotSetup) return
+	const { createSimpleTelegramInterface } = await import('./default_interface/main.mjs')
+	const defaults = await createSimpleTelegramInterface(char, username, charname)
+	char.interfaces.telegram = { ...defaults, ...char.interfaces.telegram }
+}
+
+/**
  * Telegram Bot 的核心逻辑。
  */
 
@@ -22,16 +36,17 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
  * 启动 Telegram Bot。
  * @param {{ token: string, char: string, config: any }} botConfig - 从 bot_configs.json 加载的bot配置。
  * @param {CharAPI_t} char - 加载后的角色 API 对象。
+ * @param {string} botname - bot 实例名。
  * @returns {Promise<import('npm:telegraf').Telegraf>} Telegraf 实例。
  */
-async function startTelegrafBot(botConfig, char) {
+async function startTelegrafBot(botConfig, char, botname) {
 	// 创建 Telegraf 实例
 	const bot = new Telegraf(botConfig.token)
 
 	// 允许角色自定义其 Telegram 接口的设置
 	// char.interfaces.telegram 是角色 manifest.json 中定义的 telegram 接口
 	// botConfig.config 是用户在前端UI的JSON编辑器中为此特定bot实例配置的内容
-	await char.interfaces.telegram?.BotSetup?.(bot, botConfig.config)
+	await char.interfaces.telegram?.BotSetup?.(bot, botConfig.config, botname)
 	const me = await bot.telegram.getMe()
 
 	// 启动bot
@@ -73,11 +88,7 @@ export function getBotConfig(username, botname) {
  */
 export async function getBotConfigTemplate(username, charname) {
 	const char = await loadPart(username, 'chars/' + charname)
-	// 如果角色没有定义 telegram 接口，则使用默认接口
-	if (!char.interfaces.telegram) {
-		const { createSimpleTelegramInterface } = await import('./default_interface/main.mjs')
-		char.interfaces.telegram = await createSimpleTelegramInterface(char, username, charname)
-	}
+	await ensureTelegramBotInterface(char, username, charname)
 	// 调用角色接口的 GetBotConfigTemplate 方法，如果不存在则返回空对象
 	return await char.interfaces.telegram?.GetBotConfigTemplate?.() || {}
 }
@@ -125,12 +136,8 @@ export async function runBot(username, botname) {
 	// 将启动过程包装在 Promise 中并存入缓存，以防止重复启动
 	botCache[botname] = (async () => {
 		const char = await loadPart(username, 'chars/' + config.char)
-		// 如果角色没有定义 telegram 接口，则使用默认接口
-		if (!char.interfaces.telegram) {
-			const { createSimpleTelegramInterface } = await import('./default_interface/main.mjs')
-			char.interfaces.telegram = await createSimpleTelegramInterface(char, username, config.char)
-		}
-		return await startTelegrafBot(config, char)
+		await ensureTelegramBotInterface(char, username, config.char)
+		return await startTelegrafBot(config, char, botname)
 	})()
 
 	try {
@@ -161,9 +168,9 @@ export async function stopBot(username, botname) {
 		await botCache[botname].stop('SIGINT')
 	}
 	finally {
-		// 无论停止是否成功，都从缓存中移除
 		delete botCache[botname]
-		// 在 fount 任务系统中标记此bot任务已结束
+		const { unregisterBridgeOperations } = await import('../../chat/src/chat/bridge/operations.mjs')
+		await unregisterBridgeOperations(username, 'telegram', botname)
 		EndJob(username, 'shells/telegrambot', botname)
 	}
 }
@@ -183,6 +190,8 @@ export async function pauseBot(username, botname) {
 	}
 	finally {
 		delete botCache[botname]
+		const { unregisterBridgeOperations } = await import('../../chat/src/chat/bridge/operations.mjs')
+		await unregisterBridgeOperations(username, 'telegram', botname)
 	}
 }
 on_shutdown(async () => {

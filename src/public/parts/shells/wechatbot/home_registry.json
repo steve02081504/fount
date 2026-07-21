@@ -3,7 +3,7 @@
 		{
 			"id": "bot_related",
 			"info": "wechat_bots.home_function_buttons.bot_related",
-			"level": 2,
+			"level": 3,
 			"button": "<img src=\"https://api.iconify.design/lucide/bot.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{

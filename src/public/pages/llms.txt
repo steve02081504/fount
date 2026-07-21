@@ -100,12 +100,12 @@ fount 是一个 AI Agent 框架，本文档描述 Web 服务器提供的基础 A
 
 ### POST /api/runpart
 - 认证：需要
-- Body：partpath, args
+- Body：partpath（斜杠分隔，如 `shells/chat`）, args
 - 用途：通过 IPC 执行指定 part 的命令（如 shell 命令）。
 
 ### POST /api/loadpart
 - 认证：需要
-- Body：partpath（路径中可用冒号代替斜杠，会规范化为 /）
+- Body：partpath（斜杠分隔，如 `shells/chat`）
 - 用途：为当前用户加载指定 part。
 
 ### GET /api/getlist/:path
@@ -133,6 +133,11 @@ fount 是一个 AI Agent 框架，本文档描述 Web 服务器提供的基础 A
 - 认证：需要
 - 查询：nocache（可选，true/1）
 - 用途：获取 part 的 git 分支信息。
+
+### GET /api/registries/:name
+- 认证：需要
+- 路径：name 为 registry 名称（如 `markdown_extensions`、`emoji`、`sticker`、`home_function_buttons`、`achievements`、`locales`）
+- 用途：返回当前用户聚合的 registry 条目列表（`id`、`level`、`path` 为前端 URL 前缀下的相对路径）。Shell 在 `fount.json` 的 `registries` 字段声明条目。
 
 ### GET /parts/:partpath/*
 - 认证：需要
@@ -183,6 +188,24 @@ fount 是一个 AI Agent 框架，本文档描述 Web 服务器提供的基础 A
 - 用途：设置当前用户配置项。
 - 注意：不应假设配置项存在，比起编造不存在的配置项更好的做法是进一步查找文档或代码。
   写入不存在的配置项只会给用户配置中残留垃圾数据，你可以通过将key设为null来删除配置项。
+
+---
+
+## P2P 用户级（identity / profile）
+
+服务器级路由，与 shell Load 无关；数据在 `{userDict}/settings/federation.json` 与 `{userDict}/entities/{entityHash}/`。
+
+### GET/PUT /api/p2p/federation
+- 认证：需要
+- 用途：节点联邦 identity、`relayUrls`、`batterySaver`、mailbox（网络级传输配置）。
+
+### GET /api/p2p/network · denylist · mailbox/summary
+- 认证：需要
+- 用途：节点网络图、节点 denylist、mailbox 积压摘要。
+
+实体面（viewer / profile / EVFS / personal-lists / 密钥 rotate·revoke）在 chat shell：`/api/parts/shells:chat/{viewer,entities…}`。见 `shells/chat/public/llms.txt`。
+
+Social/Mailbox 联邦 fanout 经 Chat shell 注册的 `TrustGraphProvider`；Chat 未 Load 时 explore 仅本地结果。
 
 ---
 

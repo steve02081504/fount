@@ -7,7 +7,7 @@
  * @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t
  */
 
-import { structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct.mjs'
+import { structPromptToSingleNoChatLog } from '../../../shells/chat/src/prompt_struct/index.mjs'
 
 import { MarkovGenerator } from './MarkovGenerator.mjs'
 

@@ -1,517 +1,403 @@
-import { Buffer } from 'node:buffer'
-import { setInterval, clearInterval, setTimeout } from 'node:timers'
+import { Events, ChannelType, GatewayIntentBits, Partials } from 'npm:discord.js'
 
-import { Events, ChannelType, GatewayIntentBits, Partials, escapeMarkdown } from 'npm:discord.js'
-
-import { localhostLocales, console } from '../../../../../../scripts/i18n/index.mjs'
-import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
-
-import { getMessageFullContent, splitDiscordReply } from './tools.mjs'
+import { console } from '../../../../../../scripts/i18n/bare.mjs'
+import { channelMessageAgentText } from '../../../chat/public/shared/channelContent.mjs'
+import { dispatchBridgeBotStarted, postBridgeGroupEvent } from '../../../chat/src/chat/bridge/groupEvents.mjs'
+import { claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
+import { postBridgeDelete, postBridgeEdit, postBridgeMessage } from '../../../chat/src/chat/bridge/ingress.mjs'
+import {
+	bridgeIngestDto,
+	messageLineToReplyEntry,
+	tryFewTimes,
+} from '../../../chat/src/chat/bridge/interfaceKit.mjs'
+import { registerBridgeOperations } from '../../../chat/src/chat/bridge/operations.mjs'
+import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../../chat/src/chat/bridge/outbound.mjs'
+import {
+	isBridgeGroupBackfilled,
+	lookupBridgePlatformChannel,
+	markBridgeGroupBackfilled,
+} from '../../../chat/src/chat/bridge/registry.mjs'
+import { postBridgeTyping } from '../../../chat/src/chat/bridge/typing.mjs'
+import {
+	discordMessageToBridgeDto,
+	restoreFountMentionsForDiscord,
+	splitDiscordReply,
+} from '../format.mjs'
+import { resolveOwnerPlatformUserId } from '../ownerResolve.mjs'
+import { resolveOutboundDiscordStickers } from '../stickers.mjs'
 
 /**
- * Discord 消息类型别名。
- * @typedef {import('npm:discord.js').Message} Message
- */
-/**
- * Discord 客户端类型别名。
  * @typedef {import('npm:discord.js').Client} DiscordClient
- */
-/**
- * fount 聊天日志条目基类类型别名。
- * @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase
- */
-/**
- * 含 Discord 消息 ID 扩展字段的简化聊天日志条目类型别名。
- * @typedef { (FountChatLogEntryBase & {
- *   extension?: {discord_message_id?: string, [key: string]: any }
- * })} chatLogEntry_t_simple
- */
-/**
- * 聊天回复类型别名。
- * @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t
+ * @typedef {import('../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t
  */
 
-/**
- * 按用户/角色索引当前正在运行的默认 Discord Bot 客户端实例。
- * 结构为 registry[username][charname] = DiscordClient
- * @type {Record<string, Record<string, DiscordClient>>}
- */
+/** @type {Record<string, Record<string, DiscordClient>>} */
 const charClientRegistry = {}
 
 /**
- * 获取指定用户下指定角色当前正在运行的默认 Discord Bot 客户端实例。
- * 供插件或外部代码访问 Discord.js Client（如主动发消息、管理服务器等）。
- * 注意：若同一角色同时绑定了多个 Bot，此处返回最近启动的那个。
- * @param {string} username - 角色所属的 fount 用户名。
- * @param {string} charname - 角色名称（fount charname）。
- * @returns {DiscordClient | undefined} Discord Client 实例或 undefined
+ * @param {string} username replica
+ * @param {string} charname 角色名
+ * @returns {DiscordClient | undefined} 已连接的 Client，未接入时为 undefined
  */
 export function getDiscordClientForChar(username, charname) {
 	return charClientRegistry[username]?.[charname]
 }
 
 /**
- * 尝试执行一个函数几次，如果失败则等待一段时间后重试。
- * @param {Function} func - 要执行的异步函数。
- * @param {object} [options] - 选项对象。
- * @param {number} [options.times=3] - 重试次数。
- * @param {number} [options.WhenFailsWaitFor=2000] - 失败后等待的毫秒数。
- * @returns {Promise<any>} 函数执行结果的 Promise。
- */
-async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
-	let lastError
-	for (let i = 0; i < times; i++) try {
-		return await func()
-	} catch (error) {
-		lastError = error
-		if (i < times - 1) await new Promise(resolve => setTimeout(resolve, WhenFailsWaitFor))
-	}
-
-	throw lastError
-}
-
-/**
- * 创建一个简单的 Discord 接口。
- * @param {import('../../../../../../decl/charAPI.ts').CharAPI_t} charAPI - 角色 API 对象。
- * @param {string} ownerUsername - 所有者的用户名。
- * @param {string} botCharname - 机器人角色的名称。
- * @returns {Promise<object>} 返回一个包含 Discord 接口方法的 Promise。
+ * @param {CharAPI_t} charAPI 角色 API
+ * @param {string} ownerUsername replica
+ * @param {string} botCharname 角色名
+ * @returns {Promise<object>} Discord 壳层接口对象（Intents、OnceClientReady 等）
  */
 export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCharname) {
-	if (!charAPI?.interfaces?.chat?.GetReply)
-		throw new Error('charAPI.interfaces.chat.GetReply is required for SimpleDiscordInterface.')
-
 	/**
-	 * 获取简单机器人配置模板。
-	 * @returns {{OwnerUserName: string, MaxMessageDepth: number, MaxFetchCount: number, ReplyToAllMessages: boolean}} 返回一个包含简单机器人配置模板的对象。
+	 * @returns {{ OwnerUserName: string, OwnerUserID?: string }} 默认 bot 配置模板
 	 */
 	function GetSimpleBotConfigTemplate() {
-		return {
-			OwnerUserName: 'your_discord_username', // Discord 用户名, 不是Fount用户名
-			MaxMessageDepth: 20,
-			MaxFetchCount: 30,
-			ReplyToAllMessages: false, // 若开启则对所有消息做出回复
-		}
+		return { OwnerUserName: 'your_discord_username', OwnerUserID: '' }
 	}
 
 	/**
-	 * Discord 机器人的主函数。
-	 * @param {import('npm:discord.js').Client} client - Discord 客户端实例。
-	 * @param {object} config - 机器人配置。
-	 * @returns {Promise<void>}
+	 * @param {DiscordClient} client Discord 客户端
+	 * @param {{ OwnerUserName: string, OwnerUserID?: string }} interfaceConfig 配置
+	 * @param {string} botname bot 实例名
 	 */
-	async function SimpleDiscordBotMain(client, config) {
-		const MAX_MESSAGE_DEPTH = config.MaxMessageDepth || 20
-		const MAX_FETCH_COUNT = config.MaxFetchCount || Math.max(MAX_MESSAGE_DEPTH, Math.floor(MAX_MESSAGE_DEPTH * 1.5))
+	async function SimpleDiscordBotMain(client, interfaceConfig, botname) {
+		/** @type {Set<string>} */
+		const outboundRegistered = new Set()
+		const stickerMap = charAPI.interfaces.discord?.stickers || {}
 
-		const ChannelChatLogs = {} // Record<string, chatLogEntry_t_simple[]>
-		const userInfoCache = {}   // Record<string, string> 用户ID到显示名称
-		const chat_scoped_char_memory = {} // AI的上下文记忆
-
-		const ChannelMessageQueues = {} // Record<string, Message<boolean>[]>
-		const ChannelHandlers = {}      // Record<string, Promise<void>>
-
-		/**
-		 * 键为 bot 发出的 Discord 消息 ID，值为对应 AI 回复对象。
-		 * @type {Record<string, ChatReply_t>}
-		 */
-		const aiReplyObjectCache = {}
-
-		/**
-		 * 将 Discord 消息转换为 fount 聊天日志条目。
-		 * @param {Message} discordMessage - Discord 消息对象。
-		 * @returns {Promise<chatLogEntry_t_simple>} 转换后的 fount 聊天日志条目。
-		 */
-		async function DiscordMessageToFountChatLogEntry(discordMessage) {
-			let fullMessage = discordMessage
-			if (fullMessage.partial) try {
-				fullMessage = await tryFewTimes(() => discordMessage.fetch())
-			} catch (error) {
-				console.error(`[SimpleDiscord] 获取部分消息 ${discordMessage.id} 失败:`, error)
-				return null
-			}
-
-			const { author } = fullMessage
-			if (!userInfoCache[author.id] || Math.random() < 0.1) try {
-				const fetchedUser = await tryFewTimes(() => author.fetch())
-				let displayName = fetchedUser.globalName || fetchedUser.username
-				if (fullMessage.guild && fullMessage.member) {
-					const member = fullMessage.member.partial ? await tryFewTimes(() => fullMessage.member.fetch()) : fullMessage.member
-					displayName = member.displayName || displayName
-				}
-				userInfoCache[author.id] = displayName
-			} catch (e) {
-				if (!userInfoCache[author.id])
-					userInfoCache[author.id] = author.globalName || author.username || `User_${author.id}`
-			}
-
-			const finalDisplayName = userInfoCache[author.id] || author.globalName || author.username
-
-			const content = await getMessageFullContent(fullMessage, client)
-			const files = []
-			const processedUrls = new Set()
-
-			// 附件（含 messageSnapshots 转发消息中的附件）
-			const allAttachments = [
-				...fullMessage.attachments.values(),
-				...fullMessage.messageSnapshots.values().flatMap(s => [...s.attachments.values()])
-			]
-			for (const attachment of allAttachments)
-				if (attachment?.url && !processedUrls.has(attachment.url)) {
-					processedUrls.add(attachment.url)
-					try {
-						const buffer = Buffer.from(await tryFewTimes(() => fetch(attachment.url).then(r => r.arrayBuffer())))
-						files.push({ name: attachment.name, buffer, description: attachment.description || '', mime_type: attachment.contentType })
-					} catch (error) { console.error(`[SimpleDiscord] 获取附件 ${attachment.name} 失败:`, error) }
-				}
-
-			// embed 图片和缩略图
-			for (const embed of fullMessage.embeds)
-				for (const url of [embed.image?.url, embed.thumbnail?.url].filter(Boolean))
-					if (!processedUrls.has(url)) {
-						processedUrls.add(url)
-						try {
-							const buffer = Buffer.from(await tryFewTimes(() => fetch(url).then(r => r.arrayBuffer())))
-							files.push({
-								name: url.substring(url.lastIndexOf('/') + 1).split('?')[0] || 'embedded_image.png',
-								buffer,
-								description: embed.title || embed.description || '',
-								mime_type: 'image/png'
-							})
-						} catch (error) { console.error(`[SimpleDiscord] 获取embed图片 ${url} 失败:`, error) }
-					}
-
-			// 贴纸（跳过 Lottie 格式，其无法作为图片下载）
-			for (const [, sticker] of fullMessage.stickers)
-				if (sticker.url && sticker.format !== 3 && !processedUrls.has(sticker.url)) {
-					processedUrls.add(sticker.url)
-					try {
-						const buffer = Buffer.from(await tryFewTimes(() => fetch(sticker.url).then(r => r.arrayBuffer())))
-						const fileName = sticker.url.split('/').pop()?.split('?')[0] || `${sticker.name}.png`
-						files.push({ name: fileName, buffer, description: `贴纸: ${sticker.name}`, mime_type: 'image/png' })
-					} catch (error) { console.error(`[SimpleDiscord] 获取贴纸 ${sticker.name} 失败:`, error) }
-				}
-
-			const isFromOwner = author.username === config.OwnerUserName
-
-			const cachedAIReply = aiReplyObjectCache[fullMessage.id]
+		registerBridgeOperations(ownerUsername, 'discord', botname, {
 			/**
-			 * 转换后的聊天日志条目。
-			 * @type {chatLogEntry_t_simple}
+			 * @param {{ platformChatId: string | number, platformThreadId?: string | number }} params 平台会话
 			 */
-			const entry = {
-				...cachedAIReply,
-				time_stamp: fullMessage.createdTimestamp,
-				role: author.id === client.user.id ? 'char' : isFromOwner ? 'user' : 'char',
-				name: author.id === client.user.id ? client.user.displayName || client.user.username : finalDisplayName,
-				content,
-				files: files.filter(Boolean),
-				extension: { ...cachedAIReply?.extension, discord_message_id: fullMessage.id }
-			}
-			if (cachedAIReply) delete aiReplyObjectCache[fullMessage.id]
-
-			return entry
-		}
-
-		/**
-		 * 合并聊天日志。
-		 * @param {chatLogEntry_t_simple[]} log - 聊天日志条目数组。
-		 * @returns {chatLogEntry_t_simple[]} 合并后的聊天日志条目数组。
-		 */
-		function MargeChatLog(log) {
-			if (!log?.length) return []
-			const newlog = []
-			let last = null
-			for (const currentEntry of log) {
-				const entry = { ...currentEntry }
-				if (entry.files) entry.files = [...entry.files]
-				if (entry.extension) entry.extension = { ...entry.extension }
-
-				if (last && last.name === entry.name && last.role === entry.role &&
-					entry.time_stamp - last.time_stamp < 3 * 60000 && !last.files?.length) {
-					last.content += '\n' + entry.content
-					if (entry.files?.length) last.files = [...last.files || [], ...entry.files]
-					last.time_stamp = entry.time_stamp
-					if (entry.extension?.discord_message_id)
-						last.extension = { ...last.extension, discord_message_id: entry.extension.discord_message_id }
-				}
-				else {
-					if (last) newlog.push(last)
-					last = entry
-				}
-			}
-			if (last) newlog.push(last)
-			return newlog
-		}
-
-		/**
-		 * 处理消息队列。
-		 * @param {string} channelId - 频道 ID。
-		 * @returns {Promise<void>}
-		 */
-		async function HandleMessageQueue(channelId) {
-			const myQueue = ChannelMessageQueues[channelId]
-			try {
-				if (!ChannelChatLogs[channelId]) {
-					const firstMessageInQueue = myQueue[0]
-					const fetchedMessages = await tryFewTimes(() => firstMessageInQueue.channel.messages.fetch({ limit: MAX_FETCH_COUNT, before: firstMessageInQueue.id }))
-					const historicalMessages = Array.from(fetchedMessages.values()).reverse()
-					const entries = (await Promise.all(historicalMessages.map(DiscordMessageToFountChatLogEntry))).filter(Boolean)
-					ChannelChatLogs[channelId] = MargeChatLog(entries)
-				}
-
-				while (myQueue.length) {
-					const currentMessage = myQueue.shift()
-					if (!currentMessage) continue
-
-					const newUserEntry = await DiscordMessageToFountChatLogEntry(currentMessage)
-					if (newUserEntry) {
-						ChannelChatLogs[channelId].push(newUserEntry)
-						ChannelChatLogs[channelId] = MargeChatLog(ChannelChatLogs[channelId])
-						while (ChannelChatLogs[channelId].length > MAX_MESSAGE_DEPTH) {
-							const removed = ChannelChatLogs[channelId].shift()
-							delete aiReplyObjectCache[removed?.extension?.discord_message_id]
-						}
-					}
-					else continue
-
-					let triggerMessage = currentMessage
-					if (triggerMessage.partial) triggerMessage = await tryFewTimes(() => triggerMessage.fetch())
-
-					const shouldReply = config.ReplyToAllMessages ||
-						(triggerMessage.channel.type === ChannelType.DM && triggerMessage.author.username === config.OwnerUserName) ||
-						triggerMessage.mentions.users.has(client.user.id)
-
-					if (shouldReply && triggerMessage.author.id !== client.user.id && !triggerMessage.author.bot)
-						await DoMessageReply(triggerMessage, channelId)
-				}
-			}
-			catch (error) {
-				console.error(`[SimpleDiscord] 处理频道 ${channelId} 消息队列出错:`, error)
-			}
-			finally {
-				delete ChannelHandlers[channelId]
-			}
-		}
-
-		/**
-		 * 处理消息回复。
-		 * @param {Message} triggerMessage - 触发回复的 Discord 消息对象。
-		 * @param {string} channelId - 频道 ID。
-		 * @returns {Promise<void>}
-		 */
-		async function DoMessageReply(triggerMessage, channelId) {
-			let typingInterval = setInterval(() => { triggerMessage.channel.sendTyping().catch(_ => 0) }, 7000).unref()
-
+			sendTyping: async ({ platformChatId, platformThreadId }) => {
+				const channel = await client.channels.fetch(String(platformThreadId || platformChatId))
+				if (channel?.isTextBased?.()) await channel.sendTyping()
+			},
 			/**
-			 * 发送消息并缓存AI原始回复对象 (如果提供了)
-			 * @param {import('npm:discord.js').MessagePayload | string} payload - 消息负载或字符串。
-			 * @param {ChatReply_t} originalAIReply - 原始 AI 回复对象。
-			 * @returns {Promise<Message>} 发送的 Discord 消息。
+			 * @param {{ platformChatId: string | number, platformUserId: string | number }} params 平台会话与用户
 			 */
-			async function sendAndCache(payload, originalAIReply) {
-				try {
-					const sentDiscordMessage = await tryFewTimes(() => triggerMessage.channel.send(payload))
-					if (sentDiscordMessage && originalAIReply)
-						aiReplyObjectCache[sentDiscordMessage.id] = originalAIReply
-
-					return sentDiscordMessage
-				}
-				catch (error) {
-					console.error('[SimpleDiscord] 发送消息失败: ', error, 'Payload content length:', payload?.content?.length)
-					return null
-				}
-			}
-
+			kickMember: async ({ platformChatId, platformUserId }) => {
+				const guild = await client.guilds.fetch(String(platformChatId))
+				await guild.members.kick(String(platformUserId))
+			},
 			/**
-			 * 发送分割回复。
-			 * @param {ChatReply_t} fountReply - fount 聊天回复对象。
-			 * @returns {Promise<void>}
+			 * @param {{ platformChatId: string | number, platformUserId: string | number }} params 平台会话与用户
 			 */
-			async function sendSplitReply(fountReply) {
-				const MAX_FILES_PER_MESSAGE = 10
-				const filesToSend = (fountReply.files || []).map(f => ({ attachment: f.buffer, name: f.name, description: f.description }))
-				const textChunks = splitDiscordReply(fountReply.content_for_show || fountReply.content || '')
+			unbanMember: async ({ platformChatId, platformUserId }) => {
+				const guild = await client.guilds.fetch(String(platformChatId))
+				await guild.members.unban(String(platformUserId))
+			},
+			/**
+			 * @param {{ platformChatId: string | number }} params 平台会话
+			 * @returns {Promise<string>} 邀请链接
+			 */
+			createInvite: async ({ platformChatId }) => {
+				const guild = await client.guilds.fetch(String(platformChatId))
+				const first = (await guild.invites.fetch()).first()
+				if (first?.url) return first.url
+				const channel = guild.channels.cache.find(ch => ch.isTextBased?.())
+				if (!channel) throw new Error('discord createInvite: no text channel')
+				return (await channel.createInvite({ maxAge: 0, maxUses: 0 })).url
+			},
+			/**
+			 * @param {{ platformChatId: string | number }} params 平台会话
+			 */
+			leaveChat: async ({ platformChatId }) => {
+				await (await client.guilds.fetch(String(platformChatId))).leave()
+			},
+			/**
+			 * @param {{ platformUserId: string | number }} params 平台用户
+			 * @returns {Promise<{ platformChatId: string }>} DM 频道 id
+			 */
+			openDm: async ({ platformUserId }) => {
+				const dm = await (await client.users.fetch(String(platformUserId))).createDM()
+				return { platformChatId: dm.id }
+			},
+			/**
+			 * 水合 discord.js 原生 channel / message / guild（code_execution 消费）。
+			 * @param {{ platformChatId: string | number, platformMessageId?: string | number, platformThreadId?: string | number }} params 平台定位
+			 * @returns {Promise<{ channel: object, message: object | null, guild: object | null }>} 原生对象
+			 */
+			getNativeContext: async ({ platformChatId, platformMessageId, platformThreadId }) => {
+				const channel = await client.channels.fetch(String(platformThreadId || platformChatId))
+				const message = platformMessageId
+					? await channel.messages?.fetch?.(String(platformMessageId))
+					: null
+				return { channel, message, guild: channel?.guild ?? null }
+			},
+			/** @returns {Promise<void>} 停止本 bot 实例 */
+			stopSelf: async () => {
+				const { stopBot } = await import('../bot.mjs')
+				await stopBot(ownerUsername, botname)
+			},
+			/**
+			 * @param {{ platformChatId: string | number }} params 平台会话
+			 * @returns {Promise<Array<{ platformUserId: string, displayName: string }>>} 成员列表
+			 */
+			listMembers: async ({ platformChatId }) => {
+				const guild = await client.guilds.fetch(String(platformChatId))
+				const members = await guild.members.fetch()
+				return [...members.values()].map(member => ({
+					platformUserId: member.user.id,
+					displayName: member.displayName || member.user.username || member.user.id,
+				}))
+			},
+		}, {
+			charname: botCharname,
+			/** @returns {Promise<void>} 清理 outbound 与 char 注册表 */
+			teardown: async () => {
+				for (const groupId of outboundRegistered)
+					unregisterBridgeOutbound(ownerUsername, groupId)
+				outboundRegistered.clear()
+				delete charClientRegistry[ownerUsername]?.[botCharname]
+				if (charClientRegistry[ownerUsername] && !Object.keys(charClientRegistry[ownerUsername]).length)
+					delete charClientRegistry[ownerUsername]
+			},
+		})
 
-				const fileChunks = []
-				for (let i = 0; i < filesToSend.length; i += MAX_FILES_PER_MESSAGE)
-					fileChunks.push(filesToSend.slice(i, i + MAX_FILES_PER_MESSAGE))
+		const owner = await resolveOwnerPlatformUserId(client, interfaceConfig)
+		if (owner)
+			await claimOperatorBridgeIdentity(ownerUsername, 'discord', owner.platformUserId, owner.displayName)
 
-				if (!textChunks.length && !fileChunks.length) return
+		/**
+		 * @param {string} groupId 群 ID
+		 * @param {{ platformChatId: string }} bridge 桥接设置
+		 * @param {object} [sourceDto] 触发注册的入站 DTO（回填频道定位）
+		 */
+		async function ensureOutboundHandler(groupId, bridge, sourceDto) {
+			if (outboundRegistered.has(groupId)) return
+			registerBridgeOutbound(ownerUsername, groupId, async ({ channelId, messageLine }) => {
+				const platformChannel = lookupBridgePlatformChannel(ownerUsername, groupId, channelId)
+				const platformChatId = platformChannel?.platformChatId ?? bridge.platformChatId
+				const platformThreadId = platformChannel?.platformThreadId
+				const targetChannelId = platformThreadId || platformChatId
+				const channel = await client.channels.fetch(String(targetChannelId))
+				if (!channel?.isTextBased?.()) return {}
 
-				for (let i = 0; i < textChunks.length; i++) {
-					const isLastTextMessage = i === textChunks.length - 1
-					const payload = { content: textChunks[i] }
-					if (isLastTextMessage && fileChunks.length)
-						payload.files = fileChunks.shift()
-
-					const isLastOverallMessage = isLastTextMessage && !fileChunks.length
-					await sendAndCache(payload, isLastOverallMessage ? fountReply : undefined)
-				}
-
-				for (let i = 0; i < fileChunks.length; i++) {
-					const payload = { files: fileChunks[i] }
-					const isLastOverallMessage = i === fileChunks.length - 1
-					await sendAndCache(payload, isLastOverallMessage ? fountReply : undefined)
-				}
-			}
-
-			try {
-				/**
-				 * 添加聊天日志条目。
-				 * @param {ChatReply_t} replyFromChar - 角色回复对象。
-				 * @returns {Promise<null>} 一个不返回任何值的 Promise。
-				 */
-				const AddChatLogEntry = async replyFromChar => {
-					if (replyFromChar && (replyFromChar.content || replyFromChar.files?.length))
-						await sendSplitReply(replyFromChar)
-
-					return null
-				}
+				const rawText = channelMessageAgentText(messageLine.content) || ''
+				const plainText = await restoreFountMentionsForDiscord(ownerUsername, rawText)
+				const replyEntry = messageLineToReplyEntry(messageLine, botCharname)
+				const rawFiles = (messageLine.files || []).map(file => ({
+					attachment: file.buffer,
+					name: file.name,
+					description: file.description,
+					buffer: file.buffer,
+				}))
+				const { emojiTokens, attachmentFiles: stickerResolved } = await resolveOutboundDiscordStickers(
+					client,
+					stickerMap,
+					rawFiles,
+				)
+				let plainWithEmoji = plainText
+				if (emojiTokens.length) plainWithEmoji = [plainText, ...emojiTokens].filter(Boolean).join('\n')
+				const files = stickerResolved.map(file => ({
+					attachment: file.buffer ?? file.attachment,
+					name: file.name,
+					description: file.description,
+				}))
 
 				/**
-				 * 生成聊天回复请求。
-				 * @returns {Promise<object>} 返回一个聊天回复请求对象。
+				 * @param {object} payload Discord send 载荷
+				 * @returns {Promise<{ platformMessageId: string }>} 首条平台消息 id
 				 */
-				const generateChatReplyRequest = async () => ({
-					supported_functions: { markdown: true, files: true, add_message: true },
-					username: ownerUsername,
-					chat_name: triggerMessage.channel.type === ChannelType.DM ? `DM with ${triggerMessage.author.tag}` : `${triggerMessage.guild?.name || 'N/A'}: #${triggerMessage.channel.name}`,
-					char_id: botCharname,
-					Charname: client.user.displayName || client.user.username,
-					UserCharname: config.OwnerUserName,
-					ReplyToCharname: userInfoCache[triggerMessage.author.id] || triggerMessage.author.username,
-					locales: localhostLocales, time: new Date(), world: null, user: await (async () => { const n = getAnyPreferredDefaultPart(ownerUsername, 'personas'); if (n) return loadPart(ownerUsername, 'personas/' + n); return null })(), char: charAPI, other_chars: [], plugins: {},
-					chat_scoped_char_memory, chat_log: ChannelChatLogs[channelId].map(e => ({ ...e })),
-					AddChatLogEntry, /**
-					 * 更新聊天回复请求。
-					 * @returns {Promise<object>} 返回一个更新后的聊天回复请求对象。
-					 */
-					Update: async () => await generateChatReplyRequest(),
-					extension: { platform: 'discord', trigger_message_id: triggerMessage.id, channel_id: channelId, guild_id: triggerMessage.guild?.id, discord_trigger_message_obj: triggerMessage }
+				const sendPayload = async payload => ({
+					platformMessageId: (await tryFewTimes(() => channel.send(payload))).id,
 				})
 
-				const aiFinalReply = await charAPI.interfaces.chat.GetReply(await generateChatReplyRequest())
+				if (await charAPI.interfaces.discord?.FormatOutboundReply?.(replyEntry, {
+					platform: 'discord',
+					send: sendPayload,
+					chatId: platformChatId,
+					threadId: platformThreadId,
+				})) return {}
 
-				if (aiFinalReply && (aiFinalReply.content || aiFinalReply.files?.length))
-					await sendSplitReply(aiFinalReply)
-			}
-			catch (error) {
-				console.error(`[SimpleDiscord] Error in DoMessageReply for message ${triggerMessage.id} in channel ${channelId}:`, error)
-				console.error('[SimpleDiscord] 错误堆栈:', error.stack)
-				try {
-					const errorMessage = `Sorry, an error occurred while replying to your message: ${escapeMarkdown(error.message || 'Unknown error')}`
-					await triggerMessage.channel.send(errorMessage)
+				const textChunks = splitDiscordReply(plainWithEmoji)
+				const fileChunks = []
+				for (let i = 0; i < files.length; i += 10)
+					fileChunks.push(files.slice(i, i + 10))
+
+				if (!textChunks.length && !fileChunks.length) return {}
+
+				let firstMessageId = null
+				for (let i = 0; i < textChunks.length; i++) {
+					const payload = { content: textChunks[i] }
+					if (i === textChunks.length - 1 && fileChunks.length) payload.files = fileChunks.shift()
+					const { platformMessageId } = await sendPayload(payload)
+					if (!firstMessageId) firstMessageId = platformMessageId
 				}
-				catch (sendError) {
-					console.error(`[SimpleDiscord] Failed to send error reply for message ${triggerMessage.id}:`, sendError)
+				for (const chunk of fileChunks) {
+					const { platformMessageId } = await sendPayload({ files: chunk })
+					if (!firstMessageId) firstMessageId = platformMessageId
 				}
-			}
-			finally {
-				if (typingInterval) clearInterval(typingInterval); typingInterval = null
+				return firstMessageId != null ? { platformMessageId: firstMessageId } : {}
+			})
+			outboundRegistered.add(groupId)
+			if (!isBridgeGroupBackfilled(ownerUsername, groupId)) {
+				markBridgeGroupBackfilled(ownerUsername, groupId)
+				void (async () => {
+					try {
+						// 回填触发本次映射的平台频道（DM 时 platformChatId 即频道）
+						const targetChannelId = sourceDto?.platformThreadId
+							?? (sourceDto?.chatKind === 'dm' ? sourceDto.platformChatId : null)
+						if (!targetChannelId) return
+						const channel = await client.channels.fetch(String(targetChannelId))
+						if (!channel?.messages?.fetch) return
+						const batch = await channel.messages.fetch({ limit: 30 })
+						const ordered = [...batch.values()].sort((a, b) => a.createdTimestamp - b.createdTimestamp)
+						for (const msg of ordered) {
+							if (!shouldAcceptMessage(msg)) continue
+							if (String(msg.id) === String(sourceDto?.platformMessageId)) continue
+							const dto = await discordMessageToBridgeDto(msg, client, ownerUsername)
+							if (!dto) continue
+							dto.ingress = 'backfill'
+							dto.botname = botname
+							await postBridgeMessage(ownerUsername, dto)
+						}
+					}
+					catch (error) { console.error('[DiscordBridge] history backfill failed:', error) }
+				})()
 			}
 		}
 
-		client.on(Events.MessageUpdate, async (oldMessage, newMessage) => {
+		/**
+		 * @param {object} dto 桥接 DTO
+		 */
+		async function ingestDto(dto) {
+			await bridgeIngestDto(ownerUsername, charAPI, 'discord', dto, ensureOutboundHandler, botname, botCharname)
+		}
+
+		/**
+		 * @param {import('npm:discord.js').Message} message Discord 消息
+		 * @returns {boolean} 是否应写入 bridge
+		 */
+		function shouldAcceptMessage(message) {
+			if (message.author?.bot) return false
+			if (message.channel.type === ChannelType.DM)
+				return message.author.username === interfaceConfig.OwnerUserName
+			return true
+		}
+
+		client.on(Events.MessageCreate, async message => {
+			if (!shouldAcceptMessage(message)) return
+			const dto = await discordMessageToBridgeDto(message, client, ownerUsername)
+			if (!dto) return
+			try { await ingestDto(dto) }
+			catch (error) { console.error('[DiscordBridge] postBridgeMessage failed:', error) }
+		})
+
+		client.on(Events.MessageUpdate, async (_oldMessage, newMessage) => {
+			if (!shouldAcceptMessage(newMessage)) return
+			const dto = await discordMessageToBridgeDto(newMessage, client, ownerUsername)
+			if (!dto) return
 			try {
-				const fetchedNewMessage = await tryFewTimes(() => newMessage.fetch().catch(e => {
-					if (e.code === 10008) return null
-					throw e
-				}))
-				if (!fetchedNewMessage) {
-					console.log(`[SimpleDiscord] Updated message ${newMessage.id} not found or deleted, skipping processing.`)
-					return
-				}
-
-				const channelId = fetchedNewMessage.channel.id
-				const channelLogs = ChannelChatLogs[channelId]
-				if (!channelLogs) return
-
-				const fountEntry = await DiscordMessageToFountChatLogEntry(fetchedNewMessage)
-				if (!fountEntry) return
-
-				const messageId = fetchedNewMessage.id
-				const existingIndex = channelLogs.findIndex(entry =>
-					entry.extension?.discord_message_id === messageId
-				)
-
-				if (existingIndex >= 0) {
-					channelLogs[existingIndex] = fountEntry
-					ChannelChatLogs[channelId] = MargeChatLog(channelLogs)
-				}
-				else {
-					channelLogs.push(fountEntry)
-					const merged = MargeChatLog(channelLogs)
-					ChannelChatLogs[channelId] = merged
-					while (merged.length > MAX_MESSAGE_DEPTH) {
-						const removed = merged.shift()
-						delete aiReplyObjectCache[removed?.extension?.discord_message_id]
-					}
-				}
+				await charAPI.interfaces.discord?.TweakInboundDto?.(dto)
+				await postBridgeEdit(ownerUsername, dto)
 			}
-			catch (error) {
-				console.error(`[SimpleDiscord] Error processing message update for ${newMessage.id}:`, error)
+			catch (error) { console.error('[DiscordBridge] postBridgeEdit failed:', error) }
+		})
+
+		client.on(Events.GuildCreate, async guild => {
+			try {
+				await postBridgeGroupEvent(ownerUsername, {
+					type: 'bot_joined_group',
+					platform: 'discord',
+					platformChatId: guild.id,
+					chatName: guild.name,
+					botname,
+				})
 			}
+			catch (error) { console.error('[DiscordBridge] postBridgeGroupEvent guild create failed:', error) }
+		})
+
+		client.on(Events.GuildMemberRemove, async member => {
+			try {
+				await postBridgeGroupEvent(ownerUsername, {
+					type: 'member_left',
+					platform: 'discord',
+					platformChatId: member.guild.id,
+					member: {
+						platformUserId: member.user.id,
+						displayName: member.user.username,
+					},
+					botname,
+				})
+			}
+			catch (error) { console.error('[DiscordBridge] postBridgeGroupEvent member remove failed:', error) }
 		})
 
 		client.on(Events.MessageDelete, async message => {
+			if (!message.channelId || !message.id) return
+			const isDm = message.channel?.type === ChannelType.DM
 			try {
-				if (!message.id || !message.channelId) {
-					console.warn('[SimpleDiscord] Received MessageDelete event with missing id or channelId.')
-					return
-				}
-
-				const { channelId } = message
-				const channelLogs = ChannelChatLogs[channelId]
-				if (!channelLogs) return
-
-				const messageId = message.id
-				const deletedIndex = channelLogs.findIndex(entry =>
-					entry.extension?.discord_message_id === messageId
-				)
-
-				if (deletedIndex >= 0) {
-					// 标记为已删除而非直接移除，保留上下文供 AI 感知
-					const entry = channelLogs[deletedIndex]
-					entry.content += '（已删除）'
-					if (entry.extension?.content_parts?.length)
-						entry.extension.content_parts = entry.extension.content_parts.map(p => p + '（已删除）')
-					console.log(`[SimpleDiscord] Marked deleted message ${messageId} in chat log.`)
-				}
+				await postBridgeDelete(ownerUsername, {
+					platform: 'discord',
+					platformChatId: isDm ? message.channelId : message.guildId || message.channelId,
+					platformThreadId: isDm ? undefined : message.channelId,
+					platformMessageId: message.id,
+				})
 			}
-			catch (error) {
-				console.error(`[SimpleDiscord] Error processing message delete for ${message.id}:`, error)
-			}
+			catch (error) { console.error('[DiscordBridge] postBridgeDelete failed:', error) }
 		})
 
-		client.on(Events.MessageCreate, async message => {
-			let fullMessage = message
-			if (fullMessage.partial)
-				try { fullMessage = await tryFewTimes(() => message.fetch()) }
-				catch (error) { console.error(`[SimpleDiscord] MessageCreate 获取部分消息 ${message.id} 失败:`, error); return }
-
-			const channelId = fullMessage.channel.id;
-			(ChannelMessageQueues[channelId] ??= []).push(fullMessage)
-			if (!ChannelHandlers[channelId]) ChannelHandlers[channelId] = HandleMessageQueue(channelId)
+		client.on(Events.TypingStart, async typing => {
+			const user = typing.user
+			if (!user || user.bot) return
+			const channel = typing.channel
+			if (!channel) return
+			if (channel.type === ChannelType.DM) {
+				if (user.username !== interfaceConfig.OwnerUserName) return
+				try {
+					await postBridgeTyping(ownerUsername, {
+						platform: 'discord',
+						platformChatId: channel.id,
+						platformUserId: user.id,
+						displayName: user.globalName || user.username,
+					})
+				}
+				catch (error) { console.error('[DiscordBridge] postBridgeTyping failed:', error) }
+				return
+			}
+			if (!channel.isTextBased?.() || !typing.guildId) return
+			try {
+				await postBridgeTyping(ownerUsername, {
+					platform: 'discord',
+					platformChatId: typing.guildId,
+					platformThreadId: channel.id,
+					platformUserId: user.id,
+					displayName: user.globalName || user.username,
+				})
+			}
+			catch (error) { console.error('[DiscordBridge] postBridgeTyping failed:', error) }
 		})
+
+		await dispatchBridgeBotStarted(ownerUsername, 'discord', botname)
 	}
 
 	return {
 		Intents: [
-			GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages,
-			GatewayIntentBits.MessageContent, GatewayIntentBits.DirectMessages,
+			GatewayIntentBits.Guilds,
+			GatewayIntentBits.GuildMessages,
+			GatewayIntentBits.GuildPresences,
+			GatewayIntentBits.GuildMessageReactions,
+			GatewayIntentBits.GuildMessageTyping,
 			GatewayIntentBits.GuildMembers,
+			GatewayIntentBits.MessageContent,
+			GatewayIntentBits.DirectMessages,
+			GatewayIntentBits.DirectMessageReactions,
+			GatewayIntentBits.DirectMessageTyping,
 		],
-		Partials: [Partials.Channel, Partials.Message, Partials.User, Partials.GuildMember],
+		Partials: [Partials.Channel, Partials.Message, Partials.User, Partials.GuildMember, Partials.Reaction],
 		/**
-		 * 设置 Discord Bot 实例。
-		 * @param {import('npm:discord.js').Client} client - Discord Client 实例。
-		 * @param {object} config - Bot 配置。
+		 * @param {DiscordClient} client Discord 客户端
+		 * @param {{ OwnerUserName: string }} config 配置
+		 * @param {string} botname bot 实例名
 		 */
-		OnceClientReady: async (client, config) => {
+		OnceClientReady: async (client, config, botname) => {
 			charClientRegistry[ownerUsername] ??= {}
 			charClientRegistry[ownerUsername][botCharname] = client
-			await SimpleDiscordBotMain(client, config)
+			await SimpleDiscordBotMain(client, config, botname)
 		},
 		GetBotConfigTemplate: GetSimpleBotConfigTemplate,
 	}

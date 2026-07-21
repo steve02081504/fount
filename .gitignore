@@ -4,6 +4,10 @@
 /temp
 /temp.txt
 /temp.md
+/.tmp
+/tmp
+/.temp
+/tmp
 /.env
 /.env.local
 /.idea

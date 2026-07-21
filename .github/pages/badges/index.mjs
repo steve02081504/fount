@@ -1,5 +1,5 @@
-import { initTranslations, console } from '../scripts/i18n/index.mjs'
 import { showToastI18n } from '../scripts/features/toast.mjs'
+import { initTranslations, console } from '../scripts/i18n/index.mjs'
 
 // 获取 DOM 元素
 const originalUrlInput = document.getElementById('originalUrlInput')

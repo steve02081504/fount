@@ -129,5 +129,5 @@ export async function createShareLink(username, partpath, expiration, withData) 
 
 	const link = await response.text()
 	unlockAchievement(username, 'shells/export', 'share_part')
-	return `https://steve02081504.github.io/fount/protocol?url=fount://run/parts/shells:install/install;${link}`
+	return `https://steve02081504.github.io/fount/protocol?url=fount://run/shells:install/install;${link}`
 }

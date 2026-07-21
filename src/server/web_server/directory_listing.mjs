@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { mimetypeFromBufferAndName } from '../../public/pages/scripts/lib/mimetype.mjs'
+import { mimetypeFromBufferAndName } from '../../scripts/mimetype.mjs'
 import { __dirname } from '../base.mjs'
 
 const TEMPLATE_PATH = path.join(__dirname, 'src/public/pages/directory-listing/index.html')

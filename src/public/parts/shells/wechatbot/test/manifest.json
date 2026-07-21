@@ -1,0 +1,23 @@
+{
+	"id": "shells/wechatbot",
+	"triggerSets": {
+		"testFramework": [
+			"src/scripts/test/deno/serial.mjs"
+		],
+		"shellPureTests": [
+			"src/public/parts/shells/wechatbot/test/pure/**",
+			"src/public/parts/shells/chat/src/chat/bridge/**"
+		]
+	},
+	"suites": [
+		{
+			"name": "pure",
+			"trigger": ["shellPureTests", "testFramework"],
+			"run": [
+				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/wechatbot/test/pure/"
+			]
+		}
+	]
+}

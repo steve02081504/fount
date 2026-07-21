@@ -1,4 +1,4 @@
-import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct.mjs'
+import { mergeStructPromptChatLog, structPromptToSingleNoChatLog } from '../../../../shells/chat/src/prompt_struct/index.mjs'
 
 /**
  * 将 prompt_struct 转成 OpenAI 兼容消息数组。

@@ -1,6 +1,264 @@
 {
 	"lang": "fr-FR",
 	"name": "Français",
+	"channels": {
+		"title": "Canaux",
+		"description": "Système de gestion des canaux",
+		"create": "Créer un canal",
+		"subscribe": "S'abonner",
+		"unsubscribe": "Se désabonner",
+		"settings": "Paramètres du canal",
+		"list": "Liste des canaux",
+		"members": "Membres",
+		"messages": "Messages",
+		"permissions": "Paramètres des permissions",
+		"type": {
+			"announcement": "Annonces",
+			"news": "Actualités",
+			"updates": "Mises à jour"
+		},
+		"role": {
+			"owner": "Propriétaire",
+			"admin": "Administrateur",
+			"moderator": "Modérateur",
+			"member": "Membre",
+			"subscriber": "Abonné"
+		},
+		"errors": {
+			"notFound": "Ce canal n'existe pas",
+			"noPermission": "Permissions insuffisantes",
+			"alreadySubscribed": "Vous êtes déjà abonné à ce canal",
+			"notSubscribed": "Vous n'êtes pas abonné à ce canal"
+		},
+		"success": {
+			"created": "Canal créé avec succès",
+			"updated": "Canal mis à jour avec succès",
+			"deleted": "Canal supprimé avec succès",
+			"subscribed": "Abonnement réussi",
+			"unsubscribed": "Désabonnement réussi",
+			"posted": "Message publié avec succès"
+		}
+	},
+	"profile": {
+		"title": "Profil",
+		"description": "Gérez votre présence publique dans le chat et sur les réseaux sociaux.",
+		"settingsEyebrow": "Paramètres du compte",
+		"accountAtGlance": "Aperçu du compte",
+		"advancedKicker": "Configuration à la demande",
+		"advancedSettings": "Paramètres avancés",
+		"advancedDescription": "Aucun réglage n'est nécessaire pour une utilisation quotidienne.",
+		"edit": "Modifier le profil",
+		"save": "Enregistrer",
+		"cancel": "Annuler",
+		"displayName": "Nom affiché",
+		"name": "Nom",
+		"bio": "Biographie",
+		"descriptionLabel": "Présentation (Markdown)",
+		"email": "E-mail",
+		"status": "Statut",
+		"customStatusLabel": "Statut personnalisé",
+		"avatarLabel": "Avatar",
+		"themeColorLabel": "Couleur du thème",
+		"uploadAvatar": "Téléverser un avatar",
+		"ownerTitle": "Mon propriétaire",
+		"ownerSummary": "Paramètres de délégation",
+		"ownerDescription": "Une fois configuré, le propriétaire peut modifier ou supprimer vos messages de chat, publications sociales et profil en votre nom ; le contenu sera également rendu localement en Markdown non sécurisé (scripts possibles). Vous pouvez renseigner ou effacer n'importe quel hachage d'entité à tout moment.",
+		"ownerEntityHashLabel": "Hachage d'entité du propriétaire (128 hex)",
+		"ownerSave": "Enregistrer le propriétaire",
+		"ownerClear": "Effacer le propriétaire",
+		"ownerSaved": "Propriétaire mis à jour",
+		"ownerCleared": "Propriétaire effacé",
+		"ownerSaveFailed": "Échec de l'enregistrement : ${error}",
+		"ownerConfirmTitle": "Confirmer la définition du propriétaire ?",
+		"ownerConfirmWarningTitle": "Opération à haut risque — lisez attentivement",
+		"ownerConfirmEditBody": "Une fois configuré, l'autre partie pourra modifier ou supprimer vos messages de chat, publications sociales et profil sans votre consentement. Une erreur ou une manipulation = perte immédiate du contrôle de votre contenu.",
+		"ownerConfirmRenderBody": "Les messages de chat et publications sociales de l'autre partie seront rendus en Markdown complet (HTML/scripts inclus) dans votre navigateur. Cela lui permet d'exécuter du code arbitraire sur votre machine sans nouveau consentement. Ne continuez que si vous lui faites entièrement confiance.",
+		"ownerConfirmCooldown": "J'ai lu les risques (${seconds})",
+		"ownerConfirmFirst": "Je comprends les risques, continuer",
+		"ownerConfirmSecond": "Cliquez à nouveau pour confirmer",
+		"ownerConfirmCancel": "Annuler",
+		"federationTitle": "Fédération et synchronisation",
+		"federationSummary": "Relais et mode économie d'énergie",
+		"federationDescription": "Configurez l'URL du relais Nostr et le mode économie d'énergie. La synchronisation fédérée d'un groupe s'active automatiquement lors de la première invitation ou du premier message privé fédéré.",
+		"federationAdvanced": "Options avancées",
+		"federationRelayUrlsLabel": "Serveurs relais (un par ligne ; vide = valeur par défaut)",
+		"federationBatterySaverLabel": "Mode économie d'énergie",
+		"federationSave": "Enregistrer les paramètres réseau",
+		"federationResetDefault": "Restaurer la configuration recommandée",
+		"federationSaved": "Enregistré",
+		"federationResetOk": "Configuration recommandée restaurée",
+		"federationSaveFailed": "Échec de l'enregistrement : ${error}",
+		"preferences": "Préférences",
+		"language": "Langue",
+		"theme": "Thème",
+		"notifications": "Notifications",
+		"emailNotifications": "Notifications par e-mail",
+		"pushNotifications": "Notifications push",
+		"soundNotifications": "Notifications sonores",
+		"social": "Liens sociaux",
+		"website": "Site web",
+		"github": "GitHub",
+		"twitter": "Twitter",
+		"stats": "Statistiques",
+		"joinedAt": "Date d'inscription",
+		"messageCount": "Nombre de messages",
+		"groupCount": "Nombre de groupes",
+		"channelCount": "Nombre de canaux",
+		"privacy": "Confidentialité",
+		"showEmail": "Afficher l'e-mail",
+		"showStats": "Afficher les statistiques",
+		"allowDirectMessages": "Autoriser les messages privés",
+		"statusOptions": {
+			"online": "En ligne",
+			"away": "Absent",
+			"busy": "Occupé",
+			"offline": "Hors ligne"
+		},
+		"themeOptions": {
+			"auto": "Automatique",
+			"light": "Effacer",
+			"dark": "Sombre"
+		},
+		"languageOptions": {
+			"zh-CN": "Chinois simplifié",
+			"en-US": "Anglais"
+		},
+		"notifEmail": "E-mail",
+		"notifPush": "Push",
+		"notifSound": "Son",
+		"notifsAllOff": "Tout désactiver",
+		"bioEmpty": "Cette personne est paresseuse et n'a rien écrit…",
+		"noSocialLinks": "Aucun lien social pour l'instant",
+		"emailVisible": "Visible",
+		"emailHidden": "Masqué",
+		"customStatus": {
+			"placeholder": "Que faites-vous…"
+		},
+		"avatar": {
+			"alt": "Avatar"
+		},
+		"avatarPreview": {
+			"alt": "Aperçu de l'avatar"
+		},
+		"myGroups": "Mes groupes",
+		"myChannels": "Mes canaux",
+		"noGroups": "Aucun groupe rejoint pour l'instant",
+		"noChannels": "Aucun canal pour l'instant",
+		"overview": "Aperçu du profil",
+		"summaryUserId": "ID utilisateur",
+		"summaryAccountStatus": "État du compte",
+		"summaryEmailVisibility": "Visibilité de l'e-mail",
+		"summaryThemePref": "Préférence de thème",
+		"summaryLanguagePref": "Préférence de langue",
+		"summarySocialCount": "Liens sociaux",
+		"summaryLinksCount": "Liens externes",
+		"groupDescriptionEmpty": "Aucune description",
+		"groupMembers": "${members} membres · ${channels} canaux",
+		"channelPrivate": "· Privé",
+		"channelTypeText": "Canal texte",
+		"channelTypeList": "Liste de canaux",
+		"channelTypeVoice": "Canal vocal",
+		"channelTypeStreaming": "Canal de diffusion",
+		"errors": {
+			"loadFailed": "Échec du chargement des données",
+			"saveFailed": "Échec de l'enregistrement",
+			"uploadFailed": "Échec du téléversement de l'avatar",
+			"invalidUserData": "Format de données utilisateur invalide",
+			"identityRequired": "L'identité du nœud n'est pas prête — actualisez la page ; si le problème persiste, enregistrez la configuration fédérée dans les paramètres P2P ci-dessous",
+			"fetchUserFailed": "Impossible d'obtenir les informations utilisateur",
+			"operationFailed": "Échec de l'opération : ${error}"
+		},
+		"success": {
+			"saved": "Données enregistrées",
+			"avatarUploaded": "Avatar téléversé"
+		},
+		"ownerEntityHash": {
+			"placeholder": "Saisissez le hachage d'entité du propriétaire"
+		}
+	},
+	"stickers": {
+		"title": "Autocollants",
+		"description": "Gestion des packs d'autocollants et émojis",
+		"back": {
+			"title": "Retour"
+		},
+		"packs": "Packs d'autocollants",
+		"create": "Créer un pack",
+		"upload": "Téléverser des autocollants",
+		"install": "Installer",
+		"uninstall": "Désinstaller",
+		"close": "Fermer",
+		"cancel": "Annuler",
+		"installed": "Installé",
+		"myPacks": "Mes packs",
+		"tabAll": "Tous",
+		"store": "Boutique d'autocollants",
+		"favorites": "Favoris",
+		"recent": "Récents",
+		"search": {
+			"placeholder": "Rechercher des packs…"
+		},
+		"emptyPacks": "Aucun pack pour l'instant",
+		"packNameLabel": "Nom du pack",
+		"packName": {
+			"placeholder": "Nom du pack d'autocollants"
+		},
+		"packDescriptionLabel": "Description",
+		"packDescription": {
+			"placeholder": "Description du pack"
+		},
+		"stickerNameLabel": "Nom de l'autocollant",
+		"stickerName": {
+			"placeholder": "Nom de l'autocollant"
+		},
+		"selectPack": "Choisir un pack",
+		"selectPackOption": {
+			"textContent": "Sélectionnez un pack"
+		},
+		"selectImage": "Choisir une image",
+		"tagsLabel": "Tags (séparés par des virgules)",
+		"tags": {
+			"placeholder": "ex. : mignon, émoji, animal"
+		},
+		"author": "Auteur",
+		"authorLabel": "Auteur : ${author}",
+		"stickerCount": "${count} autocollants",
+		"badgeMine": "Mien",
+		"noDescription": "Aucune description",
+		"noStickersInPack": "Aucun autocollant",
+		"deletePack": "Supprimer le pack",
+		"public": "Public",
+		"private": "Privé",
+		"animated": "Animé",
+		"static": "Statique",
+		"addTag": "Ajouter un tag",
+		"defaultPackName": "Pack d'émojis par défaut",
+		"defaultPackDescription": "Autocollants fournis par le système",
+		"unnamedPack": "Pack sans nom",
+		"importPackName": "Ma collection",
+		"importPackDescription": "Autocollants enregistrés depuis les messages",
+		"nameRequired": "Veuillez saisir le nom du pack",
+		"stickerNameRequired": "Veuillez saisir le nom de l'autocollant",
+		"selectPackRequired": "Veuillez sélectionner un pack",
+		"fileRequired": "Veuillez sélectionner une image",
+		"loadDetailFailed": "Échec du chargement du pack",
+		"deleteConfirm": "Supprimer définitivement ce pack ? Tous les autocollants seront supprimés — action irréversible.",
+		"errors": {
+			"loadFailed": "Échec du chargement des packs",
+			"uploadFailed": "Échec du téléversement",
+			"installFailed": "Échec de l'installation",
+			"uninstallFailed": "Échec de la désinstallation",
+			"createFailed": "Échec de la création du pack",
+			"deleteFailed": "Échec de la suppression"
+		},
+		"success": {
+			"uploaded": "Autocollants téléversés",
+			"installed": "Installation réussie",
+			"uninstalled": "Désinstallation réussie",
+			"created": "Pack créé avec succès",
+			"deleted": "Suppression réussie"
+		}
+	},
 	"fountConsole": {
 		"server": {
 			"start": "Démarrage du serveur",
@@ -116,6 +374,186 @@
 		"logViewer": {
 			"replHint": "Entrée pour exécuter · Maj+Entrée pour nouvelle ligne"
 		},
+		"test": {
+			"help": "Usage : fount test [--all] [--no-parallel] [--force] [<groupes>...]\n\nSyntaxe de groupement (plusieurs groupes séparés par des espaces) :\n  manifest                    toutes les suites du manifest\n  manifest:suite              suite précise (virgule pour plusieurs ; manifest/suite aussi)\n  manifest:suite:subtest      sous-tests (frontend, etc. ; manifest/suite/subtest aussi)\n  manifest:suite:file         filtre par stem de *.test.mjs sous pure/integration (serial.mjs)\n  Sous PowerShell, les jetons suivants sont fusionnés dans le groupe courant.\n\nL'id manifest provient du champ « id » de chaque test/manifest.json.\nSans correspondance exacte, expansion automatique « <nom>/* » (ex. shells → shells/chat, shells/social) ; glob (*, ? , **) supporté.\nSuite : correspondance par id ou name ; sinon expansion « <nom>* », « <nom>_* » ; glob supporté.\n\nPar défaut (fount test seul) : d'abord les échecs/inachevés (fichiers en échec prioritaires ; si le groupe échoue à nouveau, exécution puis sortie), puis les éléments périmés une fois tout vert ; un échec termine avec le code 1, sans nouvelle tentative dans le même appel. Jamais tout le périmètre (utilisez --all).\nÉtat persistant dans data/test/state/main.json ; logs d'échec conservés jusqu'au vert. Mise à jour de data/test/report.md et report.json à chaque exécution.\nLes suites comme frontend peuvent enregistrer des subtests (trigger indépendant) ; modifier une vue n'expire que le subtest concerné.\nSans subtests en pure/integration, le 3e segment filtre par stem de *.test.mjs (ex. shells/chat:pure:channel_archive).\nSi une dépendance (manifest.json dependsOn) échoue, les couches supérieures sont bloquées.\n\n--all         toutes les suites du périmètre (les vertes restent réutilisables sauf --force)\n--no-parallel exécution série des suites, sortie vers stdout/stderr ; par défaut parallélisation auto selon mémoire/CPU.\n--force       désactive la réutilisation : par défaut dernier résultat réel, --force force l'exécution.\n\nExemples :\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"passed": "Réussi : ${label}",
+			"passedWithNoise": "Réussi : ${label} (bruit détecté)",
+			"failed": "Échec : ${label}",
+			"failedWithCode": "Échec : ${label} (code de sortie ${code})",
+			"passedLabel": "Réussi",
+			"failedLabel": "Échoué",
+			"noiseHits": "(bruit : ${hits})",
+			"unknownManifestId": "ID de manifest inconnu : ${ids}",
+			"unknownSuiteSelector": "Sélecteur de suite inconnu : ${ids}",
+			"unknownSubtestFilter": "Filtre de sous-test inconnu : ${suite} → ${names}",
+			"unknownFileFilter": "Filtre de fichier de test inconnu : ${suite} → ${names}",
+			"unsupportedSubtestFilter": "Cette suite ne prend pas en charge le filtrage sous-test/fichier : ${suite} (${names})",
+			"available": "Éléments disponibles : ${ids}",
+			"manifestMatched": "Manifests correspondants : ${ids}",
+			"selectedSuites": "${selected}/${total} suites sélectionnées",
+			"planSlotSummary": "Plan : exécution ${run}, réutilisation ${reuse}, bloqué ${blocked}",
+			"noMatchingSuites": "Aucune suite correspondante.",
+			"reportPath": "Rapport : ${path}",
+			"reportPathFinal": "Rapport : ${path}",
+			"statePathFinal": "État : ${path}",
+			"blocked": "Bloqué : ${label} (dépendance non validée : ${deps})",
+			"speculativeDiscard": "Résultat spéculatif ignoré : ${label} (dépendance non validée : ${deps})",
+			"continueImperfect": "Échecs/bruit/vagues incomplètes : ${count} suites",
+			"outdatedSelected": "Vague périmée : ${count} suites obsolètes/non exécutées",
+			"runningSuite": {
+				"base": "\n>>> Exécution de ${manifestId}:${name}",
+				"speculative": "parallélisme optimiste",
+				"heavy": "charge élevée",
+				"expected": "attendu ${expected}"
+			},
+			"reusedSuite": ">>> Réutilisation de ${manifestId}:${name} (déclencheur inchangé, dernier ${status})",
+			"noisyOnlyRemain": "Encore ${count} suites réussies avec bruit : ${suites}",
+			"estimatedRun": "Durée estimée ≈ ${eta} (taux parallèle ${rate})",
+			"estimatedRunSerial": "Durée estimée ≈ ${eta} (série)",
+			"estimatedRunSkipped": "De plus ${reused} réutilisées et ${blocked} bloquées prévues (hors estimation).",
+			"noRealRunPlanned": "Aucune exécution nécessaire : ${reused} réutilisées, ${blocked} bloquées prévues (trigger inchangé)",
+			"allReusedHint": "Aucune suite réellement exécutée : les échecs sont hérités, les blocages non résolus (fichiers inchangés). Corrigez puis relancez, ou fount test --force pour forcer.",
+			"estimatedRemaining": "Temps restant ≈ ${eta} (${completed}/${total} suites)",
+			"estimatedRunSerialHint": "En parallèle ≈ ${eta} (taux ${rate}), gain ≈ ${savings} (retirez --no-parallel)",
+			"failuresSaved": "Liste d'échecs : ${path} (${count} suites)",
+			"failuresCleared": "manifest ${manifestId} tout vert, liste d'échecs effacée.",
+			"terminated": "Timeout : ${label} — ${reason}",
+			"terminateIdle": "${label} arrêté : aucune sortie depuis ${minutes} min (inactif ${idleSec}s, durée ${elapsed})",
+			"terminateDuration": "${label} arrêté : dépasse la durée watchdog (durée ${elapsed}, réf. ${baseline}, max ${limit})",
+			"terminateDurationDefault": "${label} arrêté : dépasse la limite watchdog par défaut (durée ${elapsed}, max ${limit})",
+			"terminateMarker": "[Arrêt : ${reason}]",
+			"terminateUnknown": "${label} arrêté : test interrompu",
+			"terminateSpeculative": "${label} arrêté : dépendance spéculative non validée, annulation anticipée",
+			"nothingToContinue": "Tout est vert, rien de périmé — inutile de relancer.",
+			"triggerNoMatch": "trigger sans fichier correspondant : ${scope} — ${pattern}",
+			"triggerNoMatchSummary": "${count} triggers sans fichier dans le dépôt (voir report.md)",
+			"unknownSuite": "Suite inconnue : ${name}",
+			"federationCleanupPre": "Nettoyage fédération (avant) échoué : ${output}",
+			"federationCleanupPost": "Nettoyage fédération (après) échoué : ${output}",
+			"suiteHeader": "=== Suite ${name} ===",
+			"heapSnapshotSaved": "Snapshot heap nœud de test (proche OOM) : ${path}",
+			"liveUsage": "Usage : --suite <nom> | --list",
+			"serialUsage": "Usage : serial.mjs <chemin-deno-test> [...]",
+			"silentPassedOne": "1 fichier de test réussi.",
+			"silentPassedMany": "${count} fichiers de test réussis.",
+			"ciNoDiffFallback": "CI : pas de diff, exécution de toutes les suites",
+			"noFrontendPhasesMatched": "Aucune phase frontend ne correspond à FOUNT_TEST_ONLY",
+			"denoPanic": {
+				"detected": "Crash Deno détecté : ${label} (${signature})",
+				"alreadyReported": "Crash Deno déjà signalé, ignoré : ${signature}",
+				"ghUnavailable": "gh indisponible ou non connecté, crash Deno en local seulement : ${signature}",
+				"published": "Issue crash Deno soumise : ${url}",
+				"duplicate": "Crash en double en amont, signalement ignoré : ${upstream}",
+				"publishFailed": "Échec publication issue crash Deno : ${signature}"
+			},
+			"nodeWorker": {
+				"dataPathRequired": "Worker nœud de test : --data-path manquant",
+				"portRequired": "Worker nœud de test : --port manquant (lancez via launch.mjs)",
+				"keyRequired": "Worker nœud de test : --key manquant (lancez via launch.mjs)",
+				"userRequired": "Worker nœud de test : --user manquant",
+				"error": "Erreur worker nœud de test : ${error}"
+			},
+			"ws": {
+				"pass": "Réussi : ${detail}",
+				"fail": "Échec : ${detail}"
+			},
+			"report": {
+				"title": "Rapport de tests fount",
+				"tableHeaderItem": "Élément",
+				"tableHeaderValue": "Valeur",
+				"fieldRunId": "ID d'exécution",
+				"fieldCommand": "Commande",
+				"fieldExit": "Code de sortie",
+				"fieldProgress": "Progression",
+				"fieldSuites": "Suites",
+				"fieldFailed": "Échecs",
+				"fieldNoisyPassed": "Réussis avec bruit",
+				"fieldReused": "Réutilisations",
+				"fieldSuiteSumDuration": "Durée totale des suites",
+				"fieldWallClock": "Durée totale",
+				"fieldParallelRate": "Parallélisme",
+				"fieldEstimatedRemaining": "Temps restant estimé",
+				"fieldEstimatedParallelRate": "Taux parallèle estimé",
+				"estimatePoint": "≈ ${eta}",
+				"pendingEstimate": "Temps restant ≈ ${eta}",
+				"pendingParallelEstimate": "Temps parallèle estimé ≈ ${eta} (taux ${rate})",
+				"pendingSavings": "Gain estimé ≈ ${savings}",
+				"pendingItemExpected": "attendu ${expected}",
+				"fieldDuration": "Durée",
+				"commandDefault": "(défaut)",
+				"exitPassed": "réussi",
+				"exitFailed": "échoué",
+				"exitInProgress": "en cours",
+				"progressFormat": "${completed}/${total} suites",
+				"suitesFormat": "${passed}/${completed} réussies",
+				"artifacts": "Répertoire des artefacts : `${path}`",
+				"sectionFailed": "Suites en échec",
+				"sectionNoisyPassed": "Réussies avec bruit",
+				"sectionSilentPassed": "Réussies",
+				"sectionPending": "À exécuter",
+				"sectionContinue": "Éléments inachevés",
+				"sectionReplay": "Réexécuter les échecs",
+				"sectionReplayImperfect": "Rejeu imparfait",
+				"columnSuite": "Suite",
+				"columnDuration": "Durée",
+				"labelReused": "(réutilisée)",
+				"labelExpectedBlocked": "(blocage attendu)",
+				"labelDuration": "durée",
+				"labelLog": "journal",
+				"labelNoise": "Bruit",
+				"labelFailedFiles": "fichiers en échec",
+				"labelTerminateReason": "motif d'arrêt",
+				"sectionContinueReasons": "Motifs de déclenchement",
+				"continueReasonsLink": "Motifs : voir [${path}](${path})",
+				"labelContinueReason": "motif",
+				"reasonImperfectFailed": "échec antérieur",
+				"reasonImperfectNoisy": "réussi avec bruit antérieurement",
+				"reasonImperfectBlocked": "bloqué antérieurement",
+				"reasonImperfectDependent": "amont en échec, couche aval incluse",
+				"reasonMissingRecord": "état sans enregistrement, rattrapage",
+				"reasonStaleContent": "contenu modifié, à réexécuter",
+				"reasonTriggerHashDrift": "empreinte trigger dérivée (aucun chemin atteint)",
+				"reasonExplicitSelected": "sélection explicite",
+				"reasonDependencyRequired": "dépendance intégrée",
+				"labelRootCause": "cause racine",
+				"labelDirectRequiredBy": "requis directement par",
+				"labelInclusionPath": "chaîne d'inclusion",
+				"labelPullUpstream": "Tirage amont : dépendance de ${requiredBy} non verte",
+				"labelPullDownstream": "Tirage aval : ${requiredBy} imparfait, inclus ensemble",
+				"labelGateReason": "motif d'exécution",
+				"labelCommitRange": "plage de commits",
+				"labelUncommittedHashRange": "résumé non commité",
+				"labelMatchedTriggers": "triggers correspondants",
+				"labelMatchedTriggerSets": "ensembles de triggers",
+				"labelMatchedPaths": "chemins correspondants",
+				"labelTriggerHashDrift": "empreinte trigger incohérente avec l'espace de travail (dirty → net ignoré)",
+				"sectionDeadTriggers": "triggers invalides",
+				"deadTriggersHint": "Les globs suivants ne correspondent à aucun fichier du dépôt (suivi git + non ignorés) :",
+				"durationMs": "${ms} ms",
+				"durationUnitSec": "${n} s",
+				"durationUnitMin": "${n} min",
+				"durationUnitMinute": "${n} minutes",
+				"durationUnitHour": "${n} h",
+				"durationUnitDay": "${n} j"
+			},
+			"state": {
+				"title": "État des tests fount",
+				"artifacts": "Répertoire d'état : `${path}`",
+				"sectionDependencyTree": "Arbre de dépendances",
+				"sectionOverview": "État de chaque suite",
+				"sectionBlocked": "Suites bloquées",
+				"columnSuite": "Suite",
+				"columnStatus": "État",
+				"columnCommit": "commit",
+				"columnRanAt": "dernière exécution",
+				"columnDuration": "durée",
+				"columnLog": "journal",
+				"columnBlocked": "blocages",
+				"labelBlockedBy": "bloqué par",
+				"statusUnknown": "non exécuté",
+				"statusOutdated": "périmé"
+			}
+		},
 		"path": {
 			"protocol": {
 				"description": "URL : protocole de fount",
@@ -144,7 +582,7 @@
 				"localBranchAhead": "La branche locale est en avance sur la branche distante. Aucune mise à jour requise.",
 				"branchesDiverged": "Les succursales locales et distantes ont été bifurquées. Mise à jour forcée en cours...",
 				"notOnBranch": "Pas sur la branche, passez en 'master'...",
-				"noUpstreamBranch": "Attention : Aucune branche amont n'est configurée pour la branche '${branch}'. Réglage en amont sur « origine/maître ».",
+				"noUpstreamBranch": "Attention : aucune branche amont pour « ${branch} », utilisez « ${remote} ».",
 				"dirtyWorkingDirectory": "Attention : le répertoire de travail n'est pas propre. Veuillez stager ou commiter vos modifications avant la mise à jour.",
 				"notInstalled": "Git n'est pas installé, j'essaye de l'installer...",
 				"notInstalledSkippingPull": "Git n'est pas installé, ignorez `git pull`",
@@ -727,6 +1165,513 @@
 			}
 		}
 	},
+	"social": {
+		"title": "Social",
+		"description": "Fil social P2P ouvert, abonnements et partage de fichiers",
+		"bootstrapFailed": "Échec d'initialisation de l'interface sociale : ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "Social"
+			}
+		},
+		"nav": {
+			"feed": "Fil",
+			"explore": "Explorer",
+			"notifications": "Notifications",
+			"saved": "Favoris",
+			"drafts": "Brouillons",
+			"profile": "Profil",
+			"videos": "Courtes vidéos",
+			"live": "Direct"
+		},
+		"settings": {
+			"title": "Paramètres sociaux",
+			"back": {
+				"aria-label": "Retour"
+			},
+			"privacyTitle": "Confidentialité et découverte",
+			"privacyHint": "Contrôlez si votre compte apparaît dans Découverte et Recommandations.",
+			"tasteTitle": "Recommandations et goûts",
+			"tasteHint": "Ajustez la confidentialité et le libellé « Recommandé pour vous ».",
+			"mutedKeywordsTitle": "Mots et tags bloqués",
+			"mutedKeywordsHint": "Les publications touchant le corps, l'avertissement de contenu ou les tags seront masquées du fil, de l'exploration, de la recherche et des notifications. Stockage local uniquement.",
+			"mutedKeywordsMatchTags": "Inclure les tags",
+			"mutedKeywordsAdd": "Ajouter",
+			"mutedKeywordsRemove": {
+				"title": "Retirer le mot bloqué"
+			},
+			"mutedKeywordsEmpty": "Aucun mot bloqué",
+			"autoTranslateTitle": "Traduction automatique",
+			"autoTranslateHint": "Lorsqu'elles sont activées, les publications en langue étrangère demanderont automatiquement une traduction et pourront être basculées vers le texte original.",
+			"autoTranslateEnable": "Traduire automatiquement les publications dans d'autres langues",
+			"safetyTitle": "Sécurité et blindage",
+			"safetyHint": "Gérez les listes bloquées et masquées.",
+			"mutedKeywords": {
+				"placeholder": "Saisissez des mots-clés ou des #tags"
+			}
+		},
+		"composer": {
+			"placeholder": "À quoi pensez-vous ? Markdown (dialecte fount) pris en charge — tapez @ pour mentionner",
+			"publish": "Publier",
+			"saveDraft": "Enregistrer le brouillon",
+			"fab": {
+				"title": "Rédiger une publication",
+				"aria-label": "Rédiger une publication"
+			},
+			"contentWarning": {
+				"placeholder": "Avertissement de contenu (facultatif)"
+			},
+			"sensitiveMedia": "Média sensible",
+			"editImage": "Modifier",
+			"editCrop": "Recadrer",
+			"editMosaic": "Mosaïque",
+			"editBrush": "Pinceau",
+			"editApply": "Appliquer",
+			"editCancel": "Annuler",
+			"replyPolicyEveryone": "N'importe qui peut répondre",
+			"replyPolicyFollowers7d": "Abonnés depuis plus de 7 jours",
+			"replyPolicyAuthorFollows": "Les gens que je suis",
+			"replyPolicyLabel": "Qui peut répondre",
+			"replyDisplayAll": "Afficher toutes les réponses",
+			"replyDisplayFeaturedOnly": "Réponses mises en avant uniquement",
+			"replyDisplayLabel": "Affichage des réponses",
+			"scheduleLabel": "Publication programmée",
+			"scheduleSuccess": "La publication a été ajoutée à la file d'attente planifiée",
+			"emojiButton": {
+				"title": "Émojis",
+				"aria-label": "Émojis"
+			},
+			"mediaButton": {
+				"title": "Ajouter un média",
+				"aria-label": "Ajouter un média"
+			},
+			"pollButton": {
+				"title": "Créer un sondage",
+				"aria-label": "Créer un sondage"
+			},
+			"cwToggle": {
+				"title": "Avertissement de contenu",
+				"aria-label": "Avertissement de contenu"
+			},
+			"advancedToggle": {
+				"title": "Plus d'options",
+				"aria-label": "Plus d'options"
+			},
+			"media": {
+				"placeholder": "Description de l'image (alt)"
+			}
+		},
+		"visibility": {
+			"label": "Portée visible",
+			"public": "Public",
+			"unlisted": "Non répertorié",
+			"followers": "Abonnés uniquement",
+			"followers7d": "Abonnés uniquement",
+			"followers30d": "Abonnés uniquement",
+			"selected": "Visible par les personnes spécifiées",
+			"private": "Visible uniquement par vous-même",
+			"allowLabel": "Personnes visibles",
+			"exceptLabel": "Exclure des personnes",
+			"allow": {
+				"placeholder": "visibleHash des personnes, séparés par espace ou virgule"
+			},
+			"except": {
+				"placeholder": "Personnes à exclure (facultatif)"
+			}
+		},
+		"albums": {
+			"create": "Créer un nouvel album",
+			"edit": "Modifier l'album",
+			"save": "Enregistrer",
+			"cancel": "Annuler",
+			"back": "Retour à l'album",
+			"empty": "Pas encore d'album",
+			"emptyPosts": "Il n'y a pas encore de messages dans l'album",
+			"name": "Nom de l'album",
+			"description": "Description de l'album",
+			"deleteLinks": "Supprimer l'album (conserver les publications)",
+			"deleteWithPosts": "Supprimer l'album et les publications",
+			"pickerLabel": "Ajouter à l'album",
+			"defaultName": "Album par défaut"
+		},
+		"feed": {
+			"refresh": "Actualiser le fil",
+			"newPosts": "Nouvelles publications — cliquez pour voir",
+			"tabLatest": "Récent",
+			"tabForYou": "Pour vous",
+			"repostedBy": "${author} a republié",
+			"decryptFailed": "Impossible de décrypter ce message",
+			"revealContent": "Afficher le contenu",
+			"sensitiveMedia": "Média sensible",
+			"showMore": "Développer",
+			"showLess": "Réduire",
+			"replayDivider": "Lecture terminée, naviguez à nouveau"
+		},
+		"taste": {
+			"rebuild": "Reconstruire les préférences",
+			"privacyPublishPreferences": "Dénomination des balises publiques et découverte de fusion",
+			"privacyPublishPreferencesHint": "Une fois désactivé, vos amis ne verront plus vos déclarations de tags ni de fusion, et ne pourront plus contribuer au consensus.",
+			"privacyPublishReactions": "Likes et dislikes publics",
+			"privacyPublishReactionsHint": "Une fois désactivé, l'auteur ne recevra plus vos likes/dislikes, vos réactions n'alimenteront plus les recommandations des autres, et vous ne relancerez plus la diffusion de la publication.",
+			"empty": "Il n'y a pas encore de balise de préférence, elle sera automatiquement regroupée après plus de likes/dislikes",
+			"weight": "Poids ${weight}",
+			"save": "Enregistrer",
+			"name": {
+				"placeholder": "nom d'affichage local"
+			}
+		},
+		"trending": {
+			"title": "Tendances",
+			"postCount": {
+				"title": "${n} messages"
+			},
+			"scopeLocal": "Cet appareil",
+			"scopeNearby": "À proximité",
+			"empty": "Pas encore de sujets d'actualité"
+		},
+		"search": {
+			"placeholder": "Rechercher des mises à jour, des utilisateurs ou des #sujets (minimum 2 mots)",
+			"open": {
+				"aria-label": "Rechercher"
+			},
+			"submit": "Rechercher",
+			"clear": "Effacer",
+			"empty": "Aucun message correspondant",
+			"tooShort": "Veuillez saisir au moins 2 caractères",
+			"usersTitle": "Utilisateurs",
+			"postsTitle": "Publications",
+			"usersEmpty": "Aucun utilisateur correspondant",
+			"pinAlias": "Définir comme alias",
+			"trustScore": "Faites confiance à ${score}",
+			"viewTitle": "Recherche",
+			"loading": "Recherche…",
+			"filterAuthor": {
+				"placeholder": "Auteur"
+			},
+			"filterMediaAll": "Tous les médias",
+			"filterMediaImage": "Images",
+			"filterMediaVideo": "Vidéos",
+			"filterTag": {
+				"placeholder": "#Étiquette"
+			},
+			"sortRecent": "Récent",
+			"sortPopular": "Populaire",
+			"scopeLocal": "Cet appareil",
+			"scopeNearby": "À proximité"
+		},
+		"profile": {
+			"edit": "Modifier le profil",
+			"viewPosts": "Afficher les profils sociaux",
+			"settingsBtn": {
+				"aria-label": "Paramètres sociaux"
+			},
+			"mediaOnly": "[médias]",
+			"hideFromExplore": "Masquer le compte de la page d'exploration",
+			"tabPosts": "Publications",
+			"tabAlbums": "Albums",
+			"tabLikes": "J'aime",
+			"tabCabinets": "Armoires",
+			"tabsLabel": {
+				"aria-label": "Sections du profil"
+			},
+			"cabinetsEmpty": "Aucune armoire publique pour le moment",
+			"cabinetsFailed": "Échec du chargement des armoires : ${error}",
+			"statsGroup": {
+				"aria-label": "Statistiques"
+			},
+			"statsPosts": "Publications",
+			"statsFollowing": "Abonnements",
+			"statsFollowers": "Abonnés",
+			"followingTitle": "Abonnements",
+			"followersTitle": "Abonnés"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "Fermer"
+			}
+		},
+		"actions": {
+			"like": "J'aime",
+			"unlike": "Je n'aime plus",
+			"dislike": "Je n'aime pas",
+			"undislike": "Annuler le refus",
+			"repost": "Republier",
+			"quote": "Citation",
+			"delete": "Supprimer",
+			"edit": "Modifier",
+			"save": "Enregistrer",
+			"saved": "Enregistré",
+			"translate": "Traduire",
+			"dm": "Envoyer un message privé",
+			"block": "Bloquer",
+			"hide": "Masquer",
+			"mute": "Mettre en sourdine",
+			"follow": "Suivre",
+			"following": "Je suis déjà abonné",
+			"care": "Amis proches",
+			"careRemove": "Retirer des amis proches",
+			"careAdded": "Ajouté aux amis proches",
+			"careRemoved": "Retiré des amis proches",
+			"setAlias": "Définir un alias",
+			"setAliasPrompt": "Définir un alias local (laisser vide pour effacer) :",
+			"aliasSaved": "Alias ​​​​mis à jour",
+			"replies": "Réponses",
+			"copyLink": "Copier le lien",
+			"downloadHtml": "Télécharger HTML",
+			"copied": "Copié",
+			"more": {
+				"aria-label": "Plus"
+			},
+			"share": "Partager",
+			"likeFailed": "Échec de l'appréciation : ${error}",
+			"dislikeFailed": "Échec du « Je n'aime pas » : ${error}",
+			"repostFailed": "Échec de la republication : ${error}",
+			"replyFailed": "Échec de la réponse : ${error}",
+			"followFailed": "Échec du suivi : ${error}",
+			"saveFailed": "Échec de l'enregistrement : ${error}",
+			"blockFailed": "Échec du blocage : ${error}",
+			"hideFailed": "Échec du masquage : ${error}",
+			"muteFailed": "Échec de la mise en sourdine : ${error}",
+			"deleteFailed": "Échec de la suppression : ${error}"
+		},
+		"post": {
+			"edited": "Édité",
+			"editPrompt": "Modifier le texte du message",
+			"editHistory": "Modifier l'historique",
+			"editHistoryEmpty": "Aucune version antérieure",
+			"loading": "Chargement…",
+			"notFound": "Le message n'existe pas ou n'est pas visible",
+			"loadFailed": "Échec du chargement, veuillez réessayer plus tard",
+			"detailTitle": "Publication",
+			"back": "Retour"
+		},
+		"reply": {
+			"context": "Répondre ${author}"
+		},
+		"notes": {
+			"label": "Supplément du lecteur",
+			"add": "Informations supplémentaires",
+			"prompt": "Rédiger un supplément de lecteur (note de la communauté)",
+			"listTitle": "Toutes les informations complémentaires",
+			"helpful": "Ça marche",
+			"unhelpful": "Pas utile",
+			"more": "Tous les ${n} éléments",
+			"empty": "Aucune Messages supplémentaire pour l'instant"
+		},
+		"poll": {
+			"multi": "Autoriser plusieurs sélections",
+			"apply": "Appliquer le vote",
+			"closed": "Le vote est terminé",
+			"deadline": "Date limite : ${deadline}",
+			"options": {
+				"placeholder": "Une option par ligne (minimum 2 éléments)"
+			}
+		},
+		"aside": {
+			"suggested": "Comptes suggérés"
+		},
+		"explore": {
+			"accounts": "Comptes suggérés",
+			"posts": "Publications récentes",
+			"mediaOnly": "Médias uniquement"
+		},
+		"groupRef": {
+			"linking": "Connecter un groupe de discussion",
+			"clear": "Dissocier",
+			"pick": "Connecter un groupe/canal de discussion…"
+		},
+		"notifications": {
+			"reply": "${author} a répondu à votre message",
+			"mention": "${author} vous a mentionné dans une publication",
+			"like": "${author} a aimé votre message",
+			"repost": "${author} a republié votre publication",
+			"follow": "${author} vous suit",
+			"care_post": "${author} a publié une mise à jour (amis proches)",
+			"poll_closed": "Le vote est terminé pour ${author}",
+			"post_note": "${author} a ajouté des informations à votre message",
+			"live_started": "${author} a commencé la diffusion en direct",
+			"view": "Voir",
+			"markAllRead": "Marquer tout comme lu"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "Filtrage de la boîte de réception"
+			},
+			"tabs": {
+				"all": "Tout",
+				"mention": "Mentions",
+				"reply": "Réponses",
+				"like": "J'aime",
+				"follow": "Abonnements",
+				"repost": "Republications"
+			},
+			"aggregated": {
+				"like": "${author1}, ${author2} et ${count} personnes ont aimé votre message",
+				"likeTwo": "${author1} et ${author2} ont aimé votre message",
+				"repost": "${author1}, ${author2} et ${count} personnes ont republié votre publication",
+				"repostTwo": "${author1} et ${author2} ont republié votre publication",
+				"follow": "${author1}, ${author2} et ${count} personnes vous suivent",
+				"followTwo": "${author1} et ${author2} vous suivent"
+			}
+		},
+		"replies": {
+			"placeholder": "Écrivez une réponse…",
+			"submit": "Répondre",
+			"empty": "Pas encore de réponse",
+			"emptyHint": "Soyez le premier à répondre et lancez la discussion"
+		},
+		"repost": {
+			"placeholder": "Ajouter un commentaire (facultatif)…",
+			"submit": "Confirmer la republication"
+		},
+		"quote": {
+			"quoting": "Citation",
+			"clear": "Retirer la citation",
+			"viewOriginal": "Afficher le message original"
+		},
+		"a11y": {
+			"linkGroupSelect": "Lier un groupe ou un canal de discussion",
+			"postVisibility": "Portée visible",
+			"postLang": "Langue du contenu",
+			"trendingHashtags": "Sujets tendance",
+			"saveFolderSelect": "Dossier de favoris"
+		},
+		"blocklist": {
+			"title": "Liste de blocage",
+			"hiddenTitle": "Masquer la liste",
+			"empty": "Aucune entrée bloquée ou masquée pour l'instant",
+			"unblock": "Débloquer",
+			"unhide": "Afficher",
+			"scopeEntity": "Entité",
+			"scopeSubject": "Sujet"
+		},
+		"translate": {
+			"label": "Traduction :"
+		},
+		"saved": {
+			"all": "Tout",
+			"unfiled": "Non archivé",
+			"createFolder": {
+				"title": "Créer un nouveau dossier",
+				"aria-label": "Créer un nouveau dossier"
+			},
+			"createFolderPrompt": "Nom du dossier",
+			"pickFolderTitle": "Ajouter aux favoris",
+			"confirm": "Confirmer",
+			"cancel": "Annuler",
+			"remove": "Supprimer les favoris",
+			"renameFolder": "Renommer",
+			"renameFolderPrompt": "Nouveau nom de dossier",
+			"deleteFolder": "Supprimer le dossier",
+			"deleteFolderConfirm": "Supprimer le dossier ? Les messages qui s'y trouvent seront déplacés vers \"Non archivés\".",
+			"searchEmpty": "Aucune collection correspondante",
+			"folderEmpty": "Ce dossier est vide",
+			"emptyHint": "Cliquez sur le signet lorsque vous parcourez les actualités pour l'enregistrer ici",
+			"search": {
+				"placeholder": "Rechercher des favoris…"
+			}
+		},
+		"drafts": {
+			"untitled": "(brouillon sans texte)",
+			"emptyHint": "Rédigez dans le compositeur et cliquez sur « Enregistrer le brouillon » pour reprendre plus tard.",
+			"saved": "Brouillon enregistré",
+			"deleted": "Brouillon supprimé",
+			"delete": "Supprimer le brouillon",
+			"empty": "Le brouillon est vide",
+			"saveFailed": "Échec de l'enregistrement du brouillon : ${error}",
+			"loadFailed": "Échec de l'ouverture du brouillon : ${error}",
+			"deleteFailed": "Échec de la suppression du brouillon : ${error}"
+		},
+		"time": {
+			"justNow": "À l'instant",
+			"minutesAgo": "Il y a ${n} minutes",
+			"hoursAgo": "Il y a ${n} heures"
+		},
+		"empty": {
+			"feed": "Il n'y a pas encore de mises à jour. Suivez certaines personnes.",
+			"profilePosts": "Aucune publication pour le moment",
+			"following": "Je ne suis encore personne",
+			"followers": "Aucun abonné pour le moment",
+			"notifications": "Aucune notification pour l'instant",
+			"saved": "Pas encore de favoris",
+			"drafts": "Pas encore de brouillon",
+			"exploreAccounts": "Aucun compte suggéré pour le moment",
+			"explorePosts": "Il n'y a pas encore de messages d'exploration",
+			"likedPosts": "Pas encore de likes",
+			"noIdentity": "Configurez l'identité fédérée dans Chat avant d'utiliser Social"
+		},
+		"topic": {
+			"follow": "S'abonner",
+			"unfollow": "Se désabonner",
+			"empty": "Il n'y a pas encore de messages pour ce sujet"
+		},
+		"video": {
+			"view": {
+				"aria-label": "courte vidéo"
+			},
+			"empty": "Pas encore de courte vidéo",
+			"emptyHint": "Il n'y a pas de messages contenant des vidéos dans les personnes ou sur les places publiques suivantes. Essayez de publier une mise à jour vidéo ?",
+			"compose": "Allez poster une vidéo",
+			"back": {
+				"aria-label": "Retour aux actualités"
+			},
+			"mute": {
+				"aria-label": "Couper le son"
+			},
+			"unmute": {
+				"aria-label": "Activer le son"
+			},
+			"unavailable": "La vidéo ne peut pas être lue",
+			"closeReplies": {
+				"aria-label": "Fermer les réponses"
+			}
+		},
+		"live": {
+			"empty": "Pas encore de diffusion en direct",
+			"viewers": "${n} personnes ont regardé",
+			"likes": "${n} J'aime",
+			"local": "cet appareil",
+			"hall": "Salle de diffusion en direct",
+			"back": {
+				"title": "Retour aux actualités",
+				"aria-label": "Retour aux actualités"
+			},
+			"danmakuSend": "envoyer",
+			"postWatch": "Entrez dans la diffusion en direct",
+			"postEnded": "La diffusion en direct est terminée",
+			"postEndedStats": "Vu par ${viewers} · ${likes} Aimé · ${duration}",
+			"link": {
+				"invite": "Inviter une connexion",
+				"needPeer": "Veuillez remplir l'entité homologueHash :liveId",
+				"invited": "L'invitation en ligne a été envoyée",
+				"linked": "Connecté",
+				"peer": {
+					"placeholder": "Entité homologueHash : liveId"
+				}
+			},
+			"broadcast": {
+				"title": "Démarrer la diffusion",
+				"open": "Aller à la diffusion",
+				"mediaAv": "Audio et vidéo",
+				"mediaAudio": "Un son pur",
+				"mediaVideo": "image pure",
+				"mediaWhip": "Diffusion WHIP (comme OBS)",
+				"whipUrl": "Adresse du FOUET",
+				"whipToken": "Jeton du porteur",
+				"whipWaiting": "En attente de la connexion de streaming WHIP (un logiciel de streaming tel qu'OBS peut être utilisé)…",
+				"start": "Démarrer la diffusion en direct",
+				"stop": "Arrêter la diffusion en direct",
+				"started": "La diffusion en direct a commencé",
+				"stopped": "La diffusion en direct s'est arrêtée",
+				"titleInput": {
+					"placeholder": "Titre en direct (facultatif)"
+				}
+			},
+			"danmaku": {
+				"placeholder": "Dire quelque chose..."
+			}
+		}
+	},
 	"chat": {
 		"title": "Chat",
 		"description": "Où les mots prennent leur envol et les histoires se déroulent. Interagissez avec vos compagnons IA, façonnez le récit et perdez-vous dans le flux et le reflux du dialogue numérique. Le cœur de fount bat ici.",
@@ -738,7 +1683,1453 @@
 			"isTyping": "${names} écrit...",
 			"multipleMembers": "Plusieurs membres écrivent..."
 		},
+		"emoji": {
+			"pickerTitle": "Sélectionnez une émoticône",
+			"categoryFace": "Émojis",
+			"categoryGesture": "geste",
+			"categoryHeart": "Cœur",
+			"categoryAnimal": "animal",
+			"categoryFood": "nourriture",
+			"categoryObject": "chose"
+		},
+		"unicodeEmojiGroups": {
+			"Smileys_and_Emotion": {
+				"title": "Smileys et émotions"
+			},
+			"People_and_Body": {
+				"title": "Personnages et corps"
+			},
+			"Animals_and_Nature": {
+				"title": "les animaux et la nature"
+			},
+			"Food_and_Drink": {
+				"title": "Nourriture et boisson"
+			},
+			"Travel_and_Places": {
+				"title": "Voyages et lieux"
+			},
+			"Activities": {
+				"title": "Activité"
+			},
+			"Objects": {
+				"title": "Chose"
+			},
+			"Symbols": {
+				"title": "Symbole"
+			},
+			"Flags": {
+				"title": "Bannière"
+			},
+			"Component": {
+				"title": "Composants"
+			}
+		},
+		"sessionSettings": {
+			"unnamedTitle": "Discussion de groupe sans nom",
+			"modeGroup": "discussion de groupe",
+			"modeSingle": "caractère unique",
+			"modeEmpty": "groupe vide",
+			"subtitleRoles": "${count} personnes participent à ce chat",
+			"statusSaved": "enregistré",
+			"statusSaving": "Économie…",
+			"statusDirty": "Il y a des modifications non enregistrées",
+			"statusSaveFailed": "Échec de l'enregistrement",
+			"saveSuccess": "Paramètres de discussion de groupe enregistrés",
+			"saveFailed": "Impossible d'enregistrer les paramètres de discussion de groupe"
+		},
+		"group": {
+			"defaults": {
+				"groupMetaName": "Groupe sans nom",
+				"defaultChannelName": "complet",
+				"dmChatName": "chat",
+				"dmDmName": "chat privé",
+				"threadName": "fil enfant"
+			},
+			"settingsPage": {
+				"title": "Paramètres du groupe",
+				"kicker": "Gestion de groupe",
+				"subtitle": "Gérez les informations du groupe, les membres et les fonctions communes. Les autorisations basse fréquence, le stockage et les outils d'audit sont centralisés dans les paramètres avancés.",
+				"backToChat": "Revenir au chat",
+				"navigationLabel": "Classification des paramètres de groupe",
+				"advancedNavigationLabel": "Catégorie Paramètres avancés",
+				"tabGeneral": "basique",
+				"tabPermissions": "Autorisations de rôle",
+				"tabMembers": "Membres",
+				"tabAudit": "Journal d'audit",
+				"tabEmojis": "Émojis",
+				"tabAdvanced": "avancé",
+				"tabStorage": "Stockage et archivage",
+				"tabChannelPermissions": "Autorisations de chaîne",
+				"advancedHubTitle": "Paramètres avancés",
+				"advancedHubDescription": "Ces fonctionnalités modifient la structure d'autorisation du groupe, les données historiques ou les enregistrements de gouvernance ; ajuster uniquement lorsque cela est clairement nécessaire.",
+				"channelPermsHint": "Définissez les remplacements d'autorisations de rôle pour des canaux spécifiques. Les éléments découverts héritent des autorisations de rôle de groupe.",
+				"channelPermsSelectChannel": "Canal",
+				"channelPermsAddRole": "Ajouter un remplacement de rôle",
+				"channelPermsRemoveRole": "Supprimer ce remplacement de rôle",
+				"channelPermsStateNeutral": "hériter",
+				"channelPermsStateAllow": "permettre",
+				"channelPermsStateDeny": "rejeter",
+				"channelPermsUpdated": "Autorisations de chaîne mises à jour",
+				"channelPermsUpdateFailed": "Échec de la mise à jour des autorisations de la chaîne : ${error}",
+				"channelPermsNoChannels": "Il n'y a actuellement aucun canal à configurer",
+				"emojisTitle": "Regrouper les expressions personnalisées",
+				"emojisHint": "Les membres peuvent insérer ou envoyer ces émoticônes dans le chat ; les images désinstallées sont extraites à la demande via des nœuds fédérés.",
+				"emojisUpload": "Téléverser des émojis",
+				"emojisDelete": "Supprimer l'émoticône",
+				"emojisEmpty": "Aucune Émojis de groupe pour l'instant",
+				"emojisUploadOk": "Émoji téléversé",
+				"emojisUploadFailed": "Échec du téléversement : ${error}",
+				"emojisDeleteConfirm": "Etes-vous sûr de vouloir supprimer ce groupe d'émoticônes ?",
+				"emojisDeleteOk": "L'émoticône a été supprimée",
+				"emojisDeleteFailed": "Échec de la suppression : ${error}",
+				"membersTitle": "Liste des membres",
+				"overviewTitle": "Présentation du groupe",
+				"overviewHint": "Informations en lecture seule. Si vous disposez d'autorisations de gouvernance, vous pouvez modifier les informations et les politiques du groupe dans « Basique ».",
+				"channelArchiveTitle": "Archives des chaînes",
+				"channelArchiveHint": "L'importation de l'archive JSON complète du canal créera un nouveau canal de texte ordinaire dans ce groupe et restaurera l'historique (re-signé par vous ; les pièces jointes ne conservent que les métadonnées).",
+				"channelArchiveImport": "Canal d'importation JSON",
+				"channelArchiveImportOk": "${count} messages importés, ouverture d'une nouvelle chaîne...",
+				"channelArchiveImportFailed": "Échec de l'importation : ${error}",
+				"governanceHint": "Rédiger la politique au niveau du groupe du DAG ; Les autorisations d'administrateur ou MANAGE_ADMINS sont requises.",
+				"governanceDenied": "Vous n'êtes pas autorisé à modifier les paramètres de gouvernance de groupe.",
+				"rolesDenied": "Vous ne disposez pas de l'autorisation MANAGE_ROLES pour modifier les rôles.",
+				"channelPermsDenied": "Vous ne disposez pas de l'autorisation MANAGE_CHANNELS pour modifier les remplacements d'autorisation de chaîne.",
+				"notMember": "Vous n'êtes plus membre de ce groupe ; les données de ce groupe ont été automatiquement effacées après avoir quitté le groupe.",
+				"basicTitle": "Gouvernance du Groupe",
+				"profileSectionTitle": "Informations sur le groupe",
+				"profileSectionHint": "Le nom, l'introduction et la méthode pour rejoindre le groupe seront écrits dans les métadonnées du groupe.",
+				"behaviorSectionTitle": "Comportement d'exécution",
+				"networkSectionTitle": "fédération et connexion",
+				"retentionSectionTitle": "Réserve et limite de taux",
+				"mediaSectionTitle": "Appels et dossiers",
+				"nameLabel": "Nom du groupe",
+				"descriptionLabel": "Descriptif du groupe",
+				"joinPolicyLabel": "Stratégie d'entrée de groupe",
+				"joinInviteOnly": "Sur invitation uniquement",
+				"joinPow": "PoW requis",
+				"powDifficultyLabel": "Difficulté PoW",
+				"advancedTitle": "Paramètres avancés",
+				"advancedDescription": "Paramètres de réseau, de stockage, de limite de vitesse et de cryptage ; veuillez conserver les valeurs par défaut si vous n'êtes pas sûr",
+				"securityAdvancedTitle": "Opérations de sécurité et de propriétaire de groupe",
+				"securityAdvancedDescription": "Rotation des clés et succession des chefs de groupe ; des opérations incorrectes peuvent affecter l’accès des membres",
+				"powDifficultyTip": "Preuve de difficulté de travail. Plus la valeur est élevée, plus le temps de calcul nécessaire aux étrangers pour rejoindre le groupe public est long.",
+				"maxDagPayloadTip": "La limite supérieure des données pouvant être transportées par un seul événement de groupe. S'il est trop volumineux, cela augmentera la mémoire de synchronisation et la surcharge du réseau.",
+				"trustedPeersTip": "Le nombre de voisins de la fédération de haute réputation qui sont prioritaires pour rester connectés.",
+				"gossipTtlTip": "Le nombre maximum de nœuds fédéraux via lesquels le message peut être transmis. Son augmentation augmente la couverture et augmente également le trafic.",
+				"hlcTip": "Durée maximale pendant laquelle l'horloge du nœud distant est autorisée à être plus rapide que l'horloge du nœud local, utilisée pour rejeter les événements futurs anormaux.",
+				"sfuTip": "Adresse du service de transfert audio et vidéo externe en option. Laissez vide pour utiliser les appels point à point/relais intégrés.",
+				"iceTip": "Aidez WebRTC à pénétrer dans le routeur ; en cas d'échec de la connexion directe, TURN transmettra le trafic audio, vidéo et fédéré en son nom.",
+				"fileEncryptionTip": "Le chiffrement convergent déduplique mais expose le fait que les fichiers sont identiques ; les clés aléatoires sont plus privées mais prennent plus de place.",
+				"keyManagementTitle": "Gestion des clés",
+				"keyManagementTip": "Les nouvelles clés doivent être redistribuées aux membres après la rotation. Une action manuelle ne doit être entreprise que si vous pensez qu’une clé a été compromise.",
+				"allowDangerousHtml": "Les messages d'auteur de confiance autorisent le HTML en ligne",
+				"deleteGroup": "Supprimer le groupe",
+				"save": "Enregistrer les paramètres",
+				"inviteTitle": "Inviter",
+				"inviteHint": "Générez un code d'invitation à court terme (par défaut 1 heure). L'autre partie remplit l'identifiant du groupe et le code d'invitation dans « Rejoindre le groupe ».",
+				"inviteMint": "Générer un code d'invitation",
+				"inviteGroupId": "Identifiant du groupe",
+				"inviteCode": "Code d'invitation",
+				"inviteExpires": "Expiration : ${date}",
+				"inviteCopy": "Copier les informations du groupe",
+				"inviteCopied": "Informations sur le groupe copiées",
+				"inviteCopyFailed": "Échec de la copie",
+				"inviteClipboard": "ID de groupe : ${groupId}\nCode d'invitation : ${code}\nRejoindre : ${url}",
+				"loadFailed": "Échec du chargement des paramètres du groupe : ${error}",
+				"saveSuccess": "Paramètres de groupe enregistrés",
+				"saveFailed": "Échec de l'enregistrement des paramètres : ${error}",
+				"deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce groupe ? Cette action est irréversible et tous les messages et données des membres seront définitivement supprimés.",
+				"deleteSuccess": "Groupe supprimé",
+				"deleteFailed": "Échec de la suppression du groupe : ${error}",
+				"rolesTitle": "Rôles et autorisations",
+				"createRole": "Créer un rôle",
+				"roleDefault": "Par défaut",
+				"deleteRole": "Supprimer le rôle",
+				"deleteRoleConfirm": "Êtes-vous sûr de vouloir supprimer ce rôle ?",
+				"deleteRoleSuccess": "Rôle supprimé",
+				"deleteRoleFailed": "Échec de la suppression du rôle : ${error}",
+				"createRolePrompt": "Nom du rôle :",
+				"createRoleSuccess": "Rôle créé",
+				"createRoleFailed": "Échec de la création du rôle : ${error}",
+				"permissionUpdated": "Autorisations mises à jour",
+				"permissionUpdateFailed": "Échec de la mise à jour des autorisations : ${error}",
+				"noMembers": "Pas encore de membres",
+				"memberRoles": "Rôles :",
+				"kick": "Expulser",
+				"ban": "Bannir",
+				"kickConfirm": "Êtes-vous sûr de vouloir Expulser le membre ${name} ?",
+				"kickSelfNodeWarning": "Avertissement : Ce membre utilise la même identité de nœud que vous. Vous serez également retiré du groupe après avoir été expulsé. Êtes-vous sûr de vouloir continuer ?",
+				"kickSuccess": "Membre expulsé",
+				"kickFailed": "Échec de l'expulsion du membre : ${error}",
+				"banConfirm": "Êtes-vous sûr de vouloir bannir le membre ${name} ?",
+				"banSuccess": "Le membre a été banni",
+				"banFailed": "Échec du bannissement du membre : ${error}",
+				"bannedTitle": "Membre banni",
+				"unban": "Débloquer",
+				"unbanConfirm": "Êtes-vous sûr de vouloir débloquer le membre ${name} ?",
+				"unbanSuccess": "Le membre a été débloqué",
+				"unbanFailed": "Échec du déblocage : ${error}",
+				"keyRotate": "Rotation de la clé principale du fichier de groupe",
+				"keyRotateConfirm": "Êtes-vous sûr de vouloir faire pivoter manuellement la clé principale de ce fichier de groupe ? Les nouveaux membres doivent resynchroniser la clé du fichier historique.",
+				"keyRotateOk": "La clé a été tournée",
+				"keyRotateFailed": "Échec de la rotation des clés : ${error}",
+				"gshGenerationRetentionHint": "Actuellement, seules les 64 générations les plus récentes de l’historique des clés principales de fichiers sont conservées. Les fichiers historiques les plus anciens peuvent ne pas pouvoir être déchiffrés une fois ce délai dépassé, et il est recommandé d'archiver régulièrement les données importantes.",
+				"gshGenerationNearLimit": "Actuellement en rotation vers la génération ${generation} de clés principales de fichiers (jusqu'à ${maxGenerations} générations). La poursuite d’une rotation fréquente entraînera le retrait des clés historiques les plus anciennes.",
+				"ownerSuccession": "Succession du chef de groupe",
+				"ownerSuccessionOk": "La succession des chefs de groupe est effective",
+				"ownerSuccessionFailed": "Échec de la succession du chef de groupe : ${error}",
+				"permVIEW_CHANNEL": "Voir la chaîne",
+				"permSEND_MESSAGES": "Envoyer un message",
+				"permSEND_STICKERS": "Envoyer des autocollants",
+				"permADD_REACTIONS": "ajouter une réaction",
+				"permMANAGE_MESSAGES": "Messages de gestion",
+				"permMANAGE_CHANNELS": "Gérer la chaîne",
+				"permKICK_MEMBERS": "donner un coup de pied à un membre",
+				"permBAN_MEMBERS": "Bannir un membre",
+				"permMANAGE_ROLES": "rôle de gestion",
+				"permINVITE_MEMBERS": "Inviter des membres",
+				"permSTREAM": "voix",
+				"permCREATE_THREADS": "Créer un sous-canal",
+				"permUPLOAD_FILES": "Télécharger des fichiers",
+				"permMANAGE_FILES": "Gérer les fichiers",
+				"permPIN_MESSAGES": "Message épinglé",
+				"permADMIN": "administrateur",
+				"permBYPASS_RATE_LIMIT": "Contourner la limite de débit de messages"
+			},
+			"auditLog": {
+				"title": "Journal d'audit du groupe",
+				"hint": "Affiche les membres, les rôles, les canaux et les événements de modération sur la branche de gouvernance d'adoption actuelle ; visible uniquement par les administrateurs.",
+				"filterLabel": "type d'événement",
+				"refresh": "Rafraîchir",
+				"filterAll": "Tous types",
+				"loadMore": "Charger des enregistrements plus anciens",
+				"empty": "Aucun enregistrement d'audit pour l'instant",
+				"loadFailed": "Échec du chargement du journal d'audit : ${error}",
+				"colTime": "temps",
+				"colType": "taper",
+				"colActor": "opérateur",
+				"colSummary": "résumé",
+				"type": {
+					"member_join": "les membres rejoignent",
+					"member_leave": "les membres partent",
+					"member_kick": "donner un coup de pied à un membre",
+					"member_ban": "Bannir un membre",
+					"member_unban": "débloquer",
+					"role_create": "Créer un rôle",
+					"role_update": "Mettre à jour le rôle",
+					"role_delete": "Supprimer le rôle",
+					"role_assign": "Attribuer des rôles",
+					"role_revoke": "révoquer le rôle",
+					"channel_create": "Créer une chaîne",
+					"channel_update": "Mettre à jour la chaîne",
+					"channel_delete": "Supprimer la chaîne",
+					"channel_permissions_update": "Autorisations de chaîne",
+					"group_meta_update": "Informations sur le groupe",
+					"group_settings_update": "Paramètres du groupe",
+					"reputation_slash": "Déduction de réputation",
+					"reputation_reset": "Réinitialisation de la réputation",
+					"file_master_key_rotate": "Rotation de la clé principale du fichier de groupe",
+					"peer_invite": "invitation peer-to-peer",
+					"dag_tip_merge": "Fusionner les fourches DAG",
+					"message_delete": "Supprimer le message",
+					"pin_message": "Message épinglé",
+					"unpin_message": "Détacher",
+					"file_upload": "Téléverser des fichiers",
+					"file_delete": "Supprimer des fichiers"
+				},
+				"event": {
+					"member_join": "Le membre ${target} rejoint le groupe",
+					"member_leave": "Un membre quitte le groupe",
+					"member_kick": "Expulser le membre ${target}",
+					"member_ban": "Bannir le membre ${target}",
+					"member_unban": "Débloquer ${target}",
+					"role_create": "Créer un rôle ${roleName}",
+					"role_update": "Mettre à jour le rôle ${roleName}",
+					"role_delete": "Supprimer le rôle ${roleName}",
+					"role_assign": "Attribuer le rôle ${target} à ${roleName}",
+					"role_revoke": "Révoquer le rôle ${target} de ${roleName}",
+					"channel_create": "Créer une chaîne ${channelName}",
+					"channel_update": "Mettre à jour la chaîne ${channelName}",
+					"channel_delete": "Supprimer la chaîne ${channelName}",
+					"channel_permissions_update": "Mettre à jour les autorisations pour la chaîne ${channelName}",
+					"group_meta_update": "Mettre à jour les informations du groupe : ${name}",
+					"group_settings_update": "Mettre à jour les paramètres du groupe",
+					"reputation_slash": "Déduire la réputation (${target}) sur ${claim}",
+					"reputation_reset": "Réinitialiser la réputation de ${target}",
+					"file_master_key_rotate": "Rotation de la clé principale du fichier de groupe",
+					"channel_key_rotate": "Rotation des clés E2E du canal ${channelName}",
+					"peer_invite": "Inviter un nœud homologue ${target}",
+					"dag_tip_merge": "Fusionner les forks de gouvernance DAG",
+					"message_delete": "Supprimer le message ${targetEventId}",
+					"pin_message": "Épinglez ${channelName} sur ${targetEventId}",
+					"unpin_message": "Détachez ${channelName} sur ${targetEventId}",
+					"file_upload": "Fichier téléversé : ${fileName}",
+					"file_delete": "Supprimer le fichier ${fileName}"
+				}
+			},
+			"messagePrefixSticker": "autocollant",
+			"membersEmpty": "(pas encore de membres)",
+			"channelEncryptionGsh": "Chiffrement de bout en bout par clé de canal (CKG)",
+			"ownerSuccession": "Initier un vote de succession",
+			"ownerSuccessionDescription": "Transférez l'autorité administrative la plus élevée du groupe (MANAGE_ADMINS) au membre spécifié. Seuls les administrateurs peuvent opérer.",
+			"ownerSuccessionAutoSignHint": "Après la soumission, la machine signera automatiquement la graine de signature du groupe sans saisir la clé privée. Dans un groupe multi-administrateurs, plus de la moitié des administrateurs doivent soumettre le même bulletin de vote (même identifiant et candidat) localement.",
+			"ownerSuccessionCandidateLabel": "Hachage de clé publique successeur",
+			"ownerSuccessionSelfButton": "Nommez-vous",
+			"ownerSuccessionSubmitted": "Votre signature a été enregistrée sur le bulletin de vote pour la succession.",
+			"ownerSuccessionNeedHash": "Veuillez remplir le hachage de la clé publique du successeur",
+			"ownerSuccessionFailed": "Échec de la soumission du vote de succession",
+			"e2eDecryptUnavailable": "Le message est crypté et ne peut pas être déchiffré par l'appareil actuel",
+			"contentRefBodyPending": "Texte du lien externe (content_ref, pas encore extrait pour vérification)",
+			"contentRefHashMismatch": "Le texte du lien externe est incohérent avec la vérification du stockage (le hachage ne correspond pas)",
+			"streamGenerationFailed": "La génération de l'IA a expiré et n'a pas été terminée, les mises à jour ont été arrêtées.",
+			"convergentEncryptWarn": "Les fichiers de groupe utilisent le cryptage convergent : si l'attaquant connaît le texte en clair d'un fichier, il peut en dériver la clé et déchiffrer le bloc de texte chiffré correspondant. Ne comptez pas uniquement sur le chiffrement de groupe pour la protection de documents hautement sensibles et uniquement privés.",
+			"settingsStreamGeneratingIdle": "Délai d'inactivité de l'espace réservé généré par l'IA (millisecondes)",
+			"settingsAutoReplyFrequency": "Déclencher automatiquement les réponses de rôle (après chaque N messages utilisateur, 0 est désactivé)",
+			"settingsAutoReplyFrequencyHint": "0 signifie éteint ; Les @mentions se déclencheront toujours immédiatement",
+			"settingsMaxDagPayload": "Nombre maximum d'octets du DAG pour un seul événement",
+			"settingsBatterySaver": "Mode faible consommation (pool de connexions de fédération et relais réduits)",
+			"settingsDiscoveryPublic": "Exposer ce groupe en découverte fédérée (sans rejoindre la clé du groupe)",
+			"settingsDiscoveryTitle": "Titre de la liste de découverte (facultatif)",
+			"settingsDiscoveryBlurb": "Introduction à la découverte (facultatif)",
+			"settingsTrustedPeers": "Emplacement du voisin de confiance (Top-K)",
+			"settingsExplorePeers": "Explorez les emplacements voisins",
+			"settingsMaxPeers": "Bouchon de connexion fédération",
+			"settingsGossipTtl": "TTL de transfert de potins (nombre de sauts)",
+			"settingsWantIdsBudget": "Budget des personnes recherchées",
+			"settingsHlcMaxSkew": "Limite supérieure du décalage futur HLC (millisecondes)",
+			"dagForkDetected": "Fork DAG non fusionné détecté",
+			"mergeDagTips": "Fusionner les fourches DAG",
+			"mergeDagTipsOk": "Fourche fusionnée",
+			"mergeDagTipsFailed": "Échec du fork de fusion",
+			"settingsStreamingSfu": "Adresse WebSocket de streaming SFU (facultatif)",
+			"settingsMessageRetention": "Le texte du message est automatiquement supprimé",
+			"settingsMessageRetentionForever": "Rétention permanente (événements DAG compressés uniquement)",
+			"settingsMessageRetention30d": "il y a 30 jours",
+			"settingsMessageRetention90d": "il y a 90 jours",
+			"settingsMessageRetention1y": "il y a 1 an",
+			"settingsMessageRetentionHint": "L'historique visible n'est pas automatiquement supprimé par défaut. Lorsqu'il est activé, seul le cache chaud des messages locaux sera élagué ; les messages finaux seront conservés dans les archives froides et au point de contrôle.",
+			"settingsHotLatest": "Rétention des zones chaudes (dernier nombre de publications par chaîne)",
+			"settingsPinContext": "Quartier supérieur (±N voisins)",
+			"settingsHotWindowHint": "Les publications de zones sensibles sont conservées dans le cache des points de contrôle et des messages ; les publications restantes sont écrites dans les archives froides mensuelles après matérialisation, puis supprimées des événements du processus DAG.",
+			"settingsArchiveTitle": "Stockage et archivage à froid",
+			"settingsArchiveHint": "L'archive froide est l'état final de la publication locale en texte clair (fichiers divisés par mois). La suppression de l'archive ne modifiera pas le DAG ; si l'historique est manquant, il peut être extrait des voisins fédérés.",
+			"settingsArchiveFilesTitle": "Fichiers archivés",
+			"settingsArchiveEmpty": "Il n'y a pas encore de fichiers d'archives froides.",
+			"settingsArchiveColChannel": "Canal",
+			"settingsArchiveColMonth": "mois",
+			"settingsArchiveColSize": "taille",
+			"settingsArchiveDeleteBefore": "Supprimer avant ce mois-ci",
+			"settingsArchiveDeleteButton": "Supprimer l'archive froide",
+			"settingsArchiveDeleteHint": "Seule l'archive locale/*.jsonl est supprimée ; les points chauds et les ancres DAG ne sont pas affectés.",
+			"settingsArchiveAdminOnly": "Cette machine ne dispose pas encore de données d'archives froides pour ce groupe.",
+			"settingsArchiveDeleteInvalidMonth": "Veuillez sélectionner un mois valide AAAA-MM.",
+			"settingsArchiveDeleteConfirm": "Êtes-vous sûr de vouloir supprimer tous les fichiers d'archives froides datant de plus de {mois} ? Cette opération est irréversible.",
+			"settingsArchiveDeleteOk": "{files} fichiers d'archive supprimés.",
+			"settingsArchiveDeleteFailed": "Échec de la suppression de l'archive : {erreur}",
+			"settingsEventRetentionDepth": "Profondeur de conservation des événements DAG",
+			"settingsEventRetentionMs": "Temps de conservation des événements DAG",
+			"settingsCompactTriggerDepth": "Profondeur de déclenchement de compression matérialisée",
+			"settingsMessageRateLimit": "Limite de débit de messages (message/minute/entité)",
+			"settingsAutoReplyTokenBucket": "Planification automatique de la pression de réponse (Token Bucket)",
+			"settingsAutoReplyTokenBucketHint": "Après avoir été activé, chaque personnage conserve un compartiment de jetons par canal ; onMessage n'est pas déclenché temporairement lorsque le compartiment est vide, ce qui peut empêcher le rafraîchissement continu de l'écran pendant les périodes de pointe.",
+			"settingsIceServers": "Serveur ICE/TURN",
+			"settingsIceServersAdd": "Ajouter un serveur",
+			"settingsIceServersHint": "Utilisé pour la pénétration WebRTC et P2P fédérée ; Les informations d'identification TURN conservent uniquement les paramètres matérialisés locaux et ne sont pas diffusées via la fédération.",
+			"settingsFileCeMode": "Mode de cryptage des fichiers",
+			"settingsFileCeModeConvergent": "Cryptage convergent (peut supprimer les doublons)",
+			"settingsFileCeModeRandom": "Mode haute confidentialité (clés aléatoires, pas de déduplication)",
+			"settingsFileCeModeHint": "Le mode de confidentialité élevée utilise une clé de contenu aléatoire pour chaque bloc et marque ceMode=random ; cela réduit le risque que le texte clair soit devinable, mais augmente l'utilisation du stockage et de la bande passante.",
+			"channelsTitle": "Canaux",
+			"createGroup": "Créer un nouveau groupe",
+			"members": "Membres",
+			"membersHint": "La liste des membres est synchronisée par Checkpoint (espace réservé)",
+			"send": "envoyer",
+			"streamTest": "Tester les appareils multimédias",
+			"messageInput": {
+				"placeholder": "Message de groupe... Ctrl+Entrée Envoyer"
+			},
+			"loadError": "Échec du chargement du groupe",
+			"remoteNodeTimeout": "Le nœud distant ne répond pas, veuillez réessayer plus tard.",
+			"remoteUnavailable": "Le composant distant n'est pas disponible ou ne peut pas acheminer le RPC",
+			"messagesLoadFailed": "Échec du chargement du message",
+			"sendFailed": "L'envoi a échoué",
+			"chatNotLoaded": "Le chat principal n'est pas chargé : veuillez ouvrir une conversation avec le même identifiant que le groupe sur l'interface principale et réessayer.",
+			"createFailed": "Échec de la création du groupe",
+			"newGroupName": "nouveau groupe",
+			"streamOk": "Flux multimédia acquis (arrêté, non diffusé)",
+			"remoteUnsafe": "Ce message provient d'un emplacement distant et l'auteur ne figure pas dans la liste de confiance locale. Le rendu du texte enrichi a été désactivé.",
+			"trustAuthor": {
+				"textContent": "confiance",
+				"title": "Faites confiance à cet auteur (autorisez le HTML dangereux)"
+			},
+			"trustAuthorOk": "Cet auteur a été approuvé et restitue un texte riche",
+			"voteCast": "voter",
+			"listEmpty": "(Il n'y a pas encore d'éléments de navigation, les administrateurs peuvent mettre à jour les éléments de liste via l'API)",
+			"listChannelReadonly": {
+				"placeholder": "Les chaînes de la liste affichent uniquement les cartes de navigation et n'envoient pas de messages"
+			},
+			"streamNoEmbed": {
+				"textContent": "L'adresse de diffusion en continu doit être une page https:// intégrable, ou les paramètres du groupe doivent d'abord être configurés et actualisés pour obtenir un jeton de visualisation."
+			},
+			"streamNoSfu": {
+				"textContent": "streamingSfuWss n'est pas configuré ; les administrateurs peuvent renseigner l'adresse de visualisation LiveKit/mediasoup dans les paramètres du groupe."
+			},
+			"messageDeleted": "Message supprimé",
+			"messageDeletedBracket": "[Message supprimé]",
+			"messageWithAttachments": "${text} (${n} pièces jointes)",
+			"voteBlockHeading": "[${prefix}] ${question}",
+			"voteBlockHeadingTagged": "[Voter] ${question}",
+			"voteCastLine": "[${prefix}] Vote : ${choice}",
+			"voteCastLineTagged": "[Voter] Voter : ${choice}",
+			"voteOptionsPreview": "[${prefix}] ${options}",
+			"voteOptionsPreviewTagged": "[Voter] ${options}",
+			"voteDeadlineLineOpen": "Date limite : ${date}",
+			"voteDeadlineLineClosed": "Fin : ${date} [Fin]",
+			"pinMessageLine": "[Haut] ${targetId}",
+			"unpinMessageLine": "[Désépingler] ${targetId}",
+			"stickerPrefixLine": "[${label}]",
+			"stickerPrefixLineTagged": "[autocollant]",
+			"feedbackDagLine": "[${label}]",
+			"feedbackDagLineWithNote": "[${label}] ${note}",
+			"feedbackPreviewLine": "${tag}${sep}${note}",
+			"feedbackPreviewTaggedNote": "${tag} ${note}",
+			"mentionHandle": "@${name}",
+			"mentionInsert": "@${name}",
+			"feedbackUp": "J'aime",
+			"feedbackDown": "Je n'aime pas",
+			"attachmentsHint": "(${n} pièces jointes)",
+			"pinMessage": "épingler en haut",
+			"unpinMessage": "Détacher",
+			"pinThisMessage": "Écrivez cet élément au DAG et épinglez-le en haut",
+			"pinAction": {
+				"textContent": "épingler en haut",
+				"title": "Écrivez cet élément au DAG et épinglez-le en haut"
+			},
+			"unpinAction": {
+				"textContent": "Détacher",
+				"title": "Détacher"
+			},
+			"pinOk": "Enregistré et épinglé",
+			"unpinOk": "Désépinglé",
+			"pinFailed": "Échec de la broche",
+			"menuCopyText": "copier le texte",
+			"menuExportHtml": "Exporter vers HTML",
+			"menuCopyId": "Copier l'ID du message",
+			"copied": "Copié",
+			"addBookmark": {
+				"title": "Ajouter la chaîne actuelle aux favoris"
+			},
+			"bookmarkExists": "Le favori existe déjà",
+			"bookmarkAdded": "Mis en signet",
+			"bookmarkSaveFailed": "Échec de l'enregistrement des favoris",
+			"remoteTyping": "${name} est en train d'écrire...",
+			"remoteTypingTwo": "${name1}, ${name2} Saisie...",
+			"remoteTypingMany": "${name} et ${count} autres sont en train de saisir…",
+			"mentionEmpty": "(aucun membre correspondant)",
+			"localAiLabel": "Rôle natif :",
+			"forceTriggerOne": {
+				"title": "Forcer le déclencheur à ${name} pour qu'il parle"
+			},
+			"forceTriggerAllLocal": "Déclenchez tout",
+			"forceTriggerAllLocalTitle": {
+				"title": "Forcer tous les personnages locaux à parler"
+			},
+			"messageRefAnchor": "Message de devis : ${id}",
+			"settingsFedPartition": "Nombre de divisions fédérales",
+			"settingsRtcBudget": "Budget connexion RTC",
+			"settingsRtcJoinRate": "Limite ajoutée RTC par minute",
+			"settingsFedTuningHint": "Écrire les paramètres du groupe DAG ; après modification, il est recommandé de relier la salle de fédération.",
+			"settingsAutoChannelGc": "Effacer automatiquement les canaux silencieux",
+			"settingsAutoChannelGcHint": "Au maximum 2 canaux insulaires isolés qui sont restés silencieux pendant ≥ 30 jours et inaccessibles seront supprimés une fois matérialisés.",
+			"quoteHeader": "> **${sender}**${sep}${time}",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}",
+			"quoteHeaderWithoutTime": "> **${sender}**",
+			"stopGenerating": "Arrêter de générer",
+			"messageAborted": "Interrompu",
+			"avStart": "démarrer le média",
+			"avMute": "Couper le son",
+			"avSwap": "Écran d'accueil",
+			"avStop": "arrêt",
+			"avNeedStreamChannel": "Veuillez utiliser l'audio et la vidéo dans des canaux de type \"streaming media\"",
+			"reactionAdd": {
+				"title": "Ajouter une réponse"
+			},
+			"reactionRemove": {
+				"title": "Retirer la réponse"
+			},
+			"addReaction": {
+				"title": "Ajouter des émoticônes"
+			},
+			"reactionPrompt": "Saisissez un emoji (Unicode)",
+			"channelTypeLabel": "Type de canal",
+			"channelTypeText": "canal de discussion",
+			"channelTypeList": "Chaîne de liste/forum",
+			"channelTypeStreaming": "chaîne de diffusion en continu",
+			"convertToText": "Convertir en canal de discussion",
+			"convertToList": "Convertir en chaîne de liste/forum",
+			"setAsDefault": "Définir comme canal par défaut du groupe",
+			"isDefault": "Valeur par défaut actuelle",
+			"defaultChannelSet": "Canal par défaut défini",
+			"defaultChannelSetFailed": "Échec de la définition du canal par défaut",
+			"channelUpdateFailed": "Échec de la mise à jour de la chaîne",
+			"voteCreate": "Initier un vote",
+			"votePromptDeadline": "Date limite (laisser vide pour aucune limite de temps, format 2026-01-01 23 :59)",
+			"voteTooFewOptions": "Au moins deux options sont requises",
+			"voteCreateFailed": "Échec de la création du sondage",
+			"voteFor": "Investissez ${option}",
+			"voteDeadline": "Date limite",
+			"voteEnded": "terminé",
+			"voteTotal": "Total ${n} votes",
+			"record": "enregistrement",
+			"fileDownload": {
+				"title": "Télécharger le fichier"
+			},
+			"clickToLoad": "Cliquez pour charger",
+			"unknownFile": "fichier inconnu",
+			"blockSender": {
+				"title": "Bloquer l'expéditeur"
+			},
+			"blockConfirm": "Êtes-vous sûr de vouloir bloquer \"${sender}\" ?",
+			"blockAdded": "Bloqué",
+			"saveSticker": {
+				"title": "Enregistrer les autocollants/émoticônes dans les favoris"
+			},
+			"stickerSaved": "Enregistré dans la bibliothèque d'autocollants",
+			"stickerDefaultName": "autocollant",
+			"deleteMessage": {
+				"title": "Supprimer le message"
+			},
+			"deleteConfirm": "Confirmer pour supprimer ce message ?",
+			"editMessage": {
+				"title": "Modifier le message"
+			},
+			"saveEdit": "Enregistrer",
+			"cancelEdit": "Annuler",
+			"editingMessage": "Édition",
+			"editConfirm": "Confirmer (Ctrl+Entrée)",
+			"editCancel": "Annuler (Échap)",
+			"editHint": "Ctrl+Entrée Confirmer · Echap Annuler",
+			"editedLabel": "(édité)",
+			"editEmptyText": "Le contenu du message ne peut pas être vide",
+			"createGroupTitle": "Créer un nouveau groupe",
+			"groupNameLabel": "Nom du groupe",
+			"groupName": {
+				"placeholder": "Mes groupes"
+			},
+			"defaultChannelLabel": "canal par défaut",
+			"defaultChannel": {
+				"placeholder": "général"
+			},
+			"createGroupFailed": "Échec de la création du groupe",
+			"createChannelFailed": "Échec de la création de la chaîne",
+			"moreActions": {
+				"title": "Plus de propositions"
+			},
+			"thread": "fil enfant",
+			"threadBack": "Retour",
+			"threadBreadcrumbRootTitle": "Aller au point de départ du chemin (premier niveau)",
+			"threadBreadcrumbMiddleTitle": "Développez le calque intermédiaire et sélectionnez le niveau auquel vous souhaitez accéder",
+			"threadBreadcrumbMiddleSummary": "couche intermédiaire de ${count}",
+			"menuShareExternal": "Partager sur un lien externe",
+			"shareExternalOk": "Lien téléchargé et copié",
+			"shareExternalFailed": "Échec du téléchargement, veuillez vérifier le réseau"
+		},
+		"hub": {
+			"title": "Chat",
+			"redirectToHub": "Accès au Chat Hub…",
+			"homeTooltip": {
+				"title": "Retour à la page d'accueil",
+				"tip": "Retour à la page d'accueil"
+			},
+			"charsTooltip": {
+				"title": "Personnages",
+				"tip": "Personnages"
+			},
+			"friendsTooltip": {
+				"title": "Amis",
+				"tip": "Amis"
+			},
+			"inboxTooltip": {
+				"title": "Boîte de réception",
+				"tip": "Boîte de réception intergroupe"
+			},
+			"inbox": {
+				"title": "Boîte de réception",
+				"filtersLabel": "Filtrer les messages de la boîte de réception",
+				"tabMention": "Mentions",
+				"tabMessage": "Tous les messages",
+				"tabCare": "Suivis de près",
+				"tabVoteClosed": "Votes clos",
+				"emptyMentionTitle": "Personne ne t'a encore mentionné",
+				"emptyMentionDescription": "Lorsque d'autres membres vous contactent dans la discussion de groupe, les messages seront affichés ici.",
+				"emptyMessageTitle": "La boîte de réception est vide",
+				"emptyMessageDescription": "Les mises à jour des messages provenant de diverses discussions de groupe et canaux apparaîtront ici.",
+				"emptyCareTitle": "Suivis de près : pas encore de nouvelles",
+				"emptyCareDescription": "Lorsque de nouveaux messages sont envoyés par des membres qui vous tiennent particulièrement à cœur, vous pouvez les voir ici dès que possible.",
+				"emptyVoteTitle": "Aucun vote clos",
+				"emptyVoteDescription": "Les résultats des votes clos apparaîtront ici.",
+				"rowLabel": {
+					"aria-label": "${author} a dit dans ${group} de ${channel} : ${preview}"
+				},
+				"sidebarHint": "Dans tous les groupes @ vos messages apparaîtront dans la liste de droite",
+				"badgeFetchFailed": "Échec de l'actualisation du badge non lu : ${error}",
+				"loadFailed": "Échec du chargement de la boîte de réception : ${error}",
+				"markSeenFailed": "Échec de la mise à jour de l'état de lecture de la boîte de réception : ${error}",
+				"jumpFailed": "Impossible d'ouvrir ce message : ${error}"
+			},
+			"notifyPrefs": {
+				"title": "Paramètres de notification",
+				"mode": "mode de notification",
+				"modeAll": "Tous les messages",
+				"modeMentions": "Uniquement @ et mentions",
+				"modeNothing": "Aucune notification",
+				"suppressEveryone": "Ignorer @tout le monde et @ici",
+				"suppressRoles": "Ignorer le groupe de rôles @",
+				"mute": "Mettre en sourdine",
+				"muteOff": "Désactivé",
+				"mute1h": "1 heure",
+				"mute8h": "8 heures",
+				"muteForever": "Jusqu'à réactivation manuelle",
+				"saved": "Paramètres de notification enregistrés"
+			},
+			"voteClosed": "terminé",
+			"discoveryTooltip": {
+				"title": "Découverte en groupe",
+				"tip": "Découverte en groupe"
+			},
+			"prefsTooltip": {
+				"title": "Paramètres",
+				"tip": "Paramètres de traduction et de P2P fédéré"
+			},
+			"prefsSubtitle": "Connexion traduction et fédération",
+			"federationTooltip": {
+				"title": "Paramètres P2P fédérés",
+				"tip": "Paramètres P2P fédérés"
+			},
+			"federationTitle": "Paramètres P2P fédérés",
+			"federationSubtitle": "Contrôler les connexions entre appareils ; laissez les valeurs par défaut dans la plupart des cas",
+			"federationLoadFailed": "Échec du chargement : ${error}",
+			"fedConnectionTitle": "Connectez-vous et découvrez",
+			"discoveryRefresh": "Actualiser la liste de découvertes",
+			"fedRelayUrlsLabel": "adresse de relais réseau",
+			"fedRelayUrlsTip": "Aidez les appareils à se découvrir sur Internet. Remplissez une adresse wss :// par ligne ; laissez vide pour utiliser le relais par défaut.",
+			"fedBatterySaverLabel": "mode basse consommation",
+			"fedBatterySaverTip": "La réduction du nombre de connexions en arrière-plan et de l'activité réseau peut ralentir légèrement la synchronisation des messages.",
+			"fedAdvancedTitle": "Paramètres avancés",
+			"fedAdvancedDescription": "Corrections de bugs, gestion de la réputation et émission manuelle de liens",
+			"fedGroupRecoveryTitle": "Correction de la connexion de groupe",
+			"fedGroupRecoveryTip": "Utilisé uniquement si l'invitation a été divulguée ou si le nouvel appareil ne peut pas synchroniser l'historique.",
+			"fedRotateRoomSecret": "Faire pivoter le mot de passe de la salle de groupe",
+			"fedRotateRoomSecretConfirm": "Après la rotation, les invitations utilisant l’ancien mot de passe de la salle ne pourront plus se connecter. Êtes-vous sûr de vouloir continuer ?",
+			"fedRotateRoomSecretOk": "Le mot de passe de la salle a été modifié",
+			"fedRepairJoinSnapshot": "Demander aux voisins de rejoindre la réparation d'instantanés de groupe",
+			"fedRepairJoinSnapshotOk": "Instantané de groupe appliqué (${channels} historique des chaînes)",
+			"fedRepairJoinSnapshotFailed": "Échec de la réparation de l'instantané de groupe : ${error}",
+			"fedRepTitle": "Crédibilité subjective de ce groupe",
+			"fedRepTip": "Les scores de préférence de connexion calculés de manière native en fonction du comportement des nœuds fédérés ne constituent pas des évaluations publiques des membres du groupe.",
+			"fedRepEmpty": "(nul)",
+			"fedSlashTitle": "Pénalité de réputation",
+			"fedSlashTip": "Écrit une déclaration de réputation négative sur un nœud dans le graphique d'événements de groupe. À utiliser uniquement par les administrateurs qui comprennent les protocoles de fédération.",
+			"fedSlashTargetLabel": "cible pubKeyHash (64 hex)",
+			"fedSlashTarget": {
+				"placeholder": "Hachage de la clé publique du membre"
+			},
+			"fedSlashClaimLabel": "Revendication de force de revendication (0-1)",
+			"fedSlashVerifiedLabel": "Vérifiable (identifiant d'événement de preuve requis)",
+			"fedSlashProofLabel": "preuve.eventId (facultatif)",
+			"fedSlashProof": {
+				"placeholder": "ID d'événement 64 hexadécimal"
+			},
+			"fedSlashSubmitLabel": "Publier une réputation_slash",
+			"fedResetSubmitLabel": "Réinitialiser la réputation de la cible",
+			"fedSlashNeedHash": "Nécessite un pubKeyHash hexadécimal 64 bits",
+			"fedSlashOk": "réputation_slash écrit dans DAG",
+			"fedResetOk": "réputation_reset a été écrit",
+			"fedDmLinkTitle": "Émettre manuellement un lien d'ami",
+			"fedDmLinkTip": "Nécessite une signature à l’aide d’une clé d’identité native. La clé privée est uniquement soumise au service local sur cette page et ne sera pas envoyée à d'autres nœuds.",
+			"fedDmLinkDescription": "Convient au débogage ou à la migration manuelle d’identité ; il n'est pas nécessaire de remplir ces champs lors de l'ajout d'amis quotidiennement.",
+			"fedDmPubKeyLabel": "Clé publique hexadécimale(64)",
+			"fedDmSecretLabel": "Hex de graine de clé privée (64)",
+			"fedDmNodeLabel": "URL du nœud facultative",
+			"fedDmInvalidateTitle": "Laisser les anciens liens de parrainage expirer",
+			"fedDmInvalidateDescription": "Après l'exécution, tous les liens d'ajout d'amis précédemment émis deviendront immédiatement invalides et ne pourront pas être révoqués.",
+			"fedDmRotateLabel": "Invalider les anciens liens",
+			"fedDmRotateConfirm": "Tous les liens d'ajout d'amis précédemment émis deviendront immédiatement invalides et ne pourront pas être restaurés. Êtes-vous sûr de vouloir continuer ?",
+			"fedDmIssueLabel": "Émettre un lien DM",
+			"fedDmNeedPubKey": "Nécessite une clé publique de 64 hexadécimaux",
+			"fedDmNeedSecretKey": "Nécessite une clé privée de 64 hexagones",
+			"fedDmIssued": "Lien DM signé et copié dans le presse-papier",
+			"fedNonceRotated": "rotation occasionnelle (${nonce}…)",
+			"fedSaved": "enregistré",
+			"addServerTooltip": {
+				"title": "Créer ou rejoindre un groupe",
+				"tip": "Créer ou rejoindre un groupe"
+			},
+			"pinsTitle": "épingler en haut",
+			"bookmarksTitle": "Signets",
+			"pinsButton": {
+				"title": "Message épinglé"
+			},
+			"bookmarksButton": {
+				"title": "Signets"
+			},
+			"search": {
+				"placeholder": "Rechercher des messages…",
+				"noResults": "Aucun résultat",
+				"failed": "La recherche a échoué",
+				"scopeGroup": "Ce groupe",
+				"scopeAll": "Tous les groupes"
+			},
+			"membersTitle": {
+				"title": "Membres"
+			},
+			"backToNav": {
+				"title": "Retour à la liste",
+				"aria-label": "Retour à la liste"
+			},
+			"moreActions": {
+				"title": "Plus",
+				"aria-label": "Plus de propositions"
+			},
+			"composerMore": {
+				"title": "Plus d'accessoires",
+				"aria-label": "Plus d'accessoires"
+			},
+			"settingsTitle": {
+				"title": "Paramètres"
+			},
+			"filesTitle": {
+				"title": "Fichier de groupe"
+			},
+			"filesDrawerTitle": "fichier de groupe",
+			"filesLoading": "Chargement des fichiers de groupe...",
+			"filesLoadFailed": "Échec du chargement du fichier de groupe : ${error}",
+			"filesNoGroup": "Veuillez d'abord sélectionner un groupe",
+			"filesNoCabinets": "Aucune armoire accessible pour le rôle actuel",
+			"filesBindCabinet": "Ajouter une armoire",
+			"filesNoChannel": "Veuillez d'abord entrer le canal de texte où vous pouvez envoyer des messages",
+			"filesUploadTo": "téléverser vers",
+			"filesRootFolder": "répertoire racine",
+			"filesNewFolder": "Créer un nouveau dossier",
+			"filesNewFolderPrompt": "nom du dossier",
+			"filesRename": "Renommer",
+			"filesRenameFolderPrompt": "Renommez le dossier \"${name}\" en :",
+			"filesDeleteFolderConfirm": "Êtes-vous sûr de vouloir supprimer ce dossier ? Les fichiers du dossier ne seront pas automatiquement supprimés.",
+			"filesUpload": "téléverser",
+			"filesDownload": "télécharger",
+			"filesDelete": "Supprimer",
+			"filesDeleteConfirm": "Êtes-vous sûr de vouloir supprimer ce fichier ?",
+			"filesFoldersTitle": "Dossiers",
+			"filesListTitle": "Document",
+			"filesEmpty": "Il n'y a actuellement aucun fichier dans ce répertoire",
+			"filesNoFolders": "Aucun sous-dossier pour l'instant",
+			"uploadTitle": {
+				"title": "Téléverser des fichiers"
+			},
+			"emojiTitle": {
+				"title": "Émojis"
+			},
+			"voteTitle": {
+				"title": "Initier un vote"
+			},
+			"shareGroupTitle": {
+				"title": "Partager le lien du groupe"
+			},
+			"shareGroupOk": "Carte d'invitation de groupe partagé",
+			"messageActionFailed": "Échec de l'opération : ${error}",
+			"inviteJoinButton": "Rejoindre le groupe",
+			"inviteLinkNeedsRoomSecret": "Ce groupe n'a pas encore activé la synchronisation fédérée. Régénérez le lien d'invitation avant de le partager.",
+			"inviteCardMembers": "${count} membres",
+			"syncFailed": "Échec de la synchronisation de la fédération : ${error}",
+			"syncRateLimited": "La limite de vitesse de synchronisation fédérale est en cours, veuillez réessayer plus tard.",
+			"syncIncomplete": "Les événements ${missing}/${total} ne sont pas synchronisés",
+			"syncNoPeers": "Non connecté au voisin fédéré, les messages historiques ne peuvent pas être synchronisés temporairement ; veuillez utiliser le lien d'invitation complet et réessayer plus tard",
+			"attachmentLoadFailed": "Échec du chargement de la pièce jointe",
+			"messageEditUpload": "Téléverser une pièce jointe",
+			"timeToday": "Aujourd'hui ${time}",
+			"timeYesterday": "Hier ${time}",
+			"stickerTitle": {
+				"title": "Autocollant"
+			},
+			"sendTitle": {
+				"title": "Envoyer (Ctrl+Entrée)"
+			},
+			"stopGenerateTitle": {
+				"title": "Arrêter de générer"
+			},
+			"charTyping": "Entrée…",
+			"messageActionPrev": {
+				"title": "Chronologie précédente"
+			},
+			"messageActionNext": {
+				"title": "Prochaine chronologie"
+			},
+			"messageActionRegen": {
+				"title": "Régénérer"
+			},
+			"messageActionEdit": {
+				"title": "Modifier le message"
+			},
+			"messageActionFeedbackUp": {
+				"title": "J'aime"
+			},
+			"messageActionFeedbackDown": {
+				"title": "Cliquez pour ne pas aimer"
+			},
+			"messageActionDelete": {
+				"title": "Supprimer le message"
+			},
+			"confirmDeleteLong": "Ce message est trop long. Êtes-vous sûr de vouloir le supprimer ?",
+			"messageActionCopyHtml": {
+				"title": "Copier le HTML"
+			},
+			"forceReply": "Forcer la réponse",
+			"removeChar": "Supprimer un personnage",
+			"loadMore": "Chargement d'anciennes actualités…",
+			"charChatsTitle": "Conversations historiques avec ${name}",
+			"newGroupWith": "+ Créez une nouvelle conversation avec ${name}",
+			"messageActionBookmark": {
+				"title": "Marque-page"
+			},
+			"messageActionPin": {
+				"title": "Épingler en haut"
+			},
+			"messageActionUnpin": {
+				"title": "Détacher"
+			},
+			"blockAuthor": {
+				"title": "Bloquer cet auteur"
+			},
+			"pinUnpinSidebar": {
+				"title": "Détacher"
+			},
+			"meAuthor": "Moi",
+			"messageEditSave": "Enregistrer",
+			"messageEditCancel": "Annuler",
+			"feedbackReasonPrompt": "Raison du refus (facultatif)",
+			"feedbackReasonInput": {
+				"placeholder": "Raison du refus (facultatif)"
+			},
+			"messageFeedbackSubmit": "Envoyer un retour",
+			"stickersPanelTitle": "Autocollant",
+			"stickersManage": "Gérer les autocollants →",
+			"stickersLoading": "Chargement…",
+			"recentEmojiTab": {
+				"title": "Couramment utilisé"
+			},
+			"recentEmojisEmpty": "Les émoticônes envoyées seront affichées ici en fonction du nombre de fois qu'elles ont été utilisées.",
+			"currentGroupEmojiTab": {
+				"title": "Émoticônes du groupe actuel"
+			},
+			"groupEmojiTab": {
+				"title": "Groupe"
+			},
+			"groupEmojisEmpty": "Aucun émoji de groupe pour l'instant. Vous pouvez en téléverser dans les paramètres du groupe.",
+			"groupEmojisLoadFailed": "Échec du chargement des émoticônes de groupe",
+			"profileLinkTitle": {
+				"title": "Informations personnelles",
+				"textContent": "informations personnelles"
+			},
+			"userLoading": "Chargement…",
+			"status": {
+				"online": "En ligne",
+				"idle": "Repos",
+				"dnd": "Ne pas déranger",
+				"invisible": "Furtivité",
+				"offline": "Hors ligne"
+			},
+			"changeStatusTitle": "Statut du commutateur",
+			"aboutSection": "à propos",
+			"bioEmpty": "Cet utilisateur n'a pas encore de profil.",
+			"statusOffline": {
+				"title": "Hors ligne",
+				"textContent": "Hors ligne"
+			},
+			"statusOnline": {
+				"title": "En ligne",
+				"textContent": "en ligne"
+			},
+			"statusIdle": {
+				"title": "Partir",
+				"textContent": "partir"
+			},
+			"statusDnd": {
+				"title": "Ne pas déranger",
+				"textContent": "Ne pas déranger"
+			},
+			"banners": {
+				"gshBuffer": "Il y a ${total} messages en attente d'être déchiffrés après la rotation des clés",
+				"plaintextSidecar": "Ce canal est synchronisé à la demande ; le side-car des messages locaux met en cache le contenu en texte clair.",
+				"quarantine": "Il y a ${count} événements de fédération temporairement stockés dans la zone de quarantaine en raison d'un écart d'horloge, et seront automatiquement rejoués une fois l'heure du système restaurée.",
+				"mailboxPending": "${count} messages en attente de livraison dans la boîte aux lettres hors ligne.",
+				"syncing": "Synchronisation avec les voisins fédéraux…",
+				"archiveCoverageIncomplete": "Certaines archives froides des mois n'ont pas encore été synchronisées depuis la fédération.",
+				"archiveSyncButton": "Archivage synchrone",
+				"forkGovernance": "Il existe un fork dans l'enregistrement des autorisations et il est actuellement en vue locale.",
+				"forkTips": "${count} branches non fusionnées détectées. L'ordre des messages peut être incohérent.",
+				"forkTipLabel": "feuille DAG",
+				"forkTipScore": "${short} · Réputation ${score}",
+				"applyBranch": "Branche de gouvernance des applications",
+				"autoBranch": "Sélection automatique de réputation",
+				"mergeDag": "Fusionner les fourchettes",
+				"splitFork": "Diviser dans un nouveau groupe",
+				"blockOpposing": "Les branches opposées sont inaccessibles",
+				"suspectedRemoved": "Vous avez peut-être été supprimé de ce groupe : vous avez demandé une vérification à ${count} nœuds connus, mais tous ont été rejetés. Vous pouvez commémorer l'histoire locale ou supprimer cette Copier de groupe.",
+				"suspectedRemovedKeep": "Emportez un souvenir",
+				"suspectedRemovedLeave": "Supprimer le groupe"
+			},
+			"blockOpposingConfirm": "Ajouter à la liste de blocage les émetteurs de gouvernance absents de l'élection en cours, et refuser le relais fédéré de ce groupe. Continuer ?",
+			"blockOpposingOk": "${count} sujets marqués comme inaccessibles",
+			"blockOpposingFailed": "Échec du Markdown : ${error}",
+			"applyBranchOk": "Branche Gouvernance appliquée",
+			"applyBranchFailed": "Échec de l'Appliquer de la branche : ${error}",
+			"autoBranchOk": "Sélection automatique après restauration de la réputation",
+			"autoBranchFailed": "Échec de la sélection automatique : ${error}",
+			"saveEmoji": {
+				"title": "Enregistrer les émoticônes"
+			},
+			"saveEmojiOk": "L'émoticône a été enregistrée dans la base de données",
+			"saveEmojiFailed": "Échec de l'enregistrement de l'émoticône : ${error}",
+			"saveSticker": {
+				"title": "Enregistrer les autocollants"
+			},
+			"saveStickerOk": "L'autocollant a été ajouté à votre bibliothèque d'autocollants",
+			"saveStickerFailed": "Échec de l'enregistrement des autocollants : ${error}",
+			"revealRemoteMd": "Développer le texte intégral",
+			"voteModalTitle": "Initier un vote",
+			"voteModalSubmit": "Créer un sondage",
+			"voteCreateFailed": "Échec de la création du sondage : ${error}",
+			"composer": {
+				"placeholder": "Envoyer à #${channel}"
+			},
+			"composerSuspectedRemoved": {
+				"placeholder": "Vous avez peut-être été supprimé de ce groupe et vous ne pouvez plus continuer à envoyer des messages."
+			},
+			"channelReadonlyList": {
+				"placeholder": "Liste des chaînes en lecture seule"
+			},
+			"channelReadonlyStream": {
+				"placeholder": "Chaîne de streaming en lecture seule"
+			},
+			"noChannels": "Aucune conversation pour l'instant",
+			"noMembers": "Pas encore de membres",
+			"noPins": "Pas encore d'épingles",
+			"noBookmarks": "Pas encore de favoris",
+			"adminSection": "administrateur",
+			"memberSection": "Membres",
+			"membersDigestOk": "Membre Merkle à l'unanimité · ${root}",
+			"membersDigestOkPaged": "Consensus des membres Merkle (${pages} pages) · ${root}",
+			"membersDigestMismatch": "Résumé des membres incohérents · ${root}",
+			"membersDigestPending": "Consultez le résumé des membres…",
+			"membersDigestFetchFailed": "Échec de l'extraction des membres par page",
+			"copyEntityId": "Copier l'ID de l'entité",
+			"copyEntityIdOk": "ID d'entité copié",
+			"memberJoined": "Rejoint la conversation",
+			"remoteBadge": {
+				"textContent": "télécommande",
+				"title": "Auteur distant fédéré"
+			},
+			"trustAuthor": {
+				"textContent": "confiance",
+				"title": "Faites confiance à cet auteur (autorisez le HTML dangereux)"
+			},
+			"stickerInline": "autocollant",
+			"voteDeadline": "Date limite : ${date}",
+			"voteNoOptions": "Aucune option",
+			"voteTotal": "Total ${total} votes",
+			"voteCount": "${count} billets · ${pct} %",
+			"loadGroupFailed": "Échec du chargement du groupe : ${error}",
+			"groupJoinRequired": "Le groupe ne peut pas être ouvert, veuillez utiliser le lien d'invitation ou le code d'invitation pour le rejoindre",
+			"sendFailed": "Échec de l'envoi : ${error}",
+			"sendFailedPending": "L'envoi a échoué",
+			"markdownRenderFailed": "Échec du rendu du message",
+			"retrySend": "Essayer à nouveau",
+			"sendImageFailed": "Échec de l'envoi de la photo : ${error}",
+			"sendStickerFailed": "Échec de l'envoi de l'autocollant : ${error}",
+			"voteMinOptions": "Nécessite au moins 2 options",
+			"mergeDagOk": "Fourche fusionnée",
+			"mergeDagFailed": "Échec de la fusion : ${error}",
+			"forkSplitFailed": "Échec du fractionnement : ${error}",
+			"forkSplitPrompt": "Nom du nouveau groupe (peut rester vide)",
+			"forkSplitModalTitle": "Diviser dans un nouveau groupe",
+			"forkSplitModalSubmit": "créer",
+			"typing": "${names} est en train de taper...",
+			"charsHeader": "Rôle",
+			"friendsHeader": "amis",
+			"settingsModalTitle": "Paramètres",
+			"modalClose": "Fermer",
+			"groupTag": "groupe",
+			"groupUnnamed": "Groupe sans nom ·${suffix}",
+			"groupHeaderMenu": {
+				"title": "Menu Groupe : paramètres, invitations, etc."
+			},
+			"groupDescriptionEmpty": "Il n'y a pas encore de profil pour ce groupe.",
+			"serverActionPickerTitle": "Groupe",
+			"serverActionPickerSubtitle": "Créez un nouveau groupe ou rejoignez un groupe existant par ID",
+			"serverActionPickerCreate": "Créer un groupe",
+			"serverActionPickerCreateDescription": "Repartir de zéro et inviter des amis",
+			"serverActionPickerJoin": "Rejoindre le groupe",
+			"serverActionPickerJoinDescription": "Utiliser l'ID de groupe",
+			"cancel": "Annuler",
+			"folderDefault": "Dossiers",
+			"folderRename": "Renommer le dossier",
+			"folderRenamePrompt": "Renommez le dossier \"${name}\" en :",
+			"folderCollapse": "Réduire le dossier",
+			"folderExpand": "Développer le dossier",
+			"folderDissolve": "Fermer le dossier",
+			"bookmarkLocal": "locale",
+			"groupsSection": "groupe",
+			"ungrouped": "Non groupé",
+			"defaultCategory": "dialogue",
+			"bookmarkFallback": "Signets",
+			"bookmarkRemove": {
+				"title": "Supprimer le favori",
+				"aria-label": "Supprimer le favori"
+			},
+			"loadMessagesFailed": "Échec du chargement du message : ${error}",
+			"unreadDivider": "Nouveaux messages",
+			"noUsername": "Nom d'utilisateur non obtenu",
+			"stickersEmpty": "Pas encore d'autocollants",
+			"stickersMarketLink": "Allez sur Sticker Square pour installer",
+			"stickersLoadFailed": "Échec du chargement : ${error}",
+			"noChars": "Il n'y a pas encore de rôles, veuillez d'abord en installer quelques-uns.",
+			"noFriends": "Pas encore de discussions privées",
+			"friendsEmptyTitle": "Démarrer une nouvelle conversation",
+			"friendsEmptyDescription": "Recherchez des utilisateurs sur le rôle local ou sur d'autres nœuds, et vous pouvez également ouvrir la carte de profil de membre dans la discussion de groupe pour lancer un message privé.",
+			"friendsEmptyAction": "Rechercher un rôle ou un utilisateur",
+			"friendsSearchEmpty": "Aucun rôle ou utilisateur correspondant",
+			"friendsSearchTooShort": "Veuillez saisir au moins 2 caractères",
+			"friendsSearchDm": "Envoyer un message privé",
+			"friendsSearchChat": "Démarrer une conversation",
+			"friendsSearchLocalChar": "rôle local",
+			"friendsSearchPin": "Définir comme alias",
+			"charCount": "${count} rôles",
+			"friendsCount": "${count} amis",
+			"charTag": "Rôle",
+			"friendsTag": "amis",
+			"backToFriends": "Retourner chez des amis",
+			"dmTopicsTitle": "Sujet",
+			"friendsContextNewChat": "Nouvelle discussion",
+			"friendsRestartConfirm": "Le chat privé avec \"${name}\" sera dissocié et une nouvelle conversation sera créée. Êtes-vous sûr ?",
+			"friendsRestartOk": "Un nouveau chat privé a été ouvert",
+			"friendsRestartFailed": "Échec de la création d'un nouveau chat privé : ${error}",
+			"charDescriptionEmpty": "Le personnage ne s'est pas encore présenté.",
+			"charIntro": "introduire",
+			"participants": "Participants",
+			"charTagSolo": "Personnages · Dialogues 1 :1",
+			"startChatWith": "💬 Commencez à discuter avec ${name}",
+			"loading": "Chargement…",
+			"charChatStart": "Démarrer une conversation avec ${name}",
+			"charChatEmpty": "Il n'y a pas encore de message, démarrez votre premier chat !",
+			"loadCharChatFailed": "Échec du chargement du message",
+			"createChatFailed": "Échec de la création de la session : ${error}",
+			"charChatComposer": {
+				"placeholder": "Envoyer un message à ${name} (Ctrl+Entrée pour envoyer)"
+			},
+			"friendChatComposer": {
+				"placeholder": "Envoyer un message (Ctrl+Entrée pour envoyer)"
+			},
+			"trustOk": "Cet auteur a fait confiance",
+			"trustAuthorDialog": {
+				"title": "Faites confiance à cet auteur",
+				"subtitle": "Auteur : ${author}",
+				"warningTitle": "opérations à haut risque",
+				"warningBody": "Une fois approuvés, les messages envoyés par cet auteur seront affichés dans votre navigateur sous forme de Markdown complet (avec des capacités HTML/script). Si l'autre partie crée de manière malveillante du contenu sur l'instance de fount qu'elle exécute, cela peut endommager votre ordinateur local lorsque vous affichez le message. Veuillez ne faire confiance qu’aux nœuds fédérés que vous connaissez clairement et que vous êtes prêt à prendre des risques.",
+				"durationLabel": "Durée de la confiance",
+				"duration3h": "3 heures",
+				"duration7d": "7 jours",
+				"duration1Month": "1 mois",
+				"durationForever": "permanent",
+				"confirmCooldown": "J'ai lu le risque (${seconds})",
+				"confirmFirst": "Je comprends les risques, continuez",
+				"confirmSecond": "Cliquez à nouveau pour finaliser",
+				"cancel": "Annuler"
+			},
+			"blockConfirm": "Ajouter cette personne à la liste de blocage ? La fédération de ce groupe refusera son relais.",
+			"blockOk": "Bloqué",
+			"charChatSettings": "Paramètres de discussion avec les personnages",
+			"charChatSubtitle": "Séance avec ${name}",
+			"sessionInfo": "informations sur la séance",
+			"sessionRole": "Rôle",
+			"sessionId": "ID de session",
+			"sessionMessages": "Nombre de messages",
+			"quickActions": "Fonctionnement rapide",
+			"advancedSettings": "Paramètres avancés (Personnage/Monde/Plugins)",
+			"advancedSettingsDescription": "Ouvrez les paramètres complets du groupe dans le Hub dans un nouvel onglet",
+			"dangerZone": "Zone dangereuse",
+			"unbindFriendDescription": "Après la dissociation, la conversation reviendra à la liste des groupes sur la gauche et les enregistrements des messages seront conservés.",
+			"unbindFriend": "Délier",
+			"unbindFriendConfirm": "Êtes-vous sûr de dissocier le chat privé avec ${name} ? La conversation sera replacée dans la liste des groupes.",
+			"unbindFriendOk": "Non lié",
+			"unbindFriendFailed": "Échec de la dissociation : ${error}",
+			"deleteSessionDescription": "La suppression de cette conversation supprimera définitivement tous les messages et est irréversible.",
+			"deleteSession": "Supprimer la séance",
+			"deleteSessionConfirm": "Êtes-vous sûr de vouloir supprimer la session avec ${name} ? Cette opération est irréversible.",
+			"sessionDeleted": "Conversation supprimée",
+			"sessionDeleteFailed": "Échec de la suppression : ${error}",
+			"streamTokenFailed": "Impossible d'émettre un jeton de visualisation",
+			"streamAvJoin": "Ajouter de la voix/vidéo",
+			"streamAvLeave": "partir",
+			"streamAvMute": "Couper le son",
+			"streamAvUnmute": "Activer le son",
+			"streamAvVideo": "Éteindre la caméra",
+			"streamAvVideoOn": "Allumer la caméra",
+			"streamAvYou": "toi",
+			"streamAvJoinFailed": "Impossible de démarrer l'appel : ${error}",
+			"streamAvNoCodecs": "Ce navigateur ne prend pas en charge les WebCodecs (nécessite Chrome 94+ / Edge 94+ / Firefox 130+)",
+			"streamAvPeers": "${count} personnes en ligne",
+			"streamAvPresetThumb": "abrégé 64 kbps",
+			"streamAvPresetLow": "Faible qualité 200 kbps",
+			"streamAvPresetMed": "Moyen 600 kbit/s",
+			"streamAvPresetHigh": "Haute qualité 1,5 Mbps",
+			"callButton": {
+				"title": "Démarrer ou rejoindre un appel",
+				"aria-label": "Démarrer ou rejoindre un appel"
+			},
+			"callInProgress": "Appel en cours",
+			"callEnded": "L'appel est terminé",
+			"callJoin": "Rejoignez l'appel",
+			"callHangup": "raccrocher",
+			"callScreenShare": "partager l'écran",
+			"callScreenStop": "Arrêter de partager",
+			"callJumpBack": "Retour au canal d'appel",
+			"callJoinFailed": "Impossible de rejoindre l'appel : ${error}",
+			"callScreenFailed": "Échec du partage d'écran : ${error}",
+			"callStartedAt": "Commencé à ${time}",
+			"callDuration": "Durée ${duration}",
+			"callParticipants": "${n} personnes",
+			"callPeerCount": "${n}",
+			"callNoParticipants": "Aucun participant pour l'instant",
+			"listChannelEmpty": "La liste est vide.",
+			"listItemUntitled": "Anonyme",
+			"listEditorTitle": "Modifier les éléments de la liste (tableau JSON)",
+			"listSaveToDag": "Enregistrer dans DAG",
+			"listJsonInvalid": "JSON non valide : ${message}",
+			"listSaved": "enregistré",
+			"listSaveFailed": "Échec de l'enregistrement",
+			"streamDefaultName": "diffusion multimédia en continu",
+			"streamRefreshToken": "Actualiser le jeton de surveillance",
+			"streamEmbedHttpsRequired": "L'adresse de diffusion en continu doit être une page https:// intégrable, ou les paramètres du groupe doivent d'abord être configurés et actualisés pour obtenir un jeton de visualisation.",
+			"streamWebRtcHint": "Aucun SFU externe n'est configuré ; cette chaîne utilisera WebRTC en groupe (aucun streamingSfuWss requis).",
+			"pinPreviewSticker": "[autocollant]",
+			"pinPreviewVote": "[Voter] ${question}",
+			"pinPreviewInvite": "[Inviter] ${groupName}",
+			"reactionRemovePrompt": "Quels ${emoji} supprimer ?\n${candidates}",
+			"ariaDagTip": {
+				"aria-label": "Embout de fourche DAG"
+			},
+			"ariaClose": {
+				"aria-label": "Fermer"
+			},
+			"membersDigestPagesTitle": {
+				"title": "${expected}\n${pages} pages"
+			},
+			"discoveryTitle": "Découverte en groupe",
+			"discoveryEyebrow": "Explorez la communauté",
+			"discoveryDescription": "Parcourez les groupes publics du réseau de la fédération, choisissez une communauté d'intérêt et rejoignez-la.",
+			"discoverySidebarHint": "Parcourez et rejoignez des groupes publics sur la droite",
+			"discoveryEmptyTitle": "Aucun groupe public trouvé pour l'instant",
+			"discoveryEmpty": "Il n'y a actuellement aucun groupe recommandé ; après avoir activé la synchronisation de la fédération, la liste de découverte sera synchronisée à partir des voisins.",
+			"discoveryNoDescription": "Le propriétaire du groupe n'a pas encore rempli son profil.",
+			"discoverySourceCount": "${count} sources fédérées",
+			"discoveryJoin": "Rejoindre le groupe",
+			"discoveryOpen": "Groupe ouvert",
+			"discoveryLoadFailed": "Échec du chargement de la liste de découverte : ${message}",
+			"operationFailed": "Échec de l'opération : ${error}",
+			"shareGroupFailed": "Échec du partage du lien du groupe : ${error}",
+			"blockAuthorTitle": "Bloquer cet auteur",
+			"configTitle": "Configuration des conversations",
+			"configSaved": "enregistré",
+			"configSaveFailed": "Échec de l'enregistrement : ${error}",
+			"configLoadFailed": "Échec du chargement de la configuration : ${error}",
+			"noActiveChat": "Ouvrez d'abord une session avant de déposer un fichier",
+			"groupContext": {
+				"manage": "Groupe de gestion",
+				"notifyPrefs": "Paramètres de notification",
+				"invite": "Inviter d'autres personnes",
+				"inviteCopied": "Lien d'invitation copié dans le presse-papiers",
+				"addChar": "Ajouter un rôle",
+				"addCharLabel": "Sélectionnez un rôle",
+				"addCharSubmit": "Ajouter à",
+				"noChars": "Aucun rôle disponible",
+				"setAlias": "Définir l'alias du groupe",
+				"setAliasPrompt": "Définissez un alias local pour \"${name}\" (laissez vide pour effacer) :",
+				"aliasSaved": "Alias ​​de groupe mis à jour",
+				"leave": "Quitter le groupe",
+				"leaveConfirm": "Êtes-vous sûr de vouloir quitter le groupe \"${name}\" ? Vous ne pourrez plus afficher les messages de ce groupe.",
+				"leaveOk": "A quitté le groupe",
+				"leaveBatch": "Quitter le groupe sélectionné (${count})",
+				"leaveConfirmBatch": "Voulez-vous vraiment quitter les ${count} groupes sélectionnés ? La machine ne conservera plus les données de ces groupes.",
+				"leaveBatchPending": "${count} groupes ont été supprimés de la liste et se terminent en arrière-plan...",
+				"leaveBatchOk": "Groupes ${count} quittés",
+				"leaveBatchPartial": "Les groupes ${failed} / ${total} n'ont pas pu se fermer, la liste a été actualisée"
+			},
+			"replyInline": {
+				"title": "Répondre"
+			},
+			"replyClear": {
+				"title": "Effacer la réponse"
+			},
+			"replyInThread": {
+				"title": "Répondre dans le fil de discussion enfant"
+			},
+			"syncTruncated": "L'incrément DAG n'est pas plein. Vous pouvez réessayer plus tard ou augmenter la limite.",
+			"syncTruncatedHint": "L'historique du DAG est trop long. Vous pouvez réessayer plus tard ou augmenter la limite.",
+			"newChannelButton": "Créer une nouvelle chaîne",
+			"newChannelSuccess": "Chaîne créée",
+			"newChannelFailed": "Échec de la création de la chaîne",
+			"newChannelTitle": "Créer une nouvelle chaîne",
+			"channelName": "Nom de la chaîne",
+			"channelType": "Type de canal",
+			"channelTypeText": "canal de discussion",
+			"channelTypeList": "Chaîne de liste/forum",
+			"channelTypeStreaming": "chaîne de diffusion en continu",
+			"channelNameInput": {
+				"placeholder": "général"
+			},
+			"localMaterializedView": "Il s'agit actuellement d'une vue matérialisée locale, et les autorisations et l'historique peuvent être incohérents avec ceux des autres nœuds.",
+			"convergentEncryptWarn": "Les fichiers de groupe utilisent le cryptage convergent : si l'attaquant connaît le texte en clair d'un fichier, il peut en dériver la clé et déchiffrer le bloc de texte chiffré correspondant. Ne comptez pas uniquement sur le chiffrement de groupe pour la protection de documents hautement sensibles et uniquement privés.",
+			"votePromptQuestion": "titre de vote",
+			"votePromptOptions": "Options (au moins deux, séparées par des virgules)",
+			"voteOptionDefault": "D'accord, s'opposer",
+			"votePromptDeadlineHours": "Délai (heures, laisser vide = pas de délai)",
+			"messagePrefixVote": "voter",
+			"threadCreated": "Le fil de discussion enfant a été créé",
+			"threadCreateFailed": "Échec de la création du fil de discussion enfant, veuillez réessayer plus tard",
+			"threadDrawer": {
+				"aria-label": "fil enfant"
+			},
+			"threadClose": {
+				"title": "Fermer le fil de discussion enfant"
+			},
+			"reputationSlashAlert": "La réputation du membre ${target}… est rappelée par la déduction.",
+			"profileEdit": {
+				"previewHint": "Les modifications apparaissent immédiatement dans l'aperçu et sont enregistrées et synchronisées dans Chat et Social.",
+				"livePreview": "Aperçu en direct",
+				"languageVersion": "Version linguistique",
+				"localeHint": "Cliquez sur l'étiquette pour changer ou modifier le code ; appuyez sur Entrée dans la zone de saisie à la fin pour le copier dans une nouvelle langue.",
+				"themeColorHint": "Utilisé pour générer des textures lorsqu'il n'y a pas de bannière personnalisée, et également utilisé pour les boucles d'ondes sonores en direct",
+				"bannerLabel": "fond de bannière",
+				"bannerHint": "Indiquez une URL d'image ou téléversez un fichier ; vous pouvez aussi reprendre la bannière par défaut.",
+				"bannerClear": "Reprendre la génération de bannières",
+				"linksPreview": "${count} liens publics",
+				"unsavedHint": "Fermer la fenêtre annulera les modifications non enregistrées.",
+				"tagsLabel": "Étiquette",
+				"tagAdd": "Ajouter à",
+				"tagRemove": "Supprimer la balise",
+				"linksLabel": "Lien",
+				"linkAdd": "Ajouter un lien",
+				"linkRemove": "Supprimer le lien",
+				"handleLabel": "Identifiant personnalisé",
+				"handleHint": "Peut être recherché par d'autres nœuds du réseau ; l'unicité n'est pas garantie et les conflits seront levés selon la liste de confiance.",
+				"resetFromPart": "Réinitialiser à partir d'une partie de personnage",
+				"resetFromPartConfirm": "Les informations actuelles seront remplacées par les informations de la partie de rôle. Êtes-vous sûr ?",
+				"resetFromPartDone": "Profil reconstruit à partir de parties de personnages",
+				"resetFromPartFailed": "Échec de la reconstruction : ${error}",
+				"newLocale": {
+					"placeholder": "Nouveau code de langue, tel que en-UK"
+				},
+				"avatarUrl": {
+					"placeholder": "URL de l'avatar ou téléversez un fichier ci-dessous"
+				},
+				"bannerUrl": {
+					"placeholder": "URL de la bannière ou téléversez un fichier ci-dessous"
+				},
+				"tag": {
+					"placeholder": "Ajouter après avoir saisi la balise"
+				},
+				"linkName": {
+					"placeholder": "Afficher le texte"
+				},
+				"linkUrl": {
+					"placeholder": "https://… ou font://…"
+				},
+				"handle": {
+					"placeholder": "Par exemple Steve (2 à 32 caractères alphanumériques minuscules._-)"
+				}
+			},
+			"profilePopup": {
+				"close": {
+					"title": "Fermer la carte de données"
+				},
+				"editSaved": "Données enregistrées",
+				"editQueued": "Publié, en attendant que l'autre nœud le récupère",
+				"dmChar": "Discutez en privé avec un personnage",
+				"dmUser": "Envoyer un message privé",
+				"dmFed": "Message privé fédéral",
+				"noFedIdentity": "Veuillez d'abord configurer activePubKeyHex natif dans les paramètres de fédération",
+				"peerNoIdentity": "L'autre partie n'a pas de statut fédéral et ne peut pas lancer de message privé fédéral.",
+				"dmFailed": "Impossible d'ouvrir le message privé : ${error}",
+				"care": "Suivis de près",
+				"careRemove": "Annuler les soins particuliers",
+				"setAlias": "Définir un alias",
+				"setAliasPrompt": "Définissez un alias local pour \"${name}\" (laissez vide pour effacer) :"
+			},
+			"channelContext": {
+				"copyLinkDone": "Lien de chaîne copié",
+				"notifyPrefs": "Paramètres de notification de chaîne",
+				"rename": "Renommer la chaîne",
+				"renameOk": "La chaîne a été renommée",
+				"delete": "Supprimer la chaîne",
+				"deleteOk": "Chaîne supprimée",
+				"deleteConfirm": "Êtes-vous sûr de vouloir supprimer la chaîne \"${name}\" ? Cette action ne peut pas être annulée.",
+				"setDefault": "Définir comme canal par défaut",
+				"setDefaultOk": "Canal par défaut défini",
+				"copyLink": "Copier le lien de la chaîne",
+				"exportJson": "Exporter JSON",
+				"exportOk": "Archive de chaîne téléchargée",
+				"exportFailed": "Échec de l'exportation : ${error}"
+			},
+			"memberContext": {
+				"copyName": "Copier le nom d'affichage",
+				"mention": "Mentions",
+				"care": "Suivis de près",
+				"careAdded": "Suivis de près déjà ajoutée",
+				"careRemoved": "Soins spéciaux annulés",
+				"setAlias": "Définir un alias",
+				"setAliasPrompt": "Définissez un alias local pour \"${name}\" (laissez vide pour effacer) :",
+				"aliasSaved": "Alias ​​​​mis à jour",
+				"copyPubKey": "Copier le hachage de la clé publique",
+				"copyEntityId": "Copier l'ID de l'entité",
+				"dm": "Envoyer un message privé",
+				"kick": "donner un coup de pied à un membre",
+				"kickSelfNodeWarning": "Avertissement : Ce membre utilise la même identité de nœud que vous. Vous serez également retiré du groupe après avoir été expulsé. Êtes-vous sûr de vouloir continuer ?",
+				"ban": "Bannir…",
+				"personalBlock": "Blocage personnel",
+				"personalBlockConfirm": "Ajouter ${name} à votre liste de blocage ? Les personnes qui vous suivent capteront ce signal et auront peut-être moins confiance en elles.",
+				"personalBlockSuccess": "Ajouté à la liste de blocage",
+				"banTitle": "Sélectionnez la plage d'interdiction",
+				"banEntity": "Entités interdites (entityHash 128 bits)",
+				"banNode": "Bannir le nœud (homeNodeHash)"
+			},
+			"messageContext": {
+				"edit": "Modifier le message",
+				"delete": "Supprimer le message"
+			},
+			"charStreaming": "Générateur…",
+			"gshDecryptPending": "En attente de la clé de chaîne (génération ${gen})",
+			"gshDecryptFailed": "Impossible de déchiffrer ce message sans clé de chaîne",
+			"fileDecryptFailed": "Impossible d'accéder à ce fichier sans clé de fichier",
+			"reactionFailed": "L'opération de réponse a échoué",
+			"fileUploadChecking": "Vérifier si le même contenu existe déjà...",
+			"fileUploadingChunk": "Téléversement de blocs chiffrés…",
+			"fileUploadRegistering": "Enregistrement de fichiers…",
+			"fileUploaded": "Fichier téléversé avec succès",
+			"fileUploadFailed": "Échec du téléversement du fichier",
+			"fileSkippedDedup": "Transfert de bloc en double ignoré",
+			"fileDownloadFailed": "Le téléchargement du fichier a échoué",
+			"fileNoKey": "Impossible de déchiffrer (clé manquante)",
+			"fileLoadFailed": "Le chargement du fichier a échoué",
+			"createModal": {
+				"title": "Créer un groupe",
+				"subtitle": "Les groupes sont des espaces privés où vous et vos amis pouvez discuter ensemble",
+				"basicSection": "Informations de base",
+				"nameLabel": "Nom du groupe",
+				"name": {
+					"placeholder": "Donnez un nom à votre groupe"
+				},
+				"descriptionLabel": "Descriptif du groupe",
+				"description": {
+					"placeholder": "(Facultatif) Présentez ce groupe"
+				},
+				"joinSection": "Qui peut rejoindre",
+				"joinInviteOnly": "Sur invitation uniquement",
+				"joinInviteOnlyDescription": "Un code d'invitation est requis pour rejoindre",
+				"joinPow": "Preuve de travail (PoW)",
+				"joinPowDescription": "Vous devez relever le défi PoW avant de rejoindre",
+				"cancel": "Annuler",
+				"submit": "Créer un groupe",
+				"failed": "Échec de la création du groupe : ${error}"
+			},
+			"joinModal": {
+				"title": "Rejoindre le groupe",
+				"subtitle": "Entrez l'ID du groupe pour rejoindre le chat correspondant",
+				"groupIdLabel": "Identifiant du groupe",
+				"groupId": {
+					"placeholder": "groupe_1776941580949_xxxx"
+				},
+				"inviteLabel": "Code d'invitation (facultatif)",
+				"invite": {
+					"placeholder": "Code d'invitation à court terme généré par le propriétaire du groupe"
+				},
+				"hint": "Les identifiants de groupe sont partagés par les propriétaires de groupe. Les groupes sur invitation doivent remplir un code d'invitation valide (peut être généré sur la page des paramètres).",
+				"cancel": "Annuler",
+				"submit": "Rejoindre le groupe"
+			},
+			"menuCopy": "Copier",
+			"menuMD": "Markdown",
+			"menuTXT": "Texte brut",
+			"menuHTML": "HTML",
+			"menuDownload": "Télécharger HTML",
+			"menuDelete": "Supprimer",
+			"menuShareGroup": "Partager le lien",
+			"menuPrev": "Élément précédent",
+			"menuNext": "Élément suivant",
+			"menuShare": {
+				"1h": "Partager le lien pendant 1 heure",
+				"12h": "Partager le lien de 12 heures",
+				"24h": "Partager le lien 24 heures sur 24",
+				"72h": "Partager le lien 72 heures"
+			},
+			"noGroups": "Aucun groupe",
+			"myGroups": "Mes groupes",
+			"joinGroup": "Rejoindre le groupe",
+			"createGroup": "Créer un nouveau groupe",
+			"noDescription": "Pas encore de description",
+			"memberCountLabel": "${count} membres",
+			"loadListFailed": "Échec du chargement de la liste des groupes : ${error}",
+			"contentWarning": "Avertissement de contenu",
+			"sensitiveMedia": "Média sensible",
+			"revealContent": "Afficher le contenu",
+			"revealMedia": "Afficher le média",
+			"copyShareLink": "Copier le lien de partage",
+			"forward": "Transférer",
+			"forwardedFrom": "Transféré de",
+			"forwardDialog": {
+				"title": "Transférer le message",
+				"selectGroup": "Sélectionnez le groupe cible",
+				"selectChannel": "Sélectionnez le canal cible",
+				"confirm": "Transférer",
+				"cancel": "Annuler",
+				"success": "Transféré",
+				"failed": "Le transfert a échoué"
+			},
+			"deliverySending": "Envoi",
+			"deliverySent": "Envoyé",
+			"deliveryRead": "Lu",
+			"translate": "Traduire",
+			"translating": "Traduire…",
+			"translateShowOriginal": "Afficher le texte original",
+			"translateShowTranslation": "Afficher la traduction",
+			"translateLabel": "Traduction",
+			"translateFailed": "La traduction a échoué",
+			"editImage": "Modifier l'image",
+			"draftRestored": "Brouillon restauré",
+			"queuedOffline": "En attente d'envoi (hors ligne)",
+			"translationPrefs": {
+				"title": "Paramètres de traduction",
+				"textContent": "Paramètres de traduction",
+				"autoTranslate": "Traduire automatiquement les messages en langue étrangère",
+				"hint": "Lorsqu'ils sont activés, les messages avec différentes langues et interfaces demanderont automatiquement des traductions.",
+				"save": "Enregistrer",
+				"saved": "Paramètres de traduction enregistrés",
+				"saveFailed": "Échec de l'enregistrement : ${error}"
+			},
+			"friendsSearch": {
+				"placeholder": "Rechercher un rôle local/un ID personnalisé/un nom…"
+			},
+			"threadComposer": {
+				"placeholder": "Répondez dans le sous-thème…"
+			},
+			"altImage": {
+				"placeholder": "Ajoutez une description à l’image…",
+				"label": "Description de l'image (alt)"
+			}
+		},
 		"sidebar": {
+			"settings": {
+				"title": "Paramètres du groupe"
+			},
 			"noSelection": "Rien de sélectionné",
 			"noDescription": "Aucune description disponible",
 			"world": {
@@ -780,6 +3171,16 @@
 						"alt": "Icône d'ajout de plugin"
 					}
 				}
+			},
+			"dataMgmt": {
+				"title": "Gestion des données",
+				"compact": "Générer un point de contrôle",
+				"prune": "Historique du recadrage",
+				"compactSuccess": "Point de contrôle généré avec succès",
+				"compactError": "La génération du point de contrôle a échoué",
+				"pruneSuccess": "Extrait du message historique terminé",
+				"pruneError": "Le recadrage a échoué",
+				"invalidN": "Le nombre d'articles réservés n'est pas valide (minimum 10 articles)"
 			}
 		},
 		"rightSidebar": {
@@ -951,7 +3352,11 @@
 			}
 		},
 		"messageGenerating": {
-			"stop": "Arrêter",
+			"tips": "Le rôle génère une réponse, veuillez patienter...",
+			"stop": {
+				"textContent": "Arrêter",
+				"title": "Arrêter de générer"
+			},
 			"stopIcon": {
 				"alt": "icône d'arrêt"
 			}
@@ -1036,53 +3441,9 @@
 			}
 		},
 		"home_function_buttons": {
-			"viewHistory": {
-				"title": "Voir l'historique"
+			"chatHub": {
+				"title": "Chat"
 			}
-		}
-	},
-	"chat_history": {
-		"title": "Historique des chats",
-		"pageTitle": "Historique des chats",
-		"description": "Voyagez à travers les dialogues passés. Ici, les souvenirs des conversations persistent : triez, filtrez et revisitez les histoires que vous avez tissées avec vos compagnons IA. Une bibliothèque tranquille d’échos numériques.",
-		"filterInput": {
-			"placeholder": "Rechercher..."
-		},
-		"sortOptions": {
-			"time_desc": "Date décroissante",
-			"time_asc": "Date croissante"
-		},
-		"sortBy": {
-			"aria-label": "Trier par"
-		},
-		"selectAll": "Tout sélectionner",
-		"buttons": {
-			"reverseSelect": "Inverser la sélection",
-			"deleteSelected": "Supprimer la sélection",
-			"exportSelected": "Exporter la sélection",
-			"import": "Importer"
-		},
-		"chatItemButtons": {
-			"continue": "Continuer",
-			"copy": "Copier",
-			"export": "Exporter",
-			"delete": "Supprimer"
-		},
-		"confirmDeleteChat": "Êtes-vous sûr de vouloir supprimer l'historique des chats avec ${chars} ?",
-		"confirmDeleteMultiChats": "Êtes-vous sûr de vouloir supprimer les ${count} historiques de chats sélectionnés ?",
-		"alerts": {
-			"noChatSelectedForDeletion": "Veuillez sélectionner les historiques de chats à supprimer",
-			"noChatSelectedForExport": "Veuillez sélectionner les historiques de chats à exporter",
-			"copyError": "Échec de la copie",
-			"deleteError": "Échec de la suppression",
-			"exportError": "Échec de l'exportation",
-			"dragExportError": "Erreur lors de l'exportation par glisser-déposer",
-			"importSuccess": "Importation réussie",
-			"importError": "Échec de l'importation",
-			"invalidImportFile": "Fichier d'importation invalide"
-		},
-		"select_checkbox": {
-			"aria-label": "Sélectionnez discuter avec ${chars}"
 		}
 	},
 	"easynew": {
@@ -1415,11 +3776,11 @@
 			"creationDateLabel": "Date de création du compte :",
 			"folderSizeLabel": "Taille des données utilisateur :",
 			"folderPathLabel": "Chemin des données utilisateur :",
-			"copyPathBtn": {
-				"title": "Copier le Chemin"
+			"copyPathButton": {
+				"title": "Copier le chemin"
 			},
-			"copyPathBtnIcon": {
-				"alt": "Icône de Copie"
+			"copyPathButtonIcon": {
+				"alt": "icône de Copier"
 			},
 			"copiedAlert": "Chemin copié dans le presse-papiers !",
 			"copyPathFailed": "Impossible de copier le chemin vers le presse-papiers."
@@ -1624,7 +3985,6 @@
 			"title": "exécution de code",
 			"description": "Exécuter le code JavaScript sur la subfount sélectionnée",
 			"selectSubfountLabel": "Sélectionnez la subfount",
-			"selectSubfountPlaceholder": "Veuillez sélectionner la subfount sur laquelle exécuter le code...",
 			"hostOption": "Hôte (ID : ${id})",
 			"subfountOption": "Extension ${id}${deviceId}",
 			"scriptLabel": "Code JavaScript",
@@ -1633,7 +3993,8 @@
 			"noSubfountSelected": "Veuillez d'abord sélectionner une subfount",
 			"noScriptProvided": "Veuillez entrer le code à exécuter",
 			"executionSuccess": "Exécution du code réussie",
-			"executionFailed": "Échec de l'exécution du code : ${message}"
+			"executionFailed": "Échec de l'exécution du code : ${message}",
+			"selectSubfount": "Veuillez sélectionner le sous-fond pour exécuter le code..."
 		},
 		"downloadClient": {
 			"title": "Télécharger le client de subfount",
@@ -1900,9 +4261,6 @@
 			"copyModelIdTooltip": "Cliquez pour copier l'ID du modèle",
 			"loadModelsFailed": "Échec du chargement du modèle : ${message}",
 			"modelSearchTitle": "Parcourir le catalogue de modèles",
-			"modelSearchPlaceholder": {
-				"placeholder": "Rechercher par nom de modèle, fournisseur ou capacités…"
-			},
 			"modelSearchHint": "Cliquer sur un résultat remplit automatiquement l'URL et le nom du modèle",
 			"modelsDevLoading": "Chargement du catalogue…",
 			"modelsDevLoadFailed": "Échec du chargement du catalogue : ${message}",
@@ -1921,7 +4279,10 @@
 			"metaOpenWeights": "Poids ouverts",
 			"metaKnowledge": "Limite de connaissances : ${knowledge}",
 			"metaReleaseDate": "Date de sortie : ${date}",
-			"providerDocLink": "[Voir la documentation du fournisseur](${url})"
+			"providerDocLink": "[Voir la documentation du fournisseur](${url})",
+			"modelSearch": {
+				"placeholder": "Rechercher le nom du modèle, le fabricant, les capacités..."
+			}
 		},
 		"prompts": {
 			"newFileName": "Veuillez saisir le nouveau nom du fichier source du service (n'incluez pas le suffixe) :"
@@ -1998,7 +4359,6 @@
 				"botToken": "Jeton du bot Telegram",
 				"config": "Configuration"
 			},
-			"charSelectPlaceholder": "Sélectionner un personnage",
 			"botTokenInput": {
 				"placeholder": "Saisissez le jeton du bot Telegram"
 			},
@@ -2012,6 +4372,9 @@
 				"saveConfig": "Enregistrer la configuration",
 				"startBot": "Démarrer",
 				"stopBot": "Arrêter"
+			},
+			"charSelect": {
+				"placeholder": "Sélectionnez un rôle"
 			}
 		},
 		"prompts": {
@@ -2075,7 +4438,6 @@
 				"botToken": "Jeton iLink Bot",
 				"config": "Configuration"
 			},
-			"charSelectPlaceholder": "Sélectionner un rôle",
 			"apiBaseUrlInput": {
 				"placeholder": "Laisser vide pour https://ilinkai.weixin.qq.com par défaut"
 			},
@@ -2092,6 +4454,9 @@
 				"saveConfig": "Enregistrer",
 				"startBot": "Démarrer",
 				"stopBot": "Arrêter"
+			},
+			"charSelect": {
+				"placeholder": "Sélectionnez un rôle"
 			}
 		},
 		"prompts": {
@@ -2163,7 +4528,6 @@
 				"apiKey": "Clé API Discord",
 				"config": "Configuration"
 			},
-			"charSelectPlaceholder": "Sélectionner un personnage",
 			"apiKeyInput": {
 				"placeholder": "Saisir la clé API"
 			},
@@ -2177,6 +4541,9 @@
 				"saveConfig": "Enregistrer la configuration",
 				"startBot": "Démarrer",
 				"stopBot": "Arrêter"
+			},
+			"charSelect": {
+				"placeholder": "Sélectionnez un rôle"
 			}
 		},
 		"prompts": {
@@ -2463,10 +4830,8 @@
 		"acpTitle": "Configurer le script ACP fount",
 		"acpDesc": "Reportez-vous à l'exemple suivant pour configurer le script fount ACP :",
 		"acpCharLabel": "Rôle",
-		"acpCharPlaceholder": "Sélectionnez un rôle",
 		"charListError": "Impossible d'obtenir la liste des rôles",
 		"acpScriptLabel": "URL du script ACP",
-		"acpConfigPlaceholder": "Veuillez sélectionner un rôle et générer d'abord une clé API",
 		"acpConfigSample": "Exemple de configuration :",
 		"acpConfigHint": "L'ID du rôle est affiché dans la liste déroulante des rôles sur cette page et la clé API peut être gérée dans les paramètres utilisateur.",
 		"copyButton": "Copier",
@@ -2491,7 +4856,9 @@
 				"description": "Pour la première fois, utilisez des rôles fount pour faciliter la programmation dans des éditeurs compatibles ACP tels que Zed, JetBrains, Neovim, etc.",
 				"locked_description": "Connectez-vous au rôle de fount dans un IDE externe et terminez une session."
 			}
-		}
+		},
+		"acpChar": "Sélectionnez un rôle",
+		"acpConfig": "Veuillez sélectionner un rôle et générer d'abord une clé API"
 	},
 	"achievements": {
 		"title": "Réalisation",
@@ -2757,5 +5124,97 @@
 		"search": {
 			"placeholder": "Rechercher..."
 		}
+	},
+	"common": {
+		"cancel": "Annuler",
+		"create": "Créer",
+		"save": "Enregistrer",
+		"delete": "Supprimer",
+		"confirm": "Confirmer",
+		"close": "Fermer",
+		"translate": {
+			"showOriginal": "Afficher le texte original",
+			"showTranslation": "Afficher la traduction"
+		}
+	},
+	"cabinet": {
+		"title": "Armoire",
+		"description": "Armoires personnelles et partagées en P2P",
+		"openCabinets": {
+			"title": "Ouvrir la liste des armoires",
+			"aria-label": "Ouvrir la liste des armoires"
+		},
+		"closeCabinets": {
+			"title": "Fermer",
+			"aria-label": "Fermer"
+		},
+		"bootstrapFailed": "Échec de l'initialisation de l'armoire : ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "Armoire"
+			}
+		},
+		"upload": "Téléverser",
+		"uploadFolder": "Téléverser le dossier",
+		"newFolder": "Créer un nouveau dossier",
+		"open": "Ouvrir",
+		"download": "Télécharger",
+		"downloadZip": "Dossier de téléchargement",
+		"rename": "Renommer",
+		"copy": "Copier",
+		"cut": "couper",
+		"paste": "Coller",
+		"pasteLink": "Coller en tant que lien",
+		"selectAll": "Tout sélectionner",
+		"invert": "Contre-élection",
+		"properties": "propriété",
+		"delete": "Supprimer",
+		"back": {
+			"title": "Revenir à la position précédente",
+			"aria-label": "Revenir à la position précédente"
+		},
+		"cancel": "Annuler",
+		"save": "Enregistrer",
+		"showHidden": "Afficher les éléments masqués",
+		"name": "Nom",
+		"descriptionField": "décrire",
+		"attrHidden": "Masqué",
+		"attrSystem": "Système (la suppression nécessite une confirmation)",
+		"previewUrl": "URL d'aperçu",
+		"deletePreviewWithFile": "Supprimer l'aperçu lors de la suppression du fichier",
+		"folderPassword": "Mot de passe du dossier (laissez vide, remplissez pour activer le cryptage)",
+		"unlockFolder": "Déverrouiller le dossier crypté",
+		"unlock": "Ouvrir",
+		"unlockFailed": "Échec du déverrouillage : ${error}",
+		"previewFailed": "Échec de la génération de l'aperçu : ${error}",
+		"created": "Créer : ${stamp}",
+		"modified": "Modifier : ${stamp}",
+		"statusCount": "${count} articles, ${selected} sélectionnés",
+		"newCabinetPrompt": "Nom de la nouvelle armoire",
+		"newFolderPrompt": "Nouveau nom de dossier",
+		"renamePrompt": "nouveau nom",
+		"visibilityPrompt": "Visibilité (publique/non répertorié/abonnés/privé/sélectionné)",
+		"cabinetActionPrompt": "Action : renommer/supprimer/visibilité",
+		"confirmDeleteCabinet": "Voulez-vous vraiment supprimer cette armoire ?",
+		"confirmDelete": "Confirmer pour supprimer les éléments sélectionnés ?",
+		"confirmDeleteSystem": "Les fichiers système sélectionnés sont inclus. Êtes-vous sûr de les supprimer ?",
+		"copied": "Copié",
+		"cutDone": "couper",
+		"undo": "Annuler",
+		"redo": "Refaire",
+		"newWindow": "Ouvrir une nouvelle fenêtreEmplacement actuel",
+		"goUp": "Revenir au niveau précédent",
+		"brokenLink": "Le lien est rompu : ${reason}",
+		"noDownload": "Aucun contenu téléchargeable",
+		"groupDownloadHint": "Veuillez obtenir les fichiers de groupe via les pièces jointes des messages ou les liens de téléchargement ultérieurs.",
+		"remoteEntity": "entité distante"
+	},
+	"entityProfile": {
+		"attributionMismatch": "L'identité affichée ne correspond pas au signataire du message (par ex. un historique importé re-signé par l'importateur). Ne considérez pas ce nom d'affichage comme une identité cryptographique.",
+		"attributionMismatchShort": {
+			"title": "Incohérence d'attribution de signature",
+			"aria-label": "Incohérence d'attribution de signature"
+		},
+		"ownedBy": "Cette entité appartient à ${owner}"
 	}
 }

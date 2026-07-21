@@ -1,4 +1,3 @@
-
 import { createLogWireWebSocketHandler } from 'npm:@steve02081504/virtual-console/wire/server'
 import { on_shutdown } from 'npm:on-shutdown'
 

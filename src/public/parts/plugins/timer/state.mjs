@@ -31,19 +31,19 @@ export function getChannels(username, char_id) {
 
 /**
  * 待注入通知队列（仅内存）。
- * 键为 `${chatid}|${char_id}`，值为待注入的系统日志条目队列。
+ * 键为 `${groupId}|${char_id}`，值为待注入的系统日志条目队列。
  * @type {Map<string, object[]>}
  */
 const pendingNotifications = new Map()
 
 /**
  * 存入一条待注入的定时器触发通知，供 GetPrompt 在下次生成时通过 additional_chat_log 注入。
- * @param {string} chatid 聊天 ID
+ * @param {string} groupId 群 ID
  * @param {string} char_id 角色 ID
  * @param {object} entry 符合 chatLogEntry_t 接口的纯对象
  */
-export function setPendingNotification(chatid, char_id, entry) {
-	const key = `${chatid}|${char_id}`
+export function setPendingNotification(groupId, char_id, entry) {
+	const key = `${groupId}|${char_id}`
 	const queue = pendingNotifications.get(key) ?? []
 	queue.push(entry)
 	pendingNotifications.set(key, queue)
@@ -51,12 +51,12 @@ export function setPendingNotification(chatid, char_id, entry) {
 
 /**
  * 取出（并移除）队首的待注入通知。
- * @param {string} chatid 聊天 ID
+ * @param {string} groupId 群 ID
  * @param {string} char_id 角色 ID
  * @returns {object | null} 符合 chatLogEntry_t 接口的纯对象或 null
  */
-export function takePendingNotification(chatid, char_id) {
-	const key = `${chatid}|${char_id}`
+export function takePendingNotification(groupId, char_id) {
+	const key = `${groupId}|${char_id}`
 	const queue = pendingNotifications.get(key)
 	if (!queue?.length) return null
 	const entry = queue.shift()

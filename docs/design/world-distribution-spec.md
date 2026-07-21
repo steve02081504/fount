@@ -76,7 +76,7 @@ world 在 chat 里原先隐含 **单一主机托管**：`homeNodeHash` 不在本
 
 ### resolveWorld 分发
 
-```text
+```
 无 bind          → BUILTIN_WORLD（distribution 天然 local）
 bind.distribution:
   'local'      → 本机装了同名 world ? loadPart : BUILTIN_WORLD

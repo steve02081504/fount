@@ -55,6 +55,8 @@ export function setEndpoints(router) {
 	router.post('/api/parts/shells\\:discordbot/deletebotconfig', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { botname } = req.body
+		if (getRunningBotList(username).includes(botname))
+			await stopBot(username, botname)
 		deleteBotConfig(username, botname)
 		res.status(200).json({ message: 'bot deleted' })
 	})

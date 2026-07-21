@@ -1,4 +1,4 @@
-import { localhostLocales } from '../../../../../../../src/scripts/i18n/index.mjs'
+import { localhostLocales } from '../../../../../../../src/scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../../../src/scripts/locale.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../../src/server/parts_loader.mjs'
 
@@ -60,6 +60,7 @@ export function GetDefaultShellAssistInterface(char_API, username, char_name) {
 				chat_log.push({
 					role: 'system',
 					name: args.shelltype || '终端',
+					uid: 'system',
 					content: `\
 用户执行了命令: \`${entry.command}\`
 
@@ -73,6 +74,7 @@ stderr: ${entry.error.includes('\n') ? '\n```\n' + entry.error + '\n```' : '`' +
 			else
 				chat_log.push({
 					...entry,
+					uid: entry.uid || (entry.role === 'char' ? 'char' : entry.role === 'user' ? 'user' : 'system'),
 					extension: entry.extension ??= {},
 					files: [],
 				})
@@ -103,6 +105,7 @@ ${args.screen}
 		chat_log.push({
 			role: 'system',
 			name: args.shelltype || '终端',
+			uid: 'system',
 			content: user_doing_now,
 			files: [],
 			extension: {}
@@ -120,7 +123,9 @@ ${args.screen}
 			chat_name: 'shell-assist-' + new Date().getTime(),
 			char_id: char_name,
 			Charname,
+			CharUid: 'char',
 			UserCharname: args.UserCharname,
+			UserUid: 'user',
 			locales: localhostLocales,
 			time: new Date(),
 			world: GetShellWorld(args.shelltype),

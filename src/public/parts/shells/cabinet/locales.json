@@ -7,7 +7,12 @@
 			"description_markdown": "Manage personal EVFS cabinets and group file spaces with visibility, links, and sync.",
 			"version": "0.0.0",
 			"author": "steve02081504",
-			"tags": ["files", "cabinet", "p2p", "storage"]
+			"tags": [
+				"files",
+				"cabinet",
+				"p2p",
+				"storage"
+			]
 		},
 		"zh-CN": {
 			"name": "文件柜",
@@ -16,16 +21,40 @@
 			"description_markdown": "管理个人 EVFS 文件柜与群文件空间，支持可见性、链接与同步。",
 			"version": "0.0.0",
 			"author": "steve02081504",
-			"tags": ["文件", "文件柜", "p2p", "存储"]
+			"tags": [
+				"文件",
+				"文件柜",
+				"p2p",
+				"存储"
+			]
 		},
-		"zh-TW": {
-			"name": "檔案櫃",
+		"ar-SA": {
 			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
-			"description": "P2P 個人與共享檔案櫃。",
-			"description_markdown": "管理個人 EVFS 檔案櫃與群檔案空間，支援可見性、連結與同步。",
 			"version": "0.0.0",
 			"author": "steve02081504",
-			"tags": ["檔案", "檔案櫃", "p2p", "儲存"]
+			"tags": [
+				"وثيقة",
+				"خزانة الملفات",
+				"p2p",
+				"تخزين"
+			],
+			"name": "خزانة الملفات",
+			"description": "خزائن الملفات الشخصية والمشتركة P2P.",
+			"description_markdown": "قم بإدارة خزائن ملفات EVFS الشخصية ومساحات الملفات الجماعية مع إمكانية الرؤية والربط والمزامنة."
+		},
+		"de-DE": {
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"dokumentieren",
+				"Aktenschrank",
+				"p2p",
+				"Lagerung"
+			],
+			"name": "Aktenschrank",
+			"description": "Persönliche und gemeinsam genutzte P2P-Aktenschränke.",
+			"description_markdown": "Verwalten Sie persönliche EVFS-Archive und Gruppendateibereiche mit Sichtbarkeit, Verknüpfung und Synchronisierung."
 		},
 		"emoji": {
 			"name": "🗄️📁",
@@ -34,7 +63,208 @@
 			"description_markdown": "🗄️➡️📁➡️🔗",
 			"version": "0.0.0",
 			"author": "steve02081504",
-			"tags": ["🗄️", "📁", "🔗", "📦"]
+			"tags": [
+				"🗄️",
+				"📁",
+				"🔗",
+				"📦"
+			]
+		},
+		"es-ES": {
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"documento",
+				"archivador",
+				"p2p",
+				"almacenamiento"
+			],
+			"name": "archivador",
+			"description": "Archivadores personales y compartidos P2P.",
+			"description_markdown": "Administre archivadores EVFS personales y espacios de archivos grupales con visibilidad, vinculación y sincronización."
+		},
+		"fr-FR": {
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"document",
+				"classeur",
+				"p2p",
+				"stockage"
+			],
+			"name": "classeur",
+			"description": "Classeurs personnels et partagés P2P.",
+			"description_markdown": "Gérez les classeurs EVFS personnels et les espaces fichiers de groupe avec visibilité, liaison et synchronisation."
+		},
+		"hi-IN": {
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"दस्तावेज़",
+				"फाइलें रखने की अलमारी",
+				"पी2पी",
+				"भंडारण"
+			],
+			"name": "फाइलें रखने की अलमारी",
+			"description": "पी2पी व्यक्तिगत और साझा फ़ाइल कैबिनेट।",
+			"description_markdown": "दृश्यता, लिंकिंग और सिंक्रनाइज़ेशन के साथ व्यक्तिगत ईवीएफएस फ़ाइल कैबिनेट और समूह फ़ाइल स्थान प्रबंधित करें।"
+		},
+		"is-IS": {
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"skjal",
+				"skjalaskápur",
+				"p2p",
+				"geymsla"
+			],
+			"name": "skjalaskápur",
+			"description": "P2P persónulegir og sameiginlegir skjalaskápar.",
+			"description_markdown": "Hafa umsjón með persónulegum EVFS skjalaskápum og hópskráarrýmum með sýnileika, tengingu og samstillingu."
+		},
+		"it-IT": {
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"documento",
+				"schedario",
+				"p2p",
+				"magazzinaggio"
+			],
+			"name": "schedario",
+			"description": "Schedari personali e condivisi P2P.",
+			"description_markdown": "Gestisci schedari EVFS personali e spazi file di gruppo con visibilità, collegamento e sincronizzazione."
+		},
+		"ja-JP": {
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"書類",
+				"ファイルキャビネット",
+				"p2p",
+				"ストレージ"
+			],
+			"name": "ファイルキャビネット",
+			"description": "P2P 個人および共有ファイル キャビネット。",
+			"description_markdown": "個人の EVFS ファイル キャビネットとグループ ファイル スペースを、可視性、リンク、同期により管理します。"
+		},
+		"ko-KR": {
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"문서",
+				"서류 캐비넷",
+				"p2p",
+				"저장"
+			],
+			"name": "서류 캐비넷",
+			"description": "P2P 개인 및 공유 파일 캐비닛.",
+			"description_markdown": "가시성, 연결 및 동기화를 통해 개인 EVFS 파일 캐비닛 및 그룹 파일 공간을 관리합니다."
+		},
+		"lzh": {
+			"name": "文件柜",
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"description": "P2P 个人与共享文件柜。",
+			"description_markdown": "管理个人 EVFS 文件柜与群文件空间，支持可见性、链接与同步。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"文件",
+				"文件柜",
+				"p2p",
+				"存储"
+			]
+		},
+		"nl-NL": {
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"document",
+				"archiefkast",
+				"p2p",
+				"opslag"
+			],
+			"name": "archiefkast",
+			"description": "P2P persoonlijke en gedeelde archiefkasten.",
+			"description_markdown": "Beheer persoonlijke EVFS-archiefkasten en groepsarchiefruimtes met zichtbaarheid, koppeling en synchronisatie."
+		},
+		"pt-PT": {
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"documento",
+				"arquivo",
+				"ponto-a-ponto",
+				"armazenar"
+			],
+			"name": "arquivo",
+			"description": "Armários de arquivos pessoais e compartilhados P2P.",
+			"description_markdown": "Gerencie gabinetes de arquivos EVFS pessoais e agrupe espaços de arquivos com visibilidade, vinculação e sincronização."
+		},
+		"ru-RU": {
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"документ",
+				"шкаф для документов",
+				"p2p",
+				"хранилище"
+			],
+			"name": "шкаф для документов",
+			"description": "Персональные и общие картотеки P2P.",
+			"description_markdown": "Управляйте личными картотеками EVFS и групповыми файловыми пространствами с возможностью видимости, связывания и синхронизации."
+		},
+		"uk-UA": {
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"документ",
+				"картотека",
+				"p2p",
+				"зберігання"
+			],
+			"name": "картотека",
+			"description": "Персональні та спільні картотеки P2P.",
+			"description_markdown": "Керуйте персональними картотеками EVFS і групуйте файлові простори за допомогою видимості, зв’язування та синхронізації."
+		},
+		"vi-VN": {
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"tài liệu",
+				"tủ hồ sơ",
+				"p2p",
+				"kho"
+			],
+			"name": "tủ hồ sơ",
+			"description": "Tủ hồ sơ cá nhân và chia sẻ P2P.",
+			"description_markdown": "Quản lý tủ tệp EVFS cá nhân và không gian tệp nhóm với khả năng hiển thị, liên kết và đồng bộ hóa."
+		},
+		"zh-TW": {
+			"name": "檔案櫃",
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"description": "P2P 個人與共享檔案櫃。",
+			"description_markdown": "管理個人 EVFS 檔案櫃與群檔案空間，支援可見性、連結與同步。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": [
+				"檔案",
+				"檔案櫃",
+				"p2p",
+				"儲存"
+			]
 		}
 	}
 }

@@ -1,6 +1,264 @@
 {
 	"lang": "zh-TW",
 	"name": "繁體中文",
+	"channels": {
+		"title": "頻道",
+		"description": "頻道管理系統",
+		"create": "建立頻道",
+		"subscribe": "訂閱",
+		"unsubscribe": "取消訂閱",
+		"settings": "頻道設定",
+		"list": "頻道列表",
+		"members": "成員",
+		"messages": "訊息",
+		"permissions": "許可權設定",
+		"type": {
+			"announcement": "公告",
+			"news": "新聞",
+			"updates": "更新"
+		},
+		"role": {
+			"owner": "所有者",
+			"admin": "管理員",
+			"moderator": "版主",
+			"member": "成員",
+			"subscriber": "訂閱者"
+		},
+		"errors": {
+			"notFound": "頻道不存在",
+			"noPermission": "許可權不足",
+			"alreadySubscribed": "已訂閱此頻道",
+			"notSubscribed": "未訂閱此頻道"
+		},
+		"success": {
+			"created": "頻道建立成功",
+			"updated": "頻道更新成功",
+			"deleted": "頻道刪除成功",
+			"subscribed": "訂閱成功",
+			"unsubscribed": "取消訂閱成功",
+			"posted": "訊息發佈成功"
+		}
+	},
+	"profile": {
+		"title": "個人資料",
+		"description": "管理你在聊天與社交中的公開形象。",
+		"settingsEyebrow": "賬戶設定",
+		"accountAtGlance": "賬戶概覽",
+		"advancedKicker": "依需求設定",
+		"advancedSettings": "高階設定",
+		"advancedDescription": "日常使用無需調整。",
+		"edit": "編輯資料",
+		"save": "儲存",
+		"cancel": "取消",
+		"displayName": "顯示名稱",
+		"name": "名稱",
+		"bio": "個人簡介",
+		"descriptionLabel": "簡介（Markdown）",
+		"email": "信箱",
+		"status": "狀態",
+		"customStatusLabel": "自訂狀態",
+		"avatarLabel": "頭像",
+		"themeColorLabel": "主題色",
+		"uploadAvatar": "上傳頭像",
+		"ownerTitle": "我的主人",
+		"ownerSummary": "代管設定",
+		"ownerDescription": "設定後，主人可以代為編輯或刪除你的聊天訊息、社交貼文與個人資料；其內容也會在本機以不安全 Markdown 渲染（可含腳本）。可填入任意實體雜湊，並隨時清除。",
+		"ownerEntityHashLabel": "主人實體雜湊（128 hex）",
+		"ownerSave": "儲存主人",
+		"ownerClear": "清除主人",
+		"ownerSaved": "主人已更新",
+		"ownerCleared": "主人已清除",
+		"ownerSaveFailed": "儲存失敗：${error}",
+		"ownerConfirmTitle": "確認設定主人？",
+		"ownerConfirmWarningTitle": "高風險操作，請仔細閱讀",
+		"ownerConfirmEditBody": "設定後，對方無需再徵得你同意，即可代為編輯或刪除你的聊天訊息、社交帖與個人資料。誤設或被誘騙設主人 = 立刻交出內容控制權。",
+		"ownerConfirmRenderBody": "對方發來的聊天訊息與社交帖會在你的瀏覽器中以完整 Markdown 渲染（含 HTML/指令碼）。這等於允許對方在無需你再次同意的情況下，在你的電腦上執行任意程式碼。僅當你完全信任對方時再繼續。",
+		"ownerConfirmCooldown": "我已閱讀風險（${seconds}）",
+		"ownerConfirmFirst": "我瞭解風險，繼續",
+		"ownerConfirmSecond": "再按一下以完成最終確認",
+		"ownerConfirmCancel": "取消",
+		"federationTitle": "聯邦與同步",
+		"federationSummary": "中繼伺服器與低功耗模式",
+		"federationDescription": "設定 Nostr relay URL 與省電模式。群組的聯邦同步會在首次邀請他人或建立聯邦私訊時自動啟用。",
+		"federationAdvanced": "高階選項",
+		"federationRelayUrlsLabel": "中繼伺服器（每行一個，留空則使用預設）",
+		"federationBatterySaverLabel": "低功耗模式",
+		"federationSave": "儲存網路設定",
+		"federationResetDefault": "恢復預設推薦設定",
+		"federationSaved": "已儲存",
+		"federationResetOk": "已恢復預設推薦設定",
+		"federationSaveFailed": "儲存失敗：${error}",
+		"preferences": "偏好設定",
+		"language": "語言",
+		"theme": "主題",
+		"notifications": "通知設定",
+		"emailNotifications": "郵件通知",
+		"pushNotifications": "推送通知",
+		"soundNotifications": "聲音通知",
+		"social": "社交連結",
+		"website": "網站",
+		"github": "GitHub",
+		"twitter": "Twitter",
+		"stats": "統計資訊",
+		"joinedAt": "加入時間",
+		"messageCount": "訊息數",
+		"groupCount": "群組數",
+		"channelCount": "頻道數",
+		"privacy": "隱私設定",
+		"showEmail": "顯示信箱",
+		"showStats": "顯示統計",
+		"allowDirectMessages": "允許私信",
+		"statusOptions": {
+			"online": "線上",
+			"away": "離開",
+			"busy": "忙碌",
+			"offline": "離線"
+		},
+		"themeOptions": {
+			"auto": "自動",
+			"light": "淺色",
+			"dark": "深色"
+		},
+		"languageOptions": {
+			"zh-CN": "簡體中文",
+			"en-US": "English"
+		},
+		"notifEmail": "郵件",
+		"notifPush": "推送",
+		"notifSound": "聲音",
+		"notifsAllOff": "全部關閉",
+		"bioEmpty": "這個人很懶，什麼都沒寫…",
+		"noSocialLinks": "暫無社交連結",
+		"emailVisible": "可見",
+		"emailHidden": "隱藏",
+		"customStatus": {
+			"placeholder": "正在做什麼…"
+		},
+		"avatar": {
+			"alt": "頭像"
+		},
+		"avatarPreview": {
+			"alt": "頭像預覽"
+		},
+		"myGroups": "我的群組",
+		"myChannels": "我的頻道",
+		"noGroups": "暫未加入任何群組",
+		"noChannels": "暫無頻道",
+		"overview": "使用者資訊概覽",
+		"summaryUserId": "使用者 ID",
+		"summaryAccountStatus": "帳號狀態",
+		"summaryEmailVisibility": "信箱可見性",
+		"summaryThemePref": "主題偏好",
+		"summaryLanguagePref": "語言偏好",
+		"summarySocialCount": "社交連結數量",
+		"summaryLinksCount": "外鏈數",
+		"groupDescriptionEmpty": "暫無描述",
+		"groupMembers": "${members} 位成員 · ${channels} 個頻道",
+		"channelPrivate": " · 私密",
+		"channelTypeText": "文字頻道",
+		"channelTypeList": "列表頻道",
+		"channelTypeVoice": "語音訊道",
+		"channelTypeStreaming": "流媒體頻道",
+		"errors": {
+			"loadFailed": "載入資料失敗",
+			"saveFailed": "儲存資料失敗",
+			"uploadFailed": "上傳頭像失敗",
+			"invalidUserData": "使用者資料格式錯誤",
+			"identityRequired": "節點身份尚未就緒，請重新整理頁面；若仍失敗，請在下方 P2P 設定中儲存聯邦設定",
+			"fetchUserFailed": "獲取使用者資訊失敗",
+			"operationFailed": "操作失敗：${error}"
+		},
+		"success": {
+			"saved": "資料儲存成功",
+			"avatarUploaded": "頭像上傳成功"
+		},
+		"ownerEntityHash": {
+			"placeholder": "輸入主人的實體雜湊"
+		}
+	},
+	"stickers": {
+		"title": "貼紙廣場",
+		"description": "貼紙和表情包管理系統",
+		"back": {
+			"title": "返回"
+		},
+		"packs": "貼紙包",
+		"create": "建立貼紙包",
+		"upload": "上傳貼紙",
+		"install": "安裝",
+		"uninstall": "解除安裝",
+		"close": "關閉",
+		"cancel": "取消",
+		"installed": "已安裝",
+		"myPacks": "我的貼紙包",
+		"tabAll": "全部",
+		"store": "貼紙廣場",
+		"favorites": "收藏",
+		"recent": "最近使用",
+		"search": {
+			"placeholder": "搜尋貼紙包…"
+		},
+		"emptyPacks": "暫無貼紙包",
+		"packNameLabel": "貼紙包名稱",
+		"packName": {
+			"placeholder": "輸入貼紙包名稱"
+		},
+		"packDescriptionLabel": "描述",
+		"packDescription": {
+			"placeholder": "輸入描述"
+		},
+		"stickerNameLabel": "貼紙名稱",
+		"stickerName": {
+			"placeholder": "輸入貼紙名稱"
+		},
+		"selectPack": "選擇貼紙包",
+		"selectPackOption": {
+			"textContent": "請選擇貼紙包"
+		},
+		"selectImage": "選擇圖片",
+		"tagsLabel": "標籤（用逗號分隔）",
+		"tags": {
+			"placeholder": "例如: 可愛, 表情, 動物"
+		},
+		"author": "作者",
+		"authorLabel": "作者: ${author}",
+		"stickerCount": "${count} 個貼紙",
+		"badgeMine": "我的",
+		"noDescription": "暫無描述",
+		"noStickersInPack": "暫無貼紙",
+		"deletePack": "刪除貼紙包",
+		"public": "公開",
+		"private": "私有",
+		"animated": "動態",
+		"static": "靜態",
+		"addTag": "新增標籤",
+		"defaultPackName": "預設表情包",
+		"defaultPackDescription": "系統預設提供的表情貼紙",
+		"unnamedPack": "未命名貼紙包",
+		"importPackName": "我的收藏",
+		"importPackDescription": "從訊息儲存的貼紙",
+		"nameRequired": "請輸入貼紙包名稱",
+		"stickerNameRequired": "請輸入貼紙名稱",
+		"selectPackRequired": "請選擇貼紙包",
+		"fileRequired": "請選擇圖片檔案",
+		"loadDetailFailed": "載入貼紙包詳情失敗",
+		"deleteConfirm": "確定要永久刪除此貼紙包嗎？所有貼紙將被刪除，此操作不可撤銷。",
+		"errors": {
+			"loadFailed": "載入貼紙包失敗",
+			"uploadFailed": "上傳貼紙失敗",
+			"installFailed": "安裝失敗",
+			"uninstallFailed": "解除安裝失敗",
+			"createFailed": "建立貼紙包失敗",
+			"deleteFailed": "刪除失敗"
+		},
+		"success": {
+			"uploaded": "貼紙上傳成功",
+			"installed": "安裝成功",
+			"uninstalled": "解除安裝成功",
+			"created": "貼紙包建立成功",
+			"deleted": "刪除成功"
+		}
+	},
 	"fountConsole": {
 		"server": {
 			"start": "正在啟動伺服器",
@@ -116,6 +374,186 @@
 		"logViewer": {
 			"replHint": "Enter 執行 · Shift+Enter 換行"
 		},
+		"test": {
+			"help": "用法：fount test [--all] [--no-parallel] [--force] [<groups>...]\n\n分組語法（空格分隔多組）：\n  manifest                    此 manifest 全部 suite\n  manifest:suite              指定 suite（逗號分隔多個；亦可用 manifest/suite）\n  manifest:suite:subtest      指定子測試（frontend 等已註冊 subtests；亦可用 manifest/suite/subtest）\n  manifest:suite:file         pure/integration（serial.mjs）下按 *.test.mjs 檔案 stem 過濾\n  PowerShell 拆散時後續 token 自動歸併到目前組\n\nmanifest id 取自各 test/manifest.json 頂層的 \"id\" 欄位。\n無精確匹配時自動按「<指名>/*」展開（如 shells → shells/chat,shells/social）；亦支援 glob（*、?、**）。\nsuite 指名匹配各 suite 的 id 或 name；無精確匹配時按「<指名>*」「<指名>_*」展開；亦支援 glob。\n\n預設（裸 fount test）：先跑失敗/未完成項（suite 內失敗檔案優先；失敗組有復現則跑完失敗組即退），全綠後再跑內容過期項；任一輪失敗即以 1 結束，不會在同一次呼叫內反覆重試。永不全量（用 --all）。\n測試現況持久化於 data/test/state/main.json；失敗 log 保留至轉綠。每次執行更新 data/test/report.md 與 report.json。\nfrontend 等套件可註冊 subtests（各帶獨立 trigger）；改一個視圖檔案只會使對應子測試過期。\npure/integration 未註冊 subtests 時，第三段按目錄內 *.test.mjs 的 stem 過濾（如 shells/chat:pure:channel_archive）。\n相依項（manifest.json dependsOn）未通過時高層自動 blocked。\n\n--all         範圍內全部 suite 作為目標（綠的仍可複用，除非 --force）\n--no-parallel 序列執行 suite 並串流輸出 stdout/stderr；預設由資源閘門按記憶體與 CPU 自動並行。\n--force       停用複用：預設沿用上次真實結果，--force 強制真跑目標。\n\n範例：\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"passed": "透過：${label}",
+			"passedWithNoise": "透過：${label}（含有噪聲）",
+			"failed": "失敗：${label}",
+			"failedWithCode": "失敗：${label}（退出碼 ${code}）",
+			"passedLabel": "透過",
+			"failedLabel": "失敗",
+			"noiseHits": "（噪聲：${hits}）",
+			"unknownManifestId": "未知的 manifest id：${ids}",
+			"unknownSuiteSelector": "未知的 suite 指名：${ids}",
+			"unknownSubtestFilter": "未知的子測試過濾：${suite} → ${names}",
+			"unknownFileFilter": "未知的測試檔案過濾：${suite} → ${names}",
+			"unsupportedSubtestFilter": "套件不支援子測試/檔案過濾：${suite}（${names}）",
+			"available": "可用項：${ids}",
+			"manifestMatched": "manifest 匹配結果：${ids}",
+			"selectedSuites": "已選擇 ${selected}/${total} 個測試套件",
+			"planSlotSummary": "計劃槽位：真跑 ${run}、複用 ${reuse}、阻塞 ${blocked}",
+			"noMatchingSuites": "沒有匹配的測試套件。",
+			"reportPath": "報告：${path}",
+			"reportPathFinal": "\n報告：${path}",
+			"statePathFinal": "現狀：${path}",
+			"blocked": "阻塞：${label}（依賴未過：${deps}）",
+			"speculativeDiscard": "丟棄預測結果：${label}（依賴未過：${deps}）",
+			"continueImperfect": "失敗/噪聲/未完成波次：${count} 個套件",
+			"outdatedSelected": "過期波次：${count} 個陳舊/未跑過的套件",
+			"runningSuite": {
+				"base": "\n>>> 正在執行 ${manifestId}:${name}",
+				"speculative": "樂觀並行",
+				"heavy": "高負載",
+				"expected": "預期 ${expected}"
+			},
+			"reusedSuite": "\n>>> 複用 ${manifestId}:${name}（trigger 未變，沿用上次 ${status}）",
+			"noisyOnlyRemain": "仍有 ${count} 個套件透過但含噪聲：${suites}",
+			"estimatedRun": "預計本次執行耗時 ≈ ${eta}（預估並行率 ${rate}）",
+			"estimatedRunSerial": "預計本次執行耗時 ≈ ${eta}（序列）",
+			"estimatedRunSkipped": "另有複用 ${reused} 個、預計阻塞 ${blocked} 個（不計入預估）",
+			"noRealRunPlanned": "本次無需真跑：複用 ${reused} 個、預計阻塞 ${blocked} 個（trigger 未變）",
+			"allReusedHint": "本次未真跑任何套件：失敗為沿用的上次結果，阻塞隨之未解（相關檔案未變）。修複相關檔案後重跑，或用 fount test --force 強制真跑。",
+			"estimatedRemaining": "預估剩餘耗時 ≈ ${eta}（${completed}/${total} 個套件）",
+			"estimatedRunSerialHint": "若並行預期 ≈ ${eta}（並行率 ${rate}），節省 ≈ ${savings}（去掉 --no-parallel）",
+			"failuresSaved": "已儲存失敗列表：${path}（${count} 個套件）",
+			"failuresCleared": "manifest ${manifestId} 已全部透過，失敗列表已清除。",
+			"terminated": "超時終止：${label} — ${reason}",
+			"terminateIdle": "已終止 ${label}：超過 ${minutes} 分鐘無 stdall 輸出（空閒 ${idleSec} 秒，已執行 ${elapsed}）",
+			"terminateDuration": "已終止 ${label}：耗時超過 watchdog 基線時長（已執行 ${elapsed}，基線 ${baseline}，上限 ${limit}）",
+			"terminateDurationDefault": "已終止 ${label}：耗時超過預設 watchdog 時長上限（已執行 ${elapsed}，上限 ${limit}）",
+			"terminateMarker": "[終止原因: ${reason}]",
+			"terminateUnknown": "已終止 ${label}：測試被中斷",
+			"terminateSpeculative": "已終止 ${label}：投機依賴未過，取消早停",
+			"nothingToContinue": "全部綠且無過期項，無需再跑。",
+			"triggerNoMatch": "trigger 未匹配任何檔案：${scope} — ${pattern}",
+			"triggerNoMatchSummary": "共 ${count} 條 trigger 未匹配任何倉庫檔案（詳見 report.md）",
+			"unknownSuite": "未知的套件：${name}",
+			"federationCleanupPre": "聯邦測試清理（執行前）失敗：${output}",
+			"federationCleanupPost": "聯邦測試清理（執行後）失敗：${output}",
+			"suiteHeader": "\n=== 套件 ${name} ===",
+			"heapSnapshotSaved": "測試節點近 OOM 堆快照：${path}",
+			"liveUsage": "用法：--suite <名稱> | --list",
+			"serialUsage": "用法：serial.mjs <deno-test-path> [...]",
+			"silentPassedOne": "1 個測試檔案透過。",
+			"silentPassedMany": "${count} 個測試檔案透過。",
+			"ciNoDiffFallback": "CI：未偵測到 diff，改為執行全部測試套件",
+			"noFrontendPhasesMatched": "沒有匹配 FOUNT_TEST_ONLY 的前端測試階段",
+			"denoPanic": {
+				"detected": "檢測到 Deno 崩潰：${label}（位置 ${signature}）",
+				"alreadyReported": "該 Deno 崩潰已上報過，跳過：${signature}",
+				"ghUnavailable": "gh 不可用或未登入，僅本地記錄 Deno 崩潰：${signature}",
+				"published": "已向 Deno 提交崩潰 issue：${url}",
+				"duplicate": "上游已存在重複崩潰，跳過上報：${upstream}",
+				"publishFailed": "Deno 崩潰 issue 釋出失敗：${signature}"
+			},
+			"nodeWorker": {
+				"dataPathRequired": "測試節點 worker：缺少 --data-path",
+				"portRequired": "測試節點 worker：缺少 --port（請透過 launch.mjs 啟動）",
+				"keyRequired": "測試節點 worker：缺少 --key（請透過 launch.mjs 啟動）",
+				"userRequired": "測試節點 worker：缺少 --user",
+				"error": "測試節點 worker 出錯：${error}"
+			},
+			"ws": {
+				"pass": "\n透過：${detail}",
+				"fail": "\n失敗：${detail}"
+			},
+			"report": {
+				"title": "fount 測試報告",
+				"tableHeaderItem": "項",
+				"tableHeaderValue": "值",
+				"fieldRunId": "執行 ID",
+				"fieldCommand": "命令",
+				"fieldExit": "退出狀態",
+				"fieldProgress": "進度",
+				"fieldSuites": "套件",
+				"fieldFailed": "失敗數",
+				"fieldNoisyPassed": "透過但有噪聲",
+				"fieldReused": "複用數",
+				"fieldSuiteSumDuration": "套件累計耗時",
+				"fieldWallClock": "總耗時",
+				"fieldParallelRate": "並行率",
+				"fieldEstimatedRemaining": "預估剩餘耗時",
+				"fieldEstimatedParallelRate": "預估並行率",
+				"estimatePoint": "≈ ${eta}",
+				"pendingEstimate": "預估剩餘耗時 ≈ ${eta}",
+				"pendingParallelEstimate": "並行預估耗時 ≈ ${eta}（預估並行率 ${rate}）",
+				"pendingSavings": "預計可節省 ≈ ${savings}",
+				"pendingItemExpected": "預期 ${expected}",
+				"fieldDuration": "耗時",
+				"commandDefault": "（預設）",
+				"exitPassed": "透過",
+				"exitFailed": "失敗",
+				"exitInProgress": "進行中",
+				"progressFormat": "${completed}/${total} 個套件",
+				"suitesFormat": "${passed}/${completed} 透過",
+				"artifacts": "產物目錄：`${path}`",
+				"sectionFailed": "失敗的套件",
+				"sectionNoisyPassed": "透過但有噪聲",
+				"sectionSilentPassed": "透過",
+				"sectionPending": "待執行",
+				"sectionContinue": "繼續未完成項",
+				"sectionReplay": "重跑失敗項",
+				"sectionReplayImperfect": "重跑不完美項",
+				"columnSuite": "套件",
+				"columnDuration": "耗時",
+				"labelReused": "（複用）",
+				"labelExpectedBlocked": "（預計阻塞）",
+				"labelDuration": "耗時",
+				"labelLog": "日誌",
+				"labelNoise": "噪聲",
+				"labelFailedFiles": "失敗檔案",
+				"labelTerminateReason": "終止原因",
+				"sectionContinueReasons": "觸發原因",
+				"continueReasonsLink": "觸發原因：詳見 [${path}](${path})",
+				"labelContinueReason": "原因",
+				"reasonImperfectFailed": "歷史失敗",
+				"reasonImperfectNoisy": "歷史透過但有噪聲",
+				"reasonImperfectBlocked": "歷史被阻塞",
+				"reasonImperfectDependent": "上游失敗一層下游",
+				"reasonMissingRecord": "state 無記錄，自動補跑",
+				"reasonStaleContent": "內容已變，需重跑",
+				"reasonTriggerHashDrift": "觸發指紋漂移（無路徑命中）",
+				"reasonExplicitSelected": "顯式指名",
+				"reasonDependencyRequired": "依賴拉入",
+				"labelRootCause": "根因",
+				"labelDirectRequiredBy": "直接納入方",
+				"labelInclusionPath": "納入鏈",
+				"labelPullUpstream": "上游拉取：${requiredBy} 的依賴未綠",
+				"labelPullDownstream": "下游拉取：${requiredBy} 不完美，連帶納入",
+				"labelGateReason": "需跑原因",
+				"labelCommitRange": "commit 範圍",
+				"labelUncommittedHashRange": "未提交 digest",
+				"labelMatchedTriggers": "命中 trigger",
+				"labelMatchedTriggerSets": "命中 trigger set",
+				"labelMatchedPaths": "命中路徑",
+				"labelTriggerHashDrift": "觸發指紋與當前工作區不一致（髒→淨已忽略）",
+				"sectionDeadTriggers": "無效 trigger",
+				"deadTriggersHint": "以下 glob 在倉庫內（git 已跟蹤 + 未忽略未跟蹤）未匹配任何檔案：",
+				"durationMs": "${ms} 毫秒",
+				"durationUnitSec": "${n} 秒",
+				"durationUnitMin": "${n} 分",
+				"durationUnitMinute": "${n} 分鐘",
+				"durationUnitHour": "${n} 小時",
+				"durationUnitDay": "${n} 天"
+			},
+			"state": {
+				"title": "fount 測試現狀",
+				"artifacts": "現狀目錄：`${path}`",
+				"sectionDependencyTree": "依賴樹",
+				"sectionOverview": "各套件現狀",
+				"sectionBlocked": "被阻塞的套件",
+				"columnSuite": "套件",
+				"columnStatus": "狀態",
+				"columnCommit": "commit",
+				"columnRanAt": "上次執行",
+				"columnDuration": "耗時",
+				"columnLog": "日誌",
+				"columnBlocked": "阻塞數",
+				"labelBlockedBy": "阻塞於",
+				"statusUnknown": "未執行",
+				"statusOutdated": "陳舊"
+			}
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount 協定",
@@ -144,7 +582,7 @@
 				"localBranchAhead": "本機分支領先於遠端分支。無需更新。",
 				"branchesDiverged": "本機和遠端分支已分歧。強制更新中...",
 				"notOnBranch": "不在分支上，切換到 'master'...",
-				"noUpstreamBranch": "警告：沒有為分支 '${branch}' 設定上游分支。正在將上游設定為 'origin/master'。",
+				"noUpstreamBranch": "警告：沒有為分支 '${branch}' 設定上游分支，使用 '${remote}'。",
 				"dirtyWorkingDirectory": "警告：工作目錄有未提交的變更。請在更新前暫存或提交。",
 				"notInstalled": "未安裝 Git，正在嘗試安裝...",
 				"notInstalledSkippingPull": "未安裝 Git，跳過 `git pull`",
@@ -727,6 +1165,513 @@
 			}
 		}
 	},
+	"social": {
+		"title": "廣場",
+		"description": "P2P 開放社交動態、關注與檔案分享",
+		"bootstrapFailed": "社交介面初始化失敗：${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "廣場"
+			}
+		},
+		"nav": {
+			"feed": "首頁",
+			"explore": "探索",
+			"notifications": "收件箱",
+			"saved": "收藏",
+			"drafts": "草稿箱",
+			"profile": "我的",
+			"videos": "短影片",
+			"live": "直播"
+		},
+		"settings": {
+			"title": "社交設定",
+			"back": {
+				"aria-label": "返回資料"
+			},
+			"privacyTitle": "隱私與發現",
+			"privacyHint": "控制賬戶是否出現在探索與推薦中。",
+			"tasteTitle": "推薦與偏好",
+			"tasteHint": "調節「為你推薦」的隱私邊界與標籤命名。",
+			"mutedKeywordsTitle": "遮蔽詞與標籤",
+			"mutedKeywordsHint": "命中正文、內容警告或標籤的帖子將從資訊流、探索、搜尋與通知中隱藏。僅儲存在本機。",
+			"mutedKeywordsMatchTags": "同時匹配標籤",
+			"mutedKeywordsAdd": "新增",
+			"mutedKeywordsRemove": {
+				"title": "移除遮蔽詞"
+			},
+			"mutedKeywordsEmpty": "尚未新增遮蔽詞",
+			"autoTranslateTitle": "自動翻譯",
+			"autoTranslateHint": "開啟後，外語帖子將自動請求譯文並可用原文切換。",
+			"autoTranslateEnable": "自動翻譯非本語言帖子",
+			"safetyTitle": "安全與遮蔽",
+			"safetyHint": "管理拉黑與隱藏列表。",
+			"mutedKeywords": {
+				"placeholder": "輸入關鍵詞或 #標籤"
+			}
+		},
+		"composer": {
+			"placeholder": "在想什麼？支援 Markdown（fount 方言），輸入 @ 可提及",
+			"publish": "釋出",
+			"saveDraft": "存草稿",
+			"fab": {
+				"title": "寫動態",
+				"aria-label": "寫動態"
+			},
+			"contentWarning": {
+				"placeholder": "內容警告（可選）"
+			},
+			"sensitiveMedia": "媒體敏感遮罩",
+			"editImage": "編輯",
+			"editCrop": "裁剪",
+			"editMosaic": "打碼",
+			"editBrush": "畫筆",
+			"editApply": "應用",
+			"editCancel": "取消",
+			"replyPolicyEveryone": "所有人可回覆",
+			"replyPolicyFollowers7d": "7天以上關注者",
+			"replyPolicyAuthorFollows": "我關注的人",
+			"replyPolicyLabel": "誰可以回覆",
+			"replyDisplayAll": "顯示全部回覆",
+			"replyDisplayFeaturedOnly": "僅精選回覆",
+			"replyDisplayLabel": "回覆展示",
+			"scheduleLabel": "定時釋出",
+			"scheduleSuccess": "帖子已加入定時佇列",
+			"emojiButton": {
+				"title": "表情",
+				"aria-label": "表情"
+			},
+			"mediaButton": {
+				"title": "新增媒體",
+				"aria-label": "新增媒體"
+			},
+			"pollButton": {
+				"title": "發起投票",
+				"aria-label": "發起投票"
+			},
+			"cwToggle": {
+				"title": "內容警告",
+				"aria-label": "內容警告"
+			},
+			"advancedToggle": {
+				"title": "更多選項",
+				"aria-label": "更多選項"
+			},
+			"media": {
+				"placeholder": "圖片描述（alt）"
+			}
+		},
+		"visibility": {
+			"label": "可見範圍",
+			"public": "公開",
+			"unlisted": "不公開列出",
+			"followers": "僅關注者",
+			"followers7d": "關注滿 7 天可見",
+			"followers30d": "關注滿 30 天可見",
+			"selected": "指定人員可見",
+			"private": "僅自己可見",
+			"allowLabel": "可見人員",
+			"exceptLabel": "排除人員",
+			"allow": {
+				"placeholder": "可見人員 entityHash，空格或逗號分隔"
+			},
+			"except": {
+				"placeholder": "不給誰看（可選）"
+			}
+		},
+		"albums": {
+			"create": "新建相簿",
+			"edit": "編輯相簿",
+			"save": "儲存",
+			"cancel": "取消",
+			"back": "返回相簿",
+			"empty": "還沒有相簿",
+			"emptyPosts": "相簿裡還沒有帖子",
+			"name": "相簿名稱",
+			"description": "相簿描述",
+			"deleteLinks": "刪除相簿（保留帖子）",
+			"deleteWithPosts": "刪除相簿並刪除帖子",
+			"pickerLabel": "加入相簿",
+			"defaultName": "預設相簿"
+		},
+		"feed": {
+			"refresh": "重新整理動態",
+			"newPosts": "有新動態，點選檢視",
+			"tabLatest": "最新",
+			"tabForYou": "推薦",
+			"repostedBy": "${author} 轉發了",
+			"decryptFailed": "無法解密此帖",
+			"revealContent": "顯示內容",
+			"sensitiveMedia": "敏感媒體",
+			"showMore": "展開",
+			"showLess": "收起",
+			"replayDivider": "已看完，重新瀏覽"
+		},
+		"taste": {
+			"rebuild": "重建偏好",
+			"privacyPublishPreferences": "公開標籤命名與合並發現",
+			"privacyPublishPreferencesHint": "關閉後好友看不到你的標籤命名與合併宣告，也無法貢獻共識。",
+			"privacyPublishReactions": "公開點贊與點踩",
+			"privacyPublishReactionsHint": "關閉後貼主收不到你的贊/踩、你的反應不參與他人推薦，你也不再推動帖子二度擴散。",
+			"empty": "尚無偏好標籤，多點贊/踩後會自動聚類",
+			"weight": "權重 ${weight}",
+			"save": "儲存",
+			"name": {
+				"placeholder": "本地顯示名"
+			}
+		},
+		"trending": {
+			"title": "熱門話題",
+			"postCount": {
+				"title": "${n} 條帖子"
+			},
+			"scopeLocal": "本機",
+			"scopeNearby": "附近",
+			"empty": "暫無熱門話題"
+		},
+		"search": {
+			"placeholder": "搜尋動態、使用者或 #話題（至少 2 字）",
+			"open": {
+				"aria-label": "搜尋"
+			},
+			"submit": "搜尋",
+			"clear": "清除",
+			"empty": "沒有匹配的帖子",
+			"tooShort": "請輸入至少 2 個字元",
+			"usersTitle": "使用者",
+			"postsTitle": "動態",
+			"usersEmpty": "沒有匹配的使用者",
+			"pinAlias": "設為別名",
+			"trustScore": "信任 ${score}",
+			"viewTitle": "搜尋",
+			"loading": "搜尋中…",
+			"filterAuthor": {
+				"placeholder": "作者"
+			},
+			"filterMediaAll": "所有媒體",
+			"filterMediaImage": "圖片",
+			"filterMediaVideo": "影片",
+			"filterTag": {
+				"placeholder": "#標籤"
+			},
+			"sortRecent": "最新",
+			"sortPopular": "熱門",
+			"scopeLocal": "本機",
+			"scopeNearby": "附近"
+		},
+		"profile": {
+			"edit": "編輯資料",
+			"viewPosts": "檢視社交主頁",
+			"settingsBtn": {
+				"aria-label": "社交設定"
+			},
+			"mediaOnly": "[媒體]",
+			"hideFromExplore": "從探索頁隱藏賬戶",
+			"tabPosts": "動態",
+			"tabAlbums": "相簿",
+			"tabLikes": "點贊",
+			"tabCabinets": "文件櫃",
+			"tabsLabel": {
+				"aria-label": "資料分割槽"
+			},
+			"cabinetsEmpty": "暫無公開文件櫃",
+			"cabinetsFailed": "文件櫃載入失敗：${error}",
+			"statsGroup": {
+				"aria-label": "資料統計"
+			},
+			"statsPosts": "動態",
+			"statsFollowing": "關注",
+			"statsFollowers": "粉絲",
+			"followingTitle": "關注",
+			"followersTitle": "粉絲"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "關閉"
+			}
+		},
+		"actions": {
+			"like": "點贊",
+			"unlike": "取消贊",
+			"dislike": "踩",
+			"undislike": "取消踩",
+			"repost": "轉發",
+			"quote": "引用",
+			"delete": "刪除",
+			"edit": "編輯",
+			"save": "收藏",
+			"saved": "已收藏",
+			"translate": "翻譯",
+			"dm": "發私信",
+			"block": "拉黑",
+			"hide": "隱藏",
+			"mute": "靜音",
+			"follow": "關注",
+			"following": "已關注",
+			"care": "特別關心",
+			"careRemove": "取消特別關心",
+			"careAdded": "已加入特別關心",
+			"careRemoved": "已取消特別關心",
+			"setAlias": "設定別名",
+			"setAliasPrompt": "設定本地別名（留空清除）：",
+			"aliasSaved": "別名已更新",
+			"replies": "評論",
+			"copyLink": "複製連結",
+			"downloadHtml": "下載 HTML",
+			"copied": "已複製",
+			"more": {
+				"aria-label": "更多"
+			},
+			"share": "分享",
+			"likeFailed": "點贊失敗：${error}",
+			"dislikeFailed": "踩失敗：${error}",
+			"repostFailed": "轉發失敗：${error}",
+			"replyFailed": "回覆失敗：${error}",
+			"followFailed": "關注失敗：${error}",
+			"saveFailed": "收藏失敗：${error}",
+			"blockFailed": "拉黑失敗：${error}",
+			"hideFailed": "隱藏失敗：${error}",
+			"muteFailed": "靜音失敗：${error}",
+			"deleteFailed": "刪除失敗：${error}"
+		},
+		"post": {
+			"edited": "已編輯",
+			"editPrompt": "編輯帖子正文",
+			"editHistory": "編輯歷史",
+			"editHistoryEmpty": "無更早版本",
+			"loading": "載入中…",
+			"notFound": "帖子不存在或不可見",
+			"loadFailed": "載入失敗，請稍後重試",
+			"detailTitle": "帖子",
+			"back": "返回"
+		},
+		"reply": {
+			"context": "回覆 ${author}"
+		},
+		"notes": {
+			"label": "讀者補充",
+			"add": "補充資訊",
+			"prompt": "寫一條讀者補充（社群筆記）",
+			"listTitle": "全部補充資訊",
+			"helpful": "有用",
+			"unhelpful": "無用",
+			"more": "全部 ${n} 條",
+			"empty": "暫無補充資訊"
+		},
+		"poll": {
+			"multi": "允許多選",
+			"apply": "應用投票",
+			"closed": "投票已結束",
+			"deadline": "截止：${deadline}",
+			"options": {
+				"placeholder": "每行一個選項（至少 2 項）"
+			}
+		},
+		"aside": {
+			"suggested": "推薦關注"
+		},
+		"explore": {
+			"accounts": "推薦賬戶",
+			"posts": "最新帖子",
+			"mediaOnly": "僅含媒體"
+		},
+		"groupRef": {
+			"linking": "關聯 Chat 群",
+			"clear": "取消關聯",
+			"pick": "關聯 Chat 群/頻道…"
+		},
+		"notifications": {
+			"reply": "${author} 回覆了你的帖子",
+			"mention": "${author} 在動態中 @ 了你",
+			"like": "${author} 讚了你的帖子",
+			"repost": "${author} 轉發了你的帖子",
+			"follow": "${author} 關注了你",
+			"care_post": "${author} 發了新動態（特別關心）",
+			"poll_closed": "${author} 的投票已結束",
+			"post_note": "${author} 為你的帖子補充了資訊",
+			"live_started": "${author} 開始直播了",
+			"view": "檢視",
+			"markAllRead": "全部標為已讀"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "收件箱篩選"
+			},
+			"tabs": {
+				"all": "全部",
+				"mention": "提及",
+				"reply": "回覆",
+				"like": "贊",
+				"follow": "關注",
+				"repost": "轉發"
+			},
+			"aggregated": {
+				"like": "${author1}、${author2} 等 ${count} 人讚了你的帖子",
+				"likeTwo": "${author1} 和 ${author2} 讚了你的帖子",
+				"repost": "${author1}、${author2} 等 ${count} 人轉發了你的帖子",
+				"repostTwo": "${author1} 和 ${author2} 轉發了你的帖子",
+				"follow": "${author1}、${author2} 等 ${count} 人關注了你",
+				"followTwo": "${author1} 和 ${author2} 關注了你"
+			}
+		},
+		"replies": {
+			"placeholder": "寫一條回覆…",
+			"submit": "回覆",
+			"empty": "還沒有回覆",
+			"emptyHint": "來寫第一條，開啟討論"
+		},
+		"repost": {
+			"placeholder": "新增轉發評論（可選）…",
+			"submit": "確認轉發"
+		},
+		"quote": {
+			"quoting": "正在引用",
+			"clear": "取消引用",
+			"viewOriginal": "檢視原帖"
+		},
+		"a11y": {
+			"linkGroupSelect": "關聯 Chat 群或頻道",
+			"postVisibility": "可見範圍",
+			"postLang": "內容語言",
+			"trendingHashtags": "熱門話題",
+			"saveFolderSelect": "收藏資料夾"
+		},
+		"blocklist": {
+			"title": "拉黑列表",
+			"hiddenTitle": "隱藏列表",
+			"empty": "暫無拉黑或隱藏條目",
+			"unblock": "解除拉黑",
+			"unhide": "取消隱藏",
+			"scopeEntity": "實體",
+			"scopeSubject": "主體"
+		},
+		"translate": {
+			"label": "譯文："
+		},
+		"saved": {
+			"all": "全部",
+			"unfiled": "未歸檔",
+			"createFolder": {
+				"title": "新建資料夾",
+				"aria-label": "新建資料夾"
+			},
+			"createFolderPrompt": "資料夾名稱",
+			"pickFolderTitle": "收藏到",
+			"confirm": "確認",
+			"cancel": "取消",
+			"remove": "移除收藏",
+			"renameFolder": "重新命名",
+			"renameFolderPrompt": "新資料夾名稱",
+			"deleteFolder": "刪除資料夾",
+			"deleteFolderConfirm": "刪除資料夾？其中的帖子將移到「未歸檔」。",
+			"searchEmpty": "沒有匹配的收藏",
+			"folderEmpty": "此資料夾為空",
+			"emptyHint": "瀏覽動態時點書籤即可收藏到這裡",
+			"search": {
+				"placeholder": "搜尋收藏…"
+			}
+		},
+		"drafts": {
+			"untitled": "（無文字草稿）",
+			"emptyHint": "在發帖框寫點內容後點「存草稿」，下次可繼續編輯",
+			"saved": "草稿已儲存",
+			"deleted": "草稿已刪除",
+			"delete": "刪除草稿",
+			"empty": "草稿為空",
+			"saveFailed": "儲存草稿失敗：${error}",
+			"loadFailed": "開啟草稿失敗：${error}",
+			"deleteFailed": "刪除草稿失敗：${error}"
+		},
+		"time": {
+			"justNow": "剛剛",
+			"minutesAgo": "${n} 分鐘前",
+			"hoursAgo": "${n} 小時前"
+		},
+		"empty": {
+			"feed": "暫無動態，去關注一些人吧",
+			"profilePosts": "暫無動態",
+			"following": "暫未關注任何人",
+			"followers": "還沒有粉絲",
+			"notifications": "暫無通知",
+			"saved": "暫無收藏",
+			"drafts": "暫無草稿",
+			"exploreAccounts": "暫無可推薦的賬戶",
+			"explorePosts": "暫無探索帖子",
+			"likedPosts": "暫無點贊",
+			"noIdentity": "請先在 Chat 設定聯邦 identity 後再使用 Social"
+		},
+		"topic": {
+			"follow": "訂閱",
+			"unfollow": "取消訂閱",
+			"empty": "該話題暫無帖子"
+		},
+		"video": {
+			"view": {
+				"aria-label": "短影片"
+			},
+			"empty": "暫無短影片",
+			"emptyHint": "關注的人或公開廣場裡還沒有帶影片的帖子。發一條影片動態試試？",
+			"compose": "去發影片",
+			"back": {
+				"aria-label": "返回動態"
+			},
+			"mute": {
+				"aria-label": "靜音"
+			},
+			"unmute": {
+				"aria-label": "取消靜音"
+			},
+			"unavailable": "影片無法播放",
+			"closeReplies": {
+				"aria-label": "關閉評論"
+			}
+		},
+		"live": {
+			"empty": "暫無直播",
+			"viewers": "${n} 人觀看",
+			"likes": "${n} 贊",
+			"local": "本機",
+			"hall": "直播大廳",
+			"back": {
+				"title": "返回動態",
+				"aria-label": "返回動態"
+			},
+			"danmakuSend": "傳送",
+			"postWatch": "進入直播",
+			"postEnded": "直播已結束",
+			"postEndedStats": "${viewers} 人看過 · ${likes} 贊 · ${duration}",
+			"link": {
+				"invite": "邀請連線",
+				"needPeer": "請填寫對端 entityHash:liveId",
+				"invited": "連線邀請已發出",
+				"linked": "已連線",
+				"peer": {
+					"placeholder": "對端 entityHash:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "開播",
+				"open": "去開播",
+				"mediaAv": "音影片",
+				"mediaAudio": "純音訊",
+				"mediaVideo": "純畫面",
+				"mediaWhip": "WHIP 推流（如 OBS）",
+				"whipUrl": "WHIP 地址",
+				"whipToken": "Bearer Token",
+				"whipWaiting": "等待 WHIP 推流連線（可用 OBS 等推流軟體）…",
+				"start": "開始直播",
+				"stop": "停止直播",
+				"started": "直播已開始",
+				"stopped": "直播已停止",
+				"titleInput": {
+					"placeholder": "直播標題（可選）"
+				}
+			},
+			"danmaku": {
+				"placeholder": "說點什麼…"
+			}
+		}
+	},
 	"chat": {
 		"title": "聊天",
 		"description": "言語飛揚，故事展開。與您的 AI 夥伴互動，塑造敘事，並在數位對話的潮起潮落中迷失自我。fount 的心臟在這裡跳動。",
@@ -738,7 +1683,1453 @@
 			"isTyping": "${names} 正在輸入...",
 			"multipleMembers": "多個成員正在輸入..."
 		},
+		"emoji": {
+			"pickerTitle": "選擇表情",
+			"categoryFace": "表情",
+			"categoryGesture": "手勢",
+			"categoryHeart": "心",
+			"categoryAnimal": "動物",
+			"categoryFood": "食物",
+			"categoryObject": "物品"
+		},
+		"unicodeEmojiGroups": {
+			"Smileys_and_Emotion": {
+				"title": "笑臉與情緒"
+			},
+			"People_and_Body": {
+				"title": "人物與身體"
+			},
+			"Animals_and_Nature": {
+				"title": "動物與自然"
+			},
+			"Food_and_Drink": {
+				"title": "食物與飲料"
+			},
+			"Travel_and_Places": {
+				"title": "旅行與地點"
+			},
+			"Activities": {
+				"title": "活動"
+			},
+			"Objects": {
+				"title": "物品"
+			},
+			"Symbols": {
+				"title": "符號"
+			},
+			"Flags": {
+				"title": "旗幟"
+			},
+			"Component": {
+				"title": "元件"
+			}
+		},
+		"sessionSettings": {
+			"unnamedTitle": "未命名群聊",
+			"modeGroup": "群聊",
+			"modeSingle": "單角色",
+			"modeEmpty": "空群組",
+			"subtitleRoles": "${count} 個角色在此聊天中",
+			"statusSaved": "已儲存",
+			"statusSaving": "正在儲存…",
+			"statusDirty": "有未儲存的更改",
+			"statusSaveFailed": "儲存失敗",
+			"saveSuccess": "群聊設定已儲存",
+			"saveFailed": "無法儲存群聊設定"
+		},
+		"group": {
+			"defaults": {
+				"groupMetaName": "未命名群組",
+				"defaultChannelName": "綜合",
+				"dmChatName": "聊天",
+				"dmDmName": "私聊",
+				"threadName": "子執行緒"
+			},
+			"settingsPage": {
+				"title": "群組設定",
+				"kicker": "群組管理",
+				"subtitle": "管理群資料、成員和常用功能。低頻的許可權、儲存與審計工具集中在高階設定中。",
+				"backToChat": "返回聊天",
+				"navigationLabel": "群組設定分類",
+				"advancedNavigationLabel": "高階設定分類",
+				"tabGeneral": "基本",
+				"tabPermissions": "角色許可權",
+				"tabMembers": "成員",
+				"tabAudit": "審計日誌",
+				"tabEmojis": "表情",
+				"tabAdvanced": "高階",
+				"tabStorage": "儲存與歸檔",
+				"tabChannelPermissions": "頻道許可權",
+				"advancedHubTitle": "高階設定",
+				"advancedHubDescription": "這些功能會改變群組的許可權結構、歷史資料或治理記錄；僅在明確需要時調整。",
+				"channelPermsHint": "為特定頻道設定角色許可權覆蓋。未覆蓋項繼承群組角色許可權。",
+				"channelPermsSelectChannel": "頻道",
+				"channelPermsAddRole": "新增角色覆蓋",
+				"channelPermsRemoveRole": "移除此角色覆蓋",
+				"channelPermsStateNeutral": "繼承",
+				"channelPermsStateAllow": "允許",
+				"channelPermsStateDeny": "拒絕",
+				"channelPermsUpdated": "頻道許可權已更新",
+				"channelPermsUpdateFailed": "更新頻道許可權失敗：${error}",
+				"channelPermsNoChannels": "暫無可設定頻道",
+				"emojisTitle": "群自訂表情",
+				"emojisHint": "成員可在聊天中插入或傳送這些表情；未安裝的圖片會透過聯邦節點按需拉取。",
+				"emojisUpload": "上傳表情",
+				"emojisDelete": "刪除表情",
+				"emojisEmpty": "暫無群表情",
+				"emojisUploadOk": "表情已上傳",
+				"emojisUploadFailed": "上傳失敗：${error}",
+				"emojisDeleteConfirm": "確定刪除此群表情？",
+				"emojisDeleteOk": "表情已刪除",
+				"emojisDeleteFailed": "刪除失敗：${error}",
+				"membersTitle": "成員列表",
+				"overviewTitle": "群組概覽",
+				"overviewHint": "只讀資訊。具備治理許可權時可在「基本」中編輯群資料與策略。",
+				"channelArchiveTitle": "頻道歸檔",
+				"channelArchiveHint": "匯入完整頻道 JSON 歸檔，將在本群新建一個普通文字頻道並恢復歷史（由你重新簽名；附件僅保留後設資料）。",
+				"channelArchiveImport": "匯入頻道 JSON",
+				"channelArchiveImportOk": "已匯入 ${count} 條訊息，正在開啟新頻道…",
+				"channelArchiveImportFailed": "匯入失敗：${error}",
+				"governanceHint": "寫入 DAG 的群組原則；需管理員或 MANAGE_ADMINS 等權限。",
+				"governanceDenied": "你沒有許可權修改群治理設定。",
+				"rolesDenied": "你沒有 MANAGE_ROLES 許可權，無法編輯角色。",
+				"channelPermsDenied": "你沒有 MANAGE_CHANNELS 許可權，無法編輯頻道許可權覆蓋。",
+				"notMember": "你已不是本群成員；本機群資料已在離群后自動清理。",
+				"basicTitle": "群治理",
+				"profileSectionTitle": "群資料",
+				"profileSectionHint": "名稱、簡介與入群方式會寫入群後設資料。",
+				"behaviorSectionTitle": "運作行為",
+				"networkSectionTitle": "聯邦與連線",
+				"retentionSectionTitle": "保留與限速",
+				"mediaSectionTitle": "通話與檔案",
+				"nameLabel": "群組名稱",
+				"descriptionLabel": "群組描述",
+				"joinPolicyLabel": "入群策略",
+				"joinInviteOnly": "僅邀請",
+				"joinPow": "需要 PoW",
+				"powDifficultyLabel": "PoW 難度",
+				"advancedTitle": "高階設定",
+				"advancedDescription": "網路、儲存、限速和加密引數；不確定時請保持預設",
+				"securityAdvancedTitle": "安全與群主操作",
+				"securityAdvancedDescription": "金鑰輪換和群主繼任；錯誤操作可能影響成員訪問",
+				"powDifficultyTip": "工作量證明難度。數值越高，陌生人加入公開群時需要的計算時間越長。",
+				"maxDagPayloadTip": "單個群事件允許攜帶的資料上限。過大會增加同步記憶體和網路開銷。",
+				"trustedPeersTip": "優先保持連線的高信譽聯邦鄰居數量。",
+				"gossipTtlTip": "訊息最多經多少個聯邦節點繼續轉發。增大可擴大覆蓋，也會增加流量。",
+				"hlcTip": "允許遠端節點時鐘比本機快出的最大時間，用於拒絕異常未來事件。",
+				"sfuTip": "可選的外部音影片轉發服務位址。留空則使用內建點對點/中繼通話。",
+				"iceTip": "幫助 WebRTC 穿透路由器；直連失敗時 TURN 會代為轉發音影片和聯邦流量。",
+				"fileEncryptionTip": "收斂加密可去重但會暴露相同檔案這一事實；隨機金鑰隱私更高但佔用更多空間。",
+				"keyManagementTitle": "金鑰管理",
+				"keyManagementTip": "輪換後需要重新向成員分發新金鑰。只有懷疑金鑰洩露時才應手動操作。",
+				"allowDangerousHtml": "可信作者訊息允許內聯 HTML",
+				"deleteGroup": "刪除群組",
+				"save": "儲存設定",
+				"inviteTitle": "邀請",
+				"inviteHint": "生成短時邀請碼（預設 1 小時）。對方在「加入群組」中填寫群組 ID 與邀請碼。",
+				"inviteMint": "生成邀請碼",
+				"inviteGroupId": "群組 ID",
+				"inviteCode": "邀請碼",
+				"inviteExpires": "過期：${date}",
+				"inviteCopy": "複製入群資訊",
+				"inviteCopied": "已複製入群資訊",
+				"inviteCopyFailed": "複製失敗",
+				"inviteClipboard": "群組 ID：${groupId}\n邀請碼：${code}\n加入：${url}",
+				"loadFailed": "載入群組設定失敗: ${error}",
+				"saveSuccess": "群組設定已儲存",
+				"saveFailed": "儲存設定失敗: ${error}",
+				"deleteConfirm": "確定要刪除此群組嗎？此操作不可撤銷，所有訊息和成員資料將被永久刪除。",
+				"deleteSuccess": "群組已刪除",
+				"deleteFailed": "刪除群組失敗: ${error}",
+				"rolesTitle": "角色與許可權",
+				"createRole": "建立角色",
+				"roleDefault": "預設",
+				"deleteRole": "刪除角色",
+				"deleteRoleConfirm": "確定要刪除此角色嗎？",
+				"deleteRoleSuccess": "角色已刪除",
+				"deleteRoleFailed": "刪除角色失敗: ${error}",
+				"createRolePrompt": "輸入角色名稱:",
+				"createRoleSuccess": "角色已建立",
+				"createRoleFailed": "建立角色失敗: ${error}",
+				"permissionUpdated": "許可權已更新",
+				"permissionUpdateFailed": "更新許可權失敗: ${error}",
+				"noMembers": "暫無成員",
+				"memberRoles": "角色:",
+				"kick": "踢出",
+				"ban": "封禁",
+				"kickConfirm": "確定踢出成員 ${name} 嗎？",
+				"kickSelfNodeWarning": "警告：此成員與你使用相同節點身分，踢出後你也將被移出群組。確定繼續嗎？",
+				"kickSuccess": "成員已踢出",
+				"kickFailed": "踢出成員失敗: ${error}",
+				"banConfirm": "確定封禁成員 ${name} 嗎？",
+				"banSuccess": "成員已封禁",
+				"banFailed": "封禁成員失敗: ${error}",
+				"bannedTitle": "已封禁成員",
+				"unban": "解封",
+				"unbanConfirm": "確定解封成員 ${name} 嗎？",
+				"unbanSuccess": "成員已解封",
+				"unbanFailed": "解封失敗：${error}",
+				"keyRotate": "輪換群檔案主金鑰",
+				"keyRotateConfirm": "確定手動輪換本群檔案主金鑰？新成員需重新同步歷史檔案金鑰。",
+				"keyRotateOk": "金鑰已輪換",
+				"keyRotateFailed": "金鑰輪換失敗：${error}",
+				"gshGenerationRetentionHint": "當前僅保留最近 64 代檔案主金鑰歷史。超出後最早歷史檔案可能無法解密，建議定期歸檔重要資料。",
+				"gshGenerationNearLimit": "當前已輪換到第 ${generation} 代檔案主金鑰（上限 ${maxGenerations} 代）。繼續頻繁輪換將導致最早歷史金鑰被淘汰。",
+				"ownerSuccession": "群主繼任",
+				"ownerSuccessionOk": "群主繼任已生效",
+				"ownerSuccessionFailed": "群主繼任失敗：${error}",
+				"permVIEW_CHANNEL": "檢影片道",
+				"permSEND_MESSAGES": "傳送訊息",
+				"permSEND_STICKERS": "傳送貼紙",
+				"permADD_REACTIONS": "新增反應",
+				"permMANAGE_MESSAGES": "管理訊息",
+				"permMANAGE_CHANNELS": "管理頻道",
+				"permKICK_MEMBERS": "踢出成員",
+				"permBAN_MEMBERS": "封禁成員",
+				"permMANAGE_ROLES": "管理角色",
+				"permINVITE_MEMBERS": "邀請成員",
+				"permSTREAM": "語音",
+				"permCREATE_THREADS": "建立子頻道",
+				"permUPLOAD_FILES": "上傳檔案",
+				"permMANAGE_FILES": "管理檔案",
+				"permPIN_MESSAGES": "置頂訊息",
+				"permADMIN": "管理員",
+				"permBYPASS_RATE_LIMIT": "繞過訊息限速"
+			},
+			"auditLog": {
+				"title": "群審計日誌",
+				"hint": "展示當前採納治理分支上的成員、角色、頻道與 moderation 事件；僅管理員可見。",
+				"filterLabel": "事件型別",
+				"refresh": "重新整理",
+				"filterAll": "全部型別",
+				"loadMore": "載入更早記錄",
+				"empty": "暫無審計記錄",
+				"loadFailed": "載入審計日誌失敗: ${error}",
+				"colTime": "時間",
+				"colType": "型別",
+				"colActor": "操作者",
+				"colSummary": "摘要",
+				"type": {
+					"member_join": "成員加入",
+					"member_leave": "成員離開",
+					"member_kick": "踢出成員",
+					"member_ban": "封禁成員",
+					"member_unban": "解除封禁",
+					"role_create": "建立角色",
+					"role_update": "更新角色",
+					"role_delete": "刪除角色",
+					"role_assign": "分配角色",
+					"role_revoke": "撤銷角色",
+					"channel_create": "建立頻道",
+					"channel_update": "更新頻道",
+					"channel_delete": "刪除頻道",
+					"channel_permissions_update": "頻道許可權",
+					"group_meta_update": "群資料",
+					"group_settings_update": "群設定",
+					"reputation_slash": "聲譽扣減",
+					"reputation_reset": "聲譽重置",
+					"file_master_key_rotate": "群檔案主金鑰輪換",
+					"peer_invite": "對等邀請",
+					"dag_tip_merge": "合併 DAG 分叉",
+					"message_delete": "刪除訊息",
+					"pin_message": "置頂訊息",
+					"unpin_message": "取消置頂",
+					"file_upload": "上傳檔案",
+					"file_delete": "刪除檔案"
+				},
+				"event": {
+					"member_join": "成員 ${target} 加入群組",
+					"member_leave": "成員離開群組",
+					"member_kick": "踢出成員 ${target}",
+					"member_ban": "封禁成員 ${target}",
+					"member_unban": "解除封禁 ${target}",
+					"role_create": "建立角色 ${roleName}",
+					"role_update": "更新角色 ${roleName}",
+					"role_delete": "刪除角色 ${roleName}",
+					"role_assign": "為 ${target} 分配角色 ${roleName}",
+					"role_revoke": "撤銷 ${target} 的角色 ${roleName}",
+					"channel_create": "建立頻道 ${channelName}",
+					"channel_update": "更新頻道 ${channelName}",
+					"channel_delete": "刪除頻道 ${channelName}",
+					"channel_permissions_update": "更新頻道 ${channelName} 的許可權",
+					"group_meta_update": "更新群資料：${name}",
+					"group_settings_update": "更新群設定",
+					"reputation_slash": "對 ${target} 扣減聲譽（${claim}）",
+					"reputation_reset": "重置 ${target} 的聲譽",
+					"file_master_key_rotate": "輪換群檔案主金鑰",
+					"channel_key_rotate": "頻道 ${channelName} E2E 金鑰輪換",
+					"peer_invite": "邀請對等節點 ${target}",
+					"dag_tip_merge": "合併 DAG 治理分叉",
+					"message_delete": "刪除訊息 ${targetEventId}",
+					"pin_message": "在 ${channelName} 置頂 ${targetEventId}",
+					"unpin_message": "在 ${channelName} 取消置頂 ${targetEventId}",
+					"file_upload": "上傳檔案 ${fileName}",
+					"file_delete": "刪除檔案 ${fileName}"
+				}
+			},
+			"messagePrefixSticker": "貼紙",
+			"membersEmpty": "（暫無成員）",
+			"channelEncryptionGsh": "頻道金鑰端對端加密（CKG）",
+			"ownerSuccession": "發起繼任投票",
+			"ownerSuccessionDescription": "將群最高管理許可權（MANAGE_ADMINS）轉移給指定成員。僅管理員可操作。",
+			"ownerSuccessionAutoSignHint": "提交後由本機在此群的簽名種子自動聯署，無需輸入私鑰。多管理員群需過半管理員各自在本機提交同一選票（相同 ballotId 與候選人）。",
+			"ownerSuccessionCandidateLabel": "繼任者公鑰雜湊",
+			"ownerSuccessionSelfButton": "提名自己",
+			"ownerSuccessionSubmitted": "繼任選票已記錄你的聯署。",
+			"ownerSuccessionNeedHash": "請填寫繼任者的公鑰雜湊",
+			"ownerSuccessionFailed": "繼任投票提交失敗",
+			"e2eDecryptUnavailable": "訊息已加密，當前裝置無法解密",
+			"contentRefBodyPending": "外鏈正文（content_ref，尚未拉取校驗）",
+			"contentRefHashMismatch": "外鏈正文與儲存校驗不一致（雜湊不匹配）",
+			"streamGenerationFailed": "AI 生成超時未完成，已停止更新",
+			"convergentEncryptWarn": "群檔案使用收斂加密：若攻擊者已知某檔案明文，可推導金鑰並解密對應密文塊。請勿將高度敏感且唯一的私密檔案僅依賴群加密保護。",
+			"settingsStreamGeneratingIdle": "AI 生成佔位空閒超時（毫秒）",
+			"settingsAutoReplyFrequency": "自動觸發角色回覆（每 N 條使用者訊息後，0 為關閉）",
+			"settingsAutoReplyFrequencyHint": "0 表示關閉；@提及 仍會立即觸發",
+			"settingsMaxDagPayload": "DAG 單事件最大位元組數",
+			"settingsBatterySaver": "低功耗模式（縮小聯邦連線池與中繼）",
+			"settingsDiscoveryPublic": "在聯邦發現中公開此群（不含入群金鑰）",
+			"settingsDiscoveryTitle": "發現列表標題（可選）",
+			"settingsDiscoveryBlurb": "發現簡介（可選）",
+			"settingsTrustedPeers": "信任鄰居槽位（Top-K）",
+			"settingsExplorePeers": "探索鄰居槽位",
+			"settingsMaxPeers": "聯邦連線上限",
+			"settingsGossipTtl": "Gossip 轉發 TTL（跳數）",
+			"settingsWantIdsBudget": "單次 wantIds 預算",
+			"settingsHlcMaxSkew": "HLC 未來偏移上限（毫秒）",
+			"dagForkDetected": "檢測到未合併的 DAG 分叉",
+			"mergeDagTips": "合併 DAG 分叉",
+			"mergeDagTipsOk": "分叉已合併",
+			"mergeDagTipsFailed": "合併分叉失敗",
+			"settingsStreamingSfu": "流媒體 SFU WebSocket 地址（可選）",
+			"settingsMessageRetention": "訊息正文自動刪除",
+			"settingsMessageRetentionForever": "永久保留（僅壓縮 DAG 事件）",
+			"settingsMessageRetention30d": "30 天以前",
+			"settingsMessageRetention90d": "90 天以前",
+			"settingsMessageRetention1y": "1 年以前",
+			"settingsMessageRetentionHint": "預設不自動刪除可見歷史。開啟後僅裁本地 messages 熱快取；終態帖在冷歸檔與 checkpoint 中保留。",
+			"settingsHotLatest": "熱區保留（每頻道最新帖數）",
+			"settingsPinContext": "置頂鄰域（±N 鄰帖）",
+			"settingsHotWindowHint": "熱區帖保留在 checkpoint 與 messages 快取；其餘帖在物化後寫入按月冷歸檔，再從 DAG 摺疊過程事件。",
+			"settingsArchiveTitle": "儲存與冷歸檔",
+			"settingsArchiveHint": "冷歸檔為本機明文帖子終態（按月分檔案）。刪除歸檔不會改動 DAG；缺歷史時可向聯邦鄰居拉取。",
+			"settingsArchiveFilesTitle": "已歸檔檔案",
+			"settingsArchiveEmpty": "尚無冷歸檔檔案。",
+			"settingsArchiveColChannel": "頻道",
+			"settingsArchiveColMonth": "月份",
+			"settingsArchiveColSize": "大小",
+			"settingsArchiveDeleteBefore": "刪除此月之前",
+			"settingsArchiveDeleteButton": "刪除冷歸檔",
+			"settingsArchiveDeleteHint": "僅刪除本地 archive/*.jsonl；熱區與 DAG 錨點不受影響。",
+			"settingsArchiveAdminOnly": "本機尚無此群的冷歸檔資料。",
+			"settingsArchiveDeleteInvalidMonth": "請選擇有效的 YYYY-MM 月份。",
+			"settingsArchiveDeleteConfirm": "確定刪除 {month} 之前的所有冷歸檔檔案？此操作不可恢復。",
+			"settingsArchiveDeleteOk": "已刪除 {files} 個歸檔檔案。",
+			"settingsArchiveDeleteFailed": "刪除歸檔失敗：{error}",
+			"settingsEventRetentionDepth": "DAG 事件保留深度",
+			"settingsEventRetentionMs": "DAG 事件保留時間",
+			"settingsCompactTriggerDepth": "物化壓縮觸發深度",
+			"settingsMessageRateLimit": "訊息限速（條/分鐘/實體）",
+			"settingsAutoReplyTokenBucket": "自動回覆壓力排程（Token Bucket）",
+			"settingsAutoReplyTokenBucketHint": "開啟後，每個角色按頻道維護令牌桶；桶空時暫不觸發 onMessage，可抑制高峰期連續刷屏。",
+			"settingsIceServers": "ICE / TURN 伺服器",
+			"settingsIceServersAdd": "新增伺服器",
+			"settingsIceServersHint": "用於 WebRTC 與聯邦 P2P 穿透；TURN 憑據僅存本機物化設定，不經聯邦廣播。",
+			"settingsFileCeMode": "檔案加密模式",
+			"settingsFileCeModeConvergent": "收斂加密（可去重）",
+			"settingsFileCeModeRandom": "高隱私模式（隨機金鑰，不去重）",
+			"settingsFileCeModeHint": "高隱私模式會為每個分塊使用隨機 contentKey，並標記 ceMode=random；可降低明文可猜測風險，但會增加儲存與頻寬佔用。",
+			"channelsTitle": "頻道",
+			"createGroup": "新建群組",
+			"members": "成員",
+			"membersHint": "成員列表由 Checkpoint 同步（佔位）",
+			"send": "傳送",
+			"streamTest": "測試媒體裝置",
+			"messageInput": {
+				"placeholder": "群組訊息… Ctrl+Enter 傳送"
+			},
+			"loadError": "載入群組失敗",
+			"remoteNodeTimeout": "遠端節點無響應，請稍後重試",
+			"remoteUnavailable": "遠端部件不可用或無法路由 RPC",
+			"messagesLoadFailed": "載入訊息失敗",
+			"sendFailed": "傳送失敗",
+			"chatNotLoaded": "主聊天未載入：請先在主介面開啟與此群組同 ID 的會話後再試",
+			"createFailed": "建立群組失敗",
+			"newGroupName": "新群組",
+			"streamOk": "已獲取媒體流（已停止，未廣播）",
+			"remoteUnsafe": "此訊息來自遠端且作者未在本地信任列表中，已禁用富文字渲染。",
+			"trustAuthor": {
+				"textContent": "信任",
+				"title": "信任此作者（允許危險 HTML）"
+			},
+			"trustAuthorOk": "已信任此作者並渲染富文字",
+			"voteCast": "投票",
+			"listEmpty": "（暫無導航條目，管理員可透過 API 更新 list-items）",
+			"listChannelReadonly": {
+				"placeholder": "列表頻道僅展示導航卡片，不發訊息"
+			},
+			"streamNoEmbed": {
+				"textContent": "流媒體地址須為可嵌入的 https:// 頁面，或先設定群設定並重新整理以獲取觀看令牌。"
+			},
+			"streamNoSfu": {
+				"textContent": "未設定 streamingSfuWss；管理員可在群設定中填寫 LiveKit/mediasoup 觀看地址。"
+			},
+			"messageDeleted": "訊息已刪除",
+			"messageDeletedBracket": "[訊息已刪除]",
+			"messageWithAttachments": "${text} （${n} 個附件）",
+			"voteBlockHeading": "[${prefix}] ${question}",
+			"voteBlockHeadingTagged": "[投票] ${question}",
+			"voteCastLine": "[${prefix}] 投票：${choice}",
+			"voteCastLineTagged": "[投票] 投票：${choice}",
+			"voteOptionsPreview": "[${prefix}] ${options}",
+			"voteOptionsPreviewTagged": "[投票] ${options}",
+			"voteDeadlineLineOpen": "截止：${date}",
+			"voteDeadlineLineClosed": "截止：${date} [已結束]",
+			"pinMessageLine": "[置頂] ${targetId}",
+			"unpinMessageLine": "[取消置頂] ${targetId}",
+			"stickerPrefixLine": "[${label}]",
+			"stickerPrefixLineTagged": "[貼紙]",
+			"feedbackDagLine": "[${label}]",
+			"feedbackDagLineWithNote": "[${label}] ${note}",
+			"feedbackPreviewLine": "${tag}${sep}${note}",
+			"feedbackPreviewTaggedNote": "${tag} ${note}",
+			"mentionHandle": "@${name}",
+			"mentionInsert": "@${name} ",
+			"feedbackUp": "贊",
+			"feedbackDown": "踩",
+			"attachmentsHint": "（${n} 個附件）",
+			"pinMessage": "置頂",
+			"unpinMessage": "取消置頂",
+			"pinThisMessage": "將本條寫入 DAG 置頂",
+			"pinAction": {
+				"textContent": "置頂",
+				"title": "將本條寫入 DAG 置頂"
+			},
+			"unpinAction": {
+				"textContent": "取消置頂",
+				"title": "取消置頂"
+			},
+			"pinOk": "已記錄置頂",
+			"unpinOk": "已取消置頂",
+			"pinFailed": "置頂失敗",
+			"menuCopyText": "複製文字",
+			"menuExportHtml": "匯出為 HTML",
+			"menuCopyId": "複製訊息 ID",
+			"copied": "已複製",
+			"addBookmark": {
+				"title": "將當前頻道加入書籤"
+			},
+			"bookmarkExists": "該書籤已存在",
+			"bookmarkAdded": "已加入書籤",
+			"bookmarkSaveFailed": "儲存書籤失敗",
+			"remoteTyping": "${name} 正在輸入…",
+			"remoteTypingTwo": "${name1}、${name2} 正在輸入…",
+			"remoteTypingMany": "${name} 和另外 ${count} 人正在輸入…",
+			"mentionEmpty": "（無匹配成員）",
+			"localAiLabel": "本機角色：",
+			"forceTriggerOne": {
+				"title": "強制觸發 ${name} 發言"
+			},
+			"forceTriggerAllLocal": "全部觸發",
+			"forceTriggerAllLocalTitle": {
+				"title": "強制觸發全部本機角色發言"
+			},
+			"messageRefAnchor": "引用訊息：${id}",
+			"settingsFedPartition": "聯邦分割槽數",
+			"settingsRtcBudget": "RTC 連線預算",
+			"settingsRtcJoinRate": "RTC 每分鐘加入上限",
+			"settingsFedTuningHint": "寫入 DAG 群設定；修改後建議重新繫結聯邦房間。",
+			"settingsAutoChannelGc": "自動清理沉寂頻道",
+			"settingsAutoChannelGcHint": "物化時最多刪除 2 個沉寂 ≥30 天且不可達的孤島頻道。",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
+			"stopGenerating": "停止生成",
+			"messageAborted": "已中斷",
+			"avStart": "開始媒體",
+			"avMute": "靜音",
+			"avSwap": "主畫面",
+			"avStop": "停止",
+			"avNeedStreamChannel": "請在「流媒體」型別頻道使用音影片",
+			"reactionAdd": {
+				"title": "新增回應"
+			},
+			"reactionRemove": {
+				"title": "撤銷回應"
+			},
+			"addReaction": {
+				"title": "新增表情反應"
+			},
+			"reactionPrompt": "輸入表情符號（Unicode）",
+			"channelTypeLabel": "頻道型別",
+			"channelTypeText": "聊天頻道",
+			"channelTypeList": "列表/論壇頻道",
+			"channelTypeStreaming": "流媒體頻道",
+			"convertToText": "轉換為聊天頻道",
+			"convertToList": "轉換為列表/論壇頻道",
+			"setAsDefault": "設為群預設頻道",
+			"isDefault": "當前預設",
+			"defaultChannelSet": "已設定為預設頻道",
+			"defaultChannelSetFailed": "設定預設頻道失敗",
+			"channelUpdateFailed": "頻道更新失敗",
+			"voteCreate": "發起投票",
+			"votePromptDeadline": "截止時間（留空不限時，格式 2026-01-01 23:59）",
+			"voteTooFewOptions": "至少需要兩個選項",
+			"voteCreateFailed": "建立投票失敗",
+			"voteFor": "投 ${option}",
+			"voteDeadline": "截止",
+			"voteEnded": "已結束",
+			"voteTotal": "共 ${n} 票",
+			"record": "錄音",
+			"fileDownload": {
+				"title": "下載檔案"
+			},
+			"clickToLoad": "點選載入",
+			"unknownFile": "未知檔案",
+			"blockSender": {
+				"title": "拉黑該傳送者"
+			},
+			"blockConfirm": "確認拉黑「${sender}」？",
+			"blockAdded": "已拉黑",
+			"saveSticker": {
+				"title": "儲存貼紙/表情到我的收藏"
+			},
+			"stickerSaved": "已儲存到貼紙庫",
+			"stickerDefaultName": "貼紙",
+			"deleteMessage": {
+				"title": "刪除訊息"
+			},
+			"deleteConfirm": "確認刪除此訊息？",
+			"editMessage": {
+				"title": "編輯訊息"
+			},
+			"saveEdit": "儲存",
+			"cancelEdit": "取消",
+			"editingMessage": "正在編輯",
+			"editConfirm": "確認 (Ctrl+Enter)",
+			"editCancel": "取消 (Esc)",
+			"editHint": "Ctrl+Enter 確認 · Esc 取消",
+			"editedLabel": "(已編輯)",
+			"editEmptyText": "訊息內容不能為空",
+			"createGroupTitle": "新建群組",
+			"groupNameLabel": "群組名稱",
+			"groupName": {
+				"placeholder": "我的群組"
+			},
+			"defaultChannelLabel": "預設頻道",
+			"defaultChannel": {
+				"placeholder": "general"
+			},
+			"createGroupFailed": "建立群組失敗",
+			"createChannelFailed": "建立頻道失敗",
+			"moreActions": {
+				"title": "更多操作"
+			},
+			"thread": "子執行緒",
+			"threadBack": "返回",
+			"threadBreadcrumbRootTitle": "跳轉到路徑起點（第一層）",
+			"threadBreadcrumbMiddleTitle": "展開中間層，選擇要跳轉的層級",
+			"threadBreadcrumbMiddleSummary": "中間 ${count} 層",
+			"menuShareExternal": "分享到外部連結",
+			"shareExternalOk": "已上傳並複製連結",
+			"shareExternalFailed": "上傳失敗，請檢查網路"
+		},
+		"hub": {
+			"title": "聊天",
+			"redirectToHub": "正在進入聊天 Hub…",
+			"homeTooltip": {
+				"title": "返回主頁",
+				"tip": "返回主頁"
+			},
+			"charsTooltip": {
+				"title": "角色",
+				"tip": "角色"
+			},
+			"friendsTooltip": {
+				"title": "好友",
+				"tip": "好友"
+			},
+			"inboxTooltip": {
+				"title": "收件箱",
+				"tip": "跨群收件箱"
+			},
+			"inbox": {
+				"title": "收件箱",
+				"filtersLabel": "篩選收件箱訊息",
+				"tabMention": "提及",
+				"tabMessage": "全部訊息",
+				"tabCare": "特別關心",
+				"tabVoteClosed": "投票結束",
+				"emptyMentionTitle": "暫時沒有人提及你",
+				"emptyMentionDescription": "其他成員在群聊中 @ 你後，訊息會集中顯示在這裡。",
+				"emptyMessageTitle": "收件箱空空如也",
+				"emptyMessageDescription": "來自各個群聊和頻道的訊息動態會顯示在這裡。",
+				"emptyCareTitle": "特別關心尚無動態",
+				"emptyCareDescription": "你特別關心的成員發來新訊息時，可以第一時間在這裡看到。",
+				"emptyVoteTitle": "沒有已結束的投票",
+				"emptyVoteDescription": "參與的投票結束後，結果會彙總到這裡。",
+				"rowLabel": {
+					"aria-label": "${author} 在 ${group} 的 ${channel} 頻道中說：${preview}"
+				},
+				"sidebarHint": "所有群中 @ 你的訊息會出現在右側列表",
+				"badgeFetchFailed": "未讀徽章重新整理失敗：${error}",
+				"loadFailed": "收件箱載入失敗：${error}",
+				"markSeenFailed": "收件箱已讀狀態更新失敗：${error}",
+				"jumpFailed": "無法開啟這條訊息：${error}"
+			},
+			"notifyPrefs": {
+				"title": "通知設定",
+				"mode": "通知模式",
+				"modeAll": "全部訊息",
+				"modeMentions": "僅 @ 與提及",
+				"modeNothing": "不通知",
+				"suppressEveryone": "忽略 @everyone 與 @here",
+				"suppressRoles": "忽略角色組 @",
+				"mute": "靜音",
+				"muteOff": "關閉",
+				"mute1h": "1 小時",
+				"mute8h": "8 小時",
+				"muteForever": "直到手動開啟",
+				"saved": "通知設定已儲存"
+			},
+			"voteClosed": "已結束",
+			"discoveryTooltip": {
+				"title": "群發現",
+				"tip": "群發現"
+			},
+			"prefsTooltip": {
+				"title": "設定",
+				"tip": "翻譯與聯邦 P2P 設定"
+			},
+			"prefsSubtitle": "翻譯與聯邦連線",
+			"federationTooltip": {
+				"title": "聯邦 P2P 設定",
+				"tip": "聯邦 P2P 設定"
+			},
+			"federationTitle": "聯邦 P2P 設定",
+			"federationSubtitle": "控制跨裝置連線；大多數情況下保持預設即可",
+			"federationLoadFailed": "載入失敗：${error}",
+			"fedConnectionTitle": "連線與發現",
+			"discoveryRefresh": "重新整理發現列表",
+			"fedRelayUrlsLabel": "網路中繼地址",
+			"fedRelayUrlsTip": "幫助裝置在網際網路中互相發現。每行填寫一個 wss:// 地址；留空則使用預設中繼。",
+			"fedBatterySaverLabel": "低功耗模式",
+			"fedBatterySaverTip": "減少後臺連線數量和網路活動，可能讓訊息同步稍慢。",
+			"fedAdvancedTitle": "高階設定",
+			"fedAdvancedDescription": "故障修復、信譽管理和手動連結簽發",
+			"fedGroupRecoveryTitle": "群連線修復",
+			"fedGroupRecoveryTip": "僅在邀請洩露或新裝置無法同步歷史時使用。",
+			"fedRotateRoomSecret": "輪換群房間口令",
+			"fedRotateRoomSecretConfirm": "輪換後，使用舊房間口令的邀請將無法連線。確定繼續嗎？",
+			"fedRotateRoomSecretOk": "已輪換房間口令",
+			"fedRepairJoinSnapshot": "向鄰居請求入群快照修復",
+			"fedRepairJoinSnapshotOk": "已應用入群快照（${channels} 個頻道歷史）",
+			"fedRepairJoinSnapshotFailed": "入群快照修復失敗：${error}",
+			"fedRepTitle": "本群主觀信譽",
+			"fedRepTip": "本機根據聯邦節點行為計算的連線偏好分數，不是群成員的公開評價。",
+			"fedRepEmpty": "（空）",
+			"fedSlashTitle": "信譽懲戒",
+			"fedSlashTip": "向群事件圖寫入對某個節點的負面信譽宣告。僅供理解聯邦協議的管理員使用。",
+			"fedSlashTargetLabel": "目標 pubKeyHash（64 hex）",
+			"fedSlashTarget": {
+				"placeholder": "成員公鑰雜湊"
+			},
+			"fedSlashClaimLabel": "主張強度 claim（0–1）",
+			"fedSlashVerifiedLabel": "可驗證（須填 proof event id）",
+			"fedSlashProofLabel": "proof.eventId（可選）",
+			"fedSlashProof": {
+				"placeholder": "64 hex event id"
+			},
+			"fedSlashSubmitLabel": "投遞 reputation_slash",
+			"fedResetSubmitLabel": "重置目標信譽",
+			"fedSlashNeedHash": "需要 64 位 hex pubKeyHash",
+			"fedSlashOk": "reputation_slash 已寫入 DAG",
+			"fedResetOk": "reputation_reset 已寫入",
+			"fedDmLinkTitle": "手動簽發加好友連結",
+			"fedDmLinkTip": "需要使用本機身份金鑰簽發。私鑰只在本頁面提交給本機服務，不會傳送給其他節點。",
+			"fedDmLinkDescription": "適用於除錯或手動遷移身份；日常加好友無需填寫這些欄位。",
+			"fedDmPubKeyLabel": "公鑰 hex（64）",
+			"fedDmSecretLabel": "私鑰種子 hex（64）",
+			"fedDmNodeLabel": "可選節點 URL",
+			"fedDmInvalidateTitle": "讓舊介紹連結失效",
+			"fedDmInvalidateDescription": "執行後，此前簽發的所有加好友連結都會立即失效，無法撤銷。",
+			"fedDmRotateLabel": "使舊連結失效",
+			"fedDmRotateConfirm": "此前簽發的所有加好友連結都會立即失效，且無法恢復。確定繼續嗎？",
+			"fedDmIssueLabel": "簽發 DM 連結",
+			"fedDmNeedPubKey": "需要 64 hex 公鑰",
+			"fedDmNeedSecretKey": "需要 64 hex 私鑰種子",
+			"fedDmIssued": "DM 連結已簽發並複製到剪貼簿",
+			"fedNonceRotated": "nonce 已旋轉（${nonce}…）",
+			"fedSaved": "已儲存",
+			"addServerTooltip": {
+				"title": "新建或加入群組",
+				"tip": "新建或加入群組"
+			},
+			"pinsTitle": "置頂",
+			"bookmarksTitle": "書籤",
+			"pinsButton": {
+				"title": "置頂訊息"
+			},
+			"bookmarksButton": {
+				"title": "書籤"
+			},
+			"search": {
+				"placeholder": "搜尋訊息…",
+				"noResults": "無結果",
+				"failed": "搜尋失敗",
+				"scopeGroup": "本群",
+				"scopeAll": "全部群"
+			},
+			"membersTitle": {
+				"title": "成員"
+			},
+			"backToNav": {
+				"title": "返回列表",
+				"aria-label": "返回列表"
+			},
+			"moreActions": {
+				"title": "更多",
+				"aria-label": "更多操作"
+			},
+			"composerMore": {
+				"title": "更多附件",
+				"aria-label": "更多附件"
+			},
+			"settingsTitle": {
+				"title": "設定"
+			},
+			"filesTitle": {
+				"title": "群檔案"
+			},
+			"filesDrawerTitle": "群檔案",
+			"filesLoading": "載入群檔案中…",
+			"filesLoadFailed": "載入群檔案失敗：${error}",
+			"filesNoGroup": "請先選擇群組",
+			"filesNoCabinets": "當前角色沒有可訪問的文件櫃",
+			"filesBindCabinet": "新增文件櫃",
+			"filesNoChannel": "請先進入可發訊息的文字頻道",
+			"filesUploadTo": "上傳到",
+			"filesRootFolder": "根目錄",
+			"filesNewFolder": "新建資料夾",
+			"filesNewFolderPrompt": "資料夾名稱",
+			"filesRename": "重新命名",
+			"filesRenameFolderPrompt": "重新命名資料夾「${name}」為：",
+			"filesDeleteFolderConfirm": "確定刪除此資料夾？資料夾內檔案不會自動刪除。",
+			"filesUpload": "上傳",
+			"filesDownload": "下載",
+			"filesDelete": "刪除",
+			"filesDeleteConfirm": "確定刪除此檔案？",
+			"filesFoldersTitle": "資料夾",
+			"filesListTitle": "檔案",
+			"filesEmpty": "此目錄暫無檔案",
+			"filesNoFolders": "暫無子資料夾",
+			"uploadTitle": {
+				"title": "上傳檔案"
+			},
+			"emojiTitle": {
+				"title": "表情"
+			},
+			"voteTitle": {
+				"title": "發起投票"
+			},
+			"shareGroupTitle": {
+				"title": "分享群組連結"
+			},
+			"shareGroupOk": "已分享群組邀請卡片",
+			"messageActionFailed": "操作失敗：${error}",
+			"inviteJoinButton": "加入群組",
+			"inviteLinkNeedsRoomSecret": "本群尚未啟用聯邦同步，請重新生成邀請連結後再分享。",
+			"inviteCardMembers": "${count} 名成員",
+			"syncFailed": "聯邦同步失敗：${error}",
+			"syncRateLimited": "聯邦同步限速中，請稍後再試",
+			"syncIncomplete": "尚有 ${missing}/${total} 個事件未同步",
+			"syncNoPeers": "未連線到聯邦鄰居，歷史訊息暫無法同步；請使用完整邀請連結並稍後重試",
+			"attachmentLoadFailed": "附件載入失敗",
+			"messageEditUpload": "上傳附件",
+			"timeToday": "今天 ${time}",
+			"timeYesterday": "昨天 ${time}",
+			"stickerTitle": {
+				"title": "貼紙"
+			},
+			"sendTitle": {
+				"title": "傳送 (Ctrl+Enter)"
+			},
+			"stopGenerateTitle": {
+				"title": "停止生成"
+			},
+			"charTyping": "正在輸入…",
+			"messageActionPrev": {
+				"title": "上一條時間線"
+			},
+			"messageActionNext": {
+				"title": "下一條時間線"
+			},
+			"messageActionRegen": {
+				"title": "重新生成"
+			},
+			"messageActionEdit": {
+				"title": "編輯訊息"
+			},
+			"messageActionFeedbackUp": {
+				"title": "點贊"
+			},
+			"messageActionFeedbackDown": {
+				"title": "點踩"
+			},
+			"messageActionDelete": {
+				"title": "刪除訊息"
+			},
+			"confirmDeleteLong": "此訊息較長，確認刪除？",
+			"messageActionCopyHtml": {
+				"title": "複製 HTML"
+			},
+			"forceReply": "強制回覆",
+			"removeChar": "移除角色",
+			"loadMore": "載入更早訊息…",
+			"charChatsTitle": "與 ${name} 的歷史對話",
+			"newGroupWith": "＋ 與 ${name} 新建對話",
+			"messageActionBookmark": {
+				"title": "加入書籤"
+			},
+			"messageActionPin": {
+				"title": "置頂"
+			},
+			"messageActionUnpin": {
+				"title": "取消置頂"
+			},
+			"blockAuthor": {
+				"title": "拉黑此作者"
+			},
+			"pinUnpinSidebar": {
+				"title": "取消置頂"
+			},
+			"meAuthor": "我",
+			"messageEditSave": "儲存",
+			"messageEditCancel": "取消",
+			"feedbackReasonPrompt": "點踩原因（可選）",
+			"feedbackReasonInput": {
+				"placeholder": "點踩原因（可選）"
+			},
+			"messageFeedbackSubmit": "提交反饋",
+			"stickersPanelTitle": "貼紙",
+			"stickersManage": "管理貼紙 →",
+			"stickersLoading": "載入中…",
+			"recentEmojiTab": {
+				"title": "常用"
+			},
+			"recentEmojisEmpty": "傳送過的表情會按使用次數顯示在這裡",
+			"currentGroupEmojiTab": {
+				"title": "當前群表情"
+			},
+			"groupEmojiTab": {
+				"title": "群"
+			},
+			"groupEmojisEmpty": "暫無群表情，可在群設定中上傳",
+			"groupEmojisLoadFailed": "載入群表情失敗",
+			"profileLinkTitle": {
+				"title": "個人資料",
+				"textContent": "個人資料"
+			},
+			"userLoading": "載入中…",
+			"status": {
+				"online": "線上",
+				"idle": "休息中",
+				"dnd": "請勿打擾",
+				"invisible": "隱身",
+				"offline": "離線"
+			},
+			"changeStatusTitle": "切換狀態",
+			"aboutSection": "關於",
+			"bioEmpty": "這位使用者還沒有簡介。",
+			"statusOffline": {
+				"title": "離線",
+				"textContent": "離線"
+			},
+			"statusOnline": {
+				"title": "線上",
+				"textContent": "線上"
+			},
+			"statusIdle": {
+				"title": "離開",
+				"textContent": "離開"
+			},
+			"statusDnd": {
+				"title": "勿擾",
+				"textContent": "勿擾"
+			},
+			"banners": {
+				"gshBuffer": "有 ${total} 條訊息等待金鑰輪換後解密",
+				"plaintextSidecar": "此頻道為按需同步；本地 messages sidecar 以明文快取展示內容。",
+				"quarantine": "有 ${count} 條聯邦事件因時鐘偏差暫存於隔離區，待系統時間恢復後自動重放。",
+				"mailboxPending": "離線 mailbox 中有 ${count} 條待投遞訊息。",
+				"syncing": "正在與聯邦鄰居同步…",
+				"archiveCoverageIncomplete": "部分月份冷歸檔尚未從聯邦同步完成。",
+				"archiveSyncButton": "同步歸檔",
+				"forkGovernance": "許可權記錄存在分叉，當前為本地檢視。",
+				"forkTips": "檢測到 ${count} 個未合併分支，訊息順序可能不一致。",
+				"forkTipLabel": "DAG 葉",
+				"forkTipScore": "${short} · 信譽 ${score}",
+				"applyBranch": "應用治理分支",
+				"autoBranch": "信譽自動選支",
+				"mergeDag": "合併分叉",
+				"splitFork": "分裂為新群",
+				"blockOpposing": "對立分支不可接觸",
+				"suspectedRemoved": "你大概已被移出本群：已向 ${count} 個認識的節點求證，均被拒之門外。可留念本地歷史，或刪除本群副本。",
+				"suspectedRemovedKeep": "留念",
+				"suspectedRemovedLeave": "刪除群"
+			},
+			"blockOpposingConfirm": "將非當前選支上的治理簽發者加入拉黑表，並拒絕本群聯邦中繼。繼續？",
+			"blockOpposingOk": "已標記 ${count} 個主體為不可接觸",
+			"blockOpposingFailed": "標記失敗：${error}",
+			"applyBranchOk": "已應用治理分支",
+			"applyBranchFailed": "應用分支失敗：${error}",
+			"autoBranchOk": "已恢復信譽自動選支",
+			"autoBranchFailed": "自動選支失敗：${error}",
+			"saveEmoji": {
+				"title": "存表情"
+			},
+			"saveEmojiOk": "表情已儲存到資料庫",
+			"saveEmojiFailed": "儲存表情失敗：${error}",
+			"saveSticker": {
+				"title": "存貼紙"
+			},
+			"saveStickerOk": "貼紙已加入你的貼紙庫",
+			"saveStickerFailed": "儲存貼紙失敗：${error}",
+			"revealRemoteMd": "展開全文",
+			"voteModalTitle": "發起投票",
+			"voteModalSubmit": "建立投票",
+			"voteCreateFailed": "建立投票失敗：${error}",
+			"composer": {
+				"placeholder": "傳送到 #${channel}"
+			},
+			"composerSuspectedRemoved": {
+				"placeholder": "你大概已被移出本群，無法繼續傳送"
+			},
+			"channelReadonlyList": {
+				"placeholder": "列表頻道只讀"
+			},
+			"channelReadonlyStream": {
+				"placeholder": "流媒體頻道只讀"
+			},
+			"noChannels": "暫無對話",
+			"noMembers": "暫無成員",
+			"noPins": "暫無置頂",
+			"noBookmarks": "暫無書籤",
+			"adminSection": "管理員",
+			"memberSection": "成員",
+			"membersDigestOk": "成員 Merkle 一致 · ${root}",
+			"membersDigestOkPaged": "成員 Merkle 一致（${pages} 頁）· ${root}",
+			"membersDigestMismatch": "成員摘要不一致 · ${root}",
+			"membersDigestPending": "校驗成員摘要…",
+			"membersDigestFetchFailed": "成員分頁拉取失敗",
+			"copyEntityId": "複製實體 ID",
+			"copyEntityIdOk": "已複製實體 ID",
+			"memberJoined": "加入了對話",
+			"remoteBadge": {
+				"textContent": "遠端",
+				"title": "聯邦遠端作者"
+			},
+			"trustAuthor": {
+				"textContent": "信任",
+				"title": "信任此作者（允許危險 HTML）"
+			},
+			"stickerInline": "貼紙",
+			"voteDeadline": "截止：${date}",
+			"voteNoOptions": "無選項",
+			"voteTotal": "共 ${total} 票",
+			"voteCount": "${count} 票 · ${pct}%",
+			"loadGroupFailed": "載入群組失敗：${error}",
+			"groupJoinRequired": "無法開啟此群組，請使用邀請連結或邀請碼加入",
+			"sendFailed": "傳送失敗：${error}",
+			"sendFailedPending": "傳送失敗",
+			"markdownRenderFailed": "訊息渲染失敗",
+			"retrySend": "重試",
+			"sendImageFailed": "傳送圖片失敗：${error}",
+			"sendStickerFailed": "傳送貼紙失敗：${error}",
+			"voteMinOptions": "至少需要 2 個選項",
+			"mergeDagOk": "分叉已合併",
+			"mergeDagFailed": "合併失敗：${error}",
+			"forkSplitFailed": "分裂失敗：${error}",
+			"forkSplitPrompt": "新群名稱（可留空）",
+			"forkSplitModalTitle": "分裂為新群",
+			"forkSplitModalSubmit": "建立",
+			"typing": "${names} 正在輸入…",
+			"charsHeader": "角色",
+			"friendsHeader": "好友",
+			"settingsModalTitle": "設定",
+			"modalClose": "關閉",
+			"groupTag": "群組",
+			"groupUnnamed": "未命名群 ·${suffix}",
+			"groupHeaderMenu": {
+				"title": "群選單：設定、邀請等"
+			},
+			"groupDescriptionEmpty": "這個群組還沒有簡介。",
+			"serverActionPickerTitle": "群組",
+			"serverActionPickerSubtitle": "建立新群組，或透過 ID 加入已有群組",
+			"serverActionPickerCreate": "建立群組",
+			"serverActionPickerCreateDescription": "從零開始，邀請好友",
+			"serverActionPickerJoin": "加入群組",
+			"serverActionPickerJoinDescription": "使用群組 ID",
+			"cancel": "取消",
+			"folderDefault": "資料夾",
+			"folderRename": "重新命名資料夾",
+			"folderRenamePrompt": "重新命名資料夾「${name}」為：",
+			"folderCollapse": "摺疊資料夾",
+			"folderExpand": "展開資料夾",
+			"folderDissolve": "解散資料夾",
+			"bookmarkLocal": "本地",
+			"groupsSection": "群組",
+			"ungrouped": "未分組",
+			"defaultCategory": "對話",
+			"bookmarkFallback": "書籤",
+			"bookmarkRemove": {
+				"title": "移除書籤",
+				"aria-label": "移除書籤"
+			},
+			"loadMessagesFailed": "載入訊息失敗：${error}",
+			"unreadDivider": "新訊息",
+			"noUsername": "未獲取使用者名稱",
+			"stickersEmpty": "暫無貼紙",
+			"stickersMarketLink": "前往貼紙廣場安裝",
+			"stickersLoadFailed": "載入失敗：${error}",
+			"noChars": "暫無角色，先去安裝一些吧",
+			"noFriends": "暫無私聊",
+			"friendsEmptyTitle": "開始一段新對話",
+			"friendsEmptyDescription": "搜尋本機角色或其他節點上的使用者，也可在群聊中開啟成員資料卡發起私信。",
+			"friendsEmptyAction": "搜尋角色或使用者",
+			"friendsSearchEmpty": "沒有匹配的角色或使用者",
+			"friendsSearchTooShort": "請輸入至少 2 個字元",
+			"friendsSearchDm": "發私信",
+			"friendsSearchChat": "開始對話",
+			"friendsSearchLocalChar": "本地角色",
+			"friendsSearchPin": "設為別名",
+			"charCount": "${count} 個角色",
+			"friendsCount": "${count} 個好友",
+			"charTag": "角色",
+			"friendsTag": "好友",
+			"backToFriends": "返回好友",
+			"dmTopicsTitle": "話題",
+			"friendsContextNewChat": "新建聊天",
+			"friendsRestartConfirm": "將解除與「${name}」的私聊繫結並新建會話，確定嗎？",
+			"friendsRestartOk": "已開啟新的私聊",
+			"friendsRestartFailed": "新建私聊失敗：${error}",
+			"charDescriptionEmpty": "這個角色還沒有自我介紹。",
+			"charIntro": "介紹",
+			"participants": "參與者",
+			"charTagSolo": "角色 · 1:1 對話",
+			"startChatWith": "💬 開始與 ${name} 聊天",
+			"loading": "載入中…",
+			"charChatStart": "和 ${name} 開始對話",
+			"charChatEmpty": "暫無訊息，開始你的第一條聊天吧！",
+			"loadCharChatFailed": "載入訊息失敗",
+			"createChatFailed": "建立會話失敗：${error}",
+			"charChatComposer": {
+				"placeholder": "給 ${name} 傳送訊息（Ctrl+Enter 傳送）"
+			},
+			"friendChatComposer": {
+				"placeholder": "傳送訊息（Ctrl+Enter 傳送）"
+			},
+			"trustOk": "已信任該作者",
+			"trustAuthorDialog": {
+				"title": "信任此作者",
+				"subtitle": "作者：${author}",
+				"warningTitle": "高風險操作",
+				"warningBody": "信任後，此作者發送的訊息將在你的瀏覽器中以完整 Markdown 渲染（含 HTML/腳本能力）。若對方在其運作的 fount 實例上惡意建構內容，可能在你查看訊息時對你的本機造成危害。請僅信任你明確認識且願意承擔風險的聯邦節點。",
+				"durationLabel": "信任時長",
+				"duration3h": "3 小時",
+				"duration7d": "7 天",
+				"duration1Month": "1 個月",
+				"durationForever": "永久",
+				"confirmCooldown": "我已閱讀風險（${seconds}）",
+				"confirmFirst": "我瞭解風險，繼續",
+				"confirmSecond": "再次點選以最終確認",
+				"cancel": "取消"
+			},
+			"blockConfirm": "將此人加入拉黑列表？本群聯邦將拒絕其中繼。",
+			"blockOk": "已拉黑",
+			"charChatSettings": "角色聊天設定",
+			"charChatSubtitle": "與 ${name} 的會話",
+			"sessionInfo": "會話資訊",
+			"sessionRole": "角色",
+			"sessionId": "會話 ID",
+			"sessionMessages": "訊息數",
+			"quickActions": "快捷操作",
+			"advancedSettings": "高階設定（角色 / 世界 / 外掛）",
+			"advancedSettingsDescription": "在新標籤頁開啟 Hub 中此群的完整設定",
+			"dangerZone": "危險區域",
+			"unbindFriendDescription": "解除繫結後，該會話將回到左側群列表，訊息記錄保留。",
+			"unbindFriend": "解除繫結",
+			"unbindFriendConfirm": "確認解除與 ${name} 的私聊繫結？會話將移回群列表。",
+			"unbindFriendOk": "已解除繫結",
+			"unbindFriendFailed": "解除繫結失敗：${error}",
+			"deleteSessionDescription": "刪除此會話將永久移除所有訊息，此操作不可恢復。",
+			"deleteSession": "刪除會話",
+			"deleteSessionConfirm": "確認刪除與 ${name} 的會話？此操作不可恢復。",
+			"sessionDeleted": "會話已刪除",
+			"sessionDeleteFailed": "刪除失敗：${error}",
+			"streamTokenFailed": "無法簽發觀看令牌",
+			"streamAvJoin": "加入語音/影片",
+			"streamAvLeave": "離開",
+			"streamAvMute": "靜音",
+			"streamAvUnmute": "取消靜音",
+			"streamAvVideo": "關閉攝像頭",
+			"streamAvVideoOn": "開啟攝像頭",
+			"streamAvYou": "你",
+			"streamAvJoinFailed": "無法啟動通話：${error}",
+			"streamAvNoCodecs": "此瀏覽器不支援 WebCodecs（需 Chrome 94+ / Edge 94+ / Firefox 130+）",
+			"streamAvPeers": "線上 ${count} 人",
+			"streamAvPresetThumb": "縮略 64kbps",
+			"streamAvPresetLow": "低質 200kbps",
+			"streamAvPresetMed": "中質 600kbps",
+			"streamAvPresetHigh": "高質 1.5Mbps",
+			"callButton": {
+				"title": "發起或加入通話",
+				"aria-label": "發起或加入通話"
+			},
+			"callInProgress": "通話進行中",
+			"callEnded": "通話已結束",
+			"callJoin": "加入通話",
+			"callHangup": "結束通話",
+			"callScreenShare": "共享螢幕",
+			"callScreenStop": "停止共享",
+			"callJumpBack": "返回通話頻道",
+			"callJoinFailed": "無法加入通話：${error}",
+			"callScreenFailed": "螢幕共享失敗：${error}",
+			"callStartedAt": "開始於 ${time}",
+			"callDuration": "時長 ${duration}",
+			"callParticipants": "${n} 人",
+			"callPeerCount": "${n}",
+			"callNoParticipants": "暫無參與者",
+			"listChannelEmpty": "列表為空。",
+			"listItemUntitled": "未命名",
+			"listEditorTitle": "編輯列表條目（JSON 陣列）",
+			"listSaveToDag": "儲存到 DAG",
+			"listJsonInvalid": "JSON 無效：${message}",
+			"listSaved": "已儲存",
+			"listSaveFailed": "儲存失敗",
+			"streamDefaultName": "流媒體",
+			"streamRefreshToken": "重新整理觀看令牌",
+			"streamEmbedHttpsRequired": "流媒體地址須為可嵌入的 https:// 頁面，或先設定群設定並重新整理以獲取觀看令牌。",
+			"streamWebRtcHint": "未設定外部 SFU；本頻道將使用群內 WebRTC（無需 streamingSfuWss）。",
+			"pinPreviewSticker": "[貼紙]",
+			"pinPreviewVote": "[投票] ${question}",
+			"pinPreviewInvite": "[邀請] ${groupName}",
+			"reactionRemovePrompt": "移除誰的 ${emoji}？\n${candidates}",
+			"ariaDagTip": {
+				"aria-label": "DAG 分叉 tip"
+			},
+			"ariaClose": {
+				"aria-label": "關閉"
+			},
+			"membersDigestPagesTitle": {
+				"title": "${expected}\n${pages} 頁"
+			},
+			"discoveryTitle": "群發現",
+			"discoveryEyebrow": "探索社群",
+			"discoveryDescription": "瀏覽來自聯邦網路的公開群組，挑選感興趣的社群並加入。",
+			"discoverySidebarHint": "在右側瀏覽和加入公開群組",
+			"discoveryEmptyTitle": "還沒有發現公開群組",
+			"discoveryEmpty": "暫無推薦群；開啟聯邦同步後會從鄰居同步發現列表",
+			"discoveryNoDescription": "群主還沒有填寫簡介。",
+			"discoverySourceCount": "${count} 個聯邦來源",
+			"discoveryJoin": "加入群組",
+			"discoveryOpen": "開啟群組",
+			"discoveryLoadFailed": "載入發現列表失敗：${message}",
+			"operationFailed": "操作失敗：${error}",
+			"shareGroupFailed": "分享群連結失敗：${error}",
+			"blockAuthorTitle": "拉黑此作者",
+			"configTitle": "對話設定",
+			"configSaved": "已儲存",
+			"configSaveFailed": "儲存失敗：${error}",
+			"configLoadFailed": "載入設定失敗：${error}",
+			"noActiveChat": "請先開啟一個會話再拖入部件",
+			"groupContext": {
+				"manage": "管理群",
+				"notifyPrefs": "通知設定",
+				"invite": "邀請他人",
+				"inviteCopied": "邀請連結已複製到剪貼簿",
+				"addChar": "新增角色",
+				"addCharLabel": "選擇角色",
+				"addCharSubmit": "新增",
+				"noChars": "沒有可用的角色",
+				"setAlias": "設定群別名",
+				"setAliasPrompt": "為「${name}」設定本地別名（留空清除）：",
+				"aliasSaved": "群別名已更新",
+				"leave": "退出群",
+				"leaveConfirm": "確定要退出群「${name}」嗎？你將無法再檢視此群訊息。",
+				"leaveOk": "已退出群組",
+				"leaveBatch": "退出所選群（${count}）",
+				"leaveConfirmBatch": "確定要退出所選的 ${count} 個群嗎？本機將不再保留這些群的資料。",
+				"leaveBatchPending": "已從列表移除 ${count} 個群，正在後臺退出…",
+				"leaveBatchOk": "已退出 ${count} 個群",
+				"leaveBatchPartial": "${failed} / ${total} 個群退出失敗，列表已重新整理"
+			},
+			"replyInline": {
+				"title": "回覆"
+			},
+			"replyClear": {
+				"title": "取消引用"
+			},
+			"replyInThread": {
+				"title": "在子執行緒中回覆"
+			},
+			"syncTruncated": "DAG 增量未拉全，可稍後重試或提高 limit",
+			"syncTruncatedHint": "DAG 歷史過長，可稍後重試或提高 limit",
+			"newChannelButton": "新建頻道",
+			"newChannelSuccess": "頻道已建立",
+			"newChannelFailed": "建立頻道失敗",
+			"newChannelTitle": "新建頻道",
+			"channelName": "頻道名稱",
+			"channelType": "頻道型別",
+			"channelTypeText": "聊天頻道",
+			"channelTypeList": "列表/論壇頻道",
+			"channelTypeStreaming": "流媒體頻道",
+			"channelNameInput": {
+				"placeholder": "general"
+			},
+			"localMaterializedView": "當前為本地物化檢視，許可權與歷史可能與其他節點不一致。",
+			"convergentEncryptWarn": "群檔案使用收斂加密：若攻擊者已知某檔案明文，可推導金鑰並解密對應密文塊。請勿將高度敏感且唯一的私密檔案僅依賴群加密保護。",
+			"votePromptQuestion": "投票標題",
+			"votePromptOptions": "選項（用逗號分隔，至少兩項）",
+			"voteOptionDefault": "贊成,反對",
+			"votePromptDeadlineHours": "截止（小時，留空=無截止）",
+			"messagePrefixVote": "投票",
+			"threadCreated": "子執行緒已建立",
+			"threadCreateFailed": "建立子執行緒失敗，請稍後重試",
+			"threadDrawer": {
+				"aria-label": "子執行緒"
+			},
+			"threadClose": {
+				"title": "關閉子執行緒"
+			},
+			"reputationSlashAlert": "成員 ${target}… 的聲譽受到扣減提醒",
+			"profileEdit": {
+				"previewHint": "修改會立即顯示在預覽中，儲存後同步用於 Chat 與 Social。",
+				"livePreview": "實時預覽",
+				"languageVersion": "語言版本",
+				"localeHint": "點選標籤切換或編輯程式碼；在末尾輸入框回車可複製為新語言。",
+				"themeColorHint": "無自訂橫幅時用於生成紋理，也用於直播聲波環",
+				"bannerLabel": "橫幅背景",
+				"bannerHint": "可填寫圖片 URL 或上傳檔案；也可隨時恢復生成紋理",
+				"bannerClear": "恢復生成橫幅",
+				"linksPreview": "${count} 個公開連結",
+				"unsavedHint": "關閉視窗將放棄未儲存的更改",
+				"tagsLabel": "標籤",
+				"tagAdd": "新增",
+				"tagRemove": "刪除標籤",
+				"linksLabel": "連結",
+				"linkAdd": "新增連結",
+				"linkRemove": "刪除連結",
+				"handleLabel": "自訂 ID",
+				"handleHint": "可被網路內他節點搜尋；不保證唯一，衝突時按信任度列表消歧。",
+				"resetFromPart": "從角色部件重置",
+				"resetFromPartConfirm": "將用角色 part 的 info 覆蓋當前資料，確定？",
+				"resetFromPartDone": "已從角色部件重建資料",
+				"resetFromPartFailed": "重建失敗：${error}",
+				"newLocale": {
+					"placeholder": "新語言程式碼，如 en-UK"
+				},
+				"avatarUrl": {
+					"placeholder": "頭像圖片 URL，或在下方上傳檔案"
+				},
+				"bannerUrl": {
+					"placeholder": "橫幅圖片 URL，或在下方上傳檔案"
+				},
+				"tag": {
+					"placeholder": "輸入標籤後新增"
+				},
+				"linkName": {
+					"placeholder": "顯示文字"
+				},
+				"linkUrl": {
+					"placeholder": "https://… 或 fount://…"
+				},
+				"handle": {
+					"placeholder": "例如 steve（2–32 位小寫字母數字._-）"
+				}
+			},
+			"profilePopup": {
+				"close": {
+					"title": "關閉資料卡"
+				},
+				"editSaved": "資料已儲存",
+				"editQueued": "已釋出，等待對方節點拉取",
+				"dmChar": "與角色私聊",
+				"dmUser": "傳送私信",
+				"dmFed": "聯邦私信",
+				"noFedIdentity": "請先在聯邦設定中設定本機 activePubKeyHex",
+				"peerNoIdentity": "對方無聯邦身份，無法發起聯邦私信",
+				"dmFailed": "無法開啟私信：${error}",
+				"care": "特別關心",
+				"careRemove": "取消特別關心",
+				"setAlias": "設定別名",
+				"setAliasPrompt": "為「${name}」設定本地別名（留空清除）："
+			},
+			"channelContext": {
+				"copyLinkDone": "頻道連結已複製",
+				"notifyPrefs": "頻道通知設定",
+				"rename": "重新命名頻道",
+				"renameOk": "頻道已重新命名",
+				"delete": "刪除頻道",
+				"deleteOk": "頻道已刪除",
+				"deleteConfirm": "確定刪除頻道「${name}」嗎？此操作不可撤銷。",
+				"setDefault": "設為預設頻道",
+				"setDefaultOk": "已設為預設頻道",
+				"copyLink": "複製頻道連結",
+				"exportJson": "匯出 JSON",
+				"exportOk": "頻道歸檔已下載",
+				"exportFailed": "匯出失敗：${error}"
+			},
+			"memberContext": {
+				"copyName": "複製顯示名",
+				"mention": "提及",
+				"care": "特別關心",
+				"careAdded": "已加入特別關心",
+				"careRemoved": "已取消特別關心",
+				"setAlias": "設定別名",
+				"setAliasPrompt": "為「${name}」設定本地別名（留空清除）：",
+				"aliasSaved": "別名已更新",
+				"copyPubKey": "複製公鑰雜湊",
+				"copyEntityId": "複製實體 ID",
+				"dm": "傳送私信",
+				"kick": "踢出成員",
+				"kickSelfNodeWarning": "警告：此成員與你使用同一節點身份，踢出後你也將被移出群組。確定繼續嗎？",
+				"ban": "封禁…",
+				"personalBlock": "個人拉黑",
+				"personalBlockConfirm": "將 ${name} 加入你的拉黑列表？關注你的人會收到該訊號並可能降低對其的信任值。",
+				"personalBlockSuccess": "已加入拉黑列表",
+				"banTitle": "選擇封禁範圍",
+				"banEntity": "封禁實體（128 位 entityHash）",
+				"banNode": "封禁節點（homeNodeHash）"
+			},
+			"messageContext": {
+				"edit": "編輯訊息",
+				"delete": "刪除訊息"
+			},
+			"charStreaming": "生成中…",
+			"gshDecryptPending": "等待頻道金鑰（generation ${gen}）",
+			"gshDecryptFailed": "無頻道金鑰，無法解密此訊息",
+			"fileDecryptFailed": "無檔案金鑰，無法訪問此檔案",
+			"reactionFailed": "回應操作失敗",
+			"fileUploadChecking": "正在檢查是否已有相同內容…",
+			"fileUploadingChunk": "正在上傳加密塊…",
+			"fileUploadRegistering": "正在登記檔案…",
+			"fileUploaded": "檔案上傳成功",
+			"fileUploadFailed": "檔案上傳失敗",
+			"fileSkippedDedup": "已跳過重複塊傳輸",
+			"fileDownloadFailed": "檔案下載失敗",
+			"fileNoKey": "無法解密（缺少金鑰）",
+			"fileLoadFailed": "檔案載入失敗",
+			"createModal": {
+				"title": "建立群組",
+				"subtitle": "群組是你和朋友一起聊天的私密空間",
+				"basicSection": "基本資訊",
+				"nameLabel": "群組名稱",
+				"name": {
+					"placeholder": "為你的群組起個名字"
+				},
+				"descriptionLabel": "群組描述",
+				"description": {
+					"placeholder": "（選填）介紹一下這個群組"
+				},
+				"joinSection": "誰可以加入",
+				"joinInviteOnly": "僅邀請",
+				"joinInviteOnlyDescription": "需要邀請碼才能加入",
+				"joinPow": "工作量證明",
+				"joinPowDescription": "加入前需完成 PoW 挑戰",
+				"cancel": "返回",
+				"submit": "建立群組",
+				"failed": "建立群組失敗：${error}"
+			},
+			"joinModal": {
+				"title": "加入群組",
+				"subtitle": "輸入群組 ID 即可加入對應的聊天",
+				"groupIdLabel": "群組 ID",
+				"groupId": {
+					"placeholder": "group_1776941580949_xxxx"
+				},
+				"inviteLabel": "邀請碼（可選）",
+				"invite": {
+					"placeholder": "由群主生成的短時邀請碼"
+				},
+				"hint": "群組 ID 由群主分享。邀請制群需填寫有效邀請碼（設定頁可生成）。",
+				"cancel": "返回",
+				"submit": "加入群組"
+			},
+			"menuCopy": "複製",
+			"menuMD": "Markdown",
+			"menuTXT": "純文字",
+			"menuHTML": "HTML",
+			"menuDownload": "下載 HTML",
+			"menuDelete": "刪除",
+			"menuShareGroup": "分享連結",
+			"menuPrev": "上一條",
+			"menuNext": "下一條",
+			"menuShare": {
+				"1h": "分享 1 小時連結",
+				"12h": "分享 12 小時連結",
+				"24h": "分享 24 小時連結",
+				"72h": "分享 72 小時連結"
+			},
+			"noGroups": "暫無群組",
+			"myGroups": "我的群組",
+			"joinGroup": "加入群組",
+			"createGroup": "新建群組",
+			"noDescription": "暫無描述",
+			"memberCountLabel": "${count} 成員",
+			"loadListFailed": "載入群組列表失敗: ${error}",
+			"contentWarning": "內容警告",
+			"sensitiveMedia": "敏感媒體",
+			"revealContent": "顯示內容",
+			"revealMedia": "顯示媒體",
+			"copyShareLink": "複製分享連結",
+			"forward": "轉發",
+			"forwardedFrom": "轉發自",
+			"forwardDialog": {
+				"title": "轉發訊息",
+				"selectGroup": "選擇目標群組",
+				"selectChannel": "選擇目標頻道",
+				"confirm": "轉發",
+				"cancel": "取消",
+				"success": "已轉發",
+				"failed": "轉發失敗"
+			},
+			"deliverySending": "正在傳送",
+			"deliverySent": "已傳送",
+			"deliveryRead": "已讀",
+			"translate": "翻譯",
+			"translating": "翻譯中…",
+			"translateShowOriginal": "顯示原文",
+			"translateShowTranslation": "顯示譯文",
+			"translateLabel": "譯文",
+			"translateFailed": "翻譯失敗",
+			"editImage": "編輯圖片",
+			"draftRestored": "已恢復草稿",
+			"queuedOffline": "等待傳送（離線）",
+			"translationPrefs": {
+				"title": "翻譯設定",
+				"textContent": "翻譯設定",
+				"autoTranslate": "自動翻譯外語訊息",
+				"hint": "開啟後，語言與介面不同的訊息會自動請求譯文。",
+				"save": "儲存",
+				"saved": "翻譯設定已儲存",
+				"saveFailed": "儲存失敗：${error}"
+			},
+			"friendsSearch": {
+				"placeholder": "搜本機角色 / 自訂 ID / 名稱…"
+			},
+			"threadComposer": {
+				"placeholder": "在子執行緒中回覆…"
+			},
+			"altImage": {
+				"placeholder": "為圖片新增描述…",
+				"label": "圖片說明（alt）"
+			}
+		},
 		"sidebar": {
+			"settings": {
+				"title": "群組設定"
+			},
 			"noSelection": "未選擇",
 			"noDescription": "無描述資訊",
 			"world": {
@@ -780,6 +3171,16 @@
 						"alt": "新增外掛圖示"
 					}
 				}
+			},
+			"dataMgmt": {
+				"title": "資料管理",
+				"compact": "生成檢查點",
+				"prune": "裁剪歷史",
+				"compactSuccess": "檢查點生成成功",
+				"compactError": "檢查點生成失敗",
+				"pruneSuccess": "歷史訊息裁剪完成",
+				"pruneError": "裁剪失敗",
+				"invalidN": "保留條數無效（最少10條）"
 			}
 		},
 		"rightSidebar": {
@@ -951,7 +3352,11 @@
 			}
 		},
 		"messageGenerating": {
-			"stop": "停止",
+			"tips": "角色正在生成回覆，請稍候…",
+			"stop": {
+				"textContent": "停止",
+				"title": "停止生成"
+			},
 			"stopIcon": {
 				"alt": "停止圖示"
 			}
@@ -1036,53 +3441,9 @@
 			}
 		},
 		"home_function_buttons": {
-			"viewHistory": {
-				"title": "瀏覽歷史記錄"
+			"chatHub": {
+				"title": "聊天"
 			}
-		}
-	},
-	"chat_history": {
-		"title": "聊天記錄",
-		"pageTitle": "聊天記錄",
-		"description": "穿越過去的對話之旅。在這裡，對話的記憶揮之不去——排序、過濾並重新審視你與 AI 夥伴編織的故事。一個安靜的數位迴聲圖書館。",
-		"filterInput": {
-			"placeholder": "搜尋..."
-		},
-		"sortOptions": {
-			"time_desc": "時間降序",
-			"time_asc": "時間升序"
-		},
-		"sortBy": {
-			"aria-label": "排序方式"
-		},
-		"selectAll": "全選",
-		"buttons": {
-			"reverseSelect": "反選",
-			"deleteSelected": "刪除選取",
-			"exportSelected": "匯出選取項目",
-			"import": "匯入"
-		},
-		"chatItemButtons": {
-			"continue": "繼續",
-			"copy": "複製",
-			"export": "匯出",
-			"delete": "刪除"
-		},
-		"confirmDeleteChat": "確定要刪除與 ${chars} 的聊天記錄嗎？",
-		"confirmDeleteMultiChats": "確定要刪除選取的 ${count} 則聊天記錄嗎？",
-		"alerts": {
-			"noChatSelectedForDeletion": "請選擇要刪除的聊天記錄",
-			"noChatSelectedForExport": "請選擇要匯出的聊天記錄",
-			"copyError": "複製失敗",
-			"deleteError": "刪除失敗",
-			"exportError": "匯出失敗",
-			"dragExportError": "拖曳匯出時出錯",
-			"importSuccess": "匯入成功",
-			"importError": "匯入失敗",
-			"invalidImportFile": "無效的匯入檔案"
-		},
-		"select_checkbox": {
-			"aria-label": "選擇與 ${chars} 的聊天"
 		}
 	},
 	"easynew": {
@@ -1415,10 +3776,10 @@
 			"creationDateLabel": "帳號建立日期:",
 			"folderSizeLabel": "使用者資料大小:",
 			"folderPathLabel": "使用者資料路徑:",
-			"copyPathBtn": {
+			"copyPathButton": {
 				"title": "複製路徑"
 			},
-			"copyPathBtnIcon": {
+			"copyPathButtonIcon": {
 				"alt": "複製圖示"
 			},
 			"copiedAlert": "路徑已複製到剪貼簿！",
@@ -1624,7 +3985,6 @@
 			"title": "程式碼執行",
 			"description": "在選定的 Subfount 上執行 JavaScript 程式碼",
 			"selectSubfountLabel": "選擇 Subfount",
-			"selectSubfountPlaceholder": "請選擇要執行程式碼的 Subfount...",
 			"hostOption": "主機 (ID: ${id})",
 			"subfountOption": "分機 ${id}${deviceId}",
 			"scriptLabel": "JavaScript 程式碼",
@@ -1633,7 +3993,8 @@
 			"noSubfountSelected": "請先選擇一個 Subfount",
 			"noScriptProvided": "請輸入要執行的程式碼",
 			"executionSuccess": "程式碼執行成功",
-			"executionFailed": "程式碼執行失敗: ${message}"
+			"executionFailed": "程式碼執行失敗: ${message}",
+			"selectSubfount": "請選擇要執行程式碼的Subfount..."
 		},
 		"downloadClient": {
 			"title": "下載子 fount 客戶端",
@@ -1900,9 +4261,6 @@
 			"copyModelIdTooltip": "點擊以複製模型 ID",
 			"loadModelsFailed": "載入模型失敗：${message}",
 			"modelSearchTitle": "瀏覽模型目錄",
-			"modelSearchPlaceholder": {
-				"placeholder": "搜尋模型名、廠商、能力…"
-			},
 			"modelSearchHint": "點選結果後將自動填入 URL 與模型名稱",
 			"modelsDevLoading": "正在載入目錄…",
 			"modelsDevLoadFailed": "載入目錄失敗：${message}",
@@ -1921,7 +4279,10 @@
 			"metaOpenWeights": "開放權重",
 			"metaKnowledge": "知識截止：${knowledge}",
 			"metaReleaseDate": "發佈日期：${date}",
-			"providerDocLink": "[查看廠商文件](${url})"
+			"providerDocLink": "[查看廠商文件](${url})",
+			"modelSearch": {
+				"placeholder": "搜尋模型名、廠商、能力…"
+			}
 		},
 		"prompts": {
 			"newFileName": "請輸入新的服務來源檔案名稱 (請勿包含副檔名):"
@@ -1998,7 +4359,6 @@
 				"botToken": "Telegram Bot Token",
 				"config": "設定"
 			},
-			"charSelectPlaceholder": "選擇角色",
 			"botTokenInput": {
 				"placeholder": "請輸入 Telegram Bot Token"
 			},
@@ -2012,6 +4372,9 @@
 				"saveConfig": "儲存設定",
 				"startBot": "啟動",
 				"stopBot": "停止"
+			},
+			"charSelect": {
+				"placeholder": "選擇角色"
 			}
 		},
 		"prompts": {
@@ -2075,7 +4438,6 @@
 				"botToken": "iLink Bot Token",
 				"config": "設定"
 			},
-			"charSelectPlaceholder": "選擇角色",
 			"apiBaseUrlInput": {
 				"placeholder": "留空則使用預設 https://ilinkai.weixin.qq.com"
 			},
@@ -2092,6 +4454,9 @@
 				"saveConfig": "儲存設定",
 				"startBot": "啟動",
 				"stopBot": "停止"
+			},
+			"charSelect": {
+				"placeholder": "選擇角色"
 			}
 		},
 		"prompts": {
@@ -2163,7 +4528,6 @@
 				"apiKey": "Discord API 金鑰",
 				"config": "設定"
 			},
-			"charSelectPlaceholder": "選擇角色",
 			"apiKeyInput": {
 				"placeholder": "請輸入 API 金鑰"
 			},
@@ -2177,6 +4541,9 @@
 				"saveConfig": "儲存設定",
 				"startBot": "啟動",
 				"stopBot": "停止"
+			},
+			"charSelect": {
+				"placeholder": "選擇角色"
 			}
 		},
 		"prompts": {
@@ -2463,10 +4830,8 @@
 		"acpTitle": "配置 fount ACP 指令碼",
 		"acpDesc": "參考以下範例配置 fount ACP 指令碼：",
 		"acpCharLabel": "角色",
-		"acpCharPlaceholder": "選擇角色",
 		"charListError": "獲取角色列表失敗",
 		"acpScriptLabel": "ACP 指令碼 URL",
-		"acpConfigPlaceholder": "請先選擇角色並產生 API 金鑰",
 		"acpConfigSample": "配置範例：",
 		"acpConfigHint": "角色 id 見本頁角色下拉選單，API 金鑰可在使用者設定中管理。",
 		"copyButton": "複製",
@@ -2491,7 +4856,9 @@
 				"description": "在支援 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）中首次使用 fount 角色輔助編程。",
 				"locked_description": "在外部 IDE 中連接 fount 角色並完成一次對話。"
 			}
-		}
+		},
+		"acpChar": "選擇角色",
+		"acpConfig": "請先選擇角色並生成 API 金鑰"
 	},
 	"achievements": {
 		"title": "成就",
@@ -2756,5 +5123,97 @@
 		"search": {
 			"placeholder": "搜尋..."
 		}
+	},
+	"common": {
+		"cancel": "取消",
+		"create": "建立",
+		"save": "儲存",
+		"delete": "刪除",
+		"confirm": "確認",
+		"close": "關閉",
+		"translate": {
+			"showOriginal": "顯示原文",
+			"showTranslation": "顯示譯文"
+		}
+	},
+	"cabinet": {
+		"title": "文件櫃",
+		"description": "P2P 個人與共享文件櫃",
+		"openCabinets": {
+			"title": "開啟文件櫃列表",
+			"aria-label": "開啟文件櫃列表"
+		},
+		"closeCabinets": {
+			"title": "關閉",
+			"aria-label": "關閉"
+		},
+		"bootstrapFailed": "文件櫃初始化失敗：${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "文件櫃"
+			}
+		},
+		"upload": "上傳",
+		"uploadFolder": "上傳資料夾",
+		"newFolder": "新建資料夾",
+		"open": "開啟",
+		"download": "下載",
+		"downloadZip": "下載資料夾",
+		"rename": "重新命名",
+		"copy": "複製",
+		"cut": "剪下",
+		"paste": "貼上",
+		"pasteLink": "貼上為連結",
+		"selectAll": "全選",
+		"invert": "反選",
+		"properties": "屬性",
+		"delete": "刪除",
+		"back": {
+			"title": "返回之前的位置",
+			"aria-label": "返回之前的位置"
+		},
+		"cancel": "取消",
+		"save": "儲存",
+		"showHidden": "顯示隱藏",
+		"name": "名稱",
+		"descriptionField": "描述",
+		"attrHidden": "隱藏",
+		"attrSystem": "系統（刪除需確認）",
+		"previewUrl": "預覽圖 URL",
+		"deletePreviewWithFile": "刪除檔案時刪除預覽圖",
+		"folderPassword": "資料夾密碼（留空不變，填寫則啟用加密）",
+		"unlockFolder": "解鎖加密資料夾",
+		"unlock": "解鎖",
+		"unlockFailed": "解鎖失敗：${error}",
+		"previewFailed": "預覽生成失敗：${error}",
+		"created": "建立：${stamp}",
+		"modified": "修改：${stamp}",
+		"statusCount": "${count} 項，已選 ${selected}",
+		"newCabinetPrompt": "新文件櫃名稱",
+		"newFolderPrompt": "新資料夾名稱",
+		"renamePrompt": "新名稱",
+		"visibilityPrompt": "可見性（public/unlisted/followers/private/selected）",
+		"cabinetActionPrompt": "操作：rename / delete / visibility",
+		"confirmDeleteCabinet": "確認刪除此文件櫃？",
+		"confirmDelete": "確認刪除所選專案？",
+		"confirmDeleteSystem": "所選含系統檔案，確認刪除？",
+		"copied": "已複製",
+		"cutDone": "已剪下",
+		"undo": "撤銷",
+		"redo": "重做",
+		"newWindow": "新視窗開啟當前位置",
+		"goUp": "返回上一級",
+		"brokenLink": "連結失效：${reason}",
+		"noDownload": "無可下載內容",
+		"groupDownloadHint": "群檔案請透過訊息附件或後續下載鏈獲取",
+		"remoteEntity": "遠端實體"
+	},
+	"entityProfile": {
+		"attributionMismatch": "顯示身份與訊息簽名者不匹配（例如匯入歷史經匯入者重新簽名）。請勿將該顯示名視為密碼學身份。",
+		"attributionMismatchShort": {
+			"title": "簽名歸因不匹配",
+			"aria-label": "簽名歸因不匹配"
+		},
+		"ownedBy": "此實體為 ${owner} 所有"
 	}
 }

@@ -92,58 +92,6 @@ function extractPromptContent(blocks) {
 }
 
 /**
- * 将新版 AgentContext 包装为向后兼容的连接对象，供 default_interface 中的插件使用。
- * @param {import('npm:@agentclientprotocol/sdk').AgentContext} client - 新版 AgentContext。
- * @returns {object} 兼容旧接口的连接代理。
- */
-function makeConnectionAdapter(client) {
-	return {
-		/**
-		 * 发送会话更新通知。
-		 * @param {object} params - 会话通知参数。
-		 * @returns {void}
-		 */
-		sessionUpdate: (params) => client.notify(methods.client.session.update, params),
-		/**
-		 * 请求用户授权。
-		 * @param {object} params - 授权请求参数。
-		 * @returns {Promise<object>} 授权结果。
-		 */
-		requestPermission: (params) => client.request(methods.client.session.requestPermission, params),
-		/**
-		 * 读取文件内容。
-		 * @param {object} params - 读取参数。
-		 * @returns {Promise<object>} 文件内容。
-		 */
-		readTextFile: (params) => client.request(methods.client.fs.readTextFile, params),
-		/**
-		 * 写入文件内容。
-		 * @param {object} params - 写入参数。
-		 * @returns {Promise<object>} 写入结果。
-		 */
-		writeTextFile: (params) => client.request(methods.client.fs.writeTextFile, params),
-		/**
-		 * 在 IDE 终端中执行命令，返回终端操作句柄。
-		 * @param {object} params - 终端创建参数（含 sessionId）。
-		 * @returns {Promise<{ id: string, waitForExit: Function, currentOutput: Function, release: Function }>} 终端句柄。
-		 */
-		createTerminal: async (params) => {
-			const { terminalId } = await client.request(methods.client.terminal.create, params)
-			const sid = params.sessionId
-			return {
-				id: terminalId,
-				/** @returns {Promise<object>} 退出状态。 */
-				waitForExit: () => client.request(methods.client.terminal.waitForExit, { sessionId: sid, terminalId }),
-				/** @returns {Promise<object>} 当前输出。 */
-				currentOutput: () => client.request(methods.client.terminal.output, { sessionId: sid, terminalId }),
-				/** @returns {Promise<object>} 释放结果。 */
-				release: () => client.request(methods.client.terminal.release, { sessionId: sid, terminalId }),
-			}
-		},
-	}
-}
-
-/**
  * 服务端 ACP Agent：桥接 ACP 协议与角色 ideIntegration 接口。
  * 所有业务逻辑（含 slash 命令、config options、modes）均由接口提供，此处仅转发。
  */
@@ -236,7 +184,6 @@ class ServerFountAgent {
 				sessionData = await iface.SetupSession({
 					cwd: params.cwd || '',
 					mcpServers: params.mcpServers || [],
-					connection: this.#client ? makeConnectionAdapter(this.#client) : null,
 				})
 		} catch (error) {
 			console.error('SetupSession failed:', error)
@@ -302,13 +249,13 @@ class ServerFountAgent {
 		session.pendingPrompt = new AbortController()
 		const { signal } = session.pendingPrompt
 
-		const connection = this.#client ? makeConnectionAdapter(this.#client) : null
+		const agentContext = this.#client
 
 		try {
 			const { text: userText, files } = extractPromptContent(params.prompt || [])
 
 			if (!userText && !files.length) {
-				connection?.sessionUpdate({
+				agentContext?.notify(methods.client.session.update, {
 					sessionId: params.sessionId,
 					update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: '(Please enter a message before sending.)' } },
 				})
@@ -324,7 +271,7 @@ class ServerFountAgent {
 			const iface = await this.#getInterface()
 			const replyOptions = {
 				sessionId: params.sessionId,
-				connection,
+				agentContext,
 				signal,
 				clientCapabilities: this.clientCapabilities ?? {},
 			}
@@ -336,7 +283,7 @@ class ServerFountAgent {
 			}
 
 			if (!result) {
-				connection?.sessionUpdate({
+				agentContext?.notify(methods.client.session.update, {
 					sessionId: params.sessionId,
 					update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: 'Error: no reply' } },
 				})

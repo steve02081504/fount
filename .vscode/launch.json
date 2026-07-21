@@ -23,7 +23,7 @@
 			"attachSimplePort": 9229,
 			"skipFiles": [
 				"**/node_modules/@steve02081504/virtual-console/**/node-console.mjs",
-				"${workspaceFolder}/src/scripts/i18n.mjs",
+				"${workspaceFolder}/src/scripts/i18n/bare.mjs",
 			]
 		}
 	]

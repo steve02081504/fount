@@ -1,0 +1,38 @@
+{
+	"id": "server",
+	"suites": [
+		{
+			"name": "pure",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/server/test/pure/"
+			],
+			"triggers": [
+				"src/server/test/pure/**",
+				"src/server/registries.mjs",
+				"src/server/no_cors.mjs",
+				"src/scripts/net_listen.mjs",
+				"src/public/pages/scripts/api/registries.mjs"
+			]
+		},
+		{
+			"name": "live",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/server/test/live/"
+			],
+			"triggers": [
+				"src/server/test/live/**",
+				"src/server/auth/**",
+				"src/server/web_server/**",
+				"src/scripts/test/node/launch.mjs",
+				"src/scripts/test/node/boot.mjs",
+				"src/scripts/test/core/allowNoise.mjs",
+				"src/scripts/test/core/url.mjs",
+				"src/scripts/ms.mjs",
+				"src/scripts/WsAbleRouter.mjs",
+				"src/server/web_server/resources.mjs"
+			]
+		}
+	]
+}
