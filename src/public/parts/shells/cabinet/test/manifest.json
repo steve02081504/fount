@@ -55,14 +55,14 @@
 						"src/public/parts/shells/cabinet/test/frontend/shortcuts.spec.mjs",
 						"src/public/parts/shells/cabinet/test/frontend/fixtures.mjs",
 						"src/public/parts/shells/cabinet/public/index.mjs",
-						"src/public/parts/shells/cabinet/public/src/keyboard.mjs",
+						"src/public/parts/shells/cabinet/public/shared/keyboard.mjs",
 						"src/public/parts/shells/cabinet/public/src/commands.mjs",
 						"src/public/parts/shells/cabinet/public/src/wiring.mjs",
 						"src/public/parts/shells/cabinet/public/src/state.mjs",
 						"src/public/parts/shells/cabinet/public/src/navigation.mjs",
 						"src/public/parts/shells/cabinet/public/src/entryActions.mjs",
 						"src/public/parts/shells/cabinet/public/src/entryGrid.mjs",
-						"src/public/parts/shells/cabinet/public/src/commandHistory.mjs",
+						"src/public/parts/shells/cabinet/public/shared/commandHistory.mjs",
 						"src/public/parts/shells/cabinet/public/src/clipboard.mjs"
 					]
 				}

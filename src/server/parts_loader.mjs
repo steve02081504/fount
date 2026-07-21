@@ -244,10 +244,10 @@ function partpathFromFountJsonFile(filePath, rootPath) {
 }
 
 /**
- * 校验并规范化单条 registry 条目。
- * @param {unknown} entry - 原始条目。
+ * 规范化单条 registry 条目。
+ * @param {object} entry - 原始条目。
  * @param {string} partpath - 所属 partpath。
- * @returns {RegistryEntryRaw | null} 规范化条目，无效时返回 null。
+ * @returns {RegistryEntryRaw} 规范化条目。
  */
 function normalizeRegistryEntry(entry, partpath) {
 	const { id, level, path: entryPath, format, dataField } = entry
@@ -269,19 +269,14 @@ function normalizeRegistryEntry(entry, partpath) {
  * @param {string} rootPath - 扫描根目录。
  */
 function mergeFountJsonIntoRegistries(registries, info, filePath, rootPath) {
-	try {
-		const reg = info.registries
-		if (!reg || typeof reg !== 'object') return
-		const partpath = partpathFromFountJsonFile(filePath, rootPath)
-		for (const [name, entries] of Object.entries(reg)) {
-			if (!Array.isArray(entries)) continue
-			registries[name] ??= []
-			for (const entry of entries)
-				registries[name].push(normalizeRegistryEntry(entry, partpath))
-		}
-	}
-	catch (error) {
-		console.warn(`Failed to parse registries in fount.json at ${filePath}: ${error.message}`)
+	const reg = info.registries
+	if (!reg || typeof reg !== 'object') return
+	const partpath = partpathFromFountJsonFile(filePath, rootPath)
+	for (const [name, entries] of Object.entries(reg)) {
+		if (!Array.isArray(entries)) continue
+		registries[name] ??= []
+		for (const entry of entries)
+			registries[name].push(normalizeRegistryEntry(entry, partpath))
 	}
 }
 

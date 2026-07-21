@@ -119,7 +119,7 @@ export async function materializeViewerChatLog(username, groupId, channelId, vie
  * @returns {number} 有效 page limit，1–500
  */
 function resolveViewerPageLimit(rawLimit) {
-	const messageLimit = rawLimit != null && rawLimit !== '' ? Number(rawLimit) : undefined
+	const messageLimit = Number(rawLimit)
 	return Number.isFinite(messageLimit) && messageLimit > 0
 		? Math.min(messageLimit, 500)
 		: 200

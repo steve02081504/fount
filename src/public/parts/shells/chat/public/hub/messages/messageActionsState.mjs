@@ -68,7 +68,7 @@ export function findContextMessage(row, actions) {
 	const entryId = row.getAttribute('data-entry-id')
 	const logIndex = row.getAttribute('data-log-index')
 	return actions.messages.find(message =>
-		(logIndex != null && logIndex !== '' && String(message.chatLogIndex) === logIndex)
+		(logIndex && String(message.chatLogIndex) === logIndex)
 		|| (messageId && eventIdsEqual(message.eventId, messageId))
 		|| (entryId && String(message.id) === entryId),
 	)

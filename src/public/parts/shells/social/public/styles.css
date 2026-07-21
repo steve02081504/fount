@@ -473,13 +473,6 @@ body {
 	background: color-mix(in srgb, var(--color-primary) 15%, transparent);
 }
 
-.scroll-sentinel {
-	height: 1px;
-	width: 100%;
-	pointer-events: none;
-	overflow-anchor: none;
-}
-
 .composer-toolbar {
 	display: flex;
 	align-items: center;

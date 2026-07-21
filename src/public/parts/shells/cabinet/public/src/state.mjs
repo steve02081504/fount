@@ -2,8 +2,8 @@
  * Cabinet 页面共享可变状态（各子模块读写此对象字段）。
  */
 import { readClipboard, subscribeClipboard } from './clipboard.mjs'
-import { createCommandHistory } from './commandHistory.mjs'
-import { shortcutLabels } from './keyboard.mjs'
+import { createCommandHistory } from '../shared/commandHistory.mjs'
+import { shortcutLabels } from '../shared/keyboard.mjs'
 
 /**
  *

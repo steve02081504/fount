@@ -84,12 +84,8 @@ function isDualKeyIdentity(row) {
 function cacheFromRow(username, row) {
 	const entityHash = String(row.entityHash).toLowerCase()
 	const ownerRaw = row.ownerEntityHash
-	const ownerEntityHash = ownerRaw == null || ownerRaw === ''
-		? null
-		: String(ownerRaw).toLowerCase()
-	const charPartName = row.charPartName == null || row.charPartName === ''
-		? null
-		: String(row.charPartName)
+	const ownerEntityHash = ownerRaw ? String(ownerRaw).toLowerCase() : null
+	const charPartName = row.charPartName ? String(row.charPartName) : null
 	identityCache.set(cacheKey(username, entityHash), {
 		recoveryPub: normalizeHex64(row.recoveryPubKeyHex),
 		activePub: normalizeHex64(row.activePubKeyHex),
@@ -113,7 +109,7 @@ async function findOperatorEntityHash(username) {
 	const cached = operatorHashCache.get(username)
 	if (cached) return cached
 	for (const row of await listEntityIdentities(username))
-		if (row.charPartName == null || row.charPartName === '') {
+		if (!row.charPartName) {
 			cacheFromRow(username, row)
 			return row.entityHash
 		}
@@ -126,12 +122,8 @@ async function findOperatorEntityHash(username) {
  * @returns {Promise<object>} 身份行（含 entityHash）
  */
 export async function ensureEntityIdentity(username, options = {}) {
-	const charPartName = options.charPartName == null || options.charPartName === ''
-		? null
-		: String(options.charPartName)
-	const ownerEntityHash = options.ownerEntityHash == null || options.ownerEntityHash === ''
-		? null
-		: String(options.ownerEntityHash).toLowerCase()
+	const charPartName = options.charPartName ? String(options.charPartName) : null
+	const ownerEntityHash = options.ownerEntityHash ? String(options.ownerEntityHash).toLowerCase() : null
 
 	if (charPartName === null && ownerEntityHash === null) {
 		const opHash = await findOperatorEntityHash(username)
@@ -150,9 +142,7 @@ export async function ensureEntityIdentity(username, options = {}) {
 		for (const row of await listEntityIdentities(username)) {
 			if (row.charPartName !== charPartName) continue
 			const hash = String(row.entityHash).toLowerCase()
-			const diskOwner = row.ownerEntityHash == null || row.ownerEntityHash === ''
-				? null
-				: String(row.ownerEntityHash).toLowerCase()
+			const diskOwner = row.ownerEntityHash ? String(row.ownerEntityHash).toLowerCase() : null
 			// 既有 agent 未声明主人：回填为 operator（显式指向他人则保留）。
 			if (!diskOwner) {
 				const operatorHash = await getOperatorEntityHash(username)
@@ -229,9 +219,7 @@ async function syncProfileOwnerField(username, entityHash, ownerEntityHash) {
 export async function setEntityOwner(username, entityHash, ownerEntityHash) {
 	const hash = String(entityHash || '').trim().toLowerCase()
 	if (!isEntityHash128(hash)) throw new Error('invalid entityHash')
-	const nextOwner = ownerEntityHash == null || ownerEntityHash === ''
-		? null
-		: String(ownerEntityHash).trim().toLowerCase()
+	const nextOwner = ownerEntityHash ? String(ownerEntityHash).trim().toLowerCase() : null
 	if (nextOwner && !isEntityHash128(nextOwner)) throw new Error('invalid ownerEntityHash')
 	if (nextOwner === hash) throw new Error('cannot set self as owner')
 

@@ -1,8 +1,8 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { createCommandHistory } from '../../public/src/commandHistory.mjs'
-import { isEditableTarget, matchCabinetShortcut } from '../../public/src/keyboard.mjs'
+import { createCommandHistory } from '../../public/shared/commandHistory.mjs'
+import { isEditableTarget, matchCabinetShortcut } from '../../public/shared/keyboard.mjs'
 
 /**
  * @param {Partial<{ key: string, ctrlKey: boolean, metaKey: boolean, shiftKey: boolean, altKey: boolean, target: object }>} partial 部分事件

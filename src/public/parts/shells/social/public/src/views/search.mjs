@@ -1,4 +1,4 @@
-import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
+import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { chatApi, socialApi } from '../lib/apiClient.mjs'
 import { appendEmptyState, mountEmptyState } from '../lib/emptyState.mjs'
 import { buildPostCard } from '../postCard.mjs'
@@ -158,7 +158,7 @@ export async function runSearchView() {
 				if (gen !== searchGeneration) return
 				cursor = d2.nextCursor || null
 				const c2 = await Promise.all((d2.items || []).map(item => buildPostCard(item).catch(() => null)))
-				for (const card of c2) if (card) list.appendChild(card)
+				for (const card of c2) if (card) insertBeforeScrollSentinel(list, card)
 			},
 		})
 	}

@@ -288,7 +288,7 @@
 						"src/public/parts/shells/chat/public/shared/profileEdit.css",
 						"src/public/parts/shells/chat/public/src/entityProfileApi.mjs",
 						"src/public/parts/shells/chat/public/src/profileLocaleEditor.mjs",
-						"src/public/parts/shells/chat/public/src/profileLocaleState.mjs",
+						"src/public/parts/shells/chat/public/shared/profileLocaleState.mjs",
 						"src/public/parts/shells/chat/public/src/templates/profile/**",
 						"src/public/parts/shells/chat/public/src/templates/hub/profile_edit_modal.html",
 						"src/public/parts/shells/chat/public/src/templates/hub/profile_popup.html",

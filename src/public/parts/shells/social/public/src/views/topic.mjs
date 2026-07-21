@@ -1,4 +1,4 @@
-import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
+import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { buildPostCard } from '../postCard.mjs'
@@ -102,7 +102,7 @@ async function loadTopicPosts(tag, append = false) {
 	if (gen !== topicGeneration) return
 
 	if (!append) list.replaceChildren(...cards.filter(Boolean))
-	else for (const card of cards) if (card) list.appendChild(card)
+	else for (const card of cards) if (card) insertBeforeScrollSentinel(list, card)
 
 	view.dataset.topicCursor = data.nextCursor || ''
 	if (data.nextCursor) {

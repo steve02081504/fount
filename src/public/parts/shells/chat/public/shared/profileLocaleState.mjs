@@ -1,6 +1,5 @@
 /**
- * 【文件】public/src/profileLocaleState.mjs
- * 【职责】无 DOM 依赖的资料语言切片增改操作。
+ * 无 DOM 依赖的资料语言切片增改操作（Deno-pure / 浏览器均可）。
  */
 
 /**

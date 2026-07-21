@@ -13,7 +13,7 @@ function payloadAesKey(readKeyHex, cabinetId, generation) {
 	return Buffer.from(hkdfSync(
 		'sha256',
 		Buffer.from(readKeyHex, 'hex'),
-		`cabinet-operation:${String(cabinetId)}:${String(generation)}`,
+		`cabinet-operation:${cabinetId}:${generation}`,
 		'',
 		32,
 	))

@@ -13,7 +13,7 @@ function matchLink(link, owner, cabinetId, entryId) {
 	const linkOwner = String(link.owner_entity_hash || '').toLowerCase()
 	if (linkOwner && linkOwner !== owner) return false
 	if (String(link.cabinet_id || '') !== cabinetId) return false
-	const linkEntry = link.entry_id == null || link.entry_id === '' ? null : String(link.entry_id)
+	const linkEntry = link.entry_id ? String(link.entry_id) : null
 	return linkEntry === entryId
 }
 
@@ -46,7 +46,7 @@ function countMatchingLinks(entries, owner, cabinetId, entryId, excludeIds) {
 export async function countLocalInboundLinks(username, entityHash, target, opts = {}) {
 	const targetOwner = String(target.owner_entity_hash || entityHash).toLowerCase()
 	const targetCabinet = String(target.cabinet_id || '')
-	const targetEntry = target.entry_id == null || target.entry_id === '' ? null : String(target.entry_id)
+	const targetEntry = target.entry_id ? String(target.entry_id) : null
 	const excludeCabinet = opts.exclude_cabinet_id
 	const excludeIds = opts.exclude_entry_ids || new Set()
 
@@ -79,7 +79,7 @@ export async function gcOrphanAfterUnlink(username, entityHash, linkEntry) {
 	if (targetOwner !== String(entityHash).toLowerCase()) return
 	const cabinetId = String(linkEntry.link.cabinet_id || '')
 	const entryId = linkEntry.link.entry_id
-	if (!cabinetId || entryId == null || entryId === '') return
+	if (!cabinetId || !entryId) return
 
 	const inbound = await countLocalInboundLinks(username, entityHash, {
 		owner_entity_hash: targetOwner,

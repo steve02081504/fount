@@ -63,9 +63,9 @@ export const fountLocaleList = fs.readFileSync(__dirname + '/src/public/locales/
  * @returns {string} 最佳匹配的区域设置。
  */
 export function getbestlocale(preferredlocaleList, localeList) {
-	const available = new Set(localeList.map(l => l?.id ?? l).filter(Boolean))
+	const available = new Set(localeList.map(l => l.id))
 
-	for (const preferred of preferredlocaleList ?? []) {
+	for (const preferred of preferredlocaleList) {
 		if (available.has(preferred))
 			return preferred
 
@@ -372,7 +372,6 @@ console.errorI18n = makeConsoleI18n(console.error)
  * @returns {void} 无
  */
 console.freshLineI18n = makeConsoleI18n(console.freshLine)
-
 /**
  * 使用 i18n 显示警报。
  * @param {LocaleKey} key - 翻译键。

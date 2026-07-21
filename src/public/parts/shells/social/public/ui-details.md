@@ -14,7 +14,7 @@ Feed/profile/search cards (`openDetail !== false`) collapse markdown code `<deta
 
 ## Feed pagination / replay
 
-- Shared: `/scripts/infiniteScroll.mjs`. After replay, **move** the sentinel — do not rebind while intersecting. Rising-edge arm. If loader has its own mutex, bind **after** releasing it.
+- Shared: `/scripts/infiniteScroll.mjs` (`data-scroll-sentinel` + `insertBeforeScrollSentinel`). Do not `appendChild` past the sentinel. Rising-edge arm; after replay do not rebind while intersecting. `data-feed-replaying` marks an in-flight loop replay. If loader has its own mutex, bind **after** releasing it.
 - Prefetch next cursor into `state.feedPrefetch`. Replay when `nextCursor` exhausted: re-append shown items (`.feed-replay-divider`); requires real scroll. Delete/hide/block/mute must `purgeFeedShownPost` / `purgeFeedShownAuthor`.
 - Hashtag/trending → `#topic:…`; search deep links → `#searchView`.
 

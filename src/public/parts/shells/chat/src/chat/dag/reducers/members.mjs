@@ -214,9 +214,7 @@ export const memberReducers = {
 		withGroupId(state, event)
 		const member = state.members[event.sender]
 		if (!member || member.status !== 'active') return state
-		const ownerRaw = event.content?.ownerEntityHash == null || event.content?.ownerEntityHash === ''
-			? ''
-			: String(event.content.ownerEntityHash).trim().toLowerCase()
+		const ownerRaw = String(event.content?.ownerEntityHash ?? '').trim().toLowerCase()
 		member.ownerEntityHash = ownerRaw && isEntityHash128(ownerRaw) ? ownerRaw : null
 		refreshMembersDigest(state)
 		return state

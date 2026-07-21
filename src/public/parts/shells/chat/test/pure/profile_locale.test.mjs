@@ -2,7 +2,7 @@
 import {
 	ensureLocaleEntry,
 	renameLocaleEntry,
-} from 'fount/public/parts/shells/chat/public/src/profileLocaleState.mjs'
+} from 'fount/public/parts/shells/chat/public/shared/profileLocaleState.mjs'
 import { profileBannerFileUrl } from 'fount/public/parts/shells/chat/src/entity/filesUrl.mjs'
 import {
 	normalizeLocalizedMap,

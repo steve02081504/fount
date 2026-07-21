@@ -17,7 +17,7 @@ function validateWorldBindContent(content, label) {
 	if (!content.worldname?.trim()) throw new Error(`${label}: worldname required`)
 	if (!content.ownerUsername?.trim()) throw new Error(`${label}: ownerUsername required`)
 	const distribution = content.distribution?.trim() || 'hosted'
-	if (content.distribution != null && content.distribution !== '' && !WORLD_DISTRIBUTIONS.has(distribution))
+	if (content.distribution && !WORLD_DISTRIBUTIONS.has(distribution))
 		throw new Error(`${label}: invalid distribution`)
 	if (distribution !== 'local' && !content.homeNodeHash?.trim())
 		throw new Error(`${label}: homeNodeHash required`)

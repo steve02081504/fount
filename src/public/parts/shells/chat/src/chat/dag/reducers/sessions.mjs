@@ -68,7 +68,7 @@ export const sessionReducers = {
 		const ownerUsername = String(event.content?.ownerUsername || '').trim()
 		if (ownerUsername) {
 			const personaname = event.content?.personaname
-			if (personaname == null || personaname === '')
+			if (!personaname)
 				delete state.session.personas[ownerUsername]
 			else
 				state.session.personas[ownerUsername] = String(personaname).trim()

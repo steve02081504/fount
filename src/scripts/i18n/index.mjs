@@ -35,7 +35,7 @@ export async function getLocaleDataForUser(username, preferredlocaleList) {
 	if (!username) return getLocaleData(preferredlocaleList)
 	const effectivePreferred = [
 		...localesForUser(username),
-		...preferredlocaleList ?? [],
+		...preferredlocaleList,
 	]
 	const result = {
 		...getLocaleData(effectivePreferred)
@@ -48,7 +48,7 @@ export async function getLocaleDataForUser(username, preferredlocaleList) {
 		let partdata
 		if (fs.statSync(fsPath).isDirectory()) {
 			const localeFiles = fs.readdirSync(fsPath).filter(f => f.endsWith('.json'))
-			const resultLocale = getbestlocale(effectivePreferred, localeFiles.map(f => f.slice(0, -5)))
+			const resultLocale = getbestlocale(effectivePreferred, localeFiles.map(f => ({ id: f.slice(0, -5) })))
 			partsLocaleCache[entry.partpath] ??= {}
 			partdata = partsLocaleCache[entry.partpath][resultLocale]
 				??= loadJsonFile(path.join(fsPath, `${resultLocale}.json`))
@@ -62,10 +62,10 @@ export async function getLocaleDataForUser(username, preferredlocaleList) {
 }
 
 events.on('part-loaded', ({ username, partpath }) => {
-	delete loadData(username, 'parts_locales_cache')?.[partpath]
+	delete loadData(username, 'parts_locales_cache')[partpath]
 })
 events.on('part-uninstalled', ({ username, partpath }) => {
-	delete loadData(username, 'parts_locales_cache')?.[partpath]
+	delete loadData(username, 'parts_locales_cache')[partpath]
 	saveData(username, 'parts_locales_cache')
 })
 

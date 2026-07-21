@@ -142,7 +142,7 @@ export async function pullSharedOperationsFromNetwork(username, cabinetId) {
 		if (!keys?.write_pubkey) return 0
 		/** @type {Map<string, object>} */
 		const incomingById = new Map()
-		for (const reply of replies || []) {
+		for (const reply of replies) {
 			const operations = reply?.result?.operations
 			if (!Array.isArray(operations)) continue
 			for (const operation of operations) {

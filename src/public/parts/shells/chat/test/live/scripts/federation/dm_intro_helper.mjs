@@ -56,7 +56,7 @@ function loadFederationIdentity(userDir) {
 	if (!fs.existsSync(entitiesDir)) throw new Error('operator identity missing')
 	for (const name of fs.readdirSync(entitiesDir)) {
 		const row = loadJsonFileIfExists(path.join(entitiesDir, name, 'identity.json'), null)
-		if (!row || (row.charPartName != null && row.charPartName !== '')) continue
+		if (!row || row.charPartName) continue
 		const activePub = normalizeHex64(row.activePubKeyHex)
 		const activeSecret = normalizeHex64(row.activeSecretKeyHex)
 		if (HEX_ID_64.test(activePub) && activeSecret.length >= 64)

@@ -4,7 +4,7 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { groupSelfReplyThreads } from '../../public/src/lib/feedThreads.mjs'
+import { groupSelfReplyThreads } from '../../public/shared/feedThreads.mjs'
 
 Deno.test('groupSelfReplyThreads merges self-reply chain in chronological order', () => {
 	const author = 'a'.repeat(128)
