@@ -1,4 +1,34 @@
 {
 	"type": "shells",
-	"dirname": "access"
+	"dirname": "access",
+	"registries": {
+		"home_function_buttons": [
+			{
+				"id": "function_buttons",
+				"level": 0,
+				"path": "home_registry.json"
+			}
+		],
+		"home_drag_in_handlers": [
+			{
+				"id": "drag_in_handlers",
+				"level": 0,
+				"path": "home_registry.json"
+			}
+		],
+		"home_drag_out_generators": [
+			{
+				"id": "drag_out_generators",
+				"level": 0,
+				"path": "home_registry.json"
+			}
+		],
+		"home_interfaces": [
+			{
+				"id": "interfaces",
+				"level": 0,
+				"path": "home_registry.json"
+			}
+		]
+	}
 }

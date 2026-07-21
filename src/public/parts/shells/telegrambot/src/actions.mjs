@@ -1,4 +1,4 @@
-import { runBot, stopBot, getBotList, setBotConfig, deleteBotConfig, getBotConfig as getPartData, getBotConfigTemplate } from './bot.mjs'
+import { runBot, stopBot, getBotList, setBotConfig, deleteBotConfig, getBotConfig as getPartData, getBotConfigTemplate, getRunningBotList } from './bot.mjs'
 
 /**
  * telegrambot 的动作。
@@ -44,6 +44,8 @@ export const actions = {
 	 */
 	delete: async ({ user, botname }) => {
 		if (!botname) throw new Error('Bot name is required for delete action.')
+		if (getRunningBotList(user).includes(botname))
+			await stopBot(user, botname)
 		await deleteBotConfig(user, botname)
 		return `Bot '${botname}' deleted.`
 	},

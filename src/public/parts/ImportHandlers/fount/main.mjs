@@ -7,7 +7,7 @@ import url from 'node:url'
 import { move, remove } from 'npm:fs-extra'
 
 import { backupGitUncommittedChanges, run_git } from '../../../../scripts/git.mjs'
-import { console } from '../../../../scripts/i18n/index.mjs'
+import { console } from '../../../../scripts/i18n/bare.mjs'
 import { loadJsonFile } from '../../../../scripts/json_loader.mjs'
 import { loadPart, isPartLoaded } from '../../../../server/parts_loader.mjs'
 

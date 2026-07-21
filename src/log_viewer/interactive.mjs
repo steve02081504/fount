@@ -10,6 +10,8 @@ import process from 'node:process'
 import { parse as parseKeyCodes } from 'jsr:@cliffy/keycode'
 import { connectLogWire, WireLogEntry } from 'npm:@steve02081504/virtual-console/wire/client'
 
+import { geti18nForTerminal } from '../scripts/i18n/bare.mjs'
+
 import { createHistoryStore } from './history.mjs'
 import {
 	BRACKETED_PASTE_OFF, BRACKETED_PASTE_ON,
@@ -18,7 +20,6 @@ import {
 	charLenAt, charLenBefore, isImeNoise, isShiftEnterCsi, kittyKeyAction,
 	nextWordBoundary, normalizePaste, prevWordBoundary,
 } from './keys.mjs'
-import { geti18n } from './locale.mjs'
 import {
 	ANSI_RESET, CURSOR_HIDE, CURSOR_RESTORE, CURSOR_SAVE, CURSOR_SHOW, ERASE_LINE,
 	INPUT_PAD_LEFT, INPUT_PAD_RIGHT, LEVEL_PREFIX_COLORS, MIN_INPUT_ROWS,
@@ -50,9 +51,9 @@ import {
  * @returns {InteractiveViewer} 日志与 REPL 控件。
  */
 export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir, onClearComplete }) {
-	const EVAL_WS_URL = `ws://127.0.0.1:${port}/ws/eval`
+	const EVAL_WS_URL = `ws://localhost:${port}/ws/eval`
 	const historyStore = createHistoryStore(fountDir ?? path.resolve(import.meta.dirname + '/../../'))
-	const replHint = geti18n('fountConsole.logViewer.replHint', 'enter run · shift+enter newline')
+	const replHint = geti18nForTerminal('fountConsole.logViewer.replHint')
 
 	let input = ''
 	let cursor = 0

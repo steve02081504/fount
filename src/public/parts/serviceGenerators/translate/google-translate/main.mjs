@@ -61,7 +61,7 @@ async function GetSource(config) {
 		Translate: async (text, options = {}) => {
 			const { translate } = await import('npm:@vitalets/google-translate-api')
 			const from = options.from || 'auto'
-			const to = options.to || 'zh-CN'
+			const to = options.to || 'en-UK'
 
 			const result = await translate(text, { from, to })
 

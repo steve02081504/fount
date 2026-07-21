@@ -1,6 +1,264 @@
 {
 	"lang": "ko-KR",
 	"name": "한국어",
+	"channels": {
+		"title": "채널",
+		"description": "채널 관리 시스템",
+		"create": "채널 만들기",
+		"subscribe": "구독",
+		"unsubscribe": "구독 취소",
+		"settings": "채널 설정",
+		"list": "채널 목록",
+		"members": "멤버",
+		"messages": "메시지",
+		"permissions": "권한 설정",
+		"type": {
+			"announcement": "공지",
+			"news": "뉴스",
+			"updates": "업데이트"
+		},
+		"role": {
+			"owner": "소유자",
+			"admin": "관리자",
+			"moderator": "모더레이터",
+			"member": "멤버",
+			"subscriber": "구독자"
+		},
+		"errors": {
+			"notFound": "채널이 존재하지 않습니다",
+			"noPermission": "권한이 부족합니다",
+			"alreadySubscribed": "이미 이 채널을 구독하고 있습니다",
+			"notSubscribed": "이 채널을 구독하지 않았습니다"
+		},
+		"success": {
+			"created": "채널이 생성되었습니다",
+			"updated": "채널이 업데이트되었습니다",
+			"deleted": "채널이 삭제되었습니다",
+			"subscribed": "구독했습니다",
+			"unsubscribed": "구독을 취소했습니다",
+			"posted": "메시지가 게시되었습니다"
+		}
+	},
+	"profile": {
+		"title": "프로필",
+		"description": "채팅과 소셜에서 공개 프로필을 관리하세요.",
+		"settingsEyebrow": "계정 설정",
+		"accountAtGlance": "계정 개요",
+		"advancedKicker": "필요 시 설정",
+		"advancedSettings": "고급 설정",
+		"advancedDescription": "일상 사용에는 조정할 필요가 없습니다.",
+		"edit": "프로필 편집",
+		"save": "저장",
+		"cancel": "취소",
+		"displayName": "표시 이름",
+		"name": "이름",
+		"bio": "소개",
+		"descriptionLabel": "소개(Markdown)",
+		"email": "이메일",
+		"status": "상태",
+		"customStatusLabel": "사용자 지정 상태",
+		"avatarLabel": "아바타",
+		"themeColorLabel": "테마 색상",
+		"uploadAvatar": "아바타 업로드",
+		"ownerTitle": "내 주인",
+		"ownerSummary": "대리 관리 설정",
+		"ownerDescription": "설정 후 주인이 채팅 메시지, 소셜 게시물, 프로필을 대신 편집하거나 삭제할 수 있습니다. 해당 콘텐츠는 로컬에서 안전하지 않은 Markdown(스크립트 포함 가능)으로 렌더링됩니다. 엔티티 해시는 자유롭게 입력할 수 있으며 언제든지 해제할 수 있습니다.",
+		"ownerEntityHashLabel": "주인 엔티티 해시(128 hex)",
+		"ownerSave": "주인 저장",
+		"ownerClear": "주인 해제",
+		"ownerSaved": "주인이 업데이트되었습니다",
+		"ownerCleared": "주인이 해제되었습니다",
+		"ownerSaveFailed": "저장 실패: ${error}",
+		"ownerConfirmTitle": "주인을 설정하시겠습니까?",
+		"ownerConfirmWarningTitle": "위험한 작업입니다. 주의 깊게 읽어 주세요",
+		"ownerConfirmEditBody": "설정 후 상대방이 별도 동의 없이 채팅 메시지, 소셜 게시물, 프로필을 대신 편집하거나 삭제할 수 있습니다. 실수로 설정하거나 속임수로 설정하면 = 즉시 콘텐츠 제어권을 넘기는 것입니다.",
+		"ownerConfirmRenderBody": "상대방이 보낸 채팅 메시지와 소셜 게시물은 브라우저에서 전체 Markdown(HTML/스크립트 포함)으로 렌더링됩니다. 이는 상대방이 동의 없이 로컬에서 임의 코드를 실행할 수 있게 합니다. 완전히 신뢰하는 경우에만 진행하세요.",
+		"ownerConfirmCooldown": "위험을 확인했습니다(${seconds})",
+		"ownerConfirmFirst": "위험을 이해했습니다. 계속",
+		"ownerConfirmSecond": "확인하려면 다시 클릭",
+		"ownerConfirmCancel": "취소",
+		"federationTitle": "연합 및 동기화",
+		"federationSummary": "릴레이 서버 및 저전력 모드",
+		"federationDescription": "Nostr 릴레이 URL과 절전 모드를 설정합니다. 그룹 연합 동기화는 처음으로 다른 사람을 초대하거나 연합 DM을 만들 때 자동으로 켜집니다.",
+		"federationAdvanced": "고급 옵션",
+		"federationRelayUrlsLabel": "릴레이 서버(한 줄에 하나씩, 기본값을 사용하려면 비워 두세요)",
+		"federationBatterySaverLabel": "저전력 모드",
+		"federationSave": "네트워크 설정 저장",
+		"federationResetDefault": "기본 권장 구성 복원",
+		"federationSaved": "저장됨",
+		"federationResetOk": "기본 권장 구성을 복원했습니다",
+		"federationSaveFailed": "저장 실패: ${error}",
+		"preferences": "환경설정",
+		"language": "언어",
+		"theme": "테마",
+		"notifications": "알림 설정",
+		"emailNotifications": "이메일 알림",
+		"pushNotifications": "푸시 알림",
+		"soundNotifications": "소리 알림",
+		"social": "소셜 링크",
+		"website": "웹사이트",
+		"github": "GitHub",
+		"twitter": "지저귀다",
+		"stats": "통계",
+		"joinedAt": "가입 시간",
+		"messageCount": "메시지 수",
+		"groupCount": "그룹 수",
+		"channelCount": "채널 수",
+		"privacy": "프로필 설정",
+		"showEmail": "사서함 표시",
+		"showStats": "통계 보기",
+		"allowDirectMessages": "비공개 메시지 허용",
+		"statusOptions": {
+			"online": "온라인",
+			"away": "나가기",
+			"busy": "바쁨",
+			"offline": "오프라인"
+		},
+		"themeOptions": {
+			"auto": "자동",
+			"light": "라이트",
+			"dark": "다크"
+		},
+		"languageOptions": {
+			"zh-CN": "중국어(간체)",
+			"en-US": "English"
+		},
+		"notifEmail": "이메일",
+		"notifPush": "푸시",
+		"notifSound": "소리",
+		"notifsAllOff": "모두 끄기",
+		"bioEmpty": "아직 소개를 작성하지 않았습니다…",
+		"noSocialLinks": "아직 소셜 링크가 없습니다.",
+		"emailVisible": "표시",
+		"emailHidden": "숨김",
+		"customStatus": {
+			"placeholder": "무엇을 하고 있나요…"
+		},
+		"avatar": {
+			"alt": "아바타"
+		},
+		"avatarPreview": {
+			"alt": "아바타 미리보기"
+		},
+		"myGroups": "내 그룹",
+		"myChannels": "내 채널",
+		"noGroups": "아직 어떤 그룹에도 가입하지 않았습니다.",
+		"noChannels": "아직 채널이 없습니다",
+		"overview": "사용자 메시지 개요",
+		"summaryUserId": "사용자 ID",
+		"summaryAccountStatus": "계정 상태",
+		"summaryEmailVisibility": "사서함 가시성",
+		"summaryThemePref": "테마 선호도",
+		"summaryLanguagePref": "언어 환경설정",
+		"summarySocialCount": "소셜 링크 수",
+		"summaryLinksCount": "외부 링크 수",
+		"groupDescriptionEmpty": "아직 설명이 없습니다",
+		"groupMembers": "${members} 멤버 · ${channels} 채널",
+		"channelPrivate": "· 사적인",
+		"channelTypeText": "텍스트 채널",
+		"channelTypeList": "채널 목록",
+		"channelTypeVoice": "음성 채널",
+		"channelTypeStreaming": "스트리밍 채널",
+		"errors": {
+			"loadFailed": "데이터를 불러오지 못했습니다",
+			"saveFailed": "데이터를 저장하지 못했습니다",
+			"uploadFailed": "아바타를 업로드하지 못했습니다",
+			"invalidUserData": "사용자 데이터 형식 오류",
+			"identityRequired": "노드 ID가 아직 준비되지 않았습니다. 페이지를 새로고침해 주세요. 그래도 안 되면 아래 P2P 설정에서 연합 구성을 저장하세요.",
+			"fetchUserFailed": "사용자 메시지를 가져오지 못했습니다.",
+			"operationFailed": "작업 실패: ${error}"
+		},
+		"success": {
+			"saved": "데이터가 성공적으로 저장되었습니다",
+			"avatarUploaded": "아바타가 업로드되었습니다"
+		},
+		"ownerEntityHash": {
+			"placeholder": "주인의 엔터티 해시를 입력하세요."
+		}
+	},
+	"stickers": {
+		"title": "스티커 사각형",
+		"description": "스티커 및 이모티콘 관리 시스템",
+		"back": {
+			"title": "돌아가기"
+		},
+		"packs": "스티커 팩",
+		"create": "스티커 팩 만들기",
+		"upload": "스티커 업로드",
+		"install": "설치",
+		"uninstall": "제거",
+		"close": "폐쇄",
+		"cancel": "취소",
+		"installed": "설치됨",
+		"myPacks": "내 스티커 팩",
+		"tabAll": "전체",
+		"store": "스티커 사각형",
+		"favorites": "모으다",
+		"recent": "최근에 사용됨",
+		"search": {
+			"placeholder": "스티커 팩 검색…"
+		},
+		"emptyPacks": "스티커 팩이 없습니다",
+		"packNameLabel": "스티커 팩 이름",
+		"packName": {
+			"placeholder": "스티커 팩 이름을 입력하세요."
+		},
+		"packDescriptionLabel": "설명",
+		"packDescription": {
+			"placeholder": "설명 입력"
+		},
+		"stickerNameLabel": "스티커 이름",
+		"stickerName": {
+			"placeholder": "스티커 이름을 입력하세요"
+		},
+		"selectPack": "스티커 팩을 선택하세요",
+		"selectPackOption": {
+			"textContent": "스티커 팩을 선택하세요."
+		},
+		"selectImage": "사진 선택",
+		"tagsLabel": "태그(쉼표로 구분)",
+		"tags": {
+			"placeholder": "예: 귀여운, 이모티콘, 동물"
+		},
+		"author": "작성자",
+		"authorLabel": "작성자: ${author}",
+		"stickerCount": "${count}개 스티커",
+		"badgeMine": "내 것",
+		"noDescription": "아직 설명이 없습니다",
+		"noStickersInPack": "스티커가 없습니다",
+		"deletePack": "스티커 팩 삭제",
+		"public": "공개",
+		"private": "사적인",
+		"animated": "동적",
+		"static": "정적",
+		"addTag": "태그 추가",
+		"defaultPackName": "기본 이모티콘 스위트",
+		"defaultPackDescription": "시스템에서 기본으로 제공하는 이모티콘 스티커",
+		"unnamedPack": "이름 없는 스티커 팩",
+		"importPackName": "내 컬렉션",
+		"importPackDescription": "메시지에서 저장된 스티커",
+		"nameRequired": "스티커 팩 이름을 입력하세요.",
+		"stickerNameRequired": "스티커 이름을 입력해주세요",
+		"selectPackRequired": "스티커 팩을 선택하세요.",
+		"fileRequired": "이미지 파일을 선택해주세요",
+		"loadDetailFailed": "스티커 팩 세부메시지를 불러오지 못했습니다.",
+		"deleteConfirm": "이 스티커 팩을 영구적으로 삭제하시겠습니까? 모든 스티커가 제거되며 이 작업은 되돌릴 수 없습니다.",
+		"errors": {
+			"loadFailed": "스티커 팩을 불러오지 못했습니다",
+			"uploadFailed": "스티커를 업로드하지 못했습니다",
+			"installFailed": "설치 실패",
+			"uninstallFailed": "제거 실패",
+			"createFailed": "스티커 팩을 만들지 못했습니다",
+			"deleteFailed": "삭제 실패"
+		},
+		"success": {
+			"uploaded": "스티커가 업로드되었습니다",
+			"installed": "설치 성공",
+			"uninstalled": "성공적으로 제거되었습니다.",
+			"created": "스티커 팩이 성공적으로 생성되었습니다.",
+			"deleted": "성공적으로 삭제되었습니다"
+		}
+	},
 	"fountConsole": {
 		"server": {
 			"start": "서버를 시작하고 있습니다.",
@@ -116,6 +374,186 @@
 		"logViewer": {
 			"replHint": "Enter로 실행 · Shift+Enter 줄바꿈"
 		},
+		"test": {
+			"help": "사용법: fount test [--all] [--no-parallel] [--force] [<groups>...]\n\n그룹 구문(공백으로 여러 그룹 구분):\n  manifest                    해당 manifest의 모든 suite\n  manifest:suite              지정 suite(쉼표로 여러 개; manifest/suite도 가능)\n  manifest:suite:subtest      지정 하위 테스트(frontend 등 등록된 subtests; manifest/suite/subtest도 가능)\n  manifest:suite:file         pure/integration(serial.mjs)에서 *.test.mjs 파일 stem으로 필터\n  PowerShell에서 토큰이 분리되면 이후 토큰이 현재 그룹에 자동 병합\n\nmanifest id는 각 test/manifest.json 최상위 \"id\" 필드에서 가져옵니다.\n정확히 일치하지 않으면 \"<지정>/*\"로 자동 확장(예: shells → shells/chat,shells/social); glob(*, ?, **)도 지원.\nsuite는 각 suite의 id 또는 name으로 지정; 정확히 일치하지 않으면 \"<지정>*\", \"<지정>_*\"로 확장; glob도 지원.\n\n기본(빈 fount test): 실패/미완료 항목 먼저 실행(suite 내 실패 파일 우선; 실패 그룹 재현 시 해당 그룹만 실행 후 종료), 모두 통과하면 내용 만료 항목 실행; 어느 라운드든 실패 시 1로 종료, 같은 호출에서 반복 재시도 없음. 전체 실행 안 함(--all 사용).\n테스트 상태는 data/test/state/main.json에 영속화; 실패 로그는 통과할 때까지 보존. 매 실행마다 data/test/report.md와 report.json 갱신.\nfrontend 등 스위트는 subtests 등록 가능(각각 독립 trigger); 뷰 파일 하나만 바뀌면 해당 하위 테스트만 만료.\npure/integration에 subtests 미등록 시 세 번째 세그먼트로 디렉터리 내 *.test.mjs stem 필터(예: shells/chat:pure:channel_archive).\n의존성(manifest.json dependsOn)은 선행 manifest 통과 후 실행.",
+			"passed": "경로: ${label}",
+			"passedWithNoise": "통과: ${label}(노이즈 포함)",
+			"failed": "실패: ${label}",
+			"failedWithCode": "실패: ${label}(종료 코드 ${code})",
+			"passedLabel": "통과",
+			"failedLabel": "실패",
+			"noiseHits": "(소음: ${hits})",
+			"unknownManifestId": "알 수 없는 매니페스트 ID: ${ids}",
+			"unknownSuiteSelector": "알 수 없는 제품군 지정: ${ids}",
+			"unknownSubtestFilter": "알 수 없는 하위 테스트 필터링: ${suite} → ${names}",
+			"unknownFileFilter": "알 수 없는 테스트 파일 필터링: ${suite} → ${names}",
+			"unsupportedSubtestFilter": "Suite는 하위 테스트/파일 필터링을 지원하지 않습니다: ${suite}(${names})",
+			"available": "사용 가능: ${ids}",
+			"manifestMatched": "매니페스트 일치 결과: ${ids}",
+			"selectedSuites": "${selected}/${total} 테스트 스위트 선택됨",
+			"planSlotSummary": "계획 슬롯: 실제 실행 ${run}, 재사용 ${reuse}, 차단 ${blocked}",
+			"noMatchingSuites": "일치하는 테스트 도구 모음이 없습니다.",
+			"reportPath": "보고서: ${path}",
+			"reportPathFinal": "보고서: ${path}",
+			"statePathFinal": "현재 상태: ${path}",
+			"blocked": "차단: ${label}(종속성이 전달되지 않음: ${deps})",
+			"speculativeDiscard": "예측 결과 삭제: ${label}(종속성 전달되지 않음: ${deps})",
+			"continueImperfect": "고장/소음/불완전한 웨이브: ${count} 키트",
+			"outdatedSelected": "만료된 웨이브: ${count}개의 오래된/실행 취소된 스위트",
+			"runningSuite": {
+				"base": ">>> ${manifestId}:${name} 실행 중",
+				"speculative": "",
+				"heavy": "",
+				"expected": "${expected} 예상"
+			},
+			"reusedSuite": ">>> ${manifestId}:${name} 재사용(트리거는 변경되지 않고 마지막 ${status}가 사용됨)",
+			"noisyOnlyRemain": "여전히 ${count}개의 스위트가 지나가지만 소음이 있습니다. ${suites}",
+			"estimatedRun": "이 실행에는 약 ${eta}(예상 병렬 속도 ${rate})이 소요될 것으로 예상됩니다.",
+			"estimatedRunSerial": "이 실행에는 약 ${eta}(연속)가 소요될 것으로 예상됩니다.",
+			"estimatedRunSkipped": "또한 재사용되는 ${reused}개 조각과 차단될 것으로 예상되는 ${blocked}개 조각도 있습니다(추정치에는 포함되지 않음).",
+			"noRealRunPlanned": "이번에는 실행할 필요가 없습니다. ${reused}는 재사용되고 ${blocked}는 차단될 것으로 예상됩니다(트리거는 변경되지 않은 상태로 유지됨).",
+			"allReusedHint": "이번에는 실제로 실행된 스위트가 없습니다: 실패는 이전 결과를 재사용한 것이며, 관련 파일이 변경되지 않아 차단이 해소되지 않았습니다. 관련 파일을 수정한 뒤 다시 실행하거나 `fount test --force`로 강제 실행하세요.",
+			"estimatedRemaining": "남은 예상 시간 ≒ ${eta} (${completed}/${total} 스위트)",
+			"estimatedRunSerialHint": "병렬 처리가 예상되는 경우 ≒ ${eta}(병렬 비율 ${rate}), 절감액 ≒ ${savings}(--no-parallel 제거)",
+			"failuresSaved": "저장된 실패 목록: ${path}(${count}개 스위트)",
+			"failuresCleared": "manifest ${manifestId} 모두 통과, 실패 목록 삭제됨.",
+			"terminated": "시간 초과 종료: ${label} — ${reason}",
+			"terminateIdle": "${label} 중단됨: ${minutes}분 이상 stdall 출력이 없습니다(${idleSec}초 동안 유휴 상태, ${elapsed} 실행).",
+			"terminateDuration": "종료된 ${label}: 감시 기준 시간(${elapsed} 실행, 기준 ${baseline}, 상한 ${limit})보다 오래 걸렸습니다.",
+			"terminateDurationDefault": "종료된 ${label}: 소요 시간이 기본 감시 기간 제한(${elapsed} 실행, 상한 ${limit})을 초과합니다.",
+			"terminateMarker": "[해지 이유: ${reason}]",
+			"terminateUnknown": "TERMINATED ${label}: 테스트가 중단되었습니다.",
+			"terminateSpeculative": "종료된 ${label}: 투기적 종속성이 통과되지 않았으며 조기 중지가 취소되었습니다.",
+			"nothingToContinue": "모두 통과했고 만료 항목 없음, 다시 실행할 필요 없습니다.",
+			"triggerNoMatch": "트리거와 일치하는 파일이 없습니다: ${scope} — ${pattern}",
+			"triggerNoMatchSummary": "총 ${count}개의 트리거가 어떤 웨어하우스 파일과도 일치하지 않았습니다(자세한 내용은 report.md 참조).",
+			"unknownSuite": "알 수 없는 스위트: ${name}",
+			"federationCleanupPre": "통합 테스트 정리(실행 전) 실패: ${output}",
+			"federationCleanupPost": "통합 테스트 정리(실행 후) 실패: ${output}",
+			"suiteHeader": "=== 스위트 ${name} ===",
+			"heapSnapshotSaved": "테스트 노드 OOM 근처 힙 스냅샷: ${path}",
+			"liveUsage": "사용법: --suite <이름> | --list",
+			"serialUsage": "사용법: serial.mjs <deno-test-path> [...]",
+			"silentPassedOne": "테스트 파일 1개가 통과되었습니다.",
+			"silentPassedMany": "${count}개의 테스트 파일이 통과되었습니다.",
+			"ciNoDiffFallback": "CI: 차이점이 감지되지 않음, 전체 제품군 실행으로 대체",
+			"noFrontendPhasesMatched": "FOUNT_TEST_ONLY와 일치하는 프런트엔드 테스트 단계가 없습니다.",
+			"denoPanic": {
+				"detected": "Deno 충돌 감지됨: ${label}(위치 ${signature})",
+				"alreadyReported": "이 Deno 충돌이 보고되었으며 건너뛰었습니다: ${signature}",
+				"ghUnavailable": "gh를 사용할 수 없거나 로그인하지 않았으며 로컬에서만 기록되었습니다. Deno 충돌: ${signature}",
+				"published": "Deno: ${url}에 충돌 문제가 제출되었습니다.",
+				"duplicate": "업스트림에서 반복 크래시 발생, 보고 건너뜀: ${upstream}",
+				"publishFailed": "Deno 충돌 문제 게시 실패: ${signature}"
+			},
+			"nodeWorker": {
+				"dataPathRequired": "테스트 노드 작업자: --data-path 누락",
+				"portRequired": "테스트 노드 worker: --port 누락(launch.mjs로 시작해 주세요)",
+				"keyRequired": "테스트 노드 worker: --key 누락(launch.mjs로 시작해 주세요)",
+				"userRequired": "테스트 노드 작업자: --user 누락",
+				"error": "테스트 노드 작업자 오류: ${error}"
+			},
+			"ws": {
+				"pass": "패스: ${detail}",
+				"fail": "실패: ${detail}"
+			},
+			"report": {
+				"title": "fount test 보고서",
+				"tableHeaderItem": "항목",
+				"tableHeaderValue": "값",
+				"fieldRunId": "실행 ID",
+				"fieldCommand": "주문",
+				"fieldExit": "종료",
+				"fieldProgress": "일정",
+				"fieldSuites": "스위트",
+				"fieldFailed": "실패",
+				"fieldNoisyPassed": "통과했지만 시끄러움",
+				"fieldReused": "재사용 횟수",
+				"fieldSuiteSumDuration": "키트에 소요된 총 시간",
+				"fieldWallClock": "총 소요 시간",
+				"fieldParallelRate": "병행",
+				"fieldEstimatedRemaining": "예상 남은 시간",
+				"fieldEstimatedParallelRate": "예상 병렬 처리 속도",
+				"estimatePoint": "≒ ${eta}",
+				"pendingEstimate": "남은 예상 시간 ≒ ${eta}",
+				"pendingParallelEstimate": "예상 병렬 시간 소모 ≒ ${eta} (예상 병렬 속도 ${rate})",
+				"pendingSavings": "예상 절감액 ≒ ${savings}",
+				"pendingItemExpected": "${expected} 예상",
+				"fieldDuration": "시간이 많이 걸리는",
+				"commandDefault": "(기본)",
+				"exitPassed": "통과",
+				"exitFailed": "실패",
+				"exitInProgress": "진행 중",
+				"progressFormat": "${completed}/${total} 스위트",
+				"suitesFormat": "${passed}/${completed} 통과",
+				"artifacts": "제품 디렉터리: `${path}`",
+				"sectionFailed": "실패한 키트",
+				"sectionNoisyPassed": "통과했지만 시끄러움",
+				"sectionSilentPassed": "통과",
+				"sectionPending": "실행 예정",
+				"sectionContinue": "미완료 항목 계속",
+				"sectionReplay": "실패 항목 재실행",
+				"sectionReplayImperfect": "불완전한 재방송",
+				"columnSuite": "스위트",
+				"columnDuration": "시간이 많이 걸리는",
+				"labelReused": "(재사용)",
+				"labelExpectedBlocked": "(예상 차단)",
+				"labelDuration": "시간이 많이 걸리는",
+				"labelLog": "로그",
+				"labelNoise": "노이즈",
+				"labelFailedFiles": "실패 파일",
+				"labelTerminateReason": "종료 이유",
+				"sectionContinueReasons": "트리거 이유",
+				"continueReasonsLink": "트리거 이유: 자세한 내용은 [${path}](${path})를 참조하세요.",
+				"labelContinueReason": "이유",
+				"reasonImperfectFailed": "역사적 실패",
+				"reasonImperfectNoisy": "역사는 지나가지만 소음은 있다",
+				"reasonImperfectBlocked": "기록이 차단되었습니다.",
+				"reasonImperfectDependent": "업스트림이 실패하고 한 레이어 다운스트림이 실패합니다.",
+				"reasonMissingRecord": "기록 없음 상태, 자동 화장",
+				"reasonStaleContent": "내용이 변경되어 다시 실행해야 합니다.",
+				"reasonTriggerHashDrift": "지문 드리프트 트리거(경로 적중 없음)",
+				"reasonExplicitSelected": "명시적인 명명",
+				"reasonDependencyRequired": "종속성 풀인",
+				"labelRootCause": "근본 원인",
+				"labelDirectRequiredBy": "직속 정당",
+				"labelInclusionPath": "포함 체인",
+				"labelPullUpstream": "업스트림 가져오기: ${requiredBy}의 종속성이 녹색이 ​​아닙니다.",
+				"labelPullDownstream": "다운스트림 가져오기: ${requiredBy}는 완벽하지 않으며 함께 포함됩니다.",
+				"labelGateReason": "달리는 이유",
+				"labelCommitRange": "커밋 범위",
+				"labelUncommittedHashRange": "다이제스트가 제출되지 않았습니다.",
+				"labelMatchedTriggers": "히트 트리거",
+				"labelMatchedTriggerSets": "히트 트리거 세트",
+				"labelMatchedPaths": "적중 경로",
+				"labelTriggerHashDrift": "트리거 지문이 현재 작업 공간과 일치하지 않습니다(dirty→net 무시).",
+				"sectionDeadTriggers": "잘못된 트리거",
+				"deadTriggersHint": "다음 glob은 저장소 내의 어떤 파일과도 일치하지 않습니다(git 추적됨 + 추적되지 않음 무시되지 않음).",
+				"durationMs": "${ms}밀리초",
+				"durationUnitSec": "${n}초",
+				"durationUnitMin": "${n}포인트",
+				"durationUnitMinute": "${n}분",
+				"durationUnitHour": "${n}시간",
+				"durationUnitDay": "${n}일"
+			},
+			"state": {
+				"title": "fount test 상태",
+				"artifacts": "현재 디렉터리: `${path}`",
+				"sectionDependencyTree": "종속성 트리",
+				"sectionOverview": "각 스위트의 현재 상태",
+				"sectionBlocked": "차단된 제품군",
+				"columnSuite": "키트",
+				"columnStatus": "상태",
+				"columnCommit": "커밋",
+				"columnRanAt": "마지막 실행",
+				"columnDuration": "시간이 많이 걸리는",
+				"columnLog": "로그",
+				"columnBlocked": "차단 횟수",
+				"labelBlockedBy": "차단됨",
+				"statusUnknown": "실행되지 않음",
+				"statusOutdated": "쓸모없는"
+			}
+		},
 		"path": {
 			"protocol": {
 				"description": "URL: fount 프로토콜",
@@ -144,7 +582,7 @@
 				"localBranchAhead": "로컬 지점이 원격 지점보다 앞서 있습니다. 업데이트가 필요하지 않습니다.",
 				"branchesDiverged": "로컬 및 원격 분기가 분기되었습니다. 강제 업데이트 진행 중...",
 				"notOnBranch": "브랜치에 없으면 '마스터'로 전환하세요..",
-				"noUpstreamBranch": "경고: '${branch}' 분기에 대해 구성된 업스트림 분기가 없습니다. 업스트림을 '원본/마스터'로 설정합니다.",
+				"noUpstreamBranch": "경고: '${branch}' 분기에 구성된 업스트림 분기가 없습니다. '${remote}'를 사용하세요.",
 				"dirtyWorkingDirectory": "경고: 작업 디렉터리에 커밋되지 않은 변경 사항이 있습니다. 업데이트하기 전에 변경 사항을 스테이징하거나 커밋하세요.",
 				"notInstalled": "Git이 설치되지 않았습니다. 설치하려고 합니다...",
 				"notInstalledSkippingPull": "Git이 설치되지 않았습니다. `git pull`을 건너뛰세요.",
@@ -727,6 +1165,513 @@
 			}
 		}
 	},
+	"social": {
+		"title": "정사각형",
+		"description": "P2P 공개 소셜 업데이트, 팔로우 및 파일 공유",
+		"bootstrapFailed": "소셜 인터페이스 초기화 실패: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "정사각형"
+			}
+		},
+		"nav": {
+			"feed": "첫 페이지",
+			"explore": "탐저장",
+			"notifications": "받은 편지함",
+			"saved": "모으다",
+			"drafts": "초안 상자",
+			"profile": "내 것",
+			"videos": "짧은 영상",
+			"live": "라이브 스트리밍"
+		},
+		"settings": {
+			"title": "소셜 설정",
+			"back": {
+				"aria-label": "프로필로 돌아가기"
+			},
+			"privacyTitle": "프로필 보호 및 검색",
+			"privacyHint": "검색 및 권장 사항에 계정이 표시되는지 여부를 제어합니다.",
+			"tasteTitle": "권장 사항 및 기본 설정",
+			"tasteHint": "\"추천\"의 개인 메시지 보호 경계 및 라벨 이름을 조정합니다.",
+			"mutedKeywordsTitle": "단어 및 태그 차단",
+			"mutedKeywordsHint": "본문 텍스트, 콘텐츠 경고 또는 라벨에 해당하는 게시물은 스트림, 탐색, 검색 및 알림에서 숨겨집니다. 로컬에만 저장됩니다.",
+			"mutedKeywordsMatchTags": "태그를 동시에 일치시키세요",
+			"mutedKeywordsAdd": "다음에 추가",
+			"mutedKeywordsRemove": {
+				"title": "차단된 단어 제거"
+			},
+			"mutedKeywordsEmpty": "아직 차단 단어가 추가되지 않았습니다.",
+			"autoTranslateTitle": "자동 번역",
+			"autoTranslateHint": "켜면 외국어 게시물이 자동으로 번역을 요청하고, 원문으로 전환될 수 있습니다.",
+			"autoTranslateEnable": "내 언어가 아닌 게시물 자동 번역",
+			"safetyTitle": "안전 및 차단",
+			"safetyHint": "차단 및 숨김 목록을 관리하세요.",
+			"mutedKeywords": {
+				"placeholder": "키워드 또는 #태그를 입력하세요."
+			}
+		},
+		"composer": {
+			"placeholder": "무슨 생각을 하고 계신가요? Markdown(fount 방언) 지원, @로 멘션",
+			"publish": "게시",
+			"saveDraft": "초안 저장",
+			"fab": {
+				"title": "게시물 작성",
+				"aria-label": "게시물 작성"
+			},
+			"contentWarning": {
+				"placeholder": "콘텐츠 경고(선택사항)"
+			},
+			"sensitiveMedia": "민감한 미디어 가리기",
+			"editImage": "편집",
+			"editCrop": "자르기",
+			"editMosaic": "모자이크",
+			"editBrush": "브러시",
+			"editApply": "적용",
+			"editCancel": "취소",
+			"replyPolicyEveryone": "누구나 답글을 달 수 있습니다.",
+			"replyPolicyFollowers7d": "7일 이상 팔로워 수",
+			"replyPolicyAuthorFollows": "내가 팔로우하는 사람들",
+			"replyPolicyLabel": "답글을 달 수 있는 사람",
+			"replyDisplayAll": "모든 답글 표시",
+			"replyDisplayFeaturedOnly": "선택된 답글만",
+			"replyDisplayLabel": "표시하려면 답장을 보내세요.",
+			"scheduleLabel": "정기적으로 출시",
+			"scheduleSuccess": "게시물이 예약된 대기열에 추가되었습니다.",
+			"emojiButton": {
+				"title": "표정",
+				"aria-label": "표정"
+			},
+			"mediaButton": {
+				"title": "미디어 추가",
+				"aria-label": "미디어 추가"
+			},
+			"pollButton": {
+				"title": "투표 시작",
+				"aria-label": "투표 시작"
+			},
+			"cwToggle": {
+				"title": "내용 경고",
+				"aria-label": "내용 경고"
+			},
+			"advancedToggle": {
+				"title": "추가 옵션",
+				"aria-label": "추가 옵션"
+			},
+			"media": {
+				"placeholder": "이미지 설명(대체)"
+			}
+		},
+		"visibility": {
+			"label": "가시 범위",
+			"public": "공개",
+			"unlisted": "공개적으로 나열되지 않음",
+			"followers": "팔로어만",
+			"followers7d": "7일 동안 팔로우한 후 표시됨",
+			"followers30d": "30일 동안 팔로우한 후 표시됨",
+			"selected": "지정된 사용자에게 공개",
+			"private": "본인에게만 표시됩니다.",
+			"allowLabel": "표시 사람들",
+			"exceptLabel": "사람을 제외",
+			"allow": {
+				"placeholder": "표시되는 인물 엔터티해시, 공백 또는 쉼표로 구분됨"
+			},
+			"except": {
+				"placeholder": "보여주면 안되는 사람 (선택)"
+			}
+		},
+		"albums": {
+			"create": "새 앨범 만들기",
+			"edit": "앨범 수정",
+			"save": "저장",
+			"cancel": "취소",
+			"back": "앨범으로 돌아가기",
+			"empty": "아직 앨범이 없습니다",
+			"emptyPosts": "아직 앨범에 게시물이 없습니다.",
+			"name": "앨범명",
+			"description": "앨범 설명",
+			"deleteLinks": "앨범 삭제(게시물 유지)",
+			"deleteWithPosts": "앨범 삭제 및 게시물 삭제",
+			"pickerLabel": "앨범에 추가",
+			"defaultName": "기본 앨범"
+		},
+		"feed": {
+			"refresh": "뉴스 새로고침",
+			"newPosts": "새로운 소식이 있습니다. 보려면 클릭하세요.",
+			"tabLatest": "최신",
+			"tabForYou": "추천",
+			"repostedBy": "${author}이 리트윗함",
+			"decryptFailed": "이 게시물의 암호를 해독할 수 없습니다.",
+			"revealContent": "콘텐츠 표시",
+			"sensitiveMedia": "민감한 미디어",
+			"showMore": "확장",
+			"showLess": "닫기",
+			"replayDivider": "다 읽었습니다. 다시 찾아보세요."
+		},
+		"taste": {
+			"rebuild": "기본 설정 재구성",
+			"privacyPublishPreferences": "공개 태그 이름 지정 및 병합 검색",
+			"privacyPublishPreferencesHint": "닫은 후에는 친구들이 내 태그 이름 지정 및 병합 문을 볼 수 없으며 합의에 기여할 수도 없습니다.",
+			"privacyPublishReactions": "대중이 좋아하는 것과 싫어하는 것",
+			"privacyPublishReactionsHint": "끄면 게시자에게 내 좋아요/싫어요가 전달되지 않고, 내 반응은 타인 추천에 반영되지 않으며, 게시물의 2차 확산에도 기여하지 않습니다.",
+			"empty": "아직 환경설정 태그가 없습니다. 좋아요/싫어요가 많아지면 자동으로 클러스터링됩니다.",
+			"weight": "무게 ${weight}",
+			"save": "저장",
+			"name": {
+				"placeholder": "로컬 표시 이름"
+			}
+		},
+		"trending": {
+			"title": "뜨거운 주제",
+			"postCount": {
+				"title": "${n}개의 게시물"
+			},
+			"scopeLocal": "이 기기",
+			"scopeNearby": "가까운",
+			"empty": "아직 인기 주제가 없습니다."
+		},
+		"search": {
+			"placeholder": "업데이트, 사용자 또는 #주제 검색(최소 2단어)",
+			"open": {
+				"aria-label": "찾다"
+			},
+			"submit": "찾다",
+			"clear": "지우기",
+			"empty": "일치하는 게시물이 없습니다.",
+			"tooShort": "2자 이상 입력해주세요.",
+			"usersTitle": "사용자",
+			"postsTitle": "동적",
+			"usersEmpty": "일치하는 사용자가 없습니다.",
+			"pinAlias": "별칭으로 설정",
+			"trustScore": "${score} 신뢰",
+			"viewTitle": "찾다",
+			"loading": "수색…",
+			"filterAuthor": {
+				"placeholder": "작성자"
+			},
+			"filterMediaAll": "모든 미디어",
+			"filterMediaImage": "그림",
+			"filterMediaVideo": "동영상",
+			"filterTag": {
+				"placeholder": "#라벨"
+			},
+			"sortRecent": "최신",
+			"sortPopular": "인기 있는",
+			"scopeLocal": "이 기기",
+			"scopeNearby": "가까운"
+		},
+		"profile": {
+			"edit": "프로필 편집",
+			"viewPosts": "소셜 프로필 보기",
+			"settingsBtn": {
+				"aria-label": "소셜 설정"
+			},
+			"mediaOnly": "[메디아]",
+			"hideFromExplore": "탐색 페이지에서 계정 숨기기",
+			"tabPosts": "동적",
+			"tabAlbums": "사진 앨범",
+			"tabLikes": "좋아요",
+			"tabCabinets": "서류 캐비넷",
+			"tabsLabel": {
+				"aria-label": "데이터 파티션"
+			},
+			"cabinetsEmpty": "공개 파일 캐비넷이 없습니다",
+			"cabinetsFailed": "파일 캐비닛을 불러오지 못했습니다: ${error}",
+			"statsGroup": {
+				"aria-label": "통계"
+			},
+			"statsPosts": "동적",
+			"statsFollowing": "팔로잉",
+			"statsFollowers": "팬",
+			"followingTitle": "팔로잉",
+			"followersTitle": "팬"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "폐쇄"
+			}
+		},
+		"actions": {
+			"like": "좋아요",
+			"unlike": "같지 않은",
+			"dislike": "밟다",
+			"undislike": "싫어요 취소",
+			"repost": "앞으로",
+			"quote": "인용",
+			"delete": "삭제",
+			"edit": "편집",
+			"save": "모으다",
+			"saved": "모은",
+			"translate": "번역",
+			"dm": "비공개 메시지 보내기",
+			"block": "차단",
+			"hide": "숨김",
+			"mute": "음소거",
+			"follow": "팔로잉",
+			"following": "이미 팔로우 중",
+			"care": "특별한 관심",
+			"careRemove": "스페셜 케어 취소",
+			"careAdded": "이미 특별한 관심사가 추가되었습니다.",
+			"careRemoved": "스페셜 케어 취소됨",
+			"setAlias": "별칭 설정",
+			"setAliasPrompt": "로컬 별칭 설정(지우려면 비워 두세요):",
+			"aliasSaved": "별칭이 업데이트되었습니다.",
+			"replies": "논평",
+			"copyLink": "링크 복사",
+			"downloadHtml": "HTML 다운로드",
+			"copied": "복사됨",
+			"more": {
+				"aria-label": "더 보기"
+			},
+			"share": "공유",
+			"likeFailed": "좋아요를 누르지 못했습니다: ${error}",
+			"dislikeFailed": "밟지 못했습니다: ${error}",
+			"repostFailed": "전달 실패: ${error}",
+			"replyFailed": "답장 실패: ${error}",
+			"followFailed": "팔로우 실패: ${error}",
+			"saveFailed": "수집 실패: ${error}",
+			"blockFailed": "차단 실패: ${error}",
+			"hideFailed": "숨기지 못했습니다: ${error}",
+			"muteFailed": "음소거 실패: ${error}",
+			"deleteFailed": "삭제 실패: ${error}"
+		},
+		"post": {
+			"edited": "편집됨",
+			"editPrompt": "게시물 텍스트 수정",
+			"editHistory": "편집 기록",
+			"editHistoryEmpty": "이전 버전 없음",
+			"loading": "불러오는 중…",
+			"notFound": "게시물이 존재하지 않거나 표시되지 않습니다.",
+			"loadFailed": "불러오지 못했습니다. 나중에 다시 시도해 주세요.",
+			"detailTitle": "게시",
+			"back": "돌아가기"
+		},
+		"reply": {
+			"context": "${author}님에게 답장하세요"
+		},
+		"notes": {
+			"label": "독자의 보충 자료",
+			"add": "보충 메시지",
+			"prompt": "독자 보충 자료 작성(커뮤니티 노트)",
+			"listTitle": "모든 추가 메시지",
+			"helpful": "작동해요",
+			"unhelpful": "쓸모 없는",
+			"more": "전체 ${n}개",
+			"empty": "아직 추가 메시지가 없습니다."
+		},
+		"poll": {
+			"multi": "다중 선택 허용",
+			"apply": "투표 구독",
+			"closed": "투표가 종료되었습니다",
+			"deadline": "마감일: ${deadline}",
+			"options": {
+				"placeholder": "한 줄에 옵션 하나(최소 2개)"
+			}
+		},
+		"aside": {
+			"suggested": "관심을 추천"
+		},
+		"explore": {
+			"accounts": "추천 계정",
+			"posts": "최신 게시물",
+			"mediaOnly": "미디어 전용"
+		},
+		"groupRef": {
+			"linking": "채팅 그룹 연결",
+			"clear": "연결 해제",
+			"pick": "채팅 그룹/채널 연결…"
+		},
+		"notifications": {
+			"reply": "${author}님이 내 게시물에 답변했습니다.",
+			"mention": "${author} @@나를 피드에 추가했습니다",
+			"like": "${author}님이 내 게시물을 좋아합니다.",
+			"repost": "${author}님이 내 게시물을 리트윗했습니다.",
+			"follow": "${author}님이 나를 팔로우합니다",
+			"care_post": "${author}가 새 업데이트를 게시했습니다(특별한 우려사항)",
+			"poll_closed": "${author}에 대한 투표가 종료되었습니다.",
+			"post_note": "${author}님이 게시물에 메시지를 추가했습니다.",
+			"live_started": "${author}님이 실시간 스트리밍을 시작했습니다.",
+			"view": "확인",
+			"markAllRead": "모두 읽음으로 표시"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "받은 편지함 필터링"
+			},
+			"tabs": {
+				"all": "전체",
+				"mention": "언급",
+				"reply": "답글",
+				"like": "칭찬",
+				"follow": "팔로잉",
+				"repost": "앞으로"
+			},
+			"aggregated": {
+				"like": "${author1}, ${author2} 외 ${count}명이 내 게시물을 좋아했습니다.",
+				"likeTwo": "${author1}님과 ${author2}님이 내 게시물을 좋아합니다.",
+				"repost": "${author1}, ${author2} 및 ${count}명이 내 게시물을 리트윗했습니다.",
+				"repostTwo": "${author1}님과 ${author2}님이 내 게시물을 리트윗했습니다.",
+				"follow": "${author1}, ${author2} 외 ${count}명이 나를 팔로우합니다.",
+				"followTwo": "${author1}님과 ${author2}님이 나를 팔로우합니다."
+			}
+		},
+		"replies": {
+			"placeholder": "답장을 쓰세요…",
+			"submit": "답글",
+			"empty": "아직 답장이 없습니다",
+			"emptyHint": "첫 번째 기사를 작성하고 토론을 시작하겠습니다"
+		},
+		"repost": {
+			"placeholder": "리트윗 댓글 추가(선택)…",
+			"submit": "전달 확인"
+		},
+		"quote": {
+			"quoting": "인용",
+			"clear": "역참조",
+			"viewOriginal": "원본 게시물 보기"
+		},
+		"a11y": {
+			"linkGroupSelect": "채팅 그룹 또는 채널에 연결",
+			"postVisibility": "가시 범위",
+			"postLang": "콘텐츠 언어",
+			"trendingHashtags": "뜨거운 주제",
+			"saveFolderSelect": "즐겨찾는 폴더"
+		},
+		"blocklist": {
+			"title": "블랙리스트",
+			"hiddenTitle": "목록 숨기기",
+			"empty": "아직 차단되거나 숨겨진 항목이 없습니다.",
+			"unblock": "차단 해제",
+			"unhide": "숨기기 해제",
+			"scopeEntity": "실재",
+			"scopeSubject": "본체"
+		},
+		"translate": {
+			"label": "번역:"
+		},
+		"saved": {
+			"all": "전체",
+			"unfiled": "보관되지 않음",
+			"createFolder": {
+				"title": "새 폴더 만들기",
+				"aria-label": "새 폴더 만들기"
+			},
+			"createFolderPrompt": "폴더 이름",
+			"pickFolderTitle": "즐겨찾기에 추가",
+			"confirm": "확인",
+			"cancel": "취소",
+			"remove": "즐겨찾기 제거",
+			"renameFolder": "이름 바꾸기",
+			"renameFolderPrompt": "새 폴더 이름",
+			"deleteFolder": "폴더 삭제",
+			"deleteFolderConfirm": "폴더를 삭제하시겠습니까? 해당 게시물은 '보관 취소됨'으로 이동됩니다.",
+			"searchEmpty": "일치하는 컬렉션이 없습니다.",
+			"folderEmpty": "이 폴더는 비어 있습니다.",
+			"emptyHint": "뉴스를 탐색할 때 북마크를 클릭하면 여기에 저장됩니다.",
+			"search": {
+				"placeholder": "즐겨찾기 검색…"
+			}
+		},
+		"drafts": {
+			"untitled": "(초안 텍스트 없음)",
+			"emptyHint": "게시물 상자에 내용을 작성하고 다음 번에 계속 편집하려면 \"초안 저장\"을 클릭하세요.",
+			"saved": "초안이 저장되었습니다.",
+			"deleted": "초안이 삭제되었습니다.",
+			"delete": "초안 삭제",
+			"empty": "초안이 비어 있습니다.",
+			"saveFailed": "초안 저장 실패: ${error}",
+			"loadFailed": "초안을 열지 못했습니다: ${error}",
+			"deleteFailed": "초안 삭제 실패: ${error}"
+		},
+		"time": {
+			"justNow": "방금",
+			"minutesAgo": "${n}분 전",
+			"hoursAgo": "${n}시간 전"
+		},
+		"empty": {
+			"feed": "아직 업데이트가 없습니다. 몇몇 사람들을 팔로우하세요.",
+			"profilePosts": "아직 소식이 없습니다",
+			"following": "아직 팔로우하는 사람이 없습니다.",
+			"followers": "아직 팬 없음",
+			"notifications": "아직 알림이 없습니다",
+			"saved": "아직 즐겨찾기가 없습니다.",
+			"drafts": "아직 초안이 없습니다.",
+			"exploreAccounts": "현재 추천 계정이 없습니다",
+			"explorePosts": "아직 탐색글이 없습니다.",
+			"likedPosts": "아직 좋아요가 없습니다.",
+			"noIdentity": "소셜을 쓰기 전에 Chat에서 연합 identity를 설정하세요."
+		},
+		"topic": {
+			"follow": "구독",
+			"unfollow": "구독 취소",
+			"empty": "이 주제에 대한 게시물이 아직 없습니다"
+		},
+		"video": {
+			"view": {
+				"aria-label": "짧은 영상"
+			},
+			"empty": "아직 짧은 동영상이 없습니다.",
+			"emptyHint": "다음 사용자 또는 공개 광장에는 동영상이 포함된 게시물이 없습니다. 동영상 업데이트를 게시해 보시겠습니까?",
+			"compose": "동영상 게시하러 가기",
+			"back": {
+				"aria-label": "뉴스로 돌아가기"
+			},
+			"mute": {
+				"aria-label": "음소거"
+			},
+			"unmute": {
+				"aria-label": "음소거 해제"
+			},
+			"unavailable": "비디오를 재생할 수 없습니다",
+			"closeReplies": {
+				"aria-label": "댓글 닫기"
+			}
+		},
+		"live": {
+			"empty": "아직 라이브 방송이 없습니다",
+			"viewers": "${n}명이 시청했습니다.",
+			"likes": "${n} 좋아요",
+			"local": "이 기기",
+			"hall": "생방송 홀",
+			"back": {
+				"title": "뉴스로 돌아가기",
+				"aria-label": "뉴스로 돌아가기"
+			},
+			"danmakuSend": "보내기",
+			"postWatch": "생방송 입장",
+			"postEnded": "생방송이 종료되었습니다",
+			"postEndedStats": "조회자: ${viewers} · ${likes} 좋아요 · ${duration}",
+			"link": {
+				"invite": "연결 초대",
+				"needPeer": "피어 엔터티Hash:liveId를 입력하세요.",
+				"invited": "온라인 초대장이 전송되었습니다",
+				"linked": "연결됨",
+				"peer": {
+					"placeholder": "피어 엔터티Hash:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "방송 시작",
+				"open": "방송으로 이동",
+				"mediaAv": "오디오 및 비디오",
+				"mediaAudio": "순수한 오디오",
+				"mediaVideo": "순수한 그림",
+				"mediaWhip": "WHIP 푸시 스트리밍(예: OBS)",
+				"whipUrl": "WHIP 주소",
+				"whipToken": "무기명 토큰",
+				"whipWaiting": "WHIP 스트리밍 연결을 기다리는 중(OBS 등 스트리밍 소프트웨어 사용 가능)…",
+				"start": "생방송 시작",
+				"stop": "라이브 방송을 중지하세요",
+				"started": "생방송이 시작되었습니다",
+				"stopped": "생방송이 중단되었습니다",
+				"titleInput": {
+					"placeholder": "라이브 타이틀(선택사항)"
+				}
+			},
+			"danmaku": {
+				"placeholder": "뭐라고 말해보세요..."
+			}
+		}
+	},
 	"chat": {
 		"title": "채팅",
 		"description": "말이 날아오르고 이야기가 펼쳐지는 곳. AI 동료와 함께 이야기를 구성하고 디지털 대화의 썰물과 흐름에 빠져보세요. fount의 핵심이 여기서 뛰는군요.",
@@ -738,7 +1683,1453 @@
 			"isTyping": "${names}님이 입력 중입니다...",
 			"multipleMembers": "여러 회원이 입력 중입니다..."
 		},
+		"emoji": {
+			"pickerTitle": "이모지 선택",
+			"categoryFace": "표정",
+			"categoryGesture": "제스처",
+			"categoryHeart": "하트",
+			"categoryAnimal": "동물",
+			"categoryFood": "음식",
+			"categoryObject": "사물"
+		},
+		"unicodeEmojiGroups": {
+			"Smileys_and_Emotion": {
+				"title": "스마일리 및 감정"
+			},
+			"People_and_Body": {
+				"title": "사람 및 신체"
+			},
+			"Animals_and_Nature": {
+				"title": "동물 및 자연"
+			},
+			"Food_and_Drink": {
+				"title": "음식 및 음료"
+			},
+			"Travel_and_Places": {
+				"title": "여행 및 장소"
+			},
+			"Activities": {
+				"title": "활동"
+			},
+			"Objects": {
+				"title": "사물"
+			},
+			"Symbols": {
+				"title": "기호"
+			},
+			"Flags": {
+				"title": "깃발"
+			},
+			"Component": {
+				"title": "구성 요소"
+			}
+		},
+		"sessionSettings": {
+			"unnamedTitle": "이름 없는 그룹 채팅",
+			"modeGroup": "그룹 채팅",
+			"modeSingle": "단일 캐릭터",
+			"modeEmpty": "빈 그룹",
+			"subtitleRoles": "이 채팅에 ${count}개 캐릭터",
+			"statusSaved": "저장됨",
+			"statusSaving": "저장 중…",
+			"statusDirty": "저장되지 않은 변경 사항이 있습니다",
+			"statusSaveFailed": "저장 실패",
+			"saveSuccess": "그룹 채팅 설정이 저장되었습니다",
+			"saveFailed": "그룹 채팅 설정을 저장할 수 없습니다"
+		},
+		"group": {
+			"defaults": {
+				"groupMetaName": "이름 없는 그룹",
+				"defaultChannelName": "종합",
+				"dmChatName": "채팅",
+				"dmDmName": "비공개 채팅",
+				"threadName": "하위 스레드"
+			},
+			"settingsPage": {
+				"title": "그룹 설정",
+				"kicker": "그룹 관리",
+				"subtitle": "그룹 메시지, 멤버, 공통 기능을 관리합니다. 빈도가 낮은 권한, 저장 및 감사 도구는 고급 설정에 중앙 집중화되어 있습니다.",
+				"backToChat": "채팅으로 돌아가기",
+				"navigationLabel": "그룹 설정 분류",
+				"advancedNavigationLabel": "고급 설정 카테고리",
+				"tabGeneral": "기본",
+				"tabPermissions": "역할 권한",
+				"tabMembers": "멤버",
+				"tabAudit": "감사 로그",
+				"tabEmojis": "표정",
+				"tabAdvanced": "고급의",
+				"tabStorage": "저장 및 보관",
+				"tabChannelPermissions": "채널 권한",
+				"advancedHubTitle": "고급 설정",
+				"advancedHubDescription": "이 기능은 그룹의 권한 구조, 기록 데이터 또는 거버넌스 기록을 바꿉니다. 분명히 필요할 때만 조정하세요.",
+				"channelPermsHint": "특정 채널별 역할 권한 재정의를 설정합니다. 미설정 항목은 그룹 역할 권한을 따릅니다.",
+				"channelPermsSelectChannel": "채널",
+				"channelPermsAddRole": "역할 재정의 추가",
+				"channelPermsRemoveRole": "이 역할 재정의 삭제",
+				"channelPermsStateNeutral": "상속",
+				"channelPermsStateAllow": "허용",
+				"channelPermsStateDeny": "거부",
+				"channelPermsUpdated": "채널 권한이 업데이트되었습니다.",
+				"channelPermsUpdateFailed": "채널 권한을 업데이트하지 못했습니다: ${error}",
+				"channelPermsNoChannels": "현재 구성할 채널이 없습니다.",
+				"emojisTitle": "그룹 맞춤 표정식",
+				"emojisHint": "멤버는 채팅에 이 이모티콘을 넣거나 보낼 수 있습니다. 설치되지 않은 이미지는 연합 노드를 통해 필요할 때 가져옵니다.",
+				"emojisUpload": "이모티콘 업로드",
+				"emojisDelete": "이모티콘 삭제",
+				"emojisEmpty": "아직 그룹 표정이 없습니다.",
+				"emojisUploadOk": "이모티콘이 업로드되었습니다.",
+				"emojisUploadFailed": "업로드 실패: ${error}",
+				"emojisDeleteConfirm": "이 이모티콘 그룹을 삭제하시겠습니까?",
+				"emojisDeleteOk": "이모티콘이 삭제되었습니다.",
+				"emojisDeleteFailed": "삭제 실패: ${error}",
+				"membersTitle": "멤버 목록",
+				"overviewTitle": "그룹 개요",
+				"overviewHint": "읽기 전용 메시지입니다. 거버넌스 권한이 있는 경우 '기본'에서 그룹 메시지 및 정책을 편집할 수 있습니다.",
+				"channelArchiveTitle": "채널 아카이브",
+				"channelArchiveHint": "전체 채널 JSON 아카이브를 가져오면 이 그룹에 새로운 일반 텍스트 채널이 생성되고 기록이 복원됩니다(나가 다시 서명하고 첨부 파일은 메타데이터만 유지함).",
+				"channelArchiveImport": "채널 JSON 가져오기",
+				"channelArchiveImportOk": "${count}개의 메시지를 가져왔습니다. 새 채널을 여는 중...",
+				"channelArchiveImportFailed": "가져오기 실패: ${error}",
+				"governanceHint": "DAG의 그룹 수준 정책을 작성합니다. 관리자 또는 MANAGE_ADMINS 권한이 필요합니다.",
+				"governanceDenied": "그룹 거버넌스 설정을 수정할 권한이 없습니다.",
+				"rolesDenied": "역할을 수정할 수 있는 MANAGE_ROLES 권한이 없습니다.",
+				"channelPermsDenied": "채널 권한 재정의를 수정할 수 있는 MANAGE_CHANNELS 권한이 없습니다.",
+				"notMember": "나는 더 이상 이 그룹의 멤버이 아닙니다. 이 그룹의 데이터는 그룹을 탈퇴한 후 자동으로 삭제되었습니다.",
+				"basicTitle": "그룹 거버넌스",
+				"profileSectionTitle": "그룹 메시지",
+				"profileSectionHint": "그룹 이름, 소개, 가입 방법은 그룹 메타데이터에 기록됩니다.",
+				"behaviorSectionTitle": "실행 동작",
+				"networkSectionTitle": "연합과 연결",
+				"retentionSectionTitle": "예약금 및 비율 제한",
+				"mediaSectionTitle": "통화 및 파일",
+				"nameLabel": "그룹 이름",
+				"descriptionLabel": "그룹 설명",
+				"joinPolicyLabel": "그룹 진입 전략",
+				"joinInviteOnly": "초대만 가능",
+				"joinPow": "PoW 필요",
+				"powDifficultyLabel": "PoW 난이도",
+				"advancedTitle": "고급 설정",
+				"advancedDescription": "네트워크, 스토리지, 속도 제한 및 암호화 매개변수 확실하지 않은 경우 기본값을 유지하세요.",
+				"securityAdvancedTitle": "보안 및 그룹 주인 작업",
+				"securityAdvancedDescription": "주요 순환 및 그룹 리더 승계; 잘못된 작업은 멤버 액세스에 영향을 미칠 수 있습니다.",
+				"powDifficultyTip": "작업 난이도 증명. 값이 높을수록 낯선 사람이 공개 그룹에 가입하는 데 필요한 계산 시간이 길어집니다.",
+				"maxDagPayloadTip": "단일 그룹 이벤트에 허용되는 데이터의 상한입니다. 너무 크면 동기화 메모리와 네트워크 오버헤드가 증가합니다.",
+				"trustedPeersTip": "연결을 유지하기 위해 우선 연결하는 신뢰도 높은 연합 이웃 수입니다.",
+				"gossipTtlTip": "메시지가 전달될 수 있는 최대 연방 노드 수입니다. 이를 늘리면 적용 범위가 늘어나고 트래픽도 늘어납니다.",
+				"hlcTip": "원격 노드의 시계가 로컬 노드의 시계보다 빠르도록 허용되는 최대 시간으로, 향후 비정상적인 이벤트를 거부하는 데 사용됩니다.",
+				"sfuTip": "선택적 외부 오디오 및 비디오 전달 서비스 주소입니다. 내장된 지점 간/중계 호출을 사용하려면 비워 두세요.",
+				"iceTip": "WebRTC가 라우터를 통과하도록 돕습니다. 직접 연결이 실패하면 TURN이 오디오, 영상, 연합 트래픽을 대신 전달합니다.",
+				"fileEncryptionTip": "수렴 암호화는 중복을 줄일 수 있지만 같은 파일임이 드러날 수 있습니다. 무작위 키는 프라이버시가 더 높지만 저장 공간을 더 씁니다.",
+				"keyManagementTitle": "키 관리",
+				"keyManagementTip": "교체 후 새 키를 구성원에게 재배포해야 합니다. 키가 손상되었다고 의심되는 경우에만 수동 조치를 취해야 합니다.",
+				"allowDangerousHtml": "신뢰할 수 있는 작성자 메시지는 인라인 HTML을 허용합니다.",
+				"deleteGroup": "그룹 삭제",
+				"save": "설정 저장",
+				"inviteTitle": "초대",
+				"inviteHint": "단기 초대코드를 생성합니다(기본 1시간). 상대방은 \"그룹 가입\"에 그룹 ID와 초대 코드를 입력합니다.",
+				"inviteMint": "초대 코드 생성",
+				"inviteGroupId": "그룹 ID",
+				"inviteCode": "초대코드",
+				"inviteExpires": "만료: ${date}",
+				"inviteCopy": "그룹 메시지 복사",
+				"inviteCopied": "그룹 메시지가 복사되었습니다.",
+				"inviteCopyFailed": "복사 실패",
+				"inviteClipboard": "그룹 ID: ${groupId}\n초대 코드: ${code}\n가입: ${url}",
+				"loadFailed": "그룹 설정을 불러오지 못했습니다: ${error}",
+				"saveSuccess": "그룹 설정이 저장되었습니다.",
+				"saveFailed": "설정을 저장하지 못했습니다: ${error}",
+				"deleteConfirm": "이 그룹을 삭제하시겠습니까? 이 작업은 되돌릴 수 없으며 모든 메시지와 멤버 데이터가 영구적으로 삭제됩니다.",
+				"deleteSuccess": "그룹이 삭제되었습니다.",
+				"deleteFailed": "그룹 삭제 실패: ${error}",
+				"rolesTitle": "역할 및 권한",
+				"createRole": "역할 만들기",
+				"roleDefault": "기본",
+				"deleteRole": "역할 삭제",
+				"deleteRoleConfirm": "이 역할을 삭제하시겠습니까?",
+				"deleteRoleSuccess": "역할이 삭제되었습니다.",
+				"deleteRoleFailed": "역할 삭제 실패: ${error}",
+				"createRolePrompt": "캐릭터 이름을 입력하세요:",
+				"createRoleSuccess": "역할이 생성되었습니다.",
+				"createRoleFailed": "역할 생성 실패: ${error}",
+				"permissionUpdated": "권한이 업데이트되었습니다.",
+				"permissionUpdateFailed": "권한 업데이트 실패: ${error}",
+				"noMembers": "아직 멤버이 없습니다.",
+				"memberRoles": "역할:",
+				"kick": "쫓겨나다",
+				"ban": "차단",
+				"kickConfirm": "정말로 ${name} 멤버을 추방하시겠습니까?",
+				"kickSelfNodeWarning": "경고: 이 구성원은 나와 동일한 노드 ID를 사용합니다. 또한, 퇴출된 후 그룹에서도 제명됩니다. 계속하시겠습니까?",
+				"kickSuccess": "멤버이 쫓겨났습니다.",
+				"kickFailed": "멤버을 추방하지 못했습니다: ${error}",
+				"banConfirm": "정말로 ${name} 멤버을 차단하시겠습니까?",
+				"banSuccess": "멤버이 차단되었습니다.",
+				"banFailed": "멤버을 차단하지 못했습니다: ${error}",
+				"bannedTitle": "금지된 멤버",
+				"unban": "차단 해제",
+				"unbanConfirm": "${name} 멤버의 차단을 해제하시겠습니까?",
+				"unbanSuccess": "멤버이 차단 해제되었습니다.",
+				"unbanFailed": "차단 해제 실패: ${error}",
+				"keyRotate": "그룹 파일 마스터 키 순환",
+				"keyRotateConfirm": "이 그룹 파일의 마스터 키를 수동으로 순환하시겠습니까? 새 구성원은 기록 파일 키를 다시 동기화해야 합니다.",
+				"keyRotateOk": "키가 순환되었습니다.",
+				"keyRotateFailed": "키 순환 실패: ${error}",
+				"gshGenerationRetentionHint": "현재는 가장 최근 64세대의 파일 마스터 키 기록만 유지됩니다. 가장 오래된 기록 파일은 초과되면 복호화가 불가능할 수 있으므로 중요한 데이터는 정기적으로 보관하는 것이 좋습니다.",
+				"gshGenerationNearLimit": "현재 파일 마스터 키의 ${generation}세대(최대 ${maxGenerations}세대)로 순환되었습니다. 계속해서 자주 교체하면 가장 오래된 기록 키가 폐기됩니다.",
+				"ownerSuccession": "그룹 리더 승계",
+				"ownerSuccessionOk": "그룹 리더 승계가 시행되었습니다.",
+				"ownerSuccessionFailed": "그룹 리더 승계 실패: ${error}",
+				"permVIEW_CHANNEL": "채널 보기",
+				"permSEND_MESSAGES": "메시지 보내기",
+				"permSEND_STICKERS": "스티커 보내기",
+				"permADD_REACTIONS": "반응 추가",
+				"permMANAGE_MESSAGES": "관리 메시지",
+				"permMANAGE_CHANNELS": "채널 관리",
+				"permKICK_MEMBERS": "킥 멤버",
+				"permBAN_MEMBERS": "멤버 차단",
+				"permMANAGE_ROLES": "관리 역할",
+				"permINVITE_MEMBERS": "멤버 초대",
+				"permSTREAM": "음성",
+				"permCREATE_THREADS": "하위 채널 만들기",
+				"permUPLOAD_FILES": "파일 업로드",
+				"permMANAGE_FILES": "파일 관리",
+				"permPIN_MESSAGES": "고정된 메시지",
+				"permADMIN": "관리자",
+				"permBYPASS_RATE_LIMIT": "메시지 속도 제한 우회"
+			},
+			"auditLog": {
+				"title": "그룹 감사 로그",
+				"hint": "현재 채택 거버넌스 분기의 구성원, 역할, 채널 및 중재 이벤트를 표시합니다. 관리자에게만 표시됩니다.",
+				"filterLabel": "이벤트 유형",
+				"refresh": "새로 고치다",
+				"filterAll": "모든 유형",
+				"loadMore": "이전 기록 더 불러오기",
+				"empty": "아직 감사 기록이 없습니다.",
+				"loadFailed": "감사 로그를 불러오지 못했습니다: ${error}",
+				"colTime": "시간",
+				"colType": "유형",
+				"colActor": "연산자",
+				"colSummary": "요약",
+				"type": {
+					"member_join": "멤버 가입",
+					"member_leave": "멤버 탈퇴",
+					"member_kick": "킥 멤버",
+					"member_ban": "멤버 차단",
+					"member_unban": "차단 해제",
+					"role_create": "역할 만들기",
+					"role_update": "역할 업데이트",
+					"role_delete": "역할 삭제",
+					"role_assign": "역할 할당",
+					"role_revoke": "역할 취소",
+					"channel_create": "채널 만들기",
+					"channel_update": "채널 업데이트",
+					"channel_delete": "채널 삭제",
+					"channel_permissions_update": "채널 권한",
+					"group_meta_update": "그룹 메시지",
+					"group_settings_update": "그룹 설정",
+					"reputation_slash": "평판 공제",
+					"reputation_reset": "평판 재설정",
+					"file_master_key_rotate": "그룹 파일 마스터 키 순환",
+					"peer_invite": "P2P 초대",
+					"dag_tip_merge": "DAG 포크 병합",
+					"message_delete": "메시지 삭제",
+					"pin_message": "고정된 메시지",
+					"unpin_message": "고정 해제",
+					"file_upload": "파일 업로드",
+					"file_delete": "파일 삭제"
+				},
+				"event": {
+					"member_join": "${target} 멤버이 그룹에 가입했습니다.",
+					"member_leave": "멤버이 그룹을 탈퇴함",
+					"member_kick": "멤버 ${target} 추방",
+					"member_ban": "멤버 ${target} 차단",
+					"member_unban": "${target} 차단 해제",
+					"role_create": "${roleName} 역할 만들기",
+					"role_update": "${roleName} 역할 업데이트",
+					"role_delete": "${roleName} 역할 삭제",
+					"role_assign": "${target}에게 ${roleName} 역할 할당",
+					"role_revoke": "${target}에서 ${roleName} 역할 취소",
+					"channel_create": "${channelName} 채널 만들기",
+					"channel_update": "${channelName} 채널 업데이트",
+					"channel_delete": "${channelName} 채널 삭제",
+					"channel_permissions_update": "${channelName} 채널에 대한 권한 업데이트",
+					"group_meta_update": "그룹 메시지 업데이트: ${name}",
+					"group_settings_update": "그룹 설정 업데이트",
+					"reputation_slash": "${target}의 평판(${claim}) 차감",
+					"reputation_reset": "${target}의 평판 재설정",
+					"file_master_key_rotate": "그룹 파일 마스터 키 순환",
+					"channel_key_rotate": "채널 ${channelName} E2E 키 순환",
+					"peer_invite": "피어 노드 ${target} 초대",
+					"dag_tip_merge": "DAG 거버넌스 포크 병합",
+					"message_delete": "${targetEventId} 메시지 삭제",
+					"pin_message": "${channelName}에 ${targetEventId} 고정",
+					"unpin_message": "${channelName}에서 ${targetEventId} 고정 해제",
+					"file_upload": "${fileName} 파일 업로드",
+					"file_delete": "${fileName} 파일 삭제"
+				}
+			},
+			"messagePrefixSticker": "라벨",
+			"membersEmpty": "(아직 멤버이 없습니다)",
+			"channelEncryptionGsh": "채널 키 종단 간 암호화(CKG)",
+			"ownerSuccession": "후임투표 개시",
+			"ownerSuccessionDescription": "그룹의 최고 관리 권한(MANAGE_ADMINS)을 지정된 구성원에게 이전합니다. 관리자만 작업할 수 있습니다.",
+			"ownerSuccessionAutoSignHint": "제출하면 이 기기가 개인 키 입력 없이 해당 그룹의 서명 시드에 자동으로 서명합니다. 관리자가 여러 명인 그룹에서는 과반수의 관리자가 각자 이 기기에서 동일한 표(동일한 ballotId와 후보)를 제출해야 합니다.",
+			"ownerSuccessionCandidateLabel": "후속 공개 키 해시",
+			"ownerSuccessionSelfButton": "자신을 추천하세요",
+			"ownerSuccessionSubmitted": "내 서명이 후임 투표용지에 기록되었습니다.",
+			"ownerSuccessionNeedHash": "후임자의 공개 키 해시를 입력하세요.",
+			"ownerSuccessionFailed": "후임 투표 제출 실패",
+			"e2eDecryptUnavailable": "메시지가 암호화되어 현재 장치에서 해독할 수 없습니다.",
+			"contentRefBodyPending": "외부 링크 텍스트(content_ref, 아직 확인을 위해 가져오지 않음)",
+			"contentRefHashMismatch": "외부 링크 텍스트가 저장소 확인 내용과 일치하지 않습니다(해시가 일치하지 않음).",
+			"streamGenerationFailed": "AI 생성 시간이 초과되어 완료되지 않았으며 업데이트가 중지되었습니다.",
+			"convergentEncryptWarn": "그룹 파일은 수렴 암호화를 사용합니다. 공격자가 파일 평문을 알고 있으면 키를 유도해 해당 암호문 블록을 복호화할 수 있습니다. 고도로 민감하고 유일한 비공개 문서를 그룹 암호화만으로 보호하지 마세요.",
+			"settingsStreamGeneratingIdle": "AI 생성 자리표시자 유휴 시간 제한(밀리초)",
+			"settingsAutoReplyFrequency": "역할 응답 자동 트리거(N개의 사용자 메시지마다 0은 꺼짐)",
+			"settingsAutoReplyFrequencyHint": "0은 꺼짐을 의미합니다. @멘션은 여전히 ​​즉시 실행됩니다.",
+			"settingsMaxDagPayload": "단일 이벤트의 DAG 최대 바이트 수",
+			"settingsBatterySaver": "절전 모드(연합 연결 풀·릴레이 축소)",
+			"settingsDiscoveryPublic": "연합 검색에서 이 그룹을 노출합니다(그룹 키에 가입하지 않음).",
+			"settingsDiscoveryTitle": "검색 목록 제목(선택 사항)",
+			"settingsDiscoveryBlurb": "검색 소개(선택 사항)",
+			"settingsTrustedPeers": "신뢰 이웃 슬롯(Top-K)",
+			"settingsExplorePeers": "이웃 슬롯 탐색",
+			"settingsMaxPeers": "연합 연결 상한",
+			"settingsGossipTtl": "가십 전달 TTL(홉 수)",
+			"settingsWantIdsBudget": "단일 wantIds 예산",
+			"settingsHlcMaxSkew": "HLC 미래 오프셋 상한(밀리초)",
+			"dagForkDetected": "병합되지 않은 DAG 포크가 감지되었습니다.",
+			"mergeDagTips": "DAG 포크 병합",
+			"mergeDagTipsOk": "포크 병합",
+			"mergeDagTipsFailed": "병합 포크 실패",
+			"settingsStreamingSfu": "스트리밍 SFU WebSocket 주소(선택 사항)",
+			"settingsMessageRetention": "메시지 텍스트가 자동으로 삭제됩니다.",
+			"settingsMessageRetentionForever": "영구 보존(압축된 DAG 이벤트만 해당)",
+			"settingsMessageRetention30d": "30일 전",
+			"settingsMessageRetention90d": "90일 전",
+			"settingsMessageRetention1y": "1년 전",
+			"settingsMessageRetentionHint": "표시된 기록은 기본적으로 자동 삭제되지 않습니다. 활성화되면 로컬 메시지 핫 캐시만 정리됩니다. 최종 메시지는 콜드 아카이브와 체크포인트에 보관됩니다.",
+			"settingsHotLatest": "핫존 유지(채널당 최신 게시물 수)",
+			"settingsPinContext": "상위 이웃(±N 이웃)",
+			"settingsHotWindowHint": "핫존 게시물은 체크포인트 및 메시지 캐시에 보관됩니다. 나머지 게시물은 구체화 후 월간 콜드 아카이브에 기록된 다음 DAG 프로세스 이벤트에서 축소됩니다.",
+			"settingsArchiveTitle": "스토리지 및 콜드 아카이빙",
+			"settingsArchiveHint": "콜드 아카이브는 이 기기의 평문 게시물 최종 상태입니다(월별 파일). 아카이브를 삭제해도 DAG는 바뀌지 않습니다. 기록이 빠져 있으면 연합 이웃에서 가져올 수 있습니다.",
+			"settingsArchiveFilesTitle": "보관된 파일",
+			"settingsArchiveEmpty": "아직 콜드 아카이브 파일이 없습니다.",
+			"settingsArchiveColChannel": "채널",
+			"settingsArchiveColMonth": "월",
+			"settingsArchiveColSize": "크기",
+			"settingsArchiveDeleteBefore": "이번 달 이전 삭제",
+			"settingsArchiveDeleteButton": "콜드 아카이브 삭제",
+			"settingsArchiveDeleteHint": "로컬 archive/*.jsonl만 삭제됩니다. 핫스팟 및 DAG 앵커는 영향을 받지 않습니다.",
+			"settingsArchiveAdminOnly": "이 시스템에는 아직 이 그룹에 대한 콜드 아카이브 데이터가 없습니다.",
+			"settingsArchiveDeleteInvalidMonth": "올바른 월(YYYY-MM)을 선택하세요.",
+			"settingsArchiveDeleteConfirm": "{월}보다 오래된 모든 콜드 아카이브 파일을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+			"settingsArchiveDeleteOk": "{files} 보관 파일이 삭제되었습니다.",
+			"settingsArchiveDeleteFailed": "아카이브 삭제 실패: {오류}",
+			"settingsEventRetentionDepth": "DAG 이벤트 보존 깊이",
+			"settingsEventRetentionMs": "DAG 이벤트 보존 시간",
+			"settingsCompactTriggerDepth": "물리화 압축 트리거 깊이",
+			"settingsMessageRateLimit": "메시지 속도 제한(메시지/분/항목)",
+			"settingsAutoReplyTokenBucket": "자동 응답 압력 스케줄링(토큰 버킷)",
+			"settingsAutoReplyTokenBucketHint": "활성화된 후 각 캐릭터는 채널별로 토큰 버킷을 유지합니다. 버킷이 비어 있으면 onMessage가 일시적으로 트리거되지 않으므로 피크 기간 동안 지속적인 화면 새로 고침이 금지될 수 있습니다.",
+			"settingsIceServers": "ICE/TURN 서버",
+			"settingsIceServersAdd": "서버 추가",
+			"settingsIceServersHint": "WebRTC와 연합 P2P NAT 통과에 쓰입니다. TURN 자격 증명은 이 기기에만 저장되며 연합으로 브로드캐스트되지 않습니다.",
+			"settingsFileCeMode": "파일 암호화 모드",
+			"settingsFileCeModeConvergent": "수렴 암호화(중복 제거 가능)",
+			"settingsFileCeModeRandom": "높은 개인 메시지 보호 모드(임의 키, 중복 제거 없음)",
+			"settingsFileCeModeHint": "고프라이버시 모드는 각 청크에 무작위 contentKey를 사용하고 ceMode=random으로 표시합니다. 평문 추측 위험은 줄지만 저장 공간과 대역폭 사용량이 늘어납니다.",
+			"channelsTitle": "채널",
+			"createGroup": "새 그룹 만들기",
+			"members": "멤버",
+			"membersHint": "멤버 목록은 Checkpoint(자리 표시자)에 의해 동기화됩니다.",
+			"send": "보내기",
+			"streamTest": "미디어 장치 테스트",
+			"messageInput": {
+				"placeholder": "그룹 메시지... Ctrl+Enter 보내기"
+			},
+			"loadError": "그룹을 불러오지 못했습니다.",
+			"remoteNodeTimeout": "원격 노드가 응답하지 않습니다. 잠시 후 다시 시도해 주세요.",
+			"remoteUnavailable": "원격 구성 요소를 사용할 수 없거나 RPC를 라우팅할 수 없습니다.",
+			"messagesLoadFailed": "메시지를 불러오지 못했습니다.",
+			"sendFailed": "전송 실패",
+			"chatNotLoaded": "메인 채팅이 불러와지지 않았습니다. 메인 화면에서 이 그룹과 같은 ID의 대화를 연 뒤 다시 시도하세요.",
+			"createFailed": "그룹을 생성하지 못했습니다.",
+			"newGroupName": "새 그룹",
+			"streamOk": "미디어 스트림 획득(중지됨, 방송되지 않음)",
+			"remoteUnsafe": "이 메시지는 원격 위치에서 왔으며 작성자는 로컬 신뢰 목록에 없습니다. 서식 있는 텍스트 렌더링이 비활성화되었습니다.",
+			"trustAuthor": {
+				"textContent": "신뢰",
+				"title": "이 작성자 신뢰하기(위험한 HTML 허용)"
+			},
+			"trustAuthorOk": "이 작성자는 신뢰할 수 있으며 서식 있는 텍스트를 렌더링합니다.",
+			"voteCast": "투표",
+			"listEmpty": "(아직 탐색 항목이 없습니다. 관리자는 API를 통해 목록 항목을 업데이트할 수 있습니다.)",
+			"listChannelReadonly": {
+				"placeholder": "목록 채널에는 내비게이션 카드만 표시되고 메시지는 보내지 않습니다."
+			},
+			"streamNoEmbed": {
+				"textContent": "스트리밍 주소는 임베드 가능한 https:// 페이지여야 합니다. 그렇지 않으면 그룹 설정을 먼저 구성하고 새로고침하여 시청 토큰을 받으세요."
+			},
+			"streamNoSfu": {
+				"textContent": "StreamingSfuWss가 구성되지 않았습니다. 관리자는 그룹 설정에서 LiveKit/mediasoup 시청 주소를 입력할 수 있습니다."
+			},
+			"messageDeleted": "메시지가 삭제되었습니다.",
+			"messageDeletedBracket": "[삭제된 메시지]",
+			"messageWithAttachments": "${text}(첨부파일 ${n}개)",
+			"voteBlockHeading": "[${prefix}] ${question}",
+			"voteBlockHeadingTagged": "[투표] ${question}",
+			"voteCastLine": "[${prefix}] 투표: ${choice}",
+			"voteCastLineTagged": "[투표] 투표: ${choice}",
+			"voteOptionsPreview": "[${prefix}] ${options}",
+			"voteOptionsPreviewTagged": "[투표] ${options}",
+			"voteDeadlineLineOpen": "마감일: ${date}",
+			"voteDeadlineLineClosed": "종료: ${date} [종료]",
+			"pinMessageLine": "[맨 위로] ${targetId}",
+			"unpinMessageLine": "[고정 해제] ${targetId}",
+			"stickerPrefixLine": "[${label}]",
+			"stickerPrefixLineTagged": "[라벨]",
+			"feedbackDagLine": "[${label}]",
+			"feedbackDagLineWithNote": "[${label}] ${note}",
+			"feedbackPreviewLine": "${tag}${sep}${note}",
+			"feedbackPreviewTaggedNote": "${tag} ${note}",
+			"mentionHandle": "@${name}",
+			"mentionInsert": "@${name}",
+			"feedbackUp": "칭찬",
+			"feedbackDown": "밟다",
+			"attachmentsHint": "(첨부파일 ${n}개)",
+			"pinMessage": "상단에 고정",
+			"unpinMessage": "고정 해제",
+			"pinThisMessage": "이 기사를 DAG에 작성하고 상단에 고정하세요.",
+			"pinAction": {
+				"textContent": "상단에 고정",
+				"title": "이 기사를 DAG에 작성하고 상단에 고정하세요."
+			},
+			"unpinAction": {
+				"textContent": "고정 해제",
+				"title": "고정 해제"
+			},
+			"pinOk": "녹화 및 고정됨",
+			"unpinOk": "고정 해제됨",
+			"pinFailed": "고정 실패",
+			"menuCopyText": "텍스트 복사",
+			"menuExportHtml": "HTML로 내보내기",
+			"menuCopyId": "메시지 ID 복사",
+			"copied": "복사됨",
+			"addBookmark": {
+				"title": "현재 채널을 북마크에 추가하세요"
+			},
+			"bookmarkExists": "북마크가 이미 존재합니다.",
+			"bookmarkAdded": "북마크됨",
+			"bookmarkSaveFailed": "북마크를 저장하지 못했습니다.",
+			"remoteTyping": "${name}님이 입력 중입니다...",
+			"remoteTypingTwo": "${name1}, ${name2} 입력 중...",
+			"remoteTypingMany": "${name}님 외 ${count}명이 입력 중입니다…",
+			"mentionEmpty": "(일치하는 멤버 없음)",
+			"localAiLabel": "기본 역할:",
+			"forceTriggerOne": {
+				"title": "${name} 트리거를 강제로 말하게 함"
+			},
+			"forceTriggerAllLocal": "모두 트리거",
+			"forceTriggerAllLocalTitle": {
+				"title": "모든 로컬 캐릭터가 말하도록 강제"
+			},
+			"messageRefAnchor": "인용 메시지: ${id}",
+			"settingsFedPartition": "연방 부서 수",
+			"settingsRtcBudget": "RTC 연결 예산",
+			"settingsRtcJoinRate": "RTC는 분당 한도를 추가했습니다.",
+			"settingsFedTuningHint": "DAG 그룹 설정을 작성합니다. 수정 후에는 연합방을 다시 바인딩하는 것이 좋습니다.",
+			"settingsAutoChannelGc": "무음 채널 자동 삭제",
+			"settingsAutoChannelGcHint": "30일 이상 침묵하여 접속이 불가능한 고립된 섬 채널은 최대 2개까지 구현 시 삭제됩니다.",
+			"quoteHeader": "> **${sender}**${sep}${time}",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}",
+			"quoteHeaderWithoutTime": "> **${sender}**",
+			"stopGenerating": "생성 중지",
+			"messageAborted": "중단된",
+			"avStart": "미디어 시작",
+			"avMute": "음소거",
+			"avSwap": "홈 화면",
+			"avStop": "중지",
+			"avNeedStreamChannel": "「스트리밍 미디어」 유형 채널에서 오디오·영상을 사용해 주세요.",
+			"reactionAdd": {
+				"title": "응답 추가"
+			},
+			"reactionRemove": {
+				"title": "철회 응답"
+			},
+			"addReaction": {
+				"title": "이모티콘 추가"
+			},
+			"reactionPrompt": "이모티콘 입력(유니코드)",
+			"channelTypeLabel": "채널 유형",
+			"channelTypeText": "채팅 채널",
+			"channelTypeList": "목록/포럼 채널",
+			"channelTypeStreaming": "스트리밍 채널",
+			"convertToText": "채팅 채널로 전환",
+			"convertToList": "목록/포럼 채널로 전환",
+			"setAsDefault": "그룹 기본 채널로 설정",
+			"isDefault": "현재 기본값",
+			"defaultChannelSet": "기본 채널로 설정",
+			"defaultChannelSetFailed": "기본 채널 설정에 실패했습니다.",
+			"channelUpdateFailed": "채널 업데이트 실패",
+			"voteCreate": "투표 시작",
+			"votePromptDeadline": "마감일(시간 제한이 없는 경우 비워두세요. 형식은 2026-01-01 23:59)",
+			"voteTooFewOptions": "옵션이 2개 이상 필요합니다.",
+			"voteCreateFailed": "설문조사를 생성하지 못했습니다.",
+			"voteFor": "${option} 투자",
+			"voteDeadline": "사선",
+			"voteEnded": "종료됨",
+			"voteTotal": "총 ${n}표",
+			"record": "녹음",
+			"fileDownload": {
+				"title": "파일 다운로드"
+			},
+			"clickToLoad": "클릭하여 불러오기",
+			"unknownFile": "알 수 없는 파일",
+			"blockSender": {
+				"title": "발신자 차단"
+			},
+			"blockConfirm": "\"${sender}\"을(를) 차단하시겠습니까?",
+			"blockAdded": "막힌",
+			"saveSticker": {
+				"title": "스티커/이모티콘을 즐겨찾기에 저장"
+			},
+			"stickerSaved": "스티커 라이브러리에 저장됨",
+			"stickerDefaultName": "라벨",
+			"deleteMessage": {
+				"title": "메시지 삭제"
+			},
+			"deleteConfirm": "이 메시지를 삭제하시겠습니까?",
+			"editMessage": {
+				"title": "메시지 편집"
+			},
+			"saveEdit": "저장",
+			"cancelEdit": "취소",
+			"editingMessage": "편집",
+			"editConfirm": "확인(Ctrl+Enter)",
+			"editCancel": "취소(Esc)",
+			"editHint": "Ctrl+Enter 확인 · Esc 취소",
+			"editedLabel": "(수정됨)",
+			"editEmptyText": "메시지 내용은 비워둘 수 없습니다.",
+			"createGroupTitle": "새 그룹 만들기",
+			"groupNameLabel": "그룹 이름",
+			"groupName": {
+				"placeholder": "내 그룹"
+			},
+			"defaultChannelLabel": "기본 채널",
+			"defaultChannel": {
+				"placeholder": "일반적인"
+			},
+			"createGroupFailed": "그룹을 생성하지 못했습니다.",
+			"createChannelFailed": "채널을 생성하지 못했습니다.",
+			"moreActions": {
+				"title": "추가 작업"
+			},
+			"thread": "하위 스레드",
+			"threadBack": "돌아가기",
+			"threadBreadcrumbRootTitle": "경로 시작점으로 이동(첫 번째 수준)",
+			"threadBreadcrumbMiddleTitle": "중간 레이어를 확장하고 점프하려는 레벨을 선택하세요.",
+			"threadBreadcrumbMiddleSummary": "중간 ${count} 레이어",
+			"menuShareExternal": "외부 링크로 공유",
+			"shareExternalOk": "업로드했고 링크를 복사했습니다",
+			"shareExternalFailed": "업로드에 실패했습니다. 네트워크를 확인하세요."
+		},
+		"hub": {
+			"title": "채팅",
+			"redirectToHub": "채팅 허브에 들어가는 중…",
+			"homeTooltip": {
+				"title": "홈페이지로 돌아가기",
+				"tip": "홈페이지로 돌아가기"
+			},
+			"charsTooltip": {
+				"title": "역할",
+				"tip": "역할"
+			},
+			"friendsTooltip": {
+				"title": "친구",
+				"tip": "친구"
+			},
+			"inboxTooltip": {
+				"title": "받은 편지함",
+				"tip": "그룹 간 받은 편지함"
+			},
+			"inbox": {
+				"title": "받은 편지함",
+				"filtersLabel": "받은 편지함 메시지 필터링",
+				"tabMention": "언급",
+				"tabMessage": "모든 뉴스",
+				"tabCare": "특별한 관심",
+				"tabVoteClosed": "투표 종료",
+				"emptyMentionTitle": "아직 아무도 나를 언급하지 않았습니다",
+				"emptyMentionDescription": "그룹 채팅에서 다른 멤버이 나를 @하면 메시지가 여기에 표시됩니다.",
+				"emptyMessageTitle": "받은편지함이 비어 있습니다.",
+				"emptyMessageDescription": "다양한 그룹 채팅 및 채널의 메시지 업데이트가 여기에 표시됩니다.",
+				"emptyCareTitle": "특별 관심 사항: 아직 소식이 없습니다.",
+				"emptyCareDescription": "특히 관심 있는 멤버으로부터 새 메시지가 전송되면 여기에서 최대한 빨리 확인할 수 있습니다.",
+				"emptyVoteTitle": "마감된 설문조사 없음",
+				"emptyVoteDescription": "참여 투표가 종료되면 결과가 여기에 요약됩니다.",
+				"rowLabel": {
+					"aria-label": "${author}님이 ${group}의 ${channel}에서 다음과 같이 말했습니다: ${preview}"
+				},
+				"sidebarHint": "@ 모든 그룹에서 메시지가 오른쪽 목록에 표시됩니다.",
+				"badgeFetchFailed": "읽지 않은 배지 새로고침 실패: ${error}",
+				"loadFailed": "받은 편지함을 불러오지 못했습니다: ${error}",
+				"markSeenFailed": "받은 편지함 읽기 상태 업데이트 실패: ${error}",
+				"jumpFailed": "이 메시지를 열 수 없습니다: ${error}"
+			},
+			"notifyPrefs": {
+				"title": "알림 설정",
+				"mode": "알림 모드",
+				"modeAll": "모든 뉴스",
+				"modeMentions": "@ 및 멘션만 가능",
+				"modeNothing": "예고 없이",
+				"suppressEveryone": "@everyone 및 @here 무시",
+				"suppressRoles": "역할 그룹 @ 무시",
+				"mute": "음소거",
+				"muteOff": "폐쇄",
+				"mute1h": "1시간",
+				"mute8h": "8시간",
+				"muteForever": "수동으로 켜질 때까지",
+				"saved": "알림 설정이 저장되었습니다."
+			},
+			"voteClosed": "종료됨",
+			"discoveryTooltip": {
+				"title": "그룹 검색",
+				"tip": "그룹 검색"
+			},
+			"prefsTooltip": {
+				"title": "설정",
+				"tip": "번역 및 통합 P2P 설정"
+			},
+			"prefsSubtitle": "번역 및 연합 연결",
+			"federationTooltip": {
+				"title": "연합 P2P 설정",
+				"tip": "연합 P2P 설정"
+			},
+			"federationTitle": "연합 P2P 설정",
+			"federationSubtitle": "교차 장치 연결을 제어합니다. 대부분의 경우 기본값을 그대로 둡니다.",
+			"federationLoadFailed": "불러오기 실패: ${error}",
+			"fedConnectionTitle": "연결하고 발견하세요",
+			"discoveryRefresh": "검색 목록 새로 고침",
+			"fedRelayUrlsLabel": "네트워크 릴레이 주소",
+			"fedRelayUrlsTip": "장치가 인터넷에서 서로를 발견하도록 돕습니다. 한 줄에 하나의 wss:// 주소를 입력하세요. 기본 릴레이를 사용하려면 비워 두세요.",
+			"fedBatterySaverLabel": "저전력 모드",
+			"fedBatterySaverTip": "백그라운드 연결 수와 네트워크 활동을 줄이면 메시지 동기화가 약간 느려질 수 있습니다.",
+			"fedAdvancedTitle": "고급 설정",
+			"fedAdvancedDescription": "버그 수정, 평판 관리 및 수동 링크 발행",
+			"fedGroupRecoveryTitle": "그룹 연결 수정",
+			"fedGroupRecoveryTip": "초대가 유출되었거나 새 기기에서 기록을 동기화할 수 없는 경우에만 사용됩니다.",
+			"fedRotateRoomSecret": "단체방 비밀번호 순환",
+			"fedRotateRoomSecretConfirm": "순환 후에는 기존 방 비밀번호를 사용한 초대는 접속할 수 없습니다. 계속하시겠습니까?",
+			"fedRotateRoomSecretOk": "방 비밀번호가 교체되었습니다",
+			"fedRepairJoinSnapshot": "이웃에게 그룹 스냅샷 수리 참여 요청",
+			"fedRepairJoinSnapshotOk": "그룹 스냅샷 적용됨(${channels} 채널 기록)",
+			"fedRepairJoinSnapshotFailed": "그룹 스냅샷 복구 실패: ${error}",
+			"fedRepTitle": "이 그룹의 주관적 신뢰성",
+			"fedRepTip": "연합 노드 동작을 기반으로 기본적으로 계산된 연결 선호도 점수는 그룹 구성원의 공개 등급이 아닙니다.",
+			"fedRepEmpty": "(널)",
+			"fedSlashTitle": "평판 페널티",
+			"fedSlashTip": "그룹 이벤트 그래프에 노드에 대한 부정적 평판 선언을 씁니다. 연합 프로토콜을 아는 관리자만 사용하세요.",
+			"fedSlashTargetLabel": "대상 pubKeyHash(64진수)",
+			"fedSlashTarget": {
+				"placeholder": "멤버 공개 키 해시"
+			},
+			"fedSlashClaimLabel": "주장 강도 주장(0-1)",
+			"fedSlashVerifiedLabel": "검증 가능(증명 이벤트 ID 필요)",
+			"fedSlashProofLabel": "proof.eventId(선택사항)",
+			"fedSlashProof": {
+				"placeholder": "64 16진수 이벤트 ID"
+			},
+			"fedSlashSubmitLabel": "게시물 평판_슬래시",
+			"fedResetSubmitLabel": "대상 평판 재설정",
+			"fedSlashNeedHash": "64비트 16진수 pubKeyHash가 필요합니다.",
+			"fedSlashOk": "Reputation_slash가 DAG에 기록됨",
+			"fedResetOk": "명성_재설정이 작성되었습니다.",
+			"fedDmLinkTitle": "수동으로 친구 링크 발급",
+			"fedDmLinkTip": "기본 ID 키를 사용한 서명이 필요합니다. 개인 키는 이 페이지의 로컬 서비스에만 제출되며 다른 노드로 전송되지 않습니다.",
+			"fedDmLinkDescription": "디버깅 또는 수동 ID 마이그레이션에 적합합니다. 매일 친구를 추가할 때 이 필드를 채울 필요가 없습니다.",
+			"fedDmPubKeyLabel": "공개 키 16진수(64)",
+			"fedDmSecretLabel": "개인 키 시드 16진수(64)",
+			"fedDmNodeLabel": "선택적 노드 URL",
+			"fedDmInvalidateTitle": "이전 추천 링크가 만료되도록 허용",
+			"fedDmInvalidateDescription": "실행 후에는 이전에 발행된 모든 친구 추가 링크는 즉시 무효화되며 취소할 수 없습니다.",
+			"fedDmRotateLabel": "이전 링크 무효화",
+			"fedDmRotateConfirm": "이전에 발행된 모든 친구 추가 링크는 즉시 무효화되며 복원할 수 없습니다. 계속하시겠습니까?",
+			"fedDmIssueLabel": "DM 링크 발급",
+			"fedDmNeedPubKey": "64개의 16진수 공개 키가 필요합니다.",
+			"fedDmNeedSecretKey": "64개의 16진수 개인 키 시드가 필요합니다.",
+			"fedDmIssued": "DM 링크가 서명되어 클립보드에 복사되었습니다.",
+			"fedNonceRotated": "nonce 회전됨(${nonce}…)",
+			"fedSaved": "저장됨",
+			"addServerTooltip": {
+				"title": "그룹 만들기 또는 가입",
+				"tip": "그룹 만들기 또는 가입"
+			},
+			"pinsTitle": "상단에 고정",
+			"bookmarksTitle": "서표",
+			"pinsButton": {
+				"title": "고정된 메시지"
+			},
+			"bookmarksButton": {
+				"title": "서표"
+			},
+			"search": {
+				"placeholder": "메시지 검색…",
+				"noResults": "결과 없음",
+				"failed": "검색 실패",
+				"scopeGroup": "이 그룹",
+				"scopeAll": "모든 그룹"
+			},
+			"membersTitle": {
+				"title": "멤버"
+			},
+			"backToNav": {
+				"title": "목록으로 돌아가기",
+				"aria-label": "목록으로 돌아가기"
+			},
+			"moreActions": {
+				"title": "더 보기",
+				"aria-label": "추가 작업"
+			},
+			"composerMore": {
+				"title": "더 많은 액세서리",
+				"aria-label": "더 많은 액세서리"
+			},
+			"settingsTitle": {
+				"title": "설정"
+			},
+			"filesTitle": {
+				"title": "그룹 파일"
+			},
+			"filesDrawerTitle": "그룹 파일",
+			"filesLoading": "그룹 파일 불러오는 중…",
+			"filesLoadFailed": "그룹 파일을 불러오지 못했습니다: ${error}",
+			"filesNoGroup": "먼저 그룹을 선택하세요.",
+			"filesNoCabinets": "현재 역할에 액세스할 수 있는 파일 캐비닛이 없습니다.",
+			"filesBindCabinet": "파일 캐비넷 추가",
+			"filesNoChannel": "먼저 메시지를 보낼 수 있는 문자 채널을 입력하세요.",
+			"filesUploadTo": "에 업로드",
+			"filesRootFolder": "루트 디렉터리",
+			"filesNewFolder": "새 폴더 만들기",
+			"filesNewFolderPrompt": "폴더 이름",
+			"filesRename": "이름 바꾸기",
+			"filesRenameFolderPrompt": "\"${name}\" 폴더 이름을 다음으로 변경합니다.",
+			"filesDeleteFolderConfirm": "이 폴더를 삭제하시겠습니까? 폴더에 있는 파일은 자동으로 삭제되지 않습니다.",
+			"filesUpload": "업로드",
+			"filesDownload": "다운로드",
+			"filesDelete": "삭제",
+			"filesDeleteConfirm": "이 파일을 삭제하시겠습니까?",
+			"filesFoldersTitle": "접는 사람",
+			"filesListTitle": "문서",
+			"filesEmpty": "현재 이 디렉터리에는 파일이 없습니다.",
+			"filesNoFolders": "아직 하위 폴더가 없습니다.",
+			"uploadTitle": {
+				"title": "파일 업로드"
+			},
+			"emojiTitle": {
+				"title": "표정"
+			},
+			"voteTitle": {
+				"title": "투표 시작"
+			},
+			"shareGroupTitle": {
+				"title": "그룹 링크 공유"
+			},
+			"shareGroupOk": "공유 그룹 초대 카드",
+			"messageActionFailed": "작업 실패: ${error}",
+			"inviteJoinButton": "그룹에 가입",
+			"inviteLinkNeedsRoomSecret": "이 그룹은 아직 통합 동기화를 활성화하지 않았습니다. 공유하기 전에 초대 링크를 다시 생성하세요.",
+			"inviteCardMembers": "${count}명의 멤버",
+			"syncFailed": "연합 동기화 실패: ${error}",
+			"syncRateLimited": "연방 동기화 속도 제한이 진행 중입니다. 나중에 다시 시도해 주세요.",
+			"syncIncomplete": "${missing}/${total} 이벤트가 동기화되지 않은 상태로 유지됩니다.",
+			"syncNoPeers": "연합 이웃에 연결되지 않아 기록 메시지를 아직 동기화할 수 없습니다. 전체 초대 링크를 쓰고 나중에 다시 시도해 주세요.",
+			"attachmentLoadFailed": "첨부파일을 불러오지 못했습니다.",
+			"messageEditUpload": "첨부파일 업로드",
+			"timeToday": "오늘 ${time}",
+			"timeYesterday": "어제 ${time}",
+			"stickerTitle": {
+				"title": "라벨"
+			},
+			"sendTitle": {
+				"title": "보내기(Ctrl+Enter)"
+			},
+			"stopGenerateTitle": {
+				"title": "생성 중지"
+			},
+			"charTyping": "입력 중…",
+			"messageActionPrev": {
+				"title": "이전 타임라인"
+			},
+			"messageActionNext": {
+				"title": "다음 타임라인"
+			},
+			"messageActionRegen": {
+				"title": "재생성"
+			},
+			"messageActionEdit": {
+				"title": "메시지 편집"
+			},
+			"messageActionFeedbackUp": {
+				"title": "좋아요"
+			},
+			"messageActionFeedbackDown": {
+				"title": "싫어요 클릭"
+			},
+			"messageActionDelete": {
+				"title": "메시지 삭제"
+			},
+			"confirmDeleteLong": "메시지가 너무 깁니다. 삭제하시겠습니까?",
+			"messageActionCopyHtml": {
+				"title": "HTML 복사"
+			},
+			"forceReply": "강제 답장",
+			"removeChar": "캐릭터 삭제",
+			"loadMore": "이전 메시지 불러오는 중…",
+			"charChatsTitle": "${name}님과의 과거 대화",
+			"newGroupWith": "+ ${name}님과 새 대화 만들기",
+			"messageActionBookmark": {
+				"title": "서표"
+			},
+			"messageActionPin": {
+				"title": "상단에 고정"
+			},
+			"messageActionUnpin": {
+				"title": "고정 해제"
+			},
+			"blockAuthor": {
+				"title": "이 작성자 차단"
+			},
+			"pinUnpinSidebar": {
+				"title": "고정 해제"
+			},
+			"meAuthor": "나",
+			"messageEditSave": "저장",
+			"messageEditCancel": "취소",
+			"feedbackReasonPrompt": "비승인 이유(선택사항)",
+			"feedbackReasonInput": {
+				"placeholder": "비승인 이유(선택사항)"
+			},
+			"messageFeedbackSubmit": "피드백 제출",
+			"stickersPanelTitle": "라벨",
+			"stickersManage": "스티커 관리 →",
+			"stickersLoading": "불러오는 중…",
+			"recentEmojiTab": {
+				"title": "일반적으로 사용되는"
+			},
+			"recentEmojisEmpty": "전송된 이모티콘은 사용 횟수에 따라 여기에 표시됩니다.",
+			"currentGroupEmojiTab": {
+				"title": "현재 그룹 이모티콘"
+			},
+			"groupEmojiTab": {
+				"title": "그룹"
+			},
+			"groupEmojisEmpty": "현재 그룹 이모티콘이 없습니다. 그룹 설정에서 업로드할 수 있습니다.",
+			"groupEmojisLoadFailed": "그룹 이모티콘을 불러오지 못했습니다.",
+			"profileLinkTitle": {
+				"title": "프로필",
+				"textContent": "프로필"
+			},
+			"userLoading": "불러오는 중…",
+			"status": {
+				"online": "온라인",
+				"idle": "휴식",
+				"dnd": "방해하지 마세요",
+				"invisible": "몰래 ",
+				"offline": "오프라인"
+			},
+			"changeStatusTitle": "스위치 상태",
+			"aboutSection": "정보",
+			"bioEmpty": "이 사용자는 아직 프로필이 없습니다.",
+			"statusOffline": {
+				"title": "오프라인",
+				"textContent": "오프라인"
+			},
+			"statusOnline": {
+				"title": "온라인",
+				"textContent": "온라인"
+			},
+			"statusIdle": {
+				"title": "나가기",
+				"textContent": "나가기"
+			},
+			"statusDnd": {
+				"title": "방해하지 마세요",
+				"textContent": "방해하지 마세요"
+			},
+			"banners": {
+				"gshBuffer": "키 순환 후 복호화 대기 중인 메시지 ${total}개가 있습니다.",
+				"plaintextSidecar": "이 채널은 요청 시 동기화됩니다. 로컬 메시지 사이드카는 콘텐츠를 일반 텍스트로 캐시합니다.",
+				"quarantine": "시계 오차로 격리 구역에 임시 보관된 연합 이벤트 ${count}건이 있으며, 시스템 시간이 맞으면 자동으로 재생됩니다.",
+				"mailboxPending": "오프라인 편지함에 배달 대기 중인 메시지 ${count}개가 있습니다.",
+				"syncing": "연방 이웃과 동기화…",
+				"archiveCoverageIncomplete": "일부 달의 콜드 아카이브는 아직 연합에서 동기화되지 않았습니다.",
+				"archiveSyncButton": "동기식 아카이빙",
+				"forkGovernance": "권한 레코드에 포크가 있으며 현재 로컬 보기에 있습니다.",
+				"forkTips": "${count}개의 병합되지 않은 분기가 감지되었습니다. 메시지 순서가 일관되지 않을 수 있습니다.",
+				"forkTipLabel": "DAG 잎",
+				"forkTipScore": "${short} · 평판 ${score}",
+				"applyBranch": "적용 거버넌스 분기",
+				"autoBranch": "평판 자동 선택",
+				"mergeDag": "포크 병합",
+				"splitFork": "새 그룹으로 분할",
+				"blockOpposing": "반대 지점에 접근할 수 없습니다.",
+				"suspectedRemoved": "나는 이 그룹에서 제거되었을 수 있습니다. ${count}개의 알려진 노드에 확인을 요청했지만 모두 거부되었습니다. 지역 역사를 기념하거나 이 단체 사본을 삭제할 수 있습니다.",
+				"suspectedRemovedKeep": "기념품을 가져가세요",
+				"suspectedRemovedLeave": "그룹 삭제"
+			},
+			"blockOpposingConfirm": "현재 선거에 없는 거버넌스 발급자를 차단 목록에 넣고 이 그룹의 연합 릴레이를 거부합니다. 계속할까요?",
+			"blockOpposingOk": "${count}개의 주제가 연결할 수 없는 것으로 표시됨",
+			"blockOpposingFailed": "표시 실패: ${error}",
+			"applyBranchOk": "거버넌스 분기 적용",
+			"applyBranchFailed": "분기 적용 실패: ${error}",
+			"autoBranchOk": "평판 복원 후 자동 선택",
+			"autoBranchFailed": "자동 선택 실패: ${error}",
+			"saveEmoji": {
+				"title": "이모티콘 저장"
+			},
+			"saveEmojiOk": "이모티콘이 데이터베이스에 저장되었습니다",
+			"saveEmojiFailed": "이모티콘 저장 실패: ${error}",
+			"saveSticker": {
+				"title": "스티커 저장"
+			},
+			"saveStickerOk": "스티커가 스티커 라이브러리에 추가되었습니다.",
+			"saveStickerFailed": "스티커 저장 실패: ${error}",
+			"revealRemoteMd": "전문 펼치기",
+			"voteModalTitle": "투표 시작",
+			"voteModalSubmit": "설문조사 만들기",
+			"voteCreateFailed": "설문조사 생성 실패: ${error}",
+			"composer": {
+				"placeholder": "#${channel}로 보내기"
+			},
+			"composerSuspectedRemoved": {
+				"placeholder": "나는 이 그룹에서 삭제되어 더 이상 메시지를 보낼 수 없습니다."
+			},
+			"channelReadonlyList": {
+				"placeholder": "목록 채널 읽기 전용"
+			},
+			"channelReadonlyStream": {
+				"placeholder": "스트리밍 채널 읽기 전용"
+			},
+			"noChannels": "아직 대화가 없습니다.",
+			"noMembers": "아직 멤버이 없습니다.",
+			"noPins": "아직 핀이 없습니다.",
+			"noBookmarks": "아직 북마크가 없습니다.",
+			"adminSection": "관리자",
+			"memberSection": "멤버",
+			"membersDigestOk": "멤버 Merkle 만장일치 · ${root}",
+			"membersDigestOkPaged": "멤버 Merkle 합의(${pages} 페이지) · ${root}",
+			"membersDigestMismatch": "일관성 없는 멤버 다이제스트 · ${root}",
+			"membersDigestPending": "멤버 요약 확인…",
+			"membersDigestFetchFailed": "페이지별로 구성원을 가져오지 못했습니다.",
+			"copyEntityId": "엔터티 ID 복사",
+			"copyEntityIdOk": "엔티티 ID가 복사되었습니다.",
+			"memberJoined": "대화에 참여했습니다.",
+			"remoteBadge": {
+				"textContent": "원격",
+				"title": "연합 원격 작성자"
+			},
+			"trustAuthor": {
+				"textContent": "신뢰",
+				"title": "이 작성자 신뢰하기(위험한 HTML 허용)"
+			},
+			"stickerInline": "라벨",
+			"voteDeadline": "마감일: ${date}",
+			"voteNoOptions": "옵션 없음",
+			"voteTotal": "총 ${total}표",
+			"voteCount": "${count} 티켓 · ${pct}%",
+			"loadGroupFailed": "그룹을 불러오지 못했습니다: ${error}",
+			"groupJoinRequired": "그룹을 열 수 없습니다. 초대 링크나 초대 코드를 사용하여 가입하세요.",
+			"sendFailed": "전송 실패: ${error}",
+			"sendFailedPending": "전송 실패",
+			"markdownRenderFailed": "메시지 렌더링 실패",
+			"retrySend": "다시 시도하세요",
+			"sendImageFailed": "사진 전송 실패: ${error}",
+			"sendStickerFailed": "스티커 전송 실패: ${error}",
+			"voteMinOptions": "옵션이 2개 이상 필요합니다.",
+			"mergeDagOk": "포크 병합",
+			"mergeDagFailed": "병합 실패: ${error}",
+			"forkSplitFailed": "분할 실패: ${error}",
+			"forkSplitPrompt": "새 그룹 이름(비워둘 수 있음)",
+			"forkSplitModalTitle": "새 그룹으로 분할",
+			"forkSplitModalSubmit": "만들다",
+			"typing": "${names}님이 입력 중입니다...",
+			"charsHeader": "역할",
+			"friendsHeader": "친구",
+			"settingsModalTitle": "설정",
+			"modalClose": "폐쇄",
+			"groupTag": "그룹",
+			"groupUnnamed": "이름 없는 그룹 ·${suffix}",
+			"groupHeaderMenu": {
+				"title": "그룹 메뉴: 설정, 초대 등"
+			},
+			"groupDescriptionEmpty": "아직 이 그룹에 대한 프로필이 없습니다.",
+			"serverActionPickerTitle": "그룹",
+			"serverActionPickerSubtitle": "새 그룹을 만들거나 ID로 기존 그룹에 가입하세요.",
+			"serverActionPickerCreate": "그룹 만들기",
+			"serverActionPickerCreateDescription": "처음부터 시작하고 친구를 초대하세요",
+			"serverActionPickerJoin": "그룹에 가입",
+			"serverActionPickerJoinDescription": "그룹 ID 사용",
+			"cancel": "취소",
+			"folderDefault": "접는 사람",
+			"folderRename": "폴더 이름 바꾸기",
+			"folderRenamePrompt": "\"${name}\" 폴더 이름을 다음으로 변경합니다.",
+			"folderCollapse": "폴더 축소",
+			"folderExpand": "폴더 확장",
+			"folderDissolve": "폴더 닫기",
+			"bookmarkLocal": "로컬",
+			"groupsSection": "그룹",
+			"ungrouped": "그룹화되지 않음",
+			"defaultCategory": "대화",
+			"bookmarkFallback": "서표",
+			"bookmarkRemove": {
+				"title": "북마크 삭제",
+				"aria-label": "북마크 삭제"
+			},
+			"loadMessagesFailed": "메시지 불러오기 실패: ${error}",
+			"unreadDivider": "새로운 소식",
+			"noUsername": "사용자 이름을 얻지 못했습니다.",
+			"stickersEmpty": "스티커가 없습니다",
+			"stickersMarketLink": "스티커 광장으로 이동하여 설치하세요.",
+			"stickersLoadFailed": "불러오기 실패: ${error}",
+			"noChars": "아직 역할이 없습니다. 먼저 역할을 설치하세요.",
+			"noFriends": "아직 비공개 채팅이 없습니다.",
+			"friendsEmptyTitle": "새로운 대화를 시작하세요",
+			"friendsEmptyDescription": "로컬 역할이나 다른 노드에서 사용자를 검색하고, 그룹 채팅에서 구성원 프로필 카드를 열어 비공개 메시지를 시작할 수도 있습니다.",
+			"friendsEmptyAction": "역할 또는 사용자 검색",
+			"friendsSearchEmpty": "일치하는 역할 또는 사용자가 없습니다.",
+			"friendsSearchTooShort": "2자 이상 입력해주세요.",
+			"friendsSearchDm": "비공개 메시지 보내기",
+			"friendsSearchChat": "대화 시작",
+			"friendsSearchLocalChar": "지역적 역할",
+			"friendsSearchPin": "별칭으로 설정",
+			"charCount": "${count} 역할",
+			"friendsCount": "${count}명의 친구",
+			"charTag": "역할",
+			"friendsTag": "친구",
+			"backToFriends": "친구에게 돌아가기",
+			"dmTopicsTitle": "주제",
+			"friendsContextNewChat": "새 채팅",
+			"friendsRestartConfirm": "\"${name}\"와의 비공개 채팅이 해제되고 새 대화가 생성됩니다. 확실합니까?",
+			"friendsRestartOk": "새로운 비공개 채팅이 열렸습니다",
+			"friendsRestartFailed": "새 비공개 채팅을 생성하지 못했습니다: ${error}",
+			"charDescriptionEmpty": "해당 캐릭터는 아직 자신을 소개하지 않았습니다.",
+			"charIntro": "소개",
+			"participants": "참가자들",
+			"charTagSolo": "캐릭터 · 1:1대화",
+			"startChatWith": "💬 ${name}님과 채팅을 시작하세요",
+			"loading": "불러오는 중…",
+			"charChatStart": "${name}님과 대화 시작하기",
+			"charChatEmpty": "아직 메시지가 없습니다. 첫 번째 채팅을 시작해 보세요!",
+			"loadCharChatFailed": "메시지를 불러오지 못했습니다.",
+			"createChatFailed": "세션 생성 실패: ${error}",
+			"charChatComposer": {
+				"placeholder": "${name}에게 메시지 보내기(보내려면 Ctrl+Enter)"
+			},
+			"friendChatComposer": {
+				"placeholder": "메시지 보내기(보내려면 Ctrl+Enter)"
+			},
+			"trustOk": "이 작성자는 신뢰할 수 있는 사람입니다.",
+			"trustAuthorDialog": {
+				"title": "이 작성자를 믿으세요",
+				"subtitle": "작성자: ${author}",
+				"warningTitle": "고위험 작업",
+				"warningBody": "신뢰하면 이 작성자의 메시지가 브라우저에서 전체 Markdown(HTML/스크립트 포함)으로 렌더링됩니다. 상대방이 실행 중인 fount 인스턴스에서 악의적 콘텐츠를 구성하면 메시지 열람 시 로컬에 피해를 줄 수 있습니다. 명확히 알고 위험을 감수할 연합 노드만 신뢰하세요.",
+				"durationLabel": "신뢰 기간",
+				"duration3h": "3시간",
+				"duration7d": "7일",
+				"duration1Month": "1개월",
+				"durationForever": "영구적인",
+				"confirmCooldown": "위험을 읽었습니다(${seconds}).",
+				"confirmFirst": "위험을 이해합니다. 계속하세요.",
+				"confirmSecond": "완료하려면 다시 클릭하세요.",
+				"cancel": "취소"
+			},
+			"blockConfirm": "이 사람을 블랙리스트에 추가하시겠습니까? 이 그룹의 연합은 릴레이를 거부할 것입니다.",
+			"blockOk": "막힌",
+			"charChatSettings": "캐릭터 채팅 설정",
+			"charChatSubtitle": "${name}님과의 세션",
+			"sessionInfo": "세션 메시지",
+			"sessionRole": "역할",
+			"sessionId": "세션 ID",
+			"sessionMessages": "메시지 수",
+			"quickActions": "빠른 작동",
+			"advancedSettings": "고급 설정(캐릭터/월드/플러그인)",
+			"advancedSettingsDescription": "새 탭에서 허브에 있는 그룹의 전체 설정을 엽니다.",
+			"dangerZone": "위험지역",
+			"unbindFriendDescription": "바인딩 해제 후 대화는 왼쪽 그룹 목록으로 돌아가며 메시지 기록은 유지됩니다.",
+			"unbindFriend": "바인딩 해제",
+			"unbindFriendConfirm": "${name}님과의 비공개 채팅을 해제하시겠습니까? 대화가 그룹 목록으로 다시 이동됩니다.",
+			"unbindFriendOk": "매여 있지 않은",
+			"unbindFriendFailed": "바인딩 해제 실패: ${error}",
+			"deleteSessionDescription": "이 대화를 삭제하면 모든 메시지가 영구적으로 삭제되며 되돌릴 수 없습니다.",
+			"deleteSession": "세션 삭제",
+			"deleteSessionConfirm": "${name}와의 세션을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+			"sessionDeleted": "대화가 삭제되었습니다.",
+			"sessionDeleteFailed": "삭제 실패: ${error}",
+			"streamTokenFailed": "시청 토큰을 발급할 수 없습니다.",
+			"streamAvJoin": "음성/영상 추가",
+			"streamAvLeave": "나가기",
+			"streamAvMute": "음소거",
+			"streamAvUnmute": "음소거 해제",
+			"streamAvVideo": "카메라 끄기",
+			"streamAvVideoOn": "카메라 켜기",
+			"streamAvYou": "나",
+			"streamAvJoinFailed": "통화를 시작할 수 없습니다: ${error}",
+			"streamAvNoCodecs": "이 브라우저는 WebCodecs를 지원하지 않습니다(Chrome 94+ / Edge 94+ / Firefox 130+ 필요).",
+			"streamAvPeers": "${count}명 온라인",
+			"streamAvPresetThumb": "약칭 64kbps",
+			"streamAvPresetLow": "낮은 품질 200kbps",
+			"streamAvPresetMed": "중간 600kbps",
+			"streamAvPresetHigh": "고품질 1.5Mbps",
+			"callButton": {
+				"title": "통화 시작 또는 참여",
+				"aria-label": "통화 시작 또는 참여"
+			},
+			"callInProgress": "통화 중",
+			"callEnded": "통화가 종료되었습니다",
+			"callJoin": "통화에 참여",
+			"callHangup": "끊다",
+			"callScreenShare": "화면 공유",
+			"callScreenStop": "공유 중지",
+			"callJumpBack": "통화 채널로 돌아가기",
+			"callJoinFailed": "통화에 참여할 수 없음: ${error}",
+			"callScreenFailed": "화면 공유 실패: ${error}",
+			"callStartedAt": "${time}에 시작됨",
+			"callDuration": "기간 ${duration}",
+			"callParticipants": "${n}명",
+			"callPeerCount": "${n}",
+			"callNoParticipants": "아직 참가자가 없습니다.",
+			"listChannelEmpty": "목록이 비어 있습니다.",
+			"listItemUntitled": "이름 없음",
+			"listEditorTitle": "목록 항목 편집(JSON 배열)",
+			"listSaveToDag": "DAG에 저장",
+			"listJsonInvalid": "잘못된 JSON: ${message}",
+			"listSaved": "저장됨",
+			"listSaveFailed": "저장 실패",
+			"streamDefaultName": "스트리밍 미디어",
+			"streamRefreshToken": "시계 토큰 새로 고침",
+			"streamEmbedHttpsRequired": "스트리밍 주소는 임베드 가능한 https:// 페이지여야 합니다. 그렇지 않으면 그룹 설정을 먼저 구성하고 새로고침하여 시청 토큰을 받으세요.",
+			"streamWebRtcHint": "외부 SFU가 구성되지 않았습니다. 이 채널은 그룹 내 WebRTC를 사용합니다(스트리밍SfuWss 필요 없음).",
+			"pinPreviewSticker": "[라벨]",
+			"pinPreviewVote": "[투표] ${question}",
+			"pinPreviewInvite": "[초대] ${groupName}",
+			"reactionRemovePrompt": "누구의 ${emoji}을(를) 제거할까요?\n${candidates}",
+			"ariaDagTip": {
+				"aria-label": "DAG 포크 팁"
+			},
+			"ariaClose": {
+				"aria-label": "폐쇄"
+			},
+			"membersDigestPagesTitle": {
+				"title": "${expected}\n${pages} 페이지"
+			},
+			"discoveryTitle": "그룹 검색",
+			"discoveryEyebrow": "커뮤니티 살펴보기",
+			"discoveryDescription": "연합 네트워크의 공개 그룹을 둘러보고 관심 있는 커뮤니티를 골라 가입하세요.",
+			"discoverySidebarHint": "오른쪽에서 공개 그룹을 찾아보고 가입하세요.",
+			"discoveryEmptyTitle": "아직 공개 그룹을 찾을 수 없습니다.",
+			"discoveryEmpty": "추천 그룹이 없습니다. 연합 동기화를 켜면 이웃에서 발견 목록이 동기화됩니다.",
+			"discoveryNoDescription": "그룹 주인이 아직 프로필을 작성하지 않았습니다.",
+			"discoverySourceCount": "연합 소스 ${count}개",
+			"discoveryJoin": "그룹에 가입",
+			"discoveryOpen": "그룹 열기",
+			"discoveryLoadFailed": "검색 목록을 불러오지 못했습니다: ${message}",
+			"operationFailed": "작업 실패: ${error}",
+			"shareGroupFailed": "그룹 링크 공유 실패: ${error}",
+			"blockAuthorTitle": "이 작성자 차단",
+			"configTitle": "대화 구성",
+			"configSaved": "저장됨",
+			"configSaveFailed": "저장 실패: ${error}",
+			"configLoadFailed": "구성을 불러오지 못했습니다: ${error}",
+			"noActiveChat": "해당 부분을 드래그하기 전에 먼저 세션을 열어주세요",
+			"groupContext": {
+				"manage": "관리 그룹",
+				"notifyPrefs": "알림 설정",
+				"invite": "다른 사람 초대",
+				"inviteCopied": "초대 링크가 클립보드에 복사되었습니다.",
+				"addChar": "역할 추가",
+				"addCharLabel": "역할 선택",
+				"addCharSubmit": "다음에 추가",
+				"noChars": "사용 가능한 역할 없음",
+				"setAlias": "그룹 별칭 설정",
+				"setAliasPrompt": "\"${name}\"에 대한 로컬 별칭을 설정합니다(지우려면 비워 두세요).",
+				"aliasSaved": "그룹 별칭이 업데이트되었습니다.",
+				"leave": "그룹에서 나가기",
+				"leaveConfirm": "정말로 \"${name}\" 그룹에서 탈퇴하시겠습니까? 더 이상 이 그룹의 메시지를 볼 수 없습니다.",
+				"leaveOk": "그룹을 탈퇴했습니다",
+				"leaveBatch": "선택한 그룹 종료(${count}개)",
+				"leaveConfirmBatch": "선택한 ${count}개 그룹에서 나가시겠습니까? 이 기기에는 해당 그룹 데이터가 더 이상 남지 않습니다.",
+				"leaveBatchPending": "${count}개의 그룹이 목록에서 제거되어 백그라운드에서 종료됩니다...",
+				"leaveBatchOk": "${count}개 그룹을 종료했습니다.",
+				"leaveBatchPartial": "${failed} / ${total}개 그룹 나가기 실패, 목록이 새로고침되었습니다"
+			},
+			"replyInline": {
+				"title": "답글"
+			},
+			"replyClear": {
+				"title": "역참조"
+			},
+			"replyInThread": {
+				"title": "하위 스레드에서 응답"
+			},
+			"syncTruncated": "DAG 증분이 가득 차지 않았습니다. 나중에 다시 시도하거나 한도를 늘릴 수 있습니다.",
+			"syncTruncatedHint": "DAG 기록이 너무 깁니다. 나중에 다시 시도하거나 한도를 늘릴 수 있습니다.",
+			"newChannelButton": "새 채널 만들기",
+			"newChannelSuccess": "채널이 생성되었습니다",
+			"newChannelFailed": "채널을 생성하지 못했습니다.",
+			"newChannelTitle": "새 채널 만들기",
+			"channelName": "채널 이름",
+			"channelType": "채널 유형",
+			"channelTypeText": "채팅 채널",
+			"channelTypeList": "목록/포럼 채널",
+			"channelTypeStreaming": "스트리밍 채널",
+			"channelNameInput": {
+				"placeholder": "일반적인"
+			},
+			"localMaterializedView": "현재 로컬 물리화 뷰라 권한·기록이 다른 노드와 다를 수 있습니다.",
+			"convergentEncryptWarn": "그룹 파일은 수렴 암호화를 사용합니다. 공격자가 파일 평문을 알고 있으면 키를 유도해 해당 암호문 블록을 복호화할 수 있습니다. 고도로 민감하고 유일한 비공개 문서를 그룹 암호화만으로 보호하지 마세요.",
+			"votePromptQuestion": "투표 제목",
+			"votePromptOptions": "옵션(2개 이상, 쉼표로 구분)",
+			"voteOptionDefault": "동의, 반대",
+			"votePromptDeadlineHours": "마감일(시간, 공백으로 두기 = 마감일 없음)",
+			"messagePrefixVote": "투표",
+			"threadCreated": "하위 스레드가 생성되었습니다.",
+			"threadCreateFailed": "하위 스레드를 생성하지 못했습니다. 나중에 다시 시도해 주세요.",
+			"threadDrawer": {
+				"aria-label": "하위 스레드"
+			},
+			"threadClose": {
+				"title": "하위 스레드 닫기"
+			},
+			"reputationSlashAlert": "${target} 멤버의 평판이 차감되었음을 상기시켜 드립니다.",
+			"profileEdit": {
+				"previewHint": "변경 사항은 미리보기에 즉시 표시되며 채팅과 소셜에 저장 및 동기화됩니다.",
+				"livePreview": "실시간 미리보기",
+				"languageVersion": "언어 버전",
+				"localeHint": "코드를 전환하거나 편집하려면 라벨을 클릭하세요. 마지막 입력 상자에서 Enter를 누르면 새 언어로 복사됩니다.",
+				"themeColorHint": "커스텀 배너가 없을 때 텍스처를 생성하는데 사용되며, 라이브 음파 루프에도 사용됩니다.",
+				"bannerLabel": "배너 배경",
+				"bannerHint": "이미지 URL을 입력하거나 파일을 업로드할 수 있습니다. 언제든지 배너 생성을 다시 시작할 수도 있습니다.",
+				"bannerClear": "이력서 배너 생성",
+				"linksPreview": "${count} 공개 링크",
+				"unsavedHint": "창을 닫으면 저장되지 않은 변경사항이 삭제됩니다.",
+				"tagsLabel": "라벨",
+				"tagAdd": "다음에 추가",
+				"tagRemove": "태그 삭제",
+				"linksLabel": "링크",
+				"linkAdd": "링크 추가",
+				"linkRemove": "링크 삭제",
+				"handleLabel": "맞춤 ID",
+				"handleHint": "네트워크의 다른 노드에서 검색할 수 있습니다. 고유성은 보장되지 않으며 신뢰 목록에 따라 충돌이 명확해집니다.",
+				"resetFromPart": "캐릭터 부분에서 재설정",
+				"resetFromPartConfirm": "현재 메시지는 역할 부분의 메시지로 덮어쓰여집니다. 확실합니까?",
+				"resetFromPartDone": "캐릭터 부분으로 재구성된 프로필",
+				"resetFromPartFailed": "재구축 실패: ${error}",
+				"newLocale": {
+					"placeholder": "en-UK와 같은 새로운 언어 코드"
+				},
+				"avatarUrl": {
+					"placeholder": "아바타 이미지 URL 또는 아래 파일 업로드"
+				},
+				"bannerUrl": {
+					"placeholder": "배너 이미지 URL 또는 아래 파일 업로드"
+				},
+				"tag": {
+					"placeholder": "태그 입력 후 추가"
+				},
+				"linkName": {
+					"placeholder": "텍스트 표시"
+				},
+				"linkUrl": {
+					"placeholder": "https://… 또는 fount://…"
+				},
+				"handle": {
+					"placeholder": "예: steve(2~32자의 소문자 영숫자 문자._-)"
+				}
+			},
+			"profilePopup": {
+				"close": {
+					"title": "데이터 카드 닫기"
+				},
+				"editSaved": "저장된 데이터",
+				"editQueued": "게시되었으며 다른 노드에서 가져올 때까지 기다리고 있습니다.",
+				"dmChar": "캐릭터와 비공개 채팅",
+				"dmUser": "비공개 메시지 보내기",
+				"dmFed": "연방 비공개 메시지",
+				"noFedIdentity": "먼저 연합 설정에서 이 기기의 activePubKeyHex를 설정하세요.",
+				"peerNoIdentity": "상대방은 연방 신분을 갖고 있지 않으며 연방 개인 메시지를 시작할 수 없습니다.",
+				"dmFailed": "비공개 메시지를 열 수 없습니다: ${error}",
+				"care": "특별한 관심",
+				"careRemove": "스페셜 케어 취소",
+				"setAlias": "별칭 설정",
+				"setAliasPrompt": "\"${name}\"에 대한 로컬 별칭을 설정합니다(지우려면 비워 두세요)."
+			},
+			"channelContext": {
+				"copyLinkDone": "채널 링크가 복사되었습니다.",
+				"notifyPrefs": "채널 알림 설정",
+				"rename": "채널 이름 바꾸기",
+				"renameOk": "채널 이름이 변경되었습니다.",
+				"delete": "채널 삭제",
+				"deleteOk": "채널이 삭제되었습니다.",
+				"deleteConfirm": "\"${name}\" 채널을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
+				"setDefault": "기본 채널로 설정",
+				"setDefaultOk": "이미 기본 채널로 설정되어 있습니다.",
+				"copyLink": "채널 링크 복사",
+				"exportJson": "JSON 내보내기",
+				"exportOk": "채널 자료실이 다운로드됨",
+				"exportFailed": "내보내기 실패: ${error}"
+			},
+			"memberContext": {
+				"copyName": "표시 이름 복사",
+				"mention": "언급",
+				"care": "특별한 관심",
+				"careAdded": "이미 특별한 관심사가 추가되었습니다.",
+				"careRemoved": "스페셜 케어 취소됨",
+				"setAlias": "별칭 설정",
+				"setAliasPrompt": "\"${name}\"에 대한 로컬 별칭을 설정합니다(지우려면 비워 두세요).",
+				"aliasSaved": "별칭이 업데이트되었습니다.",
+				"copyPubKey": "공개 키 해시 복사",
+				"copyEntityId": "엔터티 ID 복사",
+				"dm": "비공개 메시지 보내기",
+				"kick": "킥 멤버",
+				"kickSelfNodeWarning": "경고: 이 구성원은 나와 동일한 노드 ID를 사용합니다. 또한, 퇴출된 후 그룹에서도 제명됩니다. 계속하시겠습니까?",
+				"ban": "차단…",
+				"personalBlock": "개인 블록",
+				"personalBlockConfirm": "${name}을(를) 차단 목록에 추가하시겠습니까? 나를 따르는 사람들은 이 신호를 받아들이고 그들에 대한 신뢰도가 낮아질 수 있습니다.",
+				"personalBlockSuccess": "이미 블랙리스트에 추가됨",
+				"banTitle": "금지 범위 선택",
+				"banEntity": "금지된 엔터티(128비트 엔터티 해시)",
+				"banNode": "금지 노드(homeNodeHash)"
+			},
+			"messageContext": {
+				"edit": "메시지 편집",
+				"delete": "메시지 삭제"
+			},
+			"charStreaming": "생성 중…",
+			"gshDecryptPending": "채널 키를 기다리는 중(${gen} 세대)",
+			"gshDecryptFailed": "채널 키가 없으면 이 메시지를 해독할 수 없습니다.",
+			"fileDecryptFailed": "파일 키가 없으면 이 파일에 액세스할 수 없습니다.",
+			"reactionFailed": "대응 작업 실패",
+			"fileUploadChecking": "동일한 콘텐츠가 이미 존재하는지 확인하는 중...",
+			"fileUploadingChunk": "암호화된 블록을 업로드하는 중...",
+			"fileUploadRegistering": "파일 등록 중…",
+			"fileUploaded": "파일이 성공적으로 업로드되었습니다.",
+			"fileUploadFailed": "파일 업로드 실패",
+			"fileSkippedDedup": "중복 블록 전송을 건너뛰었습니다.",
+			"fileDownloadFailed": "파일 다운로드 실패",
+			"fileNoKey": "복호화할 수 없음(키 누락)",
+			"fileLoadFailed": "파일 로딩 실패",
+			"createModal": {
+				"title": "그룹 만들기",
+				"subtitle": "그룹은 나와 내 친구들이 함께 채팅할 수 있는 비공개 공간입니다.",
+				"basicSection": "기본메시지",
+				"nameLabel": "그룹 이름",
+				"name": {
+					"placeholder": "그룹 이름을 지정하세요"
+				},
+				"descriptionLabel": "그룹 설명",
+				"description": {
+					"placeholder": "(선택사항) 이 그룹을 소개합니다."
+				},
+				"joinSection": "누가 참여할 수 있나요?",
+				"joinInviteOnly": "초대만 가능",
+				"joinInviteOnlyDescription": "가입하려면 초대 코드가 필요합니다",
+				"joinPow": "작업 증명",
+				"joinPowDescription": "참여하기 전에 PoW 챌린지를 완료해야 합니다.",
+				"cancel": "돌아가기",
+				"submit": "그룹 만들기",
+				"failed": "그룹 생성 실패: ${error}"
+			},
+			"joinModal": {
+				"title": "그룹에 가입",
+				"subtitle": "해당 채팅에 참여하려면 그룹 ID를 입력하세요.",
+				"groupIdLabel": "그룹 ID",
+				"groupId": {
+					"placeholder": "group_1776941580949_xxxx"
+				},
+				"inviteLabel": "초대 코드(선택사항)",
+				"invite": {
+					"placeholder": "그룹 주인이 생성한 단기 초대 코드"
+				},
+				"hint": "그룹 ID는 그룹 주인이 공유합니다. 초대 기반 그룹은 유효한 초대 코드를 입력해야 합니다(설정 페이지에서 생성 가능).",
+				"cancel": "돌아가기",
+				"submit": "그룹에 가입"
+			},
+			"menuCopy": "복사",
+			"menuMD": "가격 인하",
+			"menuTXT": "일반 텍스트",
+			"menuHTML": "HTML",
+			"menuDownload": "HTML 다운로드",
+			"menuDelete": "삭제",
+			"menuShareGroup": "링크 공유",
+			"menuPrev": "이전 기사",
+			"menuNext": "다음 기사",
+			"menuShare": {
+				"1h": "1시간 링크 공유",
+				"12h": "12시간 링크 공유",
+				"24h": "24시간 링크 공유",
+				"72h": "72시간 링크 공유"
+			},
+			"noGroups": "아직 그룹이 없습니다.",
+			"myGroups": "내 그룹",
+			"joinGroup": "그룹에 가입",
+			"createGroup": "새 그룹 만들기",
+			"noDescription": "아직 설명이 없습니다",
+			"memberCountLabel": "${count}명의 멤버",
+			"loadListFailed": "그룹 목록을 불러오지 못했습니다: ${error}",
+			"contentWarning": "내용 경고",
+			"sensitiveMedia": "민감한 미디어",
+			"revealContent": "콘텐츠 표시",
+			"revealMedia": "디스플레이 미디어",
+			"copyShareLink": "공유 링크 복사",
+			"forward": "앞으로",
+			"forwardedFrom": "다음에서 전달됨",
+			"forwardDialog": {
+				"title": "메시지 전달",
+				"selectGroup": "대상 그룹 선택",
+				"selectChannel": "대상 채널 선택",
+				"confirm": "앞으로",
+				"cancel": "취소",
+				"success": "전달됨",
+				"failed": "전달 실패"
+			},
+			"deliverySending": "배상",
+			"deliverySent": "보냄",
+			"deliveryRead": "읽음",
+			"translate": "번역",
+			"translating": "번역 중…",
+			"translateShowOriginal": "원본 텍스트 표시",
+			"translateShowTranslation": "번역 표시",
+			"translateLabel": "번역",
+			"translateFailed": "번역 실패",
+			"editImage": "사진 편집",
+			"draftRestored": "초안이 복원되었습니다.",
+			"queuedOffline": "전송 대기 중(오프라인)",
+			"translationPrefs": {
+				"title": "번역 설정",
+				"textContent": "번역 설정",
+				"autoTranslate": "외국어 메시지 자동 번역",
+				"hint": "켜면 다양한 언어와 인터페이스의 메시지가 자동으로 번역을 요청합니다.",
+				"save": "저장",
+				"saved": "번역 설정이 저장되었습니다",
+				"saveFailed": "저장 실패: ${error}"
+			},
+			"friendsSearch": {
+				"placeholder": "로컬 역할/커스텀 ID/이름 검색..."
+			},
+			"threadComposer": {
+				"placeholder": "하위 스레드로 답장…"
+			},
+			"altImage": {
+				"placeholder": "이미지에 설명을 추가하세요…",
+				"label": "이미지 설명(대체)"
+			}
+		},
 		"sidebar": {
+			"settings": {
+				"title": "그룹 설정"
+			},
 			"noSelection": "선택된 항목 없음",
 			"noDescription": "설명 없음",
 			"world": {
@@ -780,6 +3171,16 @@
 						"alt": "플러그인 추가 아이콘"
 					}
 				}
+			},
+			"dataMgmt": {
+				"title": "데이터 관리",
+				"compact": "체크포인트 생성",
+				"prune": "자르기 기록",
+				"compactSuccess": "체크포인트가 성공적으로 생성되었습니다.",
+				"compactError": "체크포인트 생성 실패",
+				"pruneSuccess": "기록 메시지 클리핑이 완료되었습니다.",
+				"pruneError": "자르기 실패",
+				"invalidN": "예약된 항목 수가 잘못되었습니다(최소 10개 항목)."
 			}
 		},
 		"rightSidebar": {
@@ -951,7 +3352,11 @@
 			}
 		},
 		"messageGenerating": {
-			"stop": "중지",
+			"tips": "역할이 응답을 생성하는 중입니다. 잠시 기다려 주십시오...",
+			"stop": {
+				"textContent": "중지",
+				"title": "생성 중지"
+			},
 			"stopIcon": {
 				"alt": "정지 아이콘"
 			}
@@ -1036,53 +3441,9 @@
 			}
 		},
 		"home_function_buttons": {
-			"viewHistory": {
-				"title": "기록 보기"
+			"chatHub": {
+				"title": "채팅"
 			}
-		}
-	},
-	"chat_history": {
-		"title": "채팅 기록",
-		"pageTitle": "채팅 기록",
-		"description": "과거의 대화를 통해 여행하세요. 여기에는 대화의 추억이 남아 있습니다. AI 동료와 함께 엮은 이야기를 정렬하고 필터링하고 다시 방문하세요. 디지털 에코의 조용한 라이브러리입니다.",
-		"filterInput": {
-			"placeholder": "검색..."
-		},
-		"sortOptions": {
-			"time_desc": "시간 (최신순)",
-			"time_asc": "시간 (오래된순)"
-		},
-		"sortBy": {
-			"aria-label": "정렬"
-		},
-		"selectAll": "모두 선택",
-		"buttons": {
-			"reverseSelect": "선택 반전",
-			"deleteSelected": "선택 항목 삭제",
-			"exportSelected": "선택 항목 내보내기",
-			"import": "가져오기"
-		},
-		"chatItemButtons": {
-			"continue": "계속하기",
-			"copy": "복사",
-			"export": "내보내기",
-			"delete": "삭제"
-		},
-		"confirmDeleteChat": "${chars}님과의 채팅 기록을 삭제하시겠습니까?",
-		"confirmDeleteMultiChats": "선택한 ${count}개의 채팅 기록을 삭제하시겠습니까?",
-		"alerts": {
-			"noChatSelectedForDeletion": "삭제할 채팅 기록을 선택해주세요.",
-			"noChatSelectedForExport": "내보낼 채팅 기록을 선택해주세요.",
-			"copyError": "복사에 실패했습니다.",
-			"deleteError": "삭제에 실패했습니다.",
-			"exportError": "내보내기에 실패했습니다.",
-			"dragExportError": "드래그 앤 드롭 내보내기 중 오류가 발생했습니다.",
-			"importSuccess": "가져오기 성공",
-			"importError": "가져오기 실패",
-			"invalidImportFile": "잘못된 가져오기 파일"
-		},
-		"select_checkbox": {
-			"aria-label": "${chars}님과의 채팅 선택"
 		}
 	},
 	"easynew": {
@@ -1415,10 +3776,10 @@
 			"creationDateLabel": "계정 생성일:",
 			"folderSizeLabel": "사용자 데이터 크기:",
 			"folderPathLabel": "사용자 데이터 경로:",
-			"copyPathBtn": {
+			"copyPathButton": {
 				"title": "경로 복사"
 			},
-			"copyPathBtnIcon": {
+			"copyPathButtonIcon": {
 				"alt": "복사 아이콘"
 			},
 			"copiedAlert": "경로를 클립보드에 복사했습니다.",
@@ -1624,7 +3985,6 @@
 			"title": "코드 실행",
 			"description": "선택한 Subfount에서 JavaScript 코드 실행",
 			"selectSubfountLabel": "Subfount 선택",
-			"selectSubfountPlaceholder": "코드를 실행할 Subfount을 선택하세요...",
 			"hostOption": "호스트(ID: ${id})",
 			"subfountOption": "단말 ${id}${deviceId}",
 			"scriptLabel": "자바스크립트 코드",
@@ -1633,7 +3993,8 @@
 			"noSubfountSelected": "먼저 Subfount을 선택하세요.",
 			"noScriptProvided": "실행할 코드를 입력해주세요",
 			"executionSuccess": "코드 실행 성공",
-			"executionFailed": "코드 실행 실패: ${message}"
+			"executionFailed": "코드 실행 실패: ${message}",
+			"selectSubfount": "코드를 실행하려면 서브파운드를 선택하세요..."
 		},
 		"downloadClient": {
 			"title": "서브폰트 클라이언트 다운로드",
@@ -1900,9 +4261,6 @@
 			"copyModelIdTooltip": "모델 ID를 복사하려면 클릭하세요.",
 			"loadModelsFailed": "모델 로드 실패: ${message}",
 			"modelSearchTitle": "모델 카탈로그 탐색",
-			"modelSearchPlaceholder": {
-				"placeholder": "모델명, 제공업체, 기능으로 검색…"
-			},
 			"modelSearchHint": "항목을 클릭하면 URL과 모델명이 자동으로 입력됩니다",
 			"modelsDevLoading": "카탈로그 로딩 중…",
 			"modelsDevLoadFailed": "카탈로그를 불러오지 못했습니다: ${message}",
@@ -1921,7 +4279,10 @@
 			"metaOpenWeights": "오픈 웨이트",
 			"metaKnowledge": "지식 기준일: ${knowledge}",
 			"metaReleaseDate": "출시일: ${date}",
-			"providerDocLink": "[제공업체 문서 보기](${url})"
+			"providerDocLink": "[제공업체 문서 보기](${url})",
+			"modelSearch": {
+				"placeholder": "모델명, 제조사, 성능 등을 검색하세요."
+			}
 		},
 		"prompts": {
 			"newFileName": "새 서비스 소스 파일 이름을 입력하세요(접미사 제외)."
@@ -1998,7 +4359,6 @@
 				"botToken": "텔레그램 봇 토큰",
 				"config": "설정"
 			},
-			"charSelectPlaceholder": "캐릭터 선택",
 			"botTokenInput": {
 				"placeholder": "텔레그램 봇 토큰을 입력하세요"
 			},
@@ -2012,6 +4372,9 @@
 				"saveConfig": "설정 저장",
 				"startBot": "시작",
 				"stopBot": "중지"
+			},
+			"charSelect": {
+				"placeholder": "역할 선택"
 			}
 		},
 		"prompts": {
@@ -2075,7 +4438,6 @@
 				"botToken": "iLink 봇 토큰",
 				"config": "구성"
 			},
-			"charSelectPlaceholder": "역할 선택",
 			"apiBaseUrlInput": {
 				"placeholder": "비워 두면 기본값 https://ilinkai.weixin.qq.com 사용"
 			},
@@ -2092,6 +4454,9 @@
 				"saveConfig": "저장",
 				"startBot": "시작",
 				"stopBot": "중지"
+			},
+			"charSelect": {
+				"placeholder": "역할 선택"
 			}
 		},
 		"prompts": {
@@ -2163,7 +4528,6 @@
 				"apiKey": "Discord API 키",
 				"config": "설정"
 			},
-			"charSelectPlaceholder": "캐릭터 선택",
 			"apiKeyInput": {
 				"placeholder": "API 키를 입력하세요"
 			},
@@ -2177,6 +4541,9 @@
 				"saveConfig": "설정 저장",
 				"startBot": "시작",
 				"stopBot": "중지"
+			},
+			"charSelect": {
+				"placeholder": "역할 선택"
 			}
 		},
 		"prompts": {
@@ -2463,10 +4830,8 @@
 		"acpTitle": "fount ACP 스크립트 구성",
 		"acpDesc": "fount ACP 스크립트를 구성하려면 다음 예를 참조하십시오.",
 		"acpCharLabel": "역할",
-		"acpCharPlaceholder": "역할 선택",
 		"charListError": "역할 목록을 가져오지 못했습니다.",
 		"acpScriptLabel": "ACP 스크립트 URL",
-		"acpConfigPlaceholder": "역할을 선택하고 먼저 API 키를 생성하세요.",
 		"acpConfigSample": "구성 예:",
 		"acpConfigHint": "역할 ID는 이 페이지의 역할 드롭다운에 표시되며, API 키는 사용자 설정에서 관리할 수 있습니다.",
 		"copyButton": "복사",
@@ -2491,7 +4856,9 @@
 				"description": "처음으로 fount 역할을 사용하여 Zed, JetBrains, Neovim 등과 같은 ACP 지원 편집기에서 프로그래밍을 지원합니다.",
 				"locked_description": "외부 IDE에서 원천 역할에 연결하고 세션을 완료합니다."
 			}
-		}
+		},
+		"acpChar": "역할 선택",
+		"acpConfig": "역할을 선택하고 먼저 API 키를 생성하세요."
 	},
 	"achievements": {
 		"title": "성취",
@@ -2757,5 +5124,97 @@
 		"search": {
 			"placeholder": "검색..."
 		}
+	},
+	"common": {
+		"cancel": "취소",
+		"create": "만들다",
+		"save": "저장",
+		"delete": "삭제",
+		"confirm": "확인",
+		"close": "폐쇄",
+		"translate": {
+			"showOriginal": "원본 텍스트 표시",
+			"showTranslation": "번역 표시"
+		}
+	},
+	"cabinet": {
+		"title": "서류 캐비넷",
+		"description": "P2P 개인 및 공유 파일 캐비닛",
+		"openCabinets": {
+			"title": "파일 캐비닛 목록 열기",
+			"aria-label": "파일 캐비닛 목록 열기"
+		},
+		"closeCabinets": {
+			"title": "폐쇄",
+			"aria-label": "폐쇄"
+		},
+		"bootstrapFailed": "파일 캐비닛 초기화 실패: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "서류 캐비넷"
+			}
+		},
+		"upload": "업로드",
+		"uploadFolder": "폴더 업로드",
+		"newFolder": "새 폴더 만들기",
+		"open": "열기",
+		"download": "다운로드",
+		"downloadZip": "폴더 다운로드",
+		"rename": "이름 바꾸기",
+		"copy": "복사",
+		"cut": "자르기",
+		"paste": "붙여넣기",
+		"pasteLink": "링크로 붙여넣기",
+		"selectAll": "모두 선택",
+		"invert": "반대선거",
+		"properties": "재산",
+		"delete": "삭제",
+		"back": {
+			"title": "이전 위치로 돌아가기",
+			"aria-label": "이전 위치로 돌아가기"
+		},
+		"cancel": "취소",
+		"save": "저장",
+		"showHidden": "숨기기",
+		"name": "이름",
+		"descriptionField": "설명",
+		"attrHidden": "숨김",
+		"attrSystem": "시스템(삭제 시 확인 필요)",
+		"previewUrl": "미리보기 URL",
+		"deletePreviewWithFile": "파일 삭제 시 미리보기 삭제",
+		"folderPassword": "폴더 비밀번호(비워두세요. 암호화를 활성화하려면 입력하세요)",
+		"unlockFolder": "암호화된 폴더 잠금 해제",
+		"unlock": "터놓다",
+		"unlockFailed": "잠금 해제 실패: ${error}",
+		"previewFailed": "미리보기 생성 실패: ${error}",
+		"created": "생성: ${stamp}",
+		"modified": "수정: ${stamp}",
+		"statusCount": "${count}개 항목, ${selected}개 선택됨",
+		"newCabinetPrompt": "새 파일 캐비닛 이름",
+		"newFolderPrompt": "새 폴더 이름",
+		"renamePrompt": "새 이름",
+		"visibilityPrompt": "공개 여부(공개/미등록/팔로워/비공개/선택)",
+		"cabinetActionPrompt": "조치: 이름 바꾸기/삭제/가시성",
+		"confirmDeleteCabinet": "정말로 이 파일 캐비닛을 삭제하시겠습니까?",
+		"confirmDelete": "선택한 항목을 삭제하시겠습니까?",
+		"confirmDeleteSystem": "선택한 시스템 파일이 포함됩니다. 삭제하시겠습니까?",
+		"copied": "복사됨",
+		"cutDone": "자르기",
+		"undo": "취소",
+		"redo": "다시 실행",
+		"newWindow": "새 창 열기현재 위치",
+		"goUp": "이전 레벨로 돌아가기",
+		"brokenLink": "링크가 깨졌습니다: ${reason}",
+		"noDownload": "다운로드 가능한 콘텐츠 없음",
+		"groupDownloadHint": "그룹 파일은 메시지 첨부나 다운로드 링크로 받으세요.",
+		"remoteEntity": "원격 엔터티"
+	},
+	"entityProfile": {
+		"attributionMismatch": "표시 ID가 메시지 서명자와 일치하지 않습니다(예: 수입업자가 가져오기 기록을 다시 서명했습니다). 이 표시 이름을 암호화 ID로 간주하지 마십시오.",
+		"attributionMismatchShort": {
+			"title": "서명 속성 불일치",
+			"aria-label": "서명 속성 불일치"
+		},
+		"ownedBy": "이 항목은 ${owner}님이 소유하고 있습니다."
 	}
 }

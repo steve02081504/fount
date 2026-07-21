@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { createMCPClient } from '../../../../../src/public/parts/ImportHandlers/MCP/engine/mcp_client.mjs'
-import { defineToolUseBlocks } from '../../../../../src/public/parts/shells/chat/src/stream.mjs'
+import { defineToolUseBlocks } from '../../../../../src/public/parts/shells/chat/src/streaming/toolBlocks.mjs'
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadPart } from '../../../../../src/server/parts_loader.mjs'
 
@@ -39,7 +39,7 @@ const handleSampling = async ({ messages, systemPrompt }) => {
 	try {
 		const res = await samplingAIsource.StructCall({
 			chat_log, user_prompt: { text: [] }, char_prompt: { text: [] },
-			world_prompt: { text: [] }, other_chars_prompts: {}, plugin_prompts: {}
+			world_prompt: { text: [] }, other_chars_prompts: {}, other_personas_prompts: {}, plugin_prompts: {}
 		})
 		return res.content
 	} catch (err) {

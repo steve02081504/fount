@@ -3,7 +3,7 @@
 		{
 			"id": "integration_related",
 			"info": "ide_integration.home_function_buttons.integration_related",
-			"level": 3,
+			"level": 5,
 			"button": "<img src=\"https://api.iconify.design/line-md/link.svg\" class=\"text-icon\"/>",
 			"sub_items": [
 				{

@@ -43,8 +43,8 @@ const TIMER_PROMPT = `\
  * @returns {single_part_prompt_t} 单段 prompt 结构体，包含定时器说明与待注入的系统消息
  */
 export function getCharTimerPrompt(args) {
-	const chatid = args.chat_name?.match(/^common_chat_(.+)$/)?.[1]
-	const notification = chatid ? takePendingNotification(chatid, args.char_id) : null
+	const groupId = args.chat_name?.match(/^common_chat_(.+)$/)?.[1]
+	const notification = groupId ? takePendingNotification(groupId, args.char_id) : null
 	return {
 		text: [{ content: TIMER_PROMPT, description: 'timer 插件：定时器 XML API', important: 0 }],
 		additional_chat_log: notification ? [notification] : [],

@@ -3,7 +3,8 @@
  * 逻辑与 ImportHandlers/MCP/Template 相同，但参数化（不依赖文件状态）。
  */
 import { createMCPClient } from '../../../../ImportHandlers/MCP/engine/mcp_client.mjs'
-import { defineToolUseBlocks } from '../../../../shells/chat/src/stream.mjs'
+import { defineToolUseBlocks } from '../../../../shells/chat/src/streaming/index.mjs'
+import { sessionUpdate } from '../acp_agent.mjs'
 
 /**
  * 将 ACP McpServer 配置转换为 createMCPClient 所需格式。
@@ -191,7 +192,7 @@ export async function buildMCPPlugin(server, { cwd } = {}) {
 			const kind = call.type === 'resource' ? 'read' : 'execute'
 
 			if (acp)
-				acp.connection.sessionUpdate({
+				sessionUpdate(acp.agentContext, {
 					sessionId: acp.sessionId,
 					update: { sessionUpdate: 'tool_call', toolCallId, title: `MCP ${call.type}: ${displayName}`, kind, status: 'in_progress' },
 				})
@@ -204,7 +205,7 @@ export async function buildMCPPlugin(server, { cwd } = {}) {
 
 				const resultText = formatResult(callResult)
 				if (acp)
-					acp.connection.sessionUpdate({
+					sessionUpdate(acp.agentContext, {
 						sessionId: acp.sessionId,
 						update: {
 							sessionUpdate: 'tool_call_update', toolCallId, status: 'completed',
@@ -221,7 +222,7 @@ export async function buildMCPPlugin(server, { cwd } = {}) {
 				})
 			} catch (error) {
 				if (acp)
-					acp.connection.sessionUpdate({
+					sessionUpdate(acp.agentContext, {
 						sessionId: acp.sessionId,
 						update: {
 							sessionUpdate: 'tool_call_update', toolCallId, status: 'failed',

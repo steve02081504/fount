@@ -69,8 +69,8 @@ export async function timerReplyHandler(result, args) {
 	// 仅注册支持追加消息的频道供定时器回调使用
 	if (args.supported_functions?.add_message) registerChannel(username, char_id, args)
 
-	// 尝试从 common_chat_* 格式提取 chatid（非聊天场景下为 undefined）
-	const chatid = chat_name?.match(/^common_chat_(.+)$/)?.[1]
+	// 尝试从 common_chat_* 格式提取 groupId（非聊天场景下为 undefined）
+	const groupId = chat_name?.match(/^common_chat_(.+)$/)?.[1]
 
 	let processed = false
 
@@ -153,10 +153,10 @@ export async function timerReplyHandler(result, args) {
 					callbackdata: {
 						type: 'timer',
 						char_id,
-						chatid,
+						groupId,
 						reason: item.reason,
 						trigger: item.trigger,
-						chat_log_snip: chatLogSnip,
+						chatLogSnip,
 					},
 					repeat: item.repeat,
 				})

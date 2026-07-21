@@ -1,4 +1,5 @@
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
+import { claimOperatorBridgeIdentity } from '../../chat/src/chat/bridge/identity.mjs'
 
 import { getBotList, runBot, getBotConfig, setBotConfig, deleteBotConfig, getRunningBotList, stopBot, getBotConfigTemplate } from './bot.mjs'
 import { DEFAULT_WECHAT_ILINK_BASE } from './wechat_api.mjs'
@@ -15,7 +16,11 @@ function applyQrLoginResult(username, pollResult) {
 	const botSpecificConfig = { ...existingConfig.config }
 	const normalizedUrl = String(pollResult.apiBaseUrl || DEFAULT_WECHAT_ILINK_BASE).replace(/\/+$/, '')
 
-	if (pollResult.ilinkUserId && (!botSpecificConfig.OwnerWeChatId || String(botSpecificConfig.OwnerWeChatId).includes('your_')))
+	const ownerWeChatIdUpdated = Boolean(
+		pollResult.ilinkUserId
+		&& (!botSpecificConfig.OwnerWeChatId || String(botSpecificConfig.OwnerWeChatId).includes('your_')),
+	)
+	if (ownerWeChatIdUpdated)
 		botSpecificConfig.OwnerWeChatId = pollResult.ilinkUserId
 
 	setBotConfig(username, pollResult.botname, {
@@ -24,6 +29,11 @@ function applyQrLoginResult(username, pollResult) {
 		apiBaseUrl: normalizedUrl,
 		config: botSpecificConfig,
 	})
+
+	if (ownerWeChatIdUpdated) {
+		const displayName = String(botSpecificConfig.OwnerPromptName ?? '').trim() || username
+		claimOperatorBridgeIdentity(username, 'wechat', pollResult.ilinkUserId, displayName).catch(console.error)
+	}
 }
 
 /**
@@ -79,6 +89,8 @@ export function setEndpoints(router) {
 	router.post('/api/parts/shells\\:wechatbot/deletebotconfig', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { botname } = req.body
+		if (getRunningBotList(username).includes(botname))
+			await stopBot(username, botname)
 		deleteBotConfig(username, botname)
 		res.status(200).json({ message: 'bot deleted' })
 	})

@@ -20,12 +20,10 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 ## UI & Theming
 
 - **`theme.mjs`**: DaisyUI theme management. Call `applyTheme()` first.
-- **`template.mjs`**: `renderTemplate` / `mountTemplate` / `renderTemplateAsHtmlString` / `templatesAt(path)` / `withTemplates(path, fn)`. Cross-shell shared modules must **not** call bare `usingTemplates` — use `templatesAt` / `withTemplates` (callback receives a bound renderer) or pass `templatesPath` to `renderTemplate` / `openDialogFromTemplate`; do not rely on temporarily mutating global `templatePath`.
-- **`dialog.mjs`**: `openDialogFromTemplate` / `pickFromDialog`. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do not nest another `<dialog>`. Optional `templatesPath` sets the template root explicitly.
-- **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared pickers; floating placement helpers in `floatingPanel.mjs` (`positionFloatingPanel` / `wireOutsideClickClose`). Hub mounts via `mountDockedEmojiPicker` / `mountDockedStickerPicker`. Option names: full words (`pickerElement`, `gridElement`, …). Leave DaisyUI class names alone.
-- **`credentialManager.mjs`** / **`urlDataTransfer.mjs`**: Catbox upload/download via `host/catbox.mjs`.
+- **`template.mjs`**: `renderTemplate` / `mountTemplate` / `renderTemplateAsHtmlString` / `withTemplates(path, fn)`. Cross-shell shared modules must **not** call bare `usingTemplates` — use `withTemplates` or direct DOM.
+- **`dialog.mjs`**: `openDialogFromTemplate` / `pickFromDialog`. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do not nest another `<dialog>`.
 - **`contentReveal/`**: `wrapSensitiveMediaHtml`, `wrapContentWarningHtml`, `bindContentReveal`.
-- **`translate.mjs`**: `mountTranslationBlock`, `requestTranslation`, `resolveTargetLang` (→ `primaryLocale()`).
+- **`translate.mjs`**: `mountTranslationBlock`, `requestTranslation`, `resolveTargetLang`（→ `primaryLocale()`）。
 - **`memo.mjs`**: `memoizePromise` / `createLruMap`.
 - **`toast.mjs`**: `showToast`, `showToastI18n`.
 - **`cssValues.mjs`**: Dynamic CSS variable manipulation.
@@ -40,6 +38,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 - **`/api/no-cors`**: authenticated streaming proxy. Forwards Range / conditional / Content-Type; inject upstream Cookie/Authorization via `No-Cors-*` prefix. `X-No-Cors-Final-Url` after redirects.
 - **`markdownExtensions.mjs`**: Loads `markdown_extensions` registry.
 - **`registries.mjs`**: `GET /api/registries/:name` + dynamic `import()`.
+- **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared pickers; floating placement helpers in `components/floatingPanel.mjs` (`positionFloatingPanel` / `wireOutsideClickClose`). Hub mounts via `mountDockedEmojiPicker` / `mountDockedStickerPicker`. Option names: full words (`pickerElement`, `gridElement`, …). Leave DaisyUI class names alone.
 - **`svgInliner.mjs`**: Inline SVGs for `currentColor`.
 - **`i18n.mjs`**: Sole public entry. Call `initTranslations()` early. `data-i18n`, `geti18n`, `setElementI18n`, `primaryLocale()` (preferredLangs[0] → `main_locale`, default `en-UK`). Use it for content locale / translation target — do not hardcode `zh-CN` or bare `navigator.language`.
 - **`data-i18n` params**: full `element.dataset` is the interpolation map. MutationObserver watches **only** `data-i18n`. Nested attribute keys: `placeholder` / `title` / `label` / `value` / `alt` / `aria-label` / `textContent` / `innerHTML` / `dataset`. **`input`/`textarea` placeholders must use an object key** (`{ "placeholder": "…" }`); a string key writes `innerHTML` and wipes textarea input. Do **not** name keys `fooPlaceholder` / `fooAlt` — use `foo: { placeholder|alt: "…" }` and point `data-i18n` at `foo`. No `data-i18n-attr`.
@@ -54,6 +53,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 - **`terminal.mjs`**: `xterm.js` wrapper.
 - **`regex.mjs`**: Regex parsing and escaping.
 - **`lib/base64.mjs`**: `arrayBufferToBase64` / `blobToBase64` — reuse for upload bodies; do not copy per shell.
+- **`credentialManager.mjs`** / **`host/urlDataTransfer.mjs`**: Secure credential encryption/transfer; Catbox upload/download via `host/catbox.mjs`.
 
 ## P2P (Browser)
 

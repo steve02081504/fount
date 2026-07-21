@@ -1,9 +1,4 @@
-import {
-	defineToolUseBlocks,
-	getChatI18n,
-	inferCodeLanguageFromPath,
-	renderMarkdownCodeBlock
-} from '../../shells/chat/src/stream.mjs'
+import { getChatI18n, inferCodeLanguageFromPath, renderMarkdownCodeBlock, defineToolUseBlocks } from '../../shells/chat/src/streaming/index.mjs'
 
 import { fileOperationsReplyHandler } from './handler.mjs'
 import { getFileOperationsPrompt } from './prompt.mjs'

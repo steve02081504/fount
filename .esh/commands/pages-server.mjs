@@ -35,6 +35,9 @@ app.use('/fount/scripts', express.static(githubScriptsPath))
 const srcScriptsPath = path.join(projectRoot, 'src', 'public', 'pages', 'scripts')
 app.use('/fount/scripts', express.static(srcScriptsPath))
 
+const testScriptsPath = path.join(projectRoot, 'src', 'scripts', 'test')
+app.use('/fount/scripts/test', express.static(testScriptsPath))
+
 // Proxy data/comments.json from GitHub Pages when available, otherwise fall through to local static file.
 const GITHUB_PAGES_COMMENTS_URL = 'https://steve02081504.github.io/fount/data/comments.json'
 app.get('/fount/data/comments.json', async (_req, res, next) => {

@@ -8,7 +8,14 @@
 
 ## 结论摘要
 
-一人一台日常残差：推荐仍是本地启发式；定时帖无队列管理页、无「被谁引用」聚合、composer 不能一次发多帖 thread；互动仅 like/dislike、无按时长 mute / 关键词提醒；离线手感弱于 IndexedDB 级时间线缓存。
+微博客主路径（发帖互动、关注、通知、搜索、投票、编辑、Community Notes、关键词屏蔽、媒体 alt/CW、`for_you`+dwell、话题订阅、短视频流、直播、`replyPolicy`/精选、定时入队、可见性档 + 相册、草稿箱、dislike）**已齐**。
+
+一人一台日常会碰到的残差：
+
+1. **推荐仍是启发式**：`for_you` + taste + 本地 dwell；无全局 ML（有意不做广告）。
+2. **创作 UX 缝**：定时帖有 API/watcher，**无**队列管理界面；引用能发，**无**「被谁引用」聚合页；composer 不能一次发多帖 thread；富链接仅前端 OG 水合。
+3. **互动宽度**：仅 like/dislike；无按时长 mute 作者；关键词只屏蔽、无 match→提醒。
+4. **离线手感弱**：有内存 `feedPrefetch` 下一页预取 + 游标耗尽 replay；非 IndexedDB 级本地时间线缓存。
 
 ---
 
@@ -30,8 +37,8 @@ Feed replay：删除/屏蔽/mute 须 `purgeFeedShownPost` / `purgeFeedShownAutho
 
 | 功能 | 路径 | 用户可见缺口 | Not this |
 | --- | --- | --- | --- |
-| **定时发布** | **主路径**：composer `publishAt` + watcher + `GET\|DELETE /posts/scheduled` 已有 | 无 `#scheduled` 队列管理页 | 不是不能定时发；不是 chat 用户定时发信 |
-| **Quote** | **主路径**：`quoteRef` + 预览块能发 | 无「被谁引用」页（无 `quotedBy` 索引） | 不是引用发送坏了 |
+| **定时发布** | **主路径**：composer `publishAt` + `scheduledPostWatcher` + `GET\|DELETE /posts/scheduled` | 无 `#scheduled` 队列管理页 | 不是完全不能定时发帖 |
+| **Quote** | **主路径**：`quoteRef` + 预览块 | 无「被谁引用」页（无 `quotedBy` 索引） | 不是不能发引用帖 |
 | **Thread 串发** | **主路径**：`replyTo` + 同页合并 | composer 不能「一次发多帖」 | 不是不能逐条回复成串 |
 | **富链接** | **主路径**：前端裸链 OG 水合 | 非 oEmbed 入库；刷新前依赖客户端 | 不是完全无预览 |
 

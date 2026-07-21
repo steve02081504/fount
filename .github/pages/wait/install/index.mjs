@@ -2,16 +2,17 @@ import { animateSVG } from 'https://cdn.jsdelivr.net/gh/steve02081504/animate-SV
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { setPreRender, setTheme, theme_now } from '../../base.mjs'
-import { waitForFountService, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
-import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange } from '../../scripts/i18n/index.mjs'
 import { makeSearchable } from '../../scripts/components/search.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/features/template.mjs'
+import { showToastI18n } from '../../scripts/features/toast.mjs'
+import { waitForFountService, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
+import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange } from '../../scripts/i18n/index.mjs'
+import { escapeHtml } from '../../scripts/lib/escapeHtml.mjs'
+import { viewTransition } from '../../scripts/lib/viewTransition.mjs'
 import {
 	applyThemeWithViewTransition,
 	createAutoPreview,
 } from '../../scripts/theme/viewTransition.mjs'
-import { showToastI18n } from '../../scripts/features/toast.mjs'
-import { viewTransition } from '../../scripts/lib/viewTransition.mjs'
 
 usingTemplates('wait/install/templates')
 const hostUrl = 'http://localhost:8931'
@@ -443,17 +444,6 @@ async function renderTestimonial(slideEl, item) {
 }
 
 /**
- * 转义 HTML 特殊字符，避免注入。
- * @param {string} s - 原始字符串。
- * @returns {string} 转义后的 HTML 字符串。
- */
-function escapeHtml(s) {
-	const div = document.createElement('div')
-	div.textContent = s
-	return div.innerHTML
-}
-
-/**
  * 启动评语轮播：拉取 comments.json，带淡入淡出切换。
  */
 function startTestimonialsCarousel() {
@@ -535,19 +525,19 @@ async function populateLanguageSelector() {
 		const localeName = localeNames.get(locale) || locale
 		const node = await renderTemplate('locale_item', { localeName })
 		const li = node.nodeType === Node.DOCUMENT_FRAGMENT_NODE ? node.firstElementChild : node
-		const btn = li.querySelector('.locale-item-button')
+		const button = li.querySelector('.locale-item-button')
 		/**
 		 * 处理语言选择点击事件。
 		 * @param {Event} e - 点击事件对象。
 		 * @returns {void}
 		 */
-		btn.onclick = e => selectLocale(e, locale)
+		button.onclick = e => selectLocale(e, locale)
 		/**
 		 * 处理语言选择键盘事件。
 		 * @param {Event} e - 键盘事件对象。
 		 * @returns {void}
 		 */
-		btn.onkeydown = e => selectLocale(e, locale)
+		button.onkeydown = e => selectLocale(e, locale)
 		items.push({ element: li, locale, name: localeName })
 		languageSelector.appendChild(li)
 	}
