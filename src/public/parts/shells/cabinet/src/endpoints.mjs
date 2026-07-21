@@ -199,7 +199,7 @@ export function setEndpoints(router) {
 		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json({
 			entry: await updateEntry(username, entityHash, req.params.cabinetId, req.params.entryId, {
-				...req.body || {},
+				...req.body,
 				unlock_token: unlockToken(req, req.body),
 			}),
 		})
@@ -209,7 +209,7 @@ export function setEndpoints(router) {
 		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json({
 			entries: await copyEntries(username, entityHash, req.params.cabinetId, {
-				...req.body || {},
+				...req.body,
 				unlock_token: unlockToken(req, req.body),
 			}),
 		})
