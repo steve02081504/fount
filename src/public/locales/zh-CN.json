@@ -2046,7 +2046,8 @@
 			"send": "发送",
 			"streamTest": "测试媒体设备",
 			"messageInput": {
-				"placeholder": "群组消息… Ctrl+Enter 发送"
+				"placeholder": "群组消息… Ctrl+Enter 发送",
+				"aria-label": "消息输入"
 			},
 			"loadError": "加载群组失败",
 			"remoteNodeTimeout": "远端节点无响应，请稍后重试",

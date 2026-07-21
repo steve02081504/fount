@@ -25,6 +25,11 @@ REQUIRED_TAGS = [
 	("meta", {"name": "description"}),
 ]
 
+# ARIA in HTML：aside 允许的显式 role（不含隐式 complementary）
+ASIDE_ALLOWED_ROLES = frozenset({
+	"feed", "none", "note", "presentation", "region", "search", "status",
+})
+
 # --- 脚本主体 ---
 
 
@@ -49,6 +54,40 @@ def has_main_landmark(soup: BeautifulSoup) -> bool:
 	:return: 若存在 <main> 元素返回 True，否则返回 False。
 	"""
 	return soup.find("main") is not None
+
+
+def check_drawer_toggles(soup: BeautifulSoup) -> list[str]:
+	"""
+	DaisyUI drawer-toggle 是纯 CSS 状态开关，应对辅助技术隐藏或提供可访问名称。
+	对齐 Lighthouse「表单元素不具备关联的标签」对 #files-drawer-toggle 类问题的检出。
+	"""
+	issues = []
+	for tag in soup.find_all("input", class_=lambda c: c and "drawer-toggle" in c):
+		if tag.get("aria-hidden") == "true":
+			continue
+		if tag.has_attr("aria-label") or tag.has_attr("aria-labelledby") or tag.has_attr("data-i18n"):
+			continue
+		style = (tag.get("style") or "").replace(" ", "").lower()
+		if "display:none" in style:
+			continue
+		ident = tag.get("id") or "drawer-toggle"
+		issues.append(f'<input class="drawer-toggle" id="{ident}">（需 aria-hidden 或可访问名称）')
+	return issues
+
+
+def check_aside_aria_roles(soup: BeautifulSoup) -> list[str]:
+	"""
+	aside 上禁止使用 ARIA in HTML 不允许的 role。
+	常见误用：aside + role=\"dialog\"（应改为 div role=dialog）。
+	"""
+	issues = []
+	for tag in soup.find_all("aside"):
+		role = (tag.get("role") or "").strip().lower()
+		if not role or role in ASIDE_ALLOWED_ROLES:
+			continue
+		ident = tag.get("id") or " ".join(tag.get("class") or []) or "aside"
+		issues.append(f'<aside … role="{role}"> ({ident})')
+	return issues
 
 
 def load_gitignore_spec(directory: Path) -> pathspec.PathSpec | None:
@@ -133,7 +172,7 @@ def main():
 	warnings_found = False
 	files_checked = 0
 
-	print("--- 开始扫描 HTML 文件元数据与 main 地标 ---")
+	print("--- 开始扫描 HTML：元数据、main 地标、drawer-toggle、aside ARIA ---")
 
 	# 1. 加载 .gitignore 规则
 	gitignore_spec = load_gitignore_spec(current_directory)
@@ -163,8 +202,10 @@ def main():
 		soup = BeautifulSoup(content, "html.parser")
 		missing_meta = check_html_meta(soup)
 		missing_main = not has_main_landmark(soup)
+		bad_toggles = check_drawer_toggles(soup)
+		bad_aside_roles = check_aside_aria_roles(soup)
 
-		if missing_meta or missing_main:
+		if missing_meta or missing_main or bad_toggles or bad_aside_roles:
 			warnings_found = True
 			print(f"⚠️  警告: 文件 '{file_path.as_posix()}'")
 			if missing_meta:
@@ -173,11 +214,19 @@ def main():
 					print(f"    - {tag}")
 			if missing_main:
 				print("  缺少 main 地标 (<main> 元素)")
+			if bad_toggles:
+				print("  drawer-toggle 未对辅助技术隐藏 / 缺少可访问名称:")
+				for item in bad_toggles:
+					print(f"    - {item}")
+			if bad_aside_roles:
+				print("  aside 上使用了不兼容的 ARIA role（dialog 等请用 div）:")
+				for item in bad_aside_roles:
+					print(f"    - {item}")
 			print("-" * 20)
 
 	print("\n--- 扫描完成 ---")
 	if not warnings_found:
-		print(f"✅  所有检查过的 {files_checked} 个完整 HTML 文档均包含必需的元数据标签与 main 地标。")
+		print(f"✅  所有检查过的 {files_checked} 个完整 HTML 文档均通过元数据、main、drawer-toggle 与 aside ARIA 检查。")
 	else:
 		print(f"扫描了 {files_checked} 个完整 HTML 文档，并发现了一些问题。")
 

@@ -4,6 +4,12 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="The Stage of Whispers: Your fount Conversations" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:chat/hub/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Where words take flight and stories unfold. Engage with your AI companions, shape the narrative, and lose yourself in the ebb and flow of digital dialogue. The heart of fount beats here." />
+	<meta name="description" content="Where words take flight and stories unfold. Engage with your AI companions, shape the narrative, and lose yourself in the ebb and flow of digital dialogue. The heart of fount beats here." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
 	<title data-i18n="chat.hub.title"></title>
 	<link rel="icon" href="/favicon.ico" />
 	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -17,7 +23,7 @@
 
 <body class="m-0 h-screen w-screen overflow-hidden bg-[var(--bg-main)] text-[var(--text-normal)] font-['gg_sans','Noto_Sans',system-ui,sans-serif]">
 	<div class="drawer drawer-end">
-		<input id="files-drawer-toggle" type="checkbox" class="drawer-toggle" />
+		<input id="files-drawer-toggle" type="checkbox" class="drawer-toggle" aria-hidden="true" tabindex="-1" />
 		<div class="drawer-content flex h-screen w-screen bg-[var(--bg-main)] text-[var(--text-normal)]">
 		<aside class="server-bar w-[72px] shrink-0 overflow-y-auto bg-[var(--bg-server)] py-3 flex flex-col items-center gap-2" id="server-bar">
 			<button type="button" class="server-item" data-mode="friends" data-i18n="chat.hub.friendsTooltip">
@@ -234,7 +240,7 @@
 						<img src="https://api.iconify.design/mdi/paperclip.svg" alt="" aria-hidden="true" />
 					</button>
 					<input type="file" id="image-upload-input" multiple hidden />
-					<textarea id="message-input" class="input flex-1 bg-transparent border-none outline-none text-base py-[11px] text-[var(--text-normal)] resize-none min-h-11 max-h-40 leading-normal" rows="1" disabled></textarea>
+					<textarea id="message-input" class="input flex-1 bg-transparent border-none outline-none text-base py-[11px] text-[var(--text-normal)] resize-none min-h-11 max-h-40 leading-normal" rows="1" data-i18n="chat.hub.messageInput" disabled></textarea>
 					<button type="button" class="icon-button" id="emoji-button" data-i18n="chat.hub.emojiTitle" disabled>
 						<img src="https://api.iconify.design/line-md/emoji-smile.svg" alt="" aria-hidden="true" />
 					</button>
@@ -277,21 +283,21 @@
 
 		<div class="drawer-side z-50">
 			<label for="files-drawer-toggle" class="drawer-overlay" data-i18n="chat.hub.ariaClose"></label>
-			<aside class="files-panel w-80 min-h-full bg-[var(--bg-channel)] border-l border-[var(--border)] p-4 flex flex-col gap-3 text-[var(--text-normal)]" role="dialog" aria-labelledby="files-title">
+			<div class="files-panel w-80 min-h-full bg-[var(--bg-channel)] border-l border-[var(--border)] p-4 flex flex-col gap-3 text-[var(--text-normal)]" role="dialog" aria-modal="true" aria-labelledby="files-title">
 				<header class="flex items-center justify-between gap-2">
 					<h2 id="files-title" class="font-bold text-lg" data-i18n="chat.hub.filesDrawerTitle"></h2>
 					<label for="files-drawer-toggle" class="btn btn-ghost btn-sm btn-circle" data-i18n="chat.hub.ariaClose">×</label>
 				</header>
 				<p id="files-convergent-warn" class="text-warning text-sm" data-i18n="chat.hub.convergentEncryptWarn"></p>
 				<div class="flex flex-wrap gap-2 items-center">
-					<label class="text-sm opacity-70" data-i18n="chat.hub.filesUploadTo"></label>
+					<label for="files-folder-select" class="text-sm opacity-70" data-i18n="chat.hub.filesUploadTo"></label>
 					<select id="files-folder-select" class="select select-bordered select-sm flex-1 min-w-0"></select>
 					<button type="button" id="files-new-folder" class="btn btn-ghost btn-sm" data-i18n="chat.hub.filesNewFolder"></button>
 					<button type="button" id="files-upload-button" class="btn btn-primary btn-sm" data-i18n="chat.hub.filesUpload"></button>
 					<input type="file" id="files-upload-input" hidden />
 				</div>
 				<div id="files-list" class="flex-1 overflow-y-auto min-h-0"></div>
-			</aside>
+			</div>
 		</div>
 	</div>
 

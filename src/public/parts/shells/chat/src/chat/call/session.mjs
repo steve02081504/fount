@@ -9,9 +9,14 @@ import fs from 'node:fs'
 import { dirname } from 'node:path'
 
 import { loadJsonFileIfExists, saveJsonFile } from '../../../../../../../scripts/json_loader.mjs'
+import { getAllUserNames } from '../../../../../../../server/auth/index.mjs'
+import { resolveActiveMemberKey } from '../../group/access.mjs'
 import { postChannelMessage } from '../channel/postMessage.mjs'
 import { appendFinalEditWithRetry } from '../dag/chatLogMirror.mjs'
+import { peekLocalSignerPubKeyHash } from '../dag/localSigner.mjs'
+import { getState } from '../dag/materialize.mjs'
 import { activeCallsPath } from '../lib/paths.mjs'
+import { getAvRelayRoster } from '../ws/avRelay.mjs'
 
 /** @type {Map<string, object>} roomKey → 进程内通话态 */
 const liveCalls = new Map()
@@ -54,6 +59,25 @@ function saveActiveCalls(username, data) {
 	const path = activeCallsPath(username)
 	fs.mkdirSync(dirname(path), { recursive: true })
 	saveJsonFile(path, data)
+}
+
+/**
+ * 退群 / 拆除时清掉该群残留的通话锚点，避免 Load reconcile 往已删目录写 signers 壳。
+ * @param {string} username replica
+ * @param {string} groupId 群
+ * @returns {void}
+ */
+export function dropActiveCallsForGroup(username, groupId) {
+	const gid = String(groupId || '').trim()
+	if (!gid) return
+	const data = loadActiveCalls(username)
+	let dirty = false
+	for (const [callId, row] of Object.entries(data.calls || {}))
+		if (String(row?.groupId || '').trim() === gid) {
+			delete data.calls[callId]
+			dirty = true
+		}
+	if (dirty) saveActiveCalls(username, data)
 }
 
 /**
@@ -177,7 +201,6 @@ export async function beginCallSession(username, groupId, channelId, initiatorEn
 		messageEventId: null,
 	}
 	liveCalls.set(key, session)
-	const { getAvRelayRoster } = await import('../ws/avRelay.mjs')
 	const rosterHashes = getAvRelayRoster(callRoomId(groupId, channelId)).map(p => p.entityHash)
 	const initial = uniqHashes([initiator, ...rosterHashes])
 	session.everJoined = uniqHashes([...session.everJoined || [], ...initial])
@@ -260,19 +283,47 @@ export function getCallStatus(groupId, channelId) {
 }
 
 /**
- * shell Load 时扫描悬挂通话并定稿。
+ * 悬挂通话能否以发起者身份写 message_edit。
  * @param {string} username replica
- * @returns {Promise<number>} 收尾条数
+ * @param {string} groupId 群
+ * @param {string} initiatorEntityHash 发起者实体
+ * @returns {Promise<boolean>} 可定稿
+ */
+async function canFinalizeOrphanAsInitiator(username, groupId, initiatorEntityHash) {
+	try {
+		const { state } = await getState(username, groupId)
+		const sender = await peekLocalSignerPubKeyHash(username, groupId, initiatorEntityHash)
+		return !!(sender && resolveActiveMemberKey(state, sender))
+	}
+	catch {
+		return false
+	}
+}
+
+/**
+ * shell Load 时扫描悬挂通话并定稿。
+ * 群已空 / 发起者不再活跃等无法定稿时直接丢掉本地锚点，避免每次 Load 刷同一条错。
+ * @param {string} username replica
+ * @returns {Promise<number>} 收尾条数（含丢弃）
  */
 export async function reconcileOrphanedCalls(username) {
 	const data = loadActiveCalls(username)
 	const calls = Object.values(data.calls || {})
 	let n = 0
+	let dirty = false
 	for (const row of calls) {
-		if (!row?.messageEventId || !row.initiator) continue
+		const callId = row?.callId
+		if (!callId) continue
+		if (!row.messageEventId || !row.initiator) {
+			delete data.calls[callId]
+			dirty = true
+			n++
+			continue
+		}
 		const key = callKey(row.groupId, row.channelId)
 		if (liveCalls.has(key)) continue
-		try {
+		const canFinalize = await canFinalizeOrphanAsInitiator(username, row.groupId, row.initiator)
+		if (canFinalize) try {
 			const endedAt = Date.now()
 			await appendFinalEditWithRetry(username, row.groupId, {
 				type: 'message_edit',
@@ -293,14 +344,13 @@ export async function reconcileOrphanedCalls(username) {
 					},
 				},
 			}, { entityHash: row.initiator })
-			delete data.calls[row.callId]
-			n++
 		}
-		catch (error) {
-			console.error('call: reconcile orphan failed', row.callId, error)
-		}
+		catch { /* 仍丢本地锚点 */ }
+		delete data.calls[callId]
+		dirty = true
+		n++
 	}
-	if (n) saveActiveCalls(username, data)
+	if (dirty) saveActiveCalls(username, data)
 	return n
 }
 
@@ -309,8 +359,6 @@ export async function reconcileOrphanedCalls(username) {
  * @returns {Promise<void>}
  */
 export async function reconcileAllOrphanedCalls() {
-	const { getAllUserNames } = await import('../../../../../../../server/auth/index.mjs')
-	const names = typeof getAllUserNames === 'function' ? getAllUserNames() : []
-	for (const username of names)
+	for (const username of getAllUserNames())
 		await reconcileOrphanedCalls(username).catch(error => console.error('call: reconcile', username, error))
 }

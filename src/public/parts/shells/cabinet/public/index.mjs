@@ -9,7 +9,7 @@ import { CABINET_APP_GATE } from './src/gate.mjs'
 import { bootFromHash, refreshCabinets } from './src/navigation.mjs'
 import { wireBootstrap } from './src/wiring.mjs'
 
-await initTranslations()
+await initTranslations('cabinet')
 
 const cabinetGate = createReadyGate(CABINET_APP_GATE)
 cabinetGate.markPending()

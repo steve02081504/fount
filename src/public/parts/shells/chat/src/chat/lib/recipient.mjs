@@ -17,10 +17,6 @@ export async function resolveChatRecipient(username, requestedRecipient) {
 		return operator
 	}
 	if (operator && requested === operator) return requested
-	const fs = await import('node:fs')
-	const path = await import('node:path')
-	const { getUserDictionary } = await import('../../../../../../../server/auth/index.mjs')
-	const charPart = resolveAgentCharPartName(username, requested, getUserDictionary, fs, path)
-	if (charPart) return requested
+	if (resolveAgentCharPartName(username, requested)) return requested
 	throw httpError(403, 'invalid recipientEntityHash')
 }
