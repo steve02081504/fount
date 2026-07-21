@@ -101,5 +101,7 @@ flowchart TB
 | 1 | F | **已合并**（含 floatingPanel/catbox 等后续修） | https://github.com/steve02081504/fount/pull/238 |
 | 2 | C2 | **已合并** | https://github.com/steve02081504/fount/pull/239 |
 | 2 | H | **已合并** | https://github.com/steve02081504/fount/pull/240 |
-| 3 | G | 已开 PR | https://github.com/steve02081504/fount/pull/241 |
-| 3+ | I–K | 阻于 H（及 G） | |
+| 3 | G | **已合并** | https://github.com/steve02081504/fount/pull/241 |
+| 3 | I | 已开 PR | Social |
+| 3 | J | 已开 PR | Cabinet |
+| 3+ | K | 待开 | 其它 shells/parts |
