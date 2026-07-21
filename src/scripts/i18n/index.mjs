@@ -3,12 +3,12 @@ export * from './bare.mjs'
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { getUserByUsername } from '../../server/auth/index.mjs'
 import { events } from '../../server/events.mjs'
 import { getRegistry } from '../../server/registries.mjs'
 import { loadData, saveData } from '../../server/setting_loader.mjs'
 import { sendEventToAll } from '../../server/web_server/event_dispatcher.mjs'
 import { loadJsonFile } from '../json_loader.mjs'
+import { localesForUser } from '../locale.mjs'
 
 import {
 	getbestlocale,
@@ -34,8 +34,8 @@ import {
 export async function getLocaleDataForUser(username, preferredlocaleList) {
 	if (!username) return getLocaleData(preferredlocaleList)
 	const effectivePreferred = [
-		...getUserByUsername(username)?.locales ?? [],
-		...preferredlocaleList ?? [],
+		...localesForUser(username),
+		...preferredlocaleList,
 	]
 	const result = {
 		...getLocaleData(effectivePreferred)
@@ -48,7 +48,7 @@ export async function getLocaleDataForUser(username, preferredlocaleList) {
 		let partdata
 		if (fs.statSync(fsPath).isDirectory()) {
 			const localeFiles = fs.readdirSync(fsPath).filter(f => f.endsWith('.json'))
-			const resultLocale = getbestlocale(effectivePreferred, localeFiles.map(f => f.slice(0, -5)))
+			const resultLocale = getbestlocale(effectivePreferred, localeFiles.map(f => ({ id: f.slice(0, -5) })))
 			partsLocaleCache[entry.partpath] ??= {}
 			partdata = partsLocaleCache[entry.partpath][resultLocale]
 				??= loadJsonFile(path.join(fsPath, `${resultLocale}.json`))
@@ -62,10 +62,10 @@ export async function getLocaleDataForUser(username, preferredlocaleList) {
 }
 
 events.on('part-loaded', ({ username, partpath }) => {
-	delete loadData(username, 'parts_locales_cache')?.[partpath]
+	delete loadData(username, 'parts_locales_cache')[partpath]
 })
 events.on('part-uninstalled', ({ username, partpath }) => {
-	delete loadData(username, 'parts_locales_cache')?.[partpath]
+	delete loadData(username, 'parts_locales_cache')[partpath]
 	saveData(username, 'parts_locales_cache')
 })
 

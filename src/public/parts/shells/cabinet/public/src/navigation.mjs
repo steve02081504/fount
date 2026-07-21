@@ -270,8 +270,9 @@ export async function bootFromHash() {
 	if (hash.startsWith('cabinet:')) return openHashCabinet(8)
 	if (hash.startsWith('user:')) {
 		const parts = hash.slice(5).split('/')
-		setBrowseMode(parts[0].toLowerCase())
-		const data = await api('GET', `/remote/${encodeURIComponent(parts[0])}/cabinets`)
+		const entityHash = parts[0].toLowerCase()
+		setBrowseMode(entityHash)
+		const data = await api('GET', `/remote/${encodeURIComponent(entityHash)}/cabinets`)
 		cabinetStore.cabinets = data.cabinets || []
 		renderCabinetList()
 		const cabinetId = parts[1] || cabinetStore.cabinets[0]?.cabinet_id

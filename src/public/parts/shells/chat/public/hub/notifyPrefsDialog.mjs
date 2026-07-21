@@ -56,7 +56,7 @@ export async function openChannelNotifyPrefsDialog(groupId, channelId) {
 		 */
 		onSave: async dialog => {
 			const channelPrefs = readNotifyPrefsFromDialog(dialog, current)
-			const nextGroup = { ...group, channels: { ...group.channels || {}, [channelId]: channelPrefs } }
+			const nextGroup = { ...group, channels: { ...group.channels, [channelId]: channelPrefs } }
 			await saveNotificationPreferences({ ...prefs, [groupId]: nextGroup })
 			showToastI18n('success', 'chat.hub.notifyPrefs.saved')
 			dialog.close()

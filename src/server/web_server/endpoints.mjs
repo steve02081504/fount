@@ -310,7 +310,9 @@ export function registerEndpoints(router) {
 		const { username } = getUserByReq(req)
 		const { partpath, args } = req.body
 		const ipc = await processIPCCommand('runpart', { username, partpath, args })
-		const result = ipc?.data?.result
+		if (ipc.status === 'error')
+			return res.status(500).json({ message: ipc.message })
+		const result = ipc.data.result
 		res.status(200).json(
 			result && typeof result === 'object' && !Array.isArray(result)
 				? { message: 'Shell command sent successfully.', ...result }

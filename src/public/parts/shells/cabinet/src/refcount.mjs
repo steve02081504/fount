@@ -104,7 +104,7 @@ export async function gcOrphanAfterUnlink(username, entityHash, linkEntry) {
 		return
 	}
 
-	const { deleteSharedEntries } = await import('./shared/ops.mjs')
+	const { deleteSharedEntries } = await import('./shared/entries.mjs')
 	const sharedIndex = await loadSharedIndex(username, cabinetId)
 	const target = sharedIndex.entries.find(row => row.id === entryId)
 	if (target?.orphaned)

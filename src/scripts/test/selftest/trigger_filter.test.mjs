@@ -29,7 +29,7 @@ Deno.test('isContentFresh stays fresh when only docs or manifest change', () => 
 		'src/public/parts/shells/chat/public/hub/AGENTS.md',
 		'src/public/parts/shells/chat/test/manifest.json',
 	]
-	assertEquals(isContentFresh(s, makeStateEntry(), changed, new Map()), true)
+	assertEquals(isContentFresh(s, makeStateEntry(), changed, null), true)
 })
 
 Deno.test('collectTriggerEvidence skips doc-only changes', () => {

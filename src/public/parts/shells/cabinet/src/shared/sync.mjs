@@ -10,27 +10,27 @@ import { resolveUsernameForPartpath } from '../../../../../../server/p2p_server/
 
 import { loadSharedKeys } from './keys.mjs'
 import { persistSharedSnapshot } from './materialize.mjs'
-import { ingestSharedOp, loadSharedOps } from './oplog.mjs'
+import { getKnownOperationIds, ingestSharedOperation, loadSharedOperations } from './operationLog.mjs'
 
 const FANOUT_LIMIT = 16
 
 /**
  * @param {string} username 用户
  * @param {string} cabinetId 柜
- * @param {object} op op
+ * @param {object} operation 操作
  * @returns {Promise<void>}
  */
-export async function broadcastSharedOp(username, cabinetId, op) {
+export async function broadcastSharedOperation(username, cabinetId, operation) {
 	await ensureUserRoom({ replicaUsername: username }).catch(() => { })
 	const provider = requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER)
 	await provider.fanoutToTopNodes(
 		username,
-		'part_cabinet_op_put',
+		'part_cabinet_operation_put',
 		{
 			nodeHash: getNodeHash(),
 			partpath: getShellPartpath('cabinet'),
 			cabinetId,
-			op,
+			operation,
 		},
 		FANOUT_LIMIT,
 	)
@@ -38,17 +38,19 @@ export async function broadcastSharedOp(username, cabinetId, op) {
 
 /**
  * @param {string} username 用户
- * @param {{ cabinetId: string, op: object, peerNodeHash?: string }} payload 载荷
+ * @param {{ cabinetId: string, operation: object, peerNodeHash?: string }} payload 载荷
  * @returns {Promise<'accepted' | 'duplicate' | 'rejected' | 'unknown'>} 结果
  */
-export async function handleIncomingSharedOp(username, payload) {
+export async function handleIncomingSharedOperation(username, payload) {
 	const cabinetId = String(payload.cabinetId || '')
-	const op = payload.op
-	if (!cabinetId || !op) return 'unknown'
+	const { operation } = payload
+	if (!cabinetId || !operation) return 'unknown'
 	const keys = await loadSharedKeys(username, cabinetId)
 	if (!keys?.write_pubkey) return 'unknown'
-	const result = await ingestSharedOp(username, cabinetId, op, keys.write_pubkey, {
+	const knownOperationIds = await getKnownOperationIds(username, cabinetId)
+	const result = await ingestSharedOperation(username, cabinetId, operation, keys.write_pubkey, {
 		peerNodeHash: payload.peerNodeHash,
+		knownOperationIds,
 	})
 	if (result === 'accepted') await persistSharedSnapshot(username, cabinetId)
 	return result
@@ -57,28 +59,28 @@ export async function handleIncomingSharedOp(username, payload) {
 /**
  * @param {string} username 用户
  * @param {string} cabinetId 柜
- * @param {string[]} [haveOpIds] 对端已有
- * @returns {Promise<object[]>} 缺失 ops
+ * @param {string[]} [haveOperationIds] 对端已有
+ * @returns {Promise<object[]>} 缺失操作
  */
-export async function exportMissingSharedOps(username, cabinetId, haveOpIds = []) {
-	const have = new Set(haveOpIds)
-	const ops = await loadSharedOps(username, cabinetId)
-	return ops.filter(op => !have.has(op.op_id))
+export async function exportMissingSharedOperations(username, cabinetId, haveOperationIds = []) {
+	const have = new Set(haveOperationIds)
+	return (await loadSharedOperations(username, cabinetId))
+		.filter(operation => !have.has(operation.operation_id))
 }
 
 /**
- * 注册 part_cabinet_op_put 投递入站。
+ * 注册 part_cabinet_operation_put 投递入站。
  * @returns {void}
  */
-export function registerCabinetOpInbound() {
-	registerDeliveryInboundHandler('part_cabinet_op_put', async (ctx, message) => {
+export function registerCabinetOperationInbound() {
+	registerDeliveryInboundHandler('part_cabinet_operation_put', async (context, message) => {
 		const partpath = normalizePartpath(message.partpath) || getShellPartpath('cabinet')
-		const username = await resolveUsernameForPartpath(ctx.replicaUsername, partpath)
+		const username = await resolveUsernameForPartpath(context.replicaUsername, partpath)
 		if (!username) return
-		await handleIncomingSharedOp(username, {
+		await handleIncomingSharedOperation(username, {
 			cabinetId: message.cabinetId,
-			op: message.op,
-			peerNodeHash: ctx.requesterNodeHash ?? message.nodeHash,
+			operation: message.operation,
+			peerNodeHash: context.requesterNodeHash ?? message.nodeHash,
 		})
 	})
 }
@@ -92,50 +94,70 @@ export function registerCabinetOpInbound() {
  */
 export async function handleCabinetP2PInvoke(username, data, ingress = {}) {
 	const kind = String(data?.kind || '')
-	if (kind === 'cabinet_op_put') {
-		const result = await handleIncomingSharedOp(username, {
-			cabinetId: data.cabinetId,
-			op: data.op,
-			peerNodeHash: ingress.requesterNodeHash,
-		})
-		return { result: { status: result } }
-	}
-	if (kind === 'cabinet_op_pull') {
-		const ops = await exportMissingSharedOps(username, String(data.cabinetId || ''), data.haveOpIds || [])
-		return { result: { ops } }
-	}
+	if (kind === 'cabinet_operation_put')
+		return {
+			result: {
+				status: await handleIncomingSharedOperation(username, {
+					cabinetId: data.cabinetId,
+					operation: data.operation,
+					peerNodeHash: ingress.requesterNodeHash,
+				}),
+			},
+		}
+	if (kind === 'cabinet_operation_pull')
+		return {
+			result: {
+				operations: await exportMissingSharedOperations(
+					username,
+					String(data.cabinetId || ''),
+					data.haveOperationIds || [],
+				),
+			},
+		}
 	return { error: { message: 'unknown_kind', code: 'UNKNOWN' } }
 }
 
 /**
- * best-effort：经 part_invoke 向邻居拉缺失 ops。
+ * best-effort：经 part_invoke 向邻居拉缺失操作。
  * @param {string} username 用户
  * @param {string} cabinetId 柜
  * @returns {Promise<number>} 新接受数
  */
-export async function pullSharedOpsFromNetwork(username, cabinetId) {
-	const local = await loadSharedOps(username, cabinetId)
-	const haveOpIds = local.map(op => op.op_id)
+export async function pullSharedOperationsFromNetwork(username, cabinetId) {
+	const knownOperationIds = await getKnownOperationIds(username, cabinetId)
 	await ensureUserRoom({ replicaUsername: username }).catch(() => { })
 	try {
 		const replies = await collectPartInvokeResponses(
 			username,
 			getShellPartpath('cabinet'),
-			{ kind: 'cabinet_op_pull', cabinetId, haveOpIds },
+			{
+				kind: 'cabinet_operation_pull',
+				cabinetId,
+				haveOperationIds: [...knownOperationIds],
+			},
 			2500,
 			FANOUT_LIMIT,
 		)
 		const keys = await loadSharedKeys(username, cabinetId)
 		if (!keys?.write_pubkey) return 0
-		let accepted = 0
-		for (const reply of replies || []) {
-			const ops = reply?.result?.ops
-			if (!Array.isArray(ops)) continue
-			for (const op of ops) {
-				const result = await ingestSharedOp(username, cabinetId, op, keys.write_pubkey)
-				if (result === 'accepted') accepted++
+		/** @type {Map<string, object>} */
+		const incomingById = new Map()
+		for (const reply of replies) {
+			const operations = reply?.result?.operations
+			if (!Array.isArray(operations)) continue
+			for (const operation of operations) {
+				if (
+					!operation?.operation_id
+					|| knownOperationIds.has(operation.operation_id)
+					|| incomingById.has(operation.operation_id)
+				) continue
+				incomingById.set(operation.operation_id, operation)
 			}
 		}
+		let accepted = 0
+		for (const operation of incomingById.values())
+			if (await ingestSharedOperation(username, cabinetId, operation, keys.write_pubkey, { knownOperationIds }) === 'accepted')
+				accepted++
 		if (accepted) await persistSharedSnapshot(username, cabinetId)
 		return accepted
 	}

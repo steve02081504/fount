@@ -1,6 +1,6 @@
 # fount Social 与工业化社交 · 主路径残差
 
-最后核对：`2026-07-18`。写法：[docs/AGENTS.md](../AGENTS.md)。已落地能力不复述；博物馆功能与产品边界「明确不做」项不进摘要。
+最后核对：`2026-07-20`。写法：[docs/AGENTS.md](../AGENTS.md)。已落地能力不复述；博物馆功能与产品边界「明确不做」项不进摘要。
 
 关联：[chat-vs-industrial-im-gap.md](./chat-vs-industrial-im-gap.md)、[human-agent-operational-parity-review.md](./human-agent-operational-parity-review.md)、[chat-social-cabinet-tech-stack.md](./chat-social-cabinet-tech-stack.md)。
 
@@ -35,12 +35,12 @@ Feed replay：删除/屏蔽/mute 须 `purgeFeedShownPost` / `purgeFeedShownAutho
 
 ## 二、内容形态（仍有缝的）
 
-| 功能 | 现状 | 用户可见缺口 |
-| --- | --- | --- |
-| **定时发布** | composer `publishAt` + `scheduledPostWatcher` + `GET\|DELETE /posts/scheduled` | 无 `#scheduled` 队列管理页 |
-| **Quote** | `quoteRef` + 预览块 | 无「被谁引用」页（无 `quotedBy` 索引） |
-| **Thread 串发** | `replyTo` + 同页合并 | composer 不能「一次发多帖」 |
-| **富链接** | 前端裸链水合 | 非 oEmbed 入库；刷新前依赖客户端 |
+| 功能 | 路径 | 用户可见缺口 | Not this |
+| --- | --- | --- | --- |
+| **定时发布** | **主路径**：composer `publishAt` + `scheduledPostWatcher` + `GET\|DELETE /posts/scheduled` | 无 `#scheduled` 队列管理页 | 不是完全不能定时发帖 |
+| **Quote** | **主路径**：`quoteRef` + 预览块 | 无「被谁引用」页（无 `quotedBy` 索引） | 不是不能发引用帖 |
+| **Thread 串发** | **主路径**：`replyTo` + 同页合并 | composer 不能「一次发多帖」 | 不是不能逐条回复成串 |
+| **富链接** | **主路径**：前端裸链 OG 水合 | 非 oEmbed 入库；刷新前依赖客户端 | 不是完全无预览 |
 
 草稿箱、短视频流、直播——已齐。
 

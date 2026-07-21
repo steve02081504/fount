@@ -7,6 +7,8 @@
  */
 import { importRegistryModules } from '../api/registries.mjs'
 
+import { positionFloatingPanel, wireOutsideClickClose } from './floatingPanel.mjs'
+
 /**
  * @returns {Promise<object | null>} 首个可用 sticker 提供商
  */
@@ -179,9 +181,7 @@ export async function mountStickerPicker(anchor, onInsert, pickerContext = {}) {
 	panel.id = 'fount-shared-sticker-picker'
 	panel.className = 'fount-sticker-picker card shadow-lg'
 	panel.style.cssText = 'position:fixed;z-index:10000;max-width:360px;max-height:280px;overflow:auto;padding:8px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;'
-	const rect = anchor.getBoundingClientRect()
-	panel.style.left = `${Math.min(rect.left, window.innerWidth - 370)}px`
-	panel.style.top = `${Math.max(8, rect.top - 290)}px`
+	positionFloatingPanel(panel, anchor, { panelWidth: 360, heightOffset: 290 })
 
 	if (!items.length) {
 		const empty = document.createElement('div')
@@ -205,19 +205,7 @@ export async function mountStickerPicker(anchor, onInsert, pickerContext = {}) {
 		}))
 
 	document.body.appendChild(panel)
-	setTimeout(() => {
-		/**
-		 * @param {Event} e 外部点击事件
-		 * @returns {void}
-		 */
-		const close = e => {
-			if (!panel.contains(e.target)) {
-				panel.remove()
-				document.removeEventListener('click', close, true)
-			}
-		}
-		document.addEventListener('click', close, true)
-	}, 0)
+	wireOutsideClickClose(panel, () => panel.remove())
 }
 
 /**

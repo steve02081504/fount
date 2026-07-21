@@ -1,4 +1,5 @@
 import { Buffer } from 'node:buffer'
+import { randomUUID } from 'node:crypto'
 
 import { buildFileManifestFromEnc, encryptPlaintextToParts, vaultWrapDescriptor } from 'npm:@steve02081504/fount-p2p/files/assemble'
 import { saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/files/evfs'
@@ -50,28 +51,21 @@ export async function publishCabinetLists(username, entityHash, cabinets) {
 			mimeType: 'application/json',
 		})
 
-	if (!followersRows.length) return
 	const { masterKey } = await loadVaultMasterKey(username, entityHash)
-	const plaintext = Buffer.from(JSON.stringify({ cabinets: followersRows }), 'utf8')
-	const enc = encryptPlaintextToParts(plaintext, 'random')
 	const fileId = 'cabinets-followers'
-	const descriptor = vaultWrapDescriptor(entityHash, fileId, enc.contentKey, masterKey)
-	const manifest = buildFileManifestFromEnc({
-		ownerEntityHash: entityHash,
+	await storeEvfsManifest(entityHash, {
 		logicalPath: 'shells/cabinet/cabinets.followers.json',
-		plaintext,
+		plaintext: Buffer.from(JSON.stringify({ cabinets: followersRows }), 'utf8'),
 		name: 'cabinets.followers.json',
 		mimeType: 'application/json',
+		visibility: 'followers',
+		transferKeyDescriptor: vaultTransferKeyFactory(entityHash, fileId, masterKey),
 		ceMode: 'random',
-		transferKeyDescriptor: descriptor,
 		meta: {
 			fileId,
-			visibility: 'followers',
 			vaultGroupId: vaultGroupId(entityHash),
 		},
-	}, enc)
-	await storeManifestParts(manifest, enc.parts.map(part => part.raw))
-	await saveFileManifest(manifest)
+	})
 }
 
 /**
@@ -83,7 +77,7 @@ export async function publishCabinetLists(username, entityHash, cabinets) {
  * @returns {Promise<object | null>} manifest
  */
 export async function publishCabinetIndex(username, entityHash, cabinet, index) {
-	const publicEntries = (index.entries || []).filter(entry => !entry.orphaned).map(entry => ({
+	const publicEntries = index.entries.filter(entry => !entry.orphaned).map(entry => ({
 		id: entry.id,
 		name: entry.name,
 		kind: entry.kind,
@@ -93,6 +87,7 @@ export async function publishCabinetIndex(username, entityHash, cabinet, index) 
 		description: entry.description,
 		created: entry.created,
 		modified: entry.modified,
+		evfs_path: entry.evfs_path ?? null,
 		attrs: entry.attrs,
 		preview: entry.preview?.url ? { url: entry.preview.url } : undefined,
 		encryption: entry.encryption ? { locked: true } : null,
@@ -100,7 +95,7 @@ export async function publishCabinetIndex(username, entityHash, cabinet, index) 
 	}))
 	return putCabinetEvfsFile(username, entityHash, {
 		logical_path: evfsCabinetIndexPath(cabinet.cabinet_id),
-		plaintext: Buffer.from(JSON.stringify({ version: index.version || 1, entries: publicEntries }), 'utf8'),
+		plaintext: Buffer.from(JSON.stringify({ version: index.version, entries: publicEntries }), 'utf8'),
 		name: 'index.json',
 		mime_type: 'application/json',
 		visibility: cabinet.visibility,
@@ -182,7 +177,7 @@ export async function putCabinetEvfsFile(username, entityHash, options) {
 		})
 
 	const { masterKey } = await loadVaultMasterKey(username, entityHash)
-	const fileId = logicalPath.replace(/\W+/g, '_').slice(-48) || `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`
+	const fileId = randomUUID()
 	return storeEvfsManifest(entityHash, {
 		logicalPath, plaintext, name, mimeType, visibility,
 		transferKeyDescriptor: vaultTransferKeyFactory(entityHash, fileId, masterKey),

@@ -38,7 +38,7 @@ import {
 	restoreSharedEntries,
 	updateSharedEntry,
 	uploadSharedAndRegister,
-} from './shared/ops.mjs'
+} from './shared/entries.mjs'
 import { issueUnlockToken, resolveFolderUnlock, resolveUnlockToken } from './unlockTokens.mjs'
 
 /**
@@ -196,18 +196,35 @@ export async function updateEntry(username, entityHash, cabinetId, entryId, patc
 
 	if (patch.set_password != null) {
 		if (entry.kind !== 'folder') throw new Error('only folders support passwords')
-		const encryption = createFolderEncryption(String(patch.set_password))
-		const children = index.entries.filter(row => row.parent_id === entryId)
-		const encEntries = children.map(child => normalizeEntry({ ...child, parent_id: null }, entityHash))
-		index.entries = index.entries.filter(row => row.parent_id !== entryId)
-		entry = patchEntry(entry, { encryption }, entityHash)
+		const password = String(patch.set_password)
+		const { folder_key: folderKey, ...encryption } = createFolderEncryption(password)
+		/** @type {object[]} */
+		let encEntries
+		if (entry.encryption) {
+			const oldKey = unlockMeta?.folder_id === entryId ? unlockMeta.folder_key : null
+			if (!oldKey) throw new Error('unlock required to change folder password')
+			encEntries = (await loadEncryptedFolderIndex(
+				username, entityHash, cabinetId, entryId, oldKey,
+			)).entries
+		}
+		else {
+			const subtree = collectSubtreeIds(index.entries, entryId)
+			subtree.delete(entryId)
+			encEntries = index.entries
+				.filter(row => subtree.has(row.id))
+				.map(child => normalizeEntry({
+					...child,
+					parent_id: child.parent_id === entryId ? null : child.parent_id,
+				}, entityHash))
+			index.entries = index.entries.filter(row => !subtree.has(row.id))
+		}
+		entry = patchEntry(index.entries[idx], { encryption }, entityHash)
 		index.entries[idx] = entry
-		await savePersonalIndex(username, entityHash, cabinetId, index)
-		const folderKey = unlockFolderKey(String(patch.set_password), encryption)
 		await saveEncryptedFolderIndex(username, entityHash, cabinetId, entryId, folderKey, {
 			version: 1,
 			entries: encEntries,
 		})
+		await savePersonalIndex(username, entityHash, cabinetId, index)
 		return entry
 	}
 

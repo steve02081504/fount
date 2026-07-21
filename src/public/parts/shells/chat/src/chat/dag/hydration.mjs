@@ -121,7 +121,7 @@ export async function buildChatLogEntriesFromChannelLines(lines, baseSlice, i18n
 			state,
 		)
 		const groupChannelId = resolveChannelId(sourceChannelId, resolveChannelId(line.channelId))
-		entry.extension = { ...entry.extension || {}, groupChannelId }
+		entry.extension = { ...entry.extension, groupChannelId }
 		if (line.content?.streamGenerationFailed && streamFailedNote)
 			entry.content = `${entry.content}\n[${streamFailedNote}]`
 		dagEntries.push(entry)
@@ -196,7 +196,7 @@ async function buildChatLogEntryFromDagMessage(
 	const entry = new chatLogEntry_t()
 	entry.id = content.chatLogEntryId || crypto.randomUUID()
 	if (line.eventId)
-		entry.extension = { ...entry.extension || {}, dagEventId: line.eventId }
+		entry.extension = { ...entry.extension, dagEventId: line.eventId }
 	const resolvedShow = resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText) ?? ''
 	const decryptUnavailableFallback = line.decryptView ? decryptUnavailableText : ''
 	entry.content = editOverride?.content != null
@@ -235,15 +235,15 @@ async function buildChatLogEntryFromDagMessage(
 	const fileCount = editOverride?.fileCount != null ? editOverride.fileCount : content.fileCount
 	if (fileCount != null) entry.extension = { ...entry.extension, dagFileCount: fileCount }
 	if (content.extension?.bridge)
-		entry.extension = { ...entry.extension || {}, bridge: { ...content.extension.bridge } }
+		entry.extension = { ...entry.extension, bridge: { ...content.extension.bridge } }
 	if (content.replyTo)
-		entry.extension = { ...entry.extension || {}, replyTo: { ...content.replyTo } }
+		entry.extension = { ...entry.extension, replyTo: { ...content.replyTo } }
 	const attribution = deriveMessageAttribution(content, {
 		sender: line.sender,
 		signerEntityHash: content.importedFrom?.signerEntityHash || null,
 	})
 	entry.extension = {
-		...entry.extension || {},
+		...entry.extension,
 		attribution,
 		...content.displayName || content.importedFrom
 			? {

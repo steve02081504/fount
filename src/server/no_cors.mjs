@@ -57,7 +57,7 @@ export function buildUpstreamHeaders(req) {
 		const text = Array.isArray(value) ? value.join(', ') : String(value)
 		if (lower.startsWith(NO_CORS_PREFIX)) {
 			const name = lower.slice(NO_CORS_PREFIX.length)
-			if (!name || HOP_BY_HOP.has(name) || name === 'host') continue
+			if (!name || HOP_BY_HOP.has(name) || name === 'host' || name === 'content-length') continue
 			headers.set(name, text)
 			continue
 		}
@@ -77,6 +77,13 @@ function writeResponseHeaders(upstreamHeaders, res) {
 	for (const [key, value] of upstreamHeaders) {
 		const lower = key.toLowerCase()
 		if (HOP_BY_HOP.has(lower)) continue
+		if (lower === 'set-cookie') {
+			const cookies = typeof upstreamHeaders.getSetCookie === 'function'
+				? upstreamHeaders.getSetCookie()
+				: [value]
+			for (const cookie of cookies) res.append('Set-Cookie', cookie)
+			continue
+		}
 		res.append(key, value)
 	}
 }

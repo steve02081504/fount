@@ -116,12 +116,16 @@ export function pickFromDialog(templateName, data = {}, options = {}) {
 		openDialogFromTemplate(templateName, data, {
 			/** @param {HTMLDialogElement} dialogElement 对话框 */
 			onReady: dialogElement => {
+				let settled = false
 				/** @param {unknown} value 用户选择结果 */
 				const finish = value => {
-					dialogElement.close()
+					if (settled) return
+					settled = true
+					if (dialogElement.open) dialogElement.close()
 					resolve(value)
 				}
 				dialogElement.addEventListener('cancel', () => finish(null), { once: true })
+				dialogElement.addEventListener('close', () => finish(null), { once: true })
 				for (const sel of cancelSelectors)
 					dialogElement.querySelector(sel)?.addEventListener('click', () => finish(null), { once: true })
 				for (const button of dialogElement.querySelectorAll(resolveOn))

@@ -2,6 +2,7 @@
  * 可恢复删除 / 创建 / 补丁 的撤销历史工厂。
  */
 import { cabinetApi } from './api.mjs'
+import { currentUnlockToken } from './state.mjs'
 
 /** @returns {Promise<void>} */
 async function refreshEntries() {
@@ -42,18 +43,19 @@ export async function restoreRecovery(cabinetId, recoveryToken, unlock) {
 }
 
 /**
- * @param {{ label: string, cabinetId: string, ids: string[], token?: string, create?: boolean }} opts 选项
+ * @param {{ label: string, cabinetId: string, ids: string[], token?: string, create?: boolean, unlock?: string }} opts 选项
  * @returns {import('./commandHistory.mjs').HistoryEntry} 历史
  */
-function makeRecoveryHistory({ label, cabinetId, ids, token, create }) {
+function makeRecoveryHistory({ label, cabinetId, ids, token, create, unlock }) {
 	let recoveryToken = token
+	const unlockToken = unlock
 	/* eslint-disable jsdoc/require-jsdoc -- history callbacks */
 	return {
 		label,
 		async undo() {
-			if (create) recoveryToken = (await recoverableDelete(cabinetId, ids)).recovery_token
+			if (create) recoveryToken = (await recoverableDelete(cabinetId, ids, unlockToken)).recovery_token
 			else if (recoveryToken) {
-				await restoreRecovery(cabinetId, recoveryToken)
+				await restoreRecovery(cabinetId, recoveryToken, unlockToken)
 				recoveryToken = undefined
 			}
 			await refreshEntries()
@@ -61,10 +63,10 @@ function makeRecoveryHistory({ label, cabinetId, ids, token, create }) {
 		async redo() {
 			if (create) {
 				if (!recoveryToken) return
-				await restoreRecovery(cabinetId, recoveryToken)
+				await restoreRecovery(cabinetId, recoveryToken, unlockToken)
 				recoveryToken = undefined
 			}
-			else recoveryToken = (await recoverableDelete(cabinetId, ids)).recovery_token
+			else recoveryToken = (await recoverableDelete(cabinetId, ids, unlockToken)).recovery_token
 			await refreshEntries()
 		},
 		async discard() {
@@ -79,20 +81,22 @@ function makeRecoveryHistory({ label, cabinetId, ids, token, create }) {
  * @param {string[]} createdIds 新建 id
  * @param {string} label 标签
  * @param {string} cabinetId 柜
+ * @param {string} [unlock] 创建时的 unlock token
  * @returns {import('./commandHistory.mjs').HistoryEntry} 历史
  */
-export function makeCreateHistory(createdIds, label, cabinetId) {
-	return makeRecoveryHistory({ label, cabinetId, ids: createdIds, create: true })
+export function makeCreateHistory(createdIds, label, cabinetId, unlock = currentUnlockToken()) {
+	return makeRecoveryHistory({ label, cabinetId, ids: createdIds, create: true, unlock })
 }
 
 /**
  * @param {string[]} ids 条目
  * @param {string} [initialToken] 首次删除 token
  * @param {string} cabinetId 柜
+ * @param {string} [unlock] 删除时的 unlock token
  * @returns {import('./commandHistory.mjs').HistoryEntry} 历史
  */
-export function makeDeleteHistory(ids, initialToken, cabinetId) {
-	return makeRecoveryHistory({ label: 'delete', cabinetId, ids, token: initialToken })
+export function makeDeleteHistory(ids, initialToken, cabinetId, unlock = currentUnlockToken()) {
+	return makeRecoveryHistory({ label: 'delete', cabinetId, ids, token: initialToken, unlock })
 }
 
 /**

@@ -410,10 +410,12 @@ export type LocaleData = {
 			reportPathFinal: string
 			statePathFinal: string
 			blocked: string
+			speculativeDiscard: string
 			continueImperfect: string
 			outdatedSelected: string
 			runningSuite: {
 				base: string
+				speculative: string
 				heavy: string
 				expected: string
 			}
@@ -434,6 +436,7 @@ export type LocaleData = {
 			terminateDurationDefault: string
 			terminateMarker: string
 			terminateUnknown: string
+			terminateSpeculative: string
 			nothingToContinue: string
 			triggerNoMatch: string
 			triggerNoMatchSummary: string
@@ -1353,6 +1356,7 @@ export type LocaleData = {
 		}
 		profile: {
 			edit: string
+			viewPosts: string
 			settingsBtn: {
 				'aria-label': string
 			}
@@ -1408,6 +1412,7 @@ export type LocaleData = {
 			aliasSaved: string
 			replies: string
 			copyLink: string
+			downloadHtml: string
 			copied: string
 			more: {
 				'aria-label': string
@@ -5145,6 +5150,7 @@ export type LocaleData = {
 		unlockFolder: string
 		unlock: string
 		unlockFailed: string
+		previewFailed: string
 		created: string
 		modified: string
 		statusCount: string
@@ -5225,6 +5231,7 @@ export type LocaleKeyParams = {
 	'cabinet.brokenLink': { reason: string | number }
 	'cabinet.created': { stamp: string | number }
 	'cabinet.modified': { stamp: string | number }
+	'cabinet.previewFailed': { error: string | number }
 	'cabinet.statusCount': { count: string | number; selected: string | number }
 	'cabinet.unlockFailed': { error: string | number }
 	'chat.dragAndDrop.charAdded': { partName: string | number }
@@ -5537,6 +5544,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.runningSuite.expected': { expected: string | number }
 	'fountConsole.test.selectedSuites': { selected: string | number; total: string | number }
 	'fountConsole.test.silentPassedMany': { count: string | number }
+	'fountConsole.test.speculativeDiscard': { deps: string | number; label: string | number }
 	'fountConsole.test.state.artifacts': { path: string | number }
 	'fountConsole.test.statePathFinal': { path: string | number }
 	'fountConsole.test.suiteHeader': { name: string | number }
@@ -5544,6 +5552,7 @@ export type LocaleKeyParams = {
 	'fountConsole.test.terminateDurationDefault': { elapsed: string | number; label: string | number; limit: string | number }
 	'fountConsole.test.terminateIdle': { elapsed: string | number; idleSec: string | number; label: string | number; minutes: string | number }
 	'fountConsole.test.terminateMarker': { reason: string | number }
+	'fountConsole.test.terminateSpeculative': { label: string | number }
 	'fountConsole.test.terminateUnknown': { label: string | number }
 	'fountConsole.test.terminated': { label: string | number; reason: string | number }
 	'fountConsole.test.triggerNoMatch': { pattern: string | number; scope: string | number }

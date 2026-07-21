@@ -98,13 +98,13 @@ export function registerGroupEmojiRoutes(router, authenticate) {
 	})
 
 	router.get(`${CHAT_API_PREFIX}/emoji-content/:groupId/:emojiId`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { groupId, emojiId } = req.params
 		return sendEmojiContentResponse(req, res, username, groupId, emojiId)
 	})
 
 	router.get(`${GROUPS_PREFIX}/:groupId/emojis/:emojiId/data`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { groupId, emojiId } = req.params
 		return sendEmojiContentResponse(req, res, username, groupId, emojiId)
 	})

@@ -29,7 +29,7 @@ import { GROUPS_PREFIX } from './path.mjs'
  * 注册群文件 HTTP 路由（§10.3 收敛加密）。
  * @param {import('npm:express').Router} router 路由
  * @param {import('npm:express').RequestHandler} authenticate 鉴权中间件
- * @param {(req: import('npm:express').Request) => Promise<{ username: string }>} getUserByReq 解析用户
+ * @param {(req: import('npm:express').Request) => { username: string }} getUserByReq 解析用户
  * @param {(username: string, groupId: string) => Promise<{ state: object }>} getState 物化状态
  * @param {(state: object, member: object, permission: string, channelId: string) => boolean} canInChannel 权限检查
  * @param {typeof import('../../../../../../../permissions/chat.mjs').PERMISSIONS} PERMISSIONS 权限常量
@@ -37,22 +37,22 @@ import { GROUPS_PREFIX } from './path.mjs'
  */
 export function registerGroupFileRoutes(router, authenticate, getUserByReq, getState, canInChannel, PERMISSIONS) {
 	router.post(`${GROUPS_PREFIX}/:groupId/chunks/have`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const groupId = req.params.groupId
 		const { state } = await getState(username, groupId)
 		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state))
 			return res.status(403).json({ error: 'Not a member' })
 
-		const ceMode = normalizeCeMode(req.body?.ceMode)
+		const ceMode = normalizeCeMode(req.body.ceMode)
 		if (ceMode === 'random')
 			return res.status(200).json({ ciphertextHash: null, have: false, storageLocator: null })
 
-		const ciphertextHash = String(req.body?.ciphertextHash || '').trim().toLowerCase()
+		const ciphertextHash = String(req.body.ciphertextHash || '').trim().toLowerCase()
 		if (!isHex64(ciphertextHash))
 			return res.status(400).json({ error: 'ciphertextHash required' })
 
 		const have = await hasCiphertextBlob(username, ciphertextHash)
-		const sizeHint = Number(req.body?.size)
+		const sizeHint = Number(req.body.size)
 		let sizeOk = true
 		if (have && Number.isFinite(sizeHint) && sizeHint >= 0)
 			try {
@@ -71,7 +71,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/chunks`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const groupId = req.params.groupId
 		const { fileId, data } = parseChunkBody(req.body)
 		const { state } = await getState(username, groupId)
@@ -79,12 +79,12 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		if (!memberKey)
 			return res.status(403).json({ error: 'Not a member' })
 		const member = state.members[memberKey]
-		const permChannelId = uploadPermissionChannelId(state, req.body?.channelId)
+		const permChannelId = uploadPermissionChannelId(state, req.body.channelId)
 		if (!canInChannel(state, member, PERMISSIONS.UPLOAD_FILES, permChannelId))
 			return res.status(403).json({ error: 'No permission to upload files' })
 
-		const ceMode = normalizeCeMode(req.body?.ceMode)
-		if (req.body?.registerOnly) {
+		const ceMode = normalizeCeMode(req.body.ceMode)
+		if (req.body.registerOnly) {
 			if (ceMode === 'random')
 				return res.status(400).json({ error: 'registerOnly not supported for random ceMode' })
 			const registered = await registerEncryptedChunkIfPresent(username, groupId, { fileId, data, ceMode })
@@ -97,14 +97,14 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 			...await putEncryptedChunk(username, groupId, {
 				fileId,
 				data,
-				channelId: String(req.body?.channelId || '').trim() || undefined,
+				channelId: String(req.body.channelId || '').trim() || undefined,
 				ceMode,
 			})
 		})
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/files`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const groupId = req.params.groupId
 		const { body } = req
 		const fileId = body.fileId?.trim()
@@ -147,7 +147,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 	})
 
 	router.delete(`${GROUPS_PREFIX}/:groupId/files/:fileId`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const groupId = req.params.groupId
 		const fileId = decodeURIComponent(req.params.fileId)
 		const { state } = await getState(username, groupId)
@@ -167,7 +167,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 	})
 
 	router.get(`${GROUPS_PREFIX}/:groupId/files/:fileId/meta`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const groupId = req.params.groupId
 		const fileId = decodeURIComponent(req.params.fileId)
 		const { state } = await getState(username, groupId)
@@ -199,7 +199,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 	})
 
 	router.get(`${GROUPS_PREFIX}/:groupId/files/:fileId/download-status`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const groupId = req.params.groupId
 		const fileId = decodeURIComponent(req.params.fileId)
 		const { state } = await getState(username, groupId)
@@ -216,7 +216,7 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/files/:fileId/download-resume`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const groupId = req.params.groupId
 		const fileId = decodeURIComponent(req.params.fileId)
 		const { state } = await getState(username, groupId)

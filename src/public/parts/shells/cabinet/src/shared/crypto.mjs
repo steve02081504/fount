@@ -13,7 +13,7 @@ function payloadAesKey(readKeyHex, cabinetId, generation) {
 	return Buffer.from(hkdfSync(
 		'sha256',
 		Buffer.from(readKeyHex, 'hex'),
-		`cabinet-op:${String(cabinetId)}:${String(generation)}`,
+		`cabinet-operation:${cabinetId}:${generation}`,
 		'',
 		32,
 	))
@@ -26,7 +26,7 @@ function payloadAesKey(readKeyHex, cabinetId, generation) {
  * @param {number} generation 代际
  * @returns {{ iv: string, ciphertext: string, authTag: string }} 密文信封
  */
-export function encryptOpPayload(payload, readKeyHex, cabinetId, generation) {
+export function encryptOperationPayload(payload, readKeyHex, cabinetId, generation) {
 	const key = payloadAesKey(readKeyHex, cabinetId, generation)
 	const iv = randomBytes(12)
 	const cipher = createCipheriv('aes-256-gcm', key, iv)
@@ -48,17 +48,16 @@ export function encryptOpPayload(payload, readKeyHex, cabinetId, generation) {
  * @param {number} generation 代际
  * @returns {object | null} 明文
  */
-export function decryptOpPayload(envelope, readKeyHex, cabinetId, generation) {
+export function decryptOperationPayload(envelope, readKeyHex, cabinetId, generation) {
 	if (!envelope?.iv || !envelope?.ciphertext || !envelope?.authTag) return null
 	try {
 		const key = payloadAesKey(readKeyHex, cabinetId, generation)
 		const decipher = createDecipheriv('aes-256-gcm', key, Buffer.from(envelope.iv, 'base64'))
 		decipher.setAuthTag(Buffer.from(envelope.authTag, 'base64'))
-		const plain = Buffer.concat([
+		return JSON.parse(Buffer.concat([
 			decipher.update(Buffer.from(envelope.ciphertext, 'base64')),
 			decipher.final(),
-		]).toString('utf8')
-		return JSON.parse(plain)
+		]).toString('utf8'))
 	}
 	catch {
 		return null
@@ -66,42 +65,43 @@ export function decryptOpPayload(envelope, readKeyHex, cabinetId, generation) {
 }
 
 /**
- * @param {object} op 未签名 op（不含 sig）
+ * @param {object} operation 未签名操作（不含 sig）
  * @returns {Uint8Array} 签名字节
  */
-export function opSignBytes(op) {
-	const canonical = JSON.stringify({
-		op_id: op.op_id,
-		hlc: op.hlc,
-		gen: op.gen,
-		entry_id: op.entry_id,
-		action: op.action,
-		payload_ciphertext: op.payload_ciphertext,
-	})
-	return Buffer.from(canonical, 'utf8')
+export function operationSignBytes(operation) {
+	return Buffer.from(JSON.stringify({
+		operation_id: operation.operation_id,
+		hlc: operation.hlc,
+		gen: operation.gen,
+		entry_id: operation.entry_id,
+		action: operation.action,
+		payload_ciphertext: operation.payload_ciphertext,
+	}), 'utf8')
 }
 
 /**
- * @param {object} op 未签名 op
+ * @param {object} operation 未签名操作
  * @param {Uint8Array} writeSecretKey 写私钥种子
- * @returns {Promise<object>} 带 sig 的 op
+ * @returns {Promise<object>} 带 sig 的操作
  */
-export async function signOp(op, writeSecretKey) {
-	const sig = await sign(opSignBytes(op), writeSecretKey)
-	return { ...op, sig: Buffer.from(sig).toString('hex') }
+export async function signOperation(operation, writeSecretKey) {
+	return {
+		...operation,
+		sig: Buffer.from(await sign(operationSignBytes(operation), writeSecretKey)).toString('hex'),
+	}
 }
 
 /**
- * @param {object} op 带 sig 的 op
+ * @param {object} operation 带 sig 的操作
  * @param {Uint8Array | string} writePublicKey 写公钥（32B 或 64 hex）
  * @returns {Promise<boolean>} 验签结果
  */
-export async function verifyOp(op, writePublicKey) {
-	if (!op?.sig) return false
-	const pub = typeof writePublicKey === 'string'
+export async function verifyOperation(operation, writePublicKey) {
+	if (!operation?.sig) return false
+	const publicKey = typeof writePublicKey === 'string'
 		? Buffer.from(writePublicKey, 'hex')
 		: writePublicKey
-	return verify(Buffer.from(op.sig, 'hex'), opSignBytes(op), pub)
+	return verify(Buffer.from(operation.sig, 'hex'), operationSignBytes(operation), publicKey)
 }
 
 /**

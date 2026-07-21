@@ -1,4 +1,6 @@
 /* global Deno */
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+
 import { normalizeEntry, listChildren, patchEntry } from '../../src/entryModel.mjs'
 
 Deno.test('orphaned entries hidden from listChildren by default', () => {
@@ -10,12 +12,12 @@ Deno.test('orphaned entries hidden from listChildren by default', () => {
 		kind: 'link',
 		link: { owner_entity_hash: entity, cabinet_id: 'c1', entry_id: 'f1' },
 	}, entity)
-	if (!file.orphaned) throw new Error('orphaned flag missing')
+	assertEquals(file.orphaned, true)
 	const visible = listChildren([file, link], null)
-	if (visible.some(row => row.id === 'f1')) throw new Error('orphaned shown')
-	if (!visible.some(row => row.id === 'l1')) throw new Error('link missing')
+	assertEquals(visible.some(row => row.id === 'f1'), false)
+	assertEquals(visible.some(row => row.id === 'l1'), true)
 	const all = listChildren([file, link], null, { show_orphaned: true })
-	if (!all.some(row => row.id === 'f1')) throw new Error('show_orphaned failed')
+	assertEquals(all.some(row => row.id === 'f1'), true)
 	const patched = patchEntry(file, { orphaned: false }, entity)
-	if (patched.orphaned) throw new Error('patch orphaned failed')
+	assertEquals(patched.orphaned, false)
 })

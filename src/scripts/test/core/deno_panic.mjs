@@ -291,6 +291,9 @@ ${panic.excerpt}
 `
 }
 
+/** 串行化 reportDenoPanic 的读写，避免并发丢失条目或重复开上游 issue。 */
+let panicReportChain = Promise.resolve()
+
 /**
  * 探测测试输出中的 Deno 崩溃并自动上报（去重、版本失效、gh 发布）。
  * 全程 best-effort：任何失败仅告警，绝不打断测试流程。
@@ -301,7 +304,21 @@ ${panic.excerpt}
  * @param {string} params.commitHash fount HEAD 提交 hash
  * @returns {Promise<void>}
  */
-export async function reportDenoPanic({ repoRoot, output, label, commitHash }) {
+export function reportDenoPanic(params) {
+	const next = panicReportChain.finally(() => reportDenoPanicUnlocked(params))
+	panicReportChain = next.catch(() => {})
+	return next
+}
+
+/**
+ * @param {object} params 参数
+ * @param {string} params.repoRoot 仓库根
+ * @param {string} params.output 子进程 stdall
+ * @param {string} params.label suite 标签
+ * @param {string} params.commitHash fount HEAD 提交 hash
+ * @returns {Promise<void>}
+ */
+async function reportDenoPanicUnlocked({ repoRoot, output, label, commitHash }) {
 	const panic = parseDenoPanic(output)
 	if (!panic) return
 

@@ -88,8 +88,7 @@ export async function renderChannelPermissionsPanel(context) {
 	const overrideRoleIds = Object.keys(permissions)
 	const rolePanels = overrideRoleIds.map(roleId => {
 		const role = context.state.roles[roleId] || { name: roleId, color: '#888' }
-		const allow = permissions[roleId]?.allow || {}
-		const deny = permissions[roleId]?.deny || {}
+		const { allow = {}, deny = {} } = permissions[roleId]
 		return {
 			roleId,
 			name: role.name || roleId,
@@ -154,8 +153,8 @@ export async function renderChannelPermissionsPanel(context) {
 		const nextState = channelPermStateButton.getAttribute('data-state')
 		if (!roleId || !perm || !nextState) return
 		const current = await fetchChannelPermissions(context, context.selectedChannelPermsId)
-		const allow = { ...current[roleId]?.allow || {} }
-		const deny = { ...current[roleId]?.deny || {} }
+		const allow = { ...current[roleId]?.allow }
+		const deny = { ...current[roleId]?.deny }
 		delete allow[perm]
 		delete deny[perm]
 		if (nextState === 'allow') allow[perm] = true

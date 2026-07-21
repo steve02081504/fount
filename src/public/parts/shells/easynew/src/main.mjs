@@ -48,7 +48,7 @@ async function getTemplateDir(username, templateName) {
 export function setEndpoints(router) {
 	router.get('/api/parts/shells\\:easynew/templates', authenticate, async (req, res) => {
 		try {
-			const { username } = await getUserByReq(req)
+			const { username } = getUserByReq(req)
 			const userTemplatesPath = getUserTemplatesPath(username)
 			const defaultTemplatesPath = getDefaultTemplatesPath()
 
@@ -84,7 +84,7 @@ export function setEndpoints(router) {
 
 	router.get('/api/parts/shells\\:easynew/template-html', authenticate, async (req, res) => {
 		try {
-			const { username } = await getUserByReq(req)
+			const { username } = getUserByReq(req)
 			const { templateName } = req.query
 
 			const templateDir = await getTemplateDir(username, templateName)
@@ -100,7 +100,7 @@ export function setEndpoints(router) {
 
 	router.post('/api/parts/shells\\:easynew/create', authenticate, async (req, res) => {
 		try {
-			const { username } = await getUserByReq(req)
+			const { username } = getUserByReq(req)
 			const { templateName } = req.body
 			const templateDir = await getTemplateDir(username, templateName)
 			const templateModulePath = path.join(templateDir, 'main.mjs')

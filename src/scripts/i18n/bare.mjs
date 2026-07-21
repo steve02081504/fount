@@ -63,9 +63,9 @@ export const fountLocaleList = fs.readFileSync(__dirname + '/src/public/locales/
  * @returns {string} 最佳匹配的区域设置。
  */
 export function getbestlocale(preferredlocaleList, localeList) {
-	const available = new Set(localeList.map(l => l?.id ?? l).filter(Boolean))
+	const available = new Set(localeList.map(l => l.id))
 
-	for (const preferred of preferredlocaleList ?? []) {
+	for (const preferred of preferredlocaleList) {
 		if (available.has(preferred))
 			return preferred
 
@@ -87,7 +87,7 @@ const fountLocaleCache = {}
  */
 export function getLocaleData(localeList) {
 	const resultLocale = getbestlocale(localeList, fountLocaleList)
-	return fountLocaleCache[resultLocale] ?? loadJsonFile(__dirname + `/src/public/locales/${resultLocale}.json`)
+	return fountLocaleCache[resultLocale] ??= loadJsonFile(__dirname + `/src/public/locales/${resultLocale}.json`)
 }
 
 /**
@@ -318,81 +318,60 @@ function toString(value) {
 }
 
 /**
- *
- * @param {string} key 键
- * @param {Record<string, unknown>} [params] 插值参数
- * @returns {void} 无
+ * 包装 console 方法：跳过本栈帧并输出翻译文本。
+ * 前缀参数个数取自 `method.length`。
+ * @param {(...args: unknown[]) => void} method - console 方法。
+ * @returns {(...args: unknown[]) => void} *I18n 包装函数。
  */
-console.infoI18n = (key, params = {}) => {
-	try {
-		console.stackFrameSkipCount++
-		console.info(toString(geti18nForTerminal(key, params)))
-	} finally {
-		console.stackFrameSkipCount--
+function makeConsoleI18n(method) {
+	const prefixArgCount = method.length
+	return (...args) => {
+		try {
+			console.stackFrameSkipCount++
+			const prefix = args.slice(0, prefixArgCount)
+			const [key, params = {}] = args.slice(prefixArgCount)
+			return method(...prefix, toString(geti18nForTerminal(key, params)))
+		} finally {
+			console.stackFrameSkipCount--
+		}
 	}
 }
 
 /**
- *
- * @param {string} key 键
- * @param {Record<string, unknown>} [params] 插值参数
+ * 输出本地化后的info日志
+ * @param {LocaleKey} key - 翻译键。
+ * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void} 无
  */
-console.logI18n = (key, params = {}) => {
-	try {
-		console.stackFrameSkipCount++
-		console.log(toString(geti18nForTerminal(key, params)))
-	} finally {
-		console.stackFrameSkipCount--
-	}
-}
-
+console.infoI18n = makeConsoleI18n(console.info)
 /**
- *
- * @param {string} key 键
- * @param {Record<string, unknown>} [params] 插值参数
+ * 输出本地化后的log日志
+ * @param {LocaleKey} key - 翻译键。
+ * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void} 无
  */
-console.warnI18n = (key, params = {}) => {
-	try {
-		console.stackFrameSkipCount++
-		console.warn(toString(geti18nForTerminal(key, params)))
-	} finally {
-		console.stackFrameSkipCount--
-	}
-}
-
+console.logI18n = makeConsoleI18n(console.log)
 /**
- *
- * @param {string} key 键
- * @param {Record<string, unknown>} [params] 插值参数
+ * 输出本地化后的warn日志
+ * @param {LocaleKey} key - 翻译键。
+ * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void} 无
  */
-console.errorI18n = (key, params = {}) => {
-	try {
-		console.stackFrameSkipCount++
-		console.error(toString(geti18nForTerminal(key, params)))
-	} finally {
-		console.stackFrameSkipCount--
-	}
-}
-
+console.warnI18n = makeConsoleI18n(console.warn)
 /**
- *
- * @param {string} id 标识
- * @param {string} key 键
- * @param {Record<string, unknown>} [params] 插值参数
+ * 输出本地化后的error日志
+ * @param {LocaleKey} key - 翻译键。
+ * @param {object} [params] - 可选的参数，用于插值。
  * @returns {void} 无
  */
-console.freshLineI18n = (id, key, params = {}) => {
-	try {
-		console.stackFrameSkipCount++
-		console.freshLine(id, toString(geti18nForTerminal(key, params)))
-	} finally {
-		console.stackFrameSkipCount--
-	}
-}
-
+console.errorI18n = makeConsoleI18n(console.error)
+/**
+ * 输出本地化后的freshLine日志
+ * @param {LocaleKey} key - 翻译键。
+ * @param {object} [params] - 可选的参数，用于插值。
+ * @returns {void} 无
+ */
+console.freshLineI18n = makeConsoleI18n(console.freshLine)
 /**
  * 使用 i18n 显示警报。
  * @param {LocaleKey} key - 翻译键。

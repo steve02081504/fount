@@ -1,6 +1,264 @@
 {
 	"lang": "vi-VN",
 	"name": "Tiếng Việt",
+	"channels": {
+		"title": "Kênh",
+		"description": "Hệ thống quản lý kênh",
+		"create": "Tạo kênh",
+		"subscribe": "Đăng ký",
+		"unsubscribe": "Hủy đăng ký",
+		"settings": "Cài đặt kênh",
+		"list": "Danh sách kênh",
+		"members": "Thành viên",
+		"messages": "Tin nhắn",
+		"permissions": "Cài đặt quyền",
+		"type": {
+			"announcement": "Thông báo",
+			"news": "Tin tức",
+			"updates": "Cập nhật"
+		},
+		"role": {
+			"owner": "Chủ sở hữu",
+			"admin": "Quản trị viên",
+			"moderator": "Điều hành viên",
+			"member": "Thành viên",
+			"subscriber": "Người đăng ký"
+		},
+		"errors": {
+			"notFound": "Kênh không tồn tại",
+			"noPermission": "Không đủ quyền",
+			"alreadySubscribed": "Đã đăng ký kênh này",
+			"notSubscribed": "Chưa đăng ký kênh này"
+		},
+		"success": {
+			"created": "Đã tạo kênh thành công",
+			"updated": "Đã cập nhật kênh thành công",
+			"deleted": "Đã xóa kênh thành công",
+			"subscribed": "Đăng ký thành công",
+			"unsubscribed": "Hủy đăng ký thành công",
+			"posted": "Đã đăng tin nhắn thành công"
+		}
+	},
+	"profile": {
+		"title": "Hồ sơ cá nhân",
+		"description": "Quản lý sự hiện diện công khai của bạn trong trò chuyện và mạng xã hội.",
+		"settingsEyebrow": "Cài đặt tài khoản",
+		"accountAtGlance": "Tổng quan về tài khoản",
+		"advancedKicker": "Cấu hình theo yêu cầu",
+		"advancedSettings": "Cài đặt nâng cao",
+		"advancedDescription": "Không cần điều chỉnh để sử dụng hàng ngày.",
+		"edit": "Chỉnh sửa hồ sơ",
+		"save": "Lưu",
+		"cancel": "Hủy",
+		"displayName": "Tên hiển thị",
+		"name": "Tên",
+		"bio": "Tiểu sử",
+		"descriptionLabel": "Giới thiệu (Markdown)",
+		"email": "Email",
+		"status": "Trạng thái",
+		"customStatusLabel": "Trạng thái tùy chỉnh",
+		"avatarLabel": "Ảnh đại diện",
+		"themeColorLabel": "Màu chủ đề",
+		"uploadAvatar": "Tải hình đại diện lên",
+		"ownerTitle": "Chủ nhân của tôi",
+		"ownerSummary": "Cài đặt ủy quyền",
+		"ownerDescription": "Sau khi thiết lập, chủ sở hữu có thể thay mặt bạn chỉnh sửa hoặc xóa tin nhắn trò chuyện, bài đăng trên mạng xã hội và thông tin cá nhân; nội dung cũng sẽ được hiển thị cục bộ bằng Markdown không an toàn (có thể chứa tập lệnh). Bất kỳ hàm băm thực thể nào cũng có thể được điền và xóa bất kỳ lúc nào.",
+		"ownerEntityHashLabel": "Hash thực thể chủ (128 hex)",
+		"ownerSave": "Lưu chủ",
+		"ownerClear": "Xóa chủ",
+		"ownerSaved": "Đã cập nhật chủ",
+		"ownerCleared": "Đã xóa chủ",
+		"ownerSaveFailed": "Lưu không thành công: ${error}",
+		"ownerConfirmTitle": "Xác nhận đặt chủ?",
+		"ownerConfirmWarningTitle": "Hoạt động rủi ro cao, vui lòng đọc kỹ",
+		"ownerConfirmEditBody": "Sau khi thiết lập, bên kia có thể thay mặt bạn chỉnh sửa hoặc xóa tin nhắn trò chuyện, bài đăng trên mạng xã hội và thông tin cá nhân mà không cần xin phép bạn. Đặt nhầm chủ sở hữu hoặc bị lừa = trao quyền kiểm soát nội dung ngay lập tức.",
+		"ownerConfirmRenderBody": "Tin nhắn trò chuyện và bài đăng trên mạng xã hội do bên kia gửi sẽ được hiển thị ở dạng Markdown đầy đủ (bao gồm HTML/tập lệnh) trong trình duyệt của bạn. Điều này cho phép bên kia chạy mã tùy ý trên máy tính của bạn mà không cần sự đồng ý của bạn nữa. Chỉ tiến hành nếu bạn hoàn toàn tin tưởng người khác.",
+		"ownerConfirmCooldown": "Tôi đã đọc rủi ro (${seconds})",
+		"ownerConfirmFirst": "Tôi hiểu những rủi ro, tiếp tục",
+		"ownerConfirmSecond": "Nhấn lần nữa để hoàn tất",
+		"ownerConfirmCancel": "Hủy bỏ",
+		"federationTitle": "Liên kết và đồng bộ hóa",
+		"federationSummary": "Máy chủ chuyển tiếp và chế độ năng lượng thấp",
+		"federationDescription": "Định cấu hình URL chuyển tiếp Nostr và chế độ tiết kiệm năng lượng. Đồng bộ hóa liên kết cho một nhóm được bật tự động vào lần đầu tiên bạn mời ai đó hoặc tạo tin nhắn riêng tư liên kết.",
+		"federationAdvanced": "Tùy chọn nâng cao",
+		"federationRelayUrlsLabel": "Máy chủ chuyển tiếp (mỗi dòng một máy chủ, để trống để sử dụng mặc định)",
+		"federationBatterySaverLabel": "Chế độ tiết kiệm pin",
+		"federationSave": "Lưu cài đặt mạng",
+		"federationResetDefault": "Khôi phục cấu hình mặc định được đề xuất",
+		"federationSaved": "Đã lưu",
+		"federationResetOk": "Đã khôi phục cấu hình mặc định được đề xuất",
+		"federationSaveFailed": "Lưu không thành công: ${error}",
+		"preferences": "Tùy chọn",
+		"language": "Ngôn ngữ",
+		"theme": "Chủ đề",
+		"notifications": "Cài đặt thông báo",
+		"emailNotifications": "Thông báo qua email",
+		"pushNotifications": "Thông báo đẩy",
+		"soundNotifications": "Thông báo bằng âm thanh",
+		"social": "Liên kết mạng xã hội",
+		"website": "Trang web",
+		"github": "GitHub",
+		"twitter": "Twitter",
+		"stats": "Thống kê",
+		"joinedAt": "Thời gian tham gia",
+		"messageCount": "Số lượng tin nhắn",
+		"groupCount": "Số lượng nhóm",
+		"channelCount": "Số lượng kênh",
+		"privacy": "Cài đặt quyền riêng tư",
+		"showEmail": "Hiển thị email",
+		"showStats": "Hiển thị thống kê",
+		"allowDirectMessages": "Cho phép tin nhắn riêng tư",
+		"statusOptions": {
+			"online": "Trực tuyến",
+			"away": "Vắng mặt",
+			"busy": "Bận",
+			"offline": "Ngoại tuyến"
+		},
+		"themeOptions": {
+			"auto": "Tự động",
+			"light": "Sáng",
+			"dark": "Tối"
+		},
+		"languageOptions": {
+			"zh-CN": "Tiếng Trung giản thể",
+			"en-US": "Tiếng Anh"
+		},
+		"notifEmail": "Email",
+		"notifPush": "Đẩy",
+		"notifSound": "Âm thanh",
+		"notifsAllOff": "Đóng tất cả",
+		"bioEmpty": "Người này lười biếng và không viết gì cả…",
+		"noSocialLinks": "Chưa có liên kết xã hội nào",
+		"emailVisible": "Hiển thị",
+		"emailHidden": "Ẩn",
+		"customStatus": {
+			"placeholder": "Bạn đang làm gì thế..."
+		},
+		"avatar": {
+			"alt": "Ảnh đại diện"
+		},
+		"avatarPreview": {
+			"alt": "Xem trước hình đại diện"
+		},
+		"myGroups": "Nhóm của tôi",
+		"myChannels": "Kênh của tôi",
+		"noGroups": "Chưa tham gia nhóm nào",
+		"noChannels": "Chưa có kênh",
+		"overview": "Tổng quan về thông tin người dùng",
+		"summaryUserId": "ID người dùng",
+		"summaryAccountStatus": "Trạng thái tài khoản",
+		"summaryEmailVisibility": "Hiển thị email",
+		"summaryThemePref": "Tùy chọn chủ đề",
+		"summaryLanguagePref": "Tùy chọn ngôn ngữ",
+		"summarySocialCount": "Số lượng liên kết xã hội",
+		"summaryLinksCount": "Số lượng liên kết bên ngoài",
+		"groupDescriptionEmpty": "Chưa có mô tả",
+		"groupMembers": "${members} thành viên · ${channels} kênh",
+		"channelPrivate": "· Riêng tư",
+		"channelTypeText": "Kênh văn bản",
+		"channelTypeList": "Kênh danh sách",
+		"channelTypeVoice": "Kênh thoại",
+		"channelTypeStreaming": "Kênh phát trực tiếp",
+		"errors": {
+			"loadFailed": "Không thể tải dữ liệu",
+			"saveFailed": "Không thể lưu dữ liệu",
+			"uploadFailed": "Không thể tải hình đại diện lên",
+			"invalidUserData": "Lỗi định dạng dữ liệu người dùng",
+			"identityRequired": "Danh tính nút chưa sẵn sàng, vui lòng làm mới trang; nếu vẫn không thành công, vui lòng lưu cấu hình liên kết trong cài đặt P2P bên dưới",
+			"fetchUserFailed": "Không thể lấy được thông tin người dùng",
+			"operationFailed": "Thao tác không thành công: ${error}"
+		},
+		"success": {
+			"saved": "Dữ liệu được lưu thành công",
+			"avatarUploaded": "Hình đại diện đã được tải lên thành công"
+		},
+		"ownerEntityHash": {
+			"placeholder": "Nhập mã băm thực thể của chủ sở hữu"
+		}
+	},
+	"stickers": {
+		"title": "Quảng trường sticker",
+		"description": "Hệ thống quản lý nhãn dán và biểu tượng cảm xúc",
+		"back": {
+			"title": "Quay lại"
+		},
+		"packs": "Gói sticker",
+		"create": "Tạo gói nhãn dán",
+		"upload": "Tải nhãn dán lên",
+		"install": "Cài đặt",
+		"uninstall": "Gỡ cài đặt",
+		"close": "Đóng",
+		"cancel": "Hủy bỏ",
+		"installed": "Đã cài đặt",
+		"myPacks": "Gói sticker của tôi",
+		"tabAll": "Tất cả",
+		"store": "Quảng trường sticker",
+		"favorites": "Yêu thích",
+		"recent": "Được sử dụng gần đây",
+		"search": {
+			"placeholder": "Tìm kiếm gói nhãn dán…"
+		},
+		"emptyPacks": "Chưa có gói nhãn dán nào",
+		"packNameLabel": "Tên gói nhãn dán",
+		"packName": {
+			"placeholder": "Nhập tên gói nhãn dán"
+		},
+		"packDescriptionLabel": "Mô tả",
+		"packDescription": {
+			"placeholder": "Nhập mô tả"
+		},
+		"stickerNameLabel": "Tên nhãn dán",
+		"stickerName": {
+			"placeholder": "Nhập tên nhãn dán"
+		},
+		"selectPack": "Chọn gói nhãn dán",
+		"selectPackOption": {
+			"textContent": "Vui lòng chọn gói nhãn dán"
+		},
+		"selectImage": "Chọn ảnh",
+		"tagsLabel": "Thẻ (cách nhau bằng dấu phẩy)",
+		"tags": {
+			"placeholder": "Ví dụ: dễ thương, biểu tượng cảm xúc, động vật"
+		},
+		"author": "Tác giả",
+		"authorLabel": "Tác giả: ${author}",
+		"stickerCount": "${count} sticker",
+		"badgeMine": "Của tôi",
+		"noDescription": "Chưa có mô tả",
+		"noStickersInPack": "Chưa có nhãn dán nào",
+		"deletePack": "Xóa gói nhãn dán",
+		"public": "Công khai",
+		"private": "Riêng tư",
+		"animated": "Động",
+		"static": "Tĩnh",
+		"addTag": "Thêm thẻ",
+		"defaultPackName": "Gói biểu tượng cảm xúc mặc định",
+		"defaultPackDescription": "Sticker biểu tượng cảm xúc được hệ thống cung cấp mặc định",
+		"unnamedPack": "Gói hình dán không tên",
+		"importPackName": "Bộ sưu tập của tôi",
+		"importPackDescription": "Hình dán được lưu từ tin nhắn",
+		"nameRequired": "Vui lòng nhập tên gói nhãn dán",
+		"stickerNameRequired": "Vui lòng nhập tên nhãn dán",
+		"selectPackRequired": "Vui lòng chọn gói nhãn dán",
+		"fileRequired": "Vui lòng chọn tập tin hình ảnh",
+		"loadDetailFailed": "Không thể tải chi tiết gói sticker",
+		"deleteConfirm": "Bạn có chắc chắn muốn xóa vĩnh viễn gói nhãn dán này không? Tất cả hình dán sẽ bị xóa và hành động này không thể thay đổi được.",
+		"errors": {
+			"loadFailed": "Không thể tải gói sticker",
+			"uploadFailed": "Không thể tải hình dán lên",
+			"installFailed": "Cài đặt không thành công",
+			"uninstallFailed": "Gỡ cài đặt không thành công",
+			"createFailed": "Không thể tạo gói sticker",
+			"deleteFailed": "Xóa không thành công"
+		},
+		"success": {
+			"uploaded": "Hình dán được tải lên thành công",
+			"installed": "Cài đặt thành công",
+			"uninstalled": "Đã gỡ cài đặt thành công",
+			"created": "Đã tạo gói nhãn dán thành công",
+			"deleted": "Xóa thành công"
+		}
+	},
 	"fountConsole": {
 		"server": {
 			"start": "Đang khởi động máy chủ.",
@@ -116,6 +374,186 @@
 		"logViewer": {
 			"replHint": "Enter để chạy · Shift+Enter để xuống dòng"
 		},
+		"test": {
+			"help": "Cách dùng: fount test [--all] [--no-parallel] [--force] [<nhóm>...]\n\nCú pháp nhóm (nhiều nhóm cách nhau bằng dấu cách):\n  manifest                    toàn bộ suite của manifest đó\n  manifest:suite              chỉ định suite (nhiều suite cách nhau bằng dấu phẩy; cũng dùng manifest/suite)\n  manifest:suite:subtest      chỉ định subtest (frontend v.v. đã đăng ký subtest; cũng dùng manifest/suite/subtest)\n  manifest:suite:file         lọc theo stem tệp *.test.mjs trong pure/integration (serial.mjs)\n  Khi PowerShell tách token, các token sau tự gộp vào nhóm hiện tại\n\nmanifest id lấy từ trường \"id\" cấp cao nhất trong mỗi test/manifest.json.\nKhông khớp chính xác thì tự mở rộng theo «<tên>/*» (vd. shells → shells/chat,shells/social); cũng hỗ trợ glob (*, ?, **).\nsuite khớp id hoặc name của từng suite; không khớp chính xác thì mở rộng theo «<tên>*» «<tên>_*»; cũng hỗ trợ glob.\n\nMặc định (fount test trần): chạy mục thất bại/chưa xong trước (ưu tiên tệp thất bại trong suite; nếu nhóm lỗi tái hiện thì chạy xong nhóm lỗi rồi thoát), sau khi tất cả xanh mới chạy mục nội dung hết hạn; bất kỳ vòng nào thất bại thoát 1, không thử lại trong cùng lần gọi. Không bao giờ chạy toàn bộ (dùng --all).\nTrạng thái kiểm thử lưu tại data/test/state/main.json; log thất bại giữ đến khi xanh. Mỗi lần chạy cập nhật data/test/report.md và report.json.\nCác gói như frontend có thể đăng ký subtest (mỗi cái có trigger riêng); sửa một tệp view chỉ làm subtest tương ứng hết hạn.\nKhi pure/integration chưa đăng ký subtest, đoạn thứ ba lọc theo stem *.test.mjs trong thư mục (vd. shells/chat:pure:channel_archive).\nKhi phụ thuộc (manifest.json dependsOn) chưa đạt, tầng cao tự bị blocked.\n\n--all         toàn bộ suite trong phạm vi làm mục tiêu (suite xanh vẫn tái sử dụng trừ khi --force)\n--no-parallel chạy suite tuần tự và stream stdout/stderr; mặc định cổng tài nguyên tự song song hóa theo bộ nhớ và CPU.\n--force       tắt tái sử dụng: mặc định dùng kết quả thật lần trước, --force ép chạy thật mục tiêu.\n\nVí dụ:\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"passed": "ĐẠT: ${label}",
+			"passedWithNoise": "ĐẠT: ${label} (có nhiễu)",
+			"failed": "THẤT BẠI: ${label}",
+			"failedWithCode": "THẤT BẠI: ${label} (mã thoát ${code})",
+			"passedLabel": "ĐẠT",
+			"failedLabel": "THẤT BẠI",
+			"noiseHits": "(nhiễu: ${hits})",
+			"unknownManifestId": "manifest id không xác định: ${ids}",
+			"unknownSuiteSelector": "Chỉ định suite không xác định: ${ids}",
+			"unknownSubtestFilter": "Lọc subtest không xác định: ${suite} → ${names}",
+			"unknownFileFilter": "Lọc tệp kiểm thử không xác định: ${suite} → ${names}",
+			"unsupportedSubtestFilter": "Suite không hỗ trợ lọc subtest/tệp: ${suite} (${names})",
+			"available": "Có sẵn: ${ids}",
+			"manifestMatched": "manifest khớp: ${ids}",
+			"selectedSuites": "Đã chọn ${selected}/${total} suite",
+			"planSlotSummary": "Khe kế hoạch: chạy thật ${run}, tái sử dụng ${reuse}, chặn ${blocked}",
+			"noMatchingSuites": "Không có suite khớp.",
+			"reportPath": "Báo cáo: ${path}",
+			"reportPathFinal": "\nBáo cáo: ${path}",
+			"statePathFinal": "Trạng thái: ${path}",
+			"blocked": "Chặn: ${label} (phụ thuộc chưa đạt: ${deps})",
+			"speculativeDiscard": "Bỏ kết quả dự đoán: ${label} (phụ thuộc chưa đạt: ${deps})",
+			"continueImperfect": "Đợt thất bại/nhiễu/chưa hoàn tất: ${count} suite",
+			"outdatedSelected": "Đợt hết hạn: ${count} suite cũ/chưa chạy",
+			"runningSuite": {
+				"base": "\n>>> Đang chạy ${manifestId}:${name}",
+				"speculative": "song song lạc quan",
+				"heavy": "tải cao",
+				"expected": "dự kiến ${expected}"
+			},
+			"reusedSuite": "\n>>> Tái sử dụng ${manifestId}:${name} (trigger không đổi, dùng ${status} lần trước)",
+			"noisyOnlyRemain": "Vẫn còn ${count} suite đạt nhưng có nhiễu: ${suites}",
+			"estimatedRun": "Ước tính thời gian chạy ≈ ${eta} (tỷ lệ song song ước tính ${rate})",
+			"estimatedRunSerial": "Ước tính thời gian chạy ≈ ${eta} (tuần tự)",
+			"estimatedRunSkipped": "Ngoài ra tái sử dụng ${reused}, dự kiến chặn ${blocked} (không tính vào ước tính)",
+			"noRealRunPlanned": "Lần này không cần chạy thật: tái sử dụng ${reused}, dự kiến chặn ${blocked} (trigger không đổi)",
+			"allReusedHint": "Lần này không chạy thật suite nào: lỗi là kết quả lần trước, chặn chưa giải (tệp liên quan không đổi). Sửa tệp rồi chạy lại, hoặc dùng `fount test --force` để ép chạy thật.",
+			"estimatedRemaining": "Thời gian còn lại ước tính ≈ ${eta} (${completed}/${total} suite)",
+			"estimatedRunSerialHint": "Nếu song song dự kiến ≈ ${eta} (tỷ lệ song song ${rate}), tiết kiệm ≈ ${savings} (bỏ --no-parallel)",
+			"failuresSaved": "Đã lưu danh sách thất bại: ${path} (${count} suite)",
+			"failuresCleared": "manifest ${manifestId} đều đã đạt, danh sách thất bại đã xóa.",
+			"terminated": "Hết thời gian chờ: ${label} — ${reason}",
+			"terminateIdle": "Đã dừng ${label}: không có stdall trong hơn ${minutes} phút (nhàn rỗi ${idleSec}s, đã chạy ${elapsed})",
+			"terminateDuration": "Đã dừng ${label}: vượt thời gian cơ sở watchdog (đã chạy ${elapsed}, cơ sở ${baseline}, giới hạn ${limit})",
+			"terminateDurationDefault": "Đã dừng ${label}: vượt giới hạn watchdog mặc định (đã chạy ${elapsed}, giới hạn ${limit})",
+			"terminateMarker": "[Lý do dừng: ${reason}]",
+			"terminateUnknown": "ĐÃ DỪNG ${label}: kiểm thử bị gián đoạn",
+			"terminateSpeculative": "Đã dừng ${label}: phụ thuộc đầu cơ chưa đạt, hủy dừng sớm",
+			"nothingToContinue": "Tất cả đều xanh và không có mục hết hạn, không cần chạy lại.",
+			"triggerNoMatch": "trigger không khớp tệp nào: ${scope} — ${pattern}",
+			"triggerNoMatchSummary": "Tổng cộng ${count} trigger không khớp tệp nào trong kho (xem report.md)",
+			"unknownSuite": "Suite không xác định: ${name}",
+			"federationCleanupPre": "Dọn dẹp kiểm thử liên bang (trước khi chạy) thất bại: ${output}",
+			"federationCleanupPost": "Dọn dẹp kiểm thử liên bang (sau khi chạy) thất bại: ${output}",
+			"suiteHeader": "\n=== SUITE ${name} ===",
+			"heapSnapshotSaved": "Ảnh chụp heap gần OOM của nút kiểm thử: ${path}",
+			"liveUsage": "Cách dùng: --suite <tên> | --list",
+			"serialUsage": "Cách dùng: serial.mjs <deno-test-path> [...]",
+			"silentPassedOne": "1 tệp kiểm thử đạt.",
+			"silentPassedMany": "${count} tệp kiểm thử đạt.",
+			"ciNoDiffFallback": "CI: không phát hiện diff, fallback chạy toàn bộ suite",
+			"noFrontendPhasesMatched": "Không có giai đoạn frontend khớp FOUNT_TEST_ONLY",
+			"denoPanic": {
+				"detected": "Phát hiện Deno crash: ${label} (vị trí ${signature})",
+				"alreadyReported": "Deno crash này đã báo cáo, bỏ qua: ${signature}",
+				"ghUnavailable": "gh không khả dụng hoặc chưa đăng nhập, chỉ ghi Deno crash cục bộ: ${signature}",
+				"published": "Đã gửi issue crash tới Deno: ${url}",
+				"duplicate": "Upstream đã có crash trùng, bỏ qua báo cáo: ${upstream}",
+				"publishFailed": "Đăng issue Deno crash thất bại: ${signature}"
+			},
+			"nodeWorker": {
+				"dataPathRequired": "Worker nút kiểm thử: thiếu --data-path",
+				"portRequired": "Worker nút kiểm thử: thiếu --port (khởi chạy qua launch.mjs)",
+				"keyRequired": "Worker nút kiểm thử: thiếu --key (khởi chạy qua launch.mjs)",
+				"userRequired": "Worker nút kiểm thử: thiếu --user",
+				"error": "Worker nút kiểm thử: ${error}"
+			},
+			"ws": {
+				"pass": "\nĐẠT: ${detail}",
+				"fail": "\nTHẤT BẠI: ${detail}"
+			},
+			"report": {
+				"title": "Báo cáo thử nghiệm fount",
+				"tableHeaderItem": "Mục",
+				"tableHeaderValue": "Giá trị",
+				"fieldRunId": "ID chạy",
+				"fieldCommand": "Lệnh",
+				"fieldExit": "Trạng thái thoát",
+				"fieldProgress": "Tiến độ",
+				"fieldSuites": "Suite",
+				"fieldFailed": "Số thất bại",
+				"fieldNoisyPassed": "Đạt nhưng có nhiễu",
+				"fieldReused": "Số tái sử dụng",
+				"fieldSuiteSumDuration": "Tổng thời gian suite",
+				"fieldWallClock": "Tổng thời gian",
+				"fieldParallelRate": "Tỷ lệ song song",
+				"fieldEstimatedRemaining": "Thời gian còn lại ước tính",
+				"fieldEstimatedParallelRate": "Tỷ lệ song song ước tính",
+				"estimatePoint": "≈ ${eta}",
+				"pendingEstimate": "Thời gian còn lại ước tính ≈ ${eta}",
+				"pendingParallelEstimate": "Ước tính thời gian song song ≈ ${eta} (tỷ lệ song song ước tính ${rate})",
+				"pendingSavings": "Ước tính tiết kiệm ≈ ${savings}",
+				"pendingItemExpected": "dự kiến ${expected}",
+				"fieldDuration": "Thời gian",
+				"commandDefault": "(mặc định)",
+				"exitPassed": "ĐẠT",
+				"exitFailed": "THẤT BẠI",
+				"exitInProgress": "ĐANG CHẠY",
+				"progressFormat": "${completed}/${total} suite",
+				"suitesFormat": "${passed}/${completed} đạt",
+				"artifacts": "Thư mục artifact: `${path}`",
+				"sectionFailed": "Suite thất bại",
+				"sectionNoisyPassed": "Đạt nhưng có nhiễu",
+				"sectionSilentPassed": "Đạt",
+				"sectionPending": "Chờ chạy",
+				"sectionContinue": "Tiếp tục mục chưa xong",
+				"sectionReplay": "Chạy lại mục thất bại",
+				"sectionReplayImperfect": "Chạy lại mục chưa hoàn hảo",
+				"columnSuite": "Suite",
+				"columnDuration": "Thời gian",
+				"labelReused": "(tái sử dụng)",
+				"labelExpectedBlocked": "(dự kiến bị chặn)",
+				"labelDuration": "Thời gian",
+				"labelLog": "Nhật ký",
+				"labelNoise": "Nhiễu",
+				"labelFailedFiles": "Tệp thất bại",
+				"labelTerminateReason": "Lý do dừng",
+				"sectionContinueReasons": "Lý do kích hoạt",
+				"continueReasonsLink": "Lý do kích hoạt: xem [${path}](${path})",
+				"labelContinueReason": "Lý do",
+				"reasonImperfectFailed": "Thất bại trước đó",
+				"reasonImperfectNoisy": "Trước đó đạt nhưng có nhiễu",
+				"reasonImperfectBlocked": "Trước đó bị chặn",
+				"reasonImperfectDependent": "Upstream thất bại kéo theo một tầng downstream",
+				"reasonMissingRecord": "state không có bản ghi, tự chạy bù",
+				"reasonStaleContent": "Nội dung đã thay đổi, cần chạy lại",
+				"reasonTriggerHashDrift": "Dấu vân tay trigger lệch (không khớp đường dẫn)",
+				"reasonExplicitSelected": "Chỉ định rõ",
+				"reasonDependencyRequired": "Kéo vào do phụ thuộc",
+				"labelRootCause": "Nguyên nhân gốc",
+				"labelDirectRequiredBy": "Bên được đưa vào trực tiếp",
+				"labelInclusionPath": "Chuỗi đưa vào",
+				"labelPullUpstream": "Kéo upstream: phụ thuộc của ${requiredBy} chưa xanh",
+				"labelPullDownstream": "Kéo downstream: ${requiredBy} chưa hoàn hảo, đưa vào cùng",
+				"labelGateReason": "Lý do cần chạy",
+				"labelCommitRange": "phạm vi commit",
+				"labelUncommittedHashRange": "digest chưa commit",
+				"labelMatchedTriggers": "trigger khớp",
+				"labelMatchedTriggerSets": "trigger set khớp",
+				"labelMatchedPaths": "đường dẫn khớp",
+				"labelTriggerHashDrift": "Dấu vân tay trigger không khớp workspace hiện tại (dirty→clean đã bỏ qua)",
+				"sectionDeadTriggers": "trigger không hợp lệ",
+				"deadTriggersHint": "Các glob sau không khớp tệp nào trong kho (git tracked + untracked chưa ignore):",
+				"durationMs": "${ms} ms",
+				"durationUnitSec": "${n} giây",
+				"durationUnitMin": "${n} phút",
+				"durationUnitMinute": "${n} phút",
+				"durationUnitHour": "${n} giờ",
+				"durationUnitDay": "${n} ngày"
+			},
+			"state": {
+				"title": "Trạng thái thử nghiệm fount",
+				"artifacts": "Thư mục trạng thái: `${path}`",
+				"sectionDependencyTree": "Cây phụ thuộc",
+				"sectionOverview": "Trạng thái từng suite",
+				"sectionBlocked": "Suite bị chặn",
+				"columnSuite": "Suite",
+				"columnStatus": "Trạng thái",
+				"columnCommit": "commit",
+				"columnRanAt": "Lần chạy gần nhất",
+				"columnDuration": "Thời gian",
+				"columnLog": "Nhật ký",
+				"columnBlocked": "Số bị chặn",
+				"labelBlockedBy": "Bị chặn bởi",
+				"statusUnknown": "Chưa chạy",
+				"statusOutdated": "Lỗi thời"
+			}
+		},
 		"path": {
 			"protocol": {
 				"description": "URL: giao thức fount",
@@ -144,7 +582,7 @@
 				"localBranchAhead": "Chi nhánh địa phương đi trước chi nhánh từ xa. Không cần cập nhật.",
 				"branchesDiverged": "Các chi nhánh địa phương và từ xa đã được phân nhánh. Đang cập nhật bắt buộc...",
 				"notOnBranch": "Không ở trên nhánh, chuyển sang 'master'...",
-				"noUpstreamBranch": "Cảnh báo: Không có nhánh ngược dòng nào được định cấu hình cho nhánh '${branch}'. Thiết lập ngược dòng thành 'origin/master'.",
+				"noUpstreamBranch": "Cảnh báo: Không có nhánh ngược dòng nào được định cấu hình cho nhánh '${branch}', hãy sử dụng '${remote}'.",
 				"dirtyWorkingDirectory": "Cảnh báo: Thư mục làm việc không sạch sẽ. Vui lòng stage hoặc commit các thay đổi của bạn trước khi cập nhật.",
 				"notInstalled": "Git chưa được cài đặt, đang cố gắng cài đặt...",
 				"notInstalledSkippingPull": "Git chưa được cài đặt, bỏ qua `git pull`",
@@ -727,6 +1165,513 @@
 			}
 		}
 	},
+	"social": {
+		"title": "Quảng trường",
+		"description": "P2P mở cập nhật xã hội, theo dõi và chia sẻ tệp",
+		"bootstrapFailed": "Khởi tạo giao diện xã hội không thành công: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "Quảng trường"
+			}
+		},
+		"nav": {
+			"feed": "Trang chủ",
+			"explore": "Khám phá",
+			"notifications": "Hộp thư",
+			"saved": "Đã lưu",
+			"drafts": "Nháp",
+			"profile": "Của tôi",
+			"videos": "Video ngắn",
+			"live": "Trực tiếp"
+		},
+		"settings": {
+			"title": "Cài đặt mạng xã hội",
+			"back": {
+				"aria-label": "Quay lại hồ sơ"
+			},
+			"privacyTitle": "Quyền riêng tư và khám phá",
+			"privacyHint": "Kiểm soát xem tài khoản có xuất hiện trong phần Khám phá và Đề xuất hay không.",
+			"tasteTitle": "Khuyến nghị và ưu tiên",
+			"tasteHint": "Điều chỉnh ranh giới quyền riêng tư và đặt tên nhãn \"Được đề xuất cho bạn\".",
+			"mutedKeywordsTitle": "Chặn từ và thẻ",
+			"mutedKeywordsHint": "Các bài đăng có nội dung, cảnh báo nội dung hoặc nhãn sẽ bị ẩn khỏi luồng, khám phá, tìm kiếm và thông báo. Chỉ được lưu cục bộ.",
+			"mutedKeywordsMatchTags": "Khớp cả thẻ",
+			"mutedKeywordsAdd": "Thêm",
+			"mutedKeywordsRemove": {
+				"title": "Xóa các từ bị chặn"
+			},
+			"mutedKeywordsEmpty": "Chưa thêm từ chặn nào",
+			"autoTranslateTitle": "Dịch tự động",
+			"autoTranslateHint": "Khi bật, các bài viết bằng tiếng nước ngoài sẽ tự động yêu cầu dịch và có thể chuyển về văn bản gốc.",
+			"autoTranslateEnable": "Tự động dịch bài viết bằng các ngôn ngữ khác ngoài ngôn ngữ của bạn",
+			"safetyTitle": "An ninh và che chắn",
+			"safetyHint": "Quản lý danh sách bị chặn và ẩn.",
+			"mutedKeywords": {
+				"placeholder": "Nhập từ khóa hoặc #tags"
+			}
+		},
+		"composer": {
+			"placeholder": "Bạn đang nghĩ về điều gì? Hỗ trợ Markdown (phương ngữ nguồn), nhập @ để đề cập",
+			"publish": "giải phóng",
+			"saveDraft": "lưu bản nháp",
+			"fab": {
+				"title": "Viết cập nhật",
+				"aria-label": "Viết cập nhật"
+			},
+			"contentWarning": {
+				"placeholder": "Cảnh báo nội dung (tùy chọn)"
+			},
+			"sensitiveMedia": "mặt nạ nhạy cảm với phương tiện truyền thông",
+			"editImage": "biên tập",
+			"editCrop": "Mùa vụ",
+			"editMosaic": "mã hóa",
+			"editBrush": "Chải",
+			"editApply": "ứng dụng",
+			"editCancel": "Hủy bỏ",
+			"replyPolicyEveryone": "Bất cứ ai cũng có thể trả lời",
+			"replyPolicyFollowers7d": "Người theo dõi trong hơn 7 ngày",
+			"replyPolicyAuthorFollows": "Những người tôi theo dõi",
+			"replyPolicyLabel": "Ai có thể trả lời",
+			"replyDisplayAll": "Hiển thị tất cả các câu trả lời",
+			"replyDisplayFeaturedOnly": "Chỉ những câu trả lời được chọn",
+			"replyDisplayLabel": "Trả lời để hiển thị",
+			"scheduleLabel": "Đăng theo lịch",
+			"scheduleSuccess": "Bài đăng đã được thêm vào hàng đợi đã lên lịch",
+			"emojiButton": {
+				"title": "sự biểu lộ",
+				"aria-label": "sự biểu lộ"
+			},
+			"mediaButton": {
+				"title": "Thêm phương tiện",
+				"aria-label": "Thêm phương tiện"
+			},
+			"pollButton": {
+				"title": "Bắt đầu bỏ phiếu",
+				"aria-label": "Bắt đầu bỏ phiếu"
+			},
+			"cwToggle": {
+				"title": "cảnh báo nội dung",
+				"aria-label": "cảnh báo nội dung"
+			},
+			"advancedToggle": {
+				"title": "Nhiều lựa chọn hơn",
+				"aria-label": "Nhiều lựa chọn hơn"
+			},
+			"media": {
+				"placeholder": "Mô tả hình ảnh (alt)"
+			}
+		},
+		"visibility": {
+			"label": "Phạm vi hiển thị",
+			"public": "công cộng",
+			"unlisted": "Không được niêm yết công khai",
+			"followers": "chỉ những người theo dõi",
+			"followers7d": "Hiển thị sau 7 ngày theo dõi",
+			"followers30d": "Hiển thị sau 30 ngày theo dõi",
+			"selected": "Hiển thị với những người được chỉ định",
+			"private": "Chỉ hiển thị với chính bạn",
+			"allowLabel": "Người có thể nhìn thấy",
+			"exceptLabel": "loại trừ mọi người",
+			"allow": {
+				"placeholder": "Thực thể người hiển thị Hash, dấu cách hoặc dấu phẩy được phân tách"
+			},
+			"except": {
+				"placeholder": "Ai không nên hiển thị nó (tùy chọn)"
+			}
+		},
+		"albums": {
+			"create": "Tạo album mới",
+			"edit": "Chỉnh sửa album",
+			"save": "Lưu",
+			"cancel": "Hủy bỏ",
+			"back": "Quay lại album",
+			"empty": "Chưa có album nào",
+			"emptyPosts": "Chưa có bài viết nào trong album",
+			"name": "Tên album",
+			"description": "Mô tả album",
+			"deleteLinks": "Xóa album (giữ bài viết)",
+			"deleteWithPosts": "Xóa album và xóa bài viết",
+			"pickerLabel": "Thêm vào album",
+			"defaultName": "Album mặc định"
+		},
+		"feed": {
+			"refresh": "Làm mới tin tức",
+			"newPosts": "Có tin mới, bấm vào để xem",
+			"tabLatest": "cập nhật",
+			"tabForYou": "gợi ý",
+			"repostedBy": "${author} đã tweet lại",
+			"decryptFailed": "Không thể giải mã bài đăng này",
+			"revealContent": "Hiển thị nội dung",
+			"sensitiveMedia": "phương tiện truyền thông nhạy cảm",
+			"showMore": "Mở rộng",
+			"showLess": "Đóng",
+			"replayDivider": "Đọc xong, duyệt lại"
+		},
+		"taste": {
+			"rebuild": "Xây dựng lại tùy chọn",
+			"privacyPublishPreferences": "Đặt tên thẻ công khai và khám phá hợp nhất",
+			"privacyPublishPreferencesHint": "Sau khi đóng, bạn bè sẽ không thể xem các câu lệnh đặt tên thẻ và hợp nhất của bạn và họ sẽ không thể đóng góp vào sự đồng thuận.",
+			"privacyPublishReactions": "Lượt thích và lượt không thích của công chúng",
+			"privacyPublishReactionsHint": "Sau khi đóng, người đăng sẽ không nhận được lượt thích/không thích của bạn, phản hồi của bạn sẽ không được đưa vào đề xuất của người khác và bạn sẽ không còn quảng bá bài đăng để lan truyền nữa.",
+			"empty": "Chưa có thẻ tùy chọn nào, nó sẽ tự động được nhóm lại sau khi có nhiều lượt thích/không thích hơn",
+			"weight": "Trọng lượng ${weight}",
+			"save": "Lưu",
+			"name": {
+				"placeholder": "tên hiển thị cục bộ"
+			}
+		},
+		"trending": {
+			"title": "chủ đề nóng",
+			"postCount": {
+				"title": "${n} bài đăng"
+			},
+			"scopeLocal": "máy cục bộ",
+			"scopeNearby": "gần đó",
+			"empty": "Chưa có chủ đề nóng"
+		},
+		"search": {
+			"placeholder": "Tìm bài đăng, người dùng hoặc #chủ đề (ít nhất 2 ký tự)",
+			"open": {
+				"aria-label": "tìm kiếm"
+			},
+			"submit": "Tìm kiếm",
+			"clear": "Thông thoáng",
+			"empty": "Không có bài viết phù hợp",
+			"tooShort": "Vui lòng nhập ít nhất 2 ký tự",
+			"usersTitle": "người dùng",
+			"postsTitle": "năng động",
+			"usersEmpty": "Không có người dùng phù hợp",
+			"pinAlias": "Đặt làm bí danh",
+			"trustScore": "Tin tưởng ${score}",
+			"viewTitle": "tìm kiếm",
+			"loading": "Đang tìm kiếm…",
+			"filterAuthor": {
+				"placeholder": "tác giả"
+			},
+			"filterMediaAll": "Tất cả phương tiện truyền thông",
+			"filterMediaImage": "hình ảnh",
+			"filterMediaVideo": "băng hình",
+			"filterTag": {
+				"placeholder": "#Nhãn"
+			},
+			"sortRecent": "cập nhật",
+			"sortPopular": "Phổ biến",
+			"scopeLocal": "máy cục bộ",
+			"scopeNearby": "gần đó"
+		},
+		"profile": {
+			"edit": "Chỉnh sửa hồ sơ",
+			"viewPosts": "Xem hồ sơ xã hội",
+			"settingsBtn": {
+				"aria-label": "Cài đặt mạng xã hội"
+			},
+			"mediaOnly": "[phương tiện truyền thông]",
+			"hideFromExplore": "Ẩn tài khoản khỏi trang khám phá",
+			"tabPosts": "năng động",
+			"tabAlbums": "tập ảnh",
+			"tabLikes": "Giống",
+			"tabCabinets": "Tủ hồ sơ",
+			"tabsLabel": {
+				"aria-label": "Phân vùng hồ sơ"
+			},
+			"cabinetsEmpty": "Hiện tại chưa có tủ hồ sơ công cộng",
+			"cabinetsFailed": "Tải nội dung tệp không thành công: ${error}",
+			"statsGroup": {
+				"aria-label": "Thống kê"
+			},
+			"statsPosts": "năng động",
+			"statsFollowing": "tập trung vào",
+			"statsFollowers": "cái quạt",
+			"followingTitle": "tập trung vào",
+			"followersTitle": "cái quạt"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "đóng cửa"
+			}
+		},
+		"actions": {
+			"like": "Giống",
+			"unlike": "Không giống",
+			"dislike": "bước lên",
+			"undislike": "Hủy không thích",
+			"repost": "Phía trước",
+			"quote": "Trích dẫn",
+			"delete": "Xóa",
+			"edit": "Chỉnh sửa",
+			"save": "Lưu",
+			"saved": "Đã sưu tầm",
+			"translate": "Dịch",
+			"dm": "Gửi tin nhắn riêng tư",
+			"block": "Khối",
+			"hide": "Trốn",
+			"mute": "tắt tiếng",
+			"follow": "tập trung vào",
+			"following": "Đã theo dõi",
+			"care": "mối quan tâm đặc biệt",
+			"careRemove": "Hủy chăm sóc đặc biệt",
+			"careAdded": "Đã thêm mối quan tâm đặc biệt",
+			"careRemoved": "Đã hủy quan tâm đặc biệt",
+			"setAlias": "Đặt bí danh",
+			"setAliasPrompt": "Đặt bí danh cục bộ (để trống để xóa):",
+			"aliasSaved": "Đã cập nhật bí danh",
+			"replies": "Bình luận",
+			"copyLink": "Sao chép liên kết",
+			"downloadHtml": "Tải xuống HTML",
+			"copied": "Đã sao chép",
+			"more": {
+				"aria-label": "Hơn"
+			},
+			"share": "chia sẻ",
+			"likeFailed": "Không thích: ${error}",
+			"dislikeFailed": "Không thể bước lên: ${error}",
+			"repostFailed": "Chuyển tiếp không thành công: ${error}",
+			"replyFailed": "Trả lời không thành công: ${error}",
+			"followFailed": "Theo dõi không thành công: ${error}",
+			"saveFailed": "Việc thu thập không thành công: ${error}",
+			"blockFailed": "Không chặn được: ${error}",
+			"hideFailed": "Không ẩn được: ${error}",
+			"muteFailed": "Tắt tiếng không thành công: ${error}",
+			"deleteFailed": "Xóa không thành công: ${error}"
+		},
+		"post": {
+			"edited": "Đã chỉnh sửa",
+			"editPrompt": "Chỉnh sửa văn bản bài viết",
+			"editHistory": "Chỉnh sửa lịch sử",
+			"editHistoryEmpty": "Không có phiên bản cũ hơn",
+			"loading": "đang tải…",
+			"notFound": "Bài đăng không tồn tại hoặc không hiển thị",
+			"loadFailed": "Tải không thành công, vui lòng thử lại sau",
+			"detailTitle": "Bưu kiện",
+			"back": "Quay lại"
+		},
+		"reply": {
+			"context": "Trả lời ${author}"
+		},
+		"notes": {
+			"label": "Phần bổ sung của độc giả",
+			"add": "Thông tin bổ sung",
+			"prompt": "Viết phần bổ sung cho người đọc (ghi chú của cộng đồng)",
+			"listTitle": "Tất cả thông tin bổ sung",
+			"helpful": "nó hoạt động",
+			"unhelpful": "vô ích",
+			"more": "Tất cả ${n} mục",
+			"empty": "Chưa có thông tin bổ sung"
+		},
+		"poll": {
+			"multi": "Cho phép nhiều lựa chọn",
+			"apply": "Áp dụng biểu quyết",
+			"closed": "Cuộc bình chọn đã kết thúc",
+			"deadline": "Hạn chót: ${deadline}",
+			"options": {
+				"placeholder": "Một tùy chọn trên mỗi dòng (tối thiểu 2 mục)"
+			}
+		},
+		"aside": {
+			"suggested": "Đề nghị chú ý"
+		},
+		"explore": {
+			"accounts": "Tài khoản được đề xuất",
+			"posts": "bài viết mới nhất",
+			"mediaOnly": "chỉ phương tiện truyền thông"
+		},
+		"groupRef": {
+			"linking": "Kết nối nhóm trò chuyện",
+			"clear": "Tách rời",
+			"pick": "Kết nối Nhóm/Kênh trò chuyện…"
+		},
+		"notifications": {
+			"reply": "${author} đã trả lời bài đăng của bạn",
+			"mention": "${author} đã @ bạn trong bảng tin",
+			"like": "${author} thích bài viết của bạn",
+			"repost": "${author} đã tweet lại bài đăng của bạn",
+			"follow": "${author} theo dõi bạn",
+			"care_post": "${author} đã đăng bản cập nhật mới (mối quan tâm đặc biệt)",
+			"poll_closed": "Cuộc bỏ phiếu đã kết thúc cho ${author}",
+			"post_note": "${author} đã thêm thông tin vào bài đăng của bạn",
+			"live_started": "${author} đã bắt đầu phát trực tiếp",
+			"view": "Kiểm tra",
+			"markAllRead": "Đánh dấu tất cả là đã đọc"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "Lọc hộp thư đến"
+			},
+			"tabs": {
+				"all": "tất cả",
+				"mention": "đề cập đến",
+				"reply": "hồi đáp",
+				"like": "Khen",
+				"follow": "tập trung vào",
+				"repost": "Phía trước"
+			},
+			"aggregated": {
+				"like": "${author1}, ${author2} và ${count} người thích bài đăng của bạn",
+				"likeTwo": "${author1} và ${author2} đã thích bài đăng của bạn",
+				"repost": "${author1}, ${author2} và ${count} người đã tweet lại bài đăng của bạn",
+				"repostTwo": "${author1} và ${author2} đã chuyển tiếp bài đăng của bạn",
+				"follow": "${author1}, ${author2} và ${count} người theo dõi bạn",
+				"followTwo": "${author1} và ${author2} theo dõi bạn"
+			}
+		},
+		"replies": {
+			"placeholder": "Viết thư trả lời…",
+			"submit": "Trả lời",
+			"empty": "Chưa có trả lời",
+			"emptyHint": "Hãy viết bài đầu tiên và bắt đầu thảo luận"
+		},
+		"repost": {
+			"placeholder": "Thêm bình luận tweet lại (tùy chọn)…",
+			"submit": "Xác nhận chuyển tiếp"
+		},
+		"quote": {
+			"quoting": "Trích dẫn",
+			"clear": "sự vô lễ",
+			"viewOriginal": "Xem bài viết gốc"
+		},
+		"a11y": {
+			"linkGroupSelect": "Kết nối với nhóm hoặc kênh Trò chuyện",
+			"postVisibility": "Phạm vi hiển thị",
+			"postLang": "ngôn ngữ nội dung",
+			"trendingHashtags": "chủ đề nóng",
+			"saveFolderSelect": "thư mục yêu thích"
+		},
+		"blocklist": {
+			"title": "danh sách đen",
+			"hiddenTitle": "Ẩn danh sách",
+			"empty": "Chưa có mục nào bị chặn hoặc ẩn",
+			"unblock": "Bỏ chặn",
+			"unhide": "Bỏ ẩn",
+			"scopeEntity": "thực thể",
+			"scopeSubject": "phần thân chính"
+		},
+		"translate": {
+			"label": "Bản dịch:"
+		},
+		"saved": {
+			"all": "tất cả",
+			"unfiled": "Chưa được lưu trữ",
+			"createFolder": {
+				"title": "Tạo thư mục mới",
+				"aria-label": "Tạo thư mục mới"
+			},
+			"createFolderPrompt": "tên thư mục",
+			"pickFolderTitle": "Lưu vào",
+			"confirm": "xác nhận",
+			"cancel": "Hủy bỏ",
+			"remove": "Xóa mục yêu thích",
+			"renameFolder": "Đổi tên",
+			"renameFolderPrompt": "Tên thư mục mới",
+			"deleteFolder": "xóa thư mục",
+			"deleteFolderConfirm": "Xóa thư mục? Các bài đăng ở đó sẽ được chuyển đến \"Không được lưu trữ\".",
+			"searchEmpty": "Không có bộ sưu tập phù hợp",
+			"folderEmpty": "Thư mục này trống",
+			"emptyHint": "Bấm vào dấu trang khi duyệt tin để lưu vào đây",
+			"search": {
+				"placeholder": "Tìm kiếm yêu thích…"
+			}
+		},
+		"drafts": {
+			"untitled": "(không có văn bản dự thảo)",
+			"emptyHint": "Viết một số nội dung vào ô bài viết và nhấn \"Save Draft\" để tiếp tục chỉnh sửa vào lần sau",
+			"saved": "Đã lưu bản nháp",
+			"deleted": "Đã xóa bản nháp",
+			"delete": "Xóa bản nháp",
+			"empty": "Bản nháp trống",
+			"saveFailed": "Không thể lưu bản nháp: ${error}",
+			"loadFailed": "Không mở được bản nháp: ${error}",
+			"deleteFailed": "Không thể xóa bản nháp: ${error}"
+		},
+		"time": {
+			"justNow": "Chỉ",
+			"minutesAgo": "${n} phút trước",
+			"hoursAgo": "${n} giờ trước"
+		},
+		"empty": {
+			"feed": "Chưa có bài đăng nào. Hãy theo dõi thêm người khác nhé.",
+			"profilePosts": "Chưa có tin tức nào",
+			"following": "Chưa theo dõi ai",
+			"followers": "Chưa có người hâm mộ",
+			"notifications": "Chưa có thông báo",
+			"saved": "Chưa có mục yêu thích nào",
+			"drafts": "Chưa có dự thảo",
+			"exploreAccounts": "Hiện tại không có tài khoản nào được đề xuất",
+			"explorePosts": "Chưa có bài viết thăm dò nào",
+			"likedPosts": "Chưa có lượt thích nào",
+			"noIdentity": "Vui lòng định cấu hình danh tính liên kết trong Trò chuyện trước khi sử dụng Mạng xã hội"
+		},
+		"topic": {
+			"follow": "đăng ký",
+			"unfollow": "Hủy đăng ký",
+			"empty": "Chưa có bài viết nào cho chủ đề này"
+		},
+		"video": {
+			"view": {
+				"aria-label": "Video ngắn"
+			},
+			"empty": "Chưa có video ngắn",
+			"emptyHint": "Không có bài đăng nào có video trong những người sau đây hoặc các ô công khai. Hãy thử đăng một bản cập nhật video?",
+			"compose": "Đi đăng một video",
+			"back": {
+				"aria-label": "Quay lại tin tức"
+			},
+			"mute": {
+				"aria-label": "tắt tiếng"
+			},
+			"unmute": {
+				"aria-label": "Bật tiếng"
+			},
+			"unavailable": "Không thể phát video",
+			"closeReplies": {
+				"aria-label": "Đóng bình luận"
+			}
+		},
+		"live": {
+			"empty": "Chưa có phát sóng trực tiếp",
+			"viewers": "${n} người đã xem",
+			"likes": "${n} Thích",
+			"local": "máy cục bộ",
+			"hall": "Phòng truyền hình trực tiếp",
+			"back": {
+				"title": "Quay lại tin tức",
+				"aria-label": "Quay lại tin tức"
+			},
+			"danmakuSend": "Gửi",
+			"postWatch": "Nhập chương trình phát sóng trực tiếp",
+			"postEnded": "Phát sóng trực tiếp đã kết thúc",
+			"postEndedStats": "Được xem bởi ${viewers} · ${likes} Đã thích · ${duration}",
+			"link": {
+				"invite": "Mời kết nối",
+				"needPeer": "Vui lòng điền vào thực thể ngang hàngHash:liveId",
+				"invited": "Lời mời trực tuyến đã được gửi",
+				"linked": "Đã kết nối",
+				"peer": {
+					"placeholder": "Thực thể ngang hàngHash:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "Bắt đầu phát sóng",
+				"open": "Đi tới chương trình phát sóng",
+				"mediaAv": "Âm thanh và video",
+				"mediaAudio": "Âm thanh thuần khiết",
+				"mediaVideo": "hình ảnh thuần khiết",
+				"mediaWhip": "Truyền phát đẩy WHIP (chẳng hạn như OBS)",
+				"whipUrl": "địa chỉ WHIP",
+				"whipToken": "Mã thông báo mang",
+				"whipWaiting": "Đang chờ kết nối phát trực tuyến WHIP (có thể sử dụng phần mềm phát trực tuyến như OBS)…",
+				"start": "Bắt đầu phát sóng trực tiếp",
+				"stop": "Dừng phát sóng trực tiếp",
+				"started": "Phát sóng trực tiếp đã bắt đầu",
+				"stopped": "Phát sóng trực tiếp đã dừng",
+				"titleInput": {
+					"placeholder": "Tiêu đề trực tiếp (tùy chọn)"
+				}
+			},
+			"danmaku": {
+				"placeholder": "Nói điều gì đó..."
+			}
+		}
+	},
 	"chat": {
 		"title": "Trò chuyện",
 		"description": "Nơi lời nói cất cánh và những câu chuyện mở ra. Tương tác với người bạn đồng hành AI, cùng nhau dệt nên cốt truyện, và đắm mình trong nhịp điệu của những cuộc hội thoại kỹ thuật số. Nhịp đập của fount vang vọng tại đây.",
@@ -738,7 +1683,1453 @@
 			"isTyping": "${names} đang gõ...",
 			"multipleMembers": "Nhiều thành viên đang gõ..."
 		},
+		"emoji": {
+			"pickerTitle": "Chọn biểu tượng cảm xúc",
+			"categoryFace": "sự biểu lộ",
+			"categoryGesture": "cử chỉ",
+			"categoryHeart": "Trái tim",
+			"categoryAnimal": "động vật",
+			"categoryFood": "đồ ăn",
+			"categoryObject": "Điều"
+		},
+		"unicodeEmojiGroups": {
+			"Smileys_and_Emotion": {
+				"title": "Nụ cười và cảm xúc"
+			},
+			"People_and_Body": {
+				"title": "Hình và cơ thể"
+			},
+			"Animals_and_Nature": {
+				"title": "động vật và thiên nhiên"
+			},
+			"Food_and_Drink": {
+				"title": "thức ăn và đồ uống"
+			},
+			"Travel_and_Places": {
+				"title": "Du lịch và Địa điểm"
+			},
+			"Activities": {
+				"title": "Hoạt động"
+			},
+			"Objects": {
+				"title": "Điều"
+			},
+			"Symbols": {
+				"title": "biểu tượng"
+			},
+			"Flags": {
+				"title": "ngọn cờ"
+			},
+			"Component": {
+				"title": "thành phần"
+			}
+		},
+		"sessionSettings": {
+			"unnamedTitle": "Trò chuyện nhóm không tên",
+			"modeGroup": "trò chuyện nhóm",
+			"modeSingle": "ký tự đơn",
+			"modeEmpty": "nhóm trống",
+			"subtitleRoles": "${count} ký tự đang tham gia cuộc trò chuyện này",
+			"statusSaved": "đã lưu",
+			"statusSaving": "Đang lưu…",
+			"statusDirty": "Có những thay đổi chưa được lưu",
+			"statusSaveFailed": "Lưu không thành công",
+			"saveSuccess": "Đã lưu cài đặt trò chuyện nhóm",
+			"saveFailed": "Không thể lưu cài đặt trò chuyện nhóm"
+		},
+		"group": {
+			"defaults": {
+				"groupMetaName": "Nhóm không tên",
+				"defaultChannelName": "toàn diện",
+				"dmChatName": "trò chuyện",
+				"dmDmName": "trò chuyện riêng tư",
+				"threadName": "chủ đề con"
+			},
+			"settingsPage": {
+				"title": "Cài đặt nhóm",
+				"kicker": "Quản lý nhóm",
+				"subtitle": "Quản lý thông tin nhóm, thành viên và chức năng chung. Các công cụ cấp phép, lưu trữ và kiểm tra tần số thấp được tập trung trong cài đặt nâng cao.",
+				"backToChat": "Quay lại trò chuyện",
+				"navigationLabel": "Phân loại cài đặt nhóm",
+				"advancedNavigationLabel": "Danh mục cài đặt nâng cao",
+				"tabGeneral": "nền tảng",
+				"tabPermissions": "Quyền của vai trò",
+				"tabMembers": "thành viên",
+				"tabAudit": "Nhật ký kiểm tra",
+				"tabEmojis": "sự biểu lộ",
+				"tabAdvanced": "trình độ cao",
+				"tabStorage": "Lưu trữ và lưu trữ",
+				"tabChannelPermissions": "Quyền của kênh",
+				"advancedHubTitle": "Cài đặt nâng cao",
+				"advancedHubDescription": "Những tính năng này thay đổi cấu trúc quyền, dữ liệu lịch sử hoặc hồ sơ quản trị của nhóm; chỉ điều chỉnh khi thực sự cần thiết.",
+				"channelPermsHint": "Đặt ghi đè quyền vai trò cho các kênh cụ thể. Các mục chưa được khám phá kế thừa quyền vai trò của nhóm.",
+				"channelPermsSelectChannel": "Kênh",
+				"channelPermsAddRole": "Thêm ghi đè vai trò",
+				"channelPermsRemoveRole": "Xóa ghi đè vai trò này",
+				"channelPermsStateNeutral": "kế thừa",
+				"channelPermsStateAllow": "cho phép",
+				"channelPermsStateDeny": "từ chối",
+				"channelPermsUpdated": "Đã cập nhật quyền của kênh",
+				"channelPermsUpdateFailed": "Không thể cập nhật quyền kênh: ${error}",
+				"channelPermsNoChannels": "Hiện tại không có kênh nào để định cấu hình",
+				"emojisTitle": "Nhóm biểu thức tùy chỉnh",
+				"emojisHint": "Thành viên có thể chèn hoặc gửi các biểu tượng cảm xúc này trong cuộc trò chuyện; hình ảnh đã gỡ cài đặt được kéo theo yêu cầu thông qua các nút liên kết.",
+				"emojisUpload": "Tải lên biểu tượng cảm xúc",
+				"emojisDelete": "Xóa biểu tượng cảm xúc",
+				"emojisEmpty": "Chưa có biểu thức nhóm nào",
+				"emojisUploadOk": "Biểu thức đã được tải lên",
+				"emojisUploadFailed": "Tải lên không thành công: ${error}",
+				"emojisDeleteConfirm": "Bạn có chắc chắn muốn xóa nhóm biểu tượng cảm xúc này không?",
+				"emojisDeleteOk": "Biểu tượng cảm xúc đã bị xóa",
+				"emojisDeleteFailed": "Xóa không thành công: ${error}",
+				"membersTitle": "Danh sách thành viên",
+				"overviewTitle": "Tổng quan về nhóm",
+				"overviewHint": "Thông tin chỉ đọc. Nếu có quyền quản trị, bạn có thể chỉnh sửa thông tin và chính sách của nhóm trong phần \"Cơ bản\".",
+				"channelArchiveTitle": "Kho lưu trữ kênh",
+				"channelArchiveHint": "Nhập kho lưu trữ JSON đầy đủ của kênh sẽ tạo kênh văn bản thông thường mới trong nhóm này và khôi phục lịch sử (do bạn ký lại; tệp đính kèm chỉ giữ siêu dữ liệu).",
+				"channelArchiveImport": "Nhập kênh JSON",
+				"channelArchiveImportOk": "Đã nhập tin nhắn ${count}, mở kênh mới...",
+				"channelArchiveImportFailed": "Nhập không thành công: ${error}",
+				"governanceHint": "Viết chính sách cấp nhóm của DAG; cần có quyền quản trị viên hoặc MANAGE_ADMINS.",
+				"governanceDenied": "Bạn không có quyền sửa đổi cài đặt quản trị nhóm.",
+				"rolesDenied": "Bạn không có quyền MANAGE_ROLES để chỉnh sửa vai trò.",
+				"channelPermsDenied": "Bạn không có quyền MANAGE_CHANNELS để chỉnh sửa phần ghi đè quyền của kênh.",
+				"notMember": "Bạn không còn là thành viên nhóm này; dữ liệu nhóm trên máy đã được tự động xóa sau khi rời nhóm.",
+				"basicTitle": "Quản trị nhóm",
+				"profileSectionTitle": "Thông tin nhóm",
+				"profileSectionHint": "Tên, giới thiệu và phương thức tham gia nhóm sẽ được ghi vào siêu dữ liệu của nhóm.",
+				"behaviorSectionTitle": "Chạy hành vi",
+				"networkSectionTitle": "Liên đoàn và kết nối",
+				"retentionSectionTitle": "Lưu trữ và giới hạn tốc độ",
+				"mediaSectionTitle": "Cuộc gọi và tập tin",
+				"nameLabel": "Tên nhóm",
+				"descriptionLabel": "Mô tả nhóm",
+				"joinPolicyLabel": "Chiến lược gia nhập nhóm",
+				"joinInviteOnly": "Chỉ mời",
+				"joinPow": "Yêu cầu PoW",
+				"powDifficultyLabel": "Độ khó của PoW",
+				"advancedTitle": "Cài đặt nâng cao",
+				"advancedDescription": "Các thông số mạng, lưu trữ, giới hạn tốc độ và mã hóa; vui lòng giữ mặc định nếu bạn không chắc chắn",
+				"securityAdvancedTitle": "Hoạt động bảo mật và chủ sở hữu nhóm",
+				"securityAdvancedDescription": "Luân chuyển chủ chốt và kế nhiệm lãnh đạo nhóm; hoạt động không chính xác có thể ảnh hưởng đến quyền truy cập của thành viên",
+				"powDifficultyTip": "Bằng chứng về độ khó của công việc. Giá trị càng cao thì thời gian tính toán cần thiết để người lạ tham gia nhóm chung càng lâu.",
+				"maxDagPayloadTip": "Giới hạn trên của dữ liệu được phép mang theo bởi một sự kiện nhóm. Nếu nó quá lớn, nó sẽ làm tăng bộ nhớ đồng bộ hóa và chi phí mạng.",
+				"trustedPeersTip": "Số lượng các nước láng giềng liên đoàn có uy tín cao được ưu tiên duy trì kết nối.",
+				"gossipTtlTip": "Số lượng nút liên bang tối đa mà tin nhắn có thể được chuyển tiếp qua đó. Tăng nó làm tăng phạm vi bảo hiểm và cũng tăng lưu lượng truy cập.",
+				"hlcTip": "Khoảng thời gian tối đa đồng hồ nút từ xa được phép nhanh hơn đồng hồ cục bộ, dùng để từ chối sự kiện bất thường trong tương lai.",
+				"sfuTip": "Địa chỉ dịch vụ chuyển tiếp âm thanh và video bên ngoài tùy chọn. Để trống để sử dụng tính năng gọi điểm-điểm/chuyển tiếp tích hợp sẵn.",
+				"iceTip": "Giúp WebRTC thâm nhập vào bộ định tuyến; khi kết nối trực tiếp không thành công, TURN sẽ thay mặt nó chuyển tiếp âm thanh, video và lưu lượng liên kết.",
+				"fileEncryptionTip": "Mã hóa hội tụ loại bỏ trùng lặp nhưng cho thấy thực tế là các tệp giống nhau; khóa ngẫu nhiên riêng tư hơn nhưng chiếm nhiều dung lượng hơn.",
+				"keyManagementTitle": "Quản lý khóa",
+				"keyManagementTip": "Khóa mới cần được phân phối lại cho các thành viên sau khi luân chuyển. Chỉ nên thực hiện thao tác thủ công nếu bạn nghi ngờ khóa đã bị xâm phạm.",
+				"allowDangerousHtml": "Tin nhắn của tác giả đáng tin cậy cho phép HTML nội tuyến",
+				"deleteGroup": "Xóa nhóm",
+				"save": "Lưu cài đặt",
+				"inviteTitle": "Mời",
+				"inviteHint": "Tạo mã mời ngắn hạn (mặc định 1 giờ). Bên kia điền ID nhóm và mã mời vào \"Tham gia nhóm\".",
+				"inviteMint": "Tạo mã mời",
+				"inviteGroupId": "Mã nhóm",
+				"inviteCode": "Mã mời",
+				"inviteExpires": "Hết hạn: ${date}",
+				"inviteCopy": "Sao chép thông tin nhóm",
+				"inviteCopied": "Đã sao chép thông tin nhóm",
+				"inviteCopyFailed": "Sao chép không thành công",
+				"inviteClipboard": "ID nhóm: ${groupId}\nMã lời mời: ${code}\nTham gia: ${url}",
+				"loadFailed": "Không thể tải cài đặt nhóm: ${error}",
+				"saveSuccess": "Đã lưu cài đặt nhóm",
+				"saveFailed": "Không thể lưu cài đặt: ${error}",
+				"deleteConfirm": "Bạn có chắc chắn muốn xóa nhóm này? Hành động này không thể thay đổi được và tất cả tin nhắn cũng như dữ liệu thành viên sẽ bị xóa vĩnh viễn.",
+				"deleteSuccess": "Đã xóa nhóm",
+				"deleteFailed": "Không thể xóa nhóm: ${error}",
+				"rolesTitle": "Vai trò và quyền",
+				"createRole": "Tạo vai trò",
+				"roleDefault": "mặc định",
+				"deleteRole": "Xóa vai trò",
+				"deleteRoleConfirm": "Bạn có chắc chắn muốn xóa vai trò này không?",
+				"deleteRoleSuccess": "Đã xóa vai trò",
+				"deleteRoleFailed": "Không thể xóa vai trò: ${error}",
+				"createRolePrompt": "Nhập tên vai trò:",
+				"createRoleSuccess": "Đã tạo vai trò",
+				"createRoleFailed": "Không thể tạo vai trò: ${error}",
+				"permissionUpdated": "Đã cập nhật quyền",
+				"permissionUpdateFailed": "Không thể cập nhật quyền: ${error}",
+				"noMembers": "Chưa có thành viên nào",
+				"memberRoles": "Vai trò:",
+				"kick": "Đuổi",
+				"ban": "Cấm",
+				"kickConfirm": "Bạn có chắc chắn muốn đá thành viên ${name} không?",
+				"kickSelfNodeWarning": "Cảnh báo: Thành viên này sử dụng danh tính nút giống như bạn. Bạn cũng sẽ bị loại khỏi nhóm sau khi bị đuổi ra khỏi nhóm. Bạn có chắc chắn muốn tiếp tục không?",
+				"kickSuccess": "Thành viên bị đuổi",
+				"kickFailed": "Không thể đuổi thành viên: ${error}",
+				"banConfirm": "Bạn có chắc chắn muốn cấm thành viên ${name} không?",
+				"banSuccess": "Thành viên đã bị cấm",
+				"banFailed": "Không thể cấm thành viên: ${error}",
+				"bannedTitle": "thành viên bị cấm",
+				"unban": "Bỏ chặn",
+				"unbanConfirm": "Bạn có chắc chắn muốn bỏ chặn thành viên ${name} không?",
+				"unbanSuccess": "Thành viên đã được bỏ chặn",
+				"unbanFailed": "Bỏ chặn không thành công: ${error}",
+				"keyRotate": "Xoay khóa chính của tệp nhóm",
+				"keyRotateConfirm": "Bạn có chắc chắn muốn xoay khóa chính của tệp nhóm này theo cách thủ công không? Thành viên mới cần đồng bộ lại khóa tệp lịch sử.",
+				"keyRotateOk": "Chìa khóa đã được xoay",
+				"keyRotateFailed": "Xoay khóa không thành công: ${error}",
+				"gshGenerationRetentionHint": "Hiện chỉ giữ 64 thế hệ lịch sử khóa chính tệp gần nhất. Vượt ngưỡng này, tệp lịch sử cũ nhất có thể không giải mã được — nên lưu trữ dữ liệu quan trọng thường xuyên.",
+				"gshGenerationNearLimit": "Đang luân chuyển sang thế hệ ${generation} khóa chính tệp (tối đa ${maxGenerations} thế hệ). Tiếp tục luân chuyển thường xuyên sẽ loại bỏ các khóa lịch sử cũ nhất.",
+				"ownerSuccession": "Kế nhiệm trưởng nhóm",
+				"ownerSuccessionOk": "Việc kế nhiệm trưởng nhóm đã có hiệu lực",
+				"ownerSuccessionFailed": "Việc kế vị trưởng nhóm không thành công: ${error}",
+				"permVIEW_CHANNEL": "Xem kênh",
+				"permSEND_MESSAGES": "Gửi tin nhắn",
+				"permSEND_STICKERS": "Gửi nhãn dán",
+				"permADD_REACTIONS": "thêm phản ứng",
+				"permMANAGE_MESSAGES": "Thông báo quản lý",
+				"permMANAGE_CHANNELS": "Quản lý kênh",
+				"permKICK_MEMBERS": "đá thành viên",
+				"permBAN_MEMBERS": "Cấm thành viên",
+				"permMANAGE_ROLES": "vai trò quản lý",
+				"permINVITE_MEMBERS": "Mời thành viên",
+				"permSTREAM": "tiếng nói",
+				"permCREATE_THREADS": "Tạo kênh phụ",
+				"permUPLOAD_FILES": "Tải tập tin lên",
+				"permMANAGE_FILES": "Quản lý tập tin",
+				"permPIN_MESSAGES": "Tin nhắn được ghim",
+				"permADMIN": "quản trị viên",
+				"permBYPASS_RATE_LIMIT": "Bỏ qua giới hạn tốc độ tin nhắn"
+			},
+			"auditLog": {
+				"title": "Nhật ký kiểm tra nhóm",
+				"hint": "Hiển thị các thành viên, vai trò, kênh và sự kiện kiểm duyệt trên nhánh quản trị áp dụng hiện tại; chỉ hiển thị với quản trị viên.",
+				"filterLabel": "loại sự kiện",
+				"refresh": "làm cho khỏe lại",
+				"filterAll": "Tất cả các loại",
+				"loadMore": "Tải bản ghi cũ hơn",
+				"empty": "Chưa có hồ sơ kiểm toán",
+				"loadFailed": "Không thể tải nhật ký kiểm tra: ${error}",
+				"colTime": "thời gian",
+				"colType": "Kiểu",
+				"colActor": "toán tử",
+				"colSummary": "bản tóm tắt",
+				"type": {
+					"member_join": "thành viên tham gia",
+					"member_leave": "các thành viên rời đi",
+					"member_kick": "đá thành viên",
+					"member_ban": "Cấm thành viên",
+					"member_unban": "bỏ chặn",
+					"role_create": "Tạo một vai trò",
+					"role_update": "Cập nhật vai trò",
+					"role_delete": "Xóa vai trò",
+					"role_assign": "Chỉ định vai trò",
+					"role_revoke": "thu hồi vai trò",
+					"channel_create": "Tạo kênh",
+					"channel_update": "Cập nhật kênh",
+					"channel_delete": "Xóa kênh",
+					"channel_permissions_update": "Quyền của kênh",
+					"group_meta_update": "Thông tin nhóm",
+					"group_settings_update": "Cài đặt nhóm",
+					"reputation_slash": "Khấu trừ danh tiếng",
+					"reputation_reset": "thiết lập lại danh tiếng",
+					"file_master_key_rotate": "Xoay khóa chính của tập tin nhóm",
+					"peer_invite": "lời mời ngang hàng",
+					"dag_tip_merge": "Hợp nhất các nhánh DAG",
+					"message_delete": "Xóa tin nhắn",
+					"pin_message": "Tin nhắn được ghim",
+					"unpin_message": "Bỏ ghim",
+					"file_upload": "Tải tập tin lên",
+					"file_delete": "Xóa tập tin"
+				},
+				"event": {
+					"member_join": "Thành viên ${target} tham gia nhóm",
+					"member_leave": "Thành viên rời nhóm",
+					"member_kick": "Đá thành viên ${target}",
+					"member_ban": "Cấm thành viên ${target}",
+					"member_unban": "Bỏ chặn ${target}",
+					"role_create": "Tạo vai trò ${roleName}",
+					"role_update": "Cập nhật vai trò ${roleName}",
+					"role_delete": "Xóa vai trò ${roleName}",
+					"role_assign": "Gán vai trò ${target} cho ${roleName}",
+					"role_revoke": "Thu hồi vai trò ${target} khỏi ${roleName}",
+					"channel_create": "Tạo kênh ${channelName}",
+					"channel_update": "Cập nhật kênh ${channelName}",
+					"channel_delete": "Xóa kênh ${channelName}",
+					"channel_permissions_update": "Cập nhật quyền cho kênh ${channelName}",
+					"group_meta_update": "Cập nhật thông tin nhóm: ${name}",
+					"group_settings_update": "Cập nhật cài đặt nhóm",
+					"reputation_slash": "Khấu trừ danh tiếng (${target}) trên ${claim}",
+					"reputation_reset": "Đặt lại danh tiếng của ${target}",
+					"file_master_key_rotate": "Xoay khóa chính của tệp nhóm",
+					"channel_key_rotate": "Xoay khóa kênh ${channelName} E2E",
+					"peer_invite": "Mời nút ngang hàng ${target}",
+					"dag_tip_merge": "Hợp nhất các nhánh quản trị DAG",
+					"message_delete": "Xóa tin nhắn ${targetEventId}",
+					"pin_message": "Ghim ${channelName} trên ${targetEventId}",
+					"unpin_message": "Bỏ ghim ${channelName} trên ${targetEventId}",
+					"file_upload": "Tải tệp lên ${fileName}",
+					"file_delete": "Xóa tệp ${fileName}"
+				}
+			},
+			"messagePrefixSticker": "nhãn dán",
+			"membersEmpty": "(chưa có thành viên)",
+			"channelEncryptionGsh": "Mã hóa đầu cuối khóa kênh (CKG)",
+			"ownerSuccession": "Bắt đầu bỏ phiếu kế nhiệm",
+			"ownerSuccessionDescription": "Chuyển quyền quản trị cao nhất của nhóm (MANAGE_ADMINS) cho thành viên được chỉ định. Chỉ quản trị viên mới có thể hoạt động.",
+			"ownerSuccessionAutoSignHint": "Sau khi submit, máy sẽ tự động ký tên hạt giống của nhóm mà không cần nhập Private key. Trong một nhóm có nhiều quản trị viên, hơn một nửa số quản trị viên phải gửi cùng một lá phiếu (cùng mã phiếu bầu và ứng cử viên) tại địa phương.",
+			"ownerSuccessionCandidateLabel": "Băm khóa công khai kế tiếp",
+			"ownerSuccessionSelfButton": "Tự đề cử",
+			"ownerSuccessionSubmitted": "Chữ ký của bạn đã được ghi trên Lá phiếu kế nhiệm.",
+			"ownerSuccessionNeedHash": "Vui lòng điền vào hàm băm khóa công khai của người kế nhiệm",
+			"ownerSuccessionFailed": "Gửi phiếu bầu kế nhiệm không thành công",
+			"e2eDecryptUnavailable": "Tin nhắn đã được mã hóa và thiết bị hiện tại không thể giải mã được",
+			"contentRefBodyPending": "Văn bản liên kết bên ngoài (content_ref, chưa được lấy để xác minh)",
+			"contentRefHashMismatch": "Văn bản liên kết bên ngoài không nhất quán với xác minh bộ nhớ (bảng băm không khớp)",
+			"streamGenerationFailed": "Quá trình tạo AI đã hết thời gian chờ và chưa hoàn thành, các bản cập nhật đã bị dừng.",
+			"convergentEncryptWarn": "Các tệp nhóm sử dụng mã hóa hội tụ: nếu kẻ tấn công biết bản rõ của tệp, hắn có thể lấy được khóa và giải mã khối bản mã tương ứng. Không chỉ dựa vào mã hóa nhóm để bảo vệ các tài liệu có độ nhạy cảm cao và riêng tư.",
+			"settingsStreamGeneratingIdle": "Thời gian chờ không hoạt động của phần giữ chỗ được tạo bởi AI (mili giây)",
+			"settingsAutoReplyFrequency": "Tự động kích hoạt trả lời vai trò (sau mỗi N tin nhắn của người dùng, 0 sẽ tắt)",
+			"settingsAutoReplyFrequencyHint": "0 có nghĩa là tắt; @đề cập vẫn sẽ kích hoạt ngay lập tức",
+			"settingsMaxDagPayload": "DAG số byte tối đa cho một sự kiện",
+			"settingsBatterySaver": "Chế độ năng lượng thấp (thu nhỏ nhóm kết nối liên kết và rơle)",
+			"settingsDiscoveryPublic": "Hiển thị nhóm này trong khám phá liên kết (không tham gia khóa nhóm)",
+			"settingsDiscoveryTitle": "Tiêu đề danh sách khám phá (tùy chọn)",
+			"settingsDiscoveryBlurb": "Giới thiệu khám phá (tùy chọn)",
+			"settingsTrustedPeers": "Khe tin cậy hàng xóm (Top-K)",
+			"settingsExplorePeers": "Khám phá các khe lân cận",
+			"settingsMaxPeers": "Giới hạn kết nối liên đoàn",
+			"settingsGossipTtl": "Chuyển tiếp tin đồn TTL (số bước nhảy)",
+			"settingsWantIdsBudget": "Ngân sách mong muốn duy nhất",
+			"settingsHlcMaxSkew": "Giới hạn trên bù đắp trong tương lai của HLC (mili giây)",
+			"dagForkDetected": "Đã phát hiện thấy nhánh DAG chưa được hợp nhất",
+			"mergeDagTips": "Hợp nhất các nhánh DAG",
+			"mergeDagTipsOk": "Ngã ba hợp nhất",
+			"mergeDagTipsFailed": "Hợp nhất ngã ba không thành công",
+			"settingsStreamingSfu": "Truyền phát địa chỉ SFU WebSocket (tùy chọn)",
+			"settingsMessageRetention": "Nội dung tin nhắn sẽ tự động bị xóa",
+			"settingsMessageRetentionForever": "Lưu giữ vĩnh viễn (chỉ các sự kiện DAG được nén)",
+			"settingsMessageRetention30d": "30 ngày trước",
+			"settingsMessageRetention90d": "90 ngày trước",
+			"settingsMessageRetention1y": "1 năm trước",
+			"settingsMessageRetentionHint": "Lịch sử hiển thị không được tự động xóa theo mặc định. Khi được bật, chỉ bộ nhớ đệm nóng của tin nhắn cục bộ sẽ được cắt bớt; tin nhắn cuối cùng sẽ được lưu giữ trong kho lưu trữ lạnh và điểm kiểm tra.",
+			"settingsHotLatest": "Duy trì vùng nóng (số bài đăng mới nhất trên mỗi kênh)",
+			"settingsPinContext": "Vùng lân cận hàng đầu (±N vùng lân cận)",
+			"settingsHotWindowHint": "Các bài đăng vùng nóng được lưu giữ trong bộ đệm điểm kiểm tra và tin nhắn; các bài đăng còn lại được ghi vào kho lưu trữ lạnh hàng tháng sau khi hiện thực hóa và sau đó được thu gọn khỏi các sự kiện của quy trình DAG.",
+			"settingsArchiveTitle": "Lưu trữ và lưu trữ lạnh",
+			"settingsArchiveHint": "Kho lưu trữ lạnh là trạng thái cuối cùng của bài đăng văn bản rõ ràng cục bộ (tệp được chia theo tháng). Xóa kho lưu trữ sẽ không thay đổi DAG; nếu lịch sử bị thiếu, nó có thể được lấy từ các nước láng giềng liên bang.",
+			"settingsArchiveFilesTitle": "Tệp đã lưu trữ",
+			"settingsArchiveEmpty": "Chưa có tập tin lưu trữ lạnh.",
+			"settingsArchiveColChannel": "Kênh",
+			"settingsArchiveColMonth": "Tháng",
+			"settingsArchiveColSize": "kích cỡ",
+			"settingsArchiveDeleteBefore": "Xóa tháng này trước",
+			"settingsArchiveDeleteButton": "Xóa kho lưu trữ lạnh",
+			"settingsArchiveDeleteHint": "Chỉ kho lưu trữ cục bộ/*.jsonl bị xóa; các điểm nóng và điểm neo DAG không bị ảnh hưởng.",
+			"settingsArchiveAdminOnly": "Máy này chưa có dữ liệu lưu trữ lạnh cho nhóm này.",
+			"settingsArchiveDeleteInvalidMonth": "Vui lòng chọn tháng hợp lệ YYYY-MM.",
+			"settingsArchiveDeleteConfirm": "Bạn có chắc chắn muốn xóa tất cả các tệp lưu trữ nguội cũ hơn {tháng} không? Hoạt động này là không thể đảo ngược.",
+			"settingsArchiveDeleteOk": "{files} tệp lưu trữ đã bị xóa.",
+			"settingsArchiveDeleteFailed": "Không thể xóa kho lưu trữ: {error}",
+			"settingsEventRetentionDepth": "Độ sâu lưu giữ sự kiện DAG",
+			"settingsEventRetentionMs": "Thời gian lưu giữ sự kiện DAG",
+			"settingsCompactTriggerDepth": "Độ sâu kích hoạt nén được vật chất hóa",
+			"settingsMessageRateLimit": "Giới hạn tốc độ tin nhắn (tin nhắn/phút/thực thể)",
+			"settingsAutoReplyTokenBucket": "Lập kế hoạch áp lực trả lời tự động (Nhóm mã thông báo)",
+			"settingsAutoReplyTokenBucketHint": "Sau khi được bật, mỗi ký tự sẽ duy trì một nhóm mã thông báo theo kênh; onMessage không được kích hoạt tạm thời khi nhóm trống, điều này có thể ngăn cản việc làm mới màn hình liên tục trong thời gian cao điểm.",
+			"settingsIceServers": "máy chủ ICE/TURN",
+			"settingsIceServersAdd": "Thêm máy chủ",
+			"settingsIceServersHint": "Được sử dụng cho WebRTC và thâm nhập P2P liên kết; Thông tin xác thực TURN chỉ giữ lại các cài đặt cụ thể cục bộ và không được phát qua liên kết.",
+			"settingsFileCeMode": "Chế độ mã hóa tập tin",
+			"settingsFileCeModeConvergent": "Mã hóa hội tụ (có thể loại bỏ trùng lặp)",
+			"settingsFileCeModeRandom": "Chế độ riêng tư cao (khóa ngẫu nhiên, không trùng lặp)",
+			"settingsFileCeModeHint": "Chế độ bảo mật cao sử dụng contentKey ngẫu nhiên cho từng khối và đánh dấu ceMode=random; điều này làm giảm nguy cơ có thể đoán được văn bản gốc nhưng lại tăng dung lượng lưu trữ và mức sử dụng băng thông.",
+			"channelsTitle": "Kênh",
+			"createGroup": "Tạo nhóm mới",
+			"members": "thành viên",
+			"membersHint": "Danh sách thành viên được đồng bộ bởi Checkpoint (placeholder)",
+			"send": "Gửi",
+			"streamTest": "Kiểm tra thiết bị truyền thông",
+			"messageInput": {
+				"placeholder": "Tin nhắn nhóm... Ctrl+Enter Gửi"
+			},
+			"loadError": "Không thể tải nhóm",
+			"remoteNodeTimeout": "Nút từ xa không phản hồi, vui lòng thử lại sau.",
+			"remoteUnavailable": "Thành phần từ xa không khả dụng hoặc không thể định tuyến RPC",
+			"messagesLoadFailed": "Tải tin nhắn không thành công",
+			"sendFailed": "Gửi không thành công",
+			"chatNotLoaded": "Trò chuyện chính không được tải: Vui lòng mở cuộc trò chuyện có cùng ID với nhóm trên giao diện chính và thử lại.",
+			"createFailed": "Không thể tạo nhóm",
+			"newGroupName": "nhóm mới",
+			"streamOk": "Đã thu được luồng phương tiện (đã dừng, không phát)",
+			"remoteUnsafe": "Tin nhắn này đến từ một địa điểm xa và tác giả không có trong danh sách tin cậy của địa phương. Hiển thị văn bản đa dạng thức đã bị vô hiệu hóa.",
+			"trustAuthor": {
+				"textContent": "lòng tin",
+				"title": "Tin tưởng tác giả này (cho phép HTML nguy hiểm)"
+			},
+			"trustAuthorOk": "Tác giả này đã được tin cậy và hiển thị văn bản phong phú",
+			"voteCast": "bỏ phiếu",
+			"listEmpty": "(Chưa có mục điều hướng, quản trị viên có thể cập nhật mục danh sách thông qua API)",
+			"listChannelReadonly": {
+				"placeholder": "Danh sách các kênh chỉ hiển thị thẻ điều hướng và không gửi tin nhắn"
+			},
+			"streamNoEmbed": {
+				"textContent": "Địa chỉ phát trực tuyến phải là trang https:// có thể nhúng hoặc cài đặt nhóm phải được định cấu hình trước và làm mới để nhận được mã thông báo xem."
+			},
+			"streamNoSfu": {
+				"textContent": "streamingSfuWss không được định cấu hình; quản trị viên có thể điền địa chỉ xem LiveKit/mediasoup trong cài đặt nhóm."
+			},
+			"messageDeleted": "Đã xóa tin nhắn",
+			"messageDeletedBracket": "[Tin nhắn đã bị xóa]",
+			"messageWithAttachments": "${text} (${n} tệp đính kèm)",
+			"voteBlockHeading": "[${prefix}] ${question}",
+			"voteBlockHeadingTagged": "[Bình chọn] ${question}",
+			"voteCastLine": "[${prefix}] Bình chọn: ${choice}",
+			"voteCastLineTagged": "[Bình chọn] Bình chọn: ${choice}",
+			"voteOptionsPreview": "[${prefix}] ${options}",
+			"voteOptionsPreviewTagged": "[Bình chọn] ${options}",
+			"voteDeadlineLineOpen": "Hạn chót: ${date}",
+			"voteDeadlineLineClosed": "Kết thúc: ${date} [Đã kết thúc]",
+			"pinMessageLine": "[Hàng đầu] ${targetId}",
+			"unpinMessageLine": "[Bỏ ghim] ${targetId}",
+			"stickerPrefixLine": "[${label}]",
+			"stickerPrefixLineTagged": "[nhãn dán]",
+			"feedbackDagLine": "[${label}]",
+			"feedbackDagLineWithNote": "[${label}] ${note}",
+			"feedbackPreviewLine": "${tag}${sep}${note}",
+			"feedbackPreviewTaggedNote": "${tag} ${note}",
+			"mentionHandle": "@${name}",
+			"mentionInsert": "@${name}",
+			"feedbackUp": "Khen",
+			"feedbackDown": "bước lên",
+			"attachmentsHint": "(${n} tệp đính kèm)",
+			"pinMessage": "ghim lên trên",
+			"unpinMessage": "Bỏ ghim",
+			"pinThisMessage": "Viết bài này lên DAG và ghim lên đầu",
+			"pinAction": {
+				"textContent": "ghim lên trên",
+				"title": "Viết bài này lên DAG và ghim lên đầu"
+			},
+			"unpinAction": {
+				"textContent": "Bỏ ghim",
+				"title": "Bỏ ghim"
+			},
+			"pinOk": "Đã ghi và ghim",
+			"unpinOk": "Đã bỏ ghim",
+			"pinFailed": "Ghim không thành công",
+			"menuCopyText": "sao chép văn bản",
+			"menuExportHtml": "Xuất sang HTML",
+			"menuCopyId": "Sao chép ID tin nhắn",
+			"copied": "Đã sao chép",
+			"addBookmark": {
+				"title": "Đánh dấu kênh hiện tại"
+			},
+			"bookmarkExists": "Dấu trang đã tồn tại",
+			"bookmarkAdded": "Đã đánh dấu",
+			"bookmarkSaveFailed": "Không thể lưu dấu trang",
+			"remoteTyping": "${name} đang gõ...",
+			"remoteTypingTwo": "${name1}, ${name2} Đang vào...",
+			"remoteTypingMany": "${name} và ${count} người khác đang nhập…",
+			"mentionEmpty": "(không có thành viên phù hợp)",
+			"localAiLabel": "Vai trò bản địa:",
+			"forceTriggerOne": {
+				"title": "Buộc kích hoạt ${name} để nói"
+			},
+			"forceTriggerAllLocal": "Kích hoạt tất cả",
+			"forceTriggerAllLocalTitle": {
+				"title": "Buộc tất cả nhân vật cục bộ phát biểu"
+			},
+			"messageRefAnchor": "Tin nhắn trích dẫn: ${id}",
+			"settingsFedPartition": "Số đơn vị liên bang",
+			"settingsRtcBudget": "Ngân sách kết nối RTC",
+			"settingsRtcJoinRate": "RTC đã thêm giới hạn mỗi phút",
+			"settingsFedTuningHint": "Viết cài đặt nhóm DAG; sau khi sửa đổi, nên liên kết lại phòng liên đoàn.",
+			"settingsAutoChannelGc": "Tự động xóa các kênh im lặng",
+			"settingsAutoChannelGcHint": "Tối đa 2 kênh đảo biệt lập đã im lặng ≥30 ngày và không thể truy cập được sẽ bị xóa khi thành hiện thực.",
+			"quoteHeader": "> **${sender}**${sep}${time}",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}",
+			"quoteHeaderWithoutTime": "> **${sender}**",
+			"stopGenerating": "Dừng tạo",
+			"messageAborted": "Bị gián đoạn",
+			"avStart": "bắt đầu phương tiện truyền thông",
+			"avMute": "tắt tiếng",
+			"avSwap": "Màn hình chính",
+			"avStop": "dừng lại",
+			"avNeedStreamChannel": "Vui lòng sử dụng âm thanh và video trong các kênh loại \"phương tiện truyền thông trực tuyến\"",
+			"reactionAdd": {
+				"title": "thêm phản hồi"
+			},
+			"reactionRemove": {
+				"title": "Rút lại phản hồi"
+			},
+			"addReaction": {
+				"title": "Thêm biểu tượng cảm xúc"
+			},
+			"reactionPrompt": "Nhập biểu tượng cảm xúc (Unicode)",
+			"channelTypeLabel": "Loại kênh",
+			"channelTypeText": "kênh trò chuyện",
+			"channelTypeList": "Danh sách/Kênh diễn đàn",
+			"channelTypeStreaming": "kênh phát trực tuyến",
+			"convertToText": "Chuyển sang kênh trò chuyện",
+			"convertToList": "Chuyển đổi sang danh sách/kênh diễn đàn",
+			"setAsDefault": "Đặt làm kênh mặc định của nhóm",
+			"isDefault": "Mặc định hiện tại",
+			"defaultChannelSet": "Đặt làm kênh mặc định",
+			"defaultChannelSetFailed": "Đặt kênh mặc định không thành công",
+			"channelUpdateFailed": "Cập nhật kênh không thành công",
+			"voteCreate": "Bắt đầu bỏ phiếu",
+			"votePromptDeadline": "Hạn chót (để trống không giới hạn thời gian, định dạng 2026-01-01 23:59)",
+			"voteTooFewOptions": "Cần có ít nhất hai lựa chọn",
+			"voteCreateFailed": "Không thể tạo bình chọn",
+			"voteFor": "Đầu tư ${option}",
+			"voteDeadline": "Thời hạn",
+			"voteEnded": "đã kết thúc",
+			"voteTotal": "Tổng số ${n} phiếu bầu",
+			"record": "ghi âm",
+			"fileDownload": {
+				"title": "Tải tập tin xuống"
+			},
+			"clickToLoad": "Bấm để tải",
+			"unknownFile": "tập tin không xác định",
+			"blockSender": {
+				"title": "Chặn người gửi"
+			},
+			"blockConfirm": "Bạn có chắc chắn muốn chặn \"${sender}\" không?",
+			"blockAdded": "Bị chặn",
+			"saveSticker": {
+				"title": "Lưu nhãn dán/biểu tượng cảm xúc vào mục yêu thích"
+			},
+			"stickerSaved": "Đã lưu vào thư viện hình dán",
+			"stickerDefaultName": "nhãn dán",
+			"deleteMessage": {
+				"title": "Xóa tin nhắn"
+			},
+			"deleteConfirm": "Xác nhận xóa tin nhắn này?",
+			"editMessage": {
+				"title": "Chỉnh sửa tin nhắn"
+			},
+			"saveEdit": "Cứu",
+			"cancelEdit": "Hủy bỏ",
+			"editingMessage": "Chỉnh sửa",
+			"editConfirm": "Xác nhận (Ctrl+Enter)",
+			"editCancel": "Hủy bỏ (Esc)",
+			"editHint": "Ctrl+Enter Xác nhận · Esc Hủy",
+			"editedLabel": "(đã chỉnh sửa)",
+			"editEmptyText": "Nội dung tin nhắn không được để trống",
+			"createGroupTitle": "Tạo nhóm mới",
+			"groupNameLabel": "Tên nhóm",
+			"groupName": {
+				"placeholder": "nhóm của tôi"
+			},
+			"defaultChannelLabel": "kênh mặc định",
+			"defaultChannel": {
+				"placeholder": "tổng quan"
+			},
+			"createGroupFailed": "Không thể tạo nhóm",
+			"createChannelFailed": "Không thể tạo kênh",
+			"moreActions": {
+				"title": "Thêm hành động"
+			},
+			"thread": "chủ đề con",
+			"threadBack": "Quay lại",
+			"threadBreadcrumbRootTitle": "Nhảy đến điểm bắt đầu của đường dẫn (cấp độ đầu tiên)",
+			"threadBreadcrumbMiddleTitle": "Mở rộng lớp giữa và chọn cấp độ bạn muốn chuyển tới",
+			"threadBreadcrumbMiddleSummary": "lớp ${count} ở giữa",
+			"menuShareExternal": "Chia sẻ với liên kết bên ngoài",
+			"shareExternalOk": "Liên kết đã được tải lên và sao chép",
+			"shareExternalFailed": "Tải lên không thành công, vui lòng kiểm tra mạng"
+		},
+		"hub": {
+			"title": "trò chuyện",
+			"redirectToHub": "Đang vào Trung tâm trò chuyện…",
+			"homeTooltip": {
+				"title": "Trở về trang chủ",
+				"tip": "Trở về trang chủ"
+			},
+			"charsTooltip": {
+				"title": "Vai trò",
+				"tip": "Vai trò"
+			},
+			"friendsTooltip": {
+				"title": "Bạn",
+				"tip": "Bạn"
+			},
+			"inboxTooltip": {
+				"title": "Hộp thư",
+				"tip": "Hộp thư giữa các nhóm"
+			},
+			"inbox": {
+				"title": "Hộp thư",
+				"filtersLabel": "Lọc tin nhắn hộp thư đến",
+				"tabMention": "đề cập đến",
+				"tabMessage": "Tất cả tin tức",
+				"tabCare": "mối quan tâm đặc biệt",
+				"tabVoteClosed": "Cuộc bỏ phiếu kết thúc",
+				"emptyMentionTitle": "Chưa có ai nhắc đến bạn",
+				"emptyMentionDescription": "Khi các thành viên khác @ bạn trong cuộc trò chuyện nhóm, tin nhắn sẽ được hiển thị ở đây.",
+				"emptyMessageTitle": "Hộp thư trống",
+				"emptyMessageDescription": "Cập nhật tin nhắn từ các cuộc trò chuyện nhóm và kênh khác nhau sẽ xuất hiện ở đây.",
+				"emptyCareTitle": "Mối quan tâm đặc biệt: Chưa có tin tức",
+				"emptyCareDescription": "Khi tin nhắn mới được gửi từ các thành viên mà bạn đặc biệt quan tâm, bạn có thể xem chúng tại đây trong thời gian sớm nhất.",
+				"emptyVoteTitle": "Không có cuộc thăm dò nào đóng",
+				"emptyVoteDescription": "Khi các cuộc thăm dò tham gia đã đóng, kết quả sẽ được tóm tắt ở đây.",
+				"rowLabel": {
+					"aria-label": "${author} đã nói trong ${group} của ${channel}: ${preview}"
+				},
+				"sidebarHint": "Trong tất cả các nhóm @ tin nhắn của bạn sẽ xuất hiện trong danh sách bên phải",
+				"badgeFetchFailed": "Làm mới huy hiệu chưa đọc không thành công: ${error}",
+				"loadFailed": "Tải hộp thư đến không thành công: ${error}",
+				"markSeenFailed": "Cập nhật trạng thái đọc hộp thư đến không thành công: ${error}",
+				"jumpFailed": "Không thể mở tin nhắn này: ${error}"
+			},
+			"notifyPrefs": {
+				"title": "Cài đặt thông báo",
+				"mode": "chế độ thông báo",
+				"modeAll": "Tất cả tin tức",
+				"modeMentions": "Chỉ @ và đề cập",
+				"modeNothing": "không cần thông báo",
+				"suppressEveryone": "Bỏ qua @everyone và @here",
+				"suppressRoles": "Bỏ qua nhóm vai trò @",
+				"mute": "tắt tiếng",
+				"muteOff": "đóng cửa",
+				"mute1h": "1 giờ",
+				"mute8h": "8 giờ",
+				"muteForever": "cho đến khi được bật thủ công",
+				"saved": "Đã lưu cài đặt thông báo"
+			},
+			"voteClosed": "đã kết thúc",
+			"discoveryTooltip": {
+				"title": "Khám phá nhóm",
+				"tip": "Khám phá nhóm"
+			},
+			"prefsTooltip": {
+				"title": "cài đặt",
+				"tip": "Cài đặt dịch thuật và P2P liên kết"
+			},
+			"prefsSubtitle": "Dịch thuật và kết nối liên đoàn",
+			"federationTooltip": {
+				"title": "Cài đặt P2P liên kết",
+				"tip": "Cài đặt P2P liên kết"
+			},
+			"federationTitle": "Cài đặt P2P liên kết",
+			"federationSubtitle": "Kiểm soát kết nối thiết bị chéo; để mặc định trong hầu hết các trường hợp",
+			"federationLoadFailed": "Tải không thành công: ${error}",
+			"fedConnectionTitle": "Kết nối và khám phá",
+			"discoveryRefresh": "Làm mới danh sách khám phá",
+			"fedRelayUrlsLabel": "địa chỉ chuyển tiếp mạng",
+			"fedRelayUrlsTip": "Giúp các thiết bị tìm thấy nhau trên Internet. Điền một địa chỉ wss:// trên mỗi dòng; để trống để sử dụng rơle mặc định.",
+			"fedBatterySaverLabel": "chế độ năng lượng thấp",
+			"fedBatterySaverTip": "Việc giảm số lượng kết nối nền và hoạt động mạng có thể khiến việc đồng bộ hóa tin nhắn chậm hơn một chút.",
+			"fedAdvancedTitle": "Cài đặt nâng cao",
+			"fedAdvancedDescription": "Sửa lỗi, quản lý danh tiếng và phát hành liên kết thủ công",
+			"fedGroupRecoveryTitle": "Sửa lỗi kết nối nhóm",
+			"fedGroupRecoveryTip": "Chỉ được sử dụng nếu lời mời bị rò rỉ hoặc thiết bị mới không thể đồng bộ hóa lịch sử.",
+			"fedRotateRoomSecret": "Xoay mật khẩu phòng nhóm",
+			"fedRotateRoomSecretConfirm": "Sau khi xoay vòng, lời mời dùng mật khẩu phòng cũ sẽ không kết nối được. Bạn có chắc muốn tiếp tục?",
+			"fedRotateRoomSecretOk": "Mật khẩu phòng đã được luân chuyển",
+			"fedRepairJoinSnapshot": "Yêu cầu hàng xóm tham gia sửa chữa ảnh chụp nhanh nhóm",
+			"fedRepairJoinSnapshotOk": "Đã áp dụng ảnh chụp nhanh nhóm (${channels} lịch sử kênh)",
+			"fedRepairJoinSnapshotFailed": "Không thể sửa ảnh chụp nhanh nhóm: ${error}",
+			"fedRepTitle": "Độ tin cậy chủ quan của nhóm này",
+			"fedRepTip": "Điểm tùy chọn kết nối được tính toán nguyên bản dựa trên hành vi của nút liên kết không phải là xếp hạng công khai của các thành viên nhóm.",
+			"fedRepEmpty": "(vô giá trị)",
+			"fedSlashTitle": "Hình phạt danh tiếng",
+			"fedSlashTip": "Viết một tuyên bố danh tiếng tiêu cực về một nút vào biểu đồ sự kiện nhóm. Chỉ dành cho những quản trị viên hiểu rõ các giao thức liên kết.",
+			"fedSlashTargetLabel": "mục tiêu pubKeyHash(64 hex)",
+			"fedSlashTarget": {
+				"placeholder": "Băm khóa công khai của thành viên"
+			},
+			"fedSlashClaimLabel": "Yêu cầu sức mạnh yêu cầu (0–1)",
+			"fedSlashVerifiedLabel": "Có thể xác minh (bắt buộc phải có id sự kiện bằng chứng)",
+			"fedSlashProofLabel": "proof.eventId (tùy chọn)",
+			"fedSlashProof": {
+				"placeholder": "Id sự kiện 64 hex"
+			},
+			"fedSlashSubmitLabel": "Đăng danh tiếng_slash",
+			"fedResetSubmitLabel": "Đặt lại danh tiếng mục tiêu",
+			"fedSlashNeedHash": "Yêu cầu 64-bit hex pubKeyHash",
+			"fedSlashOk": "danh tiếng_slash được ghi vào DAG",
+			"fedResetOk": "danh tiếng_reset đã được viết",
+			"fedDmLinkTitle": "Phát hành liên kết bạn bè theo cách thủ công",
+			"fedDmLinkTip": "Yêu cầu ký bằng khóa nhận dạng gốc. Khóa riêng chỉ được gửi tới dịch vụ cục bộ trên trang này và sẽ không được gửi đến các nút khác.",
+			"fedDmLinkDescription": "Thích hợp để gỡ lỗi hoặc di chuyển danh tính thủ công; không cần phải điền vào các trường này khi thêm bạn bè hàng ngày.",
+			"fedDmPubKeyLabel": "Hex khóa công khai(64)",
+			"fedDmSecretLabel": "Hex hạt giống khóa riêng(64)",
+			"fedDmNodeLabel": "URL nút tùy chọn",
+			"fedDmInvalidateTitle": "Để các liên kết giới thiệu cũ hết hạn",
+			"fedDmInvalidateDescription": "Sau khi thực hiện, tất cả các liên kết thêm bạn bè đã phát hành trước đó sẽ ngay lập tức không hợp lệ và không thể thu hồi được.",
+			"fedDmRotateLabel": "Vô hiệu hóa các liên kết cũ",
+			"fedDmRotateConfirm": "Tất cả các liên kết thêm bạn bè được phát hành trước đó sẽ vô hiệu ngay lập tức và không thể khôi phục được. Bạn có chắc chắn muốn tiếp tục không?",
+			"fedDmIssueLabel": "Phát hành liên kết DM",
+			"fedDmNeedPubKey": "Yêu cầu khóa công khai 64 hex",
+			"fedDmNeedSecretKey": "Yêu cầu hạt giống khóa riêng 64 hex",
+			"fedDmIssued": "Liên kết DM đã được ký và sao chép vào clipboard",
+			"fedNonceRotated": "nonce đã xoay (${nonce}…)",
+			"fedSaved": "đã lưu",
+			"addServerTooltip": {
+				"title": "Tạo hoặc tham gia một nhóm",
+				"tip": "Tạo hoặc tham gia một nhóm"
+			},
+			"pinsTitle": "ghim lên trên",
+			"bookmarksTitle": "đánh dấu trang",
+			"pinsButton": {
+				"title": "Tin nhắn được ghim"
+			},
+			"bookmarksButton": {
+				"title": "đánh dấu trang"
+			},
+			"search": {
+				"placeholder": "Tìm kiếm tin nhắn…",
+				"noResults": "Không có kết quả",
+				"failed": "Tìm kiếm không thành công",
+				"scopeGroup": "Nhóm này",
+				"scopeAll": "Tất cả các nhóm"
+			},
+			"membersTitle": {
+				"title": "thành viên"
+			},
+			"backToNav": {
+				"title": "Quay lại danh sách",
+				"aria-label": "Quay lại danh sách"
+			},
+			"moreActions": {
+				"title": "Hơn",
+				"aria-label": "Thêm hành động"
+			},
+			"composerMore": {
+				"title": "Thêm phụ kiện",
+				"aria-label": "Thêm phụ kiện"
+			},
+			"settingsTitle": {
+				"title": "cài đặt"
+			},
+			"filesTitle": {
+				"title": "tập tin nhóm"
+			},
+			"filesDrawerTitle": "tập tin nhóm",
+			"filesLoading": "Đang tải tập tin nhóm...",
+			"filesLoadFailed": "Không thể tải tệp nhóm: ${error}",
+			"filesNoGroup": "Vui lòng chọn một nhóm trước",
+			"filesNoCabinets": "Không có tủ hồ sơ nào có thể truy cập được cho vai trò hiện tại",
+			"filesBindCabinet": "Thêm tủ hồ sơ",
+			"filesNoChannel": "Trước tiên hãy nhập kênh văn bản nơi bạn có thể gửi tin nhắn",
+			"filesUploadTo": "tải lên",
+			"filesRootFolder": "thư mục gốc",
+			"filesNewFolder": "Tạo thư mục mới",
+			"filesNewFolderPrompt": "tên thư mục",
+			"filesRename": "Đổi tên",
+			"filesRenameFolderPrompt": "Đổi tên thư mục \"${name}\" thành:",
+			"filesDeleteFolderConfirm": "Bạn có chắc chắn muốn xóa thư mục này? Các tập tin trong thư mục sẽ không tự động bị xóa.",
+			"filesUpload": "tải lên",
+			"filesDownload": "tải về",
+			"filesDelete": "xóa bỏ",
+			"filesDeleteConfirm": "Bạn có chắc chắn muốn xóa tập tin này?",
+			"filesFoldersTitle": "thư mục",
+			"filesListTitle": "tài liệu",
+			"filesEmpty": "Hiện tại không có tập tin nào trong thư mục này",
+			"filesNoFolders": "Chưa có thư mục con",
+			"uploadTitle": {
+				"title": "Tải tập tin lên"
+			},
+			"emojiTitle": {
+				"title": "sự biểu lộ"
+			},
+			"voteTitle": {
+				"title": "Bắt đầu bỏ phiếu"
+			},
+			"shareGroupTitle": {
+				"title": "Chia sẻ liên kết nhóm"
+			},
+			"shareGroupOk": "Thiệp mời nhóm chia sẻ",
+			"messageActionFailed": "Thao tác không thành công: ${error}",
+			"inviteJoinButton": "Tham gia nhóm",
+			"inviteLinkNeedsRoomSecret": "Nhóm này chưa kích hoạt đồng bộ hóa liên kết. Vui lòng tạo lại liên kết lời mời trước khi chia sẻ.",
+			"inviteCardMembers": "${count} thành viên",
+			"syncFailed": "Đồng bộ hóa liên kết không thành công: ${error}",
+			"syncRateLimited": "Đang tiến hành giới hạn tốc độ đồng bộ hóa liên bang, vui lòng thử lại sau.",
+			"syncIncomplete": "sự kiện ${missing}/${total} vẫn chưa được đồng bộ hóa",
+			"syncNoPeers": "Không được kết nối với hàng xóm liên kết, các tin nhắn lịch sử tạm thời không thể được đồng bộ hóa; vui lòng sử dụng liên kết lời mời đầy đủ và thử lại sau",
+			"attachmentLoadFailed": "Tải tệp đính kèm không thành công",
+			"messageEditUpload": "Tải lên tệp đính kèm",
+			"timeToday": "Hôm nay ${time}",
+			"timeYesterday": "Hôm qua ${time}",
+			"stickerTitle": {
+				"title": "nhãn dán"
+			},
+			"sendTitle": {
+				"title": "Gửi (Ctrl+Enter)"
+			},
+			"stopGenerateTitle": {
+				"title": "Dừng tạo"
+			},
+			"charTyping": "Đang vào…",
+			"messageActionPrev": {
+				"title": "Dòng thời gian trước đó"
+			},
+			"messageActionNext": {
+				"title": "dòng thời gian tiếp theo"
+			},
+			"messageActionRegen": {
+				"title": "tái sinh"
+			},
+			"messageActionEdit": {
+				"title": "Chỉnh sửa tin nhắn"
+			},
+			"messageActionFeedbackUp": {
+				"title": "Giống"
+			},
+			"messageActionFeedbackDown": {
+				"title": "Bấm vào để không thích"
+			},
+			"messageActionDelete": {
+				"title": "Xóa tin nhắn"
+			},
+			"confirmDeleteLong": "Tin nhắn này quá dài. Bạn có chắc chắn muốn xóa nó?",
+			"messageActionCopyHtml": {
+				"title": "Sao chép HTML"
+			},
+			"forceReply": "Buộc trả lời",
+			"removeChar": "Xóa ký tự",
+			"loadMore": "Đang tải tin tức cũ hơn…",
+			"charChatsTitle": "Cuộc trò chuyện lịch sử với ${name}",
+			"newGroupWith": "+ Tạo cuộc trò chuyện mới với ${name}",
+			"messageActionBookmark": {
+				"title": "Đánh dấu"
+			},
+			"messageActionPin": {
+				"title": "ghim lên trên"
+			},
+			"messageActionUnpin": {
+				"title": "Bỏ ghim"
+			},
+			"blockAuthor": {
+				"title": "Chặn tác giả này"
+			},
+			"pinUnpinSidebar": {
+				"title": "Bỏ ghim"
+			},
+			"meAuthor": "TÔI",
+			"messageEditSave": "Cứu",
+			"messageEditCancel": "Hủy bỏ",
+			"feedbackReasonPrompt": "Lý do từ chối (tùy chọn)",
+			"feedbackReasonInput": {
+				"placeholder": "Lý do từ chối (tùy chọn)"
+			},
+			"messageFeedbackSubmit": "Gửi phản hồi",
+			"stickersPanelTitle": "nhãn dán",
+			"stickersManage": "Quản lý nhãn dán →",
+			"stickersLoading": "đang tải…",
+			"recentEmojiTab": {
+				"title": "Thường được sử dụng"
+			},
+			"recentEmojisEmpty": "Các biểu tượng cảm xúc đã gửi sẽ hiển thị tại đây tùy theo số lần sử dụng.",
+			"currentGroupEmojiTab": {
+				"title": "Biểu tượng cảm xúc nhóm hiện tại"
+			},
+			"groupEmojiTab": {
+				"title": "Nhóm"
+			},
+			"groupEmojisEmpty": "Hiện tại không có biểu tượng cảm xúc nhóm. Bạn có thể tải chúng lên trong cài đặt nhóm.",
+			"groupEmojisLoadFailed": "Không thể tải emoji nhóm",
+			"profileLinkTitle": {
+				"title": "thông tin cá nhân",
+				"textContent": "thông tin cá nhân"
+			},
+			"userLoading": "đang tải…",
+			"status": {
+				"online": "trực tuyến",
+				"idle": "Nghỉ ngơi",
+				"dnd": "đừng làm phiền",
+				"invisible": "tàng hình",
+				"offline": "Ngoại tuyến"
+			},
+			"changeStatusTitle": "Chuyển trạng thái",
+			"aboutSection": "Về",
+			"bioEmpty": "Người dùng này chưa có hồ sơ.",
+			"statusOffline": {
+				"title": "Ngoại tuyến",
+				"textContent": "Ngoại tuyến"
+			},
+			"statusOnline": {
+				"title": "trực tuyến",
+				"textContent": "trực tuyến"
+			},
+			"statusIdle": {
+				"title": "rời khỏi",
+				"textContent": "rời khỏi"
+			},
+			"statusDnd": {
+				"title": "Đừng làm phiền",
+				"textContent": "Đừng làm phiền"
+			},
+			"banners": {
+				"gshBuffer": "Có ${total} tin nhắn đang chờ giải mã sau khi xoay khóa",
+				"plaintextSidecar": "Kênh này được đồng bộ theo yêu cầu; sidecar tin nhắn cục bộ lưu trữ nội dung ở dạng văn bản rõ ràng.",
+				"quarantine": "${count} sự kiện liên kết đang tạm cách ly do lệch đồng hồ; sẽ tự phát lại sau khi hệ thống khôi phục thời gian.",
+				"mailboxPending": "Có ${count} thư đang chờ gửi trong hộp thư ngoại tuyến.",
+				"syncing": "Đang đồng bộ hóa với các nước láng giềng liên bang…",
+				"archiveCoverageIncomplete": "Một số kho lạnh của tháng vẫn chưa được đồng bộ từ liên đoàn.",
+				"archiveSyncButton": "Lưu trữ đồng bộ",
+				"forkGovernance": "Có một nhánh trong bản ghi quyền và nó hiện ở chế độ xem cục bộ.",
+				"forkTips": "Đã phát hiện thấy ${count} nhánh chưa được hợp nhất, thứ tự thông báo có thể không nhất quán.",
+				"forkTipLabel": "Lá DAG",
+				"forkTipScore": "${short} · Danh tiếng ${score}",
+				"applyBranch": "Chi nhánh quản trị ứng dụng",
+				"autoBranch": "Lựa chọn tự động danh tiếng",
+				"mergeDag": "Hợp nhất các nhánh",
+				"splitFork": "Chia thành nhóm mới",
+				"blockOpposing": "Các nhánh đối lập không thể truy cập được",
+				"suspectedRemoved": "Bạn có thể đã bị xóa khỏi nhóm này: bạn đã yêu cầu các nút đã biết ${count} xác minh nhưng tất cả chúng đều bị từ chối. Bạn có thể kỷ niệm lịch sử địa phương hoặc xóa bản sao nhóm này.",
+				"suspectedRemovedKeep": "Lấy một món quà lưu niệm",
+				"suspectedRemovedLeave": "Xóa nhóm"
+			},
+			"blockOpposingConfirm": "Thêm các cơ quan ban hành quản trị không có tên trong cuộc bầu cử hiện tại vào danh sách đen và từ chối nhóm chuyển tiếp liên đoàn này. Tiếp tục?",
+			"blockOpposingOk": "Các chủ đề ${count} được đánh dấu là không thể truy cập được",
+			"blockOpposingFailed": "Đánh dấu không thành công: ${error}",
+			"applyBranchOk": "Ngành quản trị áp dụng",
+			"applyBranchFailed": "Áp dụng nhánh không thành công: ${error}",
+			"autoBranchOk": "Lựa chọn tự động sau khi khôi phục danh tiếng",
+			"autoBranchFailed": "Lựa chọn tự động không thành công: ${error}",
+			"saveEmoji": {
+				"title": "Lưu biểu tượng cảm xúc"
+			},
+			"saveEmojiOk": "Biểu tượng cảm xúc đã được lưu vào cơ sở dữ liệu",
+			"saveEmojiFailed": "Không thể lưu emoji: ${error}",
+			"saveSticker": {
+				"title": "Lưu hình dán"
+			},
+			"saveStickerOk": "Sticker đã được thêm vào thư viện sticker của bạn",
+			"saveStickerFailed": "Không thể lưu sticker: ${error}",
+			"revealRemoteMd": "Mở rộng toàn văn",
+			"voteModalTitle": "Bắt đầu bỏ phiếu",
+			"voteModalSubmit": "Tạo cuộc thăm dò",
+			"voteCreateFailed": "Không thể tạo bình chọn: ${error}",
+			"composer": {
+				"placeholder": "Gửi tới #${channel}"
+			},
+			"composerSuspectedRemoved": {
+				"placeholder": "Bạn có thể đã bị xóa khỏi nhóm này và không thể tiếp tục gửi tin nhắn."
+			},
+			"channelReadonlyList": {
+				"placeholder": "Danh sách kênh chỉ đọc"
+			},
+			"channelReadonlyStream": {
+				"placeholder": "Kênh truyền phát chỉ đọc"
+			},
+			"noChannels": "Chưa có cuộc trò chuyện nào",
+			"noMembers": "Chưa có thành viên nào",
+			"noPins": "Chưa có ghim",
+			"noBookmarks": "Chưa có dấu trang nào",
+			"adminSection": "quản trị viên",
+			"memberSection": "thành viên",
+			"membersDigestOk": "Thành viên Merkle nhất trí · ${root}",
+			"membersDigestOkPaged": "Sự đồng thuận của thành viên Merkle (${pages} pages) · ${root}",
+			"membersDigestMismatch": "Thông báo thành viên không nhất quán · ${root}",
+			"membersDigestPending": "Kiểm tra tóm tắt thành viên…",
+			"membersDigestFetchFailed": "Không thể kéo thành viên theo trang",
+			"copyEntityId": "Sao chép ID thực thể",
+			"copyEntityIdOk": "Đã sao chép ID thực thể",
+			"memberJoined": "Đã tham gia cuộc trò chuyện",
+			"remoteBadge": {
+				"textContent": "Xa",
+				"title": "liên tác giả từ xa"
+			},
+			"trustAuthor": {
+				"textContent": "lòng tin",
+				"title": "Tin tưởng tác giả này (cho phép HTML nguy hiểm)"
+			},
+			"stickerInline": "nhãn dán",
+			"voteDeadline": "Hạn chót: ${date}",
+			"voteNoOptions": "Không có tùy chọn",
+			"voteTotal": "Tổng số ${total} phiếu bầu",
+			"voteCount": "${count} vé · ${pct}%",
+			"loadGroupFailed": "Không thể tải nhóm: ${error}",
+			"groupJoinRequired": "Nhóm không mở được, vui lòng sử dụng link mời hoặc mã mời để tham gia",
+			"sendFailed": "Gửi không thành công: ${error}",
+			"sendFailedPending": "Gửi không thành công",
+			"markdownRenderFailed": "Kết xuất tin nhắn không thành công",
+			"retrySend": "Thử lại",
+			"sendImageFailed": "Không gửi được ảnh: ${error}",
+			"sendStickerFailed": "Không gửi được hình dán: ${error}",
+			"voteMinOptions": "Yêu cầu ít nhất 2 lựa chọn",
+			"mergeDagOk": "Ngã ba hợp nhất",
+			"mergeDagFailed": "Hợp nhất không thành công: ${error}",
+			"forkSplitFailed": "Tách không thành công: ${error}",
+			"forkSplitPrompt": "Tên nhóm mới (có thể để trống)",
+			"forkSplitModalTitle": "Chia thành nhóm mới",
+			"forkSplitModalSubmit": "tạo nên",
+			"typing": "${names} đang gõ...",
+			"charsHeader": "Vai trò",
+			"friendsHeader": "Bạn",
+			"settingsModalTitle": "cài đặt",
+			"modalClose": "đóng cửa",
+			"groupTag": "Nhóm",
+			"groupUnnamed": "Nhóm chưa đặt tên ·${suffix}",
+			"groupHeaderMenu": {
+				"title": "Menu nhóm: cài đặt, lời mời, v.v."
+			},
+			"groupDescriptionEmpty": "Chưa có hồ sơ cho nhóm này.",
+			"serverActionPickerTitle": "Nhóm",
+			"serverActionPickerSubtitle": "Tạo nhóm mới hoặc tham gia nhóm hiện có theo ID",
+			"serverActionPickerCreate": "Tạo nhóm",
+			"serverActionPickerCreateDescription": "Bắt đầu lại từ đầu và mời bạn bè",
+			"serverActionPickerJoin": "Tham gia nhóm",
+			"serverActionPickerJoinDescription": "Sử dụng ID nhóm",
+			"cancel": "Hủy bỏ",
+			"folderDefault": "thư mục",
+			"folderRename": "Đổi tên thư mục",
+			"folderRenamePrompt": "Đổi tên thư mục \"${name}\" thành:",
+			"folderCollapse": "Thu gọn thư mục",
+			"folderExpand": "Mở rộng thư mục",
+			"folderDissolve": "Loại bỏ thư mục",
+			"bookmarkLocal": "địa phương",
+			"groupsSection": "Nhóm",
+			"ungrouped": "Không được nhóm",
+			"defaultCategory": "đối thoại",
+			"bookmarkFallback": "đánh dấu trang",
+			"bookmarkRemove": {
+				"title": "Xóa dấu trang",
+				"aria-label": "Xóa dấu trang"
+			},
+			"loadMessagesFailed": "Tải tin nhắn không thành công: ${error}",
+			"unreadDivider": "tin tức mới",
+			"noUsername": "Tên người dùng không được lấy",
+			"stickersEmpty": "Chưa có nhãn dán nào",
+			"stickersMarketLink": "Vào Quảng trường Sticker để cài đặt",
+			"stickersLoadFailed": "Tải không thành công: ${error}",
+			"noChars": "Chưa có vai trò nào, vui lòng cài đặt một số vai trò trước.",
+			"noFriends": "Chưa có cuộc trò chuyện riêng tư nào",
+			"friendsEmptyTitle": "Bắt đầu cuộc trò chuyện mới",
+			"friendsEmptyDescription": "Tìm kiếm người dùng trên vai trò cục bộ hoặc các nút khác và bạn cũng có thể mở thẻ hồ sơ thành viên trong cuộc trò chuyện nhóm để bắt đầu tin nhắn riêng tư.",
+			"friendsEmptyAction": "Tìm kiếm vai trò hoặc người dùng",
+			"friendsSearchEmpty": "Không có vai trò hoặc người dùng phù hợp",
+			"friendsSearchTooShort": "Vui lòng nhập ít nhất 2 ký tự",
+			"friendsSearchDm": "Gửi tin nhắn riêng tư",
+			"friendsSearchChat": "Bắt đầu cuộc trò chuyện",
+			"friendsSearchLocalChar": "vai trò địa phương",
+			"friendsSearchPin": "Đặt làm bí danh",
+			"charCount": "vai trò ${count}",
+			"friendsCount": "${count} bạn bè",
+			"charTag": "Vai trò",
+			"friendsTag": "Bạn",
+			"backToFriends": "Trở lại với bạn bè",
+			"dmTopicsTitle": "đề tài",
+			"friendsContextNewChat": "Trò chuyện mới",
+			"friendsRestartConfirm": "Sẽ hủy liên kết trò chuyện riêng với \"${name}\" và tạo phiên mới. Tiếp tục?",
+			"friendsRestartOk": "Một cuộc trò chuyện riêng tư mới đã được mở",
+			"friendsRestartFailed": "Không thể tạo cuộc trò chuyện riêng mới: ${error}",
+			"charDescriptionEmpty": "Nhân vật vẫn chưa giới thiệu bản thân.",
+			"charIntro": "giới thiệu",
+			"participants": "Người tham gia",
+			"charTagSolo": "Nhân vật · Hội thoại 1:1",
+			"startChatWith": "💬 Bắt đầu trò chuyện với ${name}",
+			"loading": "đang tải…",
+			"charChatStart": "Bắt đầu cuộc trò chuyện với ${name}",
+			"charChatEmpty": "Chưa có tin nhắn nào, hãy bắt đầu cuộc trò chuyện đầu tiên của bạn!",
+			"loadCharChatFailed": "Tải tin nhắn không thành công",
+			"createChatFailed": "Không thể tạo phiên: ${error}",
+			"charChatComposer": {
+				"placeholder": "Gửi tin nhắn tới ${name} (Ctrl+Enter để gửi)"
+			},
+			"friendChatComposer": {
+				"placeholder": "Gửi tin nhắn (Ctrl+Enter để gửi)"
+			},
+			"trustOk": "Tác giả này đã được tin cậy",
+			"trustAuthorDialog": {
+				"title": "Tin tưởng tác giả này",
+				"subtitle": "Tác giả: ${author}",
+				"warningTitle": "hoạt động rủi ro cao",
+				"warningBody": "Sau khi được tin cậy, thư do tác giả này gửi sẽ được hiển thị trong trình duyệt của bạn dưới dạng Markdown đầy đủ (có khả năng viết HTML/tập lệnh). Nếu bên kia xây dựng nội dung có ác ý trên phiên bản nguồn mà nó đang chạy thì điều đó có thể gây hại cho máy cục bộ của bạn khi bạn xem tin nhắn. Vui lòng chỉ tin tưởng các nút liên kết mà bạn biết rõ và sẵn sàng chấp nhận rủi ro.",
+				"durationLabel": "Thời hạn tin cậy",
+				"duration3h": "3 giờ",
+				"duration7d": "7 ngày",
+				"duration1Month": "1 tháng",
+				"durationForever": "Vĩnh viễn",
+				"confirmCooldown": "Tôi đã đọc rủi ro(${seconds})",
+				"confirmFirst": "Tôi hiểu những rủi ro, tiếp tục",
+				"confirmSecond": "Nhấn lần nữa để hoàn tất",
+				"cancel": "Hủy bỏ"
+			},
+			"blockConfirm": "Thêm người này vào danh sách đen? Liên đoàn của nhóm này sẽ từ chối cuộc tiếp sức của nó.",
+			"blockOk": "Bị chặn",
+			"charChatSettings": "Cài đặt trò chuyện nhân vật",
+			"charChatSubtitle": "Phiên với ${name}",
+			"sessionInfo": "thông tin phiên",
+			"sessionRole": "Vai trò",
+			"sessionId": "ID phiên",
+			"sessionMessages": "Số lượng tin nhắn",
+			"quickActions": "Thao tác nhanh",
+			"advancedSettings": "Cài đặt nâng cao (Nhân vật/Thế giới/Plugin)",
+			"advancedSettingsDescription": "Mở cài đặt đầy đủ cho nhóm trong Hub trong tab mới",
+			"dangerZone": "Khu vực nguy hiểm",
+			"unbindFriendDescription": "Sau khi hủy liên kết, cuộc trò chuyện sẽ quay trở lại danh sách nhóm bên trái và bản ghi tin nhắn sẽ được giữ lại.",
+			"unbindFriend": "Hủy liên kết",
+			"unbindFriendConfirm": "Bạn có chắc chắn hủy liên kết cuộc trò chuyện riêng tư với ${name} không? Cuộc trò chuyện sẽ được chuyển trở lại danh sách nhóm.",
+			"unbindFriendOk": "Không ràng buộc",
+			"unbindFriendFailed": "Việc hủy liên kết không thành công: ${error}",
+			"deleteSessionDescription": "Việc xóa cuộc trò chuyện này sẽ xóa vĩnh viễn tất cả tin nhắn và không thể thay đổi được.",
+			"deleteSession": "Xóa phiên",
+			"deleteSessionConfirm": "Bạn có chắc chắn muốn xóa phiên với ${name} không? Hoạt động này là không thể đảo ngược.",
+			"sessionDeleted": "Đã xóa cuộc trò chuyện",
+			"sessionDeleteFailed": "Xóa không thành công: ${error}",
+			"streamTokenFailed": "Không thể cấp mã thông báo xem",
+			"streamAvJoin": "Thêm giọng nói/video",
+			"streamAvLeave": "rời khỏi",
+			"streamAvMute": "tắt tiếng",
+			"streamAvUnmute": "Bật tiếng",
+			"streamAvVideo": "Tắt máy ảnh",
+			"streamAvVideoOn": "Bật máy ảnh",
+			"streamAvYou": "Bạn",
+			"streamAvJoinFailed": "Không thể bắt đầu cuộc gọi: ${error}",
+			"streamAvNoCodecs": "Trình duyệt này không hỗ trợ WebCodecs (yêu cầu Chrome 94+ / Edge 94+ / Firefox 130+)",
+			"streamAvPeers": "${count} người trực tuyến",
+			"streamAvPresetThumb": "viết tắt là 64kbps",
+			"streamAvPresetLow": "Chất lượng thấp 200kbps",
+			"streamAvPresetMed": "Trung bình 600kbps",
+			"streamAvPresetHigh": "Chất lượng cao 1,5Mbps",
+			"callButton": {
+				"title": "Bắt đầu hoặc tham gia cuộc gọi",
+				"aria-label": "Bắt đầu hoặc tham gia cuộc gọi"
+			},
+			"callInProgress": "Cuộc gọi đang diễn ra",
+			"callEnded": "Cuộc gọi đã kết thúc",
+			"callJoin": "Tham gia cuộc gọi",
+			"callHangup": "cúp máy",
+			"callScreenShare": "chia sẻ màn hình",
+			"callScreenStop": "Dừng chia sẻ",
+			"callJumpBack": "Quay lại kênh gọi",
+			"callJoinFailed": "Không thể tham gia cuộc gọi: ${error}",
+			"callScreenFailed": "Chia sẻ màn hình không thành công: ${error}",
+			"callStartedAt": "Đã bắt đầu lúc ${time}",
+			"callDuration": "Thời lượng ${duration}",
+			"callParticipants": "${n} người",
+			"callPeerCount": "${n}",
+			"callNoParticipants": "Chưa có người tham gia",
+			"listChannelEmpty": "Danh sách trống.",
+			"listItemUntitled": "Vô danh",
+			"listEditorTitle": "Chỉnh sửa các mục danh sách (mảng JSON)",
+			"listSaveToDag": "Lưu vào DAG",
+			"listJsonInvalid": "JSON không hợp lệ: ${message}",
+			"listSaved": "đã lưu",
+			"listSaveFailed": "Lưu không thành công",
+			"streamDefaultName": "truyền phát trực tuyến",
+			"streamRefreshToken": "Làm mới mã thông báo xem",
+			"streamEmbedHttpsRequired": "Địa chỉ phát trực tuyến phải là trang https:// có thể nhúng hoặc cài đặt nhóm phải được định cấu hình trước và làm mới để nhận được mã thông báo xem.",
+			"streamWebRtcHint": "Không có SFU bên ngoài nào được cấu hình; kênh này sẽ sử dụng WebRTC trong nhóm (không yêu cầu streamingSfuWss).",
+			"pinPreviewSticker": "[nhãn dán]",
+			"pinPreviewVote": "[Bình chọn] ${question}",
+			"pinPreviewInvite": "[Mời] ${groupName}",
+			"reactionRemovePrompt": "Cần xóa ${emoji} của ai?\n${candidates}",
+			"ariaDagTip": {
+				"aria-label": "Đầu nĩa DAG"
+			},
+			"ariaClose": {
+				"aria-label": "đóng cửa"
+			},
+			"membersDigestPagesTitle": {
+				"title": "${expected}\n${pages} trang"
+			},
+			"discoveryTitle": "Khám phá nhóm",
+			"discoveryEyebrow": "Khám phá cộng đồng",
+			"discoveryDescription": "Duyệt qua các nhóm công cộng từ mạng liên kết, chọn một cộng đồng quan tâm và tham gia.",
+			"discoverySidebarHint": "Duyệt và tham gia các nhóm công khai ở bên phải",
+			"discoveryEmptyTitle": "Chưa tìm thấy nhóm công khai nào",
+			"discoveryEmpty": "Hiện tại không có nhóm được đề xuất; sau khi bật đồng bộ hóa liên kết, danh sách khám phá sẽ được đồng bộ hóa từ các nước láng giềng.",
+			"discoveryNoDescription": "Chủ nhóm chưa điền vào hồ sơ.",
+			"discoverySourceCount": "nguồn liên kết ${count}",
+			"discoveryJoin": "Tham gia nhóm",
+			"discoveryOpen": "Mở nhóm",
+			"discoveryLoadFailed": "Không thể tải danh sách khám phá: ${message}",
+			"operationFailed": "Thao tác không thành công: ${error}",
+			"shareGroupFailed": "Không chia sẻ được liên kết nhóm: ${error}",
+			"blockAuthorTitle": "Chặn tác giả này",
+			"configTitle": "Cấu hình cuộc hội thoại",
+			"configSaved": "đã lưu",
+			"configSaveFailed": "Lưu không thành công: ${error}",
+			"configLoadFailed": "Không thể tải cấu hình: ${error}",
+			"noActiveChat": "Vui lòng mở phiên trước khi kéo phần này",
+			"groupContext": {
+				"manage": "Nhóm quản lý",
+				"notifyPrefs": "Cài đặt thông báo",
+				"invite": "Mời người khác",
+				"inviteCopied": "Đã sao chép liên kết lời mời vào bảng nhớ tạm",
+				"addChar": "Thêm vai trò",
+				"addCharLabel": "Chọn vai trò",
+				"addCharSubmit": "Thêm",
+				"noChars": "Không có vai trò nào",
+				"setAlias": "Đặt bí danh nhóm",
+				"setAliasPrompt": "Đặt bí danh cục bộ cho \"${name}\" (để trống để xóa):",
+				"aliasSaved": "Đã cập nhật bí danh nhóm",
+				"leave": "Thoát khỏi nhóm",
+				"leaveConfirm": "Bạn có chắc muốn rời nhóm \"${name}\"? Bạn sẽ không xem được tin nhắn trong nhóm này nữa.",
+				"leaveOk": "Đã rời nhóm",
+				"leaveBatch": "Thoát khỏi nhóm đã chọn (${count})",
+				"leaveConfirmBatch": "Bạn có chắc muốn rời ${count} nhóm đã chọn? Máy sẽ không còn giữ dữ liệu các nhóm này.",
+				"leaveBatchPending": "Nhóm ${count} đã bị xóa khỏi danh sách, thoát ở chế độ nền...",
+				"leaveBatchOk": "Đã thoát khỏi nhóm ${count}",
+				"leaveBatchPartial": "Nhóm ${failed} / ${total} không thoát được, danh sách đã được làm mới"
+			},
+			"replyInline": {
+				"title": "hồi đáp"
+			},
+			"replyClear": {
+				"title": "sự vô lễ"
+			},
+			"replyInThread": {
+				"title": "Trả lời trong chủ đề con"
+			},
+			"syncTruncated": "Mức tăng DAG chưa đầy. Bạn có thể thử lại sau hoặc tăng giới hạn.",
+			"syncTruncatedHint": "Lịch sử DAG quá dài. Bạn có thể thử lại sau hoặc tăng giới hạn.",
+			"newChannelButton": "Tạo kênh mới",
+			"newChannelSuccess": "Đã tạo kênh",
+			"newChannelFailed": "Không thể tạo kênh",
+			"newChannelTitle": "Tạo kênh mới",
+			"channelName": "Tên kênh",
+			"channelType": "Loại kênh",
+			"channelTypeText": "kênh trò chuyện",
+			"channelTypeList": "Danh sách/Kênh diễn đàn",
+			"channelTypeStreaming": "kênh phát trực tuyến",
+			"channelNameInput": {
+				"placeholder": "tổng quan"
+			},
+			"localMaterializedView": "Nó hiện là chế độ xem cụ thể hóa cục bộ và các quyền cũng như lịch sử có thể không nhất quán với các nút khác.",
+			"convergentEncryptWarn": "Các tệp nhóm sử dụng mã hóa hội tụ: nếu kẻ tấn công biết bản rõ của tệp, hắn có thể lấy được khóa và giải mã khối bản mã tương ứng. Không chỉ dựa vào mã hóa nhóm để bảo vệ các tài liệu có độ nhạy cảm cao và riêng tư.",
+			"votePromptQuestion": "chức danh biểu quyết",
+			"votePromptOptions": "Tùy chọn (ít nhất hai, cách nhau bằng dấu phẩy)",
+			"voteOptionDefault": "Đồng ý, phản đối",
+			"votePromptDeadlineHours": "Thời hạn (giờ, để trống = không có thời hạn)",
+			"messagePrefixVote": "bỏ phiếu",
+			"threadCreated": "Chủ đề con đã được tạo",
+			"threadCreateFailed": "Không thể tạo chủ đề con, thử lại sau",
+			"threadDrawer": {
+				"aria-label": "chủ đề con"
+			},
+			"threadClose": {
+				"title": "Đóng chủ đề con"
+			},
+			"reputationSlashAlert": "Danh tiếng của thành viên ${target}… bị nhắc nhở về việc khấu trừ.",
+			"profileEdit": {
+				"previewHint": "Các thay đổi sẽ xuất hiện ngay trong bản xem trước và được lưu cũng như đồng bộ hóa trên Trò chuyện và Mạng xã hội.",
+				"livePreview": "Xem trước trực tiếp",
+				"languageVersion": "Phiên bản ngôn ngữ",
+				"localeHint": "Nhấp vào nhãn để chuyển đổi hoặc chỉnh sửa mã; nhấn Enter vào hộp nhập ở cuối để sao chép nó sang ngôn ngữ mới.",
+				"themeColorHint": "Được sử dụng để tạo họa tiết khi không có biểu ngữ tùy chỉnh và cũng được sử dụng cho các vòng lặp sóng âm thanh trực tiếp",
+				"bannerLabel": "nền biểu ngữ",
+				"bannerHint": "Bạn có thể điền URL hình ảnh hoặc tải tệp lên; bạn cũng có thể tiếp tục tạo họa tiết bất cứ lúc nào",
+				"bannerClear": "Tiếp tục tạo biểu ngữ",
+				"linksPreview": "${count} liên kết công khai",
+				"unsavedHint": "Đóng cửa sổ sẽ loại bỏ những thay đổi chưa được lưu",
+				"tagsLabel": "Nhãn",
+				"tagAdd": "Thêm",
+				"tagRemove": "Xóa thẻ",
+				"linksLabel": "liên kết",
+				"linkAdd": "Thêm liên kết",
+				"linkRemove": "Xóa liên kết",
+				"handleLabel": "ID tùy chỉnh",
+				"handleHint": "Có thể được tìm kiếm bởi các nút khác trong mạng; tính duy nhất không được đảm bảo và xung đột sẽ được giải quyết theo danh sách tin cậy.",
+				"resetFromPart": "Đặt lại từ phần ký tự",
+				"resetFromPartConfirm": "Thông tin hiện tại sẽ được ghi đè bằng thông tin của phần vai trò. Bạn có chắc không?",
+				"resetFromPartDone": "Hồ sơ được xây dựng lại từ các phần nhân vật",
+				"resetFromPartFailed": "Xây dựng lại không thành công: ${error}",
+				"newLocale": {
+					"placeholder": "Mã ngôn ngữ mới, chẳng hạn như en-UK"
+				},
+				"avatarUrl": {
+					"placeholder": "URL ảnh đại diện hoặc upload file bên dưới"
+				},
+				"bannerUrl": {
+					"placeholder": "URL hình ảnh biểu ngữ hoặc tải lên tệp bên dưới"
+				},
+				"tag": {
+					"placeholder": "Thêm sau khi nhập thẻ"
+				},
+				"linkName": {
+					"placeholder": "Hiển thị văn bản"
+				},
+				"linkUrl": {
+					"placeholder": "https://… hoặc fount://…"
+				},
+				"handle": {
+					"placeholder": "Ví dụ: steve (2–32 ký tự chữ, số, dấu chấm, gạch dưới, gạch ngang)"
+				}
+			},
+			"profilePopup": {
+				"close": {
+					"title": "Đóng thẻ hồ sơ"
+				},
+				"editSaved": "Đã lưu hồ sơ",
+				"editQueued": "Đã xuất bản, đang chờ nút khác kéo nó",
+				"dmChar": "Trò chuyện riêng với nhân vật",
+				"dmUser": "Gửi tin nhắn riêng tư",
+				"dmFed": "Tin nhắn riêng liên bang",
+				"noFedIdentity": "Trước tiên, vui lòng định cấu hình activePubKeyHex gốc trong cài đặt liên kết",
+				"peerNoIdentity": "Bên kia không có tư cách liên bang và không thể bắt đầu một tin nhắn riêng tư liên bang.",
+				"dmFailed": "Không thể mở tin nhắn riêng tư: ${error}",
+				"care": "mối quan tâm đặc biệt",
+				"careRemove": "Hủy chăm sóc đặc biệt",
+				"setAlias": "Đặt bí danh",
+				"setAliasPrompt": "Đặt bí danh cục bộ cho \"${name}\" (để trống để xóa):"
+			},
+			"channelContext": {
+				"copyLinkDone": "Đã sao chép liên kết kênh",
+				"notifyPrefs": "Cài đặt thông báo kênh",
+				"rename": "Đổi tên kênh",
+				"renameOk": "Kênh đã được đổi tên",
+				"delete": "Xóa kênh",
+				"deleteOk": "Đã xóa kênh",
+				"deleteConfirm": "Bạn có chắc chắn muốn xóa kênh \"${name}\" không? Không thể hoàn tác hành động này.",
+				"setDefault": "Đặt làm kênh mặc định",
+				"setDefaultOk": "Đã được đặt làm kênh mặc định",
+				"copyLink": "Sao chép liên kết kênh",
+				"exportJson": "Xuất JSON",
+				"exportOk": "Đã tải xuống kho lưu trữ kênh",
+				"exportFailed": "Xuất không thành công: ${error}"
+			},
+			"memberContext": {
+				"copyName": "Sao chép tên hiển thị",
+				"mention": "đề cập đến",
+				"care": "mối quan tâm đặc biệt",
+				"careAdded": "Đã thêm mối quan tâm đặc biệt",
+				"careRemoved": "Đã hủy quan tâm đặc biệt",
+				"setAlias": "Đặt bí danh",
+				"setAliasPrompt": "Đặt bí danh cục bộ cho \"${name}\" (để trống để xóa):",
+				"aliasSaved": "Đã cập nhật bí danh",
+				"copyPubKey": "Sao chép hàm băm khóa công khai",
+				"copyEntityId": "Sao chép ID thực thể",
+				"dm": "Gửi tin nhắn riêng tư",
+				"kick": "Đá thành viên",
+				"kickSelfNodeWarning": "Cảnh báo: Thành viên này sử dụng danh tính nút giống như bạn. Bạn cũng sẽ bị loại khỏi nhóm sau khi bị đuổi ra khỏi nhóm. Bạn có chắc chắn muốn tiếp tục không?",
+				"ban": "Cấm…",
+				"personalBlock": "Khối cá nhân",
+				"personalBlockConfirm": "Thêm ${name} vào danh sách chặn của bạn? Những người theo dõi bạn sẽ nhận ra tín hiệu này và có thể ít tin tưởng họ hơn.",
+				"personalBlockSuccess": "Đã được thêm vào danh sách đen",
+				"banTitle": "Chọn phạm vi cấm",
+				"banEntity": "Các thực thể bị cấm (EntityHash 128 bit)",
+				"banNode": "Nút cấm (homeNodeHash)"
+			},
+			"messageContext": {
+				"edit": "Chỉnh sửa tin nhắn",
+				"delete": "Xóa tin nhắn"
+			},
+			"charStreaming": "Đang tạo…",
+			"gshDecryptPending": "Đang chờ khóa kênh (thế hệ ${gen})",
+			"gshDecryptFailed": "Không thể giải mã tin nhắn này nếu không có khóa kênh",
+			"fileDecryptFailed": "Không thể truy cập tệp này nếu không có khóa tệp",
+			"reactionFailed": "Thao tác phản hồi không thành công",
+			"fileUploadChecking": "Đang kiểm tra xem nội dung tương tự đã tồn tại chưa...",
+			"fileUploadingChunk": "Đang tải lên các khối được mã hóa...",
+			"fileUploadRegistering": "Đang đăng ký tập tin…",
+			"fileUploaded": "Tệp được tải lên thành công",
+			"fileUploadFailed": "Tải tệp lên không thành công",
+			"fileSkippedDedup": "Chuyển khối trùng lặp bị bỏ qua",
+			"fileDownloadFailed": "Tải xuống tệp không thành công",
+			"fileNoKey": "Không thể giải mã (thiếu khóa)",
+			"fileLoadFailed": "Tải tập tin không thành công",
+			"createModal": {
+				"title": "Tạo nhóm",
+				"subtitle": "Nhóm là không gian riêng tư để bạn và bạn bè trò chuyện cùng nhau",
+				"basicSection": "Thông tin cơ bản",
+				"nameLabel": "Tên nhóm",
+				"name": {
+					"placeholder": "Đặt tên cho nhóm của bạn"
+				},
+				"descriptionLabel": "Mô tả nhóm",
+				"description": {
+					"placeholder": "(Tùy chọn) Giới thiệu nhóm này"
+				},
+				"joinSection": "Ai có thể tham gia",
+				"joinInviteOnly": "Chỉ mời",
+				"joinInviteOnlyDescription": "Cần có mã mời để tham gia",
+				"joinPow": "Bằng chứng công việc (PoW)",
+				"joinPowDescription": "Bạn cần hoàn thành thử thách PoW trước khi tham gia",
+				"cancel": "Quay lại",
+				"submit": "Tạo nhóm",
+				"failed": "Không thể tạo nhóm: ${error}"
+			},
+			"joinModal": {
+				"title": "Tham gia nhóm",
+				"subtitle": "Nhập ID nhóm để tham gia trò chuyện tương ứng",
+				"groupIdLabel": "Mã nhóm",
+				"groupId": {
+					"placeholder": "Nhóm_1776941580949_xxxx"
+				},
+				"inviteLabel": "Mã lời mời (tùy chọn)",
+				"invite": {
+					"placeholder": "Mã mời ngắn hạn do chủ nhóm tạo"
+				},
+				"hint": "ID nhóm được chia sẻ bởi chủ sở hữu nhóm. Các nhóm dựa trên lời mời cần điền mã lời mời hợp lệ (có thể được tạo trên trang cài đặt).",
+				"cancel": "Quay lại",
+				"submit": "Tham gia nhóm"
+			},
+			"menuCopy": "Sao chép",
+			"menuMD": "Giảm giá",
+			"menuTXT": "văn bản thuần túy",
+			"menuHTML": "HTML",
+			"menuDownload": "Tải xuống HTML",
+			"menuDelete": "xóa bỏ",
+			"menuShareGroup": "chia sẻ liên kết",
+			"menuPrev": "Bài viết trước",
+			"menuNext": "Bài viết tiếp theo",
+			"menuShare": {
+				"1h": "Chia sẻ liên kết 1 giờ",
+				"12h": "Chia sẻ liên kết 12 giờ",
+				"24h": "Chia sẻ liên kết 24 giờ",
+				"72h": "Chia sẻ liên kết 72 giờ"
+			},
+			"noGroups": "Chưa có nhóm nào",
+			"myGroups": "nhóm của tôi",
+			"joinGroup": "Tham gia nhóm",
+			"createGroup": "Tạo nhóm mới",
+			"noDescription": "Chưa có mô tả",
+			"memberCountLabel": "${count} thành viên",
+			"loadListFailed": "Không thể tải danh sách nhóm: ${error}",
+			"contentWarning": "cảnh báo nội dung",
+			"sensitiveMedia": "phương tiện truyền thông nhạy cảm",
+			"revealContent": "Hiển thị nội dung",
+			"revealMedia": "phương tiện hiển thị",
+			"copyShareLink": "Sao chép liên kết chia sẻ",
+			"forward": "Phía trước",
+			"forwardedFrom": "Chuyển tiếp từ",
+			"forwardDialog": {
+				"title": "Chuyển tiếp tin nhắn",
+				"selectGroup": "Chọn nhóm mục tiêu",
+				"selectChannel": "Chọn kênh mục tiêu",
+				"confirm": "Phía trước",
+				"cancel": "Hủy bỏ",
+				"success": "Đã chuyển tiếp",
+				"failed": "Chuyển tiếp không thành công"
+			},
+			"deliverySending": "Đang gửi",
+			"deliverySent": "Đã gửi",
+			"deliveryRead": "Đọc",
+			"translate": "Dịch",
+			"translating": "Đang dịch…",
+			"translateShowOriginal": "Hiển thị văn bản gốc",
+			"translateShowTranslation": "Hiển thị bản dịch",
+			"translateLabel": "dịch thuật",
+			"translateFailed": "Dịch không thành công",
+			"editImage": "Chỉnh sửa ảnh",
+			"draftRestored": "Đã khôi phục bản nháp",
+			"queuedOffline": "Đang chờ gửi (ngoại tuyến)",
+			"translationPrefs": {
+				"title": "Cài đặt dịch",
+				"textContent": "Cài đặt dịch",
+				"autoTranslate": "Tự động dịch tin nhắn bằng tiếng nước ngoài",
+				"hint": "Khi bật, các tin nhắn có ngôn ngữ và giao diện khác nhau sẽ tự động yêu cầu dịch.",
+				"save": "Cứu",
+				"saved": "Đã lưu cài đặt dịch",
+				"saveFailed": "Lưu không thành công: ${error}"
+			},
+			"friendsSearch": {
+				"placeholder": "Tìm kiếm vai trò/ID tùy chỉnh/tên địa phương…"
+			},
+			"threadComposer": {
+				"placeholder": "Trả lời trong chủ đề phụ…"
+			},
+			"altImage": {
+				"placeholder": "Thêm mô tả vào hình ảnh…",
+				"label": "Mô tả hình ảnh (alt)"
+			}
+		},
 		"sidebar": {
+			"settings": {
+				"title": "Cài đặt nhóm"
+			},
 			"noSelection": "Chưa chọn",
 			"noDescription": "Không có mô tả.",
 			"world": {
@@ -780,6 +3171,16 @@
 						"alt": "Biểu tượng thêm plugin"
 					}
 				}
+			},
+			"dataMgmt": {
+				"title": "Quản lý dữ liệu",
+				"compact": "Tạo điểm kiểm tra",
+				"prune": "Lịch sử cắt xén",
+				"compactSuccess": "Đã tạo checkpoint thành công",
+				"compactError": "Tạo điểm kiểm tra không thành công",
+				"pruneSuccess": "Việc cắt tin nhắn lịch sử đã hoàn tất",
+				"pruneError": "Cắt xén không thành công",
+				"invalidN": "Số lượng mục dành riêng không hợp lệ (tối thiểu 10 mục)"
 			}
 		},
 		"rightSidebar": {
@@ -951,7 +3352,11 @@
 			}
 		},
 		"messageGenerating": {
-			"stop": "Dừng",
+			"tips": "Vai trò đang tạo ra phản hồi, vui lòng đợi...",
+			"stop": {
+				"textContent": "Dừng",
+				"title": "Dừng tạo"
+			},
 			"stopIcon": {
 				"alt": "biểu tượng dừng lại"
 			}
@@ -1036,53 +3441,9 @@
 			}
 		},
 		"home_function_buttons": {
-			"viewHistory": {
-				"title": "Xem lịch sử"
+			"chatHub": {
+				"title": "trò chuyện"
 			}
-		}
-	},
-	"chat_history": {
-		"title": "Lịch sử trò chuyện",
-		"pageTitle": "Lịch sử trò chuyện",
-		"description": "Hành trình qua những cuộc đối thoại trong quá khứ. Tại đây, ký ức về các cuộc trò chuyện vẫn còn đọng lại—sắp xếp, lọc và xem lại những câu chuyện bạn đã dệt nên cùng những người bạn đồng hành AI của mình. Một thư viện yên tĩnh của tiếng vang kỹ thuật số.",
-		"filterInput": {
-			"placeholder": "Tìm kiếm..."
-		},
-		"sortOptions": {
-			"time_desc": "Thời gian (mới nhất trước)",
-			"time_asc": "Thời gian (cũ nhất trước)"
-		},
-		"sortBy": {
-			"aria-label": "sắp xếp theo"
-		},
-		"selectAll": "Chọn tất cả",
-		"buttons": {
-			"reverseSelect": "Đảo ngược lựa chọn",
-			"deleteSelected": "Xóa mục đã chọn",
-			"exportSelected": "Xuất mục đã chọn",
-			"import": "Nhập"
-		},
-		"chatItemButtons": {
-			"continue": "Tiếp tục",
-			"copy": "Sao chép",
-			"export": "Xuất",
-			"delete": "Xóa"
-		},
-		"confirmDeleteChat": "Bạn có chắc chắn muốn xóa lịch sử trò chuyện với ${chars} không?",
-		"confirmDeleteMultiChats": "Bạn có chắc chắn muốn xóa ${count} cuộc trò chuyện đã chọn không?",
-		"alerts": {
-			"noChatSelectedForDeletion": "Vui lòng chọn lịch sử trò chuyện cần xóa.",
-			"noChatSelectedForExport": "Vui lòng chọn lịch sử trò chuyện cần xuất.",
-			"copyError": "Sao chép không thành công.",
-			"deleteError": "Xóa không thành công.",
-			"exportError": "Xuất không thành công.",
-			"dragExportError": "Lỗi khi xuất kéo và thả",
-			"importSuccess": "Nhập thành công",
-			"importError": "Nhập không thành công",
-			"invalidImportFile": "Tệp nhập không hợp lệ"
-		},
-		"select_checkbox": {
-			"aria-label": "Chọn trò chuyện với ${chars}"
 		}
 	},
 	"easynew": {
@@ -1415,11 +3776,11 @@
 			"creationDateLabel": "Ngày tạo tài khoản:",
 			"folderSizeLabel": "Kích thước dữ liệu người dùng:",
 			"folderPathLabel": "Đường dẫn dữ liệu người dùng:",
-			"copyPathBtn": {
+			"copyPathButton": {
 				"title": "sao chép đường dẫn"
 			},
-			"copyPathBtnIcon": {
-				"alt": "sao chép đường dẫn"
+			"copyPathButtonIcon": {
+				"alt": "biểu tượng sao chép"
 			},
 			"copiedAlert": "Đường dẫn đã được sao chép vào bộ nhớ tạm!",
 			"copyPathFailed": "Không thể sao chép đường dẫn vào clipboard."
@@ -1624,7 +3985,6 @@
 			"title": "thực thi mã",
 			"description": "Thực thi mã JavaScript trên Subfount đã chọn",
 			"selectSubfountLabel": "Chọn Subfount",
-			"selectSubfountPlaceholder": "Vui lòng chọn Subfount để thực thi mã trên...",
 			"hostOption": "Máy chủ (ID: ${id})",
 			"subfountOption": "Thiết bị con ${id}${deviceId}",
 			"scriptLabel": "Mã JavaScript",
@@ -1633,7 +3993,8 @@
 			"noSubfountSelected": "Vui lòng chọn Subfount trước",
 			"noScriptProvided": "Vui lòng nhập mã để thực thi",
 			"executionSuccess": "Thực thi mã thành công",
-			"executionFailed": "Việc thực thi mã không thành công: ${message}"
+			"executionFailed": "Việc thực thi mã không thành công: ${message}",
+			"selectSubfount": "Vui lòng chọn Subfoun để thực thi mã..."
 		},
 		"downloadClient": {
 			"title": "Tải xuống ứng dụng khách phụ",
@@ -1900,9 +4261,6 @@
 			"copyModelIdTooltip": "Nhấp để sao chép ID mẫu",
 			"loadModelsFailed": "Không tải được mô hình: ${message}",
 			"modelSearchTitle": "Duyệt danh mục mô hình",
-			"modelSearchPlaceholder": {
-				"placeholder": "Tìm theo tên mô hình, nhà cung cấp hoặc khả năng…"
-			},
 			"modelSearchHint": "Nhấp vào kết quả để tự động điền URL và tên mô hình",
 			"modelsDevLoading": "Đang tải danh mục…",
 			"modelsDevLoadFailed": "Không tải được danh mục: ${message}",
@@ -1921,7 +4279,10 @@
 			"metaOpenWeights": "Trọng số mở",
 			"metaKnowledge": "Giới hạn kiến thức: ${knowledge}",
 			"metaReleaseDate": "Ngày phát hành: ${date}",
-			"providerDocLink": "[Xem tài liệu nhà cung cấp](${url})"
+			"providerDocLink": "[Xem tài liệu nhà cung cấp](${url})",
+			"modelSearch": {
+				"placeholder": "Tìm kiếm tên model, nhà sản xuất, tính năng..."
+			}
 		},
 		"prompts": {
 			"newFileName": "Vui lòng nhập tên tệp nguồn dịch vụ mới (không bao gồm hậu tố):"
@@ -1998,7 +4359,6 @@
 				"botToken": "Token Bot Telegram",
 				"config": "Cấu hình"
 			},
-			"charSelectPlaceholder": "Chọn nhân vật",
 			"botTokenInput": {
 				"placeholder": "Nhập Token Bot Telegram"
 			},
@@ -2012,6 +4372,9 @@
 				"saveConfig": "Lưu cấu hình",
 				"startBot": "Khởi động",
 				"stopBot": "Dừng"
+			},
+			"charSelect": {
+				"placeholder": "Chọn vai trò"
 			}
 		},
 		"prompts": {
@@ -2075,7 +4438,6 @@
 				"botToken": "Token iLink Bot",
 				"config": "Cấu hình"
 			},
-			"charSelectPlaceholder": "Chọn vai trò",
 			"apiBaseUrlInput": {
 				"placeholder": "Để trống để dùng mặc định https://ilinkai.weixin.qq.com"
 			},
@@ -2092,6 +4454,9 @@
 				"saveConfig": "Lưu",
 				"startBot": "Khởi động",
 				"stopBot": "Dừng"
+			},
+			"charSelect": {
+				"placeholder": "Chọn vai trò"
 			}
 		},
 		"prompts": {
@@ -2163,7 +4528,6 @@
 				"apiKey": "Khóa API Discord",
 				"config": "Cấu hình"
 			},
-			"charSelectPlaceholder": "Chọn nhân vật",
 			"apiKeyInput": {
 				"placeholder": "Nhập Khóa API"
 			},
@@ -2177,6 +4541,9 @@
 				"saveConfig": "Lưu cấu hình",
 				"startBot": "Khởi động",
 				"stopBot": "Dừng"
+			},
+			"charSelect": {
+				"placeholder": "Chọn vai trò"
 			}
 		},
 		"prompts": {
@@ -2463,10 +4830,8 @@
 		"acpTitle": "Định cấu hình tập lệnh ACP nguồn",
 		"acpDesc": "Tham khảo ví dụ sau để định cấu hình tập lệnh ACP nguồn:",
 		"acpCharLabel": "Vai trò",
-		"acpCharPlaceholder": "Chọn vai trò",
 		"charListError": "Không lấy được danh sách vai trò",
 		"acpScriptLabel": "URL tập lệnh ACP",
-		"acpConfigPlaceholder": "Vui lòng chọn một vai trò và tạo khóa API trước",
 		"acpConfigSample": "Ví dụ về cấu hình:",
 		"acpConfigHint": "Id vai trò được hiển thị trong menu thả xuống vai trò trên trang này và khóa API có thể được quản lý trong cài đặt người dùng.",
 		"copyButton": "Sao chép",
@@ -2491,7 +4856,9 @@
 				"description": "Lần đầu tiên, hãy sử dụng vai trò fount để hỗ trợ lập trình trong các trình chỉnh sửa hỗ trợ ACP như Zed, JetBrains, Neovim, v.v.",
 				"locked_description": "Kết nối với vai trò fount trong IDE bên ngoài và hoàn thành phiên."
 			}
-		}
+		},
+		"acpChar": "Chọn vai trò",
+		"acpConfig": "Vui lòng chọn một vai trò và tạo khóa API trước"
 	},
 	"achievements": {
 		"title": "Thành tích",
@@ -2757,5 +5124,97 @@
 		"search": {
 			"placeholder": "Tìm kiếm..."
 		}
+	},
+	"common": {
+		"cancel": "Hủy bỏ",
+		"create": "tạo nên",
+		"save": "Lưu",
+		"delete": "Xóa",
+		"confirm": "xác nhận",
+		"close": "Đóng",
+		"translate": {
+			"showOriginal": "Hiển thị văn bản gốc",
+			"showTranslation": "Hiển thị bản dịch"
+		}
+	},
+	"cabinet": {
+		"title": "Tủ hồ sơ",
+		"description": "Tủ hồ sơ cá nhân và chia sẻ P2P",
+		"openCabinets": {
+			"title": "Mở danh sách tủ hồ sơ",
+			"aria-label": "Mở danh sách tủ hồ sơ"
+		},
+		"closeCabinets": {
+			"title": "đóng cửa",
+			"aria-label": "đóng cửa"
+		},
+		"bootstrapFailed": "Khởi tạo nội dung tệp không thành công: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "Tủ hồ sơ"
+			}
+		},
+		"upload": "tải lên",
+		"uploadFolder": "Tải lên thư mục",
+		"newFolder": "Tạo thư mục mới",
+		"open": "Mở",
+		"download": "tải về",
+		"downloadZip": "Thư mục tải xuống",
+		"rename": "Đổi tên",
+		"copy": "Sao chép",
+		"cut": "Cắt",
+		"paste": "Dán",
+		"pasteLink": "Dán dưới dạng liên kết",
+		"selectAll": "Chọn tất cả",
+		"invert": "Cuộc bầu cử phản đối",
+		"properties": "tài sản",
+		"delete": "Xóa",
+		"back": {
+			"title": "Trở lại vị trí trước đó",
+			"aria-label": "Trở lại vị trí trước đó"
+		},
+		"cancel": "Hủy bỏ",
+		"save": "Lưu",
+		"showHidden": "khoe da",
+		"name": "Tên",
+		"descriptionField": "mô tả",
+		"attrHidden": "Trốn",
+		"attrSystem": "Hệ thống (xóa yêu cầu xác nhận)",
+		"previewUrl": "URL xem trước",
+		"deletePreviewWithFile": "Xóa bản xem trước khi xóa tập tin",
+		"folderPassword": "Mật khẩu thư mục (để trống, điền vào để kích hoạt mã hóa)",
+		"unlockFolder": "Mở khóa thư mục được mã hóa",
+		"unlock": "Mở khóa",
+		"unlockFailed": "Mở khóa không thành công: ${error}",
+		"previewFailed": "Tạo bản xem trước không thành công: ${error}",
+		"created": "Tạo: ${stamp}",
+		"modified": "Sửa đổi: ${stamp}",
+		"statusCount": "${count} mục, ${selected} đã chọn",
+		"newCabinetPrompt": "Tên tủ hồ sơ mới",
+		"newFolderPrompt": "Tên thư mục mới",
+		"renamePrompt": "tên mới",
+		"visibilityPrompt": "Chế độ hiển thị (công khai/không công khai/người theo dõi/riêng tư/đã chọn)",
+		"cabinetActionPrompt": "Hành động: đổi tên/xóa/khả năng hiển thị",
+		"confirmDeleteCabinet": "Bạn có chắc chắn muốn xóa tủ hồ sơ này không?",
+		"confirmDelete": "Xác nhận xóa các mục đã chọn?",
+		"confirmDeleteSystem": "Các tập tin hệ thống đã chọn được bao gồm. Bạn có chắc chắn xóa chúng?",
+		"copied": "Đã sao chép",
+		"cutDone": "Cắt",
+		"undo": "Hủy bỏ",
+		"redo": "Làm lại",
+		"newWindow": "Mở cửa sổ mớiVị trí hiện tại",
+		"goUp": "Trở về cấp độ trước đó",
+		"brokenLink": "Liên kết bị hỏng: ${reason}",
+		"noDownload": "Không có nội dung có thể tải xuống",
+		"groupDownloadHint": "Vui lòng lấy các tập tin nhóm thông qua tệp đính kèm tin nhắn hoặc liên kết tải xuống tiếp theo.",
+		"remoteEntity": "thực thể từ xa"
+	},
+	"entityProfile": {
+		"attributionMismatch": "Thông tin nhận dạng hiển thị không khớp với người ký thư (ví dụ: lịch sử nhập đã được nhà nhập khẩu ký lại). Đừng coi tên hiển thị này là một danh tính mật mã.",
+		"attributionMismatchShort": {
+			"title": "Thuộc tính chữ ký không khớp",
+			"aria-label": "Thuộc tính chữ ký không khớp"
+		},
+		"ownedBy": "Thực thể này thuộc quyền sở hữu của ${owner}"
 	}
 }

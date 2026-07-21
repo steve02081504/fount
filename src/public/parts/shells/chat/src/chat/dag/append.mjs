@@ -117,7 +117,7 @@ export async function appendSignedLocalEvent(username, groupId, event, appendOpt
 	delete eventBody.sender
 
 	if (eventBody.type === 'member_join') {
-		const content = { ...eventBody.content || {} }
+		const content = { ...eventBody.content }
 		if (!content.bindingSig) {
 			Object.assign(content, await buildMemberJoinBindingFields(username, entityHash, sender))
 			eventBody = { ...eventBody, content }

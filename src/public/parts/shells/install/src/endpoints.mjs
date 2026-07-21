@@ -10,7 +10,7 @@ import { importPart, importPartByText } from './Installer_handler.mjs'
 export function setEndpoints(router) {
 	// 文件上传接口
 	router.post('/api/parts/shells\\:install/file', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user)
 			return res.status(401).json({ message: '未授权' })
 
@@ -25,7 +25,7 @@ export function setEndpoints(router) {
 
 	// 文本导入接口
 	router.post('/api/parts/shells\\:install/text', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user)
 			return res.status(401).json({ message: '未授权' })
 
@@ -41,7 +41,7 @@ export function setEndpoints(router) {
 
 	// 删除请求发送
 	router.post('/api/parts/shells\\:install/uninstall', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const partpath = (req.body.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })
 		await uninstallPartBase(username, partpath)

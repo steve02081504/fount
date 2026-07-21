@@ -64,9 +64,10 @@ export function memoizePromise(keyFn, fn, options = {}) {
 	const load = rawKey => {
 		const key = keyFn(rawKey)
 		const hit = cache.get(key)
-		if (hit && (!ttlMs || Date.now() - hit.at < ttlMs))
+		if (hit && (!ttlMs || Date.now() - hit.at < ttlMs)) {
+			cache.touch(key, hit)
 			return hit.value
-
+		}
 		if (inflight.has(key)) return inflight.get(key)
 
 		const promise = fn(key).then(value => {

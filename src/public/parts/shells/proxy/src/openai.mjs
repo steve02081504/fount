@@ -223,7 +223,7 @@ export function setOpenAIAPIEndpoints(router) {
 	// 1. 模型列表 (Models List) - Remains the same
 	router.get(basePath + '/v1/models', authenticate, async (req, res) => {
 		try {
-			const { username } = await getUserByReq(req)
+			const { username } = getUserByReq(req)
 			const modelList = await getPartList(username, 'serviceSources/AI')
 			const formattedModels = {
 				object: 'list',
@@ -254,7 +254,7 @@ export function setOpenAIAPIEndpoints(router) {
 	 */
 	const processCompletions = async (req, res) => {
 		try {
-			const { username } = await getUserByReq(req)
+			const { username } = getUserByReq(req)
 			// Determine model: check path param first, then body
 			const model = req.params.modelname || req.body.model
 
@@ -282,7 +282,7 @@ export function setOpenAIAPIEndpoints(router) {
 	 */
 	const processChatCompletions = async (req, res) => {
 		try {
-			const { username } = await getUserByReq(req)
+			const { username } = getUserByReq(req)
 			// Determine model: check path param first, then body
 			const model = req.params.modelname || req.body.model
 

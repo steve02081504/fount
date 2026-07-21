@@ -7,6 +7,8 @@ import CryptoJS from 'https://esm.sh/crypto-js'
 
 import { ping } from '../api/base.mjs'
 
+import { downloadFromCatbox, uploadToCatbox } from './catbox.mjs'
+
 /**
  * 获取用于加密/解密的密钥。
  * @param {string} secret - 密钥。
@@ -70,32 +72,6 @@ async function decrypt(encryptedJson, secret) {
 	return plaintext
 }
 
-const CATBOX_API_URL = 'https://litterbox.catbox.moe/resources/internals/api.php'
-
-/**
- * 将文本上传到 Catbox/Litterbox 并返回文件 ID。
- * @param {string} content 要上传的文本内容。
- * @param {string} expiration 文件的过期时间（例如，“1h”、“24h”）。
- * @returns {Promise<string>} 文件 ID（即 catbox 上的文件名）。
- */
-async function uploadToCatbox(content, expiration = '1h') {
-	const formData = new FormData()
-	formData.append('reqtype', 'fileupload')
-	formData.append('time', expiration)
-	formData.append('fileToUpload', new Blob([content]), 'fount_creds.txt')
-
-	const response = await fetch(CATBOX_API_URL, {
-		method: 'POST',
-		body: formData,
-	})
-
-	if (!response.ok)
-		throw new Error(`Failed to upload to Catbox: ${await response.text()}`)
-
-	const fileUrl = await response.text()
-	return new URL(fileUrl).pathname.substring(1)
-}
-
 /**
  * 从 fileId、剪贴板或 URL hash 加载加密凭据密文。
  * @param {string | null} fileId - Catbox 文件 ID。
@@ -105,12 +81,8 @@ async function uploadToCatbox(content, expiration = '1h') {
  * @returns {Promise<string|null>} 密文字符串，或无可用的来源时 `null`。
  */
 async function loadEncryptedCredentials(fileId, transitSource, hashParams, { clipboardHashFallback = false } = {}) {
-	if (fileId) {
-		const resp = await fetch(`https://litter.catbox.moe/${fileId}`)
-		if (!resp.ok)
-			throw new Error(`Failed to fetch credentials from Catbox: ${resp.statusText}`)
-		return resp.text()
-	}
+	if (fileId)
+		return downloadFromCatbox(fileId)
 
 	if (transitSource === 'clipboard')
 		try {
@@ -158,7 +130,7 @@ async function applyCredentialTransitToHashParams(encryptedData, hashParams, {
 		}
 
 	try {
-		const fileId = await uploadToCatbox(encryptedData, '1h')
+		const fileId = await uploadToCatbox(encryptedData, '1h', 'fount_creds.txt')
 		hashParams.set('fileId', fileId)
 		return 'catbox'
 	}

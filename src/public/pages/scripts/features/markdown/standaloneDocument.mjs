@@ -64,7 +64,7 @@ function renderAttachmentsHtml(files, downloadLabel) {
 		const safeUrl = escapeHtml(dataUrl)
 		let previewHtml = '<div class="file-placeholder" style="font-size: 40px; text-align: center;">📄</div>'
 		if (mime.startsWith('image/'))
-			previewHtml = `<img src="${safeUrl}" alt="${name}" style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;" onclick="openModal(${jsStringLiteral(dataUrl)}, 'image')">`
+			previewHtml = `<img src="${safeUrl}" alt="${name}" style="max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in;" onclick="openModal(${escapeHtml(jsStringLiteral(dataUrl))}, 'image')">`
 		else if (mime.startsWith('video/'))
 			previewHtml = `<video src="${safeUrl}" controls style="max-width: 100%; max-height: 100%;"></video>`
 		else if (mime.startsWith('audio/'))

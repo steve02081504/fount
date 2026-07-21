@@ -12,7 +12,7 @@ import {
 import { clearRecovery, loadRecovery, storeRecovery } from '../recovery.mjs'
 
 import { getSharedCabinetBlob, putSharedCabinetBlob } from './blobs.mjs'
-import { encryptOpPayload, signOp } from './crypto.mjs'
+import { encryptOperationPayload, signOperation } from './crypto.mjs'
 import {
 	getSharedCabinetMeta,
 	loadSharedKeys,
@@ -21,7 +21,52 @@ import {
 	saveSharedKeys,
 } from './keys.mjs'
 import { loadSharedIndex, persistSharedSnapshot } from './materialize.mjs'
-import { appendSharedOp } from './oplog.mjs'
+import { appendSharedOperation } from './operationLog.mjs'
+
+/**
+ * 签名并追加一条操作（不物化、不广播）。
+ * @param {string} username 用户
+ * @param {string} cabinetId 柜
+ * @param {string} action upsert|delete
+ * @param {string} entryId 条目
+ * @param {object | null} payload 明文 payload（delete 可为 null）
+ * @returns {Promise<object>} 签名操作
+ */
+async function appendSharedOperationRecord(username, cabinetId, action, entryId, payload) {
+	const keys = await loadSharedKeys(username, cabinetId)
+	if (!keys.write_privkey) throw new Error('write key required')
+	const readKey = readKeyForGen(keys)
+	if (!readKey) throw new Error('read key missing')
+	const { hlc, keys: nextKeys } = nextSharedHlc(keys)
+	await saveSharedKeys(username, cabinetId, nextKeys)
+	const operation = await signOperation({
+		operation_id: randomUUID(),
+		hlc,
+		gen: nextKeys.current_gen,
+		entry_id: entryId,
+		action,
+		payload_ciphertext: action === 'delete'
+			? null
+			: encryptOperationPayload(payload, readKey, cabinetId, nextKeys.current_gen),
+	}, Buffer.from(keys.write_privkey, 'hex'))
+	await appendSharedOperation(username, cabinetId, operation)
+	return operation
+}
+
+/**
+ * 物化快照并广播一批操作。
+ * @param {string} username 用户
+ * @param {string} cabinetId 柜
+ * @param {object[]} operations 已追加操作
+ * @returns {Promise<void>}
+ */
+async function flushSharedOperations(username, cabinetId, operations) {
+	if (!operations.length) return
+	await persistSharedSnapshot(username, cabinetId)
+	const { broadcastSharedOperation } = await import('./sync.mjs')
+	for (const operation of operations)
+		await broadcastSharedOperation(username, cabinetId, operation).catch(() => { })
+}
 
 /**
  * @param {string} username 用户
@@ -29,60 +74,34 @@ import { appendSharedOp } from './oplog.mjs'
  * @param {string} action upsert|delete
  * @param {string} entryId 条目
  * @param {object | null} payload 明文 payload（delete 可为 null）
- * @returns {Promise<object>} 签名 op
+ * @returns {Promise<object>} 签名操作
  */
-async function commitSharedOp(username, cabinetId, action, entryId, payload) {
-	const keys = await loadSharedKeys(username, cabinetId)
-	if (!keys?.write_privkey) throw new Error('write key required')
-	const readKey = readKeyForGen(keys)
-	if (!readKey) throw new Error('read key missing')
-	const { hlc, keys: nextKeys } = nextSharedHlc(keys)
-	await saveSharedKeys(username, cabinetId, nextKeys)
-
-	const payloadCipher = action === 'delete'
-		? null
-		: encryptOpPayload(payload, readKey, cabinetId, nextKeys.current_gen)
-
-	const unsigned = {
-		op_id: randomUUID(),
-		hlc,
-		gen: nextKeys.current_gen,
-		entry_id: entryId,
-		action,
-		payload_ciphertext: payloadCipher,
-	}
-	const op = await signOp(unsigned, Buffer.from(keys.write_privkey, 'hex'))
-	await appendSharedOp(username, cabinetId, op)
-	await persistSharedSnapshot(username, cabinetId)
-	try {
-		const { broadcastSharedOp } = await import('./sync.mjs')
-		await broadcastSharedOp(username, cabinetId, op)
-	}
-	catch { /* sync optional */ }
-	return op
+async function commitSharedOperation(username, cabinetId, action, entryId, payload) {
+	const operation = await appendSharedOperationRecord(username, cabinetId, action, entryId, payload)
+	await flushSharedOperations(username, cabinetId, [operation])
+	return operation
 }
 
 /**
  * @param {string} username 用户
  * @param {string} cabinetId 柜
- * @param {{ parent_id?: string | null, show_hidden?: boolean }} [options] 选项
- * @returns {Promise<{ cabinet: object, parent_id: string | null, entries: object[] }>} 列表
+ * @param {{ parent_id?: string | null, show_hidden?: boolean, show_orphaned?: boolean }} [options] 选项
+ * @returns {Promise<{ cabinet: object, parent_id: string | null, folder_trail: object[], entries: object[] }>} 列表
  */
 export async function listSharedEntries(username, cabinetId, options = {}) {
 	const cabinet = await getSharedCabinetMeta(username, cabinetId)
 	if (!cabinet) throw new Error('cabinet not found')
 	const index = await loadSharedIndex(username, cabinetId)
 	const parentId = normalizeParentId(options.parent_id)
-	const entries = listChildren(
-		index.entries.filter(entry => !entry.orphaned || options.show_orphaned),
-		parentId,
-		options,
-	)
 	return {
 		cabinet,
 		parent_id: parentId,
 		folder_trail: buildFolderTrail(index.entries, parentId),
-		entries,
+		entries: listChildren(
+			index.entries.filter(entry => !entry.orphaned || options.show_orphaned),
+			parentId,
+			options,
+		),
 	}
 }
 
@@ -95,7 +114,7 @@ export async function listSharedEntries(username, cabinetId, options = {}) {
  */
 export async function registerSharedEntry(username, entityHash, cabinetId, draft) {
 	const entry = normalizeEntry(draft, entityHash)
-	await commitSharedOp(username, cabinetId, 'upsert', entry.id, entry)
+	await commitSharedOperation(username, cabinetId, 'upsert', entry.id, entry)
 	return entry
 }
 
@@ -112,7 +131,7 @@ export async function updateSharedEntry(username, entityHash, cabinetId, entryId
 	const current = index.entries.find(row => row.id === entryId)
 	if (!current) throw new Error('entry not found')
 	const next = patchEntry(current, patch, entityHash)
-	await commitSharedOp(username, cabinetId, 'upsert', entryId, next)
+	await commitSharedOperation(username, cabinetId, 'upsert', entryId, next)
 	return next
 }
 
@@ -131,21 +150,30 @@ export async function deleteSharedEntries(username, entityHash, cabinetId, entry
 	const deleted = []
 	/** @type {object[]} */
 	const stashed = []
+	/** @type {object[]} */
+	const operations = []
+	/** @type {Set<string>} */
+	const processed = new Set()
 	for (const id of entryIds) {
 		const subtree = collectSubtreeIds(index.entries, id)
 		for (const entryId of subtree) {
+			if (processed.has(entryId)) continue
+			processed.add(entryId)
 			const entry = index.entries.find(row => row.id === entryId)
 			if (entry) stashed.push(entry)
-			await commitSharedOp(username, cabinetId, 'delete', entryId, null)
+			operations.push(await appendSharedOperationRecord(username, cabinetId, 'delete', entryId, null))
 			deleted.push(entryId)
 		}
 	}
+	await flushSharedOperations(username, cabinetId, operations)
 	if (!options.recoverable) return { deleted }
-	const recovery_token = await storeRecovery(username, entityHash, cabinetId, {
-		shared: true,
-		entries: stashed,
-	})
-	return { deleted, recovery_token }
+	return {
+		deleted,
+		recovery_token: await storeRecovery(username, entityHash, cabinetId, {
+			shared: true,
+			entries: stashed,
+		}),
+	}
 }
 
 /**
@@ -160,16 +188,19 @@ export async function restoreSharedEntries(username, entityHash, cabinetId, reco
 	if (!record) throw new Error('recovery token invalid')
 	/** @type {string[]} */
 	const restored = []
+	/** @type {object[]} */
+	const operations = []
 	for (const entry of record.entries) {
-		await commitSharedOp(username, cabinetId, 'upsert', entry.id, entry)
+		operations.push(await appendSharedOperationRecord(username, cabinetId, 'upsert', entry.id, entry))
 		restored.push(entry.id)
 	}
+	await flushSharedOperations(username, cabinetId, operations)
 	await clearRecovery(username, entityHash, cabinetId, recoveryToken, true)
 	return { restored }
 }
 
 /**
- * 共享柜 finalize：条目已是 delete op，仅丢弃 recovery 记录（blob 由后续 GC 处理）。
+ * 共享柜 finalize：条目已是 delete 操作，仅丢弃 recovery 记录（blob 由后续 GC 处理）。
  * @param {string} username 用户
  * @param {string} cabinetId 柜
  * @param {string} recoveryToken token
@@ -207,7 +238,7 @@ export async function uploadSharedAndRegister(username, entityHash, cabinetId, o
 		description: options.description,
 		evfs_path: blob.evfs_path,
 	}, entityHash)
-	await commitSharedOp(username, cabinetId, 'upsert', entry.id, entry)
+	await commitSharedOperation(username, cabinetId, 'upsert', entry.id, entry)
 	return entry
 }
 
@@ -218,8 +249,7 @@ export async function uploadSharedAndRegister(username, entityHash, cabinetId, o
  * @returns {Promise<Buffer>} 明文
  */
 export async function downloadSharedEntry(username, cabinetId, entryId) {
-	const index = await loadSharedIndex(username, cabinetId)
-	const entry = index.entries.find(row => row.id === entryId)
+	const entry = (await loadSharedIndex(username, cabinetId)).entries.find(row => row.id === entryId)
 	if (!entry?.evfs_path) throw new Error('file not found')
 	return getSharedCabinetBlob(username, cabinetId, entry.evfs_path)
 }

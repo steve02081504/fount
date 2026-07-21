@@ -105,9 +105,10 @@ async function extractImportSpecs(file) {
  * @param {object} options 参数
  * @param {string} options.repoRoot 仓库根
  * @param {string} options.partPath shells/chat 或 shells/social
+ * @param {string[]} [options.dynamicProbes] 相对 part 根的动态 import 探针路径；省略则用默认
  * @returns {Promise<{ backendMissing: string[], publicMissing: string[], crossBoundary: string[] }>} 探针结果
  */
-export async function probeShellPart({ repoRoot, partPath }) {
+export async function probeShellPart({ repoRoot, partPath, dynamicProbes }) {
 	const partDir = path.join(repoRoot, 'src/public/parts', partPath.replace(/:/g, '/'))
 	const publicDir = path.join(partDir, 'public')
 	const srcDir = path.join(partDir, 'src')
@@ -168,11 +169,12 @@ export async function probeShellPart({ repoRoot, partPath }) {
 	
 
 	/** 动态 import 验证关键后端链（不执行 main 全量副作用）。 */
-	const dynamicProbes = [
-		path.join(partDir, 'src/group/routes/channelCrud.mjs'),
-		path.join(partDir, 'public/shared/friendBinding.mjs'),
+	const probeRels = dynamicProbes ?? [
+		'src/group/routes/channelCrud.mjs',
+		'public/shared/friendBinding.mjs',
 	]
-	for (const probe of dynamicProbes) {
+	for (const rel of probeRels) {
+		const probe = path.isAbsolute(rel) ? rel : path.join(partDir, rel)
 		if (!existsSync(probe)) continue
 		try {
 			await import(pathToFileURL(probe).href)

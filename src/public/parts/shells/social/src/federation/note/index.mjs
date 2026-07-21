@@ -94,7 +94,7 @@ export async function upsertNoteVote(username, targetEntityHash, postId, noteEve
 	if (!ids || !isHex64(noteId) || !parseEntityHash(voter)) return
 	await store.withMutex(ids.target, ids.postId, async () => {
 		const current = await store.read(username, ids.target, ids.postId)
-		const voteMap = { ...current.votes[noteId] || {} }
+		const voteMap = { ...current.votes[noteId] }
 		voteMap[voter] = helpful === true
 		await store.write(username, ids.target, ids.postId, {
 			notes: current.notes,

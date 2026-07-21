@@ -360,7 +360,7 @@ function mergeSubtestStates(
 ) {
 	if (!suite.subtests?.length) return prev
 	/** @type {Record<string, SubtestStateEntry>} */
-	const merged = { ...prev ?? {} }
+	const merged = { ...prev }
 	const ranAt = new Date().toISOString()
 	const byName = new Map(suite.subtests.map(st => [st.name, st]))
 	for (const name of ranSubtests) {

@@ -274,7 +274,7 @@ export interface GroupSettings {
 	autoPruneDagMessages?: boolean
 	messageRateLimitPerMin?: number
 	messageRateLimitWindowMs?: number
-	iceServers?: Array<{ urls: string }>
+	iceServers?: { urls: string }[]
 	discoveryPublic?: boolean
 	discoveryTitle?: string | null
 	discoveryBlurb?: string | null

@@ -27,18 +27,30 @@ import { generateUploadPreview } from './uploadPreview.mjs'
  */
 export async function promptUnlock(folderId) {
 	const dialog = document.getElementById('passwordDialog')
+	const submit = document.getElementById('unlockSubmit')
 	dialog.showModal()
 	await new Promise(resolve => {
+		let settled = false
 		/**
 		 *
 		 */
-		document.getElementById('unlockSubmit').onclick = async () => {
+		const settle = () => {
+			if (settled) return
+			settled = true
+			submit.onclick = null
+			dialog.removeEventListener('close', settle)
+			resolve()
+		}
+		dialog.addEventListener('close', settle)
+		/**
+		 *
+		 */
+		submit.onclick = async () => {
 			try {
 				const password = document.getElementById('unlockPassword').value
 				const result = await cabinetApi('POST', '/unlock', { folder_id: folderId, password }, { unlock: undefined })
 				cabinetStore.unlockTokens.set(folderId, result.unlock_token)
 				dialog.close()
-				resolve()
 				await refreshEntries()
 			}
 			catch (error) {
@@ -125,6 +137,7 @@ export async function uploadFiles(files) {
 	const createdIds = []
 	for (const file of files) {
 		const previewBlob = await generateUploadPreview(file)
+		/** @type {{ url: string, delete_with_file: boolean } | undefined} */
 		let preview
 		if (previewBlob) {
 			const uploaded = await cabinetApi('POST', '/preview', {
@@ -141,7 +154,7 @@ export async function uploadFiles(files) {
 			parent_id: cabinetStore.currentParentId,
 			preview,
 		})
-		if (entry?.id) createdIds.push(entry.id)
+		createdIds.push(entry.id)
 	}
 	await refreshEntries()
 	if (createdIds.length)
@@ -161,8 +174,7 @@ export async function createFolder() {
 		parent_id: cabinetStore.currentParentId,
 	})
 	await refreshEntries()
-	if (entry?.id)
-		await cabinetStore.history.push(makeCreateHistory([entry.id], 'newFolder', cabinetStore.currentCabinetId))
+	await cabinetStore.history.push(makeCreateHistory([entry.id], 'newFolder', cabinetStore.currentCabinetId))
 }
 
 /**

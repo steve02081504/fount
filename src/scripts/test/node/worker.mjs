@@ -30,7 +30,7 @@ const { values } = parseArgsOrExit({
 const dataPath = values['data-path']
 const username = values.user
 const loadParts = values['load-part'] ?? []
-const starts = JSON.parse(values.starts)
+const starts = values.starts && JSON.parse(values.starts)
 
 if (!dataPath) {
 	console.errorI18n('fountConsole.test.nodeWorker.dataPathRequired')

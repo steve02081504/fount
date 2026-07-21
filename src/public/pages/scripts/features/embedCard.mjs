@@ -37,10 +37,7 @@ function truncateText(text, maxLen) {
  * @returns {string} 转义后的属性值
  */
 function escapeAttr(value) {
-	return String(value)
-		.replace(/&/g, '&amp;')
-		.replace(/"/g, '&quot;')
-		.replace(/</g, '&lt;')
+	return escapeHtml(value)
 }
 
 /**
@@ -132,7 +129,7 @@ export function renderEmbedCardHtml(embed) {
 	const imageHtml = image
 		? `<img class="fount-embed-card-thumb" src="${escapeAttr(image)}" alt="" loading="lazy" decoding="async" />`
 		: ''
-	const noImageClass = image ? '' : ' fount-embed-card--no-image'
+	const noImageClass = image ? '' : ' fount-embed-card-no-image'
 	const descHtml = description
 		? `<div class="fount-embed-card-desc">${escapeHtml(description)}</div>`
 		: ''

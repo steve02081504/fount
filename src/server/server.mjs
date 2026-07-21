@@ -249,8 +249,8 @@ export async function init(start_config) {
 		 */
 		const listenOne = (bind) => new Promise((resolve, reject) => {
 			const server = httpsConfig?.enabled ? https.createServer({
-				key: fs.readFileSync(path.resolve(httpsConfig.keyFile, __dirname)),
-				cert: fs.readFileSync(path.resolve(httpsConfig.certFile, __dirname)),
+				key: fs.readFileSync(path.resolve(__dirname, httpsConfig.keyFile)),
+				cert: fs.readFileSync(path.resolve(__dirname, httpsConfig.certFile)),
 			}, requestListener) : http.createServer(requestListener)
 			server.on('upgrade', upgradeListener)
 			server.once('error', (err) => {

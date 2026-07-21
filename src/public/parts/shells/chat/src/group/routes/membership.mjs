@@ -149,7 +149,7 @@ export function registerMembershipRoutes(router, authenticate) {
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/join`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { groupId } = req.params
 		const { inviteCode, pow, introducerPubKeyHash, introducerNodeHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, roomSecret, signalingAppId, dmSessionTag, powAnchorRef, powAnchors } = req.body
 		const dmNonce = dmIntroNonce?.trim()
@@ -204,8 +204,8 @@ export function registerMembershipRoutes(router, authenticate) {
 	})
 
 	router.post(`${GROUPS_PREFIX}/leave`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
-		const groupIds = req.body?.groupIds
+		const { username } = getUserByReq(req)
+		const { groupIds } = req.body
 		if (!Array.isArray(groupIds) || !groupIds.length)
 			throw httpError(400, 'groupIds array required')
 		try {

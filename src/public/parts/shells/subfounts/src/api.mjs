@@ -1,16 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import EventEmitter from 'node:events'
-import process from 'node:process'
 // 远程执行直接传递原始值，不走 V8 serialize/deserialize。
 
 EventEmitter.defaultMaxListeners = Math.max(EventEmitter.defaultMaxListeners, 30)
-
-process.on('uncaughtException', (err) => {
-	if (err?.code === 'ECONNRESET' || err?.code === 'ECONNREFUSED' || err?.message?.includes('socket hang up'))
-		return
-	console.error('Uncaught exception:', err)
-	process.exit(1)
-})
 
 import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'

@@ -69,7 +69,7 @@ export function finishLiveWs(ok, detail) {
 
 /**
  * 从角色列表选取测试用角色。
- * @param {string[] | null | undefined} list 可用角色名列表
+ * @param {string[]} list 可用角色名列表
  * @param {string[]} preferred 优先顺序
  * @returns {string|null} 匹配到的角色名
  */

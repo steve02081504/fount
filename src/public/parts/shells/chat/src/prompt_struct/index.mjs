@@ -50,8 +50,8 @@ function injectAttributionWarnings(promptStruct, args) {
 		content: `身份归因警告：以下聊天记录的展示名不可信，实际由导入者或其他签名者重签：\n${lines.join('\n')}`,
 	})
 	promptStruct.extension = {
-		...promptStruct.extension || {},
-		...args.extension || {},
+		...promptStruct.extension,
+		...args.extension,
 		attributionWarnings: mismatched.map(entry => ({
 			id: entry.id,
 			name: entry.extension?.display?.name || entry.name,

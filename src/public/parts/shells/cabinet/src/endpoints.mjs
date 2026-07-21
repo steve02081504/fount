@@ -31,8 +31,8 @@ import { buildFolderTrail, listChildren } from './entryModel.mjs'
 import { runCabinetSync, setSyncBinding } from './folderSync.mjs'
 import { resolveLink } from './links.mjs'
 import { fetchRemoteCabinetIndex, fetchRemoteCabinets } from './remote.mjs'
+import { downloadSharedEntry } from './shared/entries.mjs'
 import { createSharedCabinet, listLocalSharedCabinets } from './shared/keys.mjs'
-import { downloadSharedEntry } from './shared/ops.mjs'
 import { zipCabinetFolder } from './zip.mjs'
 
 const PREFIX = '/api/parts/shells\\:cabinet'
@@ -72,8 +72,8 @@ async function remoteViewerContext(username, entityHash) {
 	catch { /* social 可选 */ }
 	return {
 		viewerEntityHash: entityHash,
-		following: follow.following || new Set(),
-		followSince: follow.followSince || new Map(),
+		following: follow.following,
+		followSince: follow.followSince,
 		at: Date.now(),
 	}
 }
@@ -94,9 +94,9 @@ function sendAttachment(res, bytes, filename) {
  * @returns {string} recovery token
  */
 function requireRecoveryToken(req) {
-	const recoveryToken = String(req.body?.recovery_token || '')
+	const recoveryToken = req.body.recovery_token
 	if (!recoveryToken) throw httpError(400, 'recovery_token required')
-	return recoveryToken
+	return String(recoveryToken)
 }
 
 /**
@@ -112,7 +112,7 @@ export function setEndpoints(router) {
 	router.get(`${PREFIX}/cabinets`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
 		const personal = await loadCabinets(username, entityHash)
-		const shared = await listLocalSharedCabinets(username).catch(() => [])
+		const shared = await listLocalSharedCabinets(username)
 		const byId = new Map()
 		for (const row of [...personal, ...shared]) byId.set(row.cabinet_id, row)
 		res.status(200).json({ cabinets: [...byId.values()] })
@@ -120,16 +120,16 @@ export function setEndpoints(router) {
 
 	router.post(`${PREFIX}/cabinets`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
-		if (req.body?.type === 'shared') {
+		if (req.body.type === 'shared') {
 			const { cabinet } = await createSharedCabinet(username, { name: req.body.name })
 			return res.status(200).json({ cabinet })
 		}
-		res.status(200).json({ cabinet: await createCabinet(username, entityHash, req.body || {}) })
+		res.status(200).json({ cabinet: await createCabinet(username, entityHash, req.body) })
 	})
 
 	router.patch(`${PREFIX}/cabinets/:cabinetId`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
-		res.status(200).json({ cabinet: await updateCabinet(username, entityHash, req.params.cabinetId, req.body || {}) })
+		res.status(200).json({ cabinet: await updateCabinet(username, entityHash, req.params.cabinetId, req.body) })
 	})
 
 	router.delete(`${PREFIX}/cabinets/:cabinetId`, authenticate, async (req, res) => {
@@ -150,7 +150,7 @@ export function setEndpoints(router) {
 	router.get(`${PREFIX}/cabinets/:cabinetId/entries/:entryId/download`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
 		const { cabinetId, entryId } = req.params
-		if (await getCabinet(username, entityHash, cabinetId)) 
+		if (await getCabinet(username, entityHash, cabinetId))
 			try {
 				return sendAttachment(res, await readPersonalEntryBytes(username, entityHash, cabinetId, entryId), entryId)
 			}
@@ -160,23 +160,22 @@ export function setEndpoints(router) {
 				if (msg === 'decrypt failed') throw httpError(500, msg)
 				throw error
 			}
-		
 		sendAttachment(res, await downloadSharedEntry(username, cabinetId, entryId), entryId)
 	})
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/unlock`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
-		const folderId = String(req.body?.folder_id || '')
-		const password = String(req.body?.password || '')
+		const folderId = String(req.body.folder_id)
+		const password = String(req.body.password)
 		if (!folderId || !password) throw httpError(400, 'folder_id and password required')
 		res.status(200).json(await unlockFolder(username, entityHash, req.params.cabinetId, folderId, password))
 	})
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/entries`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
-		const body = req.body || {}
+		const body = req.body
 		const unlock = unlockToken(req, body)
-		if (body.plaintext_base64) 
+		if (body.plaintext_base64)
 			return res.status(200).json({
 				entry: await uploadAndRegister(username, entityHash, req.params.cabinetId, {
 					plaintext: Buffer.from(body.plaintext_base64, 'base64'),
@@ -189,7 +188,6 @@ export function setEndpoints(router) {
 					unlock_token: unlock,
 				}),
 			})
-		
 		res.status(200).json({
 			entry: await registerEntry(username, entityHash, req.params.cabinetId, { ...body, unlock_token: unlock }),
 		})
@@ -199,7 +197,7 @@ export function setEndpoints(router) {
 		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json({
 			entry: await updateEntry(username, entityHash, req.params.cabinetId, req.params.entryId, {
-				...req.body || {},
+				...req.body,
 				unlock_token: unlockToken(req, req.body),
 			}),
 		})
@@ -209,7 +207,7 @@ export function setEndpoints(router) {
 		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json({
 			entries: await copyEntries(username, entityHash, req.params.cabinetId, {
-				...req.body || {},
+				...req.body,
 				unlock_token: unlockToken(req, req.body),
 			}),
 		})
@@ -219,8 +217,8 @@ export function setEndpoints(router) {
 		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json(await deleteEntries(
 			username, entityHash, req.params.cabinetId,
-			Array.isArray(req.body?.entry_ids) ? req.body.entry_ids : [],
-			{ recoverable: Boolean(req.body?.recoverable), unlock_token: unlockToken(req, req.body) },
+			req.body.entry_ids,
+			{ recoverable: Boolean(req.body.recoverable), unlock_token: unlockToken(req, req.body) },
 		))
 	})
 
@@ -268,7 +266,7 @@ export function setEndpoints(router) {
 
 	router.put(`${PREFIX}/cabinets/:cabinetId/sync-binding`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
-		res.status(200).json({ cabinet: await setSyncBinding(username, entityHash, req.params.cabinetId, req.body || {}) })
+		res.status(200).json({ cabinet: await setSyncBinding(username, entityHash, req.params.cabinetId, req.body) })
 	})
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/sync`, authenticate, async (req, res) => {
@@ -278,12 +276,12 @@ export function setEndpoints(router) {
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/preview`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
-		const plaintext = Buffer.from(String(req.body?.plaintext_base64 || ''), 'base64')
+		const plaintext = Buffer.from(req.body.plaintext_base64, 'base64')
 		if (!plaintext.length) throw httpError(400, 'plaintext_base64 required')
 		res.status(200).json(await uploadPreview(username, entityHash, req.params.cabinetId, {
 			plaintext,
-			name: req.body?.name,
-			mime_type: req.body?.mime_type,
+			name: req.body.name,
+			mime_type: req.body.mime_type,
 		}))
 	})
 

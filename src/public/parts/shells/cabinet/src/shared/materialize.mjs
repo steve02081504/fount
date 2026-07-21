@@ -4,51 +4,51 @@ import { normalizeEntry } from '../entryModel.mjs'
 import { writeJsonFile } from '../io.mjs'
 import { sharedCabinetSnapshotPath } from '../paths.mjs'
 
-import { decryptOpPayload } from './crypto.mjs'
+import { decryptOperationPayload } from './crypto.mjs'
 import { loadSharedKeys, readKeyForGen } from './keys.mjs'
-import { loadSharedOps } from './oplog.mjs'
+import { loadSharedOperations } from './operationLog.mjs'
 
 /**
- * @param {{ wall: number, logical: number } | null | undefined} a HLC
- * @param {{ wall: number, logical: number } | null | undefined} b HLC
+ * @param {{ wall: number, logical: number } | null | undefined} left HLC
+ * @param {{ wall: number, logical: number } | null | undefined} right HLC
  * @returns {number} compare
  */
-function compareHlcJson(a, b) {
-	if (!a) return b ? -1 : 0
-	if (!b) return 1
-	return HLC.fromJSON(a).compare(HLC.fromJSON(b))
+function compareHlcJson(left, right) {
+	if (!left) return right ? -1 : 0
+	if (!right) return 1
+	return HLC.fromJSON(left).compare(HLC.fromJSON(right))
 }
 
 /**
- * @param {object[]} ops ops
+ * @param {object[]} operations 操作列表
  * @param {import('./keys.mjs').SharedCabinetKeys} keys 密钥
  * @param {string} cabinetId 柜
  * @returns {{ entries: Map<string, object>, tips: Map<string, object> }} 物化结果
  */
-export function materializeSharedOps(ops, keys, cabinetId) {
-	/** @type {Map<string, { hlc: object, deleted?: boolean, entry?: object }>} */
+export function materializeSharedOperations(operations, keys, cabinetId) {
+	/** @type {Map<string, { hlc: object, deleted?: boolean, entry?: object, sealed?: boolean }>} */
 	const tips = new Map()
-	for (const op of ops) {
-		const entryId = String(op.entry_id || '')
+	for (const operation of operations) {
+		const entryId = String(operation.entry_id || '')
 		if (!entryId) continue
 		const existing = tips.get(entryId)
-		if (compareHlcJson(op.hlc, existing?.hlc) < 0) continue
+		if (compareHlcJson(operation.hlc, existing?.hlc) < 0) continue
 
-		if (op.action === 'delete') {
-			tips.set(entryId, { hlc: op.hlc, deleted: true })
+		if (operation.action === 'delete') {
+			tips.set(entryId, { hlc: operation.hlc, deleted: true })
 			continue
 		}
 
-		const readKey = readKeyForGen(keys, op.gen)
+		const readKey = readKeyForGen(keys, operation.gen)
 		if (!readKey) {
 			// 无对应代读密钥：保留 tip 槽但不暴露明文
-			tips.set(entryId, { hlc: op.hlc, sealed: true })
+			tips.set(entryId, { hlc: operation.hlc, sealed: true })
 			continue
 		}
-		const payload = decryptOpPayload(op.payload_ciphertext, readKey, cabinetId, op.gen)
+		const payload = decryptOperationPayload(operation.payload_ciphertext, readKey, cabinetId, operation.gen)
 		if (!payload) continue
 		tips.set(entryId, {
-			hlc: op.hlc,
+			hlc: operation.hlc,
 			entry: normalizeEntry({ ...payload, id: entryId }, payload.created?.entity_hash || ''),
 		})
 	}
@@ -70,8 +70,11 @@ export function materializeSharedOps(ops, keys, cabinetId) {
 export async function loadSharedIndex(username, cabinetId) {
 	const keys = await loadSharedKeys(username, cabinetId)
 	if (!keys) return { version: 1, entries: [] }
-	const ops = await loadSharedOps(username, cabinetId)
-	const { entries } = materializeSharedOps(ops, keys, cabinetId)
+	const { entries } = materializeSharedOperations(
+		await loadSharedOperations(username, cabinetId),
+		keys,
+		cabinetId,
+	)
 	return { version: 1, entries: [...entries.values()] }
 }
 
@@ -81,6 +84,5 @@ export async function loadSharedIndex(username, cabinetId) {
  * @returns {Promise<void>}
  */
 export async function persistSharedSnapshot(username, cabinetId) {
-	const index = await loadSharedIndex(username, cabinetId)
-	await writeJsonFile(sharedCabinetSnapshotPath(username, cabinetId), index)
+	await writeJsonFile(sharedCabinetSnapshotPath(username, cabinetId), await loadSharedIndex(username, cabinetId))
 }

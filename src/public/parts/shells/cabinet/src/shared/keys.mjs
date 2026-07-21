@@ -28,11 +28,11 @@ export async function loadSharedKeys(username, cabinetId) {
 	const raw = await readJsonFile(sharedCabinetKeysPath(username, cabinetId), null)
 	if (!raw) return null
 	return {
-		write_privkey: raw.write_privkey || undefined,
-		write_pubkey: String(raw.write_pubkey || ''),
-		read_keys: Array.isArray(raw.read_keys) ? raw.read_keys : [],
-		current_gen: Number(raw.current_gen) || 0,
-		last_hlc: raw.last_hlc || null,
+		write_privkey: raw.write_privkey,
+		write_pubkey: raw.write_pubkey,
+		read_keys: raw.read_keys,
+		current_gen: raw.current_gen,
+		last_hlc: raw.last_hlc ?? null,
 	}
 }
 
@@ -51,8 +51,7 @@ export async function saveSharedKeys(username, cabinetId, keys) {
  * @returns {Promise<object[]>} 登记的共享柜元数据
  */
 export async function loadSharedRegistry(username) {
-	const raw = await readJsonFile(sharedCabinetsRegistryPath(username), { cabinets: [] })
-	return Array.isArray(raw?.cabinets) ? raw.cabinets : []
+	return (await readJsonFile(sharedCabinetsRegistryPath(username), { cabinets: [] })).cabinets
 }
 
 /**
@@ -151,14 +150,14 @@ export function readKeyForGen(keys, gen) {
 }
 
 /**
- * 升代：生成新读密钥，可选丢弃旧写私钥以外的历史（保留旧代读密钥以便读历史 op）。
+ * 升代：生成新读密钥，可选丢弃旧写私钥以外的历史（保留旧代读密钥以便读历史操作）。
  * @param {string} username 用户
  * @param {string} cabinetId 柜
  * @returns {Promise<{ gen: number, key: string }>} 新代
  */
 export async function rotateSharedReadKey(username, cabinetId) {
 	const keys = await loadSharedKeys(username, cabinetId)
-	if (!keys?.write_privkey) throw new Error('write key required to rotate')
+	if (!keys.write_privkey) throw new Error('write key required to rotate')
 	const nextGen = keys.current_gen + 1
 	const key = randomBytes(32).toString('hex')
 	keys.read_keys.push({ gen: nextGen, key })

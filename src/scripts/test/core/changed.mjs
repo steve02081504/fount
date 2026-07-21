@@ -6,7 +6,7 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
 
-import { exec } from 'npm:@steve02081504/exec'
+import { exec, execFile } from 'npm:@steve02081504/exec'
 
 import { console } from '../../i18n/bare.mjs'
 
@@ -89,7 +89,7 @@ export async function getHeadCommitHash(repoRoot) {
  * @returns {Promise<string[]>} 变更文件相对路径
  */
 export async function diffRefs(repoRoot, base, head = 'HEAD') {
-	const output = await exec(`git diff --name-only ${base} ${head}`, { cwd: repoRoot })
+	const output = await execFile('git', ['diff', '--name-only', base, head], { cwd: repoRoot })
 	if (output.code !== 0 || !output.stdout.trim()) return []
 	return output.stdout.trim().split('\n').map(path => path.replace(/\\/g, '/'))
 }
@@ -142,7 +142,7 @@ export async function resolveChangedFiles({ repoRoot, runAll = false, since }) {
 		if (files.length) return { mode: 'diff', files }
 	}
 
-	const mergeBase = await exec('git merge-base HEAD origin/HEAD', { cwd: repoRoot })
+	const mergeBase = await execFile('git', ['merge-base', 'HEAD', 'origin/HEAD'], { cwd: repoRoot })
 	if (mergeBase.code === 0 && mergeBase.stdout.trim()) {
 		const files = await diffRefs(repoRoot, mergeBase.stdout.trim())
 		if (files.length) return { mode: 'diff', files }

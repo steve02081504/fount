@@ -154,7 +154,7 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/fork`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
-		const body = req.body || {}
+		const body = req.body
 		const result = await forkGroupFromBranch(username, groupId, {
 			tipId: body.tipId ? String(body.tipId) : undefined,
 			name: body.name ? String(body.name) : undefined,
@@ -168,7 +168,7 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/fork/block-opposing`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
-		const acceptedTipId = String(req.body?.acceptedTipId || '')
+		const acceptedTipId = String(req.body.acceptedTipId || '')
 		const { sender: selfPubKeyHash } = await resolveLocalEventSigner(username, groupId)
 		const result = await blockOpposingForkBranch(username, groupId, acceptedTipId, selfPubKeyHash)
 		res.status(200).json({ ...result })
@@ -176,7 +176,7 @@ export function registerDagRoutes(router, authenticate) {
 
 	router.put(`${GROUPS_PREFIX}/:groupId/governance-branch`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, groupId } = req.groupContext
-		const tipId = req.body?.tipId != null ? String(req.body.tipId).trim().toLowerCase() : null
+		const tipId = req.body.tipId != null ? String(req.body.tipId).trim().toLowerCase() : null
 		if (tipId && !isHex64(tipId))
 			throw httpError(400, 'invalid tipId')
 		const tips = state.dagTips || computeDagTipIdsFromEvents(await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions }))
@@ -218,18 +218,18 @@ export function registerDagRoutes(router, authenticate) {
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/events/signed`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { groupId } = req.params
-		const events = req.body?.events
+		const events = req.body.events
 		if (!Array.isArray(events))
 			throw httpError(400, 'events array required')
 		res.status(200).json(await ingestSignedEvents(username, groupId, events))
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/events/local`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { groupId } = req.params
-		const events = req.body?.events
+		const events = req.body.events
 		if (!Array.isArray(events))
 			throw httpError(400, 'events array required')
 

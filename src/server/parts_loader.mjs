@@ -221,22 +221,16 @@ function applyBranchSegments(branches, segments) {
 }
 
 /**
- * 将 fount.json 的内容合并到部件分支对象中。
+ * 将已解析的 fount.json 内容合并到部件分支对象中。
  * @param {object} branches - 当前的分支对象。
- * @param {string} filePath - fount.json 路径。
+ * @param {object} info - 已解析的 fount.json 对象。
  */
-function mergeFountJsonIntoBranches(branches, filePath) {
-	try {
-		const info = loadJsonFile(filePath)
-		const type = info.type?.trim?.() || ''
-		const dirname = info.dirname?.trim?.() || ''
-		if (!dirname) return
-		const segments = [...type.split('/').filter(Boolean), dirname]
-		applyBranchSegments(branches, segments)
-	}
-	catch (error) {
-		console.warn(`Failed to parse fount.json at ${filePath}: ${error.message}`)
-	}
+function mergeFountJsonIntoBranches(branches, info) {
+	const type = info.type?.trim?.() || ''
+	const dirname = info.dirname?.trim?.() || ''
+	if (!dirname) return
+	const segments = [...type.split('/').filter(Boolean), dirname]
+	applyBranchSegments(branches, segments)
 }
 
 /**
@@ -250,10 +244,10 @@ function partpathFromFountJsonFile(filePath, rootPath) {
 }
 
 /**
- * 校验并规范化单条 registry 条目。
- * @param {unknown} entry - 原始条目。
+ * 规范化单条 registry 条目。
+ * @param {object} entry - 原始条目。
  * @param {string} partpath - 所属 partpath。
- * @returns {RegistryEntryRaw | null} 规范化条目，无效时返回 null。
+ * @returns {RegistryEntryRaw} 规范化条目。
  */
 function normalizeRegistryEntry(entry, partpath) {
 	const { id, level, path: entryPath, format, dataField } = entry
@@ -268,26 +262,21 @@ function normalizeRegistryEntry(entry, partpath) {
 }
 
 /**
- * 将 fount.json 的 registries 字段合并到聚合对象。
+ * 将已解析的 fount.json 的 registries 字段合并到聚合对象。
  * @param {Record<string, RegistryEntryRaw[]>} registries - 聚合对象。
- * @param {string} filePath - fount.json 路径。
+ * @param {object} info - 已解析的 fount.json 对象。
+ * @param {string} filePath - fount.json 路径（用于推导 partpath）。
  * @param {string} rootPath - 扫描根目录。
  */
-function mergeFountJsonIntoRegistries(registries, filePath, rootPath) {
-	try {
-		const info = loadJsonFile(filePath)
-		const reg = info.registries
-		if (!reg || typeof reg !== 'object') return
-		const partpath = partpathFromFountJsonFile(filePath, rootPath)
-		for (const [name, entries] of Object.entries(reg)) {
-			if (!Array.isArray(entries)) continue
-			registries[name] ??= []
-			for (const entry of entries)
-				registries[name].push(normalizeRegistryEntry(entry, partpath))
-		}
-	}
-	catch (error) {
-		console.warn(`Failed to parse registries in fount.json at ${filePath}: ${error.message}`)
+function mergeFountJsonIntoRegistries(registries, info, filePath, rootPath) {
+	const reg = info.registries
+	if (!reg || typeof reg !== 'object') return
+	const partpath = partpathFromFountJsonFile(filePath, rootPath)
+	for (const [name, entries] of Object.entries(reg)) {
+		if (!Array.isArray(entries)) continue
+		registries[name] ??= []
+		for (const entry of entries)
+			registries[name].push(normalizeRegistryEntry(entry, partpath))
 	}
 }
 
@@ -307,8 +296,16 @@ function scanPartTrees(username) {
 
 	for (const root of roots)
 		for (const filePath of walkFountJsonFiles(root)) {
-			mergeFountJsonIntoBranches(branches, filePath)
-			mergeFountJsonIntoRegistries(registries, filePath, root)
+			let info
+			try {
+				info = loadJsonFile(filePath)
+			}
+			catch (error) {
+				console.warn(`Failed to parse fount.json at ${filePath}: ${error.message}`)
+				continue
+			}
+			mergeFountJsonIntoBranches(branches, info)
+			mergeFountJsonIntoRegistries(registries, info, filePath, root)
 		}
 
 	return { branches, registries }

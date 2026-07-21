@@ -65,7 +65,7 @@ async function rotateRoomSecretAfterModeration(username, groupId) {
  */
 export function registerGovernanceRoutes(router, authenticate) {
 	router.get(`${GROUPS_PREFIX}/:groupId/permissions`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const groupId = req.params.groupId
 		const subject = (req.query.pubKeyHash || '').trim()
 		const channelId = (req.query.channelId || '').trim() || 'default'
@@ -118,7 +118,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'channel_permissions_update',
 			timestamp: Date.now(),
-			content: { channelId, roleId, allow: allow || {}, deny: deny || {} },
+			content: { channelId, roleId, allow, deny },
 		})
 		res.status(200).json({})
 	})
@@ -157,7 +157,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 	router.put(`${GROUPS_PREFIX}/:groupId/roles/:roleId`, authenticate, async (req, res) => {
 		const { groupId, roleId: roleIdRaw } = req.params
 		const roleId = decodeURIComponent(roleIdRaw)
-		const { name, color, position, isHoisted } = req.body || {}
+		const { name, color, position, isHoisted } = req.body
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, member } = membership
@@ -390,7 +390,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state, memberKey: callerKey } = membership
 
-		const { proposedOwnerPubKeyHash, ballotId, adminSignatures, thresholdRatio: thresholdRaw } = req.body || {}
+		const { proposedOwnerPubKeyHash, ballotId, adminSignatures, thresholdRatio: thresholdRaw } = req.body
 
 		if (!proposedOwnerPubKeyHash?.trim())
 			throw httpError(400, 'proposedOwnerPubKeyHash required')
@@ -507,14 +507,14 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const canManage = hasPermission(member, PERMISSIONS.ADMIN, state.roles, gov, state.channelPermissions)
 			|| hasPermission(member, PERMISSIONS.MANAGE_ADMINS, state.roles, gov, state.channelPermissions)
 		if (!canManage) throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
-		const body = req.body || {}
+		const body = req.body
 		if (!body.cabinet_id) throw httpError(400, 'cabinet_id required')
 		const { appendCabinetBind } = await import('../../chat/cabinets/keys.mjs')
 		const event = await appendCabinetBind(username, req.params.groupId, {
 			cabinet_id: String(body.cabinet_id).toLowerCase(),
 			name: body.name,
 			write_pubkey: body.write_pubkey,
-			role_access: body.role_access || {},
+			role_access: body.role_access,
 		})
 		res.status(201).json({ event })
 	})
@@ -526,7 +526,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 		const canManage = hasPermission(member, PERMISSIONS.ADMIN, state.roles, gov, state.channelPermissions)
 			|| hasPermission(member, PERMISSIONS.MANAGE_ADMINS, state.roles, gov, state.channelPermissions)
 		if (!canManage) throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
-		const cabinetId = String(req.body?.cabinet_id || '').toLowerCase()
+		const cabinetId = String(req.body.cabinet_id || '').toLowerCase()
 		if (!cabinetId) throw httpError(400, 'cabinet_id required')
 		const { appendCabinetUnbind } = await import('../../chat/cabinets/keys.mjs')
 		const event = await appendCabinetUnbind(username, req.params.groupId, cabinetId)

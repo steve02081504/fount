@@ -36,14 +36,14 @@ import { GROUPS_PREFIX } from './path.mjs'
 export function registerGroupLifecycleRoutes(router, authenticate) {
 	router.get(`${GROUPS_PREFIX}/`, authenticate, async (req, res) => {
 		const { client } = await chatClientFromReq(req)
-		const rows = await enumerateJoinedFederatedGroups((await getUserByReq(req)).username, client.entityHash)
+		const rows = await enumerateJoinedFederatedGroups(getUserByReq(req).username, client.entityHash)
 		rows.sort((left, right) => new Date(right.lastMessageTime || 0) - new Date(left.lastMessageTime || 0))
 		res.status(200).json(rows)
 	})
 
 	router.post(`${GROUPS_PREFIX}/`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
-		const body = req.body || {}
+		const { username } = getUserByReq(req)
+		const body = req.body
 		const template = String(body.template || '').trim().toLowerCase()
 		if (template === 'dm') {
 			const myPubKeyHex = normalizePubKeyHex(body.myPubKeyHex || '')
@@ -130,7 +130,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 	})
 
 	router.get(`${GROUPS_PREFIX}/:groupId/preview`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { groupId } = req.params
 		res.status(200).json(await buildGroupPreview(username, groupId))
 	})
@@ -148,7 +148,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 
 	router.put(`${GROUPS_PREFIX}/:groupId/branch`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
-		const body = req.body || {}
+		const body = req.body
 		let delta = body.delta
 		if (body.latest === true) delta = Number.POSITIVE_INFINITY
 		if (typeof delta !== 'number' || Number.isNaN(delta))

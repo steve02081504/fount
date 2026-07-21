@@ -2,6 +2,9 @@
  * 共享 emoji picker：消费 registries.emoji 提供商（停靠 / 浮动两种模式）。
  */
 import { importRegistryModules } from '../api/registries.mjs'
+import { escapeHtml } from '../lib/escapeHtml.mjs'
+
+import { positionFloatingPanel, wireOutsideClickClose } from './floatingPanel.mjs'
 
 /**
  * @returns {Promise<object | null>} 首个可用 emoji 提供商
@@ -22,42 +25,10 @@ async function resolveEmojiProvider() {
  * @returns {void}
  */
 function insertAtCursor(inputElement, token) {
-	const cursorPos = inputElement.selectionStart ?? inputElement.value.length
-	inputElement.value = inputElement.value.substring(0, cursorPos) + token + inputElement.value.substring(cursorPos)
+	const start = inputElement.selectionStart ?? inputElement.value.length
+	const end = inputElement.selectionEnd ?? start
+	inputElement.setRangeText(token, start, end, 'end')
 	inputElement.focus()
-}
-
-/**
- * @param {HTMLElement} panel 浮动面板
- * @param {HTMLElement} anchor 定位锚点
- * @param {{ panelWidth?: number, heightOffset?: number }} [options] 尺寸选项
- * @returns {void}
- */
-function positionFloatingPanel(panel, anchor, { panelWidth = 320, heightOffset = 280 } = {}) {
-	const rect = anchor.getBoundingClientRect()
-	panel.style.left = `${Math.min(rect.left, window.innerWidth - panelWidth - 10)}px`
-	panel.style.top = `${Math.max(8, rect.top - heightOffset)}px`
-}
-
-/**
- * @param {HTMLElement} panel 浮动面板
- * @param {() => void} onClose 关闭回调
- * @param {HTMLElement} [alsoInside] 点击其内部时不关闭
- * @returns {void}
- */
-function wireOutsideClickClose(panel, onClose, alsoInside) {
-	setTimeout(() => {
-		/**
-		 * @param {Event} event 文档点击
-		 * @returns {void}
-		 */
-		const close = event => {
-			if (panel.contains(event.target) || alsoInside?.contains(event.target)) return
-			onClose()
-			document.removeEventListener('click', close, true)
-		}
-		document.addEventListener('click', close, true)
-	}, 0)
 }
 
 /**
@@ -81,7 +52,7 @@ function renderTabButton(tab, provider, activeTabId) {
 			!!tab.isCurrent,
 		)
 	else if (tab.glyph)
-		tabButton.innerHTML = `<span class="emoji-tab-glyph" aria-hidden="true">${tab.glyph}</span>`
+		tabButton.innerHTML = `<span class="emoji-tab-glyph" aria-hidden="true">${escapeHtml(tab.glyph)}</span>`
 
 	return tabButton
 }
@@ -144,6 +115,9 @@ function setActiveTabButton(tabsElement, tabId) {
 		tabButton.classList.toggle('active', tabButton.dataset.tab === tabId)
 }
 
+/** @type {WeakMap<HTMLElement, number>} */
+const emojiGridRenderIds = new WeakMap()
+
 /**
  * @param {object} provider emoji 提供商
  * @param {object} tab 标签页
@@ -152,8 +126,11 @@ function setActiveTabButton(tabsElement, tabId) {
  * @returns {Promise<void>}
  */
 async function renderEmojiTabGrid(provider, tab, grid, pickerContext) {
+	const renderId = (emojiGridRenderIds.get(grid) ?? 0) + 1
+	emojiGridRenderIds.set(grid, renderId)
 	grid.replaceChildren()
 	const { items, emptyI18n, errorI18n } = await provider.loadTabItems(tab, pickerContext)
+	if (emojiGridRenderIds.get(grid) !== renderId) return
 	if (errorI18n) {
 		renderGridMessage(grid, errorI18n)
 		return

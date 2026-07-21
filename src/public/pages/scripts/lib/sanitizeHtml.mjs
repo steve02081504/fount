@@ -18,6 +18,7 @@ export const BLOCKED_HTML_TAGS = new Set([
 	'form',
 	'svg',
 	'math',
+	'template',
 ])
 
 /** 未信任档会校验或剥离的 URL 类属性。 */

@@ -175,6 +175,7 @@ async function runOnePhase({
  * @param {Record<string, string>} options.env 环境变量
  * @param {(port: number) => object} options.nodeOpts launchNode 选项工厂
  * @param {string} [options.extraArgs] 额外 playwright 参数
+ * @param {string[]} [options.failFastProjects] 失败即停的 project 名（默认 shell/smoke）
  * @returns {Promise<number>} 退出码
  */
 export async function runFrontendPhases({
@@ -185,6 +186,7 @@ export async function runFrontendPhases({
 	env,
 	nodeOpts,
 	extraArgs = '',
+	failFastProjects = ['shell', 'smoke'],
 }) {
 	const jsonReportDir = await mkdtemp(join(tmpdir(), 'fount-pw-json-'))
 	const filterList = parseTestOnlyEnv()
@@ -192,6 +194,7 @@ export async function runFrontendPhases({
 	const firstList = parseTestFirstEnv()
 	const keepGoing = process.env.FOUNT_TEST_KEEP_GOING === '1'
 	const selected = filterPhasesBySelection(phases, repoRoot, filterList, subtestList)
+	const failFastSet = new Set(failFastProjects)
 
 	if (!selected.length) {
 		console.errorI18n('fountConsole.test.noFrontendPhasesMatched')
@@ -236,7 +239,7 @@ export async function runFrontendPhases({
 			Object.assign(timings, phaseTimings)
 			if (code !== 0) {
 				failed.push(...phaseFailed)
-				const failFast = phase.project === 'shell' || phase.project === 'smoke'
+				const failFast = failFastSet.has(phase.project)
 				if (abortOnPhaseFail || failFast || !keepGoing) return code
 			}
 		}

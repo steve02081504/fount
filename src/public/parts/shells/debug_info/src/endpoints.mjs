@@ -68,7 +68,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/parts/shells\\:debug_info/open_source', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user) return res.status(401).json({ message: 'Unauthorized' })
 		if (!is_local_ip_from_req(req))
 			return res.status(403).json({ message: 'Forbidden on non-local request.' })

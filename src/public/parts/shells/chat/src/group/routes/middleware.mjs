@@ -21,7 +21,7 @@ import { loadGroupShunState } from '../groupShunState.mjs'
  * @returns {Promise<{ username: string, state: object, memberKey: string, member: object }>} 成员上下文
  */
 export async function resolveGroupMember(req, _res, groupId, options = {}) {
-	const { username } = await getUserByReq(req)
+	const { username } = getUserByReq(req)
 	const { state } = await getState(username, groupId)
 	const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
 	if (!memberKey)

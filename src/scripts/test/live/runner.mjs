@@ -92,8 +92,13 @@ async function waitForFedNodesPing(nodes, timeoutMs = 30_000) {
 	const deadline = Date.now() + timeoutMs
 	while (Date.now() < deadline) {
 		const ready = await Promise.all(nodes.map(async node => {
-			const res = await fetch(`${node.baseUrl}/api/ping?fount-apikey=${encodeURIComponent(node.apiKey)}`)
-			return res.ok && (await res.json())?.message === 'pong'
+			try {
+				const res = await fetch(`${node.baseUrl}/api/ping?fount-apikey=${encodeURIComponent(node.apiKey)}`)
+				return res.ok && (await res.json())?.message === 'pong'
+			}
+			catch {
+				return false
+			}
 		}))
 		if (ready.every(Boolean)) return
 		await new Promise(resolve => { setTimeout(resolve, 500) })

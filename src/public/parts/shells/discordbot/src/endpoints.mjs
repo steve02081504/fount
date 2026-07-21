@@ -8,52 +8,52 @@ import { getBotList, runBot, getBotConfig, setBotConfig, deleteBotConfig, getRun
  */
 export function setEndpoints(router) {
 	router.post('/api/parts/shells\\:discordbot/start', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { botname } = req.body
 		await runBot(username, botname)
 		res.status(200).json({ message: 'start ok', botname })
 	})
 
 	router.post('/api/parts/shells\\:discordbot/stop', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { botname } = req.body
 		await stopBot(username, botname)
 		res.status(200).json({ message: 'stop ok', botname })
 	})
 
 	router.get('/api/parts/shells\\:discordbot/getbotlist', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		res.status(200).json(getBotList(username))
 	})
 
 	router.get('/api/parts/shells\\:discordbot/getrunningbotlist', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		res.status(200).json(getRunningBotList(username))
 	})
 
 	router.get('/api/parts/shells\\:discordbot/getbotconfig', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { botname } = req.query
 		const config = await getBotConfig(username, botname)
 		res.status(200).json(config)
 	})
 
 	router.get('/api/parts/shells\\:discordbot/getbotConfigTemplate', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { charname } = req.query
 		const config = await getBotConfigTemplate(username, charname)
 		res.status(200).json(config)
 	})
 
 	router.post('/api/parts/shells\\:discordbot/setbotconfig', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { botname, config } = req.body
 		setBotConfig(username, botname, config)
 		res.status(200).json({ message: 'config saved' })
 	})
 
 	router.post('/api/parts/shells\\:discordbot/deletebotconfig', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { botname } = req.body
 		if (getRunningBotList(username).includes(botname))
 			await stopBot(username, botname)
@@ -62,7 +62,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/parts/shells\\:discordbot/newbotconfig', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { botname } = req.body
 		setBotConfig(username, botname, {})
 		res.status(200).json({ message: 'bot created' })

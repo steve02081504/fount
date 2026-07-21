@@ -5,7 +5,7 @@ import {
 
 import { setEndpoints } from './src/endpoints.mjs'
 import { startFolderSyncScheduler, stopFolderSyncScheduler } from './src/folderSync.mjs'
-import { handleCabinetP2PInvoke, registerCabinetOpInbound } from './src/shared/sync.mjs'
+import { handleCabinetP2PInvoke, registerCabinetOperationInbound } from './src/shared/sync.mjs'
 import { registerCabinetManifestTransfer, unregisterCabinetManifestTransfer } from './src/shared/transfer.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -22,7 +22,7 @@ export default {
 	Load({ router }) {
 		registerShellPartpath('cabinet', 'shells/cabinet')
 		registerCabinetManifestTransfer()
-		registerCabinetOpInbound()
+		registerCabinetOperationInbound()
 		setEndpoints(router)
 		startFolderSyncScheduler()
 	},
