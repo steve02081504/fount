@@ -136,17 +136,20 @@ export async function uploadFiles(files) {
 	/** @type {string[]} */
 	const createdIds = []
 	for (const file of files) {
-		const previewBlob = await generateUploadPreview(file)
 		/** @type {{ url: string, delete_with_file: boolean } | undefined} */
 		let preview
-		if (previewBlob) {
-			const uploaded = await cabinetApi('POST', '/preview', {
-				plaintext_base64: await blobToBase64(previewBlob),
-				name: `preview.${previewBlob.type.includes('avif') ? 'avif' : 'webp'}`,
-				mime_type: previewBlob.type,
-			})
-			preview = { url: uploaded.url, delete_with_file: true }
+		try {
+			const previewBlob = await generateUploadPreview(file)
+			if (previewBlob) {
+				const uploaded = await cabinetApi('POST', '/preview', {
+					plaintext_base64: await blobToBase64(previewBlob),
+					name: `preview.${previewBlob.type.includes('avif') ? 'avif' : 'webp'}`,
+					mime_type: previewBlob.type,
+				})
+				preview = { url: uploaded.url, delete_with_file: true }
+			}
 		}
+		catch { /* 预览失败不阻断上传 */ }
 		const { entry } = await cabinetApi('POST', '/entries', {
 			plaintext_base64: arrayBufferToBase64(await file.arrayBuffer()),
 			name: file.name,

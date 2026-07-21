@@ -34,7 +34,7 @@ import { appendSharedOperation } from './operationLog.mjs'
  */
 async function appendSharedOperationRecord(username, cabinetId, action, entryId, payload) {
 	const keys = await loadSharedKeys(username, cabinetId)
-	if (!keys.write_privkey) throw new Error('write key required')
+	if (!keys?.write_privkey) throw new Error('write key required')
 	const readKey = readKeyForGen(keys)
 	if (!readKey) throw new Error('read key missing')
 	const { hlc, keys: nextKeys } = nextSharedHlc(keys)

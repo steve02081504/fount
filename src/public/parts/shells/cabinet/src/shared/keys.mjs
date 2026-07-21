@@ -157,7 +157,7 @@ export function readKeyForGen(keys, gen) {
  */
 export async function rotateSharedReadKey(username, cabinetId) {
 	const keys = await loadSharedKeys(username, cabinetId)
-	if (!keys.write_privkey) throw new Error('write key required to rotate')
+	if (!keys?.write_privkey) throw new Error('write key required to rotate')
 	const nextGen = keys.current_gen + 1
 	const key = randomBytes(32).toString('hex')
 	keys.read_keys.push({ gen: nextGen, key })

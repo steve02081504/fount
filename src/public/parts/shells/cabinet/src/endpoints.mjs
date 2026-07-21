@@ -165,8 +165,8 @@ export function setEndpoints(router) {
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/unlock`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
-		const folderId = String(req.body.folder_id)
-		const password = String(req.body.password)
+		const folderId = String(req.body.folder_id ?? '')
+		const password = String(req.body.password ?? '')
 		if (!folderId || !password) throw httpError(400, 'folder_id and password required')
 		res.status(200).json(await unlockFolder(username, entityHash, req.params.cabinetId, folderId, password))
 	})
@@ -276,6 +276,8 @@ export function setEndpoints(router) {
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/preview`, authenticate, async (req, res) => {
 		const { username, entityHash } = await operatorFromReq(req)
+		if (!req.body.plaintext_base64)
+			throw httpError(400, 'plaintext_base64 required')
 		const plaintext = Buffer.from(req.body.plaintext_base64, 'base64')
 		if (!plaintext.length) throw httpError(400, 'plaintext_base64 required')
 		res.status(200).json(await uploadPreview(username, entityHash, req.params.cabinetId, {

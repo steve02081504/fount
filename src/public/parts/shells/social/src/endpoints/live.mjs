@@ -37,7 +37,7 @@ export function registerLiveRoutes(router) {
 
 	router.post('/api/parts/shells\\:social/live/stop', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
-		const liveId = String(req.body.liveId).trim()
+		const liveId = String(req.body.liveId ?? '').trim()
 		if (!liveId) throw httpError(400, 'liveId required')
 		res.status(200).json(await client.stopLive(liveId))
 	})
