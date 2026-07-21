@@ -22,7 +22,7 @@ export function requireTestBaseUrl() {
  * @returns {Promise<number>} 监听端口
  */
 export async function resolveFrontendPort(raw, fallback) {
-	if (raw != null && raw !== '') {
+	if (raw) {
 		const port = Number(raw)
 		if (!Number.isInteger(port) || port <= 0)
 			throw new Error(`invalid FOUNT_TEST_FRONTEND_PORT: ${raw}`)

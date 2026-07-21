@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto'
  * @returns {string | null} 规范化父目录 id
  */
 export function normalizeParentId(value) {
-	return value == null || value === '' ? null : String(value)
+	return value ? String(value) : null
 }
 
 /**
@@ -60,9 +60,7 @@ export function normalizeEntry(draft, entityHash) {
 		link: kind === 'link' && draft?.link ? {
 			owner_entity_hash: String(draft.link.owner_entity_hash || '').toLowerCase(),
 			cabinet_id: String(draft.link.cabinet_id || ''),
-			entry_id: draft.link.entry_id == null || draft.link.entry_id === ''
-				? null
-				: String(draft.link.entry_id),
+			entry_id: draft.link.entry_id ? String(draft.link.entry_id) : null,
 		} : null,
 	}
 }

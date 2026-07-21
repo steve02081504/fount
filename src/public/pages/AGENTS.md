@@ -47,7 +47,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 ## Components & Utilities
 
 - **`virtualList.mjs`**: Virtual scrolling. Optional `getItemKey` enables keyed reconcile on `refresh()`.
-- **`infiniteScroll.mjs`**: `ensureScrollSentinel` / `bindInfiniteScroll` / `disconnectInfiniteScroll`. Rising-edge arm; after replay move the sentinel, do not rebind while intersecting.
+- **`infiniteScroll.mjs`**: `ensureScrollSentinel` / `insertBeforeScrollSentinel` / `bindInfiniteScroll` / `disconnectInfiniteScroll`. Sentinel: `data-scroll-sentinel` (module import injects styles); append via `insertBeforeScrollSentinel` so it stays last. Rising-edge arm; after replay do not rebind while intersecting.
 - **`search.mjs`**: Live filtering and searchable dropdowns.
 - **`jsonEditor.mjs`**: `vanilla-jsoneditor` wrapper.
 - **`terminal.mjs`**: `xterm.js` wrapper.

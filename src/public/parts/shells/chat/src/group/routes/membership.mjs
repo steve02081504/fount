@@ -205,7 +205,7 @@ export function registerMembershipRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/leave`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const groupIds = req.body?.groupIds
+		const { groupIds } = req.body
 		if (!Array.isArray(groupIds) || !groupIds.length)
 			throw httpError(400, 'groupIds array required')
 		try {

@@ -212,7 +212,6 @@ export function openImageEditor(file, labels = {}) {
 					w: Math.abs(p.x - cropStart.x),
 					h: Math.abs(p.y - cropStart.y),
 				}
-
 			else if (tool === 'mosaic') stampMosaic(p.x, p.y)
 			else if (tool === 'brush') {
 				ctx.lineTo(p.x, p.y)

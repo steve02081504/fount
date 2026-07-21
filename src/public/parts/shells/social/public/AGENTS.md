@@ -21,7 +21,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 - **New timeline event types**: register in both `SOCIAL_TIMELINE_REDUCERS` and `SOCIAL_TIMELINE_EVENT_TYPES` (`federation/namespace.mjs`).
 - **part_query**: register/unregister in Load/Unload (`federation/partQuery.mjs`); handlers in `trending|search|discover|live/network.mjs`.
 - **Cross-shell chat HTTP**: viewer / personal-lists / entities/search / translation-prefs via `/api/parts/shells:chat/…`. Live nodes need `loadParts: ['shells/social', 'shells/chat']`.
-- **Share URL**: chat `wrapProtocolHttpsUrl`. `public/shared/runUri.mjs` must stay Deno-pure-importable (no `/parts/` URL imports).
+- **Share URL**: chat `wrapProtocolHttpsUrl`. `public/shared/*` is Deno-pure-importable (no `/parts/` or `/scripts/` URL imports). UI under `public/src/` may use `/scripts/*` and `/parts/…` freely — do not co-locate pure exports with DOM helpers just so a pure test can import the same file.
 - **Download HTML**: post more menu → `exportHtml.mjs` → shared `markdown/standaloneDocument.mjs` (full offline document, including mediaRefs data URLs); same source as Chat message export.
 - Types: `src/decl/socialAPI.ts`; overview: `public/llms.txt`.
 
@@ -35,7 +35,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 - **`activateView(name)`** → `#${name}View` — `data-view` and section id must share the stem (`videos` → `#videosView`).
 - Avatars/names/@id: chat `entityAvatar.mjs` / `resolveDisplayName` / `formatEntityAtId` (`entityHandle`). Profile page: `rememberEntityHandle` before rendering posts. Hover: `lib/profileHover.mjs` → chat hover card.
 - Bio/post Markdown: chat `shared/trustedMarkdown.mjs`. Trusted: self / local-char / declared master / trust list. Remote self-declared `ownerEntityHash` does not elevate.
-- Browser imports of chat: absolute `/parts/shells:chat/...` URLs. Modules used by Deno pure tests must not contain `/parts/` imports.
+- Browser imports of chat: absolute `/parts/shells:chat/...` URLs.
 - Preference UI: `#settings` (taste is not a top-level nav entry).
 
 ## Identity / private state

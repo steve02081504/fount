@@ -41,7 +41,7 @@ function sanitizeRemoteStamp(stamp) {
 function sanitizeRemoteLink(link) {
 	if (!link || typeof link !== 'object') return null
 	const row = /** @type {{ owner_entity_hash?: unknown, cabinet_id?: unknown, entry_id?: unknown }} */ link
-	const entryId = row.entry_id == null || row.entry_id === '' ? null : String(row.entry_id).slice(0, 128)
+	const entryId = row.entry_id ? String(row.entry_id).slice(0, 128) : null
 	return {
 		owner_entity_hash: String(row.owner_entity_hash || '').toLowerCase().slice(0, 128),
 		cabinet_id: String(row.cabinet_id || '').slice(0, 128),

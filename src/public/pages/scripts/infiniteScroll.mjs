@@ -1,6 +1,19 @@
 /** @type {IntersectionObserver | null} */
 let activeObserver = null
 
+{
+	const style = document.createElement('style')
+	style.textContent = /* css */ `\
+[data-scroll-sentinel] {
+	height: 1px;
+	width: 100%;
+	pointer-events: none;
+	overflow-anchor: none;
+}
+`
+	document.head.appendChild(style)
+}
+
 /**
  * 绑定 IntersectionObserver 无限滚动。
  * 同一轮「进入相交」只触发一次；离开后再进入才允许下一次。
@@ -47,6 +60,9 @@ export function disconnectInfiniteScroll() {
 	activeObserver = null
 }
 
+/** 无限滚动哨兵标记；追加内容时插在此节点之前，保持哨兵为列表末子。 */
+export const SCROLL_SENTINEL_ATTR = 'data-scroll-sentinel'
+
 /**
  * 确保容器末尾有哨兵节点。
  * @param {HTMLElement} container 列表容器
@@ -58,12 +74,24 @@ export function ensureScrollSentinel(container, sentinelId) {
 	if (!sentinel) {
 		sentinel = document.createElement('div')
 		sentinel.id = sentinelId
-		sentinel.className = 'scroll-sentinel'
+		sentinel.setAttribute(SCROLL_SENTINEL_ATTR, '')
 		sentinel.setAttribute('aria-hidden', 'true')
-		// 避免 scroll anchoring 把哨兵钉在视口内，导致重绑 observer 后立刻再触发
-		sentinel.style.overflowAnchor = 'none'
 	}
+	else if (!sentinel.hasAttribute(SCROLL_SENTINEL_ATTR))
+		sentinel.setAttribute(SCROLL_SENTINEL_ATTR, '')
 	if (sentinel.parentElement !== container || container.lastElementChild !== sentinel)
 		container.appendChild(sentinel)
 	return sentinel
+}
+
+/**
+ * 插入节点：若容器内有哨兵则插在其前，否则 append。
+ * @param {HTMLElement} container 列表容器
+ * @param {Node} node 节点
+ * @returns {void}
+ */
+export function insertBeforeScrollSentinel(container, node) {
+	const sentinel = container.querySelector(`:scope > [${SCROLL_SENTINEL_ATTR}]`)
+	if (sentinel) container.insertBefore(node, sentinel)
+	else container.appendChild(node)
 }

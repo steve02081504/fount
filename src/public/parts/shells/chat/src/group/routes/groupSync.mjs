@@ -61,7 +61,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const { username } = getUserByReq(req)
 		const { groupId } = req.params
 		const content = {
-			targetPubKeyHash: String(req.body?.targetPubKeyHash || '').trim().toLowerCase(),
+			targetPubKeyHash: String(req.body.targetPubKeyHash || '').trim().toLowerCase(),
 			claim: Number(req.body.claim ?? 0.25),
 		}
 		if (req.body.verified) {
@@ -102,7 +102,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/:groupId/reputation/reset`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { groupId } = req.params
-		const targetPubKeyHash = String(req.body?.targetPubKeyHash || '').trim().toLowerCase()
+		const targetPubKeyHash = String(req.body.targetPubKeyHash || '').trim().toLowerCase()
 		if (!targetPubKeyHash)
 			throw httpError(400, 'targetPubKeyHash required')
 		await appendSignedLocalEvent(username, groupId, {
@@ -237,7 +237,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			localViewBranchTip: state.localViewBranchTip ?? null,
 			governanceFork: !!state.governanceFork,
 			dagTips: state.dagTips,
-			cabinets: state.cabinets || {},
+			cabinets: state.cabinets,
 			files: listActiveFilesFromState(state),
 			channelCaps,
 		}
@@ -323,7 +323,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			&& !canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, channelId))
 			throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		const { setFederationTuning } = await import('../../chat/federation/tuning.mjs')
-		const patch = await setFederationTuning(username, groupId, req.body || {})
+		const patch = await setFederationTuning(username, groupId, req.body)
 		res.status(200).json({ ok: true, patch })
 	})
 
@@ -353,7 +353,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username } = membership
-		const wallMs = Number(req.body?.wallMs) || Date.now()
+		const wallMs = Number(req.body.wallMs) || Date.now()
 		res.status(200).json(await markGroupOfflineStarted(username, groupId, wallMs))
 	})
 
@@ -405,7 +405,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username } = membership
-		const channelId = String(req.body?.channelId || '').trim() || null
+		const channelId = String(req.body.channelId || '').trim() || null
 		if (await isFederationRoomAlreadyBound(username, groupId, { channelId: channelId || undefined }))
 			return res.status(200).json({ ok: true, skipped: true, channelId })
 		const slot = await ensureFederationRoom(username, groupId, { channelId: channelId || undefined })

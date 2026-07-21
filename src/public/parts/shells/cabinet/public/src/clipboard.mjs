@@ -34,9 +34,7 @@ export function readClipboard() {
 			mode: data.mode === 'cut' ? 'cut' : 'copy',
 			cabinet_id: String(data.cabinet_id),
 			entry_ids: data.entry_ids.map(String),
-			source_parent_id: data.source_parent_id == null || data.source_parent_id === ''
-				? null
-				: String(data.source_parent_id),
+			source_parent_id: data.source_parent_id ? String(data.source_parent_id) : null,
 			at: Number(data.at) || Date.now(),
 		}
 	}

@@ -214,9 +214,6 @@ async function executeTransferStrategy(encryptedData, targetUrl, hashParams, cli
 export async function transferEncryptedCredentials(uuid, redirectUrl) {
 	const instanceId = uuid.split('-')[0]
 	const storedEncryptedData = localStorage.getItem(`fount-login-${instanceId}`)
-	if (!storedEncryptedData)
-		throw new Error('No stored encrypted credentials to transfer.')
-
 	const targetUrl = new URL(decodeURIComponent(redirectUrl))
 	const targetHashParams = new URLSearchParams(targetUrl.hash.substring(1))
 	targetHashParams.set('uuid', uuid)

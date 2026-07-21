@@ -2,7 +2,7 @@
  * Hub 跨群 inbox 视图（#inbox）。
  */
 import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
-import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
+import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
@@ -81,8 +81,9 @@ async function renderInboxRow(row) {
  */
 async function paintInboxRows(host, rows, replace = false) {
 	if (replace) host.replaceChildren()
-	host.append(...await Promise.all(rows.map(renderInboxRow)))
 	ensureScrollSentinel(host, 'hubInboxScrollSentinel')
+	for (const row of await Promise.all(rows.map(renderInboxRow)))
+		insertBeforeScrollSentinel(host, row)
 }
 
 const EMPTY_STATES = {

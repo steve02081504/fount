@@ -218,7 +218,7 @@ export function registerEntityEndpoints(router) {
 		if (!operatorEntityHash)
 			return res.status(400).json({ error: 'operator identity not configured' })
 		const raw = req.body?.ownerEntityHash
-		const ownerEntityHash = raw == null || raw === '' ? null : String(raw).trim().toLowerCase()
+		const ownerEntityHash = raw ? String(raw).trim().toLowerCase() : null
 		if (ownerEntityHash && !isEntityHash128(ownerEntityHash))
 			return res.status(400).json({ error: 'invalid ownerEntityHash' })
 		const row = await setEntityOwner(replicaUsername, operatorEntityHash, ownerEntityHash)

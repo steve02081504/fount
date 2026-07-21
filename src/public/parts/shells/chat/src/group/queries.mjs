@@ -235,8 +235,7 @@ async function finalizeChannelMessagesForViewer(username, groupId, state, lines,
 export async function readChannelMessagesForUser(username, groupId, channelId, pagination = {}) {
 	const { state } = await getState(username, groupId)
 	const { listChannelMessages, JOIN_CHANNEL_HISTORY_LIMIT } = await import('../chat/dag/queries.mjs')
-	const messageLimit = pagination.limit != null && pagination.limit !== ''
-		? Number(pagination.limit) : undefined
+	const messageLimit = Number(pagination.limit)
 	const pageLimit = Number.isFinite(messageLimit) && messageLimit > 0
 		? Math.min(messageLimit, 500)
 		: 200

@@ -88,8 +88,7 @@ export async function renderChannelPermissionsPanel(context) {
 	const overrideRoleIds = Object.keys(permissions)
 	const rolePanels = overrideRoleIds.map(roleId => {
 		const role = context.state.roles[roleId] || { name: roleId, color: '#888' }
-		const allow = permissions[roleId]?.allow || {}
-		const deny = permissions[roleId]?.deny || {}
+		const { allow = {}, deny = {} } = permissions[roleId]
 		return {
 			roleId,
 			name: role.name || roleId,

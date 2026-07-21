@@ -77,7 +77,7 @@ export async function publishCabinetLists(username, entityHash, cabinets) {
  * @returns {Promise<object | null>} manifest
  */
 export async function publishCabinetIndex(username, entityHash, cabinet, index) {
-	const publicEntries = (index.entries || []).filter(entry => !entry.orphaned).map(entry => ({
+	const publicEntries = index.entries.filter(entry => !entry.orphaned).map(entry => ({
 		id: entry.id,
 		name: entry.name,
 		kind: entry.kind,
@@ -87,7 +87,7 @@ export async function publishCabinetIndex(username, entityHash, cabinet, index) 
 		description: entry.description,
 		created: entry.created,
 		modified: entry.modified,
-		evfs_path: entry.evfs_path || null,
+		evfs_path: entry.evfs_path ?? null,
 		attrs: entry.attrs,
 		preview: entry.preview?.url ? { url: entry.preview.url } : undefined,
 		encryption: entry.encryption ? { locked: true } : null,
@@ -95,7 +95,7 @@ export async function publishCabinetIndex(username, entityHash, cabinet, index) 
 	}))
 	return putCabinetEvfsFile(username, entityHash, {
 		logical_path: evfsCabinetIndexPath(cabinet.cabinet_id),
-		plaintext: Buffer.from(JSON.stringify({ version: index.version || 1, entries: publicEntries }), 'utf8'),
+		plaintext: Buffer.from(JSON.stringify({ version: index.version, entries: publicEntries }), 'utf8'),
 		name: 'index.json',
 		mime_type: 'application/json',
 		visibility: cabinet.visibility,

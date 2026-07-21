@@ -431,9 +431,7 @@ export async function pollOwnedEntityProfileUpdates(username) {
 	for (const row of await listEntityIdentities(username)) {
 		const hash = String(row.entityHash).toLowerCase()
 		if (!isWritableLocalEntity(hash)) continue
-		const owner = row.ownerEntityHash == null || row.ownerEntityHash === ''
-			? null
-			: String(row.ownerEntityHash).toLowerCase()
+		const owner = row.ownerEntityHash ? String(row.ownerEntityHash).toLowerCase() : null
 		if (!owner || !isEntityHash128(owner)) continue
 		if (isWritableLocalEntity(owner)) {
 			// 主人也在本机：仍可走直写；轮询可选跳过，但拉取无害

@@ -1,5 +1,5 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
+import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { authorLabel, formatTimeHtml, renderAvatarHtml } from '../lib/display.mjs'
@@ -273,8 +273,7 @@ export function mergeIncomingNotification(notification) {
 		actors: [{ entityHash: notification.actorEntityHash, at: notification.at }],
 	}, seenAt)
 	card.dataset.knownActors = notification.actorEntityHash
-	const sentinel = document.getElementById('notificationsScrollSentinel')
-	container.insertBefore(card, sentinel)
+	insertBeforeScrollSentinel(container, card)
 	return true
 }
 
@@ -367,7 +366,7 @@ export async function loadNotifications(append = false) {
 			const card = renderNotificationCard(row, seenAt)
 			if (Array.isArray(row.actors))
 				card.dataset.knownActors = row.actors.map(actor => actor.entityHash).join(',')
-			container.insertBefore(card, document.getElementById('notificationsScrollSentinel'))
+			insertBeforeScrollSentinel(container, card)
 		}
 
 		if (!append)

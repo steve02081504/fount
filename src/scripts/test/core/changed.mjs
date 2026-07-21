@@ -8,6 +8,8 @@ import process from 'node:process'
 
 import { exec, execFile } from 'npm:@steve02081504/exec'
 
+import { console } from '../../i18n/bare.mjs'
+
 /**
  * 收集工作区未提交变更（含未跟踪文件）。
  * @param {string} repoRoot 仓库根
@@ -146,8 +148,10 @@ export async function resolveChangedFiles({ repoRoot, runAll = false, since }) {
 		if (files.length) return { mode: 'diff', files }
 	}
 
-	if (process.env.GITHUB_ACTIONS === 'true' || process.env.CI === 'true')
+	if (process.env.GITHUB_ACTIONS === 'true' || process.env.CI === 'true') {
+		console.logI18n('fountConsole.test.ciNoDiffFallback')
 		return { mode: 'all', files: [] }
+	}
 
 	return { mode: 'none', files: [] }
 }

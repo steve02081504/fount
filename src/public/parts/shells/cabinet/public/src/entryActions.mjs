@@ -149,9 +149,7 @@ export async function uploadFiles(files) {
 				preview = { url: uploaded.url, delete_with_file: true }
 			}
 		}
-		catch (error) {
-			showToastI18n('error', 'cabinet.previewFailed', { error: error.message })
-		}
+		catch { /* 预览失败不阻断上传 */ }
 		const { entry } = await cabinetApi('POST', '/entries', {
 			plaintext_base64: arrayBufferToBase64(await file.arrayBuffer()),
 			name: file.name,
@@ -159,7 +157,7 @@ export async function uploadFiles(files) {
 			parent_id: cabinetStore.currentParentId,
 			preview,
 		})
-		if (entry?.id) createdIds.push(entry.id)
+		createdIds.push(entry.id)
 	}
 	await refreshEntries()
 	if (createdIds.length)
@@ -179,8 +177,7 @@ export async function createFolder() {
 		parent_id: cabinetStore.currentParentId,
 	})
 	await refreshEntries()
-	if (entry?.id)
-		await cabinetStore.history.push(makeCreateHistory([entry.id], 'newFolder', cabinetStore.currentCabinetId))
+	await cabinetStore.history.push(makeCreateHistory([entry.id], 'newFolder', cabinetStore.currentCabinetId))
 }
 
 /**

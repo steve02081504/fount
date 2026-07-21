@@ -90,9 +90,7 @@ function toStoredProfile(profileData) {
 		entityHash: profileData.entityHash,
 		nodeHash: profileData.nodeHash,
 		subjectHash: profileData.subjectHash,
-		ownerEntityHash: ownerRaw == null || ownerRaw === ''
-			? null
-			: String(ownerRaw).trim().toLowerCase(),
+		ownerEntityHash: ownerRaw ? String(ownerRaw).trim().toLowerCase() : null,
 		handle,
 		themeColor,
 		banner,
