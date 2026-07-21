@@ -1,0 +1,11 @@
+<div class="suggested-account feed-search-entity">
+	<div class="suggested-account-info">
+		<a href="${profileHref}" class="suggested-account-name">${label}</a>
+		<span class="suggested-account-handle">${handle}</span>
+		<span class="text-xs opacity-50" data-i18n="social.search.trustScore" data-score="${score}"></span>
+	</div>
+	<div class="flex gap-1 flex-wrap justify-end">
+		<button type="button" class="suggested-follow-btn" data-follow="${entityHash}" data-is-following="${isFollowing}" data-i18n="${followI18n}"></button>
+		<button type="button" class="btn btn-ghost btn-xs" data-set-alias="${entityHash}" data-i18n="social.search.pinAlias"></button>
+	</div>
+</div>

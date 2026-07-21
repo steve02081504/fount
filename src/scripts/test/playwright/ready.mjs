@@ -1,16 +1,10 @@
 /**
  * Playwright 等待 shell 前端 bootstrap 就绪（轮询 `globalThis.fount.test.getState`）。
- * Social gate 仍内联；social shell 落地后再改回模块导入。
  */
 import { HUB_GATE } from 'fount/public/parts/shells/chat/public/hub/gate.mjs'
 import { STICKERS_PAGE_GATE } from 'fount/public/parts/shells/chat/public/stickers/gate.mjs'
+import { SOCIAL_GATE } from 'fount/public/parts/shells/social/public/src/gate.mjs'
 import { ms } from 'fount/scripts/ms.mjs'
-
-const SOCIAL_GATE = {
-	id: 'social',
-	readyEvent: 'fount:social-ready',
-	errorEvent: 'fount:social-error',
-}
 
 /**
  * 在页面内等待 shell 就绪（轮询内存状态，不依赖 DOM attribute）。

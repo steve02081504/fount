@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title data-i18n="social.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="/parts/shells:social/styles.css" />
+</head>
+
+<body class="bg-base-100 text-base-content min-h-screen">
+	<div id="shell" class="shell">
+		<aside class="side-nav" aria-label="Social navigation">
+			<div class="side-nav-brand">
+				<h1 class="brand-title" data-i18n="social.title"></h1>
+			</div>
+			<nav class="side-nav-links">
+				<button type="button" data-view="feed" class="nav-btn btn btn-ghost justify-start active">
+					<span class="icon icon-home" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.feed"></span>
+				</button>
+				<button type="button" data-view="explore" class="nav-btn btn btn-ghost justify-start">
+					<span class="icon icon-explore" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.explore"></span>
+				</button>
+				<button type="button" data-view="notifications" class="nav-btn btn btn-ghost justify-start">
+					<span class="icon icon-bell" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.notifications"></span>
+					<span id="notificationsBadge" class="nav-badge badge badge-primary badge-sm hidden"></span>
+				</button>
+				<button type="button" data-view="saved" class="nav-btn btn btn-ghost justify-start">
+					<span class="icon icon-bookmark" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.saved"></span>
+				</button>
+				<button type="button" data-view="drafts" class="nav-btn btn btn-ghost justify-start">
+					<span class="icon icon-draft" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.drafts"></span>
+				</button>
+				<button type="button" data-view="profile" class="nav-btn btn btn-ghost justify-start">
+					<span class="icon icon-user" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.profile"></span>
+				</button>
+				<button type="button" data-view="videos" class="nav-btn btn btn-ghost justify-start">
+					<span class="icon icon-video" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.videos"></span>
+				</button>
+				<button type="button" data-view="live" class="nav-btn btn btn-ghost justify-start">
+					<span class="icon icon-live" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.live"></span>
+				</button>
+			</nav>
+			<button type="button" id="composeNavButton" class="compose-nav-btn btn btn-primary">
+				<span class="nav-label" data-i18n="social.composer.publish"></span>
+				<span class="icon icon-compose compose-nav-icon" aria-hidden="true"></span>
+			</button>
+		</aside>
+
+		<main class="timeline-col">
+			<section id="composer" class="composer">
+				<div class="composer-inner">
+					<div id="viewerComposerAvatar" class="composer-avatar-slot" aria-hidden="true"></div>
+					<div class="composer-body">
+						<div id="quotePreview" class="quote-preview hidden"></div>
+						<div id="groupRefPreview" class="group-ref-preview hidden"></div>
+						<textarea id="postText" rows="3" data-i18n="social.composer" placeholder=""></textarea>
+						<input id="postContentWarning" type="text" class="input input-bordered input-sm composer-cw hidden" maxlength="200" data-i18n="social.composer.contentWarning" placeholder="" />
+						<div id="pollComposerPanel" class="composer-panel poll-composer hidden">
+							<textarea id="pollComposerOptions" rows="3" class="textarea textarea-bordered textarea-sm poll-composer-options" data-i18n="social.poll.options" placeholder=""></textarea>
+							<div class="poll-composer-row">
+								<label class="composer-check">
+									<input id="pollComposerMulti" type="checkbox" class="checkbox checkbox-sm" />
+									<span data-i18n="social.poll.multi"></span>
+								</label>
+								<input id="pollComposerDeadline" type="datetime-local" class="input input-bordered input-sm" />
+								<button type="button" id="pollComposerApply" class="btn btn-primary btn-xs" data-i18n="social.poll.apply"></button>
+							</div>
+						</div>
+						<div id="mediaPreview" class="media-preview hidden"></div>
+						<div id="composerAdvancedPanel" class="composer-panel composer-advanced hidden">
+							<label class="composer-field hidden" data-visibility-field>
+								<span class="composer-field-label" data-i18n="social.visibility.allowLabel"></span>
+								<input data-visibility-allow type="text" class="input input-bordered input-sm" data-i18n="social.visibility.allow" placeholder="" />
+							</label>
+							<label class="composer-field" data-visibility-field>
+								<span class="composer-field-label" data-i18n="social.visibility.exceptLabel"></span>
+								<input data-visibility-except type="text" class="input input-bordered input-sm" data-i18n="social.visibility.except" placeholder="" />
+							</label>
+							<label class="composer-field">
+								<span class="composer-field-label" data-i18n="social.composer.replyPolicyLabel"></span>
+								<select id="postReplyPolicy" class="select select-bordered select-sm">
+									<option value="everyone" data-i18n="social.composer.replyPolicyEveryone"></option>
+									<option value="followers_7d" data-i18n="social.composer.replyPolicyFollowers7d"></option>
+									<option value="author_follows" data-i18n="social.composer.replyPolicyAuthorFollows"></option>
+								</select>
+							</label>
+							<label class="composer-field">
+								<span class="composer-field-label" data-i18n="social.composer.replyDisplayLabel"></span>
+								<select id="postReplyDisplay" class="select select-bordered select-sm">
+									<option value="all" data-i18n="social.composer.replyDisplayAll"></option>
+									<option value="featured_only" data-i18n="social.composer.replyDisplayFeaturedOnly"></option>
+								</select>
+							</label>
+							<label class="composer-field">
+								<span class="composer-field-label" data-i18n="social.composer.scheduleLabel"></span>
+								<input id="postPublishAt" type="datetime-local" class="input input-bordered input-sm" />
+							</label>
+							<label id="linkGroupField" class="composer-field hidden">
+								<span class="composer-field-label" data-i18n="social.groupRef.linking"></span>
+								<select id="linkGroupSelect" class="select select-bordered select-sm"></select>
+							</label>
+							<label id="postAlbumField" class="composer-field hidden">
+								<span class="composer-field-label" data-i18n="social.albums.pickerLabel"></span>
+								<select id="postAlbumSelect" class="select select-bordered select-sm" multiple size="3"></select>
+							</label>
+							<label class="composer-check composer-advanced-full">
+								<input id="postSensitiveMedia" type="checkbox" class="checkbox checkbox-sm" />
+								<span data-i18n="social.composer.sensitiveMedia"></span>
+							</label>
+						</div>
+						<div class="composer-toolbar">
+							<div class="composer-tools">
+								<button id="emojiPickButton" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.emojiButton">
+									<span class="icon icon-emoji" aria-hidden="true"></span>
+								</button>
+								<label class="composer-tool-btn btn btn-ghost btn-sm btn-circle media-upload-btn" data-i18n="social.composer.mediaButton">
+									<span class="icon icon-media" aria-hidden="true"></span>
+									<input id="mediaInput" type="file" accept="image/*,video/*" multiple hidden />
+								</label>
+								<button id="pollComposerToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.pollButton">
+									<span class="icon icon-vote" aria-hidden="true"></span>
+								</button>
+								<button id="composerCwToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.cwToggle">
+									<span class="icon icon-content-warning" aria-hidden="true"></span>
+								</button>
+								<select id="postVisibility" data-visibility-select class="select select-bordered select-sm composer-select composer-visibility">
+									<option value="public" data-i18n="social.visibility.public"></option>
+									<option value="unlisted" data-i18n="social.visibility.unlisted"></option>
+									<option value="followers" data-i18n="social.visibility.followers"></option>
+									<option value="followers_7d" data-i18n="social.visibility.followers7d"></option>
+									<option value="followers_30d" data-i18n="social.visibility.followers30d"></option>
+									<option value="selected" data-i18n="social.visibility.selected"></option>
+									<option value="private" data-i18n="social.visibility.private"></option>
+								</select>
+								<button id="composerAdvancedToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.advancedToggle">
+									<span class="icon icon-options" aria-hidden="true"></span>
+								</button>
+								<input id="postLocale" type="hidden" value="zh-CN" />
+							</div>
+							<button id="saveDraftButton" type="button" class="composer-draft-btn btn btn-ghost btn-sm" data-i18n="social.composer.saveDraft"></button>
+							<button id="postButton" type="button" class="composer-post-btn btn btn-primary btn-sm" data-i18n="social.composer.publish"></button>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section id="feedView" class="view">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.nav.feed"></h2>
+					<div class="feed-ranking-tabs" role="tablist">
+						<button type="button" class="btn btn-ghost btn-xs active" data-feed-ranking="latest" data-i18n="social.feed.tabLatest"></button>
+						<button type="button" class="btn btn-ghost btn-xs" data-feed-ranking="for_you" data-i18n="social.feed.tabForYou"></button>
+					</div>
+					<button type="button" id="feedSearchOpenButton" class="view-header-btn btn btn-ghost btn-sm btn-circle mobile-only-btn" data-i18n="social.search.open">
+						<span class="icon icon-search" aria-hidden="true"></span>
+					</button>
+					<button type="button" id="feedRefreshButton" class="view-header-btn btn btn-ghost btn-sm btn-circle tooltip" data-tip="">
+						<span class="icon icon-refresh" aria-hidden="true"></span>
+					</button>
+				</header>
+				<div id="feedList" class="feed-list"></div>
+			</section>
+
+			<section id="exploreView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.nav.explore"></h2>
+				</header>
+				<div class="explore-shortcuts">
+					<button type="button" class="btn btn-ghost btn-sm" data-view="videos" data-i18n="social.nav.videos">
+						<span class="icon icon-video" aria-hidden="true"></span>
+						<span data-i18n="social.nav.videos"></span>
+					</button>
+					<button type="button" class="btn btn-ghost btn-sm" data-view="live" data-i18n="social.nav.live">
+						<span class="icon icon-live" aria-hidden="true"></span>
+						<span data-i18n="social.nav.live"></span>
+					</button>
+					<button type="button" class="btn btn-ghost btn-sm" data-view="drafts" data-i18n="social.nav.drafts">
+						<span class="icon icon-draft" aria-hidden="true"></span>
+						<span data-i18n="social.nav.drafts"></span>
+					</button>
+				</div>
+				<aside id="exploreTrending" class="feed-trending card bg-base-200 shadow-sm explore-mobile-aside"></aside>
+				<div id="exploreSuggested" class="aside-suggested card bg-base-200 shadow-sm explore-mobile-aside hidden">
+					<h3 class="aside-card-title" data-i18n="social.aside.suggested"></h3>
+					<div id="exploreSuggestedList" class="aside-suggested-list"></div>
+				</div>
+				<section class="explore-section" aria-labelledby="exploreAccountsTitle">
+					<div class="explore-section-header">
+						<h3 id="exploreAccountsTitle" class="section-title" data-i18n="social.explore.accounts"></h3>
+					</div>
+					<div id="exploreAccountList" class="explore-account-list"></div>
+				</section>
+				<section class="explore-section" aria-labelledby="explorePostsTitle">
+					<div class="explore-section-header">
+						<h3 id="explorePostsTitle" class="section-title" data-i18n="social.explore.posts"></h3>
+						<label class="explore-media-toggle">
+							<input type="checkbox" id="exploreMediaOnly" />
+							<span class="icon icon-media" aria-hidden="true"></span>
+							<span data-i18n="social.explore.mediaOnly"></span>
+						</label>
+					</div>
+					<div id="explorePostList" class="explore-post-list"></div>
+				</section>
+			</section>
+
+			<section id="notificationsView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.nav.notifications"></h2>
+					<div class="notifications-toolbar hidden" id="notificationsToolbar">
+						<button type="button" id="notificationsMarkAllButton" class="view-header-text-btn btn btn-ghost btn-sm" data-i18n="social.notifications.markAllRead"></button>
+					</div>
+				</header>
+				<div class="inbox-filter-tabs" role="tablist" data-i18n="social.inbox.filtersLabel">
+					<button type="button" class="inbox-filter-tab btn btn-ghost btn-xs active" data-notif-filter="all" data-i18n="social.inbox.tabs.all"></button>
+					<button type="button" class="inbox-filter-tab btn btn-ghost btn-xs" data-notif-filter="mention" data-i18n="social.inbox.tabs.mention"></button>
+					<button type="button" class="inbox-filter-tab btn btn-ghost btn-xs" data-notif-filter="reply" data-i18n="social.inbox.tabs.reply"></button>
+					<button type="button" class="inbox-filter-tab btn btn-ghost btn-xs" data-notif-filter="like" data-i18n="social.inbox.tabs.like"></button>
+					<button type="button" class="inbox-filter-tab btn btn-ghost btn-xs" data-notif-filter="follow" data-i18n="social.inbox.tabs.follow"></button>
+					<button type="button" class="inbox-filter-tab btn btn-ghost btn-xs" data-notif-filter="repost" data-i18n="social.inbox.tabs.repost"></button>
+				</div>
+			</section>
+
+			<section id="savedView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.nav.saved"></h2>
+					<button type="button" id="createFolderButton" class="view-header-btn" data-i18n="social.saved.createFolder">
+						<span class="icon icon-folder-plus" aria-hidden="true"></span>
+					</button>
+				</header>
+				<div id="savedPanel" class="saved-panel"></div>
+			</section>
+
+			<section id="draftsView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.nav.drafts"></h2>
+				</header>
+				<div id="draftsPanel" class="drafts-panel"></div>
+			</section>
+
+			<section id="settingsView" class="view hidden">
+				<header class="view-header">
+					<button type="button" class="view-header-btn btn btn-ghost btn-sm btn-circle" data-view="profile" data-i18n="social.settings.back">
+						<span class="icon icon-home" aria-hidden="true"></span>
+					</button>
+					<h2 class="view-title" data-i18n="social.settings.title"></h2>
+				</header>
+				<div id="settingsPanel" class="settings-panel"></div>
+			</section>
+
+			<section id="profileView" class="view hidden"></section>
+
+			<section id="searchView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.search.viewTitle"></h2>
+				</header>
+				<div class="search-view-filters">
+					<div class="feed-search-wrap">
+						<span class="icon icon-search search-icon" aria-hidden="true"></span>
+						<input type="search" id="searchViewInput" class="feed-search-input input input-bordered input-sm w-full" autocomplete="off" data-i18n="social.search" placeholder="" />
+					</div>
+					<div class="search-filters">
+						<input type="text" id="searchViewAuthor" class="input input-bordered input-sm" data-i18n="social.search.filterAuthor" placeholder="" />
+						<select id="searchViewMedia" class="select select-bordered select-sm">
+							<option value="" data-i18n="social.search.filterMediaAll"></option>
+							<option value="image" data-i18n="social.search.filterMediaImage"></option>
+							<option value="video" data-i18n="social.search.filterMediaVideo"></option>
+						</select>
+						<input type="text" id="searchViewTag" class="input input-bordered input-sm" data-i18n="social.search.filterTag" placeholder="" />
+						<select id="searchViewSort" class="select select-bordered select-sm">
+							<option value="recent" data-i18n="social.search.sortRecent"></option>
+							<option value="popular" data-i18n="social.search.sortPopular"></option>
+						</select>
+						<select id="searchViewScope" class="select select-bordered select-sm">
+							<option value="local" data-i18n="social.search.scopeLocal"></option>
+							<option value="nearby" data-i18n="social.search.scopeNearby"></option>
+						</select>
+						<button type="button" id="searchViewButton" class="btn btn-primary btn-sm" data-i18n="social.search.submit"></button>
+					</div>
+				</div>
+				<div id="searchViewResults" class="feed-list"></div>
+			</section>
+
+			<section id="topicView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title topic-view-title">#</h2>
+					<button type="button" id="topicFollowButton" class="btn btn-primary btn-sm" data-i18n="social.topic.follow"></button>
+				</header>
+				<div id="topicPostList" class="feed-list"></div>
+			</section>
+
+			<section id="postDetailView" class="view hidden"></section>
+
+			<section id="liveBroadcastView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.live.broadcast.title"></h2>
+				</header>
+				<div class="live-broadcast-panel" id="liveBroadcastPanel">
+					<input id="liveTitleInput" type="text" class="input input-bordered w-full" maxlength="120" data-i18n="social.live.broadcast.titleInput" />
+					<select id="liveMediaMode" class="select select-bordered w-full">
+						<option value="av" data-i18n="social.live.broadcast.mediaAv"></option>
+						<option value="audio" data-i18n="social.live.broadcast.mediaAudio"></option>
+						<option value="video" data-i18n="social.live.broadcast.mediaVideo"></option>
+						<option value="whip" data-i18n="social.live.broadcast.mediaWhip"></option>
+					</select>
+					<div class="live-broadcast-preview">
+						<canvas id="liveBroadcastCanvas" class="live-broadcast-canvas" width="640" height="480"></canvas>
+						<div id="liveBroadcastVoiceRing" class="live-voice-ring-host hidden"></div>
+					</div>
+					<div id="liveWhipPanel" class="live-whip-panel hidden">
+						<label class="label"><span class="label-text" data-i18n="social.live.broadcast.whipUrl"></span></label>
+						<input id="liveWhipUrl" type="text" class="input input-bordered input-sm font-mono w-full" readonly />
+						<label class="label"><span class="label-text" data-i18n="social.live.broadcast.whipToken"></span></label>
+						<input id="liveWhipToken" type="text" class="input input-bordered input-sm font-mono w-full" readonly />
+					</div>
+					<button type="button" id="liveStartButton" class="btn btn-error" data-i18n="social.live.broadcast.start"></button>
+					<button type="button" id="liveStopButton" class="btn btn-ghost hidden" data-i18n="social.live.broadcast.stop"></button>
+					<div class="live-link-row hidden" id="liveLinkRow">
+						<input id="liveLinkPeerInput" type="text" class="input input-bordered input-sm flex-1" data-i18n="social.live.link.peer" placeholder="" />
+						<button type="button" id="liveLinkInviteButton" class="btn btn-primary btn-sm" data-i18n="social.live.link.invite"></button>
+					</div>
+					<p id="liveBroadcastStatus" class="live-broadcast-status"></p>
+				</div>
+			</section>
+		</main>
+
+		<section id="videosView" class="view hidden" tabindex="-1" data-i18n="social.video.view">
+			<button type="button" class="view-back-btn" id="videosViewBackButton" data-i18n="social.video.back">
+				<span class="icon icon-home" aria-hidden="true"></span>
+			</button>
+			<div class="vertical-snap-view" id="videoSnapContainer"></div>
+		</section>
+
+		<section id="liveView" class="view hidden" aria-label="Live streams">
+			<div class="live-top-bar">
+				<button type="button" class="view-back-btn" id="liveViewBackButton" data-i18n="social.live.back">
+					<span class="icon icon-home" aria-hidden="true"></span>
+				</button>
+				<div id="liveScopeTabs" class="live-scope-tabs" role="tablist">
+					<button type="button" data-scope="local" class="live-scope-btn is-active" role="tab" aria-selected="true"></button>
+					<button type="button" data-scope="nearby" class="live-scope-btn" role="tab" aria-selected="false"></button>
+				</div>
+				<button type="button" id="liveGoBroadcastButton" class="live-go-broadcast-btn" data-view-broadcast></button>
+			</div>
+			<div class="vertical-snap-view" id="liveSnapContainer"></div>
+		</section>
+
+		<aside class="aside-col" aria-label="Social sidebar">
+			<div class="aside-search card bg-base-200 shadow-sm">
+				<div class="feed-search-wrap">
+					<span class="icon icon-search search-icon" aria-hidden="true"></span>
+					<input type="search" id="feedSearchInput" class="feed-search-input input input-bordered input-sm w-full" autocomplete="off" data-i18n="social.search" />
+					<button type="button" id="feedSearchClearButton" class="search-clear-btn hidden" data-i18n="social.search.clear" aria-label=""></button>
+				</div>
+			</div>
+			<aside id="feedTrending" class="feed-trending card bg-base-200 shadow-sm hidden"></aside>
+			<div id="asideSuggested" class="aside-suggested card bg-base-200 shadow-sm hidden">
+				<h3 class="aside-card-title" data-i18n="social.aside.suggested"></h3>
+				<div id="asideSuggestedList" class="aside-suggested-list"></div>
+			</div>
+		</aside>
+
+		<nav class="mobile-tabbar bg-base-100 border-t border-base-300" aria-label="Social mobile navigation">
+			<button type="button" data-view="feed" class="nav-btn btn btn-ghost btn-sm active" data-i18n="social.nav.feed">
+				<span class="icon icon-home" aria-hidden="true"></span>
+			</button>
+			<button type="button" data-view="explore" class="nav-btn btn btn-ghost btn-sm" data-i18n="social.nav.explore">
+				<span class="icon icon-explore" aria-hidden="true"></span>
+			</button>
+			<button type="button" data-view="notifications" class="nav-btn btn btn-ghost btn-sm" data-i18n="social.nav.notifications">
+				<span class="icon icon-bell" aria-hidden="true"></span>
+				<span id="mobileNotificationsBadge" class="nav-badge badge badge-primary badge-xs hidden"></span>
+			</button>
+			<button type="button" data-view="saved" class="nav-btn btn btn-ghost btn-sm" data-i18n="social.nav.saved">
+				<span class="icon icon-bookmark" aria-hidden="true"></span>
+			</button>
+			<button type="button" data-view="profile" class="nav-btn btn btn-ghost btn-sm" data-i18n="social.nav.profile">
+				<span class="icon icon-user" aria-hidden="true"></span>
+			</button>
+		</nav>
+
+		<button type="button" id="composeFab" class="compose-fab btn btn-primary btn-circle" data-i18n="social.composer.fab">
+			<span class="icon icon-compose" aria-hidden="true"></span>
+		</button>
+
+		<div id="saveModal" class="save-modal hidden" role="dialog" aria-modal="true">
+			<div class="save-modal-card card bg-base-200 shadow-xl">
+				<h3 data-i18n="social.saved.pickFolderTitle"></h3>
+				<select id="saveFolderSelect" class="select select-bordered w-full"></select>
+				<div class="save-modal-actions">
+					<button type="button" id="saveConfirmButton" class="btn btn-primary btn-sm" data-i18n="social.saved.confirm"></button>
+					<button type="button" id="saveCancelButton" class="btn btn-ghost btn-sm link-btn" data-i18n="social.saved.cancel"></button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="module" src="/parts/shells:social/index.mjs"></script>
+</body>
+
+</html>

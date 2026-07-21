@@ -1,0 +1,32 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Social",
+			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "P2P open social feed, profiles, and file sharing",
+			"description_markdown": "P2P open social feed, profiles, and file sharing.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"social",
+				"P2P",
+				"feed"
+			]
+		},
+		"zh-CN": {
+			"name": "社交",
+			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "P2P 开放社交动态、资料与文件分享",
+			"description_markdown": "P2P 开放社交动态、资料与文件分享。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"home_page": "",
+			"tags": [
+				"社交",
+				"P2P",
+				"动态"
+			]
+		}
+	}
+}
