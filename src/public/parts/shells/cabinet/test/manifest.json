@@ -1,0 +1,73 @@
+{
+	"id": "shells/cabinet",
+	"triggerSets": {
+		"testFramework": [
+			"src/scripts/test/deno/serial.mjs",
+			"src/scripts/test/node/boot.mjs"
+		],
+		"shellBackend": [
+			"src/public/parts/shells/cabinet/src/**",
+			"src/public/parts/shells/cabinet/main.mjs",
+			"src/public/parts/shells/cabinet/fount.json",
+			"src/public/parts/shells/cabinet/locales.json"
+		],
+		"shellPureTests": [
+			"src/public/parts/shells/cabinet/test/pure/**"
+		],
+		"shellIntegrationTests": [
+			"src/public/parts/shells/cabinet/test/integration/**"
+		],
+		"frontendShared": [
+			"src/public/parts/shells/cabinet/public/**",
+			"src/public/parts/shells/cabinet/test/frontend/**",
+			"src/scripts/test/playwright/**",
+			"src/public/pages/scripts/test/**"
+		]
+	},
+	"suites": [
+		{
+			"name": "pure",
+			"trigger": ["shellBackend", "shellPureTests", "testFramework"],
+			"run": [
+				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/cabinet/test/pure/"
+			]
+		},
+		{
+			"name": "integration",
+			"dependsOn": ["server:live"],
+			"trigger": ["shellBackend", "shellIntegrationTests", "testFramework"],
+			"run": [
+				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/cabinet/test/integration/"
+			]
+		},
+		{
+			"name": "frontend",
+			"dependsOn": ["server:live"],
+			"trigger": "frontendShared",
+			"subtests": [
+				{
+					"name": "shortcuts",
+					"triggers": [
+						"src/public/parts/shells/cabinet/test/frontend/shortcuts.spec.mjs",
+						"src/public/parts/shells/cabinet/test/frontend/fixtures.mjs",
+						"src/public/parts/shells/cabinet/public/index.mjs",
+						"src/public/parts/shells/cabinet/public/src/keyboard.mjs",
+						"src/public/parts/shells/cabinet/public/src/commands.mjs",
+						"src/public/parts/shells/cabinet/public/src/wiring.mjs",
+						"src/public/parts/shells/cabinet/public/src/state.mjs",
+						"src/public/parts/shells/cabinet/public/src/navigation.mjs",
+						"src/public/parts/shells/cabinet/public/src/entryActions.mjs",
+						"src/public/parts/shells/cabinet/public/src/entryGrid.mjs",
+						"src/public/parts/shells/cabinet/public/src/commandHistory.mjs",
+						"src/public/parts/shells/cabinet/public/src/clipboard.mjs"
+					]
+				}
+			],
+			"run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/cabinet/test/frontend/run.mjs"]
+		}
+	]
+}

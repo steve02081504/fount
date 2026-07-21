@@ -5186,6 +5186,7 @@
 		"unlockFolder": "解锁加密文件夹",
 		"unlock": "解锁",
 		"unlockFailed": "解锁失败：${error}",
+		"previewFailed": "预览生成失败：${error}",
 		"created": "创建：${stamp}",
 		"modified": "修改：${stamp}",
 		"statusCount": "${count} 项，已选 ${selected}",

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title data-i18n="cabinet.title"></title>
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+<body class="bg-base-200 min-h-screen">
+	<div class="drawer md:drawer-open">
+		<input id="cabinet-drawer-toggle" type="checkbox" class="drawer-toggle" />
+		<div class="drawer-content flex flex-col min-h-screen min-w-0">
+			<section class="flex-1 flex flex-col min-w-0 min-h-screen">
+				<div class="bg-base-100 border-b border-base-300 p-2 flex flex-wrap gap-1 items-center">
+					<label for="cabinet-drawer-toggle" class="btn btn-ghost btn-sm btn-square md:hidden" data-i18n="cabinet.openCabinets">
+						<img src="https://api.iconify.design/mdi/menu.svg" width="18" height="18" alt="" aria-hidden="true" />
+					</label>
+					<nav id="breadcrumb" class="cabinet-breadcrumb flex-1 min-w-0" aria-label="Breadcrumb"></nav>
+					<label class="label cursor-pointer gap-1">
+						<input id="showHidden" type="checkbox" class="checkbox checkbox-xs" />
+						<span class="label-text text-xs" data-i18n="cabinet.showHidden"></span>
+					</label>
+					<button id="btnNewCabinet" type="button" data-action="new-cabinet" class="btn btn-primary btn-sm btn-circle cabinet-local-only md:hidden" title="+">+</button>
+				</div>
+				<input id="fileInput" type="file" multiple class="hidden" />
+				<input id="folderInput" type="file" webkitdirectory multiple class="hidden" />
+				<div id="entryGrid" class="p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 overflow-y-auto flex-1"></div>
+				<div id="statusBar" class="text-xs opacity-70 p-2 border-t border-base-300 cabinet-status-bar"></div>
+			</section>
+		</div>
+		<div class="drawer-side z-40">
+			<label for="cabinet-drawer-toggle" class="drawer-overlay md:hidden"></label>
+			<aside class="w-64 min-h-full bg-base-100 border-r border-base-300 p-3 flex flex-col gap-2">
+				<div class="flex items-center justify-between gap-2">
+					<h1 class="text-lg font-semibold" data-i18n="cabinet.title"></h1>
+					<button id="btnNewCabinetDesktop" type="button" data-action="new-cabinet" class="btn btn-primary btn-sm btn-circle cabinet-local-only hidden md:inline-flex" title="+">+</button>
+					<label for="cabinet-drawer-toggle" class="btn btn-ghost btn-sm btn-circle md:hidden" data-i18n="cabinet.closeCabinets">×</label>
+				</div>
+				<ul id="cabinetList" class="menu menu-sm flex-1 overflow-y-auto"></ul>
+			</aside>
+		</div>
+	</div>
+	<div id="contextMenu" class="fixed hidden z-50 min-w-48 rounded-box border border-base-300 bg-base-100 p-1 shadow-xl">
+		<ul class="menu menu-sm"></ul>
+	</div>
+	<dialog id="propsDialog" class="modal">
+		<div class="modal-box space-y-3 w-11/12 max-w-lg">
+			<h3 class="font-bold text-lg" data-i18n="cabinet.properties"></h3>
+			<label class="form-control">
+				<span class="label-text" data-i18n="cabinet.name"></span>
+				<input id="propName" class="input input-bordered input-sm" data-prop-field />
+			</label>
+			<label class="form-control">
+				<span class="label-text" data-i18n="cabinet.descriptionField"></span>
+				<textarea id="propDescription" class="textarea textarea-bordered textarea-sm" rows="3" data-prop-field></textarea>
+			</label>
+			<label class="label cursor-pointer justify-start gap-2">
+				<input id="propHidden" type="checkbox" class="checkbox checkbox-sm" data-prop-field />
+				<span data-i18n="cabinet.attrHidden"></span>
+			</label>
+			<label class="label cursor-pointer justify-start gap-2">
+				<input id="propSystem" type="checkbox" class="checkbox checkbox-sm" data-prop-field />
+				<span data-i18n="cabinet.attrSystem"></span>
+			</label>
+			<label class="form-control">
+				<span class="label-text" data-i18n="cabinet.previewUrl"></span>
+				<input id="propPreviewUrl" class="input input-bordered input-sm" data-prop-field />
+			</label>
+			<label class="label cursor-pointer justify-start gap-2">
+				<input id="propDeletePreview" type="checkbox" class="checkbox checkbox-sm" checked data-prop-field />
+				<span data-i18n="cabinet.deletePreviewWithFile"></span>
+			</label>
+			<div id="propFolderPasswordWrap" class="hidden space-y-2">
+				<label class="form-control">
+					<span class="label-text" data-i18n="cabinet.folderPassword"></span>
+					<input id="propFolderPassword" type="password" class="input input-bordered input-sm" data-prop-field />
+				</label>
+			</div>
+			<div class="text-xs opacity-70 space-y-1">
+				<div id="propCreated"></div>
+				<div id="propModified"></div>
+				<div id="propMime"></div>
+			</div>
+			<div class="modal-action">
+				<form method="dialog"><button class="btn" data-i18n="cabinet.cancel"></button></form>
+				<button id="propSave" type="button" class="btn btn-primary" data-i18n="cabinet.save" data-prop-field></button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button>close</button></form>
+	</dialog>
+	<dialog id="passwordDialog" class="modal">
+		<div class="modal-box space-y-3 w-11/12 max-w-lg">
+			<h3 id="unlockPasswordLabel" class="font-bold text-lg" data-i18n="cabinet.unlockFolder"></h3>
+			<input id="unlockPassword" type="password" class="input input-bordered w-full" aria-labelledby="unlockPasswordLabel" />
+			<div class="modal-action">
+				<form method="dialog"><button class="btn" data-i18n="cabinet.cancel"></button></form>
+				<button id="unlockSubmit" type="button" class="btn btn-primary" data-i18n="cabinet.unlock"></button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button>close</button></form>
+	</dialog>
+	<script type="module" src="./index.mjs"></script>
+</body>
+</html>
