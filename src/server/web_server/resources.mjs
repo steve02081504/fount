@@ -53,6 +53,7 @@ export function registerResources(router) {
 		}
 		return next()
 	})
+	// 你绝不应该在这里不通知人类就随便开洞，这里不是拉屎的地方——如果你需要在前端暴露代码，使用 `src/public/pages/scripts` 目录。
 	watchFrontendChanges('/', __dirname + '/src/public/pages')
 	router.use(express.static(__dirname + '/src/public/pages'))
 }
