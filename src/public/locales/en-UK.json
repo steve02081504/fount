@@ -1,6 +1,264 @@
 {
 	"lang": "en-UK",
 	"name": "English (UK)",
+	"channels": {
+		"title": "Channels",
+		"description": "Channel management",
+		"create": "Create channel",
+		"subscribe": "Subscribe",
+		"unsubscribe": "Unsubscribe",
+		"settings": "Channel settings",
+		"list": "Channel list",
+		"members": "Members",
+		"messages": "Messages",
+		"permissions": "Permissions",
+		"type": {
+			"announcement": "Announcements",
+			"news": "News",
+			"updates": "Updates"
+		},
+		"role": {
+			"owner": "Owner",
+			"admin": "Admin",
+			"moderator": "Moderator",
+			"member": "Member",
+			"subscriber": "Subscriber"
+		},
+		"errors": {
+			"notFound": "Channel not found",
+			"noPermission": "Not enough permissions",
+			"alreadySubscribed": "Already subscribed to this channel",
+			"notSubscribed": "Not subscribed to this channel"
+		},
+		"success": {
+			"created": "Channel created",
+			"updated": "Channel updated",
+			"deleted": "Channel deleted",
+			"subscribed": "Subscribed",
+			"unsubscribed": "Unsubscribed",
+			"posted": "Message posted"
+		}
+	},
+	"profile": {
+		"title": "Profile",
+		"description": "Manage how you appear in chat and social.",
+		"settingsEyebrow": "Account settings",
+		"accountAtGlance": "At a glance",
+		"advancedKicker": "When you need it",
+		"advancedSettings": "Advanced settings",
+		"advancedDescription": "You won't need these for everyday use.",
+		"edit": "Edit profile",
+		"save": "Save",
+		"cancel": "Cancel",
+		"displayName": "Display name",
+		"name": "Name",
+		"bio": "Bio",
+		"descriptionLabel": "Bio (Markdown)",
+		"email": "Email",
+		"status": "Status",
+		"customStatusLabel": "Custom status",
+		"avatarLabel": "Avatar",
+		"themeColorLabel": "Theme colour",
+		"uploadAvatar": "Upload avatar",
+		"ownerTitle": "My owner",
+		"ownerSummary": "Delegation",
+		"ownerDescription": "Once set, your owner can edit or delete your chat messages, social posts and profile on your behalf. Their content is also rendered locally as unsafe Markdown (may include scripts). Enter any entity hash; you can clear it at any time.",
+		"ownerEntityHashLabel": "Owner entity hash (128 hex)",
+		"ownerSave": "Save owner",
+		"ownerClear": "Clear owner",
+		"ownerSaved": "Owner updated",
+		"ownerCleared": "Owner cleared",
+		"ownerSaveFailed": "Save failed: ${error}",
+		"ownerConfirmTitle": "Set an owner?",
+		"ownerConfirmWarningTitle": "High-risk action — read carefully",
+		"ownerConfirmEditBody": "Once set, they can edit or delete your chat messages, social posts and profile without asking again. Setting an owner by mistake — or being tricked into it — means handing over control immediately.",
+		"ownerConfirmRenderBody": "Their chat messages and social posts render as full Markdown (including HTML/scripts) in your browser. That lets them run arbitrary code on your machine without further consent. Only continue if you fully trust them.",
+		"ownerConfirmCooldown": "I've read the risks (${seconds})",
+		"ownerConfirmFirst": "I understand the risks — continue",
+		"ownerConfirmSecond": "Click again to confirm",
+		"ownerConfirmCancel": "Cancel",
+		"federationTitle": "Federation & sync",
+		"federationSummary": "Relay servers and battery saver",
+		"federationDescription": "Configure Nostr relay URLs and power-saving mode. Group federation sync turns on automatically the first time you invite someone or start a federated DM.",
+		"federationAdvanced": "Advanced options",
+		"federationRelayUrlsLabel": "Relay servers (one per line, leave blank to use default)",
+		"federationBatterySaverLabel": "Battery saver mode",
+		"federationSave": "Save network settings",
+		"federationResetDefault": "Restore recommended defaults",
+		"federationSaved": "Saved",
+		"federationResetOk": "Recommended defaults restored",
+		"federationSaveFailed": "Save failed: ${error}",
+		"preferences": "Preferences",
+		"language": "Language",
+		"theme": "Theme",
+		"notifications": "Notification settings",
+		"emailNotifications": "Email notifications",
+		"pushNotifications": "Push notifications",
+		"soundNotifications": "Sound notification",
+		"social": "Social links",
+		"website": "Website",
+		"github": "GitHub",
+		"twitter": "Twitter",
+		"stats": "Statistics",
+		"joinedAt": "Joined",
+		"messageCount": "Messages",
+		"groupCount": "Groups",
+		"channelCount": "Channels",
+		"privacy": "Privacy settings",
+		"showEmail": "Show email",
+		"showStats": "Show statistics",
+		"allowDirectMessages": "Allow DMs",
+		"statusOptions": {
+			"online": "Online",
+			"away": "Away",
+			"busy": "Busy",
+			"offline": "Offline"
+		},
+		"themeOptions": {
+			"auto": "Auto",
+			"light": "Light",
+			"dark": "Dark"
+		},
+		"languageOptions": {
+			"zh-CN": "Simplified Chinese",
+			"en-US": "English"
+		},
+		"notifEmail": "Email",
+		"notifPush": "Push",
+		"notifSound": "Sound",
+		"notifsAllOff": "Turn all off",
+		"bioEmpty": "Nothing here yet — too lazy to write anything…",
+		"noSocialLinks": "No social links yet",
+		"emailVisible": "Visible",
+		"emailHidden": "Hidden",
+		"customStatus": {
+			"placeholder": "What are you up to…"
+		},
+		"avatar": {
+			"alt": "Avatar"
+		},
+		"avatarPreview": {
+			"alt": "Avatar preview"
+		},
+		"myGroups": "My groups",
+		"myChannels": "My channels",
+		"noGroups": "You haven't joined any groups yet",
+		"noChannels": "No channels yet",
+		"overview": "Profile overview",
+		"summaryUserId": "User ID",
+		"summaryAccountStatus": "Account status",
+		"summaryEmailVisibility": "Email visibility",
+		"summaryThemePref": "Theme preference",
+		"summaryLanguagePref": "Language preference",
+		"summarySocialCount": "Social links",
+		"summaryLinksCount": "External links",
+		"groupDescriptionEmpty": "No description yet",
+		"groupMembers": "${members} members · ${channels} channels",
+		"channelPrivate": "· Private",
+		"channelTypeText": "Text channel",
+		"channelTypeList": "List channel",
+		"channelTypeVoice": "Voice channel",
+		"channelTypeStreaming": "Streaming channel",
+		"errors": {
+			"loadFailed": "Couldn't load profile",
+			"saveFailed": "Couldn't save profile",
+			"uploadFailed": "Couldn't upload avatar",
+			"invalidUserData": "Invalid user data",
+			"identityRequired": "Node identity is not ready yet — refresh the page. If it still fails, save your federation settings in P2P below.",
+			"fetchUserFailed": "Couldn't fetch user info",
+			"operationFailed": "Operation failed: ${error}"
+		},
+		"success": {
+			"saved": "Profile saved",
+			"avatarUploaded": "Avatar uploaded"
+		},
+		"ownerEntityHash": {
+			"placeholder": "Enter your owner's entity hash"
+		}
+	},
+	"stickers": {
+		"title": "Sticker gallery",
+		"description": "Stickers and emoji packs",
+		"back": {
+			"title": "Back"
+		},
+		"packs": "Sticker packs",
+		"create": "Create sticker pack",
+		"upload": "Upload stickers",
+		"install": "Install",
+		"uninstall": "Uninstall",
+		"close": "Close",
+		"cancel": "Cancel",
+		"installed": "Installed",
+		"myPacks": "My sticker packs",
+		"tabAll": "All",
+		"store": "Sticker gallery",
+		"favorites": "Favourites",
+		"recent": "Recently used",
+		"search": {
+			"placeholder": "Search for sticker packs…"
+		},
+		"emptyPacks": "No sticker packs yet",
+		"packNameLabel": "Sticker pack name",
+		"packName": {
+			"placeholder": "Enter sticker pack name"
+		},
+		"packDescriptionLabel": "Description",
+		"packDescription": {
+			"placeholder": "Enter description"
+		},
+		"stickerNameLabel": "Sticker name",
+		"stickerName": {
+			"placeholder": "Enter sticker name"
+		},
+		"selectPack": "Select sticker pack",
+		"selectPackOption": {
+			"textContent": "Select a sticker pack"
+		},
+		"selectImage": "Select image",
+		"tagsLabel": "Tags (separated by commas)",
+		"tags": {
+			"placeholder": "e.g. cute, emoji, animals"
+		},
+		"author": "Author",
+		"authorLabel": "Author: ${author}",
+		"stickerCount": "${count} stickers",
+		"badgeMine": "Mine",
+		"noDescription": "No description yet",
+		"noStickersInPack": "No stickers yet",
+		"deletePack": "Delete sticker pack",
+		"public": "Public",
+		"private": "Private",
+		"animated": "Animated",
+		"static": "Static",
+		"addTag": "Add tag",
+		"defaultPackName": "Default pack",
+		"defaultPackDescription": "Built-in sticker pack",
+		"unnamedPack": "Unnamed sticker pack",
+		"importPackName": "My favourites",
+		"importPackDescription": "Stickers saved from messages",
+		"nameRequired": "Please enter sticker pack name",
+		"stickerNameRequired": "Please enter sticker name",
+		"selectPackRequired": "Select a sticker pack",
+		"fileRequired": "Please select image file",
+		"loadDetailFailed": "Failed to load sticker pack details",
+		"deleteConfirm": "Are you sure you want to permanently delete this sticker pack? All stickers will be removed and this action is irreversible.",
+		"errors": {
+			"loadFailed": "Failed to load sticker pack",
+			"uploadFailed": "Failed to upload stickers",
+			"installFailed": "Installation failed",
+			"uninstallFailed": "Uninstall failed",
+			"createFailed": "Failed to create sticker pack",
+			"deleteFailed": "Delete failed"
+		},
+		"success": {
+			"uploaded": "Stickers uploaded successfully",
+			"installed": "Installation successful",
+			"uninstalled": "Uninstalled successfully",
+			"created": "Sticker pack created successfully",
+			"deleted": "Deleted"
+		}
+	},
 	"fountConsole": {
 		"server": {
 			"start": "Starting server",
@@ -121,36 +379,68 @@
 			"passed": "PASSED: ${label}",
 			"passedWithNoise": "PASSED: ${label} (with noise)",
 			"failed": "FAILED: ${label}",
+			"failedWithCode": "Failed: ${label} (exit code ${code})",
 			"passedLabel": "PASSED",
 			"failedLabel": "FAILED",
 			"noiseHits": "(noise: ${hits})",
 			"unknownManifestId": "unknown manifest id: ${ids}",
+			"unknownSuiteSelector": "Unknown suite: ${ids}",
+			"unknownSubtestFilter": "Unknown subtest filter: ${suite} → ${names}",
+			"unknownFileFilter": "Unknown test file filter: ${suite} → ${names}",
+			"unsupportedSubtestFilter": "Suite doesn't support subtest/file filtering: ${suite} (${names})",
 			"available": "available: ${ids}",
 			"manifestMatched": "manifest matched: ${ids}",
 			"selectedSuites": "selected ${selected}/${total} test suites",
+			"planSlotSummary": "Plan slots: ${run} to run, ${reuse} reused, ${blocked} blocked",
 			"noMatchingSuites": "no matching test suites.",
 			"reportPath": "report: ${path}",
 			"reportPathFinal": "\nreport: ${path}",
+			"statePathFinal": "State: ${path}",
+			"blocked": "Blocked: ${label} (dependency not passed: ${deps})",
+			"speculativeDiscard": "Discarding speculative result: ${label} (dependency not passed: ${deps})",
+			"continueImperfect": "Failed/noisy/incomplete waves: ${count} suite(s)",
+			"outdatedSelected": "Stale waves: ${count} outdated/unrun suite(s)",
 			"runningSuite": "\n>>> running ${manifestId}/${name}",
-			"runningSuiteHeavy": "\n>>> running ${manifestId}/${name} (heavy)",
+			"reusedSuite": ">>> Reusing ${manifestId}:${name} (trigger unchanged — using last ${status})",
+			"noisyOnlyRemain": "${count} suite(s) still passing with noise: ${suites}",
+			"estimatedRun": "Estimated run time ≈ ${eta} (parallel rate ${rate})",
+			"estimatedRunSerial": "Estimated run time ≈ ${eta} (serial)",
+			"estimatedRunSkipped": "Also ${reused} reused, ${blocked} expected blocked (not counted)",
+			"noRealRunPlanned": "No real run this time: ${reused} reused, ${blocked} expected blocked (trigger unchanged)",
+			"allReusedHint": "No suite actually ran: failure is inherited from the last run; blocks remain unresolved (files unchanged). Fix the files and rerun, or use `fount test --force`.",
+			"estimatedRemaining": "Estimated remaining ≈ ${eta} (${completed}/${total} suites)",
+			"estimatedRunSerialHint": "With parallelism ≈ ${eta} (rate ${rate}), savings ≈ ${savings} (drop --no-parallel)",
 			"failuresSaved": "saved failure list: ${path} (${count} suites)",
 			"failuresCleared": "manifest ${manifestId} all passed; failure list cleared.",
-			"failureRetry": "failure retry: ${manifests} (${count} suites)",
-			"hashStaleAppendDiff": "uncommitted hash changed, appending diff: +${count} suites",
-			"diffMode": "diff mode: ${fileCount} files — ${files}",
-			"noChangesHint": "no uncommitted changes and no --since: only retrying suites with failure records.",
-			"tip": "tip: fount test --all | fount test --since <commit> | fount test shells/chat",
-			"manifestNoDiffRunAll": "manifest ${manifestIds} has no diff triggers; running all its suites.",
+			"terminated": "Timed out: ${label} — ${reason}",
+			"terminateIdle": "Aborted ${label}: no stdout/stderr for ${minutes} min (idle ${idleSec}s, elapsed ${elapsed})",
+			"terminateDuration": "Aborted ${label}: exceeded watchdog baseline (elapsed ${elapsed}, baseline ${baseline}, limit ${limit})",
+			"terminateDurationDefault": "Aborted ${label}: exceeded default watchdog limit (elapsed ${elapsed}, limit ${limit})",
+			"terminateMarker": "[Termination reason: ${reason}]",
+			"terminateUnknown": "TERMINATED ${label}: test interrupted",
+			"terminateSpeculative": "Aborted ${label}: speculative dependency not passed — early stop cancelled",
+			"nothingToContinue": "All green with nothing stale — no rerun needed.",
+			"triggerNoMatch": "trigger matched no files: ${scope} — ${pattern}",
+			"triggerNoMatchSummary": "${count} trigger(s) matched no repo files (see report.md)",
 			"unknownSuite": "unknown suite: ${name}",
 			"federationCleanupPre": "federation cleanup pre: ${output}",
 			"federationCleanupPost": "federation cleanup post: ${output}",
 			"suiteHeader": "\n=== SUITE ${name} ===",
+			"heapSnapshotSaved": "Near-OOM heap snapshot: ${path}",
 			"liveUsage": "usage: --suite <name> | --list",
 			"serialUsage": "usage: serial.mjs <deno-test-path> [...]",
 			"silentPassedOne": "1 test file passed (no output).",
 			"silentPassedMany": "${count} test files passed (no output).",
 			"ciNoDiffFallback": "CI: no diff detected, running all suites (fallback)",
 			"noFrontendPhasesMatched": "no frontend phases matched FOUNT_TEST_ONLY",
+			"denoPanic": {
+				"detected": "Deno crash: ${label} (${signature})",
+				"alreadyReported": "Deno crash already reported — skipping: ${signature}",
+				"ghUnavailable": "gh unavailable or not logged in — logged locally only: ${signature}",
+				"published": "Submitted Deno crash issue: ${url}",
+				"duplicate": "Upstream duplicate crash exists — skipping: ${upstream}",
+				"publishFailed": "Failed to publish Deno crash issue: ${signature}"
+			},
 			"nodeWorker": {
 				"dataPathRequired": "node worker: --data-path required",
 				"portRequired": "node worker: --port required (launch via launch.mjs)",
@@ -173,6 +463,17 @@
 				"fieldSuites": "suites",
 				"fieldFailed": "failed",
 				"fieldNoisyPassed": "noisy (passed)",
+				"fieldReused": "Reused",
+				"fieldSuiteSumDuration": "Suite time (sum)",
+				"fieldWallClock": "Wall time",
+				"fieldParallelRate": "Parallelism",
+				"fieldEstimatedRemaining": "Est. remaining",
+				"fieldEstimatedParallelRate": "Est. parallel rate",
+				"estimatePoint": "≈ ${eta}",
+				"pendingEstimate": "Estimated remaining time ≈ ${eta}",
+				"pendingParallelEstimate": "Parallel est. ≈ ${eta} (rate ${rate})",
+				"pendingSavings": "Est. savings ≈ ${savings}",
+				"pendingItemExpected": "expected ${expected}",
 				"fieldDuration": "duration",
 				"commandDefault": "(default)",
 				"exitPassed": "PASSED",
@@ -185,32 +486,17 @@
 				"sectionNoisyPassed": "Passed with noise",
 				"sectionSilentPassed": "Passed (silent)",
 				"sectionPending": "Pending",
+				"sectionContinue": "Continue unfinished",
+				"sectionReplay": "Rerun failures",
+				"sectionReplayImperfect": "Rerun imperfect",
 				"columnSuite": "suite",
 				"columnDuration": "duration",
+				"labelReused": "(reused)",
+				"labelExpectedBlocked": "(expected block)",
 				"labelDuration": "duration",
 				"labelLog": "log",
 				"labelNoise": "noise",
 				"labelFailedFiles": "failed files",
-				"durationMs": "${ms}ms",
-				"durationSec": "${sec}s",
-				"durationMin": "${min}m",
-				"durationMinSec": "${min}m ${sec}s",
-				"fieldReused": "Reused",
-				"fieldSuiteSumDuration": "Suite time (sum)",
-				"fieldWallClock": "Wall time",
-				"fieldParallelRate": "Parallelism",
-				"fieldEstimatedRemaining": "Est. remaining",
-				"fieldEstimatedParallelRate": "Est. parallel rate",
-				"estimatePoint": "≈ ${eta}",
-				"pendingEstimate": "Estimated remaining time ≈ ${eta}",
-				"pendingParallelEstimate": "Parallel est. ≈ ${eta} (rate ${rate})",
-				"pendingSavings": "Est. savings ≈ ${savings}",
-				"pendingItemExpected": "expected ${expected}",
-				"sectionContinue": "Continue unfinished",
-				"sectionReplay": "Rerun failures",
-				"sectionReplayImperfect": "Rerun imperfect",
-				"labelReused": "(reused)",
-				"labelExpectedBlocked": "(expected block)",
 				"labelTerminateReason": "Termination reason",
 				"sectionContinueReasons": "Why rerun",
 				"continueReasonsLink": "Trigger reasons: see [${path}](${path})",
@@ -238,50 +524,12 @@
 				"labelTriggerHashDrift": "trigger fingerprint differs from workspace (dirty→clean ignored)",
 				"sectionDeadTriggers": "dead triggers",
 				"deadTriggersHint": "These globs match no files in the repo (git-tracked + untracked, not ignored):",
+				"durationMs": "${ms}ms",
 				"durationUnitSec": "${n} seconds",
 				"durationUnitMin": "${n} min",
 				"durationUnitMinute": "${n} minutes",
 				"durationUnitHour": "${n} hours",
 				"durationUnitDay": "${n} days"
-			},
-			"failedWithCode": "Failed: ${label} (exit code ${code})",
-			"unknownSuiteSelector": "Unknown suite: ${ids}",
-			"unknownSubtestFilter": "Unknown subtest filter: ${suite} → ${names}",
-			"unknownFileFilter": "Unknown test file filter: ${suite} → ${names}",
-			"unsupportedSubtestFilter": "Suite doesn't support subtest/file filtering: ${suite} (${names})",
-			"planSlotSummary": "Plan slots: ${run} to run, ${reuse} reused, ${blocked} blocked",
-			"statePathFinal": "State: ${path}",
-			"blocked": "Blocked: ${label} (dependency not passed: ${deps})",
-			"speculativeDiscard": "Discarding speculative result: ${label} (dependency not passed: ${deps})",
-			"continueImperfect": "Failed/noisy/incomplete waves: ${count} suite(s)",
-			"outdatedSelected": "Stale waves: ${count} outdated/unrun suite(s)",
-			"reusedSuite": ">>> Reusing ${manifestId}:${name} (trigger unchanged — using last ${status})",
-			"noisyOnlyRemain": "${count} suite(s) still passing with noise: ${suites}",
-			"estimatedRun": "Estimated run time ≈ ${eta} (parallel rate ${rate})",
-			"estimatedRunSerial": "Estimated run time ≈ ${eta} (serial)",
-			"estimatedRunSkipped": "Also ${reused} reused, ${blocked} expected blocked (not counted)",
-			"noRealRunPlanned": "No real run this time: ${reused} reused, ${blocked} expected blocked (trigger unchanged)",
-			"allReusedHint": "No suite actually ran: failure is inherited from the last run; blocks remain unresolved (files unchanged). Fix the files and rerun, or use `fount test --force`.",
-			"estimatedRemaining": "Estimated remaining ≈ ${eta} (${completed}/${total} suites)",
-			"estimatedRunSerialHint": "With parallelism ≈ ${eta} (rate ${rate}), savings ≈ ${savings} (drop --no-parallel)",
-			"terminated": "Timed out: ${label} — ${reason}",
-			"terminateIdle": "Aborted ${label}: no stdout/stderr for ${minutes} min (idle ${idleSec}s, elapsed ${elapsed})",
-			"terminateDuration": "Aborted ${label}: exceeded watchdog baseline (elapsed ${elapsed}, baseline ${baseline}, limit ${limit})",
-			"terminateDurationDefault": "Aborted ${label}: exceeded default watchdog limit (elapsed ${elapsed}, limit ${limit})",
-			"terminateMarker": "[Termination reason: ${reason}]",
-			"terminateUnknown": "TERMINATED ${label}: test interrupted",
-			"terminateSpeculative": "Aborted ${label}: speculative dependency not passed — early stop cancelled",
-			"nothingToContinue": "All green with nothing stale — no rerun needed.",
-			"triggerNoMatch": "trigger matched no files: ${scope} — ${pattern}",
-			"triggerNoMatchSummary": "${count} trigger(s) matched no repo files (see report.md)",
-			"heapSnapshotSaved": "Near-OOM heap snapshot: ${path}",
-			"denoPanic": {
-				"detected": "Deno crash: ${label} (${signature})",
-				"alreadyReported": "Deno crash already reported — skipping: ${signature}",
-				"ghUnavailable": "gh unavailable or not logged in — logged locally only: ${signature}",
-				"published": "Submitted Deno crash issue: ${url}",
-				"duplicate": "Upstream duplicate crash exists — skipping: ${upstream}",
-				"publishFailed": "Failed to publish Deno crash issue: ${signature}"
 			},
 			"state": {
 				"title": "fount test status",
@@ -329,7 +577,7 @@
 				"localBranchAhead": "The local branch is ahead of the remote branch. No updates required.",
 				"branchesDiverged": "The local and remote branches have been forked. Forced update in progress...",
 				"notOnBranch": "Not on the branch, switch to 'master'...",
-				"noUpstreamBranch": "Warning: No upstream branch is configured for branch '${branch}'. Setting upstream to 'origin/master'.",
+				"noUpstreamBranch": "Warning: No upstream branch configured for branch '${branch}', use '${remote}'.",
 				"dirtyWorkingDirectory": "Warning: The working directory is not clean. Please stage or commit your changes before updating.",
 				"notInstalled": "Git is not installed, trying to install...",
 				"notInstalledSkippingPull": "Git is not installed, skip `git pull`",
@@ -912,6 +1160,513 @@
 			}
 		}
 	},
+	"social": {
+		"title": "Square",
+		"description": "P2P open social posts, following and file sharing",
+		"bootstrapFailed": "Social interface initialization failed: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "Square"
+			}
+		},
+		"nav": {
+			"feed": "front page",
+			"explore": "explore",
+			"notifications": "Inbox",
+			"saved": "Saved",
+			"drafts": "draft box",
+			"profile": "mine",
+			"videos": "short video",
+			"live": "live streaming"
+		},
+		"settings": {
+			"title": "social settings",
+			"back": {
+				"aria-label": "Back to settings"
+			},
+			"privacyTitle": "Privacy and discovery",
+			"privacyHint": "Controls whether accounts appear in Discovery and Recommendations.",
+			"tasteTitle": "Recommendations and Preferences",
+			"tasteHint": "Adjust the privacy boundaries and label naming of \"Recommended for You\".",
+			"mutedKeywordsTitle": "Block words and tags",
+			"mutedKeywordsHint": "Posts that hit body text, Content warnings, or labels will be hidden from the stream, explore, search, and notifications. Only saved locally.",
+			"mutedKeywordsMatchTags": "Match tags at the same time",
+			"mutedKeywordsAdd": "Add",
+			"mutedKeywordsRemove": {
+				"title": "Remove blocked words"
+			},
+			"mutedKeywordsEmpty": "No blocking words added yet",
+			"autoTranslateTitle": "automatic translation",
+			"autoTranslateHint": "When turned on, foreign language posts will automatically request translation and can be switched to the original text.",
+			"autoTranslateEnable": "Automatically translate posts in languages ​​other than your own",
+			"safetyTitle": "Security and shielding",
+			"safetyHint": "Manage blocked and hidden lists.",
+			"mutedKeywords": {
+				"placeholder": "Enter keywords or #tags"
+			}
+		},
+		"composer": {
+			"placeholder": "What are you thinking about? Support Markdown (fount dialect), enter @ to mention",
+			"publish": "release",
+			"saveDraft": "save draft",
+			"fab": {
+				"title": "Write posts",
+				"aria-label": "Write posts"
+			},
+			"contentWarning": {
+				"placeholder": "Content warning (optional)"
+			},
+			"sensitiveMedia": "media sensitivity mask",
+			"editImage": "edit",
+			"editCrop": "Crop",
+			"editMosaic": "coding",
+			"editBrush": "brush",
+			"editApply": "application",
+			"editCancel": "Cancel",
+			"replyPolicyEveryone": "Anyone can reply",
+			"replyPolicyFollowers7d": "Followers for more than 7 days",
+			"replyPolicyAuthorFollows": "People I follow",
+			"replyPolicyLabel": "Who can reply",
+			"replyDisplayAll": "Show all replies",
+			"replyDisplayFeaturedOnly": "Selected replies only",
+			"replyDisplayLabel": "Reply to show",
+			"scheduleLabel": "Release regularly",
+			"scheduleSuccess": "The post has been added to the scheduled queue",
+			"emojiButton": {
+				"title": "Emoji",
+				"aria-label": "Emoji"
+			},
+			"mediaButton": {
+				"title": "Add media",
+				"aria-label": "Add media"
+			},
+			"pollButton": {
+				"title": "Start a poll",
+				"aria-label": "Start a poll"
+			},
+			"cwToggle": {
+				"title": "Content warning",
+				"aria-label": "Content warning"
+			},
+			"advancedToggle": {
+				"title": "More options",
+				"aria-label": "More options"
+			},
+			"media": {
+				"placeholder": "Image description (alt)"
+			}
+		},
+		"visibility": {
+			"label": "Visible range",
+			"public": "Public",
+			"unlisted": "Not publicly listed",
+			"followers": "followers only",
+			"followers7d": "Visible after following for 7 days",
+			"followers30d": "Visible after following for 30 days",
+			"selected": "Visible to specified people",
+			"private": "Visible only to yourself",
+			"allowLabel": "Visible people",
+			"exceptLabel": "exclude people",
+			"allow": {
+				"placeholder": "Visible people entityHash, space or comma separated"
+			},
+			"except": {
+				"placeholder": "Who should not show it (optional)"
+			}
+		},
+		"albums": {
+			"create": "Create new album",
+			"edit": "Edit album",
+			"save": "Save",
+			"cancel": "Cancel",
+			"back": "Back to albums",
+			"empty": "No album yet",
+			"emptyPosts": "There are no posts in the album yet",
+			"name": "Album name",
+			"description": "Album description",
+			"deleteLinks": "Delete album (keep posts)",
+			"deleteWithPosts": "Delete album and delete post",
+			"pickerLabel": "Add album",
+			"defaultName": "Default album"
+		},
+		"feed": {
+			"refresh": "Refresh news",
+			"newPosts": "There is new news, click to view",
+			"tabLatest": "Latest",
+			"tabForYou": "For you",
+			"repostedBy": "${author} reposted",
+			"decryptFailed": "Couldn't decrypt this post",
+			"revealContent": "Show content",
+			"sensitiveMedia": "Sensitive media",
+			"showMore": "Show more",
+			"showLess": "Show less",
+			"replayDivider": "You're all caught up — start over"
+		},
+		"taste": {
+			"rebuild": "Rebuild taste profile",
+			"privacyPublishPreferences": "Public tag naming and merge discovery",
+			"privacyPublishPreferencesHint": "When off, friends won't see your tag names or merge proposals, and can't contribute to consensus.",
+			"privacyPublishReactions": "Share likes and dislikes",
+			"privacyPublishReactionsHint": "After closing, the poster will not receive your likes/dislikes, your reactions will not be included in others' For youations, and you will no longer promote the post to spread again.",
+			"empty": "No taste tags yet — like or dislike more posts to build your profile",
+			"weight": "Weight: ${weight}",
+			"save": "Save",
+			"name": {
+				"placeholder": "Local display name"
+			}
+		},
+		"trending": {
+			"title": "Trending",
+			"postCount": {
+				"title": "${n} posts"
+			},
+			"scopeLocal": "This device",
+			"scopeNearby": "Nearby",
+			"empty": "Nothing trending yet"
+		},
+		"search": {
+			"placeholder": "Search for posts, users or #topics (minimum 2 words)",
+			"open": {
+				"aria-label": "Search"
+			},
+			"submit": "Search",
+			"clear": "Clear",
+			"empty": "No matching posts",
+			"tooShort": "Please enter at least 2 characters",
+			"usersTitle": "Users",
+			"postsTitle": "Posts",
+			"usersEmpty": "No matching user",
+			"pinAlias": "Set as alias",
+			"trustScore": "Trust ${score}",
+			"viewTitle": "Search",
+			"loading": "Searching…",
+			"filterAuthor": {
+				"placeholder": "Author"
+			},
+			"filterMediaAll": "All media",
+			"filterMediaImage": "Images",
+			"filterMediaVideo": "Videos",
+			"filterTag": {
+				"placeholder": "#Label"
+			},
+			"sortRecent": "Latest",
+			"sortPopular": "Popular",
+			"scopeLocal": "This device",
+			"scopeNearby": "Nearby"
+		},
+		"profile": {
+			"edit": "Edit profile",
+			"viewPosts": "View social profiles",
+			"settingsBtn": {
+				"aria-label": "Social settings"
+			},
+			"mediaOnly": "[media]",
+			"hideFromExplore": "Hide account from explore page",
+			"tabPosts": "Posts",
+			"tabAlbums": "Albums",
+			"tabLikes": "Like",
+			"tabCabinets": "Cabinets",
+			"tabsLabel": {
+				"aria-label": "Profile sections"
+			},
+			"cabinetsEmpty": "No public cabinets yet",
+			"cabinetsFailed": "Couldn't load file cabinets: ${error}",
+			"statsGroup": {
+				"aria-label": "Statistics"
+			},
+			"statsPosts": "Posts",
+			"statsFollowing": "Following",
+			"statsFollowers": "Followers",
+			"followingTitle": "Following",
+			"followersTitle": "Followers"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "Close"
+			}
+		},
+		"actions": {
+			"like": "Like",
+			"unlike": "Unlike",
+			"dislike": "Dislike",
+			"undislike": "Cancel dislike",
+			"repost": "Repost",
+			"quote": "Quote",
+			"delete": "Delete",
+			"edit": "Edit",
+			"save": "Save",
+			"saved": "Saved",
+			"translate": "Translate",
+			"dm": "Send DM",
+			"block": "Block",
+			"hide": "Hidden",
+			"mute": "mute",
+			"follow": "Follow",
+			"following": "Following",
+			"care": "Close friends",
+			"careRemove": "Remove from close friends",
+			"careAdded": "Added to close friends",
+			"careRemoved": "Removed from close friends",
+			"setAlias": "Set alias",
+			"setAliasPrompt": "Set local alias (leave blank to clear):",
+			"aliasSaved": "Alias ​​updated",
+			"replies": "Comment",
+			"copyLink": "Copy link",
+			"downloadHtml": "Download HTML",
+			"copied": "Copied",
+			"more": {
+				"aria-label": "More"
+			},
+			"share": "Share",
+			"likeFailed": "Failed to like: ${error}",
+			"dislikeFailed": "Dislike failed: ${error}",
+			"repostFailed": "Repost failed: ${error}",
+			"replyFailed": "Reply failed: ${error}",
+			"followFailed": "Follow failed: ${error}",
+			"saveFailed": "Failed to save: ${error}",
+			"blockFailed": "Failed to block: ${error}",
+			"hideFailed": "Failed to hide: ${error}",
+			"muteFailed": "Mute failed: ${error}",
+			"deleteFailed": "Delete failed: ${error}"
+		},
+		"post": {
+			"edited": "Edited",
+			"editPrompt": "Edit post text",
+			"editHistory": "Edit history",
+			"editHistoryEmpty": "No earlier versions",
+			"loading": "Loading…",
+			"notFound": "Post not found or not visible",
+			"loadFailed": "Couldn't load — try again later",
+			"detailTitle": "Post",
+			"back": "Back"
+		},
+		"reply": {
+			"context": "Reply ${author}"
+		},
+		"notes": {
+			"label": "Community notes",
+			"add": "Add note",
+			"prompt": "Write a community note",
+			"listTitle": "All notes",
+			"helpful": "Helpful",
+			"unhelpful": "Not helpful",
+			"more": "All ${n} items",
+			"empty": "No notes yet"
+		},
+		"poll": {
+			"multi": "Allow multiple selections",
+			"apply": "Cast vote",
+			"closed": "Voting has ended",
+			"deadline": "Deadline: ${deadline}",
+			"options": {
+				"placeholder": "One option per line (minimum 2 items)"
+			}
+		},
+		"aside": {
+			"suggested": "Suggested follows"
+		},
+		"explore": {
+			"accounts": "Suggested accounts",
+			"posts": "Latest posts",
+			"mediaOnly": "Media only"
+		},
+		"groupRef": {
+			"linking": "Link Chat group",
+			"clear": "Unlink",
+			"pick": "Link Chat group/channel…"
+		},
+		"notifications": {
+			"reply": "${author} replied to your post",
+			"mention": "${author} @@ed you in the feed",
+			"like": "${author} liked your post",
+			"repost": "${author} reposted your post",
+			"follow": "${author} follows you",
+			"care_post": "${author} posted (close friends)",
+			"poll_closed": "Voting ended for ${author}",
+			"post_note": "${author} added a note to your post",
+			"live_started": "${author} started live streaming",
+			"view": "View",
+			"markAllRead": "Mark all as read"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "Inbox filters"
+			},
+			"tabs": {
+				"all": "All",
+				"mention": "Mentions",
+				"reply": "Replies",
+				"like": "Likes",
+				"follow": "Follows",
+				"repost": "Reposts"
+			},
+			"aggregated": {
+				"like": "${author1}, ${author2} and ${count} people liked your post",
+				"likeTwo": "${author1} and ${author2} liked your post",
+				"repost": "${author1}, ${author2} and ${count} others reposted your post",
+				"repostTwo": "${author1} and ${author2} reposted your post",
+				"follow": "${author1}, ${author2} and ${count} others followed you",
+				"followTwo": "${author1} and ${author2} follow you"
+			}
+		},
+		"replies": {
+			"placeholder": "Write a reply…",
+			"submit": "Reply",
+			"empty": "No replies yet",
+			"emptyHint": "Be the first to reply"
+		},
+		"repost": {
+			"placeholder": "Add a repost comment (optional)…",
+			"submit": "Repost"
+		},
+		"quote": {
+			"quoting": "Quoting",
+			"clear": "Clear quote",
+			"viewOriginal": "View original post"
+		},
+		"a11y": {
+			"linkGroupSelect": "Connect to a Chat group or channel",
+			"postVisibility": "Visible range",
+			"postLang": "content language",
+			"trendingHashtags": "Trending topics",
+			"saveFolderSelect": "Saved folder"
+		},
+		"blocklist": {
+			"title": "Block list",
+			"hiddenTitle": "Hidden list",
+			"empty": "No blocked or hidden entries yet",
+			"unblock": "Unblock",
+			"unhide": "Unhide",
+			"scopeEntity": "Entity",
+			"scopeSubject": "Subject"
+		},
+		"translate": {
+			"label": "Translation:"
+		},
+		"saved": {
+			"all": "All",
+			"unfiled": "Unsorted",
+			"createFolder": {
+				"title": "Create new folder",
+				"aria-label": "Create new folder"
+			},
+			"createFolderPrompt": "Folder name",
+			"pickFolderTitle": "Save to…",
+			"confirm": "Confirm",
+			"cancel": "Cancel",
+			"remove": "Remove from saved",
+			"renameFolder": "Rename",
+			"renameFolderPrompt": "New folder name",
+			"deleteFolder": "Delete folder",
+			"deleteFolderConfirm": "Delete this folder? Posts inside will move to Unsorted.",
+			"searchEmpty": "No matching saves",
+			"folderEmpty": "This folder is empty",
+			"emptyHint": "Tap the bookmark while browsing to save posts here",
+			"search": {
+				"placeholder": "Search favourites…"
+			}
+		},
+		"drafts": {
+			"untitled": "(no draft text)",
+			"emptyHint": "Write some content in the post box and click \"Save Draft\" to continue editing next time",
+			"saved": "Draft saved",
+			"deleted": "Draft deleted",
+			"delete": "Delete draft",
+			"empty": "Draft is empty",
+			"saveFailed": "Failed to save draft: ${error}",
+			"loadFailed": "Failed to open draft: ${error}",
+			"deleteFailed": "Failed to delete draft: ${error}"
+		},
+		"time": {
+			"justNow": "just",
+			"minutesAgo": "${n} minutes ago",
+			"hoursAgo": "${n} hours ago"
+		},
+		"empty": {
+			"feed": "There are no posts yet. Follow some people.",
+			"profilePosts": "No news yet",
+			"following": "Not following anyone yet",
+			"followers": "No Followerss yet",
+			"notifications": "No notification yet",
+			"saved": "No favourites yet",
+			"drafts": "No draft yet",
+			"exploreAccounts": "There are currently no For youed accounts",
+			"explorePosts": "There are no exploration posts yet",
+			"likedPosts": "No likes yet",
+			"noIdentity": "Please configure federated identity in Chat before using Social"
+		},
+		"topic": {
+			"follow": "Subscribe",
+			"unfollow": "Unsubscribe",
+			"empty": "There are no posts for this topic yet"
+		},
+		"video": {
+			"view": {
+				"aria-label": "short video"
+			},
+			"empty": "No short video yet",
+			"emptyHint": "There are no posts with videos in the following people or public squares. Try posting a video update?",
+			"compose": "Go post a video",
+			"back": {
+				"aria-label": "Back to feed"
+			},
+			"mute": {
+				"aria-label": "mute"
+			},
+			"unmute": {
+				"aria-label": "Unmute"
+			},
+			"unavailable": "Video cannot be played",
+			"closeReplies": {
+				"aria-label": "Close comments"
+			}
+		},
+		"live": {
+			"empty": "No live broadcast yet",
+			"viewers": "${n} people watched",
+			"likes": "${n} Like",
+			"local": "This device",
+			"hall": "Live broadcast hall",
+			"back": {
+				"title": "Back to feed",
+				"aria-label": "Back to feed"
+			},
+			"danmakuSend": "send",
+			"postWatch": "Enter live broadcast",
+			"postEnded": "Live broadcast has ended",
+			"postEndedStats": "Viewed by ${viewers} · ${likes} Liked · ${duration}",
+			"link": {
+				"invite": "Invite connection",
+				"needPeer": "Please fill in the peer entityHash:liveId",
+				"invited": "Online invitation has been sent",
+				"linked": "Connected",
+				"peer": {
+					"placeholder": "Peer entityHash:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "Start broadcasting",
+				"open": "Go to broadcast",
+				"mediaAv": "Audio and video",
+				"mediaAudio": "Pure audio",
+				"mediaVideo": "pure picture",
+				"mediaWhip": "WHIP push streaming (such as OBS)",
+				"whipUrl": "WHIP address",
+				"whipToken": "Bearer Token",
+				"whipWaiting": "Waiting for WHIP streaming connection (streaming software such as OBS can be used)…",
+				"start": "Start live broadcast",
+				"stop": "Stop live broadcast",
+				"started": "Live broadcast has started",
+				"stopped": "Live broadcast has stopped",
+				"titleInput": {
+					"placeholder": "Live title (optional)"
+				}
+			},
+			"danmaku": {
+				"placeholder": "Say something..."
+			}
+		}
+	},
 	"chat": {
 		"title": "Chat",
 		"description": "Where words take flight and stories unfold. Engage with your AI companions, shape the narrative, and lose yourself in the ebb and flow of digital dialogue. The heart of fount beats here.",
@@ -922,328 +1677,6 @@
 		"typingIndicator": {
 			"isTyping": "${names} is typing...",
 			"multipleMembers": "Multiple members are typing..."
-		},
-		"sidebar": {
-			"noSelection": "None selected",
-			"noDescription": "No description available",
-			"world": {
-				"icon": {
-					"alt": "World Icon"
-				},
-				"title": "World"
-			},
-			"persona": {
-				"icon": {
-					"alt": "User Persona Icon"
-				},
-				"title": "User Persona"
-			},
-			"charList": {
-				"icon": {
-					"alt": "Character List Icon"
-				},
-				"title": "Character List",
-				"buttons": {
-					"addChar": {
-						"title": "Add Character"
-					},
-					"addCharIcon": {
-						"alt": "Add Character Icon"
-					}
-				}
-			},
-			"pluginList": {
-				"icon": {
-					"alt": "Plugin list icon"
-				},
-				"title": "Plugin list",
-				"buttons": {
-					"addPlugin": {
-						"title": "Add plugin"
-					},
-					"addPluginIcon": {
-						"alt": "Add plugin icon"
-					}
-				}
-			},
-			"settings": {
-				"title": "Group settings"
-			},
-			"dataMgmt": {
-				"title": "Data management",
-				"compact": "Compact checkpoint",
-				"prune": "Prune history",
-				"compactSuccess": "Viewpoint generated successfully",
-				"compactError": "Viewpoint generation failed",
-				"pruneSuccess": "History pruned",
-				"pruneError": "Prune failed",
-				"invalidN": "The number of reserved items is invalid (minimum 10 items)"
-			}
-		},
-		"rightSidebar": {
-			"title": "Details"
-		},
-		"chatArea": {
-			"title": "Chat",
-			"input": {
-				"placeholder": "Enter message...\nCtrl+Enter to send"
-			},
-			"menuButton": {
-				"title": "Menu"
-			},
-			"menuButtonIcon": {
-				"alt": "Menu Icon"
-			},
-			"sendButton": {
-				"title": "Send"
-			},
-			"sendButtonIcon": {
-				"alt": "Send Icon"
-			},
-			"uploadButton": {
-				"title": "Upload"
-			},
-			"uploadButtonIcon": {
-				"alt": "Upload Icon"
-			},
-			"voiceButton": {
-				"title": "Voice Input"
-			},
-			"voiceButtonIcon": {
-				"alt": "Voice Input Icon"
-			},
-			"photoButton": {
-				"title": "Photo"
-			},
-			"photoButtonIcon": {
-				"alt": "Photo Icon"
-			}
-		},
-		"messageList": {
-			"confirmDeleteMessage": "Are you sure you want to delete this message?"
-		},
-		"voiceRecording": {
-			"errorAccessingMicrophone": "Failed to access microphone"
-		},
-		"messageView": {
-			"buttons": {
-				"edit": {
-					"title": "Edit"
-				},
-				"editIcon": {
-					"alt": "Edit Icon"
-				},
-				"more": {
-					"title": "More"
-				},
-				"moreIcon": {
-					"alt": "More Icon"
-				},
-				"delete": {
-					"alt": "Delete"
-				},
-				"deleteIcon": {
-					"alt": "Delete Icon"
-				},
-				"downloadHtml": {
-					"alt": "Download as HTML"
-				},
-				"downloadHtmlIcon": {
-					"alt": "Download HTML icon"
-				}
-			},
-			"copyButton": {
-				"title": "Copy"
-			},
-			"copyButtonIcon": {
-				"alt": "Copy"
-			},
-			"copySuccess": "Copied to clipboard",
-			"dropdown": {
-				"delete": "Delete",
-				"deleteIcon": {
-					"alt": "Delete Icon"
-				},
-				"copyMarkdown": "Copy as Markdown",
-				"copyMarkdownIcon": {
-					"alt": "Copy as Markdown Icon"
-				},
-				"copyText": "Copy as Plain Text",
-				"copyTextIcon": {
-					"alt": "Copy Text Icon"
-				},
-				"copyHtml": "Copy as HTML",
-				"copyHtmlIcon": {
-					"alt": "Copy HTML Icon"
-				},
-				"downloadHtml": "Download as HTML",
-				"downloadHtmlIcon": {
-					"alt": "Download HTML icon"
-				},
-				"share": {
-					"textContent": "Share",
-					"1h": "1 hour",
-					"12h": "12 hours",
-					"24h": "24 hours",
-					"72h": "72 hours"
-				},
-				"shareIcon": {
-					"alt": "share icon"
-				}
-			},
-			"share": {
-				"uploading": "Creating link...",
-				"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
-			},
-			"commonToolCalling": "Calling tool",
-			"toolRunningLang": "Running ${lang}",
-			"toolSearchingContent": "Searching ${content}",
-			"toolOverridingFilepath": "Overwriting ${filepath}",
-			"toolReplacingFilepath": "Replacing in ${filepath}",
-			"toolReadingFilepath": "Reading ${filepath}",
-			"reasoningDetailsTitle": "Reasoning",
-			"logprobsNotApplicable": "N/A",
-			"logprobsTopLogprobsMeta": "top_logprobs (selected: ${token})",
-			"logprobsMetricsFooter": "TTFT: ${ttft} | Duration: ${time} | Tokens: ${tokens} | Speed: ${speed}",
-			"noReplyContent": "(No reply content)",
-			"feedback": {
-				"thumbsUp": {
-					"title": "Like"
-				},
-				"thumbsDown": {
-					"title": "Dislike"
-				},
-				"regenerate": {
-					"title": "Regenerate"
-				},
-				"reason": {
-					"placeholder": "Optional: explain why"
-				},
-				"submit": "Submit",
-				"cancel": "Cancel"
-			}
-		},
-		"messageEdit": {
-			"input": {
-				"placeholder": "Enter content..."
-			},
-			"buttons": {
-				"confirm": {
-					"title": "Confirm"
-				},
-				"confirmIcon": {
-					"alt": "Confirm Icon"
-				},
-				"cancel": {
-					"title": "Cancel"
-				},
-				"cancelIcon": {
-					"alt": "Cancel Icon"
-				},
-				"upload": {
-					"title": "Upload"
-				},
-				"uploadIcon": {
-					"alt": "Upload Icon"
-				}
-			}
-		},
-		"messageGenerating": {
-			"stop": {
-				"textContent": "stop",
-				"title": "Stop generating"
-			},
-			"stopIcon": {
-				"alt": "stop icon"
-			},
-			"tips": "Generating a reply…"
-		},
-		"attachment": {
-			"buttons": {
-				"download": {
-					"title": "Download"
-				},
-				"downloadIcon": {
-					"alt": "Download Icon"
-				},
-				"delete": {
-					"title": "Delete"
-				},
-				"deleteIcon": {
-					"alt": "Delete Icon"
-				}
-			}
-		},
-		"charCard": {
-			"frequencyLabel": "Frequency",
-			"buttons": {
-				"removeChar": {
-					"title": "Remove from Chat"
-				},
-				"removeCharIcon": {
-					"alt": "Remove Character Icon"
-				},
-				"forceReply": {
-					"title": "Force Reply"
-				},
-				"forceReplyIcon": {
-					"alt": "Force Reply Icon"
-				}
-			}
-		},
-		"pluginCard": {
-			"buttons": {
-				"removePlugin": {
-					"title": "Remove plugin"
-				},
-				"removePluginIcon": {
-					"alt": "Remove plugin icon"
-				}
-			}
-		},
-		"achievements": {
-			"first_chat": {
-				"name": "A New Challenger Appears!",
-				"description": "The first message was sent and the story begins.",
-				"locked_description": "Send your first message with any character."
-			},
-			"multiplayer_chat": {
-				"name": "Season of White Album",
-				"description": "\"Why did it become like this...\"",
-				"locked_description": "Have two or more characters speak in the same chat."
-			},
-			"photo_chat": {
-				"name": "Pics or it didn't happen",
-				"description": "Use pictures to break the dimensional wall.",
-				"locked_description": "Send a picture in chat."
-			},
-			"code_greeting": {
-				"name": "Say hello with code",
-				"description": "\"Hello, fount!\"",
-				"locked_description": "By executing the code block, 'hello fount!' is successfully output."
-			}
-		},
-		"dragAndDrop": {
-			"invalidPartData": "Invalid part data.",
-			"charAdded": "Role ${partName} has been added to the chat.",
-			"personaSet": "Persona ${partName} has been set as the current persona.",
-			"worldSet": "World ${partName} is set to the current world.",
-			"pluginAdded": "Plugin ${partName} has been added to the chat.",
-			"unsupportedPartType": "Unsupported part type: ${partType}.",
-			"errorAddingPart": "Error adding part ${partName}: ${error}"
-		},
-		"home_char_interfaces": {
-			"main": {
-				"title": "Chat"
-			}
-		},
-		"home_function_buttons": {
-			"viewHistory": {
-				"title": "View History"
-			},
-			"chatHub": {
-				"title": "Chat"
-			}
 		},
 		"emoji": {
 			"pickerTitle": "Select emoji",
@@ -2687,50 +3120,325 @@
 				"placeholder": "Add a description to the image…",
 				"label": "Image description (alt)"
 			}
-		}
-	},
-	"chat_history": {
-		"title": "Chat History",
-		"pageTitle": "Chat History",
-		"description": "Journey through dialogues past. Here, memories of conversations linger—sort, filter, and revisit the stories you've woven with your AI companions. A quiet library of digital echoes.",
-		"filterInput": {
-			"placeholder": "Search..."
 		},
-		"sortOptions": {
-			"time_desc": "Time Descending",
-			"time_asc": "Time Ascending"
+		"sidebar": {
+			"settings": {
+				"title": "Group settings"
+			},
+			"noSelection": "None selected",
+			"noDescription": "No description available",
+			"world": {
+				"icon": {
+					"alt": "World Icon"
+				},
+				"title": "World"
+			},
+			"persona": {
+				"icon": {
+					"alt": "User Persona Icon"
+				},
+				"title": "User Persona"
+			},
+			"charList": {
+				"icon": {
+					"alt": "Character List Icon"
+				},
+				"title": "Character List",
+				"buttons": {
+					"addChar": {
+						"title": "Add Character"
+					},
+					"addCharIcon": {
+						"alt": "Add Character Icon"
+					}
+				}
+			},
+			"pluginList": {
+				"icon": {
+					"alt": "Plugin list icon"
+				},
+				"title": "Plugin list",
+				"buttons": {
+					"addPlugin": {
+						"title": "Add plugin"
+					},
+					"addPluginIcon": {
+						"alt": "Add plugin icon"
+					}
+				}
+			},
+			"dataMgmt": {
+				"title": "Data management",
+				"compact": "Compact checkpoint",
+				"prune": "Prune history",
+				"compactSuccess": "Viewpoint generated successfully",
+				"compactError": "Viewpoint generation failed",
+				"pruneSuccess": "History pruned",
+				"pruneError": "Prune failed",
+				"invalidN": "The number of reserved items is invalid (minimum 10 items)"
+			}
 		},
-		"sortBy": {
-			"aria-label": "sort by"
+		"rightSidebar": {
+			"title": "Details"
 		},
-		"selectAll": "Select All",
-		"buttons": {
-			"reverseSelect": "Invert Selection",
-			"deleteSelected": "Delete Selected",
-			"exportSelected": "Export Selected",
-			"import": "Import"
+		"chatArea": {
+			"title": "Chat",
+			"input": {
+				"placeholder": "Enter message...\nCtrl+Enter to send"
+			},
+			"menuButton": {
+				"title": "Menu"
+			},
+			"menuButtonIcon": {
+				"alt": "Menu Icon"
+			},
+			"sendButton": {
+				"title": "Send"
+			},
+			"sendButtonIcon": {
+				"alt": "Send Icon"
+			},
+			"uploadButton": {
+				"title": "Upload"
+			},
+			"uploadButtonIcon": {
+				"alt": "Upload Icon"
+			},
+			"voiceButton": {
+				"title": "Voice Input"
+			},
+			"voiceButtonIcon": {
+				"alt": "Voice Input Icon"
+			},
+			"photoButton": {
+				"title": "Photo"
+			},
+			"photoButtonIcon": {
+				"alt": "Photo Icon"
+			}
 		},
-		"chatItemButtons": {
-			"continue": "Continue",
-			"copy": "Copy",
-			"export": "Export",
-			"delete": "Delete"
+		"messageList": {
+			"confirmDeleteMessage": "Are you sure you want to delete this message?"
 		},
-		"confirmDeleteChat": "Are you sure you want to delete the chat history with ${chars}?",
-		"confirmDeleteMultiChats": "Are you sure you want to delete the selected ${count} chat histories?",
-		"alerts": {
-			"noChatSelectedForDeletion": "Please select chat histories to delete.",
-			"noChatSelectedForExport": "Please select chat histories to export.",
-			"copyError": "Copy failed",
-			"deleteError": "Deletion failed",
-			"exportError": "Export failed",
-			"dragExportError": "Error during drag and drop export",
-			"importSuccess": "Import successful",
-			"importError": "Import failed",
-			"invalidImportFile": "Invalid import file"
+		"voiceRecording": {
+			"errorAccessingMicrophone": "Failed to access microphone"
 		},
-		"select_checkbox": {
-			"aria-label": "Select chat with ${chars}"
+		"messageView": {
+			"buttons": {
+				"edit": {
+					"title": "Edit"
+				},
+				"editIcon": {
+					"alt": "Edit Icon"
+				},
+				"more": {
+					"title": "More"
+				},
+				"moreIcon": {
+					"alt": "More Icon"
+				},
+				"delete": {
+					"alt": "Delete"
+				},
+				"deleteIcon": {
+					"alt": "Delete Icon"
+				},
+				"downloadHtml": {
+					"alt": "Download as HTML"
+				},
+				"downloadHtmlIcon": {
+					"alt": "Download HTML icon"
+				}
+			},
+			"copyButton": {
+				"title": "Copy"
+			},
+			"copyButtonIcon": {
+				"alt": "Copy"
+			},
+			"copySuccess": "Copied to clipboard",
+			"dropdown": {
+				"delete": "Delete",
+				"deleteIcon": {
+					"alt": "Delete Icon"
+				},
+				"copyMarkdown": "Copy as Markdown",
+				"copyMarkdownIcon": {
+					"alt": "Copy as Markdown Icon"
+				},
+				"copyText": "Copy as Plain Text",
+				"copyTextIcon": {
+					"alt": "Copy Text Icon"
+				},
+				"copyHtml": "Copy as HTML",
+				"copyHtmlIcon": {
+					"alt": "Copy HTML Icon"
+				},
+				"downloadHtml": "Download as HTML",
+				"downloadHtmlIcon": {
+					"alt": "Download HTML icon"
+				},
+				"share": {
+					"textContent": "Share",
+					"1h": "1 hour",
+					"12h": "12 hours",
+					"24h": "24 hours",
+					"72h": "72 hours"
+				},
+				"shareIcon": {
+					"alt": "share icon"
+				}
+			},
+			"share": {
+				"uploading": "Creating link...",
+				"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
+			},
+			"commonToolCalling": "Calling tool",
+			"toolRunningLang": "Running ${lang}",
+			"toolSearchingContent": "Searching ${content}",
+			"toolOverridingFilepath": "Overwriting ${filepath}",
+			"toolReplacingFilepath": "Replacing in ${filepath}",
+			"toolReadingFilepath": "Reading ${filepath}",
+			"reasoningDetailsTitle": "Reasoning",
+			"logprobsNotApplicable": "N/A",
+			"logprobsTopLogprobsMeta": "top_logprobs (selected: ${token})",
+			"logprobsMetricsFooter": "TTFT: ${ttft} | Duration: ${time} | Tokens: ${tokens} | Speed: ${speed}",
+			"noReplyContent": "(No reply content)",
+			"feedback": {
+				"thumbsUp": {
+					"title": "Like"
+				},
+				"thumbsDown": {
+					"title": "Dislike"
+				},
+				"regenerate": {
+					"title": "Regenerate"
+				},
+				"reason": {
+					"placeholder": "Optional: explain why"
+				},
+				"submit": "Submit",
+				"cancel": "Cancel"
+			}
+		},
+		"messageEdit": {
+			"input": {
+				"placeholder": "Enter content..."
+			},
+			"buttons": {
+				"confirm": {
+					"title": "Confirm"
+				},
+				"confirmIcon": {
+					"alt": "Confirm Icon"
+				},
+				"cancel": {
+					"title": "Cancel"
+				},
+				"cancelIcon": {
+					"alt": "Cancel Icon"
+				},
+				"upload": {
+					"title": "Upload"
+				},
+				"uploadIcon": {
+					"alt": "Upload Icon"
+				}
+			}
+		},
+		"messageGenerating": {
+			"tips": "Generating a reply…",
+			"stop": {
+				"textContent": "stop",
+				"title": "Stop generating"
+			},
+			"stopIcon": {
+				"alt": "stop icon"
+			}
+		},
+		"attachment": {
+			"buttons": {
+				"download": {
+					"title": "Download"
+				},
+				"downloadIcon": {
+					"alt": "Download Icon"
+				},
+				"delete": {
+					"title": "Delete"
+				},
+				"deleteIcon": {
+					"alt": "Delete Icon"
+				}
+			}
+		},
+		"charCard": {
+			"frequencyLabel": "Frequency",
+			"buttons": {
+				"removeChar": {
+					"title": "Remove from Chat"
+				},
+				"removeCharIcon": {
+					"alt": "Remove Character Icon"
+				},
+				"forceReply": {
+					"title": "Force Reply"
+				},
+				"forceReplyIcon": {
+					"alt": "Force Reply Icon"
+				}
+			}
+		},
+		"pluginCard": {
+			"buttons": {
+				"removePlugin": {
+					"title": "Remove plugin"
+				},
+				"removePluginIcon": {
+					"alt": "Remove plugin icon"
+				}
+			}
+		},
+		"achievements": {
+			"first_chat": {
+				"name": "A New Challenger Appears!",
+				"description": "The first message was sent and the story begins.",
+				"locked_description": "Send your first message with any character."
+			},
+			"multiplayer_chat": {
+				"name": "Season of White Album",
+				"description": "\"Why did it become like this...\"",
+				"locked_description": "Have two or more characters speak in the same chat."
+			},
+			"photo_chat": {
+				"name": "Pics or it didn't happen",
+				"description": "Use pictures to break the dimensional wall.",
+				"locked_description": "Send a picture in chat."
+			},
+			"code_greeting": {
+				"name": "Say hello with code",
+				"description": "\"Hello, fount!\"",
+				"locked_description": "By executing the code block, 'hello fount!' is successfully output."
+			}
+		},
+		"dragAndDrop": {
+			"invalidPartData": "Invalid part data.",
+			"charAdded": "Role ${partName} has been added to the chat.",
+			"personaSet": "Persona ${partName} has been set as the current persona.",
+			"worldSet": "World ${partName} is set to the current world.",
+			"pluginAdded": "Plugin ${partName} has been added to the chat.",
+			"unsupportedPartType": "Unsupported part type: ${partType}.",
+			"errorAddingPart": "Error adding part ${partName}: ${error}"
+		},
+		"home_char_interfaces": {
+			"main": {
+				"title": "Chat"
+			}
+		},
+		"home_function_buttons": {
+			"chatHub": {
+				"title": "Chat"
+			}
 		}
 	},
 	"easynew": {
@@ -3063,20 +3771,14 @@
 			"creationDateLabel": "Account Creation Date:",
 			"folderSizeLabel": "User Data Size:",
 			"folderPathLabel": "User Data Path:",
-			"copyPathBtn": {
-				"title": "Copy Path"
-			},
-			"copyPathBtnIcon": {
-				"alt": "Copy Icon"
-			},
-			"copiedAlert": "Path copied to clipboard!",
-			"copyPathFailed": "Unable to copy path to clipboard.",
 			"copyPathButton": {
 				"title": "Copy path"
 			},
 			"copyPathButtonIcon": {
 				"alt": "Copy icon"
-			}
+			},
+			"copiedAlert": "Path copied to clipboard!",
+			"copyPathFailed": "Unable to copy path to clipboard."
 		},
 		"changePassword": {
 			"title": "Change Password",
@@ -3278,7 +3980,6 @@
 			"title": "Code execution",
 			"description": "Execute JavaScript code on selected Subfount",
 			"selectSubfountLabel": "Select Subfount",
-			"selectSubfountPlaceholder": "Please select the Subfount to execute the code on...",
 			"hostOption": "Host (ID: ${id})",
 			"subfountOption": "Node ${id}${deviceId}",
 			"scriptLabel": "JavaScript code",
@@ -3555,9 +4256,6 @@
 			"copyModelIdTooltip": "Click to copy model ID",
 			"loadModelsFailed": "Failed to load model: ${message}",
 			"modelSearchTitle": "Browse model catalog",
-			"modelSearchPlaceholder": {
-				"placeholder": "Search by model name, provider, or capabilities…"
-			},
 			"modelSearchHint": "Clicking a result automatically fills in the URL and model name",
 			"modelsDevLoading": "Loading catalog…",
 			"modelsDevLoadFailed": "Failed to load catalog: ${message}",
@@ -3656,7 +4354,6 @@
 				"botToken": "Telegram Bot Token",
 				"config": "Configuration"
 			},
-			"charSelectPlaceholder": "Select Character",
 			"botTokenInput": {
 				"placeholder": "Enter Telegram Bot Token"
 			},
@@ -3736,7 +4433,6 @@
 				"botToken": "iLink Bot token",
 				"config": "Configuration"
 			},
-			"charSelectPlaceholder": "Select a role",
 			"apiBaseUrlInput": {
 				"placeholder": "Leave blank for default https://ilinkai.weixin.qq.com"
 			},
@@ -3827,7 +4523,6 @@
 				"apiKey": "Discord API Key",
 				"config": "Configuration"
 			},
-			"charSelectPlaceholder": "Select Character",
 			"apiKeyInput": {
 				"placeholder": "Enter API Key"
 			},
@@ -4130,10 +4825,8 @@
 		"acpTitle": "Configure fount ACP script",
 		"acpDesc": "Refer to the following example to configure the fount ACP script:",
 		"acpCharLabel": "Role",
-		"acpCharPlaceholder": "Select role",
 		"charListError": "Failed to get role list",
 		"acpScriptLabel": "ACP script URL",
-		"acpConfigPlaceholder": "Please select a role and generate an API key first",
 		"acpConfigSample": "Configuration example:",
 		"acpConfigHint": "The role id is shown in the role drop-down on this page, and the API key can be managed in user settings.",
 		"copyButton": "Copy",
@@ -4425,771 +5118,6 @@
 		},
 		"search": {
 			"placeholder": "Search..."
-		}
-	},
-	"channels": {
-		"title": "Channels",
-		"description": "Channel management",
-		"create": "Create channel",
-		"subscribe": "Subscribe",
-		"unsubscribe": "Unsubscribe",
-		"settings": "Channel settings",
-		"list": "Channel list",
-		"members": "Members",
-		"messages": "Messages",
-		"permissions": "Permissions",
-		"type": {
-			"announcement": "Announcements",
-			"news": "News",
-			"updates": "Updates"
-		},
-		"role": {
-			"owner": "Owner",
-			"admin": "Admin",
-			"moderator": "Moderator",
-			"member": "Member",
-			"subscriber": "Subscriber"
-		},
-		"errors": {
-			"notFound": "Channel not found",
-			"noPermission": "Not enough permissions",
-			"alreadySubscribed": "Already subscribed to this channel",
-			"notSubscribed": "Not subscribed to this channel"
-		},
-		"success": {
-			"created": "Channel created",
-			"updated": "Channel updated",
-			"deleted": "Channel deleted",
-			"subscribed": "Subscribed",
-			"unsubscribed": "Unsubscribed",
-			"posted": "Message posted"
-		}
-	},
-	"profile": {
-		"title": "Profile",
-		"description": "Manage how you appear in chat and social.",
-		"settingsEyebrow": "Account settings",
-		"accountAtGlance": "At a glance",
-		"advancedKicker": "When you need it",
-		"advancedSettings": "Advanced settings",
-		"advancedDescription": "You won't need these for everyday use.",
-		"edit": "Edit profile",
-		"save": "Save",
-		"cancel": "Cancel",
-		"displayName": "Display name",
-		"name": "Name",
-		"bio": "Bio",
-		"descriptionLabel": "Bio (Markdown)",
-		"email": "Email",
-		"status": "Status",
-		"customStatusLabel": "Custom status",
-		"avatarLabel": "Avatar",
-		"themeColorLabel": "Theme colour",
-		"uploadAvatar": "Upload avatar",
-		"ownerTitle": "My owner",
-		"ownerSummary": "Delegation",
-		"ownerDescription": "Once set, your owner can edit or delete your chat messages, social posts and profile on your behalf. Their content is also rendered locally as unsafe Markdown (may include scripts). Enter any entity hash; you can clear it at any time.",
-		"ownerEntityHashLabel": "Owner entity hash (128 hex)",
-		"ownerSave": "Save owner",
-		"ownerClear": "Clear owner",
-		"ownerSaved": "Owner updated",
-		"ownerCleared": "Owner cleared",
-		"ownerSaveFailed": "Save failed: ${error}",
-		"ownerConfirmTitle": "Set an owner?",
-		"ownerConfirmWarningTitle": "High-risk action — read carefully",
-		"ownerConfirmEditBody": "Once set, they can edit or delete your chat messages, social posts and profile without asking again. Setting an owner by mistake — or being tricked into it — means handing over control immediately.",
-		"ownerConfirmRenderBody": "Their chat messages and social posts render as full Markdown (including HTML/scripts) in your browser. That lets them run arbitrary code on your machine without further consent. Only continue if you fully trust them.",
-		"ownerConfirmCooldown": "I've read the risks (${seconds})",
-		"ownerConfirmFirst": "I understand the risks — continue",
-		"ownerConfirmSecond": "Click again to confirm",
-		"ownerConfirmCancel": "Cancel",
-		"federationTitle": "Federation & sync",
-		"federationSummary": "Relay servers and battery saver",
-		"federationDescription": "Configure Nostr relay URLs and power-saving mode. Group federation sync turns on automatically the first time you invite someone or start a federated DM.",
-		"federationAdvanced": "Advanced options",
-		"federationRelayUrlsLabel": "Relay servers (one per line, leave blank to use default)",
-		"federationBatterySaverLabel": "Battery saver mode",
-		"federationSave": "Save network settings",
-		"federationResetDefault": "Restore recommended defaults",
-		"federationSaved": "Saved",
-		"federationResetOk": "Recommended defaults restored",
-		"federationSaveFailed": "Save failed: ${error}",
-		"preferences": "Preferences",
-		"language": "Language",
-		"theme": "Theme",
-		"notifications": "Notification settings",
-		"emailNotifications": "Email notifications",
-		"pushNotifications": "Push notifications",
-		"soundNotifications": "Sound notification",
-		"social": "Social links",
-		"website": "Website",
-		"github": "GitHub",
-		"twitter": "Twitter",
-		"stats": "Statistics",
-		"joinedAt": "Joined",
-		"messageCount": "Messages",
-		"groupCount": "Groups",
-		"channelCount": "Channels",
-		"privacy": "Privacy settings",
-		"showEmail": "Show email",
-		"showStats": "Show statistics",
-		"allowDirectMessages": "Allow DMs",
-		"statusOptions": {
-			"online": "Online",
-			"away": "Away",
-			"busy": "Busy",
-			"offline": "Offline"
-		},
-		"themeOptions": {
-			"auto": "Auto",
-			"light": "Light",
-			"dark": "Dark"
-		},
-		"languageOptions": {
-			"zh-CN": "Simplified Chinese",
-			"en-US": "English"
-		},
-		"notifEmail": "Email",
-		"notifPush": "Push",
-		"notifSound": "Sound",
-		"notifsAllOff": "Turn all off",
-		"bioEmpty": "Nothing here yet — too lazy to write anything…",
-		"noSocialLinks": "No social links yet",
-		"emailVisible": "Visible",
-		"emailHidden": "Hidden",
-		"customStatus": {
-			"placeholder": "What are you up to…"
-		},
-		"avatar": {
-			"alt": "Avatar"
-		},
-		"avatarPreview": {
-			"alt": "Avatar preview"
-		},
-		"myGroups": "My groups",
-		"myChannels": "My channels",
-		"noGroups": "You haven't joined any groups yet",
-		"noChannels": "No channels yet",
-		"overview": "Profile overview",
-		"summaryUserId": "User ID",
-		"summaryAccountStatus": "Account status",
-		"summaryEmailVisibility": "Email visibility",
-		"summaryThemePref": "Theme preference",
-		"summaryLanguagePref": "Language preference",
-		"summarySocialCount": "Social links",
-		"summaryLinksCount": "External links",
-		"groupDescriptionEmpty": "No description yet",
-		"groupMembers": "${members} members · ${channels} channels",
-		"channelPrivate": "· Private",
-		"channelTypeText": "Text channel",
-		"channelTypeList": "List channel",
-		"channelTypeVoice": "Voice channel",
-		"channelTypeStreaming": "Streaming channel",
-		"errors": {
-			"loadFailed": "Couldn't load profile",
-			"saveFailed": "Couldn't save profile",
-			"uploadFailed": "Couldn't upload avatar",
-			"invalidUserData": "Invalid user data",
-			"identityRequired": "Node identity is not ready yet — refresh the page. If it still fails, save your federation settings in P2P below.",
-			"fetchUserFailed": "Couldn't fetch user info",
-			"operationFailed": "Operation failed: ${error}"
-		},
-		"success": {
-			"saved": "Profile saved",
-			"avatarUploaded": "Avatar uploaded"
-		},
-		"ownerEntityHash": {
-			"placeholder": "Enter your owner's entity hash"
-		}
-	},
-	"stickers": {
-		"title": "Sticker gallery",
-		"description": "Stickers and emoji packs",
-		"back": {
-			"title": "Back"
-		},
-		"packs": "Sticker packs",
-		"create": "Create sticker pack",
-		"upload": "Upload stickers",
-		"install": "Install",
-		"uninstall": "Uninstall",
-		"close": "Close",
-		"cancel": "Cancel",
-		"installed": "Installed",
-		"myPacks": "My sticker packs",
-		"tabAll": "All",
-		"store": "Sticker gallery",
-		"favorites": "Favourites",
-		"recent": "Recently used",
-		"search": {
-			"placeholder": "Search for sticker packs…"
-		},
-		"emptyPacks": "No sticker packs yet",
-		"packNameLabel": "Sticker pack name",
-		"packName": {
-			"placeholder": "Enter sticker pack name"
-		},
-		"packDescriptionLabel": "Description",
-		"packDescription": {
-			"placeholder": "Enter description"
-		},
-		"stickerNameLabel": "Sticker name",
-		"stickerName": {
-			"placeholder": "Enter sticker name"
-		},
-		"selectPack": "Select sticker pack",
-		"selectPackOption": {
-			"textContent": "Select a sticker pack"
-		},
-		"selectImage": "Select image",
-		"tagsLabel": "Tags (separated by commas)",
-		"tags": {
-			"placeholder": "e.g. cute, emoji, animals"
-		},
-		"author": "Author",
-		"authorLabel": "Author: ${author}",
-		"stickerCount": "${count} stickers",
-		"badgeMine": "Mine",
-		"noDescription": "No description yet",
-		"noStickersInPack": "No stickers yet",
-		"deletePack": "Delete sticker pack",
-		"public": "Public",
-		"private": "Private",
-		"animated": "Animated",
-		"static": "Static",
-		"addTag": "Add tag",
-		"defaultPackName": "Default pack",
-		"defaultPackDescription": "Built-in sticker pack",
-		"unnamedPack": "Unnamed sticker pack",
-		"importPackName": "My favourites",
-		"importPackDescription": "Stickers saved from messages",
-		"nameRequired": "Please enter sticker pack name",
-		"stickerNameRequired": "Please enter sticker name",
-		"selectPackRequired": "Select a sticker pack",
-		"fileRequired": "Please select image file",
-		"loadDetailFailed": "Failed to load sticker pack details",
-		"deleteConfirm": "Are you sure you want to permanently delete this sticker pack? All stickers will be removed and this action is irreversible.",
-		"errors": {
-			"loadFailed": "Failed to load sticker pack",
-			"uploadFailed": "Failed to upload stickers",
-			"installFailed": "Installation failed",
-			"uninstallFailed": "Uninstall failed",
-			"createFailed": "Failed to create sticker pack",
-			"deleteFailed": "Delete failed"
-		},
-		"success": {
-			"uploaded": "Stickers uploaded successfully",
-			"installed": "Installation successful",
-			"uninstalled": "Uninstalled successfully",
-			"created": "Sticker pack created successfully",
-			"deleted": "Deleted"
-		}
-	},
-	"social": {
-		"title": "Square",
-		"description": "P2P open social posts, following and file sharing",
-		"bootstrapFailed": "Social interface initialization failed: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "Square"
-			}
-		},
-		"nav": {
-			"feed": "front page",
-			"explore": "explore",
-			"notifications": "Inbox",
-			"saved": "Saved",
-			"drafts": "draft box",
-			"profile": "mine",
-			"videos": "short video",
-			"live": "live streaming"
-		},
-		"settings": {
-			"title": "social settings",
-			"back": {
-				"aria-label": "Back to settings"
-			},
-			"privacyTitle": "Privacy and discovery",
-			"privacyHint": "Controls whether accounts appear in Discovery and Recommendations.",
-			"tasteTitle": "Recommendations and Preferences",
-			"tasteHint": "Adjust the privacy boundaries and label naming of \"Recommended for You\".",
-			"mutedKeywordsTitle": "Block words and tags",
-			"mutedKeywordsHint": "Posts that hit body text, Content warnings, or labels will be hidden from the stream, explore, search, and notifications. Only saved locally.",
-			"mutedKeywordsMatchTags": "Match tags at the same time",
-			"mutedKeywordsAdd": "Add",
-			"mutedKeywordsRemove": {
-				"title": "Remove blocked words"
-			},
-			"mutedKeywordsEmpty": "No blocking words added yet",
-			"autoTranslateTitle": "automatic translation",
-			"autoTranslateHint": "When turned on, foreign language posts will automatically request translation and can be switched to the original text.",
-			"autoTranslateEnable": "Automatically translate posts in languages ​​other than your own",
-			"safetyTitle": "Security and shielding",
-			"safetyHint": "Manage blocked and hidden lists.",
-			"mutedKeywords": {
-				"placeholder": "Enter keywords or #tags"
-			}
-		},
-		"composer": {
-			"placeholder": "What are you thinking about? Support Markdown (fount dialect), enter @ to mention",
-			"publish": "release",
-			"saveDraft": "save draft",
-			"fab": {
-				"title": "Write posts",
-				"aria-label": "Write posts"
-			},
-			"contentWarning": {
-				"placeholder": "Content warning (optional)"
-			},
-			"sensitiveMedia": "media sensitivity mask",
-			"editImage": "edit",
-			"editCrop": "Crop",
-			"editMosaic": "coding",
-			"editBrush": "brush",
-			"editApply": "application",
-			"editCancel": "Cancel",
-			"replyPolicyEveryone": "Anyone can reply",
-			"replyPolicyFollowers7d": "Followers for more than 7 days",
-			"replyPolicyAuthorFollows": "People I follow",
-			"replyPolicyLabel": "Who can reply",
-			"replyDisplayAll": "Show all replies",
-			"replyDisplayFeaturedOnly": "Selected replies only",
-			"replyDisplayLabel": "Reply to show",
-			"scheduleLabel": "Release regularly",
-			"scheduleSuccess": "The post has been added to the scheduled queue",
-			"emojiButton": {
-				"title": "Emoji",
-				"aria-label": "Emoji"
-			},
-			"mediaButton": {
-				"title": "Add media",
-				"aria-label": "Add media"
-			},
-			"pollButton": {
-				"title": "Start a poll",
-				"aria-label": "Start a poll"
-			},
-			"cwToggle": {
-				"title": "Content warning",
-				"aria-label": "Content warning"
-			},
-			"advancedToggle": {
-				"title": "More options",
-				"aria-label": "More options"
-			},
-			"media": {
-				"placeholder": "Image description (alt)"
-			}
-		},
-		"visibility": {
-			"label": "Visible range",
-			"public": "Public",
-			"unlisted": "Not publicly listed",
-			"followers": "followers only",
-			"followers7d": "Visible after following for 7 days",
-			"followers30d": "Visible after following for 30 days",
-			"selected": "Visible to specified people",
-			"private": "Visible only to yourself",
-			"allowLabel": "Visible people",
-			"exceptLabel": "exclude people",
-			"allow": {
-				"placeholder": "Visible people entityHash, space or comma separated"
-			},
-			"except": {
-				"placeholder": "Who should not show it (optional)"
-			}
-		},
-		"albums": {
-			"create": "Create new album",
-			"edit": "Edit album",
-			"save": "Save",
-			"cancel": "Cancel",
-			"back": "Back to albums",
-			"empty": "No album yet",
-			"emptyPosts": "There are no posts in the album yet",
-			"name": "Album name",
-			"description": "Album description",
-			"deleteLinks": "Delete album (keep posts)",
-			"deleteWithPosts": "Delete album and delete post",
-			"pickerLabel": "Add album",
-			"defaultName": "Default album"
-		},
-		"feed": {
-			"refresh": "Refresh news",
-			"newPosts": "There is new news, click to view",
-			"tabLatest": "Latest",
-			"tabForYou": "For you",
-			"repostedBy": "${author} reposted",
-			"decryptFailed": "Couldn't decrypt this post",
-			"revealContent": "Show content",
-			"sensitiveMedia": "Sensitive media",
-			"showMore": "Show more",
-			"showLess": "Show less",
-			"replayDivider": "You're all caught up — start over"
-		},
-		"taste": {
-			"rebuild": "Rebuild taste profile",
-			"privacyPublishPreferences": "Public tag naming and merge discovery",
-			"privacyPublishPreferencesHint": "When off, friends won't see your tag names or merge proposals, and can't contribute to consensus.",
-			"privacyPublishReactions": "Share likes and dislikes",
-			"privacyPublishReactionsHint": "After closing, the poster will not receive your likes/dislikes, your reactions will not be included in others' For youations, and you will no longer promote the post to spread again.",
-			"empty": "No taste tags yet — like or dislike more posts to build your profile",
-			"weight": "Weight: ${weight}",
-			"save": "Save",
-			"name": {
-				"placeholder": "Local display name"
-			}
-		},
-		"trending": {
-			"title": "Trending",
-			"postCount": {
-				"title": "${n} posts"
-			},
-			"scopeLocal": "This device",
-			"scopeNearby": "Nearby",
-			"empty": "Nothing trending yet"
-		},
-		"search": {
-			"placeholder": "Search for posts, users or #topics (minimum 2 words)",
-			"open": {
-				"aria-label": "Search"
-			},
-			"submit": "Search",
-			"clear": "Clear",
-			"empty": "No matching posts",
-			"tooShort": "Please enter at least 2 characters",
-			"usersTitle": "Users",
-			"postsTitle": "Posts",
-			"usersEmpty": "No matching user",
-			"pinAlias": "Set as alias",
-			"trustScore": "Trust ${score}",
-			"viewTitle": "Search",
-			"loading": "Searching…",
-			"filterAuthor": {
-				"placeholder": "Author"
-			},
-			"filterMediaAll": "All media",
-			"filterMediaImage": "Images",
-			"filterMediaVideo": "Videos",
-			"filterTag": {
-				"placeholder": "#Label"
-			},
-			"sortRecent": "Latest",
-			"sortPopular": "Popular",
-			"scopeLocal": "This device",
-			"scopeNearby": "Nearby"
-		},
-		"profile": {
-			"edit": "Edit profile",
-			"viewPosts": "View social profiles",
-			"settingsBtn": {
-				"aria-label": "Social settings"
-			},
-			"mediaOnly": "[media]",
-			"hideFromExplore": "Hide account from explore page",
-			"tabPosts": "Posts",
-			"tabAlbums": "Albums",
-			"tabLikes": "Like",
-			"tabCabinets": "Cabinets",
-			"tabsLabel": {
-				"aria-label": "Profile sections"
-			},
-			"cabinetsEmpty": "No public cabinets yet",
-			"cabinetsFailed": "Couldn't load file cabinets: ${error}",
-			"statsGroup": {
-				"aria-label": "Statistics"
-			},
-			"statsPosts": "Posts",
-			"statsFollowing": "Following",
-			"statsFollowers": "Followers",
-			"followingTitle": "Following",
-			"followersTitle": "Followers"
-		},
-		"dialog": {
-			"close": {
-				"aria-label": "Close"
-			}
-		},
-		"actions": {
-			"like": "Like",
-			"unlike": "Unlike",
-			"dislike": "Dislike",
-			"undislike": "Cancel dislike",
-			"repost": "Repost",
-			"quote": "Quote",
-			"delete": "Delete",
-			"edit": "Edit",
-			"save": "Save",
-			"saved": "Saved",
-			"translate": "Translate",
-			"dm": "Send DM",
-			"block": "Block",
-			"hide": "Hidden",
-			"mute": "mute",
-			"follow": "Follow",
-			"following": "Following",
-			"care": "Close friends",
-			"careRemove": "Remove from close friends",
-			"careAdded": "Added to close friends",
-			"careRemoved": "Removed from close friends",
-			"setAlias": "Set alias",
-			"setAliasPrompt": "Set local alias (leave blank to clear):",
-			"aliasSaved": "Alias ​​updated",
-			"replies": "Comment",
-			"copyLink": "Copy link",
-			"downloadHtml": "Download HTML",
-			"copied": "Copied",
-			"more": {
-				"aria-label": "More"
-			},
-			"share": "Share",
-			"likeFailed": "Failed to like: ${error}",
-			"dislikeFailed": "Dislike failed: ${error}",
-			"repostFailed": "Repost failed: ${error}",
-			"replyFailed": "Reply failed: ${error}",
-			"followFailed": "Follow failed: ${error}",
-			"saveFailed": "Failed to save: ${error}",
-			"blockFailed": "Failed to block: ${error}",
-			"hideFailed": "Failed to hide: ${error}",
-			"muteFailed": "Mute failed: ${error}",
-			"deleteFailed": "Delete failed: ${error}"
-		},
-		"post": {
-			"edited": "Edited",
-			"editPrompt": "Edit post text",
-			"editHistory": "Edit history",
-			"editHistoryEmpty": "No earlier versions",
-			"loading": "Loading…",
-			"notFound": "Post not found or not visible",
-			"loadFailed": "Couldn't load — try again later",
-			"detailTitle": "Post",
-			"back": "Back"
-		},
-		"reply": {
-			"context": "Reply ${author}"
-		},
-		"notes": {
-			"label": "Community notes",
-			"add": "Add note",
-			"prompt": "Write a community note",
-			"listTitle": "All notes",
-			"helpful": "Helpful",
-			"unhelpful": "Not helpful",
-			"more": "All ${n} items",
-			"empty": "No notes yet"
-		},
-		"poll": {
-			"multi": "Allow multiple selections",
-			"apply": "Cast vote",
-			"closed": "Voting has ended",
-			"deadline": "Deadline: ${deadline}",
-			"options": {
-				"placeholder": "One option per line (minimum 2 items)"
-			}
-		},
-		"aside": {
-			"suggested": "Suggested follows"
-		},
-		"explore": {
-			"accounts": "Suggested accounts",
-			"posts": "Latest posts",
-			"mediaOnly": "Media only"
-		},
-		"groupRef": {
-			"linking": "Link Chat group",
-			"clear": "Unlink",
-			"pick": "Link Chat group/channel…"
-		},
-		"notifications": {
-			"reply": "${author} replied to your post",
-			"mention": "${author} @@ed you in the feed",
-			"like": "${author} liked your post",
-			"repost": "${author} reposted your post",
-			"follow": "${author} follows you",
-			"care_post": "${author} posted (close friends)",
-			"poll_closed": "Voting ended for ${author}",
-			"post_note": "${author} added a note to your post",
-			"live_started": "${author} started live streaming",
-			"view": "View",
-			"markAllRead": "Mark all as read"
-		},
-		"inbox": {
-			"filtersLabel": {
-				"aria-label": "Inbox filters"
-			},
-			"tabs": {
-				"all": "All",
-				"mention": "Mentions",
-				"reply": "Replies",
-				"like": "Likes",
-				"follow": "Follows",
-				"repost": "Reposts"
-			},
-			"aggregated": {
-				"like": "${author1}, ${author2} and ${count} people liked your post",
-				"likeTwo": "${author1} and ${author2} liked your post",
-				"repost": "${author1}, ${author2} and ${count} others reposted your post",
-				"repostTwo": "${author1} and ${author2} reposted your post",
-				"follow": "${author1}, ${author2} and ${count} others followed you",
-				"followTwo": "${author1} and ${author2} follow you"
-			}
-		},
-		"replies": {
-			"placeholder": "Write a reply…",
-			"submit": "Reply",
-			"empty": "No replies yet",
-			"emptyHint": "Be the first to reply"
-		},
-		"repost": {
-			"placeholder": "Add a repost comment (optional)…",
-			"submit": "Repost"
-		},
-		"quote": {
-			"quoting": "Quoting",
-			"clear": "Clear quote",
-			"viewOriginal": "View original post"
-		},
-		"a11y": {
-			"linkGroupSelect": "Connect to a Chat group or channel",
-			"postVisibility": "Visible range",
-			"postLang": "content language",
-			"trendingHashtags": "Trending topics",
-			"saveFolderSelect": "Saved folder"
-		},
-		"blocklist": {
-			"title": "Block list",
-			"hiddenTitle": "Hidden list",
-			"empty": "No blocked or hidden entries yet",
-			"unblock": "Unblock",
-			"unhide": "Unhide",
-			"scopeEntity": "Entity",
-			"scopeSubject": "Subject"
-		},
-		"translate": {
-			"label": "Translation:"
-		},
-		"saved": {
-			"all": "All",
-			"unfiled": "Unsorted",
-			"createFolder": {
-				"title": "Create new folder",
-				"aria-label": "Create new folder"
-			},
-			"createFolderPrompt": "Folder name",
-			"pickFolderTitle": "Save to…",
-			"confirm": "Confirm",
-			"cancel": "Cancel",
-			"remove": "Remove from saved",
-			"renameFolder": "Rename",
-			"renameFolderPrompt": "New folder name",
-			"deleteFolder": "Delete folder",
-			"deleteFolderConfirm": "Delete this folder? Posts inside will move to Unsorted.",
-			"searchEmpty": "No matching saves",
-			"folderEmpty": "This folder is empty",
-			"emptyHint": "Tap the bookmark while browsing to save posts here",
-			"search": {
-				"placeholder": "Search favourites…"
-			}
-		},
-		"drafts": {
-			"untitled": "(no draft text)",
-			"emptyHint": "Write some content in the post box and click \"Save Draft\" to continue editing next time",
-			"saved": "Draft saved",
-			"deleted": "Draft deleted",
-			"delete": "Delete draft",
-			"empty": "Draft is empty",
-			"saveFailed": "Failed to save draft: ${error}",
-			"loadFailed": "Failed to open draft: ${error}",
-			"deleteFailed": "Failed to delete draft: ${error}"
-		},
-		"time": {
-			"justNow": "just",
-			"minutesAgo": "${n} minutes ago",
-			"hoursAgo": "${n} hours ago"
-		},
-		"empty": {
-			"feed": "There are no posts yet. Follow some people.",
-			"profilePosts": "No news yet",
-			"following": "Not following anyone yet",
-			"followers": "No Followerss yet",
-			"notifications": "No notification yet",
-			"saved": "No favourites yet",
-			"drafts": "No draft yet",
-			"exploreAccounts": "There are currently no For youed accounts",
-			"explorePosts": "There are no exploration posts yet",
-			"likedPosts": "No likes yet",
-			"noIdentity": "Please configure federated identity in Chat before using Social"
-		},
-		"topic": {
-			"follow": "Subscribe",
-			"unfollow": "Unsubscribe",
-			"empty": "There are no posts for this topic yet"
-		},
-		"video": {
-			"view": {
-				"aria-label": "short video"
-			},
-			"empty": "No short video yet",
-			"emptyHint": "There are no posts with videos in the following people or public squares. Try posting a video update?",
-			"compose": "Go post a video",
-			"back": {
-				"aria-label": "Back to feed"
-			},
-			"mute": {
-				"aria-label": "mute"
-			},
-			"unmute": {
-				"aria-label": "Unmute"
-			},
-			"unavailable": "Video cannot be played",
-			"closeReplies": {
-				"aria-label": "Close comments"
-			}
-		},
-		"live": {
-			"empty": "No live broadcast yet",
-			"viewers": "${n} people watched",
-			"likes": "${n} Like",
-			"local": "This device",
-			"hall": "Live broadcast hall",
-			"back": {
-				"title": "Back to feed",
-				"aria-label": "Back to feed"
-			},
-			"danmakuSend": "send",
-			"postWatch": "Enter live broadcast",
-			"postEnded": "Live broadcast has ended",
-			"postEndedStats": "Viewed by ${viewers} · ${likes} Liked · ${duration}",
-			"link": {
-				"invite": "Invite connection",
-				"needPeer": "Please fill in the peer entityHash:liveId",
-				"invited": "Online invitation has been sent",
-				"linked": "Connected",
-				"peer": {
-					"placeholder": "Peer entityHash:liveId"
-				}
-			},
-			"broadcast": {
-				"title": "Start broadcasting",
-				"open": "Go to broadcast",
-				"mediaAv": "Audio and video",
-				"mediaAudio": "Pure audio",
-				"mediaVideo": "pure picture",
-				"mediaWhip": "WHIP push streaming (such as OBS)",
-				"whipUrl": "WHIP address",
-				"whipToken": "Bearer Token",
-				"whipWaiting": "Waiting for WHIP streaming connection (streaming software such as OBS can be used)…",
-				"start": "Start live broadcast",
-				"stop": "Stop live broadcast",
-				"started": "Live broadcast has started",
-				"stopped": "Live broadcast has stopped",
-				"titleInput": {
-					"placeholder": "Live title (optional)"
-				}
-			},
-			"danmaku": {
-				"placeholder": "Say something..."
-			}
 		}
 	},
 	"common": {

@@ -6,12 +6,6 @@
  * 表示所有可能的语言环境数据类型。
  */
 export type LocaleData = {
-	'404': {
-		title: string
-		description: string
-		pageNotFoundText: string
-		homepageButton: string
-	}
 	lang: string
 	name: string
 	channels: {
@@ -4973,6 +4967,12 @@ export type LocaleData = {
 		}
 		copy_error: string
 		copy_fail_alert: string
+	}
+	'404': {
+		title: string
+		description: string
+		pageNotFoundText: string
+		homepageButton: string
 	}
 	tips: {
 		title: string
