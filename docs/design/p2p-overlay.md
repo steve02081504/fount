@@ -1,6 +1,6 @@
 # fount P2P Overlay 架构
 
-更新：`2026-07-20`
+更新：`2026-07-12`
 
 > 核心实现在 npm 包 [@steve02081504/fount-p2p](https://github.com/steve02081504/fount-p2p) 与 monorepo `src/scripts/p2p/`。本文描述**架构目标、分层与线协议**；实施状态以代码与 `fount test p2p` / `shells/chat:fed_*` 为准。
 
@@ -10,7 +10,7 @@
 - **分层解耦**：发现、信令、传输、overlay 路由、业务派发各自独立。
 - **Nostr 可插拔**：降为发现源之一，与 mDNS / BT 并列。
 - **Mailbox 复用**：定向投递 / 离线继续复用现有 Mailbox，键仍是收件人 `pubKeyHash`。
-- **握手显式授权**：challenge-response + DTLS 指纹绑定；房间口令不再作为 overlay 隐式授权（见下表）。
+- **握手显式授权**：challenge-response + DTLS 指纹绑定，不以房间口令隐式授权。
 
 ## 非目标
 
@@ -25,7 +25,7 @@
 | 传输后端 | 裸 `RTCPeerConnection` + `node-datachannel`；`simple-peer`、werift 已移除 |
 | Windows ICE | 生产路径固定依赖 ICE server；mDNS 策略 `drop` |
 | 逻辑链接 | 一 nodeHash 一链接；物理断了走重发现 / 重建 |
-| 握手授权 | challenge-response + DTLS 指纹绑定；**仅**去掉 room password / `identity_announce` 作为 overlay 隐式授权——不表示从传输加密或遗留兼容面抹掉口令。subfounts 对齐仍部分：`joinRoom` 仍用 password（= `roomSecret`）做传输加密 |
+| 握手授权 | challenge-response + DTLS 指纹绑定；不再用 `identity_announce` / room password 隐式授权 |
 | 群授权 | `groupProofs` 从握手中移除；群授权后置到 `group:` scope authorizer |
 | Gossip | 群内在 overlay 就位前保留一跳 gossip 补位 |
 | 轮换 | kick / ban 事件自动轮换 `roomSecret` |
@@ -40,7 +40,7 @@
 - Chat 群联邦经 `createGroupLinkSet`（`room.mjs`）；`FederationSlot` / `partitionBridge` 等为 chat 侧出站抽象，底层走 node/group scope envelope。
 - 发现层默认 `mdns` + `nostr`；BT 需 `FOUNT_ENABLE_BT_DISCOVERY=1`。
 - 房主在 `group_link_set.start()` 主动拉起 discovery，避免「只有自己一个成员」的暗房。
-- `group:` scope 与入站成员校验（见下「群 scope 成员与 bootstrap」）。
+- `group:` scope 放行少量前成员 bootstrap 控制面 action，数据权限仍由各 handler 校验。
 - join 流携带 `introducerNodeHash`，减少纯 discovery 冷启动窗口。
 
 回归口径：`fount test p2p` + `shells/chat:fed_core fed_e2e_extended fed_dm`（`fed_dm` 长串后建议单独重跑）。
@@ -90,21 +90,7 @@ npm 包侧：`transport/link_registry.mjs`、`transport/group_link_set.mjs`、`t
 
 `ver(1B=1) || msgId(16B) || seq(4B BE) || total(4B BE) || chunk`
 
-约束：
-
-| 项 | 上限 |
-| --- | --- |
-| 单帧 chunk | 15360B |
-| 单消息重组后 | 8MiB |
-| 每 peer 未完成消息条数 | 32 |
-| 每 peer 未完成消息合计字节 | 16MiB |
-| 全节点未完成消息合计字节 | 64MiB |
-| 未完成超时（按 `lastSeenAt`） | 30s |
-| 已完成 msgId LRU | 4096 |
-
-准入：接纳该分片会使「条数 / peer 字节 / 全局字节」任一超限 → 拒收该分片（新 `msgId` 不建槽；已有槽因本片超限则丢弃该未完成消息）。驱逐：超时按 `lastSeenAt` 剪枝；字节/条数压力下优先淘汰最旧 `lastSeenAt` 的未完成消息。已完成 msgId 仍只走 LRU，不参与字节预算。
-
-> 实现现状（`fount-p2p` `link/frame.mjs`）：条数 / 单消息 / 超时已落地；peer·全局合计字节预算为本文上界，重组器尚未计合计字节。
+约束：单帧 payload 15360B；单消息最大 8MiB；每 peer 最多 32 条未完成消息；超时 30s；已完成 msgId LRU 4096。
 
 ### Envelope
 
@@ -133,23 +119,6 @@ npm 包侧：`transport/link_registry.mjs`、`transport/group_link_set.mjs`、`t
 
 这是硬性 channel binding，防止中继节点替换 SDP 后做应用层 MITM。
 
-### 群 scope 成员与 bootstrap
-
-DAG 成员表**保留**历史记录：`left` / `kicked` / `banned` 等非 `active` 条目不删除，供 shun / 审计 / 重入判断。
-
-`group:` 入站授权（`trustGraphRooms.mjs`）：
-
-1. **当前成员**：`homeNodeHash`（或 `nodeHash`）对应某条 `status === 'active'` 的成员 → 放行全部 action。
-2. **预成员 / 前成员 bootstrap 白名单**（仅下列控制面；含从未入群者与已非 active 的前成员，以支持重入与冷启动）：
-   - `fed_bootstrap_request` / `fed_bootstrap_response`
-   - `fed_join_snapshot_request` / `fed_join_snapshot_response`
-   - `fed_tip_ping` / `fed_tip_pong`
-   - `discovery_announce` / `discovery_query` / `discovery_query_response`
-   - `dag_event` 且 `payload.type === 'member_join'`
-3. **其余一律拒绝**：非 active 不得发业务/数据面 action；白名单外的控制面也不放行。业务 handler 与 DAG attestation 仍做自身校验。
-
-前成员因此**不能**凭旧身份恢复一般群访问；只能走 bootstrap / `member_join` 重入后再成为 active。
-
 ### glare 收敛
 
 链接键为 `nodeHash`。双方同时建连时：若 `selfNodeHash > peerNodeHash`，关闭「自己发起」的那条；否则不动作。竞态窗口靠 msgId 幂等去重。
@@ -158,26 +127,25 @@ DAG 成员表**保留**历史记录：`left` / `kicked` / `banned` 等非 `activ
 
 每 15s 在 `control` 发 `ping`；45s 无入站判死；关闭物理连接并通知 registry 做逻辑断链。
 
+### 会合 topic
+
+- node topic = `sha256Hex('fount-rdv-node:' + nodeHash)`
+- group topic = `sha256Hex('fount-rdv-group:' + roomSecret)`
+
 ### advertise
 
 ```json
 { "nodeHash": "...", "nodePubKey": "...", "ts": 0, "sig": "..." }
 ```
 
-`sig = sign("fount-advert\0" + topic + "\0" + ts + "\0" + nodeHash [+ "\0" + tcpPort])`。过滤：验签成功、`pubKeyHash(nodePubKey) === nodeHash`、且
-
-```text
-now - 10min <= ts <= now + 10min
-```
-
-其中 `now` 为接收方墙钟 `Date.now()`（毫秒）；允许时钟偏差 `allowedClockSkew = 10min`（与新鲜度下界共用同一常量，实现为 `Math.abs(now - ts) <= 10min`）。默认刷新间隔 5 分钟。
+`sig = sign("fount-advert-v1\0" + topic + "\0" + ts + "\0" + nodeHash)`。过滤：验签成功、`pubKeyHash(nodePubKey) === nodeHash`、`ts` 不超过 10 分钟。默认刷新间隔 5 分钟。
 
 ### 信令加密
 
-- **会合 topic**：node = `sha256Hex('fount-rdv-node:' + nodeHash)`（公开可算）；group = `sha256Hex('fount-rdv-group:' + roomSecret)`（需持有 `roomSecret`）。
-- **包密钥**：`sha256('fount-signal:' + topic)` → AES-256-GCM。
-- **node topic**：**非机密混淆**——已知 `nodeHash` 即可算 topic 与密钥，不降低对能算 topic 的观察者的可见性，也不承担认证。
-- **group topic**：密钥熵来自 `roomSecret`，对无密钥的 relay 提供机密性。
+- node topic：`kdf(sha256(nodeHash), 'signal', topic)`
+- group topic：`kdf(roomSecret, 'signal', topic)`
+
+只用于减少 relay 可见性；node topic 本身公开可算，不承担强认证。
 
 ## 触达阶梯
 
@@ -193,14 +161,14 @@ now - 10min <= ts <= now + 10min
 ### 信令中继不可信
 
 - 应用层身份必须绑定到 DTLS 指纹。
-- `route_resp` 由目标节点按下方 transcript 签名并校验（见 overlay 路由规则）。
+- `route_resp` 必须由目标节点签名。
 - advertise 必须先验签，不能直接烧 ICE / DTLS 成本。
 
 ### 业务 scope 必须显式授权
 
-- `group:<id>` 入站按「群 scope 成员与 bootstrap」：active 全放行，白名单控制面可预成员/前成员，其余拒绝。
+- `group:<id>` 任意入站查 DAG 成员表。
 - 中继帧校验来源 scope 是否允许。
-- room password **不再**作 overlay 隐式隔离；传输层 / `joinRoom` 仍可持有 `roomSecret` 作加密材料。
+- 不再依赖 room password 隐式隔离。
 
 ### 不惩罚转发者
 
@@ -216,24 +184,9 @@ now - 10min <= ts <= now + 10min
 `overlay` scope action：`route_req`、`route_resp`、`relay`。
 
 - TTL 默认 3；路径长度上限 6。
-- `route_req` 每邻居 30/min；`reqId` 入站 LRU（4096）去重，环路（`path` 含自身）与超长路径丢弃。
+- `route_req` 每邻居 30/min。
 - 发现成功后优先直连升级，失败才长期中继。
-
-### `route_resp` 签名与防重放
-
-目标节点签名 transcript（无独立 nonce / expiry / body 字段；绑定力来自 `reqId` + 完整 `path`）：
-
-```text
-"fount-route\0" + reqId + "\0" + path.join(",")
-```
-
-载荷字段：`reqId`（= 发起方 `route_req` 的请求 id）、`path`（`path[0]` = 源，`path[last]` = 目的）、`nodePubKey`、`sig`。`route_req` 另带 `target` 与递减 `ttl`，不进入签名串。
-
-校验：
-
-1. `pubKeyHash(nodePubKey) === path[last]`，且 `verify(sig, transcript, nodePubKey)`。
-2. 发起方仅当 `path[0] === self` 且本地 `pendingRoutes` 仍持有该 `reqId` 时接受——把响应绑到本机未完成请求与目的路径。
-3. 中继跳按 `path` 回传；`reqId` 已在 `seenReqs` / 已消费的 pending 上拒绝重复 `route_req` / 二次 resolve。超时从 pending 删除，迟到响应丢弃。
+- 伪造 `route_resp` 必须丢弃。
 
 ## 测试口径
 

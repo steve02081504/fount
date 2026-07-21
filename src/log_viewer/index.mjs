@@ -8,7 +8,7 @@
  * - 服务器主动退出（`fount_exit`）时与服务器同步：`code === 131` 视为重启，自动重连；其它退出码本进程同码退出。
  * - WebSocket 异常断开（无 `fount_exit`）按指数退避重连，等服务器再次起来。
  *
- * 直接执行：`deno run -c deno.json --allow-net=127.0.0.1 src/log_viewer/index.mjs`
+ * 直接执行：`deno run -c deno.json --allow-net=localhost src/log_viewer/index.mjs`
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -45,8 +45,8 @@ function readServerPort() {
 }
 
 const PORT = readServerPort()
-const PING_URL = `http://127.0.0.1:${PORT}/api/ping`
-const WS_URL = `ws://127.0.0.1:${PORT}/ws/logs`
+const PING_URL = `http://localhost:${PORT}/api/ping`
+const WS_URL = `ws://localhost:${PORT}/ws/logs`
 
 /**
  * 顶层错误兜底（供异步日志写入复用）。

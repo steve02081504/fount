@@ -1,9 +1,22 @@
 import { randomUUID } from 'node:crypto'
-import { deserialize } from 'node:v8'
+import EventEmitter from 'node:events'
+import process from 'node:process'
+// 远程执行直接传递原始值，不走 V8 serialize/deserialize。
+
+EventEmitter.defaultMaxListeners = Math.max(EventEmitter.defaultMaxListeners, 30)
+
+process.on('uncaughtException', (err) => {
+	if (err?.code === 'ECONNRESET' || err?.code === 'ECONNREFUSED' || err?.message?.includes('socket hang up'))
+		return
+	console.error('Uncaught exception:', err)
+	process.exit(1)
+})
 
 import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
+
+import { createScopedLinkRoom } from './link_room.mjs'
 
 /**
  * 设备信息类型
@@ -158,7 +171,6 @@ class RemoteSubfountExecutor extends SubfountExecutor {
 				}
 			}, 30000)
 
-			// 使用 Trystero 操作发送命令
 			const actionName = command.type === 'shell_exec' ? 'shell_exec' : 'run_code'
 			const [sendAction] = this.manager.actions.get(actionName)
 			sendAction({ ...command, requestId }, this.peerId).catch((error) => {
@@ -197,7 +209,7 @@ class UserSubfountManager {
 		 */
 		this.uiSockets = new Set()
 		/**
-		 * Trystero 房间实例
+		 * P2P 房间实例
 		 * @type {any}
 		 */
 		this.room = null
@@ -235,37 +247,28 @@ class UserSubfountManager {
 			executor: new LocalSubfountExecutor(this.username),
 		})
 
-		// 初始化 Trystero 房间
+		// 初始化分机 scope room
 		this.initRoom()
 	}
 
 	/**
-	 * 初始化 Trystero 房间。
+	 * 初始化分机 scope room。
 	 */
 	async initRoom() {
 		try {
-			// 离开现有房间（如果有）
 			if (this.room) {
-				this.room.leave()
-				/**
-				 * Trystero 房间实例
-				 * @type {any}
-				 */
+				void this.room.leave()
 				this.room = null
 				this.actions.clear()
 			}
 
-			const { joinRoom } = await import('npm:trystero/mqtt')
-			const { RTCPeerConnection } = await import('npm:node-datachannel/polyfill')
 			const codesData = loadShellData(this.username, 'subfounts', 'connection_codes')
-			const config = {
-				appId: 'fount-subfounts',
-				rtcPolyfill: RTCPeerConnection,
-				password: codesData.password, // 使用连接密码进行加密
-			}
-			this.room = joinRoom(config, this.hostPeerId)
+			this.room = createScopedLinkRoom({
+				scope: `subfount:${this.hostPeerId}`,
+				roomSecret: codesData.password,
+			})
+			await this.room.start()
 
-			// 设置操作处理程序
 			const actionNames = ['authenticate', 'device_info', 'response', 'run_code', 'callback', 'shell_exec']
 			for (const name of actionNames)
 				this.actions.set(name, this.room.makeAction(name))
@@ -311,7 +314,6 @@ class UserSubfountManager {
 				if (subfount)
 					// 更新现有分机
 					this.updateSubfountConnection(subfount, peerId, remoteDeviceId)
-
 				else
 					// 创建新分机
 					subfount = this.addSubfount(peerId, remoteDeviceId)
@@ -342,7 +344,7 @@ class UserSubfountManager {
 					if (data.isError)
 						pending.reject(new Error(data.payload?.error || data.payload || 'Unknown error'))
 					else
-						pending.resolve(deserialize(data.payload))
+						pending.resolve(data.payload)
 				}
 			}
 
@@ -358,7 +360,7 @@ class UserSubfountManager {
 
 		}
 		catch (error) {
-			console.error(`Failed to initialize Trystero room for user ${this.username}:`, error)
+			console.error(`Failed to initialize subfount scope room for user ${this.username}:`, error)
 		}
 	}
 
@@ -425,7 +427,7 @@ class UserSubfountManager {
 		const normalizedPartpath = partpath.replace(/^\/+|\/+$/g, '')
 		const part = await loadPart(this.username, normalizedPartpath)
 		if (part.interfaces?.subfount?.RemoteCallBack)
-			await part.interfaces.subfount.RemoteCallBack({ data: deserialize(data), username: this.username, partpath })
+			await part.interfaces.subfount.RemoteCallBack({ data, username: this.username, partpath })
 	}
 
 	/**
@@ -633,16 +635,13 @@ const userManagers = new Map()
 events.on('BeforeUserDeleted', ({ username }) => {
 	const manager = userManagers.get(username)
 	if (manager) {
-		// 离开 Trystero 房间
 		if (manager.room)
-			manager.room.leave()
+			void manager.room.leave()
 
-		// 关闭所有 UI WebSocket 连接
 		for (const ws of manager.uiSockets)
 			if (ws.readyState === ws.OPEN)
 				ws.close()
 
-		// 从映射中移除管理器
 		userManagers.delete(username)
 	}
 })
@@ -670,7 +669,7 @@ export function getUserManager(username, hostPeerId = null) {
 	// 如果传入了 hostPeerId 且与现有不符，直接清理旧的
 	if (hostPeerId && existing && existing.hostPeerId !== hostPeerId) {
 		if (existing.room)
-			existing.room.leave()
+			void existing.room.leave()
 		userManagers.delete(username)
 		existing = null
 	}

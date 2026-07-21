@@ -74,7 +74,7 @@ export async function setEndpoints(router) {
 	router.post('/api/parts/shells\\:subfounts/regenerate-code', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { peerId, password } = generateConnectionCode(username)
-		// 使用新房间 ID 更新管理器（这将重新创建 Trystero 房间）
+		// 使用新房间 ID 更新管理器（这将重新创建 P2P 房间）
 		getUserManager(username, peerId)
 		res.json({ peerId, password })
 	})

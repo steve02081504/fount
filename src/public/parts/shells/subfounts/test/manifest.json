@@ -1,0 +1,30 @@
+{
+	"id": "shells/subfounts",
+	"triggerSets": {
+		"testFramework": [
+			"src/scripts/test/deno/serial.mjs",
+			"src/scripts/test/node/boot.mjs"
+		],
+		"shellBackend": [
+			"src/public/parts/shells/subfounts/src/**",
+			"src/public/parts/shells/subfounts/main.mjs",
+			"src/public/parts/shells/subfounts/fount.json",
+			"src/public/parts/shells/subfounts/locales.json"
+		],
+		"shellIntegrationTests": [
+			"src/public/parts/shells/subfounts/test/integration/**"
+		]
+	},
+	"suites": [
+		{
+			"name": "integration",
+			"dependsOn": ["server:live"],
+			"trigger": ["shellBackend", "shellIntegrationTests", "testFramework"],
+			"run": [
+				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/subfounts/test/integration/"
+			]
+		}
+	]
+}

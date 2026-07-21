@@ -1606,8 +1606,8 @@ if [[ $# -gt 0 ]]; then
 		;;
 	open)
 		handle_docker_passthrough "$@"
-		# 若 $FOUNT_DIR/data 是目录
-		if [ -d "$FOUNT_DIR/data" ]; then
+		# 若 $FOUNT_DIR/data/config.json 存在
+		if [ -f "$FOUNT_DIR/data/config.json" ]; then
 			TARGET_URL='https://steve02081504.github.io/fount/wait?cold_bootting=true'
 			open_url_in_browser "$TARGET_URL"
 			"$0" "${@:2}"
@@ -1738,16 +1738,17 @@ fount_upgrade() {
 		return 1
 	fi
 
-	local remoteBranch
+	local remoteBranch candidateRemote
 	remoteBranch=$(invoke_git_for_fount rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
 	if [ -z "$remoteBranch" ]; then
-		if ! fount_git_ref_exists origin/master; then
-			print_i18n_yellow 'git.remoteRefUnavailable' 'ref' 'origin/master' >&2
+		candidateRemote="origin/$currentBranch"
+		if ! fount_git_ref_exists "$candidateRemote"; then
+			print_i18n_yellow 'git.remoteRefUnavailable' 'ref' "$candidateRemote" >&2
 			return 1
 		fi
-		print_i18n_yellow 'git.noUpstreamBranch' 'branch' "$currentBranch" >&2
-		invoke_git_for_fount branch --set-upstream-to origin/master "$currentBranch"
-		remoteBranch="origin/master"
+		print_i18n_yellow 'git.noUpstreamBranch' 'branch' "$currentBranch" 'remote' "$candidateRemote" >&2
+		invoke_git_for_fount branch --set-upstream-to "$candidateRemote" "$currentBranch"
+		remoteBranch="$candidateRemote"
 	fi
 	if ! fount_git_ref_exists "$remoteBranch"; then
 		print_i18n_yellow 'git.remoteRefUnavailable' 'ref' "$remoteBranch" >&2

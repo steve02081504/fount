@@ -1,7 +1,7 @@
 import { Client, Events, GatewayIntentBits, Partials } from 'npm:discord.js@^14.25.0'
 import { on_shutdown } from 'npm:on-shutdown'
 
-import { console } from '../../../../../scripts/i18n/index.mjs'
+import { console } from '../../../../../scripts/i18n/bare.mjs'
 import { getAllUserNames } from '../../../../../server/auth/index.mjs'
 import { events } from '../../../../../server/events.mjs'
 import { EndJob, StartJob } from '../../../../../server/jobs.mjs'
@@ -14,15 +14,29 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
  */
 
 /**
+ * @param {CharAPI_t} char 角色 API
+ * @param {string} username replica
+ * @param {string} charname 角色名
+ * @returns {Promise<void>}
+ */
+async function ensureDiscordBotInterface(char, username, charname) {
+	if (char.interfaces.discord?.OnceClientReady) return
+	const { createSimpleDiscordInterface } = await import('./default_interface/main.mjs')
+	const defaults = await createSimpleDiscordInterface(char, username, charname)
+	char.interfaces.discord = { ...defaults, ...char.interfaces.discord }
+}
+
+/**
  * 启动 Discord Bot
  * @param {{
  * 	token: string,
  * 	config: any
  * }} config - 机器人配置
  * @param {CharAPI_t} char - 角色 API
+ * @param {string} botname - bot 实例名
  * @returns {Promise<import('npm:discord.js').Client>} - Discord 客户端实例
  */
-async function startBot(config, char) {
+async function startBot(config, char, botname) {
 	const client = new Client({
 		intents: char.interfaces.discord?.Intents || [
 			GatewayIntentBits.Guilds,
@@ -46,7 +60,7 @@ async function startBot(config, char) {
 	})
 
 	client.once(Events.ClientReady, async client => {
-		await char.interfaces.discord?.OnceClientReady(client, config.config)
+		await char.interfaces.discord?.OnceClientReady(client, config.config, botname)
 		console.infoI18n('fountConsole.botStarted', {
 			platform: 'Discord',
 			botusername: client.user.username,
@@ -87,10 +101,7 @@ export function getBotConfig(username, botname) {
  */
 export async function getBotConfigTemplate(username, charname) {
 	const char = await loadPart(username, 'chars/' + charname)
-	if (!char.interfaces.discord) {
-		const { createSimpleDiscordInterface } = await import('./default_interface/main.mjs')
-		char.interfaces.discord = await createSimpleDiscordInterface(char, username, charname)
-	}
+	await ensureDiscordBotInterface(char, username, charname)
 	return await char.interfaces.discord?.GetBotConfigTemplate?.() || {}
 }
 
@@ -132,11 +143,8 @@ export async function runBot(username, botname) {
 		const config = getBotConfig(username, botname)
 		if (!Object.keys(config).length) throw new Error(`Bot ${botname} not found`)
 		const char = await loadPart(username, 'chars/' + config.char)
-		if (!char.interfaces.discord) {
-			const { createSimpleDiscordInterface } = await import('./default_interface/main.mjs')
-			char.interfaces.discord = await createSimpleDiscordInterface(char, username, config.char)
-		}
-		const client = await startBot(config, char)
+		await ensureDiscordBotInterface(char, username, config.char)
+		const client = await startBot(config, char, botname)
 		return client
 	})()
 
@@ -167,6 +175,8 @@ export async function stopBot(username, botname) {
 		delete botCache[botname]
 	}
 
+	const { unregisterBridgeOperations } = await import('../../chat/src/chat/bridge/operations.mjs')
+	await unregisterBridgeOperations(username, 'discord', botname)
 	EndJob(username, 'shells/discordbot', botname)
 }
 
@@ -186,6 +196,8 @@ export async function pauseBot(username, botname) {
 	} finally {
 		delete botCache[botname]
 	}
+	const { unregisterBridgeOperations } = await import('../../chat/src/chat/bridge/operations.mjs')
+	await unregisterBridgeOperations(username, 'discord', botname)
 }
 on_shutdown(async () => {
 	for (const username of getAllUserNames())

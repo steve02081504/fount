@@ -11,7 +11,7 @@
 - `cmd /c .\path\fount.bat`
 - `powershell ./path/fount.ps1`
 - `pwsh ./path/fount.ps1`
-- `deno run -A ./path/fount.mjs`
+- `deno run --allow-scripts --allow-all ./path/fount.mjs`
 - `node ./path/fount.mjs`
 - `sh ./run.bat`
 - `sh ./path/fount.bat`

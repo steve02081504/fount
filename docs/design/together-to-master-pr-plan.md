@@ -102,6 +102,6 @@ flowchart TB
 | 2 | C2 | **已合并** | https://github.com/steve02081504/fount/pull/239 |
 | 2 | H | **已合并** | https://github.com/steve02081504/fount/pull/240 |
 | 3 | G | **已合并** | https://github.com/steve02081504/fount/pull/241 |
-| 3 | I | 已开 PR | https://github.com/steve02081504/fount/pull/243 |
-| 3 | J | 已开 PR | https://github.com/steve02081504/fount/pull/242 |
-| 3+ | K | 待开 | 其它 shells/parts |
+| 3 | I | **已合并** | https://github.com/steve02081504/fount/pull/243 |
+| 3 | J | **已合并** | https://github.com/steve02081504/fount/pull/242 |
+| 3 | K | 已开 PR | 其它 shells/bots/parts 收口 |

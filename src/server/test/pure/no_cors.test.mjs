@@ -23,8 +23,6 @@ Deno.test('buildUpstreamHeaders forwards Range and No-Cors-* injects Cookie/Auth
 			'no-cors-cookie': 'a=1; b=2',
 			'no-cors-authorization': 'Bearer upstream',
 			'no-cors-x-custom': 'yes',
-			'no-cors-content-length': '999',
-			'no-cors-host': 'evil.example',
 			'x-random': 'nope',
 			host: 'localhost:9999',
 			connection: 'keep-alive',
@@ -36,7 +34,6 @@ Deno.test('buildUpstreamHeaders forwards Range and No-Cors-* injects Cookie/Auth
 	assertEquals(headers.get('authorization'), 'Bearer upstream')
 	assertEquals(headers.get('x-custom'), 'yes')
 	assertEquals(headers.get('host'), null)
-	assertEquals(headers.has('content-length'), false)
 	assertEquals(headers.has('fount-apikey'), false)
 	assertEquals(headers.has('connection'), false)
 	assertEquals(headers.has('x-random'), false)

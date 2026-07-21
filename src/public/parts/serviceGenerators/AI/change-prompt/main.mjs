@@ -127,10 +127,14 @@ async function GetSource(config, { username, SaveConfig }) {
 				char_id: prompt_struct.char_id,
 				UserCharname: prompt_struct.UserCharname,
 				ReplyToCharname: prompt_struct.ReplyToCharname,
+				UserUid: prompt_struct.UserUid,
+				CharUid: prompt_struct.CharUid,
+				ReplyToUid: prompt_struct.ReplyToUid,
 				Charname: prompt_struct.Charname,
 				char_prompt: getSinglePartPrompt(),
 				user_prompt: getSinglePartPrompt(),
 				other_chars_prompts: {},
+				other_personas_prompts: {},
 				world_prompt: getSinglePartPrompt(),
 				plugin_prompts: {},
 				chat_log: prompt_struct.chat_log,
@@ -140,6 +144,7 @@ async function GetSource(config, { username, SaveConfig }) {
 				user_prompt: '',
 				world_prompt: '',
 				other_chars_prompts: '',
+				other_personas_prompts: '',
 				plugin_prompts: '',
 			}
 			if (config.build_prompt) {
@@ -166,6 +171,13 @@ async function GetSource(config, { username, SaveConfig }) {
 				}
 
 				{
+					const sorted = Object.values(prompt_struct.other_personas_prompts || {}).map(persona => persona.text).filter(Boolean).map(
+						persona => persona.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
+					).flat().filter(Boolean)
+					eval_strings.other_personas_prompts = sorted.join('\n')
+				}
+
+				{
 					const sorted = Object.values(prompt_struct.plugin_prompts).map(plugin => plugin?.text).filter(Boolean).map(
 						plugin => plugin.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
 					).flat().filter(Boolean)
@@ -177,6 +189,7 @@ async function GetSource(config, { username, SaveConfig }) {
 				new_prompt_struct.user_prompt = prompt_struct.user_prompt
 				new_prompt_struct.world_prompt = prompt_struct.world_prompt
 				new_prompt_struct.other_chars_prompts = prompt_struct.other_chars_prompts
+				new_prompt_struct.other_personas_prompts = prompt_struct.other_personas_prompts || {}
 				new_prompt_struct.plugin_prompts = prompt_struct.plugin_prompts
 				eval_strings = {}
 			}

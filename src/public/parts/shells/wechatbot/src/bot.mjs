@@ -1,6 +1,6 @@
 import { on_shutdown } from 'npm:on-shutdown'
 
-import { console } from '../../../../../scripts/i18n/index.mjs'
+import { console } from '../../../../../scripts/i18n/bare.mjs'
 import { getAllUserNames } from '../../../../../server/auth/index.mjs'
 import { events } from '../../../../../server/events.mjs'
 import { EndJob, StartJob } from '../../../../../server/jobs.mjs'
@@ -39,9 +39,10 @@ async function ensureWechatInterface(char, username, charname) {
  * @param {CharAPI_t} char 角色实例。
  * @param {string} username 用户名。
  * @param {string} charname 角色名称。
+ * @param {string} botname bot 实例名。
  * @returns {Promise<void>}
  */
-async function startBot(config, char, username, charname) {
+async function startBot(config, char, username, charname, botname) {
 	const abortController = new AbortController()
 	const cdnBaseUrl = config.apiBaseUrl?.trim() || DEFAULT_WECHAT_ILINK_BASE
 	const api = createWechatApi({
@@ -52,8 +53,8 @@ async function startBot(config, char, username, charname) {
 
 	await ensureWechatInterface(char, username, charname)
 
-	const ctx = { ...api, signal: abortController.signal, cdnBaseUrl }
-	await char.interfaces.wechat.OnceClientReady(ctx, config.config)
+	const context = { ...api, signal: abortController.signal, cdnBaseUrl }
+	await char.interfaces.wechat.OnceClientReady(context, config.config, botname)
 
 	return {
 		/**
@@ -166,7 +167,7 @@ export async function runBot(username, botname) {
 			throw new Error('微信 Bot 需要 Token：请使用扫码登录或粘贴 Bot Token')
 
 		const char = await loadPart(username, 'chars/' + config.char)
-		return startBot(config, char, username, config.char)
+		return startBot(config, char, username, config.char, botname)
 	})()
 
 	try {
@@ -188,6 +189,8 @@ export async function runBot(username, botname) {
  */
 export async function stopBot(username, botname) {
 	await destroyBotSession(username, botname)
+	const { unregisterBridgeOperations } = await import('../../chat/src/chat/bridge/operations.mjs')
+	await unregisterBridgeOperations(username, 'wechat', botname)
 	EndJob(username, 'shells/wechatbot', botname)
 }
 
@@ -199,6 +202,8 @@ export async function stopBot(username, botname) {
  */
 export async function pauseBot(username, botname) {
 	await destroyBotSession(username, botname)
+	const { unregisterBridgeOperations } = await import('../../chat/src/chat/bridge/operations.mjs')
+	await unregisterBridgeOperations(username, 'wechat', botname)
 }
 
 on_shutdown(() => Promise.all(

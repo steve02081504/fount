@@ -6,7 +6,7 @@ import { getCharacterSource } from '../../../../../src/public/parts/ImportHandle
 import { evaluateMacros } from '../../../../../src/public/parts/ImportHandlers/SillyTavern/engine/marco.mjs'
 import { promptBuilder } from '../../../../../src/public/parts/ImportHandlers/SillyTavern/engine/prompt_builder.mjs'
 import { runRegex } from '../../../../../src/public/parts/ImportHandlers/SillyTavern/engine/regex.mjs'
-import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct.mjs'
+import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
 import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadAnyPreferredDefaultPart, loadPart } from '../../../../../src/server/parts_loader.mjs'
 
@@ -220,6 +220,9 @@ export default {
 				 * @param {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatEntry_t} entry 条目
 				 */
 				function AddLongTimeLog(entry) {
+					entry.uid ??= entry.role === 'char' ? args.CharUid
+						: entry.role === 'user' ? args.UserUid
+						: 'system'
 					entry.charVisibility = [args.char_id]
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)
@@ -269,13 +272,16 @@ export default {
 				}
 			},
 			/**
-			 * 获取回复频率
-			 * @returns {Promise<number>} 一个解析为回复频率（数字）的 Promise。
-			 * @param {any} args 参数
+			 * 新消息到达时，决定是否主动发言（OnMessage）
+			 * @param {{ onlineCount: number }} root0 事件参数对象
+			 * @param {number} root0.onlineCount 当前在线人数（含用户）
+			 * @returns {Promise<boolean>} 是否在本轮随机中主动发言
 			 */
-			GetReplyFrequency: async args => {
-				if (chardata.extensions.talkativeness) return Number(chardata.extensions.talkativeness) * 2
-				return 1
+			OnMessage: async ({ onlineCount }) => {
+				const talkativeness = chardata.extensions.talkativeness
+					? Math.max(0.05, Number(chardata.extensions.talkativeness) * 2)
+					: 1
+				return Math.random() < (1 / onlineCount) * talkativeness * 2
 			},
 			/**
 			 * 消息编辑
