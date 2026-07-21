@@ -1,6 +1,19 @@
 /** @type {IntersectionObserver | null} */
 let activeObserver = null
 
+{
+	const style = document.createElement('style')
+	style.textContent = /* css */ `\
+[data-scroll-sentinel] {
+	height: 1px;
+	width: 100%;
+	pointer-events: none;
+	overflow-anchor: none;
+}
+`
+	document.head.appendChild(style)
+}
+
 /**
  * 绑定 IntersectionObserver 无限滚动。
  * 同一轮「进入相交」只触发一次；离开后再进入才允许下一次。
@@ -63,8 +76,6 @@ export function ensureScrollSentinel(container, sentinelId) {
 		sentinel.id = sentinelId
 		sentinel.setAttribute(SCROLL_SENTINEL_ATTR, '')
 		sentinel.setAttribute('aria-hidden', 'true')
-		// 样式就地设：各 shell 不必再抄一份 .scroll-sentinel；overflow-anchor 避免钉在视口内连触发
-		sentinel.style.cssText = 'height:1px;width:100%;pointer-events:none;overflow-anchor:none'
 	}
 	else if (!sentinel.hasAttribute(SCROLL_SENTINEL_ATTR))
 		sentinel.setAttribute(SCROLL_SENTINEL_ATTR, '')
