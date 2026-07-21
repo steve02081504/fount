@@ -93,7 +93,7 @@ async function replayFeedItems() {
 	if (!items?.length) return
 	const list = document.getElementById('feedList')
 	if (!list) return
-	// 确保哨兵在尾；追加走 [data-scroll-sentinel] 约定，不重绑 observer
+	// 哨兵须已在尾；追加不重绑 observer
 	ensureScrollSentinel(list, 'feedScrollSentinel')
 	list.dataset.feedReplaying = '1'
 	try {

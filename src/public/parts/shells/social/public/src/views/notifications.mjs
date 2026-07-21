@@ -273,8 +273,7 @@ export function mergeIncomingNotification(notification) {
 		actors: [{ entityHash: notification.actorEntityHash, at: notification.at }],
 	}, seenAt)
 	card.dataset.knownActors = notification.actorEntityHash
-	const sentinel = document.getElementById('notificationsScrollSentinel')
-	container.insertBefore(card, sentinel)
+	insertBeforeScrollSentinel(container, card)
 	return true
 }
 
