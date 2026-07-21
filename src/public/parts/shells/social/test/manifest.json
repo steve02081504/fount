@@ -1,0 +1,240 @@
+{
+	"id": "shells/social",
+	"triggerSets": {
+		"testFramework": [
+			"src/scripts/test/deno/serial.mjs",
+			"src/scripts/test/node/boot.mjs"
+		],
+		"shellBackend": [
+			"src/public/parts/shells/social/src/**",
+			"src/public/parts/shells/social/main.mjs",
+			"src/public/parts/shells/social/fount.json",
+			"src/public/parts/shells/social/locales.json"
+		],
+		"shellPureExtra": [
+			"src/public/parts/shells/chat/public/markdown_extensions/**",
+			"deno.json",
+			"src/server/p2p_server/**",
+			"src/scripts/search/**",
+			"src/server/registries.mjs",
+			"src/public/pages/scripts/api/registries.mjs",
+			"src/public/pages/scripts/components/emojiPicker.mjs",
+			"src/public/pages/scripts/components/stickerPicker.mjs",
+			"src/public/pages/scripts/features/markdown/extensions.mjs"
+		],
+		"shellIntegrationExtra": [
+			"src/public/parts/shells/chat/public/markdown_extensions/**",
+			"src/public/parts/shells/chat/src/group/groupPreview.mjs",
+			"src/public/parts/shells/chat/src/group/emojiContentResolve.mjs",
+			"deno.json",
+			"src/server/p2p_server/**",
+			"src/scripts/search/**",
+			"src/server/registries.mjs",
+			"src/public/pages/scripts/api/registries.mjs",
+			"src/public/pages/scripts/components/emojiPicker.mjs",
+			"src/public/pages/scripts/components/stickerPicker.mjs",
+			"src/public/pages/scripts/features/markdown/extensions.mjs"
+		],
+		"shellPureTests": [
+			"src/public/parts/shells/social/test/pure/**"
+		],
+		"shellIntegrationTests": [
+			"src/public/parts/shells/social/test/integration/**"
+		],
+		"shellLiveInfra": [
+			"src/public/parts/shells/social/test/live/run.mjs",
+			"src/public/parts/shells/social/test/afterInit.mjs"
+		],
+		"liveSmokeSocial": [
+			"src/public/parts/shells/social/test/live/scripts/smoke_social.mjs"
+		],
+		"liveE2eSingle": [
+			"src/public/parts/shells/social/test/live/scripts/e2e_single.mjs"
+		],
+		"liveWs": [
+			"src/public/parts/shells/social/test/live/scripts/ws.mjs"
+		],
+		"crossShellEmojiExtra": [
+			"src/public/parts/shells/chat/public/markdown_extensions/**",
+			"src/public/parts/shells/chat/src/group/groupPreview.mjs",
+			"src/public/parts/shells/chat/src/group/emojiContentResolve.mjs",
+			"src/server/registries.mjs",
+			"src/public/pages/scripts/api/registries.mjs",
+			"src/public/pages/scripts/components/emojiPicker.mjs"
+		],
+		"liveCrossShellEmoji": [
+			"src/public/parts/shells/social/test/live/scripts/cross_shell_emoji.mjs"
+		],
+		"wsExtra": [
+			"src/server/registries.mjs",
+			"src/public/pages/scripts/api/registries.mjs"
+		],
+		"frontendShared": [
+			"src/public/parts/shells/social/test/frontend/fixtures.mjs",
+			"src/public/parts/shells/social/test/frontend/run.mjs",
+			"src/public/parts/shells/social/test/frontend/phases.mjs",
+			"src/public/parts/shells/social/test/frontend/playwright.config.mjs",
+			"src/public/parts/shells/social/test/node_bootstrap.mjs",
+			"src/public/parts/shells/social/public/index.html",
+			"src/public/parts/shells/social/public/styles.css",
+			"src/public/parts/shells/social/public/src/init.mjs",
+			"src/public/parts/shells/social/public/src/state.mjs",
+			"src/public/parts/shells/social/public/src/gate.mjs",
+			"src/public/parts/shells/social/public/src/lib/apiClient.mjs",
+			"src/public/parts/shells/social/public/src/lib/socialWrite.mjs",
+			"src/scripts/test/playwright/**",
+			"src/public/pages/scripts/test/ready_gate.mjs",
+			"src/server/auth/index.mjs",
+			"src/server/web_server/endpoints.mjs"
+		]
+	},
+	"suites": [
+		{
+			"name": "pure",
+			"trigger": ["shellBackend", "shellPureExtra", "shellPureTests", "testFramework"],
+			"run": [
+				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/social/test/pure/"
+			]
+		},
+		{
+			"name": "integration",
+			"dependsOn": ["server:live"],
+			"trigger": ["shellBackend", "shellIntegrationExtra", "shellIntegrationTests", "testFramework"],
+			"run": [
+				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/social/test/integration/"
+			]
+		},
+		{ "name": "smoke_social", "dependsOn": ["server:live"], "trigger": ["shellBackend", "shellLiveInfra", "liveSmokeSocial"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "smoke_social"] },
+		{ "name": "e2e_single", "dependsOn": ["server:live", "smoke_social"], "trigger": ["shellLiveInfra", "liveE2eSingle"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "e2e_single"] },
+		{ "name": "ws", "dependsOn": ["server:live", "smoke_social"], "trigger": ["wsExtra", "shellLiveInfra", "liveWs"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "ws"] },
+		{ "name": "cross_shell_emoji", "dependsOn": ["server:live", "smoke_social", "shells/chat:fed_core", "shells/chat:fed_emoji"], "trigger": ["crossShellEmojiExtra", "shellLiveInfra", "liveCrossShellEmoji"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "cross_shell_emoji"] },
+		{
+			"name": "frontend",
+			"dependsOn": ["server:live", "smoke_social", "e2e_single"],
+			"trigger": "frontendShared",
+			"subtests": [
+				{
+					"name": "smoke",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/smoke.spec.mjs"
+					]
+				},
+				{
+					"name": "postActions",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/postActions.spec.mjs",
+						"src/public/parts/shells/social/public/src/actions/**",
+						"src/public/parts/shells/social/public/src/postCard.mjs",
+						"src/public/parts/shells/social/public/src/actions.mjs"
+					]
+				},
+				{
+					"name": "replies",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/replies.spec.mjs",
+						"src/public/parts/shells/social/public/src/views/replies.mjs"
+					]
+				},
+				{
+					"name": "postDetail",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/postDetail.spec.mjs",
+						"src/public/parts/shells/social/public/src/views/postDetail.mjs",
+						"src/public/parts/shells/social/src/endpoints/posts.mjs"
+					]
+				},
+				{
+					"name": "composer",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/composer.spec.mjs",
+						"src/public/parts/shells/social/public/src/composer.mjs",
+						"src/public/parts/shells/social/public/src/visibilityPicker.mjs",
+						"src/public/parts/shells/social/public/src/actions/composerFeed.mjs"
+					]
+				},
+				{
+					"name": "deepLink",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/deepLink.spec.mjs",
+						"src/public/parts/shells/social/public/src/navigation.mjs"
+					]
+				},
+				{
+					"name": "feed",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/feed.spec.mjs",
+						"src/public/parts/shells/social/public/src/views/feed.mjs",
+						"src/public/parts/shells/social/public/src/postCard.mjs",
+						"src/public/pages/scripts/infiniteScroll.mjs"
+					]
+				},
+				{
+					"name": "navigation",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/navigation.spec.mjs",
+						"src/public/parts/shells/social/public/src/navigation.mjs",
+						"src/public/parts/shells/social/public/src/viewChrome.mjs",
+						"src/public/parts/shells/social/public/src/views/video.mjs"
+					]
+				},
+				{
+					"name": "profile",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/profile.spec.mjs",
+						"src/public/parts/shells/social/public/src/views/profile.mjs",
+						"src/public/parts/shells/social/public/src/views/albums.mjs",
+						"src/public/parts/shells/social/public/src/actions.mjs",
+						"src/public/parts/shells/social/public/src/lib/replies.mjs",
+						"src/public/parts/shells/social/public/src/lib/profileHover.mjs",
+						"src/public/parts/shells/social/public/src/actions/postProfileActions.mjs",
+						"src/public/parts/shells/social/public/src/actions/profileNavActions.mjs",
+						"src/public/parts/shells/chat/public/shared/entityProfileHoverCard.mjs",
+						"src/public/parts/shells/chat/public/shared/entityProfileCard.*"
+					]
+				},
+				{
+					"name": "saved",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/saved.spec.mjs",
+						"src/public/parts/shells/social/public/src/views/saved.mjs",
+						"src/public/parts/shells/social/public/src/actions/saved.mjs"
+					]
+				},
+				{
+					"name": "drafts",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/drafts.spec.mjs",
+						"src/public/parts/shells/social/public/src/views/drafts.mjs",
+						"src/public/parts/shells/social/public/src/actions/drafts.mjs",
+						"src/public/parts/shells/social/src/drafts.mjs",
+						"src/public/parts/shells/social/src/endpoints/drafts.mjs",
+						"src/public/parts/shells/social/src/api/client/drafts.mjs"
+					]
+				},
+				{
+					"name": "videos",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/videos.spec.mjs",
+						"src/public/parts/shells/social/public/src/views/video.mjs",
+						"src/public/parts/shells/social/public/src/lib/verticalSnap.mjs",
+						"src/public/parts/shells/social/src/videosFeed.mjs",
+						"src/public/parts/shells/social/src/endpoints/videos.mjs"
+					]
+				},
+				{
+					"name": "explore_notifications",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/explore_notifications.spec.mjs",
+						"src/public/parts/shells/social/public/src/views/explore.mjs",
+						"src/public/parts/shells/social/public/src/views/notifications.mjs"
+					]
+				}
+			],
+			"run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/frontend/run.mjs"]
+		}
+	]
+}

@@ -1,0 +1,9 @@
+<div class="community-note" data-note-for="${actionKey}">
+	<div class="community-note-label" data-i18n="social.notes.label"></div>
+	<p class="community-note-text">${text}</p>
+	<div class="community-note-actions">
+		<button type="button" class="btn btn-ghost btn-xs" data-note-vote="${actionKey}" data-note-id="${noteId}" data-helpful="1"><span data-i18n="social.notes.helpful"></span> (${helpfulCount})</button>
+		<button type="button" class="btn btn-ghost btn-xs" data-note-vote="${actionKey}" data-note-id="${noteId}" data-helpful="0"><span data-i18n="social.notes.unhelpful"></span> (${unhelpfulCount})</button>
+		<button type="button" class="btn btn-ghost btn-xs" data-note-more="${actionKey}" data-i18n="social.notes.more" data-n="${noteCount}"></button>
+	</div>
+</div>

@@ -1,0 +1,49 @@
+<article class="post-card" data-post-id="${postId}" data-author-entity="${entityHash}" data-post-text="${postTextEncoded}" data-visibility="${visibilityCode}">
+	${repostBanner}
+	${repostCommentHtml}
+	${embeddedWrapStart}
+	<header class="post-header">
+		<div class="post-header-row">
+			<a href="${postDetailHref}" class="author-avatar-link">${headerAvatarHtml}</a>
+			<div class="post-author">
+				<div class="post-author-line">
+					<a href="${headerLink}" class="author-name">${headerAuthor}</a>
+					<a href="${postDetailHref}" class="author-handle">${authorHandle}</a>
+					<span class="post-meta-sep">·</span>
+					<a href="${postDetailHref}" class="post-meta post-time-link"${postTimeAttrs}>${postTimeText}</a>
+					${editedBadge}
+					${visibilityIcon}
+				</div>
+			</div>
+			<div class="post-more-dropdown">
+				<button type="button" class="action-btn action-btn-more" data-more-toggle="${actionKey}" data-i18n="social.actions.more">
+					<span class="icon icon-more" aria-hidden="true"></span>
+				</button>
+				<div class="post-more-menu hidden" data-more-menu="${actionKey}">
+					<button type="button" data-quote="${actionKey}"><span class="icon icon-quote" aria-hidden="true"></span><span data-i18n="social.actions.quote"></span></button>
+					<button type="button" data-copy-link="${actionKey}"><span class="icon icon-link" aria-hidden="true"></span><span data-i18n="social.actions.copyLink"></span></button>
+					<button type="button" data-download-html="${actionKey}"><span class="icon icon-download" aria-hidden="true"></span><span data-i18n="social.actions.downloadHtml"></span></button>
+					<button type="button" data-share="${actionKey}"><span class="icon icon-share" aria-hidden="true"></span><span data-i18n="social.actions.share"></span></button>
+					<button type="button" data-add-note="${actionKey}"><span class="icon icon-note" aria-hidden="true"></span><span data-i18n="social.notes.add"></span></button>
+					<button type="button" data-translate="${actionKey}"><span class="icon icon-translate" aria-hidden="true"></span><span data-i18n="social.actions.translate"></span></button>
+					<button type="button" data-dm="${entityHash}"><span class="icon icon-direct-message" aria-hidden="true"></span><span data-i18n="social.actions.dm"></span></button>
+					${blockButton}
+					${hideButton}
+					${muteButton}
+					${editButton}
+					${editHistoryButton}
+					${deleteButton}
+				</div>
+			</div>
+		</div>
+	</header>
+	${replyContextHtml}
+	${quoteHtml}
+	${groupRefHtml}
+	${contentBlock}
+	${albumChips}
+	${communityNoteHtml}
+	${embeddedWrapEnd}
+	${engagementBarHtml}
+	<div class="replies hidden" data-replies-for="${actionKey}"></div>
+</article>
