@@ -152,9 +152,13 @@ export async function deleteSharedEntries(username, entityHash, cabinetId, entry
 	const stashed = []
 	/** @type {object[]} */
 	const operations = []
+	/** @type {Set<string>} */
+	const processed = new Set()
 	for (const id of entryIds) {
 		const subtree = collectSubtreeIds(index.entries, id)
 		for (const entryId of subtree) {
+			if (processed.has(entryId)) continue
+			processed.add(entryId)
 			const entry = index.entries.find(row => row.id === entryId)
 			if (entry) stashed.push(entry)
 			operations.push(await appendSharedOperationRecord(username, cabinetId, 'delete', entryId, null))

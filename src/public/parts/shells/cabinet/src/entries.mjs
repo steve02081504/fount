@@ -196,20 +196,33 @@ export async function updateEntry(username, entityHash, cabinetId, entryId, patc
 
 	if (patch.set_password != null) {
 		if (entry.kind !== 'folder') throw new Error('only folders support passwords')
-		const encryption = createFolderEncryption(String(patch.set_password))
-		const subtree = collectSubtreeIds(index.entries, entryId)
-		subtree.delete(entryId)
-		const descendants = index.entries.filter(row => subtree.has(row.id))
-		const encEntries = descendants.map(child => normalizeEntry({
-			...child,
-			parent_id: child.parent_id === entryId ? null : child.parent_id,
-		}, entityHash))
-		index.entries = index.entries.filter(row => !subtree.has(row.id))
+		const password = String(patch.set_password)
+		const created = createFolderEncryption(password)
+		const { folder_key: folderKey, ...encryption } = created
+		/** @type {object[]} */
+		let encEntries
+		if (entry.encryption) {
+			const oldKey = unlockMeta?.folder_id === entryId ? unlockMeta.folder_key : null
+			if (!oldKey) throw new Error('unlock required to change folder password')
+			encEntries = (await loadEncryptedFolderIndex(
+				username, entityHash, cabinetId, entryId, oldKey,
+			)).entries || []
+		}
+		else {
+			const subtree = collectSubtreeIds(index.entries, entryId)
+			subtree.delete(entryId)
+			encEntries = index.entries
+				.filter(row => subtree.has(row.id))
+				.map(child => normalizeEntry({
+					...child,
+					parent_id: child.parent_id === entryId ? null : child.parent_id,
+				}, entityHash))
+			index.entries = index.entries.filter(row => !subtree.has(row.id))
+		}
 		const folderIdx = index.entries.findIndex(row => row.id === entryId)
 		if (folderIdx < 0) throw new Error('entry not found')
 		entry = patchEntry(index.entries[folderIdx], { encryption }, entityHash)
 		index.entries[folderIdx] = entry
-		const folderKey = unlockFolderKey(String(patch.set_password), encryption)
 		await saveEncryptedFolderIndex(username, entityHash, cabinetId, entryId, folderKey, {
 			version: 1,
 			entries: encEntries,

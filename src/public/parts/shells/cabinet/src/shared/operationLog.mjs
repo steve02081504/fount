@@ -60,8 +60,9 @@ export async function loadSharedOperations(username, cabinetId) {
 export async function appendSharedOperation(username, cabinetId, operation) {
 	const path = sharedCabinetOperationsPath(username, cabinetId)
 	await ensureParentDir(path)
+	const knownOperationIds = await getKnownOperationIds(username, cabinetId)
 	await appendFile(path, `${JSON.stringify(operation)}\n`, 'utf8')
-	knownOperationIdsByCabinet.get(knownOperationIdsKey(username, cabinetId))?.add(operation.operation_id)
+	knownOperationIds.add(operation.operation_id)
 }
 
 /**
