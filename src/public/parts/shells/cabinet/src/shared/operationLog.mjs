@@ -7,6 +7,35 @@ import { sharedCabinetOperationsPath } from '../paths.mjs'
 
 import { verifyOperation } from './crypto.mjs'
 
+/** @type {Map<string, Set<string>>} */
+const knownOperationIdsByCabinet = new Map()
+
+/**
+ * @param {string} username 用户
+ * @param {string} cabinetId 柜
+ * @returns {string} 缓存键
+ */
+function knownOperationIdsKey(username, cabinetId) {
+	return `${username}:${cabinetId}`
+}
+
+/**
+ * 按柜复用已见 operation_id 集合；本地追加时同步更新。
+ * @param {string} username 用户
+ * @param {string} cabinetId 柜
+ * @returns {Promise<Set<string>>} 已知 id
+ */
+export async function getKnownOperationIds(username, cabinetId) {
+	const key = knownOperationIdsKey(username, cabinetId)
+	const cached = knownOperationIdsByCabinet.get(key)
+	if (cached) return cached
+	const knownOperationIds = new Set(
+		(await loadSharedOperations(username, cabinetId)).map(operation => operation.operation_id),
+	)
+	knownOperationIdsByCabinet.set(key, knownOperationIds)
+	return knownOperationIds
+}
+
 /**
  * @param {string} username 用户
  * @param {string} cabinetId 柜
@@ -32,6 +61,7 @@ export async function appendSharedOperation(username, cabinetId, operation) {
 	const path = sharedCabinetOperationsPath(username, cabinetId)
 	await ensureParentDir(path)
 	await appendFile(path, `${JSON.stringify(operation)}\n`, 'utf8')
+	knownOperationIdsByCabinet.get(knownOperationIdsKey(username, cabinetId))?.add(operation.operation_id)
 }
 
 /**
@@ -44,8 +74,7 @@ export async function appendSharedOperation(username, cabinetId, operation) {
  * @returns {Promise<'accepted' | 'duplicate' | 'rejected'>} 结果
  */
 export async function ingestSharedOperation(username, cabinetId, operation, writePublicKey, options = {}) {
-	const knownOperationIds = options.knownOperationIds
-		?? new Set((await loadSharedOperations(username, cabinetId)).map(operation => operation.operation_id))
+	const knownOperationIds = options.knownOperationIds ?? await getKnownOperationIds(username, cabinetId)
 	if (knownOperationIds.has(operation.operation_id)) return 'duplicate'
 	if (!await verifyOperation(operation, writePublicKey)) {
 		if (options.peerNodeHash)

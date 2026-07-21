@@ -24,6 +24,7 @@ import { loadSharedIndex, persistSharedSnapshot } from './materialize.mjs'
 import { appendSharedOperation } from './operationLog.mjs'
 
 /**
+ * 签名并追加一条操作（不物化、不广播）。
  * @param {string} username 用户
  * @param {string} cabinetId 柜
  * @param {string} action upsert|delete
@@ -31,14 +32,13 @@ import { appendSharedOperation } from './operationLog.mjs'
  * @param {object | null} payload 明文 payload（delete 可为 null）
  * @returns {Promise<object>} 签名操作
  */
-async function commitSharedOperation(username, cabinetId, action, entryId, payload) {
+async function appendSharedOperationRecord(username, cabinetId, action, entryId, payload) {
 	const keys = await loadSharedKeys(username, cabinetId)
 	if (!keys?.write_privkey) throw new Error('write key required')
 	const readKey = readKeyForGen(keys)
 	if (!readKey) throw new Error('read key missing')
 	const { hlc, keys: nextKeys } = nextSharedHlc(keys)
 	await saveSharedKeys(username, cabinetId, nextKeys)
-
 	const operation = await signOperation({
 		operation_id: randomUUID(),
 		hlc,
@@ -50,12 +50,35 @@ async function commitSharedOperation(username, cabinetId, action, entryId, paylo
 			: encryptOperationPayload(payload, readKey, cabinetId, nextKeys.current_gen),
 	}, Buffer.from(keys.write_privkey, 'hex'))
 	await appendSharedOperation(username, cabinetId, operation)
+	return operation
+}
+
+/**
+ * 物化快照并广播一批操作。
+ * @param {string} username 用户
+ * @param {string} cabinetId 柜
+ * @param {object[]} operations 已追加操作
+ * @returns {Promise<void>}
+ */
+async function flushSharedOperations(username, cabinetId, operations) {
+	if (!operations.length) return
 	await persistSharedSnapshot(username, cabinetId)
-	try {
-		const { broadcastSharedOperation } = await import('./sync.mjs')
-		await broadcastSharedOperation(username, cabinetId, operation)
-	}
-	catch { /* sync optional */ }
+	const { broadcastSharedOperation } = await import('./sync.mjs')
+	for (const operation of operations)
+		await broadcastSharedOperation(username, cabinetId, operation).catch(() => { })
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} cabinetId 柜
+ * @param {string} action upsert|delete
+ * @param {string} entryId 条目
+ * @param {object | null} payload 明文 payload（delete 可为 null）
+ * @returns {Promise<object>} 签名操作
+ */
+async function commitSharedOperation(username, cabinetId, action, entryId, payload) {
+	const operation = await appendSharedOperationRecord(username, cabinetId, action, entryId, payload)
+	await flushSharedOperations(username, cabinetId, [operation])
 	return operation
 }
 
@@ -127,15 +150,18 @@ export async function deleteSharedEntries(username, entityHash, cabinetId, entry
 	const deleted = []
 	/** @type {object[]} */
 	const stashed = []
+	/** @type {object[]} */
+	const operations = []
 	for (const id of entryIds) {
 		const subtree = collectSubtreeIds(index.entries, id)
 		for (const entryId of subtree) {
 			const entry = index.entries.find(row => row.id === entryId)
 			if (entry) stashed.push(entry)
-			await commitSharedOperation(username, cabinetId, 'delete', entryId, null)
+			operations.push(await appendSharedOperationRecord(username, cabinetId, 'delete', entryId, null))
 			deleted.push(entryId)
 		}
 	}
+	await flushSharedOperations(username, cabinetId, operations)
 	if (!options.recoverable) return { deleted }
 	return {
 		deleted,
@@ -158,10 +184,13 @@ export async function restoreSharedEntries(username, entityHash, cabinetId, reco
 	if (!record) throw new Error('recovery token invalid')
 	/** @type {string[]} */
 	const restored = []
+	/** @type {object[]} */
+	const operations = []
 	for (const entry of record.entries) {
-		await commitSharedOperation(username, cabinetId, 'upsert', entry.id, entry)
+		operations.push(await appendSharedOperationRecord(username, cabinetId, 'upsert', entry.id, entry))
 		restored.push(entry.id)
 	}
+	await flushSharedOperations(username, cabinetId, operations)
 	await clearRecovery(username, entityHash, cabinetId, recoveryToken, true)
 	return { restored }
 }

@@ -10,7 +10,7 @@ import { resolveUsernameForPartpath } from '../../../../../../server/p2p_server/
 
 import { loadSharedKeys } from './keys.mjs'
 import { persistSharedSnapshot } from './materialize.mjs'
-import { ingestSharedOperation, loadSharedOperations } from './operationLog.mjs'
+import { getKnownOperationIds, ingestSharedOperation, loadSharedOperations } from './operationLog.mjs'
 
 const FANOUT_LIMIT = 16
 
@@ -47,8 +47,10 @@ export async function handleIncomingSharedOperation(username, payload) {
 	if (!cabinetId || !operation) return 'unknown'
 	const keys = await loadSharedKeys(username, cabinetId)
 	if (!keys?.write_pubkey) return 'unknown'
+	const knownOperationIds = await getKnownOperationIds(username, cabinetId)
 	const result = await ingestSharedOperation(username, cabinetId, operation, keys.write_pubkey, {
 		peerNodeHash: payload.peerNodeHash,
+		knownOperationIds,
 	})
 	if (result === 'accepted') await persistSharedSnapshot(username, cabinetId)
 	return result
@@ -122,9 +124,7 @@ export async function handleCabinetP2PInvoke(username, data, ingress = {}) {
  * @returns {Promise<number>} 新接受数
  */
 export async function pullSharedOperationsFromNetwork(username, cabinetId) {
-	const knownOperationIds = new Set(
-		(await loadSharedOperations(username, cabinetId)).map(operation => operation.operation_id),
-	)
+	const knownOperationIds = await getKnownOperationIds(username, cabinetId)
 	await ensureUserRoom({ replicaUsername: username }).catch(() => { })
 	try {
 		const replies = await collectPartInvokeResponses(

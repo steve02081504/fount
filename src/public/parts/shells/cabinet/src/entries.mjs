@@ -209,12 +209,12 @@ export async function updateEntry(username, entityHash, cabinetId, entryId, patc
 		if (folderIdx < 0) throw new Error('entry not found')
 		entry = patchEntry(index.entries[folderIdx], { encryption }, entityHash)
 		index.entries[folderIdx] = entry
-		await savePersonalIndex(username, entityHash, cabinetId, index)
 		const folderKey = unlockFolderKey(String(patch.set_password), encryption)
 		await saveEncryptedFolderIndex(username, entityHash, cabinetId, entryId, folderKey, {
 			version: 1,
 			entries: encEntries,
 		})
+		await savePersonalIndex(username, entityHash, cabinetId, index)
 		return entry
 	}
 
