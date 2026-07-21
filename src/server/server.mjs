@@ -146,11 +146,11 @@ export async function init(start_config) {
 	restartor = start_config.restartor
 	data_path = start_config.data_path
 	const starts = start_config.starts ??= {}
-	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordRPC']) starts[start] ??= true
+	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordRPC', 'P2P']) starts[start] ??= true
 	if (starts.Web) starts.Web = Object.assign({ mDNS: true }, starts.Web)
 	let logoPromise
 	if (starts.Base) {
-		for (const event of ['error', 'unhandledRejection', 'uncaughtException']) {
+		if (!process.env.FOUNT_TEST) for (const event of ['error', 'unhandledRejection', 'uncaughtException']) {
 			unset_shutdown_listener(event)
 			process.on(event, handleError)
 		}
@@ -161,7 +161,8 @@ export async function init(start_config) {
 	}
 
 	config = get_config()
-	if (starts.Base) initAuth()
+	let authPromise
+	if (starts.Base) authPromise = initAuth()
 	SetTaskbarProgress(65)
 
 	const ipcModulePromise = starts.IPC ? import('./ipc_server/index.mjs') : null
@@ -169,7 +170,7 @@ export async function init(start_config) {
 
 	if (starts.IPC) {
 		const { IPCManager } = await ipcModulePromise
-		if (!await new IPCManager().startServer()) {
+		if (!await new IPCManager().startServer(Object(starts.IPC))) {
 			ClearTaskbarProgress()
 			return 'already_running'
 		}
@@ -193,8 +194,9 @@ export async function init(start_config) {
 		 * 懒加载地获取 Express 应用程序实例。
 		 * @returns {Promise<import('npm:express').Application>} Express 应用程序实例。
 		 */
-		const getApp = () => appPromise ??= import('./web_server/index.mjs').then(({ app }) => {
+		const getApp = () => appPromise ??= import('./web_server/index.mjs').then(async ({ app }) => {
 			app.set('trust proxy', trust_proxy ?? 'loopback')
+			await authPromise
 			for (const server of servers) {
 				server.removeListener('request', requestListener)
 				server.on('request', app)
@@ -205,8 +207,8 @@ export async function init(start_config) {
 		})
 		/**
 		 * 处理 HTTP 请求。
-		 * @param {import('http').IncomingMessage} req - HTTP 请求对象。
-		 * @param {import('http').ServerResponse} res - HTTP 响应对象。
+		 * @param {import("node:http").IncomingMessage} req - HTTP 请求对象。
+		 * @param {import("node:http").ServerResponse} res - HTTP 响应对象。
 		 * @returns {Promise<void>}
 		 */
 		const requestListener = async (req, res) => {
@@ -222,8 +224,8 @@ export async function init(start_config) {
 		}
 		/**
 		 * 处理 WebSocket 升级请求。
-		 * @param {import('http').IncomingMessage} req - HTTP 请求对象。
-		 * @param {import('net').Socket} socket - 客户端和服务器之间的网络套接字。
+		 * @param {import("node:http").IncomingMessage} req - HTTP 请求对象。
+		 * @param {import("node:net").Socket} socket - 客户端和服务器之间的网络套接字。
 		 * @param {Buffer} head - 已升级流的第一个数据包。
 		 * @returns {Promise<void>}
 		 */
@@ -239,6 +241,7 @@ export async function init(start_config) {
 		}
 
 		SetTaskbarProgress(78)
+
 		/**
 		 * 创建并绑定单个 HTTP(S) 服务器；族不支持时返回 null。
 		 * @param {import('node:net').ListenOptions} bind 绑定选项
@@ -315,6 +318,10 @@ export async function init(start_config) {
 		tray = createTray()
 	})
 	SetTaskbarProgress(88)
+	if (starts.P2P) {
+		const { initP2PServer } = await import('./p2p_server/index.mjs')
+		await initP2PServer({ dataPath: data_path, signaling: start_config.P2P?.signaling })
+	}
 	if (starts.Base) {
 		console.freshLineI18n('server start', 'fountConsole.server.ready')
 		on_shutdown(() => setWindowTitle(originalTitle))
@@ -327,7 +334,7 @@ export async function init(start_config) {
 	}
 	const endtime = new Date(),
 		denoStartTime = new Date(process.env.FOUNT_DENO_START_TIME)
-	console.log({
+	if (!process.env.FOUNT_TEST) console.log({
 		sessionStartTime: new Date(process.env.FOUNT_SESSION_START_TIME ?? startTime.getTime()),
 		startTime,
 		shellScriptTimeInMs: denoStartTime - startTime,

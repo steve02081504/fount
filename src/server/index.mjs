@@ -8,14 +8,26 @@ import os from 'node:os'
 import process from 'node:process'
 
 import { console } from '../scripts/i18n/index.mjs'
+import { set_sentry_enabled } from '../scripts/sentry_state.mjs'
 import { SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 import { setWindowTitle } from '../scripts/title.mjs'
+
+/**
+ * 生产 CLI 入口禁止继承测试 env，避免 P2P 信令静默切到测试 relay。
+ * @returns {void}
+ */
+function rejectTestEnvInProductionEntry() {
+	if (process.env.FOUNT_TEST === '1') {
+		console.error('FOUNT_TEST must not be set when starting production server (src/server/index.mjs)')
+		process.exit(1)
+	}
+}
+rejectTestEnvInProductionEntry()
 
 import { enableAutoUpdate, disableAutoUpdate } from './autoupdate.mjs'
 import { __dirname, set_start } from './base.mjs'
 import { startIdleCheck, stopIdleCheck } from './idle.mjs'
 import { PauseAllJobs, ReStartJobs } from './jobs.mjs'
-import { set_sentry_enabled } from './sentry_state.mjs'
 import { init } from './server.mjs'
 import { startTimerHeartbeat, stopTimerHeartbeat } from './timers.mjs'
 
@@ -114,6 +126,7 @@ if (args.length) {
 			Web: false,
 			Tray: false,
 			DiscordRPC: false,
+			P2P: false,
 		}
 	}
 	else {
@@ -130,25 +143,27 @@ if (process.env.FOUNT_STARTUP_PRIORITY_BOOST) {
 }
 
 // 如果提供了命令，则通过 IPC 发送到已运行的实例。
-if (command_obj) await (async () => { try {
-	const { IPCManager } = await import('./ipc_server/index.mjs')
-	const result = await IPCManager.sendCommand(command_obj.type, command_obj.data)
-	switch (command_obj.type) {
-		case 'runpart': {
-			const { outputs } = result
-			console.log(outputs)
+if (command_obj) await (async () => {
+	try {
+		const { IPCManager } = await import('./ipc_server/index.mjs')
+		const result = await IPCManager.sendCommand(command_obj.type, command_obj.data)
+		switch (command_obj.type) {
+			case 'runpart': {
+				const { outputs } = result
+				console.log(outputs)
+			}
 		}
+	} catch (err) {
+		if (command_obj.exit)
+			if (String(err.message).endsWith('read ECONNRESET')) return process.exit(0)
+			else if (['ECONNREFUSED', 'ETIMEDOUT', 'AggregateError'].includes(err.code)) {
+				console.errorI18n('fountConsole.ipc.noInstanceRunning')
+				return process.exit(1)
+			}
+		console.errorI18n('fountConsole.ipc.sendCommandFailed', { error: err })
+		throw err
 	}
-} catch (err) {
-	if (command_obj.exit)
-		if (String(err.message).endsWith('read ECONNRESET')) return process.exit(0)
-		else if (['ECONNREFUSED', 'ETIMEDOUT', 'AggregateError'].includes(err.code)) {
-			console.errorI18n('fountConsole.ipc.noInstanceRunning')
-			return process.exit(1)
-		}
-	console.errorI18n('fountConsole.ipc.sendCommandFailed', { error: err })
-	throw err
-}})()
+})()
 
 console.profileEnd('server start')
 
