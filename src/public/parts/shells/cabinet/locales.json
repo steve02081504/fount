@@ -1,0 +1,40 @@
+{
+	"info": {
+		"en-UK": {
+			"name": "Cabinet",
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"description": "P2P personal and shared file cabinets.",
+			"description_markdown": "Manage personal EVFS cabinets and group file spaces with visibility, links, and sync.",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": ["files", "cabinet", "p2p", "storage"]
+		},
+		"zh-CN": {
+			"name": "文件柜",
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"description": "P2P 个人与共享文件柜。",
+			"description_markdown": "管理个人 EVFS 文件柜与群文件空间，支持可见性、链接与同步。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": ["文件", "文件柜", "p2p", "存储"]
+		},
+		"zh-TW": {
+			"name": "檔案櫃",
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"description": "P2P 個人與共享檔案櫃。",
+			"description_markdown": "管理個人 EVFS 檔案櫃與群檔案空間，支援可見性、連結與同步。",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": ["檔案", "檔案櫃", "p2p", "儲存"]
+		},
+		"emoji": {
+			"name": "🗄️📁",
+			"avatar": "https://api.iconify.design/mdi/cabinet-filing.svg",
+			"description": "🗄️📦🔗",
+			"description_markdown": "🗄️➡️📁➡️🔗",
+			"version": "0.0.0",
+			"author": "steve02081504",
+			"tags": ["🗄️", "📁", "🔗", "📦"]
+		}
+	}
+}
