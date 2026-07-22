@@ -7,8 +7,50 @@ EventEmitter.defaultMaxListeners = Math.max(EventEmitter.defaultMaxListeners, 30
 import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
+import {
+	attachReputationSyncWire,
+	getReputationExportAllowlist,
+	setReputationExportAllowlist,
+} from 'npm:@steve02081504/fount-p2p'
 
 import { createScopedLinkRoom } from './link_room.mjs'
+
+const SETTINGS_KEY = 'settings'
+
+/**
+ * @param {string} username - 用户名
+ * @returns {{ infra: boolean }} 主机策略
+ */
+export function getSubfountSettings(username) {
+	const data = loadShellData(username, 'subfounts', SETTINGS_KEY)
+	return { infra: data.infra !== false }
+}
+
+/**
+ * @param {string} username - 用户名
+ * @param {{ infra?: boolean }} patch - 策略补丁
+ * @returns {{ infra: boolean }} 写入后的策略
+ */
+export function patchSubfountSettings(username, patch = {}) {
+	const data = loadShellData(username, 'subfounts', SETTINGS_KEY)
+	if (patch.infra !== undefined)
+		data.infra = Boolean(patch.infra)
+	saveShellData(username, 'subfounts', SETTINGS_KEY)
+	return getSubfountSettings(username)
+}
+
+/**
+ * 允许已认证分机拉取本机信誉表（infra 优先帮扶用）。
+ * @param {string} nodeHash - 分机 nodeHash
+ * @returns {void}
+ */
+function allowReputationExportTo(nodeHash) {
+	const id = String(nodeHash || '').trim().toLowerCase()
+	if (!id) return
+	const allowlist = getReputationExportAllowlist()
+	if (allowlist.includes(id)) return
+	setReputationExportAllowlist([...allowlist, id])
+}
 
 /**
  * 设备信息类型
@@ -206,6 +248,11 @@ class UserSubfountManager {
 		 */
 		this.room = null
 		/**
+		 * 信誉同步 wire dispose
+		 * @type {(() => void) | null}
+		 */
+		this.repSyncDispose = null
+		/**
 		 * 已认证对等端 ID 的集合
 		 * @type {Set<string>}
 		 */
@@ -215,6 +262,11 @@ class UserSubfountManager {
 		 * @type {Map<string, Array<Function>>}
 		 */
 		this.actions = new Map()
+		/**
+		 * 向分机推送 infra 策略
+		 * @type {((payload: { infra: boolean }, peerId?: string) => Promise<void>) | null}
+		 */
+		this.sendInfra = null
 		/**
 		 * 待处理的请求映射（requestId -> { resolve, reject }）
 		 * @type {Map<string, {resolve: Function, reject: Function}>}
@@ -253,6 +305,8 @@ class UserSubfountManager {
 				this.room = null
 				this.actions.clear()
 			}
+			this.repSyncDispose?.()
+			this.repSyncDispose = null
 
 			const codesData = loadShellData(this.username, 'subfounts', 'connection_codes')
 			this.room = createScopedLinkRoom({
@@ -260,8 +314,9 @@ class UserSubfountManager {
 				roomSecret: codesData.password,
 			})
 			await this.room.start()
+			this.repSyncDispose = attachReputationSyncWire()
 
-			const actionNames = ['authenticate', 'device_info', 'response', 'run_code', 'callback', 'shell_exec']
+			const actionNames = ['authenticate', 'device_info', 'response', 'run_code', 'callback', 'shell_exec', 'infra']
 			for (const name of actionNames)
 				this.actions.set(name, this.room.makeAction(name))
 
@@ -270,6 +325,8 @@ class UserSubfountManager {
 			const [, getResponse] = this.actions.get('response')
 			const [, getCallback] = this.actions.get('callback')
 			const [, getShellExec] = this.actions.get('shell_exec')
+			const [sendInfra] = this.actions.get('infra')
+			this.sendInfra = sendInfra
 
 			// 处理对等端离开
 			this.room.onPeerLeave((peerId) => {
@@ -297,6 +354,7 @@ class UserSubfountManager {
 				}
 
 				this.authenticatedPeers.add(peerId)
+				allowReputationExportTo(peerId)
 
 				// 使用设备 ID 或 peerId 来查找或创建分机
 				let subfount = remoteDeviceId
@@ -312,7 +370,9 @@ class UserSubfountManager {
 
 
 				this.broadcastUiUpdate()
-				sendAuth({ type: 'authenticated' }, peerId)
+				const { infra } = getSubfountSettings(this.username)
+				sendAuth({ type: 'authenticated', infra }, peerId)
+				void sendInfra?.({ infra }, peerId)
 			})
 
 			// 处理设备信息消息
@@ -605,6 +665,18 @@ class UserSubfountManager {
 	}
 
 	/**
+	 * 向所有已认证分机推送 infra 策略。
+	 * @param {boolean} infra - 是否参与网络 infra
+	 * @returns {void}
+	 */
+	broadcastInfra(infra) {
+		if (!this.sendInfra) return
+		const payload = { infra: Boolean(infra) }
+		for (const peerId of this.authenticatedPeers)
+			void this.sendInfra(payload, peerId)
+	}
+
+	/**
 	 * 向分机发送请求并等待响应。
 	 * @param {number} subfountId - 目标分机 ID。
 	 * @param {object} command - 要发送的命令对象。
@@ -629,6 +701,8 @@ events.on('BeforeUserDeleted', ({ username }) => {
 	if (manager) {
 		if (manager.room)
 			void manager.room.leave()
+		manager.repSyncDispose?.()
+		manager.repSyncDispose = null
 
 		for (const ws of manager.uiSockets)
 			if (ws.readyState === ws.OPEN)
@@ -662,6 +736,8 @@ export function getUserManager(username, hostPeerId = null) {
 	if (hostPeerId && existing && existing.hostPeerId !== hostPeerId) {
 		if (existing.room)
 			void existing.room.leave()
+		existing.repSyncDispose?.()
+		existing.repSyncDispose = null
 		userManagers.delete(username)
 		existing = null
 	}
@@ -772,4 +848,17 @@ export function setDeviceDescription(username, deviceId, description) {
 		throw new Error(`No manager found for user ${username}`)
 
 	manager.setDeviceDescription(deviceId, description)
+}
+
+/**
+ * 更新 infra 策略并推送给已连接分机。
+ * @param {string} username - 用户名
+ * @param {boolean} infra - 是否让下属分机参与网络 infra
+ * @returns {{ infra: boolean }} 写入后的策略
+ */
+export function setInfraPolicy(username, infra) {
+	const settings = patchSubfountSettings(username, { infra })
+	const manager = userManagers.get(username)
+	manager?.broadcastInfra(settings.infra)
+	return settings
 }

@@ -3952,6 +3952,16 @@ export type LocaleData = {
 			passwordCopied: string
 			regenerateSuccess: string
 		}
+		infra: {
+			title: string
+			description: string
+			capabilityRelay: string
+			capabilityMailbox: string
+			hostPriority: string
+			toggleLabel: string
+			enabledToast: string
+			disabledToast: string
+		}
 		connectedSubfounts: {
 			title: string
 			noSubfountsConnected: string
@@ -3993,6 +4003,8 @@ export type LocaleData = {
 		errors: {
 			loadConnectionCodeFailed: string
 			regenerateConnectionCodeFailed: string
+			loadSettingsFailed: string
+			saveSettingsFailed: string
 			generalError: string
 		}
 		home_function_buttons: {
@@ -5669,7 +5681,9 @@ export type LocaleKeyParams = {
 	'subfounts.connectedSubfounts.descriptionSaveFailed': { message: string | number }
 	'subfounts.errors.generalError': { message: string | number }
 	'subfounts.errors.loadConnectionCodeFailed': { message: string | number }
+	'subfounts.errors.loadSettingsFailed': { message: string | number }
 	'subfounts.errors.regenerateConnectionCodeFailed': { message: string | number }
+	'subfounts.errors.saveSettingsFailed': { message: string | number }
 	'telegram_bots.alerts.botExists': { botname: string | number }
 	'themeManage.editor.deleteConfirm': { id: string | number }
 	'themeManage.editor.failedToClone': { message: string | number }

@@ -3,16 +3,17 @@
 /**
  * 独立 Subfount 客户端
  *
- * 此脚本通过 fount 自带 P2P link scope 连接到主 fount 实例
- * 并执行主机发送的 JavaScript 代码。
+ * - 参与 fount 网络层 infra（overlay 转发 + mailbox）。
+ * - 未设置主机：standalone infra。
+ * - 设置主机后：一边跑 infra，一边从主机拉取信誉表并优先帮扶主机及其信任节点；
+ *   同时接受主机下发的 run_code / shell_exec。
  *
  * 首次使用:
  *   1. 将此文件放入一个空文件夹
  *   2. 在该文件夹中运行: deno install --allow-scripts --allow-all --entrypoint subfount.mjs
- *   3. 然后运行: deno run --allow-scripts --allow-all subfount.mjs <host-room-id> <password>
- *
- * 或交互式运行:
- *   deno run --allow-scripts --allow-all subfount.mjs
+ *   3. infra only: deno run --allow-scripts --allow-all subfount.mjs
+ *   4. 挂主机: deno run --allow-scripts --allow-all subfount.mjs <host-room-id> <password> [host-node-hash]
+ *      host-node-hash 可选；提供时可直连主机，不必只靠 discovery。
  */
 
 import fs from 'node:fs'
@@ -21,6 +22,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { setInterval, clearInterval, setTimeout } from 'node:timers'
 import { fileURLToPath } from 'node:url'
+
 process.on('uncaughtException', (err) => {
 	if (err?.code === 'ECONNRESET' || err?.code === 'ECONNREFUSED' || err?.message?.includes('socket hang up'))
 		return
@@ -37,8 +39,7 @@ if (!fs.existsSync(denoJsonPath)) {
 	fs.writeFileSync(denoJsonPath, JSON.stringify({ nodeModulesDir: 'auto' }, null, '\t') + '\n')
 	console.log('Created deno.json')
 }
-else 
-	// 确保已有 deno.json 包含 nodeModulesDir
+else
 	try {
 		const existing = JSON.parse(fs.readFileSync(denoJsonPath, 'utf-8'))
 		if (!existing.nodeModulesDir) {
@@ -47,18 +48,26 @@ else
 			console.log('Updated deno.json (added nodeModulesDir)')
 		}
 	}
-	catch { }
+	catch { /* ignore */ }
 
+const REPUTATION_PULL_INTERVAL_MS = 15 * 60 * 1000
+const DEVICE_INFO_INTERVAL_MS = 15 * 60 * 1000
 
-// --- 动态加载 npm 依赖 ---
-let exec, inquirer, on_shutdown, createScopedLinkRoom
+/** @type {typeof import('npm:@steve02081504/exec').exec} */
+let exec
+/** @type {import('npm:inquirer').default} */
+let inquirer
+/** @type {import('npm:on-shutdown').on_shutdown} */
+let on_shutdown
+/** @type {typeof import('npm:@steve02081504/fount-p2p')} */
+let p2p
+
 try {
 	;({ exec } = await import('npm:@steve02081504/exec'))
 	;({ default: inquirer } = await import('npm:inquirer'))
 	;({ on_shutdown } = await import('npm:on-shutdown'))
-	const subfountP2p = await import('npm:@steve02081504/fount-p2p/index')
-	await subfountP2p.startNode({ nodeDir: path.join(__dirname, '.fount-p2p-node') })
-	createScopedLinkRoom = subfountP2p.createScopedLinkRoom
+	p2p = await import('npm:@steve02081504/fount-p2p')
+	await p2p.startNode({ nodeDir: path.join(__dirname, '.fount-p2p-node') })
 }
 catch (error) {
 	console.error('\nFailed to load dependencies:', error.message)
@@ -73,39 +82,77 @@ const args = process.argv.slice(2)
 
 let hostRoomId = null
 let password = null
+/** @type {string | null} */
+let hostNodeHashHint = null
 
-// 解析参数
 if (args.length >= 2) {
 	hostRoomId = args[0]
 	password = args[1]
+	hostNodeHashHint = args[2]?.trim().toLowerCase() || null
 }
-else {
-	// 交互模式
+else if (args.length === 1 && (args[0] === '--help' || args[0] === '-h')) {
+	console.log(`Usage:
+  subfount.mjs                                    infra only
+  subfount.mjs <host-room-id> <password> [node-hash]
+      infra + host worker / priority assist
+`)
+	process.exit(0)
+}
+else if (args.length === 0 && process.stdin.isTTY) {
 	const result = await inquirer.prompt([
 		{
 			name: 'hostRoomId',
-			message: 'Enter host room ID (connection code):',
+			message: 'Host room ID (connection code, empty = infra only):',
 			type: 'input',
-			required: true,
+			required: false,
 		},
 		{
 			name: 'password',
-			message: 'Enter password:',
+			message: 'Host password:',
 			type: 'input',
-			required: true,
+			required: false,
+			when: answers => Boolean(answers.hostRoomId?.trim()),
+		},
+		{
+			name: 'hostNodeHash',
+			message: 'Host nodeHash (optional, from connection-code API):',
+			type: 'input',
+			required: false,
+			when: answers => Boolean(answers.hostRoomId?.trim()),
 		},
 	])
-	hostRoomId = result.hostRoomId
-	password = result.password
+	hostRoomId = result.hostRoomId?.trim() || null
+	password = result.password?.trim() || null
+	hostNodeHashHint = result.hostNodeHash?.trim().toLowerCase() || null
+}
+else if (args.length === 1) {
+	console.error('Usage: subfount.mjs [<host-room-id> <password> [host-node-hash]]')
+	process.exit(2)
 }
 
+const localNodeHash = p2p.getNodeHash()
+/** 无主机时默认跑 infra；挂上主机后由主机策略覆盖。 */
+let infraEnabled = true
+if (!(hostRoomId && password)) {
+	await p2p.startInfra({ logger: console })
+	console.log(`Infra running (nodeHash=${localNodeHash})`)
+}
+else
+	console.log(`Subfount worker starting (nodeHash=${localNodeHash}); awaiting host infra policy`)
 
+/** @type {any} */
 let room = null
 let authenticated = false
-let hostPeerId = null
+/** @type {string | null} */
+let hostNodeHash = null
 let deviceInfo = null
+/** @type {ReturnType<typeof setInterval> | null} */
 let deviceInfoUpdateInterval = null
+/** @type {ReturnType<typeof setInterval> | null} */
+let reputationPullInterval = null
+/** @type {string | null} */
 let deviceId = null
+/** @type {Record<string, Function>} */
 const actions = {}
 
 /**
@@ -114,7 +161,6 @@ const actions = {}
  */
 async function generateDeviceId() {
 	try {
-		// 收集机器信息
 		const machineInfo = {
 			hostname: os.hostname(),
 			platform: process.platform,
@@ -123,7 +169,6 @@ async function generateDeviceId() {
 			release: os.release(),
 		}
 
-		// 尝试获取网络接口的 MAC 地址（更稳定的标识符）
 		try {
 			const networkInterfaces = os.networkInterfaces()
 			const macAddresses = []
@@ -134,43 +179,33 @@ async function generateDeviceId() {
 						if (iface.mac && iface.mac !== '00:00:00:00:00:00')
 							macAddresses.push(iface.mac)
 			}
-			// 使用第一个非空 MAC 地址
 			if (macAddresses.length > 0) machineInfo.mac = macAddresses[0]
 		}
 		catch (error) {
-			// 如果获取 MAC 地址失败，继续使用其他信息
 			console.warn('Failed to get MAC address:', error.message)
 		}
 
-		// 尝试获取 CPU 信息（如果可用）
 		try {
 			const cpus = os.cpus()
 			if (cpus?.length > 0) machineInfo.cpuModel = cpus[0].model
 		}
-		catch {
-			// 忽略 CPU 信息获取失败
-		}
+		catch { /* ignore */ }
 
-		// 将机器信息转换为字符串并生成哈希
 		const machineString = JSON.stringify(machineInfo)
 		const encoder = new TextEncoder()
 		const data = encoder.encode(machineString)
 		const hashBuffer = await crypto.subtle.digest('SHA-256', data)
 		const hashArray = Array.from(new Uint8Array(hashBuffer))
 		const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-
-		// 返回前 32 个字符作为 ID（足够唯一且不会太长）
 		return hashHex.substring(0, 32)
 	}
 	catch (error) {
 		console.error('Failed to generate machine ID, falling back to hostname:', error)
-		// 如果生成失败，使用 hostname 作为后备方案
 		return os.hostname().replace(/[^\dA-Za-z]/g, '').substring(0, 32) || 'subfount-client'
 	}
 }
 
 /**
- * 安全收集信息的辅助函数。
  * @param {string} name - 信息名称（用于日志）。
  * @param {Function} fn - 收集函数。
  * @returns {Promise<any>} - 收集到的信息或错误对象。
@@ -186,11 +221,10 @@ async function safeCollect(name, fn) {
 }
 
 /**
- * 收集设备信息。
  * @returns {Promise<object>} - 设备信息对象。
  */
 async function collectDeviceInfo() {
-	const deviceInfo = {
+	const info = {
 		hostname: os.hostname(),
 		os: {
 			type: os.type(),
@@ -201,36 +235,32 @@ async function collectDeviceInfo() {
 		timestamp: new Date().toISOString(),
 	}
 
-	// 收集 CPU 信息
-	deviceInfo.cpu = await safeCollect('CPU', async () => {
+	info.cpu = await safeCollect('CPU', async () => {
 		const osinfo = await import('npm:node-os-utils@1.3.7').then(m => m.default)
 		const cpuInfo = await osinfo.cpu.average()
 		const cpuUsage = (1 - cpuInfo.avgIdle / cpuInfo.avgTotal) * 100
 		return {
 			model: osinfo.cpu.model().replaceAll('\x00', ''),
 			cores: osinfo.cpu.count(),
-			frequency: cpuInfo.avgTotal / 1000, // GHz
+			frequency: cpuInfo.avgTotal / 1000,
 			usage: cpuUsage,
 		}
 	})
 
-	// 收集内存信息
-	deviceInfo.memory = await safeCollect('memory', async () => {
+	info.memory = await safeCollect('memory', async () => {
 		const osinfo = await import('npm:node-os-utils@1.3.7').then(m => m.default)
 		const memInfo = await osinfo.mem.info()
 		return {
-			total: memInfo.totalMemMb, // MB
+			total: memInfo.totalMemMb,
 			used: memInfo.usedMemMb,
 			free: memInfo.freeMemMb,
 			usage: memInfo.usedMemMb / memInfo.totalMemMb * 100,
 		}
 	})
 
-	// 收集磁盘信息
-	deviceInfo.disk = await safeCollect('disk', async () => {
+	info.disk = await safeCollect('disk', async () => {
 		const diskUsage = {}
 		if (process.platform === 'win32') {
-			// Windows 平台使用 WMIC 命令
 			const disks = (await exec('wmic logicaldisk get DeviceID,Size,FreeSpace')).stdout
 			disks.split('\n').slice(1).forEach(line => {
 				const parts = line.trim().split(/\s+/)
@@ -239,7 +269,7 @@ async function collectDeviceInfo() {
 					const freeSize = Number(parts[1])
 					const totalSize = Number(parts[2])
 					diskUsage[disk] = {
-						total: totalSize / 1024 / 1024 / 1024, // GB
+						total: totalSize / 1024 / 1024 / 1024,
 						free: freeSize / 1024 / 1024 / 1024,
 						used: (totalSize - freeSize) / 1024 / 1024 / 1024,
 						usage: (totalSize - freeSize) / totalSize * 100,
@@ -248,7 +278,6 @@ async function collectDeviceInfo() {
 			})
 		}
 		else if (process.platform === 'linux' || process.platform === 'darwin') {
-			// Linux/macOS 平台使用 df 命令
 			const disks = (await exec('df -h')).stdout
 			disks.split('\n').slice(1).forEach(line => {
 				const parts = line.trim().split(/\s+/)
@@ -270,13 +299,12 @@ async function collectDeviceInfo() {
 		return diskUsage
 	})
 
-	// 收集 shell 可用性信息
-	deviceInfo.shells = await safeCollect('shell availability', async () => {
+	info.shells = await safeCollect('shell availability', async () => {
 		const { available } = await import('npm:@steve02081504/exec')
 		return available
 	})
 
-	return deviceInfo
+	return info
 }
 
 /**
@@ -284,22 +312,108 @@ async function collectDeviceInfo() {
  */
 async function sendDeviceInfoToHost() {
 	deviceInfo = await collectDeviceInfo()
-	if (actions.sendDeviceInfo && hostPeerId && authenticated)
-		await actions.sendDeviceInfo(deviceInfo, hostPeerId)
+	if (actions.sendDeviceInfo && hostNodeHash && authenticated)
+		await actions.sendDeviceInfo(deviceInfo, hostNodeHash)
 }
 
 /**
- * 处理主机的运行代码请求。
+ * 从主机拉取信誉表并应用到本地（用于 infra 路由加权）。
+ */
+async function pullHostReputation() {
+	if (!hostNodeHash || !authenticated) return
+	try {
+		const table = await Promise.race([
+			p2p.pullReputationFromNode(hostNodeHash),
+			new Promise((_, reject) => {
+				setTimeout(() => reject(new Error('reputation pull timed out')), 10_000)
+			}),
+		])
+		await p2p.setReputationTable(table)
+		console.log('✓ Pulled reputation table from host')
+	}
+	catch (error) {
+		console.warn('Reputation pull failed:', error.message)
+	}
+}
+
+/**
+ * 清除对本机（主机）的优先加权；保留 hostNodeHash 以便远程执行。
+ */
+async function clearHostPriority() {
+	if (reputationPullInterval) {
+		clearInterval(reputationPullInterval)
+		reputationPullInterval = null
+	}
+	const locked = hostNodeHash || p2p.getReputationLocks()[0]
+	if (locked) await p2p.unlockReputationMax([locked])
+	p2p.setTrustSyncDonors([])
+	p2p.setInfraPriority({ useLocalReputation: false })
+}
+
+/**
+ * 挂上主机后：锁定主机满分、拉取信任表、启用信誉加权。
+ * @param {string} nodeHash - 主机 nodeHash
+ */
+async function enableHostAssist(nodeHash) {
+	hostNodeHash = nodeHash
+	if (!infraEnabled) return
+	p2p.setTrustSyncDonors([nodeHash])
+	await p2p.lockReputationMax([nodeHash])
+	p2p.setInfraPriority({ useLocalReputation: true })
+	await pullHostReputation()
+	if (reputationPullInterval) clearInterval(reputationPullInterval)
+	reputationPullInterval = setInterval(() => {
+		void pullHostReputation()
+	}, REPUTATION_PULL_INTERVAL_MS).unref()
+}
+
+/**
+ * @param {{ infra?: boolean } | null | undefined} data 策略载荷
+ * @returns {boolean} 是否启用 infra
+ */
+function readInfraPolicy(data) {
+	return data?.infra !== false
+}
+
+/**
+ * 应用主机下发的 infra 策略。
+ * @param {boolean} enabled - 是否参与网络 infra
+ */
+async function applyInfra(enabled) {
+	infraEnabled = Boolean(enabled)
+	if (infraEnabled) {
+		if (!p2p.isInfraRunning()) await p2p.startInfra({ logger: console })
+		if (authenticated && hostNodeHash) await enableHostAssist(hostNodeHash)
+		console.log(authenticated
+			? '✓ Infra enabled (host priority assist)'
+			: '✓ Infra enabled')
+		return
+	}
+	await clearHostPriority()
+	if (p2p.isInfraRunning()) await p2p.stopInfra()
+	console.log('✓ Infra disabled by host policy')
+}
+
+/**
+ * 主机断开：卸优先；离开主机管辖后默认恢复 infra。
+ */
+async function onHostDisconnected() {
+	await clearHostPriority()
+	hostNodeHash = null
+	infraEnabled = true
+	if (!p2p.isInfraRunning()) await p2p.startInfra({ logger: console })
+}
+
+/**
  * @param {object} message - 运行代码消息对象。
  * @param {string} peerId - 发送者的对等端 ID。
  */
 async function handleRunCode(message, peerId) {
-	if (peerId !== hostPeerId) return
+	if (peerId !== hostNodeHash) return
 
 	const { payload, requestId } = message
 	const { script, callbackInfo } = payload
 
-	// 执行代码前更新设备信息
 	await sendDeviceInfoToHost()
 
 	try {
@@ -307,15 +421,11 @@ async function handleRunCode(message, peerId) {
 
 		let callback = null
 		if (callbackInfo && actions.sendCallback)
-			/**
-			 * 远程回调函数。
-			 * @param {any} data - 回调数据。
-			 */
 			callback = async (data) => {
 				await actions.sendCallback({
 					partpath: callbackInfo.partpath,
 					data,
-				}, hostPeerId)
+				}, hostNodeHash)
 			}
 
 		const evalResult = await async_eval(script, { callback })
@@ -323,37 +433,32 @@ async function handleRunCode(message, peerId) {
 		await actions.sendResponse({
 			requestId,
 			payload: evalResult,
-		}, hostPeerId)
+		}, hostNodeHash)
 
-		// 执行代码后更新设备信息
 		await sendDeviceInfoToHost()
 	}
 	catch (error) {
-		// 发送错误回传
 		await actions.sendResponse({
 			requestId,
 			payload: { error: error.message, stack: error.stack },
 			isError: true,
-		}, hostPeerId)
+		}, hostNodeHash)
 	}
 }
 
 /**
- * 处理主机的 shell 执行请求。
  * @param {object} message - Shell 执行消息对象。
  * @param {string} peerId - 发送者的对等端 ID。
  */
 async function handleShellExec(message, peerId) {
-	if (peerId !== hostPeerId) return
+	if (peerId !== hostNodeHash) return
 
 	const { payload, requestId } = message
 	const { command, shell, options } = payload
 
 	try {
-		// 从 @steve02081504/exec 导入 exec 函数
-		const { exec, shell_exec_map } = await import('npm:@steve02081504/exec')
+		const { exec: run, shell_exec_map } = await import('npm:@steve02081504/exec')
 
-		// 确定要使用的 exec 函数
 		if (shell) {
 			if (!shell_exec_map[shell])
 				throw new Error(`Unsupported shell: ${shell}`)
@@ -361,24 +466,22 @@ async function handleShellExec(message, peerId) {
 			await actions.sendResponse({
 				requestId,
 				payload: result,
-			}, hostPeerId)
+			}, hostNodeHash)
 			return
 		}
 
-		// 执行命令
-		const result = await exec(command, options || {})
+		const result = await run(command, options || {})
 		await actions.sendResponse({
 			requestId,
 			payload: result,
-		}, hostPeerId)
+		}, hostNodeHash)
 	}
 	catch (error) {
-		// 发送错误回传
 		await actions.sendResponse({
 			requestId,
 			payload: { error: error.message, stack: error.stack },
 			isError: true,
-		}, hostPeerId)
+		}, hostNodeHash)
 	}
 }
 
@@ -390,9 +493,22 @@ async function connectViaP2P() {
 		console.log('Connecting to host...')
 		deviceId = await generateDeviceId()
 
-		room = createScopedLinkRoom({
+		if (hostNodeHashHint) {
+			const { getLink, ensureLinkToNode } = await import('npm:@steve02081504/fount-p2p/transport/link_registry')
+			for (let attempt = 0; attempt < 30; attempt++) {
+				if (getLink(hostNodeHashHint)) break
+				void ensureLinkToNode(hostNodeHashHint).catch(() => null)
+				await new Promise(resolve => setTimeout(resolve, 1000))
+			}
+		}
+
+		room = p2p.createGroupLinkSet({
+			groupId: `subfount:${hostRoomId}`,
 			scope: `subfount:${hostRoomId}`,
 			roomSecret: password,
+			members: hostNodeHashHint ? [hostNodeHashHint] : [],
+			dialAll: true,
+			autoconnect: true,
 		})
 		await room.start()
 
@@ -402,7 +518,8 @@ async function connectViaP2P() {
 			response: ['sendResponse', null],
 			run_code: [null, 'getRunCode'],
 			callback: ['sendCallback', null],
-			shell_exec: ['sendShellExec', 'getShellExec']
+			shell_exec: [null, 'getShellExec'],
+			infra: [null, 'getInfra'],
 		}
 
 		for (const [name, [sendName, getName]] of Object.entries(actionMap)) {
@@ -414,10 +531,12 @@ async function connectViaP2P() {
 		actions.getAuth((data, peerId) => {
 			if (data.type === 'authenticated') {
 				authenticated = true
-				hostPeerId = peerId
-				console.log('✓ Successfully connected to host')
-				sendDeviceInfoToHost()
-				deviceInfoUpdateInterval = setInterval(sendDeviceInfoToHost, 15 * 60 * 1000).unref()
+				hostNodeHash = peerId
+				console.log('✓ Connected to host')
+				void applyInfra(readInfraPolicy(data))
+				void sendDeviceInfoToHost()
+				if (deviceInfoUpdateInterval) clearInterval(deviceInfoUpdateInterval)
+				deviceInfoUpdateInterval = setInterval(sendDeviceInfoToHost, DEVICE_INFO_INTERVAL_MS).unref()
 			}
 			else if (data.type === 'auth_error') {
 				console.log('✗ Authentication failed, retrying in 5 seconds...')
@@ -428,32 +547,36 @@ async function connectViaP2P() {
 			}
 		})
 
+		actions.getInfra((data, peerId) => {
+			if (!authenticated || peerId !== hostNodeHash) return
+			void applyInfra(readInfraPolicy(data))
+		})
+
 		/**
-		 * 创建已验证请求的处理函数。
 		 * @param {Function} handler - 请求处理函数。
 		 * @returns {Function} 已验证的请求处理函数。
 		 */
 		const handleAuthenticatedRequest = (handler) => (message, peerId) => {
-			if (authenticated && peerId === hostPeerId) handler(message, peerId)
+			if (authenticated && peerId === hostNodeHash) handler(message, peerId)
 		}
 		actions.getRunCode(handleAuthenticatedRequest(handleRunCode))
 		actions.getShellExec(handleAuthenticatedRequest(handleShellExec))
 
 		room.onPeerJoin((peerId) => {
-			if (!authenticated && actions.sendAuth && !hostPeerId) {
+			if (!authenticated && actions.sendAuth && !hostNodeHash) {
 				console.log('Host discovered, sending authentication...')
-				hostPeerId = peerId
+				hostNodeHash = peerId
 				actions.sendAuth({ password, deviceId }, peerId)
 			}
 		})
 
 		room.onPeerLeave((peerId) => {
-			if (peerId === hostPeerId) {
-				console.log('✗ Disconnected from host')
+			if (peerId === hostNodeHash) {
+				console.log('✗ Disconnected from host (standalone infra default)')
 				authenticated = false
 				clearInterval(deviceInfoUpdateInterval)
 				deviceInfoUpdateInterval = null
-				hostPeerId = null
+				void onHostDisconnected()
 			}
 		})
 	}
@@ -464,11 +587,15 @@ async function connectViaP2P() {
 	}
 }
 
-connectViaP2P()
+if (hostRoomId && password)
+	connectViaP2P()
+else
+	console.log('No host configured — infra overlay/mailbox only')
 
-// 处理优雅关闭
-on_shutdown(() => {
+on_shutdown(async () => {
 	console.log('\nShutting down...')
 	clearInterval(deviceInfoUpdateInterval)
-	if (room) void room.leave()
+	await clearHostPriority()
+	if (room) await room.leave()
+	if (p2p.isInfraRunning()) await p2p.stopInfra()
 })

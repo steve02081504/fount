@@ -12,6 +12,7 @@ const connectionCodeInput = document.getElementById('connection-code-input'),
 	copyCodeButton = document.getElementById('copy-code-button'),
 	copyPasswordButton = document.getElementById('copy-password-button'),
 	regenerateButton = document.getElementById('regenerate-button'),
+	infraToggle = document.getElementById('infra-toggle'),
 	subfountsList = document.getElementById('subfounts-list'),
 	subfountSelect = document.getElementById('subfount-select'),
 	scriptInput = document.getElementById('script-input'),
@@ -240,6 +241,40 @@ copyPasswordButton.addEventListener('click', () =>
 regenerateButton.addEventListener('click', regenerateConnectionCode)
 
 /**
+ * 加载 infra 策略开关状态。
+ */
+async function loadInfraSettings() {
+	try {
+		const settings = await api.getSettings()
+		infraToggle.checked = settings.infra !== false
+	}
+	catch (error) {
+		console.error('Error loading infra settings:', error)
+		showToastI18n('error', 'subfounts.errors.loadSettingsFailed', { message: error.message })
+	}
+}
+
+infraToggle.addEventListener('change', async () => {
+	const enabled = infraToggle.checked
+	infraToggle.disabled = true
+	try {
+		const settings = await api.putSettings({ infra: enabled })
+		infraToggle.checked = settings.infra !== false
+		showToastI18n('success', enabled
+			? 'subfounts.infra.enabledToast'
+			: 'subfounts.infra.disabledToast')
+	}
+	catch (error) {
+		infraToggle.checked = !enabled
+		console.error('Error updating infra settings:', error)
+		showToastI18n('error', 'subfounts.errors.saveSettingsFailed', { message: error.message })
+	}
+	finally {
+		infraToggle.disabled = false
+	}
+})
+
+/**
  * 在所选分机上执行代码。
  * @returns {Promise<void>}
  */
@@ -281,7 +316,7 @@ executeButton.addEventListener('click', executeCode)
 async function main() {
 	await initTranslations('subfounts')
 	applyTheme()
-	await loadConnectionCode()
+	await Promise.all([loadConnectionCode(), loadInfraSettings()])
 	connectWebSocket()
 }
 

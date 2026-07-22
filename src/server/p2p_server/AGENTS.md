@@ -18,7 +18,8 @@ Core lives in [@steve02081504/fount-p2p](https://www.npmjs.com/package/@steve020
 
 | Area | Path |
 | --- | --- |
-| Node startup / entity store | `src/server/p2p_server/index.mjs`, `shells/chat/src/entity/store.mjs` (`findHostingUser` matches profile **or** existing entity dir — groups/shared cabinets may have no profile) |
+| Node startup / entity store | `src/server/p2p_server/index.mjs`, `shells/chat/src/entity/store.mjs` (`findHostingUser` matches profile **or** existing entity dir — groups/shared cabinets may have no profile). `initNode({ nodeDir, entityStore })` only; signaling via `setSignalingRuntimeConfig`. `ensureUserRoom({ replicaUsername, attachDefaultWires: true })` for mailbox / part / part_query / chunks |
+| Public-good infra | optional `startInfra` / `stopInfra` / `setInfraPriority` / `pullReputationFromNode` / `lockReputationMax` (package `docs/infra.md`). Subfount client always runs infra; with a host it pulls the host reputation table and prioritizes that node |
 | HTTP `/api/p2p/*` | `src/server/web_server/p2p_endpoints.mjs` |
 | Entity / profile / EVFS HTTP | `shells/chat/src/entity/endpoints.mjs`, `filesEndpoints.mjs` |
 | Chat federation / DAG / encryption | `shells/chat/src/chat/` |
