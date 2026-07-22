@@ -7,13 +7,13 @@ import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
 
 import { localesForUser } from '../../../../../../scripts/locale.mjs'
 
-import { resolveAgentCharPartNameForUser } from './agentHost.mjs'
 import { profileAvatarFileUrl, profileBannerFileUrl } from './filesUrl.mjs'
 import {
 	applyAvatarToAllLocales,
 	normalizeLocalizedMap,
 	resolveProfilePresentation,
 } from './localized.mjs'
+import { resolveAgentCharPartName } from './member.mjs'
 import { getInfoDefaultsForEntity } from './presentation.mjs'
 
 /** 超过该毫秒未心跳则视为离线 */
@@ -278,7 +278,7 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
 
 	const resolved = resolveProfilePresentation(merged, locales, infoDefaults)
 	const charPartName = replicaUsername
-		? resolveAgentCharPartNameForUser(replicaUsername, parsed.entityHash)
+		? resolveAgentCharPartName(replicaUsername, parsed.entityHash)
 		: null
 	return {
 		...merged,

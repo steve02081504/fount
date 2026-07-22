@@ -1,7 +1,7 @@
 import { mkdir } from 'node:fs/promises'
 import path from 'node:path'
 
-import { initNode } from 'npm:@steve02081504/fount-p2p/node/instance'
+import { initNode, setSignalingRuntimeConfig } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { ensureUserRoom } from 'npm:@steve02081504/fount-p2p/transport/user_room'
 import {
 	createDefaultTrustGraphProvider,
@@ -21,9 +21,13 @@ export async function initP2PServer({ dataPath, signaling }) {
 	const nodeDir = path.join(dataPath, 'p2p', 'node')
 	await mkdir(nodeDir, { recursive: true })
 	const entityStore = createFountEntityStore()
-	initNode({ nodeDir, entityStore, ...signaling ? { signaling } : {} })
+	initNode({ nodeDir, entityStore })
+	if (signaling) setSignalingRuntimeConfig(signaling)
 	registerTrustGraphProvider('default', createDefaultTrustGraphProvider())
 	registerP2PInboundHandlers()
 	const primary = pickPrimaryReplica()
-	if (primary) await ensureUserRoom({ replicaUsername: primary })
+	await ensureUserRoom({
+		attachDefaultWires: true,
+		...primary ? { replicaUsername: primary } : {},
+	})
 }

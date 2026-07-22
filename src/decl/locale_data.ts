@@ -2036,6 +2036,7 @@ export type LocaleData = {
 			streamTest: string
 			messageInput: {
 				placeholder: string
+				'aria-label': string
 			}
 			loadError: string
 			remoteNodeTimeout: string
@@ -3952,6 +3953,16 @@ export type LocaleData = {
 			passwordCopied: string
 			regenerateSuccess: string
 		}
+		infra: {
+			title: string
+			description: string
+			capabilityRelay: string
+			capabilityMailbox: string
+			hostPriority: string
+			toggleLabel: string
+			enabledToast: string
+			disabledToast: string
+		}
 		connectedSubfounts: {
 			title: string
 			noSubfountsConnected: string
@@ -3993,6 +4004,8 @@ export type LocaleData = {
 		errors: {
 			loadConnectionCodeFailed: string
 			regenerateConnectionCodeFailed: string
+			loadSettingsFailed: string
+			saveSettingsFailed: string
 			generalError: string
 		}
 		home_function_buttons: {
@@ -5282,6 +5295,9 @@ export type LocaleKeyParams = {
 	'chat.group.remoteTyping': { name: string | number }
 	'chat.group.remoteTypingMany': { count: string | number; name: string | number }
 	'chat.group.remoteTypingTwo': { name1: string | number; name2: string | number }
+	'chat.group.settingsArchiveDeleteConfirm': { month: string | number }
+	'chat.group.settingsArchiveDeleteFailed': { error: string | number }
+	'chat.group.settingsArchiveDeleteOk': { files: string | number }
 	'chat.group.settingsPage.banConfirm': { name: string | number }
 	'chat.group.settingsPage.banFailed': { error: string | number }
 	'chat.group.settingsPage.channelArchiveImportFailed': { error: string | number }
@@ -5669,7 +5685,9 @@ export type LocaleKeyParams = {
 	'subfounts.connectedSubfounts.descriptionSaveFailed': { message: string | number }
 	'subfounts.errors.generalError': { message: string | number }
 	'subfounts.errors.loadConnectionCodeFailed': { message: string | number }
+	'subfounts.errors.loadSettingsFailed': { message: string | number }
 	'subfounts.errors.regenerateConnectionCodeFailed': { message: string | number }
+	'subfounts.errors.saveSettingsFailed': { message: string | number }
 	'telegram_bots.alerts.botExists': { botname: string | number }
 	'themeManage.editor.deleteConfirm': { id: string | number }
 	'themeManage.editor.failedToClone': { message: string | number }

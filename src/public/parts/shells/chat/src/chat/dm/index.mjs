@@ -215,7 +215,24 @@ export async function orchestrateDmFirstContact(username, introPubKeyHex, dmIntr
 }
 
 /**
- * 统一入群核心：建联邦房间 → 落 `member_join` → 后台 catch-up 拉取快照/补洞。
+ * 入群收尾：失效房间缓存 → 进信令房 → 立即 catch-up + 防抖重试。
+ * 新 join 与「已是成员但重灌 bootstrap」共用，避免早退漏汇合。
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ * @returns {Promise<void>}
+ */
+async function bindJoinFederation(username, groupId) {
+	invalidateFederationRoomCache(username, groupId)
+	await ensureFederationRoom(username, groupId).catch(error => {
+		console.error('performMemberJoin ensureFederationRoom:', error)
+	})
+	const { scheduleCatchUp } = await import('../federation/catchUpScheduler.mjs')
+	void catchUpGroupFromPeers(username, groupId, { waitMs: 8000 }).catch(console.error)
+	scheduleCatchUp(username, groupId)
+}
+
+/**
+ * 统一入群核心：bootstrap →（必要时）落 `member_join` → 进房 + catch-up。
  * 被 HTTP 入群路由与 shell `join` action 共用；邀请码不在加入者侧校验，只随 content 上链，由 owner 入站时按 joinPolicy 验签。
  * @param {string} username replica 所有者
  * @param {string} groupId 群 ID
@@ -233,7 +250,7 @@ export async function performMemberJoin(username, groupId, options = {}) {
 	if (!groupId?.trim()) throw new Error('groupId required')
 	const entityHash = options.entityHash || undefined
 
-	// 首次入群时本地尚无群 state，必须靠 roomSecret 引导联邦房间凭据才能与对端汇合。
+	// DAG 尚无 roomSecret 时靠邀请口令引导；bootstrapStore 会落盘，重启可恢复。
 	if (options.bootstrap?.roomSecret)
 		setFederationBootstrap(username, groupId, options.bootstrap)
 
@@ -242,38 +259,31 @@ export async function performMemberJoin(username, groupId, options = {}) {
 	const alreadyMember = existingSender
 		? resolveActiveMemberKey(state, existingSender)
 		: !entityHash && await resolveActiveMemberKeyForLocalUser(username, groupId, state)
-	if (alreadyMember)
-		return { groupId, defaultChannelId: state.groupSettings?.defaultChannelId || 'default' }
 
-	const content = { homeNodeHash: getLocalNodeHash() }
-	if (options.inviteCode?.trim()) content.inviteCode = options.inviteCode.trim()
-	if (options.powSolution) content.powSolution = options.powSolution
-	const introducer = normalizePubKeyHex(options.introducerPubKeyHash || '')
-	if (PUB_KEY_HEX_64.test(introducer)) content.introducerPubKeyHash = introducer
-	if (options.dmIntroNonce && options.dmIntroSignatureHex) {
-		content.dmIntroNonce = options.dmIntroNonce
-		content.dmIntroSignatureHex = options.dmIntroSignatureHex
+	let defaultChannelId = state.groupSettings?.defaultChannelId || 'default'
+	if (!alreadyMember) {
+		const content = { homeNodeHash: getLocalNodeHash() }
+		if (options.inviteCode?.trim()) content.inviteCode = options.inviteCode.trim()
+		if (options.powSolution) content.powSolution = options.powSolution
+		const introducer = normalizePubKeyHex(options.introducerPubKeyHash || '')
+		if (PUB_KEY_HEX_64.test(introducer)) content.introducerPubKeyHash = introducer
+		if (options.dmIntroNonce && options.dmIntroSignatureHex) {
+			content.dmIntroNonce = options.dmIntroNonce
+			content.dmIntroSignatureHex = options.dmIntroSignatureHex
+		}
+		if (Number.isFinite(options.reputationEdge))
+			content.reputationEdge = Math.max(-1, Math.min(1, options.reputationEdge))
+
+		// 先建房再 append，让 member_join 能发出去。
+		await ensureFederationRoom(username, groupId).catch(error => {
+			console.error('performMemberJoin ensureFederationRoom:', error)
+		})
+		await appendSignedLocalEvent(username, groupId, { type: 'member_join', timestamp: Date.now(), content }, { entityHash })
+		const { state: afterJoin } = await getState(username, groupId)
+		await maybeAssignEcdhDmAdmin(username, groupId, afterJoin)
+		defaultChannelId = afterJoin.groupSettings?.defaultChannelId || 'default'
 	}
-	if (Number.isFinite(options.reputationEdge))
-		content.reputationEdge = Math.max(-1, Math.min(1, options.reputationEdge))
 
-	// 先建联邦房间再 append，确保 member_join 能发布给对端。
-	await ensureFederationRoom(username, groupId).catch(error => {
-		console.error('performMemberJoin ensureFederationRoom:', error)
-	})
-
-	await appendSignedLocalEvent(username, groupId, { type: 'member_join', timestamp: Date.now(), content }, { entityHash })
-	const { state: afterJoin } = await getState(username, groupId)
-	await maybeAssignEcdhDmAdmin(username, groupId, afterJoin)
-	invalidateFederationRoomCache(username, groupId)
-	await ensureFederationRoom(username, groupId).catch(error => {
-		console.error('performMemberJoin rebind federationRoom:', error)
-	})
-
-	// catch-up 内部已串联 joinSnapshot → archive 月份补齐 → gossip wantIds；延长 waitMs 并调度防抖重试以覆盖 信令会合与 member_join 传播竞态。
-	const { scheduleCatchUp } = await import('../federation/catchUpScheduler.mjs')
-	void catchUpGroupFromPeers(username, groupId, { waitMs: 8000 }).catch(console.error)
-	scheduleCatchUp(username, groupId)
-
-	return { groupId, defaultChannelId: afterJoin.groupSettings?.defaultChannelId || 'default' }
+	await bindJoinFederation(username, groupId)
+	return { groupId, defaultChannelId }
 }

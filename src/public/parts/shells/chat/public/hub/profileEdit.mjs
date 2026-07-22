@@ -14,6 +14,7 @@ import {
 	paintEntityProfileCard,
 } from '../shared/entityProfileCard.mjs'
 import { customProfileAvatar } from '../shared/hashAvatar.mjs'
+import { ensureLocaleEntry, renameLocaleEntry } from '../shared/profileLocaleState.mjs'
 import { updateEntityProfileApi } from '../src/entityProfileApi.mjs'
 import {
 	normalizeProfileLinks,
@@ -24,7 +25,6 @@ import {
 	renderLocaleTabs,
 	renderTagsEditor,
 } from '../src/profileLocaleEditor.mjs'
-import { ensureLocaleEntry, renameLocaleEntry } from '../shared/profileLocaleState.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
 import { applyProfileAvatarToHost } from './core/avatarCover.mjs'

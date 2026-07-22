@@ -172,10 +172,9 @@ export async function runCommand(command, extraEnv = {}, options) {
 				: geti18n('fountConsole.test.terminateUnknown', { label })
 		abortController.abort()
 	}
-	if (externalSignal) {
+	if (externalSignal)
 		if (externalSignal.aborted) abortFromExternal(externalSignal.reason)
 		else externalSignal.addEventListener('abort', () => abortFromExternal(externalSignal.reason), { once: true })
-	}
 
 	/**
 	 * @param {string} text 输出片段

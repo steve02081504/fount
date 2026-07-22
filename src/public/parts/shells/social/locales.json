@@ -3,8 +3,8 @@
 		"en-UK": {
 			"name": "Social",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
-			"description": "P2P open social feed, profiles, and file sharing",
-			"description_markdown": "P2P open social feed, profiles, and file sharing.",
+			"description": "P2P open social feed, profiles, and file sharing.",
+			"description_markdown": "Post updates, follow others, and share files on a peer-to-peer social network.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
@@ -15,10 +15,10 @@
 			]
 		},
 		"zh-CN": {
-			"name": "社交",
+			"name": "广场",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
-			"description": "P2P 开放社交动态、资料与文件分享",
-			"description_markdown": "P2P 开放社交动态、资料与文件分享。",
+			"description": "基于 P2P 的开放社交动态、个人资料与文件分享。",
+			"description_markdown": "在点对点社交网络上发布动态、关注他人并分享文件。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
@@ -29,231 +29,234 @@
 			]
 		},
 		"ar-SA": {
+			"name": "التواصل الاجتماعي",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "خلاصة اجتماعية مفتوحة عبر الندّ للند، مع الملفات الشخصية ومشاركة الملفات.",
+			"description_markdown": "انشر التحديثات وتابع الآخرين وشارك الملفات على شبكة اجتماعية ندّية.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"الاتصال الاجتماعي",
+				"اجتماعي",
 				"P2P",
-				"متحرك"
-			],
-			"name": "الاتصال الاجتماعي",
-			"description": "P2P يفتح التحديثات الاجتماعية والمعلومات ومشاركة الملفات",
-			"description_markdown": "P2P يفتح التحديثات الاجتماعية والمعلومات ومشاركة الملفات."
+				"خلاصة"
+			]
 		},
 		"de-DE": {
+			"name": "Social",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "Offener P2P-Social-Feed mit Profilen und Dateifreigabe.",
+			"description_markdown": "Veröffentliche Beiträge, folge anderen und teile Dateien in einem Peer-to-Peer-Sozialnetzwerk.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"sozialer Kontakt",
+				"Social",
 				"P2P",
-				"dynamisch"
-			],
-			"name": "sozialer Kontakt",
-			"description": "P2P öffnet soziale Updates, Informationen und Dateifreigabe",
-			"description_markdown": "P2P öffnet soziale Updates, Informationen und Dateifreigabe."
+				"Feed"
+			]
 		},
 		"emoji": {
-			"name": "社交",
+			"name": "👥💬",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
-			"description": "P2P 开放社交动态、资料与文件分享",
-			"description_markdown": "P2P 开放社交动态、资料与文件分享。",
+			"description": "🌐📰📁",
+			"description_markdown": "👥➡️📰➡️🔗",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"社交",
-				"P2P",
-				"动态"
+				"👥",
+				"📰",
+				"🔗"
 			]
 		},
 		"es-ES": {
+			"name": "Social",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "Feed social abierto P2P, perfiles y compartir archivos.",
+			"description_markdown": "Publica actualizaciones, sigue a otros y comparte archivos en una red social entre pares.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"contacto social",
+				"social",
 				"P2P",
-				"dinámica"
-			],
-			"name": "contacto social",
-			"description": "P2P abre actualizaciones sociales, información y uso compartido de archivos",
-			"description_markdown": "P2P abre actualizaciones sociales, información y uso compartido de archivos."
+				"feed"
+			]
 		},
 		"fr-FR": {
+			"name": "Social",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "Fil social ouvert en P2P, profils et partage de fichiers.",
+			"description_markdown": "Publiez des mises à jour, suivez d'autres personnes et partagez des fichiers sur un réseau social pair à pair.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"contacts sociaux",
+				"social",
 				"P2P",
-				"dynamique"
-			],
-			"name": "contacts sociaux",
-			"description": "Mises à jour sociales ouvertes P2P, partage d'informations et de fichiers",
-			"description_markdown": "P2P ouvre les mises à jour sociales, les informations et le partage de fichiers."
+				"fil"
+			]
 		},
 		"hi-IN": {
+			"name": "सोशल",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "P2P खुला सोशल फ़ीड, प्रोफ़ाइल और फ़ाइल साझाकरण।",
+			"description_markdown": "पीयर-टू-पीयर सोशल नेटवर्क पर अपडेट पोस्ट करें, लोगों को फ़ॉलो करें और फ़ाइलें साझा करें।",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"सामाजिक संपर्क",
-				"पी2पी",
-				"गतिशील"
-			],
-			"name": "सामाजिक संपर्क",
-			"description": "पी2पी सामाजिक अपडेट, सूचना और फ़ाइल साझाकरण खोलें",
-			"description_markdown": "पी2पी सामाजिक अपडेट, सूचना और फ़ाइल साझाकरण खोलें।"
+				"सोशल",
+				"P2P",
+				"फ़ीड"
+			]
 		},
 		"is-IS": {
+			"name": "Samfélag",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "Opið P2P samfélagsstreymi, prófílar og skráadeiling.",
+			"description_markdown": "Birtu uppfærslur, fylgstu með öðrum og deildu skrám á jafningjanetinu.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"félagsleg samskipti",
+				"samfélag",
 				"P2P",
-				"kraftmikið"
-			],
-			"name": "félagsleg samskipti",
-			"description": "P2P opnar félagslegar uppfærslur, upplýsingar og deilingu skráa",
-			"description_markdown": "P2P opnar félagslegar uppfærslur, upplýsingar og deilingu skráa."
+				"streymi"
+			]
 		},
 		"it-IT": {
+			"name": "Social",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "Feed social aperto in P2P, profili e condivisione file.",
+			"description_markdown": "Pubblica aggiornamenti, segui gli altri e condividi file su una rete social peer-to-peer.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"contatto sociale",
+				"social",
 				"P2P",
-				"dinamico"
-			],
-			"name": "contatto sociale",
-			"description": "P2P apre aggiornamenti social, informazioni e condivisione di file",
-			"description_markdown": "P2P apre aggiornamenti social, informazioni e condivisione di file."
+				"feed"
+			]
 		},
 		"ja-JP": {
+			"name": "ソーシャル",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "P2P のオープンなソーシャルフィード、プロフィール、ファイル共有。",
+			"description_markdown": "ピアツーピアのソーシャルネットワークで投稿し、フォローし、ファイルを共有できます。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"社会的接触",
+				"ソーシャル",
 				"P2P",
-				"動的"
-			],
-			"name": "社会的接触",
-			"description": "P2P オープン ソーシャル アップデート、情報、ファイル共有",
-			"description_markdown": "P2P オープン ソーシャル アップデート、情報、ファイル共有。"
+				"フィード"
+			]
 		},
 		"ko-KR": {
+			"name": "소셜",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "P2P 개방형 소셜 피드, 프로필 및 파일 공유.",
+			"description_markdown": "피어 투 피어 소셜 네트워크에서 게시하고, 팔로우하고, 파일을 공유하세요.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"사회적 접촉",
+				"소셜",
 				"P2P",
-				"동적"
-			],
-			"name": "사회적 접촉",
-			"description": "P2P 공개 소셜 업데이트, 정보 및 파일 공유",
-			"description_markdown": "P2P 공개 소셜 업데이트, 정보 및 파일 공유."
+				"피드"
+			]
 		},
 		"lzh": {
-			"name": "社交",
+			"name": "交際場",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
-			"description": "P2P 开放社交动态、资料与文件分享",
-			"description_markdown": "P2P 开放社交动态、资料与文件分享。",
+			"description": "點對點之開放交際、儀容與文件授受。",
+			"description_markdown": "於點對點交際網中發帖、相從、授受文件。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"社交",
-				"P2P",
-				"动态"
+				"交際",
+				"點對點",
+				"動態"
 			]
 		},
 		"nl-NL": {
+			"name": "Sociaal",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "Open P2P-sociale feed, profielen en bestandsdeling.",
+			"description_markdown": "Plaats updates, volg anderen en deel bestanden op een peer-to-peer sociaal netwerk.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"sociaal contact",
+				"sociaal",
 				"P2P",
-				"dynamisch"
-			],
-			"name": "sociaal contact",
-			"description": "P2P open sociale updates, informatie en het delen van bestanden",
-			"description_markdown": "P2P open sociale updates, informatie en het delen van bestanden."
+				"feed"
+			]
 		},
 		"pt-PT": {
+			"name": "Social",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "Feed social aberto em P2P, perfis e partilha de ficheiros.",
+			"description_markdown": "Publique atualizações, siga outros e partilhe ficheiros numa rede social peer-to-peer.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"contato social",
+				"social",
 				"P2P",
-				"dinâmico"
-			],
-			"name": "contato social",
-			"description": "P2P abre atualizações sociais, informações e compartilhamento de arquivos",
-			"description_markdown": "P2P abre atualizações sociais, informações e compartilhamento de arquivos."
+				"feed"
+			]
 		},
 		"ru-RU": {
+			"name": "Соцсеть",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "Открытая P2P-лента, профили и обмен файлами.",
+			"description_markdown": "Публикуйте записи, подписывайтесь на других и делитесь файлами в одноранговой соцсети.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"социальный контакт",
+				"соцсеть",
 				"P2P",
-				"динамичный"
-			],
-			"name": "социальный контакт",
-			"description": "P2P открытые социальные обновления, информация и обмен файлами",
-			"description_markdown": "P2P открывает социальные обновления, информацию и обмен файлами."
+				"лента"
+			]
 		},
 		"uk-UA": {
+			"name": "Соцмережа",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "Відкрита P2P-стрічка, профілі та обмін файлами.",
+			"description_markdown": "Публікуйте дописи, підписуйтесь на інших і діліться файлами в одноранговій соцмережі.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"соціальний контакт",
+				"соцмережа",
 				"P2P",
-				"динамічний"
-			],
-			"name": "соціальний контакт",
-			"description": "P2P відкриті соціальні оновлення, інформація та обмін файлами",
-			"description_markdown": "P2P відкриті соціальні оновлення, інформація та обмін файлами."
+				"стрічка"
+			]
 		},
 		"vi-VN": {
+			"name": "Mạng xã hội",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "Bảng tin xã hội P2P mở, hồ sơ và chia sẻ tệp.",
+			"description_markdown": "Đăng bài, theo dõi người khác và chia sẻ tệp trên mạng xã hội ngang hàng.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
 			"tags": [
-				"liên hệ xã hội",
+				"xã hội",
 				"P2P",
-				"năng động"
-			],
-			"name": "liên hệ xã hội",
-			"description": "P2P mở cập nhật xã hội, chia sẻ thông tin và tập tin",
-			"description_markdown": "P2P mở cập nhật xã hội, chia sẻ thông tin và tập tin."
+				"bảng tin"
+			]
 		},
 		"zh-TW": {
+			"name": "廣場",
 			"avatar": "https://api.iconify.design/mdi/account-group-outline.svg",
+			"description": "基於 P2P 的開放社群動態、個人資料與檔案分享。",
+			"description_markdown": "在點對點社群網路中發布動態、追蹤他人並分享檔案。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"home_page": "",
@@ -261,10 +264,7 @@
 				"社群",
 				"P2P",
 				"動態"
-			],
-			"name": "社群",
-			"description": "P2P 開放社交動態、資料與文件分享",
-			"description_markdown": "P2P 開放社交動態、資料與文件分享。"
+			]
 		}
 	}
 }

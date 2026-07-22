@@ -2023,9 +2023,9 @@
 			"settingsArchiveDeleteHint": "يتم حذف الأرشيف المحلي/*.jsonl فقط؛ لا تتأثر نقاط الاتصال ومثبتات DAG.",
 			"settingsArchiveAdminOnly": "لا يحتوي هذا الجهاز حتى الآن على بيانات أرشيف باردة لهذه المجموعة.",
 			"settingsArchiveDeleteInvalidMonth": "الرجاء تحديد شهر صالح YYYY-MM.",
-			"settingsArchiveDeleteConfirm": "هل أنت متأكد أنك تريد حذف كافة ملفات الأرشيف الباردة الأقدم من {month}؟ هذه العملية لا رجعة فيها.",
-			"settingsArchiveDeleteOk": "{files} تم حذف ملفات الأرشيف.",
-			"settingsArchiveDeleteFailed": "فشل حذف الأرشيف: {خطأ}",
+			"settingsArchiveDeleteConfirm": "هل أنت متأكد أنك تريد حذف كافة ملفات الأرشيف الباردة الأقدم من ${month}؟ هذه العملية لا رجعة فيها.",
+			"settingsArchiveDeleteOk": "${files} تم حذف ملفات الأرشيف.",
+			"settingsArchiveDeleteFailed": "فشل حذف الأرشيف: ${error}",
 			"settingsEventRetentionDepth": "عمق الاحتفاظ بحدث DAG",
 			"settingsEventRetentionMs": "وقت الاحتفاظ بحدث DAG",
 			"settingsCompactTriggerDepth": "عمق الزناد المضغوط",
@@ -2046,7 +2046,8 @@
 			"send": "إرسال",
 			"streamTest": "اختبار أجهزة الوسائط",
 			"messageInput": {
-				"placeholder": "رسالة جماعية... Ctrl+Enter إرسال"
+				"placeholder": "رسالة جماعية… Ctrl+Enter للإرسال",
+				"aria-label": "رسالة"
 			},
 			"loadError": "فشل تحميل المجموعة",
 			"remoteNodeTimeout": "العقدة البعيدة لا تستجيب، يرجى المحاولة مرة أخرى لاحقًا.",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "تم نسخ كلمة المرور إلى الحافظة",
 			"regenerateSuccess": "تم إعادة إنشاء رمز الاتصال"
 		},
+		"infra": {
+			"title": "المنفعة العامة للشبكة",
+			"description": "اختر ما إذا كانت أجهزة subfount المتصلة تعمل كعقد للمنفعة العامة لمساعدة شبكة fount بأكملها. عند الإيقاف تظل تقبل التنفيذ عن بُعد من هذا المضيف، لكنها لا تشارك في المساعدة على طبقة الشبكة.",
+			"capabilityRelay": "المشاركة في إعادة التوجيه متعدد القفزات عبر الطبقة العلوية لمساعدة العقد الأخرى على التواصل عند فشل الاتصال المباشر.",
+			"capabilityMailbox": "الاحتفاظ بالتسليم دون اتصال حتى يتسنّى للعقدة الأخرى استلام الرسائل الخاصة بعد عودتها للاتصال.",
+			"hostPriority": "عند التفعيل، أعطِ الأولوية لهذا المضيف: توجيه موزون وفق جدول سمعته، وقيّده كأعلى أولوية.",
+			"toggleLabel": "إشراك أجهزة subfount في المنفعة العامة",
+			"enabledToast": "مفعّل: تشارك أجهزة subfount في المنفعة العامة للشبكة (هذا المضيف أولاً)",
+			"disabledToast": "معطّل: لم تعد أجهزة subfount تشارك في المنفعة العامة للشبكة"
+		},
 		"connectedSubfounts": {
 			"title": "فرعي متصل",
 			"noSubfountsConnected": "لا توجد أجهزة Subfount متصلة",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "فشل تحميل رمز الاتصال: ${message}",
 			"regenerateConnectionCodeFailed": "فشل في إعادة إنشاء رمز الاتصال: ${message}",
+			"loadSettingsFailed": "فشل تحميل إعدادات المنفعة العامة: ${message}",
+			"saveSettingsFailed": "فشل حفظ إعدادات المنفعة العامة: ${message}",
 			"generalError": "حدث خطأ: ${message}"
 		},
 		"home_function_buttons": {

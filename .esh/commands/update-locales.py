@@ -47,7 +47,6 @@ TRANSLATION_ABORT_AFTER = 13
 # 同步最大迭代次数
 MAX_SYNC_ITERATIONS = 10
 # 占位符名称相似度修复阈值
-PLACEHOLDER_SIMILARITY_THRESHOLD_FACTOR = 0.7
 PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD = 3
 
 # --- 配置: Parts 下的 locales.json 中的 info 块 ---
@@ -971,9 +970,18 @@ def check_used_keys_in_fount(fount_dir, reference_loc_data, reference_lang_code,
 
 def extract_placeholders(text_string: str) -> list[str]:
 	"""从字符串中提取插值占位符名称（`${name}` 中的 name）；跳过字面义 `\\${...}`（不参与插值对齐）。"""
+	return [inner for _, _, inner in extract_placeholder_spans(text_string, include_bare=False)]
+
+
+def extract_placeholder_spans(text_string: str, include_bare: bool = True) -> list[tuple[int, int, str]]:
+	"""
+	提取占位符跨度 (start, end, inner)。
+	- 始终识别 `${inner}`，跳过字面义 `\\${...}`。
+	- include_bare 时额外识别无 `$` 的 `{inner}`（inner 无空白），用于修复历史误写。
+	"""
 	if not isinstance(text_string, str):
 		return []
-	out = []
+	spans = []
 	i = 0
 	n = len(text_string)
 	while i < n:
@@ -983,13 +991,92 @@ def extract_placeholders(text_string: str) -> list[str]:
 				break
 			i = close + 1
 			continue
-		m = re.match(r"\$\{([^}]*)\}", text_string[i:])
-		if m:
-			out.append(m.group(1))
-			i += m.end()
+		if text_string.startswith("${", i):
+			close = text_string.find("}", i + 2)
+			if close == -1:
+				break
+			spans.append((i, close + 1, text_string[i + 2 : close]))
+			i = close + 1
 			continue
+		if include_bare and text_string[i] == "{":
+			close = text_string.find("}", i + 1)
+			if close == -1:
+				break
+			inner = text_string[i + 1 : close]
+			if inner and not any(c.isspace() for c in inner):
+				spans.append((i, close + 1, inner))
+				i = close + 1
+				continue
 		i += 1
-	return out
+	return spans
+
+
+def levenshtein_distance(s1, s2):
+	"""计算两个字符串之间的 Levenshtein 距离。"""
+	if len(s1) < len(s2):
+		return levenshtein_distance(s2, s1)
+	if len(s2) == 0:
+		return len(s1)
+	previous_row = range(len(s2) + 1)
+	for i, c1 in enumerate(s1):
+		current_row = [i + 1]
+		for j, c2 in enumerate(s2):
+			insertions = previous_row[j + 1] + 1
+			deletions = current_row[j] + 1
+			substitutions = previous_row[j] + (c1 != c2)
+			current_row.append(min(insertions, deletions, substitutions))
+		previous_row = current_row
+	return previous_row[-1]
+
+
+def map_placeholder_names_to_canonical(current_names: list[str], canonical_names: list[str]) -> list[str]:
+	"""
+	将当前占位符名映射到规范名（等长）。
+	优先按名称相似度一一匹配（可纠正顺序/小幅变形）；无法自信匹配时按位置对齐
+	（覆盖 `{माह}`→`${month}` 等跨文字译名，避免为此整段重翻）。
+	"""
+	if len(current_names) != len(canonical_names):
+		raise ValueError("placeholder name lists must be the same length")
+	if not current_names:
+		return []
+
+	temp_repaired, used_canonical_indices = [], set()
+	for current_name in current_names:
+		best_match_score, best_match_info = float("inf"), None
+		for idx, canonical_name in enumerate(canonical_names):
+			if idx in used_canonical_indices:
+				continue
+			dist = levenshtein_distance(current_name.lower(), canonical_name.lower())
+			if dist < best_match_score:
+				best_match_score, best_match_info = dist, (canonical_name, idx)
+		if not best_match_info or best_match_score > PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD:
+			return list(canonical_names)
+		best_canonical_match, best_canonical_idx = best_match_info
+		temp_repaired.append(best_canonical_match)
+		used_canonical_indices.add(best_canonical_idx)
+	return temp_repaired
+
+
+def try_mechanical_placeholder_rewrite(original_text: str, canonical_names: list[str]) -> str | None:
+	"""
+	在占位符数量一致时，就地改写为规范的 `${name}`（含把 `{name}` 补上 `$`、纠正译名）。
+	数量不一致时返回 None，由调用方决定是否重翻。
+	"""
+	spans = extract_placeholder_spans(original_text, include_bare=True)
+	if len(spans) != len(canonical_names):
+		return None
+	if not spans:
+		return original_text
+
+	mapped = map_placeholder_names_to_canonical([inner for _, _, inner in spans], canonical_names)
+	parts = []
+	last = 0
+	for (start, end, _), name in zip(spans, mapped):
+		parts.append(original_text[last:start])
+		parts.append(f"${{{name}}}")
+		last = end
+	parts.append(original_text[last:])
+	return "".join(parts)
 
 
 def collect_all_translatable_key_paths_recursive(current_data, current_path_prefix, collected_paths):
@@ -1020,108 +1107,22 @@ def get_string_values_for_key_path(all_data_files, languages_map, key_path):
 	return string_values_info
 
 
-def levenshtein_distance(s1, s2):
-	"""计算两个字符串之间的 Levenshtein 距离。"""
-	if len(s1) < len(s2):
-		return levenshtein_distance(s2, s1)
-	if len(s2) == 0:
-		return len(s1)
-	previous_row = range(len(s2) + 1)
-	for i, c1 in enumerate(s1):
-		current_row = [i + 1]
-		for j, c2 in enumerate(s2):
-			insertions = previous_row[j + 1] + 1
-			deletions = current_row[j] + 1
-			substitutions = previous_row[j] + (c1 != c2)
-			current_row.append(min(insertions, deletions, substitutions))
-		previous_row = current_row
-	return previous_row[-1]
-
-
-def handle_placeholder_count_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered_len, most_frequent_count, lang_file_data, source_text, source_lang_code) -> bool:
-	"""处理占位符数量不匹配的情况：重新翻译而不是清空。"""
+def retranslate_for_placeholder_mismatch(lang_code, key_path, lang_file_data, source_text, source_lang_code, reason: str) -> bool:
+	"""占位符无法机械修复时才整段重翻。"""
 	if is_translation_aborted():
 		return False
-	reason = f"占位符数量不匹配 (当前: {current_ph_list_ordered_len}, 应为: {most_frequent_count})"
 	print(f"    - 重新翻译: 键 '{key_path}' 在 '{lang_code}'. 原因: {reason}.")
-
-	if source_text and source_lang_code:
-		try:
-			translated = translate_text(source_text, source_lang_code, lang_code)
-		except TranslationAborted:
-			return False
-		if translated is not None:
-			return update_translation_at_path_in_data(lang_file_data, key_path, translated)
-		else:
-			print(f"      - 重新翻译失败，保留原文本。")
-			return False
-	else:
-		print(f"      - 无法找到源文本，跳过重新翻译。")
+	if not source_text or not source_lang_code:
+		print("      - 无法找到源文本，跳过重新翻译。")
 		return False
-
-
-def handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, lang_file_data, source_text, source_lang_code) -> bool:
-	"""处理占位符名称不匹配的情况：尝试修复或重新翻译。"""
-	original_text = lang_info["text"]
-	reason = f"占位符名称集不匹配 (当前: {sorted(list(set(current_ph_list_ordered)))}, 规范: {sorted(list(canonical_placeholder_set))})"
-	print(f"    - {reason}。尝试修复键 '{key_path}' 在语言 '{lang_code}' 中的占位符名称...")
-
-	fixed_text, repair_successful = attempt_placeholder_name_fix(original_text, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, key_path, lang_code)
-
-	if repair_successful and fixed_text is not None:
-		return update_translation_at_path_in_data(lang_file_data, key_path, fixed_text)
-	else:
-		if is_translation_aborted():
-			return False
-		print(f"      - 无法自信地修复占位符名称。将重新翻译。键: '{key_path}', 语言: '{lang_code}'.")
-		if source_text and source_lang_code:
-			try:
-				translated = translate_text(source_text, source_lang_code, lang_code)
-			except TranslationAborted:
-				return False
-			if translated is not None:
-				return update_translation_at_path_in_data(lang_file_data, key_path, translated)
-			else:
-				print(f"        - 重新翻译失败，保留原文本。")
-				return False
-		else:
-			print(f"        - 无法找到源文本，跳过重新翻译。")
-			return False
-
-
-def align_placeholders_with_list(original_text_with_placeholders: str, new_placeholder_names: list[str]) -> str:
-	"""使用 new_placeholder_names 中的名称按顺序替换 original_text_with_placeholders 中的插值占位符；保留 `\\${...}` 字面义片段。"""
-	if not isinstance(original_text_with_placeholders, str):
-		return original_text_with_placeholders
-	normalized_text = normalize_dollar_brace_spacing(original_text_with_placeholders)
-
-	if len(extract_placeholders(normalized_text)) != len(new_placeholder_names):
-		print("  - 警告 (占位符重建): 文本中的占位符数量与提供的名称列表长度不匹配。返回原文本。")
-		return original_text_with_placeholders
-
-	names_iter = iter(new_placeholder_names)
-	out = []
-	i = 0
-	while i < len(normalized_text):
-		if normalized_text.startswith("\\${", i):
-			close = normalized_text.find("}", i + 3)
-			if close == -1:
-				out.append(normalized_text[i:])
-				break
-			out.append(normalized_text[i : close + 1])
-			i = close + 1
-			continue
-		m = re.match(r"\$\{([^}]*)\}", normalized_text[i:])
-		if m:
-			try:
-				out.append(f"${{{next(names_iter)}}}")
-			except StopIteration:
-				out.append(m.group(0))
-			i += m.end()
-			continue
-		out.append(normalized_text[i])
-		i += 1
-	return "".join(out)
+	try:
+		translated = translate_text(source_text, source_lang_code, lang_code)
+	except TranslationAborted:
+		return False
+	if translated is not None:
+		return update_translation_at_path_in_data(lang_file_data, key_path, translated)
+	print("      - 重新翻译失败，保留原文本。")
+	return False
 
 
 def find_canonical_placeholder_list(placeholders_by_lang: dict[str, list[str]], most_frequent_count: int, reference_lang_codes: list[str]) -> list[str] | None:
@@ -1139,57 +1140,27 @@ def find_canonical_placeholder_list(placeholders_by_lang: dict[str, list[str]], 
 	return None
 
 
-def attempt_placeholder_name_fix(original_text: str, current_ph_list_ordered: list[str], canonical_placeholder_list_ordered: list[str], canonical_placeholder_set: set[str], key_path: str, lang_code: str) -> tuple[str | None, bool]:
-	"""尝试修复占位符名称，返回 (修复后的文本 | None, 是否成功)"""
-	if len(current_ph_list_ordered) != len(canonical_placeholder_list_ordered):
-		print(f"      - 警告: 占位符数量不一致，无法进行名称修复 for key '{key_path}' in '{lang_code}'.")
-		return None, False
-
-	temp_repaired_list, used_canonical_indices = [], set()
-	unmappable = False
-
-	for current_name in current_ph_list_ordered:
-		best_match_score, best_match_info = float("inf"), None
-		for idx, canonical_name in enumerate(canonical_placeholder_list_ordered):
-			if idx in used_canonical_indices:
-				continue
-			dist = levenshtein_distance(current_name, canonical_name)
-			if dist < best_match_score:
-				best_match_score, best_match_info = dist, (canonical_name, idx)
-
-		if best_match_info and best_match_score <= PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD:
-			best_canonical_match, best_canonical_idx = best_match_info
-			temp_repaired_list.append(best_canonical_match)
-			used_canonical_indices.add(best_canonical_idx)
-		else:
-			unmappable = True
-			break
-
-	if unmappable or len(temp_repaired_list) != len(canonical_placeholder_list_ordered):
-		return None, False
-
-	if set(temp_repaired_list) == canonical_placeholder_set:
-		fixed_text = align_placeholders_with_list(original_text, temp_repaired_list)
-		if fixed_text != original_text:
-			print(f"      - 成功修复占位符名称: 原 '{current_ph_list_ordered}' -> 修 '{temp_repaired_list}'")
-			return fixed_text, True
-		return original_text, True
-
-	return None, False
-
-
 def align_single_translation_placeholders(
-	lang_code: str, lang_info: dict, key_path: str, most_frequent_count: int, canonical_placeholder_list_ordered: list[str], canonical_placeholder_set: set[str], lang_file_data: OrderedDict, placeholders_by_lang: dict[str, list[str]], source_text: str | None, source_lang_code: str | None
+	lang_code: str, lang_info: dict, key_path: str, most_frequent_count: int, canonical_placeholder_list_ordered: list[str], lang_file_data: OrderedDict, placeholders_by_lang: dict[str, list[str]], source_text: str | None, source_lang_code: str | None
 ) -> bool:
 	"""对单个语言条目的占位符进行对齐，返回是否发生更改。"""
+	original_text = lang_info["text"]
 	current_ph_list_ordered = placeholders_by_lang.get(lang_code, [])
 
-	if len(current_ph_list_ordered) != most_frequent_count:
-		return handle_placeholder_count_mismatch(lang_code, lang_info, key_path, len(current_ph_list_ordered), most_frequent_count, lang_file_data, source_text, source_lang_code)
-	elif set(current_ph_list_ordered) != canonical_placeholder_set:
-		return handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered, canonical_placeholder_list_ordered, canonical_placeholder_set, lang_file_data, source_text, source_lang_code)
+	if current_ph_list_ordered == canonical_placeholder_list_ordered:
+		return False
 
-	return False
+	mechanical = try_mechanical_placeholder_rewrite(original_text, canonical_placeholder_list_ordered)
+	if mechanical is not None:
+		if mechanical == original_text:
+			return False
+		old_spans = [inner for _, _, inner in extract_placeholder_spans(original_text)]
+		print(f"    - 机械修复占位符: 键 '{key_path}' 在 '{lang_code}': {old_spans} -> {canonical_placeholder_list_ordered}")
+		return update_translation_at_path_in_data(lang_file_data, key_path, mechanical)
+
+	span_count = len(extract_placeholder_spans(original_text))
+	reason = f"占位符数量不匹配 (当前: {span_count}, 应为: {most_frequent_count})"
+	return retranslate_for_placeholder_mismatch(lang_code, key_path, lang_file_data, source_text, source_lang_code, reason)
 
 
 def perform_global_placeholder_alignment(all_data_files, languages_map, reference_lang_codes_list):
@@ -1248,8 +1219,6 @@ def perform_global_placeholder_alignment(all_data_files, languages_map, referenc
 					print(f"    - 警告: 键 '{key_path}' 无法确定规范占位符列表。跳过此键。")
 					continue
 
-		canonical_set = set(canonical_list)
-
 		targets = [(lang_code, lang_info) for lang_code, lang_info in string_values_info.items() if lang_code != source_lang_code]
 
 		def align_one(item):
@@ -1258,7 +1227,7 @@ def perform_global_placeholder_alignment(all_data_files, languages_map, referenc
 			if not lang_file_data:
 				return False
 			return align_single_translation_placeholders(
-				lang_code, lang_info, key_path, canonical_count, canonical_list, canonical_set, lang_file_data, placeholders_by_lang, source_text, source_lang_code
+				lang_code, lang_info, key_path, canonical_count, canonical_list, lang_file_data, placeholders_by_lang, source_text, source_lang_code
 			)
 
 		if any(run_per_lang(align_one, targets)):

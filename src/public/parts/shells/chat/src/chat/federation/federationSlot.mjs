@@ -171,7 +171,6 @@ export function buildFederationSlot(roomContext) {
 		 * @returns {void}
 		 */
 		registerCleanup(fn) {
-			if (typeof fn !== 'function') return
 			if (!active) { try { fn() } catch (error) { console.error('federation: slot cleanup failed', error) } return }
 			cleanups.add(fn)
 		},

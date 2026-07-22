@@ -724,7 +724,7 @@
 		},
 		"data_showcase": {
 			"title_prefix": "fount is het meest ",
-			"title_of": " e ",
+			"title_of": " en ",
 			"active_users": "Aantal actieve gebruikers",
 			"stars": "GitHub Stars",
 			"adjectives": [
@@ -2023,9 +2023,9 @@
 			"settingsArchiveDeleteHint": "Alleen lokaal archief/*.jsonl wordt verwijderd; hotspots en DAG-ankers worden niet beïnvloed.",
 			"settingsArchiveAdminOnly": "Deze machine beschikt nog niet over koude archiefgegevens voor deze groep.",
 			"settingsArchiveDeleteInvalidMonth": "Selecteer een geldige maand JJJJ-MM.",
-			"settingsArchiveDeleteConfirm": "Weet je zeker dat je alle koude archiefbestanden ouder dan {maand} wilt verwijderen? Deze operatie is onomkeerbaar.",
-			"settingsArchiveDeleteOk": "{files} archiefbestanden verwijderd.",
-			"settingsArchiveDeleteFailed": "Kan archief niet verwijderen: {error}",
+			"settingsArchiveDeleteConfirm": "Weet je zeker dat je alle koude archiefbestanden ouder dan ${month} wilt verwijderen? Deze operatie is onomkeerbaar.",
+			"settingsArchiveDeleteOk": "${files} archiefbestanden verwijderd.",
+			"settingsArchiveDeleteFailed": "Kan archief niet verwijderen: ${error}",
 			"settingsEventRetentionDepth": "Retentiediepte voor DAG-gebeurtenissen",
 			"settingsEventRetentionMs": "Bewaartijd van DAG-gebeurtenissen",
 			"settingsCompactTriggerDepth": "Gematerialiseerde compressietriggerdiepte",
@@ -2046,7 +2046,8 @@
 			"send": "Versturen",
 			"streamTest": "Media-apparaten testen",
 			"messageInput": {
-				"placeholder": "Groepsbericht... Ctrl+Enter Verzenden"
+				"placeholder": "Groepsbericht… Ctrl+Enter om te verzenden",
+				"aria-label": "Bericht"
 			},
 			"loadError": "Kan groep niet laden",
 			"remoteNodeTimeout": "Het externe knooppunt reageert niet. Probeer het later opnieuw.",
@@ -2176,7 +2177,7 @@
 			"votePromptDeadline": "Deadline (open laten voor geen tijdslimiet, format 2026-01-01 23:59)",
 			"voteTooFewOptions": "Er zijn minimaal twee opties vereist",
 			"voteCreateFailed": "Kan geen enquête maken",
-			"voteFor": "Investeer ${option}",
+			"voteFor": "Stem op ${option}",
 			"voteDeadline": "Termijn",
 			"voteEnded": "Eindigde",
 			"voteTotal": "Totaal ${n} stemmen",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "Wachtwoord gekopieerd naar klembord",
 			"regenerateSuccess": "De verbindingscode is opnieuw gegenereerd"
 		},
+		"infra": {
+			"title": "Netwerk-algemeen nut",
+			"description": "Kies of verbonden subfounts als knooppunten voor het algemeen nut het hele fount-netwerk ondersteunen. Uitgeschakeld accepteren ze nog steeds uitvoering op afstand vanaf deze host, maar helpen ze niet meer op netwerklaag.",
+			"capabilityRelay": "Deelnemen aan overlay multi-hop-doorsturen zodat andere knooppunten elkaar bereiken als de directe verbinding faalt.",
+			"capabilityMailbox": "Offline bezorging bewaren zodat peers privéberichten nog ontvangen zodra ze weer online zijn.",
+			"hostPriority": "Indien ingeschakeld, geef deze host voorrang: weeg routes volgens zijn reputatietabel en vergrendel hem als hoogste prioriteit.",
+			"toggleLabel": "Laat subfounts bijdragen aan het algemeen nut",
+			"enabledToast": "Aan: subfounts dragen bij aan netwerk-algemeen nut (deze host eerst)",
+			"disabledToast": "Uit: subfounts dragen niet meer bij aan netwerk-algemeen nut"
+		},
 		"connectedSubfounts": {
 			"title": "Verbonden subfount",
 			"noSubfountsConnected": "Er is geen subfount aangesloten",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "Kan verbindingscode niet laden: ${message}",
 			"regenerateConnectionCodeFailed": "Kan verbindingscode niet opnieuw genereren: ${message}",
+			"loadSettingsFailed": "Kan instellingen voor algemeen nut niet laden: ${message}",
+			"saveSettingsFailed": "Kan instellingen voor algemeen nut niet opslaan: ${message}",
 			"generalError": "Er is een fout opgetreden: ${message}"
 		},
 		"home_function_buttons": {
@@ -5202,7 +5215,7 @@
 		"cutDone": "Snee",
 		"undo": "Annuleren",
 		"redo": "Opnieuw uitvoeren",
-		"newWindow": "Nieuw venster openenHuidige locatie",
+		"newWindow": "Huidige locatie in nieuw venster openen",
 		"goUp": "Keer terug naar het vorige niveau",
 		"brokenLink": "Link is verbroken: ${reason}",
 		"noDownload": "Geen downloadbare inhoud",

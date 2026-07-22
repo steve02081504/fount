@@ -150,7 +150,7 @@
 		"summaryEmailVisibility": "Visibilità della e-mail",
 		"summaryThemePref": "Tema preferito",
 		"summaryLanguagePref": "Preferenza della lingua",
-		"summarySocialCount": "Number of social links",
+		"summarySocialCount": "Numero di collegamenti social",
 		"summaryLinksCount": "Numero di collegamenti esterni",
 		"groupDescriptionEmpty": "Nessuna descrizione ancora",
 		"groupMembers": "${members} membri · ${channels} canali",
@@ -375,10 +375,10 @@
 			"replHint": "Invio per eseguire · Maiusc+Invio per nuova riga"
 		},
 		"test": {
-			"help": "utilizzo: test di fount [--all] [--gen-report] [-j <n>] [--since <commit>] [<manifest-ids> [<suite-selectors>]]\n\nl'ID manifest proviene dal campo \"id\" di livello superiore in ogni test/manifest.json.\nPiù ID manifest sono separati da virgole (senza spazi): shell/chat, shell/social\nQuando non esiste una corrispondenza esatta, si espande come \"<nome>/*\" (ad es. shells → shells/chat,shells/social);\nsono supportati anche i glob (*, ?, **), ad es. conchiglie/*, **.\n\ni selettori di suite corrispondono all'ID o al nome di ciascuna suite, anch'essi separati da virgole.\n\nCon le modifiche non confermate, vengono eseguiti solo i test attivati ​​da differenze; con un albero pulito, usa --since per confrontare un commit.\nQuando vengono specificati gli ID manifest, i record di errori sono abilitati (data/test/failures/); senza selettori di suite espliciti, vengono ritentate le suite non riuscite; i selettori di suite espliciti vengono eseguiti come denominati (nessuna intersezione con record di errori).\n\n--gen-report Scrive l'output della suite fallita/rumorosa su disco e genera data/test/report/report.md + report.json (aggiornato dopo ogni suite).\n-j, --jobs Limite di concorrenza globale (il valore predefinito è il conteggio dei thread della CPU).\n\nesempi:\n  fount test\n  test di fount --all\n  test di fount --all --gen-report\n  test di fonte p2p,shell/chat,shell/social --all --gen-report -j 16\n  shell/chat di test di fount\n  shell di test di fount\n  shell di test di fount/*\n  shell/chat di test di fount,shell/social\n  shell di test di font/frontend chat\n  shell di test/unità di chat di font, fed_test\n  prova font p2p\n  test di fount --da abc1234",
+			"help": "utilizzo: fount test [--all] [--gen-report] [-j <n>] [--since <commit>] [<manifest-ids> [<suite-selectors>]]\n\nl'ID manifest proviene dal campo \"id\" di livello superiore in ogni test/manifest.json.\nPiù ID manifest sono separati da virgole (senza spazi): shells/chat,shells/social\nQuando non esiste una corrispondenza esatta, si espande come \"<nome>/*\" (ad es. shells → shells/chat,shells/social);\nsono supportati anche i glob (*, ?, **), ad es. shells/*, **.\n\ni selettori di suite corrispondono all'ID o al nome di ciascuna suite, anch'essi separati da virgole.\n\nCon le modifiche non confermate, vengono eseguiti solo i test attivati da differenze; con un albero pulito, usa --since per confrontare un commit.\nQuando vengono specificati gli ID manifest, i record di errori sono abilitati (data/test/failures/); senza selettori di suite espliciti, vengono ritentate le suite non riuscite; i selettori di suite espliciti vengono eseguiti come denominati (nessuna intersezione con record di errori).\n\n--gen-report  Scrive l'output della suite fallita/rumorosa su disco e genera data/test/report/report.md + report.json (aggiornato dopo ogni suite).\n-j, --jobs    Limite di concorrenza globale (il valore predefinito è il conteggio dei thread della CPU).\n\nesempi:\n  fount test\n  fount test --all\n  fount test --all --gen-report\n  fount test p2p,shells/chat,shells/social --all --gen-report -j 16\n  fount test shells/chat\n  fount test shells\n  fount test shells/*\n  fount test shells/chat,shells/social\n  fount test shells/chat frontend\n  fount test shells/chat unit,fed_test\n  fount test p2p\n  fount test --since abc1234",
 			"passed": "Superato: ${label}",
 			"passedWithNoise": "SUPERATO: ${label} (con rumore)",
-			"failed": "NON FALLITO: ${label}",
+			"failed": "Fallito: ${label}",
 			"failedWithCode": "Fallito: ${label} (codice di uscita ${code})",
 			"passedLabel": "Superato",
 			"failedLabel": "Fallito",
@@ -417,7 +417,7 @@
 			"estimatedRunSerialHint": "Se è previsto il parallelismo ≈ ${eta} (velocità di parallelo ${rate}), risparmio ≈ ${savings} (rimuovi --no-parallel)",
 			"failuresSaved": "elenco errori salvati: ${path} (${count} suite)",
 			"failuresCleared": "manifest ${manifestId} tutto superato; elenco degli errori cancellato.",
-			"terminated": "Timeout termination: ${label} — ${reason}",
+			"terminated": "Terminazione per timeout: ${label} — ${reason}",
 			"terminateIdle": "Interrotto ${label}: nessun output stdall per più di ${minutes} minuti (inattivo per ${idleSec} secondi, esegui ${elapsed})",
 			"terminateDuration": "Terminato ${label}: ha impiegato più del tempo di riferimento del watchdog (in esecuzione ${elapsed}, riferimento ${baseline}, limite superiore ${limit})",
 			"terminateDurationDefault": "Terminato ${label}: il tempo trascorso supera il limite di durata del watchdog predefinito (in esecuzione ${elapsed}, limite superiore ${limit})",
@@ -455,7 +455,7 @@
 			},
 			"ws": {
 				"pass": "PASSA: ${detail}",
-				"fail": "NON FALLITO: ${detail}"
+				"fail": "Fallito: ${detail}"
 			},
 			"report": {
 				"title": "rapporto sul test della fonte",
@@ -1299,7 +1299,7 @@
 			"newPosts": "Ci sono nuove novità, clicca per vedere",
 			"tabLatest": "aggiornato",
 			"tabForYou": "consigliare",
-			"repostedBy": "${author} retweeted",
+			"repostedBy": "${author} ha ripubblicato",
 			"decryptFailed": "Impossibile decrittografare questo post",
 			"revealContent": "Mostra contenuto",
 			"sensitiveMedia": "mezzi sensibili",
@@ -2023,9 +2023,9 @@
 			"settingsArchiveDeleteHint": "Viene eliminato solo l'archivio locale/*.jsonl; gli hotspot e gli ancoraggi DAG non sono interessati.",
 			"settingsArchiveAdminOnly": "Questa macchina non dispone ancora di dati di archivio a freddo per questo gruppo.",
 			"settingsArchiveDeleteInvalidMonth": "Seleziona un mese valido AAAA-MM.",
-			"settingsArchiveDeleteConfirm": "Sei sicuro di voler eliminare tutti i file di archivio freddi più vecchi di {mese}? Questa operazione è irreversibile.",
-			"settingsArchiveDeleteOk": "{files} file di archivio eliminati.",
-			"settingsArchiveDeleteFailed": "Impossibile eliminare l'archivio: {errore}",
+			"settingsArchiveDeleteConfirm": "Sei sicuro di voler eliminare tutti i file di archivio freddi più vecchi di ${month}? Questa operazione è irreversibile.",
+			"settingsArchiveDeleteOk": "${files} file di archivio eliminati.",
+			"settingsArchiveDeleteFailed": "Impossibile eliminare l'archivio: ${error}",
 			"settingsEventRetentionDepth": "Profondità di conservazione degli eventi DAG",
 			"settingsEventRetentionMs": "Tempo di conservazione degli eventi DAG",
 			"settingsCompactTriggerDepth": "Profondità di innesco della compressione materializzata",
@@ -2046,7 +2046,8 @@
 			"send": "Inviare",
 			"streamTest": "Testare i dispositivi multimediali",
 			"messageInput": {
-				"placeholder": "Messaggio... Ctrl+Invio per inviare"
+				"placeholder": "Messaggio… Ctrl+Invio per inviare",
+				"aria-label": "Messaggio"
 			},
 			"loadError": "Impossibile caricare il gruppo",
 			"remoteNodeTimeout": "Il nodo remoto non risponde: riprova più tardi",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "Password copiata negli appunti",
 			"regenerateSuccess": "Il codice di connessione è stato rigenerato"
 		},
+		"infra": {
+			"title": "Bene pubblico di rete",
+			"description": "Scegli se i subfount collegati fungono da nodi di bene pubblico per l’intera rete fount. Se disattivato, accettano ancora l’esecuzione remota da questo host, ma non aiutano più a livello di rete.",
+			"capabilityRelay": "Partecipare all’inoltro multi-hop dell’overlay così che gli altri nodi possano comunicare quando il collegamento diretto fallisce.",
+			"capabilityMailbox": "Conservare la consegna offline così che l’altro nodo riceva ancora i messaggi privati una volta tornato online.",
+			"hostPriority": "Se attivo, dare priorità a questo host: instradamento ponderato secondo la sua tabella di reputazione e bloccarlo alla massima priorità.",
+			"toggleLabel": "Fai contribuire i subfount al bene pubblico",
+			"enabledToast": "Attivo: i subfount contribuiscono al bene pubblico di rete (questo host per primo)",
+			"disabledToast": "Disattivo: i subfount non contribuiscono più al bene pubblico di rete"
+		},
 		"connectedSubfounts": {
 			"title": "Subfount collegato",
 			"noSubfountsConnected": "Nessun subfount collegato",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "Impossibile caricare il codice di connessione: ${message}",
 			"regenerateConnectionCodeFailed": "Impossibile rigenerare il codice di connessione: ${message}",
+			"loadSettingsFailed": "Impossibile caricare le impostazioni di bene pubblico: ${message}",
+			"saveSettingsFailed": "Impossibile salvare le impostazioni di bene pubblico: ${message}",
 			"generalError": "Si è verificato un errore: ${message}"
 		},
 		"home_function_buttons": {

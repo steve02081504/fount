@@ -1,6 +1,9 @@
 import crypto from 'node:crypto'
 
+import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
+
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
+import { httpError } from '../../../../../scripts/http_error.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
 
 import {
@@ -9,8 +12,19 @@ import {
 	getConnectedSubfounts,
 	executeCodeOnSubfount,
 	executeShellOnSubfount,
-	setDeviceDescription
+	setDeviceDescription,
+	getSubfountSettings,
+	setInfraPolicy,
 } from './api.mjs'
+
+/**
+ * @param {string} username - 用户名。
+ * @returns {{ peerId: string, password: string, nodeHash: string }} 连接码、密码与主机 nodeHash
+ */
+function connectionCodePayload(username) {
+	const { peerId, password } = getConnectionCode(username)
+	return { peerId, password, nodeHash: getNodeHash() }
+}
 
 /**
  * 获取用户的连接代码数据（从持久存储中）。
@@ -64,10 +78,10 @@ export async function setEndpoints(router) {
 	// 获取主机连接代码和密码
 	router.get('/api/parts/shells\\:subfounts/connection-code', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const { peerId, password } = getConnectionCode(username)
+		const payload = connectionCodePayload(username)
 		// 确保存在具有此房间 ID 的管理器（房间在 getUserManager 中自动初始化）
-		getUserManager(username, peerId)
-		res.json({ peerId, password })
+		getUserManager(username, payload.peerId)
+		res.json(payload)
 	})
 
 	// 重新生成连接代码
@@ -76,7 +90,7 @@ export async function setEndpoints(router) {
 		const { peerId, password } = generateConnectionCode(username)
 		// 使用新房间 ID 更新管理器（这将重新创建 P2P 房间）
 		getUserManager(username, peerId)
-		res.json({ peerId, password })
+		res.json({ peerId, password, nodeHash: getNodeHash() })
 	})
 
 	// 列出所有分机
@@ -157,5 +171,21 @@ export async function setEndpoints(router) {
 
 		setDeviceDescription(username, deviceId, description || null)
 		res.status(200).json({})
+	})
+
+	// infra 策略：是否让下属分机参与 fount 网络层（本机优先）
+	router.get('/api/parts/shells\\:subfounts/settings', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.json(getSubfountSettings(username))
+	})
+
+	router.put('/api/parts/shells\\:subfounts/settings', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		if (typeof req.body?.infra !== 'boolean')
+			throw httpError(400, 'infra must be a boolean.')
+		// 确保管理器已起，以便立即推送给在线分机
+		const { peerId } = getConnectionCode(username)
+		getUserManager(username, peerId)
+		res.json(setInfraPolicy(username, req.body.infra))
 	})
 }

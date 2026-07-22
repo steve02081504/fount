@@ -116,7 +116,7 @@
 		},
 		"themeOptions": {
 			"auto": "Automatique",
-			"light": "Effacer",
+			"light": "Clair",
 			"dark": "Sombre"
 		},
 		"languageOptions": {
@@ -1266,8 +1266,8 @@
 			"public": "Public",
 			"unlisted": "Non répertorié",
 			"followers": "Abonnés uniquement",
-			"followers7d": "Abonnés uniquement",
-			"followers30d": "Abonnés uniquement",
+			"followers7d": "Visible après avoir suivi pendant 7 jours",
+			"followers30d": "Visible après avoir suivi pendant 30 jours",
 			"selected": "Visible par les personnes spécifiées",
 			"private": "Visible uniquement par vous-même",
 			"allowLabel": "Personnes visibles",
@@ -2023,9 +2023,9 @@
 			"settingsArchiveDeleteHint": "Seule l'archive locale/*.jsonl est supprimée ; les points chauds et les ancres DAG ne sont pas affectés.",
 			"settingsArchiveAdminOnly": "Cette machine ne dispose pas encore de données d'archives froides pour ce groupe.",
 			"settingsArchiveDeleteInvalidMonth": "Veuillez sélectionner un mois valide AAAA-MM.",
-			"settingsArchiveDeleteConfirm": "Êtes-vous sûr de vouloir supprimer tous les fichiers d'archives froides datant de plus de {mois} ? Cette opération est irréversible.",
-			"settingsArchiveDeleteOk": "{files} fichiers d'archive supprimés.",
-			"settingsArchiveDeleteFailed": "Échec de la suppression de l'archive : {erreur}",
+			"settingsArchiveDeleteConfirm": "Êtes-vous sûr de vouloir supprimer tous les fichiers d'archives froides datant de plus de ${month} ? Cette opération est irréversible.",
+			"settingsArchiveDeleteOk": "${files} fichiers d'archive supprimés.",
+			"settingsArchiveDeleteFailed": "Échec de la suppression de l'archive : ${error}",
 			"settingsEventRetentionDepth": "Profondeur de conservation des événements DAG",
 			"settingsEventRetentionMs": "Temps de conservation des événements DAG",
 			"settingsCompactTriggerDepth": "Profondeur de déclenchement de compression matérialisée",
@@ -2046,7 +2046,8 @@
 			"send": "envoyer",
 			"streamTest": "Tester les appareils multimédias",
 			"messageInput": {
-				"placeholder": "Message de groupe... Ctrl+Entrée Envoyer"
+				"placeholder": "Message de groupe… Ctrl+Entrée pour envoyer",
+				"aria-label": "Message"
 			},
 			"loadError": "Échec du chargement du groupe",
 			"remoteNodeTimeout": "Le nœud distant ne répond pas, veuillez réessayer plus tard.",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "Mot de passe copié dans le presse-papiers",
 			"regenerateSuccess": "Le code de connexion a été régénéré"
 		},
+		"infra": {
+			"title": "Bien public du réseau",
+			"description": "Choisissez si les subfounts connectés agissent comme nœuds de bien public pour tout le réseau fount. Désactivés, ils acceptent encore l’exécution à distance depuis cet hôte, mais n’aident plus au niveau réseau.",
+			"capabilityRelay": "Participer au relais multi-sauts de l’overlay pour que les autres nœuds communiquent quand le lien direct échoue.",
+			"capabilityMailbox": "Conserver la livraison hors ligne pour que les pairs reçoivent encore les messages privés une fois de retour en ligne.",
+			"hostPriority": "Une fois activé, favoriser cet hôte : pondérer le routage selon sa table de réputation et le verrouiller en priorité maximale.",
+			"toggleLabel": "Faire contribuer les subfounts au bien public",
+			"enabledToast": "Activé : les subfounts contribuent au bien public du réseau (cet hôte d’abord)",
+			"disabledToast": "Désactivé : les subfounts ne contribuent plus au bien public du réseau"
+		},
 		"connectedSubfounts": {
 			"title": "subfount connectée",
 			"noSubfountsConnected": "Aucune subfount n'est connectée",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "Échec du chargement du code de connexion : ${message}",
 			"regenerateConnectionCodeFailed": "Échec de la régénération du code de connexion : ${message}",
+			"loadSettingsFailed": "Échec du chargement des paramètres de bien public : ${message}",
+			"saveSettingsFailed": "Échec de l’enregistrement des paramètres de bien public : ${message}",
 			"generalError": "Une erreur s'est produite : ${message}"
 		},
 		"home_function_buttons": {

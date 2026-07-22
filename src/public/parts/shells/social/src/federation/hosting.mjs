@@ -5,11 +5,16 @@ import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/c
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
 import {
-	listLocalAgentEntities as scanLocalAgentEntities,
-	resolveAgentCharPartNameForUser,
-} from '../../../chat/src/entity/agentHost.mjs'
+	resolveAgentCharPartName,
+	scanLocalAgentEntitiesFromChars as listLocalAgentEntities,
+} from '../../../chat/src/entity/member.mjs'
 
 import { getOperatorEntityHashProvider, getReplicaUsernamesProvider } from './follower/registry.mjs'
+
+/**
+ *
+ */
+export { listLocalAgentEntities }
 
 /**
  * @typedef {'user' | 'agent' | 'unknown'} SocialEntityKind
@@ -20,14 +25,6 @@ import { getOperatorEntityHashProvider, getReplicaUsernamesProvider } from './fo
  * @property {string | null} replicaUsername 本机托管该实体时的 replica 登录名
  * @property {string | null} charPartName 本地 agent 时 chars/ 下目录名
  */
-
-/**
- * @param {string} replicaUsername replica 登录名
- * @returns {{ entityHash: string, charPartName: string }[]} 本地 agent 列表
- */
-export function listLocalAgentEntities(replicaUsername) {
-	return scanLocalAgentEntities(replicaUsername)
-}
 
 /**
  * @param {string} entityHash 128 位 entityHash
@@ -46,7 +43,7 @@ export async function findHostingReplicaUsername(entityHash) {
 		if (parsed.nodeHash !== getNodeHash()) continue
 		const operator = await resolveOperator(username)
 		if (operator?.toLowerCase() === parsed.entityHash) return username
-		if (resolveAgentCharPartNameForUser(username, parsed.entityHash)) return username
+		if (resolveAgentCharPartName(username, parsed.entityHash)) return username
 	}
 	return null
 }
@@ -84,7 +81,7 @@ export async function resolveSocialEntity(entityHash, hintReplicaUsername = null
 			charPartName: null,
 		}
 
-	const charPartName = resolveAgentCharPartNameForUser(replicaUsername, parsed.entityHash) ?? null
+	const charPartName = resolveAgentCharPartName(replicaUsername, parsed.entityHash) ?? null
 	if (charPartName)
 		return {
 			entityHash: parsed.entityHash,

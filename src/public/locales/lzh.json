@@ -2023,9 +2023,9 @@
 			"settingsArchiveDeleteHint": "僅刪除本地 archive/*.jsonl；熱區與 DAG 錨點不受影響。",
 			"settingsArchiveAdminOnly": "本機尚無該群的冷歸檔數據。",
 			"settingsArchiveDeleteInvalidMonth": "請擇有效的 YYYY-MM 月份。",
-			"settingsArchiveDeleteConfirm": "確定刪除 {month} 之前的所有冷歸檔文件？此操作不可恢復。",
-			"settingsArchiveDeleteOk": "已刪除 {files} 個歸檔文件。",
-			"settingsArchiveDeleteFailed": "刪除歸檔失利：{error}",
+			"settingsArchiveDeleteConfirm": "確定刪除 ${month} 之前的所有冷歸檔文件？此操作不可恢復。",
+			"settingsArchiveDeleteOk": "已刪除 ${files} 個歸檔文件。",
+			"settingsArchiveDeleteFailed": "刪除歸檔失利：${error}",
 			"settingsEventRetentionDepth": "DAG 事件保留深度",
 			"settingsEventRetentionMs": "DAG 事件保留時間",
 			"settingsCompactTriggerDepth": "物化壓縮觸發深度",
@@ -2046,7 +2046,8 @@
 			"send": "發送",
 			"streamTest": "測試媒體設備",
 			"messageInput": {
-				"placeholder": "群組消息… Ctrl+Enter 發送"
+				"placeholder": "群組消息… Ctrl+Enter 發送",
+				"aria-label": "入言"
 			},
 			"loadError": "載入群組失利",
 			"remoteNodeTimeout": "遠端節點無響應，請稍後建試",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "連繫信物已謄於剪貼板",
 			"regenerateSuccess": "連繫碼已更造"
 		},
+		"infra": {
+			"title": "網之公益",
+			"description": "統御已連之子fount，使之為公益之節，以助全網。關則分機仍受本機遠役，然不預網層之助。",
+			"capabilityRelay": "預 overlay 多跳轉遞，直連敗時助他節互通。",
+			"capabilityMailbox": "託離線投遞，待彼方上線猶得私信。",
+			"hostPriority": "啟則先助本機：依本機信譽表權衡路由，並鎖本機為最上。",
+			"toggleLabel": "分機參公益",
+			"enabledToast": "已啟：分機參網之公益（本機優先）",
+			"disabledToast": "已關：分機不復參網之公益"
+		},
 		"connectedSubfounts": {
 			"title": "已連之Subfount",
 			"noSubfountsConnected": "未有Subfount相連",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "載連繫碼敗績: ${message}",
 			"regenerateConnectionCodeFailed": "更造連繫碼敗績: ${message}",
+			"loadSettingsFailed": "載公益設置敗績: ${message}",
+			"saveSettingsFailed": "存公益設置敗績: ${message}",
 			"generalError": "有誤發生: ${message}"
 		},
 		"home_function_buttons": {

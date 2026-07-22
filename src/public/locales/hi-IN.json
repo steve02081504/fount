@@ -392,7 +392,7 @@
 			"manifestMatched": "प्रकट मिलान परिणाम: ${ids}",
 			"selectedSuites": "${selected}/${total} परीक्षण सुइट चयनित",
 			"planSlotSummary": "योजना: वास्तविक रन ${run}, पुन: उपयोग ${reuse}, अवरुद्ध ${blocked}",
-			"noMatchingSuites": "कोई ईमेल खाता परीक्षण सूट नहीं.",
+			"noMatchingSuites": "कोई मिलान वाली परीक्षण सूट नहीं.",
 			"reportPath": "रिपोर्ट: ${path}",
 			"reportPathFinal": "रिपोर्ट: ${path}",
 			"statePathFinal": "वर्तमान स्थिति: ${path}",
@@ -566,7 +566,7 @@
 			"shortcut": {
 				"desktopShortcutCreated": "`${path}` पर डेस्कटॉप शॉर्टकट बनाया गया",
 				"startMenuShortcutCreated": "`${path}` पर प्रारंभ मेनू शॉर्टकट बनाया गया",
-				"protocolHandlerRegistered": "fount: // प्रोटोकॉल हैंडलर पंजीकृत।",
+				"protocolHandlerRegistered": "fount:// प्रोटोकॉल हैंडलर पंजीकृत।",
 				"shortcutNotSupported": "चेतावनी: आपका ऑपरेटिंग सिस्टम (${os}) डेस्कटॉप शॉर्टकट बनाने का समर्थन नहीं करता है।",
 				"osacompileNotFound": "त्रुटि: 'ओसाकंपाइल' नहीं मिला। MacOS ऐप बनाने में असमर्थ.",
 				"lsregisterFailed": "चेतावनी: किसी एप्लिकेशन को लॉन्चसर्विसेज के साथ पंजीकृत करने के लिए `lsregister` का उपयोग करना विफल रहा।",
@@ -1340,7 +1340,7 @@
 			"tooShort": "कृपया कम से कम 2 अक्षर दर्ज करें",
 			"usersTitle": "उपयोगकर्ता",
 			"postsTitle": "पोस्ट",
-			"usersEmpty": "कोई ईमेल खाता उपयोगकर्ता नहीं",
+			"usersEmpty": "कोई मिलान वाले उपयोगकर्ता नहीं",
 			"pinAlias": "उपनाम के रूप में सेट करें",
 			"trustScore": "${score} पर भरोसा करें",
 			"viewTitle": "खोजें",
@@ -1564,7 +1564,7 @@
 			"renameFolderPrompt": "नये फ़ोल्डर का नाम",
 			"deleteFolder": "फ़ोल्डर हटाएँ",
 			"deleteFolderConfirm": "फ़ोल्डर हटाएं? वहां मौजूद पोस्टों को \"अनआर्काइव्ड\" में ले जाया जाएगा।",
-			"searchEmpty": "कोई ईमेल खाता संग्रह नहीं",
+			"searchEmpty": "कोई मिलान वाला संग्रह नहीं",
 			"folderEmpty": "यह फ़ोल्डर खाली है",
 			"emptyHint": "पोस्ट को यहां सहेजने के लिए ब्राउज़ करते समय बुकमार्क पर क्लिक करें",
 			"search": {
@@ -2023,9 +2023,9 @@
 			"settingsArchiveDeleteHint": "केवल स्थानीय संग्रह/*.jsonl हटाया गया है; हॉटस्पॉट और डीएजी एंकर प्रभावित नहीं होते हैं।",
 			"settingsArchiveAdminOnly": "इस मशीन में अभी तक इस समूह के लिए कोल्ड आर्काइव डेटा नहीं है।",
 			"settingsArchiveDeleteInvalidMonth": "कृपया एक वैध महीना YYYY-MM चुनें।",
-			"settingsArchiveDeleteConfirm": "क्या आप वाकई {माह} से पुरानी सभी कोल्ड आर्काइव फ़ाइलें हटाना चाहते हैं? यह ऑपरेशन अपरिवर्तनीय है.",
-			"settingsArchiveDeleteOk": "{फ़ाइलें} संग्रह फ़ाइलें हटा दी गईं।",
-			"settingsArchiveDeleteFailed": "संग्रह हटाने में विफल: {त्रुटि}",
+			"settingsArchiveDeleteConfirm": "क्या आप वाकई ${month} से पुरानी सभी कोल्ड आर्काइव फ़ाइलें हटाना चाहते हैं? यह ऑपरेशन अपरिवर्तनीय है.",
+			"settingsArchiveDeleteOk": "${files} संग्रह फ़ाइलें हटा दी गईं।",
+			"settingsArchiveDeleteFailed": "संग्रह हटाने में विफल: ${error}",
 			"settingsEventRetentionDepth": "DAG घटना अवधारण गहराई",
 			"settingsEventRetentionMs": "DAG इवेंट अवधारण समय",
 			"settingsCompactTriggerDepth": "भौतिकीकृत संपीड़न ट्रिगर गहराई",
@@ -2046,7 +2046,8 @@
 			"send": "भेजें",
 			"streamTest": "मीडिया उपकरणों का परीक्षण करें",
 			"messageInput": {
-				"placeholder": "समूह संदेश… Ctrl+Enter भेजें"
+				"placeholder": "समूह संदेश… Ctrl+Enter से भेजें",
+				"aria-label": "संदेश"
 			},
 			"loadError": "समूह लोड करने में विफल",
 			"remoteNodeTimeout": "रिमोट नोड प्रतिक्रिया नहीं दे रहा है, कृपया बाद में पुनः प्रयास करें।",
@@ -2125,7 +2126,7 @@
 			"remoteTyping": "${name} टाइप कर रहा है…",
 			"remoteTypingTwo": "${name1}, ${name2} प्रवेश कर रहा हूँ…",
 			"remoteTypingMany": "${name} और ${count} अन्य लोग टाइप कर रहे हैं…",
-			"mentionEmpty": "(कोई ईमेल खाता सदस्य नहीं)",
+			"mentionEmpty": "(कोई मिलान वाले सदस्य नहीं)",
 			"localAiLabel": "मूल भूमिका:",
 			"forceTriggerOne": {
 				"title": "${name} को बोलने के लिए बाध्य करें"
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "पासवर्ड क्लिपबोर्ड पर कॉपी किया गया",
 			"regenerateSuccess": "कनेक्शन कोड पुनः जनरेट किया गया है"
 		},
+		"infra": {
+			"title": "नेटवर्क सार्वजनिक हित",
+			"description": "चुनें कि जुड़े subfount पूरे fount नेटवर्क की मदद के लिए सार्वजनिक-हित नोड के रूप में काम करें या नहीं। बंद होने पर भी वे इस होस्ट से दूरस्थ निष्पादन स्वीकार करते हैं, पर नेटवर्क परत की मदद में शामिल नहीं होते।",
+			"capabilityRelay": "overlay मल्टी-हॉप अग्रेषण में शामिल होकर सीधे कनेक्शन विफल होने पर अन्य नोड्स को जोड़ने में मदद करें।",
+			"capabilityMailbox": "ऑफ़लाइन डिलीवरी रखें ताकि दूसरा नोड वापस ऑनलाइन आने पर भी निजी संदेश पा सके।",
+			"hostPriority": "चालू होने पर इस होस्ट को प्राथमिकता दें: इसकी प्रतिष्ठा तालिका से मार्ग भारित करें और इसे सर्वोच्च प्राथमिकता पर लॉक करें।",
+			"toggleLabel": "subfount को सार्वजनिक हित में शामिल करें",
+			"enabledToast": "चालू: subfount नेटवर्क सार्वजनिक हित में शामिल (यह होस्ट पहले)",
+			"disabledToast": "बंद: subfount अब नेटवर्क सार्वजनिक हित में शामिल नहीं"
+		},
 		"connectedSubfounts": {
 			"title": "कनेक्टेड सबफ़ाउंट",
 			"noSubfountsConnected": "कोई सबफ़ाउंट कनेक्ट नहीं है",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "कनेक्शन कोड लोड करने में विफल: ${message}",
 			"regenerateConnectionCodeFailed": "कनेक्शन कोड पुन: उत्पन्न करने में विफल: ${message}",
+			"loadSettingsFailed": "सार्वजनिक-हित सेटिंग लोड करने में विफल: ${message}",
+			"saveSettingsFailed": "सार्वजनिक-हित सेटिंग सहेजने में विफल: ${message}",
 			"generalError": "एक त्रुटि उत्पन्न हुई: ${message}"
 		},
 		"home_function_buttons": {
@@ -5202,7 +5215,7 @@
 		"cutDone": "काटना",
 		"undo": "रद्द करना",
 		"redo": "फिर से करना",
-		"newWindow": "नई विंडो खोलेंवर्तमान स्थान",
+		"newWindow": "नई विंडो खोलें वर्तमान स्थान",
 		"goUp": "पिछले स्तर पर लौटें",
 		"brokenLink": "लिंक टूटा हुआ है: ${reason}",
 		"noDownload": "कोई डाउनलोड करने योग्य सामग्री नहीं",
