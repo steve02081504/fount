@@ -5295,6 +5295,9 @@ export type LocaleKeyParams = {
 	'chat.group.remoteTyping': { name: string | number }
 	'chat.group.remoteTypingMany': { count: string | number; name: string | number }
 	'chat.group.remoteTypingTwo': { name1: string | number; name2: string | number }
+	'chat.group.settingsArchiveDeleteConfirm': { month: string | number }
+	'chat.group.settingsArchiveDeleteFailed': { error: string | number }
+	'chat.group.settingsArchiveDeleteOk': { files: string | number }
 	'chat.group.settingsPage.banConfirm': { name: string | number }
 	'chat.group.settingsPage.banFailed': { error: string | number }
 	'chat.group.settingsPage.channelArchiveImportFailed': { error: string | number }
