@@ -3,6 +3,12 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="fount Cabinet: Personal &amp; Shared Files" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:cabinet" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Browse personal and shared P2P file cabinets in fount." />
+	<meta name="description" content="Browse personal and shared P2P file cabinets in fount." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
 	<title data-i18n="cabinet.title"></title>
 	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 	<script blocking="render" type="module" src="/preload.mjs"></script>
@@ -14,9 +20,9 @@
 </head>
 <body class="bg-base-200 min-h-screen">
 	<div class="drawer md:drawer-open">
-		<input id="cabinet-drawer-toggle" type="checkbox" class="drawer-toggle" />
+		<input id="cabinet-drawer-toggle" type="checkbox" class="drawer-toggle" aria-hidden="true" tabindex="-1" />
 		<div class="drawer-content flex flex-col min-h-screen min-w-0">
-			<section class="flex-1 flex flex-col min-w-0 min-h-screen">
+			<main class="flex-1 flex flex-col min-w-0 min-h-screen">
 				<div class="bg-base-100 border-b border-base-300 p-2 flex flex-wrap gap-1 items-center">
 					<label for="cabinet-drawer-toggle" class="btn btn-ghost btn-sm btn-square md:hidden" data-i18n="cabinet.openCabinets">
 						<img src="https://api.iconify.design/mdi/menu.svg" width="18" height="18" alt="" aria-hidden="true" />
@@ -32,7 +38,7 @@
 				<input id="folderInput" type="file" webkitdirectory multiple class="hidden" />
 				<div id="entryGrid" class="p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 overflow-y-auto flex-1"></div>
 				<div id="statusBar" class="text-xs opacity-70 p-2 border-t border-base-300 cabinet-status-bar"></div>
-			</section>
+			</main>
 		</div>
 		<div class="drawer-side z-40">
 			<label for="cabinet-drawer-toggle" class="drawer-overlay md:hidden"></label>

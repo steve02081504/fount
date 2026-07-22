@@ -7,17 +7,17 @@
 ## 提供的页面
 
 ### GET /parts/shells:subfounts/
-- 用途：子 fount 管理页面，用于管理子 fount 连接。包括查看连接码、管理连接列表、远程执行脚本/命令、设置连接描述等功能，支持多实例 fount 之间的连接和协作。
+- 用途：子 fount 管理页面，用于管理子 fount 连接。包括查看连接码、管理连接列表、远程执行脚本/命令、设置连接描述、统一开关下属是否参与网络 infra（开启时优先帮扶本机）等。独立客户端未挂主机时默认跑 infra；挂上主机后听从网页端「网络基建」开关。
 
 ---
 
 ## 连接码与列表
 
 ### GET /api/parts/shells:subfounts/connection-code
-- 用途：获取当前实例的连接码，供子 fount 或客户端连接。
+- 用途：获取当前实例的连接码，供子 fount 或客户端连接。响应 `{ peerId, password, nodeHash }`；`nodeHash` 可传给客户端以直连并优先帮扶主机。
 
 ### POST /api/parts/shells:subfounts/regenerate-code
-- 用途：重新生成连接码。
+- 用途：重新生成连接码。响应同 connection-code。
 
 ### GET /api/parts/shells:subfounts/list
 - 用途：获取已配置的子 fount 或连接列表。
@@ -27,6 +27,13 @@
 
 ### GET /api/parts/shells:subfounts/info
 - 用途：获取 subfounts 相关元信息（含 shell 可用性等）。
+
+### GET /api/parts/shells:subfounts/settings
+- 用途：读取下属 infra 策略。响应 `{ infra: boolean }`，默认 `true`。
+
+### PUT /api/parts/shells:subfounts/settings
+- Body：`{ infra: boolean }`。
+- 用途：统一开关已连接子 fount 是否参与网络 infra（overlay 转发、Mailbox）；开启时优先帮扶本机。立即推送给在线分机。
 
 ### POST /api/parts/shells:subfounts/set-description
 - Body：JSON。`deviceId`（字符串，必填），连接的设备 ID（来自 list/connected 等）。`description`（字符串，可选），要设置的描述。

@@ -37,6 +37,16 @@ export function activeCallsPath(username) {
 }
 
 /**
+ * 入群 bootstrap 凭证（DAG 尚无 roomSecret 时落盘，重启可恢复）。
+ * @param {string} username 本地账户名
+ * @param {string} groupId 群 ID
+ * @returns {string} `federation_bootstrap.json` 绝对路径
+ */
+export function federationBootstrapPath(username, groupId) {
+	return join(groupDir(username, groupId), 'federation_bootstrap.json')
+}
+
+/**
  * 单个群 / 会话在磁盘上的 DAG 数据目录。
  * @param {string} username 本地账户名
  * @param {string} groupId 群组或会话 ID

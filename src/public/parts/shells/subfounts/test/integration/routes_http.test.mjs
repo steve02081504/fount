@@ -34,6 +34,8 @@ Deno.test({
 		const body = JSON.parse(raw)
 		assert(body.peerId)
 		assert(body.password)
+		assert(body.nodeHash)
+		assertEquals(String(body.nodeHash).length, 64)
 		assert(String(body.peerId).startsWith('fountHost-'))
 	}
 	finally {
@@ -95,6 +97,35 @@ Deno.test({
 		assert(regenBody.peerId)
 		assert(regenBody.password)
 		assert(regenBody.peerId !== peerId, 'expected regenerated peerId to differ')
+	}
+	finally {
+		await stopNode(node)
+	}
+})
+
+Deno.test({
+	name: 'GET/PUT settings toggles infra policy',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const node = await launchSubfountNode()
+	try {
+		const getRes = await subfountFetch(node, 'GET', '/settings')
+		const getRaw = await getRes.text()
+		assertEquals(getRes.status, 200, getRaw)
+		const initial = JSON.parse(getRaw)
+		assertEquals(initial.infra, true)
+
+		const putRes = await subfountFetch(node, 'PUT', '/settings', { infra: false })
+		const putRaw = await putRes.text()
+		assertEquals(putRes.status, 200, putRaw)
+		assertEquals(JSON.parse(putRaw).infra, false)
+
+		const again = await subfountFetch(node, 'GET', '/settings')
+		assertEquals((await again.json()).infra, false)
+
+		const restore = await subfountFetch(node, 'PUT', '/settings', { infra: true })
+		assertEquals((await restore.json()).infra, true)
 	}
 	finally {
 		await stopNode(node)

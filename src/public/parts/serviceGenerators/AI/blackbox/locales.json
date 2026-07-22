@@ -2,7 +2,7 @@
 	"info": {
 		"en-UK": {
 			"name": "Blackbox AI",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
 			"description_markdown": "An AI that can answer questions and write code.",
 			"version": "0.0.0",
@@ -16,9 +16,9 @@
 		},
 		"zh-CN": {
 			"name": "Blackbox AI",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "一个可以回答问题和编写代码的人工智能。",
+			"description_markdown": "能回答问题、编写代码的人工智能。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -30,23 +30,23 @@
 		},
 		"ar-SA": {
 			"name": "Blackbox AI",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "ذكاء اصطناعي يمكنه الإجابة على الأسئلة وكتابة التعليمات البرمجية.",
+			"description_markdown": "ذكاء اصطناعي يجيب عن الأسئلة ويكتب الشيفرة.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
 				"blackbox",
 				"ai",
-				"كود"
+				"شيفرة"
 			],
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"de-DE": {
 			"name": "Blackbox AI",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "Eine KI, die Fragen beantworten und Code schreiben kann.",
+			"description_markdown": "Eine KI, die Fragen beantwortet und Code schreibt.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -58,7 +58,7 @@
 		},
 		"emoji": {
 			"name": "⬛️📦",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "⬛️🧠💻",
 			"description_markdown": "❓➕💻➡️⬛️📦➡️✨",
 			"version": "0.0.0",
@@ -72,9 +72,9 @@
 		},
 		"es-ES": {
 			"name": "Blackbox AI",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "Una IA que puede responder preguntas y escribir código.",
+			"description_markdown": "Una IA que responde preguntas y escribe código.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -86,9 +86,9 @@
 		},
 		"fr-FR": {
 			"name": "Blackbox AI",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "Une IA capable de répondre à des questions et d'écrire du code.",
+			"description_markdown": "Une IA qui répond aux questions et écrit du code.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -99,24 +99,24 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"hi-IN": {
-			"name": "ब्लैकबॉक्स एआई",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "ब्लैकबॉक्स एआई",
-			"description_markdown": "एक एआई जो सवालों के जवाब दे सकता है और कोड लिख सकता है।",
+			"name": "Blackbox AI",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "प्रश्नों के उत्तर देने और कोड लिखने वाला AI।",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
-				"ब्लैकबॉक्स",
-				"एआई",
+				"blackbox",
+				"ai",
 				"कोड"
 			],
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"is-IS": {
-			"name": "Blackbox gervigreind",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "Blackbox gervigreind",
-			"description_markdown": "Gervigreind sem getur svarað spurningum og skrifað kóða.",
+			"name": "Blackbox AI",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "Gervigreind sem svarar spurningum og skrifar kóða.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -128,9 +128,9 @@
 		},
 		"it-IT": {
 			"name": "Blackbox AI",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "Un'intelligenza artificiale in grado di rispondere a domande e scrivere codice.",
+			"description_markdown": "Un'IA che risponde alle domande e scrive codice.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -142,9 +142,9 @@
 		},
 		"ja-JP": {
 			"name": "Blackbox AI",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "質問に答えたり、コードを書いたりできる AI。",
+			"description_markdown": "質問に答え、コードを書ける AI。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -155,14 +155,14 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"ko-KR": {
-			"name": "블랙박스 AI",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "블랙박스 AI",
-			"description_markdown": "질문에 답하고 코드를 작성할 수 있는 AI입니다.",
+			"name": "Blackbox AI",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "질문에 답하고 코드를 작성하는 AI입니다.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
-				"블랙박스",
+				"blackbox",
 				"ai",
 				"코드"
 			],
@@ -170,7 +170,7 @@
 		},
 		"lzh": {
 			"name": "黑箱智械",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "黑箱智械",
 			"description_markdown": "能應問、作碼之智械。",
 			"version": "0.0.0",
@@ -184,9 +184,9 @@
 		},
 		"nl-NL": {
 			"name": "Blackbox AI",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "Een AI die vragen kan beantwoorden en code kan schrijven.",
+			"description_markdown": "Een AI die vragen beantwoordt en code schrijft.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -197,10 +197,10 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"pt-PT": {
-			"name": "IA Blackbox",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "IA Blackbox",
-			"description_markdown": "Uma IA que pode responder a perguntas e escrever código.",
+			"name": "Blackbox AI",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "Uma IA que responde a perguntas e escreve código.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -211,10 +211,10 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"ru-RU": {
-			"name": "ИИ Blackbox",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "ИИ Blackbox",
-			"description_markdown": "ИИ, который может отвечать на вопросы и писать код.",
+			"name": "Blackbox AI",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "ИИ, который отвечает на вопросы и пишет код.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -225,10 +225,10 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"uk-UA": {
-			"name": "ШІ Blackbox",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "ШІ Blackbox",
-			"description_markdown": "ШІ, який може відповідати на запитання та писати код.",
+			"name": "Blackbox AI",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "ШІ, який відповідає на запитання та пише код.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -239,28 +239,28 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"vi-VN": {
-			"name": "AI hộp đen",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "AI hộp đen",
-			"description_markdown": "Một AI có thể trả lời câu hỏi và viết mã.",
+			"name": "Blackbox AI",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "AI trả lời câu hỏi và viết mã.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
-				"hộp đen",
+				"blackbox",
 				"ai",
 				"mã"
 			],
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"zh-TW": {
-			"name": "黑盒子 AI",
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "黑盒子 AI",
-			"description_markdown": "一個可以回答問題和撰寫程式碼的人工智慧。",
+			"name": "Blackbox AI",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "能回答問題、撰寫程式碼的人工智慧。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
-				"黑盒子",
+				"blackbox",
 				"ai",
 				"程式碼"
 			],
@@ -269,7 +269,7 @@
 	},
 	"product_info": {
 		"en-UK": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
 			"description_markdown": "An AI that can answer questions and write code.",
 			"version": "0.0.0",
@@ -283,9 +283,9 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"zh-CN": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "一个可以回答问题和编写代码的人工智能。",
+			"description_markdown": "能回答问题、编写代码的人工智能。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -297,23 +297,23 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"ar-SA": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "ذكاء اصطناعي يمكنه الإجابة على الأسئلة وكتابة التعليمات البرمجية.",
+			"description_markdown": "ذكاء اصطناعي يجيب عن الأسئلة ويكتب الشيفرة.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
 				"blackbox",
 				"ai",
-				"كود"
+				"شيفرة"
 			],
 			"provider": "blackbox",
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"de-DE": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "Eine KI, die Fragen beantworten und Code schreiben kann.",
+			"description_markdown": "Eine KI, die Fragen beantwortet und Code schreibt.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -325,7 +325,7 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"emoji": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "⬛️🧠💻",
 			"description_markdown": "❓➕💻➡️⬛️📦➡️✨",
 			"version": "0.0.0",
@@ -339,9 +339,9 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"es-ES": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "Una IA que puede responder preguntas y escribir código.",
+			"description_markdown": "Una IA que responde preguntas y escribe código.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -353,9 +353,9 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"fr-FR": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "Une IA capable de répondre à des questions et d'écrire du code.",
+			"description_markdown": "Une IA qui répond aux questions et écrit du code.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -367,23 +367,23 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"hi-IN": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "ब्लैकबॉक्स एआई",
-			"description_markdown": "एक एआई जो सवालों के जवाब दे सकता है और कोड लिख सकता है।",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "प्रश्नों के उत्तर देने और कोड लिखने वाला AI।",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
-				"ब्लैकबॉक्स",
-				"एआई",
+				"blackbox",
+				"ai",
 				"कोड"
 			],
 			"provider": "blackbox",
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"is-IS": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "Blackbox gervigreind",
-			"description_markdown": "Gervigreind sem getur svarað spurningum og skrifað kóða.",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "Gervigreind sem svarar spurningum og skrifar kóða.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -395,9 +395,9 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"it-IT": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "Un'intelligenza artificiale in grado di rispondere a domande e scrivere codice.",
+			"description_markdown": "Un'IA che risponde alle domande e scrive codice.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -409,9 +409,9 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"ja-JP": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "質問に答えたり、コードを書いたりできる AI。",
+			"description_markdown": "質問に答え、コードを書ける AI。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -423,13 +423,13 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"ko-KR": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "블랙박스 AI",
-			"description_markdown": "질문에 답하고 코드를 작성할 수 있는 AI입니다.",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "질문에 답하고 코드를 작성하는 AI입니다.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
-				"블랙박스",
+				"blackbox",
 				"ai",
 				"코드"
 			],
@@ -437,7 +437,7 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"lzh": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "黑箱智械",
 			"description_markdown": "能應問、作碼之智械。",
 			"version": "0.0.0",
@@ -451,9 +451,9 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"nl-NL": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
 			"description": "Blackbox AI",
-			"description_markdown": "Een AI die vragen kan beantwoorden en code kan schrijven.",
+			"description_markdown": "Een AI die vragen beantwoordt en code schrijft.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -465,9 +465,9 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"pt-PT": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "IA Blackbox",
-			"description_markdown": "Uma IA que pode responder a perguntas e escrever código.",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "Uma IA que responde a perguntas e escreve código.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -479,9 +479,9 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"ru-RU": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "ИИ Blackbox",
-			"description_markdown": "ИИ, который может отвечать на вопросы и писать код.",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "ИИ, который отвечает на вопросы и пишет код.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -493,9 +493,9 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"uk-UA": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "ШІ Blackbox",
-			"description_markdown": "ШІ, який може відповідати на запитання та писати код.",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "ШІ, який відповідає на запитання та пише код.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
@@ -507,13 +507,13 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"vi-VN": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "AI hộp đen",
-			"description_markdown": "Một AI có thể trả lời câu hỏi và viết mã.",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "AI trả lời câu hỏi và viết mã.",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
-				"hộp đen",
+				"blackbox",
 				"ai",
 				"mã"
 			],
@@ -521,13 +521,13 @@
 			"home_page": "https://www.blackbox.ai/"
 		},
 		"zh-TW": {
-			"avatar": "https://www.blackbox.ai/favicon.svg",
-			"description": "黑盒子 AI",
-			"description_markdown": "一個可以回答問題和撰寫程式碼的人工智慧。",
+			"avatar": "https://www.blackbox.ai/favicon.ico",
+			"description": "Blackbox AI",
+			"description_markdown": "能回答問題、撰寫程式碼的人工智慧。",
 			"version": "0.0.0",
 			"author": "steve02081504",
 			"tags": [
-				"黑盒子",
+				"blackbox",
 				"ai",
 				"程式碼"
 			],

@@ -414,7 +414,7 @@
 			"noRealRunPlanned": "今回は実行不要: 再利用 ${reused} 件、ブロック予定 ${blocked} 件（trigger 不変）",
 			"allReusedHint": "今回は実際にスイートを実行していません。失敗は前回結果の引き継ぎ、ブロックも未解消（関連ファイル不変）です。修正後に再実行するか、fount test --force で強制実行してください。",
 			"estimatedRemaining": "推定残り時間 ≈ ${eta} (${completed}/${total} スイート)",
-			"estimatedRunSerialHint": "並列処理が期待される場合 ≈ ${eta} (並列レート ${rate})、節約額 ≈ ${savings} (--no-Parallel を削除)",
+			"estimatedRunSerialHint": "並列処理が期待される場合 ≈ ${eta} (並列レート ${rate})、節約額 ≈ ${savings} (--no-parallel を削除)",
 			"failuresSaved": "失敗リストを保存: ${path}（スイート ${count} 件）",
 			"failuresCleared": "マニフェスト ${manifestId} はすべて合格し、失敗リストはクリアされました。",
 			"terminated": "タイムアウト終了: ${label} — ${reason}",
@@ -2023,9 +2023,9 @@
 			"settingsArchiveDeleteHint": "ローカルの archive/*.jsonl のみが削除されます。ホットスポットと DAG アンカーは影響を受けません。",
 			"settingsArchiveAdminOnly": "このマシンには、このグループのコールド アーカイブ データがまだありません。",
 			"settingsArchiveDeleteInvalidMonth": "YYYY-MM 形式で入力してください。",
-			"settingsArchiveDeleteConfirm": "{month} より古いコールド アーカイブ ファイルをすべて削除してもよろしいですか?この操作は元に戻すことができません。",
-			"settingsArchiveDeleteOk": "{files} 個のアーカイブ ファイルが削除されました。",
-			"settingsArchiveDeleteFailed": "アーカイブの削除に失敗しました: {error}",
+			"settingsArchiveDeleteConfirm": "${month} より古いコールド アーカイブ ファイルをすべて削除してもよろしいですか?この操作は元に戻すことができません。",
+			"settingsArchiveDeleteOk": "${files} 個のアーカイブ ファイルが削除されました。",
+			"settingsArchiveDeleteFailed": "アーカイブの削除に失敗しました: ${error}",
 			"settingsEventRetentionDepth": "DAG イベント保持の深さ",
 			"settingsEventRetentionMs": "DAG イベント保持時間",
 			"settingsCompactTriggerDepth": "実体化された圧縮トリガーの深さ",
@@ -2046,7 +2046,8 @@
 			"send": "送信",
 			"streamTest": "メディアデバイスのテスト",
 			"messageInput": {
-				"placeholder": "グループメッセージ... Ctrl+Enter 送信"
+				"placeholder": "グループメッセージ... Ctrl+Enter 送信",
+				"aria-label": "メッセージを入力"
 			},
 			"loadError": "グループのロードに失敗しました",
 			"remoteNodeTimeout": "リモートノードが応答していません。しばらくしてから再試行してください。",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "パスワードがクリップボードにコピーしました",
 			"regenerateSuccess": "接続コードが再生成されました"
 		},
+		"infra": {
+			"title": "ネットワーク公益",
+			"description": "接続中の子fountを、fountネットワーク全体を支える公益ノードとして使うかどうかを一括で設定します。オフにしても分機は本機からのリモート実行を受け付けますが、ネットワーク層の支援には参加しません。",
+			"capabilityRelay": "overlay のマルチホップ転送に参加し、直結できないときでも他ノード同士の通信を助けます。",
+			"capabilityMailbox": "オフライン配信を預かり、相手ノードが復帰してもダイレクトメッセージを受け取れるようにします。",
+			"hostPriority": "オンのときは本機を優先：本機のレピュテーション表で経路を重み付けし、本機を最高優先度に固定します。",
+			"toggleLabel": "分機を公益に参加させる",
+			"enabledToast": "オン：分機がネットワーク公益に参加します（本機優先）",
+			"disabledToast": "オフ：分機はネットワーク公益に参加しません"
+		},
 		"connectedSubfounts": {
 			"title": "接続されたSubfount",
 			"noSubfountsConnected": "Subfountが接続されていません",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "接続コードのロードに失敗しました: ${message}",
 			"regenerateConnectionCodeFailed": "接続コードの再生成に失敗しました: ${message}",
+			"loadSettingsFailed": "公益設定の読み込みに失敗しました: ${message}",
+			"saveSettingsFailed": "公益設定の保存に失敗しました: ${message}",
 			"generalError": "エラーが発生しました: ${message}"
 		},
 		"home_function_buttons": {

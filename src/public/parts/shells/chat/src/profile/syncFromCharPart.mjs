@@ -11,8 +11,8 @@ import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identit
 import { primaryLocaleForUser } from '../../../../../../scripts/locale.mjs'
 import { baseloadPart, GetPartPath } from '../../../../../../server/parts_loader.mjs'
 import { isAvatarImageUrl } from '../../public/shared/hashAvatar.mjs'
-import { resolveAgentCharPartNameForUser } from '../entity/agentHost.mjs'
 import { normalizeLocalizedMap } from '../entity/localized.mjs'
+import { resolveAgentCharPartName } from '../entity/member.mjs'
 import { getProfile, updateProfile, uploadAvatar } from '../entity/profile.mjs'
 
 /** @type {Record<string, string>} */
@@ -237,7 +237,7 @@ async function applyMaterializedAvatar(localized, materialized, username, hash) 
 export async function syncAgentProfileFromCharPart(username, entityHash, options = {}) {
 	const hash = String(entityHash || '').trim().toLowerCase()
 	if (!hash || !isWritableLocalEntity(hash)) return null
-	const charname = resolveAgentCharPartNameForUser(username, hash)
+	const charname = resolveAgentCharPartName(username, hash)
 	if (!charname) return null
 
 	const current = await getProfile(hash, username, { skipPresentation: true })

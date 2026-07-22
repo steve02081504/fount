@@ -5,7 +5,7 @@ import { getLocalizedInfo, localesForUser } from '../../../../../../scripts/loca
 import { getUserByUsername } from '../../../../../../server/auth/index.mjs'
 import { getAnyDefaultPart, getPartDetails } from '../../../../../../server/parts_loader.mjs'
 
-import { resolveAgentCharPartNameForUser } from './agentHost.mjs'
+import { resolveAgentCharPartName } from './member.mjs'
 
 /**
  *
@@ -106,7 +106,7 @@ function infoLiToDefaults(li) {
  * @returns {Promise<object>} 来自 part getInfo 的默认展示字段
  */
 export async function getInfoDefaultsForEntity(replicaUsername, entityHash, locales) {
-	const charname = resolveAgentCharPartNameForUser(replicaUsername, entityHash)
+	const charname = resolveAgentCharPartName(replicaUsername, entityHash)
 	if (charname) {
 		const details = await getPartDetails(replicaUsername, `chars/${charname}`).catch(() => null) || {}
 		const li = getLocalizedInfo(details.info, locales) || getLocalizedInfo(details.info, ['']) || {}

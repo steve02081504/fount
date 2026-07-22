@@ -69,6 +69,7 @@ function spawnSubfountClient(options) {
 			FOUNT_TEST_SUBFOUNT_NODE_DIR: options.nodeDir,
 			FOUNT_TEST_SUBFOUNT_INFO_FILE: options.infoFile,
 			FOUNT_TEST_SUBFOUNT_READY_FILE: options.readyFile,
+			FOUNT_TEST_SUBFOUNT_STAGE_FILE: options.stageFile,
 		},
 	})
 }
@@ -135,6 +136,7 @@ Deno.test({
 	const clientNodeDir = join(clientRoot, 'node')
 	const readyFile = join(clientRoot, 'ready.txt')
 	const infoFile = join(clientRoot, 'client_info.json')
+	const stageFile = join(clientRoot, 'stage.txt')
 	await mkdir(clientNodeDir, { recursive: true })
 
 	/** @type {import('node:child_process').ChildProcess | null} */
@@ -166,6 +168,7 @@ Deno.test({
 			nodeDir: clientNodeDir,
 			infoFile,
 			readyFile,
+			stageFile,
 		})
 
 		client.stdout?.on('data', chunk => { clientOutput += String(chunk) })
@@ -193,6 +196,10 @@ Deno.test({
 			catch {
 				return false
 			}
+		}).catch(async error => {
+			let stage = ''
+			try { stage = await Deno.readTextFile(stageFile) } catch { /* ignore */ }
+			throw new Error(`${error.message}\n--- stage ---\n${stage}\n--- host log ---\n${host.takeOutput()}\n--- client log ---\n${clientOutput}`)
 		})
 
 		const remote = await waitForRemoteSubfount(host)

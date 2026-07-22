@@ -1,6 +1,11 @@
+import fs from 'node:fs'
+import path from 'node:path'
+
 import {
 	isEntityHash128,
 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+
+import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
 
 /**
  * @param {object} member 物化成员行
@@ -29,12 +34,9 @@ export async function ensureLocalAgentEntityHash(username, charname) {
  * 从 identity.json 解析本地 agent 的 chars 目录名。
  * @param {string} replicaUsername replica 所有者
  * @param {string} entityHash 128 位 agent entityHash
- * @param {(username: string) => string} getUserDictionary 用户目录解析
- * @param {import('node:fs')} fs 文件系统
- * @param {import('node:path')} path 路径模块
  * @returns {string | null} 角色 part 名
  */
-export function resolveAgentCharPartName(replicaUsername, entityHash, getUserDictionary, fs, path) {
+export function resolveAgentCharPartName(replicaUsername, entityHash) {
 	const hash = String(entityHash || '').trim().toLowerCase()
 	if (!isEntityHash128(hash)) return null
 	const identityPath = path.join(getUserDictionary(replicaUsername), 'entities', hash, 'identity.json')
@@ -51,12 +53,9 @@ export function resolveAgentCharPartName(replicaUsername, entityHash, getUserDic
 /**
  * 扫描 entities/{entityHash}/identity.json 枚举本地 agent。
  * @param {string} replicaUsername replica 登录名
- * @param {(username: string) => string} getUserDictionary 用户目录解析
- * @param {import('node:fs')} fs 文件系统
- * @param {import('node:path')} path 路径模块
  * @returns {{ entityHash: string, charPartName: string }[]} agent 实体列表
  */
-export function scanLocalAgentEntitiesFromChars(replicaUsername, getUserDictionary, fs, path) {
+export function scanLocalAgentEntitiesFromChars(replicaUsername) {
 	const root = path.join(getUserDictionary(replicaUsername), 'entities')
 	if (!fs.existsSync(root)) return []
 	/** @type {{ entityHash: string, charPartName: string }[]} */

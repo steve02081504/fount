@@ -3,11 +3,12 @@
  */
 import { promptI18n } from '/scripts/i18n/index.mjs'
 
+import { matchCabinetShortcut } from '../shared/keyboard.mjs'
+
 import { api } from './api.mjs'
 import { runCommand } from './commands.mjs'
 import { hideContextMenu, showContextMenu } from './contextMenu.mjs'
 import { uploadFiles } from './entryActions.mjs'
-import { matchCabinetShortcut } from '../shared/keyboard.mjs'
 import { refreshCabinets, openCabinet, refreshEntries } from './navigation.mjs'
 import { saveProps } from './properties.mjs'
 import { cabinetStore } from './state.mjs'

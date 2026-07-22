@@ -47,6 +47,23 @@ export function setDescription(deviceId, description) {
 }
 
 /**
+ * 获取主机策略（含下属是否参与网络 infra）。
+ * @returns {Promise<{ infra: boolean }>} 策略
+ */
+export function getSettings() {
+	return callApi('settings')
+}
+
+/**
+ * 更新主机策略。
+ * @param {{ infra: boolean }} settings - 策略
+ * @returns {Promise<{ infra: boolean }>} 写入后的策略
+ */
+export function putSettings(settings) {
+	return callApi('settings', 'PUT', settings)
+}
+
+/**
  * 在指定分机上执行代码。
  * @param {number} subfountId - 目标分机 ID（0 为本机）。
  * @param {string} script - 要执行的脚本内容。

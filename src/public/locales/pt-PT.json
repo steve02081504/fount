@@ -1330,12 +1330,12 @@
 			"empty": "Ainda não há tópicos quentes"
 		},
 		"search": {
-			"placeholder": "Pesquisar for posts, users or #topics (minimum 2 words)",
+			"placeholder": "Pesquisar publicações, utilizadores ou #tópicos (mínimo 2 palavras)",
 			"open": {
 				"aria-label": "Procurar"
 			},
 			"submit": "Procurar",
-			"clear": "Claro",
+			"clear": "Limpar",
 			"empty": "Nenhuma postagem correspondente",
 			"tooShort": "Por favor insira pelo menos 2 caracteres",
 			"usersTitle": "Utilizador",
@@ -1521,7 +1521,7 @@
 			"emptyHint": "Vamos escrever o primeiro artigo e iniciar a discussão"
 		},
 		"repost": {
-			"placeholder": "Adicionar a repost comment (optional)…",
+			"placeholder": "Adicionar um comentário de reenvio (opcional)…",
 			"submit": "Avançar"
 		},
 		"quote": {
@@ -1563,7 +1563,7 @@
 			"renameFolder": "Renomear",
 			"renameFolderPrompt": "Novo nome de pasta",
 			"deleteFolder": "Eliminar folder",
-			"deleteFolderConfirm": "Eliminar this folder? Posts inside will move to Unsorted.",
+			"deleteFolderConfirm": "Eliminar esta pasta? As publicações serão movidas para Não arquivado.",
 			"searchEmpty": "Nenhuma coleção correspondente",
 			"folderEmpty": "Esta pasta está vazia",
 			"emptyHint": "Clique no marcador ao navegar pelas notícias para salvá-las aqui",
@@ -1733,7 +1733,7 @@
 			"statusSaved": "Salvo",
 			"statusSaving": "Salvando…",
 			"statusDirty": "Existem alterações não salvas",
-			"statusSaveFailed": "Falha em Save",
+			"statusSaveFailed": "Falha ao guardar",
 			"saveSuccess": "Definições de bate-papo em grupo salvas",
 			"saveFailed": "Não foi possível guardar as definições de bate-papo em grupo"
 		},
@@ -1858,7 +1858,7 @@
 				"kick": "Expulsar",
 				"ban": "Banir",
 				"kickConfirm": "Tem a certeza de que deseja expulsar o membro ${name}?",
-				"kickSelfNodeWarning": "Aviso: este membro usa a mesma identidade de nó que . Pode também será removido do grupo após ser expulso. Tem a certeza de que deseja continuar?",
+				"kickSelfNodeWarning": "Aviso: este membro usa a mesma identidade de nó que você. Você também será removido do grupo após ser expulso. Tem a certeza de que deseja continuar?",
 				"kickSuccess": "Membro expulso",
 				"kickFailed": "Falha ao Kick members out: ${error}",
 				"banConfirm": "Tem a certeza de que deseja banir o membro ${name}?",
@@ -2023,9 +2023,9 @@
 			"settingsArchiveDeleteHint": "Somente archive/*.jsonl local é eliminado; hotspots e âncoras DAG não são afetados.",
 			"settingsArchiveAdminOnly": "Esta máquina ainda não possui dados de arquivo frio para este grupo.",
 			"settingsArchiveDeleteInvalidMonth": "Selecione um mês válido AAAA-MM.",
-			"settingsArchiveDeleteConfirm": "Tem a certeza de que deseja eliminar todos os arquivos cold archive anteriores a {mês}? Esta operação é irreversível.",
-			"settingsArchiveDeleteOk": "{files} arquivos compactados eliminados.",
-			"settingsArchiveDeleteFailed": "Falha ao delete archive: {error}",
+			"settingsArchiveDeleteConfirm": "Tem a certeza de que deseja eliminar todos os ficheiros de arquivo frio anteriores a ${month}? Esta operação é irreversível.",
+			"settingsArchiveDeleteOk": "${files} ficheiros de arquivo eliminados.",
+			"settingsArchiveDeleteFailed": "Falha ao eliminar o arquivo: ${error}",
 			"settingsEventRetentionDepth": "Profundidade de retenção de eventos DAG",
 			"settingsEventRetentionMs": "Tempo de retenção de eventos DAG",
 			"settingsCompactTriggerDepth": "Profundidade do gatilho de compressão materializada",
@@ -2046,7 +2046,8 @@
 			"send": "Enviar",
 			"streamTest": "Testar dispositivos de mídia",
 			"messageInput": {
-				"placeholder": "Mensagem de grupo... Ctrl+Enter Enviar"
+				"placeholder": "Mensagem de grupo… Ctrl+Enter para enviar",
+				"aria-label": "Mensagem"
 			},
 			"loadError": "Falha ao load group",
 			"remoteNodeTimeout": "O nó remoto não está respondendo. Tente novamente mais tarde.",
@@ -2806,7 +2807,7 @@
 			"listSaveToDag": "Guardar to DAG",
 			"listJsonInvalid": "JSON inválido: ${message}",
 			"listSaved": "Salvo",
-			"listSaveFailed": "Falha em Save",
+			"listSaveFailed": "Falha ao guardar",
 			"streamDefaultName": "Streaming de mídia",
 			"streamRefreshToken": "Atualizar watch token",
 			"streamEmbedHttpsRequired": "O endereço de streaming deve ser uma página https:// incorporável ou as definições do grupo devem ser definidas primeiro e atualizadas para obter um token de visualização.",
@@ -2993,7 +2994,7 @@
 				"copyEntityId": "Copiar ID da entidade",
 				"dm": "Enviar mensagem privada",
 				"kick": "Expulsar membro",
-				"kickSelfNodeWarning": "Aviso: este membro usa a mesma identidade de nó que . Pode também será removido do grupo após ser expulso. Tem a certeza de que deseja continuar?",
+				"kickSelfNodeWarning": "Aviso: este membro usa a mesma identidade de nó que você. Você também será removido do grupo após ser expulso. Tem a certeza de que deseja continuar?",
 				"ban": "Proibir…",
 				"personalBlock": "Bloqueio pessoal",
 				"personalBlockConfirm": "Adicionar ${name} to your block list? People who follow you will pick up on this signal and may have less trust in them.",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "Senha copiada para a área de transferência",
 			"regenerateSuccess": "O código de conexão foi regenerado"
 		},
+		"infra": {
+			"title": "Bem público da rede",
+			"description": "Escolha se os subfounts ligados atuam como nós de bem público para toda a rede fount. Quando desligado, ainda aceitam execução remota deste anfitrião, mas deixam de ajudar na camada de rede.",
+			"capabilityRelay": "Participar no reencaminhamento multi-salto do overlay para ajudar outros nós a comunicar quando a ligação direta falha.",
+			"capabilityMailbox": "Manter a entrega offline para que o outro nó ainda receba mensagens privadas depois de voltar online.",
+			"hostPriority": "Quando ativo, privilegiar este anfitrião: encaminhamento ponderado pela sua tabela de reputação e fixá-lo com a máxima prioridade.",
+			"toggleLabel": "Fazer os subfounts contribuírem para o bem público",
+			"enabledToast": "Ativado: os subfounts contribuem para o bem público da rede (este anfitrião primeiro)",
+			"disabledToast": "Desativado: os subfounts já não contribuem para o bem público da rede"
+		},
 		"connectedSubfounts": {
 			"title": "Subfount conectada",
 			"noSubfountsConnected": "Nenhuma subfount está conectada",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "Falha ao carregar o código de conexão: ${message}",
 			"regenerateConnectionCodeFailed": "Falha ao gerar novamente o código de conexão: ${message}",
+			"loadSettingsFailed": "Falha ao carregar as definições de bem público: ${message}",
+			"saveSettingsFailed": "Falha ao guardar as definições de bem público: ${message}",
 			"generalError": "Ocorreu um erro: ${message}"
 		},
 		"home_function_buttons": {

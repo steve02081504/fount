@@ -314,5 +314,7 @@ export async function removeLocalGroupReplica(username, groupId, options = {}) {
 	cancelScheduledCatchUp(username, groupId)
 	purgeGroupSession(groupId)
 	dropGroupReplicaRegistration(groupId)
+	const { dropActiveCallsForGroup } = await import('../call/session.mjs')
+	dropActiveCallsForGroup(username, groupId)
 	await deleteGroupData(username, groupId)
 }

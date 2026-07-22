@@ -2023,9 +2023,9 @@
 			"settingsArchiveDeleteHint": "로컬 archive/*.jsonl만 삭제됩니다. 핫스팟 및 DAG 앵커는 영향을 받지 않습니다.",
 			"settingsArchiveAdminOnly": "이 시스템에는 아직 이 그룹에 대한 콜드 아카이브 데이터가 없습니다.",
 			"settingsArchiveDeleteInvalidMonth": "올바른 월(YYYY-MM)을 선택하세요.",
-			"settingsArchiveDeleteConfirm": "{월}보다 오래된 모든 콜드 아카이브 파일을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
-			"settingsArchiveDeleteOk": "{files} 보관 파일이 삭제되었습니다.",
-			"settingsArchiveDeleteFailed": "아카이브 삭제 실패: {오류}",
+			"settingsArchiveDeleteConfirm": "${month}보다 오래된 모든 콜드 아카이브 파일을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+			"settingsArchiveDeleteOk": "${files} 보관 파일이 삭제되었습니다.",
+			"settingsArchiveDeleteFailed": "아카이브 삭제 실패: ${error}",
 			"settingsEventRetentionDepth": "DAG 이벤트 보존 깊이",
 			"settingsEventRetentionMs": "DAG 이벤트 보존 시간",
 			"settingsCompactTriggerDepth": "물리화 압축 트리거 깊이",
@@ -2046,7 +2046,8 @@
 			"send": "보내기",
 			"streamTest": "미디어 장치 테스트",
 			"messageInput": {
-				"placeholder": "그룹 메시지... Ctrl+Enter 보내기"
+				"placeholder": "그룹 메시지... Ctrl+Enter 보내기",
+				"aria-label": "메시지 입력"
 			},
 			"loadError": "그룹을 불러오지 못했습니다.",
 			"remoteNodeTimeout": "원격 노드가 응답하지 않습니다. 잠시 후 다시 시도해 주세요.",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "비밀번호가 클립보드에 복사되었습니다.",
 			"regenerateSuccess": "연결 코드가 다시 생성되었습니다."
 		},
+		"infra": {
+			"title": "네트워크 공익",
+			"description": "연결된 하위 fount가 전체 fount 네트워크를 돕는 공익 노드로 동작할지 일괄 설정합니다. 끄더라도 하위 장치는 이 호스트의 원격 실행을 받지만, 네트워크 계층 지원에는 참여하지 않습니다.",
+			"capabilityRelay": "overlay 멀티홉 중계에 참여해, 직접 연결이 실패할 때 다른 노드끼리 통신할 수 있게 돕습니다.",
+			"capabilityMailbox": "오프라인 전달을 맡아 두어, 상대 노드가 다시 온라인이 되어도 쪽지를 받을 수 있게 합니다.",
+			"hostPriority": "켜면 이 호스트를 우선합니다: 호스트 평판표로 경로에 가중치를 두고, 최고 우선순위로 고정합니다.",
+			"toggleLabel": "하위 장치가 공익에 참여",
+			"enabledToast": "켜짐: 하위 장치가 네트워크 공익에 참여합니다(이 호스트 우선)",
+			"disabledToast": "꺼짐: 하위 장치가 더 이상 네트워크 공익에 참여하지 않습니다"
+		},
 		"connectedSubfounts": {
 			"title": "연결된 서브폰트",
 			"noSubfountsConnected": "연결된 서브폰트가 없습니다",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "연결 코드를 로드하지 못했습니다: ${message}",
 			"regenerateConnectionCodeFailed": "연결 코드를 다시 생성하지 못했습니다: ${message}",
+			"loadSettingsFailed": "공익 설정을 불러오지 못했습니다: ${message}",
+			"saveSettingsFailed": "공익 설정을 저장하지 못했습니다: ${message}",
 			"generalError": "오류가 발생했습니다: ${message}"
 		},
 		"home_function_buttons": {
@@ -5166,7 +5179,7 @@
 		"paste": "붙여넣기",
 		"pasteLink": "링크로 붙여넣기",
 		"selectAll": "모두 선택",
-		"invert": "반대선거",
+		"invert": "선택 반전",
 		"properties": "재산",
 		"delete": "삭제",
 		"back": {
@@ -5175,7 +5188,7 @@
 		},
 		"cancel": "취소",
 		"save": "저장",
-		"showHidden": "숨기기",
+		"showHidden": "숨김 파일 표시",
 		"name": "이름",
 		"descriptionField": "설명",
 		"attrHidden": "숨김",

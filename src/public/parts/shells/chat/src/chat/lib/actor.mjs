@@ -16,10 +16,7 @@ export async function resolveChatEntity(username, entityHash) {
 	if (operator && resolved === operator)
 		return { entityHash: resolved }
 
-	const fs = await import('node:fs')
-	const path = await import('node:path')
-	const { getUserDictionary } = await import('../../../../../../../server/auth/index.mjs')
-	const charname = resolveAgentCharPartName(username, resolved, getUserDictionary, fs, path)
+	const charname = resolveAgentCharPartName(username, resolved)
 	if (!charname) throw httpError(403, 'invalid entityHash')
 	return { entityHash: resolved, charname }
 }

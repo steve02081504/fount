@@ -2023,9 +2023,9 @@
 			"settingsArchiveDeleteHint": "Aðeins staðbundnu skjalasafni/*.jsonl er eytt; heita reitir og DAG akkeri verða ekki fyrir áhrifum.",
 			"settingsArchiveAdminOnly": "Þessi vél er ekki enn með köld skjalasafnsgögn fyrir þennan hóp.",
 			"settingsArchiveDeleteInvalidMonth": "Vinsamlegast veldu gildan mánuð ÁÁÁÁ-MM.",
-			"settingsArchiveDeleteConfirm": "Ertu viss um að þú viljir eyða öllum köldum skjalasafnsskrám eldri en {mánuður}? Þessi aðgerð er óafturkræf.",
-			"settingsArchiveDeleteOk": "{files} skjalasafnsskrám eytt.",
-			"settingsArchiveDeleteFailed": "Mistókst að eyða skjalasafni: {villa}",
+			"settingsArchiveDeleteConfirm": "Ertu viss um að þú viljir eyða öllum köldum skjalasafnsskrám eldri en ${month}? Þessi aðgerð er óafturkræf.",
+			"settingsArchiveDeleteOk": "${files} skjalasafnsskrám eytt.",
+			"settingsArchiveDeleteFailed": "Mistókst að eyða skjalasafni: ${error}",
 			"settingsEventRetentionDepth": "DAG viðburðar varðveislu dýpt",
 			"settingsEventRetentionMs": "DAG varðveislutími viðburða",
 			"settingsCompactTriggerDepth": "Efnisbundin þjöppunarkveikjudýpt",
@@ -2046,7 +2046,8 @@
 			"send": "Senda",
 			"streamTest": "Prófaðu fjölmiðlatæki",
 			"messageInput": {
-				"placeholder": "Hópskilaboð... Ctrl+Enter Senda"
+				"placeholder": "Hópskilaboð… Ctrl+Enter til að senda",
+				"aria-label": "Skilaboð"
 			},
 			"loadError": "Mistókst að hlaða hóp",
 			"remoteNodeTimeout": "Ytri hnútur svarar ekki, vinsamlegast reyndu aftur síðar.",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "Lykilorð afritað á klippiborð",
 			"regenerateSuccess": "Tengikóði hefur verið endurnýjaður"
 		},
+		"infra": {
+			"title": "Almannaheill á netinu",
+			"description": "Veldu hvort tengdir subfounts starfi sem almannaheillahnútar fyrir allt fount-netið. Þegar slökkt er taka þeir samt fjarframkvæmd frá þessum hýsli, en hjálpa ekki lengur á netlagi.",
+			"capabilityRelay": "Taka þátt í overlay fjölhoppsframsendingu svo aðrir hnútar nái saman þegar bein tenging bregst.",
+			"capabilityMailbox": "Geyma afhendingu án nettengingar svo hinn hnúturinn fái enn einkaskilaboð eftir að hann kemur aftur á netið.",
+			"hostPriority": "Þegar kveikt er, forgangsraða þessum hýsli: vega leiðir eftir orðsporstöflu hans og læsa hann sem hæsta forgang.",
+			"toggleLabel": "Láta subfounts taka þátt í almannaheill",
+			"enabledToast": "Kveikt: subfounts taka þátt í almannaheill á netinu (þessi hýsill fyrst)",
+			"disabledToast": "Slökkt: subfounts taka ekki lengur þátt í almannaheill á netinu"
+		},
 		"connectedSubfounts": {
 			"title": "Tengt undirefni",
 			"noSubfountsConnected": "Ekkert undirefni er tengt",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "Mistókst að hlaða tengikóða: ${message}",
 			"regenerateConnectionCodeFailed": "Mistókst að endurskapa tengikóða: ${message}",
+			"loadSettingsFailed": "Mistókst að hlaða stillingum almannaheillar: ${message}",
+			"saveSettingsFailed": "Mistókst að vista stillingar almannaheillar: ${message}",
 			"generalError": "Villa kom upp: ${message}"
 		},
 		"home_function_buttons": {
