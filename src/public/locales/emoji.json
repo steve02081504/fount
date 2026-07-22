@@ -2046,7 +2046,8 @@
 			"send": "📤",
 			"streamTest": "🧪📹🎙️",
 			"messageInput": {
-				"placeholder": "👥📨… ⌃⏎📤"
+				"placeholder": "👥📨… ⌃⏎📤",
+				"aria-label": "💬⌨️"
 			},
 			"loadError": "📥👥❌",
 			"remoteNodeTimeout": "🔗⏰❌，🔁⏳",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "🔑 📋✅",
 			"regenerateSuccess": "🔗🔢 🔄✅"
 		},
+		"infra": {
+			"title": "🌐❤️",
+			"description": "🎛️ 子⛲→🌐❤️助全网；❌后仍受本机远程，不🌐层🤝",
+			"capabilityRelay": "📡🔀 overlay 多跳，直连❌时助互通",
+			"capabilityMailbox": "📦离线投递→上线仍📩",
+			"hostPriority": "✅时优先本机：信誉表⚖️ + 最高🔒",
+			"toggleLabel": "下属→🌐❤️",
+			"enabledToast": "✅ 下属🌐❤️（本机优先）",
+			"disabledToast": "❌ 下属不🌐❤️"
+		},
 		"connectedSubfounts": {
 			"title": "🔗✅ 🖇️⛲",
 			"noSubfountsConnected": "🚫🔗",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "❌ 🔗🔢: ${message}",
 			"regenerateConnectionCodeFailed": "❌ 🔄 🔗🔢: ${message}",
+			"loadSettingsFailed": "❌ 🌐❤️📋: ${message}",
+			"saveSettingsFailed": "❌ 💾🌐❤️📋: ${message}",
 			"generalError": "💥: ${message}"
 		},
 		"home_function_buttons": {

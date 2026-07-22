@@ -2036,6 +2036,7 @@ export type LocaleData = {
 			streamTest: string
 			messageInput: {
 				placeholder: string
+				'aria-label': string
 			}
 			loadError: string
 			remoteNodeTimeout: string

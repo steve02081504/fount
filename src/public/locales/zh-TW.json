@@ -2046,7 +2046,8 @@
 			"send": "傳送",
 			"streamTest": "測試媒體裝置",
 			"messageInput": {
-				"placeholder": "群組訊息… Ctrl+Enter 傳送"
+				"placeholder": "群組訊息… Ctrl+Enter 傳送",
+				"aria-label": "訊息輸入"
 			},
 			"loadError": "載入群組失敗",
 			"remoteNodeTimeout": "遠端節點無響應，請稍後重試",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "密碼已複製到剪貼簿",
 			"regenerateSuccess": "連接碼已重新產生"
 		},
+		"infra": {
+			"title": "網路公益",
+			"description": "統一設定已連線的子 fount 是否作為公益節點，協助整個 fount 網路。關閉後分機仍接受本機遠端執行，但不參與網路層協助。",
+			"capabilityRelay": "參與 overlay 多跳轉發，在直連失敗時幫助其他節點互通。",
+			"capabilityMailbox": "寄放離線投遞，讓對方節點上線後仍能收到私訊。",
+			"hostPriority": "開啟時優先協助本機：依本機信譽表加權路由，並將本機鎖定為最高優先級。",
+			"toggleLabel": "下屬參與公益",
+			"enabledToast": "已開啟：下屬分機參與網路公益（本機優先）",
+			"disabledToast": "已關閉：下屬分機不再參與網路公益"
+		},
 		"connectedSubfounts": {
 			"title": "已連接的子 fount",
 			"noSubfountsConnected": "未連接任何子 fount",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "載入連接碼失敗: ${message}",
 			"regenerateConnectionCodeFailed": "重新產生連接碼失敗: ${message}",
+			"loadSettingsFailed": "載入公益策略失敗: ${message}",
+			"saveSettingsFailed": "儲存公益策略失敗: ${message}",
 			"generalError": "發生錯誤: ${message}"
 		},
 		"home_function_buttons": {

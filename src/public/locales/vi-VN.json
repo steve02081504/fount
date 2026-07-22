@@ -2046,7 +2046,8 @@
 			"send": "Gửi",
 			"streamTest": "Kiểm tra thiết bị truyền thông",
 			"messageInput": {
-				"placeholder": "Tin nhắn nhóm... Ctrl+Enter Gửi"
+				"placeholder": "Tin nhắn nhóm... Ctrl+Enter Gửi",
+				"aria-label": "Ô nhập tin nhắn"
 			},
 			"loadError": "Không thể tải nhóm",
 			"remoteNodeTimeout": "Nút từ xa không phản hồi, vui lòng thử lại sau.",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "Đã sao chép mật khẩu vào bảng nhớ tạm",
 			"regenerateSuccess": "Mã kết nối đã được tạo lại"
 		},
+		"infra": {
+			"title": "Công ích mạng",
+			"description": "Thiết lập thống nhất xem các subfount đã kết nối có đóng vai trò nút công ích hỗ trợ toàn mạng fount hay không. Khi tắt, chúng vẫn nhận thực thi từ xa từ máy chủ này, nhưng không còn tham gia hỗ trợ tầng mạng.",
+			"capabilityRelay": "Tham gia chuyển tiếp đa bước overlay để giúp các nút khác liên lạc khi kết nối trực tiếp thất bại.",
+			"capabilityMailbox": "Lưu chuyển giao ngoại tuyến để nút đối phương vẫn nhận được tin nhắn riêng sau khi lên mạng lại.",
+			"hostPriority": "Khi bật, ưu tiên máy chủ này: định tuyến có trọng số theo bảng uy tín của nó và khóa nó ở mức ưu tiên cao nhất.",
+			"toggleLabel": "Cấp dưới tham gia công ích",
+			"enabledToast": "Đã bật: subfount cấp dưới tham gia công ích mạng (máy chủ này ưu tiên)",
+			"disabledToast": "Đã tắt: subfount cấp dưới không còn tham gia công ích mạng"
+		},
 		"connectedSubfounts": {
 			"title": "Nguồn phụ được kết nối",
 			"noSubfountsConnected": "Không có thiết bị phụ nào được kết nối",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "Không tải được mã kết nối: ${message}",
 			"regenerateConnectionCodeFailed": "Không tạo lại được mã kết nối: ${message}",
+			"loadSettingsFailed": "Không tải được chính sách công ích: ${message}",
+			"saveSettingsFailed": "Không lưu được chính sách công ích: ${message}",
 			"generalError": "Đã xảy ra lỗi: ${message}"
 		},
 		"home_function_buttons": {

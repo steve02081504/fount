@@ -2046,7 +2046,8 @@
 			"send": "Versturen",
 			"streamTest": "Media-apparaten testen",
 			"messageInput": {
-				"placeholder": "Groepsbericht... Ctrl+Enter Verzenden"
+				"placeholder": "Groepsbericht... Ctrl+Enter Verzenden",
+				"aria-label": "Berichtinvoer"
 			},
 			"loadError": "Kan groep niet laden",
 			"remoteNodeTimeout": "Het externe knooppunt reageert niet. Probeer het later opnieuw.",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "Wachtwoord gekopieerd naar klembord",
 			"regenerateSuccess": "De verbindingscode is opnieuw gegenereerd"
 		},
+		"infra": {
+			"title": "Netwerk-algemeen nut",
+			"description": "Bepaal centraal of verbonden subfounts als knooppunten voor het algemeen nut het hele fount-netwerk ondersteunen. Uitgeschakeld accepteren ze nog steeds uitvoering op afstand vanaf deze host, maar helpen ze niet meer op netwerklaag.",
+			"capabilityRelay": "Deelnemen aan overlay multi-hop-doorsturen zodat andere knooppunten elkaar bereiken als de directe verbinding faalt.",
+			"capabilityMailbox": "Offline bezorging hosten zodat peers privéberichten nog ontvangen zodra ze weer online zijn.",
+			"hostPriority": "Indien aan, geef deze host voorrang: weeg routes volgens zijn reputatietabel en vergrendel hem als hoogste prioriteit.",
+			"toggleLabel": "Ondergeschikten doen mee aan het algemeen nut",
+			"enabledToast": "Aan: ondergeschikte subfounts doen mee aan netwerk-algemeen nut (deze host eerst)",
+			"disabledToast": "Uit: ondergeschikte subfounts doen niet meer mee aan netwerk-algemeen nut"
+		},
 		"connectedSubfounts": {
 			"title": "Verbonden subfount",
 			"noSubfountsConnected": "Er is geen subfount aangesloten",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "Kan verbindingscode niet laden: ${message}",
 			"regenerateConnectionCodeFailed": "Kan verbindingscode niet opnieuw genereren: ${message}",
+			"loadSettingsFailed": "Kan beleid voor algemeen nut niet laden: ${message}",
+			"saveSettingsFailed": "Kan beleid voor algemeen nut niet opslaan: ${message}",
 			"generalError": "Er is een fout opgetreden: ${message}"
 		},
 		"home_function_buttons": {

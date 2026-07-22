@@ -2046,7 +2046,8 @@
 			"send": "보내기",
 			"streamTest": "미디어 장치 테스트",
 			"messageInput": {
-				"placeholder": "그룹 메시지... Ctrl+Enter 보내기"
+				"placeholder": "그룹 메시지... Ctrl+Enter 보내기",
+				"aria-label": "메시지 입력"
 			},
 			"loadError": "그룹을 불러오지 못했습니다.",
 			"remoteNodeTimeout": "원격 노드가 응답하지 않습니다. 잠시 후 다시 시도해 주세요.",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "비밀번호가 클립보드에 복사되었습니다.",
 			"regenerateSuccess": "연결 코드가 다시 생성되었습니다."
 		},
+		"infra": {
+			"title": "네트워크 공익",
+			"description": "연결된 하위 fount가 전체 fount 네트워크를 돕는 공익 노드로 동작할지 일괄 설정합니다. 끄더라도 하위 기기는 이 호스트의 원격 실행을 받지만, 네트워크 계층 지원에는 참여하지 않습니다.",
+			"capabilityRelay": "overlay 멀티홉 중계에 참여해, 직접 연결이 실패할 때 다른 노드끼리 통신할 수 있게 돕습니다.",
+			"capabilityMailbox": "오프라인 전달을 맡아 두어, 상대 노드가 다시 온라인이 되어도 쪽지를 받을 수 있게 합니다.",
+			"hostPriority": "켜면 이 호스트를 우선합니다: 호스트 평판표로 경로에 가중치를 두고, 최고 우선순위로 고정합니다.",
+			"toggleLabel": "하위가 공익에 참여",
+			"enabledToast": "켜짐: 하위 기기가 네트워크 공익에 참여합니다(이 호스트 우선)",
+			"disabledToast": "꺼짐: 하위 기기가 더 이상 네트워크 공익에 참여하지 않습니다"
+		},
 		"connectedSubfounts": {
 			"title": "연결된 서브폰트",
 			"noSubfountsConnected": "연결된 서브폰트가 없습니다",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "연결 코드를 로드하지 못했습니다: ${message}",
 			"regenerateConnectionCodeFailed": "연결 코드를 다시 생성하지 못했습니다: ${message}",
+			"loadSettingsFailed": "공익 정책을 불러오지 못했습니다: ${message}",
+			"saveSettingsFailed": "공익 정책을 저장하지 못했습니다: ${message}",
 			"generalError": "오류가 발생했습니다: ${message}"
 		},
 		"home_function_buttons": {

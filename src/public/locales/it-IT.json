@@ -2046,7 +2046,8 @@
 			"send": "Inviare",
 			"streamTest": "Testare i dispositivi multimediali",
 			"messageInput": {
-				"placeholder": "Messaggio... Ctrl+Invio per inviare"
+				"placeholder": "Messaggio... Ctrl+Invio per inviare",
+				"aria-label": "Campo messaggio"
 			},
 			"loadError": "Impossibile caricare il gruppo",
 			"remoteNodeTimeout": "Il nodo remoto non risponde: riprova più tardi",
@@ -3963,6 +3964,16 @@
 			"passwordCopied": "Password copiata negli appunti",
 			"regenerateSuccess": "Il codice di connessione è stato rigenerato"
 		},
+		"infra": {
+			"title": "Bene pubblico di rete",
+			"description": "Controlla in modo unificato se i subfount collegati fungono da nodi di bene pubblico per l’intera rete fount. Se disattivato, accettano ancora l’esecuzione remota da questo host, ma non aiutano più a livello di rete.",
+			"capabilityRelay": "Partecipare all’inoltro multi-hop dell’overlay così che gli altri nodi possano comunicare quando il collegamento diretto fallisce.",
+			"capabilityMailbox": "Ospitare la consegna offline così che l’altro nodo riceva ancora i messaggi privati una volta tornato online.",
+			"hostPriority": "Se attivo, dare priorità a questo host: instradamento ponderato secondo la sua tabella di reputazione e bloccarlo alla massima priorità.",
+			"toggleLabel": "I subordinati partecipano al bene pubblico",
+			"enabledToast": "Attivo: i subfount subordinati partecipano al bene pubblico di rete (questo host per primo)",
+			"disabledToast": "Disattivo: i subfount subordinati non partecipano più al bene pubblico di rete"
+		},
 		"connectedSubfounts": {
 			"title": "Subfount collegato",
 			"noSubfountsConnected": "Nessun subfount collegato",
@@ -4004,6 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "Impossibile caricare il codice di connessione: ${message}",
 			"regenerateConnectionCodeFailed": "Impossibile rigenerare il codice di connessione: ${message}",
+			"loadSettingsFailed": "Impossibile caricare la politica di bene pubblico: ${message}",
+			"saveSettingsFailed": "Impossibile salvare la politica di bene pubblico: ${message}",
 			"generalError": "Si è verificato un errore: ${message}"
 		},
 		"home_function_buttons": {
