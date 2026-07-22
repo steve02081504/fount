@@ -1041,7 +1041,6 @@ def map_placeholder_names_to_canonical(current_names: list[str], canonical_names
 		return []
 
 	temp_repaired, used_canonical_indices = [], set()
-	unmappable = False
 	for current_name in current_names:
 		best_match_score, best_match_info = float("inf"), None
 		for idx, canonical_name in enumerate(canonical_names):
@@ -1050,17 +1049,12 @@ def map_placeholder_names_to_canonical(current_names: list[str], canonical_names
 			dist = levenshtein_distance(current_name.lower(), canonical_name.lower())
 			if dist < best_match_score:
 				best_match_score, best_match_info = dist, (canonical_name, idx)
-		if best_match_info and best_match_score <= PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD:
-			best_canonical_match, best_canonical_idx = best_match_info
-			temp_repaired.append(best_canonical_match)
-			used_canonical_indices.add(best_canonical_idx)
-		else:
-			unmappable = True
-			break
-
-	if not unmappable and len(temp_repaired) == len(canonical_names) and set(temp_repaired) == set(canonical_names):
-		return temp_repaired
-	return list(canonical_names)
+		if not best_match_info or best_match_score > PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD:
+			return list(canonical_names)
+		best_canonical_match, best_canonical_idx = best_match_info
+		temp_repaired.append(best_canonical_match)
+		used_canonical_indices.add(best_canonical_idx)
+	return temp_repaired
 
 
 def try_mechanical_placeholder_rewrite(original_text: str, canonical_names: list[str]) -> str | None:
