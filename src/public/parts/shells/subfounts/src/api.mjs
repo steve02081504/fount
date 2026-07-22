@@ -53,6 +53,20 @@ function allowReputationExportTo(nodeHash) {
 }
 
 /**
+ * 从信誉导出白名单移除分机（注销 / 房间拆掉后）。
+ * @param {string} nodeHash - 分机 nodeHash
+ * @returns {void}
+ */
+function revokeReputationExportFrom(nodeHash) {
+	const id = String(nodeHash || '').trim().toLowerCase()
+	if (!id) return
+	const allowlist = getReputationExportAllowlist()
+	const next = allowlist.filter(entry => entry !== id)
+	if (next.length === allowlist.length) return
+	setReputationExportAllowlist(next)
+}
+
+/**
  * 设备信息类型
  * @typedef {object} DeviceInfo
  * @property {string} hostname - 主机名
@@ -296,11 +310,22 @@ class UserSubfountManager {
 	}
 
 	/**
+	 * 撤销所有已认证分机的信誉导出权限。
+	 * @returns {void}
+	 */
+	revokeAllReputationExports() {
+		for (const peerId of this.authenticatedPeers)
+			revokeReputationExportFrom(peerId)
+	}
+
+	/**
 	 * 初始化分机 scope room。
 	 */
 	async initRoom() {
 		try {
 			if (this.room) {
+				this.revokeAllReputationExports()
+				this.authenticatedPeers.clear()
 				void this.room.leave()
 				this.room = null
 				this.actions.clear()
@@ -331,6 +356,7 @@ class UserSubfountManager {
 			// 处理对等端离开
 			this.room.onPeerLeave((peerId) => {
 				this.authenticatedPeers.delete(peerId)
+				revokeReputationExportFrom(peerId)
 				const subfount = this.getSubfountByRemotePeerId(peerId)
 				if (subfount) {
 					subfount.isConnected = false
@@ -699,6 +725,8 @@ const userManagers = new Map()
 events.on('BeforeUserDeleted', ({ username }) => {
 	const manager = userManagers.get(username)
 	if (manager) {
+		manager.revokeAllReputationExports()
+		manager.authenticatedPeers.clear()
 		if (manager.room)
 			void manager.room.leave()
 		manager.repSyncDispose?.()
@@ -734,6 +762,8 @@ export function getUserManager(username, hostPeerId = null) {
 
 	// 如果传入了 hostPeerId 且与现有不符，直接清理旧的
 	if (hostPeerId && existing && existing.hostPeerId !== hostPeerId) {
+		existing.revokeAllReputationExports()
+		existing.authenticatedPeers.clear()
 		if (existing.room)
 			void existing.room.leave()
 		existing.repSyncDispose?.()

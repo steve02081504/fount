@@ -3,6 +3,7 @@ import crypto from 'node:crypto'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
+import { httpError } from '../../../../../scripts/http_error.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
 
 import {
@@ -180,11 +181,11 @@ export async function setEndpoints(router) {
 
 	router.put('/api/parts/shells\\:subfounts/settings', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		if (req.body?.infra === undefined)
-			return res.status(400).json({ error: 'infra is required.' })
+		if (typeof req.body?.infra !== 'boolean')
+			throw httpError(400, 'infra must be a boolean.')
 		// 确保管理器已起，以便立即推送给在线分机
 		const { peerId } = getConnectionCode(username)
 		getUserManager(username, peerId)
-		res.json(setInfraPolicy(username, Boolean(req.body.infra)))
+		res.json(setInfraPolicy(username, req.body.infra))
 	})
 }

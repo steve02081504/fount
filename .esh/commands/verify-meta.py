@@ -25,9 +25,9 @@ REQUIRED_TAGS = [
 	("meta", {"name": "description"}),
 ]
 
-# ARIA in HTML：aside 允许的显式 role（不含隐式 complementary）
+# ARIA in HTML：aside 允许的显式 role（含原生隐式 complementary）
 ASIDE_ALLOWED_ROLES = frozenset({
-	"feed", "none", "note", "presentation", "region", "search", "status",
+	"complementary", "feed", "none", "note", "presentation", "region", "search", "status",
 })
 
 # --- 脚本主体 ---
@@ -70,8 +70,10 @@ def check_drawer_toggles(soup: BeautifulSoup) -> list[str]:
 		style = (tag.get("style") or "").replace(" ", "").lower()
 		if "display:none" in style:
 			continue
-		ident = tag.get("id") or "drawer-toggle"
-		issues.append(f'<input class="drawer-toggle" id="{ident}">（需 aria-hidden 或可访问名称）')
+		ident = tag.get("id")
+		if ident and soup.find("label", attrs={"for": ident}):
+			continue
+		issues.append(f'<input class="drawer-toggle" id="{ident or "drawer-toggle"}">（需 aria-hidden 或可访问名称）')
 	return issues
 
 

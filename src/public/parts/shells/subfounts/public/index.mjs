@@ -24,6 +24,7 @@ const connectionCodeInput = document.getElementById('connection-code-input'),
 let connectionCode = null
 let password = null
 let connectedSubfounts = []
+let infraSettingsReady = false
 
 /**
  * 从服务器加载连接代码。
@@ -244,17 +245,22 @@ regenerateButton.addEventListener('click', regenerateConnectionCode)
  * 加载 infra 策略开关状态。
  */
 async function loadInfraSettings() {
+	infraToggle.disabled = true
 	try {
 		const settings = await api.getSettings()
 		infraToggle.checked = settings.infra !== false
+		infraSettingsReady = true
+		infraToggle.disabled = false
 	}
 	catch (error) {
+		infraSettingsReady = false
 		console.error('Error loading infra settings:', error)
 		showToastI18n('error', 'subfounts.errors.loadSettingsFailed', { message: error.message })
 	}
 }
 
 infraToggle.addEventListener('change', async () => {
+	if (!infraSettingsReady) return
 	const enabled = infraToggle.checked
 	infraToggle.disabled = true
 	try {
@@ -272,6 +278,13 @@ infraToggle.addEventListener('change', async () => {
 	finally {
 		infraToggle.disabled = false
 	}
+})
+
+// 初次加载失败后保持 disabled，点击标签重试
+infraToggle.closest('label')?.addEventListener('click', event => {
+	if (infraSettingsReady) return
+	event.preventDefault()
+	void loadInfraSettings()
 })
 
 /**

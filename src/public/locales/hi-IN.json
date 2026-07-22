@@ -392,7 +392,7 @@
 			"manifestMatched": "प्रकट मिलान परिणाम: ${ids}",
 			"selectedSuites": "${selected}/${total} परीक्षण सुइट चयनित",
 			"planSlotSummary": "योजना: वास्तविक रन ${run}, पुन: उपयोग ${reuse}, अवरुद्ध ${blocked}",
-			"noMatchingSuites": "कोई ईमेल खाता परीक्षण सूट नहीं.",
+			"noMatchingSuites": "कोई मिलान वाली परीक्षण सूट नहीं.",
 			"reportPath": "रिपोर्ट: ${path}",
 			"reportPathFinal": "रिपोर्ट: ${path}",
 			"statePathFinal": "वर्तमान स्थिति: ${path}",
@@ -566,7 +566,7 @@
 			"shortcut": {
 				"desktopShortcutCreated": "`${path}` पर डेस्कटॉप शॉर्टकट बनाया गया",
 				"startMenuShortcutCreated": "`${path}` पर प्रारंभ मेनू शॉर्टकट बनाया गया",
-				"protocolHandlerRegistered": "fount: // प्रोटोकॉल हैंडलर पंजीकृत।",
+				"protocolHandlerRegistered": "fount:// प्रोटोकॉल हैंडलर पंजीकृत।",
 				"shortcutNotSupported": "चेतावनी: आपका ऑपरेटिंग सिस्टम (${os}) डेस्कटॉप शॉर्टकट बनाने का समर्थन नहीं करता है।",
 				"osacompileNotFound": "त्रुटि: 'ओसाकंपाइल' नहीं मिला। MacOS ऐप बनाने में असमर्थ.",
 				"lsregisterFailed": "चेतावनी: किसी एप्लिकेशन को लॉन्चसर्विसेज के साथ पंजीकृत करने के लिए `lsregister` का उपयोग करना विफल रहा।",
@@ -1340,7 +1340,7 @@
 			"tooShort": "कृपया कम से कम 2 अक्षर दर्ज करें",
 			"usersTitle": "उपयोगकर्ता",
 			"postsTitle": "पोस्ट",
-			"usersEmpty": "कोई ईमेल खाता उपयोगकर्ता नहीं",
+			"usersEmpty": "कोई मिलान वाले उपयोगकर्ता नहीं",
 			"pinAlias": "उपनाम के रूप में सेट करें",
 			"trustScore": "${score} पर भरोसा करें",
 			"viewTitle": "खोजें",
@@ -1564,7 +1564,7 @@
 			"renameFolderPrompt": "नये फ़ोल्डर का नाम",
 			"deleteFolder": "फ़ोल्डर हटाएँ",
 			"deleteFolderConfirm": "फ़ोल्डर हटाएं? वहां मौजूद पोस्टों को \"अनआर्काइव्ड\" में ले जाया जाएगा।",
-			"searchEmpty": "कोई ईमेल खाता संग्रह नहीं",
+			"searchEmpty": "कोई मिलान वाला संग्रह नहीं",
 			"folderEmpty": "यह फ़ोल्डर खाली है",
 			"emptyHint": "पोस्ट को यहां सहेजने के लिए ब्राउज़ करते समय बुकमार्क पर क्लिक करें",
 			"search": {
@@ -2126,7 +2126,7 @@
 			"remoteTyping": "${name} टाइप कर रहा है…",
 			"remoteTypingTwo": "${name1}, ${name2} प्रवेश कर रहा हूँ…",
 			"remoteTypingMany": "${name} और ${count} अन्य लोग टाइप कर रहे हैं…",
-			"mentionEmpty": "(कोई ईमेल खाता सदस्य नहीं)",
+			"mentionEmpty": "(कोई मिलान वाले सदस्य नहीं)",
 			"localAiLabel": "मूल भूमिका:",
 			"forceTriggerOne": {
 				"title": "${name} को बोलने के लिए बाध्य करें"
@@ -5215,7 +5215,7 @@
 		"cutDone": "काटना",
 		"undo": "रद्द करना",
 		"redo": "फिर से करना",
-		"newWindow": "नई विंडो खोलेंवर्तमान स्थान",
+		"newWindow": "नई विंडो खोलें वर्तमान स्थान",
 		"goUp": "पिछले स्तर पर लौटें",
 		"brokenLink": "लिंक टूटा हुआ है: ${reason}",
 		"noDownload": "कोई डाउनलोड करने योग्य सामग्री नहीं",

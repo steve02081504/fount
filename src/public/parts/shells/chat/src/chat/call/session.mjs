@@ -323,29 +323,31 @@ export async function reconcileOrphanedCalls(username) {
 		const key = callKey(row.groupId, row.channelId)
 		if (liveCalls.has(key)) continue
 		const canFinalize = await canFinalizeOrphanAsInitiator(username, row.groupId, row.initiator)
-		if (canFinalize) try {
-			const endedAt = Date.now()
-			await appendFinalEditWithRetry(username, row.groupId, {
-				type: 'message_edit',
-				channelId: row.channelId,
-				timestamp: endedAt,
-				content: {
-					targetId: row.messageEventId,
-					newContent: {
-						type: 'call',
-						callId: row.callId,
-						status: 'ended',
-						startedAt: row.startedAt,
-						endedAt,
-						duration: Math.max(0, endedAt - (row.startedAt || endedAt)),
-						initiator: row.initiator,
-						participants: uniqHashes(row.everJoined || []),
-						current: [],
+		if (canFinalize) {
+			try {
+				const endedAt = Date.now()
+				await appendFinalEditWithRetry(username, row.groupId, {
+					type: 'message_edit',
+					channelId: row.channelId,
+					timestamp: endedAt,
+					content: {
+						targetId: row.messageEventId,
+						newContent: {
+							type: 'call',
+							callId: row.callId,
+							status: 'ended',
+							startedAt: row.startedAt,
+							endedAt,
+							duration: Math.max(0, endedAt - (row.startedAt || endedAt)),
+							initiator: row.initiator,
+							participants: uniqHashes(row.everJoined || []),
+							current: [],
+						},
 					},
-				},
-			}, { entityHash: row.initiator })
+				}, { entityHash: row.initiator })
+			}
+			catch { continue /* 定稿失败保留本地锚点，下次再试 */ }
 		}
-		catch { /* 仍丢本地锚点 */ }
 		delete data.calls[callId]
 		dirty = true
 		n++

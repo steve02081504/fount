@@ -529,6 +529,7 @@ async function connectViaP2P() {
 		}
 
 		actions.getAuth((data, peerId) => {
+			if (hostNodeHashHint && peerId !== hostNodeHashHint) return
 			if (data.type === 'authenticated') {
 				authenticated = true
 				hostNodeHash = peerId
@@ -563,6 +564,7 @@ async function connectViaP2P() {
 		actions.getShellExec(handleAuthenticatedRequest(handleShellExec))
 
 		room.onPeerJoin((peerId) => {
+			if (hostNodeHashHint && peerId !== hostNodeHashHint) return
 			if (!authenticated && actions.sendAuth && !hostNodeHash) {
 				console.log('Host discovered, sending authentication...')
 				hostNodeHash = peerId

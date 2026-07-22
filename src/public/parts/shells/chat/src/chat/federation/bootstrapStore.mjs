@@ -31,12 +31,9 @@ export function federationBootstrapKey(username, groupId) {
  * @returns {void}
  */
 function persistBootstrapRow(username, groupId, row) {
-	try {
-		const path = federationBootstrapPath(username, groupId)
-		fs.mkdirSync(dirname(path), { recursive: true })
-		saveJsonFile(path, row)
-	}
-	catch { /* 测试用户 / 无 userDict 时跳过 */ }
+	const path = federationBootstrapPath(username, groupId)
+	fs.mkdirSync(dirname(path), { recursive: true })
+	saveJsonFile(path, row)
 }
 
 /**
@@ -71,9 +68,9 @@ export function setFederationBootstrap(username, groupId, creds) {
 		powAnchorRef: creds.powAnchorRef?.trim() || undefined,
 		powAnchors: Array.isArray(creds.powAnchors) ? creds.powAnchors.map(String) : undefined,
 	}
+	persistBootstrapRow(username, groupId, row)
 	bootstrapByKey.set(federationBootstrapKey(username, groupId), row)
 	peerHintByKey.delete(federationBootstrapKey(username, groupId))
-	persistBootstrapRow(username, groupId, row)
 }
 
 /**

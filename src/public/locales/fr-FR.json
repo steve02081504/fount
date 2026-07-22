@@ -116,7 +116,7 @@
 		},
 		"themeOptions": {
 			"auto": "Automatique",
-			"light": "Effacer",
+			"light": "Clair",
 			"dark": "Sombre"
 		},
 		"languageOptions": {
@@ -2023,9 +2023,9 @@
 			"settingsArchiveDeleteHint": "Seule l'archive locale/*.jsonl est supprimée ; les points chauds et les ancres DAG ne sont pas affectés.",
 			"settingsArchiveAdminOnly": "Cette machine ne dispose pas encore de données d'archives froides pour ce groupe.",
 			"settingsArchiveDeleteInvalidMonth": "Veuillez sélectionner un mois valide AAAA-MM.",
-			"settingsArchiveDeleteConfirm": "Êtes-vous sûr de vouloir supprimer tous les fichiers d'archives froides datant de plus de {mois} ? Cette opération est irréversible.",
-			"settingsArchiveDeleteOk": "{files} fichiers d'archive supprimés.",
-			"settingsArchiveDeleteFailed": "Échec de la suppression de l'archive : {erreur}",
+			"settingsArchiveDeleteConfirm": "Êtes-vous sûr de vouloir supprimer tous les fichiers d'archives froides datant de plus de ${month} ? Cette opération est irréversible.",
+			"settingsArchiveDeleteOk": "${files} fichiers d'archive supprimés.",
+			"settingsArchiveDeleteFailed": "Échec de la suppression de l'archive : ${error}",
 			"settingsEventRetentionDepth": "Profondeur de conservation des événements DAG",
 			"settingsEventRetentionMs": "Temps de conservation des événements DAG",
 			"settingsCompactTriggerDepth": "Profondeur de déclenchement de compression matérialisée",
