@@ -2046,8 +2046,8 @@
 			"send": "Enviar",
 			"streamTest": "Testar dispositivos de mídia",
 			"messageInput": {
-				"placeholder": "Mensagem de grupo... Ctrl+Enter Enviar",
-				"aria-label": "Campo de mensagem"
+				"placeholder": "Mensagem de grupo… Ctrl+Enter para enviar",
+				"aria-label": "Mensagem"
 			},
 			"loadError": "Falha ao load group",
 			"remoteNodeTimeout": "O nó remoto não está respondendo. Tente novamente mais tarde.",
@@ -3966,13 +3966,13 @@
 		},
 		"infra": {
 			"title": "Bem público da rede",
-			"description": "Define de forma unificada se os subfounts ligados atuam como nós de bem público para toda a rede fount. Quando desligado, ainda aceitam execução remota deste anfitrião, mas deixam de ajudar na camada de rede.",
+			"description": "Escolha se os subfounts ligados atuam como nós de bem público para toda a rede fount. Quando desligado, ainda aceitam execução remota deste anfitrião, mas deixam de ajudar na camada de rede.",
 			"capabilityRelay": "Participar no reencaminhamento multi-salto do overlay para ajudar outros nós a comunicar quando a ligação direta falha.",
-			"capabilityMailbox": "Acolher a entrega offline para que o outro nó ainda receba mensagens privadas depois de voltar online.",
+			"capabilityMailbox": "Manter a entrega offline para que o outro nó ainda receba mensagens privadas depois de voltar online.",
 			"hostPriority": "Quando ativo, privilegiar este anfitrião: encaminhamento ponderado pela sua tabela de reputação e fixá-lo com a máxima prioridade.",
-			"toggleLabel": "Subordinados participam no bem público",
-			"enabledToast": "Ativado: subfounts subordinados participam no bem público da rede (este anfitrião primeiro)",
-			"disabledToast": "Desativado: subfounts subordinados já não participam no bem público da rede"
+			"toggleLabel": "Fazer os subfounts contribuírem para o bem público",
+			"enabledToast": "Ativado: os subfounts contribuem para o bem público da rede (este anfitrião primeiro)",
+			"disabledToast": "Desativado: os subfounts já não contribuem para o bem público da rede"
 		},
 		"connectedSubfounts": {
 			"title": "Subfount conectada",
@@ -4015,8 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "Falha ao carregar o código de conexão: ${message}",
 			"regenerateConnectionCodeFailed": "Falha ao gerar novamente o código de conexão: ${message}",
-			"loadSettingsFailed": "Falha ao carregar a política de bem público: ${message}",
-			"saveSettingsFailed": "Falha ao guardar a política de bem público: ${message}",
+			"loadSettingsFailed": "Falha ao carregar as definições de bem público: ${message}",
+			"saveSettingsFailed": "Falha ao guardar as definições de bem público: ${message}",
 			"generalError": "Ocorreu um erro: ${message}"
 		},
 		"home_function_buttons": {

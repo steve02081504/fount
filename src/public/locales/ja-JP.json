@@ -2047,7 +2047,7 @@
 			"streamTest": "メディアデバイスのテスト",
 			"messageInput": {
 				"placeholder": "グループメッセージ... Ctrl+Enter 送信",
-				"aria-label": "メッセージ入力"
+				"aria-label": "メッセージを入力"
 			},
 			"loadError": "グループのロードに失敗しました",
 			"remoteNodeTimeout": "リモートノードが応答していません。しばらくしてから再試行してください。",
@@ -3970,9 +3970,9 @@
 			"capabilityRelay": "overlay のマルチホップ転送に参加し、直結できないときでも他ノード同士の通信を助けます。",
 			"capabilityMailbox": "オフライン配信を預かり、相手ノードが復帰してもダイレクトメッセージを受け取れるようにします。",
 			"hostPriority": "オンのときは本機を優先：本機のレピュテーション表で経路を重み付けし、本機を最高優先度に固定します。",
-			"toggleLabel": "配下を公益に参加させる",
-			"enabledToast": "オン：配下の分機がネットワーク公益に参加します（本機優先）",
-			"disabledToast": "オフ：配下の分機はネットワーク公益に参加しません"
+			"toggleLabel": "分機を公益に参加させる",
+			"enabledToast": "オン：分機がネットワーク公益に参加します（本機優先）",
+			"disabledToast": "オフ：分機はネットワーク公益に参加しません"
 		},
 		"connectedSubfounts": {
 			"title": "接続されたSubfount",
@@ -4015,8 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "接続コードのロードに失敗しました: ${message}",
 			"regenerateConnectionCodeFailed": "接続コードの再生成に失敗しました: ${message}",
-			"loadSettingsFailed": "公益ポリシーの読み込みに失敗しました: ${message}",
-			"saveSettingsFailed": "公益ポリシーの保存に失敗しました: ${message}",
+			"loadSettingsFailed": "公益設定の読み込みに失敗しました: ${message}",
+			"saveSettingsFailed": "公益設定の保存に失敗しました: ${message}",
 			"generalError": "エラーが発生しました: ${message}"
 		},
 		"home_function_buttons": {

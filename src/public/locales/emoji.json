@@ -2047,7 +2047,7 @@
 			"streamTest": "🧪📹🎙️",
 			"messageInput": {
 				"placeholder": "👥📨… ⌃⏎📤",
-				"aria-label": "💬⌨️"
+				"aria-label": "💬"
 			},
 			"loadError": "📥👥❌",
 			"remoteNodeTimeout": "🔗⏰❌，🔁⏳",
@@ -3970,9 +3970,9 @@
 			"capabilityRelay": "📡🔀 overlay 多跳，直连❌时助互通",
 			"capabilityMailbox": "📦离线投递→上线仍📩",
 			"hostPriority": "✅时优先本机：信誉表⚖️ + 最高🔒",
-			"toggleLabel": "下属→🌐❤️",
-			"enabledToast": "✅ 下属🌐❤️（本机优先）",
-			"disabledToast": "❌ 下属不🌐❤️"
+			"toggleLabel": "分机→🌐❤️",
+			"enabledToast": "✅ 分机🌐❤️（本机优先）",
+			"disabledToast": "❌ 分机不🌐❤️"
 		},
 		"connectedSubfounts": {
 			"title": "🔗✅ 🖇️⛲",
@@ -4015,8 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "❌ 🔗🔢: ${message}",
 			"regenerateConnectionCodeFailed": "❌ 🔄 🔗🔢: ${message}",
-			"loadSettingsFailed": "❌ 🌐❤️📋: ${message}",
-			"saveSettingsFailed": "❌ 💾🌐❤️📋: ${message}",
+			"loadSettingsFailed": "❌ 🌐❤️⚙️: ${message}",
+			"saveSettingsFailed": "❌ 💾🌐❤️⚙️: ${message}",
 			"generalError": "💥: ${message}"
 		},
 		"home_function_buttons": {

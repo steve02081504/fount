@@ -2046,8 +2046,8 @@
 			"send": "envoyer",
 			"streamTest": "Tester les appareils multimédias",
 			"messageInput": {
-				"placeholder": "Message de groupe... Ctrl+Entrée Envoyer",
-				"aria-label": "Saisie du message"
+				"placeholder": "Message de groupe… Ctrl+Entrée pour envoyer",
+				"aria-label": "Message"
 			},
 			"loadError": "Échec du chargement du groupe",
 			"remoteNodeTimeout": "Le nœud distant ne répond pas, veuillez réessayer plus tard.",
@@ -3966,13 +3966,13 @@
 		},
 		"infra": {
 			"title": "Bien public du réseau",
-			"description": "Détermine de façon centralisée si les subfounts connectés agissent comme nœuds de bien public pour tout le réseau fount. Désactivés, ils acceptent encore l’exécution à distance depuis cet hôte, mais n’aident plus au niveau réseau.",
+			"description": "Choisissez si les subfounts connectés agissent comme nœuds de bien public pour tout le réseau fount. Désactivés, ils acceptent encore l’exécution à distance depuis cet hôte, mais n’aident plus au niveau réseau.",
 			"capabilityRelay": "Participer au relais multi-sauts de l’overlay pour que les autres nœuds communiquent quand le lien direct échoue.",
-			"capabilityMailbox": "Héberger la livraison hors ligne pour que les pairs reçoivent encore les messages privés une fois de retour en ligne.",
+			"capabilityMailbox": "Conserver la livraison hors ligne pour que les pairs reçoivent encore les messages privés une fois de retour en ligne.",
 			"hostPriority": "Une fois activé, favoriser cet hôte : pondérer le routage selon sa table de réputation et le verrouiller en priorité maximale.",
-			"toggleLabel": "Faire participer les subordonnés au bien public",
-			"enabledToast": "Activé : les subfounts subordonnés participent au bien public du réseau (cet hôte d’abord)",
-			"disabledToast": "Désactivé : les subfounts subordonnés ne participent plus au bien public du réseau"
+			"toggleLabel": "Faire contribuer les subfounts au bien public",
+			"enabledToast": "Activé : les subfounts contribuent au bien public du réseau (cet hôte d’abord)",
+			"disabledToast": "Désactivé : les subfounts ne contribuent plus au bien public du réseau"
 		},
 		"connectedSubfounts": {
 			"title": "subfount connectée",
@@ -4015,8 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "Échec du chargement du code de connexion : ${message}",
 			"regenerateConnectionCodeFailed": "Échec de la régénération du code de connexion : ${message}",
-			"loadSettingsFailed": "Échec du chargement de la politique de bien public : ${message}",
-			"saveSettingsFailed": "Échec de l’enregistrement de la politique de bien public : ${message}",
+			"loadSettingsFailed": "Échec du chargement des paramètres de bien public : ${message}",
+			"saveSettingsFailed": "Échec de l’enregistrement des paramètres de bien public : ${message}",
 			"generalError": "Une erreur s'est produite : ${message}"
 		},
 		"home_function_buttons": {

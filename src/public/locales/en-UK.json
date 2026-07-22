@@ -2042,7 +2042,7 @@
 			"streamTest": "Test media devices",
 			"messageInput": {
 				"placeholder": "Message… Ctrl+Enter to send",
-				"aria-label": "Message input"
+				"aria-label": "Message"
 			},
 			"loadError": "Failed to load group",
 			"remoteNodeTimeout": "Remote node not responding — try again later",
@@ -3961,13 +3961,13 @@
 		},
 		"infra": {
 			"title": "Network public good",
-			"description": "Choose whether connected subfounts act as public-good nodes for the wider fount network. When off, they still accept remote execution from this host, but no longer help at the network layer.",
+			"description": "Choose whether connected subfounts act as public-good nodes for the wider fount network. When turned off, they still accept remote execution from this host, but no longer help at the network layer.",
 			"capabilityRelay": "Join overlay multi-hop forwarding so other nodes can reach each other when a direct link fails.",
-			"capabilityMailbox": "Host offline delivery so peers can still receive direct messages after they come back online.",
-			"hostPriority": "When on, favour this host: weight routes by its reputation table and lock it at the highest priority.",
-			"toggleLabel": "Subfounts take part in the public good",
-			"enabledToast": "Enabled: subfounts take part in network public good (this host first)",
-			"disabledToast": "Disabled: subfounts no longer take part in network public good"
+			"capabilityMailbox": "Hold offline deliveries so peers can still receive direct messages once they are back online.",
+			"hostPriority": "When enabled, favour this host: weight routes by its reputation table and pin it at the highest priority.",
+			"toggleLabel": "Let subfounts contribute to the public good",
+			"enabledToast": "Enabled: subfounts now contribute to the network public good (this host first)",
+			"disabledToast": "Disabled: subfounts no longer contribute to the network public good"
 		},
 		"connectedSubfounts": {
 			"title": "Connected subfount",
@@ -4010,8 +4010,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "Failed to load connection code: ${message}",
 			"regenerateConnectionCodeFailed": "Failed to regenerate connection code: ${message}",
-			"loadSettingsFailed": "Failed to load public-good policy: ${message}",
-			"saveSettingsFailed": "Failed to save public-good policy: ${message}",
+			"loadSettingsFailed": "Failed to load public-good settings: ${message}",
+			"saveSettingsFailed": "Failed to save public-good settings: ${message}",
 			"generalError": "An error occurred: ${message}"
 		},
 		"home_function_buttons": {

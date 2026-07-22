@@ -2046,8 +2046,8 @@
 			"send": "Schicken",
 			"streamTest": "Testen Sie Mediengeräte",
 			"messageInput": {
-				"placeholder": "Gruppennachricht... Strg+Eingabetaste Senden",
-				"aria-label": "Nachrichteneingabe"
+				"placeholder": "Gruppennachricht… Strg+Eingabe zum Senden",
+				"aria-label": "Nachricht"
 			},
 			"loadError": "Die Gruppe konnte nicht geladen werden",
 			"remoteNodeTimeout": "Der Remote-Knoten antwortet nicht. Bitte versuchen Sie es später erneut.",
@@ -3966,13 +3966,13 @@
 		},
 		"infra": {
 			"title": "Netzwerk-Gemeinwohl",
-			"description": "Steuert zentral, ob verbundene Subfounts als Gemeinwohl-Knoten das gesamte fount-Netz unterstützen. Ausgeschaltet nehmen sie weiterhin Remote-Ausführung von diesem Host an, helfen aber nicht mehr auf Netzwerkebene.",
+			"description": "Legt zentral fest, ob verbundene Subfounts als Gemeinwohl-Knoten das gesamte fount-Netz unterstützen. Ausgeschaltet nehmen sie weiterhin Remote-Ausführung von diesem Host an, helfen aber nicht mehr auf Netzwerkebene.",
 			"capabilityRelay": "Am Overlay-Mehrhop-Weiterleiten teilnehmen, damit andere Knoten bei fehlender Direktverbindung trotzdem erreichbar bleiben.",
-			"capabilityMailbox": "Offline-Zustellung hosten, damit andere Knoten Direktnachrichten noch erhalten, wenn sie wieder online sind.",
-			"hostPriority": "Wenn aktiv, diesen Host bevorzugen: Routing nach seiner Reputationstabelle gewichten und ihn auf die höchste Priorität festlegen.",
-			"toggleLabel": "Untergeordnete am Gemeinwohl beteiligen",
-			"enabledToast": "Aktiv: untergeordnete Subfounts nehmen am Netzwerk-Gemeinwohl teil (dieser Host zuerst)",
-			"disabledToast": "Aus: untergeordnete Subfounts nehmen nicht mehr am Netzwerk-Gemeinwohl teil"
+			"capabilityMailbox": "Offline-Zustellung bereithalten, damit andere Knoten Direktnachrichten noch erhalten, wenn sie wieder online sind.",
+			"hostPriority": "Wenn aktiviert, diesen Host bevorzugen: Routing nach seiner Reputationstabelle gewichten und ihn auf die höchste Priorität festlegen.",
+			"toggleLabel": "Subfounts am Gemeinwohl beteiligen",
+			"enabledToast": "Aktiv: Subfounts nehmen am Netzwerk-Gemeinwohl teil (dieser Host zuerst)",
+			"disabledToast": "Aus: Subfounts nehmen nicht mehr am Netzwerk-Gemeinwohl teil"
 		},
 		"connectedSubfounts": {
 			"title": "Verbundener Subfount",
@@ -4015,8 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "Verbindungscode konnte nicht geladen werden: ${message}",
 			"regenerateConnectionCodeFailed": "Verbindungscode konnte nicht neu generiert werden: ${message}",
-			"loadSettingsFailed": "Gemeinwohl-Richtlinie konnte nicht geladen werden: ${message}",
-			"saveSettingsFailed": "Gemeinwohl-Richtlinie konnte nicht gespeichert werden: ${message}",
+			"loadSettingsFailed": "Gemeinwohl-Einstellungen konnten nicht geladen werden: ${message}",
+			"saveSettingsFailed": "Gemeinwohl-Einstellungen konnten nicht gespeichert werden: ${message}",
 			"generalError": "Es ist ein Fehler aufgetreten: ${message}"
 		},
 		"home_function_buttons": {

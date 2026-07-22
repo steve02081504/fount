@@ -2047,7 +2047,7 @@
 			"streamTest": "测试媒体设备",
 			"messageInput": {
 				"placeholder": "群组消息… Ctrl+Enter 发送",
-				"aria-label": "消息输入"
+				"aria-label": "输入消息"
 			},
 			"loadError": "加载群组失败",
 			"remoteNodeTimeout": "远端节点无响应，请稍后重试",
@@ -3966,13 +3966,13 @@
 		},
 		"infra": {
 			"title": "网络公益",
-			"description": "统一设定已连接的子fount是否作为公益节点，协助整个fount网络。关闭后分机仍接受本机远程执行，但不参与网络层帮扶。",
+			"description": "统一设定已连接的子fount是否作为公益节点，协助整个fount网络。关闭后，分机仍接受本机远程执行，但不参与网络层协助。",
 			"capabilityRelay": "参与 overlay 多跳转发，在直连失败时帮助其他节点互通。",
-			"capabilityMailbox": "寄存离线投递，让对方节点上线后仍能收到私信。",
-			"hostPriority": "开启时优先帮扶本机：按本机信誉表加权路由，并将本机锁定为最高优先级。",
-			"toggleLabel": "下属参与公益",
-			"enabledToast": "已开启：下属分机参与网络公益（本机优先）",
-			"disabledToast": "已关闭：下属分机不再参与网络公益"
+			"capabilityMailbox": "托管离线投递，让对方节点上线后仍能收到私信。",
+			"hostPriority": "开启时优先协助本机：按本机信誉表加权路由，并将本机锁定为最高优先级。",
+			"toggleLabel": "分机参与公益",
+			"enabledToast": "已开启：分机参与网络公益（本机优先）",
+			"disabledToast": "已关闭：分机不再参与网络公益"
 		},
 		"connectedSubfounts": {
 			"title": "已连接的子fount",
@@ -4015,8 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "加载连接码失败: ${message}",
 			"regenerateConnectionCodeFailed": "重新生成连接码失败: ${message}",
-			"loadSettingsFailed": "加载公益策略失败: ${message}",
-			"saveSettingsFailed": "保存公益策略失败: ${message}",
+			"loadSettingsFailed": "加载公益设置失败: ${message}",
+			"saveSettingsFailed": "保存公益设置失败: ${message}",
 			"generalError": "发生错误: ${message}"
 		},
 		"home_function_buttons": {

@@ -2046,8 +2046,8 @@
 			"send": "Senda",
 			"streamTest": "Prófaðu fjölmiðlatæki",
 			"messageInput": {
-				"placeholder": "Hópskilaboð... Ctrl+Enter Senda",
-				"aria-label": "Skilaboðainntak"
+				"placeholder": "Hópskilaboð… Ctrl+Enter til að senda",
+				"aria-label": "Skilaboð"
 			},
 			"loadError": "Mistókst að hlaða hóp",
 			"remoteNodeTimeout": "Ytri hnútur svarar ekki, vinsamlegast reyndu aftur síðar.",
@@ -3965,14 +3965,14 @@
 			"regenerateSuccess": "Tengikóði hefur verið endurnýjaður"
 		},
 		"infra": {
-			"title": "Netgagnsemi almennings",
-			"description": "Stýrir á einum stað hvort tengdir subfounts starfi sem almannaheillahnútar fyrir allt fount-netið. Þegar slökkt er taka þeir samt fjarframkvæmd frá þessum hýsli, en hjálpa ekki lengur á netlagi.",
+			"title": "Almannaheill á netinu",
+			"description": "Veldu hvort tengdir subfounts starfi sem almannaheillahnútar fyrir allt fount-netið. Þegar slökkt er taka þeir samt fjarframkvæmd frá þessum hýsli, en hjálpa ekki lengur á netlagi.",
 			"capabilityRelay": "Taka þátt í overlay fjölhoppsframsendingu svo aðrir hnútar nái saman þegar bein tenging bregst.",
-			"capabilityMailbox": "Hýsa afhendingu án nettengingar svo hinn hnúturinn fái enn einkaskilaboð eftir að hann kemur aftur á netið.",
+			"capabilityMailbox": "Geyma afhendingu án nettengingar svo hinn hnúturinn fái enn einkaskilaboð eftir að hann kemur aftur á netið.",
 			"hostPriority": "Þegar kveikt er, forgangsraða þessum hýsli: vega leiðir eftir orðsporstöflu hans og læsa hann sem hæsta forgang.",
-			"toggleLabel": "Undirmenn taka þátt í almannaheill",
-			"enabledToast": "Kveikt: undir-subfounts taka þátt í netgagnsemi (þessi hýsill fyrst)",
-			"disabledToast": "Slökkt: undir-subfounts taka ekki lengur þátt í netgagnsemi"
+			"toggleLabel": "Láta subfounts taka þátt í almannaheill",
+			"enabledToast": "Kveikt: subfounts taka þátt í almannaheill á netinu (þessi hýsill fyrst)",
+			"disabledToast": "Slökkt: subfounts taka ekki lengur þátt í almannaheill á netinu"
 		},
 		"connectedSubfounts": {
 			"title": "Tengt undirefni",
@@ -4015,8 +4015,8 @@
 		"errors": {
 			"loadConnectionCodeFailed": "Mistókst að hlaða tengikóða: ${message}",
 			"regenerateConnectionCodeFailed": "Mistókst að endurskapa tengikóða: ${message}",
-			"loadSettingsFailed": "Mistókst að hlaða almannaheillastefnu: ${message}",
-			"saveSettingsFailed": "Mistókst að vista almannaheillastefnu: ${message}",
+			"loadSettingsFailed": "Mistókst að hlaða stillingum almannaheillar: ${message}",
+			"saveSettingsFailed": "Mistókst að vista stillingar almannaheillar: ${message}",
 			"generalError": "Villa kom upp: ${message}"
 		},
 		"home_function_buttons": {
