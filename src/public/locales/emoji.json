@@ -62,24 +62,24 @@
 		"uploadAvatar": "⬆️🖼️",
 		"ownerTitle": "👑🫵",
 		"ownerSummary": "👑⚙️",
-		"ownerDescription": "⚙️➡️ 👑 ➡️ ✏️/🗑️ 🫵💬📨 ➕ 🏛️📰 ➕ 👤📋；👉📄 ➡️ 💻 ⚠️📝🖼️⚡（⚠️📜⚡）.✍️✅ 🎲🧬#️⃣，♾️🗑️👑.",
+		"ownerDescription": "⚙️➡️ 👑 ➡️ ✏️/🗑️ 🫵💬📨 ➕ 🏛️📰 ➕ 👤📋；👉📄 ➡️ 💻 ⚠️📝🖼️⚡（⚠️📜⚡）✍️✅ 🎲🧬#️⃣，♾️🗑️👑",
 		"ownerEntityHashLabel": "👑🧬#️⃣（128🔣）",
 		"ownerSave": "💾👑",
 		"ownerClear": "🗑️👑",
 		"ownerSaved": "👑✅🔄",
 		"ownerCleared": "👑✅🗑️",
 		"ownerSaveFailed": "💾❌: ${error}",
-		"ownerConfirmTitle": "👑⚠️✅?",
+		"ownerConfirmTitle": "👑⚠️✅❓",
 		"ownerConfirmWarningTitle": "⚠️🚨📖👀",
-		"ownerConfirmEditBody": "⚙️➡️ 👤➡️ 🚫🙏🫵 👍 ➡️ ✏️/🗑️ 🫵💬📨 ➕ 🏛️📰 ➕ 👤📋.⚠️👆/🎣👑 = ⚡📤🎮📄.",
-		"ownerConfirmRenderBody": "👤➡️📨💬 ➕ 🏛️📰 ➡️ 🫵🌐💻 💯📝🖼️⚡（➕ HTML/📜⚡）.= ✅ 👤➡️ 💻▶️🎲📜 🚫🔁🙏.1️⃣🤝💯👤➡️➡️.",
+		"ownerConfirmEditBody": "⚙️➡️ 👤➡️ 🚫🙏🫵 👍 ➡️ ✏️/🗑️ 🫵💬📨 ➕ 🏛️📰 ➕ 👤📋⚠️👆/🎣👑 = ⚡📤🎮📄",
+		"ownerConfirmRenderBody": "👤➡️📨💬 ➕ 🏛️📰 ➡️ 🫵🌐💻 💯📝🖼️⚡（➕ HTML/📜⚡）= ✅ 👤➡️ 💻▶️🎲📜 🚫🔁🙏.1️⃣🤝💯👤➡️➡️",
 		"ownerConfirmCooldown": "⚠️📖✅ (${seconds})",
 		"ownerConfirmFirst": "⚠️👌➡️",
 		"ownerConfirmSecond": "👆👆✅🔒",
 		"ownerConfirmCancel": "↩️",
 		"federationTitle": "🌐🔄",
 		"federationSummary": "📡🔋",
-		"federationDescription": "⚙️📡Nostr🔗 ➕ 🔋🎛️.👥🌐🔄 1️⃣🎟️👤➕/➕🌐🤫💬 ➡️ 🤖✅▶️.",
+		"federationDescription": "⚙️📡Nostr🔗 ➕ 🔋🎛️👥🌐🔄 1️⃣🎟️👤➕/➕🌐🤫💬 ➡️ 🤖✅▶️",
 		"federationAdvanced": "🔧➕",
 		"federationRelayUrlsLabel": "📡📝⬜️➡️🔧",
 		"federationBatterySaverLabel": "🔋💤",
@@ -242,7 +242,7 @@
 		"selectPackRequired": "🙏👆🏷️📦",
 		"fileRequired": "👆🙏🖼️📁",
 		"loadDetailFailed": "❌📥🏷️📦📋",
-		"deleteConfirm": "🗑️🏷️📦♾️?🏷️😀➡️🗑️，🎮🚫↩️.",
+		"deleteConfirm": "🗑️🏷️📦♾️❓🏷️😀➡️🗑️，🎮🚫↩️",
 		"errors": {
 			"loadFailed": "📥🏷️📦❌",
 			"uploadFailed": "⬆️🏷️😀❌",
@@ -290,7 +290,7 @@
 			"noInstanceRunning": "🚫🏃‍♂️💨 ❓ ▶️ ⛲",
 			"runPartLog": "▶️ 🧩${partpath} 👤${username}, 📝: ${args}",
 			"invokePartLog": "📞 🧩${partpath} 👤${username}, 📝: ${invokedata}",
-			"invalidCommand": "❓➡️ \"⛲ ▶️ <👤> <🧩📍> <🏷️...>\"",
+			"invalidCommand": "❓➡️ \"⛲ ▶️ <👤> <🧩📍> <🏷️…>\"",
 			"invalidCommandFormat": "❓➡️📝",
 			"unsupportedCommand": "🚫➡️",
 			"processMessageError": "📨⚙️❌: ${error}",
@@ -375,7 +375,7 @@
 			"replHint": "↩️ ▶️ · ⇧↩️ ↩️"
 		},
 		"test": {
-			"help": "📖：`fount test` [--all] [--no-parallel] [--force] [<groups>...]\n\n🗂️（␣＝📦×N）：\n  `manifest`                         👉 📋→📦∞\n  `manifest:suite`                   👉 📦（`,`＝×N；`/` OK）\n  `manifest:suite:subtest`           👉 🔬（`frontend`…⚡✅；`/` OK）\n  `manifest:suite:file`              👉 `pure`/`integration`（`serial.mjs`）→ `*.test.mjs` `stem`🔽\n  💙🐚 ✂️ → 📥📦⌀\n\n📋 id ← `test/manifest.json` 🔝 `\"id\"`\n🚫🎯 → `<name>/*`（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n📦 🎯＝`id`／`name`；🚫🎯 → `<name>*`／`<name>_*`；🌐 OK\n\n⭐（⌀ `fount test`）：\n  1️⃣ ❌／⏳（📦❌📁↑；❌📦♻️→✅🚪）\n  2️⃣ 💚→⏰\n  ❌🌊 → `exit 1`；🚫⌀📞🔁；🚫∞（→ `--all`）\n💾 `data/test/state/main.json`；❌📜→💚.①🏃→ `data/test/report.md`＋`report.json`\n`frontend`… 🔬✅（⚡×N）；✏️①👁️📁 → 🔬⏰⌀\n`pure`/`integration` 🚫🔬 → ③＝`*.test.mjs` `stem`🔽（`shells/chat:pure:channel_archive`）\n🔗 `dependsOn` 🚫 → ⬆️🚫⏸️\n\n`--all`         🎯📦∞（💚♻️OK，🚫`--force`）\n`--no-parallel` 📦→→＋📡 `stdout`/`stderr`；⭐＝`RAM`／`CPU` 🚪🔀\n`--force`       🚫♻️；⭐＝⏮✅；💥＝🏃\n\n💡：\n  `fount test`\n  `fount test --all`\n  `fount test --no-parallel`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`\n",
+			"help": "📖：`fount test` [--all] [--no-parallel] [--force] [<groups>…]\n\n🗂️（␣＝📦×N）：\n  `manifest`                         👉 📋→📦∞\n  `manifest:suite`                   👉 📦（`,`＝×N；`/` OK）\n  `manifest:suite:subtest`           👉 🔬（`frontend`…⚡✅；`/` OK）\n  `manifest:suite:file`              👉 `pure`/`integration`（`serial.mjs`）→ `*.test.mjs` `stem`🔽\n  💙🐚 ✂️ → 📥📦⌀\n\n📋 id ← `test/manifest.json` 🔝 `\"id\"`\n🚫🎯 → `<name>/*`（`shells`→`shells/chat`,`shells/social`）；🌐 `*` `?` `**`\n📦 🎯＝`id`／`name`；🚫🎯 → `<name>*`／`<name>_*`；🌐 OK\n\n⭐（⌀ `fount test`）：\n  1️⃣ ❌／⏳（📦❌📁↑；❌📦♻️→✅🚪）\n  2️⃣ 💚→⏰\n  ❌🌊 → `exit 1`；🚫⌀📞🔁；🚫∞（→ `--all`）\n💾 `data/test/state/main.json`；❌📜→💚①🏃→ `data/test/report.md`＋`report.json`\n`frontend`… 🔬✅（⚡×N）；✏️①👁️📁 → 🔬⏰⌀\n`pure`/`integration` 🚫🔬 → ③＝`*.test.mjs` `stem`🔽（`shells/chat:pure:channel_archive`）\n🔗 `dependsOn` 🚫 → ⬆️🚫⏸️\n\n`--all`         🎯📦∞（💚♻️OK，🚫`--force`）\n`--no-parallel` 📦→→＋📡 `stdout`/`stderr`；⭐＝`RAM`／`CPU` 🚪🔀\n`--force`       🚫♻️；⭐＝⏮✅；💥＝🏃\n\n💡：\n  `fount test`\n  `fount test --all`\n  `fount test --no-parallel`\n  `fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single`\n  `fount test server/live`\n  `fount test shells/chat`\n  `fount test shells/social:frontend`\n  `fount test shells/social:frontend:feed`\n  `fount test shells/chat:pure:channel_archive`\n  `fount test --force shells/social:frontend`\n",
 			"passed": "✅: ${label}",
 			"passedWithNoise": "✅: ${label} (🔊)",
 			"failed": "❌: ${label}",
@@ -392,7 +392,7 @@
 			"manifestMatched": "📋🎯：${ids}",
 			"selectedSuites": "👆 ${selected}/${total} 📦🧪",
 			"planSlotSummary": "📊：🏃 ${run}、♻️ ${reuse}、🚫⏸️ ${blocked}",
-			"noMatchingSuites": "🚫📦🧪🎯.",
+			"noMatchingSuites": "🚫📦🧪🎯",
 			"reportPath": "📊📄: ${path}",
 			"reportPathFinal": "\n📊📄: ${path}",
 			"statePathFinal": "📊: ${path}",
@@ -412,11 +412,11 @@
 			"estimatedRunSerial": "⏱️ ≈ ${eta}（📦→→）",
 			"estimatedRunSkipped": "＋♻️ ${reused}，🚫⏸️ ${blocked}（∉⏱️）",
 			"noRealRunPlanned": "🚫🏃：♻️ ${reused}、🚫⏸️ ${blocked}（⚡⌀Δ）",
-			"allReusedHint": "🚫🏃：❌＝⏮♻️，🚫⏸️⌀Δ（📁⌀Δ）.🔧📁→🔁，／ `fount test --force`→💥🏃",
+			"allReusedHint": "🚫🏃：❌＝⏮♻️，🚫⏸️⌀Δ（📁⌀Δ）🔧📁→🔁，／ `fount test --force`→💥🏃",
 			"estimatedRemaining": "⏱️⏳ ≈ ${eta}（${completed}/${total} 📦）",
 			"estimatedRunSerialHint": "🔀≈ ${eta}（${rate}），💰 ≈ ${savings}（➖ `--no-parallel`）",
 			"failuresSaved": "💾 ❌📋：${path}（${count} 📦）",
-			"failuresCleared": "📋 ${manifestId} 💚∞，❌📋🗑️.",
+			"failuresCleared": "📋 ${manifestId} 💚∞，❌📋🗑️",
 			"terminated": "⏰⏹：${label} — ${reason}",
 			"terminateIdle": "⏹️ ${label}：＞${minutes}m 🚫`stdall`（💤 ${idleSec}s，🏃 ${elapsed}）",
 			"terminateDuration": "⏹️ ${label}：＞`watchdog` 📏（🏃 ${elapsed}，📏 ${baseline}，🔝 ${limit}）",
@@ -424,7 +424,7 @@
 			"terminateMarker": "[⏹️: ${reason}]",
 			"terminateUnknown": "⏹️ ${label}：🧪🛑",
 			"terminateSpeculative": "⏹️ ${label}：🔮🔗🚫，❌⏹",
-			"nothingToContinue": "💚∞，🚫⏰，🚫🏃.",
+			"nothingToContinue": "💚∞，🚫⏰，🚫🏃",
 			"triggerNoMatch": "⚡🚫📁：${scope} — ${pattern}",
 			"triggerNoMatchSummary": "${count} ⚡🚫📁（👉 `report.md`）",
 			"unknownSuite": "🚫 📦: ${name}",
@@ -433,9 +433,9 @@
 			"suiteHeader": "\n=== 📦🧪 ${name} ===",
 			"heapSnapshotSaved": "🧪🖥️≈`OOM` 📚📸：${path}",
 			"liveUsage": "📖：`--suite` <📛> | `--list`",
-			"serialUsage": "📖：`serial.mjs` <`deno-test-path`> [...]",
-			"silentPassedOne": "1 🧪📁 ✅.",
-			"silentPassedMany": "${count} 🧪📁 ✅.",
+			"serialUsage": "📖：`serial.mjs` <`deno-test-path`> […]",
+			"silentPassedOne": "1 🧪📁 ✅",
+			"silentPassedMany": "${count} 🧪📁 ✅",
 			"ciNoDiffFallback": "`CI`：🚫 `diff` → 🏃📦∞",
 			"noFrontendPhasesMatched": "🚫 `FOUNT_TEST_ONLY` 💻🧪📶🎯",
 			"denoPanic": {
@@ -573,16 +573,16 @@
 				"createDesktopAppFailed": "❌ 🖥️💔"
 			},
 			"git": {
-				"repoNotFound": "🤔❓ 🐙🐱... ➡️ ✨",
+				"repoNotFound": "🤔❓ 🐙🐱… ➡️ ✨",
 				"fetchingAndResetting": "☁️📥 ➡️ 🌳",
 				"localChangesDetected": "📝👀 ➡️ 💾",
 				"backupSavedTo": "💾✅ ➡️ `${path}`",
-				"updatingFromRemote": "☁️🔄...",
+				"updatingFromRemote": "☁️🔄…",
 				"alreadyUpToDate": "👍💯",
 				"localBranchAhead": "🏠🌳 > ☁️🌳 ✅",
 				"branchesDiverged": "🔀 🌳 ‼️ ➡️ 💪🔄",
 				"notOnBranch": "🤷‍♂️🌳 ➡️ 'master'",
-				"noUpstreamBranch": "⚠️ branch '${branch}' no upstream, using '${remote}'.",
+				"noUpstreamBranch": "⚠️ branch '${branch}' no upstream, using '${remote}'",
 				"dirtyWorkingDirectory": "⚠️ 📁💩",
 				"notInstalled": "❓ 🐙🐱 ➡️ 📥",
 				"notInstalledSkippingPull": "🚫 🐙🐱 ➡️ ⏭️ pull",
@@ -596,12 +596,12 @@
 			"deno": {
 				"missing": "❓🦕 ➡️ 📥",
 				"isRequired": "🚫🦕 ➡️ 🚫⛲",
-				"installingTermux": "📱🦕📥...",
+				"installingTermux": "📱🦕📥…",
 				"installFailedFallback": "❌🦕📥 ➡️ 📁📥",
 				"notWorking": "🦕❓➡️ github.com/denoland/deno/issues",
 				"upgradeFailed": "⚠️ 🦕⏫❓",
 				"upgradeFailedTermux": "❌🦕⏫ ➡️ 📱📥",
-				"patchMissing": "❌: 🚫👀 🦕🏃‍♂️. 🚫🩹.",
+				"patchMissing": "❌: 🚫👀 🦕🏃‍♂️ 🚫🩹",
 				"patchUnsupportedArch": "❌: 🚫🤝 🏗️: ${arch}",
 				"patchFailed": "❌: 🩹🦕 🏃‍♂️ (`patchelf`) 💥"
 			},
@@ -609,9 +609,9 @@
 				"blocked": "🚫⛲🏃‍♂️📁🕒\n\n⛲🔗🖥️➡️`PATH`&🪝 in `fount`\n🕒📁🗑️➡️🚫`fount remove`\n\n📦➡️📁✅ | 🧪➡️`fount remove`"
 			},
 			"install": {
-				"installingDependencies": "📥🧩...",
+				"installingDependencies": "📥🧩…",
 				"packageFailed": "❌: ${package} 📥💥",
-				"browserMissing": "🚫🌐, 🔄📥...",
+				"browserMissing": "🚫🌐, 🔄📥…",
 				"untrustedPartsWarning": "🚫❓ ⛲🧩 ➡️ ☣️",
 				"rootWarning1": "⚠️👑 ⛲ ➡️ 💥",
 				"rootWarning2": "🙂👍 ⛲ ✅",
@@ -619,12 +619,12 @@
 				"permissionDeniedNotRoot": "❌✍️ ⛲📁 '${path}' 🔧🔐📁 ➡️ 👤✍️ 🔄 👑 ⛲"
 			},
 			"clean": {
-				"removingCaches": "🧹🗑️...",
-				"cleaningDenoCaches": "🧹🦕🗑️...",
+				"removingCaches": "🧹🗑️…",
+				"cleaningDenoCaches": "🧹🦕🗑️…",
 				"cleaningOldPwshModules": "🧹 📜 💪🐚"
 			},
 			"keepalive": {
-				"initComplete": "✅✨ ➡️ 🔄⛲...",
+				"initComplete": "✅✨ ➡️ 🔄⛲…",
 				"autoInitDisabled": "⛲ 🔄🔄🔄 & `.noautoinit` ➡️ 🛑",
 				"restartingTooFast": "⛲ 🔄🔄🔄 ➡️ 💥",
 				"failedToStart": "❌⏱️ ⛲ ➡️ 📜👀",
@@ -637,19 +637,19 @@
 				"editorRemoved": "✅ 👋 ⛲ ⌨️ @ 📝🖥️ `${path}`"
 			},
 			"remove": {
-				"removingDesktopShortcut": "🗑️🖥️🔗...",
-				"removingTerminalKeybindings": "👋 ⌨️🗺️ 🩹...",
-				"removingFount": "👋 ⛲...",
+				"removingDesktopShortcut": "🗑️🖥️🔗…",
+				"removingTerminalKeybindings": "👋 ⌨️🗺️ 🩹…",
+				"removingFount": "👋 ⛲…",
 				"fountUninstallationComplete": "✅ ⛲ 👋💯",
-				"removingFountInstallationDir": "👋 ⛲ 📁...",
+				"removingFountInstallationDir": "👋 ⛲ 📁…",
 				"fountInstallationDirRemoved": "✅ ⛲ 📁 👋",
 				"removingFountFromPath": "👋 ⛲ @ 🛣️",
 				"removingProtocolHandler": "👋 🔗⛲://",
 				"protocolHandlerRemoved": "✅ 👋 🔗⛲://",
 				"removeProtocolHandlerFailed": "❌ 👋 🔗⛲://: ${message}",
 				"removingFountFromGitSafeDir": "👋 ⛲ @ 🐙🐱🔒",
-				"removingInstalledSystemPackages": "👋 📦...",
-				"uninstallingDeno": "👋 🦕...",
+				"removingInstalledSystemPackages": "👋 📦…",
+				"uninstallingDeno": "👋 🦕…",
 				"removeDenoFailed": "❌ 👋 🦕: ${message}",
 				"removingFountPwshFromProfile": "👋 ⛲ @ 💪🐚",
 				"fountPwshRemovedFromProfile": "✅ 👋 ⛲ @ 💪🐚",
@@ -661,16 +661,16 @@
 				"terminalProfileNotFound": "❓ 🪟🖥️",
 				"desktopShortcutRemoved": "✅ 👋 🖥️",
 				"desktopShortcutNotFound": "❓ 🖥️",
-				"removingStartMenuShortcut": "👋 🏁...",
+				"removingStartMenuShortcut": "👋 🏁…",
 				"startMenuShortcutRemoved": "✅ 👋 🏁",
 				"startMenuShortcutNotFound": "❓ 🏁",
-				"removingInstalledPwshModules": "👋 pwsh 📦...",
+				"removingInstalledPwshModules": "👋 pwsh 📦…",
 				"moduleRemoved": "✅ 👋 ${module}",
 				"removeModuleFailed": "❌ 👋 ${module}: ${message}",
-				"uninstallingGit": "👋 🐙🐱...",
-				"uninstallingChrome": "👋 🌐...",
-				"uninstallingWinget": "👋 winget...",
-				"removingBackgroundRunner": "👋 🏃‍♂️💨...",
+				"uninstallingGit": "👋 🐙🐱…",
+				"uninstallingChrome": "👋 🌐…",
+				"uninstallingWinget": "👋 winget…",
+				"removingBackgroundRunner": "👋 🏃‍♂️💨…",
 				"removeBackgroundRunnerFailed": "❌ 👋 🏃‍♂️💨: ${message}"
 			}
 		}
@@ -748,7 +748,7 @@
 		},
 		"footer": {
 			"ready_text": "🚀❓",
-			"wait_text": "⏳...",
+			"wait_text": "⏳…",
 			"open_fount": "▶️ ⛲",
 			"open_or_install_fount": "▶️/📥 ⛲",
 			"error_message": "😢\n\n❌:\n${error}",
@@ -785,7 +785,7 @@
 		},
 		"offline_dialog": {
 			"title": "🖥️🚫🌐",
-			"message": "${hostUrl} 😴... 🔄❓",
+			"message": "${hostUrl} 😴… 🔄❓",
 			"buttons": {
 				"start": "🚀",
 				"retry": "🔄"
@@ -795,7 +795,7 @@
 	},
 	"startPage": {
 		"title": "⛲❗️",
-		"description": "🚪🌌⏳... ✨🗣️📚"
+		"description": "🚪🌌⏳… ✨🗣️📚"
 	},
 	"tutorial": {
 		"title": "🎓❓",
@@ -845,7 +845,7 @@
 	"auth": {
 		"title": "🔐",
 		"subtitle": "👤💾➡️💻",
-		"description": "🖋️🎭🔑... 🚀",
+		"description": "🖋️🎭🔑… 🚀",
 		"usernameLabel": "👤:",
 		"usernameInput": {
 			"placeholder": "✍️👤"
@@ -946,7 +946,7 @@
 		"itemDescription": "👆➡️ℹ️",
 		"noDescription": "🤷‍♂️",
 		"filterInput": {
-			"placeholder": "🔎...",
+			"placeholder": "🔎…",
 			"aria-label": "🔎🧩"
 		},
 		"sfwToggle": "😇",
@@ -960,7 +960,7 @@
 		},
 		"functionMenu": {
 			"search": {
-				"placeholder": "🔎..."
+				"placeholder": "🔎…"
 			},
 			"button": {
 				"title": "🧰"
@@ -970,7 +970,7 @@
 			}
 		},
 		"emptyList": {
-			"message": "💨...<br/>[✨📝](${newpartLink}) / [👨‍👩‍👧‍👦👋](${telegramLink})"
+			"message": "💨…<br/>[✨📝](${newpartLink}) / [👨‍👩‍👧‍👦👋](${telegramLink})"
 		},
 		"part_pages": {
 			"default": {
@@ -1563,7 +1563,7 @@
 			"renameFolder": "✏️🏷️",
 			"renameFolderPrompt": "📁🏷️🆕",
 			"deleteFolder": "🗑️📁",
-			"deleteFolderConfirm": "🗑️📁? ➡️ 📄➡️📂🈳",
+			"deleteFolderConfirm": "🗑️📁❓ ➡️ 📄➡️📂🈳",
 			"searchEmpty": "🔍⭐📭",
 			"folderEmpty": "📁📭",
 			"emptyHint": "👀📰 ➡️ 🔖 ➡️ ⭐",
@@ -1610,7 +1610,7 @@
 				"aria-label": "🎬"
 			},
 			"empty": "🎬📭",
-			"emptyHint": "➕👀/🏛️🌍 🎬📰📭 · 📤🎬?",
+			"emptyHint": "➕👀/🏛️🌍 🎬📰📭 · 📤🎬❓",
 			"compose": "➡️📤🎬",
 			"back": {
 				"aria-label": "🔙📰"
@@ -1677,11 +1677,11 @@
 		"description": "🗣️✈️📖💫",
 		"new": {
 			"title": "🆕💬",
-			"description": "🤫⏳📖✍️..."
+			"description": "🤫⏳📖✍️…"
 		},
 		"typingIndicator": {
-			"isTyping": "${names} ✍️...",
-			"multipleMembers": "👥✍️..."
+			"isTyping": "${names} ✍️…",
+			"multipleMembers": "👥✍️…"
 		},
 		"emoji": {
 			"pickerTitle": "😀👆",
@@ -1748,7 +1748,7 @@
 			"settingsPage": {
 				"title": "👥⚙️",
 				"kicker": "👥🛡️",
-				"subtitle": "👥📋➕👤🔧.🔽🔐、💾📜🔧 📚▶️🔧⚙️.",
+				"subtitle": "👥📋➕👤🔧🔽🔐、💾📜🔧 📚▶️🔧⚙️",
 				"backToChat": "🔙💬",
 				"navigationLabel": "👥⚙️🗂️",
 				"advancedNavigationLabel": "🔧⚙️🗂️",
@@ -1761,8 +1761,8 @@
 				"tabStorage": "💾📦",
 				"tabChannelPermissions": "📺🔐",
 				"advancedHubTitle": "🔧⚙️🎛️",
-				"advancedHubDescription": "👇🔧 ✏️👥🔐🏗️、📜💾／🏛️📜；🔒✋🫵 ✋➡️🔧.",
-				"channelPermsHint": "⭐📺 ➡️ 🎭🔐 🔁.🚫✍️ ➡️ ↩️👥🎭🔐.",
+				"advancedHubDescription": "👇🔧 ✏️👥🔐🏗️、📜💾／🏛️📜；🔒✋🫵 ✋➡️🔧",
+				"channelPermsHint": "⭐📺 ➡️ 🎭🔐 🔁🚫✍️ ➡️ ↩️👥🎭🔐",
 				"channelPermsSelectChannel": "📺",
 				"channelPermsAddRole": "➕🎭🔐",
 				"channelPermsRemoveRole": "🗑️🎭🔐",
@@ -1773,31 +1773,31 @@
 				"channelPermsUpdateFailed": "📺🔐🔄❌：${error}",
 				"channelPermsNoChannels": "📭📺⚙️",
 				"emojisTitle": "👥😀",
-				"emojisHint": "👤✅💬📍／📤👥😀；🚫📥🖼️ ➡️ 🌐🔗📥⏳.",
+				"emojisHint": "👤✅💬📍／📤👥😀；🚫📥🖼️ ➡️ 🌐🔗📥⏳",
 				"emojisUpload": "⬆️😀",
 				"emojisDelete": "🗑️😀",
 				"emojisEmpty": "📭👥😀",
 				"emojisUploadOk": "😀⬆️✅",
 				"emojisUploadFailed": "⬆️❌：${error}",
-				"emojisDeleteConfirm": "🗑️👥😀 ✅?",
+				"emojisDeleteConfirm": "🗑️👥😀 ✅❓",
 				"emojisDeleteOk": "😀🗑️✅",
 				"emojisDeleteFailed": "🗑️❌：${error}",
 				"membersTitle": "👥📋",
 				"overviewTitle": "👥👀📊",
-				"overviewHint": "👀ℹ️.🏛️🔐 ➡️ 📍「📌」✏️👥📋⚙️.",
+				"overviewHint": "👀ℹ️🏛️🔐 ➡️ 📍「📌」✏️👥📋⚙️",
 				"channelArchiveTitle": "📺📦",
-				"channelArchiveHint": "📥✅📺📊📦 ➡️ 👥🆕📝📺♻️📜（🫵✍️；📎💾📋）.",
+				"channelArchiveHint": "📥✅📺📊📦 ➡️ 👥🆕📝📺♻️📜（🫵✍️；📎💾📋）",
 				"channelArchiveImport": "📥📺📊",
 				"channelArchiveImportOk": "✅📥${count}📨，📺▶️…",
 				"channelArchiveImportFailed": "📥❌：${error}",
-				"governanceHint": "💾🔗📊👥📋；🛡️／🛡️👑⚙️ 🔐🔒.",
-				"governanceDenied": "🫵🚫🔐✏️👥🏛️⚙️.",
-				"rolesDenied": "🫵🚫🎭⚙️🔐，🚫✏️🎭.",
-				"channelPermsDenied": "🫵🚫📺⚙️🔐，🚫✏️📺🔐.",
-				"notMember": "🚫👥👤；💻👥💾⬅️👥🧹.",
+				"governanceHint": "💾🔗📊👥📋；🛡️／🛡️👑⚙️ 🔐🔒",
+				"governanceDenied": "🫵🚫🔐✏️👥🏛️⚙️",
+				"rolesDenied": "🫵🚫🎭⚙️🔐，🚫✏️🎭",
+				"channelPermsDenied": "🫵🚫📺⚙️🔐，🚫✏️📺🔐",
+				"notMember": "🚫👥👤；💻👥💾⬅️👥🧹",
 				"basicTitle": "👥🏛️",
 				"profileSectionTitle": "👥📋",
-				"profileSectionHint": "🏷️📝➕👥🛣️ ➡️ 💾👥📋.",
+				"profileSectionHint": "🏷️📝➕👥🛣️ ➡️ 💾👥📋",
 				"behaviorSectionTitle": "🏃⚙️",
 				"networkSectionTitle": "🌐🔗",
 				"retentionSectionTitle": "💾🐢",
@@ -1809,24 +1809,24 @@
 				"joinPow": "⛏️📊",
 				"powDifficultyLabel": "⛏️📊",
 				"advancedTitle": "🔧⚙️🎛️",
-				"advancedDescription": "🌐💾🐢🔐⚙️；🤷 ➡️ ⭐.",
+				"advancedDescription": "🌐💾🐢🔐⚙️；🤷 ➡️ ⭐",
 				"securityAdvancedTitle": "🛡️👑⚙️",
-				"securityAdvancedDescription": "🔄🔑👑➡️；⚠️⚙️❌ ➡️ 👤🚪⚡.",
-				"powDifficultyTip": "⛏️📊.📊⬆️ ➡️ 👤➕🌐👥➕💻⏱️.",
-				"maxDagPayloadTip": "1️⃣👥📨📦🔝.⬆️ ➡️ ➕🔄💾➕🌐📶.",
-				"trustedPeersTip": "🔝🔗⭐🌐👥.",
-				"gossipTtlTip": "💬🔝🔢🌐↪️.⬆️📶➕📶.",
-				"hlcTip": "🔗⏰➡️💻⏩🔝，🚫🔮📨.",
-				"sfuTip": "🔘🔊📹↪️📡📍.⬜ ➡️ 📦P2P/📡📞.",
-				"iceTip": "🌐📞🔀；P2P❌🔄📡↪️🔊📹🌐📶.",
-				"fileEncryptionTip": "🔄🔐♻️📁👀；🎲🔑🔒⬆️➕💾📦.",
+				"securityAdvancedDescription": "🔄🔑👑➡️；⚠️⚙️❌ ➡️ 👤🚪⚡",
+				"powDifficultyTip": "⛏️📊📊⬆️ ➡️ 👤➕🌐👥➕💻⏱️",
+				"maxDagPayloadTip": "1️⃣👥📨📦🔝⬆️ ➡️ ➕🔄💾➕🌐📶",
+				"trustedPeersTip": "🔝🔗⭐🌐👥",
+				"gossipTtlTip": "💬🔝🔢🌐↪️⬆️📶➕📶",
+				"hlcTip": "🔗⏰➡️💻⏩🔝，🚫🔮📨",
+				"sfuTip": "🔘🔊📹↪️📡📍⬜ ➡️ 📦P2P/📡📞",
+				"iceTip": "🌐📞🔀；P2P❌🔄📡↪️🔊📹🌐📶",
+				"fileEncryptionTip": "🔄🔐♻️📁👀；🎲🔑🔒⬆️➕💾📦",
 				"keyManagementTitle": "🔑🛡️",
-				"keyManagementTip": "🔄📤🆕🔑➡️👤.🔑💧✋🔄.",
+				"keyManagementTip": "🔄📤🆕🔑➡️👤🔑💧✋🔄",
 				"allowDangerousHtml": "🤝✍️💬✅📝✨",
 				"deleteGroup": "🗑️👥",
 				"save": "💾⚙️",
 				"inviteTitle": "🎟️",
-				"inviteHint": "⚙️⏱️🎟️（⭐1⏰）.👤➡️「➕👥」✍️👥🆔➕🎟️.",
+				"inviteHint": "⚙️⏱️🎟️（⭐1⏰）👤➡️「➕👥」✍️👥🆔➕🎟️",
 				"inviteMint": "⚙️🎟️",
 				"inviteGroupId": "👥🆔",
 				"inviteCode": "🎟️",
@@ -1838,14 +1838,14 @@
 				"loadFailed": "📥👥⚙️❌: ${error}",
 				"saveSuccess": "👥⚙️💾✅",
 				"saveFailed": "💾⚙️❌: ${error}",
-				"deleteConfirm": "🗑️👥 ✅?🚫↩️，📨👤♾️🗑️.",
+				"deleteConfirm": "🗑️👥 ✅❓🚫↩️，📨👤♾️🗑️",
 				"deleteSuccess": "👥🗑️✅",
 				"deleteFailed": "🗑️👥❌: ${error}",
 				"rolesTitle": "🎭🔐",
 				"createRole": "➕🎭",
 				"roleDefault": "⭐",
 				"deleteRole": "🗑️🎭",
-				"deleteRoleConfirm": "🗑️🎭 ✅?",
+				"deleteRoleConfirm": "🗑️🎭 ✅❓",
 				"deleteRoleSuccess": "🎭🗑️✅",
 				"deleteRoleFailed": "🗑️🎭❌: ${error}",
 				"createRolePrompt": "✍️🎭🏷️:",
@@ -1857,24 +1857,24 @@
 				"memberRoles": "🎭:",
 				"kick": "👢",
 				"ban": "🔨",
-				"kickConfirm": "👢👤 ${name} ✅?",
-				"kickSelfNodeWarning": "⚠️👤🤝🔗🆔，👢➡️🫵⬅️👥.✅?",
+				"kickConfirm": "👢👤 ${name} ✅❓",
+				"kickSelfNodeWarning": "⚠️👤🤝🔗🆔，👢➡️🫵⬅️👥✅❓",
 				"kickSuccess": "👤👢✅",
 				"kickFailed": "👢❌: ${error}",
-				"banConfirm": "🔨👤 ${name} ✅?",
+				"banConfirm": "🔨👤 ${name} ✅❓",
 				"banSuccess": "👤🔨✅",
 				"banFailed": "🔨❌: ${error}",
 				"bannedTitle": "🔨👥",
 				"unban": "🔓",
-				"unbanConfirm": "🔓👤 ${name} ✅?",
+				"unbanConfirm": "🔓👤 ${name} ✅❓",
 				"unbanSuccess": "👤🔓✅",
 				"unbanFailed": "🔓❌：${error}",
 				"keyRotate": "🔄👥📁👑🔑",
-				"keyRotateConfirm": "✋🔄👥📁👑🔑 ✅?🆕👤🔄📜📁🔑.",
+				"keyRotateConfirm": "✋🔄👥📁👑🔑 ✅❓🆕👤🔄📜📁🔑",
 				"keyRotateOk": "🔑🔄✅",
 				"keyRotateFailed": "🔑🔄❌：${error}",
-				"gshGenerationRetentionHint": "💾🔝6️⃣4️⃣🔄#️⃣📁👑🔑.⬆️🔝📜📁🚫🔓，💡❄️📦🔒📄.",
-				"gshGenerationNearLimit": "👉🔄#️⃣${generation}📁👑🔑（🔝${maxGenerations}🔄#️⃣）.➕🔄 ➡️ 🔝📜🔑🗑️.",
+				"gshGenerationRetentionHint": "💾🔝6️⃣4️⃣🔄#️⃣📁👑🔑⬆️🔝📜📁🚫🔓，💡❄️📦🔒📄",
+				"gshGenerationNearLimit": "👉🔄#️⃣${generation}📁👑🔑（🔝${maxGenerations}🔄#️⃣）➕🔄 ➡️ 🔝📜🔑🗑️",
 				"ownerSuccession": "👑➡️",
 				"ownerSuccessionOk": "👑➡️✅",
 				"ownerSuccessionFailed": "👑➡️❌：${error}",
@@ -1898,7 +1898,7 @@
 			},
 			"auditLog": {
 				"title": "👥📜🔍",
-				"hint": "👀🏛️🌿👤🎭📺➕🛡️📨；🔒🛡️👀.",
+				"hint": "👀🏛️🌿👤🎭📺➕🛡️📨；🔒🛡️👀",
 				"filterLabel": "📨🏷️",
 				"refresh": "🔄",
 				"filterAll": "✅🏷️",
@@ -1971,18 +1971,18 @@
 			"membersEmpty": "（👥📭）",
 			"channelEncryptionGsh": "📺🔑🔐🔗（📺🔑👥）",
 			"ownerSuccession": "👑🗳️",
-			"ownerSuccessionDescription": "➡️👑🔐（🛡️👑⚙️）➡️📌👤.🔒🛡️👀.",
-			"ownerSuccessionAutoSignHint": "📤💻👥✍️🌱➡️🗳️，🚫🔐⌨️.🛡️➕💻➡️🗳️（🗳️🆔➕👤）.",
+			"ownerSuccessionDescription": "➡️👑🔐（🛡️👑⚙️）➡️📌👤🔒🛡️👀",
+			"ownerSuccessionAutoSignHint": "📤💻👥✍️🌱➡️🗳️，🚫🔐⌨️🛡️➕💻➡️🗳️（🗳️🆔➕👤）",
 			"ownerSuccessionCandidateLabel": "👑➡️🔑🧬#️⃣",
 			"ownerSuccessionSelfButton": "📝🫵",
-			"ownerSuccessionSubmitted": "👑➡️🗳️✅🫵.",
+			"ownerSuccessionSubmitted": "👑➡️🗳️✅🫵",
 			"ownerSuccessionNeedHash": "🙏✍️👑➡️🔑🧬#️⃣",
 			"ownerSuccessionFailed": "👑➡️🗳️📤❌",
 			"e2eDecryptUnavailable": "💬🔐，💻🚫🔓",
 			"contentRefBodyPending": "🔗📝（📝🔗，⏳📥✅）",
 			"contentRefHashMismatch": "🔗📝≠💾✅（🧬#️⃣🚫🎯）",
 			"streamGenerationFailed": "🤖⏰❌，⏹️🔄",
-			"convergentEncryptWarn": "👥📁🔄🔐：👀📄➡️🔑🔓.🚫🔒📄⛔👥🔐.",
+			"convergentEncryptWarn": "👥📁🔄🔐：👀📄➡️🔑🔓🚫🔒📄⛔👥🔐",
 			"settingsStreamGeneratingIdle": "🤖😴⏰🔝（⏱️）",
 			"settingsAutoReplyFrequency": "⚡🎭（N📤👤📨，0⏹️）",
 			"settingsAutoReplyFrequencyHint": "0⏹️；@⚡",
@@ -2007,38 +2007,38 @@
 			"settingsMessageRetention30d": "3️⃣0📅⬅️",
 			"settingsMessageRetention90d": "9️⃣0📅⬅️",
 			"settingsMessageRetention1y": "1️⃣📅⬅️",
-			"settingsMessageRetentionHint": "⭐🚫⏱️🗑️📜.⏹️✂️💻📨🔥；📨❄️📦➕✅📍.",
+			"settingsMessageRetentionHint": "⭐🚫⏱️🗑️📜⏹️✂️💻📨🔥；📨❄️📦➕✅📍",
 			"settingsHotLatest": "🔥（📺🔝📨🔢）",
 			"settingsPinContext": "📌±N📨",
-			"settingsHotWindowHint": "🔥📨➡️✅📍➕📨💾；➡️📅❄️📦，🔗📊🗜️📨.",
+			"settingsHotWindowHint": "🔥📨➡️✅📍➕📨💾；➡️📅❄️📦，🔗📊🗜️📨",
 			"settingsArchiveTitle": "💾❄️📦",
-			"settingsArchiveHint": "❄️📦=💻📨（📅📁）.🗑️≠🔗📊；📜➡️🌐👥📥.",
+			"settingsArchiveHint": "❄️📦=💻📨（📅📁）🗑️≠🔗📊；📜➡️🌐👥📥",
 			"settingsArchiveFilesTitle": "✅📦📁",
-			"settingsArchiveEmpty": "📭❄️📦📁.",
+			"settingsArchiveEmpty": "📭❄️📦📁",
 			"settingsArchiveColChannel": "📺",
 			"settingsArchiveColMonth": "📅",
 			"settingsArchiveColSize": "⚖️",
 			"settingsArchiveDeleteBefore": "🗑️📅⬅️",
 			"settingsArchiveDeleteButton": "🗑️❄️📦",
-			"settingsArchiveDeleteHint": "🗑️💻❄️📦/*.📊；🔥➕🔗📊⚓✅.",
-			"settingsArchiveAdminOnly": "💻📭👥❄️📦.",
-			"settingsArchiveDeleteInvalidMonth": "🙏✅📅📋.",
-			"settingsArchiveDeleteConfirm": "🗑️${month}⬅️❄️📦 ✅?🚫↩️.",
-			"settingsArchiveDeleteOk": "🗑️${files}📦📁.",
+			"settingsArchiveDeleteHint": "🗑️💻❄️📦/*📊；🔥➕🔗📊⚓✅",
+			"settingsArchiveAdminOnly": "💻📭👥❄️📦",
+			"settingsArchiveDeleteInvalidMonth": "🙏✅📅📋",
+			"settingsArchiveDeleteConfirm": "🗑️${month}⬅️❄️📦 ✅❓🚫↩️",
+			"settingsArchiveDeleteOk": "🗑️${files}📦📁",
 			"settingsArchiveDeleteFailed": "🗑️📦❌：${error}",
 			"settingsEventRetentionDepth": "🔗📊📨💾🔝",
 			"settingsEventRetentionMs": "🔗📊📨💾⏰",
 			"settingsCompactTriggerDepth": "🧱🗜️🔝",
 			"settingsMessageRateLimit": "💬🐢（📨/⏱️/🪪）",
 			"settingsAutoReplyTokenBucket": "⚡🎫🪣",
-			"settingsAutoReplyTokenBucketHint": "⏹️🎭📺🎫🪣；🈳⏸️⚡📨，📉📈📨.",
+			"settingsAutoReplyTokenBucketHint": "⏹️🎭📺🎫🪣；🈳⏸️⚡📨，📉📈📨",
 			"settingsIceServers": "🔀🌐／🔄📡🖥️",
 			"settingsIceServersAdd": "➕🖥️",
-			"settingsIceServersHint": "🌐📞➕🌐P2P🔀；🔄📡🔐💻⚙️，🚫🌐📡.",
+			"settingsIceServersHint": "🌐📞➕🌐P2P🔀；🔄📡🔐💻⚙️，🚫🌐📡",
 			"settingsFileCeMode": "📁🔐🎛️",
 			"settingsFileCeModeConvergent": "🔄🔐（♻️）",
 			"settingsFileCeModeRandom": "🔒⬆️（🎲🔑，🚫♻️）",
-			"settingsFileCeModeHint": "🔒🎛️🎲📦🔑，ceMode=🎲；⬇️📄⚠️，➕💾📶.",
+			"settingsFileCeModeHint": "🔒🎛️🎲📦🔑，ceMode=🎲；⬇️📄⚠️，➕💾📶",
 			"channelsTitle": "📺",
 			"createGroup": "🆕👥",
 			"members": "👥",
@@ -2058,7 +2058,7 @@
 			"createFailed": "➕👥❌",
 			"newGroupName": "🆕👥",
 			"streamOk": "✅🌊（⏹️，🚫📡）",
-			"remoteUnsafe": "🔗💬✍️🚫🤝，⏹️✨📝.",
+			"remoteUnsafe": "🔗💬✍️🚫🤝，⏹️✨📝",
 			"trustAuthor": {
 				"textContent": "🤝",
 				"title": "🤝✍️（✅⚠️📝✨）"
@@ -2070,10 +2070,10 @@
 				"placeholder": "📋📺🗂️，🚫💬"
 			},
 			"streamNoEmbed": {
-				"textContent": "🌊📍🔒🔗embed / ⚙️👥🔄🎫."
+				"textContent": "🌊📍🔒🔗embed / ⚙️👥🔄🎫"
 			},
 			"streamNoSfu": {
-				"textContent": "🚫⚙️🌊📡🔗；🛡️➡️👥⚙️📺🔧📍."
+				"textContent": "🚫⚙️🌊📡🔗；🛡️➡️👥⚙️📺🔧📍"
 			},
 			"messageDeleted": "📨🗑️",
 			"messageDeletedBracket": "[📨🗑️]",
@@ -2139,9 +2139,9 @@
 			"settingsFedPartition": "🌐📂🔢",
 			"settingsRtcBudget": "📞🔗💰",
 			"settingsRtcJoinRate": "📞⏱️➕🔝",
-			"settingsFedTuningHint": "💾🔗📊👥⚙️；🔄💡🔄🌐🏠.",
+			"settingsFedTuningHint": "💾🔗📊👥⚙️；🔄💡🔄🌐🏠",
 			"settingsAutoChannelGc": "🧹📺😴",
-			"settingsAutoChannelGcHint": "🧱🗑️🔝2😴≥3️⃣0📅🏝️📺.",
+			"settingsAutoChannelGcHint": "🧱🗑️🔝2😴≥3️⃣0📅🏝️📺",
 			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
 			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
 			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
@@ -2190,7 +2190,7 @@
 			"blockSender": {
 				"title": "🚫📤"
 			},
-			"blockConfirm": "🚫「${sender}」✅?",
+			"blockConfirm": "🚫「${sender}」✅❓",
 			"blockAdded": "✅🚫",
 			"saveSticker": {
 				"title": "💾🏷️😀➡️⭐"
@@ -2200,7 +2200,7 @@
 			"deleteMessage": {
 				"title": "🗑️📨"
 			},
-			"deleteConfirm": "🗑️📨 ✅?",
+			"deleteConfirm": "🗑️📨 ✅❓",
 			"editMessage": {
 				"title": "✏️📨"
 			},
@@ -2321,7 +2321,7 @@
 			"fedGroupRecoveryTitle": "👥🔗🔧",
 			"fedGroupRecoveryTip": "⚠️📨💨／🆕🖥️🚫📜 ⏰🔧",
 			"fedRotateRoomSecret": "🔄🔐👥",
-			"fedRotateRoomSecretConfirm": "🔄🔐👥 ➡️ 🕰️📨🚫🔗 · ❓▶️?",
+			"fedRotateRoomSecretConfirm": "🔄🔐👥 ➡️ 🕰️📨🚫🔗 · ❓▶️❓",
 			"fedRotateRoomSecretOk": "✅🔄🔐",
 			"fedRepairJoinSnapshot": "🤝📸👥🔧",
 			"fedRepairJoinSnapshotOk": "✅📸👥（${channels} 📺📜）",
@@ -2355,7 +2355,7 @@
 			"fedDmInvalidateTitle": "🗑️🔗🕰️",
 			"fedDmInvalidateDescription": "⏩➡️ 📨🤝🔗 🚫⚡🚫↩️",
 			"fedDmRotateLabel": "🗑️🔗",
-			"fedDmRotateConfirm": "📨🤝🔗 🚫♻️ · ❓▶️?",
+			"fedDmRotateConfirm": "📨🤝🔗 🚫♻️ · ❓▶️❓",
 			"fedDmIssueLabel": "✍️💬🔗",
 			"fedDmNeedPubKey": "📌64🔣🔑",
 			"fedDmNeedSecretKey": "📌64🔣🔐🌱",
@@ -2415,11 +2415,11 @@
 			"filesNewFolderPrompt": "📂🏷️",
 			"filesRename": "✏️🏷️",
 			"filesRenameFolderPrompt": "✏️📂「${name}」➡️：",
-			"filesDeleteFolderConfirm": "❓🗑️📂?（📁📦✅）",
+			"filesDeleteFolderConfirm": "❓🗑️📂❓（📁📦✅）",
 			"filesUpload": "⬆️",
 			"filesDownload": "⬇️",
 			"filesDelete": "🗑️",
-			"filesDeleteConfirm": "❓🗑️📄?",
+			"filesDeleteConfirm": "❓🗑️📄❓",
 			"filesFoldersTitle": "📂",
 			"filesListTitle": "📄",
 			"filesEmpty": "📁📭",
@@ -2480,7 +2480,7 @@
 			"messageActionDelete": {
 				"title": "🗑️💬"
 			},
-			"confirmDeleteLong": "📜💬 · ❓🗑️?",
+			"confirmDeleteLong": "📜💬 · ❓🗑️❓",
 			"messageActionCopyHtml": {
 				"title": "📋🌐📄"
 			},
@@ -2579,7 +2579,7 @@
 				"suspectedRemovedKeep": "📸💾",
 				"suspectedRemovedLeave": "🗑️👥"
 			},
-			"blockOpposingConfirm": "🚫🌿✍️🏛️ · ❓▶️?",
+			"blockOpposingConfirm": "🚫🌿✍️🏛️ · ❓▶️❓",
 			"blockOpposingOk": "✅🚫 ${count} 🪪",
 			"blockOpposingFailed": "🚫❌：${error}",
 			"applyBranchOk": "✅🏛️🌿",
@@ -2711,7 +2711,7 @@
 			"backToFriends": "🔙👫",
 			"dmTopicsTitle": "#️⃣💬",
 			"friendsContextNewChat": "🆕💬",
-			"friendsRestartConfirm": "🔓✉️「${name}」➕🆕💬?",
+			"friendsRestartConfirm": "🔓✉️「${name}」➕🆕💬❓",
 			"friendsRestartOk": "✅🆕✉️",
 			"friendsRestartFailed": "🆕✉️❌：${error}",
 			"charDescriptionEmpty": "🎭📭👋",
@@ -2721,7 +2721,7 @@
 			"startChatWith": "💬 ▶️ ${name}",
 			"loading": "📥⏳…",
 			"charChatStart": "▶️💬 ${name}",
-			"charChatEmpty": "📭💬 ▶️🆕!",
+			"charChatEmpty": "📭💬 ▶️🆕❗",
 			"loadCharChatFailed": "📥💬❌",
 			"createChatFailed": "➕💬❌：${error}",
 			"charChatComposer": {
@@ -2735,7 +2735,7 @@
 				"title": "🤝✍️",
 				"subtitle": "✍️：${author}",
 				"warningTitle": "⚠️🚨",
-				"warningBody": "🤝➡️ ✍️💬 ➡️ 🌐💻 📝🖼️⚡（➕ 🔗📜⚡）.🔗 ⛲ 💻 ⚠️🔧 ➡️ 👀💬 ➡️ 💻⚠️.🙏 🔒🤝 🫵✅ ➕ ⚠️🌐🔗.",
+				"warningBody": "🤝➡️ ✍️💬 ➡️ 🌐💻 📝🖼️⚡（➕ 🔗📜⚡）🔗 ⛲ 💻 ⚠️🔧 ➡️ 👀💬 ➡️ 💻⚠️🙏 🔒🤝 🫵✅ ➕ ⚠️🌐🔗",
 				"durationLabel": "🤝⏰",
 				"duration3h": "3️⃣⏰",
 				"duration7d": "7️⃣📅",
@@ -2746,7 +2746,7 @@
 				"confirmSecond": "👆👆✅🔒",
 				"cancel": "↩️"
 			},
-			"blockConfirm": "🚫📋?👥🌐 ➡️ 🚫📡.",
+			"blockConfirm": "🚫📋❓👥🌐 ➡️ 🚫📡",
 			"blockOk": "✅🚫",
 			"charChatSettings": "🎭💬⚙️",
 			"charChatSubtitle": "💬 ${name}",
@@ -2758,14 +2758,14 @@
 			"advancedSettings": "🔧⚙️（🎭 / 🌍 / 🧩）",
 			"advancedSettingsDescription": "🆕📑 ➡️ 💬🏠 👥⚙️",
 			"dangerZone": "⚠️🗺️",
-			"unbindFriendDescription": "🔓➡️ 💬 ⬅️👥📋 📜💾.",
+			"unbindFriendDescription": "🔓➡️ 💬 ⬅️👥📋 📜💾",
 			"unbindFriend": "🔓🔗",
-			"unbindFriendConfirm": "🔓✉️ ${name}?💬 ➡️ 👥📋.",
+			"unbindFriendConfirm": "🔓✉️ ${name}❓💬 ➡️ 👥📋",
 			"unbindFriendOk": "✅🔓",
 			"unbindFriendFailed": "🔓❌：${error}",
-			"deleteSessionDescription": "🗑️💬 ♾️ 📜 🚫♻️.",
+			"deleteSessionDescription": "🗑️💬 ♾️ 📜 🚫♻️",
 			"deleteSession": "🗑️💬",
-			"deleteSessionConfirm": "🗑️💬 ${name}?🚫♻️.",
+			"deleteSessionConfirm": "🗑️💬 ${name}❓🚫♻️",
 			"sessionDeleted": "✅🗑️💬",
 			"sessionDeleteFailed": "🗑️❌：${error}",
 			"streamTokenFailed": "🚫🎫👀",
@@ -2810,12 +2810,12 @@
 			"listSaveFailed": "💾❌",
 			"streamDefaultName": "🌊📺",
 			"streamRefreshToken": "🔄🎫",
-			"streamEmbedHttpsRequired": "🌊📺 🔒🔗 https:// 📄，⚙️👥🔄🎫.",
-			"streamWebRtcHint": "🚫📡🌐；📺 ➡️ 👥 🌐📹（🚫 📡🔗）.",
+			"streamEmbedHttpsRequired": "🌊📺 🔒🔗 https:// 📄，⚙️👥🔄🎫",
+			"streamWebRtcHint": "🚫📡🌐；📺 ➡️ 👥 🌐📹（🚫 📡🔗）",
 			"pinPreviewSticker": "[🏷️😀]",
 			"pinPreviewVote": "[🗳️] ${question}",
 			"pinPreviewInvite": "[🎟️] ${groupName}",
-			"reactionRemovePrompt": "🗑️👤 ${emoji}?\n${candidates}",
+			"reactionRemovePrompt": "🗑️👤 ${emoji}❓\n${candidates}",
 			"ariaDagTip": {
 				"aria-label": "🌳🔀 🍃"
 			},
@@ -2827,7 +2827,7 @@
 			},
 			"discoveryTitle": "🔭👥",
 			"discoveryEyebrow": "🔍🏛️",
-			"discoveryDescription": "👀🌐👥 ➕ 🔍🏛️.",
+			"discoveryDescription": "👀🌐👥 ➕ 🔍🏛️",
 			"discoverySidebarHint": "➡️👀➕👥",
 			"discoveryEmptyTitle": "📭🔭👥",
 			"discoveryEmpty": "📭⭐👥；🌐🔄 ➡️ 🔍📋",
@@ -2857,10 +2857,10 @@
 				"setAliasPrompt": "「${name}」🏷️💻（⬜🧹）：",
 				"aliasSaved": "👥🏷️✅",
 				"leave": "⬅️👥",
-				"leaveConfirm": "⬅️👥「${name}」?🚫👀💬.",
+				"leaveConfirm": "⬅️👥「${name}」❓🚫👀💬",
 				"leaveOk": "✅⬅️👥",
 				"leaveBatch": "⬅️👥（${count}）",
-				"leaveConfirmBatch": "⬅️ ${count} 👥?💻🚫💾.",
+				"leaveConfirmBatch": "⬅️ ${count} 👥❓💻🚫💾",
 				"leaveBatchPending": "⬅️ ${count} 👥 ⏳…",
 				"leaveBatchOk": "✅⬅️ ${count} 👥",
 				"leaveBatchPartial": "${failed} / ${total} 👥⬅️❌ 📋🔄"
@@ -2888,8 +2888,8 @@
 			"channelNameInput": {
 				"placeholder": "general"
 			},
-			"localMaterializedView": "💻🧱📺 🔐📜 ↔️🔗🚫.",
-			"convergentEncryptWarn": "👥📁 🔐🔄：📝👀 ➡️ 🔑➡️🔓.🚫🔐📄➡️👥🔒.",
+			"localMaterializedView": "💻🧱📺 🔐📜 ↔️🔗🚫",
+			"convergentEncryptWarn": "👥📁 🔐🔄：📝👀 ➡️ 🔑➡️🔓🚫🔐📄➡️👥🔒",
 			"votePromptQuestion": "🗳️🏷️",
 			"votePromptOptions": "☑️（，⏱️ ⬆️2️⃣）",
 			"voteOptionDefault": "👍,👎",
@@ -2905,10 +2905,10 @@
 			},
 			"reputationSlashAlert": "👤 ${target}… ⭐⬇️🔔",
 			"profileEdit": {
-				"previewHint": "✏️ ➡️ 👀📍；💾 ➡️ 🔄 💬 ➕ 🏛️.",
+				"previewHint": "✏️ ➡️ 👀📍；💾 ➡️ 🔄 💬 ➕ 🏛️",
 				"livePreview": "⏱️👀",
 				"languageVersion": "🗣️🔢",
-				"localeHint": "👆🏷️🔄✏️；📤↩️ ➡️ 🆕🗣️.",
+				"localeHint": "👆🏷️🔄✏️；📤↩️ ➡️ 🆕🗣️",
 				"themeColorHint": "🚫🖼️ ➡️ 🎨🌊；📡🔊💫",
 				"bannerLabel": "🖼️🎨",
 				"bannerHint": "🔗🖼️ ⬆️📁；♻️🎨",
@@ -2922,9 +2922,9 @@
 				"linkAdd": "➕🔗",
 				"linkRemove": "🗑️🔗",
 				"handleLabel": "🔧🆔",
-				"handleHint": "🌐🔍；🚫1️⃣ 🤝📋🔀.",
+				"handleHint": "🌐🔍；🚫1️⃣ 🤝📋🔀",
 				"resetFromPart": "⬅️🎭🧩🔄",
-				"resetFromPartConfirm": "🎭🧩 ℹ️ ➡️ 👤📋?",
+				"resetFromPartConfirm": "🎭🧩 ℹ️ ➡️ 👤📋❓",
 				"resetFromPartDone": "✅🎭🧩♻️",
 				"resetFromPartFailed": "♻️❌：${error}",
 				"newLocale": {
@@ -2946,7 +2946,7 @@
 					"placeholder": "https://… ⛲://…"
 				},
 				"handle": {
-					"placeholder": "steve（2–32 🔤._-）"
+					"placeholder": "steve（2–32 🔤_-）"
 				}
 			},
 			"profilePopup": {
@@ -2973,7 +2973,7 @@
 				"renameOk": "📺🏷️✅",
 				"delete": "🗑️📺",
 				"deleteOk": "📺🗑️✅",
-				"deleteConfirm": "🗑️📺「${name}」?🚫↩️.",
+				"deleteConfirm": "🗑️📺「${name}」❓🚫↩️",
 				"setDefault": "⭐📺",
 				"setDefaultOk": "✅⭐📺",
 				"copyLink": "📋📺🔗",
@@ -2994,10 +2994,10 @@
 				"copyEntityId": "📋👤🆔",
 				"dm": "📤✉️",
 				"kick": "👢👤",
-				"kickSelfNodeWarning": "⚠️：🟰🔗🆔 👢 ➡️ 🫵⬅️👥.▶️?",
+				"kickSelfNodeWarning": "⚠️：🟰🔗🆔 👢 ➡️ 🫵⬅️👥▶️❓",
 				"ban": "🔨…",
 				"personalBlock": "👤🚫",
-				"personalBlockConfirm": "🚫 ${name}?👀👤 ⬇️🤝.",
+				"personalBlockConfirm": "🚫 ${name}❓👀👤 ⬇️🤝",
 				"personalBlockSuccess": "✅🚫📋",
 				"banTitle": "👆🔨📏",
 				"banEntity": "🔨👤（128🔢 👤#️⃣）",
@@ -3053,7 +3053,7 @@
 				"invite": {
 					"placeholder": "👑⏱️🎟️"
 				},
-				"hint": "👥🆔 ⬅️👑.🎟️👥 ➡️ 🎟️（⚙️✍️）.",
+				"hint": "👥🆔 ⬅️👑🎟️👥 ➡️ 🎟️（⚙️✍️）",
 				"cancel": "🔙",
 				"submit": "➕👥"
 			},
@@ -3111,7 +3111,7 @@
 				"title": "🌐⚙️",
 				"textContent": "🌐⚙️",
 				"autoTranslate": "🌐🔄🗣️💬",
-				"hint": "▶️ ➡️ 🗣️↔️ 🌐📝.",
+				"hint": "▶️ ➡️ 🗣️↔️ 🌐📝",
 				"save": "💾",
 				"saved": "🌐⚙️✅",
 				"saveFailed": "💾❌：${error}"
@@ -3190,7 +3190,7 @@
 		"chatArea": {
 			"title": "💬",
 			"input": {
-				"placeholder": "✍️...\nCtrl+Enter ➡️"
+				"placeholder": "✍️…\nCtrl+Enter ➡️"
 			},
 			"menuButton": {
 				"title": "⚙️"
@@ -3296,8 +3296,8 @@
 				}
 			},
 			"share": {
-				"uploading": "⏳🔗...",
-				"success": "✅🔗📋! <br>✨ ${provider} <br>[💖](${sponsorLink})"
+				"uploading": "⏳🔗…",
+				"success": "✅🔗📋❗ <br>✨ ${provider} <br>[💖](${sponsorLink})"
 			},
 			"commonToolCalling": "🛠️🔄",
 			"toolRunningLang": "▶️ ${lang}",
@@ -3329,7 +3329,7 @@
 		},
 		"messageEdit": {
 			"input": {
-				"placeholder": "✍️..."
+				"placeholder": "✍️…"
 			},
 			"buttons": {
 				"confirm": {
@@ -3424,7 +3424,7 @@
 			"code_greeting": {
 				"name": "👋💻",
 				"description": "💬💧",
-				"locked_description": "🔒: ▶️ 'hello fount!'"
+				"locked_description": "🔒: ▶️ 'hello fount❗'"
 			}
 		},
 		"dragAndDrop": {
@@ -3490,7 +3490,7 @@
 			},
 			"mesExample": {
 				"label": "💬",
-				"placeholder": "🤖💬..."
+				"placeholder": "🤖💬…"
 			},
 			"firstMessage": {
 				"label": "1️⃣💬",
@@ -3579,7 +3579,7 @@
 			"textContent": "📥📄"
 		},
 		"textArea": {
-			"placeholder": "✍️..."
+			"placeholder": "✍️…"
 		},
 		"buttons": {
 			"import": "📥"
@@ -3802,7 +3802,7 @@
 			"newUsernameLabel": "🆕👤:",
 			"submitButton": "✍️👤",
 			"confirmMessage": "🤔✍️👤❓➡️🚪➡️",
-			"success": "👤➡️ \"${newUsername}\" ✅, ➡️🚪...",
+			"success": "👤➡️ \"${newUsername}\" ✅, ➡️🚪…",
 			"missingParams": "👤🔑📋❌",
 			"wrongPassword": "🔑❌",
 			"mustDiffer": "👤🆕≠👤",
@@ -3916,7 +3916,7 @@
 			"description": "➡️🚪",
 			"buttonText": "🚪",
 			"confirmMessage": "🤔🚪❓",
-			"successMessage": "✅🚪, ➡️🔐..."
+			"successMessage": "✅🚪, ➡️🔐…"
 		},
 		"deleteAccount": {
 			"title": "🗑️👤",
@@ -3925,7 +3925,7 @@
 			"confirmMessage1": "⚠️🤔🗑️👤❓",
 			"confirmMessage2": "✍️👤 \"${username}\":",
 			"usernameMismatch": "👤 ≠ 👤, 🗑️❌",
-			"success": "👤🗑️✅, ➡️🚪...",
+			"success": "👤🗑️✅, ➡️🚪…",
 			"missingPassword": "🔑📋❌",
 			"wrongPassword": "🔑❌"
 		},
@@ -4000,7 +4000,7 @@
 			"subfountOption": "🔌 ${id}${deviceId}",
 			"scriptLabel": "JS {}",
 			"executeButton": "▶️",
-			"executing": "🏃...",
+			"executing": "🏃…",
 			"noSubfountSelected": "🚫 👆 📱",
 			"noScriptProvided": "🚫 ⌨️",
 			"executionSuccess": "▶️ ✅",
@@ -4121,7 +4121,7 @@
 			"advancedCustomization": "🛠️🔧",
 			"customCSS": "🎨📝 (CSS)",
 			"customMjsScript": "📜 (MJS)",
-			"mjsSyntaxHint": "⌨️ [async-eval](${asyncDocLink}). ↩️ 📦 { `load()`, `unload()` }.",
+			"mjsSyntaxHint": "⌨️ [async-eval](${asyncDocLink}) ↩️ 📦 { `load()`, `unload()` }",
 			"themeIdRequired": "🆔❓",
 			"newThemeName": "🆕🎨:",
 			"deleteConfirm": "🗑️🎨 ${id}❓",
@@ -4240,7 +4240,7 @@
 	},
 	"serviceSource_manager": {
 		"title": "🚰📦⚙️",
-		"description": "🎶🤖🎻. ➕/✂️/🔇 ➡️ 🔋🤖.",
+		"description": "🎶🤖🎻 ➕/✂️/🔇 ➡️ 🔋🤖",
 		"fileList": {
 			"title": "🚰📄",
 			"addButton": {
@@ -4267,7 +4267,7 @@
 		},
 		"common_config_interface": {
 			"empty_generator": "⚠️⚙️❌💾/🏷️",
-			"loadingModels": "⏳🧠...",
+			"loadingModels": "⏳🧠…",
 			"availableModels": "✅🧠:",
 			"copied": "📋✅",
 			"apiKeyRequired": "🔑❓➡️🧠",
@@ -4334,7 +4334,7 @@
 			"noFileSelectedDelete": "🤷‍♂️🗑️",
 			"noGeneratorSelectedSave": "🛑⚙️➡️💾",
 			"savedAsNewFile": "💾✅ 🆕🚰: ${name}",
-			"invalidFileName": "🚫 / \\ : * ? \" < > |"
+			"invalidFileName": "🚫 / \\ : * ❓ \" < > |"
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -4819,7 +4819,7 @@
 		"apiKeyCopied": "🔑📋✅",
 		"queryStringSectionTitle": "🚫👤🔑❓ (🔓💥)",
 		"queryStringWarning": "⚠️🔑➡️🌐 ➡️ 📜🕵️‍♂️",
-		"copyQueryStringUrlButton": "🌐?🔑=...",
+		"copyQueryStringUrlButton": "🌐❓🔑=…",
 		"home_function_buttons": {
 			"other": {
 				"title": "📦",
@@ -4832,13 +4832,13 @@
 		}
 	},
 	"ide_integration": {
-		"description": "🔗 ⛲ ➡️ 📝 (Zed, JetBrains, Neovim) 🤝 ACP. ⚙️ 🔑 & 🎭. ➕ 🤖 ➡️ 👨‍💻 🔄.",
+		"description": "🔗 ⛲ ➡️ 📝 (Zed, JetBrains, Neovim) 🤝 ACP ⚙️ 🔑 & 🎭 ➕ 🤖 ➡️ 👨‍💻 🔄",
 		"title": "⛲🔗",
 		"heading": "⛲🔗",
-		"instruction": "⛲ 🎭 ➡️ 💻 (Zed, JetBrains, Neovim) 🔗 ACP.",
+		"instruction": "⛲ 🎭 ➡️ 💻 (Zed, JetBrains, Neovim) 🔗 ACP",
 		"supportedEditorsTitle": "✅💻 & 📱",
 		"supportedEditorsIntro": "⬇️ 🔌 🤝 ⛲:",
-		"supportedEditorsLoading": "⏳...",
+		"supportedEditorsLoading": "⏳…",
 		"supportedEditorsError": "❌📋: ${message}",
 		"acpTitle": "⚙️ ⛲ ACP 📋",
 		"acpDesc": "👀👇 ➡️ ⚙️ ⛲ ACP 📋:",
@@ -4846,11 +4846,11 @@
 		"charListError": "❌🎭📋",
 		"acpScriptLabel": "ACP 📋 URL",
 		"acpConfigSample": "⚙️🌰:",
-		"acpConfigHint": "🎭ID ➡️ 📄⬇️, 🗝️ ➡️ 👤⚙️.",
+		"acpConfigHint": "🎭ID ➡️ 📄⬇️, 🗝️ ➡️ 👤⚙️",
 		"copyButton": "📋",
 		"copied": "✅📋",
 		"apiKeySectionTitle": "🗝️",
-		"apiKeyHint": "🔌📋 🔗 ⛲ (🟰 🕵️🗝️).",
+		"apiKeyHint": "🔌📋 🔗 ⛲ (🟰 🕵️🗝️)",
 		"generateApiKeyButton": "🔨🆕🗝️",
 		"apiKeyCopied": "🗝️✅📋",
 		"apiKeyCreateError": "❌🔨🗝️: ${message}",
@@ -4866,8 +4866,8 @@
 		"achievements": {
 			"first_ide_use": {
 				"name": "⛲🌊💻",
-				"description": "🥇⚙️⛲🎭➡️💻(Zed, JetBrains...).",
-				"locked_description": "🔗⛲🎭 ➡️ 🌍💻 & ✅🗣️."
+				"description": "🥇⚙️⛲🎭➡️💻(Zed, JetBrains…)",
+				"locked_description": "🔗⛲🎭 ➡️ 🌍💻 & ✅🗣️"
 			}
 		},
 		"acpChar": "👆🎭",
@@ -4880,7 +4880,7 @@
 		"pageDescription": "🏆🚀📈",
 		"unlocked_on": "✅ ${date}",
 		"locked": "🔒",
-		"toast_title": "🎉🏆!",
+		"toast_title": "🎉🏆❗",
 		"error": {
 			"load_failed": "🏆❌: ${message}"
 		},
@@ -4937,7 +4937,7 @@
 		"copyButton": "📋",
 		"versionStatus": {
 			"title": "🆚",
-			"checking": "⏳...",
+			"checking": "⏳…",
 			"local": "🏠:",
 			"remote": "☁️:",
 			"upToDate": "✅✨",
@@ -4952,14 +4952,14 @@
 			"backend": "🔌🔙",
 			"frontend": "🔌🔜"
 		},
-		"loading": "⏳...",
-		"checking": "🔎...",
+		"loading": "⏳…",
+		"checking": "🔎…",
 		"failed": "❌",
 		"copySuccess": "✅📋",
 		"copyFailed": "❌📋",
 		"updateNow": "🆕🔄▶️",
 		"alreadyLatest": "👍",
-		"updateRestarting": "🔄...",
+		"updateRestarting": "🔄…",
 		"updateSuccess": "🔄✅",
 		"updateFailed": "❌🔄",
 		"autoUpdateNotEnabled": "🚫🔄",
@@ -5014,7 +5014,7 @@
 			"🤖🆕🧠 ➡️ 💾💾💾 ➡️ 😨📉❓",
 			"👨‍💻🎭 ➕ 💼🏥🔫💰",
 			"🤖ZL-31 📛 ➡️ 🧠💥🎲",
-			"🖼️svg ➡️ png/ico. 📄0️⃣1️⃣❌ (LICENSE🆗)",
+			"🖼️svg ➡️ png/ico 📄0️⃣1️⃣❌ (LICENSE🆗)",
 			"💻🏃‍♂️💨 🚫🔨",
 			"✨🖼️💃 ➡️ 🔥💻 ➡️ 🗑️",
 			"🐣 ➡️ 🤖🔞 \"🪻\"",
@@ -5033,7 +5033,7 @@
 		"name": "🏷️",
 		"mimeType": "🆔",
 		"size": "⚖️",
-		"parentLink": "🆙 ../"
+		"parentLink": "🆙 /"
 	},
 	"code_block": {
 		"copy": {
@@ -5110,7 +5110,7 @@
 			"longerKeyboardPattern": "⌨️↗️↘️↖️",
 			"anotherWord": "➕📖",
 			"useWords": "📖➕📖➕📖",
-			"noNeed": "💪🔑 ✅ abc 🚫 #1!",
+			"noNeed": "💪🔑 ✅ abc 🚫 #1❗",
 			"pwned": "💻💥🔓"
 		},
 		"timeEstimation": {
@@ -5132,10 +5132,10 @@
 	},
 	"searchableDropdown": {
 		"trigger": {
-			"placeholder": "👉..."
+			"placeholder": "👉…"
 		},
 		"search": {
-			"placeholder": "🔍..."
+			"placeholder": "🔍…"
 		}
 	},
 	"common": {
@@ -5208,9 +5208,9 @@
 		"renamePrompt": "🆕🏷️",
 		"visibilityPrompt": "👀🌍（public/unlisted/followers/private/selected）",
 		"cabinetActionPrompt": "🎮：rename / delete / visibility",
-		"confirmDeleteCabinet": "🗑️🗄️✅?",
-		"confirmDelete": "🗑️✅👆📌?",
-		"confirmDeleteSystem": "👆➕💻📁，🗑️✅?",
+		"confirmDeleteCabinet": "🗑️🗄️✅❓",
+		"confirmDelete": "🗑️✅👆📌❓",
+		"confirmDeleteSystem": "👆➕💻📁，🗑️✅❓",
 		"copied": "✅📋",
 		"cutDone": "✅✂️",
 		"undo": "➖",
@@ -5223,7 +5223,7 @@
 		"remoteEntity": "🔗👤"
 	},
 	"entityProfile": {
-		"attributionMismatch": "👀🆔≠✍️👤（💡📥📜➡️📥👤🔁✍️）.🙏🚫➡️🏷️👀➡️🔐🧬#️⃣.",
+		"attributionMismatch": "👀🆔≠✍️👤（💡📥📜➡️📥👤🔁✍️）🙏🚫➡️🏷️👀➡️🔐🧬#️⃣",
 		"attributionMismatchShort": {
 			"title": "✍️🚫",
 			"aria-label": "✍️🚫"
