@@ -26,9 +26,13 @@ Day-to-day rules: [AGENTS.md](AGENTS.md).
 ## Message shortcuts / composer
 
 - Shift → action bar download/delete. Drag non-body → `messageDragExport.mjs`. Char timeline: bubble swipe/arrow (`chatGestures.mjs`).
-- HTML 导出（下载/分享/复制 HTML/拖拽）：`messages/exportHtml.mjs` → `scripts/features/markdown/standaloneDocument.mjs`（完整离线文档 + 群附件 data URL）；勿再只吐裸 Markdown 片段。
+- HTML export (download / share / copy HTML / drag): `messages/exportHtml.mjs` → `scripts/features/markdown/standaloneDocument.mjs` (full offline document + group attachment data URLs); do not emit bare Markdown fragments alone.
 - Composer disable: `disabled` only when surface CSS hides the input. Visible disabled: object-key `{ placeholder }` i18n — string keys write `innerHTML` into textarea.
 - Optimistic `pending:…`: no chain writes until `isDagEventId`. On WS confirm with `composerPendingId`, `applyIncomingMessage*` must `pipeline.refresh()`.
+
+## Files / cabinets
+
+Bind/unbind and `role_access` changes require `ADMIN`/`MANAGE_ADMINS` (`POST …/cabinets/bind`); wrap-only `cabinet_key_update` still needs `MANAGE_ROLES`.
 
 ## Unread / inbox / aliases
 

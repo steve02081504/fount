@@ -6,6 +6,7 @@ locales_dir = os.path.abspath(os.path.join(os.getcwd(), "src", "public", "locale
 
 USAGE = """\
 Usage: update_locale_data "<python>"
+       update_locale_data @script.py
 
 # 写一个值
 update_locale_data "set('some.key', 'some.value')"
@@ -21,6 +22,9 @@ update_locale_data "set('a.c', 'x', after='a.b')"
 
 # 一次性排好同级键；没写到的键会接在后面。根级用 order('', ...)
 update_locale_data "order('a', 'b', 'c', 'd')"
+
+# 长脚本可写成文件，用 @ 传入（避免 shell 转义）
+update_locale_data @restructure.py
 
 # 还有 has(key)、keys(parent='') 可用；after/before 可写完整路径或同级短名
 """
@@ -262,4 +266,13 @@ if __name__ == "__main__":
 		print("Error: Please provide a script string to evaluate.", file=sys.stderr)
 		print(USAGE, file=sys.stderr)
 		sys.exit(1)
-	process_locale_files(sys.argv[1])
+	arg = sys.argv[1]
+	if arg.startswith("@"):
+		script_path = arg[1:]
+		if not os.path.isabs(script_path) and not os.path.exists(script_path):
+			alt = os.path.join(os.path.dirname(os.path.abspath(__file__)), script_path)
+			if os.path.exists(alt):
+				script_path = alt
+		with open(script_path, "r", encoding="utf-8") as f:
+			arg = f.read()
+	process_locale_files(arg)

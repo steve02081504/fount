@@ -61,16 +61,16 @@ export function showOwnerConfirmDialog(ownerEntityHash) {
 					if (confirmPhase === 0) {
 						if (cooldownRemaining > 0) {
 							confirmButton.disabled = true
-							setElementI18n(confirmButton, 'profile.ownerConfirmCooldown', { seconds: String(cooldownRemaining) })
+							setElementI18n(confirmButton, 'chat.profile.ownerConfirmCooldown', { seconds: String(cooldownRemaining) })
 						}
 						else {
 							confirmButton.disabled = false
-							setElementI18n(confirmButton, 'profile.ownerConfirmFirst')
+							setElementI18n(confirmButton, 'chat.profile.ownerConfirmFirst')
 						}
 						return
 					}
 					confirmButton.disabled = false
-					setElementI18n(confirmButton, 'profile.ownerConfirmSecond')
+					setElementI18n(confirmButton, 'chat.profile.ownerConfirmSecond')
 				}
 
 				/**

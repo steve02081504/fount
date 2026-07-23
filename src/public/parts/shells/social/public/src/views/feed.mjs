@@ -151,7 +151,7 @@ export async function loadTrendingHashtags(scope = 'local', containerId = 'feedT
 	const list = document.createElement('div')
 	list.className = 'trending-tags'
 	if (!tags.length)
-		await mountEmptyState(list, { titleKey: 'social.trending.empty', modClass: ' empty-state--hint' })
+		await mountEmptyState(list, { titleKey: 'social.feed.trending.empty', modClass: ' empty-state--hint' })
 	else
 		for (const row of tags) {
 			const link = document.createElement('a')
@@ -163,7 +163,7 @@ export async function loadTrendingHashtags(scope = 'local', containerId = 'feedT
 			count.textContent = String(row.count)
 			link.appendChild(count)
 			link.dataset.n = String(row.count)
-			link.dataset.i18n = 'social.trending.postCount'
+			link.dataset.i18n = 'social.feed.trending.postCount'
 			list.appendChild(link)
 		}
 

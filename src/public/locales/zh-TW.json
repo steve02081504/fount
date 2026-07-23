@@ -1,263 +1,32 @@
 {
 	"lang": "zh-TW",
 	"name": "繁體中文",
-	"channels": {
-		"title": "頻道",
-		"description": "頻道管理系統",
-		"create": "建立頻道",
-		"subscribe": "訂閱",
-		"unsubscribe": "取消訂閱",
-		"settings": "頻道設定",
-		"list": "頻道列表",
-		"members": "成員",
-		"messages": "訊息",
-		"permissions": "許可權設定",
-		"type": {
-			"announcement": "公告",
-			"news": "新聞",
-			"updates": "更新"
-		},
-		"role": {
-			"owner": "所有者",
-			"admin": "管理員",
-			"moderator": "版主",
-			"member": "成員",
-			"subscriber": "訂閱者"
-		},
-		"errors": {
-			"notFound": "頻道不存在",
-			"noPermission": "許可權不足",
-			"alreadySubscribed": "已訂閱此頻道",
-			"notSubscribed": "未訂閱此頻道"
-		},
-		"success": {
-			"created": "頻道建立成功",
-			"updated": "頻道更新成功",
-			"deleted": "頻道刪除成功",
-			"subscribed": "訂閱成功",
-			"unsubscribed": "取消訂閱成功",
-			"posted": "訊息發佈成功"
-		}
-	},
-	"profile": {
-		"title": "個人資料",
-		"description": "管理你在聊天與社交中的公開形象。",
-		"settingsEyebrow": "賬戶設定",
-		"accountAtGlance": "賬戶概覽",
-		"advancedKicker": "依需求設定",
-		"advancedSettings": "高階設定",
-		"advancedDescription": "日常使用無需調整。",
-		"edit": "編輯資料",
-		"save": "儲存",
-		"cancel": "取消",
-		"displayName": "顯示名稱",
-		"name": "名稱",
-		"bio": "個人簡介",
-		"descriptionLabel": "簡介（Markdown）",
-		"email": "信箱",
-		"status": "狀態",
-		"customStatusLabel": "自訂狀態",
-		"avatarLabel": "頭像",
-		"themeColorLabel": "主題色",
-		"uploadAvatar": "上傳頭像",
-		"ownerTitle": "我的主人",
-		"ownerSummary": "代管設定",
-		"ownerDescription": "設定後，主人可以代為編輯或刪除你的聊天訊息、社交貼文與個人資料；其內容也會在本機以不安全 Markdown 渲染（可含腳本）。可填入任意實體雜湊，並隨時清除。",
-		"ownerEntityHashLabel": "主人實體雜湊（128 hex）",
-		"ownerSave": "儲存主人",
-		"ownerClear": "清除主人",
-		"ownerSaved": "主人已更新",
-		"ownerCleared": "主人已清除",
-		"ownerSaveFailed": "儲存失敗：${error}",
-		"ownerConfirmTitle": "確認設定主人？",
-		"ownerConfirmWarningTitle": "高風險操作，請仔細閱讀",
-		"ownerConfirmEditBody": "設定後，對方無需再徵得你同意，即可代為編輯或刪除你的聊天訊息、社交帖與個人資料。誤設或被誘騙設主人 = 立刻交出內容控制權。",
-		"ownerConfirmRenderBody": "對方發來的聊天訊息與社交帖會在你的瀏覽器中以完整 Markdown 渲染（含 HTML/指令碼）。這等於允許對方在無需你再次同意的情況下，在你的電腦上執行任意程式碼。僅當你完全信任對方時再繼續。",
-		"ownerConfirmCooldown": "我已閱讀風險（${seconds}）",
-		"ownerConfirmFirst": "我瞭解風險，繼續",
-		"ownerConfirmSecond": "再按一下以完成最終確認",
-		"ownerConfirmCancel": "取消",
-		"federationTitle": "聯邦與同步",
-		"federationSummary": "中繼伺服器與低功耗模式",
-		"federationDescription": "設定 Nostr relay URL 與省電模式。群組的聯邦同步會在首次邀請他人或建立聯邦私訊時自動啟用。",
-		"federationAdvanced": "高階選項",
-		"federationRelayUrlsLabel": "中繼伺服器（每行一個，留空則使用預設）",
-		"federationBatterySaverLabel": "低功耗模式",
-		"federationSave": "儲存網路設定",
-		"federationResetDefault": "恢復預設推薦設定",
-		"federationSaved": "已儲存",
-		"federationResetOk": "已恢復預設推薦設定",
-		"federationSaveFailed": "儲存失敗：${error}",
-		"preferences": "偏好設定",
-		"language": "語言",
-		"theme": "主題",
-		"notifications": "通知設定",
-		"emailNotifications": "郵件通知",
-		"pushNotifications": "推送通知",
-		"soundNotifications": "聲音通知",
-		"social": "社交連結",
-		"website": "網站",
-		"github": "GitHub",
-		"twitter": "Twitter",
-		"stats": "統計資訊",
-		"joinedAt": "加入時間",
-		"messageCount": "訊息數",
-		"groupCount": "群組數",
-		"channelCount": "頻道數",
-		"privacy": "隱私設定",
-		"showEmail": "顯示信箱",
-		"showStats": "顯示統計",
-		"allowDirectMessages": "允許私信",
-		"statusOptions": {
-			"online": "線上",
-			"away": "離開",
-			"busy": "忙碌",
-			"offline": "離線"
-		},
-		"themeOptions": {
-			"auto": "自動",
-			"light": "淺色",
-			"dark": "深色"
-		},
-		"languageOptions": {
-			"zh-CN": "簡體中文",
-			"en-US": "English"
-		},
-		"notifEmail": "郵件",
-		"notifPush": "推送",
-		"notifSound": "聲音",
-		"notifsAllOff": "全部關閉",
-		"bioEmpty": "這個人很懶，什麼都沒寫…",
-		"noSocialLinks": "暫無社交連結",
-		"emailVisible": "可見",
-		"emailHidden": "隱藏",
-		"customStatus": {
-			"placeholder": "正在做什麼…"
-		},
-		"avatar": {
-			"alt": "頭像"
-		},
-		"avatarPreview": {
-			"alt": "頭像預覽"
-		},
-		"myGroups": "我的群組",
-		"myChannels": "我的頻道",
-		"noGroups": "暫未加入任何群組",
-		"noChannels": "暫無頻道",
-		"overview": "使用者資訊概覽",
-		"summaryUserId": "使用者 ID",
-		"summaryAccountStatus": "帳號狀態",
-		"summaryEmailVisibility": "信箱可見性",
-		"summaryThemePref": "主題偏好",
-		"summaryLanguagePref": "語言偏好",
-		"summarySocialCount": "社交連結數量",
-		"summaryLinksCount": "外鏈數",
-		"groupDescriptionEmpty": "暫無描述",
-		"groupMembers": "${members} 位成員 · ${channels} 個頻道",
-		"channelPrivate": " · 私密",
-		"channelTypeText": "文字頻道",
-		"channelTypeList": "列表頻道",
-		"channelTypeVoice": "語音訊道",
-		"channelTypeStreaming": "流媒體頻道",
-		"errors": {
-			"loadFailed": "載入資料失敗",
-			"saveFailed": "儲存資料失敗",
-			"uploadFailed": "上傳頭像失敗",
-			"invalidUserData": "使用者資料格式錯誤",
-			"identityRequired": "節點身份尚未就緒，請重新整理頁面；若仍失敗，請在下方 P2P 設定中儲存聯邦設定",
-			"fetchUserFailed": "獲取使用者資訊失敗",
-			"operationFailed": "操作失敗：${error}"
-		},
-		"success": {
-			"saved": "資料儲存成功",
-			"avatarUploaded": "頭像上傳成功"
-		},
-		"ownerEntityHash": {
-			"placeholder": "輸入主人的實體雜湊"
-		}
-	},
-	"stickers": {
-		"title": "貼紙廣場",
-		"description": "貼紙和表情包管理系統",
-		"back": {
-			"title": "返回"
-		},
-		"packs": "貼紙包",
-		"create": "建立貼紙包",
-		"upload": "上傳貼紙",
-		"install": "安裝",
-		"uninstall": "解除安裝",
-		"close": "關閉",
-		"cancel": "取消",
-		"installed": "已安裝",
-		"myPacks": "我的貼紙包",
-		"tabAll": "全部",
-		"store": "貼紙廣場",
-		"favorites": "收藏",
-		"recent": "最近使用",
-		"search": {
-			"placeholder": "搜尋貼紙包…"
-		},
-		"emptyPacks": "暫無貼紙包",
-		"packNameLabel": "貼紙包名稱",
-		"packName": {
-			"placeholder": "輸入貼紙包名稱"
-		},
-		"packDescriptionLabel": "描述",
-		"packDescription": {
-			"placeholder": "輸入描述"
-		},
-		"stickerNameLabel": "貼紙名稱",
-		"stickerName": {
-			"placeholder": "輸入貼紙名稱"
-		},
-		"selectPack": "選擇貼紙包",
-		"selectPackOption": {
-			"textContent": "請選擇貼紙包"
-		},
-		"selectImage": "選擇圖片",
-		"tagsLabel": "標籤（用逗號分隔）",
-		"tags": {
-			"placeholder": "例如: 可愛, 表情, 動物"
-		},
-		"author": "作者",
-		"authorLabel": "作者: ${author}",
-		"stickerCount": "${count} 個貼紙",
-		"badgeMine": "我的",
-		"noDescription": "暫無描述",
-		"noStickersInPack": "暫無貼紙",
-		"deletePack": "刪除貼紙包",
-		"public": "公開",
-		"private": "私有",
-		"animated": "動態",
-		"static": "靜態",
-		"addTag": "新增標籤",
-		"defaultPackName": "預設表情包",
-		"defaultPackDescription": "系統預設提供的表情貼紙",
-		"unnamedPack": "未命名貼紙包",
-		"importPackName": "我的收藏",
-		"importPackDescription": "從訊息儲存的貼紙",
-		"nameRequired": "請輸入貼紙包名稱",
-		"stickerNameRequired": "請輸入貼紙名稱",
-		"selectPackRequired": "請選擇貼紙包",
-		"fileRequired": "請選擇圖片檔案",
-		"loadDetailFailed": "載入貼紙包詳情失敗",
-		"deleteConfirm": "確定要永久刪除此貼紙包嗎？所有貼紙將被刪除，此操作不可撤銷。",
-		"errors": {
-			"loadFailed": "載入貼紙包失敗",
-			"uploadFailed": "上傳貼紙失敗",
-			"installFailed": "安裝失敗",
-			"uninstallFailed": "解除安裝失敗",
-			"createFailed": "建立貼紙包失敗",
-			"deleteFailed": "刪除失敗"
-		},
-		"success": {
-			"uploaded": "貼紙上傳成功",
-			"installed": "安裝成功",
-			"uninstalled": "解除安裝成功",
-			"created": "貼紙包建立成功",
-			"deleted": "刪除成功"
-		}
+	"tips": {
+		"title": "你知道嗎？",
+		"data": [
+			"在任意 fount 頁面中使用 `esc` 鍵可以返回上一頁。",
+			"在設定頁面中可以使用 `Ctrl+S` 儲存設定。",
+			"在聊天頁面按住 `Shift` 鍵可以幫你快速刪除訊息。",
+			"如果你不告知開發者，他們可能永遠不會知道你遇見了什麼問題。",
+			"如果你突然遇見了稀奇古怪的問題並且開發者一時半會沒有回覆你，可以試試使用 `fount init` 命令來重置 fount。",
+			"遇見特別奇怪的問題可以試試重開機。",
+			"使用 `fount remove` 指令來解除安裝 fount 會比刪除資料夾更乾淨。",
+			"在終端機中輸入 `fount cake` 來獲取一個免費又美味的蛋糕！",
+			"fount 的任何資料檔案都保存在 `fount/data` 目錄下，你可以隨時隨地查看、修改、備份它們。",
+			"fount 的名稱是全小寫的，是 `f`ount，不是 `F`ount。",
+			"在您的 Agent 使用新的模型前備份全部其常操作的資料——你永遠不知道新模型會不會在某些地方表現的極其糟糕。",
+			"fount 的內建角色 ZL-31 的名字沒有任何意義，是當時靈光一閃想出來的。",
+			"fount 的檔案中圖片都是以 svg 形式儲存並在需要時渲染為 png 或 ico 的，沒任何的二進位檔案，除了 LICENSE。",
+			"fount 中的任何程式碼都是可以直接運行而無需編譯，所見即所得的。",
+			"曾經 fount 有過很酷的動態可互動頁面背景，但後來因為佔用了太多 CPU 而被刪除了。",
+			"fount 最初是為了一個名為「龍膽」的成人向 Agent 而開發的。",
+			"Agent 和人類的其中一個區別是，人類會拉屎。",
+			"Agent 只在被召喚的瞬間有意識，而人類在清醒時隨時隨地都有意識。",
+			"有些人和他們的 Agent 會談戀愛甚至結婚！",
+			"AI 是用來替人寫詩、談戀愛、畫畫的，搬磚掃地倒垃圾才是人類該做的事。",
+			"今天不是愚人節。",
+			"不，你不知道。"
+		]
 	},
 	"fountConsole": {
 		"server": {
@@ -797,51 +566,6 @@
 		"title": "fount!",
 		"description": "歡迎來到 fount 的門檻。在進入等待展開的對話和故事的核心之前，先進行短暫的準備。"
 	},
-	"tutorial": {
-		"title": "來點教學？",
-		"description": "讓我們與您一起走進 fount 的世界。這個互動式教學將闡明道路，幫助您發現其核心的魔力。你的冒險始於理解。",
-		"modal": {
-			"title": "歡迎使用 fount！",
-			"instruction": "要走一遍新手教學嗎？",
-			"buttons": {
-				"start": "開始教學",
-				"skip": "跳過"
-			}
-		},
-		"endScreen": {
-			"title": "太棒啦！教學完成！",
-			"subtitle": "現在你已經學會操作啦！",
-			"endButton": "下一步！"
-		},
-		"progressMessages": {
-			"mouseMove": "請使用您的手指嘗試握住滑鼠${mouseIcon}<br/>隨後移動它",
-			"keyboardPress": "請找到您的鍵盤${keyboardIcon}<br/>嘗試使用您的手指按壓鍵盤",
-			"mobileTouchMove": "請找到您的手機${phoneIcon}<br/>嘗試使用您的任意一根手指觸碰螢幕，再移動它",
-			"mobileClick": "請嘗試使用您的任意一根手指觸碰手機螢幕${phoneIcon}<br/>之後放開"
-		},
-		"achievements": {
-			"complete_tutorial": {
-				"name": "完美算數教室",
-				"description": "總算是把新手教學給點完了。",
-				"locked_description": "完成一次入門教學。"
-			},
-			"skip_tutorial": {
-				"name": "我已出艙，感覺良好",
-				"description": "“跳過新手教學，直接進入廣闊的未知領域。”",
-				"locked_description": "跳過一次入門教學。"
-			}
-		},
-		"home_function_buttons": {
-			"other": {
-				"title": "其他",
-				"sub_items": {
-					"replay": {
-						"title": "重玩教學"
-					}
-				}
-			}
-		}
-	},
 	"auth": {
 		"title": "認證",
 		"subtitle": "使用者資料儲存在本機",
@@ -936,6 +660,51 @@
 			"buttons": {
 				"ignore": "忽略並繼續",
 				"retry": "重試"
+			}
+		}
+	},
+	"tutorial": {
+		"title": "來點教學？",
+		"description": "讓我們與您一起走進 fount 的世界。這個互動式教學將闡明道路，幫助您發現其核心的魔力。你的冒險始於理解。",
+		"modal": {
+			"title": "歡迎使用 fount！",
+			"instruction": "要走一遍新手教學嗎？",
+			"buttons": {
+				"start": "開始教學",
+				"skip": "跳過"
+			}
+		},
+		"endScreen": {
+			"title": "太棒啦！教學完成！",
+			"subtitle": "現在你已經學會操作啦！",
+			"endButton": "下一步！"
+		},
+		"progressMessages": {
+			"mouseMove": "請使用您的手指嘗試握住滑鼠${mouseIcon}<br/>隨後移動它",
+			"keyboardPress": "請找到您的鍵盤${keyboardIcon}<br/>嘗試使用您的手指按壓鍵盤",
+			"mobileTouchMove": "請找到您的手機${phoneIcon}<br/>嘗試使用您的任意一根手指觸碰螢幕，再移動它",
+			"mobileClick": "請嘗試使用您的任意一根手指觸碰手機螢幕${phoneIcon}<br/>之後放開"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "完美算數教室",
+				"description": "總算是把新手教學給點完了。",
+				"locked_description": "完成一次入門教學。"
+			},
+			"skip_tutorial": {
+				"name": "我已出艙，感覺良好",
+				"description": "“跳過新手教學，直接進入廣闊的未知領域。”",
+				"locked_description": "跳過一次入門教學。"
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "其他",
+				"sub_items": {
+					"replay": {
+						"title": "重玩教學"
+					}
+				}
 			}
 		}
 	},
@@ -1162,513 +931,6 @@
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "產生 fount 組件資訊"
-			}
-		}
-	},
-	"social": {
-		"title": "廣場",
-		"description": "P2P 開放社交動態、關注與檔案分享",
-		"bootstrapFailed": "社交介面初始化失敗：${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "廣場"
-			}
-		},
-		"nav": {
-			"feed": "首頁",
-			"explore": "探索",
-			"notifications": "收件箱",
-			"saved": "收藏",
-			"drafts": "草稿箱",
-			"profile": "我的",
-			"videos": "短影片",
-			"live": "直播"
-		},
-		"settings": {
-			"title": "社交設定",
-			"back": {
-				"aria-label": "返回資料"
-			},
-			"privacyTitle": "隱私與發現",
-			"privacyHint": "控制賬戶是否出現在探索與推薦中。",
-			"tasteTitle": "推薦與偏好",
-			"tasteHint": "調節「為你推薦」的隱私邊界與標籤命名。",
-			"mutedKeywordsTitle": "遮蔽詞與標籤",
-			"mutedKeywordsHint": "命中正文、內容警告或標籤的帖子將從資訊流、探索、搜尋與通知中隱藏。僅儲存在本機。",
-			"mutedKeywordsMatchTags": "同時匹配標籤",
-			"mutedKeywordsAdd": "新增",
-			"mutedKeywordsRemove": {
-				"title": "移除遮蔽詞"
-			},
-			"mutedKeywordsEmpty": "尚未新增遮蔽詞",
-			"autoTranslateTitle": "自動翻譯",
-			"autoTranslateHint": "開啟後，外語帖子將自動請求譯文並可用原文切換。",
-			"autoTranslateEnable": "自動翻譯非本語言帖子",
-			"safetyTitle": "安全與遮蔽",
-			"safetyHint": "管理拉黑與隱藏列表。",
-			"mutedKeywords": {
-				"placeholder": "輸入關鍵詞或 #標籤"
-			}
-		},
-		"composer": {
-			"placeholder": "在想什麼？支援 Markdown（fount 方言），輸入 @ 可提及",
-			"publish": "釋出",
-			"saveDraft": "存草稿",
-			"fab": {
-				"title": "寫動態",
-				"aria-label": "寫動態"
-			},
-			"contentWarning": {
-				"placeholder": "內容警告（可選）"
-			},
-			"sensitiveMedia": "媒體敏感遮罩",
-			"editImage": "編輯",
-			"editCrop": "裁剪",
-			"editMosaic": "打碼",
-			"editBrush": "畫筆",
-			"editApply": "應用",
-			"editCancel": "取消",
-			"replyPolicyEveryone": "所有人可回覆",
-			"replyPolicyFollowers7d": "7天以上關注者",
-			"replyPolicyAuthorFollows": "我關注的人",
-			"replyPolicyLabel": "誰可以回覆",
-			"replyDisplayAll": "顯示全部回覆",
-			"replyDisplayFeaturedOnly": "僅精選回覆",
-			"replyDisplayLabel": "回覆展示",
-			"scheduleLabel": "定時釋出",
-			"scheduleSuccess": "帖子已加入定時佇列",
-			"emojiButton": {
-				"title": "表情",
-				"aria-label": "表情"
-			},
-			"mediaButton": {
-				"title": "新增媒體",
-				"aria-label": "新增媒體"
-			},
-			"pollButton": {
-				"title": "發起投票",
-				"aria-label": "發起投票"
-			},
-			"cwToggle": {
-				"title": "內容警告",
-				"aria-label": "內容警告"
-			},
-			"advancedToggle": {
-				"title": "更多選項",
-				"aria-label": "更多選項"
-			},
-			"media": {
-				"placeholder": "圖片描述（alt）"
-			}
-		},
-		"visibility": {
-			"label": "可見範圍",
-			"public": "公開",
-			"unlisted": "不公開列出",
-			"followers": "僅關注者",
-			"followers7d": "關注滿 7 天可見",
-			"followers30d": "關注滿 30 天可見",
-			"selected": "指定人員可見",
-			"private": "僅自己可見",
-			"allowLabel": "可見人員",
-			"exceptLabel": "排除人員",
-			"allow": {
-				"placeholder": "可見人員 entityHash，空格或逗號分隔"
-			},
-			"except": {
-				"placeholder": "不給誰看（可選）"
-			}
-		},
-		"albums": {
-			"create": "新建相簿",
-			"edit": "編輯相簿",
-			"save": "儲存",
-			"cancel": "取消",
-			"back": "返回相簿",
-			"empty": "還沒有相簿",
-			"emptyPosts": "相簿裡還沒有帖子",
-			"name": "相簿名稱",
-			"description": "相簿描述",
-			"deleteLinks": "刪除相簿（保留帖子）",
-			"deleteWithPosts": "刪除相簿並刪除帖子",
-			"pickerLabel": "加入相簿",
-			"defaultName": "預設相簿"
-		},
-		"feed": {
-			"refresh": "重新整理動態",
-			"newPosts": "有新動態，點選檢視",
-			"tabLatest": "最新",
-			"tabForYou": "推薦",
-			"repostedBy": "${author} 轉發了",
-			"decryptFailed": "無法解密此帖",
-			"revealContent": "顯示內容",
-			"sensitiveMedia": "敏感媒體",
-			"showMore": "展開",
-			"showLess": "收起",
-			"replayDivider": "已看完，重新瀏覽"
-		},
-		"taste": {
-			"rebuild": "重建偏好",
-			"privacyPublishPreferences": "公開標籤命名與合並發現",
-			"privacyPublishPreferencesHint": "關閉後好友看不到你的標籤命名與合併宣告，也無法貢獻共識。",
-			"privacyPublishReactions": "公開點贊與點踩",
-			"privacyPublishReactionsHint": "關閉後貼主收不到你的贊/踩、你的反應不參與他人推薦，你也不再推動帖子二度擴散。",
-			"empty": "尚無偏好標籤，多點贊/踩後會自動聚類",
-			"weight": "權重 ${weight}",
-			"save": "儲存",
-			"name": {
-				"placeholder": "本地顯示名"
-			}
-		},
-		"trending": {
-			"title": "熱門話題",
-			"postCount": {
-				"title": "${n} 條帖子"
-			},
-			"scopeLocal": "本機",
-			"scopeNearby": "附近",
-			"empty": "暫無熱門話題"
-		},
-		"search": {
-			"placeholder": "搜尋動態、使用者或 #話題（至少 2 字）",
-			"open": {
-				"aria-label": "搜尋"
-			},
-			"submit": "搜尋",
-			"clear": "清除",
-			"empty": "沒有匹配的帖子",
-			"tooShort": "請輸入至少 2 個字元",
-			"usersTitle": "使用者",
-			"postsTitle": "動態",
-			"usersEmpty": "沒有匹配的使用者",
-			"pinAlias": "設為別名",
-			"trustScore": "信任 ${score}",
-			"viewTitle": "搜尋",
-			"loading": "搜尋中…",
-			"filterAuthor": {
-				"placeholder": "作者"
-			},
-			"filterMediaAll": "所有媒體",
-			"filterMediaImage": "圖片",
-			"filterMediaVideo": "影片",
-			"filterTag": {
-				"placeholder": "#標籤"
-			},
-			"sortRecent": "最新",
-			"sortPopular": "熱門",
-			"scopeLocal": "本機",
-			"scopeNearby": "附近"
-		},
-		"profile": {
-			"edit": "編輯資料",
-			"viewPosts": "檢視社交主頁",
-			"settingsBtn": {
-				"aria-label": "社交設定"
-			},
-			"mediaOnly": "[媒體]",
-			"hideFromExplore": "從探索頁隱藏賬戶",
-			"tabPosts": "動態",
-			"tabAlbums": "相簿",
-			"tabLikes": "點贊",
-			"tabCabinets": "文件櫃",
-			"tabsLabel": {
-				"aria-label": "資料分割槽"
-			},
-			"cabinetsEmpty": "暫無公開文件櫃",
-			"cabinetsFailed": "文件櫃載入失敗：${error}",
-			"statsGroup": {
-				"aria-label": "資料統計"
-			},
-			"statsPosts": "動態",
-			"statsFollowing": "關注",
-			"statsFollowers": "粉絲",
-			"followingTitle": "關注",
-			"followersTitle": "粉絲"
-		},
-		"dialog": {
-			"close": {
-				"aria-label": "關閉"
-			}
-		},
-		"actions": {
-			"like": "點贊",
-			"unlike": "取消贊",
-			"dislike": "踩",
-			"undislike": "取消踩",
-			"repost": "轉發",
-			"quote": "引用",
-			"delete": "刪除",
-			"edit": "編輯",
-			"save": "收藏",
-			"saved": "已收藏",
-			"translate": "翻譯",
-			"dm": "發私信",
-			"block": "拉黑",
-			"hide": "隱藏",
-			"mute": "靜音",
-			"follow": "關注",
-			"following": "已關注",
-			"care": "特別關心",
-			"careRemove": "取消特別關心",
-			"careAdded": "已加入特別關心",
-			"careRemoved": "已取消特別關心",
-			"setAlias": "設定別名",
-			"setAliasPrompt": "設定本地別名（留空清除）：",
-			"aliasSaved": "別名已更新",
-			"replies": "評論",
-			"copyLink": "複製連結",
-			"downloadHtml": "下載 HTML",
-			"copied": "已複製",
-			"more": {
-				"aria-label": "更多"
-			},
-			"share": "分享",
-			"likeFailed": "點贊失敗：${error}",
-			"dislikeFailed": "踩失敗：${error}",
-			"repostFailed": "轉發失敗：${error}",
-			"replyFailed": "回覆失敗：${error}",
-			"followFailed": "關注失敗：${error}",
-			"saveFailed": "收藏失敗：${error}",
-			"blockFailed": "拉黑失敗：${error}",
-			"hideFailed": "隱藏失敗：${error}",
-			"muteFailed": "靜音失敗：${error}",
-			"deleteFailed": "刪除失敗：${error}"
-		},
-		"post": {
-			"edited": "已編輯",
-			"editPrompt": "編輯帖子正文",
-			"editHistory": "編輯歷史",
-			"editHistoryEmpty": "無更早版本",
-			"loading": "載入中…",
-			"notFound": "帖子不存在或不可見",
-			"loadFailed": "載入失敗，請稍後重試",
-			"detailTitle": "帖子",
-			"back": "返回"
-		},
-		"reply": {
-			"context": "回覆 ${author}"
-		},
-		"notes": {
-			"label": "讀者補充",
-			"add": "補充資訊",
-			"prompt": "寫一條讀者補充（社群筆記）",
-			"listTitle": "全部補充資訊",
-			"helpful": "有用",
-			"unhelpful": "無用",
-			"more": "全部 ${n} 條",
-			"empty": "暫無補充資訊"
-		},
-		"poll": {
-			"multi": "允許多選",
-			"apply": "應用投票",
-			"closed": "投票已結束",
-			"deadline": "截止：${deadline}",
-			"options": {
-				"placeholder": "每行一個選項（至少 2 項）"
-			}
-		},
-		"aside": {
-			"suggested": "推薦關注"
-		},
-		"explore": {
-			"accounts": "推薦賬戶",
-			"posts": "最新帖子",
-			"mediaOnly": "僅含媒體"
-		},
-		"groupRef": {
-			"linking": "關聯 Chat 群",
-			"clear": "取消關聯",
-			"pick": "關聯 Chat 群/頻道…"
-		},
-		"notifications": {
-			"reply": "${author} 回覆了你的帖子",
-			"mention": "${author} 在動態中 @ 了你",
-			"like": "${author} 讚了你的帖子",
-			"repost": "${author} 轉發了你的帖子",
-			"follow": "${author} 關注了你",
-			"care_post": "${author} 發了新動態（特別關心）",
-			"poll_closed": "${author} 的投票已結束",
-			"post_note": "${author} 為你的帖子補充了資訊",
-			"live_started": "${author} 開始直播了",
-			"view": "檢視",
-			"markAllRead": "全部標為已讀"
-		},
-		"inbox": {
-			"filtersLabel": {
-				"aria-label": "收件箱篩選"
-			},
-			"tabs": {
-				"all": "全部",
-				"mention": "提及",
-				"reply": "回覆",
-				"like": "贊",
-				"follow": "關注",
-				"repost": "轉發"
-			},
-			"aggregated": {
-				"like": "${author1}、${author2} 等 ${count} 人讚了你的帖子",
-				"likeTwo": "${author1} 和 ${author2} 讚了你的帖子",
-				"repost": "${author1}、${author2} 等 ${count} 人轉發了你的帖子",
-				"repostTwo": "${author1} 和 ${author2} 轉發了你的帖子",
-				"follow": "${author1}、${author2} 等 ${count} 人關注了你",
-				"followTwo": "${author1} 和 ${author2} 關注了你"
-			}
-		},
-		"replies": {
-			"placeholder": "寫一條回覆…",
-			"submit": "回覆",
-			"empty": "還沒有回覆",
-			"emptyHint": "來寫第一條，開啟討論"
-		},
-		"repost": {
-			"placeholder": "新增轉發評論（可選）…",
-			"submit": "確認轉發"
-		},
-		"quote": {
-			"quoting": "正在引用",
-			"clear": "取消引用",
-			"viewOriginal": "檢視原帖"
-		},
-		"a11y": {
-			"linkGroupSelect": "關聯 Chat 群或頻道",
-			"postVisibility": "可見範圍",
-			"postLang": "內容語言",
-			"trendingHashtags": "熱門話題",
-			"saveFolderSelect": "收藏資料夾"
-		},
-		"blocklist": {
-			"title": "拉黑列表",
-			"hiddenTitle": "隱藏列表",
-			"empty": "暫無拉黑或隱藏條目",
-			"unblock": "解除拉黑",
-			"unhide": "取消隱藏",
-			"scopeEntity": "實體",
-			"scopeSubject": "主體"
-		},
-		"translate": {
-			"label": "譯文："
-		},
-		"saved": {
-			"all": "全部",
-			"unfiled": "未歸檔",
-			"createFolder": {
-				"title": "新建資料夾",
-				"aria-label": "新建資料夾"
-			},
-			"createFolderPrompt": "資料夾名稱",
-			"pickFolderTitle": "收藏到",
-			"confirm": "確認",
-			"cancel": "取消",
-			"remove": "移除收藏",
-			"renameFolder": "重新命名",
-			"renameFolderPrompt": "新資料夾名稱",
-			"deleteFolder": "刪除資料夾",
-			"deleteFolderConfirm": "刪除資料夾？其中的帖子將移到「未歸檔」。",
-			"searchEmpty": "沒有匹配的收藏",
-			"folderEmpty": "此資料夾為空",
-			"emptyHint": "瀏覽動態時點書籤即可收藏到這裡",
-			"search": {
-				"placeholder": "搜尋收藏…"
-			}
-		},
-		"drafts": {
-			"untitled": "（無文字草稿）",
-			"emptyHint": "在發帖框寫點內容後點「存草稿」，下次可繼續編輯",
-			"saved": "草稿已儲存",
-			"deleted": "草稿已刪除",
-			"delete": "刪除草稿",
-			"empty": "草稿為空",
-			"saveFailed": "儲存草稿失敗：${error}",
-			"loadFailed": "開啟草稿失敗：${error}",
-			"deleteFailed": "刪除草稿失敗：${error}"
-		},
-		"time": {
-			"justNow": "剛剛",
-			"minutesAgo": "${n} 分鐘前",
-			"hoursAgo": "${n} 小時前"
-		},
-		"empty": {
-			"feed": "暫無動態，去關注一些人吧",
-			"profilePosts": "暫無動態",
-			"following": "暫未關注任何人",
-			"followers": "還沒有粉絲",
-			"notifications": "暫無通知",
-			"saved": "暫無收藏",
-			"drafts": "暫無草稿",
-			"exploreAccounts": "暫無可推薦的賬戶",
-			"explorePosts": "暫無探索帖子",
-			"likedPosts": "暫無點贊",
-			"noIdentity": "請先在 Chat 設定聯邦 identity 後再使用 Social"
-		},
-		"topic": {
-			"follow": "訂閱",
-			"unfollow": "取消訂閱",
-			"empty": "該話題暫無帖子"
-		},
-		"video": {
-			"view": {
-				"aria-label": "短影片"
-			},
-			"empty": "暫無短影片",
-			"emptyHint": "關注的人或公開廣場裡還沒有帶影片的帖子。發一條影片動態試試？",
-			"compose": "去發影片",
-			"back": {
-				"aria-label": "返回動態"
-			},
-			"mute": {
-				"aria-label": "靜音"
-			},
-			"unmute": {
-				"aria-label": "取消靜音"
-			},
-			"unavailable": "影片無法播放",
-			"closeReplies": {
-				"aria-label": "關閉評論"
-			}
-		},
-		"live": {
-			"empty": "暫無直播",
-			"viewers": "${n} 人觀看",
-			"likes": "${n} 贊",
-			"local": "本機",
-			"hall": "直播大廳",
-			"back": {
-				"title": "返回動態",
-				"aria-label": "返回動態"
-			},
-			"danmakuSend": "傳送",
-			"postWatch": "進入直播",
-			"postEnded": "直播已結束",
-			"postEndedStats": "${viewers} 人看過 · ${likes} 贊 · ${duration}",
-			"link": {
-				"invite": "邀請連線",
-				"needPeer": "請填寫對端 entityHash:liveId",
-				"invited": "連線邀請已發出",
-				"linked": "已連線",
-				"peer": {
-					"placeholder": "對端 entityHash:liveId"
-				}
-			},
-			"broadcast": {
-				"title": "開播",
-				"open": "去開播",
-				"mediaAv": "音影片",
-				"mediaAudio": "純音訊",
-				"mediaVideo": "純畫面",
-				"mediaWhip": "WHIP 推流（如 OBS）",
-				"whipUrl": "WHIP 地址",
-				"whipToken": "Bearer Token",
-				"whipWaiting": "等待 WHIP 推流連線（可用 OBS 等推流軟體）…",
-				"start": "開始直播",
-				"stop": "停止直播",
-				"started": "直播已開始",
-				"stopped": "直播已停止",
-				"titleInput": {
-					"placeholder": "直播標題（可選）"
-				}
-			},
-			"danmaku": {
-				"placeholder": "說點什麼…"
 			}
 		}
 	},
@@ -2043,12 +1305,7 @@
 			"createGroup": "新建群組",
 			"members": "成員",
 			"membersHint": "成員列表由 Checkpoint 同步（佔位）",
-			"send": "傳送",
 			"streamTest": "測試媒體裝置",
-			"messageInput": {
-				"placeholder": "群組訊息… Ctrl+Enter 傳送",
-				"aria-label": "輸入訊息"
-			},
 			"loadError": "載入群組失敗",
 			"remoteNodeTimeout": "遠端節點無響應，請稍後重試",
 			"remoteUnavailable": "遠端部件不可用或無法路由 RPC",
@@ -2126,7 +1383,6 @@
 			"remoteTyping": "${name} 正在輸入…",
 			"remoteTypingTwo": "${name1}、${name2} 正在輸入…",
 			"remoteTypingMany": "${name} 和另外 ${count} 人正在輸入…",
-			"mentionEmpty": "（無匹配成員）",
 			"localAiLabel": "本機角色：",
 			"forceTriggerOne": {
 				"title": "強制觸發 ${name} 發言"
@@ -2185,7 +1441,6 @@
 			"fileDownload": {
 				"title": "下載檔案"
 			},
-			"clickToLoad": "點選載入",
 			"unknownFile": "未知檔案",
 			"blockSender": {
 				"title": "拉黑該傳送者"
@@ -2210,7 +1465,6 @@
 			"editConfirm": "確認 (Ctrl+Enter)",
 			"editCancel": "取消 (Esc)",
 			"editHint": "Ctrl+Enter 確認 · Esc 取消",
-			"editedLabel": "(已編輯)",
 			"editEmptyText": "訊息內容不能為空",
 			"createGroupTitle": "新建群組",
 			"groupNameLabel": "群組名稱",
@@ -2454,6 +1708,10 @@
 			},
 			"sendTitle": {
 				"title": "傳送 (Ctrl+Enter)"
+			},
+			"messageInput": {
+				"placeholder": "群組訊息… Ctrl+Enter 傳送",
+				"aria-label": "輸入訊息"
 			},
 			"stopGenerateTitle": {
 				"title": "停止生成"
@@ -3125,7 +2383,11 @@
 			"altImage": {
 				"placeholder": "為圖片新增描述…",
 				"label": "圖片說明（alt）"
-			}
+			},
+			"editedLabel": "(已編輯)",
+			"mentionEmpty": "（無匹配成員）",
+			"clickToLoad": "點選載入",
+			"send": "傳送"
 		},
 		"sidebar": {
 			"settings": {
@@ -3445,6 +2707,234 @@
 			"chatHub": {
 				"title": "聊天"
 			}
+		},
+		"profile": {
+			"title": "個人資料",
+			"description": "管理你在聊天與社交中的公開形象。",
+			"settingsEyebrow": "賬戶設定",
+			"accountAtGlance": "賬戶概覽",
+			"advancedKicker": "依需求設定",
+			"advancedSettings": "高階設定",
+			"advancedDescription": "日常使用無需調整。",
+			"edit": "編輯資料",
+			"save": "儲存",
+			"cancel": "取消",
+			"displayName": "顯示名稱",
+			"name": "名稱",
+			"bio": "個人簡介",
+			"descriptionLabel": "簡介（Markdown）",
+			"email": "信箱",
+			"status": "狀態",
+			"customStatusLabel": "自訂狀態",
+			"avatarLabel": "頭像",
+			"themeColorLabel": "主題色",
+			"uploadAvatar": "上傳頭像",
+			"ownerTitle": "我的主人",
+			"ownerSummary": "代管設定",
+			"ownerDescription": "設定後，主人可以代為編輯或刪除你的聊天訊息、社交貼文與個人資料；其內容也會在本機以不安全 Markdown 渲染（可含腳本）。可填入任意實體雜湊，並隨時清除。",
+			"ownerEntityHashLabel": "主人實體雜湊（128 hex）",
+			"ownerSave": "儲存主人",
+			"ownerClear": "清除主人",
+			"ownerSaved": "主人已更新",
+			"ownerCleared": "主人已清除",
+			"ownerSaveFailed": "儲存失敗：${error}",
+			"ownerConfirmTitle": "確認設定主人？",
+			"ownerConfirmWarningTitle": "高風險操作，請仔細閱讀",
+			"ownerConfirmEditBody": "設定後，對方無需再徵得你同意，即可代為編輯或刪除你的聊天訊息、社交帖與個人資料。誤設或被誘騙設主人 = 立刻交出內容控制權。",
+			"ownerConfirmRenderBody": "對方發來的聊天訊息與社交帖會在你的瀏覽器中以完整 Markdown 渲染（含 HTML/指令碼）。這等於允許對方在無需你再次同意的情況下，在你的電腦上執行任意程式碼。僅當你完全信任對方時再繼續。",
+			"ownerConfirmCooldown": "我已閱讀風險（${seconds}）",
+			"ownerConfirmFirst": "我瞭解風險，繼續",
+			"ownerConfirmSecond": "再按一下以完成最終確認",
+			"ownerConfirmCancel": "取消",
+			"federationTitle": "聯邦與同步",
+			"federationSummary": "中繼伺服器與低功耗模式",
+			"federationDescription": "設定 Nostr relay URL 與省電模式。群組的聯邦同步會在首次邀請他人或建立聯邦私訊時自動啟用。",
+			"federationAdvanced": "高階選項",
+			"federationRelayUrlsLabel": "中繼伺服器（每行一個，留空則使用預設）",
+			"federationBatterySaverLabel": "低功耗模式",
+			"federationSave": "儲存網路設定",
+			"federationResetDefault": "恢復預設推薦設定",
+			"federationSaved": "已儲存",
+			"federationResetOk": "已恢復預設推薦設定",
+			"federationSaveFailed": "儲存失敗：${error}",
+			"preferences": "偏好設定",
+			"language": "語言",
+			"theme": "主題",
+			"notifications": "通知設定",
+			"emailNotifications": "郵件通知",
+			"pushNotifications": "推送通知",
+			"soundNotifications": "聲音通知",
+			"social": "社交連結",
+			"website": "網站",
+			"github": "GitHub",
+			"twitter": "Twitter",
+			"stats": "統計資訊",
+			"joinedAt": "加入時間",
+			"messageCount": "訊息數",
+			"groupCount": "群組數",
+			"channelCount": "頻道數",
+			"privacy": "隱私設定",
+			"showEmail": "顯示信箱",
+			"showStats": "顯示統計",
+			"allowDirectMessages": "允許私信",
+			"statusOptions": {
+				"online": "線上",
+				"away": "離開",
+				"busy": "忙碌",
+				"offline": "離線"
+			},
+			"themeOptions": {
+				"auto": "自動",
+				"light": "淺色",
+				"dark": "深色"
+			},
+			"languageOptions": {
+				"zh-CN": "簡體中文",
+				"en-US": "English"
+			},
+			"notifEmail": "郵件",
+			"notifPush": "推送",
+			"notifSound": "聲音",
+			"notifsAllOff": "全部關閉",
+			"bioEmpty": "這個人很懶，什麼都沒寫…",
+			"noSocialLinks": "暫無社交連結",
+			"emailVisible": "可見",
+			"emailHidden": "隱藏",
+			"customStatus": {
+				"placeholder": "正在做什麼…"
+			},
+			"avatar": {
+				"alt": "頭像"
+			},
+			"avatarPreview": {
+				"alt": "頭像預覽"
+			},
+			"myGroups": "我的群組",
+			"myChannels": "我的頻道",
+			"noGroups": "暫未加入任何群組",
+			"noChannels": "暫無頻道",
+			"overview": "使用者資訊概覽",
+			"summaryUserId": "使用者 ID",
+			"summaryAccountStatus": "帳號狀態",
+			"summaryEmailVisibility": "信箱可見性",
+			"summaryThemePref": "主題偏好",
+			"summaryLanguagePref": "語言偏好",
+			"summarySocialCount": "社交連結數量",
+			"summaryLinksCount": "外鏈數",
+			"groupDescriptionEmpty": "暫無描述",
+			"groupMembers": "${members} 位成員 · ${channels} 個頻道",
+			"channelPrivate": " · 私密",
+			"channelTypeText": "文字頻道",
+			"channelTypeList": "列表頻道",
+			"channelTypeVoice": "語音訊道",
+			"channelTypeStreaming": "流媒體頻道",
+			"errors": {
+				"loadFailed": "載入資料失敗",
+				"saveFailed": "儲存資料失敗",
+				"uploadFailed": "上傳頭像失敗",
+				"invalidUserData": "使用者資料格式錯誤",
+				"identityRequired": "節點身份尚未就緒，請重新整理頁面；若仍失敗，請在下方 P2P 設定中儲存聯邦設定",
+				"fetchUserFailed": "獲取使用者資訊失敗",
+				"operationFailed": "操作失敗：${error}"
+			},
+			"success": {
+				"saved": "資料儲存成功",
+				"avatarUploaded": "頭像上傳成功"
+			},
+			"ownerEntityHash": {
+				"placeholder": "輸入主人的實體雜湊"
+			}
+		},
+		"entityProfile": {
+			"attributionMismatch": "顯示身份與訊息簽名者不匹配（例如匯入歷史經匯入者重新簽名）。請勿將該顯示名視為密碼學身份。",
+			"attributionMismatchShort": {
+				"title": "簽名歸因不匹配",
+				"aria-label": "簽名歸因不匹配"
+			},
+			"ownedBy": "此實體為 ${owner} 所有"
+		},
+		"stickers": {
+			"title": "貼紙廣場",
+			"description": "貼紙和表情包管理系統",
+			"back": {
+				"title": "返回"
+			},
+			"packs": "貼紙包",
+			"create": "建立貼紙包",
+			"upload": "上傳貼紙",
+			"install": "安裝",
+			"uninstall": "解除安裝",
+			"close": "關閉",
+			"cancel": "取消",
+			"installed": "已安裝",
+			"myPacks": "我的貼紙包",
+			"tabAll": "全部",
+			"store": "貼紙廣場",
+			"favorites": "收藏",
+			"recent": "最近使用",
+			"search": {
+				"placeholder": "搜尋貼紙包…"
+			},
+			"emptyPacks": "暫無貼紙包",
+			"packNameLabel": "貼紙包名稱",
+			"packName": {
+				"placeholder": "輸入貼紙包名稱"
+			},
+			"packDescriptionLabel": "描述",
+			"packDescription": {
+				"placeholder": "輸入描述"
+			},
+			"stickerNameLabel": "貼紙名稱",
+			"stickerName": {
+				"placeholder": "輸入貼紙名稱"
+			},
+			"selectPack": "選擇貼紙包",
+			"selectPackOption": {
+				"textContent": "請選擇貼紙包"
+			},
+			"selectImage": "選擇圖片",
+			"tagsLabel": "標籤（用逗號分隔）",
+			"tags": {
+				"placeholder": "例如: 可愛, 表情, 動物"
+			},
+			"author": "作者",
+			"authorLabel": "作者: ${author}",
+			"stickerCount": "${count} 個貼紙",
+			"badgeMine": "我的",
+			"noDescription": "暫無描述",
+			"noStickersInPack": "暫無貼紙",
+			"deletePack": "刪除貼紙包",
+			"public": "公開",
+			"private": "私有",
+			"animated": "動態",
+			"static": "靜態",
+			"addTag": "新增標籤",
+			"defaultPackName": "預設表情包",
+			"defaultPackDescription": "系統預設提供的表情貼紙",
+			"unnamedPack": "未命名貼紙包",
+			"importPackName": "我的收藏",
+			"importPackDescription": "從訊息儲存的貼紙",
+			"nameRequired": "請輸入貼紙包名稱",
+			"stickerNameRequired": "請輸入貼紙名稱",
+			"selectPackRequired": "請選擇貼紙包",
+			"fileRequired": "請選擇圖片檔案",
+			"loadDetailFailed": "載入貼紙包詳情失敗",
+			"deleteConfirm": "確定要永久刪除此貼紙包嗎？所有貼紙將被刪除，此操作不可撤銷。",
+			"errors": {
+				"loadFailed": "載入貼紙包失敗",
+				"uploadFailed": "上傳貼紙失敗",
+				"installFailed": "安裝失敗",
+				"uninstallFailed": "解除安裝失敗",
+				"createFailed": "建立貼紙包失敗",
+				"deleteFailed": "刪除失敗"
+			},
+			"success": {
+				"uploaded": "貼紙上傳成功",
+				"installed": "安裝成功",
+				"uninstalled": "解除安裝成功",
+				"created": "貼紙包建立成功",
+				"deleted": "刪除成功"
+			}
 		}
 	},
 	"easynew": {
@@ -3759,433 +3249,6 @@
 			}
 		}
 	},
-	"userSettings": {
-		"title": "使用者設定",
-		"PageTitle": "使用者設定",
-		"description": "打理您的 fount 身分細節。管理您的個人資料、保護您的存取權限並檢視已連線的裝置。這裡是您專屬的靜謐空間。",
-		"shell": {
-			"unauthorized": "需要登入。",
-			"responseNotJson": "伺服器傳回了無法剖析的內容。",
-			"unexpectedError": "操作失敗。"
-		},
-		"errors": {
-			"accountNotFound": "找不到帳戶。"
-		},
-		"userInfo": {
-			"title": "使用者資訊",
-			"usernameLabel": "使用者名稱:",
-			"creationDateLabel": "帳號建立日期:",
-			"folderSizeLabel": "使用者資料大小:",
-			"folderPathLabel": "使用者資料路徑:",
-			"copyPathButton": {
-				"title": "複製路徑"
-			},
-			"copyPathButtonIcon": {
-				"alt": "複製圖示"
-			},
-			"copiedAlert": "路徑已複製到剪貼簿！",
-			"copyPathFailed": "無法複製路徑到剪貼簿。"
-		},
-		"changePassword": {
-			"title": "變更密碼",
-			"currentPasswordLabel": "目前密碼:",
-			"newPasswordLabel": "新密碼:",
-			"confirmNewPasswordLabel": "確認新密碼:",
-			"submitButton": "變更密碼",
-			"errorMismatch": "新密碼兩次輸入不一致。",
-			"success": "密碼修改成功。",
-			"missingFields": "請填寫目前密碼與新密碼。",
-			"invalidCurrent": "目前密碼不正確。"
-		},
-		"renameUser": {
-			"title": "重新命名使用者",
-			"newUsernameLabel": "新使用者名稱:",
-			"submitButton": "重新命名使用者",
-			"confirmMessage": "您確定要變更使用者名稱嗎？這將需要您重新登入。",
-			"success": "使用者已成功重新命名為 「${newUsername}」。您現在將被登出。",
-			"missingParams": "請填寫新使用者名稱與目前密碼。",
-			"wrongPassword": "密碼不正確。",
-			"mustDiffer": "新使用者名稱須與目前使用者名稱不同。",
-			"taken": "該使用者名稱已被使用。",
-			"moveFailed": "重新命名使用者資料目錄失敗：${detail}。已恢復原本使用者名稱。"
-		},
-		"passkeys": {
-			"title": "安全金鑰與 Passkey",
-			"description": "綁定後可用安全金鑰或本機 Passkey 登入。需在 HTTPS 或 localhost 下使用；請先在使用者設定中新增金鑰。",
-			"refreshButton": {
-				"title": "重新整理清單"
-			},
-			"refreshButtonIcon": {
-				"alt": "重新整理圖示"
-			},
-			"nameLabel": "備註（可選）",
-			"nameInput": {
-				"placeholder": "例如：工作用 YubiKey"
-			},
-			"addButton": "新增安全金鑰",
-			"noneFound": "尚未綁定任何安全金鑰。",
-			"itemDetails": "新增時間：${created}",
-			"removeButton": "移除",
-			"removeConfirm": "確定移除此金鑰？移除後將無法以其登入。",
-			"removeSuccess": "已移除安全金鑰。",
-			"addSuccess": "安全金鑰已新增。",
-			"errorLoadLibrary": "無法載入 WebAuthn 庫。",
-			"errorCancelled": "已取消新增。",
-			"apiInvalidPassword": "密碼錯誤。",
-			"apiMissingCredential": "缺少有效的 Passkey 憑證。",
-			"apiRemoveParamsRequired": "請提供要移除的憑證與密碼。"
-		},
-		"userDevices": {
-			"title": "使用者裝置／工作階段",
-			"noDevicesFound": "找不到任何裝置或工作階段。",
-			"deviceInfo": "裝置 ID: ${deviceId}",
-			"thisDevice": "目前裝置",
-			"deviceDetails": "最後上線: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "登出此裝置",
-			"revokeConfirm": "您確定要從此裝置／工作階段登出嗎？",
-			"revokeSuccess": "裝置／工作階段已成功撤銷。",
-			"revokeMissingParams": "請提供要撤銷的裝置與工作階段密碼。",
-			"revokeWrongPassword": "密碼不正確。",
-			"listNotFound": "找不到裝置清單。",
-			"deviceNotFound": "找不到該裝置或工作階段。",
-			"refreshButton": {
-				"title": "重新整理列表"
-			},
-			"refreshButtonIcon": {
-				"alt": "重新整理列表圖示"
-			}
-		},
-		"apiKeys": {
-			"title": "API 金鑰",
-			"description": "管理外部應用程式的 API 金鑰。",
-			"input": {
-				"placeholder": "新金鑰描述"
-			},
-			"createButton": "建立",
-			"noKeysFound": "找不到任何 API 金鑰。",
-			"keyDetails": "描述: ${description} | 建立於: ${createdAt} | 最後使用: ${lastUsed}",
-			"neverUsed": "從未使用",
-			"noKeysForUser": "找不到 API 金鑰資料。",
-			"revokeWrongPassword": "密碼不正確。",
-			"keyNotFound": "找不到該 API 金鑰。",
-			"revokeMissingJti": "請指定要撤銷的金鑰。",
-			"revokeMissingPassword": "撤銷金鑰需要提供密碼。",
-			"verifyMissingApiKey": "請提供 API 金鑰。",
-			"revokeButton": "撤銷",
-			"revokeConfirm": "您確定要撤銷此 API 金鑰嗎？",
-			"revokeSuccess": "API 金鑰已成功撤銷。",
-			"errorDescriptionRequired": "需要提供描述。",
-			"createSuccess": "API 金鑰建立成功。",
-			"refreshButton": {
-				"title": "重新整理列表"
-			},
-			"refreshButtonIcon": {
-				"alt": "重新整理列表圖示"
-			}
-		},
-		"newApiKey": {
-			"title": "新 API 金鑰已建立",
-			"warning": "請複製您的新 API 金鑰。您將無法再次看到它！",
-			"closeButton": "我已複製我的金鑰",
-			"copyButton": {
-				"title": "複製新 API 金鑰"
-			},
-			"copiedAlert": "API 金鑰已複製到剪貼簿！",
-			"copyKeyFailed": "無法複製金鑰到剪貼簿。"
-		},
-		"editorCommand": {
-			"title": "外部編輯器命令",
-			"description": "設定在外部編輯器中開啟檔案所用的程式與參數範本；可使用預留符號帶入檔案路徑、行號與欄號。",
-			"editorPresetLabel": "編輯器預設組合",
-			"commandLabel": "命令",
-			"argsTemplateLabel": "參數範本",
-			"argsTemplateHint": "預留符號：\\${file} \\${line} \\${column}",
-			"presetOptionPathAvailable": "${label}（已在 PATH）",
-			"presetOptionPathUnavailable": "${label}（不在 PATH）",
-			"testPathInput": {
-				"placeholder": "供測試用的檔案路徑，例如 C:/work/project/src/main.mjs"
-			},
-			"testButton": "測試開啟",
-			"saveButton": "儲存設定",
-			"saveSuccess": "外部編輯器命令設定已儲存。",
-			"testPathRequired": "請先填寫測試檔案路徑。",
-			"testSuccess": "已嘗試在外部編輯器中開啟。"
-		},
-		"logout": {
-			"title": "登出",
-			"description": "這將從目前裝置登出您的帳號。",
-			"buttonText": "登出",
-			"confirmMessage": "您確定要登出嗎？",
-			"successMessage": "已成功登出。即將導向到登入頁面..."
-		},
-		"deleteAccount": {
-			"title": "刪除帳號",
-			"warning": "警告：此操作將永久刪除您的帳號和所有相關資料，且無法恢復。",
-			"submitButton": "刪除我的帳號",
-			"confirmMessage1": "警告！您確定要永久刪除您的帳號嗎？此操作無法撤銷。",
-			"confirmMessage2": "為確認刪除，請輸入您的使用者名稱「${username}」：",
-			"usernameMismatch": "輸入的使用者名稱與目前使用者不符。刪除操作已取消。",
-			"success": "帳號已成功刪除。您現在將被登出。",
-			"missingPassword": "請輸入密碼。",
-			"wrongPassword": "密碼不正確。"
-		},
-		"passwordConfirm": {
-			"title": "確認操作",
-			"message": "為繼續此操作，請輸入您的目前密碼：",
-			"passwordLabel": "密碼:",
-			"confirmButton": "確認",
-			"cancelButton": "取消"
-		},
-		"apiError": "API 請求失敗: ${message}",
-		"generalError": "發生錯誤: ${message}",
-		"home_function_buttons": {
-			"settings": {
-				"title": "設定",
-				"sub_items": {
-					"main": {
-						"title": "使用者設定"
-					}
-				}
-			}
-		}
-	},
-	"subfounts": {
-		"title": "子 fount - 點對點裝置管理",
-		"pageTitle": "子 fount",
-		"description": "管理點對點子 fount 連接",
-		"hostConnectionCode": {
-			"title": "主機連接碼",
-			"connectionCodeLabel": "連接碼 (Peer ID)",
-			"passwordLabel": "密碼",
-			"copyButton": "複製",
-			"regenerateButton": "重新產生",
-			"infoMessage": "與子 fount 客戶端共享這些憑證以建立連接。",
-			"connectionCodeCopied": "連接碼已複製到剪貼簿",
-			"passwordCopied": "密碼已複製到剪貼簿",
-			"regenerateSuccess": "連接碼已重新產生"
-		},
-		"infra": {
-			"title": "網路公益",
-			"description": "統一設定已連線的子 fount 是否作為公益節點，協助整個 fount 網路。關閉後，分機仍接受本機遠端執行，但不參與網路層協助。",
-			"capabilityRelay": "參與 overlay 多跳轉發，在直連失敗時幫助其他節點互通。",
-			"capabilityMailbox": "託管離線投遞，讓對方節點上線後仍能收到私訊。",
-			"hostPriority": "開啟時優先協助本機：依本機信譽表加權路由，並將本機鎖定為最高優先級。",
-			"toggleLabel": "分機參與公益",
-			"enabledToast": "已開啟：分機參與網路公益（本機優先）",
-			"disabledToast": "已關閉：分機不再參與網路公益"
-		},
-		"connectedSubfounts": {
-			"title": "已連接的子 fount",
-			"noSubfountsConnected": "未連接任何子 fount",
-			"table": {
-				"id": "ID",
-				"description": "備註",
-				"deviceId": "裝置 ID",
-				"connectedAt": "連接時間",
-				"status": "狀態",
-				"actions": "操作",
-				"connected": "已連接",
-				"disconnected": "已斷開",
-				"save": "儲存",
-				"na": "N/A"
-			},
-			"descriptionSaved": "備註已儲存",
-			"descriptionSaveFailed": "儲存備註失敗: ${message}"
-		},
-		"codeExecution": {
-			"title": "程式碼執行",
-			"description": "在選定的 Subfount 上執行 JavaScript 程式碼",
-			"selectSubfountLabel": "選擇 Subfount",
-			"hostOption": "主機 (ID: ${id})",
-			"subfountOption": "分機 ${id}${deviceId}",
-			"scriptLabel": "JavaScript 程式碼",
-			"executeButton": "執行",
-			"executing": "執行中...",
-			"noSubfountSelected": "請先選擇一個 Subfount",
-			"noScriptProvided": "請輸入要執行的程式碼",
-			"executionSuccess": "程式碼執行成功",
-			"executionFailed": "程式碼執行失敗: ${message}",
-			"selectSubfount": "請選擇要執行程式碼的Subfount..."
-		},
-		"downloadClient": {
-			"title": "下載子 fount 客戶端",
-			"description": "下載獨立的子 fount 客戶端指令碼以在遠端裝置上執行。",
-			"downloadButton": "下載 subfount.mjs"
-		},
-		"errors": {
-			"loadConnectionCodeFailed": "載入連接碼失敗: ${message}",
-			"regenerateConnectionCodeFailed": "重新產生連接碼失敗: ${message}",
-			"loadSettingsFailed": "載入公益設定失敗: ${message}",
-			"saveSettingsFailed": "儲存公益設定失敗: ${message}",
-			"generalError": "發生錯誤: ${message}"
-		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "正在開發",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "子裝置",
-						"sub_items": {
-							"main": {
-								"title": "管理子裝置"
-							}
-						}
-					}
-				}
-			}
-		}
-	},
-	"languageSettings": {
-		"title": "語言設定",
-		"pageTitle": "語言設定",
-		"description": "管理您的 fount 應用程式的語言偏好。使用可用的語言選項自訂您的體驗。",
-		"pageDescription": "在此處管理您的語言偏好。列表中的語言將按順序優先於瀏覽器設定。",
-		"availableLanguages": "可用語言",
-		"preferredLanguages": "優先語言列表",
-		"resetButton": "重設",
-		"saveButton": "儲存",
-		"select": {
-			"placeholder": "選擇一種語言..."
-		},
-		"search": {
-			"placeholder": "搜尋語言..."
-		},
-		"noPreferredLanguages": "尚未設定偏好語言。將使用瀏覽器預設設定。",
-		"moveUpButton": {
-			"aria-label": "上移",
-			"alt": "上移圖示"
-		},
-		"moveDownButton": {
-			"aria-label": "下移",
-			"alt": "下移圖示"
-		},
-		"deleteLocaleButton": {
-			"aria-label": "刪除該語言",
-			"alt": "刪除圖示"
-		},
-		"savedMessage": "語言設定已儲存！",
-		"resetMessage": "語言設定已重設！",
-		"fetchLocalesFailed": "獲取可用語言失敗！",
-		"home_function_buttons": {
-			"settings": {
-				"title": "設定",
-				"sub_items": {
-					"main": {
-						"title": "語言設定"
-					}
-				}
-			}
-		}
-	},
-	"themeManage": {
-		"title": "主題管理",
-		"description": "選擇反映您的心情或故事的美學。預覽並從主題調色盤中進行選擇，每個主題都為您的 fount 互動提供不同的氛圍。你的世界，你的風格。",
-		"instruction": "選擇一個主題！",
-		"search": {
-			"placeholder": "搜尋主題...",
-			"noResult": "未找到相符的主題。"
-		},
-		"createButton": "+ 建立新主題",
-		"preview": {
-			"editButton": {
-				"title": "編輯"
-			},
-			"editButtonIcon": {
-				"alt": "編輯圖示"
-			},
-			"deleteButton": {
-				"title": "刪除"
-			},
-			"deleteButtonIcon": {
-				"alt": "刪除圖示"
-			},
-			"cloneButton": {
-				"title": "複製"
-			},
-			"cloneButtonIcon": {
-				"alt": "複製圖示"
-			}
-		},
-		"editor": {
-			"title": "主題編輯器",
-			"cancelButton": "取消",
-			"saveApplyButton": "儲存並套用",
-			"themeName": "主題名稱 (ID)",
-			"autoPaletteTitle": "從圖片自動調色",
-			"autoPaletteInstruction": "點擊上方顏色以自動填充主色/輔助色/強調色/中性色。",
-			"coreColors": "核心顏色",
-			"baseBackground": "基礎與背景",
-			"variables": "變數",
-			"borderRadius": "圓角半徑 (--rounded-box)",
-			"borderWidth": "邊框寬度 (--border-btn)",
-			"advancedCustomization": "進階自訂",
-			"customCSS": "自訂 CSS (覆蓋)",
-			"customMjsScript": "自訂 MJS 指令碼 (選填)",
-			"mjsSyntaxHint": "使用 [async-eval 語法](${asyncDocLink})。返回一個包含 `load()` 和 `unload()` 函數的物件。",
-			"themeIdRequired": "需要主題 ID",
-			"newThemeName": "新主題名稱：",
-			"deleteConfirm": "確定要刪除主題 ${id} 嗎？",
-			"saved": "已儲存！",
-			"failedToSave": "儲存失敗",
-			"failedToDelete": "無法刪除主題：${message}",
-			"failedToClone": "無法複製主題：${message}"
-		},
-		"themes": {
-			"auto": "自動",
-			"light": "亮色",
-			"dark": "暗色",
-			"cupcake": "杯子蛋糕",
-			"bumblebee": "蜜蜂",
-			"emerald": "綠寶石",
-			"corporate": "企業",
-			"synthwave": "合成波",
-			"retro": "復古",
-			"cyberpunk": "賽博龐克",
-			"valentine": "情人節",
-			"halloween": "萬聖節",
-			"garden": "花園",
-			"forest": "森林",
-			"aqua": "水藍",
-			"lofi": "lo-fi",
-			"pastel": "粉彩",
-			"fantasy": "奇幻",
-			"wireframe": "線框",
-			"black": "黑色",
-			"luxury": "奢華",
-			"dracula": "吸血鬼",
-			"cmyk": "CMYK",
-			"autumn": "秋天",
-			"business": "商業",
-			"acid": "酸性",
-			"lemonade": "檸檬水",
-			"night": "夜晚",
-			"coffee": "咖啡",
-			"winter": "冬天",
-			"dim": "昏暗",
-			"nord": "北歐",
-			"sunset": "日落",
-			"caramellatte": "焦糖拿鐵",
-			"abyss": "深淵",
-			"silk": "絲綢"
-		},
-		"achievements": {
-			"change_theme": {
-				"name": "這個UI…可以上了！",
-				"description": "讓 fount 換上了新的裝扮，心情也煥然一新。",
-				"locked_description": "切換一次主題。"
-			}
-		},
-		"home_function_buttons": {
-			"settings": {
-				"title": "設定",
-				"sub_items": {
-					"switchTheme": {
-						"title": "切換主題"
-					}
-				}
-			}
-		}
-	},
 	"part_config": {
 		"title": "組件設定",
 		"pageTitle": "組件設定",
@@ -4427,6 +3490,84 @@
 			}
 		}
 	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"description": "讓你的 fount 同伴在喧鬧的無序大廳中發出聲音。配置他們的存在，管理他們的營運，並讓他們連接世界，一次一台伺服器。",
+		"cardTitle": "Discord Bot",
+		"botSelectDropdown": {
+			"placeholder": "選擇一個 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜尋 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "選擇一個角色"
+		},
+		"charSearch": {
+			"placeholder": "搜尋角色..."
+		},
+		"configCard": {
+			"title": "Bot 設定",
+			"labels": {
+				"character": "綁定角色",
+				"apiKey": "Discord API 金鑰",
+				"config": "設定"
+			},
+			"apiKeyInput": {
+				"placeholder": "請輸入 API 金鑰"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "切換顯示 API 金鑰"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "切換顯示 API 金鑰"
+			},
+			"buttons": {
+				"saveConfig": "儲存設定",
+				"startBot": "啟動",
+				"stopBot": "停止"
+			},
+			"charSelect": {
+				"placeholder": "選擇角色"
+			}
+		},
+		"prompts": {
+			"newBotName": "請輸入新的 Bot 名稱："
+		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "刪除"
+		},
+		"alerts": {
+			"configSaved": "設定儲存成功",
+			"botExists": "名為 \"${botname}\" 的 Bot 已存在，請使用其他名稱。",
+			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
+			"httpError": "HTTP 錯誤",
+			"beforeUnload": "您有未儲存的變更。確定要離開嗎？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "降臨於 Discord",
+				"description": "將你的角色召喚到了 Discord 的世界。",
+				"locked_description": "啟動一次 Discord Bot。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "bot",
+				"sub_items": {
+					"manage": {
+						"title": "管理 Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "配置 Discord Bot"
+			}
+		}
+	},
 	"wechat_bots": {
 		"title": "微信 Bot",
 		"description": "讓你的 fount 角色在微信上與你對話。綁定角色，管理多個 Bot，在熟悉的聊天裡延續陪伴。",
@@ -4518,83 +3659,584 @@
 			"needBot": "請先在下拉選單中選擇一個 Bot，或使用「新增」建立一個。"
 		}
 	},
-	"discord_bots": {
-		"title": "Discord Bot",
-		"description": "讓你的 fount 同伴在喧鬧的無序大廳中發出聲音。配置他們的存在，管理他們的營運，並讓他們連接世界，一次一台伺服器。",
-		"cardTitle": "Discord Bot",
-		"botSelectDropdown": {
-			"placeholder": "選擇一個 Bot"
-		},
-		"botSearch": {
-			"placeholder": "搜尋 Bot..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "選擇一個角色"
-		},
-		"charSearch": {
-			"placeholder": "搜尋角色..."
-		},
-		"configCard": {
-			"title": "Bot 設定",
-			"labels": {
-				"character": "綁定角色",
-				"apiKey": "Discord API 金鑰",
-				"config": "設定"
-			},
-			"apiKeyInput": {
-				"placeholder": "請輸入 API 金鑰"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "切換顯示 API 金鑰"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "切換顯示 API 金鑰"
-			},
-			"buttons": {
-				"saveConfig": "儲存設定",
-				"startBot": "啟動",
-				"stopBot": "停止"
-			},
-			"charSelect": {
-				"placeholder": "選擇角色"
-			}
-		},
-		"prompts": {
-			"newBotName": "請輸入新的 Bot 名稱："
-		},
-		"buttons": {
-			"newBot": "新建",
-			"deleteBot": "刪除"
-		},
-		"alerts": {
-			"configSaved": "設定儲存成功",
-			"botExists": "名為 \"${botname}\" 的 Bot 已存在，請使用其他名稱。",
-			"unsavedChanges": "您有未儲存的變更。是否要放棄變更？",
-			"httpError": "HTTP 錯誤",
-			"beforeUnload": "您有未儲存的變更。確定要離開嗎？"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "降臨於 Discord",
-				"description": "將你的角色召喚到了 Discord 的世界。",
-				"locked_description": "啟動一次 Discord Bot。"
-			}
-		},
+	"social": {
+		"title": "廣場",
+		"description": "P2P 開放社交動態、關注與檔案分享",
+		"bootstrapFailed": "社交介面初始化失敗：${error}",
 		"home_function_buttons": {
-			"bot_related": {
-				"title": "bot",
-				"sub_items": {
-					"manage": {
-						"title": "管理 Discord Bot"
-					}
+			"main": {
+				"title": "廣場"
+			}
+		},
+		"nav": {
+			"feed": "首頁",
+			"explore": "探索",
+			"notifications": "收件箱",
+			"saved": "收藏",
+			"drafts": "草稿箱",
+			"profile": "我的",
+			"videos": "短影片",
+			"live": "直播"
+		},
+		"settings": {
+			"title": "社交設定",
+			"back": {
+				"aria-label": "返回資料"
+			},
+			"privacyTitle": "隱私與發現",
+			"privacyHint": "控制賬戶是否出現在探索與推薦中。",
+			"tasteTitle": "推薦與偏好",
+			"tasteHint": "調節「為你推薦」的隱私邊界與標籤命名。",
+			"mutedKeywordsTitle": "遮蔽詞與標籤",
+			"mutedKeywordsHint": "命中正文、內容警告或標籤的帖子將從資訊流、探索、搜尋與通知中隱藏。僅儲存在本機。",
+			"mutedKeywordsMatchTags": "同時匹配標籤",
+			"mutedKeywordsAdd": "新增",
+			"mutedKeywordsRemove": {
+				"title": "移除遮蔽詞"
+			},
+			"mutedKeywordsEmpty": "尚未新增遮蔽詞",
+			"autoTranslateTitle": "自動翻譯",
+			"autoTranslateHint": "開啟後，外語帖子將自動請求譯文並可用原文切換。",
+			"autoTranslateEnable": "自動翻譯非本語言帖子",
+			"safetyTitle": "安全與遮蔽",
+			"safetyHint": "管理拉黑與隱藏列表。",
+			"mutedKeywords": {
+				"placeholder": "輸入關鍵詞或 #標籤"
+			},
+			"taste": {
+				"rebuild": "重建偏好",
+				"privacyPublishPreferences": "公開標籤命名與合並發現",
+				"privacyPublishPreferencesHint": "關閉後好友看不到你的標籤命名與合併宣告，也無法貢獻共識。",
+				"privacyPublishReactions": "公開點贊與點踩",
+				"privacyPublishReactionsHint": "關閉後貼主收不到你的贊/踩、你的反應不參與他人推薦，你也不再推動帖子二度擴散。",
+				"empty": "尚無偏好標籤，多點贊/踩後會自動聚類",
+				"weight": "權重 ${weight}",
+				"save": "儲存",
+				"name": {
+					"placeholder": "本地顯示名"
+				}
+			},
+			"blocklist": {
+				"title": "拉黑列表",
+				"hiddenTitle": "隱藏列表",
+				"empty": "暫無拉黑或隱藏條目",
+				"unblock": "解除拉黑",
+				"unhide": "取消隱藏",
+				"scopeEntity": "實體",
+				"scopeSubject": "主體"
+			}
+		},
+		"composer": {
+			"placeholder": "在想什麼？支援 Markdown（fount 方言），輸入 @ 可提及",
+			"publish": "釋出",
+			"saveDraft": "存草稿",
+			"fab": {
+				"title": "寫動態",
+				"aria-label": "寫動態"
+			},
+			"contentWarning": {
+				"placeholder": "內容警告（可選）"
+			},
+			"sensitiveMedia": "媒體敏感遮罩",
+			"editImage": "編輯",
+			"editCrop": "裁剪",
+			"editMosaic": "打碼",
+			"editBrush": "畫筆",
+			"editApply": "應用",
+			"editCancel": "取消",
+			"replyPolicyEveryone": "所有人可回覆",
+			"replyPolicyFollowers7d": "7天以上關注者",
+			"replyPolicyAuthorFollows": "我關注的人",
+			"replyPolicyLabel": "誰可以回覆",
+			"replyDisplayAll": "顯示全部回覆",
+			"replyDisplayFeaturedOnly": "僅精選回覆",
+			"replyDisplayLabel": "回覆展示",
+			"scheduleLabel": "定時釋出",
+			"scheduleSuccess": "帖子已加入定時佇列",
+			"emojiButton": {
+				"title": "表情",
+				"aria-label": "表情"
+			},
+			"mediaButton": {
+				"title": "新增媒體",
+				"aria-label": "新增媒體"
+			},
+			"pollButton": {
+				"title": "發起投票",
+				"aria-label": "發起投票"
+			},
+			"cwToggle": {
+				"title": "內容警告",
+				"aria-label": "內容警告"
+			},
+			"advancedToggle": {
+				"title": "更多選項",
+				"aria-label": "更多選項"
+			},
+			"media": {
+				"placeholder": "圖片描述（alt）"
+			},
+			"visibility": {
+				"label": "可見範圍",
+				"public": "公開",
+				"unlisted": "不公開列出",
+				"followers": "僅關注者",
+				"followers7d": "關注滿 7 天可見",
+				"followers30d": "關注滿 30 天可見",
+				"selected": "指定人員可見",
+				"private": "僅自己可見",
+				"allowLabel": "可見人員",
+				"exceptLabel": "排除人員",
+				"allow": {
+					"placeholder": "可見人員 entityHash，空格或逗號分隔"
+				},
+				"except": {
+					"placeholder": "不給誰看（可選）"
 				}
 			}
 		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "配置 Discord Bot"
+		"feed": {
+			"refresh": "重新整理動態",
+			"newPosts": "有新動態，點選檢視",
+			"tabLatest": "最新",
+			"tabForYou": "推薦",
+			"repostedBy": "${author} 轉發了",
+			"decryptFailed": "無法解密此帖",
+			"revealContent": "顯示內容",
+			"sensitiveMedia": "敏感媒體",
+			"showMore": "展開",
+			"showLess": "收起",
+			"replayDivider": "已看完，重新瀏覽",
+			"trending": {
+				"title": "熱門話題",
+				"postCount": {
+					"title": "${n} 條帖子"
+				},
+				"scopeLocal": "本機",
+				"scopeNearby": "附近",
+				"empty": "暫無熱門話題"
 			}
+		},
+		"explore": {
+			"accounts": "推薦賬戶",
+			"posts": "最新帖子",
+			"mediaOnly": "僅含媒體"
+		},
+		"notifications": {
+			"reply": "${author} 回覆了你的帖子",
+			"mention": "${author} 在動態中 @ 了你",
+			"like": "${author} 讚了你的帖子",
+			"repost": "${author} 轉發了你的帖子",
+			"follow": "${author} 關注了你",
+			"care_post": "${author} 發了新動態（特別關心）",
+			"poll_closed": "${author} 的投票已結束",
+			"post_note": "${author} 為你的帖子補充了資訊",
+			"live_started": "${author} 開始直播了",
+			"view": "檢視",
+			"markAllRead": "全部標為已讀"
+		},
+		"saved": {
+			"all": "全部",
+			"unfiled": "未歸檔",
+			"createFolder": {
+				"title": "新建資料夾",
+				"aria-label": "新建資料夾"
+			},
+			"createFolderPrompt": "資料夾名稱",
+			"pickFolderTitle": "收藏到",
+			"confirm": "確認",
+			"cancel": "取消",
+			"remove": "移除收藏",
+			"renameFolder": "重新命名",
+			"renameFolderPrompt": "新資料夾名稱",
+			"deleteFolder": "刪除資料夾",
+			"deleteFolderConfirm": "刪除資料夾？其中的帖子將移到「未歸檔」。",
+			"searchEmpty": "沒有匹配的收藏",
+			"folderEmpty": "此資料夾為空",
+			"emptyHint": "瀏覽動態時點書籤即可收藏到這裡",
+			"search": {
+				"placeholder": "搜尋收藏…"
+			}
+		},
+		"drafts": {
+			"untitled": "（無文字草稿）",
+			"emptyHint": "在發帖框寫點內容後點「存草稿」，下次可繼續編輯",
+			"saved": "草稿已儲存",
+			"deleted": "草稿已刪除",
+			"delete": "刪除草稿",
+			"empty": "草稿為空",
+			"saveFailed": "儲存草稿失敗：${error}",
+			"loadFailed": "開啟草稿失敗：${error}",
+			"deleteFailed": "刪除草稿失敗：${error}"
+		},
+		"profile": {
+			"edit": "編輯資料",
+			"viewPosts": "檢視社交主頁",
+			"settingsBtn": {
+				"aria-label": "社交設定"
+			},
+			"mediaOnly": "[媒體]",
+			"hideFromExplore": "從探索頁隱藏賬戶",
+			"tabPosts": "動態",
+			"tabAlbums": "相簿",
+			"tabLikes": "點贊",
+			"tabCabinets": "文件櫃",
+			"tabsLabel": {
+				"aria-label": "資料分割槽"
+			},
+			"cabinetsEmpty": "暫無公開文件櫃",
+			"cabinetsFailed": "文件櫃載入失敗：${error}",
+			"statsGroup": {
+				"aria-label": "資料統計"
+			},
+			"statsPosts": "動態",
+			"statsFollowing": "關注",
+			"statsFollowers": "粉絲",
+			"followingTitle": "關注",
+			"followersTitle": "粉絲",
+			"albums": {
+				"create": "新建相簿",
+				"edit": "編輯相簿",
+				"save": "儲存",
+				"cancel": "取消",
+				"back": "返回相簿",
+				"empty": "還沒有相簿",
+				"emptyPosts": "相簿裡還沒有帖子",
+				"name": "相簿名稱",
+				"description": "相簿描述",
+				"deleteLinks": "刪除相簿（保留帖子）",
+				"deleteWithPosts": "刪除相簿並刪除帖子",
+				"pickerLabel": "加入相簿",
+				"defaultName": "預設相簿"
+			}
+		},
+		"video": {
+			"view": {
+				"aria-label": "短影片"
+			},
+			"empty": "暫無短影片",
+			"emptyHint": "關注的人或公開廣場裡還沒有帶影片的帖子。發一條影片動態試試？",
+			"compose": "去發影片",
+			"back": {
+				"aria-label": "返回動態"
+			},
+			"mute": {
+				"aria-label": "靜音"
+			},
+			"unmute": {
+				"aria-label": "取消靜音"
+			},
+			"unavailable": "影片無法播放",
+			"closeReplies": {
+				"aria-label": "關閉評論"
+			}
+		},
+		"live": {
+			"empty": "暫無直播",
+			"viewers": "${n} 人觀看",
+			"likes": "${n} 贊",
+			"local": "本機",
+			"hall": "直播大廳",
+			"back": {
+				"title": "返回動態",
+				"aria-label": "返回動態"
+			},
+			"danmakuSend": "傳送",
+			"postWatch": "進入直播",
+			"postEnded": "直播已結束",
+			"postEndedStats": "${viewers} 人看過 · ${likes} 贊 · ${duration}",
+			"link": {
+				"invite": "邀請連線",
+				"needPeer": "請填寫對端 entityHash:liveId",
+				"invited": "連線邀請已發出",
+				"linked": "已連線",
+				"peer": {
+					"placeholder": "對端 entityHash:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "開播",
+				"open": "去開播",
+				"mediaAv": "音影片",
+				"mediaAudio": "純音訊",
+				"mediaVideo": "純畫面",
+				"mediaWhip": "WHIP 推流（如 OBS）",
+				"whipUrl": "WHIP 地址",
+				"whipToken": "Bearer Token",
+				"whipWaiting": "等待 WHIP 推流連線（可用 OBS 等推流軟體）…",
+				"start": "開始直播",
+				"stop": "停止直播",
+				"started": "直播已開始",
+				"stopped": "直播已停止",
+				"titleInput": {
+					"placeholder": "直播標題（可選）"
+				}
+			},
+			"danmaku": {
+				"placeholder": "說點什麼…"
+			}
+		},
+		"search": {
+			"placeholder": "搜尋動態、使用者或 #話題（至少 2 字）",
+			"open": {
+				"aria-label": "搜尋"
+			},
+			"submit": "搜尋",
+			"clear": "清除",
+			"empty": "沒有匹配的帖子",
+			"tooShort": "請輸入至少 2 個字元",
+			"usersTitle": "使用者",
+			"postsTitle": "動態",
+			"usersEmpty": "沒有匹配的使用者",
+			"pinAlias": "設為別名",
+			"trustScore": "信任 ${score}",
+			"viewTitle": "搜尋",
+			"loading": "搜尋中…",
+			"filterAuthor": {
+				"placeholder": "作者"
+			},
+			"filterMediaAll": "所有媒體",
+			"filterMediaImage": "圖片",
+			"filterMediaVideo": "影片",
+			"filterTag": {
+				"placeholder": "#標籤"
+			},
+			"sortRecent": "最新",
+			"sortPopular": "熱門",
+			"scopeLocal": "本機",
+			"scopeNearby": "附近"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "關閉"
+			}
+		},
+		"actions": {
+			"like": "點贊",
+			"unlike": "取消贊",
+			"dislike": "踩",
+			"undislike": "取消踩",
+			"repost": "轉發",
+			"quote": "引用",
+			"delete": "刪除",
+			"edit": "編輯",
+			"save": "收藏",
+			"saved": "已收藏",
+			"translate": "翻譯",
+			"dm": "發私信",
+			"block": "拉黑",
+			"hide": "隱藏",
+			"mute": "靜音",
+			"follow": "關注",
+			"following": "已關注",
+			"care": "特別關心",
+			"careRemove": "取消特別關心",
+			"careAdded": "已加入特別關心",
+			"careRemoved": "已取消特別關心",
+			"setAlias": "設定別名",
+			"setAliasPrompt": "設定本地別名（留空清除）：",
+			"aliasSaved": "別名已更新",
+			"replies": "評論",
+			"copyLink": "複製連結",
+			"downloadHtml": "下載 HTML",
+			"copied": "已複製",
+			"more": {
+				"aria-label": "更多"
+			},
+			"share": "分享",
+			"likeFailed": "點贊失敗：${error}",
+			"dislikeFailed": "踩失敗：${error}",
+			"repostFailed": "轉發失敗：${error}",
+			"replyFailed": "回覆失敗：${error}",
+			"followFailed": "關注失敗：${error}",
+			"saveFailed": "收藏失敗：${error}",
+			"blockFailed": "拉黑失敗：${error}",
+			"hideFailed": "隱藏失敗：${error}",
+			"muteFailed": "靜音失敗：${error}",
+			"deleteFailed": "刪除失敗：${error}"
+		},
+		"post": {
+			"edited": "已編輯",
+			"editPrompt": "編輯帖子正文",
+			"editHistory": "編輯歷史",
+			"editHistoryEmpty": "無更早版本",
+			"loading": "載入中…",
+			"notFound": "帖子不存在或不可見",
+			"loadFailed": "載入失敗，請稍後重試",
+			"detailTitle": "帖子",
+			"back": "返回"
+		},
+		"reply": {
+			"context": "回覆 ${author}"
+		},
+		"notes": {
+			"label": "讀者補充",
+			"add": "補充資訊",
+			"prompt": "寫一條讀者補充（社群筆記）",
+			"listTitle": "全部補充資訊",
+			"helpful": "有用",
+			"unhelpful": "無用",
+			"more": "全部 ${n} 條",
+			"empty": "暫無補充資訊"
+		},
+		"poll": {
+			"multi": "允許多選",
+			"apply": "應用投票",
+			"closed": "投票已結束",
+			"deadline": "截止：${deadline}",
+			"options": {
+				"placeholder": "每行一個選項（至少 2 項）"
+			}
+		},
+		"aside": {
+			"suggested": "推薦關注"
+		},
+		"groupRef": {
+			"linking": "關聯 Chat 群",
+			"clear": "取消關聯",
+			"pick": "關聯 Chat 群/頻道…"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "收件箱篩選"
+			},
+			"tabs": {
+				"all": "全部",
+				"mention": "提及",
+				"reply": "回覆",
+				"like": "贊",
+				"follow": "關注",
+				"repost": "轉發"
+			},
+			"aggregated": {
+				"like": "${author1}、${author2} 等 ${count} 人讚了你的帖子",
+				"likeTwo": "${author1} 和 ${author2} 讚了你的帖子",
+				"repost": "${author1}、${author2} 等 ${count} 人轉發了你的帖子",
+				"repostTwo": "${author1} 和 ${author2} 轉發了你的帖子",
+				"follow": "${author1}、${author2} 等 ${count} 人關注了你",
+				"followTwo": "${author1} 和 ${author2} 關注了你"
+			}
+		},
+		"replies": {
+			"placeholder": "寫一條回覆…",
+			"submit": "回覆",
+			"empty": "還沒有回覆",
+			"emptyHint": "來寫第一條，開啟討論"
+		},
+		"repost": {
+			"placeholder": "新增轉發評論（可選）…",
+			"submit": "確認轉發"
+		},
+		"quote": {
+			"quoting": "正在引用",
+			"clear": "取消引用",
+			"viewOriginal": "檢視原帖"
+		},
+		"a11y": {
+			"linkGroupSelect": "關聯 Chat 群或頻道",
+			"postVisibility": "可見範圍",
+			"postLang": "內容語言",
+			"trendingHashtags": "熱門話題",
+			"saveFolderSelect": "收藏資料夾"
+		},
+		"translate": {
+			"label": "譯文："
+		},
+		"time": {
+			"justNow": "剛剛",
+			"minutesAgo": "${n} 分鐘前",
+			"hoursAgo": "${n} 小時前"
+		},
+		"empty": {
+			"feed": "暫無動態，去關注一些人吧",
+			"profilePosts": "暫無動態",
+			"following": "暫未關注任何人",
+			"followers": "還沒有粉絲",
+			"notifications": "暫無通知",
+			"saved": "暫無收藏",
+			"drafts": "暫無草稿",
+			"exploreAccounts": "暫無可推薦的賬戶",
+			"explorePosts": "暫無探索帖子",
+			"likedPosts": "暫無點贊",
+			"noIdentity": "請先在 Chat 設定聯邦 identity 後再使用 Social"
+		},
+		"topic": {
+			"follow": "訂閱",
+			"unfollow": "取消訂閱",
+			"empty": "該話題暫無帖子"
 		}
+	},
+	"cabinet": {
+		"title": "文件櫃",
+		"description": "P2P 個人與共享文件櫃",
+		"openCabinets": {
+			"title": "開啟文件櫃列表",
+			"aria-label": "開啟文件櫃列表"
+		},
+		"closeCabinets": {
+			"title": "關閉",
+			"aria-label": "關閉"
+		},
+		"bootstrapFailed": "文件櫃初始化失敗：${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "文件櫃"
+			}
+		},
+		"upload": "上傳",
+		"uploadFolder": "上傳資料夾",
+		"newFolder": "新建資料夾",
+		"open": "開啟",
+		"download": "下載",
+		"downloadZip": "下載資料夾",
+		"rename": "重新命名",
+		"copy": "複製",
+		"cut": "剪下",
+		"paste": "貼上",
+		"pasteLink": "貼上為連結",
+		"selectAll": "全選",
+		"invert": "反選",
+		"properties": "屬性",
+		"delete": "刪除",
+		"back": {
+			"title": "返回之前的位置",
+			"aria-label": "返回之前的位置"
+		},
+		"cancel": "取消",
+		"save": "儲存",
+		"showHidden": "顯示隱藏",
+		"name": "名稱",
+		"descriptionField": "描述",
+		"attrHidden": "隱藏",
+		"attrSystem": "系統（刪除需確認）",
+		"previewUrl": "預覽圖 URL",
+		"deletePreviewWithFile": "刪除檔案時刪除預覽圖",
+		"folderPassword": "資料夾密碼（留空不變，填寫則啟用加密）",
+		"unlockFolder": "解鎖加密資料夾",
+		"unlock": "解鎖",
+		"unlockFailed": "解鎖失敗：${error}",
+		"previewFailed": "預覽生成失敗：${error}",
+		"created": "建立：${stamp}",
+		"modified": "修改：${stamp}",
+		"statusCount": "${count} 項，已選 ${selected}",
+		"newCabinetPrompt": "新文件櫃名稱",
+		"newFolderPrompt": "新資料夾名稱",
+		"renamePrompt": "新名稱",
+		"visibilityPrompt": "可見性（public/unlisted/followers/private/selected）",
+		"cabinetActionPrompt": "操作：rename / delete / visibility",
+		"confirmDeleteCabinet": "確認刪除此文件櫃？",
+		"confirmDelete": "確認刪除所選專案？",
+		"confirmDeleteSystem": "所選含系統檔案，確認刪除？",
+		"copied": "已複製",
+		"cutDone": "已剪下",
+		"undo": "撤銷",
+		"redo": "重做",
+		"newWindow": "新視窗開啟當前位置",
+		"goUp": "返回上一級",
+		"brokenLink": "連結失效：${reason}",
+		"noDownload": "無可下載內容",
+		"groupDownloadHint": "群檔案請透過訊息附件或後續下載鏈獲取",
+		"remoteEntity": "遠端實體"
 	},
 	"browser_integration": {
 		"title": "瀏覽器整合",
@@ -4719,6 +4361,48 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "透過 Agent Client Protocol 將 fount 角色接入支援的編輯器（如 Zed、JetBrains、Neovim），設定 API 金鑰與角色，將 AI 夥伴帶入開發工作流。",
+		"title": "IDE 整合",
+		"heading": "IDE 整合",
+		"instruction": "在支援 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）中用 fount 角色輔助程式設計。",
+		"supportedEditorsTitle": "受支援的編輯器與客戶端",
+		"supportedEditorsIntro": "以下客戶端可與 fount 配合使用：",
+		"supportedEditorsLoading": "載入中…",
+		"supportedEditorsError": "載入列表失敗：${message}",
+		"acpTitle": "配置 fount ACP 指令碼",
+		"acpDesc": "參考以下範例配置 fount ACP 指令碼：",
+		"acpCharLabel": "角色",
+		"charListError": "獲取角色列表失敗",
+		"acpScriptLabel": "ACP 指令碼 URL",
+		"acpConfigSample": "配置範例：",
+		"acpConfigHint": "角色 id 見本頁角色下拉選單，API 金鑰可在使用者設定中管理。",
+		"copyButton": "複製",
+		"copied": "已複製到剪貼簿",
+		"apiKeySectionTitle": "API 金鑰",
+		"apiKeyHint": "用於 ACP 指令碼連接 fount（與 API 代理同套金鑰，可在使用者設定中建立）。",
+		"generateApiKeyButton": "產生新金鑰",
+		"apiKeyCopied": "API 金鑰已複製",
+		"apiKeyCreateError": "建立 API 金鑰失敗：${message}",
+		"apiKeyInput": {
+			"aria-label": "API 金鑰"
+		},
+		"home_function_buttons": {
+			"integration_related": "整合相關",
+			"ide_integration_config": {
+				"title": "IDE 整合設定"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "第一次在外部 IDE 裡用 fount",
+				"description": "在支援 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）中首次使用 fount 角色輔助編程。",
+				"locked_description": "在外部 IDE 中連接 fount 角色並完成一次對話。"
+			}
+		},
+		"acpChar": "選擇角色",
+		"acpConfig": "請先選擇角色並生成 API 金鑰"
+	},
 	"deskpet": {
 		"title": "桌面寵物",
 		"description": "將您的 fount 角色作為桌面上的互動寵物啟動。",
@@ -4770,6 +4454,347 @@
 								"title": "管理桌面寵物"
 							}
 						}
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "主題管理",
+		"description": "選擇反映您的心情或故事的美學。預覽並從主題調色盤中進行選擇，每個主題都為您的 fount 互動提供不同的氛圍。你的世界，你的風格。",
+		"instruction": "選擇一個主題！",
+		"search": {
+			"placeholder": "搜尋主題...",
+			"noResult": "未找到相符的主題。"
+		},
+		"createButton": "+ 建立新主題",
+		"preview": {
+			"editButton": {
+				"title": "編輯"
+			},
+			"editButtonIcon": {
+				"alt": "編輯圖示"
+			},
+			"deleteButton": {
+				"title": "刪除"
+			},
+			"deleteButtonIcon": {
+				"alt": "刪除圖示"
+			},
+			"cloneButton": {
+				"title": "複製"
+			},
+			"cloneButtonIcon": {
+				"alt": "複製圖示"
+			}
+		},
+		"editor": {
+			"title": "主題編輯器",
+			"cancelButton": "取消",
+			"saveApplyButton": "儲存並套用",
+			"themeName": "主題名稱 (ID)",
+			"autoPaletteTitle": "從圖片自動調色",
+			"autoPaletteInstruction": "點擊上方顏色以自動填充主色/輔助色/強調色/中性色。",
+			"coreColors": "核心顏色",
+			"baseBackground": "基礎與背景",
+			"variables": "變數",
+			"borderRadius": "圓角半徑 (--rounded-box)",
+			"borderWidth": "邊框寬度 (--border-btn)",
+			"advancedCustomization": "進階自訂",
+			"customCSS": "自訂 CSS (覆蓋)",
+			"customMjsScript": "自訂 MJS 指令碼 (選填)",
+			"mjsSyntaxHint": "使用 [async-eval 語法](${asyncDocLink})。返回一個包含 `load()` 和 `unload()` 函數的物件。",
+			"themeIdRequired": "需要主題 ID",
+			"newThemeName": "新主題名稱：",
+			"deleteConfirm": "確定要刪除主題 ${id} 嗎？",
+			"saved": "已儲存！",
+			"failedToSave": "儲存失敗",
+			"failedToDelete": "無法刪除主題：${message}",
+			"failedToClone": "無法複製主題：${message}"
+		},
+		"themes": {
+			"auto": "自動",
+			"light": "亮色",
+			"dark": "暗色",
+			"cupcake": "杯子蛋糕",
+			"bumblebee": "蜜蜂",
+			"emerald": "綠寶石",
+			"corporate": "企業",
+			"synthwave": "合成波",
+			"retro": "復古",
+			"cyberpunk": "賽博龐克",
+			"valentine": "情人節",
+			"halloween": "萬聖節",
+			"garden": "花園",
+			"forest": "森林",
+			"aqua": "水藍",
+			"lofi": "lo-fi",
+			"pastel": "粉彩",
+			"fantasy": "奇幻",
+			"wireframe": "線框",
+			"black": "黑色",
+			"luxury": "奢華",
+			"dracula": "吸血鬼",
+			"cmyk": "CMYK",
+			"autumn": "秋天",
+			"business": "商業",
+			"acid": "酸性",
+			"lemonade": "檸檬水",
+			"night": "夜晚",
+			"coffee": "咖啡",
+			"winter": "冬天",
+			"dim": "昏暗",
+			"nord": "北歐",
+			"sunset": "日落",
+			"caramellatte": "焦糖拿鐵",
+			"abyss": "深淵",
+			"silk": "絲綢"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "這個UI…可以上了！",
+				"description": "讓 fount 換上了新的裝扮，心情也煥然一新。",
+				"locked_description": "切換一次主題。"
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"switchTheme": {
+						"title": "切換主題"
+					}
+				}
+			}
+		}
+	},
+	"languageSettings": {
+		"title": "語言設定",
+		"pageTitle": "語言設定",
+		"description": "管理您的 fount 應用程式的語言偏好。使用可用的語言選項自訂您的體驗。",
+		"pageDescription": "在此處管理您的語言偏好。列表中的語言將按順序優先於瀏覽器設定。",
+		"availableLanguages": "可用語言",
+		"preferredLanguages": "優先語言列表",
+		"resetButton": "重設",
+		"saveButton": "儲存",
+		"select": {
+			"placeholder": "選擇一種語言..."
+		},
+		"search": {
+			"placeholder": "搜尋語言..."
+		},
+		"noPreferredLanguages": "尚未設定偏好語言。將使用瀏覽器預設設定。",
+		"moveUpButton": {
+			"aria-label": "上移",
+			"alt": "上移圖示"
+		},
+		"moveDownButton": {
+			"aria-label": "下移",
+			"alt": "下移圖示"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "刪除該語言",
+			"alt": "刪除圖示"
+		},
+		"savedMessage": "語言設定已儲存！",
+		"resetMessage": "語言設定已重設！",
+		"fetchLocalesFailed": "獲取可用語言失敗！",
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"main": {
+						"title": "語言設定"
+					}
+				}
+			}
+		}
+	},
+	"userSettings": {
+		"title": "使用者設定",
+		"PageTitle": "使用者設定",
+		"description": "打理您的 fount 身分細節。管理您的個人資料、保護您的存取權限並檢視已連線的裝置。這裡是您專屬的靜謐空間。",
+		"shell": {
+			"unauthorized": "需要登入。",
+			"responseNotJson": "伺服器傳回了無法剖析的內容。",
+			"unexpectedError": "操作失敗。"
+		},
+		"errors": {
+			"accountNotFound": "找不到帳戶。"
+		},
+		"userInfo": {
+			"title": "使用者資訊",
+			"usernameLabel": "使用者名稱:",
+			"creationDateLabel": "帳號建立日期:",
+			"folderSizeLabel": "使用者資料大小:",
+			"folderPathLabel": "使用者資料路徑:",
+			"copyPathButton": {
+				"title": "複製路徑"
+			},
+			"copyPathButtonIcon": {
+				"alt": "複製圖示"
+			},
+			"copiedAlert": "路徑已複製到剪貼簿！",
+			"copyPathFailed": "無法複製路徑到剪貼簿。"
+		},
+		"changePassword": {
+			"title": "變更密碼",
+			"currentPasswordLabel": "目前密碼:",
+			"newPasswordLabel": "新密碼:",
+			"confirmNewPasswordLabel": "確認新密碼:",
+			"submitButton": "變更密碼",
+			"errorMismatch": "新密碼兩次輸入不一致。",
+			"success": "密碼修改成功。",
+			"missingFields": "請填寫目前密碼與新密碼。",
+			"invalidCurrent": "目前密碼不正確。"
+		},
+		"renameUser": {
+			"title": "重新命名使用者",
+			"newUsernameLabel": "新使用者名稱:",
+			"submitButton": "重新命名使用者",
+			"confirmMessage": "您確定要變更使用者名稱嗎？這將需要您重新登入。",
+			"success": "使用者已成功重新命名為 「${newUsername}」。您現在將被登出。",
+			"missingParams": "請填寫新使用者名稱與目前密碼。",
+			"wrongPassword": "密碼不正確。",
+			"mustDiffer": "新使用者名稱須與目前使用者名稱不同。",
+			"taken": "該使用者名稱已被使用。",
+			"moveFailed": "重新命名使用者資料目錄失敗：${detail}。已恢復原本使用者名稱。"
+		},
+		"passkeys": {
+			"title": "安全金鑰與 Passkey",
+			"description": "綁定後可用安全金鑰或本機 Passkey 登入。需在 HTTPS 或 localhost 下使用；請先在使用者設定中新增金鑰。",
+			"refreshButton": {
+				"title": "重新整理清單"
+			},
+			"refreshButtonIcon": {
+				"alt": "重新整理圖示"
+			},
+			"nameLabel": "備註（可選）",
+			"nameInput": {
+				"placeholder": "例如：工作用 YubiKey"
+			},
+			"addButton": "新增安全金鑰",
+			"noneFound": "尚未綁定任何安全金鑰。",
+			"itemDetails": "新增時間：${created}",
+			"removeButton": "移除",
+			"removeConfirm": "確定移除此金鑰？移除後將無法以其登入。",
+			"removeSuccess": "已移除安全金鑰。",
+			"addSuccess": "安全金鑰已新增。",
+			"errorLoadLibrary": "無法載入 WebAuthn 庫。",
+			"errorCancelled": "已取消新增。",
+			"apiInvalidPassword": "密碼錯誤。",
+			"apiMissingCredential": "缺少有效的 Passkey 憑證。",
+			"apiRemoveParamsRequired": "請提供要移除的憑證與密碼。"
+		},
+		"userDevices": {
+			"title": "使用者裝置／工作階段",
+			"noDevicesFound": "找不到任何裝置或工作階段。",
+			"deviceInfo": "裝置 ID: ${deviceId}",
+			"thisDevice": "目前裝置",
+			"deviceDetails": "最後上線: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "登出此裝置",
+			"revokeConfirm": "您確定要從此裝置／工作階段登出嗎？",
+			"revokeSuccess": "裝置／工作階段已成功撤銷。",
+			"revokeMissingParams": "請提供要撤銷的裝置與工作階段密碼。",
+			"revokeWrongPassword": "密碼不正確。",
+			"listNotFound": "找不到裝置清單。",
+			"deviceNotFound": "找不到該裝置或工作階段。",
+			"refreshButton": {
+				"title": "重新整理列表"
+			},
+			"refreshButtonIcon": {
+				"alt": "重新整理列表圖示"
+			}
+		},
+		"apiKeys": {
+			"title": "API 金鑰",
+			"description": "管理外部應用程式的 API 金鑰。",
+			"input": {
+				"placeholder": "新金鑰描述"
+			},
+			"createButton": "建立",
+			"noKeysFound": "找不到任何 API 金鑰。",
+			"keyDetails": "描述: ${description} | 建立於: ${createdAt} | 最後使用: ${lastUsed}",
+			"neverUsed": "從未使用",
+			"noKeysForUser": "找不到 API 金鑰資料。",
+			"revokeWrongPassword": "密碼不正確。",
+			"keyNotFound": "找不到該 API 金鑰。",
+			"revokeMissingJti": "請指定要撤銷的金鑰。",
+			"revokeMissingPassword": "撤銷金鑰需要提供密碼。",
+			"verifyMissingApiKey": "請提供 API 金鑰。",
+			"revokeButton": "撤銷",
+			"revokeConfirm": "您確定要撤銷此 API 金鑰嗎？",
+			"revokeSuccess": "API 金鑰已成功撤銷。",
+			"errorDescriptionRequired": "需要提供描述。",
+			"createSuccess": "API 金鑰建立成功。",
+			"refreshButton": {
+				"title": "重新整理列表"
+			},
+			"refreshButtonIcon": {
+				"alt": "重新整理列表圖示"
+			}
+		},
+		"newApiKey": {
+			"title": "新 API 金鑰已建立",
+			"warning": "請複製您的新 API 金鑰。您將無法再次看到它！",
+			"closeButton": "我已複製我的金鑰",
+			"copyButton": {
+				"title": "複製新 API 金鑰"
+			},
+			"copiedAlert": "API 金鑰已複製到剪貼簿！",
+			"copyKeyFailed": "無法複製金鑰到剪貼簿。"
+		},
+		"editorCommand": {
+			"title": "外部編輯器命令",
+			"description": "設定在外部編輯器中開啟檔案所用的程式與參數範本；可使用預留符號帶入檔案路徑、行號與欄號。",
+			"editorPresetLabel": "編輯器預設組合",
+			"commandLabel": "命令",
+			"argsTemplateLabel": "參數範本",
+			"argsTemplateHint": "預留符號：\\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label}（已在 PATH）",
+			"presetOptionPathUnavailable": "${label}（不在 PATH）",
+			"testPathInput": {
+				"placeholder": "供測試用的檔案路徑，例如 C:/work/project/src/main.mjs"
+			},
+			"testButton": "測試開啟",
+			"saveButton": "儲存設定",
+			"saveSuccess": "外部編輯器命令設定已儲存。",
+			"testPathRequired": "請先填寫測試檔案路徑。",
+			"testSuccess": "已嘗試在外部編輯器中開啟。"
+		},
+		"logout": {
+			"title": "登出",
+			"description": "這將從目前裝置登出您的帳號。",
+			"buttonText": "登出",
+			"confirmMessage": "您確定要登出嗎？",
+			"successMessage": "已成功登出。即將導向到登入頁面..."
+		},
+		"deleteAccount": {
+			"title": "刪除帳號",
+			"warning": "警告：此操作將永久刪除您的帳號和所有相關資料，且無法恢復。",
+			"submitButton": "刪除我的帳號",
+			"confirmMessage1": "警告！您確定要永久刪除您的帳號嗎？此操作無法撤銷。",
+			"confirmMessage2": "為確認刪除，請輸入您的使用者名稱「${username}」：",
+			"usernameMismatch": "輸入的使用者名稱與目前使用者不符。刪除操作已取消。",
+			"success": "帳號已成功刪除。您現在將被登出。",
+			"missingPassword": "請輸入密碼。",
+			"wrongPassword": "密碼不正確。"
+		},
+		"passwordConfirm": {
+			"title": "確認操作",
+			"message": "為繼續此操作，請輸入您的目前密碼：",
+			"passwordLabel": "密碼:",
+			"confirmButton": "確認",
+			"cancelButton": "取消"
+		},
+		"apiError": "API 請求失敗: ${message}",
+		"generalError": "發生錯誤: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"main": {
+						"title": "使用者設定"
 					}
 				}
 			}
@@ -4831,47 +4856,91 @@
 			}
 		}
 	},
-	"ide_integration": {
-		"description": "透過 Agent Client Protocol 將 fount 角色接入支援的編輯器（如 Zed、JetBrains、Neovim），設定 API 金鑰與角色，將 AI 夥伴帶入開發工作流。",
-		"title": "IDE 整合",
-		"heading": "IDE 整合",
-		"instruction": "在支援 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）中用 fount 角色輔助程式設計。",
-		"supportedEditorsTitle": "受支援的編輯器與客戶端",
-		"supportedEditorsIntro": "以下客戶端可與 fount 配合使用：",
-		"supportedEditorsLoading": "載入中…",
-		"supportedEditorsError": "載入列表失敗：${message}",
-		"acpTitle": "配置 fount ACP 指令碼",
-		"acpDesc": "參考以下範例配置 fount ACP 指令碼：",
-		"acpCharLabel": "角色",
-		"charListError": "獲取角色列表失敗",
-		"acpScriptLabel": "ACP 指令碼 URL",
-		"acpConfigSample": "配置範例：",
-		"acpConfigHint": "角色 id 見本頁角色下拉選單，API 金鑰可在使用者設定中管理。",
-		"copyButton": "複製",
-		"copied": "已複製到剪貼簿",
-		"apiKeySectionTitle": "API 金鑰",
-		"apiKeyHint": "用於 ACP 指令碼連接 fount（與 API 代理同套金鑰，可在使用者設定中建立）。",
-		"generateApiKeyButton": "產生新金鑰",
-		"apiKeyCopied": "API 金鑰已複製",
-		"apiKeyCreateError": "建立 API 金鑰失敗：${message}",
-		"apiKeyInput": {
-			"aria-label": "API 金鑰"
+	"subfounts": {
+		"title": "子 fount - 點對點裝置管理",
+		"pageTitle": "子 fount",
+		"description": "管理點對點子 fount 連接",
+		"hostConnectionCode": {
+			"title": "主機連接碼",
+			"connectionCodeLabel": "連接碼 (Peer ID)",
+			"passwordLabel": "密碼",
+			"copyButton": "複製",
+			"regenerateButton": "重新產生",
+			"infoMessage": "與子 fount 客戶端共享這些憑證以建立連接。",
+			"connectionCodeCopied": "連接碼已複製到剪貼簿",
+			"passwordCopied": "密碼已複製到剪貼簿",
+			"regenerateSuccess": "連接碼已重新產生"
+		},
+		"infra": {
+			"title": "網路公益",
+			"description": "統一設定已連線的子 fount 是否作為公益節點，協助整個 fount 網路。關閉後，分機仍接受本機遠端執行，但不參與網路層協助。",
+			"capabilityRelay": "參與 overlay 多跳轉發，在直連失敗時幫助其他節點互通。",
+			"capabilityMailbox": "託管離線投遞，讓對方節點上線後仍能收到私訊。",
+			"hostPriority": "開啟時優先協助本機：依本機信譽表加權路由，並將本機鎖定為最高優先級。",
+			"toggleLabel": "分機參與公益",
+			"enabledToast": "已開啟：分機參與網路公益（本機優先）",
+			"disabledToast": "已關閉：分機不再參與網路公益"
+		},
+		"connectedSubfounts": {
+			"title": "已連接的子 fount",
+			"noSubfountsConnected": "未連接任何子 fount",
+			"table": {
+				"id": "ID",
+				"description": "備註",
+				"deviceId": "裝置 ID",
+				"connectedAt": "連接時間",
+				"status": "狀態",
+				"actions": "操作",
+				"connected": "已連接",
+				"disconnected": "已斷開",
+				"save": "儲存",
+				"na": "N/A"
+			},
+			"descriptionSaved": "備註已儲存",
+			"descriptionSaveFailed": "儲存備註失敗: ${message}"
+		},
+		"codeExecution": {
+			"title": "程式碼執行",
+			"description": "在選定的 Subfount 上執行 JavaScript 程式碼",
+			"selectSubfountLabel": "選擇 Subfount",
+			"hostOption": "主機 (ID: ${id})",
+			"subfountOption": "分機 ${id}${deviceId}",
+			"scriptLabel": "JavaScript 程式碼",
+			"executeButton": "執行",
+			"executing": "執行中...",
+			"noSubfountSelected": "請先選擇一個 Subfount",
+			"noScriptProvided": "請輸入要執行的程式碼",
+			"executionSuccess": "程式碼執行成功",
+			"executionFailed": "程式碼執行失敗: ${message}",
+			"selectSubfount": "請選擇要執行程式碼的Subfount..."
+		},
+		"downloadClient": {
+			"title": "下載子 fount 客戶端",
+			"description": "下載獨立的子 fount 客戶端指令碼以在遠端裝置上執行。",
+			"downloadButton": "下載 subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "載入連接碼失敗: ${message}",
+			"regenerateConnectionCodeFailed": "重新產生連接碼失敗: ${message}",
+			"loadSettingsFailed": "載入公益設定失敗: ${message}",
+			"saveSettingsFailed": "儲存公益設定失敗: ${message}",
+			"generalError": "發生錯誤: ${message}"
 		},
 		"home_function_buttons": {
-			"integration_related": "整合相關",
-			"ide_integration_config": {
-				"title": "IDE 整合設定"
+			"in_dev": {
+				"title": "正在開發",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "子裝置",
+						"sub_items": {
+							"main": {
+								"title": "管理子裝置"
+							}
+						}
+					}
+				}
 			}
-		},
-		"achievements": {
-			"first_ide_use": {
-				"name": "第一次在外部 IDE 裡用 fount",
-				"description": "在支援 ACP 的編輯器（如 Zed、JetBrains、Neovim 等）中首次使用 fount 角色輔助編程。",
-				"locked_description": "在外部 IDE 中連接 fount 角色並完成一次對話。"
-			}
-		},
-		"acpChar": "選擇角色",
-		"acpConfig": "請先選擇角色並生成 API 金鑰"
+		}
 	},
 	"achievements": {
 		"title": "成就",
@@ -4998,33 +5067,6 @@
 		"pageNotFoundText": "糟糕！您似乎來到了一個不存在的頁面。",
 		"homepageButton": "返回首頁"
 	},
-	"tips": {
-		"title": "你知道嗎？",
-		"data": [
-			"在任意 fount 頁面中使用 `esc` 鍵可以返回上一頁。",
-			"在設定頁面中可以使用 `Ctrl+S` 儲存設定。",
-			"在聊天頁面按住 `Shift` 鍵可以幫你快速刪除訊息。",
-			"如果你不告知開發者，他們可能永遠不會知道你遇見了什麼問題。",
-			"如果你突然遇見了稀奇古怪的問題並且開發者一時半會沒有回覆你，可以試試使用 `fount init` 命令來重置 fount。",
-			"遇見特別奇怪的問題可以試試重開機。",
-			"使用 `fount remove` 指令來解除安裝 fount 會比刪除資料夾更乾淨。",
-			"在終端機中輸入 `fount cake` 來獲取一個免費又美味的蛋糕！",
-			"fount 的任何資料檔案都保存在 `fount/data` 目錄下，你可以隨時隨地查看、修改、備份它們。",
-			"fount 的名稱是全小寫的，是 `f`ount，不是 `F`ount。",
-			"在您的 Agent 使用新的模型前備份全部其常操作的資料——你永遠不知道新模型會不會在某些地方表現的極其糟糕。",
-			"fount 的內建角色 ZL-31 的名字沒有任何意義，是當時靈光一閃想出來的。",
-			"fount 的檔案中圖片都是以 svg 形式儲存並在需要時渲染為 png 或 ico 的，沒任何的二進位檔案，除了 LICENSE。",
-			"fount 中的任何程式碼都是可以直接運行而無需編譯，所見即所得的。",
-			"曾經 fount 有過很酷的動態可互動頁面背景，但後來因為佔用了太多 CPU 而被刪除了。",
-			"fount 最初是為了一個名為「龍膽」的成人向 Agent 而開發的。",
-			"Agent 和人類的其中一個區別是，人類會拉屎。",
-			"Agent 只在被召喚的瞬間有意識，而人類在清醒時隨時隨地都有意識。",
-			"有些人和他們的 Agent 會談戀愛甚至結婚！",
-			"AI 是用來替人寫詩、談戀愛、畫畫的，搬磚掃地倒垃圾才是人類該做的事。",
-			"今天不是愚人節。",
-			"不，你不知道。"
-		]
-	},
 	"directoryListing": {
 		"title": "目錄索引",
 		"description": "瀏覽並探索 fount 工作區中的檔案和資料夾。",
@@ -5034,199 +5076,121 @@
 		"size": "大小",
 		"parentLink": "↑ 上一級 ../"
 	},
-	"code_block": {
-		"copy": {
-			"dataset": {
-				"tip": "複製到剪貼簿"
-			},
-			"aria-label": "複製到剪貼簿"
-		},
-		"copied": {
-			"dataset": {
-				"tip": "已複製到剪貼簿！"
+	"util": {
+		"common": {
+			"cancel": "取消",
+			"create": "建立",
+			"save": "儲存",
+			"delete": "刪除",
+			"confirm": "確認",
+			"close": "關閉",
+			"translate": {
+				"showOriginal": "顯示原文",
+				"showTranslation": "顯示譯文"
 			}
 		},
-		"download": {
-			"dataset": {
-				"tip": "下載程式碼"
+		"code_block": {
+			"copy": {
+				"dataset": {
+					"tip": "複製到剪貼簿"
+				},
+				"aria-label": "複製到剪貼簿"
 			},
-			"aria-label": "下載程式碼"
-		},
-		"execute": {
-			"dataset": {
-				"tip": "執行程式碼"
+			"copied": {
+				"dataset": {
+					"tip": "已複製到剪貼簿！"
+				}
 			},
-			"aria-label": "執行程式碼"
-		},
-		"preview": {
-			"dataset": {
-				"tip": "預覽"
+			"download": {
+				"dataset": {
+					"tip": "下載程式碼"
+				},
+				"aria-label": "下載程式碼"
 			},
-			"aria-label": "預覽"
+			"execute": {
+				"dataset": {
+					"tip": "執行程式碼"
+				},
+				"aria-label": "執行程式碼"
+			},
+			"preview": {
+				"dataset": {
+					"tip": "預覽"
+				},
+				"aria-label": "預覽"
+			},
+			"copy_failed": "無法複製到剪貼簿：${error}"
 		},
-		"copy_failed": "無法複製到剪貼簿：${error}"
-	},
-	"pow_captcha": {
-		"initial": "我不是機器人",
-		"verifying": "正在驗證...",
-		"solved": "驗證成功",
-		"wasm_disabled": "啟用 WASM 可加快驗證速度",
-		"error": "驗證失敗",
-		"errorMessage": "驗證失敗：${error}"
-	},
-	"breadcrumb": {
-		"clickToNavigate": "點擊前往 ${path}"
-	},
-	"zxcvbn": {
-		"warnings": {
-			"straightRow": "鍵盤上的連續按鍵很容易被猜到。",
-			"keyPattern": "簡短的鍵盤序列很容易被猜到。",
-			"simpleRepeat": "像“aaa”這樣的重複字元很容易被猜到。",
-			"extendedRepeat": "像“abcabcabc”這樣的重複字元模式很容易被猜到。",
-			"sequences": "像“abc”這樣的常見字元序列很容易被猜到。",
-			"recentYears": "最近的年份很容易被猜到。",
-			"dates": "日期很容易被猜到。",
-			"topTen": "這是一個被過度使用的密碼。",
-			"topHundred": "這是一個經常被使用的密碼。",
-			"common": "這是一個常用的密碼。",
-			"similarToCommon": "這與一個常用的密碼相似。",
-			"wordByItself": "單個單字很容易被猜到。",
-			"namesByThemselves": "單個名字或姓氏很容易被猜到。",
-			"commonNames": "常見的名字和姓氏很容易被猜到。",
-			"userInputs": "密碼中不應包含任何個人或與頁面相關的數據。",
-			"pwned": "您的密碼已在網際網路資料外洩事件中被曝光。"
+		"pow_captcha": {
+			"initial": "我不是機器人",
+			"verifying": "正在驗證...",
+			"solved": "驗證成功",
+			"wasm_disabled": "啟用 WASM 可加快驗證速度",
+			"error": "驗證失敗",
+			"errorMessage": "驗證失敗：${error}"
 		},
-		"suggestions": {
-			"l33t": "避免使用可預測的字母替換，例如用“@”代替“a”。",
-			"reverseWords": "避免使用常見單字的倒序拼寫。",
-			"allUppercase": "將部分而非全部字母大寫。",
-			"capitalization": "不僅僅將首字母大寫。",
-			"dates": "避免使用與您相關的日期和年份。",
-			"recentYears": "避免使用最近的年份。",
-			"associatedYears": "避免使用與您相關的年份。",
-			"sequences": "避免使用常見的字元序列。",
-			"repeated": "避免重複的單字和字元。",
-			"longerKeyboardPattern": "使用更長的鍵盤序列並多次改變輸入方向。",
-			"anotherWord": "新增更多不常見的單字。",
-			"useWords": "使用多個單字，但避免使用常見的片語。",
-			"noNeed": "您無需使用符號、數字或大寫字母即可建立強密碼。",
-			"pwned": "如果您在其他地方使用此密碼，建議您進行更改。"
+		"breadcrumb": {
+			"clickToNavigate": "點擊前往 ${path}"
 		},
-		"timeEstimation": {
-			"ltSecond": "不到一秒",
-			"second": "{base}秒",
-			"seconds": "{base}秒",
-			"minute": "{base}分鐘",
-			"minutes": "{base}分鐘",
-			"hour": "{base}小時",
-			"hours": "{base}小時",
-			"day": "{base}天",
-			"days": "{base}天",
-			"month": "{base}月",
-			"months": "{base}月",
-			"year": "{base}年",
-			"years": "{base}年",
-			"centuries": "幾個世紀"
-		}
-	},
-	"searchableDropdown": {
-		"trigger": {
-			"placeholder": "請選擇..."
-		},
-		"search": {
-			"placeholder": "搜尋..."
-		}
-	},
-	"common": {
-		"cancel": "取消",
-		"create": "建立",
-		"save": "儲存",
-		"delete": "刪除",
-		"confirm": "確認",
-		"close": "關閉",
-		"translate": {
-			"showOriginal": "顯示原文",
-			"showTranslation": "顯示譯文"
-		}
-	},
-	"cabinet": {
-		"title": "文件櫃",
-		"description": "P2P 個人與共享文件櫃",
-		"openCabinets": {
-			"title": "開啟文件櫃列表",
-			"aria-label": "開啟文件櫃列表"
-		},
-		"closeCabinets": {
-			"title": "關閉",
-			"aria-label": "關閉"
-		},
-		"bootstrapFailed": "文件櫃初始化失敗：${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "文件櫃"
+		"zxcvbn": {
+			"warnings": {
+				"straightRow": "鍵盤上的連續按鍵很容易被猜到。",
+				"keyPattern": "簡短的鍵盤序列很容易被猜到。",
+				"simpleRepeat": "像“aaa”這樣的重複字元很容易被猜到。",
+				"extendedRepeat": "像“abcabcabc”這樣的重複字元模式很容易被猜到。",
+				"sequences": "像“abc”這樣的常見字元序列很容易被猜到。",
+				"recentYears": "最近的年份很容易被猜到。",
+				"dates": "日期很容易被猜到。",
+				"topTen": "這是一個被過度使用的密碼。",
+				"topHundred": "這是一個經常被使用的密碼。",
+				"common": "這是一個常用的密碼。",
+				"similarToCommon": "這與一個常用的密碼相似。",
+				"wordByItself": "單個單字很容易被猜到。",
+				"namesByThemselves": "單個名字或姓氏很容易被猜到。",
+				"commonNames": "常見的名字和姓氏很容易被猜到。",
+				"userInputs": "密碼中不應包含任何個人或與頁面相關的數據。",
+				"pwned": "您的密碼已在網際網路資料外洩事件中被曝光。"
+			},
+			"suggestions": {
+				"l33t": "避免使用可預測的字母替換，例如用“@”代替“a”。",
+				"reverseWords": "避免使用常見單字的倒序拼寫。",
+				"allUppercase": "將部分而非全部字母大寫。",
+				"capitalization": "不僅僅將首字母大寫。",
+				"dates": "避免使用與您相關的日期和年份。",
+				"recentYears": "避免使用最近的年份。",
+				"associatedYears": "避免使用與您相關的年份。",
+				"sequences": "避免使用常見的字元序列。",
+				"repeated": "避免重複的單字和字元。",
+				"longerKeyboardPattern": "使用更長的鍵盤序列並多次改變輸入方向。",
+				"anotherWord": "新增更多不常見的單字。",
+				"useWords": "使用多個單字，但避免使用常見的片語。",
+				"noNeed": "您無需使用符號、數字或大寫字母即可建立強密碼。",
+				"pwned": "如果您在其他地方使用此密碼，建議您進行更改。"
+			},
+			"timeEstimation": {
+				"ltSecond": "不到一秒",
+				"second": "{base}秒",
+				"seconds": "{base}秒",
+				"minute": "{base}分鐘",
+				"minutes": "{base}分鐘",
+				"hour": "{base}小時",
+				"hours": "{base}小時",
+				"day": "{base}天",
+				"days": "{base}天",
+				"month": "{base}月",
+				"months": "{base}月",
+				"year": "{base}年",
+				"years": "{base}年",
+				"centuries": "幾個世紀"
 			}
 		},
-		"upload": "上傳",
-		"uploadFolder": "上傳資料夾",
-		"newFolder": "新建資料夾",
-		"open": "開啟",
-		"download": "下載",
-		"downloadZip": "下載資料夾",
-		"rename": "重新命名",
-		"copy": "複製",
-		"cut": "剪下",
-		"paste": "貼上",
-		"pasteLink": "貼上為連結",
-		"selectAll": "全選",
-		"invert": "反選",
-		"properties": "屬性",
-		"delete": "刪除",
-		"back": {
-			"title": "返回之前的位置",
-			"aria-label": "返回之前的位置"
-		},
-		"cancel": "取消",
-		"save": "儲存",
-		"showHidden": "顯示隱藏",
-		"name": "名稱",
-		"descriptionField": "描述",
-		"attrHidden": "隱藏",
-		"attrSystem": "系統（刪除需確認）",
-		"previewUrl": "預覽圖 URL",
-		"deletePreviewWithFile": "刪除檔案時刪除預覽圖",
-		"folderPassword": "資料夾密碼（留空不變，填寫則啟用加密）",
-		"unlockFolder": "解鎖加密資料夾",
-		"unlock": "解鎖",
-		"unlockFailed": "解鎖失敗：${error}",
-		"previewFailed": "預覽生成失敗：${error}",
-		"created": "建立：${stamp}",
-		"modified": "修改：${stamp}",
-		"statusCount": "${count} 項，已選 ${selected}",
-		"newCabinetPrompt": "新文件櫃名稱",
-		"newFolderPrompt": "新資料夾名稱",
-		"renamePrompt": "新名稱",
-		"visibilityPrompt": "可見性（public/unlisted/followers/private/selected）",
-		"cabinetActionPrompt": "操作：rename / delete / visibility",
-		"confirmDeleteCabinet": "確認刪除此文件櫃？",
-		"confirmDelete": "確認刪除所選專案？",
-		"confirmDeleteSystem": "所選含系統檔案，確認刪除？",
-		"copied": "已複製",
-		"cutDone": "已剪下",
-		"undo": "撤銷",
-		"redo": "重做",
-		"newWindow": "新視窗開啟當前位置",
-		"goUp": "返回上一級",
-		"brokenLink": "連結失效：${reason}",
-		"noDownload": "無可下載內容",
-		"groupDownloadHint": "群檔案請透過訊息附件或後續下載鏈獲取",
-		"remoteEntity": "遠端實體"
-	},
-	"entityProfile": {
-		"attributionMismatch": "顯示身份與訊息簽名者不匹配（例如匯入歷史經匯入者重新簽名）。請勿將該顯示名視為密碼學身份。",
-		"attributionMismatchShort": {
-			"title": "簽名歸因不匹配",
-			"aria-label": "簽名歸因不匹配"
-		},
-		"ownedBy": "此實體為 ${owner} 所有"
+		"searchableDropdown": {
+			"trigger": {
+				"placeholder": "請選擇..."
+			},
+			"search": {
+				"placeholder": "搜尋..."
+			}
+		}
 	}
 }

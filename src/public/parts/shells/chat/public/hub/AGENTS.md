@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Chat Hub Frontend Guide
 
-Deeper UI (profile card, module layout, unread/inbox/aliases): [ui-details.md](ui-details.md).
+Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms): [ui-details.md](ui-details.md).
 
 ## Trust model
 
@@ -36,7 +36,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases): [ui-details.md](u
 
 ## Files / messages / archive
 
-- Files drawer: `state.cabinets` by role; open Cabinet `#shared:{cabinetId}`. Bind/unbind and `role_access` changes require `ADMIN`/`MANAGE_ADMINS` (`POST …/cabinets/bind`); wrap-only `cabinet_key_update` still needs `MANAGE_ROLES`. Attachments stay on chat DAG.
+- Files drawer: `state.cabinets` by role; open Cabinet `#shared:{cabinetId}`. Bind permission matrix: [ui-details.md](ui-details.md#files--cabinets). Attachments stay on chat DAG.
 - Main read: `GET …/view-log` (`getChannelViewLog`); backfill `POST …/view-log/batch-get`. Raw `/messages` = moderation only. Decrypt failure: `decryptView: { failed: true }` with `content: null`.
 - Navigation: `messages/channelMessageStore.mjs` + `scrollToMessageEventId`.
 - Portable archive: [archive AGENTS](../../src/chat/archive/AGENTS.md). HTTP: `GET …/channels/:id/export`, `POST …/channels/import` (`MANAGE_CHANNELS`).

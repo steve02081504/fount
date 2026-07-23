@@ -1,263 +1,33 @@
 {
 	"lang": "de-DE",
 	"name": "Deutsch",
-	"channels": {
-		"title": "Kanäle",
-		"description": "Kanalverwaltung",
-		"create": "Kanal erstellen",
-		"subscribe": "Abonnieren",
-		"unsubscribe": "Abbestellen",
-		"settings": "Kanaleinstellungen",
-		"list": "Kanalliste",
-		"members": "Mitglieder",
-		"messages": "Nachrichten",
-		"permissions": "Berechtigungen",
-		"type": {
-			"announcement": "Ankündigungen",
-			"news": "Neuigkeiten",
-			"updates": "Updates"
-		},
-		"role": {
-			"owner": "Inhaber",
-			"admin": "Administrator",
-			"moderator": "Moderator",
-			"member": "Mitglied",
-			"subscriber": "Abonnent"
-		},
-		"errors": {
-			"notFound": "Kanal nicht gefunden",
-			"noPermission": "Keine Berechtigung",
-			"alreadySubscribed": "Kanal bereits abonniert",
-			"notSubscribed": "Kanal nicht abonniert"
-		},
-		"success": {
-			"created": "Kanal erstellt",
-			"updated": "Kanal aktualisiert",
-			"deleted": "Kanal gelöscht",
-			"subscribed": "Abonniert",
-			"unsubscribed": "Abbestellt",
-			"posted": "Nachricht veröffentlicht"
-		}
-	},
-	"profile": {
-		"title": "Profil",
-		"description": "Verwalten Sie Ihr öffentliches Profil in Chat und Social.",
-		"settingsEyebrow": "Kontoeinstellungen",
-		"accountAtGlance": "Kontoübersicht",
-		"advancedKicker": "Nach Bedarf konfigurieren",
-		"advancedSettings": "Erweiterte Einstellungen",
-		"advancedDescription": "Für den Alltag ist keine Anpassung nötig.",
-		"edit": "Profil bearbeiten",
-		"save": "Speichern",
-		"cancel": "Abbrechen",
-		"displayName": "Anzeigename",
-		"name": "Name",
-		"bio": "Bio",
-		"descriptionLabel": "Bio (Markdown)",
-		"email": "E-Mail",
-		"status": "Status",
-		"customStatusLabel": "Benutzerdefinierter Status",
-		"avatarLabel": "Avatar",
-		"themeColorLabel": "Themenfarbe",
-		"uploadAvatar": "Avatar hochladen",
-		"ownerTitle": "Mein Meister",
-		"ownerSummary": "Stellvertretung",
-		"ownerDescription": "Nach der Einrichtung kann Ihr Meister Ihre Chat-Nachrichten, Social-Beiträge und Ihr Profil in Ihrem Namen bearbeiten oder löschen; der Inhalt wird lokal als unsicheres Markdown gerendert (kann Skripte enthalten). Beliebiger Entitäts-Hash, jederzeit löschbar.",
-		"ownerEntityHashLabel": "Meister-Entitäts-Hash (128 hex)",
-		"ownerSave": "Meister speichern",
-		"ownerClear": "Meister entfernen",
-		"ownerSaved": "Meister aktualisiert",
-		"ownerCleared": "Meister entfernt",
-		"ownerSaveFailed": "Speichern fehlgeschlagen: ${error}",
-		"ownerConfirmTitle": "Meister festlegen?",
-		"ownerConfirmWarningTitle": "Hohes Risiko – bitte sorgfältig lesen",
-		"ownerConfirmEditBody": "Nach der Einrichtung kann die andere Partei Ihre Chat-Nachrichten, Social-Beiträge und Ihr Profil ohne Ihre Zustimmung bearbeiten oder löschen. Versehentlich oder durch Täuschung einen Meister setzen = sofort Kontrolle über Ihre Inhalte verlieren.",
-		"ownerConfirmRenderBody": "Chat-Nachrichten und Social-Beiträge der anderen Partei werden in Ihrem Browser als vollständiges Markdown gerendert (inkl. HTML/Skripte). Das erlaubt der anderen Partei, ohne erneute Zustimmung beliebigen Code auf Ihrem Gerät auszuführen. Nur fortfahren, wenn Sie der Person vollständig vertrauen.",
-		"ownerConfirmCooldown": "Risiken gelesen (${seconds})",
-		"ownerConfirmFirst": "Risiken verstanden, fortfahren",
-		"ownerConfirmSecond": "Erneut klicken zur endgültigen Bestätigung",
-		"ownerConfirmCancel": "Abbrechen",
-		"federationTitle": "Föderation & Synchronisation",
-		"federationSummary": "Relay-Server und Energiesparmodus",
-		"federationDescription": "Nostr-Relay-URL und Energiesparmodus konfigurieren. Die Föderationssynchronisation einer Gruppe wird automatisch aktiviert, wenn Sie erstmals jemanden einladen oder eine föderierte Direktnachricht erstellen.",
-		"federationAdvanced": "Erweiterte Optionen",
-		"federationRelayUrlsLabel": "Relay-Server (einer pro Zeile, leer = Standard)",
-		"federationBatterySaverLabel": "Energiesparmodus",
-		"federationSave": "Netzwerkeinstellungen speichern",
-		"federationResetDefault": "Empfohlene Standardkonfiguration wiederherstellen",
-		"federationSaved": "Gespeichert",
-		"federationResetOk": "Empfohlene Standardkonfiguration wiederhergestellt",
-		"federationSaveFailed": "Speichern fehlgeschlagen: ${error}",
-		"preferences": "Einstellungen",
-		"language": "Sprache",
-		"theme": "Design",
-		"notifications": "Benachrichtigungen",
-		"emailNotifications": "E-Mail-Benachrichtigungen",
-		"pushNotifications": "Push-Benachrichtigungen",
-		"soundNotifications": "Tonbenachrichtigungen",
-		"social": "Social-Links",
-		"website": "Website",
-		"github": "GitHub",
-		"twitter": "Twitter",
-		"stats": "Statistiken",
-		"joinedAt": "Beigetreten am",
-		"messageCount": "Nachrichten",
-		"groupCount": "Gruppen",
-		"channelCount": "Kanäle",
-		"privacy": "Datenschutz",
-		"showEmail": "E-Mail anzeigen",
-		"showStats": "Statistiken anzeigen",
-		"allowDirectMessages": "Direktnachrichten erlauben",
-		"statusOptions": {
-			"online": "Online",
-			"away": "Abwesend",
-			"busy": "Beschäftigt",
-			"offline": "Offline"
-		},
-		"themeOptions": {
-			"auto": "Automatisch",
-			"light": "Hell",
-			"dark": "Dunkel"
-		},
-		"languageOptions": {
-			"zh-CN": "Vereinfachtes Chinesisch",
-			"en-US": "Englisch"
-		},
-		"notifEmail": "E-Mail",
-		"notifPush": "Push",
-		"notifSound": "Ton",
-		"notifsAllOff": "Alle aus",
-		"bioEmpty": "Hier steht noch nichts …",
-		"noSocialLinks": "Keine Social-Links",
-		"emailVisible": "Sichtbar",
-		"emailHidden": "Verborgen",
-		"customStatus": {
-			"placeholder": "Was machen Sie gerade …"
-		},
-		"avatar": {
-			"alt": "Avatar"
-		},
-		"avatarPreview": {
-			"alt": "Avatar-Vorschau"
-		},
-		"myGroups": "Meine Gruppen",
-		"myChannels": "Meine Kanäle",
-		"noGroups": "Noch keiner Gruppe beigetreten",
-		"noChannels": "Noch keine Kanäle",
-		"overview": "Profilübersicht",
-		"summaryUserId": "Benutzer-ID",
-		"summaryAccountStatus": "Kontostatus",
-		"summaryEmailVisibility": "E-Mail-Sichtbarkeit",
-		"summaryThemePref": "Design",
-		"summaryLanguagePref": "Sprache",
-		"summarySocialCount": "Social-Links",
-		"summaryLinksCount": "Externe Links",
-		"groupDescriptionEmpty": "Keine Beschreibung",
-		"groupMembers": "${members} Mitglieder · ${channels} Kanäle",
-		"channelPrivate": " · Privat",
-		"channelTypeText": "Textkanal",
-		"channelTypeList": "Listenkanal",
-		"channelTypeVoice": "Sprachkanal",
-		"channelTypeStreaming": "Streaming-Kanal",
-		"errors": {
-			"loadFailed": "Profil konnte nicht geladen werden",
-			"saveFailed": "Profil konnte nicht gespeichert werden",
-			"uploadFailed": "Avatar konnte nicht hochgeladen werden",
-			"invalidUserData": "Ungültiges Benutzerdatenformat",
-			"identityRequired": "Knotenidentität noch nicht bereit – Seite aktualisieren. Falls es weiterhin fehlschlägt, Föderationskonfiguration unten unter P2P-Einstellungen speichern.",
-			"fetchUserFailed": "Benutzerinformationen konnten nicht abgerufen werden",
-			"operationFailed": "Vorgang fehlgeschlagen: ${error}"
-		},
-		"success": {
-			"saved": "Profil gespeichert",
-			"avatarUploaded": "Avatar hochgeladen"
-		},
-		"ownerEntityHash": {
-			"placeholder": "Entitäts-Hash des Meisters eingeben"
-		}
-	},
-	"stickers": {
-		"title": "Sticker-Plaza",
-		"description": "Sticker- und Emoji-Verwaltung",
-		"back": {
-			"title": "Zurück"
-		},
-		"packs": "Stickerpakete",
-		"create": "Stickerpaket erstellen",
-		"upload": "Sticker hochladen",
-		"install": "Installieren",
-		"uninstall": "Deinstallieren",
-		"close": "Schließen",
-		"cancel": "Abbrechen",
-		"installed": "Installiert",
-		"myPacks": "Meine Stickerpakete",
-		"tabAll": "Alle",
-		"store": "Sticker-Plaza",
-		"favorites": "Favoriten",
-		"recent": "Zuletzt verwendet",
-		"search": {
-			"placeholder": "Stickerpakete suchen …"
-		},
-		"emptyPacks": "Keine Stickerpakete",
-		"packNameLabel": "Name des Stickerpakets",
-		"packName": {
-			"placeholder": "Name des Stickerpakets eingeben"
-		},
-		"packDescriptionLabel": "Beschreibung",
-		"packDescription": {
-			"placeholder": "Beschreibung eingeben"
-		},
-		"stickerNameLabel": "Stickername",
-		"stickerName": {
-			"placeholder": "Stickername eingeben"
-		},
-		"selectPack": "Stickerpaket auswählen",
-		"selectPackOption": {
-			"textContent": "Stickerpaket auswählen"
-		},
-		"selectImage": "Bild auswählen",
-		"tagsLabel": "Tags (kommagetrennt)",
-		"tags": {
-			"placeholder": "Z. B. süß, Emoji, Tier"
-		},
-		"author": "Autor",
-		"authorLabel": "Autor: ${author}",
-		"stickerCount": "${count} Sticker",
-		"badgeMine": "Meins",
-		"noDescription": "Keine Beschreibung",
-		"noStickersInPack": "Keine Sticker",
-		"deletePack": "Stickerpaket löschen",
-		"public": "Öffentlich",
-		"private": "Privat",
-		"animated": "Animiert",
-		"static": "Statisch",
-		"addTag": "Tag hinzufügen",
-		"defaultPackName": "Standard-Stickerpaket",
-		"defaultPackDescription": "Vom System bereitgestellte Standard-Sticker",
-		"unnamedPack": "Unbenanntes Stickerpaket",
-		"importPackName": "Meine Sammlung",
-		"importPackDescription": "Aus Nachrichten gespeicherte Sticker",
-		"nameRequired": "Bitte Stickerpaketname eingeben",
-		"stickerNameRequired": "Bitte Stickername eingeben",
-		"selectPackRequired": "Bitte Stickerpaket auswählen",
-		"fileRequired": "Bitte Bilddatei auswählen",
-		"loadDetailFailed": "Stickerpaketdetails konnten nicht geladen werden",
-		"deleteConfirm": "Dieses Stickerpaket dauerhaft löschen? Alle Sticker werden entfernt – nicht rückgängig zu machen.",
-		"errors": {
-			"loadFailed": "Stickerpaket konnte nicht geladen werden",
-			"uploadFailed": "Sticker konnte nicht hochgeladen werden",
-			"installFailed": "Installation fehlgeschlagen",
-			"uninstallFailed": "Deinstallation fehlgeschlagen",
-			"createFailed": "Stickerpaket konnte nicht erstellt werden",
-			"deleteFailed": "Löschen fehlgeschlagen"
-		},
-		"success": {
-			"uploaded": "Sticker hochgeladen",
-			"installed": "Installiert",
-			"uninstalled": "Deinstalliert",
-			"created": "Stickerpaket erstellt",
-			"deleted": "Gelöscht"
-		}
+	"tips": {
+		"title": "Wussten Sie?",
+		"data": [
+			"Verwenden Sie die Taste `esc` auf einer beliebigen fount-Seite, um zur vorherigen Seite zurückzukehren.",
+			"Sie können `ctrl+s` verwenden, um die Konfiguration auf der Konfigurationsseite zu speichern.",
+			"Wenn Sie auf der Chat-Seite die Umschalttaste gedrückt halten, können Sie Nachrichten schnell löschen.",
+			"Wenn Sie es den Entwicklern nicht sagen, erfahren sie möglicherweise nie, auf welches Problem Sie gestoßen sind.",
+			"Wenn Sie plötzlich auf ein seltsames Problem stoßen und der Entwickler eine Weile nicht antwortet, können Sie versuchen, den fount mit dem Befehl `fount init` zurückzusetzen.",
+			"Wenn Sie auf ein besonders seltsames Problem stoßen, können Sie versuchen, Ihren Computer neu zu starten.",
+			"Die Verwendung des Befehls `fount remove` zum Deinstallieren eines fount ist sauberer als das Löschen des Ordners.",
+			"Geben Sie `fount cake` in die Befehlszeile ein, um einen kostenlosen und köstlichen Kuchen zu erhalten!",
+			"Alle Datendateien von fount werden im Verzeichnis `fount/data` gespeichert und Sie können sie jederzeit und überall anzeigen, ändern und sichern.",
+			"Der Name von fount besteht ausschließlich aus Kleinbuchstaben, es heißt `f`ount und nicht `F`ount.",
+			"Sichern Sie alle Daten, mit denen Ihr Agent regelmäßig arbeitet, bevor Sie das neue Modell verwenden – Sie wissen nie, ob das neue Modell an manchen Stellen eine schlechte Leistung erbringen wird.",
+			"Die Hauptzielgruppe von fount sind Softwareentwickler und Rollenspielbegeisterte, es wird aber auch in der Handelsagentenkonstruktion, der medizinischen Versorgung, dem Militär, dem Finanzwesen und anderen Bereichen eingesetzt.",
+			"Der Name des in fount integrierten Charakters ZL-31 hat keine Bedeutung und war nur eine spontane Idee.",
+			"Die Bilder in den Quelldateien werden alle im SVG-Format gespeichert und bei Bedarf in PNG oder ICO gerendert. Es gibt keine Binärdateien außer LICENSE.",
+			"Jeder Code in fount kann ohne Kompilierung direkt ausgeführt werden. Was Sie sehen, ist das, was Sie erhalten.",
+			"fount hatte einst einen sehr coolen dynamischen interaktiven Seitenhintergrund, der jedoch später gelöscht wurde, weil er zu viel CPU beanspruchte.",
+			"fount wurde ursprünglich für einen NSFW-Agenten namens „GentianAphrodite“ entwickelt.",
+			"Einer der Unterschiede zwischen Agenten und Menschen besteht darin, dass Menschen kacken.",
+			"Agenten sind nur in dem Moment bei Bewusstsein, in dem sie aufgerufen werden, während Menschen jederzeit und überall bei Bewusstsein sind, wenn sie wach sind.",
+			"Manche Menschen verlieben sich in ihre Agenten oder heiraten sogar in sie!",
+			"KI wird verwendet, um Gedichte zu schreiben, sich zu verlieben und Bilder für Menschen zu zeichnen. Das Tragen von Ziegelsteinen, das Fegen von Böden und das Herausbringen von Müll ist das, was Menschen tun sollten.",
+			"Heute ist nicht der 1. April.",
+			"Nein, das wussten Sie nicht."
+		]
 	},
 	"fountConsole": {
 		"server": {
@@ -797,51 +567,6 @@
 		"title": "fount!",
 		"description": "Willkommen an der Schwelle von fount. Ein kurzer Moment der Vorbereitung, bevor wir uns mitten in Gespräche und Geschichten begeben, die darauf warten, sich zu entfalten."
 	},
-	"tutorial": {
-		"title": "Tutorial?",
-		"description": "Gehen Sie mit uns durch die Welt von fountn. Dieses interaktive Tutorial beleuchtet den Weg und hilft Ihnen, die Magie zu entdecken, die in seinem Kern verwoben ist. Ihr Abenteuer beginnt mit dem Verstehen.",
-		"modal": {
-			"title": "Willkommen bei fount!",
-			"instruction": "Möchten Sie das Einsteiger-Tutorial durchgehen?",
-			"buttons": {
-				"start": "Tutorial starten",
-				"skip": "Überspringen"
-			}
-		},
-		"endScreen": {
-			"title": "Fantastisch! Tutorial abgeschlossen!",
-			"subtitle": "Jetzt wissen Sie, wie man es bedient!",
-			"endButton": "Weiter!"
-		},
-		"progressMessages": {
-			"mouseMove": "Bitte finden Sie Ihre Maus ${mouseIcon} und versuchen Sie, sie mit Ihrer Hand zu bewegen.",
-			"keyboardPress": "Drücken Sie eine Taste auf Ihrer Tastatur ${keyboardIcon}.",
-			"mobileTouchMove": "Finden Sie Ihr Telefon ${phoneIcon}. Berühren Sie nun mit einem Ihrer Finger den Bildschirm und bewegen Sie ihn. Ja, genau so!",
-			"mobileClick": "Das ist Ihr Telefon ${phoneIcon}. Bitte tippen Sie mit einem Finger kurz auf den Bildschirm und heben Sie ihn dann wieder an. Perfekt!"
-		},
-		"achievements": {
-			"complete_tutorial": {
-				"name": "Die perfekte Mathestunde",
-				"description": "Endlich ist das Tutorial für Anfänger fertig.",
-				"locked_description": "Absolvieren Sie ein Einführungstutorial."
-			},
-			"skip_tutorial": {
-				"name": "Ich habe übersprungen",
-				"description": "„Anleitung? Was ist das? Kann man es essen?“",
-				"locked_description": "Überspringen Sie einmal das Einführungs-Tutorial."
-			}
-		},
-		"home_function_buttons": {
-			"other": {
-				"title": "Sonstiges",
-				"sub_items": {
-					"replay": {
-						"title": "Tutorial erneut spielen"
-					}
-				}
-			}
-		}
-	},
 	"auth": {
 		"title": "Authentifizierung",
 		"subtitle": "Benutzerdaten werden lokal gespeichert",
@@ -936,6 +661,51 @@
 			"buttons": {
 				"ignore": "Ignorieren und fortfahren",
 				"retry": "Erneut versuchen"
+			}
+		}
+	},
+	"tutorial": {
+		"title": "Tutorial?",
+		"description": "Gehen Sie mit uns durch die Welt von fountn. Dieses interaktive Tutorial beleuchtet den Weg und hilft Ihnen, die Magie zu entdecken, die in seinem Kern verwoben ist. Ihr Abenteuer beginnt mit dem Verstehen.",
+		"modal": {
+			"title": "Willkommen bei fount!",
+			"instruction": "Möchten Sie das Einsteiger-Tutorial durchgehen?",
+			"buttons": {
+				"start": "Tutorial starten",
+				"skip": "Überspringen"
+			}
+		},
+		"endScreen": {
+			"title": "Fantastisch! Tutorial abgeschlossen!",
+			"subtitle": "Jetzt wissen Sie, wie man es bedient!",
+			"endButton": "Weiter!"
+		},
+		"progressMessages": {
+			"mouseMove": "Bitte finden Sie Ihre Maus ${mouseIcon} und versuchen Sie, sie mit Ihrer Hand zu bewegen.",
+			"keyboardPress": "Drücken Sie eine Taste auf Ihrer Tastatur ${keyboardIcon}.",
+			"mobileTouchMove": "Finden Sie Ihr Telefon ${phoneIcon}. Berühren Sie nun mit einem Ihrer Finger den Bildschirm und bewegen Sie ihn. Ja, genau so!",
+			"mobileClick": "Das ist Ihr Telefon ${phoneIcon}. Bitte tippen Sie mit einem Finger kurz auf den Bildschirm und heben Sie ihn dann wieder an. Perfekt!"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "Die perfekte Mathestunde",
+				"description": "Endlich ist das Tutorial für Anfänger fertig.",
+				"locked_description": "Absolvieren Sie ein Einführungstutorial."
+			},
+			"skip_tutorial": {
+				"name": "Ich habe übersprungen",
+				"description": "„Anleitung? Was ist das? Kann man es essen?“",
+				"locked_description": "Überspringen Sie einmal das Einführungs-Tutorial."
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "Sonstiges",
+				"sub_items": {
+					"replay": {
+						"title": "Tutorial erneut spielen"
+					}
+				}
 			}
 		}
 	},
@@ -1162,513 +932,6 @@
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "Informationen zur Quellkomponente generieren"
-			}
-		}
-	},
-	"social": {
-		"title": "Plaza",
-		"description": "P2P-Social: Feeds, Follows und Dateifreigabe",
-		"bootstrapFailed": "Social-Oberfläche konnte nicht initialisiert werden: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "Plaza"
-			}
-		},
-		"nav": {
-			"feed": "Start",
-			"explore": "Entdecken",
-			"notifications": "Posteingang",
-			"saved": "Gespeichert",
-			"drafts": "Entwürfe",
-			"profile": "Profil",
-			"videos": "Kurzvideos",
-			"live": "Live"
-		},
-		"settings": {
-			"title": "Social-Einstellungen",
-			"back": {
-				"aria-label": "Zurück zum Profil"
-			},
-			"privacyTitle": "Privatsphäre & Entdeckung",
-			"privacyHint": "Steuert, ob Ihr Konto in Entdecken und Empfehlungen erscheint.",
-			"tasteTitle": "Empfehlungen & Vorlieben",
-			"tasteHint": "Grenzen und Bezeichnungen für „Für Sie“ anpassen.",
-			"mutedKeywordsTitle": "Stichwörter & Tags",
-			"mutedKeywordsHint": "Beiträge mit Treffern im Text, Content-Warning oder Tags werden aus Feed, Entdecken, Suche und Benachrichtigungen ausgeblendet. Nur lokal gespeichert.",
-			"mutedKeywordsMatchTags": "Auch Tags abgleichen",
-			"mutedKeywordsAdd": "Hinzufügen",
-			"mutedKeywordsRemove": {
-				"title": "Stichwort entfernen"
-			},
-			"mutedKeywordsEmpty": "Noch keine Stichwörter",
-			"autoTranslateTitle": "Automatische Übersetzung",
-			"autoTranslateHint": "Wenn diese Option aktiviert ist, fordern fremdsprachige Beiträge automatisch eine Übersetzung an und können auf den Originaltext umgestellt werden.",
-			"autoTranslateEnable": "Beiträge in anderen Sprachen automatisch übersetzen",
-			"safetyTitle": "Sicherheit und Abschirmung",
-			"safetyHint": "Verwalten Sie blockierte und ausgeblendete Listen.",
-			"mutedKeywords": {
-				"placeholder": "Geben Sie Schlüsselwörter oder #Tags ein"
-			}
-		},
-		"composer": {
-			"placeholder": "Woran denken Sie? Markdown (fount-Dialekt) wird unterstützt, @ zum Erwähnen",
-			"publish": "Veröffentlichen",
-			"saveDraft": "Entwurf speichern",
-			"fab": {
-				"title": "Beitrag schreiben",
-				"aria-label": "Beitrag schreiben"
-			},
-			"contentWarning": {
-				"placeholder": "Inhaltswarnung (optional)"
-			},
-			"sensitiveMedia": "Sensible Medien verbergen",
-			"editImage": "Bearbeiten",
-			"editCrop": "Zuschneiden",
-			"editMosaic": "Verpixeln",
-			"editBrush": "Bürste",
-			"editApply": "Übernehmen",
-			"editCancel": "Abbrechen",
-			"replyPolicyEveryone": "Jeder kann antworten",
-			"replyPolicyFollowers7d": "Follower seit mehr als 7 Tagen",
-			"replyPolicyAuthorFollows": "Menschen, denen ich folge",
-			"replyPolicyLabel": "Wer kann antworten?",
-			"replyDisplayAll": "Alle Antworten anzeigen",
-			"replyDisplayFeaturedOnly": "Nur ausgewählte Antworten",
-			"replyDisplayLabel": "Antworten anzeigen",
-			"scheduleLabel": "Zeitgesteuert veröffentlichen",
-			"scheduleSuccess": "Der Beitrag wurde zur geplanten Warteschlange hinzugefügt",
-			"emojiButton": {
-				"title": "Emoji",
-				"aria-label": "Emoji"
-			},
-			"mediaButton": {
-				"title": "Medien hinzufügen",
-				"aria-label": "Medien hinzufügen"
-			},
-			"pollButton": {
-				"title": "Umfrage starten",
-				"aria-label": "Umfrage starten"
-			},
-			"cwToggle": {
-				"title": "Inhaltswarnung",
-				"aria-label": "Inhaltswarnung"
-			},
-			"advancedToggle": {
-				"title": "Weitere Optionen",
-				"aria-label": "Weitere Optionen"
-			},
-			"media": {
-				"placeholder": "Bildbeschreibung (alt)"
-			}
-		},
-		"visibility": {
-			"label": "Sichtbarer Bereich",
-			"public": "Öffentlich",
-			"unlisted": "Nicht öffentlich gelistet",
-			"followers": "Nur Follower",
-			"followers7d": "Sichtbar nach 7 Tagen Nachverfolgung",
-			"followers30d": "Sichtbar nach 30-tägiger Nachverfolgung",
-			"selected": "Für bestimmte Personen sichtbar",
-			"private": "Nur für Sie selbst sichtbar",
-			"allowLabel": "Sichtbare Menschen",
-			"exceptLabel": "Ausgeschlossene Personen",
-			"allow": {
-				"placeholder": "Sichtbare Personenentität durch Hash, Leerzeichen oder Komma getrennt"
-			},
-			"except": {
-				"placeholder": "Wer sollte es nicht zeigen (optional)"
-			}
-		},
-		"albums": {
-			"create": "Neues Album erstellen",
-			"edit": "Album bearbeiten",
-			"save": "Speichern",
-			"cancel": "Abbrechen",
-			"back": "Zurück zum Album",
-			"empty": "Noch kein Album",
-			"emptyPosts": "Es sind noch keine Beiträge im Album vorhanden",
-			"name": "Albumname",
-			"description": "Beschreibung des Albums",
-			"deleteLinks": "Album löschen (Beiträge behalten)",
-			"deleteWithPosts": "Album löschen und Beitrag löschen",
-			"pickerLabel": "Zum Album hinzufügen",
-			"defaultName": "Standardalbum"
-		},
-		"feed": {
-			"refresh": "Nachrichten aktualisieren",
-			"newPosts": "Neue Beiträge – zum Anzeigen tippen",
-			"tabLatest": "Neueste",
-			"tabForYou": "Für Sie",
-			"repostedBy": "${author} hat retweetet",
-			"decryptFailed": "Dieser Beitrag konnte nicht entschlüsselt werden",
-			"revealContent": "Inhalte anzeigen",
-			"sensitiveMedia": "Sensible Medien",
-			"showMore": "Mehr anzeigen",
-			"showLess": "Weniger anzeigen",
-			"replayDivider": "Alles gelesen – von vorn"
-		},
-		"taste": {
-			"rebuild": "Einstellungen neu erstellen",
-			"privacyPublishPreferences": "Öffentliche Tag-Benennung und Zusammenführungserkennung",
-			"privacyPublishPreferencesHint": "Nach dem Schließen können Freunde Ihre Tag-Benennung und Zusammenführungsanweisungen nicht mehr sehen und können nicht zum Konsens beitragen.",
-			"privacyPublishReactions": "Öffentliche Vorlieben und Abneigungen",
-			"privacyPublishReactionsHint": "Nach dem Schließen erhält das Poster keine Likes/Dislikes mehr, Ihre Reaktionen werden nicht in die Empfehlungen anderer einbezogen und Sie werden den Beitrag nicht mehr für eine erneute Verbreitung bewerben.",
-			"empty": "Es gibt noch kein Präferenz-Tag, es wird automatisch nach mehr Likes/Dislikes gruppiert",
-			"weight": "Gewicht ${weight}",
-			"save": "Speichern",
-			"name": {
-				"placeholder": "Lokaler Anzeigename"
-			}
-		},
-		"trending": {
-			"title": "Trend-Themen",
-			"postCount": {
-				"title": "${n} Beiträge"
-			},
-			"scopeLocal": "Lokal",
-			"scopeNearby": "In der Nähe",
-			"empty": "Noch keine Trend-Themen"
-		},
-		"search": {
-			"placeholder": "Suchen Sie nach Updates, Benutzern oder #Themen (mindestens 2 Wörter)",
-			"open": {
-				"aria-label": "Suchen"
-			},
-			"submit": "Suchen",
-			"clear": "Leeren",
-			"empty": "Keine passenden Beiträge",
-			"tooShort": "Bitte geben Sie mindestens 2 Zeichen ein",
-			"usersTitle": "Benutzer",
-			"postsTitle": "Beiträge",
-			"usersEmpty": "Kein passender Benutzer",
-			"pinAlias": "Als Alias ​​festlegen",
-			"trustScore": "Vertrauen ${score}",
-			"viewTitle": "Suchen",
-			"loading": "Suche...",
-			"filterAuthor": {
-				"placeholder": "Autor"
-			},
-			"filterMediaAll": "Alle Medien",
-			"filterMediaImage": "Bild",
-			"filterMediaVideo": "Video",
-			"filterTag": {
-				"placeholder": "#Etikett"
-			},
-			"sortRecent": "Neueste",
-			"sortPopular": "Beliebt",
-			"scopeLocal": "Lokal",
-			"scopeNearby": "In der Nähe"
-		},
-		"profile": {
-			"edit": "Profil bearbeiten",
-			"viewPosts": "Social-Profil anzeigen",
-			"settingsBtn": {
-				"aria-label": "Social-Einstellungen"
-			},
-			"mediaOnly": "[Medien]",
-			"hideFromExplore": "Konto auf der Erkundungsseite ausblenden",
-			"tabPosts": "Beiträge",
-			"tabAlbums": "Alben",
-			"tabLikes": "Gefällt mir",
-			"tabCabinets": "Cabinet",
-			"tabsLabel": {
-				"aria-label": "Profilbereiche"
-			},
-			"cabinetsEmpty": "Derzeit gibt es keine öffentlichen Cabinets",
-			"cabinetsFailed": "Das Laden des Archivs ist fehlgeschlagen: ${error}",
-			"statsGroup": {
-				"aria-label": "Statistiken"
-			},
-			"statsPosts": "Beiträge",
-			"statsFollowing": "Folge ich",
-			"statsFollowers": "Follower",
-			"followingTitle": "Folge ich",
-			"followersTitle": "Follower"
-		},
-		"dialog": {
-			"close": {
-				"aria-label": "Schließen"
-			}
-		},
-		"actions": {
-			"like": "Gefällt mir",
-			"unlike": "Gefällt mir nicht mehr",
-			"dislike": "Disliken",
-			"undislike": "Abneigung abbrechen",
-			"repost": "Weiterleiten",
-			"quote": "Zitat",
-			"delete": "Löschen",
-			"edit": "Bearbeiten",
-			"save": "Speichern",
-			"saved": "Gesammelt",
-			"translate": "Übersetzen",
-			"dm": "Private Nachricht senden",
-			"block": "Blockieren",
-			"hide": "Ausblenden",
-			"mute": "Stummschalten",
-			"follow": "Folgen",
-			"following": "Folgt bereits",
-			"care": "Besondere Beobachtung",
-			"careRemove": "Beobachtung beenden",
-			"careAdded": "Zur besonderen Beobachtung hinzugefügt",
-			"careRemoved": "Besondere Beobachtung beendet",
-			"setAlias": "Alias ​​festlegen",
-			"setAliasPrompt": "Lokalen Alias ​​festlegen (zum Löschen leer lassen):",
-			"aliasSaved": "Alias ​​aktualisiert",
-			"replies": "Kommentare",
-			"copyLink": "Link kopieren",
-			"downloadHtml": "HTML herunterladen",
-			"copied": "Kopiert",
-			"more": {
-				"aria-label": "Mehr"
-			},
-			"share": "Teilen",
-			"likeFailed": "Gefällt mir fehlgeschlagen: ${error}",
-			"dislikeFailed": "Dislike fehlgeschlagen: ${error}",
-			"repostFailed": "Weiterleitung fehlgeschlagen: ${error}",
-			"replyFailed": "Antwort fehlgeschlagen: ${error}",
-			"followFailed": "Folgen fehlgeschlagen: ${error}",
-			"saveFailed": "Speichern fehlgeschlagen: ${error}",
-			"blockFailed": "Blockierung fehlgeschlagen: ${error}",
-			"hideFailed": "Ausblenden fehlgeschlagen: ${error}",
-			"muteFailed": "Stummschaltung fehlgeschlagen: ${error}",
-			"deleteFailed": "Löschen fehlgeschlagen: ${error}"
-		},
-		"post": {
-			"edited": "Bearbeitet",
-			"editPrompt": "Beitragstext bearbeiten",
-			"editHistory": "Bearbeitungsverlauf",
-			"editHistoryEmpty": "Keine früheren Versionen",
-			"loading": "Laden…",
-			"notFound": "Beitrag existiert nicht oder ist nicht sichtbar",
-			"loadFailed": "Der Ladevorgang ist fehlgeschlagen. Bitte versuchen Sie es später noch einmal",
-			"detailTitle": "Post",
-			"back": "Zurück"
-		},
-		"reply": {
-			"context": "Antwort ${author}"
-		},
-		"notes": {
-			"label": "Community-Notiz",
-			"add": "Ergänzende Angaben",
-			"prompt": "Community-Notiz schreiben",
-			"listTitle": "Alle Community-Notizen",
-			"helpful": "Hilfreich",
-			"unhelpful": "Nutzlos",
-			"more": "Alle ${n} Einträge",
-			"empty": "Noch keine Community-Notizen"
-		},
-		"poll": {
-			"multi": "Mehrfachauswahl zulassen",
-			"apply": "Abstimmung anwenden",
-			"closed": "Die Abstimmung ist beendet",
-			"deadline": "Frist: ${deadline}",
-			"options": {
-				"placeholder": "Eine Option pro Zeile (mindestens 2)"
-			}
-		},
-		"aside": {
-			"suggested": "Empfohlene Konten"
-		},
-		"explore": {
-			"accounts": "Empfohlene Konten",
-			"posts": "Neueste Beiträge",
-			"mediaOnly": "Nur Medien"
-		},
-		"groupRef": {
-			"linking": "Chat-Gruppe verbinden",
-			"clear": "Verknüpfung aufheben",
-			"pick": "Chat-Gruppe/Kanal verbinden…"
-		},
-		"notifications": {
-			"reply": "${author} hat auf Ihren Beitrag geantwortet",
-			"mention": "${author} @ Sie im Feed",
-			"like": "${author} hat Ihren Beitrag mit „Gefällt mir“ markiert",
-			"repost": "${author} hat Ihren Beitrag retweetet",
-			"follow": "${author} folgt Ihnen",
-			"care_post": "${author} hat einen neuen Beitrag veröffentlicht (besondere Beobachtung)",
-			"poll_closed": "Abstimmung für ${author} beendet",
-			"post_note": "${author} hat eine Community-Notiz zu Ihrem Beitrag hinzugefügt",
-			"live_started": "${author} hat mit dem Live-Streaming begonnen",
-			"view": "Anzeigen",
-			"markAllRead": "Alle als gelesen markieren"
-		},
-		"inbox": {
-			"filtersLabel": {
-				"aria-label": "Posteingangsfilterung"
-			},
-			"tabs": {
-				"all": "Alle",
-				"mention": "Erwähnungen",
-				"reply": "Antwort",
-				"like": "Likes",
-				"follow": "Folgen",
-				"repost": "Weiterleiten"
-			},
-			"aggregated": {
-				"like": "${author1}, ${author2} und ${count} weitere Personen haben Ihren Beitrag mit „Gefällt mir“ markiert",
-				"likeTwo": "${author1} und ${author2} haben Ihren Beitrag mit „Gefällt mir“ markiert",
-				"repost": "${author1}, ${author2} und ${count} Personen haben Ihren Beitrag retweetet",
-				"repostTwo": "${author1} und ${author2} haben Ihren Beitrag retweetet",
-				"follow": "${author1}, ${author2} und ${count} Personen folgen Ihnen",
-				"followTwo": "${author1} und ${author2} folgen Ihnen"
-			}
-		},
-		"replies": {
-			"placeholder": "Antwort schreiben …",
-			"submit": "Antwort",
-			"empty": "Noch keine Antwort",
-			"emptyHint": "Schreiben Sie den ersten Beitrag und starten Sie die Diskussion"
-		},
-		"repost": {
-			"placeholder": "Retweet-Kommentar hinzufügen (optional)…",
-			"submit": "Weiterleitung bestätigen"
-		},
-		"quote": {
-			"quoting": "Zitieren",
-			"clear": "Zitat entfernen",
-			"viewOriginal": "Originalbeitrag ansehen"
-		},
-		"a11y": {
-			"linkGroupSelect": "Stellen Sie eine Verbindung zu einer Chat-Gruppe oder einem Chat-Kanal her",
-			"postVisibility": "Sichtbarer Bereich",
-			"postLang": "Inhaltssprache",
-			"trendingHashtags": "Trend-Themen",
-			"saveFolderSelect": "Sammlungsordner"
-		},
-		"blocklist": {
-			"title": "Blockierliste",
-			"hiddenTitle": "Ausgeblendete",
-			"empty": "Noch keine blockierten oder versteckten Einträge",
-			"unblock": "Entsperren",
-			"unhide": "Einblenden",
-			"scopeEntity": "Entität",
-			"scopeSubject": "Subjekt"
-		},
-		"translate": {
-			"label": "Übersetzung:"
-		},
-		"saved": {
-			"all": "Alle",
-			"unfiled": "Nicht archiviert",
-			"createFolder": {
-				"title": "Neuen Ordner erstellen",
-				"aria-label": "Neuen Ordner erstellen"
-			},
-			"createFolderPrompt": "Ordnername",
-			"pickFolderTitle": "Zu Favoriten hinzufügen",
-			"confirm": "Bestätigen",
-			"cancel": "Abbrechen",
-			"remove": "Favoriten entfernen",
-			"renameFolder": "Umbenennen",
-			"renameFolderPrompt": "Neuer Ordnername",
-			"deleteFolder": "Ordner löschen",
-			"deleteFolderConfirm": "Ordner löschen? Die dortigen Beiträge werden in den Bereich „Nicht archiviert“ verschoben.",
-			"searchEmpty": "Keine passende Sammlung",
-			"folderEmpty": "Dieser Ordner ist leer",
-			"emptyHint": "Tippen Sie beim Durchstöbern auf das Lesezeichen, um Beiträge hier zu speichern.",
-			"search": {
-				"placeholder": "Favoriten suchen…"
-			}
-		},
-		"drafts": {
-			"untitled": "(kein Textentwurf)",
-			"emptyHint": "Schreiben Sie etwas in das Eingabefeld und klicken Sie auf „Entwurf speichern“, um später weiterzubearbeiten.",
-			"saved": "Entwurf gespeichert",
-			"deleted": "Entwurf gelöscht",
-			"delete": "Entwurf löschen",
-			"empty": "Der Entwurf ist leer",
-			"saveFailed": "Entwurf konnte nicht gespeichert werden: ${error}",
-			"loadFailed": "Entwurf konnte nicht geöffnet werden: ${error}",
-			"deleteFailed": "Entwurf konnte nicht gelöscht werden: ${error}"
-		},
-		"time": {
-			"justNow": "Nur",
-			"minutesAgo": "Vor ${n} Minuten",
-			"hoursAgo": "Vor ${n} Stunden"
-		},
-		"empty": {
-			"feed": "Es gibt noch keine Updates. Folge einigen Leuten.",
-			"profilePosts": "Noch keine Neuigkeiten",
-			"following": "Folgt noch niemandem",
-			"followers": "Noch keine Fans",
-			"notifications": "Noch keine Benachrichtigung",
-			"saved": "Noch keine Favoriten",
-			"drafts": "Noch kein Entwurf",
-			"exploreAccounts": "Derzeit gibt es keine empfohlenen Konten",
-			"explorePosts": "Es sind noch keine Erkundungsbeiträge vorhanden",
-			"likedPosts": "Noch keine Likes",
-			"noIdentity": "Bitte konfigurieren Sie die Verbundidentität im Chat, bevor Sie Social verwenden"
-		},
-		"topic": {
-			"follow": "Abonnieren",
-			"unfollow": "Abbestellen",
-			"empty": "Zu diesem Thema gibt es noch keine Beiträge"
-		},
-		"video": {
-			"view": {
-				"aria-label": "Kurzes Video"
-			},
-			"empty": "Noch kein kurzes Video",
-			"emptyHint": "Bei den Personen, denen Sie folgen, und auf der Plaza gibt es noch keine Beiträge mit Videos. Wie wäre es mit einem Video-Beitrag?",
-			"compose": "Postet ein Video",
-			"back": {
-				"aria-label": "Zurück zu den Nachrichten"
-			},
-			"mute": {
-				"aria-label": "Stummschalten"
-			},
-			"unmute": {
-				"aria-label": "Stummschaltung aufheben"
-			},
-			"unavailable": "Video kann nicht abgespielt werden",
-			"closeReplies": {
-				"aria-label": "Kommentare Weniger anzeigen"
-			}
-		},
-		"live": {
-			"empty": "Noch keine Live-Übertragung",
-			"viewers": "${n} Leute haben zugesehen",
-			"likes": "${n} Gefällt mir",
-			"local": "Lokal",
-			"hall": "Live-Halle",
-			"back": {
-				"title": "Zurück zu den Nachrichten",
-				"aria-label": "Zurück zu den Nachrichten"
-			},
-			"danmakuSend": "Schicken",
-			"postWatch": "Nehmen Sie an der Live-Übertragung teil",
-			"postEnded": "Die Liveübertragung ist beendet",
-			"postEndedStats": "Gesehen von ${viewers} · ${likes} Gefällt mir · ${duration}",
-			"link": {
-				"invite": "Verbindung Einladen",
-				"needPeer": "Bitte geben Sie den Peer-EntityHash:liveId ein",
-				"invited": "Die Online-Einladung wurde gesendet",
-				"linked": "Verbunden",
-				"peer": {
-					"placeholder": "Peer-EntityHash:liveId"
-				}
-			},
-			"broadcast": {
-				"title": "Beginnen Sie mit der Übertragung",
-				"open": "Gehen Sie zur Übertragung",
-				"mediaAv": "Audio und Video",
-				"mediaAudio": "Reiner Klang",
-				"mediaVideo": "Reines Bild",
-				"mediaWhip": "WHIP-Push-Streaming (z. B. OBS)",
-				"whipUrl": "WHIP-Adresse",
-				"whipToken": "Inhabertoken",
-				"whipWaiting": "Warten auf WHIP-Streaming-Verbindung (Streaming-Software wie OBS kann verwendet werden)…",
-				"start": "Live-Übertragung starten",
-				"stop": "Stoppen Sie die Live-Übertragung",
-				"started": "Die Live-Übertragung hat begonnen",
-				"stopped": "Die Liveübertragung wurde gestoppt",
-				"titleInput": {
-					"placeholder": "Live-Titel (optional)"
-				}
-			},
-			"danmaku": {
-				"placeholder": "Sag etwas..."
 			}
 		}
 	},
@@ -2043,12 +1306,7 @@
 			"createGroup": "Neue Gruppe erstellen",
 			"members": "Mitglied",
 			"membersHint": "Die Mitgliederliste wird durch Checkpoint synchronisiert (Platzhalter)",
-			"send": "Schicken",
 			"streamTest": "Testen Sie Mediengeräte",
-			"messageInput": {
-				"placeholder": "Gruppennachricht… Strg+Eingabe zum Senden",
-				"aria-label": "Nachricht"
-			},
 			"loadError": "Die Gruppe konnte nicht geladen werden",
 			"remoteNodeTimeout": "Der Remote-Knoten antwortet nicht. Bitte versuchen Sie es später erneut.",
 			"remoteUnavailable": "Die Remote-Komponente ist nicht verfügbar oder kann den RPC nicht weiterleiten",
@@ -2126,7 +1384,6 @@
 			"remoteTyping": "${name} tippt...",
 			"remoteTypingTwo": "${name1}, ${name2} Eingabe...",
 			"remoteTypingMany": "${name} und ${count} andere tippen…",
-			"mentionEmpty": "(keine passenden Mitglieder)",
 			"localAiLabel": "Native Rolle:",
 			"forceTriggerOne": {
 				"title": "Erzwinge, dass Trigger ${name} spricht"
@@ -2185,7 +1442,6 @@
 			"fileDownload": {
 				"title": "Datei herunterladen"
 			},
-			"clickToLoad": "Klicken Sie zum Laden",
 			"unknownFile": "Unbekannte Datei",
 			"blockSender": {
 				"title": "Blockieren Sie den Absender"
@@ -2210,7 +1466,6 @@
 			"editConfirm": "Bestätigen (Strg+Eingabe)",
 			"editCancel": "Abbrechen (Esc)",
 			"editHint": "Strg+Enter Bestätigen · Esc Abbrechen",
-			"editedLabel": "(bearbeitet)",
 			"editEmptyText": "Der Nachrichteninhalt darf nicht leer sein",
 			"createGroupTitle": "Neue Gruppe erstellen",
 			"groupNameLabel": "Gruppenname",
@@ -2454,6 +1709,10 @@
 			},
 			"sendTitle": {
 				"title": "Senden (Strg+Eingabe)"
+			},
+			"messageInput": {
+				"placeholder": "Gruppennachricht… Strg+Eingabe zum Senden",
+				"aria-label": "Nachricht"
 			},
 			"stopGenerateTitle": {
 				"title": "Hören Sie auf zu generieren"
@@ -3125,7 +2384,11 @@
 			"altImage": {
 				"placeholder": "Fügen Sie dem Bild eine Beschreibung hinzu ...",
 				"label": "Bildbeschreibung (alt)"
-			}
+			},
+			"editedLabel": "(bearbeitet)",
+			"mentionEmpty": "(keine passenden Mitglieder)",
+			"clickToLoad": "Klicken Sie zum Laden",
+			"send": "Schicken"
 		},
 		"sidebar": {
 			"settings": {
@@ -3445,6 +2708,234 @@
 			"chatHub": {
 				"title": "Chat"
 			}
+		},
+		"profile": {
+			"title": "Profil",
+			"description": "Verwalten Sie Ihr öffentliches Profil in Chat und Social.",
+			"settingsEyebrow": "Kontoeinstellungen",
+			"accountAtGlance": "Kontoübersicht",
+			"advancedKicker": "Nach Bedarf konfigurieren",
+			"advancedSettings": "Erweiterte Einstellungen",
+			"advancedDescription": "Für den Alltag ist keine Anpassung nötig.",
+			"edit": "Profil bearbeiten",
+			"save": "Speichern",
+			"cancel": "Abbrechen",
+			"displayName": "Anzeigename",
+			"name": "Name",
+			"bio": "Bio",
+			"descriptionLabel": "Bio (Markdown)",
+			"email": "E-Mail",
+			"status": "Status",
+			"customStatusLabel": "Benutzerdefinierter Status",
+			"avatarLabel": "Avatar",
+			"themeColorLabel": "Themenfarbe",
+			"uploadAvatar": "Avatar hochladen",
+			"ownerTitle": "Mein Meister",
+			"ownerSummary": "Stellvertretung",
+			"ownerDescription": "Nach der Einrichtung kann Ihr Meister Ihre Chat-Nachrichten, Social-Beiträge und Ihr Profil in Ihrem Namen bearbeiten oder löschen; der Inhalt wird lokal als unsicheres Markdown gerendert (kann Skripte enthalten). Beliebiger Entitäts-Hash, jederzeit löschbar.",
+			"ownerEntityHashLabel": "Meister-Entitäts-Hash (128 hex)",
+			"ownerSave": "Meister speichern",
+			"ownerClear": "Meister entfernen",
+			"ownerSaved": "Meister aktualisiert",
+			"ownerCleared": "Meister entfernt",
+			"ownerSaveFailed": "Speichern fehlgeschlagen: ${error}",
+			"ownerConfirmTitle": "Meister festlegen?",
+			"ownerConfirmWarningTitle": "Hohes Risiko – bitte sorgfältig lesen",
+			"ownerConfirmEditBody": "Nach der Einrichtung kann die andere Partei Ihre Chat-Nachrichten, Social-Beiträge und Ihr Profil ohne Ihre Zustimmung bearbeiten oder löschen. Versehentlich oder durch Täuschung einen Meister setzen = sofort Kontrolle über Ihre Inhalte verlieren.",
+			"ownerConfirmRenderBody": "Chat-Nachrichten und Social-Beiträge der anderen Partei werden in Ihrem Browser als vollständiges Markdown gerendert (inkl. HTML/Skripte). Das erlaubt der anderen Partei, ohne erneute Zustimmung beliebigen Code auf Ihrem Gerät auszuführen. Nur fortfahren, wenn Sie der Person vollständig vertrauen.",
+			"ownerConfirmCooldown": "Risiken gelesen (${seconds})",
+			"ownerConfirmFirst": "Risiken verstanden, fortfahren",
+			"ownerConfirmSecond": "Erneut klicken zur endgültigen Bestätigung",
+			"ownerConfirmCancel": "Abbrechen",
+			"federationTitle": "Föderation & Synchronisation",
+			"federationSummary": "Relay-Server und Energiesparmodus",
+			"federationDescription": "Nostr-Relay-URL und Energiesparmodus konfigurieren. Die Föderationssynchronisation einer Gruppe wird automatisch aktiviert, wenn Sie erstmals jemanden einladen oder eine föderierte Direktnachricht erstellen.",
+			"federationAdvanced": "Erweiterte Optionen",
+			"federationRelayUrlsLabel": "Relay-Server (einer pro Zeile, leer = Standard)",
+			"federationBatterySaverLabel": "Energiesparmodus",
+			"federationSave": "Netzwerkeinstellungen speichern",
+			"federationResetDefault": "Empfohlene Standardkonfiguration wiederherstellen",
+			"federationSaved": "Gespeichert",
+			"federationResetOk": "Empfohlene Standardkonfiguration wiederhergestellt",
+			"federationSaveFailed": "Speichern fehlgeschlagen: ${error}",
+			"preferences": "Einstellungen",
+			"language": "Sprache",
+			"theme": "Design",
+			"notifications": "Benachrichtigungen",
+			"emailNotifications": "E-Mail-Benachrichtigungen",
+			"pushNotifications": "Push-Benachrichtigungen",
+			"soundNotifications": "Tonbenachrichtigungen",
+			"social": "Social-Links",
+			"website": "Website",
+			"github": "GitHub",
+			"twitter": "Twitter",
+			"stats": "Statistiken",
+			"joinedAt": "Beigetreten am",
+			"messageCount": "Nachrichten",
+			"groupCount": "Gruppen",
+			"channelCount": "Kanäle",
+			"privacy": "Datenschutz",
+			"showEmail": "E-Mail anzeigen",
+			"showStats": "Statistiken anzeigen",
+			"allowDirectMessages": "Direktnachrichten erlauben",
+			"statusOptions": {
+				"online": "Online",
+				"away": "Abwesend",
+				"busy": "Beschäftigt",
+				"offline": "Offline"
+			},
+			"themeOptions": {
+				"auto": "Automatisch",
+				"light": "Hell",
+				"dark": "Dunkel"
+			},
+			"languageOptions": {
+				"zh-CN": "Vereinfachtes Chinesisch",
+				"en-US": "Englisch"
+			},
+			"notifEmail": "E-Mail",
+			"notifPush": "Push",
+			"notifSound": "Ton",
+			"notifsAllOff": "Alle aus",
+			"bioEmpty": "Hier steht noch nichts …",
+			"noSocialLinks": "Keine Social-Links",
+			"emailVisible": "Sichtbar",
+			"emailHidden": "Verborgen",
+			"customStatus": {
+				"placeholder": "Was machen Sie gerade …"
+			},
+			"avatar": {
+				"alt": "Avatar"
+			},
+			"avatarPreview": {
+				"alt": "Avatar-Vorschau"
+			},
+			"myGroups": "Meine Gruppen",
+			"myChannels": "Meine Kanäle",
+			"noGroups": "Noch keiner Gruppe beigetreten",
+			"noChannels": "Noch keine Kanäle",
+			"overview": "Profilübersicht",
+			"summaryUserId": "Benutzer-ID",
+			"summaryAccountStatus": "Kontostatus",
+			"summaryEmailVisibility": "E-Mail-Sichtbarkeit",
+			"summaryThemePref": "Design",
+			"summaryLanguagePref": "Sprache",
+			"summarySocialCount": "Social-Links",
+			"summaryLinksCount": "Externe Links",
+			"groupDescriptionEmpty": "Keine Beschreibung",
+			"groupMembers": "${members} Mitglieder · ${channels} Kanäle",
+			"channelPrivate": " · Privat",
+			"channelTypeText": "Textkanal",
+			"channelTypeList": "Listenkanal",
+			"channelTypeVoice": "Sprachkanal",
+			"channelTypeStreaming": "Streaming-Kanal",
+			"errors": {
+				"loadFailed": "Profil konnte nicht geladen werden",
+				"saveFailed": "Profil konnte nicht gespeichert werden",
+				"uploadFailed": "Avatar konnte nicht hochgeladen werden",
+				"invalidUserData": "Ungültiges Benutzerdatenformat",
+				"identityRequired": "Knotenidentität noch nicht bereit – Seite aktualisieren. Falls es weiterhin fehlschlägt, Föderationskonfiguration unten unter P2P-Einstellungen speichern.",
+				"fetchUserFailed": "Benutzerinformationen konnten nicht abgerufen werden",
+				"operationFailed": "Vorgang fehlgeschlagen: ${error}"
+			},
+			"success": {
+				"saved": "Profil gespeichert",
+				"avatarUploaded": "Avatar hochgeladen"
+			},
+			"ownerEntityHash": {
+				"placeholder": "Entitäts-Hash des Meisters eingeben"
+			}
+		},
+		"entityProfile": {
+			"attributionMismatch": "Die Anzeigeidentität stimmt nicht mit dem Nachrichtenunterzeichner überein (z. B. wurde der Importverlauf vom Importeur neu signiert). Betrachten Sie diesen Anzeigenamen nicht als kryptografische Identität.",
+			"attributionMismatchShort": {
+				"title": "Nichtübereinstimmung der Signaturzuordnung",
+				"aria-label": "Nichtübereinstimmung der Signaturzuordnung"
+			},
+			"ownedBy": "Diese Entität gehört ${owner}"
+		},
+		"stickers": {
+			"title": "Sticker-Plaza",
+			"description": "Sticker- und Emoji-Verwaltung",
+			"back": {
+				"title": "Zurück"
+			},
+			"packs": "Stickerpakete",
+			"create": "Stickerpaket erstellen",
+			"upload": "Sticker hochladen",
+			"install": "Installieren",
+			"uninstall": "Deinstallieren",
+			"close": "Schließen",
+			"cancel": "Abbrechen",
+			"installed": "Installiert",
+			"myPacks": "Meine Stickerpakete",
+			"tabAll": "Alle",
+			"store": "Sticker-Plaza",
+			"favorites": "Favoriten",
+			"recent": "Zuletzt verwendet",
+			"search": {
+				"placeholder": "Stickerpakete suchen …"
+			},
+			"emptyPacks": "Keine Stickerpakete",
+			"packNameLabel": "Name des Stickerpakets",
+			"packName": {
+				"placeholder": "Name des Stickerpakets eingeben"
+			},
+			"packDescriptionLabel": "Beschreibung",
+			"packDescription": {
+				"placeholder": "Beschreibung eingeben"
+			},
+			"stickerNameLabel": "Stickername",
+			"stickerName": {
+				"placeholder": "Stickername eingeben"
+			},
+			"selectPack": "Stickerpaket auswählen",
+			"selectPackOption": {
+				"textContent": "Stickerpaket auswählen"
+			},
+			"selectImage": "Bild auswählen",
+			"tagsLabel": "Tags (kommagetrennt)",
+			"tags": {
+				"placeholder": "Z. B. süß, Emoji, Tier"
+			},
+			"author": "Autor",
+			"authorLabel": "Autor: ${author}",
+			"stickerCount": "${count} Sticker",
+			"badgeMine": "Meins",
+			"noDescription": "Keine Beschreibung",
+			"noStickersInPack": "Keine Sticker",
+			"deletePack": "Stickerpaket löschen",
+			"public": "Öffentlich",
+			"private": "Privat",
+			"animated": "Animiert",
+			"static": "Statisch",
+			"addTag": "Tag hinzufügen",
+			"defaultPackName": "Standard-Stickerpaket",
+			"defaultPackDescription": "Vom System bereitgestellte Standard-Sticker",
+			"unnamedPack": "Unbenanntes Stickerpaket",
+			"importPackName": "Meine Sammlung",
+			"importPackDescription": "Aus Nachrichten gespeicherte Sticker",
+			"nameRequired": "Bitte Stickerpaketname eingeben",
+			"stickerNameRequired": "Bitte Stickername eingeben",
+			"selectPackRequired": "Bitte Stickerpaket auswählen",
+			"fileRequired": "Bitte Bilddatei auswählen",
+			"loadDetailFailed": "Stickerpaketdetails konnten nicht geladen werden",
+			"deleteConfirm": "Dieses Stickerpaket dauerhaft löschen? Alle Sticker werden entfernt – nicht rückgängig zu machen.",
+			"errors": {
+				"loadFailed": "Stickerpaket konnte nicht geladen werden",
+				"uploadFailed": "Sticker konnte nicht hochgeladen werden",
+				"installFailed": "Installation fehlgeschlagen",
+				"uninstallFailed": "Deinstallation fehlgeschlagen",
+				"createFailed": "Stickerpaket konnte nicht erstellt werden",
+				"deleteFailed": "Löschen fehlgeschlagen"
+			},
+			"success": {
+				"uploaded": "Sticker hochgeladen",
+				"installed": "Installiert",
+				"uninstalled": "Deinstalliert",
+				"created": "Stickerpaket erstellt",
+				"deleted": "Gelöscht"
+			}
 		}
 	},
 	"easynew": {
@@ -3759,433 +3250,6 @@
 			}
 		}
 	},
-	"userSettings": {
-		"title": "Benutzereinstellungen",
-		"PageTitle": "Benutzereinstellungen",
-		"description": "Kümmern Sie sich um die Details Ihrer fount-Identität. Verwalten Sie Ihr Profil, schützen Sie Ihren Zugriff und sehen Sie verbundene Geräte ein. Ein ruhiger Rückzugsort für Ihr Konto.",
-		"shell": {
-			"unauthorized": "Anmeldung erforderlich.",
-			"responseNotJson": "Der Server hat Inhalt zurückgegeben, der nicht verarbeitet werden konnte.",
-			"unexpectedError": "Die Anfrage ist fehlgeschlagen."
-		},
-		"errors": {
-			"accountNotFound": "Konto nicht gefunden."
-		},
-		"userInfo": {
-			"title": "Benutzerinformationen",
-			"usernameLabel": "Benutzername:",
-			"creationDateLabel": "Kontoerstellungsdatum:",
-			"folderSizeLabel": "Größe der Benutzerdaten:",
-			"folderPathLabel": "Pfad der Benutzerdaten:",
-			"copyPathButton": {
-				"title": "Pfad kopieren"
-			},
-			"copyPathButtonIcon": {
-				"alt": "Kopiersymbol"
-			},
-			"copiedAlert": "Der Pfad wurde in die Zwischenablage kopiert!",
-			"copyPathFailed": "Der Pfad kann nicht in die Zwischenablage kopiert werden."
-		},
-		"changePassword": {
-			"title": "Passwort ändern",
-			"currentPasswordLabel": "Aktuelles Passwort:",
-			"newPasswordLabel": "Neues Passwort:",
-			"confirmNewPasswordLabel": "Neues Passwort bestätigen:",
-			"submitButton": "Passwort ändern",
-			"errorMismatch": "Die neuen Passwörter stimmen nicht überein.",
-			"success": "Passwort erfolgreich geändert.",
-			"missingFields": "Bitte geben Sie Ihr aktuelles Passwort und Ihr neues Passwort ein.",
-			"invalidCurrent": "Das aktuelle Passwort ist falsch."
-		},
-		"renameUser": {
-			"title": "Benutzer umbenennen",
-			"newUsernameLabel": "Neuer Benutzername:",
-			"submitButton": "Benutzer umbenennen",
-			"confirmMessage": "Sind Sie sicher, dass Sie Ihren Benutzernamen ändern möchten? Sie müssen sich danach neu anmelden.",
-			"success": "Der Benutzer wurde erfolgreich in \"${newUsername}\" umbenannt. Sie werden jetzt abgemeldet.",
-			"missingParams": "Bitte geben Sie den neuen Benutzernamen und das Passwort ein.",
-			"wrongPassword": "Das Passwort ist falsch.",
-			"mustDiffer": "Der neue Benutzername muss sich vom aktuellen Benutzernamen unterscheiden.",
-			"taken": "Dieser Benutzername ist bereits vergeben.",
-			"moveFailed": "Benutzerdatenverzeichnis konnte nicht umbenannt werden: ${detail}. Der ursprüngliche Benutzername wurde wiederhergestellt."
-		},
-		"passkeys": {
-			"title": "Sicherheitsschlüssel und Passkey",
-			"description": "Nach der Bindung können Sie sich mit einem Sicherheitsschlüssel oder einem nativen Passkey anmelden. Erfordert die Verwendung unter HTTPS oder localhost; Bitte fügen Sie den Schlüssel zuerst in den Benutzereinstellungen hinzu.",
-			"refreshButton": {
-				"title": "Liste aktualisieren"
-			},
-			"refreshButtonIcon": {
-				"alt": "Aktualisierungssymbol"
-			},
-			"nameLabel": "Bemerkungen (optional)",
-			"nameInput": {
-				"placeholder": "Beispiel: YubiKey für die Arbeit"
-			},
-			"addButton": "Sicherheitsschlüssel hinzufügen",
-			"noneFound": "Es wurden noch keine Sicherheitsschlüssel gebunden.",
-			"itemDetails": "Hinzugefügt: ${created}",
-			"removeButton": "Entfernen",
-			"removeConfirm": "Möchten Sie diesen Schlüssel wirklich entfernen? Nach dem Entfernen können Sie sich damit nicht mehr anmelden.",
-			"removeSuccess": "Sicherheitsschlüssel entfernt.",
-			"addSuccess": "Sicherheitsschlüssel hinzugefügt.",
-			"errorLoadLibrary": "Die WebAuthn-Bibliothek kann nicht geladen werden.",
-			"errorCancelled": "Hinzufügen abgebrochen.",
-			"apiInvalidPassword": "Falsches Passwort.",
-			"apiMissingCredential": "Gültige Passkey-Anmeldeinformationen fehlen.",
-			"apiRemoveParamsRequired": "Bitte geben Sie die Anmeldeinformationen und das Passwort ein, die Sie entfernen möchten."
-		},
-		"userDevices": {
-			"title": "Benutzergeräte/-sitzungen",
-			"noDevicesFound": "Es wurden keine Geräte oder Sitzungen gefunden.",
-			"deviceInfo": "Geräte-ID: ${deviceId}",
-			"thisDevice": "Dieses Gerät",
-			"deviceDetails": "Zuletzt online: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "Widerrufen",
-			"revokeConfirm": "Sind Sie sicher, dass Sie sich von diesem Gerät/dieser Sitzung abmelden möchten?",
-			"revokeSuccess": "Das Gerät/Die Sitzung wurde erfolgreich widerrufen.",
-			"revokeMissingParams": "Bitte geben Sie das Geräte- und Sitzungspasswort an, das Sie widerrufen möchten.",
-			"revokeWrongPassword": "Das Passwort ist falsch.",
-			"listNotFound": "Geräteliste nicht gefunden.",
-			"deviceNotFound": "Das Gerät oder die Sitzung wurde nicht gefunden.",
-			"refreshButton": {
-				"title": "Liste aktualisieren"
-			},
-			"refreshButtonIcon": {
-				"alt": "Aktualisieren-Symbol"
-			}
-		},
-		"apiKeys": {
-			"title": "API-Schlüssel",
-			"description": "Verwalten Sie den API-Schlüssel für externe Anwendungen.",
-			"input": {
-				"placeholder": "Neue Schlüsselbeschreibung"
-			},
-			"createButton": "erstellen",
-			"noKeysFound": "Es wurden keine API-Schlüssel gefunden.",
-			"keyDetails": "Beschreibung: ${description} | Erstellt in: ${createdAt} | Zuletzt gebraucht: ${lastUsed}",
-			"neverUsed": "Nie benutzt",
-			"noKeysForUser": "API-Schlüsseldaten nicht gefunden.",
-			"revokeWrongPassword": "Das Passwort ist falsch.",
-			"keyNotFound": "Der API-Schlüssel wurde nicht gefunden.",
-			"revokeMissingJti": "Bitte geben Sie den zu widerrufenden Schlüssel an.",
-			"revokeMissingPassword": "Für das Sperren eines Schlüssels ist ein Passwort erforderlich.",
-			"verifyMissingApiKey": "Bitte geben Sie einen API-Schlüssel an.",
-			"revokeButton": "Widerrufen",
-			"revokeConfirm": "Sind Sie sicher, dass Sie diesen API-Schlüssel widerrufen möchten?",
-			"revokeSuccess": "Der API-Schlüssel wurde erfolgreich widerrufen.",
-			"errorDescriptionRequired": "Eine Beschreibung ist erforderlich.",
-			"createSuccess": "Der API-Schlüssel wurde erfolgreich erstellt.",
-			"refreshButton": {
-				"title": "Aktualisieren Sie die Liste"
-			},
-			"refreshButtonIcon": {
-				"alt": "Aktualisieren-Symbol"
-			}
-		},
-		"newApiKey": {
-			"title": "Neuer API-Schlüssel wurde erstellt",
-			"warning": "Bitte kopieren Sie Ihren neuen API-Schlüssel. Sie werden es nicht wieder sehen können!",
-			"closeButton": "Ich habe meinen Schlüssel kopiert",
-			"copyButton": {
-				"title": "Kopieren Sie den neuen API-Schlüssel"
-			},
-			"copiedAlert": "Der API-Schlüssel wurde in die Zwischenablage kopiert!",
-			"copyKeyFailed": "Der Schlüssel konnte nicht in die Zwischenablage kopiert werden."
-		},
-		"editorCommand": {
-			"title": "Externer Editor – Befehl",
-			"description": "Legen Sie den Befehl und die Argumentvorlage fest, mit der Dateien in einem externen Editor geöffnet werden. Unterstützte Platzhalter: Dateipfad, Zeilen- und Spaltennummer.",
-			"editorPresetLabel": "Editor-Voreinstellungen",
-			"commandLabel": "Befehl",
-			"argsTemplateLabel": "Argumentvorlage",
-			"argsTemplateHint": "Platzhalter: \\${file} \\${line} \\${column}",
-			"presetOptionPathAvailable": "${label} (im PATH vorhanden)",
-			"presetOptionPathUnavailable": "${label} (nicht im PATH)",
-			"testPathInput": {
-				"placeholder": "Pfad zu einer Datei zum Ausprobieren, z. B. C:/work/project/src/main.mjs"
-			},
-			"testButton": "Testweise öffnen",
-			"saveButton": "Konfiguration speichern",
-			"saveSuccess": "Befehl für externen Editor gespeichert.",
-			"testPathRequired": "Bitte zuerst einen Pfad zur Testdatei angeben.",
-			"testSuccess": "Befehl zum Öffnen im Editor wurde ausgeführt."
-		},
-		"logout": {
-			"title": "Abmelden",
-			"description": "Dadurch wird Ihr Konto vom aktuellen Gerät abgemeldet.",
-			"buttonText": "Abmelden",
-			"confirmMessage": "Sind Sie sicher, dass Sie sich abmelden möchten?",
-			"successMessage": "Erfolgreich abgemeldet. Sie werden zur Anmeldeseite weitergeleitet..."
-		},
-		"deleteAccount": {
-			"title": "Konto löschen",
-			"warning": "Warnung: Diese Aktion löscht Ihr Konto und alle zugehörigen Daten dauerhaft und kann nicht wiederhergestellt werden.",
-			"submitButton": "Mein Konto löschen",
-			"confirmMessage1": "Warnung! Sind Sie sicher, dass Sie Ihr Konto dauerhaft löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
-			"confirmMessage2": "Um die Löschung zu bestätigen, geben Sie bitte Ihren Benutzernamen \"${username}\" ein:",
-			"usernameMismatch": "Der eingegebene Benutzername stimmt nicht mit dem aktuellen Benutzer überein. Der Löschvorgang wurde abgebrochen.",
-			"success": "Das Konto wurde erfolgreich gelöscht. Sie werden jetzt abgemeldet.",
-			"missingPassword": "Bitte geben Sie Ihr Passwort ein.",
-			"wrongPassword": "Das Passwort ist falsch."
-		},
-		"passwordConfirm": {
-			"title": "Vorgang bestätigen",
-			"message": "Um diesen Vorgang fortzusetzen, geben Sie bitte Ihr aktuelles Passwort ein:",
-			"passwordLabel": "Passwort:",
-			"confirmButton": "Bestätigen",
-			"cancelButton": "Abbrechen"
-		},
-		"apiError": "API-Anfrage fehlgeschlagen: ${message}",
-		"generalError": "Es ist ein Fehler aufgetreten: ${message}",
-		"home_function_buttons": {
-			"settings": {
-				"title": "Einstellungen",
-				"sub_items": {
-					"main": {
-						"title": "Benutzereinstellungen"
-					}
-				}
-			}
-		}
-	},
-	"subfounts": {
-		"title": "Subfounts – Peer-to-Peer-Geräteverwaltung",
-		"pageTitle": "Subfounts",
-		"description": "Verwalten Sie Peer-to-Peer-Subfount-Verbindungen",
-		"hostConnectionCode": {
-			"title": "Host-Verbindungscode",
-			"connectionCodeLabel": "Verbindungscode (Peer-ID)",
-			"passwordLabel": "Passwort",
-			"copyButton": "Kopieren",
-			"regenerateButton": "Regenerieren",
-			"infoMessage": "Teilen Sie diese Anmeldeinformationen mit Subfount-Clients, um Verbindungen herzustellen.",
-			"connectionCodeCopied": "Der Verbindungscode wurde in die Zwischenablage kopiert",
-			"passwordCopied": "Passwort in die Zwischenablage kopiert",
-			"regenerateSuccess": "Der Verbindungscode wurde neu generiert"
-		},
-		"infra": {
-			"title": "Netzwerk-Gemeinwohl",
-			"description": "Legt zentral fest, ob verbundene Subfounts als Gemeinwohl-Knoten das gesamte fount-Netz unterstützen. Ausgeschaltet nehmen sie weiterhin Remote-Ausführung von diesem Host an, helfen aber nicht mehr auf Netzwerkebene.",
-			"capabilityRelay": "Am Overlay-Mehrhop-Weiterleiten teilnehmen, damit andere Knoten bei fehlender Direktverbindung trotzdem erreichbar bleiben.",
-			"capabilityMailbox": "Offline-Zustellung bereithalten, damit andere Knoten Direktnachrichten noch erhalten, wenn sie wieder online sind.",
-			"hostPriority": "Wenn aktiviert, diesen Host bevorzugen: Routing nach seiner Reputationstabelle gewichten und ihn auf die höchste Priorität festlegen.",
-			"toggleLabel": "Subfounts am Gemeinwohl beteiligen",
-			"enabledToast": "Aktiv: Subfounts nehmen am Netzwerk-Gemeinwohl teil (dieser Host zuerst)",
-			"disabledToast": "Aus: Subfounts nehmen nicht mehr am Netzwerk-Gemeinwohl teil"
-		},
-		"connectedSubfounts": {
-			"title": "Verbundener Subfount",
-			"noSubfountsConnected": "Es ist kein Subfount verbunden",
-			"table": {
-				"id": "ID",
-				"description": "Bemerkung",
-				"deviceId": "Geräte-ID",
-				"connectedAt": "Verbindungszeit",
-				"status": "Zustand",
-				"actions": "Aktionen",
-				"connected": "Verbunden",
-				"disconnected": "Getrennt",
-				"save": "speichern",
-				"na": "N / A"
-			},
-			"descriptionSaved": "Notiz gespeichert",
-			"descriptionSaveFailed": "Notiz konnte nicht gespeichert werden: ${message}"
-		},
-		"codeExecution": {
-			"title": "Codeausführung",
-			"description": "Führen Sie JavaScript-Code für die ausgewählte Subfount aus",
-			"selectSubfountLabel": "Wählen Sie die Subfount aus",
-			"hostOption": "Host (ID: ${id})",
-			"subfountOption": "Client ${id}${deviceId}",
-			"scriptLabel": "JavaScript-Code",
-			"executeButton": "ausführen",
-			"executing": "Ausführen...",
-			"noSubfountSelected": "Bitte wählen Sie zunächst eine Subfount aus",
-			"noScriptProvided": "Bitte geben Sie den auszuführenden Code ein",
-			"executionSuccess": "Codeausführung erfolgreich",
-			"executionFailed": "Codeausführung fehlgeschlagen: ${message}",
-			"selectSubfount": "Bitte wählen Sie den Subfount aus, um den Code auszuführen ..."
-		},
-		"downloadClient": {
-			"title": "Laden Sie den Subfount-Client herunter",
-			"description": "Laden Sie das eigenständige Subfount-Client-Skript herunter, um es auf dem Remote-Gerät auszuführen.",
-			"downloadButton": "Laden Sie subfount.mjs herunter"
-		},
-		"errors": {
-			"loadConnectionCodeFailed": "Verbindungscode konnte nicht geladen werden: ${message}",
-			"regenerateConnectionCodeFailed": "Verbindungscode konnte nicht neu generiert werden: ${message}",
-			"loadSettingsFailed": "Gemeinwohl-Einstellungen konnten nicht geladen werden: ${message}",
-			"saveSettingsFailed": "Gemeinwohl-Einstellungen konnten nicht gespeichert werden: ${message}",
-			"generalError": "Es ist ein Fehler aufgetreten: ${message}"
-		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "In Entwicklung",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "Untergerät",
-						"sub_items": {
-							"main": {
-								"title": "Untergeräte verwalten"
-							}
-						}
-					}
-				}
-			}
-		}
-	},
-	"languageSettings": {
-		"title": "Spracheinstellungen",
-		"pageTitle": "Spracheinstellungen",
-		"description": "Verwalten Sie Ihre Spracheinstellungen für die fount-Anwendung. Passen Sie Ihr Erlebnis mit den verfügbaren Sprachoptionen an.",
-		"pageDescription": "Verwalten Sie hier Ihre Spracheinstellungen. Die Sprachen in der Liste haben Vorrang vor den Browsereinstellungen in der Reihenfolge.",
-		"availableLanguages": "Verfügbare Sprachen",
-		"preferredLanguages": "Prioritätssprachliste",
-		"resetButton": "Zurücksetzen",
-		"saveButton": "Speichern",
-		"select": {
-			"placeholder": "Sprache auswählen..."
-		},
-		"search": {
-			"placeholder": "Sprache suchen..."
-		},
-		"noPreferredLanguages": "Noch keine bevorzugte Sprache festgelegt. Es werden die Standardeinstellungen des Browsers verwendet.",
-		"moveUpButton": {
-			"aria-label": "nach oben bewegen",
-			"alt": "Symbol „Nach oben verschieben“."
-		},
-		"moveDownButton": {
-			"aria-label": "nach unten bewegen",
-			"alt": "Symbol „Nach unten verschieben“."
-		},
-		"deleteLocaleButton": {
-			"aria-label": "Diese Sprache löschen",
-			"alt": "Symbol „Löschen“."
-		},
-		"savedMessage": "Spracheinstellungen wurden gespeichert!",
-		"resetMessage": "Spracheinstellungen wurden zurückgesetzt!",
-		"fetchLocalesFailed": "Abrufen der verfügbaren Sprachen fehlgeschlagen!",
-		"home_function_buttons": {
-			"settings": {
-				"title": "Einstellungen",
-				"sub_items": {
-					"main": {
-						"title": "Spracheinstellungen"
-					}
-				}
-			}
-		}
-	},
-	"themeManage": {
-		"title": "Design-Verwaltung",
-		"description": "Wählen Sie die Ästhetik, die Ihre Stimmung oder Geschichte widerspiegelt. Sehen Sie sich eine Vorschau an und wählen Sie aus einer Palette von Themen aus, die jeweils eine andere Atmosphäre für Ihre Font-Interaktionen bieten. Deine Welt, dein Stil.",
-		"instruction": "Wählen Sie ein Design!",
-		"search": {
-			"placeholder": "Themen suchen...",
-			"noResult": "Keine passenden Themen gefunden."
-		},
-		"createButton": "+ Neues Thema erstellen",
-		"preview": {
-			"editButton": {
-				"title": "Bearbeiten"
-			},
-			"editButtonIcon": {
-				"alt": "Bearbeiten-Symbol"
-			},
-			"deleteButton": {
-				"title": "Löschen"
-			},
-			"deleteButtonIcon": {
-				"alt": "Löschen-Symbol"
-			},
-			"cloneButton": {
-				"title": "Kopieren"
-			},
-			"cloneButtonIcon": {
-				"alt": "Kopiersymbol"
-			}
-		},
-		"editor": {
-			"title": "Theme-Editor",
-			"cancelButton": "Abbrechen",
-			"saveApplyButton": "Speichern und anwenden",
-			"themeName": "Themenname (ID)",
-			"autoPaletteTitle": "Automatische Farbkorrektur aus Bildern",
-			"autoPaletteInstruction": "Klicken Sie oben auf eine Farbe, um Primär-/Sekundär-/Akzent-/Neutralfarben automatisch auszufüllen.",
-			"coreColors": "Kernfarbe",
-			"baseBackground": "Grundlagen und Hintergrund",
-			"variables": "Variablen",
-			"borderRadius": "Randradius (--rounded-box)",
-			"borderWidth": "Randbreite (--border-btn)",
-			"advancedCustomization": "Erweiterte Anpassung",
-			"customCSS": "Benutzerdefiniertes CSS (Überschreibung)",
-			"customMjsScript": "Benutzerdefiniertes MJS-Skript (optional)",
-			"mjsSyntaxHint": "Verwenden Sie [async-eval-Syntax](${asyncDocLink}). Gibt ein Objekt zurück, das die Funktionen `load()` und `unload()` enthält.",
-			"themeIdRequired": "Themen-ID erforderlich",
-			"newThemeName": "Name des neuen Themas:",
-			"deleteConfirm": "Sind Sie sicher, dass Sie das Thema ${id} löschen möchten?",
-			"saved": "Gespeichert!",
-			"failedToSave": "Speichern fehlgeschlagen",
-			"failedToDelete": "Thema konnte nicht gelöscht werden: ${message}",
-			"failedToClone": "Thema konnte nicht kopiert werden: ${message}"
-		},
-		"themes": {
-			"auto": "Automatisch",
-			"light": "Hell",
-			"dark": "Dunkel",
-			"cupcake": "Cupcake",
-			"bumblebee": "Bumblebee",
-			"emerald": "Emerald",
-			"corporate": "Corporate",
-			"synthwave": "Synthwave",
-			"retro": "Retro",
-			"cyberpunk": "Cyberpunk",
-			"valentine": "Valentine",
-			"halloween": "Halloween",
-			"garden": "Garden",
-			"forest": "Forest",
-			"aqua": "Aqua",
-			"lofi": "Lo-fi",
-			"pastel": "Pastel",
-			"fantasy": "Fantasy",
-			"wireframe": "Wireframe",
-			"black": "Black",
-			"luxury": "Luxury",
-			"dracula": "Dracula",
-			"cmyk": "CMYK",
-			"autumn": "Autumn",
-			"business": "Business",
-			"acid": "Acid",
-			"lemonade": "Lemonade",
-			"night": "Night",
-			"coffee": "Coffee",
-			"winter": "Winter",
-			"dim": "Dim",
-			"nord": "Nord",
-			"sunset": "Sunset",
-			"caramellatte": "Caramel Latte",
-			"abyss": "Abyss",
-			"silk": "Silk"
-		},
-		"achievements": {
-			"change_theme": {
-				"name": "Zeit für einen neuen Anstrich!",
-				"description": "fount hatte ein neues Aussehen und eine völlig neue Stimmung.",
-				"locked_description": "Wechseln Sie das Thema einmal."
-			}
-		},
-		"home_function_buttons": {
-			"settings": {
-				"title": "Einstellungen",
-				"sub_items": {
-					"switchTheme": {
-						"title": "Theme wechseln"
-					}
-				}
-			}
-		}
-	},
 	"part_config": {
 		"title": "Komponentenkonfiguration",
 		"pageTitle": "Komponentenkonfiguration",
@@ -4427,6 +3491,84 @@
 			}
 		}
 	},
+	"discord_bots": {
+		"title": "Discord-Bots",
+		"description": "Geben Sie Ihren Freunden eine Stimme in den geschäftigen Hallen von Discord. Konfigurieren Sie ihre Präsenz, verwalten Sie ihre Abläufe und lassen Sie sie Server für Server Welten überbrücken.",
+		"cardTitle": "Discord-Bots",
+		"botSelectDropdown": {
+			"placeholder": "Bot auswählen"
+		},
+		"botSearch": {
+			"placeholder": "Bot suchen..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Rolle auswählen"
+		},
+		"charSearch": {
+			"placeholder": "Rollen suchen..."
+		},
+		"configCard": {
+			"title": "Bot-Konfiguration",
+			"labels": {
+				"character": "Charakter",
+				"apiKey": "Discord API-Schlüssel",
+				"config": "Konfiguration"
+			},
+			"apiKeyInput": {
+				"placeholder": "API-Schlüssel eingeben"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "API-Schlüssel-Anzeige umschalten"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API-Schlüssel Sichtbarkeit umschalten"
+			},
+			"buttons": {
+				"saveConfig": "Konfiguration speichern",
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
+			},
+			"charSelect": {
+				"placeholder": "Rolle auswählen"
+			}
+		},
+		"prompts": {
+			"newBotName": "Bitte geben Sie einen neuen Bot-Namen ein:"
+		},
+		"buttons": {
+			"newBot": "Neu",
+			"deleteBot": "Löschen"
+		},
+		"alerts": {
+			"configSaved": "Konfiguration erfolgreich gespeichert.",
+			"botExists": "Ein Bot namens \"${botname}\" existiert bereits. Bitte verwenden Sie einen anderen Namen.",
+			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
+			"httpError": "HTTP-Fehler",
+			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die Seite verlassen möchten?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Komme zu Discord",
+				"description": "Beschwöre deinen Charakter in die Welt von Discord.",
+				"locked_description": "Starten Sie den Discord Bot einmal."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Discord Bot konfigurieren"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Bot konfigurieren"
+			}
+		}
+	},
 	"wechat_bots": {
 		"title": "WeChat-Bot",
 		"description": "Nutzen Sie einen fount-Charakter als WeChat-Bot: Rolle binden, Bots verwalten, in WeChat chatten.",
@@ -4518,83 +3660,584 @@
 			"needBot": "Wählen Sie zuerst einen Bot aus der Liste oder legen Sie mit „Neu“ einen an."
 		}
 	},
-	"discord_bots": {
-		"title": "Discord-Bots",
-		"description": "Geben Sie Ihren Freunden eine Stimme in den geschäftigen Hallen von Discord. Konfigurieren Sie ihre Präsenz, verwalten Sie ihre Abläufe und lassen Sie sie Server für Server Welten überbrücken.",
-		"cardTitle": "Discord-Bots",
-		"botSelectDropdown": {
-			"placeholder": "Bot auswählen"
-		},
-		"botSearch": {
-			"placeholder": "Bot suchen..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "Rolle auswählen"
-		},
-		"charSearch": {
-			"placeholder": "Rollen suchen..."
-		},
-		"configCard": {
-			"title": "Bot-Konfiguration",
-			"labels": {
-				"character": "Charakter",
-				"apiKey": "Discord API-Schlüssel",
-				"config": "Konfiguration"
-			},
-			"apiKeyInput": {
-				"placeholder": "API-Schlüssel eingeben"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "API-Schlüssel-Anzeige umschalten"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "API-Schlüssel Sichtbarkeit umschalten"
-			},
-			"buttons": {
-				"saveConfig": "Konfiguration speichern",
-				"startBot": "Starten",
-				"stopBot": "Stoppen"
-			},
-			"charSelect": {
-				"placeholder": "Rolle auswählen"
-			}
-		},
-		"prompts": {
-			"newBotName": "Bitte geben Sie einen neuen Bot-Namen ein:"
-		},
-		"buttons": {
-			"newBot": "Neu",
-			"deleteBot": "Löschen"
-		},
-		"alerts": {
-			"configSaved": "Konfiguration erfolgreich gespeichert.",
-			"botExists": "Ein Bot namens \"${botname}\" existiert bereits. Bitte verwenden Sie einen anderen Namen.",
-			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie die Änderungen verwerfen?",
-			"httpError": "HTTP-Fehler",
-			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die Seite verlassen möchten?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Komme zu Discord",
-				"description": "Beschwöre deinen Charakter in die Welt von Discord.",
-				"locked_description": "Starten Sie den Discord Bot einmal."
-			}
-		},
+	"social": {
+		"title": "Plaza",
+		"description": "P2P-Social: Feeds, Follows und Dateifreigabe",
+		"bootstrapFailed": "Social-Oberfläche konnte nicht initialisiert werden: ${error}",
 		"home_function_buttons": {
-			"bot_related": {
-				"title": "Bots",
-				"sub_items": {
-					"manage": {
-						"title": "Discord Bot konfigurieren"
-					}
+			"main": {
+				"title": "Plaza"
+			}
+		},
+		"nav": {
+			"feed": "Start",
+			"explore": "Entdecken",
+			"notifications": "Posteingang",
+			"saved": "Gespeichert",
+			"drafts": "Entwürfe",
+			"profile": "Profil",
+			"videos": "Kurzvideos",
+			"live": "Live"
+		},
+		"settings": {
+			"title": "Social-Einstellungen",
+			"back": {
+				"aria-label": "Zurück zum Profil"
+			},
+			"privacyTitle": "Privatsphäre & Entdeckung",
+			"privacyHint": "Steuert, ob Ihr Konto in Entdecken und Empfehlungen erscheint.",
+			"tasteTitle": "Empfehlungen & Vorlieben",
+			"tasteHint": "Grenzen und Bezeichnungen für „Für Sie“ anpassen.",
+			"mutedKeywordsTitle": "Stichwörter & Tags",
+			"mutedKeywordsHint": "Beiträge mit Treffern im Text, Content-Warning oder Tags werden aus Feed, Entdecken, Suche und Benachrichtigungen ausgeblendet. Nur lokal gespeichert.",
+			"mutedKeywordsMatchTags": "Auch Tags abgleichen",
+			"mutedKeywordsAdd": "Hinzufügen",
+			"mutedKeywordsRemove": {
+				"title": "Stichwort entfernen"
+			},
+			"mutedKeywordsEmpty": "Noch keine Stichwörter",
+			"autoTranslateTitle": "Automatische Übersetzung",
+			"autoTranslateHint": "Wenn diese Option aktiviert ist, fordern fremdsprachige Beiträge automatisch eine Übersetzung an und können auf den Originaltext umgestellt werden.",
+			"autoTranslateEnable": "Beiträge in anderen Sprachen automatisch übersetzen",
+			"safetyTitle": "Sicherheit und Abschirmung",
+			"safetyHint": "Verwalten Sie blockierte und ausgeblendete Listen.",
+			"mutedKeywords": {
+				"placeholder": "Geben Sie Schlüsselwörter oder #Tags ein"
+			},
+			"taste": {
+				"rebuild": "Einstellungen neu erstellen",
+				"privacyPublishPreferences": "Öffentliche Tag-Benennung und Zusammenführungserkennung",
+				"privacyPublishPreferencesHint": "Nach dem Schließen können Freunde Ihre Tag-Benennung und Zusammenführungsanweisungen nicht mehr sehen und können nicht zum Konsens beitragen.",
+				"privacyPublishReactions": "Öffentliche Vorlieben und Abneigungen",
+				"privacyPublishReactionsHint": "Nach dem Schließen erhält das Poster keine Likes/Dislikes mehr, Ihre Reaktionen werden nicht in die Empfehlungen anderer einbezogen und Sie werden den Beitrag nicht mehr für eine erneute Verbreitung bewerben.",
+				"empty": "Es gibt noch kein Präferenz-Tag, es wird automatisch nach mehr Likes/Dislikes gruppiert",
+				"weight": "Gewicht ${weight}",
+				"save": "Speichern",
+				"name": {
+					"placeholder": "Lokaler Anzeigename"
+				}
+			},
+			"blocklist": {
+				"title": "Blockierliste",
+				"hiddenTitle": "Ausgeblendete",
+				"empty": "Noch keine blockierten oder versteckten Einträge",
+				"unblock": "Entsperren",
+				"unhide": "Einblenden",
+				"scopeEntity": "Entität",
+				"scopeSubject": "Subjekt"
+			}
+		},
+		"composer": {
+			"placeholder": "Woran denken Sie? Markdown (fount-Dialekt) wird unterstützt, @ zum Erwähnen",
+			"publish": "Veröffentlichen",
+			"saveDraft": "Entwurf speichern",
+			"fab": {
+				"title": "Beitrag schreiben",
+				"aria-label": "Beitrag schreiben"
+			},
+			"contentWarning": {
+				"placeholder": "Inhaltswarnung (optional)"
+			},
+			"sensitiveMedia": "Sensible Medien verbergen",
+			"editImage": "Bearbeiten",
+			"editCrop": "Zuschneiden",
+			"editMosaic": "Verpixeln",
+			"editBrush": "Bürste",
+			"editApply": "Übernehmen",
+			"editCancel": "Abbrechen",
+			"replyPolicyEveryone": "Jeder kann antworten",
+			"replyPolicyFollowers7d": "Follower seit mehr als 7 Tagen",
+			"replyPolicyAuthorFollows": "Menschen, denen ich folge",
+			"replyPolicyLabel": "Wer kann antworten?",
+			"replyDisplayAll": "Alle Antworten anzeigen",
+			"replyDisplayFeaturedOnly": "Nur ausgewählte Antworten",
+			"replyDisplayLabel": "Antworten anzeigen",
+			"scheduleLabel": "Zeitgesteuert veröffentlichen",
+			"scheduleSuccess": "Der Beitrag wurde zur geplanten Warteschlange hinzugefügt",
+			"emojiButton": {
+				"title": "Emoji",
+				"aria-label": "Emoji"
+			},
+			"mediaButton": {
+				"title": "Medien hinzufügen",
+				"aria-label": "Medien hinzufügen"
+			},
+			"pollButton": {
+				"title": "Umfrage starten",
+				"aria-label": "Umfrage starten"
+			},
+			"cwToggle": {
+				"title": "Inhaltswarnung",
+				"aria-label": "Inhaltswarnung"
+			},
+			"advancedToggle": {
+				"title": "Weitere Optionen",
+				"aria-label": "Weitere Optionen"
+			},
+			"media": {
+				"placeholder": "Bildbeschreibung (alt)"
+			},
+			"visibility": {
+				"label": "Sichtbarer Bereich",
+				"public": "Öffentlich",
+				"unlisted": "Nicht öffentlich gelistet",
+				"followers": "Nur Follower",
+				"followers7d": "Sichtbar nach 7 Tagen Nachverfolgung",
+				"followers30d": "Sichtbar nach 30-tägiger Nachverfolgung",
+				"selected": "Für bestimmte Personen sichtbar",
+				"private": "Nur für Sie selbst sichtbar",
+				"allowLabel": "Sichtbare Menschen",
+				"exceptLabel": "Ausgeschlossene Personen",
+				"allow": {
+					"placeholder": "Sichtbare Personenentität durch Hash, Leerzeichen oder Komma getrennt"
+				},
+				"except": {
+					"placeholder": "Wer sollte es nicht zeigen (optional)"
 				}
 			}
 		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Discord Bot konfigurieren"
+		"feed": {
+			"refresh": "Nachrichten aktualisieren",
+			"newPosts": "Neue Beiträge – zum Anzeigen tippen",
+			"tabLatest": "Neueste",
+			"tabForYou": "Für Sie",
+			"repostedBy": "${author} hat retweetet",
+			"decryptFailed": "Dieser Beitrag konnte nicht entschlüsselt werden",
+			"revealContent": "Inhalte anzeigen",
+			"sensitiveMedia": "Sensible Medien",
+			"showMore": "Mehr anzeigen",
+			"showLess": "Weniger anzeigen",
+			"replayDivider": "Alles gelesen – von vorn",
+			"trending": {
+				"title": "Trend-Themen",
+				"postCount": {
+					"title": "${n} Beiträge"
+				},
+				"scopeLocal": "Lokal",
+				"scopeNearby": "In der Nähe",
+				"empty": "Noch keine Trend-Themen"
 			}
+		},
+		"explore": {
+			"accounts": "Empfohlene Konten",
+			"posts": "Neueste Beiträge",
+			"mediaOnly": "Nur Medien"
+		},
+		"notifications": {
+			"reply": "${author} hat auf Ihren Beitrag geantwortet",
+			"mention": "${author} @ Sie im Feed",
+			"like": "${author} hat Ihren Beitrag mit „Gefällt mir“ markiert",
+			"repost": "${author} hat Ihren Beitrag retweetet",
+			"follow": "${author} folgt Ihnen",
+			"care_post": "${author} hat einen neuen Beitrag veröffentlicht (besondere Beobachtung)",
+			"poll_closed": "Abstimmung für ${author} beendet",
+			"post_note": "${author} hat eine Community-Notiz zu Ihrem Beitrag hinzugefügt",
+			"live_started": "${author} hat mit dem Live-Streaming begonnen",
+			"view": "Anzeigen",
+			"markAllRead": "Alle als gelesen markieren"
+		},
+		"saved": {
+			"all": "Alle",
+			"unfiled": "Nicht archiviert",
+			"createFolder": {
+				"title": "Neuen Ordner erstellen",
+				"aria-label": "Neuen Ordner erstellen"
+			},
+			"createFolderPrompt": "Ordnername",
+			"pickFolderTitle": "Zu Favoriten hinzufügen",
+			"confirm": "Bestätigen",
+			"cancel": "Abbrechen",
+			"remove": "Favoriten entfernen",
+			"renameFolder": "Umbenennen",
+			"renameFolderPrompt": "Neuer Ordnername",
+			"deleteFolder": "Ordner löschen",
+			"deleteFolderConfirm": "Ordner löschen? Die dortigen Beiträge werden in den Bereich „Nicht archiviert“ verschoben.",
+			"searchEmpty": "Keine passende Sammlung",
+			"folderEmpty": "Dieser Ordner ist leer",
+			"emptyHint": "Tippen Sie beim Durchstöbern auf das Lesezeichen, um Beiträge hier zu speichern.",
+			"search": {
+				"placeholder": "Favoriten suchen…"
+			}
+		},
+		"drafts": {
+			"untitled": "(kein Textentwurf)",
+			"emptyHint": "Schreiben Sie etwas in das Eingabefeld und klicken Sie auf „Entwurf speichern“, um später weiterzubearbeiten.",
+			"saved": "Entwurf gespeichert",
+			"deleted": "Entwurf gelöscht",
+			"delete": "Entwurf löschen",
+			"empty": "Der Entwurf ist leer",
+			"saveFailed": "Entwurf konnte nicht gespeichert werden: ${error}",
+			"loadFailed": "Entwurf konnte nicht geöffnet werden: ${error}",
+			"deleteFailed": "Entwurf konnte nicht gelöscht werden: ${error}"
+		},
+		"profile": {
+			"edit": "Profil bearbeiten",
+			"viewPosts": "Social-Profil anzeigen",
+			"settingsBtn": {
+				"aria-label": "Social-Einstellungen"
+			},
+			"mediaOnly": "[Medien]",
+			"hideFromExplore": "Konto auf der Erkundungsseite ausblenden",
+			"tabPosts": "Beiträge",
+			"tabAlbums": "Alben",
+			"tabLikes": "Gefällt mir",
+			"tabCabinets": "Cabinet",
+			"tabsLabel": {
+				"aria-label": "Profilbereiche"
+			},
+			"cabinetsEmpty": "Derzeit gibt es keine öffentlichen Cabinets",
+			"cabinetsFailed": "Das Laden des Archivs ist fehlgeschlagen: ${error}",
+			"statsGroup": {
+				"aria-label": "Statistiken"
+			},
+			"statsPosts": "Beiträge",
+			"statsFollowing": "Folge ich",
+			"statsFollowers": "Follower",
+			"followingTitle": "Folge ich",
+			"followersTitle": "Follower",
+			"albums": {
+				"create": "Neues Album erstellen",
+				"edit": "Album bearbeiten",
+				"save": "Speichern",
+				"cancel": "Abbrechen",
+				"back": "Zurück zum Album",
+				"empty": "Noch kein Album",
+				"emptyPosts": "Es sind noch keine Beiträge im Album vorhanden",
+				"name": "Albumname",
+				"description": "Beschreibung des Albums",
+				"deleteLinks": "Album löschen (Beiträge behalten)",
+				"deleteWithPosts": "Album löschen und Beitrag löschen",
+				"pickerLabel": "Zum Album hinzufügen",
+				"defaultName": "Standardalbum"
+			}
+		},
+		"video": {
+			"view": {
+				"aria-label": "Kurzes Video"
+			},
+			"empty": "Noch kein kurzes Video",
+			"emptyHint": "Bei den Personen, denen Sie folgen, und auf der Plaza gibt es noch keine Beiträge mit Videos. Wie wäre es mit einem Video-Beitrag?",
+			"compose": "Postet ein Video",
+			"back": {
+				"aria-label": "Zurück zu den Nachrichten"
+			},
+			"mute": {
+				"aria-label": "Stummschalten"
+			},
+			"unmute": {
+				"aria-label": "Stummschaltung aufheben"
+			},
+			"unavailable": "Video kann nicht abgespielt werden",
+			"closeReplies": {
+				"aria-label": "Kommentare Weniger anzeigen"
+			}
+		},
+		"live": {
+			"empty": "Noch keine Live-Übertragung",
+			"viewers": "${n} Leute haben zugesehen",
+			"likes": "${n} Gefällt mir",
+			"local": "Lokal",
+			"hall": "Live-Halle",
+			"back": {
+				"title": "Zurück zu den Nachrichten",
+				"aria-label": "Zurück zu den Nachrichten"
+			},
+			"danmakuSend": "Schicken",
+			"postWatch": "Nehmen Sie an der Live-Übertragung teil",
+			"postEnded": "Die Liveübertragung ist beendet",
+			"postEndedStats": "Gesehen von ${viewers} · ${likes} Gefällt mir · ${duration}",
+			"link": {
+				"invite": "Verbindung Einladen",
+				"needPeer": "Bitte geben Sie den Peer-EntityHash:liveId ein",
+				"invited": "Die Online-Einladung wurde gesendet",
+				"linked": "Verbunden",
+				"peer": {
+					"placeholder": "Peer-EntityHash:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "Beginnen Sie mit der Übertragung",
+				"open": "Gehen Sie zur Übertragung",
+				"mediaAv": "Audio und Video",
+				"mediaAudio": "Reiner Klang",
+				"mediaVideo": "Reines Bild",
+				"mediaWhip": "WHIP-Push-Streaming (z. B. OBS)",
+				"whipUrl": "WHIP-Adresse",
+				"whipToken": "Inhabertoken",
+				"whipWaiting": "Warten auf WHIP-Streaming-Verbindung (Streaming-Software wie OBS kann verwendet werden)…",
+				"start": "Live-Übertragung starten",
+				"stop": "Stoppen Sie die Live-Übertragung",
+				"started": "Die Live-Übertragung hat begonnen",
+				"stopped": "Die Liveübertragung wurde gestoppt",
+				"titleInput": {
+					"placeholder": "Live-Titel (optional)"
+				}
+			},
+			"danmaku": {
+				"placeholder": "Sag etwas..."
+			}
+		},
+		"search": {
+			"placeholder": "Suchen Sie nach Updates, Benutzern oder #Themen (mindestens 2 Wörter)",
+			"open": {
+				"aria-label": "Suchen"
+			},
+			"submit": "Suchen",
+			"clear": "Leeren",
+			"empty": "Keine passenden Beiträge",
+			"tooShort": "Bitte geben Sie mindestens 2 Zeichen ein",
+			"usersTitle": "Benutzer",
+			"postsTitle": "Beiträge",
+			"usersEmpty": "Kein passender Benutzer",
+			"pinAlias": "Als Alias ​​festlegen",
+			"trustScore": "Vertrauen ${score}",
+			"viewTitle": "Suchen",
+			"loading": "Suche...",
+			"filterAuthor": {
+				"placeholder": "Autor"
+			},
+			"filterMediaAll": "Alle Medien",
+			"filterMediaImage": "Bild",
+			"filterMediaVideo": "Video",
+			"filterTag": {
+				"placeholder": "#Etikett"
+			},
+			"sortRecent": "Neueste",
+			"sortPopular": "Beliebt",
+			"scopeLocal": "Lokal",
+			"scopeNearby": "In der Nähe"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "Schließen"
+			}
+		},
+		"actions": {
+			"like": "Gefällt mir",
+			"unlike": "Gefällt mir nicht mehr",
+			"dislike": "Disliken",
+			"undislike": "Abneigung abbrechen",
+			"repost": "Weiterleiten",
+			"quote": "Zitat",
+			"delete": "Löschen",
+			"edit": "Bearbeiten",
+			"save": "Speichern",
+			"saved": "Gesammelt",
+			"translate": "Übersetzen",
+			"dm": "Private Nachricht senden",
+			"block": "Blockieren",
+			"hide": "Ausblenden",
+			"mute": "Stummschalten",
+			"follow": "Folgen",
+			"following": "Folgt bereits",
+			"care": "Besondere Beobachtung",
+			"careRemove": "Beobachtung beenden",
+			"careAdded": "Zur besonderen Beobachtung hinzugefügt",
+			"careRemoved": "Besondere Beobachtung beendet",
+			"setAlias": "Alias ​​festlegen",
+			"setAliasPrompt": "Lokalen Alias ​​festlegen (zum Löschen leer lassen):",
+			"aliasSaved": "Alias ​​aktualisiert",
+			"replies": "Kommentare",
+			"copyLink": "Link kopieren",
+			"downloadHtml": "HTML herunterladen",
+			"copied": "Kopiert",
+			"more": {
+				"aria-label": "Mehr"
+			},
+			"share": "Teilen",
+			"likeFailed": "Gefällt mir fehlgeschlagen: ${error}",
+			"dislikeFailed": "Dislike fehlgeschlagen: ${error}",
+			"repostFailed": "Weiterleitung fehlgeschlagen: ${error}",
+			"replyFailed": "Antwort fehlgeschlagen: ${error}",
+			"followFailed": "Folgen fehlgeschlagen: ${error}",
+			"saveFailed": "Speichern fehlgeschlagen: ${error}",
+			"blockFailed": "Blockierung fehlgeschlagen: ${error}",
+			"hideFailed": "Ausblenden fehlgeschlagen: ${error}",
+			"muteFailed": "Stummschaltung fehlgeschlagen: ${error}",
+			"deleteFailed": "Löschen fehlgeschlagen: ${error}"
+		},
+		"post": {
+			"edited": "Bearbeitet",
+			"editPrompt": "Beitragstext bearbeiten",
+			"editHistory": "Bearbeitungsverlauf",
+			"editHistoryEmpty": "Keine früheren Versionen",
+			"loading": "Laden…",
+			"notFound": "Beitrag existiert nicht oder ist nicht sichtbar",
+			"loadFailed": "Der Ladevorgang ist fehlgeschlagen. Bitte versuchen Sie es später noch einmal",
+			"detailTitle": "Post",
+			"back": "Zurück"
+		},
+		"reply": {
+			"context": "Antwort ${author}"
+		},
+		"notes": {
+			"label": "Community-Notiz",
+			"add": "Ergänzende Angaben",
+			"prompt": "Community-Notiz schreiben",
+			"listTitle": "Alle Community-Notizen",
+			"helpful": "Hilfreich",
+			"unhelpful": "Nutzlos",
+			"more": "Alle ${n} Einträge",
+			"empty": "Noch keine Community-Notizen"
+		},
+		"poll": {
+			"multi": "Mehrfachauswahl zulassen",
+			"apply": "Abstimmung anwenden",
+			"closed": "Die Abstimmung ist beendet",
+			"deadline": "Frist: ${deadline}",
+			"options": {
+				"placeholder": "Eine Option pro Zeile (mindestens 2)"
+			}
+		},
+		"aside": {
+			"suggested": "Empfohlene Konten"
+		},
+		"groupRef": {
+			"linking": "Chat-Gruppe verbinden",
+			"clear": "Verknüpfung aufheben",
+			"pick": "Chat-Gruppe/Kanal verbinden…"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "Posteingangsfilterung"
+			},
+			"tabs": {
+				"all": "Alle",
+				"mention": "Erwähnungen",
+				"reply": "Antwort",
+				"like": "Likes",
+				"follow": "Folgen",
+				"repost": "Weiterleiten"
+			},
+			"aggregated": {
+				"like": "${author1}, ${author2} und ${count} weitere Personen haben Ihren Beitrag mit „Gefällt mir“ markiert",
+				"likeTwo": "${author1} und ${author2} haben Ihren Beitrag mit „Gefällt mir“ markiert",
+				"repost": "${author1}, ${author2} und ${count} Personen haben Ihren Beitrag retweetet",
+				"repostTwo": "${author1} und ${author2} haben Ihren Beitrag retweetet",
+				"follow": "${author1}, ${author2} und ${count} Personen folgen Ihnen",
+				"followTwo": "${author1} und ${author2} folgen Ihnen"
+			}
+		},
+		"replies": {
+			"placeholder": "Antwort schreiben …",
+			"submit": "Antwort",
+			"empty": "Noch keine Antwort",
+			"emptyHint": "Schreiben Sie den ersten Beitrag und starten Sie die Diskussion"
+		},
+		"repost": {
+			"placeholder": "Retweet-Kommentar hinzufügen (optional)…",
+			"submit": "Weiterleitung bestätigen"
+		},
+		"quote": {
+			"quoting": "Zitieren",
+			"clear": "Zitat entfernen",
+			"viewOriginal": "Originalbeitrag ansehen"
+		},
+		"a11y": {
+			"linkGroupSelect": "Stellen Sie eine Verbindung zu einer Chat-Gruppe oder einem Chat-Kanal her",
+			"postVisibility": "Sichtbarer Bereich",
+			"postLang": "Inhaltssprache",
+			"trendingHashtags": "Trend-Themen",
+			"saveFolderSelect": "Sammlungsordner"
+		},
+		"translate": {
+			"label": "Übersetzung:"
+		},
+		"time": {
+			"justNow": "Nur",
+			"minutesAgo": "Vor ${n} Minuten",
+			"hoursAgo": "Vor ${n} Stunden"
+		},
+		"empty": {
+			"feed": "Es gibt noch keine Updates. Folge einigen Leuten.",
+			"profilePosts": "Noch keine Neuigkeiten",
+			"following": "Folgt noch niemandem",
+			"followers": "Noch keine Fans",
+			"notifications": "Noch keine Benachrichtigung",
+			"saved": "Noch keine Favoriten",
+			"drafts": "Noch kein Entwurf",
+			"exploreAccounts": "Derzeit gibt es keine empfohlenen Konten",
+			"explorePosts": "Es sind noch keine Erkundungsbeiträge vorhanden",
+			"likedPosts": "Noch keine Likes",
+			"noIdentity": "Bitte konfigurieren Sie die Verbundidentität im Chat, bevor Sie Social verwenden"
+		},
+		"topic": {
+			"follow": "Abonnieren",
+			"unfollow": "Abbestellen",
+			"empty": "Zu diesem Thema gibt es noch keine Beiträge"
 		}
+	},
+	"cabinet": {
+		"title": "Cabinet",
+		"description": "Persönliche und gemeinsam genutzte P2P-Aktenschränke",
+		"openCabinets": {
+			"title": "Cabinetliste öffnen",
+			"aria-label": "Cabinetliste öffnen"
+		},
+		"closeCabinets": {
+			"title": "Schließen",
+			"aria-label": "Schließen"
+		},
+		"bootstrapFailed": "Die Initialisierung des Archivs ist fehlgeschlagen: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "Cabinet"
+			}
+		},
+		"upload": "Hochladen",
+		"uploadFolder": "Ordner hochladen",
+		"newFolder": "Neuen Ordner erstellen",
+		"open": "Offen",
+		"download": "Herunterladen",
+		"downloadZip": "Ordner herunterladen",
+		"rename": "Umbenennen",
+		"copy": "Kopie",
+		"cut": "Schneiden",
+		"paste": "Paste",
+		"pasteLink": "Als Link einfügen",
+		"selectAll": "Alles auswählen",
+		"invert": "Gegenwahl",
+		"properties": "Eigentum",
+		"delete": "Löschen",
+		"back": {
+			"title": "Zurück zur vorherigen Position",
+			"aria-label": "Zurück zur vorherigen Position"
+		},
+		"cancel": "Abbrechen",
+		"save": "Speichern",
+		"showHidden": "Zeigenverstecken",
+		"name": "Name",
+		"descriptionField": "Beschreibung",
+		"attrHidden": "Verstecken",
+		"attrSystem": "System (Löschen erfordert Bestätigung)",
+		"previewUrl": "Vorschau-URL",
+		"deletePreviewWithFile": "Beim Löschen der Datei Vorschau löschen",
+		"folderPassword": "Ordnerpasswort (leer lassen, ausfüllen, um die Verschlüsselung zu aktivieren)",
+		"unlockFolder": "Entsperren Sie den verschlüsselten Ordner",
+		"unlock": "Entsperren",
+		"unlockFailed": "Entsperren fehlgeschlagen: ${error}",
+		"previewFailed": "Vorschaugenerierung fehlgeschlagen: ${error}",
+		"created": "Erstellen: ${stamp}",
+		"modified": "Ändern: ${stamp}",
+		"statusCount": "${count} Artikel, ${selected} ausgewählt",
+		"newCabinetPrompt": "Neuer Archivname",
+		"newFolderPrompt": "Neuer Ordnername",
+		"renamePrompt": "Neuer Name",
+		"visibilityPrompt": "Sichtbarkeit (Öffentlich/nicht gelistet/Follower/privat/ausgewählt)",
+		"cabinetActionPrompt": "Aktion: umbenennen/löschen/sichtbar",
+		"confirmDeleteCabinet": "Sind Sie sicher, dass Sie dieses Archiv löschen möchten?",
+		"confirmDelete": "Bestätigen, um ausgewählte Elemente zu löschen?",
+		"confirmDeleteSystem": "Die ausgewählten Systemdateien sind enthalten. Sind Sie sicher, dass Sie sie löschen?",
+		"copied": "Kopiert",
+		"cutDone": "Schneiden",
+		"undo": "Abbrechen",
+		"redo": "Gefällt mirderholen",
+		"newWindow": "Neues Fenster öffnenAktueller Standort",
+		"goUp": "Zurück zur vorherigen Ebene",
+		"brokenLink": "Link ist defekt: ${reason}",
+		"noDownload": "Keine herunterladbaren Inhalte",
+		"groupDownloadHint": "Bitte erhalten Sie Gruppendateien über Nachrichtenanhänge oder nachfolgende Download-Links.",
+		"remoteEntity": "Entfernte Entität"
 	},
 	"browser_integration": {
 		"title": "Browserintegration",
@@ -4719,6 +4362,48 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "Verbinden Sie die fount-Rolle über das Agent Client Protocol mit unterstützten Editoren (wie Zed, JetBrains, Neovim), konfigurieren Sie API-Schlüssel und -Rollen und beziehen Sie KI-Partner in den Entwicklungsworkflow ein.",
+		"title": "IDE-Integration",
+		"heading": "IDE-Integration",
+		"instruction": "Verwenden Sie fount-Rollen, um die Programmierung in ACP-fähigen Editoren (wie Zed, JetBrains, Neovim usw.) zu unterstützen.",
+		"supportedEditorsTitle": "Unterstützte Editoren und Clients",
+		"supportedEditorsIntro": "Folgende Clients arbeiten mit fount:",
+		"supportedEditorsLoading": "Laden…",
+		"supportedEditorsError": "Liste konnte nicht geladen werden: ${message}",
+		"acpTitle": "Konfigurieren Sie das fount-ACP-Skript",
+		"acpDesc": "Sehen Sie sich das folgende Beispiel an, um das fount-ACP-Skript zu konfigurieren:",
+		"acpCharLabel": "Rolle",
+		"charListError": "Rollenliste konnte nicht abgerufen werden",
+		"acpScriptLabel": "ACP-Skript-URL",
+		"acpConfigSample": "Konfigurationsbeispiel:",
+		"acpConfigHint": "Die Rollen-ID wird im Rollen-Dropdown auf dieser Seite angezeigt und der API-Schlüssel kann in den Benutzereinstellungen verwaltet werden.",
+		"copyButton": "Kopieren",
+		"copied": "In die Zwischenablage kopiert",
+		"apiKeySectionTitle": "API-Schlüssel",
+		"apiKeyHint": "Wird für die ACP-Skript-Verbindungsquelle verwendet (gleicher Schlüsselsatz wie API-Proxy, kann in den Benutzereinstellungen erstellt werden).",
+		"generateApiKeyButton": "Neuen Schlüssel generieren",
+		"apiKeyCopied": "API-Schlüssel kopiert",
+		"apiKeyCreateError": "API-Schlüssel konnte nicht erstellt werden: ${message}",
+		"apiKeyInput": {
+			"aria-label": "API-Schlüssel"
+		},
+		"home_function_buttons": {
+			"integration_related": "Integrationsbezogen",
+			"ide_integration_config": {
+				"title": "IDE-Integrationskonfiguration"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "fount jenseits der Grenzen",
+				"description": "Verwenden Sie zum ersten Mal fount-Rollen, um die Programmierung in ACP-fähigen Editoren wie Zed, JetBrains, Neovim und anderen zu unterstützen.",
+				"locked_description": "Stellen Sie eine Verbindung zur fount-Rolle in einer externen IDE her und schließen Sie eine Sitzung ab."
+			}
+		},
+		"acpChar": "Rolle auswählen",
+		"acpConfig": "Bitte wählen Sie eine Rolle aus und generieren Sie zunächst einen API-Schlüssel"
+	},
 	"deskpet": {
 		"title": "Desktop-Haustiere",
 		"description": "Starten Sie Ihre Quellfiguren als interaktive Haustiere, die auf Ihrem Desktop leben.",
@@ -4770,6 +4455,347 @@
 								"title": "Desktop-Haustiere verwalten"
 							}
 						}
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "Design-Verwaltung",
+		"description": "Wählen Sie die Ästhetik, die Ihre Stimmung oder Geschichte widerspiegelt. Sehen Sie sich eine Vorschau an und wählen Sie aus einer Palette von Themen aus, die jeweils eine andere Atmosphäre für Ihre Font-Interaktionen bieten. Deine Welt, dein Stil.",
+		"instruction": "Wählen Sie ein Design!",
+		"search": {
+			"placeholder": "Themen suchen...",
+			"noResult": "Keine passenden Themen gefunden."
+		},
+		"createButton": "+ Neues Thema erstellen",
+		"preview": {
+			"editButton": {
+				"title": "Bearbeiten"
+			},
+			"editButtonIcon": {
+				"alt": "Bearbeiten-Symbol"
+			},
+			"deleteButton": {
+				"title": "Löschen"
+			},
+			"deleteButtonIcon": {
+				"alt": "Löschen-Symbol"
+			},
+			"cloneButton": {
+				"title": "Kopieren"
+			},
+			"cloneButtonIcon": {
+				"alt": "Kopiersymbol"
+			}
+		},
+		"editor": {
+			"title": "Theme-Editor",
+			"cancelButton": "Abbrechen",
+			"saveApplyButton": "Speichern und anwenden",
+			"themeName": "Themenname (ID)",
+			"autoPaletteTitle": "Automatische Farbkorrektur aus Bildern",
+			"autoPaletteInstruction": "Klicken Sie oben auf eine Farbe, um Primär-/Sekundär-/Akzent-/Neutralfarben automatisch auszufüllen.",
+			"coreColors": "Kernfarbe",
+			"baseBackground": "Grundlagen und Hintergrund",
+			"variables": "Variablen",
+			"borderRadius": "Randradius (--rounded-box)",
+			"borderWidth": "Randbreite (--border-btn)",
+			"advancedCustomization": "Erweiterte Anpassung",
+			"customCSS": "Benutzerdefiniertes CSS (Überschreibung)",
+			"customMjsScript": "Benutzerdefiniertes MJS-Skript (optional)",
+			"mjsSyntaxHint": "Verwenden Sie [async-eval-Syntax](${asyncDocLink}). Gibt ein Objekt zurück, das die Funktionen `load()` und `unload()` enthält.",
+			"themeIdRequired": "Themen-ID erforderlich",
+			"newThemeName": "Name des neuen Themas:",
+			"deleteConfirm": "Sind Sie sicher, dass Sie das Thema ${id} löschen möchten?",
+			"saved": "Gespeichert!",
+			"failedToSave": "Speichern fehlgeschlagen",
+			"failedToDelete": "Thema konnte nicht gelöscht werden: ${message}",
+			"failedToClone": "Thema konnte nicht kopiert werden: ${message}"
+		},
+		"themes": {
+			"auto": "Automatisch",
+			"light": "Hell",
+			"dark": "Dunkel",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
+			"emerald": "Emerald",
+			"corporate": "Corporate",
+			"synthwave": "Synthwave",
+			"retro": "Retro",
+			"cyberpunk": "Cyberpunk",
+			"valentine": "Valentine",
+			"halloween": "Halloween",
+			"garden": "Garden",
+			"forest": "Forest",
+			"aqua": "Aqua",
+			"lofi": "Lo-fi",
+			"pastel": "Pastel",
+			"fantasy": "Fantasy",
+			"wireframe": "Wireframe",
+			"black": "Black",
+			"luxury": "Luxury",
+			"dracula": "Dracula",
+			"cmyk": "CMYK",
+			"autumn": "Autumn",
+			"business": "Business",
+			"acid": "Acid",
+			"lemonade": "Lemonade",
+			"night": "Night",
+			"coffee": "Coffee",
+			"winter": "Winter",
+			"dim": "Dim",
+			"nord": "Nord",
+			"sunset": "Sunset",
+			"caramellatte": "Caramel Latte",
+			"abyss": "Abyss",
+			"silk": "Silk"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "Zeit für einen neuen Anstrich!",
+				"description": "fount hatte ein neues Aussehen und eine völlig neue Stimmung.",
+				"locked_description": "Wechseln Sie das Thema einmal."
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "Einstellungen",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Theme wechseln"
+					}
+				}
+			}
+		}
+	},
+	"languageSettings": {
+		"title": "Spracheinstellungen",
+		"pageTitle": "Spracheinstellungen",
+		"description": "Verwalten Sie Ihre Spracheinstellungen für die fount-Anwendung. Passen Sie Ihr Erlebnis mit den verfügbaren Sprachoptionen an.",
+		"pageDescription": "Verwalten Sie hier Ihre Spracheinstellungen. Die Sprachen in der Liste haben Vorrang vor den Browsereinstellungen in der Reihenfolge.",
+		"availableLanguages": "Verfügbare Sprachen",
+		"preferredLanguages": "Prioritätssprachliste",
+		"resetButton": "Zurücksetzen",
+		"saveButton": "Speichern",
+		"select": {
+			"placeholder": "Sprache auswählen..."
+		},
+		"search": {
+			"placeholder": "Sprache suchen..."
+		},
+		"noPreferredLanguages": "Noch keine bevorzugte Sprache festgelegt. Es werden die Standardeinstellungen des Browsers verwendet.",
+		"moveUpButton": {
+			"aria-label": "nach oben bewegen",
+			"alt": "Symbol „Nach oben verschieben“."
+		},
+		"moveDownButton": {
+			"aria-label": "nach unten bewegen",
+			"alt": "Symbol „Nach unten verschieben“."
+		},
+		"deleteLocaleButton": {
+			"aria-label": "Diese Sprache löschen",
+			"alt": "Symbol „Löschen“."
+		},
+		"savedMessage": "Spracheinstellungen wurden gespeichert!",
+		"resetMessage": "Spracheinstellungen wurden zurückgesetzt!",
+		"fetchLocalesFailed": "Abrufen der verfügbaren Sprachen fehlgeschlagen!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Einstellungen",
+				"sub_items": {
+					"main": {
+						"title": "Spracheinstellungen"
+					}
+				}
+			}
+		}
+	},
+	"userSettings": {
+		"title": "Benutzereinstellungen",
+		"PageTitle": "Benutzereinstellungen",
+		"description": "Kümmern Sie sich um die Details Ihrer fount-Identität. Verwalten Sie Ihr Profil, schützen Sie Ihren Zugriff und sehen Sie verbundene Geräte ein. Ein ruhiger Rückzugsort für Ihr Konto.",
+		"shell": {
+			"unauthorized": "Anmeldung erforderlich.",
+			"responseNotJson": "Der Server hat Inhalt zurückgegeben, der nicht verarbeitet werden konnte.",
+			"unexpectedError": "Die Anfrage ist fehlgeschlagen."
+		},
+		"errors": {
+			"accountNotFound": "Konto nicht gefunden."
+		},
+		"userInfo": {
+			"title": "Benutzerinformationen",
+			"usernameLabel": "Benutzername:",
+			"creationDateLabel": "Kontoerstellungsdatum:",
+			"folderSizeLabel": "Größe der Benutzerdaten:",
+			"folderPathLabel": "Pfad der Benutzerdaten:",
+			"copyPathButton": {
+				"title": "Pfad kopieren"
+			},
+			"copyPathButtonIcon": {
+				"alt": "Kopiersymbol"
+			},
+			"copiedAlert": "Der Pfad wurde in die Zwischenablage kopiert!",
+			"copyPathFailed": "Der Pfad kann nicht in die Zwischenablage kopiert werden."
+		},
+		"changePassword": {
+			"title": "Passwort ändern",
+			"currentPasswordLabel": "Aktuelles Passwort:",
+			"newPasswordLabel": "Neues Passwort:",
+			"confirmNewPasswordLabel": "Neues Passwort bestätigen:",
+			"submitButton": "Passwort ändern",
+			"errorMismatch": "Die neuen Passwörter stimmen nicht überein.",
+			"success": "Passwort erfolgreich geändert.",
+			"missingFields": "Bitte geben Sie Ihr aktuelles Passwort und Ihr neues Passwort ein.",
+			"invalidCurrent": "Das aktuelle Passwort ist falsch."
+		},
+		"renameUser": {
+			"title": "Benutzer umbenennen",
+			"newUsernameLabel": "Neuer Benutzername:",
+			"submitButton": "Benutzer umbenennen",
+			"confirmMessage": "Sind Sie sicher, dass Sie Ihren Benutzernamen ändern möchten? Sie müssen sich danach neu anmelden.",
+			"success": "Der Benutzer wurde erfolgreich in \"${newUsername}\" umbenannt. Sie werden jetzt abgemeldet.",
+			"missingParams": "Bitte geben Sie den neuen Benutzernamen und das Passwort ein.",
+			"wrongPassword": "Das Passwort ist falsch.",
+			"mustDiffer": "Der neue Benutzername muss sich vom aktuellen Benutzernamen unterscheiden.",
+			"taken": "Dieser Benutzername ist bereits vergeben.",
+			"moveFailed": "Benutzerdatenverzeichnis konnte nicht umbenannt werden: ${detail}. Der ursprüngliche Benutzername wurde wiederhergestellt."
+		},
+		"passkeys": {
+			"title": "Sicherheitsschlüssel und Passkey",
+			"description": "Nach der Bindung können Sie sich mit einem Sicherheitsschlüssel oder einem nativen Passkey anmelden. Erfordert die Verwendung unter HTTPS oder localhost; Bitte fügen Sie den Schlüssel zuerst in den Benutzereinstellungen hinzu.",
+			"refreshButton": {
+				"title": "Liste aktualisieren"
+			},
+			"refreshButtonIcon": {
+				"alt": "Aktualisierungssymbol"
+			},
+			"nameLabel": "Bemerkungen (optional)",
+			"nameInput": {
+				"placeholder": "Beispiel: YubiKey für die Arbeit"
+			},
+			"addButton": "Sicherheitsschlüssel hinzufügen",
+			"noneFound": "Es wurden noch keine Sicherheitsschlüssel gebunden.",
+			"itemDetails": "Hinzugefügt: ${created}",
+			"removeButton": "Entfernen",
+			"removeConfirm": "Möchten Sie diesen Schlüssel wirklich entfernen? Nach dem Entfernen können Sie sich damit nicht mehr anmelden.",
+			"removeSuccess": "Sicherheitsschlüssel entfernt.",
+			"addSuccess": "Sicherheitsschlüssel hinzugefügt.",
+			"errorLoadLibrary": "Die WebAuthn-Bibliothek kann nicht geladen werden.",
+			"errorCancelled": "Hinzufügen abgebrochen.",
+			"apiInvalidPassword": "Falsches Passwort.",
+			"apiMissingCredential": "Gültige Passkey-Anmeldeinformationen fehlen.",
+			"apiRemoveParamsRequired": "Bitte geben Sie die Anmeldeinformationen und das Passwort ein, die Sie entfernen möchten."
+		},
+		"userDevices": {
+			"title": "Benutzergeräte/-sitzungen",
+			"noDevicesFound": "Es wurden keine Geräte oder Sitzungen gefunden.",
+			"deviceInfo": "Geräte-ID: ${deviceId}",
+			"thisDevice": "Dieses Gerät",
+			"deviceDetails": "Zuletzt online: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Widerrufen",
+			"revokeConfirm": "Sind Sie sicher, dass Sie sich von diesem Gerät/dieser Sitzung abmelden möchten?",
+			"revokeSuccess": "Das Gerät/Die Sitzung wurde erfolgreich widerrufen.",
+			"revokeMissingParams": "Bitte geben Sie das Geräte- und Sitzungspasswort an, das Sie widerrufen möchten.",
+			"revokeWrongPassword": "Das Passwort ist falsch.",
+			"listNotFound": "Geräteliste nicht gefunden.",
+			"deviceNotFound": "Das Gerät oder die Sitzung wurde nicht gefunden.",
+			"refreshButton": {
+				"title": "Liste aktualisieren"
+			},
+			"refreshButtonIcon": {
+				"alt": "Aktualisieren-Symbol"
+			}
+		},
+		"apiKeys": {
+			"title": "API-Schlüssel",
+			"description": "Verwalten Sie den API-Schlüssel für externe Anwendungen.",
+			"input": {
+				"placeholder": "Neue Schlüsselbeschreibung"
+			},
+			"createButton": "erstellen",
+			"noKeysFound": "Es wurden keine API-Schlüssel gefunden.",
+			"keyDetails": "Beschreibung: ${description} | Erstellt in: ${createdAt} | Zuletzt gebraucht: ${lastUsed}",
+			"neverUsed": "Nie benutzt",
+			"noKeysForUser": "API-Schlüsseldaten nicht gefunden.",
+			"revokeWrongPassword": "Das Passwort ist falsch.",
+			"keyNotFound": "Der API-Schlüssel wurde nicht gefunden.",
+			"revokeMissingJti": "Bitte geben Sie den zu widerrufenden Schlüssel an.",
+			"revokeMissingPassword": "Für das Sperren eines Schlüssels ist ein Passwort erforderlich.",
+			"verifyMissingApiKey": "Bitte geben Sie einen API-Schlüssel an.",
+			"revokeButton": "Widerrufen",
+			"revokeConfirm": "Sind Sie sicher, dass Sie diesen API-Schlüssel widerrufen möchten?",
+			"revokeSuccess": "Der API-Schlüssel wurde erfolgreich widerrufen.",
+			"errorDescriptionRequired": "Eine Beschreibung ist erforderlich.",
+			"createSuccess": "Der API-Schlüssel wurde erfolgreich erstellt.",
+			"refreshButton": {
+				"title": "Aktualisieren Sie die Liste"
+			},
+			"refreshButtonIcon": {
+				"alt": "Aktualisieren-Symbol"
+			}
+		},
+		"newApiKey": {
+			"title": "Neuer API-Schlüssel wurde erstellt",
+			"warning": "Bitte kopieren Sie Ihren neuen API-Schlüssel. Sie werden es nicht wieder sehen können!",
+			"closeButton": "Ich habe meinen Schlüssel kopiert",
+			"copyButton": {
+				"title": "Kopieren Sie den neuen API-Schlüssel"
+			},
+			"copiedAlert": "Der API-Schlüssel wurde in die Zwischenablage kopiert!",
+			"copyKeyFailed": "Der Schlüssel konnte nicht in die Zwischenablage kopiert werden."
+		},
+		"editorCommand": {
+			"title": "Externer Editor – Befehl",
+			"description": "Legen Sie den Befehl und die Argumentvorlage fest, mit der Dateien in einem externen Editor geöffnet werden. Unterstützte Platzhalter: Dateipfad, Zeilen- und Spaltennummer.",
+			"editorPresetLabel": "Editor-Voreinstellungen",
+			"commandLabel": "Befehl",
+			"argsTemplateLabel": "Argumentvorlage",
+			"argsTemplateHint": "Platzhalter: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (im PATH vorhanden)",
+			"presetOptionPathUnavailable": "${label} (nicht im PATH)",
+			"testPathInput": {
+				"placeholder": "Pfad zu einer Datei zum Ausprobieren, z. B. C:/work/project/src/main.mjs"
+			},
+			"testButton": "Testweise öffnen",
+			"saveButton": "Konfiguration speichern",
+			"saveSuccess": "Befehl für externen Editor gespeichert.",
+			"testPathRequired": "Bitte zuerst einen Pfad zur Testdatei angeben.",
+			"testSuccess": "Befehl zum Öffnen im Editor wurde ausgeführt."
+		},
+		"logout": {
+			"title": "Abmelden",
+			"description": "Dadurch wird Ihr Konto vom aktuellen Gerät abgemeldet.",
+			"buttonText": "Abmelden",
+			"confirmMessage": "Sind Sie sicher, dass Sie sich abmelden möchten?",
+			"successMessage": "Erfolgreich abgemeldet. Sie werden zur Anmeldeseite weitergeleitet..."
+		},
+		"deleteAccount": {
+			"title": "Konto löschen",
+			"warning": "Warnung: Diese Aktion löscht Ihr Konto und alle zugehörigen Daten dauerhaft und kann nicht wiederhergestellt werden.",
+			"submitButton": "Mein Konto löschen",
+			"confirmMessage1": "Warnung! Sind Sie sicher, dass Sie Ihr Konto dauerhaft löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+			"confirmMessage2": "Um die Löschung zu bestätigen, geben Sie bitte Ihren Benutzernamen \"${username}\" ein:",
+			"usernameMismatch": "Der eingegebene Benutzername stimmt nicht mit dem aktuellen Benutzer überein. Der Löschvorgang wurde abgebrochen.",
+			"success": "Das Konto wurde erfolgreich gelöscht. Sie werden jetzt abgemeldet.",
+			"missingPassword": "Bitte geben Sie Ihr Passwort ein.",
+			"wrongPassword": "Das Passwort ist falsch."
+		},
+		"passwordConfirm": {
+			"title": "Vorgang bestätigen",
+			"message": "Um diesen Vorgang fortzusetzen, geben Sie bitte Ihr aktuelles Passwort ein:",
+			"passwordLabel": "Passwort:",
+			"confirmButton": "Bestätigen",
+			"cancelButton": "Abbrechen"
+		},
+		"apiError": "API-Anfrage fehlgeschlagen: ${message}",
+		"generalError": "Es ist ein Fehler aufgetreten: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Einstellungen",
+				"sub_items": {
+					"main": {
+						"title": "Benutzereinstellungen"
 					}
 				}
 			}
@@ -4831,47 +4857,91 @@
 			}
 		}
 	},
-	"ide_integration": {
-		"description": "Verbinden Sie die fount-Rolle über das Agent Client Protocol mit unterstützten Editoren (wie Zed, JetBrains, Neovim), konfigurieren Sie API-Schlüssel und -Rollen und beziehen Sie KI-Partner in den Entwicklungsworkflow ein.",
-		"title": "IDE-Integration",
-		"heading": "IDE-Integration",
-		"instruction": "Verwenden Sie fount-Rollen, um die Programmierung in ACP-fähigen Editoren (wie Zed, JetBrains, Neovim usw.) zu unterstützen.",
-		"supportedEditorsTitle": "Unterstützte Editoren und Clients",
-		"supportedEditorsIntro": "Folgende Clients arbeiten mit fount:",
-		"supportedEditorsLoading": "Laden…",
-		"supportedEditorsError": "Liste konnte nicht geladen werden: ${message}",
-		"acpTitle": "Konfigurieren Sie das fount-ACP-Skript",
-		"acpDesc": "Sehen Sie sich das folgende Beispiel an, um das fount-ACP-Skript zu konfigurieren:",
-		"acpCharLabel": "Rolle",
-		"charListError": "Rollenliste konnte nicht abgerufen werden",
-		"acpScriptLabel": "ACP-Skript-URL",
-		"acpConfigSample": "Konfigurationsbeispiel:",
-		"acpConfigHint": "Die Rollen-ID wird im Rollen-Dropdown auf dieser Seite angezeigt und der API-Schlüssel kann in den Benutzereinstellungen verwaltet werden.",
-		"copyButton": "Kopieren",
-		"copied": "In die Zwischenablage kopiert",
-		"apiKeySectionTitle": "API-Schlüssel",
-		"apiKeyHint": "Wird für die ACP-Skript-Verbindungsquelle verwendet (gleicher Schlüsselsatz wie API-Proxy, kann in den Benutzereinstellungen erstellt werden).",
-		"generateApiKeyButton": "Neuen Schlüssel generieren",
-		"apiKeyCopied": "API-Schlüssel kopiert",
-		"apiKeyCreateError": "API-Schlüssel konnte nicht erstellt werden: ${message}",
-		"apiKeyInput": {
-			"aria-label": "API-Schlüssel"
+	"subfounts": {
+		"title": "Subfounts – Peer-to-Peer-Geräteverwaltung",
+		"pageTitle": "Subfounts",
+		"description": "Verwalten Sie Peer-to-Peer-Subfount-Verbindungen",
+		"hostConnectionCode": {
+			"title": "Host-Verbindungscode",
+			"connectionCodeLabel": "Verbindungscode (Peer-ID)",
+			"passwordLabel": "Passwort",
+			"copyButton": "Kopieren",
+			"regenerateButton": "Regenerieren",
+			"infoMessage": "Teilen Sie diese Anmeldeinformationen mit Subfount-Clients, um Verbindungen herzustellen.",
+			"connectionCodeCopied": "Der Verbindungscode wurde in die Zwischenablage kopiert",
+			"passwordCopied": "Passwort in die Zwischenablage kopiert",
+			"regenerateSuccess": "Der Verbindungscode wurde neu generiert"
+		},
+		"infra": {
+			"title": "Netzwerk-Gemeinwohl",
+			"description": "Legt zentral fest, ob verbundene Subfounts als Gemeinwohl-Knoten das gesamte fount-Netz unterstützen. Ausgeschaltet nehmen sie weiterhin Remote-Ausführung von diesem Host an, helfen aber nicht mehr auf Netzwerkebene.",
+			"capabilityRelay": "Am Overlay-Mehrhop-Weiterleiten teilnehmen, damit andere Knoten bei fehlender Direktverbindung trotzdem erreichbar bleiben.",
+			"capabilityMailbox": "Offline-Zustellung bereithalten, damit andere Knoten Direktnachrichten noch erhalten, wenn sie wieder online sind.",
+			"hostPriority": "Wenn aktiviert, diesen Host bevorzugen: Routing nach seiner Reputationstabelle gewichten und ihn auf die höchste Priorität festlegen.",
+			"toggleLabel": "Subfounts am Gemeinwohl beteiligen",
+			"enabledToast": "Aktiv: Subfounts nehmen am Netzwerk-Gemeinwohl teil (dieser Host zuerst)",
+			"disabledToast": "Aus: Subfounts nehmen nicht mehr am Netzwerk-Gemeinwohl teil"
+		},
+		"connectedSubfounts": {
+			"title": "Verbundener Subfount",
+			"noSubfountsConnected": "Es ist kein Subfount verbunden",
+			"table": {
+				"id": "ID",
+				"description": "Bemerkung",
+				"deviceId": "Geräte-ID",
+				"connectedAt": "Verbindungszeit",
+				"status": "Zustand",
+				"actions": "Aktionen",
+				"connected": "Verbunden",
+				"disconnected": "Getrennt",
+				"save": "speichern",
+				"na": "N / A"
+			},
+			"descriptionSaved": "Notiz gespeichert",
+			"descriptionSaveFailed": "Notiz konnte nicht gespeichert werden: ${message}"
+		},
+		"codeExecution": {
+			"title": "Codeausführung",
+			"description": "Führen Sie JavaScript-Code für die ausgewählte Subfount aus",
+			"selectSubfountLabel": "Wählen Sie die Subfount aus",
+			"hostOption": "Host (ID: ${id})",
+			"subfountOption": "Client ${id}${deviceId}",
+			"scriptLabel": "JavaScript-Code",
+			"executeButton": "ausführen",
+			"executing": "Ausführen...",
+			"noSubfountSelected": "Bitte wählen Sie zunächst eine Subfount aus",
+			"noScriptProvided": "Bitte geben Sie den auszuführenden Code ein",
+			"executionSuccess": "Codeausführung erfolgreich",
+			"executionFailed": "Codeausführung fehlgeschlagen: ${message}",
+			"selectSubfount": "Bitte wählen Sie den Subfount aus, um den Code auszuführen ..."
+		},
+		"downloadClient": {
+			"title": "Laden Sie den Subfount-Client herunter",
+			"description": "Laden Sie das eigenständige Subfount-Client-Skript herunter, um es auf dem Remote-Gerät auszuführen.",
+			"downloadButton": "Laden Sie subfount.mjs herunter"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Verbindungscode konnte nicht geladen werden: ${message}",
+			"regenerateConnectionCodeFailed": "Verbindungscode konnte nicht neu generiert werden: ${message}",
+			"loadSettingsFailed": "Gemeinwohl-Einstellungen konnten nicht geladen werden: ${message}",
+			"saveSettingsFailed": "Gemeinwohl-Einstellungen konnten nicht gespeichert werden: ${message}",
+			"generalError": "Es ist ein Fehler aufgetreten: ${message}"
 		},
 		"home_function_buttons": {
-			"integration_related": "Integrationsbezogen",
-			"ide_integration_config": {
-				"title": "IDE-Integrationskonfiguration"
+			"in_dev": {
+				"title": "In Entwicklung",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "Untergerät",
+						"sub_items": {
+							"main": {
+								"title": "Untergeräte verwalten"
+							}
+						}
+					}
+				}
 			}
-		},
-		"achievements": {
-			"first_ide_use": {
-				"name": "fount jenseits der Grenzen",
-				"description": "Verwenden Sie zum ersten Mal fount-Rollen, um die Programmierung in ACP-fähigen Editoren wie Zed, JetBrains, Neovim und anderen zu unterstützen.",
-				"locked_description": "Stellen Sie eine Verbindung zur fount-Rolle in einer externen IDE her und schließen Sie eine Sitzung ab."
-			}
-		},
-		"acpChar": "Rolle auswählen",
-		"acpConfig": "Bitte wählen Sie eine Rolle aus und generieren Sie zunächst einen API-Schlüssel"
+		}
 	},
 	"achievements": {
 		"title": "Leistung",
@@ -4998,34 +5068,6 @@
 		"pageNotFoundText": "Hoppla! Sie scheinen auf einer Seite gelandet zu sein, die nicht existiert.",
 		"homepageButton": "Zur Startseite zurückkehren"
 	},
-	"tips": {
-		"title": "Wussten Sie?",
-		"data": [
-			"Verwenden Sie die Taste `esc` auf einer beliebigen fount-Seite, um zur vorherigen Seite zurückzukehren.",
-			"Sie können `ctrl+s` verwenden, um die Konfiguration auf der Konfigurationsseite zu speichern.",
-			"Wenn Sie auf der Chat-Seite die Umschalttaste gedrückt halten, können Sie Nachrichten schnell löschen.",
-			"Wenn Sie es den Entwicklern nicht sagen, erfahren sie möglicherweise nie, auf welches Problem Sie gestoßen sind.",
-			"Wenn Sie plötzlich auf ein seltsames Problem stoßen und der Entwickler eine Weile nicht antwortet, können Sie versuchen, den fount mit dem Befehl `fount init` zurückzusetzen.",
-			"Wenn Sie auf ein besonders seltsames Problem stoßen, können Sie versuchen, Ihren Computer neu zu starten.",
-			"Die Verwendung des Befehls `fount remove` zum Deinstallieren eines fount ist sauberer als das Löschen des Ordners.",
-			"Geben Sie `fount cake` in die Befehlszeile ein, um einen kostenlosen und köstlichen Kuchen zu erhalten!",
-			"Alle Datendateien von fount werden im Verzeichnis `fount/data` gespeichert und Sie können sie jederzeit und überall anzeigen, ändern und sichern.",
-			"Der Name von fount besteht ausschließlich aus Kleinbuchstaben, es heißt `f`ount und nicht `F`ount.",
-			"Sichern Sie alle Daten, mit denen Ihr Agent regelmäßig arbeitet, bevor Sie das neue Modell verwenden – Sie wissen nie, ob das neue Modell an manchen Stellen eine schlechte Leistung erbringen wird.",
-			"Die Hauptzielgruppe von fount sind Softwareentwickler und Rollenspielbegeisterte, es wird aber auch in der Handelsagentenkonstruktion, der medizinischen Versorgung, dem Militär, dem Finanzwesen und anderen Bereichen eingesetzt.",
-			"Der Name des in fount integrierten Charakters ZL-31 hat keine Bedeutung und war nur eine spontane Idee.",
-			"Die Bilder in den Quelldateien werden alle im SVG-Format gespeichert und bei Bedarf in PNG oder ICO gerendert. Es gibt keine Binärdateien außer LICENSE.",
-			"Jeder Code in fount kann ohne Kompilierung direkt ausgeführt werden. Was Sie sehen, ist das, was Sie erhalten.",
-			"fount hatte einst einen sehr coolen dynamischen interaktiven Seitenhintergrund, der jedoch später gelöscht wurde, weil er zu viel CPU beanspruchte.",
-			"fount wurde ursprünglich für einen NSFW-Agenten namens „GentianAphrodite“ entwickelt.",
-			"Einer der Unterschiede zwischen Agenten und Menschen besteht darin, dass Menschen kacken.",
-			"Agenten sind nur in dem Moment bei Bewusstsein, in dem sie aufgerufen werden, während Menschen jederzeit und überall bei Bewusstsein sind, wenn sie wach sind.",
-			"Manche Menschen verlieben sich in ihre Agenten oder heiraten sogar in sie!",
-			"KI wird verwendet, um Gedichte zu schreiben, sich zu verlieben und Bilder für Menschen zu zeichnen. Das Tragen von Ziegelsteinen, das Fegen von Böden und das Herausbringen von Müll ist das, was Menschen tun sollten.",
-			"Heute ist nicht der 1. April.",
-			"Nein, das wussten Sie nicht."
-		]
-	},
 	"directoryListing": {
 		"title": "Verzeichnisindex",
 		"description": "Durchsuchen und erkunden Sie die Dateien und Ordner im fount-Arbeitsbereich.",
@@ -5035,199 +5077,121 @@
 		"size": "Größe",
 		"parentLink": "↑ Übergeordnetes Verzeichnis ../"
 	},
-	"code_block": {
-		"copy": {
-			"dataset": {
-				"tip": "in die Zwischenablage kopieren"
-			},
-			"aria-label": "in die Zwischenablage kopieren"
-		},
-		"copied": {
-			"dataset": {
-				"tip": "In die Zwischenablage kopiert!"
+	"util": {
+		"common": {
+			"cancel": "Abbrechen",
+			"create": "Erstellen",
+			"save": "Speichern",
+			"delete": "Löschen",
+			"confirm": "Bestätigen",
+			"close": "Schließen",
+			"translate": {
+				"showOriginal": "Originaltext anzeigen",
+				"showTranslation": "Übersetzung anzeigen"
 			}
 		},
-		"download": {
-			"dataset": {
-				"tip": "Code herunterladen"
+		"code_block": {
+			"copy": {
+				"dataset": {
+					"tip": "in die Zwischenablage kopieren"
+				},
+				"aria-label": "in die Zwischenablage kopieren"
 			},
-			"aria-label": "Code herunterladen"
-		},
-		"execute": {
-			"dataset": {
-				"tip": "Code ausführen"
+			"copied": {
+				"dataset": {
+					"tip": "In die Zwischenablage kopiert!"
+				}
 			},
-			"aria-label": "Code ausführen"
-		},
-		"preview": {
-			"dataset": {
-				"tip": "Vorschau"
+			"download": {
+				"dataset": {
+					"tip": "Code herunterladen"
+				},
+				"aria-label": "Code herunterladen"
 			},
-			"aria-label": "Vorschau"
+			"execute": {
+				"dataset": {
+					"tip": "Code ausführen"
+				},
+				"aria-label": "Code ausführen"
+			},
+			"preview": {
+				"dataset": {
+					"tip": "Vorschau"
+				},
+				"aria-label": "Vorschau"
+			},
+			"copy_failed": "Kopieren in die Zwischenablage fehlgeschlagen: ${error}"
 		},
-		"copy_failed": "Kopieren in die Zwischenablage fehlgeschlagen: ${error}"
-	},
-	"pow_captcha": {
-		"initial": "Ich bin kein Roboter",
-		"verifying": "Wird überprüft...",
-		"solved": "Überprüfung erfolgreich",
-		"wasm_disabled": "Aktivieren Sie WASM für eine schnellere Überprüfung.",
-		"error": "Überprüfung fehlgeschlagen",
-		"errorMessage": "Überprüfung fehlgeschlagen: ${error}"
-	},
-	"breadcrumb": {
-		"clickToNavigate": "Klicken Sie, um zu ${path} zu navigieren"
-	},
-	"zxcvbn": {
-		"warnings": {
-			"straightRow": "Kontinuierliche Tasten auf der Tastatur sind leicht zu erraten.",
-			"keyPattern": "Ein kurzes Tastaturmuster ist leicht zu erraten.",
-			"simpleRepeat": "Wiederholte Charaktere wie \"AAA\" sind leicht zu erraten.",
-			"extendedRepeat": "Wiederholte Charaktermuster wie \"abcabcabc\" sind leicht zu erraten.",
-			"sequences": "Gemeinsame Zeichensequenzen wie \"ABC\" sind leicht zu erraten.",
-			"recentYears": "Die letzten Jahre sind leicht zu erraten.",
-			"dates": "Datum ist leicht zu erraten.",
-			"topTen": "Dies ist eines der 10 häufigsten Passwörter.",
-			"topHundred": "Dies ist ein sehr häufig verwendetes Passwort.",
-			"common": "Dies ist ein häufiges Passwort.",
-			"similarToCommon": "Dies ähnelt einem häufig verwendeten Passwort.",
-			"wordByItself": "Ein einzelnes Wort ist leicht zu erraten.",
-			"namesByThemselves": "Ein einzelner Vor- oder Nachname ist leicht zu erraten.",
-			"commonNames": "Häufige Vornamen und Nachnamen sind leicht zu erraten.",
-			"userInputs": "Das Passwort sollte keine persönlichen oder Seitenbezogenen Daten enthalten.",
-			"pwned": "Ihr Passwort wurde in einer Internetdatenverletzung offengelegt."
+		"pow_captcha": {
+			"initial": "Ich bin kein Roboter",
+			"verifying": "Wird überprüft...",
+			"solved": "Überprüfung erfolgreich",
+			"wasm_disabled": "Aktivieren Sie WASM für eine schnellere Überprüfung.",
+			"error": "Überprüfung fehlgeschlagen",
+			"errorMessage": "Überprüfung fehlgeschlagen: ${error}"
 		},
-		"suggestions": {
-			"l33t": "Vermeiden Sie es, vorhersehbare Buchstabensubstitutionen wie \"@\" anstelle von \"a\" zu verwenden.",
-			"reverseWords": "Vermeiden Sie es, die umgekehrte Schreibweise gemeinsamer Wörter zu verwenden.",
-			"allUppercase": "Schreiben Sie einige, aber nicht alle Buchstaben groß.",
-			"capitalization": "Schreiben Sie mehr als nur den ersten Buchstaben groß.",
-			"dates": "Vermeiden Sie es, Daten und Jahre zu verwenden, die mit Ihnen verbunden sind.",
-			"recentYears": "Vermeiden Sie die letzten Jahre.",
-			"associatedYears": "Vermeiden Sie es, Jahre mit Ihnen zu verwenden.",
-			"sequences": "Vermeiden Sie gemeinsame Zeichensequenzen.",
-			"repeated": "Vermeiden Sie sich wiederholende Wörter und Charaktere.",
-			"longerKeyboardPattern": "Verwenden Sie ein längeres Tastaturmuster und ändern Sie die Tipprichtung mehrfach.",
-			"anotherWord": "Fügen Sie mehr ungewöhnliche Wörter hinzu.",
-			"useWords": "Verwenden Sie mehrere Wörter, vermeiden Sie jedoch häufige Sätze.",
-			"noNeed": "Sie müssen keine Symbole, Zahlen oder Großbuchstaben verwenden, um starke Passwörter zu erstellen.",
-			"pwned": "Wenn Sie dieses Passwort an anderer Stelle verwenden, sollten Sie es ändern."
+		"breadcrumb": {
+			"clickToNavigate": "Klicken Sie, um zu ${path} zu navigieren"
 		},
-		"timeEstimation": {
-			"ltSecond": "Weniger als eine Sekunde",
-			"second": "{base} Sekunde",
-			"seconds": "{base} Sekunden",
-			"minute": "{base} min",
-			"minutes": "{base} min",
-			"hour": "{base} Stunde",
-			"hours": "{base} Stunden",
-			"day": "{base} Tag",
-			"days": "{base} Tage",
-			"month": "{base} Monat",
-			"months": "{base} Monate",
-			"year": "{base} Jahr",
-			"years": "{base} Jahre",
-			"centuries": "Jahrhunderte"
-		}
-	},
-	"searchableDropdown": {
-		"trigger": {
-			"placeholder": "Auswählen..."
-		},
-		"search": {
-			"placeholder": "Suchen..."
-		}
-	},
-	"common": {
-		"cancel": "Abbrechen",
-		"create": "Erstellen",
-		"save": "Speichern",
-		"delete": "Löschen",
-		"confirm": "Bestätigen",
-		"close": "Schließen",
-		"translate": {
-			"showOriginal": "Originaltext anzeigen",
-			"showTranslation": "Übersetzung anzeigen"
-		}
-	},
-	"cabinet": {
-		"title": "Cabinet",
-		"description": "Persönliche und gemeinsam genutzte P2P-Aktenschränke",
-		"openCabinets": {
-			"title": "Cabinetliste öffnen",
-			"aria-label": "Cabinetliste öffnen"
-		},
-		"closeCabinets": {
-			"title": "Schließen",
-			"aria-label": "Schließen"
-		},
-		"bootstrapFailed": "Die Initialisierung des Archivs ist fehlgeschlagen: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "Cabinet"
+		"zxcvbn": {
+			"warnings": {
+				"straightRow": "Kontinuierliche Tasten auf der Tastatur sind leicht zu erraten.",
+				"keyPattern": "Ein kurzes Tastaturmuster ist leicht zu erraten.",
+				"simpleRepeat": "Wiederholte Charaktere wie \"AAA\" sind leicht zu erraten.",
+				"extendedRepeat": "Wiederholte Charaktermuster wie \"abcabcabc\" sind leicht zu erraten.",
+				"sequences": "Gemeinsame Zeichensequenzen wie \"ABC\" sind leicht zu erraten.",
+				"recentYears": "Die letzten Jahre sind leicht zu erraten.",
+				"dates": "Datum ist leicht zu erraten.",
+				"topTen": "Dies ist eines der 10 häufigsten Passwörter.",
+				"topHundred": "Dies ist ein sehr häufig verwendetes Passwort.",
+				"common": "Dies ist ein häufiges Passwort.",
+				"similarToCommon": "Dies ähnelt einem häufig verwendeten Passwort.",
+				"wordByItself": "Ein einzelnes Wort ist leicht zu erraten.",
+				"namesByThemselves": "Ein einzelner Vor- oder Nachname ist leicht zu erraten.",
+				"commonNames": "Häufige Vornamen und Nachnamen sind leicht zu erraten.",
+				"userInputs": "Das Passwort sollte keine persönlichen oder Seitenbezogenen Daten enthalten.",
+				"pwned": "Ihr Passwort wurde in einer Internetdatenverletzung offengelegt."
+			},
+			"suggestions": {
+				"l33t": "Vermeiden Sie es, vorhersehbare Buchstabensubstitutionen wie \"@\" anstelle von \"a\" zu verwenden.",
+				"reverseWords": "Vermeiden Sie es, die umgekehrte Schreibweise gemeinsamer Wörter zu verwenden.",
+				"allUppercase": "Schreiben Sie einige, aber nicht alle Buchstaben groß.",
+				"capitalization": "Schreiben Sie mehr als nur den ersten Buchstaben groß.",
+				"dates": "Vermeiden Sie es, Daten und Jahre zu verwenden, die mit Ihnen verbunden sind.",
+				"recentYears": "Vermeiden Sie die letzten Jahre.",
+				"associatedYears": "Vermeiden Sie es, Jahre mit Ihnen zu verwenden.",
+				"sequences": "Vermeiden Sie gemeinsame Zeichensequenzen.",
+				"repeated": "Vermeiden Sie sich wiederholende Wörter und Charaktere.",
+				"longerKeyboardPattern": "Verwenden Sie ein längeres Tastaturmuster und ändern Sie die Tipprichtung mehrfach.",
+				"anotherWord": "Fügen Sie mehr ungewöhnliche Wörter hinzu.",
+				"useWords": "Verwenden Sie mehrere Wörter, vermeiden Sie jedoch häufige Sätze.",
+				"noNeed": "Sie müssen keine Symbole, Zahlen oder Großbuchstaben verwenden, um starke Passwörter zu erstellen.",
+				"pwned": "Wenn Sie dieses Passwort an anderer Stelle verwenden, sollten Sie es ändern."
+			},
+			"timeEstimation": {
+				"ltSecond": "Weniger als eine Sekunde",
+				"second": "{base} Sekunde",
+				"seconds": "{base} Sekunden",
+				"minute": "{base} min",
+				"minutes": "{base} min",
+				"hour": "{base} Stunde",
+				"hours": "{base} Stunden",
+				"day": "{base} Tag",
+				"days": "{base} Tage",
+				"month": "{base} Monat",
+				"months": "{base} Monate",
+				"year": "{base} Jahr",
+				"years": "{base} Jahre",
+				"centuries": "Jahrhunderte"
 			}
 		},
-		"upload": "Hochladen",
-		"uploadFolder": "Ordner hochladen",
-		"newFolder": "Neuen Ordner erstellen",
-		"open": "Offen",
-		"download": "Herunterladen",
-		"downloadZip": "Ordner herunterladen",
-		"rename": "Umbenennen",
-		"copy": "Kopie",
-		"cut": "Schneiden",
-		"paste": "Paste",
-		"pasteLink": "Als Link einfügen",
-		"selectAll": "Alles auswählen",
-		"invert": "Gegenwahl",
-		"properties": "Eigentum",
-		"delete": "Löschen",
-		"back": {
-			"title": "Zurück zur vorherigen Position",
-			"aria-label": "Zurück zur vorherigen Position"
-		},
-		"cancel": "Abbrechen",
-		"save": "Speichern",
-		"showHidden": "Zeigenverstecken",
-		"name": "Name",
-		"descriptionField": "Beschreibung",
-		"attrHidden": "Verstecken",
-		"attrSystem": "System (Löschen erfordert Bestätigung)",
-		"previewUrl": "Vorschau-URL",
-		"deletePreviewWithFile": "Beim Löschen der Datei Vorschau löschen",
-		"folderPassword": "Ordnerpasswort (leer lassen, ausfüllen, um die Verschlüsselung zu aktivieren)",
-		"unlockFolder": "Entsperren Sie den verschlüsselten Ordner",
-		"unlock": "Entsperren",
-		"unlockFailed": "Entsperren fehlgeschlagen: ${error}",
-		"previewFailed": "Vorschaugenerierung fehlgeschlagen: ${error}",
-		"created": "Erstellen: ${stamp}",
-		"modified": "Ändern: ${stamp}",
-		"statusCount": "${count} Artikel, ${selected} ausgewählt",
-		"newCabinetPrompt": "Neuer Archivname",
-		"newFolderPrompt": "Neuer Ordnername",
-		"renamePrompt": "Neuer Name",
-		"visibilityPrompt": "Sichtbarkeit (Öffentlich/nicht gelistet/Follower/privat/ausgewählt)",
-		"cabinetActionPrompt": "Aktion: umbenennen/löschen/sichtbar",
-		"confirmDeleteCabinet": "Sind Sie sicher, dass Sie dieses Archiv löschen möchten?",
-		"confirmDelete": "Bestätigen, um ausgewählte Elemente zu löschen?",
-		"confirmDeleteSystem": "Die ausgewählten Systemdateien sind enthalten. Sind Sie sicher, dass Sie sie löschen?",
-		"copied": "Kopiert",
-		"cutDone": "Schneiden",
-		"undo": "Abbrechen",
-		"redo": "Gefällt mirderholen",
-		"newWindow": "Neues Fenster öffnenAktueller Standort",
-		"goUp": "Zurück zur vorherigen Ebene",
-		"brokenLink": "Link ist defekt: ${reason}",
-		"noDownload": "Keine herunterladbaren Inhalte",
-		"groupDownloadHint": "Bitte erhalten Sie Gruppendateien über Nachrichtenanhänge oder nachfolgende Download-Links.",
-		"remoteEntity": "Entfernte Entität"
-	},
-	"entityProfile": {
-		"attributionMismatch": "Die Anzeigeidentität stimmt nicht mit dem Nachrichtenunterzeichner überein (z. B. wurde der Importverlauf vom Importeur neu signiert). Betrachten Sie diesen Anzeigenamen nicht als kryptografische Identität.",
-		"attributionMismatchShort": {
-			"title": "Nichtübereinstimmung der Signaturzuordnung",
-			"aria-label": "Nichtübereinstimmung der Signaturzuordnung"
-		},
-		"ownedBy": "Diese Entität gehört ${owner}"
+		"searchableDropdown": {
+			"trigger": {
+				"placeholder": "Auswählen..."
+			},
+			"search": {
+				"placeholder": "Suchen..."
+			}
+		}
 	}
 }

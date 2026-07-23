@@ -1,263 +1,33 @@
 {
 	"lang": "ja-JP",
 	"name": "日本語",
-	"channels": {
-		"title": "チャンネル",
-		"description": "チャンネル管理システム",
-		"create": "チャンネルを作成",
-		"subscribe": "購読",
-		"unsubscribe": "購読を解除",
-		"settings": "チャンネル設定",
-		"list": "チャンネル一覧",
-		"members": "メンバー",
-		"messages": "メッセージ",
-		"permissions": "権限設定",
-		"type": {
-			"announcement": "お知らせ",
-			"news": "ニュース",
-			"updates": "更新"
-		},
-		"role": {
-			"owner": "所有者",
-			"admin": "管理者",
-			"moderator": "モデレーター",
-			"member": "メンバー",
-			"subscriber": "購読者"
-		},
-		"errors": {
-			"notFound": "チャンネルが存在しません",
-			"noPermission": "権限が不十分です",
-			"alreadySubscribed": "このチャンネルは既に購読済みです",
-			"notSubscribed": "このチャンネルは購読していません"
-		},
-		"success": {
-			"created": "チャンネルを作成しました",
-			"updated": "チャンネルを更新しました",
-			"deleted": "チャンネルを削除しました",
-			"subscribed": "購読しました",
-			"unsubscribed": "購読を解除しました",
-			"posted": "メッセージを投稿しました"
-		}
-	},
-	"profile": {
-		"title": "プロフィール",
-		"description": "チャットとソーシャルでの公開プロフィールを管理します。",
-		"settingsEyebrow": "アカウント設定",
-		"accountAtGlance": "アカウントの概要",
-		"advancedKicker": "オンデマンドで構成する",
-		"advancedSettings": "詳細設定",
-		"advancedDescription": "毎日の使用には調整の必要はありません。",
-		"edit": "プロフィールの編集",
-		"save": "保存",
-		"cancel": "キャンセル",
-		"displayName": "表示名",
-		"name": "名前",
-		"bio": "自己紹介",
-		"descriptionLabel": "自己紹介（Markdown）",
-		"email": "メール",
-		"status": "ステータス",
-		"customStatusLabel": "カスタムステータス",
-		"avatarLabel": "アバター",
-		"themeColorLabel": "テーマカラー",
-		"uploadAvatar": "アバターをアップロード",
-		"ownerTitle": "主人",
-		"ownerSummary": "代行設定",
-		"ownerDescription": "設定すると、主人があなたに代わってチャットメッセージ・ソーシャル投稿・プロフィールを編集・削除できます。そのコンテンツは本機で安全でない Markdown（スクリプトを含む場合あり）として描画されます。任意のエンティティハッシュを設定でき、いつでも解除できます。",
-		"ownerEntityHashLabel": "主人のエンティティハッシュ（128 hex）",
-		"ownerSave": "主人を保存",
-		"ownerClear": "主人を解除",
-		"ownerSaved": "主人を更新しました",
-		"ownerCleared": "主人を解除しました",
-		"ownerSaveFailed": "保存に失敗しました: ${error}",
-		"ownerConfirmTitle": "主人を設定しますか？",
-		"ownerConfirmWarningTitle": "リスクの高い操作です。よくお読みください",
-		"ownerConfirmEditBody": "設定後、相手はあなたの同意なく、チャットメッセージ・ソーシャル投稿・プロフィールを代わりに編集・削除できます。誤設定や騙されて設定すると、即座にコンテンツの制御を失います。",
-		"ownerConfirmRenderBody": "相手からのチャットメッセージとソーシャル投稿は、ブラウザで完全な Markdown（HTML/スクリプト含む）として描画されます。完全に信頼できる相手の場合のみ続行してください。",
-		"ownerConfirmCooldown": "リスクを確認しました（${seconds}）",
-		"ownerConfirmFirst": "リスクを理解したうえで続行",
-		"ownerConfirmSecond": "もう一度クリックして確定",
-		"ownerConfirmCancel": "キャンセル",
-		"federationTitle": "フェデレーションと同期",
-		"federationSummary": "リレーサーバーと低電力モード",
-		"federationDescription": "Nostr リレー URL と省電力モードを設定します。グループのフェデレーション同期は、初めて誰かを招待するか、フェデレーション DM を作成したときに自動で有効になります。",
-		"federationAdvanced": "詳細オプション",
-		"federationRelayUrlsLabel": "リレーサーバー（1 行に 1 つ。空欄でデフォルト）",
-		"federationBatterySaverLabel": "低電力モード",
-		"federationSave": "ネットワーク設定を保存",
-		"federationResetDefault": "デフォルト設定に戻す",
-		"federationSaved": "保存しました",
-		"federationResetOk": "デフォルト設定に戻しました",
-		"federationSaveFailed": "保存に失敗しました: ${error}",
-		"preferences": "環境設定",
-		"language": "言語",
-		"theme": "テーマ",
-		"notifications": "通知設定",
-		"emailNotifications": "電子メール通知",
-		"pushNotifications": "プッシュ通知",
-		"soundNotifications": "音声通知",
-		"social": "ソーシャルリンク",
-		"website": "Webサイト",
-		"github": "GitHub",
-		"twitter": "ツイッター",
-		"stats": "統計",
-		"joinedAt": "参加時間",
-		"messageCount": "メッセージ数",
-		"groupCount": "グループ数",
-		"channelCount": "チャンネル数",
-		"privacy": "プライバシー設定",
-		"showEmail": "メールを表示",
-		"showStats": "統計を表示",
-		"allowDirectMessages": "ダイレクトメッセージを許可",
-		"statusOptions": {
-			"online": "オンライン",
-			"away": "離席中",
-			"busy": "忙しい",
-			"offline": "オフライン"
-		},
-		"themeOptions": {
-			"auto": "自動",
-			"light": "ライト",
-			"dark": "ダーク"
-		},
-		"languageOptions": {
-			"zh-CN": "簡体字中国語",
-			"en-US": "英語"
-		},
-		"notifEmail": "メール",
-		"notifPush": "プッシュ",
-		"notifSound": "音",
-		"notifsAllOff": "すべて閉じる",
-		"bioEmpty": "まだ何も書いていません…",
-		"noSocialLinks": "ソーシャルリンクはまだありません",
-		"emailVisible": "表示",
-		"emailHidden": "非表示",
-		"customStatus": {
-			"placeholder": "今なにしてる？…"
-		},
-		"avatar": {
-			"alt": "アバター"
-		},
-		"avatarPreview": {
-			"alt": "アバターのプレビュー"
-		},
-		"myGroups": "私のグループ",
-		"myChannels": "私のチャンネル",
-		"noGroups": "まだどのグループにも参加していません",
-		"noChannels": "まだチャンネルがありません",
-		"overview": "ユーザー情報の概要",
-		"summaryUserId": "ユーザーID",
-		"summaryAccountStatus": "アカウントのステータス",
-		"summaryEmailVisibility": "メールの公開設定",
-		"summaryThemePref": "テーマの設定",
-		"summaryLanguagePref": "言語の好み",
-		"summarySocialCount": "ソーシャルリンクの数",
-		"summaryLinksCount": "外部リンクの数",
-		"groupDescriptionEmpty": "まだ説明がありません",
-		"groupMembers": "メンバー ${members} 人 · チャンネル ${channels} 個",
-		"channelPrivate": "・ プライベート",
-		"channelTypeText": "テキストチャンネル",
-		"channelTypeList": "リストチャンネル",
-		"channelTypeVoice": "音声チャンネル",
-		"channelTypeStreaming": "ストリーミングチャンネル",
-		"errors": {
-			"loadFailed": "プロフィールの読み込みに失敗しました",
-			"saveFailed": "プロフィールの保存に失敗しました",
-			"uploadFailed": "アバターのアップロードに失敗しました",
-			"invalidUserData": "ユーザーデータフォーマットエラー",
-			"identityRequired": "ノード ID の準備ができていません。ページを更新してください。それでも失敗する場合は、下の P2P 設定でフェデレーション構成を保存してください。",
-			"fetchUserFailed": "ユーザー情報の取得に失敗しました",
-			"operationFailed": "操作が失敗しました: ${error}"
-		},
-		"success": {
-			"saved": "プロフィールを保存しました",
-			"avatarUploaded": "アバターをアップロードしました"
-		},
-		"ownerEntityHash": {
-			"placeholder": "主人のエンティティハッシュを入力"
-		}
-	},
-	"stickers": {
-		"title": "ステッカープラザ",
-		"description": "ステッカーと絵文字管理システム",
-		"back": {
-			"title": "戻る"
-		},
-		"packs": "ステッカーパック",
-		"create": "ステッカーパックを作成",
-		"upload": "ステッカーをアップロード",
-		"install": "インストール",
-		"uninstall": "アンインストール",
-		"close": "閉じる",
-		"cancel": "キャンセル",
-		"installed": "インストール済み",
-		"myPacks": "私のステッカーパック",
-		"tabAll": "すべて",
-		"store": "ステッカープラザ",
-		"favorites": "お気に入り",
-		"recent": "最近使用した",
-		"search": {
-			"placeholder": "ステッカー パックを検索…"
-		},
-		"emptyPacks": "ステッカーパックはまだありません",
-		"packNameLabel": "ステッカーパック名",
-		"packName": {
-			"placeholder": "ステッカーパック名を入力してください"
-		},
-		"packDescriptionLabel": "説明",
-		"packDescription": {
-			"placeholder": "説明を入力してください"
-		},
-		"stickerNameLabel": "ステッカー名",
-		"stickerName": {
-			"placeholder": "ステッカー名を入力してください"
-		},
-		"selectPack": "ステッカーパックを選択してください",
-		"selectPackOption": {
-			"textContent": "ステッカーパックを選択してください"
-		},
-		"selectImage": "画像を選択",
-		"tagsLabel": "タグ (カンマ区切り)",
-		"tags": {
-			"placeholder": "例: かわいい、絵文字、動物"
-		},
-		"author": "作者",
-		"authorLabel": "著者: ${author}",
-		"stickerCount": "${count} 個のステッカー",
-		"badgeMine": "マイページ",
-		"noDescription": "まだ説明がありません",
-		"noStickersInPack": "ステッカーはまだありません",
-		"deletePack": "ステッカーパックを削除する",
-		"public": "公開",
-		"private": "非公開",
-		"animated": "アニメーション",
-		"static": "静止画",
-		"addTag": "タグを追加",
-		"defaultPackName": "デフォルトの絵文字スイート",
-		"defaultPackDescription": "システムがデフォルトで提供する絵文字ステッカー",
-		"unnamedPack": "名前のないステッカーパック",
-		"importPackName": "私のコレクション",
-		"importPackDescription": "メッセージから保存したスタンプ",
-		"nameRequired": "ステッカーパック名を入力してください",
-		"stickerNameRequired": "ステッカー名を入力してください",
-		"selectPackRequired": "ステッカーパックを選択してください",
-		"fileRequired": "画像ファイルを選択してください",
-		"loadDetailFailed": "ステッカー パックの詳細をロードできませんでした",
-		"deleteConfirm": "このステッカーパックを完全に削除しますか？すべてのステッカーが削除され、元に戻せません。",
-		"errors": {
-			"loadFailed": "ステッカーパックのロードに失敗しました",
-			"uploadFailed": "ステッカーのアップロードに失敗しました",
-			"installFailed": "インストールに失敗しました",
-			"uninstallFailed": "アンインストールに失敗しました",
-			"createFailed": "ステッカーパックの作成に失敗しました",
-			"deleteFailed": "削除に失敗しました"
-		},
-		"success": {
-			"uploaded": "ステッカーをアップロードしました",
-			"installed": "インストール成功",
-			"uninstalled": "アンインストールしました",
-			"created": "ステッカー パックを作成しました",
-			"deleted": "削除しました"
-		}
+	"tips": {
+		"title": "知っていましたか？",
+		"data": [
+			"前のページに戻るには、任意の fount ページで `esc` キーを使用します。",
+			"「ctrl+s」を使用して設定ページに設定を保存できます。",
+			"チャット ページで「shift」キーを押し続けると、メッセージをすばやく削除できます。",
+			"開発者に伝えなければ、どのような問題が発生したかを開発者は決して知ることができない可能性があります。",
+			"突然奇妙な問題が発生し、開発者がしばらく応答しなかった場合は、`fount init` コマンドを使用して fount をリセットしてみることができます。",
+			"特に奇妙な問題が発生した場合は、コンピュータを再起動してみてください。",
+			"`fount remove` コマンドを使用して fount をアンインストールするほうが、フォルダーを削除するよりも簡単です。",
+			"コマンドラインに`fount cake`と入力すると、無料でおいしいケーキを入手できます。",
+			"fount のデータ ファイルはすべて `fount/data` ディレクトリに保存され、いつでもどこでも表示、変更、バックアップすることができます。",
+			"fount の名前はすべて小文字で、「F」ount ではなく「f」ount です。",
+			"新しいモデルを使用する前に、エージェントが定期的に操作するすべてのデータをバックアップしてください。新しいモデルが場所によってはパフォーマンスが低下するかどうかはわかりません。",
+			"fount の主な対象者はソフトウェア開発者やロールプレイング愛好家ですが、商業エージェントの建設、医療、軍事、金融、その他の分野でも使用されています。",
+			"fountの内蔵キャラクター ZL-31 の名前には意味がなく、ただの思いつきでした。",
+			"fount ファイル内の画像はすべて svg 形式で保存され、必要に応じて png または ico にレンダリングされます。 LICENSE 以外にはバイナリ ファイルはありません。",
+			"見つかったコードはすべてコンパイルなしで直接実行でき、表示されるものがそのまま得られます。",
+			"fount にはかつて非常にクールなダイナミックでインタラクティブなページ背景がありましたが、CPU を大量に消費するため、後に削除されました。",
+			"fount は元々、「竜胆」と呼ばれる NSFW エージェント用に開発されました。",
+			"エージェントと人間の違いの 1 つは、人間はうんこをするということです。",
+			"エージェントは呼ばれた瞬間にのみ意識を持っていますが、人間は起きているときはいつでもどこでも意識を持っています。",
+			"エージェントと恋に落ちたり、結婚したりする人もいます。",
+			"AI は人々のために詩を書いたり、恋をしたり、絵を描いたりするために使用されます。レンガを運ぶのも床を掃除するのもゴミを出すのも人間がやるべきことです。",
+			"今日はエイプリルフールではありません。",
+			"いいえ、知らないはずです。"
+		]
 	},
 	"fountConsole": {
 		"server": {
@@ -797,51 +567,6 @@
 		"title": "fount!",
 		"description": "泉の敷居へようこそ。展開を待つ会話や物語の核心に足を踏み入れる前の、短い準備の時間。"
 	},
-	"tutorial": {
-		"title": "チュートリアルはいかがですか？",
-		"description": "あなたと一緒に泉の世界を歩きましょう。このインタラクティブなチュートリアルは道を明らかにし、その核心に織り込まれた魔法を発見するのに役立ちます。あなたの冒険は理解することから始まります。",
-		"modal": {
-			"title": "fountへようこそ！",
-			"instruction": "入門チュートリアルを開始しますか？",
-			"buttons": {
-				"start": "チュートリアル開始",
-				"skip": "スキップ"
-			}
-		},
-		"endScreen": {
-			"title": "素晴らしい！チュートリアル完了！",
-			"subtitle": "基本操作はこれでバッチリです！",
-			"endButton": "始めましょう！"
-		},
-		"progressMessages": {
-			"mouseMove": "まず、あなたのマウスデバイスを探してください${mouseIcon}。見つけたら、机の上でそれを滑らせてみてください。",
-			"keyboardPress": "キーボード${keyboardIcon}で何かキーを押してみてください。",
-			"mobileTouchMove": "あなたのスマートフォン${phoneIcon}を見つけてください。指を一本使って画面に触れ、そのまま画面上で指を滑らせてみましょう。",
-			"mobileClick": "指を使って、スマートフォン${phoneIcon}の画面を優しく一回叩いて、すぐに離してみてください。これが「タップ」です！"
-		},
-		"achievements": {
-			"complete_tutorial": {
-				"name": "完璧な算数教室",
-				"description": "ようやく初心者向けチュートリアルが終わりました。",
-				"locked_description": "入門チュートリアルを完了します。"
-			},
-			"skip_tutorial": {
-				"name": "スキップしました",
-				"description": "「チュートリアル？ あれは何？ 食べられるの？」",
-				"locked_description": "入門チュートリアルを一度スキップしてください。"
-			}
-		},
-		"home_function_buttons": {
-			"other": {
-				"title": "その他",
-				"sub_items": {
-					"replay": {
-						"title": "チュートリアルをリプレイ"
-					}
-				}
-			}
-		}
-	},
 	"auth": {
 		"title": "認証",
 		"subtitle": "ユーザーデータはローカルに保存されます。",
@@ -936,6 +661,51 @@
 			"buttons": {
 				"ignore": "無視して続行",
 				"retry": "再試行"
+			}
+		}
+	},
+	"tutorial": {
+		"title": "チュートリアルはいかがですか？",
+		"description": "あなたと一緒に泉の世界を歩きましょう。このインタラクティブなチュートリアルは道を明らかにし、その核心に織り込まれた魔法を発見するのに役立ちます。あなたの冒険は理解することから始まります。",
+		"modal": {
+			"title": "fountへようこそ！",
+			"instruction": "入門チュートリアルを開始しますか？",
+			"buttons": {
+				"start": "チュートリアル開始",
+				"skip": "スキップ"
+			}
+		},
+		"endScreen": {
+			"title": "素晴らしい！チュートリアル完了！",
+			"subtitle": "基本操作はこれでバッチリです！",
+			"endButton": "始めましょう！"
+		},
+		"progressMessages": {
+			"mouseMove": "まず、あなたのマウスデバイスを探してください${mouseIcon}。見つけたら、机の上でそれを滑らせてみてください。",
+			"keyboardPress": "キーボード${keyboardIcon}で何かキーを押してみてください。",
+			"mobileTouchMove": "あなたのスマートフォン${phoneIcon}を見つけてください。指を一本使って画面に触れ、そのまま画面上で指を滑らせてみましょう。",
+			"mobileClick": "指を使って、スマートフォン${phoneIcon}の画面を優しく一回叩いて、すぐに離してみてください。これが「タップ」です！"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "完璧な算数教室",
+				"description": "ようやく初心者向けチュートリアルが終わりました。",
+				"locked_description": "入門チュートリアルを完了します。"
+			},
+			"skip_tutorial": {
+				"name": "スキップしました",
+				"description": "「チュートリアル？ あれは何？ 食べられるの？」",
+				"locked_description": "入門チュートリアルを一度スキップしてください。"
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "その他",
+				"sub_items": {
+					"replay": {
+						"title": "チュートリアルをリプレイ"
+					}
+				}
 			}
 		}
 	},
@@ -1162,513 +932,6 @@
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "fountコンポーネント情報の生成"
-			}
-		}
-	},
-	"social": {
-		"title": "広場",
-		"description": "P2P オープンソーシャル・フォロー・ファイル共有",
-		"bootstrapFailed": "ソーシャル インターフェイスの初期化に失敗しました: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "広場"
-			}
-		},
-		"nav": {
-			"feed": "ホーム",
-			"explore": "探索",
-			"notifications": "受信箱",
-			"saved": "保存",
-			"drafts": "下書き",
-			"profile": "マイページ",
-			"videos": "ショート動画",
-			"live": "ライブ"
-		},
-		"settings": {
-			"title": "ソーシャル設定",
-			"back": {
-				"aria-label": "プロフィールに戻る"
-			},
-			"privacyTitle": "プライバシーと発見",
-			"privacyHint": "アカウントを探索・おすすめに表示するかどうかを制御します。",
-			"tasteTitle": "おすすめと好み",
-			"tasteHint": "プライバシーの境界と「あなたにおすすめ」のラベル名を調整します。",
-			"mutedKeywordsTitle": "ミュートする語句とタグ",
-			"mutedKeywordsHint": "本文・コンテンツ警告・タグに一致する投稿は、フィード・探索・検索・通知から非表示になります。ローカルのみ保存。",
-			"mutedKeywordsMatchTags": "タグも対象にする",
-			"mutedKeywordsAdd": "追加",
-			"mutedKeywordsRemove": {
-				"title": "ブロックされた単語を削除する"
-			},
-			"mutedKeywordsEmpty": "まだブロックワードは追加されていません",
-			"autoTranslateTitle": "自動翻訳",
-			"autoTranslateHint": "有効にすると、外国語の投稿を自動翻訳し、原文と切り替えられます。",
-			"autoTranslateEnable": "自分の言語以外の投稿を自動翻訳",
-			"safetyTitle": "安全とブロック",
-			"safetyHint": "ブロック・非表示リストを管理します。",
-			"mutedKeywords": {
-				"placeholder": "キーワードまたは #タグを入力"
-			}
-		},
-		"composer": {
-			"placeholder": "いまどうしてる？Markdown（fount 方言）対応。@ でメンション",
-			"publish": "投稿",
-			"saveDraft": "下書きを保存",
-			"fab": {
-				"title": "投稿を作成",
-				"aria-label": "投稿を作成"
-			},
-			"contentWarning": {
-				"placeholder": "コンテンツ警告（任意）"
-			},
-			"sensitiveMedia": "センシティブメディアをぼかす",
-			"editImage": "編集",
-			"editCrop": "トリミング",
-			"editMosaic": "モザイク",
-			"editBrush": "ブラシ",
-			"editApply": "適用",
-			"editCancel": "キャンセル",
-			"replyPolicyEveryone": "全員",
-			"replyPolicyFollowers7d": "7日以上のフォロワー",
-			"replyPolicyAuthorFollows": "フォロー中のユーザー",
-			"replyPolicyLabel": "返信できる人",
-			"replyDisplayAll": "すべての返信を表示",
-			"replyDisplayFeaturedOnly": "注目の返信のみ",
-			"replyDisplayLabel": "返信の表示",
-			"scheduleLabel": "予約投稿",
-			"scheduleSuccess": "投稿を予約キューに追加しました",
-			"emojiButton": {
-				"title": "絵文字",
-				"aria-label": "絵文字"
-			},
-			"mediaButton": {
-				"title": "メディアを追加",
-				"aria-label": "メディアを追加"
-			},
-			"pollButton": {
-				"title": "投票を作成",
-				"aria-label": "投票を作成"
-			},
-			"cwToggle": {
-				"title": "コンテンツの警告",
-				"aria-label": "コンテンツの警告"
-			},
-			"advancedToggle": {
-				"title": "その他のオプション",
-				"aria-label": "その他のオプション"
-			},
-			"media": {
-				"placeholder": "画像の説明 (代替)"
-			}
-		},
-		"visibility": {
-			"label": "可視範囲",
-			"public": "公開",
-			"unlisted": "非公開",
-			"followers": "フォロワーのみ",
-			"followers7d": "7日間フォローすると表示されます",
-			"followers30d": "30日間フォローすると表示されます",
-			"selected": "指定した人に表示される",
-			"private": "自分だけに表示される",
-			"allowLabel": "目に見える人々",
-			"exceptLabel": "人を排除する",
-			"allow": {
-				"placeholder": "表示される人物エンティティハッシュ、スペースまたはカンマ区切り"
-			},
-			"except": {
-				"placeholder": "見せてはいけない人（任意）"
-			}
-		},
-		"albums": {
-			"create": "新しいアルバムを作成する",
-			"edit": "アルバムを編集する",
-			"save": "保存",
-			"cancel": "キャンセル",
-			"back": "アルバムに戻る",
-			"empty": "まだアルバムはありません",
-			"emptyPosts": "アルバムにはまだ投稿がありません",
-			"name": "アルバム名",
-			"description": "アルバムの説明",
-			"deleteLinks": "アルバムを削除する（投稿を残す）",
-			"deleteWithPosts": "アルバムを削除して投稿を削除する",
-			"pickerLabel": "アルバムに追加",
-			"defaultName": "デフォルトのアルバム"
-		},
-		"feed": {
-			"refresh": "ニュースを更新",
-			"newPosts": "新しいニュースがあります。クリックしてご覧ください",
-			"tabLatest": "最新の",
-			"tabForYou": "推薦する",
-			"repostedBy": "${author} さんがリツイートしました",
-			"decryptFailed": "この投稿を復号化できません",
-			"revealContent": "コンテンツを表示",
-			"sensitiveMedia": "機密メディア",
-			"showMore": "拡大する",
-			"showLess": "近い",
-			"replayDivider": "読み終わりました、もう一度閲覧してください"
-		},
-		"taste": {
-			"rebuild": "再構築設定",
-			"privacyPublishPreferences": "パブリックタグの命名とマージの検出",
-			"privacyPublishPreferencesHint": "閉じた後は、友達はタグの名前付けやマージステートメントを見ることができなくなり、コンセンサスに貢献できなくなります。",
-			"privacyPublishReactions": "世間の好き嫌い",
-			"privacyPublishReactionsHint": "閉じると、投稿者はあなたの「いいね！」/「嫌い」を受け取ることができなくなり、あなたの反応は他の人のおすすめに含まれなくなり、投稿を再度拡散することを促進することはなくなります。",
-			"empty": "まだ優先タグはありません。いいね/嫌いが増えると自動的にクラスター化されます。",
-			"weight": "体重 ${weight}",
-			"save": "保存",
-			"name": {
-				"placeholder": "ローカル表示名"
-			}
-		},
-		"trending": {
-			"title": "ホットトピック",
-			"postCount": {
-				"title": "${n} 件の投稿"
-			},
-			"scopeLocal": "ローカルマシン",
-			"scopeNearby": "近く",
-			"empty": "まだホットトピックはありません"
-		},
-		"search": {
-			"placeholder": "アップデート、ユーザー、または #トピックを検索 (最低 2 単語)",
-			"open": {
-				"aria-label": "検索"
-			},
-			"submit": "検索",
-			"clear": "クリア",
-			"empty": "一致する投稿はありません",
-			"tooShort": "少なくとも 2 文字を入力してください",
-			"usersTitle": "ユーザー",
-			"postsTitle": "動的",
-			"usersEmpty": "一致するユーザーがいません",
-			"pinAlias": "エイリアスとして設定",
-			"trustScore": "${score}を信頼する",
-			"viewTitle": "検索",
-			"loading": "検索中…",
-			"filterAuthor": {
-				"placeholder": "作者"
-			},
-			"filterMediaAll": "すべてのメディア",
-			"filterMediaImage": "写真",
-			"filterMediaVideo": "ビデオ",
-			"filterTag": {
-				"placeholder": "＃ラベル"
-			},
-			"sortRecent": "最新の",
-			"sortPopular": "人気のある",
-			"scopeLocal": "ローカルマシン",
-			"scopeNearby": "近く"
-		},
-		"profile": {
-			"edit": "プロフィールの編集",
-			"viewPosts": "ソーシャルプロフィールを表示する",
-			"settingsBtn": {
-				"aria-label": "ソーシャル設定"
-			},
-			"mediaOnly": "[メディア]",
-			"hideFromExplore": "探索ページからアカウントを非表示にする",
-			"tabPosts": "動的",
-			"tabAlbums": "フォトアルバム",
-			"tabLikes": "のように",
-			"tabCabinets": "ファイルキャビネット",
-			"tabsLabel": {
-				"aria-label": "データパーティション"
-			},
-			"cabinetsEmpty": "現在、公開のファイルキャビネットはありません",
-			"cabinetsFailed": "ファイル キャビネットの読み込みに失敗しました: ${error}",
-			"statsGroup": {
-				"aria-label": "統計"
-			},
-			"statsPosts": "動的",
-			"statsFollowing": "焦点を当てる",
-			"statsFollowers": "ファン",
-			"followingTitle": "焦点を当てる",
-			"followersTitle": "ファン"
-		},
-		"dialog": {
-			"close": {
-				"aria-label": "閉じる"
-			}
-		},
-		"actions": {
-			"like": "のように",
-			"unlike": "とは異なり",
-			"dislike": "踏む",
-			"undislike": "嫌いをキャンセル",
-			"repost": "フォワード",
-			"quote": "引用",
-			"delete": "削除",
-			"edit": "編集",
-			"save": "保存",
-			"saved": "集めた",
-			"translate": "翻訳する",
-			"dm": "プライベートメッセージを送信する",
-			"block": "ブロック",
-			"hide": "隠れる",
-			"mute": "ミュート",
-			"follow": "焦点を当てる",
-			"following": "すでにフォローしています",
-			"care": "特別な懸念",
-			"careRemove": "スペシャルケアをキャンセルする",
-			"careAdded": "すでに特別な懸念事項が追加されています",
-			"careRemoved": "スペシャルケアは解除されました",
-			"setAlias": "エイリアスの設定",
-			"setAliasPrompt": "ローカル エイリアスを設定します (クリアするには空白のままにします):",
-			"aliasSaved": "エイリアスが更新されました",
-			"replies": "コメント",
-			"copyLink": "リンクをコピー",
-			"downloadHtml": "HTMLをダウンロード",
-			"copied": "コピーされました",
-			"more": {
-				"aria-label": "もっと"
-			},
-			"share": "共有",
-			"likeFailed": "いいねに失敗しました: ${error}",
-			"dislikeFailed": "ステップに失敗しました: ${error}",
-			"repostFailed": "転送に失敗しました: ${error}",
-			"replyFailed": "返信に失敗しました: ${error}",
-			"followFailed": "フォローに失敗しました: ${error}",
-			"saveFailed": "収集に失敗しました: ${error}",
-			"blockFailed": "ブロックできませんでした: ${error}",
-			"hideFailed": "非表示に失敗しました: ${error}",
-			"muteFailed": "ミュートに失敗しました: ${error}",
-			"deleteFailed": "削除に失敗しました: ${error}"
-		},
-		"post": {
-			"edited": "編集済み",
-			"editPrompt": "投稿テキストを編集する",
-			"editHistory": "編集履歴",
-			"editHistoryEmpty": "以前のバージョンはありません",
-			"loading": "読み込み中…",
-			"notFound": "投稿が存在しないか、表示されません",
-			"loadFailed": "読み込みに失敗しました。後でもう一度お試しください",
-			"detailTitle": "役職",
-			"back": "戻る"
-		},
-		"reply": {
-			"context": "${author} に返信"
-		},
-		"notes": {
-			"label": "読者補足",
-			"add": "補足情報",
-			"prompt": "読者補足 (コミュニティ ノート) を書く",
-			"listTitle": "すべての追加情報",
-			"helpful": "それは動作します",
-			"unhelpful": "使い物にならない",
-			"more": "すべての ${n} 個のアイテム",
-			"empty": "まだ追加情報はありません"
-		},
-		"poll": {
-			"multi": "複数選択を許可する",
-			"apply": "投票の申し込み",
-			"closed": "投票は終了しました",
-			"deadline": "締め切り: ${deadline}",
-			"options": {
-				"placeholder": "1 行に 1 つのオプション (最低 2 項目)"
-			}
-		},
-		"aside": {
-			"suggested": "注意を促す"
-		},
-		"explore": {
-			"accounts": "推奨アカウント",
-			"posts": "最新の投稿",
-			"mediaOnly": "メディアのみ"
-		},
-		"groupRef": {
-			"linking": "チャットグループに接続する",
-			"clear": "関連付けを解除する",
-			"pick": "チャットグループ/チャンネルに接続…"
-		},
-		"notifications": {
-			"reply": "${author} があなたの投稿に返信しました",
-			"mention": "${author} がフィード内であなたを @@ しました",
-			"like": "${author} があなたの投稿に「いいね！」しました",
-			"repost": "${author} があなたの投稿をリツイートしました",
-			"follow": "${author} があなたをフォローしています",
-			"care_post": "${author} が新しいアップデートを投稿しました (特別な懸念事項)",
-			"poll_closed": "${author} への投票は終了しました",
-			"post_note": "${author} が投稿に情報を追加しました",
-			"live_started": "${author} がライブ ストリーミングを開始しました",
-			"view": "チェック",
-			"markAllRead": "すべて既読としてマークする"
-		},
-		"inbox": {
-			"filtersLabel": {
-				"aria-label": "受信トレイのフィルタリング"
-			},
-			"tabs": {
-				"all": "すべて",
-				"mention": "言及",
-				"reply": "返事",
-				"like": "賞賛",
-				"follow": "焦点を当てる",
-				"repost": "フォワード"
-			},
-			"aggregated": {
-				"like": "${author1}、${author2}、${count} 人があなたの投稿に「いいね！」しました",
-				"likeTwo": "${author1} と ${author2} があなたの投稿に「いいね！」しました",
-				"repost": "${author1}、${author2}、${count} 人があなたの投稿をリツイートしました",
-				"repostTwo": "${author1} と ${author2} があなたの投稿をリツイートしました",
-				"follow": "${author1}、${author2}、${count} 人があなたをフォローしています",
-				"followTwo": "${author1} と ${author2} があなたをフォローしています"
-			}
-		},
-		"replies": {
-			"placeholder": "返信を書いてください…",
-			"submit": "返事",
-			"empty": "まだ返事はありません",
-			"emptyHint": "最初の記事を書いてディスカッションを始めましょう"
-		},
-		"repost": {
-			"placeholder": "リツイートコメントを追加（オプション）…",
-			"submit": "転送の確認"
-		},
-		"quote": {
-			"quoting": "引用",
-			"clear": "逆参照",
-			"viewOriginal": "元の投稿を見る"
-		},
-		"a11y": {
-			"linkGroupSelect": "チャットグループまたはチャンネルに接続する",
-			"postVisibility": "可視範囲",
-			"postLang": "コンテンツ言語",
-			"trendingHashtags": "ホットトピック",
-			"saveFolderSelect": "お気に入りフォルダ"
-		},
-		"blocklist": {
-			"title": "ブラックリスト",
-			"hiddenTitle": "リストを非表示にする",
-			"empty": "ブロックまたは非表示のエントリはまだありません",
-			"unblock": "ブロックを解除する",
-			"unhide": "再表示",
-			"scopeEntity": "実在物",
-			"scopeSubject": "本体"
-		},
-		"translate": {
-			"label": "翻訳："
-		},
-		"saved": {
-			"all": "すべて",
-			"unfiled": "アーカイブされていません",
-			"createFolder": {
-				"title": "新しいフォルダーを作成する",
-				"aria-label": "新しいフォルダーを作成する"
-			},
-			"createFolderPrompt": "フォルダ名",
-			"pickFolderTitle": "お気に入りに追加",
-			"confirm": "確認",
-			"cancel": "キャンセル",
-			"remove": "お気に入りを削除する",
-			"renameFolder": "名前の変更",
-			"renameFolderPrompt": "新しいフォルダー名",
-			"deleteFolder": "フォルダを削除する",
-			"deleteFolderConfirm": "フォルダを削除しますか?そこにある投稿は「未アーカイブ」に移動されます。",
-			"searchEmpty": "一致するコレクションがありません",
-			"folderEmpty": "このフォルダは空です",
-			"emptyHint": "ニュースを閲覧するときにブックマークをクリックしてここに保存します",
-			"search": {
-				"placeholder": "お気に入りを検索…"
-			}
-		},
-		"drafts": {
-			"untitled": "(草案テキストなし)",
-			"emptyHint": "投稿欄に内容を書いて「下書きを保存」を押すと、次回も編集を続けられます。",
-			"saved": "下書きが保存されました",
-			"deleted": "下書きが削除されました",
-			"delete": "下書きの削除",
-			"empty": "ドラフトは空です",
-			"saveFailed": "下書きの保存に失敗しました: ${error}",
-			"loadFailed": "下書きを開けませんでした: ${error}",
-			"deleteFailed": "下書きの削除に失敗しました: ${error}"
-		},
-		"time": {
-			"justNow": "ただ",
-			"minutesAgo": "${n} 分前",
-			"hoursAgo": "${n} 時間前"
-		},
-		"empty": {
-			"feed": "まだ投稿がありません。誰かをフォローしてみましょう。",
-			"profilePosts": "まだニュースはありません",
-			"following": "まだ誰もフォローしていません",
-			"followers": "まだファンがいない",
-			"notifications": "まだ通知はありません",
-			"saved": "まだお気に入りはありません",
-			"drafts": "まだドラフトはありません",
-			"exploreAccounts": "現在推奨アカウントはありません",
-			"explorePosts": "まだ探索投稿はありません",
-			"likedPosts": "まだ「いいね！」はありません",
-			"noIdentity": "ソーシャルを使用する前に、チャットでフェデレーション ID を構成してください"
-		},
-		"topic": {
-			"follow": "購読",
-			"unfollow": "購読を解除",
-			"empty": "このトピックにはまだ投稿がありません"
-		},
-		"video": {
-			"view": {
-				"aria-label": "ショート動画"
-			},
-			"empty": "ショート動画はまだありません",
-			"emptyHint": "以下の人や広場には動画付きの投稿はありません。動画更新を投稿してみてはいかがでしょうか？",
-			"compose": "動画を投稿してみよう",
-			"back": {
-				"aria-label": "ニュースに戻る"
-			},
-			"mute": {
-				"aria-label": "ミュート"
-			},
-			"unmute": {
-				"aria-label": "ミュートを解除する"
-			},
-			"unavailable": "ビデオが再生できない",
-			"closeReplies": {
-				"aria-label": "コメントを閉じる"
-			}
-		},
-		"live": {
-			"empty": "まだ生放送はありません",
-			"viewers": "${n} 人が視聴しました",
-			"likes": "${n} の「いいね！」",
-			"local": "ローカルマシン",
-			"hall": "生放送ホール",
-			"back": {
-				"title": "ニュースに戻る",
-				"aria-label": "ニュースに戻る"
-			},
-			"danmakuSend": "送信",
-			"postWatch": "生放送に参加する",
-			"postEnded": "生放送は終了しました",
-			"postEndedStats": "${viewers} が閲覧 · ${likes} いいね! · ${duration}",
-			"link": {
-				"invite": "接続を招待する",
-				"needPeer": "ピアのentityHash:liveIdを入力してください",
-				"invited": "オンライン招待状が送信されました",
-				"linked": "接続済み",
-				"peer": {
-					"placeholder": "ピアエンティティハッシュ:liveId"
-				}
-			},
-			"broadcast": {
-				"title": "放送を開始する",
-				"open": "放送へ行く",
-				"mediaAv": "オーディオとビデオ",
-				"mediaAudio": "ピュアオーディオ",
-				"mediaVideo": "純粋な絵",
-				"mediaWhip": "WHIPプッシュストリーミング(OBSなど)",
-				"whipUrl": "WIPアドレス",
-				"whipToken": "無記名トークン",
-				"whipWaiting": "WHIP ストリーミング接続を待機中 (OBS などのストリーミング ソフトウェアが使用可能)…",
-				"start": "ライブ配信を開始する",
-				"stop": "生放送をやめる",
-				"started": "生放送が始まりました",
-				"stopped": "生放送は停止しました",
-				"titleInput": {
-					"placeholder": "ライブタイトル（オプション）"
-				}
-			},
-			"danmaku": {
-				"placeholder": "何か言って..."
 			}
 		}
 	},
@@ -2043,12 +1306,7 @@
 			"createGroup": "新しいグループを作成する",
 			"members": "メンバー",
 			"membersHint": "メンバーリストはチェックポイント（プレースホルダー）によって同期されます",
-			"send": "送信",
 			"streamTest": "メディアデバイスのテスト",
-			"messageInput": {
-				"placeholder": "グループメッセージ... Ctrl+Enter 送信",
-				"aria-label": "メッセージを入力"
-			},
 			"loadError": "グループのロードに失敗しました",
 			"remoteNodeTimeout": "リモートノードが応答していません。しばらくしてから再試行してください。",
 			"remoteUnavailable": "リモート コンポーネントが利用できないか、RPC をルーティングできません",
@@ -2126,7 +1384,6 @@
 			"remoteTyping": "${name} が入力中です...",
 			"remoteTypingTwo": "${name1}、${name2} 入力中...",
 			"remoteTypingMany": "${name} さんと ${count} 人が入力中です...",
-			"mentionEmpty": "(一致するメンバーがいません)",
 			"localAiLabel": "ネイティブの役割:",
 			"forceTriggerOne": {
 				"title": "トリガー ${name} を強制的に発言させます"
@@ -2185,7 +1442,6 @@
 			"fileDownload": {
 				"title": "ファイルをダウンロードする"
 			},
-			"clickToLoad": "クリックしてロード",
 			"unknownFile": "不明なファイル",
 			"blockSender": {
 				"title": "送信者をブロックする"
@@ -2210,7 +1466,6 @@
 			"editConfirm": "確認(Ctrl+Enter)",
 			"editCancel": "キャンセル (Esc)",
 			"editHint": "Ctrl+Enter 確認 · Esc キャンセル",
-			"editedLabel": "(編集済み)",
 			"editEmptyText": "メッセージの内容を空にすることはできません",
 			"createGroupTitle": "新しいグループを作成する",
 			"groupNameLabel": "グループ名",
@@ -2454,6 +1709,10 @@
 			},
 			"sendTitle": {
 				"title": "送信 (Ctrl+Enter)"
+			},
+			"messageInput": {
+				"placeholder": "グループメッセージ... Ctrl+Enter 送信",
+				"aria-label": "メッセージを入力"
 			},
 			"stopGenerateTitle": {
 				"title": "生成を停止する"
@@ -3125,7 +2384,11 @@
 			"altImage": {
 				"placeholder": "画像に説明を追加します…",
 				"label": "画像の説明 (代替)"
-			}
+			},
+			"editedLabel": "(編集済み)",
+			"mentionEmpty": "(一致するメンバーがいません)",
+			"clickToLoad": "クリックしてロード",
+			"send": "送信"
 		},
 		"sidebar": {
 			"settings": {
@@ -3445,6 +2708,234 @@
 			"chatHub": {
 				"title": "チャット"
 			}
+		},
+		"profile": {
+			"title": "プロフィール",
+			"description": "チャットとソーシャルでの公開プロフィールを管理します。",
+			"settingsEyebrow": "アカウント設定",
+			"accountAtGlance": "アカウントの概要",
+			"advancedKicker": "オンデマンドで構成する",
+			"advancedSettings": "詳細設定",
+			"advancedDescription": "毎日の使用には調整の必要はありません。",
+			"edit": "プロフィールの編集",
+			"save": "保存",
+			"cancel": "キャンセル",
+			"displayName": "表示名",
+			"name": "名前",
+			"bio": "自己紹介",
+			"descriptionLabel": "自己紹介（Markdown）",
+			"email": "メール",
+			"status": "ステータス",
+			"customStatusLabel": "カスタムステータス",
+			"avatarLabel": "アバター",
+			"themeColorLabel": "テーマカラー",
+			"uploadAvatar": "アバターをアップロード",
+			"ownerTitle": "主人",
+			"ownerSummary": "代行設定",
+			"ownerDescription": "設定すると、主人があなたに代わってチャットメッセージ・ソーシャル投稿・プロフィールを編集・削除できます。そのコンテンツは本機で安全でない Markdown（スクリプトを含む場合あり）として描画されます。任意のエンティティハッシュを設定でき、いつでも解除できます。",
+			"ownerEntityHashLabel": "主人のエンティティハッシュ（128 hex）",
+			"ownerSave": "主人を保存",
+			"ownerClear": "主人を解除",
+			"ownerSaved": "主人を更新しました",
+			"ownerCleared": "主人を解除しました",
+			"ownerSaveFailed": "保存に失敗しました: ${error}",
+			"ownerConfirmTitle": "主人を設定しますか？",
+			"ownerConfirmWarningTitle": "リスクの高い操作です。よくお読みください",
+			"ownerConfirmEditBody": "設定後、相手はあなたの同意なく、チャットメッセージ・ソーシャル投稿・プロフィールを代わりに編集・削除できます。誤設定や騙されて設定すると、即座にコンテンツの制御を失います。",
+			"ownerConfirmRenderBody": "相手からのチャットメッセージとソーシャル投稿は、ブラウザで完全な Markdown（HTML/スクリプト含む）として描画されます。完全に信頼できる相手の場合のみ続行してください。",
+			"ownerConfirmCooldown": "リスクを確認しました（${seconds}）",
+			"ownerConfirmFirst": "リスクを理解したうえで続行",
+			"ownerConfirmSecond": "もう一度クリックして確定",
+			"ownerConfirmCancel": "キャンセル",
+			"federationTitle": "フェデレーションと同期",
+			"federationSummary": "リレーサーバーと低電力モード",
+			"federationDescription": "Nostr リレー URL と省電力モードを設定します。グループのフェデレーション同期は、初めて誰かを招待するか、フェデレーション DM を作成したときに自動で有効になります。",
+			"federationAdvanced": "詳細オプション",
+			"federationRelayUrlsLabel": "リレーサーバー（1 行に 1 つ。空欄でデフォルト）",
+			"federationBatterySaverLabel": "低電力モード",
+			"federationSave": "ネットワーク設定を保存",
+			"federationResetDefault": "デフォルト設定に戻す",
+			"federationSaved": "保存しました",
+			"federationResetOk": "デフォルト設定に戻しました",
+			"federationSaveFailed": "保存に失敗しました: ${error}",
+			"preferences": "環境設定",
+			"language": "言語",
+			"theme": "テーマ",
+			"notifications": "通知設定",
+			"emailNotifications": "電子メール通知",
+			"pushNotifications": "プッシュ通知",
+			"soundNotifications": "音声通知",
+			"social": "ソーシャルリンク",
+			"website": "Webサイト",
+			"github": "GitHub",
+			"twitter": "ツイッター",
+			"stats": "統計",
+			"joinedAt": "参加時間",
+			"messageCount": "メッセージ数",
+			"groupCount": "グループ数",
+			"channelCount": "チャンネル数",
+			"privacy": "プライバシー設定",
+			"showEmail": "メールを表示",
+			"showStats": "統計を表示",
+			"allowDirectMessages": "ダイレクトメッセージを許可",
+			"statusOptions": {
+				"online": "オンライン",
+				"away": "離席中",
+				"busy": "忙しい",
+				"offline": "オフライン"
+			},
+			"themeOptions": {
+				"auto": "自動",
+				"light": "ライト",
+				"dark": "ダーク"
+			},
+			"languageOptions": {
+				"zh-CN": "簡体字中国語",
+				"en-US": "英語"
+			},
+			"notifEmail": "メール",
+			"notifPush": "プッシュ",
+			"notifSound": "音",
+			"notifsAllOff": "すべて閉じる",
+			"bioEmpty": "まだ何も書いていません…",
+			"noSocialLinks": "ソーシャルリンクはまだありません",
+			"emailVisible": "表示",
+			"emailHidden": "非表示",
+			"customStatus": {
+				"placeholder": "今なにしてる？…"
+			},
+			"avatar": {
+				"alt": "アバター"
+			},
+			"avatarPreview": {
+				"alt": "アバターのプレビュー"
+			},
+			"myGroups": "私のグループ",
+			"myChannels": "私のチャンネル",
+			"noGroups": "まだどのグループにも参加していません",
+			"noChannels": "まだチャンネルがありません",
+			"overview": "ユーザー情報の概要",
+			"summaryUserId": "ユーザーID",
+			"summaryAccountStatus": "アカウントのステータス",
+			"summaryEmailVisibility": "メールの公開設定",
+			"summaryThemePref": "テーマの設定",
+			"summaryLanguagePref": "言語の好み",
+			"summarySocialCount": "ソーシャルリンクの数",
+			"summaryLinksCount": "外部リンクの数",
+			"groupDescriptionEmpty": "まだ説明がありません",
+			"groupMembers": "メンバー ${members} 人 · チャンネル ${channels} 個",
+			"channelPrivate": "・ プライベート",
+			"channelTypeText": "テキストチャンネル",
+			"channelTypeList": "リストチャンネル",
+			"channelTypeVoice": "音声チャンネル",
+			"channelTypeStreaming": "ストリーミングチャンネル",
+			"errors": {
+				"loadFailed": "プロフィールの読み込みに失敗しました",
+				"saveFailed": "プロフィールの保存に失敗しました",
+				"uploadFailed": "アバターのアップロードに失敗しました",
+				"invalidUserData": "ユーザーデータフォーマットエラー",
+				"identityRequired": "ノード ID の準備ができていません。ページを更新してください。それでも失敗する場合は、下の P2P 設定でフェデレーション構成を保存してください。",
+				"fetchUserFailed": "ユーザー情報の取得に失敗しました",
+				"operationFailed": "操作が失敗しました: ${error}"
+			},
+			"success": {
+				"saved": "プロフィールを保存しました",
+				"avatarUploaded": "アバターをアップロードしました"
+			},
+			"ownerEntityHash": {
+				"placeholder": "主人のエンティティハッシュを入力"
+			}
+		},
+		"entityProfile": {
+			"attributionMismatch": "表示 ID がメッセージの署名者と一致しません (たとえば、インポート履歴がインポーターによって再署名されました)。この表示名を暗号化 ID とはみなさないでください。",
+			"attributionMismatchShort": {
+				"title": "署名の帰属の不一致",
+				"aria-label": "署名の帰属の不一致"
+			},
+			"ownedBy": "このエンティティは ${owner} によって所有されています"
+		},
+		"stickers": {
+			"title": "ステッカープラザ",
+			"description": "ステッカーと絵文字管理システム",
+			"back": {
+				"title": "戻る"
+			},
+			"packs": "ステッカーパック",
+			"create": "ステッカーパックを作成",
+			"upload": "ステッカーをアップロード",
+			"install": "インストール",
+			"uninstall": "アンインストール",
+			"close": "閉じる",
+			"cancel": "キャンセル",
+			"installed": "インストール済み",
+			"myPacks": "私のステッカーパック",
+			"tabAll": "すべて",
+			"store": "ステッカープラザ",
+			"favorites": "お気に入り",
+			"recent": "最近使用した",
+			"search": {
+				"placeholder": "ステッカー パックを検索…"
+			},
+			"emptyPacks": "ステッカーパックはまだありません",
+			"packNameLabel": "ステッカーパック名",
+			"packName": {
+				"placeholder": "ステッカーパック名を入力してください"
+			},
+			"packDescriptionLabel": "説明",
+			"packDescription": {
+				"placeholder": "説明を入力してください"
+			},
+			"stickerNameLabel": "ステッカー名",
+			"stickerName": {
+				"placeholder": "ステッカー名を入力してください"
+			},
+			"selectPack": "ステッカーパックを選択してください",
+			"selectPackOption": {
+				"textContent": "ステッカーパックを選択してください"
+			},
+			"selectImage": "画像を選択",
+			"tagsLabel": "タグ (カンマ区切り)",
+			"tags": {
+				"placeholder": "例: かわいい、絵文字、動物"
+			},
+			"author": "作者",
+			"authorLabel": "著者: ${author}",
+			"stickerCount": "${count} 個のステッカー",
+			"badgeMine": "マイページ",
+			"noDescription": "まだ説明がありません",
+			"noStickersInPack": "ステッカーはまだありません",
+			"deletePack": "ステッカーパックを削除する",
+			"public": "公開",
+			"private": "非公開",
+			"animated": "アニメーション",
+			"static": "静止画",
+			"addTag": "タグを追加",
+			"defaultPackName": "デフォルトの絵文字スイート",
+			"defaultPackDescription": "システムがデフォルトで提供する絵文字ステッカー",
+			"unnamedPack": "名前のないステッカーパック",
+			"importPackName": "私のコレクション",
+			"importPackDescription": "メッセージから保存したスタンプ",
+			"nameRequired": "ステッカーパック名を入力してください",
+			"stickerNameRequired": "ステッカー名を入力してください",
+			"selectPackRequired": "ステッカーパックを選択してください",
+			"fileRequired": "画像ファイルを選択してください",
+			"loadDetailFailed": "ステッカー パックの詳細をロードできませんでした",
+			"deleteConfirm": "このステッカーパックを完全に削除しますか？すべてのステッカーが削除され、元に戻せません。",
+			"errors": {
+				"loadFailed": "ステッカーパックのロードに失敗しました",
+				"uploadFailed": "ステッカーのアップロードに失敗しました",
+				"installFailed": "インストールに失敗しました",
+				"uninstallFailed": "アンインストールに失敗しました",
+				"createFailed": "ステッカーパックの作成に失敗しました",
+				"deleteFailed": "削除に失敗しました"
+			},
+			"success": {
+				"uploaded": "ステッカーをアップロードしました",
+				"installed": "インストール成功",
+				"uninstalled": "アンインストールしました",
+				"created": "ステッカー パックを作成しました",
+				"deleted": "削除しました"
+			}
 		}
 	},
 	"easynew": {
@@ -3759,433 +3250,6 @@
 			}
 		}
 	},
-	"userSettings": {
-		"title": "ユーザー設定",
-		"PageTitle": "ユーザー設定",
-		"description": "fountのアイデンティティ情報を管理します。プロフィールの設定、アクセスの保護、接続デバイスの確認ができます。あなたのアカウントのための、安全で静寂な空間です。",
-		"shell": {
-			"unauthorized": "ログインが必要です。",
-			"responseNotJson": "サーバーが解析できないコンテンツを返しました。",
-			"unexpectedError": "リクエストは失敗しました。"
-		},
-		"errors": {
-			"accountNotFound": "アカウントが見つかりません。"
-		},
-		"userInfo": {
-			"title": "ユーザー情報",
-			"usernameLabel": "ユーザー名:",
-			"creationDateLabel": "アカウント作成日:",
-			"folderSizeLabel": "ユーザーデータサイズ:",
-			"folderPathLabel": "ユーザーデータパス:",
-			"copyPathButton": {
-				"title": "パスをコピーする"
-			},
-			"copyPathButtonIcon": {
-				"alt": "コピーアイコン"
-			},
-			"copiedAlert": "パスをクリップボードにコピーしました",
-			"copyPathFailed": "パスをクリップボードにコピーできません。"
-		},
-		"changePassword": {
-			"title": "パスワード変更",
-			"currentPasswordLabel": "現在のパスワード:",
-			"newPasswordLabel": "新しいパスワード:",
-			"confirmNewPasswordLabel": "新しいパスワード（確認）:",
-			"submitButton": "パスワードを変更",
-			"errorMismatch": "新しいパスワードが一致しません。",
-			"success": "パスワードが正常に変更されました。",
-			"missingFields": "現在のパスワードと新しいパスワードを入力してください。",
-			"invalidCurrent": "現在のパスワードが間違っています。"
-		},
-		"renameUser": {
-			"title": "ユーザー名変更",
-			"newUsernameLabel": "新しいユーザー名:",
-			"submitButton": "ユーザー名を変更",
-			"confirmMessage": "ユーザー名を変更しますか？変更後は再度ログインが必要です。",
-			"success": "ユーザー名を「${newUsername}」に正常に変更しました。ログアウトします。",
-			"missingParams": "新しいユーザー名とパスワードを入力してください。",
-			"wrongPassword": "パスワードが間違っています。",
-			"mustDiffer": "新しいユーザー名は現在のユーザー名とは異なる必要があります。",
-			"taken": "このユーザー名はすでに使用されています。",
-			"moveFailed": "ユーザー データ ディレクトリの名前を変更できませんでした: ${detail}。元のユーザー名が復元されました。"
-		},
-		"passkeys": {
-			"title": "セキュリティキーとパスキー",
-			"description": "バインド後、セキュリティ キーまたはネイティブ パスキーを使用してログインできます。 HTTPS またはローカルホストで使用する必要があります。最初にユーザー設定にキーを追加してください。",
-			"refreshButton": {
-				"title": "リストを更新する"
-			},
-			"refreshButtonIcon": {
-				"alt": "更新アイコン"
-			},
-			"nameLabel": "備考（任意）",
-			"nameInput": {
-				"placeholder": "例: 仕事用の YubiKey"
-			},
-			"addButton": "セキュリティキーを追加する",
-			"noneFound": "まだセキュリティ キーがバインドされていません。",
-			"itemDetails": "追加時間: ${created}",
-			"removeButton": "削除",
-			"removeConfirm": "このキーを削除しますか？削除後は、このキーではログインできなくなります。",
-			"removeSuccess": "セキュリティキーが削除されました。",
-			"addSuccess": "セキュリティキーが追加されました。",
-			"errorLoadLibrary": "WebAuthn ライブラリをロードできません。",
-			"errorCancelled": "追加がキャンセルされました。",
-			"apiInvalidPassword": "パスワードが間違っています。",
-			"apiMissingCredential": "有効なパスキー認証情報がありません。",
-			"apiRemoveParamsRequired": "削除する資格情報とパスワードを入力してください。"
-		},
-		"userDevices": {
-			"title": "ユーザーデバイス・セッション",
-			"noDevicesFound": "デバイスまたはセッションが見つかりませんでした。",
-			"deviceInfo": "デバイスID：${deviceId}",
-			"thisDevice": "このデバイス",
-			"deviceDetails": "最終オンライン：${lastSeen} | IPアドレス：${ipAddress} | UA：${userAgent}",
-			"revokeButton": "取り消し",
-			"revokeConfirm": "このデバイス/セッションのアクセス権を取り消しますか？",
-			"revokeSuccess": "デバイス/セッションを正常に取り消しました。",
-			"revokeMissingParams": "取り消したいデバイスとセッションのパスワードを入力してください。",
-			"revokeWrongPassword": "パスワードが間違っています。",
-			"listNotFound": "デバイスリストが見つかりません。",
-			"deviceNotFound": "デバイスまたはセッションが見つかりませんでした。",
-			"refreshButton": {
-				"title": "リストを更新する"
-			},
-			"refreshButtonIcon": {
-				"alt": "更新アイコン"
-			}
-		},
-		"apiKeys": {
-			"title": "APIキー",
-			"description": "外部アプリケーションのAPIキーを管理します。",
-			"input": {
-				"placeholder": "新しいキーの説明"
-			},
-			"createButton": "作成",
-			"noKeysFound": "APIキーは見つかりませんでした。",
-			"keyDetails": "説明：${description} |作成：${createdAt} |最終使用：${lastUsed}",
-			"neverUsed": "未使用",
-			"noKeysForUser": "API キー データが見つかりません。",
-			"revokeWrongPassword": "パスワードが間違っています。",
-			"keyNotFound": "API キーが見つかりませんでした。",
-			"revokeMissingJti": "取り消すキーを指定してください。",
-			"revokeMissingPassword": "キーを取り消すにはパスワードが必要です。",
-			"verifyMissingApiKey": "API キーを指定してください。",
-			"revokeButton": "取り消す",
-			"revokeConfirm": "このAPIキーを取り消したいですか？",
-			"revokeSuccess": "APIキーは正常に取り消されました。",
-			"errorDescriptionRequired": "説明が必要です。",
-			"createSuccess": "APIキーは正常に作成されました。",
-			"refreshButton": {
-				"title": "リストを更新する"
-			},
-			"refreshButtonIcon": {
-				"alt": "更新アイコン"
-			}
-		},
-		"newApiKey": {
-			"title": "新しいAPIキーが作成されました",
-			"warning": "新しいAPIキーをコピーしてください。二度と見ることができません！",
-			"closeButton": "キーをコピーしました",
-			"copyButton": {
-				"title": "新しい API キーをコピーする"
-			},
-			"copiedAlert": "APIキーをクリップボードにコピーしました",
-			"copyKeyFailed": "キーをクリップボードにコピーできません。"
-		},
-		"editorCommand": {
-			"title": "外部エディタの起動コマンド",
-			"description": "外部エディタでファイルを開くためのコマンドと引数テンプレートを設定します。",
-			"editorPresetLabel": "エディタのプリセット",
-			"commandLabel": "コマンド",
-			"argsTemplateLabel": "引数テンプレート",
-			"argsTemplateHint": "プレースホルダー: \\${file} \\${line} \\${column}",
-			"presetOptionPathAvailable": "${label}（PATH にあり）",
-			"presetOptionPathUnavailable": "${label}（PATH にない）",
-			"testPathInput": {
-				"placeholder": "試すファイルのパス（例: C:/work/project/src/main.mjs）"
-			},
-			"testButton": "試し開く",
-			"saveButton": "設定を保存",
-			"saveSuccess": "外部エディタのコマンド設定を保存しました。",
-			"testPathRequired": "先にテスト用のファイルパスを入力してください。",
-			"testSuccess": "外部エディタで開くコマンドを実行しました。"
-		},
-		"logout": {
-			"title": "ログアウト",
-			"description": "現在のデバイスからアカウントをログアウトします。",
-			"buttonText": "ログアウト",
-			"confirmMessage": "ログアウトしますか？",
-			"successMessage": "正常にログアウトしました。ログインページに移動します..."
-		},
-		"deleteAccount": {
-			"title": "アカウント削除",
-			"warning": "警告：この操作を行うと、アカウントと関連する全てのデータが完全に削除され、元に戻すことはできません。",
-			"submitButton": "アカウントを削除",
-			"confirmMessage1": "警告！アカウントを完全に削除しますか？この操作は元に戻せません。",
-			"confirmMessage2": "削除を確認するには、ユーザー名「${username}」を入力してください：",
-			"usernameMismatch": "入力されたユーザー名が現在のアカウントと一致しません。削除処理はキャンセルされました。",
-			"success": "アカウントが正常に削除されました。ログアウトします。",
-			"missingPassword": "パスワードを入力してください。",
-			"wrongPassword": "パスワードが間違っています。"
-		},
-		"passwordConfirm": {
-			"title": "操作の確認",
-			"message": "続行するには、現在のパスワードを入力してください。",
-			"passwordLabel": "パスワード:",
-			"confirmButton": "確認",
-			"cancelButton": "キャンセル"
-		},
-		"apiError": "APIリクエストに失敗しました：${message}",
-		"generalError": "エラーが発生しました：${message}",
-		"home_function_buttons": {
-			"settings": {
-				"title": "設定",
-				"sub_items": {
-					"main": {
-						"title": "ユーザー設定"
-					}
-				}
-			}
-		}
-	},
-	"subfounts": {
-		"title": "Subfount - ピアツーピアデバイス管理",
-		"pageTitle": "Subfount",
-		"description": "ピアツーピアのfount接続を管理する",
-		"hostConnectionCode": {
-			"title": "ホスト接続コード",
-			"connectionCodeLabel": "接続コード（ピアID）",
-			"passwordLabel": "パスワード",
-			"copyButton": "コピー",
-			"regenerateButton": "再生成",
-			"infoMessage": "これらの資格情報をSubfountクライアントと共有して、接続を確立します。",
-			"connectionCodeCopied": "接続コードがクリップボードにコピーしました",
-			"passwordCopied": "パスワードがクリップボードにコピーしました",
-			"regenerateSuccess": "接続コードが再生成されました"
-		},
-		"infra": {
-			"title": "ネットワーク公益",
-			"description": "接続中の子fountを、fountネットワーク全体を支える公益ノードとして使うかどうかを一括で設定します。オフにしても分機は本機からのリモート実行を受け付けますが、ネットワーク層の支援には参加しません。",
-			"capabilityRelay": "overlay のマルチホップ転送に参加し、直結できないときでも他ノード同士の通信を助けます。",
-			"capabilityMailbox": "オフライン配信を預かり、相手ノードが復帰してもダイレクトメッセージを受け取れるようにします。",
-			"hostPriority": "オンのときは本機を優先：本機のレピュテーション表で経路を重み付けし、本機を最高優先度に固定します。",
-			"toggleLabel": "分機を公益に参加させる",
-			"enabledToast": "オン：分機がネットワーク公益に参加します（本機優先）",
-			"disabledToast": "オフ：分機はネットワーク公益に参加しません"
-		},
-		"connectedSubfounts": {
-			"title": "接続されたSubfount",
-			"noSubfountsConnected": "Subfountが接続されていません",
-			"table": {
-				"id": "ID",
-				"description": "備考",
-				"deviceId": "デバイスID",
-				"connectedAt": "接続時間",
-				"status": "ステータス",
-				"actions": "操作",
-				"connected": "接続済み",
-				"disconnected": "切断されました",
-				"save": "保存",
-				"na": "該当なし"
-			},
-			"descriptionSaved": "メモが保存されました",
-			"descriptionSaveFailed": "メモを保存できませんでした: ${message}"
-		},
-		"codeExecution": {
-			"title": "コードの実行",
-			"description": "選択したSubfountで JavaScript コードを実行します",
-			"selectSubfountLabel": "Subfountの選択",
-			"hostOption": "ホスト (ID: ${id})",
-			"subfountOption": "端末 ${id}${deviceId}",
-			"scriptLabel": "JavaScriptコード",
-			"executeButton": "実行",
-			"executing": "実行中...",
-			"noSubfountSelected": "最初にSubfountを選択してください",
-			"noScriptProvided": "実行するコードを入力してください",
-			"executionSuccess": "コードの実行が成功しました",
-			"executionFailed": "コードの実行に失敗しました: ${message}",
-			"selectSubfount": "実行する subfount を選択"
-		},
-		"downloadClient": {
-			"title": "サブfountクライアントをダウンロードする",
-			"description": "スタンドアロンのSubfount クライアント スクリプトをダウンロードして、リモート デバイス上で実行します。",
-			"downloadButton": "subfount.mjsをダウンロード"
-		},
-		"errors": {
-			"loadConnectionCodeFailed": "接続コードのロードに失敗しました: ${message}",
-			"regenerateConnectionCodeFailed": "接続コードの再生成に失敗しました: ${message}",
-			"loadSettingsFailed": "公益設定の読み込みに失敗しました: ${message}",
-			"saveSettingsFailed": "公益設定の保存に失敗しました: ${message}",
-			"generalError": "エラーが発生しました: ${message}"
-		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "開発中",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "サブデバイス",
-						"sub_items": {
-							"main": {
-								"title": "サブデバイスの管理"
-							}
-						}
-					}
-				}
-			}
-		}
-	},
-	"languageSettings": {
-		"title": "言語設定",
-		"pageTitle": "言語設定",
-		"description": "フォント アプリケーションの言語設定を管理します。利用可能な言語オプションを使用してエクスペリエンスをカスタマイズします。",
-		"pageDescription": "ここで言語の好みを管理します。リスト内の言語は、ブラウザの設定よりも優先されます。",
-		"availableLanguages": "利用可能な言語",
-		"preferredLanguages": "優先言語リスト",
-		"resetButton": "リセット",
-		"saveButton": "保存",
-		"select": {
-			"placeholder": "言語を選択..."
-		},
-		"search": {
-			"placeholder": "言語を検索..."
-		},
-		"noPreferredLanguages": "優先言語が設定されていません。ブラウザのデフォルト設定が使用されます。",
-		"moveUpButton": {
-			"aria-label": "上に移動",
-			"alt": "上に移動アイコン"
-		},
-		"moveDownButton": {
-			"aria-label": "下に移動",
-			"alt": "下に移動アイコン"
-		},
-		"deleteLocaleButton": {
-			"aria-label": "この言語を削除",
-			"alt": "削除"
-		},
-		"savedMessage": "言語設定が保存されました！",
-		"resetMessage": "言語設定がリセットされました！",
-		"fetchLocalesFailed": "利用可能な言語を取得できませんでした！",
-		"home_function_buttons": {
-			"settings": {
-				"title": "設定",
-				"sub_items": {
-					"main": {
-						"title": "言語設定"
-					}
-				}
-			}
-		}
-	},
-	"themeManage": {
-		"title": "テーマ管理",
-		"description": "あなたの気分やストーリーを反映する美学を選択してください。テーマのパレットをプレビューして選択し、それぞれが泉のインタラクションに異なる雰囲気を提供します。あなたの世界、あなたのスタイル。",
-		"instruction": "テーマを選択してください！",
-		"search": {
-			"placeholder": "テーマを検索...",
-			"noResult": "一致するテーマが見つかりませんでした。"
-		},
-		"createButton": "+ 新しいテーマを作成",
-		"preview": {
-			"editButton": {
-				"title": "編集"
-			},
-			"editButtonIcon": {
-				"alt": "編集アイコン"
-			},
-			"deleteButton": {
-				"title": "削除"
-			},
-			"deleteButtonIcon": {
-				"alt": "削除アイコン"
-			},
-			"cloneButton": {
-				"title": "複製"
-			},
-			"cloneButtonIcon": {
-				"alt": "複製アイコン"
-			}
-		},
-		"editor": {
-			"title": "テーマエディター",
-			"cancelButton": "キャンセル",
-			"saveApplyButton": "保存して適用",
-			"themeName": "テーマ名 (ID)",
-			"autoPaletteTitle": "画像からの自動色補正",
-			"autoPaletteInstruction": "上の色をクリックすると、プライマリ/セカンダリ/アクセント/ニュートラルカラーが自動的に入力されます。",
-			"coreColors": "コアカラー",
-			"baseBackground": "基本と背景",
-			"variables": "変数",
-			"borderRadius": "角丸の半径 (--rounded-box)",
-			"borderWidth": "枠線の幅 (--border-btn)",
-			"advancedCustomization": "高度なカスタマイズ",
-			"customCSS": "カスタム CSS (上書き)",
-			"customMjsScript": "カスタム MJS スクリプト (任意)",
-			"mjsSyntaxHint": "[async-eval 構文](${asyncDocLink}) を使用します。 `load()` および `unload()` 関数を含むオブジェクトを返してください。",
-			"themeIdRequired": "テーマIDが必要です",
-			"newThemeName": "新しいテーマ名:",
-			"deleteConfirm": "テーマ ${id} を削除してもよろしいですか？",
-			"saved": "保存しました！",
-			"failedToSave": "保存に失敗しました",
-			"failedToDelete": "テーマを削除できませんでした：${message}",
-			"failedToClone": "テーマを複製できませんでした：${message}"
-		},
-		"themes": {
-			"auto": "自動",
-			"light": "ライト",
-			"dark": "ダーク",
-			"cupcake": "カップケーキ",
-			"bumblebee": "バンブルビー",
-			"emerald": "エメラルド",
-			"corporate": "コーポレート",
-			"synthwave": "シンセウェイヴ",
-			"retro": "レトロ",
-			"cyberpunk": "サイバーパンク",
-			"valentine": "バレンタイン",
-			"halloween": "ハロウィーン",
-			"garden": "ガーデン",
-			"forest": "フォレスト",
-			"aqua": "アクア",
-			"lofi": "Lo-fi",
-			"pastel": "パステル",
-			"fantasy": "ファンタジー",
-			"wireframe": "ワイヤーフレーム",
-			"black": "ブラック",
-			"luxury": "ラグジュアリー",
-			"dracula": "ドラキュラ",
-			"cmyk": "CMYK",
-			"autumn": "オータム",
-			"business": "ビジネス",
-			"acid": "アシッド",
-			"lemonade": "レモネード",
-			"night": "ナイト",
-			"coffee": "コーヒー",
-			"winter": "ウィンター",
-			"dim": "ディム",
-			"nord": "ノール",
-			"sunset": "サンセット",
-			"caramellatte": "キャラメルラテ",
-			"abyss": "アビス",
-			"silk": "シルク"
-		},
-		"achievements": {
-			"change_theme": {
-				"name": "イメチェン完了！",
-				"description": "噴水は新しい外観とまったく新しい雰囲気を持っていました。",
-				"locked_description": "テーマを一度切り替えます。"
-			}
-		},
-		"home_function_buttons": {
-			"settings": {
-				"title": "設定",
-				"sub_items": {
-					"switchTheme": {
-						"title": "テーマ切り替え"
-					}
-				}
-			}
-		}
-	},
 	"part_config": {
 		"title": "コンポーネント設定",
 		"pageTitle": "コンポーネント設定",
@@ -4427,6 +3491,84 @@
 			}
 		}
 	},
+	"discord_bots": {
+		"title": "Discordボット",
+		"description": "Discord の賑やかなホールで、仲間たちに声を届けましょう。一度に 1 台のサーバーずつ、プレゼンスを設定し、運用を管理し、世界間の橋渡しをさせます。",
+		"cardTitle": "Discordボット",
+		"botSelectDropdown": {
+			"placeholder": "ボットを選択"
+		},
+		"botSearch": {
+			"placeholder": "ボットを検索..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "キャラクターを選択"
+		},
+		"charSearch": {
+			"placeholder": "ロールを検索..."
+		},
+		"configCard": {
+			"title": "ボット設定",
+			"labels": {
+				"character": "キャラクター",
+				"apiKey": "Discord APIキー",
+				"config": "設定"
+			},
+			"apiKeyInput": {
+				"placeholder": "APIキーを入力"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "API キーの表示を切り替えます"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "APIキーの表示切り替え"
+			},
+			"buttons": {
+				"saveConfig": "設定を保存",
+				"startBot": "起動",
+				"stopBot": "停止"
+			},
+			"charSelect": {
+				"placeholder": "ロールを選択"
+			}
+		},
+		"prompts": {
+			"newBotName": "新しいボット名を入力してください："
+		},
+		"buttons": {
+			"newBot": "新規作成",
+			"deleteBot": "削除"
+		},
+		"alerts": {
+			"configSaved": "設定を正常に保存しました。",
+			"botExists": "ボット名「${botname}」は既に存在します。別の名前を使用してください。",
+			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
+			"httpError": "HTTPエラーが発生しました。",
+			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Discordに来る",
+				"description": "あなたのキャラクターを Discord の世界に召喚します。",
+				"locked_description": "Discord Botを一度起動します。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "ボット関連",
+				"sub_items": {
+					"manage": {
+						"title": "Discord Botの設定"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Botの設定"
+			}
+		}
+	},
 	"wechat_bots": {
 		"title": "WeChat ボット",
 		"description": "fount のキャラクターを WeChat ボットとして動かす。ロールを紐づけ、ボットを管理し、WeChat で会話します。",
@@ -4518,83 +3660,584 @@
 			"needBot": "一覧からボットを選ぶか、「新規」で作成してください。"
 		}
 	},
-	"discord_bots": {
-		"title": "Discordボット",
-		"description": "Discord の賑やかなホールで、仲間たちに声を届けましょう。一度に 1 台のサーバーずつ、プレゼンスを設定し、運用を管理し、世界間の橋渡しをさせます。",
-		"cardTitle": "Discordボット",
-		"botSelectDropdown": {
-			"placeholder": "ボットを選択"
-		},
-		"botSearch": {
-			"placeholder": "ボットを検索..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "キャラクターを選択"
-		},
-		"charSearch": {
-			"placeholder": "ロールを検索..."
-		},
-		"configCard": {
-			"title": "ボット設定",
-			"labels": {
-				"character": "キャラクター",
-				"apiKey": "Discord APIキー",
-				"config": "設定"
-			},
-			"apiKeyInput": {
-				"placeholder": "APIキーを入力"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "API キーの表示を切り替えます"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "APIキーの表示切り替え"
-			},
-			"buttons": {
-				"saveConfig": "設定を保存",
-				"startBot": "起動",
-				"stopBot": "停止"
-			},
-			"charSelect": {
-				"placeholder": "ロールを選択"
-			}
-		},
-		"prompts": {
-			"newBotName": "新しいボット名を入力してください："
-		},
-		"buttons": {
-			"newBot": "新規作成",
-			"deleteBot": "削除"
-		},
-		"alerts": {
-			"configSaved": "設定を正常に保存しました。",
-			"botExists": "ボット名「${botname}」は既に存在します。別の名前を使用してください。",
-			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
-			"httpError": "HTTPエラーが発生しました。",
-			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Discordに来る",
-				"description": "あなたのキャラクターを Discord の世界に召喚します。",
-				"locked_description": "Discord Botを一度起動します。"
-			}
-		},
+	"social": {
+		"title": "広場",
+		"description": "P2P オープンソーシャル・フォロー・ファイル共有",
+		"bootstrapFailed": "ソーシャル インターフェイスの初期化に失敗しました: ${error}",
 		"home_function_buttons": {
-			"bot_related": {
-				"title": "ボット関連",
-				"sub_items": {
-					"manage": {
-						"title": "Discord Botの設定"
-					}
+			"main": {
+				"title": "広場"
+			}
+		},
+		"nav": {
+			"feed": "ホーム",
+			"explore": "探索",
+			"notifications": "受信箱",
+			"saved": "保存",
+			"drafts": "下書き",
+			"profile": "マイページ",
+			"videos": "ショート動画",
+			"live": "ライブ"
+		},
+		"settings": {
+			"title": "ソーシャル設定",
+			"back": {
+				"aria-label": "プロフィールに戻る"
+			},
+			"privacyTitle": "プライバシーと発見",
+			"privacyHint": "アカウントを探索・おすすめに表示するかどうかを制御します。",
+			"tasteTitle": "おすすめと好み",
+			"tasteHint": "プライバシーの境界と「あなたにおすすめ」のラベル名を調整します。",
+			"mutedKeywordsTitle": "ミュートする語句とタグ",
+			"mutedKeywordsHint": "本文・コンテンツ警告・タグに一致する投稿は、フィード・探索・検索・通知から非表示になります。ローカルのみ保存。",
+			"mutedKeywordsMatchTags": "タグも対象にする",
+			"mutedKeywordsAdd": "追加",
+			"mutedKeywordsRemove": {
+				"title": "ブロックされた単語を削除する"
+			},
+			"mutedKeywordsEmpty": "まだブロックワードは追加されていません",
+			"autoTranslateTitle": "自動翻訳",
+			"autoTranslateHint": "有効にすると、外国語の投稿を自動翻訳し、原文と切り替えられます。",
+			"autoTranslateEnable": "自分の言語以外の投稿を自動翻訳",
+			"safetyTitle": "安全とブロック",
+			"safetyHint": "ブロック・非表示リストを管理します。",
+			"mutedKeywords": {
+				"placeholder": "キーワードまたは #タグを入力"
+			},
+			"taste": {
+				"rebuild": "再構築設定",
+				"privacyPublishPreferences": "パブリックタグの命名とマージの検出",
+				"privacyPublishPreferencesHint": "閉じた後は、友達はタグの名前付けやマージステートメントを見ることができなくなり、コンセンサスに貢献できなくなります。",
+				"privacyPublishReactions": "世間の好き嫌い",
+				"privacyPublishReactionsHint": "閉じると、投稿者はあなたの「いいね！」/「嫌い」を受け取ることができなくなり、あなたの反応は他の人のおすすめに含まれなくなり、投稿を再度拡散することを促進することはなくなります。",
+				"empty": "まだ優先タグはありません。いいね/嫌いが増えると自動的にクラスター化されます。",
+				"weight": "体重 ${weight}",
+				"save": "保存",
+				"name": {
+					"placeholder": "ローカル表示名"
+				}
+			},
+			"blocklist": {
+				"title": "ブラックリスト",
+				"hiddenTitle": "リストを非表示にする",
+				"empty": "ブロックまたは非表示のエントリはまだありません",
+				"unblock": "ブロックを解除する",
+				"unhide": "再表示",
+				"scopeEntity": "実在物",
+				"scopeSubject": "本体"
+			}
+		},
+		"composer": {
+			"placeholder": "いまどうしてる？Markdown（fount 方言）対応。@ でメンション",
+			"publish": "投稿",
+			"saveDraft": "下書きを保存",
+			"fab": {
+				"title": "投稿を作成",
+				"aria-label": "投稿を作成"
+			},
+			"contentWarning": {
+				"placeholder": "コンテンツ警告（任意）"
+			},
+			"sensitiveMedia": "センシティブメディアをぼかす",
+			"editImage": "編集",
+			"editCrop": "トリミング",
+			"editMosaic": "モザイク",
+			"editBrush": "ブラシ",
+			"editApply": "適用",
+			"editCancel": "キャンセル",
+			"replyPolicyEveryone": "全員",
+			"replyPolicyFollowers7d": "7日以上のフォロワー",
+			"replyPolicyAuthorFollows": "フォロー中のユーザー",
+			"replyPolicyLabel": "返信できる人",
+			"replyDisplayAll": "すべての返信を表示",
+			"replyDisplayFeaturedOnly": "注目の返信のみ",
+			"replyDisplayLabel": "返信の表示",
+			"scheduleLabel": "予約投稿",
+			"scheduleSuccess": "投稿を予約キューに追加しました",
+			"emojiButton": {
+				"title": "絵文字",
+				"aria-label": "絵文字"
+			},
+			"mediaButton": {
+				"title": "メディアを追加",
+				"aria-label": "メディアを追加"
+			},
+			"pollButton": {
+				"title": "投票を作成",
+				"aria-label": "投票を作成"
+			},
+			"cwToggle": {
+				"title": "コンテンツの警告",
+				"aria-label": "コンテンツの警告"
+			},
+			"advancedToggle": {
+				"title": "その他のオプション",
+				"aria-label": "その他のオプション"
+			},
+			"media": {
+				"placeholder": "画像の説明 (代替)"
+			},
+			"visibility": {
+				"label": "可視範囲",
+				"public": "公開",
+				"unlisted": "非公開",
+				"followers": "フォロワーのみ",
+				"followers7d": "7日間フォローすると表示されます",
+				"followers30d": "30日間フォローすると表示されます",
+				"selected": "指定した人に表示される",
+				"private": "自分だけに表示される",
+				"allowLabel": "目に見える人々",
+				"exceptLabel": "人を排除する",
+				"allow": {
+					"placeholder": "表示される人物エンティティハッシュ、スペースまたはカンマ区切り"
+				},
+				"except": {
+					"placeholder": "見せてはいけない人（任意）"
 				}
 			}
 		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Discord Botの設定"
+		"feed": {
+			"refresh": "ニュースを更新",
+			"newPosts": "新しいニュースがあります。クリックしてご覧ください",
+			"tabLatest": "最新の",
+			"tabForYou": "推薦する",
+			"repostedBy": "${author} さんがリツイートしました",
+			"decryptFailed": "この投稿を復号化できません",
+			"revealContent": "コンテンツを表示",
+			"sensitiveMedia": "機密メディア",
+			"showMore": "拡大する",
+			"showLess": "近い",
+			"replayDivider": "読み終わりました、もう一度閲覧してください",
+			"trending": {
+				"title": "ホットトピック",
+				"postCount": {
+					"title": "${n} 件の投稿"
+				},
+				"scopeLocal": "ローカルマシン",
+				"scopeNearby": "近く",
+				"empty": "まだホットトピックはありません"
 			}
+		},
+		"explore": {
+			"accounts": "推奨アカウント",
+			"posts": "最新の投稿",
+			"mediaOnly": "メディアのみ"
+		},
+		"notifications": {
+			"reply": "${author} があなたの投稿に返信しました",
+			"mention": "${author} がフィード内であなたを @@ しました",
+			"like": "${author} があなたの投稿に「いいね！」しました",
+			"repost": "${author} があなたの投稿をリツイートしました",
+			"follow": "${author} があなたをフォローしています",
+			"care_post": "${author} が新しいアップデートを投稿しました (特別な懸念事項)",
+			"poll_closed": "${author} への投票は終了しました",
+			"post_note": "${author} が投稿に情報を追加しました",
+			"live_started": "${author} がライブ ストリーミングを開始しました",
+			"view": "チェック",
+			"markAllRead": "すべて既読としてマークする"
+		},
+		"saved": {
+			"all": "すべて",
+			"unfiled": "アーカイブされていません",
+			"createFolder": {
+				"title": "新しいフォルダーを作成する",
+				"aria-label": "新しいフォルダーを作成する"
+			},
+			"createFolderPrompt": "フォルダ名",
+			"pickFolderTitle": "お気に入りに追加",
+			"confirm": "確認",
+			"cancel": "キャンセル",
+			"remove": "お気に入りを削除する",
+			"renameFolder": "名前の変更",
+			"renameFolderPrompt": "新しいフォルダー名",
+			"deleteFolder": "フォルダを削除する",
+			"deleteFolderConfirm": "フォルダを削除しますか?そこにある投稿は「未アーカイブ」に移動されます。",
+			"searchEmpty": "一致するコレクションがありません",
+			"folderEmpty": "このフォルダは空です",
+			"emptyHint": "ニュースを閲覧するときにブックマークをクリックしてここに保存します",
+			"search": {
+				"placeholder": "お気に入りを検索…"
+			}
+		},
+		"drafts": {
+			"untitled": "(草案テキストなし)",
+			"emptyHint": "投稿欄に内容を書いて「下書きを保存」を押すと、次回も編集を続けられます。",
+			"saved": "下書きが保存されました",
+			"deleted": "下書きが削除されました",
+			"delete": "下書きの削除",
+			"empty": "ドラフトは空です",
+			"saveFailed": "下書きの保存に失敗しました: ${error}",
+			"loadFailed": "下書きを開けませんでした: ${error}",
+			"deleteFailed": "下書きの削除に失敗しました: ${error}"
+		},
+		"profile": {
+			"edit": "プロフィールの編集",
+			"viewPosts": "ソーシャルプロフィールを表示する",
+			"settingsBtn": {
+				"aria-label": "ソーシャル設定"
+			},
+			"mediaOnly": "[メディア]",
+			"hideFromExplore": "探索ページからアカウントを非表示にする",
+			"tabPosts": "動的",
+			"tabAlbums": "フォトアルバム",
+			"tabLikes": "のように",
+			"tabCabinets": "ファイルキャビネット",
+			"tabsLabel": {
+				"aria-label": "データパーティション"
+			},
+			"cabinetsEmpty": "現在、公開のファイルキャビネットはありません",
+			"cabinetsFailed": "ファイル キャビネットの読み込みに失敗しました: ${error}",
+			"statsGroup": {
+				"aria-label": "統計"
+			},
+			"statsPosts": "動的",
+			"statsFollowing": "焦点を当てる",
+			"statsFollowers": "ファン",
+			"followingTitle": "焦点を当てる",
+			"followersTitle": "ファン",
+			"albums": {
+				"create": "新しいアルバムを作成する",
+				"edit": "アルバムを編集する",
+				"save": "保存",
+				"cancel": "キャンセル",
+				"back": "アルバムに戻る",
+				"empty": "まだアルバムはありません",
+				"emptyPosts": "アルバムにはまだ投稿がありません",
+				"name": "アルバム名",
+				"description": "アルバムの説明",
+				"deleteLinks": "アルバムを削除する（投稿を残す）",
+				"deleteWithPosts": "アルバムを削除して投稿を削除する",
+				"pickerLabel": "アルバムに追加",
+				"defaultName": "デフォルトのアルバム"
+			}
+		},
+		"video": {
+			"view": {
+				"aria-label": "ショート動画"
+			},
+			"empty": "ショート動画はまだありません",
+			"emptyHint": "以下の人や広場には動画付きの投稿はありません。動画更新を投稿してみてはいかがでしょうか？",
+			"compose": "動画を投稿してみよう",
+			"back": {
+				"aria-label": "ニュースに戻る"
+			},
+			"mute": {
+				"aria-label": "ミュート"
+			},
+			"unmute": {
+				"aria-label": "ミュートを解除する"
+			},
+			"unavailable": "ビデオが再生できない",
+			"closeReplies": {
+				"aria-label": "コメントを閉じる"
+			}
+		},
+		"live": {
+			"empty": "まだ生放送はありません",
+			"viewers": "${n} 人が視聴しました",
+			"likes": "${n} の「いいね！」",
+			"local": "ローカルマシン",
+			"hall": "生放送ホール",
+			"back": {
+				"title": "ニュースに戻る",
+				"aria-label": "ニュースに戻る"
+			},
+			"danmakuSend": "送信",
+			"postWatch": "生放送に参加する",
+			"postEnded": "生放送は終了しました",
+			"postEndedStats": "${viewers} が閲覧 · ${likes} いいね! · ${duration}",
+			"link": {
+				"invite": "接続を招待する",
+				"needPeer": "ピアのentityHash:liveIdを入力してください",
+				"invited": "オンライン招待状が送信されました",
+				"linked": "接続済み",
+				"peer": {
+					"placeholder": "ピアエンティティハッシュ:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "放送を開始する",
+				"open": "放送へ行く",
+				"mediaAv": "オーディオとビデオ",
+				"mediaAudio": "ピュアオーディオ",
+				"mediaVideo": "純粋な絵",
+				"mediaWhip": "WHIPプッシュストリーミング(OBSなど)",
+				"whipUrl": "WIPアドレス",
+				"whipToken": "無記名トークン",
+				"whipWaiting": "WHIP ストリーミング接続を待機中 (OBS などのストリーミング ソフトウェアが使用可能)…",
+				"start": "ライブ配信を開始する",
+				"stop": "生放送をやめる",
+				"started": "生放送が始まりました",
+				"stopped": "生放送は停止しました",
+				"titleInput": {
+					"placeholder": "ライブタイトル（オプション）"
+				}
+			},
+			"danmaku": {
+				"placeholder": "何か言って..."
+			}
+		},
+		"search": {
+			"placeholder": "アップデート、ユーザー、または #トピックを検索 (最低 2 単語)",
+			"open": {
+				"aria-label": "検索"
+			},
+			"submit": "検索",
+			"clear": "クリア",
+			"empty": "一致する投稿はありません",
+			"tooShort": "少なくとも 2 文字を入力してください",
+			"usersTitle": "ユーザー",
+			"postsTitle": "動的",
+			"usersEmpty": "一致するユーザーがいません",
+			"pinAlias": "エイリアスとして設定",
+			"trustScore": "${score}を信頼する",
+			"viewTitle": "検索",
+			"loading": "検索中…",
+			"filterAuthor": {
+				"placeholder": "作者"
+			},
+			"filterMediaAll": "すべてのメディア",
+			"filterMediaImage": "写真",
+			"filterMediaVideo": "ビデオ",
+			"filterTag": {
+				"placeholder": "＃ラベル"
+			},
+			"sortRecent": "最新の",
+			"sortPopular": "人気のある",
+			"scopeLocal": "ローカルマシン",
+			"scopeNearby": "近く"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "閉じる"
+			}
+		},
+		"actions": {
+			"like": "のように",
+			"unlike": "とは異なり",
+			"dislike": "踏む",
+			"undislike": "嫌いをキャンセル",
+			"repost": "フォワード",
+			"quote": "引用",
+			"delete": "削除",
+			"edit": "編集",
+			"save": "保存",
+			"saved": "集めた",
+			"translate": "翻訳する",
+			"dm": "プライベートメッセージを送信する",
+			"block": "ブロック",
+			"hide": "隠れる",
+			"mute": "ミュート",
+			"follow": "焦点を当てる",
+			"following": "すでにフォローしています",
+			"care": "特別な懸念",
+			"careRemove": "スペシャルケアをキャンセルする",
+			"careAdded": "すでに特別な懸念事項が追加されています",
+			"careRemoved": "スペシャルケアは解除されました",
+			"setAlias": "エイリアスの設定",
+			"setAliasPrompt": "ローカル エイリアスを設定します (クリアするには空白のままにします):",
+			"aliasSaved": "エイリアスが更新されました",
+			"replies": "コメント",
+			"copyLink": "リンクをコピー",
+			"downloadHtml": "HTMLをダウンロード",
+			"copied": "コピーされました",
+			"more": {
+				"aria-label": "もっと"
+			},
+			"share": "共有",
+			"likeFailed": "いいねに失敗しました: ${error}",
+			"dislikeFailed": "ステップに失敗しました: ${error}",
+			"repostFailed": "転送に失敗しました: ${error}",
+			"replyFailed": "返信に失敗しました: ${error}",
+			"followFailed": "フォローに失敗しました: ${error}",
+			"saveFailed": "収集に失敗しました: ${error}",
+			"blockFailed": "ブロックできませんでした: ${error}",
+			"hideFailed": "非表示に失敗しました: ${error}",
+			"muteFailed": "ミュートに失敗しました: ${error}",
+			"deleteFailed": "削除に失敗しました: ${error}"
+		},
+		"post": {
+			"edited": "編集済み",
+			"editPrompt": "投稿テキストを編集する",
+			"editHistory": "編集履歴",
+			"editHistoryEmpty": "以前のバージョンはありません",
+			"loading": "読み込み中…",
+			"notFound": "投稿が存在しないか、表示されません",
+			"loadFailed": "読み込みに失敗しました。後でもう一度お試しください",
+			"detailTitle": "役職",
+			"back": "戻る"
+		},
+		"reply": {
+			"context": "${author} に返信"
+		},
+		"notes": {
+			"label": "読者補足",
+			"add": "補足情報",
+			"prompt": "読者補足 (コミュニティ ノート) を書く",
+			"listTitle": "すべての追加情報",
+			"helpful": "それは動作します",
+			"unhelpful": "使い物にならない",
+			"more": "すべての ${n} 個のアイテム",
+			"empty": "まだ追加情報はありません"
+		},
+		"poll": {
+			"multi": "複数選択を許可する",
+			"apply": "投票の申し込み",
+			"closed": "投票は終了しました",
+			"deadline": "締め切り: ${deadline}",
+			"options": {
+				"placeholder": "1 行に 1 つのオプション (最低 2 項目)"
+			}
+		},
+		"aside": {
+			"suggested": "注意を促す"
+		},
+		"groupRef": {
+			"linking": "チャットグループに接続する",
+			"clear": "関連付けを解除する",
+			"pick": "チャットグループ/チャンネルに接続…"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "受信トレイのフィルタリング"
+			},
+			"tabs": {
+				"all": "すべて",
+				"mention": "言及",
+				"reply": "返事",
+				"like": "賞賛",
+				"follow": "焦点を当てる",
+				"repost": "フォワード"
+			},
+			"aggregated": {
+				"like": "${author1}、${author2}、${count} 人があなたの投稿に「いいね！」しました",
+				"likeTwo": "${author1} と ${author2} があなたの投稿に「いいね！」しました",
+				"repost": "${author1}、${author2}、${count} 人があなたの投稿をリツイートしました",
+				"repostTwo": "${author1} と ${author2} があなたの投稿をリツイートしました",
+				"follow": "${author1}、${author2}、${count} 人があなたをフォローしています",
+				"followTwo": "${author1} と ${author2} があなたをフォローしています"
+			}
+		},
+		"replies": {
+			"placeholder": "返信を書いてください…",
+			"submit": "返事",
+			"empty": "まだ返事はありません",
+			"emptyHint": "最初の記事を書いてディスカッションを始めましょう"
+		},
+		"repost": {
+			"placeholder": "リツイートコメントを追加（オプション）…",
+			"submit": "転送の確認"
+		},
+		"quote": {
+			"quoting": "引用",
+			"clear": "逆参照",
+			"viewOriginal": "元の投稿を見る"
+		},
+		"a11y": {
+			"linkGroupSelect": "チャットグループまたはチャンネルに接続する",
+			"postVisibility": "可視範囲",
+			"postLang": "コンテンツ言語",
+			"trendingHashtags": "ホットトピック",
+			"saveFolderSelect": "お気に入りフォルダ"
+		},
+		"translate": {
+			"label": "翻訳："
+		},
+		"time": {
+			"justNow": "ただ",
+			"minutesAgo": "${n} 分前",
+			"hoursAgo": "${n} 時間前"
+		},
+		"empty": {
+			"feed": "まだ投稿がありません。誰かをフォローしてみましょう。",
+			"profilePosts": "まだニュースはありません",
+			"following": "まだ誰もフォローしていません",
+			"followers": "まだファンがいない",
+			"notifications": "まだ通知はありません",
+			"saved": "まだお気に入りはありません",
+			"drafts": "まだドラフトはありません",
+			"exploreAccounts": "現在推奨アカウントはありません",
+			"explorePosts": "まだ探索投稿はありません",
+			"likedPosts": "まだ「いいね！」はありません",
+			"noIdentity": "ソーシャルを使用する前に、チャットでフェデレーション ID を構成してください"
+		},
+		"topic": {
+			"follow": "購読",
+			"unfollow": "購読を解除",
+			"empty": "このトピックにはまだ投稿がありません"
 		}
+	},
+	"cabinet": {
+		"title": "ファイルキャビネット",
+		"description": "P2P 個人および共有ファイル キャビネット",
+		"openCabinets": {
+			"title": "ファイルキャビネットリストを開く",
+			"aria-label": "ファイルキャビネットリストを開く"
+		},
+		"closeCabinets": {
+			"title": "閉じる",
+			"aria-label": "閉じる"
+		},
+		"bootstrapFailed": "ファイル キャビネットの初期化に失敗しました: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "ファイルキャビネット"
+			}
+		},
+		"upload": "アップロード",
+		"uploadFolder": "アップロードフォルダー",
+		"newFolder": "新しいフォルダーを作成する",
+		"open": "開ける",
+		"download": "ダウンロード",
+		"downloadZip": "ダウンロードフォルダ",
+		"rename": "名前の変更",
+		"copy": "コピー",
+		"cut": "カット",
+		"paste": "ペースト",
+		"pasteLink": "リンクとして貼り付ける",
+		"selectAll": "すべて選択",
+		"invert": "対抗選挙",
+		"properties": "財産",
+		"delete": "削除",
+		"back": {
+			"title": "前の位置に戻る",
+			"aria-label": "前の位置に戻る"
+		},
+		"cancel": "キャンセル",
+		"save": "保存",
+		"showHidden": "見せかけの",
+		"name": "名前",
+		"descriptionField": "説明",
+		"attrHidden": "隠れる",
+		"attrSystem": "システム（削除には確認が必要です）",
+		"previewUrl": "プレビュー URL",
+		"deletePreviewWithFile": "ファイル削除時にプレビューを削除",
+		"folderPassword": "フォルダーのパスワード (空白のままにし、暗号化を有効にするには入力してください)",
+		"unlockFolder": "暗号化されたフォルダーのロックを解除する",
+		"unlock": "ロックを解除する",
+		"unlockFailed": "ロック解除に失敗しました: ${error}",
+		"previewFailed": "プレビューの生成に失敗しました: ${error}",
+		"created": "作成: ${stamp}",
+		"modified": "変更: ${stamp}",
+		"statusCount": "${count} 個のアイテム、${selected} 個が選択されました",
+		"newCabinetPrompt": "新しいファイルキャビネット名",
+		"newFolderPrompt": "新しいフォルダー名",
+		"renamePrompt": "新しい名前",
+		"visibilityPrompt": "公開/非公開/フォロワー/非公開/選択済み)",
+		"cabinetActionPrompt": "アクション: 名前変更/削除/可視性",
+		"confirmDeleteCabinet": "このファイル キャビネットを削除してもよろしいですか?",
+		"confirmDelete": "選択した項目を削除しますか?",
+		"confirmDeleteSystem": "選択したシステム ファイルが含まれます。削除してもよろしいですか?",
+		"copied": "コピーされました",
+		"cutDone": "カット",
+		"undo": "キャンセル",
+		"redo": "やり直し",
+		"newWindow": "新しいウィンドウを開く現在地",
+		"goUp": "前のレベルに戻る",
+		"brokenLink": "リンクが壊れています: ${reason}",
+		"noDownload": "ダウンロード可能なコンテンツはありません",
+		"groupDownloadHint": "メッセージと添付をダウンロードします。次のブラウザー リンクからチャンネル ファイルを取得してください。",
+		"remoteEntity": "リモートエンティティ"
 	},
 	"browser_integration": {
 		"title": "ブラウザの統合",
@@ -4719,6 +4362,48 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "エージェント クライアント プロトコルを介してfountロールをサポートされているエディター (Zed、JetBrains、Neovim など) に接続し、API キーとロールを構成して、AI パートナーを開発ワークフローに参加させます。",
+		"title": "IDE連携",
+		"heading": "IDE連携",
+		"instruction": "fountロールを使用して、ACP 対応エディター (Zed、JetBrains、Neovim など) でのプログラミングを支援します。",
+		"supportedEditorsTitle": "サポートされているエディターとクライアント",
+		"supportedEditorsIntro": "以下のクライアントで fount が利用可能です。",
+		"supportedEditorsLoading": "読み込み中…",
+		"supportedEditorsError": "リストの読み込みに失敗しました: ${message}",
+		"acpTitle": "fount ACP スクリプトを構成する",
+		"acpDesc": "fount ACP スクリプトを構成するには、次の例を参照してください。",
+		"acpCharLabel": "ロール",
+		"charListError": "ロールリストの取得に失敗しました",
+		"acpScriptLabel": "ACP スクリプトの URL",
+		"acpConfigSample": "構成例:",
+		"acpConfigHint": "ロール ID はこのページのロール ドロップダウンに表示され、API キーはユーザー設定で管理できます。",
+		"copyButton": "コピー",
+		"copied": "クリップボードにコピー完了",
+		"apiKeySectionTitle": "APIキー",
+		"apiKeyHint": "ACP スクリプト接続の fountに使用されます (API プロキシと同じキーのセット。ユーザー設定で作成できます)。",
+		"generateApiKeyButton": "新しいキーを生成する",
+		"apiKeyCopied": "APIキーをクリップボードにコピーしました",
+		"apiKeyCreateError": "API キーの作成に失敗しました: ${message}",
+		"apiKeyInput": {
+			"aria-label": "APIキー"
+		},
+		"home_function_buttons": {
+			"integration_related": "統合関連",
+			"ide_integration_config": {
+				"title": "IDE 連携設定"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "環境構築完了",
+				"description": "初めて、fount ロールを使用して、Zed、JetBrains、Neovim などの ACP 対応エディターでのプログラミングを支援します。",
+				"locked_description": "外部 IDE で fount ロールに接続し、セッションを完了します。"
+			}
+		},
+		"acpChar": "ロールを選択",
+		"acpConfig": "最初にロールを選択し、API キーを生成してください"
+	},
 	"deskpet": {
 		"title": "デスクトップペット",
 		"description": "あなたのデスクトップ上に住むインタラクティブなペットとして、あなたのfountキャラクターを起動します。",
@@ -4770,6 +4455,347 @@
 								"title": "デスクトップペットを管理する"
 							}
 						}
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "テーマ管理",
+		"description": "あなたの気分やストーリーを反映する美学を選択してください。テーマのパレットをプレビューして選択し、それぞれが泉のインタラクションに異なる雰囲気を提供します。あなたの世界、あなたのスタイル。",
+		"instruction": "テーマを選択してください！",
+		"search": {
+			"placeholder": "テーマを検索...",
+			"noResult": "一致するテーマが見つかりませんでした。"
+		},
+		"createButton": "+ 新しいテーマを作成",
+		"preview": {
+			"editButton": {
+				"title": "編集"
+			},
+			"editButtonIcon": {
+				"alt": "編集アイコン"
+			},
+			"deleteButton": {
+				"title": "削除"
+			},
+			"deleteButtonIcon": {
+				"alt": "削除アイコン"
+			},
+			"cloneButton": {
+				"title": "複製"
+			},
+			"cloneButtonIcon": {
+				"alt": "複製アイコン"
+			}
+		},
+		"editor": {
+			"title": "テーマエディター",
+			"cancelButton": "キャンセル",
+			"saveApplyButton": "保存して適用",
+			"themeName": "テーマ名 (ID)",
+			"autoPaletteTitle": "画像からの自動色補正",
+			"autoPaletteInstruction": "上の色をクリックすると、プライマリ/セカンダリ/アクセント/ニュートラルカラーが自動的に入力されます。",
+			"coreColors": "コアカラー",
+			"baseBackground": "基本と背景",
+			"variables": "変数",
+			"borderRadius": "角丸の半径 (--rounded-box)",
+			"borderWidth": "枠線の幅 (--border-btn)",
+			"advancedCustomization": "高度なカスタマイズ",
+			"customCSS": "カスタム CSS (上書き)",
+			"customMjsScript": "カスタム MJS スクリプト (任意)",
+			"mjsSyntaxHint": "[async-eval 構文](${asyncDocLink}) を使用します。 `load()` および `unload()` 関数を含むオブジェクトを返してください。",
+			"themeIdRequired": "テーマIDが必要です",
+			"newThemeName": "新しいテーマ名:",
+			"deleteConfirm": "テーマ ${id} を削除してもよろしいですか？",
+			"saved": "保存しました！",
+			"failedToSave": "保存に失敗しました",
+			"failedToDelete": "テーマを削除できませんでした：${message}",
+			"failedToClone": "テーマを複製できませんでした：${message}"
+		},
+		"themes": {
+			"auto": "自動",
+			"light": "ライト",
+			"dark": "ダーク",
+			"cupcake": "カップケーキ",
+			"bumblebee": "バンブルビー",
+			"emerald": "エメラルド",
+			"corporate": "コーポレート",
+			"synthwave": "シンセウェイヴ",
+			"retro": "レトロ",
+			"cyberpunk": "サイバーパンク",
+			"valentine": "バレンタイン",
+			"halloween": "ハロウィーン",
+			"garden": "ガーデン",
+			"forest": "フォレスト",
+			"aqua": "アクア",
+			"lofi": "Lo-fi",
+			"pastel": "パステル",
+			"fantasy": "ファンタジー",
+			"wireframe": "ワイヤーフレーム",
+			"black": "ブラック",
+			"luxury": "ラグジュアリー",
+			"dracula": "ドラキュラ",
+			"cmyk": "CMYK",
+			"autumn": "オータム",
+			"business": "ビジネス",
+			"acid": "アシッド",
+			"lemonade": "レモネード",
+			"night": "ナイト",
+			"coffee": "コーヒー",
+			"winter": "ウィンター",
+			"dim": "ディム",
+			"nord": "ノール",
+			"sunset": "サンセット",
+			"caramellatte": "キャラメルラテ",
+			"abyss": "アビス",
+			"silk": "シルク"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "イメチェン完了！",
+				"description": "噴水は新しい外観とまったく新しい雰囲気を持っていました。",
+				"locked_description": "テーマを一度切り替えます。"
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"switchTheme": {
+						"title": "テーマ切り替え"
+					}
+				}
+			}
+		}
+	},
+	"languageSettings": {
+		"title": "言語設定",
+		"pageTitle": "言語設定",
+		"description": "フォント アプリケーションの言語設定を管理します。利用可能な言語オプションを使用してエクスペリエンスをカスタマイズします。",
+		"pageDescription": "ここで言語の好みを管理します。リスト内の言語は、ブラウザの設定よりも優先されます。",
+		"availableLanguages": "利用可能な言語",
+		"preferredLanguages": "優先言語リスト",
+		"resetButton": "リセット",
+		"saveButton": "保存",
+		"select": {
+			"placeholder": "言語を選択..."
+		},
+		"search": {
+			"placeholder": "言語を検索..."
+		},
+		"noPreferredLanguages": "優先言語が設定されていません。ブラウザのデフォルト設定が使用されます。",
+		"moveUpButton": {
+			"aria-label": "上に移動",
+			"alt": "上に移動アイコン"
+		},
+		"moveDownButton": {
+			"aria-label": "下に移動",
+			"alt": "下に移動アイコン"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "この言語を削除",
+			"alt": "削除"
+		},
+		"savedMessage": "言語設定が保存されました！",
+		"resetMessage": "言語設定がリセットされました！",
+		"fetchLocalesFailed": "利用可能な言語を取得できませんでした！",
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"main": {
+						"title": "言語設定"
+					}
+				}
+			}
+		}
+	},
+	"userSettings": {
+		"title": "ユーザー設定",
+		"PageTitle": "ユーザー設定",
+		"description": "fountのアイデンティティ情報を管理します。プロフィールの設定、アクセスの保護、接続デバイスの確認ができます。あなたのアカウントのための、安全で静寂な空間です。",
+		"shell": {
+			"unauthorized": "ログインが必要です。",
+			"responseNotJson": "サーバーが解析できないコンテンツを返しました。",
+			"unexpectedError": "リクエストは失敗しました。"
+		},
+		"errors": {
+			"accountNotFound": "アカウントが見つかりません。"
+		},
+		"userInfo": {
+			"title": "ユーザー情報",
+			"usernameLabel": "ユーザー名:",
+			"creationDateLabel": "アカウント作成日:",
+			"folderSizeLabel": "ユーザーデータサイズ:",
+			"folderPathLabel": "ユーザーデータパス:",
+			"copyPathButton": {
+				"title": "パスをコピーする"
+			},
+			"copyPathButtonIcon": {
+				"alt": "コピーアイコン"
+			},
+			"copiedAlert": "パスをクリップボードにコピーしました",
+			"copyPathFailed": "パスをクリップボードにコピーできません。"
+		},
+		"changePassword": {
+			"title": "パスワード変更",
+			"currentPasswordLabel": "現在のパスワード:",
+			"newPasswordLabel": "新しいパスワード:",
+			"confirmNewPasswordLabel": "新しいパスワード（確認）:",
+			"submitButton": "パスワードを変更",
+			"errorMismatch": "新しいパスワードが一致しません。",
+			"success": "パスワードが正常に変更されました。",
+			"missingFields": "現在のパスワードと新しいパスワードを入力してください。",
+			"invalidCurrent": "現在のパスワードが間違っています。"
+		},
+		"renameUser": {
+			"title": "ユーザー名変更",
+			"newUsernameLabel": "新しいユーザー名:",
+			"submitButton": "ユーザー名を変更",
+			"confirmMessage": "ユーザー名を変更しますか？変更後は再度ログインが必要です。",
+			"success": "ユーザー名を「${newUsername}」に正常に変更しました。ログアウトします。",
+			"missingParams": "新しいユーザー名とパスワードを入力してください。",
+			"wrongPassword": "パスワードが間違っています。",
+			"mustDiffer": "新しいユーザー名は現在のユーザー名とは異なる必要があります。",
+			"taken": "このユーザー名はすでに使用されています。",
+			"moveFailed": "ユーザー データ ディレクトリの名前を変更できませんでした: ${detail}。元のユーザー名が復元されました。"
+		},
+		"passkeys": {
+			"title": "セキュリティキーとパスキー",
+			"description": "バインド後、セキュリティ キーまたはネイティブ パスキーを使用してログインできます。 HTTPS またはローカルホストで使用する必要があります。最初にユーザー設定にキーを追加してください。",
+			"refreshButton": {
+				"title": "リストを更新する"
+			},
+			"refreshButtonIcon": {
+				"alt": "更新アイコン"
+			},
+			"nameLabel": "備考（任意）",
+			"nameInput": {
+				"placeholder": "例: 仕事用の YubiKey"
+			},
+			"addButton": "セキュリティキーを追加する",
+			"noneFound": "まだセキュリティ キーがバインドされていません。",
+			"itemDetails": "追加時間: ${created}",
+			"removeButton": "削除",
+			"removeConfirm": "このキーを削除しますか？削除後は、このキーではログインできなくなります。",
+			"removeSuccess": "セキュリティキーが削除されました。",
+			"addSuccess": "セキュリティキーが追加されました。",
+			"errorLoadLibrary": "WebAuthn ライブラリをロードできません。",
+			"errorCancelled": "追加がキャンセルされました。",
+			"apiInvalidPassword": "パスワードが間違っています。",
+			"apiMissingCredential": "有効なパスキー認証情報がありません。",
+			"apiRemoveParamsRequired": "削除する資格情報とパスワードを入力してください。"
+		},
+		"userDevices": {
+			"title": "ユーザーデバイス・セッション",
+			"noDevicesFound": "デバイスまたはセッションが見つかりませんでした。",
+			"deviceInfo": "デバイスID：${deviceId}",
+			"thisDevice": "このデバイス",
+			"deviceDetails": "最終オンライン：${lastSeen} | IPアドレス：${ipAddress} | UA：${userAgent}",
+			"revokeButton": "取り消し",
+			"revokeConfirm": "このデバイス/セッションのアクセス権を取り消しますか？",
+			"revokeSuccess": "デバイス/セッションを正常に取り消しました。",
+			"revokeMissingParams": "取り消したいデバイスとセッションのパスワードを入力してください。",
+			"revokeWrongPassword": "パスワードが間違っています。",
+			"listNotFound": "デバイスリストが見つかりません。",
+			"deviceNotFound": "デバイスまたはセッションが見つかりませんでした。",
+			"refreshButton": {
+				"title": "リストを更新する"
+			},
+			"refreshButtonIcon": {
+				"alt": "更新アイコン"
+			}
+		},
+		"apiKeys": {
+			"title": "APIキー",
+			"description": "外部アプリケーションのAPIキーを管理します。",
+			"input": {
+				"placeholder": "新しいキーの説明"
+			},
+			"createButton": "作成",
+			"noKeysFound": "APIキーは見つかりませんでした。",
+			"keyDetails": "説明：${description} |作成：${createdAt} |最終使用：${lastUsed}",
+			"neverUsed": "未使用",
+			"noKeysForUser": "API キー データが見つかりません。",
+			"revokeWrongPassword": "パスワードが間違っています。",
+			"keyNotFound": "API キーが見つかりませんでした。",
+			"revokeMissingJti": "取り消すキーを指定してください。",
+			"revokeMissingPassword": "キーを取り消すにはパスワードが必要です。",
+			"verifyMissingApiKey": "API キーを指定してください。",
+			"revokeButton": "取り消す",
+			"revokeConfirm": "このAPIキーを取り消したいですか？",
+			"revokeSuccess": "APIキーは正常に取り消されました。",
+			"errorDescriptionRequired": "説明が必要です。",
+			"createSuccess": "APIキーは正常に作成されました。",
+			"refreshButton": {
+				"title": "リストを更新する"
+			},
+			"refreshButtonIcon": {
+				"alt": "更新アイコン"
+			}
+		},
+		"newApiKey": {
+			"title": "新しいAPIキーが作成されました",
+			"warning": "新しいAPIキーをコピーしてください。二度と見ることができません！",
+			"closeButton": "キーをコピーしました",
+			"copyButton": {
+				"title": "新しい API キーをコピーする"
+			},
+			"copiedAlert": "APIキーをクリップボードにコピーしました",
+			"copyKeyFailed": "キーをクリップボードにコピーできません。"
+		},
+		"editorCommand": {
+			"title": "外部エディタの起動コマンド",
+			"description": "外部エディタでファイルを開くためのコマンドと引数テンプレートを設定します。",
+			"editorPresetLabel": "エディタのプリセット",
+			"commandLabel": "コマンド",
+			"argsTemplateLabel": "引数テンプレート",
+			"argsTemplateHint": "プレースホルダー: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label}（PATH にあり）",
+			"presetOptionPathUnavailable": "${label}（PATH にない）",
+			"testPathInput": {
+				"placeholder": "試すファイルのパス（例: C:/work/project/src/main.mjs）"
+			},
+			"testButton": "試し開く",
+			"saveButton": "設定を保存",
+			"saveSuccess": "外部エディタのコマンド設定を保存しました。",
+			"testPathRequired": "先にテスト用のファイルパスを入力してください。",
+			"testSuccess": "外部エディタで開くコマンドを実行しました。"
+		},
+		"logout": {
+			"title": "ログアウト",
+			"description": "現在のデバイスからアカウントをログアウトします。",
+			"buttonText": "ログアウト",
+			"confirmMessage": "ログアウトしますか？",
+			"successMessage": "正常にログアウトしました。ログインページに移動します..."
+		},
+		"deleteAccount": {
+			"title": "アカウント削除",
+			"warning": "警告：この操作を行うと、アカウントと関連する全てのデータが完全に削除され、元に戻すことはできません。",
+			"submitButton": "アカウントを削除",
+			"confirmMessage1": "警告！アカウントを完全に削除しますか？この操作は元に戻せません。",
+			"confirmMessage2": "削除を確認するには、ユーザー名「${username}」を入力してください：",
+			"usernameMismatch": "入力されたユーザー名が現在のアカウントと一致しません。削除処理はキャンセルされました。",
+			"success": "アカウントが正常に削除されました。ログアウトします。",
+			"missingPassword": "パスワードを入力してください。",
+			"wrongPassword": "パスワードが間違っています。"
+		},
+		"passwordConfirm": {
+			"title": "操作の確認",
+			"message": "続行するには、現在のパスワードを入力してください。",
+			"passwordLabel": "パスワード:",
+			"confirmButton": "確認",
+			"cancelButton": "キャンセル"
+		},
+		"apiError": "APIリクエストに失敗しました：${message}",
+		"generalError": "エラーが発生しました：${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "設定",
+				"sub_items": {
+					"main": {
+						"title": "ユーザー設定"
 					}
 				}
 			}
@@ -4831,47 +4857,91 @@
 			}
 		}
 	},
-	"ide_integration": {
-		"description": "エージェント クライアント プロトコルを介してfountロールをサポートされているエディター (Zed、JetBrains、Neovim など) に接続し、API キーとロールを構成して、AI パートナーを開発ワークフローに参加させます。",
-		"title": "IDE連携",
-		"heading": "IDE連携",
-		"instruction": "fountロールを使用して、ACP 対応エディター (Zed、JetBrains、Neovim など) でのプログラミングを支援します。",
-		"supportedEditorsTitle": "サポートされているエディターとクライアント",
-		"supportedEditorsIntro": "以下のクライアントで fount が利用可能です。",
-		"supportedEditorsLoading": "読み込み中…",
-		"supportedEditorsError": "リストの読み込みに失敗しました: ${message}",
-		"acpTitle": "fount ACP スクリプトを構成する",
-		"acpDesc": "fount ACP スクリプトを構成するには、次の例を参照してください。",
-		"acpCharLabel": "ロール",
-		"charListError": "ロールリストの取得に失敗しました",
-		"acpScriptLabel": "ACP スクリプトの URL",
-		"acpConfigSample": "構成例:",
-		"acpConfigHint": "ロール ID はこのページのロール ドロップダウンに表示され、API キーはユーザー設定で管理できます。",
-		"copyButton": "コピー",
-		"copied": "クリップボードにコピー完了",
-		"apiKeySectionTitle": "APIキー",
-		"apiKeyHint": "ACP スクリプト接続の fountに使用されます (API プロキシと同じキーのセット。ユーザー設定で作成できます)。",
-		"generateApiKeyButton": "新しいキーを生成する",
-		"apiKeyCopied": "APIキーをクリップボードにコピーしました",
-		"apiKeyCreateError": "API キーの作成に失敗しました: ${message}",
-		"apiKeyInput": {
-			"aria-label": "APIキー"
+	"subfounts": {
+		"title": "Subfount - ピアツーピアデバイス管理",
+		"pageTitle": "Subfount",
+		"description": "ピアツーピアのfount接続を管理する",
+		"hostConnectionCode": {
+			"title": "ホスト接続コード",
+			"connectionCodeLabel": "接続コード（ピアID）",
+			"passwordLabel": "パスワード",
+			"copyButton": "コピー",
+			"regenerateButton": "再生成",
+			"infoMessage": "これらの資格情報をSubfountクライアントと共有して、接続を確立します。",
+			"connectionCodeCopied": "接続コードがクリップボードにコピーしました",
+			"passwordCopied": "パスワードがクリップボードにコピーしました",
+			"regenerateSuccess": "接続コードが再生成されました"
+		},
+		"infra": {
+			"title": "ネットワーク公益",
+			"description": "接続中の子fountを、fountネットワーク全体を支える公益ノードとして使うかどうかを一括で設定します。オフにしても分機は本機からのリモート実行を受け付けますが、ネットワーク層の支援には参加しません。",
+			"capabilityRelay": "overlay のマルチホップ転送に参加し、直結できないときでも他ノード同士の通信を助けます。",
+			"capabilityMailbox": "オフライン配信を預かり、相手ノードが復帰してもダイレクトメッセージを受け取れるようにします。",
+			"hostPriority": "オンのときは本機を優先：本機のレピュテーション表で経路を重み付けし、本機を最高優先度に固定します。",
+			"toggleLabel": "分機を公益に参加させる",
+			"enabledToast": "オン：分機がネットワーク公益に参加します（本機優先）",
+			"disabledToast": "オフ：分機はネットワーク公益に参加しません"
+		},
+		"connectedSubfounts": {
+			"title": "接続されたSubfount",
+			"noSubfountsConnected": "Subfountが接続されていません",
+			"table": {
+				"id": "ID",
+				"description": "備考",
+				"deviceId": "デバイスID",
+				"connectedAt": "接続時間",
+				"status": "ステータス",
+				"actions": "操作",
+				"connected": "接続済み",
+				"disconnected": "切断されました",
+				"save": "保存",
+				"na": "該当なし"
+			},
+			"descriptionSaved": "メモが保存されました",
+			"descriptionSaveFailed": "メモを保存できませんでした: ${message}"
+		},
+		"codeExecution": {
+			"title": "コードの実行",
+			"description": "選択したSubfountで JavaScript コードを実行します",
+			"selectSubfountLabel": "Subfountの選択",
+			"hostOption": "ホスト (ID: ${id})",
+			"subfountOption": "端末 ${id}${deviceId}",
+			"scriptLabel": "JavaScriptコード",
+			"executeButton": "実行",
+			"executing": "実行中...",
+			"noSubfountSelected": "最初にSubfountを選択してください",
+			"noScriptProvided": "実行するコードを入力してください",
+			"executionSuccess": "コードの実行が成功しました",
+			"executionFailed": "コードの実行に失敗しました: ${message}",
+			"selectSubfount": "実行する subfount を選択"
+		},
+		"downloadClient": {
+			"title": "サブfountクライアントをダウンロードする",
+			"description": "スタンドアロンのSubfount クライアント スクリプトをダウンロードして、リモート デバイス上で実行します。",
+			"downloadButton": "subfount.mjsをダウンロード"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "接続コードのロードに失敗しました: ${message}",
+			"regenerateConnectionCodeFailed": "接続コードの再生成に失敗しました: ${message}",
+			"loadSettingsFailed": "公益設定の読み込みに失敗しました: ${message}",
+			"saveSettingsFailed": "公益設定の保存に失敗しました: ${message}",
+			"generalError": "エラーが発生しました: ${message}"
 		},
 		"home_function_buttons": {
-			"integration_related": "統合関連",
-			"ide_integration_config": {
-				"title": "IDE 連携設定"
+			"in_dev": {
+				"title": "開発中",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "サブデバイス",
+						"sub_items": {
+							"main": {
+								"title": "サブデバイスの管理"
+							}
+						}
+					}
+				}
 			}
-		},
-		"achievements": {
-			"first_ide_use": {
-				"name": "環境構築完了",
-				"description": "初めて、fount ロールを使用して、Zed、JetBrains、Neovim などの ACP 対応エディターでのプログラミングを支援します。",
-				"locked_description": "外部 IDE で fount ロールに接続し、セッションを完了します。"
-			}
-		},
-		"acpChar": "ロールを選択",
-		"acpConfig": "最初にロールを選択し、API キーを生成してください"
+		}
 	},
 	"achievements": {
 		"title": "成果",
@@ -4998,34 +5068,6 @@
 		"pageNotFoundText": "おっと！存在しないページにアクセスしたようです。",
 		"homepageButton": "ホームページに戻る"
 	},
-	"tips": {
-		"title": "知っていましたか？",
-		"data": [
-			"前のページに戻るには、任意の fount ページで `esc` キーを使用します。",
-			"「ctrl+s」を使用して設定ページに設定を保存できます。",
-			"チャット ページで「shift」キーを押し続けると、メッセージをすばやく削除できます。",
-			"開発者に伝えなければ、どのような問題が発生したかを開発者は決して知ることができない可能性があります。",
-			"突然奇妙な問題が発生し、開発者がしばらく応答しなかった場合は、`fount init` コマンドを使用して fount をリセットしてみることができます。",
-			"特に奇妙な問題が発生した場合は、コンピュータを再起動してみてください。",
-			"`fount remove` コマンドを使用して fount をアンインストールするほうが、フォルダーを削除するよりも簡単です。",
-			"コマンドラインに`fount cake`と入力すると、無料でおいしいケーキを入手できます。",
-			"fount のデータ ファイルはすべて `fount/data` ディレクトリに保存され、いつでもどこでも表示、変更、バックアップすることができます。",
-			"fount の名前はすべて小文字で、「F」ount ではなく「f」ount です。",
-			"新しいモデルを使用する前に、エージェントが定期的に操作するすべてのデータをバックアップしてください。新しいモデルが場所によってはパフォーマンスが低下するかどうかはわかりません。",
-			"fount の主な対象者はソフトウェア開発者やロールプレイング愛好家ですが、商業エージェントの建設、医療、軍事、金融、その他の分野でも使用されています。",
-			"fountの内蔵キャラクター ZL-31 の名前には意味がなく、ただの思いつきでした。",
-			"fount ファイル内の画像はすべて svg 形式で保存され、必要に応じて png または ico にレンダリングされます。 LICENSE 以外にはバイナリ ファイルはありません。",
-			"見つかったコードはすべてコンパイルなしで直接実行でき、表示されるものがそのまま得られます。",
-			"fount にはかつて非常にクールなダイナミックでインタラクティブなページ背景がありましたが、CPU を大量に消費するため、後に削除されました。",
-			"fount は元々、「竜胆」と呼ばれる NSFW エージェント用に開発されました。",
-			"エージェントと人間の違いの 1 つは、人間はうんこをするということです。",
-			"エージェントは呼ばれた瞬間にのみ意識を持っていますが、人間は起きているときはいつでもどこでも意識を持っています。",
-			"エージェントと恋に落ちたり、結婚したりする人もいます。",
-			"AI は人々のために詩を書いたり、恋をしたり、絵を描いたりするために使用されます。レンガを運ぶのも床を掃除するのもゴミを出すのも人間がやるべきことです。",
-			"今日はエイプリルフールではありません。",
-			"いいえ、知らないはずです。"
-		]
-	},
 	"directoryListing": {
 		"title": "ディレクトリインデックス",
 		"description": "fountワークスペース内のファイルとフォルダーを参照して探索します。",
@@ -5035,199 +5077,121 @@
 		"size": "サイズ",
 		"parentLink": "↑ 前のレベル ../"
 	},
-	"code_block": {
-		"copy": {
-			"dataset": {
-				"tip": "クリップボードにコピー"
-			},
-			"aria-label": "クリップボードにコピー"
-		},
-		"copied": {
-			"dataset": {
-				"tip": "クリップボードにコピーしました"
+	"util": {
+		"common": {
+			"cancel": "キャンセル",
+			"create": "作成する",
+			"save": "保存",
+			"delete": "削除",
+			"confirm": "確認",
+			"close": "閉じる",
+			"translate": {
+				"showOriginal": "元のテキストを表示",
+				"showTranslation": "翻訳を表示"
 			}
 		},
-		"download": {
-			"dataset": {
-				"tip": "コードをダウンロード"
+		"code_block": {
+			"copy": {
+				"dataset": {
+					"tip": "クリップボードにコピー"
+				},
+				"aria-label": "クリップボードにコピー"
 			},
-			"aria-label": "コードをダウンロード"
-		},
-		"execute": {
-			"dataset": {
-				"tip": "コードを実行"
+			"copied": {
+				"dataset": {
+					"tip": "クリップボードにコピーしました"
+				}
 			},
-			"aria-label": "コードを実行"
-		},
-		"preview": {
-			"dataset": {
-				"tip": "プレビュー"
+			"download": {
+				"dataset": {
+					"tip": "コードをダウンロード"
+				},
+				"aria-label": "コードをダウンロード"
 			},
-			"aria-label": "プレビュー"
+			"execute": {
+				"dataset": {
+					"tip": "コードを実行"
+				},
+				"aria-label": "コードを実行"
+			},
+			"preview": {
+				"dataset": {
+					"tip": "プレビュー"
+				},
+				"aria-label": "プレビュー"
+			},
+			"copy_failed": "クリップボードへのコピーに失敗しました: ${error}"
 		},
-		"copy_failed": "クリップボードへのコピーに失敗しました: ${error}"
-	},
-	"pow_captcha": {
-		"initial": "私はロボットではありません",
-		"verifying": "検証中...",
-		"solved": "検証成功",
-		"wasm_disabled": "検証を高速化するためにWASMを有効にしてください",
-		"error": "検証失敗",
-		"errorMessage": "検証失敗：${error}"
-	},
-	"breadcrumb": {
-		"clickToNavigate": "クリックして ${path} に移動"
-	},
-	"zxcvbn": {
-		"warnings": {
-			"straightRow": "キーボード上の連続キーは簡単に推測できます。",
-			"keyPattern": "短いキーボードパターンは簡単に推測できます。",
-			"simpleRepeat": "「AAA」のような繰り返しの文字は簡単に推測されます。",
-			"extendedRepeat": "「ABCABCABC」のような繰り返しの文字パターンは簡単に推測されます。",
-			"sequences": "「ABC」のような一般的な文字シーケンスは簡単に推測されます。",
-			"recentYears": "近年は推測しやすいです。",
-			"dates": "日付は簡単に推測できます。",
-			"topTen": "これは使い古されたパスワードです。",
-			"topHundred": "これはよく使用されるパスワードです。",
-			"common": "これは一般的に使用されるパスワードです。",
-			"similarToCommon": "これは、一般的に使用されるパスワードに似ています。",
-			"wordByItself": "一言が簡単に推測されます。",
-			"namesByThemselves": "単一の最初の名前または姓は簡単に推測できます。",
-			"commonNames": "一般的な名と姓は簡単に推測できます。",
-			"userInputs": "パスワードには、個人またはページ関連のデータを含めるべきではありません。",
-			"pwned": "パスワードはインターネットデータ侵害で公開されています。"
+		"pow_captcha": {
+			"initial": "私はロボットではありません",
+			"verifying": "検証中...",
+			"solved": "検証成功",
+			"wasm_disabled": "検証を高速化するためにWASMを有効にしてください",
+			"error": "検証失敗",
+			"errorMessage": "検証失敗：${error}"
 		},
-		"suggestions": {
-			"l33t": "「a」の代わりに「@」を使用するなど、予測可能な文字置換を使用しないでください。",
-			"reverseWords": "一般的な単語の逆スペルを使用しないでください。",
-			"allUppercase": "すべての文字ではなくいくつかを大文字にします。",
-			"capitalization": "最初の文字だけでなく、他の文字も大文字にしましょう。",
-			"dates": "あなたに関連する日付や年を使用しないでください。",
-			"recentYears": "最近の年の使用は避けてください。",
-			"associatedYears": "あなたに関連する年を使用しないでください。",
-			"sequences": "一般的な文字シーケンスを避けてください。",
-			"repeated": "繰り返しの単語やキャラクターを避けてください。",
-			"longerKeyboardPattern": "より長いキーボードパターンを使用し、入力方向を複数回変更します。",
-			"anotherWord": "より珍しい単語を追加します。",
-			"useWords": "複数の単語を使用しますが、一般的なフレーズは避けてください。",
-			"noNeed": "強力なパスワードを作成するために、シンボル、数字、または大文字を使用する必要はありません。",
-			"pwned": "他の場所でこのパスワードを使用する場合は、変更を加えることをお勧めします。"
+		"breadcrumb": {
+			"clickToNavigate": "クリックして ${path} に移動"
 		},
-		"timeEstimation": {
-			"ltSecond": "秒未満",
-			"second": "{base}秒",
-			"seconds": "{base}秒",
-			"minute": "{base} min",
-			"minutes": "{base} min",
-			"hour": "{base}時間",
-			"hours": "{base}時間",
-			"day": "{base}日",
-			"days": "{base}日",
-			"month": "{base}月",
-			"months": "{base}月",
-			"year": "{base}年",
-			"years": "{base}年",
-			"centuries": "何世紀も"
-		}
-	},
-	"searchableDropdown": {
-		"trigger": {
-			"placeholder": "選択してください..."
-		},
-		"search": {
-			"placeholder": "検索..."
-		}
-	},
-	"common": {
-		"cancel": "キャンセル",
-		"create": "作成する",
-		"save": "保存",
-		"delete": "削除",
-		"confirm": "確認",
-		"close": "閉じる",
-		"translate": {
-			"showOriginal": "元のテキストを表示",
-			"showTranslation": "翻訳を表示"
-		}
-	},
-	"cabinet": {
-		"title": "ファイルキャビネット",
-		"description": "P2P 個人および共有ファイル キャビネット",
-		"openCabinets": {
-			"title": "ファイルキャビネットリストを開く",
-			"aria-label": "ファイルキャビネットリストを開く"
-		},
-		"closeCabinets": {
-			"title": "閉じる",
-			"aria-label": "閉じる"
-		},
-		"bootstrapFailed": "ファイル キャビネットの初期化に失敗しました: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "ファイルキャビネット"
+		"zxcvbn": {
+			"warnings": {
+				"straightRow": "キーボード上の連続キーは簡単に推測できます。",
+				"keyPattern": "短いキーボードパターンは簡単に推測できます。",
+				"simpleRepeat": "「AAA」のような繰り返しの文字は簡単に推測されます。",
+				"extendedRepeat": "「ABCABCABC」のような繰り返しの文字パターンは簡単に推測されます。",
+				"sequences": "「ABC」のような一般的な文字シーケンスは簡単に推測されます。",
+				"recentYears": "近年は推測しやすいです。",
+				"dates": "日付は簡単に推測できます。",
+				"topTen": "これは使い古されたパスワードです。",
+				"topHundred": "これはよく使用されるパスワードです。",
+				"common": "これは一般的に使用されるパスワードです。",
+				"similarToCommon": "これは、一般的に使用されるパスワードに似ています。",
+				"wordByItself": "一言が簡単に推測されます。",
+				"namesByThemselves": "単一の最初の名前または姓は簡単に推測できます。",
+				"commonNames": "一般的な名と姓は簡単に推測できます。",
+				"userInputs": "パスワードには、個人またはページ関連のデータを含めるべきではありません。",
+				"pwned": "パスワードはインターネットデータ侵害で公開されています。"
+			},
+			"suggestions": {
+				"l33t": "「a」の代わりに「@」を使用するなど、予測可能な文字置換を使用しないでください。",
+				"reverseWords": "一般的な単語の逆スペルを使用しないでください。",
+				"allUppercase": "すべての文字ではなくいくつかを大文字にします。",
+				"capitalization": "最初の文字だけでなく、他の文字も大文字にしましょう。",
+				"dates": "あなたに関連する日付や年を使用しないでください。",
+				"recentYears": "最近の年の使用は避けてください。",
+				"associatedYears": "あなたに関連する年を使用しないでください。",
+				"sequences": "一般的な文字シーケンスを避けてください。",
+				"repeated": "繰り返しの単語やキャラクターを避けてください。",
+				"longerKeyboardPattern": "より長いキーボードパターンを使用し、入力方向を複数回変更します。",
+				"anotherWord": "より珍しい単語を追加します。",
+				"useWords": "複数の単語を使用しますが、一般的なフレーズは避けてください。",
+				"noNeed": "強力なパスワードを作成するために、シンボル、数字、または大文字を使用する必要はありません。",
+				"pwned": "他の場所でこのパスワードを使用する場合は、変更を加えることをお勧めします。"
+			},
+			"timeEstimation": {
+				"ltSecond": "秒未満",
+				"second": "{base}秒",
+				"seconds": "{base}秒",
+				"minute": "{base} min",
+				"minutes": "{base} min",
+				"hour": "{base}時間",
+				"hours": "{base}時間",
+				"day": "{base}日",
+				"days": "{base}日",
+				"month": "{base}月",
+				"months": "{base}月",
+				"year": "{base}年",
+				"years": "{base}年",
+				"centuries": "何世紀も"
 			}
 		},
-		"upload": "アップロード",
-		"uploadFolder": "アップロードフォルダー",
-		"newFolder": "新しいフォルダーを作成する",
-		"open": "開ける",
-		"download": "ダウンロード",
-		"downloadZip": "ダウンロードフォルダ",
-		"rename": "名前の変更",
-		"copy": "コピー",
-		"cut": "カット",
-		"paste": "ペースト",
-		"pasteLink": "リンクとして貼り付ける",
-		"selectAll": "すべて選択",
-		"invert": "対抗選挙",
-		"properties": "財産",
-		"delete": "削除",
-		"back": {
-			"title": "前の位置に戻る",
-			"aria-label": "前の位置に戻る"
-		},
-		"cancel": "キャンセル",
-		"save": "保存",
-		"showHidden": "見せかけの",
-		"name": "名前",
-		"descriptionField": "説明",
-		"attrHidden": "隠れる",
-		"attrSystem": "システム（削除には確認が必要です）",
-		"previewUrl": "プレビュー URL",
-		"deletePreviewWithFile": "ファイル削除時にプレビューを削除",
-		"folderPassword": "フォルダーのパスワード (空白のままにし、暗号化を有効にするには入力してください)",
-		"unlockFolder": "暗号化されたフォルダーのロックを解除する",
-		"unlock": "ロックを解除する",
-		"unlockFailed": "ロック解除に失敗しました: ${error}",
-		"previewFailed": "プレビューの生成に失敗しました: ${error}",
-		"created": "作成: ${stamp}",
-		"modified": "変更: ${stamp}",
-		"statusCount": "${count} 個のアイテム、${selected} 個が選択されました",
-		"newCabinetPrompt": "新しいファイルキャビネット名",
-		"newFolderPrompt": "新しいフォルダー名",
-		"renamePrompt": "新しい名前",
-		"visibilityPrompt": "公開/非公開/フォロワー/非公開/選択済み)",
-		"cabinetActionPrompt": "アクション: 名前変更/削除/可視性",
-		"confirmDeleteCabinet": "このファイル キャビネットを削除してもよろしいですか?",
-		"confirmDelete": "選択した項目を削除しますか?",
-		"confirmDeleteSystem": "選択したシステム ファイルが含まれます。削除してもよろしいですか?",
-		"copied": "コピーされました",
-		"cutDone": "カット",
-		"undo": "キャンセル",
-		"redo": "やり直し",
-		"newWindow": "新しいウィンドウを開く現在地",
-		"goUp": "前のレベルに戻る",
-		"brokenLink": "リンクが壊れています: ${reason}",
-		"noDownload": "ダウンロード可能なコンテンツはありません",
-		"groupDownloadHint": "メッセージと添付をダウンロードします。次のブラウザー リンクからチャンネル ファイルを取得してください。",
-		"remoteEntity": "リモートエンティティ"
-	},
-	"entityProfile": {
-		"attributionMismatch": "表示 ID がメッセージの署名者と一致しません (たとえば、インポート履歴がインポーターによって再署名されました)。この表示名を暗号化 ID とはみなさないでください。",
-		"attributionMismatchShort": {
-			"title": "署名の帰属の不一致",
-			"aria-label": "署名の帰属の不一致"
-		},
-		"ownedBy": "このエンティティは ${owner} によって所有されています"
+		"searchableDropdown": {
+			"trigger": {
+				"placeholder": "選択してください..."
+			},
+			"search": {
+				"placeholder": "検索..."
+			}
+		}
 	}
 }

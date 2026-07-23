@@ -10,7 +10,7 @@
 	<meta property="og:description" content="Browse, install, and manage sticker packs for your fount chats." />
 	<meta name="description" content="Browse, install, and manage sticker packs for your fount chats." />
 	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
-	<title data-i18n="stickers.title"></title>
+	<title data-i18n="chat.stickers.title"></title>
 	<link rel="icon" href="/favicon.ico" />
 	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 	<script blocking="render" type="module" src="/preload.mjs"></script>
@@ -24,60 +24,60 @@
 	<main>
 	<div class="navbar bg-base-200 shadow-lg">
 		<div class="flex-1">
-			<span class="text-2xl font-bold px-4" data-i18n="stickers.store"></span>
+			<span class="text-2xl font-bold px-4" data-i18n="chat.stickers.store"></span>
 		</div>
 		<div class="flex-none gap-2">
-			<button id="sticker-create-pack-button" class="btn btn-primary" data-i18n="stickers.create"></button>
-			<button id="sticker-upload-button" class="btn btn-secondary" data-i18n="stickers.upload"></button>
+			<button id="sticker-create-pack-button" class="btn btn-primary" data-i18n="chat.stickers.create"></button>
+			<button id="sticker-upload-button" class="btn btn-secondary" data-i18n="chat.stickers.upload"></button>
 		</div>
 	</div>
 
 	<div class="container mx-auto p-6">
 		<div class="mb-6">
-			<input type="text" id="search-input" class="input input-bordered w-full max-w-md" data-i18n="stickers.search" />
+			<input type="text" id="search-input" class="input input-bordered w-full max-w-md" data-i18n="chat.stickers.search" />
 		</div>
 
 		<div role="tablist" class="tabs tabs-boxed mb-6">
-			<a role="tab" class="tab tab-active" data-tab="all" data-i18n="stickers.tabAll"></a>
-			<a role="tab" class="tab" data-tab="installed" data-i18n="stickers.installed"></a>
-			<a role="tab" class="tab" data-tab="favorites" data-i18n="stickers.favorites"></a>
-			<a role="tab" class="tab" data-tab="my-packs" data-i18n="stickers.myPacks"></a>
+			<a role="tab" class="tab tab-active" data-tab="all" data-i18n="chat.stickers.tabAll"></a>
+			<a role="tab" class="tab" data-tab="installed" data-i18n="chat.stickers.installed"></a>
+			<a role="tab" class="tab" data-tab="favorites" data-i18n="chat.stickers.favorites"></a>
+			<a role="tab" class="tab" data-tab="my-packs" data-i18n="chat.stickers.myPacks"></a>
 		</div>
 
 		<div id="packs-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
 
 		<div id="empty-state" class="text-center py-12 hidden">
 			<img src="https://api.iconify.design/line-md/emoji-grin.svg" class="h-24 w-24 mx-auto text-base-300" alt="" aria-hidden="true" />
-			<p class="text-xl text-base-content opacity-50 mt-4" data-i18n="stickers.emptyPacks"></p>
+			<p class="text-xl text-base-content opacity-50 mt-4" data-i18n="chat.stickers.emptyPacks"></p>
 		</div>
 	</div>
 	</main>
 
 	<dialog id="create-pack-modal" class="modal">
 		<div class="modal-box">
-			<h3 class="font-bold text-lg mb-4" data-i18n="stickers.create"></h3>
+			<h3 class="font-bold text-lg mb-4" data-i18n="chat.stickers.create"></h3>
 			<form id="create-pack-form">
 				<div class="form-control mb-4">
 					<label class="label">
-						<span class="label-text" data-i18n="stickers.packNameLabel"></span>
+						<span class="label-text" data-i18n="chat.stickers.packNameLabel"></span>
 					</label>
-					<input type="text" id="pack-name" class="input input-bordered" data-i18n="stickers.packName" required />
+					<input type="text" id="pack-name" class="input input-bordered" data-i18n="chat.stickers.packName" required />
 				</div>
 				<div class="form-control mb-4">
 					<label class="label">
-						<span class="label-text" data-i18n="stickers.packDescriptionLabel"></span>
+						<span class="label-text" data-i18n="chat.stickers.packDescriptionLabel"></span>
 					</label>
-					<textarea id="pack-description" class="textarea textarea-bordered" rows="3" data-i18n="stickers.packDescription"></textarea>
+					<textarea id="pack-description" class="textarea textarea-bordered" rows="3" data-i18n="chat.stickers.packDescription"></textarea>
 				</div>
 				<div class="form-control mb-4">
 					<label class="label cursor-pointer">
-						<span class="label-text" data-i18n="stickers.public"></span>
+						<span class="label-text" data-i18n="chat.stickers.public"></span>
 						<input type="checkbox" id="pack-public" class="checkbox" checked />
 					</label>
 				</div>
 				<div class="modal-action">
-					<button type="button" class="btn" data-close-modal="create-pack-modal" data-i18n="stickers.cancel"></button>
-					<button type="submit" class="btn btn-primary" data-i18n="stickers.create"></button>
+					<button type="button" class="btn" data-close-modal="create-pack-modal" data-i18n="chat.stickers.cancel"></button>
+					<button type="submit" class="btn btn-primary" data-i18n="chat.stickers.create"></button>
 				</div>
 			</form>
 		</div>
@@ -85,37 +85,37 @@
 
 	<dialog id="upload-sticker-modal" class="modal">
 		<div class="modal-box">
-			<h3 class="font-bold text-lg mb-4" data-i18n="stickers.upload"></h3>
+			<h3 class="font-bold text-lg mb-4" data-i18n="chat.stickers.upload"></h3>
 			<form id="upload-sticker-form">
 				<div class="form-control mb-4">
 					<label class="label">
-						<span class="label-text" data-i18n="stickers.selectPack"></span>
+						<span class="label-text" data-i18n="chat.stickers.selectPack"></span>
 					</label>
 					<select id="select-pack" class="select select-bordered" required>
-						<option value="" data-i18n="stickers.selectPackOption"></option>
+						<option value="" data-i18n="chat.stickers.selectPackOption"></option>
 					</select>
 				</div>
 				<div class="form-control mb-4">
 					<label class="label">
-						<span class="label-text" data-i18n="stickers.stickerNameLabel"></span>
+						<span class="label-text" data-i18n="chat.stickers.stickerNameLabel"></span>
 					</label>
-					<input type="text" id="sticker-name" class="input input-bordered" data-i18n="stickers.stickerName" required />
+					<input type="text" id="sticker-name" class="input input-bordered" data-i18n="chat.stickers.stickerName" required />
 				</div>
 				<div class="form-control mb-4">
 					<label class="label">
-						<span class="label-text" data-i18n="stickers.selectImage"></span>
+						<span class="label-text" data-i18n="chat.stickers.selectImage"></span>
 					</label>
 					<input type="file" id="sticker-file" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" class="file-input file-input-bordered" required />
 				</div>
 				<div class="form-control mb-4">
 					<label class="label">
-						<span class="label-text" data-i18n="stickers.tagsLabel"></span>
+						<span class="label-text" data-i18n="chat.stickers.tagsLabel"></span>
 					</label>
-					<input type="text" id="sticker-tags" class="input input-bordered" data-i18n="stickers.tags" />
+					<input type="text" id="sticker-tags" class="input input-bordered" data-i18n="chat.stickers.tags" />
 				</div>
 				<div class="modal-action">
-					<button type="button" class="btn" data-close-modal="upload-sticker-modal" data-i18n="stickers.cancel"></button>
-					<button type="submit" class="btn btn-primary" data-i18n="stickers.upload"></button>
+					<button type="button" class="btn" data-close-modal="upload-sticker-modal" data-i18n="chat.stickers.cancel"></button>
+					<button type="submit" class="btn btn-primary" data-i18n="chat.stickers.upload"></button>
 				</div>
 			</form>
 		</div>
@@ -132,10 +132,10 @@
 			<div class="divider"></div>
 			<div id="detail-stickers-container" class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 max-h-96 overflow-y-auto"></div>
 			<div class="modal-action">
-				<button type="button" id="sticker-delete-pack-button" class="btn btn-error hidden" data-i18n="stickers.deletePack"></button>
-				<button type="button" class="btn" data-close-modal="pack-detail-modal" data-i18n="stickers.close"></button>
-				<button type="button" id="sticker-install-pack-button" class="btn btn-primary" data-i18n="stickers.install"></button>
-				<button type="button" id="sticker-uninstall-pack-button" class="btn btn-warning hidden" data-i18n="stickers.uninstall"></button>
+				<button type="button" id="sticker-delete-pack-button" class="btn btn-error hidden" data-i18n="chat.stickers.deletePack"></button>
+				<button type="button" class="btn" data-close-modal="pack-detail-modal" data-i18n="chat.stickers.close"></button>
+				<button type="button" id="sticker-install-pack-button" class="btn btn-primary" data-i18n="chat.stickers.install"></button>
+				<button type="button" id="sticker-uninstall-pack-button" class="btn btn-warning hidden" data-i18n="chat.stickers.uninstall"></button>
 			</div>
 		</div>
 	</dialog>

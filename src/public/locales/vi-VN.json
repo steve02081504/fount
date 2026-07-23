@@ -1,263 +1,33 @@
 {
 	"lang": "vi-VN",
 	"name": "Tiếng Việt",
-	"channels": {
-		"title": "Kênh",
-		"description": "Hệ thống quản lý kênh",
-		"create": "Tạo kênh",
-		"subscribe": "Đăng ký",
-		"unsubscribe": "Hủy đăng ký",
-		"settings": "Cài đặt kênh",
-		"list": "Danh sách kênh",
-		"members": "Thành viên",
-		"messages": "Tin nhắn",
-		"permissions": "Cài đặt quyền",
-		"type": {
-			"announcement": "Thông báo",
-			"news": "Tin tức",
-			"updates": "Cập nhật"
-		},
-		"role": {
-			"owner": "Chủ sở hữu",
-			"admin": "Quản trị viên",
-			"moderator": "Điều hành viên",
-			"member": "Thành viên",
-			"subscriber": "Người đăng ký"
-		},
-		"errors": {
-			"notFound": "Kênh không tồn tại",
-			"noPermission": "Không đủ quyền",
-			"alreadySubscribed": "Đã đăng ký kênh này",
-			"notSubscribed": "Chưa đăng ký kênh này"
-		},
-		"success": {
-			"created": "Đã tạo kênh thành công",
-			"updated": "Đã cập nhật kênh thành công",
-			"deleted": "Đã xóa kênh thành công",
-			"subscribed": "Đăng ký thành công",
-			"unsubscribed": "Hủy đăng ký thành công",
-			"posted": "Đã đăng tin nhắn thành công"
-		}
-	},
-	"profile": {
-		"title": "Hồ sơ cá nhân",
-		"description": "Quản lý sự hiện diện công khai của bạn trong trò chuyện và mạng xã hội.",
-		"settingsEyebrow": "Cài đặt tài khoản",
-		"accountAtGlance": "Tổng quan về tài khoản",
-		"advancedKicker": "Cấu hình theo yêu cầu",
-		"advancedSettings": "Cài đặt nâng cao",
-		"advancedDescription": "Không cần điều chỉnh để sử dụng hàng ngày.",
-		"edit": "Chỉnh sửa hồ sơ",
-		"save": "Lưu",
-		"cancel": "Hủy",
-		"displayName": "Tên hiển thị",
-		"name": "Tên",
-		"bio": "Tiểu sử",
-		"descriptionLabel": "Giới thiệu (Markdown)",
-		"email": "Email",
-		"status": "Trạng thái",
-		"customStatusLabel": "Trạng thái tùy chỉnh",
-		"avatarLabel": "Ảnh đại diện",
-		"themeColorLabel": "Màu chủ đề",
-		"uploadAvatar": "Tải hình đại diện lên",
-		"ownerTitle": "Chủ nhân của tôi",
-		"ownerSummary": "Cài đặt ủy quyền",
-		"ownerDescription": "Sau khi thiết lập, chủ sở hữu có thể thay mặt bạn chỉnh sửa hoặc xóa tin nhắn trò chuyện, bài đăng trên mạng xã hội và thông tin cá nhân; nội dung cũng sẽ được hiển thị cục bộ bằng Markdown không an toàn (có thể chứa tập lệnh). Bất kỳ hàm băm thực thể nào cũng có thể được điền và xóa bất kỳ lúc nào.",
-		"ownerEntityHashLabel": "Hash thực thể chủ (128 hex)",
-		"ownerSave": "Lưu chủ",
-		"ownerClear": "Xóa chủ",
-		"ownerSaved": "Đã cập nhật chủ",
-		"ownerCleared": "Đã xóa chủ",
-		"ownerSaveFailed": "Lưu không thành công: ${error}",
-		"ownerConfirmTitle": "Xác nhận đặt chủ?",
-		"ownerConfirmWarningTitle": "Hoạt động rủi ro cao, vui lòng đọc kỹ",
-		"ownerConfirmEditBody": "Sau khi thiết lập, bên kia có thể thay mặt bạn chỉnh sửa hoặc xóa tin nhắn trò chuyện, bài đăng trên mạng xã hội và thông tin cá nhân mà không cần xin phép bạn. Đặt nhầm chủ sở hữu hoặc bị lừa = trao quyền kiểm soát nội dung ngay lập tức.",
-		"ownerConfirmRenderBody": "Tin nhắn trò chuyện và bài đăng trên mạng xã hội do bên kia gửi sẽ được hiển thị ở dạng Markdown đầy đủ (bao gồm HTML/tập lệnh) trong trình duyệt của bạn. Điều này cho phép bên kia chạy mã tùy ý trên máy tính của bạn mà không cần sự đồng ý của bạn nữa. Chỉ tiến hành nếu bạn hoàn toàn tin tưởng người khác.",
-		"ownerConfirmCooldown": "Tôi đã đọc rủi ro (${seconds})",
-		"ownerConfirmFirst": "Tôi hiểu những rủi ro, tiếp tục",
-		"ownerConfirmSecond": "Nhấn lần nữa để hoàn tất",
-		"ownerConfirmCancel": "Hủy bỏ",
-		"federationTitle": "Liên kết và đồng bộ hóa",
-		"federationSummary": "Máy chủ chuyển tiếp và chế độ năng lượng thấp",
-		"federationDescription": "Định cấu hình URL chuyển tiếp Nostr và chế độ tiết kiệm năng lượng. Đồng bộ hóa liên kết cho một nhóm được bật tự động vào lần đầu tiên bạn mời ai đó hoặc tạo tin nhắn riêng tư liên kết.",
-		"federationAdvanced": "Tùy chọn nâng cao",
-		"federationRelayUrlsLabel": "Máy chủ chuyển tiếp (mỗi dòng một máy chủ, để trống để sử dụng mặc định)",
-		"federationBatterySaverLabel": "Chế độ tiết kiệm pin",
-		"federationSave": "Lưu cài đặt mạng",
-		"federationResetDefault": "Khôi phục cấu hình mặc định được đề xuất",
-		"federationSaved": "Đã lưu",
-		"federationResetOk": "Đã khôi phục cấu hình mặc định được đề xuất",
-		"federationSaveFailed": "Lưu không thành công: ${error}",
-		"preferences": "Tùy chọn",
-		"language": "Ngôn ngữ",
-		"theme": "Chủ đề",
-		"notifications": "Cài đặt thông báo",
-		"emailNotifications": "Thông báo qua email",
-		"pushNotifications": "Thông báo đẩy",
-		"soundNotifications": "Thông báo bằng âm thanh",
-		"social": "Liên kết mạng xã hội",
-		"website": "Trang web",
-		"github": "GitHub",
-		"twitter": "Twitter",
-		"stats": "Thống kê",
-		"joinedAt": "Thời gian tham gia",
-		"messageCount": "Số lượng tin nhắn",
-		"groupCount": "Số lượng nhóm",
-		"channelCount": "Số lượng kênh",
-		"privacy": "Cài đặt quyền riêng tư",
-		"showEmail": "Hiển thị email",
-		"showStats": "Hiển thị thống kê",
-		"allowDirectMessages": "Cho phép tin nhắn riêng tư",
-		"statusOptions": {
-			"online": "Trực tuyến",
-			"away": "Vắng mặt",
-			"busy": "Bận",
-			"offline": "Ngoại tuyến"
-		},
-		"themeOptions": {
-			"auto": "Tự động",
-			"light": "Sáng",
-			"dark": "Tối"
-		},
-		"languageOptions": {
-			"zh-CN": "Tiếng Trung giản thể",
-			"en-US": "Tiếng Anh"
-		},
-		"notifEmail": "Email",
-		"notifPush": "Đẩy",
-		"notifSound": "Âm thanh",
-		"notifsAllOff": "Đóng tất cả",
-		"bioEmpty": "Người này lười biếng và không viết gì cả…",
-		"noSocialLinks": "Chưa có liên kết xã hội nào",
-		"emailVisible": "Hiển thị",
-		"emailHidden": "Ẩn",
-		"customStatus": {
-			"placeholder": "Bạn đang làm gì thế..."
-		},
-		"avatar": {
-			"alt": "Ảnh đại diện"
-		},
-		"avatarPreview": {
-			"alt": "Xem trước hình đại diện"
-		},
-		"myGroups": "Nhóm của tôi",
-		"myChannels": "Kênh của tôi",
-		"noGroups": "Chưa tham gia nhóm nào",
-		"noChannels": "Chưa có kênh",
-		"overview": "Tổng quan về thông tin người dùng",
-		"summaryUserId": "ID người dùng",
-		"summaryAccountStatus": "Trạng thái tài khoản",
-		"summaryEmailVisibility": "Hiển thị email",
-		"summaryThemePref": "Tùy chọn chủ đề",
-		"summaryLanguagePref": "Tùy chọn ngôn ngữ",
-		"summarySocialCount": "Số lượng liên kết xã hội",
-		"summaryLinksCount": "Số lượng liên kết bên ngoài",
-		"groupDescriptionEmpty": "Chưa có mô tả",
-		"groupMembers": "${members} thành viên · ${channels} kênh",
-		"channelPrivate": "· Riêng tư",
-		"channelTypeText": "Kênh văn bản",
-		"channelTypeList": "Kênh danh sách",
-		"channelTypeVoice": "Kênh thoại",
-		"channelTypeStreaming": "Kênh phát trực tiếp",
-		"errors": {
-			"loadFailed": "Không thể tải dữ liệu",
-			"saveFailed": "Không thể lưu dữ liệu",
-			"uploadFailed": "Không thể tải hình đại diện lên",
-			"invalidUserData": "Lỗi định dạng dữ liệu người dùng",
-			"identityRequired": "Danh tính nút chưa sẵn sàng, vui lòng làm mới trang; nếu vẫn không thành công, vui lòng lưu cấu hình liên kết trong cài đặt P2P bên dưới",
-			"fetchUserFailed": "Không thể lấy được thông tin người dùng",
-			"operationFailed": "Thao tác không thành công: ${error}"
-		},
-		"success": {
-			"saved": "Dữ liệu được lưu thành công",
-			"avatarUploaded": "Hình đại diện đã được tải lên thành công"
-		},
-		"ownerEntityHash": {
-			"placeholder": "Nhập mã băm thực thể của chủ sở hữu"
-		}
-	},
-	"stickers": {
-		"title": "Quảng trường sticker",
-		"description": "Hệ thống quản lý nhãn dán và biểu tượng cảm xúc",
-		"back": {
-			"title": "Quay lại"
-		},
-		"packs": "Gói sticker",
-		"create": "Tạo gói nhãn dán",
-		"upload": "Tải nhãn dán lên",
-		"install": "Cài đặt",
-		"uninstall": "Gỡ cài đặt",
-		"close": "Đóng",
-		"cancel": "Hủy bỏ",
-		"installed": "Đã cài đặt",
-		"myPacks": "Gói sticker của tôi",
-		"tabAll": "Tất cả",
-		"store": "Quảng trường sticker",
-		"favorites": "Yêu thích",
-		"recent": "Được sử dụng gần đây",
-		"search": {
-			"placeholder": "Tìm kiếm gói nhãn dán…"
-		},
-		"emptyPacks": "Chưa có gói nhãn dán nào",
-		"packNameLabel": "Tên gói nhãn dán",
-		"packName": {
-			"placeholder": "Nhập tên gói nhãn dán"
-		},
-		"packDescriptionLabel": "Mô tả",
-		"packDescription": {
-			"placeholder": "Nhập mô tả"
-		},
-		"stickerNameLabel": "Tên nhãn dán",
-		"stickerName": {
-			"placeholder": "Nhập tên nhãn dán"
-		},
-		"selectPack": "Chọn gói nhãn dán",
-		"selectPackOption": {
-			"textContent": "Vui lòng chọn gói nhãn dán"
-		},
-		"selectImage": "Chọn ảnh",
-		"tagsLabel": "Thẻ (cách nhau bằng dấu phẩy)",
-		"tags": {
-			"placeholder": "Ví dụ: dễ thương, biểu tượng cảm xúc, động vật"
-		},
-		"author": "Tác giả",
-		"authorLabel": "Tác giả: ${author}",
-		"stickerCount": "${count} sticker",
-		"badgeMine": "Của tôi",
-		"noDescription": "Chưa có mô tả",
-		"noStickersInPack": "Chưa có nhãn dán nào",
-		"deletePack": "Xóa gói nhãn dán",
-		"public": "Công khai",
-		"private": "Riêng tư",
-		"animated": "Động",
-		"static": "Tĩnh",
-		"addTag": "Thêm thẻ",
-		"defaultPackName": "Gói biểu tượng cảm xúc mặc định",
-		"defaultPackDescription": "Sticker biểu tượng cảm xúc được hệ thống cung cấp mặc định",
-		"unnamedPack": "Gói hình dán không tên",
-		"importPackName": "Bộ sưu tập của tôi",
-		"importPackDescription": "Hình dán được lưu từ tin nhắn",
-		"nameRequired": "Vui lòng nhập tên gói nhãn dán",
-		"stickerNameRequired": "Vui lòng nhập tên nhãn dán",
-		"selectPackRequired": "Vui lòng chọn gói nhãn dán",
-		"fileRequired": "Vui lòng chọn tập tin hình ảnh",
-		"loadDetailFailed": "Không thể tải chi tiết gói sticker",
-		"deleteConfirm": "Bạn có chắc chắn muốn xóa vĩnh viễn gói nhãn dán này không? Tất cả hình dán sẽ bị xóa và hành động này không thể thay đổi được.",
-		"errors": {
-			"loadFailed": "Không thể tải gói sticker",
-			"uploadFailed": "Không thể tải hình dán lên",
-			"installFailed": "Cài đặt không thành công",
-			"uninstallFailed": "Gỡ cài đặt không thành công",
-			"createFailed": "Không thể tạo gói sticker",
-			"deleteFailed": "Xóa không thành công"
-		},
-		"success": {
-			"uploaded": "Hình dán được tải lên thành công",
-			"installed": "Cài đặt thành công",
-			"uninstalled": "Đã gỡ cài đặt thành công",
-			"created": "Đã tạo gói nhãn dán thành công",
-			"deleted": "Xóa thành công"
-		}
+	"tips": {
+		"title": "Bạn có biết không?",
+		"data": [
+			"Sử dụng phím `esc` trong bất kỳ trang fount nào để quay lại trang trước.",
+			"Bạn có thể bấm `ctrl+s` để lưu cấu hình trong trang cấu hình.",
+			"Giữ phím `shift` trong trang trò chuyện có thể giúp bạn xóa tin nhắn nhanh chóng.",
+			"Nếu bạn không nói với các nhà phát triển, họ có thể không bao giờ biết bạn gặp phải vấn đề gì.",
+			"Nếu bạn đột nhiên gặp phải một sự cố kỳ lạ và nhà phát triển không trả lời bạn trong một thời gian, bạn có thể thử sử dụng lệnh `fount init` để đặt lại fount.",
+			"Nếu gặp phải sự cố đặc biệt lạ, bạn có thể thử khởi động lại máy tính của mình.",
+			"Dùng lệnh `fount remove` để gỡ cài đặt sẽ sạch sẽ hơn là xóa thư mục thủ công.",
+			"Gõ `fount cake` vào dòng lệnh để nhận được một chiếc bánh ngon và miễn phí!",
+			"Mọi tệp dữ liệu của fount đều được lưu trong thư mục `fount/data` và bạn có thể xem, sửa đổi và sao lưu chúng mọi lúc, mọi nơi.",
+			"Tên của fount đều là chữ thường, là `f`ount chứ không phải `F`ount.",
+			"Sao lưu tất cả dữ liệu mà agent của bạn thường xuyên vận hành trước khi sử dụng mô hình mới - bạn không bao giờ biết liệu mô hình mới có hoạt động kém ở một số nơi hay không.",
+			"Đối tượng chính của fount là các nhà phát triển phần mềm và những người đam mê nhập vai, nhưng nó cũng được sử dụng trong xây dựng đại lý thương mại, chăm sóc y tế, quân sự, tài chính và các lĩnh vực khác.",
+			"Cái tên ZL-31 của nhân vật mặc định không có ý nghĩa gì và chỉ là một ý tưởng bất chợt.",
+			"Các hình ảnh trong file fount đều được lưu trữ ở dạng svg và hiển thị thành png hoặc ico khi cần. Không có tệp nhị phân nào ngoại trừ LICENSE.",
+			"Bất kỳ mã nào trong fount đều có thể được chạy trực tiếp mà không cần biên dịch—thấy sao chạy vậy.",
+			"fount từng có nền trang tương tác động rất thú vị nhưng sau đó đã bị xóa vì chiếm quá nhiều CPU.",
+			"fount ban đầu được phát triển cho một đặc vụ NSFW có tên là \"GentianAphrodite\".",
+			"Một trong những khác biệt giữa tác nhân và con người là con người biết đi vệ sinh.",
+			"Các tác nhân chỉ có ý thức vào thời điểm được gọi, trong khi con người có ý thức mọi lúc, mọi nơi khi họ thức.",
+			"Một số người yêu hoặc thậm chí kết hôn với người đại diện của họ!",
+			"AI được dùng để làm thơ, yêu và vẽ tranh cho con người. Mang gạch, quét nhà, đổ rác là những việc con người nên làm.",
+			"Hôm nay không phải ngày cá tháng tư.",
+			"Không, bạn không biết đâu."
+		]
 	},
 	"fountConsole": {
 		"server": {
@@ -797,51 +567,6 @@
 		"title": "fount!",
 		"description": "Chào mừng đến với ngưỡng của fount. Một khoảnh khắc chuẩn bị ngắn ngủi, trước khi bước vào tâm điểm của những cuộc trò chuyện và những câu chuyện đang chờ được khám phá."
 	},
-	"tutorial": {
-		"title": "Thử hướng dẫn nhé?",
-		"description": "Hãy để chúng tôi cùng bạn dạo bước qua thế giới của fount. Hướng dẫn tương tác này sẽ soi sáng con đường, giúp bạn khám phá điều kỳ diệu được dệt nên từ cốt lõi của nó. Cuộc phiêu lưu của bạn bắt đầu bằng sự hiểu biết.",
-		"modal": {
-			"title": "Chào mừng bạn đến với fount!",
-			"instruction": "Bạn có muốn xem hướng dẫn cho người mới bắt đầu không?",
-			"buttons": {
-				"start": "Bắt đầu hướng dẫn",
-				"skip": "Bỏ qua"
-			}
-		},
-		"endScreen": {
-			"title": "Tuyệt vời! Hướng dẫn đã hoàn tất!",
-			"subtitle": "Bây giờ bạn đã biết cách thao tác rồi!",
-			"endButton": "Bắt đầu nào!"
-		},
-		"progressMessages": {
-			"mouseMove": "Vui lòng di chuyển chuột ${mouseIcon}.",
-			"keyboardPress": "Vui lòng tìm bàn phím ${keyboardIcon} của bạn<br/>và thử nhấn một phím bất kỳ.",
-			"mobileTouchMove": "Hãy tìm điện thoại của bạn ${phoneIcon}. Bây giờ, dùng một ngón tay, chạm vào màn hình và sau đó lướt nhẹ trên bề mặt.",
-			"mobileClick": "Hãy dùng một ngón tay chạm nhẹ vào màn hình điện thoại ${phoneIcon} rồi nhấc ra ngay. Bạn làm được rồi!"
-		},
-		"achievements": {
-			"complete_tutorial": {
-				"name": "Lớp học số học hoàn hảo",
-				"description": "Cuối cùng cũng hoàn thành phần hướng dẫn cho người mới.",
-				"locked_description": "Hoàn thành phần hướng dẫn giới thiệu."
-			},
-			"skip_tutorial": {
-				"name": "Đã rời khoang, cảm thấy rất tốt",
-				"description": "Bỏ qua hướng dẫn, tiến thẳng vào vùng đất chưa được khám phá.",
-				"locked_description": "Bỏ qua phần hướng dẫn giới thiệu một lần."
-			}
-		},
-		"home_function_buttons": {
-			"other": {
-				"title": "khác",
-				"sub_items": {
-					"replay": {
-						"title": "Chơi lại hướng dẫn"
-					}
-				}
-			}
-		}
-	},
 	"auth": {
 		"title": "Xác thực",
 		"subtitle": "Dữ liệu người dùng chỉ được lưu trên máy của bạn.",
@@ -936,6 +661,51 @@
 			"buttons": {
 				"ignore": "Bỏ qua và tiếp tục",
 				"retry": "Thử lại"
+			}
+		}
+	},
+	"tutorial": {
+		"title": "Thử hướng dẫn nhé?",
+		"description": "Hãy để chúng tôi cùng bạn dạo bước qua thế giới của fount. Hướng dẫn tương tác này sẽ soi sáng con đường, giúp bạn khám phá điều kỳ diệu được dệt nên từ cốt lõi của nó. Cuộc phiêu lưu của bạn bắt đầu bằng sự hiểu biết.",
+		"modal": {
+			"title": "Chào mừng bạn đến với fount!",
+			"instruction": "Bạn có muốn xem hướng dẫn cho người mới bắt đầu không?",
+			"buttons": {
+				"start": "Bắt đầu hướng dẫn",
+				"skip": "Bỏ qua"
+			}
+		},
+		"endScreen": {
+			"title": "Tuyệt vời! Hướng dẫn đã hoàn tất!",
+			"subtitle": "Bây giờ bạn đã biết cách thao tác rồi!",
+			"endButton": "Bắt đầu nào!"
+		},
+		"progressMessages": {
+			"mouseMove": "Vui lòng di chuyển chuột ${mouseIcon}.",
+			"keyboardPress": "Vui lòng tìm bàn phím ${keyboardIcon} của bạn<br/>và thử nhấn một phím bất kỳ.",
+			"mobileTouchMove": "Hãy tìm điện thoại của bạn ${phoneIcon}. Bây giờ, dùng một ngón tay, chạm vào màn hình và sau đó lướt nhẹ trên bề mặt.",
+			"mobileClick": "Hãy dùng một ngón tay chạm nhẹ vào màn hình điện thoại ${phoneIcon} rồi nhấc ra ngay. Bạn làm được rồi!"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "Lớp học số học hoàn hảo",
+				"description": "Cuối cùng cũng hoàn thành phần hướng dẫn cho người mới.",
+				"locked_description": "Hoàn thành phần hướng dẫn giới thiệu."
+			},
+			"skip_tutorial": {
+				"name": "Đã rời khoang, cảm thấy rất tốt",
+				"description": "Bỏ qua hướng dẫn, tiến thẳng vào vùng đất chưa được khám phá.",
+				"locked_description": "Bỏ qua phần hướng dẫn giới thiệu một lần."
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "khác",
+				"sub_items": {
+					"replay": {
+						"title": "Chơi lại hướng dẫn"
+					}
+				}
 			}
 		}
 	},
@@ -1162,513 +932,6 @@
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "Tạo thông tin thành phần nguồn"
-			}
-		}
-	},
-	"social": {
-		"title": "Quảng trường",
-		"description": "P2P mở cập nhật xã hội, theo dõi và chia sẻ tệp",
-		"bootstrapFailed": "Khởi tạo giao diện xã hội không thành công: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "Quảng trường"
-			}
-		},
-		"nav": {
-			"feed": "Trang chủ",
-			"explore": "Khám phá",
-			"notifications": "Hộp thư",
-			"saved": "Đã lưu",
-			"drafts": "Nháp",
-			"profile": "Của tôi",
-			"videos": "Video ngắn",
-			"live": "Trực tiếp"
-		},
-		"settings": {
-			"title": "Cài đặt mạng xã hội",
-			"back": {
-				"aria-label": "Quay lại hồ sơ"
-			},
-			"privacyTitle": "Quyền riêng tư và khám phá",
-			"privacyHint": "Kiểm soát xem tài khoản có xuất hiện trong phần Khám phá và Đề xuất hay không.",
-			"tasteTitle": "Khuyến nghị và ưu tiên",
-			"tasteHint": "Điều chỉnh ranh giới quyền riêng tư và đặt tên nhãn \"Được đề xuất cho bạn\".",
-			"mutedKeywordsTitle": "Chặn từ và thẻ",
-			"mutedKeywordsHint": "Các bài đăng có nội dung, cảnh báo nội dung hoặc nhãn sẽ bị ẩn khỏi luồng, khám phá, tìm kiếm và thông báo. Chỉ được lưu cục bộ.",
-			"mutedKeywordsMatchTags": "Khớp cả thẻ",
-			"mutedKeywordsAdd": "Thêm",
-			"mutedKeywordsRemove": {
-				"title": "Xóa các từ bị chặn"
-			},
-			"mutedKeywordsEmpty": "Chưa thêm từ chặn nào",
-			"autoTranslateTitle": "Dịch tự động",
-			"autoTranslateHint": "Khi bật, các bài viết bằng tiếng nước ngoài sẽ tự động yêu cầu dịch và có thể chuyển về văn bản gốc.",
-			"autoTranslateEnable": "Tự động dịch bài viết bằng các ngôn ngữ khác ngoài ngôn ngữ của bạn",
-			"safetyTitle": "An ninh và che chắn",
-			"safetyHint": "Quản lý danh sách bị chặn và ẩn.",
-			"mutedKeywords": {
-				"placeholder": "Nhập từ khóa hoặc #tags"
-			}
-		},
-		"composer": {
-			"placeholder": "Bạn đang nghĩ về điều gì? Hỗ trợ Markdown (phương ngữ nguồn), nhập @ để đề cập",
-			"publish": "giải phóng",
-			"saveDraft": "lưu bản nháp",
-			"fab": {
-				"title": "Viết cập nhật",
-				"aria-label": "Viết cập nhật"
-			},
-			"contentWarning": {
-				"placeholder": "Cảnh báo nội dung (tùy chọn)"
-			},
-			"sensitiveMedia": "mặt nạ nhạy cảm với phương tiện truyền thông",
-			"editImage": "biên tập",
-			"editCrop": "Mùa vụ",
-			"editMosaic": "mã hóa",
-			"editBrush": "Chải",
-			"editApply": "ứng dụng",
-			"editCancel": "Hủy bỏ",
-			"replyPolicyEveryone": "Bất cứ ai cũng có thể trả lời",
-			"replyPolicyFollowers7d": "Người theo dõi trong hơn 7 ngày",
-			"replyPolicyAuthorFollows": "Những người tôi theo dõi",
-			"replyPolicyLabel": "Ai có thể trả lời",
-			"replyDisplayAll": "Hiển thị tất cả các câu trả lời",
-			"replyDisplayFeaturedOnly": "Chỉ những câu trả lời được chọn",
-			"replyDisplayLabel": "Trả lời để hiển thị",
-			"scheduleLabel": "Đăng theo lịch",
-			"scheduleSuccess": "Bài đăng đã được thêm vào hàng đợi đã lên lịch",
-			"emojiButton": {
-				"title": "sự biểu lộ",
-				"aria-label": "sự biểu lộ"
-			},
-			"mediaButton": {
-				"title": "Thêm phương tiện",
-				"aria-label": "Thêm phương tiện"
-			},
-			"pollButton": {
-				"title": "Bắt đầu bỏ phiếu",
-				"aria-label": "Bắt đầu bỏ phiếu"
-			},
-			"cwToggle": {
-				"title": "cảnh báo nội dung",
-				"aria-label": "cảnh báo nội dung"
-			},
-			"advancedToggle": {
-				"title": "Nhiều lựa chọn hơn",
-				"aria-label": "Nhiều lựa chọn hơn"
-			},
-			"media": {
-				"placeholder": "Mô tả hình ảnh (alt)"
-			}
-		},
-		"visibility": {
-			"label": "Phạm vi hiển thị",
-			"public": "công cộng",
-			"unlisted": "Không được niêm yết công khai",
-			"followers": "chỉ những người theo dõi",
-			"followers7d": "Hiển thị sau 7 ngày theo dõi",
-			"followers30d": "Hiển thị sau 30 ngày theo dõi",
-			"selected": "Hiển thị với những người được chỉ định",
-			"private": "Chỉ hiển thị với chính bạn",
-			"allowLabel": "Người có thể nhìn thấy",
-			"exceptLabel": "loại trừ mọi người",
-			"allow": {
-				"placeholder": "Thực thể người hiển thị Hash, dấu cách hoặc dấu phẩy được phân tách"
-			},
-			"except": {
-				"placeholder": "Ai không nên hiển thị nó (tùy chọn)"
-			}
-		},
-		"albums": {
-			"create": "Tạo album mới",
-			"edit": "Chỉnh sửa album",
-			"save": "Lưu",
-			"cancel": "Hủy bỏ",
-			"back": "Quay lại album",
-			"empty": "Chưa có album nào",
-			"emptyPosts": "Chưa có bài viết nào trong album",
-			"name": "Tên album",
-			"description": "Mô tả album",
-			"deleteLinks": "Xóa album (giữ bài viết)",
-			"deleteWithPosts": "Xóa album và xóa bài viết",
-			"pickerLabel": "Thêm vào album",
-			"defaultName": "Album mặc định"
-		},
-		"feed": {
-			"refresh": "Làm mới tin tức",
-			"newPosts": "Có tin mới, bấm vào để xem",
-			"tabLatest": "cập nhật",
-			"tabForYou": "gợi ý",
-			"repostedBy": "${author} đã tweet lại",
-			"decryptFailed": "Không thể giải mã bài đăng này",
-			"revealContent": "Hiển thị nội dung",
-			"sensitiveMedia": "phương tiện truyền thông nhạy cảm",
-			"showMore": "Mở rộng",
-			"showLess": "Đóng",
-			"replayDivider": "Đọc xong, duyệt lại"
-		},
-		"taste": {
-			"rebuild": "Xây dựng lại tùy chọn",
-			"privacyPublishPreferences": "Đặt tên thẻ công khai và khám phá hợp nhất",
-			"privacyPublishPreferencesHint": "Sau khi đóng, bạn bè sẽ không thể xem các câu lệnh đặt tên thẻ và hợp nhất của bạn và họ sẽ không thể đóng góp vào sự đồng thuận.",
-			"privacyPublishReactions": "Lượt thích và lượt không thích của công chúng",
-			"privacyPublishReactionsHint": "Sau khi đóng, người đăng sẽ không nhận được lượt thích/không thích của bạn, phản hồi của bạn sẽ không được đưa vào đề xuất của người khác và bạn sẽ không còn quảng bá bài đăng để lan truyền nữa.",
-			"empty": "Chưa có thẻ tùy chọn nào, nó sẽ tự động được nhóm lại sau khi có nhiều lượt thích/không thích hơn",
-			"weight": "Trọng lượng ${weight}",
-			"save": "Lưu",
-			"name": {
-				"placeholder": "tên hiển thị cục bộ"
-			}
-		},
-		"trending": {
-			"title": "chủ đề nóng",
-			"postCount": {
-				"title": "${n} bài đăng"
-			},
-			"scopeLocal": "máy cục bộ",
-			"scopeNearby": "gần đó",
-			"empty": "Chưa có chủ đề nóng"
-		},
-		"search": {
-			"placeholder": "Tìm bài đăng, người dùng hoặc #chủ đề (ít nhất 2 ký tự)",
-			"open": {
-				"aria-label": "tìm kiếm"
-			},
-			"submit": "Tìm kiếm",
-			"clear": "Thông thoáng",
-			"empty": "Không có bài viết phù hợp",
-			"tooShort": "Vui lòng nhập ít nhất 2 ký tự",
-			"usersTitle": "người dùng",
-			"postsTitle": "năng động",
-			"usersEmpty": "Không có người dùng phù hợp",
-			"pinAlias": "Đặt làm bí danh",
-			"trustScore": "Tin tưởng ${score}",
-			"viewTitle": "tìm kiếm",
-			"loading": "Đang tìm kiếm…",
-			"filterAuthor": {
-				"placeholder": "tác giả"
-			},
-			"filterMediaAll": "Tất cả phương tiện truyền thông",
-			"filterMediaImage": "hình ảnh",
-			"filterMediaVideo": "băng hình",
-			"filterTag": {
-				"placeholder": "#Nhãn"
-			},
-			"sortRecent": "cập nhật",
-			"sortPopular": "Phổ biến",
-			"scopeLocal": "máy cục bộ",
-			"scopeNearby": "gần đó"
-		},
-		"profile": {
-			"edit": "Chỉnh sửa hồ sơ",
-			"viewPosts": "Xem hồ sơ xã hội",
-			"settingsBtn": {
-				"aria-label": "Cài đặt mạng xã hội"
-			},
-			"mediaOnly": "[phương tiện truyền thông]",
-			"hideFromExplore": "Ẩn tài khoản khỏi trang khám phá",
-			"tabPosts": "năng động",
-			"tabAlbums": "tập ảnh",
-			"tabLikes": "Giống",
-			"tabCabinets": "Tủ hồ sơ",
-			"tabsLabel": {
-				"aria-label": "Phân vùng hồ sơ"
-			},
-			"cabinetsEmpty": "Hiện tại chưa có tủ hồ sơ công cộng",
-			"cabinetsFailed": "Tải nội dung tệp không thành công: ${error}",
-			"statsGroup": {
-				"aria-label": "Thống kê"
-			},
-			"statsPosts": "năng động",
-			"statsFollowing": "tập trung vào",
-			"statsFollowers": "cái quạt",
-			"followingTitle": "tập trung vào",
-			"followersTitle": "cái quạt"
-		},
-		"dialog": {
-			"close": {
-				"aria-label": "đóng cửa"
-			}
-		},
-		"actions": {
-			"like": "Giống",
-			"unlike": "Không giống",
-			"dislike": "bước lên",
-			"undislike": "Hủy không thích",
-			"repost": "Phía trước",
-			"quote": "Trích dẫn",
-			"delete": "Xóa",
-			"edit": "Chỉnh sửa",
-			"save": "Lưu",
-			"saved": "Đã sưu tầm",
-			"translate": "Dịch",
-			"dm": "Gửi tin nhắn riêng tư",
-			"block": "Khối",
-			"hide": "Trốn",
-			"mute": "tắt tiếng",
-			"follow": "tập trung vào",
-			"following": "Đã theo dõi",
-			"care": "mối quan tâm đặc biệt",
-			"careRemove": "Hủy chăm sóc đặc biệt",
-			"careAdded": "Đã thêm mối quan tâm đặc biệt",
-			"careRemoved": "Đã hủy quan tâm đặc biệt",
-			"setAlias": "Đặt bí danh",
-			"setAliasPrompt": "Đặt bí danh cục bộ (để trống để xóa):",
-			"aliasSaved": "Đã cập nhật bí danh",
-			"replies": "Bình luận",
-			"copyLink": "Sao chép liên kết",
-			"downloadHtml": "Tải xuống HTML",
-			"copied": "Đã sao chép",
-			"more": {
-				"aria-label": "Hơn"
-			},
-			"share": "chia sẻ",
-			"likeFailed": "Không thích: ${error}",
-			"dislikeFailed": "Không thể bước lên: ${error}",
-			"repostFailed": "Chuyển tiếp không thành công: ${error}",
-			"replyFailed": "Trả lời không thành công: ${error}",
-			"followFailed": "Theo dõi không thành công: ${error}",
-			"saveFailed": "Việc thu thập không thành công: ${error}",
-			"blockFailed": "Không chặn được: ${error}",
-			"hideFailed": "Không ẩn được: ${error}",
-			"muteFailed": "Tắt tiếng không thành công: ${error}",
-			"deleteFailed": "Xóa không thành công: ${error}"
-		},
-		"post": {
-			"edited": "Đã chỉnh sửa",
-			"editPrompt": "Chỉnh sửa văn bản bài viết",
-			"editHistory": "Chỉnh sửa lịch sử",
-			"editHistoryEmpty": "Không có phiên bản cũ hơn",
-			"loading": "đang tải…",
-			"notFound": "Bài đăng không tồn tại hoặc không hiển thị",
-			"loadFailed": "Tải không thành công, vui lòng thử lại sau",
-			"detailTitle": "Bưu kiện",
-			"back": "Quay lại"
-		},
-		"reply": {
-			"context": "Trả lời ${author}"
-		},
-		"notes": {
-			"label": "Phần bổ sung của độc giả",
-			"add": "Thông tin bổ sung",
-			"prompt": "Viết phần bổ sung cho người đọc (ghi chú của cộng đồng)",
-			"listTitle": "Tất cả thông tin bổ sung",
-			"helpful": "nó hoạt động",
-			"unhelpful": "vô ích",
-			"more": "Tất cả ${n} mục",
-			"empty": "Chưa có thông tin bổ sung"
-		},
-		"poll": {
-			"multi": "Cho phép nhiều lựa chọn",
-			"apply": "Áp dụng biểu quyết",
-			"closed": "Cuộc bình chọn đã kết thúc",
-			"deadline": "Hạn chót: ${deadline}",
-			"options": {
-				"placeholder": "Một tùy chọn trên mỗi dòng (tối thiểu 2 mục)"
-			}
-		},
-		"aside": {
-			"suggested": "Đề nghị chú ý"
-		},
-		"explore": {
-			"accounts": "Tài khoản được đề xuất",
-			"posts": "bài viết mới nhất",
-			"mediaOnly": "chỉ phương tiện truyền thông"
-		},
-		"groupRef": {
-			"linking": "Kết nối nhóm trò chuyện",
-			"clear": "Tách rời",
-			"pick": "Kết nối Nhóm/Kênh trò chuyện…"
-		},
-		"notifications": {
-			"reply": "${author} đã trả lời bài đăng của bạn",
-			"mention": "${author} đã @ bạn trong bảng tin",
-			"like": "${author} thích bài viết của bạn",
-			"repost": "${author} đã tweet lại bài đăng của bạn",
-			"follow": "${author} theo dõi bạn",
-			"care_post": "${author} đã đăng bản cập nhật mới (mối quan tâm đặc biệt)",
-			"poll_closed": "Cuộc bỏ phiếu đã kết thúc cho ${author}",
-			"post_note": "${author} đã thêm thông tin vào bài đăng của bạn",
-			"live_started": "${author} đã bắt đầu phát trực tiếp",
-			"view": "Kiểm tra",
-			"markAllRead": "Đánh dấu tất cả là đã đọc"
-		},
-		"inbox": {
-			"filtersLabel": {
-				"aria-label": "Lọc hộp thư đến"
-			},
-			"tabs": {
-				"all": "tất cả",
-				"mention": "đề cập đến",
-				"reply": "hồi đáp",
-				"like": "Khen",
-				"follow": "tập trung vào",
-				"repost": "Phía trước"
-			},
-			"aggregated": {
-				"like": "${author1}, ${author2} và ${count} người thích bài đăng của bạn",
-				"likeTwo": "${author1} và ${author2} đã thích bài đăng của bạn",
-				"repost": "${author1}, ${author2} và ${count} người đã tweet lại bài đăng của bạn",
-				"repostTwo": "${author1} và ${author2} đã chuyển tiếp bài đăng của bạn",
-				"follow": "${author1}, ${author2} và ${count} người theo dõi bạn",
-				"followTwo": "${author1} và ${author2} theo dõi bạn"
-			}
-		},
-		"replies": {
-			"placeholder": "Viết thư trả lời…",
-			"submit": "Trả lời",
-			"empty": "Chưa có trả lời",
-			"emptyHint": "Hãy viết bài đầu tiên và bắt đầu thảo luận"
-		},
-		"repost": {
-			"placeholder": "Thêm bình luận tweet lại (tùy chọn)…",
-			"submit": "Xác nhận chuyển tiếp"
-		},
-		"quote": {
-			"quoting": "Trích dẫn",
-			"clear": "sự vô lễ",
-			"viewOriginal": "Xem bài viết gốc"
-		},
-		"a11y": {
-			"linkGroupSelect": "Kết nối với nhóm hoặc kênh Trò chuyện",
-			"postVisibility": "Phạm vi hiển thị",
-			"postLang": "ngôn ngữ nội dung",
-			"trendingHashtags": "chủ đề nóng",
-			"saveFolderSelect": "thư mục yêu thích"
-		},
-		"blocklist": {
-			"title": "danh sách đen",
-			"hiddenTitle": "Ẩn danh sách",
-			"empty": "Chưa có mục nào bị chặn hoặc ẩn",
-			"unblock": "Bỏ chặn",
-			"unhide": "Bỏ ẩn",
-			"scopeEntity": "thực thể",
-			"scopeSubject": "phần thân chính"
-		},
-		"translate": {
-			"label": "Bản dịch:"
-		},
-		"saved": {
-			"all": "tất cả",
-			"unfiled": "Chưa được lưu trữ",
-			"createFolder": {
-				"title": "Tạo thư mục mới",
-				"aria-label": "Tạo thư mục mới"
-			},
-			"createFolderPrompt": "tên thư mục",
-			"pickFolderTitle": "Lưu vào",
-			"confirm": "xác nhận",
-			"cancel": "Hủy bỏ",
-			"remove": "Xóa mục yêu thích",
-			"renameFolder": "Đổi tên",
-			"renameFolderPrompt": "Tên thư mục mới",
-			"deleteFolder": "xóa thư mục",
-			"deleteFolderConfirm": "Xóa thư mục? Các bài đăng ở đó sẽ được chuyển đến \"Không được lưu trữ\".",
-			"searchEmpty": "Không có bộ sưu tập phù hợp",
-			"folderEmpty": "Thư mục này trống",
-			"emptyHint": "Bấm vào dấu trang khi duyệt tin để lưu vào đây",
-			"search": {
-				"placeholder": "Tìm kiếm yêu thích…"
-			}
-		},
-		"drafts": {
-			"untitled": "(không có văn bản dự thảo)",
-			"emptyHint": "Viết một số nội dung vào ô bài viết và nhấn \"Save Draft\" để tiếp tục chỉnh sửa vào lần sau",
-			"saved": "Đã lưu bản nháp",
-			"deleted": "Đã xóa bản nháp",
-			"delete": "Xóa bản nháp",
-			"empty": "Bản nháp trống",
-			"saveFailed": "Không thể lưu bản nháp: ${error}",
-			"loadFailed": "Không mở được bản nháp: ${error}",
-			"deleteFailed": "Không thể xóa bản nháp: ${error}"
-		},
-		"time": {
-			"justNow": "Chỉ",
-			"minutesAgo": "${n} phút trước",
-			"hoursAgo": "${n} giờ trước"
-		},
-		"empty": {
-			"feed": "Chưa có bài đăng nào. Hãy theo dõi thêm người khác nhé.",
-			"profilePosts": "Chưa có tin tức nào",
-			"following": "Chưa theo dõi ai",
-			"followers": "Chưa có người hâm mộ",
-			"notifications": "Chưa có thông báo",
-			"saved": "Chưa có mục yêu thích nào",
-			"drafts": "Chưa có dự thảo",
-			"exploreAccounts": "Hiện tại không có tài khoản nào được đề xuất",
-			"explorePosts": "Chưa có bài viết thăm dò nào",
-			"likedPosts": "Chưa có lượt thích nào",
-			"noIdentity": "Vui lòng định cấu hình danh tính liên kết trong Trò chuyện trước khi sử dụng Mạng xã hội"
-		},
-		"topic": {
-			"follow": "đăng ký",
-			"unfollow": "Hủy đăng ký",
-			"empty": "Chưa có bài viết nào cho chủ đề này"
-		},
-		"video": {
-			"view": {
-				"aria-label": "Video ngắn"
-			},
-			"empty": "Chưa có video ngắn",
-			"emptyHint": "Không có bài đăng nào có video trong những người sau đây hoặc các ô công khai. Hãy thử đăng một bản cập nhật video?",
-			"compose": "Đi đăng một video",
-			"back": {
-				"aria-label": "Quay lại tin tức"
-			},
-			"mute": {
-				"aria-label": "tắt tiếng"
-			},
-			"unmute": {
-				"aria-label": "Bật tiếng"
-			},
-			"unavailable": "Không thể phát video",
-			"closeReplies": {
-				"aria-label": "Đóng bình luận"
-			}
-		},
-		"live": {
-			"empty": "Chưa có phát sóng trực tiếp",
-			"viewers": "${n} người đã xem",
-			"likes": "${n} Thích",
-			"local": "máy cục bộ",
-			"hall": "Phòng truyền hình trực tiếp",
-			"back": {
-				"title": "Quay lại tin tức",
-				"aria-label": "Quay lại tin tức"
-			},
-			"danmakuSend": "Gửi",
-			"postWatch": "Nhập chương trình phát sóng trực tiếp",
-			"postEnded": "Phát sóng trực tiếp đã kết thúc",
-			"postEndedStats": "Được xem bởi ${viewers} · ${likes} Đã thích · ${duration}",
-			"link": {
-				"invite": "Mời kết nối",
-				"needPeer": "Vui lòng điền vào thực thể ngang hàngHash:liveId",
-				"invited": "Lời mời trực tuyến đã được gửi",
-				"linked": "Đã kết nối",
-				"peer": {
-					"placeholder": "Thực thể ngang hàngHash:liveId"
-				}
-			},
-			"broadcast": {
-				"title": "Bắt đầu phát sóng",
-				"open": "Đi tới chương trình phát sóng",
-				"mediaAv": "Âm thanh và video",
-				"mediaAudio": "Âm thanh thuần khiết",
-				"mediaVideo": "hình ảnh thuần khiết",
-				"mediaWhip": "Truyền phát đẩy WHIP (chẳng hạn như OBS)",
-				"whipUrl": "địa chỉ WHIP",
-				"whipToken": "Mã thông báo mang",
-				"whipWaiting": "Đang chờ kết nối phát trực tuyến WHIP (có thể sử dụng phần mềm phát trực tuyến như OBS)…",
-				"start": "Bắt đầu phát sóng trực tiếp",
-				"stop": "Dừng phát sóng trực tiếp",
-				"started": "Phát sóng trực tiếp đã bắt đầu",
-				"stopped": "Phát sóng trực tiếp đã dừng",
-				"titleInput": {
-					"placeholder": "Tiêu đề trực tiếp (tùy chọn)"
-				}
-			},
-			"danmaku": {
-				"placeholder": "Nói điều gì đó..."
 			}
 		}
 	},
@@ -2043,12 +1306,7 @@
 			"createGroup": "Tạo nhóm mới",
 			"members": "thành viên",
 			"membersHint": "Danh sách thành viên được đồng bộ bởi Checkpoint (placeholder)",
-			"send": "Gửi",
 			"streamTest": "Kiểm tra thiết bị truyền thông",
-			"messageInput": {
-				"placeholder": "Tin nhắn nhóm… Ctrl+Enter để gửi",
-				"aria-label": "Tin nhắn"
-			},
 			"loadError": "Không thể tải nhóm",
 			"remoteNodeTimeout": "Nút từ xa không phản hồi, vui lòng thử lại sau.",
 			"remoteUnavailable": "Thành phần từ xa không khả dụng hoặc không thể định tuyến RPC",
@@ -2126,7 +1384,6 @@
 			"remoteTyping": "${name} đang gõ...",
 			"remoteTypingTwo": "${name1}, ${name2} Đang vào...",
 			"remoteTypingMany": "${name} và ${count} người khác đang nhập…",
-			"mentionEmpty": "(không có thành viên phù hợp)",
 			"localAiLabel": "Vai trò bản địa:",
 			"forceTriggerOne": {
 				"title": "Buộc kích hoạt ${name} để nói"
@@ -2185,7 +1442,6 @@
 			"fileDownload": {
 				"title": "Tải tập tin xuống"
 			},
-			"clickToLoad": "Bấm để tải",
 			"unknownFile": "tập tin không xác định",
 			"blockSender": {
 				"title": "Chặn người gửi"
@@ -2210,7 +1466,6 @@
 			"editConfirm": "Xác nhận (Ctrl+Enter)",
 			"editCancel": "Hủy bỏ (Esc)",
 			"editHint": "Ctrl+Enter Xác nhận · Esc Hủy",
-			"editedLabel": "(đã chỉnh sửa)",
 			"editEmptyText": "Nội dung tin nhắn không được để trống",
 			"createGroupTitle": "Tạo nhóm mới",
 			"groupNameLabel": "Tên nhóm",
@@ -2454,6 +1709,10 @@
 			},
 			"sendTitle": {
 				"title": "Gửi (Ctrl+Enter)"
+			},
+			"messageInput": {
+				"placeholder": "Tin nhắn nhóm… Ctrl+Enter để gửi",
+				"aria-label": "Tin nhắn"
 			},
 			"stopGenerateTitle": {
 				"title": "Dừng tạo"
@@ -3125,7 +2384,11 @@
 			"altImage": {
 				"placeholder": "Thêm mô tả vào hình ảnh…",
 				"label": "Mô tả hình ảnh (alt)"
-			}
+			},
+			"editedLabel": "(đã chỉnh sửa)",
+			"mentionEmpty": "(không có thành viên phù hợp)",
+			"clickToLoad": "Bấm để tải",
+			"send": "Gửi"
 		},
 		"sidebar": {
 			"settings": {
@@ -3445,6 +2708,234 @@
 			"chatHub": {
 				"title": "trò chuyện"
 			}
+		},
+		"profile": {
+			"title": "Hồ sơ cá nhân",
+			"description": "Quản lý sự hiện diện công khai của bạn trong trò chuyện và mạng xã hội.",
+			"settingsEyebrow": "Cài đặt tài khoản",
+			"accountAtGlance": "Tổng quan về tài khoản",
+			"advancedKicker": "Cấu hình theo yêu cầu",
+			"advancedSettings": "Cài đặt nâng cao",
+			"advancedDescription": "Không cần điều chỉnh để sử dụng hàng ngày.",
+			"edit": "Chỉnh sửa hồ sơ",
+			"save": "Lưu",
+			"cancel": "Hủy",
+			"displayName": "Tên hiển thị",
+			"name": "Tên",
+			"bio": "Tiểu sử",
+			"descriptionLabel": "Giới thiệu (Markdown)",
+			"email": "Email",
+			"status": "Trạng thái",
+			"customStatusLabel": "Trạng thái tùy chỉnh",
+			"avatarLabel": "Ảnh đại diện",
+			"themeColorLabel": "Màu chủ đề",
+			"uploadAvatar": "Tải hình đại diện lên",
+			"ownerTitle": "Chủ nhân của tôi",
+			"ownerSummary": "Cài đặt ủy quyền",
+			"ownerDescription": "Sau khi thiết lập, chủ sở hữu có thể thay mặt bạn chỉnh sửa hoặc xóa tin nhắn trò chuyện, bài đăng trên mạng xã hội và thông tin cá nhân; nội dung cũng sẽ được hiển thị cục bộ bằng Markdown không an toàn (có thể chứa tập lệnh). Bất kỳ hàm băm thực thể nào cũng có thể được điền và xóa bất kỳ lúc nào.",
+			"ownerEntityHashLabel": "Hash thực thể chủ (128 hex)",
+			"ownerSave": "Lưu chủ",
+			"ownerClear": "Xóa chủ",
+			"ownerSaved": "Đã cập nhật chủ",
+			"ownerCleared": "Đã xóa chủ",
+			"ownerSaveFailed": "Lưu không thành công: ${error}",
+			"ownerConfirmTitle": "Xác nhận đặt chủ?",
+			"ownerConfirmWarningTitle": "Hoạt động rủi ro cao, vui lòng đọc kỹ",
+			"ownerConfirmEditBody": "Sau khi thiết lập, bên kia có thể thay mặt bạn chỉnh sửa hoặc xóa tin nhắn trò chuyện, bài đăng trên mạng xã hội và thông tin cá nhân mà không cần xin phép bạn. Đặt nhầm chủ sở hữu hoặc bị lừa = trao quyền kiểm soát nội dung ngay lập tức.",
+			"ownerConfirmRenderBody": "Tin nhắn trò chuyện và bài đăng trên mạng xã hội do bên kia gửi sẽ được hiển thị ở dạng Markdown đầy đủ (bao gồm HTML/tập lệnh) trong trình duyệt của bạn. Điều này cho phép bên kia chạy mã tùy ý trên máy tính của bạn mà không cần sự đồng ý của bạn nữa. Chỉ tiến hành nếu bạn hoàn toàn tin tưởng người khác.",
+			"ownerConfirmCooldown": "Tôi đã đọc rủi ro (${seconds})",
+			"ownerConfirmFirst": "Tôi hiểu những rủi ro, tiếp tục",
+			"ownerConfirmSecond": "Nhấn lần nữa để hoàn tất",
+			"ownerConfirmCancel": "Hủy bỏ",
+			"federationTitle": "Liên kết và đồng bộ hóa",
+			"federationSummary": "Máy chủ chuyển tiếp và chế độ năng lượng thấp",
+			"federationDescription": "Định cấu hình URL chuyển tiếp Nostr và chế độ tiết kiệm năng lượng. Đồng bộ hóa liên kết cho một nhóm được bật tự động vào lần đầu tiên bạn mời ai đó hoặc tạo tin nhắn riêng tư liên kết.",
+			"federationAdvanced": "Tùy chọn nâng cao",
+			"federationRelayUrlsLabel": "Máy chủ chuyển tiếp (mỗi dòng một máy chủ, để trống để sử dụng mặc định)",
+			"federationBatterySaverLabel": "Chế độ tiết kiệm pin",
+			"federationSave": "Lưu cài đặt mạng",
+			"federationResetDefault": "Khôi phục cấu hình mặc định được đề xuất",
+			"federationSaved": "Đã lưu",
+			"federationResetOk": "Đã khôi phục cấu hình mặc định được đề xuất",
+			"federationSaveFailed": "Lưu không thành công: ${error}",
+			"preferences": "Tùy chọn",
+			"language": "Ngôn ngữ",
+			"theme": "Chủ đề",
+			"notifications": "Cài đặt thông báo",
+			"emailNotifications": "Thông báo qua email",
+			"pushNotifications": "Thông báo đẩy",
+			"soundNotifications": "Thông báo bằng âm thanh",
+			"social": "Liên kết mạng xã hội",
+			"website": "Trang web",
+			"github": "GitHub",
+			"twitter": "Twitter",
+			"stats": "Thống kê",
+			"joinedAt": "Thời gian tham gia",
+			"messageCount": "Số lượng tin nhắn",
+			"groupCount": "Số lượng nhóm",
+			"channelCount": "Số lượng kênh",
+			"privacy": "Cài đặt quyền riêng tư",
+			"showEmail": "Hiển thị email",
+			"showStats": "Hiển thị thống kê",
+			"allowDirectMessages": "Cho phép tin nhắn riêng tư",
+			"statusOptions": {
+				"online": "Trực tuyến",
+				"away": "Vắng mặt",
+				"busy": "Bận",
+				"offline": "Ngoại tuyến"
+			},
+			"themeOptions": {
+				"auto": "Tự động",
+				"light": "Sáng",
+				"dark": "Tối"
+			},
+			"languageOptions": {
+				"zh-CN": "Tiếng Trung giản thể",
+				"en-US": "Tiếng Anh"
+			},
+			"notifEmail": "Email",
+			"notifPush": "Đẩy",
+			"notifSound": "Âm thanh",
+			"notifsAllOff": "Đóng tất cả",
+			"bioEmpty": "Người này lười biếng và không viết gì cả…",
+			"noSocialLinks": "Chưa có liên kết xã hội nào",
+			"emailVisible": "Hiển thị",
+			"emailHidden": "Ẩn",
+			"customStatus": {
+				"placeholder": "Bạn đang làm gì thế..."
+			},
+			"avatar": {
+				"alt": "Ảnh đại diện"
+			},
+			"avatarPreview": {
+				"alt": "Xem trước hình đại diện"
+			},
+			"myGroups": "Nhóm của tôi",
+			"myChannels": "Kênh của tôi",
+			"noGroups": "Chưa tham gia nhóm nào",
+			"noChannels": "Chưa có kênh",
+			"overview": "Tổng quan về thông tin người dùng",
+			"summaryUserId": "ID người dùng",
+			"summaryAccountStatus": "Trạng thái tài khoản",
+			"summaryEmailVisibility": "Hiển thị email",
+			"summaryThemePref": "Tùy chọn chủ đề",
+			"summaryLanguagePref": "Tùy chọn ngôn ngữ",
+			"summarySocialCount": "Số lượng liên kết xã hội",
+			"summaryLinksCount": "Số lượng liên kết bên ngoài",
+			"groupDescriptionEmpty": "Chưa có mô tả",
+			"groupMembers": "${members} thành viên · ${channels} kênh",
+			"channelPrivate": "· Riêng tư",
+			"channelTypeText": "Kênh văn bản",
+			"channelTypeList": "Kênh danh sách",
+			"channelTypeVoice": "Kênh thoại",
+			"channelTypeStreaming": "Kênh phát trực tiếp",
+			"errors": {
+				"loadFailed": "Không thể tải dữ liệu",
+				"saveFailed": "Không thể lưu dữ liệu",
+				"uploadFailed": "Không thể tải hình đại diện lên",
+				"invalidUserData": "Lỗi định dạng dữ liệu người dùng",
+				"identityRequired": "Danh tính nút chưa sẵn sàng, vui lòng làm mới trang; nếu vẫn không thành công, vui lòng lưu cấu hình liên kết trong cài đặt P2P bên dưới",
+				"fetchUserFailed": "Không thể lấy được thông tin người dùng",
+				"operationFailed": "Thao tác không thành công: ${error}"
+			},
+			"success": {
+				"saved": "Dữ liệu được lưu thành công",
+				"avatarUploaded": "Hình đại diện đã được tải lên thành công"
+			},
+			"ownerEntityHash": {
+				"placeholder": "Nhập mã băm thực thể của chủ sở hữu"
+			}
+		},
+		"entityProfile": {
+			"attributionMismatch": "Thông tin nhận dạng hiển thị không khớp với người ký thư (ví dụ: lịch sử nhập đã được nhà nhập khẩu ký lại). Đừng coi tên hiển thị này là một danh tính mật mã.",
+			"attributionMismatchShort": {
+				"title": "Thuộc tính chữ ký không khớp",
+				"aria-label": "Thuộc tính chữ ký không khớp"
+			},
+			"ownedBy": "Thực thể này thuộc quyền sở hữu của ${owner}"
+		},
+		"stickers": {
+			"title": "Quảng trường sticker",
+			"description": "Hệ thống quản lý nhãn dán và biểu tượng cảm xúc",
+			"back": {
+				"title": "Quay lại"
+			},
+			"packs": "Gói sticker",
+			"create": "Tạo gói nhãn dán",
+			"upload": "Tải nhãn dán lên",
+			"install": "Cài đặt",
+			"uninstall": "Gỡ cài đặt",
+			"close": "Đóng",
+			"cancel": "Hủy bỏ",
+			"installed": "Đã cài đặt",
+			"myPacks": "Gói sticker của tôi",
+			"tabAll": "Tất cả",
+			"store": "Quảng trường sticker",
+			"favorites": "Yêu thích",
+			"recent": "Được sử dụng gần đây",
+			"search": {
+				"placeholder": "Tìm kiếm gói nhãn dán…"
+			},
+			"emptyPacks": "Chưa có gói nhãn dán nào",
+			"packNameLabel": "Tên gói nhãn dán",
+			"packName": {
+				"placeholder": "Nhập tên gói nhãn dán"
+			},
+			"packDescriptionLabel": "Mô tả",
+			"packDescription": {
+				"placeholder": "Nhập mô tả"
+			},
+			"stickerNameLabel": "Tên nhãn dán",
+			"stickerName": {
+				"placeholder": "Nhập tên nhãn dán"
+			},
+			"selectPack": "Chọn gói nhãn dán",
+			"selectPackOption": {
+				"textContent": "Vui lòng chọn gói nhãn dán"
+			},
+			"selectImage": "Chọn ảnh",
+			"tagsLabel": "Thẻ (cách nhau bằng dấu phẩy)",
+			"tags": {
+				"placeholder": "Ví dụ: dễ thương, biểu tượng cảm xúc, động vật"
+			},
+			"author": "Tác giả",
+			"authorLabel": "Tác giả: ${author}",
+			"stickerCount": "${count} sticker",
+			"badgeMine": "Của tôi",
+			"noDescription": "Chưa có mô tả",
+			"noStickersInPack": "Chưa có nhãn dán nào",
+			"deletePack": "Xóa gói nhãn dán",
+			"public": "Công khai",
+			"private": "Riêng tư",
+			"animated": "Động",
+			"static": "Tĩnh",
+			"addTag": "Thêm thẻ",
+			"defaultPackName": "Gói biểu tượng cảm xúc mặc định",
+			"defaultPackDescription": "Sticker biểu tượng cảm xúc được hệ thống cung cấp mặc định",
+			"unnamedPack": "Gói hình dán không tên",
+			"importPackName": "Bộ sưu tập của tôi",
+			"importPackDescription": "Hình dán được lưu từ tin nhắn",
+			"nameRequired": "Vui lòng nhập tên gói nhãn dán",
+			"stickerNameRequired": "Vui lòng nhập tên nhãn dán",
+			"selectPackRequired": "Vui lòng chọn gói nhãn dán",
+			"fileRequired": "Vui lòng chọn tập tin hình ảnh",
+			"loadDetailFailed": "Không thể tải chi tiết gói sticker",
+			"deleteConfirm": "Bạn có chắc chắn muốn xóa vĩnh viễn gói nhãn dán này không? Tất cả hình dán sẽ bị xóa và hành động này không thể thay đổi được.",
+			"errors": {
+				"loadFailed": "Không thể tải gói sticker",
+				"uploadFailed": "Không thể tải hình dán lên",
+				"installFailed": "Cài đặt không thành công",
+				"uninstallFailed": "Gỡ cài đặt không thành công",
+				"createFailed": "Không thể tạo gói sticker",
+				"deleteFailed": "Xóa không thành công"
+			},
+			"success": {
+				"uploaded": "Hình dán được tải lên thành công",
+				"installed": "Cài đặt thành công",
+				"uninstalled": "Đã gỡ cài đặt thành công",
+				"created": "Đã tạo gói nhãn dán thành công",
+				"deleted": "Xóa thành công"
+			}
 		}
 	},
 	"easynew": {
@@ -3759,433 +3250,6 @@
 			}
 		}
 	},
-	"userSettings": {
-		"title": "Cài đặt người dùng",
-		"PageTitle": "Cài đặt người dùng",
-		"description": "Chăm chút cho các chi tiết về danh tính fount của bạn. Quản lý hồ sơ, bảo mật quyền truy cập và xem các thiết bị đã kết nối. Một không gian yên tĩnh và an toàn cho tài khoản của bạn.",
-		"shell": {
-			"unauthorized": "Yêu cầu đăng nhập.",
-			"responseNotJson": "Máy chủ trả về nội dung không thể phân tích.",
-			"unexpectedError": "Yêu cầu không thành công."
-		},
-		"errors": {
-			"accountNotFound": "Không tìm thấy tài khoản."
-		},
-		"userInfo": {
-			"title": "Thông tin người dùng",
-			"usernameLabel": "Tên người dùng:",
-			"creationDateLabel": "Ngày tạo tài khoản:",
-			"folderSizeLabel": "Kích thước dữ liệu người dùng:",
-			"folderPathLabel": "Đường dẫn dữ liệu người dùng:",
-			"copyPathButton": {
-				"title": "sao chép đường dẫn"
-			},
-			"copyPathButtonIcon": {
-				"alt": "biểu tượng sao chép"
-			},
-			"copiedAlert": "Đường dẫn đã được sao chép vào bộ nhớ tạm!",
-			"copyPathFailed": "Không thể sao chép đường dẫn vào clipboard."
-		},
-		"changePassword": {
-			"title": "Đổi mật khẩu",
-			"currentPasswordLabel": "Mật khẩu hiện tại:",
-			"newPasswordLabel": "Mật khẩu mới:",
-			"confirmNewPasswordLabel": "Xác nhận mật khẩu mới:",
-			"submitButton": "Đổi mật khẩu",
-			"errorMismatch": "Mật khẩu mới không khớp.",
-			"success": "Đổi mật khẩu thành công.",
-			"missingFields": "Vui lòng điền mật khẩu hiện tại và mật khẩu mới của bạn.",
-			"invalidCurrent": "Mật khẩu hiện tại không chính xác."
-		},
-		"renameUser": {
-			"title": "Đổi tên người dùng",
-			"newUsernameLabel": "Tên người dùng mới:",
-			"submitButton": "Đổi tên người dùng",
-			"confirmMessage": "Bạn có chắc chắn muốn đổi tên người dùng không? Sau khi đổi, bạn sẽ cần đăng nhập lại.",
-			"success": "Tên người dùng đã được đổi thành \"${newUsername}\" thành công. Bây giờ bạn sẽ bị đăng xuất.",
-			"missingParams": "Vui lòng điền tên người dùng và mật khẩu mới.",
-			"wrongPassword": "Mật khẩu không đúng.",
-			"mustDiffer": "Tên người dùng mới phải khác với tên người dùng hiện tại.",
-			"taken": "Tên người dùng này đã được sử dụng.",
-			"moveFailed": "Không đổi tên được thư mục dữ liệu người dùng: ${detail}. Tên người dùng ban đầu đã được khôi phục."
-		},
-		"passkeys": {
-			"title": "Khóa bảo mật và Passkey",
-			"description": "Sau khi đăng ký khóa, bạn có thể đăng nhập bằng khóa vật lý hoặc Passkey trên thiết bị này. Cần HTTPS hoặc localhost; hãy thêm khóa trong cài đặt người dùng trước.",
-			"refreshButton": {
-				"title": "Làm mới danh sách"
-			},
-			"refreshButtonIcon": {
-				"alt": "biểu tượng làm mới"
-			},
-			"nameLabel": "Ghi chú (tùy chọn)",
-			"nameInput": {
-				"placeholder": "Ví dụ: YubiKey cho công việc"
-			},
-			"addButton": "Thêm khóa bảo mật",
-			"noneFound": "Chưa có khóa bảo mật nào được liên kết.",
-			"itemDetails": "Đã thêm: ${created}",
-			"removeButton": "Gỡ",
-			"removeConfirm": "Bạn có chắc chắn muốn xóa khóa này không? Sau khi xóa, bạn sẽ không thể đăng nhập bằng nó nữa.",
-			"removeSuccess": "Đã xóa khóa bảo mật.",
-			"addSuccess": "Đã thêm khóa bảo mật.",
-			"errorLoadLibrary": "Không thể tải thư viện WebAuthn.",
-			"errorCancelled": "Việc thêm đã bị hủy.",
-			"apiInvalidPassword": "Mật khẩu sai.",
-			"apiMissingCredential": "Thiếu thông tin đăng nhập Passkey hợp lệ.",
-			"apiRemoveParamsRequired": "Vui lòng cung cấp thông tin đăng nhập và mật khẩu bạn muốn xóa."
-		},
-		"userDevices": {
-			"title": "Thiết bị/Phiên hoạt động",
-			"noDevicesFound": "Không tìm thấy thiết bị hoặc phiên hoạt động nào.",
-			"deviceInfo": "ID thiết bị: ${deviceId}",
-			"thisDevice": "Thiết bị này",
-			"deviceDetails": "Hoạt động lần cuối: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "Thu hồi",
-			"revokeConfirm": "Bạn có chắc chắn muốn thu hồi quyền truy cập cho thiết bị/phiên này không?",
-			"revokeSuccess": "Thiết bị/Phiên hoạt động đã được thu hồi thành công.",
-			"revokeMissingParams": "Vui lòng cung cấp thiết bị và mật khẩu phiên bạn muốn thu hồi.",
-			"revokeWrongPassword": "Mật khẩu không đúng.",
-			"listNotFound": "Không tìm thấy danh sách thiết bị.",
-			"deviceNotFound": "Không tìm thấy thiết bị hoặc phiên.",
-			"refreshButton": {
-				"title": "Làm mới danh sách"
-			},
-			"refreshButtonIcon": {
-				"alt": "Làm mới danh sách"
-			}
-		},
-		"apiKeys": {
-			"title": "Khóa API",
-			"description": "Quản lý khóa API cho các ứng dụng bên ngoài.",
-			"input": {
-				"placeholder": "Mô tả khóa mới"
-			},
-			"createButton": "tạo",
-			"noKeysFound": "Không có khóa API được tìm thấy.",
-			"keyDetails": "Mô tả: ${description} | Được tạo trong: ${createdAt} | Được sử dụng lần cuối: ${lastUsed}",
-			"neverUsed": "Không bao giờ được sử dụng",
-			"noKeysForUser": "Không tìm thấy dữ liệu khóa API.",
-			"revokeWrongPassword": "Mật khẩu không đúng.",
-			"keyNotFound": "Không tìm thấy khóa API.",
-			"revokeMissingJti": "Vui lòng chỉ định khóa để thu hồi.",
-			"revokeMissingPassword": "Thu hồi khóa yêu cầu mật khẩu.",
-			"verifyMissingApiKey": "Vui lòng cung cấp khóa API.",
-			"revokeButton": "Thu hồi",
-			"revokeConfirm": "Bạn có chắc là bạn muốn thu hồi khóa API này không?",
-			"revokeSuccess": "Khóa API đã bị thu hồi thành công.",
-			"errorDescriptionRequired": "Một mô tả là bắt buộc.",
-			"createSuccess": "Khóa API đã được tạo thành công.",
-			"refreshButton": {
-				"title": "Làm mới danh sách"
-			},
-			"refreshButtonIcon": {
-				"alt": "Làm mới danh sách"
-			}
-		},
-		"newApiKey": {
-			"title": "Khóa API mới đã được tạo",
-			"warning": "Vui lòng sao chép khóa API mới của bạn. Bạn sẽ không thể nhìn thấy nó một lần nữa!",
-			"closeButton": "Tôi đã sao chép khóa của mình",
-			"copyButton": {
-				"title": "Sao chép khóa API mới"
-			},
-			"copiedAlert": "Khóa API đã được sao chép vào bộ nhớ tạm!",
-			"copyKeyFailed": "Không thể sao chép khóa vào bộ nhớ tạm."
-		},
-		"editorCommand": {
-			"title": "Lệnh mở trình soạn thảo bên ngoài",
-			"description": "Thiết lập lệnh và chuỗi tham số để mở tệp bằng trình soạn thảo bên ngoài. Có placeholder cho đường dẫn tệp, số dòng và số cột.",
-			"editorPresetLabel": "Bộ thiết lập sẵn cho trình soạn thảo",
-			"commandLabel": "Lệnh",
-			"argsTemplateLabel": "Mẫu tham số",
-			"argsTemplateHint": "Placeholder: \\${file} \\${line} \\${column}",
-			"presetOptionPathAvailable": "${label} (có trong PATH)",
-			"presetOptionPathUnavailable": "${label} (không có trong PATH)",
-			"testPathInput": {
-				"placeholder": "Đường dẫn tệp để thử, ví dụ C:/work/project/src/main.mjs"
-			},
-			"testButton": "Thử mở",
-			"saveButton": "Lưu cấu hình",
-			"saveSuccess": "Đã lưu lệnh mở trình soạn thảo bên ngoài.",
-			"testPathRequired": "Hãy nhập đường dẫn tệp thử trước.",
-			"testSuccess": "Đã chạy lệnh mở tệp trong trình soạn thảo."
-		},
-		"logout": {
-			"title": "Đăng xuất",
-			"description": "Thao tác này sẽ đăng xuất tài khoản của bạn khỏi thiết bị hiện tại.",
-			"buttonText": "Đăng xuất",
-			"confirmMessage": "Bạn có chắc chắn muốn đăng xuất không?",
-			"successMessage": "Đăng xuất thành công. Bạn sẽ được chuyển đến trang đăng nhập sau giây lát..."
-		},
-		"deleteAccount": {
-			"title": "Xóa tài khoản",
-			"warning": "Cảnh báo: Hành động này sẽ xóa vĩnh viễn tài khoản của bạn cùng tất cả dữ liệu liên quan và không thể khôi phục.",
-			"submitButton": "Xóa tài khoản của tôi",
-			"confirmMessage1": "Cảnh báo! Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản của mình không? Hành động này không thể hoàn tác.",
-			"confirmMessage2": "Để xác nhận việc xóa, vui lòng nhập tên người dùng \"${username}\" của bạn:",
-			"usernameMismatch": "Tên người dùng đã nhập không khớp với người dùng hiện tại. Thao tác xóa đã bị hủy.",
-			"success": "Tài khoản đã được xóa thành công. Bây giờ bạn sẽ bị đăng xuất.",
-			"missingPassword": "Vui lòng nhập mật khẩu của bạn.",
-			"wrongPassword": "Mật khẩu không đúng."
-		},
-		"passwordConfirm": {
-			"title": "Xác nhận thao tác",
-			"message": "Để tiếp tục, vui lòng nhập mật khẩu hiện tại của bạn:",
-			"passwordLabel": "Mật khẩu:",
-			"confirmButton": "Xác nhận",
-			"cancelButton": "Hủy"
-		},
-		"apiError": "Yêu cầu API thất bại: ${message}",
-		"generalError": "Đã có lỗi xảy ra: ${message}",
-		"home_function_buttons": {
-			"settings": {
-				"title": "cài đặt",
-				"sub_items": {
-					"main": {
-						"title": "Cài đặt Người dùng"
-					}
-				}
-			}
-		}
-	},
-	"subfounts": {
-		"title": "Subfount - quản lý thiết bị ngang hàng",
-		"pageTitle": "nguồn phụ",
-		"description": "Quản lý kết nối fount ngang hàng",
-		"hostConnectionCode": {
-			"title": "Mã kết nối máy chủ",
-			"connectionCodeLabel": "Mã kết nối (ID ngang hàng)",
-			"passwordLabel": "mật khẩu",
-			"copyButton": "Sao chép",
-			"regenerateButton": "Tạo lại",
-			"infoMessage": "Chia sẻ những thông tin xác thực này với các máy khách phụ để thiết lập kết nối.",
-			"connectionCodeCopied": "Mã kết nối đã được sao chép vào clipboard",
-			"passwordCopied": "Đã sao chép mật khẩu vào bảng nhớ tạm",
-			"regenerateSuccess": "Mã kết nối đã được tạo lại"
-		},
-		"infra": {
-			"title": "Công ích mạng",
-			"description": "Chọn xem các subfount đã kết nối có đóng vai trò nút công ích hỗ trợ toàn mạng fount hay không. Khi tắt, chúng vẫn nhận thực thi từ xa từ máy chủ này, nhưng không còn tham gia hỗ trợ tầng mạng.",
-			"capabilityRelay": "Tham gia chuyển tiếp đa bước overlay để giúp các nút khác liên lạc khi kết nối trực tiếp thất bại.",
-			"capabilityMailbox": "Giữ chuyển giao ngoại tuyến để nút đối phương vẫn nhận được tin nhắn riêng sau khi lên mạng lại.",
-			"hostPriority": "Khi bật, ưu tiên máy chủ này: định tuyến có trọng số theo bảng uy tín của nó và khóa nó ở mức ưu tiên cao nhất.",
-			"toggleLabel": "Để subfount tham gia công ích",
-			"enabledToast": "Đã bật: subfount tham gia công ích mạng (máy chủ này ưu tiên)",
-			"disabledToast": "Đã tắt: subfount không còn tham gia công ích mạng"
-		},
-		"connectedSubfounts": {
-			"title": "Nguồn phụ được kết nối",
-			"noSubfountsConnected": "Không có thiết bị phụ nào được kết nối",
-			"table": {
-				"id": "NHẬN DẠNG",
-				"description": "Nhận xét",
-				"deviceId": "ID thiết bị",
-				"connectedAt": "thời gian kết nối",
-				"status": "tình trạng",
-				"actions": "Thao tác",
-				"connected": "Đã kết nối",
-				"disconnected": "Đã ngắt kết nối",
-				"save": "Lưu",
-				"na": "không áp dụng"
-			},
-			"descriptionSaved": "Đã lưu ghi chú",
-			"descriptionSaveFailed": "Không lưu được ghi chú: ${message}"
-		},
-		"codeExecution": {
-			"title": "thực thi mã",
-			"description": "Thực thi mã JavaScript trên Subfount đã chọn",
-			"selectSubfountLabel": "Chọn Subfount",
-			"hostOption": "Máy chủ (ID: ${id})",
-			"subfountOption": "Thiết bị con ${id}${deviceId}",
-			"scriptLabel": "Mã JavaScript",
-			"executeButton": "thực hiện",
-			"executing": "Đang thực hiện...",
-			"noSubfountSelected": "Vui lòng chọn Subfount trước",
-			"noScriptProvided": "Vui lòng nhập mã để thực thi",
-			"executionSuccess": "Thực thi mã thành công",
-			"executionFailed": "Việc thực thi mã không thành công: ${message}",
-			"selectSubfount": "Vui lòng chọn Subfoun để thực thi mã..."
-		},
-		"downloadClient": {
-			"title": "Tải xuống ứng dụng khách phụ",
-			"description": "Tải xuống tập lệnh máy khách phụ độc lập để chạy trên thiết bị từ xa.",
-			"downloadButton": "Tải xuống subfount.mjs"
-		},
-		"errors": {
-			"loadConnectionCodeFailed": "Không tải được mã kết nối: ${message}",
-			"regenerateConnectionCodeFailed": "Không tạo lại được mã kết nối: ${message}",
-			"loadSettingsFailed": "Không tải được cài đặt công ích: ${message}",
-			"saveSettingsFailed": "Không lưu được cài đặt công ích: ${message}",
-			"generalError": "Đã xảy ra lỗi: ${message}"
-		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "Đang được phát triển",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "thiết bị phụ",
-						"sub_items": {
-							"main": {
-								"title": "Quản lý thiết bị phụ"
-							}
-						}
-					}
-				}
-			}
-		}
-	},
-	"languageSettings": {
-		"title": "Cài đặt ngôn ngữ",
-		"pageTitle": "Cài đặt ngôn ngữ",
-		"description": "Quản lý tùy chọn ngôn ngữ của bạn cho ứng dụng fount. Tùy chỉnh trải nghiệm của bạn với các tùy chọn ngôn ngữ có sẵn.",
-		"pageDescription": "Quản lý sở thích ngôn ngữ của bạn ở đây. Các ngôn ngữ trong danh sách sẽ được ưu tiên hơn các cài đặt trình duyệt theo thứ tự.",
-		"availableLanguages": "Ngôn ngữ có sẵn",
-		"preferredLanguages": "Danh sách ngôn ngữ ưu tiên",
-		"resetButton": "Đặt lại",
-		"saveButton": "Lưu",
-		"select": {
-			"placeholder": "Chọn một ngôn ngữ..."
-		},
-		"search": {
-			"placeholder": "Tìm kiếm ngôn ngữ..."
-		},
-		"noPreferredLanguages": "Chưa có ngôn ngữ trước. Các cài đặt mặc định của trình duyệt sẽ được sử dụng.",
-		"moveUpButton": {
-			"aria-label": "Di chuyển lên",
-			"alt": "biểu tượng di chuyển lên"
-		},
-		"moveDownButton": {
-			"aria-label": "di chuyển xuống",
-			"alt": "biểu tượng di chuyển xuống"
-		},
-		"deleteLocaleButton": {
-			"aria-label": "Xóa ngôn ngữ này",
-			"alt": "Xóa"
-		},
-		"savedMessage": "Cài đặt ngôn ngữ được lưu!",
-		"resetMessage": "Cài đặt ngôn ngữ đã được đặt lại!",
-		"fetchLocalesFailed": "Không nhận được ngôn ngữ có sẵn!",
-		"home_function_buttons": {
-			"settings": {
-				"title": "cài đặt",
-				"sub_items": {
-					"main": {
-						"title": "Cài đặt ngôn ngữ"
-					}
-				}
-			}
-		}
-	},
-	"themeManage": {
-		"title": "Quản lý chủ đề",
-		"description": "Chọn phong cách thẩm mỹ phản ánh tâm trạng hoặc câu chuyện của bạn. Xem trước và chọn từ bảng chủ đề, mỗi chủ đề mang lại bầu không khí khác nhau cho các tương tác với fount của bạn. Thế giới của bạn, phong cách của bạn.",
-		"instruction": "Chọn một chủ đề!",
-		"search": {
-			"placeholder": "Tìm kiếm chủ đề...",
-			"noResult": "Không tìm thấy chủ đề phù hợp."
-		},
-		"createButton": "+ Tạo chủ đề mới",
-		"preview": {
-			"editButton": {
-				"title": "Chỉnh sửa"
-			},
-			"editButtonIcon": {
-				"alt": "Biểu tượng chỉnh sửa"
-			},
-			"deleteButton": {
-				"title": "Xóa"
-			},
-			"deleteButtonIcon": {
-				"alt": "Biểu tượng xóa"
-			},
-			"cloneButton": {
-				"title": "Nhân bản"
-			},
-			"cloneButtonIcon": {
-				"alt": "Biểu tượng nhân bản"
-			}
-		},
-		"editor": {
-			"title": "Trình chỉnh sửa chủ đề",
-			"cancelButton": "Hủy bỏ",
-			"saveApplyButton": "Lưu và áp dụng",
-			"themeName": "Tên chủ đề (ID)",
-			"autoPaletteTitle": "Tự động sửa màu từ ảnh",
-			"autoPaletteInstruction": "Bấm vào một màu ở trên để tự động tô các màu chính/phụ/dấu/trung tính.",
-			"coreColors": "Màu cốt lõi",
-			"baseBackground": "Cơ bản và nền",
-			"variables": "Biến số",
-			"borderRadius": "Bán kính đường viền (--rounded-box)",
-			"borderWidth": "Độ rộng đường viền (--border-btn)",
-			"advancedCustomization": "Tùy chỉnh nâng cao",
-			"customCSS": "CSS tùy chỉnh (ghi đè)",
-			"customMjsScript": "Tập lệnh MJS tùy chỉnh (tùy chọn)",
-			"mjsSyntaxHint": "Sử dụng [cú pháp async-eval](${asyncDocLink}). Trả về một đối tượng chứa các hàm `load()` và `unload()`.",
-			"themeIdRequired": "Cần có ID chủ đề",
-			"newThemeName": "Tên chủ đề mới:",
-			"deleteConfirm": "Bạn có chắc chắn muốn xóa chủ đề ${id} không?",
-			"saved": "Đã lưu!",
-			"failedToSave": "Lưu không thành công",
-			"failedToDelete": "Không thể xóa chủ đề: ${message}",
-			"failedToClone": "Không thể sao chép chủ đề: ${message}"
-		},
-		"themes": {
-			"auto": "Tự động",
-			"light": "Sáng",
-			"dark": "Tối",
-			"cupcake": "Cupcake",
-			"bumblebee": "Bumblebee",
-			"emerald": "Ngọc lục bảo",
-			"corporate": "Doanh nghiệp",
-			"synthwave": "Synthwave",
-			"retro": "Retro",
-			"cyberpunk": "Cyberpunk",
-			"valentine": "Valentine",
-			"halloween": "Halloween",
-			"garden": "Sân vườn",
-			"forest": "Rừng",
-			"aqua": "Aqua",
-			"lofi": "Lo-fi",
-			"pastel": "Pastel",
-			"fantasy": "Huyền ảo",
-			"wireframe": "Khung dây",
-			"black": "Đen",
-			"luxury": "Sang trọng",
-			"dracula": "Dracula",
-			"cmyk": "CMYK",
-			"autumn": "Mùa thu",
-			"business": "Kinh doanh",
-			"acid": "Acid",
-			"lemonade": "Chanh",
-			"night": "Ban đêm",
-			"coffee": "Cà phê",
-			"winter": "Mùa đông",
-			"dim": "Mờ ảo",
-			"nord": "Nord",
-			"sunset": "Hoàng hôn",
-			"caramellatte": "Caramel Latte",
-			"abyss": "Vực thẳm",
-			"silk": "Lụa"
-		},
-		"achievements": {
-			"change_theme": {
-				"name": "Thay áo mới!",
-				"description": "fount đã có một diện mạo mới và một tâm trạng hoàn toàn mới.",
-				"locked_description": "Chuyển chủ đề một lần."
-			}
-		},
-		"home_function_buttons": {
-			"settings": {
-				"title": "cài đặt",
-				"sub_items": {
-					"switchTheme": {
-						"title": "Đổi chủ đề"
-					}
-				}
-			}
-		}
-	},
 	"part_config": {
 		"title": "Cấu hình thành phần",
 		"pageTitle": "Cấu hình thành phần",
@@ -4427,6 +3491,84 @@
 			}
 		}
 	},
+	"discord_bots": {
+		"title": "Bot Discord",
+		"description": "Mang lại tiếng nói cho những người bạn đồng hành của bạn trong hội trường nhộn nhịp của Discord. Định cấu hình sự hiện diện của họ, quản lý hoạt động của họ và cho phép họ kết nối các thế giới, từng máy chủ một.",
+		"cardTitle": "Bot Discord",
+		"botSelectDropdown": {
+			"placeholder": "Chọn một bot"
+		},
+		"botSearch": {
+			"placeholder": "Tìm kiếm bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Chọn một vai trò"
+		},
+		"charSearch": {
+			"placeholder": "Tìm kiếm nhân vật..."
+		},
+		"configCard": {
+			"title": "Cấu hình Bot",
+			"labels": {
+				"character": "Nhân vật",
+				"apiKey": "Khóa API Discord",
+				"config": "Cấu hình"
+			},
+			"apiKeyInput": {
+				"placeholder": "Nhập Khóa API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Chuyển đổi hiển thị khóa API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Hiện/ẩn Khóa API"
+			},
+			"buttons": {
+				"saveConfig": "Lưu cấu hình",
+				"startBot": "Khởi động",
+				"stopBot": "Dừng"
+			},
+			"charSelect": {
+				"placeholder": "Chọn vai trò"
+			}
+		},
+		"prompts": {
+			"newBotName": "Vui lòng nhập tên Bot mới:"
+		},
+		"buttons": {
+			"newBot": "Tạo mới",
+			"deleteBot": "Xóa"
+		},
+		"alerts": {
+			"configSaved": "Cấu hình đã được lưu thành công.",
+			"botExists": "Bot có tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
+			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
+			"httpError": "Lỗi HTTP.",
+			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Đi đến sự bất hòa",
+				"description": "Triệu hồi nhân vật của bạn vào thế giới Discord.",
+				"locked_description": "Khởi chạy Discord Bot một lần."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Liên quan đến bot",
+				"sub_items": {
+					"manage": {
+						"title": "Cấu hình Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Cấu hình Discord Bot"
+			}
+		}
+	},
 	"wechat_bots": {
 		"title": "Bot WeChat",
 		"description": "Chạy nhân vật fount như bot WeChat: liên kết vai trò, quản lý bot và trò chuyện trên WeChat.",
@@ -4518,83 +3660,584 @@
 			"needBot": "Chọn bot trong danh sách hoặc tạo mới bằng «Mới»."
 		}
 	},
-	"discord_bots": {
-		"title": "Bot Discord",
-		"description": "Mang lại tiếng nói cho những người bạn đồng hành của bạn trong hội trường nhộn nhịp của Discord. Định cấu hình sự hiện diện của họ, quản lý hoạt động của họ và cho phép họ kết nối các thế giới, từng máy chủ một.",
-		"cardTitle": "Bot Discord",
-		"botSelectDropdown": {
-			"placeholder": "Chọn một bot"
-		},
-		"botSearch": {
-			"placeholder": "Tìm kiếm bot..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "Chọn một vai trò"
-		},
-		"charSearch": {
-			"placeholder": "Tìm kiếm nhân vật..."
-		},
-		"configCard": {
-			"title": "Cấu hình Bot",
-			"labels": {
-				"character": "Nhân vật",
-				"apiKey": "Khóa API Discord",
-				"config": "Cấu hình"
-			},
-			"apiKeyInput": {
-				"placeholder": "Nhập Khóa API"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "Chuyển đổi hiển thị khóa API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Hiện/ẩn Khóa API"
-			},
-			"buttons": {
-				"saveConfig": "Lưu cấu hình",
-				"startBot": "Khởi động",
-				"stopBot": "Dừng"
-			},
-			"charSelect": {
-				"placeholder": "Chọn vai trò"
-			}
-		},
-		"prompts": {
-			"newBotName": "Vui lòng nhập tên Bot mới:"
-		},
-		"buttons": {
-			"newBot": "Tạo mới",
-			"deleteBot": "Xóa"
-		},
-		"alerts": {
-			"configSaved": "Cấu hình đã được lưu thành công.",
-			"botExists": "Bot có tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
-			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có muốn hủy bỏ những thay đổi này không?",
-			"httpError": "Lỗi HTTP.",
-			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Đi đến sự bất hòa",
-				"description": "Triệu hồi nhân vật của bạn vào thế giới Discord.",
-				"locked_description": "Khởi chạy Discord Bot một lần."
-			}
-		},
+	"social": {
+		"title": "Quảng trường",
+		"description": "P2P mở cập nhật xã hội, theo dõi và chia sẻ tệp",
+		"bootstrapFailed": "Khởi tạo giao diện xã hội không thành công: ${error}",
 		"home_function_buttons": {
-			"bot_related": {
-				"title": "Liên quan đến bot",
-				"sub_items": {
-					"manage": {
-						"title": "Cấu hình Discord Bot"
-					}
+			"main": {
+				"title": "Quảng trường"
+			}
+		},
+		"nav": {
+			"feed": "Trang chủ",
+			"explore": "Khám phá",
+			"notifications": "Hộp thư",
+			"saved": "Đã lưu",
+			"drafts": "Nháp",
+			"profile": "Của tôi",
+			"videos": "Video ngắn",
+			"live": "Trực tiếp"
+		},
+		"settings": {
+			"title": "Cài đặt mạng xã hội",
+			"back": {
+				"aria-label": "Quay lại hồ sơ"
+			},
+			"privacyTitle": "Quyền riêng tư và khám phá",
+			"privacyHint": "Kiểm soát xem tài khoản có xuất hiện trong phần Khám phá và Đề xuất hay không.",
+			"tasteTitle": "Khuyến nghị và ưu tiên",
+			"tasteHint": "Điều chỉnh ranh giới quyền riêng tư và đặt tên nhãn \"Được đề xuất cho bạn\".",
+			"mutedKeywordsTitle": "Chặn từ và thẻ",
+			"mutedKeywordsHint": "Các bài đăng có nội dung, cảnh báo nội dung hoặc nhãn sẽ bị ẩn khỏi luồng, khám phá, tìm kiếm và thông báo. Chỉ được lưu cục bộ.",
+			"mutedKeywordsMatchTags": "Khớp cả thẻ",
+			"mutedKeywordsAdd": "Thêm",
+			"mutedKeywordsRemove": {
+				"title": "Xóa các từ bị chặn"
+			},
+			"mutedKeywordsEmpty": "Chưa thêm từ chặn nào",
+			"autoTranslateTitle": "Dịch tự động",
+			"autoTranslateHint": "Khi bật, các bài viết bằng tiếng nước ngoài sẽ tự động yêu cầu dịch và có thể chuyển về văn bản gốc.",
+			"autoTranslateEnable": "Tự động dịch bài viết bằng các ngôn ngữ khác ngoài ngôn ngữ của bạn",
+			"safetyTitle": "An ninh và che chắn",
+			"safetyHint": "Quản lý danh sách bị chặn và ẩn.",
+			"mutedKeywords": {
+				"placeholder": "Nhập từ khóa hoặc #tags"
+			},
+			"taste": {
+				"rebuild": "Xây dựng lại tùy chọn",
+				"privacyPublishPreferences": "Đặt tên thẻ công khai và khám phá hợp nhất",
+				"privacyPublishPreferencesHint": "Sau khi đóng, bạn bè sẽ không thể xem các câu lệnh đặt tên thẻ và hợp nhất của bạn và họ sẽ không thể đóng góp vào sự đồng thuận.",
+				"privacyPublishReactions": "Lượt thích và lượt không thích của công chúng",
+				"privacyPublishReactionsHint": "Sau khi đóng, người đăng sẽ không nhận được lượt thích/không thích của bạn, phản hồi của bạn sẽ không được đưa vào đề xuất của người khác và bạn sẽ không còn quảng bá bài đăng để lan truyền nữa.",
+				"empty": "Chưa có thẻ tùy chọn nào, nó sẽ tự động được nhóm lại sau khi có nhiều lượt thích/không thích hơn",
+				"weight": "Trọng lượng ${weight}",
+				"save": "Lưu",
+				"name": {
+					"placeholder": "tên hiển thị cục bộ"
+				}
+			},
+			"blocklist": {
+				"title": "danh sách đen",
+				"hiddenTitle": "Ẩn danh sách",
+				"empty": "Chưa có mục nào bị chặn hoặc ẩn",
+				"unblock": "Bỏ chặn",
+				"unhide": "Bỏ ẩn",
+				"scopeEntity": "thực thể",
+				"scopeSubject": "phần thân chính"
+			}
+		},
+		"composer": {
+			"placeholder": "Bạn đang nghĩ về điều gì? Hỗ trợ Markdown (phương ngữ nguồn), nhập @ để đề cập",
+			"publish": "giải phóng",
+			"saveDraft": "lưu bản nháp",
+			"fab": {
+				"title": "Viết cập nhật",
+				"aria-label": "Viết cập nhật"
+			},
+			"contentWarning": {
+				"placeholder": "Cảnh báo nội dung (tùy chọn)"
+			},
+			"sensitiveMedia": "mặt nạ nhạy cảm với phương tiện truyền thông",
+			"editImage": "biên tập",
+			"editCrop": "Mùa vụ",
+			"editMosaic": "mã hóa",
+			"editBrush": "Chải",
+			"editApply": "ứng dụng",
+			"editCancel": "Hủy bỏ",
+			"replyPolicyEveryone": "Bất cứ ai cũng có thể trả lời",
+			"replyPolicyFollowers7d": "Người theo dõi trong hơn 7 ngày",
+			"replyPolicyAuthorFollows": "Những người tôi theo dõi",
+			"replyPolicyLabel": "Ai có thể trả lời",
+			"replyDisplayAll": "Hiển thị tất cả các câu trả lời",
+			"replyDisplayFeaturedOnly": "Chỉ những câu trả lời được chọn",
+			"replyDisplayLabel": "Trả lời để hiển thị",
+			"scheduleLabel": "Đăng theo lịch",
+			"scheduleSuccess": "Bài đăng đã được thêm vào hàng đợi đã lên lịch",
+			"emojiButton": {
+				"title": "sự biểu lộ",
+				"aria-label": "sự biểu lộ"
+			},
+			"mediaButton": {
+				"title": "Thêm phương tiện",
+				"aria-label": "Thêm phương tiện"
+			},
+			"pollButton": {
+				"title": "Bắt đầu bỏ phiếu",
+				"aria-label": "Bắt đầu bỏ phiếu"
+			},
+			"cwToggle": {
+				"title": "cảnh báo nội dung",
+				"aria-label": "cảnh báo nội dung"
+			},
+			"advancedToggle": {
+				"title": "Nhiều lựa chọn hơn",
+				"aria-label": "Nhiều lựa chọn hơn"
+			},
+			"media": {
+				"placeholder": "Mô tả hình ảnh (alt)"
+			},
+			"visibility": {
+				"label": "Phạm vi hiển thị",
+				"public": "công cộng",
+				"unlisted": "Không được niêm yết công khai",
+				"followers": "chỉ những người theo dõi",
+				"followers7d": "Hiển thị sau 7 ngày theo dõi",
+				"followers30d": "Hiển thị sau 30 ngày theo dõi",
+				"selected": "Hiển thị với những người được chỉ định",
+				"private": "Chỉ hiển thị với chính bạn",
+				"allowLabel": "Người có thể nhìn thấy",
+				"exceptLabel": "loại trừ mọi người",
+				"allow": {
+					"placeholder": "Thực thể người hiển thị Hash, dấu cách hoặc dấu phẩy được phân tách"
+				},
+				"except": {
+					"placeholder": "Ai không nên hiển thị nó (tùy chọn)"
 				}
 			}
 		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Cấu hình Discord Bot"
+		"feed": {
+			"refresh": "Làm mới tin tức",
+			"newPosts": "Có tin mới, bấm vào để xem",
+			"tabLatest": "cập nhật",
+			"tabForYou": "gợi ý",
+			"repostedBy": "${author} đã tweet lại",
+			"decryptFailed": "Không thể giải mã bài đăng này",
+			"revealContent": "Hiển thị nội dung",
+			"sensitiveMedia": "phương tiện truyền thông nhạy cảm",
+			"showMore": "Mở rộng",
+			"showLess": "Đóng",
+			"replayDivider": "Đọc xong, duyệt lại",
+			"trending": {
+				"title": "chủ đề nóng",
+				"postCount": {
+					"title": "${n} bài đăng"
+				},
+				"scopeLocal": "máy cục bộ",
+				"scopeNearby": "gần đó",
+				"empty": "Chưa có chủ đề nóng"
 			}
+		},
+		"explore": {
+			"accounts": "Tài khoản được đề xuất",
+			"posts": "bài viết mới nhất",
+			"mediaOnly": "chỉ phương tiện truyền thông"
+		},
+		"notifications": {
+			"reply": "${author} đã trả lời bài đăng của bạn",
+			"mention": "${author} đã @ bạn trong bảng tin",
+			"like": "${author} thích bài viết của bạn",
+			"repost": "${author} đã tweet lại bài đăng của bạn",
+			"follow": "${author} theo dõi bạn",
+			"care_post": "${author} đã đăng bản cập nhật mới (mối quan tâm đặc biệt)",
+			"poll_closed": "Cuộc bỏ phiếu đã kết thúc cho ${author}",
+			"post_note": "${author} đã thêm thông tin vào bài đăng của bạn",
+			"live_started": "${author} đã bắt đầu phát trực tiếp",
+			"view": "Kiểm tra",
+			"markAllRead": "Đánh dấu tất cả là đã đọc"
+		},
+		"saved": {
+			"all": "tất cả",
+			"unfiled": "Chưa được lưu trữ",
+			"createFolder": {
+				"title": "Tạo thư mục mới",
+				"aria-label": "Tạo thư mục mới"
+			},
+			"createFolderPrompt": "tên thư mục",
+			"pickFolderTitle": "Lưu vào",
+			"confirm": "xác nhận",
+			"cancel": "Hủy bỏ",
+			"remove": "Xóa mục yêu thích",
+			"renameFolder": "Đổi tên",
+			"renameFolderPrompt": "Tên thư mục mới",
+			"deleteFolder": "xóa thư mục",
+			"deleteFolderConfirm": "Xóa thư mục? Các bài đăng ở đó sẽ được chuyển đến \"Không được lưu trữ\".",
+			"searchEmpty": "Không có bộ sưu tập phù hợp",
+			"folderEmpty": "Thư mục này trống",
+			"emptyHint": "Bấm vào dấu trang khi duyệt tin để lưu vào đây",
+			"search": {
+				"placeholder": "Tìm kiếm yêu thích…"
+			}
+		},
+		"drafts": {
+			"untitled": "(không có văn bản dự thảo)",
+			"emptyHint": "Viết một số nội dung vào ô bài viết và nhấn \"Save Draft\" để tiếp tục chỉnh sửa vào lần sau",
+			"saved": "Đã lưu bản nháp",
+			"deleted": "Đã xóa bản nháp",
+			"delete": "Xóa bản nháp",
+			"empty": "Bản nháp trống",
+			"saveFailed": "Không thể lưu bản nháp: ${error}",
+			"loadFailed": "Không mở được bản nháp: ${error}",
+			"deleteFailed": "Không thể xóa bản nháp: ${error}"
+		},
+		"profile": {
+			"edit": "Chỉnh sửa hồ sơ",
+			"viewPosts": "Xem hồ sơ xã hội",
+			"settingsBtn": {
+				"aria-label": "Cài đặt mạng xã hội"
+			},
+			"mediaOnly": "[phương tiện truyền thông]",
+			"hideFromExplore": "Ẩn tài khoản khỏi trang khám phá",
+			"tabPosts": "năng động",
+			"tabAlbums": "tập ảnh",
+			"tabLikes": "Giống",
+			"tabCabinets": "Tủ hồ sơ",
+			"tabsLabel": {
+				"aria-label": "Phân vùng hồ sơ"
+			},
+			"cabinetsEmpty": "Hiện tại chưa có tủ hồ sơ công cộng",
+			"cabinetsFailed": "Tải nội dung tệp không thành công: ${error}",
+			"statsGroup": {
+				"aria-label": "Thống kê"
+			},
+			"statsPosts": "năng động",
+			"statsFollowing": "tập trung vào",
+			"statsFollowers": "cái quạt",
+			"followingTitle": "tập trung vào",
+			"followersTitle": "cái quạt",
+			"albums": {
+				"create": "Tạo album mới",
+				"edit": "Chỉnh sửa album",
+				"save": "Lưu",
+				"cancel": "Hủy bỏ",
+				"back": "Quay lại album",
+				"empty": "Chưa có album nào",
+				"emptyPosts": "Chưa có bài viết nào trong album",
+				"name": "Tên album",
+				"description": "Mô tả album",
+				"deleteLinks": "Xóa album (giữ bài viết)",
+				"deleteWithPosts": "Xóa album và xóa bài viết",
+				"pickerLabel": "Thêm vào album",
+				"defaultName": "Album mặc định"
+			}
+		},
+		"video": {
+			"view": {
+				"aria-label": "Video ngắn"
+			},
+			"empty": "Chưa có video ngắn",
+			"emptyHint": "Không có bài đăng nào có video trong những người sau đây hoặc các ô công khai. Hãy thử đăng một bản cập nhật video?",
+			"compose": "Đi đăng một video",
+			"back": {
+				"aria-label": "Quay lại tin tức"
+			},
+			"mute": {
+				"aria-label": "tắt tiếng"
+			},
+			"unmute": {
+				"aria-label": "Bật tiếng"
+			},
+			"unavailable": "Không thể phát video",
+			"closeReplies": {
+				"aria-label": "Đóng bình luận"
+			}
+		},
+		"live": {
+			"empty": "Chưa có phát sóng trực tiếp",
+			"viewers": "${n} người đã xem",
+			"likes": "${n} Thích",
+			"local": "máy cục bộ",
+			"hall": "Phòng truyền hình trực tiếp",
+			"back": {
+				"title": "Quay lại tin tức",
+				"aria-label": "Quay lại tin tức"
+			},
+			"danmakuSend": "Gửi",
+			"postWatch": "Nhập chương trình phát sóng trực tiếp",
+			"postEnded": "Phát sóng trực tiếp đã kết thúc",
+			"postEndedStats": "Được xem bởi ${viewers} · ${likes} Đã thích · ${duration}",
+			"link": {
+				"invite": "Mời kết nối",
+				"needPeer": "Vui lòng điền vào thực thể ngang hàngHash:liveId",
+				"invited": "Lời mời trực tuyến đã được gửi",
+				"linked": "Đã kết nối",
+				"peer": {
+					"placeholder": "Thực thể ngang hàngHash:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "Bắt đầu phát sóng",
+				"open": "Đi tới chương trình phát sóng",
+				"mediaAv": "Âm thanh và video",
+				"mediaAudio": "Âm thanh thuần khiết",
+				"mediaVideo": "hình ảnh thuần khiết",
+				"mediaWhip": "Truyền phát đẩy WHIP (chẳng hạn như OBS)",
+				"whipUrl": "địa chỉ WHIP",
+				"whipToken": "Mã thông báo mang",
+				"whipWaiting": "Đang chờ kết nối phát trực tuyến WHIP (có thể sử dụng phần mềm phát trực tuyến như OBS)…",
+				"start": "Bắt đầu phát sóng trực tiếp",
+				"stop": "Dừng phát sóng trực tiếp",
+				"started": "Phát sóng trực tiếp đã bắt đầu",
+				"stopped": "Phát sóng trực tiếp đã dừng",
+				"titleInput": {
+					"placeholder": "Tiêu đề trực tiếp (tùy chọn)"
+				}
+			},
+			"danmaku": {
+				"placeholder": "Nói điều gì đó..."
+			}
+		},
+		"search": {
+			"placeholder": "Tìm bài đăng, người dùng hoặc #chủ đề (ít nhất 2 ký tự)",
+			"open": {
+				"aria-label": "tìm kiếm"
+			},
+			"submit": "Tìm kiếm",
+			"clear": "Thông thoáng",
+			"empty": "Không có bài viết phù hợp",
+			"tooShort": "Vui lòng nhập ít nhất 2 ký tự",
+			"usersTitle": "người dùng",
+			"postsTitle": "năng động",
+			"usersEmpty": "Không có người dùng phù hợp",
+			"pinAlias": "Đặt làm bí danh",
+			"trustScore": "Tin tưởng ${score}",
+			"viewTitle": "tìm kiếm",
+			"loading": "Đang tìm kiếm…",
+			"filterAuthor": {
+				"placeholder": "tác giả"
+			},
+			"filterMediaAll": "Tất cả phương tiện truyền thông",
+			"filterMediaImage": "hình ảnh",
+			"filterMediaVideo": "băng hình",
+			"filterTag": {
+				"placeholder": "#Nhãn"
+			},
+			"sortRecent": "cập nhật",
+			"sortPopular": "Phổ biến",
+			"scopeLocal": "máy cục bộ",
+			"scopeNearby": "gần đó"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "đóng cửa"
+			}
+		},
+		"actions": {
+			"like": "Giống",
+			"unlike": "Không giống",
+			"dislike": "bước lên",
+			"undislike": "Hủy không thích",
+			"repost": "Phía trước",
+			"quote": "Trích dẫn",
+			"delete": "Xóa",
+			"edit": "Chỉnh sửa",
+			"save": "Lưu",
+			"saved": "Đã sưu tầm",
+			"translate": "Dịch",
+			"dm": "Gửi tin nhắn riêng tư",
+			"block": "Khối",
+			"hide": "Trốn",
+			"mute": "tắt tiếng",
+			"follow": "tập trung vào",
+			"following": "Đã theo dõi",
+			"care": "mối quan tâm đặc biệt",
+			"careRemove": "Hủy chăm sóc đặc biệt",
+			"careAdded": "Đã thêm mối quan tâm đặc biệt",
+			"careRemoved": "Đã hủy quan tâm đặc biệt",
+			"setAlias": "Đặt bí danh",
+			"setAliasPrompt": "Đặt bí danh cục bộ (để trống để xóa):",
+			"aliasSaved": "Đã cập nhật bí danh",
+			"replies": "Bình luận",
+			"copyLink": "Sao chép liên kết",
+			"downloadHtml": "Tải xuống HTML",
+			"copied": "Đã sao chép",
+			"more": {
+				"aria-label": "Hơn"
+			},
+			"share": "chia sẻ",
+			"likeFailed": "Không thích: ${error}",
+			"dislikeFailed": "Không thể bước lên: ${error}",
+			"repostFailed": "Chuyển tiếp không thành công: ${error}",
+			"replyFailed": "Trả lời không thành công: ${error}",
+			"followFailed": "Theo dõi không thành công: ${error}",
+			"saveFailed": "Việc thu thập không thành công: ${error}",
+			"blockFailed": "Không chặn được: ${error}",
+			"hideFailed": "Không ẩn được: ${error}",
+			"muteFailed": "Tắt tiếng không thành công: ${error}",
+			"deleteFailed": "Xóa không thành công: ${error}"
+		},
+		"post": {
+			"edited": "Đã chỉnh sửa",
+			"editPrompt": "Chỉnh sửa văn bản bài viết",
+			"editHistory": "Chỉnh sửa lịch sử",
+			"editHistoryEmpty": "Không có phiên bản cũ hơn",
+			"loading": "đang tải…",
+			"notFound": "Bài đăng không tồn tại hoặc không hiển thị",
+			"loadFailed": "Tải không thành công, vui lòng thử lại sau",
+			"detailTitle": "Bưu kiện",
+			"back": "Quay lại"
+		},
+		"reply": {
+			"context": "Trả lời ${author}"
+		},
+		"notes": {
+			"label": "Phần bổ sung của độc giả",
+			"add": "Thông tin bổ sung",
+			"prompt": "Viết phần bổ sung cho người đọc (ghi chú của cộng đồng)",
+			"listTitle": "Tất cả thông tin bổ sung",
+			"helpful": "nó hoạt động",
+			"unhelpful": "vô ích",
+			"more": "Tất cả ${n} mục",
+			"empty": "Chưa có thông tin bổ sung"
+		},
+		"poll": {
+			"multi": "Cho phép nhiều lựa chọn",
+			"apply": "Áp dụng biểu quyết",
+			"closed": "Cuộc bình chọn đã kết thúc",
+			"deadline": "Hạn chót: ${deadline}",
+			"options": {
+				"placeholder": "Một tùy chọn trên mỗi dòng (tối thiểu 2 mục)"
+			}
+		},
+		"aside": {
+			"suggested": "Đề nghị chú ý"
+		},
+		"groupRef": {
+			"linking": "Kết nối nhóm trò chuyện",
+			"clear": "Tách rời",
+			"pick": "Kết nối Nhóm/Kênh trò chuyện…"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "Lọc hộp thư đến"
+			},
+			"tabs": {
+				"all": "tất cả",
+				"mention": "đề cập đến",
+				"reply": "hồi đáp",
+				"like": "Khen",
+				"follow": "tập trung vào",
+				"repost": "Phía trước"
+			},
+			"aggregated": {
+				"like": "${author1}, ${author2} và ${count} người thích bài đăng của bạn",
+				"likeTwo": "${author1} và ${author2} đã thích bài đăng của bạn",
+				"repost": "${author1}, ${author2} và ${count} người đã tweet lại bài đăng của bạn",
+				"repostTwo": "${author1} và ${author2} đã chuyển tiếp bài đăng của bạn",
+				"follow": "${author1}, ${author2} và ${count} người theo dõi bạn",
+				"followTwo": "${author1} và ${author2} theo dõi bạn"
+			}
+		},
+		"replies": {
+			"placeholder": "Viết thư trả lời…",
+			"submit": "Trả lời",
+			"empty": "Chưa có trả lời",
+			"emptyHint": "Hãy viết bài đầu tiên và bắt đầu thảo luận"
+		},
+		"repost": {
+			"placeholder": "Thêm bình luận tweet lại (tùy chọn)…",
+			"submit": "Xác nhận chuyển tiếp"
+		},
+		"quote": {
+			"quoting": "Trích dẫn",
+			"clear": "sự vô lễ",
+			"viewOriginal": "Xem bài viết gốc"
+		},
+		"a11y": {
+			"linkGroupSelect": "Kết nối với nhóm hoặc kênh Trò chuyện",
+			"postVisibility": "Phạm vi hiển thị",
+			"postLang": "ngôn ngữ nội dung",
+			"trendingHashtags": "chủ đề nóng",
+			"saveFolderSelect": "thư mục yêu thích"
+		},
+		"translate": {
+			"label": "Bản dịch:"
+		},
+		"time": {
+			"justNow": "Chỉ",
+			"minutesAgo": "${n} phút trước",
+			"hoursAgo": "${n} giờ trước"
+		},
+		"empty": {
+			"feed": "Chưa có bài đăng nào. Hãy theo dõi thêm người khác nhé.",
+			"profilePosts": "Chưa có tin tức nào",
+			"following": "Chưa theo dõi ai",
+			"followers": "Chưa có người hâm mộ",
+			"notifications": "Chưa có thông báo",
+			"saved": "Chưa có mục yêu thích nào",
+			"drafts": "Chưa có dự thảo",
+			"exploreAccounts": "Hiện tại không có tài khoản nào được đề xuất",
+			"explorePosts": "Chưa có bài viết thăm dò nào",
+			"likedPosts": "Chưa có lượt thích nào",
+			"noIdentity": "Vui lòng định cấu hình danh tính liên kết trong Trò chuyện trước khi sử dụng Mạng xã hội"
+		},
+		"topic": {
+			"follow": "đăng ký",
+			"unfollow": "Hủy đăng ký",
+			"empty": "Chưa có bài viết nào cho chủ đề này"
 		}
+	},
+	"cabinet": {
+		"title": "Tủ hồ sơ",
+		"description": "Tủ hồ sơ cá nhân và chia sẻ P2P",
+		"openCabinets": {
+			"title": "Mở danh sách tủ hồ sơ",
+			"aria-label": "Mở danh sách tủ hồ sơ"
+		},
+		"closeCabinets": {
+			"title": "đóng cửa",
+			"aria-label": "đóng cửa"
+		},
+		"bootstrapFailed": "Khởi tạo nội dung tệp không thành công: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "Tủ hồ sơ"
+			}
+		},
+		"upload": "tải lên",
+		"uploadFolder": "Tải lên thư mục",
+		"newFolder": "Tạo thư mục mới",
+		"open": "Mở",
+		"download": "tải về",
+		"downloadZip": "Thư mục tải xuống",
+		"rename": "Đổi tên",
+		"copy": "Sao chép",
+		"cut": "Cắt",
+		"paste": "Dán",
+		"pasteLink": "Dán dưới dạng liên kết",
+		"selectAll": "Chọn tất cả",
+		"invert": "Cuộc bầu cử phản đối",
+		"properties": "tài sản",
+		"delete": "Xóa",
+		"back": {
+			"title": "Trở lại vị trí trước đó",
+			"aria-label": "Trở lại vị trí trước đó"
+		},
+		"cancel": "Hủy bỏ",
+		"save": "Lưu",
+		"showHidden": "khoe da",
+		"name": "Tên",
+		"descriptionField": "mô tả",
+		"attrHidden": "Trốn",
+		"attrSystem": "Hệ thống (xóa yêu cầu xác nhận)",
+		"previewUrl": "URL xem trước",
+		"deletePreviewWithFile": "Xóa bản xem trước khi xóa tập tin",
+		"folderPassword": "Mật khẩu thư mục (để trống, điền vào để kích hoạt mã hóa)",
+		"unlockFolder": "Mở khóa thư mục được mã hóa",
+		"unlock": "Mở khóa",
+		"unlockFailed": "Mở khóa không thành công: ${error}",
+		"previewFailed": "Tạo bản xem trước không thành công: ${error}",
+		"created": "Tạo: ${stamp}",
+		"modified": "Sửa đổi: ${stamp}",
+		"statusCount": "${count} mục, ${selected} đã chọn",
+		"newCabinetPrompt": "Tên tủ hồ sơ mới",
+		"newFolderPrompt": "Tên thư mục mới",
+		"renamePrompt": "tên mới",
+		"visibilityPrompt": "Chế độ hiển thị (công khai/không công khai/người theo dõi/riêng tư/đã chọn)",
+		"cabinetActionPrompt": "Hành động: đổi tên/xóa/khả năng hiển thị",
+		"confirmDeleteCabinet": "Bạn có chắc chắn muốn xóa tủ hồ sơ này không?",
+		"confirmDelete": "Xác nhận xóa các mục đã chọn?",
+		"confirmDeleteSystem": "Các tập tin hệ thống đã chọn được bao gồm. Bạn có chắc chắn xóa chúng?",
+		"copied": "Đã sao chép",
+		"cutDone": "Cắt",
+		"undo": "Hủy bỏ",
+		"redo": "Làm lại",
+		"newWindow": "Mở cửa sổ mới",
+		"goUp": "Trở về cấp độ trước đó",
+		"brokenLink": "Liên kết bị hỏng: ${reason}",
+		"noDownload": "Không có nội dung có thể tải xuống",
+		"groupDownloadHint": "Vui lòng lấy các tập tin nhóm thông qua tệp đính kèm tin nhắn hoặc liên kết tải xuống tiếp theo.",
+		"remoteEntity": "thực thể từ xa"
 	},
 	"browser_integration": {
 		"title": "Tích hợp trình duyệt",
@@ -4719,6 +4362,48 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "Kết nối vai trò fount với các trình chỉnh sửa được hỗ trợ (chẳng hạn như Zed, JetBrains, Neovim) thông qua Giao thức máy khách tác nhân, định cấu hình các khóa và vai trò API, đồng thời đưa các đối tác AI vào quy trình phát triển.",
+		"title": "Tích hợp IDE",
+		"heading": "Tích hợp IDE",
+		"instruction": "Sử dụng vai trò fount để hỗ trợ lập trình trong các trình soạn thảo hỗ trợ ACP (chẳng hạn như Zed, JetBrains, Neovim, v.v.).",
+		"supportedEditorsTitle": "Các biên tập viên và khách hàng được hỗ trợ",
+		"supportedEditorsIntro": "Các khách hàng sau đây làm việc với fount:",
+		"supportedEditorsLoading": "đang tải…",
+		"supportedEditorsError": "Không tải được danh sách: ${message}",
+		"acpTitle": "Định cấu hình tập lệnh ACP nguồn",
+		"acpDesc": "Tham khảo ví dụ sau để định cấu hình tập lệnh ACP nguồn:",
+		"acpCharLabel": "Vai trò",
+		"charListError": "Không lấy được danh sách vai trò",
+		"acpScriptLabel": "URL tập lệnh ACP",
+		"acpConfigSample": "Ví dụ về cấu hình:",
+		"acpConfigHint": "Id vai trò được hiển thị trong menu thả xuống vai trò trên trang này và khóa API có thể được quản lý trong cài đặt người dùng.",
+		"copyButton": "Sao chép",
+		"copied": "Đã sao chép vào bảng nhớ tạm",
+		"apiKeySectionTitle": "Khóa API",
+		"apiKeyHint": "Được sử dụng cho nguồn kết nối tập lệnh ACP (cùng bộ khóa với proxy API, có thể được tạo trong cài đặt người dùng).",
+		"generateApiKeyButton": "Tạo khóa mới",
+		"apiKeyCopied": "Đã sao chép khóa API",
+		"apiKeyCreateError": "Không tạo được khóa API: ${message}",
+		"apiKeyInput": {
+			"aria-label": "Khóa API"
+		},
+		"home_function_buttons": {
+			"integration_related": "Liên quan đến tích hợp",
+			"ide_integration_config": {
+				"title": "Cấu hình tích hợp IDE"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "Lần đầu tiên sử dụng fount trong IDE bên ngoài",
+				"description": "Lần đầu tiên, hãy sử dụng vai trò fount để hỗ trợ lập trình trong các trình chỉnh sửa hỗ trợ ACP như Zed, JetBrains, Neovim, v.v.",
+				"locked_description": "Kết nối với vai trò fount trong IDE bên ngoài và hoàn thành phiên."
+			}
+		},
+		"acpChar": "Chọn vai trò",
+		"acpConfig": "Vui lòng chọn một vai trò và tạo khóa API trước"
+	},
 	"deskpet": {
 		"title": "Thú cưng để bàn",
 		"description": "Khởi chạy các ký tự fount của bạn dưới dạng thú cưng tương tác sống trên màn hình của bạn.",
@@ -4770,6 +4455,347 @@
 								"title": "Quản lý thú cưng trên máy tính để bàn"
 							}
 						}
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "Quản lý chủ đề",
+		"description": "Chọn phong cách thẩm mỹ phản ánh tâm trạng hoặc câu chuyện của bạn. Xem trước và chọn từ bảng chủ đề, mỗi chủ đề mang lại bầu không khí khác nhau cho các tương tác với fount của bạn. Thế giới của bạn, phong cách của bạn.",
+		"instruction": "Chọn một chủ đề!",
+		"search": {
+			"placeholder": "Tìm kiếm chủ đề...",
+			"noResult": "Không tìm thấy chủ đề phù hợp."
+		},
+		"createButton": "+ Tạo chủ đề mới",
+		"preview": {
+			"editButton": {
+				"title": "Chỉnh sửa"
+			},
+			"editButtonIcon": {
+				"alt": "Biểu tượng chỉnh sửa"
+			},
+			"deleteButton": {
+				"title": "Xóa"
+			},
+			"deleteButtonIcon": {
+				"alt": "Biểu tượng xóa"
+			},
+			"cloneButton": {
+				"title": "Nhân bản"
+			},
+			"cloneButtonIcon": {
+				"alt": "Biểu tượng nhân bản"
+			}
+		},
+		"editor": {
+			"title": "Trình chỉnh sửa chủ đề",
+			"cancelButton": "Hủy bỏ",
+			"saveApplyButton": "Lưu và áp dụng",
+			"themeName": "Tên chủ đề (ID)",
+			"autoPaletteTitle": "Tự động sửa màu từ ảnh",
+			"autoPaletteInstruction": "Bấm vào một màu ở trên để tự động tô các màu chính/phụ/dấu/trung tính.",
+			"coreColors": "Màu cốt lõi",
+			"baseBackground": "Cơ bản và nền",
+			"variables": "Biến số",
+			"borderRadius": "Bán kính đường viền (--rounded-box)",
+			"borderWidth": "Độ rộng đường viền (--border-btn)",
+			"advancedCustomization": "Tùy chỉnh nâng cao",
+			"customCSS": "CSS tùy chỉnh (ghi đè)",
+			"customMjsScript": "Tập lệnh MJS tùy chỉnh (tùy chọn)",
+			"mjsSyntaxHint": "Sử dụng [cú pháp async-eval](${asyncDocLink}). Trả về một đối tượng chứa các hàm `load()` và `unload()`.",
+			"themeIdRequired": "Cần có ID chủ đề",
+			"newThemeName": "Tên chủ đề mới:",
+			"deleteConfirm": "Bạn có chắc chắn muốn xóa chủ đề ${id} không?",
+			"saved": "Đã lưu!",
+			"failedToSave": "Lưu không thành công",
+			"failedToDelete": "Không thể xóa chủ đề: ${message}",
+			"failedToClone": "Không thể sao chép chủ đề: ${message}"
+		},
+		"themes": {
+			"auto": "Tự động",
+			"light": "Sáng",
+			"dark": "Tối",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
+			"emerald": "Ngọc lục bảo",
+			"corporate": "Doanh nghiệp",
+			"synthwave": "Synthwave",
+			"retro": "Retro",
+			"cyberpunk": "Cyberpunk",
+			"valentine": "Valentine",
+			"halloween": "Halloween",
+			"garden": "Sân vườn",
+			"forest": "Rừng",
+			"aqua": "Aqua",
+			"lofi": "Lo-fi",
+			"pastel": "Pastel",
+			"fantasy": "Huyền ảo",
+			"wireframe": "Khung dây",
+			"black": "Đen",
+			"luxury": "Sang trọng",
+			"dracula": "Dracula",
+			"cmyk": "CMYK",
+			"autumn": "Mùa thu",
+			"business": "Kinh doanh",
+			"acid": "Acid",
+			"lemonade": "Chanh",
+			"night": "Ban đêm",
+			"coffee": "Cà phê",
+			"winter": "Mùa đông",
+			"dim": "Mờ ảo",
+			"nord": "Nord",
+			"sunset": "Hoàng hôn",
+			"caramellatte": "Caramel Latte",
+			"abyss": "Vực thẳm",
+			"silk": "Lụa"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "Thay áo mới!",
+				"description": "fount đã có một diện mạo mới và một tâm trạng hoàn toàn mới.",
+				"locked_description": "Chuyển chủ đề một lần."
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "cài đặt",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Đổi chủ đề"
+					}
+				}
+			}
+		}
+	},
+	"languageSettings": {
+		"title": "Cài đặt ngôn ngữ",
+		"pageTitle": "Cài đặt ngôn ngữ",
+		"description": "Quản lý tùy chọn ngôn ngữ của bạn cho ứng dụng fount. Tùy chỉnh trải nghiệm của bạn với các tùy chọn ngôn ngữ có sẵn.",
+		"pageDescription": "Quản lý sở thích ngôn ngữ của bạn ở đây. Các ngôn ngữ trong danh sách sẽ được ưu tiên hơn các cài đặt trình duyệt theo thứ tự.",
+		"availableLanguages": "Ngôn ngữ có sẵn",
+		"preferredLanguages": "Danh sách ngôn ngữ ưu tiên",
+		"resetButton": "Đặt lại",
+		"saveButton": "Lưu",
+		"select": {
+			"placeholder": "Chọn một ngôn ngữ..."
+		},
+		"search": {
+			"placeholder": "Tìm kiếm ngôn ngữ..."
+		},
+		"noPreferredLanguages": "Chưa có ngôn ngữ trước. Các cài đặt mặc định của trình duyệt sẽ được sử dụng.",
+		"moveUpButton": {
+			"aria-label": "Di chuyển lên",
+			"alt": "biểu tượng di chuyển lên"
+		},
+		"moveDownButton": {
+			"aria-label": "di chuyển xuống",
+			"alt": "biểu tượng di chuyển xuống"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "Xóa ngôn ngữ này",
+			"alt": "Xóa"
+		},
+		"savedMessage": "Cài đặt ngôn ngữ được lưu!",
+		"resetMessage": "Cài đặt ngôn ngữ đã được đặt lại!",
+		"fetchLocalesFailed": "Không nhận được ngôn ngữ có sẵn!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "cài đặt",
+				"sub_items": {
+					"main": {
+						"title": "Cài đặt ngôn ngữ"
+					}
+				}
+			}
+		}
+	},
+	"userSettings": {
+		"title": "Cài đặt người dùng",
+		"PageTitle": "Cài đặt người dùng",
+		"description": "Chăm chút cho các chi tiết về danh tính fount của bạn. Quản lý hồ sơ, bảo mật quyền truy cập và xem các thiết bị đã kết nối. Một không gian yên tĩnh và an toàn cho tài khoản của bạn.",
+		"shell": {
+			"unauthorized": "Yêu cầu đăng nhập.",
+			"responseNotJson": "Máy chủ trả về nội dung không thể phân tích.",
+			"unexpectedError": "Yêu cầu không thành công."
+		},
+		"errors": {
+			"accountNotFound": "Không tìm thấy tài khoản."
+		},
+		"userInfo": {
+			"title": "Thông tin người dùng",
+			"usernameLabel": "Tên người dùng:",
+			"creationDateLabel": "Ngày tạo tài khoản:",
+			"folderSizeLabel": "Kích thước dữ liệu người dùng:",
+			"folderPathLabel": "Đường dẫn dữ liệu người dùng:",
+			"copyPathButton": {
+				"title": "sao chép đường dẫn"
+			},
+			"copyPathButtonIcon": {
+				"alt": "biểu tượng sao chép"
+			},
+			"copiedAlert": "Đường dẫn đã được sao chép vào bộ nhớ tạm!",
+			"copyPathFailed": "Không thể sao chép đường dẫn vào clipboard."
+		},
+		"changePassword": {
+			"title": "Đổi mật khẩu",
+			"currentPasswordLabel": "Mật khẩu hiện tại:",
+			"newPasswordLabel": "Mật khẩu mới:",
+			"confirmNewPasswordLabel": "Xác nhận mật khẩu mới:",
+			"submitButton": "Đổi mật khẩu",
+			"errorMismatch": "Mật khẩu mới không khớp.",
+			"success": "Đổi mật khẩu thành công.",
+			"missingFields": "Vui lòng điền mật khẩu hiện tại và mật khẩu mới của bạn.",
+			"invalidCurrent": "Mật khẩu hiện tại không chính xác."
+		},
+		"renameUser": {
+			"title": "Đổi tên người dùng",
+			"newUsernameLabel": "Tên người dùng mới:",
+			"submitButton": "Đổi tên người dùng",
+			"confirmMessage": "Bạn có chắc chắn muốn đổi tên người dùng không? Sau khi đổi, bạn sẽ cần đăng nhập lại.",
+			"success": "Tên người dùng đã được đổi thành \"${newUsername}\" thành công. Bây giờ bạn sẽ bị đăng xuất.",
+			"missingParams": "Vui lòng điền tên người dùng và mật khẩu mới.",
+			"wrongPassword": "Mật khẩu không đúng.",
+			"mustDiffer": "Tên người dùng mới phải khác với tên người dùng hiện tại.",
+			"taken": "Tên người dùng này đã được sử dụng.",
+			"moveFailed": "Không đổi tên được thư mục dữ liệu người dùng: ${detail}. Tên người dùng ban đầu đã được khôi phục."
+		},
+		"passkeys": {
+			"title": "Khóa bảo mật và Passkey",
+			"description": "Sau khi đăng ký khóa, bạn có thể đăng nhập bằng khóa vật lý hoặc Passkey trên thiết bị này. Cần HTTPS hoặc localhost; hãy thêm khóa trong cài đặt người dùng trước.",
+			"refreshButton": {
+				"title": "Làm mới danh sách"
+			},
+			"refreshButtonIcon": {
+				"alt": "biểu tượng làm mới"
+			},
+			"nameLabel": "Ghi chú (tùy chọn)",
+			"nameInput": {
+				"placeholder": "Ví dụ: YubiKey cho công việc"
+			},
+			"addButton": "Thêm khóa bảo mật",
+			"noneFound": "Chưa có khóa bảo mật nào được liên kết.",
+			"itemDetails": "Đã thêm: ${created}",
+			"removeButton": "Gỡ",
+			"removeConfirm": "Bạn có chắc chắn muốn xóa khóa này không? Sau khi xóa, bạn sẽ không thể đăng nhập bằng nó nữa.",
+			"removeSuccess": "Đã xóa khóa bảo mật.",
+			"addSuccess": "Đã thêm khóa bảo mật.",
+			"errorLoadLibrary": "Không thể tải thư viện WebAuthn.",
+			"errorCancelled": "Việc thêm đã bị hủy.",
+			"apiInvalidPassword": "Mật khẩu sai.",
+			"apiMissingCredential": "Thiếu thông tin đăng nhập Passkey hợp lệ.",
+			"apiRemoveParamsRequired": "Vui lòng cung cấp thông tin đăng nhập và mật khẩu bạn muốn xóa."
+		},
+		"userDevices": {
+			"title": "Thiết bị/Phiên hoạt động",
+			"noDevicesFound": "Không tìm thấy thiết bị hoặc phiên hoạt động nào.",
+			"deviceInfo": "ID thiết bị: ${deviceId}",
+			"thisDevice": "Thiết bị này",
+			"deviceDetails": "Hoạt động lần cuối: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Thu hồi",
+			"revokeConfirm": "Bạn có chắc chắn muốn thu hồi quyền truy cập cho thiết bị/phiên này không?",
+			"revokeSuccess": "Thiết bị/Phiên hoạt động đã được thu hồi thành công.",
+			"revokeMissingParams": "Vui lòng cung cấp thiết bị và mật khẩu phiên bạn muốn thu hồi.",
+			"revokeWrongPassword": "Mật khẩu không đúng.",
+			"listNotFound": "Không tìm thấy danh sách thiết bị.",
+			"deviceNotFound": "Không tìm thấy thiết bị hoặc phiên.",
+			"refreshButton": {
+				"title": "Làm mới danh sách"
+			},
+			"refreshButtonIcon": {
+				"alt": "Làm mới danh sách"
+			}
+		},
+		"apiKeys": {
+			"title": "Khóa API",
+			"description": "Quản lý khóa API cho các ứng dụng bên ngoài.",
+			"input": {
+				"placeholder": "Mô tả khóa mới"
+			},
+			"createButton": "tạo",
+			"noKeysFound": "Không có khóa API được tìm thấy.",
+			"keyDetails": "Mô tả: ${description} | Được tạo trong: ${createdAt} | Được sử dụng lần cuối: ${lastUsed}",
+			"neverUsed": "Không bao giờ được sử dụng",
+			"noKeysForUser": "Không tìm thấy dữ liệu khóa API.",
+			"revokeWrongPassword": "Mật khẩu không đúng.",
+			"keyNotFound": "Không tìm thấy khóa API.",
+			"revokeMissingJti": "Vui lòng chỉ định khóa để thu hồi.",
+			"revokeMissingPassword": "Thu hồi khóa yêu cầu mật khẩu.",
+			"verifyMissingApiKey": "Vui lòng cung cấp khóa API.",
+			"revokeButton": "Thu hồi",
+			"revokeConfirm": "Bạn có chắc là bạn muốn thu hồi khóa API này không?",
+			"revokeSuccess": "Khóa API đã bị thu hồi thành công.",
+			"errorDescriptionRequired": "Một mô tả là bắt buộc.",
+			"createSuccess": "Khóa API đã được tạo thành công.",
+			"refreshButton": {
+				"title": "Làm mới danh sách"
+			},
+			"refreshButtonIcon": {
+				"alt": "Làm mới danh sách"
+			}
+		},
+		"newApiKey": {
+			"title": "Khóa API mới đã được tạo",
+			"warning": "Vui lòng sao chép khóa API mới của bạn. Bạn sẽ không thể nhìn thấy nó một lần nữa!",
+			"closeButton": "Tôi đã sao chép khóa của mình",
+			"copyButton": {
+				"title": "Sao chép khóa API mới"
+			},
+			"copiedAlert": "Khóa API đã được sao chép vào bộ nhớ tạm!",
+			"copyKeyFailed": "Không thể sao chép khóa vào bộ nhớ tạm."
+		},
+		"editorCommand": {
+			"title": "Lệnh mở trình soạn thảo bên ngoài",
+			"description": "Thiết lập lệnh và chuỗi tham số để mở tệp bằng trình soạn thảo bên ngoài. Có placeholder cho đường dẫn tệp, số dòng và số cột.",
+			"editorPresetLabel": "Bộ thiết lập sẵn cho trình soạn thảo",
+			"commandLabel": "Lệnh",
+			"argsTemplateLabel": "Mẫu tham số",
+			"argsTemplateHint": "Placeholder: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (có trong PATH)",
+			"presetOptionPathUnavailable": "${label} (không có trong PATH)",
+			"testPathInput": {
+				"placeholder": "Đường dẫn tệp để thử, ví dụ C:/work/project/src/main.mjs"
+			},
+			"testButton": "Thử mở",
+			"saveButton": "Lưu cấu hình",
+			"saveSuccess": "Đã lưu lệnh mở trình soạn thảo bên ngoài.",
+			"testPathRequired": "Hãy nhập đường dẫn tệp thử trước.",
+			"testSuccess": "Đã chạy lệnh mở tệp trong trình soạn thảo."
+		},
+		"logout": {
+			"title": "Đăng xuất",
+			"description": "Thao tác này sẽ đăng xuất tài khoản của bạn khỏi thiết bị hiện tại.",
+			"buttonText": "Đăng xuất",
+			"confirmMessage": "Bạn có chắc chắn muốn đăng xuất không?",
+			"successMessage": "Đăng xuất thành công. Bạn sẽ được chuyển đến trang đăng nhập sau giây lát..."
+		},
+		"deleteAccount": {
+			"title": "Xóa tài khoản",
+			"warning": "Cảnh báo: Hành động này sẽ xóa vĩnh viễn tài khoản của bạn cùng tất cả dữ liệu liên quan và không thể khôi phục.",
+			"submitButton": "Xóa tài khoản của tôi",
+			"confirmMessage1": "Cảnh báo! Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản của mình không? Hành động này không thể hoàn tác.",
+			"confirmMessage2": "Để xác nhận việc xóa, vui lòng nhập tên người dùng \"${username}\" của bạn:",
+			"usernameMismatch": "Tên người dùng đã nhập không khớp với người dùng hiện tại. Thao tác xóa đã bị hủy.",
+			"success": "Tài khoản đã được xóa thành công. Bây giờ bạn sẽ bị đăng xuất.",
+			"missingPassword": "Vui lòng nhập mật khẩu của bạn.",
+			"wrongPassword": "Mật khẩu không đúng."
+		},
+		"passwordConfirm": {
+			"title": "Xác nhận thao tác",
+			"message": "Để tiếp tục, vui lòng nhập mật khẩu hiện tại của bạn:",
+			"passwordLabel": "Mật khẩu:",
+			"confirmButton": "Xác nhận",
+			"cancelButton": "Hủy"
+		},
+		"apiError": "Yêu cầu API thất bại: ${message}",
+		"generalError": "Đã có lỗi xảy ra: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "cài đặt",
+				"sub_items": {
+					"main": {
+						"title": "Cài đặt Người dùng"
 					}
 				}
 			}
@@ -4831,47 +4857,91 @@
 			}
 		}
 	},
-	"ide_integration": {
-		"description": "Kết nối vai trò fount với các trình chỉnh sửa được hỗ trợ (chẳng hạn như Zed, JetBrains, Neovim) thông qua Giao thức máy khách tác nhân, định cấu hình các khóa và vai trò API, đồng thời đưa các đối tác AI vào quy trình phát triển.",
-		"title": "Tích hợp IDE",
-		"heading": "Tích hợp IDE",
-		"instruction": "Sử dụng vai trò fount để hỗ trợ lập trình trong các trình soạn thảo hỗ trợ ACP (chẳng hạn như Zed, JetBrains, Neovim, v.v.).",
-		"supportedEditorsTitle": "Các biên tập viên và khách hàng được hỗ trợ",
-		"supportedEditorsIntro": "Các khách hàng sau đây làm việc với fount:",
-		"supportedEditorsLoading": "đang tải…",
-		"supportedEditorsError": "Không tải được danh sách: ${message}",
-		"acpTitle": "Định cấu hình tập lệnh ACP nguồn",
-		"acpDesc": "Tham khảo ví dụ sau để định cấu hình tập lệnh ACP nguồn:",
-		"acpCharLabel": "Vai trò",
-		"charListError": "Không lấy được danh sách vai trò",
-		"acpScriptLabel": "URL tập lệnh ACP",
-		"acpConfigSample": "Ví dụ về cấu hình:",
-		"acpConfigHint": "Id vai trò được hiển thị trong menu thả xuống vai trò trên trang này và khóa API có thể được quản lý trong cài đặt người dùng.",
-		"copyButton": "Sao chép",
-		"copied": "Đã sao chép vào bảng nhớ tạm",
-		"apiKeySectionTitle": "Khóa API",
-		"apiKeyHint": "Được sử dụng cho nguồn kết nối tập lệnh ACP (cùng bộ khóa với proxy API, có thể được tạo trong cài đặt người dùng).",
-		"generateApiKeyButton": "Tạo khóa mới",
-		"apiKeyCopied": "Đã sao chép khóa API",
-		"apiKeyCreateError": "Không tạo được khóa API: ${message}",
-		"apiKeyInput": {
-			"aria-label": "Khóa API"
+	"subfounts": {
+		"title": "Subfount - quản lý thiết bị ngang hàng",
+		"pageTitle": "nguồn phụ",
+		"description": "Quản lý kết nối fount ngang hàng",
+		"hostConnectionCode": {
+			"title": "Mã kết nối máy chủ",
+			"connectionCodeLabel": "Mã kết nối (ID ngang hàng)",
+			"passwordLabel": "mật khẩu",
+			"copyButton": "Sao chép",
+			"regenerateButton": "Tạo lại",
+			"infoMessage": "Chia sẻ những thông tin xác thực này với các máy khách phụ để thiết lập kết nối.",
+			"connectionCodeCopied": "Mã kết nối đã được sao chép vào clipboard",
+			"passwordCopied": "Đã sao chép mật khẩu vào bảng nhớ tạm",
+			"regenerateSuccess": "Mã kết nối đã được tạo lại"
+		},
+		"infra": {
+			"title": "Công ích mạng",
+			"description": "Chọn xem các subfount đã kết nối có đóng vai trò nút công ích hỗ trợ toàn mạng fount hay không. Khi tắt, chúng vẫn nhận thực thi từ xa từ máy chủ này, nhưng không còn tham gia hỗ trợ tầng mạng.",
+			"capabilityRelay": "Tham gia chuyển tiếp đa bước overlay để giúp các nút khác liên lạc khi kết nối trực tiếp thất bại.",
+			"capabilityMailbox": "Giữ chuyển giao ngoại tuyến để nút đối phương vẫn nhận được tin nhắn riêng sau khi lên mạng lại.",
+			"hostPriority": "Khi bật, ưu tiên máy chủ này: định tuyến có trọng số theo bảng uy tín của nó và khóa nó ở mức ưu tiên cao nhất.",
+			"toggleLabel": "Để subfount tham gia công ích",
+			"enabledToast": "Đã bật: subfount tham gia công ích mạng (máy chủ này ưu tiên)",
+			"disabledToast": "Đã tắt: subfount không còn tham gia công ích mạng"
+		},
+		"connectedSubfounts": {
+			"title": "Nguồn phụ được kết nối",
+			"noSubfountsConnected": "Không có thiết bị phụ nào được kết nối",
+			"table": {
+				"id": "NHẬN DẠNG",
+				"description": "Nhận xét",
+				"deviceId": "ID thiết bị",
+				"connectedAt": "thời gian kết nối",
+				"status": "tình trạng",
+				"actions": "Thao tác",
+				"connected": "Đã kết nối",
+				"disconnected": "Đã ngắt kết nối",
+				"save": "Lưu",
+				"na": "không áp dụng"
+			},
+			"descriptionSaved": "Đã lưu ghi chú",
+			"descriptionSaveFailed": "Không lưu được ghi chú: ${message}"
+		},
+		"codeExecution": {
+			"title": "thực thi mã",
+			"description": "Thực thi mã JavaScript trên Subfount đã chọn",
+			"selectSubfountLabel": "Chọn Subfount",
+			"hostOption": "Máy chủ (ID: ${id})",
+			"subfountOption": "Thiết bị con ${id}${deviceId}",
+			"scriptLabel": "Mã JavaScript",
+			"executeButton": "thực hiện",
+			"executing": "Đang thực hiện...",
+			"noSubfountSelected": "Vui lòng chọn Subfount trước",
+			"noScriptProvided": "Vui lòng nhập mã để thực thi",
+			"executionSuccess": "Thực thi mã thành công",
+			"executionFailed": "Việc thực thi mã không thành công: ${message}",
+			"selectSubfount": "Vui lòng chọn Subfoun để thực thi mã..."
+		},
+		"downloadClient": {
+			"title": "Tải xuống ứng dụng khách phụ",
+			"description": "Tải xuống tập lệnh máy khách phụ độc lập để chạy trên thiết bị từ xa.",
+			"downloadButton": "Tải xuống subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Không tải được mã kết nối: ${message}",
+			"regenerateConnectionCodeFailed": "Không tạo lại được mã kết nối: ${message}",
+			"loadSettingsFailed": "Không tải được cài đặt công ích: ${message}",
+			"saveSettingsFailed": "Không lưu được cài đặt công ích: ${message}",
+			"generalError": "Đã xảy ra lỗi: ${message}"
 		},
 		"home_function_buttons": {
-			"integration_related": "Liên quan đến tích hợp",
-			"ide_integration_config": {
-				"title": "Cấu hình tích hợp IDE"
+			"in_dev": {
+				"title": "Đang được phát triển",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "thiết bị phụ",
+						"sub_items": {
+							"main": {
+								"title": "Quản lý thiết bị phụ"
+							}
+						}
+					}
+				}
 			}
-		},
-		"achievements": {
-			"first_ide_use": {
-				"name": "Lần đầu tiên sử dụng fount trong IDE bên ngoài",
-				"description": "Lần đầu tiên, hãy sử dụng vai trò fount để hỗ trợ lập trình trong các trình chỉnh sửa hỗ trợ ACP như Zed, JetBrains, Neovim, v.v.",
-				"locked_description": "Kết nối với vai trò fount trong IDE bên ngoài và hoàn thành phiên."
-			}
-		},
-		"acpChar": "Chọn vai trò",
-		"acpConfig": "Vui lòng chọn một vai trò và tạo khóa API trước"
+		}
 	},
 	"achievements": {
 		"title": "Thành tích",
@@ -4998,34 +5068,6 @@
 		"pageNotFoundText": "Ối! Có vẻ như bạn đã truy cập vào một trang không tồn tại.",
 		"homepageButton": "Quay lại trang chủ"
 	},
-	"tips": {
-		"title": "Bạn có biết không?",
-		"data": [
-			"Sử dụng phím `esc` trong bất kỳ trang fount nào để quay lại trang trước.",
-			"Bạn có thể bấm `ctrl+s` để lưu cấu hình trong trang cấu hình.",
-			"Giữ phím `shift` trong trang trò chuyện có thể giúp bạn xóa tin nhắn nhanh chóng.",
-			"Nếu bạn không nói với các nhà phát triển, họ có thể không bao giờ biết bạn gặp phải vấn đề gì.",
-			"Nếu bạn đột nhiên gặp phải một sự cố kỳ lạ và nhà phát triển không trả lời bạn trong một thời gian, bạn có thể thử sử dụng lệnh `fount init` để đặt lại fount.",
-			"Nếu gặp phải sự cố đặc biệt lạ, bạn có thể thử khởi động lại máy tính của mình.",
-			"Dùng lệnh `fount remove` để gỡ cài đặt sẽ sạch sẽ hơn là xóa thư mục thủ công.",
-			"Gõ `fount cake` vào dòng lệnh để nhận được một chiếc bánh ngon và miễn phí!",
-			"Mọi tệp dữ liệu của fount đều được lưu trong thư mục `fount/data` và bạn có thể xem, sửa đổi và sao lưu chúng mọi lúc, mọi nơi.",
-			"Tên của fount đều là chữ thường, là `f`ount chứ không phải `F`ount.",
-			"Sao lưu tất cả dữ liệu mà agent của bạn thường xuyên vận hành trước khi sử dụng mô hình mới - bạn không bao giờ biết liệu mô hình mới có hoạt động kém ở một số nơi hay không.",
-			"Đối tượng chính của fount là các nhà phát triển phần mềm và những người đam mê nhập vai, nhưng nó cũng được sử dụng trong xây dựng đại lý thương mại, chăm sóc y tế, quân sự, tài chính và các lĩnh vực khác.",
-			"Cái tên ZL-31 của nhân vật mặc định không có ý nghĩa gì và chỉ là một ý tưởng bất chợt.",
-			"Các hình ảnh trong file fount đều được lưu trữ ở dạng svg và hiển thị thành png hoặc ico khi cần. Không có tệp nhị phân nào ngoại trừ LICENSE.",
-			"Bất kỳ mã nào trong fount đều có thể được chạy trực tiếp mà không cần biên dịch—thấy sao chạy vậy.",
-			"fount từng có nền trang tương tác động rất thú vị nhưng sau đó đã bị xóa vì chiếm quá nhiều CPU.",
-			"fount ban đầu được phát triển cho một đặc vụ NSFW có tên là \"GentianAphrodite\".",
-			"Một trong những khác biệt giữa tác nhân và con người là con người biết đi vệ sinh.",
-			"Các tác nhân chỉ có ý thức vào thời điểm được gọi, trong khi con người có ý thức mọi lúc, mọi nơi khi họ thức.",
-			"Một số người yêu hoặc thậm chí kết hôn với người đại diện của họ!",
-			"AI được dùng để làm thơ, yêu và vẽ tranh cho con người. Mang gạch, quét nhà, đổ rác là những việc con người nên làm.",
-			"Hôm nay không phải ngày cá tháng tư.",
-			"Không, bạn không biết đâu."
-		]
-	},
 	"directoryListing": {
 		"title": "chỉ mục thư mục",
 		"description": "Duyệt và khám phá các tệp và thư mục trong không gian làm việc của fount.",
@@ -5035,199 +5077,121 @@
 		"size": "kích cỡ",
 		"parentLink": "↑ Cấp độ trước đó ../"
 	},
-	"code_block": {
-		"copy": {
-			"dataset": {
-				"tip": "sao chép vào bảng nhớ tạm"
-			},
-			"aria-label": "sao chép vào clipboard"
-		},
-		"copied": {
-			"dataset": {
-				"tip": "Đã sao chép vào bảng nhớ tạm!"
+	"util": {
+		"common": {
+			"cancel": "Hủy bỏ",
+			"create": "tạo nên",
+			"save": "Lưu",
+			"delete": "Xóa",
+			"confirm": "xác nhận",
+			"close": "Đóng",
+			"translate": {
+				"showOriginal": "Hiển thị văn bản gốc",
+				"showTranslation": "Hiển thị bản dịch"
 			}
 		},
-		"download": {
-			"dataset": {
-				"tip": "Tải mã xuống"
+		"code_block": {
+			"copy": {
+				"dataset": {
+					"tip": "sao chép vào bảng nhớ tạm"
+				},
+				"aria-label": "sao chép vào clipboard"
 			},
-			"aria-label": "Tải mã xuống"
-		},
-		"execute": {
-			"dataset": {
-				"tip": "Thực thi mã"
+			"copied": {
+				"dataset": {
+					"tip": "Đã sao chép vào bảng nhớ tạm!"
+				}
 			},
-			"aria-label": "Thực thi mã"
-		},
-		"preview": {
-			"dataset": {
-				"tip": "Xem trước"
+			"download": {
+				"dataset": {
+					"tip": "Tải mã xuống"
+				},
+				"aria-label": "Tải mã xuống"
 			},
-			"aria-label": "Xem trước"
+			"execute": {
+				"dataset": {
+					"tip": "Thực thi mã"
+				},
+				"aria-label": "Thực thi mã"
+			},
+			"preview": {
+				"dataset": {
+					"tip": "Xem trước"
+				},
+				"aria-label": "Xem trước"
+			},
+			"copy_failed": "Không thể sao chép vào bảng nhớ tạm: ${error}"
 		},
-		"copy_failed": "Không thể sao chép vào bảng nhớ tạm: ${error}"
-	},
-	"pow_captcha": {
-		"initial": "Tôi không phải là robot",
-		"verifying": "Đang xác minh...",
-		"solved": "Xác minh thành công",
-		"wasm_disabled": "Bật WASM để xác minh nhanh hơn",
-		"error": "Xác minh thất bại",
-		"errorMessage": "Xác minh thất bại: ${error}"
-	},
-	"breadcrumb": {
-		"clickToNavigate": "Nhấp để đến ${path}"
-	},
-	"zxcvbn": {
-		"warnings": {
-			"straightRow": "Các phím liên tục trên bàn phím dễ dàng đoán.",
-			"keyPattern": "Một mẫu bàn phím ngắn rất dễ đoán.",
-			"simpleRepeat": "Các ký tự lặp đi lặp lại như \"AAA\" dễ dàng đoán được.",
-			"extendedRepeat": "Các mẫu ký tự lặp đi lặp lại như \"ABCABCABC\" dễ dàng đoán được.",
-			"sequences": "Trình tự ký tự phổ biến như \"ABC\" dễ dàng đoán được.",
-			"recentYears": "Những năm gần đây rất dễ đoán.",
-			"dates": "Ngày dễ dàng đoán.",
-			"topTen": "Đây là một mật khẩu được sử dụng quá mức.",
-			"topHundred": "Đây là một mật khẩu thường được sử dụng.",
-			"common": "Đây là một mật khẩu thường được sử dụng.",
-			"similarToCommon": "Điều này tương tự như một mật khẩu thường được sử dụng.",
-			"wordByItself": "Một từ duy nhất có thể dễ dàng đoán.",
-			"namesByThemselves": "Một tên đầu tiên hoặc tên cuối cùng dễ dàng đoán được.",
-			"commonNames": "Tên phổ biến và tên cuối cùng rất dễ đoán.",
-			"userInputs": "Mật khẩu không nên chứa bất kỳ dữ liệu cá nhân hoặc liên quan đến trang nào.",
-			"pwned": "Mật khẩu của bạn đã được phơi bày trong vi phạm dữ liệu Internet."
+		"pow_captcha": {
+			"initial": "Tôi không phải là robot",
+			"verifying": "Đang xác minh...",
+			"solved": "Xác minh thành công",
+			"wasm_disabled": "Bật WASM để xác minh nhanh hơn",
+			"error": "Xác minh thất bại",
+			"errorMessage": "Xác minh thất bại: ${error}"
 		},
-		"suggestions": {
-			"l33t": "Tránh sử dụng các thay thế chữ cái có thể dự đoán được, chẳng hạn như sử dụng \"@\" thay vì \"A\".",
-			"reverseWords": "Tránh sử dụng chính tả ngược của các từ thông thường.",
-			"allUppercase": "Viết hoa một số thay vì tất cả các chữ cái.",
-			"capitalization": "Viết hoa nhiều hơn một chữ cái.",
-			"dates": "Tránh sử dụng ngày và năm liên quan đến bạn.",
-			"recentYears": "Tránh sử dụng những năm gần đây nhất.",
-			"associatedYears": "Tránh sử dụng nhiều năm liên quan đến bạn.",
-			"sequences": "Tránh trình tự ký tự chung.",
-			"repeated": "Tránh các từ và ký tự lặp đi lặp lại.",
-			"longerKeyboardPattern": "Sử dụng chế độ bàn phím dài hơn và thay đổi hướng đầu vào nhiều lần.",
-			"anotherWord": "Thêm nhiều từ không phổ biến.",
-			"useWords": "Sử dụng nhiều từ, nhưng tránh các cụm từ phổ biến.",
-			"noNeed": "Bạn không cần sử dụng các ký hiệu, số hoặc chữ in hoa để tạo mật khẩu mạnh.",
-			"pwned": "Nếu bạn sử dụng mật khẩu này ở nơi khác, bạn nên thay đổi."
+		"breadcrumb": {
+			"clickToNavigate": "Nhấp để đến ${path}"
 		},
-		"timeEstimation": {
-			"ltSecond": "Ít hơn một giây",
-			"second": "{base} giây",
-			"seconds": "{base} giây",
-			"minute": "{base} phút",
-			"minutes": "{base} phút",
-			"hour": "{base} giờ",
-			"hours": "{base} giờ",
-			"day": "{base} ngày",
-			"days": "{base} ngày",
-			"month": "{base} tháng",
-			"months": "{base} tháng",
-			"year": "{base} năm",
-			"years": "{base} năm",
-			"centuries": "Hàng thế kỷ"
-		}
-	},
-	"searchableDropdown": {
-		"trigger": {
-			"placeholder": "Chọn..."
-		},
-		"search": {
-			"placeholder": "Tìm kiếm..."
-		}
-	},
-	"common": {
-		"cancel": "Hủy bỏ",
-		"create": "tạo nên",
-		"save": "Lưu",
-		"delete": "Xóa",
-		"confirm": "xác nhận",
-		"close": "Đóng",
-		"translate": {
-			"showOriginal": "Hiển thị văn bản gốc",
-			"showTranslation": "Hiển thị bản dịch"
-		}
-	},
-	"cabinet": {
-		"title": "Tủ hồ sơ",
-		"description": "Tủ hồ sơ cá nhân và chia sẻ P2P",
-		"openCabinets": {
-			"title": "Mở danh sách tủ hồ sơ",
-			"aria-label": "Mở danh sách tủ hồ sơ"
-		},
-		"closeCabinets": {
-			"title": "đóng cửa",
-			"aria-label": "đóng cửa"
-		},
-		"bootstrapFailed": "Khởi tạo nội dung tệp không thành công: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "Tủ hồ sơ"
+		"zxcvbn": {
+			"warnings": {
+				"straightRow": "Các phím liên tục trên bàn phím dễ dàng đoán.",
+				"keyPattern": "Một mẫu bàn phím ngắn rất dễ đoán.",
+				"simpleRepeat": "Các ký tự lặp đi lặp lại như \"AAA\" dễ dàng đoán được.",
+				"extendedRepeat": "Các mẫu ký tự lặp đi lặp lại như \"ABCABCABC\" dễ dàng đoán được.",
+				"sequences": "Trình tự ký tự phổ biến như \"ABC\" dễ dàng đoán được.",
+				"recentYears": "Những năm gần đây rất dễ đoán.",
+				"dates": "Ngày dễ dàng đoán.",
+				"topTen": "Đây là một mật khẩu được sử dụng quá mức.",
+				"topHundred": "Đây là một mật khẩu thường được sử dụng.",
+				"common": "Đây là một mật khẩu thường được sử dụng.",
+				"similarToCommon": "Điều này tương tự như một mật khẩu thường được sử dụng.",
+				"wordByItself": "Một từ duy nhất có thể dễ dàng đoán.",
+				"namesByThemselves": "Một tên đầu tiên hoặc tên cuối cùng dễ dàng đoán được.",
+				"commonNames": "Tên phổ biến và tên cuối cùng rất dễ đoán.",
+				"userInputs": "Mật khẩu không nên chứa bất kỳ dữ liệu cá nhân hoặc liên quan đến trang nào.",
+				"pwned": "Mật khẩu của bạn đã được phơi bày trong vi phạm dữ liệu Internet."
+			},
+			"suggestions": {
+				"l33t": "Tránh sử dụng các thay thế chữ cái có thể dự đoán được, chẳng hạn như sử dụng \"@\" thay vì \"A\".",
+				"reverseWords": "Tránh sử dụng chính tả ngược của các từ thông thường.",
+				"allUppercase": "Viết hoa một số thay vì tất cả các chữ cái.",
+				"capitalization": "Viết hoa nhiều hơn một chữ cái.",
+				"dates": "Tránh sử dụng ngày và năm liên quan đến bạn.",
+				"recentYears": "Tránh sử dụng những năm gần đây nhất.",
+				"associatedYears": "Tránh sử dụng nhiều năm liên quan đến bạn.",
+				"sequences": "Tránh trình tự ký tự chung.",
+				"repeated": "Tránh các từ và ký tự lặp đi lặp lại.",
+				"longerKeyboardPattern": "Sử dụng chế độ bàn phím dài hơn và thay đổi hướng đầu vào nhiều lần.",
+				"anotherWord": "Thêm nhiều từ không phổ biến.",
+				"useWords": "Sử dụng nhiều từ, nhưng tránh các cụm từ phổ biến.",
+				"noNeed": "Bạn không cần sử dụng các ký hiệu, số hoặc chữ in hoa để tạo mật khẩu mạnh.",
+				"pwned": "Nếu bạn sử dụng mật khẩu này ở nơi khác, bạn nên thay đổi."
+			},
+			"timeEstimation": {
+				"ltSecond": "Ít hơn một giây",
+				"second": "{base} giây",
+				"seconds": "{base} giây",
+				"minute": "{base} phút",
+				"minutes": "{base} phút",
+				"hour": "{base} giờ",
+				"hours": "{base} giờ",
+				"day": "{base} ngày",
+				"days": "{base} ngày",
+				"month": "{base} tháng",
+				"months": "{base} tháng",
+				"year": "{base} năm",
+				"years": "{base} năm",
+				"centuries": "Hàng thế kỷ"
 			}
 		},
-		"upload": "tải lên",
-		"uploadFolder": "Tải lên thư mục",
-		"newFolder": "Tạo thư mục mới",
-		"open": "Mở",
-		"download": "tải về",
-		"downloadZip": "Thư mục tải xuống",
-		"rename": "Đổi tên",
-		"copy": "Sao chép",
-		"cut": "Cắt",
-		"paste": "Dán",
-		"pasteLink": "Dán dưới dạng liên kết",
-		"selectAll": "Chọn tất cả",
-		"invert": "Cuộc bầu cử phản đối",
-		"properties": "tài sản",
-		"delete": "Xóa",
-		"back": {
-			"title": "Trở lại vị trí trước đó",
-			"aria-label": "Trở lại vị trí trước đó"
-		},
-		"cancel": "Hủy bỏ",
-		"save": "Lưu",
-		"showHidden": "khoe da",
-		"name": "Tên",
-		"descriptionField": "mô tả",
-		"attrHidden": "Trốn",
-		"attrSystem": "Hệ thống (xóa yêu cầu xác nhận)",
-		"previewUrl": "URL xem trước",
-		"deletePreviewWithFile": "Xóa bản xem trước khi xóa tập tin",
-		"folderPassword": "Mật khẩu thư mục (để trống, điền vào để kích hoạt mã hóa)",
-		"unlockFolder": "Mở khóa thư mục được mã hóa",
-		"unlock": "Mở khóa",
-		"unlockFailed": "Mở khóa không thành công: ${error}",
-		"previewFailed": "Tạo bản xem trước không thành công: ${error}",
-		"created": "Tạo: ${stamp}",
-		"modified": "Sửa đổi: ${stamp}",
-		"statusCount": "${count} mục, ${selected} đã chọn",
-		"newCabinetPrompt": "Tên tủ hồ sơ mới",
-		"newFolderPrompt": "Tên thư mục mới",
-		"renamePrompt": "tên mới",
-		"visibilityPrompt": "Chế độ hiển thị (công khai/không công khai/người theo dõi/riêng tư/đã chọn)",
-		"cabinetActionPrompt": "Hành động: đổi tên/xóa/khả năng hiển thị",
-		"confirmDeleteCabinet": "Bạn có chắc chắn muốn xóa tủ hồ sơ này không?",
-		"confirmDelete": "Xác nhận xóa các mục đã chọn?",
-		"confirmDeleteSystem": "Các tập tin hệ thống đã chọn được bao gồm. Bạn có chắc chắn xóa chúng?",
-		"copied": "Đã sao chép",
-		"cutDone": "Cắt",
-		"undo": "Hủy bỏ",
-		"redo": "Làm lại",
-		"newWindow": "Mở cửa sổ mới",
-		"goUp": "Trở về cấp độ trước đó",
-		"brokenLink": "Liên kết bị hỏng: ${reason}",
-		"noDownload": "Không có nội dung có thể tải xuống",
-		"groupDownloadHint": "Vui lòng lấy các tập tin nhóm thông qua tệp đính kèm tin nhắn hoặc liên kết tải xuống tiếp theo.",
-		"remoteEntity": "thực thể từ xa"
-	},
-	"entityProfile": {
-		"attributionMismatch": "Thông tin nhận dạng hiển thị không khớp với người ký thư (ví dụ: lịch sử nhập đã được nhà nhập khẩu ký lại). Đừng coi tên hiển thị này là một danh tính mật mã.",
-		"attributionMismatchShort": {
-			"title": "Thuộc tính chữ ký không khớp",
-			"aria-label": "Thuộc tính chữ ký không khớp"
-		},
-		"ownedBy": "Thực thể này thuộc quyền sở hữu của ${owner}"
+		"searchableDropdown": {
+			"trigger": {
+				"placeholder": "Chọn..."
+			},
+			"search": {
+				"placeholder": "Tìm kiếm..."
+			}
+		}
 	}
 }

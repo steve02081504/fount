@@ -2,6 +2,19 @@
 
 Framework-agnostic traps that only matter when writing those suites. Prefer semantic helpers over raw HTTP scans.
 
+## Live layering
+
+Prefer smoke → e2e gates; do not jump straight to full e2e.
+
+- Chat: `server:live` → `smoke_chat` → `e2e_single` → `e2e_single_extended` / `frontend`
+- Social: similar via `smoke_social`
+- WS: `ws` → `ws_rpc` → `ws_stream`
+- Federation: `fed_core` → feature suites. Cross-shell fed probes depend on `fed_core` + `fed_emoji` + `smoke_social`, not full social e2e.
+
+**Triggers follow the same gate**: `shellBackend` only on `pure` / `integration` / `smoke_*`; deeper live suites watch infra + their own script (like fed suites).
+
+Native-addon / WebRTC: one `.test.mjs` per Deno child when the addon panics under reuse. Federation live needs `node-datachannel`. Signaling: [signaling.md](../../p2p/docs/signaling.md).
+
 ## Live federation
 
 - Reuse `InitializeOpenGroupJoin` / `InitializeOpenGroupJoinMulti` from `live/federation/common.mjs` (`WarmupFedNodeLinks` → `rebind` → members gate → re-invite fallback). Bare create→invite→join without warmup hangs at `members>=2`.
@@ -21,7 +34,7 @@ Spawn via `fount/scripts/test/node/launch.mjs`, seed with env scenario + bootstr
 
 ## Bluetooth / BLE
 
-fount-p2p treats BLE as optional: `canUseBluetoothRuntime` probes cheap hardware hints then load+poweredOn; any failure → unavailable and other discovery/link providers take over. Do not add env kill-switches for tests — degrade is the contract.
+fount-p2p treats BLE as optional: probe fails → unavailable and other discovery/link providers take over. Do not add env kill-switches for tests — degrade is the contract.
 
 ## Disposable data paths
 

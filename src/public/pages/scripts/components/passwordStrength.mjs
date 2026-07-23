@@ -26,7 +26,7 @@ const PASSWORD_TEXT_CLASSES = PASSWORD_STRENGTH_BY_SCORE.map(({ textClass }) => 
  * @returns {void}
  */
 function updateZxcvbnTranslations() {
-	zxcvbnInstance.options.setOptions({ translations: geti18n('zxcvbn') })
+	zxcvbnInstance.options.setOptions({ translations: geti18n('util.zxcvbn') })
 }
 
 /**

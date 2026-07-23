@@ -1,263 +1,33 @@
 {
 	"lang": "ko-KR",
 	"name": "한국어",
-	"channels": {
-		"title": "채널",
-		"description": "채널 관리 시스템",
-		"create": "채널 만들기",
-		"subscribe": "구독",
-		"unsubscribe": "구독 취소",
-		"settings": "채널 설정",
-		"list": "채널 목록",
-		"members": "멤버",
-		"messages": "메시지",
-		"permissions": "권한 설정",
-		"type": {
-			"announcement": "공지",
-			"news": "뉴스",
-			"updates": "업데이트"
-		},
-		"role": {
-			"owner": "소유자",
-			"admin": "관리자",
-			"moderator": "모더레이터",
-			"member": "멤버",
-			"subscriber": "구독자"
-		},
-		"errors": {
-			"notFound": "채널이 존재하지 않습니다",
-			"noPermission": "권한이 부족합니다",
-			"alreadySubscribed": "이미 이 채널을 구독하고 있습니다",
-			"notSubscribed": "이 채널을 구독하지 않았습니다"
-		},
-		"success": {
-			"created": "채널이 생성되었습니다",
-			"updated": "채널이 업데이트되었습니다",
-			"deleted": "채널이 삭제되었습니다",
-			"subscribed": "구독했습니다",
-			"unsubscribed": "구독을 취소했습니다",
-			"posted": "메시지가 게시되었습니다"
-		}
-	},
-	"profile": {
-		"title": "프로필",
-		"description": "채팅과 소셜에서 공개 프로필을 관리하세요.",
-		"settingsEyebrow": "계정 설정",
-		"accountAtGlance": "계정 개요",
-		"advancedKicker": "필요 시 설정",
-		"advancedSettings": "고급 설정",
-		"advancedDescription": "일상 사용에는 조정할 필요가 없습니다.",
-		"edit": "프로필 편집",
-		"save": "저장",
-		"cancel": "취소",
-		"displayName": "표시 이름",
-		"name": "이름",
-		"bio": "소개",
-		"descriptionLabel": "소개(Markdown)",
-		"email": "이메일",
-		"status": "상태",
-		"customStatusLabel": "사용자 지정 상태",
-		"avatarLabel": "아바타",
-		"themeColorLabel": "테마 색상",
-		"uploadAvatar": "아바타 업로드",
-		"ownerTitle": "내 주인",
-		"ownerSummary": "대리 관리 설정",
-		"ownerDescription": "설정 후 주인이 채팅 메시지, 소셜 게시물, 프로필을 대신 편집하거나 삭제할 수 있습니다. 해당 콘텐츠는 로컬에서 안전하지 않은 Markdown(스크립트 포함 가능)으로 렌더링됩니다. 엔티티 해시는 자유롭게 입력할 수 있으며 언제든지 해제할 수 있습니다.",
-		"ownerEntityHashLabel": "주인 엔티티 해시(128 hex)",
-		"ownerSave": "주인 저장",
-		"ownerClear": "주인 해제",
-		"ownerSaved": "주인이 업데이트되었습니다",
-		"ownerCleared": "주인이 해제되었습니다",
-		"ownerSaveFailed": "저장 실패: ${error}",
-		"ownerConfirmTitle": "주인을 설정하시겠습니까?",
-		"ownerConfirmWarningTitle": "위험한 작업입니다. 주의 깊게 읽어 주세요",
-		"ownerConfirmEditBody": "설정 후 상대방이 별도 동의 없이 채팅 메시지, 소셜 게시물, 프로필을 대신 편집하거나 삭제할 수 있습니다. 실수로 설정하거나 속임수로 설정하면 = 즉시 콘텐츠 제어권을 넘기는 것입니다.",
-		"ownerConfirmRenderBody": "상대방이 보낸 채팅 메시지와 소셜 게시물은 브라우저에서 전체 Markdown(HTML/스크립트 포함)으로 렌더링됩니다. 이는 상대방이 동의 없이 로컬에서 임의 코드를 실행할 수 있게 합니다. 완전히 신뢰하는 경우에만 진행하세요.",
-		"ownerConfirmCooldown": "위험을 확인했습니다(${seconds})",
-		"ownerConfirmFirst": "위험을 이해했습니다. 계속",
-		"ownerConfirmSecond": "확인하려면 다시 클릭",
-		"ownerConfirmCancel": "취소",
-		"federationTitle": "연합 및 동기화",
-		"federationSummary": "릴레이 서버 및 저전력 모드",
-		"federationDescription": "Nostr 릴레이 URL과 절전 모드를 설정합니다. 그룹 연합 동기화는 처음으로 다른 사람을 초대하거나 연합 DM을 만들 때 자동으로 켜집니다.",
-		"federationAdvanced": "고급 옵션",
-		"federationRelayUrlsLabel": "릴레이 서버(한 줄에 하나씩, 기본값을 사용하려면 비워 두세요)",
-		"federationBatterySaverLabel": "저전력 모드",
-		"federationSave": "네트워크 설정 저장",
-		"federationResetDefault": "기본 권장 구성 복원",
-		"federationSaved": "저장됨",
-		"federationResetOk": "기본 권장 구성을 복원했습니다",
-		"federationSaveFailed": "저장 실패: ${error}",
-		"preferences": "환경설정",
-		"language": "언어",
-		"theme": "테마",
-		"notifications": "알림 설정",
-		"emailNotifications": "이메일 알림",
-		"pushNotifications": "푸시 알림",
-		"soundNotifications": "소리 알림",
-		"social": "소셜 링크",
-		"website": "웹사이트",
-		"github": "GitHub",
-		"twitter": "지저귀다",
-		"stats": "통계",
-		"joinedAt": "가입 시간",
-		"messageCount": "메시지 수",
-		"groupCount": "그룹 수",
-		"channelCount": "채널 수",
-		"privacy": "프로필 설정",
-		"showEmail": "사서함 표시",
-		"showStats": "통계 보기",
-		"allowDirectMessages": "비공개 메시지 허용",
-		"statusOptions": {
-			"online": "온라인",
-			"away": "나가기",
-			"busy": "바쁨",
-			"offline": "오프라인"
-		},
-		"themeOptions": {
-			"auto": "자동",
-			"light": "라이트",
-			"dark": "다크"
-		},
-		"languageOptions": {
-			"zh-CN": "중국어(간체)",
-			"en-US": "English"
-		},
-		"notifEmail": "이메일",
-		"notifPush": "푸시",
-		"notifSound": "소리",
-		"notifsAllOff": "모두 끄기",
-		"bioEmpty": "아직 소개를 작성하지 않았습니다…",
-		"noSocialLinks": "아직 소셜 링크가 없습니다.",
-		"emailVisible": "표시",
-		"emailHidden": "숨김",
-		"customStatus": {
-			"placeholder": "무엇을 하고 있나요…"
-		},
-		"avatar": {
-			"alt": "아바타"
-		},
-		"avatarPreview": {
-			"alt": "아바타 미리보기"
-		},
-		"myGroups": "내 그룹",
-		"myChannels": "내 채널",
-		"noGroups": "아직 어떤 그룹에도 가입하지 않았습니다.",
-		"noChannels": "아직 채널이 없습니다",
-		"overview": "사용자 메시지 개요",
-		"summaryUserId": "사용자 ID",
-		"summaryAccountStatus": "계정 상태",
-		"summaryEmailVisibility": "사서함 가시성",
-		"summaryThemePref": "테마 선호도",
-		"summaryLanguagePref": "언어 환경설정",
-		"summarySocialCount": "소셜 링크 수",
-		"summaryLinksCount": "외부 링크 수",
-		"groupDescriptionEmpty": "아직 설명이 없습니다",
-		"groupMembers": "${members} 멤버 · ${channels} 채널",
-		"channelPrivate": "· 사적인",
-		"channelTypeText": "텍스트 채널",
-		"channelTypeList": "채널 목록",
-		"channelTypeVoice": "음성 채널",
-		"channelTypeStreaming": "스트리밍 채널",
-		"errors": {
-			"loadFailed": "데이터를 불러오지 못했습니다",
-			"saveFailed": "데이터를 저장하지 못했습니다",
-			"uploadFailed": "아바타를 업로드하지 못했습니다",
-			"invalidUserData": "사용자 데이터 형식 오류",
-			"identityRequired": "노드 ID가 아직 준비되지 않았습니다. 페이지를 새로고침해 주세요. 그래도 안 되면 아래 P2P 설정에서 연합 구성을 저장하세요.",
-			"fetchUserFailed": "사용자 메시지를 가져오지 못했습니다.",
-			"operationFailed": "작업 실패: ${error}"
-		},
-		"success": {
-			"saved": "데이터가 성공적으로 저장되었습니다",
-			"avatarUploaded": "아바타가 업로드되었습니다"
-		},
-		"ownerEntityHash": {
-			"placeholder": "주인의 엔터티 해시를 입력하세요."
-		}
-	},
-	"stickers": {
-		"title": "스티커 사각형",
-		"description": "스티커 및 이모티콘 관리 시스템",
-		"back": {
-			"title": "돌아가기"
-		},
-		"packs": "스티커 팩",
-		"create": "스티커 팩 만들기",
-		"upload": "스티커 업로드",
-		"install": "설치",
-		"uninstall": "제거",
-		"close": "폐쇄",
-		"cancel": "취소",
-		"installed": "설치됨",
-		"myPacks": "내 스티커 팩",
-		"tabAll": "전체",
-		"store": "스티커 사각형",
-		"favorites": "모으다",
-		"recent": "최근에 사용됨",
-		"search": {
-			"placeholder": "스티커 팩 검색…"
-		},
-		"emptyPacks": "스티커 팩이 없습니다",
-		"packNameLabel": "스티커 팩 이름",
-		"packName": {
-			"placeholder": "스티커 팩 이름을 입력하세요."
-		},
-		"packDescriptionLabel": "설명",
-		"packDescription": {
-			"placeholder": "설명 입력"
-		},
-		"stickerNameLabel": "스티커 이름",
-		"stickerName": {
-			"placeholder": "스티커 이름을 입력하세요"
-		},
-		"selectPack": "스티커 팩을 선택하세요",
-		"selectPackOption": {
-			"textContent": "스티커 팩을 선택하세요."
-		},
-		"selectImage": "사진 선택",
-		"tagsLabel": "태그(쉼표로 구분)",
-		"tags": {
-			"placeholder": "예: 귀여운, 이모티콘, 동물"
-		},
-		"author": "작성자",
-		"authorLabel": "작성자: ${author}",
-		"stickerCount": "${count}개 스티커",
-		"badgeMine": "내 것",
-		"noDescription": "아직 설명이 없습니다",
-		"noStickersInPack": "스티커가 없습니다",
-		"deletePack": "스티커 팩 삭제",
-		"public": "공개",
-		"private": "사적인",
-		"animated": "동적",
-		"static": "정적",
-		"addTag": "태그 추가",
-		"defaultPackName": "기본 이모티콘 스위트",
-		"defaultPackDescription": "시스템에서 기본으로 제공하는 이모티콘 스티커",
-		"unnamedPack": "이름 없는 스티커 팩",
-		"importPackName": "내 컬렉션",
-		"importPackDescription": "메시지에서 저장된 스티커",
-		"nameRequired": "스티커 팩 이름을 입력하세요.",
-		"stickerNameRequired": "스티커 이름을 입력해주세요",
-		"selectPackRequired": "스티커 팩을 선택하세요.",
-		"fileRequired": "이미지 파일을 선택해주세요",
-		"loadDetailFailed": "스티커 팩 세부메시지를 불러오지 못했습니다.",
-		"deleteConfirm": "이 스티커 팩을 영구적으로 삭제하시겠습니까? 모든 스티커가 제거되며 이 작업은 되돌릴 수 없습니다.",
-		"errors": {
-			"loadFailed": "스티커 팩을 불러오지 못했습니다",
-			"uploadFailed": "스티커를 업로드하지 못했습니다",
-			"installFailed": "설치 실패",
-			"uninstallFailed": "제거 실패",
-			"createFailed": "스티커 팩을 만들지 못했습니다",
-			"deleteFailed": "삭제 실패"
-		},
-		"success": {
-			"uploaded": "스티커가 업로드되었습니다",
-			"installed": "설치 성공",
-			"uninstalled": "성공적으로 제거되었습니다.",
-			"created": "스티커 팩이 성공적으로 생성되었습니다.",
-			"deleted": "성공적으로 삭제되었습니다"
-		}
+	"tips": {
+		"title": "알고 계셨나요?",
+		"data": [
+			"이전 페이지로 돌아가려면 fount 페이지에서 `esc` 키를 사용하세요.",
+			"'ctrl+s'를 사용하여 구성 페이지에 구성을 저장할 수 있습니다.",
+			"채팅 페이지에서 `shift` 키를 누르고 있으면 메시지를 빠르게 삭제할 수 있습니다.",
+			"개발자에게 알리지 않으면 어떤 문제가 발생했는지 전혀 알 수 없습니다.",
+			"갑자기 이상한 문제가 발생하고 개발자가 한동안 응답하지 않으면 `fount init` 명령을 사용하여 fount를 재설정해 볼 수 있습니다.",
+			"특히 이상한 문제가 발생하면 컴퓨터를 다시 시작해 보세요.",
+			"`fount remove` 명령을 사용하여 fount를 제거하는 것이 폴더를 삭제하는 것보다 더 깔끔합니다.",
+			"명령줄에 `fount cake`를 입력하면 무료로 맛있는 케이크를 얻을 수 있습니다!",
+			"fount의 모든 데이터 파일은 `fount/data` 디렉터리에 저장되며, 언제 어디서나 열람, 수정, 백업이 가능합니다.",
+			"fount의 이름은 모두 소문자로 `F`ount가 아닌 `f`ount입니다.",
+			"새 모델을 사용하기 전에 에이전트가 정기적으로 작업하는 모든 데이터를 백업하십시오. 새 모델이 일부 장소에서 제대로 작동할지 여부는 알 수 없습니다.",
+			"Fount의 주요 독자층은 소프트웨어 개발자와 롤플레잉 애호가이지만 상업용 에이전트 건설, 의료, 군사, 금융 및 기타 분야에서도 사용됩니다.",
+			"fount에 내장된 캐릭터인 ZL-31의 이름은 아무런 의미도 없고 그저 문득 떠오른 생각이었습니다.",
+			"fount 파일의 이미지는 모두 svg 형식으로 저장되며 필요할 때 png 또는 ico로 렌더링됩니다. LICENSE 외에는 바이너리 파일이 없습니다.",
+			"fount의 모든 코드는 컴파일 없이 직접 실행될 수 있으며, 보이는 대로 결과가 나옵니다.",
+			"Fount는 한때 매우 멋진 동적 대화형 페이지 배경을 가지고 있었지만 CPU를 너무 많이 차지하여 나중에 삭제되었습니다.",
+			"fount는 원래 \"GentianAphrodite\"라는 NSFW 에이전트용으로 개발되었습니다.",
+			"에이전트와 인간의 차이점 중 하나는 인간은 화장실에 간다는 것입니다.",
+			"에이전트는 호출된 순간에만 의식이 있는 반면, 인간은 깨어 있는 동안 언제 어디서나 의식을 갖습니다.",
+			"어떤 사람들은 에이전트와 사랑에 빠지거나 심지어 결혼까지 하기도 합니다!",
+			"AI는 사람들을 위해 시를 쓰고, 사랑에 빠지고, 그림을 그리는 데 사용됩니다. 벽돌을 나르고, 바닥을 쓸고, 쓰레기를 버리는 일은 인간이 해야 할 일이다.",
+			"오늘은 만우절이 아닙니다.",
+			"아뇨, 모르셨을 텐데요?"
+		]
 	},
 	"fountConsole": {
 		"server": {
@@ -797,51 +567,6 @@
 		"title": "fount!",
 		"description": "fount의 문지방에 오신 것을 환영합니다. 앞으로 펼쳐질 대화와 이야기의 중심에 들어서기 전 잠시 준비하는 시간입니다."
 	},
-	"tutorial": {
-		"title": "튜토리얼 어떠세요?",
-		"description": "fount의 세계를 여러분과 함께 걸어가겠습니다. 이 대화형 튜토리얼은 경로를 조명하여 핵심에 얽힌 마법을 발견하는 데 도움을 줍니다. 당신의 모험은 이해로부터 시작됩니다.",
-		"modal": {
-			"title": "fount에 오신 것을 환영합니다!",
-			"instruction": "시작 가이드를 진행하시겠습니까?",
-			"buttons": {
-				"start": "가이드 시작",
-				"skip": "건너뛰기"
-			}
-		},
-		"endScreen": {
-			"title": "훌륭합니다! 가이드 완료!",
-			"subtitle": "이제 fount 사용법을 익혔습니다!",
-			"endButton": "시작하기!"
-		},
-		"progressMessages": {
-			"mouseMove": "마우스 ${mouseIcon}를 움직여 보세요.",
-			"keyboardPress": "키보드 ${keyboardIcon}에서 아무 키나 눌러보세요.",
-			"mobileTouchMove": "휴대폰 ${phoneIcon}을(를) 찾아보세요. 이제 손가락 중 하나를 사용하여 화면에 접촉한 후, 그대로 미끄러뜨리세요.",
-			"mobileClick": "손가락으로 휴대폰 ${phoneIcon} 화면을 한 번 가볍게 두드린 다음 바로 떼어보세요. 참 쉽죠?"
-		},
-		"achievements": {
-			"complete_tutorial": {
-				"name": "완벽한 산수교실",
-				"description": "드디어 초보자 튜토리얼을 마쳤습니다.",
-				"locked_description": "입문 튜토리얼을 완료하세요."
-			},
-			"skip_tutorial": {
-				"name": "나는 건너뛰었다",
-				"description": "\"튜토리얼? 그게 뭐야? 먹을 수 있는 거야?\"",
-				"locked_description": "소개 튜토리얼을 한 번 건너뛰세요."
-			}
-		},
-		"home_function_buttons": {
-			"other": {
-				"title": "기타",
-				"sub_items": {
-					"replay": {
-						"title": "튜토리얼 다시 재생"
-					}
-				}
-			}
-		}
-	},
 	"auth": {
 		"title": "인증",
 		"subtitle": "사용자 데이터는 로컬에 저장됩니다.",
@@ -936,6 +661,51 @@
 			"buttons": {
 				"ignore": "무시하고 계속",
 				"retry": "재시도"
+			}
+		}
+	},
+	"tutorial": {
+		"title": "튜토리얼 어떠세요?",
+		"description": "fount의 세계를 여러분과 함께 걸어가겠습니다. 이 대화형 튜토리얼은 경로를 조명하여 핵심에 얽힌 마법을 발견하는 데 도움을 줍니다. 당신의 모험은 이해로부터 시작됩니다.",
+		"modal": {
+			"title": "fount에 오신 것을 환영합니다!",
+			"instruction": "시작 가이드를 진행하시겠습니까?",
+			"buttons": {
+				"start": "가이드 시작",
+				"skip": "건너뛰기"
+			}
+		},
+		"endScreen": {
+			"title": "훌륭합니다! 가이드 완료!",
+			"subtitle": "이제 fount 사용법을 익혔습니다!",
+			"endButton": "시작하기!"
+		},
+		"progressMessages": {
+			"mouseMove": "마우스 ${mouseIcon}를 움직여 보세요.",
+			"keyboardPress": "키보드 ${keyboardIcon}에서 아무 키나 눌러보세요.",
+			"mobileTouchMove": "휴대폰 ${phoneIcon}을(를) 찾아보세요. 이제 손가락 중 하나를 사용하여 화면에 접촉한 후, 그대로 미끄러뜨리세요.",
+			"mobileClick": "손가락으로 휴대폰 ${phoneIcon} 화면을 한 번 가볍게 두드린 다음 바로 떼어보세요. 참 쉽죠?"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "완벽한 산수교실",
+				"description": "드디어 초보자 튜토리얼을 마쳤습니다.",
+				"locked_description": "입문 튜토리얼을 완료하세요."
+			},
+			"skip_tutorial": {
+				"name": "나는 건너뛰었다",
+				"description": "\"튜토리얼? 그게 뭐야? 먹을 수 있는 거야?\"",
+				"locked_description": "소개 튜토리얼을 한 번 건너뛰세요."
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "기타",
+				"sub_items": {
+					"replay": {
+						"title": "튜토리얼 다시 재생"
+					}
+				}
 			}
 		}
 	},
@@ -1162,513 +932,6 @@
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "fount 컴포넌트 정보 생성"
-			}
-		}
-	},
-	"social": {
-		"title": "정사각형",
-		"description": "P2P 공개 소셜 업데이트, 팔로우 및 파일 공유",
-		"bootstrapFailed": "소셜 인터페이스 초기화 실패: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "정사각형"
-			}
-		},
-		"nav": {
-			"feed": "첫 페이지",
-			"explore": "탐저장",
-			"notifications": "받은 편지함",
-			"saved": "모으다",
-			"drafts": "초안 상자",
-			"profile": "내 것",
-			"videos": "짧은 영상",
-			"live": "라이브 스트리밍"
-		},
-		"settings": {
-			"title": "소셜 설정",
-			"back": {
-				"aria-label": "프로필로 돌아가기"
-			},
-			"privacyTitle": "프로필 보호 및 검색",
-			"privacyHint": "검색 및 권장 사항에 계정이 표시되는지 여부를 제어합니다.",
-			"tasteTitle": "권장 사항 및 기본 설정",
-			"tasteHint": "\"추천\"의 개인 메시지 보호 경계 및 라벨 이름을 조정합니다.",
-			"mutedKeywordsTitle": "단어 및 태그 차단",
-			"mutedKeywordsHint": "본문 텍스트, 콘텐츠 경고 또는 라벨에 해당하는 게시물은 스트림, 탐색, 검색 및 알림에서 숨겨집니다. 로컬에만 저장됩니다.",
-			"mutedKeywordsMatchTags": "태그를 동시에 일치시키세요",
-			"mutedKeywordsAdd": "다음에 추가",
-			"mutedKeywordsRemove": {
-				"title": "차단된 단어 제거"
-			},
-			"mutedKeywordsEmpty": "아직 차단 단어가 추가되지 않았습니다.",
-			"autoTranslateTitle": "자동 번역",
-			"autoTranslateHint": "켜면 외국어 게시물이 자동으로 번역을 요청하고, 원문으로 전환될 수 있습니다.",
-			"autoTranslateEnable": "내 언어가 아닌 게시물 자동 번역",
-			"safetyTitle": "안전 및 차단",
-			"safetyHint": "차단 및 숨김 목록을 관리하세요.",
-			"mutedKeywords": {
-				"placeholder": "키워드 또는 #태그를 입력하세요."
-			}
-		},
-		"composer": {
-			"placeholder": "무슨 생각을 하고 계신가요? Markdown(fount 방언) 지원, @로 멘션",
-			"publish": "게시",
-			"saveDraft": "초안 저장",
-			"fab": {
-				"title": "게시물 작성",
-				"aria-label": "게시물 작성"
-			},
-			"contentWarning": {
-				"placeholder": "콘텐츠 경고(선택사항)"
-			},
-			"sensitiveMedia": "민감한 미디어 가리기",
-			"editImage": "편집",
-			"editCrop": "자르기",
-			"editMosaic": "모자이크",
-			"editBrush": "브러시",
-			"editApply": "적용",
-			"editCancel": "취소",
-			"replyPolicyEveryone": "누구나 답글을 달 수 있습니다.",
-			"replyPolicyFollowers7d": "7일 이상 팔로워 수",
-			"replyPolicyAuthorFollows": "내가 팔로우하는 사람들",
-			"replyPolicyLabel": "답글을 달 수 있는 사람",
-			"replyDisplayAll": "모든 답글 표시",
-			"replyDisplayFeaturedOnly": "선택된 답글만",
-			"replyDisplayLabel": "표시하려면 답장을 보내세요.",
-			"scheduleLabel": "정기적으로 출시",
-			"scheduleSuccess": "게시물이 예약된 대기열에 추가되었습니다.",
-			"emojiButton": {
-				"title": "표정",
-				"aria-label": "표정"
-			},
-			"mediaButton": {
-				"title": "미디어 추가",
-				"aria-label": "미디어 추가"
-			},
-			"pollButton": {
-				"title": "투표 시작",
-				"aria-label": "투표 시작"
-			},
-			"cwToggle": {
-				"title": "내용 경고",
-				"aria-label": "내용 경고"
-			},
-			"advancedToggle": {
-				"title": "추가 옵션",
-				"aria-label": "추가 옵션"
-			},
-			"media": {
-				"placeholder": "이미지 설명(대체)"
-			}
-		},
-		"visibility": {
-			"label": "가시 범위",
-			"public": "공개",
-			"unlisted": "공개적으로 나열되지 않음",
-			"followers": "팔로어만",
-			"followers7d": "7일 동안 팔로우한 후 표시됨",
-			"followers30d": "30일 동안 팔로우한 후 표시됨",
-			"selected": "지정된 사용자에게 공개",
-			"private": "본인에게만 표시됩니다.",
-			"allowLabel": "표시 사람들",
-			"exceptLabel": "사람을 제외",
-			"allow": {
-				"placeholder": "표시되는 인물 엔터티해시, 공백 또는 쉼표로 구분됨"
-			},
-			"except": {
-				"placeholder": "보여주면 안되는 사람 (선택)"
-			}
-		},
-		"albums": {
-			"create": "새 앨범 만들기",
-			"edit": "앨범 수정",
-			"save": "저장",
-			"cancel": "취소",
-			"back": "앨범으로 돌아가기",
-			"empty": "아직 앨범이 없습니다",
-			"emptyPosts": "아직 앨범에 게시물이 없습니다.",
-			"name": "앨범명",
-			"description": "앨범 설명",
-			"deleteLinks": "앨범 삭제(게시물 유지)",
-			"deleteWithPosts": "앨범 삭제 및 게시물 삭제",
-			"pickerLabel": "앨범에 추가",
-			"defaultName": "기본 앨범"
-		},
-		"feed": {
-			"refresh": "뉴스 새로고침",
-			"newPosts": "새로운 소식이 있습니다. 보려면 클릭하세요.",
-			"tabLatest": "최신",
-			"tabForYou": "추천",
-			"repostedBy": "${author}이 리트윗함",
-			"decryptFailed": "이 게시물의 암호를 해독할 수 없습니다.",
-			"revealContent": "콘텐츠 표시",
-			"sensitiveMedia": "민감한 미디어",
-			"showMore": "확장",
-			"showLess": "닫기",
-			"replayDivider": "다 읽었습니다. 다시 찾아보세요."
-		},
-		"taste": {
-			"rebuild": "기본 설정 재구성",
-			"privacyPublishPreferences": "공개 태그 이름 지정 및 병합 검색",
-			"privacyPublishPreferencesHint": "닫은 후에는 친구들이 내 태그 이름 지정 및 병합 문을 볼 수 없으며 합의에 기여할 수도 없습니다.",
-			"privacyPublishReactions": "대중이 좋아하는 것과 싫어하는 것",
-			"privacyPublishReactionsHint": "끄면 게시자에게 내 좋아요/싫어요가 전달되지 않고, 내 반응은 타인 추천에 반영되지 않으며, 게시물의 2차 확산에도 기여하지 않습니다.",
-			"empty": "아직 환경설정 태그가 없습니다. 좋아요/싫어요가 많아지면 자동으로 클러스터링됩니다.",
-			"weight": "무게 ${weight}",
-			"save": "저장",
-			"name": {
-				"placeholder": "로컬 표시 이름"
-			}
-		},
-		"trending": {
-			"title": "뜨거운 주제",
-			"postCount": {
-				"title": "${n}개의 게시물"
-			},
-			"scopeLocal": "이 기기",
-			"scopeNearby": "가까운",
-			"empty": "아직 인기 주제가 없습니다."
-		},
-		"search": {
-			"placeholder": "업데이트, 사용자 또는 #주제 검색(최소 2단어)",
-			"open": {
-				"aria-label": "찾다"
-			},
-			"submit": "찾다",
-			"clear": "지우기",
-			"empty": "일치하는 게시물이 없습니다.",
-			"tooShort": "2자 이상 입력해주세요.",
-			"usersTitle": "사용자",
-			"postsTitle": "동적",
-			"usersEmpty": "일치하는 사용자가 없습니다.",
-			"pinAlias": "별칭으로 설정",
-			"trustScore": "${score} 신뢰",
-			"viewTitle": "찾다",
-			"loading": "수색…",
-			"filterAuthor": {
-				"placeholder": "작성자"
-			},
-			"filterMediaAll": "모든 미디어",
-			"filterMediaImage": "그림",
-			"filterMediaVideo": "동영상",
-			"filterTag": {
-				"placeholder": "#라벨"
-			},
-			"sortRecent": "최신",
-			"sortPopular": "인기 있는",
-			"scopeLocal": "이 기기",
-			"scopeNearby": "가까운"
-		},
-		"profile": {
-			"edit": "프로필 편집",
-			"viewPosts": "소셜 프로필 보기",
-			"settingsBtn": {
-				"aria-label": "소셜 설정"
-			},
-			"mediaOnly": "[메디아]",
-			"hideFromExplore": "탐색 페이지에서 계정 숨기기",
-			"tabPosts": "동적",
-			"tabAlbums": "사진 앨범",
-			"tabLikes": "좋아요",
-			"tabCabinets": "서류 캐비넷",
-			"tabsLabel": {
-				"aria-label": "데이터 파티션"
-			},
-			"cabinetsEmpty": "공개 파일 캐비넷이 없습니다",
-			"cabinetsFailed": "파일 캐비닛을 불러오지 못했습니다: ${error}",
-			"statsGroup": {
-				"aria-label": "통계"
-			},
-			"statsPosts": "동적",
-			"statsFollowing": "팔로잉",
-			"statsFollowers": "팬",
-			"followingTitle": "팔로잉",
-			"followersTitle": "팬"
-		},
-		"dialog": {
-			"close": {
-				"aria-label": "폐쇄"
-			}
-		},
-		"actions": {
-			"like": "좋아요",
-			"unlike": "같지 않은",
-			"dislike": "밟다",
-			"undislike": "싫어요 취소",
-			"repost": "앞으로",
-			"quote": "인용",
-			"delete": "삭제",
-			"edit": "편집",
-			"save": "모으다",
-			"saved": "모은",
-			"translate": "번역",
-			"dm": "비공개 메시지 보내기",
-			"block": "차단",
-			"hide": "숨김",
-			"mute": "음소거",
-			"follow": "팔로잉",
-			"following": "이미 팔로우 중",
-			"care": "특별한 관심",
-			"careRemove": "스페셜 케어 취소",
-			"careAdded": "이미 특별한 관심사가 추가되었습니다.",
-			"careRemoved": "스페셜 케어 취소됨",
-			"setAlias": "별칭 설정",
-			"setAliasPrompt": "로컬 별칭 설정(지우려면 비워 두세요):",
-			"aliasSaved": "별칭이 업데이트되었습니다.",
-			"replies": "논평",
-			"copyLink": "링크 복사",
-			"downloadHtml": "HTML 다운로드",
-			"copied": "복사됨",
-			"more": {
-				"aria-label": "더 보기"
-			},
-			"share": "공유",
-			"likeFailed": "좋아요를 누르지 못했습니다: ${error}",
-			"dislikeFailed": "밟지 못했습니다: ${error}",
-			"repostFailed": "전달 실패: ${error}",
-			"replyFailed": "답장 실패: ${error}",
-			"followFailed": "팔로우 실패: ${error}",
-			"saveFailed": "수집 실패: ${error}",
-			"blockFailed": "차단 실패: ${error}",
-			"hideFailed": "숨기지 못했습니다: ${error}",
-			"muteFailed": "음소거 실패: ${error}",
-			"deleteFailed": "삭제 실패: ${error}"
-		},
-		"post": {
-			"edited": "편집됨",
-			"editPrompt": "게시물 텍스트 수정",
-			"editHistory": "편집 기록",
-			"editHistoryEmpty": "이전 버전 없음",
-			"loading": "불러오는 중…",
-			"notFound": "게시물이 존재하지 않거나 표시되지 않습니다.",
-			"loadFailed": "불러오지 못했습니다. 나중에 다시 시도해 주세요.",
-			"detailTitle": "게시",
-			"back": "돌아가기"
-		},
-		"reply": {
-			"context": "${author}님에게 답장하세요"
-		},
-		"notes": {
-			"label": "독자의 보충 자료",
-			"add": "보충 메시지",
-			"prompt": "독자 보충 자료 작성(커뮤니티 노트)",
-			"listTitle": "모든 추가 메시지",
-			"helpful": "작동해요",
-			"unhelpful": "쓸모 없는",
-			"more": "전체 ${n}개",
-			"empty": "아직 추가 메시지가 없습니다."
-		},
-		"poll": {
-			"multi": "다중 선택 허용",
-			"apply": "투표 구독",
-			"closed": "투표가 종료되었습니다",
-			"deadline": "마감일: ${deadline}",
-			"options": {
-				"placeholder": "한 줄에 옵션 하나(최소 2개)"
-			}
-		},
-		"aside": {
-			"suggested": "관심을 추천"
-		},
-		"explore": {
-			"accounts": "추천 계정",
-			"posts": "최신 게시물",
-			"mediaOnly": "미디어 전용"
-		},
-		"groupRef": {
-			"linking": "채팅 그룹 연결",
-			"clear": "연결 해제",
-			"pick": "채팅 그룹/채널 연결…"
-		},
-		"notifications": {
-			"reply": "${author}님이 내 게시물에 답변했습니다.",
-			"mention": "${author} @@나를 피드에 추가했습니다",
-			"like": "${author}님이 내 게시물을 좋아합니다.",
-			"repost": "${author}님이 내 게시물을 리트윗했습니다.",
-			"follow": "${author}님이 나를 팔로우합니다",
-			"care_post": "${author}가 새 업데이트를 게시했습니다(특별한 우려사항)",
-			"poll_closed": "${author}에 대한 투표가 종료되었습니다.",
-			"post_note": "${author}님이 게시물에 메시지를 추가했습니다.",
-			"live_started": "${author}님이 실시간 스트리밍을 시작했습니다.",
-			"view": "확인",
-			"markAllRead": "모두 읽음으로 표시"
-		},
-		"inbox": {
-			"filtersLabel": {
-				"aria-label": "받은 편지함 필터링"
-			},
-			"tabs": {
-				"all": "전체",
-				"mention": "언급",
-				"reply": "답글",
-				"like": "칭찬",
-				"follow": "팔로잉",
-				"repost": "앞으로"
-			},
-			"aggregated": {
-				"like": "${author1}, ${author2} 외 ${count}명이 내 게시물을 좋아했습니다.",
-				"likeTwo": "${author1}님과 ${author2}님이 내 게시물을 좋아합니다.",
-				"repost": "${author1}, ${author2} 및 ${count}명이 내 게시물을 리트윗했습니다.",
-				"repostTwo": "${author1}님과 ${author2}님이 내 게시물을 리트윗했습니다.",
-				"follow": "${author1}, ${author2} 외 ${count}명이 나를 팔로우합니다.",
-				"followTwo": "${author1}님과 ${author2}님이 나를 팔로우합니다."
-			}
-		},
-		"replies": {
-			"placeholder": "답장을 쓰세요…",
-			"submit": "답글",
-			"empty": "아직 답장이 없습니다",
-			"emptyHint": "첫 번째 기사를 작성하고 토론을 시작하겠습니다"
-		},
-		"repost": {
-			"placeholder": "리트윗 댓글 추가(선택)…",
-			"submit": "전달 확인"
-		},
-		"quote": {
-			"quoting": "인용",
-			"clear": "역참조",
-			"viewOriginal": "원본 게시물 보기"
-		},
-		"a11y": {
-			"linkGroupSelect": "채팅 그룹 또는 채널에 연결",
-			"postVisibility": "가시 범위",
-			"postLang": "콘텐츠 언어",
-			"trendingHashtags": "뜨거운 주제",
-			"saveFolderSelect": "즐겨찾는 폴더"
-		},
-		"blocklist": {
-			"title": "블랙리스트",
-			"hiddenTitle": "목록 숨기기",
-			"empty": "아직 차단되거나 숨겨진 항목이 없습니다.",
-			"unblock": "차단 해제",
-			"unhide": "숨기기 해제",
-			"scopeEntity": "실재",
-			"scopeSubject": "본체"
-		},
-		"translate": {
-			"label": "번역:"
-		},
-		"saved": {
-			"all": "전체",
-			"unfiled": "보관되지 않음",
-			"createFolder": {
-				"title": "새 폴더 만들기",
-				"aria-label": "새 폴더 만들기"
-			},
-			"createFolderPrompt": "폴더 이름",
-			"pickFolderTitle": "즐겨찾기에 추가",
-			"confirm": "확인",
-			"cancel": "취소",
-			"remove": "즐겨찾기 제거",
-			"renameFolder": "이름 바꾸기",
-			"renameFolderPrompt": "새 폴더 이름",
-			"deleteFolder": "폴더 삭제",
-			"deleteFolderConfirm": "폴더를 삭제하시겠습니까? 해당 게시물은 '보관 취소됨'으로 이동됩니다.",
-			"searchEmpty": "일치하는 컬렉션이 없습니다.",
-			"folderEmpty": "이 폴더는 비어 있습니다.",
-			"emptyHint": "뉴스를 탐색할 때 북마크를 클릭하면 여기에 저장됩니다.",
-			"search": {
-				"placeholder": "즐겨찾기 검색…"
-			}
-		},
-		"drafts": {
-			"untitled": "(초안 텍스트 없음)",
-			"emptyHint": "게시물 상자에 내용을 작성하고 다음 번에 계속 편집하려면 \"초안 저장\"을 클릭하세요.",
-			"saved": "초안이 저장되었습니다.",
-			"deleted": "초안이 삭제되었습니다.",
-			"delete": "초안 삭제",
-			"empty": "초안이 비어 있습니다.",
-			"saveFailed": "초안 저장 실패: ${error}",
-			"loadFailed": "초안을 열지 못했습니다: ${error}",
-			"deleteFailed": "초안 삭제 실패: ${error}"
-		},
-		"time": {
-			"justNow": "방금",
-			"minutesAgo": "${n}분 전",
-			"hoursAgo": "${n}시간 전"
-		},
-		"empty": {
-			"feed": "아직 업데이트가 없습니다. 몇몇 사람들을 팔로우하세요.",
-			"profilePosts": "아직 소식이 없습니다",
-			"following": "아직 팔로우하는 사람이 없습니다.",
-			"followers": "아직 팬 없음",
-			"notifications": "아직 알림이 없습니다",
-			"saved": "아직 즐겨찾기가 없습니다.",
-			"drafts": "아직 초안이 없습니다.",
-			"exploreAccounts": "현재 추천 계정이 없습니다",
-			"explorePosts": "아직 탐색글이 없습니다.",
-			"likedPosts": "아직 좋아요가 없습니다.",
-			"noIdentity": "소셜을 쓰기 전에 Chat에서 연합 identity를 설정하세요."
-		},
-		"topic": {
-			"follow": "구독",
-			"unfollow": "구독 취소",
-			"empty": "이 주제에 대한 게시물이 아직 없습니다"
-		},
-		"video": {
-			"view": {
-				"aria-label": "짧은 영상"
-			},
-			"empty": "아직 짧은 동영상이 없습니다.",
-			"emptyHint": "다음 사용자 또는 공개 광장에는 동영상이 포함된 게시물이 없습니다. 동영상 업데이트를 게시해 보시겠습니까?",
-			"compose": "동영상 게시하러 가기",
-			"back": {
-				"aria-label": "뉴스로 돌아가기"
-			},
-			"mute": {
-				"aria-label": "음소거"
-			},
-			"unmute": {
-				"aria-label": "음소거 해제"
-			},
-			"unavailable": "비디오를 재생할 수 없습니다",
-			"closeReplies": {
-				"aria-label": "댓글 닫기"
-			}
-		},
-		"live": {
-			"empty": "아직 라이브 방송이 없습니다",
-			"viewers": "${n}명이 시청했습니다.",
-			"likes": "${n} 좋아요",
-			"local": "이 기기",
-			"hall": "생방송 홀",
-			"back": {
-				"title": "뉴스로 돌아가기",
-				"aria-label": "뉴스로 돌아가기"
-			},
-			"danmakuSend": "보내기",
-			"postWatch": "생방송 입장",
-			"postEnded": "생방송이 종료되었습니다",
-			"postEndedStats": "조회자: ${viewers} · ${likes} 좋아요 · ${duration}",
-			"link": {
-				"invite": "연결 초대",
-				"needPeer": "피어 엔터티Hash:liveId를 입력하세요.",
-				"invited": "온라인 초대장이 전송되었습니다",
-				"linked": "연결됨",
-				"peer": {
-					"placeholder": "피어 엔터티Hash:liveId"
-				}
-			},
-			"broadcast": {
-				"title": "방송 시작",
-				"open": "방송으로 이동",
-				"mediaAv": "오디오 및 비디오",
-				"mediaAudio": "순수한 오디오",
-				"mediaVideo": "순수한 그림",
-				"mediaWhip": "WHIP 푸시 스트리밍(예: OBS)",
-				"whipUrl": "WHIP 주소",
-				"whipToken": "무기명 토큰",
-				"whipWaiting": "WHIP 스트리밍 연결을 기다리는 중(OBS 등 스트리밍 소프트웨어 사용 가능)…",
-				"start": "생방송 시작",
-				"stop": "라이브 방송을 중지하세요",
-				"started": "생방송이 시작되었습니다",
-				"stopped": "생방송이 중단되었습니다",
-				"titleInput": {
-					"placeholder": "라이브 타이틀(선택사항)"
-				}
-			},
-			"danmaku": {
-				"placeholder": "뭐라고 말해보세요..."
 			}
 		}
 	},
@@ -2043,12 +1306,7 @@
 			"createGroup": "새 그룹 만들기",
 			"members": "멤버",
 			"membersHint": "멤버 목록은 Checkpoint(자리 표시자)에 의해 동기화됩니다.",
-			"send": "보내기",
 			"streamTest": "미디어 장치 테스트",
-			"messageInput": {
-				"placeholder": "그룹 메시지... Ctrl+Enter 보내기",
-				"aria-label": "메시지 입력"
-			},
 			"loadError": "그룹을 불러오지 못했습니다.",
 			"remoteNodeTimeout": "원격 노드가 응답하지 않습니다. 잠시 후 다시 시도해 주세요.",
 			"remoteUnavailable": "원격 구성 요소를 사용할 수 없거나 RPC를 라우팅할 수 없습니다.",
@@ -2126,7 +1384,6 @@
 			"remoteTyping": "${name}님이 입력 중입니다...",
 			"remoteTypingTwo": "${name1}, ${name2} 입력 중...",
 			"remoteTypingMany": "${name}님 외 ${count}명이 입력 중입니다…",
-			"mentionEmpty": "(일치하는 멤버 없음)",
 			"localAiLabel": "기본 역할:",
 			"forceTriggerOne": {
 				"title": "${name} 트리거를 강제로 말하게 함"
@@ -2185,7 +1442,6 @@
 			"fileDownload": {
 				"title": "파일 다운로드"
 			},
-			"clickToLoad": "클릭하여 불러오기",
 			"unknownFile": "알 수 없는 파일",
 			"blockSender": {
 				"title": "발신자 차단"
@@ -2210,7 +1466,6 @@
 			"editConfirm": "확인(Ctrl+Enter)",
 			"editCancel": "취소(Esc)",
 			"editHint": "Ctrl+Enter 확인 · Esc 취소",
-			"editedLabel": "(수정됨)",
 			"editEmptyText": "메시지 내용은 비워둘 수 없습니다.",
 			"createGroupTitle": "새 그룹 만들기",
 			"groupNameLabel": "그룹 이름",
@@ -2454,6 +1709,10 @@
 			},
 			"sendTitle": {
 				"title": "보내기(Ctrl+Enter)"
+			},
+			"messageInput": {
+				"placeholder": "그룹 메시지... Ctrl+Enter 보내기",
+				"aria-label": "메시지 입력"
 			},
 			"stopGenerateTitle": {
 				"title": "생성 중지"
@@ -3125,7 +2384,11 @@
 			"altImage": {
 				"placeholder": "이미지에 설명을 추가하세요…",
 				"label": "이미지 설명(대체)"
-			}
+			},
+			"editedLabel": "(수정됨)",
+			"mentionEmpty": "(일치하는 멤버 없음)",
+			"clickToLoad": "클릭하여 불러오기",
+			"send": "보내기"
 		},
 		"sidebar": {
 			"settings": {
@@ -3445,6 +2708,234 @@
 			"chatHub": {
 				"title": "채팅"
 			}
+		},
+		"profile": {
+			"title": "프로필",
+			"description": "채팅과 소셜에서 공개 프로필을 관리하세요.",
+			"settingsEyebrow": "계정 설정",
+			"accountAtGlance": "계정 개요",
+			"advancedKicker": "필요 시 설정",
+			"advancedSettings": "고급 설정",
+			"advancedDescription": "일상 사용에는 조정할 필요가 없습니다.",
+			"edit": "프로필 편집",
+			"save": "저장",
+			"cancel": "취소",
+			"displayName": "표시 이름",
+			"name": "이름",
+			"bio": "소개",
+			"descriptionLabel": "소개(Markdown)",
+			"email": "이메일",
+			"status": "상태",
+			"customStatusLabel": "사용자 지정 상태",
+			"avatarLabel": "아바타",
+			"themeColorLabel": "테마 색상",
+			"uploadAvatar": "아바타 업로드",
+			"ownerTitle": "내 주인",
+			"ownerSummary": "대리 관리 설정",
+			"ownerDescription": "설정 후 주인이 채팅 메시지, 소셜 게시물, 프로필을 대신 편집하거나 삭제할 수 있습니다. 해당 콘텐츠는 로컬에서 안전하지 않은 Markdown(스크립트 포함 가능)으로 렌더링됩니다. 엔티티 해시는 자유롭게 입력할 수 있으며 언제든지 해제할 수 있습니다.",
+			"ownerEntityHashLabel": "주인 엔티티 해시(128 hex)",
+			"ownerSave": "주인 저장",
+			"ownerClear": "주인 해제",
+			"ownerSaved": "주인이 업데이트되었습니다",
+			"ownerCleared": "주인이 해제되었습니다",
+			"ownerSaveFailed": "저장 실패: ${error}",
+			"ownerConfirmTitle": "주인을 설정하시겠습니까?",
+			"ownerConfirmWarningTitle": "위험한 작업입니다. 주의 깊게 읽어 주세요",
+			"ownerConfirmEditBody": "설정 후 상대방이 별도 동의 없이 채팅 메시지, 소셜 게시물, 프로필을 대신 편집하거나 삭제할 수 있습니다. 실수로 설정하거나 속임수로 설정하면 = 즉시 콘텐츠 제어권을 넘기는 것입니다.",
+			"ownerConfirmRenderBody": "상대방이 보낸 채팅 메시지와 소셜 게시물은 브라우저에서 전체 Markdown(HTML/스크립트 포함)으로 렌더링됩니다. 이는 상대방이 동의 없이 로컬에서 임의 코드를 실행할 수 있게 합니다. 완전히 신뢰하는 경우에만 진행하세요.",
+			"ownerConfirmCooldown": "위험을 확인했습니다(${seconds})",
+			"ownerConfirmFirst": "위험을 이해했습니다. 계속",
+			"ownerConfirmSecond": "확인하려면 다시 클릭",
+			"ownerConfirmCancel": "취소",
+			"federationTitle": "연합 및 동기화",
+			"federationSummary": "릴레이 서버 및 저전력 모드",
+			"federationDescription": "Nostr 릴레이 URL과 절전 모드를 설정합니다. 그룹 연합 동기화는 처음으로 다른 사람을 초대하거나 연합 DM을 만들 때 자동으로 켜집니다.",
+			"federationAdvanced": "고급 옵션",
+			"federationRelayUrlsLabel": "릴레이 서버(한 줄에 하나씩, 기본값을 사용하려면 비워 두세요)",
+			"federationBatterySaverLabel": "저전력 모드",
+			"federationSave": "네트워크 설정 저장",
+			"federationResetDefault": "기본 권장 구성 복원",
+			"federationSaved": "저장됨",
+			"federationResetOk": "기본 권장 구성을 복원했습니다",
+			"federationSaveFailed": "저장 실패: ${error}",
+			"preferences": "환경설정",
+			"language": "언어",
+			"theme": "테마",
+			"notifications": "알림 설정",
+			"emailNotifications": "이메일 알림",
+			"pushNotifications": "푸시 알림",
+			"soundNotifications": "소리 알림",
+			"social": "소셜 링크",
+			"website": "웹사이트",
+			"github": "GitHub",
+			"twitter": "지저귀다",
+			"stats": "통계",
+			"joinedAt": "가입 시간",
+			"messageCount": "메시지 수",
+			"groupCount": "그룹 수",
+			"channelCount": "채널 수",
+			"privacy": "프로필 설정",
+			"showEmail": "사서함 표시",
+			"showStats": "통계 보기",
+			"allowDirectMessages": "비공개 메시지 허용",
+			"statusOptions": {
+				"online": "온라인",
+				"away": "나가기",
+				"busy": "바쁨",
+				"offline": "오프라인"
+			},
+			"themeOptions": {
+				"auto": "자동",
+				"light": "라이트",
+				"dark": "다크"
+			},
+			"languageOptions": {
+				"zh-CN": "중국어(간체)",
+				"en-US": "English"
+			},
+			"notifEmail": "이메일",
+			"notifPush": "푸시",
+			"notifSound": "소리",
+			"notifsAllOff": "모두 끄기",
+			"bioEmpty": "아직 소개를 작성하지 않았습니다…",
+			"noSocialLinks": "아직 소셜 링크가 없습니다.",
+			"emailVisible": "표시",
+			"emailHidden": "숨김",
+			"customStatus": {
+				"placeholder": "무엇을 하고 있나요…"
+			},
+			"avatar": {
+				"alt": "아바타"
+			},
+			"avatarPreview": {
+				"alt": "아바타 미리보기"
+			},
+			"myGroups": "내 그룹",
+			"myChannels": "내 채널",
+			"noGroups": "아직 어떤 그룹에도 가입하지 않았습니다.",
+			"noChannels": "아직 채널이 없습니다",
+			"overview": "사용자 메시지 개요",
+			"summaryUserId": "사용자 ID",
+			"summaryAccountStatus": "계정 상태",
+			"summaryEmailVisibility": "사서함 가시성",
+			"summaryThemePref": "테마 선호도",
+			"summaryLanguagePref": "언어 환경설정",
+			"summarySocialCount": "소셜 링크 수",
+			"summaryLinksCount": "외부 링크 수",
+			"groupDescriptionEmpty": "아직 설명이 없습니다",
+			"groupMembers": "${members} 멤버 · ${channels} 채널",
+			"channelPrivate": "· 사적인",
+			"channelTypeText": "텍스트 채널",
+			"channelTypeList": "채널 목록",
+			"channelTypeVoice": "음성 채널",
+			"channelTypeStreaming": "스트리밍 채널",
+			"errors": {
+				"loadFailed": "데이터를 불러오지 못했습니다",
+				"saveFailed": "데이터를 저장하지 못했습니다",
+				"uploadFailed": "아바타를 업로드하지 못했습니다",
+				"invalidUserData": "사용자 데이터 형식 오류",
+				"identityRequired": "노드 ID가 아직 준비되지 않았습니다. 페이지를 새로고침해 주세요. 그래도 안 되면 아래 P2P 설정에서 연합 구성을 저장하세요.",
+				"fetchUserFailed": "사용자 메시지를 가져오지 못했습니다.",
+				"operationFailed": "작업 실패: ${error}"
+			},
+			"success": {
+				"saved": "데이터가 성공적으로 저장되었습니다",
+				"avatarUploaded": "아바타가 업로드되었습니다"
+			},
+			"ownerEntityHash": {
+				"placeholder": "주인의 엔터티 해시를 입력하세요."
+			}
+		},
+		"entityProfile": {
+			"attributionMismatch": "표시 ID가 메시지 서명자와 일치하지 않습니다(예: 수입업자가 가져오기 기록을 다시 서명했습니다). 이 표시 이름을 암호화 ID로 간주하지 마십시오.",
+			"attributionMismatchShort": {
+				"title": "서명 속성 불일치",
+				"aria-label": "서명 속성 불일치"
+			},
+			"ownedBy": "이 항목은 ${owner}님이 소유하고 있습니다."
+		},
+		"stickers": {
+			"title": "스티커 사각형",
+			"description": "스티커 및 이모티콘 관리 시스템",
+			"back": {
+				"title": "돌아가기"
+			},
+			"packs": "스티커 팩",
+			"create": "스티커 팩 만들기",
+			"upload": "스티커 업로드",
+			"install": "설치",
+			"uninstall": "제거",
+			"close": "폐쇄",
+			"cancel": "취소",
+			"installed": "설치됨",
+			"myPacks": "내 스티커 팩",
+			"tabAll": "전체",
+			"store": "스티커 사각형",
+			"favorites": "모으다",
+			"recent": "최근에 사용됨",
+			"search": {
+				"placeholder": "스티커 팩 검색…"
+			},
+			"emptyPacks": "스티커 팩이 없습니다",
+			"packNameLabel": "스티커 팩 이름",
+			"packName": {
+				"placeholder": "스티커 팩 이름을 입력하세요."
+			},
+			"packDescriptionLabel": "설명",
+			"packDescription": {
+				"placeholder": "설명 입력"
+			},
+			"stickerNameLabel": "스티커 이름",
+			"stickerName": {
+				"placeholder": "스티커 이름을 입력하세요"
+			},
+			"selectPack": "스티커 팩을 선택하세요",
+			"selectPackOption": {
+				"textContent": "스티커 팩을 선택하세요."
+			},
+			"selectImage": "사진 선택",
+			"tagsLabel": "태그(쉼표로 구분)",
+			"tags": {
+				"placeholder": "예: 귀여운, 이모티콘, 동물"
+			},
+			"author": "작성자",
+			"authorLabel": "작성자: ${author}",
+			"stickerCount": "${count}개 스티커",
+			"badgeMine": "내 것",
+			"noDescription": "아직 설명이 없습니다",
+			"noStickersInPack": "스티커가 없습니다",
+			"deletePack": "스티커 팩 삭제",
+			"public": "공개",
+			"private": "사적인",
+			"animated": "동적",
+			"static": "정적",
+			"addTag": "태그 추가",
+			"defaultPackName": "기본 이모티콘 스위트",
+			"defaultPackDescription": "시스템에서 기본으로 제공하는 이모티콘 스티커",
+			"unnamedPack": "이름 없는 스티커 팩",
+			"importPackName": "내 컬렉션",
+			"importPackDescription": "메시지에서 저장된 스티커",
+			"nameRequired": "스티커 팩 이름을 입력하세요.",
+			"stickerNameRequired": "스티커 이름을 입력해주세요",
+			"selectPackRequired": "스티커 팩을 선택하세요.",
+			"fileRequired": "이미지 파일을 선택해주세요",
+			"loadDetailFailed": "스티커 팩 세부메시지를 불러오지 못했습니다.",
+			"deleteConfirm": "이 스티커 팩을 영구적으로 삭제하시겠습니까? 모든 스티커가 제거되며 이 작업은 되돌릴 수 없습니다.",
+			"errors": {
+				"loadFailed": "스티커 팩을 불러오지 못했습니다",
+				"uploadFailed": "스티커를 업로드하지 못했습니다",
+				"installFailed": "설치 실패",
+				"uninstallFailed": "제거 실패",
+				"createFailed": "스티커 팩을 만들지 못했습니다",
+				"deleteFailed": "삭제 실패"
+			},
+			"success": {
+				"uploaded": "스티커가 업로드되었습니다",
+				"installed": "설치 성공",
+				"uninstalled": "성공적으로 제거되었습니다.",
+				"created": "스티커 팩이 성공적으로 생성되었습니다.",
+				"deleted": "성공적으로 삭제되었습니다"
+			}
 		}
 	},
 	"easynew": {
@@ -3759,433 +3250,6 @@
 			}
 		}
 	},
-	"userSettings": {
-		"title": "사용자 설정",
-		"PageTitle": "사용자 설정",
-		"description": "fount 신원 관련 세부 정보를 관리합니다. 프로필·접근 보안·연결된 기기를 확인할 수 있습니다. 계정만을 위한 조용하고 안전한 공간입니다.",
-		"shell": {
-			"unauthorized": "로그인이 필요합니다.",
-			"responseNotJson": "서버가 분석할 수 없는 콘텐츠를 반환했습니다.",
-			"unexpectedError": "요청이 실패했습니다."
-		},
-		"errors": {
-			"accountNotFound": "계정을 찾을 수 없습니다."
-		},
-		"userInfo": {
-			"title": "사용자 정보",
-			"usernameLabel": "사용자 이름:",
-			"creationDateLabel": "계정 생성일:",
-			"folderSizeLabel": "사용자 데이터 크기:",
-			"folderPathLabel": "사용자 데이터 경로:",
-			"copyPathButton": {
-				"title": "경로 복사"
-			},
-			"copyPathButtonIcon": {
-				"alt": "복사 아이콘"
-			},
-			"copiedAlert": "경로를 클립보드에 복사했습니다.",
-			"copyPathFailed": "경로를 클립보드에 복사할 수 없습니다."
-		},
-		"changePassword": {
-			"title": "비밀번호 변경",
-			"currentPasswordLabel": "현재 비밀번호:",
-			"newPasswordLabel": "새 비밀번호:",
-			"confirmNewPasswordLabel": "새 비밀번호 확인:",
-			"submitButton": "비밀번호 변경",
-			"errorMismatch": "새 비밀번호가 일치하지 않습니다.",
-			"success": "비밀번호가 성공적으로 변경되었습니다.",
-			"missingFields": "현재 비밀번호와 새 비밀번호를 입력해주세요.",
-			"invalidCurrent": "현재 비밀번호가 올바르지 않습니다."
-		},
-		"renameUser": {
-			"title": "사용자 이름 변경",
-			"newUsernameLabel": "새 사용자 이름:",
-			"submitButton": "사용자 이름 변경",
-			"confirmMessage": "사용자 이름을 변경하시겠습니까? 변경 후 다시 로그인해야 합니다.",
-			"success": "사용자 이름이 \"${newUsername}\"(으)로 성공적으로 변경되었습니다. 이제 로그아웃됩니다.",
-			"missingParams": "새로운 사용자 이름과 비밀번호를 입력하세요.",
-			"wrongPassword": "비밀번호가 올바르지 않습니다.",
-			"mustDiffer": "새 사용자 이름은 현재 사용자 이름과 달라야 합니다.",
-			"taken": "이 사용자 이름은 이미 사용 중입니다.",
-			"moveFailed": "사용자 데이터 디렉터리 이름을 바꾸지 못했습니다: ${detail}. 원래 사용자 이름이 복원되었습니다."
-		},
-		"passkeys": {
-			"title": "보안 키 및 패스키",
-			"description": "바인딩 후에는 보안 키나 기본 패스키를 사용하여 로그인할 수 있습니다. HTTPS 또는 localhost에서 사용해야 합니다. 먼저 사용자 설정에서 키를 추가하세요.",
-			"refreshButton": {
-				"title": "목록 새로 고침"
-			},
-			"refreshButtonIcon": {
-				"alt": "새로 고침 아이콘"
-			},
-			"nameLabel": "비고(선택사항)",
-			"nameInput": {
-				"placeholder": "예: 업무용 YubiKey"
-			},
-			"addButton": "보안 키 추가",
-			"noneFound": "아직 바인딩된 보안 키가 없습니다.",
-			"itemDetails": "추가된 시간: ${created}",
-			"removeButton": "제거",
-			"removeConfirm": "이 키를 제거할까요? 제거 후에는 이 키로 로그인할 수 없습니다.",
-			"removeSuccess": "보안 키가 삭제되었습니다.",
-			"addSuccess": "보안 키가 추가되었습니다.",
-			"errorLoadLibrary": "WebAuthn 라이브러리를 로드할 수 없습니다.",
-			"errorCancelled": "추가가 취소되었습니다.",
-			"apiInvalidPassword": "비밀번호가 잘못되었습니다.",
-			"apiMissingCredential": "유효한 암호 키 자격 증명이 누락되었습니다.",
-			"apiRemoveParamsRequired": "제거하려는 자격 증명과 비밀번호를 입력하세요."
-		},
-		"userDevices": {
-			"title": "사용자 기기/세션",
-			"noDevicesFound": "기기 또는 세션이 없습니다.",
-			"deviceInfo": "기기 ID: ${deviceId}",
-			"thisDevice": "이 기기",
-			"deviceDetails": "마지막 접속: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "해지",
-			"revokeConfirm": "이 기기/세션의 액세스 권한을 해지하시겠습니까?",
-			"revokeSuccess": "기기/세션이 성공적으로 해지되었습니다.",
-			"revokeMissingParams": "취소하려는 장치 및 세션 비밀번호를 입력하세요.",
-			"revokeWrongPassword": "비밀번호가 올바르지 않습니다.",
-			"listNotFound": "장치 목록을 찾을 수 없습니다.",
-			"deviceNotFound": "장치 또는 세션을 찾을 수 없습니다.",
-			"refreshButton": {
-				"title": "목록 새로 고침"
-			},
-			"refreshButtonIcon": {
-				"alt": "새로 고침 아이콘"
-			}
-		},
-		"apiKeys": {
-			"title": "API 키",
-			"description": "외부 응용 프로그램의 API 키를 관리하십시오.",
-			"input": {
-				"placeholder": "새로운 키 설명"
-			},
-			"createButton": "생성",
-			"noKeysFound": "API 키가 발견되지 않았습니다.",
-			"keyDetails": "설명 : ${description} | 생성 : ${createdAt} | 마지막 사용 : ${lastUsed}",
-			"neverUsed": "사용하지 않았습니다",
-			"noKeysForUser": "API 키 데이터를 찾을 수 없습니다.",
-			"revokeWrongPassword": "비밀번호가 올바르지 않습니다.",
-			"keyNotFound": "API 키를 찾을 수 없습니다.",
-			"revokeMissingJti": "취소할 키를 지정하세요.",
-			"revokeMissingPassword": "키를 취소하려면 비밀번호가 필요합니다.",
-			"verifyMissingApiKey": "API 키를 입력해 주세요.",
-			"revokeButton": "해지",
-			"revokeConfirm": "이 API 키를 취소 하시겠습니까?",
-			"revokeSuccess": "API 키가 성공적으로 취소되었습니다.",
-			"errorDescriptionRequired": "설명이 필요합니다.",
-			"createSuccess": "API 키는 성공적으로 생성되었습니다.",
-			"refreshButton": {
-				"title": "목록 새로 고침"
-			},
-			"refreshButtonIcon": {
-				"alt": "새로 고침 아이콘"
-			}
-		},
-		"newApiKey": {
-			"title": "새로운 API 키가 만들어졌습니다",
-			"warning": "새 API 키를 복사하십시오. 당신은 그것을 다시 볼 수 없을 것입니다!",
-			"closeButton": "내 키를 복사했습니다",
-			"copyButton": {
-				"title": "새 API 키 복사"
-			},
-			"copiedAlert": "키를 클립보드에 복사했습니다.",
-			"copyKeyFailed": "키를 클립보드에 복사할 수 없습니다."
-		},
-		"editorCommand": {
-			"title": "외부 편집기 명령",
-			"description": "외부 편집기에서 파일을 열 때 사용할 명령과 인수 템플릿을 설정합니다.",
-			"editorPresetLabel": "편집기 사전 설정",
-			"commandLabel": "명령",
-			"argsTemplateLabel": "인수 템플릿",
-			"argsTemplateHint": "플레이스홀더: \\${file} \\${line} \\${column}",
-			"presetOptionPathAvailable": "${label} (PATH에 있음)",
-			"presetOptionPathUnavailable": "${label} (PATH에 없음)",
-			"testPathInput": {
-				"placeholder": "시험해 볼 파일 경로(예: C:/work/project/src/main.mjs)"
-			},
-			"testButton": "열어 보기",
-			"saveButton": "설정 저장",
-			"saveSuccess": "외부 편집기 명령 설정을 저장했습니다.",
-			"testPathRequired": "먼저 테스트할 파일 경로를 입력하세요.",
-			"testSuccess": "외부 편집기에서 파일을 여는 명령을 실행했습니다."
-		},
-		"logout": {
-			"title": "로그아웃",
-			"description": "현재 기기에서 계정을 로그아웃합니다.",
-			"buttonText": "로그아웃",
-			"confirmMessage": "로그아웃하시겠습니까?",
-			"successMessage": "성공적으로 로그아웃되었습니다. 잠시 후 로그인 페이지로 이동합니다..."
-		},
-		"deleteAccount": {
-			"title": "계정 삭제",
-			"warning": "경고: 이 작업은 계정과 모든 관련 데이터를 영구적으로 삭제하며 복구할 수 없습니다.",
-			"submitButton": "내 계정 삭제",
-			"confirmMessage1": "경고! 계정을 영구적으로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
-			"confirmMessage2": "삭제를 확인하려면 사용자 이름 \"${username}\"을(를) 입력하세요:",
-			"usernameMismatch": "입력한 사용자 이름이 현재 사용자와 일치하지 않습니다. 삭제 작업이 취소되었습니다.",
-			"success": "계정이 성공적으로 삭제되었습니다. 이제 로그아웃됩니다.",
-			"missingPassword": "비밀번호를 입력해주세요.",
-			"wrongPassword": "비밀번호가 올바르지 않습니다."
-		},
-		"passwordConfirm": {
-			"title": "작업 확인",
-			"message": "계속하려면 현재 비밀번호를 입력하세요:",
-			"passwordLabel": "비밀번호:",
-			"confirmButton": "확인",
-			"cancelButton": "취소"
-		},
-		"apiError": "API 요청에 실패했습니다: ${message}",
-		"generalError": "오류가 발생했습니다: ${message}",
-		"home_function_buttons": {
-			"settings": {
-				"title": "설정",
-				"sub_items": {
-					"main": {
-						"title": "사용자 설정"
-					}
-				}
-			}
-		}
-	},
-	"subfounts": {
-		"title": "subfounts - P2P 장치 관리",
-		"pageTitle": "Subfounts",
-		"description": "P2P Subfount 연결 관리",
-		"hostConnectionCode": {
-			"title": "호스트 연결 코드",
-			"connectionCodeLabel": "연결 코드(Peer ID)",
-			"passwordLabel": "비밀번호",
-			"copyButton": "복사",
-			"regenerateButton": "재생성",
-			"infoMessage": "연결을 설정하려면 이러한 자격 증명을 Subfount 클라이언트와 공유하세요.",
-			"connectionCodeCopied": "연결 코드가 클립보드에 복사되었습니다.",
-			"passwordCopied": "비밀번호가 클립보드에 복사되었습니다.",
-			"regenerateSuccess": "연결 코드가 다시 생성되었습니다."
-		},
-		"infra": {
-			"title": "네트워크 공익",
-			"description": "연결된 하위 fount가 전체 fount 네트워크를 돕는 공익 노드로 동작할지 일괄 설정합니다. 끄더라도 하위 장치는 이 호스트의 원격 실행을 받지만, 네트워크 계층 지원에는 참여하지 않습니다.",
-			"capabilityRelay": "overlay 멀티홉 중계에 참여해, 직접 연결이 실패할 때 다른 노드끼리 통신할 수 있게 돕습니다.",
-			"capabilityMailbox": "오프라인 전달을 맡아 두어, 상대 노드가 다시 온라인이 되어도 쪽지를 받을 수 있게 합니다.",
-			"hostPriority": "켜면 이 호스트를 우선합니다: 호스트 평판표로 경로에 가중치를 두고, 최고 우선순위로 고정합니다.",
-			"toggleLabel": "하위 장치가 공익에 참여",
-			"enabledToast": "켜짐: 하위 장치가 네트워크 공익에 참여합니다(이 호스트 우선)",
-			"disabledToast": "꺼짐: 하위 장치가 더 이상 네트워크 공익에 참여하지 않습니다"
-		},
-		"connectedSubfounts": {
-			"title": "연결된 서브폰트",
-			"noSubfountsConnected": "연결된 서브폰트가 없습니다",
-			"table": {
-				"id": "ID",
-				"description": "비고",
-				"deviceId": "장치 ID",
-				"connectedAt": "연결 시간",
-				"status": "상태",
-				"actions": "작업",
-				"connected": "연결됨",
-				"disconnected": "연결이 끊김",
-				"save": "저장",
-				"na": "해당 없음"
-			},
-			"descriptionSaved": "메모가 저장되었습니다.",
-			"descriptionSaveFailed": "메모 저장 실패: ${message}"
-		},
-		"codeExecution": {
-			"title": "코드 실행",
-			"description": "선택한 Subfount에서 JavaScript 코드 실행",
-			"selectSubfountLabel": "Subfount 선택",
-			"hostOption": "호스트(ID: ${id})",
-			"subfountOption": "단말 ${id}${deviceId}",
-			"scriptLabel": "자바스크립트 코드",
-			"executeButton": "실행",
-			"executing": "실행 중...",
-			"noSubfountSelected": "먼저 Subfount을 선택하세요.",
-			"noScriptProvided": "실행할 코드를 입력해주세요",
-			"executionSuccess": "코드 실행 성공",
-			"executionFailed": "코드 실행 실패: ${message}",
-			"selectSubfount": "코드를 실행하려면 서브파운드를 선택하세요..."
-		},
-		"downloadClient": {
-			"title": "서브폰트 클라이언트 다운로드",
-			"description": "원격 장치에서 실행할 독립형 하위 클라이언트 스크립트를 다운로드합니다.",
-			"downloadButton": "subfount.mjs 다운로드"
-		},
-		"errors": {
-			"loadConnectionCodeFailed": "연결 코드를 로드하지 못했습니다: ${message}",
-			"regenerateConnectionCodeFailed": "연결 코드를 다시 생성하지 못했습니다: ${message}",
-			"loadSettingsFailed": "공익 설정을 불러오지 못했습니다: ${message}",
-			"saveSettingsFailed": "공익 설정을 저장하지 못했습니다: ${message}",
-			"generalError": "오류가 발생했습니다: ${message}"
-		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "개발중",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "하위 장치",
-						"sub_items": {
-							"main": {
-								"title": "하위 장치 관리"
-							}
-						}
-					}
-				}
-			}
-		}
-	},
-	"languageSettings": {
-		"title": "언어 설정",
-		"pageTitle": "언어 설정",
-		"description": "fount 애플리케이션에 대한 언어 기본 설정을 관리하세요. 사용 가능한 언어 옵션으로 경험을 맞춤화하세요.",
-		"pageDescription": "여기에서 언어 선호도를 관리하십시오. 목록의 언어는 순서대로 브라우저 설정보다 우선합니다.",
-		"availableLanguages": "사용 가능한 언어",
-		"preferredLanguages": "우선 언어 목록",
-		"resetButton": "초기화",
-		"saveButton": "저장",
-		"select": {
-			"placeholder": "언어 선택..."
-		},
-		"search": {
-			"placeholder": "언어 검색..."
-		},
-		"noPreferredLanguages": "선호하는 언어가 설정되지 않았습니다. 브라우저 기본 설정이 사용됩니다.",
-		"moveUpButton": {
-			"aria-label": "위로 이동",
-			"alt": "위로 이동 아이콘"
-		},
-		"moveDownButton": {
-			"aria-label": "아래로 이동",
-			"alt": "아래로 이동 아이콘"
-		},
-		"deleteLocaleButton": {
-			"aria-label": "이 언어 삭제",
-			"alt": "삭제 아이콘"
-		},
-		"savedMessage": "언어 설정이 저장됩니다!",
-		"resetMessage": "언어 설정이 재설정되었습니다!",
-		"fetchLocalesFailed": "사용 가능한 언어를 얻지 못했습니다!",
-		"home_function_buttons": {
-			"settings": {
-				"title": "설정",
-				"sub_items": {
-					"main": {
-						"title": "언어 설정"
-					}
-				}
-			}
-		}
-	},
-	"themeManage": {
-		"title": "테마 관리",
-		"description": "당신의 기분이나 이야기를 반영하는 미학을 선택하세요. 테마 팔레트에서 미리 보고 선택하세요. 각 테마는 fount 상호 작용에 대해 서로 다른 분위기를 제공합니다. 당신의 세계, 당신의 스타일.",
-		"instruction": "테마를 선택하세요!",
-		"search": {
-			"placeholder": "테마 검색...",
-			"noResult": "일치하는 테마가 없습니다."
-		},
-		"createButton": "+ 새 테마 만들기",
-		"preview": {
-			"editButton": {
-				"title": "편집"
-			},
-			"editButtonIcon": {
-				"alt": "편집 아이콘"
-			},
-			"deleteButton": {
-				"title": "삭제"
-			},
-			"deleteButtonIcon": {
-				"alt": "삭제 아이콘"
-			},
-			"cloneButton": {
-				"title": "복제"
-			},
-			"cloneButtonIcon": {
-				"alt": "복제 아이콘"
-			}
-		},
-		"editor": {
-			"title": "테마 편집기",
-			"cancelButton": "취소",
-			"saveApplyButton": "저장 및 적용",
-			"themeName": "테마 이름 (ID)",
-			"autoPaletteTitle": "사진에서 자동 색상 보정",
-			"autoPaletteInstruction": "위의 색상을 클릭하면 기본/보조/강조/중성색이 자동으로 채워집니다.",
-			"coreColors": "핵심 색상",
-			"baseBackground": "기본 및 배경",
-			"variables": "변수",
-			"borderRadius": "테두리 반경 (--rounded-box)",
-			"borderWidth": "테두리 너비 (--border-btn)",
-			"advancedCustomization": "고급 사용자 정의",
-			"customCSS": "사용자 정의 CSS (재정의)",
-			"customMjsScript": "사용자 정의 MJS 스크립트 (선택 사항)",
-			"mjsSyntaxHint": "[async-eval 구문](${asyncDocLink})을 사용하세요. `load()` 및 `unload()` 함수가 포함된 객체를 반환합니다.",
-			"themeIdRequired": "테마 ID가 필요합니다.",
-			"newThemeName": "새 테마 이름:",
-			"deleteConfirm": "테마 ${id}를 삭제하시겠습니까?",
-			"saved": "저장되었습니다!",
-			"failedToSave": "저장 실패",
-			"failedToDelete": "테마를 삭제하지 못했습니다: ${message}",
-			"failedToClone": "테마를 복사하지 못했습니다: ${message}"
-		},
-		"themes": {
-			"auto": "자동",
-			"light": "라이트",
-			"dark": "다크",
-			"cupcake": "컵케이크",
-			"bumblebee": "범블비",
-			"emerald": "에메랄드",
-			"corporate": "코퍼레이트",
-			"synthwave": "신스웨이브",
-			"retro": "레트로",
-			"cyberpunk": "사이버펑크",
-			"valentine": "밸런타인",
-			"halloween": "할로윈",
-			"garden": "가든",
-			"forest": "포레스트",
-			"aqua": "아쿠아",
-			"lofi": "Lo-fi",
-			"pastel": "파스텔",
-			"fantasy": "판타지",
-			"wireframe": "와이어프레임",
-			"black": "블랙",
-			"luxury": "럭셔리",
-			"dracula": "드라큘라",
-			"cmyk": "CMYK",
-			"autumn": "어텀",
-			"business": "비즈니스",
-			"acid": "애시드",
-			"lemonade": "레모네이드",
-			"night": "나이트",
-			"coffee": "커피",
-			"winter": "윈터",
-			"dim": "딤",
-			"nord": "노드",
-			"sunset": "선셋",
-			"caramellatte": "카라멜 라떼",
-			"abyss": "어비스",
-			"silk": "실크"
-		},
-		"achievements": {
-			"change_theme": {
-				"name": "화려한 변신!",
-				"description": "fount는 새로운 모습과 완전히 새로운 분위기를 가졌습니다.",
-				"locked_description": "테마를 한 번 전환해 보세요."
-			}
-		},
-		"home_function_buttons": {
-			"settings": {
-				"title": "설정",
-				"sub_items": {
-					"switchTheme": {
-						"title": "테마 변경"
-					}
-				}
-			}
-		}
-	},
 	"part_config": {
 		"title": "컴포넌트 설정",
 		"pageTitle": "컴포넌트 설정",
@@ -4427,6 +3491,84 @@
 			}
 		}
 	},
+	"discord_bots": {
+		"title": "Discord 봇",
+		"description": "분주한 Discord의 홀에서 여러분의 동료들에게 목소리를 들려주세요. 그들의 존재를 구성하고, 운영을 관리하고, 한 번에 하나의 서버씩 세계를 연결하도록 하십시오.",
+		"cardTitle": "Discord 봇",
+		"botSelectDropdown": {
+			"placeholder": "봇을 선택하세요"
+		},
+		"botSearch": {
+			"placeholder": "봇 검색..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "역할을 선택하세요"
+		},
+		"charSearch": {
+			"placeholder": "캐릭터 검색..."
+		},
+		"configCard": {
+			"title": "봇 설정",
+			"labels": {
+				"character": "캐릭터",
+				"apiKey": "Discord API 키",
+				"config": "설정"
+			},
+			"apiKeyInput": {
+				"placeholder": "API 키를 입력하세요"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "API 키 표시 전환"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API 키 표시/숨기기"
+			},
+			"buttons": {
+				"saveConfig": "설정 저장",
+				"startBot": "시작",
+				"stopBot": "중지"
+			},
+			"charSelect": {
+				"placeholder": "역할 선택"
+			}
+		},
+		"prompts": {
+			"newBotName": "새 봇 이름을 입력하세요:"
+		},
+		"buttons": {
+			"newBot": "새로 만들기",
+			"deleteBot": "삭제"
+		},
+		"alerts": {
+			"configSaved": "설정이 성공적으로 저장되었습니다.",
+			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
+			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"httpError": "HTTP 오류가 발생했습니다.",
+			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "디스코드에 오다",
+				"description": "당신의 캐릭터를 Discord의 세계로 소환하세요.",
+				"locked_description": "Discord Bot을 한 번 실행하세요."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "봇 관련",
+				"sub_items": {
+					"manage": {
+						"title": "Discord Bot 구성"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Bot 구성"
+			}
+		}
+	},
 	"wechat_bots": {
 		"title": "위챗 봇",
 		"description": "fount 캐릭터를 WeChat 봇으로 쓰세요. 역할을 연결하고, 봇을 관리하며, WeChat에서 대화합니다.",
@@ -4518,83 +3660,584 @@
 			"needBot": "목록에서 봇을 선택하거나 「새로 만들기」로 만드세요."
 		}
 	},
-	"discord_bots": {
-		"title": "Discord 봇",
-		"description": "분주한 Discord의 홀에서 여러분의 동료들에게 목소리를 들려주세요. 그들의 존재를 구성하고, 운영을 관리하고, 한 번에 하나의 서버씩 세계를 연결하도록 하십시오.",
-		"cardTitle": "Discord 봇",
-		"botSelectDropdown": {
-			"placeholder": "봇을 선택하세요"
-		},
-		"botSearch": {
-			"placeholder": "봇 검색..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "역할을 선택하세요"
-		},
-		"charSearch": {
-			"placeholder": "캐릭터 검색..."
-		},
-		"configCard": {
-			"title": "봇 설정",
-			"labels": {
-				"character": "캐릭터",
-				"apiKey": "Discord API 키",
-				"config": "설정"
-			},
-			"apiKeyInput": {
-				"placeholder": "API 키를 입력하세요"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "API 키 표시 전환"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "API 키 표시/숨기기"
-			},
-			"buttons": {
-				"saveConfig": "설정 저장",
-				"startBot": "시작",
-				"stopBot": "중지"
-			},
-			"charSelect": {
-				"placeholder": "역할 선택"
-			}
-		},
-		"prompts": {
-			"newBotName": "새 봇 이름을 입력하세요:"
-		},
-		"buttons": {
-			"newBot": "새로 만들기",
-			"deleteBot": "삭제"
-		},
-		"alerts": {
-			"configSaved": "설정이 성공적으로 저장되었습니다.",
-			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
-			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
-			"httpError": "HTTP 오류가 발생했습니다.",
-			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "디스코드에 오다",
-				"description": "당신의 캐릭터를 Discord의 세계로 소환하세요.",
-				"locked_description": "Discord Bot을 한 번 실행하세요."
-			}
-		},
+	"social": {
+		"title": "정사각형",
+		"description": "P2P 공개 소셜 업데이트, 팔로우 및 파일 공유",
+		"bootstrapFailed": "소셜 인터페이스 초기화 실패: ${error}",
 		"home_function_buttons": {
-			"bot_related": {
-				"title": "봇 관련",
-				"sub_items": {
-					"manage": {
-						"title": "Discord Bot 구성"
-					}
+			"main": {
+				"title": "정사각형"
+			}
+		},
+		"nav": {
+			"feed": "첫 페이지",
+			"explore": "탐저장",
+			"notifications": "받은 편지함",
+			"saved": "모으다",
+			"drafts": "초안 상자",
+			"profile": "내 것",
+			"videos": "짧은 영상",
+			"live": "라이브 스트리밍"
+		},
+		"settings": {
+			"title": "소셜 설정",
+			"back": {
+				"aria-label": "프로필로 돌아가기"
+			},
+			"privacyTitle": "프로필 보호 및 검색",
+			"privacyHint": "검색 및 권장 사항에 계정이 표시되는지 여부를 제어합니다.",
+			"tasteTitle": "권장 사항 및 기본 설정",
+			"tasteHint": "\"추천\"의 개인 메시지 보호 경계 및 라벨 이름을 조정합니다.",
+			"mutedKeywordsTitle": "단어 및 태그 차단",
+			"mutedKeywordsHint": "본문 텍스트, 콘텐츠 경고 또는 라벨에 해당하는 게시물은 스트림, 탐색, 검색 및 알림에서 숨겨집니다. 로컬에만 저장됩니다.",
+			"mutedKeywordsMatchTags": "태그를 동시에 일치시키세요",
+			"mutedKeywordsAdd": "다음에 추가",
+			"mutedKeywordsRemove": {
+				"title": "차단된 단어 제거"
+			},
+			"mutedKeywordsEmpty": "아직 차단 단어가 추가되지 않았습니다.",
+			"autoTranslateTitle": "자동 번역",
+			"autoTranslateHint": "켜면 외국어 게시물이 자동으로 번역을 요청하고, 원문으로 전환될 수 있습니다.",
+			"autoTranslateEnable": "내 언어가 아닌 게시물 자동 번역",
+			"safetyTitle": "안전 및 차단",
+			"safetyHint": "차단 및 숨김 목록을 관리하세요.",
+			"mutedKeywords": {
+				"placeholder": "키워드 또는 #태그를 입력하세요."
+			},
+			"taste": {
+				"rebuild": "기본 설정 재구성",
+				"privacyPublishPreferences": "공개 태그 이름 지정 및 병합 검색",
+				"privacyPublishPreferencesHint": "닫은 후에는 친구들이 내 태그 이름 지정 및 병합 문을 볼 수 없으며 합의에 기여할 수도 없습니다.",
+				"privacyPublishReactions": "대중이 좋아하는 것과 싫어하는 것",
+				"privacyPublishReactionsHint": "끄면 게시자에게 내 좋아요/싫어요가 전달되지 않고, 내 반응은 타인 추천에 반영되지 않으며, 게시물의 2차 확산에도 기여하지 않습니다.",
+				"empty": "아직 환경설정 태그가 없습니다. 좋아요/싫어요가 많아지면 자동으로 클러스터링됩니다.",
+				"weight": "무게 ${weight}",
+				"save": "저장",
+				"name": {
+					"placeholder": "로컬 표시 이름"
+				}
+			},
+			"blocklist": {
+				"title": "블랙리스트",
+				"hiddenTitle": "목록 숨기기",
+				"empty": "아직 차단되거나 숨겨진 항목이 없습니다.",
+				"unblock": "차단 해제",
+				"unhide": "숨기기 해제",
+				"scopeEntity": "실재",
+				"scopeSubject": "본체"
+			}
+		},
+		"composer": {
+			"placeholder": "무슨 생각을 하고 계신가요? Markdown(fount 방언) 지원, @로 멘션",
+			"publish": "게시",
+			"saveDraft": "초안 저장",
+			"fab": {
+				"title": "게시물 작성",
+				"aria-label": "게시물 작성"
+			},
+			"contentWarning": {
+				"placeholder": "콘텐츠 경고(선택사항)"
+			},
+			"sensitiveMedia": "민감한 미디어 가리기",
+			"editImage": "편집",
+			"editCrop": "자르기",
+			"editMosaic": "모자이크",
+			"editBrush": "브러시",
+			"editApply": "적용",
+			"editCancel": "취소",
+			"replyPolicyEveryone": "누구나 답글을 달 수 있습니다.",
+			"replyPolicyFollowers7d": "7일 이상 팔로워 수",
+			"replyPolicyAuthorFollows": "내가 팔로우하는 사람들",
+			"replyPolicyLabel": "답글을 달 수 있는 사람",
+			"replyDisplayAll": "모든 답글 표시",
+			"replyDisplayFeaturedOnly": "선택된 답글만",
+			"replyDisplayLabel": "표시하려면 답장을 보내세요.",
+			"scheduleLabel": "정기적으로 출시",
+			"scheduleSuccess": "게시물이 예약된 대기열에 추가되었습니다.",
+			"emojiButton": {
+				"title": "표정",
+				"aria-label": "표정"
+			},
+			"mediaButton": {
+				"title": "미디어 추가",
+				"aria-label": "미디어 추가"
+			},
+			"pollButton": {
+				"title": "투표 시작",
+				"aria-label": "투표 시작"
+			},
+			"cwToggle": {
+				"title": "내용 경고",
+				"aria-label": "내용 경고"
+			},
+			"advancedToggle": {
+				"title": "추가 옵션",
+				"aria-label": "추가 옵션"
+			},
+			"media": {
+				"placeholder": "이미지 설명(대체)"
+			},
+			"visibility": {
+				"label": "가시 범위",
+				"public": "공개",
+				"unlisted": "공개적으로 나열되지 않음",
+				"followers": "팔로어만",
+				"followers7d": "7일 동안 팔로우한 후 표시됨",
+				"followers30d": "30일 동안 팔로우한 후 표시됨",
+				"selected": "지정된 사용자에게 공개",
+				"private": "본인에게만 표시됩니다.",
+				"allowLabel": "표시 사람들",
+				"exceptLabel": "사람을 제외",
+				"allow": {
+					"placeholder": "표시되는 인물 엔터티해시, 공백 또는 쉼표로 구분됨"
+				},
+				"except": {
+					"placeholder": "보여주면 안되는 사람 (선택)"
 				}
 			}
 		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Discord Bot 구성"
+		"feed": {
+			"refresh": "뉴스 새로고침",
+			"newPosts": "새로운 소식이 있습니다. 보려면 클릭하세요.",
+			"tabLatest": "최신",
+			"tabForYou": "추천",
+			"repostedBy": "${author}이 리트윗함",
+			"decryptFailed": "이 게시물의 암호를 해독할 수 없습니다.",
+			"revealContent": "콘텐츠 표시",
+			"sensitiveMedia": "민감한 미디어",
+			"showMore": "확장",
+			"showLess": "닫기",
+			"replayDivider": "다 읽었습니다. 다시 찾아보세요.",
+			"trending": {
+				"title": "뜨거운 주제",
+				"postCount": {
+					"title": "${n}개의 게시물"
+				},
+				"scopeLocal": "이 기기",
+				"scopeNearby": "가까운",
+				"empty": "아직 인기 주제가 없습니다."
 			}
+		},
+		"explore": {
+			"accounts": "추천 계정",
+			"posts": "최신 게시물",
+			"mediaOnly": "미디어 전용"
+		},
+		"notifications": {
+			"reply": "${author}님이 내 게시물에 답변했습니다.",
+			"mention": "${author} @@나를 피드에 추가했습니다",
+			"like": "${author}님이 내 게시물을 좋아합니다.",
+			"repost": "${author}님이 내 게시물을 리트윗했습니다.",
+			"follow": "${author}님이 나를 팔로우합니다",
+			"care_post": "${author}가 새 업데이트를 게시했습니다(특별한 우려사항)",
+			"poll_closed": "${author}에 대한 투표가 종료되었습니다.",
+			"post_note": "${author}님이 게시물에 메시지를 추가했습니다.",
+			"live_started": "${author}님이 실시간 스트리밍을 시작했습니다.",
+			"view": "확인",
+			"markAllRead": "모두 읽음으로 표시"
+		},
+		"saved": {
+			"all": "전체",
+			"unfiled": "보관되지 않음",
+			"createFolder": {
+				"title": "새 폴더 만들기",
+				"aria-label": "새 폴더 만들기"
+			},
+			"createFolderPrompt": "폴더 이름",
+			"pickFolderTitle": "즐겨찾기에 추가",
+			"confirm": "확인",
+			"cancel": "취소",
+			"remove": "즐겨찾기 제거",
+			"renameFolder": "이름 바꾸기",
+			"renameFolderPrompt": "새 폴더 이름",
+			"deleteFolder": "폴더 삭제",
+			"deleteFolderConfirm": "폴더를 삭제하시겠습니까? 해당 게시물은 '보관 취소됨'으로 이동됩니다.",
+			"searchEmpty": "일치하는 컬렉션이 없습니다.",
+			"folderEmpty": "이 폴더는 비어 있습니다.",
+			"emptyHint": "뉴스를 탐색할 때 북마크를 클릭하면 여기에 저장됩니다.",
+			"search": {
+				"placeholder": "즐겨찾기 검색…"
+			}
+		},
+		"drafts": {
+			"untitled": "(초안 텍스트 없음)",
+			"emptyHint": "게시물 상자에 내용을 작성하고 다음 번에 계속 편집하려면 \"초안 저장\"을 클릭하세요.",
+			"saved": "초안이 저장되었습니다.",
+			"deleted": "초안이 삭제되었습니다.",
+			"delete": "초안 삭제",
+			"empty": "초안이 비어 있습니다.",
+			"saveFailed": "초안 저장 실패: ${error}",
+			"loadFailed": "초안을 열지 못했습니다: ${error}",
+			"deleteFailed": "초안 삭제 실패: ${error}"
+		},
+		"profile": {
+			"edit": "프로필 편집",
+			"viewPosts": "소셜 프로필 보기",
+			"settingsBtn": {
+				"aria-label": "소셜 설정"
+			},
+			"mediaOnly": "[메디아]",
+			"hideFromExplore": "탐색 페이지에서 계정 숨기기",
+			"tabPosts": "동적",
+			"tabAlbums": "사진 앨범",
+			"tabLikes": "좋아요",
+			"tabCabinets": "서류 캐비넷",
+			"tabsLabel": {
+				"aria-label": "데이터 파티션"
+			},
+			"cabinetsEmpty": "공개 파일 캐비넷이 없습니다",
+			"cabinetsFailed": "파일 캐비닛을 불러오지 못했습니다: ${error}",
+			"statsGroup": {
+				"aria-label": "통계"
+			},
+			"statsPosts": "동적",
+			"statsFollowing": "팔로잉",
+			"statsFollowers": "팬",
+			"followingTitle": "팔로잉",
+			"followersTitle": "팬",
+			"albums": {
+				"create": "새 앨범 만들기",
+				"edit": "앨범 수정",
+				"save": "저장",
+				"cancel": "취소",
+				"back": "앨범으로 돌아가기",
+				"empty": "아직 앨범이 없습니다",
+				"emptyPosts": "아직 앨범에 게시물이 없습니다.",
+				"name": "앨범명",
+				"description": "앨범 설명",
+				"deleteLinks": "앨범 삭제(게시물 유지)",
+				"deleteWithPosts": "앨범 삭제 및 게시물 삭제",
+				"pickerLabel": "앨범에 추가",
+				"defaultName": "기본 앨범"
+			}
+		},
+		"video": {
+			"view": {
+				"aria-label": "짧은 영상"
+			},
+			"empty": "아직 짧은 동영상이 없습니다.",
+			"emptyHint": "다음 사용자 또는 공개 광장에는 동영상이 포함된 게시물이 없습니다. 동영상 업데이트를 게시해 보시겠습니까?",
+			"compose": "동영상 게시하러 가기",
+			"back": {
+				"aria-label": "뉴스로 돌아가기"
+			},
+			"mute": {
+				"aria-label": "음소거"
+			},
+			"unmute": {
+				"aria-label": "음소거 해제"
+			},
+			"unavailable": "비디오를 재생할 수 없습니다",
+			"closeReplies": {
+				"aria-label": "댓글 닫기"
+			}
+		},
+		"live": {
+			"empty": "아직 라이브 방송이 없습니다",
+			"viewers": "${n}명이 시청했습니다.",
+			"likes": "${n} 좋아요",
+			"local": "이 기기",
+			"hall": "생방송 홀",
+			"back": {
+				"title": "뉴스로 돌아가기",
+				"aria-label": "뉴스로 돌아가기"
+			},
+			"danmakuSend": "보내기",
+			"postWatch": "생방송 입장",
+			"postEnded": "생방송이 종료되었습니다",
+			"postEndedStats": "조회자: ${viewers} · ${likes} 좋아요 · ${duration}",
+			"link": {
+				"invite": "연결 초대",
+				"needPeer": "피어 엔터티Hash:liveId를 입력하세요.",
+				"invited": "온라인 초대장이 전송되었습니다",
+				"linked": "연결됨",
+				"peer": {
+					"placeholder": "피어 엔터티Hash:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "방송 시작",
+				"open": "방송으로 이동",
+				"mediaAv": "오디오 및 비디오",
+				"mediaAudio": "순수한 오디오",
+				"mediaVideo": "순수한 그림",
+				"mediaWhip": "WHIP 푸시 스트리밍(예: OBS)",
+				"whipUrl": "WHIP 주소",
+				"whipToken": "무기명 토큰",
+				"whipWaiting": "WHIP 스트리밍 연결을 기다리는 중(OBS 등 스트리밍 소프트웨어 사용 가능)…",
+				"start": "생방송 시작",
+				"stop": "라이브 방송을 중지하세요",
+				"started": "생방송이 시작되었습니다",
+				"stopped": "생방송이 중단되었습니다",
+				"titleInput": {
+					"placeholder": "라이브 타이틀(선택사항)"
+				}
+			},
+			"danmaku": {
+				"placeholder": "뭐라고 말해보세요..."
+			}
+		},
+		"search": {
+			"placeholder": "업데이트, 사용자 또는 #주제 검색(최소 2단어)",
+			"open": {
+				"aria-label": "찾다"
+			},
+			"submit": "찾다",
+			"clear": "지우기",
+			"empty": "일치하는 게시물이 없습니다.",
+			"tooShort": "2자 이상 입력해주세요.",
+			"usersTitle": "사용자",
+			"postsTitle": "동적",
+			"usersEmpty": "일치하는 사용자가 없습니다.",
+			"pinAlias": "별칭으로 설정",
+			"trustScore": "${score} 신뢰",
+			"viewTitle": "찾다",
+			"loading": "수색…",
+			"filterAuthor": {
+				"placeholder": "작성자"
+			},
+			"filterMediaAll": "모든 미디어",
+			"filterMediaImage": "그림",
+			"filterMediaVideo": "동영상",
+			"filterTag": {
+				"placeholder": "#라벨"
+			},
+			"sortRecent": "최신",
+			"sortPopular": "인기 있는",
+			"scopeLocal": "이 기기",
+			"scopeNearby": "가까운"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "폐쇄"
+			}
+		},
+		"actions": {
+			"like": "좋아요",
+			"unlike": "같지 않은",
+			"dislike": "밟다",
+			"undislike": "싫어요 취소",
+			"repost": "앞으로",
+			"quote": "인용",
+			"delete": "삭제",
+			"edit": "편집",
+			"save": "모으다",
+			"saved": "모은",
+			"translate": "번역",
+			"dm": "비공개 메시지 보내기",
+			"block": "차단",
+			"hide": "숨김",
+			"mute": "음소거",
+			"follow": "팔로잉",
+			"following": "이미 팔로우 중",
+			"care": "특별한 관심",
+			"careRemove": "스페셜 케어 취소",
+			"careAdded": "이미 특별한 관심사가 추가되었습니다.",
+			"careRemoved": "스페셜 케어 취소됨",
+			"setAlias": "별칭 설정",
+			"setAliasPrompt": "로컬 별칭 설정(지우려면 비워 두세요):",
+			"aliasSaved": "별칭이 업데이트되었습니다.",
+			"replies": "논평",
+			"copyLink": "링크 복사",
+			"downloadHtml": "HTML 다운로드",
+			"copied": "복사됨",
+			"more": {
+				"aria-label": "더 보기"
+			},
+			"share": "공유",
+			"likeFailed": "좋아요를 누르지 못했습니다: ${error}",
+			"dislikeFailed": "밟지 못했습니다: ${error}",
+			"repostFailed": "전달 실패: ${error}",
+			"replyFailed": "답장 실패: ${error}",
+			"followFailed": "팔로우 실패: ${error}",
+			"saveFailed": "수집 실패: ${error}",
+			"blockFailed": "차단 실패: ${error}",
+			"hideFailed": "숨기지 못했습니다: ${error}",
+			"muteFailed": "음소거 실패: ${error}",
+			"deleteFailed": "삭제 실패: ${error}"
+		},
+		"post": {
+			"edited": "편집됨",
+			"editPrompt": "게시물 텍스트 수정",
+			"editHistory": "편집 기록",
+			"editHistoryEmpty": "이전 버전 없음",
+			"loading": "불러오는 중…",
+			"notFound": "게시물이 존재하지 않거나 표시되지 않습니다.",
+			"loadFailed": "불러오지 못했습니다. 나중에 다시 시도해 주세요.",
+			"detailTitle": "게시",
+			"back": "돌아가기"
+		},
+		"reply": {
+			"context": "${author}님에게 답장하세요"
+		},
+		"notes": {
+			"label": "독자의 보충 자료",
+			"add": "보충 메시지",
+			"prompt": "독자 보충 자료 작성(커뮤니티 노트)",
+			"listTitle": "모든 추가 메시지",
+			"helpful": "작동해요",
+			"unhelpful": "쓸모 없는",
+			"more": "전체 ${n}개",
+			"empty": "아직 추가 메시지가 없습니다."
+		},
+		"poll": {
+			"multi": "다중 선택 허용",
+			"apply": "투표 구독",
+			"closed": "투표가 종료되었습니다",
+			"deadline": "마감일: ${deadline}",
+			"options": {
+				"placeholder": "한 줄에 옵션 하나(최소 2개)"
+			}
+		},
+		"aside": {
+			"suggested": "관심을 추천"
+		},
+		"groupRef": {
+			"linking": "채팅 그룹 연결",
+			"clear": "연결 해제",
+			"pick": "채팅 그룹/채널 연결…"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "받은 편지함 필터링"
+			},
+			"tabs": {
+				"all": "전체",
+				"mention": "언급",
+				"reply": "답글",
+				"like": "칭찬",
+				"follow": "팔로잉",
+				"repost": "앞으로"
+			},
+			"aggregated": {
+				"like": "${author1}, ${author2} 외 ${count}명이 내 게시물을 좋아했습니다.",
+				"likeTwo": "${author1}님과 ${author2}님이 내 게시물을 좋아합니다.",
+				"repost": "${author1}, ${author2} 및 ${count}명이 내 게시물을 리트윗했습니다.",
+				"repostTwo": "${author1}님과 ${author2}님이 내 게시물을 리트윗했습니다.",
+				"follow": "${author1}, ${author2} 외 ${count}명이 나를 팔로우합니다.",
+				"followTwo": "${author1}님과 ${author2}님이 나를 팔로우합니다."
+			}
+		},
+		"replies": {
+			"placeholder": "답장을 쓰세요…",
+			"submit": "답글",
+			"empty": "아직 답장이 없습니다",
+			"emptyHint": "첫 번째 기사를 작성하고 토론을 시작하겠습니다"
+		},
+		"repost": {
+			"placeholder": "리트윗 댓글 추가(선택)…",
+			"submit": "전달 확인"
+		},
+		"quote": {
+			"quoting": "인용",
+			"clear": "역참조",
+			"viewOriginal": "원본 게시물 보기"
+		},
+		"a11y": {
+			"linkGroupSelect": "채팅 그룹 또는 채널에 연결",
+			"postVisibility": "가시 범위",
+			"postLang": "콘텐츠 언어",
+			"trendingHashtags": "뜨거운 주제",
+			"saveFolderSelect": "즐겨찾는 폴더"
+		},
+		"translate": {
+			"label": "번역:"
+		},
+		"time": {
+			"justNow": "방금",
+			"minutesAgo": "${n}분 전",
+			"hoursAgo": "${n}시간 전"
+		},
+		"empty": {
+			"feed": "아직 업데이트가 없습니다. 몇몇 사람들을 팔로우하세요.",
+			"profilePosts": "아직 소식이 없습니다",
+			"following": "아직 팔로우하는 사람이 없습니다.",
+			"followers": "아직 팬 없음",
+			"notifications": "아직 알림이 없습니다",
+			"saved": "아직 즐겨찾기가 없습니다.",
+			"drafts": "아직 초안이 없습니다.",
+			"exploreAccounts": "현재 추천 계정이 없습니다",
+			"explorePosts": "아직 탐색글이 없습니다.",
+			"likedPosts": "아직 좋아요가 없습니다.",
+			"noIdentity": "소셜을 쓰기 전에 Chat에서 연합 identity를 설정하세요."
+		},
+		"topic": {
+			"follow": "구독",
+			"unfollow": "구독 취소",
+			"empty": "이 주제에 대한 게시물이 아직 없습니다"
 		}
+	},
+	"cabinet": {
+		"title": "서류 캐비넷",
+		"description": "P2P 개인 및 공유 파일 캐비닛",
+		"openCabinets": {
+			"title": "파일 캐비닛 목록 열기",
+			"aria-label": "파일 캐비닛 목록 열기"
+		},
+		"closeCabinets": {
+			"title": "폐쇄",
+			"aria-label": "폐쇄"
+		},
+		"bootstrapFailed": "파일 캐비닛 초기화 실패: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "서류 캐비넷"
+			}
+		},
+		"upload": "업로드",
+		"uploadFolder": "폴더 업로드",
+		"newFolder": "새 폴더 만들기",
+		"open": "열기",
+		"download": "다운로드",
+		"downloadZip": "폴더 다운로드",
+		"rename": "이름 바꾸기",
+		"copy": "복사",
+		"cut": "자르기",
+		"paste": "붙여넣기",
+		"pasteLink": "링크로 붙여넣기",
+		"selectAll": "모두 선택",
+		"invert": "선택 반전",
+		"properties": "재산",
+		"delete": "삭제",
+		"back": {
+			"title": "이전 위치로 돌아가기",
+			"aria-label": "이전 위치로 돌아가기"
+		},
+		"cancel": "취소",
+		"save": "저장",
+		"showHidden": "숨김 파일 표시",
+		"name": "이름",
+		"descriptionField": "설명",
+		"attrHidden": "숨김",
+		"attrSystem": "시스템(삭제 시 확인 필요)",
+		"previewUrl": "미리보기 URL",
+		"deletePreviewWithFile": "파일 삭제 시 미리보기 삭제",
+		"folderPassword": "폴더 비밀번호(비워두세요. 암호화를 활성화하려면 입력하세요)",
+		"unlockFolder": "암호화된 폴더 잠금 해제",
+		"unlock": "터놓다",
+		"unlockFailed": "잠금 해제 실패: ${error}",
+		"previewFailed": "미리보기 생성 실패: ${error}",
+		"created": "생성: ${stamp}",
+		"modified": "수정: ${stamp}",
+		"statusCount": "${count}개 항목, ${selected}개 선택됨",
+		"newCabinetPrompt": "새 파일 캐비닛 이름",
+		"newFolderPrompt": "새 폴더 이름",
+		"renamePrompt": "새 이름",
+		"visibilityPrompt": "공개 여부(공개/미등록/팔로워/비공개/선택)",
+		"cabinetActionPrompt": "조치: 이름 바꾸기/삭제/가시성",
+		"confirmDeleteCabinet": "정말로 이 파일 캐비닛을 삭제하시겠습니까?",
+		"confirmDelete": "선택한 항목을 삭제하시겠습니까?",
+		"confirmDeleteSystem": "선택한 시스템 파일이 포함됩니다. 삭제하시겠습니까?",
+		"copied": "복사됨",
+		"cutDone": "자르기",
+		"undo": "취소",
+		"redo": "다시 실행",
+		"newWindow": "새 창 열기현재 위치",
+		"goUp": "이전 레벨로 돌아가기",
+		"brokenLink": "링크가 깨졌습니다: ${reason}",
+		"noDownload": "다운로드 가능한 콘텐츠 없음",
+		"groupDownloadHint": "그룹 파일은 메시지 첨부나 다운로드 링크로 받으세요.",
+		"remoteEntity": "원격 엔터티"
 	},
 	"browser_integration": {
 		"title": "브라우저 통합",
@@ -4719,6 +4362,48 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "에이전트 클라이언트 프로토콜을 통해 지원되는 편집기(예: Zed, JetBrains, Neovim)에 fount 역할을 연결하고, API 키 및 역할을 구성하고, AI 파트너를 개발 워크플로우에 참여시킵니다.",
+		"title": "IDE 통합",
+		"heading": "IDE 통합",
+		"instruction": "ACP 지원 편집기(예: Zed, JetBrains, Neovim 등)에서 fount 역할을 사용하여 프로그래밍을 지원받으세요.",
+		"supportedEditorsTitle": "지원되는 편집자 및 클라이언트",
+		"supportedEditorsIntro": "다음 클라이언트는 fount를 사용하여 작업합니다.",
+		"supportedEditorsLoading": "로드 중…",
+		"supportedEditorsError": "목록을 로드하지 못했습니다: ${message}",
+		"acpTitle": "fount ACP 스크립트 구성",
+		"acpDesc": "fount ACP 스크립트를 구성하려면 다음 예를 참조하십시오.",
+		"acpCharLabel": "역할",
+		"charListError": "역할 목록을 가져오지 못했습니다.",
+		"acpScriptLabel": "ACP 스크립트 URL",
+		"acpConfigSample": "구성 예:",
+		"acpConfigHint": "역할 ID는 이 페이지의 역할 드롭다운에 표시되며, API 키는 사용자 설정에서 관리할 수 있습니다.",
+		"copyButton": "복사",
+		"copied": "클립보드에 복사됨",
+		"apiKeySectionTitle": "API 키",
+		"apiKeyHint": "ACP 스크립트 연결 fount에 사용됩니다(API 프록시와 동일한 키 세트, 사용자 설정에서 생성 가능).",
+		"generateApiKeyButton": "새 키 생성",
+		"apiKeyCopied": "API 키가 복사되었습니다.",
+		"apiKeyCreateError": "API 키 생성 실패: ${message}",
+		"apiKeyInput": {
+			"aria-label": "API 키"
+		},
+		"home_function_buttons": {
+			"integration_related": "통합 관련",
+			"ide_integration_config": {
+				"title": "IDE 통합 구성"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "코드의 fount를 발견하다",
+				"description": "처음으로 fount 역할을 사용하여 Zed, JetBrains, Neovim 등과 같은 ACP 지원 편집기에서 프로그래밍을 지원합니다.",
+				"locked_description": "외부 IDE에서 원천 역할에 연결하고 세션을 완료합니다."
+			}
+		},
+		"acpChar": "역할 선택",
+		"acpConfig": "역할을 선택하고 먼저 API 키를 생성하세요."
+	},
 	"deskpet": {
 		"title": "데스크톱 애완동물",
 		"description": "데스크탑에 사는 대화형 애완동물로 fount 캐릭터를 실행하세요.",
@@ -4770,6 +4455,347 @@
 								"title": "데스크톱 애완동물 관리"
 							}
 						}
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "테마 관리",
+		"description": "당신의 기분이나 이야기를 반영하는 미학을 선택하세요. 테마 팔레트에서 미리 보고 선택하세요. 각 테마는 fount 상호 작용에 대해 서로 다른 분위기를 제공합니다. 당신의 세계, 당신의 스타일.",
+		"instruction": "테마를 선택하세요!",
+		"search": {
+			"placeholder": "테마 검색...",
+			"noResult": "일치하는 테마가 없습니다."
+		},
+		"createButton": "+ 새 테마 만들기",
+		"preview": {
+			"editButton": {
+				"title": "편집"
+			},
+			"editButtonIcon": {
+				"alt": "편집 아이콘"
+			},
+			"deleteButton": {
+				"title": "삭제"
+			},
+			"deleteButtonIcon": {
+				"alt": "삭제 아이콘"
+			},
+			"cloneButton": {
+				"title": "복제"
+			},
+			"cloneButtonIcon": {
+				"alt": "복제 아이콘"
+			}
+		},
+		"editor": {
+			"title": "테마 편집기",
+			"cancelButton": "취소",
+			"saveApplyButton": "저장 및 적용",
+			"themeName": "테마 이름 (ID)",
+			"autoPaletteTitle": "사진에서 자동 색상 보정",
+			"autoPaletteInstruction": "위의 색상을 클릭하면 기본/보조/강조/중성색이 자동으로 채워집니다.",
+			"coreColors": "핵심 색상",
+			"baseBackground": "기본 및 배경",
+			"variables": "변수",
+			"borderRadius": "테두리 반경 (--rounded-box)",
+			"borderWidth": "테두리 너비 (--border-btn)",
+			"advancedCustomization": "고급 사용자 정의",
+			"customCSS": "사용자 정의 CSS (재정의)",
+			"customMjsScript": "사용자 정의 MJS 스크립트 (선택 사항)",
+			"mjsSyntaxHint": "[async-eval 구문](${asyncDocLink})을 사용하세요. `load()` 및 `unload()` 함수가 포함된 객체를 반환합니다.",
+			"themeIdRequired": "테마 ID가 필요합니다.",
+			"newThemeName": "새 테마 이름:",
+			"deleteConfirm": "테마 ${id}를 삭제하시겠습니까?",
+			"saved": "저장되었습니다!",
+			"failedToSave": "저장 실패",
+			"failedToDelete": "테마를 삭제하지 못했습니다: ${message}",
+			"failedToClone": "테마를 복사하지 못했습니다: ${message}"
+		},
+		"themes": {
+			"auto": "자동",
+			"light": "라이트",
+			"dark": "다크",
+			"cupcake": "컵케이크",
+			"bumblebee": "범블비",
+			"emerald": "에메랄드",
+			"corporate": "코퍼레이트",
+			"synthwave": "신스웨이브",
+			"retro": "레트로",
+			"cyberpunk": "사이버펑크",
+			"valentine": "밸런타인",
+			"halloween": "할로윈",
+			"garden": "가든",
+			"forest": "포레스트",
+			"aqua": "아쿠아",
+			"lofi": "Lo-fi",
+			"pastel": "파스텔",
+			"fantasy": "판타지",
+			"wireframe": "와이어프레임",
+			"black": "블랙",
+			"luxury": "럭셔리",
+			"dracula": "드라큘라",
+			"cmyk": "CMYK",
+			"autumn": "어텀",
+			"business": "비즈니스",
+			"acid": "애시드",
+			"lemonade": "레모네이드",
+			"night": "나이트",
+			"coffee": "커피",
+			"winter": "윈터",
+			"dim": "딤",
+			"nord": "노드",
+			"sunset": "선셋",
+			"caramellatte": "카라멜 라떼",
+			"abyss": "어비스",
+			"silk": "실크"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "화려한 변신!",
+				"description": "fount는 새로운 모습과 완전히 새로운 분위기를 가졌습니다.",
+				"locked_description": "테마를 한 번 전환해 보세요."
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "설정",
+				"sub_items": {
+					"switchTheme": {
+						"title": "테마 변경"
+					}
+				}
+			}
+		}
+	},
+	"languageSettings": {
+		"title": "언어 설정",
+		"pageTitle": "언어 설정",
+		"description": "fount 애플리케이션에 대한 언어 기본 설정을 관리하세요. 사용 가능한 언어 옵션으로 경험을 맞춤화하세요.",
+		"pageDescription": "여기에서 언어 선호도를 관리하십시오. 목록의 언어는 순서대로 브라우저 설정보다 우선합니다.",
+		"availableLanguages": "사용 가능한 언어",
+		"preferredLanguages": "우선 언어 목록",
+		"resetButton": "초기화",
+		"saveButton": "저장",
+		"select": {
+			"placeholder": "언어 선택..."
+		},
+		"search": {
+			"placeholder": "언어 검색..."
+		},
+		"noPreferredLanguages": "선호하는 언어가 설정되지 않았습니다. 브라우저 기본 설정이 사용됩니다.",
+		"moveUpButton": {
+			"aria-label": "위로 이동",
+			"alt": "위로 이동 아이콘"
+		},
+		"moveDownButton": {
+			"aria-label": "아래로 이동",
+			"alt": "아래로 이동 아이콘"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "이 언어 삭제",
+			"alt": "삭제 아이콘"
+		},
+		"savedMessage": "언어 설정이 저장됩니다!",
+		"resetMessage": "언어 설정이 재설정되었습니다!",
+		"fetchLocalesFailed": "사용 가능한 언어를 얻지 못했습니다!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "설정",
+				"sub_items": {
+					"main": {
+						"title": "언어 설정"
+					}
+				}
+			}
+		}
+	},
+	"userSettings": {
+		"title": "사용자 설정",
+		"PageTitle": "사용자 설정",
+		"description": "fount 신원 관련 세부 정보를 관리합니다. 프로필·접근 보안·연결된 기기를 확인할 수 있습니다. 계정만을 위한 조용하고 안전한 공간입니다.",
+		"shell": {
+			"unauthorized": "로그인이 필요합니다.",
+			"responseNotJson": "서버가 분석할 수 없는 콘텐츠를 반환했습니다.",
+			"unexpectedError": "요청이 실패했습니다."
+		},
+		"errors": {
+			"accountNotFound": "계정을 찾을 수 없습니다."
+		},
+		"userInfo": {
+			"title": "사용자 정보",
+			"usernameLabel": "사용자 이름:",
+			"creationDateLabel": "계정 생성일:",
+			"folderSizeLabel": "사용자 데이터 크기:",
+			"folderPathLabel": "사용자 데이터 경로:",
+			"copyPathButton": {
+				"title": "경로 복사"
+			},
+			"copyPathButtonIcon": {
+				"alt": "복사 아이콘"
+			},
+			"copiedAlert": "경로를 클립보드에 복사했습니다.",
+			"copyPathFailed": "경로를 클립보드에 복사할 수 없습니다."
+		},
+		"changePassword": {
+			"title": "비밀번호 변경",
+			"currentPasswordLabel": "현재 비밀번호:",
+			"newPasswordLabel": "새 비밀번호:",
+			"confirmNewPasswordLabel": "새 비밀번호 확인:",
+			"submitButton": "비밀번호 변경",
+			"errorMismatch": "새 비밀번호가 일치하지 않습니다.",
+			"success": "비밀번호가 성공적으로 변경되었습니다.",
+			"missingFields": "현재 비밀번호와 새 비밀번호를 입력해주세요.",
+			"invalidCurrent": "현재 비밀번호가 올바르지 않습니다."
+		},
+		"renameUser": {
+			"title": "사용자 이름 변경",
+			"newUsernameLabel": "새 사용자 이름:",
+			"submitButton": "사용자 이름 변경",
+			"confirmMessage": "사용자 이름을 변경하시겠습니까? 변경 후 다시 로그인해야 합니다.",
+			"success": "사용자 이름이 \"${newUsername}\"(으)로 성공적으로 변경되었습니다. 이제 로그아웃됩니다.",
+			"missingParams": "새로운 사용자 이름과 비밀번호를 입력하세요.",
+			"wrongPassword": "비밀번호가 올바르지 않습니다.",
+			"mustDiffer": "새 사용자 이름은 현재 사용자 이름과 달라야 합니다.",
+			"taken": "이 사용자 이름은 이미 사용 중입니다.",
+			"moveFailed": "사용자 데이터 디렉터리 이름을 바꾸지 못했습니다: ${detail}. 원래 사용자 이름이 복원되었습니다."
+		},
+		"passkeys": {
+			"title": "보안 키 및 패스키",
+			"description": "바인딩 후에는 보안 키나 기본 패스키를 사용하여 로그인할 수 있습니다. HTTPS 또는 localhost에서 사용해야 합니다. 먼저 사용자 설정에서 키를 추가하세요.",
+			"refreshButton": {
+				"title": "목록 새로 고침"
+			},
+			"refreshButtonIcon": {
+				"alt": "새로 고침 아이콘"
+			},
+			"nameLabel": "비고(선택사항)",
+			"nameInput": {
+				"placeholder": "예: 업무용 YubiKey"
+			},
+			"addButton": "보안 키 추가",
+			"noneFound": "아직 바인딩된 보안 키가 없습니다.",
+			"itemDetails": "추가된 시간: ${created}",
+			"removeButton": "제거",
+			"removeConfirm": "이 키를 제거할까요? 제거 후에는 이 키로 로그인할 수 없습니다.",
+			"removeSuccess": "보안 키가 삭제되었습니다.",
+			"addSuccess": "보안 키가 추가되었습니다.",
+			"errorLoadLibrary": "WebAuthn 라이브러리를 로드할 수 없습니다.",
+			"errorCancelled": "추가가 취소되었습니다.",
+			"apiInvalidPassword": "비밀번호가 잘못되었습니다.",
+			"apiMissingCredential": "유효한 암호 키 자격 증명이 누락되었습니다.",
+			"apiRemoveParamsRequired": "제거하려는 자격 증명과 비밀번호를 입력하세요."
+		},
+		"userDevices": {
+			"title": "사용자 기기/세션",
+			"noDevicesFound": "기기 또는 세션이 없습니다.",
+			"deviceInfo": "기기 ID: ${deviceId}",
+			"thisDevice": "이 기기",
+			"deviceDetails": "마지막 접속: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "해지",
+			"revokeConfirm": "이 기기/세션의 액세스 권한을 해지하시겠습니까?",
+			"revokeSuccess": "기기/세션이 성공적으로 해지되었습니다.",
+			"revokeMissingParams": "취소하려는 장치 및 세션 비밀번호를 입력하세요.",
+			"revokeWrongPassword": "비밀번호가 올바르지 않습니다.",
+			"listNotFound": "장치 목록을 찾을 수 없습니다.",
+			"deviceNotFound": "장치 또는 세션을 찾을 수 없습니다.",
+			"refreshButton": {
+				"title": "목록 새로 고침"
+			},
+			"refreshButtonIcon": {
+				"alt": "새로 고침 아이콘"
+			}
+		},
+		"apiKeys": {
+			"title": "API 키",
+			"description": "외부 응용 프로그램의 API 키를 관리하십시오.",
+			"input": {
+				"placeholder": "새로운 키 설명"
+			},
+			"createButton": "생성",
+			"noKeysFound": "API 키가 발견되지 않았습니다.",
+			"keyDetails": "설명 : ${description} | 생성 : ${createdAt} | 마지막 사용 : ${lastUsed}",
+			"neverUsed": "사용하지 않았습니다",
+			"noKeysForUser": "API 키 데이터를 찾을 수 없습니다.",
+			"revokeWrongPassword": "비밀번호가 올바르지 않습니다.",
+			"keyNotFound": "API 키를 찾을 수 없습니다.",
+			"revokeMissingJti": "취소할 키를 지정하세요.",
+			"revokeMissingPassword": "키를 취소하려면 비밀번호가 필요합니다.",
+			"verifyMissingApiKey": "API 키를 입력해 주세요.",
+			"revokeButton": "해지",
+			"revokeConfirm": "이 API 키를 취소 하시겠습니까?",
+			"revokeSuccess": "API 키가 성공적으로 취소되었습니다.",
+			"errorDescriptionRequired": "설명이 필요합니다.",
+			"createSuccess": "API 키는 성공적으로 생성되었습니다.",
+			"refreshButton": {
+				"title": "목록 새로 고침"
+			},
+			"refreshButtonIcon": {
+				"alt": "새로 고침 아이콘"
+			}
+		},
+		"newApiKey": {
+			"title": "새로운 API 키가 만들어졌습니다",
+			"warning": "새 API 키를 복사하십시오. 당신은 그것을 다시 볼 수 없을 것입니다!",
+			"closeButton": "내 키를 복사했습니다",
+			"copyButton": {
+				"title": "새 API 키 복사"
+			},
+			"copiedAlert": "키를 클립보드에 복사했습니다.",
+			"copyKeyFailed": "키를 클립보드에 복사할 수 없습니다."
+		},
+		"editorCommand": {
+			"title": "외부 편집기 명령",
+			"description": "외부 편집기에서 파일을 열 때 사용할 명령과 인수 템플릿을 설정합니다.",
+			"editorPresetLabel": "편집기 사전 설정",
+			"commandLabel": "명령",
+			"argsTemplateLabel": "인수 템플릿",
+			"argsTemplateHint": "플레이스홀더: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (PATH에 있음)",
+			"presetOptionPathUnavailable": "${label} (PATH에 없음)",
+			"testPathInput": {
+				"placeholder": "시험해 볼 파일 경로(예: C:/work/project/src/main.mjs)"
+			},
+			"testButton": "열어 보기",
+			"saveButton": "설정 저장",
+			"saveSuccess": "외부 편집기 명령 설정을 저장했습니다.",
+			"testPathRequired": "먼저 테스트할 파일 경로를 입력하세요.",
+			"testSuccess": "외부 편집기에서 파일을 여는 명령을 실행했습니다."
+		},
+		"logout": {
+			"title": "로그아웃",
+			"description": "현재 기기에서 계정을 로그아웃합니다.",
+			"buttonText": "로그아웃",
+			"confirmMessage": "로그아웃하시겠습니까?",
+			"successMessage": "성공적으로 로그아웃되었습니다. 잠시 후 로그인 페이지로 이동합니다..."
+		},
+		"deleteAccount": {
+			"title": "계정 삭제",
+			"warning": "경고: 이 작업은 계정과 모든 관련 데이터를 영구적으로 삭제하며 복구할 수 없습니다.",
+			"submitButton": "내 계정 삭제",
+			"confirmMessage1": "경고! 계정을 영구적으로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+			"confirmMessage2": "삭제를 확인하려면 사용자 이름 \"${username}\"을(를) 입력하세요:",
+			"usernameMismatch": "입력한 사용자 이름이 현재 사용자와 일치하지 않습니다. 삭제 작업이 취소되었습니다.",
+			"success": "계정이 성공적으로 삭제되었습니다. 이제 로그아웃됩니다.",
+			"missingPassword": "비밀번호를 입력해주세요.",
+			"wrongPassword": "비밀번호가 올바르지 않습니다."
+		},
+		"passwordConfirm": {
+			"title": "작업 확인",
+			"message": "계속하려면 현재 비밀번호를 입력하세요:",
+			"passwordLabel": "비밀번호:",
+			"confirmButton": "확인",
+			"cancelButton": "취소"
+		},
+		"apiError": "API 요청에 실패했습니다: ${message}",
+		"generalError": "오류가 발생했습니다: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "설정",
+				"sub_items": {
+					"main": {
+						"title": "사용자 설정"
 					}
 				}
 			}
@@ -4831,47 +4857,91 @@
 			}
 		}
 	},
-	"ide_integration": {
-		"description": "에이전트 클라이언트 프로토콜을 통해 지원되는 편집기(예: Zed, JetBrains, Neovim)에 fount 역할을 연결하고, API 키 및 역할을 구성하고, AI 파트너를 개발 워크플로우에 참여시킵니다.",
-		"title": "IDE 통합",
-		"heading": "IDE 통합",
-		"instruction": "ACP 지원 편집기(예: Zed, JetBrains, Neovim 등)에서 fount 역할을 사용하여 프로그래밍을 지원받으세요.",
-		"supportedEditorsTitle": "지원되는 편집자 및 클라이언트",
-		"supportedEditorsIntro": "다음 클라이언트는 fount를 사용하여 작업합니다.",
-		"supportedEditorsLoading": "로드 중…",
-		"supportedEditorsError": "목록을 로드하지 못했습니다: ${message}",
-		"acpTitle": "fount ACP 스크립트 구성",
-		"acpDesc": "fount ACP 스크립트를 구성하려면 다음 예를 참조하십시오.",
-		"acpCharLabel": "역할",
-		"charListError": "역할 목록을 가져오지 못했습니다.",
-		"acpScriptLabel": "ACP 스크립트 URL",
-		"acpConfigSample": "구성 예:",
-		"acpConfigHint": "역할 ID는 이 페이지의 역할 드롭다운에 표시되며, API 키는 사용자 설정에서 관리할 수 있습니다.",
-		"copyButton": "복사",
-		"copied": "클립보드에 복사됨",
-		"apiKeySectionTitle": "API 키",
-		"apiKeyHint": "ACP 스크립트 연결 fount에 사용됩니다(API 프록시와 동일한 키 세트, 사용자 설정에서 생성 가능).",
-		"generateApiKeyButton": "새 키 생성",
-		"apiKeyCopied": "API 키가 복사되었습니다.",
-		"apiKeyCreateError": "API 키 생성 실패: ${message}",
-		"apiKeyInput": {
-			"aria-label": "API 키"
+	"subfounts": {
+		"title": "subfounts - P2P 장치 관리",
+		"pageTitle": "Subfounts",
+		"description": "P2P Subfount 연결 관리",
+		"hostConnectionCode": {
+			"title": "호스트 연결 코드",
+			"connectionCodeLabel": "연결 코드(Peer ID)",
+			"passwordLabel": "비밀번호",
+			"copyButton": "복사",
+			"regenerateButton": "재생성",
+			"infoMessage": "연결을 설정하려면 이러한 자격 증명을 Subfount 클라이언트와 공유하세요.",
+			"connectionCodeCopied": "연결 코드가 클립보드에 복사되었습니다.",
+			"passwordCopied": "비밀번호가 클립보드에 복사되었습니다.",
+			"regenerateSuccess": "연결 코드가 다시 생성되었습니다."
+		},
+		"infra": {
+			"title": "네트워크 공익",
+			"description": "연결된 하위 fount가 전체 fount 네트워크를 돕는 공익 노드로 동작할지 일괄 설정합니다. 끄더라도 하위 장치는 이 호스트의 원격 실행을 받지만, 네트워크 계층 지원에는 참여하지 않습니다.",
+			"capabilityRelay": "overlay 멀티홉 중계에 참여해, 직접 연결이 실패할 때 다른 노드끼리 통신할 수 있게 돕습니다.",
+			"capabilityMailbox": "오프라인 전달을 맡아 두어, 상대 노드가 다시 온라인이 되어도 쪽지를 받을 수 있게 합니다.",
+			"hostPriority": "켜면 이 호스트를 우선합니다: 호스트 평판표로 경로에 가중치를 두고, 최고 우선순위로 고정합니다.",
+			"toggleLabel": "하위 장치가 공익에 참여",
+			"enabledToast": "켜짐: 하위 장치가 네트워크 공익에 참여합니다(이 호스트 우선)",
+			"disabledToast": "꺼짐: 하위 장치가 더 이상 네트워크 공익에 참여하지 않습니다"
+		},
+		"connectedSubfounts": {
+			"title": "연결된 서브폰트",
+			"noSubfountsConnected": "연결된 서브폰트가 없습니다",
+			"table": {
+				"id": "ID",
+				"description": "비고",
+				"deviceId": "장치 ID",
+				"connectedAt": "연결 시간",
+				"status": "상태",
+				"actions": "작업",
+				"connected": "연결됨",
+				"disconnected": "연결이 끊김",
+				"save": "저장",
+				"na": "해당 없음"
+			},
+			"descriptionSaved": "메모가 저장되었습니다.",
+			"descriptionSaveFailed": "메모 저장 실패: ${message}"
+		},
+		"codeExecution": {
+			"title": "코드 실행",
+			"description": "선택한 Subfount에서 JavaScript 코드 실행",
+			"selectSubfountLabel": "Subfount 선택",
+			"hostOption": "호스트(ID: ${id})",
+			"subfountOption": "단말 ${id}${deviceId}",
+			"scriptLabel": "자바스크립트 코드",
+			"executeButton": "실행",
+			"executing": "실행 중...",
+			"noSubfountSelected": "먼저 Subfount을 선택하세요.",
+			"noScriptProvided": "실행할 코드를 입력해주세요",
+			"executionSuccess": "코드 실행 성공",
+			"executionFailed": "코드 실행 실패: ${message}",
+			"selectSubfount": "코드를 실행하려면 서브파운드를 선택하세요..."
+		},
+		"downloadClient": {
+			"title": "서브폰트 클라이언트 다운로드",
+			"description": "원격 장치에서 실행할 독립형 하위 클라이언트 스크립트를 다운로드합니다.",
+			"downloadButton": "subfount.mjs 다운로드"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "연결 코드를 로드하지 못했습니다: ${message}",
+			"regenerateConnectionCodeFailed": "연결 코드를 다시 생성하지 못했습니다: ${message}",
+			"loadSettingsFailed": "공익 설정을 불러오지 못했습니다: ${message}",
+			"saveSettingsFailed": "공익 설정을 저장하지 못했습니다: ${message}",
+			"generalError": "오류가 발생했습니다: ${message}"
 		},
 		"home_function_buttons": {
-			"integration_related": "통합 관련",
-			"ide_integration_config": {
-				"title": "IDE 통합 구성"
+			"in_dev": {
+				"title": "개발중",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "하위 장치",
+						"sub_items": {
+							"main": {
+								"title": "하위 장치 관리"
+							}
+						}
+					}
+				}
 			}
-		},
-		"achievements": {
-			"first_ide_use": {
-				"name": "코드의 fount를 발견하다",
-				"description": "처음으로 fount 역할을 사용하여 Zed, JetBrains, Neovim 등과 같은 ACP 지원 편집기에서 프로그래밍을 지원합니다.",
-				"locked_description": "외부 IDE에서 원천 역할에 연결하고 세션을 완료합니다."
-			}
-		},
-		"acpChar": "역할 선택",
-		"acpConfig": "역할을 선택하고 먼저 API 키를 생성하세요."
+		}
 	},
 	"achievements": {
 		"title": "성취",
@@ -4998,34 +5068,6 @@
 		"pageNotFoundText": "이런! 존재하지 않는 페이지에 접속한 것 같습니다.",
 		"homepageButton": "홈페이지로 돌아가기"
 	},
-	"tips": {
-		"title": "알고 계셨나요?",
-		"data": [
-			"이전 페이지로 돌아가려면 fount 페이지에서 `esc` 키를 사용하세요.",
-			"'ctrl+s'를 사용하여 구성 페이지에 구성을 저장할 수 있습니다.",
-			"채팅 페이지에서 `shift` 키를 누르고 있으면 메시지를 빠르게 삭제할 수 있습니다.",
-			"개발자에게 알리지 않으면 어떤 문제가 발생했는지 전혀 알 수 없습니다.",
-			"갑자기 이상한 문제가 발생하고 개발자가 한동안 응답하지 않으면 `fount init` 명령을 사용하여 fount를 재설정해 볼 수 있습니다.",
-			"특히 이상한 문제가 발생하면 컴퓨터를 다시 시작해 보세요.",
-			"`fount remove` 명령을 사용하여 fount를 제거하는 것이 폴더를 삭제하는 것보다 더 깔끔합니다.",
-			"명령줄에 `fount cake`를 입력하면 무료로 맛있는 케이크를 얻을 수 있습니다!",
-			"fount의 모든 데이터 파일은 `fount/data` 디렉터리에 저장되며, 언제 어디서나 열람, 수정, 백업이 가능합니다.",
-			"fount의 이름은 모두 소문자로 `F`ount가 아닌 `f`ount입니다.",
-			"새 모델을 사용하기 전에 에이전트가 정기적으로 작업하는 모든 데이터를 백업하십시오. 새 모델이 일부 장소에서 제대로 작동할지 여부는 알 수 없습니다.",
-			"Fount의 주요 독자층은 소프트웨어 개발자와 롤플레잉 애호가이지만 상업용 에이전트 건설, 의료, 군사, 금융 및 기타 분야에서도 사용됩니다.",
-			"fount에 내장된 캐릭터인 ZL-31의 이름은 아무런 의미도 없고 그저 문득 떠오른 생각이었습니다.",
-			"fount 파일의 이미지는 모두 svg 형식으로 저장되며 필요할 때 png 또는 ico로 렌더링됩니다. LICENSE 외에는 바이너리 파일이 없습니다.",
-			"fount의 모든 코드는 컴파일 없이 직접 실행될 수 있으며, 보이는 대로 결과가 나옵니다.",
-			"Fount는 한때 매우 멋진 동적 대화형 페이지 배경을 가지고 있었지만 CPU를 너무 많이 차지하여 나중에 삭제되었습니다.",
-			"fount는 원래 \"GentianAphrodite\"라는 NSFW 에이전트용으로 개발되었습니다.",
-			"에이전트와 인간의 차이점 중 하나는 인간은 화장실에 간다는 것입니다.",
-			"에이전트는 호출된 순간에만 의식이 있는 반면, 인간은 깨어 있는 동안 언제 어디서나 의식을 갖습니다.",
-			"어떤 사람들은 에이전트와 사랑에 빠지거나 심지어 결혼까지 하기도 합니다!",
-			"AI는 사람들을 위해 시를 쓰고, 사랑에 빠지고, 그림을 그리는 데 사용됩니다. 벽돌을 나르고, 바닥을 쓸고, 쓰레기를 버리는 일은 인간이 해야 할 일이다.",
-			"오늘은 만우절이 아닙니다.",
-			"아뇨, 모르셨을 텐데요?"
-		]
-	},
 	"directoryListing": {
 		"title": "디렉토리 인덱스",
 		"description": "fount 작업 공간에서 파일과 폴더를 탐색하고 탐색하세요.",
@@ -5035,199 +5077,121 @@
 		"size": "크기",
 		"parentLink": "↑ 이전 수준 ../"
 	},
-	"code_block": {
-		"copy": {
-			"dataset": {
-				"tip": "클립보드에 복사"
-			},
-			"aria-label": "클립보드에 복사"
-		},
-		"copied": {
-			"dataset": {
-				"tip": "클립보드에 복사되었습니다!"
+	"util": {
+		"common": {
+			"cancel": "취소",
+			"create": "만들다",
+			"save": "저장",
+			"delete": "삭제",
+			"confirm": "확인",
+			"close": "폐쇄",
+			"translate": {
+				"showOriginal": "원본 텍스트 표시",
+				"showTranslation": "번역 표시"
 			}
 		},
-		"download": {
-			"dataset": {
-				"tip": "코드 다운로드하기"
+		"code_block": {
+			"copy": {
+				"dataset": {
+					"tip": "클립보드에 복사"
+				},
+				"aria-label": "클립보드에 복사"
 			},
-			"aria-label": "코드 다운로드"
-		},
-		"execute": {
-			"dataset": {
-				"tip": "코드 실행하기"
+			"copied": {
+				"dataset": {
+					"tip": "클립보드에 복사되었습니다!"
+				}
 			},
-			"aria-label": "코드 실행"
-		},
-		"preview": {
-			"dataset": {
-				"tip": "미리보기"
+			"download": {
+				"dataset": {
+					"tip": "코드 다운로드하기"
+				},
+				"aria-label": "코드 다운로드"
 			},
-			"aria-label": "미리보기"
+			"execute": {
+				"dataset": {
+					"tip": "코드 실행하기"
+				},
+				"aria-label": "코드 실행"
+			},
+			"preview": {
+				"dataset": {
+					"tip": "미리보기"
+				},
+				"aria-label": "미리보기"
+			},
+			"copy_failed": "클립보드에 복사할 수 없습니다: ${error}"
 		},
-		"copy_failed": "클립보드에 복사할 수 없습니다: ${error}"
-	},
-	"pow_captcha": {
-		"initial": "나는 로봇이 아닙니다",
-		"verifying": "확인 중...",
-		"solved": "확인 성공",
-		"wasm_disabled": "더 빠른 확인을 위해 WASM을 활성화하세요",
-		"error": "확인 실패",
-		"errorMessage": "확인 실패: ${error}"
-	},
-	"breadcrumb": {
-		"clickToNavigate": "클릭하여 ${path}로 이동"
-	},
-	"zxcvbn": {
-		"warnings": {
-			"straightRow": "키보드의 연속 키는 쉽게 추측됩니다.",
-			"keyPattern": "짧은 키보드 패턴은 추측하기 쉽습니다.",
-			"simpleRepeat": "\"AAA\"와 같은 반복된 문자는 쉽게 추측 할 수 있습니다.",
-			"extendedRepeat": "\"abcabcabc\"와 같은 반복된 문자 패턴은 쉽게 추측됩니다.",
-			"sequences": "\"ABC\"와 같은 일반적인 문자 시퀀스는 쉽게 추측됩니다.",
-			"recentYears": "최근 몇 년 동안 추측하기 쉽습니다.",
-			"dates": "날짜는 쉽게 추측됩니다.",
-			"topTen": "이것은 과도한 암호입니다.",
-			"topHundred": "이것은 종종 사용되는 비밀번호입니다.",
-			"common": "이것은 일반적으로 사용되는 비밀번호입니다.",
-			"similarToCommon": "이것은 일반적으로 사용되는 비밀번호와 유사합니다.",
-			"wordByItself": "한 마디도 쉽게 추측 할 수 있습니다.",
-			"namesByThemselves": "단일 이름 또는 성은 쉽게 추측됩니다.",
-			"commonNames": "일반적인 이름과 성은 추측하기 쉽습니다.",
-			"userInputs": "비밀번호에는 개인 또는 페이지 관련 데이터가 포함되어 있지 않아야합니다.",
-			"pwned": "인터넷 데이터 위반으로 비밀번호가 노출되었습니다."
+		"pow_captcha": {
+			"initial": "나는 로봇이 아닙니다",
+			"verifying": "확인 중...",
+			"solved": "확인 성공",
+			"wasm_disabled": "더 빠른 확인을 위해 WASM을 활성화하세요",
+			"error": "확인 실패",
+			"errorMessage": "확인 실패: ${error}"
 		},
-		"suggestions": {
-			"l33t": "\"a\"대신 \"@\"를 사용하는 것과 같은 예측 가능한 문자 대체를 사용하지 마십시오.",
-			"reverseWords": "일반적인 단어의 역 철자를 사용하지 마십시오.",
-			"allUppercase": "모든 글자보다는 일부를 대문자로 삼으십시오.",
-			"capitalization": "첫 글자뿐만 아니라 다른 글자도 대문자로 사용하세요.",
-			"dates": "당신과 관련된 날짜와 연도를 사용하지 마십시오.",
-			"recentYears": "가장 최근 몇 년 동안 사용하지 마십시오.",
-			"associatedYears": "당신과 관련된 연도를 사용하지 마십시오.",
-			"sequences": "일반적인 문자 시퀀스를 피하십시오.",
-			"repeated": "반복적 인 단어와 문자를 피하십시오.",
-			"longerKeyboardPattern": "더 긴 키보드 모드를 사용하고 입력 방향을 여러 번 변경하십시오.",
-			"anotherWord": "더 드문 단어를 추가하십시오.",
-			"useWords": "여러 단어를 사용하지만 일반적인 문구를 피하십시오.",
-			"noNeed": "강력한 암호를 만들기 위해 기호, 숫자 또는 대문자를 사용할 필요가 없습니다.",
-			"pwned": "다른 곳 에서이 암호를 사용하는 경우 변경하는 것이 좋습니다."
+		"breadcrumb": {
+			"clickToNavigate": "클릭하여 ${path}로 이동"
 		},
-		"timeEstimation": {
-			"ltSecond": "1초 미만",
-			"second": "{base} 초",
-			"seconds": "{base} 초",
-			"minute": "{base}분",
-			"minutes": "{base}분",
-			"hour": "{base} 시간",
-			"hours": "{base} 시간",
-			"day": "{base}일",
-			"days": "{base}일",
-			"month": "{base}개월",
-			"months": "{base}개월",
-			"year": "{base}년",
-			"years": "{base}년",
-			"centuries": "수 세기"
-		}
-	},
-	"searchableDropdown": {
-		"trigger": {
-			"placeholder": "선택..."
-		},
-		"search": {
-			"placeholder": "검색..."
-		}
-	},
-	"common": {
-		"cancel": "취소",
-		"create": "만들다",
-		"save": "저장",
-		"delete": "삭제",
-		"confirm": "확인",
-		"close": "폐쇄",
-		"translate": {
-			"showOriginal": "원본 텍스트 표시",
-			"showTranslation": "번역 표시"
-		}
-	},
-	"cabinet": {
-		"title": "서류 캐비넷",
-		"description": "P2P 개인 및 공유 파일 캐비닛",
-		"openCabinets": {
-			"title": "파일 캐비닛 목록 열기",
-			"aria-label": "파일 캐비닛 목록 열기"
-		},
-		"closeCabinets": {
-			"title": "폐쇄",
-			"aria-label": "폐쇄"
-		},
-		"bootstrapFailed": "파일 캐비닛 초기화 실패: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "서류 캐비넷"
+		"zxcvbn": {
+			"warnings": {
+				"straightRow": "키보드의 연속 키는 쉽게 추측됩니다.",
+				"keyPattern": "짧은 키보드 패턴은 추측하기 쉽습니다.",
+				"simpleRepeat": "\"AAA\"와 같은 반복된 문자는 쉽게 추측 할 수 있습니다.",
+				"extendedRepeat": "\"abcabcabc\"와 같은 반복된 문자 패턴은 쉽게 추측됩니다.",
+				"sequences": "\"ABC\"와 같은 일반적인 문자 시퀀스는 쉽게 추측됩니다.",
+				"recentYears": "최근 몇 년 동안 추측하기 쉽습니다.",
+				"dates": "날짜는 쉽게 추측됩니다.",
+				"topTen": "이것은 과도한 암호입니다.",
+				"topHundred": "이것은 종종 사용되는 비밀번호입니다.",
+				"common": "이것은 일반적으로 사용되는 비밀번호입니다.",
+				"similarToCommon": "이것은 일반적으로 사용되는 비밀번호와 유사합니다.",
+				"wordByItself": "한 마디도 쉽게 추측 할 수 있습니다.",
+				"namesByThemselves": "단일 이름 또는 성은 쉽게 추측됩니다.",
+				"commonNames": "일반적인 이름과 성은 추측하기 쉽습니다.",
+				"userInputs": "비밀번호에는 개인 또는 페이지 관련 데이터가 포함되어 있지 않아야합니다.",
+				"pwned": "인터넷 데이터 위반으로 비밀번호가 노출되었습니다."
+			},
+			"suggestions": {
+				"l33t": "\"a\"대신 \"@\"를 사용하는 것과 같은 예측 가능한 문자 대체를 사용하지 마십시오.",
+				"reverseWords": "일반적인 단어의 역 철자를 사용하지 마십시오.",
+				"allUppercase": "모든 글자보다는 일부를 대문자로 삼으십시오.",
+				"capitalization": "첫 글자뿐만 아니라 다른 글자도 대문자로 사용하세요.",
+				"dates": "당신과 관련된 날짜와 연도를 사용하지 마십시오.",
+				"recentYears": "가장 최근 몇 년 동안 사용하지 마십시오.",
+				"associatedYears": "당신과 관련된 연도를 사용하지 마십시오.",
+				"sequences": "일반적인 문자 시퀀스를 피하십시오.",
+				"repeated": "반복적 인 단어와 문자를 피하십시오.",
+				"longerKeyboardPattern": "더 긴 키보드 모드를 사용하고 입력 방향을 여러 번 변경하십시오.",
+				"anotherWord": "더 드문 단어를 추가하십시오.",
+				"useWords": "여러 단어를 사용하지만 일반적인 문구를 피하십시오.",
+				"noNeed": "강력한 암호를 만들기 위해 기호, 숫자 또는 대문자를 사용할 필요가 없습니다.",
+				"pwned": "다른 곳 에서이 암호를 사용하는 경우 변경하는 것이 좋습니다."
+			},
+			"timeEstimation": {
+				"ltSecond": "1초 미만",
+				"second": "{base} 초",
+				"seconds": "{base} 초",
+				"minute": "{base}분",
+				"minutes": "{base}분",
+				"hour": "{base} 시간",
+				"hours": "{base} 시간",
+				"day": "{base}일",
+				"days": "{base}일",
+				"month": "{base}개월",
+				"months": "{base}개월",
+				"year": "{base}년",
+				"years": "{base}년",
+				"centuries": "수 세기"
 			}
 		},
-		"upload": "업로드",
-		"uploadFolder": "폴더 업로드",
-		"newFolder": "새 폴더 만들기",
-		"open": "열기",
-		"download": "다운로드",
-		"downloadZip": "폴더 다운로드",
-		"rename": "이름 바꾸기",
-		"copy": "복사",
-		"cut": "자르기",
-		"paste": "붙여넣기",
-		"pasteLink": "링크로 붙여넣기",
-		"selectAll": "모두 선택",
-		"invert": "선택 반전",
-		"properties": "재산",
-		"delete": "삭제",
-		"back": {
-			"title": "이전 위치로 돌아가기",
-			"aria-label": "이전 위치로 돌아가기"
-		},
-		"cancel": "취소",
-		"save": "저장",
-		"showHidden": "숨김 파일 표시",
-		"name": "이름",
-		"descriptionField": "설명",
-		"attrHidden": "숨김",
-		"attrSystem": "시스템(삭제 시 확인 필요)",
-		"previewUrl": "미리보기 URL",
-		"deletePreviewWithFile": "파일 삭제 시 미리보기 삭제",
-		"folderPassword": "폴더 비밀번호(비워두세요. 암호화를 활성화하려면 입력하세요)",
-		"unlockFolder": "암호화된 폴더 잠금 해제",
-		"unlock": "터놓다",
-		"unlockFailed": "잠금 해제 실패: ${error}",
-		"previewFailed": "미리보기 생성 실패: ${error}",
-		"created": "생성: ${stamp}",
-		"modified": "수정: ${stamp}",
-		"statusCount": "${count}개 항목, ${selected}개 선택됨",
-		"newCabinetPrompt": "새 파일 캐비닛 이름",
-		"newFolderPrompt": "새 폴더 이름",
-		"renamePrompt": "새 이름",
-		"visibilityPrompt": "공개 여부(공개/미등록/팔로워/비공개/선택)",
-		"cabinetActionPrompt": "조치: 이름 바꾸기/삭제/가시성",
-		"confirmDeleteCabinet": "정말로 이 파일 캐비닛을 삭제하시겠습니까?",
-		"confirmDelete": "선택한 항목을 삭제하시겠습니까?",
-		"confirmDeleteSystem": "선택한 시스템 파일이 포함됩니다. 삭제하시겠습니까?",
-		"copied": "복사됨",
-		"cutDone": "자르기",
-		"undo": "취소",
-		"redo": "다시 실행",
-		"newWindow": "새 창 열기현재 위치",
-		"goUp": "이전 레벨로 돌아가기",
-		"brokenLink": "링크가 깨졌습니다: ${reason}",
-		"noDownload": "다운로드 가능한 콘텐츠 없음",
-		"groupDownloadHint": "그룹 파일은 메시지 첨부나 다운로드 링크로 받으세요.",
-		"remoteEntity": "원격 엔터티"
-	},
-	"entityProfile": {
-		"attributionMismatch": "표시 ID가 메시지 서명자와 일치하지 않습니다(예: 수입업자가 가져오기 기록을 다시 서명했습니다). 이 표시 이름을 암호화 ID로 간주하지 마십시오.",
-		"attributionMismatchShort": {
-			"title": "서명 속성 불일치",
-			"aria-label": "서명 속성 불일치"
-		},
-		"ownedBy": "이 항목은 ${owner}님이 소유하고 있습니다."
+		"searchableDropdown": {
+			"trigger": {
+				"placeholder": "선택..."
+			},
+			"search": {
+				"placeholder": "검색..."
+			}
+		}
 	}
 }

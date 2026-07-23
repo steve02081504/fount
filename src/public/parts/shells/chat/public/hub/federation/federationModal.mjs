@@ -108,7 +108,7 @@ function wireFederationModalEvents(root, groupId) {
 			showToastI18n('success', 'chat.hub.fedSaved')
 		}
 		catch (error) {
-			showToastI18n('error', 'profile.federationSaveFailed', { error: error.message })
+			showToastI18n('error', 'chat.profile.federationSaveFailed', { error: error.message })
 		}
 	})
 
@@ -120,7 +120,7 @@ function wireFederationModalEvents(root, groupId) {
 			showToastI18n('success', 'chat.hub.fedRotateRoomSecretOk')
 		}
 		catch (error) {
-			showToastI18n('error', 'profile.federationSaveFailed', { error: error.message })
+			showToastI18n('error', 'chat.profile.federationSaveFailed', { error: error.message })
 		}
 	})
 
@@ -159,7 +159,7 @@ function wireFederationModalEvents(root, groupId) {
 			await refreshReputationDump(root, groupId)
 		}
 		catch (error) {
-			showToastI18n('error', 'profile.federationSaveFailed', { error: error.message })
+			showToastI18n('error', 'chat.profile.federationSaveFailed', { error: error.message })
 		}
 	})
 
@@ -176,7 +176,7 @@ function wireFederationModalEvents(root, groupId) {
 			await refreshReputationDump(root, groupId)
 		}
 		catch (error) {
-			showToastI18n('error', 'profile.federationSaveFailed', { error: error.message })
+			showToastI18n('error', 'chat.profile.federationSaveFailed', { error: error.message })
 		}
 	})
 
@@ -187,7 +187,7 @@ function wireFederationModalEvents(root, groupId) {
 			showToastI18n('success', 'chat.hub.fedNonceRotated', { nonce: nonce.slice(0, 12) })
 		}
 		catch (error) {
-			showToastI18n('error', 'profile.federationSaveFailed', { error: error.message })
+			showToastI18n('error', 'chat.profile.federationSaveFailed', { error: error.message })
 		}
 	})
 
@@ -219,7 +219,7 @@ function wireFederationModalEvents(root, groupId) {
 			showToastI18n('success', 'chat.hub.fedDmIssued')
 		}
 		catch (error) {
-			showToastI18n('error', 'profile.federationSaveFailed', { error: error.message })
+			showToastI18n('error', 'chat.profile.federationSaveFailed', { error: error.message })
 		}
 	})
 }

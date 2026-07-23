@@ -22,3 +22,7 @@ Do not use Shiki `transformers.root` wrapping — it breaks inline `{:lang}` (ex
 ## URL safety
 
 `isSafeHtmlUrl` (Markdown sanitize + mediaRefs) rejects `javascript:` / `data:` and protocol-relative `//…`.
+
+## no-cors proxy
+
+Authenticated streaming proxy (`/api/no-cors`) for embeds / OG. Forwards Range / conditional / Content-Type; inject upstream Cookie/Authorization via `No-Cors-*` prefix. `X-No-Cors-Final-Url` after redirects.

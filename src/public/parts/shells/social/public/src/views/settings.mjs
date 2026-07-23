@@ -190,7 +190,7 @@ async function renderTasteSection(panel, data) {
 	const list = section.querySelector('[data-taste-list]')
 	if (!(list instanceof HTMLElement)) return
 	if (!tags.length)
-		await mountEmptyState(list, { titleKey: 'social.taste.empty', modClass: ' empty-state--hint' })
+		await mountEmptyState(list, { titleKey: 'social.settings.taste.empty', modClass: ' empty-state--hint' })
 	else
 		for (const tag of tags) {
 			const label = tag.label || formatHashShort(tag.tagHash, { headLen: 8, tailLen: 4 })

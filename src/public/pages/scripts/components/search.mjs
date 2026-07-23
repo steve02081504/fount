@@ -143,13 +143,13 @@ export async function createSearchableDropdown({
 		: null
 	const triggerI18n = oldTriggerInput?.dataset.i18n
 		?? dropdownElement.dataset.i18n
-		?? 'searchableDropdown.trigger'
+		?? 'util.searchableDropdown.trigger'
 	const triggerDataset = { ...(oldTriggerInput ?? dropdownElement).dataset, i18n: triggerI18n }
 
 	const oldSearchInput = is_builted_dropdown
 		? dropdownElement.querySelector('.dropdown-content input')
 		: dropdownElement.querySelector('input') || { dataset: {} }
-	const searchI18n = oldSearchInput.dataset?.i18n ?? 'searchableDropdown.search'
+	const searchI18n = oldSearchInput.dataset?.i18n ?? 'util.searchableDropdown.search'
 	const searchDataset = { ...oldSearchInput.dataset, i18n: searchI18n }
 
 	// Ensure the dropdownElement has the 'dropdown' class

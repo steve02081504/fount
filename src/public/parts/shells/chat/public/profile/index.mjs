@@ -47,13 +47,13 @@ function applyDatasetI18n(el, i18nKey, params = {}) {
 
 /**
  * @param {string} type 频道类型
- * @returns {string} `profile.channelType*` i18n 键
+ * @returns {string} `chat.profile.channelType*` i18n 键
  */
 function channelTypeI18nKey(type) {
-	if (type === 'text') return 'profile.channelTypeText'
-	if (type === 'list') return 'profile.channelTypeList'
-	if (type === 'streaming') return 'profile.channelTypeStreaming'
-	return 'profile.channelTypeVoice'
+	if (type === 'text') return 'chat.profile.channelTypeText'
+	if (type === 'list') return 'chat.profile.channelTypeList'
+	if (type === 'streaming') return 'chat.profile.channelTypeStreaming'
+	return 'chat.profile.channelTypeVoice'
 }
 
 /**
@@ -74,7 +74,7 @@ function channelTypeIconHtml(type) {
 async function init() {
 	usingTemplates('/parts/shells:chat/src/templates')
 	applyTheme()
-	await initTranslations('profile')
+	await initTranslations('chat.profile')
 	const profileCardHost = document.getElementById('profile-card-host')
 	const profileCard = await createEntityProfileCardElement('embedded')
 	if (profileCardHost) {
@@ -95,7 +95,7 @@ async function init() {
 		if (!data.viewerEntityHash) {
 			showToastI18n(
 				'error',
-				data.identityRequired ? 'profile.errors.identityRequired' : 'profile.errors.invalidUserData',
+				data.identityRequired ? 'chat.profile.errors.identityRequired' : 'chat.profile.errors.invalidUserData',
 			)
 			return
 		}
@@ -104,7 +104,7 @@ async function init() {
 	}
 	catch (error) {
 		console.error('Failed to get current user:', error)
-		showToastI18n('error', 'profile.errors.fetchUserFailed')
+		showToastI18n('error', 'chat.profile.errors.fetchUserFailed')
 	}
 
 	document.getElementById('profile-edit-button')?.addEventListener('click', () => {
@@ -139,7 +139,7 @@ async function loadProfile(entityHash) {
 	}
 	catch (error) {
 		console.error('Failed to load profile:', error)
-		showToastI18n('error', 'profile.errors.loadFailed')
+		showToastI18n('error', 'chat.profile.errors.loadFailed')
 	}
 }
 
@@ -163,7 +163,7 @@ async function renderProfile(profile) {
 	})
 	applyDatasetI18n(
 		document.getElementById('summary-status'),
-		`profile.statusOptions.${displayStatus}`,
+		`chat.profile.statusOptions.${displayStatus}`,
 	)
 	document.getElementById('summary-links-count').textContent = String(
 		Array.isArray(profile.links) ? profile.links.length : 0,
@@ -201,7 +201,7 @@ async function loadUserGroups() {
 				initial: avatarInitial(group.name || 'G'),
 				name: group.name || group.groupId,
 				description: escapeHtml(description),
-				descriptionI18nAttr: description ? '' : ' data-i18n="profile.groupDescriptionEmpty"',
+				descriptionI18nAttr: description ? '' : ' data-i18n="chat.profile.groupDescriptionEmpty"',
 				members: String(group.memberCount || 0),
 				channels: String(group.channelCount || 0),
 			}))
@@ -268,7 +268,7 @@ async function loadUserChannels() {
 				iconHtml: channelTypeIconHtml(channel.type),
 				typeI18nKey: channelTypeI18nKey(channel.type),
 				groupName: channel.groupName,
-				privateSpan: channel.isPrivate ? '<span data-i18n="profile.channelPrivate"></span>' : '',
+				privateSpan: channel.isPrivate ? '<span data-i18n="chat.profile.channelPrivate"></span>' : '',
 				name: channel.name,
 			}))
 

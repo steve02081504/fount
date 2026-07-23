@@ -34,11 +34,11 @@ cap-widget {
 
 	// Apply translations
 	setLocalizeLogic(widget, () => {
-		widget.dataset.capI18nVerifyingLabel = geti18n('pow_captcha.verifying')
-		widget.dataset.capI18nInitialState = geti18n('pow_captcha.initial')
-		widget.dataset.capI18nSolvedLabel = geti18n('pow_captcha.solved')
-		widget.dataset.capI18nErrorLabel = geti18n('pow_captcha.error')
-		widget.dataset.capI18nWasmDisabled = geti18n('pow_captcha.wasm_disabled')
+		widget.dataset.capI18nVerifyingLabel = geti18n('util.pow_captcha.verifying')
+		widget.dataset.capI18nInitialState = geti18n('util.pow_captcha.initial')
+		widget.dataset.capI18nSolvedLabel = geti18n('util.pow_captcha.solved')
+		widget.dataset.capI18nErrorLabel = geti18n('util.pow_captcha.error')
+		widget.dataset.capI18nWasmDisabled = geti18n('util.pow_captcha.wasm_disabled')
 	})
 
 	// Clear container and append widget
@@ -50,7 +50,7 @@ cap-widget {
 	// Event listeners for promise resolution
 	widget.addEventListener('error', (e) => {
 		console.error('POW CAPTCHA Error:', e.detail)
-		showToastI18n('error', 'pow_captcha.errorMessage', { error: `${e.detail.message}` })
+		showToastI18n('error', 'util.pow_captcha.errorMessage', { error: `${e.detail.message}` })
 	})
 
 	return cap

@@ -1,263 +1,33 @@
 {
 	"lang": "zh-CN",
 	"name": "简体中文",
-	"channels": {
-		"title": "频道",
-		"description": "频道管理系统",
-		"create": "创建频道",
-		"subscribe": "订阅",
-		"unsubscribe": "取消订阅",
-		"settings": "频道设置",
-		"list": "频道列表",
-		"members": "成员",
-		"messages": "消息",
-		"permissions": "权限设置",
-		"type": {
-			"announcement": "公告",
-			"news": "新闻",
-			"updates": "更新"
-		},
-		"role": {
-			"owner": "所有者",
-			"admin": "管理员",
-			"moderator": "版主",
-			"member": "成员",
-			"subscriber": "订阅者"
-		},
-		"errors": {
-			"notFound": "频道不存在",
-			"noPermission": "权限不足",
-			"alreadySubscribed": "已订阅该频道",
-			"notSubscribed": "未订阅该频道"
-		},
-		"success": {
-			"created": "频道创建成功",
-			"updated": "频道更新成功",
-			"deleted": "频道删除成功",
-			"subscribed": "订阅成功",
-			"unsubscribed": "取消订阅成功",
-			"posted": "消息发布成功"
-		}
-	},
-	"profile": {
-		"title": "个人资料",
-		"description": "管理你在聊天与社交中的公开形象。",
-		"settingsEyebrow": "账户设置",
-		"accountAtGlance": "账户概览",
-		"advancedKicker": "按需配置",
-		"advancedSettings": "高级设置",
-		"advancedDescription": "日常使用无需调整。",
-		"edit": "编辑资料",
-		"save": "保存",
-		"cancel": "取消",
-		"displayName": "显示名称",
-		"name": "名称",
-		"bio": "个人简介",
-		"descriptionLabel": "简介（Markdown）",
-		"email": "邮箱",
-		"status": "状态",
-		"customStatusLabel": "自定义状态",
-		"avatarLabel": "头像",
-		"themeColorLabel": "主题色",
-		"uploadAvatar": "上传头像",
-		"ownerTitle": "我的主人",
-		"ownerSummary": "代管设置",
-		"ownerDescription": "设置后，主人可以代为编辑或删除你的聊天消息、社交帖与个人资料；其内容也会在本机按不安全 Markdown 渲染（可含脚本）。可填任意实体哈希，并随时清除。",
-		"ownerEntityHashLabel": "主人实体哈希（128 hex）",
-		"ownerSave": "保存主人",
-		"ownerClear": "清除主人",
-		"ownerSaved": "主人已更新",
-		"ownerCleared": "主人已清除",
-		"ownerSaveFailed": "保存失败：${error}",
-		"ownerConfirmTitle": "确认设置主人？",
-		"ownerConfirmWarningTitle": "高风险操作，请仔细阅读",
-		"ownerConfirmEditBody": "设置后，对方无需再征得你同意，即可代为编辑或删除你的聊天消息、社交帖与个人资料。误设或被诱骗设主人 = 立刻交出内容控制权。",
-		"ownerConfirmRenderBody": "对方发来的聊天消息与社交帖会在你的浏览器中按完整 Markdown 渲染（含 HTML/脚本）。这等于允许对方在无需你再次同意的情况下，在你的电脑上运行任意代码。仅当你完全信任对方时再继续。",
-		"ownerConfirmCooldown": "我已阅读风险（${seconds}）",
-		"ownerConfirmFirst": "我了解风险，继续",
-		"ownerConfirmSecond": "再次点击以最终确认",
-		"ownerConfirmCancel": "取消",
-		"federationTitle": "联邦与同步",
-		"federationSummary": "中继服务器与低功耗模式",
-		"federationDescription": "配置 Nostr relay URL 与省电模式。群的联邦同步在首次邀请他人或创建联邦私信时自动启用。",
-		"federationAdvanced": "高级选项",
-		"federationRelayUrlsLabel": "中继服务器（每行一个，留空使用默认）",
-		"federationBatterySaverLabel": "低功耗模式",
-		"federationSave": "保存网络设置",
-		"federationResetDefault": "恢复默认推荐配置",
-		"federationSaved": "已保存",
-		"federationResetOk": "已恢复默认推荐配置",
-		"federationSaveFailed": "保存失败：${error}",
-		"preferences": "偏好设置",
-		"language": "语言",
-		"theme": "主题",
-		"notifications": "通知设置",
-		"emailNotifications": "邮件通知",
-		"pushNotifications": "推送通知",
-		"soundNotifications": "声音通知",
-		"social": "社交链接",
-		"website": "网站",
-		"github": "GitHub",
-		"twitter": "Twitter",
-		"stats": "统计信息",
-		"joinedAt": "加入时间",
-		"messageCount": "消息数",
-		"groupCount": "群组数",
-		"channelCount": "频道数",
-		"privacy": "隐私设置",
-		"showEmail": "显示邮箱",
-		"showStats": "显示统计",
-		"allowDirectMessages": "允许私信",
-		"statusOptions": {
-			"online": "在线",
-			"away": "离开",
-			"busy": "忙碌",
-			"offline": "离线"
-		},
-		"themeOptions": {
-			"auto": "自动",
-			"light": "浅色",
-			"dark": "深色"
-		},
-		"languageOptions": {
-			"zh-CN": "简体中文",
-			"en-US": "English"
-		},
-		"notifEmail": "邮件",
-		"notifPush": "推送",
-		"notifSound": "声音",
-		"notifsAllOff": "全部关闭",
-		"bioEmpty": "这个人很懒，什么都没写…",
-		"noSocialLinks": "暂无社交链接",
-		"emailVisible": "可见",
-		"emailHidden": "隐藏",
-		"customStatus": {
-			"placeholder": "正在做什么…"
-		},
-		"avatar": {
-			"alt": "头像"
-		},
-		"avatarPreview": {
-			"alt": "头像预览"
-		},
-		"myGroups": "我的群组",
-		"myChannels": "我的频道",
-		"noGroups": "暂未加入任何群组",
-		"noChannels": "暂无频道",
-		"overview": "用户信息概览",
-		"summaryUserId": "用户 ID",
-		"summaryAccountStatus": "账号状态",
-		"summaryEmailVisibility": "邮箱可见性",
-		"summaryThemePref": "主题偏好",
-		"summaryLanguagePref": "语言偏好",
-		"summarySocialCount": "社交链接数量",
-		"summaryLinksCount": "外链数",
-		"groupDescriptionEmpty": "暂无描述",
-		"groupMembers": "${members} 位成员 · ${channels} 个频道",
-		"channelPrivate": " · 私密",
-		"channelTypeText": "文字频道",
-		"channelTypeList": "列表频道",
-		"channelTypeVoice": "语音频道",
-		"channelTypeStreaming": "流媒体频道",
-		"errors": {
-			"loadFailed": "加载资料失败",
-			"saveFailed": "保存资料失败",
-			"uploadFailed": "上传头像失败",
-			"invalidUserData": "用户数据格式错误",
-			"identityRequired": "节点身份尚未就绪，请刷新页面；若仍失败，请在下方 P2P 设置中保存联邦配置",
-			"fetchUserFailed": "获取用户信息失败",
-			"operationFailed": "操作失败：${error}"
-		},
-		"success": {
-			"saved": "资料保存成功",
-			"avatarUploaded": "头像上传成功"
-		},
-		"ownerEntityHash": {
-			"placeholder": "输入主人的实体哈希"
-		}
-	},
-	"stickers": {
-		"title": "贴纸广场",
-		"description": "贴纸和表情包管理系统",
-		"back": {
-			"title": "返回"
-		},
-		"packs": "贴纸包",
-		"create": "创建贴纸包",
-		"upload": "上传贴纸",
-		"install": "安装",
-		"uninstall": "卸载",
-		"close": "关闭",
-		"cancel": "取消",
-		"installed": "已安装",
-		"myPacks": "我的贴纸包",
-		"tabAll": "全部",
-		"store": "贴纸广场",
-		"favorites": "收藏",
-		"recent": "最近使用",
-		"search": {
-			"placeholder": "搜索贴纸包…"
-		},
-		"emptyPacks": "暂无贴纸包",
-		"packNameLabel": "贴纸包名称",
-		"packName": {
-			"placeholder": "输入贴纸包名称"
-		},
-		"packDescriptionLabel": "描述",
-		"packDescription": {
-			"placeholder": "输入描述"
-		},
-		"stickerNameLabel": "贴纸名称",
-		"stickerName": {
-			"placeholder": "输入贴纸名称"
-		},
-		"selectPack": "选择贴纸包",
-		"selectPackOption": {
-			"textContent": "请选择贴纸包"
-		},
-		"selectImage": "选择图片",
-		"tagsLabel": "标签（用逗号分隔）",
-		"tags": {
-			"placeholder": "例如: 可爱, 表情, 动物"
-		},
-		"author": "作者",
-		"authorLabel": "作者: ${author}",
-		"stickerCount": "${count} 个贴纸",
-		"badgeMine": "我的",
-		"noDescription": "暂无描述",
-		"noStickersInPack": "暂无贴纸",
-		"deletePack": "删除贴纸包",
-		"public": "公开",
-		"private": "私有",
-		"animated": "动态",
-		"static": "静态",
-		"addTag": "添加标签",
-		"defaultPackName": "默认表情包",
-		"defaultPackDescription": "系统默认提供的表情贴纸",
-		"unnamedPack": "未命名贴纸包",
-		"importPackName": "我的收藏",
-		"importPackDescription": "从消息保存的贴纸",
-		"nameRequired": "请输入贴纸包名称",
-		"stickerNameRequired": "请输入贴纸名称",
-		"selectPackRequired": "请选择贴纸包",
-		"fileRequired": "请选择图片文件",
-		"loadDetailFailed": "加载贴纸包详情失败",
-		"deleteConfirm": "确定要永久删除此贴纸包吗？所有贴纸将被删除，此操作不可撤销。",
-		"errors": {
-			"loadFailed": "加载贴纸包失败",
-			"uploadFailed": "上传贴纸失败",
-			"installFailed": "安装失败",
-			"uninstallFailed": "卸载失败",
-			"createFailed": "创建贴纸包失败",
-			"deleteFailed": "删除失败"
-		},
-		"success": {
-			"uploaded": "贴纸上传成功",
-			"installed": "安装成功",
-			"uninstalled": "卸载成功",
-			"created": "贴纸包创建成功",
-			"deleted": "删除成功"
-		}
+	"tips": {
+		"title": "你知道吗？",
+		"data": [
+			"在任意fount页面中使用`esc`键可以返回上一页面。",
+			"在配置页面中可以使用`ctrl+s`保存配置。",
+			"在聊天页面中按住`shift`键可以帮你快速删除消息。",
+			"如果你不告知开发者，他们可能永远都不会知道你遇见了什么问题。",
+			"如果你突然遇见了稀奇古怪的问题并且开发者一时半会没有回复你，可以试试使用`fount init`命令来重置fount。",
+			"遇见特别奇怪的问题可以试试重启电脑",
+			"使用`fount remove`命令来卸载fount会比删除文件夹更干净。",
+			"在命令行中输入`fount cake`来获取一个免费又美味的蛋糕！",
+			"fount的任何数据文件都保存在`fount/data`目录下，你可以随时随地查看、修改、备份它们。",
+			"fount的名称是全小写的，是`f`ount，不是`F`ount。",
+			"在你的agent使用新的模型前备份全部TA常操作的数据——你永远不知道新模型会不会在某些地方表现的超级糟糕。",
+			"fount的主要受众是软件开发者和角色扮演爱好者，但在商业agent搭建、医疗、军事、金融等领域也有被使用。",
+			"fount的内置角色ZL-31的名字无任何意义，是被一拍脑袋想出来的。",
+			"fount的文件中图片都是以svg形式储存并在需要时渲染为png或ico的，没任何的二进制文件，除了LICENSE。",
+			"fount中的任何代码都是可以直接运行而无需编译，所见即所得的。",
+			"曾经fount有过很炫酷的动态可交互页面背景，但后来因为占用了太多CPU而被删除了。",
+			"fount一开始是为了一个叫“龙胆”的NSFW agent而开发的。",
+			"agent和人类的其中一个区别是，人类会拉屎。",
+			"agent只在被调用的瞬间有意识，而人类在清醒时随时随地都有意识。",
+			"有些人和他们的agent会谈恋爱甚至结婚！",
+			"AI是用来替人写诗替人谈恋爱替人画画的，搬砖扫地倒垃圾是人类该干的事。",
+			"今天不是愚人节。",
+			"不，你不知道。"
+		]
 	},
 	"fountConsole": {
 		"server": {
@@ -797,51 +567,6 @@
 		"title": "fount!",
 		"description": "欢迎来到fount的门槛。在进入等待展开的对话和故事的核心之前，先进行短暂的准备。"
 	},
-	"tutorial": {
-		"title": "来点教程？",
-		"description": "让我们与您一起走进泉水的世界。这个交互式教程将阐明道路，帮助您发现其核心的魔力。你的冒险始于理解。",
-		"modal": {
-			"title": "欢迎使用fount！",
-			"instruction": "走一遍新手教程吗？",
-			"buttons": {
-				"start": "开始教程",
-				"skip": "跳过"
-			}
-		},
-		"endScreen": {
-			"title": "太棒啦！教程完成！",
-			"subtitle": "现在你已经学会操作啦！",
-			"endButton": "下一步！"
-		},
-		"progressMessages": {
-			"mouseMove": "请使用您的手指尝试握住鼠标${mouseIcon}<br/>随后移动它",
-			"keyboardPress": "请找到您的键盘${keyboardIcon}<br/>尝试使用您的手指按压键盘",
-			"mobileTouchMove": "请找到您的手机${phoneIcon}<br/>尝试使用您的任意手指触摸屏幕，再移动它",
-			"mobileClick": "请尝试使用您的任意手指触碰手机屏幕${phoneIcon}<br/>之后松开"
-		},
-		"achievements": {
-			"complete_tutorial": {
-				"name": "完美算数教室",
-				"description": "总算是把新手教程给点完了。",
-				"locked_description": "完成一次入门教程。"
-			},
-			"skip_tutorial": {
-				"name": "我已出仓，感觉良好",
-				"description": "跳过新手教程，直接进入广阔的未知领域。",
-				"locked_description": "跳过一次入门教程。"
-			}
-		},
-		"home_function_buttons": {
-			"other": {
-				"title": "其他",
-				"sub_items": {
-					"replay": {
-						"title": "重玩教程"
-					}
-				}
-			}
-		}
-	},
 	"auth": {
 		"title": "认证",
 		"subtitle": "用户数据存储在本地",
@@ -936,6 +661,51 @@
 			"buttons": {
 				"ignore": "忽略并继续",
 				"retry": "重试"
+			}
+		}
+	},
+	"tutorial": {
+		"title": "来点教程？",
+		"description": "让我们与您一起走进泉水的世界。这个交互式教程将阐明道路，帮助您发现其核心的魔力。你的冒险始于理解。",
+		"modal": {
+			"title": "欢迎使用fount！",
+			"instruction": "走一遍新手教程吗？",
+			"buttons": {
+				"start": "开始教程",
+				"skip": "跳过"
+			}
+		},
+		"endScreen": {
+			"title": "太棒啦！教程完成！",
+			"subtitle": "现在你已经学会操作啦！",
+			"endButton": "下一步！"
+		},
+		"progressMessages": {
+			"mouseMove": "请使用您的手指尝试握住鼠标${mouseIcon}<br/>随后移动它",
+			"keyboardPress": "请找到您的键盘${keyboardIcon}<br/>尝试使用您的手指按压键盘",
+			"mobileTouchMove": "请找到您的手机${phoneIcon}<br/>尝试使用您的任意手指触摸屏幕，再移动它",
+			"mobileClick": "请尝试使用您的任意手指触碰手机屏幕${phoneIcon}<br/>之后松开"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "完美算数教室",
+				"description": "总算是把新手教程给点完了。",
+				"locked_description": "完成一次入门教程。"
+			},
+			"skip_tutorial": {
+				"name": "我已出仓，感觉良好",
+				"description": "跳过新手教程，直接进入广阔的未知领域。",
+				"locked_description": "跳过一次入门教程。"
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "其他",
+				"sub_items": {
+					"replay": {
+						"title": "重玩教程"
+					}
+				}
 			}
 		}
 	},
@@ -1162,513 +932,6 @@
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "生成 fount 组件信息"
-			}
-		}
-	},
-	"social": {
-		"title": "广场",
-		"description": "P2P 开放社交动态、关注与文件分享",
-		"bootstrapFailed": "社交界面初始化失败：${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "广场"
-			}
-		},
-		"nav": {
-			"feed": "首页",
-			"explore": "探索",
-			"notifications": "收件箱",
-			"saved": "收藏",
-			"drafts": "草稿箱",
-			"profile": "我的",
-			"videos": "短视频",
-			"live": "直播"
-		},
-		"settings": {
-			"title": "社交设置",
-			"back": {
-				"aria-label": "返回资料"
-			},
-			"privacyTitle": "隐私与发现",
-			"privacyHint": "控制账户是否出现在探索与推荐中。",
-			"tasteTitle": "推荐与偏好",
-			"tasteHint": "调节「为你推荐」的隐私边界与标签命名。",
-			"mutedKeywordsTitle": "屏蔽词与标签",
-			"mutedKeywordsHint": "命中正文、内容警告或标签的帖子将从信息流、探索、搜索与通知中隐藏。仅保存在本机。",
-			"mutedKeywordsMatchTags": "同时匹配标签",
-			"mutedKeywordsAdd": "添加",
-			"mutedKeywordsRemove": {
-				"title": "移除屏蔽词"
-			},
-			"mutedKeywordsEmpty": "尚未添加屏蔽词",
-			"autoTranslateTitle": "自动翻译",
-			"autoTranslateHint": "开启后，外语帖子将自动请求译文并可用原文切换。",
-			"autoTranslateEnable": "自动翻译非本语言帖子",
-			"safetyTitle": "安全与屏蔽",
-			"safetyHint": "管理拉黑与隐藏列表。",
-			"mutedKeywords": {
-				"placeholder": "输入关键词或 #标签"
-			}
-		},
-		"composer": {
-			"placeholder": "在想什么？支持 Markdown（fount 方言），输入 @ 可提及",
-			"publish": "发布",
-			"saveDraft": "存草稿",
-			"fab": {
-				"title": "写动态",
-				"aria-label": "写动态"
-			},
-			"contentWarning": {
-				"placeholder": "内容警告（可选）"
-			},
-			"sensitiveMedia": "媒体敏感遮罩",
-			"editImage": "编辑",
-			"editCrop": "裁剪",
-			"editMosaic": "打码",
-			"editBrush": "画笔",
-			"editApply": "应用",
-			"editCancel": "取消",
-			"replyPolicyEveryone": "所有人可回复",
-			"replyPolicyFollowers7d": "7天以上关注者",
-			"replyPolicyAuthorFollows": "我关注的人",
-			"replyPolicyLabel": "谁可以回复",
-			"replyDisplayAll": "显示全部回复",
-			"replyDisplayFeaturedOnly": "仅精选回复",
-			"replyDisplayLabel": "回复展示",
-			"scheduleLabel": "定时发布",
-			"scheduleSuccess": "帖子已加入定时队列",
-			"emojiButton": {
-				"title": "表情",
-				"aria-label": "表情"
-			},
-			"mediaButton": {
-				"title": "添加媒体",
-				"aria-label": "添加媒体"
-			},
-			"pollButton": {
-				"title": "发起投票",
-				"aria-label": "发起投票"
-			},
-			"cwToggle": {
-				"title": "内容警告",
-				"aria-label": "内容警告"
-			},
-			"advancedToggle": {
-				"title": "更多选项",
-				"aria-label": "更多选项"
-			},
-			"media": {
-				"placeholder": "图片描述（alt）"
-			}
-		},
-		"visibility": {
-			"label": "可见范围",
-			"public": "公开",
-			"unlisted": "不公开列出",
-			"followers": "仅关注者",
-			"followers7d": "关注满 7 天可见",
-			"followers30d": "关注满 30 天可见",
-			"selected": "指定人员可见",
-			"private": "仅自己可见",
-			"allowLabel": "可见人员",
-			"exceptLabel": "排除人员",
-			"allow": {
-				"placeholder": "可见人员 entityHash，空格或逗号分隔"
-			},
-			"except": {
-				"placeholder": "不给谁看（可选）"
-			}
-		},
-		"albums": {
-			"create": "新建相册",
-			"edit": "编辑相册",
-			"save": "保存",
-			"cancel": "取消",
-			"back": "返回相册",
-			"empty": "还没有相册",
-			"emptyPosts": "相册里还没有帖子",
-			"name": "相册名称",
-			"description": "相册描述",
-			"deleteLinks": "删除相册（保留帖子）",
-			"deleteWithPosts": "删除相册并删除帖子",
-			"pickerLabel": "加入相册",
-			"defaultName": "默认相册"
-		},
-		"feed": {
-			"refresh": "刷新动态",
-			"newPosts": "有新动态，点击查看",
-			"tabLatest": "最新",
-			"tabForYou": "推荐",
-			"repostedBy": "${author} 转发了",
-			"decryptFailed": "无法解密此帖",
-			"revealContent": "显示内容",
-			"sensitiveMedia": "敏感媒体",
-			"showMore": "展开",
-			"showLess": "收起",
-			"replayDivider": "已看完，重新浏览"
-		},
-		"taste": {
-			"rebuild": "重建偏好",
-			"privacyPublishPreferences": "公开标签命名与合并发现",
-			"privacyPublishPreferencesHint": "关闭后好友看不到你的标签命名与合并声明，也无法贡献共识。",
-			"privacyPublishReactions": "公开点赞与点踩",
-			"privacyPublishReactionsHint": "关闭后贴主收不到你的赞/踩、你的反应不参与他人推荐，你也不再推动帖子二度扩散。",
-			"empty": "尚无偏好标签，多点赞/踩后会自动聚类",
-			"weight": "权重 ${weight}",
-			"save": "保存",
-			"name": {
-				"placeholder": "本地显示名"
-			}
-		},
-		"trending": {
-			"title": "热门话题",
-			"postCount": {
-				"title": "${n} 条帖子"
-			},
-			"scopeLocal": "本机",
-			"scopeNearby": "附近",
-			"empty": "暂无热门话题"
-		},
-		"search": {
-			"placeholder": "搜索动态、用户或 #话题（至少 2 字）",
-			"open": {
-				"aria-label": "搜索"
-			},
-			"submit": "搜索",
-			"clear": "清除",
-			"empty": "没有匹配的帖子",
-			"tooShort": "请输入至少 2 个字符",
-			"usersTitle": "用户",
-			"postsTitle": "动态",
-			"usersEmpty": "没有匹配的用户",
-			"pinAlias": "设为别名",
-			"trustScore": "信任 ${score}",
-			"viewTitle": "搜索",
-			"loading": "搜索中…",
-			"filterAuthor": {
-				"placeholder": "作者"
-			},
-			"filterMediaAll": "所有媒体",
-			"filterMediaImage": "图片",
-			"filterMediaVideo": "视频",
-			"filterTag": {
-				"placeholder": "#标签"
-			},
-			"sortRecent": "最新",
-			"sortPopular": "热门",
-			"scopeLocal": "本机",
-			"scopeNearby": "附近"
-		},
-		"profile": {
-			"edit": "编辑资料",
-			"viewPosts": "查看社交主页",
-			"settingsBtn": {
-				"aria-label": "社交设置"
-			},
-			"mediaOnly": "[媒体]",
-			"hideFromExplore": "从探索页隐藏账户",
-			"tabPosts": "动态",
-			"tabAlbums": "相册",
-			"tabLikes": "点赞",
-			"tabCabinets": "文件柜",
-			"tabsLabel": {
-				"aria-label": "资料分区"
-			},
-			"cabinetsEmpty": "暂无公开文件柜",
-			"cabinetsFailed": "文件柜加载失败：${error}",
-			"statsGroup": {
-				"aria-label": "资料统计"
-			},
-			"statsPosts": "动态",
-			"statsFollowing": "关注",
-			"statsFollowers": "粉丝",
-			"followingTitle": "关注",
-			"followersTitle": "粉丝"
-		},
-		"dialog": {
-			"close": {
-				"aria-label": "关闭"
-			}
-		},
-		"actions": {
-			"like": "点赞",
-			"unlike": "取消赞",
-			"dislike": "踩",
-			"undislike": "取消踩",
-			"repost": "转发",
-			"quote": "引用",
-			"delete": "删除",
-			"edit": "编辑",
-			"save": "收藏",
-			"saved": "已收藏",
-			"translate": "翻译",
-			"dm": "发私信",
-			"block": "拉黑",
-			"hide": "隐藏",
-			"mute": "静音",
-			"follow": "关注",
-			"following": "已关注",
-			"care": "特别关心",
-			"careRemove": "取消特别关心",
-			"careAdded": "已加入特别关心",
-			"careRemoved": "已取消特别关心",
-			"setAlias": "设置别名",
-			"setAliasPrompt": "设置本地别名（留空清除）：",
-			"aliasSaved": "别名已更新",
-			"replies": "评论",
-			"copyLink": "复制链接",
-			"downloadHtml": "下载 HTML",
-			"copied": "已复制",
-			"more": {
-				"aria-label": "更多"
-			},
-			"share": "分享",
-			"likeFailed": "点赞失败：${error}",
-			"dislikeFailed": "踩失败：${error}",
-			"repostFailed": "转发失败：${error}",
-			"replyFailed": "回复失败：${error}",
-			"followFailed": "关注失败：${error}",
-			"saveFailed": "收藏失败：${error}",
-			"blockFailed": "拉黑失败：${error}",
-			"hideFailed": "隐藏失败：${error}",
-			"muteFailed": "静音失败：${error}",
-			"deleteFailed": "删除失败：${error}"
-		},
-		"post": {
-			"edited": "已编辑",
-			"editPrompt": "编辑帖子正文",
-			"editHistory": "编辑历史",
-			"editHistoryEmpty": "无更早版本",
-			"loading": "加载中…",
-			"notFound": "帖子不存在或不可见",
-			"loadFailed": "加载失败，请稍后重试",
-			"detailTitle": "帖子",
-			"back": "返回"
-		},
-		"reply": {
-			"context": "回复 ${author}"
-		},
-		"notes": {
-			"label": "读者补充",
-			"add": "补充信息",
-			"prompt": "写一条读者补充（社区笔记）",
-			"listTitle": "全部补充信息",
-			"helpful": "有用",
-			"unhelpful": "无用",
-			"more": "全部 ${n} 条",
-			"empty": "暂无补充信息"
-		},
-		"poll": {
-			"multi": "允许多选",
-			"apply": "应用投票",
-			"closed": "投票已结束",
-			"deadline": "截止：${deadline}",
-			"options": {
-				"placeholder": "每行一个选项（至少 2 项）"
-			}
-		},
-		"aside": {
-			"suggested": "推荐关注"
-		},
-		"explore": {
-			"accounts": "推荐账户",
-			"posts": "最新帖子",
-			"mediaOnly": "仅含媒体"
-		},
-		"groupRef": {
-			"linking": "关联 Chat 群",
-			"clear": "取消关联",
-			"pick": "关联 Chat 群/频道…"
-		},
-		"notifications": {
-			"reply": "${author} 回复了你的帖子",
-			"mention": "${author} 在动态中 @ 了你",
-			"like": "${author} 赞了你的帖子",
-			"repost": "${author} 转发了你的帖子",
-			"follow": "${author} 关注了你",
-			"care_post": "${author} 发了新动态（特别关心）",
-			"poll_closed": "${author} 的投票已结束",
-			"post_note": "${author} 为你的帖子补充了信息",
-			"live_started": "${author} 开始直播了",
-			"view": "查看",
-			"markAllRead": "全部标为已读"
-		},
-		"inbox": {
-			"filtersLabel": {
-				"aria-label": "收件箱筛选"
-			},
-			"tabs": {
-				"all": "全部",
-				"mention": "提及",
-				"reply": "回复",
-				"like": "赞",
-				"follow": "关注",
-				"repost": "转发"
-			},
-			"aggregated": {
-				"like": "${author1}、${author2} 等 ${count} 人赞了你的帖子",
-				"likeTwo": "${author1} 和 ${author2} 赞了你的帖子",
-				"repost": "${author1}、${author2} 等 ${count} 人转发了你的帖子",
-				"repostTwo": "${author1} 和 ${author2} 转发了你的帖子",
-				"follow": "${author1}、${author2} 等 ${count} 人关注了你",
-				"followTwo": "${author1} 和 ${author2} 关注了你"
-			}
-		},
-		"replies": {
-			"placeholder": "写一条回复…",
-			"submit": "回复",
-			"empty": "还没有回复",
-			"emptyHint": "来写第一条，开启讨论"
-		},
-		"repost": {
-			"placeholder": "添加转发评论（可选）…",
-			"submit": "确认转发"
-		},
-		"quote": {
-			"quoting": "正在引用",
-			"clear": "取消引用",
-			"viewOriginal": "查看原帖"
-		},
-		"a11y": {
-			"linkGroupSelect": "关联 Chat 群或频道",
-			"postVisibility": "可见范围",
-			"postLang": "内容语言",
-			"trendingHashtags": "热门话题",
-			"saveFolderSelect": "收藏文件夹"
-		},
-		"blocklist": {
-			"title": "拉黑列表",
-			"hiddenTitle": "隐藏列表",
-			"empty": "暂无拉黑或隐藏条目",
-			"unblock": "解除拉黑",
-			"unhide": "取消隐藏",
-			"scopeEntity": "实体",
-			"scopeSubject": "主体"
-		},
-		"translate": {
-			"label": "译文："
-		},
-		"saved": {
-			"all": "全部",
-			"unfiled": "未归档",
-			"createFolder": {
-				"title": "新建文件夹",
-				"aria-label": "新建文件夹"
-			},
-			"createFolderPrompt": "文件夹名称",
-			"pickFolderTitle": "收藏到",
-			"confirm": "确认",
-			"cancel": "取消",
-			"remove": "移除收藏",
-			"renameFolder": "重命名",
-			"renameFolderPrompt": "新文件夹名称",
-			"deleteFolder": "删除文件夹",
-			"deleteFolderConfirm": "删除文件夹？其中的帖子将移到「未归档」。",
-			"searchEmpty": "没有匹配的收藏",
-			"folderEmpty": "此文件夹为空",
-			"emptyHint": "浏览动态时点书签即可收藏到这里",
-			"search": {
-				"placeholder": "搜索收藏…"
-			}
-		},
-		"drafts": {
-			"untitled": "（无文字草稿）",
-			"emptyHint": "在发帖框写点内容后点「存草稿」，下次可继续编辑",
-			"saved": "草稿已保存",
-			"deleted": "草稿已删除",
-			"delete": "删除草稿",
-			"empty": "草稿为空",
-			"saveFailed": "保存草稿失败：${error}",
-			"loadFailed": "打开草稿失败：${error}",
-			"deleteFailed": "删除草稿失败：${error}"
-		},
-		"time": {
-			"justNow": "刚刚",
-			"minutesAgo": "${n} 分钟前",
-			"hoursAgo": "${n} 小时前"
-		},
-		"empty": {
-			"feed": "暂无动态，去关注一些人吧",
-			"profilePosts": "暂无动态",
-			"following": "暂未关注任何人",
-			"followers": "还没有粉丝",
-			"notifications": "暂无通知",
-			"saved": "暂无收藏",
-			"drafts": "暂无草稿",
-			"exploreAccounts": "暂无可推荐的账户",
-			"explorePosts": "暂无探索帖子",
-			"likedPosts": "暂无点赞",
-			"noIdentity": "请先在 Chat 配置联邦 identity 后再使用 Social"
-		},
-		"topic": {
-			"follow": "订阅",
-			"unfollow": "取消订阅",
-			"empty": "该话题暂无帖子"
-		},
-		"video": {
-			"view": {
-				"aria-label": "短视频"
-			},
-			"empty": "暂无短视频",
-			"emptyHint": "关注的人或公开广场里还没有带视频的帖子。发一条视频动态试试？",
-			"compose": "去发视频",
-			"back": {
-				"aria-label": "返回动态"
-			},
-			"mute": {
-				"aria-label": "静音"
-			},
-			"unmute": {
-				"aria-label": "取消静音"
-			},
-			"unavailable": "视频无法播放",
-			"closeReplies": {
-				"aria-label": "关闭评论"
-			}
-		},
-		"live": {
-			"empty": "暂无直播",
-			"viewers": "${n} 人观看",
-			"likes": "${n} 赞",
-			"local": "本机",
-			"hall": "直播大厅",
-			"back": {
-				"title": "返回动态",
-				"aria-label": "返回动态"
-			},
-			"danmakuSend": "发送",
-			"postWatch": "进入直播",
-			"postEnded": "直播已结束",
-			"postEndedStats": "${viewers} 人看过 · ${likes} 赞 · ${duration}",
-			"link": {
-				"invite": "邀请连线",
-				"needPeer": "请填写对端 entityHash:liveId",
-				"invited": "连线邀请已发出",
-				"linked": "已连线",
-				"peer": {
-					"placeholder": "对端 entityHash:liveId"
-				}
-			},
-			"broadcast": {
-				"title": "开播",
-				"open": "去开播",
-				"mediaAv": "音视频",
-				"mediaAudio": "纯音频",
-				"mediaVideo": "纯画面",
-				"mediaWhip": "WHIP 推流（如 OBS）",
-				"whipUrl": "WHIP 地址",
-				"whipToken": "Bearer Token",
-				"whipWaiting": "等待 WHIP 推流连接（可用 OBS 等推流软件）…",
-				"start": "开始直播",
-				"stop": "停止直播",
-				"started": "直播已开始",
-				"stopped": "直播已停止",
-				"titleInput": {
-					"placeholder": "直播标题（可选）"
-				}
-			},
-			"danmaku": {
-				"placeholder": "说点什么…"
 			}
 		}
 	},
@@ -2043,12 +1306,7 @@
 			"createGroup": "新建群组",
 			"members": "成员",
 			"membersHint": "成员列表由 Checkpoint 同步（占位）",
-			"send": "发送",
 			"streamTest": "测试媒体设备",
-			"messageInput": {
-				"placeholder": "群组消息… Ctrl+Enter 发送",
-				"aria-label": "输入消息"
-			},
 			"loadError": "加载群组失败",
 			"remoteNodeTimeout": "远端节点无响应，请稍后重试",
 			"remoteUnavailable": "远端部件不可用或无法路由 RPC",
@@ -2126,7 +1384,6 @@
 			"remoteTyping": "${name} 正在输入…",
 			"remoteTypingTwo": "${name1}、${name2} 正在输入…",
 			"remoteTypingMany": "${name} 和另外 ${count} 人正在输入…",
-			"mentionEmpty": "（无匹配成员）",
 			"localAiLabel": "本机角色：",
 			"forceTriggerOne": {
 				"title": "强制触发 ${name} 发言"
@@ -2185,7 +1442,6 @@
 			"fileDownload": {
 				"title": "下载文件"
 			},
-			"clickToLoad": "点击加载",
 			"unknownFile": "未知文件",
 			"blockSender": {
 				"title": "拉黑该发送者"
@@ -2210,7 +1466,6 @@
 			"editConfirm": "确认 (Ctrl+Enter)",
 			"editCancel": "取消 (Esc)",
 			"editHint": "Ctrl+Enter 确认 · Esc 取消",
-			"editedLabel": "(已编辑)",
 			"editEmptyText": "消息内容不能为空",
 			"createGroupTitle": "新建群组",
 			"groupNameLabel": "群组名称",
@@ -2454,6 +1709,10 @@
 			},
 			"sendTitle": {
 				"title": "发送 (Ctrl+Enter)"
+			},
+			"messageInput": {
+				"placeholder": "群组消息… Ctrl+Enter 发送",
+				"aria-label": "输入消息"
 			},
 			"stopGenerateTitle": {
 				"title": "停止生成"
@@ -3125,7 +2384,11 @@
 			"altImage": {
 				"placeholder": "为图片添加描述…",
 				"label": "图片说明（alt）"
-			}
+			},
+			"editedLabel": "(已编辑)",
+			"mentionEmpty": "（无匹配成员）",
+			"clickToLoad": "点击加载",
+			"send": "发送"
 		},
 		"sidebar": {
 			"settings": {
@@ -3445,6 +2708,234 @@
 			"chatHub": {
 				"title": "聊天"
 			}
+		},
+		"profile": {
+			"title": "个人资料",
+			"description": "管理你在聊天与社交中的公开形象。",
+			"settingsEyebrow": "账户设置",
+			"accountAtGlance": "账户概览",
+			"advancedKicker": "按需配置",
+			"advancedSettings": "高级设置",
+			"advancedDescription": "日常使用无需调整。",
+			"edit": "编辑资料",
+			"save": "保存",
+			"cancel": "取消",
+			"displayName": "显示名称",
+			"name": "名称",
+			"bio": "个人简介",
+			"descriptionLabel": "简介（Markdown）",
+			"email": "邮箱",
+			"status": "状态",
+			"customStatusLabel": "自定义状态",
+			"avatarLabel": "头像",
+			"themeColorLabel": "主题色",
+			"uploadAvatar": "上传头像",
+			"ownerTitle": "我的主人",
+			"ownerSummary": "代管设置",
+			"ownerDescription": "设置后，主人可以代为编辑或删除你的聊天消息、社交帖与个人资料；其内容也会在本机按不安全 Markdown 渲染（可含脚本）。可填任意实体哈希，并随时清除。",
+			"ownerEntityHashLabel": "主人实体哈希（128 hex）",
+			"ownerSave": "保存主人",
+			"ownerClear": "清除主人",
+			"ownerSaved": "主人已更新",
+			"ownerCleared": "主人已清除",
+			"ownerSaveFailed": "保存失败：${error}",
+			"ownerConfirmTitle": "确认设置主人？",
+			"ownerConfirmWarningTitle": "高风险操作，请仔细阅读",
+			"ownerConfirmEditBody": "设置后，对方无需再征得你同意，即可代为编辑或删除你的聊天消息、社交帖与个人资料。误设或被诱骗设主人 = 立刻交出内容控制权。",
+			"ownerConfirmRenderBody": "对方发来的聊天消息与社交帖会在你的浏览器中按完整 Markdown 渲染（含 HTML/脚本）。这等于允许对方在无需你再次同意的情况下，在你的电脑上运行任意代码。仅当你完全信任对方时再继续。",
+			"ownerConfirmCooldown": "我已阅读风险（${seconds}）",
+			"ownerConfirmFirst": "我了解风险，继续",
+			"ownerConfirmSecond": "再次点击以最终确认",
+			"ownerConfirmCancel": "取消",
+			"federationTitle": "联邦与同步",
+			"federationSummary": "中继服务器与低功耗模式",
+			"federationDescription": "配置 Nostr relay URL 与省电模式。群的联邦同步在首次邀请他人或创建联邦私信时自动启用。",
+			"federationAdvanced": "高级选项",
+			"federationRelayUrlsLabel": "中继服务器（每行一个，留空使用默认）",
+			"federationBatterySaverLabel": "低功耗模式",
+			"federationSave": "保存网络设置",
+			"federationResetDefault": "恢复默认推荐配置",
+			"federationSaved": "已保存",
+			"federationResetOk": "已恢复默认推荐配置",
+			"federationSaveFailed": "保存失败：${error}",
+			"preferences": "偏好设置",
+			"language": "语言",
+			"theme": "主题",
+			"notifications": "通知设置",
+			"emailNotifications": "邮件通知",
+			"pushNotifications": "推送通知",
+			"soundNotifications": "声音通知",
+			"social": "社交链接",
+			"website": "网站",
+			"github": "GitHub",
+			"twitter": "Twitter",
+			"stats": "统计信息",
+			"joinedAt": "加入时间",
+			"messageCount": "消息数",
+			"groupCount": "群组数",
+			"channelCount": "频道数",
+			"privacy": "隐私设置",
+			"showEmail": "显示邮箱",
+			"showStats": "显示统计",
+			"allowDirectMessages": "允许私信",
+			"statusOptions": {
+				"online": "在线",
+				"away": "离开",
+				"busy": "忙碌",
+				"offline": "离线"
+			},
+			"themeOptions": {
+				"auto": "自动",
+				"light": "浅色",
+				"dark": "深色"
+			},
+			"languageOptions": {
+				"zh-CN": "简体中文",
+				"en-US": "English"
+			},
+			"notifEmail": "邮件",
+			"notifPush": "推送",
+			"notifSound": "声音",
+			"notifsAllOff": "全部关闭",
+			"bioEmpty": "这个人很懒，什么都没写…",
+			"noSocialLinks": "暂无社交链接",
+			"emailVisible": "可见",
+			"emailHidden": "隐藏",
+			"customStatus": {
+				"placeholder": "正在做什么…"
+			},
+			"avatar": {
+				"alt": "头像"
+			},
+			"avatarPreview": {
+				"alt": "头像预览"
+			},
+			"myGroups": "我的群组",
+			"myChannels": "我的频道",
+			"noGroups": "暂未加入任何群组",
+			"noChannels": "暂无频道",
+			"overview": "用户信息概览",
+			"summaryUserId": "用户 ID",
+			"summaryAccountStatus": "账号状态",
+			"summaryEmailVisibility": "邮箱可见性",
+			"summaryThemePref": "主题偏好",
+			"summaryLanguagePref": "语言偏好",
+			"summarySocialCount": "社交链接数量",
+			"summaryLinksCount": "外链数",
+			"groupDescriptionEmpty": "暂无描述",
+			"groupMembers": "${members} 位成员 · ${channels} 个频道",
+			"channelPrivate": " · 私密",
+			"channelTypeText": "文字频道",
+			"channelTypeList": "列表频道",
+			"channelTypeVoice": "语音频道",
+			"channelTypeStreaming": "流媒体频道",
+			"errors": {
+				"loadFailed": "加载资料失败",
+				"saveFailed": "保存资料失败",
+				"uploadFailed": "上传头像失败",
+				"invalidUserData": "用户数据格式错误",
+				"identityRequired": "节点身份尚未就绪，请刷新页面；若仍失败，请在下方 P2P 设置中保存联邦配置",
+				"fetchUserFailed": "获取用户信息失败",
+				"operationFailed": "操作失败：${error}"
+			},
+			"success": {
+				"saved": "资料保存成功",
+				"avatarUploaded": "头像上传成功"
+			},
+			"ownerEntityHash": {
+				"placeholder": "输入主人的实体哈希"
+			}
+		},
+		"entityProfile": {
+			"attributionMismatch": "显示身份与消息签名者不匹配（例如导入历史经导入者重新签名）。请勿将该显示名视为密码学身份。",
+			"attributionMismatchShort": {
+				"title": "签名归因不匹配",
+				"aria-label": "签名归因不匹配"
+			},
+			"ownedBy": "此实体为 ${owner} 所有"
+		},
+		"stickers": {
+			"title": "贴纸广场",
+			"description": "贴纸和表情包管理系统",
+			"back": {
+				"title": "返回"
+			},
+			"packs": "贴纸包",
+			"create": "创建贴纸包",
+			"upload": "上传贴纸",
+			"install": "安装",
+			"uninstall": "卸载",
+			"close": "关闭",
+			"cancel": "取消",
+			"installed": "已安装",
+			"myPacks": "我的贴纸包",
+			"tabAll": "全部",
+			"store": "贴纸广场",
+			"favorites": "收藏",
+			"recent": "最近使用",
+			"search": {
+				"placeholder": "搜索贴纸包…"
+			},
+			"emptyPacks": "暂无贴纸包",
+			"packNameLabel": "贴纸包名称",
+			"packName": {
+				"placeholder": "输入贴纸包名称"
+			},
+			"packDescriptionLabel": "描述",
+			"packDescription": {
+				"placeholder": "输入描述"
+			},
+			"stickerNameLabel": "贴纸名称",
+			"stickerName": {
+				"placeholder": "输入贴纸名称"
+			},
+			"selectPack": "选择贴纸包",
+			"selectPackOption": {
+				"textContent": "请选择贴纸包"
+			},
+			"selectImage": "选择图片",
+			"tagsLabel": "标签（用逗号分隔）",
+			"tags": {
+				"placeholder": "例如: 可爱, 表情, 动物"
+			},
+			"author": "作者",
+			"authorLabel": "作者: ${author}",
+			"stickerCount": "${count} 个贴纸",
+			"badgeMine": "我的",
+			"noDescription": "暂无描述",
+			"noStickersInPack": "暂无贴纸",
+			"deletePack": "删除贴纸包",
+			"public": "公开",
+			"private": "私有",
+			"animated": "动态",
+			"static": "静态",
+			"addTag": "添加标签",
+			"defaultPackName": "默认表情包",
+			"defaultPackDescription": "系统默认提供的表情贴纸",
+			"unnamedPack": "未命名贴纸包",
+			"importPackName": "我的收藏",
+			"importPackDescription": "从消息保存的贴纸",
+			"nameRequired": "请输入贴纸包名称",
+			"stickerNameRequired": "请输入贴纸名称",
+			"selectPackRequired": "请选择贴纸包",
+			"fileRequired": "请选择图片文件",
+			"loadDetailFailed": "加载贴纸包详情失败",
+			"deleteConfirm": "确定要永久删除此贴纸包吗？所有贴纸将被删除，此操作不可撤销。",
+			"errors": {
+				"loadFailed": "加载贴纸包失败",
+				"uploadFailed": "上传贴纸失败",
+				"installFailed": "安装失败",
+				"uninstallFailed": "卸载失败",
+				"createFailed": "创建贴纸包失败",
+				"deleteFailed": "删除失败"
+			},
+			"success": {
+				"uploaded": "贴纸上传成功",
+				"installed": "安装成功",
+				"uninstalled": "卸载成功",
+				"created": "贴纸包创建成功",
+				"deleted": "删除成功"
+			}
 		}
 	},
 	"easynew": {
@@ -3759,433 +3250,6 @@
 			}
 		}
 	},
-	"userSettings": {
-		"title": "用户设置",
-		"PageTitle": "用户设置",
-		"description": "管理您的 fount 身份相关细节：个人资料、访问安全与已连接设备。为您的账号保留一处安静、私密的空间。",
-		"shell": {
-			"unauthorized": "需要登录。",
-			"responseNotJson": "服务器返回了无法解析的内容。",
-			"unexpectedError": "请求失败。"
-		},
-		"errors": {
-			"accountNotFound": "未找到账户。"
-		},
-		"userInfo": {
-			"title": "用户信息",
-			"usernameLabel": "用户名:",
-			"creationDateLabel": "账户创建日期:",
-			"folderSizeLabel": "用户数据大小:",
-			"folderPathLabel": "用户数据路径:",
-			"copyPathButton": {
-				"title": "复制路径"
-			},
-			"copyPathButtonIcon": {
-				"alt": "复制图标"
-			},
-			"copiedAlert": "路径已复制到剪贴板！",
-			"copyPathFailed": "无法复制路径到剪贴板。"
-		},
-		"changePassword": {
-			"title": "修改密码",
-			"currentPasswordLabel": "当前密码:",
-			"newPasswordLabel": "新密码:",
-			"confirmNewPasswordLabel": "确认新密码:",
-			"submitButton": "修改密码",
-			"errorMismatch": "新密码两次输入不一致。",
-			"success": "密码修改成功。",
-			"missingFields": "请填写当前密码与新密码。",
-			"invalidCurrent": "当前密码不正确。"
-		},
-		"renameUser": {
-			"title": "重命名用户",
-			"newUsernameLabel": "新用户名:",
-			"submitButton": "重命名用户",
-			"confirmMessage": "您确定要更改用户名吗？这将需要您重新登录。",
-			"success": "用户已成功重命名为 “${newUsername}”。您现在将被注销。",
-			"missingParams": "请填写新用户名与当前密码。",
-			"wrongPassword": "密码不正确。",
-			"mustDiffer": "新用户名须与当前用户名不同。",
-			"taken": "该用户名已被占用。",
-			"moveFailed": "重命名用户数据目录失败：${detail}。已恢复原用户名。"
-		},
-		"passkeys": {
-			"title": "安全密钥与 Passkey",
-			"description": "绑定后可用安全密钥或本机 Passkey 登录。需在 HTTPS 或 localhost 下使用；请先在用户设置中添加密钥。",
-			"refreshButton": {
-				"title": "刷新列表"
-			},
-			"refreshButtonIcon": {
-				"alt": "刷新图标"
-			},
-			"nameLabel": "备注（可选）",
-			"nameInput": {
-				"placeholder": "例如：工作用 YubiKey"
-			},
-			"addButton": "添加安全密钥",
-			"noneFound": "尚未绑定任何安全密钥。",
-			"itemDetails": "添加时间：${created}",
-			"removeButton": "移除",
-			"removeConfirm": "确定移除此密钥？移除后将无法用其登录。",
-			"removeSuccess": "已移除安全密钥。",
-			"addSuccess": "安全密钥已添加。",
-			"errorLoadLibrary": "无法加载 WebAuthn 库。",
-			"errorCancelled": "已取消添加。",
-			"apiInvalidPassword": "密码错误。",
-			"apiMissingCredential": "缺少有效的 Passkey 凭证。",
-			"apiRemoveParamsRequired": "请提供要移除的凭据与密码。"
-		},
-		"userDevices": {
-			"title": "用户设备/会话",
-			"noDevicesFound": "未找到任何设备或会话。",
-			"deviceInfo": "设备ID: ${deviceId}",
-			"thisDevice": "当前设备",
-			"deviceDetails": "最后上线: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "撤销",
-			"revokeConfirm": "您确定要从此设备/会话注销吗？",
-			"revokeSuccess": "设备/会话已成功撤销。",
-			"revokeMissingParams": "请提供要撤销的设备与会话密码。",
-			"revokeWrongPassword": "密码不正确。",
-			"listNotFound": "未找到设备列表。",
-			"deviceNotFound": "未找到该设备或会话。",
-			"refreshButton": {
-				"title": "刷新列表"
-			},
-			"refreshButtonIcon": {
-				"alt": "刷新图标"
-			}
-		},
-		"apiKeys": {
-			"title": "API 密钥",
-			"description": "管理外部应用程序的 API 密钥。",
-			"input": {
-				"placeholder": "新密钥描述"
-			},
-			"createButton": "创建",
-			"noKeysFound": "未找到任何 API 密钥。",
-			"keyDetails": "描述: ${description} | 创建于: ${createdAt} | 最后使用: ${lastUsed}",
-			"neverUsed": "从未使用",
-			"noKeysForUser": "未找到 API 密钥数据。",
-			"revokeWrongPassword": "密码不正确。",
-			"keyNotFound": "未找到该 API 密钥。",
-			"revokeMissingJti": "请指定要撤销的密钥。",
-			"revokeMissingPassword": "撤销密钥需要提供密码。",
-			"verifyMissingApiKey": "请提供 API 密钥。",
-			"revokeButton": "撤销",
-			"revokeConfirm": "您确定要撤销此 API 密钥吗？",
-			"revokeSuccess": "API 密钥已成功撤销。",
-			"errorDescriptionRequired": "需要提供描述。",
-			"createSuccess": "API 密钥创建成功。",
-			"refreshButton": {
-				"title": "刷新列表"
-			},
-			"refreshButtonIcon": {
-				"alt": "刷新图标"
-			}
-		},
-		"newApiKey": {
-			"title": "新 API 密钥已创建",
-			"warning": "请复制您的新 API 密钥。您将无法再次看到它！",
-			"closeButton": "我已复制密钥",
-			"copyButton": {
-				"title": "复制新 API 密钥"
-			},
-			"copiedAlert": "密钥已复制到剪贴板！",
-			"copyKeyFailed": "无法复制密钥到剪贴板。"
-		},
-		"editorCommand": {
-			"title": "外部编辑器命令",
-			"description": "配置在外部编辑器中打开文件时使用的命令与参数模板；可通过占位符传入文件路径、行号与列号。",
-			"editorPresetLabel": "编辑器预设",
-			"commandLabel": "命令",
-			"argsTemplateLabel": "参数模板",
-			"argsTemplateHint": "占位符：\\${file} \\${line} \\${column}",
-			"presetOptionPathAvailable": "${label}（已在 PATH）",
-			"presetOptionPathUnavailable": "${label}（不在 PATH）",
-			"testPathInput": {
-				"placeholder": "用于测试的文件路径，例如 C:/work/project/src/main.mjs"
-			},
-			"testButton": "测试打开",
-			"saveButton": "保存配置",
-			"saveSuccess": "外部编辑器命令已保存。",
-			"testPathRequired": "请先填写测试文件路径。",
-			"testSuccess": "已尝试在外部编辑器中打开。"
-		},
-		"logout": {
-			"title": "登出",
-			"description": "这将从当前设备注销您的账户。",
-			"buttonText": "登出",
-			"confirmMessage": "您确定要登出吗？",
-			"successMessage": "已成功登出。即将跳转到登录页面..."
-		},
-		"deleteAccount": {
-			"title": "删除账户",
-			"warning": "警告：此操作将永久删除您的账户和所有相关数据，且无法恢复。",
-			"submitButton": "删除我的账户",
-			"confirmMessage1": "警告！您确定要永久删除您的账户吗？此操作无法撤销。",
-			"confirmMessage2": "为确认删除，请输入您的用户名“${username}”：",
-			"usernameMismatch": "输入的用户名与当前用户不匹配。删除操作已取消。",
-			"success": "账户已成功删除。您现在将被注销。",
-			"missingPassword": "请输入密码。",
-			"wrongPassword": "密码不正确。"
-		},
-		"passwordConfirm": {
-			"title": "确认操作",
-			"message": "为继续此操作，请输入您的当前密码：",
-			"passwordLabel": "密码:",
-			"confirmButton": "确认",
-			"cancelButton": "取消"
-		},
-		"apiError": "API 请求失败: ${message}",
-		"generalError": "发生错误: ${message}",
-		"home_function_buttons": {
-			"settings": {
-				"title": "设置",
-				"sub_items": {
-					"main": {
-						"title": "用户设置"
-					}
-				}
-			}
-		}
-	},
-	"subfounts": {
-		"title": "子fount - 点对点设备管理",
-		"pageTitle": "子fount",
-		"description": "管理点对点子fount连接",
-		"hostConnectionCode": {
-			"title": "主机连接码",
-			"connectionCodeLabel": "连接码 (Peer ID)",
-			"passwordLabel": "密码",
-			"copyButton": "复制",
-			"regenerateButton": "重新生成",
-			"infoMessage": "与子fount客户端共享这些凭据以建立连接。",
-			"connectionCodeCopied": "连接码已复制到剪贴板",
-			"passwordCopied": "密码已复制到剪贴板",
-			"regenerateSuccess": "连接码已重新生成"
-		},
-		"infra": {
-			"title": "网络公益",
-			"description": "统一设定已连接的子fount是否作为公益节点，协助整个fount网络。关闭后，分机仍接受本机远程执行，但不参与网络层协助。",
-			"capabilityRelay": "参与 overlay 多跳转发，在直连失败时帮助其他节点互通。",
-			"capabilityMailbox": "托管离线投递，让对方节点上线后仍能收到私信。",
-			"hostPriority": "开启时优先协助本机：按本机信誉表加权路由，并将本机锁定为最高优先级。",
-			"toggleLabel": "分机参与公益",
-			"enabledToast": "已开启：分机参与网络公益（本机优先）",
-			"disabledToast": "已关闭：分机不再参与网络公益"
-		},
-		"connectedSubfounts": {
-			"title": "已连接的子fount",
-			"noSubfountsConnected": "未连接任何子fount",
-			"table": {
-				"id": "ID",
-				"description": "备注",
-				"deviceId": "设备 ID",
-				"connectedAt": "连接时间",
-				"status": "状态",
-				"actions": "操作",
-				"connected": "已连接",
-				"disconnected": "已断开",
-				"save": "保存",
-				"na": "N/A"
-			},
-			"descriptionSaved": "备注已保存",
-			"descriptionSaveFailed": "保存备注失败: ${message}"
-		},
-		"codeExecution": {
-			"title": "代码执行",
-			"description": "在选定的Subfount上执行JavaScript代码",
-			"selectSubfountLabel": "选择Subfount",
-			"hostOption": "主机 (ID: ${id})",
-			"subfountOption": "分机 ${id}${deviceId}",
-			"scriptLabel": "JavaScript代码",
-			"executeButton": "执行",
-			"executing": "执行中...",
-			"noSubfountSelected": "请先选择一个Subfount",
-			"noScriptProvided": "请输入要执行的代码",
-			"executionSuccess": "代码执行成功",
-			"executionFailed": "代码执行失败: ${message}",
-			"selectSubfount": "请选择要执行代码的Subfount..."
-		},
-		"downloadClient": {
-			"title": "下载子fount客户端",
-			"description": "下载独立的子fount客户端脚本以在远程设备上运行。",
-			"downloadButton": "下载 subfount.mjs"
-		},
-		"errors": {
-			"loadConnectionCodeFailed": "加载连接码失败: ${message}",
-			"regenerateConnectionCodeFailed": "重新生成连接码失败: ${message}",
-			"loadSettingsFailed": "加载公益设置失败: ${message}",
-			"saveSettingsFailed": "保存公益设置失败: ${message}",
-			"generalError": "发生错误: ${message}"
-		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "正在开发",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "子设备",
-						"sub_items": {
-							"main": {
-								"title": "管理子设备"
-							}
-						}
-					}
-				}
-			}
-		}
-	},
-	"languageSettings": {
-		"title": "语言设置",
-		"pageTitle": "语言设置",
-		"description": "管理您的fount应用程序的语言首选项。使用可用的语言选项定制您的体验。",
-		"pageDescription": "在此处管理您的语言偏好。列表中的语言将按顺序优先于浏览器设置。",
-		"availableLanguages": "可用语言",
-		"preferredLanguages": "优先语言列表",
-		"resetButton": "重置",
-		"saveButton": "保存",
-		"select": {
-			"placeholder": "选择一种语言..."
-		},
-		"search": {
-			"placeholder": "搜索语言..."
-		},
-		"noPreferredLanguages": "暂无优先语言。将使用浏览器默认设置。",
-		"moveUpButton": {
-			"aria-label": "上移",
-			"alt": "上移图标"
-		},
-		"moveDownButton": {
-			"aria-label": "下移",
-			"alt": "下移图标"
-		},
-		"deleteLocaleButton": {
-			"aria-label": "删除该语言",
-			"alt": "删除图标"
-		},
-		"savedMessage": "语言设置已保存！",
-		"resetMessage": "语言设置已重置！",
-		"fetchLocalesFailed": "获取可用语言失败！",
-		"home_function_buttons": {
-			"settings": {
-				"title": "设置",
-				"sub_items": {
-					"main": {
-						"title": "语言设置"
-					}
-				}
-			}
-		}
-	},
-	"themeManage": {
-		"title": "主题管理",
-		"description": "选择反映您的心情或故事的美学。预览并从主题调色板中进行选择，每个主题都为您的fount交互提供不同的氛围。你的世界，你的风格。",
-		"instruction": "选择一个主题！",
-		"search": {
-			"placeholder": "搜索主题...",
-			"noResult": "未找到匹配的主题。"
-		},
-		"createButton": "+ 创建新主题",
-		"preview": {
-			"editButton": {
-				"title": "编辑"
-			},
-			"editButtonIcon": {
-				"alt": "编辑图标"
-			},
-			"deleteButton": {
-				"title": "删除"
-			},
-			"deleteButtonIcon": {
-				"alt": "删除图标"
-			},
-			"cloneButton": {
-				"title": "复制"
-			},
-			"cloneButtonIcon": {
-				"alt": "复制图标"
-			}
-		},
-		"editor": {
-			"title": "主题编辑器",
-			"cancelButton": "取消",
-			"saveApplyButton": "保存并应用",
-			"themeName": "主题名称 (ID)",
-			"autoPaletteTitle": "从图片自动调色",
-			"autoPaletteInstruction": "点击上方颜色以自动填充主色/辅助色/强调色/中性色。",
-			"coreColors": "核心颜色",
-			"baseBackground": "基础与背景",
-			"variables": "变量",
-			"borderRadius": "圆角半径 (--rounded-box)",
-			"borderWidth": "边框宽度 (--border-btn)",
-			"advancedCustomization": "高级自定义",
-			"customCSS": "自定义 CSS (覆盖)",
-			"customMjsScript": "自定义 MJS 脚本 (可选)",
-			"mjsSyntaxHint": "使用 [async-eval 语法](${asyncDocLink})。返回一个包含 `load()` 和 `unload()` 函数的对象。",
-			"themeIdRequired": "需要主题 ID",
-			"newThemeName": "新主题名称：",
-			"deleteConfirm": "确定要删除主题 ${id} 吗？",
-			"saved": "已保存！",
-			"failedToSave": "保存失败",
-			"failedToDelete": "无法删除主题：${message}",
-			"failedToClone": "无法复制主题：${message}"
-		},
-		"themes": {
-			"auto": "自动",
-			"light": "亮色",
-			"dark": "暗色",
-			"cupcake": "杯糕",
-			"bumblebee": "蜂蜜糖",
-			"emerald": "绿宝石",
-			"corporate": "公司",
-			"synthwave": "合成波",
-			"retro": "复古",
-			"cyberpunk": "赛博朋克",
-			"valentine": "情人节",
-			"halloween": "万圣节",
-			"garden": "花园",
-			"forest": "森林",
-			"aqua": "深海",
-			"lofi": "lo-fi",
-			"pastel": "浅色",
-			"fantasy": "幻想",
-			"wireframe": "线框",
-			"black": "黑色",
-			"luxury": "奢华",
-			"dracula": "恶魔",
-			"cmyk": "CMYK",
-			"autumn": "秋天",
-			"business": "商业",
-			"acid": "酸性",
-			"lemonade": "柠檬汁",
-			"night": "夜晚",
-			"coffee": "咖啡",
-			"winter": "冬天",
-			"dim": "昏暗",
-			"nord": "北方",
-			"sunset": "日落",
-			"caramellatte": "焦糖拿铁",
-			"abyss": "深渊",
-			"silk": "丝绒"
-		},
-		"achievements": {
-			"change_theme": {
-				"name": "换个痛涂！",
-				"description": "让fount换上了新的装扮，心情也焕然一新。",
-				"locked_description": "切换一次主题。"
-			}
-		},
-		"home_function_buttons": {
-			"settings": {
-				"title": "设置",
-				"sub_items": {
-					"switchTheme": {
-						"title": "切换主题"
-					}
-				}
-			}
-		}
-	},
 	"part_config": {
 		"title": "组件配置",
 		"pageTitle": "组件配置",
@@ -4427,6 +3491,84 @@
 			}
 		}
 	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"description": "让你的 fount 同伴在喧闹的无序大厅中发出声音。配置他们的存在，管理他们的运营，并让他们连接世界，一次一台服务器。",
+		"cardTitle": "Discord Bot",
+		"botSelectDropdown": {
+			"placeholder": "选择一个 Bot"
+		},
+		"botSearch": {
+			"placeholder": "搜索 Bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "选择一个角色"
+		},
+		"charSearch": {
+			"placeholder": "搜索角色..."
+		},
+		"configCard": {
+			"title": "Bot配置",
+			"labels": {
+				"character": "绑定角色",
+				"apiKey": "Discord API 密钥",
+				"config": "配置"
+			},
+			"apiKeyInput": {
+				"placeholder": "请输入 API 密钥"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "切换显示 API 密钥"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "切换显示 API 密钥"
+			},
+			"buttons": {
+				"saveConfig": "保存配置",
+				"startBot": "启动",
+				"stopBot": "停止"
+			},
+			"charSelect": {
+				"placeholder": "选择角色"
+			}
+		},
+		"prompts": {
+			"newBotName": "请输入新的 Bot 名称："
+		},
+		"buttons": {
+			"newBot": "新建",
+			"deleteBot": "删除"
+		},
+		"alerts": {
+			"configSaved": "配置保存成功",
+			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
+			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
+			"httpError": "HTTP 错误",
+			"beforeUnload": "您有未保存的更改。确定要离开吗？"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "决战开黑频道",
+				"description": "将你的角色召唤到了Discord的世界。",
+				"locked_description": "启动一次Discord Bot。"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "bot",
+				"sub_items": {
+					"manage": {
+						"title": "管理Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "配置Discord Bot"
+			}
+		}
+	},
 	"wechat_bots": {
 		"title": "微信 Bot",
 		"description": "让你的 fount 角色在微信上与你对话。绑定角色，管理多个 Bot，在熟悉的聊天里延续陪伴。",
@@ -4518,83 +3660,584 @@
 			"needBot": "请先在下拉框中选择一个 Bot，或使用「新建」创建一个。"
 		}
 	},
-	"discord_bots": {
-		"title": "Discord Bot",
-		"description": "让你的 fount 同伴在喧闹的无序大厅中发出声音。配置他们的存在，管理他们的运营，并让他们连接世界，一次一台服务器。",
-		"cardTitle": "Discord Bot",
-		"botSelectDropdown": {
-			"placeholder": "选择一个 Bot"
-		},
-		"botSearch": {
-			"placeholder": "搜索 Bot..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "选择一个角色"
-		},
-		"charSearch": {
-			"placeholder": "搜索角色..."
-		},
-		"configCard": {
-			"title": "Bot配置",
-			"labels": {
-				"character": "绑定角色",
-				"apiKey": "Discord API 密钥",
-				"config": "配置"
-			},
-			"apiKeyInput": {
-				"placeholder": "请输入 API 密钥"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "切换显示 API 密钥"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "切换显示 API 密钥"
-			},
-			"buttons": {
-				"saveConfig": "保存配置",
-				"startBot": "启动",
-				"stopBot": "停止"
-			},
-			"charSelect": {
-				"placeholder": "选择角色"
-			}
-		},
-		"prompts": {
-			"newBotName": "请输入新的 Bot 名称："
-		},
-		"buttons": {
-			"newBot": "新建",
-			"deleteBot": "删除"
-		},
-		"alerts": {
-			"configSaved": "配置保存成功",
-			"botExists": "名为 \"${botname}\" 的 Bot 已存在，请使用其他名称。",
-			"unsavedChanges": "您有未保存的更改。是否要放弃更改？",
-			"httpError": "HTTP 错误",
-			"beforeUnload": "您有未保存的更改。确定要离开吗？"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "决战开黑频道",
-				"description": "将你的角色召唤到了Discord的世界。",
-				"locked_description": "启动一次Discord Bot。"
-			}
-		},
+	"social": {
+		"title": "广场",
+		"description": "P2P 开放社交动态、关注与文件分享",
+		"bootstrapFailed": "社交界面初始化失败：${error}",
 		"home_function_buttons": {
-			"bot_related": {
-				"title": "bot",
-				"sub_items": {
-					"manage": {
-						"title": "管理Discord Bot"
-					}
+			"main": {
+				"title": "广场"
+			}
+		},
+		"nav": {
+			"feed": "首页",
+			"explore": "探索",
+			"notifications": "收件箱",
+			"saved": "收藏",
+			"drafts": "草稿箱",
+			"profile": "我的",
+			"videos": "短视频",
+			"live": "直播"
+		},
+		"settings": {
+			"title": "社交设置",
+			"back": {
+				"aria-label": "返回资料"
+			},
+			"privacyTitle": "隐私与发现",
+			"privacyHint": "控制账户是否出现在探索与推荐中。",
+			"tasteTitle": "推荐与偏好",
+			"tasteHint": "调节「为你推荐」的隐私边界与标签命名。",
+			"mutedKeywordsTitle": "屏蔽词与标签",
+			"mutedKeywordsHint": "命中正文、内容警告或标签的帖子将从信息流、探索、搜索与通知中隐藏。仅保存在本机。",
+			"mutedKeywordsMatchTags": "同时匹配标签",
+			"mutedKeywordsAdd": "添加",
+			"mutedKeywordsRemove": {
+				"title": "移除屏蔽词"
+			},
+			"mutedKeywordsEmpty": "尚未添加屏蔽词",
+			"autoTranslateTitle": "自动翻译",
+			"autoTranslateHint": "开启后，外语帖子将自动请求译文并可用原文切换。",
+			"autoTranslateEnable": "自动翻译非本语言帖子",
+			"safetyTitle": "安全与屏蔽",
+			"safetyHint": "管理拉黑与隐藏列表。",
+			"mutedKeywords": {
+				"placeholder": "输入关键词或 #标签"
+			},
+			"taste": {
+				"rebuild": "重建偏好",
+				"privacyPublishPreferences": "公开标签命名与合并发现",
+				"privacyPublishPreferencesHint": "关闭后好友看不到你的标签命名与合并声明，也无法贡献共识。",
+				"privacyPublishReactions": "公开点赞与点踩",
+				"privacyPublishReactionsHint": "关闭后贴主收不到你的赞/踩、你的反应不参与他人推荐，你也不再推动帖子二度扩散。",
+				"empty": "尚无偏好标签，多点赞/踩后会自动聚类",
+				"weight": "权重 ${weight}",
+				"save": "保存",
+				"name": {
+					"placeholder": "本地显示名"
+				}
+			},
+			"blocklist": {
+				"title": "拉黑列表",
+				"hiddenTitle": "隐藏列表",
+				"empty": "暂无拉黑或隐藏条目",
+				"unblock": "解除拉黑",
+				"unhide": "取消隐藏",
+				"scopeEntity": "实体",
+				"scopeSubject": "主体"
+			}
+		},
+		"composer": {
+			"placeholder": "在想什么？支持 Markdown（fount 方言），输入 @ 可提及",
+			"publish": "发布",
+			"saveDraft": "存草稿",
+			"fab": {
+				"title": "写动态",
+				"aria-label": "写动态"
+			},
+			"contentWarning": {
+				"placeholder": "内容警告（可选）"
+			},
+			"sensitiveMedia": "媒体敏感遮罩",
+			"editImage": "编辑",
+			"editCrop": "裁剪",
+			"editMosaic": "打码",
+			"editBrush": "画笔",
+			"editApply": "应用",
+			"editCancel": "取消",
+			"replyPolicyEveryone": "所有人可回复",
+			"replyPolicyFollowers7d": "7天以上关注者",
+			"replyPolicyAuthorFollows": "我关注的人",
+			"replyPolicyLabel": "谁可以回复",
+			"replyDisplayAll": "显示全部回复",
+			"replyDisplayFeaturedOnly": "仅精选回复",
+			"replyDisplayLabel": "回复展示",
+			"scheduleLabel": "定时发布",
+			"scheduleSuccess": "帖子已加入定时队列",
+			"emojiButton": {
+				"title": "表情",
+				"aria-label": "表情"
+			},
+			"mediaButton": {
+				"title": "添加媒体",
+				"aria-label": "添加媒体"
+			},
+			"pollButton": {
+				"title": "发起投票",
+				"aria-label": "发起投票"
+			},
+			"cwToggle": {
+				"title": "内容警告",
+				"aria-label": "内容警告"
+			},
+			"advancedToggle": {
+				"title": "更多选项",
+				"aria-label": "更多选项"
+			},
+			"media": {
+				"placeholder": "图片描述（alt）"
+			},
+			"visibility": {
+				"label": "可见范围",
+				"public": "公开",
+				"unlisted": "不公开列出",
+				"followers": "仅关注者",
+				"followers7d": "关注满 7 天可见",
+				"followers30d": "关注满 30 天可见",
+				"selected": "指定人员可见",
+				"private": "仅自己可见",
+				"allowLabel": "可见人员",
+				"exceptLabel": "排除人员",
+				"allow": {
+					"placeholder": "可见人员 entityHash，空格或逗号分隔"
+				},
+				"except": {
+					"placeholder": "不给谁看（可选）"
 				}
 			}
 		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "配置Discord Bot"
+		"feed": {
+			"refresh": "刷新动态",
+			"newPosts": "有新动态，点击查看",
+			"tabLatest": "最新",
+			"tabForYou": "推荐",
+			"repostedBy": "${author} 转发了",
+			"decryptFailed": "无法解密此帖",
+			"revealContent": "显示内容",
+			"sensitiveMedia": "敏感媒体",
+			"showMore": "展开",
+			"showLess": "收起",
+			"replayDivider": "已看完，重新浏览",
+			"trending": {
+				"title": "热门话题",
+				"postCount": {
+					"title": "${n} 条帖子"
+				},
+				"scopeLocal": "本机",
+				"scopeNearby": "附近",
+				"empty": "暂无热门话题"
 			}
+		},
+		"explore": {
+			"accounts": "推荐账户",
+			"posts": "最新帖子",
+			"mediaOnly": "仅含媒体"
+		},
+		"notifications": {
+			"reply": "${author} 回复了你的帖子",
+			"mention": "${author} 在动态中 @ 了你",
+			"like": "${author} 赞了你的帖子",
+			"repost": "${author} 转发了你的帖子",
+			"follow": "${author} 关注了你",
+			"care_post": "${author} 发了新动态（特别关心）",
+			"poll_closed": "${author} 的投票已结束",
+			"post_note": "${author} 为你的帖子补充了信息",
+			"live_started": "${author} 开始直播了",
+			"view": "查看",
+			"markAllRead": "全部标为已读"
+		},
+		"saved": {
+			"all": "全部",
+			"unfiled": "未归档",
+			"createFolder": {
+				"title": "新建文件夹",
+				"aria-label": "新建文件夹"
+			},
+			"createFolderPrompt": "文件夹名称",
+			"pickFolderTitle": "收藏到",
+			"confirm": "确认",
+			"cancel": "取消",
+			"remove": "移除收藏",
+			"renameFolder": "重命名",
+			"renameFolderPrompt": "新文件夹名称",
+			"deleteFolder": "删除文件夹",
+			"deleteFolderConfirm": "删除文件夹？其中的帖子将移到「未归档」。",
+			"searchEmpty": "没有匹配的收藏",
+			"folderEmpty": "此文件夹为空",
+			"emptyHint": "浏览动态时点书签即可收藏到这里",
+			"search": {
+				"placeholder": "搜索收藏…"
+			}
+		},
+		"drafts": {
+			"untitled": "（无文字草稿）",
+			"emptyHint": "在发帖框写点内容后点「存草稿」，下次可继续编辑",
+			"saved": "草稿已保存",
+			"deleted": "草稿已删除",
+			"delete": "删除草稿",
+			"empty": "草稿为空",
+			"saveFailed": "保存草稿失败：${error}",
+			"loadFailed": "打开草稿失败：${error}",
+			"deleteFailed": "删除草稿失败：${error}"
+		},
+		"profile": {
+			"edit": "编辑资料",
+			"viewPosts": "查看社交主页",
+			"settingsBtn": {
+				"aria-label": "社交设置"
+			},
+			"mediaOnly": "[媒体]",
+			"hideFromExplore": "从探索页隐藏账户",
+			"tabPosts": "动态",
+			"tabAlbums": "相册",
+			"tabLikes": "点赞",
+			"tabCabinets": "文件柜",
+			"tabsLabel": {
+				"aria-label": "资料分区"
+			},
+			"cabinetsEmpty": "暂无公开文件柜",
+			"cabinetsFailed": "文件柜加载失败：${error}",
+			"statsGroup": {
+				"aria-label": "资料统计"
+			},
+			"statsPosts": "动态",
+			"statsFollowing": "关注",
+			"statsFollowers": "粉丝",
+			"followingTitle": "关注",
+			"followersTitle": "粉丝",
+			"albums": {
+				"create": "新建相册",
+				"edit": "编辑相册",
+				"save": "保存",
+				"cancel": "取消",
+				"back": "返回相册",
+				"empty": "还没有相册",
+				"emptyPosts": "相册里还没有帖子",
+				"name": "相册名称",
+				"description": "相册描述",
+				"deleteLinks": "删除相册（保留帖子）",
+				"deleteWithPosts": "删除相册并删除帖子",
+				"pickerLabel": "加入相册",
+				"defaultName": "默认相册"
+			}
+		},
+		"video": {
+			"view": {
+				"aria-label": "短视频"
+			},
+			"empty": "暂无短视频",
+			"emptyHint": "关注的人或公开广场里还没有带视频的帖子。发一条视频动态试试？",
+			"compose": "去发视频",
+			"back": {
+				"aria-label": "返回动态"
+			},
+			"mute": {
+				"aria-label": "静音"
+			},
+			"unmute": {
+				"aria-label": "取消静音"
+			},
+			"unavailable": "视频无法播放",
+			"closeReplies": {
+				"aria-label": "关闭评论"
+			}
+		},
+		"live": {
+			"empty": "暂无直播",
+			"viewers": "${n} 人观看",
+			"likes": "${n} 赞",
+			"local": "本机",
+			"hall": "直播大厅",
+			"back": {
+				"title": "返回动态",
+				"aria-label": "返回动态"
+			},
+			"danmakuSend": "发送",
+			"postWatch": "进入直播",
+			"postEnded": "直播已结束",
+			"postEndedStats": "${viewers} 人看过 · ${likes} 赞 · ${duration}",
+			"link": {
+				"invite": "邀请连线",
+				"needPeer": "请填写对端 entityHash:liveId",
+				"invited": "连线邀请已发出",
+				"linked": "已连线",
+				"peer": {
+					"placeholder": "对端 entityHash:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "开播",
+				"open": "去开播",
+				"mediaAv": "音视频",
+				"mediaAudio": "纯音频",
+				"mediaVideo": "纯画面",
+				"mediaWhip": "WHIP 推流（如 OBS）",
+				"whipUrl": "WHIP 地址",
+				"whipToken": "Bearer Token",
+				"whipWaiting": "等待 WHIP 推流连接（可用 OBS 等推流软件）…",
+				"start": "开始直播",
+				"stop": "停止直播",
+				"started": "直播已开始",
+				"stopped": "直播已停止",
+				"titleInput": {
+					"placeholder": "直播标题（可选）"
+				}
+			},
+			"danmaku": {
+				"placeholder": "说点什么…"
+			}
+		},
+		"search": {
+			"placeholder": "搜索动态、用户或 #话题（至少 2 字）",
+			"open": {
+				"aria-label": "搜索"
+			},
+			"submit": "搜索",
+			"clear": "清除",
+			"empty": "没有匹配的帖子",
+			"tooShort": "请输入至少 2 个字符",
+			"usersTitle": "用户",
+			"postsTitle": "动态",
+			"usersEmpty": "没有匹配的用户",
+			"pinAlias": "设为别名",
+			"trustScore": "信任 ${score}",
+			"viewTitle": "搜索",
+			"loading": "搜索中…",
+			"filterAuthor": {
+				"placeholder": "作者"
+			},
+			"filterMediaAll": "所有媒体",
+			"filterMediaImage": "图片",
+			"filterMediaVideo": "视频",
+			"filterTag": {
+				"placeholder": "#标签"
+			},
+			"sortRecent": "最新",
+			"sortPopular": "热门",
+			"scopeLocal": "本机",
+			"scopeNearby": "附近"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "关闭"
+			}
+		},
+		"actions": {
+			"like": "点赞",
+			"unlike": "取消赞",
+			"dislike": "踩",
+			"undislike": "取消踩",
+			"repost": "转发",
+			"quote": "引用",
+			"delete": "删除",
+			"edit": "编辑",
+			"save": "收藏",
+			"saved": "已收藏",
+			"translate": "翻译",
+			"dm": "发私信",
+			"block": "拉黑",
+			"hide": "隐藏",
+			"mute": "静音",
+			"follow": "关注",
+			"following": "已关注",
+			"care": "特别关心",
+			"careRemove": "取消特别关心",
+			"careAdded": "已加入特别关心",
+			"careRemoved": "已取消特别关心",
+			"setAlias": "设置别名",
+			"setAliasPrompt": "设置本地别名（留空清除）：",
+			"aliasSaved": "别名已更新",
+			"replies": "评论",
+			"copyLink": "复制链接",
+			"downloadHtml": "下载 HTML",
+			"copied": "已复制",
+			"more": {
+				"aria-label": "更多"
+			},
+			"share": "分享",
+			"likeFailed": "点赞失败：${error}",
+			"dislikeFailed": "踩失败：${error}",
+			"repostFailed": "转发失败：${error}",
+			"replyFailed": "回复失败：${error}",
+			"followFailed": "关注失败：${error}",
+			"saveFailed": "收藏失败：${error}",
+			"blockFailed": "拉黑失败：${error}",
+			"hideFailed": "隐藏失败：${error}",
+			"muteFailed": "静音失败：${error}",
+			"deleteFailed": "删除失败：${error}"
+		},
+		"post": {
+			"edited": "已编辑",
+			"editPrompt": "编辑帖子正文",
+			"editHistory": "编辑历史",
+			"editHistoryEmpty": "无更早版本",
+			"loading": "加载中…",
+			"notFound": "帖子不存在或不可见",
+			"loadFailed": "加载失败，请稍后重试",
+			"detailTitle": "帖子",
+			"back": "返回"
+		},
+		"reply": {
+			"context": "回复 ${author}"
+		},
+		"notes": {
+			"label": "读者补充",
+			"add": "补充信息",
+			"prompt": "写一条读者补充（社区笔记）",
+			"listTitle": "全部补充信息",
+			"helpful": "有用",
+			"unhelpful": "无用",
+			"more": "全部 ${n} 条",
+			"empty": "暂无补充信息"
+		},
+		"poll": {
+			"multi": "允许多选",
+			"apply": "应用投票",
+			"closed": "投票已结束",
+			"deadline": "截止：${deadline}",
+			"options": {
+				"placeholder": "每行一个选项（至少 2 项）"
+			}
+		},
+		"aside": {
+			"suggested": "推荐关注"
+		},
+		"groupRef": {
+			"linking": "关联 Chat 群",
+			"clear": "取消关联",
+			"pick": "关联 Chat 群/频道…"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "收件箱筛选"
+			},
+			"tabs": {
+				"all": "全部",
+				"mention": "提及",
+				"reply": "回复",
+				"like": "赞",
+				"follow": "关注",
+				"repost": "转发"
+			},
+			"aggregated": {
+				"like": "${author1}、${author2} 等 ${count} 人赞了你的帖子",
+				"likeTwo": "${author1} 和 ${author2} 赞了你的帖子",
+				"repost": "${author1}、${author2} 等 ${count} 人转发了你的帖子",
+				"repostTwo": "${author1} 和 ${author2} 转发了你的帖子",
+				"follow": "${author1}、${author2} 等 ${count} 人关注了你",
+				"followTwo": "${author1} 和 ${author2} 关注了你"
+			}
+		},
+		"replies": {
+			"placeholder": "写一条回复…",
+			"submit": "回复",
+			"empty": "还没有回复",
+			"emptyHint": "来写第一条，开启讨论"
+		},
+		"repost": {
+			"placeholder": "添加转发评论（可选）…",
+			"submit": "确认转发"
+		},
+		"quote": {
+			"quoting": "正在引用",
+			"clear": "取消引用",
+			"viewOriginal": "查看原帖"
+		},
+		"a11y": {
+			"linkGroupSelect": "关联 Chat 群或频道",
+			"postVisibility": "可见范围",
+			"postLang": "内容语言",
+			"trendingHashtags": "热门话题",
+			"saveFolderSelect": "收藏文件夹"
+		},
+		"translate": {
+			"label": "译文："
+		},
+		"time": {
+			"justNow": "刚刚",
+			"minutesAgo": "${n} 分钟前",
+			"hoursAgo": "${n} 小时前"
+		},
+		"empty": {
+			"feed": "暂无动态，去关注一些人吧",
+			"profilePosts": "暂无动态",
+			"following": "暂未关注任何人",
+			"followers": "还没有粉丝",
+			"notifications": "暂无通知",
+			"saved": "暂无收藏",
+			"drafts": "暂无草稿",
+			"exploreAccounts": "暂无可推荐的账户",
+			"explorePosts": "暂无探索帖子",
+			"likedPosts": "暂无点赞",
+			"noIdentity": "请先在 Chat 配置联邦 identity 后再使用 Social"
+		},
+		"topic": {
+			"follow": "订阅",
+			"unfollow": "取消订阅",
+			"empty": "该话题暂无帖子"
 		}
+	},
+	"cabinet": {
+		"title": "文件柜",
+		"description": "P2P 个人与共享文件柜",
+		"openCabinets": {
+			"title": "打开文件柜列表",
+			"aria-label": "打开文件柜列表"
+		},
+		"closeCabinets": {
+			"title": "关闭",
+			"aria-label": "关闭"
+		},
+		"bootstrapFailed": "文件柜初始化失败：${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "文件柜"
+			}
+		},
+		"upload": "上传",
+		"uploadFolder": "上传文件夹",
+		"newFolder": "新建文件夹",
+		"open": "打开",
+		"download": "下载",
+		"downloadZip": "下载文件夹",
+		"rename": "重命名",
+		"copy": "复制",
+		"cut": "剪切",
+		"paste": "粘贴",
+		"pasteLink": "粘贴为链接",
+		"selectAll": "全选",
+		"invert": "反选",
+		"properties": "属性",
+		"delete": "删除",
+		"back": {
+			"title": "返回之前的位置",
+			"aria-label": "返回之前的位置"
+		},
+		"cancel": "取消",
+		"save": "保存",
+		"showHidden": "显示隐藏",
+		"name": "名称",
+		"descriptionField": "描述",
+		"attrHidden": "隐藏",
+		"attrSystem": "系统（删除需确认）",
+		"previewUrl": "预览图 URL",
+		"deletePreviewWithFile": "删除文件时删除预览图",
+		"folderPassword": "文件夹密码（留空不变，填写则启用加密）",
+		"unlockFolder": "解锁加密文件夹",
+		"unlock": "解锁",
+		"unlockFailed": "解锁失败：${error}",
+		"previewFailed": "预览生成失败：${error}",
+		"created": "创建：${stamp}",
+		"modified": "修改：${stamp}",
+		"statusCount": "${count} 项，已选 ${selected}",
+		"newCabinetPrompt": "新文件柜名称",
+		"newFolderPrompt": "新文件夹名称",
+		"renamePrompt": "新名称",
+		"visibilityPrompt": "可见性（public/unlisted/followers/private/selected）",
+		"cabinetActionPrompt": "操作：rename / delete / visibility",
+		"confirmDeleteCabinet": "确认删除此文件柜？",
+		"confirmDelete": "确认删除所选项目？",
+		"confirmDeleteSystem": "所选含系统文件，确认删除？",
+		"copied": "已复制",
+		"cutDone": "已剪切",
+		"undo": "撤销",
+		"redo": "重做",
+		"newWindow": "新窗口打开当前位置",
+		"goUp": "返回上一级",
+		"brokenLink": "链接失效：${reason}",
+		"noDownload": "无可下载内容",
+		"groupDownloadHint": "群文件请通过消息附件或后续下载链获取",
+		"remoteEntity": "远端实体"
 	},
 	"browser_integration": {
 		"title": "浏览器集成",
@@ -4719,6 +4362,48 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "通过 Agent Client Protocol 将 fount 角色接入支持的编辑器（如 Zed、JetBrains、Neovim），配置 API 密钥与角色，将 AI 伙伴带入开发工作流。",
+		"title": "IDE 集成",
+		"heading": "IDE 集成",
+		"instruction": "在支持 ACP 的编辑器（如 Zed、JetBrains、Neovim 等）中用 fount 角色辅助编程。",
+		"supportedEditorsTitle": "受支持的编辑器与客户端",
+		"supportedEditorsIntro": "以下客户端可与 fount 配合使用：",
+		"supportedEditorsLoading": "加载中…",
+		"supportedEditorsError": "加载列表失败：${message}",
+		"acpTitle": "配置 fount ACP 脚本",
+		"acpDesc": "参考以下示例配置 fount ACP 脚本：",
+		"acpCharLabel": "角色",
+		"charListError": "获取角色列表失败",
+		"acpScriptLabel": "ACP 脚本 URL",
+		"acpConfigSample": "配置示例：",
+		"acpConfigHint": "角色 ID 可在页面上方的角色下拉菜单中查看，API 密钥可在用户设置中管理。",
+		"copyButton": "复制",
+		"copied": "已复制到剪贴板",
+		"apiKeySectionTitle": "API 密钥",
+		"apiKeyHint": "用于 ACP 脚本连接 fount（与 API 代理同套密钥，可在用户设置中创建）。",
+		"generateApiKeyButton": "生成新密钥",
+		"apiKeyCopied": "API 密钥已复制",
+		"apiKeyCreateError": "创建 API 密钥失败：${message}",
+		"apiKeyInput": {
+			"aria-label": "API 密钥"
+		},
+		"home_function_buttons": {
+			"integration_related": "集成相关",
+			"ide_integration_config": {
+				"title": "IDE 集成配置"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "初探代码之泉",
+				"description": "在支持 ACP 的编辑器（如 Zed、JetBrains、Neovim 等）中首次使用 fount 角色辅助编程。",
+				"locked_description": "在外部 IDE 中连接 fount 角色并完成一次对话。"
+			}
+		},
+		"acpChar": "选择角色",
+		"acpConfig": "请先选择角色并生成 API 密钥"
+	},
 	"deskpet": {
 		"title": "桌面宠物",
 		"description": "将您的fount角色作为桌面上的互动宠物启动。",
@@ -4770,6 +4455,347 @@
 								"title": "管理桌面宠物"
 							}
 						}
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "主题管理",
+		"description": "选择反映您的心情或故事的美学。预览并从主题调色板中进行选择，每个主题都为您的fount交互提供不同的氛围。你的世界，你的风格。",
+		"instruction": "选择一个主题！",
+		"search": {
+			"placeholder": "搜索主题...",
+			"noResult": "未找到匹配的主题。"
+		},
+		"createButton": "+ 创建新主题",
+		"preview": {
+			"editButton": {
+				"title": "编辑"
+			},
+			"editButtonIcon": {
+				"alt": "编辑图标"
+			},
+			"deleteButton": {
+				"title": "删除"
+			},
+			"deleteButtonIcon": {
+				"alt": "删除图标"
+			},
+			"cloneButton": {
+				"title": "复制"
+			},
+			"cloneButtonIcon": {
+				"alt": "复制图标"
+			}
+		},
+		"editor": {
+			"title": "主题编辑器",
+			"cancelButton": "取消",
+			"saveApplyButton": "保存并应用",
+			"themeName": "主题名称 (ID)",
+			"autoPaletteTitle": "从图片自动调色",
+			"autoPaletteInstruction": "点击上方颜色以自动填充主色/辅助色/强调色/中性色。",
+			"coreColors": "核心颜色",
+			"baseBackground": "基础与背景",
+			"variables": "变量",
+			"borderRadius": "圆角半径 (--rounded-box)",
+			"borderWidth": "边框宽度 (--border-btn)",
+			"advancedCustomization": "高级自定义",
+			"customCSS": "自定义 CSS (覆盖)",
+			"customMjsScript": "自定义 MJS 脚本 (可选)",
+			"mjsSyntaxHint": "使用 [async-eval 语法](${asyncDocLink})。返回一个包含 `load()` 和 `unload()` 函数的对象。",
+			"themeIdRequired": "需要主题 ID",
+			"newThemeName": "新主题名称：",
+			"deleteConfirm": "确定要删除主题 ${id} 吗？",
+			"saved": "已保存！",
+			"failedToSave": "保存失败",
+			"failedToDelete": "无法删除主题：${message}",
+			"failedToClone": "无法复制主题：${message}"
+		},
+		"themes": {
+			"auto": "自动",
+			"light": "亮色",
+			"dark": "暗色",
+			"cupcake": "杯糕",
+			"bumblebee": "蜂蜜糖",
+			"emerald": "绿宝石",
+			"corporate": "公司",
+			"synthwave": "合成波",
+			"retro": "复古",
+			"cyberpunk": "赛博朋克",
+			"valentine": "情人节",
+			"halloween": "万圣节",
+			"garden": "花园",
+			"forest": "森林",
+			"aqua": "深海",
+			"lofi": "lo-fi",
+			"pastel": "浅色",
+			"fantasy": "幻想",
+			"wireframe": "线框",
+			"black": "黑色",
+			"luxury": "奢华",
+			"dracula": "恶魔",
+			"cmyk": "CMYK",
+			"autumn": "秋天",
+			"business": "商业",
+			"acid": "酸性",
+			"lemonade": "柠檬汁",
+			"night": "夜晚",
+			"coffee": "咖啡",
+			"winter": "冬天",
+			"dim": "昏暗",
+			"nord": "北方",
+			"sunset": "日落",
+			"caramellatte": "焦糖拿铁",
+			"abyss": "深渊",
+			"silk": "丝绒"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "换个痛涂！",
+				"description": "让fount换上了新的装扮，心情也焕然一新。",
+				"locked_description": "切换一次主题。"
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "设置",
+				"sub_items": {
+					"switchTheme": {
+						"title": "切换主题"
+					}
+				}
+			}
+		}
+	},
+	"languageSettings": {
+		"title": "语言设置",
+		"pageTitle": "语言设置",
+		"description": "管理您的fount应用程序的语言首选项。使用可用的语言选项定制您的体验。",
+		"pageDescription": "在此处管理您的语言偏好。列表中的语言将按顺序优先于浏览器设置。",
+		"availableLanguages": "可用语言",
+		"preferredLanguages": "优先语言列表",
+		"resetButton": "重置",
+		"saveButton": "保存",
+		"select": {
+			"placeholder": "选择一种语言..."
+		},
+		"search": {
+			"placeholder": "搜索语言..."
+		},
+		"noPreferredLanguages": "暂无优先语言。将使用浏览器默认设置。",
+		"moveUpButton": {
+			"aria-label": "上移",
+			"alt": "上移图标"
+		},
+		"moveDownButton": {
+			"aria-label": "下移",
+			"alt": "下移图标"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "删除该语言",
+			"alt": "删除图标"
+		},
+		"savedMessage": "语言设置已保存！",
+		"resetMessage": "语言设置已重置！",
+		"fetchLocalesFailed": "获取可用语言失败！",
+		"home_function_buttons": {
+			"settings": {
+				"title": "设置",
+				"sub_items": {
+					"main": {
+						"title": "语言设置"
+					}
+				}
+			}
+		}
+	},
+	"userSettings": {
+		"title": "用户设置",
+		"PageTitle": "用户设置",
+		"description": "管理您的 fount 身份相关细节：个人资料、访问安全与已连接设备。为您的账号保留一处安静、私密的空间。",
+		"shell": {
+			"unauthorized": "需要登录。",
+			"responseNotJson": "服务器返回了无法解析的内容。",
+			"unexpectedError": "请求失败。"
+		},
+		"errors": {
+			"accountNotFound": "未找到账户。"
+		},
+		"userInfo": {
+			"title": "用户信息",
+			"usernameLabel": "用户名:",
+			"creationDateLabel": "账户创建日期:",
+			"folderSizeLabel": "用户数据大小:",
+			"folderPathLabel": "用户数据路径:",
+			"copyPathButton": {
+				"title": "复制路径"
+			},
+			"copyPathButtonIcon": {
+				"alt": "复制图标"
+			},
+			"copiedAlert": "路径已复制到剪贴板！",
+			"copyPathFailed": "无法复制路径到剪贴板。"
+		},
+		"changePassword": {
+			"title": "修改密码",
+			"currentPasswordLabel": "当前密码:",
+			"newPasswordLabel": "新密码:",
+			"confirmNewPasswordLabel": "确认新密码:",
+			"submitButton": "修改密码",
+			"errorMismatch": "新密码两次输入不一致。",
+			"success": "密码修改成功。",
+			"missingFields": "请填写当前密码与新密码。",
+			"invalidCurrent": "当前密码不正确。"
+		},
+		"renameUser": {
+			"title": "重命名用户",
+			"newUsernameLabel": "新用户名:",
+			"submitButton": "重命名用户",
+			"confirmMessage": "您确定要更改用户名吗？这将需要您重新登录。",
+			"success": "用户已成功重命名为 “${newUsername}”。您现在将被注销。",
+			"missingParams": "请填写新用户名与当前密码。",
+			"wrongPassword": "密码不正确。",
+			"mustDiffer": "新用户名须与当前用户名不同。",
+			"taken": "该用户名已被占用。",
+			"moveFailed": "重命名用户数据目录失败：${detail}。已恢复原用户名。"
+		},
+		"passkeys": {
+			"title": "安全密钥与 Passkey",
+			"description": "绑定后可用安全密钥或本机 Passkey 登录。需在 HTTPS 或 localhost 下使用；请先在用户设置中添加密钥。",
+			"refreshButton": {
+				"title": "刷新列表"
+			},
+			"refreshButtonIcon": {
+				"alt": "刷新图标"
+			},
+			"nameLabel": "备注（可选）",
+			"nameInput": {
+				"placeholder": "例如：工作用 YubiKey"
+			},
+			"addButton": "添加安全密钥",
+			"noneFound": "尚未绑定任何安全密钥。",
+			"itemDetails": "添加时间：${created}",
+			"removeButton": "移除",
+			"removeConfirm": "确定移除此密钥？移除后将无法用其登录。",
+			"removeSuccess": "已移除安全密钥。",
+			"addSuccess": "安全密钥已添加。",
+			"errorLoadLibrary": "无法加载 WebAuthn 库。",
+			"errorCancelled": "已取消添加。",
+			"apiInvalidPassword": "密码错误。",
+			"apiMissingCredential": "缺少有效的 Passkey 凭证。",
+			"apiRemoveParamsRequired": "请提供要移除的凭据与密码。"
+		},
+		"userDevices": {
+			"title": "用户设备/会话",
+			"noDevicesFound": "未找到任何设备或会话。",
+			"deviceInfo": "设备ID: ${deviceId}",
+			"thisDevice": "当前设备",
+			"deviceDetails": "最后上线: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "撤销",
+			"revokeConfirm": "您确定要从此设备/会话注销吗？",
+			"revokeSuccess": "设备/会话已成功撤销。",
+			"revokeMissingParams": "请提供要撤销的设备与会话密码。",
+			"revokeWrongPassword": "密码不正确。",
+			"listNotFound": "未找到设备列表。",
+			"deviceNotFound": "未找到该设备或会话。",
+			"refreshButton": {
+				"title": "刷新列表"
+			},
+			"refreshButtonIcon": {
+				"alt": "刷新图标"
+			}
+		},
+		"apiKeys": {
+			"title": "API 密钥",
+			"description": "管理外部应用程序的 API 密钥。",
+			"input": {
+				"placeholder": "新密钥描述"
+			},
+			"createButton": "创建",
+			"noKeysFound": "未找到任何 API 密钥。",
+			"keyDetails": "描述: ${description} | 创建于: ${createdAt} | 最后使用: ${lastUsed}",
+			"neverUsed": "从未使用",
+			"noKeysForUser": "未找到 API 密钥数据。",
+			"revokeWrongPassword": "密码不正确。",
+			"keyNotFound": "未找到该 API 密钥。",
+			"revokeMissingJti": "请指定要撤销的密钥。",
+			"revokeMissingPassword": "撤销密钥需要提供密码。",
+			"verifyMissingApiKey": "请提供 API 密钥。",
+			"revokeButton": "撤销",
+			"revokeConfirm": "您确定要撤销此 API 密钥吗？",
+			"revokeSuccess": "API 密钥已成功撤销。",
+			"errorDescriptionRequired": "需要提供描述。",
+			"createSuccess": "API 密钥创建成功。",
+			"refreshButton": {
+				"title": "刷新列表"
+			},
+			"refreshButtonIcon": {
+				"alt": "刷新图标"
+			}
+		},
+		"newApiKey": {
+			"title": "新 API 密钥已创建",
+			"warning": "请复制您的新 API 密钥。您将无法再次看到它！",
+			"closeButton": "我已复制密钥",
+			"copyButton": {
+				"title": "复制新 API 密钥"
+			},
+			"copiedAlert": "密钥已复制到剪贴板！",
+			"copyKeyFailed": "无法复制密钥到剪贴板。"
+		},
+		"editorCommand": {
+			"title": "外部编辑器命令",
+			"description": "配置在外部编辑器中打开文件时使用的命令与参数模板；可通过占位符传入文件路径、行号与列号。",
+			"editorPresetLabel": "编辑器预设",
+			"commandLabel": "命令",
+			"argsTemplateLabel": "参数模板",
+			"argsTemplateHint": "占位符：\\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label}（已在 PATH）",
+			"presetOptionPathUnavailable": "${label}（不在 PATH）",
+			"testPathInput": {
+				"placeholder": "用于测试的文件路径，例如 C:/work/project/src/main.mjs"
+			},
+			"testButton": "测试打开",
+			"saveButton": "保存配置",
+			"saveSuccess": "外部编辑器命令已保存。",
+			"testPathRequired": "请先填写测试文件路径。",
+			"testSuccess": "已尝试在外部编辑器中打开。"
+		},
+		"logout": {
+			"title": "登出",
+			"description": "这将从当前设备注销您的账户。",
+			"buttonText": "登出",
+			"confirmMessage": "您确定要登出吗？",
+			"successMessage": "已成功登出。即将跳转到登录页面..."
+		},
+		"deleteAccount": {
+			"title": "删除账户",
+			"warning": "警告：此操作将永久删除您的账户和所有相关数据，且无法恢复。",
+			"submitButton": "删除我的账户",
+			"confirmMessage1": "警告！您确定要永久删除您的账户吗？此操作无法撤销。",
+			"confirmMessage2": "为确认删除，请输入您的用户名“${username}”：",
+			"usernameMismatch": "输入的用户名与当前用户不匹配。删除操作已取消。",
+			"success": "账户已成功删除。您现在将被注销。",
+			"missingPassword": "请输入密码。",
+			"wrongPassword": "密码不正确。"
+		},
+		"passwordConfirm": {
+			"title": "确认操作",
+			"message": "为继续此操作，请输入您的当前密码：",
+			"passwordLabel": "密码:",
+			"confirmButton": "确认",
+			"cancelButton": "取消"
+		},
+		"apiError": "API 请求失败: ${message}",
+		"generalError": "发生错误: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "设置",
+				"sub_items": {
+					"main": {
+						"title": "用户设置"
 					}
 				}
 			}
@@ -4831,47 +4857,91 @@
 			}
 		}
 	},
-	"ide_integration": {
-		"description": "通过 Agent Client Protocol 将 fount 角色接入支持的编辑器（如 Zed、JetBrains、Neovim），配置 API 密钥与角色，将 AI 伙伴带入开发工作流。",
-		"title": "IDE 集成",
-		"heading": "IDE 集成",
-		"instruction": "在支持 ACP 的编辑器（如 Zed、JetBrains、Neovim 等）中用 fount 角色辅助编程。",
-		"supportedEditorsTitle": "受支持的编辑器与客户端",
-		"supportedEditorsIntro": "以下客户端可与 fount 配合使用：",
-		"supportedEditorsLoading": "加载中…",
-		"supportedEditorsError": "加载列表失败：${message}",
-		"acpTitle": "配置 fount ACP 脚本",
-		"acpDesc": "参考以下示例配置 fount ACP 脚本：",
-		"acpCharLabel": "角色",
-		"charListError": "获取角色列表失败",
-		"acpScriptLabel": "ACP 脚本 URL",
-		"acpConfigSample": "配置示例：",
-		"acpConfigHint": "角色 ID 可在页面上方的角色下拉菜单中查看，API 密钥可在用户设置中管理。",
-		"copyButton": "复制",
-		"copied": "已复制到剪贴板",
-		"apiKeySectionTitle": "API 密钥",
-		"apiKeyHint": "用于 ACP 脚本连接 fount（与 API 代理同套密钥，可在用户设置中创建）。",
-		"generateApiKeyButton": "生成新密钥",
-		"apiKeyCopied": "API 密钥已复制",
-		"apiKeyCreateError": "创建 API 密钥失败：${message}",
-		"apiKeyInput": {
-			"aria-label": "API 密钥"
+	"subfounts": {
+		"title": "子fount - 点对点设备管理",
+		"pageTitle": "子fount",
+		"description": "管理点对点子fount连接",
+		"hostConnectionCode": {
+			"title": "主机连接码",
+			"connectionCodeLabel": "连接码 (Peer ID)",
+			"passwordLabel": "密码",
+			"copyButton": "复制",
+			"regenerateButton": "重新生成",
+			"infoMessage": "与子fount客户端共享这些凭据以建立连接。",
+			"connectionCodeCopied": "连接码已复制到剪贴板",
+			"passwordCopied": "密码已复制到剪贴板",
+			"regenerateSuccess": "连接码已重新生成"
+		},
+		"infra": {
+			"title": "网络公益",
+			"description": "统一设定已连接的子fount是否作为公益节点，协助整个fount网络。关闭后，分机仍接受本机远程执行，但不参与网络层协助。",
+			"capabilityRelay": "参与 overlay 多跳转发，在直连失败时帮助其他节点互通。",
+			"capabilityMailbox": "托管离线投递，让对方节点上线后仍能收到私信。",
+			"hostPriority": "开启时优先协助本机：按本机信誉表加权路由，并将本机锁定为最高优先级。",
+			"toggleLabel": "分机参与公益",
+			"enabledToast": "已开启：分机参与网络公益（本机优先）",
+			"disabledToast": "已关闭：分机不再参与网络公益"
+		},
+		"connectedSubfounts": {
+			"title": "已连接的子fount",
+			"noSubfountsConnected": "未连接任何子fount",
+			"table": {
+				"id": "ID",
+				"description": "备注",
+				"deviceId": "设备 ID",
+				"connectedAt": "连接时间",
+				"status": "状态",
+				"actions": "操作",
+				"connected": "已连接",
+				"disconnected": "已断开",
+				"save": "保存",
+				"na": "N/A"
+			},
+			"descriptionSaved": "备注已保存",
+			"descriptionSaveFailed": "保存备注失败: ${message}"
+		},
+		"codeExecution": {
+			"title": "代码执行",
+			"description": "在选定的Subfount上执行JavaScript代码",
+			"selectSubfountLabel": "选择Subfount",
+			"hostOption": "主机 (ID: ${id})",
+			"subfountOption": "分机 ${id}${deviceId}",
+			"scriptLabel": "JavaScript代码",
+			"executeButton": "执行",
+			"executing": "执行中...",
+			"noSubfountSelected": "请先选择一个Subfount",
+			"noScriptProvided": "请输入要执行的代码",
+			"executionSuccess": "代码执行成功",
+			"executionFailed": "代码执行失败: ${message}",
+			"selectSubfount": "请选择要执行代码的Subfount..."
+		},
+		"downloadClient": {
+			"title": "下载子fount客户端",
+			"description": "下载独立的子fount客户端脚本以在远程设备上运行。",
+			"downloadButton": "下载 subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "加载连接码失败: ${message}",
+			"regenerateConnectionCodeFailed": "重新生成连接码失败: ${message}",
+			"loadSettingsFailed": "加载公益设置失败: ${message}",
+			"saveSettingsFailed": "保存公益设置失败: ${message}",
+			"generalError": "发生错误: ${message}"
 		},
 		"home_function_buttons": {
-			"integration_related": "集成相关",
-			"ide_integration_config": {
-				"title": "IDE 集成配置"
+			"in_dev": {
+				"title": "正在开发",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "子设备",
+						"sub_items": {
+							"main": {
+								"title": "管理子设备"
+							}
+						}
+					}
+				}
 			}
-		},
-		"achievements": {
-			"first_ide_use": {
-				"name": "初探代码之泉",
-				"description": "在支持 ACP 的编辑器（如 Zed、JetBrains、Neovim 等）中首次使用 fount 角色辅助编程。",
-				"locked_description": "在外部 IDE 中连接 fount 角色并完成一次对话。"
-			}
-		},
-		"acpChar": "选择角色",
-		"acpConfig": "请先选择角色并生成 API 密钥"
+		}
 	},
 	"achievements": {
 		"title": "成就",
@@ -4998,34 +5068,6 @@
 		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
 		"homepageButton": "返回首页"
 	},
-	"tips": {
-		"title": "你知道吗？",
-		"data": [
-			"在任意fount页面中使用`esc`键可以返回上一页面。",
-			"在配置页面中可以使用`ctrl+s`保存配置。",
-			"在聊天页面中按住`shift`键可以帮你快速删除消息。",
-			"如果你不告知开发者，他们可能永远都不会知道你遇见了什么问题。",
-			"如果你突然遇见了稀奇古怪的问题并且开发者一时半会没有回复你，可以试试使用`fount init`命令来重置fount。",
-			"遇见特别奇怪的问题可以试试重启电脑",
-			"使用`fount remove`命令来卸载fount会比删除文件夹更干净。",
-			"在命令行中输入`fount cake`来获取一个免费又美味的蛋糕！",
-			"fount的任何数据文件都保存在`fount/data`目录下，你可以随时随地查看、修改、备份它们。",
-			"fount的名称是全小写的，是`f`ount，不是`F`ount。",
-			"在你的agent使用新的模型前备份全部TA常操作的数据——你永远不知道新模型会不会在某些地方表现的超级糟糕。",
-			"fount的主要受众是软件开发者和角色扮演爱好者，但在商业agent搭建、医疗、军事、金融等领域也有被使用。",
-			"fount的内置角色ZL-31的名字无任何意义，是被一拍脑袋想出来的。",
-			"fount的文件中图片都是以svg形式储存并在需要时渲染为png或ico的，没任何的二进制文件，除了LICENSE。",
-			"fount中的任何代码都是可以直接运行而无需编译，所见即所得的。",
-			"曾经fount有过很炫酷的动态可交互页面背景，但后来因为占用了太多CPU而被删除了。",
-			"fount一开始是为了一个叫“龙胆”的NSFW agent而开发的。",
-			"agent和人类的其中一个区别是，人类会拉屎。",
-			"agent只在被调用的瞬间有意识，而人类在清醒时随时随地都有意识。",
-			"有些人和他们的agent会谈恋爱甚至结婚！",
-			"AI是用来替人写诗替人谈恋爱替人画画的，搬砖扫地倒垃圾是人类该干的事。",
-			"今天不是愚人节。",
-			"不，你不知道。"
-		]
-	},
 	"directoryListing": {
 		"title": "目录索引",
 		"description": "浏览并探索 fount 工作区中的文件和文件夹。",
@@ -5035,199 +5077,121 @@
 		"size": "大小",
 		"parentLink": "↑ 上一级 ../"
 	},
-	"code_block": {
-		"copy": {
-			"dataset": {
-				"tip": "复制到剪贴板"
-			},
-			"aria-label": "复制到剪贴板"
-		},
-		"copied": {
-			"dataset": {
-				"tip": "已复制到剪贴板！"
+	"util": {
+		"common": {
+			"cancel": "取消",
+			"create": "创建",
+			"save": "保存",
+			"delete": "删除",
+			"confirm": "确认",
+			"close": "关闭",
+			"translate": {
+				"showOriginal": "显示原文",
+				"showTranslation": "显示译文"
 			}
 		},
-		"download": {
-			"dataset": {
-				"tip": "下载代码"
+		"code_block": {
+			"copy": {
+				"dataset": {
+					"tip": "复制到剪贴板"
+				},
+				"aria-label": "复制到剪贴板"
 			},
-			"aria-label": "下载代码"
-		},
-		"execute": {
-			"dataset": {
-				"tip": "执行代码"
+			"copied": {
+				"dataset": {
+					"tip": "已复制到剪贴板！"
+				}
 			},
-			"aria-label": "执行代码"
-		},
-		"preview": {
-			"dataset": {
-				"tip": "预览"
+			"download": {
+				"dataset": {
+					"tip": "下载代码"
+				},
+				"aria-label": "下载代码"
 			},
-			"aria-label": "预览"
+			"execute": {
+				"dataset": {
+					"tip": "执行代码"
+				},
+				"aria-label": "执行代码"
+			},
+			"preview": {
+				"dataset": {
+					"tip": "预览"
+				},
+				"aria-label": "预览"
+			},
+			"copy_failed": "无法复制到剪贴板：${error}"
 		},
-		"copy_failed": "无法复制到剪贴板：${error}"
-	},
-	"pow_captcha": {
-		"initial": "我不是机器人",
-		"verifying": "正在验证...",
-		"solved": "验证成功",
-		"wasm_disabled": "启用 WASM 可加快验证速度",
-		"error": "验证失败",
-		"errorMessage": "验证失败：${error}"
-	},
-	"breadcrumb": {
-		"clickToNavigate": "点击前往 ${path}"
-	},
-	"zxcvbn": {
-		"warnings": {
-			"straightRow": "键盘上的连续按键很容易被猜到。",
-			"keyPattern": "简短的键盘序列很容易被猜到。",
-			"simpleRepeat": "像“aaa”这样的重复字符很容易被猜到。",
-			"extendedRepeat": "像“abcabcabc”这样的重复字符模式很容易被猜到。",
-			"sequences": "像“abc”这样的常见字符序列很容易被猜到。",
-			"recentYears": "最近的年份很容易被猜到。",
-			"dates": "日期很容易被猜到。",
-			"topTen": "这是一个被过度使用的密码。",
-			"topHundred": "这是一个经常被使用的密码。",
-			"common": "这是一个常用的密码。",
-			"similarToCommon": "这与一个常用的密码相似。",
-			"wordByItself": "单个单词很容易被猜到。",
-			"namesByThemselves": "单个名字或姓氏很容易被猜到。",
-			"commonNames": "常见的名字和姓氏很容易被猜到。",
-			"userInputs": "密码中不应包含任何个人或与页面相关的数据。",
-			"pwned": "您的密码已在互联网数据泄露事件中被曝光。"
+		"pow_captcha": {
+			"initial": "我不是机器人",
+			"verifying": "正在验证...",
+			"solved": "验证成功",
+			"wasm_disabled": "启用 WASM 可加快验证速度",
+			"error": "验证失败",
+			"errorMessage": "验证失败：${error}"
 		},
-		"suggestions": {
-			"l33t": "避免使用可预测的字母替换，例如用“@”代替“a”。",
-			"reverseWords": "避免使用常见单词的倒序拼写。",
-			"allUppercase": "将部分而非全部字母大写。",
-			"capitalization": "不仅仅将首字母大写。",
-			"dates": "避免使用与您相关的日期和年份。",
-			"recentYears": "避免使用最近的年份。",
-			"associatedYears": "避免使用与您相关的年份。",
-			"sequences": "避免使用常见的字符序列。",
-			"repeated": "避免重复的单词和字符。",
-			"longerKeyboardPattern": "使用更长的键盘序列并多次改变输入方向。",
-			"anotherWord": "添加更多不常见的单词。",
-			"useWords": "使用多个单词，但避免使用常见的短语。",
-			"noNeed": "您无需使用符号、数字或大写字母即可创建强密码。",
-			"pwned": "如果您在其他地方使用此密码，建议您进行更改。"
+		"breadcrumb": {
+			"clickToNavigate": "点击前往 ${path}"
 		},
-		"timeEstimation": {
-			"ltSecond": "不到一秒",
-			"second": "{base}秒",
-			"seconds": "{base}秒",
-			"minute": "{base}分钟",
-			"minutes": "{base}分钟",
-			"hour": "{base}小时",
-			"hours": "{base}小时",
-			"day": "{base}天",
-			"days": "{base}天",
-			"month": "{base}月",
-			"months": "{base}月",
-			"year": "{base}年",
-			"years": "{base}年",
-			"centuries": "几个世纪"
-		}
-	},
-	"searchableDropdown": {
-		"trigger": {
-			"placeholder": "请选择..."
-		},
-		"search": {
-			"placeholder": "搜索..."
-		}
-	},
-	"common": {
-		"cancel": "取消",
-		"create": "创建",
-		"save": "保存",
-		"delete": "删除",
-		"confirm": "确认",
-		"close": "关闭",
-		"translate": {
-			"showOriginal": "显示原文",
-			"showTranslation": "显示译文"
-		}
-	},
-	"cabinet": {
-		"title": "文件柜",
-		"description": "P2P 个人与共享文件柜",
-		"openCabinets": {
-			"title": "打开文件柜列表",
-			"aria-label": "打开文件柜列表"
-		},
-		"closeCabinets": {
-			"title": "关闭",
-			"aria-label": "关闭"
-		},
-		"bootstrapFailed": "文件柜初始化失败：${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "文件柜"
+		"zxcvbn": {
+			"warnings": {
+				"straightRow": "键盘上的连续按键很容易被猜到。",
+				"keyPattern": "简短的键盘序列很容易被猜到。",
+				"simpleRepeat": "像“aaa”这样的重复字符很容易被猜到。",
+				"extendedRepeat": "像“abcabcabc”这样的重复字符模式很容易被猜到。",
+				"sequences": "像“abc”这样的常见字符序列很容易被猜到。",
+				"recentYears": "最近的年份很容易被猜到。",
+				"dates": "日期很容易被猜到。",
+				"topTen": "这是一个被过度使用的密码。",
+				"topHundred": "这是一个经常被使用的密码。",
+				"common": "这是一个常用的密码。",
+				"similarToCommon": "这与一个常用的密码相似。",
+				"wordByItself": "单个单词很容易被猜到。",
+				"namesByThemselves": "单个名字或姓氏很容易被猜到。",
+				"commonNames": "常见的名字和姓氏很容易被猜到。",
+				"userInputs": "密码中不应包含任何个人或与页面相关的数据。",
+				"pwned": "您的密码已在互联网数据泄露事件中被曝光。"
+			},
+			"suggestions": {
+				"l33t": "避免使用可预测的字母替换，例如用“@”代替“a”。",
+				"reverseWords": "避免使用常见单词的倒序拼写。",
+				"allUppercase": "将部分而非全部字母大写。",
+				"capitalization": "不仅仅将首字母大写。",
+				"dates": "避免使用与您相关的日期和年份。",
+				"recentYears": "避免使用最近的年份。",
+				"associatedYears": "避免使用与您相关的年份。",
+				"sequences": "避免使用常见的字符序列。",
+				"repeated": "避免重复的单词和字符。",
+				"longerKeyboardPattern": "使用更长的键盘序列并多次改变输入方向。",
+				"anotherWord": "添加更多不常见的单词。",
+				"useWords": "使用多个单词，但避免使用常见的短语。",
+				"noNeed": "您无需使用符号、数字或大写字母即可创建强密码。",
+				"pwned": "如果您在其他地方使用此密码，建议您进行更改。"
+			},
+			"timeEstimation": {
+				"ltSecond": "不到一秒",
+				"second": "{base}秒",
+				"seconds": "{base}秒",
+				"minute": "{base}分钟",
+				"minutes": "{base}分钟",
+				"hour": "{base}小时",
+				"hours": "{base}小时",
+				"day": "{base}天",
+				"days": "{base}天",
+				"month": "{base}月",
+				"months": "{base}月",
+				"year": "{base}年",
+				"years": "{base}年",
+				"centuries": "几个世纪"
 			}
 		},
-		"upload": "上传",
-		"uploadFolder": "上传文件夹",
-		"newFolder": "新建文件夹",
-		"open": "打开",
-		"download": "下载",
-		"downloadZip": "下载文件夹",
-		"rename": "重命名",
-		"copy": "复制",
-		"cut": "剪切",
-		"paste": "粘贴",
-		"pasteLink": "粘贴为链接",
-		"selectAll": "全选",
-		"invert": "反选",
-		"properties": "属性",
-		"delete": "删除",
-		"back": {
-			"title": "返回之前的位置",
-			"aria-label": "返回之前的位置"
-		},
-		"cancel": "取消",
-		"save": "保存",
-		"showHidden": "显示隐藏",
-		"name": "名称",
-		"descriptionField": "描述",
-		"attrHidden": "隐藏",
-		"attrSystem": "系统（删除需确认）",
-		"previewUrl": "预览图 URL",
-		"deletePreviewWithFile": "删除文件时删除预览图",
-		"folderPassword": "文件夹密码（留空不变，填写则启用加密）",
-		"unlockFolder": "解锁加密文件夹",
-		"unlock": "解锁",
-		"unlockFailed": "解锁失败：${error}",
-		"previewFailed": "预览生成失败：${error}",
-		"created": "创建：${stamp}",
-		"modified": "修改：${stamp}",
-		"statusCount": "${count} 项，已选 ${selected}",
-		"newCabinetPrompt": "新文件柜名称",
-		"newFolderPrompt": "新文件夹名称",
-		"renamePrompt": "新名称",
-		"visibilityPrompt": "可见性（public/unlisted/followers/private/selected）",
-		"cabinetActionPrompt": "操作：rename / delete / visibility",
-		"confirmDeleteCabinet": "确认删除此文件柜？",
-		"confirmDelete": "确认删除所选项目？",
-		"confirmDeleteSystem": "所选含系统文件，确认删除？",
-		"copied": "已复制",
-		"cutDone": "已剪切",
-		"undo": "撤销",
-		"redo": "重做",
-		"newWindow": "新窗口打开当前位置",
-		"goUp": "返回上一级",
-		"brokenLink": "链接失效：${reason}",
-		"noDownload": "无可下载内容",
-		"groupDownloadHint": "群文件请通过消息附件或后续下载链获取",
-		"remoteEntity": "远端实体"
-	},
-	"entityProfile": {
-		"attributionMismatch": "显示身份与消息签名者不匹配（例如导入历史经导入者重新签名）。请勿将该显示名视为密码学身份。",
-		"attributionMismatchShort": {
-			"title": "签名归因不匹配",
-			"aria-label": "签名归因不匹配"
-		},
-		"ownedBy": "此实体为 ${owner} 所有"
+		"searchableDropdown": {
+			"trigger": {
+				"placeholder": "请选择..."
+			},
+			"search": {
+				"placeholder": "搜索..."
+			}
+		}
 	}
 }

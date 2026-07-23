@@ -165,13 +165,13 @@ export async function createStickerPack(replicaUsername, authorEntityHash, pack)
 		name: trimmedName
 			? pack.name
 			: pack.useDefaultLocaleNames
-				? await geti18nForUser(replicaUsername, 'stickers.defaultPackName')
-				: await geti18nForUser(replicaUsername, 'stickers.unnamedPack'),
+				? await geti18nForUser(replicaUsername, 'chat.stickers.defaultPackName')
+				: await geti18nForUser(replicaUsername, 'chat.stickers.unnamedPack'),
 		authorEntityHash,
 		description: trimmedDescription
 			? pack.description
 			: pack.useDefaultLocaleNames
-				? await geti18nForUser(replicaUsername, 'stickers.defaultPackDescription')
+				? await geti18nForUser(replicaUsername, 'chat.stickers.defaultPackDescription')
 				: '',
 		thumbnail: pack.thumbnail || '',
 		stickers: [],
@@ -401,8 +401,8 @@ export async function ensureUserImportPack(replicaUsername, authorEntityHash) {
 	const owned = packs.find(p => p.authorEntityHash === authorEntityHash)
 	if (owned) return owned.packId
 	const pack = await createStickerPack(replicaUsername, authorEntityHash, {
-		name: await geti18nForUser(replicaUsername, 'stickers.importPackName'),
-		description: await geti18nForUser(replicaUsername, 'stickers.importPackDescription'),
+		name: await geti18nForUser(replicaUsername, 'chat.stickers.importPackName'),
+		description: await geti18nForUser(replicaUsername, 'chat.stickers.importPackDescription'),
 		isPublic: false,
 	})
 	const collection = await getUserCollection(replicaUsername, authorEntityHash)

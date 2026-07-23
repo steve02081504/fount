@@ -1,263 +1,33 @@
 {
 	"lang": "emoji",
 	"name": "🤓",
-	"channels": {
-		"title": "📺",
-		"description": "📺⚙️🏛️",
-		"create": "➕📺",
-		"subscribe": "🔔",
-		"unsubscribe": "🔕",
-		"settings": "📺⚙️",
-		"list": "📺📋",
-		"members": "👥",
-		"messages": "📨",
-		"permissions": "🔐⚙️",
-		"type": {
-			"announcement": "📢",
-			"news": "📰",
-			"updates": "🆕🔄"
-		},
-		"role": {
-			"owner": "👑",
-			"admin": "🛡️👤",
-			"moderator": "🛡️",
-			"member": "👥",
-			"subscriber": "🔔👤"
-		},
-		"errors": {
-			"notFound": "📺🚫",
-			"noPermission": "🚫🔐",
-			"alreadySubscribed": "✅🔔📺",
-			"notSubscribed": "🚫🔔📺"
-		},
-		"success": {
-			"created": "📺✅🆕",
-			"updated": "📺✅🔄",
-			"deleted": "📺✅🗑️",
-			"subscribed": "✅🔔",
-			"unsubscribed": "✅🔕",
-			"posted": "📨✅📤"
-		}
-	},
-	"profile": {
-		"title": "👤📋",
-		"description": "💬🏛️👤✨⚙️",
-		"settingsEyebrow": "👤⚙️",
-		"accountAtGlance": "👤👀📊",
-		"advancedKicker": "🎯⚙️",
-		"advancedSettings": "🔧⚙️🎛️",
-		"advancedDescription": "😌👌🚫🔧",
-		"edit": "✏️👤",
-		"save": "💾",
-		"cancel": "↩️",
-		"displayName": "🏷️👤",
-		"name": "🏷️",
-		"bio": "📝👤",
-		"descriptionLabel": "📝📄",
-		"email": "📧",
-		"status": "💬",
-		"customStatusLabel": "✨💬",
-		"avatarLabel": "🖼️",
-		"themeColorLabel": "🎨🌈",
-		"uploadAvatar": "⬆️🖼️",
-		"ownerTitle": "👑🫵",
-		"ownerSummary": "👑⚙️",
-		"ownerDescription": "⚙️➡️ 👑 ➡️ ✏️/🗑️ 🫵💬📨 ➕ 🏛️📰 ➕ 👤📋；👉📄 ➡️ 💻 ⚠️📝🖼️⚡（⚠️📜⚡）✍️✅ 🎲🧬#️⃣，♾️🗑️👑",
-		"ownerEntityHashLabel": "👑🧬#️⃣（128🔣）",
-		"ownerSave": "💾👑",
-		"ownerClear": "🗑️👑",
-		"ownerSaved": "👑✅🔄",
-		"ownerCleared": "👑✅🗑️",
-		"ownerSaveFailed": "💾❌: ${error}",
-		"ownerConfirmTitle": "👑⚠️✅❓",
-		"ownerConfirmWarningTitle": "⚠️🚨📖👀",
-		"ownerConfirmEditBody": "⚙️➡️ 👤➡️ 🚫🙏🫵 👍 ➡️ ✏️/🗑️ 🫵💬📨 ➕ 🏛️📰 ➕ 👤📋⚠️👆/🎣👑 = ⚡📤🎮📄",
-		"ownerConfirmRenderBody": "👤➡️📨💬 ➕ 🏛️📰 ➡️ 🫵🌐💻 💯📝🖼️⚡（➕ HTML/📜⚡）= ✅ 👤➡️ 💻▶️🎲📜 🚫🔁🙏.1️⃣🤝💯👤➡️➡️",
-		"ownerConfirmCooldown": "⚠️📖✅ (${seconds})",
-		"ownerConfirmFirst": "⚠️👌➡️",
-		"ownerConfirmSecond": "👆👆✅🔒",
-		"ownerConfirmCancel": "↩️",
-		"federationTitle": "🌐🔄",
-		"federationSummary": "📡🔋",
-		"federationDescription": "⚙️📡Nostr🔗 ➕ 🔋🎛️👥🌐🔄 1️⃣🎟️👤➕/➕🌐🤫💬 ➡️ 🤖✅▶️",
-		"federationAdvanced": "🔧➕",
-		"federationRelayUrlsLabel": "📡📝⬜️➡️🔧",
-		"federationBatterySaverLabel": "🔋💤",
-		"federationSave": "💾🌐",
-		"federationResetDefault": "↩️🔧⭐",
-		"federationSaved": "💾✅",
-		"federationResetOk": "↩️✅🔧",
-		"federationSaveFailed": "💾❌: ${error}",
-		"preferences": "❤️⚙️",
-		"language": "🗣️",
-		"theme": "🎨",
-		"notifications": "🔔⚙️",
-		"emailNotifications": "📧🔔",
-		"pushNotifications": "📲🔔",
-		"soundNotifications": "🔊🔔",
-		"social": "🏛️🔗",
-		"website": "🌐",
-		"github": "🐙🐱",
-		"twitter": "Twitter",
-		"stats": "📊",
-		"joinedAt": "⏰➕",
-		"messageCount": "📨#️⃣",
-		"groupCount": "👥#️⃣",
-		"channelCount": "📺#️⃣",
-		"privacy": "🔒⚙️",
-		"showEmail": "👀📧",
-		"showStats": "👀📊",
-		"allowDirectMessages": "✅🤫💬",
-		"statusOptions": {
-			"online": "🟢",
-			"away": "🟡🚶",
-			"busy": "🔴💼",
-			"offline": "⚫"
-		},
-		"themeOptions": {
-			"auto": "⚙️",
-			"light": "☀️",
-			"dark": "🌙"
-		},
-		"languageOptions": {
-			"zh-CN": "🤓",
-			"en-US": "English"
-		},
-		"notifEmail": "📧",
-		"notifPush": "📲",
-		"notifSound": "🔊",
-		"notifsAllOff": "📋✖️",
-		"bioEmpty": "😴🦥 📝🈳…",
-		"noSocialLinks": "🏛️🔗📭",
-		"emailVisible": "👀",
-		"emailHidden": "🙈",
-		"customStatus": {
-			"placeholder": "⏳💭…"
-		},
-		"avatar": {
-			"alt": "🖼️"
-		},
-		"avatarPreview": {
-			"alt": "🖼️👀"
-		},
-		"myGroups": "🫵👥🏠",
-		"myChannels": "🫵📺",
-		"noGroups": "👥🏠📭",
-		"noChannels": "📭📺",
-		"overview": "👤📊👀",
-		"summaryUserId": "🆔👤",
-		"summaryAccountStatus": "👤💬",
-		"summaryEmailVisibility": "📧👀",
-		"summaryThemePref": "🎨❤️",
-		"summaryLanguagePref": "🗣️❤️",
-		"summarySocialCount": "🏛️🔗#️⃣",
-		"summaryLinksCount": "🔗🌐#️⃣",
-		"groupDescriptionEmpty": "📝📭",
-		"groupMembers": "👥${members} · 📺${channels}",
-		"channelPrivate": " · 🔒",
-		"channelTypeText": "📝📺",
-		"channelTypeList": "📋📺",
-		"channelTypeVoice": "🎙️📺",
-		"channelTypeStreaming": "📡📺",
-		"errors": {
-			"loadFailed": "📥👤❌",
-			"saveFailed": "💾👤❌",
-			"uploadFailed": "❌⬆️🖼️",
-			"invalidUserData": "👤📄❌",
-			"identityRequired": "🔗🖥️🆔⏳🚫 🔄📄🙏；⏳❌ ⬇️ P2P ⚙️ 💾🌐🔗",
-			"fetchUserFailed": "📥👤❌",
-			"operationFailed": "⚙️❌: ${error}"
-		},
-		"success": {
-			"saved": "💾👤✅",
-			"avatarUploaded": "✅⬆️🖼️"
-		},
-		"ownerEntityHash": {
-			"placeholder": "✍️👑🧬#️⃣"
-		}
-	},
-	"stickers": {
-		"title": "🏷️😀🏛️",
-		"description": "🏷️😀⚙️🏛️",
-		"back": {
-			"title": "🔙"
-		},
-		"packs": "🏷️📦",
-		"create": "➕🏷️📦",
-		"upload": "⬆️🏷️😀",
-		"install": "📥",
-		"uninstall": "🗑️",
-		"close": "✖️",
-		"cancel": "↩️",
-		"installed": "✅📥",
-		"myPacks": "🫵🏷️📦",
-		"tabAll": "📋",
-		"store": "🏷️😀🏛️",
-		"favorites": "⭐",
-		"recent": "🕐👆",
-		"search": {
-			"placeholder": "🔍🏷️📦…"
-		},
-		"emptyPacks": "📭🏷️📦",
-		"packNameLabel": "🏷️📦🏷️",
-		"packName": {
-			"placeholder": "✍️🏷️📦🏷️"
-		},
-		"packDescriptionLabel": "📝",
-		"packDescription": {
-			"placeholder": "✍️📝"
-		},
-		"stickerNameLabel": "🏷️😀🏷️",
-		"stickerName": {
-			"placeholder": "✍️🏷️😀🏷️"
-		},
-		"selectPack": "👆🏷️📦",
-		"selectPackOption": {
-			"textContent": "🙏👆🏷️📦"
-		},
-		"selectImage": "👆🖼️",
-		"tagsLabel": "🏷️（，🔢⏱️）",
-		"tags": {
-			"placeholder": "💡: 🥰, 😀, 🐾"
-		},
-		"author": "✍️",
-		"authorLabel": "✍️: ${author}",
-		"stickerCount": "🏷️😀 ×${count}",
-		"badgeMine": "🫵",
-		"noDescription": "📝📭",
-		"noStickersInPack": "📭🏷️😀",
-		"deletePack": "🗑️🏷️📦",
-		"public": "🌍",
-		"private": "🔒",
-		"animated": "🎞️",
-		"static": "🖼️",
-		"addTag": "➕🏷️",
-		"defaultPackName": "🔧😀📦",
-		"defaultPackDescription": "⚙️🔧😀🏷️",
-		"unnamedPack": "🈚🏷️📦",
-		"importPackName": "🫵⭐",
-		"importPackDescription": "⬅️📨💾🏷️",
-		"nameRequired": "🙏✍️🏷️📦🏷️",
-		"stickerNameRequired": "🙏✍️🏷️😀🏷️",
-		"selectPackRequired": "🙏👆🏷️📦",
-		"fileRequired": "👆🙏🖼️📁",
-		"loadDetailFailed": "❌📥🏷️📦📋",
-		"deleteConfirm": "🗑️🏷️📦♾️❓🏷️😀➡️🗑️，🎮🚫↩️",
-		"errors": {
-			"loadFailed": "📥🏷️📦❌",
-			"uploadFailed": "⬆️🏷️😀❌",
-			"installFailed": "❌📥",
-			"uninstallFailed": "❌🗑️📦",
-			"createFailed": "➕🏷️📦❌",
-			"deleteFailed": "❌🗑️"
-		},
-		"success": {
-			"uploaded": "🏷️😀⬆️✅",
-			"installed": "✅📥",
-			"uninstalled": "✅🗑️📦",
-			"created": "🏷️📦➕✅",
-			"deleted": "✅🗑️"
-		}
+	"tips": {
+		"title": "💡❓",
+		"data": [
+			"⌨️ `esc` ➡️ 🔙",
+			"⚙️📄 ➕ ⌨️ `ctrl+s` ➡️ 💾",
+			"💬📄 ➕ ⌨️ `shift` ➡️ 🗑️⚡",
+			"🙊 ➡️ 👨‍💻❓🐛",
+			"🐛❓ ➕ 👨‍💻⏳ ➡️ ⌨️ `fount init` ➡️ 🔄",
+			"🐛❓❓❓ ➡️ 💻🔄",
+			"⌨️ `fount remove` 🛁 > 🗑️📂",
+			"⌨️ `fount cake` ➡️ 🍰😋",
+			"📂 `fount/data` ➡️ 👀✏️💾 ♾️",
+			"📛 `f`ount ✅ `F`ount ❌",
+			"🤖🆕🧠 ➡️ 💾💾💾 ➡️ 😨📉❓",
+			"👨‍💻🎭 ➕ 💼🏥🔫💰",
+			"🤖ZL-31 📛 ➡️ 🧠💥🎲",
+			"🖼️svg ➡️ png/ico 📄0️⃣1️⃣❌ (LICENSE🆗)",
+			"💻🏃‍♂️💨 🚫🔨",
+			"✨🖼️💃 ➡️ 🔥💻 ➡️ 🗑️",
+			"🐣 ➡️ 🤖🔞 \"🪻\"",
+			"🤖 🆚 🧍 ➡️ 🧍💩",
+			"🤖📞💡 🆚 🧍👀💡",
+			"🧍❤️🤖 ➡️ 💒💍",
+			"🤖🎨❤️📝 🆚 🧍🧱🧹🗑️",
+			"📅 🚫 🤡🤪",
+			"🙅‍♂️ 👉 🚫🧠"
+		]
 	},
 	"fountConsole": {
 		"server": {
@@ -797,51 +567,6 @@
 		"title": "⛲❗️",
 		"description": "🚪🌌⏳… ✨🗣️📚"
 	},
-	"tutorial": {
-		"title": "🎓❓",
-		"description": "🤝🚶‍♂️🗺️✨💡",
-		"modal": {
-			"title": "👋 ⛲❗️",
-			"instruction": "🎓❓",
-			"buttons": {
-				"start": "▶️🎓",
-				"skip": "⏭️"
-			}
-		},
-		"endScreen": {
-			"title": "🎉🎓✅❗️",
-			"subtitle": "👍",
-			"endButton": "🚀"
-		},
-		"progressMessages": {
-			"mouseMove": "👆🖱️${mouseIcon}<br/>➡️",
-			"keyboardPress": "👆⌨️${keyboardIcon}<br/>👇",
-			"mobileTouchMove": "👆📱${phoneIcon}<br/>➡️",
-			"mobileClick": "👆📱${phoneIcon}<br/>👇"
-		},
-		"achievements": {
-			"complete_tutorial": {
-				"name": "🎓✅",
-				"description": "👨‍🏫➡️👨‍🎓",
-				"locked_description": "🔒: 📖✅"
-			},
-			"skip_tutorial": {
-				"name": "🤷‍♂️⏭️",
-				"description": "📖➡️🗑️",
-				"locked_description": "🔒: ⏭️📖"
-			}
-		},
-		"home_function_buttons": {
-			"other": {
-				"title": "📦",
-				"sub_items": {
-					"replay": {
-						"title": "🎓❓"
-					}
-				}
-			}
-		}
-	},
 	"auth": {
 		"title": "🔐",
 		"subtitle": "👤💾➡️💻",
@@ -936,6 +661,51 @@
 			"buttons": {
 				"ignore": "🤷‍♂️➡️",
 				"retry": "🔄"
+			}
+		}
+	},
+	"tutorial": {
+		"title": "🎓❓",
+		"description": "🤝🚶‍♂️🗺️✨💡",
+		"modal": {
+			"title": "👋 ⛲❗️",
+			"instruction": "🎓❓",
+			"buttons": {
+				"start": "▶️🎓",
+				"skip": "⏭️"
+			}
+		},
+		"endScreen": {
+			"title": "🎉🎓✅❗️",
+			"subtitle": "👍",
+			"endButton": "🚀"
+		},
+		"progressMessages": {
+			"mouseMove": "👆🖱️${mouseIcon}<br/>➡️",
+			"keyboardPress": "👆⌨️${keyboardIcon}<br/>👇",
+			"mobileTouchMove": "👆📱${phoneIcon}<br/>➡️",
+			"mobileClick": "👆📱${phoneIcon}<br/>👇"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "🎓✅",
+				"description": "👨‍🏫➡️👨‍🎓",
+				"locked_description": "🔒: 📖✅"
+			},
+			"skip_tutorial": {
+				"name": "🤷‍♂️⏭️",
+				"description": "📖➡️🗑️",
+				"locked_description": "🔒: ⏭️📖"
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "📦",
+				"sub_items": {
+					"replay": {
+						"title": "🎓❓"
+					}
+				}
 			}
 		}
 	},
@@ -1162,513 +932,6 @@
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "📥🧩📃"
-			}
-		}
-	},
-	"social": {
-		"title": "🏛️",
-		"description": "🔗🌍 🏛️📰 ➕ 👀 ➕ 📁🔗",
-		"bootstrapFailed": "🏛️🚀❌: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "🏛️"
-			}
-		},
-		"nav": {
-			"feed": "🏠",
-			"explore": "🔭",
-			"notifications": "📬",
-			"saved": "⭐",
-			"drafts": "📝📦",
-			"profile": "🫵",
-			"videos": "🎬",
-			"live": "📡🔴"
-		},
-		"settings": {
-			"title": "🏛️⚙️",
-			"back": {
-				"aria-label": "🔙👤"
-			},
-			"privacyTitle": "🔒🔭",
-			"privacyHint": "🎮👤 🔭⭐ 👀",
-			"tasteTitle": "⭐❤️",
-			"tasteHint": "🎛️⭐📰 🔒➕ 🏷️",
-			"mutedKeywordsTitle": "🚫🔑🏷️",
-			"mutedKeywordsHint": "🎯📄/⚠️/🏷️ ➡️ 🙈📰🔭🔍🔔 · 💾💻",
-			"mutedKeywordsMatchTags": "🏷️✅➕",
-			"mutedKeywordsAdd": "➕",
-			"mutedKeywordsRemove": {
-				"title": "🗑️🚫🔑"
-			},
-			"mutedKeywordsEmpty": "🚫🔑📭",
-			"autoTranslateTitle": "🌐🤖",
-			"autoTranslateHint": "▶️➡️ 🌐📰 🤖📥🌐📝 ➕ 🔄📄",
-			"autoTranslateEnable": "🤖🌐📰",
-			"safetyTitle": "🛡️🚫",
-			"safetyHint": "🛡️🚫👤 ➕ 🙈📋",
-			"mutedKeywords": {
-				"placeholder": "✍️🔑 / #️⃣🏷️"
-			}
-		},
-		"composer": {
-			"placeholder": "💭… ✅📝⛲🗣️ @️⃣✅",
-			"publish": "📤",
-			"saveDraft": "💾📝",
-			"fab": {
-				"title": "✍️📰",
-				"aria-label": "✍️📰"
-			},
-			"contentWarning": {
-				"placeholder": "⚠️📝（🔘）"
-			},
-			"sensitiveMedia": "🔞🖼️🙈",
-			"editImage": "✏️",
-			"editCrop": "✂️",
-			"editMosaic": "🔲",
-			"editBrush": "🖌️",
-			"editApply": "✅",
-			"editCancel": "↩️",
-			"replyPolicyEveryone": "🌍💬",
-			"replyPolicyFollowers7d": "7️⃣📅➕👀",
-			"replyPolicyAuthorFollows": "🫵➕👀",
-			"replyPolicyLabel": "💬🔐",
-			"replyDisplayAll": "👀💬📋",
-			"replyDisplayFeaturedOnly": "⭐💬",
-			"replyDisplayLabel": "💬👀",
-			"scheduleLabel": "⏰📤",
-			"scheduleSuccess": "📰⏰📋✅",
-			"emojiButton": {
-				"title": "😀",
-				"aria-label": "😀"
-			},
-			"mediaButton": {
-				"title": "➕🖼️",
-				"aria-label": "➕🖼️"
-			},
-			"pollButton": {
-				"title": "➕🗳️",
-				"aria-label": "➕🗳️"
-			},
-			"cwToggle": {
-				"title": "⚠️📝",
-				"aria-label": "⚠️📝"
-			},
-			"advancedToggle": {
-				"title": "➕☑️",
-				"aria-label": "➕☑️"
-			},
-			"media": {
-				"placeholder": "🖼️♿📝"
-			}
-		},
-		"visibility": {
-			"label": "👀📏",
-			"public": "🌍",
-			"unlisted": "🚫📋",
-			"followers": "🔒➕👀",
-			"followers7d": "➕👀✅7📅",
-			"followers30d": "➕👀✅30📅",
-			"selected": "👤👀",
-			"private": "🔒🫵",
-			"allowLabel": "👀👤",
-			"exceptLabel": "🚫👤",
-			"allow": {
-				"placeholder": "👀👤 👤🔑#️⃣ · 📭/，⏱️"
-			},
-			"except": {
-				"placeholder": "🚫👀（🔘）"
-			}
-		},
-		"albums": {
-			"create": "🆕🖼️📚",
-			"edit": "✏️🖼️📚",
-			"save": "💾",
-			"cancel": "↩️",
-			"back": "🔙🖼️📚",
-			"empty": "📭🖼️📚",
-			"emptyPosts": "📭🖼️📄",
-			"name": "🖼️📚🏷️",
-			"description": "🖼️📚📝",
-			"deleteLinks": "🗑️🖼️📚（💾📄）",
-			"deleteWithPosts": "🗑️🖼️📚➕📄",
-			"pickerLabel": "➕🖼️📚",
-			"defaultName": "⭐🖼️📚"
-		},
-		"feed": {
-			"refresh": "🔄📰",
-			"newPosts": "🆕📰 · 👆👀",
-			"tabLatest": "🆕",
-			"tabForYou": "⭐",
-			"repostedBy": "${author} ↪️",
-			"decryptFailed": "🚫🔓📄",
-			"revealContent": "👀📄",
-			"sensitiveMedia": "⚠️🖼️",
-			"showMore": "📂",
-			"showLess": "🔼",
-			"replayDivider": "✅👀 · 🔁👀"
-		},
-		"taste": {
-			"rebuild": "♻️❤️",
-			"privacyPublishPreferences": "🌐🏷️🔗🔍",
-			"privacyPublishPreferencesHint": "⏹️➡️ 👍🤝🚫👀🫵🏷️📢 · 🚫🤝",
-			"privacyPublishReactions": "🌐👍👎",
-			"privacyPublishReactionsHint": "⏹️➡️ ✍️🚫📥👍👎 · 🫵🚫⭐ · 🚫📤2️⃣",
-			"empty": "❤️🏷️📭 · ⬆️👍👎🤖",
-			"weight": "⚖️${weight}",
-			"save": "💾",
-			"name": {
-				"placeholder": "💻🏷️"
-			}
-		},
-		"trending": {
-			"title": "🔥#️⃣",
-			"postCount": {
-				"title": "${n}📄"
-			},
-			"scopeLocal": "💻",
-			"scopeNearby": "📍🧭",
-			"empty": "🔥#️⃣📭"
-		},
-		"search": {
-			"placeholder": "🔍📰/👤/#️⃣（⬆️2🔤）",
-			"open": {
-				"aria-label": "🔍"
-			},
-			"submit": "🔍",
-			"clear": "🧹",
-			"empty": "🔍📄📭",
-			"tooShort": "✍️⬆️2🔤",
-			"usersTitle": "👤",
-			"postsTitle": "📰",
-			"usersEmpty": "🔍👤📭",
-			"pinAlias": "🏷️➡️",
-			"trustScore": "🤝${score}",
-			"viewTitle": "🔍",
-			"loading": "🔍…",
-			"filterAuthor": {
-				"placeholder": "✍️"
-			},
-			"filterMediaAll": "✅🖼️",
-			"filterMediaImage": "🖼️",
-			"filterMediaVideo": "🎬",
-			"filterTag": {
-				"placeholder": "#️⃣🏷️"
-			},
-			"sortRecent": "🆕",
-			"sortPopular": "🔥",
-			"scopeLocal": "💻",
-			"scopeNearby": "📍🧭"
-		},
-		"profile": {
-			"edit": "✏️👤",
-			"viewPosts": "👀🏛️👤",
-			"settingsBtn": {
-				"aria-label": "🏛️⚙️"
-			},
-			"mediaOnly": "[🖼️]",
-			"hideFromExplore": "🙈🔭👤",
-			"tabPosts": "📰",
-			"tabAlbums": "🖼️📚",
-			"tabLikes": "👍",
-			"tabCabinets": "🗄️",
-			"tabsLabel": {
-				"aria-label": "👤📂"
-			},
-			"cabinetsEmpty": "🗄️🌍📭",
-			"cabinetsFailed": "🗄️📥❌: ${error}",
-			"statsGroup": {
-				"aria-label": "👤📊"
-			},
-			"statsPosts": "📰",
-			"statsFollowing": "➕👀",
-			"statsFollowers": "👥❤️",
-			"followingTitle": "➕👀",
-			"followersTitle": "👥❤️"
-		},
-		"dialog": {
-			"close": {
-				"aria-label": "✖️"
-			}
-		},
-		"actions": {
-			"like": "👍",
-			"unlike": "↩️👍",
-			"dislike": "👎",
-			"undislike": "↩️👎",
-			"repost": "↪️",
-			"quote": "💬🔗",
-			"delete": "🗑️",
-			"edit": "✏️",
-			"save": "⭐",
-			"saved": "⭐✅",
-			"translate": "🌐",
-			"dm": "📤🤫💬",
-			"block": "🚫👤",
-			"hide": "🙈",
-			"mute": "🔇",
-			"follow": "➕👀",
-			"following": "✅👀",
-			"care": "💖",
-			"careRemove": "↩️💖",
-			"careAdded": "✅💖",
-			"careRemoved": "↩️💖✅",
-			"setAlias": "⚙️🏷️",
-			"setAliasPrompt": "🏷️💻（⬜🧹）：",
-			"aliasSaved": "🏷️✅",
-			"replies": "💬",
-			"copyLink": "📋🔗",
-			"downloadHtml": "⬇️🌐📄",
-			"copied": "✅📋",
-			"more": {
-				"aria-label": "⋯"
-			},
-			"share": "🔗",
-			"likeFailed": "👍❌: ${error}",
-			"dislikeFailed": "👎❌: ${error}",
-			"repostFailed": "↪️❌: ${error}",
-			"replyFailed": "💬❌: ${error}",
-			"followFailed": "➕👀❌: ${error}",
-			"saveFailed": "⭐❌: ${error}",
-			"blockFailed": "🚫❌: ${error}",
-			"hideFailed": "🙈❌: ${error}",
-			"muteFailed": "🔇❌: ${error}",
-			"deleteFailed": "🗑️❌: ${error}"
-		},
-		"post": {
-			"edited": "✅✏️",
-			"editPrompt": "✏️📄",
-			"editHistory": "✏️📜",
-			"editHistoryEmpty": "📜📭",
-			"loading": "📥…",
-			"notFound": "📄🚫👀",
-			"loadFailed": "📥❌ · 🔁⏳",
-			"detailTitle": "📄",
-			"back": "🔙"
-		},
-		"reply": {
-			"context": "💬↩️${author}"
-		},
-		"notes": {
-			"label": "👀➕",
-			"add": "📝➕",
-			"prompt": "✍️👀➕（🏛️📝）",
-			"listTitle": "📋👀➕",
-			"helpful": "👍",
-			"unhelpful": "👎",
-			"more": "📋${n}",
-			"empty": "👀➕📭"
-		},
-		"poll": {
-			"multi": "✅🔘➕",
-			"apply": "✅🗳️",
-			"closed": "🗳️⏹️",
-			"deadline": "⏰${deadline}",
-			"options": {
-				"placeholder": "1️⃣🔘/line（⬆️2📌）"
-			}
-		},
-		"aside": {
-			"suggested": "⭐➕👀"
-		},
-		"explore": {
-			"accounts": "⭐👤",
-			"posts": "🆕📄",
-			"mediaOnly": "🖼️🔒"
-		},
-		"groupRef": {
-			"linking": "🔗💬👥",
-			"clear": "🔓🔗",
-			"pick": "🔗💬👥/📺…"
-		},
-		"notifications": {
-			"reply": "${author} 💬↩️📄",
-			"mention": "${author} 📰@️⃣🫵",
-			"like": "${author} 👍📄",
-			"repost": "${author} ↪️📄",
-			"follow": "${author} ➕👀🫵",
-			"care_post": "${author} 📤🆕📰（💖）",
-			"poll_closed": "${author} 🗳️⏹️",
-			"post_note": "${author} ➕👀📝📄",
-			"live_started": "${author} 📡▶️",
-			"view": "👀",
-			"markAllRead": "✅👀📬"
-		},
-		"inbox": {
-			"filtersLabel": {
-				"aria-label": "📬🔽"
-			},
-			"tabs": {
-				"all": "📋",
-				"mention": "@️⃣",
-				"reply": "💬↩️",
-				"like": "👍",
-				"follow": "➕👀",
-				"repost": "↪️"
-			},
-			"aggregated": {
-				"like": "${author1}、${author2} … ${count}👤👍📄",
-				"likeTwo": "${author1} ➕ ${author2} 👍📄",
-				"repost": "${author1}、${author2} … ${count}👤↪️📄",
-				"repostTwo": "${author1} ➕ ${author2} ↪️📄",
-				"follow": "${author1}、${author2} … ${count}👤➕👀🫵",
-				"followTwo": "${author1} ➕ ${author2} ➕👀🫵"
-			}
-		},
-		"replies": {
-			"placeholder": "✍️💬…",
-			"submit": "💬↩️",
-			"empty": "💬📭",
-			"emptyHint": "✍️1️⃣ · ▶️🗣️"
-		},
-		"repost": {
-			"placeholder": "➕↪️💬（🔘）…",
-			"submit": "✅↪️"
-		},
-		"quote": {
-			"quoting": "▶️🔗",
-			"clear": "↩️🔗",
-			"viewOriginal": "👀📄"
-		},
-		"a11y": {
-			"linkGroupSelect": "🔗💬👥/📺",
-			"postVisibility": "👀📏",
-			"postLang": "📄🗣️",
-			"trendingHashtags": "🔥#️⃣",
-			"saveFolderSelect": "⭐📁"
-		},
-		"blocklist": {
-			"title": "🚫📋",
-			"hiddenTitle": "🙈📋",
-			"empty": "🚫🙈📭",
-			"unblock": "🔓🚫",
-			"unhide": "↩️🙈",
-			"scopeEntity": "👤🔑",
-			"scopeSubject": "🫵"
-		},
-		"translate": {
-			"label": "🌐📝："
-		},
-		"saved": {
-			"all": "📋",
-			"unfiled": "📂🈳",
-			"createFolder": {
-				"title": "➕📁",
-				"aria-label": "➕📁"
-			},
-			"createFolderPrompt": "📁🏷️",
-			"pickFolderTitle": "⭐➡️",
-			"confirm": "✅",
-			"cancel": "↩️",
-			"remove": "🗑️⭐",
-			"renameFolder": "✏️🏷️",
-			"renameFolderPrompt": "📁🏷️🆕",
-			"deleteFolder": "🗑️📁",
-			"deleteFolderConfirm": "🗑️📁❓ ➡️ 📄➡️📂🈳",
-			"searchEmpty": "🔍⭐📭",
-			"folderEmpty": "📁📭",
-			"emptyHint": "👀📰 ➡️ 🔖 ➡️ ⭐",
-			"search": {
-				"placeholder": "🔍⭐…"
-			}
-		},
-		"drafts": {
-			"untitled": "（📝🈳）",
-			"emptyHint": "✍️📰 ➡️ 💾📝 ➡️ 🔁✏️",
-			"saved": "📝💾✅",
-			"deleted": "📝🗑️✅",
-			"delete": "🗑️📝",
-			"empty": "📝📭",
-			"saveFailed": "💾📝❌: ${error}",
-			"loadFailed": "📂📝❌: ${error}",
-			"deleteFailed": "🗑️📝❌: ${error}"
-		},
-		"time": {
-			"justNow": "⏱️✨",
-			"minutesAgo": "⏱️${n}m",
-			"hoursAgo": "⏱️${n}h"
-		},
-		"empty": {
-			"feed": "📰📭 · ➕👀",
-			"profilePosts": "📰📭",
-			"following": "➕👀📭",
-			"followers": "👥❤️📭",
-			"notifications": "🔔📭",
-			"saved": "⭐📭",
-			"drafts": "📝📭",
-			"exploreAccounts": "🔭👤📭",
-			"explorePosts": "🔭📰📭",
-			"likedPosts": "👍📭",
-			"noIdentity": "💬⚙️🌐🔗🆔 ➡️ 🏛️"
-		},
-		"topic": {
-			"follow": "🔔",
-			"unfollow": "🔕",
-			"empty": "#️⃣📭"
-		},
-		"video": {
-			"view": {
-				"aria-label": "🎬"
-			},
-			"empty": "🎬📭",
-			"emptyHint": "➕👀/🏛️🌍 🎬📰📭 · 📤🎬❓",
-			"compose": "➡️📤🎬",
-			"back": {
-				"aria-label": "🔙📰"
-			},
-			"mute": {
-				"aria-label": "🔇"
-			},
-			"unmute": {
-				"aria-label": "🔊"
-			},
-			"unavailable": "🎬❌",
-			"closeReplies": {
-				"aria-label": "✖️💬"
-			}
-		},
-		"live": {
-			"empty": "📡📭",
-			"viewers": "👀${n}",
-			"likes": "👍${n}",
-			"local": "💻",
-			"hall": "📡🏛️",
-			"back": {
-				"title": "🔙📰",
-				"aria-label": "🔙📰"
-			},
-			"danmakuSend": "📤",
-			"postWatch": "▶️📡",
-			"postEnded": "📡⏹️",
-			"postEndedStats": "${viewers}👀 · ${likes}👍 · ${duration}",
-			"link": {
-				"invite": "📡🤝",
-				"needPeer": "✍️ 👤🔑#️⃣:📡🆔",
-				"invited": "🤝📨✅",
-				"linked": "🔗✅",
-				"peer": {
-					"placeholder": "👤🔑#️⃣:📡🆔"
-				}
-			},
-			"broadcast": {
-				"title": "📡▶️",
-				"open": "➡️📡▶️",
-				"mediaAv": "🎙️➕🖼️",
-				"mediaAudio": "🎙️",
-				"mediaVideo": "🖼️",
-				"mediaWhip": "📡⬆️WHIP（📹💻）",
-				"whipUrl": "📡⬆️📍",
-				"whipToken": "🎟️🔐",
-				"whipWaiting": "⏳📡⬆️WHIP（📹💻）…",
-				"start": "▶️📡",
-				"stop": "⏹️📡",
-				"started": "📡✅▶️",
-				"stopped": "📡✅⏹️",
-				"titleInput": {
-					"placeholder": "📡🏷️（🔘）"
-				}
-			},
-			"danmaku": {
-				"placeholder": "💬…"
 			}
 		}
 	},
@@ -2043,12 +1306,7 @@
 			"createGroup": "🆕👥",
 			"members": "👥",
 			"membersHint": "👥📋➡️✅📍🔄（⏳）",
-			"send": "📤",
 			"streamTest": "🧪📹🎙️",
-			"messageInput": {
-				"placeholder": "👥📨… ⌃⏎📤",
-				"aria-label": "💬"
-			},
 			"loadError": "📥👥❌",
 			"remoteNodeTimeout": "🔗⏰❌，🔁⏳",
 			"remoteUnavailable": "🔗🧩🚫／🚫📡RPC",
@@ -2126,7 +1384,6 @@
 			"remoteTyping": "${name} ⌨️…",
 			"remoteTypingTwo": "${name1}、${name2} ⌨️…",
 			"remoteTypingMany": "${name} ➕${count} ⌨️…",
-			"mentionEmpty": "（🤷📭👤）",
 			"localAiLabel": "💻🎭：",
 			"forceTriggerOne": {
 				"title": "⚡${name} 💬"
@@ -2185,7 +1442,6 @@
 			"fileDownload": {
 				"title": "⬇️📁"
 			},
-			"clickToLoad": "👆📥",
 			"unknownFile": "📁❓",
 			"blockSender": {
 				"title": "🚫📤"
@@ -2210,7 +1466,6 @@
 			"editConfirm": "✅（⌃⏎）",
 			"editCancel": "↩️（⎋）",
 			"editHint": "⌃⏎✅ · ⎋↩️",
-			"editedLabel": "（✏️）",
 			"editEmptyText": "📨🈳🚫",
 			"createGroupTitle": "🆕👥",
 			"groupNameLabel": "👥🏷️",
@@ -2454,6 +1709,10 @@
 			},
 			"sendTitle": {
 				"title": "📤（Ctrl+Enter）"
+			},
+			"messageInput": {
+				"placeholder": "👥📨… ⌃⏎📤",
+				"aria-label": "💬"
 			},
 			"stopGenerateTitle": {
 				"title": "⏹️🔄#️⃣"
@@ -3125,7 +2384,11 @@
 			"altImage": {
 				"placeholder": "🖼️📝…",
 				"label": "🖼️📝"
-			}
+			},
+			"editedLabel": "（✏️）",
+			"mentionEmpty": "（🤷📭👤）",
+			"clickToLoad": "👆📥",
+			"send": "📤"
 		},
 		"sidebar": {
 			"settings": {
@@ -3445,6 +2708,234 @@
 			"chatHub": {
 				"title": "💬"
 			}
+		},
+		"profile": {
+			"title": "👤📋",
+			"description": "💬🏛️👤✨⚙️",
+			"settingsEyebrow": "👤⚙️",
+			"accountAtGlance": "👤👀📊",
+			"advancedKicker": "🎯⚙️",
+			"advancedSettings": "🔧⚙️🎛️",
+			"advancedDescription": "😌👌🚫🔧",
+			"edit": "✏️👤",
+			"save": "💾",
+			"cancel": "↩️",
+			"displayName": "🏷️👤",
+			"name": "🏷️",
+			"bio": "📝👤",
+			"descriptionLabel": "📝📄",
+			"email": "📧",
+			"status": "💬",
+			"customStatusLabel": "✨💬",
+			"avatarLabel": "🖼️",
+			"themeColorLabel": "🎨🌈",
+			"uploadAvatar": "⬆️🖼️",
+			"ownerTitle": "👑🫵",
+			"ownerSummary": "👑⚙️",
+			"ownerDescription": "⚙️➡️ 👑 ➡️ ✏️/🗑️ 🫵💬📨 ➕ 🏛️📰 ➕ 👤📋；👉📄 ➡️ 💻 ⚠️📝🖼️⚡（⚠️📜⚡）✍️✅ 🎲🧬#️⃣，♾️🗑️👑",
+			"ownerEntityHashLabel": "👑🧬#️⃣（128🔣）",
+			"ownerSave": "💾👑",
+			"ownerClear": "🗑️👑",
+			"ownerSaved": "👑✅🔄",
+			"ownerCleared": "👑✅🗑️",
+			"ownerSaveFailed": "💾❌: ${error}",
+			"ownerConfirmTitle": "👑⚠️✅❓",
+			"ownerConfirmWarningTitle": "⚠️🚨📖👀",
+			"ownerConfirmEditBody": "⚙️➡️ 👤➡️ 🚫🙏🫵 👍 ➡️ ✏️/🗑️ 🫵💬📨 ➕ 🏛️📰 ➕ 👤📋⚠️👆/🎣👑 = ⚡📤🎮📄",
+			"ownerConfirmRenderBody": "👤➡️📨💬 ➕ 🏛️📰 ➡️ 🫵🌐💻 💯📝🖼️⚡（➕ HTML/📜⚡）= ✅ 👤➡️ 💻▶️🎲📜 🚫🔁🙏.1️⃣🤝💯👤➡️➡️",
+			"ownerConfirmCooldown": "⚠️📖✅ (${seconds})",
+			"ownerConfirmFirst": "⚠️👌➡️",
+			"ownerConfirmSecond": "👆👆✅🔒",
+			"ownerConfirmCancel": "↩️",
+			"federationTitle": "🌐🔄",
+			"federationSummary": "📡🔋",
+			"federationDescription": "⚙️📡Nostr🔗 ➕ 🔋🎛️👥🌐🔄 1️⃣🎟️👤➕/➕🌐🤫💬 ➡️ 🤖✅▶️",
+			"federationAdvanced": "🔧➕",
+			"federationRelayUrlsLabel": "📡📝⬜️➡️🔧",
+			"federationBatterySaverLabel": "🔋💤",
+			"federationSave": "💾🌐",
+			"federationResetDefault": "↩️🔧⭐",
+			"federationSaved": "💾✅",
+			"federationResetOk": "↩️✅🔧",
+			"federationSaveFailed": "💾❌: ${error}",
+			"preferences": "❤️⚙️",
+			"language": "🗣️",
+			"theme": "🎨",
+			"notifications": "🔔⚙️",
+			"emailNotifications": "📧🔔",
+			"pushNotifications": "📲🔔",
+			"soundNotifications": "🔊🔔",
+			"social": "🏛️🔗",
+			"website": "🌐",
+			"github": "🐙🐱",
+			"twitter": "Twitter",
+			"stats": "📊",
+			"joinedAt": "⏰➕",
+			"messageCount": "📨#️⃣",
+			"groupCount": "👥#️⃣",
+			"channelCount": "📺#️⃣",
+			"privacy": "🔒⚙️",
+			"showEmail": "👀📧",
+			"showStats": "👀📊",
+			"allowDirectMessages": "✅🤫💬",
+			"statusOptions": {
+				"online": "🟢",
+				"away": "🟡🚶",
+				"busy": "🔴💼",
+				"offline": "⚫"
+			},
+			"themeOptions": {
+				"auto": "⚙️",
+				"light": "☀️",
+				"dark": "🌙"
+			},
+			"languageOptions": {
+				"zh-CN": "🤓",
+				"en-US": "English"
+			},
+			"notifEmail": "📧",
+			"notifPush": "📲",
+			"notifSound": "🔊",
+			"notifsAllOff": "📋✖️",
+			"bioEmpty": "😴🦥 📝🈳…",
+			"noSocialLinks": "🏛️🔗📭",
+			"emailVisible": "👀",
+			"emailHidden": "🙈",
+			"customStatus": {
+				"placeholder": "⏳💭…"
+			},
+			"avatar": {
+				"alt": "🖼️"
+			},
+			"avatarPreview": {
+				"alt": "🖼️👀"
+			},
+			"myGroups": "🫵👥🏠",
+			"myChannels": "🫵📺",
+			"noGroups": "👥🏠📭",
+			"noChannels": "📭📺",
+			"overview": "👤📊👀",
+			"summaryUserId": "🆔👤",
+			"summaryAccountStatus": "👤💬",
+			"summaryEmailVisibility": "📧👀",
+			"summaryThemePref": "🎨❤️",
+			"summaryLanguagePref": "🗣️❤️",
+			"summarySocialCount": "🏛️🔗#️⃣",
+			"summaryLinksCount": "🔗🌐#️⃣",
+			"groupDescriptionEmpty": "📝📭",
+			"groupMembers": "👥${members} · 📺${channels}",
+			"channelPrivate": " · 🔒",
+			"channelTypeText": "📝📺",
+			"channelTypeList": "📋📺",
+			"channelTypeVoice": "🎙️📺",
+			"channelTypeStreaming": "📡📺",
+			"errors": {
+				"loadFailed": "📥👤❌",
+				"saveFailed": "💾👤❌",
+				"uploadFailed": "❌⬆️🖼️",
+				"invalidUserData": "👤📄❌",
+				"identityRequired": "🔗🖥️🆔⏳🚫 🔄📄🙏；⏳❌ ⬇️ P2P ⚙️ 💾🌐🔗",
+				"fetchUserFailed": "📥👤❌",
+				"operationFailed": "⚙️❌: ${error}"
+			},
+			"success": {
+				"saved": "💾👤✅",
+				"avatarUploaded": "✅⬆️🖼️"
+			},
+			"ownerEntityHash": {
+				"placeholder": "✍️👑🧬#️⃣"
+			}
+		},
+		"entityProfile": {
+			"attributionMismatch": "👀🆔≠✍️👤（💡📥📜➡️📥👤🔁✍️）🙏🚫➡️🏷️👀➡️🔐🧬#️⃣",
+			"attributionMismatchShort": {
+				"title": "✍️🚫",
+				"aria-label": "✍️🚫"
+			},
+			"ownedBy": "👉👤 ${owner} ✅"
+		},
+		"stickers": {
+			"title": "🏷️😀🏛️",
+			"description": "🏷️😀⚙️🏛️",
+			"back": {
+				"title": "🔙"
+			},
+			"packs": "🏷️📦",
+			"create": "➕🏷️📦",
+			"upload": "⬆️🏷️😀",
+			"install": "📥",
+			"uninstall": "🗑️",
+			"close": "✖️",
+			"cancel": "↩️",
+			"installed": "✅📥",
+			"myPacks": "🫵🏷️📦",
+			"tabAll": "📋",
+			"store": "🏷️😀🏛️",
+			"favorites": "⭐",
+			"recent": "🕐👆",
+			"search": {
+				"placeholder": "🔍🏷️📦…"
+			},
+			"emptyPacks": "📭🏷️📦",
+			"packNameLabel": "🏷️📦🏷️",
+			"packName": {
+				"placeholder": "✍️🏷️📦🏷️"
+			},
+			"packDescriptionLabel": "📝",
+			"packDescription": {
+				"placeholder": "✍️📝"
+			},
+			"stickerNameLabel": "🏷️😀🏷️",
+			"stickerName": {
+				"placeholder": "✍️🏷️😀🏷️"
+			},
+			"selectPack": "👆🏷️📦",
+			"selectPackOption": {
+				"textContent": "🙏👆🏷️📦"
+			},
+			"selectImage": "👆🖼️",
+			"tagsLabel": "🏷️（，🔢⏱️）",
+			"tags": {
+				"placeholder": "💡: 🥰, 😀, 🐾"
+			},
+			"author": "✍️",
+			"authorLabel": "✍️: ${author}",
+			"stickerCount": "🏷️😀 ×${count}",
+			"badgeMine": "🫵",
+			"noDescription": "📝📭",
+			"noStickersInPack": "📭🏷️😀",
+			"deletePack": "🗑️🏷️📦",
+			"public": "🌍",
+			"private": "🔒",
+			"animated": "🎞️",
+			"static": "🖼️",
+			"addTag": "➕🏷️",
+			"defaultPackName": "🔧😀📦",
+			"defaultPackDescription": "⚙️🔧😀🏷️",
+			"unnamedPack": "🈚🏷️📦",
+			"importPackName": "🫵⭐",
+			"importPackDescription": "⬅️📨💾🏷️",
+			"nameRequired": "🙏✍️🏷️📦🏷️",
+			"stickerNameRequired": "🙏✍️🏷️😀🏷️",
+			"selectPackRequired": "🙏👆🏷️📦",
+			"fileRequired": "👆🙏🖼️📁",
+			"loadDetailFailed": "❌📥🏷️📦📋",
+			"deleteConfirm": "🗑️🏷️📦♾️❓🏷️😀➡️🗑️，🎮🚫↩️",
+			"errors": {
+				"loadFailed": "📥🏷️📦❌",
+				"uploadFailed": "⬆️🏷️😀❌",
+				"installFailed": "❌📥",
+				"uninstallFailed": "❌🗑️📦",
+				"createFailed": "➕🏷️📦❌",
+				"deleteFailed": "❌🗑️"
+			},
+			"success": {
+				"uploaded": "🏷️😀⬆️✅",
+				"installed": "✅📥",
+				"uninstalled": "✅🗑️📦",
+				"created": "🏷️📦➕✅",
+				"deleted": "✅🗑️"
+			}
 		}
 	},
 	"easynew": {
@@ -3759,433 +3250,6 @@
 			}
 		}
 	},
-	"userSettings": {
-		"title": "👤⚙️",
-		"PageTitle": "👤⚙️",
-		"description": "👤🔧🛡️💻",
-		"shell": {
-			"unauthorized": "🔒🚪",
-			"responseNotJson": "🖥️📄❓",
-			"unexpectedError": "❌📡"
-		},
-		"errors": {
-			"accountNotFound": "👤❌"
-		},
-		"userInfo": {
-			"title": "👤ℹ️",
-			"usernameLabel": "👤:",
-			"creationDateLabel": "🎂:",
-			"folderSizeLabel": "💾:",
-			"folderPathLabel": "📍:",
-			"copyPathButton": {
-				"title": "📋🛤️"
-			},
-			"copyPathButtonIcon": {
-				"alt": "📑"
-			},
-			"copiedAlert": "📋✅❗️",
-			"copyPathFailed": "📋📍❌"
-		},
-		"changePassword": {
-			"title": "✍️🔑",
-			"currentPasswordLabel": "🔑:",
-			"newPasswordLabel": "🆕🔑:",
-			"confirmNewPasswordLabel": "🆕🔑🔑:",
-			"submitButton": "✍️🔑",
-			"errorMismatch": "🆕🔑 ≠ 🆕🔑🔑",
-			"success": "🔑✍️✅",
-			"missingFields": "🔑📋❌",
-			"invalidCurrent": "🔑❌"
-		},
-		"renameUser": {
-			"title": "✍️👤",
-			"newUsernameLabel": "🆕👤:",
-			"submitButton": "✍️👤",
-			"confirmMessage": "🤔✍️👤❓➡️🚪➡️",
-			"success": "👤➡️ \"${newUsername}\" ✅, ➡️🚪…",
-			"missingParams": "👤🔑📋❌",
-			"wrongPassword": "🔑❌",
-			"mustDiffer": "👤🆕≠👤",
-			"taken": "👤📌",
-			"moveFailed": "📁👤❌ ${detail}"
-		},
-		"passkeys": {
-			"title": "🔐🔑📱",
-			"description": "🔗✅➡️🔑🖥️📱🔑🚪 🔒🌐➕🏠💻 ⚙️👤➕🔑",
-			"refreshButton": {
-				"title": "🔄📋"
-			},
-			"refreshButtonIcon": {
-				"alt": "🔄🖼️"
-			},
-			"nameLabel": "🏷️（➖）",
-			"nameInput": {
-				"placeholder": "💼🔐🔑"
-			},
-			"addButton": "➕🔐🔑",
-			"noneFound": "🔑📋🈳",
-			"itemDetails": "🕒➕: ${created}",
-			"removeButton": "🗑️🔑",
-			"removeConfirm": "🗑️🔑❓🚫🚪🔙",
-			"removeSuccess": "🗑️✅🔑",
-			"addSuccess": "➕✅🔑",
-			"errorLoadLibrary": "📚🔐❌",
-			"errorCancelled": "➕🚫",
-			"apiInvalidPassword": "🔑❌",
-			"apiMissingCredential": "📱🔑❌",
-			"apiRemoveParamsRequired": "📋📱🔑🔑"
-		},
-		"userDevices": {
-			"title": "👤💻",
-			"noDevicesFound": "🤷‍♂️💻",
-			"deviceInfo": "💻🆔: ${deviceId}",
-			"thisDevice": "👉💻",
-			"deviceDetails": "⏳: ${lastSeen} | 🌐: ${ipAddress} | 💻: ${userAgent}",
-			"revokeButton": "➖",
-			"revokeConfirm": "🤔➖💻❓",
-			"revokeSuccess": "💻➖✅",
-			"revokeMissingParams": "💻🔑📋❌",
-			"revokeWrongPassword": "🔑❌",
-			"listNotFound": "📋❌💻",
-			"deviceNotFound": "💻❌",
-			"refreshButton": {
-				"title": "🔄"
-			},
-			"refreshButtonIcon": {
-				"alt": "🔄"
-			}
-		},
-		"apiKeys": {
-			"title": "🔑",
-			"description": "⚙️🔑",
-			"input": {
-				"placeholder": "✍️"
-			},
-			"createButton": "✨",
-			"noKeysFound": "🤷‍♀️",
-			"keyDetails": "📝 ${description} 🗓️ ${createdAt} ⏳ ${lastUsed}",
-			"neverUsed": "⏳",
-			"noKeysForUser": "🔑📋❌",
-			"revokeWrongPassword": "🔑❌",
-			"keyNotFound": "🔑❌",
-			"revokeMissingJti": "🔑🆔❌",
-			"revokeMissingPassword": "🔑📋❌",
-			"verifyMissingApiKey": "🔑❌",
-			"revokeButton": "🗑️",
-			"revokeConfirm": "🤔🗑️❓",
-			"revokeSuccess": "✅🗑️",
-			"errorDescriptionRequired": "❗️✍️",
-			"createSuccess": "✅✨",
-			"refreshButton": {
-				"title": "🔄"
-			},
-			"refreshButtonIcon": {
-				"alt": "🔄"
-			}
-		},
-		"newApiKey": {
-			"title": "✨🔑",
-			"warning": "⚠️📋",
-			"closeButton": "✅📋",
-			"copyButton": {
-				"title": "📋🔑"
-			},
-			"copiedAlert": "📋✅❗️",
-			"copyKeyFailed": "📋🔑❌"
-		},
-		"editorCommand": {
-			"title": "✏️📟",
-			"description": "⚙️🖥️📂 — 🧩📝",
-			"editorPresetLabel": "📋✨",
-			"commandLabel": "⌨️",
-			"argsTemplateLabel": "🧩📝",
-			"argsTemplateHint": "🏷️ \\${file} \\${line} \\${column}",
-			"presetOptionPathAvailable": "${label}（✅ PATH）",
-			"presetOptionPathUnavailable": "${label}（❌ PATH）",
-			"testPathInput": {
-				"placeholder": "📂 C:/work/project/src/main.mjs"
-			},
-			"testButton": "▶️✏️",
-			"saveButton": "💾⚙️",
-			"saveSuccess": "💾✅ ✏️📟",
-			"testPathRequired": "⚠️📂❓",
-			"testSuccess": "✅▶️🖥️📂"
-		},
-		"logout": {
-			"title": "🚪",
-			"description": "➡️🚪",
-			"buttonText": "🚪",
-			"confirmMessage": "🤔🚪❓",
-			"successMessage": "✅🚪, ➡️🔐…"
-		},
-		"deleteAccount": {
-			"title": "🗑️👤",
-			"warning": "⚠️➡️🗑️👤💾",
-			"submitButton": "🗑️👤",
-			"confirmMessage1": "⚠️🤔🗑️👤❓",
-			"confirmMessage2": "✍️👤 \"${username}\":",
-			"usernameMismatch": "👤 ≠ 👤, 🗑️❌",
-			"success": "👤🗑️✅, ➡️🚪…",
-			"missingPassword": "🔑📋❌",
-			"wrongPassword": "🔑❌"
-		},
-		"passwordConfirm": {
-			"title": "✅",
-			"message": "➡️, ✍️🔑:",
-			"passwordLabel": "🔑:",
-			"confirmButton": "✅",
-			"cancelButton": "❌"
-		},
-		"apiError": "🌐❌: ${message}",
-		"generalError": "❌: ${message}",
-		"home_function_buttons": {
-			"settings": {
-				"title": "⚙️",
-				"sub_items": {
-					"main": {
-						"title": "👤⚙️"
-					}
-				}
-			}
-		}
-	},
-	"subfounts": {
-		"title": "🖇️⛲ - 📱↔️📱",
-		"pageTitle": "🖇️⛲",
-		"description": "⚙️ 📱↔️📱",
-		"hostConnectionCode": {
-			"title": "🏠🔗🔢",
-			"connectionCodeLabel": "🔗🔢 (🆔)",
-			"passwordLabel": "🔑",
-			"copyButton": "📋",
-			"regenerateButton": "🔄",
-			"infoMessage": "ℹ️ 📤 🆔+🔑 ➡️ 📱",
-			"connectionCodeCopied": "🔗🔢 📋✅",
-			"passwordCopied": "🔑 📋✅",
-			"regenerateSuccess": "🔗🔢 🔄✅"
-		},
-		"infra": {
-			"title": "🌐❤️",
-			"description": "🎛️🔗🖇️⛲➡️🌐❤️🤝🌐；❌🔌🏠📡▶️，🚫🌐🤝",
-			"capabilityRelay": "📡🔀⏭️⏭️，➡️❌🤝🔗",
-			"capabilityMailbox": "📦📴➡️📶📩",
-			"hostPriority": "✅🏠🔝：⚖️📊➕🔒🔝",
-			"toggleLabel": "🖇️⛲➡️🌐❤️",
-			"enabledToast": "✅🖇️⛲🌐❤️（🏠🔝）",
-			"disabledToast": "❌🖇️⛲🚫🌐❤️"
-		},
-		"connectedSubfounts": {
-			"title": "🔗✅ 🖇️⛲",
-			"noSubfountsConnected": "🚫🔗",
-			"table": {
-				"id": "ID",
-				"description": "📝",
-				"deviceId": "🆔📱",
-				"connectedAt": "🕒🔗",
-				"status": "📊",
-				"actions": "🎮",
-				"connected": "🟢",
-				"disconnected": "🔴",
-				"save": "💾",
-				"na": "N/A"
-			},
-			"descriptionSaved": "📝💾✅",
-			"descriptionSaveFailed": "📝💾❌: ${message}"
-		},
-		"codeExecution": {
-			"title": "💻 ▶️",
-			"description": "▶️ JS ➡️ 📱",
-			"selectSubfountLabel": "👆 📱",
-			"hostOption": "🏠 (🆔: ${id})",
-			"subfountOption": "🔌 ${id}${deviceId}",
-			"scriptLabel": "JS {}",
-			"executeButton": "▶️",
-			"executing": "🏃…",
-			"noSubfountSelected": "🚫 👆 📱",
-			"noScriptProvided": "🚫 ⌨️",
-			"executionSuccess": "▶️ ✅",
-			"executionFailed": "▶️ ❌: ${message}",
-			"selectSubfount": "👆🙏💻Subfount…"
-		},
-		"downloadClient": {
-			"title": "⬇️🖇️⛲🤖",
-			"description": "⬇️ .mjs ➡️ 📱",
-			"downloadButton": "⬇️ subfount.mjs"
-		},
-		"errors": {
-			"loadConnectionCodeFailed": "❌ 🔗🔢: ${message}",
-			"regenerateConnectionCodeFailed": "❌ 🔄 🔗🔢: ${message}",
-			"loadSettingsFailed": "❌ 🌐❤️⚙️: ${message}",
-			"saveSettingsFailed": "❌ 💾🌐❤️⚙️: ${message}",
-			"generalError": "💥: ${message}"
-		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "🚧",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "📱👶",
-						"sub_items": {
-							"main": {
-								"title": "⚙️📱👶"
-							}
-						}
-					}
-				}
-			}
-		}
-	},
-	"languageSettings": {
-		"title": "🗣️⚙️",
-		"pageTitle": "🌐🗣️⚙️",
-		"description": "⚙️🗣️, ❤️➡️🌐",
-		"pageDescription": "✍️🌐🗣️",
-		"availableLanguages": "✅🗣️",
-		"preferredLanguages": "❤️🗣️",
-		"resetButton": "🔄",
-		"saveButton": "💾",
-		"select": {
-			"placeholder": "👉🗣️"
-		},
-		"search": {
-			"placeholder": "🔍🗣️"
-		},
-		"noPreferredLanguages": "🤷‍♂️❤️🗣️, ➡️🌐",
-		"moveUpButton": {
-			"aria-label": "⬆️",
-			"alt": "⬆️"
-		},
-		"moveDownButton": {
-			"aria-label": "⬇️",
-			"alt": "⬇️"
-		},
-		"deleteLocaleButton": {
-			"aria-label": "🗑️",
-			"alt": "🗑️"
-		},
-		"savedMessage": "🗣️⚙️💾✅❗️",
-		"resetMessage": "🗣️⚙️🔄✅❗️",
-		"fetchLocalesFailed": "🗣️📥❌❗️",
-		"home_function_buttons": {
-			"settings": {
-				"title": "⚙️",
-				"sub_items": {
-					"main": {
-						"title": "🗣️⚙️"
-					}
-				}
-			}
-		}
-	},
-	"themeManage": {
-		"title": "🎨",
-		"description": "🎨🖌️🖼️✨",
-		"instruction": "🤔🎨❗️",
-		"search": {
-			"placeholder": "🔍🎨",
-			"noResult": "🤷‍♀️🚫"
-		},
-		"createButton": "+ 🆕🎨",
-		"preview": {
-			"editButton": {
-				"title": "✏️"
-			},
-			"editButtonIcon": {
-				"alt": "✏️"
-			},
-			"deleteButton": {
-				"title": "🗑️"
-			},
-			"deleteButtonIcon": {
-				"alt": "🗑️"
-			},
-			"cloneButton": {
-				"title": "📑"
-			},
-			"cloneButtonIcon": {
-				"alt": "📑"
-			}
-		},
-		"editor": {
-			"title": "🎨✏️",
-			"cancelButton": "🚫",
-			"saveApplyButton": "💾 & ▶️",
-			"themeName": "📛 (🆔)",
-			"autoPaletteTitle": "🖼️➡️🎨",
-			"autoPaletteInstruction": "👆🎨 ➡️ 🤖🎒",
-			"coreColors": "❤️💙💚",
-			"baseBackground": "🔤 & 🖼️",
-			"variables": "🧮",
-			"borderRadius": "📐🔵",
-			"borderWidth": "📐➖",
-			"advancedCustomization": "🛠️🔧",
-			"customCSS": "🎨📝 (CSS)",
-			"customMjsScript": "📜 (MJS)",
-			"mjsSyntaxHint": "⌨️ [async-eval](${asyncDocLink}) ↩️ 📦 { `load()`, `unload()` }",
-			"themeIdRequired": "🆔❓",
-			"newThemeName": "🆕🎨:",
-			"deleteConfirm": "🗑️🎨 ${id}❓",
-			"saved": "💾✅",
-			"failedToSave": "💾❌",
-			"failedToDelete": "🗑️❌ ${message}",
-			"failedToClone": "📋❌ ${message}"
-		},
-		"themes": {
-			"auto": "⚙️",
-			"light": "☀️",
-			"dark": "🌙",
-			"cupcake": "🧁",
-			"bumblebee": "🐝",
-			"emerald": "💎",
-			"corporate": "🏢",
-			"synthwave": "🌃",
-			"retro": "🕹️",
-			"cyberpunk": "🤖🦾",
-			"valentine": "❤️",
-			"halloween": "🎃",
-			"garden": "🌷",
-			"forest": "🌲",
-			"aqua": "🌊",
-			"lofi": "🎶",
-			"pastel": "🌸",
-			"fantasy": "🧙",
-			"wireframe": "📐",
-			"black": "🖤",
-			"luxury": "👑",
-			"dracula": "🧛",
-			"cmyk": "🎨",
-			"autumn": "🍂",
-			"business": "💼",
-			"acid": "🧪",
-			"lemonade": "🍋",
-			"night": "🌃",
-			"coffee": "☕",
-			"winter": "❄️",
-			"dim": "💡",
-			"nord": "🧭",
-			"sunset": "🌅",
-			"caramellatte": "🍮☕",
-			"abyss": "🕳️",
-			"silk": "🧣"
-		},
-		"achievements": {
-			"change_theme": {
-				"name": "🎨🖌️",
-				"description": "😐➡️🤩",
-				"locked_description": "🔒: 🎨🔄"
-			}
-		},
-		"home_function_buttons": {
-			"settings": {
-				"title": "⚙️",
-				"sub_items": {
-					"switchTheme": {
-						"title": "🎨"
-					}
-				}
-			}
-		}
-	},
 	"part_config": {
 		"title": "🧩⚙️",
 		"pageTitle": "🧩⚙️",
@@ -4427,6 +3491,84 @@
 			}
 		}
 	},
+	"discord_bots": {
+		"title": "🤖💬",
+		"description": "🎭🗣️ ➡️ 🤖💬",
+		"cardTitle": "🤖💬",
+		"botSelectDropdown": {
+			"placeholder": "👉🤖"
+		},
+		"botSearch": {
+			"placeholder": "🔍🤖"
+		},
+		"charSelectDropdown": {
+			"placeholder": "👉👤"
+		},
+		"charSearch": {
+			"placeholder": "🔍👤"
+		},
+		"configCard": {
+			"title": "🤖⚙️",
+			"labels": {
+				"character": "🔗🤖",
+				"apiKey": "🔑",
+				"config": "⚙️"
+			},
+			"apiKeyInput": {
+				"placeholder": "✍️🔑"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "👁️"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "👁️"
+			},
+			"buttons": {
+				"saveConfig": "💾⚙️",
+				"startBot": "▶️",
+				"stopBot": "⏹️"
+			},
+			"charSelect": {
+				"placeholder": "👆🎭"
+			}
+		},
+		"prompts": {
+			"newBotName": "✍️🆕🤖🏷️:"
+		},
+		"buttons": {
+			"newBot": "🆕",
+			"deleteBot": "🗑️"
+		},
+		"alerts": {
+			"configSaved": "⚙️💾✅",
+			"botExists": "🤖 \"${botname}\" ✅",
+			"unsavedChanges": "🤔💾❓",
+			"httpError": "🌐❌",
+			"beforeUnload": "🤔💾➡️🚪❓"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "🤖🎮",
+				"description": "👤✨➡️🎮",
+				"locked_description": "🔒: 🤖🎮"
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "🤖",
+				"sub_items": {
+					"manage": {
+						"title": "🤖💬🎮"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "🤖💬🎮"
+			}
+		}
+	},
 	"wechat_bots": {
 		"title": "🤖💚",
 		"description": "🎭➡️💚💬 · 🤖",
@@ -4518,83 +3660,584 @@
 			"needBot": "👉🤖📋🆕"
 		}
 	},
-	"discord_bots": {
-		"title": "🤖💬",
-		"description": "🎭🗣️ ➡️ 🤖💬",
-		"cardTitle": "🤖💬",
-		"botSelectDropdown": {
-			"placeholder": "👉🤖"
-		},
-		"botSearch": {
-			"placeholder": "🔍🤖"
-		},
-		"charSelectDropdown": {
-			"placeholder": "👉👤"
-		},
-		"charSearch": {
-			"placeholder": "🔍👤"
-		},
-		"configCard": {
-			"title": "🤖⚙️",
-			"labels": {
-				"character": "🔗🤖",
-				"apiKey": "🔑",
-				"config": "⚙️"
-			},
-			"apiKeyInput": {
-				"placeholder": "✍️🔑"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "👁️"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "👁️"
-			},
-			"buttons": {
-				"saveConfig": "💾⚙️",
-				"startBot": "▶️",
-				"stopBot": "⏹️"
-			},
-			"charSelect": {
-				"placeholder": "👆🎭"
-			}
-		},
-		"prompts": {
-			"newBotName": "✍️🆕🤖🏷️:"
-		},
-		"buttons": {
-			"newBot": "🆕",
-			"deleteBot": "🗑️"
-		},
-		"alerts": {
-			"configSaved": "⚙️💾✅",
-			"botExists": "🤖 \"${botname}\" ✅",
-			"unsavedChanges": "🤔💾❓",
-			"httpError": "🌐❌",
-			"beforeUnload": "🤔💾➡️🚪❓"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "🤖🎮",
-				"description": "👤✨➡️🎮",
-				"locked_description": "🔒: 🤖🎮"
-			}
-		},
+	"social": {
+		"title": "🏛️",
+		"description": "🔗🌍 🏛️📰 ➕ 👀 ➕ 📁🔗",
+		"bootstrapFailed": "🏛️🚀❌: ${error}",
 		"home_function_buttons": {
-			"bot_related": {
-				"title": "🤖",
-				"sub_items": {
-					"manage": {
-						"title": "🤖💬🎮"
-					}
+			"main": {
+				"title": "🏛️"
+			}
+		},
+		"nav": {
+			"feed": "🏠",
+			"explore": "🔭",
+			"notifications": "📬",
+			"saved": "⭐",
+			"drafts": "📝📦",
+			"profile": "🫵",
+			"videos": "🎬",
+			"live": "📡🔴"
+		},
+		"settings": {
+			"title": "🏛️⚙️",
+			"back": {
+				"aria-label": "🔙👤"
+			},
+			"privacyTitle": "🔒🔭",
+			"privacyHint": "🎮👤 🔭⭐ 👀",
+			"tasteTitle": "⭐❤️",
+			"tasteHint": "🎛️⭐📰 🔒➕ 🏷️",
+			"mutedKeywordsTitle": "🚫🔑🏷️",
+			"mutedKeywordsHint": "🎯📄/⚠️/🏷️ ➡️ 🙈📰🔭🔍🔔 · 💾💻",
+			"mutedKeywordsMatchTags": "🏷️✅➕",
+			"mutedKeywordsAdd": "➕",
+			"mutedKeywordsRemove": {
+				"title": "🗑️🚫🔑"
+			},
+			"mutedKeywordsEmpty": "🚫🔑📭",
+			"autoTranslateTitle": "🌐🤖",
+			"autoTranslateHint": "▶️➡️ 🌐📰 🤖📥🌐📝 ➕ 🔄📄",
+			"autoTranslateEnable": "🤖🌐📰",
+			"safetyTitle": "🛡️🚫",
+			"safetyHint": "🛡️🚫👤 ➕ 🙈📋",
+			"mutedKeywords": {
+				"placeholder": "✍️🔑 / #️⃣🏷️"
+			},
+			"taste": {
+				"rebuild": "♻️❤️",
+				"privacyPublishPreferences": "🌐🏷️🔗🔍",
+				"privacyPublishPreferencesHint": "⏹️➡️ 👍🤝🚫👀🫵🏷️📢 · 🚫🤝",
+				"privacyPublishReactions": "🌐👍👎",
+				"privacyPublishReactionsHint": "⏹️➡️ ✍️🚫📥👍👎 · 🫵🚫⭐ · 🚫📤2️⃣",
+				"empty": "❤️🏷️📭 · ⬆️👍👎🤖",
+				"weight": "⚖️${weight}",
+				"save": "💾",
+				"name": {
+					"placeholder": "💻🏷️"
+				}
+			},
+			"blocklist": {
+				"title": "🚫📋",
+				"hiddenTitle": "🙈📋",
+				"empty": "🚫🙈📭",
+				"unblock": "🔓🚫",
+				"unhide": "↩️🙈",
+				"scopeEntity": "👤🔑",
+				"scopeSubject": "🫵"
+			}
+		},
+		"composer": {
+			"placeholder": "💭… ✅📝⛲🗣️ @️⃣✅",
+			"publish": "📤",
+			"saveDraft": "💾📝",
+			"fab": {
+				"title": "✍️📰",
+				"aria-label": "✍️📰"
+			},
+			"contentWarning": {
+				"placeholder": "⚠️📝（🔘）"
+			},
+			"sensitiveMedia": "🔞🖼️🙈",
+			"editImage": "✏️",
+			"editCrop": "✂️",
+			"editMosaic": "🔲",
+			"editBrush": "🖌️",
+			"editApply": "✅",
+			"editCancel": "↩️",
+			"replyPolicyEveryone": "🌍💬",
+			"replyPolicyFollowers7d": "7️⃣📅➕👀",
+			"replyPolicyAuthorFollows": "🫵➕👀",
+			"replyPolicyLabel": "💬🔐",
+			"replyDisplayAll": "👀💬📋",
+			"replyDisplayFeaturedOnly": "⭐💬",
+			"replyDisplayLabel": "💬👀",
+			"scheduleLabel": "⏰📤",
+			"scheduleSuccess": "📰⏰📋✅",
+			"emojiButton": {
+				"title": "😀",
+				"aria-label": "😀"
+			},
+			"mediaButton": {
+				"title": "➕🖼️",
+				"aria-label": "➕🖼️"
+			},
+			"pollButton": {
+				"title": "➕🗳️",
+				"aria-label": "➕🗳️"
+			},
+			"cwToggle": {
+				"title": "⚠️📝",
+				"aria-label": "⚠️📝"
+			},
+			"advancedToggle": {
+				"title": "➕☑️",
+				"aria-label": "➕☑️"
+			},
+			"media": {
+				"placeholder": "🖼️♿📝"
+			},
+			"visibility": {
+				"label": "👀📏",
+				"public": "🌍",
+				"unlisted": "🚫📋",
+				"followers": "🔒➕👀",
+				"followers7d": "➕👀✅7📅",
+				"followers30d": "➕👀✅30📅",
+				"selected": "👤👀",
+				"private": "🔒🫵",
+				"allowLabel": "👀👤",
+				"exceptLabel": "🚫👤",
+				"allow": {
+					"placeholder": "👀👤 👤🔑#️⃣ · 📭/，⏱️"
+				},
+				"except": {
+					"placeholder": "🚫👀（🔘）"
 				}
 			}
 		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "🤖💬🎮"
+		"feed": {
+			"refresh": "🔄📰",
+			"newPosts": "🆕📰 · 👆👀",
+			"tabLatest": "🆕",
+			"tabForYou": "⭐",
+			"repostedBy": "${author} ↪️",
+			"decryptFailed": "🚫🔓📄",
+			"revealContent": "👀📄",
+			"sensitiveMedia": "⚠️🖼️",
+			"showMore": "📂",
+			"showLess": "🔼",
+			"replayDivider": "✅👀 · 🔁👀",
+			"trending": {
+				"title": "🔥#️⃣",
+				"postCount": {
+					"title": "${n}📄"
+				},
+				"scopeLocal": "💻",
+				"scopeNearby": "📍🧭",
+				"empty": "🔥#️⃣📭"
 			}
+		},
+		"explore": {
+			"accounts": "⭐👤",
+			"posts": "🆕📄",
+			"mediaOnly": "🖼️🔒"
+		},
+		"notifications": {
+			"reply": "${author} 💬↩️📄",
+			"mention": "${author} 📰@️⃣🫵",
+			"like": "${author} 👍📄",
+			"repost": "${author} ↪️📄",
+			"follow": "${author} ➕👀🫵",
+			"care_post": "${author} 📤🆕📰（💖）",
+			"poll_closed": "${author} 🗳️⏹️",
+			"post_note": "${author} ➕👀📝📄",
+			"live_started": "${author} 📡▶️",
+			"view": "👀",
+			"markAllRead": "✅👀📬"
+		},
+		"saved": {
+			"all": "📋",
+			"unfiled": "📂🈳",
+			"createFolder": {
+				"title": "➕📁",
+				"aria-label": "➕📁"
+			},
+			"createFolderPrompt": "📁🏷️",
+			"pickFolderTitle": "⭐➡️",
+			"confirm": "✅",
+			"cancel": "↩️",
+			"remove": "🗑️⭐",
+			"renameFolder": "✏️🏷️",
+			"renameFolderPrompt": "📁🏷️🆕",
+			"deleteFolder": "🗑️📁",
+			"deleteFolderConfirm": "🗑️📁❓ ➡️ 📄➡️📂🈳",
+			"searchEmpty": "🔍⭐📭",
+			"folderEmpty": "📁📭",
+			"emptyHint": "👀📰 ➡️ 🔖 ➡️ ⭐",
+			"search": {
+				"placeholder": "🔍⭐…"
+			}
+		},
+		"drafts": {
+			"untitled": "（📝🈳）",
+			"emptyHint": "✍️📰 ➡️ 💾📝 ➡️ 🔁✏️",
+			"saved": "📝💾✅",
+			"deleted": "📝🗑️✅",
+			"delete": "🗑️📝",
+			"empty": "📝📭",
+			"saveFailed": "💾📝❌: ${error}",
+			"loadFailed": "📂📝❌: ${error}",
+			"deleteFailed": "🗑️📝❌: ${error}"
+		},
+		"profile": {
+			"edit": "✏️👤",
+			"viewPosts": "👀🏛️👤",
+			"settingsBtn": {
+				"aria-label": "🏛️⚙️"
+			},
+			"mediaOnly": "[🖼️]",
+			"hideFromExplore": "🙈🔭👤",
+			"tabPosts": "📰",
+			"tabAlbums": "🖼️📚",
+			"tabLikes": "👍",
+			"tabCabinets": "🗄️",
+			"tabsLabel": {
+				"aria-label": "👤📂"
+			},
+			"cabinetsEmpty": "🗄️🌍📭",
+			"cabinetsFailed": "🗄️📥❌: ${error}",
+			"statsGroup": {
+				"aria-label": "👤📊"
+			},
+			"statsPosts": "📰",
+			"statsFollowing": "➕👀",
+			"statsFollowers": "👥❤️",
+			"followingTitle": "➕👀",
+			"followersTitle": "👥❤️",
+			"albums": {
+				"create": "🆕🖼️📚",
+				"edit": "✏️🖼️📚",
+				"save": "💾",
+				"cancel": "↩️",
+				"back": "🔙🖼️📚",
+				"empty": "📭🖼️📚",
+				"emptyPosts": "📭🖼️📄",
+				"name": "🖼️📚🏷️",
+				"description": "🖼️📚📝",
+				"deleteLinks": "🗑️🖼️📚（💾📄）",
+				"deleteWithPosts": "🗑️🖼️📚➕📄",
+				"pickerLabel": "➕🖼️📚",
+				"defaultName": "⭐🖼️📚"
+			}
+		},
+		"video": {
+			"view": {
+				"aria-label": "🎬"
+			},
+			"empty": "🎬📭",
+			"emptyHint": "➕👀/🏛️🌍 🎬📰📭 · 📤🎬❓",
+			"compose": "➡️📤🎬",
+			"back": {
+				"aria-label": "🔙📰"
+			},
+			"mute": {
+				"aria-label": "🔇"
+			},
+			"unmute": {
+				"aria-label": "🔊"
+			},
+			"unavailable": "🎬❌",
+			"closeReplies": {
+				"aria-label": "✖️💬"
+			}
+		},
+		"live": {
+			"empty": "📡📭",
+			"viewers": "👀${n}",
+			"likes": "👍${n}",
+			"local": "💻",
+			"hall": "📡🏛️",
+			"back": {
+				"title": "🔙📰",
+				"aria-label": "🔙📰"
+			},
+			"danmakuSend": "📤",
+			"postWatch": "▶️📡",
+			"postEnded": "📡⏹️",
+			"postEndedStats": "${viewers}👀 · ${likes}👍 · ${duration}",
+			"link": {
+				"invite": "📡🤝",
+				"needPeer": "✍️ 👤🔑#️⃣:📡🆔",
+				"invited": "🤝📨✅",
+				"linked": "🔗✅",
+				"peer": {
+					"placeholder": "👤🔑#️⃣:📡🆔"
+				}
+			},
+			"broadcast": {
+				"title": "📡▶️",
+				"open": "➡️📡▶️",
+				"mediaAv": "🎙️➕🖼️",
+				"mediaAudio": "🎙️",
+				"mediaVideo": "🖼️",
+				"mediaWhip": "📡⬆️WHIP（📹💻）",
+				"whipUrl": "📡⬆️📍",
+				"whipToken": "🎟️🔐",
+				"whipWaiting": "⏳📡⬆️WHIP（📹💻）…",
+				"start": "▶️📡",
+				"stop": "⏹️📡",
+				"started": "📡✅▶️",
+				"stopped": "📡✅⏹️",
+				"titleInput": {
+					"placeholder": "📡🏷️（🔘）"
+				}
+			},
+			"danmaku": {
+				"placeholder": "💬…"
+			}
+		},
+		"search": {
+			"placeholder": "🔍📰/👤/#️⃣（⬆️2🔤）",
+			"open": {
+				"aria-label": "🔍"
+			},
+			"submit": "🔍",
+			"clear": "🧹",
+			"empty": "🔍📄📭",
+			"tooShort": "✍️⬆️2🔤",
+			"usersTitle": "👤",
+			"postsTitle": "📰",
+			"usersEmpty": "🔍👤📭",
+			"pinAlias": "🏷️➡️",
+			"trustScore": "🤝${score}",
+			"viewTitle": "🔍",
+			"loading": "🔍…",
+			"filterAuthor": {
+				"placeholder": "✍️"
+			},
+			"filterMediaAll": "✅🖼️",
+			"filterMediaImage": "🖼️",
+			"filterMediaVideo": "🎬",
+			"filterTag": {
+				"placeholder": "#️⃣🏷️"
+			},
+			"sortRecent": "🆕",
+			"sortPopular": "🔥",
+			"scopeLocal": "💻",
+			"scopeNearby": "📍🧭"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "✖️"
+			}
+		},
+		"actions": {
+			"like": "👍",
+			"unlike": "↩️👍",
+			"dislike": "👎",
+			"undislike": "↩️👎",
+			"repost": "↪️",
+			"quote": "💬🔗",
+			"delete": "🗑️",
+			"edit": "✏️",
+			"save": "⭐",
+			"saved": "⭐✅",
+			"translate": "🌐",
+			"dm": "📤🤫💬",
+			"block": "🚫👤",
+			"hide": "🙈",
+			"mute": "🔇",
+			"follow": "➕👀",
+			"following": "✅👀",
+			"care": "💖",
+			"careRemove": "↩️💖",
+			"careAdded": "✅💖",
+			"careRemoved": "↩️💖✅",
+			"setAlias": "⚙️🏷️",
+			"setAliasPrompt": "🏷️💻（⬜🧹）：",
+			"aliasSaved": "🏷️✅",
+			"replies": "💬",
+			"copyLink": "📋🔗",
+			"downloadHtml": "⬇️🌐📄",
+			"copied": "✅📋",
+			"more": {
+				"aria-label": "⋯"
+			},
+			"share": "🔗",
+			"likeFailed": "👍❌: ${error}",
+			"dislikeFailed": "👎❌: ${error}",
+			"repostFailed": "↪️❌: ${error}",
+			"replyFailed": "💬❌: ${error}",
+			"followFailed": "➕👀❌: ${error}",
+			"saveFailed": "⭐❌: ${error}",
+			"blockFailed": "🚫❌: ${error}",
+			"hideFailed": "🙈❌: ${error}",
+			"muteFailed": "🔇❌: ${error}",
+			"deleteFailed": "🗑️❌: ${error}"
+		},
+		"post": {
+			"edited": "✅✏️",
+			"editPrompt": "✏️📄",
+			"editHistory": "✏️📜",
+			"editHistoryEmpty": "📜📭",
+			"loading": "📥…",
+			"notFound": "📄🚫👀",
+			"loadFailed": "📥❌ · 🔁⏳",
+			"detailTitle": "📄",
+			"back": "🔙"
+		},
+		"reply": {
+			"context": "💬↩️${author}"
+		},
+		"notes": {
+			"label": "👀➕",
+			"add": "📝➕",
+			"prompt": "✍️👀➕（🏛️📝）",
+			"listTitle": "📋👀➕",
+			"helpful": "👍",
+			"unhelpful": "👎",
+			"more": "📋${n}",
+			"empty": "👀➕📭"
+		},
+		"poll": {
+			"multi": "✅🔘➕",
+			"apply": "✅🗳️",
+			"closed": "🗳️⏹️",
+			"deadline": "⏰${deadline}",
+			"options": {
+				"placeholder": "1️⃣🔘/line（⬆️2📌）"
+			}
+		},
+		"aside": {
+			"suggested": "⭐➕👀"
+		},
+		"groupRef": {
+			"linking": "🔗💬👥",
+			"clear": "🔓🔗",
+			"pick": "🔗💬👥/📺…"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "📬🔽"
+			},
+			"tabs": {
+				"all": "📋",
+				"mention": "@️⃣",
+				"reply": "💬↩️",
+				"like": "👍",
+				"follow": "➕👀",
+				"repost": "↪️"
+			},
+			"aggregated": {
+				"like": "${author1}、${author2} … ${count}👤👍📄",
+				"likeTwo": "${author1} ➕ ${author2} 👍📄",
+				"repost": "${author1}、${author2} … ${count}👤↪️📄",
+				"repostTwo": "${author1} ➕ ${author2} ↪️📄",
+				"follow": "${author1}、${author2} … ${count}👤➕👀🫵",
+				"followTwo": "${author1} ➕ ${author2} ➕👀🫵"
+			}
+		},
+		"replies": {
+			"placeholder": "✍️💬…",
+			"submit": "💬↩️",
+			"empty": "💬📭",
+			"emptyHint": "✍️1️⃣ · ▶️🗣️"
+		},
+		"repost": {
+			"placeholder": "➕↪️💬（🔘）…",
+			"submit": "✅↪️"
+		},
+		"quote": {
+			"quoting": "▶️🔗",
+			"clear": "↩️🔗",
+			"viewOriginal": "👀📄"
+		},
+		"a11y": {
+			"linkGroupSelect": "🔗💬👥/📺",
+			"postVisibility": "👀📏",
+			"postLang": "📄🗣️",
+			"trendingHashtags": "🔥#️⃣",
+			"saveFolderSelect": "⭐📁"
+		},
+		"translate": {
+			"label": "🌐📝："
+		},
+		"time": {
+			"justNow": "⏱️✨",
+			"minutesAgo": "⏱️${n}m",
+			"hoursAgo": "⏱️${n}h"
+		},
+		"empty": {
+			"feed": "📰📭 · ➕👀",
+			"profilePosts": "📰📭",
+			"following": "➕👀📭",
+			"followers": "👥❤️📭",
+			"notifications": "🔔📭",
+			"saved": "⭐📭",
+			"drafts": "📝📭",
+			"exploreAccounts": "🔭👤📭",
+			"explorePosts": "🔭📰📭",
+			"likedPosts": "👍📭",
+			"noIdentity": "💬⚙️🌐🔗🆔 ➡️ 🏛️"
+		},
+		"topic": {
+			"follow": "🔔",
+			"unfollow": "🔕",
+			"empty": "#️⃣📭"
 		}
+	},
+	"cabinet": {
+		"title": "🗄️",
+		"description": "P2P 🫵🗄️➕🤝🗄️",
+		"openCabinets": {
+			"title": "📂🗄️📋",
+			"aria-label": "📂🗄️📋"
+		},
+		"closeCabinets": {
+			"title": "✖️",
+			"aria-label": "✖️"
+		},
+		"bootstrapFailed": "🗄️🚀❌：${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "🗄️"
+			}
+		},
+		"upload": "⬆️",
+		"uploadFolder": "⬆️📂",
+		"newFolder": "➕📂",
+		"open": "📂",
+		"download": "⬇️",
+		"downloadZip": "⬇️📂",
+		"rename": "✏️🏷️",
+		"copy": "📋",
+		"cut": "✂️",
+		"paste": "📋",
+		"pasteLink": "📋➡️🔗",
+		"selectAll": "✅📋",
+		"invert": "🔄👆",
+		"properties": "📋",
+		"delete": "🗑️",
+		"back": {
+			"title": "↩️⬅️📍",
+			"aria-label": "↩️⬅️📍"
+		},
+		"cancel": "↩️",
+		"save": "💾",
+		"showHidden": "👀👻",
+		"name": "🏷️",
+		"descriptionField": "📝",
+		"attrHidden": "🙈",
+		"attrSystem": "💻（🗑️📌✅）",
+		"previewUrl": "👀🖼️🔗",
+		"deletePreviewWithFile": "🗑️📁➡️🗑️👀🖼️",
+		"folderPassword": "📂🔐（⬜🔄，✍️➡️🔐✅）",
+		"unlockFolder": "🔓🔐📂",
+		"unlock": "🔓",
+		"unlockFailed": "🔓❌：${error}",
+		"previewFailed": "👀🖼️⚙️❌：${error}",
+		"created": "➕：${stamp}",
+		"modified": "✏️：${stamp}",
+		"statusCount": "${count} 📌，✅👆 ${selected}",
+		"newCabinetPrompt": "🆕🗄️🏷️",
+		"newFolderPrompt": "📂🏷️🆕",
+		"renamePrompt": "🆕🏷️",
+		"visibilityPrompt": "👀🌍（public/unlisted/followers/private/selected）",
+		"cabinetActionPrompt": "🎮：rename / delete / visibility",
+		"confirmDeleteCabinet": "🗑️🗄️✅❓",
+		"confirmDelete": "🗑️✅👆📌❓",
+		"confirmDeleteSystem": "👆➕💻📁，🗑️✅❓",
+		"copied": "✅📋",
+		"cutDone": "✅✂️",
+		"undo": "➖",
+		"redo": "↪️",
+		"newWindow": "🪟📂👉📍",
+		"goUp": "⬆️📂",
+		"brokenLink": "🔗💔：${reason}",
+		"noDownload": "🚫⬇️📄",
+		"groupDownloadHint": "👥📁➡️💬📎／⬇️🔗📥",
+		"remoteEntity": "🔗👤"
 	},
 	"browser_integration": {
 		"title": "🌐🔗",
@@ -4719,6 +4362,48 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "🔗 ⛲ ➡️ 📝 (Zed, JetBrains, Neovim) 🤝 ACP ⚙️ 🔑 & 🎭 ➕ 🤖 ➡️ 👨‍💻 🔄",
+		"title": "⛲🔗",
+		"heading": "⛲🔗",
+		"instruction": "⛲ 🎭 ➡️ 💻 (Zed, JetBrains, Neovim) 🔗 ACP",
+		"supportedEditorsTitle": "✅💻 & 📱",
+		"supportedEditorsIntro": "⬇️ 🔌 🤝 ⛲:",
+		"supportedEditorsLoading": "⏳…",
+		"supportedEditorsError": "❌📋: ${message}",
+		"acpTitle": "⚙️ ⛲ ACP 📋",
+		"acpDesc": "👀👇 ➡️ ⚙️ ⛲ ACP 📋:",
+		"acpCharLabel": "🎭",
+		"charListError": "❌🎭📋",
+		"acpScriptLabel": "ACP 📋 URL",
+		"acpConfigSample": "⚙️🌰:",
+		"acpConfigHint": "🎭ID ➡️ 📄⬇️, 🗝️ ➡️ 👤⚙️",
+		"copyButton": "📋",
+		"copied": "✅📋",
+		"apiKeySectionTitle": "🗝️",
+		"apiKeyHint": "🔌📋 🔗 ⛲ (🟰 🕵️🗝️)",
+		"generateApiKeyButton": "🔨🆕🗝️",
+		"apiKeyCopied": "🗝️✅📋",
+		"apiKeyCreateError": "❌🔨🗝️: ${message}",
+		"apiKeyInput": {
+			"aria-label": "🗝️"
+		},
+		"home_function_buttons": {
+			"integration_related": "🔗✨",
+			"ide_integration_config": {
+				"title": "💻🔗⚙️"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "⛲🌊💻",
+				"description": "🥇⚙️⛲🎭➡️💻(Zed, JetBrains…)",
+				"locked_description": "🔗⛲🎭 ➡️ 🌍💻 & ✅🗣️"
+			}
+		},
+		"acpChar": "👆🎭",
+		"acpConfig": "👆🙏🎭➕🔑⚙️ API 🔑"
+	},
 	"deskpet": {
 		"title": "🖥️🐾",
 		"description": "🎭🐾🖥️",
@@ -4770,6 +4455,347 @@
 								"title": "⚙️🐾"
 							}
 						}
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "🎨",
+		"description": "🎨🖌️🖼️✨",
+		"instruction": "🤔🎨❗️",
+		"search": {
+			"placeholder": "🔍🎨",
+			"noResult": "🤷‍♀️🚫"
+		},
+		"createButton": "+ 🆕🎨",
+		"preview": {
+			"editButton": {
+				"title": "✏️"
+			},
+			"editButtonIcon": {
+				"alt": "✏️"
+			},
+			"deleteButton": {
+				"title": "🗑️"
+			},
+			"deleteButtonIcon": {
+				"alt": "🗑️"
+			},
+			"cloneButton": {
+				"title": "📑"
+			},
+			"cloneButtonIcon": {
+				"alt": "📑"
+			}
+		},
+		"editor": {
+			"title": "🎨✏️",
+			"cancelButton": "🚫",
+			"saveApplyButton": "💾 & ▶️",
+			"themeName": "📛 (🆔)",
+			"autoPaletteTitle": "🖼️➡️🎨",
+			"autoPaletteInstruction": "👆🎨 ➡️ 🤖🎒",
+			"coreColors": "❤️💙💚",
+			"baseBackground": "🔤 & 🖼️",
+			"variables": "🧮",
+			"borderRadius": "📐🔵",
+			"borderWidth": "📐➖",
+			"advancedCustomization": "🛠️🔧",
+			"customCSS": "🎨📝 (CSS)",
+			"customMjsScript": "📜 (MJS)",
+			"mjsSyntaxHint": "⌨️ [async-eval](${asyncDocLink}) ↩️ 📦 { `load()`, `unload()` }",
+			"themeIdRequired": "🆔❓",
+			"newThemeName": "🆕🎨:",
+			"deleteConfirm": "🗑️🎨 ${id}❓",
+			"saved": "💾✅",
+			"failedToSave": "💾❌",
+			"failedToDelete": "🗑️❌ ${message}",
+			"failedToClone": "📋❌ ${message}"
+		},
+		"themes": {
+			"auto": "⚙️",
+			"light": "☀️",
+			"dark": "🌙",
+			"cupcake": "🧁",
+			"bumblebee": "🐝",
+			"emerald": "💎",
+			"corporate": "🏢",
+			"synthwave": "🌃",
+			"retro": "🕹️",
+			"cyberpunk": "🤖🦾",
+			"valentine": "❤️",
+			"halloween": "🎃",
+			"garden": "🌷",
+			"forest": "🌲",
+			"aqua": "🌊",
+			"lofi": "🎶",
+			"pastel": "🌸",
+			"fantasy": "🧙",
+			"wireframe": "📐",
+			"black": "🖤",
+			"luxury": "👑",
+			"dracula": "🧛",
+			"cmyk": "🎨",
+			"autumn": "🍂",
+			"business": "💼",
+			"acid": "🧪",
+			"lemonade": "🍋",
+			"night": "🌃",
+			"coffee": "☕",
+			"winter": "❄️",
+			"dim": "💡",
+			"nord": "🧭",
+			"sunset": "🌅",
+			"caramellatte": "🍮☕",
+			"abyss": "🕳️",
+			"silk": "🧣"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "🎨🖌️",
+				"description": "😐➡️🤩",
+				"locked_description": "🔒: 🎨🔄"
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "⚙️",
+				"sub_items": {
+					"switchTheme": {
+						"title": "🎨"
+					}
+				}
+			}
+		}
+	},
+	"languageSettings": {
+		"title": "🗣️⚙️",
+		"pageTitle": "🌐🗣️⚙️",
+		"description": "⚙️🗣️, ❤️➡️🌐",
+		"pageDescription": "✍️🌐🗣️",
+		"availableLanguages": "✅🗣️",
+		"preferredLanguages": "❤️🗣️",
+		"resetButton": "🔄",
+		"saveButton": "💾",
+		"select": {
+			"placeholder": "👉🗣️"
+		},
+		"search": {
+			"placeholder": "🔍🗣️"
+		},
+		"noPreferredLanguages": "🤷‍♂️❤️🗣️, ➡️🌐",
+		"moveUpButton": {
+			"aria-label": "⬆️",
+			"alt": "⬆️"
+		},
+		"moveDownButton": {
+			"aria-label": "⬇️",
+			"alt": "⬇️"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "🗑️",
+			"alt": "🗑️"
+		},
+		"savedMessage": "🗣️⚙️💾✅❗️",
+		"resetMessage": "🗣️⚙️🔄✅❗️",
+		"fetchLocalesFailed": "🗣️📥❌❗️",
+		"home_function_buttons": {
+			"settings": {
+				"title": "⚙️",
+				"sub_items": {
+					"main": {
+						"title": "🗣️⚙️"
+					}
+				}
+			}
+		}
+	},
+	"userSettings": {
+		"title": "👤⚙️",
+		"PageTitle": "👤⚙️",
+		"description": "👤🔧🛡️💻",
+		"shell": {
+			"unauthorized": "🔒🚪",
+			"responseNotJson": "🖥️📄❓",
+			"unexpectedError": "❌📡"
+		},
+		"errors": {
+			"accountNotFound": "👤❌"
+		},
+		"userInfo": {
+			"title": "👤ℹ️",
+			"usernameLabel": "👤:",
+			"creationDateLabel": "🎂:",
+			"folderSizeLabel": "💾:",
+			"folderPathLabel": "📍:",
+			"copyPathButton": {
+				"title": "📋🛤️"
+			},
+			"copyPathButtonIcon": {
+				"alt": "📑"
+			},
+			"copiedAlert": "📋✅❗️",
+			"copyPathFailed": "📋📍❌"
+		},
+		"changePassword": {
+			"title": "✍️🔑",
+			"currentPasswordLabel": "🔑:",
+			"newPasswordLabel": "🆕🔑:",
+			"confirmNewPasswordLabel": "🆕🔑🔑:",
+			"submitButton": "✍️🔑",
+			"errorMismatch": "🆕🔑 ≠ 🆕🔑🔑",
+			"success": "🔑✍️✅",
+			"missingFields": "🔑📋❌",
+			"invalidCurrent": "🔑❌"
+		},
+		"renameUser": {
+			"title": "✍️👤",
+			"newUsernameLabel": "🆕👤:",
+			"submitButton": "✍️👤",
+			"confirmMessage": "🤔✍️👤❓➡️🚪➡️",
+			"success": "👤➡️ \"${newUsername}\" ✅, ➡️🚪…",
+			"missingParams": "👤🔑📋❌",
+			"wrongPassword": "🔑❌",
+			"mustDiffer": "👤🆕≠👤",
+			"taken": "👤📌",
+			"moveFailed": "📁👤❌ ${detail}"
+		},
+		"passkeys": {
+			"title": "🔐🔑📱",
+			"description": "🔗✅➡️🔑🖥️📱🔑🚪 🔒🌐➕🏠💻 ⚙️👤➕🔑",
+			"refreshButton": {
+				"title": "🔄📋"
+			},
+			"refreshButtonIcon": {
+				"alt": "🔄🖼️"
+			},
+			"nameLabel": "🏷️（➖）",
+			"nameInput": {
+				"placeholder": "💼🔐🔑"
+			},
+			"addButton": "➕🔐🔑",
+			"noneFound": "🔑📋🈳",
+			"itemDetails": "🕒➕: ${created}",
+			"removeButton": "🗑️🔑",
+			"removeConfirm": "🗑️🔑❓🚫🚪🔙",
+			"removeSuccess": "🗑️✅🔑",
+			"addSuccess": "➕✅🔑",
+			"errorLoadLibrary": "📚🔐❌",
+			"errorCancelled": "➕🚫",
+			"apiInvalidPassword": "🔑❌",
+			"apiMissingCredential": "📱🔑❌",
+			"apiRemoveParamsRequired": "📋📱🔑🔑"
+		},
+		"userDevices": {
+			"title": "👤💻",
+			"noDevicesFound": "🤷‍♂️💻",
+			"deviceInfo": "💻🆔: ${deviceId}",
+			"thisDevice": "👉💻",
+			"deviceDetails": "⏳: ${lastSeen} | 🌐: ${ipAddress} | 💻: ${userAgent}",
+			"revokeButton": "➖",
+			"revokeConfirm": "🤔➖💻❓",
+			"revokeSuccess": "💻➖✅",
+			"revokeMissingParams": "💻🔑📋❌",
+			"revokeWrongPassword": "🔑❌",
+			"listNotFound": "📋❌💻",
+			"deviceNotFound": "💻❌",
+			"refreshButton": {
+				"title": "🔄"
+			},
+			"refreshButtonIcon": {
+				"alt": "🔄"
+			}
+		},
+		"apiKeys": {
+			"title": "🔑",
+			"description": "⚙️🔑",
+			"input": {
+				"placeholder": "✍️"
+			},
+			"createButton": "✨",
+			"noKeysFound": "🤷‍♀️",
+			"keyDetails": "📝 ${description} 🗓️ ${createdAt} ⏳ ${lastUsed}",
+			"neverUsed": "⏳",
+			"noKeysForUser": "🔑📋❌",
+			"revokeWrongPassword": "🔑❌",
+			"keyNotFound": "🔑❌",
+			"revokeMissingJti": "🔑🆔❌",
+			"revokeMissingPassword": "🔑📋❌",
+			"verifyMissingApiKey": "🔑❌",
+			"revokeButton": "🗑️",
+			"revokeConfirm": "🤔🗑️❓",
+			"revokeSuccess": "✅🗑️",
+			"errorDescriptionRequired": "❗️✍️",
+			"createSuccess": "✅✨",
+			"refreshButton": {
+				"title": "🔄"
+			},
+			"refreshButtonIcon": {
+				"alt": "🔄"
+			}
+		},
+		"newApiKey": {
+			"title": "✨🔑",
+			"warning": "⚠️📋",
+			"closeButton": "✅📋",
+			"copyButton": {
+				"title": "📋🔑"
+			},
+			"copiedAlert": "📋✅❗️",
+			"copyKeyFailed": "📋🔑❌"
+		},
+		"editorCommand": {
+			"title": "✏️📟",
+			"description": "⚙️🖥️📂 — 🧩📝",
+			"editorPresetLabel": "📋✨",
+			"commandLabel": "⌨️",
+			"argsTemplateLabel": "🧩📝",
+			"argsTemplateHint": "🏷️ \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label}（✅ PATH）",
+			"presetOptionPathUnavailable": "${label}（❌ PATH）",
+			"testPathInput": {
+				"placeholder": "📂 C:/work/project/src/main.mjs"
+			},
+			"testButton": "▶️✏️",
+			"saveButton": "💾⚙️",
+			"saveSuccess": "💾✅ ✏️📟",
+			"testPathRequired": "⚠️📂❓",
+			"testSuccess": "✅▶️🖥️📂"
+		},
+		"logout": {
+			"title": "🚪",
+			"description": "➡️🚪",
+			"buttonText": "🚪",
+			"confirmMessage": "🤔🚪❓",
+			"successMessage": "✅🚪, ➡️🔐…"
+		},
+		"deleteAccount": {
+			"title": "🗑️👤",
+			"warning": "⚠️➡️🗑️👤💾",
+			"submitButton": "🗑️👤",
+			"confirmMessage1": "⚠️🤔🗑️👤❓",
+			"confirmMessage2": "✍️👤 \"${username}\":",
+			"usernameMismatch": "👤 ≠ 👤, 🗑️❌",
+			"success": "👤🗑️✅, ➡️🚪…",
+			"missingPassword": "🔑📋❌",
+			"wrongPassword": "🔑❌"
+		},
+		"passwordConfirm": {
+			"title": "✅",
+			"message": "➡️, ✍️🔑:",
+			"passwordLabel": "🔑:",
+			"confirmButton": "✅",
+			"cancelButton": "❌"
+		},
+		"apiError": "🌐❌: ${message}",
+		"generalError": "❌: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "⚙️",
+				"sub_items": {
+					"main": {
+						"title": "👤⚙️"
 					}
 				}
 			}
@@ -4831,47 +4857,91 @@
 			}
 		}
 	},
-	"ide_integration": {
-		"description": "🔗 ⛲ ➡️ 📝 (Zed, JetBrains, Neovim) 🤝 ACP ⚙️ 🔑 & 🎭 ➕ 🤖 ➡️ 👨‍💻 🔄",
-		"title": "⛲🔗",
-		"heading": "⛲🔗",
-		"instruction": "⛲ 🎭 ➡️ 💻 (Zed, JetBrains, Neovim) 🔗 ACP",
-		"supportedEditorsTitle": "✅💻 & 📱",
-		"supportedEditorsIntro": "⬇️ 🔌 🤝 ⛲:",
-		"supportedEditorsLoading": "⏳…",
-		"supportedEditorsError": "❌📋: ${message}",
-		"acpTitle": "⚙️ ⛲ ACP 📋",
-		"acpDesc": "👀👇 ➡️ ⚙️ ⛲ ACP 📋:",
-		"acpCharLabel": "🎭",
-		"charListError": "❌🎭📋",
-		"acpScriptLabel": "ACP 📋 URL",
-		"acpConfigSample": "⚙️🌰:",
-		"acpConfigHint": "🎭ID ➡️ 📄⬇️, 🗝️ ➡️ 👤⚙️",
-		"copyButton": "📋",
-		"copied": "✅📋",
-		"apiKeySectionTitle": "🗝️",
-		"apiKeyHint": "🔌📋 🔗 ⛲ (🟰 🕵️🗝️)",
-		"generateApiKeyButton": "🔨🆕🗝️",
-		"apiKeyCopied": "🗝️✅📋",
-		"apiKeyCreateError": "❌🔨🗝️: ${message}",
-		"apiKeyInput": {
-			"aria-label": "🗝️"
+	"subfounts": {
+		"title": "🖇️⛲ - 📱↔️📱",
+		"pageTitle": "🖇️⛲",
+		"description": "⚙️ 📱↔️📱",
+		"hostConnectionCode": {
+			"title": "🏠🔗🔢",
+			"connectionCodeLabel": "🔗🔢 (🆔)",
+			"passwordLabel": "🔑",
+			"copyButton": "📋",
+			"regenerateButton": "🔄",
+			"infoMessage": "ℹ️ 📤 🆔+🔑 ➡️ 📱",
+			"connectionCodeCopied": "🔗🔢 📋✅",
+			"passwordCopied": "🔑 📋✅",
+			"regenerateSuccess": "🔗🔢 🔄✅"
+		},
+		"infra": {
+			"title": "🌐❤️",
+			"description": "🎛️🔗🖇️⛲➡️🌐❤️🤝🌐；❌🔌🏠📡▶️，🚫🌐🤝",
+			"capabilityRelay": "📡🔀⏭️⏭️，➡️❌🤝🔗",
+			"capabilityMailbox": "📦📴➡️📶📩",
+			"hostPriority": "✅🏠🔝：⚖️📊➕🔒🔝",
+			"toggleLabel": "🖇️⛲➡️🌐❤️",
+			"enabledToast": "✅🖇️⛲🌐❤️（🏠🔝）",
+			"disabledToast": "❌🖇️⛲🚫🌐❤️"
+		},
+		"connectedSubfounts": {
+			"title": "🔗✅ 🖇️⛲",
+			"noSubfountsConnected": "🚫🔗",
+			"table": {
+				"id": "ID",
+				"description": "📝",
+				"deviceId": "🆔📱",
+				"connectedAt": "🕒🔗",
+				"status": "📊",
+				"actions": "🎮",
+				"connected": "🟢",
+				"disconnected": "🔴",
+				"save": "💾",
+				"na": "N/A"
+			},
+			"descriptionSaved": "📝💾✅",
+			"descriptionSaveFailed": "📝💾❌: ${message}"
+		},
+		"codeExecution": {
+			"title": "💻 ▶️",
+			"description": "▶️ JS ➡️ 📱",
+			"selectSubfountLabel": "👆 📱",
+			"hostOption": "🏠 (🆔: ${id})",
+			"subfountOption": "🔌 ${id}${deviceId}",
+			"scriptLabel": "JS {}",
+			"executeButton": "▶️",
+			"executing": "🏃…",
+			"noSubfountSelected": "🚫 👆 📱",
+			"noScriptProvided": "🚫 ⌨️",
+			"executionSuccess": "▶️ ✅",
+			"executionFailed": "▶️ ❌: ${message}",
+			"selectSubfount": "👆🙏💻Subfount…"
+		},
+		"downloadClient": {
+			"title": "⬇️🖇️⛲🤖",
+			"description": "⬇️ .mjs ➡️ 📱",
+			"downloadButton": "⬇️ subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "❌ 🔗🔢: ${message}",
+			"regenerateConnectionCodeFailed": "❌ 🔄 🔗🔢: ${message}",
+			"loadSettingsFailed": "❌ 🌐❤️⚙️: ${message}",
+			"saveSettingsFailed": "❌ 💾🌐❤️⚙️: ${message}",
+			"generalError": "💥: ${message}"
 		},
 		"home_function_buttons": {
-			"integration_related": "🔗✨",
-			"ide_integration_config": {
-				"title": "💻🔗⚙️"
+			"in_dev": {
+				"title": "🚧",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "📱👶",
+						"sub_items": {
+							"main": {
+								"title": "⚙️📱👶"
+							}
+						}
+					}
+				}
 			}
-		},
-		"achievements": {
-			"first_ide_use": {
-				"name": "⛲🌊💻",
-				"description": "🥇⚙️⛲🎭➡️💻(Zed, JetBrains…)",
-				"locked_description": "🔗⛲🎭 ➡️ 🌍💻 & ✅🗣️"
-			}
-		},
-		"acpChar": "👆🎭",
-		"acpConfig": "👆🙏🎭➕🔑⚙️ API 🔑"
+		}
 	},
 	"achievements": {
 		"title": "🖥️🐾",
@@ -4998,34 +5068,6 @@
 		"pageNotFoundText": "😢 ➡️ 🤷‍♂️📄",
 		"homepageButton": "➡️🏠"
 	},
-	"tips": {
-		"title": "💡❓",
-		"data": [
-			"⌨️ `esc` ➡️ 🔙",
-			"⚙️📄 ➕ ⌨️ `ctrl+s` ➡️ 💾",
-			"💬📄 ➕ ⌨️ `shift` ➡️ 🗑️⚡",
-			"🙊 ➡️ 👨‍💻❓🐛",
-			"🐛❓ ➕ 👨‍💻⏳ ➡️ ⌨️ `fount init` ➡️ 🔄",
-			"🐛❓❓❓ ➡️ 💻🔄",
-			"⌨️ `fount remove` 🛁 > 🗑️📂",
-			"⌨️ `fount cake` ➡️ 🍰😋",
-			"📂 `fount/data` ➡️ 👀✏️💾 ♾️",
-			"📛 `f`ount ✅ `F`ount ❌",
-			"🤖🆕🧠 ➡️ 💾💾💾 ➡️ 😨📉❓",
-			"👨‍💻🎭 ➕ 💼🏥🔫💰",
-			"🤖ZL-31 📛 ➡️ 🧠💥🎲",
-			"🖼️svg ➡️ png/ico 📄0️⃣1️⃣❌ (LICENSE🆗)",
-			"💻🏃‍♂️💨 🚫🔨",
-			"✨🖼️💃 ➡️ 🔥💻 ➡️ 🗑️",
-			"🐣 ➡️ 🤖🔞 \"🪻\"",
-			"🤖 🆚 🧍 ➡️ 🧍💩",
-			"🤖📞💡 🆚 🧍👀💡",
-			"🧍❤️🤖 ➡️ 💒💍",
-			"🤖🎨❤️📝 🆚 🧍🧱🧹🗑️",
-			"📅 🚫 🤡🤪",
-			"🙅‍♂️ 👉 🚫🧠"
-		]
-	},
 	"directoryListing": {
 		"title": "📂📇",
 		"description": "👀🔭 fount 📦📂📄",
@@ -5035,199 +5077,121 @@
 		"size": "⚖️",
 		"parentLink": "🆙 /"
 	},
-	"code_block": {
-		"copy": {
-			"dataset": {
-				"tip": "📋"
-			},
-			"aria-label": "📋"
-		},
-		"copied": {
-			"dataset": {
-				"tip": "📋✅"
+	"util": {
+		"common": {
+			"cancel": "↩️",
+			"create": "➕",
+			"save": "💾",
+			"delete": "🗑️",
+			"confirm": "✅",
+			"close": "✖️",
+			"translate": {
+				"showOriginal": "👀📝",
+				"showTranslation": "👀🌐"
 			}
 		},
-		"download": {
-			"dataset": {
-				"tip": "⬇️"
+		"code_block": {
+			"copy": {
+				"dataset": {
+					"tip": "📋"
+				},
+				"aria-label": "📋"
 			},
-			"aria-label": "⬇️"
-		},
-		"execute": {
-			"dataset": {
-				"tip": "▶️"
+			"copied": {
+				"dataset": {
+					"tip": "📋✅"
+				}
 			},
-			"aria-label": "▶️"
-		},
-		"preview": {
-			"dataset": {
-				"tip": "👀"
+			"download": {
+				"dataset": {
+					"tip": "⬇️"
+				},
+				"aria-label": "⬇️"
 			},
-			"aria-label": "👀"
+			"execute": {
+				"dataset": {
+					"tip": "▶️"
+				},
+				"aria-label": "▶️"
+			},
+			"preview": {
+				"dataset": {
+					"tip": "👀"
+				},
+				"aria-label": "👀"
+			},
+			"copy_failed": "📋❌: ${error}"
 		},
-		"copy_failed": "📋❌: ${error}"
-	},
-	"pow_captcha": {
-		"initial": "🤖❓",
-		"verifying": "🤔⏳",
-		"solved": "✅✨",
-		"wasm_disabled": "⚙️➡️🚀",
-		"error": "❌👎",
-		"errorMessage": "❌👎: ${error}"
-	},
-	"breadcrumb": {
-		"clickToNavigate": "🖱️➡️${path}"
-	},
-	"zxcvbn": {
-		"warnings": {
-			"straightRow": "⌨️➡️➡️",
-			"keyPattern": "⌨️➡️↗️↘️",
-			"simpleRepeat": "🅰️🅰️🅰️",
-			"extendedRepeat": "🔤🔤🔤",
-			"sequences": "🔢🔤",
-			"recentYears": "📅👎",
-			"dates": "📅",
-			"topTen": "👎👎👎",
-			"topHundred": "👎👎",
-			"common": "👎",
-			"similarToCommon": "🤔👎",
-			"wordByItself": "📖",
-			"namesByThemselves": "👤",
-			"commonNames": "👥",
-			"userInputs": "🚫👤",
-			"pwned": "💻💥🔓"
+		"pow_captcha": {
+			"initial": "🤖❓",
+			"verifying": "🤔⏳",
+			"solved": "✅✨",
+			"wasm_disabled": "⚙️➡️🚀",
+			"error": "❌👎",
+			"errorMessage": "❌👎: ${error}"
 		},
-		"suggestions": {
-			"l33t": "🚫🅰️➡️@",
-			"reverseWords": "🚫🔄🔤",
-			"allUppercase": "✅ aBc 🚫 ABC",
-			"capitalization": "✅ aBCd",
-			"dates": "🚫📅",
-			"recentYears": "📅👎",
-			"associatedYears": "🚫🎂",
-			"sequences": "🔢🔤",
-			"repeated": "🚫👯",
-			"longerKeyboardPattern": "⌨️↗️↘️↖️",
-			"anotherWord": "➕📖",
-			"useWords": "📖➕📖➕📖",
-			"noNeed": "💪🔑 ✅ abc 🚫 #1❗",
-			"pwned": "💻💥🔓"
+		"breadcrumb": {
+			"clickToNavigate": "🖱️➡️${path}"
 		},
-		"timeEstimation": {
-			"ltSecond": "⚡️",
-			"second": "⏳{base}s",
-			"seconds": "⏳{base}s",
-			"minute": "⏳{base}m",
-			"minutes": "⏳{base}m",
-			"hour": "⏳{base}h",
-			"hours": "⏳{base}h",
-			"day": "⏳{base}d",
-			"days": "⏳{base}d",
-			"month": "🗓️{base}m",
-			"months": "🗓️{base}m",
-			"year": "🗓️{base}y",
-			"years": "🗓️{base}y",
-			"centuries": "🏛️"
-		}
-	},
-	"searchableDropdown": {
-		"trigger": {
-			"placeholder": "👉…"
-		},
-		"search": {
-			"placeholder": "🔍…"
-		}
-	},
-	"common": {
-		"cancel": "↩️",
-		"create": "➕",
-		"save": "💾",
-		"delete": "🗑️",
-		"confirm": "✅",
-		"close": "✖️",
-		"translate": {
-			"showOriginal": "👀📝",
-			"showTranslation": "👀🌐"
-		}
-	},
-	"cabinet": {
-		"title": "🗄️",
-		"description": "P2P 🫵🗄️➕🤝🗄️",
-		"openCabinets": {
-			"title": "📂🗄️📋",
-			"aria-label": "📂🗄️📋"
-		},
-		"closeCabinets": {
-			"title": "✖️",
-			"aria-label": "✖️"
-		},
-		"bootstrapFailed": "🗄️🚀❌：${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "🗄️"
+		"zxcvbn": {
+			"warnings": {
+				"straightRow": "⌨️➡️➡️",
+				"keyPattern": "⌨️➡️↗️↘️",
+				"simpleRepeat": "🅰️🅰️🅰️",
+				"extendedRepeat": "🔤🔤🔤",
+				"sequences": "🔢🔤",
+				"recentYears": "📅👎",
+				"dates": "📅",
+				"topTen": "👎👎👎",
+				"topHundred": "👎👎",
+				"common": "👎",
+				"similarToCommon": "🤔👎",
+				"wordByItself": "📖",
+				"namesByThemselves": "👤",
+				"commonNames": "👥",
+				"userInputs": "🚫👤",
+				"pwned": "💻💥🔓"
+			},
+			"suggestions": {
+				"l33t": "🚫🅰️➡️@",
+				"reverseWords": "🚫🔄🔤",
+				"allUppercase": "✅ aBc 🚫 ABC",
+				"capitalization": "✅ aBCd",
+				"dates": "🚫📅",
+				"recentYears": "📅👎",
+				"associatedYears": "🚫🎂",
+				"sequences": "🔢🔤",
+				"repeated": "🚫👯",
+				"longerKeyboardPattern": "⌨️↗️↘️↖️",
+				"anotherWord": "➕📖",
+				"useWords": "📖➕📖➕📖",
+				"noNeed": "💪🔑 ✅ abc 🚫 #1❗",
+				"pwned": "💻💥🔓"
+			},
+			"timeEstimation": {
+				"ltSecond": "⚡️",
+				"second": "⏳{base}s",
+				"seconds": "⏳{base}s",
+				"minute": "⏳{base}m",
+				"minutes": "⏳{base}m",
+				"hour": "⏳{base}h",
+				"hours": "⏳{base}h",
+				"day": "⏳{base}d",
+				"days": "⏳{base}d",
+				"month": "🗓️{base}m",
+				"months": "🗓️{base}m",
+				"year": "🗓️{base}y",
+				"years": "🗓️{base}y",
+				"centuries": "🏛️"
 			}
 		},
-		"upload": "⬆️",
-		"uploadFolder": "⬆️📂",
-		"newFolder": "➕📂",
-		"open": "📂",
-		"download": "⬇️",
-		"downloadZip": "⬇️📂",
-		"rename": "✏️🏷️",
-		"copy": "📋",
-		"cut": "✂️",
-		"paste": "📋",
-		"pasteLink": "📋➡️🔗",
-		"selectAll": "✅📋",
-		"invert": "🔄👆",
-		"properties": "📋",
-		"delete": "🗑️",
-		"back": {
-			"title": "↩️⬅️📍",
-			"aria-label": "↩️⬅️📍"
-		},
-		"cancel": "↩️",
-		"save": "💾",
-		"showHidden": "👀👻",
-		"name": "🏷️",
-		"descriptionField": "📝",
-		"attrHidden": "🙈",
-		"attrSystem": "💻（🗑️📌✅）",
-		"previewUrl": "👀🖼️🔗",
-		"deletePreviewWithFile": "🗑️📁➡️🗑️👀🖼️",
-		"folderPassword": "📂🔐（⬜🔄，✍️➡️🔐✅）",
-		"unlockFolder": "🔓🔐📂",
-		"unlock": "🔓",
-		"unlockFailed": "🔓❌：${error}",
-		"previewFailed": "👀🖼️⚙️❌：${error}",
-		"created": "➕：${stamp}",
-		"modified": "✏️：${stamp}",
-		"statusCount": "${count} 📌，✅👆 ${selected}",
-		"newCabinetPrompt": "🆕🗄️🏷️",
-		"newFolderPrompt": "📂🏷️🆕",
-		"renamePrompt": "🆕🏷️",
-		"visibilityPrompt": "👀🌍（public/unlisted/followers/private/selected）",
-		"cabinetActionPrompt": "🎮：rename / delete / visibility",
-		"confirmDeleteCabinet": "🗑️🗄️✅❓",
-		"confirmDelete": "🗑️✅👆📌❓",
-		"confirmDeleteSystem": "👆➕💻📁，🗑️✅❓",
-		"copied": "✅📋",
-		"cutDone": "✅✂️",
-		"undo": "➖",
-		"redo": "↪️",
-		"newWindow": "🪟📂👉📍",
-		"goUp": "⬆️📂",
-		"brokenLink": "🔗💔：${reason}",
-		"noDownload": "🚫⬇️📄",
-		"groupDownloadHint": "👥📁➡️💬📎／⬇️🔗📥",
-		"remoteEntity": "🔗👤"
-	},
-	"entityProfile": {
-		"attributionMismatch": "👀🆔≠✍️👤（💡📥📜➡️📥👤🔁✍️）🙏🚫➡️🏷️👀➡️🔐🧬#️⃣",
-		"attributionMismatchShort": {
-			"title": "✍️🚫",
-			"aria-label": "✍️🚫"
-		},
-		"ownedBy": "👉👤 ${owner} ✅"
+		"searchableDropdown": {
+			"trigger": {
+				"placeholder": "👉…"
+			},
+			"search": {
+				"placeholder": "🔍…"
+			}
+		}
 	}
 }

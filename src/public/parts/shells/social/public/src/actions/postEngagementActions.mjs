@@ -171,8 +171,8 @@ export async function handlePostEngagementClick(target) {
 			originalText: text,
 			translatedText: translated,
 			translationLabel: geti18n('social.translate.label'),
-			showOriginalLabel: geti18n('common.translate.showOriginal'),
-			showTranslationLabel: geti18n('common.translate.showTranslation'),
+			showOriginalLabel: geti18n('util.common.translate.showOriginal'),
+			showTranslationLabel: geti18n('util.common.translate.showTranslation'),
 		})
 		closePostMoreMenus()
 	}
