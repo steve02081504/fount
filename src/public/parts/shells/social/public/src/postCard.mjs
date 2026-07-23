@@ -223,7 +223,7 @@ export async function buildPostCard(item, options = {}) {
 		postTimeAttrs,
 		postTimeText,
 		editedBadge,
-		visibilityIcon: `<span class="icon icon-${vis.icon} post-visibility-icon" title="${escapeHtml(visLabel)}" aria-label="${escapeHtml(visLabel)}"></span>`,
+		visibilityIcon: `<span class="icon icon-${vis.icon} post-visibility-icon" role="img" title="${escapeHtml(visLabel)}" aria-label="${escapeHtml(visLabel)}"></span>`,
 		quoteHtml,
 		replyContextHtml,
 		groupRefHtml,
