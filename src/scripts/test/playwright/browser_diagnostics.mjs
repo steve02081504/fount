@@ -1,5 +1,5 @@
 /**
- * 前端 Playwright 浏览器诊断：网络异常噪声行 + pageerror / test_watch 硬失败。
+ * 前端 Playwright 浏览器诊断：网络异常噪声行 + pageerror / test_watch / i18n missing 硬失败。
  */
 
 /** 写入 suite 输出、供 `detectNoiseHits` 识别的前缀。 */
@@ -8,6 +8,8 @@ export const BROWSER_NETWORK_PREFIX = '[browser:network]'
 /** `scripts/test/test_watch.mjs` 控制台命名空间；任意 `[test:…]` 命中则硬失败。 */
 export const TEST_WATCH_CONSOLE_PREFIX = '[test:'
 
+/** `scripts/i18n` 缺键警告前缀；命中则硬失败（不去重）。 */
+export const I18N_MISSING_PREFIX = '[i18n:missing]'
 /**
  * Chromium Opaque Response Blocking：跨源无 CORS 时掐掉响应；`<img>` 等展示往往仍正常，不当噪声。
  * @param {string | null | undefined} errorText Playwright `request.failure().errorText`
@@ -71,6 +73,15 @@ export function isTestWatchConsoleText(text) {
 }
 
 /**
+ * 文本是否为 i18n 缺键警告。
+ * @param {string} text console 文本
+ * @returns {boolean} 是否 `[i18n:missing]`
+ */
+export function isI18nMissingConsoleText(text) {
+	return text.includes(I18N_MISSING_PREFIX)
+}
+
+/**
  * 等待页面至少完成一次 test_watch 轮询（`fount.test.watchLastRun`）。
  * @param {import('npm:@playwright/test').Page} page Playwright 页面
  * @param {number} [sinceMs=0] 要求 lastRun 严格晚于此时刻（0 表示任意一次）
@@ -92,6 +103,7 @@ export async function waitForTestWatchCycle(page, sinceMs = 0, timeoutMs = 8000)
  *   attach: (page: import('npm:@playwright/test').Page) => void,
  *   pageErrors: string[],
  *   testWatchErrors: string[],
+ *   i18nMissingErrors: string[],
  *   flushNetworkDiagnostics: () => BrowserNetworkEntry[],
  * }} 诊断 API
  */
@@ -101,6 +113,8 @@ export function createBrowserDiagnostics(options = {}) {
 	const pageErrors = []
 	/** @type {string[]} */
 	const testWatchErrors = []
+	/** @type {string[]} */
+	const i18nMissingErrors = []
 	/** @type {Map<string, BrowserNetworkEntry>} */
 	const aggregates = new Map()
 
@@ -115,6 +129,7 @@ export function createBrowserDiagnostics(options = {}) {
 		page.on('console', msg => {
 			const text = msg.text()
 			if (isTestWatchConsoleText(text)) testWatchErrors.push(text)
+			if (isI18nMissingConsoleText(text)) i18nMissingErrors.push(text)
 		})
 		page.on('requestfailed', req => {
 			const error = req.failure()?.errorText || null
@@ -154,5 +169,5 @@ export function createBrowserDiagnostics(options = {}) {
 		return entries
 	}
 
-	return { attach, pageErrors, testWatchErrors, flushNetworkDiagnostics }
+	return { attach, pageErrors, testWatchErrors, i18nMissingErrors, flushNetworkDiagnostics }
 }

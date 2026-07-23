@@ -9,7 +9,7 @@ import { assertIsolatedFrontendTest } from './guards.mjs'
 
 /**
  * fount 前端 E2E 通用 fixture：`baseUrl` / `apiKey` / 已登录 `context` + `page`。
- * page 自动挂载网络诊断（HTTP ≥400 / requestfailed → `[browser:network]`）与 pageerror 硬断言。
+ * page 自动挂载网络诊断（HTTP ≥400 / requestfailed → `[browser:network]`）与 pageerror / `[test:…]` / `[i18n:missing]` 硬断言。
  * @param {object} [options] fixture 选项
  * @param {string} [options.locale='zh-CN'] 浏览器与 localStorage 首选语言
  * @param {object} [options.isolated] 隔离节点断言（run.mjs 注入）
@@ -85,6 +85,7 @@ export function createFountFixtures(options = {}) {
 			diagnostics.flushNetworkDiagnostics()
 			expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
 			expect(diagnostics.testWatchErrors, 'unexpected test_watch console output').toEqual([])
+			expect(diagnostics.i18nMissingErrors, 'unexpected missing i18n keys').toEqual([])
 		},
 	})
 

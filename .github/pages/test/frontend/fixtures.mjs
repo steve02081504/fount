@@ -74,6 +74,7 @@ export function createPagesFixtures(options = {}) {
 			diagnostics.flushNetworkDiagnostics()
 			expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
 			expect(diagnostics.testWatchErrors, 'unexpected test_watch console output').toEqual([])
+			expect(diagnostics.i18nMissingErrors, 'unexpected missing i18n keys').toEqual([])
 		},
 	})
 

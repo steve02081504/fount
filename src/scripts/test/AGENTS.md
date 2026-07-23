@@ -33,7 +33,7 @@ Suite packing / optimistic overlap: [docs/resource-scheduling.md](docs/resource-
 | `frontend/` | Playwright (`playwright/`) |
 | `sim/` | In-process simulation harness |
 
-**Frontend**: fixtures, browser binary, network noise, GitHub Pages + a11y — [playwright.md](docs/playwright.md).
+**Frontend**: fixtures, browser binary, network noise, i18n-missing / a11y hard-fail, GitHub Pages — [playwright.md](docs/playwright.md).
 
 **pure/ boundary**: tested modules must not statically `import` `src/server/**` (P2P/native graph; Windows Deno child exit can hang). Use dynamic import or promote to `integration/`.
 
