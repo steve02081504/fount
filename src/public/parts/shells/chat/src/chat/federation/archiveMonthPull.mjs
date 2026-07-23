@@ -8,7 +8,7 @@ import { dirname } from 'node:path'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { finalizeAtomicRename } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { penalizeArchiveServeMismatch } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
-import { pickFederationTargetPeerIds } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
+import { pickFederationTargetPeerIds } from './peerFanout.mjs'
 
 import { isArchiveCoverageComplete, loadArchiveManifest, mutateArchiveManifest } from '../archive/index.mjs'
 import {

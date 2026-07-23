@@ -14,7 +14,7 @@ import {
 	takeOutgoingWantIdsSlot,
 } from 'npm:@steve02081504/fount-p2p/federation/want_ids'
 import { parsePullResponseEnvelope } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
-import { pickFederationTargetPeerIds, resolveFederationPoolLimits } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
+import { pickFederationTargetPeerIds, resolveFederationPoolLimits } from './peerFanout.mjs'
 import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import {
 	finishMultiWireWaiters,

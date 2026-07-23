@@ -9,7 +9,7 @@ import { HEX_ID_64 as PUB_KEY_HEX_64, isHex64, normalizeHex64 as normalizePubKey
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
-import { loadReputation, buildAndApplyUnverifiedSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import { applyVolatileSlashAlert, buildUnverifiedSlashAlert, loadReputation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { isSignedDagEventRow } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
@@ -86,11 +86,12 @@ async function appendLocalEvents(username, groupId, events) {
 			const { publishVolatileToFederation } = await import('../../chat/federation/index.mjs')
 			const { broadcastEvent } = await import('../../chat/ws/groupWsBroadcast.mjs')
 			const { groupWsRoomKeyForReplica } = await import('../../chat/ws/groupWsRooms.mjs')
-			const alert = buildAndApplyUnverifiedSlashAlert(
+			const alert = buildUnverifiedSlashAlert(
 				sender,
 				content,
 				slashState.groupSettings || {},
 			)
+			await applyVolatileSlashAlert(alert)
 			broadcastEvent(groupWsRoomKeyForReplica(groupId), alert)
 			await publishVolatileToFederation(groupId, alert)
 			applied++

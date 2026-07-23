@@ -1,8 +1,8 @@
 /**
  * 联邦群卡片拉取：fed_group_card_want / fed_group_card_data。
  */
-import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_action'
-import { isFederationActionAllowedUnderLoad } from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
+import { wireAction } from './wireAction.mjs'
+import { isFederationActionAllowedUnderLoad } from './roomLoadBudget.mjs'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
 

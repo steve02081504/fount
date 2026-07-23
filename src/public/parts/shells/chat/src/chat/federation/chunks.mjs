@@ -22,7 +22,7 @@ import { handleFedChunkGetIngress, handleFedChunkDataIngress } from 'npm:@steve0
 import { getChunk, hasChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
 import { bumpChunkStorageReputation, penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
-import { isFederationActionAllowedUnderLoad } from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
+import { isFederationActionAllowedUnderLoad } from './roomLoadBudget.mjs'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
 

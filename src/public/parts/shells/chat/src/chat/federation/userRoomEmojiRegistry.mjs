@@ -1,4 +1,4 @@
-import { registerUserRoomNodeScopeHook } from 'npm:@steve02081504/fount-p2p/transport/user_room'
+import { registerNodeScopeWireHook } from 'npm:@steve02081504/fount-p2p/transport/node_scope'
 
 import { attachUserRoomEmojiHandlers } from './groupEmojiFederation.mjs'
 
@@ -8,7 +8,9 @@ let unregisterHook = null
 /** @returns {void} */
 export function registerChatUserRoomEmojiHandlers() {
 	if (unregisterHook) return
-	unregisterHook = registerUserRoomNodeScopeHook(attachUserRoomEmojiHandlers)
+	unregisterHook = registerNodeScopeWireHook((context, wire) => {
+		attachUserRoomEmojiHandlers(context.replicaUsername, wire)
+	})
 }
 
 /** @returns {void} */

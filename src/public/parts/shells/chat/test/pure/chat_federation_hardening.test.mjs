@@ -29,7 +29,7 @@ import {
 	DEFAULT_ICE_SERVERS,
 	resolveIceServers,
 	sanitizeIceServersForSettings,
-} from 'npm:@steve02081504/fount-p2p/transport/ice_servers'
+} from '../../src/chat/lib/iceServers.mjs'
 
 import { findStaleUnreachableChannels } from '../../src/chat/channel/gc.mjs'
 import { registerChatEventTypeDefs } from '../../src/chat/dag/eventTypes.mjs'

@@ -4,7 +4,7 @@ import {
 	parseDiscoveryQueryResponse,
 } from 'npm:@steve02081504/fount-p2p/schemas/discovery'
 import { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
-import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_action'
+import { wireAction } from '../wireAction.mjs'
 
 import { applyRemoteDigestClaim } from '../archiveDigestClaims.mjs'
 import {

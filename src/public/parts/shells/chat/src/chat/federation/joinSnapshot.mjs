@@ -4,7 +4,7 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { pickFederationTargetPeerIds } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
+import { pickFederationTargetPeerIds } from './peerFanout.mjs'
 import { resolveArchiveQuorumPeerMin } from 'npm:@steve02081504/fount-p2p/trust_graph/resolve'
 
 import { sleep } from '../../../../../../../scripts/sleep.mjs'

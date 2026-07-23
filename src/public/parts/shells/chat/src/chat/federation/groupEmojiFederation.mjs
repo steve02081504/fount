@@ -5,8 +5,8 @@
  * 【数据结构】载荷 { emojiId, dataUrl?, mimeType? }；等待键 username\0groupId\0emojiId。
  * 【关联】room.mjs、group/groupEmojis.mjs、wire_ingress.mjs、governance/peers 拉黑检查。
  */
-import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_action'
-import { isFederationActionAllowedUnderLoad } from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
+import { wireAction } from './wireAction.mjs'
+import { isFederationActionAllowedUnderLoad } from './roomLoadBudget.mjs'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
 

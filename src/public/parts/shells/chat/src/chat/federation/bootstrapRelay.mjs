@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto'
 
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { decryptUtf8ForMember, encryptUtf8ForMember } from 'npm:@steve02081504/fount-p2p/crypto/key'
-import { pickFederationTargetPeerIds } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
+import { pickFederationTargetPeerIds } from './peerFanout.mjs'
 
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { eventsPath } from '../lib/paths.mjs'

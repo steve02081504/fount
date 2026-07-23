@@ -230,7 +230,7 @@ export function createGroup(apiContext, groupId, projection) {
 				async slash(args) {
 					const { appendSignedLocalEvent: append } = await import('../chat/dag/append.mjs')
 					const { getState } = await import('../chat/dag/materialize.mjs')
-					const { buildAndApplyUnverifiedSlashAlert } = await import('npm:@steve02081504/fount-p2p/node/reputation_store')
+					const { applyVolatileSlashAlert, buildUnverifiedSlashAlert } = await import('npm:@steve02081504/fount-p2p/node/reputation_store')
 					const { publishVolatileToFederation } = await import('../chat/federation/index.mjs')
 					const { broadcastEvent } = await import('../chat/ws/groupWsBroadcast.mjs')
 					const { groupWsRoomKeyForReplica } = await import('../chat/ws/groupWsRooms.mjs')
@@ -252,7 +252,8 @@ export function createGroup(apiContext, groupId, projection) {
 						if (!canGovSlash(state, member))
 							throw new Error('ADMIN or MANAGE_ROLES required')
 						const { sender } = await resolveLocalEventSigner(apiContext.username, groupId, apiContext.entityHash)
-						const alert = buildAndApplyUnverifiedSlashAlert(sender, content, state.groupSettings || {})
+						const alert = buildUnverifiedSlashAlert(sender, content, state.groupSettings || {})
+						await applyVolatileSlashAlert(alert)
 						broadcastEvent(groupWsRoomKeyForReplica(groupId), alert)
 						await publishVolatileToFederation(groupId, alert)
 						return { applied: 1 }

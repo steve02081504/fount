@@ -1,5 +1,5 @@
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { sanitizeIceServersForSettings } from 'npm:@steve02081504/fount-p2p/transport/ice_servers'
+import { sanitizeIceServersForSettings } from '../../lib/iceServers.mjs'
 
 import { recordFileMasterKeyRotation } from './files.mjs'
 import { withGroupId } from './state.mjs'

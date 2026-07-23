@@ -6,7 +6,7 @@
  * 【关联】room.mjs join 后启动；federationSlot.mjs leave() 清理；archiveHandshake.loadLocalFederationArchive、governance_branch.computeDagTipIdsFromEvents、rtc_connection_budget.isFederationActionAllowedUnderLoad。
  */
 import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
-import { isFederationActionAllowedUnderLoad } from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
+import { isFederationActionAllowedUnderLoad } from './roomLoadBudget.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'
 import { requireDagDeps } from './dagDependencies.mjs'

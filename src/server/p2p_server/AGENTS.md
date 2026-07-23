@@ -13,6 +13,7 @@ Core lives in [@steve02081504/fount-p2p](https://www.npmjs.com/package/@steve020
 - **Deno / shell / server**: `npm:@steve02081504/fount-p2p/...`
 - **Browser**: `https://esm.sh/@steve02081504/fount-p2p/...`
 - **Archive tunables**: `npm:@steve02081504/fount-p2p/dag/tunables.json` → mapped to `shells/chat/src/chat/lib/archive.tunables.json`
+- **fount network only**: shells use `startNode` / `ensureLinkToNode` / `sendToNodeLink` / public rooms (`link_registry`, `user_room`, `group_link_set`, `node_scope`, `room_scopes`, `remote_user_room`) + `node/network`. Do **not** import internal `transport/*` (`peer_pool`, `ice_servers`, `rtc_*`, `room_wire_action`, …). Chat fanout / ICE / wire helpers live under `shells/chat/src/chat/federation/` and `…/lib/iceServers.mjs`.
 
 ## fount-side responsibilities
 

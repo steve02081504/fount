@@ -4,8 +4,8 @@ import { takeIncomingWantIdsSlot } from 'npm:@steve02081504/fount-p2p/federation
 import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
 import { widenExploreFromTrustedAnchors } from 'npm:@steve02081504/fount-p2p/node/network'
 import { bumpReputationOnRelay, recordGossipAllUnknownWant } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
-import { pickFederationTargetPeerIds } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
-import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_action'
+import { pickFederationTargetPeerIds } from '../peerFanout.mjs'
+import { wireAction } from '../wireAction.mjs'
 import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
 import { evaluateArchiveHandshake, loadLocalFederationArchive, wireArchiveSummary } from '../archiveHandshake.mjs'
