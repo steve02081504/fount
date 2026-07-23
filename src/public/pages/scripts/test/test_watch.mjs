@@ -1,16 +1,18 @@
 /**
  * 测试环境页面监视：import 即启动（无导出）。
- * 当前内置 axe-core 无障碍轮询；后续检查可继续挂在本模块。
+ * 当前内置 axe-core 无障碍检查；DOM 有变化时每 0.5s 扫一次，静止则停。
  *
  * 本地化：有 `[data-i18n]` 时等 `onLanguageChange` 开闸并立刻 `offLanguageChange`；
  * 无本地化标记则立即开始。
  *
  * 违规以 `[test:a11y]` 打到 console（已打印指纹去重）；Playwright 捕获即硬失败。
+ * 收尾可经 `fount.test.kickWatch()` 立刻再扫（`waitForTestWatchCycle` 会调）。
  */
 import axe from 'https://esm.sh/axe-core'
 
 const A11Y_PREFIX = '[test:a11y]'
-const INTERVAL_MS = 1000
+/** DOM 仍在变时的扫描间隔 */
+const SCAN_MS = 500
 /** 同一违规连续命中次数后才打印 */
 const CONFIRM_HITS = 2
 
@@ -25,14 +27,16 @@ const printedKeys = new Set()
 const pendingHits = new Map()
 
 let localeReady = false
-let timer = 0
-/** 串行化 axe.run，避免 interval 重叠触发 “Axe is already running” */
+let scanTimer = 0
+/** 自上次扫描以来 DOM 是否又变过 */
+let dirty = false
+/** 串行化 axe.run，避免重叠触发 “Axe is already running” */
 let a11yChain = Promise.resolve()
 
 /**
- * @param {import('https://esm.sh/axe-core').Result} violation
- * @param {import('https://esm.sh/axe-core').NodeResult} node
- * @returns {string}
+ * @param {import('https://esm.sh/axe-core').Result} violation axe 违规
+ * @param {import('https://esm.sh/axe-core').NodeResult} node 违规节点
+ * @returns {string} 去重键
  */
 function violationKey(violation, node) {
 	const target = Array.isArray(node.target) ? node.target.join(' ') : String(node.target ?? '')
@@ -55,7 +59,7 @@ async function runA11y() {
 	})
 	/** @type {Set<string>} */
 	const seen = new Set()
-	for (const violation of results.violations) {
+	for (const violation of results.violations) 
 		for (const node of violation.nodes) {
 			const key = violationKey(violation, node)
 			seen.add(key)
@@ -73,7 +77,7 @@ async function runA11y() {
 				node.failureSummary || '',
 			)
 		}
-	}
+	
 	for (const key of pendingHits.keys())
 		if (!seen.has(key)) pendingHits.delete(key)
 
@@ -91,14 +95,60 @@ function tick() {
 }
 
 /**
+ * 保证有扫描定时器；无 dirty 且无待确认命中时自行停掉。
+ * @returns {void}
+ */
+function ensureScanTimer() {
+	if (scanTimer) return
+	scanTimer = setInterval(() => {
+		if (!dirty && !pendingHits.size) {
+			clearInterval(scanTimer)
+			scanTimer = 0
+			return
+		}
+		dirty = false
+		tick()
+	}, SCAN_MS)
+}
+
+/**
+ * DOM 变脏：locale 已开闸则启动/保持 0.5s 扫描；否则只记 dirty，开闸时再扫。
+ * @returns {void}
+ */
+function markDirty() {
+	dirty = true
+	if (!localeReady) return
+	ensureScanTimer()
+}
+
+/**
+ * 立刻扫一轮并保持定时器（供 Playwright 收尾确认）。
+ * @returns {void}
+ */
+function kickWatch() {
+	if (!localeReady) return
+	dirty = true
+	tick()
+	ensureScanTimer()
+}
+
+globalThis.fount.test.kickWatch = kickWatch
+
+/**
  * @returns {void}
  */
 function openLocaleGate() {
 	if (localeReady) return
 	localeReady = true
-	tick()
-	if (!timer) timer = setInterval(tick, INTERVAL_MS)
+	kickWatch()
 }
+
+new MutationObserver(markDirty).observe(document.documentElement, {
+	subtree: true,
+	childList: true,
+	attributes: true,
+	characterData: true,
+})
 
 if (!document.querySelector('[data-i18n]'))
 	openLocaleGate()

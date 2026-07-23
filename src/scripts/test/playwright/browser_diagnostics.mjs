@@ -82,13 +82,15 @@ export function isI18nMissingConsoleText(text) {
 }
 
 /**
- * 等待页面至少完成一次 test_watch 轮询（`fount.test.watchLastRun`）。
+ * 等待页面至少完成一次 test_watch 扫描（`fount.test.watchLastRun`）。
+ * 先 `kickWatch()`（DOM 静止时不会自动扫），再等 lastRun 推进。
  * @param {import('npm:@playwright/test').Page} page Playwright 页面
  * @param {number} [sinceMs=0] 要求 lastRun 严格晚于此时刻（0 表示任意一次）
  * @param {number} [timeoutMs=8000] 超时（含 locale 闸 / 确认轮）
  * @returns {Promise<void>}
  */
 export async function waitForTestWatchCycle(page, sinceMs = 0, timeoutMs = 8000) {
+	await page.evaluate(() => globalThis.fount?.test?.kickWatch?.())
 	await page.waitForFunction(min => {
 		const last = globalThis.fount?.test?.watchLastRun
 		return typeof last === 'number' && last > min

@@ -77,7 +77,7 @@ export function createFountFixtures(options = {}) {
 			const page = await context.newPage()
 			diagnostics.attach(page)
 			await use(page)
-			// 测试体结束后再等两轮 test_watch（locale 闸 + 确认命中）
+			// 测试体结束后 kick 两轮 test_watch（确认命中）；未挂载则超时跳过
 			let since = Date.now()
 			await waitForTestWatchCycle(page, since).catch(() => { /* 未挂载 test_watch 则跳过 */ })
 			since = Date.now()
