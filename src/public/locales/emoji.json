@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "🏠",
-			"explore": "🔭",
-			"notifications": "📬",
-			"saved": "⭐",
-			"drafts": "📝📦",
-			"profile": "🫵",
-			"videos": "🎬",
-			"live": "📡🔴"
+			"feed": {
+				"aria-label": "🏠",
+				"textContent": "🏠"
+			},
+			"explore": {
+				"aria-label": "🔭",
+				"textContent": "🔭"
+			},
+			"notifications": {
+				"aria-label": "📬",
+				"textContent": "📬"
+			},
+			"saved": {
+				"aria-label": "⭐",
+				"textContent": "⭐"
+			},
+			"drafts": {
+				"aria-label": "📝📦",
+				"textContent": "📝📦"
+			},
+			"profile": {
+				"aria-label": "🫵",
+				"textContent": "🫵"
+			},
+			"videos": {
+				"aria-label": "🎬",
+				"textContent": "🎬"
+			},
+			"live": {
+				"aria-label": "📡🔴",
+				"textContent": "📡🔴"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "🏛️⚙️",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "💭… ✅📝⛲🗣️ @️⃣✅",
+			"locale": "📄🗣️",
 			"publish": "📤",
 			"saveDraft": "💾📝",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "🚫👀（🔘）"
-				}
+				},
+				"aria-label": "👀📏"
 			}
 		},
 		"feed": {
-			"refresh": "🔄📰",
+			"refresh": {
+				"aria-label": "🔄📰",
+				"title": "🔄📰",
+				"dataset": {
+					"tip": "🔄📰"
+				}
+			},
 			"newPosts": "🆕📰 · 👆👀",
 			"tabLatest": "🆕",
 			"tabForYou": "⭐",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "💻",
 				"scopeNearby": "📍🧭",
-				"empty": "🔥#️⃣📭"
+				"empty": "🔥#️⃣📭",
+				"aria-label": "🔥#️⃣"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "📁🏷️",
 			"pickFolderTitle": "⭐➡️",
+			"folderSelect": "⭐📁",
 			"confirm": "✅",
 			"cancel": "↩️",
 			"remove": "🗑️⭐",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "🔗💬👥",
 			"clear": "🔓🔗",
-			"pick": "🔗💬👥/📺…"
+			"pick": "🔗💬👥/📺…",
+			"select": "🔗💬👥/📺"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "▶️🔗",
 			"clear": "↩️🔗",
 			"viewOriginal": "👀📄"
-		},
-		"a11y": {
-			"linkGroupSelect": "🔗💬👥/📺",
-			"postVisibility": "👀📏",
-			"postLang": "📄🗣️",
-			"trendingHashtags": "🔥#️⃣",
-			"saveFolderSelect": "⭐📁"
 		},
 		"translate": {
 			"label": "🌐📝："

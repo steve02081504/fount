@@ -8,7 +8,7 @@ import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 import { svgInliner } from './scripts/lib/svgInliner.mjs'
 
 let skipBreadcrumb = false
-try { Sentry.init({
+if (!globalThis.fount?.test?.enabled) try { Sentry.init({
 	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
 	/**
 	 * 在 Sentry 捕获面包屑事件之前进行处理。
@@ -41,6 +41,8 @@ console.noBreadcrumb = {
 }
 
 await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').catch(console.error)
+
+if (globalThis.fount?.test?.enabled) import('/fount/scripts/test/test_watch.mjs')
 
 /* global urlParams */
 /**

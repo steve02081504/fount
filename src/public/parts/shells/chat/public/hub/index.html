@@ -25,7 +25,7 @@
 	<div class="drawer drawer-end">
 		<input id="files-drawer-toggle" type="checkbox" class="drawer-toggle" aria-hidden="true" tabindex="-1" />
 		<div class="drawer-content flex h-screen w-screen bg-[var(--bg-main)] text-[var(--text-normal)]">
-		<aside class="server-bar w-[72px] shrink-0 overflow-y-auto bg-[var(--bg-server)] py-3 flex flex-col items-center gap-2" id="server-bar">
+		<aside class="server-bar w-[72px] shrink-0 overflow-y-auto bg-[var(--bg-server)] py-3 flex flex-col items-center gap-2" id="server-bar" data-i18n="chat.hub.serverBar">
 			<button type="button" class="server-item" data-mode="friends" data-i18n="chat.hub.friendsTooltip">
 				<img src="https://api.iconify.design/line-md/person.svg" width="24" height="24" alt="" aria-hidden="true" />
 				<span class="server-tooltip" data-i18n="chat.hub.charsTooltip.tip"></span>
@@ -51,11 +51,13 @@
 			</button>
 		</aside>
 
-		<aside class="channel-bar w-60 shrink-0 bg-[var(--bg-channel)] flex flex-col" id="channel-bar">
-			<header class="channel-header h-12 min-h-12 px-4 border-b border-[var(--border)] shadow-sm flex items-center justify-between font-bold text-base text-[var(--text-bright)] cursor-pointer" id="group-header" data-i18n="chat.hub.groupHeaderMenu" aria-haspopup="menu">
+		<main id="hub-workspace" class="hub-workspace flex flex-1 min-w-0">
+		<h1 class="sr-only" data-i18n="chat.hub.title"></h1>
+		<div class="channel-bar w-60 shrink-0 bg-[var(--bg-channel)] flex flex-col" id="channel-bar" role="complementary" data-i18n="chat.hub.channelBar">
+			<div class="channel-header h-12 min-h-12 px-4 border-b border-[var(--border)] shadow-sm flex items-center justify-between font-bold text-base text-[var(--text-bright)] cursor-pointer" id="group-header" data-i18n="chat.hub.groupHeaderMenu" aria-haspopup="menu">
 				<span id="group-name-display"></span>
 				<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" />
-			</header>
+			</div>
 			<div class="channel-list flex-1 overflow-y-auto py-2" id="channel-list"></div>
 			<div class="user-bar" id="user-bar">
 				<div class="avatar-wrap user-avatar-wrap">
@@ -69,10 +71,10 @@
 					</div>
 				</div>
 			</div>
-		</aside>
+		</div>
 
-		<main class="main flex-1 min-w-0 flex flex-col bg-[var(--bg-main)]">
-			<header class="main-header h-12 min-h-12 px-4 border-b border-[var(--border)] shadow-sm flex items-center gap-2 z-30 relative">
+		<div id="hub-main" class="main flex-1 min-w-0 flex flex-col bg-[var(--bg-main)]">
+			<div class="main-header h-12 min-h-12 px-4 border-b border-[var(--border)] shadow-sm flex items-center gap-2 z-30 relative">
 				<button type="button" class="top-back icon-button" id="top-back-button" data-i18n="chat.hub.backToNav">
 					<img src="https://api.iconify.design/mdi/arrow-left.svg" width="18" height="18" alt="" aria-hidden="true" />
 				</button>
@@ -84,8 +86,8 @@
 						<img src="https://api.iconify.design/mdi/pin.svg" alt="" aria-hidden="true" />
 						<span class="header-pop-count" id="pins-count" hidden></span>
 					</button>
-					<div class="header-panel" id="pins-panel" hidden role="dialog">
-						<div class="header-panel-title" data-i18n="chat.hub.pinsTitle"></div>
+					<div class="header-panel" id="pins-panel" hidden role="dialog" aria-labelledby="pins-panel-title">
+						<div class="header-panel-title" id="pins-panel-title" data-i18n="chat.hub.pinsTitle"></div>
 						<div id="pins-wrap" class="header-panel-body"></div>
 					</div>
 				</div>
@@ -94,8 +96,8 @@
 						<img src="https://api.iconify.design/mdi/bookmark-outline.svg" alt="" aria-hidden="true" />
 						<span class="header-pop-count" id="bookmarks-count" hidden></span>
 					</button>
-					<div class="header-panel" id="bookmarks-panel" hidden role="dialog">
-						<div class="header-panel-title" data-i18n="chat.hub.bookmarksTitle"></div>
+					<div class="header-panel" id="bookmarks-panel" hidden role="dialog" aria-labelledby="bookmarks-panel-title">
+						<div class="header-panel-title" id="bookmarks-panel-title" data-i18n="chat.hub.bookmarksTitle"></div>
 						<div id="bookmarks-wrap" class="header-panel-body"></div>
 					</div>
 				</div>
@@ -149,7 +151,7 @@
 					</div>
 					<input id="mobile-search-input" class="search-input flex-1 min-w-0" type="search" data-i18n="chat.hub.search" />
 				</div>
-			</header>
+			</div>
 			<div id="group-state-host-buffer-banner" class="alert alert-info rounded-none py-2 text-sm" hidden>
 				<span id="group-state-host-buffer-banner-text" data-i18n="chat.hub.banners.gshBuffer"></span>
 			</div>
@@ -271,9 +273,10 @@
 					</div>
 				</div>
 			</div>
+		</div>
 		</main>
 
-		<aside class="member-bar w-60 shrink-0 overflow-y-auto bg-[var(--bg-member)] py-4" id="member-bar">
+		<aside class="member-bar w-60 shrink-0 overflow-y-auto bg-[var(--bg-member)] py-4" id="member-bar" data-i18n="chat.hub.memberBar">
 			<div id="info-card-host"></div>
 			<div id="member-list"></div>
 			<div id="member-digest" class="member-digest" hidden></div>
@@ -303,7 +306,7 @@
 
 	<dialog id="fork-split-modal" class="modal">
 		<div class="modal-box overlay-box">
-			<h3 class="font-bold text-lg mb-3" data-i18n="chat.hub.forkSplitModalTitle"></h3>
+			<h2 class="font-bold text-lg mb-3" data-i18n="chat.hub.forkSplitModalTitle"></h2>
 			<label class="form-control w-full mb-4">
 				<span class="label-text" data-i18n="chat.hub.forkSplitPrompt"></span>
 				<input type="text" id="fork-split-name" class="input input-bordered w-full" autocomplete="off" />
@@ -318,7 +321,7 @@
 
 	<dialog id="vote-modal" class="modal">
 		<div class="modal-box overlay-box vote-modal-box">
-			<h3 class="font-bold text-lg mb-3" data-i18n="chat.hub.voteModalTitle"></h3>
+			<h2 class="font-bold text-lg mb-3" data-i18n="chat.hub.voteModalTitle"></h2>
 			<label class="form-control w-full mb-3">
 				<span class="label-text" data-i18n="chat.hub.votePromptQuestion"></span>
 				<input type="text" id="vote-question" class="input input-bordered w-full" autocomplete="off" />
@@ -342,7 +345,7 @@
 	<dialog id="settings-modal" class="modal">
 		<div class="modal-box overlay-box" id="overlay-box">
 			<div class="overlay-header p-4 bg-gradient-to-br from-primary/90 to-primary text-primary-content">
-				<h3 id="overlay-title" data-i18n="chat.hub.settingsModalTitle"></h3>
+				<h2 id="overlay-title" data-i18n="chat.hub.settingsModalTitle"></h2>
 				<p id="overlay-subtitle"></p>
 			</div>
 			<div class="overlay-body p-4 space-y-3 max-h-[65vh] overflow-y-auto" id="overlay-body"></div>

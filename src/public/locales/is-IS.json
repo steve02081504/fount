@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "Heim",
-			"explore": "Kanna",
-			"notifications": "Innhólf",
-			"saved": "Vistað",
-			"drafts": "Drög",
-			"profile": "Ég",
-			"videos": "Stutt myndbönd",
-			"live": "Beint"
+			"feed": {
+				"aria-label": "Heim",
+				"textContent": "Heim"
+			},
+			"explore": {
+				"aria-label": "Kanna",
+				"textContent": "Kanna"
+			},
+			"notifications": {
+				"aria-label": "Innhólf",
+				"textContent": "Innhólf"
+			},
+			"saved": {
+				"aria-label": "Vistað",
+				"textContent": "Vistað"
+			},
+			"drafts": {
+				"aria-label": "Drög",
+				"textContent": "Drög"
+			},
+			"profile": {
+				"aria-label": "Ég",
+				"textContent": "Ég"
+			},
+			"videos": {
+				"aria-label": "Stutt myndbönd",
+				"textContent": "Stutt myndbönd"
+			},
+			"live": {
+				"aria-label": "Beint",
+				"textContent": "Beint"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "Samfélagsstillingar",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "Hvað ertu að hugsa um? Styðjið Markdown (font mállýska), sláðu inn @ til að nefna",
+			"locale": "Efnismál",
 			"publish": "Birta",
 			"saveDraft": "Vista drög",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "Hver ætti ekki að sýna það (valfrjálst)"
-				}
+				},
+				"aria-label": "Sýnilegt svið"
 			}
 		},
 		"feed": {
-			"refresh": "Endurnýjaðu fréttir",
+			"refresh": {
+				"aria-label": "Endurnýjaðu fréttir",
+				"title": "Endurnýjaðu fréttir",
+				"dataset": {
+					"tip": "Endurnýjaðu fréttir"
+				}
+			},
 			"newPosts": "Það eru nýjar fréttir, smelltu til að skoða",
 			"tabLatest": "Nýjast",
 			"tabForYou": "Fyrir þig",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "Staðvært",
 				"scopeNearby": "Nálægt",
-				"empty": "Ekkert heitt umræðuefni ennþá"
+				"empty": "Ekkert heitt umræðuefni ennþá",
+				"aria-label": "Vinsælt efni"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "Nafn möppu",
 			"pickFolderTitle": "Bæta við eftirlæti",
+			"folderSelect": "Uppáhalds mappa",
 			"confirm": "Staðfesta",
 			"cancel": "Hætta við",
 			"remove": "Fjarlægja eftirlæti",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "Tengdu spjallhóp",
 			"clear": "Aftengja",
-			"pick": "Tengja spjallhóp/rás..."
+			"pick": "Tengja spjallhóp/rás...",
+			"select": "Tengstu við spjallhóp eða rás"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "Tilvitnun",
 			"clear": "Tillitsleysi",
 			"viewOriginal": "Skoða upprunalega færslu"
-		},
-		"a11y": {
-			"linkGroupSelect": "Tengstu við spjallhóp eða rás",
-			"postVisibility": "Sýnilegt svið",
-			"postLang": "Efnismál",
-			"trendingHashtags": "Vinsælt efni",
-			"saveFolderSelect": "Uppáhalds mappa"
 		},
 		"translate": {
 			"label": "Þýðing:"

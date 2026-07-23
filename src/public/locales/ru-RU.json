@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "Лента",
-			"explore": "Обзор",
-			"notifications": "Входящие",
-			"saved": "Избранное",
-			"drafts": "Черновики",
-			"profile": "Профиль",
-			"videos": "Клипы",
-			"live": "Эфир"
+			"feed": {
+				"aria-label": "Лента",
+				"textContent": "Лента"
+			},
+			"explore": {
+				"aria-label": "Обзор",
+				"textContent": "Обзор"
+			},
+			"notifications": {
+				"aria-label": "Входящие",
+				"textContent": "Входящие"
+			},
+			"saved": {
+				"aria-label": "Избранное",
+				"textContent": "Избранное"
+			},
+			"drafts": {
+				"aria-label": "Черновики",
+				"textContent": "Черновики"
+			},
+			"profile": {
+				"aria-label": "Профиль",
+				"textContent": "Профиль"
+			},
+			"videos": {
+				"aria-label": "Клипы",
+				"textContent": "Клипы"
+			},
+			"live": {
+				"aria-label": "Эфир",
+				"textContent": "Эфир"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "Настройки соцсети",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "О чём думаете? Поддерживается Markdown (диалект fount), введите @ для упоминания",
+			"locale": "язык содержания",
 			"publish": "Опубликовать",
 			"saveDraft": "Сохранить черновик",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "Кому не следует это показывать (необязательно)"
-				}
+				},
+				"aria-label": "Область видимости"
 			}
 		},
 		"feed": {
-			"refresh": "Обновить ленту",
+			"refresh": {
+				"aria-label": "Обновить ленту",
+				"title": "Обновить ленту",
+				"dataset": {
+					"tip": "Обновить ленту"
+				}
+			},
 			"newPosts": "Новые записи — нажмите, чтобы посмотреть",
 			"tabLatest": "Свежее",
 			"tabForYou": "Для вас",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "Локально",
 				"scopeNearby": "Рядом",
-				"empty": "Горячих тем пока нет"
+				"empty": "Горячих тем пока нет",
+				"aria-label": "Популярные темы"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "Имя папки",
 			"pickFolderTitle": "Сохранить в",
+			"folderSelect": "любимая папка",
 			"confirm": "Подтвердить",
 			"cancel": "Отмена",
 			"remove": "Удалить избранное",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "Подключить чат-группу",
 			"clear": "Разъединить",
-			"pick": "Подключить группу/канал чата…"
+			"pick": "Подключить группу/канал чата…",
+			"select": "Подключиться к группе или каналу чата"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "Цитирование",
 			"clear": "Убрать цитату",
 			"viewOriginal": "Посмотреть исходное сообщение"
-		},
-		"a11y": {
-			"linkGroupSelect": "Подключиться к группе или каналу чата",
-			"postVisibility": "Область видимости",
-			"postLang": "язык содержания",
-			"trendingHashtags": "Популярные темы",
-			"saveFolderSelect": "любимая папка"
 		},
 		"translate": {
 			"label": "Перевод:"

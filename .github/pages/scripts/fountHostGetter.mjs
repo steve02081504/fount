@@ -212,7 +212,7 @@ async function mappingFountHostUrl(hostUrl) {
 /**
  * 保存 fount 主机 URL。
  * @param {string} hostUrl - 要保存的主机 URL。
- * @returns {void}
+ * @returns {string} - 保存后的主机 URL。
  */
 export function saveFountHostUrl(hostUrl) {
 	localStorage.setItem('fountHostUrl', hostUrl ?? '')
@@ -230,6 +230,7 @@ export function saveFountHostUrl(hostUrl) {
 		hostUrl,
 		...JSON.parse(localStorage.getItem('fountPreviousHostUrls') || '[]')
 	])].slice(0, 13)))
+	return hostUrl
 }
 
 /**
@@ -242,9 +243,10 @@ export async function getFountHostUrl(hostUrl = window.fount?.hostUrl ??
 	localStorage.getItem('fountHostUrl')
 ) {
 	if (!String(hostUrl).startsWith('http')) hostUrl = null
-	const result = await mappingFountHostUrl(hostUrl)
-	saveFountHostUrl(result)
-	return result
+	// Playwright / a11y：禁止局域网扫描，直接用已给或默认主机
+	if (globalThis.fount?.test?.enabled)
+		return saveFountHostUrl(hostUrl || 'http://localhost:8931')
+	return saveFountHostUrl(await mappingFountHostUrl(hostUrl))
 }
 
 /**

@@ -2187,8 +2187,14 @@
 				"avatarUrl": {
 					"placeholder": "Avatar image URL, or upload file below"
 				},
+				"avatarUpload": {
+					"aria-label": "Upload avatar image"
+				},
 				"bannerUrl": {
 					"placeholder": "Banner image URL, or upload file below"
+				},
+				"bannerUpload": {
+					"aria-label": "Upload banner image"
 				},
 				"tag": {
 					"placeholder": "Add after entering tag"
@@ -3665,14 +3671,47 @@
 			}
 		},
 		"nav": {
-			"feed": "front page",
-			"explore": "explore",
-			"notifications": "Inbox",
-			"saved": "Saved",
-			"drafts": "draft box",
-			"profile": "mine",
-			"videos": "short video",
-			"live": "live streaming"
+			"side": {
+				"aria-label": "Social navigation"
+			},
+			"mobile": {
+				"aria-label": "Social bottom navigation"
+			},
+			"feed": {
+				"aria-label": "front page",
+				"title": "front page"
+			},
+			"explore": {
+				"aria-label": "explore",
+				"title": "explore"
+			},
+			"notifications": {
+				"aria-label": "Inbox",
+				"title": "Inbox"
+			},
+			"saved": {
+				"aria-label": "Saved",
+				"title": "Saved"
+			},
+			"drafts": {
+				"aria-label": "draft box",
+				"title": "draft box"
+			},
+			"profile": {
+				"aria-label": "mine",
+				"title": "mine"
+			},
+			"videos": {
+				"aria-label": "short video",
+				"title": "short video"
+			},
+			"live": {
+				"aria-label": "live streaming",
+				"title": "live streaming"
+			},
+			"compose": {
+				"aria-label": "Write a post"
+			}
 		},
 		"settings": {
 			"title": "social settings",
@@ -3724,6 +3763,10 @@
 		},
 		"composer": {
 			"placeholder": "What are you thinking about? Support Markdown (fount dialect), enter @ to mention",
+			"locale": {
+				"aria-label": "Content language"
+			},
+			"aria-label": "Write a post",
 			"publish": "release",
 			"saveDraft": "save draft",
 			"fab": {
@@ -3788,12 +3831,22 @@
 				},
 				"except": {
 					"placeholder": "Who should not show it (optional)"
-				}
+				},
+				"aria-label": "Visible range"
 			}
 		},
 		"feed": {
-			"refresh": "Refresh news",
+			"refresh": {
+				"aria-label": "Refresh news",
+				"title": "Refresh news",
+				"dataset": {
+					"tip": "Refresh news"
+				}
+			},
 			"newPosts": "There is new news, click to view",
+			"tabsLabel": {
+				"aria-label": "Feed ranking"
+			},
 			"tabLatest": "Latest",
 			"tabForYou": "For you",
 			"repostedBy": "${author} reposted",
@@ -3810,7 +3863,8 @@
 				},
 				"scopeLocal": "This device",
 				"scopeNearby": "Nearby",
-				"empty": "Nothing trending yet"
+				"empty": "Nothing trending yet",
+				"aria-label": "Trending"
 			}
 		},
 		"explore": {
@@ -3840,6 +3894,7 @@
 			},
 			"createFolderPrompt": "Folder name",
 			"pickFolderTitle": "Save to…",
+			"folderSelect": "Saved folder",
 			"confirm": "Confirm",
 			"cancel": "Cancel",
 			"remove": "Remove from saved",
@@ -4090,7 +4145,8 @@
 		"groupRef": {
 			"linking": "Link Chat group",
 			"clear": "Unlink",
-			"pick": "Link Chat group/channel…"
+			"pick": "Link Chat group/channel…",
+			"select": "Connect to a Chat group or channel"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4127,13 +4183,6 @@
 			"quoting": "Quoting",
 			"clear": "Clear quote",
 			"viewOriginal": "View original post"
-		},
-		"a11y": {
-			"linkGroupSelect": "Connect to a Chat group or channel",
-			"postVisibility": "Visible range",
-			"postLang": "content language",
-			"trendingHashtags": "Trending topics",
-			"saveFolderSelect": "Saved folder"
 		},
 		"translate": {
 			"label": "Translation:"

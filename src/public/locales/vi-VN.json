@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "Trang chủ",
-			"explore": "Khám phá",
-			"notifications": "Hộp thư",
-			"saved": "Đã lưu",
-			"drafts": "Nháp",
-			"profile": "Của tôi",
-			"videos": "Video ngắn",
-			"live": "Trực tiếp"
+			"feed": {
+				"aria-label": "Trang chủ",
+				"textContent": "Trang chủ"
+			},
+			"explore": {
+				"aria-label": "Khám phá",
+				"textContent": "Khám phá"
+			},
+			"notifications": {
+				"aria-label": "Hộp thư",
+				"textContent": "Hộp thư"
+			},
+			"saved": {
+				"aria-label": "Đã lưu",
+				"textContent": "Đã lưu"
+			},
+			"drafts": {
+				"aria-label": "Nháp",
+				"textContent": "Nháp"
+			},
+			"profile": {
+				"aria-label": "Của tôi",
+				"textContent": "Của tôi"
+			},
+			"videos": {
+				"aria-label": "Video ngắn",
+				"textContent": "Video ngắn"
+			},
+			"live": {
+				"aria-label": "Trực tiếp",
+				"textContent": "Trực tiếp"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "Cài đặt mạng xã hội",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "Bạn đang nghĩ về điều gì? Hỗ trợ Markdown (phương ngữ nguồn), nhập @ để đề cập",
+			"locale": "ngôn ngữ nội dung",
 			"publish": "giải phóng",
 			"saveDraft": "lưu bản nháp",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "Ai không nên hiển thị nó (tùy chọn)"
-				}
+				},
+				"aria-label": "Phạm vi hiển thị"
 			}
 		},
 		"feed": {
-			"refresh": "Làm mới tin tức",
+			"refresh": {
+				"aria-label": "Làm mới tin tức",
+				"title": "Làm mới tin tức",
+				"dataset": {
+					"tip": "Làm mới tin tức"
+				}
+			},
 			"newPosts": "Có tin mới, bấm vào để xem",
 			"tabLatest": "cập nhật",
 			"tabForYou": "gợi ý",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "máy cục bộ",
 				"scopeNearby": "gần đó",
-				"empty": "Chưa có chủ đề nóng"
+				"empty": "Chưa có chủ đề nóng",
+				"aria-label": "chủ đề nóng"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "tên thư mục",
 			"pickFolderTitle": "Lưu vào",
+			"folderSelect": "thư mục yêu thích",
 			"confirm": "xác nhận",
 			"cancel": "Hủy bỏ",
 			"remove": "Xóa mục yêu thích",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "Kết nối nhóm trò chuyện",
 			"clear": "Tách rời",
-			"pick": "Kết nối Nhóm/Kênh trò chuyện…"
+			"pick": "Kết nối Nhóm/Kênh trò chuyện…",
+			"select": "Kết nối với nhóm hoặc kênh Trò chuyện"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "Trích dẫn",
 			"clear": "sự vô lễ",
 			"viewOriginal": "Xem bài viết gốc"
-		},
-		"a11y": {
-			"linkGroupSelect": "Kết nối với nhóm hoặc kênh Trò chuyện",
-			"postVisibility": "Phạm vi hiển thị",
-			"postLang": "ngôn ngữ nội dung",
-			"trendingHashtags": "chủ đề nóng",
-			"saveFolderSelect": "thư mục yêu thích"
 		},
 		"translate": {
 			"label": "Bản dịch:"

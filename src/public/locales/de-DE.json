@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "Start",
-			"explore": "Entdecken",
-			"notifications": "Posteingang",
-			"saved": "Gespeichert",
-			"drafts": "Entwürfe",
-			"profile": "Profil",
-			"videos": "Kurzvideos",
-			"live": "Live"
+			"feed": {
+				"aria-label": "Start",
+				"textContent": "Start"
+			},
+			"explore": {
+				"aria-label": "Entdecken",
+				"textContent": "Entdecken"
+			},
+			"notifications": {
+				"aria-label": "Posteingang",
+				"textContent": "Posteingang"
+			},
+			"saved": {
+				"aria-label": "Gespeichert",
+				"textContent": "Gespeichert"
+			},
+			"drafts": {
+				"aria-label": "Entwürfe",
+				"textContent": "Entwürfe"
+			},
+			"profile": {
+				"aria-label": "Profil",
+				"textContent": "Profil"
+			},
+			"videos": {
+				"aria-label": "Kurzvideos",
+				"textContent": "Kurzvideos"
+			},
+			"live": {
+				"aria-label": "Live",
+				"textContent": "Live"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "Social-Einstellungen",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "Woran denken Sie? Markdown (fount-Dialekt) wird unterstützt, @ zum Erwähnen",
+			"locale": "Inhaltssprache",
 			"publish": "Veröffentlichen",
 			"saveDraft": "Entwurf speichern",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "Wer sollte es nicht zeigen (optional)"
-				}
+				},
+				"aria-label": "Sichtbarer Bereich"
 			}
 		},
 		"feed": {
-			"refresh": "Nachrichten aktualisieren",
+			"refresh": {
+				"aria-label": "Nachrichten aktualisieren",
+				"title": "Nachrichten aktualisieren",
+				"dataset": {
+					"tip": "Nachrichten aktualisieren"
+				}
+			},
 			"newPosts": "Neue Beiträge – zum Anzeigen tippen",
 			"tabLatest": "Neueste",
 			"tabForYou": "Für Sie",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "Lokal",
 				"scopeNearby": "In der Nähe",
-				"empty": "Noch keine Trend-Themen"
+				"empty": "Noch keine Trend-Themen",
+				"aria-label": "Trend-Themen"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "Ordnername",
 			"pickFolderTitle": "Zu Favoriten hinzufügen",
+			"folderSelect": "Sammlungsordner",
 			"confirm": "Bestätigen",
 			"cancel": "Abbrechen",
 			"remove": "Favoriten entfernen",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "Chat-Gruppe verbinden",
 			"clear": "Verknüpfung aufheben",
-			"pick": "Chat-Gruppe/Kanal verbinden…"
+			"pick": "Chat-Gruppe/Kanal verbinden…",
+			"select": "Stellen Sie eine Verbindung zu einer Chat-Gruppe oder einem Chat-Kanal her"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "Zitieren",
 			"clear": "Zitat entfernen",
 			"viewOriginal": "Originalbeitrag ansehen"
-		},
-		"a11y": {
-			"linkGroupSelect": "Stellen Sie eine Verbindung zu einer Chat-Gruppe oder einem Chat-Kanal her",
-			"postVisibility": "Sichtbarer Bereich",
-			"postLang": "Inhaltssprache",
-			"trendingHashtags": "Trend-Themen",
-			"saveFolderSelect": "Sammlungsordner"
 		},
 		"translate": {
 			"label": "Übersetzung:"

@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "prima pagina",
-			"explore": "esplorare",
-			"notifications": "Posta in arrivo",
-			"saved": "raccogliere",
-			"drafts": "scatola per bozze",
-			"profile": "mio",
-			"videos": "breve video",
-			"live": "streaming in diretta"
+			"feed": {
+				"aria-label": "prima pagina",
+				"textContent": "prima pagina"
+			},
+			"explore": {
+				"aria-label": "esplorare",
+				"textContent": "esplorare"
+			},
+			"notifications": {
+				"aria-label": "Posta in arrivo",
+				"textContent": "Posta in arrivo"
+			},
+			"saved": {
+				"aria-label": "raccogliere",
+				"textContent": "raccogliere"
+			},
+			"drafts": {
+				"aria-label": "scatola per bozze",
+				"textContent": "scatola per bozze"
+			},
+			"profile": {
+				"aria-label": "mio",
+				"textContent": "mio"
+			},
+			"videos": {
+				"aria-label": "breve video",
+				"textContent": "breve video"
+			},
+			"live": {
+				"aria-label": "streaming in diretta",
+				"textContent": "streaming in diretta"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "impostazioni sociali",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "A cosa stai pensando? Supporta Markdown (dialetto dei caratteri), inserisci @ per menzionare",
+			"locale": "linguaggio dei contenuti",
 			"publish": "pubblicazione",
 			"saveDraft": "salva bozza",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "Chi non deve mostrarlo (facoltativo)"
-				}
+				},
+				"aria-label": "Gamma visibile"
 			}
 		},
 		"feed": {
-			"refresh": "Aggiorna notizie",
+			"refresh": {
+				"aria-label": "Aggiorna notizie",
+				"title": "Aggiorna notizie",
+				"dataset": {
+					"tip": "Aggiorna notizie"
+				}
+			},
 			"newPosts": "Ci sono nuove novità, clicca per vedere",
 			"tabLatest": "aggiornato",
 			"tabForYou": "consigliare",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "Questo dispositivo",
 				"scopeNearby": "Nelle vicinanze",
-				"empty": "Niente di trend per ora"
+				"empty": "Niente di trend per ora",
+				"aria-label": "Tendenza"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "Nome della cartella",
 			"pickFolderTitle": "Salva in…",
+			"folderSelect": "Cartella salvata",
 			"confirm": "Confermare",
 			"cancel": "Annulla",
 			"remove": "Rimuovi da salvato",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "Collega il gruppo di chat",
 			"clear": "Scollega",
-			"pick": "Collega gruppo/canale di chat..."
+			"pick": "Collega gruppo/canale di chat...",
+			"select": "Connettiti a un gruppo o canale di chat"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "Citando",
 			"clear": "Citazione chiara",
 			"viewOriginal": "Visualizza il post originale"
-		},
-		"a11y": {
-			"linkGroupSelect": "Connettiti a un gruppo o canale di chat",
-			"postVisibility": "Gamma visibile",
-			"postLang": "linguaggio dei contenuti",
-			"trendingHashtags": "Argomenti di tendenza",
-			"saveFolderSelect": "Cartella salvata"
 		},
 		"translate": {
 			"label": "Traduzione:"

@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "Головна",
-			"explore": "Огляд",
-			"notifications": "Вхідні",
-			"saved": "Обране",
-			"drafts": "Чернетки",
-			"profile": "Моя",
-			"videos": "Коротке відео",
-			"live": "Пряма трансляція"
+			"feed": {
+				"aria-label": "Головна",
+				"textContent": "Головна"
+			},
+			"explore": {
+				"aria-label": "Огляд",
+				"textContent": "Огляд"
+			},
+			"notifications": {
+				"aria-label": "Вхідні",
+				"textContent": "Вхідні"
+			},
+			"saved": {
+				"aria-label": "Обране",
+				"textContent": "Обране"
+			},
+			"drafts": {
+				"aria-label": "Чернетки",
+				"textContent": "Чернетки"
+			},
+			"profile": {
+				"aria-label": "Моя",
+				"textContent": "Моя"
+			},
+			"videos": {
+				"aria-label": "Коротке відео",
+				"textContent": "Коротке відео"
+			},
+			"live": {
+				"aria-label": "Пряма трансляція",
+				"textContent": "Пряма трансляція"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "Соціальні налаштування",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "про що ти думаєш Підтримка Markdown (діалект фонту), введіть @, щоб згадати",
+			"locale": "Мова змісту",
 			"publish": "Опублікувати",
 			"saveDraft": "Зберегти чернетку",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "Хто не повинен показувати (необов'язково)"
-				}
+				},
+				"aria-label": "Видимий діапазон"
 			}
 		},
 		"feed": {
-			"refresh": "Оновити новини",
+			"refresh": {
+				"aria-label": "Оновити новини",
+				"title": "Оновити новини",
+				"dataset": {
+					"tip": "Оновити новини"
+				}
+			},
 			"newPosts": "Є нові новини, натисніть, щоб переглянути",
 			"tabLatest": "Найновіше",
 			"tabForYou": "Для вас",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "Цей пристрій",
 				"scopeNearby": "Неподалік",
-				"empty": "Актуальних тем ще немає"
+				"empty": "Актуальних тем ще немає",
+				"aria-label": "Гарячі теми"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "Ім'я папки",
 			"pickFolderTitle": "Додати в обране",
+			"folderSelect": "Улюблена папка",
 			"confirm": "підтвердити",
 			"cancel": "Скасувати",
 			"remove": "Видалити вибране",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "Підключити групу чату",
 			"clear": "Роз’єднувати",
-			"pick": "Підключити чат-групу/канал…"
+			"pick": "Підключити чат-групу/канал…",
+			"select": "Підключіться до групи або каналу чату"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "Цитування",
 			"clear": "Прибрати цитату",
 			"viewOriginal": "Переглянути оригінальний допис"
-		},
-		"a11y": {
-			"linkGroupSelect": "Підключіться до групи або каналу чату",
-			"postVisibility": "Видимий діапазон",
-			"postLang": "Мова змісту",
-			"trendingHashtags": "Гарячі теми",
-			"saveFolderSelect": "Улюблена папка"
 		},
 		"translate": {
 			"label": "Переклад:"

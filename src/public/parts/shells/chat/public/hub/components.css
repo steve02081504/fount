@@ -250,7 +250,7 @@
 	min-width: 0;
 	border: 1px solid var(--border-subtle);
 	border-radius: var(--radius-sm);
-	background: var(--bg-tertiary);
+	background: var(--bg-input);
 	transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -282,7 +282,7 @@
 	padding: 0 6px 0 8px;
 	border: 1px solid var(--border-subtle);
 	border-radius: var(--radius-sm);
-	background: var(--bg-tertiary);
+	background: var(--bg-input);
 	color: var(--text-bright);
 	font-size: 12px;
 	line-height: 1;
@@ -320,7 +320,7 @@
 .search-input {
 	box-sizing: border-box;
 	height: var(--search-h, 32px);
-	background: var(--bg-tertiary);
+	background: var(--bg-input);
 	border: 1px solid var(--border-subtle);
 	color: var(--text-bright);
 	padding: 0 12px 0 32px;

@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "첫 페이지",
-			"explore": "탐저장",
-			"notifications": "받은 편지함",
-			"saved": "모으다",
-			"drafts": "초안 상자",
-			"profile": "내 것",
-			"videos": "짧은 영상",
-			"live": "라이브 스트리밍"
+			"feed": {
+				"aria-label": "첫 페이지",
+				"textContent": "첫 페이지"
+			},
+			"explore": {
+				"aria-label": "탐저장",
+				"textContent": "탐저장"
+			},
+			"notifications": {
+				"aria-label": "받은 편지함",
+				"textContent": "받은 편지함"
+			},
+			"saved": {
+				"aria-label": "모으다",
+				"textContent": "모으다"
+			},
+			"drafts": {
+				"aria-label": "초안 상자",
+				"textContent": "초안 상자"
+			},
+			"profile": {
+				"aria-label": "내 것",
+				"textContent": "내 것"
+			},
+			"videos": {
+				"aria-label": "짧은 영상",
+				"textContent": "짧은 영상"
+			},
+			"live": {
+				"aria-label": "라이브 스트리밍",
+				"textContent": "라이브 스트리밍"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "소셜 설정",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "무슨 생각을 하고 계신가요? Markdown(fount 방언) 지원, @로 멘션",
+			"locale": "콘텐츠 언어",
 			"publish": "게시",
 			"saveDraft": "초안 저장",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "보여주면 안되는 사람 (선택)"
-				}
+				},
+				"aria-label": "가시 범위"
 			}
 		},
 		"feed": {
-			"refresh": "뉴스 새로고침",
+			"refresh": {
+				"aria-label": "뉴스 새로고침",
+				"title": "뉴스 새로고침",
+				"dataset": {
+					"tip": "뉴스 새로고침"
+				}
+			},
 			"newPosts": "새로운 소식이 있습니다. 보려면 클릭하세요.",
 			"tabLatest": "최신",
 			"tabForYou": "추천",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "이 기기",
 				"scopeNearby": "가까운",
-				"empty": "아직 인기 주제가 없습니다."
+				"empty": "아직 인기 주제가 없습니다.",
+				"aria-label": "뜨거운 주제"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "폴더 이름",
 			"pickFolderTitle": "즐겨찾기에 추가",
+			"folderSelect": "즐겨찾는 폴더",
 			"confirm": "확인",
 			"cancel": "취소",
 			"remove": "즐겨찾기 제거",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "채팅 그룹 연결",
 			"clear": "연결 해제",
-			"pick": "채팅 그룹/채널 연결…"
+			"pick": "채팅 그룹/채널 연결…",
+			"select": "채팅 그룹 또는 채널에 연결"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "인용",
 			"clear": "역참조",
 			"viewOriginal": "원본 게시물 보기"
-		},
-		"a11y": {
-			"linkGroupSelect": "채팅 그룹 또는 채널에 연결",
-			"postVisibility": "가시 범위",
-			"postLang": "콘텐츠 언어",
-			"trendingHashtags": "뜨거운 주제",
-			"saveFolderSelect": "즐겨찾는 폴더"
 		},
 		"translate": {
 			"label": "번역:"

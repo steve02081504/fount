@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "ホーム",
-			"explore": "探索",
-			"notifications": "受信箱",
-			"saved": "保存",
-			"drafts": "下書き",
-			"profile": "マイページ",
-			"videos": "ショート動画",
-			"live": "ライブ"
+			"feed": {
+				"aria-label": "ホーム",
+				"textContent": "ホーム"
+			},
+			"explore": {
+				"aria-label": "探索",
+				"textContent": "探索"
+			},
+			"notifications": {
+				"aria-label": "受信箱",
+				"textContent": "受信箱"
+			},
+			"saved": {
+				"aria-label": "保存",
+				"textContent": "保存"
+			},
+			"drafts": {
+				"aria-label": "下書き",
+				"textContent": "下書き"
+			},
+			"profile": {
+				"aria-label": "マイページ",
+				"textContent": "マイページ"
+			},
+			"videos": {
+				"aria-label": "ショート動画",
+				"textContent": "ショート動画"
+			},
+			"live": {
+				"aria-label": "ライブ",
+				"textContent": "ライブ"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "ソーシャル設定",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "いまどうしてる？Markdown（fount 方言）対応。@ でメンション",
+			"locale": "コンテンツ言語",
 			"publish": "投稿",
 			"saveDraft": "下書きを保存",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "見せてはいけない人（任意）"
-				}
+				},
+				"aria-label": "可視範囲"
 			}
 		},
 		"feed": {
-			"refresh": "ニュースを更新",
+			"refresh": {
+				"aria-label": "ニュースを更新",
+				"title": "ニュースを更新",
+				"dataset": {
+					"tip": "ニュースを更新"
+				}
+			},
 			"newPosts": "新しいニュースがあります。クリックしてご覧ください",
 			"tabLatest": "最新の",
 			"tabForYou": "推薦する",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "ローカルマシン",
 				"scopeNearby": "近く",
-				"empty": "まだホットトピックはありません"
+				"empty": "まだホットトピックはありません",
+				"aria-label": "ホットトピック"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "フォルダ名",
 			"pickFolderTitle": "お気に入りに追加",
+			"folderSelect": "お気に入りフォルダ",
 			"confirm": "確認",
 			"cancel": "キャンセル",
 			"remove": "お気に入りを削除する",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "チャットグループに接続する",
 			"clear": "関連付けを解除する",
-			"pick": "チャットグループ/チャンネルに接続…"
+			"pick": "チャットグループ/チャンネルに接続…",
+			"select": "チャットグループまたはチャンネルに接続する"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "引用",
 			"clear": "逆参照",
 			"viewOriginal": "元の投稿を見る"
-		},
-		"a11y": {
-			"linkGroupSelect": "チャットグループまたはチャンネルに接続する",
-			"postVisibility": "可視範囲",
-			"postLang": "コンテンツ言語",
-			"trendingHashtags": "ホットトピック",
-			"saveFolderSelect": "お気に入りフォルダ"
 		},
 		"translate": {
 			"label": "翻訳："

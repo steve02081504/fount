@@ -3669,14 +3669,39 @@
 			}
 		},
 		"nav": {
-			"feed": "首頁",
-			"explore": "探索",
-			"notifications": "收件箱",
-			"saved": "收藏",
-			"drafts": "草稿箱",
-			"profile": "我的",
-			"videos": "短影片",
-			"live": "直播"
+			"feed": {
+				"aria-label": "首頁",
+				"textContent": "首頁"
+			},
+			"explore": {
+				"aria-label": "探索",
+				"textContent": "探索"
+			},
+			"notifications": {
+				"aria-label": "收件箱",
+				"textContent": "收件箱"
+			},
+			"saved": {
+				"aria-label": "收藏",
+				"textContent": "收藏"
+			},
+			"drafts": {
+				"aria-label": "草稿箱",
+				"textContent": "草稿箱"
+			},
+			"profile": {
+				"aria-label": "我的",
+				"textContent": "我的"
+			},
+			"videos": {
+				"aria-label": "短影片",
+				"textContent": "短影片"
+			},
+			"live": {
+				"aria-label": "直播",
+				"textContent": "直播"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "社交設定",
@@ -3728,6 +3753,7 @@
 		},
 		"composer": {
 			"placeholder": "在想什麼？支援 Markdown（fount 方言），輸入 @ 可提及",
+			"locale": "內容語言",
 			"publish": "釋出",
 			"saveDraft": "存草稿",
 			"fab": {
@@ -3792,11 +3818,18 @@
 				},
 				"except": {
 					"placeholder": "不給誰看（可選）"
-				}
+				},
+				"aria-label": "可見範圍"
 			}
 		},
 		"feed": {
-			"refresh": "重新整理動態",
+			"refresh": {
+				"aria-label": "重新整理動態",
+				"title": "重新整理動態",
+				"dataset": {
+					"tip": "重新整理動態"
+				}
+			},
 			"newPosts": "有新動態，點選檢視",
 			"tabLatest": "最新",
 			"tabForYou": "推薦",
@@ -3814,7 +3847,8 @@
 				},
 				"scopeLocal": "本機",
 				"scopeNearby": "附近",
-				"empty": "暫無熱門話題"
+				"empty": "暫無熱門話題",
+				"aria-label": "熱門話題"
 			}
 		},
 		"explore": {
@@ -3844,6 +3878,7 @@
 			},
 			"createFolderPrompt": "資料夾名稱",
 			"pickFolderTitle": "收藏到",
+			"folderSelect": "收藏資料夾",
 			"confirm": "確認",
 			"cancel": "取消",
 			"remove": "移除收藏",
@@ -4094,7 +4129,8 @@
 		"groupRef": {
 			"linking": "關聯 Chat 群",
 			"clear": "取消關聯",
-			"pick": "關聯 Chat 群/頻道…"
+			"pick": "關聯 Chat 群/頻道…",
+			"select": "關聯 Chat 群或頻道"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4131,13 +4167,6 @@
 			"quoting": "正在引用",
 			"clear": "取消引用",
 			"viewOriginal": "檢視原帖"
-		},
-		"a11y": {
-			"linkGroupSelect": "關聯 Chat 群或頻道",
-			"postVisibility": "可見範圍",
-			"postLang": "內容語言",
-			"trendingHashtags": "熱門話題",
-			"saveFolderSelect": "收藏資料夾"
 		},
 		"translate": {
 			"label": "譯文："

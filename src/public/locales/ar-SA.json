@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "الصفحة الأولى",
-			"explore": "استكشاف",
-			"notifications": "البريد الوارد",
-			"saved": "حفظ",
-			"drafts": "مربع مشروع",
-			"profile": "خاصتي",
-			"videos": "فيديو قصير",
-			"live": "البث المباشر"
+			"feed": {
+				"aria-label": "الصفحة الأولى",
+				"textContent": "الصفحة الأولى"
+			},
+			"explore": {
+				"aria-label": "استكشاف",
+				"textContent": "استكشاف"
+			},
+			"notifications": {
+				"aria-label": "البريد الوارد",
+				"textContent": "البريد الوارد"
+			},
+			"saved": {
+				"aria-label": "حفظ",
+				"textContent": "حفظ"
+			},
+			"drafts": {
+				"aria-label": "مربع مشروع",
+				"textContent": "مربع مشروع"
+			},
+			"profile": {
+				"aria-label": "خاصتي",
+				"textContent": "خاصتي"
+			},
+			"videos": {
+				"aria-label": "فيديو قصير",
+				"textContent": "فيديو قصير"
+			},
+			"live": {
+				"aria-label": "البث المباشر",
+				"textContent": "البث المباشر"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "الإعدادات الاجتماعية",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "ما الذي تفكر فيه؟ دعم تخفيض السعر (اللهجة المحلية)، أدخل @ للإشارة",
+			"locale": "لغة المحتوى",
 			"publish": "نشر",
 			"saveDraft": "حفظ المسودة",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "من لا ينبغي أن يظهره (اختياري)"
-				}
+				},
+				"aria-label": "نطاق مرئي"
 			}
 		},
 		"feed": {
-			"refresh": "تحديث الأخبار",
+			"refresh": {
+				"aria-label": "تحديث الأخبار",
+				"title": "تحديث الأخبار",
+				"dataset": {
+					"tip": "تحديث الأخبار"
+				}
+			},
 			"newPosts": "هناك أخبار جديدة، انقر لعرضها",
 			"tabLatest": "حتى الآن",
 			"tabForYou": "لك",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "آلة محلية",
 				"scopeNearby": "قريب",
-				"empty": "لا توجد مواضيع ساخنة بعد"
+				"empty": "لا توجد مواضيع ساخنة بعد",
+				"aria-label": "مواضيع ساخنة"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "اسم المجلد",
 			"pickFolderTitle": "أضف إلى المفضلة",
+			"folderSelect": "المجلد المفضل",
 			"confirm": "تأكيد",
 			"cancel": "إلغاء",
 			"remove": "إزالة المفضلة",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "ربط مجموعة الدردشة",
 			"clear": "فصل",
-			"pick": "ربط مجموعة/قناة الدردشة..."
+			"pick": "ربط مجموعة/قناة الدردشة...",
+			"select": "اتصل بمجموعة دردشة أو قناة"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "اقتباس",
 			"clear": "إلغاء الاقتباس",
 			"viewOriginal": "عرض المنشور الأصلي"
-		},
-		"a11y": {
-			"linkGroupSelect": "اتصل بمجموعة دردشة أو قناة",
-			"postVisibility": "نطاق مرئي",
-			"postLang": "لغة المحتوى",
-			"trendingHashtags": "مواضيع ساخنة",
-			"saveFolderSelect": "المجلد المفضل"
 		},
 		"translate": {
 			"label": "الترجمة:"

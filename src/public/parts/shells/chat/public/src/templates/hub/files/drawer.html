@@ -1,5 +1,5 @@
 <section class="mb-4">
-	<h3 class="font-semibold text-sm mb-2" data-i18n="chat.hub.filesFoldersTitle"></h3>
+	<h2 class="font-semibold text-sm mb-2" data-i18n="chat.hub.filesFoldersTitle"></h2>
 	<ul class="menu menu-sm bg-base-100 rounded-box">
 		${Object.keys(folders).length ? Object.entries(folders).map(([id, f]) => `
 		<li class="flex items-center justify-between gap-2 py-1">
@@ -14,7 +14,7 @@
 	</ul>
 </section>
 <section>
-	<h3 class="font-semibold text-sm mb-2" data-i18n="chat.hub.filesListTitle"></h3>
+	<h2 class="font-semibold text-sm mb-2" data-i18n="chat.hub.filesListTitle"></h2>
 	<ul class="menu menu-sm">
 		${filteredFiles.length ? filteredFiles.map(f => {
 		const sizeKb = f.size ? `${Math.round(f.size / 1024)} KB` : ''

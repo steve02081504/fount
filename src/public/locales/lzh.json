@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "卷首",
-			"explore": "探索",
-			"notifications": "收件箱",
-			"saved": "收藏",
-			"drafts": "底稿囊",
-			"profile": "吾之",
-			"videos": "留影",
-			"live": "現影"
+			"feed": {
+				"aria-label": "卷首",
+				"textContent": "卷首"
+			},
+			"explore": {
+				"aria-label": "探索",
+				"textContent": "探索"
+			},
+			"notifications": {
+				"aria-label": "收件箱",
+				"textContent": "收件箱"
+			},
+			"saved": {
+				"aria-label": "收藏",
+				"textContent": "收藏"
+			},
+			"drafts": {
+				"aria-label": "底稿囊",
+				"textContent": "底稿囊"
+			},
+			"profile": {
+				"aria-label": "吾之",
+				"textContent": "吾之"
+			},
+			"videos": {
+				"aria-label": "留影",
+				"textContent": "留影"
+			},
+			"live": {
+				"aria-label": "現影",
+				"textContent": "現影"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "社交樞機",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "方今何思？可用墨記（fount 方言），入 @ 可提及",
+			"locale": "內容語言",
 			"publish": "發布",
 			"saveDraft": "存底稿",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "不給誰看（可選）"
-				}
+				},
+				"aria-label": "可見範圍"
 			}
 		},
 		"feed": {
-			"refresh": "重覽言",
+			"refresh": {
+				"aria-label": "重覽言",
+				"title": "重覽言",
+				"dataset": {
+					"tip": "重覽言"
+				}
+			},
 			"newPosts": "有新言，觸以披閱",
 			"tabLatest": "最新",
 			"tabForYou": "推薦",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "本機",
 				"scopeNearby": "附近",
-				"empty": "暫無熱門話題"
+				"empty": "暫無熱門話題",
+				"aria-label": "熱門話題"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "帙名",
 			"pickFolderTitle": "收藏到",
+			"folderSelect": "收藏帙",
 			"confirm": "允",
 			"cancel": "止",
 			"remove": "移除收藏",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "關聯 Chat 群",
 			"clear": "否關聯",
-			"pick": "關聯 Chat 群/分苑…"
+			"pick": "關聯 Chat 群/分苑…",
+			"select": "關聯 Chat 群或分苑"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "方引用",
 			"clear": "否引用",
 			"viewOriginal": "覽原信"
-		},
-		"a11y": {
-			"linkGroupSelect": "關聯 Chat 群或分苑",
-			"postVisibility": "可見範圍",
-			"postLang": "內容語言",
-			"trendingHashtags": "熱門話題",
-			"saveFolderSelect": "收藏帙"
 		},
 		"translate": {
 			"label": "譯文："

@@ -147,6 +147,8 @@ export async function loadTrendingHashtags(scope = 'local', containerId = 'feedT
 	aside.appendChild(await renderTemplate('trending_header', {
 		localActive: currentScope === 'local' ? 'active' : '',
 		nearbyActive: currentScope === 'nearby' ? 'active' : '',
+		localSelected: currentScope === 'local' ? 'true' : 'false',
+		nearbySelected: currentScope === 'nearby' ? 'true' : 'false',
 	}))
 	const list = document.createElement('div')
 	list.className = 'trending-tags'

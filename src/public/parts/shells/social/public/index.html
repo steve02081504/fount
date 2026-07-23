@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 
 <head>
 	<meta charset="UTF-8" />
@@ -23,50 +23,50 @@
 
 <body class="bg-base-100 text-base-content min-h-screen">
 	<div id="shell" class="shell">
-		<aside class="side-nav" aria-label="Social navigation">
+		<nav class="side-nav" data-i18n="social.nav.side">
 			<div class="side-nav-brand">
 				<h1 class="brand-title" data-i18n="social.title"></h1>
 			</div>
-			<nav class="side-nav-links">
-				<button type="button" data-view="feed" class="nav-btn btn btn-ghost justify-start active">
+			<div class="side-nav-links">
+				<button type="button" data-view="feed" class="nav-btn btn btn-ghost justify-start active" data-i18n="social.nav.feed">
 					<span class="icon icon-home" aria-hidden="true"></span>
-					<span class="nav-label" data-i18n="social.nav.feed"></span>
+					<span class="nav-label" data-i18n="social.nav.feed.title"></span>
 				</button>
-				<button type="button" data-view="explore" class="nav-btn btn btn-ghost justify-start">
+				<button type="button" data-view="explore" class="nav-btn btn btn-ghost justify-start" data-i18n="social.nav.explore">
 					<span class="icon icon-explore" aria-hidden="true"></span>
-					<span class="nav-label" data-i18n="social.nav.explore"></span>
+					<span class="nav-label" data-i18n="social.nav.explore.title"></span>
 				</button>
-				<button type="button" data-view="notifications" class="nav-btn btn btn-ghost justify-start">
+				<button type="button" data-view="notifications" class="nav-btn btn btn-ghost justify-start" data-i18n="social.nav.notifications">
 					<span class="icon icon-bell" aria-hidden="true"></span>
-					<span class="nav-label" data-i18n="social.nav.notifications"></span>
+					<span class="nav-label" data-i18n="social.nav.notifications.title"></span>
 					<span id="notificationsBadge" class="nav-badge badge badge-primary badge-sm hidden"></span>
 				</button>
-				<button type="button" data-view="saved" class="nav-btn btn btn-ghost justify-start">
+				<button type="button" data-view="saved" class="nav-btn btn btn-ghost justify-start" data-i18n="social.nav.saved">
 					<span class="icon icon-bookmark" aria-hidden="true"></span>
-					<span class="nav-label" data-i18n="social.nav.saved"></span>
+					<span class="nav-label" data-i18n="social.nav.saved.title"></span>
 				</button>
-				<button type="button" data-view="drafts" class="nav-btn btn btn-ghost justify-start">
+				<button type="button" data-view="drafts" class="nav-btn btn btn-ghost justify-start" data-i18n="social.nav.drafts">
 					<span class="icon icon-draft" aria-hidden="true"></span>
-					<span class="nav-label" data-i18n="social.nav.drafts"></span>
+					<span class="nav-label" data-i18n="social.nav.drafts.title"></span>
 				</button>
-				<button type="button" data-view="profile" class="nav-btn btn btn-ghost justify-start">
+				<button type="button" data-view="profile" class="nav-btn btn btn-ghost justify-start" data-i18n="social.nav.profile">
 					<span class="icon icon-user" aria-hidden="true"></span>
-					<span class="nav-label" data-i18n="social.nav.profile"></span>
+					<span class="nav-label" data-i18n="social.nav.profile.title"></span>
 				</button>
-				<button type="button" data-view="videos" class="nav-btn btn btn-ghost justify-start">
+				<button type="button" data-view="videos" class="nav-btn btn btn-ghost justify-start" data-i18n="social.nav.videos">
 					<span class="icon icon-video" aria-hidden="true"></span>
-					<span class="nav-label" data-i18n="social.nav.videos"></span>
+					<span class="nav-label" data-i18n="social.nav.videos.title"></span>
 				</button>
-				<button type="button" data-view="live" class="nav-btn btn btn-ghost justify-start">
+				<button type="button" data-view="live" class="nav-btn btn btn-ghost justify-start" data-i18n="social.nav.live">
 					<span class="icon icon-live" aria-hidden="true"></span>
-					<span class="nav-label" data-i18n="social.nav.live"></span>
+					<span class="nav-label" data-i18n="social.nav.live.title"></span>
 				</button>
-			</nav>
-			<button type="button" id="composeNavButton" class="compose-nav-btn btn btn-primary">
+			</div>
+			<button type="button" id="composeNavButton" class="compose-nav-btn btn btn-primary" data-i18n="social.nav.compose">
 				<span class="nav-label" data-i18n="social.composer.publish"></span>
 				<span class="icon icon-compose compose-nav-icon" aria-hidden="true"></span>
 			</button>
-		</aside>
+		</nav>
 
 		<main class="timeline-col">
 			<section id="composer" class="composer">
@@ -119,7 +119,7 @@
 							</label>
 							<label id="linkGroupField" class="composer-field hidden">
 								<span class="composer-field-label" data-i18n="social.groupRef.linking"></span>
-								<select id="linkGroupSelect" class="select select-bordered select-sm"></select>
+								<select id="linkGroupSelect" class="select select-bordered select-sm" data-i18n="social.groupRef.select"></select>
 							</label>
 							<label id="postAlbumField" class="composer-field hidden">
 								<span class="composer-field-label" data-i18n="social.profile.albums.pickerLabel"></span>
@@ -145,7 +145,7 @@
 								<button id="composerCwToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.cwToggle">
 									<span class="icon icon-content-warning" aria-hidden="true"></span>
 								</button>
-								<select id="postVisibility" data-visibility-select class="select select-bordered select-sm composer-select composer-visibility">
+								<select id="postVisibility" data-visibility-select class="select select-bordered select-sm composer-select composer-visibility" data-i18n="social.composer.visibility">
 									<option value="public" data-i18n="social.composer.visibility.public"></option>
 									<option value="unlisted" data-i18n="social.composer.visibility.unlisted"></option>
 									<option value="followers" data-i18n="social.composer.visibility.followers"></option>
@@ -157,7 +157,7 @@
 								<button id="composerAdvancedToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.advancedToggle">
 									<span class="icon icon-options" aria-hidden="true"></span>
 								</button>
-								<input id="postLocale" type="hidden" value="zh-CN" />
+								<input id="postLocale" type="hidden" value="zh-CN" data-i18n="social.composer.locale" />
 							</div>
 							<button id="saveDraftButton" type="button" class="composer-draft-btn btn btn-ghost btn-sm" data-i18n="social.composer.saveDraft"></button>
 							<button id="postButton" type="button" class="composer-post-btn btn btn-primary btn-sm" data-i18n="social.composer.publish"></button>
@@ -168,15 +168,15 @@
 
 			<section id="feedView" class="view">
 				<header class="view-header">
-					<h2 class="view-title" data-i18n="social.nav.feed"></h2>
-					<div class="feed-ranking-tabs" role="tablist">
-						<button type="button" class="btn btn-ghost btn-xs active" data-feed-ranking="latest" data-i18n="social.feed.tabLatest"></button>
-						<button type="button" class="btn btn-ghost btn-xs" data-feed-ranking="for_you" data-i18n="social.feed.tabForYou"></button>
+					<h2 class="view-title" data-i18n="social.nav.feed.title"></h2>
+					<div class="feed-ranking-tabs" role="tablist" data-i18n="social.feed.tabsLabel">
+						<button type="button" class="btn btn-ghost btn-xs active" role="tab" aria-selected="true" data-feed-ranking="latest" data-i18n="social.feed.tabLatest"></button>
+						<button type="button" class="btn btn-ghost btn-xs" role="tab" aria-selected="false" data-feed-ranking="for_you" data-i18n="social.feed.tabForYou"></button>
 					</div>
 					<button type="button" id="feedSearchOpenButton" class="view-header-btn btn btn-ghost btn-sm btn-circle mobile-only-btn" data-i18n="social.search.open">
 						<span class="icon icon-search" aria-hidden="true"></span>
 					</button>
-					<button type="button" id="feedRefreshButton" class="view-header-btn btn btn-ghost btn-sm btn-circle tooltip" data-tip="">
+					<button type="button" id="feedRefreshButton" class="view-header-btn btn btn-ghost btn-sm btn-circle tooltip" data-i18n="social.feed.refresh">
 						<span class="icon icon-refresh" aria-hidden="true"></span>
 					</button>
 				</header>
@@ -185,23 +185,23 @@
 
 			<section id="exploreView" class="view hidden">
 				<header class="view-header">
-					<h2 class="view-title" data-i18n="social.nav.explore"></h2>
+					<h2 class="view-title" data-i18n="social.nav.explore.title"></h2>
 				</header>
 				<div class="explore-shortcuts">
 					<button type="button" class="btn btn-ghost btn-sm" data-view="videos" data-i18n="social.nav.videos">
 						<span class="icon icon-video" aria-hidden="true"></span>
-						<span data-i18n="social.nav.videos"></span>
+						<span data-i18n="social.nav.videos.title"></span>
 					</button>
 					<button type="button" class="btn btn-ghost btn-sm" data-view="live" data-i18n="social.nav.live">
 						<span class="icon icon-live" aria-hidden="true"></span>
-						<span data-i18n="social.nav.live"></span>
+						<span data-i18n="social.nav.live.title"></span>
 					</button>
 					<button type="button" class="btn btn-ghost btn-sm" data-view="drafts" data-i18n="social.nav.drafts">
 						<span class="icon icon-draft" aria-hidden="true"></span>
-						<span data-i18n="social.nav.drafts"></span>
+						<span data-i18n="social.nav.drafts.title"></span>
 					</button>
 				</div>
-				<aside id="exploreTrending" class="feed-trending card bg-base-200 shadow-sm explore-mobile-aside"></aside>
+				<div id="exploreTrending" class="feed-trending card bg-base-200 shadow-sm explore-mobile-aside"></div>
 				<div id="exploreSuggested" class="aside-suggested card bg-base-200 shadow-sm explore-mobile-aside hidden">
 					<h3 class="aside-card-title" data-i18n="social.aside.suggested"></h3>
 					<div id="exploreSuggestedList" class="aside-suggested-list"></div>
@@ -227,7 +227,7 @@
 
 			<section id="notificationsView" class="view hidden">
 				<header class="view-header">
-					<h2 class="view-title" data-i18n="social.nav.notifications"></h2>
+					<h2 class="view-title" data-i18n="social.nav.notifications.title"></h2>
 					<div class="notifications-toolbar hidden" id="notificationsToolbar">
 						<button type="button" id="notificationsMarkAllButton" class="view-header-text-btn btn btn-ghost btn-sm" data-i18n="social.notifications.markAllRead"></button>
 					</div>
@@ -244,7 +244,7 @@
 
 			<section id="savedView" class="view hidden">
 				<header class="view-header">
-					<h2 class="view-title" data-i18n="social.nav.saved"></h2>
+					<h2 class="view-title" data-i18n="social.nav.saved.title"></h2>
 					<button type="button" id="createFolderButton" class="view-header-btn" data-i18n="social.saved.createFolder">
 						<span class="icon icon-folder-plus" aria-hidden="true"></span>
 					</button>
@@ -254,7 +254,7 @@
 
 			<section id="draftsView" class="view hidden">
 				<header class="view-header">
-					<h2 class="view-title" data-i18n="social.nav.drafts"></h2>
+					<h2 class="view-title" data-i18n="social.nav.drafts.title"></h2>
 				</header>
 				<div id="draftsPanel" class="drafts-panel"></div>
 			</section>
@@ -366,22 +366,22 @@
 			<div class="vertical-snap-view" id="liveSnapContainer"></div>
 		</section>
 
-		<aside class="aside-col" aria-label="Social sidebar">
+		<aside class="aside-col" data-i18n="social.aside.region">
 			<div class="aside-search card bg-base-200 shadow-sm">
 				<div class="feed-search-wrap">
 					<span class="icon icon-search search-icon" aria-hidden="true"></span>
 					<input type="search" id="feedSearchInput" class="feed-search-input input input-bordered input-sm w-full" autocomplete="off" data-i18n="social.search" />
-					<button type="button" id="feedSearchClearButton" class="search-clear-btn hidden" data-i18n="social.search.clear" aria-label=""></button>
+					<button type="button" id="feedSearchClearButton" class="search-clear-btn hidden" data-i18n="social.search.clear"></button>
 				</div>
 			</div>
-			<aside id="feedTrending" class="feed-trending card bg-base-200 shadow-sm hidden"></aside>
+			<div id="feedTrending" class="feed-trending card bg-base-200 shadow-sm hidden" data-i18n="social.feed.trending"></div>
 			<div id="asideSuggested" class="aside-suggested card bg-base-200 shadow-sm hidden">
 				<h3 class="aside-card-title" data-i18n="social.aside.suggested"></h3>
 				<div id="asideSuggestedList" class="aside-suggested-list"></div>
 			</div>
 		</aside>
 
-		<nav class="mobile-tabbar bg-base-100 border-t border-base-300" aria-label="Social mobile navigation">
+		<nav class="mobile-tabbar bg-base-100 border-t border-base-300" data-i18n="social.nav.mobile">
 			<button type="button" data-view="feed" class="nav-btn btn btn-ghost btn-sm active" data-i18n="social.nav.feed">
 				<span class="icon icon-home" aria-hidden="true"></span>
 			</button>
@@ -407,7 +407,7 @@
 		<div id="saveModal" class="save-modal hidden" role="dialog" aria-modal="true">
 			<div class="save-modal-card card bg-base-200 shadow-xl">
 				<h3 data-i18n="social.saved.pickFolderTitle"></h3>
-				<select id="saveFolderSelect" class="select select-bordered w-full"></select>
+				<select id="saveFolderSelect" class="select select-bordered w-full" data-i18n="social.saved.folderSelect"></select>
 				<div class="save-modal-actions">
 					<button type="button" id="saveConfirmButton" class="btn btn-primary btn-sm" data-i18n="social.saved.confirm"></button>
 					<button type="button" id="saveCancelButton" class="btn btn-ghost btn-sm link-btn" data-i18n="social.saved.cancel"></button>

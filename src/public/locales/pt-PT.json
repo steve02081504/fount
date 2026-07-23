@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "Início",
-			"explore": "Explorar",
-			"notifications": "Caixa de entrada",
-			"saved": "Guardados",
-			"drafts": "Rascunhos",
-			"profile": "Eu",
-			"videos": "Vídeos curtos",
-			"live": "Em direto"
+			"feed": {
+				"aria-label": "Início",
+				"textContent": "Início"
+			},
+			"explore": {
+				"aria-label": "Explorar",
+				"textContent": "Explorar"
+			},
+			"notifications": {
+				"aria-label": "Caixa de entrada",
+				"textContent": "Caixa de entrada"
+			},
+			"saved": {
+				"aria-label": "Guardados",
+				"textContent": "Guardados"
+			},
+			"drafts": {
+				"aria-label": "Rascunhos",
+				"textContent": "Rascunhos"
+			},
+			"profile": {
+				"aria-label": "Eu",
+				"textContent": "Eu"
+			},
+			"videos": {
+				"aria-label": "Vídeos curtos",
+				"textContent": "Vídeos curtos"
+			},
+			"live": {
+				"aria-label": "Em direto",
+				"textContent": "Em direto"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "Definições sociais",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "O que está pensando? Suporte Markdown (dialeto fount), digite @ para mencionar",
+			"locale": "Linguagem do conteúdo",
 			"publish": "Liberar",
 			"saveDraft": "Guardar draft",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "Quem não deve mostrar (opcional)"
-				}
+				},
+				"aria-label": "Alcance visível"
 			}
 		},
 		"feed": {
-			"refresh": "Atualizar news",
+			"refresh": {
+				"aria-label": "Atualizar news",
+				"title": "Atualizar news",
+				"dataset": {
+					"tip": "Atualizar news"
+				}
+			},
 			"newPosts": "Há novidades, clique para ver",
 			"tabLatest": "Atualizado",
 			"tabForYou": "Recomendar",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "Máquina local",
 				"scopeNearby": "Próximo",
-				"empty": "Ainda não há tópicos quentes"
+				"empty": "Ainda não há tópicos quentes",
+				"aria-label": "Tópicos quentes"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "Nome da pasta",
 			"pickFolderTitle": "Guardar to…",
+			"folderSelect": "Pasta favorita",
 			"confirm": "Confirmar",
 			"cancel": "Cancelar",
 			"remove": "Remover from saved",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "Conectar grupo de bate-papo",
 			"clear": "Desassociar",
-			"pick": "Conectar grupo/canal de bate-papo…"
+			"pick": "Conectar grupo/canal de bate-papo…",
+			"select": "Conecte-se a um grupo ou canal de bate-papo"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "Citando",
 			"clear": "Desreferência",
 			"viewOriginal": "Ver postagem original"
-		},
-		"a11y": {
-			"linkGroupSelect": "Conecte-se a um grupo ou canal de bate-papo",
-			"postVisibility": "Alcance visível",
-			"postLang": "Linguagem do conteúdo",
-			"trendingHashtags": "Tópicos quentes",
-			"saveFolderSelect": "Pasta favorita"
 		},
 		"translate": {
 			"label": "Tradução:"

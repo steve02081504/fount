@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "Inicio",
-			"explore": "Explorar",
-			"notifications": "Bandeja de entrada",
-			"saved": "Guardados",
-			"drafts": "Borradores",
-			"profile": "Mi perfil",
-			"videos": "Vídeos cortos",
-			"live": "En directo"
+			"feed": {
+				"aria-label": "Inicio",
+				"textContent": "Inicio"
+			},
+			"explore": {
+				"aria-label": "Explorar",
+				"textContent": "Explorar"
+			},
+			"notifications": {
+				"aria-label": "Bandeja de entrada",
+				"textContent": "Bandeja de entrada"
+			},
+			"saved": {
+				"aria-label": "Guardados",
+				"textContent": "Guardados"
+			},
+			"drafts": {
+				"aria-label": "Borradores",
+				"textContent": "Borradores"
+			},
+			"profile": {
+				"aria-label": "Mi perfil",
+				"textContent": "Mi perfil"
+			},
+			"videos": {
+				"aria-label": "Vídeos cortos",
+				"textContent": "Vídeos cortos"
+			},
+			"live": {
+				"aria-label": "En directo",
+				"textContent": "En directo"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "Ajustes sociales",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "¿En qué estás pensando? Admite Markdown (dialecto 0), ingresa @ para mencionar",
+			"locale": "idioma del contenido",
 			"publish": "Publicar",
 			"saveDraft": "guardar borrador",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "Quién no debe mostrarlo (opcional)"
-				}
+				},
+				"aria-label": "rango visible"
 			}
 		},
 		"feed": {
-			"refresh": "Actualizar noticias",
+			"refresh": {
+				"aria-label": "Actualizar noticias",
+				"title": "Actualizar noticias",
+				"dataset": {
+					"tip": "Actualizar noticias"
+				}
+			},
 			"newPosts": "Hay mensajes nuevos, haz clic para ver",
 			"tabLatest": "Recientes",
 			"tabForYou": "recomendar",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "local",
 				"scopeNearby": "cercano",
-				"empty": "Aún no hay temas candentes"
+				"empty": "Aún no hay temas candentes",
+				"aria-label": "temas candentes"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "nombre de la carpeta",
 			"pickFolderTitle": "Añadir a favoritos",
+			"folderSelect": "carpeta favorita",
 			"confirm": "confirm",
 			"cancel": "Cancelar",
 			"remove": "Eliminar favoritos",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "Conectar grupo de chat",
 			"clear": "Desasociar",
-			"pick": "Conectar grupo/canal de chat…"
+			"pick": "Conectar grupo/canal de chat…",
+			"select": "Conectarse a un grupo o canal de chat"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "Citando",
 			"clear": "desreferenciación",
 			"viewOriginal": "Ver publicación original"
-		},
-		"a11y": {
-			"linkGroupSelect": "Conectarse a un grupo o canal de chat",
-			"postVisibility": "rango visible",
-			"postLang": "idioma del contenido",
-			"trendingHashtags": "temas candentes",
-			"saveFolderSelect": "carpeta favorita"
 		},
 		"translate": {
 			"label": "Traducción:"

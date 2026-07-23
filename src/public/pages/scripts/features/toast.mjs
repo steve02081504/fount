@@ -28,10 +28,14 @@ const icons = {
  * @returns {HTMLElement} - toast 容器。
  */
 function ensureToastContainer() {
-	return (toastContainer ??= document.getElementById('toast-container')) || document.body.appendChild(toastContainer = Object.assign(document.createElement('div'), {
-		id: 'toast-container',
-		className: 'toast toast-bottom toast-end z-[100]'
-	})) && toastContainer
+	if (toastContainer ??= document.getElementById('toast-container')) return toastContainer
+	toastContainer = document.createElement('div')
+	toastContainer.id = 'toast-container'
+	toastContainer.className = 'toast toast-bottom toast-end z-[100]'
+	toastContainer.role = 'region'
+	toastContainer.dataset.i18n = 'util.toast.container'
+	document.body.appendChild(toastContainer)
+	return toastContainer
 }
 
 /**

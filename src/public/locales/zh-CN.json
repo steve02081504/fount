@@ -1631,6 +1631,7 @@
 			},
 			"search": {
 				"placeholder": "搜索消息…",
+				"aria-label": "搜索消息",
 				"noResults": "无结果",
 				"failed": "搜索失败",
 				"scopeGroup": "本群",
@@ -2081,6 +2082,15 @@
 			"ariaClose": {
 				"aria-label": "关闭"
 			},
+			"memberBar": {
+				"aria-label": "成员列表"
+			},
+			"channelBar": {
+				"aria-label": "频道列表"
+			},
+			"serverBar": {
+				"aria-label": "群组与导航"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} 页"
 			},
@@ -2192,8 +2202,14 @@
 				"avatarUrl": {
 					"placeholder": "头像图片 URL，或在下方上传文件"
 				},
+				"avatarUpload": {
+					"aria-label": "上传头像图片"
+				},
 				"bannerUrl": {
 					"placeholder": "横幅图片 URL，或在下方上传文件"
+				},
+				"bannerUpload": {
+					"aria-label": "上传横幅图片"
 				},
 				"tag": {
 					"placeholder": "输入标签后添加"
@@ -3670,14 +3686,47 @@
 			}
 		},
 		"nav": {
-			"feed": "首页",
-			"explore": "探索",
-			"notifications": "收件箱",
-			"saved": "收藏",
-			"drafts": "草稿箱",
-			"profile": "我的",
-			"videos": "短视频",
-			"live": "直播"
+			"side": {
+				"aria-label": "社交导航"
+			},
+			"mobile": {
+				"aria-label": "社交底部导航"
+			},
+			"feed": {
+				"aria-label": "首页",
+				"title": "首页"
+			},
+			"explore": {
+				"aria-label": "探索",
+				"title": "探索"
+			},
+			"notifications": {
+				"aria-label": "收件箱",
+				"title": "收件箱"
+			},
+			"saved": {
+				"aria-label": "收藏",
+				"title": "收藏"
+			},
+			"drafts": {
+				"aria-label": "草稿箱",
+				"title": "草稿箱"
+			},
+			"profile": {
+				"aria-label": "我的",
+				"title": "我的"
+			},
+			"videos": {
+				"aria-label": "短视频",
+				"title": "短视频"
+			},
+			"live": {
+				"aria-label": "直播",
+				"title": "直播"
+			},
+			"compose": {
+				"aria-label": "写动态"
+			}
 		},
 		"settings": {
 			"title": "社交设置",
@@ -3729,6 +3778,10 @@
 		},
 		"composer": {
 			"placeholder": "在想什么？支持 Markdown（fount 方言），输入 @ 可提及",
+			"locale": {
+				"aria-label": "内容语言"
+			},
+			"aria-label": "写动态",
 			"publish": "发布",
 			"saveDraft": "存草稿",
 			"fab": {
@@ -3793,12 +3846,22 @@
 				},
 				"except": {
 					"placeholder": "不给谁看（可选）"
-				}
+				},
+				"aria-label": "可见范围"
 			}
 		},
 		"feed": {
-			"refresh": "刷新动态",
+			"refresh": {
+				"aria-label": "刷新动态",
+				"title": "刷新动态",
+				"dataset": {
+					"tip": "刷新动态"
+				}
+			},
 			"newPosts": "有新动态，点击查看",
+			"tabsLabel": {
+				"aria-label": "信息流排序"
+			},
 			"tabLatest": "最新",
 			"tabForYou": "推荐",
 			"repostedBy": "${author} 转发了",
@@ -3810,12 +3873,16 @@
 			"replayDivider": "已看完，重新浏览",
 			"trending": {
 				"title": "热门话题",
+				"tabsLabel": {
+					"aria-label": "热门话题范围"
+				},
 				"postCount": {
 					"title": "${n} 条帖子"
 				},
 				"scopeLocal": "本机",
 				"scopeNearby": "附近",
-				"empty": "暂无热门话题"
+				"empty": "暂无热门话题",
+				"aria-label": "热门话题"
 			}
 		},
 		"explore": {
@@ -3845,6 +3912,9 @@
 			},
 			"createFolderPrompt": "文件夹名称",
 			"pickFolderTitle": "收藏到",
+			"folderSelect": {
+				"aria-label": "收藏文件夹"
+			},
 			"confirm": "确认",
 			"cancel": "取消",
 			"remove": "移除收藏",
@@ -3979,11 +4049,14 @@
 		},
 		"search": {
 			"placeholder": "搜索动态、用户或 #话题（至少 2 字）",
+			"aria-label": "搜索动态、用户或话题",
 			"open": {
 				"aria-label": "搜索"
 			},
 			"submit": "搜索",
-			"clear": "清除",
+			"clear": {
+				"aria-label": "清除"
+			},
 			"empty": "没有匹配的帖子",
 			"tooShort": "请输入至少 2 个字符",
 			"usersTitle": "用户",
@@ -4090,12 +4163,18 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "社交侧栏"
+			},
 			"suggested": "推荐关注"
 		},
 		"groupRef": {
 			"linking": "关联 Chat 群",
 			"clear": "取消关联",
-			"pick": "关联 Chat 群/频道…"
+			"pick": "关联 Chat 群/频道…",
+			"select": {
+				"aria-label": "关联 Chat 群或频道"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4211,6 @@
 			"quoting": "正在引用",
 			"clear": "取消引用",
 			"viewOriginal": "查看原帖"
-		},
-		"a11y": {
-			"linkGroupSelect": "关联 Chat 群或频道",
-			"postVisibility": "可见范围",
-			"postLang": "内容语言",
-			"trendingHashtags": "热门话题",
-			"saveFolderSelect": "收藏文件夹"
 		},
 		"translate": {
 			"label": "译文："
@@ -5078,6 +5150,11 @@
 		"parentLink": "↑ 上一级 ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "通知"
+			}
+		},
 		"common": {
 			"cancel": "取消",
 			"create": "创建",

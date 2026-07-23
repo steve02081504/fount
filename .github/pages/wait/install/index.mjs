@@ -54,7 +54,7 @@ const testimonialNext = document.getElementById('testimonial-next')
  */
 const fetchJson = async (url, fallback = null) => {
 	try {
-		const response = await fetch(url)
+		const response = await fetch(url, { signal: AbortSignal.timeout(8000) })
 		if (!response.ok) return fallback
 		return await response.json()
 	}
@@ -67,12 +67,15 @@ const fetchJson = async (url, fallback = null) => {
 /** 评论 JSON 的 URL：GitHub Pages 与 pages-server 代理均可使用同一路径。 */
 const COMMENTS_JSON_URL = new URL('../../data/comments.json', import.meta.url).href
 
-const [initialUserData, initialRepoData] = await Promise.all([
-	fetchJson('https://data.jsdelivr.com/v1/stats/packages/gh/steve02081504/fount?period=year'),
-	fetchJson('https://api.github.com/repos/steve02081504/fount')
-])
-const activeUserNum = initialUserData?.hits?.total ?? NaN
-const starNum = initialRepoData?.stargazers_count ?? NaN
+/** 统计数据：不阻塞 hero / 首屏 */
+let activeUserNum = NaN
+let starNum = NaN
+fetchJson('https://data.jsdelivr.com/v1/stats/packages/gh/steve02081504/fount?period=year').then(data => {
+	activeUserNum = data?.hits?.total ?? NaN
+})
+fetchJson('https://api.github.com/repos/steve02081504/fount').then(data => {
+	starNum = data?.stargazers_count ?? NaN
+})
 
 /**
  * 播放英雄动画。
@@ -114,7 +117,9 @@ async function playHeroAnimation() {
 
 	try {
 		document.body.classList.add('scroll-lock')
-		const svgText = await fetch('https://steve02081504.github.io/fount/imgs/repo-img.svg').then(res => {
+		const svgText = await fetch('https://steve02081504.github.io/fount/imgs/repo-img.svg', {
+			signal: AbortSignal.timeout(5000),
+		}).then(res => {
 			if (!res.ok) throw new Error(`Failed to load SVG: ${res.statusText}`)
 			return res.text()
 		})
@@ -126,7 +131,7 @@ async function playHeroAnimation() {
 		animateSVG(svgElement)
 		const durationMs = 3100
 
-		setTimeout(() => showFinalState(), durationMs)
+		setTimeout(showFinalState, durationMs)
 	}
 	catch (error) {
 		console.error('Hero animation failed:', error)

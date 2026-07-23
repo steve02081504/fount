@@ -11,13 +11,13 @@ import { initTranslations, preferredLangsStorageKey } from './base.mjs'
 
 /**
  * 本地化键
- * @typedef {import('../../../decl/locale_data.ts').LocaleKey} LocaleKey
+ * @typedef {import('../../../../decl/locale_data.ts').LocaleKey} LocaleKey
  * 无参数的本地化键
- * @typedef {import('../../../decl/locale_data.ts').LocaleKeyWithoutParams} LocaleKeyWithoutParams
+ * @typedef {import('../../../../decl/locale_data.ts').LocaleKeyWithoutParams} LocaleKeyWithoutParams
  * 有参数的本地化键
- * @typedef {import('../../../decl/locale_data.ts').LocaleKeyWithParams} LocaleKeyWithParams
+ * @typedef {import('../../../../decl/locale_data.ts').LocaleKeyWithParams} LocaleKeyWithParams
  * 对应键的本地化参数类型
- * @typedef {import('../../../decl/locale_data.ts').LocaleKeyParams} LocaleKeyParams
+ * @typedef {import('../../../../decl/locale_data.ts').LocaleKeyParams} LocaleKeyParams
  */
 
 const languageChangeCallbacks = []

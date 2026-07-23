@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "होम",
-			"explore": "एक्सप्लोर",
-			"notifications": "इनबॉक्स",
-			"saved": "सेव किए",
-			"drafts": "ड्राफ़्ट",
-			"profile": "मेरा",
-			"videos": "शॉर्ट वीडियो",
-			"live": "लाइव"
+			"feed": {
+				"aria-label": "होम",
+				"textContent": "होम"
+			},
+			"explore": {
+				"aria-label": "एक्सप्लोर",
+				"textContent": "एक्सप्लोर"
+			},
+			"notifications": {
+				"aria-label": "इनबॉक्स",
+				"textContent": "इनबॉक्स"
+			},
+			"saved": {
+				"aria-label": "सेव किए",
+				"textContent": "सेव किए"
+			},
+			"drafts": {
+				"aria-label": "ड्राफ़्ट",
+				"textContent": "ड्राफ़्ट"
+			},
+			"profile": {
+				"aria-label": "मेरा",
+				"textContent": "मेरा"
+			},
+			"videos": {
+				"aria-label": "शॉर्ट वीडियो",
+				"textContent": "शॉर्ट वीडियो"
+			},
+			"live": {
+				"aria-label": "लाइव",
+				"textContent": "लाइव"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "सोशल सेटिंग",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "आप किस बारे में सोच रहे हैं? मार्कडाउन (फ़ॉउंट बोली) का समर्थन करें, उल्लेख करने के लिए @ दर्ज करें",
+			"locale": "सामग्री भाषा",
 			"publish": "प्रकाशित करें",
 			"saveDraft": "ड्राफ़्ट सहेजें",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "इसे किसे नहीं दिखाना चाहिए (वैकल्पिक)"
-				}
+				},
+				"aria-label": "दृश्यमान सीमा"
 			}
 		},
 		"feed": {
-			"refresh": "पोस्ट रीफ़्रेश करें",
+			"refresh": {
+				"aria-label": "पोस्ट रीफ़्रेश करें",
+				"title": "पोस्ट रीफ़्रेश करें",
+				"dataset": {
+					"tip": "पोस्ट रीफ़्रेश करें"
+				}
+			},
 			"newPosts": "नई खबर है, देखने के लिए क्लिक करें",
 			"tabLatest": "नवीनतम",
 			"tabForYou": "आपके लिए",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "इस डिवाइस",
 				"scopeNearby": "आस-पास",
-				"empty": "अभी तक कोई गर्म विषय नहीं है"
+				"empty": "अभी तक कोई गर्म विषय नहीं है",
+				"aria-label": "ट्रेंडिंग विषय"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "फ़ोल्डर का नाम",
 			"pickFolderTitle": "पसंदीदा में जोड़े",
+			"folderSelect": "पसंदीदा फ़ोल्डर",
 			"confirm": "पुष्टि करें",
 			"cancel": "रद्द करें",
 			"remove": "सेव हटाएँ",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "चैट समूह कनेक्ट करें",
 			"clear": "अनलिंक",
-			"pick": "चैट समूह/चैनल कनेक्ट करें…"
+			"pick": "चैट समूह/चैनल कनेक्ट करें…",
+			"select": "किसी चैट समूह या चैनल से कनेक्ट करें"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "का हवाला देते हुए",
 			"clear": "भिन्नता",
 			"viewOriginal": "मूल पोस्ट देखें"
-		},
-		"a11y": {
-			"linkGroupSelect": "किसी चैट समूह या चैनल से कनेक्ट करें",
-			"postVisibility": "दृश्यमान सीमा",
-			"postLang": "सामग्री भाषा",
-			"trendingHashtags": "ट्रेंडिंग विषय",
-			"saveFolderSelect": "पसंदीदा फ़ोल्डर"
 		},
 		"translate": {
 			"label": "अनुवाद:"

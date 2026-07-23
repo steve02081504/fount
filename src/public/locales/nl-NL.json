@@ -3670,14 +3670,39 @@
 			}
 		},
 		"nav": {
-			"feed": "Start",
-			"explore": "Ontdekken",
-			"notifications": "Meldingen",
-			"saved": "Opgeslagen",
-			"drafts": "Concepten",
-			"profile": "Profiel",
-			"videos": "korte video",
-			"live": "Live"
+			"feed": {
+				"aria-label": "Start",
+				"textContent": "Start"
+			},
+			"explore": {
+				"aria-label": "Ontdekken",
+				"textContent": "Ontdekken"
+			},
+			"notifications": {
+				"aria-label": "Meldingen",
+				"textContent": "Meldingen"
+			},
+			"saved": {
+				"aria-label": "Opgeslagen",
+				"textContent": "Opgeslagen"
+			},
+			"drafts": {
+				"aria-label": "Concepten",
+				"textContent": "Concepten"
+			},
+			"profile": {
+				"aria-label": "Profiel",
+				"textContent": "Profiel"
+			},
+			"videos": {
+				"aria-label": "korte video",
+				"textContent": "korte video"
+			},
+			"live": {
+				"aria-label": "Live",
+				"textContent": "Live"
+			},
+			"compose": {}
 		},
 		"settings": {
 			"title": "Sociale instellingen",
@@ -3729,6 +3754,7 @@
 		},
 		"composer": {
 			"placeholder": "Waar denk je aan? Markdown (fount-dialect) wordt ondersteund — typ @ om te vermelden",
+			"locale": "inhoud taal",
 			"publish": "Plaatsen",
 			"saveDraft": "Concept opslaan",
 			"fab": {
@@ -3793,11 +3819,18 @@
 				},
 				"except": {
 					"placeholder": "Wie mag het niet laten zien (optioneel)"
-				}
+				},
+				"aria-label": "Zichtbaar bereik"
 			}
 		},
 		"feed": {
-			"refresh": "Nieuws vernieuwen",
+			"refresh": {
+				"aria-label": "Nieuws vernieuwen",
+				"title": "Nieuws vernieuwen",
+				"dataset": {
+					"tip": "Nieuws vernieuwen"
+				}
+			},
 			"newPosts": "Er is nieuw nieuws, klik om te bekijken",
 			"tabLatest": "Nieuwste",
 			"tabForYou": "Voor jou",
@@ -3815,7 +3848,8 @@
 				},
 				"scopeLocal": "Lokaal",
 				"scopeNearby": "In de buurt",
-				"empty": "Nog geen actuele onderwerpen"
+				"empty": "Nog geen actuele onderwerpen",
+				"aria-label": "Trending"
 			}
 		},
 		"explore": {
@@ -3845,6 +3879,7 @@
 			},
 			"createFolderPrompt": "Mapnaam",
 			"pickFolderTitle": "Toevoegen aan favorieten",
+			"folderSelect": "favoriete map",
 			"confirm": "Bevestigen",
 			"cancel": "Annuleren",
 			"remove": "Verwijder favorieten",
@@ -4095,7 +4130,8 @@
 		"groupRef": {
 			"linking": "Chatgroep commit",
 			"clear": "Ontkoppel",
-			"pick": "Chatgroep/kanaal commit…"
+			"pick": "Chatgroep/kanaal commit…",
+			"select": "Maak verbinding met een chatgroep of kanaal"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4168,6 @@
 			"quoting": "Citeren",
 			"clear": "Citaat verwijderen",
 			"viewOriginal": "Bekijk origineel bericht"
-		},
-		"a11y": {
-			"linkGroupSelect": "Maak verbinding met een chatgroep of kanaal",
-			"postVisibility": "Zichtbaar bereik",
-			"postLang": "inhoud taal",
-			"trendingHashtags": "Trending",
-			"saveFolderSelect": "favoriete map"
 		},
 		"translate": {
 			"label": "Vertaling:"

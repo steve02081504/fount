@@ -164,6 +164,7 @@ jobs:
           cp -rn ./src/public/pages/scripts ./.github/pages/
           cp ./src/runner/main.sh ./.github/pages/install.sh
           cp ./src/runner/main.ps1 ./.github/pages/install.ps1
+          rm -rf ./.github/pages/test
 
       - name: PNG/ICO from live site or local render
         if: steps.pages_skip.outputs.skip != 'true'
