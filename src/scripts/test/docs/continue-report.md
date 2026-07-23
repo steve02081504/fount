@@ -1,10 +1,20 @@
-# Run report — trigger reasons
+# Run report — verdicts, plan, trigger reasons
 
 Per-slot `continueReason` in `data/test/report.json` and `data/test/triggered-reasons.md` (linked from `report.md`) explain why each suite was included. Implementation: `runner/continue_reason.mjs` from the plan built by `core/plan.mjs`.
 
+**CI** caches `data/test` as `fount-test-data` across pushes (strips logs/tmp/playwright/heapsnapshots/report).
+
+## Verdict + plan
+
+- `core/verdict.mjs` → `green` / `noisy` / `red` / `unknown`.
+- `core/plan.mjs` → `reuse` / `run` / `blocked` + `subtestsToRun`.
+- Fresh green/noisy/red → `reuse`. Goal red/noisy/unknown always **run**. Suite-level `failed` (e.g. watchdog) with all subtests still green/noisy elevates to **red** and full re-run. `--force` forces goals.
+- Failed transitive dep with unchanged triggers stays `reuse(red)` and still **blocks**.
+- Fingerprints (`commitHash` / `uncommittedHash` / `triggerHash`) update only after that suite's plan slot finishes (`upsertSuiteRun` on run, `refreshEntryFingerprint` on reuse) — never batch-align at wave start.
+
 ## Decision model
 
-1. **`buildVerdicts`** — `green` / `noisy` / `red` / `unknown` from state + git freshness. Suites with `subtests` aggregate and expose `subtestsToRun`. Dirty→clean `triggerHash` alone is not stale (`isTriggerHashStale`); fingerprints advance only after a suite slot finishes (`upsertSuiteRun` / reuse `refreshEntryFingerprint`), never before the wave.
+1. **`buildVerdicts`** — from state + git freshness. Suites with `subtests` aggregate and expose `subtestsToRun`. Dirty→clean `triggerHash` alone is not stale (`isTriggerHashStale`).
 2. **Goals** — imperfect (`failed`/`blocked`/missing/fresh `noisy` + one-level dependents of hard fails only), outdated (`unknown`), or explicit / `--all`.
 3. **`buildPlan`** — topo scan → each slot `reuse` | `run` | `blocked` with provenance.
 

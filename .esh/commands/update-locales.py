@@ -24,8 +24,8 @@ except NameError:
 	MY_DIR = os.path.abspath(".")
 	print("警告: 无法确定脚本精确位置，假设在项目子目录中运行。")
 
-LOCALE_DIR = os.path.join(MY_DIR, "../../src/public/locales")
-FOUNT_DIR = os.path.join(MY_DIR, "../../")  # fount文件夹的路径
+LOCALE_DIR = os.path.abspath(os.path.join(MY_DIR, "../../src/public/locales"))
+FOUNT_DIR = os.path.abspath(os.path.join(MY_DIR, "../.."))  # fount 根目录
 
 # 参考语言优先级列表
 REFERENCE_LANG_CODES = [
@@ -63,13 +63,36 @@ _translation_aborted = False
 _REAL_PRINT = builtins.print
 
 
+def _ensure_stdio_unicode():
+	"""Windows 默认 GBK 控制台会在打印 ↔/→ 等字符时 UnicodeEncodeError 炸掉整次同步。"""
+	for stream in (sys.stdout, sys.stderr):
+		reconfigure = getattr(stream, "reconfigure", None)
+		if not reconfigure:
+			continue
+		try:
+			reconfigure(errors="replace")
+		except Exception:
+			pass
+
+
+_ensure_stdio_unicode()
+
+
 class TranslationAborted(Exception):
 	"""连续翻译失败已达上限，停止后续 API 调用。"""
 
 
 def print(*args, **kwargs):  # noqa: A001 — 并发时串行化日志，避免多线程日志交错
 	with _PRINT_LOCK:
-		_REAL_PRINT(*args, **kwargs)
+		try:
+			_REAL_PRINT(*args, **kwargs)
+		except UnicodeEncodeError:
+			encoding = getattr(kwargs.get("file") or sys.stdout, "encoding", None) or "utf-8"
+			safe = [
+				str(a).encode(encoding, errors="replace").decode(encoding, errors="replace")
+				for a in args
+			]
+			_REAL_PRINT(*safe, **kwargs)
 
 
 def is_translation_aborted():

@@ -1,19 +1,19 @@
 <div class="modal-box album-edit-dialog">
 	<h3 class="font-bold text-lg">${title}</h3>
 	<label class="form-control">
-		<span class="label-text" data-i18n="social.albums.name"></span>
+		<span class="label-text" data-i18n="social.profile.albums.name"></span>
 		<input type="text" class="input input-bordered" data-album-name value="${name}" />
 	</label>
 	<label class="form-control">
-		<span class="label-text" data-i18n="social.albums.description"></span>
+		<span class="label-text" data-i18n="social.profile.albums.description"></span>
 		<textarea class="textarea textarea-bordered" data-album-description rows="2">${description}</textarea>
 	</label>
 	<div class="form-control">
-		<span class="label-text" data-i18n="social.visibility.label"></span>
+		<span class="label-text" data-i18n="social.composer.visibility.label"></span>
 		${visibilityPickerHtml}
 	</div>
 	<div class="modal-action">
-		<form method="dialog"><button class="btn btn-ghost" data-i18n="social.albums.cancel"></button></form>
+		<form method="dialog"><button class="btn btn-ghost" data-i18n="social.profile.albums.cancel"></button></form>
 		<button type="button" class="btn btn-primary" data-album-submit>${submitLabel}</button>
 	</div>
 </div>

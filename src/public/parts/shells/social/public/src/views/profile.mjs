@@ -45,15 +45,15 @@ export async function renderBlocklist(container) {
 	const data = await chatApi('/personal-lists')
 	const entries = data.entries || []
 	const sections = [
-		{ kind: 'block', titleKey: 'social.blocklist.title', action: 'unblock', labelKey: 'social.blocklist.unblock' },
-		{ kind: 'hide', titleKey: 'social.blocklist.hiddenTitle', action: 'unhide', labelKey: 'social.blocklist.unhide' },
+		{ kind: 'block', titleKey: 'social.settings.blocklist.title', action: 'unblock', labelKey: 'social.settings.blocklist.unblock' },
+		{ kind: 'hide', titleKey: 'social.settings.blocklist.hiddenTitle', action: 'unhide', labelKey: 'social.settings.blocklist.unhide' },
 	]
 	const grouped = sections.map(section => ({
 		...section,
 		rows: entries.filter(entry => entry.kind === section.kind),
 	}))
 	if (grouped.every(section => !section.rows.length)) {
-		await mountEmptyState(container, { titleKey: 'social.blocklist.empty', modClass: ' empty-state--hint' })
+		await mountEmptyState(container, { titleKey: 'social.settings.blocklist.empty', modClass: ' empty-state--hint' })
 		return
 	}
 	container.replaceChildren()
@@ -70,8 +70,8 @@ export async function renderBlocklist(container) {
 				: ''
 			await appendTemplate(container, 'blocklist_row', {
 				scopeKey: entry.scope === 'subject'
-					? 'social.blocklist.scopeSubject'
-					: 'social.blocklist.scopeEntity',
+					? 'social.settings.blocklist.scopeSubject'
+					: 'social.settings.blocklist.scopeEntity',
 				value: escapeHtml(entry.value),
 				actionHtml,
 			})

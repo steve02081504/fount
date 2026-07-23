@@ -20,7 +20,7 @@ alwaysApply: false
 - **HTTP API**: Success = 2xx JSON (no `success` wrapper); failures = `throw httpError(code, message, { json?, skip_report? })` from `@src/scripts/http_error.mjs`.
 - **`fount.json` → `registries`**: `[{ id, level, path }]` for `markdown_extensions`, `emoji`, `sticker`, `locales`, `home_*`, `achievements`.
 - **`home_function_buttons.info`**: locale **object** with `title` (e.g. `achievements.home_function_buttons.main`), not a page-level string. Home reads `geti18n(info).title`.
-- **`home_function_buttons.level`** (ascending): `1` components/service sources/chat · `2` social · `3` bots · `4` cabinet · `5` integration · `90` settings · `99` access · `100+` misc. Same level → load-order unstable.
+- **`home_function_buttons.level`**: ascending sort; same level → load-order unstable. See existing shells for conventional bands (chat/components low, settings/access high).
 - **Iconify `button` HTML**: verify the URL returns SVG (404 body `"Not found"` is injected as icon text).
 
 ## Implementation
@@ -35,5 +35,4 @@ alwaysApply: false
 
 ## Relative imports
 
-- `shells/<bot>/src/*.mjs` → `src/scripts` / `src/server` / sibling `shells/chat`: **5** `../`.
-- `shells/<bot>/src/default_interface/*.mjs`: **6** `../` to `src/*`, and **`../../../chat/...`** (not `../../chat`) to chat. Copy-pasting bot.mjs paths into `default_interface/` resolves wrong and breaks char Load.
+Bot shells: from `src/*.mjs` use **5** `../` to reach `src/scripts` / `src/server` / sibling `shells/chat`. From `src/default_interface/*.mjs` use **6** `../` to `src/*`, and **`../../../chat/...`** (not `../../chat`) to chat — copy-pasting `bot.mjs` paths into `default_interface/` resolves wrong and breaks char Load.

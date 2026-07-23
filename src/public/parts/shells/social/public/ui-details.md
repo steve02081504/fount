@@ -2,6 +2,14 @@
 
 Day-to-day rules: [AGENTS.md](AGENTS.md).
 
+## Hash routing
+
+- `switchView` → `#feed` / `#explore` / … / `#drafts` / `#settings`
+- Post detail: `#post;<entityHash>;<postId>`
+- Search: `#search;q` / `#search:q` / `?q=` → `#searchView`
+- Hashtag/trending → `#topic:…`
+- Preference UI lives under `#settings` (not a top-level nav entry)
+
 ## Short video / live UI
 
 - Slide fields from `buildPostFeedItem`: `post.content.text` / `post.content.mediaRefs` / `authorProfile` — not flat `item.text` / `item.authorName`.

@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Social Shell Frontend Guide
 
-Deeper UI (video/live, body fold, feed replay): [ui-details.md](ui-details.md).
+Deeper UI (video/live, body fold, feed replay, hash routing): [ui-details.md](ui-details.md).
 Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../src/scripts/test/docs/domain-harness.md).
 
 ## Trust & backend surface
@@ -29,14 +29,11 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 
 - CSS: page-local, no `social-` prefix. Icons `.icon` + `.icon-*`. Ready-gate: `SOCIAL_GATE` / `fount:social-*`.
 - Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder` (do not use `fooPlaceholder` key names). Templates: `${...}` only (no Mustache `{{...}}`). Prefer `renderTemplate` / `mountTemplate`.
-- Empty states: `lib/emptyState.mjs` + `templates/empty_state.html`. Heart anim: `lib/heartAnim.mjs` `playHeartAnim`.
 - HTTP: `endpoints/shared.mjs` `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.
-- Hash routing: `switchView` → `#feed`/`#explore`/…/`#drafts`/`#settings`; detail `#post;<entityHash>;<postId>`; search `#search;q` / `#search:q` / `?q=` → `#searchView`.
-- **`activateView(name)`** → `#${name}View` — `data-view` and section id must share the stem (`videos` → `#videosView`).
+- Hash routing: `switchView` / `activateView` — route map in [ui-details.md](ui-details.md#hash-routing). **`activateView(name)`** → `#${name}View` — `data-view` and section id must share the stem (`videos` → `#videosView`).
 - Avatars/names/@id: chat `entityAvatar.mjs` / `resolveDisplayName` / `formatEntityAtId` (`entityHandle`). Profile page: `rememberEntityHandle` before rendering posts. Hover: `lib/profileHover.mjs` → chat hover card.
 - Bio/post Markdown: chat `shared/trustedMarkdown.mjs`. Trusted: self / local-char / declared master / trust list. Remote self-declared `ownerEntityHash` does not elevate.
 - Browser imports of chat: absolute `/parts/shells:chat/...` URLs.
-- Preference UI: `#settings` (taste is not a top-level nav entry).
 
 ## Identity / private state
 

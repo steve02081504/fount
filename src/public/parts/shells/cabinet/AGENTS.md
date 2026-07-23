@@ -12,7 +12,7 @@ alwaysApply: false
 - **Links**: `{ owner_entity_hash, cabinet_id, entry_id }`. Do not conflate entry `owner_entity_hash` (file ownership) with entity `ownerEntityHash`.
 - **API**: snake_case. Password folders: `POST …/unlock` → `X-Cabinet-Unlock`. Listing: `GET …/index?parent_id=` returns `folder_trail` for breadcrumbs (same shape on remote).
 - **Recoverable delete**: `DELETE …/entries` + `recoverable:true` → `recovery_token`; restore / finalize-delete endpoints. UI undo must finalize discarded tokens. History factories capture unlock at push time — do not re-resolve `currentUnlockToken()` in undo/redo.
-- **Shortcuts**: Ctrl/Cmd+C/X/V/A/D/Z/Y/N, F2, Delete=up. Clipboard is app-level (`sessionStorage` + `BroadcastChannel`), not OS.
+- **Clipboard / shortcuts**: app-level (`sessionStorage` + `BroadcastChannel`), not OS. Keymap lives in `public/shared/keyboard`.
 - **Entity profile**: `#user:{entityHash}` — shared popup via `/parts/shells:chat/shared/entityProfilePopup.mjs`; stamps use `formatEntityAtId` / `formatHashShort`.
 - **UI**: no explanatory `data-i18n` on invisible controls; omit unavailable context-menu items. Layout: `public/index.mjs` bootstrap; state `cabinetStore`; DOM wiring under `public/src/`; Deno-pure helpers under `public/shared/` (`keyboard`, `commandHistory`).
-- **Tests**: `fount test shells/cabinet --no-parallel`. Pure suites import `public/shared/` only — not `public/src/`. Pure suites that import `remote.mjs` sanitize helpers must not statically pull Social (`visibilitySpec`) — keep that behind dynamic import in fetch paths.
+- **Tests**: `fount test shells/cabinet --no-parallel`. Pure suites import `public/shared/` only — not `public/src/`. Keep Social `visibilitySpec` behind dynamic import in `remote.mjs` fetch paths so pure suites do not statically pull Social.

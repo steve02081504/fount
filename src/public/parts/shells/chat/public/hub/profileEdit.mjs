@@ -468,7 +468,7 @@ async function handleSaveProfile() {
 		await onSavedCallback?.()
 	}
 	catch (error) {
-		handleUIError(error, 'profile.errors.saveFailed')
+		handleUIError(error, 'chat.profile.errors.saveFailed')
 	}
 }
 
@@ -483,7 +483,7 @@ export async function openHubProfileEdit(entityHash, options = {}) {
 	const dialog = await ensureEditDialog()
 	const data = await fetchApi(entityHash, groupId)
 	if (!data?.profile) {
-		showToastI18n('error', 'profile.errors.loadFailed')
+		showToastI18n('error', 'chat.profile.errors.loadFailed')
 		return
 	}
 	onSavedCallback = options.onSaved || null

@@ -511,7 +511,7 @@ async function initializeApp() {
 		if (!isLoginForm) toggleForm()
 		if (powCaptcha) try {
 			submitButton.disabled = true
-			submitButton.dataset.i18n = 'pow_captcha.verifying'
+			submitButton.dataset.i18n = 'util.pow_captcha.verifying'
 			await powCaptcha.solve()
 		} catch (err) {
 			console.error('POW captcha solve error:', err)

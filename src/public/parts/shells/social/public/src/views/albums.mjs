@@ -37,7 +37,7 @@ export async function renderProfileAlbums(entityHash, container) {
 	if (isSelf) {
 		const toolbar = document.createElement('div')
 		toolbar.className = 'album-toolbar'
-		toolbar.innerHTML = `<button type="button" class="btn btn-primary btn-sm" data-album-create>${escapeHtml(geti18n('social.albums.create'))}</button>`
+		toolbar.innerHTML = `<button type="button" class="btn btn-primary btn-sm" data-album-create>${escapeHtml(geti18n('social.profile.albums.create'))}</button>`
 		toolbar.querySelector('[data-album-create]')?.addEventListener('click', () => {
 			void openCreateAlbumDialog(() => renderProfileAlbums(entityHash, container))
 		})
@@ -46,7 +46,7 @@ export async function renderProfileAlbums(entityHash, container) {
 	if (!albums.length) {
 		const empty = document.createElement('div')
 		empty.className = 'empty'
-		empty.textContent = geti18n('social.albums.empty')
+		empty.textContent = geti18n('social.profile.albums.empty')
 		container.appendChild(empty)
 		return
 	}
@@ -58,13 +58,13 @@ export async function renderProfileAlbums(entityHash, container) {
 		card.className = 'album-card'
 		card.dataset.albumOpen = entityHash
 		card.dataset.albumId = album.albumId
-		const displayName = album.virtual ? geti18n('social.albums.defaultName') : album.name
+		const displayName = album.virtual ? geti18n('social.profile.albums.defaultName') : album.name
 		const visKey = album.visibility === 'followers_since' ? 'followers7d' : album.visibility || 'public'
 		card.innerHTML = `
 			${renderAlbumCoverHtml(album.coverMediaRef, displayName)}
 			<div class="album-card-meta">
 				<strong>${escapeHtml(displayName)}</strong>
-				<span class="muted">${album.postCount || 0} · ${escapeHtml(geti18n(`social.visibility.${visKey}`))}</span>
+				<span class="muted">${album.postCount || 0} · ${escapeHtml(geti18n(`social.composer.visibility.${visKey}`))}</span>
 			</div>
 		`
 		card.addEventListener('click', () => {
@@ -93,14 +93,14 @@ export async function openAlbumDetail(entityHash, albumId, backContainer = null)
 	const header = document.createElement('div')
 	header.className = 'album-detail-header'
 	header.innerHTML = `
-		<button type="button" class="btn btn-ghost btn-sm" data-album-back>${escapeHtml(geti18n('social.albums.back'))}</button>
-		<h3>${escapeHtml(album.virtual ? geti18n('social.albums.defaultName') : album.name)}</h3>
+		<button type="button" class="btn btn-ghost btn-sm" data-album-back>${escapeHtml(geti18n('social.profile.albums.back'))}</button>
+		<h3>${escapeHtml(album.virtual ? geti18n('social.profile.albums.defaultName') : album.name)}</h3>
 		<p class="muted">${escapeHtml(album.description || '')}</p>
 		${isSelf && !album.virtual ? `
 			<div class="album-detail-actions">
-				<button type="button" class="btn btn-ghost btn-sm" data-album-edit>${escapeHtml(geti18n('social.albums.edit'))}</button>
-				<button type="button" class="btn btn-ghost btn-sm" data-album-delete-links>${escapeHtml(geti18n('social.albums.deleteLinks'))}</button>
-				<button type="button" class="btn btn-error btn-sm" data-album-delete-posts>${escapeHtml(geti18n('social.albums.deleteWithPosts'))}</button>
+				<button type="button" class="btn btn-ghost btn-sm" data-album-edit>${escapeHtml(geti18n('social.profile.albums.edit'))}</button>
+				<button type="button" class="btn btn-ghost btn-sm" data-album-delete-links>${escapeHtml(geti18n('social.profile.albums.deleteLinks'))}</button>
+				<button type="button" class="btn btn-error btn-sm" data-album-delete-posts>${escapeHtml(geti18n('social.profile.albums.deleteWithPosts'))}</button>
 			</div>
 		` : ''}
 	`
@@ -122,7 +122,7 @@ export async function openAlbumDetail(entityHash, albumId, backContainer = null)
 	if (!items.length) {
 		const empty = document.createElement('div')
 		empty.className = 'empty'
-		empty.textContent = geti18n('social.albums.emptyPosts')
+		empty.textContent = geti18n('social.profile.albums.emptyPosts')
 		panel.appendChild(empty)
 		return
 	}
@@ -139,11 +139,11 @@ export async function openAlbumDetail(entityHash, albumId, backContainer = null)
  */
 async function openCreateAlbumDialog(onDone) {
 	const dialog = await openDialogFromTemplate('album_edit_dialog', {
-		title: geti18n('social.albums.create'),
+		title: geti18n('social.profile.albums.create'),
 		name: '',
 		description: '',
 		visibilityPickerHtml: renderVisibilityPickerHtml({ idPrefix: 'albumCreate', selected: 'public' }),
-		submitLabel: geti18n('social.albums.create'),
+		submitLabel: geti18n('social.profile.albums.create'),
 	})
 	bindVisibilityPicker(dialog)
 	dialog.querySelector('[data-album-submit]')?.addEventListener('click', async () => {
@@ -175,7 +175,7 @@ async function openEditAlbumDialog(album, onDone) {
 		selected = (album.minFollowMs || 0) >= 30 * day ? 'followers_30d' : 'followers_7d'
 	}
 	const dialog = await openDialogFromTemplate('album_edit_dialog', {
-		title: geti18n('social.albums.edit'),
+		title: geti18n('social.profile.albums.edit'),
 		name: album.name || '',
 		description: album.description || '',
 		visibilityPickerHtml: renderVisibilityPickerHtml({
@@ -184,7 +184,7 @@ async function openEditAlbumDialog(album, onDone) {
 			allow: (album.allow || []).join(' '),
 			except: (album.except || []).join(' '),
 		}),
-		submitLabel: geti18n('social.albums.save'),
+		submitLabel: geti18n('social.profile.albums.save'),
 	})
 	bindVisibilityPicker(dialog)
 	dialog.querySelector('[data-album-submit]')?.addEventListener('click', async () => {

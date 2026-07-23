@@ -775,7 +775,7 @@ function enhanceCodeBlockPre(pre, { isStandalone = false, allowUnsafeExecutors =
 	// 复制按钮
 	const copyButtonCore = h('button', {
 		class: 'btn btn-ghost btn-square btn-sm text-icon',
-		...isStandalone ? { 'aria-label': geti18n('code_block.copy.aria-label') } : { 'data-i18n': 'code_block.copy' },
+		...isStandalone ? { 'aria-label': geti18n('util.code_block.copy.aria-label') } : { 'data-i18n': 'util.code_block.copy' },
 		onclick: `\
 event.stopPropagation()
 const button = this
@@ -784,20 +784,20 @@ const button = this
 	try {
 		await navigator.clipboard.writeText(document.querySelector('#${uniqueId} pre').innerText)
 		${isStandalone
-			? `tooltip.dataset.tip = '${geti18n('code_block.copied.dataset.tip')}'`
-			: 'tooltip.dataset.i18n = \'code_block.copied\''
+			? `tooltip.dataset.tip = '${geti18n('util.code_block.copied.dataset.tip')}'`
+			: 'tooltip.dataset.i18n = \'util.code_block.copied\''
 }
 		button.innerHTML = ${JSON.stringify(successIconSized)}
 	} catch (e) {
 		${isStandalone
 			? 'alert(\'Failed to copy: \' + e.message)'
-			: 'const { showToastI18n } = await import(\'/scripts/features/toast.mjs\'); showToastI18n(\'error\', \'code_block.copy_failed\', { error: e.message })'
+			: 'const { showToastI18n } = await import(\'/scripts/features/toast.mjs\'); showToastI18n(\'error\', \'util.code_block.copy_failed\', { error: e.message })'
 }
 	}
 	setTimeout(() => {
 		${isStandalone
-			? `tooltip.dataset.tip = '${geti18n('code_block.copy.dataset.tip')}'`
-			: 'tooltip.dataset.i18n = \'code_block.copy\''
+			? `tooltip.dataset.tip = '${geti18n('util.code_block.copy.dataset.tip')}'`
+			: 'tooltip.dataset.i18n = \'util.code_block.copy\''
 }
 		button.innerHTML = ${JSON.stringify(copyIconSized)}
 	}, 2000)
@@ -808,7 +808,7 @@ const button = this
 	// 下载按钮
 	const downloadButtonCore = h('button', {
 		class: 'btn btn-ghost btn-square btn-sm text-icon',
-		...isStandalone ? { 'aria-label': geti18n('code_block.download.aria-label') } : { 'data-i18n': 'code_block.download' },
+		...isStandalone ? { 'aria-label': geti18n('util.code_block.download.aria-label') } : { 'data-i18n': 'util.code_block.download' },
 		onclick: `\
 event.stopPropagation()
 const code = document.querySelector('#${uniqueId} pre').innerText
@@ -826,7 +826,7 @@ document.body.removeChild(a)
 	if (ext === 'html' && allowUnsafeExecutors)
 		previewButtonCore = h('button', {
 			class: 'btn btn-ghost btn-square btn-sm text-icon',
-			...isStandalone ? { 'aria-label': geti18n('code_block.preview.aria-label') } : { 'data-i18n': 'code_block.preview' },
+			...isStandalone ? { 'aria-label': geti18n('util.code_block.preview.aria-label') } : { 'data-i18n': 'util.code_block.preview' },
 			onclick: `\
 event.stopPropagation()
 const code = document.querySelector('#${uniqueId} pre').innerText
@@ -841,7 +841,7 @@ previewWindow.document.close()
 	if (executor)
 		executeButtonCore = h('button', {
 			class: 'btn btn-ghost btn-square btn-sm text-icon',
-			...isStandalone ? { 'aria-label': geti18n('code_block.execute.aria-label') } : { 'data-i18n': 'code_block.execute' },
+			...isStandalone ? { 'aria-label': geti18n('util.code_block.execute.aria-label') } : { 'data-i18n': 'util.code_block.execute' },
 			onclick: `\
 event.stopPropagation()
 const codeBlockContainer = document.getElementById('${uniqueId}')
@@ -869,20 +869,20 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	button.innerHTML = \${JSON.stringify(successSvg)}
 	setTimeout(() => button.innerHTML = \${JSON.stringify(copySvg)}, 2000)
 	${isStandalone
-				? `button.parentElement.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))})`
-				: 'button.parentElement.dataset.i18n = \'code_block.copied\''
+				? `button.parentElement.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('util.code_block.copied.dataset.tip')))})`
+				: 'button.parentElement.dataset.i18n = \'util.code_block.copied\''
 }
 }).catch(error => {
 	${isStandalone
 				? 'alert(\'Failed to copy: \' + error.message)'
-				: 'import(\'/scripts/features/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'code_block.copy_failed\', { error: error.message }))'
+				: 'import(\'/scripts/features/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'util.code_block.copy_failed\', { error: error.message }))'
 }
 })
 \`
 
 	return /* html */ \`\\
 <button class="btn btn-ghost btn-square btn-xs absolute top-2 right-2 opacity-70 hover:opacity-100 z-10"
-		${isStandalone ? 'aria-label="Copy"' : 'data-i18n="code_block.copy"'}
+		${isStandalone ? 'aria-label="Copy"' : 'data-i18n="util.code_block.copy"'}
 		onclick="\${copyAction.replace(/"/g, '&quot;')}" >
 	\${copySvg}
 </button>\`
@@ -995,13 +995,13 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	const getButtonGroup = (tooltipPosition) => {
 		const buttons = []
 		if (previewButtonCore)
-			buttons.push(createTooltip('code_block.preview', [previewButtonCore], tooltipPosition))
+			buttons.push(createTooltip('util.code_block.preview', [previewButtonCore], tooltipPosition))
 		if (executeButtonCore)
-			buttons.push(createTooltip('code_block.execute', [executeButtonCore], tooltipPosition))
+			buttons.push(createTooltip('util.code_block.execute', [executeButtonCore], tooltipPosition))
 
 		buttons.push(
-			createTooltip('code_block.download', [downloadButtonCore], tooltipPosition),
-			createTooltip('code_block.copy', [copyButtonCore], tooltipPosition)
+			createTooltip('util.code_block.download', [downloadButtonCore], tooltipPosition),
+			createTooltip('util.code_block.copy', [copyButtonCore], tooltipPosition)
 		)
 		return h('div', { class: 'flex items-center' }, buttons)
 	}

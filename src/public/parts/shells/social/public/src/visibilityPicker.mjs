@@ -3,13 +3,13 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 /** UI 档位选项 */
 const VISIBILITY_OPTIONS = [
-	{ value: 'public', i18n: 'social.visibility.public' },
-	{ value: 'unlisted', i18n: 'social.visibility.unlisted' },
-	{ value: 'followers', i18n: 'social.visibility.followers' },
-	{ value: 'followers_7d', i18n: 'social.visibility.followers7d' },
-	{ value: 'followers_30d', i18n: 'social.visibility.followers30d' },
-	{ value: 'selected', i18n: 'social.visibility.selected' },
-	{ value: 'private', i18n: 'social.visibility.private' },
+	{ value: 'public', i18n: 'social.composer.visibility.public' },
+	{ value: 'unlisted', i18n: 'social.composer.visibility.unlisted' },
+	{ value: 'followers', i18n: 'social.composer.visibility.followers' },
+	{ value: 'followers_7d', i18n: 'social.composer.visibility.followers7d' },
+	{ value: 'followers_30d', i18n: 'social.composer.visibility.followers30d' },
+	{ value: 'selected', i18n: 'social.composer.visibility.selected' },
+	{ value: 'private', i18n: 'social.composer.visibility.private' },
 ]
 
 /**
@@ -25,13 +25,13 @@ export function visibilityDisplay(visibility, minFollowMs = 0) {
 		code = minFollowMs >= 30 * day ? 'followers_30d' : 'followers_7d'
 	}
 	const map = {
-		public: { icon: 'globe', labelKey: 'social.visibility.public' },
-		unlisted: { icon: 'unlisted', labelKey: 'social.visibility.unlisted' },
-		followers: { icon: 'lock', labelKey: 'social.visibility.followers' },
-		followers_7d: { icon: 'lock', labelKey: 'social.visibility.followers7d' },
-		followers_30d: { icon: 'lock', labelKey: 'social.visibility.followers30d' },
-		selected: { icon: 'selected', labelKey: 'social.visibility.selected' },
-		private: { icon: 'private', labelKey: 'social.visibility.private' },
+		public: { icon: 'globe', labelKey: 'social.composer.visibility.public' },
+		unlisted: { icon: 'unlisted', labelKey: 'social.composer.visibility.unlisted' },
+		followers: { icon: 'lock', labelKey: 'social.composer.visibility.followers' },
+		followers_7d: { icon: 'lock', labelKey: 'social.composer.visibility.followers7d' },
+		followers_30d: { icon: 'lock', labelKey: 'social.composer.visibility.followers30d' },
+		selected: { icon: 'selected', labelKey: 'social.composer.visibility.selected' },
+		private: { icon: 'private', labelKey: 'social.composer.visibility.private' },
 	}
 	const row = map[code] || map.public
 	return { code, ...row }
@@ -81,10 +81,10 @@ export function renderVisibilityPickerHtml(options = {}) {
 				${optionHtml}
 			</select>
 			<input data-visibility-allow type="text" class="input input-bordered input-sm visibility-allow${showAllow}"
-				placeholder="${escapeHtml(geti18n('social.visibility.allow.placeholder'))}"
+				placeholder="${escapeHtml(geti18n('social.composer.visibility.allow.placeholder'))}"
 				value="${escapeHtml(options.allow || '')}" />
 			<input data-visibility-except type="text" class="input input-bordered input-sm visibility-except${showExcept}"
-				placeholder="${escapeHtml(geti18n('social.visibility.except.placeholder'))}"
+				placeholder="${escapeHtml(geti18n('social.composer.visibility.except.placeholder'))}"
 				value="${escapeHtml(options.except || '')}" />
 		</div>
 	`

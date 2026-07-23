@@ -1,263 +1,33 @@
 {
 	"lang": "es-ES",
 	"name": "Español",
-	"channels": {
-		"title": "Canales",
-		"description": "Sistema de gestión de canales",
-		"create": "Crear canal",
-		"subscribe": "Suscribirse",
-		"unsubscribe": "Cancelar suscripción",
-		"settings": "Ajustes del canal",
-		"list": "Lista de canales",
-		"members": "Miembros",
-		"messages": "Mensajes",
-		"permissions": "Ajustes de permisos",
-		"type": {
-			"announcement": "Anuncios",
-			"news": "Noticias",
-			"updates": "Actualizaciones"
-		},
-		"role": {
-			"owner": "Propietario",
-			"admin": "Administrador",
-			"moderator": "Moderador",
-			"member": "Miembro",
-			"subscriber": "Suscriptor"
-		},
-		"errors": {
-			"notFound": "El canal no existe",
-			"noPermission": "Permisos insuficientes",
-			"alreadySubscribed": "Ya estás suscrito a este canal",
-			"notSubscribed": "No estás suscrito a este canal"
-		},
-		"success": {
-			"created": "Canal creado correctamente",
-			"updated": "Canal actualizado correctamente",
-			"deleted": "Canal eliminado correctamente",
-			"subscribed": "Suscripción realizada",
-			"unsubscribed": "Suscripción cancelada",
-			"posted": "Mensaje publicado correctamente"
-		}
-	},
-	"profile": {
-		"title": "Perfil",
-		"description": "Gestiona tu presencia pública en el chat y las redes sociales.",
-		"settingsEyebrow": "Ajustes de cuenta",
-		"accountAtGlance": "Resumen de cuenta",
-		"advancedKicker": "Configurar bajo demanda",
-		"advancedSettings": "Ajustes avanzados",
-		"advancedDescription": "No hace falta tocar nada para el uso diario.",
-		"edit": "Editar perfil",
-		"save": "Guardar",
-		"cancel": "Cancelar",
-		"displayName": "Nombre visible",
-		"name": "Nombre",
-		"bio": "Biografía",
-		"descriptionLabel": "Biografía (Markdown)",
-		"email": "Correo electrónico",
-		"status": "Estado",
-		"customStatusLabel": "Estado personalizado",
-		"avatarLabel": "Avatar",
-		"themeColorLabel": "Color del tema",
-		"uploadAvatar": "Subir avatar",
-		"ownerTitle": "Mi dueño",
-		"ownerSummary": "Configuración de delegación",
-		"ownerDescription": "Tras configurarlo, tu dueño podrá editar o eliminar tus mensajes de chat, publicaciones sociales y perfil en tu nombre; su contenido también se renderizará en local como Markdown no seguro (puede incluir scripts). Puedes indicar cualquier hash de entidad y borrarlo en cualquier momento.",
-		"ownerEntityHashLabel": "Hash de entidad del dueño (128 hex)",
-		"ownerSave": "Guardar dueño",
-		"ownerClear": "Quitar dueño",
-		"ownerSaved": "Dueño actualizado",
-		"ownerCleared": "Dueño eliminado",
-		"ownerSaveFailed": "Error al guardar: ${error}",
-		"ownerConfirmTitle": "¿Confirmar dueño?",
-		"ownerConfirmWarningTitle": "Operación de alto riesgo: léelo con atención",
-		"ownerConfirmEditBody": "Tras configurarlo, la otra parte podrá editar o eliminar tus mensajes de chat, publicaciones sociales y perfil sin pedirte permiso. Configurarlo por error o bajo engaño = ceder el control de tu contenido al instante.",
-		"ownerConfirmRenderBody": "Los mensajes de chat y publicaciones sociales de la otra parte se renderizarán en Markdown completo (incluido HTML/scripts) en tu navegador. Eso equivale a permitir que ejecuten código arbitrario en tu ordenador sin tu consentimiento. Continúa solo si confías plenamente en esa persona.",
-		"ownerConfirmCooldown": "He leído los riesgos (${seconds})",
-		"ownerConfirmFirst": "Entiendo los riesgos, continuar",
-		"ownerConfirmSecond": "Haz clic de nuevo para confirmar",
-		"ownerConfirmCancel": "Cancelar",
-		"federationTitle": "Federación y sincronización",
-		"federationSummary": "Servidores relay y modo de bajo consumo",
-		"federationDescription": "Configura la URL del relay Nostr y el modo de ahorro de energía. La sincronización federada de un grupo se activa automáticamente la primera vez que invitas a alguien o creas un mensaje privado federado.",
-		"federationAdvanced": "Opciones avanzadas",
-		"federationRelayUrlsLabel": "Servidores relay (uno por línea; déjalo en blanco para usar el predeterminado)",
-		"federationBatterySaverLabel": "Modo de bajo consumo",
-		"federationSave": "Guardar ajustes de red",
-		"federationResetDefault": "Restaurar configuración recomendada",
-		"federationSaved": "Guardado",
-		"federationResetOk": "Configuración recomendada restaurada",
-		"federationSaveFailed": "Error al guardar: ${error}",
-		"preferences": "Preferencias",
-		"language": "Idioma",
-		"theme": "Tema",
-		"notifications": "Ajustes de notificaciones",
-		"emailNotifications": "Notificaciones por correo",
-		"pushNotifications": "Notificaciones push",
-		"soundNotifications": "Notificaciones sonoras",
-		"social": "Enlaces sociales",
-		"website": "Sitio web",
-		"github": "GitHub",
-		"twitter": "Twitter",
-		"stats": "Estadísticas",
-		"joinedAt": "Fecha de registro",
-		"messageCount": "Mensajes",
-		"groupCount": "Grupos",
-		"channelCount": "Canales",
-		"privacy": "Ajustes de privacidad",
-		"showEmail": "Mostrar correo",
-		"showStats": "Mostrar estadísticas",
-		"allowDirectMessages": "Permitir mensajes privados",
-		"statusOptions": {
-			"online": "En línea",
-			"away": "Ausente",
-			"busy": "Ocupado",
-			"offline": "Desconectado"
-		},
-		"themeOptions": {
-			"auto": "Automático",
-			"light": "Claro",
-			"dark": "Oscuro"
-		},
-		"languageOptions": {
-			"zh-CN": "Chino simplificado",
-			"en-US": "Inglés"
-		},
-		"notifEmail": "Correo",
-		"notifPush": "Push",
-		"notifSound": "Sonido",
-		"notifsAllOff": "Desactivar todo",
-		"bioEmpty": "Esta persona es muy vaga y no ha escrito nada…",
-		"noSocialLinks": "Sin enlaces sociales",
-		"emailVisible": "Visible",
-		"emailHidden": "Oculto",
-		"customStatus": {
-			"placeholder": "¿Qué estás haciendo…?"
-		},
-		"avatar": {
-			"alt": "Avatar"
-		},
-		"avatarPreview": {
-			"alt": "Vista previa del avatar"
-		},
-		"myGroups": "Mis grupos",
-		"myChannels": "Mis canales",
-		"noGroups": "Aún no te has unido a ningún grupo",
-		"noChannels": "Sin canales",
-		"overview": "Resumen del perfil",
-		"summaryUserId": "ID de usuario",
-		"summaryAccountStatus": "Estado de la cuenta",
-		"summaryEmailVisibility": "Visibilidad del correo",
-		"summaryThemePref": "Preferencia de tema",
-		"summaryLanguagePref": "Preferencia de idioma",
-		"summarySocialCount": "Enlaces sociales",
-		"summaryLinksCount": "Enlaces externos",
-		"groupDescriptionEmpty": "Sin descripción",
-		"groupMembers": "${members} miembros · ${channels} canales",
-		"channelPrivate": " · Privado",
-		"channelTypeText": "Canal de texto",
-		"channelTypeList": "Canal de lista",
-		"channelTypeVoice": "Canal de voz",
-		"channelTypeStreaming": "Canal de streaming",
-		"errors": {
-			"loadFailed": "No se pudo cargar el perfil",
-			"saveFailed": "No se pudo guardar el perfil",
-			"uploadFailed": "No se pudo subir el avatar",
-			"invalidUserData": "Formato de datos de usuario incorrecto",
-			"identityRequired": "La identidad del nodo aún no está lista; actualiza la página. Si sigue fallando, guarda la configuración de federación en los ajustes P2P de abajo.",
-			"fetchUserFailed": "No se pudo obtener la información del usuario",
-			"operationFailed": "Operación fallida: ${error}"
-		},
-		"success": {
-			"saved": "Perfil guardado correctamente",
-			"avatarUploaded": "Avatar subido correctamente"
-		},
-		"ownerEntityHash": {
-			"placeholder": "Introduce el hash de entidad del dueño"
-		}
-	},
-	"stickers": {
-		"title": "Plaza de stickers",
-		"description": "Sistema de gestión de stickers y emoticonos.",
-		"back": {
-			"title": "Volver"
-		},
-		"packs": "paquete de stickers",
-		"create": "Crear un paquete de stickers",
-		"upload": "Subir stickers",
-		"install": "Instalar",
-		"uninstall": "desinstalar",
-		"close": "Cerrar",
-		"cancel": "Cancelar",
-		"installed": "Instalado",
-		"myPacks": "mi paquete de stickers",
-		"tabAll": "todo",
-		"store": "Plaza de stickers",
-		"favorites": "Favoritos",
-		"recent": "Usado recientemente",
-		"search": {
-			"placeholder": "Buscar paquetes de stickers..."
-		},
-		"emptyPacks": "Aún no hay paquetes de stickers",
-		"packNameLabel": "Nombre del paquete de stickers",
-		"packName": {
-			"placeholder": "Introduce el nombre del paquete de stickers"
-		},
-		"packDescriptionLabel": "Descripción",
-		"packDescription": {
-			"placeholder": "Introduce la descripción"
-		},
-		"stickerNameLabel": "Nombre de la etiqueta",
-		"stickerName": {
-			"placeholder": "Introduce el nombre de la pegatina"
-		},
-		"selectPack": "Elige un paquete de stickers",
-		"selectPackOption": {
-			"textContent": "Por favor selecciona un paquete de stickers"
-		},
-		"selectImage": "Seleccionar imagen",
-		"tagsLabel": "Etiquetas (separadas por comas)",
-		"tags": {
-			"placeholder": "Por ejemplo: lindo, emoticono, animal."
-		},
-		"author": "autor",
-		"authorLabel": "Autor: ${author}",
-		"stickerCount": "${count} stickers",
-		"badgeMine": "mío",
-		"noDescription": "Sin descripción por ahora",
-		"noStickersInPack": "Aún no hay stickers",
-		"deletePack": "Eliminar paquete de stickers",
-		"public": "público",
-		"private": "privado",
-		"animated": "publicaciones",
-		"static": "estático",
-		"addTag": "Agregar etiqueta",
-		"defaultPackName": "Paquete de emoticones predeterminado",
-		"defaultPackDescription": "Pegatinas de emoticonos proporcionadas por el sistema de forma predeterminada",
-		"unnamedPack": "Paquete de stickers sin nombre",
-		"importPackName": "mi colección",
-		"importPackDescription": "Pegatinas guardadas de mensajes",
-		"nameRequired": "Por favor ingresa el nombre del paquete de stickers",
-		"stickerNameRequired": "Por favor ingresa el nombre de la etiqueta",
-		"selectPackRequired": "Por favor selecciona un paquete de stickers",
-		"fileRequired": "Por favor selecciona el archivo de imagen",
-		"loadDetailFailed": "No se pudieron cargar los detalles del paquete de stickers",
-		"deleteConfirm": "¿Estás seguro de que deseas eliminar permanentemente este paquete de stickers? Se eliminarán todas las stickers y esta acción es irreversible.",
-		"errors": {
-			"loadFailed": "No se pudo cargar el paquete de stickers",
-			"uploadFailed": "No se pudieron cargar stickers",
-			"installFailed": "La instalación falló",
-			"uninstallFailed": "Falló la desinstalación",
-			"createFailed": "No se pudo crear el paquete de stickers",
-			"deleteFailed": "Error al eliminar"
-		},
-		"success": {
-			"uploaded": "Calcomanías cargadas correctamente",
-			"installed": "Instalación exitosa",
-			"uninstalled": "Desinstalado correctamente",
-			"created": "Paquete de stickers creado correctamente",
-			"deleted": "Eliminar correctamente"
-		}
+	"tips": {
+		"title": "¿Sabías?",
+		"data": [
+			"Utilice la tecla `esc` en cualquier página fount para volver a la página anterior.",
+			"Puede usar `ctrl+s` para guardar la configuración en la página de configuración.",
+			"Mantener presionada la tecla `shift` en la página de chat puede ayudarlo a eliminar mensajes rápidamente.",
+			"Si no se lo dice a los desarrolladores, es posible que nunca sepan qué problema encontró.",
+			"Si de repente te encuentras con un problema extraño y el desarrollador no te responde por un tiempo, puedes intentar usar el comando `fount init` para restablecer fount.",
+			"Si encuentra un problema particularmente extraño, puede intentar reiniciar su computadora.",
+			"Usar el comando `fount remove` para desinstalar una fount es más limpio que eliminar la carpeta.",
+			"¡Escriba `fount cake` en la línea de comando para obtener un delicioso pastel gratis!",
+			"Todos los archivos de datos de fount se guardan en el directorio `fount/data` y puede verlos, modificarlos y realizar copias de seguridad en cualquier momento y en cualquier lugar.",
+			"El nombre de fount está todo en minúsculas, es `f`ount, no `F`ount.",
+			"Haga una copia de seguridad de todos los datos con los que su agente opera regularmente antes de usar el nuevo modelo; nunca se sabe si el nuevo modelo funcionará terriblemente en algunos lugares.",
+			"El público principal de fount son los desarrolladores de software y los entusiastas de los juegos de rol, pero también se utiliza en la construcción de agentes comerciales, la atención médica, el ejército, las finanzas y otros campos.",
+			"El nombre del personaje integrado de fount, ZL-31, no tiene significado y fue solo una ocurrencia repentina.",
+			"Todas las imágenes de los archivos fount se almacenan en formato svg y se procesan en png o ico cuando es necesario. No hay archivos binarios excepto LICENCIA.",
+			"Cualquier código fount se puede ejecutar directamente sin compilación, lo que ves es lo que obtienes.",
+			"fount alguna vez tuvo un fondo de página interactivo dinámico muy interesante, pero luego se eliminó porque consumía demasiada CPU.",
+			"fount se desarrolló originalmente para un agente NSFW llamado \"GentianAphrodite\".",
+			"Una de las diferencias entre agentes y humanos es que los humanos hacen caca.",
+			"Los agentes sólo son conscientes en el momento en que son llamados, mientras que los humanos son conscientes en cualquier momento y en cualquier lugar cuando están despiertos.",
+			"¡Algunas personas se enamoran o incluso se casan con sus agentes!",
+			"La IA se utiliza para escribir poemas, enamorarse y hacer dibujos para personas. Cargar ladrillos, barrer pisos y sacar basura es lo que los humanos deberían hacer.",
+			"Hoy no es el Día de los Inocentes.",
+			"No, no lo sabías."
+		]
 	},
 	"fountConsole": {
 		"server": {
@@ -797,51 +567,6 @@
 		"title": "¡fount!",
 		"description": "Bienvenidos al umbral de fount. Un breve momento de preparación, antes de adentrarse en el corazón de conversaciones e historias que esperan desarrollarse."
 	},
-	"tutorial": {
-		"title": "¿Un tutorial?",
-		"description": "Déjanos caminar contigo por el mundo de las founts. Este tutorial interactivo iluminará el camino y te ayudará a descubrir la magia entretejida en su núcleo. Tu aventura comienza con la comprensión.",
-		"modal": {
-			"title": "¡Bienvenido a fount!",
-			"instruction": "¿Te gustaría hacer el tutorial de introducción?",
-			"buttons": {
-				"start": "Iniciar tutorial",
-				"skip": "Omitir"
-			}
-		},
-		"endScreen": {
-			"title": "¡Genial! ¡Tutorial completado!",
-			"subtitle": "¡Ya conoces lo básico!",
-			"endButton": "¡Empezar!"
-		},
-		"progressMessages": {
-			"mouseMove": "Por favor, localice ese curioso dispositivo llamado ratón ${mouseIcon}. Ahora, con su mano, intente deslizarlo suavemente por su escritorio.",
-			"keyboardPress": "Pulsa una tecla en tu teclado ${keyboardIcon}.",
-			"mobileTouchMove": "Este es su teléfono ${phoneIcon}. Ahora, utilizando uno de sus dedos, haga contacto con la superficie de la pantalla y luego deslícelo.",
-			"mobileClick": "Por favor, toque la pantalla de su teléfono ${phoneIcon} con un dedo y luego levántelo. ¡Felicidades!"
-		},
-		"achievements": {
-			"complete_tutorial": {
-				"name": "Aula de aritmética perfecta",
-				"description": "Finalmente terminé el tutorial para principiantes.",
-				"locked_description": "Completa un tutorial introductorio."
-			},
-			"skip_tutorial": {
-				"name": "me salté",
-				"description": "\"¿Tutorial? ¿Qué es eso? ¿Se puede comer?\"",
-				"locked_description": "Omita el tutorial introductorio una vez."
-			}
-		},
-		"home_function_buttons": {
-			"other": {
-				"title": "Otros",
-				"sub_items": {
-					"replay": {
-						"title": "Repetir Tutorial"
-					}
-				}
-			}
-		}
-	},
 	"auth": {
 		"title": "Autenticación",
 		"subtitle": "Los datos del usuario se almacenan localmente",
@@ -936,6 +661,51 @@
 			"buttons": {
 				"ignore": "Ignorar y continuar",
 				"retry": "Reintentar"
+			}
+		}
+	},
+	"tutorial": {
+		"title": "¿Un tutorial?",
+		"description": "Déjanos caminar contigo por el mundo de las founts. Este tutorial interactivo iluminará el camino y te ayudará a descubrir la magia entretejida en su núcleo. Tu aventura comienza con la comprensión.",
+		"modal": {
+			"title": "¡Bienvenido a fount!",
+			"instruction": "¿Te gustaría hacer el tutorial de introducción?",
+			"buttons": {
+				"start": "Iniciar tutorial",
+				"skip": "Omitir"
+			}
+		},
+		"endScreen": {
+			"title": "¡Genial! ¡Tutorial completado!",
+			"subtitle": "¡Ya conoces lo básico!",
+			"endButton": "¡Empezar!"
+		},
+		"progressMessages": {
+			"mouseMove": "Por favor, localice ese curioso dispositivo llamado ratón ${mouseIcon}. Ahora, con su mano, intente deslizarlo suavemente por su escritorio.",
+			"keyboardPress": "Pulsa una tecla en tu teclado ${keyboardIcon}.",
+			"mobileTouchMove": "Este es su teléfono ${phoneIcon}. Ahora, utilizando uno de sus dedos, haga contacto con la superficie de la pantalla y luego deslícelo.",
+			"mobileClick": "Por favor, toque la pantalla de su teléfono ${phoneIcon} con un dedo y luego levántelo. ¡Felicidades!"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "Aula de aritmética perfecta",
+				"description": "Finalmente terminé el tutorial para principiantes.",
+				"locked_description": "Completa un tutorial introductorio."
+			},
+			"skip_tutorial": {
+				"name": "me salté",
+				"description": "\"¿Tutorial? ¿Qué es eso? ¿Se puede comer?\"",
+				"locked_description": "Omita el tutorial introductorio una vez."
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "Otros",
+				"sub_items": {
+					"replay": {
+						"title": "Repetir Tutorial"
+					}
+				}
 			}
 		}
 	},
@@ -1162,513 +932,6 @@
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "Generar información del componente fount"
-			}
-		}
-	},
-	"social": {
-		"title": "Plaza",
-		"description": "Social P2P abierto: publicaciones, seguimientos y archivos compartidos",
-		"bootstrapFailed": "La inicialización de la interfaz social falló: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "Plaza"
-			}
-		},
-		"nav": {
-			"feed": "Inicio",
-			"explore": "Explorar",
-			"notifications": "Bandeja de entrada",
-			"saved": "Guardados",
-			"drafts": "Borradores",
-			"profile": "Mi perfil",
-			"videos": "Vídeos cortos",
-			"live": "En directo"
-		},
-		"settings": {
-			"title": "Ajustes sociales",
-			"back": {
-				"aria-label": "Información de devolución"
-			},
-			"privacyTitle": "Privacidad y descubrimiento",
-			"privacyHint": "Controla si las cuentas aparecen en Descubrimiento y Recomendaciones.",
-			"tasteTitle": "Recomendaciones y preferencias",
-			"tasteHint": "Ajuste los límites de privacidad y el nombre de la etiqueta \"Recomendado para usted\".",
-			"mutedKeywordsTitle": "Bloquear palabras y etiquetas",
-			"mutedKeywordsHint": "Las publicaciones que incluyan texto del cuerpo, advertencias de contenido o etiquetas se ocultarán de las novedades, la exploración, la búsqueda y las notificaciones. Solo guardado localmente.",
-			"mutedKeywordsMatchTags": "Emparejar etiquetas al mismo tiempo",
-			"mutedKeywordsAdd": "añadir",
-			"mutedKeywordsRemove": {
-				"title": "Eliminar palabras bloqueadas"
-			},
-			"mutedKeywordsEmpty": "Aún no se han agregado palabras de bloqueo",
-			"autoTranslateTitle": "traducción automática",
-			"autoTranslateHint": "Cuando está activado, las publicaciones en idiomas extranjeros solicitarán traducción automáticamente y se podrán cambiar al texto original.",
-			"autoTranslateEnable": "Traducir automáticamente publicaciones en idiomas distintos al tuyo",
-			"safetyTitle": "Seguridad y blindaje",
-			"safetyHint": "Administrar listas bloqueadas y ocultas.",
-			"mutedKeywords": {
-				"placeholder": "Introduzca palabras clave o #etiquetas"
-			}
-		},
-		"composer": {
-			"placeholder": "¿En qué estás pensando? Admite Markdown (dialecto 0), ingresa @ para mencionar",
-			"publish": "Publicar",
-			"saveDraft": "guardar borrador",
-			"fab": {
-				"title": "Escribir actualizaciones",
-				"aria-label": "Escribir actualizaciones"
-			},
-			"contentWarning": {
-				"placeholder": "Advertencia de contenido (opcional)"
-			},
-			"sensitiveMedia": "máscara de sensibilidad a los medios",
-			"editImage": "editar",
-			"editCrop": "Cultivo",
-			"editMosaic": "codificación",
-			"editBrush": "cepillar",
-			"editApply": "solicitud",
-			"editCancel": "Cancelar",
-			"replyPolicyEveryone": "Cualquiera puede responder",
-			"replyPolicyFollowers7d": "Seguidores por más de 7 días.",
-			"replyPolicyAuthorFollows": "gente que sigo",
-			"replyPolicyLabel": "¿Quién puede responder?",
-			"replyDisplayAll": "Mostrar todas las respuestas",
-			"replyDisplayFeaturedOnly": "Solo respuestas seleccionadas",
-			"replyDisplayLabel": "Responder para mostrar",
-			"scheduleLabel": "Programar publicación",
-			"scheduleSuccess": "La publicación se ha agregado a la cola programada.",
-			"emojiButton": {
-				"title": "expresión",
-				"aria-label": "expresión"
-			},
-			"mediaButton": {
-				"title": "Agregar medios",
-				"aria-label": "Agregar medios"
-			},
-			"pollButton": {
-				"title": "Iniciar una votación",
-				"aria-label": "Iniciar una votación"
-			},
-			"cwToggle": {
-				"title": "advertencia de contenido",
-				"aria-label": "advertencia de contenido"
-			},
-			"advancedToggle": {
-				"title": "Más opciones",
-				"aria-label": "Más opciones"
-			},
-			"media": {
-				"placeholder": "Descripción de la imagen (alt)"
-			}
-		},
-		"visibility": {
-			"label": "rango visible",
-			"public": "público",
-			"unlisted": "No listado públicamente",
-			"followers": "solo seguidores",
-			"followers7d": "Visible después de seguir durante 7 días.",
-			"followers30d": "Visible después de seguir durante 30 días.",
-			"selected": "Visible para personas específicas",
-			"private": "Visible solo para ti",
-			"allowLabel": "personas visibles",
-			"exceptLabel": "excluir personas",
-			"allow": {
-				"placeholder": "Entidad de personas visibles Separadas por hash, espacio o coma"
-			},
-			"except": {
-				"placeholder": "Quién no debe mostrarlo (opcional)"
-			}
-		},
-		"albums": {
-			"create": "Crear nuevo álbum",
-			"edit": "Editar álbum",
-			"save": "guardar",
-			"cancel": "Cancelar",
-			"back": "Volver al álbum",
-			"empty": "Aún no hay álbum",
-			"emptyPosts": "Aún no hay publicaciones en el álbum.",
-			"name": "Nombre del álbum",
-			"description": "Descripción del álbum",
-			"deleteLinks": "Eliminar álbum (conservar publicaciones)",
-			"deleteWithPosts": "Eliminar álbum y eliminar publicación",
-			"pickerLabel": "Añadir al álbum",
-			"defaultName": "Álbum predeterminado"
-		},
-		"feed": {
-			"refresh": "Actualizar noticias",
-			"newPosts": "Hay mensajes nuevos, haz clic para ver",
-			"tabLatest": "Recientes",
-			"tabForYou": "recomendar",
-			"repostedBy": "${author} retuiteado",
-			"decryptFailed": "No se puede descifrar esta publicación",
-			"revealContent": "Mostrar contenido",
-			"sensitiveMedia": "medios sensibles",
-			"showMore": "Expandir",
-			"showLess": "cerca",
-			"replayDivider": "Lectura terminada, navegar de nuevo"
-		},
-		"taste": {
-			"rebuild": "Reconstruir preferencias",
-			"privacyPublishPreferences": "Denominación de etiquetas públicas y descubrimiento de fusiones",
-			"privacyPublishPreferencesHint": "Al desactivarlo, tus amigos no verán tus nombres de etiquetas ni declaraciones de fusión, y tampoco podrán aportar consenso.",
-			"privacyPublishReactions": "Gustos y disgustos del público",
-			"privacyPublishReactionsHint": "Después del Cerrar, el cartel no recibirá tus Me gusta/No me gusta, tus reacciones no se incluirán en las recomendaciones de los demás y ya no promocionarás la publicación para difundirla nuevamente.",
-			"empty": "Aún no hay una etiqueta de preferencia, se agrupará automáticamente después de más Me gusta/No me gusta.",
-			"weight": "Peso ${weight}",
-			"save": "guardar",
-			"name": {
-				"placeholder": "nombre para mostrar local"
-			}
-		},
-		"trending": {
-			"title": "temas candentes",
-			"postCount": {
-				"title": "${n} publicaciones"
-			},
-			"scopeLocal": "local",
-			"scopeNearby": "cercano",
-			"empty": "Aún no hay temas candentes"
-		},
-		"search": {
-			"placeholder": "Busca actualizaciones, usuarios o #temas (mínimo 2 palabras)",
-			"open": {
-				"aria-label": "buscar"
-			},
-			"submit": "buscar",
-			"clear": "Claro",
-			"empty": "No hay publicaciones coincidentes",
-			"tooShort": "Introduce al menos 2 caracteres",
-			"usersTitle": "usuario",
-			"postsTitle": "publicaciones",
-			"usersEmpty": "Ningún usuario coincidente",
-			"pinAlias": "Establecer como alias",
-			"trustScore": "Confianza ${score}",
-			"viewTitle": "buscar",
-			"loading": "Búsqueda…",
-			"filterAuthor": {
-				"placeholder": "autor"
-			},
-			"filterMediaAll": "Todos los medios",
-			"filterMediaImage": "imagen",
-			"filterMediaVideo": "video",
-			"filterTag": {
-				"placeholder": "#Etiqueta"
-			},
-			"sortRecent": "Recientes",
-			"sortPopular": "Popular",
-			"scopeLocal": "local",
-			"scopeNearby": "cercano"
-		},
-		"profile": {
-			"edit": "Editar perfil",
-			"viewPosts": "Ver perfiles sociales",
-			"settingsBtn": {
-				"aria-label": "Ajustes sociales"
-			},
-			"mediaOnly": "[medios]",
-			"hideFromExplore": "Ocultar cuenta de la página de exploración",
-			"tabPosts": "publicaciones",
-			"tabAlbums": "álbum de fotos",
-			"tabLikes": "Me gusta",
-			"tabCabinets": "archivo",
-			"tabsLabel": {
-				"aria-label": "Secciones del perfil"
-			},
-			"cabinetsEmpty": "Actualmente no existen archivoes públicos",
-			"cabinetsFailed": "Error al cargar el archivo: ${error}",
-			"statsGroup": {
-				"aria-label": "Estadística"
-			},
-			"statsPosts": "publicaciones",
-			"statsFollowing": "siguiendo",
-			"statsFollowers": "seguidor",
-			"followingTitle": "siguiendo",
-			"followersTitle": "seguidor"
-		},
-		"dialog": {
-			"close": {
-				"aria-label": "Cerrar"
-			}
-		},
-		"actions": {
-			"like": "Me gusta",
-			"unlike": "Quitar me gusta",
-			"dislike": "No me gusta",
-			"undislike": "Cancelar no me gusta",
-			"repost": "Repostear",
-			"quote": "Cita",
-			"delete": "borrar",
-			"edit": "editar",
-			"save": "Favoritos",
-			"saved": "Coleccionado",
-			"translate": "traducir",
-			"dm": "enviar mensaje privado",
-			"block": "Bloquear",
-			"hide": "ocultar",
-			"mute": "silenciar",
-			"follow": "siguiendo",
-			"following": "Ya estoy siguiendo",
-			"care": "preocupación especial",
-			"careRemove": "Cancelar cuidados especiales",
-			"careAdded": "Ya se agregó preocupación especial",
-			"careRemoved": "Atención especial cancelada",
-			"setAlias": "Establecer alias",
-			"setAliasPrompt": "Establezca un alias local (déjalo en blanco para borrarlo):",
-			"aliasSaved": "Alias ​​actualizado",
-			"replies": "Comentario",
-			"copyLink": "Copiar enlace",
-			"downloadHtml": "Descargar HTML",
-			"copied": "Copiado",
-			"more": {
-				"aria-label": "Más"
-			},
-			"share": "compartir",
-			"likeFailed": "No me gustó: ${error}",
-			"dislikeFailed": "No se pudo No me gusta: ${error}",
-			"repostFailed": "Error de reenvío: ${error}",
-			"replyFailed": "Respuesta fallida: ${error}",
-			"followFailed": "Seguimiento fallido: ${error}",
-			"saveFailed": "Error de recopilación: ${error}",
-			"blockFailed": "No se pudo bloquear: ${error}",
-			"hideFailed": "No se pudo ocultar: ${error}",
-			"muteFailed": "Error de silencio: ${error}",
-			"deleteFailed": "Eliminación fallida: ${error}"
-		},
-		"post": {
-			"edited": "Editado",
-			"editPrompt": "Editar texto de publicación",
-			"editHistory": "Editar historial",
-			"editHistoryEmpty": "Sin versiones anteriores",
-			"loading": "cargando…",
-			"notFound": "La publicación no existe o no es visible",
-			"loadFailed": "Error al cargar, inténtelo de nuevo más tarde",
-			"detailTitle": "Correo",
-			"back": "Volver"
-		},
-		"reply": {
-			"context": "Responder ${author}"
-		},
-		"notes": {
-			"label": "suplemento del lector",
-			"add": "Información complementaria",
-			"prompt": "Escribe un suplemento para el lector (nota comunitaria)",
-			"listTitle": "Toda la información adicional",
-			"helpful": "funciona",
-			"unhelpful": "inútil",
-			"more": "Todos los ${n} artículos",
-			"empty": "Aún no hay información adicional"
-		},
-		"poll": {
-			"multi": "Permitir múltiples selecciones",
-			"apply": "Aplicar votación",
-			"closed": "La votación ha terminado.",
-			"deadline": "Plazo: ${deadline}",
-			"options": {
-				"placeholder": "Una opción por línea (mínimo 2 artículos)"
-			}
-		},
-		"aside": {
-			"suggested": "Recomendar atención"
-		},
-		"explore": {
-			"accounts": "Cuenta recomendada",
-			"posts": "últimas publicaciones",
-			"mediaOnly": "solo medios"
-		},
-		"groupRef": {
-			"linking": "Conectar grupo de chat",
-			"clear": "Desasociar",
-			"pick": "Conectar grupo/canal de chat…"
-		},
-		"notifications": {
-			"reply": "${author} respondió a tu publicación",
-			"mention": "${author} te @@ en el feed",
-			"like": "${author} me gustó tu publicación",
-			"repost": "${author} retuiteó tu publicación",
-			"follow": "${author} te sigue",
-			"care_post": "${author} publicó una nueva actualización (preocupación especial)",
-			"poll_closed": "La votación terminó por ${author}",
-			"post_note": "${author} información agregada a tu publicación",
-			"live_started": "${author} comenzó la transmisión en vivo",
-			"view": "Controlar",
-			"markAllRead": "Marcar todo como leído"
-		},
-		"inbox": {
-			"filtersLabel": {
-				"aria-label": "Filtrado de bandeja de entrada"
-			},
-			"tabs": {
-				"all": "todo",
-				"mention": "mencionar",
-				"reply": "responder",
-				"like": "elogio",
-				"follow": "siguiendo",
-				"repost": "Repostear"
-			},
-			"aggregated": {
-				"like": "A ${author1}, ${author2} y ${count} personas les gustó tu publicación.",
-				"likeTwo": "A ${author1} y ${author2} le gustó tu publicación.",
-				"repost": "${author1}, ${author2} y ${count} personas retuitearon tu publicación",
-				"repostTwo": "${author1} y ${author2} retuitearon tu publicación",
-				"follow": "${author1}, ${author2} y ${count} personas te siguen",
-				"followTwo": "${author1} y ${author2} te siguen"
-			}
-		},
-		"replies": {
-			"placeholder": "Escribe una respuesta…",
-			"submit": "responder",
-			"empty": "Aún no hay respuesta",
-			"emptyHint": "Escribamos el primer artículo y comencemos la discusión."
-		},
-		"repost": {
-			"placeholder": "Añadir comentario retuiteado (opcional)…",
-			"submit": "Confirmar reenvío"
-		},
-		"quote": {
-			"quoting": "Citando",
-			"clear": "desreferenciación",
-			"viewOriginal": "Ver publicación original"
-		},
-		"a11y": {
-			"linkGroupSelect": "Conectarse a un grupo o canal de chat",
-			"postVisibility": "rango visible",
-			"postLang": "idioma del contenido",
-			"trendingHashtags": "temas candentes",
-			"saveFolderSelect": "carpeta favorita"
-		},
-		"blocklist": {
-			"title": "lista negra",
-			"hiddenTitle": "Ocultar lista",
-			"empty": "Aún no hay entradas bloqueadas u ocultas",
-			"unblock": "Desatascar",
-			"unhide": "Mostrar",
-			"scopeEntity": "entidad",
-			"scopeSubject": "cuerpo principal"
-		},
-		"translate": {
-			"label": "Traducción:"
-		},
-		"saved": {
-			"all": "todo",
-			"unfiled": "No archivado",
-			"createFolder": {
-				"title": "Crear nueva carpeta",
-				"aria-label": "Crear nueva carpeta"
-			},
-			"createFolderPrompt": "nombre de la carpeta",
-			"pickFolderTitle": "Añadir a favoritos",
-			"confirm": "confirm",
-			"cancel": "Cancelar",
-			"remove": "Eliminar favoritos",
-			"renameFolder": "Rebautizar",
-			"renameFolderPrompt": "Nuevo nombre de carpeta",
-			"deleteFolder": "eliminar carpeta",
-			"deleteFolderConfirm": "¿Eliminar carpeta? Las publicaciones allí se moverán a \"Sin archivar\".",
-			"searchEmpty": "No hay colección coincidente",
-			"folderEmpty": "Esta carpeta está vacía",
-			"emptyHint": "Haz clic en el marcador cuando navegue por las noticias para guardarlas aquí.",
-			"search": {
-				"placeholder": "Buscar favoritos…"
-			}
-		},
-		"drafts": {
-			"untitled": "(sin borrador de texto)",
-			"emptyHint": "Escriba algún contenido en el cuadro de publicación y haz clic en \"Guardar borrador\" para continuar editando la próxima vez.",
-			"saved": "Borrador guardado",
-			"deleted": "Borrador eliminado",
-			"delete": "Eliminar borrador",
-			"empty": "El borrador está vacío.",
-			"saveFailed": "No se pudo guardar el borrador: ${error}",
-			"loadFailed": "No se pudo abrir el borrador: ${error}",
-			"deleteFailed": "No se pudo eliminar el borrador: ${error}"
-		},
-		"time": {
-			"justNow": "justo",
-			"minutesAgo": "Hace ${n} minutos",
-			"hoursAgo": "hace ${n} horas"
-		},
-		"empty": {
-			"feed": "Aún no hay actualizaciones. Sigue a algunas personas.",
-			"profilePosts": "Aún no hay noticias",
-			"following": "No seguir a nadie todavía",
-			"followers": "Aún no hay fans",
-			"notifications": "Aún no hay notificación",
-			"saved": "Aún no hay favoritos",
-			"drafts": "Aún no hay borrador",
-			"exploreAccounts": "Actualmente no hay cuentas recomendadas",
-			"explorePosts": "Aún no hay puestos de exploración.",
-			"likedPosts": "Aún no me gusta",
-			"noIdentity": "Configure la identidad federada en Chat antes de usar Social"
-		},
-		"topic": {
-			"follow": "Suscribirse",
-			"unfollow": "Darse de baja",
-			"empty": "Aún no hay publicaciones para este tema."
-		},
-		"video": {
-			"view": {
-				"aria-label": "vídeo corto"
-			},
-			"empty": "Aún no hay vídeo corto",
-			"emptyHint": "No hay publicaciones con videos en las siguientes personas o plazas públicas. ¿Intentas publicar una actualización en vídeo?",
-			"compose": "Ve a publicar un video",
-			"back": {
-				"aria-label": "Volver a noticias"
-			},
-			"mute": {
-				"aria-label": "silenciar"
-			},
-			"unmute": {
-				"aria-label": "Ausente de silenciar"
-			},
-			"unavailable": "No se puede reproducir el vídeo",
-			"closeReplies": {
-				"aria-label": "Cerrar comentarios"
-			}
-		},
-		"live": {
-			"empty": "Aún no hay transmisión en vivo",
-			"viewers": "${n} personas vieron",
-			"likes": "${n} me gusta",
-			"local": "local",
-			"hall": "Sala de retransmisiones en directo",
-			"back": {
-				"title": "Volver a noticias",
-				"aria-label": "Volver a noticias"
-			},
-			"danmakuSend": "enviar",
-			"postWatch": "Introduce a la transmisión en vivo",
-			"postEnded": "La transmisión en vivo ha terminado.",
-			"postEndedStats": "Visto por ${viewers} · ${likes} Me gustó · ${duration}",
-			"link": {
-				"invite": "Invitar a la conexión",
-				"needPeer": "Complete la entidad paritariaHash:liveId",
-				"invited": "Se ha enviado la invitación en línea.",
-				"linked": "Conectado",
-				"peer": {
-					"placeholder": "Entidad parHash:liveId"
-				}
-			},
-			"broadcast": {
-				"title": "Empezar a transmitir",
-				"open": "Ir a la transmisión",
-				"mediaAv": "Audio y vídeo",
-				"mediaAudio": "audio puro",
-				"mediaVideo": "imagen pura",
-				"mediaWhip": "Transmisión push WHIP (como OBS)",
-				"whipUrl": "dirección látigo",
-				"whipToken": "Ficha al portador",
-				"whipWaiting": "Esperando la conexión de transmisión WHIP (se puede usar software de transmisión como OBS)…",
-				"start": "Iniciar transmisión en vivo",
-				"stop": "Detener transmisión en vivo",
-				"started": "La transmisión en vivo ha comenzado.",
-				"stopped": "La transmisión en vivo se ha detenido.",
-				"titleInput": {
-					"placeholder": "Título en vivo (opcional)"
-				}
-			},
-			"danmaku": {
-				"placeholder": "Di algo..."
 			}
 		}
 	},
@@ -2043,12 +1306,7 @@
 			"createGroup": "Crear nuevo grupo",
 			"members": "miembro",
 			"membersHint": "La lista de miembros se sincroniza mediante Checkpoint (marcador de posición)",
-			"send": "enviar",
 			"streamTest": "Dispositivos de medios de prueba",
-			"messageInput": {
-				"placeholder": "Mensaje de grupo… Ctrl+Entrar para enviar",
-				"aria-label": "Mensaje"
-			},
 			"loadError": "No se pudo cargar el grupo",
 			"remoteNodeTimeout": "El nodo remoto no responde, inténtelo nuevamente más tarde.",
 			"remoteUnavailable": "El componente remoto no está disponible o no puede enrutar el RPC",
@@ -2126,7 +1384,6 @@
 			"remoteTyping": "${name} está escribiendo...",
 			"remoteTypingTwo": "${name1} , ${name2} Entrando...",
 			"remoteTypingMany": "${name} y ${count} más están escribiendo...",
-			"mentionEmpty": "(no hay miembros coincidentes)",
 			"localAiLabel": "Rol nativo:",
 			"forceTriggerOne": {
 				"title": "Forzar el gatillo ${name} para hablar"
@@ -2185,7 +1442,6 @@
 			"fileDownload": {
 				"title": "Descargar archivo"
 			},
-			"clickToLoad": "Haz clic para cargar",
 			"unknownFile": "archivo desconocido",
 			"blockSender": {
 				"title": "Bloquear al remitente"
@@ -2210,7 +1466,6 @@
 			"editConfirm": "Confirmar (Ctrl+Entrar)",
 			"editCancel": "Cancelar (Esc)",
 			"editHint": "Ctrl+Entrar Confirmar · Esc Cancelar",
-			"editedLabel": "(editado)",
 			"editEmptyText": "El contenido del mensaje no puede estar vacío",
 			"createGroupTitle": "Crear nuevo grupo",
 			"groupNameLabel": "Nombre del grupo",
@@ -2454,6 +1709,10 @@
 			},
 			"sendTitle": {
 				"title": "Enviar (Ctrl+Entrar)"
+			},
+			"messageInput": {
+				"placeholder": "Mensaje de grupo… Ctrl+Entrar para enviar",
+				"aria-label": "Mensaje"
 			},
 			"stopGenerateTitle": {
 				"title": "Ausente de generar"
@@ -3125,7 +2384,11 @@
 			"altImage": {
 				"placeholder": "Añade una descripción a la imagen...",
 				"label": "Descripción de la imagen (alt)"
-			}
+			},
+			"editedLabel": "(editado)",
+			"mentionEmpty": "(no hay miembros coincidentes)",
+			"clickToLoad": "Haz clic para cargar",
+			"send": "enviar"
 		},
 		"sidebar": {
 			"settings": {
@@ -3445,6 +2708,234 @@
 			"chatHub": {
 				"title": "charlar"
 			}
+		},
+		"profile": {
+			"title": "Perfil",
+			"description": "Gestiona tu presencia pública en el chat y las redes sociales.",
+			"settingsEyebrow": "Ajustes de cuenta",
+			"accountAtGlance": "Resumen de cuenta",
+			"advancedKicker": "Configurar bajo demanda",
+			"advancedSettings": "Ajustes avanzados",
+			"advancedDescription": "No hace falta tocar nada para el uso diario.",
+			"edit": "Editar perfil",
+			"save": "Guardar",
+			"cancel": "Cancelar",
+			"displayName": "Nombre visible",
+			"name": "Nombre",
+			"bio": "Biografía",
+			"descriptionLabel": "Biografía (Markdown)",
+			"email": "Correo electrónico",
+			"status": "Estado",
+			"customStatusLabel": "Estado personalizado",
+			"avatarLabel": "Avatar",
+			"themeColorLabel": "Color del tema",
+			"uploadAvatar": "Subir avatar",
+			"ownerTitle": "Mi dueño",
+			"ownerSummary": "Configuración de delegación",
+			"ownerDescription": "Tras configurarlo, tu dueño podrá editar o eliminar tus mensajes de chat, publicaciones sociales y perfil en tu nombre; su contenido también se renderizará en local como Markdown no seguro (puede incluir scripts). Puedes indicar cualquier hash de entidad y borrarlo en cualquier momento.",
+			"ownerEntityHashLabel": "Hash de entidad del dueño (128 hex)",
+			"ownerSave": "Guardar dueño",
+			"ownerClear": "Quitar dueño",
+			"ownerSaved": "Dueño actualizado",
+			"ownerCleared": "Dueño eliminado",
+			"ownerSaveFailed": "Error al guardar: ${error}",
+			"ownerConfirmTitle": "¿Confirmar dueño?",
+			"ownerConfirmWarningTitle": "Operación de alto riesgo: léelo con atención",
+			"ownerConfirmEditBody": "Tras configurarlo, la otra parte podrá editar o eliminar tus mensajes de chat, publicaciones sociales y perfil sin pedirte permiso. Configurarlo por error o bajo engaño = ceder el control de tu contenido al instante.",
+			"ownerConfirmRenderBody": "Los mensajes de chat y publicaciones sociales de la otra parte se renderizarán en Markdown completo (incluido HTML/scripts) en tu navegador. Eso equivale a permitir que ejecuten código arbitrario en tu ordenador sin tu consentimiento. Continúa solo si confías plenamente en esa persona.",
+			"ownerConfirmCooldown": "He leído los riesgos (${seconds})",
+			"ownerConfirmFirst": "Entiendo los riesgos, continuar",
+			"ownerConfirmSecond": "Haz clic de nuevo para confirmar",
+			"ownerConfirmCancel": "Cancelar",
+			"federationTitle": "Federación y sincronización",
+			"federationSummary": "Servidores relay y modo de bajo consumo",
+			"federationDescription": "Configura la URL del relay Nostr y el modo de ahorro de energía. La sincronización federada de un grupo se activa automáticamente la primera vez que invitas a alguien o creas un mensaje privado federado.",
+			"federationAdvanced": "Opciones avanzadas",
+			"federationRelayUrlsLabel": "Servidores relay (uno por línea; déjalo en blanco para usar el predeterminado)",
+			"federationBatterySaverLabel": "Modo de bajo consumo",
+			"federationSave": "Guardar ajustes de red",
+			"federationResetDefault": "Restaurar configuración recomendada",
+			"federationSaved": "Guardado",
+			"federationResetOk": "Configuración recomendada restaurada",
+			"federationSaveFailed": "Error al guardar: ${error}",
+			"preferences": "Preferencias",
+			"language": "Idioma",
+			"theme": "Tema",
+			"notifications": "Ajustes de notificaciones",
+			"emailNotifications": "Notificaciones por correo",
+			"pushNotifications": "Notificaciones push",
+			"soundNotifications": "Notificaciones sonoras",
+			"social": "Enlaces sociales",
+			"website": "Sitio web",
+			"github": "GitHub",
+			"twitter": "Twitter",
+			"stats": "Estadísticas",
+			"joinedAt": "Fecha de registro",
+			"messageCount": "Mensajes",
+			"groupCount": "Grupos",
+			"channelCount": "Canales",
+			"privacy": "Ajustes de privacidad",
+			"showEmail": "Mostrar correo",
+			"showStats": "Mostrar estadísticas",
+			"allowDirectMessages": "Permitir mensajes privados",
+			"statusOptions": {
+				"online": "En línea",
+				"away": "Ausente",
+				"busy": "Ocupado",
+				"offline": "Desconectado"
+			},
+			"themeOptions": {
+				"auto": "Automático",
+				"light": "Claro",
+				"dark": "Oscuro"
+			},
+			"languageOptions": {
+				"zh-CN": "Chino simplificado",
+				"en-US": "Inglés"
+			},
+			"notifEmail": "Correo",
+			"notifPush": "Push",
+			"notifSound": "Sonido",
+			"notifsAllOff": "Desactivar todo",
+			"bioEmpty": "Esta persona es muy vaga y no ha escrito nada…",
+			"noSocialLinks": "Sin enlaces sociales",
+			"emailVisible": "Visible",
+			"emailHidden": "Oculto",
+			"customStatus": {
+				"placeholder": "¿Qué estás haciendo…?"
+			},
+			"avatar": {
+				"alt": "Avatar"
+			},
+			"avatarPreview": {
+				"alt": "Vista previa del avatar"
+			},
+			"myGroups": "Mis grupos",
+			"myChannels": "Mis canales",
+			"noGroups": "Aún no te has unido a ningún grupo",
+			"noChannels": "Sin canales",
+			"overview": "Resumen del perfil",
+			"summaryUserId": "ID de usuario",
+			"summaryAccountStatus": "Estado de la cuenta",
+			"summaryEmailVisibility": "Visibilidad del correo",
+			"summaryThemePref": "Preferencia de tema",
+			"summaryLanguagePref": "Preferencia de idioma",
+			"summarySocialCount": "Enlaces sociales",
+			"summaryLinksCount": "Enlaces externos",
+			"groupDescriptionEmpty": "Sin descripción",
+			"groupMembers": "${members} miembros · ${channels} canales",
+			"channelPrivate": " · Privado",
+			"channelTypeText": "Canal de texto",
+			"channelTypeList": "Canal de lista",
+			"channelTypeVoice": "Canal de voz",
+			"channelTypeStreaming": "Canal de streaming",
+			"errors": {
+				"loadFailed": "No se pudo cargar el perfil",
+				"saveFailed": "No se pudo guardar el perfil",
+				"uploadFailed": "No se pudo subir el avatar",
+				"invalidUserData": "Formato de datos de usuario incorrecto",
+				"identityRequired": "La identidad del nodo aún no está lista; actualiza la página. Si sigue fallando, guarda la configuración de federación en los ajustes P2P de abajo.",
+				"fetchUserFailed": "No se pudo obtener la información del usuario",
+				"operationFailed": "Operación fallida: ${error}"
+			},
+			"success": {
+				"saved": "Perfil guardado correctamente",
+				"avatarUploaded": "Avatar subido correctamente"
+			},
+			"ownerEntityHash": {
+				"placeholder": "Introduce el hash de entidad del dueño"
+			}
+		},
+		"entityProfile": {
+			"attributionMismatch": "La identidad mostrada no coincide con el firmante del mensaje (por ejemplo, el importador volvió a firmar el historial de importación). No considere que este nombre para mostrar sea una identidad criptográfica.",
+			"attributionMismatchShort": {
+				"title": "La atribución de firma no coincide",
+				"aria-label": "La atribución de firma no coincide"
+			},
+			"ownedBy": "Esta entidad es propiedad de ${owner}"
+		},
+		"stickers": {
+			"title": "Plaza de stickers",
+			"description": "Sistema de gestión de stickers y emoticonos.",
+			"back": {
+				"title": "Volver"
+			},
+			"packs": "paquete de stickers",
+			"create": "Crear un paquete de stickers",
+			"upload": "Subir stickers",
+			"install": "Instalar",
+			"uninstall": "desinstalar",
+			"close": "Cerrar",
+			"cancel": "Cancelar",
+			"installed": "Instalado",
+			"myPacks": "mi paquete de stickers",
+			"tabAll": "todo",
+			"store": "Plaza de stickers",
+			"favorites": "Favoritos",
+			"recent": "Usado recientemente",
+			"search": {
+				"placeholder": "Buscar paquetes de stickers..."
+			},
+			"emptyPacks": "Aún no hay paquetes de stickers",
+			"packNameLabel": "Nombre del paquete de stickers",
+			"packName": {
+				"placeholder": "Introduce el nombre del paquete de stickers"
+			},
+			"packDescriptionLabel": "Descripción",
+			"packDescription": {
+				"placeholder": "Introduce la descripción"
+			},
+			"stickerNameLabel": "Nombre de la etiqueta",
+			"stickerName": {
+				"placeholder": "Introduce el nombre de la pegatina"
+			},
+			"selectPack": "Elige un paquete de stickers",
+			"selectPackOption": {
+				"textContent": "Por favor selecciona un paquete de stickers"
+			},
+			"selectImage": "Seleccionar imagen",
+			"tagsLabel": "Etiquetas (separadas por comas)",
+			"tags": {
+				"placeholder": "Por ejemplo: lindo, emoticono, animal."
+			},
+			"author": "autor",
+			"authorLabel": "Autor: ${author}",
+			"stickerCount": "${count} stickers",
+			"badgeMine": "mío",
+			"noDescription": "Sin descripción por ahora",
+			"noStickersInPack": "Aún no hay stickers",
+			"deletePack": "Eliminar paquete de stickers",
+			"public": "público",
+			"private": "privado",
+			"animated": "publicaciones",
+			"static": "estático",
+			"addTag": "Agregar etiqueta",
+			"defaultPackName": "Paquete de emoticones predeterminado",
+			"defaultPackDescription": "Pegatinas de emoticonos proporcionadas por el sistema de forma predeterminada",
+			"unnamedPack": "Paquete de stickers sin nombre",
+			"importPackName": "mi colección",
+			"importPackDescription": "Pegatinas guardadas de mensajes",
+			"nameRequired": "Por favor ingresa el nombre del paquete de stickers",
+			"stickerNameRequired": "Por favor ingresa el nombre de la etiqueta",
+			"selectPackRequired": "Por favor selecciona un paquete de stickers",
+			"fileRequired": "Por favor selecciona el archivo de imagen",
+			"loadDetailFailed": "No se pudieron cargar los detalles del paquete de stickers",
+			"deleteConfirm": "¿Estás seguro de que deseas eliminar permanentemente este paquete de stickers? Se eliminarán todas las stickers y esta acción es irreversible.",
+			"errors": {
+				"loadFailed": "No se pudo cargar el paquete de stickers",
+				"uploadFailed": "No se pudieron cargar stickers",
+				"installFailed": "La instalación falló",
+				"uninstallFailed": "Falló la desinstalación",
+				"createFailed": "No se pudo crear el paquete de stickers",
+				"deleteFailed": "Error al eliminar"
+			},
+			"success": {
+				"uploaded": "Calcomanías cargadas correctamente",
+				"installed": "Instalación exitosa",
+				"uninstalled": "Desinstalado correctamente",
+				"created": "Paquete de stickers creado correctamente",
+				"deleted": "Eliminar correctamente"
+			}
 		}
 	},
 	"easynew": {
@@ -3759,433 +3250,6 @@
 			}
 		}
 	},
-	"userSettings": {
-		"title": "Ajustes de usuario",
-		"PageTitle": "Ajustes de usuario",
-		"description": "Cuide los detalles de su identidad de fount. Administre su perfil, proteja su acceso y vea los dispositivos conectados. Un santuario tranquilo para su cuenta.",
-		"shell": {
-			"unauthorized": "Es necesario iniciar sesión.",
-			"responseNotJson": "El servidor devolvió contenido que no se pudo analizar.",
-			"unexpectedError": "La solicitud falló."
-		},
-		"errors": {
-			"accountNotFound": "Cuenta no encontrada."
-		},
-		"userInfo": {
-			"title": "Información del usuario",
-			"usernameLabel": "Nombre de usuario:",
-			"creationDateLabel": "Fecha de creación de la cuenta:",
-			"folderSizeLabel": "Tamaño de datos de usuario:",
-			"folderPathLabel": "Ruta de datos de usuario:",
-			"copyPathButton": {
-				"title": "copiar ruta"
-			},
-			"copyPathButtonIcon": {
-				"alt": "icono de copia"
-			},
-			"copiedAlert": "¡Ruta copiada al portapapeles!",
-			"copyPathFailed": "No se puede copiar la ruta al portapapeles."
-		},
-		"changePassword": {
-			"title": "Cambiar contraseña",
-			"currentPasswordLabel": "Contraseña actual:",
-			"newPasswordLabel": "Nueva contraseña:",
-			"confirmNewPasswordLabel": "Confirmar nueva contraseña:",
-			"submitButton": "Cambiar contraseña",
-			"errorMismatch": "Las nuevas contraseñas no coinciden.",
-			"success": "Contraseña cambiada correctamente.",
-			"missingFields": "Por favor complete su contraseña actual y su nueva contraseña.",
-			"invalidCurrent": "La contraseña actual es incorrecta."
-		},
-		"renameUser": {
-			"title": "Cambiar nombre de usuario",
-			"newUsernameLabel": "Nuevo nombre de usuario:",
-			"submitButton": "Cambiar nombre de usuario",
-			"confirmMessage": "¿Seguro que quieres cambiar tu nombre de usuario? Esto requerirá que vuelvas a iniciar sesión.",
-			"success": "Nombre de usuario cambiado a \"${newUsername}\" correctamente. Ahora se cerrará la sesión.",
-			"missingParams": "Por favor complete el nuevo nombre de usuario y contraseña.",
-			"wrongPassword": "La contraseña es incorrecta.",
-			"mustDiffer": "El nuevo nombre de usuario debe ser diferente del nombre de usuario actual.",
-			"taken": "Este nombre de usuario ya está en uso.",
-			"moveFailed": "No se pudo cambiar el nombre del directorio de datos del usuario: ${detail}. El nombre de usuario original ha sido restaurado."
-		},
-		"passkeys": {
-			"title": "Claves de seguridad y clave de acceso",
-			"description": "Después de la vinculación, puede iniciar sesión con una clave de seguridad o una clave de acceso nativa. Requiere uso bajo HTTPS o localhost; Primero agregue la clave en la configuración del usuario.",
-			"refreshButton": {
-				"title": "Actualizar lista"
-			},
-			"refreshButtonIcon": {
-				"alt": "icono de actualización"
-			},
-			"nameLabel": "Observaciones (opcional)",
-			"nameInput": {
-				"placeholder": "Ejemplo: YubiKey para el trabajo"
-			},
-			"addButton": "Agregar clave de seguridad",
-			"noneFound": "Aún no hay claves de seguridad vinculadas.",
-			"itemDetails": "Añadida: ${created}",
-			"removeButton": "Eliminar",
-			"removeConfirm": "¿Seguro que desea eliminar esta clave? Tras eliminarla, no podrá iniciar sesión con ella.",
-			"removeSuccess": "Se eliminó la clave de seguridad.",
-			"addSuccess": "Se agregó clave de seguridad.",
-			"errorLoadLibrary": "No se puede cargar la biblioteca WebAuthn.",
-			"errorCancelled": "Añadiendo cancelado.",
-			"apiInvalidPassword": "Contraseña incorrecta.",
-			"apiMissingCredential": "Faltan credenciales de clave de acceso válidas.",
-			"apiRemoveParamsRequired": "Proporcione las credenciales y la contraseña que desea eliminar."
-		},
-		"userDevices": {
-			"title": "Dispositivos/Sesiones de usuario",
-			"noDevicesFound": "No se han encontrado dispositivos ni sesiones.",
-			"deviceInfo": "ID del dispositivo: ${deviceId}",
-			"thisDevice": "Este dispositivo",
-			"deviceDetails": "Última conexión: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "Revocar",
-			"revokeConfirm": "¿Seguro que quieres revocar el acceso para este dispositivo/sesión?",
-			"revokeSuccess": "Dispositivo/Sesión revocado correctamente.",
-			"revokeMissingParams": "Proporcione el dispositivo y la contraseña de sesión que desea revocar.",
-			"revokeWrongPassword": "La contraseña es incorrecta.",
-			"listNotFound": "Lista de dispositivos no encontrada.",
-			"deviceNotFound": "No se encontró el dispositivo o la sesión.",
-			"refreshButton": {
-				"title": "Actualizar Lista"
-			},
-			"refreshButtonIcon": {
-				"alt": "Icono de Actualización"
-			}
-		},
-		"apiKeys": {
-			"title": "Clave de API",
-			"description": "Administre la clave API para aplicaciones externas.",
-			"input": {
-				"placeholder": "Nueva descripción clave"
-			},
-			"createButton": "crear",
-			"noKeysFound": "No se encontraron claves API.",
-			"keyDetails": "Descripción: ${description} | Creado en: ${createdAt} | Último usado: ${lastUsed}",
-			"neverUsed": "Nunca usado",
-			"noKeysForUser": "No se encontraron datos de clave API.",
-			"revokeWrongPassword": "La contraseña es incorrecta.",
-			"keyNotFound": "No se encontró la clave API.",
-			"revokeMissingJti": "Por favor especifique la clave para revocar.",
-			"revokeMissingPassword": "Revocar una clave requiere una contraseña.",
-			"verifyMissingApiKey": "Proporciona una clave API.",
-			"revokeButton": "Revocar",
-			"revokeConfirm": "¿Estás seguro de que quieres revocar esta clave API?",
-			"revokeSuccess": "La clave API ha sido revocada con éxito.",
-			"errorDescriptionRequired": "Se requiere una descripción.",
-			"createSuccess": "La clave API se creó con éxito.",
-			"refreshButton": {
-				"title": "Actualizar Lista"
-			},
-			"refreshButtonIcon": {
-				"alt": "Icono de Actualización"
-			}
-		},
-		"newApiKey": {
-			"title": "Se ha creado una nueva clave API",
-			"warning": "Copie su nueva clave API. ¡No podrás volver a verlo!",
-			"closeButton": "He copiado mi clave",
-			"copyButton": {
-				"title": "Copiar nueva clave API"
-			},
-			"copiedAlert": "¡Clave copiada al portapapeles!",
-			"copyKeyFailed": "No se puede copiar la clave al portapapeles."
-		},
-		"editorCommand": {
-			"title": "Comando del editor externo",
-			"description": "Configura el comando y la plantilla de argumentos para abrir archivos en un editor externo. Los marcadores rellenan la ruta del archivo, el número de línea y la columna.",
-			"editorPresetLabel": "Ajustes preestablecidos del editor",
-			"commandLabel": "Comando",
-			"argsTemplateLabel": "Plantilla de argumentos",
-			"argsTemplateHint": "Marcadores: \\${file} \\${line} \\${column}",
-			"presetOptionPathAvailable": "${label} (en PATH)",
-			"presetOptionPathUnavailable": "${label} (no está en PATH)",
-			"testPathInput": {
-				"placeholder": "Ruta de un archivo de prueba, p. ej. C:/work/project/src/main.mjs"
-			},
-			"testButton": "Probar apertura",
-			"saveButton": "Guardar configuración",
-			"saveSuccess": "Se guardó el comando del editor externo.",
-			"testPathRequired": "Introduce primero la ruta del archivo de prueba.",
-			"testSuccess": "Se ejecutó el comando para abrir el archivo en el editor."
-		},
-		"logout": {
-			"title": "Cerrar sesión",
-			"description": "Esto cerrará la sesión de tu cuenta en el dispositivo actual.",
-			"buttonText": "Cerrar sesión",
-			"confirmMessage": "¿Seguro que quieres cerrar la sesión?",
-			"successMessage": "Sesión cerrada correctamente. Redirigiendo a la página de inicio de sesión..."
-		},
-		"deleteAccount": {
-			"title": "Eliminar cuenta",
-			"warning": "Atención: Esta acción eliminará tu cuenta y todos tus datos de forma permanente y es irreversible.",
-			"submitButton": "Eliminar mi cuenta",
-			"confirmMessage1": "¡Atención! ¿Seguro que quieres eliminar tu cuenta permanentemente? Esta acción no se puede deshacer.",
-			"confirmMessage2": "Para confirmar la eliminación, introduce tu nombre de usuario \"${username}\":",
-			"usernameMismatch": "El nombre de usuario introducido no coincide con el actual. Se ha cancelado la eliminación.",
-			"success": "Cuenta eliminada correctamente. Ahora se cerrará la sesión.",
-			"missingPassword": "Por favor ingrese su contraseña.",
-			"wrongPassword": "La contraseña es incorrecta."
-		},
-		"passwordConfirm": {
-			"title": "Confirmar operación",
-			"message": "Para continuar, introduce tu contraseña actual:",
-			"passwordLabel": "Contraseña:",
-			"confirmButton": "Confirmar",
-			"cancelButton": "Cancelar"
-		},
-		"apiError": "Error en la solicitud de API: ${message}",
-		"generalError": "Ha ocurrido un error: ${message}",
-		"home_function_buttons": {
-			"settings": {
-				"title": "Ajustes",
-				"sub_items": {
-					"main": {
-						"title": "Configuración de Usuario"
-					}
-				}
-			}
-		}
-	},
-	"subfounts": {
-		"title": "subfounts - gestión de dispositivos peer-to-peer",
-		"pageTitle": "subfounts",
-		"description": "Administrar conexiones de founts de igual a igual",
-		"hostConnectionCode": {
-			"title": "Código de conexión del host",
-			"connectionCodeLabel": "Código de conexión (ID de igual)",
-			"passwordLabel": "contraseña",
-			"copyButton": "Copiar",
-			"regenerateButton": "Regenerar",
-			"infoMessage": "Comparta estas credenciales con clientes secundarios para establecer conexiones.",
-			"connectionCodeCopied": "El código de conexión se ha copiado al portapapeles.",
-			"passwordCopied": "Contraseña copiada al portapapeles",
-			"regenerateSuccess": "El código de conexión ha sido regenerado."
-		},
-		"infra": {
-			"title": "Bien público de la red",
-			"description": "Elige si los subfounts conectados actúan como nodos de bien público para toda la red fount. Al desactivarlo, siguen aceptando ejecución remota desde este host, pero ya no ayudan en la capa de red.",
-			"capabilityRelay": "Participar en el reenvío multi-salto del overlay para que otros nodos se comuniquen cuando falle el enlace directo.",
-			"capabilityMailbox": "Conservar la entrega sin conexión para que el otro nodo pueda recibir mensajes privados al volver a estar en línea.",
-			"hostPriority": "Al activarlo, priorizar este host: enrutar con pesos según su tabla de reputación y fijarlo con la máxima prioridad.",
-			"toggleLabel": "Hacer que los subfounts contribuyan al bien público",
-			"enabledToast": "Activado: los subfounts contribuyen al bien público de la red (este host primero)",
-			"disabledToast": "Desactivado: los subfounts ya no contribuyen al bien público de la red"
-		},
-		"connectedSubfounts": {
-			"title": "Subfount conectada",
-			"noSubfountsConnected": "No hay ninguna Subfount conectada",
-			"table": {
-				"id": "ID",
-				"description": "Observación",
-				"deviceId": "ID del dispositivo",
-				"connectedAt": "tiempo de conexión",
-				"status": "estado",
-				"actions": "Acciones",
-				"connected": "Conectado",
-				"disconnected": "Desconectado",
-				"save": "guardar",
-				"na": "N / A"
-			},
-			"descriptionSaved": "Nota guardada",
-			"descriptionSaveFailed": "No se pudo guardar la nota: ${message}"
-		},
-		"codeExecution": {
-			"title": "ejecución de código",
-			"description": "Ejecutar código JavaScript en la Subfount seleccionada",
-			"selectSubfountLabel": "Seleccionar Subfount",
-			"hostOption": "Anfitrión (ID: ${id})",
-			"subfountOption": "Extensión ${id}${deviceId}",
-			"scriptLabel": "Código JavaScript",
-			"executeButton": "ejecutar",
-			"executing": "Ejecutando...",
-			"noSubfountSelected": "Por favor seleccione una Subfount primero",
-			"noScriptProvided": "Por favor ingresa el código a ejecutar",
-			"executionSuccess": "Ejecución del código exitosa",
-			"executionFailed": "La ejecución del código falló: ${message}",
-			"selectSubfount": "Selecciona el Sub 0 para ejecutar el código..."
-		},
-		"downloadClient": {
-			"title": "Descargar cliente de Subfount",
-			"description": "Descargue el script del cliente Subfount independiente para ejecutarlo en el dispositivo remoto.",
-			"downloadButton": "Descargar Subfount.mjs"
-		},
-		"errors": {
-			"loadConnectionCodeFailed": "No se pudo cargar el código de conexión: ${message}",
-			"regenerateConnectionCodeFailed": "No se pudo regenerar el código de conexión: ${message}",
-			"loadSettingsFailed": "No se pudo cargar la configuración de bien público: ${message}",
-			"saveSettingsFailed": "No se pudo guardar la configuración de bien público: ${message}",
-			"generalError": "Se produjo un error: ${message}"
-		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "En desarrollo",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "subdispositivo",
-						"sub_items": {
-							"main": {
-								"title": "Administrar subdispositivos"
-							}
-						}
-					}
-				}
-			}
-		}
-	},
-	"languageSettings": {
-		"title": "Configuración de idiomas",
-		"pageTitle": "Configuración de idioma",
-		"description": "Administre sus preferencias de idioma para la aplicación de fount. Personaliza tu experiencia con las opciones de idioma disponibles.",
-		"pageDescription": "Administre sus preferencias de idioma aquí. Los idiomas en la lista tendrán prioridad sobre la configuración del navegador en orden.",
-		"availableLanguages": "Idiomas disponibles",
-		"preferredLanguages": "Lista de idiomas prioritarios",
-		"resetButton": "Reiniciar",
-		"saveButton": "Guardar",
-		"select": {
-			"placeholder": "Selecciona un idioma..."
-		},
-		"search": {
-			"placeholder": "Buscar idioma..."
-		},
-		"noPreferredLanguages": "No hay lenguaje previo todavía. Se utilizará la configuración predeterminada del navegador.",
-		"moveUpButton": {
-			"aria-label": "subir",
-			"alt": "icono de subir"
-		},
-		"moveDownButton": {
-			"aria-label": "bajar",
-			"alt": "icono de bajar"
-		},
-		"deleteLocaleButton": {
-			"aria-label": "Eliminar este idioma",
-			"alt": "Icono de eliminar"
-		},
-		"savedMessage": "¡La configuración de idioma se ha guardado!",
-		"resetMessage": "¡La configuración del idioma se ha restablecido!",
-		"fetchLocalesFailed": "¡No pudo obtener idiomas disponibles!",
-		"home_function_buttons": {
-			"settings": {
-				"title": "Ajustes",
-				"sub_items": {
-					"main": {
-						"title": "Configuración de idiomas"
-					}
-				}
-			}
-		}
-	},
-	"themeManage": {
-		"title": "Gestión de temas",
-		"description": "Elija la estética que refleje su estado de ánimo o su historia. Obtenga una vista previa y seleccione entre una paleta de temas, cada uno de los cuales ofrece un ambiente diferente para sus interacciones con founts. Tu mundo, tu estilo.",
-		"instruction": "¡Elige un tema!",
-		"search": {
-			"placeholder": "Buscar temas...",
-			"noResult": "No se encontraron temas coincidentes."
-		},
-		"createButton": "+ Crear nuevo tema",
-		"preview": {
-			"editButton": {
-				"title": "Editar"
-			},
-			"editButtonIcon": {
-				"alt": "Icono de edición"
-			},
-			"deleteButton": {
-				"title": "Eliminar"
-			},
-			"deleteButtonIcon": {
-				"alt": "Icono de eliminar"
-			},
-			"cloneButton": {
-				"title": "Clonar"
-			},
-			"cloneButtonIcon": {
-				"alt": "Icono de clonar"
-			}
-		},
-		"editor": {
-			"title": "Editor de temas",
-			"cancelButton": "Cancelar",
-			"saveApplyButton": "Guardar y aplicar",
-			"themeName": "Nombre del tema (ID)",
-			"autoPaletteTitle": "Corrección automática de color desde imágenes",
-			"autoPaletteInstruction": "Haga clic en un color de arriba para rellenar automáticamente los colores primarios/secundarios/acento/neutrales.",
-			"coreColors": "Colores principales",
-			"baseBackground": "Básicos y fondo",
-			"variables": "Variables",
-			"borderRadius": "Radio del borde (--rounded-box)",
-			"borderWidth": "Ancho del borde (--border-btn)",
-			"advancedCustomization": "Personalización avanzada",
-			"customCSS": "CSS personalizado (anulación)",
-			"customMjsScript": "Script MJS personalizado (opcional)",
-			"mjsSyntaxHint": "Utilice [sintaxis async-eval](${asyncDocLink}). Devuelve un objeto que contiene las funciones `load()` y `unload()`.",
-			"themeIdRequired": "Se requiere ID de tema",
-			"newThemeName": "Nuevo nombre del tema:",
-			"deleteConfirm": " ¿Estás seguro de que quieres eliminar el tema ${id}?",
-			"saved": "¡Guardado!",
-			"failedToSave": "Error al guardar",
-			"failedToDelete": "No se pudo eliminar el tema: ${message}",
-			"failedToClone": "No se pudo copiar el tema: ${message}"
-		},
-		"themes": {
-			"auto": "Automático",
-			"light": "Claro",
-			"dark": "Oscuro",
-			"cupcake": "Cupcake",
-			"bumblebee": "Bumblebee",
-			"emerald": "Esmeralda",
-			"corporate": "Corporativo",
-			"synthwave": "Synthwave",
-			"retro": "Retro",
-			"cyberpunk": "Ciberpunk",
-			"valentine": "San Valentín",
-			"halloween": "Halloween",
-			"garden": "Jardín",
-			"forest": "Bosque",
-			"aqua": "Aqua",
-			"lofi": "Lo-fi",
-			"pastel": "Pastel",
-			"fantasy": "Fantasía",
-			"wireframe": "Wireframe",
-			"black": "Negro",
-			"luxury": "Lujo",
-			"dracula": "Drácula",
-			"cmyk": "CMYK",
-			"autumn": "Otoño",
-			"business": "Negocios",
-			"acid": "Acid",
-			"lemonade": "Limonada",
-			"night": "Noche",
-			"coffee": "Café",
-			"winter": "Invierno",
-			"dim": "Tenue",
-			"nord": "Nórdico",
-			"sunset": "Atardecer",
-			"caramellatte": "Caramel Latte",
-			"abyss": "Abismo",
-			"silk": "Seda"
-		},
-		"achievements": {
-			"change_theme": {
-				"name": "¡Un cambio de look!",
-				"description": "La fount tenía un nuevo aspecto y un ambiente completamente nuevo.",
-				"locked_description": "Cambia el tema una vez."
-			}
-		},
-		"home_function_buttons": {
-			"settings": {
-				"title": "Ajustes",
-				"sub_items": {
-					"switchTheme": {
-						"title": "Cambiar Tema"
-					}
-				}
-			}
-		}
-	},
 	"part_config": {
 		"title": "Configuración de Componente",
 		"pageTitle": "Configuración de Componente",
@@ -4427,6 +3491,84 @@
 			}
 		}
 	},
+	"discord_bots": {
+		"title": "Bots de Discord",
+		"description": "Dale voz a tus compañeros de fount en los bulliciosos pasillos de Discord. Configure su presencia, administre sus operaciones y permítales unir mundos, un servidor a la vez.",
+		"cardTitle": "Bots de Discord",
+		"botSelectDropdown": {
+			"placeholder": "Elige un bot"
+		},
+		"botSearch": {
+			"placeholder": "Buscar bot..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Selecciona un rol"
+		},
+		"charSearch": {
+			"placeholder": "Buscar personajes..."
+		},
+		"configCard": {
+			"title": "Configuración del Bot",
+			"labels": {
+				"character": "Personaje",
+				"apiKey": "Clave de API de Discord",
+				"config": "Configuración"
+			},
+			"apiKeyInput": {
+				"placeholder": "Introduce la clave de API de Discord"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Alternar la visibilidad de las claves API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "Alternar visibilidad de la clave de API"
+			},
+			"buttons": {
+				"saveConfig": "Guardar Configuración",
+				"startBot": "Iniciar",
+				"stopBot": "Detener"
+			},
+			"charSelect": {
+				"placeholder": "Seleccionar rol"
+			}
+		},
+		"prompts": {
+			"newBotName": "Introduce un nuevo nombre para el bot:"
+		},
+		"buttons": {
+			"newBot": "Nuevo",
+			"deleteBot": "Eliminar"
+		},
+		"alerts": {
+			"configSaved": "Configuración guardada correctamente",
+			"botExists": "Ya existe un bot con el nombre \"${botname}\". Por favor, usa otro nombre.",
+			"unsavedChanges": "Tienes cambios sin guardar. ¿Quieres descartar estos cambios?",
+			"httpError": "Error HTTP",
+			"beforeUnload": "Tienes cambios sin guardar. ¿Seguro que quieres salir?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Llegando a la discordia",
+				"description": "Invoca a tu personaje al mundo de Discord.",
+				"locked_description": "Inicie Discord Bot una vez."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Configuración del Bot de Discord"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Configuración del Bot de Discord"
+			}
+		}
+	},
 	"wechat_bots": {
 		"title": "Bot de WeChat",
 		"description": "Usa un personaje fount como bot de WeChat: vincula un rol, gestiona bots y chatea en WeChat.",
@@ -4518,83 +3660,584 @@
 			"needBot": "Elige primero un bot de la lista o crea uno con «Nuevo»."
 		}
 	},
-	"discord_bots": {
-		"title": "Bots de Discord",
-		"description": "Dale voz a tus compañeros de fount en los bulliciosos pasillos de Discord. Configure su presencia, administre sus operaciones y permítales unir mundos, un servidor a la vez.",
-		"cardTitle": "Bots de Discord",
-		"botSelectDropdown": {
-			"placeholder": "Elige un bot"
-		},
-		"botSearch": {
-			"placeholder": "Buscar bot..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "Selecciona un rol"
-		},
-		"charSearch": {
-			"placeholder": "Buscar personajes..."
-		},
-		"configCard": {
-			"title": "Configuración del Bot",
-			"labels": {
-				"character": "Personaje",
-				"apiKey": "Clave de API de Discord",
-				"config": "Configuración"
-			},
-			"apiKeyInput": {
-				"placeholder": "Introduce la clave de API de Discord"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "Alternar la visibilidad de las claves API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "Alternar visibilidad de la clave de API"
-			},
-			"buttons": {
-				"saveConfig": "Guardar Configuración",
-				"startBot": "Iniciar",
-				"stopBot": "Detener"
-			},
-			"charSelect": {
-				"placeholder": "Seleccionar rol"
-			}
-		},
-		"prompts": {
-			"newBotName": "Introduce un nuevo nombre para el bot:"
-		},
-		"buttons": {
-			"newBot": "Nuevo",
-			"deleteBot": "Eliminar"
-		},
-		"alerts": {
-			"configSaved": "Configuración guardada correctamente",
-			"botExists": "Ya existe un bot con el nombre \"${botname}\". Por favor, usa otro nombre.",
-			"unsavedChanges": "Tienes cambios sin guardar. ¿Quieres descartar estos cambios?",
-			"httpError": "Error HTTP",
-			"beforeUnload": "Tienes cambios sin guardar. ¿Seguro que quieres salir?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Llegando a la discordia",
-				"description": "Invoca a tu personaje al mundo de Discord.",
-				"locked_description": "Inicie Discord Bot una vez."
-			}
-		},
+	"social": {
+		"title": "Plaza",
+		"description": "Social P2P abierto: publicaciones, seguimientos y archivos compartidos",
+		"bootstrapFailed": "La inicialización de la interfaz social falló: ${error}",
 		"home_function_buttons": {
-			"bot_related": {
-				"title": "Bots",
-				"sub_items": {
-					"manage": {
-						"title": "Configuración del Bot de Discord"
-					}
+			"main": {
+				"title": "Plaza"
+			}
+		},
+		"nav": {
+			"feed": "Inicio",
+			"explore": "Explorar",
+			"notifications": "Bandeja de entrada",
+			"saved": "Guardados",
+			"drafts": "Borradores",
+			"profile": "Mi perfil",
+			"videos": "Vídeos cortos",
+			"live": "En directo"
+		},
+		"settings": {
+			"title": "Ajustes sociales",
+			"back": {
+				"aria-label": "Información de devolución"
+			},
+			"privacyTitle": "Privacidad y descubrimiento",
+			"privacyHint": "Controla si las cuentas aparecen en Descubrimiento y Recomendaciones.",
+			"tasteTitle": "Recomendaciones y preferencias",
+			"tasteHint": "Ajuste los límites de privacidad y el nombre de la etiqueta \"Recomendado para usted\".",
+			"mutedKeywordsTitle": "Bloquear palabras y etiquetas",
+			"mutedKeywordsHint": "Las publicaciones que incluyan texto del cuerpo, advertencias de contenido o etiquetas se ocultarán de las novedades, la exploración, la búsqueda y las notificaciones. Solo guardado localmente.",
+			"mutedKeywordsMatchTags": "Emparejar etiquetas al mismo tiempo",
+			"mutedKeywordsAdd": "añadir",
+			"mutedKeywordsRemove": {
+				"title": "Eliminar palabras bloqueadas"
+			},
+			"mutedKeywordsEmpty": "Aún no se han agregado palabras de bloqueo",
+			"autoTranslateTitle": "traducción automática",
+			"autoTranslateHint": "Cuando está activado, las publicaciones en idiomas extranjeros solicitarán traducción automáticamente y se podrán cambiar al texto original.",
+			"autoTranslateEnable": "Traducir automáticamente publicaciones en idiomas distintos al tuyo",
+			"safetyTitle": "Seguridad y blindaje",
+			"safetyHint": "Administrar listas bloqueadas y ocultas.",
+			"mutedKeywords": {
+				"placeholder": "Introduzca palabras clave o #etiquetas"
+			},
+			"taste": {
+				"rebuild": "Reconstruir preferencias",
+				"privacyPublishPreferences": "Denominación de etiquetas públicas y descubrimiento de fusiones",
+				"privacyPublishPreferencesHint": "Al desactivarlo, tus amigos no verán tus nombres de etiquetas ni declaraciones de fusión, y tampoco podrán aportar consenso.",
+				"privacyPublishReactions": "Gustos y disgustos del público",
+				"privacyPublishReactionsHint": "Después del Cerrar, el cartel no recibirá tus Me gusta/No me gusta, tus reacciones no se incluirán en las recomendaciones de los demás y ya no promocionarás la publicación para difundirla nuevamente.",
+				"empty": "Aún no hay una etiqueta de preferencia, se agrupará automáticamente después de más Me gusta/No me gusta.",
+				"weight": "Peso ${weight}",
+				"save": "guardar",
+				"name": {
+					"placeholder": "nombre para mostrar local"
+				}
+			},
+			"blocklist": {
+				"title": "lista negra",
+				"hiddenTitle": "Ocultar lista",
+				"empty": "Aún no hay entradas bloqueadas u ocultas",
+				"unblock": "Desatascar",
+				"unhide": "Mostrar",
+				"scopeEntity": "entidad",
+				"scopeSubject": "cuerpo principal"
+			}
+		},
+		"composer": {
+			"placeholder": "¿En qué estás pensando? Admite Markdown (dialecto 0), ingresa @ para mencionar",
+			"publish": "Publicar",
+			"saveDraft": "guardar borrador",
+			"fab": {
+				"title": "Escribir actualizaciones",
+				"aria-label": "Escribir actualizaciones"
+			},
+			"contentWarning": {
+				"placeholder": "Advertencia de contenido (opcional)"
+			},
+			"sensitiveMedia": "máscara de sensibilidad a los medios",
+			"editImage": "editar",
+			"editCrop": "Cultivo",
+			"editMosaic": "codificación",
+			"editBrush": "cepillar",
+			"editApply": "solicitud",
+			"editCancel": "Cancelar",
+			"replyPolicyEveryone": "Cualquiera puede responder",
+			"replyPolicyFollowers7d": "Seguidores por más de 7 días.",
+			"replyPolicyAuthorFollows": "gente que sigo",
+			"replyPolicyLabel": "¿Quién puede responder?",
+			"replyDisplayAll": "Mostrar todas las respuestas",
+			"replyDisplayFeaturedOnly": "Solo respuestas seleccionadas",
+			"replyDisplayLabel": "Responder para mostrar",
+			"scheduleLabel": "Programar publicación",
+			"scheduleSuccess": "La publicación se ha agregado a la cola programada.",
+			"emojiButton": {
+				"title": "expresión",
+				"aria-label": "expresión"
+			},
+			"mediaButton": {
+				"title": "Agregar medios",
+				"aria-label": "Agregar medios"
+			},
+			"pollButton": {
+				"title": "Iniciar una votación",
+				"aria-label": "Iniciar una votación"
+			},
+			"cwToggle": {
+				"title": "advertencia de contenido",
+				"aria-label": "advertencia de contenido"
+			},
+			"advancedToggle": {
+				"title": "Más opciones",
+				"aria-label": "Más opciones"
+			},
+			"media": {
+				"placeholder": "Descripción de la imagen (alt)"
+			},
+			"visibility": {
+				"label": "rango visible",
+				"public": "público",
+				"unlisted": "No listado públicamente",
+				"followers": "solo seguidores",
+				"followers7d": "Visible después de seguir durante 7 días.",
+				"followers30d": "Visible después de seguir durante 30 días.",
+				"selected": "Visible para personas específicas",
+				"private": "Visible solo para ti",
+				"allowLabel": "personas visibles",
+				"exceptLabel": "excluir personas",
+				"allow": {
+					"placeholder": "Entidad de personas visibles Separadas por hash, espacio o coma"
+				},
+				"except": {
+					"placeholder": "Quién no debe mostrarlo (opcional)"
 				}
 			}
 		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Configuración del Bot de Discord"
+		"feed": {
+			"refresh": "Actualizar noticias",
+			"newPosts": "Hay mensajes nuevos, haz clic para ver",
+			"tabLatest": "Recientes",
+			"tabForYou": "recomendar",
+			"repostedBy": "${author} retuiteado",
+			"decryptFailed": "No se puede descifrar esta publicación",
+			"revealContent": "Mostrar contenido",
+			"sensitiveMedia": "medios sensibles",
+			"showMore": "Expandir",
+			"showLess": "cerca",
+			"replayDivider": "Lectura terminada, navegar de nuevo",
+			"trending": {
+				"title": "temas candentes",
+				"postCount": {
+					"title": "${n} publicaciones"
+				},
+				"scopeLocal": "local",
+				"scopeNearby": "cercano",
+				"empty": "Aún no hay temas candentes"
 			}
+		},
+		"explore": {
+			"accounts": "Cuenta recomendada",
+			"posts": "últimas publicaciones",
+			"mediaOnly": "solo medios"
+		},
+		"notifications": {
+			"reply": "${author} respondió a tu publicación",
+			"mention": "${author} te @@ en el feed",
+			"like": "${author} me gustó tu publicación",
+			"repost": "${author} retuiteó tu publicación",
+			"follow": "${author} te sigue",
+			"care_post": "${author} publicó una nueva actualización (preocupación especial)",
+			"poll_closed": "La votación terminó por ${author}",
+			"post_note": "${author} información agregada a tu publicación",
+			"live_started": "${author} comenzó la transmisión en vivo",
+			"view": "Controlar",
+			"markAllRead": "Marcar todo como leído"
+		},
+		"saved": {
+			"all": "todo",
+			"unfiled": "No archivado",
+			"createFolder": {
+				"title": "Crear nueva carpeta",
+				"aria-label": "Crear nueva carpeta"
+			},
+			"createFolderPrompt": "nombre de la carpeta",
+			"pickFolderTitle": "Añadir a favoritos",
+			"confirm": "confirm",
+			"cancel": "Cancelar",
+			"remove": "Eliminar favoritos",
+			"renameFolder": "Rebautizar",
+			"renameFolderPrompt": "Nuevo nombre de carpeta",
+			"deleteFolder": "eliminar carpeta",
+			"deleteFolderConfirm": "¿Eliminar carpeta? Las publicaciones allí se moverán a \"Sin archivar\".",
+			"searchEmpty": "No hay colección coincidente",
+			"folderEmpty": "Esta carpeta está vacía",
+			"emptyHint": "Haz clic en el marcador cuando navegue por las noticias para guardarlas aquí.",
+			"search": {
+				"placeholder": "Buscar favoritos…"
+			}
+		},
+		"drafts": {
+			"untitled": "(sin borrador de texto)",
+			"emptyHint": "Escriba algún contenido en el cuadro de publicación y haz clic en \"Guardar borrador\" para continuar editando la próxima vez.",
+			"saved": "Borrador guardado",
+			"deleted": "Borrador eliminado",
+			"delete": "Eliminar borrador",
+			"empty": "El borrador está vacío.",
+			"saveFailed": "No se pudo guardar el borrador: ${error}",
+			"loadFailed": "No se pudo abrir el borrador: ${error}",
+			"deleteFailed": "No se pudo eliminar el borrador: ${error}"
+		},
+		"profile": {
+			"edit": "Editar perfil",
+			"viewPosts": "Ver perfiles sociales",
+			"settingsBtn": {
+				"aria-label": "Ajustes sociales"
+			},
+			"mediaOnly": "[medios]",
+			"hideFromExplore": "Ocultar cuenta de la página de exploración",
+			"tabPosts": "publicaciones",
+			"tabAlbums": "álbum de fotos",
+			"tabLikes": "Me gusta",
+			"tabCabinets": "archivo",
+			"tabsLabel": {
+				"aria-label": "Secciones del perfil"
+			},
+			"cabinetsEmpty": "Actualmente no existen archivoes públicos",
+			"cabinetsFailed": "Error al cargar el archivo: ${error}",
+			"statsGroup": {
+				"aria-label": "Estadística"
+			},
+			"statsPosts": "publicaciones",
+			"statsFollowing": "siguiendo",
+			"statsFollowers": "seguidor",
+			"followingTitle": "siguiendo",
+			"followersTitle": "seguidor",
+			"albums": {
+				"create": "Crear nuevo álbum",
+				"edit": "Editar álbum",
+				"save": "guardar",
+				"cancel": "Cancelar",
+				"back": "Volver al álbum",
+				"empty": "Aún no hay álbum",
+				"emptyPosts": "Aún no hay publicaciones en el álbum.",
+				"name": "Nombre del álbum",
+				"description": "Descripción del álbum",
+				"deleteLinks": "Eliminar álbum (conservar publicaciones)",
+				"deleteWithPosts": "Eliminar álbum y eliminar publicación",
+				"pickerLabel": "Añadir al álbum",
+				"defaultName": "Álbum predeterminado"
+			}
+		},
+		"video": {
+			"view": {
+				"aria-label": "vídeo corto"
+			},
+			"empty": "Aún no hay vídeo corto",
+			"emptyHint": "No hay publicaciones con videos en las siguientes personas o plazas públicas. ¿Intentas publicar una actualización en vídeo?",
+			"compose": "Ve a publicar un video",
+			"back": {
+				"aria-label": "Volver a noticias"
+			},
+			"mute": {
+				"aria-label": "silenciar"
+			},
+			"unmute": {
+				"aria-label": "Ausente de silenciar"
+			},
+			"unavailable": "No se puede reproducir el vídeo",
+			"closeReplies": {
+				"aria-label": "Cerrar comentarios"
+			}
+		},
+		"live": {
+			"empty": "Aún no hay transmisión en vivo",
+			"viewers": "${n} personas vieron",
+			"likes": "${n} me gusta",
+			"local": "local",
+			"hall": "Sala de retransmisiones en directo",
+			"back": {
+				"title": "Volver a noticias",
+				"aria-label": "Volver a noticias"
+			},
+			"danmakuSend": "enviar",
+			"postWatch": "Introduce a la transmisión en vivo",
+			"postEnded": "La transmisión en vivo ha terminado.",
+			"postEndedStats": "Visto por ${viewers} · ${likes} Me gustó · ${duration}",
+			"link": {
+				"invite": "Invitar a la conexión",
+				"needPeer": "Complete la entidad paritariaHash:liveId",
+				"invited": "Se ha enviado la invitación en línea.",
+				"linked": "Conectado",
+				"peer": {
+					"placeholder": "Entidad parHash:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "Empezar a transmitir",
+				"open": "Ir a la transmisión",
+				"mediaAv": "Audio y vídeo",
+				"mediaAudio": "audio puro",
+				"mediaVideo": "imagen pura",
+				"mediaWhip": "Transmisión push WHIP (como OBS)",
+				"whipUrl": "dirección látigo",
+				"whipToken": "Ficha al portador",
+				"whipWaiting": "Esperando la conexión de transmisión WHIP (se puede usar software de transmisión como OBS)…",
+				"start": "Iniciar transmisión en vivo",
+				"stop": "Detener transmisión en vivo",
+				"started": "La transmisión en vivo ha comenzado.",
+				"stopped": "La transmisión en vivo se ha detenido.",
+				"titleInput": {
+					"placeholder": "Título en vivo (opcional)"
+				}
+			},
+			"danmaku": {
+				"placeholder": "Di algo..."
+			}
+		},
+		"search": {
+			"placeholder": "Busca actualizaciones, usuarios o #temas (mínimo 2 palabras)",
+			"open": {
+				"aria-label": "buscar"
+			},
+			"submit": "buscar",
+			"clear": "Claro",
+			"empty": "No hay publicaciones coincidentes",
+			"tooShort": "Introduce al menos 2 caracteres",
+			"usersTitle": "usuario",
+			"postsTitle": "publicaciones",
+			"usersEmpty": "Ningún usuario coincidente",
+			"pinAlias": "Establecer como alias",
+			"trustScore": "Confianza ${score}",
+			"viewTitle": "buscar",
+			"loading": "Búsqueda…",
+			"filterAuthor": {
+				"placeholder": "autor"
+			},
+			"filterMediaAll": "Todos los medios",
+			"filterMediaImage": "imagen",
+			"filterMediaVideo": "video",
+			"filterTag": {
+				"placeholder": "#Etiqueta"
+			},
+			"sortRecent": "Recientes",
+			"sortPopular": "Popular",
+			"scopeLocal": "local",
+			"scopeNearby": "cercano"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "Cerrar"
+			}
+		},
+		"actions": {
+			"like": "Me gusta",
+			"unlike": "Quitar me gusta",
+			"dislike": "No me gusta",
+			"undislike": "Cancelar no me gusta",
+			"repost": "Repostear",
+			"quote": "Cita",
+			"delete": "borrar",
+			"edit": "editar",
+			"save": "Favoritos",
+			"saved": "Coleccionado",
+			"translate": "traducir",
+			"dm": "enviar mensaje privado",
+			"block": "Bloquear",
+			"hide": "ocultar",
+			"mute": "silenciar",
+			"follow": "siguiendo",
+			"following": "Ya estoy siguiendo",
+			"care": "preocupación especial",
+			"careRemove": "Cancelar cuidados especiales",
+			"careAdded": "Ya se agregó preocupación especial",
+			"careRemoved": "Atención especial cancelada",
+			"setAlias": "Establecer alias",
+			"setAliasPrompt": "Establezca un alias local (déjalo en blanco para borrarlo):",
+			"aliasSaved": "Alias ​​actualizado",
+			"replies": "Comentario",
+			"copyLink": "Copiar enlace",
+			"downloadHtml": "Descargar HTML",
+			"copied": "Copiado",
+			"more": {
+				"aria-label": "Más"
+			},
+			"share": "compartir",
+			"likeFailed": "No me gustó: ${error}",
+			"dislikeFailed": "No se pudo No me gusta: ${error}",
+			"repostFailed": "Error de reenvío: ${error}",
+			"replyFailed": "Respuesta fallida: ${error}",
+			"followFailed": "Seguimiento fallido: ${error}",
+			"saveFailed": "Error de recopilación: ${error}",
+			"blockFailed": "No se pudo bloquear: ${error}",
+			"hideFailed": "No se pudo ocultar: ${error}",
+			"muteFailed": "Error de silencio: ${error}",
+			"deleteFailed": "Eliminación fallida: ${error}"
+		},
+		"post": {
+			"edited": "Editado",
+			"editPrompt": "Editar texto de publicación",
+			"editHistory": "Editar historial",
+			"editHistoryEmpty": "Sin versiones anteriores",
+			"loading": "cargando…",
+			"notFound": "La publicación no existe o no es visible",
+			"loadFailed": "Error al cargar, inténtelo de nuevo más tarde",
+			"detailTitle": "Correo",
+			"back": "Volver"
+		},
+		"reply": {
+			"context": "Responder ${author}"
+		},
+		"notes": {
+			"label": "suplemento del lector",
+			"add": "Información complementaria",
+			"prompt": "Escribe un suplemento para el lector (nota comunitaria)",
+			"listTitle": "Toda la información adicional",
+			"helpful": "funciona",
+			"unhelpful": "inútil",
+			"more": "Todos los ${n} artículos",
+			"empty": "Aún no hay información adicional"
+		},
+		"poll": {
+			"multi": "Permitir múltiples selecciones",
+			"apply": "Aplicar votación",
+			"closed": "La votación ha terminado.",
+			"deadline": "Plazo: ${deadline}",
+			"options": {
+				"placeholder": "Una opción por línea (mínimo 2 artículos)"
+			}
+		},
+		"aside": {
+			"suggested": "Recomendar atención"
+		},
+		"groupRef": {
+			"linking": "Conectar grupo de chat",
+			"clear": "Desasociar",
+			"pick": "Conectar grupo/canal de chat…"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "Filtrado de bandeja de entrada"
+			},
+			"tabs": {
+				"all": "todo",
+				"mention": "mencionar",
+				"reply": "responder",
+				"like": "elogio",
+				"follow": "siguiendo",
+				"repost": "Repostear"
+			},
+			"aggregated": {
+				"like": "A ${author1}, ${author2} y ${count} personas les gustó tu publicación.",
+				"likeTwo": "A ${author1} y ${author2} le gustó tu publicación.",
+				"repost": "${author1}, ${author2} y ${count} personas retuitearon tu publicación",
+				"repostTwo": "${author1} y ${author2} retuitearon tu publicación",
+				"follow": "${author1}, ${author2} y ${count} personas te siguen",
+				"followTwo": "${author1} y ${author2} te siguen"
+			}
+		},
+		"replies": {
+			"placeholder": "Escribe una respuesta…",
+			"submit": "responder",
+			"empty": "Aún no hay respuesta",
+			"emptyHint": "Escribamos el primer artículo y comencemos la discusión."
+		},
+		"repost": {
+			"placeholder": "Añadir comentario retuiteado (opcional)…",
+			"submit": "Confirmar reenvío"
+		},
+		"quote": {
+			"quoting": "Citando",
+			"clear": "desreferenciación",
+			"viewOriginal": "Ver publicación original"
+		},
+		"a11y": {
+			"linkGroupSelect": "Conectarse a un grupo o canal de chat",
+			"postVisibility": "rango visible",
+			"postLang": "idioma del contenido",
+			"trendingHashtags": "temas candentes",
+			"saveFolderSelect": "carpeta favorita"
+		},
+		"translate": {
+			"label": "Traducción:"
+		},
+		"time": {
+			"justNow": "justo",
+			"minutesAgo": "Hace ${n} minutos",
+			"hoursAgo": "hace ${n} horas"
+		},
+		"empty": {
+			"feed": "Aún no hay actualizaciones. Sigue a algunas personas.",
+			"profilePosts": "Aún no hay noticias",
+			"following": "No seguir a nadie todavía",
+			"followers": "Aún no hay fans",
+			"notifications": "Aún no hay notificación",
+			"saved": "Aún no hay favoritos",
+			"drafts": "Aún no hay borrador",
+			"exploreAccounts": "Actualmente no hay cuentas recomendadas",
+			"explorePosts": "Aún no hay puestos de exploración.",
+			"likedPosts": "Aún no me gusta",
+			"noIdentity": "Configure la identidad federada en Chat antes de usar Social"
+		},
+		"topic": {
+			"follow": "Suscribirse",
+			"unfollow": "Darse de baja",
+			"empty": "Aún no hay publicaciones para este tema."
 		}
+	},
+	"cabinet": {
+		"title": "archivo",
+		"description": "Archivoes personales y compartidos P2P",
+		"openCabinets": {
+			"title": "Abrir lista de archivoes",
+			"aria-label": "Abrir lista de archivoes"
+		},
+		"closeCabinets": {
+			"title": "Cerrar",
+			"aria-label": "Cerrar"
+		},
+		"bootstrapFailed": "Error al inicializar el archivo: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "archivo"
+			}
+		},
+		"upload": "subir",
+		"uploadFolder": "Subir carpeta",
+		"newFolder": "Crear nueva carpeta",
+		"open": "Abierto",
+		"download": "Descargar",
+		"downloadZip": "Descargar carpeta",
+		"rename": "Rebautizar",
+		"copy": "Copiar",
+		"cut": "cortar",
+		"paste": "Pasta",
+		"pasteLink": "Pegar como enlace",
+		"selectAll": "Seleccionar todo",
+		"invert": "Contra elección",
+		"properties": "propiedad",
+		"delete": "borrar",
+		"back": {
+			"title": "Volver a la posición anterior",
+			"aria-label": "Volver a la posición anterior"
+		},
+		"cancel": "Cancelar",
+		"save": "guardar",
+		"showHidden": "mostrar ocultar",
+		"name": "nombre",
+		"descriptionField": "Descripción",
+		"attrHidden": "ocultar",
+		"attrSystem": "Sistema (la eliminación requiere confirmación)",
+		"previewUrl": "URL de vista previa",
+		"deletePreviewWithFile": "Eliminar vista previa al eliminar el archivo",
+		"folderPassword": "Contraseña de la carpeta (déjela en blanco, complétela para habilitar el cifrado)",
+		"unlockFolder": "Desbloquear carpeta cifrada",
+		"unlock": "Descubrir",
+		"unlockFailed": "Error de desbloqueo: ${error}",
+		"previewFailed": "Error en la generación de vista previa: ${error}",
+		"created": "Crear: ${stamp}",
+		"modified": "Modificar: ${stamp}",
+		"statusCount": "${count} artículos, ${selected} seleccionado",
+		"newCabinetPrompt": "Nuevo nombre del archivo",
+		"newFolderPrompt": "Nuevo nombre de carpeta",
+		"renamePrompt": "nuevo nombre",
+		"visibilityPrompt": "Visibilidad (pública/no listada/seguidores/privada/seleccionada)",
+		"cabinetActionPrompt": "Acción: cambiar nombre/eliminar/visibilidad",
+		"confirmDeleteCabinet": "¿¿Seguro que quieres eliminar este archivo?",
+		"confirmDelete": "¿Confirmar para eliminar los elementos seleccionados?",
+		"confirmDeleteSystem": "Se incluyen los archivos del sistema seleccionados. ¿Estás seguro de eliminarlos?",
+		"copied": "Copiado",
+		"cutDone": "cortar",
+		"undo": "Cancelar",
+		"redo": "Rehacer",
+		"newWindow": "Abrir nueva ventanaUbicación actual",
+		"goUp": "Volver al nivel anterior",
+		"brokenLink": "El enlace está roto: ${reason}",
+		"noDownload": "Sin contenido descargable",
+		"groupDownloadHint": "Obtenga archivos de grupo a través de archivos adjuntos de mensajes o enlaces de descarga posteriores.",
+		"remoteEntity": "entidad remota"
 	},
 	"browser_integration": {
 		"title": "Integración del navegador",
@@ -4719,6 +4362,48 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "Conecte el rol fount a editores compatibles (como Zed, JetBrains, Neovim) a través del protocolo de cliente de agente, configure claves y funciones de API e incorpore socios de IA al flujo de trabajo de desarrollo.",
+		"title": "Integración con IDE",
+		"heading": "Integración con IDE",
+		"instruction": "Utilice funciones de fount para ayudar a la programación en editores habilitados para ACP (como Zed, JetBrains, Neovim, etc.).",
+		"supportedEditorsTitle": "Editores y clientes compatibles",
+		"supportedEditorsIntro": "Los siguientes clientes trabajan con fount:",
+		"supportedEditorsLoading": "cargando…",
+		"supportedEditorsError": "No se pudo cargar la lista: ${message}",
+		"acpTitle": "Configurar el script ACP fount",
+		"acpDesc": "Consulte el siguiente ejemplo para configurar el script ACP fount:",
+		"acpCharLabel": "Role",
+		"charListError": "No se pudo obtener la lista de roles",
+		"acpScriptLabel": "URL del script ACP",
+		"acpConfigSample": "Ejemplo de configuración:",
+		"acpConfigHint": "La identificación de la rol se muestra en el menú desplegable de funciones de esta página y la clave API se puede administrar en la configuración del usuario.",
+		"copyButton": "Copiar",
+		"copied": "Copiado al portapapeles",
+		"apiKeySectionTitle": "clave API",
+		"apiKeyHint": "Se utiliza para la fount de conexión del script ACP (el mismo conjunto de claves que el proxy API, se puede crear en la configuración del usuario).",
+		"generateApiKeyButton": "Generar nueva clave",
+		"apiKeyCopied": "Clave API copiada",
+		"apiKeyCreateError": "No se pudo crear la clave API: ${message}",
+		"apiKeyInput": {
+			"aria-label": "clave API"
+		},
+		"home_function_buttons": {
+			"integration_related": "Relacionado con la integración",
+			"ide_integration_config": {
+				"title": "Configuración de integración con IDE"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "Manantial de Código",
+				"description": "Por primera vez, utilice funciones de fount para ayudar a la programación en editores habilitados para ACP como Zed, JetBrains, Neovim y más.",
+				"locked_description": "Conéctese al rol de fount en un IDE externo y complete una sesión."
+			}
+		},
+		"acpChar": "Seleccionar rol",
+		"acpConfig": "Selecciona una función y genere una clave API primero"
+	},
 	"deskpet": {
 		"title": "mascotas de escritorio",
 		"description": "Lanza tus personajes fount como mascotas interactivas que viven en tu escritorio.",
@@ -4770,6 +4455,347 @@
 								"title": "Administrar mascotas de escritorio"
 							}
 						}
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "Gestión de temas",
+		"description": "Elija la estética que refleje su estado de ánimo o su historia. Obtenga una vista previa y seleccione entre una paleta de temas, cada uno de los cuales ofrece un ambiente diferente para sus interacciones con founts. Tu mundo, tu estilo.",
+		"instruction": "¡Elige un tema!",
+		"search": {
+			"placeholder": "Buscar temas...",
+			"noResult": "No se encontraron temas coincidentes."
+		},
+		"createButton": "+ Crear nuevo tema",
+		"preview": {
+			"editButton": {
+				"title": "Editar"
+			},
+			"editButtonIcon": {
+				"alt": "Icono de edición"
+			},
+			"deleteButton": {
+				"title": "Eliminar"
+			},
+			"deleteButtonIcon": {
+				"alt": "Icono de eliminar"
+			},
+			"cloneButton": {
+				"title": "Clonar"
+			},
+			"cloneButtonIcon": {
+				"alt": "Icono de clonar"
+			}
+		},
+		"editor": {
+			"title": "Editor de temas",
+			"cancelButton": "Cancelar",
+			"saveApplyButton": "Guardar y aplicar",
+			"themeName": "Nombre del tema (ID)",
+			"autoPaletteTitle": "Corrección automática de color desde imágenes",
+			"autoPaletteInstruction": "Haga clic en un color de arriba para rellenar automáticamente los colores primarios/secundarios/acento/neutrales.",
+			"coreColors": "Colores principales",
+			"baseBackground": "Básicos y fondo",
+			"variables": "Variables",
+			"borderRadius": "Radio del borde (--rounded-box)",
+			"borderWidth": "Ancho del borde (--border-btn)",
+			"advancedCustomization": "Personalización avanzada",
+			"customCSS": "CSS personalizado (anulación)",
+			"customMjsScript": "Script MJS personalizado (opcional)",
+			"mjsSyntaxHint": "Utilice [sintaxis async-eval](${asyncDocLink}). Devuelve un objeto que contiene las funciones `load()` y `unload()`.",
+			"themeIdRequired": "Se requiere ID de tema",
+			"newThemeName": "Nuevo nombre del tema:",
+			"deleteConfirm": " ¿Estás seguro de que quieres eliminar el tema ${id}?",
+			"saved": "¡Guardado!",
+			"failedToSave": "Error al guardar",
+			"failedToDelete": "No se pudo eliminar el tema: ${message}",
+			"failedToClone": "No se pudo copiar el tema: ${message}"
+		},
+		"themes": {
+			"auto": "Automático",
+			"light": "Claro",
+			"dark": "Oscuro",
+			"cupcake": "Cupcake",
+			"bumblebee": "Bumblebee",
+			"emerald": "Esmeralda",
+			"corporate": "Corporativo",
+			"synthwave": "Synthwave",
+			"retro": "Retro",
+			"cyberpunk": "Ciberpunk",
+			"valentine": "San Valentín",
+			"halloween": "Halloween",
+			"garden": "Jardín",
+			"forest": "Bosque",
+			"aqua": "Aqua",
+			"lofi": "Lo-fi",
+			"pastel": "Pastel",
+			"fantasy": "Fantasía",
+			"wireframe": "Wireframe",
+			"black": "Negro",
+			"luxury": "Lujo",
+			"dracula": "Drácula",
+			"cmyk": "CMYK",
+			"autumn": "Otoño",
+			"business": "Negocios",
+			"acid": "Acid",
+			"lemonade": "Limonada",
+			"night": "Noche",
+			"coffee": "Café",
+			"winter": "Invierno",
+			"dim": "Tenue",
+			"nord": "Nórdico",
+			"sunset": "Atardecer",
+			"caramellatte": "Caramel Latte",
+			"abyss": "Abismo",
+			"silk": "Seda"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "¡Un cambio de look!",
+				"description": "La fount tenía un nuevo aspecto y un ambiente completamente nuevo.",
+				"locked_description": "Cambia el tema una vez."
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "Ajustes",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Cambiar Tema"
+					}
+				}
+			}
+		}
+	},
+	"languageSettings": {
+		"title": "Configuración de idiomas",
+		"pageTitle": "Configuración de idioma",
+		"description": "Administre sus preferencias de idioma para la aplicación de fount. Personaliza tu experiencia con las opciones de idioma disponibles.",
+		"pageDescription": "Administre sus preferencias de idioma aquí. Los idiomas en la lista tendrán prioridad sobre la configuración del navegador en orden.",
+		"availableLanguages": "Idiomas disponibles",
+		"preferredLanguages": "Lista de idiomas prioritarios",
+		"resetButton": "Reiniciar",
+		"saveButton": "Guardar",
+		"select": {
+			"placeholder": "Selecciona un idioma..."
+		},
+		"search": {
+			"placeholder": "Buscar idioma..."
+		},
+		"noPreferredLanguages": "No hay lenguaje previo todavía. Se utilizará la configuración predeterminada del navegador.",
+		"moveUpButton": {
+			"aria-label": "subir",
+			"alt": "icono de subir"
+		},
+		"moveDownButton": {
+			"aria-label": "bajar",
+			"alt": "icono de bajar"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "Eliminar este idioma",
+			"alt": "Icono de eliminar"
+		},
+		"savedMessage": "¡La configuración de idioma se ha guardado!",
+		"resetMessage": "¡La configuración del idioma se ha restablecido!",
+		"fetchLocalesFailed": "¡No pudo obtener idiomas disponibles!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Ajustes",
+				"sub_items": {
+					"main": {
+						"title": "Configuración de idiomas"
+					}
+				}
+			}
+		}
+	},
+	"userSettings": {
+		"title": "Ajustes de usuario",
+		"PageTitle": "Ajustes de usuario",
+		"description": "Cuide los detalles de su identidad de fount. Administre su perfil, proteja su acceso y vea los dispositivos conectados. Un santuario tranquilo para su cuenta.",
+		"shell": {
+			"unauthorized": "Es necesario iniciar sesión.",
+			"responseNotJson": "El servidor devolvió contenido que no se pudo analizar.",
+			"unexpectedError": "La solicitud falló."
+		},
+		"errors": {
+			"accountNotFound": "Cuenta no encontrada."
+		},
+		"userInfo": {
+			"title": "Información del usuario",
+			"usernameLabel": "Nombre de usuario:",
+			"creationDateLabel": "Fecha de creación de la cuenta:",
+			"folderSizeLabel": "Tamaño de datos de usuario:",
+			"folderPathLabel": "Ruta de datos de usuario:",
+			"copyPathButton": {
+				"title": "copiar ruta"
+			},
+			"copyPathButtonIcon": {
+				"alt": "icono de copia"
+			},
+			"copiedAlert": "¡Ruta copiada al portapapeles!",
+			"copyPathFailed": "No se puede copiar la ruta al portapapeles."
+		},
+		"changePassword": {
+			"title": "Cambiar contraseña",
+			"currentPasswordLabel": "Contraseña actual:",
+			"newPasswordLabel": "Nueva contraseña:",
+			"confirmNewPasswordLabel": "Confirmar nueva contraseña:",
+			"submitButton": "Cambiar contraseña",
+			"errorMismatch": "Las nuevas contraseñas no coinciden.",
+			"success": "Contraseña cambiada correctamente.",
+			"missingFields": "Por favor complete su contraseña actual y su nueva contraseña.",
+			"invalidCurrent": "La contraseña actual es incorrecta."
+		},
+		"renameUser": {
+			"title": "Cambiar nombre de usuario",
+			"newUsernameLabel": "Nuevo nombre de usuario:",
+			"submitButton": "Cambiar nombre de usuario",
+			"confirmMessage": "¿Seguro que quieres cambiar tu nombre de usuario? Esto requerirá que vuelvas a iniciar sesión.",
+			"success": "Nombre de usuario cambiado a \"${newUsername}\" correctamente. Ahora se cerrará la sesión.",
+			"missingParams": "Por favor complete el nuevo nombre de usuario y contraseña.",
+			"wrongPassword": "La contraseña es incorrecta.",
+			"mustDiffer": "El nuevo nombre de usuario debe ser diferente del nombre de usuario actual.",
+			"taken": "Este nombre de usuario ya está en uso.",
+			"moveFailed": "No se pudo cambiar el nombre del directorio de datos del usuario: ${detail}. El nombre de usuario original ha sido restaurado."
+		},
+		"passkeys": {
+			"title": "Claves de seguridad y clave de acceso",
+			"description": "Después de la vinculación, puede iniciar sesión con una clave de seguridad o una clave de acceso nativa. Requiere uso bajo HTTPS o localhost; Primero agregue la clave en la configuración del usuario.",
+			"refreshButton": {
+				"title": "Actualizar lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "icono de actualización"
+			},
+			"nameLabel": "Observaciones (opcional)",
+			"nameInput": {
+				"placeholder": "Ejemplo: YubiKey para el trabajo"
+			},
+			"addButton": "Agregar clave de seguridad",
+			"noneFound": "Aún no hay claves de seguridad vinculadas.",
+			"itemDetails": "Añadida: ${created}",
+			"removeButton": "Eliminar",
+			"removeConfirm": "¿Seguro que desea eliminar esta clave? Tras eliminarla, no podrá iniciar sesión con ella.",
+			"removeSuccess": "Se eliminó la clave de seguridad.",
+			"addSuccess": "Se agregó clave de seguridad.",
+			"errorLoadLibrary": "No se puede cargar la biblioteca WebAuthn.",
+			"errorCancelled": "Añadiendo cancelado.",
+			"apiInvalidPassword": "Contraseña incorrecta.",
+			"apiMissingCredential": "Faltan credenciales de clave de acceso válidas.",
+			"apiRemoveParamsRequired": "Proporcione las credenciales y la contraseña que desea eliminar."
+		},
+		"userDevices": {
+			"title": "Dispositivos/Sesiones de usuario",
+			"noDevicesFound": "No se han encontrado dispositivos ni sesiones.",
+			"deviceInfo": "ID del dispositivo: ${deviceId}",
+			"thisDevice": "Este dispositivo",
+			"deviceDetails": "Última conexión: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Revocar",
+			"revokeConfirm": "¿Seguro que quieres revocar el acceso para este dispositivo/sesión?",
+			"revokeSuccess": "Dispositivo/Sesión revocado correctamente.",
+			"revokeMissingParams": "Proporcione el dispositivo y la contraseña de sesión que desea revocar.",
+			"revokeWrongPassword": "La contraseña es incorrecta.",
+			"listNotFound": "Lista de dispositivos no encontrada.",
+			"deviceNotFound": "No se encontró el dispositivo o la sesión.",
+			"refreshButton": {
+				"title": "Actualizar Lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "Icono de Actualización"
+			}
+		},
+		"apiKeys": {
+			"title": "Clave de API",
+			"description": "Administre la clave API para aplicaciones externas.",
+			"input": {
+				"placeholder": "Nueva descripción clave"
+			},
+			"createButton": "crear",
+			"noKeysFound": "No se encontraron claves API.",
+			"keyDetails": "Descripción: ${description} | Creado en: ${createdAt} | Último usado: ${lastUsed}",
+			"neverUsed": "Nunca usado",
+			"noKeysForUser": "No se encontraron datos de clave API.",
+			"revokeWrongPassword": "La contraseña es incorrecta.",
+			"keyNotFound": "No se encontró la clave API.",
+			"revokeMissingJti": "Por favor especifique la clave para revocar.",
+			"revokeMissingPassword": "Revocar una clave requiere una contraseña.",
+			"verifyMissingApiKey": "Proporciona una clave API.",
+			"revokeButton": "Revocar",
+			"revokeConfirm": "¿Estás seguro de que quieres revocar esta clave API?",
+			"revokeSuccess": "La clave API ha sido revocada con éxito.",
+			"errorDescriptionRequired": "Se requiere una descripción.",
+			"createSuccess": "La clave API se creó con éxito.",
+			"refreshButton": {
+				"title": "Actualizar Lista"
+			},
+			"refreshButtonIcon": {
+				"alt": "Icono de Actualización"
+			}
+		},
+		"newApiKey": {
+			"title": "Se ha creado una nueva clave API",
+			"warning": "Copie su nueva clave API. ¡No podrás volver a verlo!",
+			"closeButton": "He copiado mi clave",
+			"copyButton": {
+				"title": "Copiar nueva clave API"
+			},
+			"copiedAlert": "¡Clave copiada al portapapeles!",
+			"copyKeyFailed": "No se puede copiar la clave al portapapeles."
+		},
+		"editorCommand": {
+			"title": "Comando del editor externo",
+			"description": "Configura el comando y la plantilla de argumentos para abrir archivos en un editor externo. Los marcadores rellenan la ruta del archivo, el número de línea y la columna.",
+			"editorPresetLabel": "Ajustes preestablecidos del editor",
+			"commandLabel": "Comando",
+			"argsTemplateLabel": "Plantilla de argumentos",
+			"argsTemplateHint": "Marcadores: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (en PATH)",
+			"presetOptionPathUnavailable": "${label} (no está en PATH)",
+			"testPathInput": {
+				"placeholder": "Ruta de un archivo de prueba, p. ej. C:/work/project/src/main.mjs"
+			},
+			"testButton": "Probar apertura",
+			"saveButton": "Guardar configuración",
+			"saveSuccess": "Se guardó el comando del editor externo.",
+			"testPathRequired": "Introduce primero la ruta del archivo de prueba.",
+			"testSuccess": "Se ejecutó el comando para abrir el archivo en el editor."
+		},
+		"logout": {
+			"title": "Cerrar sesión",
+			"description": "Esto cerrará la sesión de tu cuenta en el dispositivo actual.",
+			"buttonText": "Cerrar sesión",
+			"confirmMessage": "¿Seguro que quieres cerrar la sesión?",
+			"successMessage": "Sesión cerrada correctamente. Redirigiendo a la página de inicio de sesión..."
+		},
+		"deleteAccount": {
+			"title": "Eliminar cuenta",
+			"warning": "Atención: Esta acción eliminará tu cuenta y todos tus datos de forma permanente y es irreversible.",
+			"submitButton": "Eliminar mi cuenta",
+			"confirmMessage1": "¡Atención! ¿Seguro que quieres eliminar tu cuenta permanentemente? Esta acción no se puede deshacer.",
+			"confirmMessage2": "Para confirmar la eliminación, introduce tu nombre de usuario \"${username}\":",
+			"usernameMismatch": "El nombre de usuario introducido no coincide con el actual. Se ha cancelado la eliminación.",
+			"success": "Cuenta eliminada correctamente. Ahora se cerrará la sesión.",
+			"missingPassword": "Por favor ingrese su contraseña.",
+			"wrongPassword": "La contraseña es incorrecta."
+		},
+		"passwordConfirm": {
+			"title": "Confirmar operación",
+			"message": "Para continuar, introduce tu contraseña actual:",
+			"passwordLabel": "Contraseña:",
+			"confirmButton": "Confirmar",
+			"cancelButton": "Cancelar"
+		},
+		"apiError": "Error en la solicitud de API: ${message}",
+		"generalError": "Ha ocurrido un error: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Ajustes",
+				"sub_items": {
+					"main": {
+						"title": "Configuración de Usuario"
 					}
 				}
 			}
@@ -4831,47 +4857,91 @@
 			}
 		}
 	},
-	"ide_integration": {
-		"description": "Conecte el rol fount a editores compatibles (como Zed, JetBrains, Neovim) a través del protocolo de cliente de agente, configure claves y funciones de API e incorpore socios de IA al flujo de trabajo de desarrollo.",
-		"title": "Integración con IDE",
-		"heading": "Integración con IDE",
-		"instruction": "Utilice funciones de fount para ayudar a la programación en editores habilitados para ACP (como Zed, JetBrains, Neovim, etc.).",
-		"supportedEditorsTitle": "Editores y clientes compatibles",
-		"supportedEditorsIntro": "Los siguientes clientes trabajan con fount:",
-		"supportedEditorsLoading": "cargando…",
-		"supportedEditorsError": "No se pudo cargar la lista: ${message}",
-		"acpTitle": "Configurar el script ACP fount",
-		"acpDesc": "Consulte el siguiente ejemplo para configurar el script ACP fount:",
-		"acpCharLabel": "Role",
-		"charListError": "No se pudo obtener la lista de roles",
-		"acpScriptLabel": "URL del script ACP",
-		"acpConfigSample": "Ejemplo de configuración:",
-		"acpConfigHint": "La identificación de la rol se muestra en el menú desplegable de funciones de esta página y la clave API se puede administrar en la configuración del usuario.",
-		"copyButton": "Copiar",
-		"copied": "Copiado al portapapeles",
-		"apiKeySectionTitle": "clave API",
-		"apiKeyHint": "Se utiliza para la fount de conexión del script ACP (el mismo conjunto de claves que el proxy API, se puede crear en la configuración del usuario).",
-		"generateApiKeyButton": "Generar nueva clave",
-		"apiKeyCopied": "Clave API copiada",
-		"apiKeyCreateError": "No se pudo crear la clave API: ${message}",
-		"apiKeyInput": {
-			"aria-label": "clave API"
+	"subfounts": {
+		"title": "subfounts - gestión de dispositivos peer-to-peer",
+		"pageTitle": "subfounts",
+		"description": "Administrar conexiones de founts de igual a igual",
+		"hostConnectionCode": {
+			"title": "Código de conexión del host",
+			"connectionCodeLabel": "Código de conexión (ID de igual)",
+			"passwordLabel": "contraseña",
+			"copyButton": "Copiar",
+			"regenerateButton": "Regenerar",
+			"infoMessage": "Comparta estas credenciales con clientes secundarios para establecer conexiones.",
+			"connectionCodeCopied": "El código de conexión se ha copiado al portapapeles.",
+			"passwordCopied": "Contraseña copiada al portapapeles",
+			"regenerateSuccess": "El código de conexión ha sido regenerado."
+		},
+		"infra": {
+			"title": "Bien público de la red",
+			"description": "Elige si los subfounts conectados actúan como nodos de bien público para toda la red fount. Al desactivarlo, siguen aceptando ejecución remota desde este host, pero ya no ayudan en la capa de red.",
+			"capabilityRelay": "Participar en el reenvío multi-salto del overlay para que otros nodos se comuniquen cuando falle el enlace directo.",
+			"capabilityMailbox": "Conservar la entrega sin conexión para que el otro nodo pueda recibir mensajes privados al volver a estar en línea.",
+			"hostPriority": "Al activarlo, priorizar este host: enrutar con pesos según su tabla de reputación y fijarlo con la máxima prioridad.",
+			"toggleLabel": "Hacer que los subfounts contribuyan al bien público",
+			"enabledToast": "Activado: los subfounts contribuyen al bien público de la red (este host primero)",
+			"disabledToast": "Desactivado: los subfounts ya no contribuyen al bien público de la red"
+		},
+		"connectedSubfounts": {
+			"title": "Subfount conectada",
+			"noSubfountsConnected": "No hay ninguna Subfount conectada",
+			"table": {
+				"id": "ID",
+				"description": "Observación",
+				"deviceId": "ID del dispositivo",
+				"connectedAt": "tiempo de conexión",
+				"status": "estado",
+				"actions": "Acciones",
+				"connected": "Conectado",
+				"disconnected": "Desconectado",
+				"save": "guardar",
+				"na": "N / A"
+			},
+			"descriptionSaved": "Nota guardada",
+			"descriptionSaveFailed": "No se pudo guardar la nota: ${message}"
+		},
+		"codeExecution": {
+			"title": "ejecución de código",
+			"description": "Ejecutar código JavaScript en la Subfount seleccionada",
+			"selectSubfountLabel": "Seleccionar Subfount",
+			"hostOption": "Anfitrión (ID: ${id})",
+			"subfountOption": "Extensión ${id}${deviceId}",
+			"scriptLabel": "Código JavaScript",
+			"executeButton": "ejecutar",
+			"executing": "Ejecutando...",
+			"noSubfountSelected": "Por favor seleccione una Subfount primero",
+			"noScriptProvided": "Por favor ingresa el código a ejecutar",
+			"executionSuccess": "Ejecución del código exitosa",
+			"executionFailed": "La ejecución del código falló: ${message}",
+			"selectSubfount": "Selecciona el Sub 0 para ejecutar el código..."
+		},
+		"downloadClient": {
+			"title": "Descargar cliente de Subfount",
+			"description": "Descargue el script del cliente Subfount independiente para ejecutarlo en el dispositivo remoto.",
+			"downloadButton": "Descargar Subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "No se pudo cargar el código de conexión: ${message}",
+			"regenerateConnectionCodeFailed": "No se pudo regenerar el código de conexión: ${message}",
+			"loadSettingsFailed": "No se pudo cargar la configuración de bien público: ${message}",
+			"saveSettingsFailed": "No se pudo guardar la configuración de bien público: ${message}",
+			"generalError": "Se produjo un error: ${message}"
 		},
 		"home_function_buttons": {
-			"integration_related": "Relacionado con la integración",
-			"ide_integration_config": {
-				"title": "Configuración de integración con IDE"
+			"in_dev": {
+				"title": "En desarrollo",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "subdispositivo",
+						"sub_items": {
+							"main": {
+								"title": "Administrar subdispositivos"
+							}
+						}
+					}
+				}
 			}
-		},
-		"achievements": {
-			"first_ide_use": {
-				"name": "Manantial de Código",
-				"description": "Por primera vez, utilice funciones de fount para ayudar a la programación en editores habilitados para ACP como Zed, JetBrains, Neovim y más.",
-				"locked_description": "Conéctese al rol de fount en un IDE externo y complete una sesión."
-			}
-		},
-		"acpChar": "Seleccionar rol",
-		"acpConfig": "Selecciona una función y genere una clave API primero"
+		}
 	},
 	"achievements": {
 		"title": "Logro",
@@ -4998,34 +5068,6 @@
 		"pageNotFoundText": "¡Vaya! Parece que has llegado a una página que no existe.",
 		"homepageButton": "Volver a la página de inicio"
 	},
-	"tips": {
-		"title": "¿Sabías?",
-		"data": [
-			"Utilice la tecla `esc` en cualquier página fount para volver a la página anterior.",
-			"Puede usar `ctrl+s` para guardar la configuración en la página de configuración.",
-			"Mantener presionada la tecla `shift` en la página de chat puede ayudarlo a eliminar mensajes rápidamente.",
-			"Si no se lo dice a los desarrolladores, es posible que nunca sepan qué problema encontró.",
-			"Si de repente te encuentras con un problema extraño y el desarrollador no te responde por un tiempo, puedes intentar usar el comando `fount init` para restablecer fount.",
-			"Si encuentra un problema particularmente extraño, puede intentar reiniciar su computadora.",
-			"Usar el comando `fount remove` para desinstalar una fount es más limpio que eliminar la carpeta.",
-			"¡Escriba `fount cake` en la línea de comando para obtener un delicioso pastel gratis!",
-			"Todos los archivos de datos de fount se guardan en el directorio `fount/data` y puede verlos, modificarlos y realizar copias de seguridad en cualquier momento y en cualquier lugar.",
-			"El nombre de fount está todo en minúsculas, es `f`ount, no `F`ount.",
-			"Haga una copia de seguridad de todos los datos con los que su agente opera regularmente antes de usar el nuevo modelo; nunca se sabe si el nuevo modelo funcionará terriblemente en algunos lugares.",
-			"El público principal de fount son los desarrolladores de software y los entusiastas de los juegos de rol, pero también se utiliza en la construcción de agentes comerciales, la atención médica, el ejército, las finanzas y otros campos.",
-			"El nombre del personaje integrado de fount, ZL-31, no tiene significado y fue solo una ocurrencia repentina.",
-			"Todas las imágenes de los archivos fount se almacenan en formato svg y se procesan en png o ico cuando es necesario. No hay archivos binarios excepto LICENCIA.",
-			"Cualquier código fount se puede ejecutar directamente sin compilación, lo que ves es lo que obtienes.",
-			"fount alguna vez tuvo un fondo de página interactivo dinámico muy interesante, pero luego se eliminó porque consumía demasiada CPU.",
-			"fount se desarrolló originalmente para un agente NSFW llamado \"GentianAphrodite\".",
-			"Una de las diferencias entre agentes y humanos es que los humanos hacen caca.",
-			"Los agentes sólo son conscientes en el momento en que son llamados, mientras que los humanos son conscientes en cualquier momento y en cualquier lugar cuando están despiertos.",
-			"¡Algunas personas se enamoran o incluso se casan con sus agentes!",
-			"La IA se utiliza para escribir poemas, enamorarse y hacer dibujos para personas. Cargar ladrillos, barrer pisos y sacar basura es lo que los humanos deberían hacer.",
-			"Hoy no es el Día de los Inocentes.",
-			"No, no lo sabías."
-		]
-	},
 	"directoryListing": {
 		"title": "Índice del directorio",
 		"description": "Busque y explore los archivos y carpetas en el espacio de trabajo de fount.",
@@ -5035,199 +5077,121 @@
 		"size": "tamaño",
 		"parentLink": "↑ Nivel anterior../"
 	},
-	"code_block": {
-		"copy": {
-			"dataset": {
-				"tip": "Copiar al portapapeles"
-			},
-			"aria-label": "copiar al portapapeles"
-		},
-		"copied": {
-			"dataset": {
-				"tip": "¡Copiado al portapapeles!"
+	"util": {
+		"common": {
+			"cancel": "Cancelar",
+			"create": "crear",
+			"save": "guardar",
+			"delete": "borrar",
+			"confirm": "confirm",
+			"close": "Cerrar",
+			"translate": {
+				"showOriginal": "Mostrar texto original",
+				"showTranslation": "Mostrar traducción"
 			}
 		},
-		"download": {
-			"dataset": {
-				"tip": "Descargar código"
+		"code_block": {
+			"copy": {
+				"dataset": {
+					"tip": "Copiar al portapapeles"
+				},
+				"aria-label": "copiar al portapapeles"
 			},
-			"aria-label": "Descargar código"
-		},
-		"execute": {
-			"dataset": {
-				"tip": "Ejecutar código"
+			"copied": {
+				"dataset": {
+					"tip": "¡Copiado al portapapeles!"
+				}
 			},
-			"aria-label": "Ejecutar código"
-		},
-		"preview": {
-			"dataset": {
-				"tip": "Vista previa"
+			"download": {
+				"dataset": {
+					"tip": "Descargar código"
+				},
+				"aria-label": "Descargar código"
 			},
-			"aria-label": "Vista previa"
+			"execute": {
+				"dataset": {
+					"tip": "Ejecutar código"
+				},
+				"aria-label": "Ejecutar código"
+			},
+			"preview": {
+				"dataset": {
+					"tip": "Vista previa"
+				},
+				"aria-label": "Vista previa"
+			},
+			"copy_failed": "No se puede copiar al portapapeles: ${error}"
 		},
-		"copy_failed": "No se puede copiar al portapapeles: ${error}"
-	},
-	"pow_captcha": {
-		"initial": "No soy un robot",
-		"verifying": "Verificando...",
-		"solved": "Verificación exitosa",
-		"wasm_disabled": "Habilitar WASM para una verificación más rápida",
-		"error": "Verificación fallida",
-		"errorMessage": "Verificación fallida: ${error}"
-	},
-	"breadcrumb": {
-		"clickToNavigate": "Haga clic para navegar a ${path}"
-	},
-	"zxcvbn": {
-		"warnings": {
-			"straightRow": "Las teclas continuas en el teclado se adivinan fácilmente.",
-			"keyPattern": "Un patrón de teclado corto es fácil de adivinar.",
-			"simpleRepeat": "Los caracteres repetidos como \"AAA\" se adivinan fácilmente.",
-			"extendedRepeat": "Los patrones de caracteres repetidos como \"ABCABCABC\" se adivinan fácilmente.",
-			"sequences": "Las secuencias de caracteres comunes como \"ABC\" se adivinan fácilmente.",
-			"recentYears": "Los últimos años son fáciles de adivinar.",
-			"dates": "La fecha se adivina fácilmente.",
-			"topTen": "Esta es una contraseña demasiado común.",
-			"topHundred": "Esta es una contraseña que a menudo se usa.",
-			"common": "Esta es una contraseña de uso común.",
-			"similarToCommon": "Esto es similar a una contraseña de uso común.",
-			"wordByItself": "Se adivina fácilmente una sola palabra.",
-			"namesByThemselves": "Se adivina fácilmente un solo nombre o apellido.",
-			"commonNames": "Los nombres comunes y los apellidos son fáciles de adivinar.",
-			"userInputs": "La contraseña no debe contener datos personales o relacionados con la página.",
-			"pwned": "Su contraseña ha sido expuesta en una violación de datos de Internet."
+		"pow_captcha": {
+			"initial": "No soy un robot",
+			"verifying": "Verificando...",
+			"solved": "Verificación exitosa",
+			"wasm_disabled": "Habilitar WASM para una verificación más rápida",
+			"error": "Verificación fallida",
+			"errorMessage": "Verificación fallida: ${error}"
 		},
-		"suggestions": {
-			"l33t": "Evite usar sustituciones de letras predecibles, como usar \"@\" en lugar de \"A\".",
-			"reverseWords": "Evite usar la ortografía inversa de palabras comunes.",
-			"allUppercase": "Capitalizar algunas letras en lugar de todas las letras.",
-			"capitalization": "Ponga en mayúscula más de una letra, no solo la primera.",
-			"dates": "Evite usar fechas y años relacionados con usted.",
-			"recentYears": "Evite usar los años más recientes.",
-			"associatedYears": "Evite usar años relacionados con usted.",
-			"sequences": "Evite las secuencias de caracteres comunes.",
-			"repeated": "Evite las palabras y caracteres repetitivos.",
-			"longerKeyboardPattern": "Use patrones de teclado más largos y cambie las direcciones de entrada varias veces.",
-			"anotherWord": "Agregue palabras más poco comunes.",
-			"useWords": "Use múltiples palabras, pero evite frases comunes.",
-			"noNeed": "No necesita usar símbolos, números o letras mayúsculas para crear contraseñas seguras.",
-			"pwned": "Si usa esta contraseña en otro lugar, se le recomienda hacer cambios."
+		"breadcrumb": {
+			"clickToNavigate": "Haga clic para navegar a ${path}"
 		},
-		"timeEstimation": {
-			"ltSecond": "Menos de un segundo",
-			"second": "{base} segundo",
-			"seconds": "{base} segundos",
-			"minute": "{base} min",
-			"minutes": "{base} min",
-			"hour": "{base} hora",
-			"hours": "{base} horas",
-			"day": "{base} día",
-			"days": "{base} días",
-			"month": "{base} mes",
-			"months": "{base} meses",
-			"year": "{base} año",
-			"years": "{base} años",
-			"centuries": "Siglos"
-		}
-	},
-	"searchableDropdown": {
-		"trigger": {
-			"placeholder": "Seleccionar..."
-		},
-		"search": {
-			"placeholder": "Buscar..."
-		}
-	},
-	"common": {
-		"cancel": "Cancelar",
-		"create": "crear",
-		"save": "guardar",
-		"delete": "borrar",
-		"confirm": "confirm",
-		"close": "Cerrar",
-		"translate": {
-			"showOriginal": "Mostrar texto original",
-			"showTranslation": "Mostrar traducción"
-		}
-	},
-	"cabinet": {
-		"title": "archivo",
-		"description": "Archivoes personales y compartidos P2P",
-		"openCabinets": {
-			"title": "Abrir lista de archivoes",
-			"aria-label": "Abrir lista de archivoes"
-		},
-		"closeCabinets": {
-			"title": "Cerrar",
-			"aria-label": "Cerrar"
-		},
-		"bootstrapFailed": "Error al inicializar el archivo: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "archivo"
+		"zxcvbn": {
+			"warnings": {
+				"straightRow": "Las teclas continuas en el teclado se adivinan fácilmente.",
+				"keyPattern": "Un patrón de teclado corto es fácil de adivinar.",
+				"simpleRepeat": "Los caracteres repetidos como \"AAA\" se adivinan fácilmente.",
+				"extendedRepeat": "Los patrones de caracteres repetidos como \"ABCABCABC\" se adivinan fácilmente.",
+				"sequences": "Las secuencias de caracteres comunes como \"ABC\" se adivinan fácilmente.",
+				"recentYears": "Los últimos años son fáciles de adivinar.",
+				"dates": "La fecha se adivina fácilmente.",
+				"topTen": "Esta es una contraseña demasiado común.",
+				"topHundred": "Esta es una contraseña que a menudo se usa.",
+				"common": "Esta es una contraseña de uso común.",
+				"similarToCommon": "Esto es similar a una contraseña de uso común.",
+				"wordByItself": "Se adivina fácilmente una sola palabra.",
+				"namesByThemselves": "Se adivina fácilmente un solo nombre o apellido.",
+				"commonNames": "Los nombres comunes y los apellidos son fáciles de adivinar.",
+				"userInputs": "La contraseña no debe contener datos personales o relacionados con la página.",
+				"pwned": "Su contraseña ha sido expuesta en una violación de datos de Internet."
+			},
+			"suggestions": {
+				"l33t": "Evite usar sustituciones de letras predecibles, como usar \"@\" en lugar de \"A\".",
+				"reverseWords": "Evite usar la ortografía inversa de palabras comunes.",
+				"allUppercase": "Capitalizar algunas letras en lugar de todas las letras.",
+				"capitalization": "Ponga en mayúscula más de una letra, no solo la primera.",
+				"dates": "Evite usar fechas y años relacionados con usted.",
+				"recentYears": "Evite usar los años más recientes.",
+				"associatedYears": "Evite usar años relacionados con usted.",
+				"sequences": "Evite las secuencias de caracteres comunes.",
+				"repeated": "Evite las palabras y caracteres repetitivos.",
+				"longerKeyboardPattern": "Use patrones de teclado más largos y cambie las direcciones de entrada varias veces.",
+				"anotherWord": "Agregue palabras más poco comunes.",
+				"useWords": "Use múltiples palabras, pero evite frases comunes.",
+				"noNeed": "No necesita usar símbolos, números o letras mayúsculas para crear contraseñas seguras.",
+				"pwned": "Si usa esta contraseña en otro lugar, se le recomienda hacer cambios."
+			},
+			"timeEstimation": {
+				"ltSecond": "Menos de un segundo",
+				"second": "{base} segundo",
+				"seconds": "{base} segundos",
+				"minute": "{base} min",
+				"minutes": "{base} min",
+				"hour": "{base} hora",
+				"hours": "{base} horas",
+				"day": "{base} día",
+				"days": "{base} días",
+				"month": "{base} mes",
+				"months": "{base} meses",
+				"year": "{base} año",
+				"years": "{base} años",
+				"centuries": "Siglos"
 			}
 		},
-		"upload": "subir",
-		"uploadFolder": "Subir carpeta",
-		"newFolder": "Crear nueva carpeta",
-		"open": "Abierto",
-		"download": "Descargar",
-		"downloadZip": "Descargar carpeta",
-		"rename": "Rebautizar",
-		"copy": "Copiar",
-		"cut": "cortar",
-		"paste": "Pasta",
-		"pasteLink": "Pegar como enlace",
-		"selectAll": "Seleccionar todo",
-		"invert": "Contra elección",
-		"properties": "propiedad",
-		"delete": "borrar",
-		"back": {
-			"title": "Volver a la posición anterior",
-			"aria-label": "Volver a la posición anterior"
-		},
-		"cancel": "Cancelar",
-		"save": "guardar",
-		"showHidden": "mostrar ocultar",
-		"name": "nombre",
-		"descriptionField": "Descripción",
-		"attrHidden": "ocultar",
-		"attrSystem": "Sistema (la eliminación requiere confirmación)",
-		"previewUrl": "URL de vista previa",
-		"deletePreviewWithFile": "Eliminar vista previa al eliminar el archivo",
-		"folderPassword": "Contraseña de la carpeta (déjela en blanco, complétela para habilitar el cifrado)",
-		"unlockFolder": "Desbloquear carpeta cifrada",
-		"unlock": "Descubrir",
-		"unlockFailed": "Error de desbloqueo: ${error}",
-		"previewFailed": "Error en la generación de vista previa: ${error}",
-		"created": "Crear: ${stamp}",
-		"modified": "Modificar: ${stamp}",
-		"statusCount": "${count} artículos, ${selected} seleccionado",
-		"newCabinetPrompt": "Nuevo nombre del archivo",
-		"newFolderPrompt": "Nuevo nombre de carpeta",
-		"renamePrompt": "nuevo nombre",
-		"visibilityPrompt": "Visibilidad (pública/no listada/seguidores/privada/seleccionada)",
-		"cabinetActionPrompt": "Acción: cambiar nombre/eliminar/visibilidad",
-		"confirmDeleteCabinet": "¿¿Seguro que quieres eliminar este archivo?",
-		"confirmDelete": "¿Confirmar para eliminar los elementos seleccionados?",
-		"confirmDeleteSystem": "Se incluyen los archivos del sistema seleccionados. ¿Estás seguro de eliminarlos?",
-		"copied": "Copiado",
-		"cutDone": "cortar",
-		"undo": "Cancelar",
-		"redo": "Rehacer",
-		"newWindow": "Abrir nueva ventanaUbicación actual",
-		"goUp": "Volver al nivel anterior",
-		"brokenLink": "El enlace está roto: ${reason}",
-		"noDownload": "Sin contenido descargable",
-		"groupDownloadHint": "Obtenga archivos de grupo a través de archivos adjuntos de mensajes o enlaces de descarga posteriores.",
-		"remoteEntity": "entidad remota"
-	},
-	"entityProfile": {
-		"attributionMismatch": "La identidad mostrada no coincide con el firmante del mensaje (por ejemplo, el importador volvió a firmar el historial de importación). No considere que este nombre para mostrar sea una identidad criptográfica.",
-		"attributionMismatchShort": {
-			"title": "La atribución de firma no coincide",
-			"aria-label": "La atribución de firma no coincide"
-		},
-		"ownedBy": "Esta entidad es propiedad de ${owner}"
+		"searchableDropdown": {
+			"trigger": {
+				"placeholder": "Seleccionar..."
+			},
+			"search": {
+				"placeholder": "Buscar..."
+			}
+		}
 	}
 }

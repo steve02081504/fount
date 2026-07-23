@@ -2,7 +2,7 @@
 	<div class="modal-box profile-edit-box">
 		<header class="profile-edit-header">
 			<div>
-				<h3 class="profile-edit-title" data-i18n="profile.edit"></h3>
+				<h3 class="profile-edit-title" data-i18n="chat.profile.edit"></h3>
 				<p class="profile-edit-subtitle" data-i18n="chat.hub.profileEdit.previewHint"></p>
 			</div>
 			<button type="button" class="btn btn-circle btn-ghost btn-sm" id="profile-edit-close" aria-label="Close">✕</button>
@@ -21,7 +21,7 @@
 					</div>
 				<div class="profile-edit-field-grid">
 				<div class="form-control profile-edit-field">
-					<label class="label py-1"><span class="label-text text-xs opacity-70" data-i18n="profile.avatarLabel"></span></label>
+					<label class="label py-1"><span class="label-text text-xs opacity-70" data-i18n="chat.profile.avatarLabel"></span></label>
 					<div class="profile-edit-avatar-row">
 						<div id="profile-edit-avatar-swatch" class="profile-edit-avatar-swatch"></div>
 						<div class="profile-edit-media-inputs">
@@ -42,7 +42,7 @@
 				</div>
 				<div class="profile-edit-field-grid">
 				<div class="form-control profile-edit-field">
-					<label class="label py-1"><span class="label-text" data-i18n="profile.themeColorLabel"></span></label>
+					<label class="label py-1"><span class="label-text" data-i18n="chat.profile.themeColorLabel"></span></label>
 					<div class="profile-edit-color-row">
 						<input type="color" id="profile-edit-theme-color" class="profile-edit-color-input" value="#5865f2" />
 						<span class="text-xs opacity-60" data-i18n="chat.hub.profileEdit.themeColorHint"></span>
@@ -55,12 +55,12 @@
 				</div>
 				</div>
 				<div class="form-control profile-edit-field">
-					<label class="label py-1"><span class="label-text" data-i18n="profile.name"></span></label>
+					<label class="label py-1"><span class="label-text" data-i18n="chat.profile.name"></span></label>
 					<input type="text" id="profile-edit-name" class="input input-bordered input-sm" />
 					<span class="label-text-alt opacity-50" data-profile-default-name></span>
 				</div>
 				<div class="form-control profile-edit-field">
-					<label class="label py-1"><span class="label-text" data-i18n="profile.descriptionLabel"></span></label>
+					<label class="label py-1"><span class="label-text" data-i18n="chat.profile.descriptionLabel"></span></label>
 					<textarea id="profile-edit-description-markdown" class="textarea textarea-bordered textarea-sm" rows="4"></textarea>
 				</div>
 				<div class="form-control profile-edit-field">
@@ -78,16 +78,16 @@
 				</div>
 				<div class="profile-edit-field-grid">
 					<div class="form-control profile-edit-field">
-						<label class="label py-1"><span class="label-text" data-i18n="profile.status"></span></label>
+						<label class="label py-1"><span class="label-text" data-i18n="chat.profile.status"></span></label>
 						<select id="profile-edit-status" class="select select-bordered select-sm">
-							<option value="online" data-i18n="profile.statusOptions.online"></option>
-							<option value="away" data-i18n="profile.statusOptions.away"></option>
-							<option value="busy" data-i18n="profile.statusOptions.busy"></option>
-							<option value="offline" data-i18n="profile.statusOptions.offline"></option>
+							<option value="online" data-i18n="chat.profile.statusOptions.online"></option>
+							<option value="away" data-i18n="chat.profile.statusOptions.away"></option>
+							<option value="busy" data-i18n="chat.profile.statusOptions.busy"></option>
+							<option value="offline" data-i18n="chat.profile.statusOptions.offline"></option>
 						</select>
 					</div>
 					<div class="form-control profile-edit-field">
-						<label class="label py-1"><span class="label-text" data-i18n="profile.customStatusLabel"></span></label>
+						<label class="label py-1"><span class="label-text" data-i18n="chat.profile.customStatusLabel"></span></label>
 						<input type="text" id="profile-edit-custom-status" class="input input-bordered input-sm" />
 					</div>
 				</div>
@@ -98,8 +98,8 @@
 			<span class="text-xs opacity-50" data-i18n="chat.hub.profileEdit.unsavedHint"></span>
 			<div class="flex gap-2 flex-wrap justify-end">
 			<button type="button" class="btn btn-ghost btn-sm" id="profile-edit-reset-from-part" hidden data-i18n="chat.hub.profileEdit.resetFromPart"></button>
-			<button type="button" class="btn btn-ghost btn-sm" id="profile-edit-cancel" data-i18n="common.cancel"></button>
-			<button type="button" class="btn btn-primary btn-sm" id="profile-edit-save" data-i18n="common.save"></button>
+			<button type="button" class="btn btn-ghost btn-sm" id="profile-edit-cancel" data-i18n="util.common.cancel"></button>
+			<button type="button" class="btn btn-primary btn-sm" id="profile-edit-save" data-i18n="util.common.save"></button>
 			</div>
 		</div>
 	</div>

@@ -67,7 +67,7 @@ export async function initProfileOwnerSettings() {
 		}
 	}
 	catch (error) {
-		showToastI18n('error', 'profile.ownerSaveFailed', { error: error?.message || String(error) })
+		showToastI18n('error', 'chat.profile.ownerSaveFailed', { error: error?.message || String(error) })
 		return
 	}
 
@@ -94,32 +94,32 @@ export async function initProfileOwnerSettings() {
 		try {
 			const next = normalizeOwnerInput(document.getElementById('profile-owner-entity-hash')?.value)
 			if (!next) {
-				showToastI18n('error', 'profile.ownerSaveFailed', { error: 'empty' })
+				showToastI18n('error', 'chat.profile.ownerSaveFailed', { error: 'empty' })
 				return
 			}
 			if (next === ownerEntityHash) {
-				showToastI18n('success', 'profile.ownerSaved')
+				showToastI18n('success', 'chat.profile.ownerSaved')
 				return
 			}
 			const confirmed = await showOwnerConfirmDialog(next)
 			if (!confirmed) return
 			await putOwner(next)
-			showToastI18n('success', 'profile.ownerSaved')
+			showToastI18n('success', 'chat.profile.ownerSaved')
 			await initProfileOwnerSettings()
 		}
 		catch (e) {
-			showToastI18n('error', 'profile.ownerSaveFailed', { error: e?.message || String(e) })
+			showToastI18n('error', 'chat.profile.ownerSaveFailed', { error: e?.message || String(e) })
 		}
 	})
 
 	document.getElementById('profile-owner-clear')?.addEventListener('click', async () => {
 		try {
 			await putOwner(null)
-			showToastI18n('success', 'profile.ownerCleared')
+			showToastI18n('success', 'chat.profile.ownerCleared')
 			await initProfileOwnerSettings()
 		}
 		catch (e) {
-			showToastI18n('error', 'profile.ownerSaveFailed', { error: e?.message || String(e) })
+			showToastI18n('error', 'chat.profile.ownerSaveFailed', { error: e?.message || String(e) })
 		}
 	})
 }

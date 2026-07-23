@@ -2,6 +2,14 @@
 
 Day-to-day rules: [AGENTS.md](AGENTS.md).
 
+## Profile handle / entity search
+
+Profile `handle` (`[a-z0-9_.-]{2,32}`, optional, not unique) lives in signed `profile.json`. Network search: `GET …/entities/search` / `ChatClient.entities.search` via `part_query` kind `entity_search` (**handler in chat `Load`**, after `registerShellPartpath`). Local agent hits also match `charPartName`.
+
+## Node-local session events
+
+`session_*` / `agent_reply_frequency_set` are node-local only (federation ingest rejects). They may sit in `events.jsonl`, but **must not** occupy the tip frontier for subsequent federatable appends (`append.mjs`) or consensus fold (`materialize.mjs` folds federatable tips first, then overlays local session events).
+
 ## `member_join` binding
 
 `bindingSig` + `verifyEntityActivePubKeyBelongs` — cannot spoof another entityHash with a self-made active key. Ownership proof order: this replica's identity → any same-process hosted identity (`findLocalEntityActivePubKey`) → EVFS `profile.json`.

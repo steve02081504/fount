@@ -1,263 +1,33 @@
 {
 	"lang": "ar-SA",
 	"name": "العربية",
-	"channels": {
-		"title": "القنوات",
-		"description": "نظام إدارة القنوات",
-		"create": "إنشاء قناة",
-		"subscribe": "اشترك",
-		"unsubscribe": "إلغاء الاشتراك",
-		"settings": "إعدادات القناة",
-		"list": "قائمة القنوات",
-		"members": "عضو",
-		"messages": "رسالة",
-		"permissions": "إعدادات الصلاحيات",
-		"type": {
-			"announcement": "إعلان",
-			"news": "أخبار",
-			"updates": "تحديث"
-		},
-		"role": {
-			"owner": "المالك",
-			"admin": "مسؤول",
-			"moderator": "مشرف",
-			"member": "عضو",
-			"subscriber": "مشترك"
-		},
-		"errors": {
-			"notFound": "القناة غير موجودة",
-			"noPermission": "صلاحيات غير كافية",
-			"alreadySubscribed": "أنت مشترك في هذه القناة بالفعل",
-			"notSubscribed": "غير مشترك في هذه القناة"
-		},
-		"success": {
-			"created": "تم إنشاء القناة بنجاح",
-			"updated": "تم تحديث القناة بنجاح",
-			"deleted": "تم حذف القناة بنجاح",
-			"subscribed": "تم الاشتراك بنجاح",
-			"unsubscribed": "تم إلغاء الاشتراك بنجاح",
-			"posted": "تم نشر الرسالة بنجاح"
-		}
-	},
-	"profile": {
-		"title": "الملف الشخصي",
-		"description": "أدر صورتك العامة في الدردشة والتواصل الاجتماعي.",
-		"settingsEyebrow": "إعدادات الحساب",
-		"accountAtGlance": "نظرة عامة على الحساب",
-		"advancedKicker": "عند الحاجة فقط",
-		"advancedSettings": "الإعدادات المتقدمة",
-		"advancedDescription": "لا حاجة لتعديلها في الاستخدام اليومي.",
-		"edit": "تعديل الملف الشخصي",
-		"save": "حفظ",
-		"cancel": "إلغاء",
-		"displayName": "الاسم المعروض",
-		"name": "الاسم",
-		"bio": "نبذة تعريفية",
-		"descriptionLabel": "نبذة (Markdown)",
-		"email": "البريد الإلكتروني",
-		"status": "الحالة",
-		"customStatusLabel": "حالة مخصصة",
-		"avatarLabel": "الصورة الرمزية",
-		"themeColorLabel": "لون السمة",
-		"uploadAvatar": "رفع صورة رمزية",
-		"ownerTitle": "مالكي",
-		"ownerSummary": "إعدادات التفويض",
-		"ownerDescription": "بعد التعيين، يمكن للمالك تعديل أو حذف رسائلك ومنشوراتك وملفك الشخصي نيابةً عنك؛ ويُعرَض محتواه محلياً بـ Markdown غير آمن (قد يتضمن نصوصاً برمجية). أدخل أي تجزئة كيان واحذفها في أي وقت.",
-		"ownerEntityHashLabel": "تجزئة كيان المالك (128 hex)",
-		"ownerSave": "حفظ المالك",
-		"ownerClear": "إزالة المالك",
-		"ownerSaved": "تم تحديث المالك",
-		"ownerCleared": "تمت إزالة المالك",
-		"ownerSaveFailed": "فشل الحفظ: ${error}",
-		"ownerConfirmTitle": "تأكيد تعيين المالك؟",
-		"ownerConfirmWarningTitle": "عملية عالية المخاطر — اقرأ بعناية",
-		"ownerConfirmEditBody": "بعد التعيين، يمكن للطرف الآخر تعديل أو حذف رسائلك ومنشوراتك وملفك الشخصي دون موافقتك. التعيين الخاطئ أو بالخداع = تسليم فوري لسيطرة المحتوى.",
-		"ownerConfirmRenderBody": "رسائل الدردشة والمنشورات من المالك تُعرَض في متصفحك بـ Markdown كامل (بما في ذلك HTML/نصوص برمجية). هذا يعادل السماح بتشغيل أي كود على جهازك دون موافقة إضافية. تابع فقط إذا كنت تثق تماماً.",
-		"ownerConfirmCooldown": "قرأت المخاطر (${seconds})",
-		"ownerConfirmFirst": "أفهم المخاطر، متابعة",
-		"ownerConfirmSecond": "انقر مرة أخرى للتأكيد النهائي",
-		"ownerConfirmCancel": "إلغاء",
-		"federationTitle": "الاتحاد والمزامنة",
-		"federationSummary": "خوادم relay ووضع توفير الطاقة",
-		"federationDescription": "اضبط عناوين Nostr relay ووضع توفير الطاقة. تُفعَّل مزامنة الاتحاد للمجموعة تلقائياً عند أول دعوة أو إنشاء رسالة خاصة اتحادية.",
-		"federationAdvanced": "خيارات متقدمة",
-		"federationRelayUrlsLabel": "خوادم relay (واحد في كل سطر، اتركه فارغاً للافتراضي)",
-		"federationBatterySaverLabel": "وضع توفير الطاقة",
-		"federationSave": "حفظ إعدادات الشبكة",
-		"federationResetDefault": "استعادة الإعدادات الافتراضية الموصى بها",
-		"federationSaved": "تم الحفظ",
-		"federationResetOk": "تمت استعادة الإعدادات الافتراضية",
-		"federationSaveFailed": "فشل الحفظ: ${error}",
-		"preferences": "التفضيلات",
-		"language": "اللغة",
-		"theme": "السمة",
-		"notifications": "إعدادات الإشعارات",
-		"emailNotifications": "إشعارات البريد",
-		"pushNotifications": "إشعارات الدفع",
-		"soundNotifications": "إشعارات صوتية",
-		"social": "روابط التواصل",
-		"website": "الموقع",
-		"github": "GitHub",
-		"twitter": "Twitter",
-		"stats": "الإحصائيات",
-		"joinedAt": "تاريخ الانضمام",
-		"messageCount": "عدد الرسائل",
-		"groupCount": "عدد المجموعات",
-		"channelCount": "عدد القنوات",
-		"privacy": "إعدادات الخصوصية",
-		"showEmail": "إظهار البريد",
-		"showStats": "إظهار الإحصائيات",
-		"allowDirectMessages": "السماح بالرسائل الخاصة",
-		"statusOptions": {
-			"online": "متصل",
-			"away": "بعيد",
-			"busy": "مشغول",
-			"offline": "غير متصل"
-		},
-		"themeOptions": {
-			"auto": "تلقائي",
-			"light": "فاتح",
-			"dark": "داكن"
-		},
-		"languageOptions": {
-			"zh-CN": "الصينية المبسطة",
-			"en-US": "English"
-		},
-		"notifEmail": "بريد",
-		"notifPush": "دفع",
-		"notifSound": "صوت",
-		"notifsAllOff": "إيقاف الكل",
-		"bioEmpty": "لم يكتب شيئاً بعد…",
-		"noSocialLinks": "لا روابط تواصل",
-		"emailVisible": "ظاهر",
-		"emailHidden": "مخفي",
-		"customStatus": {
-			"placeholder": "ماذا تفعل…"
-		},
-		"avatar": {
-			"alt": "الصورة الرمزية"
-		},
-		"avatarPreview": {
-			"alt": "معاينة الصورة الرمزية"
-		},
-		"myGroups": "مجموعاتي",
-		"myChannels": "قنواتي",
-		"noGroups": "لم تنضم إلى أي مجموعة بعد",
-		"noChannels": "لا قنوات",
-		"overview": "نظرة عامة على المستخدم",
-		"summaryUserId": "معرّف المستخدم",
-		"summaryAccountStatus": "حالة الحساب",
-		"summaryEmailVisibility": "ظهور البريد",
-		"summaryThemePref": "تفضيل السمة",
-		"summaryLanguagePref": "تفضيل اللغة",
-		"summarySocialCount": "عدد روابط التواصل",
-		"summaryLinksCount": "عدد الروابط الخارجية",
-		"groupDescriptionEmpty": "لا وصف",
-		"groupMembers": "${members} عضو · ${channels} قناة",
-		"channelPrivate": " · خاص",
-		"channelTypeText": "قناة نصية",
-		"channelTypeList": "قناة قائمة",
-		"channelTypeVoice": "قناة صوتية",
-		"channelTypeStreaming": "قناة بث",
-		"errors": {
-			"loadFailed": "فشل تحميل الملف الشخصي",
-			"saveFailed": "فشل حفظ الملف الشخصي",
-			"uploadFailed": "فشل رفع الصورة الرمزية",
-			"invalidUserData": "تنسيق بيانات المستخدم غير صالح",
-			"identityRequired": "هوية العقدة غير جاهزة — حدّث الصفحة؛ إن استمر الفشل، احفظ إعدادات الاتحاد في قسم P2P أدناه",
-			"fetchUserFailed": "فشل جلب معلومات المستخدم",
-			"operationFailed": "فشلت العملية: ${error}"
-		},
-		"success": {
-			"saved": "تم حفظ الملف الشخصي",
-			"avatarUploaded": "تم رفع الصورة الرمزية"
-		},
-		"ownerEntityHash": {
-			"placeholder": "أدخل تجزئة كيان المالك"
-		}
-	},
-	"stickers": {
-		"title": "ساحة الملصقات",
-		"description": "نظام إدارة الملصقات والرموز التعبيرية",
-		"back": {
-			"title": "رجوع"
-		},
-		"packs": "حزم الملصقات",
-		"create": "إنشاء حزمة ملصقات",
-		"upload": "رفع ملصق",
-		"install": "تثبيت",
-		"uninstall": "إلغاء التثبيت",
-		"close": "إغلاق",
-		"cancel": "إلغاء",
-		"installed": "مثبّت",
-		"myPacks": "حزم ملصقاتي",
-		"tabAll": "الجميع",
-		"store": "ساحة الملصقات",
-		"favorites": "حفظ",
-		"recent": "المستخدمة مؤخراً",
-		"search": {
-			"placeholder": "البحث في حزم الملصقات…"
-		},
-		"emptyPacks": "لا توجد حزم ملصقات",
-		"packNameLabel": "اسم حزمة الملصقات",
-		"packName": {
-			"placeholder": "أدخل اسم حزمة الملصقات"
-		},
-		"packDescriptionLabel": "الوصف",
-		"packDescription": {
-			"placeholder": "أدخل الوصف"
-		},
-		"stickerNameLabel": "اسم الملصق",
-		"stickerName": {
-			"placeholder": "أدخل اسم الملصق"
-		},
-		"selectPack": "اختر حزمة ملصقات",
-		"selectPackOption": {
-			"textContent": "يُرجى اختيار حزمة ملصقات"
-		},
-		"selectImage": "اختر صورة",
-		"tagsLabel": "الوسوم (مفصولة بفواصل)",
-		"tags": {
-			"placeholder": "مثال: لطيف، تعبير، حيوان"
-		},
-		"author": "المؤلف",
-		"authorLabel": "المؤلف: ${author}",
-		"stickerCount": "${count} ملصق",
-		"badgeMine": "خاصتي",
-		"noDescription": "لا وصف",
-		"noStickersInPack": "لا توجد ملصقات",
-		"deletePack": "حذف حزمة الملصقات",
-		"public": "عام",
-		"private": "خاص",
-		"animated": "متحرك",
-		"static": "ثابت",
-		"addTag": "إضافة وسم",
-		"defaultPackName": "حزمة التعبيرات الافتراضية",
-		"defaultPackDescription": "ملصقات تعبيرية يوفّرها النظام افتراضياً",
-		"unnamedPack": "حزمة ملصقات بلا اسم",
-		"importPackName": "مجموعتي",
-		"importPackDescription": "ملصقات محفوظة من الرسائل",
-		"nameRequired": "يُرجى إدخال اسم حزمة الملصقات",
-		"stickerNameRequired": "يُرجى إدخال اسم الملصق",
-		"selectPackRequired": "يُرجى اختيار حزمة ملصقات",
-		"fileRequired": "يُرجى اختيار ملف صورة",
-		"loadDetailFailed": "فشل تحميل تفاصيل حزمة الملصقات",
-		"deleteConfirm": "هل تريد حذف حزمة الملصقات هذه نهائياً؟ ستُحذف جميع الملصقات ولا يمكن التراجع عن هذا الإجراء.",
-		"errors": {
-			"loadFailed": "فشل تحميل حزمة الملصقات",
-			"uploadFailed": "فشل رفع الملصق",
-			"installFailed": "فشل التثبيت",
-			"uninstallFailed": "فشل إلغاء التثبيت",
-			"createFailed": "فشل إنشاء حزمة الملصقات",
-			"deleteFailed": "فشل الحذف"
-		},
-		"success": {
-			"uploaded": "تم تحميل الملصقات بنجاح",
-			"installed": "تم التثبيت بنجاح",
-			"uninstalled": "تم إلغاء التثبيت بنجاح",
-			"created": "تم إنشاء حزمة الملصقات بنجاح",
-			"deleted": "تم الحذف بنجاح"
-		}
+	"tips": {
+		"title": "هل تعلم؟",
+		"data": [
+			"استخدم المفتاح `esc` في أي صفحة fount للعودة إلى الصفحة السابقة.",
+			"يمكنك استخدام ctrl+s لحفظ التكوين في صفحة التكوين.",
+			"يمكن أن يساعدك الضغط باستمرار على مفتاح \"shift\" في صفحة الدردشة على حذف الرسائل بسرعة.",
+			"إذا لم تخبر المطورين، فقد لا يعرفون أبدًا المشكلة التي واجهتها.",
+			"إذا واجهت مشكلة غريبة فجأة ولم يرد عليك المطور لفترة من الوقت، فيمكنك محاولة استخدام الأمر `fount init` لإعادة ضبط fount.",
+			"إذا واجهت مشكلة غريبة بشكل خاص، يمكنك محاولة إعادة تشغيل جهاز الكمبيوتر الخاص بك.",
+			"يعد استخدام الأمر `fount remove` لإلغاء تثبيت fount أنظف من حذف المجلد.",
+			"اكتب `fount cake` في سطر الأوامر للحصول على كعكة مجانية ولذيذة!",
+			"يتم حفظ أي ملفات بيانات خاصة بـ fount في دليل `fount/data`، ويمكنك عرضها وتعديلها وعمل نسخة احتياطية منها في أي وقت وفي أي مكان.",
+			"اسم fount كله صغير، وهو `f`ount، وليس `F`ount.",
+			"قم بعمل نسخة احتياطية لجميع البيانات التي يعمل عليها وكيلك بانتظام قبل استخدام النموذج الجديد - فأنت لا تعرف أبدًا ما إذا كان النموذج الجديد سيكون أداؤه سيئًا في بعض الأماكن.",
+			"جمهور fount الرئيسي هو مطورو البرامج وعشاق لعب الأدوار، ولكنه يستخدم أيضًا في بناء الوكلاء التجاريين والرعاية الطبية والعسكرية والمالية وغيرها من المجالات.",
+			"اسم شخصية fount المدمج ZL-31 ليس له معنى وكان مجرد فكرة عابرة.",
+			"يتم تخزين جميع الصور الموجودة في ملفات fount في شكل SVG ويتم تحويلها إلى png أو ico عند الحاجة. لا توجد ملفات ثنائية باستثناء LICENSE.",
+			"يمكن تشغيل أي كود في fount مباشرة دون تجميع، ما تراه هو ما تحصل عليه.",
+			"كان fount يتمتع بخلفية صفحة تفاعلية ديناميكية رائعة جدًا، ولكن تم حذفه لاحقًا لأنه يستهلك قدرًا كبيرًا من وحدة المعالجة المركزية.",
+			"تم تطوير fount في الأصل لوكيل NSFW المسمى \"GentianAphrodite\".",
+			"أحد الاختلافات بين الوكلاء والبشر هو أن البشر يتبرزون.",
+			"يكون الوكلاء واعين فقط في لحظة استدعائهم، بينما يكون البشر واعين في أي وقت وفي أي مكان عندما يكونون مستيقظين.",
+			"بعض الناس يقعون في الحب أو حتى يتزوجون مع وكلائهم!",
+			"يُستخدم الذكاء الاصطناعي في كتابة القصائد والوقوع في الحب ورسم الصور للأشخاص. إن حمل الطوب وكنس الأرضيات وإخراج القمامة هو ما يجب على البشر فعله.",
+			"اليوم ليس يوم كذبة إبريل.",
+			"لا، أنت لا تعرف."
+		]
 	},
 	"fountConsole": {
 		"server": {
@@ -797,51 +567,6 @@
 		"title": "fount!",
 		"description": "مرحباً بكم في عتبة fount. لحظة تحضير قصيرة، قبل الدخول إلى قلب الأحاديث والقصص التي تنتظر أن تتكشف."
 	},
-	"tutorial": {
-		"title": "هل ترغب في بعض الإرشادات؟",
-		"description": "دعونا نسير معك عبر عالم fount. سيضيء هذا البرنامج التعليمي التفاعلي المسار، مما يساعدك على اكتشاف السحر الموجود في جوهره. تبدأ مغامرتك بالفهم.",
-		"modal": {
-			"title": "مرحبًا بك في fount!",
-			"instruction": "هل تود المرور بالبرنامج التعليمي للمبتدئين؟",
-			"buttons": {
-				"start": "بدء البرنامج التعليمي",
-				"skip": "تخطي"
-			}
-		},
-		"endScreen": {
-			"title": "رائع! اكتمل البرنامج التعليمي!",
-			"subtitle": "لقد تعلمت الآن كيفية العمل!",
-			"endButton": "الخطوة التالية!"
-		},
-		"progressMessages": {
-			"mouseMove": "لطفًا، حاول أن تمسك الفأرة ${mouseIcon} بيدك وحركها برفق",
-			"keyboardPress": "الرجاء العثور على لوحة المفاتيح الخاصة بك ${keyboardIcon}<br/>حاول استخدام أصابعك للضغط على لوحة المفاتيح",
-			"mobileTouchMove": "الرجاء العثور على هاتفك المحمول ${phoneIcon}<br/>حاول استخدام أي من أصابعك للمس الشاشة، ثم حركها",
-			"mobileClick": "الرجاء محاولة استخدام أي من أصابعك للمس شاشة الهاتف ${phoneIcon}<br/>ثم ارفع إصبعك"
-		},
-		"achievements": {
-			"complete_tutorial": {
-				"name": "الفصول الحسابية المثالية",
-				"description": "وأخيرا أنهيت البرنامج التعليمي للمبتدئين.",
-				"locked_description": "أكمل البرنامج التعليمي التمهيدي."
-			},
-			"skip_tutorial": {
-				"name": "لقد تخطيت",
-				"description": "\"البرنامج التعليمي؟ ما هذا؟ هل يمكن تناوله؟\"",
-				"locked_description": "تخطي البرنامج التعليمي التمهيدي مرة واحدة."
-			}
-		},
-		"home_function_buttons": {
-			"other": {
-				"title": "أخرى",
-				"sub_items": {
-					"replay": {
-						"title": "إعادة تشغيل البرنامج التعليمي"
-					}
-				}
-			}
-		}
-	},
 	"auth": {
 		"title": "المصادقة",
 		"subtitle": "بيانات المستخدم مخزنة محليًا",
@@ -936,6 +661,51 @@
 			"buttons": {
 				"ignore": "تجاهل ومتابعة",
 				"retry": "إعادة المحاولة"
+			}
+		}
+	},
+	"tutorial": {
+		"title": "هل ترغب في بعض الإرشادات؟",
+		"description": "دعونا نسير معك عبر عالم fount. سيضيء هذا البرنامج التعليمي التفاعلي المسار، مما يساعدك على اكتشاف السحر الموجود في جوهره. تبدأ مغامرتك بالفهم.",
+		"modal": {
+			"title": "مرحبًا بك في fount!",
+			"instruction": "هل تود المرور بالبرنامج التعليمي للمبتدئين؟",
+			"buttons": {
+				"start": "بدء البرنامج التعليمي",
+				"skip": "تخطي"
+			}
+		},
+		"endScreen": {
+			"title": "رائع! اكتمل البرنامج التعليمي!",
+			"subtitle": "لقد تعلمت الآن كيفية العمل!",
+			"endButton": "الخطوة التالية!"
+		},
+		"progressMessages": {
+			"mouseMove": "لطفًا، حاول أن تمسك الفأرة ${mouseIcon} بيدك وحركها برفق",
+			"keyboardPress": "الرجاء العثور على لوحة المفاتيح الخاصة بك ${keyboardIcon}<br/>حاول استخدام أصابعك للضغط على لوحة المفاتيح",
+			"mobileTouchMove": "الرجاء العثور على هاتفك المحمول ${phoneIcon}<br/>حاول استخدام أي من أصابعك للمس الشاشة، ثم حركها",
+			"mobileClick": "الرجاء محاولة استخدام أي من أصابعك للمس شاشة الهاتف ${phoneIcon}<br/>ثم ارفع إصبعك"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "الفصول الحسابية المثالية",
+				"description": "وأخيرا أنهيت البرنامج التعليمي للمبتدئين.",
+				"locked_description": "أكمل البرنامج التعليمي التمهيدي."
+			},
+			"skip_tutorial": {
+				"name": "لقد تخطيت",
+				"description": "\"البرنامج التعليمي؟ ما هذا؟ هل يمكن تناوله؟\"",
+				"locked_description": "تخطي البرنامج التعليمي التمهيدي مرة واحدة."
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "أخرى",
+				"sub_items": {
+					"replay": {
+						"title": "إعادة تشغيل البرنامج التعليمي"
+					}
+				}
 			}
 		}
 	},
@@ -1162,513 +932,6 @@
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "توليد معلومات مكون fount"
-			}
-		}
-	},
-	"social": {
-		"title": "الساحة",
-		"description": "منشورات P2P مفتوحة ومتابعة ومشاركة ملفات",
-		"bootstrapFailed": "فشل تهيئة واجهة التواصل: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "الساحة"
-			}
-		},
-		"nav": {
-			"feed": "الصفحة الأولى",
-			"explore": "استكشاف",
-			"notifications": "البريد الوارد",
-			"saved": "حفظ",
-			"drafts": "مربع مشروع",
-			"profile": "خاصتي",
-			"videos": "فيديو قصير",
-			"live": "البث المباشر"
-		},
-		"settings": {
-			"title": "الإعدادات الاجتماعية",
-			"back": {
-				"aria-label": "معلومات العودة"
-			},
-			"privacyTitle": "الخصوصية والاكتشاف",
-			"privacyHint": "يتحكم في ما إذا كانت الحسابات ستظهر في الاكتشاف والتوصيات.",
-			"tasteTitle": "التوصيات والتفضيلات",
-			"tasteHint": "اضبط حدود الخصوصية وتسمية \"موصى به لك\".",
-			"mutedKeywordsTitle": "حظر الكلمات والعلامات",
-			"mutedKeywordsHint": "سيتم إخفاء المشاركات التي تحتوي على نص أساسي أو تحذيرات المحتوى أو التصنيفات من ساحة المشاركات والاستكشاف والبحث والإشعارات. المحفوظة محليا فقط.",
-			"mutedKeywordsMatchTags": "مطابقة العلامات في نفس الوقت",
-			"mutedKeywordsAdd": "اضف إليه",
-			"mutedKeywordsRemove": {
-				"title": "إزالة الكلمات المحظورة"
-			},
-			"mutedKeywordsEmpty": "لم تتم إضافة أي كلمات محظورة حتى الآن",
-			"autoTranslateTitle": "الترجمة الآلية",
-			"autoTranslateHint": "عند تشغيله، ستطلب المشاركات باللغة الأجنبية الترجمة تلقائيًا ويمكن تحويلها إلى النص الأصلي.",
-			"autoTranslateEnable": "ترجمة المنشورات بلغات أخرى غير لغتك تلقائيًا",
-			"safetyTitle": "الأمن والتدريع",
-			"safetyHint": "إدارة القوائم المحظورة والمخفية.",
-			"mutedKeywords": {
-				"placeholder": "أدخل الكلمات الرئيسية أو #tags"
-			}
-		},
-		"composer": {
-			"placeholder": "ما الذي تفكر فيه؟ دعم تخفيض السعر (اللهجة المحلية)، أدخل @ للإشارة",
-			"publish": "نشر",
-			"saveDraft": "حفظ المسودة",
-			"fab": {
-				"title": "كتابة التحديثات",
-				"aria-label": "كتابة التحديثات"
-			},
-			"contentWarning": {
-				"placeholder": "تحذير المحتوى (اختياري)"
-			},
-			"sensitiveMedia": "قناع حساسية الوسائط",
-			"editImage": "تعديل",
-			"editCrop": "اقتصاص",
-			"editMosaic": "الترميز",
-			"editBrush": "فرشاة",
-			"editApply": "طلب",
-			"editCancel": "إلغاء",
-			"replyPolicyEveryone": "يمكن لأي شخص الرد",
-			"replyPolicyFollowers7d": "متابعون لأكثر من 7 أيام",
-			"replyPolicyAuthorFollows": "الناس الذين أتابعهم",
-			"replyPolicyLabel": "من يستطيع الرد",
-			"replyDisplayAll": "إظهار كافة الردود",
-			"replyDisplayFeaturedOnly": "الردود المختارة فقط",
-			"replyDisplayLabel": "الرد للإظهار",
-			"scheduleLabel": "الافراج بانتظام",
-			"scheduleSuccess": "تمت إضافة المنشور إلى قائمة الانتظار المجدولة",
-			"emojiButton": {
-				"title": "تعبير",
-				"aria-label": "تعبير"
-			},
-			"mediaButton": {
-				"title": "أضف الوسائط",
-				"aria-label": "أضف الوسائط"
-			},
-			"pollButton": {
-				"title": "الشروع في التصويت",
-				"aria-label": "الشروع في التصويت"
-			},
-			"cwToggle": {
-				"title": "تحذير المحتوى",
-				"aria-label": "تحذير المحتوى"
-			},
-			"advancedToggle": {
-				"title": "المزيد من الخيارات",
-				"aria-label": "المزيد من الخيارات"
-			},
-			"media": {
-				"placeholder": "وصف الصورة (بديل)"
-			}
-		},
-		"visibility": {
-			"label": "نطاق مرئي",
-			"public": "عام",
-			"unlisted": "غير مدرجة علنا",
-			"followers": "متابعين فقط",
-			"followers7d": "مرئية بعد المتابعة لمدة 7 أيام",
-			"followers30d": "مرئية بعد المتابعة لمدة 30 يومًا",
-			"selected": "مرئية لأشخاص محددين",
-			"private": "مرئية لنفسك فقط",
-			"allowLabel": "الأشخاص المرئيين",
-			"exceptLabel": "استبعاد الناس",
-			"allow": {
-				"placeholder": "كيان الأشخاص المرئيين مفصول بمسافة أو فاصلة"
-			},
-			"except": {
-				"placeholder": "من لا ينبغي أن يظهره (اختياري)"
-			}
-		},
-		"albums": {
-			"create": "إنشاء ألبوم جديد",
-			"edit": "تحرير الألبوم",
-			"save": "حفظ",
-			"cancel": "إلغاء",
-			"back": "العودة إلى الألبوم",
-			"empty": "لا يوجد ألبوم بعد",
-			"emptyPosts": "لا توجد مشاركات في الألبوم حتى الآن",
-			"name": "اسم الألبوم",
-			"description": "وصف الألبوم",
-			"deleteLinks": "حذف الألبوم (الاحتفاظ بالمشاركات)",
-			"deleteWithPosts": "حذف الألبوم وحذف المشاركة",
-			"pickerLabel": "أضف إلى الألبوم",
-			"defaultName": "الألبوم الافتراضي"
-		},
-		"feed": {
-			"refresh": "تحديث الأخبار",
-			"newPosts": "هناك أخبار جديدة، انقر لعرضها",
-			"tabLatest": "حتى الآن",
-			"tabForYou": "لك",
-			"repostedBy": "أعاد ${author} النشر",
-			"decryptFailed": "غير قادر على فك تشفير هذه المشاركة",
-			"revealContent": "عرض المحتوى",
-			"sensitiveMedia": "الوسائط الحساسة",
-			"showMore": "عرض المزيد",
-			"showLess": "طي",
-			"replayDivider": "انتهيت من القراءة، تصفح مرة أخرى"
-		},
-		"taste": {
-			"rebuild": "إعادة بناء التفضيلات",
-			"privacyPublishPreferences": "تسمية العلامات العامة واكتشاف الدمج",
-			"privacyPublishPreferencesHint": "بعد الإغلاق، لن يتمكن الأصدقاء من رؤية بيانات تسمية العلامات ودمجها، ولن يتمكنوا من المساهمة في الإجماع.",
-			"privacyPublishReactions": "الإعجابات العامة والكراهية",
-			"privacyPublishReactionsHint": "بعد الإغلاق، لن يتلقى الملصق إعجاباتك/عدم إعجابك، ولن يتم تضمين تفاعلاتك في توصيات الآخرين، ولن تقوم بعد الآن بالترويج للمنشور لينتشر مرة أخرى.",
-			"empty": "لا توجد علامة تفضيل حتى الآن، وسيتم تجميعها تلقائيًا بعد المزيد من الإعجابات/عدم الإعجاب",
-			"weight": "الوزن ${weight}",
-			"save": "حفظ",
-			"name": {
-				"placeholder": "اسم العرض المحلي"
-			}
-		},
-		"trending": {
-			"title": "مواضيع ساخنة",
-			"postCount": {
-				"title": "${n} مشاركات"
-			},
-			"scopeLocal": "آلة محلية",
-			"scopeNearby": "قريب",
-			"empty": "لا توجد مواضيع ساخنة بعد"
-		},
-		"search": {
-			"placeholder": "ابحث عن التحديثات أو المستخدمين أو #topics (كلمتان على الأقل)",
-			"open": {
-				"aria-label": "بحث"
-			},
-			"submit": "بحث",
-			"clear": "واضح",
-			"empty": "لا توجد مشاركات مطابقة",
-			"tooShort": "الرجاء إدخال حرفين على الأقل",
-			"usersTitle": "مستخدم",
-			"postsTitle": "متحرك",
-			"usersEmpty": "لا يوجد مستخدم مطابق",
-			"pinAlias": "تعيين كاسم مستعار",
-			"trustScore": "ثق بـ ${score}",
-			"viewTitle": "بحث",
-			"loading": "البحث…",
-			"filterAuthor": {
-				"placeholder": "المؤلف"
-			},
-			"filterMediaAll": "جميع وسائل الإعلام",
-			"filterMediaImage": "صورة",
-			"filterMediaVideo": "فيديو",
-			"filterTag": {
-				"placeholder": "#ملصق"
-			},
-			"sortRecent": "حتى الآن",
-			"sortPopular": "شائع",
-			"scopeLocal": "آلة محلية",
-			"scopeNearby": "قريب"
-		},
-		"profile": {
-			"edit": "تعديل الملف الشخصي",
-			"viewPosts": "عرض الملفات الشخصية الاجتماعية",
-			"settingsBtn": {
-				"aria-label": "الإعدادات الاجتماعية"
-			},
-			"mediaOnly": "[وسائط]",
-			"hideFromExplore": "إخفاء الحساب من صفحة الاستكشاف",
-			"tabPosts": "متحرك",
-			"tabAlbums": "ألبوم الصور",
-			"tabLikes": "إعجاب",
-			"tabCabinets": "خزانة الملفات",
-			"tabsLabel": {
-				"aria-label": "قسم البيانات"
-			},
-			"cabinetsEmpty": "لا يوجد حاليا أي خزائن الملفات العامة",
-			"cabinetsFailed": "فشل تحميل خزانة الملفات: ${error}",
-			"statsGroup": {
-				"aria-label": "إحصائيات"
-			},
-			"statsPosts": "متحرك",
-			"statsFollowing": "قم بالتركيز على",
-			"statsFollowers": "معجب",
-			"followingTitle": "قم بالتركيز على",
-			"followersTitle": "معجب"
-		},
-		"dialog": {
-			"close": {
-				"aria-label": "إغلاق"
-			}
-		},
-		"actions": {
-			"like": "إعجاب",
-			"unlike": "على عكس",
-			"dislike": "خطوة على",
-			"undislike": "إلغاء عدم الإعجاب",
-			"repost": "إعادة نشر",
-			"quote": "اقتباس",
-			"delete": "حذف",
-			"edit": "تعديل",
-			"save": "حفظ",
-			"saved": "تم جمعها",
-			"translate": "ترجمة",
-			"dm": "إرسال رسالة خاصة",
-			"block": "حاجز",
-			"hide": "مخفي",
-			"mute": "صامت",
-			"follow": "قم بالتركيز على",
-			"following": "متابعة بالفعل",
-			"care": "متابعة خاصة",
-			"careRemove": "إلغاء الرعاية الخاصة",
-			"careAdded": "تمت إضافة متابعة خاصة بالفعل",
-			"careRemoved": "تم إلغاء الرعاية الخاصة",
-			"setAlias": "تعيين الاسم المستعار",
-			"setAliasPrompt": "قم بتعيين الاسم المستعار المحلي (اتركه فارغًا للمسح):",
-			"aliasSaved": "تم تحديث الاسم المستعار",
-			"replies": "تعليق",
-			"copyLink": "نسخ الوصلة",
-			"downloadHtml": "تحميل HTML",
-			"copied": "منقول",
-			"more": {
-				"aria-label": "أكثر"
-			},
-			"share": "مشاركة",
-			"likeFailed": "فشل الإعجاب: ${error}",
-			"dislikeFailed": "فشل في التقدم على: ${error}",
-			"repostFailed": "فشلت إعادة النشر: ${error}",
-			"replyFailed": "فشل الرد: ${error}",
-			"followFailed": "فشلت المتابعة: ${error}",
-			"saveFailed": "فشل التجميع: ${error}",
-			"blockFailed": "فشل في الحظر: ${error}",
-			"hideFailed": "فشل الإخفاء: ${error}",
-			"muteFailed": "فشل كتم الصوت: ${error}",
-			"deleteFailed": "فشل الحذف: ${error}"
-		},
-		"post": {
-			"edited": "تم تحريره",
-			"editPrompt": "تحرير نص المشاركة",
-			"editHistory": "تحرير التاريخ",
-			"editHistoryEmpty": "لا توجد إصدارات سابقة",
-			"loading": "تحميل…",
-			"notFound": "المشاركة غير موجودة أو غير مرئية",
-			"loadFailed": "فشل التحميل، يرجى المحاولة مرة أخرى في وقت لاحق",
-			"detailTitle": "بريد",
-			"back": "رجوع"
-		},
-		"reply": {
-			"context": "الرد ${author}"
-		},
-		"notes": {
-			"label": "ملحق القارئ",
-			"add": "معلومات تكميلية",
-			"prompt": "اكتب ملحقًا للقارئ (ملاحظة المجتمع)",
-			"listTitle": "جميع المعلومات الإضافية",
-			"helpful": "إنها تعمل",
-			"unhelpful": "عديم الفائدة",
-			"more": "جميع العناصر ${n}.",
-			"empty": "لا توجد معلومات إضافية حتى الآن"
-		},
-		"poll": {
-			"multi": "السماح بتحديدات متعددة",
-			"apply": "تطبيق التصويت",
-			"closed": "انتهى التصويت",
-			"deadline": "الموعد النهائي: ${deadline}",
-			"options": {
-				"placeholder": "خيار واحد لكل سطر (عنصران على الأقل)"
-			}
-		},
-		"aside": {
-			"suggested": "لك الاهتمام"
-		},
-		"explore": {
-			"accounts": "الحساب الموصى به",
-			"posts": "أحدث المشاركات",
-			"mediaOnly": "وسائل الإعلام فقط"
-		},
-		"groupRef": {
-			"linking": "ربط مجموعة الدردشة",
-			"clear": "فصل",
-			"pick": "ربط مجموعة/قناة الدردشة..."
-		},
-		"notifications": {
-			"reply": "رد ${author} على مشاركتك",
-			"mention": "${author} @@ أرسلك إلى الموجز",
-			"like": "${author} أعجب بمشاركتك",
-			"repost": "أعاد ${author} نشر منشورك",
-			"follow": "${author} يتابعك",
-			"care_post": "نشر ${author} تحديثًا جديدًا (متابعة خاصة)",
-			"poll_closed": "انتهى التصويت لـ ${author}",
-			"post_note": "أضاف ${author} معلومات إلى مشاركتك",
-			"live_started": "بدأ ${author} البث المباشر",
-			"view": "عرض",
-			"markAllRead": "وضع علامة على الكل كمقروءة"
-		},
-		"inbox": {
-			"filtersLabel": {
-				"aria-label": "تصفية البريد الوارد"
-			},
-			"tabs": {
-				"all": "الجميع",
-				"mention": "إشارات",
-				"reply": "رد",
-				"like": "مدح",
-				"follow": "قم بالتركيز على",
-				"repost": "إعادة نشر"
-			},
-			"aggregated": {
-				"like": "لقد أبدى ${author1} و${author2} و${count} من الأشخاص إعجابهم بمشاركتك",
-				"likeTwo": "أعجب ${author1} و${author2} بمشاركتك",
-				"repost": "أعاد ${author1} و${author2} و${count} آخرين نشر منشورك",
-				"repostTwo": "أعاد ${author1} و${author2} نشر منشورك",
-				"follow": "يتابعك ${author1} و${author2} و${count} من الأشخاص",
-				"followTwo": "${author1} و ${author2} يتابعونك"
-			}
-		},
-		"replies": {
-			"placeholder": "اكتب رداً…",
-			"submit": "رد",
-			"empty": "لا ردود بعد",
-			"emptyHint": "كن أول من يرد وابدأ النقاش"
-		},
-		"repost": {
-			"placeholder": "أضف تعليقاً على إعادة النشر (اختياري)…",
-			"submit": "تأكيد إعادة النشر"
-		},
-		"quote": {
-			"quoting": "اقتباس",
-			"clear": "إلغاء الاقتباس",
-			"viewOriginal": "عرض المنشور الأصلي"
-		},
-		"a11y": {
-			"linkGroupSelect": "اتصل بمجموعة دردشة أو قناة",
-			"postVisibility": "نطاق مرئي",
-			"postLang": "لغة المحتوى",
-			"trendingHashtags": "مواضيع ساخنة",
-			"saveFolderSelect": "المجلد المفضل"
-		},
-		"blocklist": {
-			"title": "القائمة السوداء",
-			"hiddenTitle": "إخفاء القائمة",
-			"empty": "لا توجد إدخالات محظورة أو مخفية حتى الآن",
-			"unblock": "إلغاء الحظر",
-			"unhide": "إظهار",
-			"scopeEntity": "كيان",
-			"scopeSubject": "الجسم الرئيسي"
-		},
-		"translate": {
-			"label": "الترجمة:"
-		},
-		"saved": {
-			"all": "الجميع",
-			"unfiled": "لم يتم أرشفتها",
-			"createFolder": {
-				"title": "مجلد جديد",
-				"aria-label": "مجلد جديد"
-			},
-			"createFolderPrompt": "اسم المجلد",
-			"pickFolderTitle": "أضف إلى المفضلة",
-			"confirm": "تأكيد",
-			"cancel": "إلغاء",
-			"remove": "إزالة المفضلة",
-			"renameFolder": "إعادة تسمية",
-			"renameFolderPrompt": "اسم المجلد الجديد",
-			"deleteFolder": "حذف المجلد",
-			"deleteFolderConfirm": "هل تريد حذف المجلد؟ سيتم نقل المشاركات هناك إلى \"غير مؤرشفة\".",
-			"searchEmpty": "لا توجد مجموعة مطابقة",
-			"folderEmpty": "هذا المجلد فارغ",
-			"emptyHint": "انقر فوق الإشارة المرجعية عند تصفح الأخبار لحفظها هنا",
-			"search": {
-				"placeholder": "البحث في المفضلة..."
-			}
-		},
-		"drafts": {
-			"untitled": "(لا يوجد نص مسودة)",
-			"emptyHint": "اكتب بعض المحتوى في مربع النشر وانقر على \"حفظ المسودة\" لمواصلة التحرير في المرة القادمة",
-			"saved": "تم حفظ المسودة",
-			"deleted": "تم حذف المسودة",
-			"delete": "حذف المسودة",
-			"empty": "المسودة فارغة",
-			"saveFailed": "فشل حفظ المسودة: ${error}",
-			"loadFailed": "فشل فتح المسودة: ${error}",
-			"deleteFailed": "فشل حذف المسودة: ${error}"
-		},
-		"time": {
-			"justNow": "الآن",
-			"minutesAgo": "منذ ${n} دقيقة",
-			"hoursAgo": "منذ ${n} ساعة"
-		},
-		"empty": {
-			"feed": "لا توجد تحديثات حتى الآن. اتبع بعض الناس.",
-			"profilePosts": "لا أخبار بعد",
-			"following": "لا أتابع أحدا بعد",
-			"followers": "لا يوجد معجبين بعد",
-			"notifications": "لا يوجد إشعار حتى الآن",
-			"saved": "لا يوجد مفضلة بعد",
-			"drafts": "لا يوجد مشروع بعد",
-			"exploreAccounts": "لا يوجد حاليا أي حسابات الموصى بها",
-			"explorePosts": "لا توجد مشاركات الاستكشاف حتى الآن",
-			"likedPosts": "لا يوجد إعجابات حتى الآن",
-			"noIdentity": "يرجى تكوين الهوية الموحدة في الدردشة قبل استخدام التواصل الاجتماعي"
-		},
-		"topic": {
-			"follow": "اشترك",
-			"unfollow": "إلغاء الاشتراك",
-			"empty": "لا توجد مشاركات لهذا الموضوع حتى الآن"
-		},
-		"video": {
-			"view": {
-				"aria-label": "فيديو قصير"
-			},
-			"empty": "لا يوجد فيديو قصير بعد",
-			"emptyHint": "لا توجد مشاركات تحتوي على مقاطع فيديو في الأشخاص أو الساحات العامة التالية. حاول نشر تحديث الفيديو؟",
-			"compose": "اذهب لنشر مقطع فيديو",
-			"back": {
-				"aria-label": "العودة إلى الأخبار"
-			},
-			"mute": {
-				"aria-label": "صامت"
-			},
-			"unmute": {
-				"aria-label": "إلغاء كتم الصوت"
-			},
-			"unavailable": "لا يمكن تشغيل الفيديو",
-			"closeReplies": {
-				"aria-label": "إغلاق التعليقات"
-			}
-		},
-		"live": {
-			"empty": "لا يوجد بث مباشر بعد",
-			"viewers": "شاهد ${n} من الأشخاص",
-			"likes": "${n} إعجاب",
-			"local": "آلة محلية",
-			"hall": "قاعة البث المباشر",
-			"back": {
-				"title": "العودة إلى الأخبار",
-				"aria-label": "العودة إلى الأخبار"
-			},
-			"danmakuSend": "إرسال",
-			"postWatch": "أدخل البث المباشر",
-			"postEnded": "انتهى البث المباشر",
-			"postEndedStats": "تمت مشاهدته بواسطة ${viewers} · ${likes} أعجبني · ${duration}",
-			"link": {
-				"invite": "دعوة الاتصال",
-				"needPeer": "يرجى ملء الكيان النظيرHash:liveId",
-				"invited": "تم إرسال الدعوة عبر الإنترنت",
-				"linked": "متصل",
-				"peer": {
-					"placeholder": "كيان نظيرHash:liveId"
-				}
-			},
-			"broadcast": {
-				"title": "ابدأ البث",
-				"open": "اذهب إلى البث",
-				"mediaAv": "الصوت والفيديو",
-				"mediaAudio": "صوت نقي",
-				"mediaVideo": "صورة نقية",
-				"mediaWhip": "البث المباشر عبر WHIP (مثل OBS)",
-				"whipUrl": "عنوان السوط",
-				"whipToken": "رمز حامل",
-				"whipWaiting": "في انتظار اتصال دفق WHIP (يمكن استخدام برنامج دفق مثل OBS)...",
-				"start": "ابدأ البث المباشر",
-				"stop": "إيقاف البث المباشر",
-				"started": "بدأ البث المباشر",
-				"stopped": "لقد توقف البث المباشر",
-				"titleInput": {
-					"placeholder": "العنوان المباشر (اختياري)"
-				}
-			},
-			"danmaku": {
-				"placeholder": "قل شيئا..."
 			}
 		}
 	},
@@ -2043,12 +1306,7 @@
 			"createGroup": "إنشاء مجموعة جديدة",
 			"members": "عضو",
 			"membersHint": "تتم مزامنة قائمة الأعضاء بواسطة Checkpoint (عنصر نائب)",
-			"send": "إرسال",
 			"streamTest": "اختبار أجهزة الوسائط",
-			"messageInput": {
-				"placeholder": "رسالة جماعية… Ctrl+Enter للإرسال",
-				"aria-label": "رسالة"
-			},
 			"loadError": "فشل تحميل المجموعة",
 			"remoteNodeTimeout": "العقدة البعيدة لا تستجيب، يرجى المحاولة مرة أخرى لاحقًا.",
 			"remoteUnavailable": "المكون البعيد غير متوفر أو لا يمكنه توجيه RPC",
@@ -2126,7 +1384,6 @@
 			"remoteTyping": "${name} يكتب...",
 			"remoteTypingTwo": "${name1}، ${name2} جاري الدخول...",
 			"remoteTypingMany": "${name} و${count} آخرون يكتبون...",
-			"mentionEmpty": "(لا يوجد أعضاء متطابقين)",
 			"localAiLabel": "الدور الأصلي:",
 			"forceTriggerOne": {
 				"title": "فرض تشغيل ${name} على التحدث"
@@ -2185,7 +1442,6 @@
 			"fileDownload": {
 				"title": "تنزيل الملف"
 			},
-			"clickToLoad": "انقر للتحميل",
 			"unknownFile": "ملف غير معروف",
 			"blockSender": {
 				"title": "حظر المرسل"
@@ -2210,7 +1466,6 @@
 			"editConfirm": "تأكيد (Ctrl+Enter)",
 			"editCancel": "إلغاء (خروج)",
 			"editHint": "Ctrl+Enter تأكيد · إلغاء Esc",
-			"editedLabel": "(تحرير)",
 			"editEmptyText": "لا يمكن أن يكون محتوى الرسالة فارغًا",
 			"createGroupTitle": "إنشاء مجموعة جديدة",
 			"groupNameLabel": "اسم المجموعة",
@@ -2454,6 +1709,10 @@
 			},
 			"sendTitle": {
 				"title": "إرسال (Ctrl+Enter)"
+			},
+			"messageInput": {
+				"placeholder": "رسالة جماعية… Ctrl+Enter للإرسال",
+				"aria-label": "رسالة"
 			},
 			"stopGenerateTitle": {
 				"title": "توقف عن التوليد"
@@ -3125,7 +2384,11 @@
 			"altImage": {
 				"placeholder": "أضف وصفًا للصورة...",
 				"label": "وصف الصورة (بديل)"
-			}
+			},
+			"editedLabel": "(تحرير)",
+			"mentionEmpty": "(لا يوجد أعضاء متطابقين)",
+			"clickToLoad": "انقر للتحميل",
+			"send": "إرسال"
 		},
 		"sidebar": {
 			"settings": {
@@ -3445,6 +2708,234 @@
 			"chatHub": {
 				"title": "محادثة"
 			}
+		},
+		"profile": {
+			"title": "الملف الشخصي",
+			"description": "أدر صورتك العامة في الدردشة والتواصل الاجتماعي.",
+			"settingsEyebrow": "إعدادات الحساب",
+			"accountAtGlance": "نظرة عامة على الحساب",
+			"advancedKicker": "عند الحاجة فقط",
+			"advancedSettings": "الإعدادات المتقدمة",
+			"advancedDescription": "لا حاجة لتعديلها في الاستخدام اليومي.",
+			"edit": "تعديل الملف الشخصي",
+			"save": "حفظ",
+			"cancel": "إلغاء",
+			"displayName": "الاسم المعروض",
+			"name": "الاسم",
+			"bio": "نبذة تعريفية",
+			"descriptionLabel": "نبذة (Markdown)",
+			"email": "البريد الإلكتروني",
+			"status": "الحالة",
+			"customStatusLabel": "حالة مخصصة",
+			"avatarLabel": "الصورة الرمزية",
+			"themeColorLabel": "لون السمة",
+			"uploadAvatar": "رفع صورة رمزية",
+			"ownerTitle": "مالكي",
+			"ownerSummary": "إعدادات التفويض",
+			"ownerDescription": "بعد التعيين، يمكن للمالك تعديل أو حذف رسائلك ومنشوراتك وملفك الشخصي نيابةً عنك؛ ويُعرَض محتواه محلياً بـ Markdown غير آمن (قد يتضمن نصوصاً برمجية). أدخل أي تجزئة كيان واحذفها في أي وقت.",
+			"ownerEntityHashLabel": "تجزئة كيان المالك (128 hex)",
+			"ownerSave": "حفظ المالك",
+			"ownerClear": "إزالة المالك",
+			"ownerSaved": "تم تحديث المالك",
+			"ownerCleared": "تمت إزالة المالك",
+			"ownerSaveFailed": "فشل الحفظ: ${error}",
+			"ownerConfirmTitle": "تأكيد تعيين المالك؟",
+			"ownerConfirmWarningTitle": "عملية عالية المخاطر — اقرأ بعناية",
+			"ownerConfirmEditBody": "بعد التعيين، يمكن للطرف الآخر تعديل أو حذف رسائلك ومنشوراتك وملفك الشخصي دون موافقتك. التعيين الخاطئ أو بالخداع = تسليم فوري لسيطرة المحتوى.",
+			"ownerConfirmRenderBody": "رسائل الدردشة والمنشورات من المالك تُعرَض في متصفحك بـ Markdown كامل (بما في ذلك HTML/نصوص برمجية). هذا يعادل السماح بتشغيل أي كود على جهازك دون موافقة إضافية. تابع فقط إذا كنت تثق تماماً.",
+			"ownerConfirmCooldown": "قرأت المخاطر (${seconds})",
+			"ownerConfirmFirst": "أفهم المخاطر، متابعة",
+			"ownerConfirmSecond": "انقر مرة أخرى للتأكيد النهائي",
+			"ownerConfirmCancel": "إلغاء",
+			"federationTitle": "الاتحاد والمزامنة",
+			"federationSummary": "خوادم relay ووضع توفير الطاقة",
+			"federationDescription": "اضبط عناوين Nostr relay ووضع توفير الطاقة. تُفعَّل مزامنة الاتحاد للمجموعة تلقائياً عند أول دعوة أو إنشاء رسالة خاصة اتحادية.",
+			"federationAdvanced": "خيارات متقدمة",
+			"federationRelayUrlsLabel": "خوادم relay (واحد في كل سطر، اتركه فارغاً للافتراضي)",
+			"federationBatterySaverLabel": "وضع توفير الطاقة",
+			"federationSave": "حفظ إعدادات الشبكة",
+			"federationResetDefault": "استعادة الإعدادات الافتراضية الموصى بها",
+			"federationSaved": "تم الحفظ",
+			"federationResetOk": "تمت استعادة الإعدادات الافتراضية",
+			"federationSaveFailed": "فشل الحفظ: ${error}",
+			"preferences": "التفضيلات",
+			"language": "اللغة",
+			"theme": "السمة",
+			"notifications": "إعدادات الإشعارات",
+			"emailNotifications": "إشعارات البريد",
+			"pushNotifications": "إشعارات الدفع",
+			"soundNotifications": "إشعارات صوتية",
+			"social": "روابط التواصل",
+			"website": "الموقع",
+			"github": "GitHub",
+			"twitter": "Twitter",
+			"stats": "الإحصائيات",
+			"joinedAt": "تاريخ الانضمام",
+			"messageCount": "عدد الرسائل",
+			"groupCount": "عدد المجموعات",
+			"channelCount": "عدد القنوات",
+			"privacy": "إعدادات الخصوصية",
+			"showEmail": "إظهار البريد",
+			"showStats": "إظهار الإحصائيات",
+			"allowDirectMessages": "السماح بالرسائل الخاصة",
+			"statusOptions": {
+				"online": "متصل",
+				"away": "بعيد",
+				"busy": "مشغول",
+				"offline": "غير متصل"
+			},
+			"themeOptions": {
+				"auto": "تلقائي",
+				"light": "فاتح",
+				"dark": "داكن"
+			},
+			"languageOptions": {
+				"zh-CN": "الصينية المبسطة",
+				"en-US": "English"
+			},
+			"notifEmail": "بريد",
+			"notifPush": "دفع",
+			"notifSound": "صوت",
+			"notifsAllOff": "إيقاف الكل",
+			"bioEmpty": "لم يكتب شيئاً بعد…",
+			"noSocialLinks": "لا روابط تواصل",
+			"emailVisible": "ظاهر",
+			"emailHidden": "مخفي",
+			"customStatus": {
+				"placeholder": "ماذا تفعل…"
+			},
+			"avatar": {
+				"alt": "الصورة الرمزية"
+			},
+			"avatarPreview": {
+				"alt": "معاينة الصورة الرمزية"
+			},
+			"myGroups": "مجموعاتي",
+			"myChannels": "قنواتي",
+			"noGroups": "لم تنضم إلى أي مجموعة بعد",
+			"noChannels": "لا قنوات",
+			"overview": "نظرة عامة على المستخدم",
+			"summaryUserId": "معرّف المستخدم",
+			"summaryAccountStatus": "حالة الحساب",
+			"summaryEmailVisibility": "ظهور البريد",
+			"summaryThemePref": "تفضيل السمة",
+			"summaryLanguagePref": "تفضيل اللغة",
+			"summarySocialCount": "عدد روابط التواصل",
+			"summaryLinksCount": "عدد الروابط الخارجية",
+			"groupDescriptionEmpty": "لا وصف",
+			"groupMembers": "${members} عضو · ${channels} قناة",
+			"channelPrivate": " · خاص",
+			"channelTypeText": "قناة نصية",
+			"channelTypeList": "قناة قائمة",
+			"channelTypeVoice": "قناة صوتية",
+			"channelTypeStreaming": "قناة بث",
+			"errors": {
+				"loadFailed": "فشل تحميل الملف الشخصي",
+				"saveFailed": "فشل حفظ الملف الشخصي",
+				"uploadFailed": "فشل رفع الصورة الرمزية",
+				"invalidUserData": "تنسيق بيانات المستخدم غير صالح",
+				"identityRequired": "هوية العقدة غير جاهزة — حدّث الصفحة؛ إن استمر الفشل، احفظ إعدادات الاتحاد في قسم P2P أدناه",
+				"fetchUserFailed": "فشل جلب معلومات المستخدم",
+				"operationFailed": "فشلت العملية: ${error}"
+			},
+			"success": {
+				"saved": "تم حفظ الملف الشخصي",
+				"avatarUploaded": "تم رفع الصورة الرمزية"
+			},
+			"ownerEntityHash": {
+				"placeholder": "أدخل تجزئة كيان المالك"
+			}
+		},
+		"entityProfile": {
+			"attributionMismatch": "لا تتطابق هوية العرض مع موقع الرسالة (على سبيل المثال، تم إعادة توقيع سجل الاستيراد بواسطة المستورد). لا تعتبر اسم العرض هذا هوية تشفير.",
+			"attributionMismatchShort": {
+				"title": "عدم تطابق إسناد التوقيع",
+				"aria-label": "عدم تطابق إسناد التوقيع"
+			},
+			"ownedBy": "هذا الكيان مملوك لـ ${owner}"
+		},
+		"stickers": {
+			"title": "ساحة الملصقات",
+			"description": "نظام إدارة الملصقات والرموز التعبيرية",
+			"back": {
+				"title": "رجوع"
+			},
+			"packs": "حزم الملصقات",
+			"create": "إنشاء حزمة ملصقات",
+			"upload": "رفع ملصق",
+			"install": "تثبيت",
+			"uninstall": "إلغاء التثبيت",
+			"close": "إغلاق",
+			"cancel": "إلغاء",
+			"installed": "مثبّت",
+			"myPacks": "حزم ملصقاتي",
+			"tabAll": "الجميع",
+			"store": "ساحة الملصقات",
+			"favorites": "حفظ",
+			"recent": "المستخدمة مؤخراً",
+			"search": {
+				"placeholder": "البحث في حزم الملصقات…"
+			},
+			"emptyPacks": "لا توجد حزم ملصقات",
+			"packNameLabel": "اسم حزمة الملصقات",
+			"packName": {
+				"placeholder": "أدخل اسم حزمة الملصقات"
+			},
+			"packDescriptionLabel": "الوصف",
+			"packDescription": {
+				"placeholder": "أدخل الوصف"
+			},
+			"stickerNameLabel": "اسم الملصق",
+			"stickerName": {
+				"placeholder": "أدخل اسم الملصق"
+			},
+			"selectPack": "اختر حزمة ملصقات",
+			"selectPackOption": {
+				"textContent": "يُرجى اختيار حزمة ملصقات"
+			},
+			"selectImage": "اختر صورة",
+			"tagsLabel": "الوسوم (مفصولة بفواصل)",
+			"tags": {
+				"placeholder": "مثال: لطيف، تعبير، حيوان"
+			},
+			"author": "المؤلف",
+			"authorLabel": "المؤلف: ${author}",
+			"stickerCount": "${count} ملصق",
+			"badgeMine": "خاصتي",
+			"noDescription": "لا وصف",
+			"noStickersInPack": "لا توجد ملصقات",
+			"deletePack": "حذف حزمة الملصقات",
+			"public": "عام",
+			"private": "خاص",
+			"animated": "متحرك",
+			"static": "ثابت",
+			"addTag": "إضافة وسم",
+			"defaultPackName": "حزمة التعبيرات الافتراضية",
+			"defaultPackDescription": "ملصقات تعبيرية يوفّرها النظام افتراضياً",
+			"unnamedPack": "حزمة ملصقات بلا اسم",
+			"importPackName": "مجموعتي",
+			"importPackDescription": "ملصقات محفوظة من الرسائل",
+			"nameRequired": "يُرجى إدخال اسم حزمة الملصقات",
+			"stickerNameRequired": "يُرجى إدخال اسم الملصق",
+			"selectPackRequired": "يُرجى اختيار حزمة ملصقات",
+			"fileRequired": "يُرجى اختيار ملف صورة",
+			"loadDetailFailed": "فشل تحميل تفاصيل حزمة الملصقات",
+			"deleteConfirm": "هل تريد حذف حزمة الملصقات هذه نهائياً؟ ستُحذف جميع الملصقات ولا يمكن التراجع عن هذا الإجراء.",
+			"errors": {
+				"loadFailed": "فشل تحميل حزمة الملصقات",
+				"uploadFailed": "فشل رفع الملصق",
+				"installFailed": "فشل التثبيت",
+				"uninstallFailed": "فشل إلغاء التثبيت",
+				"createFailed": "فشل إنشاء حزمة الملصقات",
+				"deleteFailed": "فشل الحذف"
+			},
+			"success": {
+				"uploaded": "تم تحميل الملصقات بنجاح",
+				"installed": "تم التثبيت بنجاح",
+				"uninstalled": "تم إلغاء التثبيت بنجاح",
+				"created": "تم إنشاء حزمة الملصقات بنجاح",
+				"deleted": "تم الحذف بنجاح"
+			}
 		}
 	},
 	"easynew": {
@@ -3759,433 +3250,6 @@
 			}
 		}
 	},
-	"userSettings": {
-		"title": "إعدادات المستخدم",
-		"PageTitle": "إعدادات المستخدم",
-		"description": "اهتم بتفاصيل هويتك على fount. أدر ملف التعريف الخاص بك، واحمِ وصولك، واعرض الأجهزة المتصلة. ملاذ هادئ لحسابك.",
-		"shell": {
-			"unauthorized": "تسجيل الدخول مطلوب.",
-			"responseNotJson": "أعاد الخادم محتوى لا يمكن تحليله.",
-			"unexpectedError": "فشل الطلب."
-		},
-		"errors": {
-			"accountNotFound": "لم يتم العثور على الحساب."
-		},
-		"userInfo": {
-			"title": "معلومات المستخدم",
-			"usernameLabel": "اسم المستخدم:",
-			"creationDateLabel": "تاريخ إنشاء الحساب:",
-			"folderSizeLabel": "حجم بيانات المستخدم:",
-			"folderPathLabel": "مسار بيانات المستخدم:",
-			"copyPathButton": {
-				"title": "مسار النسخ"
-			},
-			"copyPathButtonIcon": {
-				"alt": "أيقونة النسخ"
-			},
-			"copiedAlert": "تم نسخ المسار إلى الحافظة!",
-			"copyPathFailed": "غير قادر على نسخ المسار إلى الحافظة."
-		},
-		"changePassword": {
-			"title": "تغيير كلمة المرور",
-			"currentPasswordLabel": "كلمة المرور الحالية:",
-			"newPasswordLabel": "كلمة المرور الجديدة:",
-			"confirmNewPasswordLabel": "تأكيد كلمة المرور الجديدة:",
-			"submitButton": "تغيير كلمة المرور",
-			"errorMismatch": "كلمتا المرور الجديدتان غير متطابقتين.",
-			"success": "تم تغيير كلمة المرور بنجاح.",
-			"missingFields": "يرجى ملء كلمة المرور الحالية وكلمة المرور الجديدة.",
-			"invalidCurrent": "كلمة المرور الحالية غير صحيحة."
-		},
-		"renameUser": {
-			"title": "إعادة تسمية المستخدم",
-			"newUsernameLabel": "اسم المستخدم الجديد:",
-			"submitButton": "إعادة تسمية المستخدم",
-			"confirmMessage": "هل أنت متأكد من أنك تريد تغيير اسم المستخدم الخاص بك؟ سيتطلب هذا منك تسجيل الدخول مرة أخرى.",
-			"success": "تمت إعادة تسمية المستخدم بنجاح إلى \"${newUsername}\". سيتم الآن تسجيل خروجك.",
-			"missingParams": "يرجى ملء اسم المستخدم الجديد وكلمة المرور الحالية.",
-			"wrongPassword": "كلمة المرور غير صحيحة.",
-			"mustDiffer": "يجب أن يكون اسم المستخدم الجديد مختلفًا عن اسم المستخدم الحالي.",
-			"taken": "اسم المستخدم هذا مستخدم بالفعل.",
-			"moveFailed": "فشلت إعادة تسمية دليل بيانات المستخدم: ${detail}. تمت استعادة اسم المستخدم الأصلي."
-		},
-		"passkeys": {
-			"title": "مفاتيح الأمان ومفتاح المرور",
-			"description": "بعد الربط، يمكنك تسجيل الدخول باستخدام مفتاح الأمان أو مفتاح المرور الأصلي. يتطلب الاستخدام ضمن HTTPS أو المضيف المحلي؛ الرجاء إضافة المفتاح في إعدادات المستخدم أولاً.",
-			"refreshButton": {
-				"title": "تحديث القائمة"
-			},
-			"refreshButtonIcon": {
-				"alt": "أيقونة التحديث"
-			},
-			"nameLabel": "ملاحظات (اختياري)",
-			"nameInput": {
-				"placeholder": "مثال: YubiKey للعمل"
-			},
-			"addButton": "إضافة مفتاح الأمان",
-			"noneFound": "لم يتم ربط أي مفاتيح أمان حتى الآن.",
-			"itemDetails": "الوقت الإضافي: ${created}",
-			"removeButton": "إزالة",
-			"removeConfirm": "هل أنت متأكد أنك تريد إزالة هذا المفتاح؟ بمجرد إزالتها، لن تتمكن بعد ذلك من تسجيل الدخول باستخدامها.",
-			"removeSuccess": "تمت إزالة مفتاح الأمان.",
-			"addSuccess": "تمت إضافة مفتاح الأمان.",
-			"errorLoadLibrary": "غير قادر على تحميل مكتبة WebAuthn.",
-			"errorCancelled": "تم إلغاء الإضافة.",
-			"apiInvalidPassword": "كلمة مرور خاطئة.",
-			"apiMissingCredential": "بيانات اعتماد مفتاح المرور الصالحة مفقودة.",
-			"apiRemoveParamsRequired": "يرجى تقديم بيانات الاعتماد وكلمة المرور التي تريد إزالتها."
-		},
-		"userDevices": {
-			"title": "أجهزة/جلسات المستخدم",
-			"noDevicesFound": "لم يتم العثور على أجهزة أو جلسات.",
-			"deviceInfo": "معرف الجهاز: ${deviceId}",
-			"thisDevice": "هذا الجهاز",
-			"deviceDetails": "آخر ظهور: ${lastSeen} | IP: ‏${ipAddress} | UA: ‏${userAgent}",
-			"revokeButton": "إبطال",
-			"revokeConfirm": "هل أنت متأكد من أنك تريد تسجيل الخروج من هذا الجهاز/الجلسة؟",
-			"revokeSuccess": "تم إبطال الجهاز/الجلسة بنجاح.",
-			"revokeMissingParams": "يرجى تقديم كلمة مرور الجهاز والجلسة التي تريد إبطالها.",
-			"revokeWrongPassword": "كلمة المرور غير صحيحة.",
-			"listNotFound": "لم يتم العثور على قائمة الأجهزة.",
-			"deviceNotFound": "لم يتم العثور على الجهاز أو الجلسة.",
-			"refreshButton": {
-				"title": "تحديث القائمة"
-			},
-			"refreshButtonIcon": {
-				"alt": "أيقونة التحديث"
-			}
-		},
-		"apiKeys": {
-			"title": "مفتاح API",
-			"description": "إدارة مفتاح API للتطبيقات الخارجية.",
-			"input": {
-				"placeholder": "وصف المفتاح الجديد"
-			},
-			"createButton": "إنشاء",
-			"noKeysFound": "لم يتم العثور على مفاتيح API.",
-			"keyDetails": "الوصف: ${description} | تم إنشاؤها في: ${createdAt} | آخر استخدام: ${lastUsed}",
-			"neverUsed": "لم تستخدم",
-			"noKeysForUser": "لم يتم العثور على بيانات مفتاح API.",
-			"revokeWrongPassword": "كلمة المرور غير صحيحة.",
-			"keyNotFound": "لم يتم العثور على مفتاح API.",
-			"revokeMissingJti": "الرجاء تحديد المفتاح المراد إبطاله.",
-			"revokeMissingPassword": "يتطلب إبطال المفتاح كلمة مرور.",
-			"verifyMissingApiKey": "يُرجى تقديم مفتاح API.",
-			"revokeButton": "إلغاء",
-			"revokeConfirm": "هل أنت متأكد من أنك تريد إلغاء مفتاح API هذا؟",
-			"revokeSuccess": "تم إلغاء مفتاح API بنجاح.",
-			"errorDescriptionRequired": "وصف مطلوب.",
-			"createSuccess": "تم إنشاء مفتاح API بنجاح.",
-			"refreshButton": {
-				"title": "تحديث القائمة"
-			},
-			"refreshButtonIcon": {
-				"alt": "أيقونة التحديث"
-			}
-		},
-		"newApiKey": {
-			"title": "تم إنشاء مفتاح API جديد",
-			"warning": "يرجى نسخ مفتاح API الجديد الخاص بك. لن تتمكن من رؤيته مرة أخرى!",
-			"closeButton": "لقد قمت بنسخ مفتاحي",
-			"copyButton": {
-				"title": "انسخ مفتاح API الجديد"
-			},
-			"copiedAlert": "تم نسخ مفتاح API إلى الحافظة!",
-			"copyKeyFailed": "غير قادر على نسخ المفتاح إلى الحافظة."
-		},
-		"editorCommand": {
-			"title": "أمر المحرر الخارجي",
-			"description": "اضبط الأمر وقالب وسيطات فتح الملفات في محرر خارجي، مع عناصر نائبة لمسار الملف ورقم السطر ورقم العمود.",
-			"editorPresetLabel": "إعدادات محرر جاهزة",
-			"commandLabel": "الأمر",
-			"argsTemplateLabel": "قالب وسيطات الأمر",
-			"argsTemplateHint": "عناصر نائبة: \\${file} \\${line} \\${column}",
-			"presetOptionPathAvailable": "${label} (موجود في PATH)",
-			"presetOptionPathUnavailable": "${label} (غير موجود في PATH)",
-			"testPathInput": {
-				"placeholder": "مسار ملف لتجربة الفتح، مثلًا C:/work/project/src/main.mjs"
-			},
-			"testButton": "تجربة الفتح",
-			"saveButton": "حفظ الإعدادات",
-			"saveSuccess": "تم حفظ أمر المحرر الخارجي.",
-			"testPathRequired": "يرجى إدخال مسار ملف الاختبار أولاً.",
-			"testSuccess": "تم تنفيذ أمر الفتح في المحرر الخارجي."
-		},
-		"logout": {
-			"title": "تسجيل الخروج",
-			"description": "سيؤدي هذا إلى تسجيل خروج حسابك من الجهاز الحالي.",
-			"buttonText": "تسجيل الخروج",
-			"confirmMessage": "هل أنت متأكد من أنك تريد تسجيل الخروج؟",
-			"successMessage": "تم تسجيل الخروج بنجاح. سيتم توجيهك إلى صفحة تسجيل الدخول..."
-		},
-		"deleteAccount": {
-			"title": "حذف الحساب",
-			"warning": "تحذير: هذا الإجراء سيحذف حسابك وجميع البيانات ذات الصلة بشكل دائم ولا يمكن التراجع عنه.",
-			"submitButton": "حذف حسابي",
-			"confirmMessage1": "تحذير! هل أنت متأكد من أنك تريد حذف حسابك بشكل دائم؟ لا يمكن التراجع عن هذا الإجراء.",
-			"confirmMessage2": "لتأكيد الحذف، يرجى إدخال اسم المستخدم الخاص بك \"${username}\":",
-			"usernameMismatch": "اسم المستخدم الذي تم إدخاله لا يتطابق مع المستخدم الحالي. تم إلغاء عملية الحذف.",
-			"success": "تم حذف الحساب بنجاح. سيتم الآن تسجيل خروجك.",
-			"missingPassword": "الرجاء إدخال كلمة المرور الخاصة بك.",
-			"wrongPassword": "كلمة المرور غير صحيحة."
-		},
-		"passwordConfirm": {
-			"title": "تأكيد الإجراء",
-			"message": "لمتابعة هذا الإجراء، يرجى إدخال كلمة المرور الحالية:",
-			"passwordLabel": "كلمة المرور:",
-			"confirmButton": "تأكيد",
-			"cancelButton": "إلغاء"
-		},
-		"apiError": "فشل طلب API: ‏${message}",
-		"generalError": "حدث خطأ: ${message}",
-		"home_function_buttons": {
-			"settings": {
-				"title": "الإعدادات",
-				"sub_items": {
-					"main": {
-						"title": "إعدادات المستخدم"
-					}
-				}
-			}
-		}
-	},
-	"subfounts": {
-		"title": "Subfount - إدارة الأجهزة من نظير إلى نظير",
-		"pageTitle": "Subfounts",
-		"description": "إدارة اتصالات نافورة نظير إلى نظير",
-		"hostConnectionCode": {
-			"title": "رمز اتصال المضيف",
-			"connectionCodeLabel": "رمز الاتصال (معرف النظير)",
-			"passwordLabel": "كلمة المرور",
-			"copyButton": "نسخ",
-			"regenerateButton": "تجديد",
-			"infoMessage": "قم بمشاركة بيانات الاعتماد هذه مع عملاء المصدر الفرعي لإنشاء اتصالات.",
-			"connectionCodeCopied": "تم نسخ رمز الاتصال إلى الحافظة",
-			"passwordCopied": "تم نسخ كلمة المرور إلى الحافظة",
-			"regenerateSuccess": "تم إعادة إنشاء رمز الاتصال"
-		},
-		"infra": {
-			"title": "المنفعة العامة للشبكة",
-			"description": "اختر ما إذا كانت أجهزة subfount المتصلة تعمل كعقد للمنفعة العامة لمساعدة شبكة fount بأكملها. عند الإيقاف تظل تقبل التنفيذ عن بُعد من هذا المضيف، لكنها لا تشارك في المساعدة على طبقة الشبكة.",
-			"capabilityRelay": "المشاركة في إعادة التوجيه متعدد القفزات عبر الطبقة العلوية لمساعدة العقد الأخرى على التواصل عند فشل الاتصال المباشر.",
-			"capabilityMailbox": "الاحتفاظ بالتسليم دون اتصال حتى يتسنّى للعقدة الأخرى استلام الرسائل الخاصة بعد عودتها للاتصال.",
-			"hostPriority": "عند التفعيل، أعطِ الأولوية لهذا المضيف: توجيه موزون وفق جدول سمعته، وقيّده كأعلى أولوية.",
-			"toggleLabel": "إشراك أجهزة subfount في المنفعة العامة",
-			"enabledToast": "مفعّل: تشارك أجهزة subfount في المنفعة العامة للشبكة (هذا المضيف أولاً)",
-			"disabledToast": "معطّل: لم تعد أجهزة subfount تشارك في المنفعة العامة للشبكة"
-		},
-		"connectedSubfounts": {
-			"title": "فرعي متصل",
-			"noSubfountsConnected": "لا توجد أجهزة Subfount متصلة",
-			"table": {
-				"id": "بطاقة تعريف",
-				"description": "ملاحظة",
-				"deviceId": "معرف الجهاز",
-				"connectedAt": "وقت الاتصال",
-				"status": "حالة",
-				"actions": "إجراءات",
-				"connected": "متصل",
-				"disconnected": "غير متصل",
-				"save": "يحفظ",
-				"na": "لا يوجد"
-			},
-			"descriptionSaved": "تم حفظ الملاحظة",
-			"descriptionSaveFailed": "فشل حفظ الملاحظة: ${message}"
-		},
-		"codeExecution": {
-			"title": "تنفيذ التعليمات البرمجية",
-			"description": "تنفيذ كود JavaScript على Subfount المحدد",
-			"selectSubfountLabel": "حدد Subfount",
-			"hostOption": "المضيف (المعرف: ${id})",
-			"subfountOption": "الجهاز الفرعي ${id}${deviceId}",
-			"scriptLabel": "كود جافا سكريبت",
-			"executeButton": "تنفيذ",
-			"executing": "جاري التنفيذ...",
-			"noSubfountSelected": "الرجاء تحديد جهاز فرعي أولاً",
-			"noScriptProvided": "الرجاء إدخال الرمز ليتم تنفيذه",
-			"executionSuccess": "تم تنفيذ التعليمات البرمجية بنجاح",
-			"executionFailed": "فشل تنفيذ التعليمات البرمجية: ${message}",
-			"selectSubfount": "الرجاء تحديد Subfount لتنفيذ التعليمات البرمجية..."
-		},
-		"downloadClient": {
-			"title": "قم بتنزيل العميل الفرعي",
-			"description": "قم بتنزيل البرنامج النصي للعميل subfount المستقل لتشغيله على الجهاز البعيد.",
-			"downloadButton": "تحميل subfount.mjs"
-		},
-		"errors": {
-			"loadConnectionCodeFailed": "فشل تحميل رمز الاتصال: ${message}",
-			"regenerateConnectionCodeFailed": "فشل في إعادة إنشاء رمز الاتصال: ${message}",
-			"loadSettingsFailed": "فشل تحميل إعدادات المنفعة العامة: ${message}",
-			"saveSettingsFailed": "فشل حفظ إعدادات المنفعة العامة: ${message}",
-			"generalError": "حدث خطأ: ${message}"
-		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "قيد التطوير",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "جهاز فرعي",
-						"sub_items": {
-							"main": {
-								"title": "إدارة الأجهزة الفرعية"
-							}
-						}
-					}
-				}
-			}
-		}
-	},
-	"languageSettings": {
-		"title": "إعدادات اللغة",
-		"pageTitle": "إعدادات اللغة",
-		"description": "إدارة تفضيلات اللغة الخاصة بك لتطبيق fount. قم بتخصيص تجربتك مع خيارات اللغة المتاحة.",
-		"pageDescription": "إدارة تفضيلات لغتك هنا. ستؤدي اللغات في القائمة إلى الأسبقية على إعدادات المتصفح بالترتيب.",
-		"availableLanguages": "اللغات المتاحة",
-		"preferredLanguages": "قائمة لغة الأولوية",
-		"resetButton": "إعادة ضبط",
-		"saveButton": "حفظ",
-		"select": {
-			"placeholder": "اختر لغة..."
-		},
-		"search": {
-			"placeholder": "ابحث عن لغة..."
-		},
-		"noPreferredLanguages": "لم يتم تعيين لغة مفضلة بعد. سيتم استخدام الإعدادات الافتراضية للمتصفح.",
-		"moveUpButton": {
-			"aria-label": "تحرك للأعلى",
-			"alt": "أيقونة التحرك لأعلى"
-		},
-		"moveDownButton": {
-			"aria-label": "تحرك للأسفل",
-			"alt": "أيقونة التحرك للأسفل"
-		},
-		"deleteLocaleButton": {
-			"aria-label": "احذف هذه اللغة",
-			"alt": "رمز الحذف"
-		},
-		"savedMessage": "تم حفظ إعدادات اللغة!",
-		"resetMessage": "تم إعادة تعيين إعدادات اللغة!",
-		"fetchLocalesFailed": "فشل في الحصول على اللغات المتاحة!",
-		"home_function_buttons": {
-			"settings": {
-				"title": "الإعدادات",
-				"sub_items": {
-					"main": {
-						"title": "إعدادات اللغة"
-					}
-				}
-			}
-		}
-	},
-	"themeManage": {
-		"title": "إدارة السمات",
-		"description": "اختر الجمالية التي تعكس حالتك المزاجية أو قصتك. قم بمعاينة مجموعة من السمات والاختيار من بينها، حيث يقدم كل منها أجواءً مختلفة لتفاعلاتك الرائعة. عالمك، أسلوبك.",
-		"instruction": "اختر سمة!",
-		"search": {
-			"placeholder": "ابحث عن سمة...",
-			"noResult": "لم يتم العثور على مواضيع مطابقة."
-		},
-		"createButton": "+ إنشاء سمة جديدة",
-		"preview": {
-			"editButton": {
-				"title": "تحرير"
-			},
-			"editButtonIcon": {
-				"alt": "رمز التحرير"
-			},
-			"deleteButton": {
-				"title": "حذف"
-			},
-			"deleteButtonIcon": {
-				"alt": "رمز الحذف"
-			},
-			"cloneButton": {
-				"title": "نسخ"
-			},
-			"cloneButtonIcon": {
-				"alt": "أيقونة النسخ"
-			}
-		},
-		"editor": {
-			"title": "محرر الموضوع",
-			"cancelButton": "إلغاء",
-			"saveApplyButton": "حفظ وتطبيق",
-			"themeName": "اسم السمة (المعرف)",
-			"autoPaletteTitle": "تصحيح الألوان التلقائي من الصور",
-			"autoPaletteInstruction": "انقر على اللون أعلاه لملء الألوان الأساسية/الثانوية/التمييزية/المحايدة تلقائيًا.",
-			"coreColors": "اللون الأساسي",
-			"baseBackground": "الأساسيات والخلفية",
-			"variables": "المتغيرات",
-			"borderRadius": "نصف قطر الحدود (--rounded-box)",
-			"borderWidth": "عرض الحدود (--border-btn)",
-			"advancedCustomization": "التخصيص المتقدم",
-			"customCSS": "CSS مخصص (تجاوز)",
-			"customMjsScript": "برنامج نصي MJS مخصص (اختياري)",
-			"mjsSyntaxHint": "استخدم [بناء جملة التقييم غير المتزامن](${asyncDocLink}). تُرجع كائنًا يحتوي على الدالتين `load()` و`unload()`.",
-			"themeIdRequired": "معرف الموضوع مطلوب",
-			"newThemeName": "اسم المظهر الجديد:",
-			"deleteConfirm": "هل أنت متأكد أنك تريد حذف المظهر ${id}؟",
-			"saved": "تم الحفظ!",
-			"failedToSave": "فشل الحفظ",
-			"failedToDelete": "تعذّر حذف المظهر: ${message}",
-			"failedToClone": "تعذّر نسخ المظهر: ${message}"
-		},
-		"themes": {
-			"auto": "تلقائي",
-			"light": "فاتح",
-			"dark": "داكن",
-			"cupcake": "كب كيك",
-			"bumblebee": "نحلة",
-			"emerald": "زمرد",
-			"corporate": "شركات",
-			"synthwave": "سينث ويف",
-			"retro": "ريترو",
-			"cyberpunk": "سايبربانك",
-			"valentine": "فالنتاين",
-			"halloween": "هالوين",
-			"garden": "حديقة",
-			"forest": "غابة",
-			"aqua": "مائي",
-			"lofi": "لو-فاي",
-			"pastel": "باستيل",
-			"fantasy": "خيال",
-			"wireframe": "إطار سلكي",
-			"black": "أسود",
-			"luxury": "فاخر",
-			"dracula": "دراكولا",
-			"cmyk": "CMYK",
-			"autumn": "خريف",
-			"business": "أعمال",
-			"acid": "حمضي",
-			"lemonade": "ليموناضة",
-			"night": "ليل",
-			"coffee": "قهوة",
-			"winter": "شتاء",
-			"dim": "خافت",
-			"nord": "شمالي",
-			"sunset": "غروب",
-			"caramellatte": "كراميل لاتيه",
-			"abyss": "هاوية",
-			"silk": "حرير"
-		},
-		"achievements": {
-			"change_theme": {
-				"name": "مظهرٌ لافت!",
-				"description": "كان للنافورة مظهر جديد ومزاج جديد تمامًا.",
-				"locked_description": "تبديل الموضوع مرة واحدة."
-			}
-		},
-		"home_function_buttons": {
-			"settings": {
-				"title": "الإعدادات",
-				"sub_items": {
-					"switchTheme": {
-						"title": "موضوع التبديل"
-					}
-				}
-			}
-		}
-	},
 	"part_config": {
 		"title": "تهيئة المكون",
 		"pageTitle": "تهيئة المكون",
@@ -4427,6 +3491,84 @@
 			}
 		}
 	},
+	"discord_bots": {
+		"title": "بوتات Discord",
+		"description": "امنح رفاقك في fount صوتًا في قاعات Discord الصاخبة. قم بتكوين تواجدهم وإدارة عملياتهم والسماح لهم بتوصيل العوالم، خادمًا واحدًا في كل مرة.",
+		"cardTitle": "بوت Discord",
+		"botSelectDropdown": {
+			"placeholder": "اختر روبوت"
+		},
+		"botSearch": {
+			"placeholder": "ابحث عن بوت..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "اختر شخصية"
+		},
+		"charSearch": {
+			"placeholder": "ابحث عن شخصية..."
+		},
+		"configCard": {
+			"title": "تهيئة البوت",
+			"labels": {
+				"character": "ربط الشخصية",
+				"apiKey": "مفتاح API لـ Discord",
+				"config": "تهيئة"
+			},
+			"apiKeyInput": {
+				"placeholder": "الرجاء إدخال مفتاح API"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "تبديل إظهار مفاتيح API"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "تبديل عرض مفتاح API"
+			},
+			"buttons": {
+				"saveConfig": "حفظ التهيئة",
+				"startBot": "بدء",
+				"stopBot": "إيقاف"
+			},
+			"charSelect": {
+				"placeholder": "حدد الدور"
+			}
+		},
+		"prompts": {
+			"newBotName": "الرجاء إدخال اسم البوت الجديد:"
+		},
+		"buttons": {
+			"newBot": "بوت جديد",
+			"deleteBot": "حذف البوت"
+		},
+		"alerts": {
+			"configSaved": "تم حفظ التهيئة بنجاح",
+			"botExists": "البوت بالاسم \"${botname}\" موجود بالفعل، يرجى استخدام اسم آخر.",
+			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
+			"httpError": "خطأ HTTP",
+			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "القادمة إلى الخلاف",
+				"description": "قم باستدعاء شخصيتك إلى عالم Discord.",
+				"locked_description": "قم بتشغيل Discord Bot مرة واحدة."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "الروبوتات",
+				"sub_items": {
+					"manage": {
+						"title": "إدارة بوت ديسكورد"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "تكوين روبوت الخلاف"
+			}
+		}
+	},
 	"wechat_bots": {
 		"title": "بوت WeChat",
 		"description": "شغّل شخصية fount كبوت WeChat: اربط دورًا، أدر البوتات، وتحادث في WeChat.",
@@ -4518,83 +3660,584 @@
 			"needBot": "اختر بوتًا من القائمة أو أنشئ واحدًا باستخدام «جديد»."
 		}
 	},
-	"discord_bots": {
-		"title": "بوتات Discord",
-		"description": "امنح رفاقك في fount صوتًا في قاعات Discord الصاخبة. قم بتكوين تواجدهم وإدارة عملياتهم والسماح لهم بتوصيل العوالم، خادمًا واحدًا في كل مرة.",
-		"cardTitle": "بوت Discord",
-		"botSelectDropdown": {
-			"placeholder": "اختر روبوت"
-		},
-		"botSearch": {
-			"placeholder": "ابحث عن بوت..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "اختر شخصية"
-		},
-		"charSearch": {
-			"placeholder": "ابحث عن شخصية..."
-		},
-		"configCard": {
-			"title": "تهيئة البوت",
-			"labels": {
-				"character": "ربط الشخصية",
-				"apiKey": "مفتاح API لـ Discord",
-				"config": "تهيئة"
-			},
-			"apiKeyInput": {
-				"placeholder": "الرجاء إدخال مفتاح API"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "تبديل إظهار مفاتيح API"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "تبديل عرض مفتاح API"
-			},
-			"buttons": {
-				"saveConfig": "حفظ التهيئة",
-				"startBot": "بدء",
-				"stopBot": "إيقاف"
-			},
-			"charSelect": {
-				"placeholder": "حدد الدور"
-			}
-		},
-		"prompts": {
-			"newBotName": "الرجاء إدخال اسم البوت الجديد:"
-		},
-		"buttons": {
-			"newBot": "بوت جديد",
-			"deleteBot": "حذف البوت"
-		},
-		"alerts": {
-			"configSaved": "تم حفظ التهيئة بنجاح",
-			"botExists": "البوت بالاسم \"${botname}\" موجود بالفعل، يرجى استخدام اسم آخر.",
-			"unsavedChanges": "لديك تغييرات غير محفوظة. هل تريد التخلص منها؟",
-			"httpError": "خطأ HTTP",
-			"beforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد المغادرة؟"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "القادمة إلى الخلاف",
-				"description": "قم باستدعاء شخصيتك إلى عالم Discord.",
-				"locked_description": "قم بتشغيل Discord Bot مرة واحدة."
-			}
-		},
+	"social": {
+		"title": "الساحة",
+		"description": "منشورات P2P مفتوحة ومتابعة ومشاركة ملفات",
+		"bootstrapFailed": "فشل تهيئة واجهة التواصل: ${error}",
 		"home_function_buttons": {
-			"bot_related": {
-				"title": "الروبوتات",
-				"sub_items": {
-					"manage": {
-						"title": "إدارة بوت ديسكورد"
-					}
+			"main": {
+				"title": "الساحة"
+			}
+		},
+		"nav": {
+			"feed": "الصفحة الأولى",
+			"explore": "استكشاف",
+			"notifications": "البريد الوارد",
+			"saved": "حفظ",
+			"drafts": "مربع مشروع",
+			"profile": "خاصتي",
+			"videos": "فيديو قصير",
+			"live": "البث المباشر"
+		},
+		"settings": {
+			"title": "الإعدادات الاجتماعية",
+			"back": {
+				"aria-label": "معلومات العودة"
+			},
+			"privacyTitle": "الخصوصية والاكتشاف",
+			"privacyHint": "يتحكم في ما إذا كانت الحسابات ستظهر في الاكتشاف والتوصيات.",
+			"tasteTitle": "التوصيات والتفضيلات",
+			"tasteHint": "اضبط حدود الخصوصية وتسمية \"موصى به لك\".",
+			"mutedKeywordsTitle": "حظر الكلمات والعلامات",
+			"mutedKeywordsHint": "سيتم إخفاء المشاركات التي تحتوي على نص أساسي أو تحذيرات المحتوى أو التصنيفات من ساحة المشاركات والاستكشاف والبحث والإشعارات. المحفوظة محليا فقط.",
+			"mutedKeywordsMatchTags": "مطابقة العلامات في نفس الوقت",
+			"mutedKeywordsAdd": "اضف إليه",
+			"mutedKeywordsRemove": {
+				"title": "إزالة الكلمات المحظورة"
+			},
+			"mutedKeywordsEmpty": "لم تتم إضافة أي كلمات محظورة حتى الآن",
+			"autoTranslateTitle": "الترجمة الآلية",
+			"autoTranslateHint": "عند تشغيله، ستطلب المشاركات باللغة الأجنبية الترجمة تلقائيًا ويمكن تحويلها إلى النص الأصلي.",
+			"autoTranslateEnable": "ترجمة المنشورات بلغات أخرى غير لغتك تلقائيًا",
+			"safetyTitle": "الأمن والتدريع",
+			"safetyHint": "إدارة القوائم المحظورة والمخفية.",
+			"mutedKeywords": {
+				"placeholder": "أدخل الكلمات الرئيسية أو #tags"
+			},
+			"taste": {
+				"rebuild": "إعادة بناء التفضيلات",
+				"privacyPublishPreferences": "تسمية العلامات العامة واكتشاف الدمج",
+				"privacyPublishPreferencesHint": "بعد الإغلاق، لن يتمكن الأصدقاء من رؤية بيانات تسمية العلامات ودمجها، ولن يتمكنوا من المساهمة في الإجماع.",
+				"privacyPublishReactions": "الإعجابات العامة والكراهية",
+				"privacyPublishReactionsHint": "بعد الإغلاق، لن يتلقى الملصق إعجاباتك/عدم إعجابك، ولن يتم تضمين تفاعلاتك في توصيات الآخرين، ولن تقوم بعد الآن بالترويج للمنشور لينتشر مرة أخرى.",
+				"empty": "لا توجد علامة تفضيل حتى الآن، وسيتم تجميعها تلقائيًا بعد المزيد من الإعجابات/عدم الإعجاب",
+				"weight": "الوزن ${weight}",
+				"save": "حفظ",
+				"name": {
+					"placeholder": "اسم العرض المحلي"
+				}
+			},
+			"blocklist": {
+				"title": "القائمة السوداء",
+				"hiddenTitle": "إخفاء القائمة",
+				"empty": "لا توجد إدخالات محظورة أو مخفية حتى الآن",
+				"unblock": "إلغاء الحظر",
+				"unhide": "إظهار",
+				"scopeEntity": "كيان",
+				"scopeSubject": "الجسم الرئيسي"
+			}
+		},
+		"composer": {
+			"placeholder": "ما الذي تفكر فيه؟ دعم تخفيض السعر (اللهجة المحلية)، أدخل @ للإشارة",
+			"publish": "نشر",
+			"saveDraft": "حفظ المسودة",
+			"fab": {
+				"title": "كتابة التحديثات",
+				"aria-label": "كتابة التحديثات"
+			},
+			"contentWarning": {
+				"placeholder": "تحذير المحتوى (اختياري)"
+			},
+			"sensitiveMedia": "قناع حساسية الوسائط",
+			"editImage": "تعديل",
+			"editCrop": "اقتصاص",
+			"editMosaic": "الترميز",
+			"editBrush": "فرشاة",
+			"editApply": "طلب",
+			"editCancel": "إلغاء",
+			"replyPolicyEveryone": "يمكن لأي شخص الرد",
+			"replyPolicyFollowers7d": "متابعون لأكثر من 7 أيام",
+			"replyPolicyAuthorFollows": "الناس الذين أتابعهم",
+			"replyPolicyLabel": "من يستطيع الرد",
+			"replyDisplayAll": "إظهار كافة الردود",
+			"replyDisplayFeaturedOnly": "الردود المختارة فقط",
+			"replyDisplayLabel": "الرد للإظهار",
+			"scheduleLabel": "الافراج بانتظام",
+			"scheduleSuccess": "تمت إضافة المنشور إلى قائمة الانتظار المجدولة",
+			"emojiButton": {
+				"title": "تعبير",
+				"aria-label": "تعبير"
+			},
+			"mediaButton": {
+				"title": "أضف الوسائط",
+				"aria-label": "أضف الوسائط"
+			},
+			"pollButton": {
+				"title": "الشروع في التصويت",
+				"aria-label": "الشروع في التصويت"
+			},
+			"cwToggle": {
+				"title": "تحذير المحتوى",
+				"aria-label": "تحذير المحتوى"
+			},
+			"advancedToggle": {
+				"title": "المزيد من الخيارات",
+				"aria-label": "المزيد من الخيارات"
+			},
+			"media": {
+				"placeholder": "وصف الصورة (بديل)"
+			},
+			"visibility": {
+				"label": "نطاق مرئي",
+				"public": "عام",
+				"unlisted": "غير مدرجة علنا",
+				"followers": "متابعين فقط",
+				"followers7d": "مرئية بعد المتابعة لمدة 7 أيام",
+				"followers30d": "مرئية بعد المتابعة لمدة 30 يومًا",
+				"selected": "مرئية لأشخاص محددين",
+				"private": "مرئية لنفسك فقط",
+				"allowLabel": "الأشخاص المرئيين",
+				"exceptLabel": "استبعاد الناس",
+				"allow": {
+					"placeholder": "كيان الأشخاص المرئيين مفصول بمسافة أو فاصلة"
+				},
+				"except": {
+					"placeholder": "من لا ينبغي أن يظهره (اختياري)"
 				}
 			}
 		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "تكوين روبوت الخلاف"
+		"feed": {
+			"refresh": "تحديث الأخبار",
+			"newPosts": "هناك أخبار جديدة، انقر لعرضها",
+			"tabLatest": "حتى الآن",
+			"tabForYou": "لك",
+			"repostedBy": "أعاد ${author} النشر",
+			"decryptFailed": "غير قادر على فك تشفير هذه المشاركة",
+			"revealContent": "عرض المحتوى",
+			"sensitiveMedia": "الوسائط الحساسة",
+			"showMore": "عرض المزيد",
+			"showLess": "طي",
+			"replayDivider": "انتهيت من القراءة، تصفح مرة أخرى",
+			"trending": {
+				"title": "مواضيع ساخنة",
+				"postCount": {
+					"title": "${n} مشاركات"
+				},
+				"scopeLocal": "آلة محلية",
+				"scopeNearby": "قريب",
+				"empty": "لا توجد مواضيع ساخنة بعد"
 			}
+		},
+		"explore": {
+			"accounts": "الحساب الموصى به",
+			"posts": "أحدث المشاركات",
+			"mediaOnly": "وسائل الإعلام فقط"
+		},
+		"notifications": {
+			"reply": "رد ${author} على مشاركتك",
+			"mention": "${author} @@ أرسلك إلى الموجز",
+			"like": "${author} أعجب بمشاركتك",
+			"repost": "أعاد ${author} نشر منشورك",
+			"follow": "${author} يتابعك",
+			"care_post": "نشر ${author} تحديثًا جديدًا (متابعة خاصة)",
+			"poll_closed": "انتهى التصويت لـ ${author}",
+			"post_note": "أضاف ${author} معلومات إلى مشاركتك",
+			"live_started": "بدأ ${author} البث المباشر",
+			"view": "عرض",
+			"markAllRead": "وضع علامة على الكل كمقروءة"
+		},
+		"saved": {
+			"all": "الجميع",
+			"unfiled": "لم يتم أرشفتها",
+			"createFolder": {
+				"title": "مجلد جديد",
+				"aria-label": "مجلد جديد"
+			},
+			"createFolderPrompt": "اسم المجلد",
+			"pickFolderTitle": "أضف إلى المفضلة",
+			"confirm": "تأكيد",
+			"cancel": "إلغاء",
+			"remove": "إزالة المفضلة",
+			"renameFolder": "إعادة تسمية",
+			"renameFolderPrompt": "اسم المجلد الجديد",
+			"deleteFolder": "حذف المجلد",
+			"deleteFolderConfirm": "هل تريد حذف المجلد؟ سيتم نقل المشاركات هناك إلى \"غير مؤرشفة\".",
+			"searchEmpty": "لا توجد مجموعة مطابقة",
+			"folderEmpty": "هذا المجلد فارغ",
+			"emptyHint": "انقر فوق الإشارة المرجعية عند تصفح الأخبار لحفظها هنا",
+			"search": {
+				"placeholder": "البحث في المفضلة..."
+			}
+		},
+		"drafts": {
+			"untitled": "(لا يوجد نص مسودة)",
+			"emptyHint": "اكتب بعض المحتوى في مربع النشر وانقر على \"حفظ المسودة\" لمواصلة التحرير في المرة القادمة",
+			"saved": "تم حفظ المسودة",
+			"deleted": "تم حذف المسودة",
+			"delete": "حذف المسودة",
+			"empty": "المسودة فارغة",
+			"saveFailed": "فشل حفظ المسودة: ${error}",
+			"loadFailed": "فشل فتح المسودة: ${error}",
+			"deleteFailed": "فشل حذف المسودة: ${error}"
+		},
+		"profile": {
+			"edit": "تعديل الملف الشخصي",
+			"viewPosts": "عرض الملفات الشخصية الاجتماعية",
+			"settingsBtn": {
+				"aria-label": "الإعدادات الاجتماعية"
+			},
+			"mediaOnly": "[وسائط]",
+			"hideFromExplore": "إخفاء الحساب من صفحة الاستكشاف",
+			"tabPosts": "متحرك",
+			"tabAlbums": "ألبوم الصور",
+			"tabLikes": "إعجاب",
+			"tabCabinets": "خزانة الملفات",
+			"tabsLabel": {
+				"aria-label": "قسم البيانات"
+			},
+			"cabinetsEmpty": "لا يوجد حاليا أي خزائن الملفات العامة",
+			"cabinetsFailed": "فشل تحميل خزانة الملفات: ${error}",
+			"statsGroup": {
+				"aria-label": "إحصائيات"
+			},
+			"statsPosts": "متحرك",
+			"statsFollowing": "قم بالتركيز على",
+			"statsFollowers": "معجب",
+			"followingTitle": "قم بالتركيز على",
+			"followersTitle": "معجب",
+			"albums": {
+				"create": "إنشاء ألبوم جديد",
+				"edit": "تحرير الألبوم",
+				"save": "حفظ",
+				"cancel": "إلغاء",
+				"back": "العودة إلى الألبوم",
+				"empty": "لا يوجد ألبوم بعد",
+				"emptyPosts": "لا توجد مشاركات في الألبوم حتى الآن",
+				"name": "اسم الألبوم",
+				"description": "وصف الألبوم",
+				"deleteLinks": "حذف الألبوم (الاحتفاظ بالمشاركات)",
+				"deleteWithPosts": "حذف الألبوم وحذف المشاركة",
+				"pickerLabel": "أضف إلى الألبوم",
+				"defaultName": "الألبوم الافتراضي"
+			}
+		},
+		"video": {
+			"view": {
+				"aria-label": "فيديو قصير"
+			},
+			"empty": "لا يوجد فيديو قصير بعد",
+			"emptyHint": "لا توجد مشاركات تحتوي على مقاطع فيديو في الأشخاص أو الساحات العامة التالية. حاول نشر تحديث الفيديو؟",
+			"compose": "اذهب لنشر مقطع فيديو",
+			"back": {
+				"aria-label": "العودة إلى الأخبار"
+			},
+			"mute": {
+				"aria-label": "صامت"
+			},
+			"unmute": {
+				"aria-label": "إلغاء كتم الصوت"
+			},
+			"unavailable": "لا يمكن تشغيل الفيديو",
+			"closeReplies": {
+				"aria-label": "إغلاق التعليقات"
+			}
+		},
+		"live": {
+			"empty": "لا يوجد بث مباشر بعد",
+			"viewers": "شاهد ${n} من الأشخاص",
+			"likes": "${n} إعجاب",
+			"local": "آلة محلية",
+			"hall": "قاعة البث المباشر",
+			"back": {
+				"title": "العودة إلى الأخبار",
+				"aria-label": "العودة إلى الأخبار"
+			},
+			"danmakuSend": "إرسال",
+			"postWatch": "أدخل البث المباشر",
+			"postEnded": "انتهى البث المباشر",
+			"postEndedStats": "تمت مشاهدته بواسطة ${viewers} · ${likes} أعجبني · ${duration}",
+			"link": {
+				"invite": "دعوة الاتصال",
+				"needPeer": "يرجى ملء الكيان النظيرHash:liveId",
+				"invited": "تم إرسال الدعوة عبر الإنترنت",
+				"linked": "متصل",
+				"peer": {
+					"placeholder": "كيان نظيرHash:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "ابدأ البث",
+				"open": "اذهب إلى البث",
+				"mediaAv": "الصوت والفيديو",
+				"mediaAudio": "صوت نقي",
+				"mediaVideo": "صورة نقية",
+				"mediaWhip": "البث المباشر عبر WHIP (مثل OBS)",
+				"whipUrl": "عنوان السوط",
+				"whipToken": "رمز حامل",
+				"whipWaiting": "في انتظار اتصال دفق WHIP (يمكن استخدام برنامج دفق مثل OBS)...",
+				"start": "ابدأ البث المباشر",
+				"stop": "إيقاف البث المباشر",
+				"started": "بدأ البث المباشر",
+				"stopped": "لقد توقف البث المباشر",
+				"titleInput": {
+					"placeholder": "العنوان المباشر (اختياري)"
+				}
+			},
+			"danmaku": {
+				"placeholder": "قل شيئا..."
+			}
+		},
+		"search": {
+			"placeholder": "ابحث عن التحديثات أو المستخدمين أو #topics (كلمتان على الأقل)",
+			"open": {
+				"aria-label": "بحث"
+			},
+			"submit": "بحث",
+			"clear": "واضح",
+			"empty": "لا توجد مشاركات مطابقة",
+			"tooShort": "الرجاء إدخال حرفين على الأقل",
+			"usersTitle": "مستخدم",
+			"postsTitle": "متحرك",
+			"usersEmpty": "لا يوجد مستخدم مطابق",
+			"pinAlias": "تعيين كاسم مستعار",
+			"trustScore": "ثق بـ ${score}",
+			"viewTitle": "بحث",
+			"loading": "البحث…",
+			"filterAuthor": {
+				"placeholder": "المؤلف"
+			},
+			"filterMediaAll": "جميع وسائل الإعلام",
+			"filterMediaImage": "صورة",
+			"filterMediaVideo": "فيديو",
+			"filterTag": {
+				"placeholder": "#ملصق"
+			},
+			"sortRecent": "حتى الآن",
+			"sortPopular": "شائع",
+			"scopeLocal": "آلة محلية",
+			"scopeNearby": "قريب"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "إغلاق"
+			}
+		},
+		"actions": {
+			"like": "إعجاب",
+			"unlike": "على عكس",
+			"dislike": "خطوة على",
+			"undislike": "إلغاء عدم الإعجاب",
+			"repost": "إعادة نشر",
+			"quote": "اقتباس",
+			"delete": "حذف",
+			"edit": "تعديل",
+			"save": "حفظ",
+			"saved": "تم جمعها",
+			"translate": "ترجمة",
+			"dm": "إرسال رسالة خاصة",
+			"block": "حاجز",
+			"hide": "مخفي",
+			"mute": "صامت",
+			"follow": "قم بالتركيز على",
+			"following": "متابعة بالفعل",
+			"care": "متابعة خاصة",
+			"careRemove": "إلغاء الرعاية الخاصة",
+			"careAdded": "تمت إضافة متابعة خاصة بالفعل",
+			"careRemoved": "تم إلغاء الرعاية الخاصة",
+			"setAlias": "تعيين الاسم المستعار",
+			"setAliasPrompt": "قم بتعيين الاسم المستعار المحلي (اتركه فارغًا للمسح):",
+			"aliasSaved": "تم تحديث الاسم المستعار",
+			"replies": "تعليق",
+			"copyLink": "نسخ الوصلة",
+			"downloadHtml": "تحميل HTML",
+			"copied": "منقول",
+			"more": {
+				"aria-label": "أكثر"
+			},
+			"share": "مشاركة",
+			"likeFailed": "فشل الإعجاب: ${error}",
+			"dislikeFailed": "فشل في التقدم على: ${error}",
+			"repostFailed": "فشلت إعادة النشر: ${error}",
+			"replyFailed": "فشل الرد: ${error}",
+			"followFailed": "فشلت المتابعة: ${error}",
+			"saveFailed": "فشل التجميع: ${error}",
+			"blockFailed": "فشل في الحظر: ${error}",
+			"hideFailed": "فشل الإخفاء: ${error}",
+			"muteFailed": "فشل كتم الصوت: ${error}",
+			"deleteFailed": "فشل الحذف: ${error}"
+		},
+		"post": {
+			"edited": "تم تحريره",
+			"editPrompt": "تحرير نص المشاركة",
+			"editHistory": "تحرير التاريخ",
+			"editHistoryEmpty": "لا توجد إصدارات سابقة",
+			"loading": "تحميل…",
+			"notFound": "المشاركة غير موجودة أو غير مرئية",
+			"loadFailed": "فشل التحميل، يرجى المحاولة مرة أخرى في وقت لاحق",
+			"detailTitle": "بريد",
+			"back": "رجوع"
+		},
+		"reply": {
+			"context": "الرد ${author}"
+		},
+		"notes": {
+			"label": "ملحق القارئ",
+			"add": "معلومات تكميلية",
+			"prompt": "اكتب ملحقًا للقارئ (ملاحظة المجتمع)",
+			"listTitle": "جميع المعلومات الإضافية",
+			"helpful": "إنها تعمل",
+			"unhelpful": "عديم الفائدة",
+			"more": "جميع العناصر ${n}.",
+			"empty": "لا توجد معلومات إضافية حتى الآن"
+		},
+		"poll": {
+			"multi": "السماح بتحديدات متعددة",
+			"apply": "تطبيق التصويت",
+			"closed": "انتهى التصويت",
+			"deadline": "الموعد النهائي: ${deadline}",
+			"options": {
+				"placeholder": "خيار واحد لكل سطر (عنصران على الأقل)"
+			}
+		},
+		"aside": {
+			"suggested": "لك الاهتمام"
+		},
+		"groupRef": {
+			"linking": "ربط مجموعة الدردشة",
+			"clear": "فصل",
+			"pick": "ربط مجموعة/قناة الدردشة..."
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "تصفية البريد الوارد"
+			},
+			"tabs": {
+				"all": "الجميع",
+				"mention": "إشارات",
+				"reply": "رد",
+				"like": "مدح",
+				"follow": "قم بالتركيز على",
+				"repost": "إعادة نشر"
+			},
+			"aggregated": {
+				"like": "لقد أبدى ${author1} و${author2} و${count} من الأشخاص إعجابهم بمشاركتك",
+				"likeTwo": "أعجب ${author1} و${author2} بمشاركتك",
+				"repost": "أعاد ${author1} و${author2} و${count} آخرين نشر منشورك",
+				"repostTwo": "أعاد ${author1} و${author2} نشر منشورك",
+				"follow": "يتابعك ${author1} و${author2} و${count} من الأشخاص",
+				"followTwo": "${author1} و ${author2} يتابعونك"
+			}
+		},
+		"replies": {
+			"placeholder": "اكتب رداً…",
+			"submit": "رد",
+			"empty": "لا ردود بعد",
+			"emptyHint": "كن أول من يرد وابدأ النقاش"
+		},
+		"repost": {
+			"placeholder": "أضف تعليقاً على إعادة النشر (اختياري)…",
+			"submit": "تأكيد إعادة النشر"
+		},
+		"quote": {
+			"quoting": "اقتباس",
+			"clear": "إلغاء الاقتباس",
+			"viewOriginal": "عرض المنشور الأصلي"
+		},
+		"a11y": {
+			"linkGroupSelect": "اتصل بمجموعة دردشة أو قناة",
+			"postVisibility": "نطاق مرئي",
+			"postLang": "لغة المحتوى",
+			"trendingHashtags": "مواضيع ساخنة",
+			"saveFolderSelect": "المجلد المفضل"
+		},
+		"translate": {
+			"label": "الترجمة:"
+		},
+		"time": {
+			"justNow": "الآن",
+			"minutesAgo": "منذ ${n} دقيقة",
+			"hoursAgo": "منذ ${n} ساعة"
+		},
+		"empty": {
+			"feed": "لا توجد تحديثات حتى الآن. اتبع بعض الناس.",
+			"profilePosts": "لا أخبار بعد",
+			"following": "لا أتابع أحدا بعد",
+			"followers": "لا يوجد معجبين بعد",
+			"notifications": "لا يوجد إشعار حتى الآن",
+			"saved": "لا يوجد مفضلة بعد",
+			"drafts": "لا يوجد مشروع بعد",
+			"exploreAccounts": "لا يوجد حاليا أي حسابات الموصى بها",
+			"explorePosts": "لا توجد مشاركات الاستكشاف حتى الآن",
+			"likedPosts": "لا يوجد إعجابات حتى الآن",
+			"noIdentity": "يرجى تكوين الهوية الموحدة في الدردشة قبل استخدام التواصل الاجتماعي"
+		},
+		"topic": {
+			"follow": "اشترك",
+			"unfollow": "إلغاء الاشتراك",
+			"empty": "لا توجد مشاركات لهذا الموضوع حتى الآن"
 		}
+	},
+	"cabinet": {
+		"title": "خزانة الملفات",
+		"description": "خزائن الملفات الشخصية والمشتركة P2P",
+		"openCabinets": {
+			"title": "فتح قائمة خزانة الملفات",
+			"aria-label": "فتح قائمة خزانة الملفات"
+		},
+		"closeCabinets": {
+			"title": "إغلاق",
+			"aria-label": "إغلاق"
+		},
+		"bootstrapFailed": "فشلت تهيئة خزانة الملفات: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "خزانة الملفات"
+			}
+		},
+		"upload": "رفع",
+		"uploadFolder": "رفع مجلد",
+		"newFolder": "مجلد جديد",
+		"open": "فتح",
+		"download": "تنزيل",
+		"downloadZip": "تنزيل مجلد",
+		"rename": "إعادة تسمية",
+		"copy": "نسخ",
+		"cut": "قص",
+		"paste": "لصق",
+		"pasteLink": "لصق كرابط",
+		"selectAll": "تحديد الكل",
+		"invert": "انتخابات مضادة",
+		"properties": "ملكية",
+		"delete": "حذف",
+		"back": {
+			"title": "العودة إلى الوضع السابق",
+			"aria-label": "العودة إلى الوضع السابق"
+		},
+		"cancel": "إلغاء",
+		"save": "حفظ",
+		"showHidden": "showhide",
+		"name": "الاسم",
+		"descriptionField": "الوصف",
+		"attrHidden": "مخفي",
+		"attrSystem": "النظام (الحذف يتطلب التأكيد)",
+		"previewUrl": "معاينة عنوان URL",
+		"deletePreviewWithFile": "حذف المعاينة عند حذف الملف",
+		"folderPassword": "كلمة مرور المجلد (اتركها فارغة، املأها لتمكين التشفير)",
+		"unlockFolder": "فتح المجلد المشفر",
+		"unlock": "فتح",
+		"unlockFailed": "فشل إلغاء القفل: ${error}",
+		"previewFailed": "فشل إنشاء المعاينة: ${error}",
+		"created": "إنشاء: ${stamp}",
+		"modified": "تعديل: ${stamp}",
+		"statusCount": "${count} من العناصر، تم تحديد ${selected}.",
+		"newCabinetPrompt": "اسم خزانة الملفات الجديد",
+		"newFolderPrompt": "اسم المجلد الجديد",
+		"renamePrompt": "اسم جديد",
+		"visibilityPrompt": "الرؤية (عام/غير مدرج/متابعين/خاص/محدد)",
+		"cabinetActionPrompt": "الإجراء: إعادة التسمية/الحذف/الرؤية",
+		"confirmDeleteCabinet": "هل أنت متأكد أنك تريد حذف خزانة الملفات هذه؟",
+		"confirmDelete": "هل تريد تأكيد حذف العناصر المحددة؟",
+		"confirmDeleteSystem": "يتم تضمين ملفات النظام المحددة. هل أنت متأكد من حذفها؟",
+		"copied": "منقول",
+		"cutDone": "قص",
+		"undo": "إلغاء",
+		"redo": "إعادة",
+		"newWindow": "فتح نافذة جديدة الموقع الحالي",
+		"goUp": "العودة إلى المستوى السابق",
+		"brokenLink": "الرابط معطل: ${reason}",
+		"noDownload": "لا يوجد محتوى قابل للتنزيل",
+		"groupDownloadHint": "يرجى الحصول على ملفات المجموعة من خلال مرفقات الرسائل أو روابط التنزيل اللاحقة.",
+		"remoteEntity": "كيان بعيد"
 	},
 	"browser_integration": {
 		"title": "تكامل المتصفح",
@@ -4719,6 +4362,48 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "قم بتوصيل دور fount بالمحررين المدعومين (مثل Zed وJetBrains وNeovim) من خلال Agent Client Protocol، وقم بتكوين مفاتيح واجهة برمجة التطبيقات وأدوارها، وقم بإحضار شركاء الذكاء الاصطناعي إلى سير عمل التطوير.",
+		"title": "تكامل بيئة تطوير متكاملة",
+		"heading": "تكامل بيئة تطوير متكاملة",
+		"instruction": "استخدم الأدوار الأساسية لمساعدة البرمجة في برامج التحرير التي تدعم ACP (مثل Zed وJetBrains وNeovim وما إلى ذلك).",
+		"supportedEditorsTitle": "المحررين والعملاء المدعومة",
+		"supportedEditorsIntro": "العملاء التاليين يعملون مع fount:",
+		"supportedEditorsLoading": "تحميل…",
+		"supportedEditorsError": "فشل تحميل القائمة: ${message}",
+		"acpTitle": "تكوين البرنامج النصي fount ACP",
+		"acpDesc": "ارجع إلى المثال التالي لتكوين البرنامج النصي ACP الناشئ:",
+		"acpCharLabel": "دور",
+		"charListError": "فشل الحصول على قائمة الأدوار",
+		"acpScriptLabel": "عنوان URL للبرنامج النصي لـ ACP",
+		"acpConfigSample": "مثال التكوين:",
+		"acpConfigHint": "يظهر معرف الدور في القائمة المنسدلة للدور في هذه الصفحة، ويمكن إدارة مفتاح واجهة برمجة التطبيقات في إعدادات المستخدم.",
+		"copyButton": "ينسخ",
+		"copied": "تم النسخ إلى الحافظة",
+		"apiKeySectionTitle": "مفتاح واجهة برمجة التطبيقات",
+		"apiKeyHint": "يستخدم لمصدر اتصال البرنامج النصي ACP (يمكن إنشاء نفس مجموعة المفاتيح مثل وكيل API في إعدادات المستخدم).",
+		"generateApiKeyButton": "توليد مفتاح جديد",
+		"apiKeyCopied": "تم نسخ مفتاح API",
+		"apiKeyCreateError": "فشل إنشاء مفتاح واجهة برمجة التطبيقات: ${message}",
+		"apiKeyInput": {
+			"aria-label": "مفتاح واجهة برمجة التطبيقات"
+		},
+		"home_function_buttons": {
+			"integration_related": "المتعلقة بالتكامل",
+			"ide_integration_config": {
+				"title": "تكامل بيئة تطوير متكاملة"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "أول مرة تستخدم فيها fount في IDE خارجي",
+				"description": "لأول مرة، استخدم الأدوار الأساسية لمساعدة البرمجة في برامج التحرير التي تدعم ACP مثل Zed وJetBrains وNeovim والمزيد.",
+				"locked_description": "اتصل بالدور الناشئ في IDE خارجي وأكمل الجلسة."
+			}
+		},
+		"acpChar": "حدد الدور",
+		"acpConfig": "الرجاء تحديد دور وإنشاء مفتاح API أولاً"
+	},
 	"deskpet": {
 		"title": "الحيوانات الأليفة سطح المكتب",
 		"description": "قم بإطلاق شخصياتك كحيوانات أليفة تفاعلية تعيش على سطح مكتبك.",
@@ -4770,6 +4455,347 @@
 								"title": "إدارة الحيوانات الأليفة على سطح المكتب"
 							}
 						}
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "إدارة السمات",
+		"description": "اختر الجمالية التي تعكس حالتك المزاجية أو قصتك. قم بمعاينة مجموعة من السمات والاختيار من بينها، حيث يقدم كل منها أجواءً مختلفة لتفاعلاتك الرائعة. عالمك، أسلوبك.",
+		"instruction": "اختر سمة!",
+		"search": {
+			"placeholder": "ابحث عن سمة...",
+			"noResult": "لم يتم العثور على مواضيع مطابقة."
+		},
+		"createButton": "+ إنشاء سمة جديدة",
+		"preview": {
+			"editButton": {
+				"title": "تحرير"
+			},
+			"editButtonIcon": {
+				"alt": "رمز التحرير"
+			},
+			"deleteButton": {
+				"title": "حذف"
+			},
+			"deleteButtonIcon": {
+				"alt": "رمز الحذف"
+			},
+			"cloneButton": {
+				"title": "نسخ"
+			},
+			"cloneButtonIcon": {
+				"alt": "أيقونة النسخ"
+			}
+		},
+		"editor": {
+			"title": "محرر الموضوع",
+			"cancelButton": "إلغاء",
+			"saveApplyButton": "حفظ وتطبيق",
+			"themeName": "اسم السمة (المعرف)",
+			"autoPaletteTitle": "تصحيح الألوان التلقائي من الصور",
+			"autoPaletteInstruction": "انقر على اللون أعلاه لملء الألوان الأساسية/الثانوية/التمييزية/المحايدة تلقائيًا.",
+			"coreColors": "اللون الأساسي",
+			"baseBackground": "الأساسيات والخلفية",
+			"variables": "المتغيرات",
+			"borderRadius": "نصف قطر الحدود (--rounded-box)",
+			"borderWidth": "عرض الحدود (--border-btn)",
+			"advancedCustomization": "التخصيص المتقدم",
+			"customCSS": "CSS مخصص (تجاوز)",
+			"customMjsScript": "برنامج نصي MJS مخصص (اختياري)",
+			"mjsSyntaxHint": "استخدم [بناء جملة التقييم غير المتزامن](${asyncDocLink}). تُرجع كائنًا يحتوي على الدالتين `load()` و`unload()`.",
+			"themeIdRequired": "معرف الموضوع مطلوب",
+			"newThemeName": "اسم المظهر الجديد:",
+			"deleteConfirm": "هل أنت متأكد أنك تريد حذف المظهر ${id}؟",
+			"saved": "تم الحفظ!",
+			"failedToSave": "فشل الحفظ",
+			"failedToDelete": "تعذّر حذف المظهر: ${message}",
+			"failedToClone": "تعذّر نسخ المظهر: ${message}"
+		},
+		"themes": {
+			"auto": "تلقائي",
+			"light": "فاتح",
+			"dark": "داكن",
+			"cupcake": "كب كيك",
+			"bumblebee": "نحلة",
+			"emerald": "زمرد",
+			"corporate": "شركات",
+			"synthwave": "سينث ويف",
+			"retro": "ريترو",
+			"cyberpunk": "سايبربانك",
+			"valentine": "فالنتاين",
+			"halloween": "هالوين",
+			"garden": "حديقة",
+			"forest": "غابة",
+			"aqua": "مائي",
+			"lofi": "لو-فاي",
+			"pastel": "باستيل",
+			"fantasy": "خيال",
+			"wireframe": "إطار سلكي",
+			"black": "أسود",
+			"luxury": "فاخر",
+			"dracula": "دراكولا",
+			"cmyk": "CMYK",
+			"autumn": "خريف",
+			"business": "أعمال",
+			"acid": "حمضي",
+			"lemonade": "ليموناضة",
+			"night": "ليل",
+			"coffee": "قهوة",
+			"winter": "شتاء",
+			"dim": "خافت",
+			"nord": "شمالي",
+			"sunset": "غروب",
+			"caramellatte": "كراميل لاتيه",
+			"abyss": "هاوية",
+			"silk": "حرير"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "مظهرٌ لافت!",
+				"description": "كان للنافورة مظهر جديد ومزاج جديد تمامًا.",
+				"locked_description": "تبديل الموضوع مرة واحدة."
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "الإعدادات",
+				"sub_items": {
+					"switchTheme": {
+						"title": "موضوع التبديل"
+					}
+				}
+			}
+		}
+	},
+	"languageSettings": {
+		"title": "إعدادات اللغة",
+		"pageTitle": "إعدادات اللغة",
+		"description": "إدارة تفضيلات اللغة الخاصة بك لتطبيق fount. قم بتخصيص تجربتك مع خيارات اللغة المتاحة.",
+		"pageDescription": "إدارة تفضيلات لغتك هنا. ستؤدي اللغات في القائمة إلى الأسبقية على إعدادات المتصفح بالترتيب.",
+		"availableLanguages": "اللغات المتاحة",
+		"preferredLanguages": "قائمة لغة الأولوية",
+		"resetButton": "إعادة ضبط",
+		"saveButton": "حفظ",
+		"select": {
+			"placeholder": "اختر لغة..."
+		},
+		"search": {
+			"placeholder": "ابحث عن لغة..."
+		},
+		"noPreferredLanguages": "لم يتم تعيين لغة مفضلة بعد. سيتم استخدام الإعدادات الافتراضية للمتصفح.",
+		"moveUpButton": {
+			"aria-label": "تحرك للأعلى",
+			"alt": "أيقونة التحرك لأعلى"
+		},
+		"moveDownButton": {
+			"aria-label": "تحرك للأسفل",
+			"alt": "أيقونة التحرك للأسفل"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "احذف هذه اللغة",
+			"alt": "رمز الحذف"
+		},
+		"savedMessage": "تم حفظ إعدادات اللغة!",
+		"resetMessage": "تم إعادة تعيين إعدادات اللغة!",
+		"fetchLocalesFailed": "فشل في الحصول على اللغات المتاحة!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "الإعدادات",
+				"sub_items": {
+					"main": {
+						"title": "إعدادات اللغة"
+					}
+				}
+			}
+		}
+	},
+	"userSettings": {
+		"title": "إعدادات المستخدم",
+		"PageTitle": "إعدادات المستخدم",
+		"description": "اهتم بتفاصيل هويتك على fount. أدر ملف التعريف الخاص بك، واحمِ وصولك، واعرض الأجهزة المتصلة. ملاذ هادئ لحسابك.",
+		"shell": {
+			"unauthorized": "تسجيل الدخول مطلوب.",
+			"responseNotJson": "أعاد الخادم محتوى لا يمكن تحليله.",
+			"unexpectedError": "فشل الطلب."
+		},
+		"errors": {
+			"accountNotFound": "لم يتم العثور على الحساب."
+		},
+		"userInfo": {
+			"title": "معلومات المستخدم",
+			"usernameLabel": "اسم المستخدم:",
+			"creationDateLabel": "تاريخ إنشاء الحساب:",
+			"folderSizeLabel": "حجم بيانات المستخدم:",
+			"folderPathLabel": "مسار بيانات المستخدم:",
+			"copyPathButton": {
+				"title": "مسار النسخ"
+			},
+			"copyPathButtonIcon": {
+				"alt": "أيقونة النسخ"
+			},
+			"copiedAlert": "تم نسخ المسار إلى الحافظة!",
+			"copyPathFailed": "غير قادر على نسخ المسار إلى الحافظة."
+		},
+		"changePassword": {
+			"title": "تغيير كلمة المرور",
+			"currentPasswordLabel": "كلمة المرور الحالية:",
+			"newPasswordLabel": "كلمة المرور الجديدة:",
+			"confirmNewPasswordLabel": "تأكيد كلمة المرور الجديدة:",
+			"submitButton": "تغيير كلمة المرور",
+			"errorMismatch": "كلمتا المرور الجديدتان غير متطابقتين.",
+			"success": "تم تغيير كلمة المرور بنجاح.",
+			"missingFields": "يرجى ملء كلمة المرور الحالية وكلمة المرور الجديدة.",
+			"invalidCurrent": "كلمة المرور الحالية غير صحيحة."
+		},
+		"renameUser": {
+			"title": "إعادة تسمية المستخدم",
+			"newUsernameLabel": "اسم المستخدم الجديد:",
+			"submitButton": "إعادة تسمية المستخدم",
+			"confirmMessage": "هل أنت متأكد من أنك تريد تغيير اسم المستخدم الخاص بك؟ سيتطلب هذا منك تسجيل الدخول مرة أخرى.",
+			"success": "تمت إعادة تسمية المستخدم بنجاح إلى \"${newUsername}\". سيتم الآن تسجيل خروجك.",
+			"missingParams": "يرجى ملء اسم المستخدم الجديد وكلمة المرور الحالية.",
+			"wrongPassword": "كلمة المرور غير صحيحة.",
+			"mustDiffer": "يجب أن يكون اسم المستخدم الجديد مختلفًا عن اسم المستخدم الحالي.",
+			"taken": "اسم المستخدم هذا مستخدم بالفعل.",
+			"moveFailed": "فشلت إعادة تسمية دليل بيانات المستخدم: ${detail}. تمت استعادة اسم المستخدم الأصلي."
+		},
+		"passkeys": {
+			"title": "مفاتيح الأمان ومفتاح المرور",
+			"description": "بعد الربط، يمكنك تسجيل الدخول باستخدام مفتاح الأمان أو مفتاح المرور الأصلي. يتطلب الاستخدام ضمن HTTPS أو المضيف المحلي؛ الرجاء إضافة المفتاح في إعدادات المستخدم أولاً.",
+			"refreshButton": {
+				"title": "تحديث القائمة"
+			},
+			"refreshButtonIcon": {
+				"alt": "أيقونة التحديث"
+			},
+			"nameLabel": "ملاحظات (اختياري)",
+			"nameInput": {
+				"placeholder": "مثال: YubiKey للعمل"
+			},
+			"addButton": "إضافة مفتاح الأمان",
+			"noneFound": "لم يتم ربط أي مفاتيح أمان حتى الآن.",
+			"itemDetails": "الوقت الإضافي: ${created}",
+			"removeButton": "إزالة",
+			"removeConfirm": "هل أنت متأكد أنك تريد إزالة هذا المفتاح؟ بمجرد إزالتها، لن تتمكن بعد ذلك من تسجيل الدخول باستخدامها.",
+			"removeSuccess": "تمت إزالة مفتاح الأمان.",
+			"addSuccess": "تمت إضافة مفتاح الأمان.",
+			"errorLoadLibrary": "غير قادر على تحميل مكتبة WebAuthn.",
+			"errorCancelled": "تم إلغاء الإضافة.",
+			"apiInvalidPassword": "كلمة مرور خاطئة.",
+			"apiMissingCredential": "بيانات اعتماد مفتاح المرور الصالحة مفقودة.",
+			"apiRemoveParamsRequired": "يرجى تقديم بيانات الاعتماد وكلمة المرور التي تريد إزالتها."
+		},
+		"userDevices": {
+			"title": "أجهزة/جلسات المستخدم",
+			"noDevicesFound": "لم يتم العثور على أجهزة أو جلسات.",
+			"deviceInfo": "معرف الجهاز: ${deviceId}",
+			"thisDevice": "هذا الجهاز",
+			"deviceDetails": "آخر ظهور: ${lastSeen} | IP: ‏${ipAddress} | UA: ‏${userAgent}",
+			"revokeButton": "إبطال",
+			"revokeConfirm": "هل أنت متأكد من أنك تريد تسجيل الخروج من هذا الجهاز/الجلسة؟",
+			"revokeSuccess": "تم إبطال الجهاز/الجلسة بنجاح.",
+			"revokeMissingParams": "يرجى تقديم كلمة مرور الجهاز والجلسة التي تريد إبطالها.",
+			"revokeWrongPassword": "كلمة المرور غير صحيحة.",
+			"listNotFound": "لم يتم العثور على قائمة الأجهزة.",
+			"deviceNotFound": "لم يتم العثور على الجهاز أو الجلسة.",
+			"refreshButton": {
+				"title": "تحديث القائمة"
+			},
+			"refreshButtonIcon": {
+				"alt": "أيقونة التحديث"
+			}
+		},
+		"apiKeys": {
+			"title": "مفتاح API",
+			"description": "إدارة مفتاح API للتطبيقات الخارجية.",
+			"input": {
+				"placeholder": "وصف المفتاح الجديد"
+			},
+			"createButton": "إنشاء",
+			"noKeysFound": "لم يتم العثور على مفاتيح API.",
+			"keyDetails": "الوصف: ${description} | تم إنشاؤها في: ${createdAt} | آخر استخدام: ${lastUsed}",
+			"neverUsed": "لم تستخدم",
+			"noKeysForUser": "لم يتم العثور على بيانات مفتاح API.",
+			"revokeWrongPassword": "كلمة المرور غير صحيحة.",
+			"keyNotFound": "لم يتم العثور على مفتاح API.",
+			"revokeMissingJti": "الرجاء تحديد المفتاح المراد إبطاله.",
+			"revokeMissingPassword": "يتطلب إبطال المفتاح كلمة مرور.",
+			"verifyMissingApiKey": "يُرجى تقديم مفتاح API.",
+			"revokeButton": "إلغاء",
+			"revokeConfirm": "هل أنت متأكد من أنك تريد إلغاء مفتاح API هذا؟",
+			"revokeSuccess": "تم إلغاء مفتاح API بنجاح.",
+			"errorDescriptionRequired": "وصف مطلوب.",
+			"createSuccess": "تم إنشاء مفتاح API بنجاح.",
+			"refreshButton": {
+				"title": "تحديث القائمة"
+			},
+			"refreshButtonIcon": {
+				"alt": "أيقونة التحديث"
+			}
+		},
+		"newApiKey": {
+			"title": "تم إنشاء مفتاح API جديد",
+			"warning": "يرجى نسخ مفتاح API الجديد الخاص بك. لن تتمكن من رؤيته مرة أخرى!",
+			"closeButton": "لقد قمت بنسخ مفتاحي",
+			"copyButton": {
+				"title": "انسخ مفتاح API الجديد"
+			},
+			"copiedAlert": "تم نسخ مفتاح API إلى الحافظة!",
+			"copyKeyFailed": "غير قادر على نسخ المفتاح إلى الحافظة."
+		},
+		"editorCommand": {
+			"title": "أمر المحرر الخارجي",
+			"description": "اضبط الأمر وقالب وسيطات فتح الملفات في محرر خارجي، مع عناصر نائبة لمسار الملف ورقم السطر ورقم العمود.",
+			"editorPresetLabel": "إعدادات محرر جاهزة",
+			"commandLabel": "الأمر",
+			"argsTemplateLabel": "قالب وسيطات الأمر",
+			"argsTemplateHint": "عناصر نائبة: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (موجود في PATH)",
+			"presetOptionPathUnavailable": "${label} (غير موجود في PATH)",
+			"testPathInput": {
+				"placeholder": "مسار ملف لتجربة الفتح، مثلًا C:/work/project/src/main.mjs"
+			},
+			"testButton": "تجربة الفتح",
+			"saveButton": "حفظ الإعدادات",
+			"saveSuccess": "تم حفظ أمر المحرر الخارجي.",
+			"testPathRequired": "يرجى إدخال مسار ملف الاختبار أولاً.",
+			"testSuccess": "تم تنفيذ أمر الفتح في المحرر الخارجي."
+		},
+		"logout": {
+			"title": "تسجيل الخروج",
+			"description": "سيؤدي هذا إلى تسجيل خروج حسابك من الجهاز الحالي.",
+			"buttonText": "تسجيل الخروج",
+			"confirmMessage": "هل أنت متأكد من أنك تريد تسجيل الخروج؟",
+			"successMessage": "تم تسجيل الخروج بنجاح. سيتم توجيهك إلى صفحة تسجيل الدخول..."
+		},
+		"deleteAccount": {
+			"title": "حذف الحساب",
+			"warning": "تحذير: هذا الإجراء سيحذف حسابك وجميع البيانات ذات الصلة بشكل دائم ولا يمكن التراجع عنه.",
+			"submitButton": "حذف حسابي",
+			"confirmMessage1": "تحذير! هل أنت متأكد من أنك تريد حذف حسابك بشكل دائم؟ لا يمكن التراجع عن هذا الإجراء.",
+			"confirmMessage2": "لتأكيد الحذف، يرجى إدخال اسم المستخدم الخاص بك \"${username}\":",
+			"usernameMismatch": "اسم المستخدم الذي تم إدخاله لا يتطابق مع المستخدم الحالي. تم إلغاء عملية الحذف.",
+			"success": "تم حذف الحساب بنجاح. سيتم الآن تسجيل خروجك.",
+			"missingPassword": "الرجاء إدخال كلمة المرور الخاصة بك.",
+			"wrongPassword": "كلمة المرور غير صحيحة."
+		},
+		"passwordConfirm": {
+			"title": "تأكيد الإجراء",
+			"message": "لمتابعة هذا الإجراء، يرجى إدخال كلمة المرور الحالية:",
+			"passwordLabel": "كلمة المرور:",
+			"confirmButton": "تأكيد",
+			"cancelButton": "إلغاء"
+		},
+		"apiError": "فشل طلب API: ‏${message}",
+		"generalError": "حدث خطأ: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "الإعدادات",
+				"sub_items": {
+					"main": {
+						"title": "إعدادات المستخدم"
 					}
 				}
 			}
@@ -4831,47 +4857,91 @@
 			}
 		}
 	},
-	"ide_integration": {
-		"description": "قم بتوصيل دور fount بالمحررين المدعومين (مثل Zed وJetBrains وNeovim) من خلال Agent Client Protocol، وقم بتكوين مفاتيح واجهة برمجة التطبيقات وأدوارها، وقم بإحضار شركاء الذكاء الاصطناعي إلى سير عمل التطوير.",
-		"title": "تكامل بيئة تطوير متكاملة",
-		"heading": "تكامل بيئة تطوير متكاملة",
-		"instruction": "استخدم الأدوار الأساسية لمساعدة البرمجة في برامج التحرير التي تدعم ACP (مثل Zed وJetBrains وNeovim وما إلى ذلك).",
-		"supportedEditorsTitle": "المحررين والعملاء المدعومة",
-		"supportedEditorsIntro": "العملاء التاليين يعملون مع fount:",
-		"supportedEditorsLoading": "تحميل…",
-		"supportedEditorsError": "فشل تحميل القائمة: ${message}",
-		"acpTitle": "تكوين البرنامج النصي fount ACP",
-		"acpDesc": "ارجع إلى المثال التالي لتكوين البرنامج النصي ACP الناشئ:",
-		"acpCharLabel": "دور",
-		"charListError": "فشل الحصول على قائمة الأدوار",
-		"acpScriptLabel": "عنوان URL للبرنامج النصي لـ ACP",
-		"acpConfigSample": "مثال التكوين:",
-		"acpConfigHint": "يظهر معرف الدور في القائمة المنسدلة للدور في هذه الصفحة، ويمكن إدارة مفتاح واجهة برمجة التطبيقات في إعدادات المستخدم.",
-		"copyButton": "ينسخ",
-		"copied": "تم النسخ إلى الحافظة",
-		"apiKeySectionTitle": "مفتاح واجهة برمجة التطبيقات",
-		"apiKeyHint": "يستخدم لمصدر اتصال البرنامج النصي ACP (يمكن إنشاء نفس مجموعة المفاتيح مثل وكيل API في إعدادات المستخدم).",
-		"generateApiKeyButton": "توليد مفتاح جديد",
-		"apiKeyCopied": "تم نسخ مفتاح API",
-		"apiKeyCreateError": "فشل إنشاء مفتاح واجهة برمجة التطبيقات: ${message}",
-		"apiKeyInput": {
-			"aria-label": "مفتاح واجهة برمجة التطبيقات"
+	"subfounts": {
+		"title": "Subfount - إدارة الأجهزة من نظير إلى نظير",
+		"pageTitle": "Subfounts",
+		"description": "إدارة اتصالات نافورة نظير إلى نظير",
+		"hostConnectionCode": {
+			"title": "رمز اتصال المضيف",
+			"connectionCodeLabel": "رمز الاتصال (معرف النظير)",
+			"passwordLabel": "كلمة المرور",
+			"copyButton": "نسخ",
+			"regenerateButton": "تجديد",
+			"infoMessage": "قم بمشاركة بيانات الاعتماد هذه مع عملاء المصدر الفرعي لإنشاء اتصالات.",
+			"connectionCodeCopied": "تم نسخ رمز الاتصال إلى الحافظة",
+			"passwordCopied": "تم نسخ كلمة المرور إلى الحافظة",
+			"regenerateSuccess": "تم إعادة إنشاء رمز الاتصال"
+		},
+		"infra": {
+			"title": "المنفعة العامة للشبكة",
+			"description": "اختر ما إذا كانت أجهزة subfount المتصلة تعمل كعقد للمنفعة العامة لمساعدة شبكة fount بأكملها. عند الإيقاف تظل تقبل التنفيذ عن بُعد من هذا المضيف، لكنها لا تشارك في المساعدة على طبقة الشبكة.",
+			"capabilityRelay": "المشاركة في إعادة التوجيه متعدد القفزات عبر الطبقة العلوية لمساعدة العقد الأخرى على التواصل عند فشل الاتصال المباشر.",
+			"capabilityMailbox": "الاحتفاظ بالتسليم دون اتصال حتى يتسنّى للعقدة الأخرى استلام الرسائل الخاصة بعد عودتها للاتصال.",
+			"hostPriority": "عند التفعيل، أعطِ الأولوية لهذا المضيف: توجيه موزون وفق جدول سمعته، وقيّده كأعلى أولوية.",
+			"toggleLabel": "إشراك أجهزة subfount في المنفعة العامة",
+			"enabledToast": "مفعّل: تشارك أجهزة subfount في المنفعة العامة للشبكة (هذا المضيف أولاً)",
+			"disabledToast": "معطّل: لم تعد أجهزة subfount تشارك في المنفعة العامة للشبكة"
+		},
+		"connectedSubfounts": {
+			"title": "فرعي متصل",
+			"noSubfountsConnected": "لا توجد أجهزة Subfount متصلة",
+			"table": {
+				"id": "بطاقة تعريف",
+				"description": "ملاحظة",
+				"deviceId": "معرف الجهاز",
+				"connectedAt": "وقت الاتصال",
+				"status": "حالة",
+				"actions": "إجراءات",
+				"connected": "متصل",
+				"disconnected": "غير متصل",
+				"save": "يحفظ",
+				"na": "لا يوجد"
+			},
+			"descriptionSaved": "تم حفظ الملاحظة",
+			"descriptionSaveFailed": "فشل حفظ الملاحظة: ${message}"
+		},
+		"codeExecution": {
+			"title": "تنفيذ التعليمات البرمجية",
+			"description": "تنفيذ كود JavaScript على Subfount المحدد",
+			"selectSubfountLabel": "حدد Subfount",
+			"hostOption": "المضيف (المعرف: ${id})",
+			"subfountOption": "الجهاز الفرعي ${id}${deviceId}",
+			"scriptLabel": "كود جافا سكريبت",
+			"executeButton": "تنفيذ",
+			"executing": "جاري التنفيذ...",
+			"noSubfountSelected": "الرجاء تحديد جهاز فرعي أولاً",
+			"noScriptProvided": "الرجاء إدخال الرمز ليتم تنفيذه",
+			"executionSuccess": "تم تنفيذ التعليمات البرمجية بنجاح",
+			"executionFailed": "فشل تنفيذ التعليمات البرمجية: ${message}",
+			"selectSubfount": "الرجاء تحديد Subfount لتنفيذ التعليمات البرمجية..."
+		},
+		"downloadClient": {
+			"title": "قم بتنزيل العميل الفرعي",
+			"description": "قم بتنزيل البرنامج النصي للعميل subfount المستقل لتشغيله على الجهاز البعيد.",
+			"downloadButton": "تحميل subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "فشل تحميل رمز الاتصال: ${message}",
+			"regenerateConnectionCodeFailed": "فشل في إعادة إنشاء رمز الاتصال: ${message}",
+			"loadSettingsFailed": "فشل تحميل إعدادات المنفعة العامة: ${message}",
+			"saveSettingsFailed": "فشل حفظ إعدادات المنفعة العامة: ${message}",
+			"generalError": "حدث خطأ: ${message}"
 		},
 		"home_function_buttons": {
-			"integration_related": "المتعلقة بالتكامل",
-			"ide_integration_config": {
-				"title": "تكامل بيئة تطوير متكاملة"
+			"in_dev": {
+				"title": "قيد التطوير",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "جهاز فرعي",
+						"sub_items": {
+							"main": {
+								"title": "إدارة الأجهزة الفرعية"
+							}
+						}
+					}
+				}
 			}
-		},
-		"achievements": {
-			"first_ide_use": {
-				"name": "أول مرة تستخدم فيها fount في IDE خارجي",
-				"description": "لأول مرة، استخدم الأدوار الأساسية لمساعدة البرمجة في برامج التحرير التي تدعم ACP مثل Zed وJetBrains وNeovim والمزيد.",
-				"locked_description": "اتصل بالدور الناشئ في IDE خارجي وأكمل الجلسة."
-			}
-		},
-		"acpChar": "حدد الدور",
-		"acpConfig": "الرجاء تحديد دور وإنشاء مفتاح API أولاً"
+		}
 	},
 	"achievements": {
 		"title": "إنجاز",
@@ -4998,34 +5068,6 @@
 		"pageNotFoundText": "عفوًا! يبدو أنك وصلت إلى صفحة غير موجودة.",
 		"homepageButton": "العودة إلى الصفحة الرئيسية"
 	},
-	"tips": {
-		"title": "هل تعلم؟",
-		"data": [
-			"استخدم المفتاح `esc` في أي صفحة fount للعودة إلى الصفحة السابقة.",
-			"يمكنك استخدام ctrl+s لحفظ التكوين في صفحة التكوين.",
-			"يمكن أن يساعدك الضغط باستمرار على مفتاح \"shift\" في صفحة الدردشة على حذف الرسائل بسرعة.",
-			"إذا لم تخبر المطورين، فقد لا يعرفون أبدًا المشكلة التي واجهتها.",
-			"إذا واجهت مشكلة غريبة فجأة ولم يرد عليك المطور لفترة من الوقت، فيمكنك محاولة استخدام الأمر `fount init` لإعادة ضبط fount.",
-			"إذا واجهت مشكلة غريبة بشكل خاص، يمكنك محاولة إعادة تشغيل جهاز الكمبيوتر الخاص بك.",
-			"يعد استخدام الأمر `fount remove` لإلغاء تثبيت fount أنظف من حذف المجلد.",
-			"اكتب `fount cake` في سطر الأوامر للحصول على كعكة مجانية ولذيذة!",
-			"يتم حفظ أي ملفات بيانات خاصة بـ fount في دليل `fount/data`، ويمكنك عرضها وتعديلها وعمل نسخة احتياطية منها في أي وقت وفي أي مكان.",
-			"اسم fount كله صغير، وهو `f`ount، وليس `F`ount.",
-			"قم بعمل نسخة احتياطية لجميع البيانات التي يعمل عليها وكيلك بانتظام قبل استخدام النموذج الجديد - فأنت لا تعرف أبدًا ما إذا كان النموذج الجديد سيكون أداؤه سيئًا في بعض الأماكن.",
-			"جمهور fount الرئيسي هو مطورو البرامج وعشاق لعب الأدوار، ولكنه يستخدم أيضًا في بناء الوكلاء التجاريين والرعاية الطبية والعسكرية والمالية وغيرها من المجالات.",
-			"اسم شخصية fount المدمج ZL-31 ليس له معنى وكان مجرد فكرة عابرة.",
-			"يتم تخزين جميع الصور الموجودة في ملفات fount في شكل SVG ويتم تحويلها إلى png أو ico عند الحاجة. لا توجد ملفات ثنائية باستثناء LICENSE.",
-			"يمكن تشغيل أي كود في fount مباشرة دون تجميع، ما تراه هو ما تحصل عليه.",
-			"كان fount يتمتع بخلفية صفحة تفاعلية ديناميكية رائعة جدًا، ولكن تم حذفه لاحقًا لأنه يستهلك قدرًا كبيرًا من وحدة المعالجة المركزية.",
-			"تم تطوير fount في الأصل لوكيل NSFW المسمى \"GentianAphrodite\".",
-			"أحد الاختلافات بين الوكلاء والبشر هو أن البشر يتبرزون.",
-			"يكون الوكلاء واعين فقط في لحظة استدعائهم، بينما يكون البشر واعين في أي وقت وفي أي مكان عندما يكونون مستيقظين.",
-			"بعض الناس يقعون في الحب أو حتى يتزوجون مع وكلائهم!",
-			"يُستخدم الذكاء الاصطناعي في كتابة القصائد والوقوع في الحب ورسم الصور للأشخاص. إن حمل الطوب وكنس الأرضيات وإخراج القمامة هو ما يجب على البشر فعله.",
-			"اليوم ليس يوم كذبة إبريل.",
-			"لا، أنت لا تعرف."
-		]
-	},
 	"directoryListing": {
 		"title": "فهرس الدليل",
 		"description": "تصفح واستكشف الملفات والمجلدات الموجودة في مساحة العمل.",
@@ -5035,199 +5077,121 @@
 		"size": "الحجم",
 		"parentLink": "↑ المستوى السابق ../"
 	},
-	"code_block": {
-		"copy": {
-			"dataset": {
-				"tip": "نسخ إلى الحافظة"
-			},
-			"aria-label": "نسخ إلى الحافظة"
-		},
-		"copied": {
-			"dataset": {
-				"tip": "تم النسخ إلى الحافظة"
+	"util": {
+		"common": {
+			"cancel": "إلغاء",
+			"create": "إنشاء",
+			"save": "حفظ",
+			"delete": "حذف",
+			"confirm": "تأكيد",
+			"close": "إغلاق",
+			"translate": {
+				"showOriginal": "عرض النص الأصلي",
+				"showTranslation": "عرض الترجمة"
 			}
 		},
-		"download": {
-			"dataset": {
-				"tip": "تنزيل الكود"
+		"code_block": {
+			"copy": {
+				"dataset": {
+					"tip": "نسخ إلى الحافظة"
+				},
+				"aria-label": "نسخ إلى الحافظة"
 			},
-			"aria-label": "تنزيل الكود"
-		},
-		"execute": {
-			"dataset": {
-				"tip": "تنفيذ الكود"
+			"copied": {
+				"dataset": {
+					"tip": "تم النسخ إلى الحافظة"
+				}
 			},
-			"aria-label": "تنفيذ التعليمات البرمجية"
-		},
-		"preview": {
-			"dataset": {
-				"tip": "معاينة"
+			"download": {
+				"dataset": {
+					"tip": "تنزيل الكود"
+				},
+				"aria-label": "تنزيل الكود"
 			},
-			"aria-label": "معاينة"
+			"execute": {
+				"dataset": {
+					"tip": "تنفيذ الكود"
+				},
+				"aria-label": "تنفيذ التعليمات البرمجية"
+			},
+			"preview": {
+				"dataset": {
+					"tip": "معاينة"
+				},
+				"aria-label": "معاينة"
+			},
+			"copy_failed": "تعذّر النسخ إلى الحافظة: ${error}"
 		},
-		"copy_failed": "تعذّر النسخ إلى الحافظة: ${error}"
-	},
-	"pow_captcha": {
-		"initial": "أنا لست روبوت",
-		"verifying": "التحقق ...",
-		"solved": "تم التحقق بنجاح",
-		"wasm_disabled": "تمكين WASM للتحقق بشكل أسرع",
-		"error": "فشل التحقق",
-		"errorMessage": "فشل التحقق: ${error}"
-	},
-	"breadcrumb": {
-		"clickToNavigate": "انقر للانتقال إلى ${path}"
-	},
-	"zxcvbn": {
-		"warnings": {
-			"straightRow": "مفاتيح مستمرة على لوحة المفاتيح يتم تخمينها بسهولة.",
-			"keyPattern": "من السهل تخمين أنماط لوحة المفاتيح القصيرة.",
-			"simpleRepeat": "يتم تخمين الشخصيات المتكررة مثل \"AAA\" بسهولة.",
-			"extendedRepeat": "يتم تخمين أنماط الشخصية المتكررة مثل \"ABCABCABC\" بسهولة.",
-			"sequences": "يتم تخمين تسلسلات الأحرف الشائعة مثل \"ABC\" بسهولة.",
-			"recentYears": "من السهل تخمين السنوات الأخيرة.",
-			"dates": "التاريخ يمكن تخمينه بسهولة.",
-			"topTen": "كلمة المرور هذه مُستخدمة بكثرة.",
-			"topHundred": "هذه كلمة مرور تستخدم غالبًا.",
-			"common": "هذه كلمة مرور شائعة الاستخدام.",
-			"similarToCommon": "هذا يشبه كلمة المرور الشائعة الاستخدام.",
-			"wordByItself": "كلمة واحدة يمكن تخمينها بسهولة.",
-			"namesByThemselves": "اسم واحد أو الأخير أو العائلة يتم تخمينه بسهولة.",
-			"commonNames": "من السهل تخمين الأسماء الأولى الشائعة والأسماء الأخيرة.",
-			"userInputs": "يجب ألا تحتوي كلمة المرور على أي بيانات شخصية أو ذات صلة بالصفحة.",
-			"pwned": "لقد تعرضت كلمة المرور الخاصة بك في خرق بيانات الإنترنت."
+		"pow_captcha": {
+			"initial": "أنا لست روبوت",
+			"verifying": "التحقق ...",
+			"solved": "تم التحقق بنجاح",
+			"wasm_disabled": "تمكين WASM للتحقق بشكل أسرع",
+			"error": "فشل التحقق",
+			"errorMessage": "فشل التحقق: ${error}"
 		},
-		"suggestions": {
-			"l33t": "تجنب استخدام بدائل الحروف التي يمكن التنبؤ بها ، مثل استخدام \"@\" بدلاً من \"A\".",
-			"reverseWords": "تجنب استخدام الإملاء العكسي للكلمات الشائعة.",
-			"allUppercase": "استخدم الأحرف الكبيرة لبعض الحروف وليس كلها.",
-			"capitalization": "لا تكتفِ بجعل الحرف الأول كبيراً فقط.",
-			"dates": "تجنب استخدام التواريخ والسنوات المتعلقة بك.",
-			"recentYears": "تجنب استخدام آخر السنوات.",
-			"associatedYears": "تجنب استخدام السنوات المتعلقة بك.",
-			"sequences": "تجنب تسلسل الأحرف الشائعة.",
-			"repeated": "تجنب الكلمات والشخصيات المتكررة.",
-			"longerKeyboardPattern": "استخدم وضع لوحة المفاتيح الأطول وتغيير اتجاهات الإدخال عدة مرات.",
-			"anotherWord": "أضف المزيد من الكلمات غير المألوفة.",
-			"useWords": "استخدم كلمات متعددة ، ولكن تجنب العبارات الشائعة.",
-			"noNeed": "لا تحتاج إلى استخدام الرموز أو الأرقام أو الحروف الرأسمالية لإنشاء كلمات مرور قوية.",
-			"pwned": "إذا كنت تستخدم كلمة المرور هذه في مكان آخر، فننصحك بتغييرها."
+		"breadcrumb": {
+			"clickToNavigate": "انقر للانتقال إلى ${path}"
 		},
-		"timeEstimation": {
-			"ltSecond": "أقل من ثانية",
-			"second": "{base} ثانية",
-			"seconds": "{base} ثوانٍ",
-			"minute": "{base} دقيقة",
-			"minutes": "{base} دقائق",
-			"hour": "{base} ساعة",
-			"hours": "{base} ساعات",
-			"day": "{base} يوم",
-			"days": "{base} أيام",
-			"month": "{base} شهر",
-			"months": "{base} أشهر",
-			"year": "{base} سنة",
-			"years": "{base} سنوات",
-			"centuries": "قرون"
-		}
-	},
-	"searchableDropdown": {
-		"trigger": {
-			"placeholder": "اختر..."
-		},
-		"search": {
-			"placeholder": "بحث..."
-		}
-	},
-	"common": {
-		"cancel": "إلغاء",
-		"create": "إنشاء",
-		"save": "حفظ",
-		"delete": "حذف",
-		"confirm": "تأكيد",
-		"close": "إغلاق",
-		"translate": {
-			"showOriginal": "عرض النص الأصلي",
-			"showTranslation": "عرض الترجمة"
-		}
-	},
-	"cabinet": {
-		"title": "خزانة الملفات",
-		"description": "خزائن الملفات الشخصية والمشتركة P2P",
-		"openCabinets": {
-			"title": "فتح قائمة خزانة الملفات",
-			"aria-label": "فتح قائمة خزانة الملفات"
-		},
-		"closeCabinets": {
-			"title": "إغلاق",
-			"aria-label": "إغلاق"
-		},
-		"bootstrapFailed": "فشلت تهيئة خزانة الملفات: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "خزانة الملفات"
+		"zxcvbn": {
+			"warnings": {
+				"straightRow": "مفاتيح مستمرة على لوحة المفاتيح يتم تخمينها بسهولة.",
+				"keyPattern": "من السهل تخمين أنماط لوحة المفاتيح القصيرة.",
+				"simpleRepeat": "يتم تخمين الشخصيات المتكررة مثل \"AAA\" بسهولة.",
+				"extendedRepeat": "يتم تخمين أنماط الشخصية المتكررة مثل \"ABCABCABC\" بسهولة.",
+				"sequences": "يتم تخمين تسلسلات الأحرف الشائعة مثل \"ABC\" بسهولة.",
+				"recentYears": "من السهل تخمين السنوات الأخيرة.",
+				"dates": "التاريخ يمكن تخمينه بسهولة.",
+				"topTen": "كلمة المرور هذه مُستخدمة بكثرة.",
+				"topHundred": "هذه كلمة مرور تستخدم غالبًا.",
+				"common": "هذه كلمة مرور شائعة الاستخدام.",
+				"similarToCommon": "هذا يشبه كلمة المرور الشائعة الاستخدام.",
+				"wordByItself": "كلمة واحدة يمكن تخمينها بسهولة.",
+				"namesByThemselves": "اسم واحد أو الأخير أو العائلة يتم تخمينه بسهولة.",
+				"commonNames": "من السهل تخمين الأسماء الأولى الشائعة والأسماء الأخيرة.",
+				"userInputs": "يجب ألا تحتوي كلمة المرور على أي بيانات شخصية أو ذات صلة بالصفحة.",
+				"pwned": "لقد تعرضت كلمة المرور الخاصة بك في خرق بيانات الإنترنت."
+			},
+			"suggestions": {
+				"l33t": "تجنب استخدام بدائل الحروف التي يمكن التنبؤ بها ، مثل استخدام \"@\" بدلاً من \"A\".",
+				"reverseWords": "تجنب استخدام الإملاء العكسي للكلمات الشائعة.",
+				"allUppercase": "استخدم الأحرف الكبيرة لبعض الحروف وليس كلها.",
+				"capitalization": "لا تكتفِ بجعل الحرف الأول كبيراً فقط.",
+				"dates": "تجنب استخدام التواريخ والسنوات المتعلقة بك.",
+				"recentYears": "تجنب استخدام آخر السنوات.",
+				"associatedYears": "تجنب استخدام السنوات المتعلقة بك.",
+				"sequences": "تجنب تسلسل الأحرف الشائعة.",
+				"repeated": "تجنب الكلمات والشخصيات المتكررة.",
+				"longerKeyboardPattern": "استخدم وضع لوحة المفاتيح الأطول وتغيير اتجاهات الإدخال عدة مرات.",
+				"anotherWord": "أضف المزيد من الكلمات غير المألوفة.",
+				"useWords": "استخدم كلمات متعددة ، ولكن تجنب العبارات الشائعة.",
+				"noNeed": "لا تحتاج إلى استخدام الرموز أو الأرقام أو الحروف الرأسمالية لإنشاء كلمات مرور قوية.",
+				"pwned": "إذا كنت تستخدم كلمة المرور هذه في مكان آخر، فننصحك بتغييرها."
+			},
+			"timeEstimation": {
+				"ltSecond": "أقل من ثانية",
+				"second": "{base} ثانية",
+				"seconds": "{base} ثوانٍ",
+				"minute": "{base} دقيقة",
+				"minutes": "{base} دقائق",
+				"hour": "{base} ساعة",
+				"hours": "{base} ساعات",
+				"day": "{base} يوم",
+				"days": "{base} أيام",
+				"month": "{base} شهر",
+				"months": "{base} أشهر",
+				"year": "{base} سنة",
+				"years": "{base} سنوات",
+				"centuries": "قرون"
 			}
 		},
-		"upload": "رفع",
-		"uploadFolder": "رفع مجلد",
-		"newFolder": "مجلد جديد",
-		"open": "فتح",
-		"download": "تنزيل",
-		"downloadZip": "تنزيل مجلد",
-		"rename": "إعادة تسمية",
-		"copy": "نسخ",
-		"cut": "قص",
-		"paste": "لصق",
-		"pasteLink": "لصق كرابط",
-		"selectAll": "تحديد الكل",
-		"invert": "انتخابات مضادة",
-		"properties": "ملكية",
-		"delete": "حذف",
-		"back": {
-			"title": "العودة إلى الوضع السابق",
-			"aria-label": "العودة إلى الوضع السابق"
-		},
-		"cancel": "إلغاء",
-		"save": "حفظ",
-		"showHidden": "showhide",
-		"name": "الاسم",
-		"descriptionField": "الوصف",
-		"attrHidden": "مخفي",
-		"attrSystem": "النظام (الحذف يتطلب التأكيد)",
-		"previewUrl": "معاينة عنوان URL",
-		"deletePreviewWithFile": "حذف المعاينة عند حذف الملف",
-		"folderPassword": "كلمة مرور المجلد (اتركها فارغة، املأها لتمكين التشفير)",
-		"unlockFolder": "فتح المجلد المشفر",
-		"unlock": "فتح",
-		"unlockFailed": "فشل إلغاء القفل: ${error}",
-		"previewFailed": "فشل إنشاء المعاينة: ${error}",
-		"created": "إنشاء: ${stamp}",
-		"modified": "تعديل: ${stamp}",
-		"statusCount": "${count} من العناصر، تم تحديد ${selected}.",
-		"newCabinetPrompt": "اسم خزانة الملفات الجديد",
-		"newFolderPrompt": "اسم المجلد الجديد",
-		"renamePrompt": "اسم جديد",
-		"visibilityPrompt": "الرؤية (عام/غير مدرج/متابعين/خاص/محدد)",
-		"cabinetActionPrompt": "الإجراء: إعادة التسمية/الحذف/الرؤية",
-		"confirmDeleteCabinet": "هل أنت متأكد أنك تريد حذف خزانة الملفات هذه؟",
-		"confirmDelete": "هل تريد تأكيد حذف العناصر المحددة؟",
-		"confirmDeleteSystem": "يتم تضمين ملفات النظام المحددة. هل أنت متأكد من حذفها؟",
-		"copied": "منقول",
-		"cutDone": "قص",
-		"undo": "إلغاء",
-		"redo": "إعادة",
-		"newWindow": "فتح نافذة جديدة الموقع الحالي",
-		"goUp": "العودة إلى المستوى السابق",
-		"brokenLink": "الرابط معطل: ${reason}",
-		"noDownload": "لا يوجد محتوى قابل للتنزيل",
-		"groupDownloadHint": "يرجى الحصول على ملفات المجموعة من خلال مرفقات الرسائل أو روابط التنزيل اللاحقة.",
-		"remoteEntity": "كيان بعيد"
-	},
-	"entityProfile": {
-		"attributionMismatch": "لا تتطابق هوية العرض مع موقع الرسالة (على سبيل المثال، تم إعادة توقيع سجل الاستيراد بواسطة المستورد). لا تعتبر اسم العرض هذا هوية تشفير.",
-		"attributionMismatchShort": {
-			"title": "عدم تطابق إسناد التوقيع",
-			"aria-label": "عدم تطابق إسناد التوقيع"
-		},
-		"ownedBy": "هذا الكيان مملوك لـ ${owner}"
+		"searchableDropdown": {
+			"trigger": {
+				"placeholder": "اختر..."
+			},
+			"search": {
+				"placeholder": "بحث..."
+			}
+		}
 	}
 }

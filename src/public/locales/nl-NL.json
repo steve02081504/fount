@@ -1,263 +1,33 @@
 {
 	"lang": "nl-NL",
 	"name": "Nederlands",
-	"channels": {
-		"title": "Kanalen",
-		"description": "Kanaalbeheer",
-		"create": "Kanaal aanmaken",
-		"subscribe": "Abonneren",
-		"unsubscribe": "Uitschrijven",
-		"settings": "Kanaalinstellingen",
-		"list": "Kanaallijst",
-		"members": "Leden",
-		"messages": "Berichten",
-		"permissions": "Machtigingen",
-		"type": {
-			"announcement": "Aankondigingen",
-			"news": "Nieuws",
-			"updates": "Updates"
-		},
-		"role": {
-			"owner": "Eigenaar",
-			"admin": "Beheerder",
-			"moderator": "Moderator",
-			"member": "Lid",
-			"subscriber": "Abonnee"
-		},
-		"errors": {
-			"notFound": "Kanaal bestaat niet",
-			"noPermission": "Onvoldoende machtigingen",
-			"alreadySubscribed": "Ben al geabonneerd op dit kanaal",
-			"notSubscribed": "Niet geabonneerd op dit kanaal"
-		},
-		"success": {
-			"created": "Kanaal aangemaakt",
-			"updated": "Kanaal bijgewerkt",
-			"deleted": "Kanaal verwijderd",
-			"subscribed": "Geabonneerd",
-			"unsubscribed": "Uitgeschreven",
-			"posted": "Bericht geplaatst"
-		}
-	},
-	"profile": {
-		"title": "Profiel",
-		"description": "Beheer hoe je overkomt in chat en social.",
-		"settingsEyebrow": "Accountinstellingen",
-		"accountAtGlance": "Accountoverzicht",
-		"advancedKicker": "Op aanvraag configureren",
-		"advancedSettings": "Geavanceerde instellingen",
-		"advancedDescription": "Voor dagelijks gebruik is geen aanpassing nodig.",
-		"edit": "Profiel bewerken",
-		"save": "Opslaan",
-		"cancel": "Annuleren",
-		"displayName": "Weergavenaam",
-		"name": "Naam",
-		"bio": "Bio",
-		"descriptionLabel": "Bio (Markdown)",
-		"email": "E-mail",
-		"status": "Status",
-		"customStatusLabel": "Aangepaste status",
-		"avatarLabel": "Avatar",
-		"themeColorLabel": "Themakleur",
-		"uploadAvatar": "Avatar uploaden",
-		"ownerTitle": "Mijn meester",
-		"ownerSummary": "Escrow-instellingen",
-		"ownerDescription": "Na instelling kan je meester namens jou je chatberichten, socialposts en profiel bewerken of verwijderen. Die inhoud wordt lokaal als onveilige Markdown gerenderd (kan scripts bevatten). Vul een willekeurige entiteitshash in; je kunt dit altijd wissen.",
-		"ownerEntityHashLabel": "Meester-entiteitshash (128 hex)",
-		"ownerSave": "Meester opslaan",
-		"ownerClear": "Meester wissen",
-		"ownerSaved": "Meester bijgewerkt",
-		"ownerCleared": "Meester gewist",
-		"ownerSaveFailed": "Opslaan mislukt: ${error}",
-		"ownerConfirmTitle": "Meester instellen?",
-		"ownerConfirmWarningTitle": "Risicovolle actie — lees dit zorgvuldig",
-		"ownerConfirmEditBody": "Na instelling kan de ander zonder opnieuw te vragen je chatberichten, socialposts en profiel bewerken of verwijderen. Per ongeluk of door misleiding een meester instellen = meteen controle over je inhoud kwijt.",
-		"ownerConfirmRenderBody": "Chatberichten en socialposts van de ander worden in je browser als volledige Markdown gerenderd (inclusief HTML/scripts). Daarmee kan de ander zonder verdere toestemming willekeurige code op je apparaat uitvoeren. Ga alleen verder als je hen volledig vertrouwt.",
-		"ownerConfirmCooldown": "Ik heb het risico gelezen(${seconds})",
-		"ownerConfirmFirst": "Ik begrijp de risico's, ga door",
-		"ownerConfirmSecond": "Klik nogmaals om te voltooien",
-		"ownerConfirmCancel": "Annuleren",
-		"federationTitle": "Federatie en synchronisatie",
-		"federationSummary": "Relay-servers en energiezuinige modi",
-		"federationDescription": "Configureer Nostr-relay-URL's en energiebesparende modus. Federatiesync voor een groep schakelt automatisch in bij de eerste uitnodiging of federatieve DM.",
-		"federationAdvanced": "Geavanceerde opties",
-		"federationRelayUrlsLabel": "Relay-servers (één per lijn, leeg laten om standaard te gebruiken)",
-		"federationBatterySaverLabel": "Energiebesparende modus",
-		"federationSave": "Netwerkinstellingen opslaan",
-		"federationResetDefault": "Herstel de aanbevolen standaardconfiguratie",
-		"federationSaved": "Opgeslagen",
-		"federationResetOk": "Standaard aanbevolen configuratie hersteld",
-		"federationSaveFailed": "Opslaan mislukt: ${error}",
-		"preferences": "Voorkeuren",
-		"language": "Taal",
-		"theme": "Thema",
-		"notifications": "Meldingsinstellingen",
-		"emailNotifications": "E-mailmelding",
-		"pushNotifications": "Pushmeldingen",
-		"soundNotifications": "Geluidsmelding",
-		"social": "Sociale links",
-		"website": "Website",
-		"github": "GitHub",
-		"twitter": "Twitteren",
-		"stats": "Statistieken",
-		"joinedAt": "Lid sinds",
-		"messageCount": "Aantal berichten",
-		"groupCount": "Aantal groepen",
-		"channelCount": "Aantal kanalen",
-		"privacy": "Privacy-instellingen",
-		"showEmail": "E-mailadres tonen",
-		"showStats": "Statistieken tonen",
-		"allowDirectMessages": "Sta privéberichten toe",
-		"statusOptions": {
-			"online": "online",
-			"away": "Afwezig",
-			"busy": "Druk bezig",
-			"offline": "Offline"
-		},
-		"themeOptions": {
-			"auto": "Automatisch",
-			"light": "Lichte kleur",
-			"dark": "Donker"
-		},
-		"languageOptions": {
-			"zh-CN": "Vereenvoudigd Chinees",
-			"en-US": "Engels"
-		},
-		"notifEmail": "E-mail",
-		"notifPush": "Push",
-		"notifSound": "Geluid",
-		"notifsAllOff": "Alles uitschakelen",
-		"bioEmpty": "Deze persoon is lui en heeft niets geschreven...",
-		"noSocialLinks": "Nog geen sociale links",
-		"emailVisible": "Zichtbaar",
-		"emailHidden": "Verborgen",
-		"customStatus": {
-			"placeholder": "Wat ben je aan het doen..."
-		},
-		"avatar": {
-			"alt": "Avatar"
-		},
-		"avatarPreview": {
-			"alt": "Avatar-voorbeeld"
-		},
-		"myGroups": "Mijn groepen",
-		"myChannels": "Mijn kanalen",
-		"noGroups": "Nog geen lid van een groep",
-		"noChannels": "Nog geen kanaal",
-		"overview": "Gebruikersoverzicht",
-		"summaryUserId": "Gebruikers-ID",
-		"summaryAccountStatus": "Accountstatus",
-		"summaryEmailVisibility": "Zichtbaarheid van de mailbox",
-		"summaryThemePref": "Themavoorkeur",
-		"summaryLanguagePref": "Taalvoorkeur",
-		"summarySocialCount": "Aantal sociale links",
-		"summaryLinksCount": "Aantal externe links",
-		"groupDescriptionEmpty": "Nog geen beschrijving",
-		"groupMembers": "${members} leden · ${channels} kanalen",
-		"channelPrivate": " · Privé",
-		"channelTypeText": "Tekstkanaal",
-		"channelTypeList": "Lijstkanaal",
-		"channelTypeVoice": "Spraakkanaal",
-		"channelTypeStreaming": "Streamingkanaal",
-		"errors": {
-			"loadFailed": "Kan gegevens niet laden",
-			"saveFailed": "Kan gegevens niet opslaan",
-			"uploadFailed": "Kan avatar niet uploaden",
-			"invalidUserData": "Fout in formaat gebruikersgegevens",
-			"identityRequired": "De knooppuntidentiteit is nog niet gereed. Vernieuw de pagina; Als het nog steeds niet lukt, sla dan de federatieconfiguratie op in de onderstaande P2P-instellingen",
-			"fetchUserFailed": "Gebruikersinformatie ophalen mislukt",
-			"operationFailed": "Bewerking mislukt: ${error}"
-		},
-		"success": {
-			"saved": "Gegevens succesvol opgeslagen",
-			"avatarUploaded": "Avatar succesvol geüpload"
-		},
-		"ownerEntityHash": {
-			"placeholder": "Voer de entiteitshash van de eigenaar in"
-		}
-	},
-	"stickers": {
-		"title": "Stickerplein",
-		"description": "Beheer voor stickers en emoji",
-		"back": {
-			"title": "Terug"
-		},
-		"packs": "Stickerpakketten",
-		"create": "Maak een stickerpakket",
-		"upload": "Stickers uploaden",
-		"install": "Installeren",
-		"uninstall": "Deïnstalleren",
-		"close": "Sluiten",
-		"cancel": "Annuleren",
-		"installed": "Geïnstalleerd",
-		"myPacks": "Mijn stickerpakketten",
-		"tabAll": "Alles",
-		"store": "Stickerplein",
-		"favorites": "Favorieten",
-		"recent": "Recent gebruikt",
-		"search": {
-			"placeholder": "Zoek naar stickerpakketten…"
-		},
-		"emptyPacks": "Nog geen stickerpakketten",
-		"packNameLabel": "Naam stickerpakket",
-		"packName": {
-			"placeholder": "Voer de naam van het stickerpakket in"
-		},
-		"packDescriptionLabel": "Beschrijving",
-		"packDescription": {
-			"placeholder": "Voer een beschrijving in"
-		},
-		"stickerNameLabel": "Stickernaam",
-		"stickerName": {
-			"placeholder": "Voer de stickernaam in"
-		},
-		"selectPack": "Kies een stickerpakket",
-		"selectPackOption": {
-			"textContent": "Selecteer een stickerpakket"
-		},
-		"selectImage": "Selecteer afbeelding",
-		"tagsLabel": "Tags (gescheiden door komma's)",
-		"tags": {
-			"placeholder": "Bijvoorbeeld: schattig, emoticon, dier"
-		},
-		"author": "Auteur",
-		"authorLabel": "Auteur: ${author}",
-		"stickerCount": "${count} stickers",
-		"badgeMine": "Van mij",
-		"noDescription": "Nog geen beschrijving",
-		"noStickersInPack": "Nog geen stickers",
-		"deletePack": "Stickerpakket verwijderen",
-		"public": "Publiek",
-		"private": "Privé",
-		"animated": "Geanimeerd",
-		"static": "Statisch",
-		"addTag": "Tag toevoegen",
-		"defaultPackName": "Standaard emoticonpakket",
-		"defaultPackDescription": "Emoticonstickers worden standaard door het systeem geleverd",
-		"unnamedPack": "Naamloos stickerpakket",
-		"importPackName": "Mijn favorieten",
-		"importPackDescription": "Stickers opgeslagen uit berichten",
-		"nameRequired": "Voer de naam van het stickerpakket in",
-		"stickerNameRequired": "Voer de stickernaam in",
-		"selectPackRequired": "Selecteer een stickerpakket",
-		"fileRequired": "Selecteer een afbeeldingsbestand",
-		"loadDetailFailed": "Kan de details van het stickerpakket niet laden",
-		"deleteConfirm": "Weet je zeker dat je dit stickerpakket definitief wilt verwijderen? Alle stickers worden verwijderd en deze actie is onomkeerbaar.",
-		"errors": {
-			"loadFailed": "Kan het stickerpakket niet laden",
-			"uploadFailed": "Kan stickers niet uploaden",
-			"installFailed": "Installatie mislukt",
-			"uninstallFailed": "Verwijderen is mislukt",
-			"createFailed": "Kan stickerpakket niet maken",
-			"deleteFailed": "Verwijderen is mislukt"
-		},
-		"success": {
-			"uploaded": "Stickers zijn succesvol geüpload",
-			"installed": "Installatie succesvol",
-			"uninstalled": "Succesvol verwijderd",
-			"created": "Stickerpakket is succesvol aangemaakt",
-			"deleted": "Succesvol verwijderen"
-		}
+	"tips": {
+		"title": "Wist je dat?",
+		"data": [
+			"Gebruik de `esc`-toets op een willekeurige fount-pagina om terug te keren naar de vorige pagina.",
+			"U kunt `ctrl+s` gebruiken om de configuratie op de configuratiepagina op te slaan.",
+			"Door de `shift`-toets op de chatpagina ingedrukt te houden, kunt u berichten snel verwijderen.",
+			"Als u het de ontwikkelaars niet vertelt, weten ze misschien nooit welk probleem u bent tegengekomen.",
+			"Als je plotseling een raar probleem tegenkomt en de ontwikkelaar een tijdje niet op je reageert, kun je proberen het `fount init`-commando te gebruiken om de fount te resetten.",
+			"Als u een bijzonder vreemd probleem tegenkomt, kunt u proberen uw computer opnieuw op te starten.",
+			"Het gebruik van de opdracht `fount remove` om een fount te verwijderen is schoner dan het verwijderen van de map.",
+			"Typ `fount cake` in de opdrachtregel om een gratis en heerlijke cake te krijgen!",
+			"Alle gegevensbestanden van fount worden opgeslagen in de map `fount/data` en u kunt ze altijd en overal bekijken, wijzigen en er een back-up van maken.",
+			"De naam van de bron is geheel in kleine letters, het is `f`ount, niet `F`ount.",
+			"Maak een back-up van alle gegevens waarmee uw agent regelmatig werkt voordat u het nieuwe model gebruikt. U weet nooit of het nieuwe model op sommige plaatsen vreselijk zal presteren.",
+			"Het belangrijkste publiek van fount bestaat uit softwareontwikkelaars en liefhebbers van rollenspellen, maar het wordt ook gebruikt in de bouw van commerciële agenten, de medische zorg, het leger, de financiële sector en andere terreinen.",
+			"Het ingebouwde personage van fount, de naam ZL-31, heeft geen betekenis en was slechts een hersenkraker.",
+			"De afbeeldingen in fount-bestanden worden allemaal opgeslagen in SVG-vorm en indien nodig weergegeven in PNG of ICO. Er zijn geen binaire bestanden behalve LICENSE.",
+			"Elke code in fount kan direct worden uitgevoerd zonder compilatie, wat u ziet is wat u krijgt.",
+			"fount had ooit een hele coole dynamische interactieve pagina-achtergrond, maar deze werd later verwijderd omdat het te veel CPU in beslag nam.",
+			"fount is oorspronkelijk ontwikkeld voor een NSFW-agent genaamd \"GentianAphrodite\".",
+			"Een van de verschillen tussen agenten en mensen is dat mensen poepen.",
+			"Agenten zijn alleen bij bewustzijn op het moment dat ze worden opgeroepen, terwijl mensen altijd en overal bij bewustzijn zijn als ze wakker zijn.",
+			"Sommige mensen worden verliefd of trouwen zelfs met hun agenten!",
+			"AI wordt gebruikt om gedichten te schrijven, verliefd te worden en afbeeldingen voor mensen te tekenen. Bakstenen dragen, vloeren vegen en afval buiten zetten is wat mensen moeten doen.",
+			"Vandaag is het geen aprilgrappendag.",
+			"Nee, dat wist je niet."
+		]
 	},
 	"fountConsole": {
 		"server": {
@@ -797,51 +567,6 @@
 		"title": "fount!",
 		"description": "Welkom op de drempel van de bron. Een kort moment van voorbereiding, voordat je midden in de gesprekken en verhalen stapt die wachten om zich te ontvouwen."
 	},
-	"tutorial": {
-		"title": "Een tutorial nodig?",
-		"description": "Laat ons met u meelopen door de wereld van fount. Deze interactieve tutorial zal het pad belichten en je helpen de magie te ontdekken die in de kern ervan verweven is. Je avontuur begint met begrip.",
-		"modal": {
-			"title": "Welkom bij fount!",
-			"instruction": "Wil je de tutorial voor beginners doorlopen?",
-			"buttons": {
-				"start": "Start tutorial",
-				"skip": "Overslaan"
-			}
-		},
-		"endScreen": {
-			"title": "Geweldig! Tutorial voltooid!",
-			"subtitle": "Nu weet je hoe het werkt!",
-			"endButton": "Volgende!"
-		},
-		"progressMessages": {
-			"mouseMove": "Probeer alstublieft met uw vingers de muis vast te houden ${mouseIcon}<br/>en beweeg deze vervolgens",
-			"keyboardPress": "Zoek alstublieft uw toetsenbord ${keyboardIcon}<br/>en probeer met uw vingers op het toetsenbord te drukken",
-			"mobileTouchMove": "Zoek alstublieft uw mobiele telefoon ${phoneIcon}<br/>probeer met een van uw vingers het scherm aan te raken en beweeg deze vervolgens",
-			"mobileClick": "Probeer alstublieft met een van uw vingers het scherm van de telefoon aan te raken ${phoneIcon}<br/>en laat daarna los"
-		},
-		"achievements": {
-			"complete_tutorial": {
-				"name": "Perfect rekenklaslokaal",
-				"description": "Eindelijk klaar met de beginnerstutorial.",
-				"locked_description": "Voltooi een inleidende tutorial."
-			},
-			"skip_tutorial": {
-				"name": "Ik heb overgeslagen",
-				"description": "\"Tutorial? Wat is dat? Kan het gegeten worden?\"",
-				"locked_description": "Sla de inleidende tutorial een keer over."
-			}
-		},
-		"home_function_buttons": {
-			"other": {
-				"title": "Overig",
-				"sub_items": {
-					"replay": {
-						"title": "Herhaling van de tutorial"
-					}
-				}
-			}
-		}
-	},
 	"auth": {
 		"title": "Authenticatie",
 		"subtitle": "Gebruikersgegevens worden lokaal opgeslagen",
@@ -936,6 +661,51 @@
 			"buttons": {
 				"ignore": "Negeer en ga door",
 				"retry": "Opnieuw proberen"
+			}
+		}
+	},
+	"tutorial": {
+		"title": "Een tutorial nodig?",
+		"description": "Laat ons met u meelopen door de wereld van fount. Deze interactieve tutorial zal het pad belichten en je helpen de magie te ontdekken die in de kern ervan verweven is. Je avontuur begint met begrip.",
+		"modal": {
+			"title": "Welkom bij fount!",
+			"instruction": "Wil je de tutorial voor beginners doorlopen?",
+			"buttons": {
+				"start": "Start tutorial",
+				"skip": "Overslaan"
+			}
+		},
+		"endScreen": {
+			"title": "Geweldig! Tutorial voltooid!",
+			"subtitle": "Nu weet je hoe het werkt!",
+			"endButton": "Volgende!"
+		},
+		"progressMessages": {
+			"mouseMove": "Probeer alstublieft met uw vingers de muis vast te houden ${mouseIcon}<br/>en beweeg deze vervolgens",
+			"keyboardPress": "Zoek alstublieft uw toetsenbord ${keyboardIcon}<br/>en probeer met uw vingers op het toetsenbord te drukken",
+			"mobileTouchMove": "Zoek alstublieft uw mobiele telefoon ${phoneIcon}<br/>probeer met een van uw vingers het scherm aan te raken en beweeg deze vervolgens",
+			"mobileClick": "Probeer alstublieft met een van uw vingers het scherm van de telefoon aan te raken ${phoneIcon}<br/>en laat daarna los"
+		},
+		"achievements": {
+			"complete_tutorial": {
+				"name": "Perfect rekenklaslokaal",
+				"description": "Eindelijk klaar met de beginnerstutorial.",
+				"locked_description": "Voltooi een inleidende tutorial."
+			},
+			"skip_tutorial": {
+				"name": "Ik heb overgeslagen",
+				"description": "\"Tutorial? Wat is dat? Kan het gegeten worden?\"",
+				"locked_description": "Sla de inleidende tutorial een keer over."
+			}
+		},
+		"home_function_buttons": {
+			"other": {
+				"title": "Overig",
+				"sub_items": {
+					"replay": {
+						"title": "Herhaling van de tutorial"
+					}
+				}
 			}
 		}
 	},
@@ -1162,513 +932,6 @@
 		"home_drag_out_generators": {
 			"generateXFountPart": {
 				"description": "Genereer informatie over lettertypecomponenten"
-			}
-		}
-	},
-	"social": {
-		"title": "Plein",
-		"description": "Open P2P-socialfeed, volgen en bestandsdeling",
-		"bootstrapFailed": "Initialisatie van sociale interface mislukt: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "Plein"
-			}
-		},
-		"nav": {
-			"feed": "Start",
-			"explore": "Ontdekken",
-			"notifications": "Meldingen",
-			"saved": "Opgeslagen",
-			"drafts": "Concepten",
-			"profile": "Profiel",
-			"videos": "korte video",
-			"live": "Live"
-		},
-		"settings": {
-			"title": "Sociale instellingen",
-			"back": {
-				"aria-label": "Terug naar profiel"
-			},
-			"privacyTitle": "Privacy en ontdekking",
-			"privacyHint": "Bepaalt of accounts verschijnen in Discovery en Aanbevelingen.",
-			"tasteTitle": "Aanbevelingen en voorkeuren",
-			"tasteHint": "Pas de privacygrenzen en de labelnaam van 'Aanbevolen voor je' aan.",
-			"mutedKeywordsTitle": "Blokkeer woorden en tags",
-			"mutedKeywordsHint": "Berichten die in de hoofdtekst, inhoudswaarschuwingen of labels terechtkomen, worden verborgen voor de updates, verkenningen, zoekopdrachten en meldingen. Alleen lokaal opgeslagen.",
-			"mutedKeywordsMatchTags": "Match tags tegelijkertijd",
-			"mutedKeywordsAdd": "Toevoegen aan",
-			"mutedKeywordsRemove": {
-				"title": "Verwijder geblokkeerde woorden"
-			},
-			"mutedKeywordsEmpty": "Er zijn nog geen blokkerende woorden toegevoegd",
-			"autoTranslateTitle": "automatische vertaling",
-			"autoTranslateHint": "Indien ingeschakeld, wordt bij berichten in vreemde talen automatisch om vertaling gevraagd en kan naar de originele tekst worden overgeschakeld.",
-			"autoTranslateEnable": "Vertaal berichten automatisch in andere talen dan de jouwe",
-			"safetyTitle": "Beveiliging en afscherming",
-			"safetyHint": "Beheer geblokkeerde en verborgen lijsten.",
-			"mutedKeywords": {
-				"placeholder": "Voer trefwoorden of #tags in"
-			}
-		},
-		"composer": {
-			"placeholder": "Waar denk je aan? Markdown (fount-dialect) wordt ondersteund — typ @ om te vermelden",
-			"publish": "Plaatsen",
-			"saveDraft": "Concept opslaan",
-			"fab": {
-				"title": "Schrijf updates",
-				"aria-label": "Schrijf updates"
-			},
-			"contentWarning": {
-				"placeholder": "Inhoudswaarschuwing (optioneel)"
-			},
-			"sensitiveMedia": "masker voor mediagevoeligheid",
-			"editImage": "Bewerken",
-			"editCrop": "Bijsnijden",
-			"editMosaic": "Verpixelen",
-			"editBrush": "Penseel",
-			"editApply": "Toepassen",
-			"editCancel": "Annuleren",
-			"replyPolicyEveryone": "Iedereen kan antwoorden",
-			"replyPolicyFollowers7d": "Volgers langer dan 7 dagen",
-			"replyPolicyAuthorFollows": "Mensen die ik volg",
-			"replyPolicyLabel": "Wie kan antwoorden",
-			"replyDisplayAll": "Toon alle antwoorden",
-			"replyDisplayFeaturedOnly": "Alleen geselecteerde antwoorden",
-			"replyDisplayLabel": "Reageer om te laten zien",
-			"scheduleLabel": "Laat regelmatig los",
-			"scheduleSuccess": "Het bericht is toegevoegd aan de geplande wachtrij",
-			"emojiButton": {
-				"title": "Emoji",
-				"aria-label": "Emoji"
-			},
-			"mediaButton": {
-				"title": "Media toevoegen",
-				"aria-label": "Media toevoegen"
-			},
-			"pollButton": {
-				"title": "Start een stemming",
-				"aria-label": "Start een stemming"
-			},
-			"cwToggle": {
-				"title": "Inhoudswaarschuwing",
-				"aria-label": "inhoud waarschuwing"
-			},
-			"advancedToggle": {
-				"title": "Meer opties",
-				"aria-label": "Meer opties"
-			},
-			"media": {
-				"placeholder": "Afbeeldingsbeschrijving (alt)"
-			}
-		},
-		"visibility": {
-			"label": "Zichtbaar bereik",
-			"public": "Publiek",
-			"unlisted": "Niet openbaar vermeld",
-			"followers": "alleen volgers",
-			"followers7d": "Zichtbaar na 7 dagen volgen",
-			"followers30d": "Zichtbaar na 30 dagen volgen",
-			"selected": "Zichtbaar voor gespecificeerde personen",
-			"private": "Alleen zichtbaar voor jezelf",
-			"allowLabel": "Zichtbare mensen",
-			"exceptLabel": "mensen uitsluiten",
-			"allow": {
-				"placeholder": "Zichtbare personenentiteitHash, spatie of komma gescheiden"
-			},
-			"except": {
-				"placeholder": "Wie mag het niet laten zien (optioneel)"
-			}
-		},
-		"albums": {
-			"create": "Nieuw album maken",
-			"edit": "Album bewerken",
-			"save": "Opslaan",
-			"cancel": "Annuleren",
-			"back": "Terug naar album",
-			"empty": "Nog geen album",
-			"emptyPosts": "Er zijn nog geen berichten in het album",
-			"name": "Albumnaam",
-			"description": "Albumbeschrijving",
-			"deleteLinks": "Album verwijderen (berichten behouden)",
-			"deleteWithPosts": "Album verwijderen en bericht verwijderen",
-			"pickerLabel": "Toevoegen aan album",
-			"defaultName": "Standaardalbum"
-		},
-		"feed": {
-			"refresh": "Nieuws vernieuwen",
-			"newPosts": "Er is nieuw nieuws, klik om te bekijken",
-			"tabLatest": "Nieuwste",
-			"tabForYou": "Voor jou",
-			"repostedBy": "${author} heeft geretweet",
-			"decryptFailed": "Kan dit bericht niet ontsleutelen",
-			"revealContent": "Toon inhoud",
-			"sensitiveMedia": "gevoelige media",
-			"showMore": "Meer tonen",
-			"showLess": "Minder tonen",
-			"replayDivider": "Klaar met lezen, blader opnieuw"
-		},
-		"taste": {
-			"rebuild": "Voorkeuren opnieuw opbouwen",
-			"privacyPublishPreferences": "Naamgeving van openbare tags en ontdekking van samenvoegingen",
-			"privacyPublishPreferencesHint": "Uitgeschakeld: vrienden zien je tagnaamgeving en samenvoegvoorstellen niet en dragen niet bij aan consensus.",
-			"privacyPublishReactions": "Publieke voorkeuren en antipathieën",
-			"privacyPublishReactionsHint": "Uitgeschakeld: de auteur krijgt je likes/dislikes niet, je reacties tellen niet mee in aanbevelingen voor anderen en je verspreidt het bericht niet opnieuw.",
-			"empty": "Er is nog geen voorkeurstag, deze wordt automatisch geclusterd na meer likes/dislikes",
-			"weight": "Gewicht ${weight}",
-			"save": "Opslaan",
-			"name": {
-				"placeholder": "lokale weergavenaam"
-			}
-		},
-		"trending": {
-			"title": "Trending",
-			"postCount": {
-				"title": "${n} berichten"
-			},
-			"scopeLocal": "Lokaal",
-			"scopeNearby": "In de buurt",
-			"empty": "Nog geen actuele onderwerpen"
-		},
-		"search": {
-			"placeholder": "Zoek naar updates, gebruikers of #topics (minimaal 2 woorden)",
-			"open": {
-				"aria-label": "Zoeken"
-			},
-			"submit": "Zoeken",
-			"clear": "Duidelijk",
-			"empty": "Geen overeenkomende berichten",
-			"tooShort": "Voer minimaal 2 tekens in",
-			"usersTitle": "Gebruiker",
-			"postsTitle": "Berichten",
-			"usersEmpty": "Geen overeenkomende gebruiker",
-			"pinAlias": "Instellen als alias",
-			"trustScore": "Vertrouw ${score}",
-			"viewTitle": "Zoeken",
-			"loading": "Zoeken…",
-			"filterAuthor": {
-				"placeholder": "Auteur"
-			},
-			"filterMediaAll": "Alle media",
-			"filterMediaImage": "Afbeelding",
-			"filterMediaVideo": "Video",
-			"filterTag": {
-				"placeholder": "#Label"
-			},
-			"sortRecent": "Nieuwste",
-			"sortPopular": "Populair",
-			"scopeLocal": "Lokaal",
-			"scopeNearby": "In de buurt"
-		},
-		"profile": {
-			"edit": "Profiel bewerken",
-			"viewPosts": "Bekijk sociale profielen",
-			"settingsBtn": {
-				"aria-label": "sociale instellingen"
-			},
-			"mediaOnly": "[media]",
-			"hideFromExplore": "Account Verborgen op de verkenningspagina",
-			"tabPosts": "Berichten",
-			"tabAlbums": "Albums",
-			"tabLikes": "Leuk vinden",
-			"tabCabinets": "Cabinet",
-			"tabsLabel": {
-				"aria-label": "Gegevenspartitie"
-			},
-			"cabinetsEmpty": "Er zijn momenteel geen openbare archiefkasten",
-			"cabinetsFailed": "Laden van Cabinet mislukt: ${error}",
-			"statsGroup": {
-				"aria-label": "Statistieken"
-			},
-			"statsPosts": "Berichten",
-			"statsFollowing": "Volgend",
-			"statsFollowers": "Volgers",
-			"followingTitle": "Volgend",
-			"followersTitle": "Volgers"
-		},
-		"dialog": {
-			"close": {
-				"aria-label": "Sluiten"
-			}
-		},
-		"actions": {
-			"like": "Leuk vinden",
-			"unlike": "Like ongedaan",
-			"dislike": "Disliken",
-			"undislike": "Dislike ongedaan",
-			"repost": "Reposten",
-			"quote": "Citaat",
-			"delete": "Verwijderen",
-			"edit": "Bewerking",
-			"save": "Opslaan",
-			"saved": "Verzameld",
-			"translate": "Vertalen",
-			"dm": "Stuur een privébericht",
-			"block": "Blokkeren",
-			"hide": "Verborgen",
-			"mute": "Dempen",
-			"follow": "Volgen",
-			"following": "Volg je al",
-			"care": "Bijzonder gevolgd",
-			"careRemove": "Bijzondere zorg annuleren",
-			"careAdded": "Er is al Bijzonder gevolgd toegevoegd",
-			"careRemoved": "Bijzonder gevolgd geannuleerd",
-			"setAlias": "Alias ​​instellen",
-			"setAliasPrompt": "Lokale alias instellen (leeg laten om te wissen):",
-			"aliasSaved": "Alias ​​bijgewerkt",
-			"replies": "Reacties",
-			"copyLink": "Kopieer link",
-			"downloadHtml": "HTML downloaden",
-			"copied": "Gekopieerd",
-			"more": {
-				"aria-label": "Meer"
-			},
-			"share": "Delen",
-			"likeFailed": "Kan het leuk vinden: ${error}",
-			"dislikeFailed": "Kan niet verdergaan: ${error}",
-			"repostFailed": "Doorsturen mislukt: ${error}",
-			"replyFailed": "Antwoord mislukt: ${error}",
-			"followFailed": "Volgen mislukt: ${error}",
-			"saveFailed": "Opslaan mislukt: ${error}",
-			"blockFailed": "Kan niet blokkeren: ${error}",
-			"hideFailed": "Kan niet Verborgen: ${error}",
-			"muteFailed": "Dempen mislukt: ${error}",
-			"deleteFailed": "Verwijderen mislukt: ${error}"
-		},
-		"post": {
-			"edited": "Bewerkt",
-			"editPrompt": "Berichttekst bewerken",
-			"editHistory": "Geschiedenis bewerken",
-			"editHistoryEmpty": "Geen eerdere versies",
-			"loading": "Laden…",
-			"notFound": "Bericht bestaat niet of is niet zichtbaar",
-			"loadFailed": "Laden mislukt. Probeer het later opnieuw",
-			"detailTitle": "Bericht",
-			"back": "Terug"
-		},
-		"reply": {
-			"context": "Antwoord ${author}"
-		},
-		"notes": {
-			"label": "Lezerssupplement",
-			"add": "Aanvullende informatie",
-			"prompt": "Schrijf een lezerssupplement (communitynota)",
-			"listTitle": "Alle aanvullende informatie",
-			"helpful": "het werkt",
-			"unhelpful": "Nutteloos",
-			"more": "Alle ${n} items",
-			"empty": "Nog geen aanvullende informatie"
-		},
-		"poll": {
-			"multi": "Meerdere selecties toestaan",
-			"apply": "Stemmen toepassen",
-			"closed": "Het stemmen is beëindigd",
-			"deadline": "Deadline: ${deadline}",
-			"options": {
-				"placeholder": "Eén optie per regel (minimaal 2 items)"
-			}
-		},
-		"aside": {
-			"suggested": "Voor jou aandacht"
-		},
-		"explore": {
-			"accounts": "Aanbevolen account",
-			"posts": "laatste berichten",
-			"mediaOnly": "alleen media"
-		},
-		"groupRef": {
-			"linking": "Chatgroep commit",
-			"clear": "Ontkoppel",
-			"pick": "Chatgroep/kanaal commit…"
-		},
-		"notifications": {
-			"reply": "${author} heeft op je bericht gereageerd",
-			"mention": "${author} heeft je @@ed in de feed",
-			"like": "${author} vond je bericht leuk",
-			"repost": "${author} heeft je bericht geretweet",
-			"follow": "${author} volgt je",
-			"care_post": "${author} heeft een nieuwe update geplaatst (Bijzonder gevolgd)",
-			"poll_closed": "Stemmen beëindigd voor ${author}",
-			"post_note": "${author} heeft informatie aan je bericht toegevoegd",
-			"live_started": "${author} is begonnen met livestreamen",
-			"view": "Bekijken",
-			"markAllRead": "Markeer alles als gelezen"
-		},
-		"inbox": {
-			"filtersLabel": {
-				"aria-label": "Filteren van postvak IN"
-			},
-			"tabs": {
-				"all": "Alle",
-				"mention": "Vermeldingen",
-				"reply": "Antwoord",
-				"like": "Likes",
-				"follow": "Volgers",
-				"repost": "Reposts"
-			},
-			"aggregated": {
-				"like": "${author1}, ${author2} en ${count} mensen vonden je bericht leuk",
-				"likeTwo": "${author1} en ${author2} vonden je bericht leuk",
-				"repost": "${author1}, ${author2} en ${count} mensen hebben je bericht geretweet",
-				"repostTwo": "${author1} en ${author2} hebben je bericht geretweet",
-				"follow": "${author1}, ${author2} en ${count} mensen volgen je",
-				"followTwo": "${author1} en ${author2} volgen je"
-			}
-		},
-		"replies": {
-			"placeholder": "Schrijf een antwoord…",
-			"submit": "Antwoord",
-			"empty": "Nog geen antwoord",
-			"emptyHint": "Laten we het eerste artikel schrijven en de discussie starten"
-		},
-		"repost": {
-			"placeholder": "Retweet-opmerking toevoegen (optioneel)…",
-			"submit": "Bevestig het doorsturen"
-		},
-		"quote": {
-			"quoting": "Citeren",
-			"clear": "Citaat verwijderen",
-			"viewOriginal": "Bekijk origineel bericht"
-		},
-		"a11y": {
-			"linkGroupSelect": "Maak verbinding met een chatgroep of kanaal",
-			"postVisibility": "Zichtbaar bereik",
-			"postLang": "inhoud taal",
-			"trendingHashtags": "Trending",
-			"saveFolderSelect": "favoriete map"
-		},
-		"blocklist": {
-			"title": "Zwarte lijst",
-			"hiddenTitle": "Lijst Verborgen",
-			"empty": "Nog geen geblokkeerde of verborgen vermeldingen",
-			"unblock": "Deblokkeren",
-			"unhide": "Zichtbaar maken",
-			"scopeEntity": "Entiteit",
-			"scopeSubject": "Hoofdgedeelte"
-		},
-		"translate": {
-			"label": "Vertaling:"
-		},
-		"saved": {
-			"all": "Alle",
-			"unfiled": "Niet gearchiveerd",
-			"createFolder": {
-				"title": "Maak een nieuwe map",
-				"aria-label": "Maak een nieuwe map"
-			},
-			"createFolderPrompt": "Mapnaam",
-			"pickFolderTitle": "Toevoegen aan favorieten",
-			"confirm": "Bevestigen",
-			"cancel": "Annuleren",
-			"remove": "Verwijder favorieten",
-			"renameFolder": "Hernoemen",
-			"renameFolderPrompt": "Nieuwe mapnaam",
-			"deleteFolder": "map verwijderen",
-			"deleteFolderConfirm": "Map verwijderen? De berichten daar worden verplaatst naar 'Niet gearchiveerd'.",
-			"searchEmpty": "Geen bijpassende collectie",
-			"folderEmpty": "Deze map is leeg",
-			"emptyHint": "Tik op het bladwijzericoon tijdens het browsen om berichten hier op te slaan",
-			"search": {
-				"placeholder": "Favorieten zoeken…"
-			}
-		},
-		"drafts": {
-			"untitled": "(geen concepttekst)",
-			"emptyHint": "Schrijf iets in het invoerveld en klik op «Concept opslaan» om later verder te gaan",
-			"saved": "Concept opgeslagen",
-			"deleted": "Concept verwijderd",
-			"delete": "Concept verwijderen",
-			"empty": "Concept is leeg",
-			"saveFailed": "Kan concept niet opslaan: ${error}",
-			"loadFailed": "Kan concept niet openen: ${error}",
-			"deleteFailed": "Kan concept niet verwijderen: ${error}"
-		},
-		"time": {
-			"justNow": "Zojuist",
-			"minutesAgo": "${n} minuten geleden",
-			"hoursAgo": "${n} uur geleden"
-		},
-		"empty": {
-			"feed": "Er zijn nog geen updates. Volg een aantal mensen.",
-			"profilePosts": "Nog geen nieuws",
-			"following": "Volg nog niemand",
-			"followers": "Nog geen fans",
-			"notifications": "Nog geen melding",
-			"saved": "Nog geen favorieten",
-			"drafts": "Nog geen ontwerp",
-			"exploreAccounts": "Er zijn momenteel geen aanbevolen accounts",
-			"explorePosts": "Er zijn nog geen verkenningsposten",
-			"likedPosts": "Nog geen vind-ik-leuks",
-			"noIdentity": "Configureer eerst je federatieve identiteit in Chat voordat je Social gebruikt"
-		},
-		"topic": {
-			"follow": "Volgen",
-			"unfollow": "Uitschrijven",
-			"empty": "Er zijn nog geen berichten voor dit onderwerp"
-		},
-		"video": {
-			"view": {
-				"aria-label": "korte video"
-			},
-			"empty": "Nog geen korte video",
-			"emptyHint": "Er zijn geen berichten met video's van de volgende mensen of openbare pleinen. Probeer een video-update te plaatsen?",
-			"compose": "Ga een filmpje posten",
-			"back": {
-				"aria-label": "Terug naar nieuws"
-			},
-			"mute": {
-				"aria-label": "Dempen"
-			},
-			"unmute": {
-				"aria-label": "Dempen opheffen"
-			},
-			"unavailable": "Video kan niet worden afgespeeld",
-			"closeReplies": {
-				"aria-label": "Sluit opmerkingen"
-			}
-		},
-		"live": {
-			"empty": "Nog geen live-uitzending",
-			"viewers": "${n} mensen keken",
-			"likes": "${n} Vind ik leuk",
-			"local": "Lokaal",
-			"hall": "Live-uitzendzaal",
-			"back": {
-				"title": "Terug naar nieuws",
-				"aria-label": "Terug naar nieuws"
-			},
-			"danmakuSend": "Versturen",
-			"postWatch": "Voer live-uitzending in",
-			"postEnded": "Live-uitzending is beëindigd",
-			"postEndedStats": "Bekeken door ${viewers} · ${likes} Vind ik leuk · ${duration}",
-			"link": {
-				"invite": "Nodig verbinding uit",
-				"needPeer": "Vul de peer-entiteitHash:liveId in",
-				"invited": "Online uitnodiging is verzonden",
-				"linked": "Aangesloten",
-				"peer": {
-					"placeholder": "Peer-entiteitHash:liveId"
-				}
-			},
-			"broadcast": {
-				"title": "Begin met uitzenden",
-				"open": "Ga naar uitzending",
-				"mediaAv": "Audio en video",
-				"mediaAudio": "Puur geluid",
-				"mediaVideo": "puur beeld",
-				"mediaWhip": "WHIP-pushstreaming (zoals OBS)",
-				"whipUrl": "WHIP-adres",
-				"whipToken": "Token aan toonder",
-				"whipWaiting": "Wachten op WHIP-streamingverbinding (streamingsoftware zoals OBS kan worden gebruikt)…",
-				"start": "Live-uitzending starten",
-				"stop": "Live-uitzending stopzetten",
-				"started": "Live-uitzending is begonnen",
-				"stopped": "Live-uitzending is gestopt",
-				"titleInput": {
-					"placeholder": "Live titel (optioneel)"
-				}
-			},
-			"danmaku": {
-				"placeholder": "Zeg iets..."
 			}
 		}
 	},
@@ -2043,12 +1306,7 @@
 			"createGroup": "Nieuwe groep aanmaken",
 			"members": "Leden",
 			"membersHint": "De ledenlijst wordt gesynchroniseerd door Checkpoint (placeholder)",
-			"send": "Versturen",
 			"streamTest": "Media-apparaten testen",
-			"messageInput": {
-				"placeholder": "Groepsbericht… Ctrl+Enter om te verzenden",
-				"aria-label": "Bericht"
-			},
 			"loadError": "Kan groep niet laden",
 			"remoteNodeTimeout": "Het externe knooppunt reageert niet. Probeer het later opnieuw.",
 			"remoteUnavailable": "De externe component is niet beschikbaar of kan de RPC niet routeren",
@@ -2126,7 +1384,6 @@
 			"remoteTyping": "${name} is aan het typen...",
 			"remoteTypingTwo": "${name1}, ${name2} Bezig met invoeren...",
 			"remoteTypingMany": "${name} en ${count} anderen typen…",
-			"mentionEmpty": "(geen overeenkomende leden)",
 			"localAiLabel": "Native rol:",
 			"forceTriggerOne": {
 				"title": "Forceer trigger ${name} om te spreken"
@@ -2185,7 +1442,6 @@
 			"fileDownload": {
 				"title": "Bestand downloaden"
 			},
-			"clickToLoad": "Klik om te laden",
 			"unknownFile": "onbekend bestand",
 			"blockSender": {
 				"title": "Blokkeer de afzender"
@@ -2210,7 +1466,6 @@
 			"editConfirm": "Bevestigen (Ctrl+Enter)",
 			"editCancel": "Annuleren (Esc)",
 			"editHint": "Ctrl+Enter Bevestigen · Esc Annuleren",
-			"editedLabel": "(bewerkt)",
 			"editEmptyText": "De inhoud van het bericht mag niet leeg zijn",
 			"createGroupTitle": "Nieuwe groep aanmaken",
 			"groupNameLabel": "Groepsnaam",
@@ -2454,6 +1709,10 @@
 			},
 			"sendTitle": {
 				"title": "Verzenden (Ctrl+Enter)"
+			},
+			"messageInput": {
+				"placeholder": "Groepsbericht… Ctrl+Enter om te verzenden",
+				"aria-label": "Bericht"
 			},
 			"stopGenerateTitle": {
 				"title": "Stop met genereren"
@@ -3125,7 +2384,11 @@
 			"altImage": {
 				"placeholder": "Voeg een beschrijving toe aan de afbeelding...",
 				"label": "Afbeeldingsbeschrijving (alt)"
-			}
+			},
+			"editedLabel": "(bewerkt)",
+			"mentionEmpty": "(geen overeenkomende leden)",
+			"clickToLoad": "Klik om te laden",
+			"send": "Versturen"
 		},
 		"sidebar": {
 			"settings": {
@@ -3445,6 +2708,234 @@
 			"chatHub": {
 				"title": "Chatten"
 			}
+		},
+		"profile": {
+			"title": "Profiel",
+			"description": "Beheer hoe je overkomt in chat en social.",
+			"settingsEyebrow": "Accountinstellingen",
+			"accountAtGlance": "Accountoverzicht",
+			"advancedKicker": "Op aanvraag configureren",
+			"advancedSettings": "Geavanceerde instellingen",
+			"advancedDescription": "Voor dagelijks gebruik is geen aanpassing nodig.",
+			"edit": "Profiel bewerken",
+			"save": "Opslaan",
+			"cancel": "Annuleren",
+			"displayName": "Weergavenaam",
+			"name": "Naam",
+			"bio": "Bio",
+			"descriptionLabel": "Bio (Markdown)",
+			"email": "E-mail",
+			"status": "Status",
+			"customStatusLabel": "Aangepaste status",
+			"avatarLabel": "Avatar",
+			"themeColorLabel": "Themakleur",
+			"uploadAvatar": "Avatar uploaden",
+			"ownerTitle": "Mijn meester",
+			"ownerSummary": "Escrow-instellingen",
+			"ownerDescription": "Na instelling kan je meester namens jou je chatberichten, socialposts en profiel bewerken of verwijderen. Die inhoud wordt lokaal als onveilige Markdown gerenderd (kan scripts bevatten). Vul een willekeurige entiteitshash in; je kunt dit altijd wissen.",
+			"ownerEntityHashLabel": "Meester-entiteitshash (128 hex)",
+			"ownerSave": "Meester opslaan",
+			"ownerClear": "Meester wissen",
+			"ownerSaved": "Meester bijgewerkt",
+			"ownerCleared": "Meester gewist",
+			"ownerSaveFailed": "Opslaan mislukt: ${error}",
+			"ownerConfirmTitle": "Meester instellen?",
+			"ownerConfirmWarningTitle": "Risicovolle actie — lees dit zorgvuldig",
+			"ownerConfirmEditBody": "Na instelling kan de ander zonder opnieuw te vragen je chatberichten, socialposts en profiel bewerken of verwijderen. Per ongeluk of door misleiding een meester instellen = meteen controle over je inhoud kwijt.",
+			"ownerConfirmRenderBody": "Chatberichten en socialposts van de ander worden in je browser als volledige Markdown gerenderd (inclusief HTML/scripts). Daarmee kan de ander zonder verdere toestemming willekeurige code op je apparaat uitvoeren. Ga alleen verder als je hen volledig vertrouwt.",
+			"ownerConfirmCooldown": "Ik heb het risico gelezen(${seconds})",
+			"ownerConfirmFirst": "Ik begrijp de risico's, ga door",
+			"ownerConfirmSecond": "Klik nogmaals om te voltooien",
+			"ownerConfirmCancel": "Annuleren",
+			"federationTitle": "Federatie en synchronisatie",
+			"federationSummary": "Relay-servers en energiezuinige modi",
+			"federationDescription": "Configureer Nostr-relay-URL's en energiebesparende modus. Federatiesync voor een groep schakelt automatisch in bij de eerste uitnodiging of federatieve DM.",
+			"federationAdvanced": "Geavanceerde opties",
+			"federationRelayUrlsLabel": "Relay-servers (één per lijn, leeg laten om standaard te gebruiken)",
+			"federationBatterySaverLabel": "Energiebesparende modus",
+			"federationSave": "Netwerkinstellingen opslaan",
+			"federationResetDefault": "Herstel de aanbevolen standaardconfiguratie",
+			"federationSaved": "Opgeslagen",
+			"federationResetOk": "Standaard aanbevolen configuratie hersteld",
+			"federationSaveFailed": "Opslaan mislukt: ${error}",
+			"preferences": "Voorkeuren",
+			"language": "Taal",
+			"theme": "Thema",
+			"notifications": "Meldingsinstellingen",
+			"emailNotifications": "E-mailmelding",
+			"pushNotifications": "Pushmeldingen",
+			"soundNotifications": "Geluidsmelding",
+			"social": "Sociale links",
+			"website": "Website",
+			"github": "GitHub",
+			"twitter": "Twitteren",
+			"stats": "Statistieken",
+			"joinedAt": "Lid sinds",
+			"messageCount": "Aantal berichten",
+			"groupCount": "Aantal groepen",
+			"channelCount": "Aantal kanalen",
+			"privacy": "Privacy-instellingen",
+			"showEmail": "E-mailadres tonen",
+			"showStats": "Statistieken tonen",
+			"allowDirectMessages": "Sta privéberichten toe",
+			"statusOptions": {
+				"online": "online",
+				"away": "Afwezig",
+				"busy": "Druk bezig",
+				"offline": "Offline"
+			},
+			"themeOptions": {
+				"auto": "Automatisch",
+				"light": "Lichte kleur",
+				"dark": "Donker"
+			},
+			"languageOptions": {
+				"zh-CN": "Vereenvoudigd Chinees",
+				"en-US": "Engels"
+			},
+			"notifEmail": "E-mail",
+			"notifPush": "Push",
+			"notifSound": "Geluid",
+			"notifsAllOff": "Alles uitschakelen",
+			"bioEmpty": "Deze persoon is lui en heeft niets geschreven...",
+			"noSocialLinks": "Nog geen sociale links",
+			"emailVisible": "Zichtbaar",
+			"emailHidden": "Verborgen",
+			"customStatus": {
+				"placeholder": "Wat ben je aan het doen..."
+			},
+			"avatar": {
+				"alt": "Avatar"
+			},
+			"avatarPreview": {
+				"alt": "Avatar-voorbeeld"
+			},
+			"myGroups": "Mijn groepen",
+			"myChannels": "Mijn kanalen",
+			"noGroups": "Nog geen lid van een groep",
+			"noChannels": "Nog geen kanaal",
+			"overview": "Gebruikersoverzicht",
+			"summaryUserId": "Gebruikers-ID",
+			"summaryAccountStatus": "Accountstatus",
+			"summaryEmailVisibility": "Zichtbaarheid van de mailbox",
+			"summaryThemePref": "Themavoorkeur",
+			"summaryLanguagePref": "Taalvoorkeur",
+			"summarySocialCount": "Aantal sociale links",
+			"summaryLinksCount": "Aantal externe links",
+			"groupDescriptionEmpty": "Nog geen beschrijving",
+			"groupMembers": "${members} leden · ${channels} kanalen",
+			"channelPrivate": " · Privé",
+			"channelTypeText": "Tekstkanaal",
+			"channelTypeList": "Lijstkanaal",
+			"channelTypeVoice": "Spraakkanaal",
+			"channelTypeStreaming": "Streamingkanaal",
+			"errors": {
+				"loadFailed": "Kan gegevens niet laden",
+				"saveFailed": "Kan gegevens niet opslaan",
+				"uploadFailed": "Kan avatar niet uploaden",
+				"invalidUserData": "Fout in formaat gebruikersgegevens",
+				"identityRequired": "De knooppuntidentiteit is nog niet gereed. Vernieuw de pagina; Als het nog steeds niet lukt, sla dan de federatieconfiguratie op in de onderstaande P2P-instellingen",
+				"fetchUserFailed": "Gebruikersinformatie ophalen mislukt",
+				"operationFailed": "Bewerking mislukt: ${error}"
+			},
+			"success": {
+				"saved": "Gegevens succesvol opgeslagen",
+				"avatarUploaded": "Avatar succesvol geüpload"
+			},
+			"ownerEntityHash": {
+				"placeholder": "Voer de entiteitshash van de eigenaar in"
+			}
+		},
+		"entityProfile": {
+			"attributionMismatch": "De weergave-identiteit komt niet overeen met de ondertekenaar van het bericht (de importgeschiedenis is bijvoorbeeld opnieuw ondertekend door de importeur). Beschouw deze weergavenaam niet als een cryptografische identiteit.",
+			"attributionMismatchShort": {
+				"title": "Toeschrijving van handtekening komt niet overeen",
+				"aria-label": "Toeschrijving van handtekening komt niet overeen"
+			},
+			"ownedBy": "Deze entiteit is eigendom van ${owner}"
+		},
+		"stickers": {
+			"title": "Stickerplein",
+			"description": "Beheer voor stickers en emoji",
+			"back": {
+				"title": "Terug"
+			},
+			"packs": "Stickerpakketten",
+			"create": "Maak een stickerpakket",
+			"upload": "Stickers uploaden",
+			"install": "Installeren",
+			"uninstall": "Deïnstalleren",
+			"close": "Sluiten",
+			"cancel": "Annuleren",
+			"installed": "Geïnstalleerd",
+			"myPacks": "Mijn stickerpakketten",
+			"tabAll": "Alles",
+			"store": "Stickerplein",
+			"favorites": "Favorieten",
+			"recent": "Recent gebruikt",
+			"search": {
+				"placeholder": "Zoek naar stickerpakketten…"
+			},
+			"emptyPacks": "Nog geen stickerpakketten",
+			"packNameLabel": "Naam stickerpakket",
+			"packName": {
+				"placeholder": "Voer de naam van het stickerpakket in"
+			},
+			"packDescriptionLabel": "Beschrijving",
+			"packDescription": {
+				"placeholder": "Voer een beschrijving in"
+			},
+			"stickerNameLabel": "Stickernaam",
+			"stickerName": {
+				"placeholder": "Voer de stickernaam in"
+			},
+			"selectPack": "Kies een stickerpakket",
+			"selectPackOption": {
+				"textContent": "Selecteer een stickerpakket"
+			},
+			"selectImage": "Selecteer afbeelding",
+			"tagsLabel": "Tags (gescheiden door komma's)",
+			"tags": {
+				"placeholder": "Bijvoorbeeld: schattig, emoticon, dier"
+			},
+			"author": "Auteur",
+			"authorLabel": "Auteur: ${author}",
+			"stickerCount": "${count} stickers",
+			"badgeMine": "Van mij",
+			"noDescription": "Nog geen beschrijving",
+			"noStickersInPack": "Nog geen stickers",
+			"deletePack": "Stickerpakket verwijderen",
+			"public": "Publiek",
+			"private": "Privé",
+			"animated": "Geanimeerd",
+			"static": "Statisch",
+			"addTag": "Tag toevoegen",
+			"defaultPackName": "Standaard emoticonpakket",
+			"defaultPackDescription": "Emoticonstickers worden standaard door het systeem geleverd",
+			"unnamedPack": "Naamloos stickerpakket",
+			"importPackName": "Mijn favorieten",
+			"importPackDescription": "Stickers opgeslagen uit berichten",
+			"nameRequired": "Voer de naam van het stickerpakket in",
+			"stickerNameRequired": "Voer de stickernaam in",
+			"selectPackRequired": "Selecteer een stickerpakket",
+			"fileRequired": "Selecteer een afbeeldingsbestand",
+			"loadDetailFailed": "Kan de details van het stickerpakket niet laden",
+			"deleteConfirm": "Weet je zeker dat je dit stickerpakket definitief wilt verwijderen? Alle stickers worden verwijderd en deze actie is onomkeerbaar.",
+			"errors": {
+				"loadFailed": "Kan het stickerpakket niet laden",
+				"uploadFailed": "Kan stickers niet uploaden",
+				"installFailed": "Installatie mislukt",
+				"uninstallFailed": "Verwijderen is mislukt",
+				"createFailed": "Kan stickerpakket niet maken",
+				"deleteFailed": "Verwijderen is mislukt"
+			},
+			"success": {
+				"uploaded": "Stickers zijn succesvol geüpload",
+				"installed": "Installatie succesvol",
+				"uninstalled": "Succesvol verwijderd",
+				"created": "Stickerpakket is succesvol aangemaakt",
+				"deleted": "Succesvol verwijderen"
+			}
 		}
 	},
 	"easynew": {
@@ -3759,433 +3250,6 @@
 			}
 		}
 	},
-	"userSettings": {
-		"title": "Gebruikersinstellingen",
-		"PageTitle": "Gebruikersinstellingen",
-		"description": "Verzorg de details van uw fount-identiteit. Beheer uw profiel, beveilig uw toegang en bekijk gekoppelde apparaten. Een rustig toevluchtsoord voor uw account.",
-		"shell": {
-			"unauthorized": "Inloggen vereist.",
-			"responseNotJson": "De server heeft inhoud geretourneerd die niet kon worden verwerkt.",
-			"unexpectedError": "Het verzoek is mislukt."
-		},
-		"errors": {
-			"accountNotFound": "Account niet gevonden."
-		},
-		"userInfo": {
-			"title": "Gebruikersinformatie",
-			"usernameLabel": "Gebruikersnaam:",
-			"creationDateLabel": "Account aangemaakt op:",
-			"folderSizeLabel": "Grootte gebruikersgegevens:",
-			"folderPathLabel": "Pad naar gebruikersgegevens:",
-			"copyPathButton": {
-				"title": "Kopieer pad"
-			},
-			"copyPathButtonIcon": {
-				"alt": "kopieer pictogram"
-			},
-			"copiedAlert": "Pad gekopieerd naar klembord!",
-			"copyPathFailed": "Kan pad naar klembord niet kopiëren."
-		},
-		"changePassword": {
-			"title": "Wachtwoord wijzigen",
-			"currentPasswordLabel": "Huidig wachtwoord:",
-			"newPasswordLabel": "Nieuw wachtwoord:",
-			"confirmNewPasswordLabel": "Bevestig nieuw wachtwoord:",
-			"submitButton": "Wachtwoord wijzigen",
-			"errorMismatch": "De nieuwe wachtwoorden komen niet overeen.",
-			"success": "Wachtwoord succesvol gewijzigd.",
-			"missingFields": "Vul uw huidige wachtwoord en uw nieuwe wachtwoord in.",
-			"invalidCurrent": "Het huidige wachtwoord is onjuist."
-		},
-		"renameUser": {
-			"title": "Gebruiker hernoemen",
-			"newUsernameLabel": "Nieuwe gebruikersnaam:",
-			"submitButton": "Gebruiker hernoemen",
-			"confirmMessage": "Weet je zeker dat je je gebruikersnaam wilt wijzigen? Je moet opnieuw inloggen.",
-			"success": "Gebruiker succesvol hernoemd naar \"${newUsername}\". Je wordt nu uitgelogd.",
-			"missingParams": "Vul de nieuwe gebruikersnaam en het wachtwoord in.",
-			"wrongPassword": "Het wachtwoord is onjuist.",
-			"mustDiffer": "De nieuwe gebruikersnaam moet anders zijn dan de huidige gebruikersnaam.",
-			"taken": "Deze gebruikersnaam is al in gebruik.",
-			"moveFailed": "Kan de naam van de gebruikersgegevensmap niet wijzigen: ${detail}. De oorspronkelijke gebruikersnaam is hersteld."
-		},
-		"passkeys": {
-			"title": "Beveiligingssleutels en passkeys",
-			"description": "Na registratie van een sleutel kunt u inloggen met een hardwaresleutel of de passkey van dit apparaat. Vereist HTTPS of localhost; voeg sleutels eerst toe in de gebruikersinstellingen.",
-			"refreshButton": {
-				"title": "Lijst vernieuwen"
-			},
-			"refreshButtonIcon": {
-				"alt": "pictogram vernieuwen"
-			},
-			"nameLabel": "Opmerkingen (optioneel)",
-			"nameInput": {
-				"placeholder": "Voorbeeld: YubiKey voor werk"
-			},
-			"addButton": "Beveiligingssleutel toevoegen",
-			"noneFound": "Er zijn nog geen beveiligingssleutels gebonden.",
-			"itemDetails": "Toegevoegde tijd: ${created}",
-			"removeButton": "Verwijderen",
-			"removeConfirm": "Weet u zeker dat u deze sleutel wilt verwijderen? Eenmaal verwijderd, kunt u er niet meer mee inloggen.",
-			"removeSuccess": "Beveiligingssleutel verwijderd.",
-			"addSuccess": "Beveiligingssleutel toegevoegd.",
-			"errorLoadLibrary": "Kan de WebAuthn-bibliotheek niet laden.",
-			"errorCancelled": "Toevoegen geannuleerd.",
-			"apiInvalidPassword": "Verkeerd wachtwoord.",
-			"apiMissingCredential": "Geldige toegangscodegegevens ontbreken.",
-			"apiRemoveParamsRequired": "Geef de inloggegevens en het wachtwoord op die u wilt verwijderen."
-		},
-		"userDevices": {
-			"title": "Gebruikersapparaten/sessies",
-			"noDevicesFound": "Geen apparaten of sessies gevonden.",
-			"deviceInfo": "Apparaat-ID: ${deviceId}",
-			"thisDevice": "Dit apparaat",
-			"deviceDetails": "Laatst gezien: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "Intrekken",
-			"revokeConfirm": "Weet je zeker dat je wilt uitloggen van dit apparaat/deze sessie?",
-			"revokeSuccess": "Apparaat/sessie succesvol ingetrokken.",
-			"revokeMissingParams": "Geef het apparaat- en sessiewachtwoord op dat u wilt intrekken.",
-			"revokeWrongPassword": "Het wachtwoord is onjuist.",
-			"listNotFound": "Apparaatlijst niet gevonden.",
-			"deviceNotFound": "Het apparaat of de sessie is niet gevonden.",
-			"refreshButton": {
-				"title": "Lijst vernieuwen"
-			},
-			"refreshButtonIcon": {
-				"alt": "pictogram vernieuwen"
-			}
-		},
-		"apiKeys": {
-			"title": "API -sleutel",
-			"description": "Beheer de API -sleutel voor externe toepassingen.",
-			"input": {
-				"placeholder": "Nieuwe sleutelbeschrijving"
-			},
-			"createButton": "creëren",
-			"noKeysFound": "Er werden geen API-sleutels gevonden.",
-			"keyDetails": "Beschrijving: ${description} | Gemaakt in: ${createdAt} | Laatst gebruikt: ${lastUsed}",
-			"neverUsed": "Nooit gebruikt",
-			"noKeysForUser": "API-sleutelgegevens niet gevonden.",
-			"revokeWrongPassword": "Het wachtwoord is onjuist.",
-			"keyNotFound": "De API-sleutel is niet gevonden.",
-			"revokeMissingJti": "Geef de sleutel op die u wilt intrekken.",
-			"revokeMissingPassword": "Voor het intrekken van een sleutel is een wachtwoord vereist.",
-			"verifyMissingApiKey": "Geef een API-sleutel op.",
-			"revokeButton": "Herroepen",
-			"revokeConfirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
-			"revokeSuccess": "De API -sleutel is succesvol ingetrokken.",
-			"errorDescriptionRequired": "Een beschrijving is vereist.",
-			"createSuccess": "De API -sleutel is met succes gemaakt.",
-			"refreshButton": {
-				"title": "Lijst vernieuwen"
-			},
-			"refreshButtonIcon": {
-				"alt": "pictogram vernieuwen"
-			}
-		},
-		"newApiKey": {
-			"title": "Er is een nieuwe API -sleutel gemaakt",
-			"warning": "Kopieer uw nieuwe API -sleutel. Je kunt het niet meer zien!",
-			"closeButton": "Ik heb mijn sleutel gekopieerd",
-			"copyButton": {
-				"title": "Kopieer nieuwe API-sleutel"
-			},
-			"copiedAlert": "API -sleutel gekopieerd naar klembord!",
-			"copyKeyFailed": "Kan de sleutel niet naar het klembord kopiëren."
-		},
-		"editorCommand": {
-			"title": "Externe editor – opdracht",
-			"description": "Stel het programma en het argumentsjabloon in om bestanden in een externe editor te openen. Gebruik tijdelijke aanduidingen voor pad, regel en kolom.",
-			"editorPresetLabel": "Editor-voorinstellingen",
-			"commandLabel": "Opdracht",
-			"argsTemplateLabel": "Argumentsjabloon",
-			"argsTemplateHint": "Tijdelijke aanduidingen: \\${file} \\${line} \\${column}",
-			"presetOptionPathAvailable": "${label} (staat in PATH)",
-			"presetOptionPathUnavailable": "${label} (staat niet in PATH)",
-			"testPathInput": {
-				"placeholder": "Pad naar een bestand om te proberen, bijv. C:/work/project/src/main.mjs"
-			},
-			"testButton": "Test: openen",
-			"saveButton": "Configuratie opslaan",
-			"saveSuccess": "Opdracht voor externe editor opgeslagen.",
-			"testPathRequired": "Vul eerst het pad naar het testbestand in.",
-			"testSuccess": "De opdracht om in de editor te openen is uitgevoerd."
-		},
-		"logout": {
-			"title": "Uitloggen",
-			"description": "Dit logt je account uit op het huidige apparaat.",
-			"buttonText": "Uitloggen",
-			"confirmMessage": "Weet je zeker dat je wilt uitloggen?",
-			"successMessage": "Succesvol uitgelogd. Je wordt doorgestuurd naar de inlogpagina..."
-		},
-		"deleteAccount": {
-			"title": "Account verwijderen",
-			"warning": "WAARSCHUWING: Deze actie verwijdert je account en alle bijbehorende gegevens permanent en kan niet ongedaan worden gemaakt.",
-			"submitButton": "Mijn account verwijderen",
-			"confirmMessage1": "WAARSCHUWING! Weet je zeker dat je je account permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
-			"confirmMessage2": "Om de verwijdering te bevestigen, voer je je gebruikersnaam \"${username}\" in:",
-			"usernameMismatch": "De ingevoerde gebruikersnaam komt niet overeen met de huidige gebruiker. Verwijdering geannuleerd.",
-			"success": "Account succesvol verwijderd. Je wordt nu uitgelogd.",
-			"missingPassword": "Voer uw wachtwoord in.",
-			"wrongPassword": "Het wachtwoord is onjuist."
-		},
-		"passwordConfirm": {
-			"title": "Actie bevestigen",
-			"message": "Voer je huidige wachtwoord in om deze actie voort te zetten:",
-			"passwordLabel": "Wachtwoord:",
-			"confirmButton": "Bevestigen",
-			"cancelButton": "Annuleren"
-		},
-		"apiError": "API-verzoek mislukt: ${message}",
-		"generalError": "Er is een fout opgetreden: ${message}",
-		"home_function_buttons": {
-			"settings": {
-				"title": "Instellingen",
-				"sub_items": {
-					"main": {
-						"title": "Gebruikersinstellingen"
-					}
-				}
-			}
-		}
-	},
-	"subfounts": {
-		"title": "subfounts - peer-to-peer apparaatbeheer",
-		"pageTitle": "subfounts",
-		"description": "Beheer peer-to-peer-fonteinverbindingen",
-		"hostConnectionCode": {
-			"title": "Hostverbindingscode",
-			"connectionCodeLabel": "Verbindingscode (Peer-ID)",
-			"passwordLabel": "wachtwoord",
-			"copyButton": "Kopiëren",
-			"regenerateButton": "Regenereer",
-			"infoMessage": "Deel deze inloggegevens met subfount-clients om verbindingen tot stand te brengen.",
-			"connectionCodeCopied": "De verbindingscode is naar het klembord gekopieerd",
-			"passwordCopied": "Wachtwoord gekopieerd naar klembord",
-			"regenerateSuccess": "De verbindingscode is opnieuw gegenereerd"
-		},
-		"infra": {
-			"title": "Netwerk-algemeen nut",
-			"description": "Kies of verbonden subfounts als knooppunten voor het algemeen nut het hele fount-netwerk ondersteunen. Uitgeschakeld accepteren ze nog steeds uitvoering op afstand vanaf deze host, maar helpen ze niet meer op netwerklaag.",
-			"capabilityRelay": "Deelnemen aan overlay multi-hop-doorsturen zodat andere knooppunten elkaar bereiken als de directe verbinding faalt.",
-			"capabilityMailbox": "Offline bezorging bewaren zodat peers privéberichten nog ontvangen zodra ze weer online zijn.",
-			"hostPriority": "Indien ingeschakeld, geef deze host voorrang: weeg routes volgens zijn reputatietabel en vergrendel hem als hoogste prioriteit.",
-			"toggleLabel": "Laat subfounts bijdragen aan het algemeen nut",
-			"enabledToast": "Aan: subfounts dragen bij aan netwerk-algemeen nut (deze host eerst)",
-			"disabledToast": "Uit: subfounts dragen niet meer bij aan netwerk-algemeen nut"
-		},
-		"connectedSubfounts": {
-			"title": "Verbonden subfount",
-			"noSubfountsConnected": "Er is geen subfount aangesloten",
-			"table": {
-				"id": "ID",
-				"description": "Opmerking",
-				"deviceId": "Apparaat-ID",
-				"connectedAt": "verbindingstijd",
-				"status": "Status",
-				"actions": "Acties",
-				"connected": "Aangesloten",
-				"disconnected": "Verbinding verbroken",
-				"save": "opslaan",
-				"na": "N.v.t"
-			},
-			"descriptionSaved": "Notitie opgeslagen",
-			"descriptionSaveFailed": "Kan notitie niet opslaan: ${message}"
-		},
-		"codeExecution": {
-			"title": "uitvoering van code",
-			"description": "Voer JavaScript-code uit op de geselecteerde subfount",
-			"selectSubfountLabel": "Selecteer subfount",
-			"hostOption": "Host (ID: ${id})",
-			"subfountOption": "Extensie ${id}${deviceId}",
-			"scriptLabel": "JavaScript-code",
-			"executeButton": "uitvoeren",
-			"executing": "Uitvoeren...",
-			"noSubfountSelected": "Selecteer eerst een subfount",
-			"noScriptProvided": "Voer de uit te voeren code in",
-			"executionSuccess": "Code-uitvoering succesvol",
-			"executionFailed": "Uitvoering van code mislukt: ${message}",
-			"selectSubfount": "Selecteer het subfont om de code uit te voeren..."
-		},
-		"downloadClient": {
-			"title": "subfount-client downloaden",
-			"description": "Download het zelfstandige subfount-clientscript om op het externe apparaat uit te voeren.",
-			"downloadButton": "Download subfount.mjs"
-		},
-		"errors": {
-			"loadConnectionCodeFailed": "Kan verbindingscode niet laden: ${message}",
-			"regenerateConnectionCodeFailed": "Kan verbindingscode niet opnieuw genereren: ${message}",
-			"loadSettingsFailed": "Kan instellingen voor algemeen nut niet laden: ${message}",
-			"saveSettingsFailed": "Kan instellingen voor algemeen nut niet opslaan: ${message}",
-			"generalError": "Er is een fout opgetreden: ${message}"
-		},
-		"home_function_buttons": {
-			"in_dev": {
-				"title": "In ontwikkeling",
-				"sub_items": {
-					"subfounts_related": {
-						"title": "subapparaat",
-						"sub_items": {
-							"main": {
-								"title": "Beheer subapparaten"
-							}
-						}
-					}
-				}
-			}
-		}
-	},
-	"languageSettings": {
-		"title": "Taalinstellingen",
-		"pageTitle": "Taalinstellingen",
-		"description": "Beheer uw taalvoorkeuren voor de lettertypetoepassing. Pas uw ervaring aan met de beschikbare taalopties.",
-		"pageDescription": "Beheer hier uw taalvoorkeuren. De talen in de lijst hebben voorrang op de browserinstellingen in volgorde.",
-		"availableLanguages": "Beschikbare talen",
-		"preferredLanguages": "Prioriteitstaallijst",
-		"resetButton": "Resetten",
-		"saveButton": "Opslaan",
-		"select": {
-			"placeholder": "Kies een taal..."
-		},
-		"search": {
-			"placeholder": "Taal zoeken..."
-		},
-		"noPreferredLanguages": "Nog geen voorkeurstaal ingesteld. De standaardinstellingen van de browser worden gebruikt.",
-		"moveUpButton": {
-			"aria-label": "omhoog bewegen",
-			"alt": "pictogram omhoog bewegen"
-		},
-		"moveDownButton": {
-			"aria-label": "ga naar beneden",
-			"alt": "pictogram naar beneden verplaatsen"
-		},
-		"deleteLocaleButton": {
-			"aria-label": "Verwijder deze taal",
-			"alt": "pictogram verwijderen"
-		},
-		"savedMessage": "Taalinstellingen worden opgeslagen!",
-		"resetMessage": "Taalinstellingen zijn gereset!",
-		"fetchLocalesFailed": "Kan beschikbare talen niet ophalen!",
-		"home_function_buttons": {
-			"settings": {
-				"title": "Instellingen",
-				"sub_items": {
-					"main": {
-						"title": "Taalinstellingen"
-					}
-				}
-			}
-		}
-	},
-	"themeManage": {
-		"title": "Themabeheer",
-		"description": "Kies de esthetiek die uw stemming of verhaal weerspiegelt. Bekijk een voorbeeld en kies uit een palet van thema's, die elk een andere sfeer bieden voor uw broninteracties. Jouw wereld, jouw stijl.",
-		"instruction": "Kies een thema!",
-		"search": {
-			"placeholder": "Thema's zoeken...",
-			"noResult": "Geen overeenkomende thema's gevonden."
-		},
-		"createButton": "+ Maak een nieuw thema",
-		"preview": {
-			"editButton": {
-				"title": "Bewerken"
-			},
-			"editButtonIcon": {
-				"alt": "Pictogram bewerken"
-			},
-			"deleteButton": {
-				"title": "Verwijderen"
-			},
-			"deleteButtonIcon": {
-				"alt": "Pictogram verwijderen"
-			},
-			"cloneButton": {
-				"title": "Kopiëren"
-			},
-			"cloneButtonIcon": {
-				"alt": "Kopieer pictogram"
-			}
-		},
-		"editor": {
-			"title": "Thema-editor",
-			"cancelButton": "Annuleren",
-			"saveApplyButton": "Opslaan en toepassen",
-			"themeName": "Themanaam (ID)",
-			"autoPaletteTitle": "Automatische kleurcorrectie van afbeeldingen",
-			"autoPaletteInstruction": "Klik op een kleur hierboven om de primaire/secundaire/accent/neutrale kleuren automatisch te vullen.",
-			"coreColors": "Kernkleuren",
-			"baseBackground": "Basis en achtergrond",
-			"variables": "Variabelen",
-			"borderRadius": "Randradius (--rounded-box)",
-			"borderWidth": "Randbreedte (--border-btn)",
-			"advancedCustomization": "Geavanceerd aanpassen",
-			"customCSS": "Aangepaste CSS (overschrijven)",
-			"customMjsScript": "Aangepast MJS-script (optioneel)",
-			"mjsSyntaxHint": "Gebruik [async-eval syntaxis](${asyncDocLink}). Retourneert een object dat de functies `load()` en `unload()` bevat.",
-			"themeIdRequired": "Thema-ID vereist",
-			"newThemeName": "Nieuwe themanaam:",
-			"deleteConfirm": "Weet je zeker dat je het thema ${id} wilt verwijderen?",
-			"saved": "Opgeslagen!",
-			"failedToSave": "Opslaan mislukt",
-			"failedToDelete": "Thema kon niet worden verwijderd: ${message}",
-			"failedToClone": "Thema kon niet worden gekopieerd: ${message}"
-		},
-		"themes": {
-			"auto": "Automatisch",
-			"light": "Licht",
-			"dark": "Donker",
-			"cupcake": "Cupcake",
-			"bumblebee": "Hommel",
-			"emerald": "Smaragd",
-			"corporate": "Zakelijk",
-			"synthwave": "Synthwave",
-			"retro": "Retro",
-			"cyberpunk": "Cyberpunk",
-			"valentine": "Valentijn",
-			"halloween": "Halloween",
-			"garden": "Tuin",
-			"forest": "Bos",
-			"aqua": "Aqua",
-			"lofi": "Lo-fi",
-			"pastel": "Pastel",
-			"fantasy": "Fantasie",
-			"wireframe": "Draadmodel",
-			"black": "Zwart",
-			"luxury": "Luxe",
-			"dracula": "Dracula",
-			"cmyk": "CMYK",
-			"autumn": "Herfst",
-			"business": "Zakelijk",
-			"acid": "Acid",
-			"lemonade": "Limonade",
-			"night": "Nacht",
-			"coffee": "Koffie",
-			"winter": "Winter",
-			"dim": "Gedimd",
-			"nord": "Nord",
-			"sunset": "Zonsondergang",
-			"caramellatte": "Caramel Latte",
-			"abyss": "Afgrond",
-			"silk": "Zijde"
-		},
-		"achievements": {
-			"change_theme": {
-				"name": "Schakel over op een pijnstiller!",
-				"description": "De fontein had een nieuwe look en een geheel nieuwe sfeer.",
-				"locked_description": "Wissel één keer van thema."
-			}
-		},
-		"home_function_buttons": {
-			"settings": {
-				"title": "Instellingen",
-				"sub_items": {
-					"switchTheme": {
-						"title": "Schakel thema"
-					}
-				}
-			}
-		}
-	},
 	"part_config": {
 		"title": "Componentconfiguratie",
 		"pageTitle": "Componentconfiguratie",
@@ -4427,6 +3491,84 @@
 			}
 		}
 	},
+	"discord_bots": {
+		"title": "Discord Bot",
+		"description": "Geef je favoriete metgezellen een stem in de bruisende hallen van Discord. Configureer hun aanwezigheid, beheer hun activiteiten en laat ze werelden overbruggen, server voor server.",
+		"cardTitle": "Discord Bot",
+		"botSelectDropdown": {
+			"placeholder": "Kies een bot"
+		},
+		"botSearch": {
+			"placeholder": "Bot zoeken..."
+		},
+		"charSelectDropdown": {
+			"placeholder": "Selecteer een rol"
+		},
+		"charSearch": {
+			"placeholder": "Personages zoeken..."
+		},
+		"configCard": {
+			"title": "Botconfiguratie",
+			"labels": {
+				"character": "Gekoppeld personage",
+				"apiKey": "Discord API-sleutel",
+				"config": "Configuratie"
+			},
+			"apiKeyInput": {
+				"placeholder": "Voer API-sleutel in"
+			},
+			"toggleApiKeyButton": {
+				"aria-label": "Schakel tussen het tonen van API-sleutels"
+			},
+			"toggleApiKeyIcon": {
+				"alt": "API-sleutel tonen/verbergen"
+			},
+			"buttons": {
+				"saveConfig": "Configuratie opslaan",
+				"startBot": "Starten",
+				"stopBot": "Stoppen"
+			},
+			"charSelect": {
+				"placeholder": "Selecteer rol"
+			}
+		},
+		"prompts": {
+			"newBotName": "Voer een naam in voor de nieuwe Bot:"
+		},
+		"buttons": {
+			"newBot": "Nieuwe Bot",
+			"deleteBot": "Bot verwijderen"
+		},
+		"alerts": {
+			"configSaved": "Configuratie succesvol opgeslagen",
+			"botExists": "Een Bot met de naam \"${botname}\" bestaat al, gebruik een andere naam.",
+			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze negeren?",
+			"httpError": "HTTP-fout",
+			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
+		},
+		"achievements": {
+			"start_bot": {
+				"name": "Op weg naar onenigheid",
+				"description": "Roep je personage op in de wereld van Discord.",
+				"locked_description": "Start de Discord Bot één keer."
+			}
+		},
+		"home_function_buttons": {
+			"bot_related": {
+				"title": "Bots",
+				"sub_items": {
+					"manage": {
+						"title": "Beheer Discord Bot"
+					}
+				}
+			}
+		},
+		"home_char_interfaces": {
+			"configure": {
+				"title": "Discord Bot configureren"
+			}
+		}
+	},
 	"wechat_bots": {
 		"title": "WeChat-bot",
 		"description": "Gebruik een fount-personage als WeChat-bot: koppel een rol, beheer bots en chat in WeChat.",
@@ -4518,83 +3660,584 @@
 			"needBot": "Kies eerst een bot uit de lijst of maak er een met «Nieuw»."
 		}
 	},
-	"discord_bots": {
-		"title": "Discord Bot",
-		"description": "Geef je favoriete metgezellen een stem in de bruisende hallen van Discord. Configureer hun aanwezigheid, beheer hun activiteiten en laat ze werelden overbruggen, server voor server.",
-		"cardTitle": "Discord Bot",
-		"botSelectDropdown": {
-			"placeholder": "Kies een bot"
-		},
-		"botSearch": {
-			"placeholder": "Bot zoeken..."
-		},
-		"charSelectDropdown": {
-			"placeholder": "Selecteer een rol"
-		},
-		"charSearch": {
-			"placeholder": "Personages zoeken..."
-		},
-		"configCard": {
-			"title": "Botconfiguratie",
-			"labels": {
-				"character": "Gekoppeld personage",
-				"apiKey": "Discord API-sleutel",
-				"config": "Configuratie"
-			},
-			"apiKeyInput": {
-				"placeholder": "Voer API-sleutel in"
-			},
-			"toggleApiKeyButton": {
-				"aria-label": "Schakel tussen het tonen van API-sleutels"
-			},
-			"toggleApiKeyIcon": {
-				"alt": "API-sleutel tonen/verbergen"
-			},
-			"buttons": {
-				"saveConfig": "Configuratie opslaan",
-				"startBot": "Starten",
-				"stopBot": "Stoppen"
-			},
-			"charSelect": {
-				"placeholder": "Selecteer rol"
-			}
-		},
-		"prompts": {
-			"newBotName": "Voer een naam in voor de nieuwe Bot:"
-		},
-		"buttons": {
-			"newBot": "Nieuwe Bot",
-			"deleteBot": "Bot verwijderen"
-		},
-		"alerts": {
-			"configSaved": "Configuratie succesvol opgeslagen",
-			"botExists": "Een Bot met de naam \"${botname}\" bestaat al, gebruik een andere naam.",
-			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze negeren?",
-			"httpError": "HTTP-fout",
-			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt vertrekken?"
-		},
-		"achievements": {
-			"start_bot": {
-				"name": "Op weg naar onenigheid",
-				"description": "Roep je personage op in de wereld van Discord.",
-				"locked_description": "Start de Discord Bot één keer."
-			}
-		},
+	"social": {
+		"title": "Plein",
+		"description": "Open P2P-socialfeed, volgen en bestandsdeling",
+		"bootstrapFailed": "Initialisatie van sociale interface mislukt: ${error}",
 		"home_function_buttons": {
-			"bot_related": {
-				"title": "Bots",
-				"sub_items": {
-					"manage": {
-						"title": "Beheer Discord Bot"
-					}
+			"main": {
+				"title": "Plein"
+			}
+		},
+		"nav": {
+			"feed": "Start",
+			"explore": "Ontdekken",
+			"notifications": "Meldingen",
+			"saved": "Opgeslagen",
+			"drafts": "Concepten",
+			"profile": "Profiel",
+			"videos": "korte video",
+			"live": "Live"
+		},
+		"settings": {
+			"title": "Sociale instellingen",
+			"back": {
+				"aria-label": "Terug naar profiel"
+			},
+			"privacyTitle": "Privacy en ontdekking",
+			"privacyHint": "Bepaalt of accounts verschijnen in Discovery en Aanbevelingen.",
+			"tasteTitle": "Aanbevelingen en voorkeuren",
+			"tasteHint": "Pas de privacygrenzen en de labelnaam van 'Aanbevolen voor je' aan.",
+			"mutedKeywordsTitle": "Blokkeer woorden en tags",
+			"mutedKeywordsHint": "Berichten die in de hoofdtekst, inhoudswaarschuwingen of labels terechtkomen, worden verborgen voor de updates, verkenningen, zoekopdrachten en meldingen. Alleen lokaal opgeslagen.",
+			"mutedKeywordsMatchTags": "Match tags tegelijkertijd",
+			"mutedKeywordsAdd": "Toevoegen aan",
+			"mutedKeywordsRemove": {
+				"title": "Verwijder geblokkeerde woorden"
+			},
+			"mutedKeywordsEmpty": "Er zijn nog geen blokkerende woorden toegevoegd",
+			"autoTranslateTitle": "automatische vertaling",
+			"autoTranslateHint": "Indien ingeschakeld, wordt bij berichten in vreemde talen automatisch om vertaling gevraagd en kan naar de originele tekst worden overgeschakeld.",
+			"autoTranslateEnable": "Vertaal berichten automatisch in andere talen dan de jouwe",
+			"safetyTitle": "Beveiliging en afscherming",
+			"safetyHint": "Beheer geblokkeerde en verborgen lijsten.",
+			"mutedKeywords": {
+				"placeholder": "Voer trefwoorden of #tags in"
+			},
+			"taste": {
+				"rebuild": "Voorkeuren opnieuw opbouwen",
+				"privacyPublishPreferences": "Naamgeving van openbare tags en ontdekking van samenvoegingen",
+				"privacyPublishPreferencesHint": "Uitgeschakeld: vrienden zien je tagnaamgeving en samenvoegvoorstellen niet en dragen niet bij aan consensus.",
+				"privacyPublishReactions": "Publieke voorkeuren en antipathieën",
+				"privacyPublishReactionsHint": "Uitgeschakeld: de auteur krijgt je likes/dislikes niet, je reacties tellen niet mee in aanbevelingen voor anderen en je verspreidt het bericht niet opnieuw.",
+				"empty": "Er is nog geen voorkeurstag, deze wordt automatisch geclusterd na meer likes/dislikes",
+				"weight": "Gewicht ${weight}",
+				"save": "Opslaan",
+				"name": {
+					"placeholder": "lokale weergavenaam"
+				}
+			},
+			"blocklist": {
+				"title": "Zwarte lijst",
+				"hiddenTitle": "Lijst Verborgen",
+				"empty": "Nog geen geblokkeerde of verborgen vermeldingen",
+				"unblock": "Deblokkeren",
+				"unhide": "Zichtbaar maken",
+				"scopeEntity": "Entiteit",
+				"scopeSubject": "Hoofdgedeelte"
+			}
+		},
+		"composer": {
+			"placeholder": "Waar denk je aan? Markdown (fount-dialect) wordt ondersteund — typ @ om te vermelden",
+			"publish": "Plaatsen",
+			"saveDraft": "Concept opslaan",
+			"fab": {
+				"title": "Schrijf updates",
+				"aria-label": "Schrijf updates"
+			},
+			"contentWarning": {
+				"placeholder": "Inhoudswaarschuwing (optioneel)"
+			},
+			"sensitiveMedia": "masker voor mediagevoeligheid",
+			"editImage": "Bewerken",
+			"editCrop": "Bijsnijden",
+			"editMosaic": "Verpixelen",
+			"editBrush": "Penseel",
+			"editApply": "Toepassen",
+			"editCancel": "Annuleren",
+			"replyPolicyEveryone": "Iedereen kan antwoorden",
+			"replyPolicyFollowers7d": "Volgers langer dan 7 dagen",
+			"replyPolicyAuthorFollows": "Mensen die ik volg",
+			"replyPolicyLabel": "Wie kan antwoorden",
+			"replyDisplayAll": "Toon alle antwoorden",
+			"replyDisplayFeaturedOnly": "Alleen geselecteerde antwoorden",
+			"replyDisplayLabel": "Reageer om te laten zien",
+			"scheduleLabel": "Laat regelmatig los",
+			"scheduleSuccess": "Het bericht is toegevoegd aan de geplande wachtrij",
+			"emojiButton": {
+				"title": "Emoji",
+				"aria-label": "Emoji"
+			},
+			"mediaButton": {
+				"title": "Media toevoegen",
+				"aria-label": "Media toevoegen"
+			},
+			"pollButton": {
+				"title": "Start een stemming",
+				"aria-label": "Start een stemming"
+			},
+			"cwToggle": {
+				"title": "Inhoudswaarschuwing",
+				"aria-label": "inhoud waarschuwing"
+			},
+			"advancedToggle": {
+				"title": "Meer opties",
+				"aria-label": "Meer opties"
+			},
+			"media": {
+				"placeholder": "Afbeeldingsbeschrijving (alt)"
+			},
+			"visibility": {
+				"label": "Zichtbaar bereik",
+				"public": "Publiek",
+				"unlisted": "Niet openbaar vermeld",
+				"followers": "alleen volgers",
+				"followers7d": "Zichtbaar na 7 dagen volgen",
+				"followers30d": "Zichtbaar na 30 dagen volgen",
+				"selected": "Zichtbaar voor gespecificeerde personen",
+				"private": "Alleen zichtbaar voor jezelf",
+				"allowLabel": "Zichtbare mensen",
+				"exceptLabel": "mensen uitsluiten",
+				"allow": {
+					"placeholder": "Zichtbare personenentiteitHash, spatie of komma gescheiden"
+				},
+				"except": {
+					"placeholder": "Wie mag het niet laten zien (optioneel)"
 				}
 			}
 		},
-		"home_char_interfaces": {
-			"configure": {
-				"title": "Discord Bot configureren"
+		"feed": {
+			"refresh": "Nieuws vernieuwen",
+			"newPosts": "Er is nieuw nieuws, klik om te bekijken",
+			"tabLatest": "Nieuwste",
+			"tabForYou": "Voor jou",
+			"repostedBy": "${author} heeft geretweet",
+			"decryptFailed": "Kan dit bericht niet ontsleutelen",
+			"revealContent": "Toon inhoud",
+			"sensitiveMedia": "gevoelige media",
+			"showMore": "Meer tonen",
+			"showLess": "Minder tonen",
+			"replayDivider": "Klaar met lezen, blader opnieuw",
+			"trending": {
+				"title": "Trending",
+				"postCount": {
+					"title": "${n} berichten"
+				},
+				"scopeLocal": "Lokaal",
+				"scopeNearby": "In de buurt",
+				"empty": "Nog geen actuele onderwerpen"
 			}
+		},
+		"explore": {
+			"accounts": "Aanbevolen account",
+			"posts": "laatste berichten",
+			"mediaOnly": "alleen media"
+		},
+		"notifications": {
+			"reply": "${author} heeft op je bericht gereageerd",
+			"mention": "${author} heeft je @@ed in de feed",
+			"like": "${author} vond je bericht leuk",
+			"repost": "${author} heeft je bericht geretweet",
+			"follow": "${author} volgt je",
+			"care_post": "${author} heeft een nieuwe update geplaatst (Bijzonder gevolgd)",
+			"poll_closed": "Stemmen beëindigd voor ${author}",
+			"post_note": "${author} heeft informatie aan je bericht toegevoegd",
+			"live_started": "${author} is begonnen met livestreamen",
+			"view": "Bekijken",
+			"markAllRead": "Markeer alles als gelezen"
+		},
+		"saved": {
+			"all": "Alle",
+			"unfiled": "Niet gearchiveerd",
+			"createFolder": {
+				"title": "Maak een nieuwe map",
+				"aria-label": "Maak een nieuwe map"
+			},
+			"createFolderPrompt": "Mapnaam",
+			"pickFolderTitle": "Toevoegen aan favorieten",
+			"confirm": "Bevestigen",
+			"cancel": "Annuleren",
+			"remove": "Verwijder favorieten",
+			"renameFolder": "Hernoemen",
+			"renameFolderPrompt": "Nieuwe mapnaam",
+			"deleteFolder": "map verwijderen",
+			"deleteFolderConfirm": "Map verwijderen? De berichten daar worden verplaatst naar 'Niet gearchiveerd'.",
+			"searchEmpty": "Geen bijpassende collectie",
+			"folderEmpty": "Deze map is leeg",
+			"emptyHint": "Tik op het bladwijzericoon tijdens het browsen om berichten hier op te slaan",
+			"search": {
+				"placeholder": "Favorieten zoeken…"
+			}
+		},
+		"drafts": {
+			"untitled": "(geen concepttekst)",
+			"emptyHint": "Schrijf iets in het invoerveld en klik op «Concept opslaan» om later verder te gaan",
+			"saved": "Concept opgeslagen",
+			"deleted": "Concept verwijderd",
+			"delete": "Concept verwijderen",
+			"empty": "Concept is leeg",
+			"saveFailed": "Kan concept niet opslaan: ${error}",
+			"loadFailed": "Kan concept niet openen: ${error}",
+			"deleteFailed": "Kan concept niet verwijderen: ${error}"
+		},
+		"profile": {
+			"edit": "Profiel bewerken",
+			"viewPosts": "Bekijk sociale profielen",
+			"settingsBtn": {
+				"aria-label": "sociale instellingen"
+			},
+			"mediaOnly": "[media]",
+			"hideFromExplore": "Account Verborgen op de verkenningspagina",
+			"tabPosts": "Berichten",
+			"tabAlbums": "Albums",
+			"tabLikes": "Leuk vinden",
+			"tabCabinets": "Cabinet",
+			"tabsLabel": {
+				"aria-label": "Gegevenspartitie"
+			},
+			"cabinetsEmpty": "Er zijn momenteel geen openbare archiefkasten",
+			"cabinetsFailed": "Laden van Cabinet mislukt: ${error}",
+			"statsGroup": {
+				"aria-label": "Statistieken"
+			},
+			"statsPosts": "Berichten",
+			"statsFollowing": "Volgend",
+			"statsFollowers": "Volgers",
+			"followingTitle": "Volgend",
+			"followersTitle": "Volgers",
+			"albums": {
+				"create": "Nieuw album maken",
+				"edit": "Album bewerken",
+				"save": "Opslaan",
+				"cancel": "Annuleren",
+				"back": "Terug naar album",
+				"empty": "Nog geen album",
+				"emptyPosts": "Er zijn nog geen berichten in het album",
+				"name": "Albumnaam",
+				"description": "Albumbeschrijving",
+				"deleteLinks": "Album verwijderen (berichten behouden)",
+				"deleteWithPosts": "Album verwijderen en bericht verwijderen",
+				"pickerLabel": "Toevoegen aan album",
+				"defaultName": "Standaardalbum"
+			}
+		},
+		"video": {
+			"view": {
+				"aria-label": "korte video"
+			},
+			"empty": "Nog geen korte video",
+			"emptyHint": "Er zijn geen berichten met video's van de volgende mensen of openbare pleinen. Probeer een video-update te plaatsen?",
+			"compose": "Ga een filmpje posten",
+			"back": {
+				"aria-label": "Terug naar nieuws"
+			},
+			"mute": {
+				"aria-label": "Dempen"
+			},
+			"unmute": {
+				"aria-label": "Dempen opheffen"
+			},
+			"unavailable": "Video kan niet worden afgespeeld",
+			"closeReplies": {
+				"aria-label": "Sluit opmerkingen"
+			}
+		},
+		"live": {
+			"empty": "Nog geen live-uitzending",
+			"viewers": "${n} mensen keken",
+			"likes": "${n} Vind ik leuk",
+			"local": "Lokaal",
+			"hall": "Live-uitzendzaal",
+			"back": {
+				"title": "Terug naar nieuws",
+				"aria-label": "Terug naar nieuws"
+			},
+			"danmakuSend": "Versturen",
+			"postWatch": "Voer live-uitzending in",
+			"postEnded": "Live-uitzending is beëindigd",
+			"postEndedStats": "Bekeken door ${viewers} · ${likes} Vind ik leuk · ${duration}",
+			"link": {
+				"invite": "Nodig verbinding uit",
+				"needPeer": "Vul de peer-entiteitHash:liveId in",
+				"invited": "Online uitnodiging is verzonden",
+				"linked": "Aangesloten",
+				"peer": {
+					"placeholder": "Peer-entiteitHash:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "Begin met uitzenden",
+				"open": "Ga naar uitzending",
+				"mediaAv": "Audio en video",
+				"mediaAudio": "Puur geluid",
+				"mediaVideo": "puur beeld",
+				"mediaWhip": "WHIP-pushstreaming (zoals OBS)",
+				"whipUrl": "WHIP-adres",
+				"whipToken": "Token aan toonder",
+				"whipWaiting": "Wachten op WHIP-streamingverbinding (streamingsoftware zoals OBS kan worden gebruikt)…",
+				"start": "Live-uitzending starten",
+				"stop": "Live-uitzending stopzetten",
+				"started": "Live-uitzending is begonnen",
+				"stopped": "Live-uitzending is gestopt",
+				"titleInput": {
+					"placeholder": "Live titel (optioneel)"
+				}
+			},
+			"danmaku": {
+				"placeholder": "Zeg iets..."
+			}
+		},
+		"search": {
+			"placeholder": "Zoek naar updates, gebruikers of #topics (minimaal 2 woorden)",
+			"open": {
+				"aria-label": "Zoeken"
+			},
+			"submit": "Zoeken",
+			"clear": "Duidelijk",
+			"empty": "Geen overeenkomende berichten",
+			"tooShort": "Voer minimaal 2 tekens in",
+			"usersTitle": "Gebruiker",
+			"postsTitle": "Berichten",
+			"usersEmpty": "Geen overeenkomende gebruiker",
+			"pinAlias": "Instellen als alias",
+			"trustScore": "Vertrouw ${score}",
+			"viewTitle": "Zoeken",
+			"loading": "Zoeken…",
+			"filterAuthor": {
+				"placeholder": "Auteur"
+			},
+			"filterMediaAll": "Alle media",
+			"filterMediaImage": "Afbeelding",
+			"filterMediaVideo": "Video",
+			"filterTag": {
+				"placeholder": "#Label"
+			},
+			"sortRecent": "Nieuwste",
+			"sortPopular": "Populair",
+			"scopeLocal": "Lokaal",
+			"scopeNearby": "In de buurt"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "Sluiten"
+			}
+		},
+		"actions": {
+			"like": "Leuk vinden",
+			"unlike": "Like ongedaan",
+			"dislike": "Disliken",
+			"undislike": "Dislike ongedaan",
+			"repost": "Reposten",
+			"quote": "Citaat",
+			"delete": "Verwijderen",
+			"edit": "Bewerking",
+			"save": "Opslaan",
+			"saved": "Verzameld",
+			"translate": "Vertalen",
+			"dm": "Stuur een privébericht",
+			"block": "Blokkeren",
+			"hide": "Verborgen",
+			"mute": "Dempen",
+			"follow": "Volgen",
+			"following": "Volg je al",
+			"care": "Bijzonder gevolgd",
+			"careRemove": "Bijzondere zorg annuleren",
+			"careAdded": "Er is al Bijzonder gevolgd toegevoegd",
+			"careRemoved": "Bijzonder gevolgd geannuleerd",
+			"setAlias": "Alias ​​instellen",
+			"setAliasPrompt": "Lokale alias instellen (leeg laten om te wissen):",
+			"aliasSaved": "Alias ​​bijgewerkt",
+			"replies": "Reacties",
+			"copyLink": "Kopieer link",
+			"downloadHtml": "HTML downloaden",
+			"copied": "Gekopieerd",
+			"more": {
+				"aria-label": "Meer"
+			},
+			"share": "Delen",
+			"likeFailed": "Kan het leuk vinden: ${error}",
+			"dislikeFailed": "Kan niet verdergaan: ${error}",
+			"repostFailed": "Doorsturen mislukt: ${error}",
+			"replyFailed": "Antwoord mislukt: ${error}",
+			"followFailed": "Volgen mislukt: ${error}",
+			"saveFailed": "Opslaan mislukt: ${error}",
+			"blockFailed": "Kan niet blokkeren: ${error}",
+			"hideFailed": "Kan niet Verborgen: ${error}",
+			"muteFailed": "Dempen mislukt: ${error}",
+			"deleteFailed": "Verwijderen mislukt: ${error}"
+		},
+		"post": {
+			"edited": "Bewerkt",
+			"editPrompt": "Berichttekst bewerken",
+			"editHistory": "Geschiedenis bewerken",
+			"editHistoryEmpty": "Geen eerdere versies",
+			"loading": "Laden…",
+			"notFound": "Bericht bestaat niet of is niet zichtbaar",
+			"loadFailed": "Laden mislukt. Probeer het later opnieuw",
+			"detailTitle": "Bericht",
+			"back": "Terug"
+		},
+		"reply": {
+			"context": "Antwoord ${author}"
+		},
+		"notes": {
+			"label": "Lezerssupplement",
+			"add": "Aanvullende informatie",
+			"prompt": "Schrijf een lezerssupplement (communitynota)",
+			"listTitle": "Alle aanvullende informatie",
+			"helpful": "het werkt",
+			"unhelpful": "Nutteloos",
+			"more": "Alle ${n} items",
+			"empty": "Nog geen aanvullende informatie"
+		},
+		"poll": {
+			"multi": "Meerdere selecties toestaan",
+			"apply": "Stemmen toepassen",
+			"closed": "Het stemmen is beëindigd",
+			"deadline": "Deadline: ${deadline}",
+			"options": {
+				"placeholder": "Eén optie per regel (minimaal 2 items)"
+			}
+		},
+		"aside": {
+			"suggested": "Voor jou aandacht"
+		},
+		"groupRef": {
+			"linking": "Chatgroep commit",
+			"clear": "Ontkoppel",
+			"pick": "Chatgroep/kanaal commit…"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "Filteren van postvak IN"
+			},
+			"tabs": {
+				"all": "Alle",
+				"mention": "Vermeldingen",
+				"reply": "Antwoord",
+				"like": "Likes",
+				"follow": "Volgers",
+				"repost": "Reposts"
+			},
+			"aggregated": {
+				"like": "${author1}, ${author2} en ${count} mensen vonden je bericht leuk",
+				"likeTwo": "${author1} en ${author2} vonden je bericht leuk",
+				"repost": "${author1}, ${author2} en ${count} mensen hebben je bericht geretweet",
+				"repostTwo": "${author1} en ${author2} hebben je bericht geretweet",
+				"follow": "${author1}, ${author2} en ${count} mensen volgen je",
+				"followTwo": "${author1} en ${author2} volgen je"
+			}
+		},
+		"replies": {
+			"placeholder": "Schrijf een antwoord…",
+			"submit": "Antwoord",
+			"empty": "Nog geen antwoord",
+			"emptyHint": "Laten we het eerste artikel schrijven en de discussie starten"
+		},
+		"repost": {
+			"placeholder": "Retweet-opmerking toevoegen (optioneel)…",
+			"submit": "Bevestig het doorsturen"
+		},
+		"quote": {
+			"quoting": "Citeren",
+			"clear": "Citaat verwijderen",
+			"viewOriginal": "Bekijk origineel bericht"
+		},
+		"a11y": {
+			"linkGroupSelect": "Maak verbinding met een chatgroep of kanaal",
+			"postVisibility": "Zichtbaar bereik",
+			"postLang": "inhoud taal",
+			"trendingHashtags": "Trending",
+			"saveFolderSelect": "favoriete map"
+		},
+		"translate": {
+			"label": "Vertaling:"
+		},
+		"time": {
+			"justNow": "Zojuist",
+			"minutesAgo": "${n} minuten geleden",
+			"hoursAgo": "${n} uur geleden"
+		},
+		"empty": {
+			"feed": "Er zijn nog geen updates. Volg een aantal mensen.",
+			"profilePosts": "Nog geen nieuws",
+			"following": "Volg nog niemand",
+			"followers": "Nog geen fans",
+			"notifications": "Nog geen melding",
+			"saved": "Nog geen favorieten",
+			"drafts": "Nog geen ontwerp",
+			"exploreAccounts": "Er zijn momenteel geen aanbevolen accounts",
+			"explorePosts": "Er zijn nog geen verkenningsposten",
+			"likedPosts": "Nog geen vind-ik-leuks",
+			"noIdentity": "Configureer eerst je federatieve identiteit in Chat voordat je Social gebruikt"
+		},
+		"topic": {
+			"follow": "Volgen",
+			"unfollow": "Uitschrijven",
+			"empty": "Er zijn nog geen berichten voor dit onderwerp"
 		}
+	},
+	"cabinet": {
+		"title": "Cabinet",
+		"description": "P2P persoonlijke en gedeelde archiefkasten",
+		"openCabinets": {
+			"title": "Archiefkastlijst openen",
+			"aria-label": "Archiefkastlijst openen"
+		},
+		"closeCabinets": {
+			"title": "Sluiten",
+			"aria-label": "Sluiten"
+		},
+		"bootstrapFailed": "Initialisatie van Cabinet mislukt: ${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "Cabinet"
+			}
+		},
+		"upload": "Uploaden",
+		"uploadFolder": "Map uploaden",
+		"newFolder": "Maak een nieuwe map",
+		"open": "Open",
+		"download": "Downloaden",
+		"downloadZip": "Map downloaden",
+		"rename": "Hernoemen",
+		"copy": "Kopiëren",
+		"cut": "Snee",
+		"paste": "Plakken",
+		"pasteLink": "Plakken als link",
+		"selectAll": "Selecteer alles",
+		"invert": "Tegenverkiezing",
+		"properties": "Eigendom",
+		"delete": "Verwijderen",
+		"back": {
+			"title": "Keer terug naar de vorige positie",
+			"aria-label": "Keer terug naar de vorige positie"
+		},
+		"cancel": "Annuleren",
+		"save": "Opslaan",
+		"showHidden": "toon Verborgen",
+		"name": "Naam",
+		"descriptionField": "Beschrijven",
+		"attrHidden": "Verborgen",
+		"attrSystem": "Systeem (verwijdering vereist bevestiging)",
+		"previewUrl": "Voorbeeld-URL",
+		"deletePreviewWithFile": "Voorbeeld verwijderen bij verwijderen bestand",
+		"folderPassword": "Mapwachtwoord (leeg laten, invullen om versleuteling in te schakelen)",
+		"unlockFolder": "Ontgrendel de gecodeerde map",
+		"unlock": "Ontgrendelen",
+		"unlockFailed": "Ontgrendelen mislukt: ${error}",
+		"previewFailed": "Genereren van voorbeeld mislukt: ${error}",
+		"created": "Maken: ${stamp}",
+		"modified": "Wijzigen: ${stamp}",
+		"statusCount": "${count} items, ${selected} geselecteerd",
+		"newCabinetPrompt": "Nieuwe naam Cabinet",
+		"newFolderPrompt": "Nieuwe mapnaam",
+		"renamePrompt": "nieuwe naam",
+		"visibilityPrompt": "Zichtbaarheid (openbaar/niet vermeld/volgers/privé/geselecteerd)",
+		"cabinetActionPrompt": "Actie: hernoemen/verwijderen/zichtbaarheid",
+		"confirmDeleteCabinet": "Weet je zeker dat je deze Cabinet wilt verwijderen?",
+		"confirmDelete": "Bevestigen om geselecteerde items te verwijderen?",
+		"confirmDeleteSystem": "De geselecteerde systeembestanden worden opgenomen. Weet je zeker dat je ze wilt verwijderen?",
+		"copied": "Gekopieerd",
+		"cutDone": "Snee",
+		"undo": "Annuleren",
+		"redo": "Opnieuw uitvoeren",
+		"newWindow": "Huidige locatie in nieuw venster openen",
+		"goUp": "Keer terug naar het vorige niveau",
+		"brokenLink": "Link is verbroken: ${reason}",
+		"noDownload": "Geen downloadbare inhoud",
+		"groupDownloadHint": "Verkrijg groepsbestanden via berichtbijlagen of daaropvolgende downloadlinks.",
+		"remoteEntity": "afgelegen entiteit"
 	},
 	"browser_integration": {
 		"title": "Browserintegratie",
@@ -4719,6 +4362,48 @@
 			}
 		}
 	},
+	"ide_integration": {
+		"description": "Verbind de fount-rol met ondersteunde editors (zoals Zed, JetBrains, Neovim) via Agent Client Protocol, configureer API-sleutels en -rollen en betrek AI-partners in de ontwikkelingsworkflow.",
+		"title": "IDE-integratie",
+		"heading": "IDE-integratie",
+		"instruction": "Gebruik fount-rollen voor ondersteuning bij het programmeren in ACP-compatibele editors (zoals Zed, JetBrains, Neovim, enz.).",
+		"supportedEditorsTitle": "Ondersteunde redacteuren en klanten",
+		"supportedEditorsIntro": "De volgende klanten werken met fount:",
+		"supportedEditorsLoading": "laden…",
+		"supportedEditorsError": "Kan lijst niet laden: ${message}",
+		"acpTitle": "Configureer het lettertype ACP-script",
+		"acpDesc": "Raadpleeg het volgende voorbeeld om het font ACP-script te configureren:",
+		"acpCharLabel": "Rol",
+		"charListError": "Kan de rollijst niet ophalen",
+		"acpScriptLabel": "ACP-script-URL",
+		"acpConfigSample": "Configuratievoorbeeld:",
+		"acpConfigHint": "De rol-ID wordt weergegeven in de vervolgkeuzelijst met rollen op deze pagina en de API-sleutel kan worden beheerd in de gebruikersinstellingen.",
+		"copyButton": "Kopiëren",
+		"copied": "Gekopieerd naar klembord",
+		"apiKeySectionTitle": "API-sleutel",
+		"apiKeyHint": "Wordt gebruikt voor ACP-scriptverbindingsbron (dezelfde set sleutels als API-proxy, kan worden aangemaakt in gebruikersinstellingen).",
+		"generateApiKeyButton": "Nieuwe sleutel genereren",
+		"apiKeyCopied": "API-sleutel gekopieerd",
+		"apiKeyCreateError": "Kan API-sleutel niet maken: ${message}",
+		"apiKeyInput": {
+			"aria-label": "API-sleutel"
+		},
+		"home_function_buttons": {
+			"integration_related": "Integratie gerelateerd",
+			"ide_integration_config": {
+				"title": "IDE-integratieconfiguratie"
+			}
+		},
+		"achievements": {
+			"first_ide_use": {
+				"name": "Eerste keer dat ik het lettertype in een externe IDE gebruik",
+				"description": "Gebruik voor het eerst lettertyperollen voor ondersteuning bij het programmeren in ACP-compatibele editors zoals Zed, JetBrains, Neovim en meer.",
+				"locked_description": "Maak verbinding met de font-rol in een externe IDE en voltooi een sessie."
+			}
+		},
+		"acpChar": "Selecteer rol",
+		"acpConfig": "Selecteer een rol en genereer eerst een API-sleutel"
+	},
 	"deskpet": {
 		"title": "Desktop huisdieren",
 		"description": "Lanceer je lettertypekarakters als interactieve huisdieren die op je bureaublad leven.",
@@ -4770,6 +4455,347 @@
 								"title": "Beheer bureaubladdieren"
 							}
 						}
+					}
+				}
+			}
+		}
+	},
+	"themeManage": {
+		"title": "Themabeheer",
+		"description": "Kies de esthetiek die uw stemming of verhaal weerspiegelt. Bekijk een voorbeeld en kies uit een palet van thema's, die elk een andere sfeer bieden voor uw broninteracties. Jouw wereld, jouw stijl.",
+		"instruction": "Kies een thema!",
+		"search": {
+			"placeholder": "Thema's zoeken...",
+			"noResult": "Geen overeenkomende thema's gevonden."
+		},
+		"createButton": "+ Maak een nieuw thema",
+		"preview": {
+			"editButton": {
+				"title": "Bewerken"
+			},
+			"editButtonIcon": {
+				"alt": "Pictogram bewerken"
+			},
+			"deleteButton": {
+				"title": "Verwijderen"
+			},
+			"deleteButtonIcon": {
+				"alt": "Pictogram verwijderen"
+			},
+			"cloneButton": {
+				"title": "Kopiëren"
+			},
+			"cloneButtonIcon": {
+				"alt": "Kopieer pictogram"
+			}
+		},
+		"editor": {
+			"title": "Thema-editor",
+			"cancelButton": "Annuleren",
+			"saveApplyButton": "Opslaan en toepassen",
+			"themeName": "Themanaam (ID)",
+			"autoPaletteTitle": "Automatische kleurcorrectie van afbeeldingen",
+			"autoPaletteInstruction": "Klik op een kleur hierboven om de primaire/secundaire/accent/neutrale kleuren automatisch te vullen.",
+			"coreColors": "Kernkleuren",
+			"baseBackground": "Basis en achtergrond",
+			"variables": "Variabelen",
+			"borderRadius": "Randradius (--rounded-box)",
+			"borderWidth": "Randbreedte (--border-btn)",
+			"advancedCustomization": "Geavanceerd aanpassen",
+			"customCSS": "Aangepaste CSS (overschrijven)",
+			"customMjsScript": "Aangepast MJS-script (optioneel)",
+			"mjsSyntaxHint": "Gebruik [async-eval syntaxis](${asyncDocLink}). Retourneert een object dat de functies `load()` en `unload()` bevat.",
+			"themeIdRequired": "Thema-ID vereist",
+			"newThemeName": "Nieuwe themanaam:",
+			"deleteConfirm": "Weet je zeker dat je het thema ${id} wilt verwijderen?",
+			"saved": "Opgeslagen!",
+			"failedToSave": "Opslaan mislukt",
+			"failedToDelete": "Thema kon niet worden verwijderd: ${message}",
+			"failedToClone": "Thema kon niet worden gekopieerd: ${message}"
+		},
+		"themes": {
+			"auto": "Automatisch",
+			"light": "Licht",
+			"dark": "Donker",
+			"cupcake": "Cupcake",
+			"bumblebee": "Hommel",
+			"emerald": "Smaragd",
+			"corporate": "Zakelijk",
+			"synthwave": "Synthwave",
+			"retro": "Retro",
+			"cyberpunk": "Cyberpunk",
+			"valentine": "Valentijn",
+			"halloween": "Halloween",
+			"garden": "Tuin",
+			"forest": "Bos",
+			"aqua": "Aqua",
+			"lofi": "Lo-fi",
+			"pastel": "Pastel",
+			"fantasy": "Fantasie",
+			"wireframe": "Draadmodel",
+			"black": "Zwart",
+			"luxury": "Luxe",
+			"dracula": "Dracula",
+			"cmyk": "CMYK",
+			"autumn": "Herfst",
+			"business": "Zakelijk",
+			"acid": "Acid",
+			"lemonade": "Limonade",
+			"night": "Nacht",
+			"coffee": "Koffie",
+			"winter": "Winter",
+			"dim": "Gedimd",
+			"nord": "Nord",
+			"sunset": "Zonsondergang",
+			"caramellatte": "Caramel Latte",
+			"abyss": "Afgrond",
+			"silk": "Zijde"
+		},
+		"achievements": {
+			"change_theme": {
+				"name": "Schakel over op een pijnstiller!",
+				"description": "De fontein had een nieuwe look en een geheel nieuwe sfeer.",
+				"locked_description": "Wissel één keer van thema."
+			}
+		},
+		"home_function_buttons": {
+			"settings": {
+				"title": "Instellingen",
+				"sub_items": {
+					"switchTheme": {
+						"title": "Schakel thema"
+					}
+				}
+			}
+		}
+	},
+	"languageSettings": {
+		"title": "Taalinstellingen",
+		"pageTitle": "Taalinstellingen",
+		"description": "Beheer uw taalvoorkeuren voor de lettertypetoepassing. Pas uw ervaring aan met de beschikbare taalopties.",
+		"pageDescription": "Beheer hier uw taalvoorkeuren. De talen in de lijst hebben voorrang op de browserinstellingen in volgorde.",
+		"availableLanguages": "Beschikbare talen",
+		"preferredLanguages": "Prioriteitstaallijst",
+		"resetButton": "Resetten",
+		"saveButton": "Opslaan",
+		"select": {
+			"placeholder": "Kies een taal..."
+		},
+		"search": {
+			"placeholder": "Taal zoeken..."
+		},
+		"noPreferredLanguages": "Nog geen voorkeurstaal ingesteld. De standaardinstellingen van de browser worden gebruikt.",
+		"moveUpButton": {
+			"aria-label": "omhoog bewegen",
+			"alt": "pictogram omhoog bewegen"
+		},
+		"moveDownButton": {
+			"aria-label": "ga naar beneden",
+			"alt": "pictogram naar beneden verplaatsen"
+		},
+		"deleteLocaleButton": {
+			"aria-label": "Verwijder deze taal",
+			"alt": "pictogram verwijderen"
+		},
+		"savedMessage": "Taalinstellingen worden opgeslagen!",
+		"resetMessage": "Taalinstellingen zijn gereset!",
+		"fetchLocalesFailed": "Kan beschikbare talen niet ophalen!",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Instellingen",
+				"sub_items": {
+					"main": {
+						"title": "Taalinstellingen"
+					}
+				}
+			}
+		}
+	},
+	"userSettings": {
+		"title": "Gebruikersinstellingen",
+		"PageTitle": "Gebruikersinstellingen",
+		"description": "Verzorg de details van uw fount-identiteit. Beheer uw profiel, beveilig uw toegang en bekijk gekoppelde apparaten. Een rustig toevluchtsoord voor uw account.",
+		"shell": {
+			"unauthorized": "Inloggen vereist.",
+			"responseNotJson": "De server heeft inhoud geretourneerd die niet kon worden verwerkt.",
+			"unexpectedError": "Het verzoek is mislukt."
+		},
+		"errors": {
+			"accountNotFound": "Account niet gevonden."
+		},
+		"userInfo": {
+			"title": "Gebruikersinformatie",
+			"usernameLabel": "Gebruikersnaam:",
+			"creationDateLabel": "Account aangemaakt op:",
+			"folderSizeLabel": "Grootte gebruikersgegevens:",
+			"folderPathLabel": "Pad naar gebruikersgegevens:",
+			"copyPathButton": {
+				"title": "Kopieer pad"
+			},
+			"copyPathButtonIcon": {
+				"alt": "kopieer pictogram"
+			},
+			"copiedAlert": "Pad gekopieerd naar klembord!",
+			"copyPathFailed": "Kan pad naar klembord niet kopiëren."
+		},
+		"changePassword": {
+			"title": "Wachtwoord wijzigen",
+			"currentPasswordLabel": "Huidig wachtwoord:",
+			"newPasswordLabel": "Nieuw wachtwoord:",
+			"confirmNewPasswordLabel": "Bevestig nieuw wachtwoord:",
+			"submitButton": "Wachtwoord wijzigen",
+			"errorMismatch": "De nieuwe wachtwoorden komen niet overeen.",
+			"success": "Wachtwoord succesvol gewijzigd.",
+			"missingFields": "Vul uw huidige wachtwoord en uw nieuwe wachtwoord in.",
+			"invalidCurrent": "Het huidige wachtwoord is onjuist."
+		},
+		"renameUser": {
+			"title": "Gebruiker hernoemen",
+			"newUsernameLabel": "Nieuwe gebruikersnaam:",
+			"submitButton": "Gebruiker hernoemen",
+			"confirmMessage": "Weet je zeker dat je je gebruikersnaam wilt wijzigen? Je moet opnieuw inloggen.",
+			"success": "Gebruiker succesvol hernoemd naar \"${newUsername}\". Je wordt nu uitgelogd.",
+			"missingParams": "Vul de nieuwe gebruikersnaam en het wachtwoord in.",
+			"wrongPassword": "Het wachtwoord is onjuist.",
+			"mustDiffer": "De nieuwe gebruikersnaam moet anders zijn dan de huidige gebruikersnaam.",
+			"taken": "Deze gebruikersnaam is al in gebruik.",
+			"moveFailed": "Kan de naam van de gebruikersgegevensmap niet wijzigen: ${detail}. De oorspronkelijke gebruikersnaam is hersteld."
+		},
+		"passkeys": {
+			"title": "Beveiligingssleutels en passkeys",
+			"description": "Na registratie van een sleutel kunt u inloggen met een hardwaresleutel of de passkey van dit apparaat. Vereist HTTPS of localhost; voeg sleutels eerst toe in de gebruikersinstellingen.",
+			"refreshButton": {
+				"title": "Lijst vernieuwen"
+			},
+			"refreshButtonIcon": {
+				"alt": "pictogram vernieuwen"
+			},
+			"nameLabel": "Opmerkingen (optioneel)",
+			"nameInput": {
+				"placeholder": "Voorbeeld: YubiKey voor werk"
+			},
+			"addButton": "Beveiligingssleutel toevoegen",
+			"noneFound": "Er zijn nog geen beveiligingssleutels gebonden.",
+			"itemDetails": "Toegevoegde tijd: ${created}",
+			"removeButton": "Verwijderen",
+			"removeConfirm": "Weet u zeker dat u deze sleutel wilt verwijderen? Eenmaal verwijderd, kunt u er niet meer mee inloggen.",
+			"removeSuccess": "Beveiligingssleutel verwijderd.",
+			"addSuccess": "Beveiligingssleutel toegevoegd.",
+			"errorLoadLibrary": "Kan de WebAuthn-bibliotheek niet laden.",
+			"errorCancelled": "Toevoegen geannuleerd.",
+			"apiInvalidPassword": "Verkeerd wachtwoord.",
+			"apiMissingCredential": "Geldige toegangscodegegevens ontbreken.",
+			"apiRemoveParamsRequired": "Geef de inloggegevens en het wachtwoord op die u wilt verwijderen."
+		},
+		"userDevices": {
+			"title": "Gebruikersapparaten/sessies",
+			"noDevicesFound": "Geen apparaten of sessies gevonden.",
+			"deviceInfo": "Apparaat-ID: ${deviceId}",
+			"thisDevice": "Dit apparaat",
+			"deviceDetails": "Laatst gezien: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
+			"revokeButton": "Intrekken",
+			"revokeConfirm": "Weet je zeker dat je wilt uitloggen van dit apparaat/deze sessie?",
+			"revokeSuccess": "Apparaat/sessie succesvol ingetrokken.",
+			"revokeMissingParams": "Geef het apparaat- en sessiewachtwoord op dat u wilt intrekken.",
+			"revokeWrongPassword": "Het wachtwoord is onjuist.",
+			"listNotFound": "Apparaatlijst niet gevonden.",
+			"deviceNotFound": "Het apparaat of de sessie is niet gevonden.",
+			"refreshButton": {
+				"title": "Lijst vernieuwen"
+			},
+			"refreshButtonIcon": {
+				"alt": "pictogram vernieuwen"
+			}
+		},
+		"apiKeys": {
+			"title": "API -sleutel",
+			"description": "Beheer de API -sleutel voor externe toepassingen.",
+			"input": {
+				"placeholder": "Nieuwe sleutelbeschrijving"
+			},
+			"createButton": "creëren",
+			"noKeysFound": "Er werden geen API-sleutels gevonden.",
+			"keyDetails": "Beschrijving: ${description} | Gemaakt in: ${createdAt} | Laatst gebruikt: ${lastUsed}",
+			"neverUsed": "Nooit gebruikt",
+			"noKeysForUser": "API-sleutelgegevens niet gevonden.",
+			"revokeWrongPassword": "Het wachtwoord is onjuist.",
+			"keyNotFound": "De API-sleutel is niet gevonden.",
+			"revokeMissingJti": "Geef de sleutel op die u wilt intrekken.",
+			"revokeMissingPassword": "Voor het intrekken van een sleutel is een wachtwoord vereist.",
+			"verifyMissingApiKey": "Geef een API-sleutel op.",
+			"revokeButton": "Herroepen",
+			"revokeConfirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
+			"revokeSuccess": "De API -sleutel is succesvol ingetrokken.",
+			"errorDescriptionRequired": "Een beschrijving is vereist.",
+			"createSuccess": "De API -sleutel is met succes gemaakt.",
+			"refreshButton": {
+				"title": "Lijst vernieuwen"
+			},
+			"refreshButtonIcon": {
+				"alt": "pictogram vernieuwen"
+			}
+		},
+		"newApiKey": {
+			"title": "Er is een nieuwe API -sleutel gemaakt",
+			"warning": "Kopieer uw nieuwe API -sleutel. Je kunt het niet meer zien!",
+			"closeButton": "Ik heb mijn sleutel gekopieerd",
+			"copyButton": {
+				"title": "Kopieer nieuwe API-sleutel"
+			},
+			"copiedAlert": "API -sleutel gekopieerd naar klembord!",
+			"copyKeyFailed": "Kan de sleutel niet naar het klembord kopiëren."
+		},
+		"editorCommand": {
+			"title": "Externe editor – opdracht",
+			"description": "Stel het programma en het argumentsjabloon in om bestanden in een externe editor te openen. Gebruik tijdelijke aanduidingen voor pad, regel en kolom.",
+			"editorPresetLabel": "Editor-voorinstellingen",
+			"commandLabel": "Opdracht",
+			"argsTemplateLabel": "Argumentsjabloon",
+			"argsTemplateHint": "Tijdelijke aanduidingen: \\${file} \\${line} \\${column}",
+			"presetOptionPathAvailable": "${label} (staat in PATH)",
+			"presetOptionPathUnavailable": "${label} (staat niet in PATH)",
+			"testPathInput": {
+				"placeholder": "Pad naar een bestand om te proberen, bijv. C:/work/project/src/main.mjs"
+			},
+			"testButton": "Test: openen",
+			"saveButton": "Configuratie opslaan",
+			"saveSuccess": "Opdracht voor externe editor opgeslagen.",
+			"testPathRequired": "Vul eerst het pad naar het testbestand in.",
+			"testSuccess": "De opdracht om in de editor te openen is uitgevoerd."
+		},
+		"logout": {
+			"title": "Uitloggen",
+			"description": "Dit logt je account uit op het huidige apparaat.",
+			"buttonText": "Uitloggen",
+			"confirmMessage": "Weet je zeker dat je wilt uitloggen?",
+			"successMessage": "Succesvol uitgelogd. Je wordt doorgestuurd naar de inlogpagina..."
+		},
+		"deleteAccount": {
+			"title": "Account verwijderen",
+			"warning": "WAARSCHUWING: Deze actie verwijdert je account en alle bijbehorende gegevens permanent en kan niet ongedaan worden gemaakt.",
+			"submitButton": "Mijn account verwijderen",
+			"confirmMessage1": "WAARSCHUWING! Weet je zeker dat je je account permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+			"confirmMessage2": "Om de verwijdering te bevestigen, voer je je gebruikersnaam \"${username}\" in:",
+			"usernameMismatch": "De ingevoerde gebruikersnaam komt niet overeen met de huidige gebruiker. Verwijdering geannuleerd.",
+			"success": "Account succesvol verwijderd. Je wordt nu uitgelogd.",
+			"missingPassword": "Voer uw wachtwoord in.",
+			"wrongPassword": "Het wachtwoord is onjuist."
+		},
+		"passwordConfirm": {
+			"title": "Actie bevestigen",
+			"message": "Voer je huidige wachtwoord in om deze actie voort te zetten:",
+			"passwordLabel": "Wachtwoord:",
+			"confirmButton": "Bevestigen",
+			"cancelButton": "Annuleren"
+		},
+		"apiError": "API-verzoek mislukt: ${message}",
+		"generalError": "Er is een fout opgetreden: ${message}",
+		"home_function_buttons": {
+			"settings": {
+				"title": "Instellingen",
+				"sub_items": {
+					"main": {
+						"title": "Gebruikersinstellingen"
 					}
 				}
 			}
@@ -4831,47 +4857,91 @@
 			}
 		}
 	},
-	"ide_integration": {
-		"description": "Verbind de fount-rol met ondersteunde editors (zoals Zed, JetBrains, Neovim) via Agent Client Protocol, configureer API-sleutels en -rollen en betrek AI-partners in de ontwikkelingsworkflow.",
-		"title": "IDE-integratie",
-		"heading": "IDE-integratie",
-		"instruction": "Gebruik fount-rollen voor ondersteuning bij het programmeren in ACP-compatibele editors (zoals Zed, JetBrains, Neovim, enz.).",
-		"supportedEditorsTitle": "Ondersteunde redacteuren en klanten",
-		"supportedEditorsIntro": "De volgende klanten werken met fount:",
-		"supportedEditorsLoading": "laden…",
-		"supportedEditorsError": "Kan lijst niet laden: ${message}",
-		"acpTitle": "Configureer het lettertype ACP-script",
-		"acpDesc": "Raadpleeg het volgende voorbeeld om het font ACP-script te configureren:",
-		"acpCharLabel": "Rol",
-		"charListError": "Kan de rollijst niet ophalen",
-		"acpScriptLabel": "ACP-script-URL",
-		"acpConfigSample": "Configuratievoorbeeld:",
-		"acpConfigHint": "De rol-ID wordt weergegeven in de vervolgkeuzelijst met rollen op deze pagina en de API-sleutel kan worden beheerd in de gebruikersinstellingen.",
-		"copyButton": "Kopiëren",
-		"copied": "Gekopieerd naar klembord",
-		"apiKeySectionTitle": "API-sleutel",
-		"apiKeyHint": "Wordt gebruikt voor ACP-scriptverbindingsbron (dezelfde set sleutels als API-proxy, kan worden aangemaakt in gebruikersinstellingen).",
-		"generateApiKeyButton": "Nieuwe sleutel genereren",
-		"apiKeyCopied": "API-sleutel gekopieerd",
-		"apiKeyCreateError": "Kan API-sleutel niet maken: ${message}",
-		"apiKeyInput": {
-			"aria-label": "API-sleutel"
+	"subfounts": {
+		"title": "subfounts - peer-to-peer apparaatbeheer",
+		"pageTitle": "subfounts",
+		"description": "Beheer peer-to-peer-fonteinverbindingen",
+		"hostConnectionCode": {
+			"title": "Hostverbindingscode",
+			"connectionCodeLabel": "Verbindingscode (Peer-ID)",
+			"passwordLabel": "wachtwoord",
+			"copyButton": "Kopiëren",
+			"regenerateButton": "Regenereer",
+			"infoMessage": "Deel deze inloggegevens met subfount-clients om verbindingen tot stand te brengen.",
+			"connectionCodeCopied": "De verbindingscode is naar het klembord gekopieerd",
+			"passwordCopied": "Wachtwoord gekopieerd naar klembord",
+			"regenerateSuccess": "De verbindingscode is opnieuw gegenereerd"
+		},
+		"infra": {
+			"title": "Netwerk-algemeen nut",
+			"description": "Kies of verbonden subfounts als knooppunten voor het algemeen nut het hele fount-netwerk ondersteunen. Uitgeschakeld accepteren ze nog steeds uitvoering op afstand vanaf deze host, maar helpen ze niet meer op netwerklaag.",
+			"capabilityRelay": "Deelnemen aan overlay multi-hop-doorsturen zodat andere knooppunten elkaar bereiken als de directe verbinding faalt.",
+			"capabilityMailbox": "Offline bezorging bewaren zodat peers privéberichten nog ontvangen zodra ze weer online zijn.",
+			"hostPriority": "Indien ingeschakeld, geef deze host voorrang: weeg routes volgens zijn reputatietabel en vergrendel hem als hoogste prioriteit.",
+			"toggleLabel": "Laat subfounts bijdragen aan het algemeen nut",
+			"enabledToast": "Aan: subfounts dragen bij aan netwerk-algemeen nut (deze host eerst)",
+			"disabledToast": "Uit: subfounts dragen niet meer bij aan netwerk-algemeen nut"
+		},
+		"connectedSubfounts": {
+			"title": "Verbonden subfount",
+			"noSubfountsConnected": "Er is geen subfount aangesloten",
+			"table": {
+				"id": "ID",
+				"description": "Opmerking",
+				"deviceId": "Apparaat-ID",
+				"connectedAt": "verbindingstijd",
+				"status": "Status",
+				"actions": "Acties",
+				"connected": "Aangesloten",
+				"disconnected": "Verbinding verbroken",
+				"save": "opslaan",
+				"na": "N.v.t"
+			},
+			"descriptionSaved": "Notitie opgeslagen",
+			"descriptionSaveFailed": "Kan notitie niet opslaan: ${message}"
+		},
+		"codeExecution": {
+			"title": "uitvoering van code",
+			"description": "Voer JavaScript-code uit op de geselecteerde subfount",
+			"selectSubfountLabel": "Selecteer subfount",
+			"hostOption": "Host (ID: ${id})",
+			"subfountOption": "Extensie ${id}${deviceId}",
+			"scriptLabel": "JavaScript-code",
+			"executeButton": "uitvoeren",
+			"executing": "Uitvoeren...",
+			"noSubfountSelected": "Selecteer eerst een subfount",
+			"noScriptProvided": "Voer de uit te voeren code in",
+			"executionSuccess": "Code-uitvoering succesvol",
+			"executionFailed": "Uitvoering van code mislukt: ${message}",
+			"selectSubfount": "Selecteer het subfont om de code uit te voeren..."
+		},
+		"downloadClient": {
+			"title": "subfount-client downloaden",
+			"description": "Download het zelfstandige subfount-clientscript om op het externe apparaat uit te voeren.",
+			"downloadButton": "Download subfount.mjs"
+		},
+		"errors": {
+			"loadConnectionCodeFailed": "Kan verbindingscode niet laden: ${message}",
+			"regenerateConnectionCodeFailed": "Kan verbindingscode niet opnieuw genereren: ${message}",
+			"loadSettingsFailed": "Kan instellingen voor algemeen nut niet laden: ${message}",
+			"saveSettingsFailed": "Kan instellingen voor algemeen nut niet opslaan: ${message}",
+			"generalError": "Er is een fout opgetreden: ${message}"
 		},
 		"home_function_buttons": {
-			"integration_related": "Integratie gerelateerd",
-			"ide_integration_config": {
-				"title": "IDE-integratieconfiguratie"
+			"in_dev": {
+				"title": "In ontwikkeling",
+				"sub_items": {
+					"subfounts_related": {
+						"title": "subapparaat",
+						"sub_items": {
+							"main": {
+								"title": "Beheer subapparaten"
+							}
+						}
+					}
+				}
 			}
-		},
-		"achievements": {
-			"first_ide_use": {
-				"name": "Eerste keer dat ik het lettertype in een externe IDE gebruik",
-				"description": "Gebruik voor het eerst lettertyperollen voor ondersteuning bij het programmeren in ACP-compatibele editors zoals Zed, JetBrains, Neovim en meer.",
-				"locked_description": "Maak verbinding met de font-rol in een externe IDE en voltooi een sessie."
-			}
-		},
-		"acpChar": "Selecteer rol",
-		"acpConfig": "Selecteer een rol en genereer eerst een API-sleutel"
+		}
 	},
 	"achievements": {
 		"title": "Prestatie",
@@ -4998,34 +5068,6 @@
 		"pageNotFoundText": "Oeps! Het lijkt erop dat je op een pagina bent beland die niet bestaat.",
 		"homepageButton": "Terug naar startpagina"
 	},
-	"tips": {
-		"title": "Wist je dat?",
-		"data": [
-			"Gebruik de `esc`-toets op een willekeurige fount-pagina om terug te keren naar de vorige pagina.",
-			"U kunt `ctrl+s` gebruiken om de configuratie op de configuratiepagina op te slaan.",
-			"Door de `shift`-toets op de chatpagina ingedrukt te houden, kunt u berichten snel verwijderen.",
-			"Als u het de ontwikkelaars niet vertelt, weten ze misschien nooit welk probleem u bent tegengekomen.",
-			"Als je plotseling een raar probleem tegenkomt en de ontwikkelaar een tijdje niet op je reageert, kun je proberen het `fount init`-commando te gebruiken om de fount te resetten.",
-			"Als u een bijzonder vreemd probleem tegenkomt, kunt u proberen uw computer opnieuw op te starten.",
-			"Het gebruik van de opdracht `fount remove` om een fount te verwijderen is schoner dan het verwijderen van de map.",
-			"Typ `fount cake` in de opdrachtregel om een gratis en heerlijke cake te krijgen!",
-			"Alle gegevensbestanden van fount worden opgeslagen in de map `fount/data` en u kunt ze altijd en overal bekijken, wijzigen en er een back-up van maken.",
-			"De naam van de bron is geheel in kleine letters, het is `f`ount, niet `F`ount.",
-			"Maak een back-up van alle gegevens waarmee uw agent regelmatig werkt voordat u het nieuwe model gebruikt. U weet nooit of het nieuwe model op sommige plaatsen vreselijk zal presteren.",
-			"Het belangrijkste publiek van fount bestaat uit softwareontwikkelaars en liefhebbers van rollenspellen, maar het wordt ook gebruikt in de bouw van commerciële agenten, de medische zorg, het leger, de financiële sector en andere terreinen.",
-			"Het ingebouwde personage van fount, de naam ZL-31, heeft geen betekenis en was slechts een hersenkraker.",
-			"De afbeeldingen in fount-bestanden worden allemaal opgeslagen in SVG-vorm en indien nodig weergegeven in PNG of ICO. Er zijn geen binaire bestanden behalve LICENSE.",
-			"Elke code in fount kan direct worden uitgevoerd zonder compilatie, wat u ziet is wat u krijgt.",
-			"fount had ooit een hele coole dynamische interactieve pagina-achtergrond, maar deze werd later verwijderd omdat het te veel CPU in beslag nam.",
-			"fount is oorspronkelijk ontwikkeld voor een NSFW-agent genaamd \"GentianAphrodite\".",
-			"Een van de verschillen tussen agenten en mensen is dat mensen poepen.",
-			"Agenten zijn alleen bij bewustzijn op het moment dat ze worden opgeroepen, terwijl mensen altijd en overal bij bewustzijn zijn als ze wakker zijn.",
-			"Sommige mensen worden verliefd of trouwen zelfs met hun agenten!",
-			"AI wordt gebruikt om gedichten te schrijven, verliefd te worden en afbeeldingen voor mensen te tekenen. Bakstenen dragen, vloeren vegen en afval buiten zetten is wat mensen moeten doen.",
-			"Vandaag is het geen aprilgrappendag.",
-			"Nee, dat wist je niet."
-		]
-	},
 	"directoryListing": {
 		"title": "directory-index",
 		"description": "Blader en verken de bestanden en mappen in de fount-werkruimte.",
@@ -5035,199 +5077,121 @@
 		"size": "Grootte",
 		"parentLink": "↑ Vorig niveau ../"
 	},
-	"code_block": {
-		"copy": {
-			"dataset": {
-				"tip": "kopiëren naar klembord"
-			},
-			"aria-label": "kopiëren naar klembord"
-		},
-		"copied": {
-			"dataset": {
-				"tip": "Gekopieerd naar klembord!"
+	"util": {
+		"common": {
+			"cancel": "Annuleren",
+			"create": "Creëren",
+			"save": "Opslaan",
+			"delete": "Verwijderen",
+			"confirm": "Bevestigen",
+			"close": "Sluiten",
+			"translate": {
+				"showOriginal": "Toon originele tekst",
+				"showTranslation": "Laat vertaling zien"
 			}
 		},
-		"download": {
-			"dataset": {
-				"tip": "Code downloaden"
+		"code_block": {
+			"copy": {
+				"dataset": {
+					"tip": "kopiëren naar klembord"
+				},
+				"aria-label": "kopiëren naar klembord"
 			},
-			"aria-label": "Code downloaden"
-		},
-		"execute": {
-			"dataset": {
-				"tip": "Code uitvoeren"
+			"copied": {
+				"dataset": {
+					"tip": "Gekopieerd naar klembord!"
+				}
 			},
-			"aria-label": "Code uitvoeren"
-		},
-		"preview": {
-			"dataset": {
-				"tip": "Voorvertoning"
+			"download": {
+				"dataset": {
+					"tip": "Code downloaden"
+				},
+				"aria-label": "Code downloaden"
 			},
-			"aria-label": "Voorvertoning"
+			"execute": {
+				"dataset": {
+					"tip": "Code uitvoeren"
+				},
+				"aria-label": "Code uitvoeren"
+			},
+			"preview": {
+				"dataset": {
+					"tip": "Voorvertoning"
+				},
+				"aria-label": "Voorvertoning"
+			},
+			"copy_failed": "Kan niet naar klembord kopiëren: ${error}"
 		},
-		"copy_failed": "Kan niet naar klembord kopiëren: ${error}"
-	},
-	"pow_captcha": {
-		"initial": "Ik ben geen robot",
-		"verifying": "Bezig met verifiëren...",
-		"solved": "Verificatie succesvol",
-		"wasm_disabled": "Schakel WASM in voor snellere verificatie",
-		"error": "Verificatie mislukt",
-		"errorMessage": "Verificatie mislukt: ${error}"
-	},
-	"breadcrumb": {
-		"clickToNavigate": "Klik om naar ${path} te navigeren"
-	},
-	"zxcvbn": {
-		"warnings": {
-			"straightRow": "Continue toetsen op het toetsenbord zijn gemakkelijk geraden.",
-			"keyPattern": "Een kort toetsenbordpatroon is gemakkelijk te raden.",
-			"simpleRepeat": "Herhaalde karakters zoals \"AAA\" worden gemakkelijk geraden.",
-			"extendedRepeat": "Herhaalde karakterpatronen zoals \"Abcabcabc\" worden gemakkelijk geraden.",
-			"sequences": "Gemeenschappelijke tekenreeksen zoals \"ABC\" worden gemakkelijk geraden.",
-			"recentYears": "De afgelopen jaren zijn gemakkelijk te raden.",
-			"dates": "Datum is gemakkelijk geraden.",
-			"topTen": "Dit is een overgebruikt wachtwoord.",
-			"topHundred": "Dit is een wachtwoord dat vaak wordt gebruikt.",
-			"common": "Dit is een veelgebruikt wachtwoord.",
-			"similarToCommon": "Dit is vergelijkbaar met een veelgebruikt wachtwoord.",
-			"wordByItself": "Een enkel woord wordt gemakkelijk geraden.",
-			"namesByThemselves": "Een enkele eerste of achternaam is gemakkelijk geraden.",
-			"commonNames": "Veel voorkomende voornamen en achternamen zijn gemakkelijk te raden.",
-			"userInputs": "Het wachtwoord mag geen persoonlijke of pagina-gerelateerde gegevens bevatten.",
-			"pwned": "Uw wachtwoord is blootgesteld in een internet datalek."
+		"pow_captcha": {
+			"initial": "Ik ben geen robot",
+			"verifying": "Bezig met verifiëren...",
+			"solved": "Verificatie succesvol",
+			"wasm_disabled": "Schakel WASM in voor snellere verificatie",
+			"error": "Verificatie mislukt",
+			"errorMessage": "Verificatie mislukt: ${error}"
 		},
-		"suggestions": {
-			"l33t": "Vermijd het gebruik van voorspelbare letters, zoals het gebruik van \"@\" in plaats van \"A\".",
-			"reverseWords": "Gebruik geen omgekeerde spelling van veel voorkomende woorden.",
-			"allUppercase": "Kapitaliseer sommige in plaats van alle letters.",
-			"capitalization": "Meer dan de eerste letter kapitaliseren.",
-			"dates": "Vermijd datums en jaren gerelateerd aan u.",
-			"recentYears": "Gebruik de meest recente jaren niet.",
-			"associatedYears": "Vermijd het gebruik van jaren met u gerelateerd.",
-			"sequences": "Vermijd gemeenschappelijke tekenreeksen.",
-			"repeated": "Vermijd repetitieve woorden en tekens.",
-			"longerKeyboardPattern": "Gebruik langere toetsenbordpatronen en verander meermaals van typrichting.",
-			"anotherWord": "Voeg meer ongewone woorden toe.",
-			"useWords": "Gebruik meerdere woorden, maar vermijd veel voorkomende zinnen.",
-			"noNeed": "U hoeft geen symbolen, cijfers of hoofdletters te gebruiken om sterke wachtwoorden te maken.",
-			"pwned": "Als u dit wachtwoord elders gebruikt, wordt u geadviseerd om wijzigingen aan te brengen."
+		"breadcrumb": {
+			"clickToNavigate": "Klik om naar ${path} te navigeren"
 		},
-		"timeEstimation": {
-			"ltSecond": "Minder dan een seconde",
-			"second": "{base} seconde",
-			"seconds": "{base} seconden",
-			"minute": "{base} min",
-			"minutes": "{base} min",
-			"hour": "{base} uur",
-			"hours": "{base} uur",
-			"day": "{base} dag",
-			"days": "{base} dagen",
-			"month": "{base} maand",
-			"months": "{base} maand",
-			"year": "{base} jaar",
-			"years": "{base} jaar",
-			"centuries": "Eeuwen"
-		}
-	},
-	"searchableDropdown": {
-		"trigger": {
-			"placeholder": "Selecteer..."
-		},
-		"search": {
-			"placeholder": "Zoeken..."
-		}
-	},
-	"common": {
-		"cancel": "Annuleren",
-		"create": "Creëren",
-		"save": "Opslaan",
-		"delete": "Verwijderen",
-		"confirm": "Bevestigen",
-		"close": "Sluiten",
-		"translate": {
-			"showOriginal": "Toon originele tekst",
-			"showTranslation": "Laat vertaling zien"
-		}
-	},
-	"cabinet": {
-		"title": "Cabinet",
-		"description": "P2P persoonlijke en gedeelde archiefkasten",
-		"openCabinets": {
-			"title": "Archiefkastlijst openen",
-			"aria-label": "Archiefkastlijst openen"
-		},
-		"closeCabinets": {
-			"title": "Sluiten",
-			"aria-label": "Sluiten"
-		},
-		"bootstrapFailed": "Initialisatie van Cabinet mislukt: ${error}",
-		"home_function_buttons": {
-			"main": {
-				"title": "Cabinet"
+		"zxcvbn": {
+			"warnings": {
+				"straightRow": "Continue toetsen op het toetsenbord zijn gemakkelijk geraden.",
+				"keyPattern": "Een kort toetsenbordpatroon is gemakkelijk te raden.",
+				"simpleRepeat": "Herhaalde karakters zoals \"AAA\" worden gemakkelijk geraden.",
+				"extendedRepeat": "Herhaalde karakterpatronen zoals \"Abcabcabc\" worden gemakkelijk geraden.",
+				"sequences": "Gemeenschappelijke tekenreeksen zoals \"ABC\" worden gemakkelijk geraden.",
+				"recentYears": "De afgelopen jaren zijn gemakkelijk te raden.",
+				"dates": "Datum is gemakkelijk geraden.",
+				"topTen": "Dit is een overgebruikt wachtwoord.",
+				"topHundred": "Dit is een wachtwoord dat vaak wordt gebruikt.",
+				"common": "Dit is een veelgebruikt wachtwoord.",
+				"similarToCommon": "Dit is vergelijkbaar met een veelgebruikt wachtwoord.",
+				"wordByItself": "Een enkel woord wordt gemakkelijk geraden.",
+				"namesByThemselves": "Een enkele eerste of achternaam is gemakkelijk geraden.",
+				"commonNames": "Veel voorkomende voornamen en achternamen zijn gemakkelijk te raden.",
+				"userInputs": "Het wachtwoord mag geen persoonlijke of pagina-gerelateerde gegevens bevatten.",
+				"pwned": "Uw wachtwoord is blootgesteld in een internet datalek."
+			},
+			"suggestions": {
+				"l33t": "Vermijd het gebruik van voorspelbare letters, zoals het gebruik van \"@\" in plaats van \"A\".",
+				"reverseWords": "Gebruik geen omgekeerde spelling van veel voorkomende woorden.",
+				"allUppercase": "Kapitaliseer sommige in plaats van alle letters.",
+				"capitalization": "Meer dan de eerste letter kapitaliseren.",
+				"dates": "Vermijd datums en jaren gerelateerd aan u.",
+				"recentYears": "Gebruik de meest recente jaren niet.",
+				"associatedYears": "Vermijd het gebruik van jaren met u gerelateerd.",
+				"sequences": "Vermijd gemeenschappelijke tekenreeksen.",
+				"repeated": "Vermijd repetitieve woorden en tekens.",
+				"longerKeyboardPattern": "Gebruik langere toetsenbordpatronen en verander meermaals van typrichting.",
+				"anotherWord": "Voeg meer ongewone woorden toe.",
+				"useWords": "Gebruik meerdere woorden, maar vermijd veel voorkomende zinnen.",
+				"noNeed": "U hoeft geen symbolen, cijfers of hoofdletters te gebruiken om sterke wachtwoorden te maken.",
+				"pwned": "Als u dit wachtwoord elders gebruikt, wordt u geadviseerd om wijzigingen aan te brengen."
+			},
+			"timeEstimation": {
+				"ltSecond": "Minder dan een seconde",
+				"second": "{base} seconde",
+				"seconds": "{base} seconden",
+				"minute": "{base} min",
+				"minutes": "{base} min",
+				"hour": "{base} uur",
+				"hours": "{base} uur",
+				"day": "{base} dag",
+				"days": "{base} dagen",
+				"month": "{base} maand",
+				"months": "{base} maand",
+				"year": "{base} jaar",
+				"years": "{base} jaar",
+				"centuries": "Eeuwen"
 			}
 		},
-		"upload": "Uploaden",
-		"uploadFolder": "Map uploaden",
-		"newFolder": "Maak een nieuwe map",
-		"open": "Open",
-		"download": "Downloaden",
-		"downloadZip": "Map downloaden",
-		"rename": "Hernoemen",
-		"copy": "Kopiëren",
-		"cut": "Snee",
-		"paste": "Plakken",
-		"pasteLink": "Plakken als link",
-		"selectAll": "Selecteer alles",
-		"invert": "Tegenverkiezing",
-		"properties": "Eigendom",
-		"delete": "Verwijderen",
-		"back": {
-			"title": "Keer terug naar de vorige positie",
-			"aria-label": "Keer terug naar de vorige positie"
-		},
-		"cancel": "Annuleren",
-		"save": "Opslaan",
-		"showHidden": "toon Verborgen",
-		"name": "Naam",
-		"descriptionField": "Beschrijven",
-		"attrHidden": "Verborgen",
-		"attrSystem": "Systeem (verwijdering vereist bevestiging)",
-		"previewUrl": "Voorbeeld-URL",
-		"deletePreviewWithFile": "Voorbeeld verwijderen bij verwijderen bestand",
-		"folderPassword": "Mapwachtwoord (leeg laten, invullen om versleuteling in te schakelen)",
-		"unlockFolder": "Ontgrendel de gecodeerde map",
-		"unlock": "Ontgrendelen",
-		"unlockFailed": "Ontgrendelen mislukt: ${error}",
-		"previewFailed": "Genereren van voorbeeld mislukt: ${error}",
-		"created": "Maken: ${stamp}",
-		"modified": "Wijzigen: ${stamp}",
-		"statusCount": "${count} items, ${selected} geselecteerd",
-		"newCabinetPrompt": "Nieuwe naam Cabinet",
-		"newFolderPrompt": "Nieuwe mapnaam",
-		"renamePrompt": "nieuwe naam",
-		"visibilityPrompt": "Zichtbaarheid (openbaar/niet vermeld/volgers/privé/geselecteerd)",
-		"cabinetActionPrompt": "Actie: hernoemen/verwijderen/zichtbaarheid",
-		"confirmDeleteCabinet": "Weet je zeker dat je deze Cabinet wilt verwijderen?",
-		"confirmDelete": "Bevestigen om geselecteerde items te verwijderen?",
-		"confirmDeleteSystem": "De geselecteerde systeembestanden worden opgenomen. Weet je zeker dat je ze wilt verwijderen?",
-		"copied": "Gekopieerd",
-		"cutDone": "Snee",
-		"undo": "Annuleren",
-		"redo": "Opnieuw uitvoeren",
-		"newWindow": "Huidige locatie in nieuw venster openen",
-		"goUp": "Keer terug naar het vorige niveau",
-		"brokenLink": "Link is verbroken: ${reason}",
-		"noDownload": "Geen downloadbare inhoud",
-		"groupDownloadHint": "Verkrijg groepsbestanden via berichtbijlagen of daaropvolgende downloadlinks.",
-		"remoteEntity": "afgelegen entiteit"
-	},
-	"entityProfile": {
-		"attributionMismatch": "De weergave-identiteit komt niet overeen met de ondertekenaar van het bericht (de importgeschiedenis is bijvoorbeeld opnieuw ondertekend door de importeur). Beschouw deze weergavenaam niet als een cryptografische identiteit.",
-		"attributionMismatchShort": {
-			"title": "Toeschrijving van handtekening komt niet overeen",
-			"aria-label": "Toeschrijving van handtekening komt niet overeen"
-		},
-		"ownedBy": "Deze entiteit is eigendom van ${owner}"
+		"searchableDropdown": {
+			"trigger": {
+				"placeholder": "Selecteer..."
+			},
+			"search": {
+				"placeholder": "Zoeken..."
+			}
+		}
 	}
 }

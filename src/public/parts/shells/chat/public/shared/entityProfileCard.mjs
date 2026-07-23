@@ -200,7 +200,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 		}
 		else {
 			statusText.textContent = ''
-			statusText.dataset.i18n = `profile.statusOptions.${normalized.status}`
+			statusText.dataset.i18n = `chat.profile.statusOptions.${normalized.status}`
 		}
 
 
@@ -300,7 +300,7 @@ export function renderOwnedByBox(ownerEntityHash, options = {}) {
 	const box = document.createElement('div')
 	box.className = 'entity-owned-by-box'
 	box.dataset.entityOwnedBy = owner
-	box.innerHTML = geti18n('entityProfile.ownedBy', { owner: ownerLink })
+	box.innerHTML = geti18n('chat.entityProfile.ownedBy', { owner: ownerLink })
 	return box
 }
 
@@ -324,7 +324,7 @@ export function renderAttributionWarningIcon(attribution) {
 	const span = document.createElement('span')
 	span.className = 'entity-attribution-warning-icon-inline'
 	span.role = 'img'
-	span.dataset.i18n = 'entityProfile.attributionMismatchShort'
+	span.dataset.i18n = 'chat.entityProfile.attributionMismatchShort'
 	span.dataset.attributionWarningIcon = ''
 	span.textContent = '⚠'
 	return span
@@ -369,7 +369,7 @@ export function paintEntityProfileExtras(root, options = {}) {
 			icon.textContent = '⚠'
 			const text = document.createElement('span')
 			text.className = 'entity-attribution-warning-text'
-			text.dataset.i18n = 'entityProfile.attributionMismatch'
+			text.dataset.i18n = 'chat.entityProfile.attributionMismatch'
 			box.append(icon, text)
 			warnHost.replaceChildren(box)
 			warnHost.hidden = false

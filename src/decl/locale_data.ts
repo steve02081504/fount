@@ -8,263 +8,8 @@
 export type LocaleData = {
 	lang: string
 	name: string
-	channels: {
+	tips: {
 		title: string
-		description: string
-		create: string
-		subscribe: string
-		unsubscribe: string
-		settings: string
-		list: string
-		members: string
-		messages: string
-		permissions: string
-		type: {
-			announcement: string
-			news: string
-			updates: string
-		}
-		role: {
-			owner: string
-			admin: string
-			moderator: string
-			member: string
-			subscriber: string
-		}
-		errors: {
-			notFound: string
-			noPermission: string
-			alreadySubscribed: string
-			notSubscribed: string
-		}
-		success: {
-			created: string
-			updated: string
-			deleted: string
-			subscribed: string
-			unsubscribed: string
-			posted: string
-		}
-	}
-	profile: {
-		title: string
-		description: string
-		settingsEyebrow: string
-		accountAtGlance: string
-		advancedKicker: string
-		advancedSettings: string
-		advancedDescription: string
-		edit: string
-		save: string
-		cancel: string
-		displayName: string
-		name: string
-		bio: string
-		descriptionLabel: string
-		email: string
-		status: string
-		customStatusLabel: string
-		avatarLabel: string
-		themeColorLabel: string
-		uploadAvatar: string
-		ownerTitle: string
-		ownerSummary: string
-		ownerDescription: string
-		ownerEntityHashLabel: string
-		ownerSave: string
-		ownerClear: string
-		ownerSaved: string
-		ownerCleared: string
-		ownerSaveFailed: string
-		ownerConfirmTitle: string
-		ownerConfirmWarningTitle: string
-		ownerConfirmEditBody: string
-		ownerConfirmRenderBody: string
-		ownerConfirmCooldown: string
-		ownerConfirmFirst: string
-		ownerConfirmSecond: string
-		ownerConfirmCancel: string
-		federationTitle: string
-		federationSummary: string
-		federationDescription: string
-		federationAdvanced: string
-		federationRelayUrlsLabel: string
-		federationBatterySaverLabel: string
-		federationSave: string
-		federationResetDefault: string
-		federationSaved: string
-		federationResetOk: string
-		federationSaveFailed: string
-		preferences: string
-		language: string
-		theme: string
-		notifications: string
-		emailNotifications: string
-		pushNotifications: string
-		soundNotifications: string
-		social: string
-		website: string
-		github: string
-		twitter: string
-		stats: string
-		joinedAt: string
-		messageCount: string
-		groupCount: string
-		channelCount: string
-		privacy: string
-		showEmail: string
-		showStats: string
-		allowDirectMessages: string
-		statusOptions: {
-			online: string
-			away: string
-			busy: string
-			offline: string
-		}
-		themeOptions: {
-			auto: string
-			light: string
-			dark: string
-		}
-		languageOptions: {
-			'zh-CN': string
-			'en-US': string
-		}
-		notifEmail: string
-		notifPush: string
-		notifSound: string
-		notifsAllOff: string
-		bioEmpty: string
-		noSocialLinks: string
-		emailVisible: string
-		emailHidden: string
-		customStatus: {
-			placeholder: string
-		}
-		avatar: {
-			alt: string
-		}
-		avatarPreview: {
-			alt: string
-		}
-		myGroups: string
-		myChannels: string
-		noGroups: string
-		noChannels: string
-		overview: string
-		summaryUserId: string
-		summaryAccountStatus: string
-		summaryEmailVisibility: string
-		summaryThemePref: string
-		summaryLanguagePref: string
-		summarySocialCount: string
-		summaryLinksCount: string
-		groupDescriptionEmpty: string
-		groupMembers: string
-		channelPrivate: string
-		channelTypeText: string
-		channelTypeList: string
-		channelTypeVoice: string
-		channelTypeStreaming: string
-		errors: {
-			loadFailed: string
-			saveFailed: string
-			uploadFailed: string
-			invalidUserData: string
-			identityRequired: string
-			fetchUserFailed: string
-			operationFailed: string
-		}
-		success: {
-			saved: string
-			avatarUploaded: string
-		}
-		ownerEntityHash: {
-			placeholder: string
-		}
-	}
-	stickers: {
-		title: string
-		description: string
-		back: {
-			title: string
-		}
-		packs: string
-		create: string
-		upload: string
-		install: string
-		uninstall: string
-		close: string
-		cancel: string
-		installed: string
-		myPacks: string
-		tabAll: string
-		store: string
-		favorites: string
-		recent: string
-		search: {
-			placeholder: string
-		}
-		emptyPacks: string
-		packNameLabel: string
-		packName: {
-			placeholder: string
-		}
-		packDescriptionLabel: string
-		packDescription: {
-			placeholder: string
-		}
-		stickerNameLabel: string
-		stickerName: {
-			placeholder: string
-		}
-		selectPack: string
-		selectPackOption: {
-			textContent: string
-		}
-		selectImage: string
-		tagsLabel: string
-		tags: {
-			placeholder: string
-		}
-		author: string
-		authorLabel: string
-		stickerCount: string
-		badgeMine: string
-		noDescription: string
-		noStickersInPack: string
-		deletePack: string
-		public: string
-		private: string
-		animated: string
-		static: string
-		addTag: string
-		defaultPackName: string
-		defaultPackDescription: string
-		unnamedPack: string
-		importPackName: string
-		importPackDescription: string
-		nameRequired: string
-		stickerNameRequired: string
-		selectPackRequired: string
-		fileRequired: string
-		loadDetailFailed: string
-		deleteConfirm: string
-		errors: {
-			loadFailed: string
-			uploadFailed: string
-			installFailed: string
-			uninstallFailed: string
-			createFailed: string
-			deleteFailed: string
-		}
-		success: {
-			uploaded: string
-			installed: string
-			uninstalled: string
-			created: string
-			deleted: string
-		}
 	}
 	fountConsole: {
 		server: {
@@ -786,51 +531,6 @@ export type LocaleData = {
 		title: string
 		description: string
 	}
-	tutorial: {
-		title: string
-		description: string
-		modal: {
-			title: string
-			instruction: string
-			buttons: {
-				start: string
-				skip: string
-			}
-		}
-		endScreen: {
-			title: string
-			subtitle: string
-			endButton: string
-		}
-		progressMessages: {
-			mouseMove: string
-			keyboardPress: string
-			mobileTouchMove: string
-			mobileClick: string
-		}
-		achievements: {
-			complete_tutorial: {
-				name: string
-				description: string
-				locked_description: string
-			}
-			skip_tutorial: {
-				name: string
-				description: string
-				locked_description: string
-			}
-		}
-		home_function_buttons: {
-			other: {
-				title: string
-				sub_items: {
-					replay: {
-						title: string
-					}
-				}
-			}
-		}
-	}
 	auth: {
 		title: string
 		subtitle: string
@@ -925,6 +625,51 @@ export type LocaleData = {
 			buttons: {
 				ignore: string
 				retry: string
+			}
+		}
+	}
+	tutorial: {
+		title: string
+		description: string
+		modal: {
+			title: string
+			instruction: string
+			buttons: {
+				start: string
+				skip: string
+			}
+		}
+		endScreen: {
+			title: string
+			subtitle: string
+			endButton: string
+		}
+		progressMessages: {
+			mouseMove: string
+			keyboardPress: string
+			mobileTouchMove: string
+			mobileClick: string
+		}
+		achievements: {
+			complete_tutorial: {
+				name: string
+				description: string
+				locked_description: string
+			}
+			skip_tutorial: {
+				name: string
+				description: string
+				locked_description: string
+			}
+		}
+		home_function_buttons: {
+			other: {
+				title: string
+				sub_items: {
+					replay: {
+						title: string
+					}
+				}
 			}
 		}
 	}
@@ -1151,513 +896,6 @@ export type LocaleData = {
 		home_drag_out_generators: {
 			generateXFountPart: {
 				description: string
-			}
-		}
-	}
-	social: {
-		title: string
-		description: string
-		bootstrapFailed: string
-		home_function_buttons: {
-			main: {
-				title: string
-			}
-		}
-		nav: {
-			feed: string
-			explore: string
-			notifications: string
-			saved: string
-			drafts: string
-			profile: string
-			videos: string
-			live: string
-		}
-		settings: {
-			title: string
-			back: {
-				'aria-label': string
-			}
-			privacyTitle: string
-			privacyHint: string
-			tasteTitle: string
-			tasteHint: string
-			mutedKeywordsTitle: string
-			mutedKeywordsHint: string
-			mutedKeywordsMatchTags: string
-			mutedKeywordsAdd: string
-			mutedKeywordsRemove: {
-				title: string
-			}
-			mutedKeywordsEmpty: string
-			autoTranslateTitle: string
-			autoTranslateHint: string
-			autoTranslateEnable: string
-			safetyTitle: string
-			safetyHint: string
-			mutedKeywords: {
-				placeholder: string
-			}
-		}
-		composer: {
-			placeholder: string
-			publish: string
-			saveDraft: string
-			fab: {
-				title: string
-				'aria-label': string
-			}
-			contentWarning: {
-				placeholder: string
-			}
-			sensitiveMedia: string
-			editImage: string
-			editCrop: string
-			editMosaic: string
-			editBrush: string
-			editApply: string
-			editCancel: string
-			replyPolicyEveryone: string
-			replyPolicyFollowers7d: string
-			replyPolicyAuthorFollows: string
-			replyPolicyLabel: string
-			replyDisplayAll: string
-			replyDisplayFeaturedOnly: string
-			replyDisplayLabel: string
-			scheduleLabel: string
-			scheduleSuccess: string
-			emojiButton: {
-				title: string
-				'aria-label': string
-			}
-			mediaButton: {
-				title: string
-				'aria-label': string
-			}
-			pollButton: {
-				title: string
-				'aria-label': string
-			}
-			cwToggle: {
-				title: string
-				'aria-label': string
-			}
-			advancedToggle: {
-				title: string
-				'aria-label': string
-			}
-			media: {
-				placeholder: string
-			}
-		}
-		visibility: {
-			label: string
-			public: string
-			unlisted: string
-			followers: string
-			followers7d: string
-			followers30d: string
-			selected: string
-			private: string
-			allowLabel: string
-			exceptLabel: string
-			allow: {
-				placeholder: string
-			}
-			except: {
-				placeholder: string
-			}
-		}
-		albums: {
-			create: string
-			edit: string
-			save: string
-			cancel: string
-			back: string
-			empty: string
-			emptyPosts: string
-			name: string
-			description: string
-			deleteLinks: string
-			deleteWithPosts: string
-			pickerLabel: string
-			defaultName: string
-		}
-		feed: {
-			refresh: string
-			newPosts: string
-			tabLatest: string
-			tabForYou: string
-			repostedBy: string
-			decryptFailed: string
-			revealContent: string
-			sensitiveMedia: string
-			showMore: string
-			showLess: string
-			replayDivider: string
-		}
-		taste: {
-			rebuild: string
-			privacyPublishPreferences: string
-			privacyPublishPreferencesHint: string
-			privacyPublishReactions: string
-			privacyPublishReactionsHint: string
-			empty: string
-			weight: string
-			save: string
-			name: {
-				placeholder: string
-			}
-		}
-		trending: {
-			title: string
-			postCount: {
-				title: string
-			}
-			scopeLocal: string
-			scopeNearby: string
-			empty: string
-		}
-		search: {
-			placeholder: string
-			open: {
-				'aria-label': string
-			}
-			submit: string
-			clear: string
-			empty: string
-			tooShort: string
-			usersTitle: string
-			postsTitle: string
-			usersEmpty: string
-			pinAlias: string
-			trustScore: string
-			viewTitle: string
-			loading: string
-			filterAuthor: {
-				placeholder: string
-			}
-			filterMediaAll: string
-			filterMediaImage: string
-			filterMediaVideo: string
-			filterTag: {
-				placeholder: string
-			}
-			sortRecent: string
-			sortPopular: string
-			scopeLocal: string
-			scopeNearby: string
-		}
-		profile: {
-			edit: string
-			viewPosts: string
-			settingsBtn: {
-				'aria-label': string
-			}
-			mediaOnly: string
-			hideFromExplore: string
-			tabPosts: string
-			tabAlbums: string
-			tabLikes: string
-			tabCabinets: string
-			tabsLabel: {
-				'aria-label': string
-			}
-			cabinetsEmpty: string
-			cabinetsFailed: string
-			statsGroup: {
-				'aria-label': string
-			}
-			statsPosts: string
-			statsFollowing: string
-			statsFollowers: string
-			followingTitle: string
-			followersTitle: string
-		}
-		dialog: {
-			close: {
-				'aria-label': string
-			}
-		}
-		actions: {
-			like: string
-			unlike: string
-			dislike: string
-			undislike: string
-			repost: string
-			quote: string
-			delete: string
-			edit: string
-			save: string
-			saved: string
-			translate: string
-			dm: string
-			block: string
-			hide: string
-			mute: string
-			follow: string
-			following: string
-			care: string
-			careRemove: string
-			careAdded: string
-			careRemoved: string
-			setAlias: string
-			setAliasPrompt: string
-			aliasSaved: string
-			replies: string
-			copyLink: string
-			downloadHtml: string
-			copied: string
-			more: {
-				'aria-label': string
-			}
-			share: string
-			likeFailed: string
-			dislikeFailed: string
-			repostFailed: string
-			replyFailed: string
-			followFailed: string
-			saveFailed: string
-			blockFailed: string
-			hideFailed: string
-			muteFailed: string
-			deleteFailed: string
-		}
-		post: {
-			edited: string
-			editPrompt: string
-			editHistory: string
-			editHistoryEmpty: string
-			loading: string
-			notFound: string
-			loadFailed: string
-			detailTitle: string
-			back: string
-		}
-		reply: {
-			context: string
-		}
-		notes: {
-			label: string
-			add: string
-			prompt: string
-			listTitle: string
-			helpful: string
-			unhelpful: string
-			more: string
-			empty: string
-		}
-		poll: {
-			multi: string
-			apply: string
-			closed: string
-			deadline: string
-			options: {
-				placeholder: string
-			}
-		}
-		aside: {
-			suggested: string
-		}
-		explore: {
-			accounts: string
-			posts: string
-			mediaOnly: string
-		}
-		groupRef: {
-			linking: string
-			clear: string
-			pick: string
-		}
-		notifications: {
-			reply: string
-			mention: string
-			like: string
-			repost: string
-			follow: string
-			care_post: string
-			poll_closed: string
-			post_note: string
-			live_started: string
-			view: string
-			markAllRead: string
-		}
-		inbox: {
-			filtersLabel: {
-				'aria-label': string
-			}
-			tabs: {
-				all: string
-				mention: string
-				reply: string
-				like: string
-				follow: string
-				repost: string
-			}
-			aggregated: {
-				like: string
-				likeTwo: string
-				repost: string
-				repostTwo: string
-				follow: string
-				followTwo: string
-			}
-		}
-		replies: {
-			placeholder: string
-			submit: string
-			empty: string
-			emptyHint: string
-		}
-		repost: {
-			placeholder: string
-			submit: string
-		}
-		quote: {
-			quoting: string
-			clear: string
-			viewOriginal: string
-		}
-		a11y: {
-			linkGroupSelect: string
-			postVisibility: string
-			postLang: string
-			trendingHashtags: string
-			saveFolderSelect: string
-		}
-		blocklist: {
-			title: string
-			hiddenTitle: string
-			empty: string
-			unblock: string
-			unhide: string
-			scopeEntity: string
-			scopeSubject: string
-		}
-		translate: {
-			label: string
-		}
-		saved: {
-			all: string
-			unfiled: string
-			createFolder: {
-				title: string
-				'aria-label': string
-			}
-			createFolderPrompt: string
-			pickFolderTitle: string
-			confirm: string
-			cancel: string
-			remove: string
-			renameFolder: string
-			renameFolderPrompt: string
-			deleteFolder: string
-			deleteFolderConfirm: string
-			searchEmpty: string
-			folderEmpty: string
-			emptyHint: string
-			search: {
-				placeholder: string
-			}
-		}
-		drafts: {
-			untitled: string
-			emptyHint: string
-			saved: string
-			deleted: string
-			delete: string
-			empty: string
-			saveFailed: string
-			loadFailed: string
-			deleteFailed: string
-		}
-		time: {
-			justNow: string
-			minutesAgo: string
-			hoursAgo: string
-		}
-		empty: {
-			feed: string
-			profilePosts: string
-			following: string
-			followers: string
-			notifications: string
-			saved: string
-			drafts: string
-			exploreAccounts: string
-			explorePosts: string
-			likedPosts: string
-			noIdentity: string
-		}
-		topic: {
-			follow: string
-			unfollow: string
-			empty: string
-		}
-		video: {
-			view: {
-				'aria-label': string
-			}
-			empty: string
-			emptyHint: string
-			compose: string
-			back: {
-				'aria-label': string
-			}
-			mute: {
-				'aria-label': string
-			}
-			unmute: {
-				'aria-label': string
-			}
-			unavailable: string
-			closeReplies: {
-				'aria-label': string
-			}
-		}
-		live: {
-			empty: string
-			viewers: string
-			likes: string
-			local: string
-			hall: string
-			back: {
-				title: string
-				'aria-label': string
-			}
-			danmakuSend: string
-			postWatch: string
-			postEnded: string
-			postEndedStats: string
-			link: {
-				invite: string
-				needPeer: string
-				invited: string
-				linked: string
-				peer: {
-					placeholder: string
-				}
-			}
-			broadcast: {
-				title: string
-				open: string
-				mediaAv: string
-				mediaAudio: string
-				mediaVideo: string
-				mediaWhip: string
-				whipUrl: string
-				whipToken: string
-				whipWaiting: string
-				start: string
-				stop: string
-				started: string
-				stopped: string
-				titleInput: {
-					placeholder: string
-				}
-			}
-			danmaku: {
-				placeholder: string
 			}
 		}
 	}
@@ -2032,12 +1270,7 @@ export type LocaleData = {
 			createGroup: string
 			members: string
 			membersHint: string
-			send: string
 			streamTest: string
-			messageInput: {
-				placeholder: string
-				'aria-label': string
-			}
 			loadError: string
 			remoteNodeTimeout: string
 			remoteUnavailable: string
@@ -2115,7 +1348,6 @@ export type LocaleData = {
 			remoteTyping: string
 			remoteTypingTwo: string
 			remoteTypingMany: string
-			mentionEmpty: string
 			localAiLabel: string
 			forceTriggerOne: {
 				title: string
@@ -2174,7 +1406,6 @@ export type LocaleData = {
 			fileDownload: {
 				title: string
 			}
-			clickToLoad: string
 			unknownFile: string
 			blockSender: {
 				title: string
@@ -2199,7 +1430,6 @@ export type LocaleData = {
 			editConfirm: string
 			editCancel: string
 			editHint: string
-			editedLabel: string
 			editEmptyText: string
 			createGroupTitle: string
 			groupNameLabel: string
@@ -2443,6 +1673,10 @@ export type LocaleData = {
 			}
 			sendTitle: {
 				title: string
+			}
+			messageInput: {
+				placeholder: string
+				'aria-label': string
 			}
 			stopGenerateTitle: {
 				title: string
@@ -3115,6 +2349,10 @@ export type LocaleData = {
 				placeholder: string
 				label: string
 			}
+			editedLabel: string
+			mentionEmpty: string
+			clickToLoad: string
+			send: string
 		}
 		sidebar: {
 			settings: {
@@ -3435,6 +2673,234 @@ export type LocaleData = {
 				title: string
 			}
 		}
+		profile: {
+			title: string
+			description: string
+			settingsEyebrow: string
+			accountAtGlance: string
+			advancedKicker: string
+			advancedSettings: string
+			advancedDescription: string
+			edit: string
+			save: string
+			cancel: string
+			displayName: string
+			name: string
+			bio: string
+			descriptionLabel: string
+			email: string
+			status: string
+			customStatusLabel: string
+			avatarLabel: string
+			themeColorLabel: string
+			uploadAvatar: string
+			ownerTitle: string
+			ownerSummary: string
+			ownerDescription: string
+			ownerEntityHashLabel: string
+			ownerSave: string
+			ownerClear: string
+			ownerSaved: string
+			ownerCleared: string
+			ownerSaveFailed: string
+			ownerConfirmTitle: string
+			ownerConfirmWarningTitle: string
+			ownerConfirmEditBody: string
+			ownerConfirmRenderBody: string
+			ownerConfirmCooldown: string
+			ownerConfirmFirst: string
+			ownerConfirmSecond: string
+			ownerConfirmCancel: string
+			federationTitle: string
+			federationSummary: string
+			federationDescription: string
+			federationAdvanced: string
+			federationRelayUrlsLabel: string
+			federationBatterySaverLabel: string
+			federationSave: string
+			federationResetDefault: string
+			federationSaved: string
+			federationResetOk: string
+			federationSaveFailed: string
+			preferences: string
+			language: string
+			theme: string
+			notifications: string
+			emailNotifications: string
+			pushNotifications: string
+			soundNotifications: string
+			social: string
+			website: string
+			github: string
+			twitter: string
+			stats: string
+			joinedAt: string
+			messageCount: string
+			groupCount: string
+			channelCount: string
+			privacy: string
+			showEmail: string
+			showStats: string
+			allowDirectMessages: string
+			statusOptions: {
+				online: string
+				away: string
+				busy: string
+				offline: string
+			}
+			themeOptions: {
+				auto: string
+				light: string
+				dark: string
+			}
+			languageOptions: {
+				'zh-CN': string
+				'en-US': string
+			}
+			notifEmail: string
+			notifPush: string
+			notifSound: string
+			notifsAllOff: string
+			bioEmpty: string
+			noSocialLinks: string
+			emailVisible: string
+			emailHidden: string
+			customStatus: {
+				placeholder: string
+			}
+			avatar: {
+				alt: string
+			}
+			avatarPreview: {
+				alt: string
+			}
+			myGroups: string
+			myChannels: string
+			noGroups: string
+			noChannels: string
+			overview: string
+			summaryUserId: string
+			summaryAccountStatus: string
+			summaryEmailVisibility: string
+			summaryThemePref: string
+			summaryLanguagePref: string
+			summarySocialCount: string
+			summaryLinksCount: string
+			groupDescriptionEmpty: string
+			groupMembers: string
+			channelPrivate: string
+			channelTypeText: string
+			channelTypeList: string
+			channelTypeVoice: string
+			channelTypeStreaming: string
+			errors: {
+				loadFailed: string
+				saveFailed: string
+				uploadFailed: string
+				invalidUserData: string
+				identityRequired: string
+				fetchUserFailed: string
+				operationFailed: string
+			}
+			success: {
+				saved: string
+				avatarUploaded: string
+			}
+			ownerEntityHash: {
+				placeholder: string
+			}
+		}
+		entityProfile: {
+			attributionMismatch: string
+			attributionMismatchShort: {
+				title: string
+				'aria-label': string
+			}
+			ownedBy: string
+		}
+		stickers: {
+			title: string
+			description: string
+			back: {
+				title: string
+			}
+			packs: string
+			create: string
+			upload: string
+			install: string
+			uninstall: string
+			close: string
+			cancel: string
+			installed: string
+			myPacks: string
+			tabAll: string
+			store: string
+			favorites: string
+			recent: string
+			search: {
+				placeholder: string
+			}
+			emptyPacks: string
+			packNameLabel: string
+			packName: {
+				placeholder: string
+			}
+			packDescriptionLabel: string
+			packDescription: {
+				placeholder: string
+			}
+			stickerNameLabel: string
+			stickerName: {
+				placeholder: string
+			}
+			selectPack: string
+			selectPackOption: {
+				textContent: string
+			}
+			selectImage: string
+			tagsLabel: string
+			tags: {
+				placeholder: string
+			}
+			author: string
+			authorLabel: string
+			stickerCount: string
+			badgeMine: string
+			noDescription: string
+			noStickersInPack: string
+			deletePack: string
+			public: string
+			private: string
+			animated: string
+			static: string
+			addTag: string
+			defaultPackName: string
+			defaultPackDescription: string
+			unnamedPack: string
+			importPackName: string
+			importPackDescription: string
+			nameRequired: string
+			stickerNameRequired: string
+			selectPackRequired: string
+			fileRequired: string
+			loadDetailFailed: string
+			deleteConfirm: string
+			errors: {
+				loadFailed: string
+				uploadFailed: string
+				installFailed: string
+				uninstallFailed: string
+				createFailed: string
+				deleteFailed: string
+			}
+			success: {
+				uploaded: string
+				installed: string
+				uninstalled: string
+				created: string
+				deleted: string
+			}
+		}
 	}
 	easynew: {
 		title: string
@@ -3748,433 +3214,6 @@ export type LocaleData = {
 			}
 		}
 	}
-	userSettings: {
-		title: string
-		PageTitle: string
-		description: string
-		shell: {
-			unauthorized: string
-			responseNotJson: string
-			unexpectedError: string
-		}
-		errors: {
-			accountNotFound: string
-		}
-		userInfo: {
-			title: string
-			usernameLabel: string
-			creationDateLabel: string
-			folderSizeLabel: string
-			folderPathLabel: string
-			copyPathButton: {
-				title: string
-			}
-			copyPathButtonIcon: {
-				alt: string
-			}
-			copiedAlert: string
-			copyPathFailed: string
-		}
-		changePassword: {
-			title: string
-			currentPasswordLabel: string
-			newPasswordLabel: string
-			confirmNewPasswordLabel: string
-			submitButton: string
-			errorMismatch: string
-			success: string
-			missingFields: string
-			invalidCurrent: string
-		}
-		renameUser: {
-			title: string
-			newUsernameLabel: string
-			submitButton: string
-			confirmMessage: string
-			success: string
-			missingParams: string
-			wrongPassword: string
-			mustDiffer: string
-			taken: string
-			moveFailed: string
-		}
-		passkeys: {
-			title: string
-			description: string
-			refreshButton: {
-				title: string
-			}
-			refreshButtonIcon: {
-				alt: string
-			}
-			nameLabel: string
-			nameInput: {
-				placeholder: string
-			}
-			addButton: string
-			noneFound: string
-			itemDetails: string
-			removeButton: string
-			removeConfirm: string
-			removeSuccess: string
-			addSuccess: string
-			errorLoadLibrary: string
-			errorCancelled: string
-			apiInvalidPassword: string
-			apiMissingCredential: string
-			apiRemoveParamsRequired: string
-		}
-		userDevices: {
-			title: string
-			noDevicesFound: string
-			deviceInfo: string
-			thisDevice: string
-			deviceDetails: string
-			revokeButton: string
-			revokeConfirm: string
-			revokeSuccess: string
-			revokeMissingParams: string
-			revokeWrongPassword: string
-			listNotFound: string
-			deviceNotFound: string
-			refreshButton: {
-				title: string
-			}
-			refreshButtonIcon: {
-				alt: string
-			}
-		}
-		apiKeys: {
-			title: string
-			description: string
-			input: {
-				placeholder: string
-			}
-			createButton: string
-			noKeysFound: string
-			keyDetails: string
-			neverUsed: string
-			noKeysForUser: string
-			revokeWrongPassword: string
-			keyNotFound: string
-			revokeMissingJti: string
-			revokeMissingPassword: string
-			verifyMissingApiKey: string
-			revokeButton: string
-			revokeConfirm: string
-			revokeSuccess: string
-			errorDescriptionRequired: string
-			createSuccess: string
-			refreshButton: {
-				title: string
-			}
-			refreshButtonIcon: {
-				alt: string
-			}
-		}
-		newApiKey: {
-			title: string
-			warning: string
-			closeButton: string
-			copyButton: {
-				title: string
-			}
-			copiedAlert: string
-			copyKeyFailed: string
-		}
-		editorCommand: {
-			title: string
-			description: string
-			editorPresetLabel: string
-			commandLabel: string
-			argsTemplateLabel: string
-			argsTemplateHint: string
-			presetOptionPathAvailable: string
-			presetOptionPathUnavailable: string
-			testPathInput: {
-				placeholder: string
-			}
-			testButton: string
-			saveButton: string
-			saveSuccess: string
-			testPathRequired: string
-			testSuccess: string
-		}
-		logout: {
-			title: string
-			description: string
-			buttonText: string
-			confirmMessage: string
-			successMessage: string
-		}
-		deleteAccount: {
-			title: string
-			warning: string
-			submitButton: string
-			confirmMessage1: string
-			confirmMessage2: string
-			usernameMismatch: string
-			success: string
-			missingPassword: string
-			wrongPassword: string
-		}
-		passwordConfirm: {
-			title: string
-			message: string
-			passwordLabel: string
-			confirmButton: string
-			cancelButton: string
-		}
-		apiError: string
-		generalError: string
-		home_function_buttons: {
-			settings: {
-				title: string
-				sub_items: {
-					main: {
-						title: string
-					}
-				}
-			}
-		}
-	}
-	subfounts: {
-		title: string
-		pageTitle: string
-		description: string
-		hostConnectionCode: {
-			title: string
-			connectionCodeLabel: string
-			passwordLabel: string
-			copyButton: string
-			regenerateButton: string
-			infoMessage: string
-			connectionCodeCopied: string
-			passwordCopied: string
-			regenerateSuccess: string
-		}
-		infra: {
-			title: string
-			description: string
-			capabilityRelay: string
-			capabilityMailbox: string
-			hostPriority: string
-			toggleLabel: string
-			enabledToast: string
-			disabledToast: string
-		}
-		connectedSubfounts: {
-			title: string
-			noSubfountsConnected: string
-			table: {
-				id: string
-				description: string
-				deviceId: string
-				connectedAt: string
-				status: string
-				actions: string
-				connected: string
-				disconnected: string
-				save: string
-				na: string
-			}
-			descriptionSaved: string
-			descriptionSaveFailed: string
-		}
-		codeExecution: {
-			title: string
-			description: string
-			selectSubfountLabel: string
-			hostOption: string
-			subfountOption: string
-			scriptLabel: string
-			executeButton: string
-			executing: string
-			noSubfountSelected: string
-			noScriptProvided: string
-			executionSuccess: string
-			executionFailed: string
-			selectSubfount: string
-		}
-		downloadClient: {
-			title: string
-			description: string
-			downloadButton: string
-		}
-		errors: {
-			loadConnectionCodeFailed: string
-			regenerateConnectionCodeFailed: string
-			loadSettingsFailed: string
-			saveSettingsFailed: string
-			generalError: string
-		}
-		home_function_buttons: {
-			in_dev: {
-				title: string
-				sub_items: {
-					subfounts_related: {
-						title: string
-						sub_items: {
-							main: {
-								title: string
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	languageSettings: {
-		title: string
-		pageTitle: string
-		description: string
-		pageDescription: string
-		availableLanguages: string
-		preferredLanguages: string
-		resetButton: string
-		saveButton: string
-		select: {
-			placeholder: string
-		}
-		search: {
-			placeholder: string
-		}
-		noPreferredLanguages: string
-		moveUpButton: {
-			'aria-label': string
-			alt: string
-		}
-		moveDownButton: {
-			'aria-label': string
-			alt: string
-		}
-		deleteLocaleButton: {
-			'aria-label': string
-			alt: string
-		}
-		savedMessage: string
-		resetMessage: string
-		fetchLocalesFailed: string
-		home_function_buttons: {
-			settings: {
-				title: string
-				sub_items: {
-					main: {
-						title: string
-					}
-				}
-			}
-		}
-	}
-	themeManage: {
-		title: string
-		description: string
-		instruction: string
-		search: {
-			placeholder: string
-			noResult: string
-		}
-		createButton: string
-		preview: {
-			editButton: {
-				title: string
-			}
-			editButtonIcon: {
-				alt: string
-			}
-			deleteButton: {
-				title: string
-			}
-			deleteButtonIcon: {
-				alt: string
-			}
-			cloneButton: {
-				title: string
-			}
-			cloneButtonIcon: {
-				alt: string
-			}
-		}
-		editor: {
-			title: string
-			cancelButton: string
-			saveApplyButton: string
-			themeName: string
-			autoPaletteTitle: string
-			autoPaletteInstruction: string
-			coreColors: string
-			baseBackground: string
-			variables: string
-			borderRadius: string
-			borderWidth: string
-			advancedCustomization: string
-			customCSS: string
-			customMjsScript: string
-			mjsSyntaxHint: string
-			themeIdRequired: string
-			newThemeName: string
-			deleteConfirm: string
-			saved: string
-			failedToSave: string
-			failedToDelete: string
-			failedToClone: string
-		}
-		themes: {
-			auto: string
-			light: string
-			dark: string
-			cupcake: string
-			bumblebee: string
-			emerald: string
-			corporate: string
-			synthwave: string
-			retro: string
-			cyberpunk: string
-			valentine: string
-			halloween: string
-			garden: string
-			forest: string
-			aqua: string
-			lofi: string
-			pastel: string
-			fantasy: string
-			wireframe: string
-			black: string
-			luxury: string
-			dracula: string
-			cmyk: string
-			autumn: string
-			business: string
-			acid: string
-			lemonade: string
-			night: string
-			coffee: string
-			winter: string
-			dim: string
-			nord: string
-			sunset: string
-			caramellatte: string
-			abyss: string
-			silk: string
-		}
-		achievements: {
-			change_theme: {
-				name: string
-				description: string
-				locked_description: string
-			}
-		}
-		home_function_buttons: {
-			settings: {
-				title: string
-				sub_items: {
-					switchTheme: {
-						title: string
-					}
-				}
-			}
-		}
-	}
 	part_config: {
 		title: string
 		pageTitle: string
@@ -4416,6 +3455,84 @@ export type LocaleData = {
 			}
 		}
 	}
+	discord_bots: {
+		title: string
+		description: string
+		cardTitle: string
+		botSelectDropdown: {
+			placeholder: string
+		}
+		botSearch: {
+			placeholder: string
+		}
+		charSelectDropdown: {
+			placeholder: string
+		}
+		charSearch: {
+			placeholder: string
+		}
+		configCard: {
+			title: string
+			labels: {
+				character: string
+				apiKey: string
+				config: string
+			}
+			apiKeyInput: {
+				placeholder: string
+			}
+			toggleApiKeyButton: {
+				'aria-label': string
+			}
+			toggleApiKeyIcon: {
+				alt: string
+			}
+			buttons: {
+				saveConfig: string
+				startBot: string
+				stopBot: string
+			}
+			charSelect: {
+				placeholder: string
+			}
+		}
+		prompts: {
+			newBotName: string
+		}
+		buttons: {
+			newBot: string
+			deleteBot: string
+		}
+		alerts: {
+			configSaved: string
+			botExists: string
+			unsavedChanges: string
+			httpError: string
+			beforeUnload: string
+		}
+		achievements: {
+			start_bot: {
+				name: string
+				description: string
+				locked_description: string
+			}
+		}
+		home_function_buttons: {
+			bot_related: {
+				title: string
+				sub_items: {
+					manage: {
+						title: string
+					}
+				}
+			}
+		}
+		home_char_interfaces: {
+			configure: {
+				title: string
+			}
+		}
+	}
 	wechat_bots: {
 		title: string
 		description: string
@@ -4507,83 +3624,584 @@ export type LocaleData = {
 			needBot: string
 		}
 	}
-	discord_bots: {
+	social: {
 		title: string
 		description: string
-		cardTitle: string
-		botSelectDropdown: {
-			placeholder: string
+		bootstrapFailed: string
+		home_function_buttons: {
+			main: {
+				title: string
+			}
 		}
-		botSearch: {
-			placeholder: string
+		nav: {
+			feed: string
+			explore: string
+			notifications: string
+			saved: string
+			drafts: string
+			profile: string
+			videos: string
+			live: string
 		}
-		charSelectDropdown: {
-			placeholder: string
-		}
-		charSearch: {
-			placeholder: string
-		}
-		configCard: {
+		settings: {
 			title: string
-			labels: {
-				character: string
-				apiKey: string
-				config: string
-			}
-			apiKeyInput: {
-				placeholder: string
-			}
-			toggleApiKeyButton: {
+			back: {
 				'aria-label': string
 			}
-			toggleApiKeyIcon: {
-				alt: string
+			privacyTitle: string
+			privacyHint: string
+			tasteTitle: string
+			tasteHint: string
+			mutedKeywordsTitle: string
+			mutedKeywordsHint: string
+			mutedKeywordsMatchTags: string
+			mutedKeywordsAdd: string
+			mutedKeywordsRemove: {
+				title: string
 			}
-			buttons: {
-				saveConfig: string
-				startBot: string
-				stopBot: string
-			}
-			charSelect: {
+			mutedKeywordsEmpty: string
+			autoTranslateTitle: string
+			autoTranslateHint: string
+			autoTranslateEnable: string
+			safetyTitle: string
+			safetyHint: string
+			mutedKeywords: {
 				placeholder: string
 			}
-		}
-		prompts: {
-			newBotName: string
-		}
-		buttons: {
-			newBot: string
-			deleteBot: string
-		}
-		alerts: {
-			configSaved: string
-			botExists: string
-			unsavedChanges: string
-			httpError: string
-			beforeUnload: string
-		}
-		achievements: {
-			start_bot: {
-				name: string
-				description: string
-				locked_description: string
+			taste: {
+				rebuild: string
+				privacyPublishPreferences: string
+				privacyPublishPreferencesHint: string
+				privacyPublishReactions: string
+				privacyPublishReactionsHint: string
+				empty: string
+				weight: string
+				save: string
+				name: {
+					placeholder: string
+				}
+			}
+			blocklist: {
+				title: string
+				hiddenTitle: string
+				empty: string
+				unblock: string
+				unhide: string
+				scopeEntity: string
+				scopeSubject: string
 			}
 		}
-		home_function_buttons: {
-			bot_related: {
+		composer: {
+			placeholder: string
+			publish: string
+			saveDraft: string
+			fab: {
 				title: string
-				sub_items: {
-					manage: {
-						title: string
-					}
+				'aria-label': string
+			}
+			contentWarning: {
+				placeholder: string
+			}
+			sensitiveMedia: string
+			editImage: string
+			editCrop: string
+			editMosaic: string
+			editBrush: string
+			editApply: string
+			editCancel: string
+			replyPolicyEveryone: string
+			replyPolicyFollowers7d: string
+			replyPolicyAuthorFollows: string
+			replyPolicyLabel: string
+			replyDisplayAll: string
+			replyDisplayFeaturedOnly: string
+			replyDisplayLabel: string
+			scheduleLabel: string
+			scheduleSuccess: string
+			emojiButton: {
+				title: string
+				'aria-label': string
+			}
+			mediaButton: {
+				title: string
+				'aria-label': string
+			}
+			pollButton: {
+				title: string
+				'aria-label': string
+			}
+			cwToggle: {
+				title: string
+				'aria-label': string
+			}
+			advancedToggle: {
+				title: string
+				'aria-label': string
+			}
+			media: {
+				placeholder: string
+			}
+			visibility: {
+				label: string
+				public: string
+				unlisted: string
+				followers: string
+				followers7d: string
+				followers30d: string
+				selected: string
+				private: string
+				allowLabel: string
+				exceptLabel: string
+				allow: {
+					placeholder: string
+				}
+				except: {
+					placeholder: string
 				}
 			}
 		}
-		home_char_interfaces: {
-			configure: {
+		feed: {
+			refresh: string
+			newPosts: string
+			tabLatest: string
+			tabForYou: string
+			repostedBy: string
+			decryptFailed: string
+			revealContent: string
+			sensitiveMedia: string
+			showMore: string
+			showLess: string
+			replayDivider: string
+			trending: {
+				title: string
+				postCount: {
+					title: string
+				}
+				scopeLocal: string
+				scopeNearby: string
+				empty: string
+			}
+		}
+		explore: {
+			accounts: string
+			posts: string
+			mediaOnly: string
+		}
+		notifications: {
+			reply: string
+			mention: string
+			like: string
+			repost: string
+			follow: string
+			care_post: string
+			poll_closed: string
+			post_note: string
+			live_started: string
+			view: string
+			markAllRead: string
+		}
+		saved: {
+			all: string
+			unfiled: string
+			createFolder: {
+				title: string
+				'aria-label': string
+			}
+			createFolderPrompt: string
+			pickFolderTitle: string
+			confirm: string
+			cancel: string
+			remove: string
+			renameFolder: string
+			renameFolderPrompt: string
+			deleteFolder: string
+			deleteFolderConfirm: string
+			searchEmpty: string
+			folderEmpty: string
+			emptyHint: string
+			search: {
+				placeholder: string
+			}
+		}
+		drafts: {
+			untitled: string
+			emptyHint: string
+			saved: string
+			deleted: string
+			delete: string
+			empty: string
+			saveFailed: string
+			loadFailed: string
+			deleteFailed: string
+		}
+		profile: {
+			edit: string
+			viewPosts: string
+			settingsBtn: {
+				'aria-label': string
+			}
+			mediaOnly: string
+			hideFromExplore: string
+			tabPosts: string
+			tabAlbums: string
+			tabLikes: string
+			tabCabinets: string
+			tabsLabel: {
+				'aria-label': string
+			}
+			cabinetsEmpty: string
+			cabinetsFailed: string
+			statsGroup: {
+				'aria-label': string
+			}
+			statsPosts: string
+			statsFollowing: string
+			statsFollowers: string
+			followingTitle: string
+			followersTitle: string
+			albums: {
+				create: string
+				edit: string
+				save: string
+				cancel: string
+				back: string
+				empty: string
+				emptyPosts: string
+				name: string
+				description: string
+				deleteLinks: string
+				deleteWithPosts: string
+				pickerLabel: string
+				defaultName: string
+			}
+		}
+		video: {
+			view: {
+				'aria-label': string
+			}
+			empty: string
+			emptyHint: string
+			compose: string
+			back: {
+				'aria-label': string
+			}
+			mute: {
+				'aria-label': string
+			}
+			unmute: {
+				'aria-label': string
+			}
+			unavailable: string
+			closeReplies: {
+				'aria-label': string
+			}
+		}
+		live: {
+			empty: string
+			viewers: string
+			likes: string
+			local: string
+			hall: string
+			back: {
+				title: string
+				'aria-label': string
+			}
+			danmakuSend: string
+			postWatch: string
+			postEnded: string
+			postEndedStats: string
+			link: {
+				invite: string
+				needPeer: string
+				invited: string
+				linked: string
+				peer: {
+					placeholder: string
+				}
+			}
+			broadcast: {
+				title: string
+				open: string
+				mediaAv: string
+				mediaAudio: string
+				mediaVideo: string
+				mediaWhip: string
+				whipUrl: string
+				whipToken: string
+				whipWaiting: string
+				start: string
+				stop: string
+				started: string
+				stopped: string
+				titleInput: {
+					placeholder: string
+				}
+			}
+			danmaku: {
+				placeholder: string
+			}
+		}
+		search: {
+			placeholder: string
+			open: {
+				'aria-label': string
+			}
+			submit: string
+			clear: string
+			empty: string
+			tooShort: string
+			usersTitle: string
+			postsTitle: string
+			usersEmpty: string
+			pinAlias: string
+			trustScore: string
+			viewTitle: string
+			loading: string
+			filterAuthor: {
+				placeholder: string
+			}
+			filterMediaAll: string
+			filterMediaImage: string
+			filterMediaVideo: string
+			filterTag: {
+				placeholder: string
+			}
+			sortRecent: string
+			sortPopular: string
+			scopeLocal: string
+			scopeNearby: string
+		}
+		dialog: {
+			close: {
+				'aria-label': string
+			}
+		}
+		actions: {
+			like: string
+			unlike: string
+			dislike: string
+			undislike: string
+			repost: string
+			quote: string
+			delete: string
+			edit: string
+			save: string
+			saved: string
+			translate: string
+			dm: string
+			block: string
+			hide: string
+			mute: string
+			follow: string
+			following: string
+			care: string
+			careRemove: string
+			careAdded: string
+			careRemoved: string
+			setAlias: string
+			setAliasPrompt: string
+			aliasSaved: string
+			replies: string
+			copyLink: string
+			downloadHtml: string
+			copied: string
+			more: {
+				'aria-label': string
+			}
+			share: string
+			likeFailed: string
+			dislikeFailed: string
+			repostFailed: string
+			replyFailed: string
+			followFailed: string
+			saveFailed: string
+			blockFailed: string
+			hideFailed: string
+			muteFailed: string
+			deleteFailed: string
+		}
+		post: {
+			edited: string
+			editPrompt: string
+			editHistory: string
+			editHistoryEmpty: string
+			loading: string
+			notFound: string
+			loadFailed: string
+			detailTitle: string
+			back: string
+		}
+		reply: {
+			context: string
+		}
+		notes: {
+			label: string
+			add: string
+			prompt: string
+			listTitle: string
+			helpful: string
+			unhelpful: string
+			more: string
+			empty: string
+		}
+		poll: {
+			multi: string
+			apply: string
+			closed: string
+			deadline: string
+			options: {
+				placeholder: string
+			}
+		}
+		aside: {
+			suggested: string
+		}
+		groupRef: {
+			linking: string
+			clear: string
+			pick: string
+		}
+		inbox: {
+			filtersLabel: {
+				'aria-label': string
+			}
+			tabs: {
+				all: string
+				mention: string
+				reply: string
+				like: string
+				follow: string
+				repost: string
+			}
+			aggregated: {
+				like: string
+				likeTwo: string
+				repost: string
+				repostTwo: string
+				follow: string
+				followTwo: string
+			}
+		}
+		replies: {
+			placeholder: string
+			submit: string
+			empty: string
+			emptyHint: string
+		}
+		repost: {
+			placeholder: string
+			submit: string
+		}
+		quote: {
+			quoting: string
+			clear: string
+			viewOriginal: string
+		}
+		a11y: {
+			linkGroupSelect: string
+			postVisibility: string
+			postLang: string
+			trendingHashtags: string
+			saveFolderSelect: string
+		}
+		translate: {
+			label: string
+		}
+		time: {
+			justNow: string
+			minutesAgo: string
+			hoursAgo: string
+		}
+		empty: {
+			feed: string
+			profilePosts: string
+			following: string
+			followers: string
+			notifications: string
+			saved: string
+			drafts: string
+			exploreAccounts: string
+			explorePosts: string
+			likedPosts: string
+			noIdentity: string
+		}
+		topic: {
+			follow: string
+			unfollow: string
+			empty: string
+		}
+	}
+	cabinet: {
+		title: string
+		description: string
+		openCabinets: {
+			title: string
+			'aria-label': string
+		}
+		closeCabinets: {
+			title: string
+			'aria-label': string
+		}
+		bootstrapFailed: string
+		home_function_buttons: {
+			main: {
 				title: string
 			}
 		}
+		upload: string
+		uploadFolder: string
+		newFolder: string
+		open: string
+		download: string
+		downloadZip: string
+		rename: string
+		copy: string
+		cut: string
+		paste: string
+		pasteLink: string
+		selectAll: string
+		invert: string
+		properties: string
+		delete: string
+		back: {
+			title: string
+			'aria-label': string
+		}
+		cancel: string
+		save: string
+		showHidden: string
+		name: string
+		descriptionField: string
+		attrHidden: string
+		attrSystem: string
+		previewUrl: string
+		deletePreviewWithFile: string
+		folderPassword: string
+		unlockFolder: string
+		unlock: string
+		unlockFailed: string
+		previewFailed: string
+		created: string
+		modified: string
+		statusCount: string
+		newCabinetPrompt: string
+		newFolderPrompt: string
+		renamePrompt: string
+		visibilityPrompt: string
+		cabinetActionPrompt: string
+		confirmDeleteCabinet: string
+		confirmDelete: string
+		confirmDeleteSystem: string
+		copied: string
+		cutDone: string
+		undo: string
+		redo: string
+		newWindow: string
+		goUp: string
+		brokenLink: string
+		noDownload: string
+		groupDownloadHint: string
+		remoteEntity: string
 	}
 	browser_integration: {
 		title: string
@@ -4708,6 +4326,48 @@ export type LocaleData = {
 			}
 		}
 	}
+	ide_integration: {
+		description: string
+		title: string
+		heading: string
+		instruction: string
+		supportedEditorsTitle: string
+		supportedEditorsIntro: string
+		supportedEditorsLoading: string
+		supportedEditorsError: string
+		acpTitle: string
+		acpDesc: string
+		acpCharLabel: string
+		charListError: string
+		acpScriptLabel: string
+		acpConfigSample: string
+		acpConfigHint: string
+		copyButton: string
+		copied: string
+		apiKeySectionTitle: string
+		apiKeyHint: string
+		generateApiKeyButton: string
+		apiKeyCopied: string
+		apiKeyCreateError: string
+		apiKeyInput: {
+			'aria-label': string
+		}
+		home_function_buttons: {
+			integration_related: string
+			ide_integration_config: {
+				title: string
+			}
+		}
+		achievements: {
+			first_ide_use: {
+				name: string
+				description: string
+				locked_description: string
+			}
+		}
+		acpChar: string
+		acpConfig: string
+	}
 	deskpet: {
 		title: string
 		description: string
@@ -4759,6 +4419,347 @@ export type LocaleData = {
 								title: string
 							}
 						}
+					}
+				}
+			}
+		}
+	}
+	themeManage: {
+		title: string
+		description: string
+		instruction: string
+		search: {
+			placeholder: string
+			noResult: string
+		}
+		createButton: string
+		preview: {
+			editButton: {
+				title: string
+			}
+			editButtonIcon: {
+				alt: string
+			}
+			deleteButton: {
+				title: string
+			}
+			deleteButtonIcon: {
+				alt: string
+			}
+			cloneButton: {
+				title: string
+			}
+			cloneButtonIcon: {
+				alt: string
+			}
+		}
+		editor: {
+			title: string
+			cancelButton: string
+			saveApplyButton: string
+			themeName: string
+			autoPaletteTitle: string
+			autoPaletteInstruction: string
+			coreColors: string
+			baseBackground: string
+			variables: string
+			borderRadius: string
+			borderWidth: string
+			advancedCustomization: string
+			customCSS: string
+			customMjsScript: string
+			mjsSyntaxHint: string
+			themeIdRequired: string
+			newThemeName: string
+			deleteConfirm: string
+			saved: string
+			failedToSave: string
+			failedToDelete: string
+			failedToClone: string
+		}
+		themes: {
+			auto: string
+			light: string
+			dark: string
+			cupcake: string
+			bumblebee: string
+			emerald: string
+			corporate: string
+			synthwave: string
+			retro: string
+			cyberpunk: string
+			valentine: string
+			halloween: string
+			garden: string
+			forest: string
+			aqua: string
+			lofi: string
+			pastel: string
+			fantasy: string
+			wireframe: string
+			black: string
+			luxury: string
+			dracula: string
+			cmyk: string
+			autumn: string
+			business: string
+			acid: string
+			lemonade: string
+			night: string
+			coffee: string
+			winter: string
+			dim: string
+			nord: string
+			sunset: string
+			caramellatte: string
+			abyss: string
+			silk: string
+		}
+		achievements: {
+			change_theme: {
+				name: string
+				description: string
+				locked_description: string
+			}
+		}
+		home_function_buttons: {
+			settings: {
+				title: string
+				sub_items: {
+					switchTheme: {
+						title: string
+					}
+				}
+			}
+		}
+	}
+	languageSettings: {
+		title: string
+		pageTitle: string
+		description: string
+		pageDescription: string
+		availableLanguages: string
+		preferredLanguages: string
+		resetButton: string
+		saveButton: string
+		select: {
+			placeholder: string
+		}
+		search: {
+			placeholder: string
+		}
+		noPreferredLanguages: string
+		moveUpButton: {
+			'aria-label': string
+			alt: string
+		}
+		moveDownButton: {
+			'aria-label': string
+			alt: string
+		}
+		deleteLocaleButton: {
+			'aria-label': string
+			alt: string
+		}
+		savedMessage: string
+		resetMessage: string
+		fetchLocalesFailed: string
+		home_function_buttons: {
+			settings: {
+				title: string
+				sub_items: {
+					main: {
+						title: string
+					}
+				}
+			}
+		}
+	}
+	userSettings: {
+		title: string
+		PageTitle: string
+		description: string
+		shell: {
+			unauthorized: string
+			responseNotJson: string
+			unexpectedError: string
+		}
+		errors: {
+			accountNotFound: string
+		}
+		userInfo: {
+			title: string
+			usernameLabel: string
+			creationDateLabel: string
+			folderSizeLabel: string
+			folderPathLabel: string
+			copyPathButton: {
+				title: string
+			}
+			copyPathButtonIcon: {
+				alt: string
+			}
+			copiedAlert: string
+			copyPathFailed: string
+		}
+		changePassword: {
+			title: string
+			currentPasswordLabel: string
+			newPasswordLabel: string
+			confirmNewPasswordLabel: string
+			submitButton: string
+			errorMismatch: string
+			success: string
+			missingFields: string
+			invalidCurrent: string
+		}
+		renameUser: {
+			title: string
+			newUsernameLabel: string
+			submitButton: string
+			confirmMessage: string
+			success: string
+			missingParams: string
+			wrongPassword: string
+			mustDiffer: string
+			taken: string
+			moveFailed: string
+		}
+		passkeys: {
+			title: string
+			description: string
+			refreshButton: {
+				title: string
+			}
+			refreshButtonIcon: {
+				alt: string
+			}
+			nameLabel: string
+			nameInput: {
+				placeholder: string
+			}
+			addButton: string
+			noneFound: string
+			itemDetails: string
+			removeButton: string
+			removeConfirm: string
+			removeSuccess: string
+			addSuccess: string
+			errorLoadLibrary: string
+			errorCancelled: string
+			apiInvalidPassword: string
+			apiMissingCredential: string
+			apiRemoveParamsRequired: string
+		}
+		userDevices: {
+			title: string
+			noDevicesFound: string
+			deviceInfo: string
+			thisDevice: string
+			deviceDetails: string
+			revokeButton: string
+			revokeConfirm: string
+			revokeSuccess: string
+			revokeMissingParams: string
+			revokeWrongPassword: string
+			listNotFound: string
+			deviceNotFound: string
+			refreshButton: {
+				title: string
+			}
+			refreshButtonIcon: {
+				alt: string
+			}
+		}
+		apiKeys: {
+			title: string
+			description: string
+			input: {
+				placeholder: string
+			}
+			createButton: string
+			noKeysFound: string
+			keyDetails: string
+			neverUsed: string
+			noKeysForUser: string
+			revokeWrongPassword: string
+			keyNotFound: string
+			revokeMissingJti: string
+			revokeMissingPassword: string
+			verifyMissingApiKey: string
+			revokeButton: string
+			revokeConfirm: string
+			revokeSuccess: string
+			errorDescriptionRequired: string
+			createSuccess: string
+			refreshButton: {
+				title: string
+			}
+			refreshButtonIcon: {
+				alt: string
+			}
+		}
+		newApiKey: {
+			title: string
+			warning: string
+			closeButton: string
+			copyButton: {
+				title: string
+			}
+			copiedAlert: string
+			copyKeyFailed: string
+		}
+		editorCommand: {
+			title: string
+			description: string
+			editorPresetLabel: string
+			commandLabel: string
+			argsTemplateLabel: string
+			argsTemplateHint: string
+			presetOptionPathAvailable: string
+			presetOptionPathUnavailable: string
+			testPathInput: {
+				placeholder: string
+			}
+			testButton: string
+			saveButton: string
+			saveSuccess: string
+			testPathRequired: string
+			testSuccess: string
+		}
+		logout: {
+			title: string
+			description: string
+			buttonText: string
+			confirmMessage: string
+			successMessage: string
+		}
+		deleteAccount: {
+			title: string
+			warning: string
+			submitButton: string
+			confirmMessage1: string
+			confirmMessage2: string
+			usernameMismatch: string
+			success: string
+			missingPassword: string
+			wrongPassword: string
+		}
+		passwordConfirm: {
+			title: string
+			message: string
+			passwordLabel: string
+			confirmButton: string
+			cancelButton: string
+		}
+		apiError: string
+		generalError: string
+		home_function_buttons: {
+			settings: {
+				title: string
+				sub_items: {
+					main: {
+						title: string
 					}
 				}
 			}
@@ -4820,47 +4821,91 @@ export type LocaleData = {
 			}
 		}
 	}
-	ide_integration: {
-		description: string
+	subfounts: {
 		title: string
-		heading: string
-		instruction: string
-		supportedEditorsTitle: string
-		supportedEditorsIntro: string
-		supportedEditorsLoading: string
-		supportedEditorsError: string
-		acpTitle: string
-		acpDesc: string
-		acpCharLabel: string
-		charListError: string
-		acpScriptLabel: string
-		acpConfigSample: string
-		acpConfigHint: string
-		copyButton: string
-		copied: string
-		apiKeySectionTitle: string
-		apiKeyHint: string
-		generateApiKeyButton: string
-		apiKeyCopied: string
-		apiKeyCreateError: string
-		apiKeyInput: {
-			'aria-label': string
+		pageTitle: string
+		description: string
+		hostConnectionCode: {
+			title: string
+			connectionCodeLabel: string
+			passwordLabel: string
+			copyButton: string
+			regenerateButton: string
+			infoMessage: string
+			connectionCodeCopied: string
+			passwordCopied: string
+			regenerateSuccess: string
+		}
+		infra: {
+			title: string
+			description: string
+			capabilityRelay: string
+			capabilityMailbox: string
+			hostPriority: string
+			toggleLabel: string
+			enabledToast: string
+			disabledToast: string
+		}
+		connectedSubfounts: {
+			title: string
+			noSubfountsConnected: string
+			table: {
+				id: string
+				description: string
+				deviceId: string
+				connectedAt: string
+				status: string
+				actions: string
+				connected: string
+				disconnected: string
+				save: string
+				na: string
+			}
+			descriptionSaved: string
+			descriptionSaveFailed: string
+		}
+		codeExecution: {
+			title: string
+			description: string
+			selectSubfountLabel: string
+			hostOption: string
+			subfountOption: string
+			scriptLabel: string
+			executeButton: string
+			executing: string
+			noSubfountSelected: string
+			noScriptProvided: string
+			executionSuccess: string
+			executionFailed: string
+			selectSubfount: string
+		}
+		downloadClient: {
+			title: string
+			description: string
+			downloadButton: string
+		}
+		errors: {
+			loadConnectionCodeFailed: string
+			regenerateConnectionCodeFailed: string
+			loadSettingsFailed: string
+			saveSettingsFailed: string
+			generalError: string
 		}
 		home_function_buttons: {
-			integration_related: string
-			ide_integration_config: {
+			in_dev: {
 				title: string
+				sub_items: {
+					subfounts_related: {
+						title: string
+						sub_items: {
+							main: {
+								title: string
+							}
+						}
+					}
+				}
 			}
 		}
-		achievements: {
-			first_ide_use: {
-				name: string
-				description: string
-				locked_description: string
-			}
-		}
-		acpChar: string
-		acpConfig: string
 	}
 	achievements: {
 		title: string
@@ -4987,9 +5032,6 @@ export type LocaleData = {
 		pageNotFoundText: string
 		homepageButton: string
 	}
-	tips: {
-		title: string
-	}
 	directoryListing: {
 		title: string
 		description: string
@@ -4999,200 +5041,122 @@ export type LocaleData = {
 		size: string
 		parentLink: string
 	}
-	code_block: {
-		copy: {
-			dataset: {
-				tip: string
-			}
-			'aria-label': string
-		}
-		copied: {
-			dataset: {
-				tip: string
-			}
-		}
-		download: {
-			dataset: {
-				tip: string
-			}
-			'aria-label': string
-		}
-		execute: {
-			dataset: {
-				tip: string
-			}
-			'aria-label': string
-		}
-		preview: {
-			dataset: {
-				tip: string
-			}
-			'aria-label': string
-		}
-		copy_failed: string
-	}
-	pow_captcha: {
-		initial: string
-		verifying: string
-		solved: string
-		wasm_disabled: string
-		error: string
-		errorMessage: string
-	}
-	breadcrumb: {
-		clickToNavigate: string
-	}
-	zxcvbn: {
-		warnings: {
-			straightRow: string
-			keyPattern: string
-			simpleRepeat: string
-			extendedRepeat: string
-			sequences: string
-			recentYears: string
-			dates: string
-			topTen: string
-			topHundred: string
-			common: string
-			similarToCommon: string
-			wordByItself: string
-			namesByThemselves: string
-			commonNames: string
-			userInputs: string
-			pwned: string
-		}
-		suggestions: {
-			l33t: string
-			reverseWords: string
-			allUppercase: string
-			capitalization: string
-			dates: string
-			recentYears: string
-			associatedYears: string
-			sequences: string
-			repeated: string
-			longerKeyboardPattern: string
-			anotherWord: string
-			useWords: string
-			noNeed: string
-			pwned: string
-		}
-		timeEstimation: {
-			ltSecond: string
-			second: string
-			seconds: string
-			minute: string
-			minutes: string
-			hour: string
-			hours: string
-			day: string
-			days: string
-			month: string
-			months: string
-			year: string
-			years: string
-			centuries: string
-		}
-	}
-	searchableDropdown: {
-		trigger: {
-			placeholder: string
-		}
-		search: {
-			placeholder: string
-		}
-	}
-	common: {
-		cancel: string
-		create: string
-		save: string
-		delete: string
-		confirm: string
-		close: string
-		translate: {
-			showOriginal: string
-			showTranslation: string
-		}
-	}
-	cabinet: {
-		title: string
-		description: string
-		openCabinets: {
-			title: string
-			'aria-label': string
-		}
-		closeCabinets: {
-			title: string
-			'aria-label': string
-		}
-		bootstrapFailed: string
-		home_function_buttons: {
-			main: {
-				title: string
+	util: {
+		common: {
+			cancel: string
+			create: string
+			save: string
+			delete: string
+			confirm: string
+			close: string
+			translate: {
+				showOriginal: string
+				showTranslation: string
 			}
 		}
-		upload: string
-		uploadFolder: string
-		newFolder: string
-		open: string
-		download: string
-		downloadZip: string
-		rename: string
-		copy: string
-		cut: string
-		paste: string
-		pasteLink: string
-		selectAll: string
-		invert: string
-		properties: string
-		delete: string
-		back: {
-			title: string
-			'aria-label': string
+		code_block: {
+			copy: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			copied: {
+				dataset: {
+					tip: string
+				}
+			}
+			download: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			execute: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			preview: {
+				dataset: {
+					tip: string
+				}
+				'aria-label': string
+			}
+			copy_failed: string
 		}
-		cancel: string
-		save: string
-		showHidden: string
-		name: string
-		descriptionField: string
-		attrHidden: string
-		attrSystem: string
-		previewUrl: string
-		deletePreviewWithFile: string
-		folderPassword: string
-		unlockFolder: string
-		unlock: string
-		unlockFailed: string
-		previewFailed: string
-		created: string
-		modified: string
-		statusCount: string
-		newCabinetPrompt: string
-		newFolderPrompt: string
-		renamePrompt: string
-		visibilityPrompt: string
-		cabinetActionPrompt: string
-		confirmDeleteCabinet: string
-		confirmDelete: string
-		confirmDeleteSystem: string
-		copied: string
-		cutDone: string
-		undo: string
-		redo: string
-		newWindow: string
-		goUp: string
-		brokenLink: string
-		noDownload: string
-		groupDownloadHint: string
-		remoteEntity: string
-	}
-	entityProfile: {
-		attributionMismatch: string
-		attributionMismatchShort: {
-			title: string
-			'aria-label': string
+		pow_captcha: {
+			initial: string
+			verifying: string
+			solved: string
+			wasm_disabled: string
+			error: string
+			errorMessage: string
 		}
-		ownedBy: string
+		breadcrumb: {
+			clickToNavigate: string
+		}
+		zxcvbn: {
+			warnings: {
+				straightRow: string
+				keyPattern: string
+				simpleRepeat: string
+				extendedRepeat: string
+				sequences: string
+				recentYears: string
+				dates: string
+				topTen: string
+				topHundred: string
+				common: string
+				similarToCommon: string
+				wordByItself: string
+				namesByThemselves: string
+				commonNames: string
+				userInputs: string
+				pwned: string
+			}
+			suggestions: {
+				l33t: string
+				reverseWords: string
+				allUppercase: string
+				capitalization: string
+				dates: string
+				recentYears: string
+				associatedYears: string
+				sequences: string
+				repeated: string
+				longerKeyboardPattern: string
+				anotherWord: string
+				useWords: string
+				noNeed: string
+				pwned: string
+			}
+			timeEstimation: {
+				ltSecond: string
+				second: string
+				seconds: string
+				minute: string
+				minutes: string
+				hour: string
+				hours: string
+				day: string
+				days: string
+				month: string
+				months: string
+				year: string
+				years: string
+				centuries: string
+			}
+		}
+		searchableDropdown: {
+			trigger: {
+				placeholder: string
+			}
+			search: {
+				placeholder: string
+			}
+		}
 	}
 }
 // 用于从嵌套对象生成点表示法键的实用类型。
@@ -5232,7 +5196,6 @@ export type LocaleKeyParams = {
 	'achievements.unlocked_on': { date: string | number }
 	'auth.error.accountLockedRetry': { timeLeft: string | number }
 	'badges_maker.copy_error': { error: string | number }
-	'breadcrumb.clickToNavigate': { path: string | number }
 	'browser_integration.csp_warning': { browser: string | number; link: string | number }
 	'browser_integration.error.add_failed': { message: string | number }
 	'browser_integration.error.delete_failed': { message: string | number }
@@ -5253,6 +5216,7 @@ export type LocaleKeyParams = {
 	'chat.dragAndDrop.pluginAdded': { partName: string | number }
 	'chat.dragAndDrop.unsupportedPartType': { partType: string | number }
 	'chat.dragAndDrop.worldSet': { partName: string | number }
+	'chat.entityProfile.ownedBy': { owner: string | number }
 	'chat.group.attachmentsHint': { n: string | number }
 	'chat.group.auditLog.event.channel_create': { channelName: string | number }
 	'chat.group.auditLog.event.channel_delete': { channelName: string | number }
@@ -5446,9 +5410,15 @@ export type LocaleKeyParams = {
 	'chat.messageView.toolReplacingFilepath': { filepath: string | number }
 	'chat.messageView.toolRunningLang': { lang: string | number }
 	'chat.messageView.toolSearchingContent': { content: string | number }
+	'chat.profile.errors.operationFailed': { error: string | number }
+	'chat.profile.federationSaveFailed': { error: string | number }
+	'chat.profile.groupMembers': { channels: string | number; members: string | number }
+	'chat.profile.ownerConfirmCooldown': { seconds: string | number }
+	'chat.profile.ownerSaveFailed': { error: string | number }
 	'chat.sessionSettings.subtitleRoles': { count: string | number }
+	'chat.stickers.authorLabel': { author: string | number }
+	'chat.stickers.stickerCount': { count: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
-	'code_block.copy_failed': { error: string | number }
 	'deskpet.toasts.start_failed': { charname: string | number; message: string | number }
 	'deskpet.toasts.started': { charname: string | number }
 	'deskpet.toasts.stop_failed': { charname: string | number; message: string | number }
@@ -5457,7 +5427,6 @@ export type LocaleKeyParams = {
 	'discord_bots.alerts.botExists': { botname: string | number }
 	'easynew.alerts.error': { message: string | number }
 	'easynew.alerts.success': { partName: string | number }
-	'entityProfile.ownedBy': { owner: string | number }
 	'export.alerts.exportFailed': { message: string | number }
 	'export.alerts.loadPartDetailsFailed': { message: string | number }
 	'export.alerts.shareFailed': { message: string | number }
@@ -5601,12 +5570,6 @@ export type LocaleKeyParams = {
 	'login_info.modal.transfer_error': { error: string | number }
 	'part_config.alerts.loadEditorFailed': { message: string | number }
 	'part_config.alerts.saveConfigFailed': { message: string | number }
-	'pow_captcha.errorMessage': { error: string | number }
-	'profile.errors.operationFailed': { error: string | number }
-	'profile.federationSaveFailed': { error: string | number }
-	'profile.groupMembers': { channels: string | number; members: string | number }
-	'profile.ownerConfirmCooldown': { seconds: string | number }
-	'profile.ownerSaveFailed': { error: string | number }
 	'protocolhandler.offline_dialog.message': { hostUrl: string | number }
 	'protocolhandler.runPart.commandError': { error: string | number }
 	'protocolhandler.runPart.confirm.message': { partpath: string | number }
@@ -5650,6 +5613,7 @@ export type LocaleKeyParams = {
 	'social.drafts.loadFailed': { error: string | number }
 	'social.drafts.saveFailed': { error: string | number }
 	'social.feed.repostedBy': { author: string | number }
+	'social.feed.trending.postCount.title': { n: string | number }
 	'social.inbox.aggregated.follow': { author1: string | number; author2: string | number; count: string | number }
 	'social.inbox.aggregated.followTwo': { author1: string | number; author2: string | number }
 	'social.inbox.aggregated.like': { author1: string | number; author2: string | number; count: string | number }
@@ -5673,12 +5637,9 @@ export type LocaleKeyParams = {
 	'social.profile.cabinetsFailed': { error: string | number }
 	'social.reply.context': { author: string | number }
 	'social.search.trustScore': { score: string | number }
-	'social.taste.weight': { weight: string | number }
+	'social.settings.taste.weight': { weight: string | number }
 	'social.time.hoursAgo': { n: string | number }
 	'social.time.minutesAgo': { n: string | number }
-	'social.trending.postCount.title': { n: string | number }
-	'stickers.authorLabel': { author: string | number }
-	'stickers.stickerCount': { count: string | number }
 	'subfounts.codeExecution.executionFailed': { message: string | number }
 	'subfounts.codeExecution.hostOption': { id: string | number }
 	'subfounts.codeExecution.subfountOption': { deviceId: string | number; id: string | number }
@@ -5713,6 +5674,9 @@ export type LocaleKeyParams = {
 	'userSettings.renameUser.success': { newUsername: string | number }
 	'userSettings.userDevices.deviceDetails': { ipAddress: string | number; lastSeen: string | number; userAgent: string | number }
 	'userSettings.userDevices.deviceInfo': { deviceId: string | number }
+	'util.breadcrumb.clickToNavigate': { path: string | number }
+	'util.code_block.copy_failed': { error: string | number }
+	'util.pow_captcha.errorMessage': { error: string | number }
 	'wechat_bots.alerts.botExists': { botname: string | number }
 }
 

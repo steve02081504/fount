@@ -33,7 +33,7 @@ async function init() {
 	try {
 		usingTemplates('/parts/shells:chat/src/templates')
 		applyTheme()
-		await initTranslations('stickers')
+		await initTranslations('chat.stickers')
 
 		try {
 			const resp = await fetch('/api/parts/shells:chat/viewer', { credentials: 'include' })
@@ -139,7 +139,7 @@ async function loadPacks() {
 		}
 	} catch (error) {
 		console.error('Failed to load packs:', error)
-		showToastI18n('error', 'stickers.errors.loadFailed')
+		showToastI18n('error', 'chat.stickers.errors.loadFailed')
 	}
 	return false
 }
@@ -201,7 +201,7 @@ async function renderPacks(packs) {
 		const isInstalled = userCollection?.installedPacks.includes(pack.packId)
 		const descriptionHtml = pack.description
 			? escapeHtml(pack.description)
-			: '<span data-i18n="stickers.noDescription"></span>'
+			: '<span data-i18n="chat.stickers.noDescription"></span>'
 
 		card.appendChild(await renderTemplate('stickers/pack_card', {
 			name: pack.name,
@@ -238,7 +238,7 @@ async function showPackDetail(packId) {
 		}
 	} catch (error) {
 		console.error('Failed to load pack detail:', error)
-		showToastI18n('error', 'stickers.loadDetailFailed')
+		showToastI18n('error', 'chat.stickers.loadDetailFailed')
 	}
 }
 
@@ -255,15 +255,15 @@ async function renderPackDetail(pack) {
 		descriptionElement.removeAttribute('data-i18n')
 	} else {
 		descriptionElement.textContent = ''
-		descriptionElement.dataset.i18n = 'stickers.noDescription'
+		descriptionElement.dataset.i18n = 'chat.stickers.noDescription'
 	}
 
 	const authorElement = document.getElementById('detail-pack-author')
-	authorElement.dataset.i18n = 'stickers.authorLabel'
+	authorElement.dataset.i18n = 'chat.stickers.authorLabel'
 	authorElement.dataset.author = pack.authorEntityHash
 
 	const countElement = document.getElementById('detail-pack-count')
-	countElement.dataset.i18n = 'stickers.stickerCount'
+	countElement.dataset.i18n = 'chat.stickers.stickerCount'
 	countElement.dataset.count = String(pack.stickers.length)
 
 	const stickersContainer = document.getElementById('detail-stickers-container')
@@ -316,7 +316,7 @@ async function handleCreatePack(e) {
 	const isPublic = document.getElementById('pack-public').checked
 
 	if (!name) {
-		showToastI18n('error', 'stickers.nameRequired')
+		showToastI18n('error', 'chat.stickers.nameRequired')
 		return
 	}
 
@@ -335,15 +335,15 @@ async function handleCreatePack(e) {
 		})
 
 		if (response.ok) {
-			showToastI18n('success', 'stickers.success.created')
+			showToastI18n('success', 'chat.stickers.success.created')
 			document.getElementById('create-pack-modal').close()
 			document.getElementById('create-pack-form').reset()
 			await loadPacks()
 		} else
-			showToastI18n('error', 'stickers.errors.createFailed')
+			showToastI18n('error', 'chat.stickers.errors.createFailed')
 	} catch (error) {
 		console.error('Failed to create pack:', error)
-		showToastI18n('error', 'stickers.errors.createFailed')
+		showToastI18n('error', 'chat.stickers.errors.createFailed')
 	}
 }
 
@@ -360,17 +360,17 @@ async function handleUploadSticker(e) {
 	const tags = document.getElementById('sticker-tags').value.trim()
 
 	if (!packId) {
-		showToastI18n('error', 'stickers.selectPackRequired')
+		showToastI18n('error', 'chat.stickers.selectPackRequired')
 		return
 	}
 
 	if (!name) {
-		showToastI18n('error', 'stickers.stickerNameRequired')
+		showToastI18n('error', 'chat.stickers.stickerNameRequired')
 		return
 	}
 
 	if (!file) {
-		showToastI18n('error', 'stickers.fileRequired')
+		showToastI18n('error', 'chat.stickers.fileRequired')
 		return
 	}
 
@@ -387,15 +387,15 @@ async function handleUploadSticker(e) {
 		})
 
 		if (response.ok) {
-			showToastI18n('success', 'stickers.success.uploaded')
+			showToastI18n('success', 'chat.stickers.success.uploaded')
 			document.getElementById('upload-sticker-modal').close()
 			document.getElementById('upload-sticker-form').reset()
 			await loadPacks()
 		} else
-			showToastI18n('error', 'stickers.errors.uploadFailed')
+			showToastI18n('error', 'chat.stickers.errors.uploadFailed')
 	} catch (error) {
 		console.error('Failed to upload sticker:', error)
-		showToastI18n('error', 'stickers.errors.uploadFailed')
+		showToastI18n('error', 'chat.stickers.errors.uploadFailed')
 	}
 }
 
@@ -412,15 +412,15 @@ async function handleInstallPack() {
 		})
 
 		if (response.ok) {
-			showToastI18n('success', 'stickers.success.installed')
+			showToastI18n('success', 'chat.stickers.success.installed')
 			await loadUserCollection()
 			await loadPacks()
 			document.getElementById('pack-detail-modal').close()
 		} else
-			showToastI18n('error', 'stickers.errors.installFailed')
+			showToastI18n('error', 'chat.stickers.errors.installFailed')
 	} catch (error) {
 		console.error('Failed to install pack:', error)
-		showToastI18n('error', 'stickers.errors.installFailed')
+		showToastI18n('error', 'chat.stickers.errors.installFailed')
 	}
 }
 
@@ -437,15 +437,15 @@ async function handleUninstallPack() {
 		})
 
 		if (response.ok) {
-			showToastI18n('success', 'stickers.success.uninstalled')
+			showToastI18n('success', 'chat.stickers.success.uninstalled')
 			await loadUserCollection()
 			await loadPacks()
 			document.getElementById('pack-detail-modal').close()
 		} else
-			showToastI18n('error', 'stickers.errors.uninstallFailed')
+			showToastI18n('error', 'chat.stickers.errors.uninstallFailed')
 	} catch (error) {
 		console.error('Failed to uninstall pack:', error)
-		showToastI18n('error', 'stickers.errors.uninstallFailed')
+		showToastI18n('error', 'chat.stickers.errors.uninstallFailed')
 	}
 }
 
@@ -454,7 +454,7 @@ async function handleUninstallPack() {
  */
 async function handleDeletePack() {
 	if (!currentPackId) return
-	if (!await confirmI18n('stickers.deleteConfirm')) return
+	if (!await confirmI18n('chat.stickers.deleteConfirm')) return
 
 	try {
 		const response = await fetch(`/api/parts/shells:chat/stickers/packs/${currentPackId}`, {
@@ -463,17 +463,17 @@ async function handleDeletePack() {
 		})
 
 		if (response.ok) {
-			showToastI18n('success', 'stickers.success.deleted')
+			showToastI18n('success', 'chat.stickers.success.deleted')
 			document.getElementById('pack-detail-modal').close()
 			await loadUserCollection()
 			await loadPacks()
 		} else {
 			const data = await response.json()
-			showToastI18n('error', 'stickers.errors.deleteFailed', { error: data.error })
+			showToastI18n('error', 'chat.stickers.errors.deleteFailed', { error: data.error })
 		}
 	} catch (error) {
 		console.error('Failed to delete pack:', error)
-		showToastI18n('error', 'stickers.errors.deleteFailed')
+		showToastI18n('error', 'chat.stickers.errors.deleteFailed')
 	}
 }
 
@@ -549,7 +549,7 @@ async function toggleStickerFavorite(stickerId, favorited) {
 		{ method, credentials: 'include' },
 	)
 	if (!response.ok) {
-		showToastI18n('error', 'stickers.errors.loadFailed')
+		showToastI18n('error', 'chat.stickers.errors.loadFailed')
 		return
 	}
 	await loadUserCollection()

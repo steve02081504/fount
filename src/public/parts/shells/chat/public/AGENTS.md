@@ -6,15 +6,13 @@ alwaysApply: false
 
 # Chat Shell Guide
 
-Less-common entity traps (`member_join`, avatars, Load reentrancy): [entity-details.md](entity-details.md).
+Less-common entity traps (`member_join`, avatars, Load reentrancy, session tip frontier): [entity-details.md](entity-details.md).
 
 ## Entity model
 
 - Human and local agent are the same kind of thing: an **entity** with its own keypair. Operator = unique entity with `charPartName === null`; `ownerEntityHash` is optional belonging on any entity.
 - Identity / profile / EVFS HTTP: `src/entity/` and `/api/parts/shells:chat/{viewer,entities…}`. Network-only P2P: `/api/p2p/*`. Belonging: `PUT …/entities/owner` / `ChatClient.setOwner` / `updateProfile({ ownerEntityHash })` → all through `setEntityOwner`. Do not write `ownerEntityHash` to profile alone.
-- Profile `handle` (`[a-z0-9_.-]{2,32}`, optional, not unique) lives in signed `profile.json`. Network search: `GET …/entities/search` / `ChatClient.entities.search` via `part_query` kind `entity_search` (**handler in chat `Load`**, after `registerShellPartpath`). Local agent hits also match `charPartName`.
 - Group writes use per-(group, entity) `signers/{entityHash}/local_signer_seed` — self-signed; no delegate path. `memberKind` is `agent` iff join carries `charname`. **Signer `pubKeyHash` ≠ entityHash**: use operator / DAG `member.entityHash`; never invent an entity from the ephemeral signing pubkey.
-- **`session_*` / `agent_reply_frequency_set`**: node-local only (federation ingest rejects). Still may sit in `events.jsonl`, but **must not** occupy the tip frontier for subsequent federatable appends (`append.mjs`) or consensus fold (`materialize.mjs` folds federatable tips first, then overlays local session events).
 - **Webapi identity is always the operator.** Agents: in-process `getChatClient(username, agentEntityHash)`. No HTTP act-as.
 - Owner power: edit/delete that entity's messages/posts **and** update its profile (local keys → local write; else EVFS `owned/{target}/profile_update/*`). Attribution stays the owner's signature. Hub never switches to agent view.
 - Local profile write gate: `isWritableLocalEntityForUser` = node-writable **and** (operator **or** `ownerEntityHash === operator`). Do not gate on `charPartName` alone.
@@ -22,25 +20,14 @@ Less-common entity traps (`member_join`, avatars, Load reentrancy): [entity-deta
 
 ## ChatClient
 
-- Entry: `src/api/client/index.mjs` → `getChatClient(username, entityHash?)` (default = operator).
-- Surface: groups/DM/join, channel send (+ files), reactions/pins/votes, governance, fork/reputation/denylist, federation, session slots (persona/world/**node-local plugins**/char/frequency), `triggerReply`, `streamingAuth`, profile/owner/search, bridge bots, private-state namespaces.
+- Entry: `src/api/client/index.mjs` → `getChatClient(username, entityHash?)` (default = operator). API surface: `public/llms.txt`.
 - **Plugins**: per-group `local_plugins.json` (node-only, not DAG). World may inject via `GetChatPlugins` (local name wins). Hosted world plugins apply only on the host; `TweakPrompt` mutations do not survive RPC.
 - `OnMessage` may hydrate via `client.messageFrom(event)`; returning false skips `GetReply` without blocking ops.
 - Bridge groups: duck-typed `bridgeOperations`; `group.bridgeBot().stop()` / `client.bridgeBots()`.
 
 ## Private state (per-entity)
 
-Root: `{userDict}/shells/chat/entities/{entityHash}/`.
-
-| Datum | File / module |
-| --- | --- |
-| bookmarks / groupFolders / aliases | JSON via `ChatClient.*` + `endpoints/preferences.mjs` |
-| readMarkers | `lib/readMarkers.mjs` |
-| notificationPreferences | `lib/notificationPreferences.mjs` (HTTP still `/notify-prefs`) |
-| custom emojis / stickers | `client.emojis` / `client.stickers` |
-| care | `client.care` (`targetEntityHash` only) |
-
-Inbox: `{userDict}/shells/chat/inbox/{recipientEntityHash}/…`; HTTP `/inbox` is operator-only.
+Root: `{userDict}/shells/chat/entities/{entityHash}/` — bookmarks, folders, aliases, read markers, notify prefs, emojis/stickers, care via `ChatClient.*` / matching `lib/*`. Inbox: `{userDict}/shells/chat/inbox/{recipientEntityHash}/…`; HTTP `/inbox` is operator-only.
 
 ## Files
 
