@@ -7,7 +7,7 @@
  */
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
-import { buildAndApplyUnverifiedSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import { applyVolatileSlashAlert, buildUnverifiedSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
@@ -81,11 +81,12 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			if (!canGovSlash(slashState, member))
 				throw httpError(403, 'ADMIN or MANAGE_ROLES required')
 			const { sender } = await resolveLocalEventSigner(username, groupId)
-			const alert = buildAndApplyUnverifiedSlashAlert(
+			const alert = buildUnverifiedSlashAlert(
 				sender,
 				content,
 				slashState.groupSettings || {},
 			)
+			await applyVolatileSlashAlert(alert)
 			broadcastEvent(groupWsRoomKeyForReplica(groupId), alert)
 			await publishVolatileToFederation(groupId, alert)
 			return res.status(200).json({ applied: 1 })

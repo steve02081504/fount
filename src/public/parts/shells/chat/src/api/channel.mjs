@@ -127,7 +127,7 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 		 * @returns {Promise<object>} 流媒体鉴权结果（webrtc 或 sfu）
 		 */
 		async streamingAuth() {
-			const { resolveIceServers } = await import('npm:@steve02081504/fount-p2p/transport/ice_servers')
+			const { resolveIceServers } = await import('../chat/lib/iceServers.mjs')
 			const { appendStreamingSession } = await import('../chat/dag/channelOperations.mjs')
 			const { getCurrentFileMasterKey } = await import('../chat/file_keys/store.mjs')
 			const { buildStreamingEmbedUrl, mintStreamingViewToken } = await import('../chat/ws/auth.mjs')

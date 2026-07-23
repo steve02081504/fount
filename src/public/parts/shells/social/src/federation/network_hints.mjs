@@ -3,6 +3,7 @@ import { applyNetworkHint } from 'npm:@steve02081504/fount-p2p/node/network'
 
 /**
  * 关注/取关后为被关注实体的 nodeHash 写入 explore 扩边 hint。
+ * 建链交给 fount network（mesh / sendToNode）；此处不主动 ensureRemoteUserRoom。
  * @param {string} username replica 登录名
  * @param {string} targetEntityHash 128 hex
  * @param {boolean} follow true=关注
@@ -18,9 +19,6 @@ export function applyFollowNetworkHints(username, targetEntityHash, follow) {
 		kind: 'follow',
 		weight: 0.25,
 	})
-	import('npm:@steve02081504/fount-p2p/transport/remote_user_room').then(({ ensureRemoteUserRoom }) =>
-		ensureRemoteUserRoom(username, parsed.nodeHash),
-	).catch(err => console.warn('social: ensureRemoteUserRoom after follow failed', err))
 }
 
 /**
