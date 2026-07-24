@@ -60,7 +60,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 ## Operator tools
 
-- **Hung run**: `data/test/state/logs/`; rerun `deno run --allow-scripts --allow-all -c deno.json <probe.mjs>` with env from the log.
+- **Hung run**: `data/test/state/logs/`; rerun `deno run --allow-scripts --allow-all -c deno.json <probe.mjs>` with env from the log. Idle watchdog (10m no stdall) fails the suite; wall-clock jump ≥ 5× poll interval (30s) is treated as host sleep → abort and re-run that suite (not a failure).
 - **OOM / heap**: [heap-snapshots.md](docs/heap-snapshots.md).
 - **Deno panic auto-report**: `core/deno_panic.mjs` → GitHub issue on `denoland/deno` (if `gh` + auth); dedup `data/test/deno_panics.json`. Override via `FOUNT_DENO_PANIC_REPO`. `testkit` excluded.
 - **Selftests**: `fount test testkit`. Fixtures: `selftest/fixtures.mjs` (`makeSuite` / `makeStateEntry`). Keep manifest id `testkit`.

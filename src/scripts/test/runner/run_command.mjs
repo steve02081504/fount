@@ -16,6 +16,12 @@ export const IDLE_TIMEOUT_MS = ms('10m')
 /** watchdog 轮询间隔（毫秒）。 */
 export const WATCH_INTERVAL_MS = ms('30s')
 
+/**
+ * 两次 watchdog 回调的墙钟间隔 ≥ 该倍数 × {@link WATCH_INTERVAL_MS} 时视为系统休眠
+ *（休眠期间 setInterval 不触发，醒来后一次跳变远大于周期）。
+ */
+export const SLEEP_DETECT_MULTIPLIER = 5
+
 /** 基于历史耗时的 watchdog 至少给 15 分钟；多阶段 Playwright frontend 常需 10m+。 */
 export const MIN_DURATION_TIMEOUT_MS = ms('15m')
 
@@ -29,7 +35,7 @@ export const DURATION_WATCHDOG_MULTIPLIER = 2
 export const OUTPUT_TAIL_BYTES = 2 * 1024 * 1024
 
 /**
- * @typedef {'idle' | 'duration' | null} WatchdogTrigger
+ * @typedef {'sleep' | 'idle' | 'duration' | null} WatchdogTrigger
  */
 
 /**
@@ -45,7 +51,8 @@ export const OUTPUT_TAIL_BYTES = 2 * 1024 * 1024
  * @typedef {object} RunCommandResult
  * @property {number} code 退出码
  * @property {string} output 有界内存尾部（noise 检测与失败落盘）
- * @property {boolean} [terminated] 是否被 watchdog 终止
+ * @property {boolean} [terminated] 是否被 watchdog 终止（真失败）
+ * @property {boolean} [sleepInterrupted] 是否因系统休眠中止（应重跑，不算失败）
  * @property {string} [terminateReason] 终止原因
  * @property {number} [peakMemMb] 子进程树峰值内存（MB）
  * @property {number} [avgCpuPct] 子进程树平均 CPU（0–100，归一化后）
@@ -89,15 +96,26 @@ export function getDurationWatchdogLimitMs(baselineDurationMs) {
 }
 
 /**
- * 判定是否应触发 watchdog 终止。
+ * 休眠判定阈值（毫秒）。
+ * @returns {number} 墙钟跳变上限
+ */
+export function getSleepGapMs() {
+	return SLEEP_DETECT_MULTIPLIER * WATCH_INTERVAL_MS
+}
+
+/**
+ * 判定是否应触发 watchdog。
  * @param {object} state 当前状态
  * @param {number} state.now 当前时间戳
  * @param {number} state.startedAt 开始时间戳
  * @param {number} state.lastActivityAt 上次 stdall 活动时间戳
+ * @param {number} [state.lastTickAt] 上次 watchdog 回调时间；缺省则跳过休眠判定
  * @param {number | undefined} [state.baselineDurationMs] 最近一次可用基线耗时
  * @returns {WatchdogTrigger} 触发类型；null 表示继续
  */
-export function evaluateWatchdog({ now, startedAt, lastActivityAt, baselineDurationMs }) {
+export function evaluateWatchdog({ now, startedAt, lastActivityAt, lastTickAt, baselineDurationMs }) {
+	// 休眠优先：墙钟跳变远大于轮询周期时，空闲/总时长计数都不可信
+	if (lastTickAt != null && now - lastTickAt >= getSleepGapMs()) return 'sleep'
 	if (now - lastActivityAt >= IDLE_TIMEOUT_MS) return 'idle'
 	const durationLimitMs = getDurationWatchdogLimitMs(baselineDurationMs)
 	if (now - startedAt >= durationLimitMs) return 'duration'
@@ -105,18 +123,28 @@ export function evaluateWatchdog({ now, startedAt, lastActivityAt, baselineDurat
 }
 
 /**
- * 构造 watchdog 终止原因文案。
- * @param {'idle' | 'duration'} trigger 触发类型
+ * 构造 watchdog 终止/中断原因文案。
+ * @param {'sleep' | 'idle' | 'duration'} trigger 触发类型
  * @param {object} ctx 上下文
  * @param {string} ctx.label suite 标签
  * @param {number} ctx.startedAt 开始时间戳
  * @param {number} ctx.lastActivityAt 上次活动时间戳
+ * @param {number} [ctx.lastTickAt] 上次 watchdog 回调时间
  * @param {number} [ctx.baselineDurationMs] 最近一次可用基线耗时
  * @param {number} ctx.now 当前时间戳
  * @returns {string} 终止原因
  */
-export function buildTerminateReason(trigger, { label, startedAt, lastActivityAt, baselineDurationMs, now }) {
+export function buildTerminateReason(trigger, { label, startedAt, lastActivityAt, lastTickAt, baselineDurationMs, now }) {
 	const elapsedMs = now - startedAt
+	if (trigger === 'sleep') {
+		const gapMs = lastTickAt != null ? now - lastTickAt : now - startedAt
+		return geti18n('fountConsole.test.sleepDetected', {
+			label,
+			gap: formatDuration(gapMs),
+			limit: formatDuration(getSleepGapMs()),
+			elapsed: formatDuration(elapsedMs),
+		})
+	}
 	if (trigger === 'idle') {
 		const idleSec = Math.round((now - lastActivityAt) / 1000)
 		return geti18n('fountConsole.test.terminateIdle', {
@@ -154,16 +182,18 @@ export async function runCommand(command, extraEnv = {}, options) {
 	const abortController = new AbortController()
 	const startedAt = Date.now()
 	let lastActivityAt = startedAt
+	let lastTickAt = startedAt
 	let outputTail = ''
 	const usageTracker = new ProcessUsageTracker()
 	let usageSampling = false
 	/** @type {string | null} */
 	let terminateReason = null
 	let terminated = false
+	let sleepInterrupted = false
 
 	/** @param {unknown} [reason] abort 原因 */
 	const abortFromExternal = reason => {
-		if (terminated || abortController.signal.aborted) return
+		if (terminated || sleepInterrupted || abortController.signal.aborted) return
 		terminated = true
 		terminateReason = reason === SPECULATIVE_ABORT_REASON
 			? geti18n('fountConsole.test.terminateSpeculative', { label })
@@ -195,23 +225,34 @@ export async function runCommand(command, extraEnv = {}, options) {
 	const usageResult = () => usageTracker.finish()
 
 	const watchdog = setInterval(() => {
-		if (terminated || abortController.signal.aborted) return
+		if (terminated || sleepInterrupted || abortController.signal.aborted) return
+		const now = Date.now()
+		const previousTickAt = lastTickAt
 		const trigger = evaluateWatchdog({
-			now: Date.now(),
+			now,
 			startedAt,
 			lastActivityAt,
+			lastTickAt: previousTickAt,
 			baselineDurationMs,
 		})
+		lastTickAt = now
 		if (!trigger) return
 		terminateReason = buildTerminateReason(trigger, {
 			label,
 			startedAt,
 			lastActivityAt,
+			lastTickAt: previousTickAt,
 			baselineDurationMs,
-			now: Date.now(),
+			now,
 		})
-		terminated = true
-		console.error(terminateReason)
+		if (trigger === 'sleep') {
+			sleepInterrupted = true
+			console.warn(terminateReason)
+		}
+		else {
+			terminated = true
+			console.error(terminateReason)
+		}
 		abortController.abort()
 	}, WATCH_INTERVAL_MS)
 
@@ -261,7 +302,7 @@ export async function runCommand(command, extraEnv = {}, options) {
 	catch (error) {
 		clearInterval(watchdog)
 		clearInterval(resourceSampler)
-		if (terminated || error?.name === 'AbortError') {
+		if (sleepInterrupted || terminated || error?.name === 'AbortError') {
 			const reason = terminateReason ?? geti18n('fountConsole.test.terminateUnknown', { label })
 			const marker = geti18n('fountConsole.test.terminateMarker', { reason })
 			const output = `${outputTail}${outputTail.endsWith('\n') ? '' : '\n'}${marker}\n`
@@ -269,7 +310,8 @@ export async function runCommand(command, extraEnv = {}, options) {
 			return {
 				code: 1,
 				output,
-				terminated: true,
+				terminated: !sleepInterrupted,
+				sleepInterrupted,
 				terminateReason: reason,
 				peakMemMb,
 				avgCpuPct,

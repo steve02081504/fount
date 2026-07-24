@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { basename, join } from 'node:path'
 import process from 'node:process'
 
+import { console } from '../../i18n/bare.mjs'
 import { applyBudgetToEnv } from '../core/concurrency.mjs'
 import { filterTestOutput } from '../core/output_filter.mjs'
 import { readFailuresOutFile, readTimingsOutFile, toRepoRelative } from '../core/protocol.mjs'
@@ -107,6 +108,51 @@ export function mapTimingsToSubtests(suite, timings, ranSubtests) {
  */
 
 /**
+ * 单次执行 suite（不含休眠重试）。
+ * @param {import('../core/manifest.mjs').SuiteDef} suite suite
+ * @param {SuiteInvocationOptions | undefined} options 调用选项
+ * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
+ * @param {boolean} stream 是否实时转发 stdout/stderr
+ * @param {object} watchdog watchdog 选项
+ * @returns {Promise<SuiteRunResult & { sleepInterrupted?: boolean }>} 运行结果
+ */
+async function runSuiteOnce(suite, options, globalBudget, stream, watchdog) {
+	const tempDir = await mkdtemp(join(tmpdir(), 'fount-test-'))
+	const failuresOut = join(tempDir, 'failures.json')
+	const timingsOut = join(tempDir, 'timings.json')
+	const started = Date.now()
+	try {
+		const { command, env } = buildSuiteInvocation(suite, options ?? {}, failuresOut, timingsOut, globalBudget)
+		const {
+			code, output, terminated, sleepInterrupted, terminateReason, peakMemMb, avgCpuPct,
+		} = await runCommand(command, env, {
+			stream,
+			cwd: REPO_ROOT,
+			label: watchdog.label,
+			baselineDurationMs: watchdog.baselineDurationMs,
+			signal: watchdog.signal,
+		})
+		const timings = await readTimingsOutFile(timingsOut)
+		return {
+			passed: code === 0 && !terminated && !sleepInterrupted,
+			exitCode: code,
+			failedFiles: (await readFailuresOutFile(failuresOut)).map(file => toRepoRelative(REPO_ROOT, file)),
+			output: filterTestOutput(output),
+			durationMs: Date.now() - started,
+			subtestDurations: mapTimingsToSubtests(suite, timings, options?.subtests),
+			peakMemMb,
+			avgCpuPct,
+			terminated,
+			sleepInterrupted,
+			terminateReason,
+		}
+	}
+	finally {
+		await rm(tempDir, { recursive: true, force: true })
+	}
+}
+
+/**
  * @param {import('../core/manifest.mjs').SuiteDef} suite suite
  * @param {SuiteInvocationOptions | undefined} options 调用选项
  * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
@@ -118,34 +164,29 @@ export function mapTimingsToSubtests(suite, timings, ranSubtests) {
  * @returns {Promise<SuiteRunResult>} 运行结果
  */
 export async function runSuite(suite, options, globalBudget, stream = false, watchdog = {}) {
-	const tempDir = await mkdtemp(join(tmpdir(), 'fount-test-'))
-	const failuresOut = join(tempDir, 'failures.json')
-	const timingsOut = join(tempDir, 'timings.json')
-	const started = Date.now()
-	try {
-		const { command, env } = buildSuiteInvocation(suite, options ?? {}, failuresOut, timingsOut, globalBudget)
-		const { code, output, terminated, terminateReason, peakMemMb, avgCpuPct } = await runCommand(command, env, {
-			stream,
-			cwd: REPO_ROOT,
-			label: watchdog.label,
-			baselineDurationMs: watchdog.baselineDurationMs,
-			signal: watchdog.signal,
-		})
-		const timings = await readTimingsOutFile(timingsOut)
-		return {
-			passed: code === 0 && !terminated,
-			exitCode: code,
-			failedFiles: (await readFailuresOutFile(failuresOut)).map(file => toRepoRelative(REPO_ROOT, file)),
-			output: filterTestOutput(output),
-			durationMs: Date.now() - started,
-			subtestDurations: mapTimingsToSubtests(suite, timings, options?.subtests),
-			peakMemMb,
-			avgCpuPct,
-			terminated,
-			terminateReason,
+	const label = watchdog.label || `${suite.manifestId}:${suite.name}`
+	let attempt = 0
+	for (;;) {
+		attempt++
+		if (watchdog.signal?.aborted) {
+			return {
+				passed: false,
+				exitCode: 1,
+				failedFiles: [],
+				output: '',
+				durationMs: 0,
+				terminated: true,
+				terminateReason: String(watchdog.signal.reason || ''),
+			}
 		}
-	}
-	finally {
-		await rm(tempDir, { recursive: true, force: true })
+		const result = await runSuiteOnce(suite, options, globalBudget, stream, watchdog)
+		if (!result.sleepInterrupted) {
+			const { sleepInterrupted: _, ...rest } = result
+			return rest
+		}
+		console.warnI18n('fountConsole.test.sleepRetry', {
+			label,
+			attempt: attempt + 1,
+		})
 	}
 }

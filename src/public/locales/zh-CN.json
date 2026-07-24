@@ -191,6 +191,8 @@
 			"terminateIdle": "已终止 ${label}：超过 ${minutes} 分钟无 stdall 输出（空闲 ${idleSec} 秒，已运行 ${elapsed}）",
 			"terminateDuration": "已终止 ${label}：耗时超过 watchdog 基线时长（已运行 ${elapsed}，基线 ${baseline}，上限 ${limit}）",
 			"terminateDurationDefault": "已终止 ${label}：耗时超过默认 watchdog 时长上限（已运行 ${elapsed}，上限 ${limit}）",
+			"sleepDetected": "检测到系统休眠（看门狗间隔跳变 ${gap} ≥ ${limit}），中止 ${label} 并准备重跑（已运行 ${elapsed}）",
+			"sleepRetry": "系统休眠中断，重跑 ${label}（第 ${attempt} 次）",
 			"terminateMarker": "[终止原因: ${reason}]",
 			"terminateUnknown": "已终止 ${label}：测试被中断",
 			"terminateSpeculative": "已终止 ${label}：投机依赖未过，取消早停",
