@@ -142,7 +142,9 @@ export async function waitForPostMaterialized(baseUrl, apiKey, postId) {
 }
 
 /**
- * 通过 composer 发帖并等待 API 成功及 feed 刷新。
+ * 通过 composer 发帖并等待 API 成功与输入框清空。
+ * 不硬等 feed GET：发帖后的 loadFeed 可能叠在联邦 backfill 上，易超时；
+ * 帖子可见性由 publishPost fixture 的 waitForPostMaterialized / findPostCard 负责。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} text - 帖子正文。
  * @param {{ baseUrl?: string, apiKey?: string }} [api] - 可选 API 上下文（当前未使用，预留扩展）。
@@ -150,16 +152,15 @@ export async function waitForPostMaterialized(baseUrl, apiKey, postId) {
  */
 export async function publishPostViaComposer(page, text, api = {}) {
 	await page.locator('#postText').fill(text)
-	const postWait = page.waitForResponse(res => {
-		if (res.request().method() !== 'POST' || res.status() !== 200) return false
-		return new URL(res.url()).pathname === '/api/parts/shells:social/posts'
-	}, { timeout: ms('1m') })
-	const feedWait = waitForFeedLoad(page)
-	await page.locator('#postButton').click()
-	const postResponse = await postWait
+	const [postResponse] = await Promise.all([
+		page.waitForResponse(res => {
+			if (res.request().method() !== 'POST' || res.status() !== 200) return false
+			return new URL(res.url()).pathname === '/api/parts/shells:social/posts'
+		}, { timeout: ms('1m') }),
+		page.locator('#postButton').click(),
+	])
 	const postJson = await postResponse.json()
-	await feedWait
-	await expect(page.locator('#postText')).toHaveValue('')
+	await expect(page.locator('#postText')).toHaveValue('', { timeout: ms('30s') })
 	return postJson
 }
 

@@ -1,3 +1,5 @@
+import { sleep } from '../../../../../../../scripts/sleep.mjs'
+
 import { discoverWithNetwork } from '../../discover/network.mjs'
 import { buildHomeFeed } from '../../feed/home.mjs'
 import { buildForYouFeed } from '../../feed/ranking.mjs'
@@ -9,8 +11,11 @@ import { buildTrendingHashtags } from '../../trending/hashtags.mjs'
 
 import { makeViewerOptions } from './helpers.mjs'
 
+/** 首屏 feed 等待联邦补给的上限；超时后仍返回本地结果，补给经 inFlight 在后台继续。 */
+const FEED_BACKFILL_BUDGET_MS = 2500
+
 /**
- * 首页/短视频：首屏不足时触发联邦 backfill 再重读。
+ * 首页/短视频：首屏不足时触发联邦 backfill，受预算约束后重读。
  * @param {string} username replica
  * @param {object} options 含 viewerEntityHash / cursor / limit
  * @param {() => Promise<{ items: object[] }>} build 构建本页
@@ -22,17 +27,20 @@ async function withThinFeedBackfill(username, options, build, { defaultLimit, ma
 	const limit = Math.min(Math.max(Number(options.limit) || defaultLimit, 1), maxLimit)
 	if (!options.cursor && result.items.length < limit) {
 		const { backfillPosts } = await import('../../federation/backfill.mjs')
-		await backfillPosts(username, {
-			viewerEntityHash: options.viewerEntityHash,
-			...mediaOnly ? { mediaOnly: true } : {},
-			/**
-			 * @returns {Promise<boolean>} 本地是否已足够
-			 */
-			enough: async () => {
-				result = await build()
-				return result.items.length >= limit
-			},
-		})
+		await Promise.race([
+			backfillPosts(username, {
+				viewerEntityHash: options.viewerEntityHash,
+				...mediaOnly ? { mediaOnly: true } : {},
+				/**
+				 * @returns {Promise<boolean>} 本地是否已足够
+				 */
+				enough: async () => {
+					result = await build()
+					return result.items.length >= limit
+				},
+			}),
+			sleep(FEED_BACKFILL_BUDGET_MS),
+		])
 		result = await build()
 	}
 	return result
