@@ -18,4 +18,8 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 
 `test_watch.mjs` runs axe-core after locale gate: MutationObserver marks dirty, scans every 0.5s while dirty (or while a violation is pending confirm), stops when quiet. Playwright teardown calls `kickWatch()` via `waitForTestWatchCycle`. Hard-fail on violations except `color-contrast` and `link-in-text-block` (would force visual restyle). Structural issues (name, landmark, heading, label) still fail.
 
+**Visibility traps**: a control with only `aria-label` and no glyph/text/`width`/`height` has a 0×0 box — Playwright `toBeVisible` reports `hidden` even when the `hidden` class is off. Icon-only clear/close buttons need a visible `×`/SVG (or explicit size).
+
+**Double-tap**: sequential `locator.dispatchEvent('pointerup')` round-trips via CDP and often exceed a 300–350ms window under load. Prefer `dblclick()`, or fire both events inside one `page.evaluate`.
+
 Prefer local `page.route` over external media. Fix broken Iconify names; do not allowlist 404s.

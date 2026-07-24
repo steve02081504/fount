@@ -270,6 +270,8 @@ export async function mountEmojiPicker(anchor, onInsert, pickerContext = {}) {
 	const panel = document.createElement('div')
 	panel.id = 'fount-shared-emoji-picker'
 	panel.className = 'emoji-picker show'
+	panel.setAttribute('role', 'dialog')
+	panel.dataset.i18n = 'chat.emoji.pickerTitle'
 	panel.style.cssText = 'position:fixed;z-index:10000;width:320px;'
 	positionFloatingPanel(panel, anchor)
 

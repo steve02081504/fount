@@ -256,7 +256,7 @@ test.describe('Social short videos', () => {
 	test('post detail double-tap media likes', async ({ page, baseUrl, apiKey }) => {
 		const text = `detail-dbl-like ${Date.now()}`
 		const postId = await publishViaApi(baseUrl, apiKey, videoPostBody(baseUrl, text))
-		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		const entityHash = (await fetchViewerEntityHash(baseUrl, apiKey)).toLowerCase()
 		await waitForPostMaterialized(baseUrl, apiKey, postId)
 		await page.goto(`${baseUrl}/parts/shells:social/#post;${entityHash};${postId}`)
 		const card = page.locator('#postDetailView .post-detail-card')
@@ -264,15 +264,13 @@ test.describe('Social short videos', () => {
 		const likeBtn = card.locator('[data-like]')
 		await expect(likeBtn).toHaveAttribute('data-liked', '0')
 		const media = card.locator('.post-media')
-		await media.dispatchEvent('pointerup')
-		await page.waitForTimeout(50)
 		await Promise.all([
 			page.waitForResponse(res =>
-				res.url().includes(`/api/parts/shells:social/posts/${entityHash}/${postId}/like`)
+				res.url().toLowerCase().includes(`/api/parts/shells:social/posts/${entityHash}/${postId}/like`)
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),
-			media.dispatchEvent('pointerup'),
+			media.dblclick(),
 		])
 		await expect(likeBtn).toHaveAttribute('data-liked', '1', { timeout: 10_000 })
 	})

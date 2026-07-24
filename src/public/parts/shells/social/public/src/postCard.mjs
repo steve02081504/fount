@@ -340,6 +340,36 @@ function bindPostDetailMediaLike(card, entityHash, postId) {
 	if (!(media instanceof HTMLElement) || media.dataset.dblLikeBound === '1') return
 	media.dataset.dblLikeBound = '1'
 	let lastTap = 0
+	/**
+	 * @returns {Promise<void>}
+	 */
+	async function likeFromMedia() {
+		const likeButton = card.querySelector('[data-like]')
+		if (!(likeButton instanceof HTMLElement)) return
+		if (likeButton.dataset.liked === '1') {
+			showPostMediaHeart(media)
+			return
+		}
+		const { applyLikeButtonOptimistic, rollbackLikeButton, runWrite } = await import('./lib/socialWrite.mjs')
+		const { socialApi } = await import('./lib/apiClient.mjs')
+		const snapshot = applyLikeButtonOptimistic(likeButton, true)
+		showPostMediaHeart(media)
+		try {
+			await runWrite('like', () => socialApi(`/posts/${entityHash}/${postId}/like`, {
+				method: 'POST',
+				body: JSON.stringify({ like: true }),
+			}))
+		}
+		catch {
+			rollbackLikeButton(likeButton, snapshot)
+		}
+	}
+	media.addEventListener('dblclick', event => {
+		if (!(event.target instanceof Element)) return
+		if (event.target.closest('[data-media-nav], .post-media-dot')) return
+		event.preventDefault()
+		void likeFromMedia()
+	})
 	media.addEventListener('pointerup', async event => {
 		if (!(event.target instanceof Element)) return
 		if (event.target.closest('[data-media-nav], .post-media-dot')) return
@@ -349,25 +379,7 @@ function bindPostDetailMediaLike(card, entityHash, postId) {
 			lastTap = 0
 			event.preventDefault()
 			event.stopPropagation()
-			const likeButton = card.querySelector('[data-like]')
-			if (!(likeButton instanceof HTMLElement)) return
-			if (likeButton.dataset.liked === '1') {
-				showPostMediaHeart(media)
-				return
-			}
-			const { applyLikeButtonOptimistic, rollbackLikeButton, runWrite } = await import('./lib/socialWrite.mjs')
-			const { socialApi } = await import('./lib/apiClient.mjs')
-			const snapshot = applyLikeButtonOptimistic(likeButton, true)
-			showPostMediaHeart(media)
-			try {
-				await runWrite('like', () => socialApi(`/posts/${entityHash}/${postId}/like`, {
-					method: 'POST',
-					body: JSON.stringify({ like: true }),
-				}))
-			}
-			catch {
-				rollbackLikeButton(likeButton, snapshot)
-			}
+			await likeFromMedia()
 			return
 		}
 		lastTap = now

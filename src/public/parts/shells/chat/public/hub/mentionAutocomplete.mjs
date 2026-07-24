@@ -16,6 +16,7 @@ export function attachHubMentionAutocomplete(textarea) {
 	const panel = document.createElement('div')
 	panel.className = 'mention-panel hidden'
 	panel.setAttribute('role', 'listbox')
+	panel.dataset.i18n = 'chat.hub.mentionSuggest'
 	textarea.parentElement?.appendChild(panel)
 
 	/** @type {object[]} */
@@ -48,6 +49,8 @@ export function attachHubMentionAutocomplete(textarea) {
 		for (const [index, row] of rows.entries()) {
 			const button = document.createElement('button')
 			button.type = 'button'
+			button.setAttribute('role', 'option')
+			button.setAttribute('aria-selected', index === 0 ? 'true' : 'false')
 			button.className = `mention-option${index === 0 ? ' active' : ''}`
 			button.dataset.index = String(index)
 			const subtitle = row.entityHash
@@ -153,8 +156,11 @@ export function attachHubMentionAutocomplete(textarea) {
 		}
 		else return
 
-		for (const button of panel.querySelectorAll('.mention-option'))
-			button.classList.toggle('active', Number(button.dataset.index) === activeIndex)
+		for (const button of panel.querySelectorAll('.mention-option')) {
+			const selected = Number(button.dataset.index) === activeIndex
+			button.classList.toggle('active', selected)
+			button.setAttribute('aria-selected', selected ? 'true' : 'false')
+		}
 	}
 
 	/** @returns {void} */

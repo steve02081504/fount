@@ -947,7 +947,9 @@
 			"multipleMembers": "多个成员正在输入..."
 		},
 		"emoji": {
-			"pickerTitle": "选择表情",
+			"pickerTitle": {
+				"aria-label": "选择表情"
+			},
 			"categoryFace": "表情",
 			"categoryGesture": "手势",
 			"categoryHeart": "心",
@@ -2225,6 +2227,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "用户资料",
 				"close": {
 					"title": "关闭资料卡"
 				},
@@ -2403,6 +2406,9 @@
 			},
 			"editedLabel": "(已编辑)",
 			"mentionEmpty": "（无匹配成员）",
+			"mentionSuggest": {
+				"aria-label": "提及候选"
+			},
 			"clickToLoad": "点击加载",
 			"send": "发送"
 		},
@@ -3811,6 +3817,9 @@
 				"title": "表情",
 				"aria-label": "表情"
 			},
+			"mentionSuggest": {
+				"aria-label": "提及候选"
+			},
 			"mediaButton": {
 				"title": "添加媒体",
 				"aria-label": "添加媒体"
@@ -4069,14 +4078,23 @@
 			"filterAuthor": {
 				"placeholder": "作者"
 			},
+			"filterMedia": {
+				"aria-label": "媒体类型"
+			},
 			"filterMediaAll": "所有媒体",
 			"filterMediaImage": "图片",
 			"filterMediaVideo": "视频",
 			"filterTag": {
 				"placeholder": "#标签"
 			},
+			"filterSort": {
+				"aria-label": "排序"
+			},
 			"sortRecent": "最新",
 			"sortPopular": "热门",
+			"filterScope": {
+				"aria-label": "搜索范围"
+			},
 			"scopeLocal": "本机",
 			"scopeNearby": "附近"
 		},
