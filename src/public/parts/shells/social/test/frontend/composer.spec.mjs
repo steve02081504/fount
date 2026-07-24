@@ -184,8 +184,15 @@ test.describe('Social composer', () => {
 		await expect(page.locator('#groupRefPreview')).toBeVisible({ timeout: 20_000 })
 		const text = `group-ref ${Date.now()}`
 		await page.locator('#postText').fill(text)
-		await page.locator('#postButton').click()
-		await expect(page.locator('#postText')).toHaveValue('')
+		const [postResponse] = await Promise.all([
+			page.waitForResponse(res => {
+				if (res.request().method() !== 'POST' || res.status() !== 200) return false
+				return new URL(res.url()).pathname === '/api/parts/shells:social/posts'
+			}, { timeout: 60_000 }),
+			page.locator('#postButton').click(),
+		])
+		expect((await postResponse.json()).event?.type).toBe('post')
+		await expect(page.locator('#postText')).toHaveValue('', { timeout: 30_000 })
 		await expect(page.locator('#feedList .group-ref-block').first()).toBeVisible({ timeout: 30_000 })
 	})
 })

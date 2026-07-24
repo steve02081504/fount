@@ -2193,10 +2193,14 @@
 				"unsavedHint": "关闭窗口将放弃未保存的更改",
 				"tagsLabel": "标签",
 				"tagAdd": "添加",
-				"tagRemove": "删除标签",
+				"tagRemove": {
+					"aria-label": "删除标签"
+				},
 				"linksLabel": "链接",
 				"linkAdd": "添加链接",
-				"linkRemove": "删除链接",
+				"linkRemove": {
+					"aria-label": "删除链接"
+				},
 				"handleLabel": "自定义 ID",
 				"handleHint": "可被网络内他节点搜索；不保证唯一，冲突时按信任度列表消歧。",
 				"resetFromPart": "从角色部件重置",
@@ -2205,6 +2209,12 @@
 				"resetFromPartFailed": "重建失败：${error}",
 				"newLocale": {
 					"placeholder": "新语言代码，如 en-UK"
+				},
+				"renameLocale": {
+					"aria-label": "重命名语言代码"
+				},
+				"localeRemove": {
+					"aria-label": "删除语言版本"
 				},
 				"avatarUrl": {
 					"placeholder": "头像图片 URL，或在下方上传文件"

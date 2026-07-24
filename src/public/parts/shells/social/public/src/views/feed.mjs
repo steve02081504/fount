@@ -24,16 +24,28 @@ export function updateFeedSearchChrome() {
 	clearButton?.classList.toggle('hidden', !hasSearch)
 }
 
+/** 用户是否滚动过（重放门槛）；每次首屏 loadFeed(false) 重置 */
+let feedUserScrolled = false
+
 /**
- * 循环重放仅在用户已真实下滚且内容高于视口时允许，避免短 feed 首屏自动复制。
+ * 循环重放仅在用户已真实滚动且内容高于视口时允许，避免短 feed 首屏自动复制。
  * @returns {boolean} 是否允许重放
  */
 function canReplayFeed() {
 	const list = document.getElementById('feedList')
 	if (!list?.children.length) return false
-	const scrolled = (window.scrollY || document.documentElement.scrollTop) > 0
-	if (!scrolled) return false
+	if (!feedUserScrolled) return false
 	return document.documentElement.scrollHeight > window.innerHeight
+}
+
+/**
+ * 首次滚动后允许重放，并重绑 IO（rising-edge 重新武装）。
+ * @returns {void}
+ */
+function onFeedWindowScroll() {
+	feedUserScrolled = true
+	if (!state.feedCursor && state.feedShownItems?.length)
+		bindFeedInfiniteScroll()
 }
 
 /**
@@ -179,23 +191,32 @@ export async function loadTrendingHashtags(scope = 'local', containerId = 'feedT
 }
 
 /**
- * 在 feed 顶部插入单条帖子卡片（WS 真增量）。
+ * 在 feed 顶部插入单条帖子卡片（WS / 本机写操作增量）。
  * @param {object} item feed 条目
+ * @param {{ force?: boolean }} [options] force：本机写操作忽略深分页 cursor 限制
  * @returns {Promise<boolean>} 是否成功插入
  */
-export async function prependFeedItem(item) {
+export async function prependFeedItem(item, options = {}) {
 	if (state.activeFeedSearchQuery) return false
-	if (state.feedCursor) return false
 	const feedView = document.getElementById('feedView')
 	if (!feedView || feedView.classList.contains('hidden')) return false
 	const list = document.getElementById('feedList')
 	if (!list) return false
+	const postId = String(item.postId || '')
+	const entityHash = String(item.entityHash || '').toLowerCase()
+	// 已在列表：在 cursor 门闩之前返回，避免本机 force 插入后 WS 再弹「有新帖」
+	if (postId && entityHash && list.querySelector(
+		`.post-card[data-post-id="${CSS.escape(postId)}"][data-author-entity="${CSS.escape(entityHash)}"]`,
+	))
+		return true
+	if (!options.force && state.feedCursor) return false
 	document.getElementById('feedNewPostsBanner')?.remove()
 	const card = await buildPostCard(item).catch(() => null)
 	if (!card) return false
 	const empty = list.querySelector('.feed-empty')
 	if (empty) list.replaceChildren(card)
 	else list.prepend(card)
+	state.feedShownItems = [item, ...state.feedShownItems || []]
 	return true
 }
 
@@ -298,6 +319,9 @@ export async function loadFeed(append = false) {
 
 	state.feedCursor = nextCursor || null
 	if (!append) {
+		feedUserScrolled = false
+		window.removeEventListener('scroll', onFeedWindowScroll)
+		window.addEventListener('scroll', onFeedWindowScroll, { passive: true, once: true })
 		state.feedShownItems = [...items]
 		state.feedPrefetch = null
 	}

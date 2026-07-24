@@ -291,15 +291,69 @@ export async function searchAndExpectPost(page, query, postId) {
  */
 export async function seedPostsViaApi(baseUrl, apiKey, count, textPrefix = 'seed') {
 	const key = encodeURIComponent(apiKey)
+	const stamp = Date.now()
 	await withApiRequest(async req => {
+		// 同一时间线签名链不可并发 append，否则丢事件
 		for (let index = 0; index < count; index++) {
 			const res = await req.post(
 				`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${key}`,
-				{ data: { text: `${textPrefix}-${index}-${Date.now()}`, visibility: 'public', locale: 'zh-CN' } },
+				{ data: { text: `${textPrefix}-${index}-${stamp}`, visibility: 'public', locale: 'zh-CN' } },
 			)
-			if (!res.ok()) throw new Error(`seed post failed: ${res.status()}`)
+			if (!res.ok()) throw new Error(`seed post failed: ${res.status()} ${await res.text()}`)
 		}
 	})
+}
+
+/**
+ * 抽泵无限滚动哨兵：上滚离开 rootMargin 后再 scrollIntoView，触发 rising-edge 装载。
+ * @param {import('npm:@playwright/test').Page} page Playwright 页面
+ * @param {() => Promise<boolean>} until 为 true 时停止
+ * @param {{ maxRounds?: number, leaveWaitMs?: number, enterWaitMs?: number }} [options] 轮次与等待
+ * @returns {Promise<boolean>} 是否在 maxRounds 内满足 until
+ */
+export async function pumpFeedScroll(page, until, {
+	maxRounds = 40,
+	leaveWaitMs = 100,
+	enterWaitMs = 250,
+} = {}) {
+	for (let i = 0; i < maxRounds; i++) {
+		if (await until()) return true
+		await page.evaluate(() => window.scrollBy(0, -900))
+		await page.waitForTimeout(leaveWaitMs)
+		await page.locator('#feedScrollSentinel').scrollIntoViewIfNeeded()
+		await page.waitForTimeout(enterWaitMs)
+	}
+	return until()
+}
+
+/**
+ * 确保首页 feed 至少有一页以上（存在 nextCursor）；不足则串行补种直至满足。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {number} [pageSize=30] 与前端首屏 limit 对齐。
+ * @returns {Promise<void>}
+ */
+export async function ensureFeedHasNextPage(baseUrl, apiKey, pageSize = 30) {
+	const key = encodeURIComponent(apiKey)
+	/**
+	 * @returns {Promise<{ hasNext: boolean, count: number }>} 探测结果
+	 */
+	async function probe() {
+		return withApiRequest(async req => {
+			const res = await req.get(`${baseUrl}/api/parts/shells:social/feed?limit=${pageSize}&fount-apikey=${key}`)
+			if (!res.ok()) throw new Error(`feed probe failed: ${res.status()}`)
+			const data = await res.json()
+			return { hasNext: Boolean(data.nextCursor), count: (data.items || []).length }
+		})
+	}
+	for (let attempt = 0; attempt < 6; attempt++) {
+		const { hasNext, count } = await probe()
+		if (hasNext) return
+		await seedPostsViaApi(baseUrl, apiKey, Math.max(pageSize + 5 - count, 8), `loadmore${attempt}`)
+	}
+	const last = await probe()
+	if (!last.hasNext)
+		throw new Error(`feed still has no nextCursor (items=${last.count}, limit=${pageSize})`)
 }
 
 /**

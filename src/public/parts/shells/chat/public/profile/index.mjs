@@ -75,12 +75,8 @@ async function init() {
 	usingTemplates('/parts/shells:chat/src/templates')
 	applyTheme()
 	await initTranslations('chat.profile')
-	const profileCardHost = document.getElementById('profile-card-host')
-	const profileCard = await createEntityProfileCardElement('embedded')
-	if (profileCardHost) {
-		profileCardHost.appendChild(profileCard)
-		currentProfileCard = profileCard
-	}
+	currentProfileCard = await createEntityProfileCardElement('embedded')
+	// 先 paint 再挂 DOM，避免空名标题被 a11y 扫到
 
 	onLanguageChange(async () => {
 		if (currentProfile) await renderProfile(currentProfile)
@@ -149,11 +145,15 @@ async function loadProfile(entityHash) {
  */
 async function renderProfile(profile) {
 	const entityHash = currentEntityHash || profile.entityHash || '?'
-	if (currentProfileCard)
+	if (currentProfileCard) {
 		await paintEntityProfileCard(currentProfileCard, profile, {
 			entityHash,
 			selfEntityHash: currentEntityHash,
 		})
+		const profileCardHost = document.getElementById('profile-card-host')
+		if (profileCardHost && !currentProfileCard.isConnected)
+			profileCardHost.appendChild(currentProfileCard)
+	}
 	document.documentElement.style.setProperty('--profile-accent', profile.themeColor || '#5865f2')
 
 	const displayStatus = profile.effectiveStatus || profile.status || 'offline'

@@ -15,8 +15,10 @@ test.describe('Social replies', () => {
 		// 同一 postId 可能在 feed 出现多张卡片；面板须限定在当前卡片内
 		const panel = card.locator(`[data-replies-for="${actionKey}"]`)
 		await expect(panel).not.toHaveClass(/hidden/)
+		await expect(panel.locator('[data-submit-reply]')).toBeVisible({ timeout: 30_000 })
 		const replyText = `reply-body ${Date.now()}`
 		await panel.locator('textarea').fill(replyText)
+		await expect(panel.locator('textarea')).toHaveValue(replyText)
 		await submitReplyViaPanel(page, panel)
 		await expect(card.locator(':scope > .post-actions > [data-replies] .action-count')).toHaveText('1', { timeout: 30_000 })
 		const replyRow = panel.locator('.reply').first()

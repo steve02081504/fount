@@ -191,7 +191,7 @@ Body：`like?`（默认 true）。
 Body：`dislike?`（默认 true）。与 like 互斥；reducer 写入时清对立反应。
 
 ### `POST /api/parts/shells:social/posts/:entityHash/:postId/repost`
-Body：`comment?`。
+Body：`comment?`。响应：`{ event, item? }`（`item` 为可直接渲染的 feed 条目；同时 `pushFeedUpdate`）。
 
 ---
 
