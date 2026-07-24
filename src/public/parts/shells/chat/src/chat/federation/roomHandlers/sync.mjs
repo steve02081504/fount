@@ -1,13 +1,11 @@
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { takeIncomingWantIdsSlot } from 'npm:@steve02081504/fount-p2p/federation/want_ids'
-import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
 import { widenExploreFromTrustedAnchors } from 'npm:@steve02081504/fount-p2p/node/network'
 import { bumpReputationOnRelay, recordGossipAllUnknownWant } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
-import { pickFederationTargetPeerIds } from '../peerFanout.mjs'
-import { wireAction } from '../wireAction.mjs'
 import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
+import { computeFederatableDagTipIds } from '../../dag/eventTypes.mjs'
 import { evaluateArchiveHandshake, loadLocalFederationArchive, wireArchiveSummary } from '../archiveHandshake.mjs'
 import { scheduleCatchUp } from '../catchUpScheduler.mjs'
 import { handleChannelHistoryResponse } from '../channelHistory.mjs'
@@ -19,6 +17,7 @@ import {
 	takeGossipRequestSlot,
 	wantIdsLimitsFromSettings,
 } from '../gossip.mjs'
+import { pickFederationTargetPeerIds } from '../peerFanout.mjs'
 import { resolveMemberEdPubKeyHex, validatePullAttestationForGroup, verifyPullAttestationSignatureForMember } from '../pullAttestation.mjs'
 import { buildPullResponseEnvelope } from '../pullEnvelope.mjs'
 import { getPendingTipExchange } from '../registry.mjs'
@@ -29,6 +28,7 @@ import {
 } from '../seen.mjs'
 import { handleInboundFedShun, resolveShunForNodeHashRequester, resolveShunForPubKeyRequester, sendFedShun } from '../shun.mjs'
 import { handleIncomingFedVolatile } from '../volatile.mjs'
+import { wireAction } from '../wireAction.mjs'
 import { parseChannelHistoryWant, parseFedShun, parseFedTipPing, parseFedTipPong, parseGossipRequest } from '../wireSchemas.mjs'
 
 /**
@@ -144,7 +144,7 @@ export function registerSyncHandlers(roomContext) {
 				const { readJsonl } = requireDagDeps()
 				const { events } = await loadLocalFederationArchive(username, groupId, readJsonl)
 				if (!events.length) return
-				const flushIds = new Set(computeDagTipIdsFromEvents(events))
+				const flushIds = new Set(computeFederatableDagTipIds(events))
 				for (const event of events)
 					if (event.type === 'member_join' && event.node_id === nodeHash)
 						flushIds.add(event.id)
@@ -215,7 +215,7 @@ export function registerSyncHandlers(roomContext) {
 			ingestRemoteTipsForExchange(username, groupId, tipPing.tips)
 			const { readJsonl } = requireDagDeps()
 			const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
-			const localTips = computeDagTipIdsFromEvents(localArchive.events)
+			const localTips = computeFederatableDagTipIds(localArchive.events)
 			// 心跳/补洞探测照常 pong 回去；同时若远端 tips 集合与本地不一致（任何 DAG 分歧）⇒ 调度补齐。
 			if (tipSetsDiverge(tipPing.tips, localTips))
 				scheduleCatchUp(username, groupId)
@@ -247,7 +247,7 @@ export function registerSyncHandlers(roomContext) {
 			// 远端 pong 的 tips 集合与本地不一致（任何 DAG 分歧）⇒ 调度补齐（心跳/被动 pong 也能驱动兜底）。
 			const { readJsonl } = requireDagDeps()
 			const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
-			if (tipSetsDiverge(tipPong.tips, computeDagTipIdsFromEvents(localArchive.events)))
+			if (tipSetsDiverge(tipPong.tips, computeFederatableDagTipIds(localArchive.events)))
 				scheduleCatchUp(username, groupId)
 		})().catch(error => console.error('federation: fed_tip_pong failed', error))
 	})

@@ -15,6 +15,7 @@ import { isSignedDagEventRow } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
+import { computeFederatableDagTipIds, isFederatableDagEvent } from '../../chat/dag/eventTypes.mjs'
 import { mergeDagTips } from '../../chat/dag/lifecycle.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
@@ -128,12 +129,13 @@ export function registerDagRoutes(router, authenticate) {
 		const { username, state, groupId } = req.groupContext
 
 		const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
-		const tips = computeDagTipIdsFromEvents(events)
+		const federatableEvents = events.filter(isFederatableDagEvent)
+		const tips = computeDagTipIdsFromEvents(federatableEvents)
 		const { checkpoint } = await getState(username, groupId)
 		const { computeLocalTipsHash } = await import('npm:@steve02081504/fount-p2p/dag/index')
 		const { computeTipAuthzScores, computeTipConsensusScores } = await import('npm:@steve02081504/fount-p2p/governance/branch')
 		const eventsById = new Map()
-		for (const event of events)
+		for (const event of federatableEvents)
 			if (event?.id) eventsById.set(String(event.id), event)
 		const reputation = loadReputation()
 		const reputationBySender = {}
@@ -180,7 +182,9 @@ export function registerDagRoutes(router, authenticate) {
 		const tipId = req.body.tipId != null ? String(req.body.tipId).trim().toLowerCase() : null
 		if (tipId && !isHex64(tipId))
 			throw httpError(400, 'invalid tipId')
-		const tips = state.dagTips || computeDagTipIdsFromEvents(await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions }))
+		const tips = state.dagTips || computeFederatableDagTipIds(
+			await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions }),
+		)
 		if (tipId && !tips.includes(tipId))
 			throw httpError(400, 'tipId is not a current DAG tip')
 		await saveGovernanceBranchTip(username, groupId, tipId)

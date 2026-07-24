@@ -155,7 +155,7 @@ export function isSignedBaseCheckpoint(checkpoint) {
  * 永远停留在采纳基态。另一条 supersede 路径在联邦层：收到更高 epoch 的本地签名 checkpoint 时
  * 直接替换 snapshot.json（见 federation/pullEnvelope.mjs 的 epoch 比较），此处读到的即新基态。
  * @param {object | null | undefined} checkpoint 当前快照
- * @param {string[]} localTipIds 本地 DAG 叶 id（computeDagTipIdsFromEvents 结果）
+ * @param {string[]} localTipIds 本地联邦 DAG 叶 id（computeFederatableDagTipIds / 已剔 session 后的 tip 集）
  * @returns {boolean} 仍需作为采纳签名基态保护时为 true
  */
 export function isAdoptedBaseAuthoritative(checkpoint, localTipIds) {

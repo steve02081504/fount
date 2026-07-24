@@ -9,7 +9,6 @@ import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonlStream } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { isWantIdsInBackoff, wantIdsGroupKey } from 'npm:@steve02081504/fount-p2p/federation/want_ids'
-import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
 import { pickFederationTargetPeerIds, reconcilePeerPoolFromRoster } from './peerFanout.mjs'
 import { getStalePeerPruneCount } from './stalePeerLog.mjs'
 
@@ -17,6 +16,7 @@ import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { syncMissingArchiveMonths } from '../archive/syncMonths.mjs'
 import { eventChannelId } from '../dag/authorizeEvent.mjs'
+import { computeFederatableDagTipIds } from '../dag/eventTypes.mjs'
 import { readQuarantineRows } from '../events/quarantine.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
@@ -207,7 +207,7 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	const eventsById = new Map()
 	for await (const event of readJsonlStream(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions }))
 		events.push(event), eventsById.set(event.id, event)
-	const localTips = computeDagTipIdsFromEvents(events)
+	const localTips = computeFederatableDagTipIds(events)
 	const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
 
 	// 小圈子补洞顺序：① 首入群（无 checkpoint）信誉 joinSnapshot 引导 ② gossip wantIds 增量补洞

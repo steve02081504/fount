@@ -15,7 +15,7 @@ import { groupDir, eventsPath } from '../lib/paths.mjs'
 
 import { commitSignedChatEvent } from './commitSignedEvent.mjs'
 import { buildMemberJoinBindingFields } from './entityBinding.mjs'
-import { SESSION_EVENT_TYPES } from './eventTypes.mjs'
+import { isFederatableDagEvent } from './eventTypes.mjs'
 import { validateIngestAuthz } from './ingest.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
@@ -74,7 +74,7 @@ export async function appendEvent(username, groupId, event, secretKey, options =
 	const previous = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	// session_* 为本机元数据：仍落 events.jsonl，但不得占据联邦 tip frontier，
 	// 否则后续世界/消息事件会挂上对端没有的 session 父节点，物化折叠会丢成员。
-	const previousForTips = previous.filter(row => !SESSION_EVENT_TYPES.has(row?.type))
+	const previousForTips = previous.filter(isFederatableDagEvent)
 	const { hlc, prev_event_ids: prevFromCaller } = computeAppendHlcAndPrev(previousForTips, event, { multiTip: true })
 
 	const { signPayload, wirePayload } = await signLocalChatEvent({

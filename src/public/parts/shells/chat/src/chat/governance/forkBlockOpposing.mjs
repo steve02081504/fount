@@ -1,7 +1,7 @@
 /**
  * 【文件】governance/forkBlockOpposing.mjs
  * 【职责】采纳某 DAG tip 后，对立分支上治理授权类事件签发者批量写入 blocklist。
- * 【原理】computeDagTipIdsFromEvents 枚举 tips；ancestorClosureFromTip 收集 GOVERNANCE_AUTHZ_TYPES 发送者 pubKeyHash。
+ * 【原理】先剔 session 元数据再 computeDagTipIdsFromEvents；ancestorClosureFromTip 收集 GOVERNANCE_AUTHZ_TYPES 发送者 pubKeyHash。
  * 【关联】blocklist addDenylistEntry、governance_branch；fork 后用户确认选支。
  */
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
@@ -13,7 +13,7 @@ import {
 } from 'npm:@steve02081504/fount-p2p/governance/branch'
 import { addDenylistEntry } from 'npm:@steve02081504/fount-p2p/node/denylist'
 
-import { GOVERNANCE_AUTHZ_TYPES } from '../dag/eventTypes.mjs'
+import { GOVERNANCE_AUTHZ_TYPES, isFederatableDagEvent } from '../dag/eventTypes.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 /**
@@ -27,9 +27,10 @@ export function computeOpposingForkBlockTargets(events, acceptedTipId, selfPubKe
 	const tip = String(acceptedTipId || '').trim().toLowerCase()
 	if (!isHex64(tip)) throw new Error('acceptedTipId must be 64 hex chars')
 
-	const byId = new Map(events.filter(event => event?.id).map(event => [String(event.id), event]))
+	const federatable = events.filter(isFederatableDagEvent)
+	const byId = new Map(federatable.filter(event => event?.id).map(event => [String(event.id), event]))
 
-	const tips = computeDagTipIdsFromEvents(events)
+	const tips = computeDagTipIdsFromEvents(federatable)
 	if (!tips.includes(tip)) throw new Error('acceptedTipId is not a current DAG tip')
 
 	// 被采纳分支的因果闭包属于共享/已认可历史，不应拉黑（含创世治理事件、共同祖先）。
