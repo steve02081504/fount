@@ -1769,6 +1769,9 @@
 			"meAuthor": "我",
 			"messageEditSave": "保存",
 			"messageEditCancel": "取消",
+			"messageEditArea": {
+				"aria-label": "编辑消息"
+			},
 			"feedbackReasonPrompt": "点踩原因（可选）",
 			"feedbackReasonInput": {
 				"placeholder": "点踩原因（可选）"

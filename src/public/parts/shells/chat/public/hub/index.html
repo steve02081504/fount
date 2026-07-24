@@ -284,9 +284,9 @@
 		<button type="button" class="member-backdrop" id="member-backdrop" data-i18n="chat.hub.ariaClose"></button>
 		</div>
 
-		<div class="drawer-side z-50">
+		<aside class="drawer-side z-50" aria-labelledby="files-title">
 			<label for="files-drawer-toggle" class="drawer-overlay" data-i18n="chat.hub.ariaClose"></label>
-			<div class="files-panel w-80 min-h-full bg-[var(--bg-channel)] border-l border-[var(--border)] p-4 flex flex-col gap-3 text-[var(--text-normal)]" aria-labelledby="files-title">
+			<div class="files-panel w-80 min-h-full bg-[var(--bg-channel)] border-l border-[var(--border)] p-4 flex flex-col gap-3 text-[var(--text-normal)]">
 				<header class="flex items-center justify-between gap-2">
 					<h2 id="files-title" class="font-bold text-lg" data-i18n="chat.hub.filesDrawerTitle"></h2>
 					<label for="files-drawer-toggle" class="btn btn-ghost btn-sm btn-circle" data-i18n="chat.hub.ariaClose">×</label>
@@ -301,7 +301,7 @@
 				</div>
 				<div id="files-list" class="flex-1 overflow-y-auto min-h-0"></div>
 			</div>
-		</div>
+		</aside>
 	</div>
 
 	<dialog id="fork-split-modal" class="modal">
