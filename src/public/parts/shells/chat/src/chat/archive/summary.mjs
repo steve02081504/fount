@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 
 import { computeLocalTipsHash } from 'npm:@steve02081504/fount-p2p/dag/index'
 
-import { computeFederatableDagTipIds } from '../dag/eventTypes.mjs'
+import { computeFederatableDagTipIds, isFederatableDagEvent } from '../dag/eventTypes.mjs'
 
 const BODY_ARCHIVE_TYPES = new Set(['message', 'message_edit'])
 
@@ -34,8 +34,9 @@ export function computeArchiveSummary(events, checkpoint, options = {}) {
 	const view = blockedSenders.size
 		? events.map(event => eventViewForArchive(event, blockedSenders))
 		: events
-	const eventCount = view.length
-	const lastEventId = eventCount ? String(view[eventCount - 1]?.id ?? '') : ''
+	const federatable = view.filter(isFederatableDagEvent)
+	const eventCount = federatable.length
+	const lastEventId = eventCount ? String(federatable[eventCount - 1]?.id ?? '') : ''
 	const checkpointEventId = checkpoint?.checkpoint_event_id
 		? String(checkpoint.checkpoint_event_id)
 		: ''

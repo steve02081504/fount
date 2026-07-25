@@ -266,7 +266,7 @@ test.describe('Social short videos', () => {
 		const media = card.locator('.post-media')
 		await Promise.all([
 			page.waitForResponse(res =>
-				res.url().toLowerCase().includes(`/api/parts/shells:social/posts/${entityHash}/${postId}/like`)
+				res.url().toLowerCase().includes(`/api/parts/shells:social/posts/${entityHash}/${postId}/like`.toLowerCase())
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),

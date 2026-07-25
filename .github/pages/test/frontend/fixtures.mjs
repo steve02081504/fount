@@ -2,7 +2,6 @@
  * GitHub Pages 静态站 Playwright fixture（无登录、无 fount 节点）。
  */
 import { test as base, expect } from '@playwright/test'
-
 import { createBrowserDiagnostics, waitForTestWatchCycle } from 'fount/scripts/test/playwright/browser_diagnostics.mjs'
 import { requireTestBaseUrl } from 'fount/scripts/test/playwright/env.mjs'
 
@@ -17,10 +16,11 @@ export function createPagesFixtures(options = {}) {
 
 	const test = base.extend({
 		/**
-		 * @param {object} _fixtures 未使用
+		 * @param {object} dependencies fixture 依赖
+		 * @param {import('npm:@playwright/test').Browser} dependencies.browser 未使用（满足 no-empty-pattern）
 		 * @param {(url: string) => Promise<void>} use fixture use
 		 */
-		baseUrl: async ({}, use) => {
+		baseUrl: async ({ browser: _browser }, use) => {
 			await use(requireTestBaseUrl())
 		},
 		/**
@@ -82,5 +82,11 @@ export function createPagesFixtures(options = {}) {
 }
 
 const fixtures = createPagesFixtures()
+/**
+ *
+ */
 export const test = fixtures.test
+/**
+ *
+ */
 export { expect }

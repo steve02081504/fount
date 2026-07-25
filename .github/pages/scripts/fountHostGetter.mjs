@@ -215,8 +215,9 @@ async function mappingFountHostUrl(hostUrl) {
  * @returns {string} - 保存后的主机 URL。
  */
 export function saveFountHostUrl(hostUrl) {
-	localStorage.setItem('fountHostUrl', hostUrl ?? '')
-	if (!hostUrl) return
+	const saved = hostUrl ?? ''
+	localStorage.setItem('fountHostUrl', saved)
+	if (!hostUrl) return saved
 	const url = new URL(hostUrl)
 	// Dispatch host info for browser integration script
 	const event = new CustomEvent('fount-host-info', {

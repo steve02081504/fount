@@ -233,7 +233,7 @@ export async function buildPostCard(item, options = {}) {
 		engagementBarHtml,
 		actionKey,
 		postDetailHref,
-		entityHash: item.entityHash,
+		entityHash: String(item.entityHash || '').toLowerCase(),
 		blockButton,
 		hideButton,
 		muteButton,
@@ -343,25 +343,36 @@ function bindPostDetailMediaLike(card, entityHash, postId) {
 	/**
 	 * @returns {Promise<void>}
 	 */
+	let likeInFlight = false
+	/**
+	 *
+	 */
 	async function likeFromMedia() {
+		if (likeInFlight) return
 		const likeButton = card.querySelector('[data-like]')
 		if (!(likeButton instanceof HTMLElement)) return
 		if (likeButton.dataset.liked === '1') {
 			showPostMediaHeart(media)
 			return
 		}
-		const { applyLikeButtonOptimistic, rollbackLikeButton, runWrite } = await import('./lib/socialWrite.mjs')
-		const { socialApi } = await import('./lib/apiClient.mjs')
-		const snapshot = applyLikeButtonOptimistic(likeButton, true)
-		showPostMediaHeart(media)
+		likeInFlight = true
 		try {
-			await runWrite('like', () => socialApi(`/posts/${entityHash}/${postId}/like`, {
-				method: 'POST',
-				body: JSON.stringify({ like: true }),
-			}))
+			const { applyLikeButtonOptimistic, rollbackLikeButton, runWrite } = await import('./lib/socialWrite.mjs')
+			const { socialApi } = await import('./lib/apiClient.mjs')
+			const snapshot = applyLikeButtonOptimistic(likeButton, true)
+			showPostMediaHeart(media)
+			try {
+				await runWrite('like', () => socialApi(`/posts/${entityHash}/${postId}/like`, {
+					method: 'POST',
+					body: JSON.stringify({ like: true }),
+				}))
+			}
+			catch {
+				rollbackLikeButton(likeButton, snapshot)
+			}
 		}
-		catch {
-			rollbackLikeButton(likeButton, snapshot)
+		finally {
+			likeInFlight = false
 		}
 	}
 	media.addEventListener('dblclick', event => {

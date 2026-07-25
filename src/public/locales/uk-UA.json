@@ -3721,14 +3721,14 @@
 			},
 			"saved": {
 				"aria-label": "Обране",
-				"title": "Збережене"
+				"title": "Обране"
 			},
 			"drafts": {
 				"aria-label": "Чернетки",
 				"title": "Чернетки"
 			},
 			"profile": {
-				"aria-label": "Моя",
+				"aria-label": "Профіль",
 				"title": "Профіль"
 			},
 			"videos": {

@@ -81,10 +81,8 @@ async function installSocialTestHooks({ page }) {
 			 */
 			navigator.clipboard.writeText = async () => { }
 	})
-	// 谓词匹配 pathname（比 glob/regex 全 URL 更稳）；context + page 双挂避免漏拦。
-	const context = page.context()
-	await context.route(isStubSocialEvfsFileUrl, stubMissingSocialFileGet)
-	await page.route(isStubSocialEvfsFileUrl, stubMissingSocialFileGet)
+	// 谓词匹配 pathname（比 glob/regex 全 URL 更稳）；挂 context 覆盖 popup / 多 page。
+	await page.context().route(isStubSocialEvfsFileUrl, stubMissingSocialFileGet)
 }
 
 /**

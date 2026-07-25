@@ -3708,19 +3708,19 @@
 				"aria-label": "소셜 하단 탐색"
 			},
 			"feed": {
-				"aria-label": "첫 페이지",
+				"aria-label": "피드",
 				"title": "홈"
 			},
 			"explore": {
-				"aria-label": "탐저장",
+				"aria-label": "탐색",
 				"title": "탐색"
 			},
 			"notifications": {
-				"aria-label": "받은 편지함",
+				"aria-label": "알림",
 				"title": "받은편지함"
 			},
 			"saved": {
-				"aria-label": "모으다",
+				"aria-label": "저장됨",
 				"title": "저장됨"
 			},
 			"drafts": {
@@ -3728,7 +3728,7 @@
 				"title": "임시보관함"
 			},
 			"profile": {
-				"aria-label": "내 것",
+				"aria-label": "프로필",
 				"title": "내 프로필"
 			},
 			"videos": {

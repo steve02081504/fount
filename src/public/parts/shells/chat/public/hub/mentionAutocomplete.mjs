@@ -8,15 +8,20 @@ import { formatEntityMentionToken, formatRoleMentionToken } from '../shared/inli
 
 import { store } from './core/state.mjs'
 
+let mentionListboxSeq = 0
+
 /**
  * @param {HTMLTextAreaElement} textarea 消息输入框
  * @returns {() => void} 卸载监听
  */
 export function attachHubMentionAutocomplete(textarea) {
 	const panel = document.createElement('div')
+	panel.id = `hub-mention-listbox-${++mentionListboxSeq}`
 	panel.className = 'mention-panel hidden'
 	panel.setAttribute('role', 'listbox')
 	panel.dataset.i18n = 'chat.hub.mentionSuggest'
+	textarea.setAttribute('aria-controls', panel.id)
+	textarea.setAttribute('aria-autocomplete', 'list')
 	textarea.parentElement?.appendChild(panel)
 
 	/** @type {object[]} */
@@ -26,11 +31,30 @@ export function attachHubMentionAutocomplete(textarea) {
 	let mentionRange = null
 
 	/** @returns {void} */
+	function clearActiveOption() {
+		textarea.removeAttribute('aria-activedescendant')
+	}
+
+	/** @returns {void} */
+	function syncActiveOption() {
+		const options = panel.querySelectorAll('.mention-option')
+		for (const button of options) {
+			const selected = Number(button.dataset.index) === activeIndex
+			button.classList.toggle('active', selected)
+			button.setAttribute('aria-selected', selected ? 'true' : 'false')
+		}
+		const active = options[activeIndex]
+		if (active?.id) textarea.setAttribute('aria-activedescendant', active.id)
+		else textarea.removeAttribute('aria-activedescendant')
+	}
+
+	/** @returns {void} */
 	function hide() {
 		panel.classList.add('hidden')
 		panel.innerHTML = ''
 		suggestions = []
 		mentionRange = null
+		clearActiveOption()
 	}
 
 	/**
@@ -44,11 +68,13 @@ export function attachHubMentionAutocomplete(textarea) {
 		if (!rows.length) {
 			panel.classList.remove('hidden')
 			panel.innerHTML = '<div class="mention-empty" data-i18n="chat.hub.mentionEmpty"></div>'
+			textarea.removeAttribute('aria-activedescendant')
 			return
 		}
 		for (const [index, row] of rows.entries()) {
 			const button = document.createElement('button')
 			button.type = 'button'
+			button.id = `${panel.id}-option-${index}`
 			button.setAttribute('role', 'option')
 			button.setAttribute('aria-selected', index === 0 ? 'true' : 'false')
 			button.className = `mention-option${index === 0 ? ' active' : ''}`
@@ -64,6 +90,7 @@ export function attachHubMentionAutocomplete(textarea) {
 			panel.appendChild(button)
 		}
 		panel.classList.remove('hidden')
+		syncActiveOption()
 	}
 
 	/**
@@ -89,8 +116,8 @@ export function attachHubMentionAutocomplete(textarea) {
 	}
 
 	/**
- * @returns {{ query: string, start: number, end: number } | null} 当前 @ 片段或 null
- */
+	 * @returns {{ query: string, start: number, end: number } | null} 当前 @ 片段或 null
+	 */
 	function currentMention() {
 		const pos = textarea.selectionStart
 		const before = textarea.value.slice(0, pos)
@@ -156,11 +183,7 @@ export function attachHubMentionAutocomplete(textarea) {
 		}
 		else return
 
-		for (const button of panel.querySelectorAll('.mention-option')) {
-			const selected = Number(button.dataset.index) === activeIndex
-			button.classList.toggle('active', selected)
-			button.setAttribute('aria-selected', selected ? 'true' : 'false')
-		}
+		syncActiveOption()
 	}
 
 	/** @returns {void} */
@@ -189,6 +212,9 @@ export function attachHubMentionAutocomplete(textarea) {
 	return () => {
 		textarea.removeEventListener('input', onInput)
 		textarea.removeEventListener('keydown', onKeydown)
+		textarea.removeAttribute('aria-controls')
+		textarea.removeAttribute('aria-autocomplete')
+		textarea.removeAttribute('aria-activedescendant')
 		panel.remove()
 	}
 }

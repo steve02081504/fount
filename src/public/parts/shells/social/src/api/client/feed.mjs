@@ -1,5 +1,4 @@
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
-
 import { discoverWithNetwork } from '../../discover/network.mjs'
 import { buildHomeFeed } from '../../feed/home.mjs'
 import { buildForYouFeed } from '../../feed/ranking.mjs'
@@ -27,18 +26,21 @@ async function withThinFeedBackfill(username, options, build, { defaultLimit, ma
 	const limit = Math.min(Math.max(Number(options.limit) || defaultLimit, 1), maxLimit)
 	if (!options.cursor && result.items.length < limit) {
 		const { backfillPosts } = await import('../../federation/backfill.mjs')
+		const backfill = backfillPosts(username, {
+			viewerEntityHash: options.viewerEntityHash,
+			...mediaOnly ? { mediaOnly: true } : {},
+			/**
+			 * @returns {Promise<boolean>} 本地是否已足够
+			 */
+			enough: async () => {
+				result = await build()
+				return result.items.length >= limit
+			},
+		}).catch(error => {
+			console.error('[social] feed backfill failed', error)
+		})
 		await Promise.race([
-			backfillPosts(username, {
-				viewerEntityHash: options.viewerEntityHash,
-				...mediaOnly ? { mediaOnly: true } : {},
-				/**
-				 * @returns {Promise<boolean>} 本地是否已足够
-				 */
-				enough: async () => {
-					result = await build()
-					return result.items.length >= limit
-				},
-			}),
+			backfill,
 			sleep(FEED_BACKFILL_BUDGET_MS),
 		])
 		result = await build()

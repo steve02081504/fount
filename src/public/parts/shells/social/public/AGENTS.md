@@ -32,6 +32,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 - **Own write → feed**: repost returns `{ event, item }` and `pushFeedUpdate`; UI `prependFeedItem(item, { force: true })` (dedupe + in-flight `pendingFeedInserts` so WS cannot double-insert during `buildPostCard`). Deep-pagination WS still banners unless `force`.
 - CSS: page-local, no `social-` prefix. Icons `.icon` + `.icon-*`. Ready-gate: `SOCIAL_GATE` / `fount:social-*`.
 - Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder` (do not use `fooPlaceholder` key names). Templates: `${...}` only (no Mustache `{{...}}`). Prefer `renderTemplate` / `mountTemplate`.
+- **@ 提及 autocomplete**：textarea 保持隐式 textbox；只用 `aria-controls` + `aria-activedescendant`（+ `aria-autocomplete`）。axe 禁止给 `<textarea>` 加 `role="combobox"` / `aria-expanded`。
 - HTTP: `endpoints/shared.mjs` `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.
 - Hash routing: `switchView` / `activateView` — route map in [ui-details.md](ui-details.md#hash-routing). **`activateView(name)`** → `#${name}View` — `data-view` and section id must share the stem (`videos` → `#videosView`).
 - Avatars/names/@id: chat `entityAvatar.mjs` / `resolveDisplayName` / `formatEntityAtId` (`entityHandle`). Profile page: `rememberEntityHandle` before rendering posts. Hover: `lib/profileHover.mjs` → chat hover card.

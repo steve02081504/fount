@@ -4091,7 +4091,8 @@
 			"viewTitle": "搜索",
 			"loading": "搜索中…",
 			"filterAuthor": {
-				"placeholder": "作者"
+				"placeholder": "作者",
+				"aria-label": "作者"
 			},
 			"filterMedia": {
 				"aria-label": "媒体类型"
@@ -4100,7 +4101,8 @@
 			"filterMediaImage": "图片",
 			"filterMediaVideo": "视频",
 			"filterTag": {
-				"placeholder": "#标签"
+				"placeholder": "#标签",
+				"aria-label": "标签"
 			},
 			"filterSort": {
 				"aria-label": "排序"

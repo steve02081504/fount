@@ -19,6 +19,7 @@ export const WATCH_INTERVAL_MS = ms('30s')
 /**
  * 两次 watchdog 回调的墙钟间隔 ≥ 该倍数 × {@link WATCH_INTERVAL_MS} 时视为系统休眠
  *（休眠期间 setInterval 不触发，醒来后一次跳变远大于周期）。
+ * suite 侧对该类中断最多重跑 {@link import('./suite_run.mjs').MAX_SLEEP_INTERRUPT_ATTEMPTS} 次。
  */
 export const SLEEP_DETECT_MULTIPLIER = 5
 

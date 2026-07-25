@@ -4,6 +4,7 @@
 	--chat-gap: 0.375rem;
 	/* 与 avatar_block `w-10` 对齐；改尺寸只动这一处 */
 	--message-avatar-size: 2.5rem;
+
 	overflow-y: auto;
 	overflow-x: hidden;
 }

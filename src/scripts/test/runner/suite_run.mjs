@@ -153,6 +153,12 @@ async function runSuiteOnce(suite, options, globalBudget, stream, watchdog) {
 }
 
 /**
+ * 系统休眠中断后最多重跑次数（含首次）。超出则 terminated，避免无限循环。
+ */
+export const MAX_SLEEP_INTERRUPT_ATTEMPTS = 5
+
+/**
+ * 运行 suite：含 sleep 中断重跑（有界）。
  * @param {import('../core/manifest.mjs').SuiteDef} suite suite
  * @param {SuiteInvocationOptions | undefined} options 调用选项
  * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
@@ -168,7 +174,7 @@ export async function runSuite(suite, options, globalBudget, stream = false, wat
 	let attempt = 0
 	for (;;) {
 		attempt++
-		if (watchdog.signal?.aborted) {
+		if (watchdog.signal?.aborted) 
 			return {
 				passed: false,
 				exitCode: 1,
@@ -178,7 +184,18 @@ export async function runSuite(suite, options, globalBudget, stream = false, wat
 				terminated: true,
 				terminateReason: String(watchdog.signal.reason || ''),
 			}
-		}
+		
+		if (attempt > MAX_SLEEP_INTERRUPT_ATTEMPTS) 
+			return {
+				passed: false,
+				exitCode: 1,
+				failedFiles: [],
+				output: '',
+				durationMs: 0,
+				terminated: true,
+				terminateReason: `sleep_retry_exhausted:${MAX_SLEEP_INTERRUPT_ATTEMPTS}`,
+			}
+		
 		const result = await runSuiteOnce(suite, options, globalBudget, stream, watchdog)
 		if (!result.sleepInterrupted) {
 			const { sleepInterrupted: _, ...rest } = result

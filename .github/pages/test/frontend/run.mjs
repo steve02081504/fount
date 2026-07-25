@@ -43,7 +43,7 @@ try {
 	server = await startPagesServer({ port, host: '127.0.0.1' })
 	if (commitPort) await commitPort(port)
 
-	const code = await runPlaywright({
+	process.exitCode = await runPlaywright({
 		configPath,
 		env: {
 			FOUNT_TEST_BASE_URL: server.baseUrl,
@@ -51,7 +51,6 @@ try {
 		},
 		playwrightArgs: process.argv.slice(2).join(' '),
 	})
-	process.exit(code)
 }
 finally {
 	if (server) await server.close().catch(() => {})

@@ -42,7 +42,7 @@ console.noBreadcrumb = {
 
 await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').catch(console.error)
 
-if (globalThis.fount?.test?.enabled) import('/fount/scripts/test/test_watch.mjs')
+if (globalThis.fount?.test?.enabled) import('/fount/scripts/test/test_watch.mjs').catch(console.error)
 
 /* global urlParams */
 /**

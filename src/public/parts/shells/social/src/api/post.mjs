@@ -92,30 +92,36 @@ export function createPost(apiContext, entityHash, postId, snapshot = null) {
 					comment: String(comment || ''),
 				},
 			})
-			const view = await getTimelineMaterialized(apiContext.username, owner)
-			const original = view.postById[id]
-			if (!original) return { event }
-			const itemContext = await createFeedItemBuildContext(
-				apiContext.username,
-				new Set([apiContext.entityHash, owner]),
-				apiContext.entityHash,
-			)
-			const originalPost = await withDecryptedPostContent(
-				apiContext.username,
-				owner,
-				original,
-				apiContext.entityHash,
-			)
-			const item = await buildRepostFeedItem({
-				entityHash: apiContext.entityHash,
-				postId: event.id,
-				originalEntityHash: owner,
-				originalPostId: id,
-				repost: event,
-				hlc: event.hlc,
-			}, originalPost, itemContext)
-			pushFeedUpdate(apiContext.username, { type: 'post', item })
-			return { event, item }
+			try {
+				const view = await getTimelineMaterialized(apiContext.username, owner)
+				const original = view.postById[id]
+				if (!original) return { event }
+				const itemContext = await createFeedItemBuildContext(
+					apiContext.username,
+					new Set([apiContext.entityHash, owner]),
+					apiContext.entityHash,
+				)
+				const originalPost = await withDecryptedPostContent(
+					apiContext.username,
+					owner,
+					original,
+					apiContext.entityHash,
+				)
+				const item = await buildRepostFeedItem({
+					entityHash: apiContext.entityHash,
+					postId: event.id,
+					originalEntityHash: owner,
+					originalPostId: id,
+					repost: event,
+					hlc: event.hlc,
+				}, originalPost, itemContext)
+				pushFeedUpdate(apiContext.username, { type: 'post', item })
+				return { event, item }
+			}
+			catch (error) {
+				console.error('[social] repost presentation failed', error)
+				return { event }
+			}
 		},
 		/**
 		 * 编辑帖子：作者自签，或作者所属主人以自身钥签到作者时间线。
