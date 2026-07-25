@@ -109,21 +109,21 @@ function applyTelegramSpanFormats(inner, spanEntities) {
 		text = `@[${text} (UserID:${textMention.user.id})]`
 		mentionEntity = textMention
 		mentionLength = utf16Length(text)
-		contentPrefix = 2
+		contentPrefix += 2
 	}
 	const textLink = spanEntities.find(entity => entity.type === 'text_link')
 	if (textLink) {
 		text = `[${text}](${textLink.url})`
-		contentPrefix = 1
+		contentPrefix += 1
 	}
 	if (spanEntities.some(entity => entity.type === 'code')) {
 		text = `\`${text}\``
-		contentPrefix = 1
+		contentPrefix += 1
 	}
 	const pre = spanEntities.find(entity => entity.type === 'pre')
 	if (pre) {
 		text = '```' + (pre.language ? pre.language : '') + '\n' + text + '\n```'
-		contentPrefix = 3 + (pre.language ? pre.language.length : 0) + 1
+		contentPrefix += 3 + (pre.language ? pre.language.length : 0) + 1
 	}
 	if (spanEntities.some(entity => entity.type === 'blockquote')) {
 		text = text.split('\n').map(line => `> ${line}`).join('\n')
@@ -199,14 +199,17 @@ function renderTelegramEntityRange(text, entities, rangeStart, rangeEnd, markdow
 		const blockquotePad = formatted.hasBlockquote ? 2 : 0
 
 		const mentionSource = formatted.mentionEntity || exactSpan.find(item => item.type === 'mention')
-		if (mentionSource)
+		if (mentionSource) {
+			// text_mention 自身的 `@[` 已计入 mentionLength，offset 只加其后包上的结构前缀
+			const afterMentionPrefix = formatted.contentPrefix - (formatted.mentionEntity ? 2 : 0)
 			mentionEntities.push({
 				...mentionSource,
-				offset: partBase + formatted.stylePrefix + blockquotePad,
+				offset: partBase + formatted.stylePrefix + blockquotePad + afterMentionPrefix,
 				length: formatted.mentionEntity
 					? formatted.mentionLength
 					: utf16Length(innerRendered.text),
 			})
+		}
 		else
 			for (const nestedMention of innerRendered.mentionEntities) {
 				const offsetInInner = nestedMention.offset - partBase

@@ -389,6 +389,92 @@ Deno.test('telegramMessageToBridgeDto rewrites bold text_mention without duplica
 	assertEquals(dto.text, `ping **@[entity:${expectedHash}]** now`)
 })
 
+Deno.test('telegramEntitiesToAiMarkdown nests text_mention inside text_link+code', () => {
+	const text = 'go Alice now'
+	const markdown = telegramEntitiesToAiMarkdown(text, [
+		{ type: 'text_link', offset: 0, length: 12, url: 'https://example.com' },
+		{ type: 'code', offset: 0, length: 12 },
+		{
+			type: 'text_mention',
+			offset: 3,
+			length: 5,
+			user: { id: 55, is_bot: false, first_name: 'Alice' },
+		},
+	])
+	assertEquals(markdown, '`[go @[Alice (UserID:55)] now](https://example.com)`')
+})
+
+Deno.test('telegramMessageToBridgeDto remaps same-span code text_mention', async () => {
+	const username = `tg-code-mention-${crypto.randomUUID().slice(0, 8)}`
+	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_code_mention_'))
+	await createTestServerBoot({
+		username,
+		dataDir,
+		minP2pNode: true,
+		loadParts: ['shells/chat'],
+	})()
+
+	const { bridgeEntityHash } = await import('../../../chat/src/chat/bridge/identity.mjs')
+	const mentionUserId = 727272
+	const expectedHash = bridgeEntityHash('telegram', mentionUserId)
+	const message = {
+		message_id: 91,
+		date: 1_700_000_400,
+		text: 'Alice',
+		entities: [
+			{ type: 'code', offset: 0, length: 5 },
+			{
+				type: 'text_mention',
+				offset: 0,
+				length: 5,
+				user: { id: mentionUserId, is_bot: false, first_name: 'Alice' },
+			},
+		],
+		from: { id: 15, first_name: 'Frank' },
+		chat: { id: -100666, type: 'supergroup', title: 'Code Mention Group' },
+	}
+
+	const dto = await telegramMessageToBridgeDto({}, message, { id: 1, username: 'bot' }, username)
+	assert(dto)
+	assertEquals(dto.text, `\`@[entity:${expectedHash}]\``)
+})
+
+Deno.test('telegramMessageToBridgeDto remaps nested text_mention under text_link+code', async () => {
+	const username = `tg-link-code-mention-${crypto.randomUUID().slice(0, 8)}`
+	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_link_code_mention_'))
+	await createTestServerBoot({
+		username,
+		dataDir,
+		minP2pNode: true,
+		loadParts: ['shells/chat'],
+	})()
+
+	const { bridgeEntityHash } = await import('../../../chat/src/chat/bridge/identity.mjs')
+	const mentionUserId = 838383
+	const expectedHash = bridgeEntityHash('telegram', mentionUserId)
+	const message = {
+		message_id: 92,
+		date: 1_700_000_500,
+		text: 'go Alice now',
+		entities: [
+			{ type: 'text_link', offset: 0, length: 12, url: 'https://example.com' },
+			{ type: 'code', offset: 0, length: 12 },
+			{
+				type: 'text_mention',
+				offset: 3,
+				length: 5,
+				user: { id: mentionUserId, is_bot: false, first_name: 'Alice' },
+			},
+		],
+		from: { id: 16, first_name: 'Gina' },
+		chat: { id: -100555, type: 'supergroup', title: 'Link Code Mention Group' },
+	}
+
+	const dto = await telegramMessageToBridgeDto({}, message, { id: 1, username: 'bot' }, username)
+	assert(dto)
+	assertEquals(dto.text, `\`[go @[entity:${expectedHash}] now](https://example.com)\``)
+})
+
 Deno.test('rewriteTelegramMentionsToFount rewrites @BotUsername mention entity', async () => {
 	const username = `tg-mention-${crypto.randomUUID().slice(0, 8)}`
 	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_mention_'))
