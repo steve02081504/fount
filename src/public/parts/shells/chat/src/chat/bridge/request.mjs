@@ -84,7 +84,7 @@ export async function buildVirtualBridgeChatRequest(username, groupId, channelId
 				platformChatId: session.platformChatId,
 				chatKind: session.chatKind,
 				...session.botname ? { botname: session.botname } : {},
-				...triggerEntry?.extension?.bridge || {},
+				...triggerEntry?.extension?.bridge,
 			},
 			...declaredOwnerEntityHash ? { declaredOwnerEntityHash } : {},
 		},

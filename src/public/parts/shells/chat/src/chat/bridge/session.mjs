@@ -361,7 +361,7 @@ export function appendVirtualBridgeCharReply(username, groupId, channelId, reply
 			virtualEventId: eventId,
 			groupChannelId: channelId,
 			charId: charname,
-			...reply?.extension || {},
+			...reply?.extension,
 		},
 	}
 	pushLog(channel, entry)
