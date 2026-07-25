@@ -4056,6 +4056,7 @@ export type LocaleData = {
 			loading: string
 			filterAuthor: {
 				placeholder: string
+				'aria-label': string
 			}
 			filterMedia: {
 				'aria-label': string
@@ -4065,6 +4066,7 @@ export type LocaleData = {
 			filterMediaVideo: string
 			filterTag: {
 				placeholder: string
+				'aria-label': string
 			}
 			filterSort: {
 				'aria-label': string
