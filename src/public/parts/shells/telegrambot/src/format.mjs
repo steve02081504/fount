@@ -508,32 +508,77 @@ function utf16Length(text) {
 }
 
 /**
- * 将 Telegram text_mention 实体改写为 fount `@[hash]` token。
+ * 将 Telegram text_mention / @BotUsername mention 实体改写为 fount `@[hash]` token。
  * @param {string} username replica
  * @param {string | undefined} text 原始正文
  * @param {TelegramMessageEntity[] | undefined} entities 实体列表
+ * @param {TelegramBotInfo | null} [botInfo] bot 信息（用于匹配 @BotUsername）
  * @returns {Promise<string>} 改写后正文
  */
-export async function rewriteTelegramMentionsToFount(username, text, entities) {
+export async function rewriteTelegramMentionsToFount(username, text, entities, botInfo = null) {
 	if (!text || !entities?.length) return text || ''
 	const { resolveBridgeIdentity } = await import('../../chat/src/chat/bridge/identity.mjs')
-	const sorted = [...entities]
-		.filter(entity => entity.type === 'text_mention' && entity.user?.id != null)
-		.sort((a, b) => b.offset - a.offset)
+	const botUsername = String(botInfo?.username || '').replace(/^@/, '').toLowerCase()
+	const botId = botInfo?.id
+
+	/** @type {Array<{ offset: number, length: number, platformUserId: string | number, displayName: string }>} */
+	const rewrites = []
+	for (const entity of entities) {
+		if (entity.type === 'text_mention' && entity.user?.id != null) {
+			rewrites.push({
+				offset: entity.offset,
+				length: entity.length,
+				platformUserId: entity.user.id,
+				displayName: entity.user.first_name || entity.user.username || '',
+			})
+			continue
+		}
+		if (entity.type === 'mention' && botUsername && botId != null) {
+			const mentionText = utf16Slice(text, entity.offset, entity.length)
+			const handle = mentionText.replace(/^@/, '').toLowerCase()
+			if (handle === botUsername)
+				rewrites.push({
+					offset: entity.offset,
+					length: entity.length,
+					platformUserId: botId,
+					displayName: botInfo.username || '',
+				})
+		}
+	}
+	const sorted = rewrites.sort((a, b) => b.offset - a.offset)
 	let result = text
 	for (const entity of sorted) {
 		const hash = await resolveBridgeIdentity(
 			username,
 			'telegram',
-			entity.user.id,
-			entity.user.first_name || entity.user.username || '',
+			entity.platformUserId,
+			entity.displayName,
 		)
 		const token = formatEntityMentionToken(hash)
-		const chars = Array.from(result)
-		chars.splice(entity.offset, entity.length, ...Array.from(token))
-		result = chars.join('')
+		result = utf16Replace(result, entity.offset, entity.length, token)
 	}
 	return result
+}
+
+/**
+ * @param {string} text 文本
+ * @param {number} offset UTF-16 码元偏移
+ * @param {number} length UTF-16 码元长度
+ * @returns {string} 切片
+ */
+function utf16Slice(text, offset, length) {
+	return text.slice(offset, offset + length)
+}
+
+/**
+ * @param {string} text 文本
+ * @param {number} offset UTF-16 码元偏移
+ * @param {number} length UTF-16 码元长度
+ * @param {string} replacement 替换内容
+ * @returns {string} 替换后文本
+ */
+function utf16Replace(text, offset, length, replacement) {
+	return text.slice(0, offset) + replacement + text.slice(offset + length)
 }
 
 /**
@@ -617,7 +662,7 @@ export async function telegramMessageToBridgeDto(context, message, botInfo, owne
 	const rawText = message.text || message.caption || ''
 	const entities = message.entities || message.caption_entities
 	let text = telegramEntitiesToAiMarkdown(rawText, entities, botInfo, message.reply_to_message)
-	text = await rewriteTelegramMentionsToFount(ownerUsername, text, entities)
+	text = await rewriteTelegramMentionsToFount(ownerUsername, text, entities, botInfo)
 	if (message.sticker) {
 		const { sticker } = message
 		const stickerDesc = `<:${sticker.file_id}:${sticker.set_name || 'unknown_set'}:${sticker.emoji || ''}>`

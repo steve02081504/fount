@@ -1,7 +1,7 @@
 import { console } from '../../../../../../scripts/i18n/bare.mjs'
 import { channelMessageAgentText } from '../../../chat/public/shared/channelContent.mjs'
 import { dispatchBridgeBotStarted, postBridgeGroupEvent } from '../../../chat/src/chat/bridge/groupEvents.mjs'
-import { claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
+import { claimAgentBridgeIdentity, claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
 import {
 	bridgeIngestDto,
 	messageLineToReplyEntry,
@@ -70,6 +70,10 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 	 */
 	async function SimpleTelegramBotSetup(bot, interfaceConfig, botname) {
 		const botInfo = bot.botInfo || await tryFewTimes(() => bot.telegram.getMe())
+		await claimAgentBridgeIdentity(
+			ownerUsername, 'telegram', botInfo.id, botCharname,
+			botInfo.username || botCharname,
+		)
 		const DefaultParseModeOptions = { parse_mode: 'HTML' }
 		const stickerMap = charAPI.interfaces.telegram?.stickers || {}
 		/** @type {Set<string>} */
@@ -131,14 +135,34 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 			},
 			/**
 			 * @param {{ platformChatId: string | number }} params 平台会话
-			 * @returns {Promise<Array<{ platformUserId: string | number, displayName: string }>>} 管理员列表
+			 * @returns {Promise<Array<{ platformUserId: string | number, displayName: string }>>} 成员列表
 			 */
 			listMembers: async ({ platformChatId }) => {
+				/** @type {Map<string, { platformUserId: string | number, displayName: string }>} */
+				const byId = new Map()
 				const admins = await bot.telegram.getChatAdministrators(platformChatId)
-				return admins.map(admin => ({
-					platformUserId: admin.user.id,
-					displayName: admin.user.first_name || admin.user.username || String(admin.user.id),
-				}))
+				for (const admin of admins) {
+					const id = String(admin.user.id)
+					byId.set(id, {
+						platformUserId: admin.user.id,
+						displayName: admin.user.first_name || admin.user.username || id,
+					})
+				}
+				// Telegram Bot API 无法枚举全员；单独补查已声明的主人，避免非管理员主人被误判不在群
+				const ownerId = interfaceConfig.OwnerUserID
+				if (ownerId != null && String(ownerId).trim() && !byId.has(String(ownerId))) try {
+					const member = await bot.telegram.getChatMember(platformChatId, ownerId)
+					const status = member?.status
+					if (status && status !== 'left' && status !== 'kicked') {
+						const user = member.user
+						byId.set(String(user.id), {
+							platformUserId: user.id,
+							displayName: user.first_name || user.username || String(user.id),
+						})
+					}
+				}
+				catch { /* 主人不在群或查询失败 */ }
+				return [...byId.values()]
 			},
 		}, {
 			charname: botCharname,

@@ -319,12 +319,21 @@ export async function wechatMessageToBridgeDto(wechatMessage, ownerUsername, cdn
 	const fromUserId = String(wechatMessage.from_user_id || '').trim()
 	if (!fromUserId) return null
 
+	// iLink Bot 当前仅为用户↔bot 私聊；若协议带 room/group 字段则按群处理
+	const roomId = String(
+		wechatMessage.room_id || wechatMessage.group_id || wechatMessage.chatroom_id || '',
+	).trim()
+	const chatKind = roomId ? 'group' : 'dm'
+	const platformChatId = roomId || fromUserId
+
 	return {
 		platform: 'wechat',
-		platformChatId: fromUserId,
+		platformChatId,
 		platformMessageId: String(wechatMessage.message_id ?? wechatMessage.seq ?? crypto.randomUUID()),
-		chatKind: 'dm',
-		chatName: ownerDisplayName || `WeChat:${fromUserId}`,
+		chatKind,
+		chatName: chatKind === 'dm'
+			? ownerDisplayName || `WeChat:${fromUserId}`
+			: wechatMessage.room_name || wechatMessage.group_name || `WeChatRoom:${roomId}`,
 		author: {
 			platformUserId: fromUserId,
 			displayName: ownerDisplayName || fromUserId,

@@ -170,3 +170,37 @@ Deno.test('telegramMessageToBridgeDto maps mock Telegraf message with mention re
 	assert(dto.text.includes('<:STICKER_FILE:demo_set:🙂>'))
 	assert(!dto.text.includes('@Alice'))
 })
+
+Deno.test('rewriteTelegramMentionsToFount rewrites @BotUsername mention entity', async () => {
+	const username = `tg-mention-${crypto.randomUUID().slice(0, 8)}`
+	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_mention_'))
+	await createTestServerBoot({
+		username,
+		dataDir,
+		minP2pNode: true,
+		loadParts: ['shells/chat'],
+	})()
+
+	const { claimAgentBridgeIdentity, bridgeEntityHash } = await import('../../../chat/src/chat/bridge/identity.mjs')
+	const { ensureLocalAgentEntityHash } = await import('../../../chat/src/entity/member.mjs')
+	const botId = 900001
+	const botUsername = 'MockTgBot'
+	// 未绑定前为伪 hash；绑定后为 char hash
+	const unbound = bridgeEntityHash('telegram', botId)
+	const { rewriteTelegramMentionsToFount } = await import('../../src/format.mjs')
+	const mention = `@${botUsername}`
+	const text = `${mention} hi`
+	const entities = [{ type: 'mention', offset: 0, length: mention.length }]
+	const before = await rewriteTelegramMentionsToFount(username, text, entities, {
+		id: botId, username: botUsername,
+	})
+	assert(before.includes(`@[entity:${unbound}]`))
+
+	await claimAgentBridgeIdentity(username, 'telegram', botId, 'on_message_yes', botUsername)
+	const charHash = (await ensureLocalAgentEntityHash(username, 'on_message_yes')).toLowerCase()
+	const after = await rewriteTelegramMentionsToFount(username, text, entities, {
+		id: botId, username: botUsername,
+	})
+	assert(after.includes(`@[entity:${charHash}]`))
+	assert(!after.includes(mention))
+})
