@@ -186,8 +186,8 @@
 			"terminateIdle": "Aborted ${label}: no stdout/stderr for ${minutes} min (idle ${idleSec}s, elapsed ${elapsed})",
 			"terminateDuration": "Aborted ${label}: exceeded watchdog baseline (elapsed ${elapsed}, baseline ${baseline}, limit ${limit})",
 			"terminateDurationDefault": "Aborted ${label}: exceeded default watchdog limit (elapsed ${elapsed}, limit ${limit})",
-			"sleepDetected": "System hibernation is detected (watchdog interval jumps ${gap} ≥ ${limit}), ${label} is aborted and ready to be rerun (${elapsed} has been run)",
-			"sleepRetry": "System sleep interruption, rerun ${label} (${attempt} time)",
+			"sleepDetected": "System sleep detected (watchdog interval jumped ${gap} ≥ ${limit}); aborted ${label} for rerun (ran ${elapsed})",
+			"sleepRetry": "Interrupted by system sleep; rerunning ${label} (attempt ${attempt})",
 			"terminateMarker": "[Termination reason: ${reason}]",
 			"terminateUnknown": "TERMINATED ${label}: test interrupted",
 			"terminateSpeculative": "Aborted ${label}: speculative dependency not passed — early stop cancelled",
@@ -2089,7 +2089,7 @@
 				"aria-label": "Channel list"
 			},
 			"serverBar": {
-				"aria-label": "Groups and Navigation"
+				"aria-label": "Groups and navigation"
 			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} pages"
@@ -2203,19 +2203,19 @@
 					"aria-label": "Rename language code"
 				},
 				"localeRemove": {
-					"aria-label": "Delete language version"
+					"aria-label": "Remove language"
 				},
 				"avatarUrl": {
 					"placeholder": "Avatar image URL, or upload file below"
 				},
 				"avatarUpload": {
-					"aria-label": "Upload avatar image"
+					"aria-label": "Upload avatar"
 				},
 				"bannerUrl": {
 					"placeholder": "Banner image URL, or upload file below"
 				},
 				"bannerUpload": {
-					"aria-label": "Upload banner image"
+					"aria-label": "Upload banner"
 				},
 				"tag": {
 					"placeholder": "Add after entering tag"
@@ -2411,7 +2411,7 @@
 			"editedLabel": "(edited)",
 			"mentionEmpty": "(no matching members)",
 			"mentionSuggest": {
-				"aria-label": "mention candidates"
+				"aria-label": "Mention suggestions"
 			},
 			"clickToLoad": "Click to load",
 			"send": "Send"
@@ -3703,12 +3703,12 @@
 				"aria-label": "Social bottom navigation"
 			},
 			"feed": {
-				"aria-label": "front page",
-				"title": "front page"
+				"aria-label": "Home",
+				"title": "Home"
 			},
 			"explore": {
-				"aria-label": "explore",
-				"title": "explore"
+				"aria-label": "Explore",
+				"title": "Explore"
 			},
 			"notifications": {
 				"aria-label": "Inbox",
@@ -3719,20 +3719,20 @@
 				"title": "Saved"
 			},
 			"drafts": {
-				"aria-label": "draft box",
-				"title": "draft box"
+				"aria-label": "Drafts",
+				"title": "Drafts"
 			},
 			"profile": {
-				"aria-label": "mine",
-				"title": "mine"
+				"aria-label": "Profile",
+				"title": "Profile"
 			},
 			"videos": {
-				"aria-label": "short video",
-				"title": "short video"
+				"aria-label": "Videos",
+				"title": "Videos"
 			},
 			"live": {
-				"aria-label": "live streaming",
-				"title": "live streaming"
+				"aria-label": "Live",
+				"title": "Live"
 			},
 			"compose": {
 				"aria-label": "Write a post"
@@ -3822,7 +3822,7 @@
 				"aria-label": "Emoji"
 			},
 			"mentionSuggest": {
-				"aria-label": "mention candidates"
+				"aria-label": "Mention suggestions"
 			},
 			"mediaButton": {
 				"title": "Add media",
@@ -3873,7 +3873,7 @@
 			},
 			"newPosts": "There is new news, click to view",
 			"tabsLabel": {
-				"aria-label": "Feed ranking"
+				"aria-label": "Feed sort order"
 			},
 			"tabLatest": "Latest",
 			"tabForYou": "For you",
@@ -3887,7 +3887,7 @@
 			"trending": {
 				"title": "Trending",
 				"tabsLabel": {
-					"aria-label": "Popular topic range"
+					"aria-label": "Trending scope"
 				},
 				"postCount": {
 					"title": "${n} posts"
@@ -4060,7 +4060,7 @@
 		},
 		"search": {
 			"placeholder": "Search for posts, users or #topics (minimum 2 words)",
-			"aria-label": "Search for updates, users or topics",
+			"aria-label": "Search posts, people or topics",
 			"open": {
 				"aria-label": "Search"
 			},
@@ -4079,7 +4079,7 @@
 				"placeholder": "Author"
 			},
 			"filterMedia": {
-				"aria-label": "media type"
+				"aria-label": "Media type"
 			},
 			"filterMediaAll": "All media",
 			"filterMediaImage": "Images",
@@ -4088,7 +4088,7 @@
 				"placeholder": "#Label"
 			},
 			"filterSort": {
-				"aria-label": "sort"
+				"aria-label": "Sort by"
 			},
 			"sortRecent": "Latest",
 			"sortPopular": "Popular",
@@ -4182,7 +4182,7 @@
 		},
 		"aside": {
 			"region": {
-				"aria-label": "social sidebar"
+				"aria-label": "Social sidebar"
 			},
 			"suggested": "Suggested follows"
 		},
@@ -5168,7 +5168,7 @@
 	"util": {
 		"toast": {
 			"container": {
-				"aria-label": "notify"
+				"aria-label": "Notifications"
 			}
 		},
 		"common": {

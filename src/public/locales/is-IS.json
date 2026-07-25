@@ -191,8 +191,8 @@
 			"terminateIdle": "Hætt við ${label}: Ekkert stdall úttak í meira en ${minutes} mínútur (aðgerðalaus í ${idleSec} sekúndur, keyrðu ${elapsed})",
 			"terminateDuration": "Lokað ${label}: tók meira en Grunnurlínutíma varðhundsins (kemur ${elapsed}, Grunnurlína ${baseline}, efri mörk ${limit})",
 			"terminateDurationDefault": "Lokað ${label}: Tími sem varið er umfram sjálfgefna lengdarmörk varðhunda (í gangi ${elapsed}, efri mörk ${limit})",
-			"sleepDetected": "Kerfisdvala greinist (varðhundsbilið hoppar ${gap} ≥ ${limit}), ${label} er hætt og tilbúið til að keyra aftur (${elapsed} hefur verið keyrt)",
-			"sleepRetry": "Kerfissvefnistruflun, endurkeyrðu ${label} (${attempt} tími)",
+			"sleepDetected": "Kerfissvefn greindur (watchdog-bil stökk ${gap} ≥ ${limit}); ${label} stöðvað og tilbúið til endurræsningar (keyrði ${elapsed})",
+			"sleepRetry": "Truflað af kerfissvefni; endurræsir ${label} (tilraun ${attempt})",
 			"terminateMarker": "[Ástæða uppsagnar: ${reason}]",
 			"terminateUnknown": "LOKAÐ ${label}: próf truflað",
 			"terminateSpeculative": "Lokað ${label}: Bjartsýn háð mistókst, snemmbúin stöðvun aflýst",
@@ -1633,7 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "Leita að skilaboðum...",
-				"aria-label": "Leitaðu að skilaboðum",
+				"aria-label": "Leita í skilaboðum",
 				"noResults": "Engar niðurstöður",
 				"failed": "Leit mistókst",
 				"scopeGroup": "Þessi hópur",
@@ -2094,7 +2094,7 @@
 				"aria-label": "Rásalisti"
 			},
 			"serverBar": {
-				"aria-label": "Hópar og siglingar"
+				"aria-label": "Hópar og leiðsögn"
 			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} síður"
@@ -2205,22 +2205,22 @@
 					"placeholder": "Nýr tungumálakóði, eins og en-UK"
 				},
 				"renameLocale": {
-					"aria-label": "Endurnefna tungumálakóða"
+					"aria-label": "Endurnefna tungumálskóða"
 				},
 				"localeRemove": {
-					"aria-label": "Eyða tungumálaútgáfu"
+					"aria-label": "Fjarlægja þetta tungumál"
 				},
 				"avatarUrl": {
 					"placeholder": "Vefslóð avatarmyndar, eða hlaðið upp skránni hér að neðan"
 				},
 				"avatarUpload": {
-					"aria-label": "Sækja avatar mynd"
+					"aria-label": "Hlaða upp avatari"
 				},
 				"bannerUrl": {
 					"placeholder": "Vefslóð borðamyndar, eða hlaðið upp skránni hér að neðan"
 				},
 				"bannerUpload": {
-					"aria-label": "Hladdu upp borðamynd"
+					"aria-label": "Hlaða upp borða"
 				},
 				"tag": {
 					"placeholder": "Bæta við eftir að hafa slegið inn merkið"
@@ -2416,7 +2416,7 @@
 			"editedLabel": "(breytt)",
 			"mentionEmpty": "(engir samsvarandi meðlimir)",
 			"mentionSuggest": {
-				"aria-label": "nefna frambjóðendur"
+				"aria-label": "Tillögur að mentíunum"
 			},
 			"clickToLoad": "Smelltu til að hlaða",
 			"send": "Senda"
@@ -3702,18 +3702,18 @@
 		},
 		"nav": {
 			"side": {
-				"aria-label": "félagslegur flakk"
+				"aria-label": "Félagsleg leiðsögn"
 			},
 			"mobile": {
-				"aria-label": "Félagsleg botnleiðsögn"
+				"aria-label": "Félagsleg neðri leiðsögn"
 			},
 			"feed": {
 				"aria-label": "Heim",
-				"title": "forsíðu"
+				"title": "Heim"
 			},
 			"explore": {
 				"aria-label": "Kanna",
-				"title": "kanna"
+				"title": "Kanna"
 			},
 			"notifications": {
 				"aria-label": "Innhólf",
@@ -3721,26 +3721,26 @@
 			},
 			"saved": {
 				"aria-label": "Vistað",
-				"title": "safna"
+				"title": "Vistað"
 			},
 			"drafts": {
 				"aria-label": "Drög",
-				"title": "uppkastskassa"
+				"title": "Drög"
 			},
 			"profile": {
 				"aria-label": "Ég",
-				"title": "minn"
+				"title": "Prófíll"
 			},
 			"videos": {
 				"aria-label": "Stutt myndbönd",
-				"title": "stutt myndband"
+				"title": "Stuttmyndbönd"
 			},
 			"live": {
 				"aria-label": "Beint",
-				"title": "streymi í beinni"
+				"title": "Í beinni"
 			},
 			"compose": {
-				"aria-label": "Skrifaðu uppfærslur"
+				"aria-label": "Skrifa færslu"
 			}
 		},
 		"settings": {
@@ -3794,7 +3794,7 @@
 		"composer": {
 			"placeholder": "Hvað ertu að hugsa um? Styðjið Markdown (font mállýska), sláðu inn @ til að nefna",
 			"locale": "Efnismál",
-			"aria-label": "Skrifaðu uppfærslur",
+			"aria-label": "Skrifa færslu",
 			"publish": "Birta",
 			"saveDraft": "Vista drög",
 			"fab": {
@@ -3825,7 +3825,7 @@
 				"aria-label": "Broskarlar"
 			},
 			"mentionSuggest": {
-				"aria-label": "nefna frambjóðendur"
+				"aria-label": "Tillögur að mentíunum"
 			},
 			"mediaButton": {
 				"title": "Bættu við miðli",
@@ -3876,7 +3876,7 @@
 			},
 			"newPosts": "Það eru nýjar fréttir, smelltu til að skoða",
 			"tabsLabel": {
-				"aria-label": "Flokkun upplýsingaflæðis"
+				"aria-label": "Röðun straums"
 			},
 			"tabLatest": "Nýjast",
 			"tabForYou": "Fyrir þig",
@@ -3890,7 +3890,7 @@
 			"trending": {
 				"title": "Vinsælt efni",
 				"tabsLabel": {
-					"aria-label": "Vinsælt efnissvið"
+					"aria-label": "Umfang vinsælla umræðuefna"
 				},
 				"postCount": {
 					"title": "${n} færslur"
@@ -4063,7 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Leitaðu að uppfærslum, notendum eða #topics (að lágmarki 2 orð)",
-			"aria-label": "Leitaðu að uppfærslum, notendum eða efni",
+			"aria-label": "Leita að færslum, fólki eða umræðuefnum",
 			"open": {
 				"aria-label": "Leita"
 			},
@@ -4082,7 +4082,7 @@
 				"placeholder": "Höfundur"
 			},
 			"filterMedia": {
-				"aria-label": "gerð fjölmiðla"
+				"aria-label": "Miðlagerð"
 			},
 			"filterMediaAll": "Allir fjölmiðlar",
 			"filterMediaImage": "Myndir",
@@ -4091,7 +4091,7 @@
 				"placeholder": "#Merki"
 			},
 			"filterSort": {
-				"aria-label": "flokka"
+				"aria-label": "Raða eftir"
 			},
 			"sortRecent": "Nýjast",
 			"sortPopular": "Vinsælt",
@@ -4185,7 +4185,7 @@
 		},
 		"aside": {
 			"region": {
-				"aria-label": "félagsleg hliðarstika"
+				"aria-label": "Félagsleg hliðarstika"
 			},
 			"suggested": "Mæli með athygli"
 		},
@@ -5171,7 +5171,7 @@
 	"util": {
 		"toast": {
 			"container": {
-				"aria-label": "tilkynna"
+				"aria-label": "Tilkynningar"
 			}
 		},
 		"common": {

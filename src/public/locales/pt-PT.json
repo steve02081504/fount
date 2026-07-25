@@ -191,8 +191,8 @@
 			"terminateIdle": "${label} abortado: Nenhuma saída padrão por mais de ${minutes} minutos (inativo por ${idleSec} segundos, execute ${elapsed})",
 			"terminateDuration": "${label} encerrado: demorou mais do que o tempo de linha de base do watchdog (executando ${elapsed}, linha de base ${baseline}, limite superior ${limit})",
 			"terminateDurationDefault": "${label} encerrado: o tempo gasto excede o limite de duração do watchdog padrão (executando ${elapsed}, limite superior ${limit})",
-			"sleepDetected": "A hibernação do sistema é detectada (intervalo de watchdog salta ${gap} ≥ ${limit}), ${label} é abortado e está pronto para ser executado novamente (${elapsed} foi executado)",
-			"sleepRetry": "Interrupção do sono do sistema, reexecutar ${label} (${attempt} time)",
+			"sleepDetected": "Suspensão do sistema detetada (intervalo do watchdog saltou ${gap} ≥ ${limit}); ${label} interrompido e pronto a relançar (já correu ${elapsed})",
+			"sleepRetry": "Interrompido pela suspensão do sistema; a relançar ${label} (tentativa ${attempt})",
 			"terminateMarker": "[Motivo da terminação: ${reason}]",
 			"terminateUnknown": "TERMINADO ${label}: teste interrompido",
 			"terminateSpeculative": "Terminado ${label}: A dependência especulativa não passou, parada antecipada cancelada",
@@ -2205,22 +2205,22 @@
 					"placeholder": "Novo código de idioma, como en-UK"
 				},
 				"renameLocale": {
-					"aria-label": "Renomear código de idioma"
+					"aria-label": "Mudar o código de idioma"
 				},
 				"localeRemove": {
-					"aria-label": "Excluir versão do idioma"
+					"aria-label": "Remover este idioma"
 				},
 				"avatarUrl": {
 					"placeholder": "URL da imagem do avatar, ou carregue o ficheiro abaixo"
 				},
 				"avatarUpload": {
-					"aria-label": "Carregar imagem de avatar"
+					"aria-label": "Carregar avatar"
 				},
 				"bannerUrl": {
 					"placeholder": "URL da imagem do banner, ou carregue o ficheiro abaixo"
 				},
 				"bannerUpload": {
-					"aria-label": "Carregar imagem do banner"
+					"aria-label": "Carregar banner"
 				},
 				"tag": {
 					"placeholder": "Adicionar after entering tag"
@@ -2236,7 +2236,7 @@
 				}
 			},
 			"profilePopup": {
-				"aria-label": "Perfil de usuário",
+				"aria-label": "Perfil do utilizador",
 				"close": {
 					"title": "Fechar cartão de dados"
 				},
@@ -2416,7 +2416,7 @@
 			"editedLabel": "(editado)",
 			"mentionEmpty": "(sem membros correspondentes)",
 			"mentionSuggest": {
-				"aria-label": "mencionar candidatos"
+				"aria-label": "Sugestões de menção"
 			},
 			"clickToLoad": "Clique para carregar",
 			"send": "Enviar"
@@ -3702,18 +3702,18 @@
 		},
 		"nav": {
 			"side": {
-				"aria-label": "navegação social"
+				"aria-label": "Navegação social"
 			},
 			"mobile": {
 				"aria-label": "Navegação social inferior"
 			},
 			"feed": {
 				"aria-label": "Início",
-				"title": "primeira página"
+				"title": "Início"
 			},
 			"explore": {
 				"aria-label": "Explorar",
-				"title": "explorar"
+				"title": "Explorar"
 			},
 			"notifications": {
 				"aria-label": "Caixa de entrada",
@@ -3721,26 +3721,26 @@
 			},
 			"saved": {
 				"aria-label": "Guardados",
-				"title": "coletar"
+				"title": "Guardados"
 			},
 			"drafts": {
 				"aria-label": "Rascunhos",
-				"title": "caixa de rascunho"
+				"title": "Rascunhos"
 			},
 			"profile": {
 				"aria-label": "Eu",
-				"title": "meu"
+				"title": "Perfil"
 			},
 			"videos": {
 				"aria-label": "Vídeos curtos",
-				"title": "vídeo curto"
+				"title": "Vídeos curtos"
 			},
 			"live": {
 				"aria-label": "Em direto",
-				"title": "transmissão ao vivo"
+				"title": "Em direto"
 			},
 			"compose": {
-				"aria-label": "Escreva atualizações"
+				"aria-label": "Escrever uma publicação"
 			}
 		},
 		"settings": {
@@ -3794,7 +3794,7 @@
 		"composer": {
 			"placeholder": "O que está pensando? Suporte Markdown (dialeto fount), digite @ para mencionar",
 			"locale": "Linguagem do conteúdo",
-			"aria-label": "Escreva atualizações",
+			"aria-label": "Escrever uma publicação",
 			"publish": "Liberar",
 			"saveDraft": "Guardar draft",
 			"fab": {
@@ -3825,7 +3825,7 @@
 				"aria-label": "Expressão"
 			},
 			"mentionSuggest": {
-				"aria-label": "mencionar candidatos"
+				"aria-label": "Sugestões de menção"
 			},
 			"mediaButton": {
 				"title": "Adicionar media",
@@ -3876,7 +3876,7 @@
 			},
 			"newPosts": "Há novidades, clique para ver",
 			"tabsLabel": {
-				"aria-label": "Classificação do fluxo de informações"
+				"aria-label": "Ordenação do feed"
 			},
 			"tabLatest": "Atualizado",
 			"tabForYou": "Recomendar",
@@ -3890,7 +3890,7 @@
 			"trending": {
 				"title": "Tópicos quentes",
 				"tabsLabel": {
-					"aria-label": "Intervalo de tópicos populares"
+					"aria-label": "Âmbito das tendências"
 				},
 				"postCount": {
 					"title": "${n} postagens"
@@ -4063,7 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Pesquisar publicações, utilizadores ou #tópicos (mínimo 2 palavras)",
-			"aria-label": "Pesquise atualizações, usuários ou tópicos",
+			"aria-label": "Pesquisar publicações, pessoas ou tópicos",
 			"open": {
 				"aria-label": "Procurar"
 			},
@@ -4082,7 +4082,7 @@
 				"placeholder": "Autor"
 			},
 			"filterMedia": {
-				"aria-label": "tipo de mídia"
+				"aria-label": "Tipo de média"
 			},
 			"filterMediaAll": "Todas as mídias",
 			"filterMediaImage": "Foto",
@@ -4091,12 +4091,12 @@
 				"placeholder": "#Rótulo"
 			},
 			"filterSort": {
-				"aria-label": "organizar"
+				"aria-label": "Ordenar por"
 			},
 			"sortRecent": "Atualizado",
 			"sortPopular": "Popular",
 			"filterScope": {
-				"aria-label": "Escopo da pesquisa"
+				"aria-label": "Âmbito da pesquisa"
 			},
 			"scopeLocal": "Máquina local",
 			"scopeNearby": "Próximo"
@@ -4185,7 +4185,7 @@
 		},
 		"aside": {
 			"region": {
-				"aria-label": "barra lateral social"
+				"aria-label": "Barra lateral social"
 			},
 			"suggested": "Recomendo atenção"
 		},
@@ -5171,7 +5171,7 @@
 	"util": {
 		"toast": {
 			"container": {
-				"aria-label": "notificar"
+				"aria-label": "Notificações"
 			}
 		},
 		"common": {

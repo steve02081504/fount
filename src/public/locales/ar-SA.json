@@ -191,8 +191,8 @@
 			"terminateIdle": "تم إحباط ${label}: لا يوجد إخراج قياسي لأكثر من ${minutes} دقيقة (خمول لمدة ${idleSec} ثانية، تشغيل ${elapsed})",
 			"terminateDuration": "تم إغلاق ${label}: استغرق أكثر من وقت خط الأساس للمراقبة (تشغيل ${elapsed}، خط الأساس ${baseline}، الحد الأعلى ${limit})",
 			"terminateDurationDefault": "تم الإنهاء ${label}: يتجاوز الوقت المستغرق الحد الأقصى لمدة المراقبة الافتراضية (تشغيل ${elapsed}، الحد الأعلى ${limit})",
-			"sleepDetected": "تم اكتشاف حالة إسبات النظام (يقفز الفاصل الزمني للمراقبة ${gap} ≥ ${limit})، وتم إحباط ${label} وأصبح جاهزًا لإعادة التشغيل (تم تشغيل ${elapsed})",
-			"sleepRetry": "انقطاع سكون النظام، أعد تشغيل ${label} (وقت ${attempt})",
+			"sleepDetected": "اكتُشف سبات النظام (قفز فاصل المراقب ${gap} ≥ ${limit})؛ أُلغي ${label} وجاهز لإعادة التشغيل (شغّل ${elapsed})",
+			"sleepRetry": "قاطعه سبات النظام؛ إعادة تشغيل ${label} (المحاولة ${attempt})",
 			"terminateMarker": "[سبب الإنهاء: ${reason}]",
 			"terminateUnknown": "تم إغلاق ${label}: تمت مقاطعة الاختبار",
 			"terminateSpeculative": "تم إغلاق ${label}: لم ينته اعتماد المضاربة، وتم إلغاء الإيقاف المبكر",
@@ -1633,7 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "البحث عن الرسائل...",
-				"aria-label": "بحث في الرسائل",
+				"aria-label": "البحث في الرسائل",
 				"noResults": "لا توجد نتائج",
 				"failed": "فشل البحث",
 				"scopeGroup": "هذه المجموعة",
@@ -1770,7 +1770,7 @@
 			"messageEditSave": "حفظ",
 			"messageEditCancel": "إلغاء",
 			"messageEditArea": {
-				"aria-label": "تحرير الرسالة"
+				"aria-label": "تعديل الرسالة"
 			},
 			"feedbackReasonPrompt": "سبب الرفض (اختياري)",
 			"feedbackReasonInput": {
@@ -2094,7 +2094,7 @@
 				"aria-label": "قائمة القنوات"
 			},
 			"serverBar": {
-				"aria-label": "المجموعات والملاحة"
+				"aria-label": "المجموعات والتنقل"
 			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} صفحة"
@@ -2208,19 +2208,19 @@
 					"aria-label": "إعادة تسمية رمز اللغة"
 				},
 				"localeRemove": {
-					"aria-label": "حذف نسخة اللغة"
+					"aria-label": "حذف هذه اللغة"
 				},
 				"avatarUrl": {
 					"placeholder": "عنوان URL للصورة الرمزية، أو قم بتحميل الملف أدناه"
 				},
 				"avatarUpload": {
-					"aria-label": "تحميل الصورة الرمزية"
+					"aria-label": "رفع صورة الملف الشخصي"
 				},
 				"bannerUrl": {
 					"placeholder": "عنوان URL لصورة البانر، أو قم بتحميل الملف أدناه"
 				},
 				"bannerUpload": {
-					"aria-label": "تحميل صورة البانر"
+					"aria-label": "رفع صورة الغلاف"
 				},
 				"tag": {
 					"placeholder": "أضف بعد إدخال العلامة"
@@ -2236,7 +2236,7 @@
 				}
 			},
 			"profilePopup": {
-				"aria-label": "ملف تعريف المستخدم",
+				"aria-label": "ملف المستخدم",
 				"close": {
 					"title": "إغلاق بطاقة البيانات"
 				},
@@ -2416,7 +2416,7 @@
 			"editedLabel": "(تحرير)",
 			"mentionEmpty": "(لا يوجد أعضاء متطابقين)",
 			"mentionSuggest": {
-				"aria-label": "أذكر المرشحين"
+				"aria-label": "اقتراحات الإشارة"
 			},
 			"clickToLoad": "انقر للتحميل",
 			"send": "إرسال"
@@ -3702,45 +3702,45 @@
 		},
 		"nav": {
 			"side": {
-				"aria-label": "الملاحة الاجتماعية"
+				"aria-label": "التنقل الاجتماعي"
 			},
 			"mobile": {
-				"aria-label": "التنقل السفلي الاجتماعي"
+				"aria-label": "التنقل الاجتماعي السفلي"
 			},
 			"feed": {
 				"aria-label": "الصفحة الأولى",
-				"title": "الصفحة الأولى"
+				"title": "الرئيسية"
 			},
 			"explore": {
 				"aria-label": "استكشاف",
-				"title": "يستكشف"
+				"title": "استكشاف"
 			},
 			"notifications": {
 				"aria-label": "البريد الوارد",
-				"title": "البريد الوارد"
+				"title": "الوارد"
 			},
 			"saved": {
 				"aria-label": "حفظ",
-				"title": "يجمع"
+				"title": "المحفوظات"
 			},
 			"drafts": {
 				"aria-label": "مربع مشروع",
-				"title": "مربع مشروع"
+				"title": "المسودات"
 			},
 			"profile": {
 				"aria-label": "خاصتي",
-				"title": "مِلكِي"
+				"title": "الملف الشخصي"
 			},
 			"videos": {
 				"aria-label": "فيديو قصير",
-				"title": "فيديو قصير"
+				"title": "مقاطع قصيرة"
 			},
 			"live": {
 				"aria-label": "البث المباشر",
-				"title": "البث المباشر"
+				"title": "مباشر"
 			},
 			"compose": {
-				"aria-label": "كتابة التحديثات"
+				"aria-label": "كتابة منشور"
 			}
 		},
 		"settings": {
@@ -3794,7 +3794,7 @@
 		"composer": {
 			"placeholder": "ما الذي تفكر فيه؟ دعم تخفيض السعر (اللهجة المحلية)، أدخل @ للإشارة",
 			"locale": "لغة المحتوى",
-			"aria-label": "كتابة التحديثات",
+			"aria-label": "كتابة منشور",
 			"publish": "نشر",
 			"saveDraft": "حفظ المسودة",
 			"fab": {
@@ -3825,7 +3825,7 @@
 				"aria-label": "تعبير"
 			},
 			"mentionSuggest": {
-				"aria-label": "أذكر المرشحين"
+				"aria-label": "اقتراحات الإشارة"
 			},
 			"mediaButton": {
 				"title": "أضف الوسائط",
@@ -3876,7 +3876,7 @@
 			},
 			"newPosts": "هناك أخبار جديدة، انقر لعرضها",
 			"tabsLabel": {
-				"aria-label": "فرز تدفق المعلومات"
+				"aria-label": "ترتيب الخلاصة"
 			},
 			"tabLatest": "حتى الآن",
 			"tabForYou": "لك",
@@ -3890,7 +3890,7 @@
 			"trending": {
 				"title": "مواضيع ساخنة",
 				"tabsLabel": {
-					"aria-label": "نطاق المواضيع الشعبية"
+					"aria-label": "نطاق المواضيع الرائجة"
 				},
 				"postCount": {
 					"title": "${n} مشاركات"
@@ -4063,7 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "ابحث عن التحديثات أو المستخدمين أو #topics (كلمتان على الأقل)",
-			"aria-label": "البحث عن التحديثات أو المستخدمين أو المواضيع",
+			"aria-label": "البحث عن منشورات أو أشخاص أو مواضيع",
 			"open": {
 				"aria-label": "بحث"
 			},
@@ -4091,7 +4091,7 @@
 				"placeholder": "#ملصق"
 			},
 			"filterSort": {
-				"aria-label": "نوع"
+				"aria-label": "ترتيب حسب"
 			},
 			"sortRecent": "حتى الآن",
 			"sortPopular": "شائع",
@@ -5171,7 +5171,7 @@
 	"util": {
 		"toast": {
 			"container": {
-				"aria-label": "يخطر"
+				"aria-label": "الإشعارات"
 			}
 		},
 		"common": {

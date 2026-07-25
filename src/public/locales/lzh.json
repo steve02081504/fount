@@ -191,8 +191,8 @@
 			"terminateIdle": "已終止 ${label}：超過 ${minutes} 分鐘無 stdall 輸出（空閒 ${idleSec} 秒，已運行 ${elapsed}）",
 			"terminateDuration": "已終止 ${label}：耗時超過 watchdog 基線時長（已運行 ${elapsed}，基線 ${baseline}，上限 ${limit}）",
 			"terminateDurationDefault": "已終止 ${label}：耗時超過常制 watchdog 時長上限（已運行 ${elapsed}，上限 ${limit}）",
-			"sleepDetected": "检测到系统休眠（看门狗间隔跳变 ${gap} ≥ ${limit}），中止 ${label} 并准备重跑（已运行 ${elapsed}）",
-			"sleepRetry": "系统休眠中断，重跑 ${label}（第 ${attempt} 次）",
+			"sleepDetected": "察系休眠（監犬間隔躍 ${gap} ≥ ${limit}），已止 ${label}，待再跑（已行 ${elapsed}）",
+			"sleepRetry": "系休眠中絕，再跑 ${label}（第 ${attempt} 次）",
 			"terminateMarker": "[終止原因: ${reason}]",
 			"terminateUnknown": "已終止 ${label}：試程中斷",
 			"terminateSpeculative": "已終止 ${label}：投機依賴未過，取消早停",
@@ -1633,7 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "尋蹤之札…",
-				"aria-label": "搜索消息",
+				"aria-label": "索書",
 				"noResults": "無結果",
 				"failed": "尋蹤未遂",
 				"scopeGroup": "本群",
@@ -1770,7 +1770,7 @@
 			"messageEditSave": "存",
 			"messageEditCancel": "罷",
 			"messageEditArea": {
-				"aria-label": "编辑消息"
+				"aria-label": "脩書"
 			},
 			"feedbackReasonPrompt": "惡緣由（可選）",
 			"feedbackReasonInput": {
@@ -2088,13 +2088,13 @@
 				"aria-label": "闔"
 			},
 			"memberBar": {
-				"aria-label": "成员列表"
+				"aria-label": "成員冊"
 			},
 			"channelBar": {
-				"aria-label": "频道列表"
+				"aria-label": "頻道冊"
 			},
 			"serverBar": {
-				"aria-label": "群组与导航"
+				"aria-label": "群與導覽"
 			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} 頁"
@@ -2205,22 +2205,22 @@
 					"placeholder": "新語言符碼，如 en-UK"
 				},
 				"renameLocale": {
-					"aria-label": "重命名语言代码"
+					"aria-label": "更語碼之名"
 				},
 				"localeRemove": {
-					"aria-label": "删除语言版本"
+					"aria-label": "刪此語"
 				},
 				"avatarUrl": {
 					"placeholder": "真容圖片 URL，或在下方傳文牘"
 				},
 				"avatarUpload": {
-					"aria-label": "上传头像图片"
+					"aria-label": "上傳容像"
 				},
 				"bannerUrl": {
 					"placeholder": "橫幅圖片 URL，或在下方傳文牘"
 				},
 				"bannerUpload": {
-					"aria-label": "上传横幅图片"
+					"aria-label": "上傳旌旗"
 				},
 				"tag": {
 					"placeholder": "輸入標籤後添"
@@ -2236,7 +2236,7 @@
 				}
 			},
 			"profilePopup": {
-				"aria-label": "用户资料",
+				"aria-label": "客之籍",
 				"close": {
 					"title": "闔簿牒卡"
 				},
@@ -2416,7 +2416,7 @@
 			"editedLabel": "(已修)",
 			"mentionEmpty": "（無相契成員）",
 			"mentionSuggest": {
-				"aria-label": "提及候选"
+				"aria-label": "呼名候選"
 			},
 			"clickToLoad": "觸以取錄",
 			"send": "發送"
@@ -3702,45 +3702,45 @@
 		},
 		"nav": {
 			"side": {
-				"aria-label": "社交导航"
+				"aria-label": "社交導覽"
 			},
 			"mobile": {
-				"aria-label": "社交底部导航"
+				"aria-label": "社交底導"
 			},
 			"feed": {
 				"aria-label": "卷首",
-				"title": "首页"
+				"title": "卷首"
 			},
 			"explore": {
 				"aria-label": "探索",
-				"title": "探索"
+				"title": "遊覽"
 			},
 			"notifications": {
 				"aria-label": "收件箱",
-				"title": "收件箱"
+				"title": "函匣"
 			},
 			"saved": {
 				"aria-label": "收藏",
-				"title": "收藏"
+				"title": "珍藏"
 			},
 			"drafts": {
 				"aria-label": "底稿囊",
-				"title": "草稿箱"
+				"title": "底稿囊"
 			},
 			"profile": {
 				"aria-label": "吾之",
-				"title": "我的"
+				"title": "吾之"
 			},
 			"videos": {
 				"aria-label": "留影",
-				"title": "短视频"
+				"title": "短影"
 			},
 			"live": {
 				"aria-label": "現影",
 				"title": "直播"
 			},
 			"compose": {
-				"aria-label": "写动态"
+				"aria-label": "書言"
 			}
 		},
 		"settings": {
@@ -3794,7 +3794,7 @@
 		"composer": {
 			"placeholder": "方今何思？可用墨記（fount 方言），入 @ 可提及",
 			"locale": "內容語言",
-			"aria-label": "写动态",
+			"aria-label": "書言",
 			"publish": "發布",
 			"saveDraft": "存底稿",
 			"fab": {
@@ -3825,7 +3825,7 @@
 				"aria-label": "表情"
 			},
 			"mentionSuggest": {
-				"aria-label": "提及候选"
+				"aria-label": "呼名候選"
 			},
 			"mediaButton": {
 				"title": "添媒體",
@@ -3876,7 +3876,7 @@
 			},
 			"newPosts": "有新言，觸以披閱",
 			"tabsLabel": {
-				"aria-label": "信息流排序"
+				"aria-label": "言序"
 			},
 			"tabLatest": "最新",
 			"tabForYou": "推薦",
@@ -3890,7 +3890,7 @@
 			"trending": {
 				"title": "熱門話題",
 				"tabsLabel": {
-					"aria-label": "热门话题范围"
+					"aria-label": "熱議之域"
 				},
 				"postCount": {
 					"title": "${n} 則言"
@@ -4063,7 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "尋言、客或 #話題（至少 2 字）",
-			"aria-label": "搜索动态、用户或话题",
+			"aria-label": "索言、客或題",
 			"open": {
 				"aria-label": "尋蹤"
 			},
@@ -4082,7 +4082,7 @@
 				"placeholder": "作者"
 			},
 			"filterMedia": {
-				"aria-label": "媒体类型"
+				"aria-label": "媒類"
 			},
 			"filterMediaAll": "所有媒體",
 			"filterMediaImage": "圖片",
@@ -4091,12 +4091,12 @@
 				"placeholder": "#標籤"
 			},
 			"filterSort": {
-				"aria-label": "排序"
+				"aria-label": "序"
 			},
 			"sortRecent": "最新",
 			"sortPopular": "熱門",
 			"filterScope": {
-				"aria-label": "搜索范围"
+				"aria-label": "索域"
 			},
 			"scopeLocal": "本機",
 			"scopeNearby": "附近"
@@ -4185,7 +4185,7 @@
 		},
 		"aside": {
 			"region": {
-				"aria-label": "社交侧栏"
+				"aria-label": "社交側欄"
 			},
 			"suggested": "推薦關注"
 		},
@@ -5171,7 +5171,7 @@
 	"util": {
 		"toast": {
 			"container": {
-				"aria-label": "通知"
+				"aria-label": "告示"
 			}
 		},
 		"common": {

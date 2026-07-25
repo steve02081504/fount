@@ -191,7 +191,7 @@
 			"terminateIdle": "已终止 ${label}：超过 ${minutes} 分钟无 stdall 输出（空闲 ${idleSec} 秒，已运行 ${elapsed}）",
 			"terminateDuration": "已终止 ${label}：耗时超过 watchdog 基线时长（已运行 ${elapsed}，基线 ${baseline}，上限 ${limit}）",
 			"terminateDurationDefault": "已终止 ${label}：耗时超过默认 watchdog 时长上限（已运行 ${elapsed}，上限 ${limit}）",
-			"sleepDetected": "检测到系统休眠（看门狗间隔跳变 ${gap} ≥ ${limit}），中止 ${label} 并准备重跑（已运行 ${elapsed}）",
+			"sleepDetected": "检测到系统休眠（看门狗间隔跳变 ${gap} ≥ ${limit}），已中止 ${label} 并准备重跑（已运行 ${elapsed}）",
 			"sleepRetry": "系统休眠中断，重跑 ${label}（第 ${attempt} 次）",
 			"terminateMarker": "[终止原因: ${reason}]",
 			"terminateUnknown": "已终止 ${label}：测试被中断",
@@ -2214,19 +2214,19 @@
 					"aria-label": "重命名语言代码"
 				},
 				"localeRemove": {
-					"aria-label": "删除语言版本"
+					"aria-label": "删除此语言"
 				},
 				"avatarUrl": {
 					"placeholder": "头像图片 URL，或在下方上传文件"
 				},
 				"avatarUpload": {
-					"aria-label": "上传头像图片"
+					"aria-label": "上传头像"
 				},
 				"bannerUrl": {
 					"placeholder": "横幅图片 URL，或在下方上传文件"
 				},
 				"bannerUpload": {
-					"aria-label": "上传横幅图片"
+					"aria-label": "上传横幅"
 				},
 				"tag": {
 					"placeholder": "输入标签后添加"
@@ -2422,7 +2422,7 @@
 			"editedLabel": "(已编辑)",
 			"mentionEmpty": "（无匹配成员）",
 			"mentionSuggest": {
-				"aria-label": "提及候选"
+				"aria-label": "提及建议"
 			},
 			"clickToLoad": "点击加载",
 			"send": "发送"
@@ -3833,7 +3833,7 @@
 				"aria-label": "表情"
 			},
 			"mentionSuggest": {
-				"aria-label": "提及候选"
+				"aria-label": "提及建议"
 			},
 			"mediaButton": {
 				"title": "添加媒体",

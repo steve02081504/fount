@@ -191,8 +191,8 @@
 			"terminateIdle": "Прервано ${label}: нет вывода stdall более ${minutes} мин (простой ${idleSec} с, работает ${elapsed})",
 			"terminateDuration": "Прервано ${label}: превышено базовое время watchdog (работает ${elapsed}, база ${baseline}, лимит ${limit})",
 			"terminateDurationDefault": "Прервано ${label}: превышен лимит watchdog по умолчанию (работает ${elapsed}, лимит ${limit})",
-			"sleepDetected": "Обнаружен режим гибернации системы (переход сторожевого таймера ${gap} ≥ ${limit}), ${label} прерывается и готов к повторному запуску (${elapsed} был запущен)",
-			"sleepRetry": "Прерывание сна системы, повторный запуск ${label} (время ${attempt})",
+			"sleepDetected": "Обнаружен сон системы (интервал watchdog прыгнул на ${gap} ≥ ${limit}); ${label} прерван и готов к повторному запуску (уже шёл ${elapsed})",
+			"sleepRetry": "Прервано сном системы; повторный запуск ${label} (попытка ${attempt})",
 			"terminateMarker": "[Причина: ${reason}]",
 			"terminateUnknown": "ПРЕРВАНО ${label}: тест прерван",
 			"terminateSpeculative": "Прервано ${label}: спекулятивная зависимость не пройдена, ранний стоп отменён",
@@ -2205,22 +2205,22 @@
 					"placeholder": "Новый языковой код, например en-UK."
 				},
 				"renameLocale": {
-					"aria-label": "Переименование кода языка"
+					"aria-label": "Переименовать код языка"
 				},
 				"localeRemove": {
-					"aria-label": "Удалить языковую версию"
+					"aria-label": "Удалить этот язык"
 				},
 				"avatarUrl": {
 					"placeholder": "URL изображения аватара или загрузите файл ниже"
 				},
 				"avatarUpload": {
-					"aria-label": "Загрузите изображение аватара"
+					"aria-label": "Загрузить аватар"
 				},
 				"bannerUrl": {
 					"placeholder": "URL изображения баннера или загрузите файл ниже"
 				},
 				"bannerUpload": {
-					"aria-label": "Загрузить изображение баннера"
+					"aria-label": "Загрузить баннер"
 				},
 				"tag": {
 					"placeholder": "Добавить после ввода тега"
@@ -2416,7 +2416,7 @@
 			"editedLabel": "(отредактировано)",
 			"mentionEmpty": "(нет подходящих участников)",
 			"mentionSuggest": {
-				"aria-label": "упомянуть кандидатов"
+				"aria-label": "Подсказки упоминаний"
 			},
 			"clickToLoad": "Нажмите, чтобы загрузить",
 			"send": "Отправить"
@@ -3702,18 +3702,18 @@
 		},
 		"nav": {
 			"side": {
-				"aria-label": "социальная навигация"
+				"aria-label": "Навигация соцсети"
 			},
 			"mobile": {
-				"aria-label": "Социальная нижняя навигация"
+				"aria-label": "Нижняя навигация соцсети"
 			},
 			"feed": {
 				"aria-label": "Лента",
-				"title": "первая страница"
+				"title": "Главная"
 			},
 			"explore": {
 				"aria-label": "Обзор",
-				"title": "исследовать"
+				"title": "Обзор"
 			},
 			"notifications": {
 				"aria-label": "Входящие",
@@ -3721,26 +3721,26 @@
 			},
 			"saved": {
 				"aria-label": "Избранное",
-				"title": "собирать"
+				"title": "Сохранённое"
 			},
 			"drafts": {
 				"aria-label": "Черновики",
-				"title": "черновой ящик"
+				"title": "Черновики"
 			},
 			"profile": {
 				"aria-label": "Профиль",
-				"title": "мой"
+				"title": "Профиль"
 			},
 			"videos": {
 				"aria-label": "Клипы",
-				"title": "короткое видео"
+				"title": "Короткие видео"
 			},
 			"live": {
 				"aria-label": "Эфир",
-				"title": "прямая трансляция"
+				"title": "Эфир"
 			},
 			"compose": {
-				"aria-label": "Написание обновлений"
+				"aria-label": "Написать пост"
 			}
 		},
 		"settings": {
@@ -3794,7 +3794,7 @@
 		"composer": {
 			"placeholder": "О чём думаете? Поддерживается Markdown (диалект fount), введите @ для упоминания",
 			"locale": "язык содержания",
-			"aria-label": "Написание обновлений",
+			"aria-label": "Написать пост",
 			"publish": "Опубликовать",
 			"saveDraft": "Сохранить черновик",
 			"fab": {
@@ -3825,7 +3825,7 @@
 				"aria-label": "Эмодзи"
 			},
 			"mentionSuggest": {
-				"aria-label": "упомянуть кандидатов"
+				"aria-label": "Подсказки упоминаний"
 			},
 			"mediaButton": {
 				"title": "Добавить медиа",
@@ -3876,7 +3876,7 @@
 			},
 			"newPosts": "Новые записи — нажмите, чтобы посмотреть",
 			"tabsLabel": {
-				"aria-label": "Сортировка информационных потоков"
+				"aria-label": "Сортировка ленты"
 			},
 			"tabLatest": "Свежее",
 			"tabForYou": "Для вас",
@@ -3890,7 +3890,7 @@
 			"trending": {
 				"title": "Популярные темы",
 				"tabsLabel": {
-					"aria-label": "Популярный диапазон тем"
+					"aria-label": "Область трендов"
 				},
 				"postCount": {
 					"title": "${n} сообщений"
@@ -4063,7 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Поиск записей, пользователей или #тегов (минимум 2 символа)",
-			"aria-label": "Поиск обновлений, пользователей или тем",
+			"aria-label": "Поиск постов, людей или тем",
 			"open": {
 				"aria-label": "Поиск"
 			},
@@ -4082,7 +4082,7 @@
 				"placeholder": "Автор"
 			},
 			"filterMedia": {
-				"aria-label": "тип носителя"
+				"aria-label": "Тип медиа"
 			},
 			"filterMediaAll": "Все медиа",
 			"filterMediaImage": "Изображения",
@@ -4091,7 +4091,7 @@
 				"placeholder": "#Тег"
 			},
 			"filterSort": {
-				"aria-label": "сортировать"
+				"aria-label": "Сортировка"
 			},
 			"sortRecent": "Свежее",
 			"sortPopular": "Популярное",
@@ -4185,7 +4185,7 @@
 		},
 		"aside": {
 			"region": {
-				"aria-label": "социальная боковая панель"
+				"aria-label": "Боковая панель соцсети"
 			},
 			"suggested": "Рекомендуем подписаться"
 		},
@@ -5171,7 +5171,7 @@
 	"util": {
 		"toast": {
 			"container": {
-				"aria-label": "уведомить"
+				"aria-label": "Уведомления"
 			}
 		},
 		"common": {

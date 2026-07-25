@@ -191,8 +191,8 @@
 			"terminateIdle": "${label} afgebroken: meer dan ${minutes} min geen stdall-output (inactief ${idleSec}s, gelopen ${elapsed})",
 			"terminateDuration": "${label} afgebroken: duur overschrijdt watchdog-baseline (gelopen ${elapsed}, baseline ${baseline}, limiet ${limit})",
 			"terminateDurationDefault": "${label} afgebroken: duur overschrijdt standaard watchdog-limiet (gelopen ${elapsed}, limiet ${limit})",
-			"sleepDetected": "Systeemslaapstand wordt gedetecteerd (watchdog-interval springt ${gap} ≥ ${limit}), ${label} wordt afgebroken en is klaar om opnieuw te worden uitgevoerd (${elapsed} is uitgevoerd)",
-			"sleepRetry": "Systeemslaaponderbreking, herhaal ${label} (${attempt} tijd)",
+			"sleepDetected": "Systeemslaapstand gedetecteerd (watchdog-interval sprong ${gap} ≥ ${limit}); ${label} afgebroken en klaar voor herstart (gedraaid ${elapsed})",
+			"sleepRetry": "Onderbroken door systeemslaap; ${label} opnieuw uitvoeren (poging ${attempt})",
 			"terminateMarker": "[Afbraakreden: ${reason}]",
 			"terminateUnknown": "${label} afgebroken: test onderbroken",
 			"terminateSpeculative": "${label} afgebroken: speculatieve afhankelijkheid niet geslaagd, vroegtijdig stoppen",
@@ -2091,7 +2091,7 @@
 				"aria-label": "Ledenlijst"
 			},
 			"channelBar": {
-				"aria-label": "Kanaallijst"
+				"aria-label": "Kanalenlijst"
 			},
 			"serverBar": {
 				"aria-label": "Groepen en navigatie"
@@ -2208,19 +2208,19 @@
 					"aria-label": "Taalcode hernoemen"
 				},
 				"localeRemove": {
-					"aria-label": "Taalversie verwijderen"
+					"aria-label": "Deze taal verwijderen"
 				},
 				"avatarUrl": {
 					"placeholder": "URL van de avatarafbeelding, of upload het bestand hieronder"
 				},
 				"avatarUpload": {
-					"aria-label": "Avatarafbeelding uploaden"
+					"aria-label": "Avatar uploaden"
 				},
 				"bannerUrl": {
 					"placeholder": "URL van de bannerafbeelding of upload het bestand hieronder"
 				},
 				"bannerUpload": {
-					"aria-label": "Bannerafbeelding uploaden"
+					"aria-label": "Banner uploaden"
 				},
 				"tag": {
 					"placeholder": "Voeg toe na het invoeren van de tag"
@@ -2416,7 +2416,7 @@
 			"editedLabel": "(bewerkt)",
 			"mentionEmpty": "(geen overeenkomende leden)",
 			"mentionSuggest": {
-				"aria-label": "kandidaten noemen"
+				"aria-label": "Vermeldingssuggesties"
 			},
 			"clickToLoad": "Klik om te laden",
 			"send": "Versturen"
@@ -3702,45 +3702,45 @@
 		},
 		"nav": {
 			"side": {
-				"aria-label": "sociale navigatie"
+				"aria-label": "Sociale navigatie"
 			},
 			"mobile": {
-				"aria-label": "Sociale bodemnavigatie"
+				"aria-label": "Sociale navigatie onderaan"
 			},
 			"feed": {
 				"aria-label": "Start",
-				"title": "voorpagina"
+				"title": "Home"
 			},
 			"explore": {
 				"aria-label": "Ontdekken",
-				"title": "ontdekken"
+				"title": "Ontdekken"
 			},
 			"notifications": {
 				"aria-label": "Meldingen",
-				"title": "Postvak IN"
+				"title": "Inbox"
 			},
 			"saved": {
 				"aria-label": "Opgeslagen",
-				"title": "verzamelen"
+				"title": "Opgeslagen"
 			},
 			"drafts": {
 				"aria-label": "Concepten",
-				"title": "ontwerpdoos"
+				"title": "Concepten"
 			},
 			"profile": {
 				"aria-label": "Profiel",
-				"title": "de mijne"
+				"title": "Profiel"
 			},
 			"videos": {
 				"aria-label": "korte video",
-				"title": "korte video"
+				"title": "Korte video’s"
 			},
 			"live": {
 				"aria-label": "Live",
-				"title": "livestreaming"
+				"title": "Live"
 			},
 			"compose": {
-				"aria-label": "Schrijf updates"
+				"aria-label": "Een bericht schrijven"
 			}
 		},
 		"settings": {
@@ -3794,7 +3794,7 @@
 		"composer": {
 			"placeholder": "Waar denk je aan? Markdown (fount-dialect) wordt ondersteund — typ @ om te vermelden",
 			"locale": "inhoud taal",
-			"aria-label": "Schrijf updates",
+			"aria-label": "Een bericht schrijven",
 			"publish": "Plaatsen",
 			"saveDraft": "Concept opslaan",
 			"fab": {
@@ -3825,7 +3825,7 @@
 				"aria-label": "Emoji"
 			},
 			"mentionSuggest": {
-				"aria-label": "kandidaten noemen"
+				"aria-label": "Vermeldingssuggesties"
 			},
 			"mediaButton": {
 				"title": "Media toevoegen",
@@ -3876,7 +3876,7 @@
 			},
 			"newPosts": "Er is nieuw nieuws, klik om te bekijken",
 			"tabsLabel": {
-				"aria-label": "Sorteren van informatiestromen"
+				"aria-label": "Feed sorteren"
 			},
 			"tabLatest": "Nieuwste",
 			"tabForYou": "Voor jou",
@@ -3890,7 +3890,7 @@
 			"trending": {
 				"title": "Trending",
 				"tabsLabel": {
-					"aria-label": "Populair onderwerpbereik"
+					"aria-label": "Trending-bereik"
 				},
 				"postCount": {
 					"title": "${n} berichten"
@@ -4063,7 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Zoek naar updates, gebruikers of #topics (minimaal 2 woorden)",
-			"aria-label": "Zoek naar updates, gebruikers of onderwerpen",
+			"aria-label": "Zoek berichten, mensen of onderwerpen",
 			"open": {
 				"aria-label": "Zoeken"
 			},
@@ -4082,7 +4082,7 @@
 				"placeholder": "Auteur"
 			},
 			"filterMedia": {
-				"aria-label": "mediatype"
+				"aria-label": "Mediatype"
 			},
 			"filterMediaAll": "Alle media",
 			"filterMediaImage": "Afbeelding",
@@ -4091,7 +4091,7 @@
 				"placeholder": "#Label"
 			},
 			"filterSort": {
-				"aria-label": "soort"
+				"aria-label": "Sorteren op"
 			},
 			"sortRecent": "Nieuwste",
 			"sortPopular": "Populair",
@@ -4185,7 +4185,7 @@
 		},
 		"aside": {
 			"region": {
-				"aria-label": "sociale zijbalk"
+				"aria-label": "Sociale zijbalk"
 			},
 			"suggested": "Voor jou aandacht"
 		},
@@ -5171,7 +5171,7 @@
 	"util": {
 		"toast": {
 			"container": {
-				"aria-label": "op de hoogte stellen"
+				"aria-label": "Meldingen"
 			}
 		},
 		"common": {

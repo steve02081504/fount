@@ -191,8 +191,8 @@
 			"terminateIdle": "Зупинено ${label}: немає stdout/stderr понад ${minutes} хв (простій ${idleSec} с, працювало ${elapsed})",
 			"terminateDuration": "Припинено ${label}: знадобилося більше, ніж сторожовий базовий час (запуск ${elapsed}, базовий рівень ${baseline}, верхня межа ${limit})",
 			"terminateDurationDefault": "Припинено ${label}: витрачений час перевищує ліміт тривалості сторожового таймера за умовчанням (запущено ${elapsed}, верхня межа ${limit})",
-			"sleepDetected": "Виявлено сплячий режим системи (скачки сторожового інтервалу ${gap} ≥ ${limit}), ${label} перервано та готове до повторного запуску (${elapsed} було запущено)",
-			"sleepRetry": "Переривання системи в режимі сну, повторно запустіть ${label} (${attempt} раз)",
+			"sleepDetected": "Виявлено сон системи (інтервал watchdog стрибнув на ${gap} ≥ ${limit}); ${label} перервано й готово до повторного запуску (вже тривало ${elapsed})",
+			"sleepRetry": "Перервано сном системи; повторний запуск ${label} (спроба ${attempt})",
 			"terminateMarker": "[Причина розірвання: ${reason}]",
 			"terminateUnknown": "ПРИПИНЕНО ${label}: тест перервано",
 			"terminateSpeculative": "Припинено ${label}: спекулятивну залежність не минуло, ранню зупинку скасовано",
@@ -2208,19 +2208,19 @@
 					"aria-label": "Перейменувати код мови"
 				},
 				"localeRemove": {
-					"aria-label": "Видалити мовну версію"
+					"aria-label": "Видалити цю мову"
 				},
 				"avatarUrl": {
 					"placeholder": "URL-адреса зображення аватара або завантажте файл нижче"
 				},
 				"avatarUpload": {
-					"aria-label": "Завантажте зображення аватара"
+					"aria-label": "Завантажити аватар"
 				},
 				"bannerUrl": {
 					"placeholder": "URL-адреса зображення банера або завантажте файл нижче"
 				},
 				"bannerUpload": {
-					"aria-label": "Завантажте зображення банера"
+					"aria-label": "Завантажити банер"
 				},
 				"tag": {
 					"placeholder": "Додайте після введення тегу"
@@ -2416,7 +2416,7 @@
 			"editedLabel": "(відредаговано)",
 			"mentionEmpty": "(немає відповідних учасників)",
 			"mentionSuggest": {
-				"aria-label": "згадати кандидатів"
+				"aria-label": "Підказки згадок"
 			},
 			"clickToLoad": "Натисніть, щоб завантажити",
 			"send": "Відправити"
@@ -3702,18 +3702,18 @@
 		},
 		"nav": {
 			"side": {
-				"aria-label": "соціальна навігація"
+				"aria-label": "Навігація соцмережі"
 			},
 			"mobile": {
-				"aria-label": "Соціальна нижня навігація"
+				"aria-label": "Нижня навігація соцмережі"
 			},
 			"feed": {
 				"aria-label": "Головна",
-				"title": "титульна сторінка"
+				"title": "Головна"
 			},
 			"explore": {
 				"aria-label": "Огляд",
-				"title": "досліджувати"
+				"title": "Огляд"
 			},
 			"notifications": {
 				"aria-label": "Вхідні",
@@ -3721,26 +3721,26 @@
 			},
 			"saved": {
 				"aria-label": "Обране",
-				"title": "збирати"
+				"title": "Збережене"
 			},
 			"drafts": {
 				"aria-label": "Чернетки",
-				"title": "чернетковий ящик"
+				"title": "Чернетки"
 			},
 			"profile": {
 				"aria-label": "Моя",
-				"title": "мій"
+				"title": "Профіль"
 			},
 			"videos": {
 				"aria-label": "Коротке відео",
-				"title": "коротке відео"
+				"title": "Короткі відео"
 			},
 			"live": {
 				"aria-label": "Пряма трансляція",
-				"title": "пряма трансляція"
+				"title": "Ефір"
 			},
 			"compose": {
-				"aria-label": "Пишіть оновлення"
+				"aria-label": "Написати допис"
 			}
 		},
 		"settings": {
@@ -3794,7 +3794,7 @@
 		"composer": {
 			"placeholder": "про що ти думаєш Підтримка Markdown (діалект фонту), введіть @, щоб згадати",
 			"locale": "Мова змісту",
-			"aria-label": "Пишіть оновлення",
+			"aria-label": "Написати допис",
 			"publish": "Опублікувати",
 			"saveDraft": "Зберегти чернетку",
 			"fab": {
@@ -3825,7 +3825,7 @@
 				"aria-label": "Емодзі"
 			},
 			"mentionSuggest": {
-				"aria-label": "згадати кандидатів"
+				"aria-label": "Підказки згадок"
 			},
 			"mediaButton": {
 				"title": "Додайте медіа",
@@ -3876,7 +3876,7 @@
 			},
 			"newPosts": "Є нові новини, натисніть, щоб переглянути",
 			"tabsLabel": {
-				"aria-label": "Сортування потоку інформації"
+				"aria-label": "Сортування стрічки"
 			},
 			"tabLatest": "Найновіше",
 			"tabForYou": "Для вас",
@@ -3890,7 +3890,7 @@
 			"trending": {
 				"title": "Гарячі теми",
 				"tabsLabel": {
-					"aria-label": "Діапазон популярних тем"
+					"aria-label": "Область трендів"
 				},
 				"postCount": {
 					"title": "${n} дописів"
@@ -4063,7 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Пошук оновлень, користувачів або #тем (мінімум 2 слова)",
-			"aria-label": "Шукайте оновлення, користувачів або теми",
+			"aria-label": "Пошук дописів, людей або тем",
 			"open": {
 				"aria-label": "Пошук"
 			},
@@ -4082,7 +4082,7 @@
 				"placeholder": "Автор"
 			},
 			"filterMedia": {
-				"aria-label": "тип носія"
+				"aria-label": "Тип медіа"
 			},
 			"filterMediaAll": "Усі медіа",
 			"filterMediaImage": "Малюнок",
@@ -4091,7 +4091,7 @@
 				"placeholder": "#Мітка"
 			},
 			"filterSort": {
-				"aria-label": "сортувати"
+				"aria-label": "Сортування"
 			},
 			"sortRecent": "Найновіше",
 			"sortPopular": "Популярний",
@@ -4185,7 +4185,7 @@
 		},
 		"aside": {
 			"region": {
-				"aria-label": "соціальна бічна панель"
+				"aria-label": "Бічна панель соцмережі"
 			},
 			"suggested": "Рекомендовані підписки"
 		},
@@ -5171,7 +5171,7 @@
 	"util": {
 		"toast": {
 			"container": {
-				"aria-label": "повідомити"
+				"aria-label": "Сповіщення"
 			}
 		},
 		"common": {

@@ -191,8 +191,8 @@
 			"terminateIdle": "निरस्त ${label}: ${minutes} मिनट से अधिक के लिए कोई stdall आउटपुट नहीं (${idleSec} सेकंड के लिए निष्क्रिय, ${elapsed} चलाएँ)",
 			"terminateDuration": "समाप्त ${label}: वॉचडॉग बेसलाइन समय से अधिक लिया गया (${elapsed} चल रहा है, बेसलाइन ${baseline}, ऊपरी सीमा ${limit})",
 			"terminateDurationDefault": "समाप्त ${label}: बिताया गया समय डिफ़ॉल्ट वॉचडॉग अवधि सीमा से अधिक है (${elapsed} चल रहा है, ऊपरी सीमा ${limit})",
-			"sleepDetected": "सिस्टम हाइबरनेशन का पता चला है (वॉचडॉग अंतराल कूदता है ${gap} ≥ ${limit}), ${label} निरस्त कर दिया गया है और फिर से चलाने के लिए तैयार है (${elapsed} चलाया गया है)",
-			"sleepRetry": "सिस्टम नींद में रुकावट, पुन: चलाएँ ${label} (${attempt} समय)",
+			"sleepDetected": "सिस्टम स्लीप पहचानी गई (वॉचडॉग अंतराल ${gap} ≥ ${limit} कूदा); ${label} रोक दिया गया, फिर चलाने को तैयार (चला ${elapsed})",
+			"sleepRetry": "सिस्टम स्लीप से बाधित; ${label} फिर चलाया जा रहा है (प्रयास ${attempt})",
 			"terminateMarker": "[समाप्ति का कारण: ${reason}]",
 			"terminateUnknown": "समाप्त ${label}: परीक्षण बाधित",
 			"terminateSpeculative": "समाप्त ${label}: सट्टा निर्भरता समाप्त नहीं हुई है, प्रारंभिक रोक रद्द कर दी गई है",
@@ -2091,7 +2091,7 @@
 				"aria-label": "सदस्य सूची"
 			},
 			"channelBar": {
-				"aria-label": "चैनल की सूची"
+				"aria-label": "चैनल सूची"
 			},
 			"serverBar": {
 				"aria-label": "समूह और नेविगेशन"
@@ -2208,19 +2208,19 @@
 					"aria-label": "भाषा कोड का नाम बदलें"
 				},
 				"localeRemove": {
-					"aria-label": "भाषा संस्करण हटाएँ"
+					"aria-label": "यह भाषा हटाएँ"
 				},
 				"avatarUrl": {
 					"placeholder": "अवतार छवि URL, या नीचे फ़ाइल अपलोड करें"
 				},
 				"avatarUpload": {
-					"aria-label": "अवतार छवि अपलोड करें"
+					"aria-label": "अवतार अपलोड करें"
 				},
 				"bannerUrl": {
 					"placeholder": "झंडे छवि यूआरएल, या नीचे फ़ाइल अपलोड करें"
 				},
 				"bannerUpload": {
-					"aria-label": "बैनर छवि अपलोड करें"
+					"aria-label": "बैनर अपलोड करें"
 				},
 				"tag": {
 					"placeholder": "टैग डालने के बाद जोड़ें"
@@ -2236,7 +2236,7 @@
 				}
 			},
 			"profilePopup": {
-				"aria-label": "उपयोगकर्ता रूपरेखा",
+				"aria-label": "उपयोगकर्ता प्रोफ़ाइल",
 				"close": {
 					"title": "डेटा कार्ड बंद करें"
 				},
@@ -2416,7 +2416,7 @@
 			"editedLabel": "(संपादित)",
 			"mentionEmpty": "(कोई मिलान वाले सदस्य नहीं)",
 			"mentionSuggest": {
-				"aria-label": "उम्मीदवारों का उल्लेख करें"
+				"aria-label": "मेंशन सुझाव"
 			},
 			"clickToLoad": "लोड करने के लिए क्लिक करें",
 			"send": "भेजें"
@@ -3702,18 +3702,18 @@
 		},
 		"nav": {
 			"side": {
-				"aria-label": "सामाजिक नेविगेशन"
+				"aria-label": "सोशल नेविगेशन"
 			},
 			"mobile": {
-				"aria-label": "सामाजिक निचला नेविगेशन"
+				"aria-label": "सोशल निचला नेविगेशन"
 			},
 			"feed": {
 				"aria-label": "होम",
-				"title": "मुखपृष्ठ"
+				"title": "होम"
 			},
 			"explore": {
 				"aria-label": "एक्सप्लोर",
-				"title": "अन्वेषण करना"
+				"title": "खोजें"
 			},
 			"notifications": {
 				"aria-label": "इनबॉक्स",
@@ -3721,26 +3721,26 @@
 			},
 			"saved": {
 				"aria-label": "सेव किए",
-				"title": "इकट्ठा करना"
+				"title": "सहेजे गए"
 			},
 			"drafts": {
 				"aria-label": "ड्राफ़्ट",
-				"title": "ड्राफ्ट बॉक्स"
+				"title": "ड्राफ़्ट"
 			},
 			"profile": {
 				"aria-label": "मेरा",
-				"title": "मेरा"
+				"title": "प्रोफ़ाइल"
 			},
 			"videos": {
 				"aria-label": "शॉर्ट वीडियो",
-				"title": "लघु वीडियो"
+				"title": "शॉर्ट वीडियो"
 			},
 			"live": {
 				"aria-label": "लाइव",
-				"title": "सीधा आ रहा है"
+				"title": "लाइव"
 			},
 			"compose": {
-				"aria-label": "अद्यतन लिखें"
+				"aria-label": "पोस्ट लिखें"
 			}
 		},
 		"settings": {
@@ -3794,7 +3794,7 @@
 		"composer": {
 			"placeholder": "आप किस बारे में सोच रहे हैं? मार्कडाउन (फ़ॉउंट बोली) का समर्थन करें, उल्लेख करने के लिए @ दर्ज करें",
 			"locale": "सामग्री भाषा",
-			"aria-label": "अद्यतन लिखें",
+			"aria-label": "पोस्ट लिखें",
 			"publish": "प्रकाशित करें",
 			"saveDraft": "ड्राफ़्ट सहेजें",
 			"fab": {
@@ -3825,7 +3825,7 @@
 				"aria-label": "इमोजी"
 			},
 			"mentionSuggest": {
-				"aria-label": "उम्मीदवारों का उल्लेख करें"
+				"aria-label": "मेंशन सुझाव"
 			},
 			"mediaButton": {
 				"title": "मीडिया जोड़ें",
@@ -3876,7 +3876,7 @@
 			},
 			"newPosts": "नई खबर है, देखने के लिए क्लिक करें",
 			"tabsLabel": {
-				"aria-label": "सूचना प्रवाह छँटाई"
+				"aria-label": "फ़ीड क्रम"
 			},
 			"tabLatest": "नवीनतम",
 			"tabForYou": "आपके लिए",
@@ -3890,7 +3890,7 @@
 			"trending": {
 				"title": "ट्रेंडिंग विषय",
 				"tabsLabel": {
-					"aria-label": "लोकप्रिय विषय श्रेणी"
+					"aria-label": "ट्रेंडिंग दायरा"
 				},
 				"postCount": {
 					"title": "${n} पोस्ट"
@@ -4063,7 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "अपडेट, उपयोगकर्ता या #विषय खोजें (न्यूनतम 2 शब्द)",
-			"aria-label": "अपडेट, उपयोगकर्ता या विषय खोजें",
+			"aria-label": "पोस्ट, लोग या विषय खोजें",
 			"open": {
 				"aria-label": "खोजें"
 			},
@@ -4091,12 +4091,12 @@
 				"placeholder": "#लेबल"
 			},
 			"filterSort": {
-				"aria-label": "क्रम से लगाना"
+				"aria-label": "क्रमबद्ध करें"
 			},
 			"sortRecent": "नवीनतम",
 			"sortPopular": "ट्रेंडिंग",
 			"filterScope": {
-				"aria-label": "खोज का दायरा"
+				"aria-label": "खोज दायरा"
 			},
 			"scopeLocal": "इस डिवाइस",
 			"scopeNearby": "आस-पास"
@@ -4185,7 +4185,7 @@
 		},
 		"aside": {
 			"region": {
-				"aria-label": "सामाजिक साइडबार"
+				"aria-label": "सोशल साइडबार"
 			},
 			"suggested": "फ़ॉलो सुझाव करें"
 		},
@@ -5171,7 +5171,7 @@
 	"util": {
 		"toast": {
 			"container": {
-				"aria-label": "सूचित करें"
+				"aria-label": "सूचनाएँ"
 			}
 		},
 		"common": {

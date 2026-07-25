@@ -191,8 +191,8 @@
 			"terminateIdle": "Abgebrochen ${label}: über ${minutes} Min. ohne stdall-Ausgabe (Leerlauf ${idleSec} s, Laufzeit ${elapsed})",
 			"terminateDuration": "Abgebrochen ${label}: Laufzeit über Watchdog-Baseline (Laufzeit ${elapsed}, Baseline ${baseline}, Limit ${limit})",
 			"terminateDurationDefault": "Abgebrochen ${label}: Laufzeit über Standard-Watchdog-Limit (Laufzeit ${elapsed}, Limit ${limit})",
-			"sleepDetected": "Der Ruhezustand des Systems wurde erkannt (Watchdog-Intervall springt auf ${gap} ≥ ${limit}), ${label} wird abgebrochen und kann erneut ausgeführt werden (${elapsed} wurde ausgeführt).",
-			"sleepRetry": "Unterbrechung des Systemschlafs, ${label} erneut ausführen (${attempt} Zeit)",
+			"sleepDetected": "Systemruhezustand erkannt (Watchdog-Intervall sprang um ${gap} ≥ ${limit}); ${label} abgebrochen und bereit zum erneuten Lauf (gelaufen ${elapsed})",
+			"sleepRetry": "Durch Systemruhe unterbrochen; ${label} wird erneut ausgeführt (Versuch ${attempt})",
 			"terminateMarker": "[Abbruchgrund: ${reason}]",
 			"terminateUnknown": "Abgebrochen ${label}: Test unterbrochen",
 			"terminateSpeculative": "Abgebrochen ${label}: spekulative Abhängigkeit nicht bestanden, Frühstopp aufgehoben",
@@ -1633,7 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "Nach Nachrichten suchen…",
-				"aria-label": "Nachrichten durchsuchen",
+				"aria-label": "Nachrichten suchen",
 				"noResults": "Keine Ergebnisse",
 				"failed": "Die Suche ist fehlgeschlagen",
 				"scopeGroup": "Diese Gruppe",
@@ -2208,19 +2208,19 @@
 					"aria-label": "Sprachcode umbenennen"
 				},
 				"localeRemove": {
-					"aria-label": "Sprachversion löschen"
+					"aria-label": "Diese Sprache entfernen"
 				},
 				"avatarUrl": {
 					"placeholder": "Avatar-Bild-URL oder laden Sie die Datei unten hoch"
 				},
 				"avatarUpload": {
-					"aria-label": "Avatarbild hochladen"
+					"aria-label": "Avatar hochladen"
 				},
 				"bannerUrl": {
 					"placeholder": "Bannerbild-URL oder laden Sie die Datei unten hoch"
 				},
 				"bannerUpload": {
-					"aria-label": "Bannerbild hochladen"
+					"aria-label": "Banner hochladen"
 				},
 				"tag": {
 					"placeholder": "Nach Eingabe des Tags hinzufügen"
@@ -2416,7 +2416,7 @@
 			"editedLabel": "(bearbeitet)",
 			"mentionEmpty": "(keine passenden Mitglieder)",
 			"mentionSuggest": {
-				"aria-label": "Kandidaten erwähnen"
+				"aria-label": "Erwähnungsvorschläge"
 			},
 			"clickToLoad": "Klicken Sie zum Laden",
 			"send": "Schicken"
@@ -3702,18 +3702,18 @@
 		},
 		"nav": {
 			"side": {
-				"aria-label": "soziale Navigation"
+				"aria-label": "Social-Navigation"
 			},
 			"mobile": {
-				"aria-label": "Soziale Navigation unten"
+				"aria-label": "Social-Navigation unten"
 			},
 			"feed": {
 				"aria-label": "Start",
-				"title": "Titelseite"
+				"title": "Startseite"
 			},
 			"explore": {
 				"aria-label": "Entdecken",
-				"title": "erkunden"
+				"title": "Entdecken"
 			},
 			"notifications": {
 				"aria-label": "Posteingang",
@@ -3721,26 +3721,26 @@
 			},
 			"saved": {
 				"aria-label": "Gespeichert",
-				"title": "sammeln"
+				"title": "Gespeichert"
 			},
 			"drafts": {
 				"aria-label": "Entwürfe",
-				"title": "Entwurfsbox"
+				"title": "Entwürfe"
 			},
 			"profile": {
 				"aria-label": "Profil",
-				"title": "meins"
+				"title": "Profil"
 			},
 			"videos": {
 				"aria-label": "Kurzvideos",
-				"title": "kurzes Video"
+				"title": "Kurzvideos"
 			},
 			"live": {
 				"aria-label": "Live",
-				"title": "Live-Streaming"
+				"title": "Live"
 			},
 			"compose": {
-				"aria-label": "Schreiben Sie Updates"
+				"aria-label": "Beitrag schreiben"
 			}
 		},
 		"settings": {
@@ -3794,7 +3794,7 @@
 		"composer": {
 			"placeholder": "Woran denken Sie? Markdown (fount-Dialekt) wird unterstützt, @ zum Erwähnen",
 			"locale": "Inhaltssprache",
-			"aria-label": "Schreiben Sie Updates",
+			"aria-label": "Beitrag schreiben",
 			"publish": "Veröffentlichen",
 			"saveDraft": "Entwurf speichern",
 			"fab": {
@@ -3825,7 +3825,7 @@
 				"aria-label": "Emoji"
 			},
 			"mentionSuggest": {
-				"aria-label": "Kandidaten erwähnen"
+				"aria-label": "Erwähnungsvorschläge"
 			},
 			"mediaButton": {
 				"title": "Medien hinzufügen",
@@ -3876,7 +3876,7 @@
 			},
 			"newPosts": "Neue Beiträge – zum Anzeigen tippen",
 			"tabsLabel": {
-				"aria-label": "Sortierung des Informationsflusses"
+				"aria-label": "Feed-Sortierung"
 			},
 			"tabLatest": "Neueste",
 			"tabForYou": "Für Sie",
@@ -3890,7 +3890,7 @@
 			"trending": {
 				"title": "Trend-Themen",
 				"tabsLabel": {
-					"aria-label": "Beliebter Themenbereich"
+					"aria-label": "Trendbereich"
 				},
 				"postCount": {
 					"title": "${n} Beiträge"
@@ -4063,7 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Suchen Sie nach Updates, Benutzern oder #Themen (mindestens 2 Wörter)",
-			"aria-label": "Suchen Sie nach Updates, Benutzern oder Themen",
+			"aria-label": "Beiträge, Personen oder Themen suchen",
 			"open": {
 				"aria-label": "Suchen"
 			},
@@ -4091,7 +4091,7 @@
 				"placeholder": "#Etikett"
 			},
 			"filterSort": {
-				"aria-label": "Sortieren"
+				"aria-label": "Sortieren nach"
 			},
 			"sortRecent": "Neueste",
 			"sortPopular": "Beliebt",
@@ -4185,7 +4185,7 @@
 		},
 		"aside": {
 			"region": {
-				"aria-label": "soziale Seitenleiste"
+				"aria-label": "Social-Seitenleiste"
 			},
 			"suggested": "Empfohlene Konten"
 		},
@@ -5171,7 +5171,7 @@
 	"util": {
 		"toast": {
 			"container": {
-				"aria-label": "benachrichtigen"
+				"aria-label": "Benachrichtigungen"
 			}
 		},
 		"common": {

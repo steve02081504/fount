@@ -190,7 +190,7 @@
 			"terminateIdle": "已終止 ${label}：超過 ${minutes} 分鐘無 stdall 輸出（空閒 ${idleSec} 秒，已執行 ${elapsed}）",
 			"terminateDuration": "已終止 ${label}：耗時超過 watchdog 基線時長（已執行 ${elapsed}，基線 ${baseline}，上限 ${limit}）",
 			"terminateDurationDefault": "已終止 ${label}：耗時超過預設 watchdog 時長上限（已執行 ${elapsed}，上限 ${limit}）",
-			"sleepDetected": "偵測到系統休眠（看門狗間隔跳變 ${gap} ≥ ${limit}），中止 ${label} 並準備重跑（已執行 ${elapsed}）",
+			"sleepDetected": "偵測到系統休眠（看門狗間隔跳變 ${gap} ≥ ${limit}），已中止 ${label} 並準備重跑（已執行 ${elapsed}）",
 			"sleepRetry": "系統休眠中斷，重跑 ${label}（第 ${attempt} 次）",
 			"terminateMarker": "[終止原因: ${reason}]",
 			"terminateUnknown": "已終止 ${label}：測試被中斷",
@@ -2093,7 +2093,7 @@
 				"aria-label": "頻道列表"
 			},
 			"serverBar": {
-				"aria-label": "群組與導航"
+				"aria-label": "群組與導覽"
 			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} 頁"
@@ -2204,22 +2204,22 @@
 					"placeholder": "新語言程式碼，如 en-UK"
 				},
 				"renameLocale": {
-					"aria-label": "重新命名語言程式碼"
+					"aria-label": "重新命名語言代碼"
 				},
 				"localeRemove": {
-					"aria-label": "刪除語言版本"
+					"aria-label": "刪除此語言"
 				},
 				"avatarUrl": {
 					"placeholder": "頭像圖片 URL，或在下方上傳檔案"
 				},
 				"avatarUpload": {
-					"aria-label": "上傳頭像圖片"
+					"aria-label": "上傳頭像"
 				},
 				"bannerUrl": {
 					"placeholder": "橫幅圖片 URL，或在下方上傳檔案"
 				},
 				"bannerUpload": {
-					"aria-label": "上傳橫幅圖片"
+					"aria-label": "上傳橫幅"
 				},
 				"tag": {
 					"placeholder": "輸入標籤後新增"
@@ -2415,7 +2415,7 @@
 			"editedLabel": "(已編輯)",
 			"mentionEmpty": "（無匹配成員）",
 			"mentionSuggest": {
-				"aria-label": "提及候選"
+				"aria-label": "提及建議"
 			},
 			"clickToLoad": "點選載入",
 			"send": "傳送"
@@ -3701,10 +3701,10 @@
 		},
 		"nav": {
 			"side": {
-				"aria-label": "社交導航"
+				"aria-label": "社交導覽"
 			},
 			"mobile": {
-				"aria-label": "社交底部導航"
+				"aria-label": "社交底部導覽"
 			},
 			"feed": {
 				"aria-label": "首頁",
@@ -3732,7 +3732,7 @@
 			},
 			"videos": {
 				"aria-label": "短影片",
-				"title": "短片"
+				"title": "短影音"
 			},
 			"live": {
 				"aria-label": "直播",
@@ -3824,7 +3824,7 @@
 				"aria-label": "表情"
 			},
 			"mentionSuggest": {
-				"aria-label": "提及候選"
+				"aria-label": "提及建議"
 			},
 			"mediaButton": {
 				"title": "新增媒體",
@@ -3875,7 +3875,7 @@
 			},
 			"newPosts": "有新動態，點選檢視",
 			"tabsLabel": {
-				"aria-label": "資訊流排序"
+				"aria-label": "動態排序"
 			},
 			"tabLatest": "最新",
 			"tabForYou": "推薦",

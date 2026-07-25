@@ -191,8 +191,8 @@
 			"terminateIdle": "${label} arrêté : aucune sortie depuis ${minutes} min (inactif ${idleSec}s, durée ${elapsed})",
 			"terminateDuration": "${label} arrêté : dépasse la durée watchdog (durée ${elapsed}, réf. ${baseline}, max ${limit})",
 			"terminateDurationDefault": "${label} arrêté : dépasse la limite watchdog par défaut (durée ${elapsed}, max ${limit})",
-			"sleepDetected": "L'hibernation du système est détectée (l'intervalle de surveillance saute ${gap} ≥ ${limit}), ${label} est abandonné et prêt à être réexécuté (${elapsed} a été exécuté)",
-			"sleepRetry": "Interruption de la veille du système, réexécutez ${label} (${attempt} time)",
+			"sleepDetected": "Mise en veille système détectée (intervalle watchdog sauté de ${gap} ≥ ${limit}) ; ${label} interrompu, prêt à être relancé (déjà exécuté ${elapsed})",
+			"sleepRetry": "Interrompu par la mise en veille ; nouvel essai de ${label} (tentative ${attempt})",
 			"terminateMarker": "[Arrêt : ${reason}]",
 			"terminateUnknown": "${label} arrêté : test interrompu",
 			"terminateSpeculative": "${label} arrêté : dépendance spéculative non validée, annulation anticipée",
@@ -2091,7 +2091,7 @@
 				"aria-label": "Liste des membres"
 			},
 			"channelBar": {
-				"aria-label": "Liste des chaînes"
+				"aria-label": "Liste des salons"
 			},
 			"serverBar": {
 				"aria-label": "Groupes et navigation"
@@ -2208,19 +2208,19 @@
 					"aria-label": "Renommer le code de langue"
 				},
 				"localeRemove": {
-					"aria-label": "Supprimer la version linguistique"
+					"aria-label": "Supprimer cette langue"
 				},
 				"avatarUrl": {
 					"placeholder": "URL de l'avatar ou téléversez un fichier ci-dessous"
 				},
 				"avatarUpload": {
-					"aria-label": "Télécharger une image d'avatar"
+					"aria-label": "Téléverser un avatar"
 				},
 				"bannerUrl": {
 					"placeholder": "URL de la bannière ou téléversez un fichier ci-dessous"
 				},
 				"bannerUpload": {
-					"aria-label": "Télécharger l'image de la bannière"
+					"aria-label": "Téléverser une bannière"
 				},
 				"tag": {
 					"placeholder": "Ajouter après avoir saisi la balise"
@@ -2416,7 +2416,7 @@
 			"editedLabel": "(édité)",
 			"mentionEmpty": "(aucun membre correspondant)",
 			"mentionSuggest": {
-				"aria-label": "mentionner les candidats"
+				"aria-label": "Suggestions de mention"
 			},
 			"clickToLoad": "Cliquez pour charger",
 			"send": "envoyer"
@@ -3702,18 +3702,18 @@
 		},
 		"nav": {
 			"side": {
-				"aria-label": "navigation sociale"
+				"aria-label": "Navigation sociale"
 			},
 			"mobile": {
-				"aria-label": "Navigation sociale inférieure"
+				"aria-label": "Navigation sociale en bas"
 			},
 			"feed": {
 				"aria-label": "Fil",
-				"title": "première page"
+				"title": "Accueil"
 			},
 			"explore": {
 				"aria-label": "Explorer",
-				"title": "explorer"
+				"title": "Explorer"
 			},
 			"notifications": {
 				"aria-label": "Notifications",
@@ -3721,26 +3721,26 @@
 			},
 			"saved": {
 				"aria-label": "Favoris",
-				"title": "collecter"
+				"title": "Enregistrés"
 			},
 			"drafts": {
 				"aria-label": "Brouillons",
-				"title": "boîte à brouillons"
+				"title": "Brouillons"
 			},
 			"profile": {
 				"aria-label": "Profil",
-				"title": "le mien"
+				"title": "Profil"
 			},
 			"videos": {
 				"aria-label": "Courtes vidéos",
-				"title": "courte vidéo"
+				"title": "Vidéos courtes"
 			},
 			"live": {
 				"aria-label": "Direct",
-				"title": "diffusion en direct"
+				"title": "Direct"
 			},
 			"compose": {
-				"aria-label": "Écrire des mises à jour"
+				"aria-label": "Écrire une publication"
 			}
 		},
 		"settings": {
@@ -3794,7 +3794,7 @@
 		"composer": {
 			"placeholder": "À quoi pensez-vous ? Markdown (dialecte fount) pris en charge — tapez @ pour mentionner",
 			"locale": "Langue du contenu",
-			"aria-label": "Écrire des mises à jour",
+			"aria-label": "Écrire une publication",
 			"publish": "Publier",
 			"saveDraft": "Enregistrer le brouillon",
 			"fab": {
@@ -3825,7 +3825,7 @@
 				"aria-label": "Émojis"
 			},
 			"mentionSuggest": {
-				"aria-label": "mentionner les candidats"
+				"aria-label": "Suggestions de mention"
 			},
 			"mediaButton": {
 				"title": "Ajouter un média",
@@ -3876,7 +3876,7 @@
 			},
 			"newPosts": "Nouvelles publications — cliquez pour voir",
 			"tabsLabel": {
-				"aria-label": "Tri des flux d'informations"
+				"aria-label": "Tri du fil"
 			},
 			"tabLatest": "Récent",
 			"tabForYou": "Pour vous",
@@ -3890,7 +3890,7 @@
 			"trending": {
 				"title": "Tendances",
 				"tabsLabel": {
-					"aria-label": "Gamme de sujets populaires"
+					"aria-label": "Portée des tendances"
 				},
 				"postCount": {
 					"title": "${n} messages"
@@ -4063,7 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Rechercher des mises à jour, des utilisateurs ou des #sujets (minimum 2 mots)",
-			"aria-label": "Rechercher des mises à jour, des utilisateurs ou des sujets",
+			"aria-label": "Rechercher des publications, personnes ou sujets",
 			"open": {
 				"aria-label": "Rechercher"
 			},
@@ -4082,7 +4082,7 @@
 				"placeholder": "Auteur"
 			},
 			"filterMedia": {
-				"aria-label": "type de média"
+				"aria-label": "Type de média"
 			},
 			"filterMediaAll": "Tous les médias",
 			"filterMediaImage": "Images",
@@ -4091,7 +4091,7 @@
 				"placeholder": "#Étiquette"
 			},
 			"filterSort": {
-				"aria-label": "trier"
+				"aria-label": "Trier par"
 			},
 			"sortRecent": "Récent",
 			"sortPopular": "Populaire",
@@ -4185,7 +4185,7 @@
 		},
 		"aside": {
 			"region": {
-				"aria-label": "barre latérale sociale"
+				"aria-label": "Barre latérale sociale"
 			},
 			"suggested": "Comptes suggérés"
 		},
@@ -5171,7 +5171,7 @@
 	"util": {
 		"toast": {
 			"container": {
-				"aria-label": "notifier"
+				"aria-label": "Notifications"
 			}
 		},
 		"common": {

@@ -191,8 +191,8 @@
 			"terminateIdle": "Đã dừng ${label}: không có stdall trong hơn ${minutes} phút (nhàn rỗi ${idleSec}s, đã chạy ${elapsed})",
 			"terminateDuration": "Đã dừng ${label}: vượt thời gian cơ sở watchdog (đã chạy ${elapsed}, cơ sở ${baseline}, giới hạn ${limit})",
 			"terminateDurationDefault": "Đã dừng ${label}: vượt giới hạn watchdog mặc định (đã chạy ${elapsed}, giới hạn ${limit})",
-			"sleepDetected": "Đã phát hiện thấy trạng thái ngủ đông của hệ thống (khoảng thời gian theo dõi nhảy ${gap} ≥ ${limit}), ${label} bị hủy bỏ và sẵn sàng chạy lại (${elapsed} đã được chạy)",
-			"sleepRetry": "Hệ thống bị gián đoạn khi ngủ, chạy lại ${label} (${attempt} time)",
+			"sleepDetected": "Phát hiện hệ thống ngủ đông (khoảng watchdog nhảy ${gap} ≥ ${limit}); đã dừng ${label} và chờ chạy lại (đã chạy ${elapsed})",
+			"sleepRetry": "Bị ngắt do hệ thống ngủ; chạy lại ${label} (lần ${attempt})",
 			"terminateMarker": "[Lý do dừng: ${reason}]",
 			"terminateUnknown": "ĐÃ DỪNG ${label}: kiểm thử bị gián đoạn",
 			"terminateSpeculative": "Đã dừng ${label}: phụ thuộc đầu cơ chưa đạt, hủy dừng sớm",
@@ -1633,7 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "Tìm kiếm tin nhắn…",
-				"aria-label": "Tìm kiếm tin nhắn",
+				"aria-label": "Tìm tin nhắn",
 				"noResults": "Không có kết quả",
 				"failed": "Tìm kiếm không thành công",
 				"scopeGroup": "Nhóm này",
@@ -2094,7 +2094,7 @@
 				"aria-label": "Danh sách kênh"
 			},
 			"serverBar": {
-				"aria-label": "Nhóm và Điều hướng"
+				"aria-label": "Nhóm và điều hướng"
 			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} trang"
@@ -2205,10 +2205,10 @@
 					"placeholder": "Mã ngôn ngữ mới, chẳng hạn như en-UK"
 				},
 				"renameLocale": {
-					"aria-label": "Đổi tên mã ngôn ngữ"
+					"aria-label": "Đổi mã ngôn ngữ"
 				},
 				"localeRemove": {
-					"aria-label": "Xóa phiên bản ngôn ngữ"
+					"aria-label": "Xóa ngôn ngữ này"
 				},
 				"avatarUrl": {
 					"placeholder": "URL ảnh đại diện hoặc upload file bên dưới"
@@ -2220,7 +2220,7 @@
 					"placeholder": "URL hình ảnh biểu ngữ hoặc tải lên tệp bên dưới"
 				},
 				"bannerUpload": {
-					"aria-label": "Tải lên hình ảnh biểu ngữ"
+					"aria-label": "Tải ảnh bìa lên"
 				},
 				"tag": {
 					"placeholder": "Thêm sau khi nhập thẻ"
@@ -2416,7 +2416,7 @@
 			"editedLabel": "(đã chỉnh sửa)",
 			"mentionEmpty": "(không có thành viên phù hợp)",
 			"mentionSuggest": {
-				"aria-label": "đề cập đến ứng viên"
+				"aria-label": "Gợi ý nhắc đến"
 			},
 			"clickToLoad": "Bấm để tải",
 			"send": "Gửi"
@@ -3702,18 +3702,18 @@
 		},
 		"nav": {
 			"side": {
-				"aria-label": "điều hướng xã hội"
+				"aria-label": "Điều hướng xã hội"
 			},
 			"mobile": {
-				"aria-label": "Điều hướng dưới cùng của mạng xã hội"
+				"aria-label": "Điều hướng xã hội dưới cùng"
 			},
 			"feed": {
 				"aria-label": "Trang chủ",
-				"title": "trang đầu"
+				"title": "Trang chủ"
 			},
 			"explore": {
 				"aria-label": "Khám phá",
-				"title": "khám phá"
+				"title": "Khám phá"
 			},
 			"notifications": {
 				"aria-label": "Hộp thư",
@@ -3721,26 +3721,26 @@
 			},
 			"saved": {
 				"aria-label": "Đã lưu",
-				"title": "sưu tầm"
+				"title": "Đã lưu"
 			},
 			"drafts": {
 				"aria-label": "Nháp",
-				"title": "hộp dự thảo"
+				"title": "Bản nháp"
 			},
 			"profile": {
 				"aria-label": "Của tôi",
-				"title": "của tôi"
+				"title": "Hồ sơ"
 			},
 			"videos": {
 				"aria-label": "Video ngắn",
-				"title": "đoạn video ngắn"
+				"title": "Video ngắn"
 			},
 			"live": {
 				"aria-label": "Trực tiếp",
-				"title": "phát trực tiếp"
+				"title": "Trực tiếp"
 			},
 			"compose": {
-				"aria-label": "Viết cập nhật"
+				"aria-label": "Viết bài đăng"
 			}
 		},
 		"settings": {
@@ -3794,7 +3794,7 @@
 		"composer": {
 			"placeholder": "Bạn đang nghĩ về điều gì? Hỗ trợ Markdown (phương ngữ nguồn), nhập @ để đề cập",
 			"locale": "ngôn ngữ nội dung",
-			"aria-label": "Viết cập nhật",
+			"aria-label": "Viết bài đăng",
 			"publish": "giải phóng",
 			"saveDraft": "lưu bản nháp",
 			"fab": {
@@ -3825,7 +3825,7 @@
 				"aria-label": "sự biểu lộ"
 			},
 			"mentionSuggest": {
-				"aria-label": "đề cập đến ứng viên"
+				"aria-label": "Gợi ý nhắc đến"
 			},
 			"mediaButton": {
 				"title": "Thêm phương tiện",
@@ -3876,7 +3876,7 @@
 			},
 			"newPosts": "Có tin mới, bấm vào để xem",
 			"tabsLabel": {
-				"aria-label": "Phân loại luồng thông tin"
+				"aria-label": "Sắp xếp bảng tin"
 			},
 			"tabLatest": "cập nhật",
 			"tabForYou": "gợi ý",
@@ -3890,7 +3890,7 @@
 			"trending": {
 				"title": "chủ đề nóng",
 				"tabsLabel": {
-					"aria-label": "Phạm vi chủ đề phổ biến"
+					"aria-label": "Phạm vi xu hướng"
 				},
 				"postCount": {
 					"title": "${n} bài đăng"
@@ -4063,7 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Tìm bài đăng, người dùng hoặc #chủ đề (ít nhất 2 ký tự)",
-			"aria-label": "Tìm kiếm thông tin cập nhật, người dùng hoặc chủ đề",
+			"aria-label": "Tìm bài đăng, người dùng hoặc chủ đề",
 			"open": {
 				"aria-label": "tìm kiếm"
 			},
@@ -4082,7 +4082,7 @@
 				"placeholder": "tác giả"
 			},
 			"filterMedia": {
-				"aria-label": "loại phương tiện truyền thông"
+				"aria-label": "Loại phương tiện"
 			},
 			"filterMediaAll": "Tất cả phương tiện truyền thông",
 			"filterMediaImage": "hình ảnh",
@@ -4091,7 +4091,7 @@
 				"placeholder": "#Nhãn"
 			},
 			"filterSort": {
-				"aria-label": "loại"
+				"aria-label": "Sắp xếp theo"
 			},
 			"sortRecent": "cập nhật",
 			"sortPopular": "Phổ biến",
@@ -4185,7 +4185,7 @@
 		},
 		"aside": {
 			"region": {
-				"aria-label": "thanh bên xã hội"
+				"aria-label": "Thanh bên mạng xã hội"
 			},
 			"suggested": "Đề nghị chú ý"
 		},
@@ -5171,7 +5171,7 @@
 	"util": {
 		"toast": {
 			"container": {
-				"aria-label": "thông báo"
+				"aria-label": "Thông báo"
 			}
 		},
 		"common": {

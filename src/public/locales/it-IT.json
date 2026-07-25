@@ -191,8 +191,8 @@
 			"terminateIdle": "Interrotto ${label}: nessun output stdall per più di ${minutes} minuti (inattivo per ${idleSec} secondi, esegui ${elapsed})",
 			"terminateDuration": "Terminato ${label}: ha impiegato più del tempo di riferimento del watchdog (in esecuzione ${elapsed}, riferimento ${baseline}, limite superiore ${limit})",
 			"terminateDurationDefault": "Terminato ${label}: il tempo trascorso supera il limite di durata del watchdog predefinito (in esecuzione ${elapsed}, limite superiore ${limit})",
-			"sleepDetected": "È stata rilevata l'ibernazione del sistema (l'intervallo del watchdog salta ${gap} ≥ ${limit}), ${label} è stato interrotto ed è pronto per essere eseguito nuovamente (${elapsed} è stato eseguito)",
-			"sleepRetry": "Interruzione della sospensione del sistema, esegui nuovamente ${label} (${attempt} volta)",
+			"sleepDetected": "Rilevata sospensione di sistema (intervallo watchdog saltato di ${gap} ≥ ${limit}); ${label} interrotto e pronto per il rilancio (eseguito ${elapsed})",
+			"sleepRetry": "Interrotto dalla sospensione di sistema; riesecuzione di ${label} (tentativo ${attempt})",
 			"terminateMarker": "[Motivo della risoluzione: ${reason}]",
 			"terminateUnknown": "TERMINATO ${label}: test interrotto",
 			"terminateSpeculative": "Terminato ${label}: la dipendenza speculativa non è passata, interruzione anticipata annullata",
@@ -2088,13 +2088,13 @@
 				"aria-label": "Vicino"
 			},
 			"memberBar": {
-				"aria-label": "Elenco dei membri"
+				"aria-label": "Elenco membri"
 			},
 			"channelBar": {
 				"aria-label": "Elenco canali"
 			},
 			"serverBar": {
-				"aria-label": "Gruppi e Navigazione"
+				"aria-label": "Gruppi e navigazione"
 			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} pagine"
@@ -2205,22 +2205,22 @@
 					"placeholder": "Nuovo codice lingua, come en-UK"
 				},
 				"renameLocale": {
-					"aria-label": "Rinominare il codice della lingua"
+					"aria-label": "Rinomina codice lingua"
 				},
 				"localeRemove": {
-					"aria-label": "Elimina la versione della lingua"
+					"aria-label": "Rimuovi questa lingua"
 				},
 				"avatarUrl": {
 					"placeholder": "URL dell'immagine avatar o carica il file di seguito"
 				},
 				"avatarUpload": {
-					"aria-label": "Carica l'immagine dell'avatar"
+					"aria-label": "Carica avatar"
 				},
 				"bannerUrl": {
 					"placeholder": "URL dell'immagine banner o carica il file di seguito"
 				},
 				"bannerUpload": {
-					"aria-label": "Carica l'immagine del banner"
+					"aria-label": "Carica banner"
 				},
 				"tag": {
 					"placeholder": "Aggiungi dopo aver inserito il tag"
@@ -2416,7 +2416,7 @@
 			"editedLabel": "(modificato)",
 			"mentionEmpty": "(nessun membro corrispondente)",
 			"mentionSuggest": {
-				"aria-label": "menzionare i candidati"
+				"aria-label": "Suggerimenti menzione"
 			},
 			"clickToLoad": "Fare clic per caricare",
 			"send": "Inviare"
@@ -3702,18 +3702,18 @@
 		},
 		"nav": {
 			"side": {
-				"aria-label": "navigazione sociale"
+				"aria-label": "Navigazione social"
 			},
 			"mobile": {
-				"aria-label": "Navigazione sociale inferiore"
+				"aria-label": "Navigazione social in basso"
 			},
 			"feed": {
 				"aria-label": "prima pagina",
-				"title": "prima pagina"
+				"title": "Home"
 			},
 			"explore": {
 				"aria-label": "esplorare",
-				"title": "esplorare"
+				"title": "Esplora"
 			},
 			"notifications": {
 				"aria-label": "Posta in arrivo",
@@ -3721,26 +3721,26 @@
 			},
 			"saved": {
 				"aria-label": "raccogliere",
-				"title": "raccogliere"
+				"title": "Salvati"
 			},
 			"drafts": {
 				"aria-label": "scatola per bozze",
-				"title": "scatola per bozze"
+				"title": "Bozze"
 			},
 			"profile": {
 				"aria-label": "mio",
-				"title": "mio"
+				"title": "Profilo"
 			},
 			"videos": {
 				"aria-label": "breve video",
-				"title": "breve video"
+				"title": "Video brevi"
 			},
 			"live": {
 				"aria-label": "streaming in diretta",
-				"title": "streaming in diretta"
+				"title": "Live"
 			},
 			"compose": {
-				"aria-label": "Scrivi aggiornamenti"
+				"aria-label": "Scrivi un post"
 			}
 		},
 		"settings": {
@@ -3794,7 +3794,7 @@
 		"composer": {
 			"placeholder": "A cosa stai pensando? Supporta Markdown (dialetto dei caratteri), inserisci @ per menzionare",
 			"locale": "linguaggio dei contenuti",
-			"aria-label": "Scrivi aggiornamenti",
+			"aria-label": "Scrivi un post",
 			"publish": "pubblicazione",
 			"saveDraft": "salva bozza",
 			"fab": {
@@ -3825,7 +3825,7 @@
 				"aria-label": "espressione"
 			},
 			"mentionSuggest": {
-				"aria-label": "menzionare i candidati"
+				"aria-label": "Suggerimenti menzione"
 			},
 			"mediaButton": {
 				"title": "Aggiungi contenuti multimediali",
@@ -3876,7 +3876,7 @@
 			},
 			"newPosts": "Ci sono nuove novità, clicca per vedere",
 			"tabsLabel": {
-				"aria-label": "Ordinamento del flusso di informazioni"
+				"aria-label": "Ordinamento del feed"
 			},
 			"tabLatest": "aggiornato",
 			"tabForYou": "consigliare",
@@ -3890,7 +3890,7 @@
 			"trending": {
 				"title": "Tendenza",
 				"tabsLabel": {
-					"aria-label": "Gamma di argomenti popolari"
+					"aria-label": "Ambito tendenze"
 				},
 				"postCount": {
 					"title": "${n} post"
@@ -4063,7 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Cerca post, utenti o #argomenti (minimo 2 parole)",
-			"aria-label": "Cerca aggiornamenti, utenti o argomenti",
+			"aria-label": "Cerca post, persone o argomenti",
 			"open": {
 				"aria-label": "Ricerca"
 			},
@@ -4082,7 +4082,7 @@
 				"placeholder": "Autore"
 			},
 			"filterMedia": {
-				"aria-label": "tipo di supporto"
+				"aria-label": "Tipo di media"
 			},
 			"filterMediaAll": "Tutti i media",
 			"filterMediaImage": "Immagini",
@@ -4091,7 +4091,7 @@
 				"placeholder": "#Etichetta"
 			},
 			"filterSort": {
-				"aria-label": "ordinare"
+				"aria-label": "Ordina per"
 			},
 			"sortRecent": "Ultimo",
 			"sortPopular": "Popolare",
@@ -4185,7 +4185,7 @@
 		},
 		"aside": {
 			"region": {
-				"aria-label": "barra laterale sociale"
+				"aria-label": "Barra laterale social"
 			},
 			"suggested": "Segue suggerito"
 		},
@@ -5171,7 +5171,7 @@
 	"util": {
 		"toast": {
 			"container": {
-				"aria-label": "avvisare"
+				"aria-label": "Notifiche"
 			}
 		},
 		"common": {
