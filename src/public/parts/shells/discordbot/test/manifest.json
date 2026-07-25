@@ -2,7 +2,8 @@
 	"id": "shells/discordbot",
 	"triggerSets": {
 		"testFramework": [
-			"src/scripts/test/deno/serial.mjs"
+			"src/scripts/test/deno/serial.mjs",
+			"src/scripts/test/node/boot.mjs"
 		],
 		"shellPureTests": [
 			"src/public/parts/shells/discordbot/test/pure/**",
@@ -14,6 +15,12 @@
 			"src/public/parts/shells/discordbot/src/**",
 			"src/public/parts/shells/chat/test/fixtures/**",
 			"src/public/parts/shells/chat/test/harness.mjs"
+		],
+		"frontendShared": [
+			"src/public/parts/shells/discordbot/public/**",
+			"src/public/parts/shells/discordbot/test/frontend/**",
+			"src/scripts/test/playwright/**",
+			"src/public/pages/scripts/test/**"
 		]
 	},
 	"suites": [
@@ -29,12 +36,28 @@
 		{
 			"name": "integration",
 			"trigger": ["shellIntegrationTests", "testFramework"],
-			"dependsOn": ["shells/chat:integration"],
 			"run": [
 				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/public/parts/shells/discordbot/test/integration/"
 			]
+		},
+		{
+			"name": "frontend",
+			"dependsOn": ["server:live"],
+			"trigger": "frontendShared",
+			"subtests": [
+				{
+					"name": "smoke",
+					"triggers": [
+						"src/public/parts/shells/discordbot/test/frontend/smoke.spec.mjs",
+						"src/public/parts/shells/discordbot/test/frontend/fixtures.mjs",
+						"src/public/parts/shells/discordbot/public/index.html",
+						"src/public/parts/shells/discordbot/public/index.mjs"
+					]
+				}
+			],
+			"run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/discordbot/test/frontend/run.mjs"]
 		}
 	]
 }
