@@ -23,7 +23,7 @@ Less-common entity traps (`member_join`, avatars, Load reentrancy, session tip f
 - Entry: `src/api/client/index.mjs` → `getChatClient(username, entityHash?)` (default = operator). API surface: `public/llms.txt`.
 - **Plugins**: per-group `local_plugins.json` (node-only, not DAG). World may inject via `GetChatPlugins` (local name wins). Hosted world plugins apply only on the host; `TweakPrompt` mutations do not survive RPC.
 - `OnMessage` may hydrate via `client.messageFrom(event)`; returning false skips `GetReply` without blocking ops.
-- Bridge groups: duck-typed `bridgeOperations`; `group.bridgeBot().stop()` / `client.bridgeBots()`.
+- **Platform bots (Discord/Telegram/WeChat)**: in-memory **virtual** sessions (`bridge:{platform}:{platformChatId}`), not real Hub groups / DAG. Duck-typed via `bridgeOperations`; `getChatClient` → `group(virtualId)` returns virtual Group/Channel/Message; `group.bridgeBot().stop()` / `client.bridgeBots()`.
 
 ## Private state (per-entity)
 

@@ -54,6 +54,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **Live WS probes**: `createLiveShellHttp({ shell? })` from `wsHarness.mjs` — do not re-declare local HTTP helpers. End with `finishLiveWs` / `failLiveWsPrecondition`; frames via `waitForWsFrame`.
 - **Polling**: `pollUntil` (live/fed, seconds, soft) / `waitUntil` (integration, ms, throws) — definitions only in `live/http.mjs`.
 - **Chat / Social fixtures**: `createCharBoot` / `seedCharFixture` / `waitUntil` from `shells/chat/test/harness.mjs`; Social agents: `seedAgentChar` in `shells/social/test/harness.mjs`.
+- **Platform bot bridge**: prefer mock Client / Telegraf (duck-typed `on`/`channels.fetch`/`send`) + no-AI fixture char (`on_message_yes`) over real tokens; assert platform outbound (`channel.send` captured), and that `enumerateJoinedFederatedGroups` does not grow (virtual sessions must not create Hub groups).
 - Every `deno run`/`test`/`install` carries `--allow-scripts --allow-all` (in that order). Sole exception: `deno cache` takes `--allow-scripts` alone.
 - Single-node: `{ p2p: false, minP2pNode: true }`. Domain traps (ports, native addons, federation): [domain-harness.md](docs/domain-harness.md).
 - **Teardown crashes after green**: Windows napi exit codes and Linux fatal signals with `N passed | 0 failed` → `[serial] ok … (deno teardown crash after pass)`, not suite red.

@@ -2,15 +2,16 @@ import { console } from '../../../../../../scripts/i18n/bare.mjs'
 import { channelMessageAgentText } from '../../../chat/public/shared/channelContent.mjs'
 import { dispatchBridgeBotStarted, postBridgeGroupEvent } from '../../../chat/src/chat/bridge/groupEvents.mjs'
 import { claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
-import { postBridgeEdit } from '../../../chat/src/chat/bridge/ingress.mjs'
 import {
 	bridgeIngestDto,
 	messageLineToReplyEntry,
+	postBridgeEdit,
 	tryFewTimes,
 } from '../../../chat/src/chat/bridge/interfaceKit.mjs'
 import { registerBridgeOperations } from '../../../chat/src/chat/bridge/operations.mjs'
 import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../../chat/src/chat/bridge/outbound.mjs'
 import { lookupBridgePlatformChannel } from '../../../chat/src/chat/bridge/registry.mjs'
+import { dropVirtualBridgeSessionsForBot } from '../../../chat/src/chat/bridge/session.mjs'
 import {
 	aiMarkdownToTelegramHtml,
 	buildTelegramTextAndEntities,
@@ -147,6 +148,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				for (const groupId of outboundRegistered)
 					unregisterBridgeOutbound(ownerUsername, groupId)
 				outboundRegistered.clear()
+				dropVirtualBridgeSessionsForBot(ownerUsername, 'telegram', botname)
 				delete charBotRegistry[ownerUsername]?.[botCharname]
 				if (charBotRegistry[ownerUsername] && !Object.keys(charBotRegistry[ownerUsername]).length)
 					delete charBotRegistry[ownerUsername]

@@ -1,5 +1,5 @@
 /**
- * operator 平台身份认领集成测试。
+ * operator 平台身份认领集成测试（虚拟会话）。
  */
 /* global Deno */
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
@@ -12,7 +12,7 @@ const CHAR_YES = 'on_message_yes'
  * @param {string} username replica
  * @param {string} operatorHash operator entityHash
  * @param {string} name profile 展示名
- * @returns {Promise<void>} 无
+ * @returns {Promise<void>}
  */
 async function seedOperatorProfileName(username, operatorHash, name) {
 	const { getProfile, updateProfile } = await import('../../src/entity/profile.mjs')
@@ -54,10 +54,8 @@ Deno.test('bound owner bridge message attributes operator entityHash', async () 
 	await ensureServer()
 
 	const { claimOperatorBridgeIdentity } = await import('../../src/chat/bridge/identity.mjs')
-	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const { postBridgeMessage } = await import('../../src/chat/bridge/interfaceKit.mjs')
+	const { getVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
 
 	const operatorHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
@@ -76,15 +74,11 @@ Deno.test('bound owner bridge message attributes operator entityHash', async () 
 		timestamp: Date.now(),
 	})
 
-	const { groupId } = await ensureBridgeGroup(username, {
-		platform: 'telegram',
-		platformChatId: 910001,
-	})
-	const channelId = await getDefaultChannelId(username, groupId)
-	const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
-	const row = messages.find(message => message.eventId === event.id)
+	const session = getVirtualBridgeSession(username, event.groupId)
+	const row = session.channels.default.logs.find(message => message.extension?.virtualEventId === event.id)
 	assert(row)
-	assertEquals(row.content?.extension?.bridge?.authorEntityHash, operatorHash)
+	assertEquals(row.extension?.bridge?.authorEntityHash, operatorHash)
+	assertEquals(row.uid, operatorHash)
 })
 
 Deno.test('bound owner message uses operator profile displayName', async () => {
@@ -96,10 +90,8 @@ Deno.test('bound owner message uses operator profile displayName', async () => {
 	await ensureServer()
 
 	const { claimOperatorBridgeIdentity } = await import('../../src/chat/bridge/identity.mjs')
-	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const { postBridgeMessage } = await import('../../src/chat/bridge/interfaceKit.mjs')
+	const { getVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
 
 	const operatorHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
@@ -119,15 +111,10 @@ Deno.test('bound owner message uses operator profile displayName', async () => {
 		timestamp: Date.now(),
 	})
 
-	const { groupId } = await ensureBridgeGroup(username, {
-		platform: 'telegram',
-		platformChatId: 910002,
-	})
-	const channelId = await getDefaultChannelId(username, groupId)
-	const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
-	const row = messages.find(message => message.eventId === event.id)
+	const session = getVirtualBridgeSession(username, event.groupId)
+	const row = session.channels.default.logs.find(message => message.extension?.virtualEventId === event.id)
 	assert(row)
-	assertEquals(row.content?.displayName, 'Operator Profile Name')
+	assertEquals(row.name, 'Operator Profile Name')
 })
 
 Deno.test('isCaredBy recognizes bound owner and not unbound stranger', async () => {

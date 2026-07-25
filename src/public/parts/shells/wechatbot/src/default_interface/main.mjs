@@ -8,6 +8,7 @@ import {
 } from '../../../chat/src/chat/bridge/interfaceKit.mjs'
 import { registerBridgeOperations } from '../../../chat/src/chat/bridge/operations.mjs'
 import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../../chat/src/chat/bridge/outbound.mjs'
+import { dropVirtualBridgeSessionsForBot } from '../../../chat/src/chat/bridge/session.mjs'
 import {
 	buildWechatMediaMessageItem,
 	convertFileToWechatCompatible,
@@ -96,6 +97,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 				for (const groupId of outboundRegistered)
 					unregisterBridgeOutbound(ownerUsername, groupId)
 				outboundRegistered.clear()
+				dropVirtualBridgeSessionsForBot(ownerUsername, 'wechat', botname)
 				delete charWechatRuntimeRegistry[ownerUsername]?.[botCharname]
 				if (charWechatRuntimeRegistry[ownerUsername] && !Object.keys(charWechatRuntimeRegistry[ownerUsername]).length)
 					delete charWechatRuntimeRegistry[ownerUsername]

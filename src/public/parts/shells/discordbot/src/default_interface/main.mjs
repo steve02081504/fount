@@ -4,10 +4,12 @@ import { console } from '../../../../../../scripts/i18n/bare.mjs'
 import { channelMessageAgentText } from '../../../chat/public/shared/channelContent.mjs'
 import { dispatchBridgeBotStarted, postBridgeGroupEvent } from '../../../chat/src/chat/bridge/groupEvents.mjs'
 import { claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
-import { postBridgeDelete, postBridgeEdit, postBridgeMessage } from '../../../chat/src/chat/bridge/ingress.mjs'
 import {
 	bridgeIngestDto,
 	messageLineToReplyEntry,
+	postBridgeDelete,
+	postBridgeEdit,
+	postBridgeMessage,
 	tryFewTimes,
 } from '../../../chat/src/chat/bridge/interfaceKit.mjs'
 import { registerBridgeOperations } from '../../../chat/src/chat/bridge/operations.mjs'
@@ -17,6 +19,7 @@ import {
 	lookupBridgePlatformChannel,
 	markBridgeGroupBackfilled,
 } from '../../../chat/src/chat/bridge/registry.mjs'
+import { dropVirtualBridgeSessionsForBot } from '../../../chat/src/chat/bridge/session.mjs'
 import { postBridgeTyping } from '../../../chat/src/chat/bridge/typing.mjs'
 import {
 	discordMessageToBridgeDto,
@@ -151,6 +154,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				for (const groupId of outboundRegistered)
 					unregisterBridgeOutbound(ownerUsername, groupId)
 				outboundRegistered.clear()
+				dropVirtualBridgeSessionsForBot(ownerUsername, 'discord', botname)
 				delete charClientRegistry[ownerUsername]?.[botCharname]
 				if (charClientRegistry[ownerUsername] && !Object.keys(charClientRegistry[ownerUsername]).length)
 					delete charClientRegistry[ownerUsername]

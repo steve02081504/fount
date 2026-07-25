@@ -13,6 +13,11 @@ export function createGroupAccessMethods(apiContext) {
 	 * @returns {Promise<object>} Group
 	 */
 	async function group(groupId) {
+		const { isVirtualBridgeGroupId } = await import('../../chat/bridge/session.mjs')
+		if (isVirtualBridgeGroupId(groupId)) {
+			const { createVirtualBridgeGroup } = await import('../../chat/bridge/virtualObjects.mjs')
+			return createVirtualBridgeGroup(apiContext, groupId)
+		}
 		const { loadGroupState } = await import('../internal.mjs')
 		const state = await loadGroupState(apiContext, groupId)
 		const channelId = state.groupSettings?.defaultChannelId || 'default'

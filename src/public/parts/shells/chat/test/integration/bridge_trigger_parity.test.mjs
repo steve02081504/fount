@@ -1,5 +1,5 @@
 /**
- * Hub + mock TG/DC/WX 四端触发意愿一致性。
+ * Hub + 虚拟 TG/DC/WX 触发意愿一致性。
  */
 /* global Deno */
 import { Buffer } from 'node:buffer'
@@ -15,19 +15,28 @@ const CHAR_PLAIN_B = 'plain_reply_b'
 
 /**
  * @param {string} username replica
- * @param {string} groupId 群
+ * @param {string} groupId 群 / 虚拟群
  * @param {string} channelId 频道
- * @returns {Promise<object[]>} 频道消息行
+ * @param {'hub' | string} end 端
+ * @returns {Promise<object[]>} 消息行
  */
-async function listMessages(username, groupId, channelId) {
-	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
-	return readChannelMessagesForUser(username, groupId, channelId, { limit: 40 })
+async function listMessages(username, groupId, channelId, end) {
+	if (end === 'hub') {
+		const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+		return readChannelMessagesForUser(username, groupId, channelId, { limit: 40 })
+	}
+	const { getVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
+	const session = getVirtualBridgeSession(username, groupId)
+	return (session?.channels[channelId]?.logs || []).map(row => ({
+		content: { content: row.content },
+		role: row.role,
+	}))
 }
 
 /**
  * @param {'hub' | 'telegram' | 'discord' | 'wechat'} end 端点
  * @param {string} username replica
- * @param {{ chatKind: 'group' | 'dm', label: string, platformChatId: string | number }} options 会话选项
+ * @param {{ chatKind: 'group' | 'dm', label: string, platformChatId: string | number, charname: string }} options 会话选项
  * @returns {Promise<{ groupId: string, channelId: string, post: (text: string, platformMessageId: string | number) => Promise<void> }>} 端会话句柄
  */
 async function openEnd(end, username, options) {
@@ -48,7 +57,7 @@ async function openEnd(end, username, options) {
 				channelId: dm.defaultChannelId,
 				/**
 				 * @param {string} text 正文
-				 * @returns {Promise<void>} 无
+				 * @returns {Promise<void>}
 				 */
 				post: async text => {
 					await postChannelMessage(username, dm.groupId, dm.defaultChannelId, { text })
@@ -64,7 +73,7 @@ async function openEnd(end, username, options) {
 			channelId,
 			/**
 			 * @param {string} text 正文
-			 * @returns {Promise<void>} 无
+			 * @returns {Promise<void>}
 			 */
 			post: async text => {
 				await postChannelMessage(username, groupId, channelId, { text })
@@ -72,26 +81,26 @@ async function openEnd(end, username, options) {
 		}
 	}
 
-	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
+	const { bridgeIngestDto } = await import('../../src/chat/bridge/interfaceKit.mjs')
+	const { registerBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
+	const { loadPart } = await import('fount/server/parts_loader.mjs')
 	const platform = end
-	const { groupId } = await ensureBridgeGroup(username, {
-		platform,
-		platformChatId: options.platformChatId,
-		chatKind: options.chatKind,
-		name: options.label,
-	})
-	const channelId = await getDefaultChannelId(username, groupId)
+	const charAPI = await loadPart(username, `chars/${options.charname}`)
+	/** @type {string} */
+	let groupId = ''
 	return {
-		groupId,
-		channelId,
+		/**
+		 * @returns {string} 虚拟群 ID
+		 */
+		get groupId() { return groupId },
+		channelId: 'default',
 		/**
 		 * @param {string} text 正文
 		 * @param {string | number} platformMessageId 平台消息 id
-		 * @returns {Promise<void>} 无
+		 * @returns {Promise<void>}
 		 */
 		post: async (text, platformMessageId) => {
-			await postBridgeMessage(username, {
+			const result = await bridgeIngestDto(username, charAPI, platform, {
 				platform,
 				platformChatId: options.platformChatId,
 				chatKind: options.chatKind,
@@ -99,7 +108,11 @@ async function openEnd(end, username, options) {
 				author: { platformUserId: `${end}-user`, displayName: `${end} User` },
 				text,
 				timestamp: Date.now(),
-			})
+			}, async gid => {
+				groupId = gid
+				registerBridgeOutbound(username, gid, async () => ({ platformMessageId: 1 }))
+			}, `${end}-bot`, options.charname)
+			groupId = result.groupId
 		},
 	}
 }
@@ -125,8 +138,10 @@ Deno.test('four-end group: OnMessage willingness is consistent', async () => {
 			chatKind: 'group',
 			label: `parity-onmsg-${end}`,
 			platformChatId: 940000 + index,
+			charname: CHAR_YES,
 		})
-		await addchar(session.groupId, CHAR_YES, username)
+		if (end === 'hub')
+			await addchar(session.groupId, CHAR_YES, username)
 		await session.post(`parity OnMessage ping ${end}`, 1000 + index)
 		await waitUntil(async () => onMessageProbe.events.length > before, 15000)
 		triggeredByEnd[end] = onMessageProbe.events.length - before
@@ -145,16 +160,20 @@ Deno.test('four-end group: plain chars without OnMessage do not fallback-trigger
 	const replyMarkers = ['write_path_agent reply', 'plain_reply_b reply']
 
 	for (const [index, end] of ENDS.entries()) {
+		const charname = end === 'hub' ? CHAR_PLAIN_A : CHAR_PLAIN_A
 		const session = await openEnd(end, username, {
 			chatKind: 'group',
 			label: `parity-plain-g-${end}`,
 			platformChatId: 950000 + index,
+			charname,
 		})
-		await addchar(session.groupId, CHAR_PLAIN_A, username)
-		await addchar(session.groupId, CHAR_PLAIN_B, username)
+		if (end === 'hub') {
+			await addchar(session.groupId, CHAR_PLAIN_A, username)
+			await addchar(session.groupId, CHAR_PLAIN_B, username)
+		}
 		await session.post(`group no-fallback ${end}`, 2000 + index)
 		await new Promise(resolve => setTimeout(resolve, 500))
-		const messages = await listMessages(username, session.groupId, session.channelId)
+		const messages = await listMessages(username, session.groupId, session.channelId, end)
 		assert(
 			!messages.some(row => replyMarkers.some(marker => String(row.content?.content || '').includes(marker))),
 			`${end} group must not fallback-trigger plain chars`,
@@ -162,7 +181,7 @@ Deno.test('four-end group: plain chars without OnMessage do not fallback-trigger
 	}
 })
 
-Deno.test('four-end DM: plain chars fallback-trigger consistently (WX ingress-only)', async () => {
+Deno.test('four-end DM: plain chars fallback-trigger consistently', async () => {
 	const username = `parity-plain-dm-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createCharBoot({ username, chars: [CHAR_PLAIN_A, CHAR_PLAIN_B] })
 	await ensureServer()
@@ -177,13 +196,16 @@ Deno.test('four-end DM: plain chars fallback-trigger consistently (WX ingress-on
 			chatKind: 'dm',
 			label: `parity-plain-dm-${end}`,
 			platformChatId: end === 'hub' ? `hub-dm-${index}` : `96000${index}`,
+			charname: CHAR_PLAIN_B,
 		})
-		await addchar(session.groupId, CHAR_PLAIN_A, username)
-		await addchar(session.groupId, CHAR_PLAIN_B, username)
+		if (end === 'hub') {
+			await addchar(session.groupId, CHAR_PLAIN_A, username)
+			await addchar(session.groupId, CHAR_PLAIN_B, username)
+		}
 		await session.post(`dm fallback ${end}`, 3000 + index)
 		await waitUntil(async () => {
-			const messages = await listMessages(username, session.groupId, session.channelId)
-			return messages.some(row => replyMarkers.some(marker => String(row.content?.content || '').includes(marker)))
+			const messages = await listMessages(username, session.groupId, session.channelId, end)
+			return messages.some(row => replyMarkers.some(marker => String(row.content?.content || row.content || '').includes(marker)))
 		}, 15000)
 		repliedByEnd[end] = true
 	}

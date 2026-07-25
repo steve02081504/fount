@@ -7,6 +7,13 @@
 		"shellPureTests": [
 			"src/public/parts/shells/discordbot/test/pure/**",
 			"src/public/parts/shells/chat/src/chat/bridge/**"
+		],
+		"shellIntegrationTests": [
+			"src/public/parts/shells/discordbot/test/integration/**",
+			"src/public/parts/shells/chat/src/chat/bridge/**",
+			"src/public/parts/shells/discordbot/src/**",
+			"src/public/parts/shells/chat/test/fixtures/**",
+			"src/public/parts/shells/chat/test/harness.mjs"
 		]
 	},
 	"suites": [
@@ -17,6 +24,16 @@
 				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/public/parts/shells/discordbot/test/pure/"
+			]
+		},
+		{
+			"name": "integration",
+			"trigger": ["shellIntegrationTests", "testFramework"],
+			"dependsOn": ["shells/chat:integration"],
+			"run": [
+				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/discordbot/test/integration/"
 			]
 		}
 	]

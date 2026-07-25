@@ -298,10 +298,4 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		catch (error) {
 			console.error('AfterAddChatLogEntry failed:', error)
 		}
-	if (signPayload.type === 'message' && signPayload.charId) {
-		const { notifyBridgeOutbound } = await import('../bridge/outbound.mjs')
-		void notifyBridgeOutbound(username, groupId, channelId, messageLine).catch(error => {
-			console.error('notifyBridgeOutbound failed:', error)
-		})
-	}
 }
