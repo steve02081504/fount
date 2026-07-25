@@ -7,7 +7,6 @@ import { dirname } from 'node:path'
 
 import { clearMasterKeyKdfCache, deriveNextFileMasterKey } from 'npm:@steve02081504/fount-p2p/crypto/key'
 
-import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { fileMasterKeysPath } from '../lib/paths.mjs'
 
 /** 最多保留多少代历史密钥（用于解密旧文件块） */

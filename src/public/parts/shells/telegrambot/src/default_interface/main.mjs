@@ -196,6 +196,10 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				 */
 				const sendPayload = async payload => {
 					let firstId = null
+					/**
+					 * 仅第一条出站消息挂 reply_parameters，避免整串回复都引用同一条。
+					 * @returns {{ reply_parameters?: { message_id: number, allow_sending_without_reply: boolean } }} 首次调用返回 reply 参数，之后为空对象
+					 */
 					const takeReply = () => {
 						if (replyAttached || !replyParams.reply_parameters) return {}
 						replyAttached = true

@@ -111,6 +111,11 @@ else if (args.length === 0 && process.stdin.isTTY) {
 			message: 'Host password:',
 			type: 'input',
 			required: false,
+			/**
+			 * 仅在填写了主机房间 ID 时询问密码。
+			 * @param {{ hostRoomId?: string }} answers 已收集的答案
+			 * @returns {boolean} 是否需要询问密码
+			 */
 			when: answers => Boolean(answers.hostRoomId?.trim()),
 		},
 		{
@@ -118,6 +123,11 @@ else if (args.length === 0 && process.stdin.isTTY) {
 			message: 'Host nodeHash (optional, from connection-code API):',
 			type: 'input',
 			required: false,
+			/**
+			 * 仅在填写了主机房间 ID 时询问 nodeHash 提示。
+			 * @param {{ hostRoomId?: string }} answers 已收集的答案
+			 * @returns {boolean} 是否需要询问 nodeHash
+			 */
 			when: answers => Boolean(answers.hostRoomId?.trim()),
 		},
 	])
@@ -421,6 +431,11 @@ async function handleRunCode(message, peerId) {
 
 		let callback = null
 		if (callbackInfo && actions.sendCallback)
+			/**
+			 * 将远端脚本中的 callback 调用回传给主机。
+			 * @param {unknown} data 脚本传入的回调载荷
+			 * @returns {Promise<void>}
+			 */
 			callback = async (data) => {
 				await actions.sendCallback({
 					partpath: callbackInfo.partpath,

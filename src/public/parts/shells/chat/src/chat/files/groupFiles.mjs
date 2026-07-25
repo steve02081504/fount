@@ -24,7 +24,6 @@ import { normalizeFileManifest } from 'npm:@steve02081504/fount-p2p/files/manife
 import { penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
 
-import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { groupEntityHash } from '../../../public/shared/groupEntityHash.mjs'
 import { getState } from '../dag/materialize.mjs'
 import {

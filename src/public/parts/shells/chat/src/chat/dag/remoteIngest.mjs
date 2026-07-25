@@ -8,7 +8,6 @@ import { isPeerPoolKeyBlocked, loadPeerPoolView } from 'npm:@steve02081504/fount
 import { recordMessageRateViolation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
-import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { assertFederatedCkgContent } from '../channel_keys/content.mjs'
 import {
 	classifyHlcSkewAction,

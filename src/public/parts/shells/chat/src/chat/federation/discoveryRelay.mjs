@@ -1,7 +1,6 @@
 /**
  * 联邦群发现 gossip：discovery_announce / discovery_query。
  */
-import { pickFederationTargetPeerIds } from './peerFanout.mjs'
 
 import {
 	buildDiscoveryQueryResponse,
@@ -11,6 +10,7 @@ import {
 import { listUserGroups } from '../lib/userGroups.mjs'
 
 import { loadFederationGroupSettings } from './dagDependencies.mjs'
+import { pickFederationTargetPeerIds } from './peerFanout.mjs'
 
 /**
  * @param {string} username 用户
