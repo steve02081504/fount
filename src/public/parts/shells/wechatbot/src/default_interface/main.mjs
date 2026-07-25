@@ -7,7 +7,7 @@ import {
 	messageLineToReplyEntry,
 } from '../../../chat/src/chat/bridge/interfaceKit.mjs'
 import { registerBridgeOperations } from '../../../chat/src/chat/bridge/operations.mjs'
-import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../../chat/src/chat/bridge/outbound.mjs'
+import { registerBridgeOutbound, teardownBridgeInterface } from '../../../chat/src/chat/bridge/outbound.mjs'
 import {
 	buildWechatMediaMessageItem,
 	convertFileToWechatCompatible,
@@ -93,12 +93,14 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 			charname: botCharname,
 			/** @returns {Promise<void>} 清理 outbound 与 char 注册表 */
 			teardown: async () => {
-				for (const groupId of outboundRegistered)
-					unregisterBridgeOutbound(ownerUsername, groupId)
-				outboundRegistered.clear()
-				delete charWechatRuntimeRegistry[ownerUsername]?.[botCharname]
-				if (charWechatRuntimeRegistry[ownerUsername] && !Object.keys(charWechatRuntimeRegistry[ownerUsername]).length)
-					delete charWechatRuntimeRegistry[ownerUsername]
+				teardownBridgeInterface({
+					username: ownerUsername,
+					platform: 'wechat',
+					botname,
+					outboundRegistered,
+					registry: charWechatRuntimeRegistry,
+					charname: botCharname,
+				})
 			},
 		})
 

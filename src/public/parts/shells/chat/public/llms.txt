@@ -287,7 +287,7 @@ import 入口：`src/public/parts/shells/chat/src/api/client/index.mjs` → `get
 - **私有状态**：`bookmarks` / `groupFolders` / `aliases` / `readMarkers` / `notifications` / `inbox` / `emojis` / `stickers` / `care` 均挂在绑定实体目录下。
 - **会话 / 联邦 / 节点**：`Group.session.*`、`Group.federation.catchup/setTuning`、`Group.fork/blockOpposingFork`、`Group.reputation`、`ChatClient.reputation`、`ChatClient.nodeDenylist`、`Channel.triggerReply` / `streamingAuth`、`updateProfile` / `updateEntityProfile` / `setOwner`。
 - **写路径**：消息发送走 `commitChannelMessageEvent`；其余写操作走 `appendSignedLocalEvent(..., { entityHash })`。
-- **桥接群**：`group.bridge` 含 `platform` / `platformChatId` / `chatKind` / `botname`；平台操作经 `requireBridgeOperation`；`group.bridgeBot().stop()` / `client.bridgeBots()`。无 char 级杀进程。
-- **code_execution**：`getChatRequest` 注入 `fount_chat` → `{ fount: { chat, group, channel, message? } }`；平台插件另注入原生命名空间。沙箱不暴露 `bridgeOperations`。
+- **桥接（虚拟会话）**：平台 bot 不建真实 Hub 群。虚拟群 id = `bridge:{platform}:{platformChatId}`；进程内 chat log + `bridgeOperations` 出站。`group.bridge` 含 `platform` / `platformChatId` / `chatKind` / `botname`；`group.bridgeBot().stop()` / `client.bridgeBots()`。无 char 级杀进程。
+- **code_execution**：`getChatRequest` / 虚拟 bridge request 注入 `fount_chat` → `{ fount: { chat, group, channel, message? } }`；平台插件另注入原生命名空间。沙箱不暴露 `bridgeOperations`。
 
 壳级说明见 `public/AGENTS.md`；操作平权见 `docs/review/human-agent-operational-parity-review.md`。

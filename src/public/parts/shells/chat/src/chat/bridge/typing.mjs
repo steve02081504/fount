@@ -1,9 +1,13 @@
 import { resolveBridgeIdentity } from './identity.mjs'
-import { resolveBridgeChannel } from './registry.mjs'
+import {
+	ensureVirtualBridgeSession,
+	virtualBridgeChannelId,
+	virtualBridgeGroupId,
+} from './session.mjs'
 
 const TYPING_TTL_MS = 6000
 
-/** @type {Map<string, Map<string, number>>} `${username}:${groupId}:${channelId}` → entityHash → expiresAt */
+/** @type {Map<string, Map<string, number>>} key → entityHash → expiresAt */
 const typingByChannel = new Map()
 
 /**
@@ -30,8 +34,9 @@ function pruneBucket(bucket, now) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} entityHash 正在输入的实体
+ * @returns {void}
  */
-export function recordChannelTyping(username, groupId, channelId, entityHash) {
+export function recordVirtualBridgeTyping(username, groupId, channelId, entityHash) {
 	const hash = String(entityHash || '').trim().toLowerCase()
 	if (!hash) return
 	const key = channelKey(username, groupId, channelId)
@@ -45,13 +50,16 @@ export function recordChannelTyping(username, groupId, channelId, entityHash) {
 	bucket.set(hash, now + TYPING_TTL_MS)
 }
 
+/** @deprecated 兼容原生群 channel.typing 仍可能调用 */
+export const recordChannelTyping = recordVirtualBridgeTyping
+
 /**
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
- * @returns {string[]} 当前正在输入的 entityHash 列表
+ * @returns {string[]} 正在输入的 entityHash
  */
-export function listTypingEntities(username, groupId, channelId) {
+export function listVirtualBridgeTyping(username, groupId, channelId) {
 	const key = channelKey(username, groupId, channelId)
 	const bucket = typingByChannel.get(key)
 	if (!bucket?.size) return []
@@ -61,18 +69,23 @@ export function listTypingEntities(username, groupId, channelId) {
 	return [...bucket.keys()]
 }
 
+/** @deprecated */
+export const listTypingEntities = listVirtualBridgeTyping
+
 /**
- * 桥接平台 typing 事件入账（不进 DAG）。
+ * 平台 typing 入账虚拟会话。
  * @param {string} username replica
- * @param {{ platform: string, platformChatId: string | number, platformThreadId?: string | number, platformUserId: string | number, displayName?: string }} dto 平台 typing
+ * @param {{ platform: string, platformChatId: string | number, platformThreadId?: string | number, platformUserId: string | number, displayName?: string, botname?: string }} dto typing DTO
  * @returns {Promise<void>}
  */
 export async function postBridgeTyping(username, dto) {
-	const { groupId, channelId } = await resolveBridgeChannel(username, {
+	const groupId = virtualBridgeGroupId(dto.platform, dto.platformChatId)
+	ensureVirtualBridgeSession(username, {
 		platform: dto.platform,
 		platformChatId: dto.platformChatId,
-		platformThreadId: dto.platformThreadId,
+		botname: dto.botname,
 	})
+	const channelId = virtualBridgeChannelId(dto.platformThreadId)
 	const entityHash = await resolveBridgeIdentity(username, dto.platform, dto.platformUserId, dto.displayName)
-	recordChannelTyping(username, groupId, channelId, entityHash)
+	recordVirtualBridgeTyping(username, groupId, channelId, entityHash)
 }

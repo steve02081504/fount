@@ -13,6 +13,15 @@ export function createHydrationMethods(apiContext) {
 		async messageFrom(event) {
 			const groupId = event.group?.groupId
 			const message = event.message || event
+			const { isVirtualBridgeGroupId } = await import('../../chat/bridge/session.mjs')
+			if (isVirtualBridgeGroupId(groupId)) {
+				const { createVirtualBridgeMessage } = await import('../../chat/bridge/virtualObjects.mjs')
+				return createVirtualBridgeMessage(apiContext, groupId, {
+					...message,
+					channelId: event.channel?.channelId || message.channelId || 'default',
+					eventId: message.eventId || message.id || message.extension?.virtualEventId,
+				}, event.mentions)
+			}
 			return createMessage(apiContext, groupId, {
 				...message,
 				channelId: event.channel?.channelId || message.channelId || 'default',

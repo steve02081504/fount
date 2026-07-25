@@ -4,14 +4,16 @@ import { console } from '../../../../../../scripts/i18n/bare.mjs'
 import { channelMessageAgentText } from '../../../chat/public/shared/channelContent.mjs'
 import { dispatchBridgeBotStarted, postBridgeGroupEvent } from '../../../chat/src/chat/bridge/groupEvents.mjs'
 import { claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
-import { postBridgeDelete, postBridgeEdit, postBridgeMessage } from '../../../chat/src/chat/bridge/ingress.mjs'
 import {
 	bridgeIngestDto,
 	messageLineToReplyEntry,
+	postBridgeDelete,
+	postBridgeEdit,
+	postBridgeMessage,
 	tryFewTimes,
 } from '../../../chat/src/chat/bridge/interfaceKit.mjs'
 import { registerBridgeOperations } from '../../../chat/src/chat/bridge/operations.mjs'
-import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../../chat/src/chat/bridge/outbound.mjs'
+import { registerBridgeOutbound, teardownBridgeInterface } from '../../../chat/src/chat/bridge/outbound.mjs'
 import {
 	isBridgeGroupBackfilled,
 	lookupBridgePlatformChannel,
@@ -148,12 +150,14 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			charname: botCharname,
 			/** @returns {Promise<void>} 清理 outbound 与 char 注册表 */
 			teardown: async () => {
-				for (const groupId of outboundRegistered)
-					unregisterBridgeOutbound(ownerUsername, groupId)
-				outboundRegistered.clear()
-				delete charClientRegistry[ownerUsername]?.[botCharname]
-				if (charClientRegistry[ownerUsername] && !Object.keys(charClientRegistry[ownerUsername]).length)
-					delete charClientRegistry[ownerUsername]
+				teardownBridgeInterface({
+					username: ownerUsername,
+					platform: 'discord',
+					botname,
+					outboundRegistered,
+					registry: charClientRegistry,
+					charname: botCharname,
+				})
 			},
 		})
 
@@ -168,7 +172,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		 */
 		async function ensureOutboundHandler(groupId, bridge, sourceDto) {
 			if (outboundRegistered.has(groupId)) return
-			registerBridgeOutbound(ownerUsername, groupId, async ({ channelId, messageLine }) => {
+			registerBridgeOutbound(ownerUsername, groupId, async ({ channelId, messageLine, replyToPlatformMessageId }) => {
 				const platformChannel = lookupBridgePlatformChannel(ownerUsername, groupId, channelId)
 				const platformChatId = platformChannel?.platformChatId ?? bridge.platformChatId
 				const platformThreadId = platformChannel?.platformThreadId
@@ -198,13 +202,24 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					description: file.description,
 				}))
 
+				let replyAttached = false
 				/**
 				 * @param {object} payload Discord send 载荷
 				 * @returns {Promise<{ platformMessageId: string }>} 首条平台消息 id
 				 */
-				const sendPayload = async payload => ({
-					platformMessageId: (await tryFewTimes(() => channel.send(payload))).id,
-				})
+				const sendPayload = async payload => {
+					const options = { ...payload }
+					if (!replyAttached && replyToPlatformMessageId != null) {
+						options.reply = {
+							messageReference: String(replyToPlatformMessageId),
+							failIfNotExists: false,
+						}
+						replyAttached = true
+					}
+					return {
+						platformMessageId: (await tryFewTimes(() => channel.send(options))).id,
+					}
+				}
 
 				if (await charAPI.interfaces.discord?.FormatOutboundReply?.(replyEntry, {
 					platform: 'discord',

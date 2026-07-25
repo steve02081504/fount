@@ -114,10 +114,8 @@ Deno.test('bridgeOperations mock: typing and leave dispatch', async () => {
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
 	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
+	const { ensureVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
 	const { getChatClient } = await import('../../src/api/client/index.mjs')
 
 	const calls = []
@@ -136,17 +134,16 @@ Deno.test('bridgeOperations mock: typing and leave dispatch', async () => {
 		leaveChat: async payload => { calls.push(['leave', payload]) },
 	})
 
-	const groupId = await newGroup(username, { name: 'bridge-mock' })
-	const channelId = await getDefaultChannelId(username, groupId)
-	await appendSignedLocalEvent(username, groupId, {
-		type: 'group_settings_update',
-		timestamp: Date.now(),
-		content: { bridge: { platform: 'mock', platformChatId: 'plat-chat-1', chatKind: 'group', botname: 'bridge-bot' } },
+	const session = ensureVirtualBridgeSession(username, {
+		platform: 'mock',
+		platformChatId: 'plat-chat-1',
+		chatKind: 'group',
+		botname: 'bridge-bot',
 	})
 
 	const client = await getChatClient(username)
-	const group = await client.group(groupId)
-	const channel = await group.channel(channelId)
+	const group = await client.group(session.groupId)
+	const channel = await group.channel('default')
 	await channel.typing()
 	assertEquals(calls[0][0], 'typing')
 

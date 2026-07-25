@@ -1,5 +1,5 @@
 /**
- * bridge ingress 集成测试。
+ * 虚拟 bridge 入站 / 出站 / 触发集成测试。
  */
 /* global Deno */
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
@@ -26,42 +26,34 @@ async function bootBridge(prefix, bootOpts = {}) {
 	return { username, ...boot }
 }
 
-Deno.test('postBridgeMessage persists message and mention inbox', async () => {
+Deno.test('postBridgeMessage writes virtual log (no real group)', async () => {
 	const { username } = await bootBridge('bridge')
 
-	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
-	const { bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')
+	const { postBridgeMessage } = await import('../../src/chat/bridge/interfaceKit.mjs')
+	const { getVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
+	const { enumerateJoinedFederatedGroups } = await import('../../src/group/queries.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
-	const { listChatInbox } = await import('../../src/chat/lib/inbox.mjs')
-	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
 
 	const operatorHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
 	assert(operatorHash)
 
-	const platformUserId = 424242
-	const authorHash = bridgeEntityHash('telegram', platformUserId)
 	const event = await postBridgeMessage(username, {
 		platform: 'telegram',
 		platformChatId: 900001,
 		chatKind: 'group',
 		platformMessageId: 11,
-		author: { platformUserId, displayName: 'BridgeUser' },
+		author: { platformUserId: 424242, displayName: 'BridgeUser' },
 		text: `hello @[entity:${operatorHash}]`,
 		timestamp: Date.now(),
 	})
 
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { groupId } = await ensureBridgeGroup(username, {
-		platform: 'telegram',
-		platformChatId: 900001,
-	})
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-	const channelId = await getDefaultChannelId(username, groupId)
-	const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
-	assert(messages.some(row => row.eventId === event.id))
+	const session = getVirtualBridgeSession(username, event.groupId)
+	assert(session)
+	assert(session.channels.default.logs.some(row => row.extension?.virtualEventId === event.id))
+	assert(String(event.groupId).startsWith('bridge:'))
 
-	const inbox = await listChatInbox(username, operatorHash, { kinds: ['mention'] })
-	assert(inbox.items.some(row => row.eventId === event.id))
+	const realGroups = await enumerateJoinedFederatedGroups(username, operatorHash)
+	assertEquals(realGroups.filter(row => row.groupId === event.groupId).length, 0)
 })
 
 Deno.test('bridge identity: stable hash and bind overrides', async () => {
@@ -118,49 +110,45 @@ Deno.test('rewriteTelegramMentionsToFount and outbound entity restore', async ()
 	assertEquals(restored.entities[0].user.id, 77)
 })
 
-Deno.test('notifyBridgeOutbound on char channel.send', async () => {
+Deno.test('virtual channel.send notifies bridge outbound', async () => {
 	const username = `bridge-out-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createCharBoot({ username, chars: CHAR_YES })
 	await ensureServer()
 
 	const { registerBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+	const { ensureVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
 	const { getChatClient } = await import('../../src/api/client/index.mjs')
 
-	const platformChatId = 800002
-	const { groupId } = await ensureBridgeGroup(username, {
+	const session = ensureVirtualBridgeSession(username, {
 		platform: 'telegram',
-		platformChatId,
+		platformChatId: 800002,
 		chatKind: 'dm',
 		name: 'tg-dm',
+		charname: CHAR_YES,
+		botname: 'out-bot',
 	})
-	await addchar(groupId, CHAR_YES, username)
-	const channelId = await getDefaultChannelId(username, groupId)
-
 	const agentHash = (await ensureLocalAgentEntityHash(username, CHAR_YES)).toLowerCase()
 	/** @type {object[]} */
 	const outboundLines = []
-	registerBridgeOutbound(username, groupId, async ({ messageLine }) => {
+	registerBridgeOutbound(username, session.groupId, async ({ messageLine }) => {
 		outboundLines.push(messageLine)
 		return { platformMessageId: 999 }
 	})
 
 	const client = await getChatClient(username, agentHash)
-	const group = await client.group(groupId)
-	const channel = await group.channel(channelId)
+	const group = await client.group(session.groupId)
+	const channel = await group.channel('default')
 	await channel.send('bridge outbound ping')
 
 	await waitUntil(async () => outboundLines.some(row => row.charId === CHAR_YES))
 })
 
-Deno.test('mock bridgeOperations: typing and createInvite on bridge group', async () => {
+Deno.test('mock bridgeOperations: typing and createInvite on virtual bridge group', async () => {
 	const { username } = await bootBridge('bridge-ops')
 
 	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
-	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
+	const { ensureVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
 	const { getChatClient } = await import('../../src/api/client/index.mjs')
 
 	/** @type {string[]} */
@@ -175,23 +163,14 @@ Deno.test('mock bridgeOperations: typing and createInvite on bridge group', asyn
 		},
 	})
 
-	await postBridgeMessage(username, {
+	const session = ensureVirtualBridgeSession(username, {
 		platform: 'telegram',
 		platformChatId: 700003,
-		platformMessageId: 31,
 		botname: 'ops-bot',
-		author: { platformUserId: 1, displayName: 'u' },
-		text: 'ops',
-	})
-
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { groupId } = await ensureBridgeGroup(username, {
-		platform: 'telegram',
-		platformChatId: 700003,
 	})
 
 	const client = await getChatClient(username)
-	const group = await client.group(groupId)
+	const group = await client.group(session.groupId)
 	const channel = await group.defaultChannel()
 	await channel.typing()
 	const invite = await group.createInvite()
@@ -200,12 +179,12 @@ Deno.test('mock bridgeOperations: typing and createInvite on bridge group', asyn
 	assert(calls.includes('invite'))
 })
 
-Deno.test('discord synthetic DTO persists and lookupBridgePlatformChannel resolves thread', async () => {
+Deno.test('discord synthetic DTO writes thread channel; lookupBridgePlatformChannel resolves', async () => {
 	const { username } = await bootBridge('bridge-dc')
 
-	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
+	const { postBridgeMessage } = await import('../../src/chat/bridge/interfaceKit.mjs')
 	const { lookupBridgePlatformChannel, resolveBridgeChannel } = await import('../../src/chat/bridge/registry.mjs')
-	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const { getVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
 
 	const guildId = '900100'
 	const discordChannelId = '900101'
@@ -221,14 +200,11 @@ Deno.test('discord synthetic DTO persists and lookupBridgePlatformChannel resolv
 		timestamp: Date.now(),
 	})
 
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { groupId } = await ensureBridgeGroup(username, {
-		platform: 'discord',
-		platformChatId: guildId,
-	})
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-	const defaultChannelId = await getDefaultChannelId(username, groupId)
-	const resolved = lookupBridgePlatformChannel(username, groupId, defaultChannelId)
+	const session = getVirtualBridgeSession(username, event.groupId)
+	assert(session)
+	assert(session.channels[discordChannelId]?.logs.some(row => row.extension?.virtualEventId === event.id))
+
+	const resolved = lookupBridgePlatformChannel(username, event.groupId, 'default')
 	assertEquals(resolved?.platformChatId, guildId)
 
 	const { channelId: fountThreadChannelId } = await resolveBridgeChannel(username, {
@@ -236,19 +212,16 @@ Deno.test('discord synthetic DTO persists and lookupBridgePlatformChannel resolv
 		platformChatId: guildId,
 		platformThreadId: discordChannelId,
 	})
-	const mapped = lookupBridgePlatformChannel(username, groupId, fountThreadChannelId)
+	const mapped = lookupBridgePlatformChannel(username, event.groupId, fountThreadChannelId)
 	assertEquals(mapped?.platformChatId, guildId)
 	assertEquals(mapped?.platformThreadId, discordChannelId)
-
-	const messages = await readChannelMessagesForUser(username, groupId, fountThreadChannelId, { limit: 10 })
-	assert(messages.some(row => row.eventId === event.id))
 })
 
-Deno.test('wechat synthetic DTO persists to DAG', async () => {
+Deno.test('wechat synthetic DTO writes virtual DM log', async () => {
 	const { username } = await bootBridge('bridge-wx')
 
-	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
-	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const { postBridgeMessage } = await import('../../src/chat/bridge/interfaceKit.mjs')
+	const { getVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
 
 	const peerId = 'wx-peer-001'
 	const event = await postBridgeMessage(username, {
@@ -262,16 +235,10 @@ Deno.test('wechat synthetic DTO persists to DAG', async () => {
 		timestamp: Date.now(),
 	})
 
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { groupId } = await ensureBridgeGroup(username, {
-		platform: 'wechat',
-		platformChatId: peerId,
-		chatKind: 'dm',
-	})
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-	const channelId = await getDefaultChannelId(username, groupId)
-	const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 10 })
-	assert(messages.some(row => row.eventId === event.id))
+	const session = getVirtualBridgeSession(username, event.groupId)
+	assert(session)
+	assertEquals(session.chatKind, 'dm')
+	assert(session.channels.default.logs.some(row => row.extension?.virtualEventId === event.id))
 })
 
 Deno.test('rewriteDiscordMentionsToFount in discordbot format module', async () => {
@@ -284,29 +251,23 @@ Deno.test('rewriteDiscordMentionsToFount in discordbot format module', async () 
 	assertEquals(out, `see @[entity:${hash}]`)
 })
 
-Deno.test('bridge DM fallback triggers char without OnMessage when charCount > 1', async () => {
+Deno.test('bridgeIngestDto DM triggers plain char GetReply → outbound', async () => {
 	const username = `bridge-dm-trig-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createCharBoot({ username, chars: [CHAR_PLAIN_A, CHAR_PLAIN_B] })
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_PLAIN_B })
 	await ensureServer()
 
-	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const { bridgeIngestDto } = await import('../../src/chat/bridge/interfaceKit.mjs')
+	const { registerBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
+	const { getVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
+	const { loadPart } = await import('fount/server/parts_loader.mjs')
 
 	const platformChatId = 910001
-	const { groupId } = await ensureBridgeGroup(username, {
-		platform: 'telegram',
-		platformChatId,
-		chatKind: 'dm',
-		name: 'tg-dm-trigger',
-	})
-	await addchar(groupId, CHAR_PLAIN_A, username)
-	await addchar(groupId, CHAR_PLAIN_B, username)
-	const channelId = await getDefaultChannelId(username, groupId)
-
-	await postBridgeMessage(username, {
+	const charAPI = await loadPart(username, `chars/${CHAR_PLAIN_B}`)
+	/** @type {object[]} */
+	const outboundLines = []
+	/** @type {string | undefined} */
+	let groupId
+	await bridgeIngestDto(username, charAPI, 'telegram', {
 		platform: 'telegram',
 		platformChatId,
 		chatKind: 'dm',
@@ -314,38 +275,40 @@ Deno.test('bridge DM fallback triggers char without OnMessage when charCount > 1
 		author: { platformUserId: 4242, displayName: 'Peer' },
 		text: 'dm ping without mention',
 		timestamp: Date.now(),
-	})
+	}, async gid => {
+		groupId = gid
+		registerBridgeOutbound(username, gid, async ({ messageLine }) => {
+			outboundLines.push(messageLine)
+			return { platformMessageId: 42 }
+		})
+	}, 'dm-bot', CHAR_PLAIN_B)
 
-	const replyMarkers = ['write_path_agent reply', 'plain_reply_b reply']
-	await waitUntil(async () => {
-		const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
-		return messages.some(row => replyMarkers.some(marker => String(row.content?.content || '').includes(marker)))
-	}, 15000)
+	await waitUntil(() => outboundLines.some(row =>
+		String(row.content?.content || '').includes('plain_reply_b reply'),
+	), 15000)
+	const session = getVirtualBridgeSession(username, groupId)
+	assert(session.channels.default.logs.some(row =>
+		row.role === 'char' && String(row.content || '').includes('plain_reply_b reply'),
+	))
 })
 
-Deno.test('bridge group without DM does not fallback-trigger chars without OnMessage', async () => {
+Deno.test('bridgeIngestDto group does not fallback-trigger chars without OnMessage', async () => {
 	const username = `bridge-grp-trig-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createCharBoot({ username, chars: [CHAR_PLAIN_A, CHAR_PLAIN_B] })
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_PLAIN_A })
 	await ensureServer()
 
-	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const { bridgeIngestDto } = await import('../../src/chat/bridge/interfaceKit.mjs')
+	const { registerBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
+	const { getVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
+	const { loadPart } = await import('fount/server/parts_loader.mjs')
 
 	const platformChatId = 910002
-	const { groupId } = await ensureBridgeGroup(username, {
-		platform: 'telegram',
-		platformChatId,
-		chatKind: 'group',
-		name: 'tg-group-no-trigger',
-	})
-	await addchar(groupId, CHAR_PLAIN_A, username)
-	await addchar(groupId, CHAR_PLAIN_B, username)
-	const channelId = await getDefaultChannelId(username, groupId)
-
-	await postBridgeMessage(username, {
+	const charAPI = await loadPart(username, `chars/${CHAR_PLAIN_A}`)
+	/** @type {object[]} */
+	const outboundLines = []
+	/** @type {string | undefined} */
+	let groupId
+	await bridgeIngestDto(username, charAPI, 'telegram', {
 		platform: 'telegram',
 		platformChatId,
 		chatKind: 'group',
@@ -353,26 +316,25 @@ Deno.test('bridge group without DM does not fallback-trigger chars without OnMes
 		author: { platformUserId: 4243, displayName: 'Member' },
 		text: 'group ping without mention',
 		timestamp: Date.now(),
-	})
+	}, async gid => {
+		groupId = gid
+		registerBridgeOutbound(username, gid, async ({ messageLine }) => {
+			outboundLines.push(messageLine)
+			return {}
+		})
+	}, 'grp-bot', CHAR_PLAIN_A)
 
-	await new Promise(resolve => setTimeout(resolve, 500))
-	const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
-	const replyMarkers = ['write_path_agent reply', 'plain_reply_b reply']
-	assert(!messages.some(row => replyMarkers.some(marker => String(row.content?.content || '').includes(marker))))
+	await new Promise(resolve => setTimeout(resolve, 800))
+	assertEquals(outboundLines.length, 0)
+	const session = getVirtualBridgeSession(username, groupId)
+	assert(!session.channels.default.logs.some(row => row.role === 'char'))
 })
 
-Deno.test('postBridgeEdit updates content and mention inbox', async () => {
-	const { username } = await bootBridge('bridge-edit')
+Deno.test('postBridgeEdit / postBridgeDelete mutate virtual log', async () => {
+	const { username } = await bootBridge('bridge-mut')
 
-	const { postBridgeMessage, postBridgeEdit } = await import('../../src/chat/bridge/ingress.mjs')
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
-	const { listChatInbox } = await import('../../src/chat/lib/inbox.mjs')
-	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-
-	const operatorHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
-	assert(operatorHash)
+	const { postBridgeMessage, postBridgeEdit, postBridgeDelete } = await import('../../src/chat/bridge/interfaceKit.mjs')
+	const { getVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
 
 	const platformChatId = 920001
 	const platformMessageId = 601
@@ -383,111 +345,60 @@ Deno.test('postBridgeEdit updates content and mention inbox', async () => {
 		chatKind: 'group',
 		platformMessageId,
 		author,
-		text: `hello @[entity:${operatorHash}]`,
+		text: 'hello original',
 		timestamp: Date.now(),
 	})
-
-	const { groupId } = await ensureBridgeGroup(username, { platform: 'telegram', platformChatId })
-	const channelId = await getDefaultChannelId(username, groupId)
-	const inboxBefore = await listChatInbox(username, operatorHash, { kinds: ['mention'] })
-	assert(inboxBefore.items.some(row => row.eventId === event.id))
 
 	await postBridgeEdit(username, {
 		platform: 'telegram',
 		platformChatId,
 		platformMessageId,
 		author,
-		text: `edited @[entity:${operatorHash}] ping`,
+		text: 'edited ping',
 		timestamp: Date.now(),
 	})
 
-	const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
-	const row = messages.find(m => m.eventId === event.id)
-	assert(row)
-	assert(String(row.content?.content || '').includes('edited'))
-	assert(String(row.content?.content || '').includes(`@[entity:${operatorHash}]`))
-
-	await waitUntil(async () => {
-		const inbox = await listChatInbox(username, operatorHash, { kinds: ['mention'] })
-		return inbox.items.some(item =>
-			item.eventId === event.id && String(item.textPreview || '').includes('edited'),
-		)
-	})
-})
-
-Deno.test('postBridgeDelete removes message from channel display', async () => {
-	const { username } = await bootBridge('bridge-del')
-
-	const { postBridgeMessage, postBridgeDelete } = await import('../../src/chat/bridge/ingress.mjs')
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-
-	const platformChatId = 920002
-	const platformMessageId = 602
-	const event = await postBridgeMessage(username, {
-		platform: 'discord',
-		platformChatId,
-		platformMessageId,
-		chatKind: 'group',
-		author: { platformUserId: '8001', displayName: 'Deleter' },
-		text: 'delete me soon',
-		timestamp: Date.now(),
-	})
-
-	const { groupId } = await ensureBridgeGroup(username, { platform: 'discord', platformChatId })
-	const channelId = await getDefaultChannelId(username, groupId)
-	assert((await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 }))
-		.some(row => row.eventId === event.id))
+	let session = getVirtualBridgeSession(username, event.groupId)
+	const edited = session.channels.default.logs.find(row => row.extension?.virtualEventId === event.id)
+	assert(edited)
+	assertEquals(edited.content, 'edited ping')
 
 	await postBridgeDelete(username, {
-		platform: 'discord',
+		platform: 'telegram',
 		platformChatId,
 		platformMessageId,
 	})
-
-	const after = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
-	assert(!after.some(row => row.eventId === event.id))
+	session = getVirtualBridgeSession(username, event.groupId)
+	assert(!session.channels.default.logs.some(row => row.extension?.virtualEventId === event.id))
 })
 
-Deno.test('full chain: bridgeIngestDto auto addchar → GetReply → notifyBridgeOutbound', async () => {
+Deno.test('full chain: bridgeIngestDto → GetReply → notifyBridgeOutbound', async () => {
 	const username = `bridge-chain-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createCharBoot({ username, chars: CHAR_PLAIN_B })
 	await ensureServer()
 
 	const { bridgeIngestDto } = await import('../../src/chat/bridge/interfaceKit.mjs')
 	const { registerBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
 	const { loadPart } = await import('fount/server/parts_loader.mjs')
 
 	const platformChatId = 930001
 	const charAPI = await loadPart(username, `chars/${CHAR_PLAIN_B}`)
-	/** @type {string | undefined} */
-	let groupId
 	/** @type {object[]} */
 	const outboundLines = []
 	await bridgeIngestDto(username, charAPI, 'telegram', {
 		platform: 'telegram',
 		platformChatId,
-		chatKind: 'group',
+		chatKind: 'dm',
 		platformMessageId: 701,
 		author: { platformUserId: 9001, displayName: 'Peer' },
 		text: 'trigger full chain',
 		timestamp: Date.now(),
 	}, async gid => {
-		groupId = gid
 		registerBridgeOutbound(username, gid, async ({ messageLine }) => {
 			outboundLines.push(messageLine)
 			return { platformMessageId: 4242 }
 		})
 	}, 'chain-bot', CHAR_PLAIN_B)
-
-	const channelId = await getDefaultChannelId(username, groupId)
-	await waitUntil(async () => {
-		const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
-		return messages.some(row => String(row.content?.content || '').includes('plain_reply_b reply'))
-	}, 15000)
 
 	await waitUntil(() => outboundLines.some(row =>
 		row.charId === CHAR_PLAIN_B
@@ -495,32 +406,21 @@ Deno.test('full chain: bridgeIngestDto auto addchar → GetReply → notifyBridg
 	), 15000)
 })
 
-Deno.test('replyToPlatformMessageId resolves to extension.bridge.replyToEventId; codeBridgeContext reads hydrated meta', async () => {
+Deno.test('replyToPlatformMessageId resolves on virtual log; codeBridgeContext reads meta', async () => {
 	const username = `bridge-reply-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createCharBoot({ username, chars: CHAR_PLAIN_B })
 	await ensureServer()
 
-	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
-	const { getChatRequest } = await import('../../src/chat/session/chatRequest.mjs')
+	const { postBridgeMessage } = await import('../../src/chat/bridge/interfaceKit.mjs')
+	const { getVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
+	const { buildVirtualBridgeChatRequest } = await import('../../src/chat/bridge/request.mjs')
 	const {
 		bridgeMetaFromChatLogEntry,
 		findTriggerChatLogEntry,
 	} = await import('../../src/chat/lib/codeBridgeContext.mjs')
+	const { loadPart } = await import('fount/server/parts_loader.mjs')
 
 	const platformChatId = 960001
-	const { groupId } = await ensureBridgeGroup(username, {
-		platform: 'telegram',
-		platformChatId,
-		chatKind: 'group',
-		name: 'reply-chain',
-	})
-	await addchar(groupId, CHAR_PLAIN_B, username)
-	const channelId = await getDefaultChannelId(username, groupId)
-
 	const author = { platformUserId: 9101, displayName: 'Quoter' }
 	const first = await postBridgeMessage(username, {
 		platform: 'telegram',
@@ -542,54 +442,60 @@ Deno.test('replyToPlatformMessageId resolves to extension.bridge.replyToEventId;
 		timestamp: Date.now(),
 	})
 
-	const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 10 })
-	const quoted = messages.find(row => String(row.content?.content || '').includes('quoting reply'))
+	const session = getVirtualBridgeSession(username, first.groupId)
+	const quoted = session.channels.default.logs.find(row => String(row.content || '').includes('quoting reply'))
 	assert(quoted)
-	assertEquals(quoted.content.extension.bridge.replyToEventId, first.id)
-	assertEquals(quoted.content.extension.bridge.replyToPlatformMessageId, '901')
-	assertEquals(quoted.content.replyTo?.eventId, first.id)
-	assertEquals(quoted.content.replyTo?.preview, 'original message')
-	assertEquals(quoted.content.replyTo?.senderName, 'Quoter')
+	assertEquals(quoted.extension.bridge.replyToEventId, first.id)
+	assertEquals(quoted.extension.bridge.replyToPlatformMessageId, '901')
+	assertEquals(quoted.extension.replyTo?.eventId, first.id)
+	assertEquals(quoted.extension.replyTo?.preview, 'original message')
 
-	// 水合后 chat_log 行上 bridge 元数据在 entry.extension.bridge，codeBridgeContext 必须能读到
-	const req = await getChatRequest(groupId, CHAR_PLAIN_B, channelId, { replicaUsername: username })
+	const charAPI = await loadPart(username, `chars/${CHAR_PLAIN_B}`)
+	const req = await buildVirtualBridgeChatRequest(
+		username, first.groupId, 'default', CHAR_PLAIN_B, charAPI, quoted,
+	)
 	const trigger = findTriggerChatLogEntry(req.chat_log)
 	assert(trigger)
 	const meta = bridgeMetaFromChatLogEntry(trigger)
 	assert(meta)
 	assertEquals(meta.platformMessageId, '902')
 	assertEquals(meta.replyToEventId, first.id)
+	assertEquals(req.extension?.bridge?.platform, 'telegram')
 })
 
-Deno.test('getChatRequest exposes extension.bridge on bridge groups', async () => {
-	const username = `bridge-ext-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createCharBoot({ username, chars: CHAR_PLAIN_B })
+Deno.test('OnMessage yes char: bridgeIngestDto group triggers outbound', async () => {
+	const username = `bridge-onmsg-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_YES })
 	await ensureServer()
 
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
-	const { getChatRequest } = await import('../../src/chat/session/chatRequest.mjs')
-	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
+	const { onMessageProbe } = await import('../fixtures/probes/onMessageProbe.mjs')
+	onMessageProbe.reset()
+	onMessageProbe.returnValue = true
 
-	const platformChatId = 940001
-	const { groupId } = await ensureBridgeGroup(username, {
+	const { bridgeIngestDto } = await import('../../src/chat/bridge/interfaceKit.mjs')
+	const { registerBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
+	const { loadPart } = await import('fount/server/parts_loader.mjs')
+
+	const charAPI = await loadPart(username, `chars/${CHAR_YES}`)
+	/** @type {object[]} */
+	const outboundLines = []
+	await bridgeIngestDto(username, charAPI, 'telegram', {
 		platform: 'telegram',
-		platformChatId,
-		chatKind: 'group',
-		botname: 'ext-bot',
-	})
-	await addchar(groupId, CHAR_PLAIN_B, username)
-	await postBridgeMessage(username, {
-		platform: 'telegram',
-		platformChatId,
+		platformChatId: 970001,
 		chatKind: 'group',
 		platformMessageId: 801,
 		author: { platformUserId: 9002, displayName: 'Peer' },
-		text: 'bridge extension probe',
+		text: 'onmessage group ping',
 		timestamp: Date.now(),
-	})
+	}, async gid => {
+		registerBridgeOutbound(username, gid, async ({ messageLine }) => {
+			outboundLines.push(messageLine)
+			return { platformMessageId: 1 }
+		})
+	}, 'onmsg-bot', CHAR_YES)
 
-	const req = await getChatRequest(groupId, CHAR_PLAIN_B, null, { replicaUsername: username })
-	assertEquals(req.extension?.bridge?.platform, 'telegram')
-	assertEquals(req.extension?.bridge?.botname, 'ext-bot')
+	await waitUntil(() => outboundLines.some(row =>
+		String(row.content?.content || '').includes('on_message_yes reply'),
+	), 15000)
+	assert(onMessageProbe.events.length >= 1)
 })
