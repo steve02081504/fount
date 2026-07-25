@@ -172,7 +172,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		 */
 		async function ensureOutboundHandler(groupId, bridge) {
 			if (outboundRegistered.has(groupId)) return
-			registerBridgeOutbound(ownerUsername, groupId, async ({ channelId, messageLine }) => {
+			registerBridgeOutbound(ownerUsername, groupId, async ({ channelId, messageLine, replyToPlatformMessageId }) => {
 				const platformChannel = lookupBridgePlatformChannel(ownerUsername, groupId, channelId)
 				const platformChatId = platformChannel?.platformChatId ?? bridge.platformChatId
 				const threadKey = platformChannel?.platformThreadId
@@ -180,6 +180,15 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				const plainText = await restoreFountMentionsInText(ownerUsername, rawText)
 				const replyEntry = messageLineToReplyEntry(messageLine, botCharname)
 				const { cleanMarkdown, stickerIds } = extractStickerIdsFromMarkdown(plainText)
+				const replyParams = replyToPlatformMessageId != null
+					? {
+						reply_parameters: {
+							message_id: Number(replyToPlatformMessageId),
+							allow_sending_without_reply: true,
+						},
+					}
+					: {}
+				let replyAttached = false
 
 				/**
 				 * @param {{ text?: string, stickerIds?: string[] }} payload 出站载荷
@@ -187,6 +196,11 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				 */
 				const sendPayload = async payload => {
 					let firstId = null
+					const takeReply = () => {
+						if (replyAttached || !replyParams.reply_parameters) return {}
+						replyAttached = true
+						return replyParams
+					}
 					if (payload.text?.trim()) {
 						const { text, entities } = await buildTelegramTextAndEntities(ownerUsername, payload.text)
 						for (const part of splitTelegramReply(aiMarkdownToTelegramHtml(text))) {
@@ -194,6 +208,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 								...DefaultParseModeOptions,
 								...threadKey ? { message_thread_id: Number(threadKey) } : {},
 								...entities.length ? { entities } : {},
+								...takeReply(),
 							}))
 							if (!firstId) firstId = sent.message_id
 						}
@@ -201,6 +216,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					for (const stickerId of payload.stickerIds || []) {
 						const sent = await tryFewTimes(() => bot.telegram.sendSticker(platformChatId, stickerId, {
 							...threadKey ? { message_thread_id: Number(threadKey) } : {},
+							...takeReply(),
 						}))
 						if (!firstId) firstId = sent.message_id
 					}

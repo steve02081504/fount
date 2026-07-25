@@ -2,7 +2,7 @@
  * Telegram 虚拟桥接验收：mock Telegraf + 无 AI 角色，断言 sendMessage 出站。
  */
 /* global Deno */
-import { assert } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { createCharBoot, waitUntil } from '../../../chat/test/harness.mjs'
 
@@ -167,4 +167,28 @@ Deno.test('telegram virtual bridge: message → GetReply → sendMessage', async
 
 	const groupsAfter = await enumerateJoinedFederatedGroups(username, operatorHash)
 	assert(groupsAfter.length === groupsBefore.length, 'virtual bridge must not create real chat groups')
+
+	const {
+		getVirtualBridgeSession,
+		virtualBridgeGroupId,
+	} = await import('../../../chat/src/chat/bridge/session.mjs')
+	const { notifyVirtualBridgeOutbound } = await import('../../../chat/src/chat/bridge/outbound.mjs')
+	const groupId = virtualBridgeGroupId('telegram', ownerId)
+	const channelId = 'default'
+	const inbound = getVirtualBridgeSession(username, groupId)?.channels[channelId]?.logs
+		?.find(row => row.role === 'user')
+	assert(inbound?.extension?.virtualEventId, 'inbound virtual event missing')
+
+	const before = fake.sent.length
+	await notifyVirtualBridgeOutbound(username, groupId, channelId, {
+		content: 'threaded reply body',
+		extension: {
+			virtualEventId: `vchar_reply_${Date.now().toString(36)}`,
+			replyTo: { eventId: inbound.extension.virtualEventId },
+		},
+	}, CHAR)
+	const threaded = fake.sent.slice(before)
+	assert(threaded.length >= 1)
+	assertEquals(threaded[0].reply_parameters?.message_id, 501)
+	assertEquals(threaded[0].reply_parameters?.allow_sending_without_reply, true)
 })

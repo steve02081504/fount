@@ -268,4 +268,29 @@ Deno.test('discord virtual bridge: MessageCreate → GetReply → channel.send',
 
 	const groupsAfter = await enumerateJoinedFederatedGroups(username, operatorHash)
 	assertEquals(groupsAfter.length, groupsBefore.length, 'virtual bridge must not create real chat groups')
+
+	const {
+		getVirtualBridgeSession,
+		virtualBridgeChannelId,
+		virtualBridgeGroupId,
+	} = await import('../../../chat/src/chat/bridge/session.mjs')
+	const { notifyVirtualBridgeOutbound } = await import('../../../chat/src/chat/bridge/outbound.mjs')
+	const groupId = virtualBridgeGroupId('discord', fake.guildId)
+	const channelId = virtualBridgeChannelId(fake.channelId)
+	const inbound = getVirtualBridgeSession(username, groupId)?.channels[channelId]?.logs
+		?.find(row => row.role === 'user')
+	assert(inbound?.extension?.virtualEventId, 'inbound virtual event missing')
+
+	const before = fake.sent.length
+	await notifyVirtualBridgeOutbound(username, groupId, channelId, {
+		content: 'threaded reply body',
+		extension: {
+			virtualEventId: `vchar_reply_${Date.now().toString(36)}`,
+			replyTo: { eventId: inbound.extension.virtualEventId },
+		},
+	}, CHAR)
+	const threaded = fake.sent.slice(before)
+	assert(threaded.length >= 1)
+	assertEquals(threaded[0].reply?.messageReference, 'msg-1')
+	assertEquals(threaded[0].reply?.failIfNotExists, false)
 })

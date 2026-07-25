@@ -172,7 +172,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		 */
 		async function ensureOutboundHandler(groupId, bridge, sourceDto) {
 			if (outboundRegistered.has(groupId)) return
-			registerBridgeOutbound(ownerUsername, groupId, async ({ channelId, messageLine }) => {
+			registerBridgeOutbound(ownerUsername, groupId, async ({ channelId, messageLine, replyToPlatformMessageId }) => {
 				const platformChannel = lookupBridgePlatformChannel(ownerUsername, groupId, channelId)
 				const platformChatId = platformChannel?.platformChatId ?? bridge.platformChatId
 				const platformThreadId = platformChannel?.platformThreadId
@@ -202,13 +202,24 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					description: file.description,
 				}))
 
+				let replyAttached = false
 				/**
 				 * @param {object} payload Discord send 载荷
 				 * @returns {Promise<{ platformMessageId: string }>} 首条平台消息 id
 				 */
-				const sendPayload = async payload => ({
-					platformMessageId: (await tryFewTimes(() => channel.send(payload))).id,
-				})
+				const sendPayload = async payload => {
+					const options = { ...payload }
+					if (!replyAttached && replyToPlatformMessageId != null) {
+						options.reply = {
+							messageReference: String(replyToPlatformMessageId),
+							failIfNotExists: false,
+						}
+						replyAttached = true
+					}
+					return {
+						platformMessageId: (await tryFewTimes(() => channel.send(options))).id,
+					}
+				}
 
 				if (await charAPI.interfaces.discord?.FormatOutboundReply?.(replyEntry, {
 					platform: 'discord',
