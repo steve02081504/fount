@@ -80,43 +80,56 @@ function utf16Replace(text, offset, length, replacement) {
 }
 
 /**
+ * blockquote 给每一行加 `> ` 后，内层 offset 处需额外加上的 UTF-16 前缀长度。
+ * @param {string} innerText 加 `> ` 之前的内层文本
+ * @param {number} offsetInInner 相对内层起点的 UTF-16 偏移
+ * @returns {number} 应加上的前缀长度
+ */
+function blockquotePrefixBefore(innerText, offsetInInner) {
+	const newlinesBefore = utf16Slice(innerText, 0, offsetInInner).split('\n').length - 1
+	return 2 * (newlinesBefore + 1)
+}
+
+/**
  * 对同一段文本叠加 Telegram 实体（结构类优先，样式外包）。
+ * 结构类按固定优先级应用，避免 exactSpan 数组顺序把 blockquote 包进 text_mention。
  * @param {string} inner - 已处理好的内层文本。
  * @param {TelegramMessageEntity[]} spanEntities - 覆盖同一 UTF-16 区间的实体。
- * @returns {{ text: string, stylePrefix: number, innerPrefix: number, mentionLength: number, mentionEntity: TelegramMessageEntity | undefined }}
+ * @returns {{ text: string, stylePrefix: number, contentPrefix: number, hasBlockquote: boolean, mentionLength: number, mentionEntity: TelegramMessageEntity | undefined }} 格式化结果与前缀信息
  */
 function applyTelegramSpanFormats(inner, spanEntities) {
 	let text = inner
 	/** @type {TelegramMessageEntity | undefined} */
 	let mentionEntity
+	let mentionLength = 0
 	let contentPrefix = 0
-	for (const entity of spanEntities)
-		switch (entity.type) {
-			case 'text_mention':
-				text = `@[${text} (UserID:${entity.user.id})]`
-				mentionEntity = entity
-				contentPrefix = 2
-				break
-			case 'text_link':
-				text = `[${text}](${entity.url})`
-				contentPrefix = 1
-				break
-			case 'code':
-				text = `\`${text}\``
-				contentPrefix = 1
-				break
-			case 'pre':
-				text = '```' + (entity.language ? entity.language : '') + '\n' + text + '\n```'
-				contentPrefix = 3 + (entity.language ? entity.language.length : 0) + 1
-				break
-			case 'blockquote':
-				text = text.split('\n').map(line => `> ${line}`).join('\n')
-				contentPrefix = 2
-				break
-			default: break
-		}
+	let hasBlockquote = false
+	const textMention = spanEntities.find(entity => entity.type === 'text_mention')
+	if (textMention) {
+		text = `@[${text} (UserID:${textMention.user.id})]`
+		mentionEntity = textMention
+		mentionLength = utf16Length(text)
+		contentPrefix = 2
+	}
+	const textLink = spanEntities.find(entity => entity.type === 'text_link')
+	if (textLink) {
+		text = `[${text}](${textLink.url})`
+		contentPrefix = 1
+	}
+	if (spanEntities.some(entity => entity.type === 'code')) {
+		text = `\`${text}\``
+		contentPrefix = 1
+	}
+	const pre = spanEntities.find(entity => entity.type === 'pre')
+	if (pre) {
+		text = '```' + (pre.language ? pre.language : '') + '\n' + text + '\n```'
+		contentPrefix = 3 + (pre.language ? pre.language.length : 0) + 1
+	}
+	if (spanEntities.some(entity => entity.type === 'blockquote')) {
+		text = text.split('\n').map(line => `> ${line}`).join('\n')
+		hasBlockquote = true
+	}
 
-	const mentionLength = mentionEntity ? utf16Length(text) : 0
 	let stylePrefix = 0
 	for (const entity of spanEntities)
 		switch (entity.type) {
@@ -131,7 +144,8 @@ function applyTelegramSpanFormats(inner, spanEntities) {
 	return {
 		text,
 		stylePrefix,
-		innerPrefix: stylePrefix + contentPrefix,
+		contentPrefix,
+		hasBlockquote,
 		mentionLength,
 		mentionEntity,
 	}
@@ -144,7 +158,7 @@ function applyTelegramSpanFormats(inner, spanEntities) {
  * @param {number} rangeStart UTF-16 起点
  * @param {number} rangeEnd UTF-16 终点
  * @param {number} markdownBase 已输出 Markdown 的 UTF-16 长度
- * @returns {{ text: string, mentionEntities: TelegramMessageEntity[] }}
+ * @returns {{ text: string, mentionEntities: TelegramMessageEntity[] }} 渲染文本与重映射后的 mention 实体
  */
 function renderTelegramEntityRange(text, entities, rangeStart, rangeEnd, markdownBase) {
 	/** @type {string[]} */
@@ -182,22 +196,28 @@ function renderTelegramEntityRange(text, entities, rangeStart, rangeEnd, markdow
 			? renderTelegramEntityRange(text, nested, spanStart, spanEnd, partBase)
 			: { text: utf16Slice(text, spanStart, spanEnd - spanStart), mentionEntities: [] }
 		const formatted = applyTelegramSpanFormats(innerRendered.text, exactSpan)
+		const blockquotePad = formatted.hasBlockquote ? 2 : 0
 
 		const mentionSource = formatted.mentionEntity || exactSpan.find(item => item.type === 'mention')
 		if (mentionSource)
 			mentionEntities.push({
 				...mentionSource,
-				offset: partBase + formatted.stylePrefix,
+				offset: partBase + formatted.stylePrefix + blockquotePad,
 				length: formatted.mentionEntity
 					? formatted.mentionLength
 					: utf16Length(innerRendered.text),
 			})
 		else
-			for (const nestedMention of innerRendered.mentionEntities)
+			for (const nestedMention of innerRendered.mentionEntities) {
+				const offsetInInner = nestedMention.offset - partBase
+				const quoteAdjust = formatted.hasBlockquote
+					? blockquotePrefixBefore(innerRendered.text, offsetInInner)
+					: 0
 				mentionEntities.push({
 					...nestedMention,
-					offset: nestedMention.offset + formatted.innerPrefix,
+					offset: nestedMention.offset + formatted.stylePrefix + formatted.contentPrefix + quoteAdjust,
 				})
+			}
 
 		parts.push(formatted.text)
 		cursor = spanEnd

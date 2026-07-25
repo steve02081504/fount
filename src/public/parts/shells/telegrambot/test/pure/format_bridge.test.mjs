@@ -96,6 +96,83 @@ Deno.test('telegramEntitiesToAiMarkdown nests text_mention inside wider bold', (
 	assertEquals(markdown, '**hello @[Alice (UserID:7)]** end')
 })
 
+Deno.test('telegramEntitiesToAiMarkdown blockquote prefixes every line', () => {
+	const markdown = telegramEntitiesToAiMarkdown('foo\nbar', [
+		{ type: 'blockquote', offset: 0, length: 7 },
+	])
+	assertEquals(markdown, '> foo\n> bar')
+})
+
+Deno.test('telegramMessageToBridgeDto remaps text_mention on later blockquote line', async () => {
+	const username = `tg-bq-${crypto.randomUUID().slice(0, 8)}`
+	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_bq_'))
+	await createTestServerBoot({
+		username,
+		dataDir,
+		minP2pNode: true,
+		loadParts: ['shells/chat'],
+	})()
+
+	const { bridgeEntityHash } = await import('../../../chat/src/chat/bridge/identity.mjs')
+	const mentionUserId = 991122
+	const expectedHash = bridgeEntityHash('telegram', mentionUserId)
+	const message = {
+		message_id: 1,
+		date: 1_700_000_000,
+		text: 'foo\nbar',
+		entities: [
+			{ type: 'blockquote', offset: 0, length: 7 },
+			{
+				type: 'text_mention',
+				offset: 4,
+				length: 3,
+				user: { id: mentionUserId, is_bot: false, first_name: 'bar' },
+			},
+		],
+		from: { id: 11, first_name: 'Bob', is_bot: false },
+		chat: { id: 1, type: 'private' },
+	}
+
+	const dto = await telegramMessageToBridgeDto({}, message, { id: 1, username: 'bot' }, username)
+	assert(dto)
+	assertEquals(dto.text, `> foo\n> @[entity:${expectedHash}]`)
+})
+
+Deno.test('telegramMessageToBridgeDto remaps same-span blockquote text_mention', async () => {
+	const username = `tg-bq1-${crypto.randomUUID().slice(0, 8)}`
+	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_bq1_'))
+	await createTestServerBoot({
+		username,
+		dataDir,
+		minP2pNode: true,
+		loadParts: ['shells/chat'],
+	})()
+
+	const { bridgeEntityHash } = await import('../../../chat/src/chat/bridge/identity.mjs')
+	const mentionUserId = 334455
+	const expectedHash = bridgeEntityHash('telegram', mentionUserId)
+	const message = {
+		message_id: 2,
+		date: 1_700_000_000,
+		text: 'Alice',
+		entities: [
+			{ type: 'blockquote', offset: 0, length: 5 },
+			{
+				type: 'text_mention',
+				offset: 0,
+				length: 5,
+				user: { id: mentionUserId, is_bot: false, first_name: 'Alice' },
+			},
+		],
+		from: { id: 11, first_name: 'Bob', is_bot: false },
+		chat: { id: 1, type: 'private' },
+	}
+
+	const dto = await telegramMessageToBridgeDto({}, message, { id: 1, username: 'bot' }, username)
+	assert(dto)
+	assertEquals(dto.text, `> @[entity:${expectedHash}]`)
+})
+
 Deno.test('extractStickerIdsFromMarkdown strips stickers for outbound', () => {
 	const { cleanMarkdown, stickerIds } = extractStickerIdsFromMarkdown(
 		'hello <:CA_sticker_id:set_name:😀> world <:CB_id:other:>',
