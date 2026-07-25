@@ -1,13 +1,13 @@
 <div class="char-settings-body">
 	<div class="overlay-section space-y-3">
-		<h4 data-i18n="chat.hub.sessionInfo"></h4>
+		<h3 data-i18n="chat.hub.sessionInfo"></h3>
 		<div class="overlay-info-row"><span data-i18n="chat.hub.sessionRole"></span><span>${escapeHtml(charname)}</span></div>
 		<div class="overlay-info-row"><span data-i18n="chat.hub.sessionId"></span><span>${escapeHtml(groupId)}</span></div>
 		<div class="overlay-info-row"><span data-i18n="chat.hub.sessionMessages"></span><span>${logLength}</span></div>
 	</div>
 	<div class="overlay-section space-y-3" id="character-chat-config-host"></div>
 	<div class="overlay-section space-y-3">
-		<h4 data-i18n="chat.hub.quickActions"></h4>
+		<h3 data-i18n="chat.hub.quickActions"></h3>
 		<div class="overlay-toggle-row flex items-center justify-between gap-2 rounded-lg bg-base-200 p-3" id="character-chat-advanced" style="cursor:pointer;">
 			<div>
 				<div class="overlay-toggle-title" data-i18n="chat.hub.advancedSettings"></div>
@@ -17,7 +17,7 @@
 		</div>
 	</div>
 	<div class="overlay-section space-y-3">
-		<h4 data-i18n="chat.hub.dangerZone"></h4>
+		<h3 data-i18n="chat.hub.dangerZone"></h3>
 		${friendBound
 		? '<div class="text-sm text-base-content/50 mb-2" data-i18n="chat.hub.unbindFriendDescription"></div>'
 		: '<div class="text-sm text-base-content/50 mb-2" data-i18n="chat.hub.deleteSessionDescription"></div>'}

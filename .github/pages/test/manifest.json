@@ -1,0 +1,32 @@
+{
+	"id": "pages",
+	"suites": [
+		{
+			"name": "frontend",
+			"run": [
+				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./.github/pages/test/frontend/run.mjs"
+			],
+			"triggers": [
+				".github/pages/**",
+				".github/pages/test/frontend/**",
+				"src/public/pages/scripts/**",
+				"src/public/locales/**",
+				"imgs/**",
+				"src/scripts/test/playwright/**",
+				".esh/commands/pages-server.mjs"
+			],
+			"subtests": [
+				{
+					"name": "smoke",
+					"triggers": [
+						".github/pages/test/frontend/smoke.spec.mjs",
+						".github/pages/index.html",
+						".github/pages/base.mjs",
+						".github/pages/wait/install/**"
+					]
+				}
+			]
+		}
+	]
+}

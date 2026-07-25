@@ -2,7 +2,7 @@
 	<div class="modal-box profile-edit-box">
 		<header class="profile-edit-header">
 			<div>
-				<h3 class="profile-edit-title" data-i18n="chat.profile.edit"></h3>
+				<h2 class="profile-edit-title" data-i18n="chat.profile.edit"></h2>
 				<p class="profile-edit-subtitle" data-i18n="chat.hub.profileEdit.previewHint"></p>
 			</div>
 			<button type="button" class="btn btn-circle btn-ghost btn-sm" id="profile-edit-close" aria-label="Close">✕</button>
@@ -21,20 +21,20 @@
 					</div>
 				<div class="profile-edit-field-grid">
 				<div class="form-control profile-edit-field">
-					<label class="label py-1"><span class="label-text text-xs opacity-70" data-i18n="chat.profile.avatarLabel"></span></label>
+					<label class="label py-1" for="profile-edit-avatar-url"><span class="label-text text-xs opacity-70" data-i18n="chat.profile.avatarLabel"></span></label>
 					<div class="profile-edit-avatar-row">
 						<div id="profile-edit-avatar-swatch" class="profile-edit-avatar-swatch"></div>
 						<div class="profile-edit-media-inputs">
 							<input type="url" id="profile-edit-avatar-url" class="input input-bordered input-sm" data-i18n="chat.hub.profileEdit.avatarUrl" />
-							<input type="file" id="profile-edit-avatar-upload" accept="image/*" class="file-input file-input-bordered file-input-sm" />
+							<input type="file" id="profile-edit-avatar-upload" accept="image/*" class="file-input file-input-bordered file-input-sm" data-i18n="chat.hub.profileEdit.avatarUpload" />
 						</div>
 					</div>
 				</div>
 				<div class="form-control profile-edit-field">
-					<label class="label py-1"><span class="label-text" data-i18n="chat.hub.profileEdit.bannerLabel"></span></label>
+					<label class="label py-1" for="profile-edit-banner-url"><span class="label-text" data-i18n="chat.hub.profileEdit.bannerLabel"></span></label>
 					<div class="profile-edit-banner-row">
 						<input type="url" id="profile-edit-banner-url" class="input input-bordered input-sm" data-i18n="chat.hub.profileEdit.bannerUrl" />
-						<input type="file" id="profile-edit-banner-upload" accept="image/*" class="file-input file-input-bordered file-input-sm" />
+						<input type="file" id="profile-edit-banner-upload" accept="image/*" class="file-input file-input-bordered file-input-sm" data-i18n="chat.hub.profileEdit.bannerUpload" />
 						<button type="button" class="btn btn-ghost btn-sm" id="profile-edit-banner-clear" data-i18n="chat.hub.profileEdit.bannerClear"></button>
 					</div>
 					<span class="label-text-alt opacity-50" data-i18n="chat.hub.profileEdit.bannerHint"></span>
@@ -42,29 +42,29 @@
 				</div>
 				<div class="profile-edit-field-grid">
 				<div class="form-control profile-edit-field">
-					<label class="label py-1"><span class="label-text" data-i18n="chat.profile.themeColorLabel"></span></label>
+					<label class="label py-1" for="profile-edit-theme-color"><span class="label-text" data-i18n="chat.profile.themeColorLabel"></span></label>
 					<div class="profile-edit-color-row">
 						<input type="color" id="profile-edit-theme-color" class="profile-edit-color-input" value="#5865f2" />
 						<span class="text-xs opacity-60" data-i18n="chat.hub.profileEdit.themeColorHint"></span>
 					</div>
 				</div>
 				<div class="form-control profile-edit-field">
-					<label class="label py-1"><span class="label-text" data-i18n="chat.hub.profileEdit.handleLabel"></span></label>
+					<label class="label py-1" for="profile-edit-handle"><span class="label-text" data-i18n="chat.hub.profileEdit.handleLabel"></span></label>
 					<input type="text" id="profile-edit-handle" class="input input-bordered input-sm font-mono" maxlength="32" autocomplete="off" data-i18n="chat.hub.profileEdit.handle" />
 					<span class="label-text-alt opacity-50" data-i18n="chat.hub.profileEdit.handleHint"></span>
 				</div>
 				</div>
 				<div class="form-control profile-edit-field">
-					<label class="label py-1"><span class="label-text" data-i18n="chat.profile.name"></span></label>
+					<label class="label py-1" for="profile-edit-name"><span class="label-text" data-i18n="chat.profile.name"></span></label>
 					<input type="text" id="profile-edit-name" class="input input-bordered input-sm" />
 					<span class="label-text-alt opacity-50" data-profile-default-name></span>
 				</div>
 				<div class="form-control profile-edit-field">
-					<label class="label py-1"><span class="label-text" data-i18n="chat.profile.descriptionLabel"></span></label>
+					<label class="label py-1" for="profile-edit-description-markdown"><span class="label-text" data-i18n="chat.profile.descriptionLabel"></span></label>
 					<textarea id="profile-edit-description-markdown" class="textarea textarea-bordered textarea-sm" rows="4"></textarea>
 				</div>
 				<div class="form-control profile-edit-field">
-					<label class="label py-1"><span class="label-text" data-i18n="chat.hub.profileEdit.tagsLabel"></span></label>
+					<label class="label py-1" for="profile-edit-tag-input"><span class="label-text" data-i18n="chat.hub.profileEdit.tagsLabel"></span></label>
 					<div id="profile-edit-tags" class="profile-edit-tags" data-profile-tags-editor></div>
 					<div class="profile-edit-tags-add">
 						<input type="text" id="profile-edit-tag-input" class="input input-bordered input-sm" data-i18n="chat.hub.profileEdit.tag" />
@@ -78,7 +78,7 @@
 				</div>
 				<div class="profile-edit-field-grid">
 					<div class="form-control profile-edit-field">
-						<label class="label py-1"><span class="label-text" data-i18n="chat.profile.status"></span></label>
+						<label class="label py-1" for="profile-edit-status"><span class="label-text" data-i18n="chat.profile.status"></span></label>
 						<select id="profile-edit-status" class="select select-bordered select-sm">
 							<option value="online" data-i18n="chat.profile.statusOptions.online"></option>
 							<option value="away" data-i18n="chat.profile.statusOptions.away"></option>
@@ -87,7 +87,7 @@
 						</select>
 					</div>
 					<div class="form-control profile-edit-field">
-						<label class="label py-1"><span class="label-text" data-i18n="chat.profile.customStatusLabel"></span></label>
+						<label class="label py-1" for="profile-edit-custom-status"><span class="label-text" data-i18n="chat.profile.customStatusLabel"></span></label>
 						<input type="text" id="profile-edit-custom-status" class="input input-bordered input-sm" />
 					</div>
 				</div>

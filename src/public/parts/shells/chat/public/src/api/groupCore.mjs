@@ -21,10 +21,18 @@ export async function getGroupChatConfig(groupId) {
  * 创建新群组。
  * @param {string} name 群组名称
  * @param {string} [description] 描述
+ * @param {{ joinPolicy?: string }} [options] 建群选项
  * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 新群 ID 与默认频道
  */
-export async function createGroup(name, description) {
-	const data = await groupFetch('', { method: 'POST', json: { name, description } })
+export async function createGroup(name, description, options = {}) {
+	const data = await groupFetch('', {
+		method: 'POST',
+		json: {
+			name,
+			description,
+			joinPolicy: options.joinPolicy,
+		},
+	})
 	return { groupId: data.groupId, defaultChannelId: data.defaultChannelId || 'default' }
 }
 

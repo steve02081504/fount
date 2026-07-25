@@ -1,9 +1,23 @@
 /**
- * 前端 Playwright 浏览器网络诊断：聚合 HTTP ≥400 / requestfailed，输出可被噪声检测识别的行。
+ * 前端 Playwright 浏览器诊断：网络异常噪声行 + pageerror / test_watch / i18n missing 硬失败。
  */
 
 /** 写入 suite 输出、供 `detectNoiseHits` 识别的前缀。 */
 export const BROWSER_NETWORK_PREFIX = '[browser:network]'
+
+/** `scripts/test/test_watch.mjs` 控制台命名空间；任意 `[test:…]` 命中则硬失败。 */
+export const TEST_WATCH_CONSOLE_PREFIX = '[test:'
+
+/** `scripts/i18n` 缺键警告前缀；命中则硬失败（不去重）。 */
+export const I18N_MISSING_PREFIX = '[i18n:missing]'
+/**
+ * Chromium Opaque Response Blocking：跨源无 CORS 时掐掉响应；`<img>` 等展示往往仍正常，不当噪声。
+ * @param {string | null | undefined} errorText Playwright `request.failure().errorText`
+ * @returns {boolean} 是否应忽略
+ */
+export function isIgnoredBrowserNetworkError(errorText) {
+	return Boolean(errorText?.includes('ERR_BLOCKED_BY_ORB'))
+}
 
 /**
  * @typedef {object} BrowserNetworkEntry
@@ -50,16 +64,59 @@ export function formatBrowserNetworkLine(entry) {
 }
 
 /**
+ * 文本是否为 test_watch 输出。
+ * @param {string} text console 文本
+ * @returns {boolean} 是否 test_watch
+ */
+export function isTestWatchConsoleText(text) {
+	return text.includes(TEST_WATCH_CONSOLE_PREFIX)
+}
+
+/**
+ * 文本是否为 i18n 缺键警告。
+ * @param {string} text console 文本
+ * @returns {boolean} 是否 `[i18n:missing]`
+ */
+export function isI18nMissingConsoleText(text) {
+	return text.includes(I18N_MISSING_PREFIX)
+}
+
+/**
+ * 等待页面至少完成一次 test_watch 扫描（`fount.test.watchLastRun`）。
+ * 先 `kickWatch()`（DOM 静止时不会自动扫），再等 lastRun 推进。
+ * @param {import('npm:@playwright/test').Page} page Playwright 页面
+ * @param {number} [sinceMs=0] 要求 lastRun 严格晚于此时刻（0 表示任意一次）
+ * @param {number} [timeoutMs=8000] 超时（含 locale 闸 / 确认轮）
+ * @returns {Promise<void>}
+ */
+export async function waitForTestWatchCycle(page, sinceMs = 0, timeoutMs = 8000) {
+	await page.evaluate(() => globalThis.fount?.test?.kickWatch?.())
+	await page.waitForFunction(min => {
+		const last = globalThis.fount?.test?.watchLastRun
+		return typeof last === 'number' && last > min
+	}, sinceMs, { timeout: timeoutMs })
+}
+
+/**
  * 创建绑定到单个 Playwright page 的诊断收集器。
+ * @param {object} [options] 选项
+ * @param {(url: string) => boolean} [options.shouldRecordNetwork] 返回 false 则忽略该 URL 的网络异常
  * @returns {{
  *   attach: (page: import('npm:@playwright/test').Page) => void,
  *   pageErrors: string[],
+ *   testWatchErrors: string[],
+ *   i18nMissingErrors: string[],
  *   flushNetworkDiagnostics: () => BrowserNetworkEntry[],
  * }} 诊断 API
  */
-export function createBrowserDiagnostics() {
+export function createBrowserDiagnostics(options = {}) {
+	const shouldRecordNetwork = options.shouldRecordNetwork ?? (() => true)
 	/** @type {string[]} */
 	const pageErrors = []
+	/** @type {string[]} */
+	const testWatchErrors = []
+	/** @type {string[]} */
+	const i18nMissingErrors = []
 	/** @type {Map<string, BrowserNetworkEntry>} */
 	const aggregates = new Map()
 
@@ -71,18 +128,27 @@ export function createBrowserDiagnostics() {
 		page.on('pageerror', err => {
 			pageErrors.push(String(err?.message || err))
 		})
+		page.on('console', msg => {
+			const text = msg.text()
+			if (isTestWatchConsoleText(text)) testWatchErrors.push(text)
+			if (isI18nMissingConsoleText(text)) i18nMissingErrors.push(text)
+		})
 		page.on('requestfailed', req => {
+			const error = req.failure()?.errorText || null
+			if (isIgnoredBrowserNetworkError(error)) return
+			if (!shouldRecordNetwork(req.url())) return
 			recordBrowserNetworkEntry(aggregates, {
 				kind: 'requestfailed',
 				method: req.method(),
 				status: null,
 				url: req.url(),
-				error: req.failure()?.errorText || null,
+				error,
 			})
 		})
 		page.on('response', res => {
 			const status = res.status()
 			if (status < 400) return
+			if (!shouldRecordNetwork(res.url())) return
 			recordBrowserNetworkEntry(aggregates, {
 				kind: 'http',
 				method: res.request().method(),
@@ -105,5 +171,5 @@ export function createBrowserDiagnostics() {
 		return entries
 	}
 
-	return { attach, pageErrors, flushNetworkDiagnostics }
+	return { attach, pageErrors, testWatchErrors, i18nMissingErrors, flushNetworkDiagnostics }
 }

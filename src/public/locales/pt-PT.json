@@ -191,6 +191,8 @@
 			"terminateIdle": "${label} abortado: Nenhuma saída padrão por mais de ${minutes} minutos (inativo por ${idleSec} segundos, execute ${elapsed})",
 			"terminateDuration": "${label} encerrado: demorou mais do que o tempo de linha de base do watchdog (executando ${elapsed}, linha de base ${baseline}, limite superior ${limit})",
 			"terminateDurationDefault": "${label} encerrado: o tempo gasto excede o limite de duração do watchdog padrão (executando ${elapsed}, limite superior ${limit})",
+			"sleepDetected": "Suspensão do sistema detetada (intervalo do watchdog saltou ${gap} ≥ ${limit}); ${label} interrompido e pronto a relançar (já correu ${elapsed})",
+			"sleepRetry": "Interrompido pela suspensão do sistema; a relançar ${label} (tentativa ${attempt})",
 			"terminateMarker": "[Motivo da terminação: ${reason}]",
 			"terminateUnknown": "TERMINADO ${label}: teste interrompido",
 			"terminateSpeculative": "Terminado ${label}: A dependência especulativa não passou, parada antecipada cancelada",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "Pesquisar for messages…",
+				"aria-label": "Pesquisar mensagens",
 				"noResults": "Nenhum resultado",
 				"failed": "Falha em Search",
 				"scopeGroup": "Este grupo",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "Eu",
 			"messageEditSave": "Guardar",
 			"messageEditCancel": "Cancelar",
+			"messageEditArea": {
+				"aria-label": "Editar mensagem"
+			},
 			"feedbackReasonPrompt": "Motivo da reprovação (opcional)",
 			"feedbackReasonInput": {
 				"placeholder": "Motivo da reprovação (opcional)"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "Encerramento"
 			},
+			"memberBar": {
+				"aria-label": "Lista de membros"
+			},
+			"channelBar": {
+				"aria-label": "Lista de canais"
+			},
+			"serverBar": {
+				"aria-label": "Grupos e navegação"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} páginas"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "Novo código de idioma, como en-UK"
 				},
+				"renameLocale": {
+					"aria-label": "Mudar o código de idioma"
+				},
+				"localeRemove": {
+					"aria-label": "Remover este idioma"
+				},
 				"avatarUrl": {
 					"placeholder": "URL da imagem do avatar, ou carregue o ficheiro abaixo"
 				},
+				"avatarUpload": {
+					"aria-label": "Carregar avatar"
+				},
 				"bannerUrl": {
 					"placeholder": "URL da imagem do banner, ou carregue o ficheiro abaixo"
+				},
+				"bannerUpload": {
+					"aria-label": "Carregar banner"
 				},
 				"tag": {
 					"placeholder": "Adicionar after entering tag"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "Perfil do utilizador",
 				"close": {
 					"title": "Fechar cartão de dados"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(editado)",
 			"mentionEmpty": "(sem membros correspondentes)",
+			"mentionSuggest": {
+				"aria-label": "Sugestões de menção"
+			},
 			"clickToLoad": "Clique para carregar",
 			"send": "Enviar"
 		},
@@ -3670,14 +3701,47 @@
 			}
 		},
 		"nav": {
-			"feed": "Início",
-			"explore": "Explorar",
-			"notifications": "Caixa de entrada",
-			"saved": "Guardados",
-			"drafts": "Rascunhos",
-			"profile": "Eu",
-			"videos": "Vídeos curtos",
-			"live": "Em direto"
+			"side": {
+				"aria-label": "Navegação social"
+			},
+			"mobile": {
+				"aria-label": "Navegação social inferior"
+			},
+			"feed": {
+				"aria-label": "Início",
+				"title": "Início"
+			},
+			"explore": {
+				"aria-label": "Explorar",
+				"title": "Explorar"
+			},
+			"notifications": {
+				"aria-label": "Caixa de entrada",
+				"title": "Caixa de entrada"
+			},
+			"saved": {
+				"aria-label": "Guardados",
+				"title": "Guardados"
+			},
+			"drafts": {
+				"aria-label": "Rascunhos",
+				"title": "Rascunhos"
+			},
+			"profile": {
+				"aria-label": "Eu",
+				"title": "Perfil"
+			},
+			"videos": {
+				"aria-label": "Vídeos curtos",
+				"title": "Vídeos curtos"
+			},
+			"live": {
+				"aria-label": "Em direto",
+				"title": "Em direto"
+			},
+			"compose": {
+				"aria-label": "Escrever uma publicação"
+			}
 		},
 		"settings": {
 			"title": "Definições sociais",
@@ -3729,6 +3793,8 @@
 		},
 		"composer": {
 			"placeholder": "O que está pensando? Suporte Markdown (dialeto fount), digite @ para mencionar",
+			"locale": "Linguagem do conteúdo",
+			"aria-label": "Escrever uma publicação",
 			"publish": "Liberar",
 			"saveDraft": "Guardar draft",
 			"fab": {
@@ -3757,6 +3823,9 @@
 			"emojiButton": {
 				"title": "Expressão",
 				"aria-label": "Expressão"
+			},
+			"mentionSuggest": {
+				"aria-label": "Sugestões de menção"
 			},
 			"mediaButton": {
 				"title": "Adicionar media",
@@ -3793,12 +3862,22 @@
 				},
 				"except": {
 					"placeholder": "Quem não deve mostrar (opcional)"
-				}
+				},
+				"aria-label": "Alcance visível"
 			}
 		},
 		"feed": {
-			"refresh": "Atualizar news",
+			"refresh": {
+				"aria-label": "Atualizar news",
+				"title": "Atualizar news",
+				"dataset": {
+					"tip": "Atualizar news"
+				}
+			},
 			"newPosts": "Há novidades, clique para ver",
+			"tabsLabel": {
+				"aria-label": "Ordenação do feed"
+			},
 			"tabLatest": "Atualizado",
 			"tabForYou": "Recomendar",
 			"repostedBy": "${author} retuitado",
@@ -3810,12 +3889,16 @@
 			"replayDivider": "Terminada a leitura, navegue novamente",
 			"trending": {
 				"title": "Tópicos quentes",
+				"tabsLabel": {
+					"aria-label": "Âmbito das tendências"
+				},
 				"postCount": {
 					"title": "${n} postagens"
 				},
 				"scopeLocal": "Máquina local",
 				"scopeNearby": "Próximo",
-				"empty": "Ainda não há tópicos quentes"
+				"empty": "Ainda não há tópicos quentes",
+				"aria-label": "Tópicos quentes"
 			}
 		},
 		"explore": {
@@ -3845,6 +3928,7 @@
 			},
 			"createFolderPrompt": "Nome da pasta",
 			"pickFolderTitle": "Guardar to…",
+			"folderSelect": "Pasta favorita",
 			"confirm": "Confirmar",
 			"cancel": "Cancelar",
 			"remove": "Remover from saved",
@@ -3979,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Pesquisar publicações, utilizadores ou #tópicos (mínimo 2 palavras)",
+			"aria-label": "Pesquisar publicações, pessoas ou tópicos",
 			"open": {
 				"aria-label": "Procurar"
 			},
@@ -3994,16 +4079,27 @@
 			"viewTitle": "Procurar",
 			"loading": "Procurando…",
 			"filterAuthor": {
-				"placeholder": "Autor"
+				"placeholder": "Autor",
+				"aria-label": "Autor"
+			},
+			"filterMedia": {
+				"aria-label": "Tipo de média"
 			},
 			"filterMediaAll": "Todas as mídias",
 			"filterMediaImage": "Foto",
 			"filterMediaVideo": "Vídeo",
 			"filterTag": {
-				"placeholder": "#Rótulo"
+				"placeholder": "#Rótulo",
+				"aria-label": "Rótulo"
+			},
+			"filterSort": {
+				"aria-label": "Ordenar por"
 			},
 			"sortRecent": "Atualizado",
 			"sortPopular": "Popular",
+			"filterScope": {
+				"aria-label": "Âmbito da pesquisa"
+			},
 			"scopeLocal": "Máquina local",
 			"scopeNearby": "Próximo"
 		},
@@ -4090,12 +4186,16 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "Barra lateral social"
+			},
 			"suggested": "Recomendo atenção"
 		},
 		"groupRef": {
 			"linking": "Conectar grupo de bate-papo",
 			"clear": "Desassociar",
-			"pick": "Conectar grupo/canal de bate-papo…"
+			"pick": "Conectar grupo/canal de bate-papo…",
+			"select": "Conecte-se a um grupo ou canal de bate-papo"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4232,6 @@
 			"quoting": "Citando",
 			"clear": "Desreferência",
 			"viewOriginal": "Ver postagem original"
-		},
-		"a11y": {
-			"linkGroupSelect": "Conecte-se a um grupo ou canal de bate-papo",
-			"postVisibility": "Alcance visível",
-			"postLang": "Linguagem do conteúdo",
-			"trendingHashtags": "Tópicos quentes",
-			"saveFolderSelect": "Pasta favorita"
 		},
 		"translate": {
 			"label": "Tradução:"
@@ -5078,6 +5171,11 @@
 		"parentLink": "↑ Nível anterior ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "Notificações"
+			}
+		},
 		"common": {
 			"cancel": "Cancelar",
 			"create": "Criar",

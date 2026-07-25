@@ -51,7 +51,7 @@ export function findEmptyGroupId() {
 /**
  * 创建一个全新的聊天（每个聊天天然对应一个群，groupId 即 groupId）。
  * @param {string} username - 新聊天的所有者用户名。
- * @param {{ name?: string, defaultChannelName?: string, entityHash?: string }} [options] 群显示名 / 默认频道 / 建群实体（缺省 operator）
+ * @param {{ name?: string, defaultChannelName?: string, entityHash?: string, joinPolicy?: string }} [options] 群显示名 / 默认频道 / 建群实体（缺省 operator） / 入群策略
  * @returns {Promise<string>} 新创建的聊天的ID。
  */
 export async function newGroup(username, options = {}) {
@@ -65,6 +65,7 @@ export async function newGroup(username, options = {}) {
 		entityHash,
 		name: options.name || await geti18nForUser(username, 'chat.group.defaults.dmChatName'),
 		defaultChannelName: options.defaultChannelName,
+		joinPolicy: options.joinPolicy,
 	})
 	registerGroupRuntime(result.groupId, username)
 	await newMetadata(result.groupId, username)

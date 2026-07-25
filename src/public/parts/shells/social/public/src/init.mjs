@@ -21,7 +21,7 @@ import { wireSocialProfileHover } from './lib/profileHover.mjs'
 import { bindMediaCarousel } from './mediaRender.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { bindContentReveal } from '/scripts/features/contentReveal/index.mjs'
-import { geti18n, primaryLocale } from '/scripts/i18n/index.mjs'
+import { primaryLocale } from '/scripts/i18n/index.mjs'
 import { applyIncomingNavigation, afterPublishPost, focusComposer, switchView } from './navigation.mjs'
 import { state } from './state.mjs'
 import { prependFeedItem, showFeedNewPostsBanner, updateFeedSearchChrome } from './views/feed.mjs'
@@ -196,25 +196,6 @@ export async function bootstrap() {
 		const avatarSlot = document.getElementById('viewerComposerAvatar')
 		if (avatarSlot && state.viewerEntityHash)
 			avatarSlot.innerHTML = renderAvatarHtml(state.viewerEntityHash, state.viewerProfile)
-
-		for (const [id, key] of Object.entries({
-			linkGroupSelect: 'social.a11y.linkGroupSelect',
-			postVisibility: 'social.a11y.postVisibility',
-			postLocale: 'social.a11y.postLang',
-			feedTrending: 'social.a11y.trendingHashtags',
-			saveFolderSelect: 'social.a11y.saveFolderSelect',
-			feedRefreshButton: 'social.feed.refresh',
-			feedSearchClearButton: 'social.search.clear',
-		})) {
-			const el = document.getElementById(id)
-			if (el) el.setAttribute('aria-label', geti18n(key))
-		}
-		const refreshButton = document.getElementById('feedRefreshButton')
-		if (refreshButton) {
-			const refreshLabel = geti18n('social.feed.refresh')
-			refreshButton.setAttribute('data-tip', refreshLabel)
-			refreshButton.setAttribute('title', refreshLabel)
-		}
 
 		document.getElementById('linkGroupSelect')?.addEventListener('change', event => {
 			const select = event.target

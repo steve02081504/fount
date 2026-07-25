@@ -1,5 +1,6 @@
 /** DAG 事件 type 分类（供治理选支、联邦 ACL、频道 GC 等复用）。 */
 
+import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
 import {
 	registerEventTypeDefs,
 	unregisterEventTypeDefs,
@@ -143,6 +144,26 @@ export const SESSION_EVENT_TYPES = new Set(
 	Object.keys(CHAT_EVENT_TYPE_DEFS).filter(type => type.startsWith('session_')),
 )
 SESSION_EVENT_TYPES.add('agent_reply_frequency_set')
+
+/**
+ * session_* / agent_reply_frequency_set 为本机元数据：不参与联邦 tip / 共识折叠。
+ * 仍可落 `events.jsonl`，但不得占据 tip frontier，否则后续联邦事件会与之并列成假分叉。
+ * @param {object} event DAG 事件
+ * @returns {boolean} 是否参与联邦 tip 与共识折叠
+ */
+export function isFederatableDagEvent(event) {
+	return !SESSION_EVENT_TYPES.has(event?.type)
+}
+
+/**
+ * 联邦 tip 叶集合：先剔除本机 session 元数据，再算 DAG tips。
+ * 若调用方已持有 `events.filter(isFederatableDagEvent)`，直接用 `computeDagTipIdsFromEvents`，勿再套本函数。
+ * @param {object[]} events 事件列表（可含 session_*）
+ * @returns {string[]} tip event id 列表
+ */
+export function computeFederatableDagTipIds(events) {
+	return computeDagTipIdsFromEvents(events.filter(isFederatableDagEvent))
+}
 
 /** @returns {void} */
 export function registerChatEventTypeDefs() {

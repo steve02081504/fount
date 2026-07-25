@@ -191,6 +191,8 @@
 			"terminateIdle": "Interrotto ${label}: nessun output stdall per più di ${minutes} minuti (inattivo per ${idleSec} secondi, esegui ${elapsed})",
 			"terminateDuration": "Terminato ${label}: ha impiegato più del tempo di riferimento del watchdog (in esecuzione ${elapsed}, riferimento ${baseline}, limite superiore ${limit})",
 			"terminateDurationDefault": "Terminato ${label}: il tempo trascorso supera il limite di durata del watchdog predefinito (in esecuzione ${elapsed}, limite superiore ${limit})",
+			"sleepDetected": "Rilevata sospensione di sistema (intervallo watchdog saltato di ${gap} ≥ ${limit}); ${label} interrotto e pronto per il rilancio (eseguito ${elapsed})",
+			"sleepRetry": "Interrotto dalla sospensione di sistema; riesecuzione di ${label} (tentativo ${attempt})",
 			"terminateMarker": "[Motivo della risoluzione: ${reason}]",
 			"terminateUnknown": "TERMINATO ${label}: test interrotto",
 			"terminateSpeculative": "Terminato ${label}: la dipendenza speculativa non è passata, interruzione anticipata annullata",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "Cerca messaggi...",
+				"aria-label": "Cerca messaggi",
 				"noResults": "Nessun risultato",
 				"failed": "Ricerca fallita",
 				"scopeGroup": "Questo gruppo",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "IO",
 			"messageEditSave": "Salva",
 			"messageEditCancel": "Annulla",
+			"messageEditArea": {
+				"aria-label": "Modifica messaggio"
+			},
 			"feedbackReasonPrompt": "Motivo della non mi piace (facoltativo)",
 			"feedbackReasonInput": {
 				"placeholder": "Motivo della non mi piace (facoltativo)"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "Vicino"
 			},
+			"memberBar": {
+				"aria-label": "Elenco membri"
+			},
+			"channelBar": {
+				"aria-label": "Elenco canali"
+			},
+			"serverBar": {
+				"aria-label": "Gruppi e navigazione"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} pagine"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "Nuovo codice lingua, come en-UK"
 				},
+				"renameLocale": {
+					"aria-label": "Rinomina codice lingua"
+				},
+				"localeRemove": {
+					"aria-label": "Rimuovi questa lingua"
+				},
 				"avatarUrl": {
 					"placeholder": "URL dell'immagine avatar o carica il file di seguito"
 				},
+				"avatarUpload": {
+					"aria-label": "Carica avatar"
+				},
 				"bannerUrl": {
 					"placeholder": "URL dell'immagine banner o carica il file di seguito"
+				},
+				"bannerUpload": {
+					"aria-label": "Carica banner"
 				},
 				"tag": {
 					"placeholder": "Aggiungi dopo aver inserito il tag"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "Profilo utente",
 				"close": {
 					"title": "Chiudi profilo"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(modificato)",
 			"mentionEmpty": "(nessun membro corrispondente)",
+			"mentionSuggest": {
+				"aria-label": "Suggerimenti menzione"
+			},
 			"clickToLoad": "Fare clic per caricare",
 			"send": "Inviare"
 		},
@@ -3670,14 +3701,47 @@
 			}
 		},
 		"nav": {
-			"feed": "prima pagina",
-			"explore": "esplorare",
-			"notifications": "Posta in arrivo",
-			"saved": "raccogliere",
-			"drafts": "scatola per bozze",
-			"profile": "mio",
-			"videos": "breve video",
-			"live": "streaming in diretta"
+			"side": {
+				"aria-label": "Navigazione social"
+			},
+			"mobile": {
+				"aria-label": "Navigazione social in basso"
+			},
+			"feed": {
+				"aria-label": "Home",
+				"title": "Home"
+			},
+			"explore": {
+				"aria-label": "Esplora",
+				"title": "Esplora"
+			},
+			"notifications": {
+				"aria-label": "Posta in arrivo",
+				"title": "Posta in arrivo"
+			},
+			"saved": {
+				"aria-label": "Salvati",
+				"title": "Salvati"
+			},
+			"drafts": {
+				"aria-label": "Bozze",
+				"title": "Bozze"
+			},
+			"profile": {
+				"aria-label": "Profilo",
+				"title": "Profilo"
+			},
+			"videos": {
+				"aria-label": "breve video",
+				"title": "Video brevi"
+			},
+			"live": {
+				"aria-label": "streaming in diretta",
+				"title": "Live"
+			},
+			"compose": {
+				"aria-label": "Scrivi un post"
+			}
 		},
 		"settings": {
 			"title": "impostazioni sociali",
@@ -3729,6 +3793,8 @@
 		},
 		"composer": {
 			"placeholder": "A cosa stai pensando? Supporta Markdown (dialetto dei caratteri), inserisci @ per menzionare",
+			"locale": "linguaggio dei contenuti",
+			"aria-label": "Scrivi un post",
 			"publish": "pubblicazione",
 			"saveDraft": "salva bozza",
 			"fab": {
@@ -3757,6 +3823,9 @@
 			"emojiButton": {
 				"title": "espressione",
 				"aria-label": "espressione"
+			},
+			"mentionSuggest": {
+				"aria-label": "Suggerimenti menzione"
 			},
 			"mediaButton": {
 				"title": "Aggiungi contenuti multimediali",
@@ -3793,12 +3862,22 @@
 				},
 				"except": {
 					"placeholder": "Chi non deve mostrarlo (facoltativo)"
-				}
+				},
+				"aria-label": "Gamma visibile"
 			}
 		},
 		"feed": {
-			"refresh": "Aggiorna notizie",
+			"refresh": {
+				"aria-label": "Aggiorna notizie",
+				"title": "Aggiorna notizie",
+				"dataset": {
+					"tip": "Aggiorna notizie"
+				}
+			},
 			"newPosts": "Ci sono nuove novità, clicca per vedere",
+			"tabsLabel": {
+				"aria-label": "Ordinamento del feed"
+			},
 			"tabLatest": "aggiornato",
 			"tabForYou": "consigliare",
 			"repostedBy": "${author} ha ripubblicato",
@@ -3810,12 +3889,16 @@
 			"replayDivider": "Sei tutto preso: ricomincia da capo",
 			"trending": {
 				"title": "Tendenza",
+				"tabsLabel": {
+					"aria-label": "Ambito tendenze"
+				},
 				"postCount": {
 					"title": "${n} post"
 				},
 				"scopeLocal": "Questo dispositivo",
 				"scopeNearby": "Nelle vicinanze",
-				"empty": "Niente di trend per ora"
+				"empty": "Niente di trend per ora",
+				"aria-label": "Tendenza"
 			}
 		},
 		"explore": {
@@ -3845,6 +3928,7 @@
 			},
 			"createFolderPrompt": "Nome della cartella",
 			"pickFolderTitle": "Salva in…",
+			"folderSelect": "Cartella salvata",
 			"confirm": "Confermare",
 			"cancel": "Annulla",
 			"remove": "Rimuovi da salvato",
@@ -3979,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Cerca post, utenti o #argomenti (minimo 2 parole)",
+			"aria-label": "Cerca post, persone o argomenti",
 			"open": {
 				"aria-label": "Ricerca"
 			},
@@ -3994,16 +4079,27 @@
 			"viewTitle": "Ricerca",
 			"loading": "Ricerca…",
 			"filterAuthor": {
-				"placeholder": "Autore"
+				"placeholder": "Autore",
+				"aria-label": "Autore"
+			},
+			"filterMedia": {
+				"aria-label": "Tipo di media"
 			},
 			"filterMediaAll": "Tutti i media",
 			"filterMediaImage": "Immagini",
 			"filterMediaVideo": "Video",
 			"filterTag": {
-				"placeholder": "#Etichetta"
+				"placeholder": "#Etichetta",
+				"aria-label": "Etichetta"
+			},
+			"filterSort": {
+				"aria-label": "Ordina per"
 			},
 			"sortRecent": "Ultimo",
 			"sortPopular": "Popolare",
+			"filterScope": {
+				"aria-label": "Ambito di ricerca"
+			},
 			"scopeLocal": "Questo dispositivo",
 			"scopeNearby": "Nelle vicinanze"
 		},
@@ -4090,12 +4186,16 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "Barra laterale social"
+			},
 			"suggested": "Segue suggerito"
 		},
 		"groupRef": {
 			"linking": "Collega il gruppo di chat",
 			"clear": "Scollega",
-			"pick": "Collega gruppo/canale di chat..."
+			"pick": "Collega gruppo/canale di chat...",
+			"select": "Connettiti a un gruppo o canale di chat"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4232,6 @@
 			"quoting": "Citando",
 			"clear": "Citazione chiara",
 			"viewOriginal": "Visualizza il post originale"
-		},
-		"a11y": {
-			"linkGroupSelect": "Connettiti a un gruppo o canale di chat",
-			"postVisibility": "Gamma visibile",
-			"postLang": "linguaggio dei contenuti",
-			"trendingHashtags": "Argomenti di tendenza",
-			"saveFolderSelect": "Cartella salvata"
 		},
 		"translate": {
 			"label": "Traduzione:"
@@ -5078,6 +5171,11 @@
 		"parentLink": "↑ Livello precedente ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "Notifiche"
+			}
+		},
 		"common": {
 			"cancel": "Annulla",
 			"create": "Creare",

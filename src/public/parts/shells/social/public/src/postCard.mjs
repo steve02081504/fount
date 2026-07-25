@@ -223,7 +223,7 @@ export async function buildPostCard(item, options = {}) {
 		postTimeAttrs,
 		postTimeText,
 		editedBadge,
-		visibilityIcon: `<span class="icon icon-${vis.icon} post-visibility-icon" title="${escapeHtml(visLabel)}" aria-label="${escapeHtml(visLabel)}"></span>`,
+		visibilityIcon: `<span class="icon icon-${vis.icon} post-visibility-icon" role="img" title="${escapeHtml(visLabel)}" aria-label="${escapeHtml(visLabel)}"></span>`,
 		quoteHtml,
 		replyContextHtml,
 		groupRefHtml,
@@ -233,7 +233,7 @@ export async function buildPostCard(item, options = {}) {
 		engagementBarHtml,
 		actionKey,
 		postDetailHref,
-		entityHash: item.entityHash,
+		entityHash: String(item.entityHash || '').toLowerCase(),
 		blockButton,
 		hideButton,
 		muteButton,
@@ -340,21 +340,23 @@ function bindPostDetailMediaLike(card, entityHash, postId) {
 	if (!(media instanceof HTMLElement) || media.dataset.dblLikeBound === '1') return
 	media.dataset.dblLikeBound = '1'
 	let lastTap = 0
-	media.addEventListener('pointerup', async event => {
-		if (!(event.target instanceof Element)) return
-		if (event.target.closest('[data-media-nav], .post-media-dot')) return
-		const now = Date.now()
-		const hitVideo = Boolean(event.target.closest('[data-media-video]'))
-		if (now - lastTap < MEDIA_DBLCLICK_MS) {
-			lastTap = 0
-			event.preventDefault()
-			event.stopPropagation()
-			const likeButton = card.querySelector('[data-like]')
-			if (!(likeButton instanceof HTMLElement)) return
-			if (likeButton.dataset.liked === '1') {
-				showPostMediaHeart(media)
-				return
-			}
+	/**
+	 * @returns {Promise<void>}
+	 */
+	let likeInFlight = false
+	/**
+	 *
+	 */
+	async function likeFromMedia() {
+		if (likeInFlight) return
+		const likeButton = card.querySelector('[data-like]')
+		if (!(likeButton instanceof HTMLElement)) return
+		if (likeButton.dataset.liked === '1') {
+			showPostMediaHeart(media)
+			return
+		}
+		likeInFlight = true
+		try {
 			const { applyLikeButtonOptimistic, rollbackLikeButton, runWrite } = await import('./lib/socialWrite.mjs')
 			const { socialApi } = await import('./lib/apiClient.mjs')
 			const snapshot = applyLikeButtonOptimistic(likeButton, true)
@@ -368,6 +370,27 @@ function bindPostDetailMediaLike(card, entityHash, postId) {
 			catch {
 				rollbackLikeButton(likeButton, snapshot)
 			}
+		}
+		finally {
+			likeInFlight = false
+		}
+	}
+	media.addEventListener('dblclick', event => {
+		if (!(event.target instanceof Element)) return
+		if (event.target.closest('[data-media-nav], .post-media-dot')) return
+		event.preventDefault()
+		void likeFromMedia()
+	})
+	media.addEventListener('pointerup', async event => {
+		if (!(event.target instanceof Element)) return
+		if (event.target.closest('[data-media-nav], .post-media-dot')) return
+		const now = Date.now()
+		const hitVideo = Boolean(event.target.closest('[data-media-video]'))
+		if (now - lastTap < MEDIA_DBLCLICK_MS) {
+			lastTap = 0
+			event.preventDefault()
+			event.stopPropagation()
+			await likeFromMedia()
 			return
 		}
 		lastTap = now

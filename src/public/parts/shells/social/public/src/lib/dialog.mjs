@@ -16,7 +16,7 @@ export function promptText(title, value = '') {
 	return pickFromDialog('text_prompt_modal', {
 		title,
 		boxClass: '',
-		bodyHtml: `<input type="text" class="input input-bordered w-full" id="promptInput" value="${escapeHtml(value)}" />`,
+		bodyHtml: `<input type="text" class="input input-bordered w-full" id="promptInput" aria-label="${escapeHtml(title)}" value="${escapeHtml(value)}" />`,
 		actionsHtml: CANCEL_OK,
 	}, {
 		/**
@@ -40,7 +40,7 @@ export function promptTextArea(title, value = '') {
 	return pickFromDialog('text_prompt_modal', {
 		title,
 		boxClass: '',
-		bodyHtml: `<textarea class="textarea textarea-bordered w-full min-h-32" id="promptInput" maxlength="2000" rows="6">${escapeHtml(value)}</textarea>`,
+		bodyHtml: `<textarea class="textarea textarea-bordered w-full min-h-32" id="promptInput" aria-label="${escapeHtml(title)}" maxlength="2000" rows="6">${escapeHtml(value)}</textarea>`,
 		actionsHtml: CANCEL_OK,
 	}, {
 		/**

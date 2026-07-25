@@ -191,6 +191,8 @@
 			"terminateIdle": "Прервано ${label}: нет вывода stdall более ${minutes} мин (простой ${idleSec} с, работает ${elapsed})",
 			"terminateDuration": "Прервано ${label}: превышено базовое время watchdog (работает ${elapsed}, база ${baseline}, лимит ${limit})",
 			"terminateDurationDefault": "Прервано ${label}: превышен лимит watchdog по умолчанию (работает ${elapsed}, лимит ${limit})",
+			"sleepDetected": "Обнаружен сон системы (интервал watchdog прыгнул на ${gap} ≥ ${limit}); ${label} прерван и готов к повторному запуску (уже шёл ${elapsed})",
+			"sleepRetry": "Прервано сном системы; повторный запуск ${label} (попытка ${attempt})",
 			"terminateMarker": "[Причина: ${reason}]",
 			"terminateUnknown": "ПРЕРВАНО ${label}: тест прерван",
 			"terminateSpeculative": "Прервано ${label}: спекулятивная зависимость не пройдена, ранний стоп отменён",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "Поиск сообщений…",
+				"aria-label": "Поиск сообщений",
 				"noResults": "Нет результатов",
 				"failed": "Ошибка поиска",
 				"scopeGroup": "Эта группа",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "Я",
 			"messageEditSave": "Сохранить",
 			"messageEditCancel": "Отмена",
+			"messageEditArea": {
+				"aria-label": "Редактировать сообщение"
+			},
 			"feedbackReasonPrompt": "Причина отклонения (необязательно)",
 			"feedbackReasonInput": {
 				"placeholder": "Причина отклонения (необязательно)"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "Закрыть"
 			},
+			"memberBar": {
+				"aria-label": "Список участников"
+			},
+			"channelBar": {
+				"aria-label": "Список каналов"
+			},
+			"serverBar": {
+				"aria-label": "Группы и навигация"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} страниц"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "Новый языковой код, например en-UK."
 				},
+				"renameLocale": {
+					"aria-label": "Переименовать код языка"
+				},
+				"localeRemove": {
+					"aria-label": "Удалить этот язык"
+				},
 				"avatarUrl": {
 					"placeholder": "URL изображения аватара или загрузите файл ниже"
 				},
+				"avatarUpload": {
+					"aria-label": "Загрузить аватар"
+				},
 				"bannerUrl": {
 					"placeholder": "URL изображения баннера или загрузите файл ниже"
+				},
+				"bannerUpload": {
+					"aria-label": "Загрузить баннер"
 				},
 				"tag": {
 					"placeholder": "Добавить после ввода тега"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "Профиль пользователя",
 				"close": {
 					"title": "Закрыть карточку данных"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(отредактировано)",
 			"mentionEmpty": "(нет подходящих участников)",
+			"mentionSuggest": {
+				"aria-label": "Подсказки упоминаний"
+			},
 			"clickToLoad": "Нажмите, чтобы загрузить",
 			"send": "Отправить"
 		},
@@ -3670,14 +3701,47 @@
 			}
 		},
 		"nav": {
-			"feed": "Лента",
-			"explore": "Обзор",
-			"notifications": "Входящие",
-			"saved": "Избранное",
-			"drafts": "Черновики",
-			"profile": "Профиль",
-			"videos": "Клипы",
-			"live": "Эфир"
+			"side": {
+				"aria-label": "Навигация соцсети"
+			},
+			"mobile": {
+				"aria-label": "Нижняя навигация соцсети"
+			},
+			"feed": {
+				"aria-label": "Лента",
+				"title": "Главная"
+			},
+			"explore": {
+				"aria-label": "Обзор",
+				"title": "Обзор"
+			},
+			"notifications": {
+				"aria-label": "Входящие",
+				"title": "Входящие"
+			},
+			"saved": {
+				"aria-label": "Избранное",
+				"title": "Сохранённое"
+			},
+			"drafts": {
+				"aria-label": "Черновики",
+				"title": "Черновики"
+			},
+			"profile": {
+				"aria-label": "Профиль",
+				"title": "Профиль"
+			},
+			"videos": {
+				"aria-label": "Клипы",
+				"title": "Короткие видео"
+			},
+			"live": {
+				"aria-label": "Эфир",
+				"title": "Эфир"
+			},
+			"compose": {
+				"aria-label": "Написать пост"
+			}
 		},
 		"settings": {
 			"title": "Настройки соцсети",
@@ -3729,6 +3793,8 @@
 		},
 		"composer": {
 			"placeholder": "О чём думаете? Поддерживается Markdown (диалект fount), введите @ для упоминания",
+			"locale": "язык содержания",
+			"aria-label": "Написать пост",
 			"publish": "Опубликовать",
 			"saveDraft": "Сохранить черновик",
 			"fab": {
@@ -3757,6 +3823,9 @@
 			"emojiButton": {
 				"title": "Эмодзи",
 				"aria-label": "Эмодзи"
+			},
+			"mentionSuggest": {
+				"aria-label": "Подсказки упоминаний"
 			},
 			"mediaButton": {
 				"title": "Добавить медиа",
@@ -3793,12 +3862,22 @@
 				},
 				"except": {
 					"placeholder": "Кому не следует это показывать (необязательно)"
-				}
+				},
+				"aria-label": "Область видимости"
 			}
 		},
 		"feed": {
-			"refresh": "Обновить ленту",
+			"refresh": {
+				"aria-label": "Обновить ленту",
+				"title": "Обновить ленту",
+				"dataset": {
+					"tip": "Обновить ленту"
+				}
+			},
 			"newPosts": "Новые записи — нажмите, чтобы посмотреть",
+			"tabsLabel": {
+				"aria-label": "Сортировка ленты"
+			},
 			"tabLatest": "Свежее",
 			"tabForYou": "Для вас",
 			"repostedBy": "${author} репостнул",
@@ -3810,12 +3889,16 @@
 			"replayDivider": "Вы всё просмотрели — начать сначала",
 			"trending": {
 				"title": "Популярные темы",
+				"tabsLabel": {
+					"aria-label": "Область трендов"
+				},
 				"postCount": {
 					"title": "${n} сообщений"
 				},
 				"scopeLocal": "Локально",
 				"scopeNearby": "Рядом",
-				"empty": "Горячих тем пока нет"
+				"empty": "Горячих тем пока нет",
+				"aria-label": "Популярные темы"
 			}
 		},
 		"explore": {
@@ -3845,6 +3928,7 @@
 			},
 			"createFolderPrompt": "Имя папки",
 			"pickFolderTitle": "Сохранить в",
+			"folderSelect": "любимая папка",
 			"confirm": "Подтвердить",
 			"cancel": "Отмена",
 			"remove": "Удалить избранное",
@@ -3979,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Поиск записей, пользователей или #тегов (минимум 2 символа)",
+			"aria-label": "Поиск постов, людей или тем",
 			"open": {
 				"aria-label": "Поиск"
 			},
@@ -3994,16 +4079,27 @@
 			"viewTitle": "Поиск",
 			"loading": "Идет поиск…",
 			"filterAuthor": {
-				"placeholder": "Автор"
+				"placeholder": "Автор",
+				"aria-label": "Автор"
+			},
+			"filterMedia": {
+				"aria-label": "Тип медиа"
 			},
 			"filterMediaAll": "Все медиа",
 			"filterMediaImage": "Изображения",
 			"filterMediaVideo": "Видео",
 			"filterTag": {
-				"placeholder": "#Тег"
+				"placeholder": "#Тег",
+				"aria-label": "Тег"
+			},
+			"filterSort": {
+				"aria-label": "Сортировка"
 			},
 			"sortRecent": "Свежее",
 			"sortPopular": "Популярное",
+			"filterScope": {
+				"aria-label": "Область поиска"
+			},
 			"scopeLocal": "Локально",
 			"scopeNearby": "Рядом"
 		},
@@ -4090,12 +4186,16 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "Боковая панель соцсети"
+			},
 			"suggested": "Рекомендуем подписаться"
 		},
 		"groupRef": {
 			"linking": "Подключить чат-группу",
 			"clear": "Разъединить",
-			"pick": "Подключить группу/канал чата…"
+			"pick": "Подключить группу/канал чата…",
+			"select": "Подключиться к группе или каналу чата"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4232,6 @@
 			"quoting": "Цитирование",
 			"clear": "Убрать цитату",
 			"viewOriginal": "Посмотреть исходное сообщение"
-		},
-		"a11y": {
-			"linkGroupSelect": "Подключиться к группе или каналу чата",
-			"postVisibility": "Область видимости",
-			"postLang": "язык содержания",
-			"trendingHashtags": "Популярные темы",
-			"saveFolderSelect": "любимая папка"
 		},
 		"translate": {
 			"label": "Перевод:"
@@ -5078,6 +5171,11 @@
 		"parentLink": "↑ Предыдущий уровень../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "Уведомления"
+			}
+		},
 		"common": {
 			"cancel": "Отмена",
 			"create": "создавать",

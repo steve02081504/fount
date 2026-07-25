@@ -5,11 +5,11 @@ import { randomUUID } from 'node:crypto'
 
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { createDedupeSlot } from 'npm:@steve02081504/fount-p2p/federation/dedupe_slot'
-import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
 
 import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { loadGroupShunState, saveGroupShunState, SHUN_CONSENSUS_WINDOW_MS, updateGroupShunState } from '../../group/groupShunState.mjs'
+import { computeFederatableDagTipIds } from '../dag/eventTypes.mjs'
 import { resolveTargetMemberKey } from '../dag/reducers/members.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'
@@ -348,7 +348,7 @@ export async function probeShunViaTipPingToRosterPeers(username, groupId, slot) 
 	const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
 	const ping = {
 		nodeHash,
-		tips: computeDagTipIdsFromEvents(localArchive.events),
+		tips: computeFederatableDagTipIds(localArchive.events),
 		archiveSummary: wireArchiveSummary(localArchive.summary),
 	}
 	const peerIds = slot.getRoster().map(peer => peer?.peerId).filter(Boolean)

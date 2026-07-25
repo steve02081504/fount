@@ -93,6 +93,6 @@ export async function runShellFrontendTests({
 			FOUNT_TEST_USERNAME: testUsername,
 		},
 		nodeOpts: nodeLaunchOptions,
-		extraArgs: process.argv.slice(2).join(' '),
+		extraArgs: process.argv.slice(2),
 	})
 }

@@ -12,7 +12,7 @@
 	--border: color-mix(in srgb, var(--color-base-content) 8%, transparent);
 	--border-strong: color-mix(in srgb, var(--color-base-content) 14%, transparent);
 	--text: var(--color-base-content);
-	--muted: color-mix(in srgb, var(--color-base-content) 55%, transparent);
+	--muted: color-mix(in srgb, var(--color-base-content) 68%, transparent);
 	--accent: var(--color-primary);
 	--accent-hover: color-mix(in srgb, var(--color-primary) 85%, var(--color-base-content));
 	--like: var(--color-error);

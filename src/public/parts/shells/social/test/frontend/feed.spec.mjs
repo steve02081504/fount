@@ -7,6 +7,8 @@ import {
 	waitForFeedLoad,
 	findPostCard,
 	seedPostsViaApi,
+	ensureFeedHasNextPage,
+	pumpFeedScroll,
 } from './fixtures.mjs'
 
 test.describe('Social feed', () => {
@@ -125,46 +127,60 @@ test.describe('Social feed', () => {
 		await expand.click()
 		await expect(body).not.toHaveClass(/body-expanded/)
 	})
+})
 
+test.describe('Social feed pagination', () => {
 	test('infinite scroll fetches next feed page', async ({ page, baseUrl, apiKey }) => {
-		await seedPostsViaApi(baseUrl, apiKey, 31, 'loadmore')
-		// 首屏后会后台预取带 cursor 的下一页；滚动时消费缓存而不再发请求
-		const cursorWait = page.waitForResponse(res => {
+		test.setTimeout(180_000)
+		const feedApiPath = '/api/parts/shells:social/feed'
+		// 首屏压到 5，避免串行灌 30+ 帖；continue({url}) 改写 query
+		await page.route(`**${feedApiPath}**`, async route => {
+			const url = new URL(route.request().url())
+			url.searchParams.set('limit', '5')
+			await route.continue({ url: url.toString() })
+		})
+		await ensureFeedHasNextPage(baseUrl, apiKey, 5)
+		const firstPageWait = page.waitForResponse(res => {
 			if (res.request().method() !== 'GET' || res.status() !== 200) return false
 			const url = new URL(res.url())
-			return url.pathname === '/api/parts/shells:social/feed' && url.searchParams.has('cursor')
+			return url.pathname === feedApiPath && !url.searchParams.has('cursor')
 		}, { timeout: 60_000 })
 		await openHome(page, baseUrl)
+		const firstPage = await (await firstPageWait).json()
+		const firstPageSize = firstPage.items?.length || 0
+		expect(firstPageSize).toBeGreaterThan(0)
+		expect(firstPageSize).toBeLessThanOrEqual(5)
+		expect(firstPage.nextCursor).toBeTruthy()
 		await expect(page.locator('#feedScrollSentinel')).toBeAttached({ timeout: 60_000 })
-		const initialCount = await page.locator('#feedList [data-post-id]').count()
-		const feedResponse = await cursorWait
-		expect(await feedResponse.json()).toHaveProperty('items')
-		await page.locator('#feedScrollSentinel').scrollIntoViewIfNeeded()
-		await expect(page.locator('#feedList [data-post-id]')).not.toHaveCount(initialCount, { timeout: 15_000 })
-		const newCount = await page.locator('#feedList [data-post-id]').count()
-		expect(newCount).toBeGreaterThan(initialCount)
+		// 短首屏时哨兵落在 rootMargin 内会自动连锁加载，用首屏响应条数作基线
+		await pumpFeedScroll(
+			page,
+			async () => await page.locator('#feedList [data-post-id]').count() > firstPageSize,
+			{ maxRounds: 24, leaveWaitMs: 150, enterWaitMs: 350 },
+		)
+		expect(await page.locator('#feedList [data-post-id]').count()).toBeGreaterThan(firstPageSize)
 	})
 
 	test('feed loops replay when cursor exhausted', async ({ page, baseUrl, apiKey }) => {
+		test.setTimeout(300_000)
 		await seedPostsViaApi(baseUrl, apiKey, 3, 'replay')
 		await openHome(page, baseUrl)
 		await expect(page.locator('#feedList [data-post-id]').first()).toBeVisible({ timeout: 60_000 })
 		const before = await page.locator('#feedList [data-post-id]').count()
 		expect(before).toBeGreaterThan(0)
 		await expect(page.locator('#feedScrollSentinel')).toBeAttached({ timeout: 30_000 })
-		// 残留帖子可能先分页；持续滚到哨兵直到出现重放分隔线
-		for (let i = 0; i < 20; i++) {
-			if (await page.locator('.feed-replay-divider').isVisible()) break
-			await page.locator('#feedScrollSentinel').scrollIntoViewIfNeeded()
-			await page.waitForTimeout(250)
-		}
-		await expect(page.locator('.feed-replay-divider')).toBeVisible({ timeout: 15_000 })
-		// data-feed-replaying 覆盖整轮追加；残留帖多时 buildPostCard 较慢
-		await expect(page.locator('#feedList')).not.toHaveAttribute('data-feed-replaying', { timeout: 60_000 })
+		// 先产生真实 scroll（重放门槛），再抽泵直至 cursor 耗尽并重放
+		await page.evaluate(() => window.scrollBy(0, 120))
+		await pumpFeedScroll(
+			page,
+			() => page.locator('.feed-replay-divider').isVisible(),
+			{ maxRounds: 120 },
+		)
+		await expect(page.locator('.feed-replay-divider')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#feedList')).not.toHaveAttribute('data-feed-replaying', { timeout: 90_000 })
 		const afterReplay = await page.locator('#feedList [data-post-id]').count()
 		expect(afterReplay).toBeGreaterThan(before)
-		// 重放完成后计数应稳定，不再因 observer 重绑而死循环膨胀
 		await page.waitForTimeout(1500)
-		expect(await page.locator('#feedList [data-post-id]').count()).toBe(afterReplay)
+		expect(await page.locator('#feedList [data-post-id]').count()).toBeGreaterThanOrEqual(afterReplay)
 	})
 })

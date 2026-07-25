@@ -190,6 +190,8 @@
 			"terminateIdle": "已終止 ${label}：超過 ${minutes} 分鐘無 stdall 輸出（空閒 ${idleSec} 秒，已執行 ${elapsed}）",
 			"terminateDuration": "已終止 ${label}：耗時超過 watchdog 基線時長（已執行 ${elapsed}，基線 ${baseline}，上限 ${limit}）",
 			"terminateDurationDefault": "已終止 ${label}：耗時超過預設 watchdog 時長上限（已執行 ${elapsed}，上限 ${limit}）",
+			"sleepDetected": "偵測到系統休眠（看門狗間隔跳變 ${gap} ≥ ${limit}），已中止 ${label} 並準備重跑（已執行 ${elapsed}）",
+			"sleepRetry": "系統休眠中斷，重跑 ${label}（第 ${attempt} 次）",
 			"terminateMarker": "[終止原因: ${reason}]",
 			"terminateUnknown": "已終止 ${label}：測試被中斷",
 			"terminateSpeculative": "已終止 ${label}：投機依賴未過，取消早停",
@@ -1630,6 +1632,7 @@
 			},
 			"search": {
 				"placeholder": "搜尋訊息…",
+				"aria-label": "搜尋訊息",
 				"noResults": "無結果",
 				"failed": "搜尋失敗",
 				"scopeGroup": "本群",
@@ -1765,6 +1768,9 @@
 			"meAuthor": "我",
 			"messageEditSave": "儲存",
 			"messageEditCancel": "取消",
+			"messageEditArea": {
+				"aria-label": "編輯訊息"
+			},
 			"feedbackReasonPrompt": "點踩原因（可選）",
 			"feedbackReasonInput": {
 				"placeholder": "點踩原因（可選）"
@@ -2080,6 +2086,15 @@
 			"ariaClose": {
 				"aria-label": "關閉"
 			},
+			"memberBar": {
+				"aria-label": "成員列表"
+			},
+			"channelBar": {
+				"aria-label": "頻道列表"
+			},
+			"serverBar": {
+				"aria-label": "群組與導覽"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} 頁"
 			},
@@ -2188,11 +2203,23 @@
 				"newLocale": {
 					"placeholder": "新語言程式碼，如 en-UK"
 				},
+				"renameLocale": {
+					"aria-label": "重新命名語言代碼"
+				},
+				"localeRemove": {
+					"aria-label": "刪除此語言"
+				},
 				"avatarUrl": {
 					"placeholder": "頭像圖片 URL，或在下方上傳檔案"
 				},
+				"avatarUpload": {
+					"aria-label": "上傳頭像"
+				},
 				"bannerUrl": {
 					"placeholder": "橫幅圖片 URL，或在下方上傳檔案"
+				},
+				"bannerUpload": {
+					"aria-label": "上傳橫幅"
 				},
 				"tag": {
 					"placeholder": "輸入標籤後新增"
@@ -2208,6 +2235,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "使用者資料",
 				"close": {
 					"title": "關閉資料卡"
 				},
@@ -2386,6 +2414,9 @@
 			},
 			"editedLabel": "(已編輯)",
 			"mentionEmpty": "（無匹配成員）",
+			"mentionSuggest": {
+				"aria-label": "提及建議"
+			},
 			"clickToLoad": "點選載入",
 			"send": "傳送"
 		},
@@ -3669,14 +3700,47 @@
 			}
 		},
 		"nav": {
-			"feed": "首頁",
-			"explore": "探索",
-			"notifications": "收件箱",
-			"saved": "收藏",
-			"drafts": "草稿箱",
-			"profile": "我的",
-			"videos": "短影片",
-			"live": "直播"
+			"side": {
+				"aria-label": "社交導覽"
+			},
+			"mobile": {
+				"aria-label": "社交底部導覽"
+			},
+			"feed": {
+				"aria-label": "首頁",
+				"title": "首頁"
+			},
+			"explore": {
+				"aria-label": "探索",
+				"title": "探索"
+			},
+			"notifications": {
+				"aria-label": "收件箱",
+				"title": "收件匣"
+			},
+			"saved": {
+				"aria-label": "收藏",
+				"title": "收藏"
+			},
+			"drafts": {
+				"aria-label": "草稿箱",
+				"title": "草稿箱"
+			},
+			"profile": {
+				"aria-label": "我的",
+				"title": "我的"
+			},
+			"videos": {
+				"aria-label": "短影片",
+				"title": "短影音"
+			},
+			"live": {
+				"aria-label": "直播",
+				"title": "直播"
+			},
+			"compose": {
+				"aria-label": "寫動態"
+			}
 		},
 		"settings": {
 			"title": "社交設定",
@@ -3728,6 +3792,8 @@
 		},
 		"composer": {
 			"placeholder": "在想什麼？支援 Markdown（fount 方言），輸入 @ 可提及",
+			"locale": "內容語言",
+			"aria-label": "寫動態",
 			"publish": "釋出",
 			"saveDraft": "存草稿",
 			"fab": {
@@ -3756,6 +3822,9 @@
 			"emojiButton": {
 				"title": "表情",
 				"aria-label": "表情"
+			},
+			"mentionSuggest": {
+				"aria-label": "提及建議"
 			},
 			"mediaButton": {
 				"title": "新增媒體",
@@ -3792,12 +3861,22 @@
 				},
 				"except": {
 					"placeholder": "不給誰看（可選）"
-				}
+				},
+				"aria-label": "可見範圍"
 			}
 		},
 		"feed": {
-			"refresh": "重新整理動態",
+			"refresh": {
+				"aria-label": "重新整理動態",
+				"title": "重新整理動態",
+				"dataset": {
+					"tip": "重新整理動態"
+				}
+			},
 			"newPosts": "有新動態，點選檢視",
+			"tabsLabel": {
+				"aria-label": "動態排序"
+			},
 			"tabLatest": "最新",
 			"tabForYou": "推薦",
 			"repostedBy": "${author} 轉發了",
@@ -3809,12 +3888,16 @@
 			"replayDivider": "已看完，重新瀏覽",
 			"trending": {
 				"title": "熱門話題",
+				"tabsLabel": {
+					"aria-label": "熱門話題範圍"
+				},
 				"postCount": {
 					"title": "${n} 條帖子"
 				},
 				"scopeLocal": "本機",
 				"scopeNearby": "附近",
-				"empty": "暫無熱門話題"
+				"empty": "暫無熱門話題",
+				"aria-label": "熱門話題"
 			}
 		},
 		"explore": {
@@ -3844,6 +3927,7 @@
 			},
 			"createFolderPrompt": "資料夾名稱",
 			"pickFolderTitle": "收藏到",
+			"folderSelect": "收藏資料夾",
 			"confirm": "確認",
 			"cancel": "取消",
 			"remove": "移除收藏",
@@ -3978,6 +4062,7 @@
 		},
 		"search": {
 			"placeholder": "搜尋動態、使用者或 #話題（至少 2 字）",
+			"aria-label": "搜尋動態、使用者或話題",
 			"open": {
 				"aria-label": "搜尋"
 			},
@@ -3993,16 +4078,27 @@
 			"viewTitle": "搜尋",
 			"loading": "搜尋中…",
 			"filterAuthor": {
-				"placeholder": "作者"
+				"placeholder": "作者",
+				"aria-label": "作者"
+			},
+			"filterMedia": {
+				"aria-label": "媒體類型"
 			},
 			"filterMediaAll": "所有媒體",
 			"filterMediaImage": "圖片",
 			"filterMediaVideo": "影片",
 			"filterTag": {
-				"placeholder": "#標籤"
+				"placeholder": "#標籤",
+				"aria-label": "標籤"
+			},
+			"filterSort": {
+				"aria-label": "排序"
 			},
 			"sortRecent": "最新",
 			"sortPopular": "熱門",
+			"filterScope": {
+				"aria-label": "搜尋範圍"
+			},
 			"scopeLocal": "本機",
 			"scopeNearby": "附近"
 		},
@@ -4089,12 +4185,16 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "社交側欄"
+			},
 			"suggested": "推薦關注"
 		},
 		"groupRef": {
 			"linking": "關聯 Chat 群",
 			"clear": "取消關聯",
-			"pick": "關聯 Chat 群/頻道…"
+			"pick": "關聯 Chat 群/頻道…",
+			"select": "關聯 Chat 群或頻道"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4131,13 +4231,6 @@
 			"quoting": "正在引用",
 			"clear": "取消引用",
 			"viewOriginal": "檢視原帖"
-		},
-		"a11y": {
-			"linkGroupSelect": "關聯 Chat 群或頻道",
-			"postVisibility": "可見範圍",
-			"postLang": "內容語言",
-			"trendingHashtags": "熱門話題",
-			"saveFolderSelect": "收藏資料夾"
 		},
 		"translate": {
 			"label": "譯文："
@@ -5077,6 +5170,11 @@
 		"parentLink": "↑ 上一級 ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "通知"
+			}
+		},
 		"common": {
 			"cancel": "取消",
 			"create": "建立",

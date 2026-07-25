@@ -9,6 +9,7 @@ import {
 	waitForFeedLoad,
 	postIdFromResponse,
 	openPostMoreMenu,
+	publishPostViaComposer,
 } from './fixtures.mjs'
 
 test.describe('Social composer', () => {
@@ -183,9 +184,8 @@ test.describe('Social composer', () => {
 		await groupSelect.dispatchEvent('change')
 		await expect(page.locator('#groupRefPreview')).toBeVisible({ timeout: 20_000 })
 		const text = `group-ref ${Date.now()}`
-		await page.locator('#postText').fill(text)
-		await page.locator('#postButton').click()
-		await expect(page.locator('#postText')).toHaveValue('')
+		const postJson = await publishPostViaComposer(page, text)
+		expect(postJson.event?.type).toBe('post')
 		await expect(page.locator('#feedList .group-ref-block').first()).toBeVisible({ timeout: 30_000 })
 	})
 })

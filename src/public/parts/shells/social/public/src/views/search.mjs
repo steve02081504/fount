@@ -30,6 +30,16 @@ function syncSearchHash(q) {
 }
 
 /**
+ * 纯 hashtag / 侧栏 tag 过滤：不跑实体搜索。
+ * @param {string} q 主查询
+ * @param {string} tag 侧栏 tag
+ * @returns {boolean} 是否跳过实体搜索
+ */
+function isTagOnlySearch(q, tag) {
+	return Boolean(tag) || /^#\w+$/u.test(q)
+}
+
+/**
  * 初始化搜索视图事件绑定（只调用一次）。
  * @returns {void}
  */
@@ -107,26 +117,23 @@ export async function runSearchView() {
 	if (media) baseParams.set('media', media)
 	if (tag) baseParams.set('tag', tag.replace(/^#/, ''))
 
-	const [data, entityData] = await Promise.all([
-		socialApi(`/search?${baseParams}`).catch(() => ({ items: [] })),
-		chatApi(`/entities/search?q=${encodeURIComponent(q)}&limit=20`).catch(() => ({ entities: [] })),
-	])
+	const tagOnly = isTagOnlySearch(q, tag)
+	const data = await socialApi(`/search?${baseParams}`).catch(() => ({ items: [] }))
 	if (gen !== searchGeneration) return
 
 	const items = data.items || []
-	const entities = entityData.entities || []
 	list.replaceChildren()
 
-	const usersTitle = document.createElement('h3')
-	usersTitle.className = 'section-title'
-	usersTitle.dataset.i18n = 'social.search.usersTitle'
-	list.appendChild(usersTitle)
-	if (!entities.length)
-		await appendEmptyState(list, { titleKey: 'social.search.usersEmpty', modClass: ' empty-state--hint' })
-	else {
-		const { buildEntitySearchCard } = await import('./feed.mjs')
-		for (const entity of entities)
-			list.appendChild(await buildEntitySearchCard(entity))
+	/** @type {HTMLElement | null} */
+	let usersHost = null
+	if (!tagOnly) {
+		usersHost = document.createElement('div')
+		usersHost.className = 'search-users-block'
+		list.appendChild(usersHost)
+		const usersTitle = document.createElement('h3')
+		usersTitle.className = 'section-title'
+		usersTitle.dataset.i18n = 'social.search.usersTitle'
+		usersHost.appendChild(usersTitle)
 	}
 
 	const postsTitle = document.createElement('h3')
@@ -134,14 +141,13 @@ export async function runSearchView() {
 	postsTitle.dataset.i18n = 'social.search.postsTitle'
 	list.appendChild(postsTitle)
 
-	if (!items.length) {
+	if (!items.length)
 		await appendEmptyState(list, { titleKey: 'social.search.empty', modClass: ' empty-state--hint' })
-		return
+	else {
+		const cards = await Promise.all(items.map(item => buildPostCard(item).catch(() => null)))
+		if (gen !== searchGeneration) return
+		for (const card of cards) if (card) list.appendChild(card)
 	}
-
-	const cards = await Promise.all(items.map(item => buildPostCard(item).catch(() => null)))
-	if (gen !== searchGeneration) return
-	for (const card of cards) if (card) list.appendChild(card)
 
 	let cursor = data.nextCursor || null
 	if (cursor) {
@@ -161,5 +167,19 @@ export async function runSearchView() {
 				for (const card of c2) if (card) insertBeforeScrollSentinel(list, card)
 			},
 		})
+	}
+
+	// 实体搜索可能走网络；不阻塞帖子区。纯 hashtag / 侧栏 tag 不跑用户区。
+	if (!usersHost) return
+	const entityData = await chatApi(`/entities/search?q=${encodeURIComponent(q)}&limit=20`)
+		.catch(() => ({ entities: [] }))
+	if (gen !== searchGeneration) return
+	const entities = entityData.entities || []
+	if (!entities.length)
+		await appendEmptyState(usersHost, { titleKey: 'social.search.usersEmpty', modClass: ' empty-state--hint' })
+	else {
+		const { buildEntitySearchCard } = await import('./feed.mjs')
+		for (const entity of entities)
+			usersHost.appendChild(await buildEntitySearchCard(entity))
 	}
 }

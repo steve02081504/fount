@@ -7,7 +7,7 @@
 	--bg-secondary: var(--color-base-200);
 	--bg-tertiary: var(--color-neutral);
 
-	--text-muted: color-mix(in srgb, var(--color-base-content), transparent 50%);
+	--text-muted: color-mix(in srgb, var(--color-base-content), transparent 32%);
 	--text-normal: color-mix(in srgb, var(--color-base-content), transparent 12%);
 	--text-bright: var(--color-base-content);
 

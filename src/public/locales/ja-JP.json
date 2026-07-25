@@ -191,6 +191,8 @@
 			"terminateIdle": "${label} を終了: ${minutes} 分以上 stdout/stderr 出力なし（アイドル ${idleSec} 秒、実行 ${elapsed}）",
 			"terminateDuration": "${label} を終了: watchdog 基準時間超過（実行 ${elapsed}、基準 ${baseline}、上限 ${limit}）",
 			"terminateDurationDefault": "${label} を終了: デフォルト watchdog 上限超過（実行 ${elapsed}、上限 ${limit}）",
+			"sleepDetected": "システムスリープを検出（watchdog 間隔が ${gap} ≥ ${limit} に跳ねた）。${label} を中止し、再実行待ち（実行済み ${elapsed}）",
+			"sleepRetry": "システムスリープにより中断。${label} を再実行（${attempt} 回目）",
 			"terminateMarker": "[終了理由: ${reason}]",
 			"terminateUnknown": "${label} を終了: テストが中断されました",
 			"terminateSpeculative": "${label} を終了: 投機的依存が未通過のため早期停止をキャンセル",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "メッセージを検索…",
+				"aria-label": "メッセージを検索",
 				"noResults": "結果はありません",
 				"failed": "検索に失敗しました",
 				"scopeGroup": "このグループ",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "私",
 			"messageEditSave": "保存",
 			"messageEditCancel": "キャンセル",
+			"messageEditArea": {
+				"aria-label": "メッセージを編集"
+			},
 			"feedbackReasonPrompt": "不承認の理由（任意）",
 			"feedbackReasonInput": {
 				"placeholder": "不承認の理由（任意）"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "閉じる"
 			},
+			"memberBar": {
+				"aria-label": "メンバー一覧"
+			},
+			"channelBar": {
+				"aria-label": "チャンネル一覧"
+			},
+			"serverBar": {
+				"aria-label": "グループとナビゲーション"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} ページ"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "新しい言語コード (en-UK など)"
 				},
+				"renameLocale": {
+					"aria-label": "言語コードを変更"
+				},
+				"localeRemove": {
+					"aria-label": "この言語を削除"
+				},
 				"avatarUrl": {
 					"placeholder": "アバター画像のURL、または以下のファイルをアップロードしてください"
 				},
+				"avatarUpload": {
+					"aria-label": "アバターをアップロード"
+				},
 				"bannerUrl": {
 					"placeholder": "バナー画像のURL、または以下のファイルをアップロードしてください"
+				},
+				"bannerUpload": {
+					"aria-label": "バナーをアップロード"
 				},
 				"tag": {
 					"placeholder": "タグ入力後に追加"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "ユーザープロフィール",
 				"close": {
 					"title": "データカードを閉じる"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(編集済み)",
 			"mentionEmpty": "(一致するメンバーがいません)",
+			"mentionSuggest": {
+				"aria-label": "メンション候補"
+			},
 			"clickToLoad": "クリックしてロード",
 			"send": "送信"
 		},
@@ -3670,14 +3701,47 @@
 			}
 		},
 		"nav": {
-			"feed": "ホーム",
-			"explore": "探索",
-			"notifications": "受信箱",
-			"saved": "保存",
-			"drafts": "下書き",
-			"profile": "マイページ",
-			"videos": "ショート動画",
-			"live": "ライブ"
+			"side": {
+				"aria-label": "ソーシャルナビ"
+			},
+			"mobile": {
+				"aria-label": "ソーシャル下部ナビ"
+			},
+			"feed": {
+				"aria-label": "ホーム",
+				"title": "ホーム"
+			},
+			"explore": {
+				"aria-label": "探索",
+				"title": "探索"
+			},
+			"notifications": {
+				"aria-label": "受信箱",
+				"title": "受信箱"
+			},
+			"saved": {
+				"aria-label": "保存",
+				"title": "保存済み"
+			},
+			"drafts": {
+				"aria-label": "下書き",
+				"title": "下書き"
+			},
+			"profile": {
+				"aria-label": "マイページ",
+				"title": "マイページ"
+			},
+			"videos": {
+				"aria-label": "ショート動画",
+				"title": "ショート動画"
+			},
+			"live": {
+				"aria-label": "ライブ",
+				"title": "ライブ"
+			},
+			"compose": {
+				"aria-label": "投稿を作成"
+			}
 		},
 		"settings": {
 			"title": "ソーシャル設定",
@@ -3729,6 +3793,8 @@
 		},
 		"composer": {
 			"placeholder": "いまどうしてる？Markdown（fount 方言）対応。@ でメンション",
+			"locale": "コンテンツ言語",
+			"aria-label": "投稿を作成",
 			"publish": "投稿",
 			"saveDraft": "下書きを保存",
 			"fab": {
@@ -3757,6 +3823,9 @@
 			"emojiButton": {
 				"title": "絵文字",
 				"aria-label": "絵文字"
+			},
+			"mentionSuggest": {
+				"aria-label": "メンション候補"
 			},
 			"mediaButton": {
 				"title": "メディアを追加",
@@ -3793,12 +3862,22 @@
 				},
 				"except": {
 					"placeholder": "見せてはいけない人（任意）"
-				}
+				},
+				"aria-label": "可視範囲"
 			}
 		},
 		"feed": {
-			"refresh": "ニュースを更新",
+			"refresh": {
+				"aria-label": "ニュースを更新",
+				"title": "ニュースを更新",
+				"dataset": {
+					"tip": "ニュースを更新"
+				}
+			},
 			"newPosts": "新しいニュースがあります。クリックしてご覧ください",
+			"tabsLabel": {
+				"aria-label": "フィードの並び替え"
+			},
 			"tabLatest": "最新の",
 			"tabForYou": "推薦する",
 			"repostedBy": "${author} さんがリツイートしました",
@@ -3810,12 +3889,16 @@
 			"replayDivider": "読み終わりました、もう一度閲覧してください",
 			"trending": {
 				"title": "ホットトピック",
+				"tabsLabel": {
+					"aria-label": "トレンドの範囲"
+				},
 				"postCount": {
 					"title": "${n} 件の投稿"
 				},
 				"scopeLocal": "ローカルマシン",
 				"scopeNearby": "近く",
-				"empty": "まだホットトピックはありません"
+				"empty": "まだホットトピックはありません",
+				"aria-label": "ホットトピック"
 			}
 		},
 		"explore": {
@@ -3845,6 +3928,7 @@
 			},
 			"createFolderPrompt": "フォルダ名",
 			"pickFolderTitle": "お気に入りに追加",
+			"folderSelect": "お気に入りフォルダ",
 			"confirm": "確認",
 			"cancel": "キャンセル",
 			"remove": "お気に入りを削除する",
@@ -3979,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "アップデート、ユーザー、または #トピックを検索 (最低 2 単語)",
+			"aria-label": "投稿・ユーザー・トピックを検索",
 			"open": {
 				"aria-label": "検索"
 			},
@@ -3994,16 +4079,27 @@
 			"viewTitle": "検索",
 			"loading": "検索中…",
 			"filterAuthor": {
-				"placeholder": "作者"
+				"placeholder": "作者",
+				"aria-label": "作者"
+			},
+			"filterMedia": {
+				"aria-label": "メディアの種類"
 			},
 			"filterMediaAll": "すべてのメディア",
 			"filterMediaImage": "写真",
 			"filterMediaVideo": "ビデオ",
 			"filterTag": {
-				"placeholder": "＃ラベル"
+				"placeholder": "＃ラベル",
+				"aria-label": "ラベル"
+			},
+			"filterSort": {
+				"aria-label": "並び替え"
 			},
 			"sortRecent": "最新の",
 			"sortPopular": "人気のある",
+			"filterScope": {
+				"aria-label": "検索範囲"
+			},
 			"scopeLocal": "ローカルマシン",
 			"scopeNearby": "近く"
 		},
@@ -4090,12 +4186,16 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "ソーシャルサイドバー"
+			},
 			"suggested": "注意を促す"
 		},
 		"groupRef": {
 			"linking": "チャットグループに接続する",
 			"clear": "関連付けを解除する",
-			"pick": "チャットグループ/チャンネルに接続…"
+			"pick": "チャットグループ/チャンネルに接続…",
+			"select": "チャットグループまたはチャンネルに接続する"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4232,6 @@
 			"quoting": "引用",
 			"clear": "逆参照",
 			"viewOriginal": "元の投稿を見る"
-		},
-		"a11y": {
-			"linkGroupSelect": "チャットグループまたはチャンネルに接続する",
-			"postVisibility": "可視範囲",
-			"postLang": "コンテンツ言語",
-			"trendingHashtags": "ホットトピック",
-			"saveFolderSelect": "お気に入りフォルダ"
 		},
 		"translate": {
 			"label": "翻訳："
@@ -5078,6 +5171,11 @@
 		"parentLink": "↑ 前のレベル ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "通知"
+			}
+		},
 		"common": {
 			"cancel": "キャンセル",
 			"create": "作成する",

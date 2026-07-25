@@ -5,7 +5,6 @@
  * 【数据结构】ProfileLink { icon?, name?, url }；localized Record<locale, fields>。
  * 【关联】Hub/profileEdit、entityProfile；@pages/scripts/i18n/index.mjs。
  */
-import { geti18n } from '../../../../scripts/i18n/index.mjs'
 
 /**
  * @typedef {object} ProfileLink
@@ -41,33 +40,33 @@ export function renderLocaleTabs(tabsHost, localized, activeKey, callbacks) {
 	const keys = Object.keys(localized).sort((a, b) => a.localeCompare(b))
 
 	for (const key of keys) {
-		const tabButton = document.createElement('button')
-		tabButton.type = 'button'
-		tabButton.className = `profile-locale-tab${key === activeKey ? ' active' : ''}`
-		tabButton.dataset.locale = key
-		const label = document.createElement('span')
-		label.className = 'profile-locale-tab-label'
-		label.textContent = key
-		tabButton.append(label)
-		const close = document.createElement('span')
-		close.className = 'profile-locale-tab-close'
-		close.textContent = '×'
-		close.setAttribute('role', 'button')
-		close.setAttribute('aria-label', 'remove')
-		close.addEventListener('click', (event) => {
-			event.stopPropagation()
-			callbacks.onRemove(key)
-		})
-		tabButton.addEventListener('click', (event) => {
-			if (event.target === close || close.contains(/** @type {Node} */ event.target)) return
+		const tab = document.createElement('div')
+		tab.className = `profile-locale-tab${key === activeKey ? ' active' : ''}`
+		tab.dataset.locale = key
+
+		const selectButton = document.createElement('button')
+		selectButton.type = 'button'
+		selectButton.className = 'profile-locale-tab-label'
+		selectButton.textContent = key
+		selectButton.addEventListener('click', () => {
 			if (key === activeKey) {
-				beginLocaleRename(tabButton, label, key, callbacks.onRename)
+				beginLocaleRename(tab, selectButton, key, callbacks.onRename)
 				return
 			}
 			callbacks.onSelect(key)
 		})
-		tabButton.append(close)
-		tabsHost.append(tabButton)
+
+		const close = document.createElement('button')
+		close.type = 'button'
+		close.className = 'profile-locale-tab-close'
+		close.textContent = '×'
+		close.dataset.i18n = 'chat.hub.profileEdit.localeRemove'
+		close.addEventListener('click', () => {
+			callbacks.onRemove(key)
+		})
+
+		tab.append(selectButton, close)
+		tabsHost.append(tab)
 	}
 
 	const addInput = document.createElement('input')
@@ -75,7 +74,7 @@ export function renderLocaleTabs(tabsHost, localized, activeKey, callbacks) {
 	addInput.className = 'profile-locale-add-input input input-bordered input-sm font-mono'
 	addInput.autocomplete = 'off'
 	addInput.dataset.i18n = 'chat.hub.profileEdit.newLocale'
-	addInput.addEventListener('keydown', (event) => {
+	addInput.addEventListener('keydown', event => {
 		if (event.key !== 'Enter') return
 		event.preventDefault()
 		const next = addInput.value.trim()
@@ -88,20 +87,21 @@ export function renderLocaleTabs(tabsHost, localized, activeKey, callbacks) {
 
 /**
  * 将 locale 标签替换为内联输入以改名（点击已选中标签）。
- * @param {HTMLElement} tabButton 标签按钮
- * @param {HTMLElement} label 当前文案节点
+ * @param {HTMLElement} tab 标签壳
+ * @param {HTMLElement} selectButton 当前文案按钮
  * @param {string} key 原 locale
  * @param {(oldKey: string, newKey: string) => void} onRename 提交回调
  * @returns {void}
  */
-function beginLocaleRename(tabButton, label, key, onRename) {
-	if (tabButton.querySelector('.profile-locale-tab-edit')) return
+function beginLocaleRename(tab, selectButton, key, onRename) {
+	if (tab.querySelector('.profile-locale-tab-edit')) return
 	const input = document.createElement('input')
 	input.type = 'text'
 	input.className = 'profile-locale-tab-edit input input-bordered input-sm font-mono'
 	input.value = key
 	input.size = Math.max(key.length, 4)
-	label.replaceWith(input)
+	input.dataset.i18n = 'chat.hub.profileEdit.renameLocale'
+	selectButton.replaceWith(input)
 	input.focus()
 	input.select()
 
@@ -110,28 +110,25 @@ function beginLocaleRename(tabButton, label, key, onRename) {
 	 * @param {boolean} commit 是否提交
 	 * @returns {void}
 	 */
-	const finish = (commit) => {
+	const finish = commit => {
 		if (done) return
 		done = true
 		const next = input.value.trim()
 		if (commit && next && next !== key) onRename(key, next)
-		else input.replaceWith(label)
+		else input.replaceWith(selectButton)
 	}
-	input.addEventListener('keydown', (event) => {
+	input.addEventListener('keydown', event => {
 		if (event.key === 'Enter') {
 			event.preventDefault()
-			event.stopPropagation()
 			finish(true)
 			return
 		}
 		if (event.key === 'Escape') {
 			event.preventDefault()
-			event.stopPropagation()
 			finish(false)
 		}
 	})
 	input.addEventListener('blur', () => finish(true))
-	input.addEventListener('click', (event) => event.stopPropagation())
 }
 
 /**
@@ -194,7 +191,7 @@ export function renderTagsEditor(host, tags, onChange) {
 		remove.type = 'button'
 		remove.className = 'profile-edit-tag-remove'
 		remove.textContent = '×'
-		remove.setAttribute('aria-label', geti18n('chat.hub.profileEdit.tagRemove') || 'remove')
+		remove.dataset.i18n = 'chat.hub.profileEdit.tagRemove'
 		remove.addEventListener('click', () => {
 			onChange(list.filter(item => item !== tag))
 		})
@@ -237,7 +234,7 @@ export function renderLinksEditor(host, links, onChange) {
 		remove.type = 'button'
 		remove.className = 'btn btn-ghost btn-sm'
 		remove.textContent = '×'
-		remove.setAttribute('aria-label', geti18n('chat.hub.profileEdit.linkRemove') || 'remove')
+		remove.dataset.i18n = 'chat.hub.profileEdit.linkRemove'
 
 		/**
 		 *

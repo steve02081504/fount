@@ -46,7 +46,7 @@ export function createGroupAccessMethods(apiContext) {
 			return hydrateGroup(apiContext, dm.groupId, meta)
 		},
 		/**
-		 * @param {{ name?: string, defaultChannelName?: string }} [options] 建群参数
+		 * @param {{ name?: string, defaultChannelName?: string, joinPolicy?: string }} [options] 建群参数
 		 * @returns {Promise<object>} 新建 Group
 		 */
 		async createGroup(options = {}) {

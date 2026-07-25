@@ -1,5 +1,7 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { primaryLocaleForUser } from '../../../../../../scripts/locale.mjs'
+import { buildRepostFeedItem, withDecryptedPostContent } from '../feed/buildItem.mjs'
+import { createFeedItemBuildContext } from '../feed/iterate.mjs'
 import { getEntityProfile } from '../lib/entityProfile.mjs'
 import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
 import { sanitizeMediaRefs, resolveSensitiveMedia } from '../lib/mediaRefs.mjs'
@@ -8,6 +10,7 @@ import { loadTaste } from '../taste/store.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 import { maybeDecryptPostContent, maybeEncryptPostContent } from '../vault_crypto/vault.mjs'
+import { pushFeedUpdate } from '../ws/feedHub.mjs'
 
 /**
  * @param {import('./client/helpers.mjs').SocialApiContext} apiContext API 上下文
@@ -77,11 +80,11 @@ export function createPost(apiContext, entityHash, postId, snapshot = null) {
 		},
 		/**
 		 * @param {string} [comment] 转发附言
-		 * @returns {Promise<object>} repost 事件
+		 * @returns {Promise<{ event: object, item?: object }>} 签名事件与可选 feed 条目
 		 */
 		async repost(comment = '') {
 			await assertKnownPostTarget(apiContext, owner)
-			return commitTimelineEvent(apiContext.username, apiContext.entityHash, {
+			const event = await commitTimelineEvent(apiContext.username, apiContext.entityHash, {
 				type: 'repost',
 				content: {
 					targetEntityHash: owner,
@@ -89,6 +92,36 @@ export function createPost(apiContext, entityHash, postId, snapshot = null) {
 					comment: String(comment || ''),
 				},
 			})
+			try {
+				const view = await getTimelineMaterialized(apiContext.username, owner)
+				const original = view.postById[id]
+				if (!original) return { event }
+				const itemContext = await createFeedItemBuildContext(
+					apiContext.username,
+					new Set([apiContext.entityHash, owner]),
+					apiContext.entityHash,
+				)
+				const originalPost = await withDecryptedPostContent(
+					apiContext.username,
+					owner,
+					original,
+					apiContext.entityHash,
+				)
+				const item = await buildRepostFeedItem({
+					entityHash: apiContext.entityHash,
+					postId: event.id,
+					originalEntityHash: owner,
+					originalPostId: id,
+					repost: event,
+					hlc: event.hlc,
+				}, originalPost, itemContext)
+				pushFeedUpdate(apiContext.username, { type: 'post', item })
+				return { event, item }
+			}
+			catch (error) {
+				console.error('[social] repost presentation failed', error)
+				return { event }
+			}
 		},
 		/**
 		 * 编辑帖子：作者自签，或作者所属主人以自身钥签到作者时间线。

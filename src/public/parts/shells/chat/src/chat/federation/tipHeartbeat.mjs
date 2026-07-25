@@ -3,13 +3,13 @@
  * 【职责】方案3 提示通道：为每个活跃 federation slot 周期性广播轻量 fed_tip_ping（本地 tips + archiveSummary），让对端发现“有新东西”从而自驱有界补齐，兜底实时 dag_event 漏帧。
  * 【原理】setInterval 心跳：仅在 slot 仍活跃、房内有 peer、且未处于 RTC 过载时才发；复用既有 fed_tip_ping wire action（priority 3，轻量帧），不新增 wire action。心跳句柄由调用方（room.mjs）经 slot.registerCleanup 绑定，slot.leave() 时统一 clearInterval，杜绝孤儿定时器。
  * 【数据结构】ping { nodeHash, tips: string[], archiveSummary }，与 tipExchange.mjs 的 ping 同构。
- * 【关联】room.mjs join 后启动；federationSlot.mjs leave() 清理；archiveHandshake.loadLocalFederationArchive、governance_branch.computeDagTipIdsFromEvents、rtc_connection_budget.isFederationActionAllowedUnderLoad。
+ * 【关联】room.mjs join 后启动；federationSlot.mjs leave() 清理；archiveHandshake.loadLocalFederationArchive、eventTypes.computeFederatableDagTipIds、rtc_connection_budget.isFederationActionAllowedUnderLoad。
  */
-import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
-import { isFederationActionAllowedUnderLoad } from './roomLoadBudget.mjs'
+import { computeFederatableDagTipIds } from '../dag/eventTypes.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'
 import { requireDagDeps } from './dagDependencies.mjs'
+import { isFederationActionAllowedUnderLoad } from './roomLoadBudget.mjs'
 
 /** 默认心跳间隔。 */
 const TIP_HEARTBEAT_INTERVAL_MS = 20_000
@@ -58,7 +58,7 @@ export function startTipHeartbeat({ slot, username, groupId, nodeHash, groupSett
 			const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
 			const ping = {
 				nodeHash,
-				tips: computeDagTipIdsFromEvents(localArchive.events),
+				tips: computeFederatableDagTipIds(localArchive.events),
 				archiveSummary: wireArchiveSummary(localArchive.summary),
 			}
 			if (stopped || !slot.isActive()) return

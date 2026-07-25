@@ -7,8 +7,13 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import { detectNoiseHits } from '../core/output_filter.mjs'
 import {
 	BROWSER_NETWORK_PREFIX,
+	I18N_MISSING_PREFIX,
+	TEST_WATCH_CONSOLE_PREFIX,
 	browserNetworkAggregateKey,
 	formatBrowserNetworkLine,
+	isI18nMissingConsoleText,
+	isIgnoredBrowserNetworkError,
+	isTestWatchConsoleText,
 	recordBrowserNetworkEntry,
 } from '../playwright/browser_diagnostics.mjs'
 
@@ -84,4 +89,20 @@ Deno.test('detectNoiseHits marks browser:network as browser_network', () => {
 	assertEquals(detectNoiseHits(line), ['browser_network'])
 	assertEquals(detectNoiseHits('ok\n[browser:http] 403 http://x\n'), [])
 	assertEquals(detectNoiseHits('all green'), [])
+})
+
+Deno.test('isTestWatchConsoleText matches test_watch prefix', () => {
+	assertEquals(isTestWatchConsoleText(`${TEST_WATCH_CONSOLE_PREFIX}a11y] color-contrast ...`), true)
+	assertEquals(isTestWatchConsoleText('plain log'), false)
+})
+
+Deno.test('isI18nMissingConsoleText matches i18n missing prefix', () => {
+	assertEquals(isI18nMissingConsoleText(`${I18N_MISSING_PREFIX} Translation key "foo.bar" not found.`), true)
+	assertEquals(isI18nMissingConsoleText('plain log'), false)
+})
+
+Deno.test('isIgnoredBrowserNetworkError drops ORB only', () => {
+	assertEquals(isIgnoredBrowserNetworkError('net::ERR_BLOCKED_BY_ORB'), true)
+	assertEquals(isIgnoredBrowserNetworkError('net::ERR_CONNECTION_REFUSED'), false)
+	assertEquals(isIgnoredBrowserNetworkError(null), false)
 })

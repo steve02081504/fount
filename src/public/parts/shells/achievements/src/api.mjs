@@ -109,11 +109,11 @@ export async function unlockAchievement(username, partpath, achievementId) {
 	const toastHtml = /* html */ `\
 <a href="/parts/shells:achievements/" rel="noopener" class="alert alert-success shadow-lg flex items-end opacity-80">
 	<div class="flex-none w-12 h-12 mr-2">
-		<img src="${unlockedAchievement.icon}" class="h-full w-full aspect-square" />
+		<img src="${unlockedAchievement.icon}" class="h-full w-full aspect-square" alt="" role="presentation" />
 	</div>
 	<div class="flex-grow">
 		<div class="text-xs mb-1" data-i18n="achievements.toast_title"></div>
-		<h3 class="font-bold text-lg" data-i18n="${unlockedAchievement.name}"></h3>
+		<div class="font-bold text-lg" data-i18n="${unlockedAchievement.name}"></div>
 		<p class="text-sm" data-i18n="${unlockedAchievement.description}"></p>
 	</div>
 </a>

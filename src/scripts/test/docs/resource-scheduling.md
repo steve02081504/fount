@@ -32,6 +32,12 @@ Effective demand = max(manifest `resources`, measured baseline if present else n
 
 `run_command.mjs` samples the subprocess tree every 30s via `proc_sample.mjs` (RSS peak → `baselineMemMb`; avg CPU → `baselineCpuPct`). Baselines update on pass or non-watchdog failure.
 
+**Idle / duration / sleep watchdog** (`run_command.mjs`):
+
+- No stdall for `IDLE_TIMEOUT_MS` (10m) → kill as failed.
+- Wall runtime over 2× baseline (min 15m / default 30m) → kill as failed.
+- Watchdog poll gap ≥ `5 × WATCH_INTERVAL_MS` (5×30s) → treat as **system sleep**: abort the suite process and **re-run** from `runSuite` (not recorded as failure). Sleep wins over idle/duration because frozen timers make those clocks meaningless.
+
 When `run` includes `serial.mjs`, `suite_run.mjs` injects `FOUNT_TEST_BUDGET_CORES` / `FOUNT_TEST_BUDGET_MEM`. Silent passes emit `[serial] ok …` for idle watchdog liveness.
 
 Selftests: `fount test testkit` (`selftest/resources_scheduler.test.mjs`, `selftest/proc_sample.test.mjs`).

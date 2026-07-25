@@ -3,13 +3,13 @@ import { test as base, expect, request } from '@playwright/test'
 import { ms } from '../../ms.mjs'
 
 import { loginWithApiKey } from './auth.mjs'
-import { createBrowserDiagnostics } from './browser_diagnostics.mjs'
+import { createBrowserDiagnostics, waitForTestWatchCycle } from './browser_diagnostics.mjs'
 import { requireTestBaseUrl } from './env.mjs'
 import { assertIsolatedFrontendTest } from './guards.mjs'
 
 /**
  * fount 前端 E2E 通用 fixture：`baseUrl` / `apiKey` / 已登录 `context` + `page`。
- * page 自动挂载网络诊断（HTTP ≥400 / requestfailed → `[browser:network]`）与 pageerror 硬断言。
+ * page 自动挂载网络诊断（HTTP ≥400 / requestfailed → `[browser:network]`）与 pageerror / `[test:…]` / `[i18n:missing]` 硬断言。
  * @param {object} [options] fixture 选项
  * @param {string} [options.locale='zh-CN'] 浏览器与 localStorage 首选语言
  * @param {object} [options.isolated] 隔离节点断言（run.mjs 注入）
@@ -54,7 +54,7 @@ export function createFountFixtures(options = {}) {
 			await loginWithApiKey(api, baseUrl, apiKey)
 			const storageState = await api.storageState()
 			await api.dispose()
-			const context = await browser.newContext({ storageState, locale })
+			const context = await browser.newContext({ storageState, locale, serviceWorkers: 'block' })
 			await context.addInitScript(language => {
 				localStorage.setItem('userPreferredLanguages', JSON.stringify([language]))
 			}, locale)
@@ -77,8 +77,15 @@ export function createFountFixtures(options = {}) {
 			const page = await context.newPage()
 			diagnostics.attach(page)
 			await use(page)
+			// 测试体结束后 kick 两轮 test_watch（确认命中）；未挂载则超时跳过
+			let since = Date.now()
+			await waitForTestWatchCycle(page, since).catch(() => { /* 未挂载 test_watch 则跳过 */ })
+			since = Date.now()
+			await waitForTestWatchCycle(page, since).catch(() => {})
 			diagnostics.flushNetworkDiagnostics()
 			expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
+			expect(diagnostics.testWatchErrors, 'unexpected test_watch console output').toEqual([])
+			expect(diagnostics.i18nMissingErrors, 'unexpected missing i18n keys').toEqual([])
 		},
 	})
 

@@ -80,17 +80,11 @@ export async function showCreateGroupModal(parentDialog) {
 				event.preventDefault()
 				const formData = new FormData(event.target)
 				try {
-					const { groupId, defaultChannelId } = await createGroup(formData.get('name'), formData.get('description'))
-					const settingsResp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/settings`, {
-						method: 'PUT',
-						headers: { 'Content-Type': 'application/json' },
-						credentials: 'include',
-						body: JSON.stringify({ joinPolicy: formData.get('joinPolicy') || 'invite-only' }),
-					})
-					if (!settingsResp.ok) {
-						const err = await settingsResp.json().catch(() => ({}))
-						throw new Error(err.error || `settings HTTP ${settingsResp.status}`)
-					}
+					const { groupId, defaultChannelId } = await createGroup(
+						formData.get('name'),
+						formData.get('description'),
+						{ joinPolicy: formData.get('joinPolicy') || 'invite-only' },
+					)
 					dialog.close()
 					const hubUrl = `/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:${encodeURIComponent(defaultChannelId || 'default')}`
 					window.location.assign(hubUrl)
