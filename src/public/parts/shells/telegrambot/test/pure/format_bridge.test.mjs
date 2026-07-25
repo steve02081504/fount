@@ -172,6 +172,41 @@ Deno.test('telegramMessageToBridgeDto maps mock Telegraf message with mention re
 	assert(!dto.text.includes('UserID:'))
 })
 
+Deno.test('telegramMessageToBridgeDto rewrites mention after leading emoji', async () => {
+	const username = `tg-emoji-mention-${crypto.randomUUID().slice(0, 8)}`
+	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_emoji_mention_'))
+	await createTestServerBoot({
+		username,
+		dataDir,
+		minP2pNode: true,
+		loadParts: ['shells/chat'],
+	})()
+
+	const { bridgeEntityHash } = await import('../../../chat/src/chat/bridge/identity.mjs')
+	const mentionUserId = 616161
+	const expectedHash = bridgeEntityHash('telegram', mentionUserId)
+	// "👋 Alice" — emoji is 2 UTF-16 units, so Alice starts at offset 3
+	const message = {
+		message_id: 89,
+		date: 1_700_000_200,
+		text: '👋 Alice',
+		entities: [{
+			type: 'text_mention',
+			offset: 3,
+			length: 5,
+			user: { id: mentionUserId, is_bot: false, first_name: 'Alice' },
+		}],
+		from: { id: 13, first_name: 'Dave' },
+		chat: { id: -100888, type: 'supergroup', title: 'Emoji Group' },
+	}
+
+	const dto = await telegramMessageToBridgeDto({}, message, { id: 1, username: 'bot' }, username)
+	assert(dto)
+	assertEquals(dto.text.includes(`@[entity:${expectedHash}]`), true)
+	assertEquals(dto.text.includes('Alice'), false)
+	assertEquals(dto.text.startsWith('👋 '), true)
+})
+
 Deno.test('telegramMessageToBridgeDto remaps mention offsets after earlier markdown entities', async () => {
 	const username = `tg-offset-${crypto.randomUUID().slice(0, 8)}`
 	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_offset_'))

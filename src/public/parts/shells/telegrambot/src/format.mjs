@@ -50,12 +50,33 @@ export function extractStickerIdsFromMarkdown(markdown) {
 }
 
 /**
- * UTF-16 码元长度（Telegram entity offset 用）。
+ * UTF-16 码元长度（Telegram entity offset 用；JS string.length 即 UTF-16）。
  * @param {string} text 文本
  * @returns {number} UTF-16 码元数
  */
 function utf16Length(text) {
-	return [...text].reduce((sum, ch) => sum + (ch.codePointAt(0) > 0xffff ? 2 : 1), 0)
+	return text.length
+}
+
+/**
+ * @param {string} text 文本
+ * @param {number} offset UTF-16 码元偏移
+ * @param {number} length UTF-16 码元长度
+ * @returns {string} 切片
+ */
+function utf16Slice(text, offset, length) {
+	return text.slice(offset, offset + length)
+}
+
+/**
+ * @param {string} text 文本
+ * @param {number} offset UTF-16 码元偏移
+ * @param {number} length UTF-16 码元长度
+ * @param {string} replacement 替换内容
+ * @returns {string} 替换后文本
+ */
+function utf16Replace(text, offset, length, replacement) {
+	return text.slice(0, offset) + replacement + text.slice(offset + length)
 }
 
 /**
@@ -102,7 +123,6 @@ function telegramEntitiesToAiMarkdownMapped(text, entities, botInfo, replyToMess
 	/** @type {TelegramMessageEntity[]} */
 	const mentionEntities = []
 	if (!text) return { text: aiMarkdown.trim(), mentionEntities }
-	const textChars = Array.from(text)
 	if (!entities?.length) return { text: (aiMarkdown + text).trim(), mentionEntities }
 
 	const parts = []
@@ -110,9 +130,9 @@ function telegramEntitiesToAiMarkdownMapped(text, entities, botInfo, replyToMess
 	const sortedEntities = [...entities].sort((a, b) => a.offset - b.offset)
 	for (const entity of sortedEntities) {
 		if (entity.offset > lastOffset)
-			parts.push(textChars.slice(lastOffset, entity.offset).join(''))
+			parts.push(utf16Slice(text, lastOffset, entity.offset - lastOffset))
 
-		const entityText = textChars.slice(entity.offset, entity.offset + entity.length).join('')
+		const entityText = utf16Slice(text, entity.offset, entity.length)
 		let formattedEntityText = entityText
 		switch (entity.type) {
 			case 'bold': formattedEntityText = `**${entityText}**`; break
@@ -129,18 +149,18 @@ function telegramEntitiesToAiMarkdownMapped(text, entities, botInfo, replyToMess
 				formattedEntityText = entityText; break
 			default: formattedEntityText = entityText
 		}
-		if (entity.type === 'text_mention' || entity.type === 'mention') 
+		if (entity.type === 'text_mention' || entity.type === 'mention')
 			mentionEntities.push({
 				...entity,
 				offset: utf16Length(aiMarkdown + parts.join('')),
 				length: utf16Length(formattedEntityText),
 			})
-		
+
 		parts.push(formattedEntityText)
 		lastOffset = entity.offset + entity.length
 	}
-	if (lastOffset < textChars.length)
-		parts.push(textChars.slice(lastOffset).join(''))
+	if (lastOffset < text.length)
+		parts.push(text.slice(lastOffset))
 
 	aiMarkdown += parts.join('')
 	const leadWs = aiMarkdown.match(/^\s*/u)?.[0] || ''
@@ -587,27 +607,6 @@ export async function rewriteTelegramMentionsToFount(username, text, entities, b
 		result = utf16Replace(result, entity.offset, entity.length, token)
 	}
 	return result
-}
-
-/**
- * @param {string} text 文本
- * @param {number} offset UTF-16 码元偏移
- * @param {number} length UTF-16 码元长度
- * @returns {string} 切片
- */
-function utf16Slice(text, offset, length) {
-	return text.slice(offset, offset + length)
-}
-
-/**
- * @param {string} text 文本
- * @param {number} offset UTF-16 码元偏移
- * @param {number} length UTF-16 码元长度
- * @param {string} replacement 替换内容
- * @returns {string} 替换后文本
- */
-function utf16Replace(text, offset, length, replacement) {
-	return text.slice(0, offset) + replacement + text.slice(offset + length)
 }
 
 /**
