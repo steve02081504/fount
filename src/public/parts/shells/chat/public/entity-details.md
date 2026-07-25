@@ -8,7 +8,7 @@ Profile `handle` (`[a-z0-9_.-]{2,32}`, optional, not unique) lives in signed `pr
 
 ## Node-local session events
 
-`session_*` / `agent_reply_frequency_set` are node-local only (federation ingest rejects). They may sit in `events.jsonl`, but **must not** occupy the tip frontier for subsequent federatable appends (`append.mjs`) or consensus fold (`materialize.mjs` folds federatable tips first, then overlays local session events).
+`session_*` / `agent_reply_frequency_set` are node-local only (federation ingest rejects). They may sit in `events.jsonl`, but **must not** occupy the tip frontier for subsequent federatable appends (`append.mjs`), tip APIs / merge / WAL / federation tip exchange, or consensus fold (`materialize.mjs` folds federatable tips first, then overlays local session events). Counting them as tips next to a later federatable sibling looks like a fresh fork in the Hub banner.
 
 ## `member_join` binding
 

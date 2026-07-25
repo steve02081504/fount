@@ -2,13 +2,14 @@ import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 
 /**
  * 执行写操作并在失败时 toast。
+ * @template T
  * @param {string} actionKey i18n 后缀（social.actions.{actionKey}Failed）
- * @param {() => Promise<void>} fn 写操作
- * @returns {Promise<void>}
+ * @param {() => Promise<T>} fn 写操作
+ * @returns {Promise<T>} fn 的返回值
  */
 export async function runWrite(actionKey, fn) {
 	try {
-		await fn()
+		return await fn()
 	}
 	catch (error) {
 		const err = error instanceof Error ? error : new Error(String(error))

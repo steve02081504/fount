@@ -8,6 +8,7 @@ import { formatEntityAtId, formatHashShort } from '/parts/shells:chat/shared/ent
 import { sanitizePermissiveHtml } from '/scripts/lib/sanitizeHtml.mjs'
 
 const API = '/api/parts/shells:social/mentions/suggest'
+let mentionListboxSeq = 0
 
 /**
  * 为发帖框挂载 @ 提及 autocomplete。
@@ -16,8 +17,12 @@ const API = '/api/parts/shells:social/mentions/suggest'
  */
 export function attachMentionAutocomplete(textarea) {
 	const panel = document.createElement('div')
+	panel.id = `social-mention-listbox-${++mentionListboxSeq}`
 	panel.className = 'mention-panel hidden'
 	panel.setAttribute('role', 'listbox')
+	panel.dataset.i18n = 'social.composer.mentionSuggest'
+	textarea.setAttribute('aria-controls', panel.id)
+	textarea.setAttribute('aria-autocomplete', 'list')
 	textarea.parentElement?.appendChild(panel)
 
 	/** @type {object[]} */
@@ -25,6 +30,24 @@ export function attachMentionAutocomplete(textarea) {
 	let activeIndex = 0
 	/** @type {{ start: number, end: number } | null} */
 	let mentionRange = null
+
+	/** @returns {void} */
+	function clearActiveOption() {
+		textarea.removeAttribute('aria-activedescendant')
+	}
+
+	/** @returns {void} */
+	function syncActiveOption() {
+		const options = panel.querySelectorAll('.mention-option')
+		for (const button of options) {
+			const selected = Number(button.dataset.index) === activeIndex
+			button.classList.toggle('active', selected)
+			button.setAttribute('aria-selected', selected ? 'true' : 'false')
+		}
+		const active = options[activeIndex]
+		if (active?.id) textarea.setAttribute('aria-activedescendant', active.id)
+		else textarea.removeAttribute('aria-activedescendant')
+	}
 
 	/**
 	 * 隐藏 @ 提及候选面板并重置状态。
@@ -35,6 +58,7 @@ export function attachMentionAutocomplete(textarea) {
 		panel.innerHTML = ''
 		suggestions = []
 		mentionRange = null
+		clearActiveOption()
 	}
 
 	/**
@@ -53,6 +77,9 @@ export function attachMentionAutocomplete(textarea) {
 		for (const [index, row] of rows.entries()) {
 			const button = document.createElement('button')
 			button.type = 'button'
+			button.id = `${panel.id}-option-${index}`
+			button.setAttribute('role', 'option')
+			button.setAttribute('aria-selected', index === 0 ? 'true' : 'false')
 			button.className = `mention-option${index === 0 ? ' active' : ''}`
 			button.dataset.index = String(index)
 			button.innerHTML = `
@@ -62,6 +89,7 @@ export function attachMentionAutocomplete(textarea) {
 			panel.appendChild(button)
 		}
 		panel.classList.remove('hidden')
+		syncActiveOption()
 	}
 
 	/**
@@ -138,8 +166,7 @@ export function attachMentionAutocomplete(textarea) {
 		}
 		else return
 
-		for (const button of panel.querySelectorAll('.mention-option'))
-			button.classList.toggle('active', Number(button.dataset.index) === activeIndex)
+		syncActiveOption()
 	}
 
 	/**
@@ -171,6 +198,9 @@ export function attachMentionAutocomplete(textarea) {
 	return () => {
 		textarea.removeEventListener('input', onInput)
 		textarea.removeEventListener('keydown', onKeydown)
+		textarea.removeAttribute('aria-controls')
+		textarea.removeAttribute('aria-autocomplete')
+		textarea.removeAttribute('aria-activedescendant')
 		panel.remove()
 	}
 }

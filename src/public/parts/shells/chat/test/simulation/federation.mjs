@@ -7,16 +7,7 @@ import { join } from 'node:path'
 
 import { bootHeadlessDataRoot } from 'fount/scripts/test/node/boot.mjs'
 
-import { SESSION_EVENT_TYPES } from '../../src/chat/dag/eventTypes.mjs'
-
-/**
- * session_* / agent_reply_frequency_set 为节点本地元数据，不参与联邦同步与收敛断言。
- * @param {object} event DAG 事件
- * @returns {boolean} 是否可联邦
- */
-function isFederatableEvent(event) {
-	return !SESSION_EVENT_TYPES.has(event?.type)
-}
+import { computeFederatableDagTipIds, isFederatableDagEvent } from '../../src/chat/dag/eventTypes.mjs'
 
 /**
  * 初始化 headless 联邦仿真上下文。
@@ -81,7 +72,7 @@ export async function createChatFederationSim(options = {}) {
 	 */
 	async function eventIdsOf(node, groupId) {
 		return new Set((await readEvents(node, groupId))
-			.filter(isFederatableEvent)
+			.filter(isFederatableDagEvent)
 			.map(event => String(event.id).trim().toLowerCase()))
 	}
 
@@ -120,7 +111,7 @@ export async function createChatFederationSim(options = {}) {
 				if (targetNode === sourceNode) continue
 				const knownIds = new Set((await readEvents(targetNode, groupId)).map(event => String(event.id).toLowerCase()))
 				for (const event of sourceEvents) {
-					if (!isFederatableEvent(event)) continue
+					if (!isFederatableDagEvent(event)) continue
 					if (knownIds.has(String(event.id).toLowerCase())) continue
 					const status = await modules.remoteIngest.appendValidatedRemoteEvent(targetNode, groupId, event, { logFailures })
 					if (status.status === 'applied') {
@@ -242,7 +233,7 @@ export async function createChatFederationSim(options = {}) {
 	 * @returns {Promise<string[]>} 排序后的 DAG tip ID 列表
 	 */
 	async function tipsOf(node, groupId) {
-		return [...modules.dag.computeDagTipIdsFromEvents(await readEvents(node, groupId))].sort()
+		return [...computeFederatableDagTipIds(await readEvents(node, groupId))].sort()
 	}
 
 	/**

@@ -30,7 +30,7 @@ test.describe('Chat profile page', () => {
 		await page.locator('.profile-locale-add-input').press('Enter')
 		await expect(page.locator('#profile-edit-name')).toHaveValue('实时预览名称')
 		await expect(page.locator('.profile-locale-tab[data-locale="x-copy-test"]')).toBeVisible()
-		await page.locator('.profile-locale-tab[data-locale="x-copy-test"]').click()
+		await page.locator('.profile-locale-tab[data-locale="x-copy-test"] .profile-locale-tab-label').click()
 		await page.locator('.profile-locale-tab-edit').fill('x-renamed-test')
 		await page.locator('.profile-locale-tab-edit').press('Enter')
 		await expect(page.locator('.profile-locale-tab[data-locale="x-renamed-test"]')).toBeVisible()

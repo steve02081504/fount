@@ -378,5 +378,12 @@ export async function loadNotifications(append = false) {
 	finally {
 		notificationsLoading = false
 	}
-	if (shouldBind) bindNotificationsInfiniteScroll()
+	if (!shouldBind) return
+	// 仅首屏重绑；append 由 infiniteScroll 的 unobserve/observe 上升沿续接，避免重绑吞掉 armed
+	if (!append) {
+		bindNotificationsInfiniteScroll()
+		// 首屏后预取下一页（与 feed prefetch 同理；长列表哨兵在折线外时单靠 IO 不可靠）
+		if (state.notificationsCursor)
+			queueMicrotask(() => { void loadNotifications(true) })
+	}
 }

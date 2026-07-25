@@ -19,6 +19,7 @@ export function openModal(contentSrc, contentType) {
 	if (contentType === 'image') {
 		modalContentElement = document.createElement('img')
 		modalContentElement.src = contentSrc
+		modalContentElement.alt = ''
 		modalContentElement.classList.add('modal-img')
 	}
 	else if (contentType === 'video') {

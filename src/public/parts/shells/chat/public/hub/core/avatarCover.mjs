@@ -57,6 +57,7 @@ export async function applyProfileAvatarToHost(host, options) {
 		const img = document.createElement('img')
 		img.src = avatarVal
 		img.alt = String(label || '')
+		if (!img.alt) img.role = 'presentation'
 		img.style.cssText = 'width:100%;height:100%;object-fit:cover;'
 		img.addEventListener('error', () => {
 			img.remove()

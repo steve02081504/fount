@@ -6,7 +6,7 @@ ${mode === 'error' ? `
 ` : `
 <div data-federation-part="body">
 	<div class="overlay-section space-y-3">
-		<h4 data-i18n="chat.hub.fedConnectionTitle"></h4>
+		<h3 data-i18n="chat.hub.fedConnectionTitle"></h3>
 		<div class="overlay-field space-y-1">
 			<label class="setting-label">
 				<span data-i18n="chat.hub.fedRelayUrlsLabel"></span>
@@ -33,10 +33,10 @@ ${mode === 'error' ? `
 		<div class="advanced-settings-body">
 			${showRotateRoomSecret ? `
 			<div class="overlay-section space-y-3">
-				<h4 class="setting-label">
+				<h3 class="setting-label">
 					<span data-i18n="chat.hub.fedGroupRecoveryTitle"></span>
 					<span class="info-tip tooltip tooltip-right" tabindex="0" data-tip="${fedGroupRecoveryTip}">i</span>
-				</h4>
+				</h3>
 				<div class="overlay-action-row">
 					<button type="button" class="overlay-button overlay-button-cancel btn btn-warning" id="federation-rotate-room-secret" data-i18n="chat.hub.fedRotateRoomSecret"></button>
 					<button type="button" class="overlay-button btn btn-outline" id="federation-repair-join-snapshot" data-i18n="chat.hub.fedRepairJoinSnapshot"></button>
@@ -44,17 +44,17 @@ ${mode === 'error' ? `
 			</div>
 			` : ''}
 			<div class="overlay-section space-y-3" id="federation-rep-section">
-				<h4 class="setting-label">
+				<h3 class="setting-label">
 					<span data-i18n="chat.hub.fedRepTitle"></span>
 					<span class="info-tip tooltip tooltip-right" tabindex="0" data-tip="${fedRepTip}">i</span>
-				</h4>
+				</h3>
 				<pre id="federation-rep-dump" class="federation-reputation-dump" data-i18n="chat.hub.loading"></pre>
 			</div>
 			<div class="overlay-section space-y-3" id="federation-slash-section">
-				<h4 class="setting-label">
+				<h3 class="setting-label">
 					<span data-i18n="chat.hub.fedSlashTitle"></span>
 					<span class="info-tip tooltip tooltip-right" tabindex="0" data-tip="${fedSlashTip}">i</span>
-				</h4>
+				</h3>
 				<div class="overlay-field space-y-1">
 					<label data-i18n="chat.hub.fedSlashTargetLabel"></label>
 					<input type="text" id="federation-slash-target" class="overlay-input input input-bordered w-full" data-i18n="chat.hub.fedSlashTarget" spellcheck="false" />
@@ -75,10 +75,10 @@ ${mode === 'error' ? `
 				<button type="button" class="overlay-button overlay-button-cancel btn btn-ghost w-full mt-1.5" id="federation-reset-submit" data-i18n="chat.hub.fedResetSubmitLabel"></button>
 			</div>
 			<div class="overlay-section space-y-3" id="federation-dm-link-section">
-				<h4 class="setting-label">
+				<h3 class="setting-label">
 					<span data-i18n="chat.hub.fedDmLinkTitle"></span>
 					<span class="info-tip tooltip tooltip-right" tabindex="0" data-tip="${fedDmLinkTip}">i</span>
-				</h4>
+				</h3>
 				<p class="overlay-toggle-description" data-i18n="chat.hub.fedDmLinkDescription"></p>
 				<div class="overlay-field space-y-1">
 					<label data-i18n="chat.hub.fedDmPubKeyLabel"></label>

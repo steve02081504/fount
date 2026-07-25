@@ -191,6 +191,8 @@
 			"terminateIdle": "⏹️ ${label}：＞${minutes}m 🚫`stdall`（💤 ${idleSec}s，🏃 ${elapsed}）",
 			"terminateDuration": "⏹️ ${label}：＞`watchdog` 📏（🏃 ${elapsed}，📏 ${baseline}，🔝 ${limit}）",
 			"terminateDurationDefault": "⏹️ ${label}：＞⭐`watchdog`🔝（🏃 ${elapsed}，🔝 ${limit}）",
+			"sleepDetected": "💤🖥️（`watchdog` ⏱️↗️ ${gap} ≥ ${limit}）⏹️ ${label} → 🔁（🏃 ${elapsed}）",
+			"sleepRetry": "💤🛑 → 🔁 ${label}（#${attempt}）",
 			"terminateMarker": "[⏹️: ${reason}]",
 			"terminateUnknown": "⏹️ ${label}：🧪🛑",
 			"terminateSpeculative": "⏹️ ${label}：🔮🔗🚫，❌⏹",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "🔍💬…",
+				"aria-label": "🔎💬",
 				"noResults": "🔍📭",
 				"failed": "🔍❌",
 				"scopeGroup": "👥📍",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "🫵",
 			"messageEditSave": "💾",
 			"messageEditCancel": "↩️",
+			"messageEditArea": {
+				"aria-label": "✏️💬"
+			},
 			"feedbackReasonPrompt": "👎📝（🔘）",
 			"feedbackReasonInput": {
 				"placeholder": "👎📝（🔘）"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "✖️"
 			},
+			"memberBar": {
+				"aria-label": "👤📋"
+			},
+			"channelBar": {
+				"aria-label": "#️⃣📋"
+			},
+			"serverBar": {
+				"aria-label": "👥🧭"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} 📄"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "🆕🗣️💻 🇬🇧"
 				},
+				"renameLocale": {
+					"aria-label": "✏️🌐🔢"
+				},
+				"localeRemove": {
+					"aria-label": "🗑️🌐"
+				},
 				"avatarUrl": {
 					"placeholder": "🖼️🔗 ⬇️⬆️📁"
 				},
+				"avatarUpload": {
+					"aria-label": "⬆️🖼️👤"
+				},
 				"bannerUrl": {
 					"placeholder": "🖼️🔗 ⬇️⬆️📁"
+				},
+				"bannerUpload": {
+					"aria-label": "⬆️🖼️🏳️"
 				},
 				"tag": {
 					"placeholder": "📤🏷️ ➕"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "👤🪪",
 				"close": {
 					"title": "✖️👤📋"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "（✏️）",
 			"mentionEmpty": "（🤷📭👤）",
+			"mentionSuggest": {
+				"aria-label": "@️⃣💡"
+			},
 			"clickToLoad": "👆📥",
 			"send": "📤"
 		},
@@ -3670,14 +3701,47 @@
 			}
 		},
 		"nav": {
-			"feed": "🏠",
-			"explore": "🔭",
-			"notifications": "📬",
-			"saved": "⭐",
-			"drafts": "📝📦",
-			"profile": "🫵",
-			"videos": "🎬",
-			"live": "📡🔴"
+			"side": {
+				"aria-label": "📰🧭"
+			},
+			"mobile": {
+				"aria-label": "📰🔽🧭"
+			},
+			"feed": {
+				"aria-label": "🏠",
+				"title": "🏠"
+			},
+			"explore": {
+				"aria-label": "🔭",
+				"title": "🔭"
+			},
+			"notifications": {
+				"aria-label": "📬",
+				"title": "📬"
+			},
+			"saved": {
+				"aria-label": "⭐",
+				"title": "⭐"
+			},
+			"drafts": {
+				"aria-label": "📝📦",
+				"title": "📝📦"
+			},
+			"profile": {
+				"aria-label": "🫵",
+				"title": "🫵"
+			},
+			"videos": {
+				"aria-label": "🎬",
+				"title": "🎬"
+			},
+			"live": {
+				"aria-label": "📡🔴",
+				"title": "📡🔴"
+			},
+			"compose": {
+				"aria-label": "✍️📰"
+			}
 		},
 		"settings": {
 			"title": "🏛️⚙️",
@@ -3729,6 +3793,8 @@
 		},
 		"composer": {
 			"placeholder": "💭… ✅📝⛲🗣️ @️⃣✅",
+			"locale": "📄🗣️",
+			"aria-label": "✍️📰",
 			"publish": "📤",
 			"saveDraft": "💾📝",
 			"fab": {
@@ -3757,6 +3823,9 @@
 			"emojiButton": {
 				"title": "😀",
 				"aria-label": "😀"
+			},
+			"mentionSuggest": {
+				"aria-label": "@️⃣💡"
 			},
 			"mediaButton": {
 				"title": "➕🖼️",
@@ -3793,12 +3862,22 @@
 				},
 				"except": {
 					"placeholder": "🚫👀（🔘）"
-				}
+				},
+				"aria-label": "👀📏"
 			}
 		},
 		"feed": {
-			"refresh": "🔄📰",
+			"refresh": {
+				"aria-label": "🔄📰",
+				"title": "🔄📰",
+				"dataset": {
+					"tip": "🔄📰"
+				}
+			},
 			"newPosts": "🆕📰 · 👆👀",
+			"tabsLabel": {
+				"aria-label": "📰🔀"
+			},
 			"tabLatest": "🆕",
 			"tabForYou": "⭐",
 			"repostedBy": "${author} ↪️",
@@ -3810,12 +3889,16 @@
 			"replayDivider": "✅👀 · 🔁👀",
 			"trending": {
 				"title": "🔥#️⃣",
+				"tabsLabel": {
+					"aria-label": "🔥#️⃣📏"
+				},
 				"postCount": {
 					"title": "${n}📄"
 				},
 				"scopeLocal": "💻",
 				"scopeNearby": "📍🧭",
-				"empty": "🔥#️⃣📭"
+				"empty": "🔥#️⃣📭",
+				"aria-label": "🔥#️⃣"
 			}
 		},
 		"explore": {
@@ -3845,6 +3928,7 @@
 			},
 			"createFolderPrompt": "📁🏷️",
 			"pickFolderTitle": "⭐➡️",
+			"folderSelect": "⭐📁",
 			"confirm": "✅",
 			"cancel": "↩️",
 			"remove": "🗑️⭐",
@@ -3979,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "🔍📰/👤/#️⃣（⬆️2🔤）",
+			"aria-label": "🔎📰👤#️⃣",
 			"open": {
 				"aria-label": "🔍"
 			},
@@ -3994,16 +4079,27 @@
 			"viewTitle": "🔍",
 			"loading": "🔍…",
 			"filterAuthor": {
-				"placeholder": "✍️"
+				"placeholder": "✍️",
+				"aria-label": "✍️"
+			},
+			"filterMedia": {
+				"aria-label": "🖼️🎬"
 			},
 			"filterMediaAll": "✅🖼️",
 			"filterMediaImage": "🖼️",
 			"filterMediaVideo": "🎬",
 			"filterTag": {
-				"placeholder": "#️⃣🏷️"
+				"placeholder": "#️⃣🏷️",
+				"aria-label": "#️⃣🏷️"
+			},
+			"filterSort": {
+				"aria-label": "🔀"
 			},
 			"sortRecent": "🆕",
 			"sortPopular": "🔥",
+			"filterScope": {
+				"aria-label": "🔎📏"
+			},
 			"scopeLocal": "💻",
 			"scopeNearby": "📍🧭"
 		},
@@ -4090,12 +4186,16 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "📰◀️📋"
+			},
 			"suggested": "⭐➕👀"
 		},
 		"groupRef": {
 			"linking": "🔗💬👥",
 			"clear": "🔓🔗",
-			"pick": "🔗💬👥/📺…"
+			"pick": "🔗💬👥/📺…",
+			"select": "🔗💬👥/📺"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4232,6 @@
 			"quoting": "▶️🔗",
 			"clear": "↩️🔗",
 			"viewOriginal": "👀📄"
-		},
-		"a11y": {
-			"linkGroupSelect": "🔗💬👥/📺",
-			"postVisibility": "👀📏",
-			"postLang": "📄🗣️",
-			"trendingHashtags": "🔥#️⃣",
-			"saveFolderSelect": "⭐📁"
 		},
 		"translate": {
 			"label": "🌐📝："
@@ -5078,6 +5171,11 @@
 		"parentLink": "🆙 /"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "🔔"
+			}
+		},
 		"common": {
 			"cancel": "↩️",
 			"create": "➕",

@@ -127,7 +127,6 @@
 	color: var(--text-normal, var(--color-base-content));
 	font-size: 12px;
 	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-	cursor: pointer;
 }
 
 .profile-locale-tab:hover {
@@ -139,11 +138,24 @@
 	background: color-mix(in srgb, var(--accent, var(--color-primary)) 15%, transparent);
 }
 
+.profile-locale-tab-label {
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+}
+
 .profile-locale-tab-close {
 	padding: 0 2px;
+	border: 0;
+	background: transparent;
+	color: inherit;
 	opacity: 0.55;
 	font-size: 14px;
 	line-height: 1;
+	cursor: pointer;
 }
 
 .profile-locale-tab-close:hover {

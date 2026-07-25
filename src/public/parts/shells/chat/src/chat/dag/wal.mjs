@@ -13,6 +13,7 @@ import { computeDagTipIdsFromEvents, hasDanglingParents } from 'npm:@steve020815
 import { eventsPath, snapshotPath } from '../lib/paths.mjs'
 
 import { isAdoptedBaseAuthoritative, isSignedBaseCheckpoint } from './checkpointPayload.mjs'
+import { isFederatableDagEvent } from './eventTypes.mjs'
 
 
 /**
@@ -32,8 +33,9 @@ export async function verifyEventsSnapshotWAL(username, groupId, checkpoint, eve
 		return { ok: false, reason: 'checkpoint_event_id invalid', forceFullReplay: true }
 	if (!rows.length)
 		return { ok: false, reason: 'checkpoint without events', forceFullReplay: true }
+	const federatableRows = rows.filter(isFederatableDagEvent)
 	const anchorInEvents = rows.some(row => String(row.id || '').trim().toLowerCase() === tipId)
-	const tips = computeDagTipIdsFromEvents(rows).map(t => String(t).trim().toLowerCase())
+	const tips = computeDagTipIdsFromEvents(federatableRows).map(t => String(t).trim().toLowerCase())
 	// 采纳的 owner 签名基态 checkpoint 在联邦 catch-up 全周期内保持权威，不得 forceFullReplay：
 	//   · 锚点尚未被 gossip 拉回 events
 	//   · DAG 仍有悬挂父（有叶无链）
@@ -41,8 +43,9 @@ export async function verifyEventsSnapshotWAL(username, groupId, checkpoint, eve
 	//   · checkpoint.dag_tip_ids 与本地叶集合未对齐（catch-up 常态）
 	// 以上均为「未追平」中间态，全量重放会把基态 active 成员滤没。退出条件由
 	// isAdoptedBaseAuthoritative 给出：本地叶与 dag_tip_ids 完全对齐时返回 false，走下方常规校验。
+	// tip / 悬挂父口径与 materialize 一致：只看联邦事件（session_* 不占 tip frontier）。
 	if (isAdoptedBaseAuthoritative(checkpoint, tips)
-		|| (isSignedBaseCheckpoint(checkpoint) && hasDanglingParents(rows)))
+		|| (isSignedBaseCheckpoint(checkpoint) && hasDanglingParents(federatableRows)))
 		return { ok: true }
 
 	if (!anchorInEvents)

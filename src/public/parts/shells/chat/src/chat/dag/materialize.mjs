@@ -47,7 +47,7 @@ import { safeReadJson } from '../lib/fsSafe.mjs'
 import { eventsOrderCachePath, groupDir, eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 
 import { buildCheckpointPayload, isAdoptedBaseAuthoritative, isSignedBaseCheckpoint } from './checkpointPayload.mjs'
-import { SESSION_EVENT_TYPES } from './eventTypes.mjs'
+import { computeFederatableDagTipIds, isFederatableDagEvent, SESSION_EVENT_TYPES } from './eventTypes.mjs'
 import { withGroupWriteLock } from './groupLock.mjs'
 import {
 	applyEvent,
@@ -58,15 +58,6 @@ import {
 	serializeVotesOverlay,
 } from './groupMaterializedState.mjs'
 import { verifyEventsSnapshotWAL } from './wal.mjs'
-
-/**
- * session_* 为本机元数据：不参与联邦 tip / 共识折叠，避免与 world_state 等并列成叉。
- * @param {object} event DAG 事件
- * @returns {boolean} 是否参与联邦 tip 与共识折叠
- */
-function isFederatableDagEvent(event) {
-	return !SESSION_EVENT_TYPES.has(event?.type)
-}
 
 /** @type {AsyncLocalStorage<boolean>} 当前异步上下文中是否正在执行 WAL 修复，防止 rebuild 内嵌 getState 无限递归 OOM。 */
 const walRepairContext = new AsyncLocalStorage()
@@ -303,7 +294,7 @@ export async function buildAndSaveCheckpoint(username, groupId, options = {}) {
 	if (!canSign && baseAuthoritative && isSignedBaseCheckpoint(previousCheckpoint))
 		return previousCheckpoint
 
-	const dagTipIds = computeDagTipIdsFromEvents(events.filter(isFederatableDagEvent))
+	const dagTipIds = computeFederatableDagTipIds(events)
 	const checkpointEventId = resolveCheckpointEventId(state, dagTipIds, order)
 	if (!checkpointEventId) return null
 

@@ -33,6 +33,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms
 - Reusable widgets: short semantic class + CSS; atomic/Tailwind only for DaisyUI and one-off layout. Context menus: `hub/core/positionContextMenu.mjs` + `bindDismissOnDocumentInteraction`.
 - State: `core/state.mjs`. No setter-injected appContext bags — import exported bindings; heavy modules use call-site `await import()`.
 - No hardcoded user-visible strings; `data-i18n` / `setElementI18n` + `zh-CN.json`.
+- **@ 提及 autocomplete**：与 Social 相同——textarea 上只用 `aria-controls` / `aria-activedescendant`；勿加 `role="combobox"` / `aria-expanded`（axe 会红）。
 
 ## Files / messages / archive
 

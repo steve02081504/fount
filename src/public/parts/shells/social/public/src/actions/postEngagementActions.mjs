@@ -15,6 +15,7 @@ import {
 } from '../lib/socialWrite.mjs'
 import { focusComposer } from '../navigation.mjs'
 import { state } from '../state.mjs'
+import { prependFeedItem } from '../views/feed.mjs'
 import { renderRepliesPanel } from '../views/replies.mjs'
 import { syncVideoCommentTicker } from '../views/video.mjs'
 
@@ -86,12 +87,14 @@ export async function handlePostEngagementClick(target) {
 			const card = submitRepostButton.closest('.post-card, .reply')
 			const prevRepost = card ? bumpRepostCount(card, 1) : 0
 			try {
-				await runWrite('repost', () => socialApi(`/posts/${entityHash}/${postId}/repost`, {
+				const data = await runWrite('repost', () => socialApi(`/posts/${entityHash}/${postId}/repost`, {
 					method: 'POST',
 					body: JSON.stringify({ comment }),
 				}))
 				if (textarea) textarea.value = ''
 				panel?.classList.add('hidden')
+				if (data?.item)
+					await prependFeedItem(data.item, { force: true })
 			}
 			catch {
 				if (card) bumpRepostCount(card, -1)
@@ -121,11 +124,15 @@ export async function handlePostEngagementClick(target) {
 			const { entityHash, postId } = parsed
 			const panel = queryByActionKey('data-replies-for', actionKey, cardRoot)
 			if (!panel) return false
-			panel.classList.toggle('hidden')
-			if (panel.dataset.loaded) return false
+			if (panel.dataset.loaded) {
+				panel.classList.toggle('hidden')
+				return false
+			}
+			// 先加载再显示，避免测试/用户在 replaceChildren 前写入被清掉的 textarea
 			const data = await socialApi(`/profile/${entityHash}/replies/${postId}`)
 			await renderRepliesPanel(panel, data.replies || [])
 			panel.dataset.loaded = '1'
+			panel.classList.remove('hidden')
 		}
 	}
 

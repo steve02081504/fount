@@ -191,6 +191,8 @@
 			"terminateIdle": "निरस्त ${label}: ${minutes} मिनट से अधिक के लिए कोई stdall आउटपुट नहीं (${idleSec} सेकंड के लिए निष्क्रिय, ${elapsed} चलाएँ)",
 			"terminateDuration": "समाप्त ${label}: वॉचडॉग बेसलाइन समय से अधिक लिया गया (${elapsed} चल रहा है, बेसलाइन ${baseline}, ऊपरी सीमा ${limit})",
 			"terminateDurationDefault": "समाप्त ${label}: बिताया गया समय डिफ़ॉल्ट वॉचडॉग अवधि सीमा से अधिक है (${elapsed} चल रहा है, ऊपरी सीमा ${limit})",
+			"sleepDetected": "सिस्टम स्लीप पहचानी गई (वॉचडॉग अंतराल ${gap} ≥ ${limit} कूदा); ${label} रोक दिया गया, फिर चलाने को तैयार (चला ${elapsed})",
+			"sleepRetry": "सिस्टम स्लीप से बाधित; ${label} फिर चलाया जा रहा है (प्रयास ${attempt})",
 			"terminateMarker": "[समाप्ति का कारण: ${reason}]",
 			"terminateUnknown": "समाप्त ${label}: परीक्षण बाधित",
 			"terminateSpeculative": "समाप्त ${label}: सट्टा निर्भरता समाप्त नहीं हुई है, प्रारंभिक रोक रद्द कर दी गई है",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "संदेश खोजें…",
+				"aria-label": "संदेश खोजें",
 				"noResults": "कोई परिणाम नहीं",
 				"failed": "खोजें विफल",
 				"scopeGroup": "यह समूह",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "मैं",
 			"messageEditSave": "सहेजें",
 			"messageEditCancel": "रद्द करें",
+			"messageEditArea": {
+				"aria-label": "संदेश संपादित करें"
+			},
 			"feedbackReasonPrompt": "अस्वीकृति का कारण (वैकल्पिक)",
 			"feedbackReasonInput": {
 				"placeholder": "अस्वीकृति का कारण (वैकल्पिक)"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "बंद करें"
 			},
+			"memberBar": {
+				"aria-label": "सदस्य सूची"
+			},
+			"channelBar": {
+				"aria-label": "चैनल सूची"
+			},
+			"serverBar": {
+				"aria-label": "समूह और नेविगेशन"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} पेज"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "नया भाषा कोड, जैसे एन-यूके"
 				},
+				"renameLocale": {
+					"aria-label": "भाषा कोड का नाम बदलें"
+				},
+				"localeRemove": {
+					"aria-label": "यह भाषा हटाएँ"
+				},
 				"avatarUrl": {
 					"placeholder": "अवतार छवि URL, या नीचे फ़ाइल अपलोड करें"
 				},
+				"avatarUpload": {
+					"aria-label": "अवतार अपलोड करें"
+				},
 				"bannerUrl": {
 					"placeholder": "झंडे छवि यूआरएल, या नीचे फ़ाइल अपलोड करें"
+				},
+				"bannerUpload": {
+					"aria-label": "बैनर अपलोड करें"
 				},
 				"tag": {
 					"placeholder": "टैग डालने के बाद जोड़ें"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "उपयोगकर्ता प्रोफ़ाइल",
 				"close": {
 					"title": "डेटा कार्ड बंद करें"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(संपादित)",
 			"mentionEmpty": "(कोई मिलान वाले सदस्य नहीं)",
+			"mentionSuggest": {
+				"aria-label": "मेंशन सुझाव"
+			},
 			"clickToLoad": "लोड करने के लिए क्लिक करें",
 			"send": "भेजें"
 		},
@@ -3670,14 +3701,47 @@
 			}
 		},
 		"nav": {
-			"feed": "होम",
-			"explore": "एक्सप्लोर",
-			"notifications": "इनबॉक्स",
-			"saved": "सेव किए",
-			"drafts": "ड्राफ़्ट",
-			"profile": "मेरा",
-			"videos": "शॉर्ट वीडियो",
-			"live": "लाइव"
+			"side": {
+				"aria-label": "सोशल नेविगेशन"
+			},
+			"mobile": {
+				"aria-label": "सोशल निचला नेविगेशन"
+			},
+			"feed": {
+				"aria-label": "होम",
+				"title": "होम"
+			},
+			"explore": {
+				"aria-label": "एक्सप्लोर",
+				"title": "एक्सप्लोर"
+			},
+			"notifications": {
+				"aria-label": "इनबॉक्स",
+				"title": "इनबॉक्स"
+			},
+			"saved": {
+				"aria-label": "सेव किए",
+				"title": "सहेजे गए"
+			},
+			"drafts": {
+				"aria-label": "ड्राफ़्ट",
+				"title": "ड्राफ़्ट"
+			},
+			"profile": {
+				"aria-label": "मेरा",
+				"title": "प्रोफ़ाइल"
+			},
+			"videos": {
+				"aria-label": "शॉर्ट वीडियो",
+				"title": "शॉर्ट वीडियो"
+			},
+			"live": {
+				"aria-label": "लाइव",
+				"title": "लाइव"
+			},
+			"compose": {
+				"aria-label": "पोस्ट लिखें"
+			}
 		},
 		"settings": {
 			"title": "सोशल सेटिंग",
@@ -3729,6 +3793,8 @@
 		},
 		"composer": {
 			"placeholder": "आप किस बारे में सोच रहे हैं? मार्कडाउन (फ़ॉउंट बोली) का समर्थन करें, उल्लेख करने के लिए @ दर्ज करें",
+			"locale": "सामग्री भाषा",
+			"aria-label": "पोस्ट लिखें",
 			"publish": "प्रकाशित करें",
 			"saveDraft": "ड्राफ़्ट सहेजें",
 			"fab": {
@@ -3757,6 +3823,9 @@
 			"emojiButton": {
 				"title": "इमोजी",
 				"aria-label": "इमोजी"
+			},
+			"mentionSuggest": {
+				"aria-label": "मेंशन सुझाव"
 			},
 			"mediaButton": {
 				"title": "मीडिया जोड़ें",
@@ -3793,12 +3862,22 @@
 				},
 				"except": {
 					"placeholder": "इसे किसे नहीं दिखाना चाहिए (वैकल्पिक)"
-				}
+				},
+				"aria-label": "दृश्यमान सीमा"
 			}
 		},
 		"feed": {
-			"refresh": "पोस्ट रीफ़्रेश करें",
+			"refresh": {
+				"aria-label": "पोस्ट रीफ़्रेश करें",
+				"title": "पोस्ट रीफ़्रेश करें",
+				"dataset": {
+					"tip": "पोस्ट रीफ़्रेश करें"
+				}
+			},
 			"newPosts": "नई खबर है, देखने के लिए क्लिक करें",
+			"tabsLabel": {
+				"aria-label": "फ़ीड क्रम"
+			},
 			"tabLatest": "नवीनतम",
 			"tabForYou": "आपके लिए",
 			"repostedBy": "${author} ने रीट्वीट किया",
@@ -3810,12 +3889,16 @@
 			"replayDivider": "पढ़ना समाप्त करें, पुनः ब्राउज़ करें",
 			"trending": {
 				"title": "ट्रेंडिंग विषय",
+				"tabsLabel": {
+					"aria-label": "ट्रेंडिंग दायरा"
+				},
 				"postCount": {
 					"title": "${n} पोस्ट"
 				},
 				"scopeLocal": "इस डिवाइस",
 				"scopeNearby": "आस-पास",
-				"empty": "अभी तक कोई गर्म विषय नहीं है"
+				"empty": "अभी तक कोई गर्म विषय नहीं है",
+				"aria-label": "ट्रेंडिंग विषय"
 			}
 		},
 		"explore": {
@@ -3845,6 +3928,7 @@
 			},
 			"createFolderPrompt": "फ़ोल्डर का नाम",
 			"pickFolderTitle": "पसंदीदा में जोड़े",
+			"folderSelect": "पसंदीदा फ़ोल्डर",
 			"confirm": "पुष्टि करें",
 			"cancel": "रद्द करें",
 			"remove": "सेव हटाएँ",
@@ -3979,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "अपडेट, उपयोगकर्ता या #विषय खोजें (न्यूनतम 2 शब्द)",
+			"aria-label": "पोस्ट, लोग या विषय खोजें",
 			"open": {
 				"aria-label": "खोजें"
 			},
@@ -3994,16 +4079,27 @@
 			"viewTitle": "खोजें",
 			"loading": "खोज रहे हैं…",
 			"filterAuthor": {
-				"placeholder": "लेखक"
+				"placeholder": "लेखक",
+				"aria-label": "लेखक"
+			},
+			"filterMedia": {
+				"aria-label": "मीडिया प्रकार"
 			},
 			"filterMediaAll": "सभी मीडिया",
 			"filterMediaImage": "छवि",
 			"filterMediaVideo": "वीडियो",
 			"filterTag": {
-				"placeholder": "#लेबल"
+				"placeholder": "#लेबल",
+				"aria-label": "लेबल"
+			},
+			"filterSort": {
+				"aria-label": "क्रमबद्ध करें"
 			},
 			"sortRecent": "नवीनतम",
 			"sortPopular": "ट्रेंडिंग",
+			"filterScope": {
+				"aria-label": "खोज दायरा"
+			},
 			"scopeLocal": "इस डिवाइस",
 			"scopeNearby": "आस-पास"
 		},
@@ -4090,12 +4186,16 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "सोशल साइडबार"
+			},
 			"suggested": "फ़ॉलो सुझाव करें"
 		},
 		"groupRef": {
 			"linking": "चैट समूह कनेक्ट करें",
 			"clear": "अनलिंक",
-			"pick": "चैट समूह/चैनल कनेक्ट करें…"
+			"pick": "चैट समूह/चैनल कनेक्ट करें…",
+			"select": "किसी चैट समूह या चैनल से कनेक्ट करें"
 		},
 		"inbox": {
 			"filtersLabel": {
@@ -4132,13 +4232,6 @@
 			"quoting": "का हवाला देते हुए",
 			"clear": "भिन्नता",
 			"viewOriginal": "मूल पोस्ट देखें"
-		},
-		"a11y": {
-			"linkGroupSelect": "किसी चैट समूह या चैनल से कनेक्ट करें",
-			"postVisibility": "दृश्यमान सीमा",
-			"postLang": "सामग्री भाषा",
-			"trendingHashtags": "ट्रेंडिंग विषय",
-			"saveFolderSelect": "पसंदीदा फ़ोल्डर"
 		},
 		"translate": {
 			"label": "अनुवाद:"
@@ -5078,6 +5171,11 @@
 		"parentLink": "↑ पिछला स्तर ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "सूचनाएँ"
+			}
+		},
 		"common": {
 			"cancel": "रद्द करें",
 			"create": "बनाएं",

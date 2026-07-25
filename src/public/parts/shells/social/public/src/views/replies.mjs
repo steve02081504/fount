@@ -50,13 +50,14 @@ export async function buildReplyRow(reply) {
 		: await renderTrustedPostMarkdown(text, entityHash)
 	const engagementBarHtml = await renderEngagementBarHtml(reply, actionKey)
 	rememberEntityHandle(entityHash, reply.authorProfile)
+	const authorName = authorLabel(entityHash, reply.authorProfile)
 	row.innerHTML = `
 		<div class="reply-header">
-			<a href="${escapeHtml(formatSocialProfileHref(entityHash))}" class="reply-avatar-link">
+			<a href="${escapeHtml(formatSocialProfileHref(entityHash))}" class="reply-avatar-link" aria-label="${escapeHtml(authorName)}">
 				${renderAvatarHtml(entityHash, reply.authorProfile, 'reply-avatar')}
 			</a>
 			<div class="reply-header-text">
-				<a href="${escapeHtml(formatSocialProfileHref(entityHash))}" class="link-btn author-name">${escapeHtml(authorLabel(entityHash, reply.authorProfile))}</a>
+				<a href="${escapeHtml(formatSocialProfileHref(entityHash))}" class="link-btn author-name">${escapeHtml(authorName)}</a>
 				<a href="${escapeHtml(formatSocialProfileHref(entityHash))}" class="author-handle">${escapeHtml(entityHandle(entityHash, reply.authorProfile))}</a>
 				<span class="post-meta-sep">·</span>
 				${formatTimeHtml(reply.post?.hlc?.wall || reply.hlc?.wall, 'post-meta reply-time', 'a', {

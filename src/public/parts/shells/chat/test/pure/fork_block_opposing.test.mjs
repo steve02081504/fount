@@ -83,3 +83,16 @@ Deno.test('computeOpposingForkBlockTargets rejects acceptedTipId that is not a c
 	const { events } = buildForkEvents()
 	assertThrows(() => computeOpposingForkBlockTargets(events, hex64('deadbeef'), SELF), Error, 'acceptedTipId is not a current DAG tip')
 })
+
+Deno.test('computeOpposingForkBlockTargets ignores session_* siblings when enumerating tips', () => {
+	const { events, acceptedTip } = buildForkEvents()
+	const sessionSibling = {
+		id: hex64('5e5510'),
+		prev_event_ids: [events[0].id],
+		type: 'session_world_bind',
+		sender: SELF,
+		content: {},
+	}
+	const blocked = computeOpposingForkBlockTargets([...events, sessionSibling], acceptedTip, SELF).sort()
+	assertEquals(blocked, [ATTACKER, VICTIM].sort())
+})

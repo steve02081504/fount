@@ -1,5 +1,5 @@
 <h2 class="aside-card-title" data-i18n="social.feed.trending.title"></h2>
-<div class="trending-scope-tabs" role="tablist">
-	<button type="button" class="btn btn-ghost btn-xs ${localActive}" data-trending-scope="local" data-i18n="social.feed.trending.scopeLocal"></button>
-	<button type="button" class="btn btn-ghost btn-xs ${nearbyActive}" data-trending-scope="nearby" data-i18n="social.feed.trending.scopeNearby"></button>
+<div class="trending-scope-tabs" role="tablist" data-i18n="social.feed.trending.tabsLabel">
+	<button type="button" class="btn btn-ghost btn-xs ${localActive}" role="tab" aria-selected="${localSelected}" data-trending-scope="local" data-i18n="social.feed.trending.scopeLocal"></button>
+	<button type="button" class="btn btn-ghost btn-xs ${nearbyActive}" role="tab" aria-selected="${nearbySelected}" data-trending-scope="nearby" data-i18n="social.feed.trending.scopeNearby"></button>
 </div>

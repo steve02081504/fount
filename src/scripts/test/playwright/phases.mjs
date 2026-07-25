@@ -128,7 +128,7 @@ async function collectPhaseFailures({ jsonReportPath, repoRoot, ranSpecPaths }) 
  * @param {number} params.basePort 基准端口
  * @param {Record<string, string>} params.env 环境变量
  * @param {(port: number) => object} params.nodeOpts 节点选项工厂
- * @param {string} params.extraArgs 额外 CLI 参数
+ * @param {string | string[]} params.extraArgs 额外 CLI 参数（数组保留 token 边界）
  * @param {string} params.jsonReportDir JSON report 目录
  * @param {string} params.repoRoot 仓库根
  * @returns {Promise<{ code: number, failed: string[], timings: Record<string, number> }>} 结果
@@ -147,11 +147,17 @@ async function runOnePhase({
 }) {
 	if (!specBasenames.length) return { code: 0, failed: [], timings: {} }
 	const port = basePort + phase.portOffset
-	const playwrightArgs = [extraArgs, `--project=${phase.project}`, ...specBasenames].filter(Boolean)
+	const playwrightArgs = [
+		...Array.isArray(extraArgs)
+			? extraArgs
+			: extraArgs?.trim() ? extraArgs.trim().split(/\s+/) : [],
+		`--project=${phase.project}`,
+		...specBasenames,
+	].filter(Boolean)
 	const jsonReportPath = join(jsonReportDir, `${phase.project}-${specBasenames.join('_')}.json`)
 	const code = await runPlaywrightWithNode({
 		configPath,
-		playwrightArgs: playwrightArgs.join(' '),
+		playwrightArgs,
 		env,
 		node: nodeOpts(port),
 		jsonReportPath,
@@ -174,7 +180,7 @@ async function runOnePhase({
  * @param {FrontendPhase[]} options.phases 阶段列表
  * @param {Record<string, string>} options.env 环境变量
  * @param {(port: number) => object} options.nodeOpts launchNode 选项工厂
- * @param {string} [options.extraArgs] 额外 playwright 参数
+ * @param {string | string[]} [options.extraArgs] 额外 playwright 参数（数组保留 token 边界）
  * @param {string[]} [options.failFastProjects] 失败即停的 project 名（默认 shell/smoke）
  * @returns {Promise<number>} 退出码
  */

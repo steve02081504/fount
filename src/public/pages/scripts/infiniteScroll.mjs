@@ -30,7 +30,7 @@ let activeObserver = null
  */
 export function bindInfiniteScroll({ root = null, sentinel, hasMore, onLoad, rootMargin = '480px 0px' }) {
 	disconnectInfiniteScroll()
-	if (!sentinel || !hasMore()) return
+	if (!sentinel) return
 	let loading = false
 	/** 离开相交后重新武装；onLoad 期间 unobserve，避免挪哨兵的假 leave/enter 连触发 */
 	let armed = true

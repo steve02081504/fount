@@ -10,6 +10,15 @@ const playwrightCli = require.resolve('@playwright/test/cli')
 /** 本机可复用的浏览器命令（Windows / Linux / macOS 常见名）。 */
 const SYSTEM_BROWSER_COMMANDS = ['chrome', 'msedge', 'google-chrome', 'chromium', 'chromium-browser']
 
+/**
+ * Playwright 启动参数：关 BFCache；禁组件更新以免运行中 CRLSet/Root Store
+ * 换掉证书校验器 → `net::ERR_CERT_VERIFIER_CHANGED` 打断 esm.sh 模块加载。
+ */
+const BROWSER_LAUNCH_ARGS = [
+	'--disable-features=BackForwardCache',
+	'--disable-component-update',
+]
+
 /** @type {Promise<void> | null} */
 let playwrightChromeInstall = null
 
@@ -60,7 +69,7 @@ export async function resolveBrowserUseOptions() {
 			return {
 				launchOptions: {
 					executablePath,
-					args: ['--disable-features=BackForwardCache'],
+					args: BROWSER_LAUNCH_ARGS,
 				},
 			}
 	}
@@ -70,7 +79,7 @@ export async function resolveBrowserUseOptions() {
 		return {
 			channel: 'chrome',
 			launchOptions: {
-				args: ['--disable-features=BackForwardCache'],
+				args: BROWSER_LAUNCH_ARGS,
 			},
 		}
 	}

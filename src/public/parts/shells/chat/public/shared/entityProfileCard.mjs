@@ -130,6 +130,10 @@ export function configureEntityProfileCard(root, mode = 'popup') {
 	root.classList.toggle('entity-profile-card--embedded', mode === 'embedded')
 	root.classList.toggle('entity-profile-card--preview', mode === 'preview')
 	root.classList.toggle('entity-profile-card--hover', mode === 'hover')
+	if (mode === 'hover') {
+		root.setAttribute('role', 'region')
+		root.dataset.i18n = 'chat.hub.profilePopup'
+	}
 	if (mode === 'popup') return
 	root.querySelector('[data-profile-popup-close]')?.remove()
 	for (const button of root.querySelectorAll('[data-profile-popup-edit], [data-profile-popup-care], [data-profile-popup-alias], [data-profile-popup-dm], [data-profile-popup-social]'))

@@ -23,13 +23,49 @@ export const DUMMY_ENTITY_HASH = SEEDED_TEST_TARGET_HASH
 /** bootstrap 联邦 ingest 的远程作者（治理菜单烟测）。 */
 export { FOREIGN_FE_AUTHOR_HASH }
 
+/** 1×1 PNG，供 composer 媒体上传与缺失 EVFS 文件 stub。 */
+export const TINY_PNG_BUFFER = Buffer.from(
+	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+	'base64',
+)
+
 /**
- * 安装 clipboard stub（share/copy 烟测避免缺 API）。
+ * 缺失头像/附件的 GET stub（PUT/POST 上传 continue 到真实 API）。
+ * @param {import('npm:@playwright/test').Route} route Playwright 路由
+ * @returns {Promise<void>}
+ */
+async function stubMissingSocialFileGet(route) {
+	const method = route.request().method()
+	if (method !== 'GET' && method !== 'HEAD') {
+		await route.continue()
+		return
+	}
+	// 不要 route.fetch / page.request.fetch 同 URL——易缠死或把上游 404 泄进诊断。
+	await route.fulfill({
+		status: 200,
+		headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-store' },
+		body: TINY_PNG_BUFFER,
+	})
+}
+
+/**
+ * @param {string | URL} url 请求 URL
+ * @returns {boolean} 是否为需 stub 的缺失 EVFS 媒体路径
+ */
+function isStubSocialEvfsFileUrl(url) {
+	const path = typeof url === 'string' ? new URL(url).pathname : url.pathname
+	return path.endsWith('/files/profile/avatar')
+		|| /\/files\/shells\/social\/attachments\/[^/]+$/.test(path)
+}
+
+/**
+ * Social 前端测前置：clipboard stub；缺失的 profile avatar 用 1×1 png 顶上，
+ * 避免探索/资料页对无文件头像 URL 刷 `[browser:network]` 404 噪声。
  * @param {object} args fixture 参数
  * @param {import('npm:@playwright/test').Page} args.page Playwright 页面
  * @returns {Promise<void>}
  */
-async function installClipboardStub({ page }) {
+async function installSocialTestHooks({ page }) {
 	await page.addInitScript(() => {
 		if (!navigator.clipboard)
 			Object.defineProperty(navigator, 'clipboard', {
@@ -45,6 +81,8 @@ async function installClipboardStub({ page }) {
 			 */
 			navigator.clipboard.writeText = async () => { }
 	})
+	// 谓词匹配 pathname（比 glob/regex 全 URL 更稳）；挂 context 覆盖 popup / 多 page。
+	await page.context().route(isStubSocialEvfsFileUrl, stubMissingSocialFileGet)
 }
 
 /**
@@ -55,7 +93,7 @@ export const { test: baseTest, expect } = createFountFixtures({
 	isolated: {
 		shellLabel: 'Social',
 		timeout: ms('3m'),
-		beforeEach: installClipboardStub,
+		beforeEach: installSocialTestHooks,
 	},
 })
 
@@ -142,7 +180,9 @@ export async function waitForPostMaterialized(baseUrl, apiKey, postId) {
 }
 
 /**
- * 通过 composer 发帖并等待 API 成功及 feed 刷新。
+ * 通过 composer 发帖并等待 API 成功与输入框清空。
+ * 不硬等 feed GET：发帖后的 loadFeed 可能叠在联邦 backfill 上，易超时；
+ * 帖子可见性由 publishPost fixture 的 waitForPostMaterialized / findPostCard 负责。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} text - 帖子正文。
  * @param {{ baseUrl?: string, apiKey?: string }} [api] - 可选 API 上下文（当前未使用，预留扩展）。
@@ -150,16 +190,15 @@ export async function waitForPostMaterialized(baseUrl, apiKey, postId) {
  */
 export async function publishPostViaComposer(page, text, api = {}) {
 	await page.locator('#postText').fill(text)
-	const postWait = page.waitForResponse(res => {
-		if (res.request().method() !== 'POST' || res.status() !== 200) return false
-		return new URL(res.url()).pathname === '/api/parts/shells:social/posts'
-	}, { timeout: ms('1m') })
-	const feedWait = waitForFeedLoad(page)
-	await page.locator('#postButton').click()
-	const postResponse = await postWait
+	const [postResponse] = await Promise.all([
+		page.waitForResponse(res => {
+			if (res.request().method() !== 'POST' || res.status() !== 200) return false
+			return new URL(res.url()).pathname === '/api/parts/shells:social/posts'
+		}, { timeout: ms('1m') }),
+		page.locator('#postButton').click(),
+	])
 	const postJson = await postResponse.json()
-	await feedWait
-	await expect(page.locator('#postText')).toHaveValue('')
+	await expect(page.locator('#postText')).toHaveValue('', { timeout: ms('30s') })
 	return postJson
 }
 
@@ -290,15 +329,70 @@ export async function searchAndExpectPost(page, query, postId) {
  */
 export async function seedPostsViaApi(baseUrl, apiKey, count, textPrefix = 'seed') {
 	const key = encodeURIComponent(apiKey)
+	const stamp = Date.now()
 	await withApiRequest(async req => {
+		// 同一时间线签名链不可并发 append，否则丢事件
 		for (let index = 0; index < count; index++) {
 			const res = await req.post(
 				`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${key}`,
-				{ data: { text: `${textPrefix}-${index}-${Date.now()}`, visibility: 'public', locale: 'zh-CN' } },
+				{ data: { text: `${textPrefix}-${index}-${stamp}`, visibility: 'public', locale: 'zh-CN' } },
 			)
-			if (!res.ok()) throw new Error(`seed post failed: ${res.status()}`)
+			if (!res.ok()) throw new Error(`seed post failed: ${res.status()} ${await res.text()}`)
 		}
 	})
+}
+
+/**
+ * 抽泵无限滚动哨兵：上滚离开 rootMargin 后再 scrollIntoView，触发 rising-edge 装载。
+ * @param {import('npm:@playwright/test').Page} page Playwright 页面
+ * @param {() => Promise<boolean>} until 为 true 时停止
+ * @param {{ maxRounds?: number, leaveWaitMs?: number, enterWaitMs?: number, sentinel?: string }} [options] 轮次、等待与哨兵选择器
+ * @returns {Promise<boolean>} 是否在 maxRounds 内满足 until
+ */
+export async function pumpFeedScroll(page, until, {
+	maxRounds = 40,
+	leaveWaitMs = 100,
+	enterWaitMs = 250,
+	sentinel = '#feedScrollSentinel',
+} = {}) {
+	for (let i = 0; i < maxRounds; i++) {
+		if (await until()) return true
+		await page.evaluate(() => window.scrollBy(0, -900))
+		await page.waitForTimeout(leaveWaitMs)
+		await page.locator(sentinel).scrollIntoViewIfNeeded()
+		await page.waitForTimeout(enterWaitMs)
+	}
+	return until()
+}
+
+/**
+ * 确保首页 feed 至少有一页以上（存在 nextCursor）；不足则串行补种直至满足。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {number} [pageSize=30] 与前端首屏 limit 对齐。
+ * @returns {Promise<void>}
+ */
+export async function ensureFeedHasNextPage(baseUrl, apiKey, pageSize = 30) {
+	const key = encodeURIComponent(apiKey)
+	/**
+	 * @returns {Promise<{ hasNext: boolean, count: number }>} 探测结果
+	 */
+	async function probe() {
+		return withApiRequest(async req => {
+			const res = await req.get(`${baseUrl}/api/parts/shells:social/feed?limit=${pageSize}&fount-apikey=${key}`)
+			if (!res.ok()) throw new Error(`feed probe failed: ${res.status()}`)
+			const data = await res.json()
+			return { hasNext: Boolean(data.nextCursor), count: (data.items || []).length }
+		})
+	}
+	for (let attempt = 0; attempt < 6; attempt++) {
+		const { hasNext, count } = await probe()
+		if (hasNext) return
+		await seedPostsViaApi(baseUrl, apiKey, Math.max(pageSize + 5 - count, 8), `loadmore${attempt}`)
+	}
+	const last = await probe()
+	if (!last.hasNext)
+		throw new Error(`feed still has no nextCursor (items=${last.count}, limit=${pageSize})`)
 }
 
 /**
@@ -346,12 +440,6 @@ export async function installVideoFixtureRoute(page) {
 export function videoFixtureUrl(baseUrl) {
 	return new URL(VIDEO_FIXTURE_PATH, baseUrl).href
 }
-
-/** 1×1 PNG，供 composer 媒体上传烟测。 */
-export const TINY_PNG_BUFFER = Buffer.from(
-	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
-	'base64',
-)
 
 /**
  * 读取当前测试用户的 viewer entityHash（含 ECONNRESET 重试）。

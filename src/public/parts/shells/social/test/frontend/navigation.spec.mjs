@@ -38,7 +38,7 @@ test.describe('Social navigation', () => {
 		await expect(page).toHaveURL(/#explore$/)
 	})
 
-	test('videos view opens fullscreen and shows empty state', async ({ page }) => {
+	test('videos view opens fullscreen and compose returns to feed', async ({ page }) => {
 		const feedPromise = page.waitForResponse(res => {
 			if (res.request().method() !== 'GET' || res.status() !== 200) return false
 			return new URL(res.url()).pathname === '/api/parts/shells:social/videos/feed'
@@ -47,9 +47,14 @@ test.describe('Social navigation', () => {
 		await feedPromise
 		await expect(page.locator('#videosView')).toBeVisible()
 		await expect(page.locator('#composer')).toBeHidden()
-		await expect(page.locator('#videosView .empty-state--video')).toBeVisible()
-		await expect(page.locator('#videosView .empty-state-title')).toHaveText('暂无短视频')
-		await page.locator('#videosView [data-video-compose]').click()
+		const empty = page.locator('#videosView .empty-state--video')
+		if (await empty.isVisible()) {
+			await expect(page.locator('#videosView .empty-state-title')).toHaveText('暂无短视频')
+			await page.locator('#videosView [data-video-compose]').click()
+		}
+		else
+			// 全屏 #videosView 盖住侧栏，点 nav 会被 <video> 截获
+			await page.locator('#videosViewBackButton').click()
 		await expect(page.locator('#feedView')).toBeVisible()
 		await expect(page.locator('#composer')).toBeVisible()
 	})

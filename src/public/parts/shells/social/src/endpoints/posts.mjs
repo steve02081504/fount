@@ -74,7 +74,7 @@ export function registerPostsRoutes(router) {
 
 	router.post('/api/parts/shells\\:social/posts/:entityHash/:postId/repost', authenticate, socialJson(async (req, { client }) => {
 		const post = await postFromParams(req, client)
-		return { event: await post.repost(req.body?.comment) }
+		return await post.repost(req.body?.comment)
 	}))
 
 	router.post('/api/parts/shells\\:social/posts/:entityHash/:postId/poll-vote', authenticate, socialJson(async (req, { client }) => {

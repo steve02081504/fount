@@ -20,8 +20,11 @@ import {
 	DEFAULT_DURATION_TIMEOUT_MS,
 	evaluateWatchdog,
 	getDurationWatchdogLimitMs,
+	getSleepGapMs,
 	IDLE_TIMEOUT_MS,
 	MIN_DURATION_TIMEOUT_MS,
+	SLEEP_DETECT_MULTIPLIER,
+	WATCH_INTERVAL_MS,
 } from '../runner/run_command.mjs'
 
 Deno.test('evaluateWatchdog idle when no recent output', () => {
@@ -30,6 +33,7 @@ Deno.test('evaluateWatchdog idle when no recent output', () => {
 		now,
 		startedAt: now - IDLE_TIMEOUT_MS - 1,
 		lastActivityAt: now - IDLE_TIMEOUT_MS,
+		lastTickAt: now - WATCH_INTERVAL_MS,
 	}), 'idle')
 })
 
@@ -39,6 +43,7 @@ Deno.test('evaluateWatchdog duration when over 2x baseline', () => {
 		now,
 		startedAt: now - ms('21m') - 1,
 		lastActivityAt: now - ms('1s'),
+		lastTickAt: now - WATCH_INTERVAL_MS,
 		baselineDurationMs: ms('10m'),
 	}), 'duration')
 })
@@ -53,12 +58,14 @@ Deno.test('evaluateWatchdog duration waits for 15 minute minimum on short baseli
 		now,
 		startedAt: now - MIN_DURATION_TIMEOUT_MS + 1,
 		lastActivityAt: now - ms('1s'),
+		lastTickAt: now - WATCH_INTERVAL_MS,
 		baselineDurationMs: ms('23s'),
 	}), null)
 	assertEquals(evaluateWatchdog({
 		now,
 		startedAt: now - MIN_DURATION_TIMEOUT_MS,
 		lastActivityAt: now - ms('1s'),
+		lastTickAt: now - WATCH_INTERVAL_MS,
 		baselineDurationMs: ms('23s'),
 	}), 'duration')
 })
@@ -69,8 +76,37 @@ Deno.test('evaluateWatchdog idle takes priority over duration', () => {
 		now,
 		startedAt: now - IDLE_TIMEOUT_MS - 1,
 		lastActivityAt: now - IDLE_TIMEOUT_MS,
+		lastTickAt: now - WATCH_INTERVAL_MS,
 		baselineDurationMs: ms('1s'),
 	}), 'idle')
+})
+
+Deno.test('evaluateWatchdog sleep takes priority over idle when tick gap is huge', () => {
+	const now = 1_000_000
+	assertEquals(evaluateWatchdog({
+		now,
+		startedAt: now - IDLE_TIMEOUT_MS - 1,
+		lastActivityAt: now - IDLE_TIMEOUT_MS,
+		lastTickAt: now - getSleepGapMs(),
+		baselineDurationMs: ms('1s'),
+	}), 'sleep')
+})
+
+Deno.test('evaluateWatchdog sleep when tick gap reaches 5x interval', () => {
+	const now = 1_000_000
+	assertEquals(getSleepGapMs(), SLEEP_DETECT_MULTIPLIER * WATCH_INTERVAL_MS)
+	assertEquals(evaluateWatchdog({
+		now,
+		startedAt: now - ms('5m'),
+		lastActivityAt: now - ms('1s'),
+		lastTickAt: now - getSleepGapMs() + 1,
+	}), null)
+	assertEquals(evaluateWatchdog({
+		now,
+		startedAt: now - ms('5m'),
+		lastActivityAt: now - ms('1s'),
+		lastTickAt: now - getSleepGapMs(),
+	}), 'sleep')
 })
 
 Deno.test('evaluateWatchdog null when within limits', () => {
@@ -79,6 +115,7 @@ Deno.test('evaluateWatchdog null when within limits', () => {
 		now,
 		startedAt: now - ms('5s'),
 		lastActivityAt: now - ms('1s'),
+		lastTickAt: now - WATCH_INTERVAL_MS,
 		baselineDurationMs: ms('10s'),
 	}), null)
 })
@@ -89,11 +126,13 @@ Deno.test('evaluateWatchdog uses default 30 minute limit without baseline', () =
 		now,
 		startedAt: now - DEFAULT_DURATION_TIMEOUT_MS + 1,
 		lastActivityAt: now - ms('1s'),
+		lastTickAt: now - WATCH_INTERVAL_MS,
 	}), null)
 	assertEquals(evaluateWatchdog({
 		now,
 		startedAt: now - DEFAULT_DURATION_TIMEOUT_MS,
 		lastActivityAt: now - ms('1s'),
+		lastTickAt: now - WATCH_INTERVAL_MS,
 	}), 'duration')
 })
 

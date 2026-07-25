@@ -1,8 +1,17 @@
 /* Hub 消息区：布局由 DaisyUI chat 组件承担，此处仅保留无法用工具类表达的规则 */
 
 .messages {
+	--chat-gap: 0.375rem;
+	/* 与 avatar_block `w-10` 对齐；改尺寸只动这一处 */
+	--message-avatar-size: 2.5rem;
+
 	overflow-y: auto;
 	overflow-x: hidden;
+}
+
+.messages .chat-image > div {
+	width: var(--message-avatar-size);
+	height: var(--message-avatar-size);
 }
 
 .messages::-webkit-scrollbar {
@@ -29,9 +38,9 @@
 	margin-top: 1.25rem;
 }
 
-/* 系统消息 */
+/* 系统消息：与聊天气泡正文左缘对齐（列表 padding + 头像 + 间距） */
 .system-message {
-	padding: 6px 16px 6px 72px;
+	padding: 6px 16px 6px calc(16px + var(--message-avatar-size) + var(--chat-gap));
 	color: var(--text-muted);
 	font-size: 14px;
 	display: flex;
@@ -86,9 +95,36 @@
 	opacity: 0.5;
 }
 
-/* 消息行 hover 过渡 */
+/*
+ * 消息行：收紧头像↔气泡（DaisyUI 默认 0.75rem 偏疏），尾巴同比缩小；
+ * 盖掉 bubble max-width:90%（嵌在 stack 里会留白）。
+ */
 .chat.message-row {
-	transition: background 0.12s ease;
+	column-gap: var(--chat-gap);
+}
+
+.chat.message-row .chat-bubble {
+	max-width: 100%;
+}
+
+.chat.message-row .chat-bubble::before {
+	width: var(--chat-gap);
+	height: var(--chat-gap);
+	mask-size: calc(var(--chat-gap) + 0.025rem);
+}
+
+.chat.message-row.chat-start .chat-bubble::before {
+	inset-inline-start: calc(-1 * var(--chat-gap));
+}
+
+/* end：header/footer/短气泡贴右（inner 已 fit-content 靠右；header 比气泡宽时靠这条） */
+.messages .chat-end .chat-header,
+.messages .chat-end .chat-footer {
+	justify-content: flex-end;
+}
+
+.messages .chat-end .message-stack-inner .chat-bubble {
+	margin-inline-start: auto;
 }
 
 /* 内容列：承接 header/bubble/footer，让悬浮栏相对定位 */
@@ -98,11 +134,11 @@
 	justify-self: stretch;
 }
 
-.chat-start .message-stack {
+.messages .chat-start .message-stack {
 	grid-column-start: 2;
 }
 
-.chat-end .message-stack {
+.messages .chat-end .message-stack {
 	grid-column-start: 1;
 }
 
@@ -115,13 +151,13 @@
 	max-width: 100%;
 }
 
-.chat-start .message-stack-inner {
+.messages .chat-start .message-stack-inner {
 	width: 100%;
 }
 
-.chat-end .message-stack-inner {
+.messages .chat-end .message-stack-inner {
 	width: fit-content;
-	margin-left: auto;
+	margin-inline-start: auto;
 }
 
 /* =========================================================

@@ -8,6 +8,7 @@ import {
 	injectForeignLike,
 	seedInboxLikes,
 	seedInboxMentions,
+	pumpFeedScroll,
 } from './fixtures.mjs'
 
 test.describe('Social secondary views', () => {
@@ -178,23 +179,32 @@ test.describe('Social secondary views', () => {
 	})
 
 	test('notifications infinite scroll loads next page', async ({ page, baseUrl, apiKey }) => {
+		test.setTimeout(180_000)
 		await seedInboxMentions(baseUrl, apiKey, 41)
-		// rootMargin 可能在首屏 bind 后立刻拉下一页；也覆盖需滚动才触发的情况
-		const cursorWait = page.waitForResponse(res => {
+		const notifApiPath = '/api/parts/shells:social/notifications'
+		const firstPageWait = page.waitForResponse(res => {
 			if (res.request().method() !== 'GET' || res.status() !== 200) return false
 			const url = new URL(res.url())
-			return url.pathname === '/api/parts/shells:social/notifications' && url.searchParams.has('cursor')
+			return url.pathname === notifApiPath && !url.searchParams.has('cursor')
 		}, { timeout: 60_000 })
 		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
+		const firstPage = await (await firstPageWait).json()
+		const firstPageSize = firstPage.notifications?.length || 0
+		expect(firstPageSize).toBeGreaterThan(0)
+		expect(firstPage.nextCursor).toBeTruthy()
 		await expect(page.locator('#notificationsView .notification-card').first())
 			.toBeVisible({ timeout: 30_000 })
-		await page.locator('#notificationsScrollSentinel').scrollIntoViewIfNeeded()
-		expect(await (await cursorWait).json()).toHaveProperty('notifications')
+		await expect(page.locator('#notificationsScrollSentinel')).toBeAttached({ timeout: 30_000 })
+		await pumpFeedScroll(
+			page,
+			async () => (await page.locator('#notificationsView .notification-card').count()) > firstPageSize,
+			{ maxRounds: 24, leaveWaitMs: 150, enterWaitMs: 350, sentinel: '#notificationsScrollSentinel' },
+		)
 		// 首页 limit=40；第二页到达后总数应超过首页
 		await expect.poll(
 			() => page.locator('#notificationsView .notification-card').count(),
 			{ timeout: 15_000 },
-		).toBeGreaterThan(40)
+		).toBeGreaterThan(firstPageSize)
 	})
 
 	test('explore post link opens profile', async ({ page, publishPost }) => {

@@ -13,7 +13,6 @@ import { DEFAULT_STREAM_GENERATING_IDLE_MS } from 'npm:@steve02081504/fount-p2p/
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
-import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
@@ -35,6 +34,7 @@ import { dropGroupReplicaRegistration } from '../ws/groupWsRooms.mjs'
 import { appendEvent } from './append.mjs'
 import { checkEventPermission } from './authorizeEvent.mjs'
 import { buildMemberJoinBindingFields } from './entityBinding.mjs'
+import { computeFederatableDagTipIds } from './eventTypes.mjs'
 import { applyEvent, emptyMaterializedState } from './groupMaterializedState.mjs'
 import { getLocalSignerForNewGroup, resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
@@ -57,7 +57,7 @@ const GENESIS_APPEND_OPTS = {
  */
 export async function mergeDagTips(username, groupId, sender, secretKey) {
 	const rows = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
-	const tips = computeDagTipIdsFromEvents(rows)
+	const tips = computeFederatableDagTipIds(rows)
 	if (tips.length < 2) throw httpError(409, 'dag_tip_merge: fewer than 2 tips')
 	return appendEvent(username, groupId, {
 		type: 'dag_tip_merge',
@@ -76,7 +76,7 @@ export async function mergeDagTips(username, groupId, sender, secretKey) {
  */
 export async function convergeDagTipsIfAuthorized(username, groupId) {
 	const rows = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
-	const tips = computeDagTipIdsFromEvents(rows)
+	const tips = computeFederatableDagTipIds(rows)
 	if (tips.length < 2) return
 
 	const { sender, secretKey } = await resolveLocalEventSigner(username, groupId)
@@ -172,6 +172,7 @@ export async function createGroup(username, body) {
 			eventRetentionDepth: 200_000,
 			eventRetentionMs: 365 * 24 * 3600 * 1000,
 			messageContentRetentionMs: 0,
+			...body.joinPolicy ? { joinPolicy: body.joinPolicy } : {},
 			...body.enableGroupFederation ? {
 				signalingAppId: DEFAULT_SIGNALING_APP_ID,
 				roomSecret: mintRoomSecret(),

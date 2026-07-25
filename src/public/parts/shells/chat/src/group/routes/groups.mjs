@@ -95,12 +95,14 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 		}
 
 		const groupId = body.groupId || randomUUID()
+		const joinPolicy = ['invite-only', 'pow', 'open'].includes(body.joinPolicy) ? body.joinPolicy : undefined
 		const useClientCreate = !body.groupId && !body.description && !friendBinding
 		if (useClientCreate) {
 			const { client } = await chatClientFromReq(req)
 			const group = await client.createGroup({
 				name: body.name || 'New Group',
 				defaultChannelName: body.defaultChannelName,
+				joinPolicy,
 			})
 			const { loadGroupState } = await import('../../api/internal.mjs')
 			const state = await loadGroupState({ username, entityHash: client.entityHash }, group.id)
@@ -119,6 +121,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 			secretKey,
 			defaultChannelName: body.defaultChannelName,
 			defaultChannelId: body.defaultChannelId,
+			joinPolicy,
 			...friendBinding ? { friendBinding } : {},
 		})
 		registerGroupRuntime(result.groupId, username)

@@ -43,7 +43,6 @@ test.describe('Social post actions', () => {
 			panel.locator('[data-submit-repost]').click(),
 		])
 		await expect(panel).toHaveClass(/hidden/)
-		await page.locator('#feedRefreshButton').click()
 		await expect(page.locator('#feedList .repost-comment', { hasText: comment })).toBeVisible({ timeout: 30_000 })
 	})
 

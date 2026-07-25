@@ -46,6 +46,8 @@ console.noBreadcrumb = {
 
 await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').catch(console.error)
 
+if (globalThis.fount?.test?.enabled) import('/scripts/test/test_watch.mjs')
+
 // register service worker
 if (navigator.serviceWorker)
 	navigator.serviceWorker.register('/service_worker.mjs', { scope: '/', module: true })

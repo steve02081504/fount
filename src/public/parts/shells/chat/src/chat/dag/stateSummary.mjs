@@ -2,12 +2,13 @@ import { createHash } from 'node:crypto'
 
 import { canonicalStringify } from 'npm:@steve02081504/fount-p2p/core/canonical_json'
 import { findLastEventOfType } from 'npm:@steve02081504/fount-p2p/dag/event_query'
-import { computeLocalTipsHash, computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { computeLocalTipsHash } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 
 import { eventsPath } from '../lib/paths.mjs'
 
 import { appendSignedLocalEvent } from './append.mjs'
+import { computeFederatableDagTipIds } from './eventTypes.mjs'
 
 /**
  * @param {object} state 物化状态
@@ -16,7 +17,7 @@ import { appendSignedLocalEvent } from './append.mjs'
  * @returns {object} state_summary content
  */
 export function buildStateSummaryContent(state, anchorEventId, events = []) {
-	const tipIds = computeDagTipIdsFromEvents(events)
+	const tipIds = computeFederatableDagTipIds(events)
 	return {
 		anchorEventId,
 		membersRoot: state.membersRoot ?? null,
