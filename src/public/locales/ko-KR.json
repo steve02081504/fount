@@ -191,6 +191,8 @@
 			"terminateIdle": "${label} 중단됨: ${minutes}분 이상 stdall 출력이 없습니다(${idleSec}초 동안 유휴 상태, ${elapsed} 실행).",
 			"terminateDuration": "종료된 ${label}: 감시 기준 시간(${elapsed} 실행, 기준 ${baseline}, 상한 ${limit})보다 오래 걸렸습니다.",
 			"terminateDurationDefault": "종료된 ${label}: 소요 시간이 기본 감시 기간 제한(${elapsed} 실행, 상한 ${limit})을 초과합니다.",
+			"sleepDetected": "시스템 최대 절전 모드가 감지되었습니다(워치독 간격이 ${gap} ≥ ${limit} 점프). ${label}이 중단되었으며 다시 실행될 준비가 되었습니다(${elapsed}가 실행되었습니다).",
+			"sleepRetry": "시스템 절전 모드 중단, ${label} 다시 실행(${attempt} 시간)",
 			"terminateMarker": "[해지 이유: ${reason}]",
 			"terminateUnknown": "TERMINATED ${label}: 테스트가 중단되었습니다.",
 			"terminateSpeculative": "종료된 ${label}: 투기적 종속성이 통과되지 않았으며 조기 중지가 취소되었습니다.",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "메시지 검색…",
+				"aria-label": "메시지 검색",
 				"noResults": "결과 없음",
 				"failed": "검색 실패",
 				"scopeGroup": "이 그룹",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "나",
 			"messageEditSave": "저장",
 			"messageEditCancel": "취소",
+			"messageEditArea": {
+				"aria-label": "메시지 편집"
+			},
 			"feedbackReasonPrompt": "비승인 이유(선택사항)",
 			"feedbackReasonInput": {
 				"placeholder": "비승인 이유(선택사항)"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "폐쇄"
 			},
+			"memberBar": {
+				"aria-label": "회원 목록"
+			},
+			"channelBar": {
+				"aria-label": "채널 목록"
+			},
+			"serverBar": {
+				"aria-label": "그룹 및 탐색"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} 페이지"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "en-UK와 같은 새로운 언어 코드"
 				},
+				"renameLocale": {
+					"aria-label": "언어 코드 이름 바꾸기"
+				},
+				"localeRemove": {
+					"aria-label": "언어 버전 삭제"
+				},
 				"avatarUrl": {
 					"placeholder": "아바타 이미지 URL 또는 아래 파일 업로드"
 				},
+				"avatarUpload": {
+					"aria-label": "아바타 이미지 업로드"
+				},
 				"bannerUrl": {
 					"placeholder": "배너 이미지 URL 또는 아래 파일 업로드"
+				},
+				"bannerUpload": {
+					"aria-label": "배너 이미지 업로드"
 				},
 				"tag": {
 					"placeholder": "태그 입력 후 추가"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "사용자 프로필",
 				"close": {
 					"title": "데이터 카드 닫기"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(수정됨)",
 			"mentionEmpty": "(일치하는 멤버 없음)",
+			"mentionSuggest": {
+				"aria-label": "후보자를 언급하다"
+			},
 			"clickToLoad": "클릭하여 불러오기",
 			"send": "보내기"
 		},
@@ -3670,39 +3701,47 @@
 			}
 		},
 		"nav": {
+			"side": {
+				"aria-label": "소셜 네비게이션"
+			},
+			"mobile": {
+				"aria-label": "소셜 하단 탐색"
+			},
 			"feed": {
 				"aria-label": "첫 페이지",
-				"textContent": "첫 페이지"
+				"title": "첫 페이지"
 			},
 			"explore": {
 				"aria-label": "탐저장",
-				"textContent": "탐저장"
+				"title": "탐구하다"
 			},
 			"notifications": {
 				"aria-label": "받은 편지함",
-				"textContent": "받은 편지함"
+				"title": "받은편지함"
 			},
 			"saved": {
 				"aria-label": "모으다",
-				"textContent": "모으다"
+				"title": "모으다"
 			},
 			"drafts": {
 				"aria-label": "초안 상자",
-				"textContent": "초안 상자"
+				"title": "초안 상자"
 			},
 			"profile": {
 				"aria-label": "내 것",
-				"textContent": "내 것"
+				"title": "내 거"
 			},
 			"videos": {
 				"aria-label": "짧은 영상",
-				"textContent": "짧은 영상"
+				"title": "짧은 영상"
 			},
 			"live": {
 				"aria-label": "라이브 스트리밍",
-				"textContent": "라이브 스트리밍"
+				"title": "라이브 스트리밍"
 			},
-			"compose": {}
+			"compose": {
+				"aria-label": "업데이트 쓰기"
+			}
 		},
 		"settings": {
 			"title": "소셜 설정",
@@ -3755,6 +3794,7 @@
 		"composer": {
 			"placeholder": "무슨 생각을 하고 계신가요? Markdown(fount 방언) 지원, @로 멘션",
 			"locale": "콘텐츠 언어",
+			"aria-label": "업데이트 쓰기",
 			"publish": "게시",
 			"saveDraft": "초안 저장",
 			"fab": {
@@ -3783,6 +3823,9 @@
 			"emojiButton": {
 				"title": "표정",
 				"aria-label": "표정"
+			},
+			"mentionSuggest": {
+				"aria-label": "후보자를 언급하다"
 			},
 			"mediaButton": {
 				"title": "미디어 추가",
@@ -3832,6 +3875,9 @@
 				}
 			},
 			"newPosts": "새로운 소식이 있습니다. 보려면 클릭하세요.",
+			"tabsLabel": {
+				"aria-label": "정보 흐름 정렬"
+			},
 			"tabLatest": "최신",
 			"tabForYou": "추천",
 			"repostedBy": "${author}이 리트윗함",
@@ -3843,6 +3889,9 @@
 			"replayDivider": "다 읽었습니다. 다시 찾아보세요.",
 			"trending": {
 				"title": "뜨거운 주제",
+				"tabsLabel": {
+					"aria-label": "인기 주제 범위"
+				},
 				"postCount": {
 					"title": "${n}개의 게시물"
 				},
@@ -4014,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "업데이트, 사용자 또는 #주제 검색(최소 2단어)",
+			"aria-label": "업데이트, 사용자 또는 주제 검색",
 			"open": {
 				"aria-label": "찾다"
 			},
@@ -4031,14 +4081,23 @@
 			"filterAuthor": {
 				"placeholder": "작성자"
 			},
+			"filterMedia": {
+				"aria-label": "미디어 유형"
+			},
 			"filterMediaAll": "모든 미디어",
 			"filterMediaImage": "그림",
 			"filterMediaVideo": "동영상",
 			"filterTag": {
 				"placeholder": "#라벨"
 			},
+			"filterSort": {
+				"aria-label": "종류"
+			},
 			"sortRecent": "최신",
 			"sortPopular": "인기 있는",
+			"filterScope": {
+				"aria-label": "검색범위"
+			},
 			"scopeLocal": "이 기기",
 			"scopeNearby": "가까운"
 		},
@@ -4125,6 +4184,9 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "소셜 사이드바"
+			},
 			"suggested": "관심을 추천"
 		},
 		"groupRef": {
@@ -5107,6 +5169,11 @@
 		"parentLink": "↑ 이전 수준 ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "통지하다"
+			}
+		},
 		"common": {
 			"cancel": "취소",
 			"create": "만들다",

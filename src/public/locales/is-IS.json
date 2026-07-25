@@ -191,6 +191,8 @@
 			"terminateIdle": "Hætt við ${label}: Ekkert stdall úttak í meira en ${minutes} mínútur (aðgerðalaus í ${idleSec} sekúndur, keyrðu ${elapsed})",
 			"terminateDuration": "Lokað ${label}: tók meira en Grunnurlínutíma varðhundsins (kemur ${elapsed}, Grunnurlína ${baseline}, efri mörk ${limit})",
 			"terminateDurationDefault": "Lokað ${label}: Tími sem varið er umfram sjálfgefna lengdarmörk varðhunda (í gangi ${elapsed}, efri mörk ${limit})",
+			"sleepDetected": "Kerfisdvala greinist (varðhundsbilið hoppar ${gap} ≥ ${limit}), ${label} er hætt og tilbúið til að keyra aftur (${elapsed} hefur verið keyrt)",
+			"sleepRetry": "Kerfissvefnistruflun, endurkeyrðu ${label} (${attempt} tími)",
 			"terminateMarker": "[Ástæða uppsagnar: ${reason}]",
 			"terminateUnknown": "LOKAÐ ${label}: próf truflað",
 			"terminateSpeculative": "Lokað ${label}: Bjartsýn háð mistókst, snemmbúin stöðvun aflýst",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "Leita að skilaboðum...",
+				"aria-label": "Leitaðu að skilaboðum",
 				"noResults": "Engar niðurstöður",
 				"failed": "Leit mistókst",
 				"scopeGroup": "Þessi hópur",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "Ég",
 			"messageEditSave": "Vista",
 			"messageEditCancel": "Hætta við",
+			"messageEditArea": {
+				"aria-label": "Breyta skilaboðum"
+			},
 			"feedbackReasonPrompt": "Ástæða fyrir höfnun (valfrjálst)",
 			"feedbackReasonInput": {
 				"placeholder": "Ástæða fyrir höfnun (valfrjálst)"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "Loka"
 			},
+			"memberBar": {
+				"aria-label": "Meðlimalisti"
+			},
+			"channelBar": {
+				"aria-label": "Rásalisti"
+			},
+			"serverBar": {
+				"aria-label": "Hópar og siglingar"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} síður"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "Nýr tungumálakóði, eins og en-UK"
 				},
+				"renameLocale": {
+					"aria-label": "Endurnefna tungumálakóða"
+				},
+				"localeRemove": {
+					"aria-label": "Eyða tungumálaútgáfu"
+				},
 				"avatarUrl": {
 					"placeholder": "Vefslóð avatarmyndar, eða hlaðið upp skránni hér að neðan"
 				},
+				"avatarUpload": {
+					"aria-label": "Sækja avatar mynd"
+				},
 				"bannerUrl": {
 					"placeholder": "Vefslóð borðamyndar, eða hlaðið upp skránni hér að neðan"
+				},
+				"bannerUpload": {
+					"aria-label": "Hladdu upp borðamynd"
 				},
 				"tag": {
 					"placeholder": "Bæta við eftir að hafa slegið inn merkið"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "Notandasnið",
 				"close": {
 					"title": "Lokaðu gagnakorti"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(breytt)",
 			"mentionEmpty": "(engir samsvarandi meðlimir)",
+			"mentionSuggest": {
+				"aria-label": "nefna frambjóðendur"
+			},
 			"clickToLoad": "Smelltu til að hlaða",
 			"send": "Senda"
 		},
@@ -3670,39 +3701,47 @@
 			}
 		},
 		"nav": {
+			"side": {
+				"aria-label": "félagslegur flakk"
+			},
+			"mobile": {
+				"aria-label": "Félagsleg botnleiðsögn"
+			},
 			"feed": {
 				"aria-label": "Heim",
-				"textContent": "Heim"
+				"title": "forsíðu"
 			},
 			"explore": {
 				"aria-label": "Kanna",
-				"textContent": "Kanna"
+				"title": "kanna"
 			},
 			"notifications": {
 				"aria-label": "Innhólf",
-				"textContent": "Innhólf"
+				"title": "Innhólf"
 			},
 			"saved": {
 				"aria-label": "Vistað",
-				"textContent": "Vistað"
+				"title": "safna"
 			},
 			"drafts": {
 				"aria-label": "Drög",
-				"textContent": "Drög"
+				"title": "uppkastskassa"
 			},
 			"profile": {
 				"aria-label": "Ég",
-				"textContent": "Ég"
+				"title": "minn"
 			},
 			"videos": {
 				"aria-label": "Stutt myndbönd",
-				"textContent": "Stutt myndbönd"
+				"title": "stutt myndband"
 			},
 			"live": {
 				"aria-label": "Beint",
-				"textContent": "Beint"
+				"title": "streymi í beinni"
 			},
-			"compose": {}
+			"compose": {
+				"aria-label": "Skrifaðu uppfærslur"
+			}
 		},
 		"settings": {
 			"title": "Samfélagsstillingar",
@@ -3755,6 +3794,7 @@
 		"composer": {
 			"placeholder": "Hvað ertu að hugsa um? Styðjið Markdown (font mállýska), sláðu inn @ til að nefna",
 			"locale": "Efnismál",
+			"aria-label": "Skrifaðu uppfærslur",
 			"publish": "Birta",
 			"saveDraft": "Vista drög",
 			"fab": {
@@ -3783,6 +3823,9 @@
 			"emojiButton": {
 				"title": "Broskarlar",
 				"aria-label": "Broskarlar"
+			},
+			"mentionSuggest": {
+				"aria-label": "nefna frambjóðendur"
 			},
 			"mediaButton": {
 				"title": "Bættu við miðli",
@@ -3832,6 +3875,9 @@
 				}
 			},
 			"newPosts": "Það eru nýjar fréttir, smelltu til að skoða",
+			"tabsLabel": {
+				"aria-label": "Flokkun upplýsingaflæðis"
+			},
 			"tabLatest": "Nýjast",
 			"tabForYou": "Fyrir þig",
 			"repostedBy": "${author} endurtísti",
@@ -3843,6 +3889,9 @@
 			"replayDivider": "Búin að lesa, flettu aftur",
 			"trending": {
 				"title": "Vinsælt efni",
+				"tabsLabel": {
+					"aria-label": "Vinsælt efnissvið"
+				},
 				"postCount": {
 					"title": "${n} færslur"
 				},
@@ -4014,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Leitaðu að uppfærslum, notendum eða #topics (að lágmarki 2 orð)",
+			"aria-label": "Leitaðu að uppfærslum, notendum eða efni",
 			"open": {
 				"aria-label": "Leita"
 			},
@@ -4031,14 +4081,23 @@
 			"filterAuthor": {
 				"placeholder": "Höfundur"
 			},
+			"filterMedia": {
+				"aria-label": "gerð fjölmiðla"
+			},
 			"filterMediaAll": "Allir fjölmiðlar",
 			"filterMediaImage": "Myndir",
 			"filterMediaVideo": "Myndbönd",
 			"filterTag": {
 				"placeholder": "#Merki"
 			},
+			"filterSort": {
+				"aria-label": "flokka"
+			},
 			"sortRecent": "Nýjast",
 			"sortPopular": "Vinsælt",
+			"filterScope": {
+				"aria-label": "Leitarsvið"
+			},
 			"scopeLocal": "Staðvært",
 			"scopeNearby": "Nálægt"
 		},
@@ -4125,6 +4184,9 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "félagsleg hliðarstika"
+			},
 			"suggested": "Mæli með athygli"
 		},
 		"groupRef": {
@@ -5107,6 +5169,11 @@
 		"parentLink": "↑ Fyrra stig ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "tilkynna"
+			}
+		},
 		"common": {
 			"cancel": "Hætta við",
 			"create": "Búa til",

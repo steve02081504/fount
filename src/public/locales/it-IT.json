@@ -191,6 +191,8 @@
 			"terminateIdle": "Interrotto ${label}: nessun output stdall per più di ${minutes} minuti (inattivo per ${idleSec} secondi, esegui ${elapsed})",
 			"terminateDuration": "Terminato ${label}: ha impiegato più del tempo di riferimento del watchdog (in esecuzione ${elapsed}, riferimento ${baseline}, limite superiore ${limit})",
 			"terminateDurationDefault": "Terminato ${label}: il tempo trascorso supera il limite di durata del watchdog predefinito (in esecuzione ${elapsed}, limite superiore ${limit})",
+			"sleepDetected": "È stata rilevata l'ibernazione del sistema (l'intervallo del watchdog salta ${gap} ≥ ${limit}), ${label} è stato interrotto ed è pronto per essere eseguito nuovamente (${elapsed} è stato eseguito)",
+			"sleepRetry": "Interruzione della sospensione del sistema, esegui nuovamente ${label} (${attempt} volta)",
 			"terminateMarker": "[Motivo della risoluzione: ${reason}]",
 			"terminateUnknown": "TERMINATO ${label}: test interrotto",
 			"terminateSpeculative": "Terminato ${label}: la dipendenza speculativa non è passata, interruzione anticipata annullata",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "Cerca messaggi...",
+				"aria-label": "Cerca messaggi",
 				"noResults": "Nessun risultato",
 				"failed": "Ricerca fallita",
 				"scopeGroup": "Questo gruppo",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "IO",
 			"messageEditSave": "Salva",
 			"messageEditCancel": "Annulla",
+			"messageEditArea": {
+				"aria-label": "Modifica messaggio"
+			},
 			"feedbackReasonPrompt": "Motivo della non mi piace (facoltativo)",
 			"feedbackReasonInput": {
 				"placeholder": "Motivo della non mi piace (facoltativo)"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "Vicino"
 			},
+			"memberBar": {
+				"aria-label": "Elenco dei membri"
+			},
+			"channelBar": {
+				"aria-label": "Elenco canali"
+			},
+			"serverBar": {
+				"aria-label": "Gruppi e Navigazione"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} pagine"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "Nuovo codice lingua, come en-UK"
 				},
+				"renameLocale": {
+					"aria-label": "Rinominare il codice della lingua"
+				},
+				"localeRemove": {
+					"aria-label": "Elimina la versione della lingua"
+				},
 				"avatarUrl": {
 					"placeholder": "URL dell'immagine avatar o carica il file di seguito"
 				},
+				"avatarUpload": {
+					"aria-label": "Carica l'immagine dell'avatar"
+				},
 				"bannerUrl": {
 					"placeholder": "URL dell'immagine banner o carica il file di seguito"
+				},
+				"bannerUpload": {
+					"aria-label": "Carica l'immagine del banner"
 				},
 				"tag": {
 					"placeholder": "Aggiungi dopo aver inserito il tag"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "Profilo utente",
 				"close": {
 					"title": "Chiudi profilo"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(modificato)",
 			"mentionEmpty": "(nessun membro corrispondente)",
+			"mentionSuggest": {
+				"aria-label": "menzionare i candidati"
+			},
 			"clickToLoad": "Fare clic per caricare",
 			"send": "Inviare"
 		},
@@ -3670,39 +3701,47 @@
 			}
 		},
 		"nav": {
+			"side": {
+				"aria-label": "navigazione sociale"
+			},
+			"mobile": {
+				"aria-label": "Navigazione sociale inferiore"
+			},
 			"feed": {
 				"aria-label": "prima pagina",
-				"textContent": "prima pagina"
+				"title": "prima pagina"
 			},
 			"explore": {
 				"aria-label": "esplorare",
-				"textContent": "esplorare"
+				"title": "esplorare"
 			},
 			"notifications": {
 				"aria-label": "Posta in arrivo",
-				"textContent": "Posta in arrivo"
+				"title": "Posta in arrivo"
 			},
 			"saved": {
 				"aria-label": "raccogliere",
-				"textContent": "raccogliere"
+				"title": "raccogliere"
 			},
 			"drafts": {
 				"aria-label": "scatola per bozze",
-				"textContent": "scatola per bozze"
+				"title": "scatola per bozze"
 			},
 			"profile": {
 				"aria-label": "mio",
-				"textContent": "mio"
+				"title": "mio"
 			},
 			"videos": {
 				"aria-label": "breve video",
-				"textContent": "breve video"
+				"title": "breve video"
 			},
 			"live": {
 				"aria-label": "streaming in diretta",
-				"textContent": "streaming in diretta"
+				"title": "streaming in diretta"
 			},
-			"compose": {}
+			"compose": {
+				"aria-label": "Scrivi aggiornamenti"
+			}
 		},
 		"settings": {
 			"title": "impostazioni sociali",
@@ -3755,6 +3794,7 @@
 		"composer": {
 			"placeholder": "A cosa stai pensando? Supporta Markdown (dialetto dei caratteri), inserisci @ per menzionare",
 			"locale": "linguaggio dei contenuti",
+			"aria-label": "Scrivi aggiornamenti",
 			"publish": "pubblicazione",
 			"saveDraft": "salva bozza",
 			"fab": {
@@ -3783,6 +3823,9 @@
 			"emojiButton": {
 				"title": "espressione",
 				"aria-label": "espressione"
+			},
+			"mentionSuggest": {
+				"aria-label": "menzionare i candidati"
 			},
 			"mediaButton": {
 				"title": "Aggiungi contenuti multimediali",
@@ -3832,6 +3875,9 @@
 				}
 			},
 			"newPosts": "Ci sono nuove novità, clicca per vedere",
+			"tabsLabel": {
+				"aria-label": "Ordinamento del flusso di informazioni"
+			},
 			"tabLatest": "aggiornato",
 			"tabForYou": "consigliare",
 			"repostedBy": "${author} ha ripubblicato",
@@ -3843,6 +3889,9 @@
 			"replayDivider": "Sei tutto preso: ricomincia da capo",
 			"trending": {
 				"title": "Tendenza",
+				"tabsLabel": {
+					"aria-label": "Gamma di argomenti popolari"
+				},
 				"postCount": {
 					"title": "${n} post"
 				},
@@ -4014,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Cerca post, utenti o #argomenti (minimo 2 parole)",
+			"aria-label": "Cerca aggiornamenti, utenti o argomenti",
 			"open": {
 				"aria-label": "Ricerca"
 			},
@@ -4031,14 +4081,23 @@
 			"filterAuthor": {
 				"placeholder": "Autore"
 			},
+			"filterMedia": {
+				"aria-label": "tipo di supporto"
+			},
 			"filterMediaAll": "Tutti i media",
 			"filterMediaImage": "Immagini",
 			"filterMediaVideo": "Video",
 			"filterTag": {
 				"placeholder": "#Etichetta"
 			},
+			"filterSort": {
+				"aria-label": "ordinare"
+			},
 			"sortRecent": "Ultimo",
 			"sortPopular": "Popolare",
+			"filterScope": {
+				"aria-label": "Ambito di ricerca"
+			},
 			"scopeLocal": "Questo dispositivo",
 			"scopeNearby": "Nelle vicinanze"
 		},
@@ -4125,6 +4184,9 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "barra laterale sociale"
+			},
 			"suggested": "Segue suggerito"
 		},
 		"groupRef": {
@@ -5107,6 +5169,11 @@
 		"parentLink": "↑ Livello precedente ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "avvisare"
+			}
+		},
 		"common": {
 			"cancel": "Annulla",
 			"create": "Creare",

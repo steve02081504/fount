@@ -186,6 +186,8 @@
 			"terminateIdle": "Aborted ${label}: no stdout/stderr for ${minutes} min (idle ${idleSec}s, elapsed ${elapsed})",
 			"terminateDuration": "Aborted ${label}: exceeded watchdog baseline (elapsed ${elapsed}, baseline ${baseline}, limit ${limit})",
 			"terminateDurationDefault": "Aborted ${label}: exceeded default watchdog limit (elapsed ${elapsed}, limit ${limit})",
+			"sleepDetected": "System hibernation is detected (watchdog interval jumps ${gap} ≥ ${limit}), ${label} is aborted and ready to be rerun (${elapsed} has been run)",
+			"sleepRetry": "System sleep interruption, rerun ${label} (${attempt} time)",
 			"terminateMarker": "[Termination reason: ${reason}]",
 			"terminateUnknown": "TERMINATED ${label}: test interrupted",
 			"terminateSpeculative": "Aborted ${label}: speculative dependency not passed — early stop cancelled",
@@ -1626,6 +1628,7 @@
 			},
 			"search": {
 				"placeholder": "Search for messages…",
+				"aria-label": "Search messages",
 				"noResults": "No results",
 				"failed": "Search failed",
 				"scopeGroup": "This group",
@@ -1761,6 +1764,9 @@
 			"meAuthor": "I",
 			"messageEditSave": "Save",
 			"messageEditCancel": "Cancel",
+			"messageEditArea": {
+				"aria-label": "Edit message"
+			},
 			"feedbackReasonPrompt": "Reason for dislike (optional)",
 			"feedbackReasonInput": {
 				"placeholder": "Reason for dislike (optional)"
@@ -2076,6 +2082,15 @@
 			"ariaClose": {
 				"aria-label": "Close"
 			},
+			"memberBar": {
+				"aria-label": "Member list"
+			},
+			"channelBar": {
+				"aria-label": "Channel list"
+			},
+			"serverBar": {
+				"aria-label": "Groups and Navigation"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} pages"
 			},
@@ -2184,6 +2199,12 @@
 				"newLocale": {
 					"placeholder": "New language code, such as en-UK"
 				},
+				"renameLocale": {
+					"aria-label": "Rename language code"
+				},
+				"localeRemove": {
+					"aria-label": "Delete language version"
+				},
 				"avatarUrl": {
 					"placeholder": "Avatar image URL, or upload file below"
 				},
@@ -2210,6 +2231,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "User profile",
 				"close": {
 					"title": "Close profile"
 				},
@@ -2388,6 +2410,9 @@
 			},
 			"editedLabel": "(edited)",
 			"mentionEmpty": "(no matching members)",
+			"mentionSuggest": {
+				"aria-label": "mention candidates"
+			},
 			"clickToLoad": "Click to load",
 			"send": "Send"
 		},
@@ -3796,6 +3821,9 @@
 				"title": "Emoji",
 				"aria-label": "Emoji"
 			},
+			"mentionSuggest": {
+				"aria-label": "mention candidates"
+			},
 			"mediaButton": {
 				"title": "Add media",
 				"aria-label": "Add media"
@@ -3858,6 +3886,9 @@
 			"replayDivider": "You're all caught up — start over",
 			"trending": {
 				"title": "Trending",
+				"tabsLabel": {
+					"aria-label": "Popular topic range"
+				},
 				"postCount": {
 					"title": "${n} posts"
 				},
@@ -4029,6 +4060,7 @@
 		},
 		"search": {
 			"placeholder": "Search for posts, users or #topics (minimum 2 words)",
+			"aria-label": "Search for updates, users or topics",
 			"open": {
 				"aria-label": "Search"
 			},
@@ -4046,14 +4078,23 @@
 			"filterAuthor": {
 				"placeholder": "Author"
 			},
+			"filterMedia": {
+				"aria-label": "media type"
+			},
 			"filterMediaAll": "All media",
 			"filterMediaImage": "Images",
 			"filterMediaVideo": "Videos",
 			"filterTag": {
 				"placeholder": "#Label"
 			},
+			"filterSort": {
+				"aria-label": "sort"
+			},
 			"sortRecent": "Latest",
 			"sortPopular": "Popular",
+			"filterScope": {
+				"aria-label": "Search scope"
+			},
 			"scopeLocal": "This device",
 			"scopeNearby": "Nearby"
 		},
@@ -4140,6 +4181,9 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "social sidebar"
+			},
 			"suggested": "Suggested follows"
 		},
 		"groupRef": {
@@ -5122,6 +5166,11 @@
 		"parentLink": "↑ Previous level ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "notify"
+			}
+		},
 		"common": {
 			"cancel": "Cancel",
 			"create": "Create",

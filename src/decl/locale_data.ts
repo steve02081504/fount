@@ -173,6 +173,8 @@ export type LocaleData = {
 			terminateIdle: string
 			terminateDuration: string
 			terminateDurationDefault: string
+			sleepDetected: string
+			sleepRetry: string
 			terminateMarker: string
 			terminateUnknown: string
 			terminateSpeculative: string
@@ -911,7 +913,9 @@ export type LocaleData = {
 			multipleMembers: string
 		}
 		emoji: {
-			pickerTitle: string
+			pickerTitle: {
+				'aria-label': string
+			}
 			categoryFace: string
 			categoryGesture: string
 			categoryHeart: string
@@ -1595,6 +1599,7 @@ export type LocaleData = {
 			}
 			search: {
 				placeholder: string
+				'aria-label': string
 				noResults: string
 				failed: string
 				scopeGroup: string
@@ -1730,6 +1735,9 @@ export type LocaleData = {
 			meAuthor: string
 			messageEditSave: string
 			messageEditCancel: string
+			messageEditArea: {
+				'aria-label': string
+			}
 			feedbackReasonPrompt: string
 			feedbackReasonInput: {
 				placeholder: string
@@ -2045,6 +2053,15 @@ export type LocaleData = {
 			ariaClose: {
 				'aria-label': string
 			}
+			memberBar: {
+				'aria-label': string
+			}
+			channelBar: {
+				'aria-label': string
+			}
+			serverBar: {
+				'aria-label': string
+			}
 			membersDigestPagesTitle: {
 				title: string
 			}
@@ -2140,10 +2157,14 @@ export type LocaleData = {
 				unsavedHint: string
 				tagsLabel: string
 				tagAdd: string
-				tagRemove: string
+				tagRemove: {
+					'aria-label': string
+				}
 				linksLabel: string
 				linkAdd: string
-				linkRemove: string
+				linkRemove: {
+					'aria-label': string
+				}
 				handleLabel: string
 				handleHint: string
 				resetFromPart: string
@@ -2153,11 +2174,23 @@ export type LocaleData = {
 				newLocale: {
 					placeholder: string
 				}
+				renameLocale: {
+					'aria-label': string
+				}
+				localeRemove: {
+					'aria-label': string
+				}
 				avatarUrl: {
 					placeholder: string
 				}
+				avatarUpload: {
+					'aria-label': string
+				}
 				bannerUrl: {
 					placeholder: string
+				}
+				bannerUpload: {
+					'aria-label': string
 				}
 				tag: {
 					placeholder: string
@@ -2173,6 +2206,7 @@ export type LocaleData = {
 				}
 			}
 			profilePopup: {
+				'aria-label': string
 				close: {
 					title: string
 				}
@@ -2351,6 +2385,9 @@ export type LocaleData = {
 			}
 			editedLabel: string
 			mentionEmpty: string
+			mentionSuggest: {
+				'aria-label': string
+			}
 			clickToLoad: string
 			send: string
 		}
@@ -3634,14 +3671,47 @@ export type LocaleData = {
 			}
 		}
 		nav: {
-			feed: string
-			explore: string
-			notifications: string
-			saved: string
-			drafts: string
-			profile: string
-			videos: string
-			live: string
+			side: {
+				'aria-label': string
+			}
+			mobile: {
+				'aria-label': string
+			}
+			feed: {
+				'aria-label': string
+				title: string
+			}
+			explore: {
+				'aria-label': string
+				title: string
+			}
+			notifications: {
+				'aria-label': string
+				title: string
+			}
+			saved: {
+				'aria-label': string
+				title: string
+			}
+			drafts: {
+				'aria-label': string
+				title: string
+			}
+			profile: {
+				'aria-label': string
+				title: string
+			}
+			videos: {
+				'aria-label': string
+				title: string
+			}
+			live: {
+				'aria-label': string
+				title: string
+			}
+			compose: {
+				'aria-label': string
+			}
 		}
 		settings: {
 			title: string
@@ -3693,6 +3763,10 @@ export type LocaleData = {
 		}
 		composer: {
 			placeholder: string
+			locale: {
+				'aria-label': string
+			}
+			'aria-label': string
 			publish: string
 			saveDraft: string
 			fab: {
@@ -3720,6 +3794,9 @@ export type LocaleData = {
 			scheduleSuccess: string
 			emojiButton: {
 				title: string
+				'aria-label': string
+			}
+			mentionSuggest: {
 				'aria-label': string
 			}
 			mediaButton: {
@@ -3758,11 +3835,21 @@ export type LocaleData = {
 				except: {
 					placeholder: string
 				}
+				'aria-label': string
 			}
 		}
 		feed: {
-			refresh: string
+			refresh: {
+				'aria-label': string
+				title: string
+				dataset: {
+					tip: string
+				}
+			}
 			newPosts: string
+			tabsLabel: {
+				'aria-label': string
+			}
 			tabLatest: string
 			tabForYou: string
 			repostedBy: string
@@ -3774,12 +3861,16 @@ export type LocaleData = {
 			replayDivider: string
 			trending: {
 				title: string
+				tabsLabel: {
+					'aria-label': string
+				}
 				postCount: {
 					title: string
 				}
 				scopeLocal: string
 				scopeNearby: string
 				empty: string
+				'aria-label': string
 			}
 		}
 		explore: {
@@ -3809,6 +3900,9 @@ export type LocaleData = {
 			}
 			createFolderPrompt: string
 			pickFolderTitle: string
+			folderSelect: {
+				'aria-label': string
+			}
 			confirm: string
 			cancel: string
 			remove: string
@@ -3943,11 +4037,14 @@ export type LocaleData = {
 		}
 		search: {
 			placeholder: string
+			'aria-label': string
 			open: {
 				'aria-label': string
 			}
 			submit: string
-			clear: string
+			clear: {
+				'aria-label': string
+			}
 			empty: string
 			tooShort: string
 			usersTitle: string
@@ -3960,14 +4057,23 @@ export type LocaleData = {
 			filterAuthor: {
 				placeholder: string
 			}
+			filterMedia: {
+				'aria-label': string
+			}
 			filterMediaAll: string
 			filterMediaImage: string
 			filterMediaVideo: string
 			filterTag: {
 				placeholder: string
 			}
+			filterSort: {
+				'aria-label': string
+			}
 			sortRecent: string
 			sortPopular: string
+			filterScope: {
+				'aria-label': string
+			}
 			scopeLocal: string
 			scopeNearby: string
 		}
@@ -4054,12 +4160,18 @@ export type LocaleData = {
 			}
 		}
 		aside: {
+			region: {
+				'aria-label': string
+			}
 			suggested: string
 		}
 		groupRef: {
 			linking: string
 			clear: string
 			pick: string
+			select: {
+				'aria-label': string
+			}
 		}
 		inbox: {
 			filtersLabel: {
@@ -4096,13 +4208,6 @@ export type LocaleData = {
 			quoting: string
 			clear: string
 			viewOriginal: string
-		}
-		a11y: {
-			linkGroupSelect: string
-			postVisibility: string
-			postLang: string
-			trendingHashtags: string
-			saveFolderSelect: string
 		}
 		translate: {
 			label: string
@@ -5042,6 +5147,11 @@ export type LocaleData = {
 		parentLink: string
 	}
 	util: {
+		toast: {
+			container: {
+				'aria-label': string
+			}
+		}
 		common: {
 			cancel: string
 			create: string
@@ -5529,6 +5639,8 @@ export type LocaleKeyParams = {
 	'fountConsole.test.runningSuite.expected': { expected: string | number }
 	'fountConsole.test.selectedSuites': { selected: string | number; total: string | number }
 	'fountConsole.test.silentPassedMany': { count: string | number }
+	'fountConsole.test.sleepDetected': { elapsed: string | number; gap: string | number; label: string | number; limit: string | number }
+	'fountConsole.test.sleepRetry': { attempt: string | number; label: string | number }
 	'fountConsole.test.speculativeDiscard': { deps: string | number; label: string | number }
 	'fountConsole.test.state.artifacts': { path: string | number }
 	'fountConsole.test.statePathFinal': { path: string | number }

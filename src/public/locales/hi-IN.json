@@ -191,6 +191,8 @@
 			"terminateIdle": "निरस्त ${label}: ${minutes} मिनट से अधिक के लिए कोई stdall आउटपुट नहीं (${idleSec} सेकंड के लिए निष्क्रिय, ${elapsed} चलाएँ)",
 			"terminateDuration": "समाप्त ${label}: वॉचडॉग बेसलाइन समय से अधिक लिया गया (${elapsed} चल रहा है, बेसलाइन ${baseline}, ऊपरी सीमा ${limit})",
 			"terminateDurationDefault": "समाप्त ${label}: बिताया गया समय डिफ़ॉल्ट वॉचडॉग अवधि सीमा से अधिक है (${elapsed} चल रहा है, ऊपरी सीमा ${limit})",
+			"sleepDetected": "सिस्टम हाइबरनेशन का पता चला है (वॉचडॉग अंतराल कूदता है ${gap} ≥ ${limit}), ${label} निरस्त कर दिया गया है और फिर से चलाने के लिए तैयार है (${elapsed} चलाया गया है)",
+			"sleepRetry": "सिस्टम नींद में रुकावट, पुन: चलाएँ ${label} (${attempt} समय)",
 			"terminateMarker": "[समाप्ति का कारण: ${reason}]",
 			"terminateUnknown": "समाप्त ${label}: परीक्षण बाधित",
 			"terminateSpeculative": "समाप्त ${label}: सट्टा निर्भरता समाप्त नहीं हुई है, प्रारंभिक रोक रद्द कर दी गई है",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "संदेश खोजें…",
+				"aria-label": "संदेश खोजें",
 				"noResults": "कोई परिणाम नहीं",
 				"failed": "खोजें विफल",
 				"scopeGroup": "यह समूह",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "मैं",
 			"messageEditSave": "सहेजें",
 			"messageEditCancel": "रद्द करें",
+			"messageEditArea": {
+				"aria-label": "संदेश संपादित करें"
+			},
 			"feedbackReasonPrompt": "अस्वीकृति का कारण (वैकल्पिक)",
 			"feedbackReasonInput": {
 				"placeholder": "अस्वीकृति का कारण (वैकल्पिक)"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "बंद करें"
 			},
+			"memberBar": {
+				"aria-label": "सदस्य सूची"
+			},
+			"channelBar": {
+				"aria-label": "चैनल की सूची"
+			},
+			"serverBar": {
+				"aria-label": "समूह और नेविगेशन"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} पेज"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "नया भाषा कोड, जैसे एन-यूके"
 				},
+				"renameLocale": {
+					"aria-label": "भाषा कोड का नाम बदलें"
+				},
+				"localeRemove": {
+					"aria-label": "भाषा संस्करण हटाएँ"
+				},
 				"avatarUrl": {
 					"placeholder": "अवतार छवि URL, या नीचे फ़ाइल अपलोड करें"
 				},
+				"avatarUpload": {
+					"aria-label": "अवतार छवि अपलोड करें"
+				},
 				"bannerUrl": {
 					"placeholder": "झंडे छवि यूआरएल, या नीचे फ़ाइल अपलोड करें"
+				},
+				"bannerUpload": {
+					"aria-label": "बैनर छवि अपलोड करें"
 				},
 				"tag": {
 					"placeholder": "टैग डालने के बाद जोड़ें"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "उपयोगकर्ता रूपरेखा",
 				"close": {
 					"title": "डेटा कार्ड बंद करें"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(संपादित)",
 			"mentionEmpty": "(कोई मिलान वाले सदस्य नहीं)",
+			"mentionSuggest": {
+				"aria-label": "उम्मीदवारों का उल्लेख करें"
+			},
 			"clickToLoad": "लोड करने के लिए क्लिक करें",
 			"send": "भेजें"
 		},
@@ -3670,39 +3701,47 @@
 			}
 		},
 		"nav": {
+			"side": {
+				"aria-label": "सामाजिक नेविगेशन"
+			},
+			"mobile": {
+				"aria-label": "सामाजिक निचला नेविगेशन"
+			},
 			"feed": {
 				"aria-label": "होम",
-				"textContent": "होम"
+				"title": "मुखपृष्ठ"
 			},
 			"explore": {
 				"aria-label": "एक्सप्लोर",
-				"textContent": "एक्सप्लोर"
+				"title": "अन्वेषण करना"
 			},
 			"notifications": {
 				"aria-label": "इनबॉक्स",
-				"textContent": "इनबॉक्स"
+				"title": "इनबॉक्स"
 			},
 			"saved": {
 				"aria-label": "सेव किए",
-				"textContent": "सेव किए"
+				"title": "इकट्ठा करना"
 			},
 			"drafts": {
 				"aria-label": "ड्राफ़्ट",
-				"textContent": "ड्राफ़्ट"
+				"title": "ड्राफ्ट बॉक्स"
 			},
 			"profile": {
 				"aria-label": "मेरा",
-				"textContent": "मेरा"
+				"title": "मेरा"
 			},
 			"videos": {
 				"aria-label": "शॉर्ट वीडियो",
-				"textContent": "शॉर्ट वीडियो"
+				"title": "लघु वीडियो"
 			},
 			"live": {
 				"aria-label": "लाइव",
-				"textContent": "लाइव"
+				"title": "सीधा आ रहा है"
 			},
-			"compose": {}
+			"compose": {
+				"aria-label": "अद्यतन लिखें"
+			}
 		},
 		"settings": {
 			"title": "सोशल सेटिंग",
@@ -3755,6 +3794,7 @@
 		"composer": {
 			"placeholder": "आप किस बारे में सोच रहे हैं? मार्कडाउन (फ़ॉउंट बोली) का समर्थन करें, उल्लेख करने के लिए @ दर्ज करें",
 			"locale": "सामग्री भाषा",
+			"aria-label": "अद्यतन लिखें",
 			"publish": "प्रकाशित करें",
 			"saveDraft": "ड्राफ़्ट सहेजें",
 			"fab": {
@@ -3783,6 +3823,9 @@
 			"emojiButton": {
 				"title": "इमोजी",
 				"aria-label": "इमोजी"
+			},
+			"mentionSuggest": {
+				"aria-label": "उम्मीदवारों का उल्लेख करें"
 			},
 			"mediaButton": {
 				"title": "मीडिया जोड़ें",
@@ -3832,6 +3875,9 @@
 				}
 			},
 			"newPosts": "नई खबर है, देखने के लिए क्लिक करें",
+			"tabsLabel": {
+				"aria-label": "सूचना प्रवाह छँटाई"
+			},
 			"tabLatest": "नवीनतम",
 			"tabForYou": "आपके लिए",
 			"repostedBy": "${author} ने रीट्वीट किया",
@@ -3843,6 +3889,9 @@
 			"replayDivider": "पढ़ना समाप्त करें, पुनः ब्राउज़ करें",
 			"trending": {
 				"title": "ट्रेंडिंग विषय",
+				"tabsLabel": {
+					"aria-label": "लोकप्रिय विषय श्रेणी"
+				},
 				"postCount": {
 					"title": "${n} पोस्ट"
 				},
@@ -4014,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "अपडेट, उपयोगकर्ता या #विषय खोजें (न्यूनतम 2 शब्द)",
+			"aria-label": "अपडेट, उपयोगकर्ता या विषय खोजें",
 			"open": {
 				"aria-label": "खोजें"
 			},
@@ -4031,14 +4081,23 @@
 			"filterAuthor": {
 				"placeholder": "लेखक"
 			},
+			"filterMedia": {
+				"aria-label": "मीडिया प्रकार"
+			},
 			"filterMediaAll": "सभी मीडिया",
 			"filterMediaImage": "छवि",
 			"filterMediaVideo": "वीडियो",
 			"filterTag": {
 				"placeholder": "#लेबल"
 			},
+			"filterSort": {
+				"aria-label": "क्रम से लगाना"
+			},
 			"sortRecent": "नवीनतम",
 			"sortPopular": "ट्रेंडिंग",
+			"filterScope": {
+				"aria-label": "खोज का दायरा"
+			},
 			"scopeLocal": "इस डिवाइस",
 			"scopeNearby": "आस-पास"
 		},
@@ -4125,6 +4184,9 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "सामाजिक साइडबार"
+			},
 			"suggested": "फ़ॉलो सुझाव करें"
 		},
 		"groupRef": {
@@ -5107,6 +5169,11 @@
 		"parentLink": "↑ पिछला स्तर ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "सूचित करें"
+			}
+		},
 		"common": {
 			"cancel": "रद्द करें",
 			"create": "बनाएं",

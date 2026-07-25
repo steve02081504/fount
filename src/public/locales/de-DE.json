@@ -191,6 +191,8 @@
 			"terminateIdle": "Abgebrochen ${label}: über ${minutes} Min. ohne stdall-Ausgabe (Leerlauf ${idleSec} s, Laufzeit ${elapsed})",
 			"terminateDuration": "Abgebrochen ${label}: Laufzeit über Watchdog-Baseline (Laufzeit ${elapsed}, Baseline ${baseline}, Limit ${limit})",
 			"terminateDurationDefault": "Abgebrochen ${label}: Laufzeit über Standard-Watchdog-Limit (Laufzeit ${elapsed}, Limit ${limit})",
+			"sleepDetected": "Der Ruhezustand des Systems wurde erkannt (Watchdog-Intervall springt auf ${gap} ≥ ${limit}), ${label} wird abgebrochen und kann erneut ausgeführt werden (${elapsed} wurde ausgeführt).",
+			"sleepRetry": "Unterbrechung des Systemschlafs, ${label} erneut ausführen (${attempt} Zeit)",
 			"terminateMarker": "[Abbruchgrund: ${reason}]",
 			"terminateUnknown": "Abgebrochen ${label}: Test unterbrochen",
 			"terminateSpeculative": "Abgebrochen ${label}: spekulative Abhängigkeit nicht bestanden, Frühstopp aufgehoben",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "Nach Nachrichten suchen…",
+				"aria-label": "Nachrichten durchsuchen",
 				"noResults": "Keine Ergebnisse",
 				"failed": "Die Suche ist fehlgeschlagen",
 				"scopeGroup": "Diese Gruppe",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "ICH",
 			"messageEditSave": "Speichern",
 			"messageEditCancel": "Abbrechen",
+			"messageEditArea": {
+				"aria-label": "Nachricht bearbeiten"
+			},
 			"feedbackReasonPrompt": "Grund für die Ablehnung (optional)",
 			"feedbackReasonInput": {
 				"placeholder": "Grund für die Ablehnung (optional)"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "Schließen"
 			},
+			"memberBar": {
+				"aria-label": "Mitgliederliste"
+			},
+			"channelBar": {
+				"aria-label": "Kanalliste"
+			},
+			"serverBar": {
+				"aria-label": "Gruppen und Navigation"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} Seiten"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "Neuer Sprachcode, z. B. en-UK"
 				},
+				"renameLocale": {
+					"aria-label": "Sprachcode umbenennen"
+				},
+				"localeRemove": {
+					"aria-label": "Sprachversion löschen"
+				},
 				"avatarUrl": {
 					"placeholder": "Avatar-Bild-URL oder laden Sie die Datei unten hoch"
 				},
+				"avatarUpload": {
+					"aria-label": "Avatarbild hochladen"
+				},
 				"bannerUrl": {
 					"placeholder": "Bannerbild-URL oder laden Sie die Datei unten hoch"
+				},
+				"bannerUpload": {
+					"aria-label": "Bannerbild hochladen"
 				},
 				"tag": {
 					"placeholder": "Nach Eingabe des Tags hinzufügen"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "Benutzerprofil",
 				"close": {
 					"title": "Datenkarte Weniger anzeigen"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(bearbeitet)",
 			"mentionEmpty": "(keine passenden Mitglieder)",
+			"mentionSuggest": {
+				"aria-label": "Kandidaten erwähnen"
+			},
 			"clickToLoad": "Klicken Sie zum Laden",
 			"send": "Schicken"
 		},
@@ -3670,39 +3701,47 @@
 			}
 		},
 		"nav": {
+			"side": {
+				"aria-label": "soziale Navigation"
+			},
+			"mobile": {
+				"aria-label": "Soziale Navigation unten"
+			},
 			"feed": {
 				"aria-label": "Start",
-				"textContent": "Start"
+				"title": "Titelseite"
 			},
 			"explore": {
 				"aria-label": "Entdecken",
-				"textContent": "Entdecken"
+				"title": "erkunden"
 			},
 			"notifications": {
 				"aria-label": "Posteingang",
-				"textContent": "Posteingang"
+				"title": "Posteingang"
 			},
 			"saved": {
 				"aria-label": "Gespeichert",
-				"textContent": "Gespeichert"
+				"title": "sammeln"
 			},
 			"drafts": {
 				"aria-label": "Entwürfe",
-				"textContent": "Entwürfe"
+				"title": "Entwurfsbox"
 			},
 			"profile": {
 				"aria-label": "Profil",
-				"textContent": "Profil"
+				"title": "meins"
 			},
 			"videos": {
 				"aria-label": "Kurzvideos",
-				"textContent": "Kurzvideos"
+				"title": "kurzes Video"
 			},
 			"live": {
 				"aria-label": "Live",
-				"textContent": "Live"
+				"title": "Live-Streaming"
 			},
-			"compose": {}
+			"compose": {
+				"aria-label": "Schreiben Sie Updates"
+			}
 		},
 		"settings": {
 			"title": "Social-Einstellungen",
@@ -3755,6 +3794,7 @@
 		"composer": {
 			"placeholder": "Woran denken Sie? Markdown (fount-Dialekt) wird unterstützt, @ zum Erwähnen",
 			"locale": "Inhaltssprache",
+			"aria-label": "Schreiben Sie Updates",
 			"publish": "Veröffentlichen",
 			"saveDraft": "Entwurf speichern",
 			"fab": {
@@ -3783,6 +3823,9 @@
 			"emojiButton": {
 				"title": "Emoji",
 				"aria-label": "Emoji"
+			},
+			"mentionSuggest": {
+				"aria-label": "Kandidaten erwähnen"
 			},
 			"mediaButton": {
 				"title": "Medien hinzufügen",
@@ -3832,6 +3875,9 @@
 				}
 			},
 			"newPosts": "Neue Beiträge – zum Anzeigen tippen",
+			"tabsLabel": {
+				"aria-label": "Sortierung des Informationsflusses"
+			},
 			"tabLatest": "Neueste",
 			"tabForYou": "Für Sie",
 			"repostedBy": "${author} hat retweetet",
@@ -3843,6 +3889,9 @@
 			"replayDivider": "Alles gelesen – von vorn",
 			"trending": {
 				"title": "Trend-Themen",
+				"tabsLabel": {
+					"aria-label": "Beliebter Themenbereich"
+				},
 				"postCount": {
 					"title": "${n} Beiträge"
 				},
@@ -4014,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Suchen Sie nach Updates, Benutzern oder #Themen (mindestens 2 Wörter)",
+			"aria-label": "Suchen Sie nach Updates, Benutzern oder Themen",
 			"open": {
 				"aria-label": "Suchen"
 			},
@@ -4031,14 +4081,23 @@
 			"filterAuthor": {
 				"placeholder": "Autor"
 			},
+			"filterMedia": {
+				"aria-label": "Medientyp"
+			},
 			"filterMediaAll": "Alle Medien",
 			"filterMediaImage": "Bild",
 			"filterMediaVideo": "Video",
 			"filterTag": {
 				"placeholder": "#Etikett"
 			},
+			"filterSort": {
+				"aria-label": "Sortieren"
+			},
 			"sortRecent": "Neueste",
 			"sortPopular": "Beliebt",
+			"filterScope": {
+				"aria-label": "Suchbereich"
+			},
 			"scopeLocal": "Lokal",
 			"scopeNearby": "In der Nähe"
 		},
@@ -4125,6 +4184,9 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "soziale Seitenleiste"
+			},
 			"suggested": "Empfohlene Konten"
 		},
 		"groupRef": {
@@ -5107,6 +5169,11 @@
 		"parentLink": "↑ Übergeordnetes Verzeichnis ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "benachrichtigen"
+			}
+		},
 		"common": {
 			"cancel": "Abbrechen",
 			"create": "Erstellen",

@@ -191,6 +191,8 @@
 			"terminateIdle": "${label} afgebroken: meer dan ${minutes} min geen stdall-output (inactief ${idleSec}s, gelopen ${elapsed})",
 			"terminateDuration": "${label} afgebroken: duur overschrijdt watchdog-baseline (gelopen ${elapsed}, baseline ${baseline}, limiet ${limit})",
 			"terminateDurationDefault": "${label} afgebroken: duur overschrijdt standaard watchdog-limiet (gelopen ${elapsed}, limiet ${limit})",
+			"sleepDetected": "Systeemslaapstand wordt gedetecteerd (watchdog-interval springt ${gap} ≥ ${limit}), ${label} wordt afgebroken en is klaar om opnieuw te worden uitgevoerd (${elapsed} is uitgevoerd)",
+			"sleepRetry": "Systeemslaaponderbreking, herhaal ${label} (${attempt} tijd)",
 			"terminateMarker": "[Afbraakreden: ${reason}]",
 			"terminateUnknown": "${label} afgebroken: test onderbroken",
 			"terminateSpeculative": "${label} afgebroken: speculatieve afhankelijkheid niet geslaagd, vroegtijdig stoppen",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "Zoeken naar berichten…",
+				"aria-label": "Berichten zoeken",
 				"noResults": "Geen resultaten",
 				"failed": "Zoeken mislukt",
 				"scopeGroup": "Deze groep",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "I",
 			"messageEditSave": "Opslaan",
 			"messageEditCancel": "Annuleren",
+			"messageEditArea": {
+				"aria-label": "Bericht bewerken"
+			},
 			"feedbackReasonPrompt": "Reden van afkeuring (optioneel)",
 			"feedbackReasonInput": {
 				"placeholder": "Reden van afkeuring (optioneel)"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "Sluiten"
 			},
+			"memberBar": {
+				"aria-label": "Ledenlijst"
+			},
+			"channelBar": {
+				"aria-label": "Kanaallijst"
+			},
+			"serverBar": {
+				"aria-label": "Groepen en navigatie"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} pagina's"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "Nieuwe taalcode, zoals en-UK"
 				},
+				"renameLocale": {
+					"aria-label": "Taalcode hernoemen"
+				},
+				"localeRemove": {
+					"aria-label": "Taalversie verwijderen"
+				},
 				"avatarUrl": {
 					"placeholder": "URL van de avatarafbeelding, of upload het bestand hieronder"
 				},
+				"avatarUpload": {
+					"aria-label": "Avatarafbeelding uploaden"
+				},
 				"bannerUrl": {
 					"placeholder": "URL van de bannerafbeelding of upload het bestand hieronder"
+				},
+				"bannerUpload": {
+					"aria-label": "Bannerafbeelding uploaden"
 				},
 				"tag": {
 					"placeholder": "Voeg toe na het invoeren van de tag"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "Gebruikersprofiel",
 				"close": {
 					"title": "Sluit de datakaart"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(bewerkt)",
 			"mentionEmpty": "(geen overeenkomende leden)",
+			"mentionSuggest": {
+				"aria-label": "kandidaten noemen"
+			},
 			"clickToLoad": "Klik om te laden",
 			"send": "Versturen"
 		},
@@ -3670,39 +3701,47 @@
 			}
 		},
 		"nav": {
+			"side": {
+				"aria-label": "sociale navigatie"
+			},
+			"mobile": {
+				"aria-label": "Sociale bodemnavigatie"
+			},
 			"feed": {
 				"aria-label": "Start",
-				"textContent": "Start"
+				"title": "voorpagina"
 			},
 			"explore": {
 				"aria-label": "Ontdekken",
-				"textContent": "Ontdekken"
+				"title": "ontdekken"
 			},
 			"notifications": {
 				"aria-label": "Meldingen",
-				"textContent": "Meldingen"
+				"title": "Postvak IN"
 			},
 			"saved": {
 				"aria-label": "Opgeslagen",
-				"textContent": "Opgeslagen"
+				"title": "verzamelen"
 			},
 			"drafts": {
 				"aria-label": "Concepten",
-				"textContent": "Concepten"
+				"title": "ontwerpdoos"
 			},
 			"profile": {
 				"aria-label": "Profiel",
-				"textContent": "Profiel"
+				"title": "de mijne"
 			},
 			"videos": {
 				"aria-label": "korte video",
-				"textContent": "korte video"
+				"title": "korte video"
 			},
 			"live": {
 				"aria-label": "Live",
-				"textContent": "Live"
+				"title": "livestreaming"
 			},
-			"compose": {}
+			"compose": {
+				"aria-label": "Schrijf updates"
+			}
 		},
 		"settings": {
 			"title": "Sociale instellingen",
@@ -3755,6 +3794,7 @@
 		"composer": {
 			"placeholder": "Waar denk je aan? Markdown (fount-dialect) wordt ondersteund — typ @ om te vermelden",
 			"locale": "inhoud taal",
+			"aria-label": "Schrijf updates",
 			"publish": "Plaatsen",
 			"saveDraft": "Concept opslaan",
 			"fab": {
@@ -3783,6 +3823,9 @@
 			"emojiButton": {
 				"title": "Emoji",
 				"aria-label": "Emoji"
+			},
+			"mentionSuggest": {
+				"aria-label": "kandidaten noemen"
 			},
 			"mediaButton": {
 				"title": "Media toevoegen",
@@ -3832,6 +3875,9 @@
 				}
 			},
 			"newPosts": "Er is nieuw nieuws, klik om te bekijken",
+			"tabsLabel": {
+				"aria-label": "Sorteren van informatiestromen"
+			},
 			"tabLatest": "Nieuwste",
 			"tabForYou": "Voor jou",
 			"repostedBy": "${author} heeft geretweet",
@@ -3843,6 +3889,9 @@
 			"replayDivider": "Klaar met lezen, blader opnieuw",
 			"trending": {
 				"title": "Trending",
+				"tabsLabel": {
+					"aria-label": "Populair onderwerpbereik"
+				},
 				"postCount": {
 					"title": "${n} berichten"
 				},
@@ -4014,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Zoek naar updates, gebruikers of #topics (minimaal 2 woorden)",
+			"aria-label": "Zoek naar updates, gebruikers of onderwerpen",
 			"open": {
 				"aria-label": "Zoeken"
 			},
@@ -4031,14 +4081,23 @@
 			"filterAuthor": {
 				"placeholder": "Auteur"
 			},
+			"filterMedia": {
+				"aria-label": "mediatype"
+			},
 			"filterMediaAll": "Alle media",
 			"filterMediaImage": "Afbeelding",
 			"filterMediaVideo": "Video",
 			"filterTag": {
 				"placeholder": "#Label"
 			},
+			"filterSort": {
+				"aria-label": "soort"
+			},
 			"sortRecent": "Nieuwste",
 			"sortPopular": "Populair",
+			"filterScope": {
+				"aria-label": "Zoekbereik"
+			},
 			"scopeLocal": "Lokaal",
 			"scopeNearby": "In de buurt"
 		},
@@ -4125,6 +4184,9 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "sociale zijbalk"
+			},
 			"suggested": "Voor jou aandacht"
 		},
 		"groupRef": {
@@ -5107,6 +5169,11 @@
 		"parentLink": "↑ Vorig niveau ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "op de hoogte stellen"
+			}
+		},
 		"common": {
 			"cancel": "Annuleren",
 			"create": "Creëren",

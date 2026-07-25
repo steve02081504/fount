@@ -191,6 +191,8 @@
 			"terminateIdle": "⏹️ ${label}：＞${minutes}m 🚫`stdall`（💤 ${idleSec}s，🏃 ${elapsed}）",
 			"terminateDuration": "⏹️ ${label}：＞`watchdog` 📏（🏃 ${elapsed}，📏 ${baseline}，🔝 ${limit}）",
 			"terminateDurationDefault": "⏹️ ${label}：＞⭐`watchdog`🔝（🏃 ${elapsed}，🔝 ${limit}）",
+			"sleepDetected": "检测到系统休眠（看门狗间隔跳变 ${gap} ≥ ${limit}），中止 ${label} 并准备重跑（已运行 ${elapsed}）",
+			"sleepRetry": "系统休眠中断，重跑 ${label}（第 ${attempt} 次）",
 			"terminateMarker": "[⏹️: ${reason}]",
 			"terminateUnknown": "⏹️ ${label}：🧪🛑",
 			"terminateSpeculative": "⏹️ ${label}：🔮🔗🚫，❌⏹",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "🔍💬…",
+				"aria-label": "搜索消息",
 				"noResults": "🔍📭",
 				"failed": "🔍❌",
 				"scopeGroup": "👥📍",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "🫵",
 			"messageEditSave": "💾",
 			"messageEditCancel": "↩️",
+			"messageEditArea": {
+				"aria-label": "编辑消息"
+			},
 			"feedbackReasonPrompt": "👎📝（🔘）",
 			"feedbackReasonInput": {
 				"placeholder": "👎📝（🔘）"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "✖️"
 			},
+			"memberBar": {
+				"aria-label": "成员列表"
+			},
+			"channelBar": {
+				"aria-label": "频道列表"
+			},
+			"serverBar": {
+				"aria-label": "群组与导航"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} 📄"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "🆕🗣️💻 🇬🇧"
 				},
+				"renameLocale": {
+					"aria-label": "重命名语言代码"
+				},
+				"localeRemove": {
+					"aria-label": "删除语言版本"
+				},
 				"avatarUrl": {
 					"placeholder": "🖼️🔗 ⬇️⬆️📁"
 				},
+				"avatarUpload": {
+					"aria-label": "上传头像图片"
+				},
 				"bannerUrl": {
 					"placeholder": "🖼️🔗 ⬇️⬆️📁"
+				},
+				"bannerUpload": {
+					"aria-label": "上传横幅图片"
 				},
 				"tag": {
 					"placeholder": "📤🏷️ ➕"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "用户资料",
 				"close": {
 					"title": "✖️👤📋"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "（✏️）",
 			"mentionEmpty": "（🤷📭👤）",
+			"mentionSuggest": {
+				"aria-label": "提及候选"
+			},
 			"clickToLoad": "👆📥",
 			"send": "📤"
 		},
@@ -3670,39 +3701,47 @@
 			}
 		},
 		"nav": {
+			"side": {
+				"aria-label": "社交导航"
+			},
+			"mobile": {
+				"aria-label": "社交底部导航"
+			},
 			"feed": {
 				"aria-label": "🏠",
-				"textContent": "🏠"
+				"title": "首页"
 			},
 			"explore": {
 				"aria-label": "🔭",
-				"textContent": "🔭"
+				"title": "探索"
 			},
 			"notifications": {
 				"aria-label": "📬",
-				"textContent": "📬"
+				"title": "收件箱"
 			},
 			"saved": {
 				"aria-label": "⭐",
-				"textContent": "⭐"
+				"title": "收藏"
 			},
 			"drafts": {
 				"aria-label": "📝📦",
-				"textContent": "📝📦"
+				"title": "草稿箱"
 			},
 			"profile": {
 				"aria-label": "🫵",
-				"textContent": "🫵"
+				"title": "我的"
 			},
 			"videos": {
 				"aria-label": "🎬",
-				"textContent": "🎬"
+				"title": "短视频"
 			},
 			"live": {
 				"aria-label": "📡🔴",
-				"textContent": "📡🔴"
+				"title": "直播"
 			},
-			"compose": {}
+			"compose": {
+				"aria-label": "写动态"
+			}
 		},
 		"settings": {
 			"title": "🏛️⚙️",
@@ -3755,6 +3794,7 @@
 		"composer": {
 			"placeholder": "💭… ✅📝⛲🗣️ @️⃣✅",
 			"locale": "📄🗣️",
+			"aria-label": "写动态",
 			"publish": "📤",
 			"saveDraft": "💾📝",
 			"fab": {
@@ -3783,6 +3823,9 @@
 			"emojiButton": {
 				"title": "😀",
 				"aria-label": "😀"
+			},
+			"mentionSuggest": {
+				"aria-label": "提及候选"
 			},
 			"mediaButton": {
 				"title": "➕🖼️",
@@ -3832,6 +3875,9 @@
 				}
 			},
 			"newPosts": "🆕📰 · 👆👀",
+			"tabsLabel": {
+				"aria-label": "信息流排序"
+			},
 			"tabLatest": "🆕",
 			"tabForYou": "⭐",
 			"repostedBy": "${author} ↪️",
@@ -3843,6 +3889,9 @@
 			"replayDivider": "✅👀 · 🔁👀",
 			"trending": {
 				"title": "🔥#️⃣",
+				"tabsLabel": {
+					"aria-label": "热门话题范围"
+				},
 				"postCount": {
 					"title": "${n}📄"
 				},
@@ -4014,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "🔍📰/👤/#️⃣（⬆️2🔤）",
+			"aria-label": "搜索动态、用户或话题",
 			"open": {
 				"aria-label": "🔍"
 			},
@@ -4031,14 +4081,23 @@
 			"filterAuthor": {
 				"placeholder": "✍️"
 			},
+			"filterMedia": {
+				"aria-label": "媒体类型"
+			},
 			"filterMediaAll": "✅🖼️",
 			"filterMediaImage": "🖼️",
 			"filterMediaVideo": "🎬",
 			"filterTag": {
 				"placeholder": "#️⃣🏷️"
 			},
+			"filterSort": {
+				"aria-label": "排序"
+			},
 			"sortRecent": "🆕",
 			"sortPopular": "🔥",
+			"filterScope": {
+				"aria-label": "搜索范围"
+			},
 			"scopeLocal": "💻",
 			"scopeNearby": "📍🧭"
 		},
@@ -4125,6 +4184,9 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "社交侧栏"
+			},
 			"suggested": "⭐➕👀"
 		},
 		"groupRef": {
@@ -5107,6 +5169,11 @@
 		"parentLink": "🆙 /"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "通知"
+			}
+		},
 		"common": {
 			"cancel": "↩️",
 			"create": "➕",

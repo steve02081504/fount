@@ -191,6 +191,8 @@
 			"terminateIdle": "${label} abortado: Nenhuma saída padrão por mais de ${minutes} minutos (inativo por ${idleSec} segundos, execute ${elapsed})",
 			"terminateDuration": "${label} encerrado: demorou mais do que o tempo de linha de base do watchdog (executando ${elapsed}, linha de base ${baseline}, limite superior ${limit})",
 			"terminateDurationDefault": "${label} encerrado: o tempo gasto excede o limite de duração do watchdog padrão (executando ${elapsed}, limite superior ${limit})",
+			"sleepDetected": "A hibernação do sistema é detectada (intervalo de watchdog salta ${gap} ≥ ${limit}), ${label} é abortado e está pronto para ser executado novamente (${elapsed} foi executado)",
+			"sleepRetry": "Interrupção do sono do sistema, reexecutar ${label} (${attempt} time)",
 			"terminateMarker": "[Motivo da terminação: ${reason}]",
 			"terminateUnknown": "TERMINADO ${label}: teste interrompido",
 			"terminateSpeculative": "Terminado ${label}: A dependência especulativa não passou, parada antecipada cancelada",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "Pesquisar for messages…",
+				"aria-label": "Pesquisar mensagens",
 				"noResults": "Nenhum resultado",
 				"failed": "Falha em Search",
 				"scopeGroup": "Este grupo",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "Eu",
 			"messageEditSave": "Guardar",
 			"messageEditCancel": "Cancelar",
+			"messageEditArea": {
+				"aria-label": "Editar mensagem"
+			},
 			"feedbackReasonPrompt": "Motivo da reprovação (opcional)",
 			"feedbackReasonInput": {
 				"placeholder": "Motivo da reprovação (opcional)"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "Encerramento"
 			},
+			"memberBar": {
+				"aria-label": "Lista de membros"
+			},
+			"channelBar": {
+				"aria-label": "Lista de canais"
+			},
+			"serverBar": {
+				"aria-label": "Grupos e navegação"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} páginas"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "Novo código de idioma, como en-UK"
 				},
+				"renameLocale": {
+					"aria-label": "Renomear código de idioma"
+				},
+				"localeRemove": {
+					"aria-label": "Excluir versão do idioma"
+				},
 				"avatarUrl": {
 					"placeholder": "URL da imagem do avatar, ou carregue o ficheiro abaixo"
 				},
+				"avatarUpload": {
+					"aria-label": "Carregar imagem de avatar"
+				},
 				"bannerUrl": {
 					"placeholder": "URL da imagem do banner, ou carregue o ficheiro abaixo"
+				},
+				"bannerUpload": {
+					"aria-label": "Carregar imagem do banner"
 				},
 				"tag": {
 					"placeholder": "Adicionar after entering tag"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "Perfil de usuário",
 				"close": {
 					"title": "Fechar cartão de dados"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(editado)",
 			"mentionEmpty": "(sem membros correspondentes)",
+			"mentionSuggest": {
+				"aria-label": "mencionar candidatos"
+			},
 			"clickToLoad": "Clique para carregar",
 			"send": "Enviar"
 		},
@@ -3670,39 +3701,47 @@
 			}
 		},
 		"nav": {
+			"side": {
+				"aria-label": "navegação social"
+			},
+			"mobile": {
+				"aria-label": "Navegação social inferior"
+			},
 			"feed": {
 				"aria-label": "Início",
-				"textContent": "Início"
+				"title": "primeira página"
 			},
 			"explore": {
 				"aria-label": "Explorar",
-				"textContent": "Explorar"
+				"title": "explorar"
 			},
 			"notifications": {
 				"aria-label": "Caixa de entrada",
-				"textContent": "Caixa de entrada"
+				"title": "Caixa de entrada"
 			},
 			"saved": {
 				"aria-label": "Guardados",
-				"textContent": "Guardados"
+				"title": "coletar"
 			},
 			"drafts": {
 				"aria-label": "Rascunhos",
-				"textContent": "Rascunhos"
+				"title": "caixa de rascunho"
 			},
 			"profile": {
 				"aria-label": "Eu",
-				"textContent": "Eu"
+				"title": "meu"
 			},
 			"videos": {
 				"aria-label": "Vídeos curtos",
-				"textContent": "Vídeos curtos"
+				"title": "vídeo curto"
 			},
 			"live": {
 				"aria-label": "Em direto",
-				"textContent": "Em direto"
+				"title": "transmissão ao vivo"
 			},
-			"compose": {}
+			"compose": {
+				"aria-label": "Escreva atualizações"
+			}
 		},
 		"settings": {
 			"title": "Definições sociais",
@@ -3755,6 +3794,7 @@
 		"composer": {
 			"placeholder": "O que está pensando? Suporte Markdown (dialeto fount), digite @ para mencionar",
 			"locale": "Linguagem do conteúdo",
+			"aria-label": "Escreva atualizações",
 			"publish": "Liberar",
 			"saveDraft": "Guardar draft",
 			"fab": {
@@ -3783,6 +3823,9 @@
 			"emojiButton": {
 				"title": "Expressão",
 				"aria-label": "Expressão"
+			},
+			"mentionSuggest": {
+				"aria-label": "mencionar candidatos"
 			},
 			"mediaButton": {
 				"title": "Adicionar media",
@@ -3832,6 +3875,9 @@
 				}
 			},
 			"newPosts": "Há novidades, clique para ver",
+			"tabsLabel": {
+				"aria-label": "Classificação do fluxo de informações"
+			},
 			"tabLatest": "Atualizado",
 			"tabForYou": "Recomendar",
 			"repostedBy": "${author} retuitado",
@@ -3843,6 +3889,9 @@
 			"replayDivider": "Terminada a leitura, navegue novamente",
 			"trending": {
 				"title": "Tópicos quentes",
+				"tabsLabel": {
+					"aria-label": "Intervalo de tópicos populares"
+				},
 				"postCount": {
 					"title": "${n} postagens"
 				},
@@ -4014,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Pesquisar publicações, utilizadores ou #tópicos (mínimo 2 palavras)",
+			"aria-label": "Pesquise atualizações, usuários ou tópicos",
 			"open": {
 				"aria-label": "Procurar"
 			},
@@ -4031,14 +4081,23 @@
 			"filterAuthor": {
 				"placeholder": "Autor"
 			},
+			"filterMedia": {
+				"aria-label": "tipo de mídia"
+			},
 			"filterMediaAll": "Todas as mídias",
 			"filterMediaImage": "Foto",
 			"filterMediaVideo": "Vídeo",
 			"filterTag": {
 				"placeholder": "#Rótulo"
 			},
+			"filterSort": {
+				"aria-label": "organizar"
+			},
 			"sortRecent": "Atualizado",
 			"sortPopular": "Popular",
+			"filterScope": {
+				"aria-label": "Escopo da pesquisa"
+			},
 			"scopeLocal": "Máquina local",
 			"scopeNearby": "Próximo"
 		},
@@ -4125,6 +4184,9 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "barra lateral social"
+			},
 			"suggested": "Recomendo atenção"
 		},
 		"groupRef": {
@@ -5107,6 +5169,11 @@
 		"parentLink": "↑ Nível anterior ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "notificar"
+			}
+		},
 		"common": {
 			"cancel": "Cancelar",
 			"create": "Criar",

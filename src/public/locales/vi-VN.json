@@ -191,6 +191,8 @@
 			"terminateIdle": "Đã dừng ${label}: không có stdall trong hơn ${minutes} phút (nhàn rỗi ${idleSec}s, đã chạy ${elapsed})",
 			"terminateDuration": "Đã dừng ${label}: vượt thời gian cơ sở watchdog (đã chạy ${elapsed}, cơ sở ${baseline}, giới hạn ${limit})",
 			"terminateDurationDefault": "Đã dừng ${label}: vượt giới hạn watchdog mặc định (đã chạy ${elapsed}, giới hạn ${limit})",
+			"sleepDetected": "Đã phát hiện thấy trạng thái ngủ đông của hệ thống (khoảng thời gian theo dõi nhảy ${gap} ≥ ${limit}), ${label} bị hủy bỏ và sẵn sàng chạy lại (${elapsed} đã được chạy)",
+			"sleepRetry": "Hệ thống bị gián đoạn khi ngủ, chạy lại ${label} (${attempt} time)",
 			"terminateMarker": "[Lý do dừng: ${reason}]",
 			"terminateUnknown": "ĐÃ DỪNG ${label}: kiểm thử bị gián đoạn",
 			"terminateSpeculative": "Đã dừng ${label}: phụ thuộc đầu cơ chưa đạt, hủy dừng sớm",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "Tìm kiếm tin nhắn…",
+				"aria-label": "Tìm kiếm tin nhắn",
 				"noResults": "Không có kết quả",
 				"failed": "Tìm kiếm không thành công",
 				"scopeGroup": "Nhóm này",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "TÔI",
 			"messageEditSave": "Cứu",
 			"messageEditCancel": "Hủy bỏ",
+			"messageEditArea": {
+				"aria-label": "Chỉnh sửa tin nhắn"
+			},
 			"feedbackReasonPrompt": "Lý do từ chối (tùy chọn)",
 			"feedbackReasonInput": {
 				"placeholder": "Lý do từ chối (tùy chọn)"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "đóng cửa"
 			},
+			"memberBar": {
+				"aria-label": "Danh sách thành viên"
+			},
+			"channelBar": {
+				"aria-label": "Danh sách kênh"
+			},
+			"serverBar": {
+				"aria-label": "Nhóm và Điều hướng"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} trang"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "Mã ngôn ngữ mới, chẳng hạn như en-UK"
 				},
+				"renameLocale": {
+					"aria-label": "Đổi tên mã ngôn ngữ"
+				},
+				"localeRemove": {
+					"aria-label": "Xóa phiên bản ngôn ngữ"
+				},
 				"avatarUrl": {
 					"placeholder": "URL ảnh đại diện hoặc upload file bên dưới"
 				},
+				"avatarUpload": {
+					"aria-label": "Tải ảnh đại diện lên"
+				},
 				"bannerUrl": {
 					"placeholder": "URL hình ảnh biểu ngữ hoặc tải lên tệp bên dưới"
+				},
+				"bannerUpload": {
+					"aria-label": "Tải lên hình ảnh biểu ngữ"
 				},
 				"tag": {
 					"placeholder": "Thêm sau khi nhập thẻ"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "Hồ sơ người dùng",
 				"close": {
 					"title": "Đóng thẻ hồ sơ"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(đã chỉnh sửa)",
 			"mentionEmpty": "(không có thành viên phù hợp)",
+			"mentionSuggest": {
+				"aria-label": "đề cập đến ứng viên"
+			},
 			"clickToLoad": "Bấm để tải",
 			"send": "Gửi"
 		},
@@ -3670,39 +3701,47 @@
 			}
 		},
 		"nav": {
+			"side": {
+				"aria-label": "điều hướng xã hội"
+			},
+			"mobile": {
+				"aria-label": "Điều hướng dưới cùng của mạng xã hội"
+			},
 			"feed": {
 				"aria-label": "Trang chủ",
-				"textContent": "Trang chủ"
+				"title": "trang đầu"
 			},
 			"explore": {
 				"aria-label": "Khám phá",
-				"textContent": "Khám phá"
+				"title": "khám phá"
 			},
 			"notifications": {
 				"aria-label": "Hộp thư",
-				"textContent": "Hộp thư"
+				"title": "Hộp thư đến"
 			},
 			"saved": {
 				"aria-label": "Đã lưu",
-				"textContent": "Đã lưu"
+				"title": "sưu tầm"
 			},
 			"drafts": {
 				"aria-label": "Nháp",
-				"textContent": "Nháp"
+				"title": "hộp dự thảo"
 			},
 			"profile": {
 				"aria-label": "Của tôi",
-				"textContent": "Của tôi"
+				"title": "của tôi"
 			},
 			"videos": {
 				"aria-label": "Video ngắn",
-				"textContent": "Video ngắn"
+				"title": "đoạn video ngắn"
 			},
 			"live": {
 				"aria-label": "Trực tiếp",
-				"textContent": "Trực tiếp"
+				"title": "phát trực tiếp"
 			},
-			"compose": {}
+			"compose": {
+				"aria-label": "Viết cập nhật"
+			}
 		},
 		"settings": {
 			"title": "Cài đặt mạng xã hội",
@@ -3755,6 +3794,7 @@
 		"composer": {
 			"placeholder": "Bạn đang nghĩ về điều gì? Hỗ trợ Markdown (phương ngữ nguồn), nhập @ để đề cập",
 			"locale": "ngôn ngữ nội dung",
+			"aria-label": "Viết cập nhật",
 			"publish": "giải phóng",
 			"saveDraft": "lưu bản nháp",
 			"fab": {
@@ -3783,6 +3823,9 @@
 			"emojiButton": {
 				"title": "sự biểu lộ",
 				"aria-label": "sự biểu lộ"
+			},
+			"mentionSuggest": {
+				"aria-label": "đề cập đến ứng viên"
 			},
 			"mediaButton": {
 				"title": "Thêm phương tiện",
@@ -3832,6 +3875,9 @@
 				}
 			},
 			"newPosts": "Có tin mới, bấm vào để xem",
+			"tabsLabel": {
+				"aria-label": "Phân loại luồng thông tin"
+			},
 			"tabLatest": "cập nhật",
 			"tabForYou": "gợi ý",
 			"repostedBy": "${author} đã tweet lại",
@@ -3843,6 +3889,9 @@
 			"replayDivider": "Đọc xong, duyệt lại",
 			"trending": {
 				"title": "chủ đề nóng",
+				"tabsLabel": {
+					"aria-label": "Phạm vi chủ đề phổ biến"
+				},
 				"postCount": {
 					"title": "${n} bài đăng"
 				},
@@ -4014,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "Tìm bài đăng, người dùng hoặc #chủ đề (ít nhất 2 ký tự)",
+			"aria-label": "Tìm kiếm thông tin cập nhật, người dùng hoặc chủ đề",
 			"open": {
 				"aria-label": "tìm kiếm"
 			},
@@ -4031,14 +4081,23 @@
 			"filterAuthor": {
 				"placeholder": "tác giả"
 			},
+			"filterMedia": {
+				"aria-label": "loại phương tiện truyền thông"
+			},
 			"filterMediaAll": "Tất cả phương tiện truyền thông",
 			"filterMediaImage": "hình ảnh",
 			"filterMediaVideo": "băng hình",
 			"filterTag": {
 				"placeholder": "#Nhãn"
 			},
+			"filterSort": {
+				"aria-label": "loại"
+			},
 			"sortRecent": "cập nhật",
 			"sortPopular": "Phổ biến",
+			"filterScope": {
+				"aria-label": "Phạm vi tìm kiếm"
+			},
 			"scopeLocal": "máy cục bộ",
 			"scopeNearby": "gần đó"
 		},
@@ -4125,6 +4184,9 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "thanh bên xã hội"
+			},
 			"suggested": "Đề nghị chú ý"
 		},
 		"groupRef": {
@@ -5107,6 +5169,11 @@
 		"parentLink": "↑ Cấp độ trước đó ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "thông báo"
+			}
+		},
 		"common": {
 			"cancel": "Hủy bỏ",
 			"create": "tạo nên",

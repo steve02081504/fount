@@ -191,6 +191,8 @@
 			"terminateIdle": "تم إحباط ${label}: لا يوجد إخراج قياسي لأكثر من ${minutes} دقيقة (خمول لمدة ${idleSec} ثانية، تشغيل ${elapsed})",
 			"terminateDuration": "تم إغلاق ${label}: استغرق أكثر من وقت خط الأساس للمراقبة (تشغيل ${elapsed}، خط الأساس ${baseline}، الحد الأعلى ${limit})",
 			"terminateDurationDefault": "تم الإنهاء ${label}: يتجاوز الوقت المستغرق الحد الأقصى لمدة المراقبة الافتراضية (تشغيل ${elapsed}، الحد الأعلى ${limit})",
+			"sleepDetected": "تم اكتشاف حالة إسبات النظام (يقفز الفاصل الزمني للمراقبة ${gap} ≥ ${limit})، وتم إحباط ${label} وأصبح جاهزًا لإعادة التشغيل (تم تشغيل ${elapsed})",
+			"sleepRetry": "انقطاع سكون النظام، أعد تشغيل ${label} (وقت ${attempt})",
 			"terminateMarker": "[سبب الإنهاء: ${reason}]",
 			"terminateUnknown": "تم إغلاق ${label}: تمت مقاطعة الاختبار",
 			"terminateSpeculative": "تم إغلاق ${label}: لم ينته اعتماد المضاربة، وتم إلغاء الإيقاف المبكر",
@@ -1631,6 +1633,7 @@
 			},
 			"search": {
 				"placeholder": "البحث عن الرسائل...",
+				"aria-label": "بحث في الرسائل",
 				"noResults": "لا توجد نتائج",
 				"failed": "فشل البحث",
 				"scopeGroup": "هذه المجموعة",
@@ -1766,6 +1769,9 @@
 			"meAuthor": "أنا",
 			"messageEditSave": "حفظ",
 			"messageEditCancel": "إلغاء",
+			"messageEditArea": {
+				"aria-label": "تحرير الرسالة"
+			},
 			"feedbackReasonPrompt": "سبب الرفض (اختياري)",
 			"feedbackReasonInput": {
 				"placeholder": "سبب الرفض (اختياري)"
@@ -2081,6 +2087,15 @@
 			"ariaClose": {
 				"aria-label": "إغلاق"
 			},
+			"memberBar": {
+				"aria-label": "قائمة الأعضاء"
+			},
+			"channelBar": {
+				"aria-label": "قائمة القنوات"
+			},
+			"serverBar": {
+				"aria-label": "المجموعات والملاحة"
+			},
 			"membersDigestPagesTitle": {
 				"title": "${expected}\n${pages} صفحة"
 			},
@@ -2189,11 +2204,23 @@
 				"newLocale": {
 					"placeholder": "رمز لغة جديد، مثل en-UK"
 				},
+				"renameLocale": {
+					"aria-label": "إعادة تسمية رمز اللغة"
+				},
+				"localeRemove": {
+					"aria-label": "حذف نسخة اللغة"
+				},
 				"avatarUrl": {
 					"placeholder": "عنوان URL للصورة الرمزية، أو قم بتحميل الملف أدناه"
 				},
+				"avatarUpload": {
+					"aria-label": "تحميل الصورة الرمزية"
+				},
 				"bannerUrl": {
 					"placeholder": "عنوان URL لصورة البانر، أو قم بتحميل الملف أدناه"
+				},
+				"bannerUpload": {
+					"aria-label": "تحميل صورة البانر"
 				},
 				"tag": {
 					"placeholder": "أضف بعد إدخال العلامة"
@@ -2209,6 +2236,7 @@
 				}
 			},
 			"profilePopup": {
+				"aria-label": "ملف تعريف المستخدم",
 				"close": {
 					"title": "إغلاق بطاقة البيانات"
 				},
@@ -2387,6 +2415,9 @@
 			},
 			"editedLabel": "(تحرير)",
 			"mentionEmpty": "(لا يوجد أعضاء متطابقين)",
+			"mentionSuggest": {
+				"aria-label": "أذكر المرشحين"
+			},
 			"clickToLoad": "انقر للتحميل",
 			"send": "إرسال"
 		},
@@ -3670,39 +3701,47 @@
 			}
 		},
 		"nav": {
+			"side": {
+				"aria-label": "الملاحة الاجتماعية"
+			},
+			"mobile": {
+				"aria-label": "التنقل السفلي الاجتماعي"
+			},
 			"feed": {
 				"aria-label": "الصفحة الأولى",
-				"textContent": "الصفحة الأولى"
+				"title": "الصفحة الأولى"
 			},
 			"explore": {
 				"aria-label": "استكشاف",
-				"textContent": "استكشاف"
+				"title": "يستكشف"
 			},
 			"notifications": {
 				"aria-label": "البريد الوارد",
-				"textContent": "البريد الوارد"
+				"title": "البريد الوارد"
 			},
 			"saved": {
 				"aria-label": "حفظ",
-				"textContent": "حفظ"
+				"title": "يجمع"
 			},
 			"drafts": {
 				"aria-label": "مربع مشروع",
-				"textContent": "مربع مشروع"
+				"title": "مربع مشروع"
 			},
 			"profile": {
 				"aria-label": "خاصتي",
-				"textContent": "خاصتي"
+				"title": "مِلكِي"
 			},
 			"videos": {
 				"aria-label": "فيديو قصير",
-				"textContent": "فيديو قصير"
+				"title": "فيديو قصير"
 			},
 			"live": {
 				"aria-label": "البث المباشر",
-				"textContent": "البث المباشر"
+				"title": "البث المباشر"
 			},
-			"compose": {}
+			"compose": {
+				"aria-label": "كتابة التحديثات"
+			}
 		},
 		"settings": {
 			"title": "الإعدادات الاجتماعية",
@@ -3755,6 +3794,7 @@
 		"composer": {
 			"placeholder": "ما الذي تفكر فيه؟ دعم تخفيض السعر (اللهجة المحلية)، أدخل @ للإشارة",
 			"locale": "لغة المحتوى",
+			"aria-label": "كتابة التحديثات",
 			"publish": "نشر",
 			"saveDraft": "حفظ المسودة",
 			"fab": {
@@ -3783,6 +3823,9 @@
 			"emojiButton": {
 				"title": "تعبير",
 				"aria-label": "تعبير"
+			},
+			"mentionSuggest": {
+				"aria-label": "أذكر المرشحين"
 			},
 			"mediaButton": {
 				"title": "أضف الوسائط",
@@ -3832,6 +3875,9 @@
 				}
 			},
 			"newPosts": "هناك أخبار جديدة، انقر لعرضها",
+			"tabsLabel": {
+				"aria-label": "فرز تدفق المعلومات"
+			},
 			"tabLatest": "حتى الآن",
 			"tabForYou": "لك",
 			"repostedBy": "أعاد ${author} النشر",
@@ -3843,6 +3889,9 @@
 			"replayDivider": "انتهيت من القراءة، تصفح مرة أخرى",
 			"trending": {
 				"title": "مواضيع ساخنة",
+				"tabsLabel": {
+					"aria-label": "نطاق المواضيع الشعبية"
+				},
 				"postCount": {
 					"title": "${n} مشاركات"
 				},
@@ -4014,6 +4063,7 @@
 		},
 		"search": {
 			"placeholder": "ابحث عن التحديثات أو المستخدمين أو #topics (كلمتان على الأقل)",
+			"aria-label": "البحث عن التحديثات أو المستخدمين أو المواضيع",
 			"open": {
 				"aria-label": "بحث"
 			},
@@ -4031,14 +4081,23 @@
 			"filterAuthor": {
 				"placeholder": "المؤلف"
 			},
+			"filterMedia": {
+				"aria-label": "نوع الوسائط"
+			},
 			"filterMediaAll": "جميع وسائل الإعلام",
 			"filterMediaImage": "صورة",
 			"filterMediaVideo": "فيديو",
 			"filterTag": {
 				"placeholder": "#ملصق"
 			},
+			"filterSort": {
+				"aria-label": "نوع"
+			},
 			"sortRecent": "حتى الآن",
 			"sortPopular": "شائع",
+			"filterScope": {
+				"aria-label": "نطاق البحث"
+			},
 			"scopeLocal": "آلة محلية",
 			"scopeNearby": "قريب"
 		},
@@ -4125,6 +4184,9 @@
 			}
 		},
 		"aside": {
+			"region": {
+				"aria-label": "الشريط الجانبي الاجتماعي"
+			},
 			"suggested": "لك الاهتمام"
 		},
 		"groupRef": {
@@ -5107,6 +5169,11 @@
 		"parentLink": "↑ المستوى السابق ../"
 	},
 	"util": {
+		"toast": {
+			"container": {
+				"aria-label": "يخطر"
+			}
+		},
 		"common": {
 			"cancel": "إلغاء",
 			"create": "إنشاء",
