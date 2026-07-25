@@ -38,7 +38,7 @@ function flightKey(username, groupId, channelId, charname) {
  */
 export async function runVirtualBridgeTrigger(username, groupId, channelId, entry, charAPI, charname) {
 	if (entry.extension?.ingress === 'backfill') return
-	if (entry.role === 'char' || entry.extension?.charId) return
+	if (entry.role === 'char') return
 
 	const session = getVirtualBridgeSession(username, groupId)
 	if (!session) return

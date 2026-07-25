@@ -89,6 +89,27 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 				const { stopBot } = await import('../bot.mjs')
 				await stopBot(ownerUsername, botname)
 			},
+			/**
+			 * iLink Bot 协议无群成员枚举。
+			 * @returns {Promise<never>} 始终抛错
+			 */
+			listMembers: async () => {
+				throw new Error('wechat listMembers: iLink bot API does not support listing members')
+			},
+			/**
+			 * iLink Bot 协议无退群。
+			 * @returns {Promise<never>} 始终抛错
+			 */
+			leaveChat: async () => {
+				throw new Error('wechat leaveChat: iLink bot API does not support leaving chats')
+			},
+			/**
+			 * iLink Bot 协议无邀请链接。
+			 * @returns {Promise<never>} 始终抛错
+			 */
+			createInvite: async () => {
+				throw new Error('wechat createInvite: iLink bot API does not support invite links')
+			},
 		}, {
 			charname: botCharname,
 			/** @returns {Promise<void>} 清理 outbound 与 char 注册表 */

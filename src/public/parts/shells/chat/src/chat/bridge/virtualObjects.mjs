@@ -262,10 +262,11 @@ export function createVirtualBridgeMessage(apiContext, groupId, entry, mentions)
 		async author() {
 			if (!authorHash) return null
 			const { createMember } = await import('../../api/member.mjs')
+			const session = getVirtualBridgeSession(apiContext.username, groupId)
 			return createMember(apiContext, groupId, authorHash, {
 				memberKind: entry.role === 'char' ? 'agent' : 'user',
 				displayName: entry.name || authorHash.slice(64, 72),
-				charname: entry.extension?.charId,
+				charname: entry.role === 'char' ? session?.charname : undefined,
 				extension: entry.extension?.bridge
 					? { bridge: { platformUserId: entry.extension.bridge.platformUserId } }
 					: {},

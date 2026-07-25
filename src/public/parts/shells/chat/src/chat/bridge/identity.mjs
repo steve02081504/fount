@@ -53,6 +53,28 @@ export async function claimOperatorBridgeIdentity(username, platform, platformUs
 }
 
 /**
+ * 将平台 bot 账号绑定到本地 agent entityHash（使 @bot 提及命中 CharUid）。
+ * @param {string} username replica
+ * @param {string} platform 平台
+ * @param {string | number} platformUserId bot 平台用户 ID
+ * @param {string} charname 角色名
+ * @param {string} [displayName] 展示名
+ * @returns {Promise<void>}
+ */
+export async function claimAgentBridgeIdentity(username, platform, platformUserId, charname, displayName = '') {
+	if (isPlaceholderPlatformUserId(platformUserId) || !charname) return
+	const { ensureLocalAgentEntityHash } = await import('../../entity/member.mjs')
+	const entityHash = await ensureLocalAgentEntityHash(username, charname)
+	if (!entityHash) return
+	await bindBridgeIdentity(username, {
+		platform,
+		platformUserId,
+		entityHash,
+		displayName: displayName || charname,
+	})
+}
+
+/**
  * 确定性派生桥接伪 entityHash（128 hex，与真实 entityHash 同构）。
  * @param {string} platform 平台名
  * @param {string | number} platformUserId 平台用户 ID

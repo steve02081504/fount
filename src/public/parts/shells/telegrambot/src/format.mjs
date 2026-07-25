@@ -50,14 +50,195 @@ export function extractStickerIdsFromMarkdown(markdown) {
 }
 
 /**
- * 将 Telegram 消息文本和实体转换为 AI 方言 Markdown。
+ * UTF-16 码元长度（Telegram entity offset 用；JS string.length 即 UTF-16）。
+ * @param {string} text 文本
+ * @returns {number} UTF-16 码元数
+ */
+function utf16Length(text) {
+	return text.length
+}
+
+/**
+ * @param {string} text 文本
+ * @param {number} offset UTF-16 码元偏移
+ * @param {number} length UTF-16 码元长度
+ * @returns {string} 切片
+ */
+function utf16Slice(text, offset, length) {
+	return text.slice(offset, offset + length)
+}
+
+/**
+ * @param {string} text 文本
+ * @param {number} offset UTF-16 码元偏移
+ * @param {number} length UTF-16 码元长度
+ * @param {string} replacement 替换内容
+ * @returns {string} 替换后文本
+ */
+function utf16Replace(text, offset, length, replacement) {
+	return text.slice(0, offset) + replacement + text.slice(offset + length)
+}
+
+/**
+ * blockquote 给每一行加 `> ` 后，内层 offset 处需额外加上的 UTF-16 前缀长度。
+ * @param {string} innerText 加 `> ` 之前的内层文本
+ * @param {number} offsetInInner 相对内层起点的 UTF-16 偏移
+ * @returns {number} 应加上的前缀长度
+ */
+function blockquotePrefixBefore(innerText, offsetInInner) {
+	const newlinesBefore = utf16Slice(innerText, 0, offsetInInner).split('\n').length - 1
+	return 2 * (newlinesBefore + 1)
+}
+
+/**
+ * 对同一段文本叠加 Telegram 实体（结构类优先，样式外包）。
+ * 结构类按固定优先级应用，避免 exactSpan 数组顺序把 blockquote 包进 text_mention。
+ * @param {string} inner - 已处理好的内层文本。
+ * @param {TelegramMessageEntity[]} spanEntities - 覆盖同一 UTF-16 区间的实体。
+ * @returns {{ text: string, stylePrefix: number, contentPrefix: number, hasBlockquote: boolean, mentionLength: number, mentionEntity: TelegramMessageEntity | undefined }} 格式化结果与前缀信息
+ */
+function applyTelegramSpanFormats(inner, spanEntities) {
+	let text = inner
+	/** @type {TelegramMessageEntity | undefined} */
+	let mentionEntity
+	let mentionLength = 0
+	let contentPrefix = 0
+	let hasBlockquote = false
+	const textMention = spanEntities.find(entity => entity.type === 'text_mention')
+	if (textMention) {
+		text = `@[${text} (UserID:${textMention.user.id})]`
+		mentionEntity = textMention
+		mentionLength = utf16Length(text)
+		contentPrefix += 2
+	}
+	const textLink = spanEntities.find(entity => entity.type === 'text_link')
+	if (textLink) {
+		text = `[${text}](${textLink.url})`
+		contentPrefix += 1
+	}
+	if (spanEntities.some(entity => entity.type === 'code')) {
+		text = `\`${text}\``
+		contentPrefix += 1
+	}
+	const pre = spanEntities.find(entity => entity.type === 'pre')
+	if (pre) {
+		text = '```' + (pre.language ? pre.language : '') + '\n' + text + '\n```'
+		contentPrefix += 3 + (pre.language ? pre.language.length : 0) + 1
+	}
+	if (spanEntities.some(entity => entity.type === 'blockquote')) {
+		text = text.split('\n').map(line => `> ${line}`).join('\n')
+		hasBlockquote = true
+	}
+
+	let stylePrefix = 0
+	for (const entity of spanEntities)
+		switch (entity.type) {
+			case 'bold': text = `**${text}**`; stylePrefix += 2; break
+			case 'italic': text = `*${text}*`; stylePrefix += 1; break
+			case 'underline': text = `__${text}__`; stylePrefix += 2; break
+			case 'strikethrough': text = `~~${text}~~`; stylePrefix += 2; break
+			case 'spoiler': text = `||${text}||`; stylePrefix += 2; break
+			default: break
+		}
+
+	return {
+		text,
+		stylePrefix,
+		contentPrefix,
+		hasBlockquote,
+		mentionLength,
+		mentionEntity,
+	}
+}
+
+/**
+ * 渲染 [rangeStart, rangeEnd) 内嵌套/同段实体（TG 允许嵌套与同段叠加，禁止部分重叠）。
+ * @param {string} text 原始文本
+ * @param {TelegramMessageEntity[]} entities 候选实体
+ * @param {number} rangeStart UTF-16 起点
+ * @param {number} rangeEnd UTF-16 终点
+ * @param {number} markdownBase 已输出 Markdown 的 UTF-16 长度
+ * @returns {{ text: string, mentionEntities: TelegramMessageEntity[] }} 渲染文本与重映射后的 mention 实体
+ */
+function renderTelegramEntityRange(text, entities, rangeStart, rangeEnd, markdownBase) {
+	/** @type {string[]} */
+	const parts = []
+	/** @type {TelegramMessageEntity[]} */
+	const mentionEntities = []
+	const contained = entities
+		.filter(entity => entity.offset >= rangeStart && entity.offset + entity.length <= rangeEnd)
+		.sort((a, b) => a.offset - b.offset || b.length - a.length)
+
+	let cursor = rangeStart
+	let i = 0
+	while (i < contained.length) {
+		const entity = contained[i]
+		if (entity.offset < cursor) {
+			i++
+			continue
+		}
+		if (entity.offset > cursor)
+			parts.push(utf16Slice(text, cursor, entity.offset - cursor))
+
+		const spanStart = entity.offset
+		const spanEnd = entity.offset + entity.length
+		/** @type {TelegramMessageEntity[]} */
+		const exactSpan = []
+		while (i < contained.length && contained[i].offset === spanStart && contained[i].offset + contained[i].length === spanEnd)
+			exactSpan.push(contained[i++])
+
+		const nested = contained.filter(candidate =>
+			candidate.offset >= spanStart && candidate.offset + candidate.length <= spanEnd
+			&& !(candidate.offset === spanStart && candidate.offset + candidate.length === spanEnd)
+		)
+		const partBase = markdownBase + utf16Length(parts.join(''))
+		const innerRendered = nested.length
+			? renderTelegramEntityRange(text, nested, spanStart, spanEnd, partBase)
+			: { text: utf16Slice(text, spanStart, spanEnd - spanStart), mentionEntities: [] }
+		const formatted = applyTelegramSpanFormats(innerRendered.text, exactSpan)
+		const blockquotePad = formatted.hasBlockquote ? 2 : 0
+
+		const mentionSource = formatted.mentionEntity || exactSpan.find(item => item.type === 'mention')
+		if (mentionSource) {
+			// text_mention 自身的 `@[` 已计入 mentionLength，offset 只加其后包上的结构前缀
+			const afterMentionPrefix = formatted.contentPrefix - (formatted.mentionEntity ? 2 : 0)
+			mentionEntities.push({
+				...mentionSource,
+				offset: partBase + formatted.stylePrefix + blockquotePad + afterMentionPrefix,
+				length: formatted.mentionEntity
+					? formatted.mentionLength
+					: utf16Length(innerRendered.text),
+			})
+		}
+		else
+			for (const nestedMention of innerRendered.mentionEntities) {
+				const offsetInInner = nestedMention.offset - partBase
+				const quoteAdjust = formatted.hasBlockquote
+					? blockquotePrefixBefore(innerRendered.text, offsetInInner)
+					: 0
+				mentionEntities.push({
+					...nestedMention,
+					offset: nestedMention.offset + formatted.stylePrefix + formatted.contentPrefix + quoteAdjust,
+				})
+			}
+
+		parts.push(formatted.text)
+		cursor = spanEnd
+	}
+	if (cursor < rangeEnd)
+		parts.push(utf16Slice(text, cursor, rangeEnd - cursor))
+
+	return { text: parts.join(''), mentionEntities }
+}
+
+/**
  * @param {string | undefined} text - 原始消息文本。
  * @param {TelegramMessageEntity[] | undefined} entities - Telegram 消息实体数组。
  * @param {TelegramBotInfo | undefined} botInfo - bot自身信息。
  * @param {TelegramMessageType | undefined} replyToMessage - 被回复的 Telegram 消息对象。
- * @returns {string} 转换后的 AI 方言 Markdown 文本。
+ * @returns {{ text: string, mentionEntities: TelegramMessageEntity[] }} Markdown 与重映射后的 mention 实体。
  */
-export function telegramEntitiesToAiMarkdown(text, entities, botInfo, replyToMessage) {
+function telegramEntitiesToAiMarkdownMapped(text, entities, botInfo, replyToMessage) {
 	let aiMarkdown = ''
 	if (replyToMessage) {
 		const repliedFrom = replyToMessage.from
@@ -91,41 +272,32 @@ export function telegramEntitiesToAiMarkdown(text, entities, botInfo, replyToMes
 			aiMarkdown += `\n(回复 ${replierName})\n\n`
 		}
 	}
-	if (!text) return aiMarkdown.trim()
-	const textChars = Array.from(text)
-	if (!entities?.length) return aiMarkdown + text
-	const parts = []
-	let lastOffset = 0
-	const sortedEntities = [...entities].sort((a, b) => a.offset - b.offset)
-	for (const entity of sortedEntities) {
-		if (entity.offset > lastOffset)
-			parts.push(textChars.slice(lastOffset, entity.offset).join(''))
+	if (!text) return { text: aiMarkdown.trim(), mentionEntities: [] }
+	if (!entities?.length) return { text: (aiMarkdown + text).trim(), mentionEntities: [] }
 
-		const entityText = textChars.slice(entity.offset, entity.offset + entity.length).join('')
-		let formattedEntityText = entityText
-		switch (entity.type) {
-			case 'bold': formattedEntityText = `**${entityText}**`; break
-			case 'italic': formattedEntityText = `*${entityText}*`; break
-			case 'underline': formattedEntityText = `__${entityText}__`; break
-			case 'strikethrough': formattedEntityText = `~~${entityText}~~`; break
-			case 'spoiler': formattedEntityText = `||${entityText}||`; break
-			case 'code': formattedEntityText = `\`${entityText}\``; break
-			case 'pre': formattedEntityText = '```' + (entity.language ? entity.language : '') + '\n' + entityText + '\n```'; break
-			case 'text_link': formattedEntityText = `[${entityText}](${entity.url})`; break
-			case 'blockquote': formattedEntityText = entityText.split('\n').map(line => `> ${line}`).join('\n'); break
-			case 'text_mention': formattedEntityText = `@[${entityText} (UserID:${entity.user.id})]`; break
-			case 'mention': case 'hashtag': case 'cashtag': case 'bot_command': case 'url': case 'email': case 'phone_number':
-				formattedEntityText = entityText; break
-			default: formattedEntityText = entityText
-		}
-		parts.push(formattedEntityText)
-		lastOffset = entity.offset + entity.length
+	const rendered = renderTelegramEntityRange(text, entities, 0, text.length, utf16Length(aiMarkdown))
+	aiMarkdown += rendered.text
+	const leadWs = aiMarkdown.match(/^\s*/u)?.[0] || ''
+	const leadUtf16 = utf16Length(leadWs)
+	return {
+		text: aiMarkdown.trim(),
+		mentionEntities: rendered.mentionEntities.map(entity => ({
+			...entity,
+			offset: entity.offset - leadUtf16,
+		})).filter(entity => entity.offset >= 0),
 	}
-	if (lastOffset < textChars.length)
-		parts.push(textChars.slice(lastOffset).join(''))
+}
 
-	aiMarkdown += parts.join('')
-	return aiMarkdown.trim()
+/**
+ * 将 Telegram 消息文本和实体转换为 AI 方言 Markdown。
+ * @param {string | undefined} text - 原始消息文本。
+ * @param {TelegramMessageEntity[] | undefined} entities - Telegram 消息实体数组。
+ * @param {TelegramBotInfo | undefined} botInfo - bot自身信息。
+ * @param {TelegramMessageType | undefined} replyToMessage - 被回复的 Telegram 消息对象。
+ * @returns {string} 转换后的 AI 方言 Markdown 文本。
+ */
+export function telegramEntitiesToAiMarkdown(text, entities, botInfo, replyToMessage) {
+	return telegramEntitiesToAiMarkdownMapped(text, entities, botInfo, replyToMessage).text
 }
 
 /**
@@ -499,39 +671,54 @@ export function splitTelegramReply(reply, split_length = 4096) {
 }
 
 /**
- * UTF-16 码元长度（Telegram entity offset 用）。
- * @param {string} text 文本
- * @returns {number} UTF-16 码元数
- */
-function utf16Length(text) {
-	return [...text].reduce((sum, ch) => sum + (ch.codePointAt(0) > 0xffff ? 2 : 1), 0)
-}
-
-/**
- * 将 Telegram text_mention 实体改写为 fount `@[hash]` token。
+ * 将 Telegram text_mention / @BotUsername mention 实体改写为 fount `@[hash]` token。
  * @param {string} username replica
  * @param {string | undefined} text 原始正文
  * @param {TelegramMessageEntity[] | undefined} entities 实体列表
+ * @param {TelegramBotInfo | null} [botInfo] bot 信息（用于匹配 @BotUsername）
  * @returns {Promise<string>} 改写后正文
  */
-export async function rewriteTelegramMentionsToFount(username, text, entities) {
+export async function rewriteTelegramMentionsToFount(username, text, entities, botInfo = null) {
 	if (!text || !entities?.length) return text || ''
 	const { resolveBridgeIdentity } = await import('../../chat/src/chat/bridge/identity.mjs')
-	const sorted = [...entities]
-		.filter(entity => entity.type === 'text_mention' && entity.user?.id != null)
-		.sort((a, b) => b.offset - a.offset)
+	const botUsername = String(botInfo?.username || '').replace(/^@/, '').toLowerCase()
+	const botId = botInfo?.id
+
+	/** @type {Array<{ offset: number, length: number, platformUserId: string | number, displayName: string }>} */
+	const rewrites = []
+	for (const entity of entities) {
+		if (entity.type === 'text_mention' && entity.user?.id != null) {
+			rewrites.push({
+				offset: entity.offset,
+				length: entity.length,
+				platformUserId: entity.user.id,
+				displayName: entity.user.first_name || entity.user.username || '',
+			})
+			continue
+		}
+		if (entity.type === 'mention' && botUsername && botId != null) {
+			const mentionText = utf16Slice(text, entity.offset, entity.length)
+			const handle = mentionText.replace(/^@/, '').toLowerCase()
+			if (handle === botUsername)
+				rewrites.push({
+					offset: entity.offset,
+					length: entity.length,
+					platformUserId: botId,
+					displayName: botInfo.username || '',
+				})
+		}
+	}
+	const sorted = rewrites.sort((a, b) => b.offset - a.offset)
 	let result = text
 	for (const entity of sorted) {
 		const hash = await resolveBridgeIdentity(
 			username,
 			'telegram',
-			entity.user.id,
-			entity.user.first_name || entity.user.username || '',
+			entity.platformUserId,
+			entity.displayName,
 		)
 		const token = formatEntityMentionToken(hash)
-		const chars = Array.from(result)
-		chars.splice(entity.offset, entity.length, ...Array.from(token))
-		result = chars.join('')
+		result = utf16Replace(result, entity.offset, entity.length, token)
 	}
 	return result
 }
@@ -616,8 +803,8 @@ export async function telegramMessageToBridgeDto(context, message, botInfo, owne
 	if (!message?.from) return null
 	const rawText = message.text || message.caption || ''
 	const entities = message.entities || message.caption_entities
-	let text = telegramEntitiesToAiMarkdown(rawText, entities, botInfo, message.reply_to_message)
-	text = await rewriteTelegramMentionsToFount(ownerUsername, text, entities)
+	const mapped = telegramEntitiesToAiMarkdownMapped(rawText, entities, botInfo, message.reply_to_message)
+	let text = await rewriteTelegramMentionsToFount(ownerUsername, mapped.text, mapped.mentionEntities, botInfo)
 	if (message.sticker) {
 		const { sticker } = message
 		const stickerDesc = `<:${sticker.file_id}:${sticker.set_name || 'unknown_set'}:${sticker.emoji || ''}>`

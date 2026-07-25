@@ -1,6 +1,8 @@
 import { setCared } from 'fount/public/parts/shells/chat/src/chat/lib/care.mjs'
+import { messageMentionsEntity } from 'fount/public/parts/shells/chat/src/chat/lib/mentionFacts.mjs'
 import { resolveOperatorEntityHash } from 'fount/public/parts/shells/chat/src/chat/lib/replica.mjs'
 import { ensureLocalAgentEntityHash } from 'fount/public/parts/shells/chat/src/entity/member.mjs'
+import { onMessageProbe } from 'fount/public/parts/shells/chat/test/fixtures/probes/onMessageProbe.mjs'
 
 import { handleOwnerCommands } from './commands.mjs'
 import { extractMessageText, resolveMessageContext } from './helpers.mjs'
@@ -11,6 +13,14 @@ const CHARNAME = 'gentian_shell_contract'
 let selfEntityHash = ''
 /** @type {string} */
 let operatorEntityHash = ''
+
+/**
+ * @param {object} row chat_log 行
+ * @returns {boolean} 是否角色发言
+ */
+function rowIsFromChar(row) {
+	return row?.role === 'char'
+}
 
 /**
  * @param {Parameters<NonNullable<import('fount/decl/charAPI.ts').CharAPI_t['interfaces']['chat']['OnMessage']>>[0]} event OnMessage 事件
@@ -24,6 +34,10 @@ export async function OnMessage(event) {
 	const platform = event.chatReplyRequest.extension?.bridge?.platform || 'chat'
 	const { isFromOwner, client, message } =
 		await resolveMessageContext(event, selfEntityHash)
+	const mentionsBot = await messageMentionsEntity(event, selfEntityHash)
+	const chatLog = event.chatReplyRequest.chat_log || []
+	const hasCharReply = chatLog.some(rowIsFromChar)
+	const isDm = event.group?.kind === 'dm'
 
 	const commandResult = await handleOwnerCommands({
 		content,
@@ -36,9 +50,40 @@ export async function OnMessage(event) {
 		selfHash: selfEntityHash,
 		username: event.chatReplyRequest.username,
 	})
-	if (commandResult === 'handled' || commandResult === 'exit') return false
+	if (commandResult === 'handled' || commandResult === 'exit') {
+		onMessageProbe.decisions.push({
+			wantsReply: false,
+			reason: `command:${commandResult}`,
+			isFromOwner,
+			mentionsBot,
+			isDm,
+			hasCharReply,
+		})
+		onMessageProbe.events.push(event)
+		return false
+	}
 
-	return false
+	// 契约骨架：DM 主人 / 已有角色回复的 DM / @bot → 愿意回复；其余拒绝
+	const wantsReply = (isDm && isFromOwner)
+		|| (isDm && hasCharReply)
+		|| mentionsBot
+
+	onMessageProbe.decisions.push({
+		wantsReply,
+		reason: wantsReply
+			? (isDm && isFromOwner && 'dm_owner')
+				|| (isDm && hasCharReply && 'dm_followup')
+				|| (mentionsBot && 'mention')
+			: 'no_trigger',
+		isFromOwner,
+		mentionsBot,
+		isDm,
+		hasCharReply,
+		selfEntityHash,
+		charUid: event.chatReplyRequest.CharUid,
+	})
+	onMessageProbe.events.push(event)
+	return wantsReply
 }
 
 /**

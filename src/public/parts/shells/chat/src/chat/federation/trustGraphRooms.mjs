@@ -3,10 +3,11 @@ import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { loadReputation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { registerFederationRoomProvider, unregisterFederationRoomProvider } from 'npm:@steve02081504/fount-p2p/registries/room_provider'
 import { registerScopeAuthorizer } from 'npm:@steve02081504/fount-p2p/transport/link_registry'
-import { resolveFederationPoolLimits, selectPeerIdsFromPool } from './peerFanout.mjs'
+
 
 import { loadFederationGroupSettings, loadFederationMaterializedState } from './dagDependencies.mjs'
 import { LOGIC_SYNC_PARTITION } from './partitions.mjs'
+import { resolveFederationPoolLimits, selectPeerIdsFromPool } from './peerFanout.mjs'
 import { forEachFederationPartitionSlot, groupFederationOwner } from './registry.mjs'
 
 let unregisterGroupScopeAuthorizer = null

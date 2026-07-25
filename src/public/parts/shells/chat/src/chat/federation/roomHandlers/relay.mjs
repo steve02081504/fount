@@ -4,7 +4,7 @@ import {
 	parseDiscoveryQueryResponse,
 } from 'npm:@steve02081504/fount-p2p/schemas/discovery'
 import { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
-import { wireAction } from '../wireAction.mjs'
+
 
 import { applyRemoteDigestClaim } from '../archiveDigestClaims.mjs'
 import {
@@ -24,6 +24,7 @@ import {
 import { handleJoinSnapshotRequest } from '../joinSnapshot.mjs'
 import { bindFedSender } from '../outbound.mjs'
 import { noteJoinSnapshotResponse } from '../pull/joinSnapshotPick.mjs'
+import { wireAction } from '../wireAction.mjs'
 
 /**
  * bootstrap / join snapshot / discovery 中继 handler。

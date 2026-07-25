@@ -4,14 +4,15 @@ import EventEmitter from 'node:events'
 
 EventEmitter.defaultMaxListeners = Math.max(EventEmitter.defaultMaxListeners, 30)
 
-import { events } from '../../../../../server/events.mjs'
-import { loadPart } from '../../../../../server/parts_loader.mjs'
-import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
 import {
 	attachReputationSyncWire,
 	getReputationExportAllowlist,
 	setReputationExportAllowlist,
 } from 'npm:@steve02081504/fount-p2p'
+
+import { events } from '../../../../../server/events.mjs'
+import { loadPart } from '../../../../../server/parts_loader.mjs'
+import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
 
 import { createScopedLinkRoom } from './link_room.mjs'
 

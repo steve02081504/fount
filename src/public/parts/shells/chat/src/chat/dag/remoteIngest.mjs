@@ -8,7 +8,6 @@ import { isPeerPoolKeyBlocked, loadPeerPoolView } from 'npm:@steve02081504/fount
 import { recordMessageRateViolation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
-import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { assertFederatedCkgContent } from '../channel_keys/content.mjs'
 import {
 	classifyHlcSkewAction,
@@ -174,10 +173,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 
 	const bodyForId = unsignedEventFields(wirePayload)
 	if (computeEventId(bodyForId) !== wirePayload.id) {
-		if (logFailures) {
-			console.error('federation: drop remote event (id mismatch)')
-			await debugLog('remote-ingest-invalid', { username, groupId, reason: 'id_mismatch', eventId: wirePayload.id }).catch(() => {})
-		}
+		if (logFailures) console.error('federation: drop remote event (id mismatch)')
 		return finish(ingestResult('invalid', 'id_mismatch'))
 	}
 
@@ -186,10 +182,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 		await validateSignature(bodyForId, wirePayload, wirePayload, undefined, state)
 	}
 	catch (error) {
-		if (logFailures) {
-			console.error('federation: drop remote event (signature)', error)
-			await debugLog('remote-ingest-invalid', { username, groupId, reason: 'signature', eventId: wirePayload.id, message: error?.message }).catch(() => {})
-		}
+		if (logFailures) console.error('federation: drop remote event (signature)', error)
 		return finish(ingestResult('invalid', 'signature'))
 	}
 

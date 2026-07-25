@@ -7,7 +7,6 @@ import { dirname } from 'node:path'
 
 import { clearMasterKeyKdfCache, deriveNextFileMasterKey } from 'npm:@steve02081504/fount-p2p/crypto/key'
 
-import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { fileMasterKeysPath } from '../lib/paths.mjs'
 
 /** 最多保留多少代历史密钥（用于解密旧文件块） */
@@ -43,8 +42,7 @@ export async function loadFileMasterKeys(username, groupId) {
 		return normalizeFileMasterKeysFile(JSON.parse(text))
 	}
 	catch (error) {
-		if (error?.code !== 'ENOENT')
-			await debugLog('file-master-key-load-fail', { username, groupId, message: error?.message }).catch(() => { })
+		if (error?.code !== 'ENOENT') console.error(error)
 		return normalizeFileMasterKeysFile(null)
 	}
 }
