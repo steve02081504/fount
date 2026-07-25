@@ -27,6 +27,9 @@ export function updateFeedSearchChrome() {
 /** 用户是否滚动过（重放门槛）；每次首屏 loadFeed(false) 重置 */
 let feedUserScrolled = false
 
+/** 正在 build/插入的 feed 键，堵住本机 force 与 WS 在 await 窗口双插 */
+const pendingFeedInserts = new Set()
+
 /**
  * 循环重放仅在用户已真实滚动且内容高于视口时允许，避免短 feed 首屏自动复制。
  * @returns {boolean} 是否允许重放
@@ -204,20 +207,34 @@ export async function prependFeedItem(item, options = {}) {
 	if (!list) return false
 	const postId = String(item.postId || '')
 	const entityHash = String(item.entityHash || '').toLowerCase()
+	const insertKey = postId && entityHash ? `${entityHash}:${postId}` : ''
 	// 已在列表：在 cursor 门闩之前返回，避免本机 force 插入后 WS 再弹「有新帖」
-	if (postId && entityHash && list.querySelector(
+	if (insertKey && list.querySelector(
 		`.post-card[data-post-id="${CSS.escape(postId)}"][data-author-entity="${CSS.escape(entityHash)}"]`,
 	))
 		return true
 	if (!options.force && state.feedCursor) return false
-	document.getElementById('feedNewPostsBanner')?.remove()
-	const card = await buildPostCard(item).catch(() => null)
-	if (!card) return false
-	const empty = list.querySelector('.feed-empty')
-	if (empty) list.replaceChildren(card)
-	else list.prepend(card)
-	state.feedShownItems = [item, ...state.feedShownItems || []]
-	return true
+	if (insertKey) {
+		if (pendingFeedInserts.has(insertKey)) return true
+		pendingFeedInserts.add(insertKey)
+	}
+	try {
+		document.getElementById('feedNewPostsBanner')?.remove()
+		const card = await buildPostCard(item).catch(() => null)
+		if (!card) return false
+		if (insertKey && list.querySelector(
+			`.post-card[data-post-id="${CSS.escape(postId)}"][data-author-entity="${CSS.escape(entityHash)}"]`,
+		))
+			return true
+		const empty = list.querySelector('.feed-empty')
+		if (empty) list.replaceChildren(card)
+		else list.prepend(card)
+		state.feedShownItems = [item, ...state.feedShownItems || []]
+		return true
+	}
+	finally {
+		if (insertKey) pendingFeedInserts.delete(insertKey)
+	}
 }
 
 /**

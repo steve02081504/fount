@@ -54,7 +54,7 @@ export function createFountFixtures(options = {}) {
 			await loginWithApiKey(api, baseUrl, apiKey)
 			const storageState = await api.storageState()
 			await api.dispose()
-			const context = await browser.newContext({ storageState, locale })
+			const context = await browser.newContext({ storageState, locale, serviceWorkers: 'block' })
 			await context.addInitScript(language => {
 				localStorage.setItem('userPreferredLanguages', JSON.stringify([language]))
 			}, locale)

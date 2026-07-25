@@ -127,33 +127,38 @@ test.describe('Social feed', () => {
 		await expand.click()
 		await expect(body).not.toHaveClass(/body-expanded/)
 	})
+})
 
+test.describe('Social feed pagination', () => {
 	test('infinite scroll fetches next feed page', async ({ page, baseUrl, apiKey }) => {
 		test.setTimeout(180_000)
-		// 测例把首屏 limit 降到 5，避免为凑 nextCursor 串行灌 30+ 帖
-		await page.route('**/api/parts/shells:social/feed**', async route => {
+		const feedApiPath = '/api/parts/shells:social/feed'
+		// 首屏压到 5，避免串行灌 30+ 帖；continue({url}) 改写 query
+		await page.route(`**${feedApiPath}**`, async route => {
 			const url = new URL(route.request().url())
 			url.searchParams.set('limit', '5')
 			await route.continue({ url: url.toString() })
 		})
 		await ensureFeedHasNextPage(baseUrl, apiKey, 5)
-		const cursorWait = page.waitForResponse(res => {
+		const firstPageWait = page.waitForResponse(res => {
 			if (res.request().method() !== 'GET' || res.status() !== 200) return false
 			const url = new URL(res.url())
-			return url.pathname.includes('/feed') && url.searchParams.has('cursor')
+			return url.pathname === feedApiPath && !url.searchParams.has('cursor')
 		}, { timeout: 60_000 })
 		await openHome(page, baseUrl)
+		const firstPage = await (await firstPageWait).json()
+		const firstPageSize = firstPage.items?.length || 0
+		expect(firstPageSize).toBeGreaterThan(0)
+		expect(firstPageSize).toBeLessThanOrEqual(5)
+		expect(firstPage.nextCursor).toBeTruthy()
 		await expect(page.locator('#feedScrollSentinel')).toBeAttached({ timeout: 60_000 })
-		const initialCount = await page.locator('#feedList [data-post-id]').count()
-		expect(initialCount).toBeGreaterThan(0)
-		// 短首屏时哨兵落在 rootMargin 内会自动连锁加载，勿断言 initialCount <= limit
-		expect((await (await cursorWait).json()).items?.length).toBeGreaterThan(0)
+		// 短首屏时哨兵落在 rootMargin 内会自动连锁加载，用首屏响应条数作基线
 		await pumpFeedScroll(
 			page,
-			async () => (await page.locator('#feedList [data-post-id]').count()) > initialCount,
+			async () => (await page.locator('#feedList [data-post-id]').count()) > firstPageSize,
 			{ maxRounds: 24, leaveWaitMs: 150, enterWaitMs: 350 },
 		)
-		expect(await page.locator('#feedList [data-post-id]').count()).toBeGreaterThan(initialCount)
+		expect(await page.locator('#feedList [data-post-id]').count()).toBeGreaterThan(firstPageSize)
 	})
 
 	test('feed loops replay when cursor exhausted', async ({ page, baseUrl, apiKey }) => {

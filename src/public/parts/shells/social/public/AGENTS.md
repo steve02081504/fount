@@ -29,7 +29,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 
 - **Search view**: render post hits as soon as `/search` returns; `entities/search` must not block the posts section (hashtag/tag-only queries skip the users block entirely).
 - **Replies panel**: first open loads then reveals; do not toggle visible before `renderRepliesPanel` or composer input can be wiped mid-type.
-- **Own write → feed**: repost returns `{ event, item }` and `pushFeedUpdate`; UI `prependFeedItem(item, { force: true })` (dedupe before cursor gate so WS does not banner after a local insert). Deep-pagination WS still banners unless `force`.
+- **Own write → feed**: repost returns `{ event, item }` and `pushFeedUpdate`; UI `prependFeedItem(item, { force: true })` (dedupe + in-flight `pendingFeedInserts` so WS cannot double-insert during `buildPostCard`). Deep-pagination WS still banners unless `force`.
 - CSS: page-local, no `social-` prefix. Icons `.icon` + `.icon-*`. Ready-gate: `SOCIAL_GATE` / `fount:social-*`.
 - Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder` (do not use `fooPlaceholder` key names). Templates: `${...}` only (no Mustache `{{...}}`). Prefer `renderTemplate` / `mountTemplate`.
 - HTTP: `endpoints/shared.mjs` `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.

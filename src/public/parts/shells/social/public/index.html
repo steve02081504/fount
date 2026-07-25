@@ -404,9 +404,9 @@
 			<span class="icon icon-compose" aria-hidden="true"></span>
 		</button>
 
-		<div id="saveModal" class="save-modal hidden" role="dialog" aria-modal="true">
+		<div id="saveModal" class="save-modal hidden" role="dialog" aria-modal="true" aria-labelledby="saveModalTitle">
 			<div class="save-modal-card card bg-base-200 shadow-xl">
-				<h3 data-i18n="social.saved.pickFolderTitle"></h3>
+				<h3 id="saveModalTitle" data-i18n="social.saved.pickFolderTitle"></h3>
 				<select id="saveFolderSelect" class="select select-bordered w-full" data-i18n="social.saved.folderSelect"></select>
 				<div class="save-modal-actions">
 					<button type="button" id="saveConfirmButton" class="btn btn-primary btn-sm" data-i18n="social.saved.confirm"></button>
