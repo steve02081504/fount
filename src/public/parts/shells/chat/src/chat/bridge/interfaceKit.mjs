@@ -1,8 +1,16 @@
-import { channelMessageAgentText } from '../../../public/shared/channelContent.mjs'
-import { getState } from '../dag/materialize.mjs'
-
-import { postBridgeMessage } from './ingress.mjs'
-import { ensureBridgeGroup } from './registry.mjs'
+/**
+ * bot 壳共用入站套件（虚拟会话，不建真实 chat 群）。
+ */
+import {
+	appendVirtualBridgeMessage,
+	deleteVirtualBridgeMessage,
+	editVirtualBridgeMessage,
+	ensureVirtualBridgeSession,
+	isVirtualBridgeBackfilled,
+	markVirtualBridgeBackfilled,
+	virtualBridgeChannelId,
+} from './session.mjs'
+import { runVirtualBridgeTrigger } from './trigger.mjs'
 
 /**
  * @param {Function} func 异步函数
@@ -22,55 +30,101 @@ export async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } =
 }
 
 /**
- * @param {object} messageLine DAG 消息行
+ * @param {object} messageLine 虚拟 log / 出站行
  * @param {string} charname 角色名
- * @returns {object} chatLogEntry 形状
+ * @returns {object} chatLogEntry 形状（FormatOutboundReply 用）
  */
 export function messageLineToReplyEntry(messageLine, charname) {
-	const text = channelMessageAgentText(messageLine?.content) || ''
+	const text = typeof messageLine?.content === 'string'
+		? messageLine.content
+		: String(messageLine?.content?.content ?? messageLine?.content?.text ?? '')
 	return {
 		name: charname,
 		role: 'char',
 		content: text,
 		content_for_show: text,
-		time_stamp: messageLine?.hlc?.wall || Date.now(),
+		time_stamp: messageLine?.time_stamp || messageLine?.hlc?.wall || Date.now(),
 		files: (messageLine?.files || []).map(file => ({
 			name: file.name,
 			mime_type: file.mime_type,
 			buffer: file.buffer,
 			description: file.description || '',
 		})),
-		extension: { dagEventId: messageLine?.eventId },
+		extension: { virtualEventId: messageLine?.extension?.virtualEventId || messageLine?.eventId },
 	}
 }
 
 /**
- * 入站 DTO 写入 DAG 并在需要时注册出站 handler。
+ * 入站 DTO → 虚拟会话 → OnMessage/GetReply。
  * @param {string} ownerUsername replica
  * @param {import('../../../../../../decl/charAPI.ts').CharAPI_t} charAPI 角色 API
  * @param {'discord' | 'telegram' | 'wechat'} platform 平台
  * @param {object} dto 桥接 DTO
  * @param {(groupId: string, bridge: object, sourceDto: object) => Promise<void>} ensureOutboundHandler 出站注册
- * @param {string} [botname] 服务该群的 bot 实例名
- * @param {string} [charname] 绑定进桥接群的角色名（幂等 addchar）
- * @returns {Promise<void>}
+ * @param {string} [botname] bot 实例名
+ * @param {string} [charname] 角色名
+ * @returns {Promise<{ groupId: string }>} 虚拟群 ID
  */
 export async function bridgeIngestDto(ownerUsername, charAPI, platform, dto, ensureOutboundHandler, botname, charname) {
 	await charAPI.interfaces[platform]?.TweakInboundDto?.(dto)
 	if (botname) dto.botname = botname
-	const { groupId } = await ensureBridgeGroup(ownerUsername, {
-		platform: dto.platform,
+	const session = ensureVirtualBridgeSession(ownerUsername, {
+		platform: dto.platform || platform,
 		platformChatId: dto.platformChatId,
 		chatKind: dto.chatKind,
 		name: dto.chatName,
 		botname,
+		charname,
 	})
-	if (charname) {
-		const { addchar } = await import('../session/partConfig.mjs')
-		await addchar(groupId, charname, ownerUsername)
-	}
-	await postBridgeMessage(ownerUsername, dto)
-	const { state } = await getState(ownerUsername, groupId)
-	if (state.groupSettings?.bridge)
-		await ensureOutboundHandler(groupId, state.groupSettings.bridge, dto)
+	const { entry } = await appendVirtualBridgeMessage(ownerUsername, dto)
+	const channelId = virtualBridgeChannelId(dto.platformThreadId)
+	await ensureOutboundHandler(session.groupId, {
+		platform: session.platform,
+		platformChatId: session.platformChatId,
+		chatKind: session.chatKind,
+		botname: session.botname,
+	}, dto)
+	if (charname)
+		void runVirtualBridgeTrigger(ownerUsername, session.groupId, channelId, entry, charAPI, charname)
+			.catch(error => console.error('[bridge] virtual trigger failed:', error))
+	return { groupId: session.groupId }
+}
+
+/**
+ * 入站编辑。
+ * @param {string} username replica
+ * @param {object} dto 编辑 DTO
+ * @returns {Promise<object | null>} 结果
+ */
+export async function postBridgeEdit(username, dto) {
+	return editVirtualBridgeMessage(username, dto)
+}
+
+/**
+ * 入站删除。
+ * @param {string} username replica
+ * @param {object} dto 删除 DTO
+ * @returns {Promise<boolean>} 是否删除
+ */
+export async function postBridgeDelete(username, dto) {
+	return deleteVirtualBridgeMessage(username, dto)
+}
+
+/**
+ * 入站消息（兼容旧名；不触发回复，仅写 log——完整链路请用 bridgeIngestDto）。
+ * @param {string} username replica
+ * @param {object} dto DTO
+ * @returns {Promise<object>} entry
+ */
+export async function postBridgeMessage(username, dto) {
+	const { entry, session } = await appendVirtualBridgeMessage(username, dto)
+	return { id: entry.extension.virtualEventId, groupId: session.groupId, entry }
+}
+
+/**
+ *
+ */
+export {
+	isVirtualBridgeBackfilled as isBridgeGroupBackfilled,
+	markVirtualBridgeBackfilled as markBridgeGroupBackfilled,
 }

@@ -1,3 +1,4 @@
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { buildConversationContext } from '../../chat/lib/conversationContext.mjs'
 import { enumerateJoinedFederatedGroups } from '../../group/queries.mjs'
 import { createGroup as hydrateGroup } from '../group.mjs'
@@ -13,6 +14,13 @@ export function createGroupAccessMethods(apiContext) {
 	 * @returns {Promise<object>} Group
 	 */
 	async function group(groupId) {
+		const { getVirtualBridgeSession, isVirtualBridgeGroupId } = await import('../../chat/bridge/session.mjs')
+		if (isVirtualBridgeGroupId(groupId)) {
+			if (!getVirtualBridgeSession(apiContext.username, groupId))
+				throw httpError(404, 'Virtual bridge session not found')
+			const { createVirtualBridgeGroup } = await import('../../chat/bridge/virtualObjects.mjs')
+			return createVirtualBridgeGroup(apiContext, groupId)
+		}
 		const { loadGroupState } = await import('../internal.mjs')
 		const state = await loadGroupState(apiContext, groupId)
 		const channelId = state.groupSettings?.defaultChannelId || 'default'

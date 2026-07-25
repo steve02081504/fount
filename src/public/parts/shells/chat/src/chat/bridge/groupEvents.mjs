@@ -1,62 +1,71 @@
-import { buildConversationContext } from '../lib/conversationContext.mjs'
+import { loadPart } from '../../../../../../../server/parts_loader.mjs'
 import { dispatchCharError } from '../session/charError.mjs'
-import { getCharListOfGroup } from '../session/partConfig.mjs'
-import { resolveChar } from '../session/resolvePart.mjs'
 
 import { resolveBridgeIdentity } from './identity.mjs'
-import { ensureBridgeGroup, resolveBridgeChannel } from './registry.mjs'
-
+import {
+	ensureVirtualBridgeSession,
+	listVirtualBridgeSessions,
+	virtualBridgeChannelId,
+} from './session.mjs'
 
 /**
- * 构建 OnGroupEvent 事件体。
- * @param {string} username replica
- * @param {string} groupId 群 ID
+ * @param {object} session 虚拟会话
  * @param {string} channelId 频道 ID
  * @param {string} type 事件类型
  * @param {object} [member] 成员事实
- * @returns {Promise<object>} 可序列化事件
+ * @returns {object} OnGroupEvent
  */
-async function buildGroupEvent(username, groupId, channelId, type, member) {
-	const { group, channel } = await buildConversationContext(username, groupId, channelId)
+function buildVirtualGroupEvent(session, channelId, type, member) {
 	return {
 		type,
-		group,
-		channel,
+		group: {
+			groupId: session.groupId,
+			name: session.name,
+			kind: session.chatKind === 'dm' ? 'dm' : 'group',
+			bridge: {
+				platform: session.platform,
+				platformChatId: session.platformChatId,
+				chatKind: session.chatKind,
+				...session.botname ? { botname: session.botname } : {},
+			},
+			memberCount: 0,
+		},
+		channel: {
+			channelId,
+			name: session.channels[channelId]?.name || channelId,
+			kind: channelId === 'default' ? 'text' : 'thread',
+		},
 		...member ? { member } : {},
 	}
 }
 
 /**
- * 向群内 char 分发群生命周期事件。
  * @param {string} username replica
- * @param {string} groupId 群 ID
- * @param {string} channelId 频道 ID
- * @param {object} event OnGroupEvent 事件
+ * @param {object} session 虚拟会话
+ * @param {object} event 事件
  * @returns {Promise<void>}
  */
-async function dispatchGroupEventToChars(username, groupId, channelId, event) {
-	const chars = await getCharListOfGroup(groupId, username)
-	for (const charname of chars) {
-		const char = await resolveChar(groupId, charname, username)
-		if (!char?.interfaces?.chat?.OnGroupEvent) continue
-		try {
-			await char.interfaces.chat.OnGroupEvent(event)
-		}
-		catch (error) {
-			await dispatchCharError(char, error, {
-				username,
-				source: 'OnGroupEvent',
-				groupId,
-				channelId,
-				charname,
-				event,
-			})
-		}
+async function dispatchToSessionChar(username, session, event) {
+	if (!session.charname) return
+	const char = await loadPart(username, `chars/${session.charname}`)
+	if (!char?.interfaces?.chat?.OnGroupEvent) return
+	try {
+		await char.interfaces.chat.OnGroupEvent(event)
+	}
+	catch (error) {
+		await dispatchCharError(char, error, {
+			username,
+			source: 'OnGroupEvent',
+			groupId: session.groupId,
+			channelId: event.channel?.channelId,
+			charname: session.charname,
+			event,
+		})
 	}
 }
 
 /**
- * 桥接平台群生命周期事件 → char OnGroupEvent。
+ * 桥接平台群生命周期事件 → char OnGroupEvent（虚拟会话）。
  * @param {string} username replica
  * @param {{ type: string, platform: string, platformChatId: string | number, platformThreadId?: string | number, chatKind?: string, chatName?: string, botname?: string, member?: { platformUserId: string | number, displayName?: string } }} dto DTO
  * @returns {Promise<void>}
@@ -66,19 +75,14 @@ export async function postBridgeGroupEvent(username, dto) {
 	const platformChatId = dto.platformChatId
 	if (!platform || platformChatId == null) throw new Error('platform and platformChatId required')
 
-	const chatKind = dto.chatKind === 'dm' ? 'dm' : 'group'
-	await ensureBridgeGroup(username, {
+	const session = ensureVirtualBridgeSession(username, {
 		platform,
 		platformChatId,
-		chatKind,
+		chatKind: dto.chatKind === 'dm' ? 'dm' : 'group',
 		name: dto.chatName,
 		botname: dto.botname,
 	})
-	const { groupId, channelId } = await resolveBridgeChannel(username, {
-		platform,
-		platformChatId,
-		platformThreadId: dto.platformThreadId,
-	})
+	const channelId = virtualBridgeChannelId(dto.platformThreadId)
 
 	let member
 	if (dto.member?.platformUserId != null) {
@@ -95,25 +99,20 @@ export async function postBridgeGroupEvent(username, dto) {
 		}
 	}
 
-	const event = await buildGroupEvent(username, groupId, channelId, dto.type, member)
-	await dispatchGroupEventToChars(username, groupId, channelId, event)
+	const event = buildVirtualGroupEvent(session, channelId, dto.type, member)
+	await dispatchToSessionChar(username, session, event)
 }
 
 /**
- * bot 启动后对已映射桥接群广播 bot_started。
+ * bot 启动后对已映射虚拟会话广播 bot_started。
  * @param {string} username replica
  * @param {string} platform 平台
  * @param {string} botname bot 实例名
  * @returns {Promise<void>}
  */
 export async function dispatchBridgeBotStarted(username, platform, botname) {
-	const { listBridgeGroupMappings } = await import('./registry.mjs')
-	const { getState } = await import('../dag/materialize.mjs')
-	for (const { groupId } of listBridgeGroupMappings(username)) {
-		const { state } = await getState(username, groupId)
-		const bridge = state.groupSettings?.bridge
-		if (!bridge || bridge.platform !== platform || String(bridge.botname || '') !== String(botname)) continue
-		const event = await buildGroupEvent(username, groupId, 'default', 'bot_started')
-		await dispatchGroupEventToChars(username, groupId, 'default', event)
+	for (const session of listVirtualBridgeSessions(username, platform, botname)) {
+		const event = buildVirtualGroupEvent(session, 'default', 'bot_started')
+		await dispatchToSessionChar(username, session, event)
 	}
 }

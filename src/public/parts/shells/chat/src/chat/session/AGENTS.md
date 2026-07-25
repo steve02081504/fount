@@ -15,7 +15,7 @@ Multi-node bind / fixture probes: [test domain-harness](../../../../../../../../
 - **Hard security rule**: `User*` = local operator/owner; `Char*` = the agent generating the reply; `ReplyTo*` = reply target (may be a stranger); `chat_log[].uid` = that row's speaker (may be a stranger). **Never** put a Discord/Telegram/Social message author into `User*` — the char can operate this machine; mistaking the owner is dangerous.
 - Opaque comparable strings (`===` / JSON); fount chat uses entityHash; bridges use `authorEntityHash`. **Not** RFC UUID. Simple dual-party shells (shellassist / ide) may use `'user'` / `'char'`.
 - `name` / `*Charname` are display only; identity compares **only** via `uid` / `*Uid` (no display-name fallback).
-- Hydration: `hydration.resolveSpeakerUid`; `getChatRequest` fills top-level Uids and `ReplyTo*` from the latest `extension.replyTo.senderEntityHash`. Discord/Telegram/WeChat go through bridge → `getChatRequest`; do not hand-build the request.
+- Hydration: `hydration.resolveSpeakerUid`; Hub `getChatRequest` fills top-level Uids and `ReplyTo*` from the latest `extension.replyTo.senderEntityHash`. Discord/Telegram/WeChat use **virtual bridge sessions** (`chat/bridge/session.mjs` + `buildVirtualBridgeChatRequest`) — same Uid rules; do not hand-build the request or call `newGroup` for platform chats.
 - `AddLongTimeLog` without `uid` fills from request `CharUid` / `UserUid` by `role` (else `'system'`).
 
 ## Viewer symmetry

@@ -36,10 +36,10 @@ Deno.test('Gentian OnMessage: owner repeat command replies inline', async () => 
 
 	const { loadPart } = await import('fount/server/parts_loader.mjs')
 	const { bridgeIngestDto } = await import('../../src/chat/bridge/interfaceKit.mjs')
+	const { registerBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
 	const { bindBridgeIdentity } = await import('../../src/chat/bridge/identity.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
-	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const { getVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
 
 	const operatorHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
 	assert(operatorHash)
@@ -54,6 +54,8 @@ Deno.test('Gentian OnMessage: owner repeat command replies inline', async () => 
 	const platformChatId = 880001 + Math.floor(Math.random() * 1000)
 	/** @type {string | undefined} */
 	let groupId
+	/** @type {object[]} */
+	const outbound = []
 	await bridgeIngestDto(username, charAPI, 'telegram', {
 		platform: 'telegram',
 		platformChatId,
@@ -62,12 +64,19 @@ Deno.test('Gentian OnMessage: owner repeat command replies inline', async () => 
 		author: { platformUserId: '77001', displayName: 'Owner' },
 		text: '龙胆复诵\n```\nhello gentian\n```',
 		timestamp: Date.now(),
-	}, async gid => { groupId = gid }, 'gentian-bot', CHAR)
+	}, async gid => {
+		groupId = gid
+		registerBridgeOutbound(username, gid, async ({ messageLine }) => {
+			outbound.push(messageLine)
+			return { platformMessageId: 1 }
+		})
+	}, 'gentian-bot', CHAR)
 
-	const channelId = await getDefaultChannelId(username, groupId)
 	await waitUntil(async () => {
-		const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 30 })
-		return messages.some(row => String(row.content?.content || '').includes('hello gentian'))
+		const session = getVirtualBridgeSession(username, groupId)
+		const logs = session?.channels.default?.logs || []
+		return logs.some(row => String(row.content || '').includes('hello gentian'))
+			|| outbound.some(row => String(row.content?.content || '').includes('hello gentian'))
 	}, 15000)
 })
 

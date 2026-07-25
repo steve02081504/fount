@@ -1,5 +1,5 @@
 /**
- * 桥接群生命周期事件 → char OnGroupEvent 分发。
+ * 桥接群生命周期事件 → char OnGroupEvent 分发（虚拟会话）。
  */
 /* global Deno */
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
@@ -16,7 +16,6 @@ Deno.test('postBridgeGroupEvent dispatches to char OnGroupEvent with member iden
 
 	const { postBridgeGroupEvent } = await import('../../src/chat/bridge/groupEvents.mjs')
 	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')
 
 	groupEventProbe.reset()
@@ -27,8 +26,8 @@ Deno.test('postBridgeGroupEvent dispatches to char OnGroupEvent with member iden
 		chatKind: 'group',
 		name: 'group-events',
 		botname: 'gev-bot',
+		charname: CHAR,
 	})
-	await addchar(groupId, CHAR, username)
 
 	await postBridgeGroupEvent(username, {
 		type: 'bot_joined_group',
@@ -63,7 +62,6 @@ Deno.test('dispatchBridgeBotStarted hits only mapped groups of matching bot', as
 
 	const { dispatchBridgeBotStarted } = await import('../../src/chat/bridge/groupEvents.mjs')
 	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 
 	groupEventProbe.reset()
 	const { groupId: mineGroupId } = await ensureBridgeGroup(username, {
@@ -72,16 +70,16 @@ Deno.test('dispatchBridgeBotStarted hits only mapped groups of matching bot', as
 		chatKind: 'group',
 		name: 'mine',
 		botname: 'bot-a',
+		charname: CHAR,
 	})
-	await addchar(mineGroupId, CHAR, username)
-	const { groupId: otherGroupId } = await ensureBridgeGroup(username, {
+	await ensureBridgeGroup(username, {
 		platform: 'telegram',
 		platformChatId: 950003,
 		chatKind: 'group',
 		name: 'other-bot',
 		botname: 'bot-b',
+		charname: CHAR,
 	})
-	await addchar(otherGroupId, CHAR, username)
 
 	await dispatchBridgeBotStarted(username, 'telegram', 'bot-a')
 

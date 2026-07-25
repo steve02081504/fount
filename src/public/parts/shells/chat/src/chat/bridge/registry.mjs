@@ -1,262 +1,176 @@
-import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
-
-import { appendSignedLocalEvent } from '../dag/append.mjs'
-import { getState } from '../dag/materialize.mjs'
-import { newGroup } from '../session/groupLifecycle.mjs'
-
+/**
+ * 虚拟桥接会话 registry 兼容面（不再建真实 chat 群）。
+ */
 import {
-	bridgeGroupKey,
-	loadBridgesDoc,
-	saveBridgesDoc,
-} from './store.mjs'
-
-const MESSAGE_MAP_MAX = 500
+	ensureVirtualBridgeSession,
+	getVirtualBridgeSession,
+	isVirtualBridgeBackfilled,
+	listVirtualBridgeSessions,
+	markVirtualBridgeBackfilled,
+	parseVirtualBridgeGroupId,
+	virtualBridgeChannelId,
+	virtualBridgeGroupId,
+} from './session.mjs'
 
 /**
  * @param {string} username replica
- * @param {string} groupKey 桥接群键
- * @returns {object | null} 映射行或 null
+ * @param {{ platform: string, platformChatId: string | number, chatKind?: 'dm' | 'group', name?: string, botname?: string, charname?: string }} args 参数
+ * @returns {Promise<{ groupId: string, mapping: object }>} 虚拟群
  */
-export function getBridgeGroupMapping(username, groupKey) {
-	return loadBridgesDoc(username).mappings[groupKey] || null
-}
-
-/**
- * 确保平台会话映射到 fount 群（不存在则建群并写 bridge 标记）。
- * @param {string} username replica
- * @param {{ platform: string, platformChatId: string | number, chatKind?: 'dm' | 'group', name?: string, botname?: string }} args 参数
- * @returns {Promise<{ groupId: string, mapping: object }>} 群 ID 与映射行
- */
-export async function ensureBridgeGroup(username, { platform, platformChatId, chatKind = 'group', name, botname }) {
-	const key = bridgeGroupKey(platform, platformChatId)
-	const doc = loadBridgesDoc(username)
-	let mapping = doc.mappings[key]
-	if (mapping?.groupId) {
-		if (!mapping.channels) mapping.channels = { default: 'default' }
-		if (!mapping.messageMap) mapping.messageMap = []
-		if (botname) {
-			const { state } = await getState(username, mapping.groupId)
-			const current = state.groupSettings?.bridge
-			if (current && String(current.botname || '') !== String(botname))
-				await appendSignedLocalEvent(username, mapping.groupId, {
-					type: 'group_settings_update',
-					timestamp: Date.now(),
-					content: {
-						bridge: {
-							...current,
-							botname: String(botname),
-						},
-					},
-				})
-
-		}
-		return { groupId: mapping.groupId, mapping }
-	}
-
-	const groupId = await newGroup(username, { name: name || `${platform}:${platformChatId}` })
-	await appendSignedLocalEvent(username, groupId, {
-		type: 'group_settings_update',
-		timestamp: Date.now(),
-		content: {
-			bridge: {
-				platform: String(platform),
-				platformChatId: String(platformChatId),
-				chatKind,
-				...botname ? { botname: String(botname) } : {},
-			},
+export async function ensureBridgeGroup(username, args) {
+	const session = ensureVirtualBridgeSession(username, args)
+	return {
+		groupId: session.groupId,
+		mapping: {
+			groupId: session.groupId,
+			channels: Object.fromEntries(
+				Object.keys(session.channels).map(id => [id === 'default' ? 'default' : id, id]),
+			),
+			messageMap: [],
 		},
-	})
-
-	mapping = {
-		groupId,
-		channels: { default: 'default' },
-		messageMap: [],
 	}
-	doc.mappings[key] = mapping
-	saveBridgesDoc(username, doc)
-	return { groupId, mapping }
 }
 
 /**
- * 解析桥接频道（thread 未映射则建子频道）。
  * @param {string} username replica
  * @param {{ platform: string, platformChatId: string | number, platformThreadId?: string | number }} args 参数
- * @returns {Promise<{ groupId: string, channelId: string }>} 群与频道 ID
+ * @returns {Promise<{ groupId: string, channelId: string }>} 群与频道
  */
 export async function resolveBridgeChannel(username, { platform, platformChatId, platformThreadId }) {
-	const key = bridgeGroupKey(platform, platformChatId)
-	const doc = loadBridgesDoc(username)
-	const mapping = doc.mappings[key]
-	if (!mapping?.groupId) throw new Error(`bridge group not mapped: ${key}`)
-
-	const threadKey = (platformThreadId != null) && String(platformThreadId).trim() || 'default'
-
-	let channelId = mapping.channels?.[threadKey]
-	if (channelId) return { groupId: mapping.groupId, channelId }
-
-	if (threadKey === 'default')
-		channelId = 'default'
-	else {
-		channelId = prefixedRandomId('channel_')
-		await appendSignedLocalEvent(username, mapping.groupId, {
-			type: 'channel_create',
-			timestamp: Date.now(),
-			content: {
-				channelId,
-				name: `thread:${threadKey}`,
-				type: 'text',
-			},
-		})
+	const groupId = virtualBridgeGroupId(platform, platformChatId)
+	if (!getVirtualBridgeSession(username, groupId))
+		ensureVirtualBridgeSession(username, { platform, platformChatId })
+	return {
+		groupId,
+		channelId: virtualBridgeChannelId(platformThreadId),
 	}
-
-	mapping.channels ??= {}
-	mapping.channels[threadKey] = channelId
-	doc.mappings[key] = mapping
-	saveBridgesDoc(username, doc)
-	return { groupId: mapping.groupId, channelId }
 }
 
 /**
  * @param {string} username replica
  * @param {string} groupId 群 ID
- * @returns {string | null} 桥接群键
+ * @returns {string | null} 桥接群键 platform:chatId
  */
 export function findBridgeGroupKeyByGroupId(username, groupId) {
-	const doc = loadBridgesDoc(username)
-	for (const [key, mapping] of Object.entries(doc.mappings))
-		if (mapping?.groupId === groupId) return key
+	const parsed = parseVirtualBridgeGroupId(groupId)
+	if (!parsed || !getVirtualBridgeSession(username, groupId)) return null
+	return `${parsed.platform}:${parsed.platformChatId}`
+}
+
+/**
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ * @param {string | number} platformMessageId 平台消息 id
+ * @returns {string | null} eventId
+ */
+export function lookupBridgeEventId(username, groupId, platformMessageId) {
+	const session = getVirtualBridgeSession(username, groupId)
+	if (!session) return null
+	const needle = String(platformMessageId)
+	for (const channel of Object.values(session.channels)) 
+		for (let i = channel.messageMap.length - 1; i >= 0; i--) {
+			const row = channel.messageMap[i]
+			if (String(row.platformMessageId) === needle)
+				return String(row.eventId).toLowerCase()
+		}
+	
 	return null
 }
 
 /**
- * 记录 fount eventId ↔ 平台 messageId 对。
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ * @param {string} eventId 虚拟事件 id
+ * @returns {string | null} platformMessageId
+ */
+export function lookupBridgePlatformMessageId(username, groupId, eventId) {
+	const session = getVirtualBridgeSession(username, groupId)
+	if (!session) return null
+	const needle = String(eventId || '').trim().toLowerCase()
+	for (const channel of Object.values(session.channels)) 
+		for (let i = channel.messageMap.length - 1; i >= 0; i--) {
+			const row = channel.messageMap[i]
+			if (String(row.eventId).toLowerCase() === needle)
+				return String(row.platformMessageId)
+		}
+	
+	return null
+}
+
+/**
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {{ eventId: string, platformMessageId: string | number }} pair 映射对
  * @returns {Promise<void>}
  */
 export async function recordBridgeMessagePair(username, groupId, { eventId, platformMessageId }) {
-	const key = findBridgeGroupKeyByGroupId(username, groupId)
-	if (!key) return
-	const doc = loadBridgesDoc(username)
-	const mapping = doc.mappings[key]
-	if (!mapping) return
-	mapping.messageMap ??= []
-	mapping.messageMap.push({
+	const session = getVirtualBridgeSession(username, groupId)
+	if (!session) return
+	const channel = session.channels.default
+	if (!channel) return
+	channel.messageMap.push({
 		eventId: String(eventId).trim().toLowerCase(),
 		platformMessageId: String(platformMessageId),
 	})
-	if (mapping.messageMap.length > MESSAGE_MAP_MAX)
-		mapping.messageMap = mapping.messageMap.slice(-MESSAGE_MAP_MAX)
-	doc.mappings[key] = mapping
-	saveBridgesDoc(username, doc)
-}
-
-/**
- * 按平台 messageId 查 fount eventId。
- * @param {string} username replica
- * @param {string} groupId 群 ID
- * @param {string | number} platformMessageId 平台消息 ID
- * @returns {string | null} eventId
- */
-export function lookupBridgeEventId(username, groupId, platformMessageId) {
-	const key = findBridgeGroupKeyByGroupId(username, groupId)
-	if (!key) return null
-	const needle = String(platformMessageId)
-	const mapping = loadBridgesDoc(username).mappings[key]
-	if (!mapping?.messageMap?.length) return null
-	for (let i = mapping.messageMap.length - 1; i >= 0; i--) {
-		const row = mapping.messageMap[i]
-		if (String(row.platformMessageId) === needle)
-			return String(row.eventId).trim().toLowerCase()
-	}
-	return null
-}
-
-/**
- * 按 fount eventId 反查平台 messageId（出站原生 reply 用）。
- * @param {string} username replica
- * @param {string} groupId 群 ID
- * @param {string} eventId fount 消息 id
- * @returns {string | null} platformMessageId
- */
-export function lookupBridgePlatformMessageId(username, groupId, eventId) {
-	const key = findBridgeGroupKeyByGroupId(username, groupId)
-	if (!key) return null
-	const needle = String(eventId || '').trim().toLowerCase()
-	if (!needle) return null
-	const mapping = loadBridgesDoc(username).mappings[key]
-	if (!mapping?.messageMap?.length) return null
-	for (let i = mapping.messageMap.length - 1; i >= 0; i--) {
-		const row = mapping.messageMap[i]
-		if (String(row.eventId).trim().toLowerCase() === needle)
-			return String(row.platformMessageId)
-	}
-	return null
 }
 
 /**
  * @param {string} username replica
  * @param {string} groupId 群 ID
- * @returns {boolean} 该桥接群是否已做过历史回填
+ * @returns {boolean} 是否已回填
  */
 export function isBridgeGroupBackfilled(username, groupId) {
-	const key = findBridgeGroupKeyByGroupId(username, groupId)
-	if (!key) return false
-	return !!loadBridgesDoc(username).mappings[key]?.backfilled
+	return isVirtualBridgeBackfilled(username, groupId)
 }
 
 /**
- * 持久化标记桥接群已完成历史回填（跨进程重启幂等）。
  * @param {string} username replica
  * @param {string} groupId 群 ID
+ * @returns {void}
  */
 export function markBridgeGroupBackfilled(username, groupId) {
-	const key = findBridgeGroupKeyByGroupId(username, groupId)
-	if (!key) return
-	const doc = loadBridgesDoc(username)
-	const mapping = doc.mappings[key]
-	if (!mapping) return
-	mapping.backfilled = true
-	saveBridgesDoc(username, doc)
+	markVirtualBridgeBackfilled(username, groupId)
 }
 
 /**
- * 枚举本 replica 已映射的桥接群。
  * @param {string} username replica
- * @returns {Array<{ groupKey: string, groupId: string }>} 已映射桥接群列表
+ * @returns {Array<{ groupKey: string, groupId: string }>} 映射列表
  */
 export function listBridgeGroupMappings(username) {
-	const doc = loadBridgesDoc(username)
-	return Object.entries(doc.mappings).map(([groupKey, mapping]) => ({
-		groupKey,
-		groupId: mapping.groupId,
+	return listVirtualBridgeSessions(username).map(session => ({
+		groupKey: `${session.platform}:${session.platformChatId}`,
+		groupId: session.groupId,
 	}))
 }
 
 /**
- * fount channelId → 平台会话/子频道反查（出站统一入口）。
  * @param {string} username replica
  * @param {string} groupId 群 ID
- * @param {string} channelId fount 频道 ID
- * @returns {{ platformChatId: string, platformThreadId?: string } | null} 平台会话与子频道
+ * @param {string} channelId 频道 ID
+ * @returns {{ platformChatId: string, platformThreadId?: string } | null} 平台定位
  */
 export function lookupBridgePlatformChannel(username, groupId, channelId) {
-	const groupKey = findBridgeGroupKeyByGroupId(username, groupId)
-	if (!groupKey) return null
-	const colon = groupKey.indexOf(':')
+	const session = getVirtualBridgeSession(username, groupId)
+	if (!session) return null
+	const id = String(channelId || 'default').trim() || 'default'
+	return {
+		platformChatId: session.platformChatId,
+		...id !== 'default' ? { platformThreadId: id } : {},
+	}
+}
+
+/**
+ * @param {string} username replica
+ * @param {string} groupKey 键
+ * @returns {object | null} 映射
+ */
+export function getBridgeGroupMapping(username, groupKey) {
+	const colon = String(groupKey).indexOf(':')
 	if (colon < 0) return null
+	const platform = groupKey.slice(0, colon)
 	const platformChatId = groupKey.slice(colon + 1)
-	const mapping = loadBridgesDoc(username).mappings[groupKey]
-	if (!mapping?.channels) return { platformChatId }
-
-	const normalizedChannelId = String(channelId || 'default').trim() || 'default'
-	for (const [threadKey, mappedChannelId] of Object.entries(mapping.channels))
-		if (mappedChannelId === normalizedChannelId)
-			return {
-				platformChatId,
-				...threadKey !== 'default' ? { platformThreadId: threadKey } : {},
-			}
-
-	return { platformChatId }
+	const groupId = virtualBridgeGroupId(platform, platformChatId)
+	const session = getVirtualBridgeSession(username, groupId)
+	if (!session) return null
+	return { groupId: session.groupId, channels: { default: 'default' }, messageMap: [] }
 }
