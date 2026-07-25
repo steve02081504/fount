@@ -80,6 +80,135 @@ function utf16Replace(text, offset, length, replacement) {
 }
 
 /**
+ * 对同一段文本叠加 Telegram 实体（结构类优先，样式外包）。
+ * @param {string} inner - 已处理好的内层文本。
+ * @param {TelegramMessageEntity[]} spanEntities - 覆盖同一 UTF-16 区间的实体。
+ * @returns {{ text: string, stylePrefix: number, innerPrefix: number, mentionLength: number, mentionEntity: TelegramMessageEntity | undefined }}
+ */
+function applyTelegramSpanFormats(inner, spanEntities) {
+	let text = inner
+	/** @type {TelegramMessageEntity | undefined} */
+	let mentionEntity
+	let contentPrefix = 0
+	for (const entity of spanEntities)
+		switch (entity.type) {
+			case 'text_mention':
+				text = `@[${text} (UserID:${entity.user.id})]`
+				mentionEntity = entity
+				contentPrefix = 2
+				break
+			case 'text_link':
+				text = `[${text}](${entity.url})`
+				contentPrefix = 1
+				break
+			case 'code':
+				text = `\`${text}\``
+				contentPrefix = 1
+				break
+			case 'pre':
+				text = '```' + (entity.language ? entity.language : '') + '\n' + text + '\n```'
+				contentPrefix = 3 + (entity.language ? entity.language.length : 0) + 1
+				break
+			case 'blockquote':
+				text = text.split('\n').map(line => `> ${line}`).join('\n')
+				contentPrefix = 2
+				break
+			default: break
+		}
+
+	const mentionLength = mentionEntity ? utf16Length(text) : 0
+	let stylePrefix = 0
+	for (const entity of spanEntities)
+		switch (entity.type) {
+			case 'bold': text = `**${text}**`; stylePrefix += 2; break
+			case 'italic': text = `*${text}*`; stylePrefix += 1; break
+			case 'underline': text = `__${text}__`; stylePrefix += 2; break
+			case 'strikethrough': text = `~~${text}~~`; stylePrefix += 2; break
+			case 'spoiler': text = `||${text}||`; stylePrefix += 2; break
+			default: break
+		}
+
+	return {
+		text,
+		stylePrefix,
+		innerPrefix: stylePrefix + contentPrefix,
+		mentionLength,
+		mentionEntity,
+	}
+}
+
+/**
+ * 渲染 [rangeStart, rangeEnd) 内嵌套/同段实体（TG 允许嵌套与同段叠加，禁止部分重叠）。
+ * @param {string} text 原始文本
+ * @param {TelegramMessageEntity[]} entities 候选实体
+ * @param {number} rangeStart UTF-16 起点
+ * @param {number} rangeEnd UTF-16 终点
+ * @param {number} markdownBase 已输出 Markdown 的 UTF-16 长度
+ * @returns {{ text: string, mentionEntities: TelegramMessageEntity[] }}
+ */
+function renderTelegramEntityRange(text, entities, rangeStart, rangeEnd, markdownBase) {
+	/** @type {string[]} */
+	const parts = []
+	/** @type {TelegramMessageEntity[]} */
+	const mentionEntities = []
+	const contained = entities
+		.filter(entity => entity.offset >= rangeStart && entity.offset + entity.length <= rangeEnd)
+		.sort((a, b) => a.offset - b.offset || b.length - a.length)
+
+	let cursor = rangeStart
+	let i = 0
+	while (i < contained.length) {
+		const entity = contained[i]
+		if (entity.offset < cursor) {
+			i++
+			continue
+		}
+		if (entity.offset > cursor)
+			parts.push(utf16Slice(text, cursor, entity.offset - cursor))
+
+		const spanStart = entity.offset
+		const spanEnd = entity.offset + entity.length
+		/** @type {TelegramMessageEntity[]} */
+		const exactSpan = []
+		while (i < contained.length && contained[i].offset === spanStart && contained[i].offset + contained[i].length === spanEnd)
+			exactSpan.push(contained[i++])
+
+		const nested = contained.filter(candidate =>
+			candidate.offset >= spanStart && candidate.offset + candidate.length <= spanEnd
+			&& !(candidate.offset === spanStart && candidate.offset + candidate.length === spanEnd)
+		)
+		const partBase = markdownBase + utf16Length(parts.join(''))
+		const innerRendered = nested.length
+			? renderTelegramEntityRange(text, nested, spanStart, spanEnd, partBase)
+			: { text: utf16Slice(text, spanStart, spanEnd - spanStart), mentionEntities: [] }
+		const formatted = applyTelegramSpanFormats(innerRendered.text, exactSpan)
+
+		const mentionSource = formatted.mentionEntity || exactSpan.find(item => item.type === 'mention')
+		if (mentionSource)
+			mentionEntities.push({
+				...mentionSource,
+				offset: partBase + formatted.stylePrefix,
+				length: formatted.mentionEntity
+					? formatted.mentionLength
+					: utf16Length(innerRendered.text),
+			})
+		else
+			for (const nestedMention of innerRendered.mentionEntities)
+				mentionEntities.push({
+					...nestedMention,
+					offset: nestedMention.offset + formatted.innerPrefix,
+				})
+
+		parts.push(formatted.text)
+		cursor = spanEnd
+	}
+	if (cursor < rangeEnd)
+		parts.push(utf16Slice(text, cursor, rangeEnd - cursor))
+
+	return { text: parts.join(''), mentionEntities }
+}
+
+/**
  * @param {string | undefined} text - 原始消息文本。
  * @param {TelegramMessageEntity[] | undefined} entities - Telegram 消息实体数组。
  * @param {TelegramBotInfo | undefined} botInfo - bot自身信息。
@@ -120,54 +249,16 @@ function telegramEntitiesToAiMarkdownMapped(text, entities, botInfo, replyToMess
 			aiMarkdown += `\n(回复 ${replierName})\n\n`
 		}
 	}
-	/** @type {TelegramMessageEntity[]} */
-	const mentionEntities = []
-	if (!text) return { text: aiMarkdown.trim(), mentionEntities }
-	if (!entities?.length) return { text: (aiMarkdown + text).trim(), mentionEntities }
+	if (!text) return { text: aiMarkdown.trim(), mentionEntities: [] }
+	if (!entities?.length) return { text: (aiMarkdown + text).trim(), mentionEntities: [] }
 
-	const parts = []
-	let lastOffset = 0
-	const sortedEntities = [...entities].sort((a, b) => a.offset - b.offset)
-	for (const entity of sortedEntities) {
-		if (entity.offset > lastOffset)
-			parts.push(utf16Slice(text, lastOffset, entity.offset - lastOffset))
-
-		const entityText = utf16Slice(text, entity.offset, entity.length)
-		let formattedEntityText = entityText
-		switch (entity.type) {
-			case 'bold': formattedEntityText = `**${entityText}**`; break
-			case 'italic': formattedEntityText = `*${entityText}*`; break
-			case 'underline': formattedEntityText = `__${entityText}__`; break
-			case 'strikethrough': formattedEntityText = `~~${entityText}~~`; break
-			case 'spoiler': formattedEntityText = `||${entityText}||`; break
-			case 'code': formattedEntityText = `\`${entityText}\``; break
-			case 'pre': formattedEntityText = '```' + (entity.language ? entity.language : '') + '\n' + entityText + '\n```'; break
-			case 'text_link': formattedEntityText = `[${entityText}](${entity.url})`; break
-			case 'blockquote': formattedEntityText = entityText.split('\n').map(line => `> ${line}`).join('\n'); break
-			case 'text_mention': formattedEntityText = `@[${entityText} (UserID:${entity.user.id})]`; break
-			case 'mention': case 'hashtag': case 'cashtag': case 'bot_command': case 'url': case 'email': case 'phone_number':
-				formattedEntityText = entityText; break
-			default: formattedEntityText = entityText
-		}
-		if (entity.type === 'text_mention' || entity.type === 'mention')
-			mentionEntities.push({
-				...entity,
-				offset: utf16Length(aiMarkdown + parts.join('')),
-				length: utf16Length(formattedEntityText),
-			})
-
-		parts.push(formattedEntityText)
-		lastOffset = entity.offset + entity.length
-	}
-	if (lastOffset < text.length)
-		parts.push(text.slice(lastOffset))
-
-	aiMarkdown += parts.join('')
+	const rendered = renderTelegramEntityRange(text, entities, 0, text.length, utf16Length(aiMarkdown))
+	aiMarkdown += rendered.text
 	const leadWs = aiMarkdown.match(/^\s*/u)?.[0] || ''
 	const leadUtf16 = utf16Length(leadWs)
 	return {
 		text: aiMarkdown.trim(),
-		mentionEntities: mentionEntities.map(entity => ({
+		mentionEntities: rendered.mentionEntities.map(entity => ({
 			...entity,
 			offset: entity.offset - leadUtf16,
 		})).filter(entity => entity.offset >= 0),

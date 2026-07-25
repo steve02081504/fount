@@ -14,6 +14,7 @@ import {
 	aiMarkdownToTelegramHtml,
 	extractStickerIdsFromMarkdown,
 	splitTelegramReply,
+	telegramEntitiesToAiMarkdown,
 	telegramMessageToBridgeDto,
 } from '../../src/format.mjs'
 
@@ -63,6 +64,36 @@ Deno.test('splitTelegramReply splits long HTML safely', () => {
 Deno.test('aiMarkdownToTelegramHtml bold', () => {
 	const html = aiMarkdownToTelegramHtml('**hi**')
 	assertEquals(html.includes('<b>hi</b>'), true)
+})
+
+Deno.test('telegramEntitiesToAiMarkdown merges bold text_mention into one span', () => {
+	const text = 'hey Alice!'
+	const markdown = telegramEntitiesToAiMarkdown(text, [
+		{ type: 'bold', offset: 4, length: 5 },
+		{
+			type: 'text_mention',
+			offset: 4,
+			length: 5,
+			user: { id: 42, is_bot: false, first_name: 'Alice' },
+		},
+	])
+	assertEquals(markdown, 'hey **@[Alice (UserID:42)]**!')
+	assertEquals(markdown.includes('Alice**'), false)
+	assertEquals(markdown.includes('**Alice'), false)
+})
+
+Deno.test('telegramEntitiesToAiMarkdown nests text_mention inside wider bold', () => {
+	const text = 'hello Alice end'
+	const markdown = telegramEntitiesToAiMarkdown(text, [
+		{ type: 'bold', offset: 0, length: 11 },
+		{
+			type: 'text_mention',
+			offset: 6,
+			length: 5,
+			user: { id: 7, is_bot: false, first_name: 'Alice' },
+		},
+	])
+	assertEquals(markdown, '**hello @[Alice (UserID:7)]** end')
 })
 
 Deno.test('extractStickerIdsFromMarkdown strips stickers for outbound', () => {
@@ -244,6 +275,41 @@ Deno.test('telegramMessageToBridgeDto remaps mention offsets after earlier markd
 	assert(dto.text.includes(`@[entity:${expectedHash}]`))
 	assert(!dto.text.includes('Alice'))
 	assert(!dto.text.includes('UserID:'))
+})
+
+Deno.test('telegramMessageToBridgeDto rewrites bold text_mention without duplicating text', async () => {
+	const username = `tg-bold-mention-${crypto.randomUUID().slice(0, 8)}`
+	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_bold_mention_'))
+	await createTestServerBoot({
+		username,
+		dataDir,
+		minP2pNode: true,
+		loadParts: ['shells/chat'],
+	})()
+
+	const { bridgeEntityHash } = await import('../../../chat/src/chat/bridge/identity.mjs')
+	const mentionUserId = 313131
+	const expectedHash = bridgeEntityHash('telegram', mentionUserId)
+	const message = {
+		message_id: 90,
+		date: 1_700_000_300,
+		text: 'ping Alice now',
+		entities: [
+			{ type: 'bold', offset: 5, length: 5 },
+			{
+				type: 'text_mention',
+				offset: 5,
+				length: 5,
+				user: { id: mentionUserId, is_bot: false, first_name: 'Alice' },
+			},
+		],
+		from: { id: 14, first_name: 'Eve' },
+		chat: { id: -100777, type: 'supergroup', title: 'Bold Mention Group' },
+	}
+
+	const dto = await telegramMessageToBridgeDto({}, message, { id: 1, username: 'bot' }, username)
+	assert(dto)
+	assertEquals(dto.text, `ping **@[entity:${expectedHash}]** now`)
 })
 
 Deno.test('rewriteTelegramMentionsToFount rewrites @BotUsername mention entity', async () => {
