@@ -1,3 +1,5 @@
+import { dropVirtualBridgeSessionsForBot } from './session.mjs'
+
 /** @type {Map<string, (args: { channelId: string, messageLine: object, replyToPlatformMessageId?: string | null, charname?: string }) => Promise<{ platformMessageId?: string | number } | void>>} */
 const outboundHandlers = new Map()
 
@@ -31,6 +33,28 @@ export function unregisterBridgeOutbound(username, groupId) {
 }
 
 /**
+ * bot 停止时统一清理 outbound 注册、虚拟会话与 char 运行时表项。
+ * @param {{ username: string, platform: string, botname: string, outboundRegistered: Set<string>, registry: Record<string, Record<string, unknown>>, charname: string }} args 清理参数
+ * @returns {void}
+ */
+export function teardownBridgeInterface({
+	username,
+	platform,
+	botname,
+	outboundRegistered,
+	registry,
+	charname,
+}) {
+	for (const groupId of outboundRegistered)
+		unregisterBridgeOutbound(username, groupId)
+	outboundRegistered.clear()
+	dropVirtualBridgeSessionsForBot(username, platform, botname)
+	delete registry[username]?.[charname]
+	if (registry[username] && !Object.keys(registry[username]).length)
+		delete registry[username]
+}
+
+/**
  * char 产出消息后通知壳层出站。
  * @param {string} username replica
  * @param {string} groupId 虚拟群 ID
@@ -43,17 +67,22 @@ export async function notifyVirtualBridgeOutbound(username, groupId, channelId, 
 	const handler = outboundHandlers.get(handlerKey(username, groupId))
 	if (!handler) return
 	const { lookupVirtualOutboundReplyTarget } = await import('./virtualObjects.mjs')
-	const { getVirtualBridgeSession, lookupVirtualBridgePlatformMessageId } = await import('./session.mjs')
+	const {
+		getVirtualBridgeSession,
+		lookupVirtualBridgePlatformMessageId,
+		recordVirtualBridgeMessagePair,
+	} = await import('./session.mjs')
 	const replyEventId = messageLine?.extension?.replyTo?.eventId
 		|| messageLine?.extension?.bridge?.replyToEventId
 	const replyToPlatformMessageId = replyEventId
 		? lookupVirtualOutboundReplyTarget(username, groupId, channelId, replyEventId)
 		: null
+	const eventId = messageLine?.extension?.virtualEventId ?? messageLine?.eventId
 	const result = await handler({
 		channelId,
 		messageLine: {
 			...messageLine,
-			eventId: messageLine.extension?.virtualEventId,
+			eventId,
 			content: typeof messageLine.content === 'string'
 				? { type: 'text', content: messageLine.content }
 				: messageLine.content,
@@ -64,16 +93,11 @@ export async function notifyVirtualBridgeOutbound(username, groupId, channelId, 
 		charname,
 	})
 	const platformMessageId = result?.platformMessageId
-	const eventId = messageLine?.extension?.virtualEventId
 	if (platformMessageId != null && eventId) {
 		const session = getVirtualBridgeSession(username, groupId)
 		const channel = session?.channels[channelId]
-		if (channel && !lookupVirtualBridgePlatformMessageId(channel, eventId)) 
-			channel.messageMap.push({
-				eventId: String(eventId).toLowerCase(),
-				platformMessageId: String(platformMessageId),
-			})
-		
+		if (channel && !lookupVirtualBridgePlatformMessageId(channel, eventId))
+			recordVirtualBridgeMessagePair(channel, eventId, platformMessageId)
 	}
 }
 

@@ -12,7 +12,7 @@ import {
 	appendVirtualBridgeCharReply,
 	getVirtualBridgeSession,
 	lookupVirtualBridgePlatformMessageId,
-	parseVirtualBridgeGroupId,
+	resolveVirtualBridgePlatformIds,
 } from './session.mjs'
 import { listVirtualBridgeTyping, recordVirtualBridgeTyping } from './typing.mjs'
 
@@ -337,28 +337,21 @@ export function createVirtualBridgeMessage(apiContext, groupId, entry, mentions)
  * @returns {Promise<(object & { platform: string }) | null>} 原生上下文
  */
 export async function hydrateVirtualBridgeNativeContext(username, groupId, channelId, triggerEntry) {
-	const parsed = parseVirtualBridgeGroupId(groupId)
-	const session = getVirtualBridgeSession(username, groupId)
-	if (!parsed || !session) return null
+	const ids = resolveVirtualBridgePlatformIds(username, groupId, channelId)
+	if (!ids) return null
 	const platformMessageId = triggerEntry?.extension?.bridge?.platformMessageId
-	const getNativeContext = session.botname
-		? resolveBridgeOperations(username, { platform: session.platform, botname: session.botname })?.getNativeContext
+	const getNativeContext = ids.botname
+		? resolveBridgeOperations(username, { platform: ids.platform, botname: ids.botname })?.getNativeContext
 		: undefined
-	const ids = {
-		platform: session.platform,
-		platformChatId: session.platformChatId,
-		...session.botname ? { botname: session.botname } : {},
-		...channelId !== 'default' ? { platformThreadId: channelId } : {},
-	}
 	if (!getNativeContext)
 		return { ...ids, platformMessageId }
 	return {
 		...ids,
 		platformMessageId,
 		...await getNativeContext({
-			platformChatId: channelId !== 'default' ? channelId : session.platformChatId,
+			platformChatId: ids.platformChatId,
 			platformMessageId,
-			...channelId !== 'default' ? { platformThreadId: channelId } : {},
+			...ids.platformThreadId ? { platformThreadId: ids.platformThreadId } : {},
 		}),
 	}
 }

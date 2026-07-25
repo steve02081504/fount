@@ -9,9 +9,8 @@ import {
 	tryFewTimes,
 } from '../../../chat/src/chat/bridge/interfaceKit.mjs'
 import { registerBridgeOperations } from '../../../chat/src/chat/bridge/operations.mjs'
-import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../../chat/src/chat/bridge/outbound.mjs'
+import { registerBridgeOutbound, teardownBridgeInterface } from '../../../chat/src/chat/bridge/outbound.mjs'
 import { lookupBridgePlatformChannel } from '../../../chat/src/chat/bridge/registry.mjs'
-import { dropVirtualBridgeSessionsForBot } from '../../../chat/src/chat/bridge/session.mjs'
 import {
 	aiMarkdownToTelegramHtml,
 	buildTelegramTextAndEntities,
@@ -145,13 +144,14 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 			charname: botCharname,
 			/** @returns {Promise<void>} 清理 outbound 与 char 注册表 */
 			teardown: async () => {
-				for (const groupId of outboundRegistered)
-					unregisterBridgeOutbound(ownerUsername, groupId)
-				outboundRegistered.clear()
-				dropVirtualBridgeSessionsForBot(ownerUsername, 'telegram', botname)
-				delete charBotRegistry[ownerUsername]?.[botCharname]
-				if (charBotRegistry[ownerUsername] && !Object.keys(charBotRegistry[ownerUsername]).length)
-					delete charBotRegistry[ownerUsername]
+				teardownBridgeInterface({
+					username: ownerUsername,
+					platform: 'telegram',
+					botname,
+					outboundRegistered,
+					registry: charBotRegistry,
+					charname: botCharname,
+				})
 			},
 		})
 

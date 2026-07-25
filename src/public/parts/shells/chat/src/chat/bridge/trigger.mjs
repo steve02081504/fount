@@ -17,13 +17,14 @@ import { recordVirtualBridgeTyping } from './typing.mjs'
 const inflight = new Set()
 
 /**
+ * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} charname 角色名
  * @returns {string} flight key
  */
-function flightKey(groupId, channelId, charname) {
-	return `${groupId}\0${channelId}\0${charname}`
+function flightKey(username, groupId, channelId, charname) {
+	return `${username}\0${groupId}\0${channelId}\0${charname}`
 }
 
 /**
@@ -80,7 +81,7 @@ export async function runVirtualBridgeTrigger(username, groupId, channelId, entr
 	})
 	if (!allowed) return
 
-	const key = flightKey(groupId, channelId, charname)
+	const key = flightKey(username, groupId, channelId, charname)
 	if (inflight.has(key)) return
 	inflight.add(key)
 

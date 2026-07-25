@@ -1,6 +1,6 @@
 import { resolveBridgeOperations } from '../bridge/operations.mjs'
 import { lookupBridgePlatformChannel } from '../bridge/registry.mjs'
-import { isVirtualBridgeGroupId } from '../bridge/session.mjs'
+import { isVirtualBridgeGroupId, resolveVirtualBridgePlatformIds } from '../bridge/session.mjs'
 import { hydrateVirtualBridgeNativeContext } from '../bridge/virtualObjects.mjs'
 import { getState } from '../dag/materialize.mjs'
 
@@ -33,18 +33,8 @@ export function bridgeMetaFromChatLogEntry(entry) {
  * @returns {Promise<{ platform: string, platformChatId: string, platformThreadId?: string, botname?: string } | null>} 非桥接为 null
  */
 export async function resolveBridgePlatformIds(username, groupId, channelId) {
-	if (isVirtualBridgeGroupId(groupId)) {
-		const { getVirtualBridgeSession } = await import('../bridge/session.mjs')
-		const session = getVirtualBridgeSession(username, groupId)
-		if (!session) return null
-		const id = String(channelId || 'default').trim() || 'default'
-		return {
-			platform: session.platform,
-			platformChatId: session.platformChatId,
-			...session.botname ? { botname: session.botname } : {},
-			...id !== 'default' ? { platformThreadId: id } : {},
-		}
-	}
+	if (isVirtualBridgeGroupId(groupId))
+		return resolveVirtualBridgePlatformIds(username, groupId, channelId)
 
 	const { state } = await getState(username, groupId)
 	const bridge = state.groupSettings?.bridge

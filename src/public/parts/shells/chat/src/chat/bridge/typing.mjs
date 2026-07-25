@@ -1,7 +1,6 @@
 import { resolveBridgeIdentity } from './identity.mjs'
 import {
 	ensureVirtualBridgeSession,
-	getVirtualBridgeSession,
 	virtualBridgeChannelId,
 	virtualBridgeGroupId,
 } from './session.mjs'
@@ -81,13 +80,11 @@ export const listTypingEntities = listVirtualBridgeTyping
  */
 export async function postBridgeTyping(username, dto) {
 	const groupId = virtualBridgeGroupId(dto.platform, dto.platformChatId)
-	if (!getVirtualBridgeSession(username, groupId)) 
-		ensureVirtualBridgeSession(username, {
-			platform: dto.platform,
-			platformChatId: dto.platformChatId,
-			botname: dto.botname,
-		})
-	
+	ensureVirtualBridgeSession(username, {
+		platform: dto.platform,
+		platformChatId: dto.platformChatId,
+		botname: dto.botname,
+	})
 	const channelId = virtualBridgeChannelId(dto.platformThreadId)
 	const entityHash = await resolveBridgeIdentity(username, dto.platform, dto.platformUserId, dto.displayName)
 	recordVirtualBridgeTyping(username, groupId, channelId, entityHash)

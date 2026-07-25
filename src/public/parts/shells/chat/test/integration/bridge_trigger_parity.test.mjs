@@ -160,7 +160,7 @@ Deno.test('four-end group: plain chars without OnMessage do not fallback-trigger
 	const replyMarkers = ['write_path_agent reply', 'plain_reply_b reply']
 
 	for (const [index, end] of ENDS.entries()) {
-		const charname = end === 'hub' ? CHAR_PLAIN_A : CHAR_PLAIN_A
+		const charname = end === 'hub' ? CHAR_PLAIN_A : CHAR_PLAIN_B
 		const session = await openEnd(end, username, {
 			chatKind: 'group',
 			label: `parity-plain-g-${end}`,

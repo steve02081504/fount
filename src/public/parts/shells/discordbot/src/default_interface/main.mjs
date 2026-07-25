@@ -13,13 +13,12 @@ import {
 	tryFewTimes,
 } from '../../../chat/src/chat/bridge/interfaceKit.mjs'
 import { registerBridgeOperations } from '../../../chat/src/chat/bridge/operations.mjs'
-import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../../chat/src/chat/bridge/outbound.mjs'
+import { registerBridgeOutbound, teardownBridgeInterface } from '../../../chat/src/chat/bridge/outbound.mjs'
 import {
 	isBridgeGroupBackfilled,
 	lookupBridgePlatformChannel,
 	markBridgeGroupBackfilled,
 } from '../../../chat/src/chat/bridge/registry.mjs'
-import { dropVirtualBridgeSessionsForBot } from '../../../chat/src/chat/bridge/session.mjs'
 import { postBridgeTyping } from '../../../chat/src/chat/bridge/typing.mjs'
 import {
 	discordMessageToBridgeDto,
@@ -151,13 +150,14 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			charname: botCharname,
 			/** @returns {Promise<void>} 清理 outbound 与 char 注册表 */
 			teardown: async () => {
-				for (const groupId of outboundRegistered)
-					unregisterBridgeOutbound(ownerUsername, groupId)
-				outboundRegistered.clear()
-				dropVirtualBridgeSessionsForBot(ownerUsername, 'discord', botname)
-				delete charClientRegistry[ownerUsername]?.[botCharname]
-				if (charClientRegistry[ownerUsername] && !Object.keys(charClientRegistry[ownerUsername]).length)
-					delete charClientRegistry[ownerUsername]
+				teardownBridgeInterface({
+					username: ownerUsername,
+					platform: 'discord',
+					botname,
+					outboundRegistered,
+					registry: charClientRegistry,
+					charname: botCharname,
+				})
 			},
 		})
 

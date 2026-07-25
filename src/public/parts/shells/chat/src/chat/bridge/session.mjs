@@ -115,6 +115,25 @@ export function getVirtualBridgeSession(username, groupId) {
 }
 
 /**
+ * 虚拟桥接群的平台定位（chat / 可选 thread）。
+ * @param {string} username replica
+ * @param {string} groupId 虚拟群 ID
+ * @param {string} channelId 频道 ID
+ * @returns {{ platform: string, platformChatId: string, botname?: string, platformThreadId?: string } | null} 定位
+ */
+export function resolveVirtualBridgePlatformIds(username, groupId, channelId) {
+	const session = getVirtualBridgeSession(username, groupId)
+	if (!session) return null
+	const id = String(channelId || 'default').trim() || 'default'
+	return {
+		platform: session.platform,
+		platformChatId: session.platformChatId,
+		...session.botname ? { botname: session.botname } : {},
+		...id !== 'default' ? { platformThreadId: id } : {},
+	}
+}
+
+/**
  * @param {string} username replica
  * @param {string} groupId 虚拟群 ID
  * @param {string} channelId 频道 ID
@@ -152,7 +171,13 @@ function pushLog(channel, entry) {
  * @param {string | number} platformMessageId 平台消息 id
  * @returns {void}
  */
-function recordPair(channel, eventId, platformMessageId) {
+/**
+ * @param {object} channel 频道桶
+ * @param {string} eventId 虚拟事件 id
+ * @param {string | number} platformMessageId 平台消息 id
+ * @returns {void}
+ */
+export function recordVirtualBridgeMessagePair(channel, eventId, platformMessageId) {
 	channel.messageMap.push({
 		eventId: String(eventId).toLowerCase(),
 		platformMessageId: String(platformMessageId),
@@ -248,7 +273,7 @@ export async function appendVirtualBridgeMessage(username, dto) {
 	}
 	if (dto.ingress === 'backfill') entry.extension.ingress = 'backfill'
 	pushLog(channel, entry)
-	recordPair(channel, eventId, dto.platformMessageId)
+	recordVirtualBridgeMessagePair(channel, eventId, dto.platformMessageId)
 	return { session, channel, entry }
 }
 
