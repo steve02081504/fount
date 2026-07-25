@@ -1,11 +1,10 @@
 /**
  * 联邦房间 FederationSlot：roomContext + 统一 send(action, payload, peerId)。
  */
-import { pruneStaleRosterEntries } from './rosterMaps.mjs'
-import { isFederationActionAllowedUnderLoad } from './roomLoadBudget.mjs'
-import { recordStalePeerPrune } from './stalePeerLog.mjs'
-
 import { bindFedSender } from './outbound.mjs'
+import { isFederationActionAllowedUnderLoad } from './roomLoadBudget.mjs'
+import { pruneStaleRosterEntries } from './rosterMaps.mjs'
+import { recordStalePeerPrune } from './stalePeerLog.mjs'
 
 /** @type {Record<string, [number, string]>} group scope action → [priority, logLabel] */
 const FED_ACTION_SPECS = {

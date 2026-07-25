@@ -6,11 +6,10 @@ import { resolveTrustedOwnerContext } from 'fount/public/parts/shells/chat/src/e
  * @returns {string} 纯文本内容
  */
 export function extractMessageText(message) {
-	const raw = message?.content
-	if (typeof raw === 'string') return raw.trim()
-	if (raw?.type === 'text' && raw.content != null) return String(raw.content).trim()
-	if (raw && typeof raw === 'object' && raw.content != null) return String(raw.content).trim()
-	return String(raw ?? '').trim()
+	const content = message?.content
+	if (content && typeof content === 'object' && content.type === 'text')
+		return String(content.content ?? '').trim()
+	return String(content ?? '').trim()
 }
 
 /**

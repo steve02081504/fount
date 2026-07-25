@@ -52,10 +52,10 @@ export async function messageMentionsEntity(event, entityHash) {
 	const username = event?.chatReplyRequest?.username
 	if (!groupId || !username) return false
 	const { isVirtualBridgeGroupId } = await import('../bridge/session.mjs')
-	if (isVirtualBridgeGroupId(groupId)) {
+	if (isVirtualBridgeGroupId(groupId)) 
 		// 虚拟桥接群无 DAG members：role/@everyone 无法展开，仅直接 entity @ 生效
 		return false
-	}
+	
 	const { state } = await getState(username, groupId)
 	if (mentions.everyone && isActiveGroupMember(state, hash)) return true
 	if (mentions.roleIds?.length && memberHasAnyRole(state, hash, mentions.roleIds)) return true

@@ -5,7 +5,7 @@ import { randomUUID } from 'node:crypto'
 
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { decryptUtf8ForMember, encryptUtf8ForMember } from 'npm:@steve02081504/fount-p2p/crypto/key'
-import { pickFederationTargetPeerIds } from './peerFanout.mjs'
+
 
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { eventsPath } from '../lib/paths.mjs'
@@ -17,6 +17,7 @@ import {
 import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './dagDependencies.mjs'
 import { catchUpGroupFromPeers } from './index.mjs'
 import { LOGIC_SYNC_PARTITION } from './partitions.mjs'
+import { pickFederationTargetPeerIds } from './peerFanout.mjs'
 import { getFederationPartitionSlot } from './registry.mjs'
 import { invalidateFederationRoomCache } from './room.mjs'
 import { roomCredentialsFromGroupSettings } from './roomCredentials.mjs'

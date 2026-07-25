@@ -197,7 +197,7 @@ test.describe('Social secondary views', () => {
 		await expect(page.locator('#notificationsScrollSentinel')).toBeAttached({ timeout: 30_000 })
 		await pumpFeedScroll(
 			page,
-			async () => (await page.locator('#notificationsView .notification-card').count()) > firstPageSize,
+			async () => await page.locator('#notificationsView .notification-card').count() > firstPageSize,
 			{ maxRounds: 24, leaveWaitMs: 150, enterWaitMs: 350, sentinel: '#notificationsScrollSentinel' },
 		)
 		// 首页 limit=40；第二页到达后总数应超过首页

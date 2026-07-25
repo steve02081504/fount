@@ -25,11 +25,7 @@ import {
 	parseJoinSnapshotResponse,
 	parsePullResponseEnvelope,
 } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
-import {
-	DEFAULT_ICE_SERVERS,
-	resolveIceServers,
-	sanitizeIceServersForSettings,
-} from '../../src/chat/lib/iceServers.mjs'
+
 
 import { findStaleUnreachableChannels } from '../../src/chat/channel/gc.mjs'
 import { registerChatEventTypeDefs } from '../../src/chat/dag/eventTypes.mjs'
@@ -48,6 +44,11 @@ import {
 } from '../../src/chat/federation/pullAttestation.mjs'
 import { wrapPullResponseInner, unwrapPullResponseEnvelope } from '../../src/chat/federation/pullResponse.mjs'
 import { parseGossipRequest } from '../../src/chat/federation/wireSchemas.mjs'
+import {
+	DEFAULT_ICE_SERVERS,
+	resolveIceServers,
+	sanitizeIceServersForSettings,
+} from '../../src/chat/lib/iceServers.mjs'
 
 registerChatEventTypeDefs()
 

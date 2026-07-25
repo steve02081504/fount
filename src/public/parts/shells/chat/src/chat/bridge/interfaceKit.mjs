@@ -76,14 +76,15 @@ export async function bridgeIngestDto(ownerUsername, charAPI, platform, dto, ens
 		botname,
 		charname,
 	})
-	const { entry } = await appendVirtualBridgeMessage(ownerUsername, dto)
 	const channelId = virtualBridgeChannelId(dto.platformThreadId)
+	// 先注册出站并完成历史回填，再写入触发消息，保证 chat_log.at(-1) 是最新消息
 	await ensureOutboundHandler(session.groupId, {
 		platform: session.platform,
 		platformChatId: session.platformChatId,
 		chatKind: session.chatKind,
 		botname: session.botname,
 	}, dto)
+	const { entry } = await appendVirtualBridgeMessage(ownerUsername, dto)
 	if (charname)
 		void runVirtualBridgeTrigger(ownerUsername, session.groupId, channelId, entry, charAPI, charname)
 			.catch(error => console.error('[bridge] virtual trigger failed:', error))

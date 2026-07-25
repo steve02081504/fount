@@ -11,7 +11,6 @@ import { dirname } from 'node:path'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
-import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { pendingIngestPath } from '../lib/paths.mjs'
 
 /** 单群 pending_ingest 最大行数（超出时丢弃最老行）。 */
@@ -79,12 +78,6 @@ export async function enqueuePendingIngest(username, groupId, signPayload, reaso
 		pendedAt: nowMs,
 	})
 	await writePendingIngestRows(username, groupId, rows)
-	await debugLog('pending-ingest', {
-		action: 'enqueue',
-		reason: String(reason || ''),
-		eventId: signPayload.id,
-		count: rows.length,
-	}).catch(() => {})
 }
 
 /**
@@ -113,10 +106,5 @@ export async function replayPendingIngestEvents(username, groupId, tryIngest) {
 	}
 	if (keep.length !== rows.length)
 		await writePendingIngestRows(username, groupId, keep)
-	await debugLog('pending-ingest', {
-		action: 'replay',
-		released,
-		remaining: keep.length,
-	}).catch(() => {})
 	return { released, remaining: keep.length }
 }

@@ -313,9 +313,11 @@ export async function restoreFountMentionsForDiscord(username, text) {
  * @param {import('npm:discord.js').Message} message Discord 消息
  * @param {import('npm:discord.js').Client} client Discord 客户端
  * @param {string} ownerUsername replica
+ * @param {{ includeMedia?: boolean }} [options] 转换选项；`includeMedia: false` 跳过附件/embed/贴纸下载
  * @returns {Promise<object | null>} bridge DTO
  */
-export async function discordMessageToBridgeDto(message, client, ownerUsername) {
+export async function discordMessageToBridgeDto(message, client, ownerUsername, options = {}) {
+	const includeMedia = options.includeMedia !== false
 	let fullMessage = message
 	if (fullMessage.partial) try {
 		fullMessage = await tryFewTimes(() => message.fetch())
@@ -344,53 +346,55 @@ export async function discordMessageToBridgeDto(message, client, ownerUsername) 
 	}
 	const text = await rewriteDiscordMentionsToFount(ownerUsername, rawText)
 	const files = []
-	const processedUrls = new Set()
-	const allAttachments = [
-		...fullMessage.attachments.values(),
-		...fullMessage.messageSnapshots.values().flatMap(s => [...s.attachments.values()]),
-	]
-	for (const attachment of allAttachments)
-		if (attachment?.url && !processedUrls.has(attachment.url)) {
-			processedUrls.add(attachment.url)
-			try {
-				const buffer = Buffer.from(await tryFewTimes(() => fetch(attachment.url).then(r => r.arrayBuffer())))
-				files.push({
-					name: attachment.name,
-					buffer,
-					mime_type: attachment.contentType || 'application/octet-stream',
-				})
-			}
-			catch { /* skip attachment */ }
-		}
-
-	for (const embed of fullMessage.embeds)
-		for (const url of [embed.image?.url, embed.thumbnail?.url].filter(Boolean))
-			if (!processedUrls.has(url)) {
-				processedUrls.add(url)
+	if (includeMedia) {
+		const processedUrls = new Set()
+		const allAttachments = [
+			...fullMessage.attachments.values(),
+			...fullMessage.messageSnapshots.values().flatMap(s => [...s.attachments.values()]),
+		]
+		for (const attachment of allAttachments)
+			if (attachment?.url && !processedUrls.has(attachment.url)) {
+				processedUrls.add(attachment.url)
 				try {
-					const buffer = Buffer.from(await tryFewTimes(() => fetch(url).then(r => r.arrayBuffer())))
+					const buffer = Buffer.from(await tryFewTimes(() => fetch(attachment.url).then(r => r.arrayBuffer())))
 					files.push({
-						name: url.substring(url.lastIndexOf('/') + 1).split('?')[0] || 'embedded_image.png',
+						name: attachment.name,
+						buffer,
+						mime_type: attachment.contentType || 'application/octet-stream',
+					})
+				}
+				catch { /* skip attachment */ }
+			}
+
+		for (const embed of fullMessage.embeds)
+			for (const url of [embed.image?.url, embed.thumbnail?.url].filter(Boolean))
+				if (!processedUrls.has(url)) {
+					processedUrls.add(url)
+					try {
+						const buffer = Buffer.from(await tryFewTimes(() => fetch(url).then(r => r.arrayBuffer())))
+						files.push({
+							name: url.substring(url.lastIndexOf('/') + 1).split('?')[0] || 'embedded_image.png',
+							buffer,
+							mime_type: 'image/png',
+						})
+					}
+					catch { /* skip embed image */ }
+				}
+
+		for (const [, sticker] of fullMessage.stickers)
+			if (sticker.url && sticker.format !== 3 && !processedUrls.has(sticker.url)) {
+				processedUrls.add(sticker.url)
+				try {
+					const buffer = Buffer.from(await tryFewTimes(() => fetch(sticker.url).then(r => r.arrayBuffer())))
+					files.push({
+						name: sticker.url.split('/').pop()?.split('?')[0] || `${sticker.name}.png`,
 						buffer,
 						mime_type: 'image/png',
 					})
 				}
-				catch { /* skip embed image */ }
+				catch { /* skip sticker */ }
 			}
-
-	for (const [, sticker] of fullMessage.stickers)
-		if (sticker.url && sticker.format !== 3 && !processedUrls.has(sticker.url)) {
-			processedUrls.add(sticker.url)
-			try {
-				const buffer = Buffer.from(await tryFewTimes(() => fetch(sticker.url).then(r => r.arrayBuffer())))
-				files.push({
-					name: sticker.url.split('/').pop()?.split('?')[0] || `${sticker.name}.png`,
-					buffer,
-					mime_type: 'image/png',
-				})
-			}
-			catch { /* skip sticker */ }
-		}
+	}
 
 	if (!text.trim() && !files.length) return null
 

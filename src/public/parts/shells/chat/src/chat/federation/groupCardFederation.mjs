@@ -1,14 +1,14 @@
 /**
  * 联邦群卡片拉取：fed_group_card_want / fed_group_card_data。
  */
-import { wireAction } from './wireAction.mjs'
-import { isFederationActionAllowedUnderLoad } from './roomLoadBudget.mjs'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
 
 import { getState } from '../../chat/dag/materialize.mjs'
 
 import { bindFedSender } from './outbound.mjs'
+import { isFederationActionAllowedUnderLoad } from './roomLoadBudget.mjs'
+import { wireAction } from './wireAction.mjs'
 
 const FETCH_TIMEOUT_MS = 14_000
 const CARD_WANT_MAX_PER_MIN = 30

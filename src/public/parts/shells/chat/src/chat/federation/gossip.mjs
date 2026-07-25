@@ -14,7 +14,6 @@ import {
 	takeOutgoingWantIdsSlot,
 } from 'npm:@steve02081504/fount-p2p/federation/want_ids'
 import { parsePullResponseEnvelope } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
-import { pickFederationTargetPeerIds, resolveFederationPoolLimits } from './peerFanout.mjs'
 import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import {
 	finishMultiWireWaiters,
@@ -26,6 +25,7 @@ import { eventsPath } from '../lib/paths.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'
 import { loadFederationGroupSettings, localNodeHash, requireDagDeps } from './dagDependencies.mjs'
+import { pickFederationTargetPeerIds, resolveFederationPoolLimits } from './peerFanout.mjs'
 import { signPullAttestation } from './pullAttestation.mjs'
 import {
 	applyPullInner,

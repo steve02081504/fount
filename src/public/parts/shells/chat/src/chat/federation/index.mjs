@@ -9,8 +9,7 @@ import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonlStream } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { isWantIdsInBackoff, wantIdsGroupKey } from 'npm:@steve02081504/fount-p2p/federation/want_ids'
-import { pickFederationTargetPeerIds, reconcilePeerPoolFromRoster } from './peerFanout.mjs'
-import { getStalePeerPruneCount } from './stalePeerLog.mjs'
+
 
 import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
@@ -36,10 +35,12 @@ import {
 	partitionForOutboundEvent,
 	pickLocalRelayPartition,
 } from './partitions.mjs'
+import { pickFederationTargetPeerIds, reconcilePeerPoolFromRoster } from './peerFanout.mjs'
 import { readPendingIngestRows } from './pendingIngest.mjs'
 import { enqueuePendingRelay } from './pendingRelay.mjs'
 import { EVENT_ID_HEX, forEachFederationRoomSlotInGroup, getFederationPartitionSlot } from './registry.mjs'
 import { ensureFederationPartitionRoom, ensureFederationRoom } from './room.mjs'
+import { getStalePeerPruneCount } from './stalePeerLog.mjs'
 import { maybeJoinSnapshotOnStaleTips } from './staleResync.mjs'
 import { markGroupOnlineSynced } from './syncState.mjs'
 import { collectRemoteTipsFromPeers } from './tipExchange.mjs'

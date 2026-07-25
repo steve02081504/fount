@@ -3,7 +3,7 @@ import { Events, ChannelType, GatewayIntentBits, Partials } from 'npm:discord.js
 import { console } from '../../../../../../scripts/i18n/bare.mjs'
 import { channelMessageAgentText } from '../../../chat/public/shared/channelContent.mjs'
 import { dispatchBridgeBotStarted, postBridgeGroupEvent } from '../../../chat/src/chat/bridge/groupEvents.mjs'
-import { claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
+import { claimAgentBridgeIdentity, claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
 import {
 	bridgeIngestDto,
 	messageLineToReplyEntry,
@@ -19,6 +19,11 @@ import {
 	lookupBridgePlatformChannel,
 	markBridgeGroupBackfilled,
 } from '../../../chat/src/chat/bridge/registry.mjs'
+import {
+	getVirtualBridgeSession,
+	lookupVirtualBridgeEventId,
+	virtualBridgeChannelId,
+} from '../../../chat/src/chat/bridge/session.mjs'
 import { postBridgeTyping } from '../../../chat/src/chat/bridge/typing.mjs'
 import {
 	discordMessageToBridgeDto,
@@ -164,6 +169,12 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		const owner = await resolveOwnerPlatformUserId(client, interfaceConfig)
 		if (owner)
 			await claimOperatorBridgeIdentity(ownerUsername, 'discord', owner.platformUserId, owner.displayName)
+		const ownerPlatformUserId = owner?.platformUserId ? String(owner.platformUserId) : null
+		if (client.user?.id)
+			await claimAgentBridgeIdentity(
+				ownerUsername, 'discord', client.user.id, botCharname,
+				client.user.username || botCharname,
+			)
 
 		/**
 		 * @param {string} groupId 群 ID
@@ -249,31 +260,35 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				return firstMessageId != null ? { platformMessageId: firstMessageId } : {}
 			})
 			outboundRegistered.add(groupId)
-			if (!isBridgeGroupBackfilled(ownerUsername, groupId)) {
-				markBridgeGroupBackfilled(ownerUsername, groupId)
-				void (async () => {
-					try {
-						// 回填触发本次映射的平台频道（DM 时 platformChatId 即频道）
-						const targetChannelId = sourceDto?.platformThreadId
-							?? (sourceDto?.chatKind === 'dm' ? sourceDto.platformChatId : null)
-						if (!targetChannelId) return
+			if (!isBridgeGroupBackfilled(ownerUsername, groupId)) 
+				try {
+					// 回填触发本次映射的平台频道（DM 时 platformChatId 即频道）；须在触发消息入 log 前完成
+					const targetChannelId = sourceDto?.platformThreadId
+						?? (sourceDto?.chatKind === 'dm' ? sourceDto.platformChatId : null)
+					if (targetChannelId) {
 						const channel = await client.channels.fetch(String(targetChannelId))
-						if (!channel?.messages?.fetch) return
-						const batch = await channel.messages.fetch({ limit: 30 })
-						const ordered = [...batch.values()].sort((a, b) => a.createdTimestamp - b.createdTimestamp)
-						for (const msg of ordered) {
-							if (!shouldAcceptMessage(msg)) continue
-							if (String(msg.id) === String(sourceDto?.platformMessageId)) continue
-							const dto = await discordMessageToBridgeDto(msg, client, ownerUsername)
-							if (!dto) continue
-							dto.ingress = 'backfill'
-							dto.botname = botname
-							await postBridgeMessage(ownerUsername, dto)
+						if (channel?.messages?.fetch) {
+							const bridgeChannelId = virtualBridgeChannelId(sourceDto?.platformThreadId)
+							const bridgeChannel = getVirtualBridgeSession(ownerUsername, groupId)
+								?.channels?.[bridgeChannelId]
+							const batch = await channel.messages.fetch({ limit: 30 })
+							const ordered = [...batch.values()].sort((a, b) => a.createdTimestamp - b.createdTimestamp)
+							for (const msg of ordered) {
+								if (!shouldAcceptMessage(msg)) continue
+								if (String(msg.id) === String(sourceDto?.platformMessageId)) continue
+								if (bridgeChannel && lookupVirtualBridgeEventId(bridgeChannel, msg.id)) continue
+								const dto = await discordMessageToBridgeDto(msg, client, ownerUsername, { includeMedia: false })
+								if (!dto) continue
+								dto.ingress = 'backfill'
+								dto.botname = botname
+								await postBridgeMessage(ownerUsername, dto)
+							}
 						}
 					}
-					catch (error) { console.error('[DiscordBridge] history backfill failed:', error) }
-				})()
-			}
+					markBridgeGroupBackfilled(ownerUsername, groupId)
+				}
+				catch (error) { console.error('[DiscordBridge] history backfill failed:', error) }
+			
 		}
 
 		/**
@@ -289,8 +304,11 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		 */
 		function shouldAcceptMessage(message) {
 			if (message.author?.bot) return false
-			if (message.channel.type === ChannelType.DM)
-				return message.author.username === interfaceConfig.OwnerUserName
+			if (message.channel.type === ChannelType.DM) {
+				// 主人未解析到时放行，交给下游 isFromOwner；解析到则按 platformUserId 比对
+				if (!ownerPlatformUserId) return true
+				return String(message.author.id) === ownerPlatformUserId
+			}
 			return true
 		}
 
@@ -362,7 +380,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			const channel = typing.channel
 			if (!channel) return
 			if (channel.type === ChannelType.DM) {
-				if (user.username !== interfaceConfig.OwnerUserName) return
+				if (ownerPlatformUserId && String(user.id) !== ownerPlatformUserId) return
 				try {
 					await postBridgeTyping(ownerUsername, {
 						platform: 'discord',

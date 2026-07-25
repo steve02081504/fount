@@ -4,7 +4,6 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { pickFederationTargetPeerIds } from './peerFanout.mjs'
 import { resolveArchiveQuorumPeerMin } from 'npm:@steve02081504/fount-p2p/trust_graph/resolve'
 
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
@@ -19,6 +18,7 @@ import { hasMaterializedAclSnapshot } from './acl.mjs'
 import { wireArchiveSummary, loadLocalFederationArchive } from './archiveHandshake.mjs'
 import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './dagDependencies.mjs'
 import { createFederationCollect } from './federationCollect.mjs'
+import { pickFederationTargetPeerIds } from './peerFanout.mjs'
 import {
 	joinSnapshotWaitKey,
 	pendingSnapshotPulls,
