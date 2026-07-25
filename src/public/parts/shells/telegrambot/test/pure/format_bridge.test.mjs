@@ -169,6 +169,46 @@ Deno.test('telegramMessageToBridgeDto maps mock Telegraf message with mention re
 	assert(dto.text.includes(`@[entity:${expectedHash}]`))
 	assert(dto.text.includes('<:STICKER_FILE:demo_set:🙂>'))
 	assert(!dto.text.includes('@Alice'))
+	assert(!dto.text.includes('UserID:'))
+})
+
+Deno.test('telegramMessageToBridgeDto remaps mention offsets after earlier markdown entities', async () => {
+	const username = `tg-offset-${crypto.randomUUID().slice(0, 8)}`
+	const dataDir = mkdtempSync(join(tmpdir(), 'fount_tg_offset_'))
+	await createTestServerBoot({
+		username,
+		dataDir,
+		minP2pNode: true,
+		loadParts: ['shells/chat'],
+	})()
+
+	const { bridgeEntityHash } = await import('../../../chat/src/chat/bridge/identity.mjs')
+	const mentionUserId = 515151
+	const expectedHash = bridgeEntityHash('telegram', mentionUserId)
+	// "hi X there Alice end" — bold on "X" shifts later mention offsets in markdown
+	const message = {
+		message_id: 88,
+		date: 1_700_000_100,
+		text: 'hi X there Alice end',
+		entities: [
+			{ type: 'bold', offset: 3, length: 1 },
+			{
+				type: 'text_mention',
+				offset: 11,
+				length: 5,
+				user: { id: mentionUserId, is_bot: false, first_name: 'Alice' },
+			},
+		],
+		from: { id: 12, first_name: 'Carol' },
+		chat: { id: -100999, type: 'supergroup', title: 'Offset Group' },
+	}
+
+	const dto = await telegramMessageToBridgeDto({}, message, { id: 1, username: 'bot' }, username)
+	assert(dto)
+	assert(dto.text.includes('**X**'))
+	assert(dto.text.includes(`@[entity:${expectedHash}]`))
+	assert(!dto.text.includes('Alice'))
+	assert(!dto.text.includes('UserID:'))
 })
 
 Deno.test('rewriteTelegramMentionsToFount rewrites @BotUsername mention entity', async () => {

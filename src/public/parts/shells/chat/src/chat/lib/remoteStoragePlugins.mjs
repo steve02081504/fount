@@ -132,7 +132,7 @@ export function createS3StoragePlugin(config) {
 				await s3Client.send(new DeleteObjectCommand({ Bucket: bucket, Key: objectKey }))
 			}
 			catch (error) {
-				console.error(error)
+				if (!isAbsentStorageError(error)) console.error(error)
 			}
 		},
 	}
@@ -235,7 +235,7 @@ export function createFederatedChunksPlugin(config) {
 					await s3Client.send(new DeleteObjectCommand({ Bucket: replicaConfig.bucket, Key: objectKey }))
 				}
 				catch (error) {
-					console.error(error)
+					if (!isAbsentStorageError(error)) console.error(error)
 				}
 			}
 		},

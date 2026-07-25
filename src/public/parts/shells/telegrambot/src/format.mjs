@@ -50,14 +50,22 @@ export function extractStickerIdsFromMarkdown(markdown) {
 }
 
 /**
- * 将 Telegram 消息文本和实体转换为 AI 方言 Markdown。
+ * UTF-16 码元长度（Telegram entity offset 用）。
+ * @param {string} text 文本
+ * @returns {number} UTF-16 码元数
+ */
+function utf16Length(text) {
+	return [...text].reduce((sum, ch) => sum + (ch.codePointAt(0) > 0xffff ? 2 : 1), 0)
+}
+
+/**
  * @param {string | undefined} text - 原始消息文本。
  * @param {TelegramMessageEntity[] | undefined} entities - Telegram 消息实体数组。
  * @param {TelegramBotInfo | undefined} botInfo - bot自身信息。
  * @param {TelegramMessageType | undefined} replyToMessage - 被回复的 Telegram 消息对象。
- * @returns {string} 转换后的 AI 方言 Markdown 文本。
+ * @returns {{ text: string, mentionEntities: TelegramMessageEntity[] }} Markdown 与重映射后的 mention 实体。
  */
-export function telegramEntitiesToAiMarkdown(text, entities, botInfo, replyToMessage) {
+function telegramEntitiesToAiMarkdownMapped(text, entities, botInfo, replyToMessage) {
 	let aiMarkdown = ''
 	if (replyToMessage) {
 		const repliedFrom = replyToMessage.from
@@ -91,9 +99,12 @@ export function telegramEntitiesToAiMarkdown(text, entities, botInfo, replyToMes
 			aiMarkdown += `\n(回复 ${replierName})\n\n`
 		}
 	}
-	if (!text) return aiMarkdown.trim()
+	/** @type {TelegramMessageEntity[]} */
+	const mentionEntities = []
+	if (!text) return { text: aiMarkdown.trim(), mentionEntities }
 	const textChars = Array.from(text)
-	if (!entities?.length) return aiMarkdown + text
+	if (!entities?.length) return { text: (aiMarkdown + text).trim(), mentionEntities }
+
 	const parts = []
 	let lastOffset = 0
 	const sortedEntities = [...entities].sort((a, b) => a.offset - b.offset)
@@ -118,6 +129,13 @@ export function telegramEntitiesToAiMarkdown(text, entities, botInfo, replyToMes
 				formattedEntityText = entityText; break
 			default: formattedEntityText = entityText
 		}
+		if (entity.type === 'text_mention' || entity.type === 'mention') 
+			mentionEntities.push({
+				...entity,
+				offset: utf16Length(aiMarkdown + parts.join('')),
+				length: utf16Length(formattedEntityText),
+			})
+		
 		parts.push(formattedEntityText)
 		lastOffset = entity.offset + entity.length
 	}
@@ -125,7 +143,27 @@ export function telegramEntitiesToAiMarkdown(text, entities, botInfo, replyToMes
 		parts.push(textChars.slice(lastOffset).join(''))
 
 	aiMarkdown += parts.join('')
-	return aiMarkdown.trim()
+	const leadWs = aiMarkdown.match(/^\s*/u)?.[0] || ''
+	const leadUtf16 = utf16Length(leadWs)
+	return {
+		text: aiMarkdown.trim(),
+		mentionEntities: mentionEntities.map(entity => ({
+			...entity,
+			offset: entity.offset - leadUtf16,
+		})).filter(entity => entity.offset >= 0),
+	}
+}
+
+/**
+ * 将 Telegram 消息文本和实体转换为 AI 方言 Markdown。
+ * @param {string | undefined} text - 原始消息文本。
+ * @param {TelegramMessageEntity[] | undefined} entities - Telegram 消息实体数组。
+ * @param {TelegramBotInfo | undefined} botInfo - bot自身信息。
+ * @param {TelegramMessageType | undefined} replyToMessage - 被回复的 Telegram 消息对象。
+ * @returns {string} 转换后的 AI 方言 Markdown 文本。
+ */
+export function telegramEntitiesToAiMarkdown(text, entities, botInfo, replyToMessage) {
+	return telegramEntitiesToAiMarkdownMapped(text, entities, botInfo, replyToMessage).text
 }
 
 /**
@@ -499,15 +537,6 @@ export function splitTelegramReply(reply, split_length = 4096) {
 }
 
 /**
- * UTF-16 码元长度（Telegram entity offset 用）。
- * @param {string} text 文本
- * @returns {number} UTF-16 码元数
- */
-function utf16Length(text) {
-	return [...text].reduce((sum, ch) => sum + (ch.codePointAt(0) > 0xffff ? 2 : 1), 0)
-}
-
-/**
  * 将 Telegram text_mention / @BotUsername mention 实体改写为 fount `@[hash]` token。
  * @param {string} username replica
  * @param {string | undefined} text 原始正文
@@ -661,8 +690,8 @@ export async function telegramMessageToBridgeDto(context, message, botInfo, owne
 	if (!message?.from) return null
 	const rawText = message.text || message.caption || ''
 	const entities = message.entities || message.caption_entities
-	let text = telegramEntitiesToAiMarkdown(rawText, entities, botInfo, message.reply_to_message)
-	text = await rewriteTelegramMentionsToFount(ownerUsername, text, entities, botInfo)
+	const mapped = telegramEntitiesToAiMarkdownMapped(rawText, entities, botInfo, message.reply_to_message)
+	let text = await rewriteTelegramMentionsToFount(ownerUsername, mapped.text, mapped.mentionEntities, botInfo)
 	if (message.sticker) {
 		const { sticker } = message
 		const stickerDesc = `<:${sticker.file_id}:${sticker.set_name || 'unknown_set'}:${sticker.emoji || ''}>`

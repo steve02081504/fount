@@ -325,6 +325,13 @@ export async function wechatMessageToBridgeDto(wechatMessage, ownerUsername, cdn
 	).trim()
 	const chatKind = roomId ? 'group' : 'dm'
 	const platformChatId = roomId || fromUserId
+	const senderName = String(
+		wechatMessage.from_user_name
+		|| wechatMessage.nickname
+		|| wechatMessage.sender_name
+		|| wechatMessage.member_name
+		|| '',
+	).trim()
 
 	return {
 		platform: 'wechat',
@@ -336,7 +343,7 @@ export async function wechatMessageToBridgeDto(wechatMessage, ownerUsername, cdn
 			: wechatMessage.room_name || wechatMessage.group_name || `WeChatRoom:${roomId}`,
 		author: {
 			platformUserId: fromUserId,
-			displayName: ownerDisplayName || fromUserId,
+			displayName: senderName || (chatKind === 'dm' ? ownerDisplayName || fromUserId : fromUserId),
 		},
 		text,
 		files: files.length ? files : undefined,

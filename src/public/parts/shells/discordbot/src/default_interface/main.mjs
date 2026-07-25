@@ -19,6 +19,11 @@ import {
 	lookupBridgePlatformChannel,
 	markBridgeGroupBackfilled,
 } from '../../../chat/src/chat/bridge/registry.mjs'
+import {
+	getVirtualBridgeSession,
+	lookupVirtualBridgeEventId,
+	virtualBridgeChannelId,
+} from '../../../chat/src/chat/bridge/session.mjs'
 import { postBridgeTyping } from '../../../chat/src/chat/bridge/typing.mjs'
 import {
 	discordMessageToBridgeDto,
@@ -255,8 +260,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				return firstMessageId != null ? { platformMessageId: firstMessageId } : {}
 			})
 			outboundRegistered.add(groupId)
-			if (!isBridgeGroupBackfilled(ownerUsername, groupId)) {
-				markBridgeGroupBackfilled(ownerUsername, groupId)
+			if (!isBridgeGroupBackfilled(ownerUsername, groupId)) 
 				try {
 					// 回填触发本次映射的平台频道（DM 时 platformChatId 即频道）；须在触发消息入 log 前完成
 					const targetChannelId = sourceDto?.platformThreadId
@@ -264,12 +268,16 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					if (targetChannelId) {
 						const channel = await client.channels.fetch(String(targetChannelId))
 						if (channel?.messages?.fetch) {
+							const bridgeChannelId = virtualBridgeChannelId(sourceDto?.platformThreadId)
+							const bridgeChannel = getVirtualBridgeSession(ownerUsername, groupId)
+								?.channels?.[bridgeChannelId]
 							const batch = await channel.messages.fetch({ limit: 30 })
 							const ordered = [...batch.values()].sort((a, b) => a.createdTimestamp - b.createdTimestamp)
 							for (const msg of ordered) {
 								if (!shouldAcceptMessage(msg)) continue
 								if (String(msg.id) === String(sourceDto?.platformMessageId)) continue
-								const dto = await discordMessageToBridgeDto(msg, client, ownerUsername)
+								if (bridgeChannel && lookupVirtualBridgeEventId(bridgeChannel, msg.id)) continue
+								const dto = await discordMessageToBridgeDto(msg, client, ownerUsername, { includeMedia: false })
 								if (!dto) continue
 								dto.ingress = 'backfill'
 								dto.botname = botname
@@ -277,9 +285,10 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 							}
 						}
 					}
+					markBridgeGroupBackfilled(ownerUsername, groupId)
 				}
 				catch (error) { console.error('[DiscordBridge] history backfill failed:', error) }
-			}
+			
 		}
 
 		/**
