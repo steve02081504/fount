@@ -32,13 +32,13 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
 	app.use('/fount/scripts/test', express.static(path.join(projectRoot, 'src', 'scripts', 'test')))
 
 	app.get('/fount/data/comments.json', async (_req, res) => {
-		const response = await fetch(GITHUB_PAGES_COMMENTS_URL, {
-			signal: AbortSignal.timeout(8000),
-		}).catch(() => null)
-		if (response?.ok) {
-			const data = await response.json()
-			return res.json(data)
+		try {
+			const response = await fetch(GITHUB_PAGES_COMMENTS_URL, {
+				signal: AbortSignal.timeout(8000),
+			})
+			if (response.ok) return res.json(await response.json())
 		}
+		catch { /* fall through to mock */ }
 		return res.json([
 			{
 				name: 'test user',

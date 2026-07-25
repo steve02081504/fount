@@ -11,11 +11,13 @@ const require = createRequire(import.meta.url)
 const playwrightCli = require.resolve('@playwright/test/cli')
 
 /**
- * 将 playwright CLI 参数字符串拆为 argv 片段。
- * @param {string} args 参数字符串
+ * 将 playwright CLI 参数规范为 argv 片段。
+ * 数组原样保留 token 边界（含空格的 grep 等）；字符串按空白拆分（兼容旧调用）。
+ * @param {string | string[]} args 参数字符串或 argv
  * @returns {string[]} argv
  */
 function playwrightArgv(args) {
+	if (Array.isArray(args)) return args.filter(Boolean)
 	return args.trim() ? args.trim().split(/\s+/) : []
 }
 
@@ -25,11 +27,11 @@ function playwrightArgv(args) {
  * @param {string} options.configPath playwright.config.mjs 路径
  * @param {string} [options.cwd=REPO_ROOT] 工作目录
  * @param {Record<string, string>} [options.env] 额外环境变量
- * @param {string} [options.playwrightArgs=''] 传给 playwright test 的额外参数
+ * @param {string | string[]} [options.playwrightArgs=[]] 传给 playwright test 的额外参数
  * @param {string} [options.jsonReportPath] 写入 Playwright JSON report 的路径
  * @returns {Promise<number>} 进程退出码（0 为通过）
  */
-export async function runPlaywright({ configPath, cwd = REPO_ROOT, env = {}, playwrightArgs = '', jsonReportPath }) {
+export async function runPlaywright({ configPath, cwd = REPO_ROOT, env = {}, playwrightArgs = [], jsonReportPath }) {
 	const mergedEnv = { ...process.env, ...env }
 	// FORCE_COLOR 与 NO_COLOR 同时存在时 Node 会产生 Warning；
 	// 删除两者让 Playwright 子进程自行检测终端色彩能力。
@@ -67,11 +69,11 @@ export async function runPlaywright({ configPath, cwd = REPO_ROOT, env = {}, pla
  * @param {object} [options.node] launchNode 选项（port、username、apiKey 等）
  * @param {Record<string, string>} [options.env] 额外环境变量
  * @param {string} [options.cwd] 工作目录
- * @param {string} [options.playwrightArgs=''] 传给 playwright test 的额外参数
+ * @param {string | string[]} [options.playwrightArgs=[]] 传给 playwright test 的额外参数
  * @param {string} [options.jsonReportPath] 写入 Playwright JSON report 的路径
  * @returns {Promise<number>} 进程退出码
  */
-export async function runPlaywrightWithNode({ configPath, node, env: extraEnv = {}, cwd, playwrightArgs = '', jsonReportPath }) {
+export async function runPlaywrightWithNode({ configPath, node, env: extraEnv = {}, cwd, playwrightArgs = [], jsonReportPath }) {
 	let launched = null
 	try {
 		const env = { ...extraEnv }

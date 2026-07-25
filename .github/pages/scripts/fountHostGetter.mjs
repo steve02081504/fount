@@ -216,9 +216,12 @@ async function mappingFountHostUrl(hostUrl) {
  */
 export function saveFountHostUrl(hostUrl) {
 	const saved = hostUrl ?? ''
-	localStorage.setItem('fountHostUrl', saved)
-	if (!hostUrl) return saved
+	if (!hostUrl) {
+		localStorage.setItem('fountHostUrl', saved)
+		return saved
+	}
 	const url = new URL(hostUrl)
+	localStorage.setItem('fountHostUrl', saved)
 	// Dispatch host info for browser integration script
 	const event = new CustomEvent('fount-host-info', {
 		detail: {

@@ -3720,15 +3720,15 @@
 				"title": "الوارد"
 			},
 			"saved": {
-				"aria-label": "حفظ",
+				"aria-label": "المحفوظات",
 				"title": "المحفوظات"
 			},
 			"drafts": {
-				"aria-label": "مربع مشروع",
+				"aria-label": "المسودات",
 				"title": "المسودات"
 			},
 			"profile": {
-				"aria-label": "خاصتي",
+				"aria-label": "الملف الشخصي",
 				"title": "الملف الشخصي"
 			},
 			"videos": {

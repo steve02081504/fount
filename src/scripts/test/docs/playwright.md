@@ -2,6 +2,10 @@
 
 Day-to-day: [AGENTS.md](../AGENTS.md) Taxonomy → Frontend.
 
+## CLI args
+
+`runPlaywright` / `runPlaywrightWithNode` accept `playwrightArgs` as `string | string[]`. Prefer an argv array (e.g. `process.argv.slice(2)`) so grep patterns and other values with spaces keep their token boundaries; a string is still split on whitespace for older call sites.
+
 ## Fixtures
 
 `createFountFixtures({ locale, isolated? })` — `isolated` registers `FOUNT_TEST_USERNAME` + `assertIsolatedFrontendTest` (Chat/Social/Cabinet).

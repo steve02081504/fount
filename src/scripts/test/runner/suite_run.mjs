@@ -174,7 +174,7 @@ export async function runSuite(suite, options, globalBudget, stream = false, wat
 	let attempt = 0
 	for (;;) {
 		attempt++
-		if (watchdog.signal?.aborted) 
+		if (watchdog.signal?.aborted)
 			return {
 				passed: false,
 				exitCode: 1,
@@ -184,8 +184,8 @@ export async function runSuite(suite, options, globalBudget, stream = false, wat
 				terminated: true,
 				terminateReason: String(watchdog.signal.reason || ''),
 			}
-		
-		if (attempt > MAX_SLEEP_INTERRUPT_ATTEMPTS) 
+
+		if (attempt > MAX_SLEEP_INTERRUPT_ATTEMPTS)
 			return {
 				passed: false,
 				exitCode: 1,
@@ -195,15 +195,16 @@ export async function runSuite(suite, options, globalBudget, stream = false, wat
 				terminated: true,
 				terminateReason: `sleep_retry_exhausted:${MAX_SLEEP_INTERRUPT_ATTEMPTS}`,
 			}
-		
+
 		const result = await runSuiteOnce(suite, options, globalBudget, stream, watchdog)
 		if (!result.sleepInterrupted) {
 			const { sleepInterrupted: _, ...rest } = result
 			return rest
 		}
-		console.warnI18n('fountConsole.test.sleepRetry', {
-			label,
-			attempt: attempt + 1,
-		})
+		if (attempt < MAX_SLEEP_INTERRUPT_ATTEMPTS)
+			console.warnI18n('fountConsole.test.sleepRetry', {
+				label,
+				attempt: attempt + 1,
+			})
 	}
 }

@@ -49,7 +49,7 @@ try {
 			FOUNT_TEST_BASE_URL: server.baseUrl,
 			FOUNT_TEST_SCOPE: process.env.FOUNT_TEST_SCOPE || 'pages',
 		},
-		playwrightArgs: process.argv.slice(2).join(' '),
+		playwrightArgs: process.argv.slice(2),
 	})
 }
 finally {
