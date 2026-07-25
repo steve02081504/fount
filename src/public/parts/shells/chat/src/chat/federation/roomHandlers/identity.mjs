@@ -70,14 +70,7 @@ export function registerIdentityHandlers(roomContext) {
 		nodeToPeer.set(remoteNodeHash, peerId)
 		annotateRtcPeerNodeHash(key, peerId, remoteNodeHash, rtcLimits)
 		setRtcPeerSource(key, peerId, remoteNodeHash)
-		if (!takeRtcJoinSlot(key, peerId, rtcLimits, peerId)) {
-			void debugLog('federation', {
-				event: 'onPeerJoin_rtc_slot_denied',
-				groupId,
-				peerId,
-			})
-			return
-		}
+		if (!takeRtcJoinSlot(key, peerId, rtcLimits, peerId)) return
 		fedOut.enqueue(4, () => {
 			void import('../groupEmojiFederation.mjs').then(({ replicateGroupEmojisToPeer }) => {
 				const slot = getSlot()

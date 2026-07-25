@@ -169,7 +169,7 @@ async function resolveCiphertextRaw(username, groupId, storageLocator) {
 		return Buffer.from(u8)
 	}
 	catch (error) {
-		await debugLog('group-files-fed-fetch', { username, groupId, hash, message: error?.message }).catch(() => { })
+		console.error(error)
 	}
 
 	const fed = getFederatedChunkStorage(username, groupSettings)

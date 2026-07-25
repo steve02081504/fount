@@ -133,8 +133,7 @@ export function createS3StoragePlugin(config) {
 				await s3Client.send(new DeleteObjectCommand({ Bucket: bucket, Key: objectKey }))
 			}
 			catch (error) {
-				if (!isAbsentStorageError(error))
-					await debugLog('p2p-chunk-delete', { locator, message: error?.message }).catch(() => {})
+				console.error(error)
 			}
 		},
 	}
@@ -237,8 +236,7 @@ export function createFederatedChunksPlugin(config) {
 					await s3Client.send(new DeleteObjectCommand({ Bucket: replicaConfig.bucket, Key: objectKey }))
 				}
 				catch (error) {
-					if (!isAbsentStorageError(error))
-						await debugLog('p2p-chunk-delete', { locator, replica: replicaIndex, message: error?.message }).catch(() => {})
+					console.error(error)
 				}
 			}
 		},

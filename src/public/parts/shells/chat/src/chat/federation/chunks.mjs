@@ -117,10 +117,10 @@ export async function replicateChunkToFederation(username, groupId, ciphertextHa
 	if (sentPeerKeys?.length)
 		registerChunkReplicationTargets(username, groupId, ciphertextHash, sentPeerKeys)
 	const result = await waitPromise
-	if (result.timedOut && result.missingPeerKeys?.length) 
+	if (result.timedOut && result.missingPeerKeys?.length)
 		for (const peerKey of result.missingPeerKeys)
 			penalizeChunkStorageFailure(peerKey)
-	
+
 	return result
 }
 
@@ -221,8 +221,6 @@ function replicateChunkToRoster(slot, chunkHash, data, bucketKey, options = {}) 
 		try { slot.sendToPeer(peerId, 'fed_chunk_put', payload) }
 		catch (err) {
 			console.error('federation: fed_chunk_put send failed', err)
-			void debugLog('federation', { scope: 'fed_chunk_put', peerId, message: err?.message })
-				.catch(error => console.warn('federation: fed_chunk_put debugLog failed', error))
 		}
 		const key = String(remoteNodeHash || peerId || '').trim()
 		if (key) sentPeerKeys.push(key)
@@ -259,8 +257,6 @@ function fetchChunkFromPeer(slot, username, groupId, chunkHash, peerId) {
 		try { slot.sendToPeer(targetPeerId, 'fed_chunk_get', payload) }
 		catch (err) {
 			console.error('federation: fed_chunk_get send failed', err)
-			void debugLog('federation', { scope: 'fed_chunk_get', peerId: targetPeerId, message: err?.message })
-				.catch(error => console.warn('federation: fed_chunk_get debugLog failed', error))
 		}
 	return done
 }
@@ -304,13 +300,13 @@ export async function fetchChunksFromRoster(slot, username, groupId, chunkHashes
 	while (missing.length) {
 		const plan = planChunkFetches(table, missing, peerIds, { maxAttempts: options.maxAttempts ?? 3 })
 		const batch = [...plan.assignments.entries()].slice(0, concurrency)
-		if (!batch.length && plan.broadcast.length) 
+		if (!batch.length && plan.broadcast.length)
 			await Promise.all(plan.broadcast.map(hash =>
 				fetchChunkFromPeer(slot, username, groupId, hash, null)
 					.then(bytes => { fetched[hash] = bytes; markChunkDone(table, hash) })
 					.catch(() => markChunkFailed(table, hash)),
 			))
-		
+
 		else if (!batch.length) break
 
 		await Promise.all(batch.map(async ([hash, peerId]) => {
@@ -437,14 +433,14 @@ export function attachFedChunkHandlers(fedRoom) {
 			let bytes
 			if (await hasChunk( hash))
 				bytes = await getChunk( hash)
-			else 
+			else
 				try {
 					bytes = await local.getChunk(loc)
 				}
 				catch {
 					return
 				}
-			
+
 			if (!bytes?.byteLength) return
 			if (remoteNode)
 				await bumpChunkStorageReputation(remoteNode)

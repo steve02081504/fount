@@ -43,8 +43,7 @@ export async function loadFileMasterKeys(username, groupId) {
 		return normalizeFileMasterKeysFile(JSON.parse(text))
 	}
 	catch (error) {
-		if (error?.code !== 'ENOENT')
-			await debugLog('file-master-key-load-fail', { username, groupId, message: error?.message }).catch(() => { })
+		if (error?.code !== 'ENOENT') console.error(error)
 		return normalizeFileMasterKeysFile(null)
 	}
 }

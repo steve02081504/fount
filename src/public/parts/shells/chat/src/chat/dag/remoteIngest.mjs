@@ -174,10 +174,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 
 	const bodyForId = unsignedEventFields(wirePayload)
 	if (computeEventId(bodyForId) !== wirePayload.id) {
-		if (logFailures) {
-			console.error('federation: drop remote event (id mismatch)')
-			await debugLog('remote-ingest-invalid', { username, groupId, reason: 'id_mismatch', eventId: wirePayload.id }).catch(() => {})
-		}
+		if (logFailures) console.error('federation: drop remote event (id mismatch)')
 		return finish(ingestResult('invalid', 'id_mismatch'))
 	}
 
@@ -186,10 +183,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 		await validateSignature(bodyForId, wirePayload, wirePayload, undefined, state)
 	}
 	catch (error) {
-		if (logFailures) {
-			console.error('federation: drop remote event (signature)', error)
-			await debugLog('remote-ingest-invalid', { username, groupId, reason: 'signature', eventId: wirePayload.id, message: error?.message }).catch(() => {})
-		}
+		if (logFailures) console.error('federation: drop remote event (signature)', error)
 		return finish(ingestResult('invalid', 'signature'))
 	}
 
