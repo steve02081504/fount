@@ -4079,7 +4079,8 @@
 			"viewTitle": "Suchen",
 			"loading": "Suche...",
 			"filterAuthor": {
-				"placeholder": "Autor"
+				"placeholder": "Autor",
+				"aria-label": "Autor"
 			},
 			"filterMedia": {
 				"aria-label": "Medientyp"
@@ -4088,7 +4089,8 @@
 			"filterMediaImage": "Bild",
 			"filterMediaVideo": "Video",
 			"filterTag": {
-				"placeholder": "#Etikett"
+				"placeholder": "#Etikett",
+				"aria-label": "Etikett"
 			},
 			"filterSort": {
 				"aria-label": "Sortieren nach"

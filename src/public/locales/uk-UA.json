@@ -4079,7 +4079,8 @@
 			"viewTitle": "Пошук",
 			"loading": "Пошук…",
 			"filterAuthor": {
-				"placeholder": "Автор"
+				"placeholder": "Автор",
+				"aria-label": "Автор"
 			},
 			"filterMedia": {
 				"aria-label": "Тип медіа"
@@ -4088,7 +4089,8 @@
 			"filterMediaImage": "Малюнок",
 			"filterMediaVideo": "Відео",
 			"filterTag": {
-				"placeholder": "#Мітка"
+				"placeholder": "#Мітка",
+				"aria-label": "Мітка"
 			},
 			"filterSort": {
 				"aria-label": "Сортування"

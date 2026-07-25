@@ -4076,7 +4076,8 @@
 			"viewTitle": "Search",
 			"loading": "Searching…",
 			"filterAuthor": {
-				"placeholder": "Author"
+				"placeholder": "Author",
+				"aria-label": "Author"
 			},
 			"filterMedia": {
 				"aria-label": "Media type"
@@ -4085,7 +4086,8 @@
 			"filterMediaImage": "Images",
 			"filterMediaVideo": "Videos",
 			"filterTag": {
-				"placeholder": "#Label"
+				"placeholder": "#Label",
+				"aria-label": "Label"
 			},
 			"filterSort": {
 				"aria-label": "Sort by"

@@ -4079,7 +4079,8 @@
 			"viewTitle": "खोजें",
 			"loading": "खोज रहे हैं…",
 			"filterAuthor": {
-				"placeholder": "लेखक"
+				"placeholder": "लेखक",
+				"aria-label": "लेखक"
 			},
 			"filterMedia": {
 				"aria-label": "मीडिया प्रकार"
@@ -4088,7 +4089,8 @@
 			"filterMediaImage": "छवि",
 			"filterMediaVideo": "वीडियो",
 			"filterTag": {
-				"placeholder": "#लेबल"
+				"placeholder": "#लेबल",
+				"aria-label": "लेबल"
 			},
 			"filterSort": {
 				"aria-label": "क्रमबद्ध करें"

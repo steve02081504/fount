@@ -4079,7 +4079,8 @@
 			"viewTitle": "Поиск",
 			"loading": "Идет поиск…",
 			"filterAuthor": {
-				"placeholder": "Автор"
+				"placeholder": "Автор",
+				"aria-label": "Автор"
 			},
 			"filterMedia": {
 				"aria-label": "Тип медиа"
@@ -4088,7 +4089,8 @@
 			"filterMediaImage": "Изображения",
 			"filterMediaVideo": "Видео",
 			"filterTag": {
-				"placeholder": "#Тег"
+				"placeholder": "#Тег",
+				"aria-label": "Тег"
 			},
 			"filterSort": {
 				"aria-label": "Сортировка"

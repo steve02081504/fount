@@ -4078,7 +4078,8 @@
 			"viewTitle": "搜尋",
 			"loading": "搜尋中…",
 			"filterAuthor": {
-				"placeholder": "作者"
+				"placeholder": "作者",
+				"aria-label": "作者"
 			},
 			"filterMedia": {
 				"aria-label": "媒體類型"
@@ -4087,7 +4088,8 @@
 			"filterMediaImage": "圖片",
 			"filterMediaVideo": "影片",
 			"filterTag": {
-				"placeholder": "#標籤"
+				"placeholder": "#標籤",
+				"aria-label": "標籤"
 			},
 			"filterSort": {
 				"aria-label": "排序"

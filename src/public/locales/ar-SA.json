@@ -4079,7 +4079,8 @@
 			"viewTitle": "بحث",
 			"loading": "البحث…",
 			"filterAuthor": {
-				"placeholder": "المؤلف"
+				"placeholder": "المؤلف",
+				"aria-label": "المؤلف"
 			},
 			"filterMedia": {
 				"aria-label": "نوع الوسائط"
@@ -4088,7 +4089,8 @@
 			"filterMediaImage": "صورة",
 			"filterMediaVideo": "فيديو",
 			"filterTag": {
-				"placeholder": "#ملصق"
+				"placeholder": "#ملصق",
+				"aria-label": "ملصق"
 			},
 			"filterSort": {
 				"aria-label": "ترتيب حسب"

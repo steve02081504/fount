@@ -4079,7 +4079,8 @@
 			"viewTitle": "検索",
 			"loading": "検索中…",
 			"filterAuthor": {
-				"placeholder": "作者"
+				"placeholder": "作者",
+				"aria-label": "作者"
 			},
 			"filterMedia": {
 				"aria-label": "メディアの種類"
@@ -4088,7 +4089,8 @@
 			"filterMediaImage": "写真",
 			"filterMediaVideo": "ビデオ",
 			"filterTag": {
-				"placeholder": "＃ラベル"
+				"placeholder": "＃ラベル",
+				"aria-label": "ラベル"
 			},
 			"filterSort": {
 				"aria-label": "並び替え"

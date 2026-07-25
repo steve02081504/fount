@@ -4079,7 +4079,8 @@
 			"viewTitle": "tìm kiếm",
 			"loading": "Đang tìm kiếm…",
 			"filterAuthor": {
-				"placeholder": "tác giả"
+				"placeholder": "tác giả",
+				"aria-label": "tác giả"
 			},
 			"filterMedia": {
 				"aria-label": "Loại phương tiện"
@@ -4088,7 +4089,8 @@
 			"filterMediaImage": "hình ảnh",
 			"filterMediaVideo": "băng hình",
 			"filterTag": {
-				"placeholder": "#Nhãn"
+				"placeholder": "#Nhãn",
+				"aria-label": "Nhãn"
 			},
 			"filterSort": {
 				"aria-label": "Sắp xếp theo"

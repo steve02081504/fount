@@ -4079,7 +4079,8 @@
 			"viewTitle": "찾다",
 			"loading": "수색…",
 			"filterAuthor": {
-				"placeholder": "작성자"
+				"placeholder": "작성자",
+				"aria-label": "작성자"
 			},
 			"filterMedia": {
 				"aria-label": "미디어 유형"
@@ -4088,7 +4089,8 @@
 			"filterMediaImage": "그림",
 			"filterMediaVideo": "동영상",
 			"filterTag": {
-				"placeholder": "#라벨"
+				"placeholder": "#라벨",
+				"aria-label": "라벨"
 			},
 			"filterSort": {
 				"aria-label": "정렬"

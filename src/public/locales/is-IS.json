@@ -4079,7 +4079,8 @@
 			"viewTitle": "Leita",
 			"loading": "Leitar…",
 			"filterAuthor": {
-				"placeholder": "Höfundur"
+				"placeholder": "Höfundur",
+				"aria-label": "Höfundur"
 			},
 			"filterMedia": {
 				"aria-label": "Miðlagerð"
@@ -4088,7 +4089,8 @@
 			"filterMediaImage": "Myndir",
 			"filterMediaVideo": "Myndbönd",
 			"filterTag": {
-				"placeholder": "#Merki"
+				"placeholder": "#Merki",
+				"aria-label": "Merki"
 			},
 			"filterSort": {
 				"aria-label": "Raða eftir"

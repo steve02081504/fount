@@ -4079,7 +4079,8 @@
 			"viewTitle": "🔍",
 			"loading": "🔍…",
 			"filterAuthor": {
-				"placeholder": "✍️"
+				"placeholder": "✍️",
+				"aria-label": "✍️"
 			},
 			"filterMedia": {
 				"aria-label": "🖼️🎬"
@@ -4088,7 +4089,8 @@
 			"filterMediaImage": "🖼️",
 			"filterMediaVideo": "🎬",
 			"filterTag": {
-				"placeholder": "#️⃣🏷️"
+				"placeholder": "#️⃣🏷️",
+				"aria-label": "#️⃣🏷️"
 			},
 			"filterSort": {
 				"aria-label": "🔀"

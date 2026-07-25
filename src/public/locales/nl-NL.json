@@ -4079,7 +4079,8 @@
 			"viewTitle": "Zoeken",
 			"loading": "Zoeken…",
 			"filterAuthor": {
-				"placeholder": "Auteur"
+				"placeholder": "Auteur",
+				"aria-label": "Auteur"
 			},
 			"filterMedia": {
 				"aria-label": "Mediatype"
@@ -4088,7 +4089,8 @@
 			"filterMediaImage": "Afbeelding",
 			"filterMediaVideo": "Video",
 			"filterTag": {
-				"placeholder": "#Label"
+				"placeholder": "#Label",
+				"aria-label": "Label"
 			},
 			"filterSort": {
 				"aria-label": "Sorteren op"
