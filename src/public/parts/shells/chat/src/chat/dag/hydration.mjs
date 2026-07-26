@@ -91,7 +91,7 @@ export async function loadDagHydrationI18n(username) {
 export async function buildChatLogEntriesFromChannelLines(lines, baseSlice, i18n, sourceChannelId = null, replicaUsername = null, groupId = null, state = null) {
 	const { decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText, streamFailedNote } = i18n
 	const deleted = new Set()
-	/** @type {Map<string, { content?: string, content_for_show?: string, content_for_edit?: string, files?: object[], editedAt: number }>} */
+	/** @type {Map<string, { content?: string, content_for_show?: string, content_for_edit?: string, files?: object[], type?: string, editedAt: number }>} */
 	const edits = new Map()
 	for (const line of lines) {
 		if (line.type === 'message_delete' && line.content?.targetId)
@@ -108,6 +108,7 @@ export async function buildChatLogEntriesFromChannelLines(lines, baseSlice, i18n
 					content_for_show: isText ? messageShowText(patch) : undefined,
 					content_for_edit: isText ? messageEditText(patch) : undefined,
 					files: patch?.files,
+					type: patch.type,
 					editedAt,
 				})
 			}
@@ -285,7 +286,7 @@ function mergeChatSidecar(entry, content, line, sourceChannelId) {
  * 从 DAG default 频道行构造 chatLog 条目。
  * @param {object} line DAG 消息事件行
  * @param {timeSlice_t} baseSlice 作为快照基准的时间切片
- * @param {{ content?: string, content_for_show?: string, content_for_edit?: string, files?: object[] } | undefined} editOverride 编辑折叠后的覆盖字段
+ * @param {{ content?: string, content_for_show?: string, content_for_edit?: string, files?: object[], type?: string } | undefined} editOverride 编辑折叠后的覆盖字段
  * @param {string} decryptUnavailableText GSH 加密内容占位文本
  * @param {string} [contentRefPlaceholder] content_ref 占位文案
  * @param {string} [contentRefMismatchText] content_ref 校验失败文案
@@ -316,7 +317,8 @@ async function buildChatLogEntryFromDagMessage(
 
 	const resolvedShow = resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText) ?? ''
 	const decryptUnavailableFallback = line.decryptView ? decryptUnavailableText : ''
-	const isText = !content.type || content.type === 'text'
+	const effectiveType = editOverride ? editOverride.type : content.type
+	const isText = !effectiveType || effectiveType === 'text'
 	entry.content = editOverride?.content != null
 		? editOverride.content
 		: messageAgentText(content) || resolvedShow || decryptUnavailableFallback

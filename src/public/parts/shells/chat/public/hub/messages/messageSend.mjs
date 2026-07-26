@@ -1,5 +1,6 @@
 import { primaryLocale } from '../../../../../scripts/i18n/index.mjs'
-import { channelMessage, ensureChatExtension } from '../../shared/channelContent.mjs'
+import { channelMessage } from '../../shared/channelContent.mjs'
+import { ensureChatExtension } from '../../shared/messageFields.mjs'
 import { sendGroupMessage } from '../../src/api/groupChannel.mjs'
 import { clearComposerExtras, getContentWarning, getSensitiveMedia } from '../composerExtras.mjs'
 import { clearSelectedFiles, selectedFiles } from '../composerFiles.mjs'
