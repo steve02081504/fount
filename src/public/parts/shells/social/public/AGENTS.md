@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Social Shell Frontend Guide
 
-Deeper UI (video/live, body fold, feed replay, hash routing): [ui-details.md](ui-details.md).
+Deeper UI (video/live, body fold, feed replay, hash routing, search/replies/own-write): [ui-details.md](ui-details.md).
 Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../src/scripts/test/docs/domain-harness.md).
 
 ## Trust & backend surface
@@ -22,20 +22,17 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 - **part_query**: register/unregister in Load/Unload (`federation/partQuery.mjs`); handlers in `trending|search|discover|live/network.mjs`.
 - **Cross-shell chat HTTP**: viewer / personal-lists / entities/search / translation-prefs via `/api/parts/shells:chat/…`. Live nodes need `loadParts: ['shells/social', 'shells/chat']`.
 - **Share URL**: chat `wrapProtocolHttpsUrl`. `public/shared/*` is Deno-pure-importable (no `/parts/` or `/scripts/` URL imports). UI under `public/src/` may use `/scripts/*` and `/parts/…` freely — do not co-locate pure exports with DOM helpers just so a pure test can import the same file.
-- **Download HTML**: post more menu → `exportHtml.mjs` → shared `markdown/standaloneDocument.mjs` (full offline document, including mediaRefs data URLs); same source as Chat message export.
 - Types: `src/decl/socialAPI.ts`; overview: `public/llms.txt`.
 
 ## UI conventions
 
-- **Search view**: render post hits as soon as `/search` returns; `entities/search` must not block the posts section (hashtag/tag-only queries skip the users block entirely).
-- **Replies panel**: first open loads then reveals; do not toggle visible before `renderRepliesPanel` or composer input can be wiped mid-type.
-- **Own write → feed**: repost returns `{ event, item }` and `pushFeedUpdate`; UI `prependFeedItem(item, { force: true })` (dedupe + in-flight `pendingFeedInserts` so WS cannot double-insert during `buildPostCard`). Deep-pagination WS still banners unless `force`.
 - CSS: page-local, no `social-` prefix. Icons `.icon` + `.icon-*`. Ready-gate: `SOCIAL_GATE` / `fount:social-*`.
-- Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder` (do not use `fooPlaceholder` key names). Templates: `${...}` only (no Mustache `{{...}}`). Prefer `renderTemplate` / `mountTemplate`.
-- **@ 提及 autocomplete**：textarea 保持隐式 textbox；只用 `aria-controls` + `aria-activedescendant`（+ `aria-autocomplete`）。axe 禁止给 `<textarea>` 加 `role="combobox"` / `aria-expanded`。
+- Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder` (not `fooPlaceholder`). Templates: `${...}` only. Prefer `renderTemplate` / `mountTemplate`.
+- **@-mention autocomplete**: keep `<textarea>` as implicit textbox; only `aria-controls` + `aria-activedescendant` (+ `aria-autocomplete`). Do not set `role="combobox"` / `aria-expanded` on textarea (axe fails).
 - HTTP: `endpoints/shared.mjs` `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.
-- Hash routing: `switchView` / `activateView` — route map in [ui-details.md](ui-details.md#hash-routing). **`activateView(name)`** → `#${name}View` — `data-view` and section id must share the stem (`videos` → `#videosView`).
-- Avatars/names/@id: chat `entityAvatar.mjs` / `resolveDisplayName` / `formatEntityAtId` (`entityHandle`). Profile page: `rememberEntityHandle` before rendering posts. Hover: `lib/profileHover.mjs` → chat hover card.
+- Hash routing: `switchView` / `activateView` — [ui-details.md](ui-details.md#hash-routing). **`activateView(name)`** → `#${name}View` (`data-view` and section id share the stem: `videos` → `#videosView`).
+- Search / replies / own-write feed insert traps: [ui-details.md](ui-details.md#search--replies--own-write-feed).
+- Avatars/names/@id: chat `entityAvatar.mjs` / `resolveDisplayName` / `formatEntityAtId`. Profile: `rememberEntityHandle` before posts. Hover: `lib/profileHover.mjs` → chat hover card.
 - Bio/post Markdown: chat `shared/trustedMarkdown.mjs`. Trusted: self / local-char / declared master / trust list. Remote self-declared `ownerEntityHash` does not elevate.
 - Browser imports of chat: absolute `/parts/shells:chat/...` URLs.
 

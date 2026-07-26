@@ -42,12 +42,7 @@ Multi-node bind / fixture probes: [test domain-harness](../../../../../../../../
 
 `groups/{groupId}/local_plugins.json` via `session/localPlugins.mjs` — node-private; not federated.
 
-## World shared state + WorldChatHost
-
-- DAG `world_state`: `{ worldname, action: 'set'|'delete', key, value? }` → `state.worldStates[worldname][key]` (LWW, group-scoped — use key prefixes for channel scope).
-- Shell reducer is ACL-agnostic; world's fold layer ignores unauthorized ops.
-- `WorldChatHost` (`session/worldHost.mjs`): `state`, `localData`, `triggerCharReply`, `postSystemMessage`, `listMembers`/`listChannels`. Wired once on local `resolveWorld` via `ChatHostConnected` (not for builtin/remote proxy).
-- `session_*` is node-local (federation ingest rejects). Federation inbound: `aclGated` + 64KB content limit.
+World shared state / `WorldChatHost`: [world-host.md](world-host.md).
 
 ## member_roles / greeting
 
