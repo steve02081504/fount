@@ -46,7 +46,7 @@ export async function requestChannelHistoryFromPeers(username, groupId, channelI
 	const before = EVENT_ID_HEX.test(String(options.before || '')) ? options.before : null
 	const attestation = await signPullAttestation(username, groupId, { requestId })
 	try {
-		slot.send('channel_history_want',{
+		slot.send('channel_history_want', {
 			requestId,
 			channelId,
 			before,

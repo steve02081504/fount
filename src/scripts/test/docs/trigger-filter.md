@@ -19,11 +19,11 @@ Set on manifest root or individual suite. Suite layer merges on top of manifest.
 
 ```json
 {
-	"triggerFilter": { "ignoreDefaults": false },
-	"suites": [{
-		"name": "docs-check",
-		"triggerFilter": { "unignore": ["src/public/parts/foo/**/*.md"] }
-	}]
+ "triggerFilter": { "ignoreDefaults": false },
+ "suites": [{
+  "name": "docs-check",
+  "triggerFilter": { "unignore": ["src/public/parts/foo/**/*.md"] }
+ }]
 }
 ```
 

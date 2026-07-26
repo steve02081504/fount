@@ -54,7 +54,7 @@ async function writePendingIngestRows(username, groupId, rows) {
 	await writeFile(path, body ? `${body}\n` : '', 'utf8')
 	if (!rows.length) {
 		const { unlink } = await import('node:fs/promises')
-		await unlink(path).catch(() => {})
+		await unlink(path).catch(() => { })
 	}
 }
 

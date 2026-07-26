@@ -142,7 +142,7 @@ export async function pickAvailablePort(preferred, scan = 50) {
 
 /** env 指定端口时无持有句柄，释放为空操作。 */
 /** @type {(port: number) => Promise<void>} */
-const noopReleasePort = async () => {}
+const noopReleasePort = async () => { }
 
 /**
  * 由已持有的 server 映射构造端口块句柄。
@@ -265,7 +265,7 @@ export async function allocateLiveNodePorts({ preferred = TEST_PORT_BASE } = {})
 
 /** env 指定端口时无持有句柄。 */
 /** @type {() => Promise<void>} */
-const noopReleaseAll = async () => {}
+const noopReleaseAll = async () => { }
 
 /**
  * 为 live 联邦套件分配连续 N 个端口（或读 env）。
@@ -437,7 +437,7 @@ export async function launchNode(options = {}) {
 	let lastError
 	/** @type {object} */
 	let attemptOptions = options
-	for (let attempt = 0; attempt < LAUNCH_PORT_RACE_RETRIES; attempt++) 
+	for (let attempt = 0; attempt < LAUNCH_PORT_RACE_RETRIES; attempt++)
 		try {
 			return await launchNodeOnce(attemptOptions)
 		}
@@ -447,7 +447,7 @@ export async function launchNode(options = {}) {
 			// 换口重试：丢掉已 release 的显式端口，重新 hold（fed 节点 env 以返回的 port 为准）。
 			attemptOptions = { ...options, port: undefined, releasePort: undefined, commitPort: undefined }
 		}
-	
+
 	throw lastError
 }
 

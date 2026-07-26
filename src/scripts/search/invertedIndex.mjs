@@ -134,14 +134,14 @@ export async function indexDocument(indexDir, shardKey, doc) {
 		const postings = await readPostings(dir)
 		const rows = await readJsonl(join(dir, 'docs.jsonl'))
 		const prev = foldDocs(rows).get(id)
-		if (prev && !prev.deleted) 
+		if (prev && !prev.deleted)
 			for (const token of tokenizeForQuery(String(prev.text || ''))) {
 				const list = postings[token]
 				if (!list) continue
 				postings[token] = list.filter(entry => entry !== id)
 				if (!postings[token].length) delete postings[token]
 			}
-		
+
 
 		for (const token of tokens) {
 			if (!postings[token]) postings[token] = []
@@ -214,9 +214,9 @@ export async function loadActiveDocs(indexDir, shardKey) {
 	const folded = foldDocs(rows)
 	/** @type {Map<string, object>} */
 	const active = new Map()
-	for (const [id, row] of folded) 
+	for (const [id, row] of folded)
 		if (!row.deleted) active.set(id, row)
-	
+
 	return active
 }
 
@@ -251,12 +251,12 @@ export async function queryIndex(options) {
 
 		/** @type {Map<string, number>} */
 		const scoreById = new Map()
-		for (const token of tokens) 
+		for (const token of tokens)
 			for (const docId of postings[token] || []) {
 				if (!active.has(docId)) continue
 				scoreById.set(docId, (scoreById.get(docId) || 0) + 1)
 			}
-		
+
 
 		for (const [docId, hits] of scoreById) {
 			const doc = active.get(docId)

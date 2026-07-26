@@ -136,8 +136,8 @@ export async function renderMemberList(state) {
 			const { memberKey, isAgent, entityHash, displayName } = row
 			const avatarFor = entityHash
 			const isAdmin = memberDisplaysAsAdmin(member, roleDefs)
-			const ownerAttr = isAgent && member.ownerPubKeyHash
-				? ` data-owner-pub-key-hash="${escapeHtml(member.ownerPubKeyHash)}"`
+			const ownerAttr = isAgent && member.ownerEntityHash
+				? ` data-owner-entity-hash="${escapeHtml(member.ownerEntityHash)}"`
 				: ''
 			const avatarSeed = entityHash || memberKey || (isAgent ? member.charname : '') || displayName
 			listHost.appendChild(await renderTemplate('hub/nav/member_item', {

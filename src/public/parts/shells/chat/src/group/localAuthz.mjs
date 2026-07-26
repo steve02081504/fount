@@ -64,7 +64,7 @@ export async function validateLocalAuthzBatch(username, groupId, events) {
 		validateLocalAuthzPayload(eventType, event.content, memberKey, state)
 		if (eventType === 'reputation_reset') {
 			const targetPubKeyHash = event.content?.targetPubKeyHash?.trim().toLowerCase() || ''
-			if (targetPubKeyHash && isPubKeyHashBlocked( targetPubKeyHash))
+			if (targetPubKeyHash && isPubKeyHashBlocked(targetPubKeyHash))
 				throw new Error('reputation_reset ignored for locally blocked target')
 		}
 	}

@@ -118,7 +118,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const { username, groupId } = req.groupContext
 
 		const roster = await listFederationPeersForGroup(username, groupId)
-		const stored = loadPeerPoolView( groupId)
+		const stored = loadPeerPoolView(groupId)
 		res.status(200).json({
 			selfNodeHash: roster.selfNodeHash,
 			federationEnabled: roster.federationEnabled,
@@ -206,7 +206,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 
 		/** @type {Record<string, object>} */
 		const channelCaps = {}
-		if (active) 
+		if (active)
 			for (const channelId of Object.keys(channels))
 				channelCaps[channelId] = {
 					canEditList: canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId),
@@ -215,7 +215,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 					canStream: canInChannel(state, member, PERMISSIONS.STREAM, channelId),
 					canManageMessages: canInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId),
 				}
-		
+
 
 		/** @type {object} */
 		const meta = {

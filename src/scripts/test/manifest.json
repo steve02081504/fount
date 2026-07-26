@@ -4,7 +4,13 @@
 		{
 			"name": "manifest_selectors",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/manifest_selectors.test.mjs"
 			],
 			"triggers": [
@@ -15,7 +21,13 @@
 		{
 			"name": "trigger_filter",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/trigger_filter.test.mjs"
 			],
 			"triggers": [
@@ -28,7 +40,13 @@
 		{
 			"name": "dependencies_state",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/dependencies_state.test.mjs"
 			],
 			"triggers": [
@@ -45,7 +63,13 @@
 		{
 			"name": "continue_reason",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/continue_reason.test.mjs"
 			],
 			"triggers": [
@@ -64,7 +88,13 @@
 		{
 			"name": "serial_files",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/serial_files.test.mjs"
 			],
 			"triggers": [
@@ -80,7 +110,13 @@
 		{
 			"name": "selection",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/selection.test.mjs"
 			],
 			"triggers": [
@@ -96,7 +132,13 @@
 		{
 			"name": "protocol_order",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/protocol_order.test.mjs"
 			],
 			"triggers": [
@@ -111,7 +153,13 @@
 		{
 			"name": "runner_watchdog",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/runner_watchdog.test.mjs"
 			],
 			"triggers": [
@@ -126,7 +174,13 @@
 		{
 			"name": "resources_scheduler",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/resources_scheduler.test.mjs"
 			],
 			"triggers": [
@@ -140,7 +194,13 @@
 		{
 			"name": "proc_sample",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/proc_sample.test.mjs"
 			],
 			"triggers": [
@@ -151,7 +211,13 @@
 		{
 			"name": "deno_panic",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/deno_panic.test.mjs"
 			],
 			"triggers": [
@@ -163,7 +229,13 @@
 		{
 			"name": "run_timing",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/run_timing.test.mjs",
 				"./src/scripts/test/selftest/format_duration.test.mjs"
 			],
@@ -180,7 +252,13 @@
 		{
 			"name": "estimate",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/estimate.test.mjs"
 			],
 			"triggers": [
@@ -198,7 +276,13 @@
 		{
 			"name": "trigger_audit",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/trigger_audit.test.mjs"
 			],
 			"triggers": [
@@ -212,7 +296,13 @@
 		{
 			"name": "disposable_path",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/disposable_path.test.mjs"
 			],
 			"triggers": [
@@ -227,7 +317,13 @@
 		{
 			"name": "browser_diagnostics",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/browser_diagnostics.test.mjs"
 			],
 			"triggers": [
@@ -240,7 +336,13 @@
 		{
 			"name": "fatal_exit",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/fatal_exit.test.mjs"
 			],
 			"triggers": [
@@ -252,7 +354,13 @@
 		{
 			"name": "port_lease",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/selftest/port_lease.test.mjs"
 			],
 			"triggers": [

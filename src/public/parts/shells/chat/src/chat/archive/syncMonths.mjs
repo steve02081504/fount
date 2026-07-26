@@ -18,16 +18,16 @@ export async function listMissingArchiveMonths(username, groupId) {
 	const manifest = await loadArchiveManifest(username, groupId)
 	/** @type {Array<{ channelId: string, utcMonth: string }>} */
 	const missing = []
-	for (const [channelId, meta] of Object.entries(manifest.channels || {})) 
-		for (const utcMonth of meta.months || []) 
+	for (const [channelId, meta] of Object.entries(manifest.channels || {}))
+		for (const utcMonth of meta.months || [])
 			try {
 				await readFile(channelArchivePath(username, groupId, channelId, utcMonth), 'utf8')
 			}
 			catch {
 				missing.push({ channelId, utcMonth })
 			}
-		
-	
+
+
 	return missing.sort((a, b) => a.utcMonth.localeCompare(b.utcMonth))
 }
 
@@ -69,7 +69,7 @@ export async function syncMissingArchiveMonths(username, groupId, slot, options 
 
 	/** @returns {Promise<void>} */
 	const worker = async () => {
-		for (;;) {
+		for (; ;) {
 			const itemIndex = nextIndex++
 			if (itemIndex >= missing.length) return
 			const { channelId, utcMonth } = missing[itemIndex]

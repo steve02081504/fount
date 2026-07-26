@@ -336,7 +336,7 @@ function fanoutBinary(roomId, room, buf, fromWs, options = {}) {
 		catch { /* skip failed send */ }
 	}
 	const bridged = roomBridges.get(roomId)
-	if (bridged?.size) 
+	if (bridged?.size)
 		for (const otherId of bridged) {
 			const other = rooms.get(otherId)
 			if (!other) continue
@@ -351,7 +351,7 @@ function fanoutBinary(roomId, room, buf, fromWs, options = {}) {
 				catch { /* skip */ }
 			}
 		}
-	
+
 	if (options.skipSinks) return
 	const sinks = roomSinks.get(roomId)
 	if (sinks?.size)

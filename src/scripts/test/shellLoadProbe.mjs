@@ -120,7 +120,7 @@ export async function probeShellPart({ repoRoot, partPath, dynamicProbes }) {
 	/** @type {string[]} */
 	const crossBoundary = []
 
-	for (const file of await walkMjsFiles(publicDir)) 
+	for (const file of await walkMjsFiles(publicDir))
 		for (const spec of await extractImportSpecs(file)) {
 			if (spec.startsWith('/')) {
 				const resolved = resolveBrowserImportSpec(repoRoot, file, spec)
@@ -147,9 +147,9 @@ export async function probeShellPart({ repoRoot, partPath, dynamicProbes }) {
 			if (rel.includes('/src/scripts/') || rel.match(/parts\/shells\/[^/]+\/src\//))
 				crossBoundary.push(`frontend ${path.relative(repoRoot, file)} imports backend ${rel} via ${spec}`)
 		}
-	
 
-	for (const file of await walkMjsFiles(srcDir)) 
+
+	for (const file of await walkMjsFiles(srcDir))
 		for (const spec of await extractImportSpecs(file)) {
 			if (!spec.startsWith('.')) continue
 			// `.ts` 是类型声明路径，不参与运行时模块图
@@ -166,7 +166,7 @@ export async function probeShellPart({ repoRoot, partPath, dynamicProbes }) {
 			if (rel.includes('/public/pages/'))
 				crossBoundary.push(`backend ${path.relative(repoRoot, file)} imports pages ${rel}`)
 		}
-	
+
 
 	/** 动态 import 验证关键后端链（不执行 main 全量副作用）。 */
 	const probeRels = dynamicProbes ?? [

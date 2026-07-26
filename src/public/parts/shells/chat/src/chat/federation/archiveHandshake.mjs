@@ -97,7 +97,7 @@ export async function loadLocalFederationArchive(username, groupId, readJsonl) {
 	catch { /* absent */ }
 	let deniedSubjects = []
 	try {
-		const peers = loadPeerPoolView( groupId)
+		const peers = loadPeerPoolView(groupId)
 		deniedSubjects = peers.deniedSubjects || []
 	}
 	catch { /* absent */ }

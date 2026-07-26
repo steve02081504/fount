@@ -64,12 +64,12 @@ export function requireGroupChannel(options = {}) {
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { state, member } = membership
 		ensureChannel(state, channelId)
-		if (permission) 
+		if (permission)
 			if (options.sendText)
 				ensureCanInChannelSend(state, member, permission, channelId, options.error)
 			else
 				ensureCanInChannel(state, member, permission, channelId, options.error)
-		
+
 		req.groupContext = { ...membership, groupId, channelId }
 		next()
 	}

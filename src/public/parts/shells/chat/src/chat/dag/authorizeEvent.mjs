@@ -98,10 +98,10 @@ function permissionsExceedGrantor(govPerms, targetPerms) {
  * @returns {{ ok: true } | { ok: false, reason: string }} 校验结果
  */
 function checkRolePermissionsMutation(govPerms, existingPerms, nextPerms) {
-	if (permissionsGrantSuperuser(existingPerms) || permissionsGrantSuperuser(nextPerms)) 
+	if (permissionsGrantSuperuser(existingPerms) || permissionsGrantSuperuser(nextPerms))
 		if (!govPerms[PERMISSIONS.MANAGE_ADMINS])
 			return { ok: false, reason: 'ADMIN/MANAGE_ADMINS role mutation requires MANAGE_ADMINS' }
-	
+
 	if (permissionsExceedGrantor(govPerms, nextPerms))
 		return { ok: false, reason: 'role permissions exceed grantor' }
 	return { ok: true }
@@ -145,13 +145,13 @@ export async function checkEventPermission(state, event, senderHash, options = {
 			entityHash,
 			entityActivePubKeyHex,
 		)
-		if (!ownership.ok) 
+		if (!ownership.ok)
 			return {
 				ok: false,
 				reason: ownership.reason || 'member_join active key not owned by entity',
 				deferrable: ownership.deferrable,
 			}
-		
+
 		return { ok: true }
 	}
 	if (type === 'member_leave')
@@ -287,11 +287,11 @@ export async function checkEventPermission(state, event, senderHash, options = {
 		case 'cabinet_key_update': {
 			const touchesAccess = event.content?.role_access
 				&& typeof event.content.role_access === 'object'
-			if (touchesAccess) 
+			if (touchesAccess)
 				return govPerms[PERMISSIONS.ADMIN] || govPerms[PERMISSIONS.MANAGE_ADMINS]
 					? { ok: true }
 					: { ok: false, reason: 'cabinet role_access change requires ADMIN or MANAGE_ADMINS' }
-			
+
 			return govPerms[PERMISSIONS.MANAGE_ROLES]
 				? { ok: true }
 				: { ok: false, reason: 'MANAGE_ROLES required' }

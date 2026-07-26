@@ -30,10 +30,10 @@ async function telegramCodePrompt(args) {
 - \`telegram.client\` — Telegraf 实例
 - \`telegram.api\` — Bot API（\`bot.telegram\`）
 ${inBridge
-		? `- \`telegram.chat\` — 当前 Telegram 聊天（群/私聊）
+			? `- \`telegram.chat\` — 当前 Telegram 聊天（群/私聊）
 - \`telegram.chatId\` / \`telegram.threadId\` / \`telegram.messageId\` — 定位这次回复用的 id
 可发消息、禁言/踢人、管群组等。`
-		: '当前不在 Telegram 对话里，chat 相关字段不可用。'}
+			: '当前不在 Telegram 对话里，chat 相关字段不可用。'}
 示例：\`await telegram.api.sendMessage(telegram.chatId, 'hello')\`
 `
 }

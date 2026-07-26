@@ -125,7 +125,7 @@ function showModelsError(div, error) {
 	div.appendChild(errorDiv)
 }
 
-return async function({ data, containers }) {
+return async function ({ data, containers }) {
 	const div = containers.generatorDisplay
 	const { apikey, base_url } = data
 	if (!apikey?.trim()) {

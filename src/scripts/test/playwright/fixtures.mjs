@@ -28,7 +28,7 @@ export function createFountFixtures(options = {}) {
 		 * @param {object} fixtures - Playwright fixture 依赖（未使用）
 		 * @param {(url: string) => Promise<void>} use - Playwright fixture use 回调
 		 */
-		baseUrl: async ({}, use) => {
+		baseUrl: async ({ }, use) => {
 			await use(requireTestBaseUrl())
 		},
 		/**
@@ -36,7 +36,7 @@ export function createFountFixtures(options = {}) {
 		 * @param {object} fixtures - Playwright fixture 依赖（未使用）
 		 * @param {(key: string) => Promise<void>} use - Playwright fixture use 回调
 		 */
-		apiKey: async ({}, use) => {
+		apiKey: async ({ }, use) => {
 			const apiKey = process.env.FOUNT_API_KEY
 			if (!apiKey) throw new Error('FOUNT_API_KEY is required for fount frontend tests')
 			await use(apiKey)
@@ -81,7 +81,7 @@ export function createFountFixtures(options = {}) {
 			let since = Date.now()
 			await waitForTestWatchCycle(page, since).catch(() => { /* 未挂载 test_watch 则跳过 */ })
 			since = Date.now()
-			await waitForTestWatchCycle(page, since).catch(() => {})
+			await waitForTestWatchCycle(page, since).catch(() => { })
 			diagnostics.flushNetworkDiagnostics()
 			expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
 			expect(diagnostics.testWatchErrors, 'unexpected test_watch console output').toEqual([])

@@ -200,11 +200,11 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 		nodeHash: isHex64(homeNodeHash) ? homeNodeHash : undefined,
 		entityHash: isHex64(homeNodeHash) ? `${homeNodeHash}${senderKey}` : undefined,
 	}
-	if (isSubjectBannedByState(state, subject) || isSubjectBlocked( subject)) {
+	if (isSubjectBannedByState(state, subject) || isSubjectBlocked(subject)) {
 		if (logFailures) console.error('federation: drop remote event (banned/blocked subject)')
 		return finish(ingestResult('invalid', 'banned'))
 	}
-	const peers = loadPeerPoolView( groupId)
+	const peers = loadPeerPoolView(groupId)
 	if (isPeerPoolKeyBlocked(peers, senderKey)
 		|| (subject.nodeHash && isPeerPoolKeyBlocked(peers, subject.nodeHash))
 		|| (subject.entityHash && isPeerPoolKeyBlocked(peers, subject.entityHash))) {

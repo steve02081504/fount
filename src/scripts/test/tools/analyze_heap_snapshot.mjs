@@ -61,9 +61,9 @@ export function formatHeapSnapshotAnalysis(result) {
 		`nodes: ${result.nodeCount}`,
 		'top by self_size (type\\tname\\tcount\\tbytes):',
 	]
-	for (const row of result.ranked) 
+	for (const row of result.ranked)
 		lines.push(`${row.type}\t${row.name || '(empty)'}\t${row.count}\t${row.selfSize}`)
-	
+
 	return `${lines.join('\n')}\n`
 }
 

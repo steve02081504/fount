@@ -103,7 +103,7 @@ export async function tryAcquirePortLease(port) {
 			await handle.writeFile(`${process.pid}\n${Date.now()}\n`, 'utf8')
 		}
 		finally {
-			await handle.close().catch(() => {})
+			await handle.close().catch(() => { })
 		}
 
 		let released = false

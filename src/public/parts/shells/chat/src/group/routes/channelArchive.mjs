@@ -47,14 +47,14 @@ export function registerChannelArchiveRoutes(router, authenticate) {
 
 		const file = pickUploadedFile(req, 'archive')
 		let archive
-		if (file?.buffer?.length) 
+		if (file?.buffer?.length)
 			try {
 				archive = JSON.parse(file.buffer.toString('utf8'))
 			}
 			catch {
 				throw httpError(400, 'Invalid archive JSON')
 			}
-		
+
 		else if (req.body?.archive && typeof req.body.archive === 'object')
 			archive = req.body.archive
 		else if (req.body?.format === 'fount-channel-archive')

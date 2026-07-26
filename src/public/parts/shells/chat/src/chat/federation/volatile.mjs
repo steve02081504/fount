@@ -80,11 +80,11 @@ export async function publishVolatileToFederation(groupId, payload) {
 		.slice(0, 24)
 	const envelope = { nodeHash, groupId, dedupeId, payload }
 	if (!targets.length) {
-		slot.send('fed_volatile',envelope, null)
+		slot.send('fed_volatile', envelope, null)
 		return
 	}
 	for (const peerId of targets)
-		slot.send('fed_volatile',envelope, peerId)
+		slot.send('fed_volatile', envelope, peerId)
 }
 
 /**

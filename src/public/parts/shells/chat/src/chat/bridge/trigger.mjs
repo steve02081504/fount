@@ -48,7 +48,7 @@ export async function runVirtualBridgeTrigger(username, groupId, channelId, entr
 	)
 
 	let wantsReply = true
-	if (charAPI.interfaces?.chat?.OnMessage) 
+	if (charAPI.interfaces?.chat?.OnMessage)
 		try {
 			wantsReply = await charAPI.interfaces.chat.OnMessage(event)
 		}
@@ -63,7 +63,7 @@ export async function runVirtualBridgeTrigger(username, groupId, channelId, entr
 			})
 			return
 		}
-	
+
 	else {
 		const isDm = session.chatKind === 'dm'
 		const agentHash = event.chatReplyRequest.CharUid

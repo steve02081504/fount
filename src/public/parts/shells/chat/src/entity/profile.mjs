@@ -142,7 +142,7 @@ async function publishStaticProfile(replicaUsername, entityHash, stored) {
 	if (!recoverySecretKeyHex || !recoveryPubKeyHex) return
 	let activePubKeyHex = stored.activePubKeyHex || ''
 	let keyGeneration = Number(stored.keyGeneration ?? 0) || 0
-	if (!activePubKeyHex) 
+	if (!activePubKeyHex)
 		try {
 			activePubKeyHex = await getEntityActivePubKey(replicaUsername, entityHash)
 			const { readEntityIdentity } = await import('./store.mjs')
@@ -150,7 +150,7 @@ async function publishStaticProfile(replicaUsername, entityHash, stored) {
 			if (row) keyGeneration = Number(row.keyGeneration ?? 0) || 0
 		}
 		catch { /* 无本地身份则保持空 */ }
-	
+
 	const plaintext = Buffer.from(JSON.stringify(toPublicProfilePayload({
 		...stored,
 		activePubKeyHex,
@@ -253,7 +253,7 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
 	else if (isWritableLocalEntity(parsed.entityHash)) {
 		await store.writeEntityJson(parsed.entityHash, PROFILE_JSON, stored)
 		if (replicaUsername)
-			await publishStaticProfile(replicaUsername, parsed.entityHash, stored).catch(() => {})
+			await publishStaticProfile(replicaUsername, parsed.entityHash, stored).catch(() => { })
 	}
 	else if (options.fetchRemote && replicaUsername) {
 		const remote = await fetchAndCacheRemoteProfile(replicaUsername, parsed.entityHash)
@@ -389,7 +389,7 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 		|| updates.themeColor !== undefined
 		|| updates.banner !== undefined
 	if (staticTouched)
-		await publishStaticProfile(replicaUsername, entityHash, updatedProfile).catch(() => {})
+		await publishStaticProfile(replicaUsername, entityHash, updatedProfile).catch(() => { })
 
 	if (options.skipPresentation) return updatedProfile
 	const locales = options.locales || localesForUser(replicaUsername)

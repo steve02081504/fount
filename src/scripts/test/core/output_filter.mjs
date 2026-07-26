@@ -90,9 +90,9 @@ const IMBALANCE_HIT = 'noise_allow_imbalance'
  * @returns {boolean} 是否豁免
  */
 function isLineAllowedByStack(line, allowStack) {
-	for (const pattern of allowStack) 
+	for (const pattern of allowStack)
 		if (pattern.test(line)) return true
-	
+
 	return false
 }
 

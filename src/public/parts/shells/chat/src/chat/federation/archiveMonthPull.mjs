@@ -235,10 +235,10 @@ async function noteArchiveDigestObservations(username, groupId, candidates, chan
 	const penalized = new Set()
 	await mutateArchiveManifest(username, groupId, manifest => {
 		if (!manifest.peerDigestObservations) manifest.peerDigestObservations = {}
-		for (const { peer, digest } of observations) 
+		for (const { peer, digest } of observations)
 			if (mergeDigestObservation(manifest, channelId, utcMonth, peer, digest))
 				penalized.add(peer)
-		
+
 	})
 	for (const peer of penalized)
 		penalizeArchiveServeMismatch(peer)
@@ -338,10 +338,10 @@ export async function pullArchiveMonthQuorum(username, groupId, slot, channelId,
 	}
 
 	const applied = (await applyArchiveMonthWinner(username, groupId, picked.winner)).applied
-	for (const row of candidates) 
+	for (const row of candidates)
 		if (row.tmpPath && row.tmpPath !== picked.winner?.tmpPath)
-			await unlink(row.tmpPath).catch(() => {})
-	
+			await unlink(row.tmpPath).catch(() => { })
+
 	return { applied, reason: applied ? 'ok' : 'apply_failed' }
 }
 

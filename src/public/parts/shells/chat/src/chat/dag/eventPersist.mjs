@@ -97,7 +97,7 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 		const target = slashTargetPubKeyHash(signPayload)
 		if (!target) return
 		const state = await materializedState()
-		await applyDecayCollusionAfterSlash( target, state.inviteEdges)
+		await applyDecayCollusionAfterSlash(target, state.inviteEdges)
 	}
 
 	if (signPayload.type === 'reputation_slash') {
@@ -124,7 +124,7 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 	}
 	else if (signPayload.type === 'reputation_reset') {
 		const target = slashTargetPubKeyHash(signPayload)
-		if (target) await applyReputationResetToScores( target)
+		if (target) await applyReputationResetToScores(target)
 	}
 	if (signPayload.type === 'member_join') {
 		const sender = signPayload.sender.trim().toLowerCase()
@@ -171,9 +171,9 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		return cachedState
 	}
 
-	if (signPayload.type === 'file_delete' && signPayload.content?.fileId) 
+	if (signPayload.type === 'file_delete' && signPayload.content?.fileId)
 		await releaseFileChunksAfterDelete(username, groupId, String(signPayload.content.fileId), await materializedState())
-	
+
 
 	const roomKey = groupWsRoomKeyForReplica(groupId)
 	broadcastEvent(roomKey, { type: 'dag_event', event: signPayload })
@@ -198,7 +198,7 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 			&& !isSignedBaseCheckpoint(existingCheckpoint)
 		if (!persistOpts.skipCheckpointRebuild && !deferCheckpointForBootstrapJoin)
 			await rebuildAndSaveCheckpoint(username, groupId, { ...persistOpts, skipChannelGc: true })
-		if (!persistOpts.skipGenesisSideEffects) 
+		if (!persistOpts.skipGenesisSideEffects)
 			if (signPayload.type === 'channel_permissions_update') {
 				const channelId = String(signPayload.content?.channelId || '').trim()
 				if (channelId) await appendChannelKeyRotate(username, groupId, channelId)
@@ -211,7 +211,7 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 				await rotateAllChannelKeys(username, groupId)
 				await rotateBoundCabinetKeys(username, groupId).catch(() => { })
 			}
-		
+
 
 		if (signPayload.type === 'group_settings_update' && signPayload.content?.roomSecret) {
 			const state = await materializedState()

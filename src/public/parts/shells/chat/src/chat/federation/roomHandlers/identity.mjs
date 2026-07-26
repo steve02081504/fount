@@ -56,7 +56,7 @@ export function registerIdentityHandlers(roomContext) {
 			const settings = await loadFederationGroupSettings(username, groupId)
 			await mergePexNodeHints(groupId, hints, settings)
 			if (hints.length)
-				await bumpReputationOnRelay( remoteNode, `pex:${remoteNode}`)
+				await bumpReputationOnRelay(remoteNode, `pex:${remoteNode}`)
 		})().catch(error => console.error('federation: fed_pex ingest failed', error))
 	})
 
@@ -78,7 +78,7 @@ export function registerIdentityHandlers(roomContext) {
 		})
 		if (!isFederationActionAllowedUnderLoad(key, 'fed_pex', rtcLimits)) return
 		void (async () => {
-			const stored = loadPeerPoolView( groupId)
+			const stored = loadPeerPoolView(groupId)
 			const hints = [...stored.trustedPeers, ...stored.explorePeers].slice(0, 48)
 			if (hints.length)
 				fedOut.enqueue(3, () => {

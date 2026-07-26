@@ -52,13 +52,13 @@ export async function refreshArchivedSnapshotIfPresent(username, groupId, channe
 	/** @type {object[]} */
 	const rows = []
 	let replaced = false
-	for await (const line of readJsonlStream(path)) 
+	for await (const line of readJsonlStream(path))
 		if (String(line.eventId).trim().toLowerCase() === id) {
 			rows.push(snap)
 			replaced = true
 		}
 		else rows.push(line)
-	
+
 	if (!replaced) return false
 	await writeFile(path, rows.map(row => canonicalArchiveMonthLine(row)).join('\n') + '\n', 'utf8')
 	await mutateArchiveManifest(username, groupId, async m => {

@@ -16,13 +16,13 @@ for (const dir of [
 	path.join(nodeBData, 'users/nodeb/shells/chat/blobs'),
 	path.join(nodeBData, 'users/nodeb/entities'),
 	path.join(nodeBData, 'p2p/chunks'),
-]) 
+])
 	if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true, force: true })
 
 
 for (const file of [
 	path.join(nodeBData, 'users/nodeb/shells/chat/blob_refcounts.json'),
-]) 
+])
 	if (fs.existsSync(file)) fs.rmSync(file, { force: true })
 
 
@@ -30,7 +30,7 @@ for (const dir of [
 	path.join(nodeBData, 'users/nodeb/settings'),
 	path.join(nodeBData, 'users/nodeb/shells/chat'),
 	path.join(nodeBData, 'p2p'),
-]) 
+])
 	if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
 
 

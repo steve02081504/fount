@@ -80,7 +80,7 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, op
 		entityHash,
 		enableGroupFederation: true,
 	})
-	const {groupId} = result
+	const { groupId } = result
 	registerGroupRuntime(groupId, username)
 	await initGroupFileMasterKey(username, groupId)
 	// 仿 session/groupLifecycle.mjs newMetadata：建群后这两条 DAG 事件跳过逐条重型 checkpoint 与联邦发布，

@@ -431,8 +431,8 @@ export function attachFedChunkHandlers(fedRoom) {
 			}
 			const loc = `local:${groupId}/chunks/${hash}.bin`
 			let bytes
-			if (await hasChunk( hash))
-				bytes = await getChunk( hash)
+			if (await hasChunk(hash))
+				bytes = await getChunk(hash)
 			else
 				try {
 					bytes = await local.getChunk(loc)

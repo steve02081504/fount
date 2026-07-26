@@ -124,7 +124,7 @@ export function registerSyncHandlers(roomContext) {
 			if (result?.status === 'applied') {
 				const remoteNodeHash = peerToNode.get(peerId)
 				if (remoteNodeHash)
-					await bumpReputationOnRelay( remoteNodeHash, `dag:${eventId}`)
+					await bumpReputationOnRelay(remoteNodeHash, `dag:${eventId}`)
 			}
 			if (result?.status === 'quarantined' || result?.status === 'pending')
 				scheduleCatchUp(username, groupId)
@@ -313,7 +313,7 @@ export function registerSyncHandlers(roomContext) {
 					}
 					catch (error) { console.error('federation: gossip_response failed', error) }
 				})
-				void bumpReputationOnRelay( requesterNodeHash, `gossip:${dedupeKey}`)
+				void bumpReputationOnRelay(requesterNodeHash, `gossip:${dedupeKey}`)
 					.catch(error => console.warn('federation: gossip reputation update failed', error))
 			}
 

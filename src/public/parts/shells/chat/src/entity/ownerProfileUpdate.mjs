@@ -156,7 +156,7 @@ export async function purgeOwnedProfilePublish(username, ownerEntityHash, target
 	catch { /* 无文件列表则只清已知三条 */ }
 
 	const tombstone = Buffer.from(JSON.stringify({ tombstone: true, ts: Date.now() }), 'utf8')
-	for (const logicalPath of paths) 
+	for (const logicalPath of paths)
 		try {
 			await publishAsOwner(
 				username,
@@ -168,7 +168,7 @@ export async function purgeOwnedProfilePublish(username, ownerEntityHash, target
 			)
 		}
 		catch { /* 单路径失败不阻断 */ }
-	
+
 
 	clearPending(username, ownerEntityHash, targetEntityHash)
 }
@@ -291,7 +291,7 @@ export async function publishOwnerProfileUpdate(username, publisherEntityHash, t
 			files.banner.mimeType || 'image/png',
 			files.banner.filename || 'banner',
 		)
-	
+
 
 	savePending(username, publisher, target, { contentHash, ts })
 
@@ -390,13 +390,13 @@ export async function pullOwnerProfileUpdate(username, targetEntityHash) {
 	await updateProfile(username, target, sanitized, { skipPresentation: true })
 
 	const avatarPlain = await readPublicFile(username, ownerEntityHash, ownedProfileUpdatePath(target, 'avatar'))
-	if (avatarPlain?.length && !isTombstonePlain(avatarPlain)) 
+	if (avatarPlain?.length && !isTombstonePlain(avatarPlain))
 		await uploadAvatar(username, target, avatarPlain, 'avatar.png', 'image/png')
-	
+
 	const bannerPlain = await readPublicFile(username, ownerEntityHash, ownedProfileUpdatePath(target, 'banner'))
-	if (bannerPlain?.length && !isTombstonePlain(bannerPlain)) 
+	if (bannerPlain?.length && !isTombstonePlain(bannerPlain))
 		await uploadBanner(username, target, bannerPlain, 'banner.png', 'image/png')
-	
+
 
 	await writeLastAppliedTs(target, ts)
 
@@ -543,19 +543,19 @@ export async function updateEntityProfileAsActor(username, actorEntityHash, targ
 	const operatorHash = await resolveOperatorEntityHashForUser(username)
 
 	let canLocalWrite = false
-	if (isWritableLocalEntity(target)) 
+	if (isWritableLocalEntity(target))
 		if (actor === target)
 			canLocalWrite = true
 		else if (operatorHash && actor === operatorHash && await isWritableLocalEntityForUser(username, target))
 			canLocalWrite = true
-		else 
+		else
 			try {
 				const row = await loadEntityIdentity(username, target)
 				canLocalWrite = String(row.ownerEntityHash || '').toLowerCase() === actor
 			}
 			catch { /* 非本用户托管 */ }
-		
-	
+
+
 
 	if (canLocalWrite) {
 		if (avatar?.buffer)

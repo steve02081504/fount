@@ -175,7 +175,7 @@ export function collectStaleTriggerEvidence(suite, changedFiles, opts = {}) {
 	/** @type {string[]} */
 	const matchedPaths = [...globEvidence.matchedPaths]
 
-	if (suite.subtests?.length) 
+	if (suite.subtests?.length)
 		for (const subtest of suite.subtests) {
 			const relevant = filterTriggerRelevantFiles(changedFiles, suite.triggerFilter)
 			for (const pat of subtest.triggers ?? []) {
@@ -185,7 +185,7 @@ export function collectStaleTriggerEvidence(suite, changedFiles, opts = {}) {
 				matchedPaths.push(...hits)
 			}
 		}
-	
+
 
 	/** @type {string[]} */
 	const matchedTriggerSets = []

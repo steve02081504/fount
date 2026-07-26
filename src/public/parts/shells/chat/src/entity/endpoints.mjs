@@ -126,7 +126,7 @@ export function registerEntityEndpoints(router) {
 		if (!await isWritableLocalEntityForUser(replicaUsername, entityHash))
 			return res.status(403).json({ error: 'Permission denied' })
 		const { lastSeenAt } = await recordHeartbeat(replicaUsername, entityHash)
-		void pollOwnedEntityProfileUpdates(replicaUsername).catch(() => {})
+		void pollOwnedEntityProfileUpdates(replicaUsername).catch(() => { })
 		const profile = await getProfile(entityHash, replicaUsername, { skipPresentation: true })
 		res.status(200).json({
 			lastSeenAt,

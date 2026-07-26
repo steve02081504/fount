@@ -30,11 +30,11 @@ async function discordCodePrompt(args) {
 你可以在 JS 代码里用 \`discord\` 对象操控 Bot：
 - \`discord.client\` — discord.js Client
 ${inBridge
-		? `- \`discord.message\` — 触发这次回复的那条 Discord 消息
+			? `- \`discord.message\` — 触发这次回复的那条 Discord 消息
 - \`discord.channel\` — 消息所在频道
 - \`discord.guild\` — 消息所在服务器（私聊时没有）
 可发消息、设身份组、踢人/封禁、管服务器等。`
-		: '当前不在 Discord 对话里，`message`/`channel`/`guild` 不可用。'}
+			: '当前不在 Discord 对话里，`message`/`channel`/`guild` 不可用。'}
 示例：\`await discord.channel?.send('hello')\`
 `
 }

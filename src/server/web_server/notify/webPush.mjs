@@ -98,7 +98,7 @@ export async function sendWebPush(username, payload) {
 		url: payload.url || '/',
 		tag: payload.tag,
 	})
-	for (const subscription of [...subscriptions]) 
+	for (const subscription of [...subscriptions])
 		try {
 			await webpush.sendNotification(subscription, body)
 		}
@@ -107,7 +107,7 @@ export async function sendWebPush(username, payload) {
 			if (status === 404 || status === 410)
 				await removePushSubscription(username, subscription.endpoint)
 		}
-	
+
 }
 
 /**
