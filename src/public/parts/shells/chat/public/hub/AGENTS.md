@@ -20,7 +20,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms
 ## Streaming AV
 
 - Default (no `streamingSfuWss`): WebCodecs + **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`). `subscribe mode=preview|full`.
-- Group call: `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`; card `extension.chat.call`. Shift+click = audio-only.
+- Group call: `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`; card wire `type: 'call'`. Shift+click = audio-only.
 - Session lifecycle traps + shared client: [ui-details.md](ui-details.md#streaming-av-lifecycle).
 
 ## UI conventions

@@ -11,7 +11,7 @@ function mergeMessageContent(base, patch) {
 	const baseKind = channelMessageKind(base)
 	const patchKind = channelMessageKind(patch)
 	if (baseKind !== 'text' && patchKind !== 'text')
-		return normalizeChannelMessage({ ...base, ...patch, content: String(patch?.content ?? base?.content ?? '') })
+		return normalizeChannelMessage({ ...base, ...patch })
 	if (baseKind !== 'text' || patchKind !== 'text')
 		throw new Error('text edit patch requires text message')
 	const baseObj = normalizeChannelMessage(base)

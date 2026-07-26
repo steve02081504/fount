@@ -162,7 +162,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 **写路径（DAG-first）**：human（Hub `POST …/messages` 与 CLI `send`）→ persona `BeforeUserSend` → `commitChannelMessageEvent`；char / greeting 同进该门面。world `AddChatLogEntry` 为落盘前改写/拒绝；`AfterAddChatLogEntry` 仅在 `broadcastAndPersist` 对 `message`（及流式终稿 `message_edit`）触发一次。canonical `message` content：`{ content: string, name?, avatar?, files?, extension?: { chat?: { sessionSnapshot?, entryId?, … } } }`。内存 `chatLog` 仅为 hydration 缓存。
 
-**Chat 日志类型**：权威定义在 `src/decl/chatLog.ts`（`timeSlice` 存于 `extension.timeSlice`；含 `channelMessageContent_t` / `file_t` / `chatViewer_t`）；shell `decl/chatLog.ts` 仅 re-export。persona `BeforeUserSend` / `GetChatLogForViewer` 见 `src/decl/userAPI.ts`。未绑定 world/persona 时 shell 用内置极小实现（`BUILTIN_WORLD` / `BUILTIN_PERSONA`）。
+**Chat 日志类型**：fount 面在 `src/decl/chatLog.ts`（`timeSlice` / 水合后 `extension.chat`）；DAG wire 判别联合在 `shells/chat/decl/channelWire.ts`（`channelWireMessage_t`；文本省略 `type`）。shell `decl/chatLog.ts` re-export 两者。persona `BeforeUserSend` / `GetChatLogForViewer` 见 `src/decl/userAPI.ts`。未绑定 world/persona 时 shell 用内置极小实现（`BUILTIN_WORLD` / `BUILTIN_PERSONA`）。
 
 **跨节点 RPC**：群 WS `group_ws_rpc_identity`（`clientNodeId` = 本机 node UUID）+ `rpc_call`（`targetNodeId` 定向）。**RPC 线协议** `memberId`：`owner:charname`（角色）、`owner:world:worldname`（世界）、`owner:persona:name`（人格）。**会话/viewer 层**另用 entity hash 作主键（`chatViewer_t.memberId`、`GetSpeakingOrder` turn 等）。`GetReply` 参数为 `SerializableRequest` `{ groupId, channelId, charname, replicaUsername }`；执行端本地 `getChatRequest`（含 `other_personas` 远程 persona proxy）后生成并 mirror DAG。`other_chars` 为常驻频率∪频道活跃 Top-N（`groupSettings.otherCharsActiveLimit`，默认 8）。本机插件名单仅 `local_plugins.json`；world `GetChatPlugins` 在本机 merge（同名本机优先），hosted 仅主机侧生效。
 

@@ -1,12 +1,11 @@
-import { ensureChatExtension, sanitizeAlt, sanitizeMessageExtras } from './messageFields.mjs'
+import { sanitizeAlt, sanitizeMessageExtras } from './messageFields.mjs'
 
 /**
  * @param {object} content wire content
  * @returns {Record<string, unknown> | undefined} extension.chat
  */
 export function chatExtensionOf(content) {
-	const chat = content?.extension?.chat
-	return chat && typeof chat === 'object' ? chat : undefined
+	return content?.extension?.chat
 }
 
 /**
@@ -15,8 +14,8 @@ export function chatExtensionOf(content) {
  */
 export function channelMessageKind(content) {
 	const type = content?.type
-	if (type === 'sticker' || type === 'vote' || type === 'group_invite' || type === 'call' || type === 'text')
-		return type
+	if (!type || type === 'text') return 'text'
+	if (['sticker', 'vote', 'group_invite', 'call'].includes(type)) return type
 	throw new Error(`unknown content.type: ${type}`)
 }
 
@@ -25,10 +24,9 @@ export function channelMessageKind(content) {
  * @returns {object[] | undefined} 校验后的描述符
  */
 function normalizeWireFiles(files) {
-	if (!Array.isArray(files) || !files.length) return undefined
+	if (!files?.length) return undefined
 	const out = []
 	for (const file of files) {
-		if (!file || typeof file !== 'object') continue
 		const fileId = String(file.fileId || '').trim()
 		if (!fileId) continue
 		const description = sanitizeAlt(file.description)
@@ -58,16 +56,29 @@ function trimCommon(out) {
 }
 
 /**
+ * @param {object} input wire 片段
+ * @param {Record<string, unknown>} fields 类型字段
+ * @returns {Record<string, unknown>} 带展示字段的 wire
+ */
+function withDisplayFields(input, fields) {
+	return trimCommon({
+		...fields,
+		...input.extension ? { extension: input.extension } : {},
+		...input.name ? { name: input.name } : {},
+		...input.avatar ? { avatar: input.avatar } : {},
+	})
+}
+
+/**
  * 构造文本类 wire。
  * @param {string} agentText 正文
  * @param {Record<string, unknown>} [extra] 其它字段
- * @returns {Record<string, unknown>} type:text wire
+ * @returns {Record<string, unknown>} 文本 wire
  */
 export function channelMessage(agentText, extra = {}) {
-	const { content_for_show, content_for_edit, type: _t, ...rest } = extra
+	const { content_for_show, content_for_edit, type: _ignoredType, ...rest } = extra
 	return normalizeChannelMessage({
 		...rest,
-		type: 'text',
 		content: String(agentText ?? ''),
 		...content_for_show != null ? { content_for_show: String(content_for_show) } : {},
 		...content_for_edit != null ? { content_for_edit: String(content_for_edit) } : {},
@@ -75,7 +86,7 @@ export function channelMessage(agentText, extra = {}) {
 }
 
 /**
- * 规范化 DAG wire content（带 type）。
+ * 规范化 DAG wire content。
  * @param {object} input 写入 DAG 的 content
  * @returns {Record<string, unknown>} 校验后的对象
  */
@@ -87,7 +98,8 @@ export function normalizeChannelMessage(input) {
 	if (type === 'text') {
 		if (typeof input.content !== 'string')
 			throw new Error('text content requires string content field')
-		const out = trimCommon({ ...input, type: 'text', content: input.content })
+		const out = trimCommon({ ...input, content: input.content })
+		delete out.type
 		if (out.content_for_show === out.content) delete out.content_for_show
 		if (out.content_for_edit === out.content) delete out.content_for_edit
 		return out
@@ -96,47 +108,31 @@ export function normalizeChannelMessage(input) {
 	if (type === 'sticker') {
 		const emojiRef = String(input.emojiRef || '').trim()
 		const stickerBase64 = String(input.stickerBase64 || '')
-		if (emojiRef && /:\[[\w.-]+\/[\w.-]+\](?!:)/.test(emojiRef)) {
-			return trimCommon({
-				type: 'sticker',
-				emojiRef,
-				stickerId: String(input.stickerId || ''),
-				stickerName: String(input.stickerName || ''),
-				...input.extension ? { extension: input.extension } : {},
-				...input.name ? { name: input.name } : {},
-				...input.avatar ? { avatar: input.avatar } : {},
-			})
-		}
-		return trimCommon({
+		const compactEmoji = emojiRef && /:\[[\w.-]+\/[\w.-]+\](?!:)/.test(emojiRef)
+		return withDisplayFields(input, {
 			type: 'sticker',
-			...emojiRef ? { emojiRef } : {},
-			...stickerBase64 ? { stickerBase64 } : {},
+			...compactEmoji || emojiRef ? { emojiRef } : {},
+			...!compactEmoji && stickerBase64 ? { stickerBase64 } : {},
 			stickerId: String(input.stickerId || ''),
 			stickerName: String(input.stickerName || ''),
-			...input.mimeType ? { mimeType: String(input.mimeType) } : {},
-			...input.extension ? { extension: input.extension } : {},
-			...input.name ? { name: input.name } : {},
-			...input.avatar ? { avatar: input.avatar } : {},
+			...!compactEmoji && input.mimeType ? { mimeType: String(input.mimeType) } : {},
 		})
 	}
 
 	if (type === 'vote') {
 		if (!String(input.question || '').trim()) throw new Error('vote requires question')
-		if (!Array.isArray(input.options) || !input.options.length) throw new Error('vote requires options')
-		return trimCommon({
+		if (!input.options?.length) throw new Error('vote requires options')
+		return withDisplayFields(input, {
 			type: 'vote',
 			question: String(input.question),
 			options: input.options.map(String),
 			...input.deadline != null ? { deadline: input.deadline } : {},
-			...input.extension ? { extension: input.extension } : {},
-			...input.name ? { name: input.name } : {},
-			...input.avatar ? { avatar: input.avatar } : {},
 		})
 	}
 
 	if (type === 'group_invite') {
 		if (!input.groupId) throw new Error('group_invite requires groupId')
-		return trimCommon({
+		return withDisplayFields(input, {
 			type: 'group_invite',
 			groupId: input.groupId,
 			inviteCode: input.inviteCode || '',
@@ -145,14 +141,11 @@ export function normalizeChannelMessage(input) {
 			...input.memberCount != null && {
 				memberCount: Math.max(0, Math.floor(Number(input.memberCount))),
 			},
-			...input.extension ? { extension: input.extension } : {},
-			...input.name ? { name: input.name } : {},
-			...input.avatar ? { avatar: input.avatar } : {},
 		})
 	}
 
 	if (type === 'call') {
-		return trimCommon({
+		return withDisplayFields(input, {
 			type: 'call',
 			callId: String(input.callId || ''),
 			status: String(input.status || 'ongoing'),
@@ -162,9 +155,6 @@ export function normalizeChannelMessage(input) {
 			...input.initiator != null ? { initiator: String(input.initiator) } : {},
 			...Array.isArray(input.participants) ? { participants: input.participants.map(String) } : {},
 			...Array.isArray(input.current) ? { current: input.current.map(String) } : {},
-			...input.extension ? { extension: input.extension } : {},
-			...input.name ? { name: input.name } : {},
-			...input.avatar ? { avatar: input.avatar } : {},
 		})
 	}
 
@@ -191,7 +181,7 @@ export function messageAgentText(content) {
 export function messageShowText(content) {
 	const kind = channelMessageKind(content)
 	if (kind === 'text') return String(content.content_for_show ?? content.content ?? '')
-	if (kind === 'sticker' || kind === 'group_invite') return ''
+	if (['sticker', 'group_invite'].includes(kind)) return ''
 	return messageAgentText(content)
 }
 
@@ -213,11 +203,10 @@ export function messageLineShowText(messageLine, { onlyMessageTypes = false } = 
 	if (messageLine?.decryptView?.failed) return ''
 	const type = messageLine?.type
 	if (type === 'message_delete') return ''
-	const content = messageLine?.content
 	if (type === 'message_edit')
-		return messageShowText(content?.newContent ?? content)
+		return messageShowText(messageLine.content?.newContent ?? messageLine.content)
 	if (onlyMessageTypes && type !== 'message') return ''
-	return messageShowText(content)
+	return messageShowText(messageLine.content)
 }
 
 /**
@@ -251,7 +240,7 @@ export function mergeInlineImageMarkersIntoContent(content, inlineMarkers, { pre
 /**
  * wire → fount 面字段（不含 files buffer 惰性化；由 hydration 处理 files）。
  * @param {object} wire DAG content
- * @returns {{ content: string, content_for_show?: string, content_for_edit?: string, locale?: string, content_warning?: string, sensitive_media?: boolean, name?: string, avatar?: string, role?: string, is_generating?: boolean, charVisibility?: string[], visibility?: unknown, files?: object[], extension?: object }} fount 投影
+ * @returns {object} fount 投影
  */
 export function wireToFountFields(wire) {
 	const kind = channelMessageKind(wire)
@@ -263,16 +252,11 @@ export function wireToFountFields(wire) {
 		if (show && show !== content) out.content_for_show = show
 		if (edit && edit !== content) out.content_for_edit = edit
 	}
-	if (wire.name) out.name = String(wire.name)
-	if (wire.avatar) out.avatar = String(wire.avatar)
-	if (wire.role) out.role = wire.role
-	if (wire.locale) out.locale = wire.locale
-	if (wire.content_warning) out.content_warning = wire.content_warning
+	for (const key of ['name', 'avatar', 'role', 'locale', 'content_warning', 'visibility', 'extension'])
+		if (wire[key] != null) out[key] = wire[key]
 	if (wire.sensitive_media) out.sensitive_media = true
 	if (wire.is_generating) out.is_generating = true
 	if (wire.charVisibility?.length) out.charVisibility = wire.charVisibility
-	if (wire.visibility != null) out.visibility = wire.visibility
 	if (wire.files?.length) out.files = wire.files
-	if (wire.extension) out.extension = wire.extension
 	return out
 }

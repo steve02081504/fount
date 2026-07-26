@@ -198,7 +198,7 @@ async function attachFilesToContent(username, groupId, content, files, maxBytes)
 
 	content = mergeInlineImageMarkersIntoContent(content, inlineMarkers, { preserveShowEdit: true })
 
-	const stickerBase64 = String(content?.extension?.chat?.sticker?.stickerBase64 || '')
+	const stickerBase64 = content?.type === 'sticker' ? String(content.stickerBase64 || '') : ''
 	if (stickerBase64 && approxStickerBytes(stickerBase64) > maxBytes)
 		throw new Error(`sticker exceeds maxDagPayloadBytes (~${maxBytes})`)
 

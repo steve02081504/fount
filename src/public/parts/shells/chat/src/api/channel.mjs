@@ -83,7 +83,7 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 					}
 			}
 			const { event } = await postChannelMessage(apiContext.username, groupId, channelId, postPayload)
-			// 落盘后 content 是 CKG 密文；发送方持钥，还原明文供调用方直接读取（fileIds 等）。
+			// 落盘后 content 是频道密钥密文；发送方持钥，还原明文供调用方直接读取（fileIds 等）。
 			const { decryptEventContent } = await import('../chat/channel_keys/content.mjs')
 			const decrypted = await decryptEventContent(apiContext.username, groupId, channelId, event.content)
 			const message = createMessage(apiContext, groupId, {
@@ -231,16 +231,10 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 
 			const { event } = await postChannelMessage(apiContext.username, groupId, channelId, {
 				rawContent: normalizeChannelMessage({
-					content: question,
-					extension: {
-						chat: {
-							vote: {
-								question,
-								options,
-								...voteDeadline ? { deadline: new Date(voteDeadline).getTime() } : {},
-							},
-						},
-					},
+					type: 'vote',
+					question,
+					options,
+					...voteDeadline ? { deadline: new Date(voteDeadline).getTime() } : {},
 				}),
 				origin: apiContext.charname ? 'char' : 'human',
 				charId: apiContext.charname || null,

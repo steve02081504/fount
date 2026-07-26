@@ -28,7 +28,7 @@ import {
 import { memberEntityHash } from '../../entity/member.mjs'
 import { resolveActiveAgentMemberKeyByCharname } from '../../group/access.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
-import { isCkgEncryptedContent } from '../channel_keys/content.mjs'
+import { isChannelKeyEncryptedContent } from '../channel_keys/content.mjs'
 import { fileMetaFromState, getDecryptedFile } from '../files/groupFiles.mjs'
 import { deriveMessageAttribution } from '../lib/attribution.mjs'
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
@@ -232,7 +232,7 @@ function resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceh
 	if (ref && !content?.contentRefResolved && !chat?.contentRefResolved)
 		return contentRefPlaceholder?.trim()
 			|| `[content_ref:${ref.contentHash?.trim().slice(0, 12) || '?'}…]`
-	if (content?.decryptView?.failed || isCkgEncryptedContent(content))
+	if (content?.decryptView?.failed || isChannelKeyEncryptedContent(content))
 		return decryptUnavailableText
 	const text = messageShowText(content)
 	if (text) return text

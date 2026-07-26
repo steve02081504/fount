@@ -29,49 +29,47 @@ export async function renderDecryptBodyHtml(message) {
 }
 
 /**
- * 渲染贴纸消息块（`extension.chat.sticker`）。
+ * 渲染贴纸消息块（顶层 `type: 'sticker'`）。
  * @param {object} message 消息行
  * @returns {Promise<string | null>} HTML 或 null（非贴纸时）
  */
 export async function renderStickerBlock(message) {
 	const content = message?.content
 	if (!content || channelMessageKind(content) !== 'sticker') return null
-	const sticker = chatExtensionOf(content)?.sticker || {}
-	let src = String(sticker.stickerBase64 || '')
-	if (!src && sticker.emojiRef) {
-		const refMatch = /:\[([\w.-]+)\/([\w.-]+)]:/.exec(String(sticker.emojiRef))
+	let src = String(content.stickerBase64 || '')
+	if (!src && content.emojiRef) {
+		const refMatch = /:\[([\w.-]+)\/([\w.-]+)]:/.exec(String(content.emojiRef))
 		if (refMatch)
 			src = await resolveEmojiUrlBestEffort(refMatch[1], refMatch[2]) || ''
 	}
-	const name = escapeHtml(sticker.stickerName || sticker.stickerId || 'sticker')
+	const name = escapeHtml(content.stickerName || content.stickerId || 'sticker')
 	if (src.startsWith('data:') || src.startsWith('https://') || src.startsWith('http://') || src.startsWith('/'))
 		return renderTemplateAsHtmlString('hub/messages/sticker_block', { src: escapeHtml(src), name })
 	return renderTemplateAsHtmlString('hub/messages/sticker_block_fallback', { name })
 }
 
 /**
- * 渲染群链接 overlay 块（`extension.chat.group_invite`）。
+ * 渲染群链接 overlay 块（顶层 `type: 'group_invite'`）。
  * @param {object} message 消息行
  * @returns {Promise<string | null>} HTML 或 null（非群链接时）
  */
 export async function renderGroupInviteBlock(message) {
 	const content = message?.content
 	if (!content || channelMessageKind(content) !== 'group_invite') return null
-	const invite = chatExtensionOf(content)?.group_invite || {}
-	const groupId = escapeHtml(invite.groupId || '')
-	const inviteCode = escapeHtml(invite.inviteCode || '')
-	const groupName = escapeHtml(invite.groupName || groupId)
-	const descriptionText = escapeHtml(invite.description ?? '')
-	const memberCount = invite.memberCount != null ? Number(invite.memberCount) : null
+	const groupId = escapeHtml(content.groupId || '')
+	const inviteCode = escapeHtml(content.inviteCode || '')
+	const groupName = escapeHtml(content.groupName || groupId)
+	const descriptionText = escapeHtml(content.description ?? '')
+	const memberCount = content.memberCount != null ? Number(content.memberCount) : null
 	const countHtml = memberCount != null && Number.isFinite(memberCount)
 		? await renderTemplateAsHtmlString('hub/messages/invite_member_count', { count: memberCount })
 		: ''
 	const settings = store.context.currentState?.groupSettings
-	const roomSecret = invite.groupId === store.context.currentGroupId
+	const roomSecret = content.groupId === store.context.currentGroupId
 		? settings?.roomSecret?.trim()
 		: ''
 	const joinUrl = roomSecret
-		? escapeHtml(buildInviteJoinShareUrl(invite.groupId, invite.inviteCode, roomSecret))
+		? escapeHtml(buildInviteJoinShareUrl(content.groupId, content.inviteCode, roomSecret))
 		: ''
 	return renderTemplateAsHtmlString('hub/messages/group_invite_card', {
 		groupId,

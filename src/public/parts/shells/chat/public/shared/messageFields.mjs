@@ -143,12 +143,12 @@ export function sanitizeMessageExtras(content) {
 		delete out.sensitive_media
 
 	delete out.embeds
-	delete out.type
 	delete out.fileIds
 	delete out.fileCount
 	delete out.fileAlts
 	delete out.displayName
 	delete out.displayAvatar
+	if (!['sticker', 'vote', 'group_invite', 'call'].includes(out.type)) delete out.type
 
 	if (out.extension && typeof out.extension === 'object') {
 		const ext = { .../** @type {Record<string, unknown>} */ out.extension }

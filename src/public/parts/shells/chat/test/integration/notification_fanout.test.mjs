@@ -98,18 +98,13 @@ Deno.test('call card message/edit skips inbox fanout even in mode all', async ()
 		sender: 'ff'.repeat(32),
 		content: {
 			content: 'Call in progress',
-			extension: {
-				chat: {
-					call: {
-						callId,
-						status: 'ongoing',
-						startedAt: Date.now(),
-						initiator: operatorHash,
-						participants: [operatorHash],
-						current: [operatorHash],
-					},
-				},
-			},
+			type: 'call',
+			callId,
+			status: 'ongoing',
+			startedAt: Date.now(),
+			initiator: operatorHash,
+			participants: [operatorHash],
+			current: [operatorHash],
 		},
 		hlc: { wall: Date.now() },
 	}, { ingress: 'live' })
@@ -120,21 +115,15 @@ Deno.test('call card message/edit skips inbox fanout even in mode all', async ()
 		content: {
 			targetId: eventId,
 			newContent: {
-				content: 'Call ended',
-				extension: {
-					chat: {
-						call: {
-							callId,
-							status: 'ended',
-							startedAt: Date.now() - 1000,
-							endedAt: Date.now(),
-							duration: 1000,
-							initiator: operatorHash,
-							participants: [operatorHash],
-							current: [],
-						},
-					},
-				},
+				type: 'call',
+				callId,
+				status: 'ended',
+				startedAt: Date.now() - 1000,
+				endedAt: Date.now(),
+				duration: 1000,
+				initiator: operatorHash,
+				participants: [operatorHash],
+				current: [],
 			},
 		},
 		hlc: { wall: Date.now() },
@@ -252,16 +241,10 @@ Deno.test('fireVoteClosed appends vote_closed inbox row for operator', async () 
 		channelId,
 		timestamp: Date.now(),
 		content: {
-			content: 'pick one',
-			extension: {
-				chat: {
-					vote: {
-						question: 'pick one',
-						options: ['a', 'b'],
-						deadline: new Date(Date.now() + 60_000).toISOString(),
-					},
-				},
-			},
+			type: 'vote',
+			question: 'pick one',
+			options: ['a', 'b'],
+			deadline: new Date(Date.now() + 60_000).toISOString(),
 		},
 	})
 	const ballotId = event.id

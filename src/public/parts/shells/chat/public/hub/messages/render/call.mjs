@@ -4,7 +4,7 @@
  */
 import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { chatExtensionOf } from '../../../shared/channelContent.mjs'
+import { channelMessageKind } from '../../../shared/channelContent.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from '/parts/shells:chat/shared/hashAvatar.mjs'
 
 /**
@@ -12,7 +12,8 @@ import { avatarColor, avatarInitial, avatarTextColor } from '/parts/shells:chat/
  * @returns {Promise<string>} HTML
  */
 export async function renderCallBlock(message) {
-	const call = chatExtensionOf(message?.content)?.call || {}
+	const content = message?.content || {}
+	const call = channelMessageKind(content) === 'call' ? content : {}
 	const status = call.status === 'ended' ? 'ended' : 'ongoing'
 	const source = status === 'ongoing' && Array.isArray(call.current) && call.current.length
 		? call.current

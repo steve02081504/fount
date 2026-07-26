@@ -6,7 +6,7 @@
  * 【关联】channelMessageStore、../core/domUtils、../core/state、render/text
  */
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { channelMessageKind, chatExtensionOf } from '../../shared/channelContent.mjs'
+import { channelMessageKind } from '../../shared/channelContent.mjs'
 import { store } from '../core/state.mjs'
 
 import { fetchRowsForMessageEvent } from './channelMessageStore.mjs'
@@ -47,11 +47,11 @@ function previewFromMessage(message) {
 	const kind = channelMessageKind(message?.content)
 	if (kind === 'sticker') return { i18n: 'chat.hub.pinPreviewSticker' }
 	if (kind === 'vote') {
-		const question = chatExtensionOf(message.content)?.vote?.question || ''
+		const question = message.content?.question || ''
 		return { i18n: 'chat.hub.pinPreviewVote', params: { question } }
 	}
 	if (kind === 'group_invite') {
-		const groupName = chatExtensionOf(message.content)?.group_invite?.groupName || ''
+		const groupName = message.content?.groupName || ''
 		return { i18n: 'chat.hub.pinPreviewInvite', params: { groupName } }
 	}
 	return { text: text.length > 40 ? `${text.slice(0, 40)}…` : text }

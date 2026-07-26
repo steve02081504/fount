@@ -1,5 +1,5 @@
 /**
- * 入群快照：checkpoint + ckg wire channelHistories + fileKeyWraps + channelKeyWraps。
+ * 入群快照：checkpoint + 频道密钥 wire channelHistories + fileKeyWraps + channelKeyWraps。
  * archiveManifest 仅作月份 union hint；checkpoint 经多 peer 信誉仲裁后写入。
  */
 import { randomUUID } from 'node:crypto'

@@ -4,7 +4,7 @@
  */
 import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { chatExtensionOf } from '../../../shared/channelContent.mjs'
+import { channelMessageKind } from '../../../shared/channelContent.mjs'
 import { tallyVoteChoices } from '../../../src/lib/voteTally.mjs'
 
 /**
@@ -14,7 +14,8 @@ import { tallyVoteChoices } from '../../../src/lib/voteTally.mjs'
  * @returns {Promise<string>} HTML
  */
 export async function renderVoteBlock(message, allMessages) {
-	const vote = chatExtensionOf(message?.content)?.vote || {}
+	const content = message?.content || {}
+	const vote = channelMessageKind(content) === 'vote' ? content : {}
 	const question = escapeHtml(String(vote.question || ''))
 	const options = Array.isArray(vote.options) ? vote.options : []
 	const ballotId = escapeHtml(String(message.eventId))

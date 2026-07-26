@@ -24,6 +24,4 @@ export {
 	type channelWireVote_t,
 	type channelWireGroupInvite_t,
 	type channelWireCall_t,
-	/** @deprecated 用 channelWireMessage_t */
-	type channelMessage_t,
 } from './channelWire.ts'

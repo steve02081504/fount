@@ -50,10 +50,10 @@ type channelWireCommon_t = {
 }
 
 /**
- * 文本消息。
+ * 文本消息（wire 上省略 `type` 以省内存；缺省即 text）。
  */
 export type channelWireText_t = channelWireCommon_t & {
-	type: 'text'
+	type?: 'text'
 	content: string
 	content_for_show?: string
 	content_for_edit?: string
@@ -72,7 +72,7 @@ export type channelWireSticker_t = channelWireCommon_t & {
 }
 
 /**
- * 投票（计票字段顶层，便于 CKG 明文保留）。
+ * 投票（计票字段顶层，便于频道密钥明文保留）。
  */
 export type channelWireVote_t = channelWireCommon_t & {
 	type: 'vote'
@@ -117,8 +117,3 @@ export type channelWireMessage_t =
 	| channelWireVote_t
 	| channelWireGroupInvite_t
 	| channelWireCall_t
-
-/**
- * @deprecated 用 channelWireMessage_t
- */
-export type channelMessage_t = channelWireMessage_t

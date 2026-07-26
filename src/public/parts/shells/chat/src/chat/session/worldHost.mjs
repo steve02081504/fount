@@ -222,7 +222,7 @@ export function createWorldChatHost(replicaUsername, groupId, worldname) {
 		},
 		/**
 		 * @param {string} channelId 频道 ID
-		 * @param {import('../../../../../../../decl/chatLog.ts').channelMessage_t} content 消息内容
+		 * @param {import('../../../../../../../public/parts/shells/chat/decl/channelWire.ts').channelWireMessage_t} content 消息内容
 		 * @returns {Promise<void>}
 		 */
 		async postSystemMessage(channelId, content) {
