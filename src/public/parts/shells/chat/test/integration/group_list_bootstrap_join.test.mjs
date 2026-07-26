@@ -2,7 +2,7 @@
  * 跨节点 bootstrap 入群：侧栏群列表须识别本地 member_join（不能只读 owner 签名 checkpoint）。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { createChatFederationSim } from '../simulation/federation.mjs'
 

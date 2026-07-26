@@ -2,7 +2,7 @@
  * Social markdown 扩展注册结构测试。
  */
 /* global Deno */
-import { assertMatch } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertMatch } from 'jsr:@std/assert'
 
 const socialMarkdownExtensionPath = new URL('../../public/markdown_extensions/index.mjs', import.meta.url)
 

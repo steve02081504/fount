@@ -6,7 +6,7 @@ import { cp, mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { assert, assertEquals, assertNotEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals, assertNotEquals } from 'jsr:@std/assert'
 
 import { createIntegrationBoot } from '../harness.mjs'
 

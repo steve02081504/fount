@@ -2,7 +2,7 @@
  * social OnMessage 分发：GetReply 回退、意愿裁决、去重、care 通知。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'
 import { getReplyIdentityProbe } from '../fixtures/probes/getReplyIdentityProbe.mjs'

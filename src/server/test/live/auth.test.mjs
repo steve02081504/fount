@@ -6,7 +6,7 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { allowNoise } from '../../../scripts/test/core/allowNoise.mjs'
 import { wsBaseUrl } from '../../../scripts/test/core/url.mjs'

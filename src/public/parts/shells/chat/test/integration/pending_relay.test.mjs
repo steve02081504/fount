@@ -2,7 +2,7 @@
  * pending relay 磁盘队列集成单测。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { flushPendingRelay, enqueuePendingRelay } from '../../src/chat/federation/pendingRelay.mjs'
 import { createIntegrationBoot } from '../harness.mjs'

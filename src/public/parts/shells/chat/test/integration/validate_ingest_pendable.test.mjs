@@ -5,7 +5,7 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { validateIngestAuthz } from '../../src/chat/dag/ingest.mjs'
 import { eventsPath } from '../../src/chat/lib/paths.mjs'

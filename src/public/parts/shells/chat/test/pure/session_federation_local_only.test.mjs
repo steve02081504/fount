@@ -2,7 +2,7 @@
  * session_* 联邦入站硬拒；本地仍允许形状校验。
  */
 /* global Deno */
-import { assertEquals, assertRejects } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals, assertRejects } from 'jsr:@std/assert'
 
 const { validateIngestAuthz } = await import('../../src/chat/dag/ingest.mjs')
 

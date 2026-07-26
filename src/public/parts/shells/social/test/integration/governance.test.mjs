@@ -3,7 +3,7 @@
  */
 /* global Deno */
 import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 import { setPersonalMuted, isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
 import { createTestSession } from '../harness.mjs'

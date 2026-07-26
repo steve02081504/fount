@@ -2,7 +2,7 @@
  * 浏览器从 /scripts/* 加载的共用静态资源门控（见 resources.mjs：仅暴露 public/pages/scripts）。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { launchNode, stopNode } from '../../../scripts/test/node/launch.mjs'
 

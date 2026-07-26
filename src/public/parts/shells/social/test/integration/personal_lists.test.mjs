@@ -3,7 +3,7 @@
  */
 /* global Deno */
 import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
-import { assert } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert } from 'jsr:@std/assert'
 import { setPersonalHidden } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
 import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'

@@ -2,7 +2,7 @@
  * SocialClient：绑定实体发帖 / 互动 / 收藏搜索。
  */
 /* global Deno */
-import { assert, assertEquals, assertRejects } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { createTestSession } from '../harness.mjs'
 

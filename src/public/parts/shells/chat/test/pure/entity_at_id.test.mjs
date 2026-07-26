@@ -3,7 +3,7 @@
  */
 /* global Deno */
 import { formatEntityAtId, formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 const HASH = '459e5033' + 'a'.repeat(116) + 'a419'
 

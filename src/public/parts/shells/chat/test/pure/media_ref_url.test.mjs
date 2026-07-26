@@ -2,7 +2,7 @@
  * mediaRefUrl：拒绝 javascript: 等危险 scheme，回退到 EVFS 路径。
  */
 /* global Deno */
-import { assertEquals, assertThrows } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals, assertThrows } from 'jsr:@std/assert'
 
 import { mediaRefUrl } from '../../public/shared/evfsMedia.mjs'
 

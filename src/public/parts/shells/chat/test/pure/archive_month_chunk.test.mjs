@@ -2,7 +2,7 @@
 import { Buffer } from 'node:buffer'
 
 
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { encryptPlaintextToMultiParts } from 'npm:@steve02081504/fount-p2p/files/assemble'
 

@@ -2,7 +2,7 @@
  * sanitizePermissiveHtml：保留排版，剥 script / on* / 危险 URL。
  */
 /* global Deno */
-import { assertEquals, assertFalse, assertStringIncludes } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals, assertFalse, assertStringIncludes } from 'jsr:@std/assert'
 
 import { installMarkdownTestDom } from './markdown_test_dom.mjs'
 

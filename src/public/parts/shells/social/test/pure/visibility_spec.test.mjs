@@ -2,7 +2,7 @@
  * visibilitySpec / canViewPost / 相册 reducer 纯函数测试。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 import { topologicalCanonicalOrder } from 'npm:@steve02081504/fount-p2p/dag/index'
 
 import { canViewPost } from '../../src/feedVisibility.mjs'

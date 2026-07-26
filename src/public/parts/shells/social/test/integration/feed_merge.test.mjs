@@ -3,7 +3,7 @@
  * 复测：deno test --no-check --allow-scripts --allow-all src/public/parts/shells/social/test/integration/feed_merge.test.mjs
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { createTestSession } from '../harness.mjs'
 

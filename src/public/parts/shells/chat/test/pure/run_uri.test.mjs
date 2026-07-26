@@ -2,7 +2,7 @@
  * Chat runUri 深链测试。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import {
 	CHAT_RUN_PART,

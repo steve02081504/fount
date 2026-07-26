@@ -2,7 +2,7 @@
  * 触发管线专项（token bucket + backfill 不触发）。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { onMessageProbe } from '../fixtures/probes/onMessageProbe.mjs'
 import { createCharBoot } from '../harness.mjs'

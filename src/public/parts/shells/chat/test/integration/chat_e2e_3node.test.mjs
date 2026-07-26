@@ -10,7 +10,7 @@
  * 真实 Nostr relay 在离线 CI 下不可用，因此用「直接注入已签名帧」替换 relay 传输介质本身；
  * 帧的产生（本地签名）与帧的消费（联邦入站校验）均为生产代码路径。
  */
-import { assert, assertEquals, assertRejects } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { createChatFederationSim } from '../simulation/federation.mjs'
 

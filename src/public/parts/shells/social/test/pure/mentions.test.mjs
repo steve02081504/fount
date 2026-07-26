@@ -3,7 +3,7 @@
  */
 /* global Deno */
 import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 
 const SAMPLE_HASH = 'a'.repeat(128)

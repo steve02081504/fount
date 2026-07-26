@@ -2,7 +2,7 @@
  * Telegram 虚拟桥接验收：mock Telegraf + 无 AI 角色，断言 sendMessage 出站。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { createCharBoot, waitUntil } from '../../../chat/test/harness.mjs'
 

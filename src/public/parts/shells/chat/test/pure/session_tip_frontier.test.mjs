@@ -2,7 +2,7 @@
  * session_* 不占 tip frontier：建群后 world_bind + 后续联邦设置不得被当成假分叉。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
 
 import { computeFederatableDagTipIds, isFederatableDagEvent } from '../../src/chat/dag/eventTypes.mjs'

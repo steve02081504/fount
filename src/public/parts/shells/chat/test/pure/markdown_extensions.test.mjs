@@ -2,7 +2,7 @@
  * Chat markdown 扩展导出结构测试。
  */
 /* global Deno */
-import { assertEquals, assertMatch } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals, assertMatch } from 'jsr:@std/assert'
 
 import chatMarkdownExtension from '../../public/markdown_extensions/index.mjs'
 

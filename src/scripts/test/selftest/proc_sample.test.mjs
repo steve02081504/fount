@@ -1,7 +1,7 @@
 /* global Deno */
 import os from 'node:os'
 
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { normalizePidusageCpuPct, treePidsFromProcessList } from '../core/proc_sample.mjs'
 

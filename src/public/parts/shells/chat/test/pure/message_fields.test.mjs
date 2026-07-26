@@ -2,7 +2,7 @@
  * 消息扩展字段纯函数测试。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { channelMessage } from '../../public/shared/channelContent.mjs'
 import {

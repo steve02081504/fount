@@ -4,7 +4,7 @@
 /* global Deno */
 import { Buffer } from 'node:buffer'
 
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { scanEmojiTokens } from '../../../social/src/lib/emojiPostEmbed.mjs'
 import { formatEmojiToken } from '../../public/shared/inlineTokenSyntax.mjs'

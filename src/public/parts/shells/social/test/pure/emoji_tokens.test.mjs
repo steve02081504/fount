@@ -2,7 +2,7 @@
  * Social emoji token 扫描与展示结构测试。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { formatEmojiToken } from '../../../chat/public/shared/inlineTokenSyntax.mjs'
 import { buildEmojiMediaRefsForPost, scanEmojiTokens } from '../../src/lib/emojiPostEmbed.mjs'

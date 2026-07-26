@@ -1,5 +1,5 @@
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { memberReducers } from '../../src/chat/dag/reducers/members.mjs'
 import { roleReducers } from '../../src/chat/dag/reducers/roles.mjs'

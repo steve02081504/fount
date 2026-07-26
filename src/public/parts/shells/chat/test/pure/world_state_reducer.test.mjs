@@ -2,7 +2,7 @@
  * world_state LWW reducer 纯测试。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { emptyMaterializedState } from '../../src/chat/dag/groupMaterializedState.mjs'
 import { worldStateReducers } from '../../src/chat/dag/reducers/worldState.mjs'

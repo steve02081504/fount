@@ -5,7 +5,7 @@
 import { Buffer } from 'node:buffer'
 import fs from 'node:fs'
 
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { randomSeed } from '../federation/remote_timeline.mjs'
 import { createTestSession } from '../harness.mjs'

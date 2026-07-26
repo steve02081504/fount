@@ -2,7 +2,7 @@
  * Discordbot shell 模块图 smoke：路径解析 + 具名导出（拦住 shared 重命名漏改）。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { defaultRepoRoot, probeShellPart } from '../../../../../../scripts/test/shellLoadProbe.mjs'
 

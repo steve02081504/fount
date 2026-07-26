@@ -3,7 +3,7 @@
  * setFederationBootstrap 需可写 userDict（server 上下文）；pure 只测内存 override。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { parseFedBootstrapRequest } from '../../src/chat/federation/bootstrap/wire.mjs'
 import { peekPreferredRoomOverride, setPeerRoomHint, clearFederationBootstrap } from '../../src/chat/federation/bootstrapStore.mjs'

@@ -2,7 +2,7 @@
  * 主人远程更新资料：路径 / hash / 白名单 / 本机 publish→pull→ack purge。
  */
 /* global Deno */
-import { assertEquals, assertRejects } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { createIntegrationBoot } from '../harness.mjs'
 

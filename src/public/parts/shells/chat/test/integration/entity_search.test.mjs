@@ -2,7 +2,7 @@
  * 具名实体搜索：本地 handle 命中、排序与无效 query。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { createTestSession } from '../harness.mjs'
 

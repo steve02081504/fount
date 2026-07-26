@@ -2,7 +2,7 @@
  * Telegram OnMessage 契约：DM 主人、@BotUsername、listMembers 含非管理员主人、角色行、普通消息不回复。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import {
 	assertCharReplyRowContract,

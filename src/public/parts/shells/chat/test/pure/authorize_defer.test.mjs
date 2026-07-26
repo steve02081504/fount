@@ -3,7 +3,7 @@
  * 供 remoteIngest 走 quarantine/defer 重试而非永久 drop；真正的权限拒绝则不可 defer。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { assertEventPermission, checkEventPermission } from '../../src/chat/dag/authorizeEvent.mjs'
 

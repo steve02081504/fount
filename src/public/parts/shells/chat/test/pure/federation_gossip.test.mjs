@@ -2,7 +2,7 @@
  * 联邦 gossip 纯函数单测。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 import {
 	batchWantIds,
 	wantIdsPeerKey,

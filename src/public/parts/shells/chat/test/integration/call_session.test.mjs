@@ -2,7 +2,7 @@
  * 群组通话卡片生命周期集成测试。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { createIntegrationBoot } from '../harness.mjs'
 

@@ -2,7 +2,7 @@
  * 关键词/标签屏蔽匹配纯测。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { postMatchesMutedKeywords, pruneMutedKeywordEntries } from '../../src/lib/contentFilter.mjs'
 

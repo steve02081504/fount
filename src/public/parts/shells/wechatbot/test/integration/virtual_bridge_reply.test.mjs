@@ -2,7 +2,7 @@
  * WeChat 虚拟桥接验收：mock getUpdates/sendMessage + 无 AI 角色，断言出站。
  */
 /* global Deno */
-import { assert } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert } from 'jsr:@std/assert'
 
 import { createCharBoot, waitUntil } from '../../../chat/test/harness.mjs'
 

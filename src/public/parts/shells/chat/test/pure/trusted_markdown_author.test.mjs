@@ -3,7 +3,7 @@
  * 远端自声明 ownerEntityHash 不升档。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 const {
 	isSelfOrLocalAgentEntity,

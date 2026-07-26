@@ -2,7 +2,7 @@
  * safeProfileLink：http(s) + fount:（经 protocol 页）；拒绝 javascript: 等。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { wrapProtocolHttpsUrl } from '../../public/shared/runUri.mjs'
 import { safeProfileLink } from '../../public/shared/safeProfileLink.mjs'
