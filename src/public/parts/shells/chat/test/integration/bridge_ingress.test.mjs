@@ -49,7 +49,7 @@ Deno.test('postBridgeMessage writes virtual log (no real group)', async () => {
 
 	const session = getVirtualBridgeSession(username, event.groupId)
 	assert(session)
-	assert(session.channels.default.logs.some(row => row.extension?.virtualEventId === event.id))
+	assert(session.channels.default.logs.some(row => row.extension?.chat?.virtualEventId === event.id))
 	assert(String(event.groupId).startsWith('bridge:'))
 
 	const realGroups = await enumerateJoinedFederatedGroups(username, operatorHash)
@@ -202,7 +202,7 @@ Deno.test('discord synthetic DTO writes thread channel; lookupBridgePlatformChan
 
 	const session = getVirtualBridgeSession(username, event.groupId)
 	assert(session)
-	assert(session.channels[discordChannelId]?.logs.some(row => row.extension?.virtualEventId === event.id))
+	assert(session.channels[discordChannelId]?.logs.some(row => row.extension?.chat?.virtualEventId === event.id))
 
 	const resolved = lookupBridgePlatformChannel(username, event.groupId, 'default')
 	assertEquals(resolved?.platformChatId, guildId)
@@ -238,7 +238,7 @@ Deno.test('wechat synthetic DTO writes virtual DM log', async () => {
 	const session = getVirtualBridgeSession(username, event.groupId)
 	assert(session)
 	assertEquals(session.chatKind, 'dm')
-	assert(session.channels.default.logs.some(row => row.extension?.virtualEventId === event.id))
+	assert(session.channels.default.logs.some(row => row.extension?.chat?.virtualEventId === event.id))
 })
 
 Deno.test('rewriteDiscordMentionsToFount in discordbot format module', async () => {
@@ -284,7 +284,7 @@ Deno.test('bridgeIngestDto DM triggers plain char GetReply → outbound', async 
 	}, 'dm-bot', CHAR_PLAIN_B)
 
 	await waitUntil(() => outboundLines.some(row =>
-		String(row.content?.content || '').includes('plain_reply_b reply'),
+		typeof row.content === 'string' && row.content.includes('plain_reply_b reply'),
 	), 15000)
 	const session = getVirtualBridgeSession(username, groupId)
 	assert(session.channels.default.logs.some(row =>
@@ -359,7 +359,7 @@ Deno.test('postBridgeEdit / postBridgeDelete mutate virtual log', async () => {
 	})
 
 	let session = getVirtualBridgeSession(username, event.groupId)
-	const edited = session.channels.default.logs.find(row => row.extension?.virtualEventId === event.id)
+	const edited = session.channels.default.logs.find(row => row.extension?.chat?.virtualEventId === event.id)
 	assert(edited)
 	assertEquals(edited.content, 'edited ping')
 
@@ -369,7 +369,7 @@ Deno.test('postBridgeEdit / postBridgeDelete mutate virtual log', async () => {
 		platformMessageId,
 	})
 	session = getVirtualBridgeSession(username, event.groupId)
-	assert(!session.channels.default.logs.some(row => row.extension?.virtualEventId === event.id))
+	assert(!session.channels.default.logs.some(row => row.extension?.chat?.virtualEventId === event.id))
 })
 
 Deno.test('full chain: bridgeIngestDto → GetReply → notifyBridgeOutbound', async () => {
@@ -402,7 +402,7 @@ Deno.test('full chain: bridgeIngestDto → GetReply → notifyBridgeOutbound', a
 
 	await waitUntil(() => outboundLines.some(row =>
 		row.charId === CHAR_PLAIN_B
-		|| String(row.content?.content || '').includes('plain_reply_b reply'),
+		|| typeof row.content === 'string' && row.content.includes('plain_reply_b reply'),
 	), 15000)
 })
 
@@ -445,10 +445,10 @@ Deno.test('replyToPlatformMessageId resolves on virtual log; codeBridgeContext r
 	const session = getVirtualBridgeSession(username, first.groupId)
 	const quoted = session.channels.default.logs.find(row => String(row.content || '').includes('quoting reply'))
 	assert(quoted)
-	assertEquals(quoted.extension.bridge.replyToEventId, first.id)
-	assertEquals(quoted.extension.bridge.replyToPlatformMessageId, '901')
-	assertEquals(quoted.extension.replyTo?.eventId, first.id)
-	assertEquals(quoted.extension.replyTo?.preview, 'original message')
+	assertEquals(quoted.extension.chat.bridge.replyToEventId, first.id)
+	assertEquals(quoted.extension.chat.bridge.replyToPlatformMessageId, '901')
+	assertEquals(quoted.extension.chat.replyTo?.eventId, first.id)
+	assertEquals(quoted.extension.chat.replyTo?.preview, 'original message')
 
 	const charAPI = await loadPart(username, `chars/${CHAR_PLAIN_B}`)
 	const req = await buildVirtualBridgeChatRequest(
@@ -460,7 +460,7 @@ Deno.test('replyToPlatformMessageId resolves on virtual log; codeBridgeContext r
 	assert(meta)
 	assertEquals(meta.platformMessageId, '902')
 	assertEquals(meta.replyToEventId, first.id)
-	assertEquals(req.extension?.bridge?.platform, 'telegram')
+	assertEquals(req.extension?.chat?.bridge?.platform, 'telegram')
 })
 
 Deno.test('OnMessage yes char: bridgeIngestDto group triggers outbound', async () => {
@@ -495,7 +495,7 @@ Deno.test('OnMessage yes char: bridgeIngestDto group triggers outbound', async (
 	}, 'onmsg-bot', CHAR_YES)
 
 	await waitUntil(() => outboundLines.some(row =>
-		String(row.content?.content || '').includes('on_message_yes reply'),
+		typeof row.content === 'string' && row.content.includes('on_message_yes reply'),
 	), 15000)
 	assert(onMessageProbe.events.length >= 1)
 })

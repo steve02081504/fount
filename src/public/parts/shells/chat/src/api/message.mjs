@@ -1,3 +1,4 @@
+import { chatExtensionOf, messageAgentText } from '../../public/shared/channelContent.mjs'
 import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
 import { deriveMessageAttribution } from '../chat/lib/attribution.mjs'
 import { messageMentionsEntity } from '../chat/lib/mentionFacts.mjs'
@@ -15,16 +16,20 @@ import { createMember } from './member.mjs'
  */
 export function createMessage(apiContext, groupId, line, mentions) {
 	const eventId = String(line.eventId || line.id || '').trim().toLowerCase()
-	const channelId = line.channelId || line.extension?.groupChannelId || 'default'
-	const content = line.content || line
+	const wire = line.content != null && typeof line.content === 'object' ? line.content : null
+	const chat = wire ? chatExtensionOf(wire) : line.extension?.chat
+	const channelId = line.channelId || chat?.channelId || 'default'
+	const content = wire ? messageAgentText(wire) : String(line.content ?? '')
 	const messageMentions = mentions || line.mentions
 	const signOptions = { entityHash: apiContext.entityHash }
+	const chatLogEntryId = chat?.entryId || wire?.extension?.chat?.entryId
 
 	return {
 		eventId,
 		channelId,
+		/** @type {string} fount chatLogEntry 正文 */
 		content,
-		files: line.files || [],
+		files: line.files || wire?.files || [],
 		mentions: messageMentions,
 		time: line.timestamp || line.time_stamp || Date.now(),
 		/**
@@ -49,16 +54,27 @@ export function createMessage(apiContext, groupId, line, mentions) {
 				const hash = memberEntityHash(member)
 				if (hash) return createMember(apiContext, groupId, hash, member)
 			}
+			const uid = String(
+				line.uid
+				|| chat?.bridge?.authorEntityHash
+				|| '',
+			).toLowerCase()
+			if (uid)
+				return createMember(apiContext, groupId, uid, {
+					memberKind: line.role === 'char' || line.charId ? 'agent' : 'user',
+					displayName: line.name || wire?.name || chat?.display?.name || uid.slice(64, 72),
+					charname: line.charId,
+				})
 			return null
 		},
 		/**
 		 * @returns {import('../chat/lib/attribution.mjs').MessageAttribution} 归因
 		 */
 		attribution() {
-			const contentObj = content && typeof content === 'object' ? content : {}
+			const contentObj = wire || { content, extension: line.extension }
 			return deriveMessageAttribution(contentObj, {
 				sender: line.sender,
-				signerEntityHash: contentObj.importedFrom?.signerEntityHash || null,
+				signerEntityHash: chatExtensionOf(contentObj)?.importedFrom?.signerEntityHash || null,
 			})
 		},
 		/**
@@ -100,7 +116,7 @@ export function createMessage(apiContext, groupId, line, mentions) {
 				content: {
 					targetId: eventId,
 					newContent,
-					chatLogEntryId: content.chatLogEntryId,
+					...chatLogEntryId ? { chatLogEntryId } : {},
 				},
 			}, signOptions)
 		},
@@ -114,7 +130,7 @@ export function createMessage(apiContext, groupId, line, mentions) {
 				timestamp: Date.now(),
 				content: {
 					targetId: eventId,
-					chatLogEntryId: content.chatLogEntryId,
+					...chatLogEntryId ? { chatLogEntryId } : {},
 				},
 			}, signOptions)
 		},

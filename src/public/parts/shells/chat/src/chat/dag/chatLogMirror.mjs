@@ -1,14 +1,14 @@
 /**
  * 【文件】`dag/chatLogMirror.mjs` — 内存 chatLog 与 DAG 双向镜像。
  * 【职责】将用户/角色聊天条目同步为 `message`/`message_edit`/`message_delete` 事件；支持流式占位与终稿编辑链。
- * 【原理】非流式与 greeting 经 `commitChannelMessageEvent` 落盘（world AddChatLogEntry pre-DAG）；流式占位 skipWorldHook 后由 finalize 再钩；终稿 `message_edit`；超大正文转 `content_ref`；`extension.dagEventId` 关联 chatLog 与 DAG。
- * 【数据结构】canonical DAG `content`：全员 displayName/displayAvatar；生成类另附 chatLogEntryId、sessionSnapshot；亦可 `content_ref`。
+ * 【原理】非流式与 greeting 经 `commitChannelMessageEvent` 落盘（world AddChatLogEntry pre-DAG）；流式占位 skipWorldHook 后由 finalize 再钩；终稿 `message_edit`；超大正文转 `content_ref`；`extension.chat.eventId` 关联 chatLog 与 DAG。
+ * 【数据结构】canonical DAG `content`：全员 displayName/displayAvatar；生成类另附 `extension.chat.entryId`、sessionSnapshot；亦可 `content_ref`。
  * 【关联】`../channel/messageCommit.mjs`、`append.mjs`、`lifecycle.mjs`、`hydration.mjs`、`../session/sessionSnapshot.mjs`。
  */
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
 
-import { textChannelContent } from '../../../public/shared/channelContent.mjs'
+import { channelMessage, normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
 import { commitChannelMessageEvent } from '../channel/messageCommit.mjs'
 import { replicateChunkToFederation } from '../federation/chunks.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
@@ -57,8 +57,8 @@ async function resolveMirrorContext(entry, username, groupId) {
 	const charId = entry.role === 'char'
 		? entry.extension.timeSlice?.charname || entry.name || null
 		: null
-	const groupChannelId = entry.extension?.groupChannelId
-	const channelIdForDag = await resolveGroupChannelId(username, groupId, groupChannelId)
+	const channelId = entry.extension?.chat?.channelId
+	const channelIdForDag = await resolveGroupChannelId(username, groupId, channelId)
 	return {
 		channelIdForDag,
 		sender,
@@ -88,13 +88,11 @@ export async function appendDagGeneratingPlaceholder(groupId, entry, username) {
 			entry,
 			origin: 'char',
 			skipWorldHook: true,
-			content: {
-				type: 'text',
+			content: normalizeChannelMessage({
 				content: '',
 				role: entry.role || 'char',
 				is_generating: true,
-				charId,
-			},
+			}),
 		})
 		if (event?.id) return event.id
 	}
@@ -114,45 +112,46 @@ export async function appendDagGeneratingPlaceholder(groupId, entry, username) {
 async function buildFinalMessageContent(username, groupId, entry, text) {
 	const { state } = await getState(username, groupId)
 	const maxBytes = Number(state.groupSettings?.maxDagPayloadBytes) || 262_144
-	const hasFiles = Array.isArray(entry.files) && entry.files.length > 0
-	const content = {
-		chatLogEntryId: entry.id,
-		role: entry.role,
-		is_generating: false,
-	}
 	const agent = String(text ?? entry.content)
 	const show = entry.content_for_show ?? agent
 	const edit = entry.content_for_edit ?? agent
-	if (Buffer.byteLength(agent, 'utf8') > maxBytes)
-		Object.assign(content, textChannelContent('', {
-			content_ref: await storeContentRef(username, groupId, agent),
-		}))
-	else {
-		const textPayload = textChannelContent(agent)
-		if (show !== agent) textPayload.content_for_show = show
-		if (edit !== agent) textPayload.content_for_edit = edit
-		Object.assign(content, textPayload)
+
+	let base
+	if (Buffer.byteLength(agent, 'utf8') > maxBytes) {
+		const contentRef = await storeContentRef(username, groupId, agent)
+		base = channelMessage('', { extension: { chat: { contentRef } } })
 	}
-	if (hasFiles) content.fileCount = entry.files.length
-	if (entry.visibility) content.visibility = entry.visibility
-	if (entry.charVisibility?.length) content.charVisibility = entry.charVisibility
+	else 
+		base = channelMessage(agent, {
+			...show !== agent ? { content_for_show: show } : {},
+			...edit !== agent ? { content_for_edit: edit } : {},
+		})
+	
+
+	const content = normalizeChannelMessage({
+		...base,
+		role: entry.role,
+		is_generating: false,
+		...entry.visibility ? { visibility: entry.visibility } : {},
+		...entry.charVisibility?.length ? { charVisibility: entry.charVisibility } : {},
+	})
 	return content
 }
 
 /**
  * 取消流式占位：DAG `message_delete`（不依赖 chatLog 索引）。
  * @param {string} groupId 聊天 ID
- * @param {object | null} entry 占位条目（含 `extension.dagEventId`）
+ * @param {object | null} entry 占位条目（含 `extension.chat.eventId`）
  * @param {string} username 所有者
  * @param {string} [dagEventId] 占位 message 事件 id
  * @returns {Promise<void>}
  */
 export async function cancelGeneratingPlaceholder(groupId, entry, username, dagEventId) {
-	const targetId = dagEventId ?? entry?.extension?.dagEventId
+	const targetId = dagEventId ?? entry?.extension?.chat?.eventId
 	if (!targetId || !username) return
 	const stub = entry?.id
 		? entry
-		: { id: entry?.id || targetId, extension: { dagEventId: targetId, groupChannelId: entry?.extension?.groupChannelId } }
+		: { id: entry?.id || targetId, extension: { chat: { eventId: targetId, channelId: entry?.extension?.chat?.channelId } } }
 	await mirrorDeleteToDag(groupId, stub, username)
 }
 
@@ -190,12 +189,12 @@ export async function appendFinalEditWithRetry(username, groupId, eventBody, app
 export async function finalizeDagGeneratingMessage(groupId, entry, username, dagEventId) {
 	try {
 		if (!username) return
-		if (entry.extension?.isGreeting || entry.extension.timeSlice?.greeting_type) return
-		const targetId = dagEventId ?? entry.extension?.dagEventId
+		if (entry.extension?.chat?.isGreeting || entry.extension.timeSlice?.greeting_type) return
+		const targetId = dagEventId ?? entry.extension?.chat?.eventId
 		if (!targetId) return
 		const text = entry.content
 		const hasFiles = Array.isArray(entry.files) && entry.files.length > 0
-		if (!text.trim() && !hasFiles && !entry.extension?.aborted) {
+		if (!text.trim() && !hasFiles && !entry.extension?.chat?.aborted) {
 			await cancelGeneratingPlaceholder(groupId, entry, username, targetId)
 			return
 		}
@@ -232,7 +231,7 @@ export async function finalizeDagGeneratingMessage(groupId, entry, username, dag
 				targetId,
 				targetSender: sender,
 				newContent,
-				chatLogEntryId: entry.id,
+				extension: { chat: { entryId: entry.id } },
 			},
 		})
 	}
@@ -258,7 +257,7 @@ export async function syncChatLogEntryToDag(groupId, entry, username) {
 		if (!text.trim() && !hasFiles) return
 		const { channelIdForDag, sender, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
 		const content = await buildFinalMessageContent(username, groupId, entry, text)
-		const isGreeting = !!entry.extension?.isGreeting
+		const isGreeting = !!entry.extension?.chat?.isGreeting
 			|| !!entry.extension?.greetingType
 			|| !!entry.extension.timeSlice?.greeting_type
 		await commitChannelMessageEvent({
@@ -289,15 +288,19 @@ export async function mirrorDeleteToDag(groupId, deletedEntry, username) {
 		if (!deletedEntry?.id || !username) return
 		if (deletedEntry.extension.timeSlice?.greeting_type) return
 		await ensureGroup(username, groupId)
-		const targetId = deletedEntry.extension?.dagEventId
+		const targetId = deletedEntry.extension?.chat?.eventId
 		if (!targetId) return
-		const channelIdForDag = await resolveGroupChannelId(username, groupId, deletedEntry.extension?.groupChannelId)
+		const channelIdForDag = await resolveGroupChannelId(username, groupId, deletedEntry.extension?.chat?.channelId)
 		const { sender } = await resolveLocalEventSigner(username, groupId)
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'message_delete',
 			channelId: channelIdForDag,
 			timestamp: Date.now(),
-			content: { targetId, targetSender: sender, chatLogEntryId: deletedEntry.id },
+			content: {
+				targetId,
+				targetSender: sender,
+				extension: { chat: { entryId: deletedEntry.id } },
+			},
 		})
 	}
 	catch (error) {
@@ -317,7 +320,7 @@ export async function mirrorEditToDag(groupId, originalEntryId, entry, username)
 	try {
 		if (!originalEntryId || !username) return
 		if (entry.extension.timeSlice?.greeting_type) return
-		const targetId = entry.extension?.dagEventId
+		const targetId = entry.extension?.chat?.eventId
 		if (!targetId) return
 		const { channelIdForDag, sender, charId } = await resolveMirrorContext(entry, username, groupId)
 		let newContent = await buildFinalMessageContent(username, groupId, entry, entry.content)
@@ -341,7 +344,7 @@ export async function mirrorEditToDag(groupId, originalEntryId, entry, username)
 				targetId,
 				targetSender: sender,
 				newContent,
-				chatLogEntryId: originalEntryId,
+				extension: { chat: { entryId: originalEntryId } },
 			},
 		})
 	}

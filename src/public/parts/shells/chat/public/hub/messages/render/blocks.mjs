@@ -3,6 +3,7 @@
  * 【职责】特殊内容块：解密占位、贴纸、群邀请、语义引用气泡。
  */
 import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
+import { channelMessageKind, chatExtensionOf } from '../../../shared/channelContent.mjs'
 import { resolveEmojiUrlBestEffort } from '../../../src/emojiCache.mjs'
 import { buildInviteJoinShareUrl } from '../../../src/inviteQr.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -28,15 +29,14 @@ export async function renderDecryptBodyHtml(message) {
 }
 
 /**
- * 渲染贴纸消息块（`content.type === 'sticker'`）。
+ * 渲染贴纸消息块（顶层 `type: 'sticker'`）。
  * @param {object} message 消息行
  * @returns {Promise<string | null>} HTML 或 null（非贴纸时）
  */
 export async function renderStickerBlock(message) {
 	const content = message?.content
-	if (!content) return null
-	if (content.type !== 'sticker') return null
-	let src = content.stickerBase64 || ''
+	if (!content || channelMessageKind(content) !== 'sticker') return null
+	let src = String(content.stickerBase64 || '')
 	if (!src && content.emojiRef) {
 		const refMatch = /:\[([\w.-]+)\/([\w.-]+)]:/.exec(String(content.emojiRef))
 		if (refMatch)
@@ -49,13 +49,13 @@ export async function renderStickerBlock(message) {
 }
 
 /**
- * 渲染群链接 overlay 块（`content.type === 'group_invite'`）。
+ * 渲染群链接 overlay 块（顶层 `type: 'group_invite'`）。
  * @param {object} message 消息行
  * @returns {Promise<string | null>} HTML 或 null（非群链接时）
  */
 export async function renderGroupInviteBlock(message) {
 	const content = message?.content
-	if (content?.type !== 'group_invite') return null
+	if (!content || channelMessageKind(content) !== 'group_invite') return null
 	const groupId = escapeHtml(content.groupId || '')
 	const inviteCode = escapeHtml(content.inviteCode || '')
 	const groupName = escapeHtml(content.groupName || groupId)
@@ -85,13 +85,13 @@ export async function renderGroupInviteBlock(message) {
 }
 
 /**
- * 仅在语义 `content.replyTo` 存在时渲染引用气泡；不把 DAG `prev_event_ids` 画成引用条。
+ * 仅在语义 `extension.chat.replyTo` 存在时渲染引用气泡；不把 DAG `prev_event_ids` 画成引用条。
  * @param {object} message 消息行
  * @param {Map<string, object>} messagesByEventId 页级 eventId→行
  * @returns {Promise<string>} quote 气泡 HTML
  */
 export async function renderMessageRefBlockHtml(message, messagesByEventId) {
-	const replyTo = message?.content?.replyTo
+	const replyTo = chatExtensionOf(message?.content)?.replyTo
 	if (!replyTo?.eventId) return ''
 	const eventId = String(replyTo.eventId).trim().toLowerCase()
 	const parent = messagesByEventId?.get(eventId)
@@ -100,7 +100,7 @@ export async function renderMessageRefBlockHtml(message, messagesByEventId) {
 	if (parent) {
 		if (!author) {
 			const keys = authorPresentationKeys(parent.charId ?? parent.sender ?? '?')
-			author = parent.content?.displayName || keys.displayName
+			author = parent.content?.name || keys.displayName
 		}
 		if (!previewText)
 			previewText = getMessageText(parent).replace(/\s+/g, ' ').trim().slice(0, 120)

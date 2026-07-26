@@ -21,13 +21,13 @@ import {
 import { groupDir, eventsPath, sidecarPath } from './paths.mjs'
 
 /**
- * @param {{ extension?: { groupChannelId?: string } }} entry 聊天条目（含 extension 频道）
+ * @param {{ extension?: { chat?: { channelId?: string } } }} entry 聊天条目（含 extension 频道）
  * @param {string} scopeChannelId 已解析的会话频道 id（调用方保证合法）
  * @returns {string} 用于侧车目录名的频道 id
  */
 export function sidecarChannelForEntry(entry, scopeChannelId) {
-	return isChannelIdValid(entry?.extension?.groupChannelId)
-		? String(entry.extension.groupChannelId).trim()
+	return isChannelIdValid(entry?.extension?.chat?.channelId)
+		? String(entry.extension.chat.channelId).trim()
 		: scopeChannelId
 }
 
@@ -51,7 +51,7 @@ function addReachable(reachable, channelId, messageId) {
  */
 function addReachableFromChatEntry(entry, reachable) {
 	if (entry?.id)
-		addReachable(reachable, resolveChannelId(entry?.extension?.groupChannelId), String(entry.id))
+		addReachable(reachable, resolveChannelId(entry?.extension?.chat?.channelId), String(entry.id))
 }
 
 /**

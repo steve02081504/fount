@@ -63,12 +63,13 @@ Deno.test('call session posts and edits call card then ends', async () => {
 		row.eventId === session.messageEventId || row.content?.type === 'call',
 	)
 	assert(card)
-	assertEquals(card.content?.type, 'call')
-	assertEquals(card.content?.status, 'ended')
-	assert(Array.isArray(card.content?.participants))
-	assert(card.content.participants.includes(initiator.toLowerCase()))
-	assertEquals(card.content?.current?.length ?? 0, 0)
-	assert(card.content?.duration >= 0)
+	const call = card.content
+	assert(call?.type === 'call')
+	assertEquals(call.status, 'ended')
+	assert(Array.isArray(call.participants))
+	assert(call.participants.includes(initiator.toLowerCase()))
+	assertEquals(call.current?.length ?? 0, 0)
+	assert(call.duration >= 0)
 })
 
 Deno.test('dropActiveCallsForGroup clears active.json for that group', async () => {
@@ -176,9 +177,9 @@ Deno.test('reconcile drops orphan when group cannot authorize edit', async () =>
 	assertEquals(Object.keys(remaining.calls || {}).length, 0)
 })
 
-Deno.test('channelContent accepts call type', async () => {
-	const { channelMessageContentObject } = await import('../../public/shared/channelContent.mjs')
-	const content = channelMessageContentObject({
+Deno.test('channelContent accepts typed call wire', async () => {
+	const { normalizeChannelMessage, channelMessageKind } = await import('../../public/shared/channelContent.mjs')
+	const content = normalizeChannelMessage({
 		type: 'call',
 		callId: 'x',
 		status: 'ongoing',
@@ -187,7 +188,8 @@ Deno.test('channelContent accepts call type', async () => {
 		participants: ['a'.repeat(128)],
 		current: ['a'.repeat(128)],
 	})
-	assertEquals(content.type, 'call')
+	assertEquals(content.callId, 'x')
+	assertEquals(channelMessageKind(content), 'call')
 })
 
 Deno.test('concurrent begin + roster update yields one call card', async () => {

@@ -1236,7 +1236,7 @@
 			},
 			"messagePrefixSticker": "贴纸",
 			"membersEmpty": "（暂无成员）",
-			"channelEncryptionGsh": "频道密钥端对端加密（CKG）",
+			"channelEncryptionGsh": "频道密钥端对端加密",
 			"ownerSuccession": "发起继任投票",
 			"ownerSuccessionDescription": "将群最高管理权限（MANAGE_ADMINS）转移给指定成员。仅管理员可操作。",
 			"ownerSuccessionAutoSignHint": "提交后由本机在该群的签名种子自动联署，无需输入私钥。多管理员群需过半管理员各自在本机提交同一选票（相同 ballotId 与候选人）。",

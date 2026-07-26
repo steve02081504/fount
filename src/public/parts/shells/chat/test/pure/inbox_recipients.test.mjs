@@ -22,7 +22,7 @@ Deno.test('deriveChatInboxMentionRow matches viewer and skips self mention', () 
 		type: 'message',
 		eventId: 'f'.repeat(64),
 		sender: senderKey,
-		content: { type: 'text', content: `@${VIEWER} ping` },
+		content: { content: `@${VIEWER} ping` },
 		hlc: { wall: 1000 },
 	}, state)
 	assert(row)
@@ -34,7 +34,7 @@ Deno.test('deriveChatInboxMentionRow matches viewer and skips self mention', () 
 		type: 'message',
 		eventId: 'e'.repeat(64),
 		sender: VIEWER,
-		content: { type: 'text', content: `@${VIEWER} ping` },
+		content: { content: `@${VIEWER} ping` },
 		hlc: { wall: 1000 },
 	}, {
 		members: {

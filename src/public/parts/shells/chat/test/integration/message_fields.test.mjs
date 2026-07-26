@@ -23,7 +23,6 @@ Deno.test('postChannelMessage persists locale content_warning', async () => {
 	const channelId = await getDefaultChannelId(username, groupId)
 	const { event } = await postChannelMessage(username, groupId, channelId, {
 		rawContent: {
-			type: 'text',
 			content: 'hello spoilers',
 			locale: 'en-US',
 			content_warning: 'cw',

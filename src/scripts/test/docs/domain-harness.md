@@ -23,14 +23,14 @@ Native-addon / WebRTC: one `.test.mjs` per Deno child when the addon panics unde
 
 ## Chat integration
 
-- After `postChannelMessage`, wire `event.content` is often CKG (`scheme: 'ckg'`). Assert extras (`locale` / `content_warning`) via `readChannelMessagesForUser` decrypted rows.
+- After `postChannelMessage`, wire `event.content` is often channel-key encrypted (`scheme: 'channel-key'`). Assert extras (`locale` / `content_warning`) via `readChannelMessagesForUser` decrypted rows.
 - `message_edit` is folded out of `events.jsonl` during checkpoint rebuild. Assert edits with `readChannelMessagesForUser` + `mergeChannelMessagesForDisplay`.
 - Agent hashes: `ensureLocalAgentEntityHash` / `ensureAgentEntityIdentity` (or `keyPairFromSeed` + `entityHashFromRecoveryPubKeyHex`). Never path-derive from `chars/`.
 - Social inbound may call `rebuildSignedTimelineSnapshot` with no local identity — that path must not throw through `getEntitySecretKey`.
 
 ## HTTP route integration (`launchNode`)
 
-Spawn via `fount/scripts/test/node/launch.mjs`, seed with env scenario + bootstrap worker, then `fetch` `http://127.0.0.1:{port}/api/parts/shells:…?fount-apikey=…`. Example: chat `routes_http.test.mjs` + `FOUNT_TEST_HTTP_SCENARIO` → `routes_http_bootstrap.mjs`. **Do not** call `pickAvailablePort` then pass `port:` — omit `port` so `launchNode` holds until spawn (avoids parallel TOCTOU; a bad dual-bind list once exhausted a 2000-port scan and killed the live wave on CI). Live suite drivers use `runLiveSuiteCli({ buildNode })` — ports are allocated **per suite `fedNodes`**, never pre-hold a max fleet at module load. Cross-suite races on the free window after listen-hold release are covered by `core/port_lease.mjs` (lease survives until child ready); `launchNode` still re-holds up to 5 times if needed. Integration `serial.mjs` forces `DENO_JOBS=1` so one file cannot stack parallel `launchNode`s.
+Spawn via `fount/scripts/test/node/launch.mjs`, seed with env scenario + bootstrap worker, then `fetch` `http://127.0.0.1:{port}/api/parts/shells:…?fount-apikey=…`. Example: chat `routes_http.test.mjs` + `FOUNT_TEST_HTTP_SCENARIO` → `routes_http_bootstrap.mjs`. **Do not** call `pickAvailablePort` then pass `port:` — omit `port` so `launchNode` holds until spawn (avoids parallel TOCTOU). Live suite drivers use `runLiveSuiteCli({ buildNode })` — ports are allocated **per suite `fedNodes`**, never pre-hold a max fleet at module load. Cross-suite races after listen-hold release: `core/port_lease.mjs` (lease until child ready); `launchNode` re-holds up to 5 times. Integration `serial.mjs` forces `DENO_JOBS=1` so one file cannot stack parallel `launchNode`s.
 
 ## Bluetooth / BLE
 
@@ -60,3 +60,8 @@ Share state via module-level singletons under `…/test/fixtures/probes/*.mjs` (
 ## Social OnMessage / timeline commits
 
 `commitTimelineEvent` / ingest `post` triggers `dispatchSocialMessage` → `loadPart`. Prefer real fixture chars, or `appendTimelineEvent` (skips dispatch).
+
+## Platform bot / OnMessage contract
+
+- Prefer mock Client / Telegraf / WeChat long-poll (duck-typed `on`/`channels.fetch`/`send` / `getUpdates`+`sendMessage`) + no-AI fixture char (`on_message_yes`) over real tokens. Assert platform outbound (`channel.send` / `telegram.sendMessage` / `context.sendMessage`) and that `enumerateJoinedFederatedGroups` does not grow (virtual sessions must not create Hub groups). Threaded replies: forward `replyToPlatformMessageId` into Discord `reply.messageReference` / Telegram `reply_parameters` (FormatOutboundReply `send` helper, first chunk only). Bot shells also keep a Playwright `frontend` smoke (`#new-bot` / `#save-config` / …; WeChat adds `#qr-start`).
+- OnMessage contract (`*/test/integration/on_message_contract.test.mjs` + `chat/test/bridgeContract.mjs`): use `gentian_shell_contract` (willingness skeleton + `onMessageProbe.decisions`) — DM owner, guild `@bot` / Telegram `@BotUsername`, plain group silence, char log row `{ role: 'char', uid: CharUid }` (never `extension.charId`), Discord backfill-before-trigger, Discord DM with only `OwnerUserID`. Shared asserts: `assertOnMessageEventShape` / `assertCharReplyRowContract` / `assertBackfillBeforeTrigger`. `message.content` / ChatClient `Message.content` are fount **strings**; DAG wire is typed (`sticker`/`vote`/`call`/`group_invite` top-level `type`; text omits `type`), converted at hydrate — never hand wire `type` to chars.

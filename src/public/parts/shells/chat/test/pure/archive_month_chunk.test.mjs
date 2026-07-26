@@ -37,7 +37,7 @@ Deno.test('assembleArchiveMonthBodyFromParts roundtrip', () => {
 		eventId: A,
 		channelId: 'general',
 		timestamp: 1,
-		content: { type: 'text', content: 'hello' },
+		content: { content: 'hello' },
 	})
 	const body = `${line}\n`
 	const enc = encryptPlaintextToMultiParts(Buffer.from(body, 'utf8'), 'plain')
@@ -55,7 +55,7 @@ Deno.test('multi-chunk split for large archive month body', () => {
 	const bigLine = JSON.stringify({
 		eventId: A,
 		channelId: 'general',
-		content: { type: 'text', content: 'x'.repeat(FEDERATION_CHUNK_MAX_BYTES) },
+		content: { content: 'x'.repeat(FEDERATION_CHUNK_MAX_BYTES) },
 	})
 	const enc = encryptPlaintextToMultiParts(Buffer.from(`${bigLine}\n`, 'utf8'), 'plain')
 	assertEquals(enc.parts.length > 1, true)

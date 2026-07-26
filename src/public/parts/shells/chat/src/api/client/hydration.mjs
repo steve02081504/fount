@@ -19,13 +19,13 @@ export function createHydrationMethods(apiContext) {
 				return createVirtualBridgeMessage(apiContext, groupId, {
 					...message,
 					channelId: event.channel?.channelId || message.channelId || 'default',
-					eventId: message.eventId || message.id || message.extension?.virtualEventId,
+					eventId: message.eventId || message.id || message.extension?.chat?.virtualEventId,
 				}, event.mentions)
 			}
 			return createMessage(apiContext, groupId, {
 				...message,
 				channelId: event.channel?.channelId || message.channelId || 'default',
-				eventId: message.eventId || message.id || message.extension?.dagEventId,
+				eventId: message.eventId || message.id || message.extension?.chat?.eventId,
 			}, event.mentions)
 		},
 	}

@@ -8,7 +8,7 @@ import { isPeerPoolKeyBlocked, loadPeerPoolView } from 'npm:@steve02081504/fount
 import { recordMessageRateViolation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
-import { assertFederatedCkgContent } from '../channel_keys/content.mjs'
+import { assertFederatedChannelKeyContent } from '../channel_keys/content.mjs'
 import {
 	classifyHlcSkewAction,
 	resolveHlcMaxSkewMs,
@@ -229,7 +229,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 	}
 
 	try {
-		assertFederatedCkgContent(String(wirePayload.type), wirePayload.content)
+		assertFederatedChannelKeyContent(String(wirePayload.type), wirePayload.content)
 	}
 	catch (error) {
 		if (logFailures) console.error('federation: drop remote event (GSH required)', error)

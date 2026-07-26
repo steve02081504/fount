@@ -52,7 +52,7 @@ Deno.test('digest includes display snapshot fields', () => {
 		eventId: A,
 		channelId: 'general',
 		timestamp: 1,
-		content: { type: 'text', content: 'a' },
+		content: { content: 'a' },
 	}
 	const d1 = digestArchiveMonthBody(`${canonicalArchiveMonthLine({
 		...base,
@@ -72,13 +72,13 @@ Deno.test('digestArchiveMonthBody is stable for sorted snapshots', () => {
 			eventId: B,
 			channelId: 'general',
 			timestamp: 2,
-			content: { type: 'text', content: 'b' },
+			content: { content: 'b' },
 		}),
 		canonicalArchiveMonthLine({
 			eventId: A,
 			channelId: 'general',
 			timestamp: 1,
-			content: { type: 'text', content: 'a' },
+			content: { content: 'a' },
 		}),
 	].join('\n') + '\n'
 	const d1 = digestArchiveMonthBody(body).digest
@@ -107,7 +107,7 @@ Deno.test('pickArchiveMonthByReputation requires reputation or strict peer count
 		eventId: A,
 		channelId: 'general',
 		timestamp: 1,
-		content: { type: 'text', content: 'a' },
+		content: { content: 'a' },
 	}) + '\n'
 	const weak = await pickArchiveMonthByReputation(
 		[await archiveMonthCandidate(body, 'c'.repeat(64))],
@@ -143,8 +143,8 @@ Deno.test('pickArchiveMonthByReputation requires reputation or strict peer count
 
 Deno.test('extendRollingMonthDigest matches full digestArchiveMonthSnapshots', () => {
 	const snaps = [
-		{ eventId: A, channelId: 'general', timestamp: 1, content: { type: 'text', content: 'a' } },
-		{ eventId: B, channelId: 'general', timestamp: 2, content: { type: 'text', content: 'b' } },
+		{ eventId: A, channelId: 'general', timestamp: 1, content: { content: 'a' } },
+		{ eventId: B, channelId: 'general', timestamp: 2, content: { content: 'b' } },
 	]
 	const full = digestArchiveMonthSnapshots(snaps).digest
 	const rolling = extendRollingMonthDigest('', [snaps[0]])
@@ -163,7 +163,7 @@ Deno.test('pickArchiveMonthByReputation prefers manifest monthDigests on tie', a
 		eventId: A,
 		channelId: 'general',
 		timestamp: 1,
-		content: { type: 'text', content: 'a' },
+		content: { content: 'a' },
 	}) + '\n'
 	const digest = digestArchiveMonthBody(body).digest
 	const manifest = {
@@ -189,7 +189,7 @@ Deno.test('pickArchiveMonthByReputation rejects sole high-rep dictator', async (
 		eventId: A,
 		channelId: 'general',
 		timestamp: 1,
-		content: { type: 'text', content: 'a' },
+		content: { content: 'a' },
 	}) + '\n'
 	const manifest = { archivedEventIds: {}, monthDigests: {} }
 	const sole = await pickArchiveMonthByReputation(

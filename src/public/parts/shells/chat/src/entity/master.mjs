@@ -6,6 +6,7 @@
  */
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
+import { chatExtensionOf } from '../../public/shared/channelContent.mjs'
 import { deriveMessageAttribution, isTrustedOwnerAttribution } from '../chat/lib/attribution.mjs'
 
 import { loadEntityIdentity } from './identity.mjs'
@@ -27,6 +28,24 @@ export async function resolveDeclaredOwnerEntityHash(username, entityHash) {
 }
 
 /**
+ * @param {object} message 消息行、chatLog 条目或 Message
+ * @returns {object} wire content 对象
+ */
+function wireContentOf(message) {
+	return message?.content?.constructor === Object ? message.content : {}
+}
+
+/**
+ * @param {object} message 消息行、chatLog 条目或 Message
+ * @returns {object} extension.chat 侧车
+ */
+function chatSidecarOf(message) {
+	return message?.extension?.chat
+		|| chatExtensionOf(wireContentOf(message))
+		|| {}
+}
+
+/**
  * 从 OnMessage / Message 行解析密码学作者实体。
  * @param {object} eventOrLine OnMessage 事件或消息行
  * @param {object} [state] 可选物化状态（含 members）
@@ -34,10 +53,9 @@ export async function resolveDeclaredOwnerEntityHash(username, entityHash) {
  */
 export function resolveCryptographicAuthorEntityHash(eventOrLine, state = null) {
 	const message = eventOrLine?.message || eventOrLine
-	const content = message?.content && typeof message.content === 'object' ? message.content : {}
-	const bridge = message?.extension?.bridge
-		|| content.extension?.bridge
-		|| eventOrLine?.chatReplyRequest?.extension?.bridge
+	const chat = chatSidecarOf(message)
+	const bridge = chat.bridge
+		|| eventOrLine?.chatReplyRequest?.extension?.chat?.bridge
 	if (bridge?.authorEntityHash && isEntityHash128(String(bridge.authorEntityHash)))
 		return String(bridge.authorEntityHash).toLowerCase()
 
@@ -57,6 +75,11 @@ export function resolveCryptographicAuthorEntityHash(eventOrLine, state = null) 
 			}
 		}
 	}
+
+	const uid = String(message?.uid || '').trim().toLowerCase()
+	if (uid && isEntityHash128(uid) && message?.role !== 'char')
+		return uid
+
 	return null
 }
 
@@ -79,12 +102,14 @@ export async function resolveTrustedOwnerContext({
 }) {
 	const declaredOwnerEntityHash = await resolveDeclaredOwnerEntityHash(username, agentEntityHash)
 	const message = eventOrLine?.message || eventOrLine
-	const content = message?.content && typeof message.content === 'object' ? message.content : {}
+	const wire = wireContentOf(message)
+	const localChat = message?.extension?.chat
 	const signerEntityHash = authorEntityHash || resolveCryptographicAuthorEntityHash(eventOrLine, state)
-	const attribution = deriveMessageAttribution(content, {
-		sender: message?.sender || eventOrLine?.sender,
-		signerEntityHash,
-	})
+	const attribution = localChat?.attribution
+		|| deriveMessageAttribution(wire, {
+			sender: message?.sender || eventOrLine?.sender,
+			signerEntityHash,
+		})
 	const isFromOwner = isTrustedOwnerAttribution(attribution, signerEntityHash, declaredOwnerEntityHash)
 	return {
 		declaredOwnerEntityHash,

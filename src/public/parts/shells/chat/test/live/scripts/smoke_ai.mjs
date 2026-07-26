@@ -16,7 +16,7 @@ await chatApiJson('POST', `/groups/${groupId}/char`, { charname: 'test_streamer'
 
 console.log('\n=== 3. Send user message ===')
 await chatApiJson('POST', `/groups/${groupId}/channels/${channelId}/messages`, {
-	content: { type: 'text', content: '请说点什么' },
+	content: { content: '请说点什么' },
 })
 
 console.log('\n=== 4. Trigger char reply ===')

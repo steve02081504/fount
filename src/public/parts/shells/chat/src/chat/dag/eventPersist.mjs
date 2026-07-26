@@ -19,7 +19,7 @@ import {
 
 import { rotateBoundCabinetKeys, tryImportCabinetKeyWraps } from '../cabinets/keys.mjs'
 import {
-	CKG_ENCRYPT_EVENT_TYPES,
+	CHANNEL_KEY_ENCRYPT_EVENT_TYPES,
 	decryptEventContent,
 } from '../channel_keys/content.mjs'
 import { appendChannelKeyRotate, rotateAllChannelKeys } from '../channel_keys/schedule.mjs'
@@ -225,7 +225,7 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 	let displayContent = storedContent
 	let sidecarContent = storedContent
 	let decryptResult = null
-	if (CKG_ENCRYPT_EVENT_TYPES.has(signPayload.type)) {
+	if (CHANNEL_KEY_ENCRYPT_EVENT_TYPES.has(signPayload.type)) {
 		decryptResult = await decryptEventContent(username, groupId, channelId, storedContent)
 		if (decryptResult.ok) {
 			displayContent = decryptResult.content

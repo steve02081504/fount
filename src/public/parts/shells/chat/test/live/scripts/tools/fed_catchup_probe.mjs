@@ -21,7 +21,7 @@ console.log(`group=${gid} joined; waiting 14s for join-time catch-up to settle..
 await sleep(14_000)
 
 const eventId = (await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-	content: { type: 'text', content: 'catchup-message' },
+	content: { content: 'catchup-message' },
 })).json.event?.id
 console.log(`A created post-join eventId=${eventId}`)
 

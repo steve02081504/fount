@@ -75,9 +75,9 @@ Deno.test('bound owner bridge message attributes operator entityHash', async () 
 	})
 
 	const session = getVirtualBridgeSession(username, event.groupId)
-	const row = session.channels.default.logs.find(message => message.extension?.virtualEventId === event.id)
+	const row = session.channels.default.logs.find(message => message.extension?.chat?.virtualEventId === event.id)
 	assert(row)
-	assertEquals(row.extension?.bridge?.authorEntityHash, operatorHash)
+	assertEquals(row.extension?.chat?.bridge?.authorEntityHash, operatorHash)
 	assertEquals(row.uid, operatorHash)
 })
 
@@ -112,7 +112,7 @@ Deno.test('bound owner message uses operator profile displayName', async () => {
 	})
 
 	const session = getVirtualBridgeSession(username, event.groupId)
-	const row = session.channels.default.logs.find(message => message.extension?.virtualEventId === event.id)
+	const row = session.channels.default.logs.find(message => message.extension?.chat?.virtualEventId === event.id)
 	assert(row)
 	assertEquals(row.name, 'Operator Profile Name')
 })

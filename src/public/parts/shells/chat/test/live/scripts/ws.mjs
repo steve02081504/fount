@@ -25,7 +25,7 @@ const timeout = setTimeout(() => finish('timeout'), ms('20s'))
 websocket.onopen = async () => {
 	console.log('WS open; posting message...')
 	const post = await chatApi('POST', `/groups/${groupId}/channels/${channelId}/messages`, {
-		content: { type: 'text', content: 'ws-hello' },
+		content: { content: 'ws-hello' },
 	})
 	console.log(`post -> ${post.status}`)
 }

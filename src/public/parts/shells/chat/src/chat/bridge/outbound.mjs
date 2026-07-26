@@ -72,20 +72,18 @@ export async function notifyVirtualBridgeOutbound(username, groupId, channelId, 
 		lookupVirtualBridgePlatformMessageId,
 		recordVirtualBridgeMessagePair,
 	} = await import('./session.mjs')
-	const replyEventId = messageLine?.extension?.replyTo?.eventId
-		|| messageLine?.extension?.bridge?.replyToEventId
+	const replyEventId = messageLine?.extension?.chat?.replyTo?.eventId
+		|| messageLine?.extension?.chat?.bridge?.replyToEventId
 	const replyToPlatformMessageId = replyEventId
 		? lookupVirtualOutboundReplyTarget(username, groupId, channelId, replyEventId)
 		: null
-	const eventId = messageLine?.extension?.virtualEventId ?? messageLine?.eventId
+	const eventId = messageLine?.extension?.chat?.virtualEventId ?? messageLine?.eventId
 	const result = await handler({
 		channelId,
 		messageLine: {
 			...messageLine,
 			eventId,
-			content: typeof messageLine.content === 'string'
-				? { type: 'text', content: messageLine.content }
-				: messageLine.content,
+			content: messageLine.content,
 			files: messageLine.files,
 			charId: charname || messageLine.extension?.charId,
 		},
@@ -100,6 +98,3 @@ export async function notifyVirtualBridgeOutbound(username, groupId, channelId, 
 			recordVirtualBridgeMessagePair(channel, eventId, platformMessageId)
 	}
 }
-
-/** @deprecated 兼容旧名 */
-export const notifyBridgeOutbound = notifyVirtualBridgeOutbound

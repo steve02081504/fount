@@ -35,7 +35,6 @@ Deno.test('channel archive export/import round-trip preserves final view and pro
 		origin: 'human',
 	})
 	await appendChannelMessageEdit(username, groupId, channelId, editTarget.event.id, {
-		type: 'text',
 		content: 'after-edit',
 	})
 	const delTarget = await postChannelMessage(username, groupId, channelId, {
@@ -67,10 +66,10 @@ Deno.test('channel archive export/import round-trip preserves final view and pro
 
 	const rows = await readChannelMessagesForUser(username, groupId, importedId, { limit: 50 })
 	assert(rows.some(row => row.content?.content === 'after-edit'))
-	const importedKeep = rows.find(row => row.content?.importedFrom?.eventId === keep.event.id)
+	const importedKeep = rows.find(row => row.content?.extension?.chat?.importedFrom?.eventId === keep.event.id)
 	assert(importedKeep)
-	assertEquals(importedKeep.content.importedFrom.attributionMismatch, true)
-	assert(importedKeep.content.importedFrom.signerEntityHash)
-	assert(importedKeep.content.importedFrom.sourceSenderPubKeyHash)
-	assert(rows.every(row => !row.content?.fileIds?.length))
+	assertEquals(importedKeep.content.extension.chat.importedFrom.attributionMismatch, true)
+	assert(importedKeep.content.extension.chat.importedFrom.signerEntityHash)
+	assert(importedKeep.content.extension.chat.importedFrom.sourceSenderPubKeyHash)
+	assert(rows.every(row => !row.content?.files?.length))
 })

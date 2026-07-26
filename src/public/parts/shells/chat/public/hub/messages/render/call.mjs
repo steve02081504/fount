@@ -4,6 +4,7 @@
  */
 import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { channelMessageKind } from '../../../shared/channelContent.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from '/parts/shells:chat/shared/hashAvatar.mjs'
 
 /**
@@ -12,10 +13,11 @@ import { avatarColor, avatarInitial, avatarTextColor } from '/parts/shells:chat/
  */
 export async function renderCallBlock(message) {
 	const content = message?.content || {}
-	const status = content.status === 'ended' ? 'ended' : 'ongoing'
-	const source = status === 'ongoing' && Array.isArray(content.current) && content.current.length
-		? content.current
-		: Array.isArray(content.participants) ? content.participants : []
+	const call = channelMessageKind(content) === 'call' ? content : {}
+	const status = call.status === 'ended' ? 'ended' : 'ongoing'
+	const source = status === 'ongoing' && Array.isArray(call.current) && call.current.length
+		? call.current
+		: Array.isArray(call.participants) ? call.participants : []
 	const hashes = [...new Set(source.map(h => String(h || '').toLowerCase()).filter(Boolean))]
 	const avatarsHtml = hashes.slice(0, 12).map(hash => {
 		const letter = escapeHtml(avatarInitial(hash.slice(0, 8)))
@@ -25,13 +27,13 @@ export async function renderCallBlock(message) {
 	}).join('')
 	let metaHtml = ''
 	if (status === 'ongoing') {
-		const started = Number(content.startedAt) || 0
+		const started = Number(call.startedAt) || 0
 		const timeText = started ? new Date(started).toLocaleTimeString() : ''
 		metaHtml = `<span data-i18n="chat.hub.callStartedAt" data-time="${escapeHtml(timeText)}"></span>`
 			+ ` · <span data-i18n="chat.hub.callParticipants" data-n="${hashes.length}"></span>`
 	}
 	else {
-		const durationMs = Number(content.duration) || 0
+		const durationMs = Number(call.duration) || 0
 		const secs = Math.max(0, Math.round(durationMs / 1000))
 		const mm = String(Math.floor(secs / 60)).padStart(2, '0')
 		const ss = String(secs % 60).padStart(2, '0')
@@ -42,7 +44,7 @@ export async function renderCallBlock(message) {
 		? '<button type="button" class="btn btn-sm btn-primary call-join-btn" data-i18n="chat.hub.callJoin"></button>'
 		: ''
 	return renderTemplateAsHtmlString('hub/messages/call_block', {
-		callId: escapeHtml(String(content.callId || message.eventId || '')),
+		callId: escapeHtml(String(call.callId || message.eventId || '')),
 		status,
 		titleI18n: status === 'ended' ? 'chat.hub.callEnded' : 'chat.hub.callInProgress',
 		metaHtml,

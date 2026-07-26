@@ -78,7 +78,7 @@ Deno.test('resolveDisplaySnapshot: char message uses char part not host persona'
 	assert(human.name !== agent.name, 'human and char snapshots differ')
 })
 
-Deno.test('buildCanonicalMessageContent: char reply persists char displayName/avatar', async () => {
+Deno.test('buildCanonicalMessageContent: char reply persists char name/avatar', async () => {
 	const { username, groupId, channelId } = await setupSession()
 	const { buildCanonicalMessageContent } = await import('../../src/chat/channel/messageCommit.mjs')
 	const { triggerCharReply } = await import('../../src/chat/session/triggerReply.mjs')
@@ -93,17 +93,17 @@ Deno.test('buildCanonicalMessageContent: char reply persists char displayName/av
 		if (!charRow) await new Promise(resolve => setTimeout(resolve, 40))
 	}
 	assert(charRow, 'char reply landed on DAG')
-	assertEquals(charRow.content?.displayName, '写路径 Agent')
-	assertEquals(charRow.content?.displayAvatar, '🤖')
-	assertNotEquals(charRow.content?.displayName, '写路径测试人格')
+	assertEquals(charRow.content?.name, '写路径 Agent')
+	assertEquals(charRow.content?.avatar, '🤖')
+	assertNotEquals(charRow.content?.name, '写路径测试人格')
 
 	const canonical = await buildCanonicalMessageContent(
 		username,
 		groupId,
 		channelId,
-		{ type: 'text', content: 'probe' },
+		{ content: 'probe' },
 		{ charId: CHAR, origin: 'char' },
 	)
-	assertEquals(canonical.displayName, '写路径 Agent')
-	assertEquals(canonical.displayAvatar, '🤖')
+	assertEquals(canonical.name, '写路径 Agent')
+	assertEquals(canonical.avatar, '🤖')
 })

@@ -53,7 +53,7 @@ Deno.test('per-recipient inbox: @operator and @agent', async () => {
 		type: 'message',
 		eventId: `${'ab'.repeat(32)}`,
 		sender: senderKey,
-		content: { type: 'text', content: `ping @[entity:${operatorHash}] and @[entity:${agentHash}]` },
+		content: { content: `ping @[entity:${operatorHash}] and @[entity:${agentHash}]` },
 		hlc: { wall: at },
 	}, { ingress: 'backfill' })
 

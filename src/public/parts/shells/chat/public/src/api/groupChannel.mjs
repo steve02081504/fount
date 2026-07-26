@@ -2,10 +2,10 @@
  * 【文件】public/src/api/groupChannel.mjs
  * 【职责】频道与消息 API：发消息、编辑/删除、时间线、投票、置顶、反馈、触发 AI 回复、频道 CRUD。
  * 【原理】content 经 channelContent.mjs 规范为对象；groupFetch POST/PUT 到 channels/:channelId/...；getChatTimeline 供 MessagePipeline 分页。
- * 【数据结构】textChannelContent、channelMessageContentObject；eventId、ballotId、timeline 游标。
+ * 【数据结构】channelMessage、normalizeChannelMessage；eventId、ballotId、timeline 游标。
  * 【关联】groupClient.mjs、lib/channelContent.mjs；MessagePipeline、Hub composer。
  */
-import { channelMessageContentObject, textChannelContent } from '../../shared/channelContent.mjs'
+import { channelMessage, normalizeChannelMessage } from '../../shared/channelContent.mjs'
 
 import { groupFetch, groupPath } from './groupClient.mjs'
 
@@ -91,9 +91,9 @@ export async function createChannelVote(groupId, channelId, body) {
  */
 export async function sendGroupMessage(groupId, channelId, content, files = []) {
 	const body = {
-		content: channelMessageContentObject(
-			content?.type ? content : textChannelContent(content),
-		),
+		content: typeof content === 'string'
+			? channelMessage(content)
+			: normalizeChannelMessage(content),
 	}
 	if (files.length) body.files = files
 	const data = await groupFetch(groupPath(groupId, 'channels', channelId, 'messages'), {
@@ -335,7 +335,7 @@ export async function triggerChannelReply(groupId, channelId, charname) {
 export async function editChannelMessage(groupId, channelId, eventId, content) {
 	await groupFetch(groupPath(groupId, 'channels', channelId, 'messages', eventId), {
 		method: 'PUT',
-		json: { content: channelMessageContentObject(textChannelContent(content)) },
+		json: { content: channelMessage(content) },
 	})
 }
 

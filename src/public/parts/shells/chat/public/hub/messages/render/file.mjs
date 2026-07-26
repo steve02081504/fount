@@ -1,6 +1,6 @@
 /**
  * 【文件】public/hub/messages/render/file.mjs
- * 【职责】DAG fileIds 附件区渲染与懒加载媒体占位点击。
+ * 【职责】`content.files` 附件区渲染与懒加载媒体占位点击。
  */
 import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
@@ -60,33 +60,28 @@ async function renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt) {
 }
 
 /**
- * 渲染 DAG `fileIds` 附件区（图/音视频/懒加载/下载）。
+ * 渲染 `content.files` 附件区（图/音视频/懒加载/下载）。
  * @param {object} message 消息行
  * @returns {Promise<string>} HTML 片段
  */
 export async function renderMessageFileIdsHtml(message) {
-	const fileIds = message.content?.fileIds
-	const fileAlts = message.content?.fileAlts || {}
+	const files = message.content?.files
 	const groupId = store.context.currentGroupId
-	if (!groupId || !Array.isArray(fileIds) || !fileIds.length) return ''
+	if (!groupId || !Array.isArray(files) || !files.length) return ''
 
 	const text = getMessageText(message)
 	const rows = []
-	for (const fileId of fileIds) {
-		const id = String(fileId || '').trim()
+	for (const file of files) {
+		const id = String(file?.fileId || '').trim()
 		if (!id) continue
-		const metaR = await fetch(
-			`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files/${encodeURIComponent(id)}/meta`,
-			{ credentials: 'include' },
-		)
-		if (!metaR.ok) {
-			rows.push(await renderTemplateAsHtmlString('hub/messages/media_error', {}))
-			continue
+		const meta = {
+			name: file.name || id,
+			size: Number(file.size) || 0,
+			description: file.description || '',
 		}
-		const meta = await metaR.json()
-		const mime = String(meta.mimeType || '')
+		const mime = String(file.mime_type || '')
 		if (mime.startsWith('image/') && text.includes('[image:')) continue
-		const alt = fileAlts[id] || meta.description || ''
+		const alt = file.description || ''
 		rows.push(await renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt))
 	}
 	if (!rows.length) return ''

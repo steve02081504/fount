@@ -74,7 +74,7 @@ Deno.test('backfill ingress skips trigger pipeline', async () => {
 		type: 'message',
 		eventId: `${'cc'.repeat(32)}`,
 		sender: 'e'.repeat(64),
-		content: { type: 'text', content: 'backfill message' },
+		content: { content: 'backfill message' },
 		hlc: { wall: Date.now() },
 	}, { ingress: 'backfill' })
 

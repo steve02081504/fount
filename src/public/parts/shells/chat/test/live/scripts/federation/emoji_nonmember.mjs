@@ -60,7 +60,7 @@ await testCase('A seeds channel (federation metadata)', async () => {
 	await sleep(ms('2s'))
 	await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('6s') })
 	const r = await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-		content: { type: 'text', content: `seed ${formatEmojiToken(gid, emojiId)}` },
+		content: { content: `seed ${formatEmojiToken(gid, emojiId)}` },
 	})
 	return r.status === 200 || r.status === 201
 })

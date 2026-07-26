@@ -4,7 +4,7 @@
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
-import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
+import { normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
 import { mergeChannelMessagesForDisplay } from '../../../public/shared/messageMerge.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
 import { getProfile } from '../../entity/profile.mjs'
@@ -114,7 +114,7 @@ export async function buildPostSnapshotFromRow(row, state, username, groupId) {
 	const eventId = String(row.eventId).trim()
 	const channelId = String(row.channelId || 'default').trim()
 	const display = await resolveDisplaySnapshot(state, row, username, groupId)
-	const content = row.content ? channelMessageContentObject(row.content) : null
+	const content = row.content ? normalizeChannelMessage(row.content) : null
 	const pins = overlayPinsForChannel(state.messageOverlay, channelId)
 	const prevIds = Array.isArray(row.prev_event_ids)
 		? [...row.prev_event_ids].map(id => String(id).trim().toLowerCase()).filter(isHex64)
@@ -157,7 +157,7 @@ async function resolveArchiveMessageContent(username, groupId, channelId, row) {
 	if (row.decryptView?.failed)
 		return { content: null, decryptView: row.decryptView }
 	const result = await decryptEventContent(username, groupId, channelId, row.content)
-	if (result.ok && result.content?.type)
+	if (result.ok && result.content)
 		return { content: result.content }
 	return {
 		content: null,

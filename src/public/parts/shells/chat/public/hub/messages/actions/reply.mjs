@@ -18,11 +18,11 @@ export async function handleReply(button, channelMessage) {
 		channelMessage?.charId ?? channelMessage?.authorPubKeyHash ?? channelMessage?.sender ?? '?',
 	)
 	const preview = getMessageText(channelMessage).replace(/\s+/g, ' ').trim().slice(0, 120)
-		|| String(channelMessage?.content?.displayName || '').trim()
+		|| String(channelMessage?.content?.name || '').trim()
 		|| '…'
 	setReplyTarget({
 		eventId,
-		senderName: channelMessage?.content?.displayName || displayName,
+		senderName: channelMessage?.content?.name || displayName,
 		preview,
 	})
 	return true

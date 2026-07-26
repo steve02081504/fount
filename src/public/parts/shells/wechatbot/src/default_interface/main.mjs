@@ -223,7 +223,9 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 				const toUserId = String(bridge.platformChatId || lastToUserId || '').trim()
 				if (!toUserId) return {}
 				const contextToken = lastContextToken
-				const rawText = channelMessageAgentText(messageLine.content) || ''
+				const rawText = typeof messageLine.content === 'string'
+					? messageLine.content
+					: channelMessageAgentText(messageLine.content) || ''
 				const replyEntry = messageLineToReplyEntry(messageLine, botCharname)
 				const files = (messageLine.files || []).map(file => ({
 					name: file.name,

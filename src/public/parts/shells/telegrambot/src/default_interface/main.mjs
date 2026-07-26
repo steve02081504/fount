@@ -200,7 +200,9 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				const platformChannel = lookupBridgePlatformChannel(ownerUsername, groupId, channelId)
 				const platformChatId = platformChannel?.platformChatId ?? bridge.platformChatId
 				const threadKey = platformChannel?.platformThreadId
-				const rawText = channelMessageAgentText(messageLine.content) || ''
+				const rawText = typeof messageLine.content === 'string'
+					? messageLine.content
+					: channelMessageAgentText(messageLine.content) || ''
 				const plainText = await restoreFountMentionsInText(ownerUsername, rawText)
 				const replyEntry = messageLineToReplyEntry(messageLine, botCharname)
 				const { cleanMarkdown, stickerIds } = extractStickerIdsFromMarkdown(plainText)

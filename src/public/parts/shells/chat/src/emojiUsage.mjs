@@ -8,7 +8,7 @@
  * 【关联】endpoints 暴露 list API；发送消息路径调用 record；依赖 channelContent 取文本。
  */
 import { assignEntityShellData, loadEntityShellData } from '../../../../../server/setting_loader.mjs'
-import { channelMessageShowText } from '../public/shared/channelContent.mjs'
+import { channelMessageKind, messageShowText } from '../public/shared/channelContent.mjs'
 
 const SHELL_DATANAME = 'emoji_usage'
 const MAX_STORED = 512
@@ -104,14 +104,14 @@ export function recordEmojiUsage(username, entityHash, item) {
  */
 export function recordEmojiUsageFromMessageContent(username, entityHash, content) {
 	if (!content) return
-	if (content.type === 'sticker') {
+	if (channelMessageKind(content) === 'sticker') {
 		const emojiRef = String(content.emojiRef || '').trim()
 		const match = /:\[([\w.-]+)\/([\w.-]+)]:/.exec(emojiRef)
 		if (match)
 			recordEmojiUsage(username, entityHash, { kind: 'custom', groupId: match[1], emojiId: match[2] })
 		return
 	}
-	const text = channelMessageShowText(content)
+	const text = messageShowText(content)
 	if (!text) return
 
 	CUSTOM_EMOJI_REF.lastIndex = 0

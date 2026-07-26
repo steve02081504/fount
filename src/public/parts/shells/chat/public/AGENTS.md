@@ -21,9 +21,10 @@ Less-common entity traps (`member_join`, avatars, Load reentrancy, session tip f
 ## ChatClient
 
 - Entry: `src/api/client/index.mjs` → `getChatClient(username, entityHash?)` (default = operator). API surface: `public/llms.txt`.
+- **Message.content (ChatClient / chat_log / OnMessage) is fount text (`string`)**. DAG wire is separate — discriminated `type` (`text` omits `type`; `sticker`/`vote`/`group_invite`/`call` keep top-level fields). Convert at hydrate/serialize (`chatLogEntry_t`); chars must not unpack wire. Shell sidecars under `extension.chat` only (`eventId`, `channelId`, `bridge`, `replyTo`, … — not kind payloads). Wire `files[]` carry `fileId`; hydrated `files[].buffer` is a lazy getter. Types: `decl/channelWire.ts`.
 - **Plugins**: per-group `local_plugins.json` (node-only, not DAG). World may inject via `GetChatPlugins` (local name wins). Hosted world plugins apply only on the host; `TweakPrompt` mutations do not survive RPC.
 - `OnMessage` may hydrate via `client.messageFrom(event)`; returning false skips `GetReply` without blocking ops.
-- **Platform bots (Discord/Telegram/WeChat)**: in-memory **virtual** sessions (`bridge:{platform}:{platformChatId}`), not real Hub groups / DAG. Duck-typed via `bridgeOperations`; `getChatClient` → `group(virtualId)` returns virtual Group/Channel/Message; `group.bridgeBot().stop()` / `client.bridgeBots()`.
+- **Platform bots (Discord/Telegram/WeChat)**: in-memory **virtual** sessions (`bridge:{platform}:{platformChatId}`), not Hub groups / DAG. Duck-typed via `bridgeOperations`; `getChatClient` → `group(virtualId)` returns virtual Group/Channel/Message; `group.bridgeBot().stop()` / `client.bridgeBots()`.
 
 ## Private state (per-entity)
 
@@ -45,5 +46,5 @@ Thin wrappers: `endpoints/shared.mjs` → `chatClientFromReq` → operator clien
 | Area | Doc |
 | --- | --- |
 | Hub frontend | [hub/AGENTS.md](hub/AGENTS.md) |
-| Session / viewer / WorldChatHost | [../src/chat/session/AGENTS.md](../src/chat/session/AGENTS.md) |
+| Session / viewer | [../src/chat/session/AGENTS.md](../src/chat/session/AGENTS.md) |
 | Cold archive | [../src/chat/archive/AGENTS.md](../src/chat/archive/AGENTS.md) |

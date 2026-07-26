@@ -31,5 +31,13 @@ export async function handleOwnerCommands({
 		return 'handled'
 	}
 
+	// 主人唤名彩蛋：龙→主、胆→人（与真实龙胆 commands.mjs 对齐）
+	if (/^[\n,.~、。亲儿呵哦啊嗯噫子宝欸胆龙，～]+$/.test(content)
+		|| /^[\n,.~、。亲儿呵哦啊嗯噫子宝欸胆龙，～]{4}[\n!,.?~、。亲儿呵哦啊嗯噫子宝欸胆龙！，？～]+$/.test(content)) {
+		const ownerCallReply = content.replaceAll('龙', '主').replaceAll('胆', '人')
+		await message.reply({ content: ownerCallReply })
+		return 'handled'
+	}
+
 	return 'none'
 }

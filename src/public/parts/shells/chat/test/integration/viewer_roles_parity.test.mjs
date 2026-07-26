@@ -123,7 +123,7 @@ Deno.test('GetChatLogForViewer hides staff-only when viewer lacks moderator role
 		type: 'message',
 		channelId,
 		timestamp: Date.now(),
-		content: { type: 'text', content: ACL_MARKER, visibility: { roles: ['moderator'] } },
+		content: { content: ACL_MARKER, visibility: { roles: ['moderator'] } },
 	})
 
 	const { messages: humanAfterAcl } = await readViewerChannelMessages(username, groupId, channelId, { limit: 20 })

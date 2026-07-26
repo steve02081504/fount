@@ -79,12 +79,14 @@ export async function buildVirtualBridgeChatRequest(username, groupId, channelId
 		extension: {
 			groupId,
 			channelId,
-			bridge: {
-				platform: session.platform,
-				platformChatId: session.platformChatId,
-				chatKind: session.chatKind,
-				...session.botname ? { botname: session.botname } : {},
-				...triggerEntry?.extension?.bridge,
+			chat: {
+				bridge: {
+					platform: session.platform,
+					platformChatId: session.platformChatId,
+					chatKind: session.chatKind,
+					...session.botname ? { botname: session.botname } : {},
+					...triggerEntry?.extension?.chat?.bridge,
+				},
 			},
 			...declaredOwnerEntityHash ? { declaredOwnerEntityHash } : {},
 		},
@@ -132,7 +134,7 @@ export async function buildVirtualBridgeOnMessageEvent(username, session, channe
 	return {
 		message: {
 			...entry,
-			eventId: entry.extension?.virtualEventId,
+			eventId: entry.extension?.chat?.virtualEventId,
 			channelId,
 			content: entry.content,
 			extension: entry.extension,

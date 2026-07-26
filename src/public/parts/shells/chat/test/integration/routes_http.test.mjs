@@ -145,7 +145,7 @@ Deno.test({
 	])
 	try {
 		const res = await chatFetch(node, 'POST', `/groups/${setup.groupId}/channels/${setup.channelId}/messages`, {
-			content: { type: 'text', content: 'please persona-reject-me' },
+			content: { content: 'please persona-reject-me' },
 		})
 		assertEquals(res.status, 400)
 		const body = await res.text()
@@ -173,7 +173,7 @@ Deno.test({
 			node,
 			'PUT',
 			`/groups/${setup.groupId}/channels/${setup.channelId}/messages/${setup.editEventId}`,
-			{ content: { type: 'text', content: 'edited persona-edit-me world-edit-me' } },
+			{ content: { content: 'edited persona-edit-me world-edit-me' } },
 		)
 		assertEquals(editRes.status, 200)
 

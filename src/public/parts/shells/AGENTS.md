@@ -35,4 +35,4 @@ alwaysApply: false
 
 ## Relative imports
 
-Bot shells: from `src/*.mjs` use **5** `../` to reach `src/scripts` / `src/server` / sibling `shells/chat`. From `src/default_interface/*.mjs` use **6** `../` to `src/*`, and **`../../../chat/...`** (not `../../chat`) to chat — copy-pasting `bot.mjs` paths into `default_interface/` resolves wrong and breaks char Load.
+Bot shells: from `src/*.mjs` use **5** `../` to reach `src/scripts` / `src/server` / sibling `shells/chat`. From `src/default_interface/*.mjs` use **6** `../` to `src/*`, and **`../../../chat/...`** (not `../../chat`) to chat.

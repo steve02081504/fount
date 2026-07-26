@@ -52,7 +52,7 @@ async function prepareDragPayload(row) {
 	const message = actions ? findContextMessage(row, actions) : null
 	const contentEl = row.querySelector('.message-content')
 	const markdown = getMessageText(message) || contentEl?.textContent?.trim() || ''
-	const hasFiles = Array.isArray(message?.content?.fileIds) && message.content.fileIds.length
+	const hasFiles = Array.isArray(message?.content?.files) && message.content.files.length
 	if (!markdown && !hasFiles) return
 
 	const html = await generateMessageStandaloneHtml(message, row)

@@ -191,7 +191,9 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				const channel = await client.channels.fetch(String(targetChannelId))
 				if (!channel?.isTextBased?.()) return {}
 
-				const rawText = channelMessageAgentText(messageLine.content) || ''
+				const rawText = typeof messageLine.content === 'string'
+					? messageLine.content
+					: channelMessageAgentText(messageLine.content) || ''
 				const plainText = await restoreFountMentionsForDiscord(ownerUsername, rawText)
 				const replyEntry = messageLineToReplyEntry(messageLine, botCharname)
 				const rawFiles = (messageLine.files || []).map(file => ({

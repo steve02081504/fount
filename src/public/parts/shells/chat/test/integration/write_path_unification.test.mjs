@@ -95,11 +95,11 @@ Deno.test('world greeting triggers Add/After exactly once and lands on DAG', asy
 	const messages = await listMessages(username, groupId, channelId)
 	const greeting = messages.find(row => String(row.content?.content || '').includes('world-greeting'))
 	assert(greeting, 'greeting on DAG')
-	assert(greeting.content?.displayName, 'canonical displayName on generation message')
-	assert(greeting.content?.sessionSnapshot || greeting.content?.chatLogEntryId, 'generation sidecar fields')
+	assert(greeting.content?.name, 'canonical name on generation message')
+	assert(greeting.content?.extension?.chat?.sessionSnapshot || greeting.content?.extension?.chat?.entryId, 'generation sidecar fields')
 })
 
-Deno.test('Hub postChannelMessage: BeforeUserSend rewrite + Add/After once + displayName', async () => {
+Deno.test('Hub postChannelMessage: BeforeUserSend rewrite + Add/After once + name', async () => {
 	const { username, groupId, channelId, hooks } = await setupWritePathSession()
 	const beforeCount = hooks.beforeSendCalls.length
 	const addCount = hooks.addCalls.length
@@ -116,8 +116,8 @@ Deno.test('Hub postChannelMessage: BeforeUserSend rewrite + Add/After once + dis
 	const hit = messages.find(row => String(row.content?.content || '').includes('persona-rewritten'))
 	assert(hit, 'persona rewrite landed')
 	assert(!String(hit.content?.content || '').includes('persona-rewrite-me'))
-	assert(hit.content?.displayName, 'human message has displayName')
-	assert(!hit.content?.sessionSnapshot, 'human message has no sessionSnapshot')
+	assert(hit.content?.name, 'human message has name')
+	assert(!hit.content?.extension?.chat?.sessionSnapshot, 'human message has no sessionSnapshot')
 })
 
 Deno.test('CLI actions.send shares postChannelMessage path with BeforeUserSend reject', async () => {
@@ -170,7 +170,7 @@ Deno.test('triggerCharReply finalize fires Add/After once on message_edit', asyn
 	const messages = await listMessages(username, groupId, channelId)
 	const charReply = messages.find(row => String(row.content?.content || '').includes('write_path_agent reply'))
 	assert(charReply, 'char reply on DAG')
-	assertEquals(charReply.content?.displayName, '写路径 Agent')
-	assertEquals(charReply.content?.displayAvatar, '🤖')
-	assertNotEquals(charReply.content?.displayName, '写路径测试人格')
+	assertEquals(charReply.content?.name, '写路径 Agent')
+	assertEquals(charReply.content?.avatar, '🤖')
+	assertNotEquals(charReply.content?.name, '写路径测试人格')
 })

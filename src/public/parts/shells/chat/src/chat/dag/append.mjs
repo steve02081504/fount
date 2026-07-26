@@ -7,7 +7,7 @@ import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { computeAppendHlcAndPrev } from 'npm:@steve02081504/fount-p2p/timeline/append_core'
 
-import { CKG_ENCRYPT_EVENT_TYPES, encryptEventContent, isCkgEncryptedContent, plaintextCkgContentFields } from '../channel_keys/content.mjs'
+import { CHANNEL_KEY_ENCRYPT_EVENT_TYPES, encryptEventContent, isChannelKeyEncryptedContent, plaintextChannelKeyContentFields } from '../channel_keys/content.mjs'
 import { ensureFederationRoom, invalidateFederationRoomCache } from '../federation/room.mjs'
 import { shouldRebindFederationRoomForEvent } from '../federation/rosterChange.mjs'
 import { checkMessageRateLimit } from '../governance/messageRateLimit.mjs'
@@ -138,13 +138,13 @@ export async function appendSignedLocalEvent(username, groupId, event, appendOpt
 
 	const state = restOpts.state ?? (await getState(username, groupId)).state
 	await validateIngestAuthz(username, groupId, { ...eventBody, sender }, { source: 'local', state })
-	if (CKG_ENCRYPT_EVENT_TYPES.has(eventBody.type) && eventBody.content && !isCkgEncryptedContent(eventBody.content)) {
+	if (CHANNEL_KEY_ENCRYPT_EVENT_TYPES.has(eventBody.type) && eventBody.content && !isChannelKeyEncryptedContent(eventBody.content)) {
 		const channelId = eventBody.channelId || 'default'
 		const { ensureChannelKey } = await import('../channel_keys/schedule.mjs')
 		await ensureChannelKey(username, groupId, channelId)
 		eventBody = {
 			...eventBody,
-			content: await encryptEventContent(username, groupId, channelId, eventBody.content, plaintextCkgContentFields(eventBody.type)),
+			content: await encryptEventContent(username, groupId, channelId, eventBody.content, plaintextChannelKeyContentFields(eventBody.type)),
 		}
 	}
 	return appendEvent(username, groupId, { ...eventBody, sender }, secretKey, {

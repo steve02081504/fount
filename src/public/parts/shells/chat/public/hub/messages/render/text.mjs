@@ -3,7 +3,7 @@
  * 【职责】消息正文文本提取、内联贴纸/图片标记展开、生成中判定。
  */
 import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
-import { channelMessageEditText, channelMessageShowText } from '../../../shared/channelContent.mjs'
+import { messageEditText, messageShowText } from '../../../shared/channelContent.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 /**
@@ -64,7 +64,7 @@ export function isOwnViewerMessage(message, renderOpts) {
  */
 export function getMessageText(message) {
 	if (message?.decryptView?.failed) return ''
-	return channelMessageShowText(message?.content)
+	return messageShowText(message?.content)
 }
 
 /**
@@ -72,7 +72,7 @@ export function getMessageText(message) {
  * @returns {string} 编辑用正文（`content_for_edit` 回落 `content`）
  */
 export function getMessageEditText(message) {
-	return channelMessageEditText(message?.content)
+	return messageEditText(message?.content)
 }
 
 /**

@@ -240,12 +240,12 @@ export function createVirtualBridgeChannel(apiContext, groupId, channelId) {
  * @returns {object} Message
  */
 export function createVirtualBridgeMessage(apiContext, groupId, entry, mentions) {
-	const eventId = String(entry.extension?.virtualEventId || entry.eventId || '').toLowerCase()
-	const channelId = entry.extension?.groupChannelId || entry.channelId || 'default'
+	const eventId = String(entry.extension?.chat?.virtualEventId || entry.eventId || '').toLowerCase()
+	const channelId = entry.extension?.chat?.channelId || entry.channelId || 'default'
 	const content = entry.content
 	const authorHash = String(
 		entry.uid
-		|| entry.extension?.bridge?.authorEntityHash
+		|| entry.extension?.chat?.bridge?.authorEntityHash
 		|| '',
 	).toLowerCase() || null
 
@@ -267,8 +267,8 @@ export function createVirtualBridgeMessage(apiContext, groupId, entry, mentions)
 				memberKind: entry.role === 'char' ? 'agent' : 'user',
 				displayName: entry.name || authorHash.slice(64, 72),
 				charname: entry.role === 'char' ? session?.charname : undefined,
-				extension: entry.extension?.bridge
-					? { bridge: { platformUserId: entry.extension.bridge.platformUserId } }
+				extension: entry.extension?.chat?.bridge
+					? { bridge: { platformUserId: entry.extension.chat.bridge.platformUserId } }
 					: {},
 			})
 		},
@@ -276,7 +276,9 @@ export function createVirtualBridgeMessage(apiContext, groupId, entry, mentions)
 		 * @returns {object} 归因
 		 */
 		attribution() {
-			const contentObj = content && typeof content === 'object' ? content : { content }
+			const contentObj = typeof content === 'object' && content
+				? content
+				: { content: String(content ?? ''), extension: entry.extension }
 			return deriveMessageAttribution(contentObj, {
 				sender: authorHash,
 				signerEntityHash: authorHash,
@@ -340,7 +342,7 @@ export function createVirtualBridgeMessage(apiContext, groupId, entry, mentions)
 export async function hydrateVirtualBridgeNativeContext(username, groupId, channelId, triggerEntry) {
 	const ids = resolveVirtualBridgePlatformIds(username, groupId, channelId)
 	if (!ids) return null
-	const platformMessageId = triggerEntry?.extension?.bridge?.platformMessageId
+	const platformMessageId = triggerEntry?.extension?.chat?.bridge?.platformMessageId
 	const getNativeContext = ids.botname
 		? resolveBridgeOperations(username, { platform: ids.platform, botname: ids.botname })?.getNativeContext
 		: undefined

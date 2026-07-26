@@ -2,7 +2,7 @@
  * 【文件】triggerReply.mjs — 角色回复触发、生成执行与多轮自动对话
  * 【职责】triggerCharReply 启动占位条目与 DAG generating 占位；executeGeneration 调用 char.GetReply 并 finalize；getCharReplyFrequency/handleAutoReply 实现发言顺序与加权轮询；跨机角色走 invokeGroupRpc。
  * 【原理】charReplyInFlight 防同 group+channel+char 并发；流式经 charPreviewStream 发签名 stream_chunk（slices）；结束后走 handleAutoReply（AfterAddChatLogEntry 已收归 DAG persist）；本机 bind 外发 RPC 带 buildSerializableRequest。
- * 【数据结构】charReplyInFlight（Set）、占位 chatLogEntry_t（is_generating、extension.dagEventId/groupChannelId）、replyFrequency 表。
+ * 【数据结构】charReplyInFlight（Set）、占位 chatLogEntry_t（is_generating、`extension.chat.eventId`/`channelId`）、replyFrequency 表。
  * 【关联】generationAbort、charPreviewStream、chatRequest、logEntries、dag/chatLogMirror、rpcInvoke。
  */
 /** @typedef {import('../../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
@@ -17,6 +17,7 @@ import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/c
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
+import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
 import { ensureLocalAgentEntityHash, memberEntityHash } from '../../entity/member.mjs'
 import {
 	appendDagGeneratingPlaceholder,
@@ -179,7 +180,7 @@ export async function handleAutoReply(groupId, channelId, replyFrequency, lastSp
  */
 export async function executeGeneration(groupId, request, stream, placeholderEntry, chatMetadata) {
 	const entryId = placeholderEntry.id
-	const pendingStreamId = placeholderEntry.extension?.dagEventId || entryId
+	const pendingStreamId = placeholderEntry.extension?.chat?.eventId || entryId
 	const channelForStream = getChannelForCharStream(chatMetadata, placeholderEntry)
 
 	/**
@@ -211,9 +212,9 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 		chatMetadata.LastTimeSlice = finalEntry.extension.timeSlice
 
 		const owner = groupMetadatas.get(groupId)?.username
-		if (owner && placeholderEntry.extension?.dagEventId)
-			await finalizeDagGeneratingMessage(groupId, finalEntry, owner, placeholderEntry.extension.dagEventId)
-		else if (owner && !isError && !finalEntry.extension?.aborted)
+		if (owner && placeholderEntry.extension?.chat?.eventId)
+			await finalizeDagGeneratingMessage(groupId, finalEntry, owner, placeholderEntry.extension.chat.eventId)
+		else if (owner && !isError && !finalEntry.extension?.chat?.aborted)
 			await syncChatLogEntryToDag(groupId, finalEntry, owner)
 
 		return finalEntry
@@ -292,13 +293,13 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 
 		const savedEntry = await finalizeEntry(finalEntry, false)
 		const replyFrequency = await getCharReplyFrequency(groupId)
-		const savedChannelId = savedEntry.extension?.groupChannelId || null
+		const savedChannelId = savedEntry.extension?.chat?.channelId || null
 		await handleAutoReply(groupId, savedChannelId, replyFrequency, savedEntry.extension.timeSlice.charname ?? null)
 	}
 	catch (error) {
 		if (error.name === 'AbortError') {
 			placeholderEntry.is_generating = false
-			placeholderEntry.extension = { ...placeholderEntry.extension, aborted: true }
+			ensureChatExtension(placeholderEntry).aborted = true
 			await finalizeEntry(placeholderEntry, false)
 		}
 		else {
@@ -323,7 +324,7 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 	finally {
 		charReplyInFlight.delete(charReplyFlightKey(
 			groupId,
-			placeholderEntry.extension?.groupChannelId || channelForStream,
+			placeholderEntry.extension?.chat?.channelId || channelForStream,
 			request.char_id,
 		))
 	}
@@ -417,7 +418,7 @@ async function ensureCharSession(groupId, channelId, charname) {
  * @returns {Promise<void>}
  */
 async function rollbackCharReplySetup(groupId, placeholder, owner) {
-	if (owner && placeholder.extension?.dagEventId)
+	if (owner && placeholder.extension?.chat?.eventId)
 		await cancelGeneratingPlaceholder(groupId, placeholder, owner)
 }
 
@@ -440,7 +441,7 @@ async function buildCharReplyPlaceholder(chatMetadata, groupId, charname, channe
 	placeholder.avatar = info?.avatar
 	placeholder.extension.timeSlice.charname = charname
 	placeholder.content = ''
-	placeholder.extension.groupChannelId = await resolveGroupChannelId(chatMetadata.username, groupId, channelId)
+	ensureChatExtension(placeholder).channelId = await resolveGroupChannelId(chatMetadata.username, groupId, channelId)
 	return placeholder
 }
 
@@ -516,7 +517,7 @@ export async function triggerCharReply(groupId, channelId, charname, requestOver
 				channelId,
 				sender,
 				charId: charname,
-				content: { type: 'text', content: '' },
+				content: { content: '' },
 				hlc: { wall: Date.now() },
 			})
 			if (!rate.ok) {
@@ -531,7 +532,7 @@ export async function triggerCharReply(groupId, channelId, charname, requestOver
 		const stream = createGenerationStream(
 			groupId,
 			placeholder.id,
-			placeholder.extension?.dagEventId || null,
+			placeholder.extension?.chat?.eventId || null,
 		)
 
 		void executeGeneration(groupId, request, stream, placeholder, chatMetadata)

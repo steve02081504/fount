@@ -188,7 +188,9 @@ Deno.test('ChatClient session/profile/denylist/send-with-files/fork surface', as
 		files: [{ name: 'note.txt', mime_type: 'text/plain', buffer: Buffer.from('hello-e3') }],
 	})
 	assert(withFile.eventId)
-	assert((withFile.content?.fileIds || []).length >= 1, 'send with files should attach fileIds')
+	assertEquals(typeof withFile.content, 'string')
+	assertEquals(withFile.content, 'with attachment')
+	assert((withFile.files || []).length >= 1, 'send with files should attach files on Message')
 
 	const forked = await group.fork({ name: 'e3-fork' })
 	assert(forked.id)

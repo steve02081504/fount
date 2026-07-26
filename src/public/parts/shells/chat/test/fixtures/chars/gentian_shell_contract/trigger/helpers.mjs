@@ -2,14 +2,12 @@ import { getChatClient } from 'fount/public/parts/shells/chat/src/api/client/ind
 import { resolveTrustedOwnerContext } from 'fount/public/parts/shells/chat/src/entity/master.mjs'
 
 /**
+ * OnMessage / chat_log 正文已是 fount `chatLogEntry_t.content`（string）。
  * @param {object} message 消息行
  * @returns {string} 纯文本内容
  */
 export function extractMessageText(message) {
-	const content = message?.content
-	if (content && typeof content === 'object' && content.type === 'text')
-		return String(content.content ?? '').trim()
-	return String(content ?? '').trim()
+	return String(message?.content ?? '').trim()
 }
 
 /**

@@ -12,7 +12,7 @@ import { getState } from '../dag/materialize.mjs'
 export function findTriggerChatLogEntry(chatLog) {
 	return [...chatLog || []].reverse().find(entry =>
 		entry.role !== 'char'
-		&& (entry.extension?.virtualEventId || entry.extension?.dagEventId || entry.extension?.bridge))
+		&& (entry.extension?.chat?.virtualEventId || entry.extension?.chat?.eventId || entry.extension?.chat?.bridge))
 }
 
 /**
@@ -20,8 +20,8 @@ export function findTriggerChatLogEntry(chatLog) {
  * @returns {object | null} 桥接入站元数据
  */
 export function bridgeMetaFromChatLogEntry(entry) {
-	return entry?.extension?.bridge
-		?? entry?.content?.extension?.bridge
+	return entry?.extension?.chat?.bridge
+		?? entry?.content?.extension?.chat?.bridge
 		?? null
 }
 

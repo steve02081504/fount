@@ -120,7 +120,7 @@ export async function showMessageContextMenu(event, row) {
 		const { displayName } = authorPresentationKeys(message.charId ?? message.authorPubKeyHash ?? message.sender ?? '?')
 		setReplyTarget({
 			eventId,
-			senderName: message.content?.displayName || displayName,
+			senderName: message.content?.name || displayName,
 			preview: plainText.slice(0, 120) || '…',
 		})
 		closeOnce()

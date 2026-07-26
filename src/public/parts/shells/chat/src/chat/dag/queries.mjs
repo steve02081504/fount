@@ -109,8 +109,8 @@ export async function listChannelMessages(username, groupId, channelId, q = {}) 
 	if (Array.isArray(q.eventIds) && q.eventIds.length) {
 		const filtered = linesIncludingOverlaysForTargets(lines, q.eventIds)
 		if (q.decrypt === false) return filtered
-		const { decryptChannelMessageLines, isCkgEncryptedContent } = await import('../channel_keys/content.mjs')
-		if (filtered.some(line => isCkgEncryptedContent(line?.content)))
+		const { decryptChannelMessageLines, isChannelKeyEncryptedContent } = await import('../channel_keys/content.mjs')
+		if (filtered.some(line => isChannelKeyEncryptedContent(line?.content)))
 			return decryptChannelMessageLines(username, groupId, channelId, filtered)
 		return filtered
 	}
@@ -135,8 +135,8 @@ export async function listChannelMessages(username, groupId, channelId, q = {}) 
 		}
 	}
 	if (q.decrypt !== false) {
-		const { decryptChannelMessageLines, isCkgEncryptedContent } = await import('../channel_keys/content.mjs')
-		if (slice.some(line => isCkgEncryptedContent(line?.content)))
+		const { decryptChannelMessageLines, isChannelKeyEncryptedContent } = await import('../channel_keys/content.mjs')
+		if (slice.some(line => isChannelKeyEncryptedContent(line?.content)))
 			slice = await decryptChannelMessageLines(username, groupId, channelId, slice)
 	}
 	return slice

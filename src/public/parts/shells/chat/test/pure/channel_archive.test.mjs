@@ -47,7 +47,7 @@ Deno.test('portableMessageFromSnapshot maps source identity fields', () => {
 		sender: 'aa'.repeat(32),
 		sourceEntityHash: 'bb'.repeat(64),
 		display: { name: 'Ada', avatar: null },
-		content: { type: 'text', content: 'hi' },
+		content: { content: 'hi' },
 		reactions: [{ emoji: '👍', voters: [{ pubKeyHash: 'x' }] }],
 		pinned: true,
 		deleted: false,
@@ -58,24 +58,27 @@ Deno.test('portableMessageFromSnapshot maps source identity fields', () => {
 	assertEquals(portable.sourceEntityHash, 'bb'.repeat(64))
 	assertEquals(portable.reactionCounts, { '👍': 1 })
 	assertEquals(portable.pinned, true)
-	assertEquals(portable.content.type, 'text')
+	assertEquals(portable.content.content, 'hi')
 })
 
 Deno.test('deriveMessageAttribution marks importedFrom as mismatch', () => {
-	const trusted = deriveMessageAttribution({ type: 'text', content: 'ok' }, { sender: 'aa'.repeat(32) })
+	const trusted = deriveMessageAttribution({ content: 'ok' }, { sender: 'aa'.repeat(32) })
 	assertEquals(trusted.trusted, true)
 	assertEquals(trusted.mismatch, false)
 
 	const mismatch = deriveMessageAttribution({
-		type: 'text',
 		content: 'old',
-		displayName: 'Ada',
-		importedFrom: {
-			groupId: 'g',
-			channelId: 'c',
-			eventId: 'e1',
-			sourceEntityHash: 'cc'.repeat(64),
-			signerEntityHash: 'dd'.repeat(64),
+		name: 'Ada',
+		extension: {
+			chat: {
+				importedFrom: {
+					groupId: 'g',
+					channelId: 'c',
+					eventId: 'e1',
+					sourceEntityHash: 'cc'.repeat(64),
+					signerEntityHash: 'dd'.repeat(64),
+				},
+			},
 		},
 	}, { sender: 'ee'.repeat(32) })
 	assertEquals(mismatch.trusted, false)

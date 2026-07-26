@@ -59,7 +59,7 @@ let liveId = null
 
 await testCase('A sends while B room warm', async () => {
 	const r = await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-		content: { type: 'text', content: 'mailbox-live-check' },
+		content: { content: 'mailbox-live-check' },
 	})
 	if (r.status !== 201) throw new Error(`send ${r.status}`)
 	liveId = r.json.event?.id

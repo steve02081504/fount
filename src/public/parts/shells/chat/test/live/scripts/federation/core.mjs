@@ -30,7 +30,7 @@ console.log(`NodeB received A1: ${gotA1 ? 'YES' : 'NO'}`)
 
 console.log('\n=== 3. NodeB: send message #B1 ===')
 const b1 = await Api(FedB, 'POST', `/groups/${groupId}/channels/${channelId}/messages`, {
-	content: { type: 'text', content: 'B1: reply from NodeB' },
+	content: { content: 'B1: reply from NodeB' },
 })
 if (b1.status !== 201) throw new Error(`B1 send failed: ${b1.status} ${b1.raw}`)
 
