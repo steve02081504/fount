@@ -76,7 +76,8 @@ function withDisplayFields(input, fields) {
  * @returns {Record<string, unknown>} 文本 wire
  */
 export function channelMessage(agentText, extra = {}) {
-	const { content_for_show, content_for_edit, type: _ignoredType, ...rest } = extra
+	const { content_for_show, content_for_edit, ...rest } = extra
+	delete rest.type
 	return normalizeChannelMessage({
 		...rest,
 		content: String(agentText ?? ''),
@@ -175,9 +176,6 @@ function normalizeCallContent(input) {
  * @returns {Record<string, unknown>} 校验后的对象
  */
 export function normalizeChannelMessage(input) {
-	if (!input || typeof input !== 'object')
-		throw new Error('channel message requires object content')
-
 	const type = input.type || 'text'
 	switch (type) {
 		case 'text': return normalizeTextContent(input)
@@ -190,16 +188,18 @@ export function normalizeChannelMessage(input) {
 }
 
 /**
+ * 展示/agent 文本：未知 type（联邦垃圾）返回空串，不抛。
  * @param {object} content wire
  * @returns {string} agent / 回退正文
  */
 export function messageAgentText(content) {
-	const kind = channelMessageKind(content)
-	if (kind === 'vote') return String(content.question || '').trim()
-	if (kind === 'call') return content.status === 'ended' ? 'Call ended' : 'Call in progress'
-	if (kind === 'sticker') return String(content.emojiRef || content.stickerName || '')
-	if (kind === 'group_invite') return String(content.groupName || content.groupId || '')
-	return String(content.content ?? '')
+	const type = content?.type
+	if (type === 'vote') return String(content.question || '').trim()
+	if (type === 'call') return content.status === 'ended' ? 'Call ended' : 'Call in progress'
+	if (type === 'sticker') return String(content.emojiRef || content.stickerName || '')
+	if (type === 'group_invite') return String(content.groupName || content.groupId || '')
+	if (type && type !== 'text') return ''
+	return String(content?.content ?? '')
 }
 
 /**
@@ -207,10 +207,11 @@ export function messageAgentText(content) {
  * @returns {string} 展示正文
  */
 export function messageShowText(content) {
-	const kind = channelMessageKind(content)
-	if (kind === 'text') return String(content.content_for_show ?? content.content ?? '')
-	if (['sticker', 'group_invite'].includes(kind)) return ''
-	return messageAgentText(content)
+	const type = content?.type
+	if (type === 'sticker' || type === 'group_invite') return ''
+	if (type === 'vote' || type === 'call') return messageAgentText(content)
+	if (type && type !== 'text') return ''
+	return String(content?.content_for_show ?? content?.content ?? '')
 }
 
 /**
@@ -218,8 +219,8 @@ export function messageShowText(content) {
  * @returns {string} 编辑正文
  */
 export function messageEditText(content) {
-	if (channelMessageKind(content) !== 'text') return ''
-	return String(content.content_for_edit ?? content.content ?? '')
+	if (content?.type && content.type !== 'text') return ''
+	return String(content?.content_for_edit ?? content?.content ?? '')
 }
 
 /**
@@ -248,27 +249,16 @@ export function inlineImageMarker(fileName, inlineImageUrl) {
 
 /**
  * @param {object} content wire
- * @param {string[]} inlineMarkers 标记
- * @param {{ preserveShowEdit?: boolean }} [options] 选项
- * @returns {object} 合并后 wire
- */
-/**
- * @param {object} content wire
  * @returns {Record<string, unknown>} 跨类型可保留的公共元数据
  */
 function commonWireMetadata(content) {
-	return {
-		...content.name != null ? { name: content.name } : {},
-		...content.avatar != null ? { avatar: content.avatar } : {},
-		...content.locale != null ? { locale: content.locale } : {},
-		...content.role != null ? { role: content.role } : {},
-		...content.visibility != null ? { visibility: content.visibility } : {},
-		...content.content_warning != null ? { content_warning: content.content_warning } : {},
-		...content.sensitive_media ? { sensitive_media: true } : {},
-		...content.charVisibility?.length ? { charVisibility: content.charVisibility } : {},
-		...content.files?.length ? { files: content.files } : {},
-		...content.extension ? { extension: content.extension } : {},
-	}
+	const out = {}
+	for (const key of ['name', 'avatar', 'locale', 'role', 'visibility', 'content_warning', 'extension'])
+		if (content[key] != null) out[key] = content[key]
+	if (content.sensitive_media) out.sensitive_media = true
+	if (content.charVisibility?.length) out.charVisibility = content.charVisibility
+	if (content.files?.length) out.files = content.files
+	return out
 }
 
 /**
@@ -279,17 +269,18 @@ function commonWireMetadata(content) {
  */
 export function mergeInlineImageMarkersIntoContent(content, inlineMarkers, { preserveShowEdit = false } = {}) {
 	if (!inlineMarkers?.length) return content
-	const isText = channelMessageKind(content) === 'text'
+	const isText = !content.type || content.type === 'text'
 	const baseText = isText ? messageAgentText(content) : messageShowText(content)
 	const mergedText = [baseText, ...inlineMarkers].filter(Boolean).join('\n')
-	if (isText) {
-		const { content: _prev, content_for_show, content_for_edit, ...extra } = normalizeChannelMessage(content)
-		return channelMessage(mergedText, {
-			...extra,
-			...preserveShowEdit && { content_for_show, content_for_edit },
-		})
+	if (!isText) return channelMessage(mergedText, commonWireMetadata(content))
+
+	const extra = { ...normalizeChannelMessage(content) }
+	delete extra.content
+	if (!preserveShowEdit) {
+		delete extra.content_for_show
+		delete extra.content_for_edit
 	}
-	return channelMessage(mergedText, commonWireMetadata(content))
+	return channelMessage(mergedText, extra)
 }
 
 /**
@@ -298,10 +289,9 @@ export function mergeInlineImageMarkersIntoContent(content, inlineMarkers, { pre
  * @returns {object} fount 投影
  */
 export function wireToFountFields(wire) {
-	const kind = channelMessageKind(wire)
 	const content = messageAgentText(wire)
 	const out = { content }
-	if (kind === 'text') {
+	if (!wire.type || wire.type === 'text') {
 		const show = messageShowText(wire)
 		const edit = messageEditText(wire)
 		if (show && show !== content) out.content_for_show = show

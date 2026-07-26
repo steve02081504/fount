@@ -95,25 +95,21 @@ export async function handleForward(button, channelMessage, actions) {
 		if (!targetGroupId || !targetChannelId) return
 		dialog.close()
 		try {
-			const original = channelMessage.content && typeof channelMessage.content === 'object'
-				? channelMessage.content
-				: { content: String(channelMessage.content ?? '') }
+			const original = channelMessage.content
 			const senderName = original.name
-				|| channelMessage.content?.name
 				|| String(channelMessage.sender || '').slice(0, 8)
 				|| '?'
 			const { formatMessageRunUri, wrapProtocolHttpsUrl } = await import('../../../shared/runUri.mjs')
 			const shareUrl = groupId && channelId && eventId
 				? wrapProtocolHttpsUrl(formatMessageRunUri(groupId, channelId, eventId))
 				: ''
-			const chat = chatExtensionOf(original) || {}
 			await sendGroupMessage(targetGroupId, targetChannelId, normalizeChannelMessage({
 				...original,
 				...!original.locale ? { locale: navigator.language } : {},
 				extension: {
 					...original.extension,
 					chat: {
-						...chat,
+						...chatExtensionOf(original),
 						forwardedFrom: {
 							groupId: groupId || '',
 							channelId: channelId || '',

@@ -44,7 +44,7 @@ Deno.test('unregisterBridgeOperations clears registry and outbound handlers', as
 
 	const { registerBridgeOperations, unregisterBridgeOperations, requireBridgeOperation, resolveBridgeOperations } =
 		await import('../../src/chat/bridge/operations.mjs')
-	const { registerBridgeOutbound, notifyBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
+	const { registerBridgeOutbound, notifyVirtualBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
 	const { ensureVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
 
 	const session = ensureVirtualBridgeSession(username, {
@@ -73,7 +73,7 @@ Deno.test('unregisterBridgeOperations clears registry and outbound handlers', as
 	await unregisterBridgeOperations(username, 'mock', 'clear-bot')
 	assertEquals(resolveBridgeOperations(username, { platform: 'mock', botname: 'clear-bot' }), undefined)
 
-	await notifyBridgeOutbound(username, groupId, 'default', { eventId: 'e1', content: { text: 'x' } })
+	await notifyVirtualBridgeOutbound(username, groupId, 'default', { eventId: 'e1', content: { text: 'x' } })
 	assertEquals(outboundLines.length, 0)
 
 	assertThrows(

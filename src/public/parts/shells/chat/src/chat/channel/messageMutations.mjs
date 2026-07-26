@@ -10,7 +10,7 @@ import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { channelMessageKind, normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
+import { normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
 import { isEventArchivedInManifest, loadArchiveManifest } from '../archive/index.mjs'
 import { postSnapshotToMessageLine } from '../archive/postSnapshot.mjs'
 import { readArchiveMonth } from '../archive/reader.mjs'
@@ -84,10 +84,9 @@ export async function appendChannelMessageEdit(username, groupId, channelId, eve
 	let contentObj
 	try {
 		contentObj = normalizeChannelMessage(newContent)
-		channelMessageKind(contentObj)
 	}
 	catch (error) {
-		throw httpError(400, error?.message || 'invalid content')
+		throw httpError(400, error.message)
 	}
 	const row = await findChannelMessageRow(username, groupId, channelId, eventId)
 	if (!row) throw httpError(400, 'message not found')

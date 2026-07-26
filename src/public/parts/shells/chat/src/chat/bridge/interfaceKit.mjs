@@ -35,9 +35,7 @@ export async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } =
  * @returns {object} chatLogEntry 形状（FormatOutboundReply 用）
  */
 export function messageLineToReplyEntry(messageLine, charname) {
-	const text = typeof messageLine?.content === 'string'
-		? messageLine.content
-		: String(messageLine?.content?.content ?? messageLine?.content?.text ?? '')
+	const text = String(messageLine.content?.content ?? messageLine.content?.text ?? messageLine.content ?? '')
 	return {
 		name: charname,
 		role: 'char',
@@ -50,7 +48,11 @@ export function messageLineToReplyEntry(messageLine, charname) {
 			buffer: file.buffer,
 			description: file.description || '',
 		})),
-		extension: { virtualEventId: messageLine?.extension?.virtualEventId || messageLine?.eventId },
+		extension: {
+			chat: {
+				virtualEventId: messageLine.extension?.chat?.virtualEventId || messageLine.eventId,
+			},
+		},
 	}
 }
 

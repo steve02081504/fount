@@ -103,14 +103,13 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const { username, state } = membership
 		ensureChannel(state, channelId)
 
-		const contentObj = (() => {
-			try {
-				return normalizeChannelMessage(rawContent)
-			}
-			catch (error) {
-				throw httpError(400, error?.message || 'invalid content')
-			}
-		})()
+		let contentObj
+		try {
+			contentObj = normalizeChannelMessage(rawContent)
+		}
+		catch (error) {
+			throw httpError(400, error.message)
+		}
 		const row = await findChannelMessageRow(username, groupId, channelId, eventId)
 		if (!row) throw httpError(404, 'message not found')
 		const finalContent = await applyChannelMessageEditHooks(

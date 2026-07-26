@@ -47,19 +47,18 @@ function entryForWorldHook(content) {
  * @returns {object} 合并正文后的 content
  */
 function applyEntryRewriteToContent(content, entry) {
-	const text = entry.content
 	const base = normalizeChannelMessage(content)
-	if (channelMessageKind(base) !== 'text') 
-		if (String(text ?? '') === messageAgentText(base))
-			return {
-				...base,
-				...entry.role ? { role: entry.role } : {},
-				...entry.visibility ? { visibility: entry.visibility } : {},
-				...entry.charVisibility?.length ? { charVisibility: entry.charVisibility } : {},
-			}
-	
-	const { content: _c, content_for_show, content_for_edit, ...extra } = base
-	return channelMessage(text, {
+	if (channelMessageKind(base) !== 'text' && String(entry.content ?? '') === messageAgentText(base))
+		return {
+			...base,
+			...entry.role ? { role: entry.role } : {},
+			...entry.visibility ? { visibility: entry.visibility } : {},
+			...entry.charVisibility?.length ? { charVisibility: entry.charVisibility } : {},
+		}
+
+	const extra = { ...base }
+	delete extra.content
+	return channelMessage(entry.content, {
 		...extra,
 		...entry.content_for_show != null ? { content_for_show: entry.content_for_show } : {},
 		...entry.content_for_edit != null ? { content_for_edit: entry.content_for_edit } : {},

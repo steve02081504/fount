@@ -78,16 +78,7 @@ export function peerPubKeyFromEntityHash(entityHash) {
  * @returns {object} channel message content
  */
 export function normalizeReplyContent(reply) {
-	if (typeof reply === 'string')
-		return channelMessage(reply)
-	if (reply && typeof reply === 'object') {
-		if (typeof reply.content === 'string')
-			return normalizeChannelMessage(reply)
-		if (['sticker', 'vote', 'group_invite', 'call'].includes(reply.type))
-			return normalizeChannelMessage(reply)
-		const text = reply.text ?? reply.content
-		if (text != null)
-			return channelMessage(String(text))
-	}
-	throw new Error('reply must be a string or content object')
+	if (typeof reply === 'string') return channelMessage(reply)
+	if (reply.type && reply.type !== 'text') return normalizeChannelMessage(reply)
+	return normalizeChannelMessage({ ...reply, content: String(reply.content ?? reply.text ?? '') })
 }

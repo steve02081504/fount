@@ -32,9 +32,7 @@ export async function resolveDeclaredOwnerEntityHash(username, entityHash) {
  * @returns {object} wire content 对象
  */
 function wireContentOf(message) {
-	if (message?.content && typeof message.content === 'object')
-		return message.content
-	return {}
+	return message?.content?.constructor === Object ? message.content : {}
 }
 
 /**

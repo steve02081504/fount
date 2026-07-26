@@ -19,7 +19,6 @@ import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import {
-	channelMessageKind,
 	chatExtensionOf,
 	messageAgentText,
 	messageEditText,
@@ -103,13 +102,11 @@ export async function buildChatLogEntriesFromChannelLines(lines, baseSlice, i18n
 			const patch = line.content.newContent
 			const previous = edits.get(messageEventId)
 			if (!previous || editedAt >= previous.editedAt) {
-				const kind = tryChannelMessageKind(patch)
+				const isText = !patch.type || patch.type === 'text'
 				edits.set(messageEventId, {
-					content: kind
-						? messageAgentText(patch) || resolveDagMessageText(patch, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText)
-						: resolveDagMessageText(patch, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText),
-					content_for_show: kind === 'text' ? messageShowText(patch) : undefined,
-					content_for_edit: kind === 'text' ? messageEditText(patch) : undefined,
+					content: messageAgentText(patch) || resolveDagMessageText(patch, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText),
+					content_for_show: isText ? messageShowText(patch) : undefined,
+					content_for_edit: isText ? messageEditText(patch) : undefined,
 					files: patch?.files,
 					editedAt,
 				})
@@ -178,10 +175,9 @@ function tryReadPlaintextCache(username, contentHashHex) {
  * @returns {object[] | undefined} 水合附件
  */
 export function hydrateWireFiles(username, groupId, state, wireFiles) {
-	if (!Array.isArray(wireFiles) || !wireFiles.length) return undefined
+	if (!wireFiles?.length) return undefined
 	const out = []
 	for (const wire of wireFiles) {
-		if (!wire || typeof wire !== 'object') continue
 		const fileId = String(wire.fileId || '').trim()
 		if (!fileId) continue
 		const name = String(wire.name || 'file').slice(0, 255)
@@ -220,39 +216,21 @@ export function hydrateWireFiles(username, groupId, state, wireFiles) {
 		Object.defineProperty(descriptor, 'buffer', {
 			enumerable: true,
 			/**
-			 * @returns {Buffer} 附件字节（惰性记忆化；加载中/失败时为空 Buffer）
+			 * @returns {Buffer} 附件字节（惰性；加载中为空 Buffer）
 			 */
 			get() {
 				if (bufferCache) return bufferCache
-				void ensureBuffer().catch(() => { /* 失败不写入 cache，允许重试 */ })
+				void ensureBuffer().catch(() => {})
 				return bufferCache ?? Buffer.alloc(0)
 			},
 		})
 		Object.defineProperty(descriptor, 'getBuffer', {
 			enumerable: false,
-			/**
-			 * @returns {Promise<Buffer>} 解密后的附件字节（失败则为空 Buffer）
-			 */
-			value() {
-				return ensureBuffer().catch(() => Buffer.alloc(0))
-			},
+			value: ensureBuffer,
 		})
 		out.push(descriptor)
 	}
 	return out.length ? out : undefined
-}
-
-/**
- * @param {object | undefined} content wire
- * @returns {'text' | 'sticker' | 'vote' | 'group_invite' | 'call' | null} 已知类别；未知为 null
- */
-function tryChannelMessageKind(content) {
-	try {
-		return channelMessageKind(content)
-	}
-	catch {
-		return null
-	}
 }
 
 /**
@@ -273,10 +251,7 @@ function resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceh
 			|| `[content_ref:${ref.contentHash?.trim().slice(0, 12) || '?'}…]`
 	if (content?.decryptView?.failed || isChannelKeyEncryptedContent(content))
 		return decryptUnavailableText
-	if (!tryChannelMessageKind(content)) return ''
-	const text = messageShowText(content)
-	if (text) return text
-	return ''
+	return messageShowText(content) || ''
 }
 
 /**
@@ -341,12 +316,12 @@ async function buildChatLogEntryFromDagMessage(
 
 	const resolvedShow = resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText) ?? ''
 	const decryptUnavailableFallback = line.decryptView ? decryptUnavailableText : ''
-	const kind = tryChannelMessageKind(content)
+	const isText = !content.type || content.type === 'text'
 	entry.content = editOverride?.content != null
 		? editOverride.content
-		: (kind ? messageAgentText(content) : '') || resolvedShow || decryptUnavailableFallback
+		: messageAgentText(content) || resolvedShow || decryptUnavailableFallback
 
-	if (kind === 'text') {
+	if (isText) {
 		const show = editOverride?.content_for_show ?? messageShowText(content)
 		if (show && show !== entry.content) entry.content_for_show = show
 		const edit = editOverride?.content_for_edit ?? messageEditText(content)

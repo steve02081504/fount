@@ -150,12 +150,8 @@ export function sanitizeMessageExtras(content) {
 	delete out.displayAvatar
 	if (!['sticker', 'vote', 'group_invite', 'call'].includes(out.type)) delete out.type
 
-	const ext = out.extension && typeof out.extension === 'object'
-		? { .../** @type {Record<string, unknown>} */ out.extension }
-		: {}
-	const chatRaw = ext.chat && typeof ext.chat === 'object'
-		? { .../** @type {Record<string, unknown>} */ ext.chat }
-		: {}
+	const ext = { ...out.extension }
+	const chatRaw = { ...ext.chat }
 
 	const forwardedFrom = sanitizeForwardedFrom(chatRaw.forwardedFrom ?? out.forwardedFrom)
 	if (forwardedFrom) chatRaw.forwardedFrom = forwardedFrom
@@ -171,8 +167,8 @@ export function sanitizeMessageExtras(content) {
 	if (Object.keys(chatRaw).length) ext.chat = chatRaw
 	else delete ext.chat
 
-	out.extension = Object.keys(ext).length ? ext : undefined
-	if (!out.extension) delete out.extension
+	if (Object.keys(ext).length) out.extension = ext
+	else delete out.extension
 
 	return out
 }

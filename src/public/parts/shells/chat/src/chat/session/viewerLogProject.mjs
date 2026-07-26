@@ -7,7 +7,6 @@
 
 import {
 	channelMessage,
-	channelMessageKind,
 	messageAgentText,
 	messageShowText,
 } from '../../../public/shared/channelContent.mjs'
@@ -37,41 +36,29 @@ export function projectViewerEntriesToRows(rawLines, entries) {
 
 		const entry = byEventId.get(eventId)
 		const { content } = line
-		if (!content || typeof content !== 'object') {
+		if (!content || content.type && content.type !== 'text') {
 			out.push(line)
 			continue
 		}
 
-		if (channelMessageKind(content) !== 'text') {
-			out.push(line)
-			continue
-		}
-
-		const originalAgent = messageAgentText(content)
-		const originalShow = messageShowText(content)
 		const nextAgent = String(entry.content ?? '')
 		const nextShow = String(entry.content_for_show ?? entry.content ?? '')
-		const rewritten = nextAgent !== originalAgent || nextShow !== originalShow
-
-		if (!rewritten) {
+		if (nextAgent === messageAgentText(content) && nextShow === messageShowText(content)) {
 			out.push(line)
 			continue
 		}
 
-		const {
-			content: _omitContent,
-			content_for_show: _omitShow,
-			content_for_edit: _omitEdit,
-			...restContent
-		} = content
-		const nextContent = channelMessage(nextAgent, {
-			...restContent,
-			...nextShow !== nextAgent ? { content_for_show: nextShow } : {},
-			...entry.content_for_edit != null ? { content_for_edit: String(entry.content_for_edit) } : {},
-		})
+		const extra = { ...content }
+		delete extra.content
+		delete extra.content_for_show
+		delete extra.content_for_edit
 		out.push({
 			...line,
-			content: nextContent,
+			content: channelMessage(nextAgent, {
+				...extra,
+				...nextShow !== nextAgent ? { content_for_show: nextShow } : {},
+				...entry.content_for_edit != null ? { content_for_edit: String(entry.content_for_edit) } : {},
+			}),
 			extension: {
 				...line.extension,
 				viewerRewritten: true,

@@ -240,7 +240,7 @@ export async function exportChannelArchive(username, groupId, channelId) {
 function buildImportContent(msg, source, signer = {}) {
 	const name = String(msg.display?.name || '').trim() || '?'
 	const avatar = msg.display?.avatar ? String(msg.display.avatar).trim() : null
-	const base = msg.content && typeof msg.content === 'object'
+	const base = msg.content?.constructor === Object
 		? normalizeChannelMessage(msg.content)
 		: channelMessage(String(msg.content ?? ''))
 
