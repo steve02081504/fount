@@ -400,7 +400,7 @@ function showStatus(statusLine, i18nKey, params = {}) {
 	statusLine.appendChild(node)
 }
 
-return async function({ data, containers, editors }) {
+return async function ({ data, containers, editors }) {
 	const container = containers.generatorDisplay
 	const { detailCard, searchInput, resultsList, statusLine } = ensureSearchUi(container)
 

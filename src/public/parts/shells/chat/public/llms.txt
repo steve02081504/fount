@@ -40,7 +40,7 @@ WebSocket：`/ws/parts/shells:chat/groups/:ownerNodeHash/:groupId`（Hub、群�
 
 ### `GET /api/parts/shells:chat/groups/:groupId/state`
 分层 DTO：`{ meta, viewer, federation }`。
-- **meta**：`channels`、`groupSettings`、`roles`、`pinsByChannel`、`members`（`{ memberKey, kind, ownerPubKeyHash?, … }`）、`bannedMembers`（`{ memberKey }`）、`memberCount`、`consensusBranchTip`、`localViewBranchTip` 等物化字段。
+- **meta**：`channels`、`groupSettings`、`roles`、`pinsByChannel`、`members`（`{ memberKey, kind, ownerEntityHash?, … }`）、`bannedMembers`（`{ memberKey }`）、`memberCount`、`consensusBranchTip`、`localViewBranchTip` 等物化字段。
 - **viewer**：`isMember`、`memberKey`、`entityHash`、`roles`、`suspectedRemoved` 等当前用户视角。
 - **federation**：联邦同步/隔离相关字段。
 
@@ -63,7 +63,7 @@ WebSocket：`/ws/parts/shells:chat/groups/:ownerNodeHash/:groupId`（Hub、群�
 Query：`q`（≥2 字符）、`channelId?`、`limit`（默认 30，最大 100）。跨频道全文搜索（bigram+词元倒排索引，子串真值校验）；过滤成员资格与 personal block；响应 `{ query, items[] }`（含 `eventId`、`channelId` 定位字段）。
 
 ### `GET /api/parts/shells:chat/groups/:groupId/members/page/:idx`
-活跃成员分页（每页 ≤500）；成员行 `{ memberKey, kind, ownerPubKeyHash?, … }`；含 `membersRoot`、`membersPagesCount`。
+活跃成员分页（每页 ≤500）；成员行 `{ memberKey, kind, ownerEntityHash?, … }`；含 `membersRoot`、`membersPagesCount`。
 
 ### `GET /api/parts/shells:chat/groups/:groupId/dag/tips`
 当前 DAG 叶 id；≥2 表示分叉。响应含 `tipScores`（主观分）与 `tipConsensusScores`（客观治理事件计数）。

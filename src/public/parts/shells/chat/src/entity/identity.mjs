@@ -138,7 +138,7 @@ export async function ensureEntityIdentity(username, options = {}) {
 			operatorHashCache.delete(username)
 		}
 	}
-	else if (charPartName) 
+	else if (charPartName)
 		for (const row of await listEntityIdentities(username)) {
 			if (row.charPartName !== charPartName) continue
 			const hash = String(row.entityHash).toLowerCase()
@@ -152,7 +152,7 @@ export async function ensureEntityIdentity(username, options = {}) {
 			cacheFromRow(username, row)
 			return row
 		}
-	
+
 
 	const recovery = keyPairFromSeed(randomBytes(32))
 	const active = keyPairFromSeed(randomBytes(32))
@@ -247,7 +247,7 @@ export async function setEntityOwner(username, entityHash, ownerEntityHash) {
 	const { getState } = await import('../chat/dag/materialize.mjs')
 	const { appendSignedLocalEvent } = await import('../chat/dag/append.mjs')
 	const { peekLocalSignerPubKeyHash } = await import('../chat/dag/localSigner.mjs')
-	for (const groupId of await listUserGroups(username)) 
+	for (const groupId of await listUserGroups(username))
 		try {
 			const { state } = await getState(username, groupId, { skipLeftPurge: true })
 			const sender = await peekLocalSignerPubKeyHash(username, groupId, hash)
@@ -260,7 +260,7 @@ export async function setEntityOwner(username, entityHash, ownerEntityHash) {
 			}, { entityHash: hash })
 		}
 		catch { /* 非成员 / 无权写则跳过 */ }
-	
+
 	return row
 }
 

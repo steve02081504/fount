@@ -72,8 +72,8 @@ export async function OnMessage(event) {
 		wantsReply,
 		reason: wantsReply
 			? (isDm && isFromOwner && 'dm_owner')
-				|| (isDm && hasCharReply && 'dm_followup')
-				|| (mentionsBot && 'mention')
+			|| (isDm && hasCharReply && 'dm_followup')
+			|| (mentionsBot && 'mention')
 			: 'no_trigger',
 		isFromOwner,
 		mentionsBot,

@@ -143,7 +143,7 @@ function unmatchedSuiteSelectors(allSuites, groups) {
 function collectSubtestFilterByKey(groups, filtered) {
 	/** @type {Map<string, string[]>} */
 	const map = new Map()
-	for (const group of groups) 
+	for (const group of groups)
 		for (const [suiteName, subtests] of Object.entries(group.subtestSelectors ?? {})) {
 			if (!subtests.length) continue
 			for (const suite of filtered) {
@@ -154,7 +154,7 @@ function collectSubtestFilterByKey(groups, filtered) {
 				map.set(key, [...new Set([...prev, ...subtests])])
 			}
 		}
-	
+
 	return map
 }
 

@@ -148,7 +148,7 @@ function enqueuePersistCallCard(session) {
 	const key = callKey(session.groupId, session.channelId)
 	const prev = persistChains.get(key) || Promise.resolve()
 	const next = prev.then(() => persistCallCardNow(session), () => persistCallCardNow(session))
-	persistChains.set(key, next.then(() => {}, () => {}))
+	persistChains.set(key, next.then(() => { }, () => { }))
 	return next
 }
 
@@ -323,7 +323,7 @@ export async function reconcileOrphanedCalls(username) {
 		const key = callKey(row.groupId, row.channelId)
 		if (liveCalls.has(key)) continue
 		const canFinalize = await canFinalizeOrphanAsInitiator(username, row.groupId, row.initiator)
-		if (canFinalize) 
+		if (canFinalize)
 			try {
 				const endedAt = Date.now()
 				await appendFinalEditWithRetry(username, row.groupId, {
@@ -347,7 +347,7 @@ export async function reconcileOrphanedCalls(username) {
 				}, { entityHash: row.initiator })
 			}
 			catch { continue /* 定稿失败保留本地锚点，下次再试 */ }
-		
+
 		delete data.calls[callId]
 		dirty = true
 		n++

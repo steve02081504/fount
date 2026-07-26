@@ -38,7 +38,7 @@ async function sampleOsUtils(pids) {
 	let ok = 0
 	/** @type {string[]} */
 	const errors = []
-	for (const pid of pids) 
+	for (const pid of pids)
 		try {
 			const res = await osutils.process.byPid(pid)
 			if (!res.success || !res.data) {
@@ -53,7 +53,7 @@ async function sampleOsUtils(pids) {
 		catch (error) {
 			errors.push(`${pid}:${error?.message ?? error}`)
 		}
-	
+
 	return {
 		ok: ok > 0,
 		cpu,

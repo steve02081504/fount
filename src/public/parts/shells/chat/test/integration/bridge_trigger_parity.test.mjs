@@ -117,7 +117,7 @@ async function openEnd(end, username, options) {
 	}
 }
 
-const ENDS = /** @type {const} */ ['hub', 'telegram', 'discord', 'wechat']
+const ENDS = /** @type {const} */['hub', 'telegram', 'discord', 'wechat']
 
 Deno.test('four-end group: OnMessage willingness is consistent', async () => {
 	const username = `parity-onmsg-${crypto.randomUUID().slice(0, 8)}`

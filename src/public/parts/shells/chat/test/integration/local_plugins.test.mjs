@@ -64,7 +64,7 @@ Deno.test('local plugins + world GetChatPlugins merge into getChatRequest', asyn
 	assertEquals(await getPluginListOfGroup(groupId, username), defaults)
 
 	await addplugin(groupId, 'probe-plugin', username)
-	assert( (await getLocalPluginNames(username, groupId)).includes('probe-plugin'))
+	assert((await getLocalPluginNames(username, groupId)).includes('probe-plugin'))
 	await removeplugin(groupId, 'probe-plugin', username)
 	assert(!(await getLocalPluginNames(username, groupId)).includes('probe-plugin'))
 

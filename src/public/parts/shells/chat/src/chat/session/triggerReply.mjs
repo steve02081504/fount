@@ -241,9 +241,9 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 			const genClient = await getChatClient(chatMetadata.username, selfHash)
 			const genGroup = await genClient.group(groupId)
 			const genChannel = await genGroup.channel(channelForStream)
-			void genChannel.typing().catch(() => {})
+			void genChannel.typing().catch(() => { })
 			typingTimer = setInterval(() => {
-				void genChannel.typing().catch(() => {})
+				void genChannel.typing().catch(() => { })
 			}, 5000)
 			typingTimer.unref?.()
 		}

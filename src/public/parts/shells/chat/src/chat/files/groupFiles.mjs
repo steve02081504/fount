@@ -114,7 +114,7 @@ async function mirrorCiphertextToStorageBackends(username, groupId, ciphertextHa
 	const hash = String(ciphertextHash || '').trim().toLowerCase()
 	const local = createLocalStoragePlugin(shellChatRoot(username))
 	await local.putChunk(groupId, hash, raw).catch(() => { })
-	await putChunk( hash, raw).catch(() => { })
+	await putChunk(hash, raw).catch(() => { })
 
 	const storage = getStorageForGroup(username, groupSettings, { groupId })
 	const peerId = storage.storagePeerId
@@ -142,8 +142,8 @@ async function resolveCiphertextRaw(username, groupId, storageLocator) {
 	}
 	catch { /* fall through */ }
 
-	if (await hasChunk( hash))
-		return Buffer.from(await getChunk( hash))
+	if (await hasChunk(hash))
+		return Buffer.from(await getChunk(hash))
 
 	const local = createLocalStoragePlugin(shellChatRoot(username))
 	const localLoc = `local:${groupId}/chunks/${hash}.bin`
@@ -246,7 +246,7 @@ export async function putEncryptedChunk(username, groupId, options) {
 	const storageLocator = have
 		? await bumpCiphertextBlobRef(username, ciphertextHash)
 		: await putCiphertextBlob(username, ciphertextHash, raw)
-	await putChunk( ciphertextHash, raw).catch(() => { })
+	await putChunk(ciphertextHash, raw).catch(() => { })
 
 	let groupSettings = {}
 	try {
@@ -653,8 +653,8 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 	/** @type {Buffer[]} */
 	const partBytes = []
 	for (const part of manifest.parts) {
-		if (await hasChunk( part.hash)) {
-			partBytes.push(await getChunk( part.hash))
+		if (await hasChunk(part.hash)) {
+			partBytes.push(await getChunk(part.hash))
 			continue
 		}
 		try {

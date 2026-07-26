@@ -121,12 +121,12 @@ async function buildFinalMessageContent(username, groupId, entry, text) {
 		const contentRef = await storeContentRef(username, groupId, agent)
 		base = channelMessage('', { extension: { chat: { contentRef } } })
 	}
-	else 
+	else
 		base = channelMessage(agent, {
 			...show !== agent ? { content_for_show: show } : {},
 			...edit !== agent ? { content_for_edit: edit } : {},
 		})
-	
+
 
 	const content = normalizeChannelMessage({
 		...base,

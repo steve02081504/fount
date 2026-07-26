@@ -55,7 +55,7 @@ await lease?.release()
 	}
 	finally {
 		await held.release()
-		await Deno.remove(dir, { recursive: true }).catch(() => {})
+		await Deno.remove(dir, { recursive: true }).catch(() => { })
 	}
 })
 

@@ -97,7 +97,7 @@ export function createGroup(apiContext, groupId, projection) {
 						memberKind: 'user',
 						displayName: row.displayName || entityHash.slice(64, 72),
 						platformUserId: String(row.platformUserId),
-						extension: { bridge: { platformUserId: String(row.platformUserId) }},
+						extension: { bridge: { platformUserId: String(row.platformUserId) } },
 					})
 				}))
 				return { page: 1, pageCount: 1, members }

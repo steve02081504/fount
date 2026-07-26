@@ -96,7 +96,7 @@ Deno.test('handleFedEmojiData resolves pending peer fetch', async () => {
 				return [{ peerId: 'peer-1' }]
 			},
 			/** @returns {void} 发送 want 请求 */
-			sendEmojiWant() {},
+			sendEmojiWant() { },
 		}
 		const pending = requestGroupEmojiFromPeers(username, groupId, emojiId, slot)
 		await handleFedEmojiData(username, groupId, { emojiId, dataUrl, mimeType: 'image/png' })

@@ -45,10 +45,11 @@ export async function showMemberContextMenu(event, memberElement) {
 	if (!memberKey || !store.context.currentGroupId) return
 	const displayName = memberElement.querySelector('.member-name')?.textContent?.trim() || memberKey
 	const viewer = String(store.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
+	const viewerEntity = String(store.viewer.viewerEntityHash || '').trim().toLowerCase()
 	const defaultChannelId = store.context.currentState?.groupSettings?.defaultChannelId || 'default'
 	const isAgent = memberElement.dataset.memberKind === 'agent'
-	const ownerPubKeyHash = memberElement.dataset.ownerPubKeyHash?.trim().toLowerCase() || ''
-	const isOwnerOwnAgent = isAgent && ownerPubKeyHash === viewer
+	const ownerEntityHash = memberElement.dataset.ownerEntityHash?.trim().toLowerCase() || ''
+	const isOwnerOwnAgent = isAgent && !!(ownerEntityHash && ownerEntityHash === viewerEntity)
 	const perms = viewer && memberKey.toLowerCase() !== viewer
 		? await fetchViewerChannelPermissions(store.context.currentState, store.context.currentGroupId, defaultChannelId)
 		: {}

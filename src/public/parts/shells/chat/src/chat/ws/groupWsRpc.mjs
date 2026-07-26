@@ -122,7 +122,7 @@ export function handleGroupSocketIdentityMessage(ws, wireMessage) {
 export function relayOrConsumeRpcResponse(message) {
 	const type = message?.type
 	if (!['rpc_end', 'rpc_error', 'rpc_chunk'].includes(type)) return false
-	const {requestId} = message
+	const { requestId } = message
 	if (!requestId) return false
 
 	const serverWait = serverProcessRpcWaiters.get(requestId)
@@ -236,7 +236,7 @@ async function handleRpcCall(senderWs, groupId, roomKey, wireMessage) {
 function forwardRpcCall(senderWs, roomKey, payload) {
 	const set = groupSockets.get(roomKey)
 	if (!set) return false
-	const {requestId} = payload
+	const { requestId } = payload
 	if (!requestId) return false
 
 	const targetRaw = payload[GROUP_RPC_TARGET_NODE_ID_KEY]

@@ -306,7 +306,7 @@ let panicReportChain = Promise.resolve()
  */
 export function reportDenoPanic(params) {
 	const next = panicReportChain.finally(() => reportDenoPanicUnlocked(params))
-	panicReportChain = next.catch(() => {})
+	panicReportChain = next.catch(() => { })
 	return next
 }
 

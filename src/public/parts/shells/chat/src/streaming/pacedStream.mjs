@@ -90,12 +90,12 @@ export function createPacedFakeStream(options) {
 					onChunk('\n')
 					return scheduleLine(lineIndex + 1)
 				}
-				for (const [chunkIndex, chunk] of chunks.entries()) 
+				for (const [chunkIndex, chunk] of chunks.entries())
 					timeouts.push(setTimeout(() => {
 						if (signal?.aborted || generation !== thisGeneration) return
 						onChunk(chunk)
 					}, (chunkIndex / chunks.length) * lineDuration))
-				
+
 				timeouts.push(setTimeout(() => {
 					if (signal?.aborted || generation !== thisGeneration) return
 					onChunk('\n')

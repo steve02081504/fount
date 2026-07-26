@@ -29,8 +29,8 @@ export async function publishDiscoveryAnnounceForGroup(username, groupId, nodeHa
 		nodeHash,
 	)
 	const body = { nodeHash, advertisements: [advertisement] }
-	if (!targets.length) slot.send('discovery_announce',body, null)
-	else for (const peerId of targets) slot.send('discovery_announce',body, peerId)
+	if (!targets.length) slot.send('discovery_announce', body, null)
+	else for (const peerId of targets) slot.send('discovery_announce', body, peerId)
 }
 
 /**
