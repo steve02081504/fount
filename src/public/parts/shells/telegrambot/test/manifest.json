@@ -12,9 +12,11 @@
 		"shellIntegrationTests": [
 			"src/public/parts/shells/telegrambot/test/integration/**",
 			"src/public/parts/shells/chat/src/chat/bridge/**",
+			"src/public/parts/shells/chat/public/shared/**",
 			"src/public/parts/shells/telegrambot/src/**",
 			"src/public/parts/shells/chat/test/fixtures/**",
-			"src/public/parts/shells/chat/test/harness.mjs"
+			"src/public/parts/shells/chat/test/harness.mjs",
+			"src/scripts/test/shellLoadProbe.mjs"
 		],
 		"frontendShared": [
 			"src/public/parts/shells/telegrambot/public/**",

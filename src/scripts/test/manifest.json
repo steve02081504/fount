@@ -368,6 +368,23 @@
 				"src/scripts/test/core/port_lease.mjs",
 				"src/scripts/test/node/launch.mjs"
 			]
+		},
+		{
+			"name": "shell_load_probe",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/shell_load_probe.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/shell_load_probe.test.mjs",
+				"src/scripts/test/shellLoadProbe.mjs"
+			]
 		}
 	]
 }

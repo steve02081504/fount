@@ -1,5 +1,5 @@
 /**
- * Shell 前后端模块加载探针：快速发现跨界 import 与无法解析的静态依赖。
+ * Shell 前后端模块加载探针：快速发现跨界 import、无法解析的静态依赖、以及缺失的具名导出。
  */
 import { existsSync } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
@@ -8,6 +8,11 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const IMPORT_RE = /\b(?:import|export)\s+(?:[^'";]+?\s+from\s+)?['"]([^'"]+)['"]/gu
 const DYNAMIC_IMPORT_RE = /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/gu
+const NAMED_IMPORT_RE = /\bimport\s+(?:type\s+)?(?:[A-Za-z_$][\w$]*\s*,\s*)?\{([^}]+)\}\s*from\s*['"]([^'"]+)['"]/gu
+const EXPORT_DECL_RE = /\bexport\s+(?:async\s+)?(?:function\*?|class|const|let|var)\s+([A-Za-z_$][\w$]*)/gu
+const EXPORT_LIST_RE = /\bexport\s*\{([^}]+)\}\s*(?:from\s*['"]([^'"]+)['"])?/gu
+const EXPORT_STAR_RE = /\bexport\s*\*\s*(?:as\s+([A-Za-z_$][\w$]*)\s+)?from\s*['"]([^'"]+)['"]/gu
+const EXPORT_DEFAULT_RE = /\bexport\s+default\b/u
 
 /**
  * @param {string} repoRoot 仓库根目录
@@ -24,6 +29,41 @@ function pagesScriptsRoot(repoRoot) {
  */
 function partPublicRoot(repoRoot, partPath) {
 	return path.join(repoRoot, 'src/public/parts', partPath.replace(/:/g, '/'), 'public')
+}
+
+/**
+ * @param {string} source 源码
+ * @returns {string} 去掉注释后的源码
+ */
+function stripComments(source) {
+	return source
+		.replace(/\/\*[\s\S]*?\*\//gu, '')
+		.replace(/(^|[^:\\])\/\/.*$/gmu, '$1')
+}
+
+/**
+ * @param {string} clause `{ a, b as c, type D }` 内的片段
+ * @param {'import' | 'export'} mode import 取源名，export 取对外名
+ * @returns {string[]} 绑定名
+ */
+export function parseBindingNames(clause, mode = 'import') {
+	/** @type {string[]} */
+	const names = []
+	for (const raw of clause.split(',')) {
+		const part = raw.trim()
+		if (!part || part === '...') continue
+		const tokens = part.split(/\s+/u).filter(Boolean)
+		if (!tokens.length) continue
+		if (tokens[0] === 'type') tokens.shift()
+		if (!tokens.length) continue
+		if (mode === 'import') {
+			names.push(tokens[0])
+			continue
+		}
+		const asIdx = tokens.indexOf('as')
+		names.push(asIdx >= 0 ? tokens[asIdx + 1] : tokens[0])
+	}
+	return names.filter(Boolean)
 }
 
 /**
@@ -82,14 +122,18 @@ async function walkMjsFiles(dir) {
 
 /**
  * @param {string} file 文件路径
+ * @returns {Promise<string>} 去掉注释的源码
+ */
+async function readStripped(file) {
+	return stripComments(await readFile(file, 'utf8'))
+}
+
+/**
+ * @param {string} file 文件路径
  * @returns {Promise<string[]>} 文件中所有静态/动态 import 说明符（忽略注释内）
  */
 async function extractImportSpecs(file) {
-	const raw = await readFile(file, 'utf8')
-	// 去掉块注释与行注释，避免 JSDoc `import('…')` 被动态 import 正则误抓
-	const text = raw
-		.replace(/\/\*[\s\S]*?\*\//gu, '')
-		.replace(/(^|[^:\\])\/\/.*$/gmu, '$1')
+	const text = await readStripped(file)
 	/** @type {string[]} */
 	const specs = []
 	for (const re of [IMPORT_RE, DYNAMIC_IMPORT_RE]) {
@@ -102,11 +146,80 @@ async function extractImportSpecs(file) {
 }
 
 /**
+ * @param {string} file 文件路径
+ * @returns {Promise<{ spec: string, names: string[] }[]>} 具名静态 import
+ */
+export async function extractNamedImports(file) {
+	const text = await readStripped(file)
+	/** @type {{ spec: string, names: string[] }[]} */
+	const out = []
+	NAMED_IMPORT_RE.lastIndex = 0
+	let match
+	while ((match = NAMED_IMPORT_RE.exec(text)) !== null)
+		out.push({ spec: match[2], names: parseBindingNames(match[1], 'import') })
+	return out
+}
+
+/**
+ * 静态收集模块导出的绑定名（跟随相对路径的 `export … from` / `export * from`）。
+ * @param {string} repoRoot 仓库根
+ * @param {string} file 模块绝对路径
+ * @param {Map<string, Set<string>>} [cache] 缓存
+ * @returns {Promise<Set<string>>} 导出名集合
+ */
+export async function collectModuleExports(repoRoot, file, cache = new Map()) {
+	const key = path.resolve(file)
+	if (cache.has(key)) return cache.get(key)
+
+	/** @type {Set<string>} */
+	const names = new Set()
+	cache.set(key, names)
+
+	if (!existsSync(key) || !key.endsWith('.mjs') && !key.endsWith('.js'))
+		return names
+
+	const text = await readStripped(key)
+
+	EXPORT_DECL_RE.lastIndex = 0
+	let match
+	while ((match = EXPORT_DECL_RE.exec(text)) !== null)
+		names.add(match[1])
+
+	if (EXPORT_DEFAULT_RE.test(text))
+		names.add('default')
+
+	EXPORT_LIST_RE.lastIndex = 0
+	while ((match = EXPORT_LIST_RE.exec(text)) !== null) 
+		// `export { a as b } from 'npm:…'` — 对外名即本模块导出；远端是否可解析无关
+		for (const name of parseBindingNames(match[1], 'export'))
+			names.add(name)
+	
+
+	EXPORT_STAR_RE.lastIndex = 0
+	while ((match = EXPORT_STAR_RE.exec(text)) !== null) {
+		const alias = match[1]
+		const fromSpec = match[2]
+		// `export * as ns from` 只导出命名空间本身，不展开子导出
+		if (alias) {
+			names.add(alias)
+			continue
+		}
+		const resolved = resolveBrowserImportSpec(repoRoot, key, fromSpec)
+		if (!resolved) continue
+		const star = await collectModuleExports(repoRoot, resolved, cache)
+		for (const name of star)
+			if (name !== 'default') names.add(name)
+	}
+
+	return names
+}
+
+/**
  * @param {object} options 参数
  * @param {string} options.repoRoot 仓库根
  * @param {string} options.partPath shells/chat 或 shells/social
  * @param {string[]} [options.dynamicProbes] 相对 part 根的动态 import 探针路径；省略则用默认
- * @returns {Promise<{ backendMissing: string[], publicMissing: string[], crossBoundary: string[] }>} 探针结果
+ * @returns {Promise<{ backendMissing: string[], publicMissing: string[], crossBoundary: string[], missingNamed: string[] }>} 探针结果
  */
 export async function probeShellPart({ repoRoot, partPath, dynamicProbes }) {
 	const partDir = path.join(repoRoot, 'src/public/parts', partPath.replace(/:/g, '/'))
@@ -119,8 +232,33 @@ export async function probeShellPart({ repoRoot, partPath, dynamicProbes }) {
 	const backendMissing = []
 	/** @type {string[]} */
 	const crossBoundary = []
+	/** @type {string[]} */
+	const missingNamed = []
+	/** @type {Map<string, Set<string>>} */
+	const exportCache = new Map()
 
-	for (const file of await walkMjsFiles(publicDir))
+	/**
+	 * @param {string} file 导入方
+	 * @returns {Promise<void>}
+	 */
+	async function checkNamedImports(file) {
+		for (const { spec, names } of await extractNamedImports(file)) {
+			if (!names.length) continue
+			if (!spec.startsWith('.') && !spec.startsWith('/')) continue
+			if (spec.endsWith('.ts')) continue
+			const resolved = resolveBrowserImportSpec(repoRoot, file, spec)
+			if (!resolved) continue
+			const exports = await collectModuleExports(repoRoot, resolved, exportCache)
+			for (const name of names) {
+				if (exports.has(name)) continue
+				missingNamed.push(
+					`${path.relative(repoRoot, file)} imports '${name}' from ${spec} (missing in ${path.relative(repoRoot, resolved)})`,
+				)
+			}
+		}
+	}
+
+	for (const file of await walkMjsFiles(publicDir)) {
 		for (const spec of await extractImportSpecs(file)) {
 			if (spec.startsWith('/')) {
 				const resolved = resolveBrowserImportSpec(repoRoot, file, spec)
@@ -147,9 +285,11 @@ export async function probeShellPart({ repoRoot, partPath, dynamicProbes }) {
 			if (rel.includes('/src/scripts/') || rel.match(/parts\/shells\/[^/]+\/src\//))
 				crossBoundary.push(`frontend ${path.relative(repoRoot, file)} imports backend ${rel} via ${spec}`)
 		}
+		await checkNamedImports(file)
+	}
 
 
-	for (const file of await walkMjsFiles(srcDir))
+	for (const file of await walkMjsFiles(srcDir)) {
 		for (const spec of await extractImportSpecs(file)) {
 			if (!spec.startsWith('.')) continue
 			// `.ts` 是类型声明路径，不参与运行时模块图
@@ -166,6 +306,8 @@ export async function probeShellPart({ repoRoot, partPath, dynamicProbes }) {
 			if (rel.includes('/public/pages/'))
 				crossBoundary.push(`backend ${path.relative(repoRoot, file)} imports pages ${rel}`)
 		}
+		await checkNamedImports(file)
+	}
 
 
 	/** 动态 import 验证关键后端链（不执行 main 全量副作用）。 */
@@ -181,12 +323,12 @@ export async function probeShellPart({ repoRoot, partPath, dynamicProbes }) {
 		}
 		catch (error) {
 			const message = error instanceof Error ? error.message : String(error)
-			if (message.includes('Module not found'))
+			if (message.includes('Module not found') || message.includes('does not provide an export named'))
 				backendMissing.push(`${path.relative(repoRoot, probe)} (dynamic): ${message}`)
 		}
 	}
 
-	return { backendMissing, publicMissing, crossBoundary }
+	return { backendMissing, publicMissing, crossBoundary, missingNamed }
 }
 
 /**

@@ -1,5 +1,5 @@
 import { console } from '../../../../../../scripts/i18n/bare.mjs'
-import { channelMessageAgentText } from '../../../chat/public/shared/channelContent.mjs'
+import { messageAgentText } from '../../../chat/public/shared/channelContent.mjs'
 import { dispatchBridgeBotStarted } from '../../../chat/src/chat/bridge/groupEvents.mjs'
 import { claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
 import {
@@ -225,7 +225,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 				const contextToken = lastContextToken
 				const rawText = typeof messageLine.content === 'string'
 					? messageLine.content
-					: channelMessageAgentText(messageLine.content) || ''
+					: messageAgentText(messageLine.content) || ''
 				const replyEntry = messageLineToReplyEntry(messageLine, botCharname)
 				const files = (messageLine.files || []).map(file => ({
 					name: file.name,
