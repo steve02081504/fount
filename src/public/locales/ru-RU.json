@@ -1299,21 +1299,21 @@
 			"settingsAutoReplyTokenBucketHint": "После включения каждый персонаж поддерживает корзину токенов по каналам; onMessage не запускается временно, когда корзина пуста, что может препятствовать непрерывному обновлению экрана в периоды пиковой нагрузки.",
 			"settingsIceServers": "ICE/TURN сервер",
 			"settingsIceServersAdd": "Добавить сервер",
-			"settingsIceServersHint": "Для обхода NAT в WebRTC и федеративном P2P. Учётные данные TURN хранятся только в локальных настройках и не передаются через федерацию.",
+			"settingsIceServersHint": "Для NAT traversal в WebRTC и федеративном P2P. Имя пользователя и пароль TURN хранятся только на этом устройстве и не синхронизируются через федерацию.",
 			"settingsIceUrl": {
-				"aria-label": "URL-адрес ICE-сервера",
-				"placeholder": "оглушение: хост: 19302"
+				"aria-label": "Адрес ICE-сервера",
+				"placeholder": "stun:host:19302"
 			},
 			"settingsIceUser": {
-				"aria-label": "ПОВЕРНУТЬ имя пользователя",
-				"placeholder": "ПОВЕРНУТЬ имя пользователя"
+				"aria-label": "Имя пользователя TURN",
+				"placeholder": "Имя пользователя (необязательно)"
 			},
 			"settingsIceCred": {
-				"aria-label": "Учетные данные TURN",
-				"placeholder": "Реквизиты для входа"
+				"aria-label": "Пароль TURN",
+				"placeholder": "Пароль (необязательно)"
 			},
 			"settingsIceRemove": {
-				"aria-label": "Удалить ICE-сервер"
+				"aria-label": "Удалить этот сервер"
 			},
 			"settingsFileCeMode": "Режим шифрования файлов",
 			"settingsFileCeModeConvergent": "Конвергентное шифрование (может удалять дубликаты)",

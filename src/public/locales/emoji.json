@@ -1299,21 +1299,21 @@
 			"settingsAutoReplyTokenBucketHint": "⏹️🎭📺🎫🪣；🈳⏸️⚡📨，📉📈📨",
 			"settingsIceServers": "🔀🌐／🔄📡🖥️",
 			"settingsIceServersAdd": "➕🖥️",
-			"settingsIceServersHint": "🌐📞➕🌐P2P🔀；🔄📡🔐💻⚙️，🚫🌐📡",
+			"settingsIceServersHint": "🌐📞➕🌐P2P🔀NAT；TURN👤🔑💻only，🚫🌐🔄",
 			"settingsIceUrl": {
-				"aria-label": "ICE 服务器 URL",
+				"aria-label": "ICE🖥️📍",
 				"placeholder": "stun:host:19302"
 			},
 			"settingsIceUser": {
-				"aria-label": "TURN 用户名",
-				"placeholder": "TURN 用户名"
+				"aria-label": "TURN👤",
+				"placeholder": "👤（optional）"
 			},
 			"settingsIceCred": {
-				"aria-label": "TURN 凭据",
-				"placeholder": "凭据"
+				"aria-label": "TURN🔑",
+				"placeholder": "🔑（optional）"
 			},
 			"settingsIceRemove": {
-				"aria-label": "移除 ICE 服务器"
+				"aria-label": "🗑️🖥️"
 			},
 			"settingsFileCeMode": "📁🔐🎛️",
 			"settingsFileCeModeConvergent": "🔄🔐（♻️）",
@@ -2922,7 +2922,7 @@
 			"search": {
 				"placeholder": "🔍🏷️📦…"
 			},
-			"searchLabel": "搜索贴纸包",
+			"searchLabel": "🔍📦",
 			"emptyPacks": "📭🏷️📦",
 			"packNameLabel": "🏷️📦🏷️",
 			"packName": {

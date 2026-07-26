@@ -1299,21 +1299,21 @@
 			"settingsAutoReplyTokenBucketHint": "Después de ser habilitado, cada personaje mantiene un depósito de tokens por canal; onMessage no se activa temporalmente cuando el depósito está vacío, lo que puede inhibir la actualización continua de la pantalla durante los períodos pico.",
 			"settingsIceServers": "Servidor ICE/TURN",
 			"settingsIceServersAdd": "Agregar servidor",
-			"settingsIceServersHint": "Se utiliza para WebRTC y penetración P2P federada; Las credenciales TURN solo conservan la configuración materializada local y no se transmiten a través de la federación.",
+			"settingsIceServersHint": "Para el traversal NAT de WebRTC y P2P federado. El usuario y la contraseña TURN se guardan solo en este dispositivo y no se sincronizan por la federación.",
 			"settingsIceUrl": {
-				"aria-label": "URL del servidor ICE",
-				"placeholder": "aturdimiento: anfitrión: 19302"
+				"aria-label": "Dirección del servidor ICE",
+				"placeholder": "stun:host:19302"
 			},
 			"settingsIceUser": {
-				"aria-label": "GIRO nombre de usuario",
-				"placeholder": "GIRO nombre de usuario"
+				"aria-label": "Nombre de usuario TURN",
+				"placeholder": "Nombre de usuario (opcional)"
 			},
 			"settingsIceCred": {
-				"aria-label": "GIRAR credenciales",
-				"placeholder": "Cartas credenciales"
+				"aria-label": "Contraseña TURN",
+				"placeholder": "Contraseña (opcional)"
 			},
 			"settingsIceRemove": {
-				"aria-label": "Quitar servidor ICE"
+				"aria-label": "Eliminar este servidor"
 			},
 			"settingsFileCeMode": "Modo de cifrado de archivos",
 			"settingsFileCeModeConvergent": "Cifrado convergente (puede eliminar duplicados)",
@@ -2922,7 +2922,7 @@
 			"search": {
 				"placeholder": "Buscar paquetes de stickers..."
 			},
-			"searchLabel": "Buscar paquetes de pegatinas",
+			"searchLabel": "Buscar packs de stickers",
 			"emptyPacks": "Aún no hay paquetes de stickers",
 			"packNameLabel": "Nombre del paquete de stickers",
 			"packName": {

@@ -1299,21 +1299,21 @@
 			"settingsAutoReplyTokenBucketHint": "開啟後，每具化身按分苑維護令符桶；桶空時暫不觸發 onMessage，可抑制高峯期連續刷屏。",
 			"settingsIceServers": "ICE / TURN 服務器",
 			"settingsIceServersAdd": "添服務器",
-			"settingsIceServersHint": "用於 WebRTC 與諸邦 P2P 穿透；TURN 憑據僅存本機物化樞機，不經諸邦廣播。",
+			"settingsIceServersHint": "用於 WebRTC 與諸邦 P2P 之 NAT 穿透。TURN 用戶名與密語惟存本機，不經諸邦同步。",
 			"settingsIceUrl": {
-				"aria-label": "ICE 服务器 URL",
+				"aria-label": "ICE 服務器地址",
 				"placeholder": "stun:host:19302"
 			},
 			"settingsIceUser": {
-				"aria-label": "TURN 用户名",
-				"placeholder": "TURN 用户名"
+				"aria-label": "TURN 用戶名",
+				"placeholder": "用戶名（可略）"
 			},
 			"settingsIceCred": {
-				"aria-label": "TURN 凭据",
-				"placeholder": "凭据"
+				"aria-label": "TURN 密語",
+				"placeholder": "密語（可略）"
 			},
 			"settingsIceRemove": {
-				"aria-label": "移除 ICE 服务器"
+				"aria-label": "刪此服務器"
 			},
 			"settingsFileCeMode": "文牘加密模式",
 			"settingsFileCeModeConvergent": "收斂加密（可去建）",
@@ -2922,7 +2922,7 @@
 			"search": {
 				"placeholder": "尋蹤貼紙包…"
 			},
-			"searchLabel": "搜索贴纸包",
+			"searchLabel": "搜貼紙包",
 			"emptyPacks": "暫無貼紙包",
 			"packNameLabel": "貼紙包名稱",
 			"packName": {

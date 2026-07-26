@@ -1301,21 +1301,21 @@
 			"settingsAutoReplyTokenBucketHint": "开启后，每个角色按频道维护令牌桶；桶空时暂不触发 onMessage，可抑制高峰期连续刷屏。",
 			"settingsIceServers": "ICE / TURN 服务器",
 			"settingsIceServersAdd": "添加服务器",
-			"settingsIceServersHint": "用于 WebRTC 与联邦 P2P 穿透；TURN 凭据仅存本机物化设置，不经联邦广播。",
+			"settingsIceServersHint": "用于 WebRTC 与联邦 P2P 的 NAT 穿透。TURN 用户名和密码只保存在本机，不会经联邦同步。",
 			"settingsIceUrl": {
-				"aria-label": "ICE 服务器 URL",
+				"aria-label": "ICE 服务器地址",
 				"placeholder": "stun:host:19302"
 			},
 			"settingsIceUser": {
 				"aria-label": "TURN 用户名",
-				"placeholder": "TURN 用户名"
+				"placeholder": "用户名（可选）"
 			},
 			"settingsIceCred": {
-				"aria-label": "TURN 凭据",
-				"placeholder": "凭据"
+				"aria-label": "TURN 密码",
+				"placeholder": "密码（可选）"
 			},
 			"settingsIceRemove": {
-				"aria-label": "移除 ICE 服务器"
+				"aria-label": "删除此服务器"
 			},
 			"settingsFileCeMode": "文件加密模式",
 			"settingsFileCeModeConvergent": "收敛加密（可去重）",

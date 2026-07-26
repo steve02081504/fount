@@ -1299,21 +1299,21 @@
 			"settingsAutoReplyTokenBucketHint": "Після ввімкнення кожен персонаж підтримує відро маркера за каналом; onMessage тимчасово не запускається, коли відро порожнє, що може перешкоджати безперервному оновленню екрана під час пікових періодів.",
 			"settingsIceServers": "Сервер ICE/TURN",
 			"settingsIceServersAdd": "Додати сервер",
-			"settingsIceServersHint": "Використовується для WebRTC і об’єднаного проникнення P2P; Облікові дані TURN зберігають лише локальні матеріалізовані налаштування та не транслюються через федерацію.",
+			"settingsIceServersHint": "Для NAT traversal у WebRTC і федеративному P2P. Імʼя користувача та пароль TURN зберігаються лише на цьому пристрої й не синхронізуються через федерацію.",
 			"settingsIceUrl": {
-				"aria-label": "URL-адреса сервера ICE",
+				"aria-label": "Адреса ICE-сервера",
 				"placeholder": "stun:host:19302"
 			},
 			"settingsIceUser": {
-				"aria-label": "Ім'я користувача TURN",
-				"placeholder": "Ім'я користувача TURN"
+				"aria-label": "Імʼя користувача TURN",
+				"placeholder": "Імʼя користувача (необовʼязково)"
 			},
 			"settingsIceCred": {
-				"aria-label": "TURN облікові дані",
-				"placeholder": "Облікові дані"
+				"aria-label": "Пароль TURN",
+				"placeholder": "Пароль (необовʼязково)"
 			},
 			"settingsIceRemove": {
-				"aria-label": "Видаліть сервер ICE"
+				"aria-label": "Видалити цей сервер"
 			},
 			"settingsFileCeMode": "Режим шифрування файлів",
 			"settingsFileCeModeConvergent": "Конвергентне шифрування (може видалити дублікати)",
@@ -2922,7 +2922,7 @@
 			"search": {
 				"placeholder": "Пошук наборів стікерів…"
 			},
-			"searchLabel": "Пошук пакетів стікерів",
+			"searchLabel": "Пошук стікерпаків",
 			"emptyPacks": "Наборів стікерів ще немає",
 			"packNameLabel": "Назва набору",
 			"packName": {

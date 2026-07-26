@@ -1299,21 +1299,21 @@
 			"settingsAutoReplyTokenBucketHint": "활성화된 후 각 캐릭터는 채널별로 토큰 버킷을 유지합니다. 버킷이 비어 있으면 onMessage가 일시적으로 트리거되지 않으므로 피크 기간 동안 지속적인 화면 새로 고침이 금지될 수 있습니다.",
 			"settingsIceServers": "ICE/TURN 서버",
 			"settingsIceServersAdd": "서버 추가",
-			"settingsIceServersHint": "WebRTC와 연합 P2P NAT 통과에 쓰입니다. TURN 자격 증명은 이 기기에만 저장되며 연합으로 브로드캐스트되지 않습니다.",
+			"settingsIceServersHint": "WebRTC와 연합 P2P NAT 통과에 사용합니다. TURN 사용자 이름과 비밀번호는 이 기기에만 저장되며 연합으로 동기화되지 않습니다.",
 			"settingsIceUrl": {
-				"aria-label": "ICE 서버 URL",
-				"placeholder": "기절:호스트:19302"
+				"aria-label": "ICE 서버 주소",
+				"placeholder": "stun:host:19302"
 			},
 			"settingsIceUser": {
 				"aria-label": "TURN 사용자 이름",
-				"placeholder": "TURN 사용자 이름"
+				"placeholder": "사용자 이름 (선택)"
 			},
 			"settingsIceCred": {
-				"aria-label": "TURN 자격 증명",
-				"placeholder": "신임장"
+				"aria-label": "TURN 비밀번호",
+				"placeholder": "비밀번호 (선택)"
 			},
 			"settingsIceRemove": {
-				"aria-label": "ICE 서버 제거"
+				"aria-label": "이 서버 삭제"
 			},
 			"settingsFileCeMode": "파일 암호화 모드",
 			"settingsFileCeModeConvergent": "수렴 암호화(중복 제거 가능)",

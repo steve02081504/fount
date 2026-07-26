@@ -1299,21 +1299,21 @@
 			"settingsAutoReplyTokenBucketHint": "Ogni ruolo riceve un bucket di token per canale; quando è vuoto, onMessage viene ignorato per limitare lo spam nelle ore di punta.",
 			"settingsIceServers": "Server ICE/TURN",
 			"settingsIceServersAdd": "Aggiungi server",
-			"settingsIceServersHint": "Utilizzato per WebRTC e penetrazione P2P federata; Le credenziali TURN mantengono solo le impostazioni materializzate locali e non vengono trasmesse tramite la federazione.",
+			"settingsIceServersHint": "Per il traversal NAT di WebRTC e P2P federato. Nome utente e password TURN restano solo su questo dispositivo e non vengono sincronizzati tramite la federazione.",
 			"settingsIceUrl": {
-				"aria-label": "URL del server ICE",
-				"placeholder": "stordire:host:19302"
+				"aria-label": "Indirizzo del server ICE",
+				"placeholder": "stun:host:19302"
 			},
 			"settingsIceUser": {
-				"aria-label": "TURN nome utente",
-				"placeholder": "TURN nome utente"
+				"aria-label": "Nome utente TURN",
+				"placeholder": "Nome utente (facoltativo)"
 			},
 			"settingsIceCred": {
-				"aria-label": "Credenziali TURNO",
-				"placeholder": "Credenziali"
+				"aria-label": "Password TURN",
+				"placeholder": "Password (facoltativa)"
 			},
 			"settingsIceRemove": {
-				"aria-label": "Rimuovere il server ICE"
+				"aria-label": "Rimuovi questo server"
 			},
 			"settingsFileCeMode": "Modalità di crittografia dei file",
 			"settingsFileCeModeConvergent": "Crittografia convergente (deduplicazione)",
@@ -2922,7 +2922,7 @@
 			"search": {
 				"placeholder": "Cerca pacchetti di adesivi..."
 			},
-			"searchLabel": "Cerca pacchetti di adesivi",
+			"searchLabel": "Cerca pacchetti sticker",
 			"emptyPacks": "Nessun pacchetto di adesivi ancora",
 			"packNameLabel": "Nome del pacchetto di adesivi",
 			"packName": {

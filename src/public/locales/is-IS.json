@@ -1299,21 +1299,21 @@
 			"settingsAutoReplyTokenBucketHint": "Eftir að hafa verið virkjaður heldur hver persóna við sig auðkennisfötu eftir rás; onMessage er ekki ræst tímabundið þegar fötan er tóm, sem getur hindrað stöðuga skjáuppfærslu á álagstímum.",
 			"settingsIceServers": "ICE/TURN miðlari",
 			"settingsIceServersAdd": "Bæta við netþjóni",
-			"settingsIceServersHint": "Notað fyrir WebRTC og sameinað P2P skarpskyggni; TURN skilStaða halda aðeins staðbundnum efnislegum stillingum og eru ekki sendar út í gegnum sambandsStaða.",
+			"settingsIceServersHint": "Fyrir NAT-yfirferð í WebRTC og sambands-P2P. TURN-notendanafn og lykilorð eru aðeins vistuð á þessu tæki og eru ekki samstillt um sambandið.",
 			"settingsIceUrl": {
-				"aria-label": "ICE netþjónsslóð",
+				"aria-label": "ICE-netþjónsslóð",
 				"placeholder": "stun:host:19302"
 			},
 			"settingsIceUser": {
-				"aria-label": "TURN notendanafn",
-				"placeholder": "TURN notendanafn"
+				"aria-label": "TURN-notendanafn",
+				"placeholder": "Notendanafn (valfrjálst)"
 			},
 			"settingsIceCred": {
-				"aria-label": "TURN skilríki",
-				"placeholder": "Skilríki"
+				"aria-label": "TURN-lykilorð",
+				"placeholder": "Lykilorð (valfrjálst)"
 			},
 			"settingsIceRemove": {
-				"aria-label": "Fjarlægðu ICE miðlara"
+				"aria-label": "Eyða þessum miðlara"
 			},
 			"settingsFileCeMode": "Dulkóðunarstilling skráa",
 			"settingsFileCeModeConvergent": "Samleit dulkóðun (getur fjarlægt afrit)",
@@ -2922,7 +2922,7 @@
 			"search": {
 				"placeholder": "Leitaðu að límmiðapökkum..."
 			},
-			"searchLabel": "Leitaðu að límmiðapökkum",
+			"searchLabel": "Leita að límmiðapökkum",
 			"emptyPacks": "Engir límmiðapakkar ennþá",
 			"packNameLabel": "Nafn límmiðapakka",
 			"packName": {

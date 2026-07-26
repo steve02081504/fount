@@ -1294,21 +1294,21 @@
 			"settingsAutoReplyTokenBucketHint": "Each role gets a per-channel token bucket; when empty, onMessage is skipped to curb peak-time spam.",
 			"settingsIceServers": "ICE/TURN server",
 			"settingsIceServersAdd": "Add server",
-			"settingsIceServersHint": "Used for WebRTC and federated P2P penetration; TURN credentials only retain local materialized settings and are not broadcast through federation.",
+			"settingsIceServersHint": "Used for WebRTC and federated P2P NAT traversal. TURN username and password are stored only on this device and are not synced through the federation.",
 			"settingsIceUrl": {
-				"aria-label": "ICE server URL",
+				"aria-label": "ICE server address",
 				"placeholder": "stun:host:19302"
 			},
 			"settingsIceUser": {
 				"aria-label": "TURN username",
-				"placeholder": "TURN username"
+				"placeholder": "Username (optional)"
 			},
 			"settingsIceCred": {
-				"aria-label": "TURN credentials",
-				"placeholder": "Credentials"
+				"aria-label": "TURN password",
+				"placeholder": "Password (optional)"
 			},
 			"settingsIceRemove": {
-				"aria-label": "Remove ICE server"
+				"aria-label": "Remove this server"
 			},
 			"settingsFileCeMode": "File encryption mode",
 			"settingsFileCeModeConvergent": "Convergent encryption (deduplication)",
