@@ -24,12 +24,16 @@ Deno.test('collectModuleExports follows export-star and local decls', async () =
 	try {
 		const base = path.join(root, 'base.mjs')
 		const star = path.join(root, 'star.mjs')
+		const ns = path.join(root, 'ns.mjs')
 		const remote = path.join(root, 'remote.mjs')
 		await writeFile(base, 'export function alpha() {}\nexport const beta = 1\n')
 		await writeFile(star, 'export { alpha as gamma } from \'./base.mjs\'\nexport * from \'./base.mjs\'\nexport function delta() {}\n')
+		await writeFile(ns, 'export * as bundle from \'./base.mjs\'\n')
 		await writeFile(remote, 'export { remoteName as localName } from \'npm:@example/pkg\'\n')
 		const names = await collectModuleExports(root, star)
 		assertEquals([...names].sort(), ['alpha', 'beta', 'delta', 'gamma'])
+		const nsNames = await collectModuleExports(root, ns)
+		assertEquals([...nsNames], ['bundle'])
 		const remoteNames = await collectModuleExports(root, remote)
 		assertEquals([...remoteNames], ['localName'])
 	}

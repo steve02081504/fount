@@ -7,6 +7,7 @@
 		],
 		"shellBackend": [
 			"src/public/parts/shells/chat/src/**",
+			"src/public/parts/shells/chat/public/shared/**",
 			"src/public/parts/shells/chat/main.mjs",
 			"src/public/parts/shells/chat/fount.json",
 			"src/public/parts/shells/chat/locales.json",

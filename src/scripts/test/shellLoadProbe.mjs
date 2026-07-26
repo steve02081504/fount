@@ -11,7 +11,7 @@ const DYNAMIC_IMPORT_RE = /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/gu
 const NAMED_IMPORT_RE = /\bimport\s+(?:type\s+)?(?:[A-Za-z_$][\w$]*\s*,\s*)?\{([^}]+)\}\s*from\s*['"]([^'"]+)['"]/gu
 const EXPORT_DECL_RE = /\bexport\s+(?:async\s+)?(?:function\*?|class|const|let|var)\s+([A-Za-z_$][\w$]*)/gu
 const EXPORT_LIST_RE = /\bexport\s*\{([^}]+)\}\s*(?:from\s*['"]([^'"]+)['"])?/gu
-const EXPORT_STAR_RE = /\bexport\s*\*\s*(?:as\s+[A-Za-z_$][\w$]*\s+)?from\s*['"]([^'"]+)['"]/gu
+const EXPORT_STAR_RE = /\bexport\s*\*\s*(?:as\s+([A-Za-z_$][\w$]*)\s+)?from\s*['"]([^'"]+)['"]/gu
 const EXPORT_DEFAULT_RE = /\bexport\s+default\b/u
 
 /**
@@ -197,7 +197,13 @@ export async function collectModuleExports(repoRoot, file, cache = new Map()) {
 
 	EXPORT_STAR_RE.lastIndex = 0
 	while ((match = EXPORT_STAR_RE.exec(text)) !== null) {
-		const fromSpec = match[1]
+		const alias = match[1]
+		const fromSpec = match[2]
+		// `export * as ns from` 只导出命名空间本身，不展开子导出
+		if (alias) {
+			names.add(alias)
+			continue
+		}
 		const resolved = resolveBrowserImportSpec(repoRoot, key, fromSpec)
 		if (!resolved) continue
 		const star = await collectModuleExports(repoRoot, resolved, cache)
