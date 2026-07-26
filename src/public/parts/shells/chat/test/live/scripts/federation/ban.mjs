@@ -54,9 +54,9 @@ await testCase('A state lists B in bannedMembers', async () => {
 console.log('\n=== 3. C receives ban via federation ===')
 await testCase('C catchup receives ban (third-party sync)', async () => {
 	const ok = await pollUntil(async () => {
-		for (const node of [FedA, FedC]) 
+		for (const node of [FedA, FedC])
 			await Api(node, 'POST', `/groups/${gid}/federation/rebind`, {})
-		
+
 		await Api(FedA, 'POST', `/groups/${gid}/dag/merge-tips`, {})
 		await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('8s') })
 		const ev = await Api(FedA, 'GET', `/groups/${gid}/events?limit=40`)
@@ -80,9 +80,9 @@ await testCase('C catchup receives ban (third-party sync)', async () => {
 console.log('\n=== 4. B probes peers and self-judges removed ===')
 await testCase('B catchup probes shunned by A and C -> suspectedRemoved', async () => {
 	const ok = await pollUntil(async () => {
-		for (const node of [FedB, FedA, FedC]) 
+		for (const node of [FedB, FedA, FedC])
 			await Api(node, 'POST', `/groups/${gid}/federation/rebind`, {})
-		
+
 		const r = await Api(FedB, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('15s') })
 		if (r.status !== 200) return false
 		if (r.json.suspectedRemoved === true) return true

@@ -52,10 +52,10 @@ export function createFountEntityStore() {
 		async listEntityHashes() {
 			/** @type {Set<string>} */
 			const hashes = new Set()
-			for (const username of getAllUserNames()) 
+			for (const username of getAllUserNames())
 				for (const hash of await storeForUser(username).listEntityHashes())
 					hashes.add(hash)
-			
+
 			return [...hashes]
 		},
 

@@ -259,7 +259,7 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 
 	/** @type {Record<string, string>} */
 	const aliases = { ...options.aliases }
-	if (!options.aliases && viewerEntityHash) 
+	if (!options.aliases && viewerEntityHash)
 		try {
 			const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
 			const doc = loadEntityShellData(username, 'chat', viewerEntityHash, 'aliases')

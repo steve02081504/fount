@@ -158,7 +158,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 
 	let ReplyToCharname = options.ReplyToCharname
 	let ReplyToUid = options.ReplyToUid
-	if (ReplyToCharname == null && ReplyToUid == null) 
+	if (ReplyToCharname == null && ReplyToUid == null)
 		for (let index = chatLogForRequest.length - 1; index >= 0; index--) {
 			const replyTo = chatLogForRequest[index]?.extension?.chat?.replyTo
 			if (!replyTo) continue
@@ -166,7 +166,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 			ReplyToUid = replyTo.senderEntityHash || undefined
 			break
 		}
-	
+
 
 	/** @type {import('../../../../../../../decl/chatLog.ts').chatReplyRequest_t} */
 	const chatReplyRequest = {

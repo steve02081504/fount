@@ -155,48 +155,533 @@
 	"suites": [
 		{
 			"name": "pure",
-			"trigger": ["shellBackend", "shellPureExtra", "shellPureTests", "testFramework"],
+			"trigger": [
+				"shellBackend",
+				"shellPureExtra",
+				"shellPureTests",
+				"testFramework"
+			],
 			"run": [
-				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/public/parts/shells/chat/test/pure/"
 			]
 		},
 		{
 			"name": "integration",
-			"dependsOn": ["server:live"],
-			"trigger": ["shellBackend", "shellIntegrationExtra", "shellIntegrationTests", "testFramework"],
+			"dependsOn": [
+				"server:live"
+			],
+			"trigger": [
+				"shellBackend",
+				"shellIntegrationExtra",
+				"shellIntegrationTests",
+				"testFramework"
+			],
 			"run": [
-				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/public/parts/shells/chat/test/integration/"
 			]
 		},
-		{ "name": "smoke_chat", "dependsOn": ["server:live"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveSmokeChat"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "smoke_chat"] },
-		{ "name": "smoke_ai", "dependsOn": ["server:live", "smoke_chat"], "trigger": ["shellLiveCommon", "shellLiveInfra", "liveSmokeAi"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "smoke_ai"] },
-		{ "name": "e2e_single", "dependsOn": ["server:live", "smoke_chat"], "trigger": ["shellLiveCommon", "shellLiveInfra", "liveE2eSingle"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "e2e_single"] },
-		{ "name": "e2e_single_extended", "dependsOn": ["server:live", "e2e_single"], "trigger": ["shellLiveCommon", "shellLiveInfra", "liveE2eSingleExtended"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "e2e_single_extended"] },
-		{ "name": "ws", "dependsOn": ["server:live", "smoke_chat"], "trigger": ["shellLiveCommon", "shellLiveInfra", "liveWs"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws"] },
-		{ "name": "ws_read_marker", "dependsOn": ["server:live", "ws"], "trigger": ["shellLiveCommon", "shellLiveInfra", "liveWsReadMarker"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws_read_marker"] },
-		{ "name": "ws_rpc", "dependsOn": ["server:live", "ws"], "trigger": ["shellLiveCommon", "shellLiveInfra", "liveWsRpc"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws_rpc"] },
-		{ "name": "ws_stream", "dependsOn": ["server:live", "ws_rpc"], "trigger": ["shellLiveCommon", "shellLiveInfra", "liveWsStream"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws_stream"] },
-		{ "name": "av_relay", "dependsOn": ["server:live", "ws"], "trigger": ["shellLiveCommon", "shellLiveInfra", "liveAvRelay"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "av_relay"] },
-		{ "name": "fed_core", "dependsOn": ["server:live"], "trigger": ["fedLiveInfra", "fed"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_core"] },
-		{ "name": "fed_e2e_extended", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedE2eExtended"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_e2e_extended"] },
-		{ "name": "fed_dm", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedDm"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_dm"] },
-		{ "name": "fed_archive_month", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedArchive"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_archive_month"] },
-		{ "name": "fed_mailbox", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedMailbox"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_mailbox"] },
-		{ "name": "fed_ban", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedBan"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_ban"] },
-		{ "name": "fed_emoji", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedEmoji"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_emoji"] },
-		{ "name": "fed_emoji_nonmember", "dependsOn": ["fed_core", "fed_emoji"], "trigger": ["fedLiveInfra", "fedEmojiGroup"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_emoji_nonmember"] },
-		{ "name": "fed_emoji_nearcache", "dependsOn": ["fed_core", "fed_emoji"], "trigger": ["fedLiveInfra", "fedEmojiNearcache"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_emoji_nearcache"] },
-		{ "name": "fed_file_transfer", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedFileTransfer"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_file_transfer"] },
-		{ "name": "fed_control_plane", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedControlPlane"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_control_plane"] },
-		{ "name": "fed_reputation_owner", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedReputationOwner"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_reputation_owner"] },
-		{ "name": "fed_entity_search", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedEntitySearch"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_entity_search"] },
+		{
+			"name": "smoke_chat",
+			"dependsOn": [
+				"server:live"
+			],
+			"trigger": [
+				"shellBackend",
+				"shellLiveCommon",
+				"shellLiveInfra",
+				"liveSmokeChat"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"smoke_chat"
+			]
+		},
+		{
+			"name": "smoke_ai",
+			"dependsOn": [
+				"server:live",
+				"smoke_chat"
+			],
+			"trigger": [
+				"shellLiveCommon",
+				"shellLiveInfra",
+				"liveSmokeAi"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"smoke_ai"
+			]
+		},
+		{
+			"name": "e2e_single",
+			"dependsOn": [
+				"server:live",
+				"smoke_chat"
+			],
+			"trigger": [
+				"shellLiveCommon",
+				"shellLiveInfra",
+				"liveE2eSingle"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"e2e_single"
+			]
+		},
+		{
+			"name": "e2e_single_extended",
+			"dependsOn": [
+				"server:live",
+				"e2e_single"
+			],
+			"trigger": [
+				"shellLiveCommon",
+				"shellLiveInfra",
+				"liveE2eSingleExtended"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"e2e_single_extended"
+			]
+		},
+		{
+			"name": "ws",
+			"dependsOn": [
+				"server:live",
+				"smoke_chat"
+			],
+			"trigger": [
+				"shellLiveCommon",
+				"shellLiveInfra",
+				"liveWs"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"ws"
+			]
+		},
+		{
+			"name": "ws_read_marker",
+			"dependsOn": [
+				"server:live",
+				"ws"
+			],
+			"trigger": [
+				"shellLiveCommon",
+				"shellLiveInfra",
+				"liveWsReadMarker"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"ws_read_marker"
+			]
+		},
+		{
+			"name": "ws_rpc",
+			"dependsOn": [
+				"server:live",
+				"ws"
+			],
+			"trigger": [
+				"shellLiveCommon",
+				"shellLiveInfra",
+				"liveWsRpc"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"ws_rpc"
+			]
+		},
+		{
+			"name": "ws_stream",
+			"dependsOn": [
+				"server:live",
+				"ws_rpc"
+			],
+			"trigger": [
+				"shellLiveCommon",
+				"shellLiveInfra",
+				"liveWsStream"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"ws_stream"
+			]
+		},
+		{
+			"name": "av_relay",
+			"dependsOn": [
+				"server:live",
+				"ws"
+			],
+			"trigger": [
+				"shellLiveCommon",
+				"shellLiveInfra",
+				"liveAvRelay"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"av_relay"
+			]
+		},
+		{
+			"name": "fed_core",
+			"dependsOn": [
+				"server:live"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fed"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_core"
+			]
+		},
+		{
+			"name": "fed_e2e_extended",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedE2eExtended"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_e2e_extended"
+			]
+		},
+		{
+			"name": "fed_dm",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedDm"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_dm"
+			]
+		},
+		{
+			"name": "fed_archive_month",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedArchive"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_archive_month"
+			]
+		},
+		{
+			"name": "fed_mailbox",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedMailbox"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_mailbox"
+			]
+		},
+		{
+			"name": "fed_ban",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedBan"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_ban"
+			]
+		},
+		{
+			"name": "fed_emoji",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedEmoji"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_emoji"
+			]
+		},
+		{
+			"name": "fed_emoji_nonmember",
+			"dependsOn": [
+				"fed_core",
+				"fed_emoji"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedEmojiGroup"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_emoji_nonmember"
+			]
+		},
+		{
+			"name": "fed_emoji_nearcache",
+			"dependsOn": [
+				"fed_core",
+				"fed_emoji"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedEmojiNearcache"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_emoji_nearcache"
+			]
+		},
+		{
+			"name": "fed_file_transfer",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedFileTransfer"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_file_transfer"
+			]
+		},
+		{
+			"name": "fed_control_plane",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedControlPlane"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_control_plane"
+			]
+		},
+		{
+			"name": "fed_reputation_owner",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedReputationOwner"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_reputation_owner"
+			]
+		},
+		{
+			"name": "fed_entity_search",
+			"dependsOn": [
+				"fed_core"
+			],
+			"trigger": [
+				"fedLiveInfra",
+				"fedEntitySearch"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/live/run.mjs",
+				"--suite",
+				"fed_entity_search"
+			]
+		},
 		{
 			"name": "frontend",
-			"dependsOn": ["server:live", "e2e_single"],
+			"dependsOn": [
+				"server:live",
+				"e2e_single"
+			],
 			"trigger": "frontendShared",
 			"subtests": [
 				{
@@ -301,7 +786,15 @@
 					]
 				}
 			],
-			"run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/frontend/run.mjs"]
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/chat/test/frontend/run.mjs"
+			]
 		}
 	]
 }

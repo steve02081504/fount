@@ -153,7 +153,7 @@ if (result === 'ok' && sawStreamChunk) {
 	console.log(`dagFinalized=${dagFinalized}`)
 }
 
-if (triggerReplyTask) await triggerReplyTask.catch(() => {})
+if (triggerReplyTask) await triggerReplyTask.catch(() => { })
 await chatApi('DELETE', `/groups/${gid}`)
 
 console.log(`result=${result} stream=${sawStreamChunk} finish=${sawFinish} types=[${[...new Set(received)].join(', ')}]`)

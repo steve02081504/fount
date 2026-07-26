@@ -143,14 +143,14 @@ export function ensureVirtualBridgeChannel(username, groupId, channelId) {
 	const session = getVirtualBridgeSession(username, groupId)
 	if (!session) throw new Error(`virtual bridge session not found: ${groupId}`)
 	const id = String(channelId || 'default').trim() || 'default'
-	if (!session.channels[id]) 
+	if (!session.channels[id])
 		session.channels[id] = {
 			channelId: id,
 			name: id === 'default' ? 'default' : `thread:${id}`,
 			logs: [],
 			messageMap: [],
 		}
-	
+
 	return session.channels[id]
 }
 
@@ -211,7 +211,7 @@ export async function appendVirtualBridgeMessage(username, dto) {
 	let authorDisplayName = String(dto.author.displayName || '').trim() || `User_${dto.author.platformUserId}`
 	let displayAvatar = dto.author.avatarUrl
 	const { isBoundBridgeIdentity } = await import('./identity.mjs')
-	if (isBoundBridgeIdentity(username, dto.platform, dto.author.platformUserId)) 
+	if (isBoundBridgeIdentity(username, dto.platform, dto.author.platformUserId))
 		try {
 			const { getProfile } = await import('../../entity/profile.mjs')
 			const profile = await getProfile(authorEntityHash, username)
@@ -219,7 +219,7 @@ export async function appendVirtualBridgeMessage(username, dto) {
 			if (profile?.avatar) displayAvatar = profile.avatar
 		}
 		catch { /* profile optional */ }
-	
+
 	const eventId = `vmsg_${dto.platform}_${dto.platformMessageId}_${Date.now().toString(36)}`
 	const text = String(dto.text || '')
 	/** @type {{ eventId: string, senderName?: string, preview?: string, senderEntityHash?: string } | undefined} */
@@ -327,14 +327,14 @@ export async function editVirtualBridgeMessage(username, dto) {
 	const text = String(dto.text || '')
 	entry.content = text
 	entry.content_for_show = text
-	if (dto.files) 
+	if (dto.files)
 		entry.files = dto.files.map(file => ({
 			name: file.name,
 			mime_type: file.mime_type,
 			buffer: file.buffer,
 			description: file.description || '',
 		}))
-	
+
 	return { session, channel, entry }
 }
 

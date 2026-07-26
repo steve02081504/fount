@@ -128,7 +128,7 @@ function waitForGossipProgress(username, groupId, wantIds) {
 		gossipWaitPrefix(username, groupId),
 		gossipWaitSuffix(wantIds),
 		GOSSIP_RESPONSE_WAIT_MS,
-		() => {},
+		() => { },
 	)
 }
 
@@ -225,7 +225,7 @@ export async function requestMissingEventsGossip(username, groupId, query = {}) 
 			forceResolveGossipWait(username, groupId, stillMissing)
 		else {
 			const groupSettings = await loadFederationGroupSettings(username, groupId)
-			if (!takeOutgoingWantIdsSlot( groupId, wantIdsLimitsFromSettings(groupSettings))) {
+			if (!takeOutgoingWantIdsSlot(groupId, wantIdsLimitsFromSettings(groupSettings))) {
 				rateLimited = true
 				forceResolveGossipWait(username, groupId, stillMissing)
 			}

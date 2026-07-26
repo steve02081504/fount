@@ -339,12 +339,12 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 			}
 		}
 
-		for (;;) {
+		for (; ;) {
 			const best = pickLight(listHardReady().filter(task => !task.heavy), true)
 			if (!best) break
 			admit(best, false)
 		}
-		for (;;) {
+		for (; ;) {
 			const best = pickLight(listSpeculativeReady().filter(task => !task.heavy), true)
 			if (!best) break
 			admit(best, true)

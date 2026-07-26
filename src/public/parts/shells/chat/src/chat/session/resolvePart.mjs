@@ -34,10 +34,10 @@ function resolvePersonaHomeNodeHash(session, state, ownerUsername, replicaUserna
 		if (member.ownerUsername === ownerUsername && member.homeNodeHash)
 			return member.homeNodeHash
 	}
-	for (const bind of Object.values(session?.chars || {})) 
+	for (const bind of Object.values(session?.chars || {}))
 		if (bind?.ownerUsername === ownerUsername && bind.homeNodeHash)
 			return bind.homeNodeHash
-	
+
 	return null
 }
 

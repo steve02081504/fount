@@ -162,7 +162,7 @@ function normalizeUrl(url) {
 	return urlObj.toString()
 }
 
-return async function({ data, containers }) {
+return async function ({ data, containers }) {
 	const div = containers.generatorDisplay
 	const { url, apikey } = data
 	const modelsUrl = normalizeUrl(url)

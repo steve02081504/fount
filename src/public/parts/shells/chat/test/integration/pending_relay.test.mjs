@@ -14,7 +14,7 @@ const { ensureServer, username } = createIntegrationBoot({
 
 Deno.test('flushPendingRelay on empty file returns 0', async () => {
 	await ensureServer()
-	assertEquals(await flushPendingRelay(username, '__empty_group__', async () => {}), 0)
+	assertEquals(await flushPendingRelay(username, '__empty_group__', async () => { }), 0)
 })
 
 Deno.test('enqueuePendingRelay skips payload without id', async () => {

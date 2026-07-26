@@ -141,9 +141,9 @@ export function createH264Depacketizer() {
 					fuParts = [Buffer.from([reconstructedType]), chunk]
 					fuTs = hdr.timestamp
 				}
-				else if (fuParts.length) 
+				else if (fuParts.length)
 					fuParts.push(chunk)
-				
+
 				if (!end || !fuParts.length) return null
 				const nalu = Buffer.concat(fuParts)
 				fuParts = []

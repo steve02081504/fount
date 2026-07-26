@@ -4,7 +4,13 @@
 		{
 			"name": "pure",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/server/test/pure/"
 			],
 			"triggers": [
@@ -18,7 +24,13 @@
 		{
 			"name": "live",
 			"run": [
-				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/server/test/live/"
 			],
 			"triggers": [

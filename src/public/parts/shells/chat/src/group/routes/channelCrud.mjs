@@ -52,7 +52,7 @@ export function registerChannelCrudRoutes(router, authenticate) {
 		const content = {}
 		if (name !== undefined) content.name = name
 		if (description !== undefined) content.description = description ?? ''
-		if (friendBinding !== undefined) 
+		if (friendBinding !== undefined)
 			if (friendBinding === null)
 				content.friendBinding = null
 			else {
@@ -61,7 +61,7 @@ export function registerChannelCrudRoutes(router, authenticate) {
 					throw httpError(400, 'invalid friendBinding')
 				content.friendBinding = normalized
 			}
-		
+
 
 		if (!Object.keys(content).length)
 			throw httpError(400, 'no meta fields to update')

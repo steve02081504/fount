@@ -158,7 +158,7 @@ export class RunReportWriter {
 	 */
 	#enqueue(fn) {
 		const next = this.#writeChain.then(fn)
-		this.#writeChain = next.then(() => {}, () => {})
+		this.#writeChain = next.then(() => { }, () => { })
 		return next
 	}
 
