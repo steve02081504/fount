@@ -69,6 +69,21 @@ function reactionCountsFromOverlay(overlay, eventId) {
 }
 
 /**
+ * @param {object | null | undefined} file 落盘 file 描述符
+ * @param {Map<string, object> | Record<string, object> | undefined} index fileIndex
+ * @returns {{ name: string, mimeType: string, size: number }} 单条附件元数据
+ */
+function attachmentMetaFromFile(file, index) {
+	const fileId = String(file?.fileId || '').trim()
+	const meta = fileId && index instanceof Map ? index.get(fileId) : index?.[fileId]
+	return {
+		name: String(file?.name || meta?.name || fileId || 'file'),
+		mimeType: String(file?.mime_type || meta?.mime_type || meta?.mimeType || 'application/octet-stream'),
+		size: Number(file?.size ?? meta?.size) || 0,
+	}
+}
+
+/**
  * @param {object} state 物化状态
  * @param {object[]} files 落盘 files 描述符
  * @returns {Array<{ name: string, mimeType: string, size: number }>} 附件元数据
@@ -76,18 +91,18 @@ function reactionCountsFromOverlay(overlay, eventId) {
 function attachmentMetaFromFiles(state, files) {
 	if (!Array.isArray(files) || !files.length) return []
 	const index = state.messageOverlay?.fileIndex
-	/** @type {Array<{ name: string, mimeType: string, size: number }>} */
-	const out = []
-	for (const file of files) {
-		const fileId = String(file?.fileId || '').trim()
-		const meta = fileId && index instanceof Map ? index.get(fileId) : index?.[fileId]
-		out.push({
-			name: String(file?.name || meta?.name || fileId || 'file'),
-			mimeType: String(file?.mime_type || meta?.mime_type || meta?.mimeType || 'application/octet-stream'),
-			size: Number(file?.size ?? meta?.size) || 0,
-		})
-	}
-	return out
+	return files.map(file => attachmentMetaFromFile(file, index))
+}
+
+/**
+ * @param {object} portable portable 消息
+ * @param {object} state 物化状态
+ * @param {object[]} files 落盘 files
+ * @returns {object} 写入 attachments 后的 portable
+ */
+function attachArchiveAttachments(portable, state, files) {
+	portable.attachments = attachmentMetaFromFiles(state, files)
+	return portable
 }
 
 /**
@@ -125,10 +140,7 @@ async function portableFromHotRow(username, groupId, channelId, row, state, flag
 		deleted: flags.deleted ?? snap.deleted,
 	})
 	portable.wasEdited = !!flags.wasEdited || !!row.wasEdited
-	portable.attachments = attachmentMetaFromFiles(
-		state,
-		Array.isArray(content?.files) ? content.files : [],
-	)
+	attachArchiveAttachments(portable, state, Array.isArray(content?.files) ? content.files : [])
 	portable.reactionCounts = reactionCountsFromOverlay(state.messageOverlay, String(row.eventId).trim())
 	if (row.extension?.feedback)
 		portable.feedback = row.extension.feedback
@@ -157,7 +169,8 @@ export async function exportChannelArchive(username, groupId, channelId) {
 			const id = String(snap.eventId || '').trim()
 			if (!id) continue
 			const portable = portableMessageFromSnapshot(snap)
-			portable.attachments = attachmentMetaFromFiles(
+			attachArchiveAttachments(
+				portable,
 				state,
 				Array.isArray(snap.content?.files) ? snap.content.files : [],
 			)

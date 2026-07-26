@@ -86,6 +86,90 @@ export function channelMessage(agentText, extra = {}) {
 }
 
 /**
+ * @param {object} input wire
+ * @returns {Record<string, unknown>} 文本 wire
+ */
+function normalizeTextContent(input) {
+	if (typeof input.content !== 'string')
+		throw new Error('text content requires string content field')
+	const out = trimCommon({ ...input, content: input.content })
+	delete out.type
+	if (out.content_for_show === out.content) delete out.content_for_show
+	if (out.content_for_edit === out.content) delete out.content_for_edit
+	return out
+}
+
+/**
+ * @param {object} input wire
+ * @returns {Record<string, unknown>} sticker wire
+ */
+function normalizeStickerContent(input) {
+	const emojiRef = String(input.emojiRef || '').trim()
+	const stickerBase64 = String(input.stickerBase64 || '')
+	if (!emojiRef && !stickerBase64) throw new Error('sticker requires emojiRef or stickerBase64')
+	const compactEmoji = emojiRef && /:\[[\w.-]+\/[\w.-]+\](?!:)/.test(emojiRef)
+	return withDisplayFields(input, {
+		type: 'sticker',
+		...compactEmoji || emojiRef ? { emojiRef } : {},
+		...!compactEmoji && stickerBase64 ? { stickerBase64 } : {},
+		stickerId: String(input.stickerId || ''),
+		stickerName: String(input.stickerName || ''),
+		...!compactEmoji && input.mimeType ? { mimeType: String(input.mimeType) } : {},
+	})
+}
+
+/**
+ * @param {object} input wire
+ * @returns {Record<string, unknown>} vote wire
+ */
+function normalizeVoteContent(input) {
+	if (!String(input.question || '').trim()) throw new Error('vote requires question')
+	if (!input.options?.length) throw new Error('vote requires options')
+	return withDisplayFields(input, {
+		type: 'vote',
+		question: String(input.question),
+		options: input.options.map(String),
+		...input.deadline != null ? { deadline: input.deadline } : {},
+	})
+}
+
+/**
+ * @param {object} input wire
+ * @returns {Record<string, unknown>} group_invite wire
+ */
+function normalizeGroupInviteContent(input) {
+	if (!input.groupId) throw new Error('group_invite requires groupId')
+	return withDisplayFields(input, {
+		type: 'group_invite',
+		groupId: input.groupId,
+		inviteCode: input.inviteCode || '',
+		groupName: String(input.groupName || '').slice(0, 100),
+		description: String(input.description ?? '').slice(0, 200),
+		...input.memberCount != null
+			? { memberCount: Math.max(0, Math.floor(Number(input.memberCount))) }
+			: {},
+	})
+}
+
+/**
+ * @param {object} input wire
+ * @returns {Record<string, unknown>} call wire
+ */
+function normalizeCallContent(input) {
+	return withDisplayFields(input, {
+		type: 'call',
+		callId: String(input.callId || ''),
+		status: String(input.status || 'ongoing'),
+		...input.startedAt != null ? { startedAt: Number(input.startedAt) } : {},
+		...input.endedAt != null ? { endedAt: Number(input.endedAt) } : {},
+		...input.duration != null ? { duration: Number(input.duration) } : {},
+		...input.initiator != null ? { initiator: String(input.initiator) } : {},
+		...Array.isArray(input.participants) ? { participants: input.participants.map(String) } : {},
+		...Array.isArray(input.current) ? { current: input.current.map(String) } : {},
+	})
+}
+
+/**
  * 规范化 DAG wire content。
  * @param {object} input 写入 DAG 的 content
  * @returns {Record<string, unknown>} 校验后的对象
@@ -95,71 +179,14 @@ export function normalizeChannelMessage(input) {
 		throw new Error('channel message requires object content')
 
 	const type = input.type || 'text'
-	if (type === 'text') {
-		if (typeof input.content !== 'string')
-			throw new Error('text content requires string content field')
-		const out = trimCommon({ ...input, content: input.content })
-		delete out.type
-		if (out.content_for_show === out.content) delete out.content_for_show
-		if (out.content_for_edit === out.content) delete out.content_for_edit
-		return out
+	switch (type) {
+		case 'text': return normalizeTextContent(input)
+		case 'sticker': return normalizeStickerContent(input)
+		case 'vote': return normalizeVoteContent(input)
+		case 'group_invite': return normalizeGroupInviteContent(input)
+		case 'call': return normalizeCallContent(input)
+		default: throw new Error(`unknown content.type: ${type}`)
 	}
-
-	if (type === 'sticker') {
-		const emojiRef = String(input.emojiRef || '').trim()
-		const stickerBase64 = String(input.stickerBase64 || '')
-		if (!emojiRef && !stickerBase64) throw new Error('sticker requires emojiRef or stickerBase64')
-		const compactEmoji = emojiRef && /:\[[\w.-]+\/[\w.-]+\](?!:)/.test(emojiRef)
-		return withDisplayFields(input, {
-			type: 'sticker',
-			...compactEmoji || emojiRef ? { emojiRef } : {},
-			...!compactEmoji && stickerBase64 ? { stickerBase64 } : {},
-			stickerId: String(input.stickerId || ''),
-			stickerName: String(input.stickerName || ''),
-			...!compactEmoji && input.mimeType ? { mimeType: String(input.mimeType) } : {},
-		})
-	}
-
-	if (type === 'vote') {
-		if (!String(input.question || '').trim()) throw new Error('vote requires question')
-		if (!input.options?.length) throw new Error('vote requires options')
-		return withDisplayFields(input, {
-			type: 'vote',
-			question: String(input.question),
-			options: input.options.map(String),
-			...input.deadline != null ? { deadline: input.deadline } : {},
-		})
-	}
-
-	if (type === 'group_invite') {
-		if (!input.groupId) throw new Error('group_invite requires groupId')
-		return withDisplayFields(input, {
-			type: 'group_invite',
-			groupId: input.groupId,
-			inviteCode: input.inviteCode || '',
-			groupName: String(input.groupName || '').slice(0, 100),
-			description: String(input.description ?? '').slice(0, 200),
-			...input.memberCount != null && {
-				memberCount: Math.max(0, Math.floor(Number(input.memberCount))),
-			},
-		})
-	}
-
-	if (type === 'call') 
-		return withDisplayFields(input, {
-			type: 'call',
-			callId: String(input.callId || ''),
-			status: String(input.status || 'ongoing'),
-			...input.startedAt != null ? { startedAt: Number(input.startedAt) } : {},
-			...input.endedAt != null ? { endedAt: Number(input.endedAt) } : {},
-			...input.duration != null ? { duration: Number(input.duration) } : {},
-			...input.initiator != null ? { initiator: String(input.initiator) } : {},
-			...Array.isArray(input.participants) ? { participants: input.participants.map(String) } : {},
-			...Array.isArray(input.current) ? { current: input.current.map(String) } : {},
-		})
-	
-
-	throw new Error(`unknown content.type: ${type}`)
 }
 
 /**
@@ -225,6 +252,31 @@ export function inlineImageMarker(fileName, inlineImageUrl) {
  * @param {{ preserveShowEdit?: boolean }} [options] 选项
  * @returns {object} 合并后 wire
  */
+/**
+ * @param {object} content wire
+ * @returns {Record<string, unknown>} 跨类型可保留的公共元数据
+ */
+function commonWireMetadata(content) {
+	return {
+		...content.name != null ? { name: content.name } : {},
+		...content.avatar != null ? { avatar: content.avatar } : {},
+		...content.locale != null ? { locale: content.locale } : {},
+		...content.role != null ? { role: content.role } : {},
+		...content.visibility != null ? { visibility: content.visibility } : {},
+		...content.content_warning != null ? { content_warning: content.content_warning } : {},
+		...content.sensitive_media ? { sensitive_media: true } : {},
+		...content.charVisibility?.length ? { charVisibility: content.charVisibility } : {},
+		...content.files?.length ? { files: content.files } : {},
+		...content.extension ? { extension: content.extension } : {},
+	}
+}
+
+/**
+ * @param {object} content wire
+ * @param {string[]} inlineMarkers 标记
+ * @param {{ preserveShowEdit?: boolean }} [options] 选项
+ * @returns {object} 合并后 wire
+ */
 export function mergeInlineImageMarkersIntoContent(content, inlineMarkers, { preserveShowEdit = false } = {}) {
 	if (!inlineMarkers?.length) return content
 	const isText = channelMessageKind(content) === 'text'
@@ -237,18 +289,7 @@ export function mergeInlineImageMarkersIntoContent(content, inlineMarkers, { pre
 			...preserveShowEdit && { content_for_show, content_for_edit },
 		})
 	}
-	return channelMessage(mergedText, {
-		...content.name != null ? { name: content.name } : {},
-		...content.avatar != null ? { avatar: content.avatar } : {},
-		...content.locale != null ? { locale: content.locale } : {},
-		...content.role != null ? { role: content.role } : {},
-		...content.visibility != null ? { visibility: content.visibility } : {},
-		...content.content_warning != null ? { content_warning: content.content_warning } : {},
-		...content.sensitive_media ? { sensitive_media: true } : {},
-		...content.charVisibility?.length ? { charVisibility: content.charVisibility } : {},
-		...content.files?.length ? { files: content.files } : {},
-		...content.extension ? { extension: content.extension } : {},
-	})
+	return channelMessage(mergedText, commonWireMetadata(content))
 }
 
 /**
