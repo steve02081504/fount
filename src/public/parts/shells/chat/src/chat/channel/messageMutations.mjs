@@ -9,7 +9,8 @@ import { HEX_ID_64 as EVENT_ID_HEX } from 'npm:@steve02081504/fount-p2p/core/hex
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
-import { normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
+import { channelMessageKind, normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
 import { isEventArchivedInManifest, loadArchiveManifest } from '../archive/index.mjs'
 import { postSnapshotToMessageLine } from '../archive/postSnapshot.mjs'
 import { readArchiveMonth } from '../archive/reader.mjs'
@@ -80,10 +81,16 @@ export async function findChannelMessageRow(username, groupId, channelId, eventI
  * @returns {Promise<object>} 签名后事件
  */
 export async function appendChannelMessageEdit(username, groupId, channelId, eventId, newContent) {
-	const contentObj = normalizeChannelMessage(newContent)
-	if (!contentObj?.content) throw new Error('content required')
+	let contentObj
+	try {
+		contentObj = normalizeChannelMessage(newContent)
+		channelMessageKind(contentObj)
+	}
+	catch (error) {
+		throw httpError(400, error?.message || 'invalid content')
+	}
 	const row = await findChannelMessageRow(username, groupId, channelId, eventId)
-	if (!row) throw new Error('message not found')
+	if (!row) throw httpError(400, 'message not found')
 	const targetId = channelMessageTargetId(row)
 	const entryId = row.content?.extension?.chat?.entryId
 	const event = await appendSignedLocalEvent(username, groupId, {

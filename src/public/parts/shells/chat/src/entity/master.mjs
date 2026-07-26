@@ -42,8 +42,8 @@ function wireContentOf(message) {
  * @returns {object} extension.chat 侧车
  */
 function chatSidecarOf(message) {
-	return chatExtensionOf(wireContentOf(message))
-		|| message?.extension?.chat
+	return message?.extension?.chat
+		|| chatExtensionOf(wireContentOf(message))
 		|| {}
 }
 
@@ -61,10 +61,6 @@ export function resolveCryptographicAuthorEntityHash(eventOrLine, state = null) 
 	if (bridge?.authorEntityHash && isEntityHash128(String(bridge.authorEntityHash)))
 		return String(bridge.authorEntityHash).toLowerCase()
 
-	const uid = String(message?.uid || '').trim().toLowerCase()
-	if (uid && isEntityHash128(uid) && message?.role !== 'char')
-		return uid
-
 	const sender = String(message?.sender || eventOrLine?.sender || '').trim().toLowerCase()
 	if (state?.members && sender) {
 		const member = state.members[sender]
@@ -81,6 +77,11 @@ export function resolveCryptographicAuthorEntityHash(eventOrLine, state = null) 
 			}
 		}
 	}
+
+	const uid = String(message?.uid || '').trim().toLowerCase()
+	if (uid && isEntityHash128(uid) && message?.role !== 'char')
+		return uid
+
 	return null
 }
 
@@ -104,9 +105,9 @@ export async function resolveTrustedOwnerContext({
 	const declaredOwnerEntityHash = await resolveDeclaredOwnerEntityHash(username, agentEntityHash)
 	const message = eventOrLine?.message || eventOrLine
 	const wire = wireContentOf(message)
-	const chat = chatSidecarOf(message)
+	const localChat = message?.extension?.chat
 	const signerEntityHash = authorEntityHash || resolveCryptographicAuthorEntityHash(eventOrLine, state)
-	const attribution = chat.attribution
+	const attribution = localChat?.attribution
 		|| deriveMessageAttribution(wire, {
 			sender: message?.sender || eventOrLine?.sender,
 			signerEntityHash,

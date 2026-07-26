@@ -11,8 +11,8 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-import { syncEntityProfileFromPersona } from '../../profile/syncFromPersona.mjs'
 import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
+import { syncEntityProfileFromPersona } from '../../profile/syncFromPersona.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { getDefaultChannelId } from '../dag/queries.mjs'
 import { isExpectedTeardownRace } from '../lib/expectedTeardownRace.mjs'

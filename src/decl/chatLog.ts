@@ -119,6 +119,7 @@ export type file_t = {
  */
 export type chatLogChatExtension_t = {
 	eventId?: string
+	entryId?: string
 	channelId?: string
 	attribution?: Record<string, unknown>
 	display?: { name?: string | null, avatar?: string | null }

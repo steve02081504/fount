@@ -7,6 +7,7 @@
 
 import {
 	channelMessage,
+	channelMessageKind,
 	messageAgentText,
 	messageShowText,
 } from '../../../public/shared/channelContent.mjs'
@@ -37,6 +38,11 @@ export function projectViewerEntriesToRows(rawLines, entries) {
 		const entry = byEventId.get(eventId)
 		const { content } = line
 		if (!content || typeof content !== 'object') {
+			out.push(line)
+			continue
+		}
+
+		if (channelMessageKind(content) !== 'text') {
 			out.push(line)
 			continue
 		}

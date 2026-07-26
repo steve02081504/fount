@@ -83,6 +83,8 @@ export function normalizeReplyContent(reply) {
 	if (reply && typeof reply === 'object') {
 		if (typeof reply.content === 'string')
 			return normalizeChannelMessage(reply)
+		if (['sticker', 'vote', 'group_invite', 'call'].includes(reply.type))
+			return normalizeChannelMessage(reply)
 		const text = reply.text ?? reply.content
 		if (text != null)
 			return channelMessage(String(text))

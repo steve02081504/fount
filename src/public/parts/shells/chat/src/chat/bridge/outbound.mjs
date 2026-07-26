@@ -77,7 +77,9 @@ export async function notifyVirtualBridgeOutbound(username, groupId, channelId, 
 	const replyToPlatformMessageId = replyEventId
 		? lookupVirtualOutboundReplyTarget(username, groupId, channelId, replyEventId)
 		: null
-	const eventId = messageLine?.extension?.virtualEventId ?? messageLine?.eventId
+	const eventId = messageLine?.extension?.chat?.virtualEventId
+		?? messageLine?.extension?.virtualEventId
+		?? messageLine?.eventId
 	const result = await handler({
 		channelId,
 		messageLine: {

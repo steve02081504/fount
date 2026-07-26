@@ -8,6 +8,9 @@ import { recordPendingChannelDecrypt } from '../file_keys/buffer.mjs'
 
 import { getChannelKeyHex, loadChannelKeysFile } from './store.mjs'
 
+/**
+ *
+ */
 export { CHANNEL_KEY_SCHEME }
 
 /** @type {Set<string>} */

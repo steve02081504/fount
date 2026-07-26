@@ -5,6 +5,7 @@
 import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { bindContentReveal, wrapContentWarningHtml, wrapSensitiveMediaHtml } from '/scripts/features/contentReveal/index.mjs'
 import { geti18n } from '../../../../../../scripts/i18n/index.mjs'
+import { channelMessageKind, chatExtensionOf } from '../../../shared/channelContent.mjs'
 import { firstCustomEmojiRef } from '../../../src/customEmojis.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isFirstMessageInAuthorGroup } from '/parts/shells:chat/shared/hashAvatar.mjs'
@@ -12,7 +13,6 @@ import {
 	attributionFromHubMessage,
 } from '/parts/shells:chat/shared/attribution.mjs'
 import { renderAttributionWarningIconHtml } from '/parts/shells:chat/shared/entityProfileCard.mjs'
-import { channelMessageKind, chatExtensionOf } from '../../../shared/channelContent.mjs'
 import { hubDeliveryReadIcon, hubDeliverySentIcon } from '../../../src/lib/emojiSvg.mjs'
 import { buildMessagesByEventId } from '../../../src/ui/channelDisplay.mjs'
 import { authorPresentationKeys, avatarColor, avatarInitial, avatarTextColor, formatTimeAttrs, timeI18nAttrFragment } from '../../core/domUtils.mjs'
@@ -158,8 +158,12 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 		? ` data-author-pubkey-hash="${escapeHtml(message.authorPubKeyHash)}"`
 		: ''
 	const charAttr = message.charId ? ` data-char-id="${escapeHtml(String(message.charId))}"` : ''
-	const snapDisplay = message.content?.name || message.extension?.display?.name
-	const snapAvatar = message.content?.avatar || message.extension?.display?.avatar
+	const snapDisplay = message.content?.name
+		|| message.extension?.display?.name
+		|| message.extension?.chat?.display?.name
+	const snapAvatar = message.content?.avatar
+		|| message.extension?.display?.avatar
+		|| message.extension?.chat?.display?.avatar
 	const presentation = authorPresentationKeys(authorKey)
 	const displayAuthor = snapDisplay || presentation.displayName
 	const avatarKey = presentation.profileKey

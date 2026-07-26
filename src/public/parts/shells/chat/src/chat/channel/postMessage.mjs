@@ -237,7 +237,8 @@ export async function postChannelMessage(username, groupId, channelId, payload =
 
 	if (payload.generated) {
 		const generated = payload.generated.content
-		content = typeof generated === 'object' && generated?.content != null
+		content = typeof generated === 'object' && generated != null
+			&& (generated.content != null || ['sticker', 'vote', 'group_invite', 'call'].includes(generated.type))
 			? normalizeChannelMessage(generated)
 			: channelMessage(String(generated ?? ''))
 		if (payload.generated.isAutoTrigger)

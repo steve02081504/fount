@@ -16,6 +16,7 @@
 
 
 import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
+
 import { broadcastGroupEvent } from './broadcast.mjs'
 import { getChatRequest } from './chatRequest.mjs'
 import { abortAllGenerations, createGenerationStream } from './generationAbort.mjs'
@@ -143,6 +144,11 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 				Object.assign(newEntry, finalEntry)
 				newEntry.is_generating = false
 				newEntry.id = entry.id
+				if (greeting_type) {
+					ensureChatExtension(newEntry).isGreeting = true
+					newEntry.extension.greetingType = greeting_type
+					newEntry.extension.timeSlice.greeting_type = greeting_type
+				}
 
 				chatMetadata.timeLines[newTimeLineIndex] = newEntry
 				chatMetadata.chatLog[chatMetadata.chatLog.length - 1] = newEntry

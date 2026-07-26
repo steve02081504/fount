@@ -160,7 +160,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	let ReplyToUid = options.ReplyToUid
 	if (ReplyToCharname == null && ReplyToUid == null) 
 		for (let index = chatLogForRequest.length - 1; index >= 0; index--) {
-			const replyTo = chatLogForRequest[index]?.extension?.replyTo
+			const replyTo = chatLogForRequest[index]?.extension?.chat?.replyTo
 			if (!replyTo) continue
 			ReplyToCharname = replyTo.senderName || undefined
 			ReplyToUid = replyTo.senderEntityHash || undefined

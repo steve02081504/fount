@@ -15,6 +15,9 @@ export {
 	type GenerationOptions_t,
 } from '../../../../../decl/chatLog.ts'
 
+/**
+ *
+ */
 export {
 	type channelWireMessage_t,
 	type channelWireFile_t,

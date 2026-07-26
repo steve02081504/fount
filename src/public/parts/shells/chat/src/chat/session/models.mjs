@@ -201,9 +201,11 @@ export class chatLogEntry_t {
 					return { ...file, buffer: file.buffer }
 				if (!operatorEntityHash)
 					throw new Error('identity required to persist chat attachments')
-				const plain = Buffer.isBuffer(file.buffer)
-					? file.buffer
-					: Buffer.from(String(file.buffer), 'base64')
+				const plain = typeof file.getBuffer === 'function'
+					? await file.getBuffer()
+					: Buffer.isBuffer(file.buffer)
+						? file.buffer
+						: Buffer.from(String(file.buffer), 'base64')
 				const attachId = crypto.randomUUID()
 				const logicalPath = `shells/chat/attachments/${attachId}`
 				await putFileManifest({

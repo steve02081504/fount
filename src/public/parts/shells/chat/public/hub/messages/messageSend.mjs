@@ -162,13 +162,13 @@ function buildComposerContent(text) {
 	if (getSensitiveMedia()) extra.sensitive_media = true
 	const contentObj = channelMessage(text, extra)
 	const reply = getReplyTarget()
-	if (reply) {
+	if (reply) 
 		ensureChatExtension(contentObj).replyTo = {
 			eventId: reply.eventId,
 			senderName: reply.senderName,
 			preview: reply.preview,
 		}
-	}
+	
 	return contentObj
 }
 

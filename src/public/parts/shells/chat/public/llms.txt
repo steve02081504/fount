@@ -160,7 +160,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 `session_world_bind` / `session_world_bind_channel` 的 `content` 含 `worldname`、`ownerUsername`、`homeNodeHash`（`local` 分布可缺省）、`distribution`（`'local' | 'replicated' | 'hosted'`，绑定者从本机 world part 读出，缺省 `hosted`）。`resolveWorld` 按 `distribution` 决定本机执行或 RPC；未绑定/未安装时回退内置 `BUILTIN_WORLD`（`distribution: 'local'`）。
 
-**写路径（DAG-first）**：human（Hub `POST …/messages` 与 CLI `send`）→ persona `BeforeUserSend` → `commitChannelMessageEvent`；char / greeting 同进该门面。world `AddChatLogEntry` 为落盘前改写/拒绝；`AfterAddChatLogEntry` 仅在 `broadcastAndPersist` 对 `message`（及流式终稿 `message_edit`）触发一次。canonical `message` content：`{ content: string, name?, avatar?, files?, extension?: { chat?: { sessionSnapshot?, entryId?, … } } }`。内存 `chatLog` 仅为 hydration 缓存。
+**写路径（DAG-first）**：human（Hub `POST …/messages` 与 CLI `send`）→ persona `BeforeUserSend` → `commitChannelMessageEvent`；char / greeting 同进该门面。world `AddChatLogEntry` 为落盘前改写/拒绝；`AfterAddChatLogEntry` 仅在 `broadcastAndPersist` 对 `message`（及流式终稿 `message_edit`）触发一次。canonical `message` content（**文本变体**）：`{ content: string, name?, avatar?, files?, extension?: { chat?: { sessionSnapshot?, entryId?, … } } }`；完整 wire 判别联合以 `channelWireMessage_t` 为准（含 `sticker` / `vote` / `group_invite` / `call`）。内存 `chatLog` 仅为 hydration 缓存。
 
 **Chat 日志类型**：fount 面在 `src/decl/chatLog.ts`（`timeSlice` / 水合后 `extension.chat`）；DAG wire 判别联合在 `shells/chat/decl/channelWire.ts`（`channelWireMessage_t`；文本省略 `type`）。shell `decl/chatLog.ts` re-export 两者。persona `BeforeUserSend` / `GetChatLogForViewer` 见 `src/decl/userAPI.ts`。未绑定 world/persona 时 shell 用内置极小实现（`BUILTIN_WORLD` / `BUILTIN_PERSONA`）。
 

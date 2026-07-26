@@ -50,7 +50,7 @@ export const FOUNT_CHAT_CODE_CONTEXT_PLUGIN = {
 						message: {
 							...triggerEntry,
 							eventId: triggerEntry.extension?.chat?.eventId
-								|| triggerEntry.extension?.virtualEventId
+								|| triggerEntry.extension?.chat?.virtualEventId
 								|| triggerEntry.id,
 							channelId,
 						},

@@ -4,11 +4,10 @@
  */
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { geti18n } from '../../../../../../scripts/i18n/index.mjs'
-import { channelMessage as buildChannelMessage } from '../../../shared/channelContent.mjs'
+import { chatExtensionOf, normalizeChannelMessage } from '../../../shared/channelContent.mjs'
 import { sendGroupMessage } from '../../../src/api/groupChannel.mjs'
 import { getGroupState } from '../../../src/api/groupCore.mjs'
 import { store } from '../../core/state.mjs'
-import { getMessageText } from '../render/text.mjs'
 
 /**
  * 弹出转发对话框，选择目标群+频道后发送。
@@ -96,18 +95,25 @@ export async function handleForward(button, channelMessage, actions) {
 		if (!targetGroupId || !targetChannelId) return
 		dialog.close()
 		try {
-			const text = getMessageText(channelMessage)
-			const senderName = channelMessage.content?.name
+			const original = channelMessage.content && typeof channelMessage.content === 'object'
+				? channelMessage.content
+				: { content: String(channelMessage.content ?? '') }
+			const senderName = original.name
+				|| channelMessage.content?.name
 				|| String(channelMessage.sender || '').slice(0, 8)
 				|| '?'
 			const { formatMessageRunUri, wrapProtocolHttpsUrl } = await import('../../../shared/runUri.mjs')
 			const shareUrl = groupId && channelId && eventId
 				? wrapProtocolHttpsUrl(formatMessageRunUri(groupId, channelId, eventId))
 				: ''
-			await sendGroupMessage(targetGroupId, targetChannelId, buildChannelMessage(text, {
-				locale: channelMessage.content?.locale || navigator.language,
+			const chat = chatExtensionOf(original) || {}
+			await sendGroupMessage(targetGroupId, targetChannelId, normalizeChannelMessage({
+				...original,
+				...!original.locale ? { locale: navigator.language } : {},
 				extension: {
+					...original.extension,
 					chat: {
+						...chat,
 						forwardedFrom: {
 							groupId: groupId || '',
 							channelId: channelId || '',

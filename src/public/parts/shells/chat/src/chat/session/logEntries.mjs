@@ -11,8 +11,8 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
+import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
 import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
 import { resolveChannelId } from '../lib/channelId.mjs'
 import { getOperatorEntityHash } from '../lib/replica.mjs'

@@ -32,7 +32,6 @@ export function portableMessageFromSnapshot(snap) {
 	const content = snap.content && typeof snap.content === 'object'
 		? normalizeChannelMessage(snap.content)
 		: snap.content ?? null
-	const files = Array.isArray(content?.files) ? content.files : []
 	const sender = snap.sender ? String(snap.sender).trim().toLowerCase() : null
 	const sourceEntityHash = snap.sourceEntityHash
 		? String(snap.sourceEntityHash).trim().toLowerCase()
@@ -54,13 +53,6 @@ export function portableMessageFromSnapshot(snap) {
 		wasEdited: false,
 		pinned: !!snap.pinned,
 		reactionCounts: reactionCountsFromList(snap.reactions),
-		attachments: files.length
-			? files.map(file => ({
-				name: String(file.name || file.fileId || 'file'),
-				mimeType: String(file.mime_type || 'application/octet-stream'),
-				size: Number(file.size) || 0,
-			}))
-			: [],
 	}
 }
 

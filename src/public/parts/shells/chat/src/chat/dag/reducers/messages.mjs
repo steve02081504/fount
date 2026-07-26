@@ -31,9 +31,19 @@ export const messageReducers = {
 		const content = event.content
 		if (content?.type === 'vote') {
 			state.voteBallots ??= {}
+			const rawDeadline = content.deadline
+			let deadline = null
+			if (rawDeadline != null && rawDeadline !== '') 
+				if (typeof rawDeadline === 'number' && Number.isFinite(rawDeadline))
+					deadline = new Date(rawDeadline).toISOString()
+				else {
+					const parsed = Date.parse(rawDeadline)
+					if (Number.isFinite(parsed)) deadline = new Date(parsed).toISOString()
+				}
+			
 			state.voteBallots[eventId] = {
 				channelId,
-				deadline: content.deadline || null,
+				deadline,
 				question: content.question || '',
 				options: content.options || [],
 				sender: event.sender,

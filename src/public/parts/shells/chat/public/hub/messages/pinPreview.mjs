@@ -42,8 +42,6 @@ export function pinPreviewTemplateFields(descriptor) {
  * @returns {{ i18n?: string, params?: Record<string, string>, text?: string }} 摘要描述
  */
 function previewFromMessage(message) {
-	const text = getMessageText(message).trim().replace(/\s+/gu, ' ')
-	if (!text) return { text: '' }
 	const kind = channelMessageKind(message?.content)
 	if (kind === 'sticker') return { i18n: 'chat.hub.pinPreviewSticker' }
 	if (kind === 'vote') {
@@ -54,6 +52,8 @@ function previewFromMessage(message) {
 		const groupName = message.content?.groupName || ''
 		return { i18n: 'chat.hub.pinPreviewInvite', params: { groupName } }
 	}
+	const text = getMessageText(message).trim().replace(/\s+/gu, ' ')
+	if (!text) return { text: '' }
 	return { text: text.length > 40 ? `${text.slice(0, 40)}…` : text }
 }
 

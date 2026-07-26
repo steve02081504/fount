@@ -386,9 +386,9 @@ export function appendVirtualBridgeCharReply(username, groupId, channelId, reply
 		})),
 		extension: {
 			chat: {
+				...reply?.extension?.chat,
 				virtualEventId: eventId,
 				channelId,
-				...reply?.extension?.chat,
 			},
 		},
 	}

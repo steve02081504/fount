@@ -284,7 +284,7 @@ Deno.test('bridgeIngestDto DM triggers plain char GetReply → outbound', async 
 	}, 'dm-bot', CHAR_PLAIN_B)
 
 	await waitUntil(() => outboundLines.some(row =>
-		String(typeof row.content === 'string' ? row.content : (row.content?.content ?? '')).includes('plain_reply_b reply'),
+		typeof row.content === 'string' && row.content.includes('plain_reply_b reply'),
 	), 15000)
 	const session = getVirtualBridgeSession(username, groupId)
 	assert(session.channels.default.logs.some(row =>
@@ -402,7 +402,7 @@ Deno.test('full chain: bridgeIngestDto → GetReply → notifyBridgeOutbound', a
 
 	await waitUntil(() => outboundLines.some(row =>
 		row.charId === CHAR_PLAIN_B
-		|| String(typeof row.content === 'string' ? row.content : (row.content?.content ?? '')).includes('plain_reply_b reply'),
+		|| typeof row.content === 'string' && row.content.includes('plain_reply_b reply'),
 	), 15000)
 })
 
@@ -495,7 +495,7 @@ Deno.test('OnMessage yes char: bridgeIngestDto group triggers outbound', async (
 	}, 'onmsg-bot', CHAR_YES)
 
 	await waitUntil(() => outboundLines.some(row =>
-		String(typeof row.content === 'string' ? row.content : (row.content?.content ?? '')).includes('on_message_yes reply'),
+		typeof row.content === 'string' && row.content.includes('on_message_yes reply'),
 	), 15000)
 	assert(onMessageProbe.events.length >= 1)
 })

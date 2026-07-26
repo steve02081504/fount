@@ -49,7 +49,15 @@ function entryForWorldHook(content) {
 function applyEntryRewriteToContent(content, entry) {
 	const text = entry.content
 	const base = normalizeChannelMessage(content)
-	if (channelMessageKind(base) !== 'text' && !text) return base
+	if (channelMessageKind(base) !== 'text') 
+		if (String(text ?? '') === messageAgentText(base))
+			return {
+				...base,
+				...entry.role ? { role: entry.role } : {},
+				...entry.visibility ? { visibility: entry.visibility } : {},
+				...entry.charVisibility?.length ? { charVisibility: entry.charVisibility } : {},
+			}
+	
 	const { content: _c, content_for_show, content_for_edit, ...extra } = base
 	return channelMessage(text, {
 		...extra,

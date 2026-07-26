@@ -2,8 +2,8 @@
  * 仅本机 chatLog 系统提示（不入 DAG、不联邦）。
  */
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
-
 import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
+
 import { broadcastGroupEvent } from './broadcast.mjs'
 import { getActiveGroupRuntime } from './persistence.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'

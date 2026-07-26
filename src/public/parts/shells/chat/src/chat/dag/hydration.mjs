@@ -103,11 +103,13 @@ export async function buildChatLogEntriesFromChannelLines(lines, baseSlice, i18n
 			const patch = line.content.newContent
 			const previous = edits.get(messageEventId)
 			if (!previous || editedAt >= previous.editedAt) {
-				const isText = channelMessageKind(patch) === 'text'
+				const kind = tryChannelMessageKind(patch)
 				edits.set(messageEventId, {
-					content: messageAgentText(patch) || resolveDagMessageText(patch, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText),
-					content_for_show: isText ? messageShowText(patch) : undefined,
-					content_for_edit: isText ? messageEditText(patch) : undefined,
+					content: kind
+						? messageAgentText(patch) || resolveDagMessageText(patch, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText)
+						: resolveDagMessageText(patch, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText),
+					content_for_show: kind === 'text' ? messageShowText(patch) : undefined,
+					content_for_edit: kind === 'text' ? messageEditText(patch) : undefined,
 					files: patch?.files,
 					editedAt,
 				})
@@ -187,33 +189,70 @@ export function hydrateWireFiles(username, groupId, state, wireFiles) {
 		const description = wire.description ? String(wire.description) : ''
 		/** @type {Buffer | undefined} */
 		let bufferCache
-		let loading = false
+		/** @type {Promise<Buffer> | null} */
+		let loadPromise = null
+		/**
+		 * @returns {Promise<Buffer>} 解密后的附件字节
+		 */
+		const ensureBuffer = () => {
+			if (bufferCache) return Promise.resolve(bufferCache)
+			if (loadPromise) return loadPromise
+			const meta = fileMetaFromState(state, fileId)
+			const cached = meta?.contentHash ? tryReadPlaintextCache(username, meta.contentHash) : null
+			if (cached) {
+				bufferCache = cached
+				return Promise.resolve(bufferCache)
+			}
+			if (!meta) return Promise.resolve(Buffer.alloc(0))
+			loadPromise = getDecryptedFile(username, groupId, meta)
+				.then(bytes => {
+					bufferCache = Buffer.from(bytes)
+					loadPromise = null
+					return bufferCache
+				})
+				.catch(error => {
+					loadPromise = null
+					throw error
+				})
+			return loadPromise
+		}
 		const descriptor = { name, mime_type, description }
 		Object.defineProperty(descriptor, 'buffer', {
 			enumerable: true,
 			/**
-			 * @returns {Buffer} 附件字节（惰性记忆化）
+			 * @returns {Buffer} 附件字节（惰性记忆化；加载中/失败时为空 Buffer）
 			 */
 			get() {
 				if (bufferCache) return bufferCache
-				const meta = fileMetaFromState(state, fileId)
-				const cached = meta?.contentHash ? tryReadPlaintextCache(username, meta.contentHash) : null
-				if (cached) {
-					bufferCache = cached
-					return bufferCache
-				}
-				if (!loading && meta) {
-					loading = true
-					void getDecryptedFile(username, groupId, meta)
-						.then(bytes => { bufferCache = Buffer.from(bytes) })
-						.catch(() => { bufferCache = Buffer.alloc(0) })
-				}
+				void ensureBuffer().catch(() => { /* 失败不写入 cache，允许重试 */ })
 				return bufferCache ?? Buffer.alloc(0)
+			},
+		})
+		Object.defineProperty(descriptor, 'getBuffer', {
+			enumerable: false,
+			/**
+			 * @returns {Promise<Buffer>} 解密后的附件字节（失败则为空 Buffer）
+			 */
+			value() {
+				return ensureBuffer().catch(() => Buffer.alloc(0))
 			},
 		})
 		out.push(descriptor)
 	}
 	return out.length ? out : undefined
+}
+
+/**
+ * @param {object | undefined} content wire
+ * @returns {'text' | 'sticker' | 'vote' | 'group_invite' | 'call' | null} 已知类别；未知为 null
+ */
+function tryChannelMessageKind(content) {
+	try {
+		return channelMessageKind(content)
+	}
+	catch {
+		return null
+	}
 }
 
 /**
@@ -234,6 +273,7 @@ function resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceh
 			|| `[content_ref:${ref.contentHash?.trim().slice(0, 12) || '?'}…]`
 	if (content?.decryptView?.failed || isChannelKeyEncryptedContent(content))
 		return decryptUnavailableText
+	if (!tryChannelMessageKind(content)) return ''
 	const text = messageShowText(content)
 	if (text) return text
 	return ''
@@ -301,12 +341,12 @@ async function buildChatLogEntryFromDagMessage(
 
 	const resolvedShow = resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText) ?? ''
 	const decryptUnavailableFallback = line.decryptView ? decryptUnavailableText : ''
+	const kind = tryChannelMessageKind(content)
 	entry.content = editOverride?.content != null
 		? editOverride.content
-		: messageAgentText(content) || resolvedShow || decryptUnavailableFallback
+		: (kind ? messageAgentText(content) : '') || resolvedShow || decryptUnavailableFallback
 
-	const isText = channelMessageKind(content) === 'text'
-	if (isText) {
+	if (kind === 'text') {
 		const show = editOverride?.content_for_show ?? messageShowText(content)
 		if (show && show !== entry.content) entry.content_for_show = show
 		const edit = editOverride?.content_for_edit ?? messageEditText(content)

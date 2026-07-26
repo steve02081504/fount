@@ -150,33 +150,29 @@ export function sanitizeMessageExtras(content) {
 	delete out.displayAvatar
 	if (!['sticker', 'vote', 'group_invite', 'call'].includes(out.type)) delete out.type
 
-	if (out.extension && typeof out.extension === 'object') {
-		const ext = { .../** @type {Record<string, unknown>} */ out.extension }
-		const chatRaw = ext.chat && typeof ext.chat === 'object'
-			? { .../** @type {Record<string, unknown>} */ ext.chat }
-			: {}
+	const ext = out.extension && typeof out.extension === 'object'
+		? { .../** @type {Record<string, unknown>} */ out.extension }
+		: {}
+	const chatRaw = ext.chat && typeof ext.chat === 'object'
+		? { .../** @type {Record<string, unknown>} */ ext.chat }
+		: {}
 
-		const forwardedFrom = sanitizeForwardedFrom(chatRaw.forwardedFrom ?? out.forwardedFrom)
-		if (forwardedFrom) chatRaw.forwardedFrom = forwardedFrom
-		else delete chatRaw.forwardedFrom
+	const forwardedFrom = sanitizeForwardedFrom(chatRaw.forwardedFrom ?? out.forwardedFrom)
+	if (forwardedFrom) chatRaw.forwardedFrom = forwardedFrom
+	else delete chatRaw.forwardedFrom
 
-		const replyTo = sanitizeReplyTo(chatRaw.replyTo ?? out.replyTo)
-		if (replyTo) chatRaw.replyTo = replyTo
-		else delete chatRaw.replyTo
+	const replyTo = sanitizeReplyTo(chatRaw.replyTo ?? out.replyTo)
+	if (replyTo) chatRaw.replyTo = replyTo
+	else delete chatRaw.replyTo
 
-		delete out.forwardedFrom
-		delete out.replyTo
+	delete out.forwardedFrom
+	delete out.replyTo
 
-		if (Object.keys(chatRaw).length) ext.chat = chatRaw
-		else delete ext.chat
+	if (Object.keys(chatRaw).length) ext.chat = chatRaw
+	else delete ext.chat
 
-		out.extension = Object.keys(ext).length ? ext : undefined
-		if (!out.extension) delete out.extension
-	}
-	else {
-		delete out.forwardedFrom
-		delete out.replyTo
-	}
+	out.extension = Object.keys(ext).length ? ext : undefined
+	if (!out.extension) delete out.extension
 
 	return out
 }

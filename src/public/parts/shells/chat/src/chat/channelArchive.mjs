@@ -227,7 +227,7 @@ export async function exportChannelArchive(username, groupId, channelId) {
 function buildImportContent(msg, source, signer = {}) {
 	const name = String(msg.display?.name || '').trim() || '?'
 	const avatar = msg.display?.avatar ? String(msg.display.avatar).trim() : null
-	const base = msg.content && typeof msg.content === 'object' && msg.content.content != null
+	const base = msg.content && typeof msg.content === 'object'
 		? normalizeChannelMessage(msg.content)
 		: channelMessage(String(msg.content ?? ''))
 
@@ -250,7 +250,7 @@ function buildImportContent(msg, source, signer = {}) {
 	}
 
 	const chat = {
-		...(base.extension?.chat && typeof base.extension.chat === 'object' ? base.extension.chat : {}),
+		...base.extension?.chat && typeof base.extension.chat === 'object' ? base.extension.chat : {},
 		importedFrom,
 		...Object.keys(msg.reactionCounts || {}).length
 			? { importedReactions: msg.reactionCounts }

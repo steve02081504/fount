@@ -2,10 +2,10 @@ import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
 
+import { normalizeChannelMessage } from '../../public/shared/channelContent.mjs'
 import { recordChannelTyping } from '../chat/bridge/typing.mjs'
 import { postChannelMessage } from '../chat/channel/postMessage.mjs'
 import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
-import { normalizeChannelMessage } from '../../public/shared/channelContent.mjs'
 import { buildConversationContext } from '../chat/lib/conversationContext.mjs'
 import { scheduleVoteDeadlines } from '../chat/lib/voteDeadlineWatcher.mjs'
 import { broadcastSignedGroupVolatile } from '../chat/session/broadcast.mjs'

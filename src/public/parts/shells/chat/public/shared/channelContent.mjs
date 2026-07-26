@@ -108,6 +108,7 @@ export function normalizeChannelMessage(input) {
 	if (type === 'sticker') {
 		const emojiRef = String(input.emojiRef || '').trim()
 		const stickerBase64 = String(input.stickerBase64 || '')
+		if (!emojiRef && !stickerBase64) throw new Error('sticker requires emojiRef or stickerBase64')
 		const compactEmoji = emojiRef && /:\[[\w.-]+\/[\w.-]+\](?!:)/.test(emojiRef)
 		return withDisplayFields(input, {
 			type: 'sticker',
@@ -144,7 +145,7 @@ export function normalizeChannelMessage(input) {
 		})
 	}
 
-	if (type === 'call') {
+	if (type === 'call') 
 		return withDisplayFields(input, {
 			type: 'call',
 			callId: String(input.callId || ''),
@@ -156,7 +157,7 @@ export function normalizeChannelMessage(input) {
 			...Array.isArray(input.participants) ? { participants: input.participants.map(String) } : {},
 			...Array.isArray(input.current) ? { current: input.current.map(String) } : {},
 		})
-	}
+	
 
 	throw new Error(`unknown content.type: ${type}`)
 }
@@ -228,12 +229,25 @@ export function mergeInlineImageMarkersIntoContent(content, inlineMarkers, { pre
 	if (!inlineMarkers?.length) return content
 	const isText = channelMessageKind(content) === 'text'
 	const baseText = isText ? messageAgentText(content) : messageShowText(content)
-	const { content: _prev, content_for_show, content_for_edit, ...extra } = normalizeChannelMessage(
-		isText ? content : channelMessage(baseText, { ...content, type: 'text' }),
-	)
-	return channelMessage([baseText, ...inlineMarkers].filter(Boolean).join('\n'), {
-		...extra,
-		...preserveShowEdit && isText && { content_for_show, content_for_edit },
+	const mergedText = [baseText, ...inlineMarkers].filter(Boolean).join('\n')
+	if (isText) {
+		const { content: _prev, content_for_show, content_for_edit, ...extra } = normalizeChannelMessage(content)
+		return channelMessage(mergedText, {
+			...extra,
+			...preserveShowEdit && { content_for_show, content_for_edit },
+		})
+	}
+	return channelMessage(mergedText, {
+		...content.name != null ? { name: content.name } : {},
+		...content.avatar != null ? { avatar: content.avatar } : {},
+		...content.locale != null ? { locale: content.locale } : {},
+		...content.role != null ? { role: content.role } : {},
+		...content.visibility != null ? { visibility: content.visibility } : {},
+		...content.content_warning != null ? { content_warning: content.content_warning } : {},
+		...content.sensitive_media ? { sensitive_media: true } : {},
+		...content.charVisibility?.length ? { charVisibility: content.charVisibility } : {},
+		...content.files?.length ? { files: content.files } : {},
+		...content.extension ? { extension: content.extension } : {},
 	})
 }
 
