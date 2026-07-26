@@ -282,9 +282,11 @@ export function registerGovernanceRoutes(router, authenticate) {
 			throw httpError(404, 'Member not found')
 		const resolvedMember = state.members[resolvedTargetKey]
 		const requiredPermission = action === 'ban' ? PERMISSIONS.BAN_MEMBERS : PERMISSIONS.KICK_MEMBERS
+		const callerEntity = String(member?.entityHash || '').trim().toLowerCase()
+		const ownerEntity = String(resolvedMember?.ownerEntityHash || '').trim().toLowerCase()
 		const isOwnerKickOwnAgent = action === 'kick'
 			&& resolvedMember?.memberKind === 'agent'
-			&& resolvedMember.ownerPubKeyHash === memberKey
+			&& !!(ownerEntity && callerEntity === ownerEntity)
 		const isAdminKickAgent = action === 'kick'
 			&& resolvedMember?.memberKind === 'agent'
 			&& hasPermission(member, PERMISSIONS.ADMIN, state.roles, governanceChannel, state.channelPermissions)
