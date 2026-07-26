@@ -9,10 +9,10 @@ import { parseInlineTokens } from './inlineTokens.mjs'
  */
 export function extractMentionEntityHashes(text) {
 	const hashes = []
-	for (const token of parseInlineTokens(text)) 
+	for (const token of parseInlineTokens(text))
 		if (token.kind === 'entity' && isEntityHash128(token.body))
 			hashes.push(token.body)
-	
+
 	return [...new Set(hashes)]
 }
 
@@ -22,10 +22,10 @@ export function extractMentionEntityHashes(text) {
  */
 export function extractMentionRoleIds(text) {
 	const roleIds = []
-	for (const token of parseInlineTokens(text)) 
+	for (const token of parseInlineTokens(text))
 		if (token.kind === 'role' && token.body)
 			roleIds.push(token.body)
-	
+
 	return [...new Set(roleIds)]
 }
 
@@ -56,16 +56,16 @@ export function buildMentionsStructure(text, options = {}) {
 	const entityHashes = []
 	const roleIds = []
 	let everyone = false
-	for (const token of parseInlineTokens(text)) 
+	for (const token of parseInlineTokens(text))
 		if (token.kind === 'entity' && isEntityHash128(token.body))
 			entityHashes.push(token.body)
 		else if (token.kind === 'role' && canMentionEveryone && token.body)
 			roleIds.push(token.body)
-		else if (token.kind === 'everyone' && canMentionEveryone) 
+		else if (token.kind === 'everyone' && canMentionEveryone)
 			if (token.body === 'everyone') everyone = true
 			else if (token.body === 'here' && ingress === 'live') everyone = true
-		
-	
+
+
 	return {
 		entityHashes: [...new Set(entityHashes)],
 		roleIds: [...new Set(roleIds)],

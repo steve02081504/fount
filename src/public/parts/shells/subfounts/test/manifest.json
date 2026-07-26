@@ -18,10 +18,21 @@
 	"suites": [
 		{
 			"name": "integration",
-			"dependsOn": ["server:live"],
-			"trigger": ["shellBackend", "shellIntegrationTests", "testFramework"],
+			"dependsOn": [
+				"server:live"
+			],
+			"trigger": [
+				"shellBackend",
+				"shellIntegrationTests",
+				"testFramework"
+			],
 			"run": [
-				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/public/parts/shells/subfounts/test/integration/"
 			]

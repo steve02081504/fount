@@ -54,9 +54,9 @@ export function actionButton({ action, attrs = '', icon = '', i18nKey = '', clas
 		const title = extractI18nTitle(raw)
 		if (title) titleAttr = ` title="${escapeHtml(title)}"`
 	}
-	else if (i18nKey) 
+	else if (i18nKey)
 		i18nAttr = ` data-i18n="${i18nKey}"`
-	
+
 	const content = icon || escapeHtml(label)
 	return `<button type="button" class="btn btn-ghost btn-xs message-action ${classes}" data-action="${action}"${titleAttr}${i18nAttr} ${attrs}>${content}</button>`
 }

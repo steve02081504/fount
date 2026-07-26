@@ -85,12 +85,12 @@ export async function resolveEmojiUrlBestEffort(groupId, emojiId) {
 		const entries = await listCustomEmojis()
 		const saved = entries.find(entry => entry?.groupId === groupId && entry?.emojiId === emojiId)?.dataUrl
 		if (saved) {
-			await putCachedEmojiDataUrl(groupId, emojiId, saved).catch(() => {})
+			await putCachedEmojiDataUrl(groupId, emojiId, saved).catch(() => { })
 			return saved
 		}
 	}
 	catch { /* empty */ }
 	const fromApi = await fetchGroupEmojiDataUrl(groupId, emojiId).catch(() => null)
-	if (fromApi) await putCachedEmojiDataUrl(groupId, emojiId, fromApi).catch(() => {})
+	if (fromApi) await putCachedEmojiDataUrl(groupId, emojiId, fromApi).catch(() => { })
 	return fromApi
 }

@@ -756,9 +756,9 @@ export async function buildTelegramTextAndEntities(username, text) {
 			})
 			output += mentionText
 		}
-		else 
+		else
 			output += rev?.displayName || hash.slice(64, 72)
-		
+
 		lastIndex = start + match[0].length
 	}
 	output += text.slice(lastIndex)

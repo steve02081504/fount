@@ -62,7 +62,7 @@ export const AUDIO_BPS = 32_000
 export function safeClose(resource) {
 	try {
 		const closing = resource?.close?.()
-		void closing?.catch?.(() => {})
+		void closing?.catch?.(() => { })
 	}
 	catch { /* ignore */ }
 }

@@ -330,12 +330,12 @@ export async function loadMessages() {
 			store.messages.lastMessageId = null
 			return
 		}
-		if (!softReload) 
+		if (!softReload)
 			if (store.messages.firstUnreadEventId)
 				setPendingScrollTarget(store.messages.firstUnreadEventId)
 			else
 				consumePendingScrollTarget()
-		
+
 		if (store.messages.channelMessagePipeline)
 			await store.messages.channelMessagePipeline.refresh()
 		else {
@@ -347,7 +347,7 @@ export async function loadMessages() {
 		updateLastMessageId()
 		// 有未读时滚到分割线；打开频道即标已读（badge 清零），分割线锚点保留到下次 load
 		if (!softReload && !store.messages.firstUnreadEventId) scrollToBottom()
-		await markCurrentChannelRead().catch(() => {})
+		await markCurrentChannelRead().catch(() => { })
 		refreshChannelPinsBar()
 		saveChannelViewCache()
 		void import('../memberReadMarkers.mjs').then(({ fetchMemberReadMarkers }) => {

@@ -1299,7 +1299,22 @@
 			"settingsAutoReplyTokenBucketHint": "有効になった後、各キャラクターはチャンネルごとにトークン バケットを維持します。バケットが空の場合、onMessage は一時的にトリガーされないため、ピーク時の継続的な画面更新が妨げられる可能性があります。",
 			"settingsIceServers": "ICE/TURNサーバー",
 			"settingsIceServersAdd": "サーバーの追加",
-			"settingsIceServersHint": "WebRTC およびフェデレーション P2P の浸透に使用されます。 TURN 資格情報はローカルで実体化された設定のみを保持し、フェデレーションを通じてブロードキャストされません。",
+			"settingsIceServersHint": "WebRTC およびフェデレーション P2P の NAT 越えに使います。TURN のユーザー名とパスワードはこの端末にのみ保存され、フェデレーションには同期されません。",
+			"settingsIceUrl": {
+				"aria-label": "ICE サーバーのアドレス",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "TURN ユーザー名",
+				"placeholder": "ユーザー名（任意）"
+			},
+			"settingsIceCred": {
+				"aria-label": "TURN パスワード",
+				"placeholder": "パスワード（任意）"
+			},
+			"settingsIceRemove": {
+				"aria-label": "このサーバーを削除"
+			},
 			"settingsFileCeMode": "ファイル暗号化モード",
 			"settingsFileCeModeConvergent": "集中暗号化 (重複を削除可能)",
 			"settingsFileCeModeRandom": "高プライバシー モード (ランダム キー、重複排除なし)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "ステッカー パックを検索…"
 			},
+			"searchLabel": "ステッカーパックを検索",
 			"emptyPacks": "ステッカーパックはまだありません",
 			"packNameLabel": "ステッカーパック名",
 			"packName": {

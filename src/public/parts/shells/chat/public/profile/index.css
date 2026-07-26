@@ -139,13 +139,13 @@
 	gap: 10px;
 }
 
-.profile-item-grid > a {
+.profile-item-grid>a {
 	border: 1px solid transparent;
 	background: color-mix(in srgb, var(--color-base-300) 58%, transparent);
 	transition: border-color 0.16s ease, transform 0.16s ease, background 0.16s ease;
 }
 
-.profile-item-grid > a:hover {
+.profile-item-grid>a:hover {
 	border-color: color-mix(in srgb, var(--profile-accent) 42%, transparent);
 	background: color-mix(in srgb, var(--profile-accent) 8%, var(--color-base-300));
 	transform: translateY(-1px);

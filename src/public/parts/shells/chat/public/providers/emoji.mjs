@@ -97,7 +97,7 @@ async function listTabs(context) {
 	else
 		for (const g of allGroups) ordered.push({ group: g, isCurrent: false })
 
-	for (const { group, isCurrent } of ordered) 
+	for (const { group, isCurrent } of ordered)
 		tabs.push({
 			id: groupTabKey(group.groupId),
 			type: 'group',
@@ -108,7 +108,7 @@ async function listTabs(context) {
 			glyph: isCurrent ? CURRENT_GROUP_EMOJI_TAB_GLYPH : GROUP_EMOJI_TAB_GLYPH,
 			i18nKey: isCurrent ? 'chat.hub.currentGroupEmojiTab' : null,
 		})
-	
+
 
 	const { order } = await loadUnicodeEmojiByGroup()
 	for (const groupName of order)
@@ -137,7 +137,7 @@ async function loadTabItems(tab, context) {
 	}
 
 	const groupId = tab.groupId || extractGroupIdFromTabKey(tab.id)
-	if (groupId) 
+	if (groupId)
 		try {
 			const items = await loadGroupItems(groupId)
 			if (!items.length)
@@ -147,7 +147,7 @@ async function loadTabItems(tab, context) {
 		catch {
 			return { items: [], errorI18n: 'chat.hub.groupEmojisLoadFailed' }
 		}
-	
+
 
 	const { byGroup, order } = await loadUnicodeEmojiByGroup()
 	const groupName = tab.groupName || unicodeEmojiGroupFromTabKey(tab.id, order)

@@ -132,7 +132,7 @@ export async function publishPost() {
 	const draftId = state.activeDraftId
 	await socialApi('/posts', { method: 'POST', body: JSON.stringify(body) })
 	if (draftId)
-		await socialApi(`/drafts/${encodeURIComponent(draftId)}`, { method: 'DELETE' }).catch(() => {})
+		await socialApi(`/drafts/${encodeURIComponent(draftId)}`, { method: 'DELETE' }).catch(() => { })
 	await clearComposer()
 	if (isScheduled)
 		showToastI18n('success', 'social.composer.scheduleSuccess')

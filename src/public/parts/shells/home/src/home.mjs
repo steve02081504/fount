@@ -59,12 +59,12 @@ export async function loadHomeRegistry(username) {
 	}
 
 	const interfaceEntries = await loadRegistryJsonEntries(username, 'home_interfaces')
-	for (const { data } of interfaceEntries) 
+	for (const { data } of interfaceEntries)
 		for (const [key, list] of Object.entries(data || {})) {
 			if (!Array.isArray(list)) continue
 			((user_home_registry.home_interfaces ??= {})[key] ??= []).push(...list)
 		}
-	
+
 }
 
 /**

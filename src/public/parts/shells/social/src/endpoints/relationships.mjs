@@ -17,7 +17,7 @@ const TOGGLE_RELATIONSHIPS = [
  * @returns {void}
  */
 export function registerRelationshipsRoutes(router) {
-	for (const { path, flag, on, off } of TOGGLE_RELATIONSHIPS) 
+	for (const { path, flag, on, off } of TOGGLE_RELATIONSHIPS)
 		router.post(`/api/parts/shells\\:social/relationships/${path}`, authenticate, socialJson(async (req, { client }) => {
 			const target = req.body?.entityHash
 			if (!target) throw httpError(400, 'entityHash required')
@@ -25,7 +25,7 @@ export function registerRelationshipsRoutes(router) {
 				? await client[off](target)
 				: await client[on](target)
 		}))
-	
+
 
 	router.post('/api/parts/shells\\:social/relationships/follow-approve', authenticate, socialJson(async (req, { client }) => {
 		const followerPubKeyHex = String(req.body?.followerPubKeyHex || '')

@@ -1266,6 +1266,21 @@ export type LocaleData = {
 			settingsIceServers: string
 			settingsIceServersAdd: string
 			settingsIceServersHint: string
+			settingsIceUrl: {
+				'aria-label': string
+				placeholder: string
+			}
+			settingsIceUser: {
+				'aria-label': string
+				placeholder: string
+			}
+			settingsIceCred: {
+				'aria-label': string
+				placeholder: string
+			}
+			settingsIceRemove: {
+				'aria-label': string
+			}
 			settingsFileCeMode: string
 			settingsFileCeModeConvergent: string
 			settingsFileCeModeRandom: string
@@ -2877,6 +2892,7 @@ export type LocaleData = {
 			search: {
 				placeholder: string
 			}
+			searchLabel: string
 			emptyPacks: string
 			packNameLabel: string
 			packName: {

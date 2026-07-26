@@ -1299,7 +1299,22 @@
 			"settingsAutoReplyTokenBucketHint": "Après avoir été activé, chaque personnage conserve un compartiment de jetons par canal ; onMessage n'est pas déclenché temporairement lorsque le compartiment est vide, ce qui peut empêcher le rafraîchissement continu de l'écran pendant les périodes de pointe.",
 			"settingsIceServers": "Serveur ICE/TURN",
 			"settingsIceServersAdd": "Ajouter un serveur",
-			"settingsIceServersHint": "Utilisé pour la pénétration WebRTC et P2P fédérée ; Les informations d'identification TURN conservent uniquement les paramètres matérialisés locaux et ne sont pas diffusées via la fédération.",
+			"settingsIceServersHint": "Pour le traversal NAT WebRTC et P2P fédéré. Le nom d’utilisateur et le mot de passe TURN sont stockés uniquement sur cet appareil et ne sont pas synchronisés via la fédération.",
+			"settingsIceUrl": {
+				"aria-label": "Adresse du serveur ICE",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "Nom d’utilisateur TURN",
+				"placeholder": "Nom d’utilisateur (facultatif)"
+			},
+			"settingsIceCred": {
+				"aria-label": "Mot de passe TURN",
+				"placeholder": "Mot de passe (facultatif)"
+			},
+			"settingsIceRemove": {
+				"aria-label": "Supprimer ce serveur"
+			},
 			"settingsFileCeMode": "Mode de cryptage des fichiers",
 			"settingsFileCeModeConvergent": "Cryptage convergent (peut supprimer les doublons)",
 			"settingsFileCeModeRandom": "Mode haute confidentialité (clés aléatoires, pas de déduplication)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "Rechercher des packs…"
 			},
+			"searchLabel": "Rechercher des packs de stickers",
 			"emptyPacks": "Aucun pack pour l'instant",
 			"packNameLabel": "Nom du pack",
 			"packName": {

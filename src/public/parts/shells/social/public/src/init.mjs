@@ -105,7 +105,7 @@ function connectFeedWebSocket(attempt = 0) {
 export async function bootstrap() {
 	socialGate.markPending()
 	try {
-		await loadAliases().catch(() => {})
+		await loadAliases().catch(() => { })
 		document.getElementById('postButton')?.addEventListener('click', () => { void afterPublishPost() })
 		document.getElementById('composeNavButton')?.addEventListener('click', () => {
 			void focusComposer({ switchToFeed: true })
@@ -208,7 +208,7 @@ export async function bootstrap() {
 			const [groupId, channelId] = select.value.split('\t')
 			if (!groupId) return
 			const label = select.selectedOptions[0]?.textContent
-			|| groupRefLabel({ groupId, channelId })
+				|| groupRefLabel({ groupId, channelId })
 			setPendingGroupRef(groupId, channelId, label)
 		})
 

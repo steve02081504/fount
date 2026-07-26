@@ -3,23 +3,23 @@
 	<div class="form-control gap-3 py-4">
 		<label class="label"><span class="label-text" data-i18n="chat.hub.notifyPrefs.mode"></span></label>
 		<label class="label cursor-pointer justify-start gap-2">
-			<input type="radio" name="notifyMode" value="all" class="radio radio-sm" ${mode === 'all' ? 'checked' : ''} />
+			<input type="radio" name="notifyMode" value="all" class="radio radio-sm" ${mode==='all' ? 'checked' : '' } />
 			<span data-i18n="chat.hub.notifyPrefs.modeAll"></span>
 		</label>
 		<label class="label cursor-pointer justify-start gap-2">
-			<input type="radio" name="notifyMode" value="mentions" class="radio radio-sm" ${mode === 'mentions' ? 'checked' : ''} />
+			<input type="radio" name="notifyMode" value="mentions" class="radio radio-sm" ${mode==='mentions' ? 'checked' : '' } />
 			<span data-i18n="chat.hub.notifyPrefs.modeMentions"></span>
 		</label>
 		<label class="label cursor-pointer justify-start gap-2">
-			<input type="radio" name="notifyMode" value="nothing" class="radio radio-sm" ${mode === 'nothing' ? 'checked' : ''} />
+			<input type="radio" name="notifyMode" value="nothing" class="radio radio-sm" ${mode==='nothing' ? 'checked' : '' } />
 			<span data-i18n="chat.hub.notifyPrefs.modeNothing"></span>
 		</label>
 		<label class="label cursor-pointer justify-start gap-2">
-			<input type="checkbox" name="suppressEveryone" class="checkbox checkbox-sm" ${suppressEveryone ? 'checked' : ''} />
+			<input type="checkbox" name="suppressEveryone" class="checkbox checkbox-sm" ${suppressEveryone ? 'checked' : '' } />
 			<span data-i18n="chat.hub.notifyPrefs.suppressEveryone"></span>
 		</label>
 		<label class="label cursor-pointer justify-start gap-2">
-			<input type="checkbox" name="suppressRoles" class="checkbox checkbox-sm" ${suppressRoles ? 'checked' : ''} />
+			<input type="checkbox" name="suppressRoles" class="checkbox checkbox-sm" ${suppressRoles ? 'checked' : '' } />
 			<span data-i18n="chat.hub.notifyPrefs.suppressRoles"></span>
 		</label>
 		<label class="label"><span class="label-text" data-i18n="chat.hub.notifyPrefs.mute"></span></label>

@@ -90,7 +90,7 @@ export async function renderMembers(context) {
 				profileName: member.displayName,
 			})
 			: String(member.displayName || '').trim()
-				|| authorDisplayLabel(memberKey)
+			|| authorDisplayLabel(memberKey)
 		return { member, memberKey, entityHash, label }
 	})
 	const labels = disambiguateLabels(labelItems)

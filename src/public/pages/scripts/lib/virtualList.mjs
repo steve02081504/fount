@@ -228,13 +228,13 @@ export function createVirtualList({
 		// 移除头部多余元素
 		for (let i = state.startIndex; i < retainStart; i++) {
 			const element = state.renderedElements.get(i)
-			if (element && getItemKey) 
+			if (element && getItemKey)
 				for (const [key, cached] of state.keyedCache)
 					if (cached.element === element) {
 						state.keyedCache.delete(key)
 						break
 					}
-			
+
 			element?.remove()
 			state.renderedElements.delete(i)
 		}
@@ -248,13 +248,13 @@ export function createVirtualList({
 		const queueEndIndex = state.startIndex + state.queue.length - 1
 		for (let i = queueEndIndex; i > retainEnd; i--) {
 			const element = state.renderedElements.get(i)
-			if (element && getItemKey) 
+			if (element && getItemKey)
 				for (const [key, cached] of state.keyedCache)
 					if (cached.element === element) {
 						state.keyedCache.delete(key)
 						break
 					}
-			
+
 			element?.remove()
 			state.renderedElements.delete(i)
 		}
@@ -523,13 +523,13 @@ export function createVirtualList({
 		await getMutex()
 		try {
 			const element = state.renderedElements.get(index)
-			if (element && getItemKey) 
+			if (element && getItemKey)
 				for (const [key, cached] of state.keyedCache)
 					if (cached.element === element) {
 						state.keyedCache.delete(key)
 						break
 					}
-			
+
 			state.queue.splice(queueIndex, 1)
 			state.totalCount--
 			element?.remove()

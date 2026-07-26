@@ -33,15 +33,19 @@ Deno.test('buildNotifications includes like repost follow reply mention', async 
 		{ type: 'follow', content: { targetEntityHash: operator, rep_edge: 1 } },
 		{ type: 'like', content: { targetEntityHash: operator, targetPostId: parent.id } },
 		{ type: 'repost', content: { targetEntityHash: operator, targetPostId: parent.id, comment: 'nice' } },
-		{ type: 'post', content: {
-			text: `reply @${operator}`,
-			visibility: 'public',
-			replyTo: { entityHash: operator, postId: parent.id },
-		} },
-		{ type: 'post', content: {
-			text: `hello @[entity:${operator}] there`,
-			visibility: 'public',
-		} },
+		{
+			type: 'post', content: {
+				text: `reply @${operator}`,
+				visibility: 'public',
+				replyTo: { entityHash: operator, postId: parent.id },
+			}
+		},
+		{
+			type: 'post', content: {
+				text: `hello @[entity:${operator}] there`,
+				visibility: 'public',
+			}
+		},
 	])
 
 	await following.setFollow(username, operator, remoteOwner, true)

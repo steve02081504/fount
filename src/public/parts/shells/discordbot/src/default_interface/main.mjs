@@ -262,7 +262,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				return firstMessageId != null ? { platformMessageId: firstMessageId } : {}
 			})
 			outboundRegistered.add(groupId)
-			if (!isBridgeGroupBackfilled(ownerUsername, groupId)) 
+			if (!isBridgeGroupBackfilled(ownerUsername, groupId))
 				try {
 					// 回填触发本次映射的平台频道（DM 时 platformChatId 即频道）；须在触发消息入 log 前完成
 					const targetChannelId = sourceDto?.platformThreadId
@@ -290,7 +290,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					markBridgeGroupBackfilled(ownerUsername, groupId)
 				}
 				catch (error) { console.error('[DiscordBridge] history backfill failed:', error) }
-			
+
 		}
 
 		/**

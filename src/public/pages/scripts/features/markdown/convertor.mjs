@@ -784,20 +784,20 @@ const button = this
 	try {
 		await navigator.clipboard.writeText(document.querySelector('#${uniqueId} pre').innerText)
 		${isStandalone
-			? `tooltip.dataset.tip = '${geti18n('util.code_block.copied.dataset.tip')}'`
-			: 'tooltip.dataset.i18n = \'util.code_block.copied\''
+				? `tooltip.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('util.code_block.copied.dataset.tip')))})`
+				: 'tooltip.dataset.i18n = \'util.code_block.copied\''
 }
 		button.innerHTML = ${JSON.stringify(successIconSized)}
 	} catch (e) {
 		${isStandalone
-			? 'alert(\'Failed to copy: \' + e.message)'
-			: 'const { showToastI18n } = await import(\'/scripts/features/toast.mjs\'); showToastI18n(\'error\', \'util.code_block.copy_failed\', { error: e.message })'
+				? 'alert(\'Failed to copy: \' + e.message)'
+				: 'const { showToastI18n } = await import(\'/scripts/features/toast.mjs\'); showToastI18n(\'error\', \'util.code_block.copy_failed\', { error: e.message })'
 }
 	}
 	setTimeout(() => {
 		${isStandalone
-			? `tooltip.dataset.tip = '${geti18n('util.code_block.copy.dataset.tip')}'`
-			: 'tooltip.dataset.i18n = \'util.code_block.copy\''
+				? `tooltip.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('util.code_block.copy.dataset.tip')))})`
+				: 'tooltip.dataset.i18n = \'util.code_block.copy\''
 }
 		button.innerHTML = ${JSON.stringify(copyIconSized)}
 	}, 2000)
@@ -869,13 +869,13 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	button.innerHTML = \${JSON.stringify(successSvg)}
 	setTimeout(() => button.innerHTML = \${JSON.stringify(copySvg)}, 2000)
 	${isStandalone
-				? `button.parentElement.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('util.code_block.copied.dataset.tip')))})`
-				: 'button.parentElement.dataset.i18n = \'util.code_block.copied\''
+					? `button.parentElement.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('util.code_block.copied.dataset.tip')))})`
+					: 'button.parentElement.dataset.i18n = \'util.code_block.copied\''
 }
 }).catch(error => {
 	${isStandalone
-				? 'alert(\'Failed to copy: \' + error.message)'
-				: 'import(\'/scripts/features/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'util.code_block.copy_failed\', { error: error.message }))'
+					? 'alert(\'Failed to copy: \' + error.message)'
+					: 'import(\'/scripts/features/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'util.code_block.copy_failed\', { error: error.message }))'
 }
 })
 \`

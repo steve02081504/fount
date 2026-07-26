@@ -26,25 +26,43 @@
 	"suites": [
 		{
 			"name": "pure",
-			"trigger": ["shellPureTests", "testFramework"],
+			"trigger": [
+				"shellPureTests",
+				"testFramework"
+			],
 			"run": [
-				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/public/parts/shells/telegrambot/test/pure/"
 			]
 		},
 		{
 			"name": "integration",
-			"trigger": ["shellIntegrationTests", "testFramework"],
+			"trigger": [
+				"shellIntegrationTests",
+				"testFramework"
+			],
 			"run": [
-				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/public/parts/shells/telegrambot/test/integration/"
 			]
 		},
 		{
 			"name": "frontend",
-			"dependsOn": ["server:live"],
+			"dependsOn": [
+				"server:live"
+			],
 			"trigger": "frontendShared",
 			"subtests": [
 				{
@@ -57,7 +75,15 @@
 					]
 				}
 			],
-			"run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/telegrambot/test/frontend/run.mjs"]
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/telegrambot/test/frontend/run.mjs"
+			]
 		}
 	]
 }

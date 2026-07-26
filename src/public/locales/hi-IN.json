@@ -1297,9 +1297,24 @@
 			"settingsMessageRateLimit": "संदेश दर सीमा (संदेश/मिनट/इकाई)",
 			"settingsAutoReplyTokenBucket": "स्वचालित उत्तर दबाव शेड्यूलिंग (टोकन बाल्टी)",
 			"settingsAutoReplyTokenBucketHint": "सक्षम होने के बाद, प्रत्येक वर्ण चैनल द्वारा एक टोकन बकेट बनाए रखता है; बकेट खाली होने पर ऑनमैसेज अस्थायी रूप से ट्रिगर नहीं होता है, जो पीक अवधि के दौरान निरंतर स्क्रीन रिफ्रेश को बाधित कर सकता है।",
-			"settingsIceServers": "आईसीई/टर्न सर्वर",
+			"settingsIceServers": "ICE / TURN सर्वर",
 			"settingsIceServersAdd": "सर्वर जोड़ें",
-			"settingsIceServersHint": "WebRTC और फ़ेडरेटेड P2P नेटवर्किंग के लिए; TURN क्रेडेंशियल केवल इस डिवाइस पर सहेजे जाते हैं, फ़ेडरेशन पर प्रसारित नहीं होते।",
+			"settingsIceServersHint": "WebRTC और फ़ेडरेटेड P2P के NAT traversal के लिए। TURN उपयोगकर्ता नाम और पासवर्ड केवल इस डिवाइस पर सहेजे जाते हैं, फ़ेडरेशन पर सिंक नहीं होते।",
+			"settingsIceUrl": {
+				"aria-label": "ICE सर्वर पता",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "TURN उपयोगकर्ता नाम",
+				"placeholder": "उपयोगकर्ता नाम (वैकल्पिक)"
+			},
+			"settingsIceCred": {
+				"aria-label": "TURN पासवर्ड",
+				"placeholder": "पासवर्ड (वैकल्पिक)"
+			},
+			"settingsIceRemove": {
+				"aria-label": "यह सर्वर हटाएँ"
+			},
 			"settingsFileCeMode": "फ़ाइल एन्क्रिप्शन मोड",
 			"settingsFileCeModeConvergent": "अभिसारी एन्क्रिप्शन (डुप्लिकेट हटा सकते हैं)",
 			"settingsFileCeModeRandom": "उच्च गोपनीयता मोड (यादृच्छिक कुंजियाँ, कोई डुप्लिकेशन नहीं)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "स्टिकर पैक खोजें…"
 			},
+			"searchLabel": "स्टिकर पैक खोजें",
 			"emptyPacks": "अभी तक कोई स्टिकर पैक नहीं है",
 			"packNameLabel": "स्टीकर पैक का नाम",
 			"packName": {

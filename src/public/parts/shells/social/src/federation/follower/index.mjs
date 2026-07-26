@@ -282,7 +282,7 @@ export async function rebuildFollowerIndex() {
 	await mkdir(bucketsDir, { recursive: true })
 	for (const name of await readdir(bucketsDir).catch(() => [])) {
 		if (!name.endsWith('.json')) continue
-		await unlink(path.join(bucketsDir, name)).catch(() => {})
+		await unlink(path.join(bucketsDir, name)).catch(() => { })
 	}
 	followerEntryCache.clear()
 	for (const [bucketId, targets] of Object.entries(scratch)) {

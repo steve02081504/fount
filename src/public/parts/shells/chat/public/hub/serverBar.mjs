@@ -38,7 +38,7 @@ export async function persistGroupFolders() {
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ folders: store.sidebar.groupFoldersState.folders }),
-	}).catch(() => {})
+	}).catch(() => { })
 }
 
 /**
@@ -64,10 +64,10 @@ export function computeOrderedSidebarGroupIds() {
 				order.push(groupId)
 			}
 		}
-		for (const group of sidebarGroups) 
+		for (const group of sidebarGroups)
 			if (!used.has(group.groupId))
 				order.push(group.groupId)
-		
+
 	}
 	else
 		for (const group of sidebarGroups)

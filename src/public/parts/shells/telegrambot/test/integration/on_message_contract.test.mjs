@@ -50,7 +50,7 @@ function createFakeTelegraf(options = {}) {
 		/**
 		 * @returns {Promise<void>} typing
 		 */
-		sendChatAction: async () => {},
+		sendChatAction: async () => { },
 		/**
 		 * @param {string | number} id 用户/群 id
 		 * @returns {Promise<object>} 假 chat

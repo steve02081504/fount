@@ -88,9 +88,9 @@ export async function scrollToMessageEventId(eventId) {
 
 	setPendingHighlightEventId(norm)
 
-	if (findMessageViewIndex(norm) >= 0 && store.messages.channelMessagePipeline) 
+	if (findMessageViewIndex(norm) >= 0 && store.messages.channelMessagePipeline)
 		await store.messages.channelMessagePipeline.refresh()
-	
+
 	else {
 		rebuildVirtualListAtEvent(container, norm)
 		if (store.messages.channelMessagePipeline)

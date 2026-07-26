@@ -436,7 +436,7 @@ async function appendFriendsSearchHit(hit, resultsHost) {
 				return
 			}
 			if (hit.handle || hit.name)
-				await setEntityAlias(hit.entityHash, hit.alias || hit.handle || hit.name).catch(() => {})
+				await setEntityAlias(hit.entityHash, hit.alias || hit.handle || hit.name).catch(() => { })
 			await dispatchFriendChat({
 				type: 'user',
 				displayName: hit.label,

@@ -1298,8 +1298,23 @@
 			"settingsAutoReplyTokenBucket": "Agendamento automático de pressão de resposta (Token Bucket)",
 			"settingsAutoReplyTokenBucketHint": "Após ser habilitado, cada personagem mantém um token bucket por canal; onMessage não é acionado temporariamente quando o bucket está vazio, o que pode inibir a atualização contínua da ecrã durante períodos de pico.",
 			"settingsIceServers": "Servidor ICE/TURN",
-			"settingsIceServersAdd": "Adicionar server",
-			"settingsIceServersHint": "Usado para WebRTC e penetração P2P federada; As credenciais TURN retêm apenas definições materializadas locais e não são transmitidas por meio da federação.",
+			"settingsIceServersAdd": "Adicionar servidor",
+			"settingsIceServersHint": "Para traversal NAT de WebRTC e P2P federado. O nome de utilizador e a palavra-passe TURN ficam apenas neste dispositivo e não são sincronizados pela federação.",
+			"settingsIceUrl": {
+				"aria-label": "Endereço do servidor ICE",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "Nome de utilizador TURN",
+				"placeholder": "Nome de utilizador (opcional)"
+			},
+			"settingsIceCred": {
+				"aria-label": "Palavra-passe TURN",
+				"placeholder": "Palavra-passe (opcional)"
+			},
+			"settingsIceRemove": {
+				"aria-label": "Remover este servidor"
+			},
 			"settingsFileCeMode": "Modo de encriptação de ficheiros",
 			"settingsFileCeModeConvergent": "Encriptação convergente (pode remover duplicatas)",
 			"settingsFileCeModeRandom": "Modo de alta privacidade (chaves aleatórias, sem desduplicação)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "Pesquisar pacotes…"
 			},
+			"searchLabel": "Pesquisar pacotes de autocolantes",
 			"emptyPacks": "Sem pacotes de autocolantes",
 			"packNameLabel": "Nome do pacote",
 			"packName": {

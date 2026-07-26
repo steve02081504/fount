@@ -87,9 +87,9 @@ export async function drainSendQueue() {
 				dequeueOfflineMessage(tempId)
 				// 若当前还在同一频道，触发增量刷新
 				if (store.context.currentGroupId === groupId
-					&& store.context.currentChannelId === channelId) 
+					&& store.context.currentChannelId === channelId)
 					void import('./messages/messages.mjs').then(m => m.scheduleChannelIncrementalRefresh({ immediate: true }))
-				
+
 			}
 			catch { /* 继续尝试下一条 */ }
 		}

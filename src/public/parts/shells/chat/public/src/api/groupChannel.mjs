@@ -20,7 +20,7 @@ import { groupFetch, groupPath } from './groupClient.mjs'
 export async function castChannelVote(groupId, channelId, ballotId, choice) {
 	const data = await groupFetch(
 		groupPath(groupId, 'channels', channelId, 'votes', ballotId, 'cast'),
-		{ method: 'POST', json: { choice }},
+		{ method: 'POST', json: { choice } },
 	)
 	return data.event
 }
@@ -132,7 +132,7 @@ export async function getChannelMessages(groupId, channelId, options = {}) {
 	if (Array.isArray(options.eventIds) && options.eventIds.length) {
 		const data = await groupFetch(
 			groupPath(groupId, 'channels', channelId, 'messages', 'batch-get'),
-			{ method: 'POST', json: { eventIds: options.eventIds }},
+			{ method: 'POST', json: { eventIds: options.eventIds } },
 		)
 		return {
 			messages: data.messages || [],
@@ -190,7 +190,7 @@ export async function getChannelViewLog(groupId, channelId, options = {}) {
 export async function getChannelViewLogByEventIds(groupId, channelId, eventIds) {
 	const data = await groupFetch(
 		groupPath(groupId, 'channels', channelId, 'view-log', 'batch-get'),
-		{ method: 'POST', json: { eventIds }},
+		{ method: 'POST', json: { eventIds } },
 	)
 	return {
 		messages: data.messages || [],

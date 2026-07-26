@@ -1299,7 +1299,22 @@
 			"settingsAutoReplyTokenBucketHint": "⏹️🎭📺🎫🪣；🈳⏸️⚡📨，📉📈📨",
 			"settingsIceServers": "🔀🌐／🔄📡🖥️",
 			"settingsIceServersAdd": "➕🖥️",
-			"settingsIceServersHint": "🌐📞➕🌐P2P🔀；🔄📡🔐💻⚙️，🚫🌐📡",
+			"settingsIceServersHint": "🌐📞➕🌐P2P🔀NAT；TURN👤🔑💻only，🚫🌐🔄",
+			"settingsIceUrl": {
+				"aria-label": "ICE🖥️📍",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "TURN👤",
+				"placeholder": "👤（optional）"
+			},
+			"settingsIceCred": {
+				"aria-label": "TURN🔑",
+				"placeholder": "🔑（optional）"
+			},
+			"settingsIceRemove": {
+				"aria-label": "🗑️🖥️"
+			},
 			"settingsFileCeMode": "📁🔐🎛️",
 			"settingsFileCeModeConvergent": "🔄🔐（♻️）",
 			"settingsFileCeModeRandom": "🔒⬆️（🎲🔑，🚫♻️）",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "🔍🏷️📦…"
 			},
+			"searchLabel": "🔍📦",
 			"emptyPacks": "📭🏷️📦",
 			"packNameLabel": "🏷️📦🏷️",
 			"packName": {

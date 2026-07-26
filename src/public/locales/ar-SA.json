@@ -1297,9 +1297,24 @@
 			"settingsMessageRateLimit": "حد معدل الرسائل (رسالة/دقيقة/كيان)",
 			"settingsAutoReplyTokenBucket": "جدولة ضغط الرد التلقائي (دلو الرمز المميز)",
 			"settingsAutoReplyTokenBucketHint": "بعد التمكين، يحتفظ كل حرف بحاوية رمزية لكل قناة؛ لا يتم تشغيل onMessage مؤقتًا عندما تكون الحاوية فارغة، مما قد يمنع التحديث المستمر للشاشة خلال فترات الذروة.",
-			"settingsIceServers": "خادم الجليد / بدوره",
-			"settingsIceServersAdd": "أضف الخادم",
-			"settingsIceServersHint": "يُستخدم لـ WebRTC واختراق P2P الموحد؛ تحتفظ بيانات اعتماد TURN فقط بالإعدادات المادية المحلية ولا يتم بثها من خلال الاتحاد.",
+			"settingsIceServers": "خادم ICE / TURN",
+			"settingsIceServersAdd": "إضافة خادم",
+			"settingsIceServersHint": "يُستخدم لاختراق NAT في WebRTC وP2P الفيدرالي. يُحفظ اسم مستخدم وكلمة مرور TURN على هذا الجهاز فقط ولا تُزامَن عبر الاتحاد.",
+			"settingsIceUrl": {
+				"aria-label": "عنوان خادم ICE",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "اسم مستخدم TURN",
+				"placeholder": "اسم المستخدم (اختياري)"
+			},
+			"settingsIceCred": {
+				"aria-label": "كلمة مرور TURN",
+				"placeholder": "كلمة المرور (اختياري)"
+			},
+			"settingsIceRemove": {
+				"aria-label": "حذف هذا الخادم"
+			},
 			"settingsFileCeMode": "وضع تشفير الملفات",
 			"settingsFileCeModeConvergent": "التشفير المتقارب (يمكن إزالة التكرارات)",
 			"settingsFileCeModeRandom": "وضع الخصوصية العالية (مفاتيح عشوائية، عدم إلغاء البيانات المكررة)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "البحث في حزم الملصقات…"
 			},
+			"searchLabel": "البحث في حزم الملصقات",
 			"emptyPacks": "لا توجد حزم ملصقات",
 			"packNameLabel": "اسم حزمة الملصقات",
 			"packName": {

@@ -52,25 +52,25 @@ export async function handleSocialRpc(username, rpc, ingress = {}) {
 		}
 		case 'social_reaction_pull_request': {
 			const ids = normalizeReactionTarget(rpc.targetEntityHash, rpc.postId)
-			if (!ids) 
+			if (!ids)
 				return {
 					type: 'social_reaction_pull_response',
 					targetEntityHash: String(rpc.targetEntityHash || '').toLowerCase(),
 					postId: String(rpc.postId || '').trim(),
 					events: [],
 				}
-			
+
 			const afterReactor = rpc.afterReactor
 				? String(rpc.afterReactor).trim().toLowerCase()
 				: null
-			if (afterReactor && !parseEntityHash(afterReactor)) 
+			if (afterReactor && !parseEntityHash(afterReactor))
 				return {
 					type: 'social_reaction_pull_response',
 					targetEntityHash: ids.target,
 					postId: ids.postId,
 					events: [],
 				}
-			
+
 			const events = await listReactionEvents(
 				username,
 				ids.target,

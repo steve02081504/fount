@@ -103,7 +103,7 @@
 	min-width: 0;
 }
 
-.settings-panel > * + * {
+.settings-panel>*+* {
 	margin-top: 1rem;
 }
 
@@ -124,7 +124,7 @@
 	padding: 0.85rem 0;
 }
 
-.settings-section + .settings-section {
+.settings-section+.settings-section {
 	border-top: 1px solid color-mix(in srgb, currentColor 8%, transparent);
 }
 
@@ -164,7 +164,7 @@
 	background: color-mix(in srgb, currentColor 3%, transparent);
 }
 
-.settings-advanced > summary {
+.settings-advanced>summary {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -174,11 +174,11 @@
 	list-style: none;
 }
 
-.settings-advanced > summary::-webkit-details-marker {
+.settings-advanced>summary::-webkit-details-marker {
 	display: none;
 }
 
-.settings-advanced > summary::after {
+.settings-advanced>summary::after {
 	content: '›';
 	font-size: 1.5rem;
 	opacity: 0.55;
@@ -186,7 +186,7 @@
 	transition: transform 0.16s ease;
 }
 
-.settings-advanced[open] > summary::after {
+.settings-advanced[open]>summary::after {
 	transform: rotate(-90deg);
 }
 
@@ -208,7 +208,7 @@
 	border-top: 1px solid color-mix(in srgb, currentColor 10%, transparent);
 }
 
-.settings-advanced-body > :first-child {
+.settings-advanced-body> :first-child {
 	margin-top: 1rem;
 }
 
@@ -281,7 +281,7 @@
 	background: color-mix(in srgb, currentColor 4%, transparent);
 }
 
-.settings-role > summary {
+.settings-role>summary {
 	display: flex;
 	align-items: center;
 	gap: 0.55rem;
@@ -291,7 +291,7 @@
 	font-weight: 600;
 }
 
-.settings-role > summary::-webkit-details-marker {
+.settings-role>summary::-webkit-details-marker {
 	display: none;
 }
 
@@ -364,7 +364,7 @@
 		grid-template-columns: 1fr;
 	}
 
-	#audit-log-container > .grid {
+	#audit-log-container>.grid {
 		display: none;
 	}
 

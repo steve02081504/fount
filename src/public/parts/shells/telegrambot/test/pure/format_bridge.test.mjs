@@ -44,12 +44,12 @@ async function dispatchTelegramOutbound({ FormatOutboundReply, replyEntry, plain
 
 	/** @type {string[]} */
 	const htmlParts = []
-	if (cleanMarkdown.trim()) 
+	if (cleanMarkdown.trim())
 		for (const part of splitTelegramReply(aiMarkdownToTelegramHtml(cleanMarkdown))) {
 			htmlParts.push(part)
 			await trackedSend({ text: part })
 		}
-	
+
 	if (stickerIds.length)
 		await trackedSend({ stickerIds })
 	return { path: 'default', htmlParts, stickerIds, sendCalls }

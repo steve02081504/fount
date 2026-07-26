@@ -1022,7 +1022,7 @@ body[data-surface="discovery"] .main-header {
 	font-size: 12px;
 }
 
-.inbox-row-meta > span {
+.inbox-row-meta>span {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;

@@ -67,7 +67,7 @@ export async function loadTopicView(tag) {
 			followButton.textContent = geti18n(isFollowed ? 'social.topic.unfollow' : 'social.topic.follow')
 			followButton.classList.toggle('btn-primary', !isFollowed)
 			followButton.classList.toggle('btn-outline', isFollowed)
-		}).catch(() => {})
+		}).catch(() => { })
 	}
 
 	await loadTopicPosts(normalizedTag, false)

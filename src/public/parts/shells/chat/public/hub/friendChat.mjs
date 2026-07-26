@@ -86,7 +86,7 @@ function enqueueResolveFriendGroup(fn, signal) {
 		throwIfAborted(signal)
 		return fn()
 	})
-	resolveFriendGroupChain = run.catch(() => {})
+	resolveFriendGroupChain = run.catch(() => { })
 	return run
 }
 

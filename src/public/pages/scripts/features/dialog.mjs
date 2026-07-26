@@ -135,8 +135,8 @@ export function pickFromDialog(templateName, data = {}, options = {}) {
 								|| button.getAttribute('data-action')
 								|| 'ok')
 							: button.getAttribute('data-dialog-resolve')
-								|| button.getAttribute('data-action')
-								|| 'ok')
+							|| button.getAttribute('data-action')
+							|| 'ok')
 					}, { once: true })
 			},
 		}).catch(reject)
