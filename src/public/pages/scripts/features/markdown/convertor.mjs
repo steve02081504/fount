@@ -784,7 +784,7 @@ const button = this
 	try {
 		await navigator.clipboard.writeText(document.querySelector('#${uniqueId} pre').innerText)
 		${isStandalone
-				? `tooltip.dataset.tip = '${geti18n('util.code_block.copied.dataset.tip')}'`
+				? `tooltip.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('util.code_block.copied.dataset.tip')))})`
 				: 'tooltip.dataset.i18n = \'util.code_block.copied\''
 }
 		button.innerHTML = ${JSON.stringify(successIconSized)}
@@ -796,7 +796,7 @@ const button = this
 	}
 	setTimeout(() => {
 		${isStandalone
-				? `tooltip.dataset.tip = '${geti18n('util.code_block.copy.dataset.tip')}'`
+				? `tooltip.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('util.code_block.copy.dataset.tip')))})`
 				: 'tooltip.dataset.i18n = \'util.code_block.copy\''
 }
 		button.innerHTML = ${JSON.stringify(copyIconSized)}

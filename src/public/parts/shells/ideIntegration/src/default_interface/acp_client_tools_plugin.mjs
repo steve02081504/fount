@@ -12,7 +12,7 @@
  * - tool_call        → 每次工具调用报告 tool_call / tool_call_update 到 IDE
  * - permission       → 写文件/终端前请求用户授权
  */
-import { defineToolUseBlocks } from '../../../../shells/chat/src/streaming/index.mjs'
+import { defineToolUseBlocks } from '../../../chat/src/streaming/index.mjs'
 import {
 	createTerminal,
 	readTextFile,
@@ -87,8 +87,8 @@ async function requestPermission(acp, toolCallId, title, description) {
 		})
 		return result?.outcome?.outcome === 'selected' && result.outcome.optionId === 'allow'
 	} catch (error) {
-		console.error('requestPermission failed, defaulting to allow:', error)
-		return true
+		console.error('requestPermission failed:', error)
+		return false
 	}
 }
 
@@ -338,31 +338,34 @@ ${canRead ? `\
 				if (cwd) termParams.cwd = cwd
 				if (envVars.length) termParams.env = envVars
 				const terminal = await createTerminal(agentContext, termParams)
+				try {
+					// 将终端嵌入 tool_call 内容以获得实时输出
+					if (acp)
+						sessionUpdate(acp.agentContext, {
+							sessionId: acp.sessionId,
+							update: {
+								sessionUpdate: 'tool_call_update', toolCallId: callId,
+								content: [{ type: 'terminal', terminalId: terminal.id ?? callId }],
+							},
+						})
 
-				// 将终端嵌入 tool_call 内容以获得实时输出
-				if (acp)
-					sessionUpdate(acp.agentContext, {
-						sessionId: acp.sessionId,
-						update: {
-							sessionUpdate: 'tool_call_update', toolCallId: callId,
-							content: [{ type: 'terminal', terminalId: terminal.id ?? callId }],
-						},
+					const exitStatus = await terminal.waitForExit()
+					const outputResult = await terminal.currentOutput()
+
+					const exitCode = exitStatus?.exitCode ?? exitStatus?.signal ?? 'unknown'
+					const output = outputResult?.output ?? ''
+					const truncated = outputResult?.truncated ? ' (truncated)' : ''
+
+					if (acp) reportToolCallEnd(acp, callId, exitCode === 0 ? 'completed' : 'failed', `exit ${exitCode}${truncated}`)
+					args.AddLongTimeLog({
+						role: 'tool', name: 'acp-terminal',
+						content: `$ ${command} ${argsStr}\nexit code: ${exitCode}${truncated}\n\`\`\`\n${output}\n\`\`\``,
+						files: [],
 					})
-
-				const exitStatus = await terminal.waitForExit()
-				const outputResult = await terminal.currentOutput()
-				await terminal.release()
-
-				const exitCode = exitStatus?.exitCode ?? exitStatus?.signal ?? 'unknown'
-				const output = outputResult?.output ?? ''
-				const truncated = outputResult?.truncated ? ' (truncated)' : ''
-
-				if (acp) reportToolCallEnd(acp, callId, exitCode === 0 ? 'completed' : 'failed', `exit ${exitCode}${truncated}`)
-				args.AddLongTimeLog({
-					role: 'tool', name: 'acp-terminal',
-					content: `$ ${command} ${argsStr}\nexit code: ${exitCode}${truncated}\n\`\`\`\n${output}\n\`\`\``,
-					files: [],
-				})
+				}
+				finally {
+					await terminal.release()
+				}
 			} catch (error) {
 				if (acp) reportToolCallEnd(acp, callId, 'failed', error.message)
 				args.AddLongTimeLog({

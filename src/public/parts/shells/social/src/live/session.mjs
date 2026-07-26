@@ -147,7 +147,7 @@ export async function stopLiveSession(username, entityHash, liveId) {
 
 	if (session.link) {
 		const { tearDownLiveLink } = await import('./link.mjs')
-		await tearDownLiveLink(username, owner, id).catch(() => { })
+		await tearDownLiveLink(username, owner, id)
 	}
 
 	session.status = 'ended'
