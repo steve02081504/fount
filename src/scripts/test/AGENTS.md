@@ -22,6 +22,7 @@ Suite packing / optimistic overlap: [docs/resource-scheduling.md](docs/resource-
 - **`dependsOn`**: downstream `blocked(by)` when a dependency is not green-capable. Optimistic overlap while hard deps run: [resource-scheduling.md](docs/resource-scheduling.md).
 - **Live driver**: `live/runner.mjs` — ephemeral nodes, `FOUNT_TEST_NODE_*` env, teardown after. Launch/ping failures return exit 1. Non-worker `env.mjs` sets `process.exitCode = 1` on `unhandledRejection`/`uncaughtException` — otherwise a logged rejection exits 0 (**passed with noise**).
 - **Libs**: import from `core/`, `live/`, `runner/`, `playwright/` — do not reimplement HTTP/WS/state helpers.
+- **Shell module graph**: `shellLoadProbe.mjs` — path resolve + **named export** check (`missingNamed`). Bot/chat/social integration probes assert `missingNamed === []`. When a shell imports another part's `public/shared`, put that shared glob on the consumer suite's triggers.
 
 ## Taxonomy
 

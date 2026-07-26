@@ -9,7 +9,8 @@
 			"src/public/parts/shells/chat/src/**",
 			"src/public/parts/shells/chat/main.mjs",
 			"src/public/parts/shells/chat/fount.json",
-			"src/public/parts/shells/chat/locales.json"
+			"src/public/parts/shells/chat/locales.json",
+			"src/scripts/test/shellLoadProbe.mjs"
 		],
 		"shellLiveCommon": [
 			"src/server/registries.mjs",

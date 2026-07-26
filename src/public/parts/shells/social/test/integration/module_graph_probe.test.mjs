@@ -9,11 +9,12 @@ import { defaultRepoRoot, probeShellPart } from '../../../../../../scripts/test/
 const repoRoot = defaultRepoRoot()
 
 Deno.test('social shell module graph resolves without cross-boundary leaks', async () => {
-	const { backendMissing, publicMissing, crossBoundary } = await probeShellPart({
+	const { backendMissing, publicMissing, crossBoundary, missingNamed } = await probeShellPart({
 		repoRoot,
 		partPath: 'shells/social',
 	})
 	assertEquals(backendMissing, [])
 	assertEquals(publicMissing, [])
 	assertEquals(crossBoundary, [])
+	assertEquals(missingNamed, [])
 })

@@ -9,7 +9,8 @@
 			"src/public/parts/shells/subfounts/src/**",
 			"src/public/parts/shells/subfounts/main.mjs",
 			"src/public/parts/shells/subfounts/fount.json",
-			"src/public/parts/shells/subfounts/locales.json"
+			"src/public/parts/shells/subfounts/locales.json",
+			"src/scripts/test/shellLoadProbe.mjs"
 		],
 		"shellIntegrationTests": [
 			"src/public/parts/shells/subfounts/test/integration/**"

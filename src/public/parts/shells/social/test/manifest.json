@@ -9,7 +9,8 @@
 			"src/public/parts/shells/social/src/**",
 			"src/public/parts/shells/social/main.mjs",
 			"src/public/parts/shells/social/fount.json",
-			"src/public/parts/shells/social/locales.json"
+			"src/public/parts/shells/social/locales.json",
+			"src/scripts/test/shellLoadProbe.mjs"
 		],
 		"shellPureExtra": [
 			"src/public/parts/shells/chat/public/markdown_extensions/**",
