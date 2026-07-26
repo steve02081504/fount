@@ -3,7 +3,7 @@
  * 复测：deno test --no-check --allow-scripts --allow-all src/public/parts/shells/chat/test/integration/events_quarantine.test.mjs
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import {
 	appendQuarantinedEvent,

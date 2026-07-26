@@ -1,7 +1,7 @@
 /**
  * member_leave 经 remoteIngest 在 A 侧触发完整 checkpoint 重建（B 侧 skipCheckpointRebuild 仅用于保留已签名帧供投递）。
  */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { createChatFederationSim } from '../simulation/federation.mjs'
 

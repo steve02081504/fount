@@ -1,5 +1,5 @@
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { recomputeHotPostIndex } from '../../src/chat/archive/hotPostsIndex.mjs'
 import { ARCHIVE_MONTH_WALL_MAX_SKEW_MS, archiveMonthKey, clampArchiveWallMs, isArchiveWallOutOfSkew } from '../../src/chat/archive/settings.mjs'

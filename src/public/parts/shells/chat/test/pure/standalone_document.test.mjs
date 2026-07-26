@@ -2,7 +2,7 @@
  * standaloneDocument：完整离线 HTML 包装（OG / DaisyUI / github-markdown-css / 附件）。
  */
 /* global Deno */
-import { assert, assertStringIncludes } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertStringIncludes } from 'jsr:@std/assert'
 
 import { installMarkdownTestDom } from './markdown_test_dom.mjs'
 

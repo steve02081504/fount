@@ -2,7 +2,7 @@
  * 话题提取与匹配测试。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { extractHashtagsFromText } from '../../src/lib/hashtags.mjs'
 import { postMatchesQuery } from '../../src/lib/postQuery.mjs'

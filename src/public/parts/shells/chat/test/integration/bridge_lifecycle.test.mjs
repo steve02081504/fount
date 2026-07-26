@@ -2,7 +2,7 @@
  * per-bot bridgeOperations 生命周期集成测试（虚拟会话）。
  */
 /* global Deno */
-import { assert, assertEquals, assertThrows } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals, assertThrows } from 'jsr:@std/assert'
 
 import { createIntegrationBoot } from '../harness.mjs'
 

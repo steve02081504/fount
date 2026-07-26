@@ -2,7 +2,7 @@
  * postQuery 纯函数测试（Deno）。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { normalizeSearchQuery, postMatchesQuery } from '../../src/lib/postQuery.mjs'
 

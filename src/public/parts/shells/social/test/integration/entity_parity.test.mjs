@@ -4,7 +4,7 @@
 /* global Deno */
 import { Buffer } from 'node:buffer'
 
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { socialOnMessageProbe } from '../fixtures/probes/socialOnMessageProbe.mjs'
 import { createTestSession, seedAgentChar } from '../harness.mjs'

@@ -1,7 +1,7 @@
 /* global Deno */
 import { Buffer } from 'node:buffer'
 
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 import { entityHashFromRecoveryPubKeyHex } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { keyPairFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 

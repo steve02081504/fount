@@ -2,7 +2,7 @@
  * Discord OnMessage 契约：DM 主人直通、群内 @、角色行 role/uid、回填时序、普通消息不回复。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 import { ChannelType, Events } from 'npm:discord.js'
 
 import {

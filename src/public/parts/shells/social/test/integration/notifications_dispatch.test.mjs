@@ -2,7 +2,7 @@
  * 通知与 dispatch 主流程。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'
 import { createTestSession, seedAgentChar } from '../harness.mjs'

@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { replicatedWorldHookState } from '../fixtures/probes/replicatedWorldHookState.mjs'
 import { createChatFederationSim } from '../simulation/federation.mjs'

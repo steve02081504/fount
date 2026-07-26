@@ -2,7 +2,7 @@
  * Emoji / sticker provider 单测（不依赖 DOM 与 registry 聚合）。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import emojiProvider from '../../public/providers/emoji.mjs'
 import stickerProvider from '../../public/providers/sticker.mjs'

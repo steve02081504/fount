@@ -8,7 +8,7 @@ import {
 	normalizeLocalizedMap,
 	resolveProfilePresentation,
 } from 'fount/public/parts/shells/chat/src/entity/localized.mjs'
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 
 Deno.test('profileBannerFileUrl points at EVFS profile/banner', () => {

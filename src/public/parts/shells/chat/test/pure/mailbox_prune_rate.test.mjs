@@ -4,7 +4,7 @@
 /* global Deno */
 
 import { ms } from 'fount/scripts/ms.mjs'
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 import {
 	MAX_BUCKET_ENTRIES,
 	mailboxBucketKey,

@@ -2,7 +2,7 @@
  * session_world_bind* 的 distribution / homeNodeHash 校验。
  */
 /* global Deno */
-import { assertThrows } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertThrows } from 'jsr:@std/assert'
 
 import { validateSessionEventContent } from '../../src/chat/dag/sessionEventValidate.mjs'
 

@@ -2,7 +2,7 @@
  * WHIP 冒烟：node-datachannel 双端 loopback 媒体轨。
  */
 /* global Deno */
-import { assert } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert } from 'jsr:@std/assert'
 import nodeDataChannel from 'npm:node-datachannel'
 
 

@@ -1,7 +1,7 @@
 /* global Deno */
 import { Buffer } from 'node:buffer'
 
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 import { nextHlc } from 'npm:@steve02081504/fount-p2p/core/hlc'
 import { randomKeyPair } from 'npm:@steve02081504/fount-p2p/crypto'
 

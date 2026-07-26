@@ -2,7 +2,7 @@
  * 同页自回复 thread 合并。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { groupSelfReplyThreads } from '../../public/shared/feedThreads.mjs'
 

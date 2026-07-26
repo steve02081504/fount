@@ -2,7 +2,7 @@
  * 共享 escapeHtml：属性安全（含引号）回归。
  */
 /* global Deno */
-import { assertEquals, assertStringIncludes } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
 import { escapeHtml } from '../../../../../pages/scripts/lib/escapeHtml.mjs'
 

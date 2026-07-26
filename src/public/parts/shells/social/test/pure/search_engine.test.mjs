@@ -8,7 +8,7 @@ import { join } from 'node:path'
 
 import { indexDocument, queryIndex, removeDocument, patchShardMeta } from 'fount/scripts/search/invertedIndex.mjs'
 import { tokenizeForIndex, tokenizeForQuery } from 'fount/scripts/search/tokenize.mjs'
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 Deno.test('tokenize mixes cjk bigrams and latin words', () => {
 	const tokens = tokenizeForIndex('你好世界 hello #tag')

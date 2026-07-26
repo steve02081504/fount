@@ -2,7 +2,7 @@
  * 口味聚类与 for_you 打分纯函数测试。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { isTimelineEventVisibleForFederation } from '../../src/federation/visibility.mjs'
 import { scorePostForYou } from '../../src/feed/ranking.mjs'

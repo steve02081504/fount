@@ -2,7 +2,7 @@
  * WAL 对采纳态 base checkpoint + 不完整 DAG 的放行测试。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { verifyEventsSnapshotWAL } from '../../src/chat/dag/wal.mjs'
 

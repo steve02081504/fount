@@ -1,7 +1,7 @@
 /**
  * 自建群（founder）识别：用于 WS 空闲卸载时避免删盘。
  */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { createChatFederationSim } from '../simulation/federation.mjs'
 

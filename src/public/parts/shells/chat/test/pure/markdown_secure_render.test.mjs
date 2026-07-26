@@ -3,7 +3,7 @@
  * 自产 style/onclick / KaTeX·Mermaid 主题不受影响；输入侧 script / javascript: / 图源 HTML·click·themeCSS 覆盖被忽略。
  */
 /* global Deno */
-import { assertEquals, assertFalse, assertMatch, assertStringIncludes } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals, assertFalse, assertMatch, assertStringIncludes } from 'jsr:@std/assert'
 
 import { installMarkdownTestDom } from './markdown_test_dom.mjs'
 

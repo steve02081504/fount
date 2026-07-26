@@ -2,7 +2,7 @@
  * 消息扩展字段与 member-read-markers 侧车。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { createIntegrationBoot } from '../harness.mjs'
 

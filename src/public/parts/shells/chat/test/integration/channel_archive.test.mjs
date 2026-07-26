@@ -2,7 +2,7 @@
  * 频道归档导出/导入 integration：终态消息、墓碑、来源标记、新频道。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { createIntegrationBoot } from '../harness.mjs'
 

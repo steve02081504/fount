@@ -3,7 +3,7 @@
  * 覆盖 computeOpposingForkBlockTargets：对立分叉分支上治理事件签发者/目标识别、自身排除、入参校验。
  */
 /* global Deno */
-import { assertEquals, assertThrows } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals, assertThrows } from 'jsr:@std/assert'
 
 import { computeOpposingForkBlockTargets } from '../../src/chat/governance/forkBlockOpposing.mjs'
 

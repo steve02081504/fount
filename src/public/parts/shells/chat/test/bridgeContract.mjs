@@ -1,7 +1,7 @@
 /**
  * 虚拟桥接 OnMessage 契约断言（三平台 integration 复用）。
  */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 /**
  * @param {object} event OnMessage 事件

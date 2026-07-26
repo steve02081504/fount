@@ -1,5 +1,5 @@
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { checkEventPermission } from '../../src/chat/dag/authorizeEvent.mjs'
 import { emptyMaterializedState } from '../../src/chat/dag/groupMaterializedState.mjs'

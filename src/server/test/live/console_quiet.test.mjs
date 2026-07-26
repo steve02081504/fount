@@ -9,7 +9,7 @@
  * 该 issue 合入后：改回 `starts: {}`，删掉本段 TODO 与 AutoUpdate 覆盖。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { ms } from '../../../scripts/ms.mjs'
 import { launchNode, stopNode } from '../../../scripts/test/node/launch.mjs'

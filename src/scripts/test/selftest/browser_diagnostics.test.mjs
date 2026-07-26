@@ -2,7 +2,7 @@
  * 浏览器网络诊断聚合与噪声规则。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { detectNoiseHits } from '../core/output_filter.mjs'
 import {

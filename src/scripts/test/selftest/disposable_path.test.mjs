@@ -6,7 +6,7 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { assertThrows } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertThrows } from 'jsr:@std/assert'
 
 import { assertDisposableDataPath } from '../core/disposable_path.mjs'
 import { testDataRoot } from '../core/paths.mjs'

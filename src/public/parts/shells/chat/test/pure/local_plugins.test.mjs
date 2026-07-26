@@ -2,7 +2,7 @@
  * GetChatPlugins merge 优先级（本机同名优先）。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 Deno.test('GetChatPlugins merge：本机同名优先', () => {
 	const worldPlugin = { info: { name: 'shared' }, tag: 'world' }

@@ -4,7 +4,7 @@
  * 而新成员（未 active）擅自携带 roles 提权仍被拒。
  */
 /* global Deno */
-import { assertEquals, assertRejects } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals, assertRejects } from 'jsr:@std/assert'
 
 import { validateJoinPolicy } from '../../src/chat/governance/joinPolicy.mjs'
 

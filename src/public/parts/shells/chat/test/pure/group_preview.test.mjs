@@ -2,7 +2,7 @@
  * 群预览卡片组装：本地 state → discovery → 联邦 fallback。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { assembleGroupPreviewCard } from '../../src/group/groupPreviewCard.mjs'
 

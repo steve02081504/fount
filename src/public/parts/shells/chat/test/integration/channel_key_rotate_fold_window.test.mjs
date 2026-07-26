@@ -1,7 +1,7 @@
 /**
  * 任务 B 实证：`channel_key_rotate(_batch)` 被 owner 折叠进签名 checkpoint 后的窗口期交互。
  */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { createChatFederationSim } from '../simulation/federation.mjs'
 

@@ -2,7 +2,7 @@
  * operator 平台身份认领集成测试（虚拟会话）。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'jsr:@std/assert'
 
 import { createCharBoot, createIntegrationBoot } from '../harness.mjs'
 

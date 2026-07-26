@@ -5,7 +5,7 @@
 
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { ms } from 'fount/scripts/ms.mjs'
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 import {
 	pubKeyHash,
 	publicKeyFromSeed,

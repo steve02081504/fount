@@ -5,7 +5,7 @@
  * 节点 ingest 后都能正确读到，且取消反应（reaction_remove）后该投票者不再出现。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { messageReducers } from '../../src/chat/dag/reducers/messages.mjs'
 import { aggregateReactionsForMessages } from '../../src/group/queries.mjs'

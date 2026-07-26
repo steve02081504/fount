@@ -2,7 +2,7 @@
  * ChatClient 对象模型集成测试。
  */
 /* global Deno */
-import { assert, assertEquals, assertRejects, assertThrows } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals, assertRejects, assertThrows } from 'jsr:@std/assert'
 
 import { createCharBoot, createIntegrationBoot } from '../harness.mjs'
 
