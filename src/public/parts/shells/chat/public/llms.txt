@@ -282,7 +282,7 @@ import 入口：`src/public/parts/shells/chat/src/api/client/index.mjs` → `get
 
 - **统一实体模型**：人类与本机 agent 同为实体；缺省 entityHash = operator。HTTP 路由薄封装恒为 operator；agent 只经本入口绑定自身实体。无私有状态换身份参数。
 - **写事件**：该实体 per-group `local_signer_seed` 自签；权限主体恒为 `sender`。无代签 / `acting*` 归因字段。
-- **对象**：`ChatClient` → `Group` → `Channel` / `Member` / `Role`；`Message` 由 `channel.send` 或 `client.messageFrom(onMessageEvent)` 水合。
+- **对象**：`ChatClient` → `Group` → `Channel` / `Member` / `Role`；`Message` 由 `channel.send` 或 `client.messageFrom(onMessageEvent)` 水合。`Message.content` 恒为 fount 正文（`string`，同 `chatLogEntry_t` / `OnMessage`）；DAG 线载荷在可选的 `sourceContent`。
 - **生命周期**：`createGroup` / `openDm` / `join` 均以绑定实体签名（DM 对端须为可解析用户 pubKeyHash）。
 - **私有状态**：`bookmarks` / `groupFolders` / `aliases` / `readMarkers` / `notifications` / `inbox` / `emojis` / `stickers` / `care` 均挂在绑定实体目录下。
 - **会话 / 联邦 / 节点**：`Group.session.*`、`Group.federation.catchup/setTuning`、`Group.fork/blockOpposingFork`、`Group.reputation`、`ChatClient.reputation`、`ChatClient.nodeDenylist`、`Channel.triggerReply` / `streamingAuth`、`updateProfile` / `updateEntityProfile` / `setOwner`。

@@ -27,6 +27,20 @@ export async function resolveDeclaredOwnerEntityHash(username, entityHash) {
 }
 
 /**
+ * 取归因/桥接用的线载荷：ChatClient `sourceContent` 或尚未投影的 DAG content 对象。
+ * fount chatLog / Message.content（string）不参与。
+ * @param {object} message 消息行或 Message
+ * @returns {object} 线载荷或空对象
+ */
+function wireContentOf(message) {
+	if (message?.sourceContent && typeof message.sourceContent === 'object')
+		return message.sourceContent
+	if (message?.content && typeof message.content === 'object')
+		return message.content
+	return {}
+}
+
+/**
  * 从 OnMessage / Message 行解析密码学作者实体。
  * @param {object} eventOrLine OnMessage 事件或消息行
  * @param {object} [state] 可选物化状态（含 members）
@@ -34,12 +48,16 @@ export async function resolveDeclaredOwnerEntityHash(username, entityHash) {
  */
 export function resolveCryptographicAuthorEntityHash(eventOrLine, state = null) {
 	const message = eventOrLine?.message || eventOrLine
-	const content = message?.content && typeof message.content === 'object' ? message.content : {}
+	const wire = wireContentOf(message)
 	const bridge = message?.extension?.bridge
-		|| content.extension?.bridge
+		|| wire.extension?.bridge
 		|| eventOrLine?.chatReplyRequest?.extension?.bridge
 	if (bridge?.authorEntityHash && isEntityHash128(String(bridge.authorEntityHash)))
 		return String(bridge.authorEntityHash).toLowerCase()
+
+	const uid = String(message?.uid || '').trim().toLowerCase()
+	if (uid && isEntityHash128(uid) && message?.role !== 'char')
+		return uid
 
 	const sender = String(message?.sender || eventOrLine?.sender || '').trim().toLowerCase()
 	if (state?.members && sender) {
@@ -79,12 +97,13 @@ export async function resolveTrustedOwnerContext({
 }) {
 	const declaredOwnerEntityHash = await resolveDeclaredOwnerEntityHash(username, agentEntityHash)
 	const message = eventOrLine?.message || eventOrLine
-	const content = message?.content && typeof message.content === 'object' ? message.content : {}
+	const wire = wireContentOf(message)
 	const signerEntityHash = authorEntityHash || resolveCryptographicAuthorEntityHash(eventOrLine, state)
-	const attribution = deriveMessageAttribution(content, {
-		sender: message?.sender || eventOrLine?.sender,
-		signerEntityHash,
-	})
+	const attribution = message?.extension?.attribution
+		|| deriveMessageAttribution(wire, {
+			sender: message?.sender || eventOrLine?.sender,
+			signerEntityHash,
+		})
 	const isFromOwner = isTrustedOwnerAttribution(attribution, signerEntityHash, declaredOwnerEntityHash)
 	return {
 		declaredOwnerEntityHash,

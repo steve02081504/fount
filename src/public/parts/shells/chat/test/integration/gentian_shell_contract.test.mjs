@@ -75,6 +75,7 @@ Deno.test('Gentian OnMessage: owner repeat command replies inline', async () => 
 	await waitUntil(async () => {
 		const session = getVirtualBridgeSession(username, groupId)
 		const logs = session?.channels.default?.logs || []
+		// fount log 正文为 string；outbound handler 收到的是平台 DTO（{type:'text', content}）
 		return logs.some(row => String(row.content || '').includes('hello gentian'))
 			|| outbound.some(row => String(row.content?.content || '').includes('hello gentian'))
 	}, 15000)
@@ -183,4 +184,104 @@ Deno.test('Gentian OnMessage: isCaredBy recognizes bound owner not stranger', as
 
 	const strangerHash = bridgeEntityHash('telegram', '999999').toLowerCase()
 	assertEquals(await isCaredBy(username, selfHash, strangerHash), false)
+})
+
+Deno.test('Gentian Telegram DM: owner call easter egg then plain message triggers GetReply+typing', async () => {
+	const username = `gentian-dm-${crypto.randomUUID().slice(0, 8)}`
+	const boot = createCharBoot({
+		username,
+		chars: CHAR,
+		/**
+		 * @param {string} user fount 用户名
+		 * @returns {Promise<void>}
+		 */
+		afterInit: async user => {
+			const { loadPart } = await import('fount/server/parts_loader.mjs')
+			const char = await loadPart(user, `chars/${CHAR}`)
+			await char.Load?.({ username: user, router: {} })
+		},
+	})
+	await boot.ensureServer()
+
+	const { loadPart } = await import('fount/server/parts_loader.mjs')
+	const { bridgeIngestDto } = await import('../../src/chat/bridge/interfaceKit.mjs')
+	const { registerBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
+	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
+	const { bindBridgeIdentity } = await import('../../src/chat/bridge/identity.mjs')
+	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
+	const { getVirtualBridgeSession } = await import('../../src/chat/bridge/session.mjs')
+	const { onMessageProbe } = await import('../fixtures/probes/onMessageProbe.mjs')
+
+	onMessageProbe.reset()
+	const operatorHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
+	assert(operatorHash)
+	await bindBridgeIdentity(username, {
+		platform: 'telegram',
+		platformUserId: '77002',
+		entityHash: operatorHash,
+		displayName: 'Owner',
+	})
+
+	const charAPI = await loadPart(username, `chars/${CHAR}`)
+	const platformChatId = 880100 + Math.floor(Math.random() * 1000)
+	const botname = 'gentian-dm-bot'
+	/** @type {string | undefined} */
+	let groupId
+	/** @type {object[]} */
+	const outbound = []
+	/** @type {object[]} */
+	const typingCalls = []
+	registerBridgeOperations(username, 'telegram', botname, {
+		/** @param {object} payload typing 载荷 */
+		sendTyping: async payload => { typingCalls.push(payload) },
+	}, { charname: CHAR })
+
+	/**
+	 * @param {string} text 入站文本
+	 * @param {number} platformMessageId 平台消息 id
+	 * @returns {Promise<void>}
+	 */
+	async function ingest(text, platformMessageId) {
+		await bridgeIngestDto(username, charAPI, 'telegram', {
+			platform: 'telegram',
+			platformChatId,
+			chatKind: 'dm',
+			platformMessageId,
+			author: { platformUserId: '77002', displayName: 'Owner' },
+			text,
+			timestamp: Date.now(),
+		}, async gid => {
+			groupId = gid
+			registerBridgeOutbound(username, gid, async ({ messageLine }) => {
+				outbound.push(messageLine)
+				return { platformMessageId: outbound.length }
+			})
+		}, botname, CHAR)
+	}
+
+	await ingest('龙胆', 901)
+	await waitUntil(() => {
+		const session = getVirtualBridgeSession(username, groupId)
+		const logs = session?.channels.default?.logs || []
+		return logs.some(row => String(row.content || '') === '主人')
+			|| outbound.some(row => String(row.content?.content || '') === '主人')
+	}, 15000)
+
+	const sessionAfterCall = getVirtualBridgeSession(username, groupId)
+	assertEquals(sessionAfterCall?.chatKind, 'dm')
+	assertEquals(onMessageProbe.replies, 0)
+	assertEquals(typingCalls.length, 0)
+	assert(onMessageProbe.decisions.some(row => row.reason === 'command:handled' && row.isFromOwner === true))
+
+	const repliesBefore = onMessageProbe.replies
+	await ingest('活着吗', 902)
+	await waitUntil(() => outbound.some(row =>
+		String(row.content?.content || '').includes('gentian_shell_contract reply')), 15000)
+
+	assert(onMessageProbe.replies > repliesBefore)
+	assert(typingCalls.length >= 1)
+	const lastDecision = onMessageProbe.decisions.at(-1)
+	assertEquals(lastDecision?.isFromOwner, true)
+	assertEquals(lastDecision?.isDm, true)
+	assertEquals(lastDecision?.wantsReply, true)
 })

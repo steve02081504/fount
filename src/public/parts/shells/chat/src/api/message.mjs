@@ -1,3 +1,4 @@
+import { channelMessageAgentText } from '../../public/shared/channelContent.mjs'
 import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
 import { deriveMessageAttribution } from '../chat/lib/attribution.mjs'
 import { messageMentionsEntity } from '../chat/lib/mentionFacts.mjs'
@@ -5,6 +6,27 @@ import { memberEntityHash } from '../entity/member.mjs'
 
 import { normalizeReplyContent } from './internal.mjs'
 import { createMember } from './member.mjs'
+
+/**
+ * ChatClient Message 面向角色的 content 必须是 fount `chatLogEntry_t` 正文（string）。
+ * DAG 线格式（`{ type, content, … }`）只留在 `sourceContent`，供壳层/调试读取。
+ * @param {unknown} raw line.content
+ * @returns {{ content: string, sourceContent: object | undefined }} 规范正文与可选线载荷
+ */
+function resolveFacingContent(raw) {
+	if (typeof raw === 'string') return { content: raw, sourceContent: undefined }
+	if (raw && typeof raw === 'object') {
+		try {
+			if (raw.type)
+				return { content: channelMessageAgentText(raw), sourceContent: raw }
+		}
+		catch { /* 未知 type → 尽量取 text 字段 */ }
+		if (typeof raw.content === 'string')
+			return { content: raw.content, sourceContent: raw }
+		return { content: '', sourceContent: raw }
+	}
+	return { content: String(raw ?? ''), sourceContent: undefined }
+}
 
 /**
  * @param {import('./internal.mjs').ChatApiContext} apiContext API 上下文
@@ -16,14 +38,22 @@ import { createMember } from './member.mjs'
 export function createMessage(apiContext, groupId, line, mentions) {
 	const eventId = String(line.eventId || line.id || '').trim().toLowerCase()
 	const channelId = line.channelId || line.extension?.groupChannelId || 'default'
-	const content = line.content || line
+	const { content, sourceContent } = resolveFacingContent(
+		line.content != null ? line.content : line.type ? line : undefined,
+	)
 	const messageMentions = mentions || line.mentions
 	const signOptions = { entityHash: apiContext.entityHash }
+	const chatLogEntryId = sourceContent?.chatLogEntryId
+		|| line.extension?.chatLogEntryId
+		|| line.chatLogEntryId
 
 	return {
 		eventId,
 		channelId,
+		/** @type {string} fount chatLogEntry 正文 */
 		content,
+		/** DAG / 解密后的线载荷；虚拟桥接与已水合 chatLogEntry 通常为 undefined */
+		...sourceContent ? { sourceContent } : {},
 		files: line.files || [],
 		mentions: messageMentions,
 		time: line.timestamp || line.time_stamp || Date.now(),
@@ -49,13 +79,23 @@ export function createMessage(apiContext, groupId, line, mentions) {
 				const hash = memberEntityHash(member)
 				if (hash) return createMember(apiContext, groupId, hash, member)
 			}
+			// 水合 chatLogEntry：uid / name 已在行上
+			const uid = String(line.uid || sourceContent?.extension?.bridge?.authorEntityHash || '').toLowerCase()
+			if (uid)
+				return createMember(apiContext, groupId, uid, {
+					memberKind: line.role === 'char' || line.charId ? 'agent' : 'user',
+					displayName: line.name || sourceContent?.displayName || uid.slice(64, 72),
+					charname: line.charId,
+				})
 			return null
 		},
 		/**
 		 * @returns {import('../chat/lib/attribution.mjs').MessageAttribution} 归因
 		 */
 		attribution() {
-			const contentObj = content && typeof content === 'object' ? content : {}
+			const contentObj = sourceContent && typeof sourceContent === 'object'
+				? sourceContent
+				: {}
 			return deriveMessageAttribution(contentObj, {
 				sender: line.sender,
 				signerEntityHash: contentObj.importedFrom?.signerEntityHash || null,
@@ -100,7 +140,7 @@ export function createMessage(apiContext, groupId, line, mentions) {
 				content: {
 					targetId: eventId,
 					newContent,
-					chatLogEntryId: content.chatLogEntryId,
+					...chatLogEntryId ? { chatLogEntryId } : {},
 				},
 			}, signOptions)
 		},
@@ -114,7 +154,7 @@ export function createMessage(apiContext, groupId, line, mentions) {
 				timestamp: Date.now(),
 				content: {
 					targetId: eventId,
-					chatLogEntryId: content.chatLogEntryId,
+					...chatLogEntryId ? { chatLogEntryId } : {},
 				},
 			}, signOptions)
 		},

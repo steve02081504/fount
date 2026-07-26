@@ -14,6 +14,7 @@ export function assertOnMessageEventShape(event, expect) {
 	assert(event?.group, 'group missing')
 	assert(event?.channel, 'channel missing')
 	assert(Array.isArray(event.chatReplyRequest.chat_log), 'chat_log must be array')
+	assertEquals(typeof event.message.content, 'string', 'OnMessage message.content must be fount string')
 	assertEquals(event.group.bridge?.platform, expect.platform)
 	if (expect.chatKind)
 		assertEquals(event.group.kind, expect.chatKind === 'dm' ? 'dm' : 'group')
