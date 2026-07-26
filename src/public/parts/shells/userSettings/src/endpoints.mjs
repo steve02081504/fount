@@ -92,7 +92,8 @@ export function setEndpoints(router) {
 		const folderSizeNum = getDirectorySize(userDirectory).then(size => userReqData.directorySize = size)
 		const folderSize = formatBytes(userReqData.directorySize || await folderSizeNum)
 
-		res.json({ username: userReqData.username,
+		res.json({
+			username: userReqData.username,
 			creationDate,
 			folderSize,
 			folderPath: userDirectory

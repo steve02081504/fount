@@ -80,20 +80,20 @@ export function patchEntry(entry, patch, entityHash) {
 	if (patch.mime_type != null) next.mime_type = String(patch.mime_type)
 	if (patch.size != null) next.size = Number(patch.size) || 0
 	if (patch.evfs_path !== undefined) next.evfs_path = patch.evfs_path ? String(patch.evfs_path) : null
-	if (patch.attrs) 
+	if (patch.attrs)
 		next.attrs = {
 			hidden: patch.attrs.hidden != null ? Boolean(patch.attrs.hidden) : next.attrs.hidden,
 			system: patch.attrs.system != null ? Boolean(patch.attrs.system) : next.attrs.system,
 		}
-	
-	if (patch.preview) 
+
+	if (patch.preview)
 		next.preview = {
 			url: patch.preview.url != null ? String(patch.preview.url) : next.preview.url,
 			delete_with_file: patch.preview.delete_with_file != null
 				? Boolean(patch.preview.delete_with_file)
 				: next.preview.delete_with_file,
 		}
-	
+
 	if (patch.encryption !== undefined) next.encryption = patch.encryption
 	if (patch.orphaned !== undefined) next.orphaned = Boolean(patch.orphaned)
 	if (patch.link !== undefined) next.link = patch.link

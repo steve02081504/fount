@@ -245,11 +245,11 @@ export function ensureEmbedHydrator() {
 	ensureEmbedCardCss()
 	hydrateIn(document.body)
 	new MutationObserver(records => {
-		for (const record of records) 
+		for (const record of records)
 			for (const node of record.addedNodes) {
 				if (node.nodeType !== Node.ELEMENT_NODE && node.nodeType !== Node.DOCUMENT_FRAGMENT_NODE) continue
 				hydrateIn(/** @type {ParentNode} */node)
 			}
-		
+
 	}).observe(document.body, { childList: true, subtree: true })
 }

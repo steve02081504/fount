@@ -1299,7 +1299,22 @@
 			"settingsAutoReplyTokenBucketHint": "Nadat het is ingeschakeld, onderhoudt elk personage een token-bucket per kanaal; onMessage wordt niet tijdelijk geactiveerd als de bucket leeg is, wat de continue schermvernieuwing tijdens piekperioden kan belemmeren.",
 			"settingsIceServers": "ICE/TURN-server",
 			"settingsIceServersAdd": "Server toevoegen",
-			"settingsIceServersHint": "Gebruikt voor WebRTC en federatieve P2P-penetratie; TURN-inloggegevens behouden alleen lokaal gerealiseerde instellingen en worden niet via federatie uitgezonden.",
+			"settingsIceServersHint": "Voor WebRTC- en federatieve P2P-NAT-traversal. TURN-gebruikersnaam en -wachtwoord worden alleen lokaal opgeslagen en niet via de federatie gesynchroniseerd.",
+			"settingsIceUrl": {
+				"aria-label": "ICE-serveradres",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "TURN-gebruikersnaam",
+				"placeholder": "Gebruikersnaam (optioneel)"
+			},
+			"settingsIceCred": {
+				"aria-label": "TURN-wachtwoord",
+				"placeholder": "Wachtwoord (optioneel)"
+			},
+			"settingsIceRemove": {
+				"aria-label": "Deze server verwijderen"
+			},
 			"settingsFileCeMode": "Bestandsversleutelingsmodus",
 			"settingsFileCeModeConvergent": "Convergente versleuteling (kan duplicaten verwijderen)",
 			"settingsFileCeModeRandom": "Hoge privacymodus (willekeurige sleutels, geen ontdubbeling)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "Zoek naar stickerpakketten…"
 			},
+			"searchLabel": "Stickerpakketten zoeken",
 			"emptyPacks": "Nog geen stickerpakketten",
 			"packNameLabel": "Naam stickerpakket",
 			"packName": {

@@ -38,9 +38,9 @@ export function setReplyTarget(target) {
 	}
 	renderReplyBanner()
 	const input = document.getElementById('message-input')
-	if (input instanceof HTMLTextAreaElement) 
+	if (input instanceof HTMLTextAreaElement)
 		input.focus()
-	
+
 }
 
 /** @returns {void} */

@@ -45,10 +45,10 @@ export async function createFeedItemBuildContext(username, owners, viewerEntityH
 	function albumsForPost(authorEntityHash, postId) {
 		const owner = String(authorEntityHash).toLowerCase()
 		const view = albumViewCache.get(owner)
-		if (!view) 
+		if (!view)
 			// 同步缓存：物化视图通常已在内存；首次 miss 时用空（异步预热由调用方保证）
 			return []
-		
+
 		return albumsForPostFromView(view, owner, postId, viewerContext)
 	}
 	/**

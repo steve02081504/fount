@@ -63,9 +63,9 @@ let on_shutdown
 let p2p
 
 try {
-	;({ exec } = await import('npm:@steve02081504/exec'))
-	;({ default: inquirer } = await import('npm:inquirer'))
-	;({ on_shutdown } = await import('npm:on-shutdown'))
+	; ({ exec } = await import('npm:@steve02081504/exec'))
+	; ({ default: inquirer } = await import('npm:inquirer'))
+	; ({ on_shutdown } = await import('npm:on-shutdown'))
 	p2p = await import('npm:@steve02081504/fount-p2p')
 	await p2p.startNode({ nodeDir: path.join(__dirname, '.fount-p2p-node') })
 }

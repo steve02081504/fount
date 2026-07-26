@@ -21,7 +21,7 @@ export async function handleTranslate(button, row, channelMessage) {
 		const targetLang = resolveTargetLang()
 		const translated = await requestTranslation('/api/parts/shells:chat/translate', text, targetLang)
 		const bubble = row?.querySelector('.message-content')
-		if (bubble instanceof HTMLElement) 
+		if (bubble instanceof HTMLElement)
 			mountTranslationBlock(bubble, {
 				originalText: text,
 				translatedText: translated,
@@ -29,7 +29,7 @@ export async function handleTranslate(button, row, channelMessage) {
 				showTranslationLabel: geti18n('chat.hub.translateShowTranslation') || 'Translation',
 				translationLabel: geti18n('chat.hub.translateLabel') || '',
 			})
-		
+
 	}
 	catch (error) {
 		showToastI18n('error', 'chat.hub.translateFailed', { error: error?.message || String(error) })

@@ -9,6 +9,7 @@ import { renderTemplate, usingTemplates } from '../../../scripts/features/templa
 import { closeOverlayModal, openOverlayModal } from '../hub/core/overlayModal.mjs'
 
 import { addTrustedAuthor, TRUST_EXPIRES_NEVER } from './trustedAuthors.mjs'
+import { handleUIError } from './ui/errors.mjs'
 
 const COOLDOWN_SECONDS = 5
 const SECOND_CONFIRM_TIMEOUT_MS = 3000
@@ -44,7 +45,7 @@ export function showTrustAuthorDialog(authorPubKeyHash, authorDisplayName = '') 
 
 	return new Promise((resolve) => {
 		void (async () => {
-		/** @type {TrustDurationChoice} */
+			/** @type {TrustDurationChoice} */
 			let selectedDuration = '7d'
 			let cooldownRemaining = COOLDOWN_SECONDS
 			let confirmPhase = 0
@@ -63,8 +64,8 @@ export function showTrustAuthorDialog(authorPubKeyHash, authorDisplayName = '') 
 			]
 
 			/**
-		 * @returns {void}
-		 */
+			 * @returns {void}
+			 */
 			const cleanup = () => {
 				if (cooldownTimer) clearInterval(cooldownTimer)
 				if (secondConfirmResetTimer) clearTimeout(secondConfirmResetTimer)
@@ -72,17 +73,17 @@ export function showTrustAuthorDialog(authorPubKeyHash, authorDisplayName = '') 
 			}
 
 			/**
-		 * @returns {HTMLElement | null} 确认按钮元素
-		 */
+			 * @returns {HTMLElement | null} 确认按钮元素
+			 */
 			const getConfirmButton = () => document.getElementById('trust-author-confirm-button')
 
 			/**
-		 * @returns {void}
-		 */
+			 * @returns {void}
+			 */
 			const updateConfirmButtonLabel = () => {
 				const confirmButton = getConfirmButton()
 				if (!confirmButton) return
-				if (confirmPhase === 0) 
+				if (confirmPhase === 0)
 					if (cooldownRemaining > 0) {
 						confirmButton.disabled = true
 						confirmButton.dataset.i18n = 'chat.hub.trustAuthorDialog.confirmCooldown'
@@ -93,7 +94,7 @@ export function showTrustAuthorDialog(authorPubKeyHash, authorDisplayName = '') 
 						confirmButton.dataset.i18n = 'chat.hub.trustAuthorDialog.confirmFirst'
 						delete confirmButton.dataset.seconds
 					}
-			
+
 				else {
 					confirmButton.disabled = false
 					confirmButton.dataset.i18n = 'chat.hub.trustAuthorDialog.confirmSecond'
@@ -102,8 +103,8 @@ export function showTrustAuthorDialog(authorPubKeyHash, authorDisplayName = '') 
 			}
 
 			/**
-		 * @returns {void}
-		 */
+			 * @returns {void}
+			 */
 			const resetToFirstPhase = () => {
 				confirmPhase = 0
 				if (secondConfirmResetTimer) {
@@ -113,60 +114,73 @@ export function showTrustAuthorDialog(authorPubKeyHash, authorDisplayName = '') 
 				updateConfirmButtonLabel()
 			}
 
+			try {
+				usingTemplates('/parts/shells:chat/src/templates')
+				const trustRoot = await renderTemplate('hub/modals/trust_author', {
+					authorLabel,
+					durationOptions: durationOptions.map(option => ({
+						...option,
+						checked: option.value === selectedDuration,
+					})),
+				})
 
-			usingTemplates('/parts/shells:chat/src/templates')
-			const trustRoot = await renderTemplate('hub/modals/trust_author', {
-				authorLabel,
-				durationOptions: durationOptions.map(option => ({
-					...option,
-					checked: option.value === selectedDuration,
-				})),
-			})
+				openOverlayModal({
+					titleKey: 'chat.hub.trustAuthorDialog.title',
+					subtitleKey: 'chat.hub.trustAuthorDialog.subtitle',
+					subtitleParams: { author: authorLabel },
+					body: trustRoot.querySelector('[data-trust-part="body"]'),
+					footer: trustRoot.querySelector('[data-trust-part="footer"]'),
+				})
 
-			openOverlayModal({
-				titleKey: 'chat.hub.trustAuthorDialog.title',
-				subtitleKey: 'chat.hub.trustAuthorDialog.subtitle',
-				subtitleParams: { author: authorLabel },
-				body: trustRoot.querySelector('[data-trust-part="body"]'),
-				footer: trustRoot.querySelector('[data-trust-part="footer"]'),
-			})
+				document.getElementById('trust-author-duration-options')?.addEventListener('change', (event) => {
+					const { target } = event
+					if (target instanceof HTMLInputElement && target.name === 'trust-duration')
+						selectedDuration = /** @type {TrustDurationChoice} */ (target.value)
+				})
 
-			document.getElementById('trust-author-duration-options')?.addEventListener('change', (event) => {
-				const {target} = event
-				if (target instanceof HTMLInputElement && target.name === 'trust-duration')
-					selectedDuration = /** @type {TrustDurationChoice} */ (target.value)
-			})
+				document.getElementById('trust-author-cancel-button')?.addEventListener('click', () => {
+					cleanup()
+					resolve(false)
+				})
 
-			document.getElementById('trust-author-cancel-button')?.addEventListener('click', () => {
-				cleanup()
-				resolve(false)
-			})
+				getConfirmButton()?.addEventListener('click', async () => {
+					if (confirmPhase === 0) {
+						if (cooldownRemaining > 0) return
+						confirmPhase = 1
+						updateConfirmButtonLabel()
+						secondConfirmResetTimer = setTimeout(resetToFirstPhase, SECOND_CONFIRM_TIMEOUT_MS)
+						return
+					}
+					try {
+						const expiresAt = expiresAtForDurationChoice(selectedDuration)
+						await addTrustedAuthor(authorPubKeyHash, expiresAt)
+						cleanup()
+						resolve(true)
+					}
+					catch (error) {
+						cleanup()
+						handleUIError(error, 'chat.hub.operationFailed')
+						resolve(false)
+					}
+				})
 
-			getConfirmButton()?.addEventListener('click', async () => {
-				if (confirmPhase === 0) {
-					if (cooldownRemaining > 0) return
-					confirmPhase = 1
-					updateConfirmButtonLabel()
-					secondConfirmResetTimer = setTimeout(resetToFirstPhase, SECOND_CONFIRM_TIMEOUT_MS)
-					return
-				}
-				const expiresAt = expiresAtForDurationChoice(selectedDuration)
-				await addTrustedAuthor(authorPubKeyHash, expiresAt)
-				cleanup()
-				resolve(true)
-			})
-
-			updateConfirmButtonLabel()
-			cooldownTimer = setInterval(() => {
-				if (confirmPhase !== 0) return
-				cooldownRemaining -= 1
-				if (cooldownRemaining <= 0) {
-					cooldownRemaining = 0
-					if (cooldownTimer) clearInterval(cooldownTimer)
-					cooldownTimer = null
-				}
 				updateConfirmButtonLabel()
-			}, 1000)
+				cooldownTimer = setInterval(() => {
+					if (confirmPhase !== 0) return
+					cooldownRemaining -= 1
+					if (cooldownRemaining <= 0) {
+						cooldownRemaining = 0
+						if (cooldownTimer) clearInterval(cooldownTimer)
+						cooldownTimer = null
+					}
+					updateConfirmButtonLabel()
+				}, 1000)
+			}
+			catch (error) {
+				cleanup()
+				handleUIError(error, 'chat.hub.operationFailed')
+				resolve(false)
+			}
 		})()
 	})
 }

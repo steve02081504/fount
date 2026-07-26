@@ -18,10 +18,10 @@ async function buildRegistry(username) {
 	for (const key in registry) delete registry[key]
 
 	const loaded = await loadRegistryJsonEntries(username, 'achievements')
-	for (const { entry, data } of loaded) 
+	for (const { entry, data } of loaded)
 		if (entry.partpath && data && typeof data === 'object')
 			registry[entry.partpath] = data
-	
+
 }
 
 /**

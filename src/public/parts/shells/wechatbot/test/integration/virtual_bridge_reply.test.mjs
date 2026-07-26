@@ -58,7 +58,7 @@ function createFakeWechatRuntime() {
 		/**
 		 * @returns {Promise<void>} typing
 		 */
-		sendTyping: async () => {},
+		sendTyping: async () => { },
 		/**
 		 * @returns {Promise<object>} 假上传
 		 */
@@ -148,6 +148,6 @@ Deno.test('wechat virtual bridge: getUpdates → GetReply → sendMessage', asyn
 	}
 	finally {
 		fake.abort()
-		await readyPromise.catch(() => {})
+		await readyPromise.catch(() => { })
 	}
 })

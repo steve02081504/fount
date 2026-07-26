@@ -1299,7 +1299,22 @@
 			"settingsAutoReplyTokenBucketHint": "Nach der Aktivierung verwaltet jeder Charakter einen Token-Bucket pro Kanal; onMessage wird vorübergehend nicht ausgelöst, wenn der Bucket leer ist, was eine kontinuierliche Bildschirmaktualisierung in Spitzenzeiten verhindern kann.",
 			"settingsIceServers": "ICE/TURN-Server",
 			"settingsIceServersAdd": "Server hinzufügen",
-			"settingsIceServersHint": "Wird für WebRTC und föderierte P2P-Penetration verwendet; TURN-Anmeldeinformationen behalten nur lokal materialisierte Einstellungen bei und werden nicht über den Verbund übertragen.",
+			"settingsIceServersHint": "Für WebRTC und föderiertes P2P-NAT-Traversal. TURN-Benutzername und -Passwort werden nur lokal gespeichert und nicht über die Föderation synchronisiert.",
+			"settingsIceUrl": {
+				"aria-label": "ICE-Serveradresse",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "TURN-Benutzername",
+				"placeholder": "Benutzername (optional)"
+			},
+			"settingsIceCred": {
+				"aria-label": "TURN-Passwort",
+				"placeholder": "Passwort (optional)"
+			},
+			"settingsIceRemove": {
+				"aria-label": "Diesen Server entfernen"
+			},
 			"settingsFileCeMode": "Dateiverschlüsselungsmodus",
 			"settingsFileCeModeConvergent": "Konvergente Verschlüsselung (kann Duplikate entfernen)",
 			"settingsFileCeModeRandom": "Hoher Datenschutzmodus (zufällige Schlüssel, keine Deduplizierung)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "Stickerpakete suchen …"
 			},
+			"searchLabel": "Stickerpakete suchen",
 			"emptyPacks": "Keine Stickerpakete",
 			"packNameLabel": "Name des Stickerpakets",
 			"packName": {

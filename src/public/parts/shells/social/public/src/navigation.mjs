@@ -38,7 +38,7 @@ function connectNodesFromShare(entityHash, sharerNodeHash) {
 			credentials: 'include',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ targetNodeHash }),
-		}).catch(() => {})
+		}).catch(() => { })
 	}
 }
 

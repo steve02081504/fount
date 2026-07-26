@@ -73,7 +73,7 @@ async function flushBuffer() {
  */
 export function bindDwellTracker(root) {
 	unbindDwellTracker()
-	if (!(root instanceof HTMLElement)) return () => {}
+	if (!(root instanceof HTMLElement)) return () => { }
 	observer = new IntersectionObserver(entries => {
 		const now = Date.now()
 		for (const entry of entries) {

@@ -169,12 +169,12 @@ async function createTimelinePost(apiContext, draft) {
 			visibilitySpec,
 		),
 	})
-	for (const albumId of albumIds) 
+	for (const albumId of albumIds)
 		await commitTimelineEvent(apiContext.username, apiContext.entityHash, {
 			type: 'album_post_add',
 			content: { albumId, postId: signed.id },
 		})
-	
+
 	const itemContext = await createFeedItemBuildContext(apiContext.username, new Set([apiContext.entityHash]), apiContext.entityHash)
 	const item = await buildPostFeedItem(apiContext.username, apiContext.entityHash, { ...signed, postId: signed.id }, itemContext)
 	pushFeedUpdate(apiContext.username, { type: 'post', item })

@@ -66,7 +66,7 @@ function createFakeDiscordClient(options = {}) {
 			/**
 			 * @returns {Promise<void>} typing
 			 */
-			sendTyping: async () => {},
+			sendTyping: async () => { },
 			/**
 			 * @param {object} payload Discord send 载荷
 			 * @returns {Promise<{ id: string }>} 假消息
@@ -122,12 +122,12 @@ function createFakeDiscordClient(options = {}) {
 					/**
 					 * @returns {Promise<void>} noop
 					 */
-					kick: async () => {},
+					kick: async () => { },
 				},
 				/**
 				 * @returns {Promise<void>} noop
 				 */
-				leave: async () => {},
+				leave: async () => { },
 				invites: {
 					/**
 					 * @returns {Promise<object>} 空邀请集合

@@ -128,7 +128,7 @@ export async function loadVideoView(options = {}) {
 			const video = el.querySelector('video')
 			if (video) {
 				video.preload = 'auto'
-				video.play().catch(() => {})
+				video.play().catch(() => { })
 			}
 			setPauseHint(el, false)
 			for (let i = 1; i <= 2; i++) {
@@ -475,7 +475,7 @@ function buildVideoSlide(item) {
 			setTimeout(() => {
 				if (lastTap !== now) return
 				if (!video) return
-				if (video.paused) video.play().catch(() => {})
+				if (video.paused) video.play().catch(() => { })
 				else video.pause()
 			}, 360)
 		}
@@ -531,7 +531,7 @@ function buildVideoSlide(item) {
 				watchMs,
 				watchRatio: video.duration ? watchMs / (video.duration * 1000) : 0,
 			}),
-		}).catch(() => {})
+		}).catch(() => { })
 		dwellStart = null
 	})
 
@@ -636,7 +636,7 @@ export function handleVideoKeydown(event) {
 			break
 		case ' ':
 			event.preventDefault()
-			if (video?.paused) video.play().catch(() => {})
+			if (video?.paused) video.play().catch(() => { })
 			else video?.pause()
 			break
 		case 'ArrowLeft':

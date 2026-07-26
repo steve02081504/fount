@@ -1298,7 +1298,22 @@
 			"settingsAutoReplyTokenBucketHint": "開啟後，每個角色按頻道維護令牌桶；桶空時暫不觸發 onMessage，可抑制高峰期連續刷屏。",
 			"settingsIceServers": "ICE / TURN 伺服器",
 			"settingsIceServersAdd": "新增伺服器",
-			"settingsIceServersHint": "用於 WebRTC 與聯邦 P2P 穿透；TURN 憑據僅存本機物化設定，不經聯邦廣播。",
+			"settingsIceServersHint": "用於 WebRTC 與聯邦 P2P 的 NAT 穿透。TURN 使用者名稱與密碼只保存在本機，不會經聯邦同步。",
+			"settingsIceUrl": {
+				"aria-label": "ICE 伺服器位址",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "TURN 使用者名稱",
+				"placeholder": "使用者名稱（選填）"
+			},
+			"settingsIceCred": {
+				"aria-label": "TURN 密碼",
+				"placeholder": "密碼（選填）"
+			},
+			"settingsIceRemove": {
+				"aria-label": "刪除此伺服器"
+			},
 			"settingsFileCeMode": "檔案加密模式",
 			"settingsFileCeModeConvergent": "收斂加密（可去重）",
 			"settingsFileCeModeRandom": "高隱私模式（隨機金鑰，不去重）",
@@ -2906,6 +2921,7 @@
 			"search": {
 				"placeholder": "搜尋貼紙包…"
 			},
+			"searchLabel": "搜尋貼紙包",
 			"emptyPacks": "暫無貼紙包",
 			"packNameLabel": "貼紙包名稱",
 			"packName": {

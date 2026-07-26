@@ -9,7 +9,7 @@
 	overflow-x: hidden;
 }
 
-.messages .chat-image > div {
+.messages .chat-image>div {
 	width: var(--message-avatar-size);
 	height: var(--message-avatar-size);
 }
@@ -180,7 +180,7 @@
 	transition: opacity 0.12s ease;
 }
 
-.message-hover-bar > .message-actions {
+.message-hover-bar>.message-actions {
 	background: var(--bg-main);
 	border: 1px solid var(--border-subtle);
 	border-radius: 8px;
@@ -274,7 +274,7 @@
 	opacity: 0.8;
 }
 
-.menu-submenu > details > ul {
+.menu-submenu>details>ul {
 	min-width: 9rem;
 }
 

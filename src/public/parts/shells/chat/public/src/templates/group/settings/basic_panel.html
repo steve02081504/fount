@@ -264,21 +264,21 @@
 				</span>
 			</summary>
 			<div class="settings-advanced-body">
-		${showKeyRotate ? `
-		<div>
-			<div class="settings-label-with-info mb-2">
-				<strong class="text-sm" data-i18n="chat.group.settingsPage.keyManagementTitle"></strong>
-				<span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.keyManagementTip">i</span>
-			</div>
-			<button type="button" id="group-settings-key-rotate-button" class="btn btn-warning btn-outline btn-sm" data-i18n="chat.group.settingsPage.keyRotate"></button>
-			<p class="text-xs opacity-70 mt-2" data-i18n="chat.group.settingsPage.gshGenerationRetentionHint"></p>
-		</div>
-		` : ''}
-		${showOwnerSuccession ? `
-		<div>
-			<button type="button" id="group-settings-owner-succession-button" class="btn btn-outline btn-sm" data-i18n="chat.group.settingsPage.ownerSuccession"></button>
-		</div>
-		` : ''}
+				${showKeyRotate ? `
+				<div>
+					<div class="settings-label-with-info mb-2">
+						<strong class="text-sm" data-i18n="chat.group.settingsPage.keyManagementTitle"></strong>
+						<span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.keyManagementTip">i</span>
+					</div>
+					<button type="button" id="group-settings-key-rotate-button" class="btn btn-warning btn-outline btn-sm" data-i18n="chat.group.settingsPage.keyRotate"></button>
+					<p class="text-xs opacity-70 mt-2" data-i18n="chat.group.settingsPage.gshGenerationRetentionHint"></p>
+				</div>
+				` : ''}
+				${showOwnerSuccession ? `
+				<div>
+					<button type="button" id="group-settings-owner-succession-button" class="btn btn-outline btn-sm" data-i18n="chat.group.settingsPage.ownerSuccession"></button>
+				</div>
+				` : ''}
 			</div>
 		</details>
 		` : ''}

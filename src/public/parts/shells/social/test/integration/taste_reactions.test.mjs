@@ -73,12 +73,12 @@ Deno.test('reaction_index projection after like', async () => {
 Deno.test('listReactionEvents paginates by afterReactor', async () => {
 	const { username, operator } = await getSession()
 	const reactors = [operator, REACTOR_B, REACTOR_C].map(h => h.toLowerCase()).sort()
-	for (const reactor of reactors) 
+	for (const reactor of reactors)
 		await reactionIndex.upsertReaction(username, TARGET, POST_ID, reactor, {
 			kind: 'like',
 			event: { id: `evt-${reactor}`, type: 'like', content: { targetEntityHash: TARGET, targetPostId: POST_ID } },
 		})
-	
+
 
 	const first = await reactionIndex.listReactionEvents(username, TARGET, POST_ID, null, 2)
 	assertEquals(first.length, 2)

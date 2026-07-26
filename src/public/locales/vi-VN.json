@@ -1297,9 +1297,24 @@
 			"settingsMessageRateLimit": "Giới hạn tốc độ tin nhắn (tin nhắn/phút/thực thể)",
 			"settingsAutoReplyTokenBucket": "Lập kế hoạch áp lực trả lời tự động (Nhóm mã thông báo)",
 			"settingsAutoReplyTokenBucketHint": "Sau khi được bật, mỗi ký tự sẽ duy trì một nhóm mã thông báo theo kênh; onMessage không được kích hoạt tạm thời khi nhóm trống, điều này có thể ngăn cản việc làm mới màn hình liên tục trong thời gian cao điểm.",
-			"settingsIceServers": "máy chủ ICE/TURN",
+			"settingsIceServers": "Máy chủ ICE / TURN",
 			"settingsIceServersAdd": "Thêm máy chủ",
-			"settingsIceServersHint": "Được sử dụng cho WebRTC và thâm nhập P2P liên kết; Thông tin xác thực TURN chỉ giữ lại các cài đặt cụ thể cục bộ và không được phát qua liên kết.",
+			"settingsIceServersHint": "Dùng cho NAT traversal của WebRTC và P2P liên bang. Tên người dùng và mật khẩu TURN chỉ lưu trên máy này, không đồng bộ qua liên bang.",
+			"settingsIceUrl": {
+				"aria-label": "Địa chỉ máy chủ ICE",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "Tên người dùng TURN",
+				"placeholder": "Tên người dùng (tuỳ chọn)"
+			},
+			"settingsIceCred": {
+				"aria-label": "Mật khẩu TURN",
+				"placeholder": "Mật khẩu (tuỳ chọn)"
+			},
+			"settingsIceRemove": {
+				"aria-label": "Xoá máy chủ này"
+			},
 			"settingsFileCeMode": "Chế độ mã hóa tập tin",
 			"settingsFileCeModeConvergent": "Mã hóa hội tụ (có thể loại bỏ trùng lặp)",
 			"settingsFileCeModeRandom": "Chế độ riêng tư cao (khóa ngẫu nhiên, không trùng lặp)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "Tìm kiếm gói nhãn dán…"
 			},
+			"searchLabel": "Tìm kiếm gói nhãn dán",
 			"emptyPacks": "Chưa có gói nhãn dán nào",
 			"packNameLabel": "Tên gói nhãn dán",
 			"packName": {
