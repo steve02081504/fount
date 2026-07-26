@@ -1300,6 +1300,21 @@
 			"settingsIceServers": "خادم الجليد / بدوره",
 			"settingsIceServersAdd": "أضف الخادم",
 			"settingsIceServersHint": "يُستخدم لـ WebRTC واختراق P2P الموحد؛ تحتفظ بيانات اعتماد TURN فقط بالإعدادات المادية المحلية ولا يتم بثها من خلال الاتحاد.",
+			"settingsIceUrl": {
+				"aria-label": "عنوان URL لخادم ICE",
+				"placeholder": "صاعقة:المضيف:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "اسم المستخدم TURN",
+				"placeholder": "اسم المستخدم TURN"
+			},
+			"settingsIceCred": {
+				"aria-label": "بدوره أوراق الاعتماد",
+				"placeholder": "أوراق اعتماد"
+			},
+			"settingsIceRemove": {
+				"aria-label": "إزالة خادم ICE"
+			},
 			"settingsFileCeMode": "وضع تشفير الملفات",
 			"settingsFileCeModeConvergent": "التشفير المتقارب (يمكن إزالة التكرارات)",
 			"settingsFileCeModeRandom": "وضع الخصوصية العالية (مفاتيح عشوائية، عدم إلغاء البيانات المكررة)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "البحث في حزم الملصقات…"
 			},
+			"searchLabel": "ابحث في حزم الملصقات",
 			"emptyPacks": "لا توجد حزم ملصقات",
 			"packNameLabel": "اسم حزمة الملصقات",
 			"packName": {

@@ -1300,6 +1300,21 @@
 			"settingsIceServers": "ICE/TURN 서버",
 			"settingsIceServersAdd": "서버 추가",
 			"settingsIceServersHint": "WebRTC와 연합 P2P NAT 통과에 쓰입니다. TURN 자격 증명은 이 기기에만 저장되며 연합으로 브로드캐스트되지 않습니다.",
+			"settingsIceUrl": {
+				"aria-label": "ICE 서버 URL",
+				"placeholder": "기절:호스트:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "TURN 사용자 이름",
+				"placeholder": "TURN 사용자 이름"
+			},
+			"settingsIceCred": {
+				"aria-label": "TURN 자격 증명",
+				"placeholder": "신임장"
+			},
+			"settingsIceRemove": {
+				"aria-label": "ICE 서버 제거"
+			},
 			"settingsFileCeMode": "파일 암호화 모드",
 			"settingsFileCeModeConvergent": "수렴 암호화(중복 제거 가능)",
 			"settingsFileCeModeRandom": "높은 개인 메시지 보호 모드(임의 키, 중복 제거 없음)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "스티커 팩 검색…"
 			},
+			"searchLabel": "스티커 팩 검색",
 			"emptyPacks": "스티커 팩이 없습니다",
 			"packNameLabel": "스티커 팩 이름",
 			"packName": {

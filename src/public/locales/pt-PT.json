@@ -1300,6 +1300,21 @@
 			"settingsIceServers": "Servidor ICE/TURN",
 			"settingsIceServersAdd": "Adicionar server",
 			"settingsIceServersHint": "Usado para WebRTC e penetração P2P federada; As credenciais TURN retêm apenas definições materializadas locais e não são transmitidas por meio da federação.",
+			"settingsIceUrl": {
+				"aria-label": "URL do servidor ICE",
+				"placeholder": "atordoamento: anfitrião: 19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "TURN nome de usuário",
+				"placeholder": "TURN nome de usuário"
+			},
+			"settingsIceCred": {
+				"aria-label": "Credenciais TURN",
+				"placeholder": "Credenciais"
+			},
+			"settingsIceRemove": {
+				"aria-label": "Remover servidor ICE"
+			},
 			"settingsFileCeMode": "Modo de encriptação de ficheiros",
 			"settingsFileCeModeConvergent": "Encriptação convergente (pode remover duplicatas)",
 			"settingsFileCeModeRandom": "Modo de alta privacidade (chaves aleatórias, sem desduplicação)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "Pesquisar pacotes…"
 			},
+			"searchLabel": "Pesquise pacotes de adesivos",
 			"emptyPacks": "Sem pacotes de autocolantes",
 			"packNameLabel": "Nome do pacote",
 			"packName": {

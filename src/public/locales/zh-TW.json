@@ -1299,6 +1299,21 @@
 			"settingsIceServers": "ICE / TURN 伺服器",
 			"settingsIceServersAdd": "新增伺服器",
 			"settingsIceServersHint": "用於 WebRTC 與聯邦 P2P 穿透；TURN 憑據僅存本機物化設定，不經聯邦廣播。",
+			"settingsIceUrl": {
+				"aria-label": "ICE 伺服器 URL",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "TURN 用戶名",
+				"placeholder": "TURN 用戶名"
+			},
+			"settingsIceCred": {
+				"aria-label": "TURN 憑證",
+				"placeholder": "憑證"
+			},
+			"settingsIceRemove": {
+				"aria-label": "移除 ICE 伺服器"
+			},
 			"settingsFileCeMode": "檔案加密模式",
 			"settingsFileCeModeConvergent": "收斂加密（可去重）",
 			"settingsFileCeModeRandom": "高隱私模式（隨機金鑰，不去重）",
@@ -2906,6 +2921,7 @@
 			"search": {
 				"placeholder": "搜尋貼紙包…"
 			},
+			"searchLabel": "搜尋貼紙包",
 			"emptyPacks": "暫無貼紙包",
 			"packNameLabel": "貼紙包名稱",
 			"packName": {

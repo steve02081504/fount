@@ -1300,6 +1300,21 @@
 			"settingsIceServers": "Сервер ICE/TURN",
 			"settingsIceServersAdd": "Додати сервер",
 			"settingsIceServersHint": "Використовується для WebRTC і об’єднаного проникнення P2P; Облікові дані TURN зберігають лише локальні матеріалізовані налаштування та не транслюються через федерацію.",
+			"settingsIceUrl": {
+				"aria-label": "URL-адреса сервера ICE",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "Ім'я користувача TURN",
+				"placeholder": "Ім'я користувача TURN"
+			},
+			"settingsIceCred": {
+				"aria-label": "TURN облікові дані",
+				"placeholder": "Облікові дані"
+			},
+			"settingsIceRemove": {
+				"aria-label": "Видаліть сервер ICE"
+			},
 			"settingsFileCeMode": "Режим шифрування файлів",
 			"settingsFileCeModeConvergent": "Конвергентне шифрування (може видалити дублікати)",
 			"settingsFileCeModeRandom": "Режим високої конфіденційності (випадкові ключі, без дедуплікації)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "Пошук наборів стікерів…"
 			},
+			"searchLabel": "Пошук пакетів стікерів",
 			"emptyPacks": "Наборів стікерів ще немає",
 			"packNameLabel": "Назва набору",
 			"packName": {

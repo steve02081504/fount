@@ -1300,6 +1300,21 @@
 			"settingsIceServers": "ICE/TURN-server",
 			"settingsIceServersAdd": "Server toevoegen",
 			"settingsIceServersHint": "Gebruikt voor WebRTC en federatieve P2P-penetratie; TURN-inloggegevens behouden alleen lokaal gerealiseerde instellingen en worden niet via federatie uitgezonden.",
+			"settingsIceUrl": {
+				"aria-label": "ICE-server-URL",
+				"placeholder": "verdoven:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "TURN-gebruikersnaam",
+				"placeholder": "TURN-gebruikersnaam"
+			},
+			"settingsIceCred": {
+				"aria-label": "TURN-referenties",
+				"placeholder": "Referenties"
+			},
+			"settingsIceRemove": {
+				"aria-label": "ICE-server verwijderen"
+			},
 			"settingsFileCeMode": "Bestandsversleutelingsmodus",
 			"settingsFileCeModeConvergent": "Convergente versleuteling (kan duplicaten verwijderen)",
 			"settingsFileCeModeRandom": "Hoge privacymodus (willekeurige sleutels, geen ontdubbeling)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "Zoek naar stickerpakketten…"
 			},
+			"searchLabel": "Zoek naar stickerpakketten",
 			"emptyPacks": "Nog geen stickerpakketten",
 			"packNameLabel": "Naam stickerpakket",
 			"packName": {

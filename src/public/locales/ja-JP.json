@@ -1300,6 +1300,21 @@
 			"settingsIceServers": "ICE/TURNサーバー",
 			"settingsIceServersAdd": "サーバーの追加",
 			"settingsIceServersHint": "WebRTC およびフェデレーション P2P の浸透に使用されます。 TURN 資格情報はローカルで実体化された設定のみを保持し、フェデレーションを通じてブロードキャストされません。",
+			"settingsIceUrl": {
+				"aria-label": "ICEサーバーのURL",
+				"placeholder": "気絶:ホスト:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "ターンユーザー名",
+				"placeholder": "ターンユーザー名"
+			},
+			"settingsIceCred": {
+				"aria-label": "ターン認証情報",
+				"placeholder": "資格"
+			},
+			"settingsIceRemove": {
+				"aria-label": "ICEサーバーを削除する"
+			},
 			"settingsFileCeMode": "ファイル暗号化モード",
 			"settingsFileCeModeConvergent": "集中暗号化 (重複を削除可能)",
 			"settingsFileCeModeRandom": "高プライバシー モード (ランダム キー、重複排除なし)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "ステッカー パックを検索…"
 			},
+			"searchLabel": "ステッカーパックを検索",
 			"emptyPacks": "ステッカーパックはまだありません",
 			"packNameLabel": "ステッカーパック名",
 			"packName": {

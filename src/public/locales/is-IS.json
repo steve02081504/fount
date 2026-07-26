@@ -1300,6 +1300,21 @@
 			"settingsIceServers": "ICE/TURN miðlari",
 			"settingsIceServersAdd": "Bæta við netþjóni",
 			"settingsIceServersHint": "Notað fyrir WebRTC og sameinað P2P skarpskyggni; TURN skilStaða halda aðeins staðbundnum efnislegum stillingum og eru ekki sendar út í gegnum sambandsStaða.",
+			"settingsIceUrl": {
+				"aria-label": "ICE netþjónsslóð",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "TURN notendanafn",
+				"placeholder": "TURN notendanafn"
+			},
+			"settingsIceCred": {
+				"aria-label": "TURN skilríki",
+				"placeholder": "Skilríki"
+			},
+			"settingsIceRemove": {
+				"aria-label": "Fjarlægðu ICE miðlara"
+			},
 			"settingsFileCeMode": "Dulkóðunarstilling skráa",
 			"settingsFileCeModeConvergent": "Samleit dulkóðun (getur fjarlægt afrit)",
 			"settingsFileCeModeRandom": "Mikil næðisstilling (handahófskenndir lyklar, engin tvítekning)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "Leitaðu að límmiðapökkum..."
 			},
+			"searchLabel": "Leitaðu að límmiðapökkum",
 			"emptyPacks": "Engir límmiðapakkar ennþá",
 			"packNameLabel": "Nafn límmiðapakka",
 			"packName": {

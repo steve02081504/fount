@@ -1300,6 +1300,21 @@
 			"settingsIceServers": "🔀🌐／🔄📡🖥️",
 			"settingsIceServersAdd": "➕🖥️",
 			"settingsIceServersHint": "🌐📞➕🌐P2P🔀；🔄📡🔐💻⚙️，🚫🌐📡",
+			"settingsIceUrl": {
+				"aria-label": "ICE 服务器 URL",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "TURN 用户名",
+				"placeholder": "TURN 用户名"
+			},
+			"settingsIceCred": {
+				"aria-label": "TURN 凭据",
+				"placeholder": "凭据"
+			},
+			"settingsIceRemove": {
+				"aria-label": "移除 ICE 服务器"
+			},
 			"settingsFileCeMode": "📁🔐🎛️",
 			"settingsFileCeModeConvergent": "🔄🔐（♻️）",
 			"settingsFileCeModeRandom": "🔒⬆️（🎲🔑，🚫♻️）",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "🔍🏷️📦…"
 			},
+			"searchLabel": "搜索贴纸包",
 			"emptyPacks": "📭🏷️📦",
 			"packNameLabel": "🏷️📦🏷️",
 			"packName": {

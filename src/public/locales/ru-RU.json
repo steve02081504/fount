@@ -1300,6 +1300,21 @@
 			"settingsIceServers": "ICE/TURN сервер",
 			"settingsIceServersAdd": "Добавить сервер",
 			"settingsIceServersHint": "Для обхода NAT в WebRTC и федеративном P2P. Учётные данные TURN хранятся только в локальных настройках и не передаются через федерацию.",
+			"settingsIceUrl": {
+				"aria-label": "URL-адрес ICE-сервера",
+				"placeholder": "оглушение: хост: 19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "ПОВЕРНУТЬ имя пользователя",
+				"placeholder": "ПОВЕРНУТЬ имя пользователя"
+			},
+			"settingsIceCred": {
+				"aria-label": "Учетные данные TURN",
+				"placeholder": "Реквизиты для входа"
+			},
+			"settingsIceRemove": {
+				"aria-label": "Удалить ICE-сервер"
+			},
 			"settingsFileCeMode": "Режим шифрования файлов",
 			"settingsFileCeModeConvergent": "Конвергентное шифрование (может удалять дубликаты)",
 			"settingsFileCeModeRandom": "Режим высокой конфиденциальности (случайные ключи, без дедупликации)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "Поиск наборов стикеров…"
 			},
+			"searchLabel": "Поиск стикерпаков",
 			"emptyPacks": "Наборов стикеров пока нет",
 			"packNameLabel": "Название набора",
 			"packName": {

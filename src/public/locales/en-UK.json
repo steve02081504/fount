@@ -1295,6 +1295,21 @@
 			"settingsIceServers": "ICE/TURN server",
 			"settingsIceServersAdd": "Add server",
 			"settingsIceServersHint": "Used for WebRTC and federated P2P penetration; TURN credentials only retain local materialized settings and are not broadcast through federation.",
+			"settingsIceUrl": {
+				"aria-label": "ICE server URL",
+				"placeholder": "stun:host:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "TURN username",
+				"placeholder": "TURN username"
+			},
+			"settingsIceCred": {
+				"aria-label": "TURN credentials",
+				"placeholder": "Credentials"
+			},
+			"settingsIceRemove": {
+				"aria-label": "Remove ICE server"
+			},
 			"settingsFileCeMode": "File encryption mode",
 			"settingsFileCeModeConvergent": "Convergent encryption (deduplication)",
 			"settingsFileCeModeRandom": "High privacy (random keys, no dedup)",
@@ -2902,6 +2917,7 @@
 			"search": {
 				"placeholder": "Search for sticker packs…"
 			},
+			"searchLabel": "Search sticker packs",
 			"emptyPacks": "No sticker packs yet",
 			"packNameLabel": "Sticker pack name",
 			"packName": {

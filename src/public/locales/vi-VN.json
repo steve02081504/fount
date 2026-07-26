@@ -1300,6 +1300,21 @@
 			"settingsIceServers": "máy chủ ICE/TURN",
 			"settingsIceServersAdd": "Thêm máy chủ",
 			"settingsIceServersHint": "Được sử dụng cho WebRTC và thâm nhập P2P liên kết; Thông tin xác thực TURN chỉ giữ lại các cài đặt cụ thể cục bộ và không được phát qua liên kết.",
+			"settingsIceUrl": {
+				"aria-label": "URL máy chủ ICE",
+				"placeholder": "choáng:máy chủ:19302"
+			},
+			"settingsIceUser": {
+				"aria-label": "BẬT tên người dùng",
+				"placeholder": "BẬT tên người dùng"
+			},
+			"settingsIceCred": {
+				"aria-label": "thông tin xác thực TURN",
+				"placeholder": "Thông tin xác thực"
+			},
+			"settingsIceRemove": {
+				"aria-label": "Xóa máy chủ ICE"
+			},
 			"settingsFileCeMode": "Chế độ mã hóa tập tin",
 			"settingsFileCeModeConvergent": "Mã hóa hội tụ (có thể loại bỏ trùng lặp)",
 			"settingsFileCeModeRandom": "Chế độ riêng tư cao (khóa ngẫu nhiên, không trùng lặp)",
@@ -2907,6 +2922,7 @@
 			"search": {
 				"placeholder": "Tìm kiếm gói nhãn dán…"
 			},
+			"searchLabel": "Tìm kiếm gói nhãn dán",
 			"emptyPacks": "Chưa có gói nhãn dán nào",
 			"packNameLabel": "Tên gói nhãn dán",
 			"packName": {
