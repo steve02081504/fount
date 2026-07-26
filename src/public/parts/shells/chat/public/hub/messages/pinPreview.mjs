@@ -6,6 +6,7 @@
  * 【关联】channelMessageStore、../core/domUtils、../core/state、render/text
  */
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { channelMessageKind } from '../../shared/channelContent.mjs'
 import { store } from '../core/state.mjs'
 
 import { fetchRowsForMessageEvent } from './channelMessageStore.mjs'
@@ -41,18 +42,18 @@ export function pinPreviewTemplateFields(descriptor) {
  * @returns {{ i18n?: string, params?: Record<string, string>, text?: string }} 摘要描述
  */
 function previewFromMessage(message) {
-	const text = getMessageText(message).trim().replace(/\s+/gu, ' ')
-	if (!text) return { text: '' }
-	const type = message?.content?.type
-	if (type === 'sticker') return { i18n: 'chat.hub.pinPreviewSticker' }
-	if (type === 'vote') {
+	const kind = channelMessageKind(message?.content)
+	if (kind === 'sticker') return { i18n: 'chat.hub.pinPreviewSticker' }
+	if (kind === 'vote') {
 		const question = message.content?.question || ''
 		return { i18n: 'chat.hub.pinPreviewVote', params: { question } }
 	}
-	if (type === 'group_invite') {
+	if (kind === 'group_invite') {
 		const groupName = message.content?.groupName || ''
 		return { i18n: 'chat.hub.pinPreviewInvite', params: { groupName } }
 	}
+	const text = getMessageText(message).trim().replace(/\s+/gu, ' ')
+	if (!text) return { text: '' }
 	return { text: text.length > 40 ? `${text.slice(0, 40)}…` : text }
 }
 

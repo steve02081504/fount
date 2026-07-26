@@ -1,5 +1,5 @@
 /**
- * 频道消息扩展字段清洗（locale / content_warning / sensitive_media / forwardedFrom / replyTo）。
+ * 频道消息扩展字段清洗（locale / content_warning / sensitive_media / extension.chat.replyTo|forwardedFrom）。
  * 入站联邦与本机写入共用。
  */
 
@@ -107,7 +107,21 @@ export function sanitizeReplyTo(raw) {
 }
 
 /**
- * 将扩展展示字段写入 content（就地规范后返回新对象）。
+ * 保证 `content.extension.chat` 为对象并返回该对象。
+ * @param {Record<string, unknown>} content 消息 content
+ * @returns {Record<string, unknown>} chat 侧车
+ */
+export function ensureChatExtension(content) {
+	if (!content.extension || typeof content.extension !== 'object')
+		content.extension = {}
+	const ext = /** @type {Record<string, unknown>} */ content.extension
+	if (!ext.chat || typeof ext.chat !== 'object')
+		ext.chat = {}
+	return /** @type {Record<string, unknown>} */ ext.chat
+}
+
+/**
+ * 将展示/侧车字段写入消息（就地规范后返回新对象）。
  * @param {Record<string, unknown>} content 消息 content
  * @returns {Record<string, unknown>} 清洗后
  */
@@ -128,27 +142,33 @@ export function sanitizeMessageExtras(content) {
 	else
 		delete out.sensitive_media
 
-	const forwardedFrom = sanitizeForwardedFrom(out.forwardedFrom)
-	if (forwardedFrom) out.forwardedFrom = forwardedFrom
-	else delete out.forwardedFrom
-
-	const replyTo = sanitizeReplyTo(out.replyTo)
-	if (replyTo) out.replyTo = replyTo
-	else delete out.replyTo
-
 	delete out.embeds
+	delete out.fileIds
+	delete out.fileCount
+	delete out.fileAlts
+	delete out.displayName
+	delete out.displayAvatar
+	if (!['sticker', 'vote', 'group_invite', 'call'].includes(out.type)) delete out.type
 
-	if (out.fileAlts && typeof out.fileAlts === 'object' && !Array.isArray(out.fileAlts)) {
-		/** @type {Record<string, string>} */
-		const alts = {}
-		for (const [fileId, alt] of Object.entries(/** @type {Record<string, unknown>} */ out.fileAlts)) {
-			const cleaned = sanitizeAlt(alt)
-			if (cleaned && fileId) alts[String(fileId)] = cleaned
-		}
-		if (Object.keys(alts).length) out.fileAlts = alts
-		else delete out.fileAlts
-	}
-	else delete out.fileAlts
+	const ext = { ...out.extension }
+	const chatRaw = { ...ext.chat }
+
+	const forwardedFrom = sanitizeForwardedFrom(chatRaw.forwardedFrom ?? out.forwardedFrom)
+	if (forwardedFrom) chatRaw.forwardedFrom = forwardedFrom
+	else delete chatRaw.forwardedFrom
+
+	const replyTo = sanitizeReplyTo(chatRaw.replyTo ?? out.replyTo)
+	if (replyTo) chatRaw.replyTo = replyTo
+	else delete chatRaw.replyTo
+
+	delete out.forwardedFrom
+	delete out.replyTo
+
+	if (Object.keys(chatRaw).length) ext.chat = chatRaw
+	else delete ext.chat
+
+	if (Object.keys(ext).length) out.extension = ext
+	else delete out.extension
 
 	return out
 }

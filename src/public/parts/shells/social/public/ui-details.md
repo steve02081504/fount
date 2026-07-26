@@ -10,6 +10,12 @@ Day-to-day rules: [AGENTS.md](AGENTS.md).
 - Hashtag/trending → `#topic:…`
 - Preference UI lives under `#settings` (not a top-level nav entry)
 
+## Search / replies / own-write feed
+
+- **Search view**: render post hits as soon as `/search` returns; `entities/search` must not block the posts section (hashtag/tag-only queries skip the users block).
+- **Replies panel**: first open loads then reveals; do not toggle visible before `renderRepliesPanel` or composer input can be wiped mid-type.
+- **Own write → feed**: repost returns `{ event, item }` and `pushFeedUpdate`; UI `prependFeedItem(item, { force: true })` (dedupe + in-flight `pendingFeedInserts` so WS cannot double-insert during `buildPostCard`). Deep-pagination WS still banners unless `force`.
+
 ## Short video / live UI
 
 - Slide fields from `buildPostFeedItem`: `post.content.text` / `post.content.mediaRefs` / `authorProfile` — not flat `item.text` / `item.authorName`.
@@ -31,3 +37,4 @@ Feed/profile/search cards (`openDetail !== false`) collapse markdown code `<deta
 
 - `templates/empty_state.html` via `lib/emptyState.mjs`. Snap feeds: `lib/snapCursorFeed.mjs`. Suggested accounts: `lib/suggestedAccounts.mjs`. Engagement: `templates/engagement_bar.html` + `lib/engagementBar.mjs`.
 - Governance optimistic UX: `socialWrite.mjs` + `runWrite` failure toasts.
+- **Download HTML**: post more menu → `exportHtml.mjs` → shared `markdown/standaloneDocument.mjs` (full offline document, including mediaRefs data URLs); same source as Chat message export.

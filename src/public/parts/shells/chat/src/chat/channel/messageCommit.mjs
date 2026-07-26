@@ -2,15 +2,17 @@
  * 【文件】channel/messageCommit.mjs
  * 【职责】DAG-first 消息落盘门面：world AddChatLogEntry（落盘前改写/拒绝）+ canonical content + appendSignedLocalEvent。
  * 【原理】human / char / greeting 共用本入口；AfterAddChatLogEntry 在 broadcastAndPersist 唯一触发；内存 chatLog 仅 hydration 缓存。
- * 【数据结构】canonical message content：全员 displayName/displayAvatar；生成类另附 sessionSnapshot/chatLogEntryId。
+ * 【数据结构】canonical message content：全员 displayName/displayAvatar；生成类另附 sessionSnapshot、`extension.chat.entryId`。
  * 【关联】postMessage、chatLogMirror、eventPersist、session/chatRequest、archive/postSnapshot。
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import {
-	channelMessageAgentText,
-	channelMessageContentObject,
-	textChannelContent,
+	channelMessage,
+	channelMessageKind,
+	messageAgentText,
+	normalizeChannelMessage,
 } from '../../../public/shared/channelContent.mjs'
+import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
 import { resolveDisplaySnapshot } from '../archive/postSnapshot.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
@@ -23,19 +25,20 @@ import { exportSessionSnapshot } from '../session/sessionSnapshot.mjs'
  * @returns {object} 轻量 hook 用条目
  */
 function entryForWorldHook(content) {
-	const text = channelMessageAgentText(content)
-	return {
+	const text = messageAgentText(content)
+	const entry = {
 		id: '',
-		name: content.displayName || '',
-		avatar: content.displayAvatar || '',
+		name: content.name || '',
+		avatar: content.avatar || '',
 		content: text,
 		role: content.role || 'user',
 		time_stamp: new Date(),
 		files: [],
-		extension: {
-			groupChannelId: content.groupChannelId,
-		},
+		extension: {},
 	}
+	const channelId = String(content.groupChannelId || '').trim()
+	if (channelId) ensureChatExtension(entry).channelId = channelId
+	return entry
 }
 
 /**
@@ -44,13 +47,18 @@ function entryForWorldHook(content) {
  * @returns {object} 合并正文后的 content
  */
 function applyEntryRewriteToContent(content, entry) {
-	const text = entry.content
-	const base = channelMessageContentObject(content)
-	if (base.type !== 'text' && !text) return base
+	const base = normalizeChannelMessage(content)
+	if (channelMessageKind(base) !== 'text' && String(entry.content ?? '') === messageAgentText(base))
+		return {
+			...base,
+			...entry.role ? { role: entry.role } : {},
+			...entry.visibility ? { visibility: entry.visibility } : {},
+			...entry.charVisibility?.length ? { charVisibility: entry.charVisibility } : {},
+		}
+
 	const extra = { ...base }
-	for (const key of ['type', 'content', 'content_for_show', 'content_for_edit'])
-		delete extra[key]
-	return textChannelContent(text, {
+	delete extra.content
+	return channelMessage(entry.content, {
 		...extra,
 		...entry.content_for_show != null ? { content_for_show: entry.content_for_show } : {},
 		...entry.content_for_edit != null ? { content_for_edit: entry.content_for_edit } : {},
@@ -73,7 +81,7 @@ function applyEntryRewriteToContent(content, entry) {
 export async function runWorldAddChatLogEntryHook(username, groupId, channelId, content, entry, charname = null) {
 	const world = await resolveWorld(groupId, channelId, username)
 	const hook = world.interfaces.chat.AddChatLogEntry
-	if (!hook) return { content: channelMessageContentObject(content), entry: entry || entryForWorldHook(content) }
+	if (!hook) return { content: normalizeChannelMessage(content), entry: entry || entryForWorldHook(content) }
 
 	// 动态 import：避免 messageCommit ↔ chatRequest ↔ chatLogAppend ↔ chatLogMirror 环依赖
 	const { getChatRequest } = await import('../session/chatRequest.mjs')
@@ -100,7 +108,7 @@ export async function runWorldAddChatLogEntryHook(username, groupId, channelId, 
  */
 export async function buildCanonicalMessageContent(username, groupId, channelId, content, options = {}) {
 	const { charId = null, entry = null, origin = 'human', entityHash } = options
-	const base = channelMessageContentObject(content)
+	const base = normalizeChannelMessage(content)
 	if (origin === 'bridge')
 		return base
 
@@ -114,15 +122,16 @@ export async function buildCanonicalMessageContent(username, groupId, channelId,
 		username,
 		groupId,
 	)
-	const canonical = channelMessageContentObject({
+	const canonical = normalizeChannelMessage({
 		...base,
-		displayName: display.name,
-		...display.avatar ? { displayAvatar: display.avatar } : {},
+		name: display.name,
+		...display.avatar ? { avatar: display.avatar } : {},
 	})
 	const isGeneration = origin === 'char' || origin === 'greeting' || !!charId || entry?.role === 'char'
 	if (isGeneration) {
-		if (entry?.id) canonical.chatLogEntryId = entry.id
-		canonical.sessionSnapshot = await exportSessionSnapshot(username, groupId, channelId)
+		const chat = ensureChatExtension(canonical)
+		if (entry?.id) chat.entryId = entry.id
+		chat.sessionSnapshot = await exportSessionSnapshot(username, groupId, channelId)
 		if (entry?.role) canonical.role = entry.role
 		if (canonical.is_generating == null && entry?.is_generating)
 			canonical.is_generating = true
@@ -191,11 +200,11 @@ export async function commitChannelMessageEvent(args) {
 		channelId,
 		timestamp,
 		...charId ? { charId } : {},
-		content: channelMessageContentObject(canonical),
+		content: normalizeChannelMessage(canonical),
 	}, { entityHash, ...ingress ? { ingress } : {} })
 
 	if (event?.id && entry)
-		entry.extension = { ...entry.extension, dagEventId: event.id }
+		ensureChatExtension(entry).eventId = event.id
 
 	return event
 }

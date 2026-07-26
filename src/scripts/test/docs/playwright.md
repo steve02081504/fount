@@ -14,7 +14,7 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 
 ## Browser binary
 
-`browser.mjs`: reuse PATH Chrome/Edge locally (no download). On `GITHUB_ACTIONS=true` without a system browser, `playwright install --with-deps chrome` then `channel: 'chrome'`. Launch args include `--disable-component-update` so Chrome Root Store / CRLSet updates do not swap the cert verifier mid-flight (`net::ERR_CERT_VERIFIER_CHANGED` would cancel esm.sh module loads and leave ready-gates stuck). Fixtures use `serviceWorkers: 'block'` so page.route is not bypassed by the app SW.
+`browser.mjs`: reuse PATH Chrome/Edge locally (no download). On `GITHUB_ACTIONS=true` without a system browser, `playwright install --with-deps chrome` then `channel: 'chrome'`. Launch args include `--disable-component-update` (avoids mid-flight cert-verifier swaps that cancel esm.sh loads). Fixtures use `serviceWorkers: 'block'` so `page.route` is not bypassed by the app SW.
 
 ## Network diagnostics
 

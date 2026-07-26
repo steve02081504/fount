@@ -48,8 +48,11 @@ export const FOUNT_CHAT_CODE_CONTEXT_PLUGIN = {
 						group: groupProjection,
 						channel: channelProjection,
 						message: {
-							content: { content: triggerEntry.content, displayName: triggerEntry.name },
-							eventId: triggerEntry.extension.dagEventId,
+							...triggerEntry,
+							eventId: triggerEntry.extension?.chat?.eventId
+								|| triggerEntry.extension?.chat?.virtualEventId
+								|| triggerEntry.id,
+							channelId,
 						},
 					})
 				}

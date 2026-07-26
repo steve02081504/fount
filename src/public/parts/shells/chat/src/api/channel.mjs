@@ -2,6 +2,7 @@ import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
 
+import { normalizeChannelMessage } from '../../public/shared/channelContent.mjs'
 import { recordChannelTyping } from '../chat/bridge/typing.mjs'
 import { postChannelMessage } from '../chat/channel/postMessage.mjs'
 import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
@@ -65,11 +66,9 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 				}
 			else {
 				const files = Array.isArray(objectReply?.files) ? mapFiles(objectReply.files) : undefined
-				const useText = !!files?.length
-					|| (objectReply && (objectReply.text != null || objectReply.content != null) && !objectReply.type)
-				postPayload = useText
+				postPayload = typeof reply === 'string'
 					? {
-						text: typeof reply === 'string' ? reply : String(objectReply.text ?? objectReply.content ?? ''),
+						text: reply,
 						files,
 						origin,
 						charId,
@@ -84,7 +83,7 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 					}
 			}
 			const { event } = await postChannelMessage(apiContext.username, groupId, channelId, postPayload)
-			// 落盘后 content 是 CKG 密文；发送方持钥，还原明文供调用方直接读取（fileIds 等）。
+			// 落盘后 content 是频道密钥密文；发送方持钥，还原明文供调用方直接读取（fileIds 等）。
 			const { decryptEventContent } = await import('../chat/channel_keys/content.mjs')
 			const decrypted = await decryptEventContent(apiContext.username, groupId, channelId, event.content)
 			const message = createMessage(apiContext, groupId, {
@@ -230,13 +229,17 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 			if (!voteDeadline && Number.isFinite(Number(ballot.deadlineMs)) && Number(ballot.deadlineMs) > 0)
 				voteDeadline = new Date(Date.now() + Number(ballot.deadlineMs)).toISOString()
 
-			const body = {
-				type: 'message',
-				channelId,
-				timestamp: Date.now(),
-				content: { type: 'vote', question, options, deadline: voteDeadline },
-			}
-			const event = await appendSignedLocalEvent(apiContext.username, groupId, body, signOptions)
+			const { event } = await postChannelMessage(apiContext.username, groupId, channelId, {
+				rawContent: normalizeChannelMessage({
+					type: 'vote',
+					question,
+					options,
+					...voteDeadline ? { deadline: new Date(voteDeadline).getTime() } : {},
+				}),
+				origin: apiContext.charname ? 'char' : 'human',
+				charId: apiContext.charname || null,
+				entityHash: apiContext.entityHash,
+			})
 			void scheduleVoteDeadlines(apiContext.username, groupId)
 			const message = createMessage(apiContext, groupId, {
 				eventId: event.id,

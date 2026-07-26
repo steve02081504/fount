@@ -19,7 +19,7 @@ console.log(JSON.stringify(state, null, 2))
 
 console.log('\n=== 3. Send message ===')
 const m = await chatApiJson('POST', `/groups/${groupId}/channels/${channelId}/messages`, {
-	content: { type: 'text', content: '你好，这是第一条冒烟测试消息' },
+	content: { content: '你好，这是第一条冒烟测试消息' },
 })
 console.log(JSON.stringify(m, null, 2))
 

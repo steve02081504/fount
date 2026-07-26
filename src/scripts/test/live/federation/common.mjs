@@ -297,7 +297,7 @@ async function createOpenFedGroup(name, seedText) {
 	let seedEventId = null
 	if (seedText)
 		seedEventId = (await Api(FedA, 'POST', `/groups/${groupId}/channels/${channelId}/messages`, {
-			content: { type: 'text', content: seedText },
+			content: { content: seedText },
 		})).json?.event?.id
 	return { groupId, channelId, seedEventId, invite }
 }

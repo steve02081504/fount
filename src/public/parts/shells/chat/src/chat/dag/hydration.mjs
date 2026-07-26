@@ -2,7 +2,7 @@
  * 【文件】`dag/hydration.mjs` — 频道消息行 → 内存 chatLog 水合。
  * 【职责】从 DAG 衍生的 `messages.jsonl` 重建 `chatMetadata.chatLog`；折叠编辑/删除；解析 GSH/content_ref 展示文本。
  * 【原理】先扫描 `message_edit`/`message_delete` 建 overlay，再对 `message` 行构造 `chatLogEntry_t`；可选 `sessionSnapshot` 恢复 timeSlice；侧车 GC 与 chatLog 对齐。
- * 【数据结构】`buildChatLogEntriesFromChannelLines` 输入频道行数组，输出 `chatLogEntry_t[]`（含 `extension.dagEventId`、`groupChannelId`）。
+ * 【数据结构】`buildChatLogEntriesFromChannelLines` 输入频道行数组，输出 `chatLogEntry_t[]`（侧车挂 `extension.chat`）。
  * 【关联】`queries.mjs`（经 group queries 读消息）、`chatLogMirror.mjs`、`../session/models.mjs`。
  */
 /** @typedef {import('../../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
@@ -11,20 +11,28 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
+import { Buffer } from 'node:buffer'
+import { existsSync, readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import {
-	channelMessageAgentText,
-	channelMessageEditText,
-	channelMessageShowText,
-	isTextChannelContent,
+	chatExtensionOf,
+	messageAgentText,
+	messageEditText,
+	messageShowText,
 } from '../../../public/shared/channelContent.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
 import { resolveActiveAgentMemberKeyByCharname } from '../../group/access.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
-import { isCkgEncryptedContent } from '../channel_keys/content.mjs'
+import { isChannelKeyEncryptedContent } from '../channel_keys/content.mjs'
+import { fileMetaFromState, getDecryptedFile } from '../files/groupFiles.mjs'
 import { deriveMessageAttribution } from '../lib/attribution.mjs'
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
 import { gcLogContextSidecars } from '../lib/contextSidecar.mjs'
+import { shellChatRoot } from '../lib/paths.mjs'
 import { chatLogEntry_t } from '../session/models.mjs'
 import { buildTimeSliceFromSessionSnapshot } from '../session/runtime.mjs'
 
@@ -37,7 +45,7 @@ import { buildTimeSliceFromSessionSnapshot } from '../session/runtime.mjs'
  * @returns {string} 说话人 uid
  */
 export function resolveSpeakerUid(line, content, state = null) {
-	const bridgeHash = String(content?.extension?.bridge?.authorEntityHash || '').trim().toLowerCase()
+	const bridgeHash = String(chatExtensionOf(content)?.bridge?.authorEntityHash || '').trim().toLowerCase()
 	if (bridgeHash) return bridgeHash
 	const charId = line?.charId ? String(line.charId).trim() : ''
 	if (charId && state) {
@@ -74,7 +82,7 @@ export async function loadDagHydrationI18n(username) {
  * @param {object[]} lines `readChannelMessagesForUser` 返回的行
  * @param {timeSlice_t} baseSlice 时间切片基准
  * @param {{ decryptUnavailableText: string, contentRefPlaceholder: string, contentRefMismatchText: string, streamFailedNote: string }} i18n 文案
- * @param {string} [sourceChannelId] 来源频道（写入 `extension.groupChannelId`）
+ * @param {string} [sourceChannelId] 来源频道（写入 `extension.chat.channelId`）
  * @param {string} [replicaUsername] 用于 sessionSnapshot 水合
  * @param {string} [groupId] 群 ID
  * @param {object | null} [state] 物化群状态（解析说话人 uid）
@@ -83,7 +91,7 @@ export async function loadDagHydrationI18n(username) {
 export async function buildChatLogEntriesFromChannelLines(lines, baseSlice, i18n, sourceChannelId = null, replicaUsername = null, groupId = null, state = null) {
 	const { decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText, streamFailedNote } = i18n
 	const deleted = new Set()
-	/** @type {Map<string, { content?: string, content_for_show?: string, content_for_edit?: string, fileCount?: number, editedAt: number }>} */
+	/** @type {Map<string, { content?: string, content_for_show?: string, content_for_edit?: string, files?: object[], type?: string, editedAt: number }>} */
 	const edits = new Map()
 	for (const line of lines) {
 		if (line.type === 'message_delete' && line.content?.targetId)
@@ -93,14 +101,17 @@ export async function buildChatLogEntriesFromChannelLines(lines, baseSlice, i18n
 			const editedAt = Number(line.timestamp) || 0
 			const patch = line.content.newContent
 			const previous = edits.get(messageEventId)
-			if (!previous || editedAt >= previous.editedAt)
+			if (!previous || editedAt >= previous.editedAt) {
+				const isText = !patch.type || patch.type === 'text'
 				edits.set(messageEventId, {
-					content: channelMessageAgentText(patch) || resolveDagMessageText(patch, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText),
-					content_for_show: isTextChannelContent(patch) ? channelMessageShowText(patch) : undefined,
-					content_for_edit: isTextChannelContent(patch) ? channelMessageEditText(patch) : undefined,
-					fileCount: patch?.fileCount,
+					content: messageAgentText(patch) || resolveDagMessageText(patch, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText),
+					content_for_show: isText ? messageShowText(patch) : undefined,
+					content_for_edit: isText ? messageEditText(patch) : undefined,
+					files: patch?.files,
+					type: patch.type,
 					editedAt,
 				})
+			}
 		}
 	}
 	const dagEntries = []
@@ -120,8 +131,6 @@ export async function buildChatLogEntriesFromChannelLines(lines, baseSlice, i18n
 			sourceChannelId,
 			state,
 		)
-		const groupChannelId = resolveChannelId(sourceChannelId, resolveChannelId(line.channelId))
-		entry.extension = { ...entry.extension, groupChannelId }
 		if (line.content?.streamGenerationFailed && streamFailedNote)
 			entry.content = `${entry.content}\n[${streamFailedNote}]`
 		dagEntries.push(entry)
@@ -141,6 +150,91 @@ export async function reconcileContextSidecarsWithChatLog(username, groupId, cha
 }
 
 /**
+ * @param {string} username replica
+ * @param {string} contentHashHex 明文哈希
+ * @returns {Buffer | null} 本地明文缓存
+ */
+function tryReadPlaintextCache(username, contentHashHex) {
+	const h = String(contentHashHex || '').trim().toLowerCase()
+	if (!isHex64(h)) return null
+	const path = join(shellChatRoot(username), 'files', h)
+	if (!existsSync(path)) return null
+	try {
+		return readFileSync(path)
+	}
+	catch {
+		return null
+	}
+}
+
+/**
+ * 将 wire `files[]` 反序列化为带惰性 `buffer` getter 的附件描述符（fileId 闭包不外露）。
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ * @param {object | null} state 物化群状态
+ * @param {object[]} wireFiles 落盘 files
+ * @returns {object[] | undefined} 水合附件
+ */
+export function hydrateWireFiles(username, groupId, state, wireFiles) {
+	if (!wireFiles?.length) return undefined
+	const out = []
+	for (const wire of wireFiles) {
+		const fileId = String(wire.fileId || '').trim()
+		if (!fileId) continue
+		const name = String(wire.name || 'file').slice(0, 255)
+		const mime_type = String(wire.mime_type || 'application/octet-stream')
+		const description = wire.description ? String(wire.description) : ''
+		/** @type {Buffer | undefined} */
+		let bufferCache
+		/** @type {Promise<Buffer> | null} */
+		let loadPromise = null
+		/**
+		 * @returns {Promise<Buffer>} 解密后的附件字节
+		 */
+		const ensureBuffer = () => {
+			if (bufferCache) return Promise.resolve(bufferCache)
+			if (loadPromise) return loadPromise
+			const meta = fileMetaFromState(state, fileId)
+			const cached = meta?.contentHash ? tryReadPlaintextCache(username, meta.contentHash) : null
+			if (cached) {
+				bufferCache = cached
+				return Promise.resolve(bufferCache)
+			}
+			if (!meta) return Promise.resolve(Buffer.alloc(0))
+			loadPromise = getDecryptedFile(username, groupId, meta)
+				.then(bytes => {
+					bufferCache = Buffer.from(bytes)
+					loadPromise = null
+					return bufferCache
+				})
+				.catch(error => {
+					loadPromise = null
+					throw error
+				})
+			return loadPromise
+		}
+		const descriptor = { name, mime_type, description }
+		Object.defineProperty(descriptor, 'buffer', {
+			enumerable: true,
+			/**
+			 * @returns {Buffer} 附件字节（惰性；加载中为空 Buffer）
+			 */
+			get() {
+				if (bufferCache) return bufferCache
+				void ensureBuffer().catch(() => {})
+				return bufferCache ?? Buffer.alloc(0)
+			},
+		})
+		Object.defineProperty(descriptor, 'getBuffer', {
+			enumerable: false,
+			value: ensureBuffer,
+		})
+		out.push(descriptor)
+	}
+	return out.length ? out : undefined
+}
+
+/**
  * 解析 DAG 消息正文（已解密行直接取 text；未解密 GSH 用占位）。
  * @param {object | undefined} content DAG content
  * @param {string} decryptUnavailableText GSH 加密内容占位文本（§11）
@@ -149,26 +243,50 @@ export async function reconcileContextSidecarsWithChatLog(username, groupId, cha
  * @returns {string} 可展示正文
  */
 function resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText) {
-	if (content?.contentRefHashMismatch)
+	const chat = chatExtensionOf(content)
+	if (content?.contentRefHashMismatch || chat?.contentRefHashMismatch)
 		return contentRefMismatchText?.trim() || 'content_ref mismatch'
-	const ref = content?.content_ref
-	if (ref && !content.contentRefResolved)
+	const ref = chat?.contentRef
+	if (ref && !content?.contentRefResolved && !chat?.contentRefResolved)
 		return contentRefPlaceholder?.trim()
 			|| `[content_ref:${ref.contentHash?.trim().slice(0, 12) || '?'}…]`
-	if (content?.decryptView?.failed || isCkgEncryptedContent(content))
+	if (content?.decryptView?.failed || isChannelKeyEncryptedContent(content))
 		return decryptUnavailableText
-	if (content?.type === 'vote')
-		return content.question?.trim() || decryptUnavailableText
-	const text = channelMessageShowText(content)
-	if (text) return text
-	return ''
+	return messageShowText(content) || ''
+}
+
+/**
+ * @param {object} entry chatLog 条目
+ * @param {object} content wire content
+ * @param {object} line DAG 行
+ * @param {string | null} sourceChannelId 频道 ID
+ * @returns {void}
+ */
+function mergeChatSidecar(entry, content, line, sourceChannelId) {
+	const wireChat = chatExtensionOf(content) || {}
+	const channelId = resolveChannelId(sourceChannelId, resolveChannelId(line.channelId))
+	const attribution = deriveMessageAttribution(content, {
+		sender: line.sender,
+		signerEntityHash: wireChat.importedFrom?.signerEntityHash || null,
+	})
+	const chat = {
+		...wireChat,
+		eventId: line.eventId,
+		channelId,
+		attribution,
+		...content.name || content.avatar
+			? { display: { name: content.name || null, avatar: content.avatar || null } }
+			: wireChat.display ? { display: wireChat.display } : {},
+	}
+	if (wireChat.entryId) chat.entryId = wireChat.entryId
+	entry.extension = { ...entry.extension, chat }
 }
 
 /**
  * 从 DAG default 频道行构造 chatLog 条目。
  * @param {object} line DAG 消息事件行
  * @param {timeSlice_t} baseSlice 作为快照基准的时间切片
- * @param {{ content?: string, content_for_show?: string, content_for_edit?: string, fileCount?: number } | undefined} editOverride 编辑折叠后的覆盖字段
+ * @param {{ content?: string, content_for_show?: string, content_for_edit?: string, files?: object[], type?: string } | undefined} editOverride 编辑折叠后的覆盖字段
  * @param {string} decryptUnavailableText GSH 加密内容占位文本
  * @param {string} [contentRefPlaceholder] content_ref 占位文案
  * @param {string} [contentRefMismatchText] content_ref 校验失败文案
@@ -194,29 +312,37 @@ async function buildChatLogEntryFromDagMessage(
 	// 这是合法的展示状态，水合侧必须容忍，否则单条坏消息会拖垮整页水合。
 	const content = line.content || {}
 	const entry = new chatLogEntry_t()
-	entry.id = content.chatLogEntryId || crypto.randomUUID()
-	if (line.eventId)
-		entry.extension = { ...entry.extension, dagEventId: line.eventId }
+	const entryId = chatExtensionOf(content)?.entryId
+	entry.id = entryId || crypto.randomUUID()
+
 	const resolvedShow = resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText) ?? ''
 	const decryptUnavailableFallback = line.decryptView ? decryptUnavailableText : ''
+	const effectiveType = editOverride ? editOverride.type : content.type
+	const isText = !effectiveType || effectiveType === 'text'
 	entry.content = editOverride?.content != null
 		? editOverride.content
-		: channelMessageAgentText(content) || resolvedShow || decryptUnavailableFallback
-	if (content.type === 'text') {
-		const show = editOverride?.content_for_show ?? channelMessageShowText(content)
+		: messageAgentText(content) || resolvedShow || decryptUnavailableFallback
+
+	if (isText) {
+		const show = editOverride?.content_for_show ?? messageShowText(content)
 		if (show && show !== entry.content) entry.content_for_show = show
-		const edit = editOverride?.content_for_edit ?? channelMessageEditText(content)
+		const edit = editOverride?.content_for_edit ?? messageEditText(content)
 		if (edit && edit !== entry.content) entry.content_for_edit = edit
 	}
+
+	if (content.locale) entry.locale = content.locale
+	if (content.content_warning) entry.content_warning = content.content_warning
+	if (content.sensitive_media) entry.sensitive_media = content.sensitive_media
+
 	entry.role = content.role || 'user'
 	const charId = line.charId
-	const snapshot = content.sessionSnapshot
+	const snapshot = chatExtensionOf(content)?.sessionSnapshot
 	const channelForSnapshot = resolveChannelId(sourceChannelId, resolveChannelId(line.channelId))
 	let slice = baseSlice.copy()
 	if (snapshot && replicaUsername && groupId)
 		slice = await buildTimeSliceFromSessionSnapshot(snapshot, replicaUsername, groupId, channelForSnapshot)
 
-	const displayName = content.displayName ? String(content.displayName).trim() : ''
+	const displayName = content.name ? String(content.name).trim() : ''
 	if (entry.role === 'char') {
 		entry.name = displayName || charId || 'char'
 		entry.extension.timeSlice = slice.copy()
@@ -232,30 +358,15 @@ async function buildChatLogEntryFromDagMessage(
 	}
 	entry.uid = resolveSpeakerUid(line, content, state)
 	entry.time_stamp = new Date(line.hlc?.wall ?? Date.now()).toISOString()
-	const fileCount = editOverride?.fileCount != null ? editOverride.fileCount : content.fileCount
-	if (fileCount != null) entry.extension = { ...entry.extension, dagFileCount: fileCount }
-	if (content.extension?.bridge)
-		entry.extension = { ...entry.extension, bridge: { ...content.extension.bridge } }
-	if (content.replyTo)
-		entry.extension = { ...entry.extension, replyTo: { ...content.replyTo } }
-	const attribution = deriveMessageAttribution(content, {
-		sender: line.sender,
-		signerEntityHash: content.importedFrom?.signerEntityHash || null,
-	})
-	entry.extension = {
-		...entry.extension,
-		attribution,
-		...content.displayName || content.importedFrom
-			? {
-				display: {
-					name: content.displayName || null,
-					avatar: content.displayAvatar || null,
-				},
-			}
-			: {},
-	}
+
+	const wireFiles = editOverride?.files ?? content.files
+	if (wireFiles && groupId && replicaUsername)
+		entry.files = hydrateWireFiles(replicaUsername, groupId, state, wireFiles) || []
+
 	if (content.visibility) entry.visibility = content.visibility
 	if (content.charVisibility?.length) entry.charVisibility = content.charVisibility
+
+	mergeChatSidecar(entry, content, line, sourceChannelId)
 	return entry
 }
 

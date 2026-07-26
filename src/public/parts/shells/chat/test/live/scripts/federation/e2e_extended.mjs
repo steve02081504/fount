@@ -28,7 +28,7 @@ const cid = g.defaultChannelId
 await Api(FedA, 'PUT', `/groups/${gid}/settings`, { joinPolicy: 'open' })
 const inv = (await Api(FedA, 'POST', `/groups/${gid}/invite-ticket`, { ttlMs: 3_600_000 })).json
 const seedMsg = (await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-	content: { type: 'text', content: 'seed-A' },
+	content: { content: 'seed-A' },
 })).json.event?.id
 const jr = await Api(FedB, 'POST', `/groups/${gid}/join`, {
 	roomSecret: inv.roomSecret,
@@ -55,7 +55,7 @@ await testCase('B sees new channel', async () =>
 
 console.log('\n=== 3. Live message B->A ===')
 const bMsg = (await Api(FedB, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-	content: { type: 'text', content: 'from-B' },
+	content: { content: 'from-B' },
 })).json.event?.id
 await testCase('A sees B message (live)', async () =>
 	pollUntil(() => TestFedHasMessage(FedA, gid, cid, bMsg), 60, 3),
@@ -72,10 +72,10 @@ await testCase('B sees reaction on B-message', async () =>
 
 console.log('\n=== 5. Edit propagation A->B ===')
 const aMsg = (await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-	content: { type: 'text', content: 'orig-A' },
+	content: { content: 'orig-A' },
 })).json.event?.id
 await Api(FedA, 'PUT', `/groups/${gid}/channels/${cid}/messages/${aMsg}`, {
-	content: { type: 'text', content: 'edited-A' },
+	content: { content: 'edited-A' },
 })
 await testCase('B sees edited content', async () =>
 	pollUntil(() => TestFedMessageContent(FedB, gid, cid, aMsg, 'edited-A'), 60, 3),

@@ -115,29 +115,19 @@ export type file_t = {
 }
 
 /**
- * 频道消息 content（与 `public/shared/channelContent.mjs` 对齐；允许扩展字段）。
+ * 水合后 chatLog 壳层侧车（`extension.chat`）。DAG wire 类型见 `shells/chat/decl/channelWire.ts`。
  */
-export type channelMessageContent_t = {
-	type: 'text' | 'sticker' | 'vote' | 'group_invite'
-	content?: string
-	content_for_show?: string
-	content_for_edit?: string
-	displayName?: string
-	displayAvatar?: string
-	fileIds?: string[]
-	fileCount?: number
-	isAutoTrigger?: boolean
-	locale?: string
-	content_warning?: string
-	sensitive_media?: boolean
-	forwardedFrom?: {
-		groupId: string
-		channelId: string
-		eventId: string
-		senderName?: string
-		shareUrl?: string
-	}
-	fileAlts?: Record<string, string>
+export type chatLogChatExtension_t = {
+	eventId?: string
+	entryId?: string
+	channelId?: string
+	attribution?: Record<string, unknown>
+	display?: { name?: string | null, avatar?: string | null }
+	bridge?: Record<string, unknown>
+	replyTo?: { eventId: string, senderName?: string, preview?: string, senderEntityHash?: string }
+	virtualEventId?: string
+	isGreeting?: boolean
+	aborted?: boolean
 	[key: string]: unknown
 }
 
@@ -191,7 +181,7 @@ export class chatReplyRequest_t {
 
 /**
  * 聊天日志条目。
- * RPG 分支上下文存于 `extension.timeSlice`。
+ * RPG 分支上下文存于 `extension.timeSlice`；壳层侧车存于 `extension.chat`。
  */
 export class chatLogEntry_t {
 	id: string
@@ -221,8 +211,7 @@ export class chatLogEntry_t {
 	extension: {
 		timeSlice?: ChatLogTimeSlice
 		feedback?: { type: 'up' | 'down', content?: string }
-		dagEventId?: string
-		chatLogEntryId?: string
+		chat?: chatLogChatExtension_t
 		[key: string]: unknown
 	}
 }

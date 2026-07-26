@@ -1,7 +1,7 @@
 import { loadPersonalFilterSets, matchesPersonalListEntries } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
 import { indexDocument, patchShardMeta, queryIndex, removeDocument } from '../../../../../../../scripts/search/invertedIndex.mjs'
-import { channelMessageShowText, messageLineShowText } from '../../../public/shared/channelContent.mjs'
+import { messageLineShowText, messageShowText } from '../../../public/shared/channelContent.mjs'
 import { loadArchiveManifest } from '../archive/index.mjs'
 import { readArchiveAsMessageLines } from '../archive/reader.mjs'
 import { groupSearchIndexPath } from '../lib/paths.mjs'
@@ -35,7 +35,7 @@ export async function indexChannelMessageLine(username, groupId, channelId, mess
 		const targetId = String(messageLine.content?.targetId || '').trim().toLowerCase()
 		const newContent = messageLine.content?.newContent
 		if (!targetId || newContent?.is_generating) return
-		const text = channelMessageShowText(newContent)
+		const text = messageShowText(newContent)
 		if (!text) return
 		await indexDocument(indexDir, channelId, {
 			id: targetId,

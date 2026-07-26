@@ -91,7 +91,7 @@ Deno.test('persona BeforeUserEdit then world MessageEdit rewrite before DAG edit
 	const originalRow = await findChannelMessageRow(username, groupId, channelId, row.eventId)
 	const edited = await applyChannelMessageEditHooks(
 		username, groupId, channelId, row.eventId, originalRow,
-		{ type: 'text', content: 'edited persona-edit-me world-edit-me' },
+		{ content: 'edited persona-edit-me world-edit-me' },
 	)
 	await appendChannelMessageEdit(username, groupId, channelId, row.eventId, edited)
 

@@ -93,17 +93,17 @@ Deno.test('projectViewerEntriesToRows drops hidden and rewrites text', async () 
 		{
 			type: 'message',
 			eventId: 'e1',
-			content: { type: 'text', content: 'keep-me' },
+			content: { content: 'keep-me' },
 		},
 		{
 			type: 'message',
 			eventId: 'e2',
-			content: { type: 'text', content: 'hide-me' },
+			content: { content: 'hide-me' },
 		},
 		{
 			type: 'message',
 			eventId: 'e3',
-			content: { type: 'text', content: 'rewrite-src' },
+			content: { content: 'rewrite-src' },
 		},
 		{
 			type: 'vote_cast',
@@ -112,8 +112,8 @@ Deno.test('projectViewerEntriesToRows drops hidden and rewrites text', async () 
 		},
 	]
 	const entries = [
-		{ content: 'keep-me', extension: { dagEventId: 'e1' } },
-		{ content: 'rewrite-dst', content_for_show: 'rewrite-dst', extension: { dagEventId: 'e3' } },
+		{ content: 'keep-me', extension: { chat: { eventId: 'e1' } } },
+		{ content: 'rewrite-dst', content_for_show: 'rewrite-dst', extension: { chat: { eventId: 'e3' } } },
 	]
 	const rows = projectViewerEntriesToRows(rawLines, entries)
 	assertEquals(rows.map(row => row.eventId), ['e1', 'e3', 'v1'])

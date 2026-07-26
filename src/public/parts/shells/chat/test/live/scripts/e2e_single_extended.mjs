@@ -137,7 +137,7 @@ await testCase('PUT messages/:id/feedback down', async () => {
 
 await testCase('POST message (user)', async () => {
 	const r = await api('POST', `/groups/${gid}/channels/${cid}/messages`, {
-		content: { type: 'text', content: 'ext user message' },
+		content: { content: 'ext user message' },
 	})
 	return okStatus(r.status)
 })

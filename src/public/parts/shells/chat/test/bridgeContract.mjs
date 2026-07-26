@@ -14,10 +14,11 @@ export function assertOnMessageEventShape(event, expect) {
 	assert(event?.group, 'group missing')
 	assert(event?.channel, 'channel missing')
 	assert(Array.isArray(event.chatReplyRequest.chat_log), 'chat_log must be array')
+	assertEquals(typeof event.message.content, 'string', 'OnMessage message.content must be fount string')
 	assertEquals(event.group.bridge?.platform, expect.platform)
 	if (expect.chatKind)
 		assertEquals(event.group.kind, expect.chatKind === 'dm' ? 'dm' : 'group')
-	assert(event.message.extension?.bridge?.authorEntityHash
+	assert(event.message.extension?.chat?.bridge?.authorEntityHash
 		|| event.message.uid, 'author identity missing on message')
 	if (expect.expectCharUid)
 		assertEquals(
@@ -50,18 +51,18 @@ export function assertCharReplyRowContract(chatLog, charUid) {
 export function assertBackfillBeforeTrigger(chatLog, triggerPlatformMessageId) {
 	const logs = chatLog || []
 	const triggerIndex = logs.findIndex(row =>
-		String(row.extension?.bridge?.platformMessageId) === String(triggerPlatformMessageId)
-		&& row.extension?.ingress !== 'backfill')
+		String(row.extension?.chat?.bridge?.platformMessageId) === String(triggerPlatformMessageId)
+		&& row.extension?.chat?.ingress !== 'backfill')
 	assert(triggerIndex >= 0, 'trigger message missing from chat_log')
 	for (let i = 0; i < logs.length; i++) {
-		if (logs[i].extension?.ingress !== 'backfill') continue
+		if (logs[i].extension?.chat?.ingress !== 'backfill') continue
 		assert(i < triggerIndex, `backfill at index ${i} must precede trigger at ${triggerIndex}`)
 	}
 	const lastUser = [...logs].reverse().find(row => row.role !== 'char')
 	assert(lastUser, 'user trigger row missing')
-	assertEquals(lastUser.extension?.ingress !== 'backfill', true, 'latest user row must not be backfill')
+	assertEquals(lastUser.extension?.chat?.ingress !== 'backfill', true, 'latest user row must not be backfill')
 	assertEquals(
-		String(lastUser.extension?.bridge?.platformMessageId),
+		String(lastUser.extension?.chat?.bridge?.platformMessageId),
 		String(triggerPlatformMessageId),
 		'latest user row must be the trigger message',
 	)

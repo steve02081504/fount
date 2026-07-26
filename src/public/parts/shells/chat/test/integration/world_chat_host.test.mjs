@@ -72,7 +72,7 @@ Deno.test('WorldChatHost postSystemMessage localData triggerCharReply', async ()
 	await host.localData.set('inventory', { gold: 42 })
 	assertEquals(await host.localData.get('inventory'), { gold: 42 })
 
-	await host.postSystemMessage(channelId, { type: 'text', content: 'world-host-system-message' })
+	await host.postSystemMessage(channelId, { content: 'world-host-system-message' })
 	const afterSystem = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
 	assert(afterSystem.some(row => String(row.content?.content || '').includes('world-host-system-message')))
 

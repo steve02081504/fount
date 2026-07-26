@@ -1,4 +1,4 @@
-import { channelMessageContent_t, chatReply_t, chatReplyRequest_t, type chatViewer_t } from '../public/parts/shells/chat/decl/chatLog.ts'
+import { channelWireMessage_t, chatReply_t, chatReplyRequest_t, type chatViewer_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
 import type { GroupPrompt_t, MemberTurn_t, SpeakingOrderContext_t } from './memberProfile.ts'
@@ -56,7 +56,7 @@ export type WorldChatHost_t = {
 		set(key: string, value: unknown): Promise<void>
 	}
 	triggerCharReply(channelId: string, charname: string): Promise<void>
-	postSystemMessage(channelId: string, content: channelMessageContent_t): Promise<void>
+	postSystemMessage(channelId: string, content: channelWireMessage_t): Promise<void>
 	listMembers(): Promise<memberSummary_t[]>
 	listChannels(): Promise<channelSummary_t[]>
 }
@@ -242,12 +242,12 @@ export class WorldAPI_t {
 				username: string
 				eventId: string
 				original: object
-				edited: channelMessageContent_t
+				edited: channelWireMessage_t
 				memberId?: string
 			}) => Promise<{
-				edited?: channelMessageContent_t
+				edited?: channelWireMessage_t
 				reject?: string
-			} | channelMessageContent_t | undefined>
+			} | channelWireMessage_t | undefined>
 			/**
 			 * 频道消息删除前：reject 拒绝删除。
 			 */

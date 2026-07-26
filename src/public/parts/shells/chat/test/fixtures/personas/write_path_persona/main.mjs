@@ -49,7 +49,6 @@ export default {
 					return {
 						input: {
 							...context.input,
-							type: 'text',
 							content: text.replace('persona-rewrite-me', 'persona-rewritten'),
 						},
 					}

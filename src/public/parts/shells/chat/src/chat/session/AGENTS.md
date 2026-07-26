@@ -15,7 +15,7 @@ Multi-node bind / fixture probes: [test domain-harness](../../../../../../../../
 - **Hard security rule**: `User*` = local operator/owner; `Char*` = the agent generating the reply; `ReplyTo*` = reply target (may be a stranger); `chat_log[].uid` = that row's speaker (may be a stranger). **Never** put a Discord/Telegram/Social message author into `User*` — the char can operate this machine; mistaking the owner is dangerous.
 - Opaque comparable strings (`===` / JSON); fount chat uses entityHash; bridges use `authorEntityHash`. **Not** RFC UUID. Simple dual-party shells (shellassist / ide) may use `'user'` / `'char'`.
 - `name` / `*Charname` are display only; identity compares **only** via `uid` / `*Uid` (no display-name fallback).
-- Hydration: `hydration.resolveSpeakerUid`; Hub `getChatRequest` fills top-level Uids and `ReplyTo*` from the latest `extension.replyTo.senderEntityHash`. Discord/Telegram/WeChat use **virtual bridge sessions** (`chat/bridge/session.mjs` + `buildVirtualBridgeChatRequest`) — same Uid rules; do not hand-build the request or call `newGroup` for platform chats.
+- Hydration: `hydration.resolveSpeakerUid`; Hub `getChatRequest` fills top-level Uids and `ReplyTo*` from the latest `extension.chat.replyTo.senderEntityHash`. Discord/Telegram/WeChat use **virtual bridge sessions** (`chat/bridge/session.mjs` + `buildVirtualBridgeChatRequest`) — same Uid rules; do not hand-build the request or call `newGroup` for platform chats.
 - `AddLongTimeLog` without `uid` fills from request `CharUid` / `UserUid` by `role` (else `'system'`).
 
 ## Viewer symmetry
@@ -42,12 +42,7 @@ Multi-node bind / fixture probes: [test domain-harness](../../../../../../../../
 
 `groups/{groupId}/local_plugins.json` via `session/localPlugins.mjs` — node-private; not federated.
 
-## World shared state + WorldChatHost
-
-- DAG `world_state`: `{ worldname, action: 'set'|'delete', key, value? }` → `state.worldStates[worldname][key]` (LWW, group-scoped — use key prefixes for channel scope).
-- Shell reducer is ACL-agnostic; world's fold layer ignores unauthorized ops.
-- `WorldChatHost` (`session/worldHost.mjs`): `state`, `localData`, `triggerCharReply`, `postSystemMessage`, `listMembers`/`listChannels`. Wired once on local `resolveWorld` via `ChatHostConnected` (not for builtin/remote proxy).
-- `session_*` is node-local (federation ingest rejects). Federation inbound: `aclGated` + 64KB content limit.
+World shared state / `WorldChatHost`: [world-host.md](world-host.md).
 
 ## member_roles / greeting
 
@@ -58,6 +53,6 @@ Multi-node bind / fixture probes: [test domain-harness](../../../../../../../../
 
 - Human entry: `postChannelMessage`. Persona `BeforeUserSend` before persist — resolve persona for **sender's** `username` via `getMaterializedSession` + `loadPlayerForReplica` (**not** `getActiveGroupRuntime`).
 - Persist: `channel/messageCommit.mjs` → world `AddChatLogEntry` → `appendSignedLocalEvent`. Sole `After` point: `broadcastAndPersist` for `message` and finalized `message_edit`.
-- Char display: `resolveDisplaySnapshot` with `charId` (not sender persona). Preserve `displayName`/`displayAvatar` through streaming finalize / `message_edit`.
+- Char display: `resolveDisplaySnapshot` with `charId` (not sender persona). Preserve `name`/`avatar` through streaming finalize / `message_edit`.
 - Edit/delete Hub path: `PUT/DELETE …/messages/:eventId` → `channel/channelUserHooks.mjs` → `messageMutations`. `triggerReply`: `world.GetCharReply?.(…) ?? char.GetReply(…)`.
 - Pure projection tests: import `viewerLogProject.mjs` only (not the full session I/O graph).

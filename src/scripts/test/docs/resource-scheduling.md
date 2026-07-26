@@ -14,13 +14,13 @@ No CLI concurrency knob: suite packing and `serial.mjs` inner file parallelism b
 `PlanRunCoordinator` (`runner/dependency_scheduler.mjs`):
 
 - Hard-ready: all in-batch deps resolved **and passed** → normal `acquire`, sorted by footprint BFD (`suiteSchedulePriority`). Same-round hard-ready `tryAcquire` before any speculative fill.
-- Speculative: deps still in-flight, **anchored only to hard-running deps** (never stacked on another speculative suite), and `tryAcquire` fits spare budget → start early. **Spare fill is intentional**: other hard suites may already be running or queued for more capacity; as long as crumbs fit, speculate.
-- Speculative sort is a **separate pool**: proximity to hard-running work (same manifest / more hard anchors) first, then cheaper suites (small mem/cpu/baseline) so a wrong prediction wastes less. Not the hard-ready footprint weight.
-- Mid-run: if all deps pass, the speculative suite is **promoted** to a hard anchor so the next layer may overlap its remaining work. If any dep fails, `AbortSignal` cancels the suite process early; `awaitCommitGate()` then discards (record `blocked`, keep output/log).
-- If a dep fails before the dependent starts (no spare room to speculate) → `discardWithoutRun` blocked, no suite process.
+- Speculative: deps still in-flight, **anchored only to hard-running deps** (never stacked on another speculative suite), and `tryAcquire` fits spare budget → start early.
+- Speculative sort: proximity to hard-running work first, then cheaper suites (small mem/cpu/baseline).
+- Mid-run: all deps pass → promote to hard anchor for the next layer; any dep fails → `AbortSignal` cancel + `awaitCommitGate()` discard (`blocked`).
+- Dep fails before start (no spare to speculate) → `discardWithoutRun` blocked.
 - Serial mode: no speculation.
 
-ETA simulation (`simulateParallelMakespanMs`) uses the same one-layer hard-anchor overlap + promotion rules so parallel-rate estimates match.
+ETA simulation (`simulateParallelMakespanMs`) uses the same one-layer hard-anchor overlap + promotion rules.
 
 ## Ordering
 

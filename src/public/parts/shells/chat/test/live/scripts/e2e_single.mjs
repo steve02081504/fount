@@ -89,7 +89,7 @@ await testCase('PUT /default-channel', async () => {
 
 await testCase('POST message', async () => {
 	const r = await chatApi('POST', `/groups/${gid}/channels/${cid}/messages`, {
-		content: { type: 'text', content: 'hello e2e' },
+		content: { content: 'hello e2e' },
 	})
 	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
 	msgId = r.json.event?.id
@@ -109,7 +109,7 @@ await testCase('POST messages/batch-get', async () => {
 
 await testCase('PUT edit message', async () => {
 	const r = await chatApi('PUT', `/groups/${gid}/channels/${cid}/messages/${msgId}`, {
-		content: { type: 'text', content: 'edited e2e' },
+		content: { content: 'edited e2e' },
 	})
 	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
 	return Boolean(r.json.event)

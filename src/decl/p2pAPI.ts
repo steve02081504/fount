@@ -15,9 +15,9 @@ export interface GshContentEnvelope {
 	authTag: string
 }
 
-/** CKG 密文信封：Chat 频道消息（`channel_crypto.mjs` / `channel_keys/content.mjs`）。 */
-export interface CkgContentEnvelope {
-	scheme: 'ckg'
+/** 频道密钥密文信封：Chat 频道消息（wire `scheme: 'channel-key'`；`channel_keys/content.mjs`）。 */
+export interface ChannelKeyContentEnvelope {
+	scheme: 'channel-key'
 	channelId: string
 	generation: number
 	payload: string
@@ -47,7 +47,7 @@ export interface DAGEvent {
 		logical: number
 	}
 	prev_event_ids: string[]
-	content: Record<string, unknown> | GshContentEnvelope | CkgContentEnvelope
+	content: Record<string, unknown> | GshContentEnvelope | ChannelKeyContentEnvelope
 	signature: string
 	/** 联邦入站附带的 Ed25519 公钥 hex */
 	senderPubKey?: string

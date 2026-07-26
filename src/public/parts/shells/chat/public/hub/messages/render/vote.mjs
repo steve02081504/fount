@@ -4,6 +4,7 @@
  */
 import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { channelMessageKind } from '../../../shared/channelContent.mjs'
 import { tallyVoteChoices } from '../../../src/lib/voteTally.mjs'
 
 /**
@@ -14,14 +15,15 @@ import { tallyVoteChoices } from '../../../src/lib/voteTally.mjs'
  */
 export async function renderVoteBlock(message, allMessages) {
 	const content = message?.content || {}
-	const question = escapeHtml(String(content.question || ''))
-	const options = Array.isArray(content.options) ? content.options : []
+	const vote = channelMessageKind(content) === 'vote' ? content : {}
+	const question = escapeHtml(String(vote.question || ''))
+	const options = Array.isArray(vote.options) ? vote.options : []
 	const ballotId = escapeHtml(String(message.eventId))
 	const counts = tallyVoteChoices(allMessages, message.eventId)
 	const total = [...counts.values()].reduce((sum, count) => sum + count, 0)
-	const closed = content.deadline && Date.parse(content.deadline) <= Date.now()
-	const deadlineHtml = content.deadline
-		? await renderTemplateAsHtmlString('hub/messages/vote_deadline', { deadline: String(content.deadline) })
+	const closed = vote.deadline && Number(vote.deadline) <= Date.now()
+	const deadlineHtml = vote.deadline
+		? await renderTemplateAsHtmlString('hub/messages/vote_deadline', { deadline: String(vote.deadline) })
 		: ''
 	const voteOptions = options.map(label => {
 		const key = String(label)

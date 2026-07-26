@@ -35,9 +35,12 @@ export async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } =
  * @returns {object} chatLogEntry 形状（FormatOutboundReply 用）
  */
 export function messageLineToReplyEntry(messageLine, charname) {
-	const text = typeof messageLine?.content === 'string'
-		? messageLine.content
-		: String(messageLine?.content?.content ?? messageLine?.content?.text ?? '')
+	const raw = messageLine?.content
+	const text = typeof raw === 'object' && raw !== null
+		? String(raw.content ?? raw.text ?? '')
+		: typeof raw === 'string' || typeof raw === 'number' || typeof raw === 'boolean'
+			? String(raw)
+			: ''
 	return {
 		name: charname,
 		role: 'char',
@@ -50,7 +53,11 @@ export function messageLineToReplyEntry(messageLine, charname) {
 			buffer: file.buffer,
 			description: file.description || '',
 		})),
-		extension: { virtualEventId: messageLine?.extension?.virtualEventId || messageLine?.eventId },
+		extension: {
+			chat: {
+				virtualEventId: messageLine.extension?.chat?.virtualEventId || messageLine.eventId,
+			},
+		},
 	}
 }
 
@@ -119,7 +126,7 @@ export async function postBridgeDelete(username, dto) {
  */
 export async function postBridgeMessage(username, dto) {
 	const { entry, session } = await appendVirtualBridgeMessage(username, dto)
-	return { id: entry.extension.virtualEventId, groupId: session.groupId, entry }
+	return { id: entry.extension?.chat?.virtualEventId, groupId: session.groupId, entry }
 }
 
 /**

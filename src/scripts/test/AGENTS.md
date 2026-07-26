@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Test Framework Guide
 
-Domain harness (federation join, CKG asserts, `launchNode`, fixtures, disposable paths): [docs/domain-harness.md](docs/domain-harness.md).
+Domain harness (federation join, channel-key asserts, `launchNode`, fixtures, disposable paths): [docs/domain-harness.md](docs/domain-harness.md).
 Plan / verdict / continue reasons: [docs/continue-report.md](docs/continue-report.md).
 Suite packing / optimistic overlap: [docs/resource-scheduling.md](docs/resource-scheduling.md).
 
@@ -45,7 +45,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **`dependsOn`**: plan pulls transitive deps. Imperfect wave = hard fails + one-level dependents (noisy re-runs but does not expand dependents); stale `unknown` → outdated wave.
 - **`subtests`**: `{ name, triggers|trigger, spec? }`. When splitting a frontend god-file, update that subtest's `triggers`. Runtime filter: `FOUNT_TEST_SUBTESTS`. Suite-level `noisy` only marks subtests when **no** file failed.
 - **Live layering**: use smoke → e2e gates; do not jump straight to full e2e. Details: [domain-harness.md](docs/domain-harness.md#live-layering).
-- **Browser scripts**: `/scripts/*` → `src/public/pages/scripts/` (browser-only absolute URLs). **Shared cross-runtime** (Deno `pure/` + browser): `shells/*/public/shared/`. Do not import `/scripts/test/*` from Deno trees; pure tests use relative paths, not `/parts/` URL specifiers. Relative climbs from part `public/` to `pages/scripts` resolve in the browser as `/pages/scripts/…` (404) — use absolute `/scripts/…`. Split pure → `shared/`, UI → `public/src/`.
+- **Browser scripts**: `/scripts/*` → `src/public/pages/scripts/` (browser absolute URLs only). Cross-runtime pure+browser: `shells/*/public/shared/`. Do not import `/scripts/test/*` from Deno trees; pure tests use relative paths, not `/parts/` URLs. Relative climbs from part `public/` to `pages/scripts` resolve as `/pages/scripts/…` (404) — use `/scripts/…`. Split: pure → `shared/`, UI → `public/src/`.
 - **`heavy`** / **`resources`**: [resource-scheduling.md](docs/resource-scheduling.md). Invariant: waiters + idle machine → admit ≥1.
 
 ## Writing new tests
@@ -54,11 +54,10 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **Live WS probes**: `createLiveShellHttp({ shell? })` from `wsHarness.mjs` — do not re-declare local HTTP helpers. End with `finishLiveWs` / `failLiveWsPrecondition`; frames via `waitForWsFrame`.
 - **Polling**: `pollUntil` (live/fed, seconds, soft) / `waitUntil` (integration, ms, throws) — definitions only in `live/http.mjs`.
 - **Chat / Social fixtures**: `createCharBoot` / `seedCharFixture` / `waitUntil` from `shells/chat/test/harness.mjs`; Social agents: `seedAgentChar` in `shells/social/test/harness.mjs`.
-- **Platform bot bridge**: prefer mock Client / Telegraf / WeChat long-poll context (duck-typed `on`/`channels.fetch`/`send` / `getUpdates`+`sendMessage`) + no-AI fixture char (`on_message_yes`) over real tokens; assert platform outbound (`channel.send` / `telegram.sendMessage` / `context.sendMessage`), and that `enumerateJoinedFederatedGroups` does not grow (virtual sessions must not create Hub groups). Threaded replies: outbound handlers must forward `replyToPlatformMessageId` into Discord `reply.messageReference` / Telegram `reply_parameters` (via the FormatOutboundReply `send` helper, first chunk only). Bot shells also keep a Playwright `frontend` smoke (`#new-bot` / `#save-config` / …; WeChat adds `#qr-start`).
-- **OnMessage contract** (`*/test/integration/on_message_contract.test.mjs` + `chat/test/bridgeContract.mjs`): use `gentian_shell_contract` (real willingness skeleton + `onMessageProbe.decisions`) — cover DM owner, guild `@bot` / Telegram `@BotUsername`, plain group silence, char log row `{ role: 'char', uid: CharUid }` (never `extension.charId`), Discord backfill-before-trigger, Discord DM with only `OwnerUserID`. Shared asserts: `assertOnMessageEventShape` / `assertCharReplyRowContract` / `assertBackfillBeforeTrigger`.
+- **Platform bot / OnMessage contract**: [domain-harness.md](docs/domain-harness.md#platform-bot--onmessage-contract).
 - Every `deno run`/`test`/`install` carries `--allow-scripts --allow-all` (in that order). Sole exception: `deno cache` takes `--allow-scripts` alone.
 - Single-node: `{ p2p: false, minP2pNode: true }`. Domain traps (ports, native addons, federation): [domain-harness.md](docs/domain-harness.md).
-- **Teardown crashes after green**: Windows napi exit codes and Linux fatal signals with `N passed | 0 failed` → `[serial] ok … (deno teardown crash after pass)`, not suite red.
+- **Teardown crashes after green**: Windows napi / Linux fatal signals with `N passed | 0 failed` → `[serial] ok … (deno teardown crash after pass)`, not suite red.
 
 ## Operator tools
 

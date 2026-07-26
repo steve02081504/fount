@@ -37,7 +37,7 @@ Deno.test('notify prefs: group mentions mode skips message row without @', async
 		type: 'message',
 		eventId: `${'aa'.repeat(32)}`,
 		sender: 'bb'.repeat(32),
-		content: { type: 'text', content: 'plain hello' },
+		content: { content: 'plain hello' },
 		hlc: { wall: Date.now() },
 	}, { ingress: 'live' })
 
@@ -65,7 +65,7 @@ Deno.test('notify prefs: mode all appends message row', async () => {
 		type: 'message',
 		eventId: `${'cc'.repeat(32)}`,
 		sender: 'dd'.repeat(32),
-		content: { type: 'text', content: 'broadcast ping' },
+		content: { content: 'broadcast ping' },
 		hlc: { wall: Date.now() },
 	}, { ingress: 'live' })
 
@@ -97,6 +97,7 @@ Deno.test('call card message/edit skips inbox fanout even in mode all', async ()
 		eventId,
 		sender: 'ff'.repeat(32),
 		content: {
+			content: 'Call in progress',
 			type: 'call',
 			callId,
 			status: 'ongoing',
@@ -162,7 +163,7 @@ Deno.test('care pierces mute for care inbox row', async () => {
 		type: 'message',
 		eventId: `${'ff'.repeat(32)}`,
 		sender: charMemberKey,
-		content: { type: 'text', content: 'cared author speaks' },
+		content: { content: 'cared author speaks' },
 		hlc: { wall: Date.now() },
 	}, { ingress: 'live' })
 
@@ -195,7 +196,7 @@ Deno.test('@[here] live hits everyone mention; backfill does not', async () => {
 		type: 'message',
 		eventId: `${'11'.repeat(32)}`,
 		sender: senderKey,
-		content: { type: 'text', content: 'wake @[role:here]' },
+		content: { content: 'wake @[role:here]' },
 		hlc: { wall: Date.now() },
 	}
 	const liveMentions = buildMentionsFromMessageLine(channelId, messageLine, state, { ingress: 'live' })

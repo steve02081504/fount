@@ -10,6 +10,7 @@ import { dirname } from 'node:path'
 
 import { loadJsonFileIfExists, saveJsonFile } from '../../../../../../../scripts/json_loader.mjs'
 import { getAllUserNames } from '../../../../../../../server/auth/index.mjs'
+import { normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
 import { resolveActiveMemberKey } from '../../group/access.mjs'
 import { postChannelMessage } from '../channel/postMessage.mjs'
 import { appendFinalEditWithRetry } from '../dag/chatLogMirror.mjs'
@@ -94,7 +95,7 @@ function uniqHashes(participants) {
  */
 function buildCallContent(session) {
 	const participants = uniqHashes(session.everJoined || [])
-	const content = {
+	return normalizeChannelMessage({
 		type: 'call',
 		callId: session.callId,
 		status: session.status,
@@ -102,12 +103,11 @@ function buildCallContent(session) {
 		initiator: session.initiator,
 		participants,
 		current: uniqHashes(session.current || []),
-	}
-	if (session.status === 'ended') {
-		content.endedAt = session.endedAt
-		content.duration = Math.max(0, (session.endedAt || Date.now()) - session.startedAt)
-	}
-	return content
+		...session.status === 'ended' ? {
+			endedAt: session.endedAt,
+			duration: Math.max(0, (session.endedAt || Date.now()) - session.startedAt),
+		} : {},
+	})
 }
 
 /**
@@ -332,7 +332,7 @@ export async function reconcileOrphanedCalls(username) {
 					timestamp: endedAt,
 					content: {
 						targetId: row.messageEventId,
-						newContent: {
+						newContent: normalizeChannelMessage({
 							type: 'call',
 							callId: row.callId,
 							status: 'ended',
@@ -342,7 +342,7 @@ export async function reconcileOrphanedCalls(username) {
 							initiator: row.initiator,
 							participants: uniqHashes(row.everJoined || []),
 							current: [],
-						},
+						}),
 					},
 				}, { entityHash: row.initiator })
 			}

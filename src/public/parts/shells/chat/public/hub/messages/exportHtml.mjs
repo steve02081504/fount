@@ -16,32 +16,26 @@ import { getMessageText } from './render/text.mjs'
 
 /**
  * @param {string} groupId 群 ID
- * @param {string[]} fileIds 文件 ID
+ * @param {object[]} files `content.files` 描述符
  * @returns {Promise<object[]>} standalone 附件
  */
-async function resolveGroupFileAttachments(groupId, fileIds) {
-	if (!groupId || !fileIds?.length) return []
+async function resolveGroupFileAttachments(groupId, files) {
+	if (!groupId || !files?.length) return []
 	const entityHash = groupEntityHash(groupId)
-	const files = []
-	for (const fileId of fileIds) {
-		const id = String(fileId || '').trim()
+	const out = []
+	for (const file of files) {
+		const id = String(file?.fileId || '').trim()
 		if (!id) continue
-		const metaR = await fetch(
-			`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files/${encodeURIComponent(id)}/meta`,
-			{ credentials: 'include' },
-		)
-		if (!metaR.ok) continue
-		const meta = await metaR.json()
 		const plainR = await fetch(entityFileUrl(entityHash, `chat/${id}`), { credentials: 'include' })
 		if (!plainR.ok) continue
-		const mime = String(meta.mimeType || plainR.headers.get('Content-Type') || 'application/octet-stream')
-		files.push({
-			name: meta.name || id,
+		const mime = String(file.mime_type || plainR.headers.get('Content-Type') || 'application/octet-stream')
+		out.push({
+			name: file.name || id,
 			mime_type: mime,
 			buffer: arrayBufferToBase64(await plainR.arrayBuffer()),
 		})
 	}
-	return files
+	return out
 }
 
 /**
@@ -56,9 +50,9 @@ export async function generateMessageStandaloneHtml(message, row = null, options
 		|| ''
 	const includeFiles = options.includeFiles !== false
 	const groupId = options.groupId || store.context.currentGroupId
-	const fileIds = includeFiles ? message?.content?.fileIds : null
+	const wireFiles = includeFiles ? message?.content?.files : null
 	const files = await materializeStandaloneAttachments(
-		await resolveGroupFileAttachments(groupId, fileIds),
+		await resolveGroupFileAttachments(groupId, wireFiles),
 	)
 	return renderMarkdownAsStandaloneDocument(markdown, { files })
 }
