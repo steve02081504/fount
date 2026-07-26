@@ -36,7 +36,7 @@ export function broadcastHubGroupJoined(groupId) {
  */
 export function wireHubGroupJoinedListener(onJoined) {
 	const ch = getChannel()
-	if (!ch) return () => {}
+	if (!ch) return () => { }
 	/**
 	 * @param {MessageEvent} event 频道消息
 	 * @returns {void}

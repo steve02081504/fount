@@ -45,14 +45,14 @@ export async function applyChatRunUri(raw) {
 	}
 
 	const message = parseMessageRunUri(raw)
-	if (message) 
+	if (message)
 		return {
 			kind: 'message',
 			groupId: message.groupId,
 			channelId: message.channelId,
 			eventId: message.eventId,
 		}
-	
+
 
 	const dm = parseDmRunUri(raw)
 	if (dm) {

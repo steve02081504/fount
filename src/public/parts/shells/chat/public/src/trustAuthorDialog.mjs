@@ -44,7 +44,7 @@ export function showTrustAuthorDialog(authorPubKeyHash, authorDisplayName = '') 
 
 	return new Promise((resolve) => {
 		void (async () => {
-		/** @type {TrustDurationChoice} */
+			/** @type {TrustDurationChoice} */
 			let selectedDuration = '7d'
 			let cooldownRemaining = COOLDOWN_SECONDS
 			let confirmPhase = 0
@@ -82,7 +82,7 @@ export function showTrustAuthorDialog(authorPubKeyHash, authorDisplayName = '') 
 			const updateConfirmButtonLabel = () => {
 				const confirmButton = getConfirmButton()
 				if (!confirmButton) return
-				if (confirmPhase === 0) 
+				if (confirmPhase === 0)
 					if (cooldownRemaining > 0) {
 						confirmButton.disabled = true
 						confirmButton.dataset.i18n = 'chat.hub.trustAuthorDialog.confirmCooldown'
@@ -93,7 +93,7 @@ export function showTrustAuthorDialog(authorPubKeyHash, authorDisplayName = '') 
 						confirmButton.dataset.i18n = 'chat.hub.trustAuthorDialog.confirmFirst'
 						delete confirmButton.dataset.seconds
 					}
-			
+
 				else {
 					confirmButton.disabled = false
 					confirmButton.dataset.i18n = 'chat.hub.trustAuthorDialog.confirmSecond'
@@ -132,7 +132,7 @@ export function showTrustAuthorDialog(authorPubKeyHash, authorDisplayName = '') 
 			})
 
 			document.getElementById('trust-author-duration-options')?.addEventListener('change', (event) => {
-				const {target} = event
+				const { target } = event
 				if (target instanceof HTMLInputElement && target.name === 'trust-duration')
 					selectedDuration = /** @type {TrustDurationChoice} */ (target.value)
 			})

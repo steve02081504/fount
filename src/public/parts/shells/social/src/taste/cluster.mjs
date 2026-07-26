@@ -254,7 +254,7 @@ async function pullRecentReactionPosts(username, actor) {
  */
 async function discoverAndGossipMerges(username, actor, store, stats) {
 	const tags = [...stats.audiences.keys()].sort()
-	for (let i = 0; i < tags.length; i++) 
+	for (let i = 0; i < tags.length; i++)
 		for (let j = i + 1; j < tags.length; j++) {
 			const a = tags[i]
 			const b = tags[j]
@@ -276,7 +276,7 @@ async function discoverAndGossipMerges(username, actor, store, stats) {
 			if (store.privacy.publishPreferences !== false)
 				await gossipTagMergeClaim(username, claim).catch(() => null)
 		}
-	
+
 }
 
 /**

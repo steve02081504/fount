@@ -97,7 +97,7 @@ export async function initCore() {
 	const { setHubPane } = await import('./hubPane.mjs')
 	setHubPane('nav')
 	await loadViewerIdentity()
-	await loadAliases().catch(() => {})
+	await loadAliases().catch(() => { })
 	try {
 		const { loadGroups } = await import('./serverBar.mjs')
 		await loadGroups()

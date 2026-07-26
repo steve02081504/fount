@@ -63,7 +63,7 @@ function createFakeWechatRuntime() {
 		/**
 		 * @returns {Promise<void>} typing
 		 */
-		sendTyping: async () => {},
+		sendTyping: async () => { },
 		/**
 		 * @returns {Promise<object>} 假上传
 		 */
@@ -164,7 +164,7 @@ Deno.test('wechat OnMessage contract: owner DM replies and char row uses role/ui
 	}
 	finally {
 		fake.abort()
-		await readyPromise.catch(() => {})
+		await readyPromise.catch(() => { })
 	}
 })
 
@@ -214,7 +214,7 @@ Deno.test('wechat OnMessage contract: non-owner message does not reply', async (
 	}
 	finally {
 		fake.abort()
-		await readyPromise.catch(() => {})
+		await readyPromise.catch(() => { })
 	}
 })
 
@@ -263,6 +263,6 @@ Deno.test('wechat unsupported bridge ops throw clearly', async () => {
 	}
 	finally {
 		fake.abort()
-		await readyPromise.catch(() => {})
+		await readyPromise.catch(() => { })
 	}
 })

@@ -24,7 +24,7 @@ function remarkChatDialect() {
 					const src = `${EMOJI_CONTENT_API}/${encodeURIComponent(groupId)}/${encodeURIComponent(emojiId)}`
 					return `![emoji](${src})`
 				})
-			
+
 			node.value = value
 		})
 	}

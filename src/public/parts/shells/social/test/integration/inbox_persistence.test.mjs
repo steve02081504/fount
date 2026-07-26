@@ -121,7 +121,7 @@ Deno.test('inbox read aggregates seeded likes into one card', async () => {
 	const eventsPath = inbox.inboxEventsPath(username, operator)
 	fs.mkdirSync(inbox.inboxDir(username, operator), { recursive: true })
 	const lines = []
-	for (let index = 0; index < 12; index++) 
+	for (let index = 0; index < 12; index++)
 		lines.push(JSON.stringify({
 			type: 'like',
 			actorEntityHash: `c${String(index).padStart(127, '0')}`,
@@ -131,7 +131,7 @@ Deno.test('inbox read aggregates seeded likes into one card', async () => {
 			snippet: 'aggregate target',
 			at: index,
 		}))
-	
+
 	await writeFile(eventsPath, `${lines.join('\n')}\n`, 'utf8')
 
 	const page = await inbox.readInboxNotifications(username, operator, { limit: 10 })

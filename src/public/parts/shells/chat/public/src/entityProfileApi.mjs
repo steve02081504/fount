@@ -85,8 +85,8 @@ export async function updateEntityProfileApi(entityHash, updates, groupId) {
 		},
 	)
 	const data = await response.json().catch(() => ({}))
-	if (!response.ok) 
+	if (!response.ok)
 		throw Object.assign(new Error(data.error || response.statusText), data, { response })
-	
+
 	return data
 }

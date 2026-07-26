@@ -22,35 +22,35 @@
 
 <body class="bg-base-100">
 	<main>
-	<div class="navbar bg-base-200 shadow-lg">
-		<div class="flex-1">
-			<h1 class="text-2xl font-bold px-4" data-i18n="chat.stickers.store"></h1>
-		</div>
-		<div class="flex-none gap-2">
-			<button id="sticker-create-pack-button" class="btn btn-primary" data-i18n="chat.stickers.create"></button>
-			<button id="sticker-upload-button" class="btn btn-secondary" data-i18n="chat.stickers.upload"></button>
-		</div>
-	</div>
-
-	<div class="container mx-auto p-6">
-		<div class="mb-6">
-			<input type="text" id="search-input" class="input input-bordered w-full max-w-md" data-i18n="chat.stickers.search" />
+		<div class="navbar bg-base-200 shadow-lg">
+			<div class="flex-1">
+				<h1 class="text-2xl font-bold px-4" data-i18n="chat.stickers.store"></h1>
+			</div>
+			<div class="flex-none gap-2">
+				<button id="sticker-create-pack-button" class="btn btn-primary" data-i18n="chat.stickers.create"></button>
+				<button id="sticker-upload-button" class="btn btn-secondary" data-i18n="chat.stickers.upload"></button>
+			</div>
 		</div>
 
-		<div role="tablist" class="tabs tabs-boxed mb-6">
-			<a role="tab" class="tab tab-active" data-tab="all" data-i18n="chat.stickers.tabAll"></a>
-			<a role="tab" class="tab" data-tab="installed" data-i18n="chat.stickers.installed"></a>
-			<a role="tab" class="tab" data-tab="favorites" data-i18n="chat.stickers.favorites"></a>
-			<a role="tab" class="tab" data-tab="my-packs" data-i18n="chat.stickers.myPacks"></a>
-		</div>
+		<div class="container mx-auto p-6">
+			<div class="mb-6">
+				<input type="text" id="search-input" class="input input-bordered w-full max-w-md" data-i18n="chat.stickers.search" />
+			</div>
 
-		<div id="packs-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+			<div role="tablist" class="tabs tabs-boxed mb-6">
+				<a role="tab" class="tab tab-active" data-tab="all" data-i18n="chat.stickers.tabAll"></a>
+				<a role="tab" class="tab" data-tab="installed" data-i18n="chat.stickers.installed"></a>
+				<a role="tab" class="tab" data-tab="favorites" data-i18n="chat.stickers.favorites"></a>
+				<a role="tab" class="tab" data-tab="my-packs" data-i18n="chat.stickers.myPacks"></a>
+			</div>
 
-		<div id="empty-state" class="text-center py-12 hidden">
-			<img src="https://api.iconify.design/line-md/emoji-grin.svg" class="h-24 w-24 mx-auto text-base-300" alt="" aria-hidden="true" />
-			<p class="text-xl text-base-content opacity-50 mt-4" data-i18n="chat.stickers.emptyPacks"></p>
+			<div id="packs-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+			<div id="empty-state" class="text-center py-12 hidden">
+				<img src="https://api.iconify.design/line-md/emoji-grin.svg" class="h-24 w-24 mx-auto text-base-300" alt="" aria-hidden="true" />
+				<p class="text-xl text-base-content opacity-50 mt-4" data-i18n="chat.stickers.emptyPacks"></p>
+			</div>
 		</div>
-	</div>
 	</main>
 
 	<dialog id="create-pack-modal" class="modal">

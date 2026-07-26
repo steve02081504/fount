@@ -32,7 +32,7 @@ export async function seedForeignFeedAuthorPost(username) {
 	})
 	const store = getEntityStore()
 	const existing = await store.readEntityJson(FOREIGN_FE_AUTHOR_HASH, 'profile.json')
-	if (!existing) 
+	if (!existing)
 		await store.writeEntityJson(FOREIGN_FE_AUTHOR_HASH, 'profile.json', {
 			entityHash: FOREIGN_FE_AUTHOR_HASH,
 			nodeHash: 'f'.repeat(64),
@@ -43,7 +43,7 @@ export async function seedForeignFeedAuthorPost(username) {
 			lastSeenAt: 0,
 			stats: { joinedAt: Date.now(), messageCount: 0, groupCount: 0, channelCount: 0 },
 		})
-	
+
 
 	const [post] = await seedRemoteTimeline(username, FOREIGN_FE_SEED, FOREIGN_FE_AUTHOR_HASH, [
 		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },

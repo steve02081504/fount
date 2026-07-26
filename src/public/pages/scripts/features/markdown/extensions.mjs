@@ -10,7 +10,7 @@ let initsRan = false
  * @returns {Promise<{ remarkPlugins: unknown[], rehypePlugins: unknown[], css: string, inits: Array<() => void>, version: string }>} 合并后的扩展配置。
  */
 export async function loadRegisteredMarkdownExtensions() {
-	if (!loadPromise) 
+	if (!loadPromise)
 		loadPromise = (async () => {
 			const modules = await importRegistryModules('markdown_extensions')
 			/** @type {unknown[]} */
@@ -39,7 +39,7 @@ export async function loadRegisteredMarkdownExtensions() {
 				version: versionParts.join(','),
 			}
 		})()
-	
+
 	return loadPromise
 }
 

@@ -111,8 +111,8 @@ export async function renderMemberList(state) {
 				fallbackLabel: isAgent ? member.charname : undefined,
 			})
 			: String(member.displayName || '').trim()
-				|| (isAgent ? member.charname : '')
-				|| authorDisplayLabel(memberKey)
+			|| (isAgent ? member.charname : '')
+			|| authorDisplayLabel(memberKey)
 		return { member, memberKey, isAgent, entityHash, label }
 	})
 	const labels = disambiguateLabels(prepared)

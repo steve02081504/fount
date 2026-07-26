@@ -48,9 +48,9 @@ export async function updateProfile(entityHash, updates, groupId) {
 		}),
 	})
 	const data = await response.json().catch(() => ({}))
-	if (!response.ok) 
+	if (!response.ok)
 		throw Object.assign(new Error(data.error || response.statusText), data, { response })
-	
+
 	return data
 }
 
@@ -84,9 +84,9 @@ export async function uploadAvatar(entityHash, file) {
 		body: formData,
 	})
 	const data = await response.json().catch(() => ({}))
-	if (!response.ok) 
+	if (!response.ok)
 		throw Object.assign(new Error(data.error || response.statusText), data, { response })
-	
+
 	return data
 }
 
@@ -103,8 +103,8 @@ export async function uploadBanner(entityHash, file) {
 		body: formData,
 	})
 	const data = await response.json().catch(() => ({}))
-	if (!response.ok) 
+	if (!response.ok)
 		throw Object.assign(new Error(data.error || response.statusText), data, { response })
-	
+
 	return data
 }

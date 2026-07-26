@@ -242,13 +242,13 @@ export async function materializeStandaloneAttachments(files) {
 			out.push(file)
 			continue
 		}
-		if (file._blob instanceof Blob) 
+		if (file._blob instanceof Blob)
 			out.push({
 				name: file.name,
 				mime_type: file.mime_type || file.mimeType || file._blob.type || 'application/octet-stream',
 				buffer: arrayBufferToBase64(await file._blob.arrayBuffer()),
 			})
-		
+
 	}
 	return out
 }

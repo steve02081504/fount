@@ -17,7 +17,7 @@ function getFeedVideoObserver() {
 			if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
 				if (video.closest('[data-cw-collapsed="1"], [data-sensitive-collapsed="1"]')) continue
 				video.muted = true
-				video.play().catch(() => {})
+				video.play().catch(() => { })
 			}
 			else
 				video.pause()
@@ -56,7 +56,7 @@ export function playRevealedPostVideos(wrap) {
 		video.loop = true
 		video.playsInline = true
 		getFeedVideoObserver().observe(video)
-		video.play().catch(() => {})
+		video.play().catch(() => { })
 	}
 }
 
@@ -67,8 +67,8 @@ export function playRevealedPostVideos(wrap) {
  */
 export function pauseAllVideos(scope = document) {
 	if (!scope) return
-	for (const video of scope.querySelectorAll('video.post-media-video, video.video-player')) 
+	for (const video of scope.querySelectorAll('video.post-media-video, video.video-player'))
 		if (video instanceof HTMLVideoElement)
 			video.pause()
-	
+
 }
