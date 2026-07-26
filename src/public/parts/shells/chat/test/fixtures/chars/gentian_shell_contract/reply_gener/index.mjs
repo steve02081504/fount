@@ -8,6 +8,6 @@ export async function GetReply(args) {
 	onMessageProbe.replies++
 	const memory = args.chat_scoped_char_memory
 	if (memory?.fuyanMode) return { content: '嗯嗯！' }
-	const platform = args.extension?.bridge?.platform || 'chat'
+	const platform = args.extension?.chat?.bridge?.platform || 'chat'
 	return { content: `gentian_shell_contract reply (${platform})` }
 }

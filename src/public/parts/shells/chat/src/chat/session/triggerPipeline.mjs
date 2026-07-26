@@ -96,7 +96,8 @@ function logTriggerCharReplyFailure(error) {
  */
 export async function runTriggerPipeline(username, groupId, channelId, messageLine, options) {
 	const content = messageLine?.content
-	if (content?.isAutoTrigger || messageLine?.charId || content?.role === 'char') return
+	const chat = content?.extension?.chat
+	if (chat?.isAutoTrigger || messageLine?.charId || content?.role === 'char') return
 
 	const chars = await getCharListOfGroup(groupId, username)
 	if (!chars.length) return

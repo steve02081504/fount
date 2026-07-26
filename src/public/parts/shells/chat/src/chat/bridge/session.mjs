@@ -227,7 +227,7 @@ export async function appendVirtualBridgeMessage(username, dto) {
 	if (dto.replyToPlatformMessageId != null) {
 		const parentEventId = lookupVirtualBridgeEventId(channel, dto.replyToPlatformMessageId)
 		if (parentEventId) {
-			const parent = channel.logs.find(row => String(row.extension?.virtualEventId || '').toLowerCase() === parentEventId)
+			const parent = channel.logs.find(row => String(row.extension?.chat?.virtualEventId || '').toLowerCase() === parentEventId)
 			replyTo = {
 				eventId: parentEventId,
 				...parent?.name ? { senderName: parent.name } : {},
@@ -252,26 +252,28 @@ export async function appendVirtualBridgeMessage(username, dto) {
 			description: file.description || '',
 		})),
 		extension: {
-			virtualEventId: eventId,
-			groupChannelId: channelId,
-			bridge: {
-				platform: String(dto.platform),
-				platformChatId: String(dto.platformChatId),
-				platformMessageId: String(dto.platformMessageId),
-				platformUserId: String(dto.author.platformUserId),
-				authorEntityHash,
-				authorDisplayName: String(dto.author.displayName || '').trim(),
-				...dto.platformThreadId != null ? { platformThreadId: String(dto.platformThreadId) } : {},
-				...dto.replyToPlatformMessageId != null
-					? { replyToPlatformMessageId: String(dto.replyToPlatformMessageId) }
-					: {},
-				...replyTo?.eventId ? { replyToEventId: replyTo.eventId } : {},
+			chat: {
+				virtualEventId: eventId,
+				channelId,
+				bridge: {
+					platform: String(dto.platform),
+					platformChatId: String(dto.platformChatId),
+					platformMessageId: String(dto.platformMessageId),
+					platformUserId: String(dto.author.platformUserId),
+					authorEntityHash,
+					authorDisplayName: String(dto.author.displayName || '').trim(),
+					...dto.platformThreadId != null ? { platformThreadId: String(dto.platformThreadId) } : {},
+					...dto.replyToPlatformMessageId != null
+						? { replyToPlatformMessageId: String(dto.replyToPlatformMessageId) }
+						: {},
+					...replyTo?.eventId ? { replyToEventId: replyTo.eventId } : {},
+				},
+				...replyTo ? { replyTo } : {},
+				...displayAvatar ? { display: { avatar: displayAvatar } } : {},
+				...dto.ingress === 'backfill' ? { ingress: 'backfill' } : {},
 			},
-			...replyTo ? { replyTo } : {},
-			...displayAvatar ? { displayAvatar } : {},
 		},
 	}
-	if (dto.ingress === 'backfill') entry.extension.ingress = 'backfill'
 	pushLog(channel, entry)
 	recordVirtualBridgeMessagePair(channel, eventId, dto.platformMessageId)
 	return { session, channel, entry }
@@ -320,7 +322,7 @@ export async function editVirtualBridgeMessage(username, dto) {
 	const channel = ensureVirtualBridgeChannel(username, groupId, virtualBridgeChannelId(dto.platformThreadId))
 	const eventId = lookupVirtualBridgeEventId(channel, dto.platformMessageId)
 	if (!eventId) return null
-	const entry = channel.logs.find(row => String(row.extension?.virtualEventId || '').toLowerCase() === eventId)
+	const entry = channel.logs.find(row => String(row.extension?.chat?.virtualEventId || '').toLowerCase() === eventId)
 	if (!entry) return null
 	const text = String(dto.text || '')
 	entry.content = text
@@ -348,7 +350,7 @@ export async function deleteVirtualBridgeMessage(username, dto) {
 	const channel = ensureVirtualBridgeChannel(username, groupId, virtualBridgeChannelId(dto.platformThreadId))
 	const eventId = lookupVirtualBridgeEventId(channel, dto.platformMessageId)
 	if (!eventId) return false
-	const index = channel.logs.findIndex(row => String(row.extension?.virtualEventId || '').toLowerCase() === eventId)
+	const index = channel.logs.findIndex(row => String(row.extension?.chat?.virtualEventId || '').toLowerCase() === eventId)
 	if (index < 0) return false
 	channel.logs.splice(index, 1)
 	channel.messageMap = channel.messageMap.filter(row => String(row.eventId).toLowerCase() !== eventId)
@@ -383,9 +385,11 @@ export function appendVirtualBridgeCharReply(username, groupId, channelId, reply
 			description: file.description || '',
 		})),
 		extension: {
-			virtualEventId: eventId,
-			groupChannelId: channelId,
-			...reply?.extension,
+			chat: {
+				virtualEventId: eventId,
+				channelId,
+				...reply?.extension?.chat,
+			},
 		},
 	}
 	pushLog(channel, entry)

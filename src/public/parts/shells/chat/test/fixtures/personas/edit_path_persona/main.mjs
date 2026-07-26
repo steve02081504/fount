@@ -20,7 +20,7 @@ export default {
 				editPathHookState.beforeEditCalls.push(context)
 				const text = String(context.edited?.content || '')
 				if (text.includes('persona-edit-me'))
-					return { edited: { type: 'text', content: text.replace('persona-edit-me', 'persona-edited') } }
+					return { edited: { content: text.replace('persona-edit-me', 'persona-edited') } }
 			},
 			/**
 			 * @param {object} context 删除钩子上下文

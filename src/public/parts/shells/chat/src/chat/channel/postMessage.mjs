@@ -15,12 +15,12 @@ import { parseEvfsRef } from 'npm:@steve02081504/fount-p2p/files/evfs_ref'
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { unlockAchievement } from '../../../../achievements/src/api.mjs'
 import {
-	channelMessageContentObject,
+	channelMessage,
 	inlineImageMarker,
 	mergeInlineImageMarkersIntoContent,
-	textChannelContent,
+	normalizeChannelMessage,
 } from '../../../public/shared/channelContent.mjs'
-import { sanitizeAlt } from '../../../public/shared/messageFields.mjs'
+import { ensureChatExtension, sanitizeAlt } from '../../../public/shared/messageFields.mjs'
 import { entityFileUrl } from '../../entity/filesUrl.mjs'
 import { appendFileUploadEvent } from '../dag/channelOperations.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
@@ -131,44 +131,6 @@ function approxStickerBytes(stickerBase64) {
 }
 
 /**
- * 规范化频道消息内容（贴纸大小、群邀请字段等）。
- * @param {object} content 消息内容对象
- * @param {number} maxBytes `maxDagPayloadBytes` 上限
- * @returns {object} 规范化后的内容
- */
-function normalizeChannelMessageContent(content, maxBytes) {
-	const normalized = channelMessageContentObject(content)
-	if (normalized.type === 'sticker') {
-		const emojiRef = String(normalized.emojiRef || '').trim()
-		if (emojiRef && /:\[[\w.-]+\/[\w.-]+\](?!:)/.test(emojiRef))
-			return {
-				type: 'sticker',
-				emojiRef,
-				stickerId: String(normalized.stickerId || ''),
-				stickerName: String(normalized.stickerName || ''),
-			}
-		const stickerBase64 = String(normalized.stickerBase64 || '')
-		if (stickerBase64 && approxStickerBytes(stickerBase64) > maxBytes)
-			throw new Error(`sticker exceeds maxDagPayloadBytes (~${maxBytes})`)
-		return normalized
-	}
-	if (normalized.type === 'group_invite') {
-		if (!normalized.groupId) throw new Error('group_invite requires groupId')
-		return {
-			type: 'group_invite',
-			groupId: normalized.groupId,
-			inviteCode: normalized.inviteCode || '',
-			groupName: (normalized.groupName || '').slice(0, 100),
-			description: (normalized.description ?? '').slice(0, 200),
-			...normalized.memberCount != null && {
-				memberCount: Math.max(0, Math.floor(normalized.memberCount)),
-			},
-		}
-	}
-	return normalized
-}
-
-/**
  * @param {string} username 所有者
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
@@ -196,7 +158,7 @@ async function applyBeforeUserSend(username, groupId, channelId, content, files)
 	if (result.reject)
 		throw httpError(400, String(result.reject))
 	return {
-		content: result.input != null ? channelMessageContentObject(result.input) : content,
+		content: result.input != null ? normalizeChannelMessage(result.input) : content,
 		files: result.files !== undefined ? result.files : files,
 	}
 }
@@ -212,34 +174,40 @@ async function applyBeforeUserSend(username, groupId, channelId, content, files)
  */
 async function attachFilesToContent(username, groupId, content, files, maxBytes) {
 	const fileIds = []
+	/** @type {object[]} */
+	const fileDescriptors = []
 	const inlineMarkers = []
-	/** @type {Record<string, string>} */
-	const fileAlts = {}
 	for (const file of files || []) {
 		if (parseEvfsRef(file.buffer))
 			continue
 		const buffer = Buffer.isBuffer(file.buffer) ? file.buffer : Buffer.from(file.buffer, 'base64')
 		if (!buffer.byteLength) continue
-		const { fileId, inlineImageUrl } = await uploadPlainFileToGroup(username, groupId, buffer, file)
+		const { fileId, uploadMeta, inlineImageUrl } = await uploadPlainFileToGroup(username, groupId, buffer, file)
 		fileIds.push(fileId)
-		const alt = sanitizeAlt(file.description)
-		if (alt) fileAlts[fileId] = alt
+		const description = sanitizeAlt(file.description)
+		fileDescriptors.push({
+			fileId,
+			name: uploadMeta.name,
+			mime_type: uploadMeta.mimeType,
+			size: uploadMeta.size,
+			...description ? { description } : {},
+		})
 		if (inlineImageUrl)
 			inlineMarkers.push(inlineImageMarker(file.name, inlineImageUrl))
 	}
 
 	content = mergeInlineImageMarkersIntoContent(content, inlineMarkers, { preserveShowEdit: true })
 
-	if (fileIds.length) 
-		content = {
-			...content,
-			fileIds,
-			fileCount: fileIds.length,
-			...Object.keys(fileAlts).length ? { fileAlts: { ...content.fileAlts, ...fileAlts } } : {},
-		}
-	
+	const stickerBase64 = String(content?.extension?.chat?.sticker?.stickerBase64 || '')
+	if (stickerBase64 && approxStickerBytes(stickerBase64) > maxBytes)
+		throw new Error(`sticker exceeds maxDagPayloadBytes (~${maxBytes})`)
 
-	return { content: normalizeChannelMessageContent(content, maxBytes), fileIds }
+	if (fileDescriptors.length)
+		content = normalizeChannelMessage({ ...content, files: fileDescriptors })
+	else
+		content = normalizeChannelMessage(content)
+
+	return { content, fileIds }
 }
 
 /**
@@ -264,12 +232,16 @@ export async function postChannelMessage(username, groupId, channelId, payload =
 	const origin = payload.origin || 'human'
 
 	let content = payload.rawContent
-		? channelMessageContentObject(payload.rawContent)
-		: textChannelContent(payload.text ?? '')
+		? normalizeChannelMessage(payload.rawContent)
+		: channelMessage(payload.text ?? '')
 
 	if (payload.generated) {
-		content = channelMessageContentObject(payload.generated.content)
-		if (payload.generated.isAutoTrigger) content = { ...content, isAutoTrigger: true }
+		const generated = payload.generated.content
+		content = typeof generated === 'object' && generated?.content != null
+			? normalizeChannelMessage(generated)
+			: channelMessage(String(generated ?? ''))
+		if (payload.generated.isAutoTrigger)
+			ensureChatExtension(content).isAutoTrigger = true
 	}
 
 	let files = Array.isArray(payload.files) ? payload.files : undefined
@@ -289,7 +261,7 @@ export async function postChannelMessage(username, groupId, channelId, payload =
 		username,
 		groupId,
 		channelId,
-		content: channelMessageContentObject(content),
+		content: normalizeChannelMessage(content),
 		origin,
 		charId: payload.charId ?? null,
 		...payload.entityHash && { entityHash: payload.entityHash },

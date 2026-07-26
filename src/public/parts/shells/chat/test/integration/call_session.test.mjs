@@ -60,15 +60,16 @@ Deno.test('call session posts and edits call card then ends', async () => {
 	// message_edit 会在 checkpoint rebuild 时从 events.jsonl 折叠掉；断言看频道侧车折叠后的展示行
 	const lines = await readChannelMessagesForUser(username, groupId, channelId, { limit: 100 })
 	const card = mergeChannelMessagesForDisplay(lines).find(row =>
-		row.eventId === session.messageEventId || row.content?.type === 'call',
+		row.eventId === session.messageEventId || row.content?.extension?.chat?.call,
 	)
 	assert(card)
-	assertEquals(card.content?.type, 'call')
-	assertEquals(card.content?.status, 'ended')
-	assert(Array.isArray(card.content?.participants))
-	assert(card.content.participants.includes(initiator.toLowerCase()))
-	assertEquals(card.content?.current?.length ?? 0, 0)
-	assert(card.content?.duration >= 0)
+	const call = card.content?.extension?.chat?.call
+	assert(call)
+	assertEquals(call.status, 'ended')
+	assert(Array.isArray(call.participants))
+	assert(call.participants.includes(initiator.toLowerCase()))
+	assertEquals(call.current?.length ?? 0, 0)
+	assert(call.duration >= 0)
 })
 
 Deno.test('dropActiveCallsForGroup clears active.json for that group', async () => {
@@ -176,18 +177,24 @@ Deno.test('reconcile drops orphan when group cannot authorize edit', async () =>
 	assertEquals(Object.keys(remaining.calls || {}).length, 0)
 })
 
-Deno.test('channelContent accepts call type', async () => {
-	const { channelMessageContentObject } = await import('../../public/shared/channelContent.mjs')
-	const content = channelMessageContentObject({
-		type: 'call',
-		callId: 'x',
-		status: 'ongoing',
-		startedAt: Date.now(),
-		initiator: 'a'.repeat(128),
-		participants: ['a'.repeat(128)],
-		current: ['a'.repeat(128)],
-	})
-	assertEquals(content.type, 'call')
+Deno.test('channelContent accepts call extension', async () => {
+	const { normalizeChannelMessage, channelMessage, channelMessageKind } = await import('../../public/shared/channelContent.mjs')
+	const content = normalizeChannelMessage(channelMessage('', {
+		extension: {
+			chat: {
+				call: {
+					callId: 'x',
+					status: 'ongoing',
+					startedAt: Date.now(),
+					initiator: 'a'.repeat(128),
+					participants: ['a'.repeat(128)],
+					current: ['a'.repeat(128)],
+				},
+			},
+		},
+	}))
+	assertEquals(content.extension?.chat?.call?.callId, 'x')
+	assertEquals(channelMessageKind(content), 'call')
 })
 
 Deno.test('concurrent begin + roster update yields one call card', async () => {
@@ -236,9 +243,9 @@ Deno.test('concurrent begin + roster update yields one call card', async () => {
 	await endCallSession(groupId, channelId)
 
 	const lines = await readChannelMessagesForUser(username, groupId, channelId, { limit: 100 })
-	const callCards = mergeChannelMessagesForDisplay(lines).filter(row => row.content?.type === 'call')
+	const callCards = mergeChannelMessagesForDisplay(lines).filter(row => row.content?.extension?.chat?.call)
 	assertEquals(callCards.length, 1)
-	assertEquals(callCards[0].content?.status, 'ended')
-	assert(callCards[0].content.participants.includes(initiator.toLowerCase()))
-	assert(callCards[0].content.participants.includes(peer))
+	assertEquals(callCards[0].content?.extension?.chat?.call?.status, 'ended')
+	assert(callCards[0].content.extension.chat.call.participants.includes(initiator.toLowerCase()))
+	assert(callCards[0].content.extension.chat.call.participants.includes(peer))
 })

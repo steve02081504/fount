@@ -49,7 +49,7 @@ export const FOUNT_CHAT_CODE_CONTEXT_PLUGIN = {
 						channel: channelProjection,
 						message: {
 							...triggerEntry,
-							eventId: triggerEntry.extension?.dagEventId
+							eventId: triggerEntry.extension?.chat?.eventId
 								|| triggerEntry.extension?.virtualEventId
 								|| triggerEntry.id,
 							channelId,

@@ -25,7 +25,7 @@ export function createHydrationMethods(apiContext) {
 			return createMessage(apiContext, groupId, {
 				...message,
 				channelId: event.channel?.channelId || message.channelId || 'default',
-				eventId: message.eventId || message.id || message.extension?.dagEventId,
+				eventId: message.eventId || message.id || message.extension?.chat?.eventId || message.extension?.virtualEventId,
 			}, event.mentions)
 		},
 	}

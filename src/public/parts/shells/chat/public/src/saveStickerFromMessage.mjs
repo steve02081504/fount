@@ -34,14 +34,15 @@ async function toImageDataUrl(src) {
 
 /**
  * 将消息中的贴纸保存到本用户贴纸包并收藏。
- * @param {object} content 消息 `content`（`stickerBase64` / `stickerName`）
+ * @param {object} content 消息 `content`（`extension.chat.sticker`）
  * @returns {Promise<object>} 服务端返回的 sticker 对象
  */
 export async function saveStickerFromMessage(content) {
-	const src = content?.stickerBase64
+	const sticker = content?.extension?.chat?.sticker
+	const src = sticker?.stickerBase64
 	if (!src) throw new Error('no sticker in message')
 	const dataUrl = await toImageDataUrl(src)
-	const name = String(content?.stickerName || content?.stickerId || 'saved').trim().slice(0, 120)
+	const name = String(sticker.stickerName || sticker.stickerId || 'saved').trim().slice(0, 120)
 	const response = await fetch('/api/parts/shells:chat/stickers/import', {
 		method: 'POST',
 		credentials: 'include',

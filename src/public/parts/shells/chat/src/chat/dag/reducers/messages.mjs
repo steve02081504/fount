@@ -28,13 +28,14 @@ export const messageReducers = {
 				channelId,
 			}
 		
-		if (event.content?.type === 'vote') {
+		const vote = event.content?.extension?.chat?.vote
+		if (vote) {
 			state.voteBallots ??= {}
 			state.voteBallots[eventId] = {
 				channelId,
-				deadline: event.content.deadline || null,
-				question: event.content.question || '',
-				options: event.content.options || [],
+				deadline: vote.deadline || null,
+				question: vote.question || '',
+				options: vote.options || [],
 				sender: event.sender,
 			}
 		}

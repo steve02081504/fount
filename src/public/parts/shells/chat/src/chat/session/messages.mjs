@@ -2,7 +2,7 @@
  * 【文件】messages.mjs — 消息 CRUD（删改反馈）
  * 【职责】deleteMessage/setMessageFeedback 维护内存日志、广播 WS 事件、镜像 DAG 与 sidecar 一致性。
  * 【原理】deleteMessage 仅用于生成 abort 清理占位；human edit/delete 走频道 HTTP + channelUserHooks。反馈写入 entry.extension.feedback 并 mirrorFeedbackToDag。
- * 【数据结构】chatLog 索引、chatLogEntry_t、extension.feedback / groupChannelId。
+ * 【数据结构】chatLog 索引、chatLogEntry_t、extension.feedback / `extension.chat.channelId`。
  * 【关联】broadcast、generationFeedback、dag/chatLogMirror、generationAbort、channel/postMessage。
  */
 /** @typedef {import('../../../../../../../decl/prompt_struct.ts').chatLogEntry_t} chatLogEntry_t */
@@ -34,7 +34,7 @@ export async function deleteMessage(groupId, index) {
 
 	const entry = chatMetadata.chatLog[index]
 	abortGenerationByMessageId(entry.id)
-	deleteLogContextSidecar(chatMetadata.username, groupId, resolveChannelId(entry.extension?.groupChannelId), entry.id)
+	deleteLogContextSidecar(chatMetadata.username, groupId, resolveChannelId(entry.extension?.chat?.channelId), entry.id)
 
 	chatMetadata.chatLog.splice(index, 1)
 

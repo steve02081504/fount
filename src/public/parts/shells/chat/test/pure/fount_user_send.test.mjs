@@ -8,7 +8,7 @@ import { normalizeUserSendPayload } from '../../public/shared/fountUserSend.mjs'
 
 Deno.test('normalizeUserSendPayload: string', () => {
 	const { content, files } = normalizeUserSendPayload('hello', { locale: 'en-US' })
-	assertEquals(content, { type: 'text', content: 'hello', locale: 'en-US' })
+	assertEquals(content, { content: 'hello', locale: 'en-US' })
 	assertEquals(files, [])
 })
 
@@ -29,7 +29,6 @@ Deno.test('normalizeUserSendPayload: chatLogEntry fields', () => {
 		}],
 	})
 	assertEquals(content, {
-		type: 'text',
 		content: 'pick A',
 		content_for_show: '<b>A</b>',
 		content_for_edit: 'A',

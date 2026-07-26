@@ -1,7 +1,7 @@
 /**
  * 【文件】public/shared/attribution.mjs
  * 【职责】浏览器侧消息归因推导（与后端 chat/lib/attribution 语义对齐）。
- * 【原理】importedFrom 存在 → attributionMismatch；供 Hub 消息头警告与人物卡使用。
+ * 【原理】extension.chat.importedFrom 存在 → attributionMismatch；供 Hub 消息头警告与人物卡使用。
  */
 
 /**
@@ -20,32 +20,40 @@
 
 /**
  * @param {object | null | undefined} content 消息 content
+ * @returns {object | null} importedFrom
+ */
+function importedFromOf(content) {
+	const fromChat = content?.extension?.chat?.importedFrom
+	if (fromChat && typeof fromChat === 'object') return fromChat
+	return null
+}
+
+/**
+ * @param {object | null | undefined} content 消息 content
  * @param {{ sender?: string, signerEntityHash?: string | null }} [line] 行信息
  * @returns {MessageAttribution} 归因
  */
 export function deriveMessageAttribution(content, line = {}) {
-	const importedFrom = content?.importedFrom && typeof content.importedFrom === 'object'
-		? content.importedFrom
-		: null
-	if (!importedFrom) 
+	const importedFrom = importedFromOf(content)
+	const claimedDisplayName = content?.name ? String(content.name) : null
+	if (!importedFrom)
 		return {
 			trusted: true,
 			mismatch: false,
 			reason: null,
-			claimedDisplayName: content?.displayName ? String(content.displayName) : null,
+			claimedDisplayName,
 			claimedEntityHash: null,
 			claimedSenderPubKeyHash: null,
 			signerEntityHash: line.signerEntityHash || null,
 			signerPubKeyHash: line.sender ? String(line.sender).toLowerCase() : null,
 			importedFrom: null,
 		}
-	
 
 	return {
 		trusted: false,
 		mismatch: true,
 		reason: 'imported_resign',
-		claimedDisplayName: content?.displayName ? String(content.displayName) : null,
+		claimedDisplayName,
 		claimedEntityHash: importedFrom.sourceEntityHash
 			? String(importedFrom.sourceEntityHash).toLowerCase()
 			: null,
@@ -69,8 +77,9 @@ export function deriveMessageAttribution(content, line = {}) {
 export function attributionFromHubMessage(message) {
 	return deriveMessageAttribution(message?.content, {
 		sender: message?.sender || message?.authorPubKeyHash,
-		signerEntityHash: message?.extension?.attribution?.signerEntityHash
-			|| message?.content?.importedFrom?.signerEntityHash
+		signerEntityHash: message?.extension?.chat?.attribution?.signerEntityHash
+			|| message?.extension?.attribution?.signerEntityHash
+			|| message?.content?.extension?.chat?.importedFrom?.signerEntityHash
 			|| null,
 	})
 }

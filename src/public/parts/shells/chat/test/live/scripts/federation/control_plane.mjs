@@ -50,7 +50,7 @@ let histMsg = null
 
 await testCase('A posts history-want target', async () => {
 	const response = await Api(FedA, 'POST', `/groups/${groupId}/channels/${channelId}/messages`, {
-		content: { type: 'text', content: 'history-want-target' },
+		content: { content: 'history-want-target' },
 	})
 	if (response.status !== 201) throw new Error(`send ${response.status}`)
 	histMsg = response.json.event?.id
@@ -82,7 +82,7 @@ console.log('\n=== 4. POST events remote verify (B ingests A-signed row) ===')
 await testCase('B applies signed event from A via POST /events/signed', async () => {
 	// A 追加一条全新签名事件，取回其完整签名行。
 	const posted = await Api(FedA, 'POST', `/groups/${groupId}/channels/${channelId}/messages`, {
-		content: { type: 'text', content: 'signed-ingest-target' },
+		content: { content: 'signed-ingest-target' },
 	})
 	if (posted.status !== 201) throw new Error(`send ${posted.status}`)
 	const eventId = String(posted.json.event?.id)

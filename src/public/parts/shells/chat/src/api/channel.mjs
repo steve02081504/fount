@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto'
 import { recordChannelTyping } from '../chat/bridge/typing.mjs'
 import { postChannelMessage } from '../chat/channel/postMessage.mjs'
 import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
+import { normalizeChannelMessage } from '../../public/shared/channelContent.mjs'
 import { buildConversationContext } from '../chat/lib/conversationContext.mjs'
 import { scheduleVoteDeadlines } from '../chat/lib/voteDeadlineWatcher.mjs'
 import { broadcastSignedGroupVolatile } from '../chat/session/broadcast.mjs'
@@ -65,11 +66,9 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 				}
 			else {
 				const files = Array.isArray(objectReply?.files) ? mapFiles(objectReply.files) : undefined
-				const useText = !!files?.length
-					|| (objectReply && (objectReply.text != null || objectReply.content != null) && !objectReply.type)
-				postPayload = useText
+				postPayload = typeof reply === 'string'
 					? {
-						text: typeof reply === 'string' ? reply : String(objectReply.text ?? objectReply.content ?? ''),
+						text: reply,
 						files,
 						origin,
 						charId,
@@ -230,13 +229,23 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 			if (!voteDeadline && Number.isFinite(Number(ballot.deadlineMs)) && Number(ballot.deadlineMs) > 0)
 				voteDeadline = new Date(Date.now() + Number(ballot.deadlineMs)).toISOString()
 
-			const body = {
-				type: 'message',
-				channelId,
-				timestamp: Date.now(),
-				content: { type: 'vote', question, options, deadline: voteDeadline },
-			}
-			const event = await appendSignedLocalEvent(apiContext.username, groupId, body, signOptions)
+			const { event } = await postChannelMessage(apiContext.username, groupId, channelId, {
+				rawContent: normalizeChannelMessage({
+					content: question,
+					extension: {
+						chat: {
+							vote: {
+								question,
+								options,
+								...voteDeadline ? { deadline: new Date(voteDeadline).getTime() } : {},
+							},
+						},
+					},
+				}),
+				origin: apiContext.charname ? 'char' : 'human',
+				charId: apiContext.charname || null,
+				entityHash: apiContext.entityHash,
+			})
 			void scheduleVoteDeadlines(apiContext.username, groupId)
 			const message = createMessage(apiContext, groupId, {
 				eventId: event.id,

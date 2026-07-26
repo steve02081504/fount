@@ -104,7 +104,7 @@ await testCase('B POST message rejected after suspectedRemoved (403)', async () 
 		const s = await Api(FedB, 'GET', `/groups/${gid}/state`)
 		if (s.status !== 200 || s.json.viewer?.suspectedRemoved !== true) return false
 		const r = await Api(FedB, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-			content: { type: 'text', content: 'banned-attempt' },
+			content: { content: 'banned-attempt' },
 		})
 		return r.status === 403
 	}, 30, 2)
@@ -132,7 +132,7 @@ await testCase('A events keep member_ban and no unban rollback', async () => {
 
 await testCase('A can still send after ban', async () => {
 	const r = await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-		content: { type: 'text', content: 'after-ban-A' },
+		content: { content: 'after-ban-A' },
 	})
 	return r.status === 201
 })

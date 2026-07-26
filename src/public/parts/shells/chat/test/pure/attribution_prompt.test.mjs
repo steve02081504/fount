@@ -36,12 +36,14 @@ Deno.test('buildPromptStruct injects attribution mismatch warnings', async () =>
 			role: 'user',
 			content: 'hi',
 			extension: {
-				attribution: {
-					trusted: false,
-					mismatch: true,
-					reason: 'imported_resign',
+				chat: {
+					attribution: {
+						trusted: false,
+						mismatch: true,
+						reason: 'imported_resign',
+					},
+					display: { name: 'Ada' },
 				},
-				display: { name: 'Ada' },
 			},
 		}],
 		timelines: [],

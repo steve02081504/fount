@@ -30,7 +30,7 @@ if (!okStatus(add.status)) {
 }
 
 const postResponse = await chatApi('POST', `/groups/${gid}/channels/${cid}/messages`, {
-	content: { type: 'text', content: 'ws-stream probe', isAutoTrigger: true },
+	content: { content: 'ws-stream probe', extension: { chat: { isAutoTrigger: true } } },
 })
 if (!okStatus(postResponse.status)) {
 	await chatApi('DELETE', `/groups/${gid}`)
@@ -103,7 +103,7 @@ function onWsMessage(ev) {
 
 	if (type === 'message_replaced') {
 		const entry = wire.payload?.entry ?? wire.entry
-		const ch = entry?.extension?.groupChannelId
+		const ch = entry?.extension?.chat?.channelId
 		if (!ch || ch === cid) {
 			sawFinish = true
 			console.log(`message_replaced generating=${entry?.is_generating}`)

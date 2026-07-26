@@ -5,6 +5,7 @@ import { randomBytes } from 'node:crypto'
 
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../server/auth/index.mjs'
+import { channelMessage } from '../../public/shared/channelContent.mjs'
 import { broadcastAndPersist } from '../chat/dag/eventPersist.mjs'
 import { resolveOperatorEntityHash } from '../chat/lib/replica.mjs'
 import { CHAT_API_PREFIX } from '../group/routes/path.mjs'
@@ -43,7 +44,7 @@ export function registerTestSeedRoutes(router, authenticate) {
 			type: 'message',
 			channelId,
 			sender: senderKey,
-			content: { type: 'text', content: text },
+			content: channelMessage(text),
 			timestamp: at,
 			hlc: { wall: at },
 			prev_event_ids: [],

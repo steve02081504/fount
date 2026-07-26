@@ -1,4 +1,4 @@
-import { channelMessageContentObject, isTextChannelContent, textChannelContent } from './channelContent.mjs'
+import { channelMessage, channelMessageKind, normalizeChannelMessage } from './channelContent.mjs'
 
 const OVERLAY_EVENT_TYPES = new Set(['message_edit', 'message_delete', 'message_feedback'])
 
@@ -8,15 +8,17 @@ const OVERLAY_EVENT_TYPES = new Set(['message_edit', 'message_delete', 'message_
  * @returns {object} 合并后的 content
  */
 function mergeMessageContent(base, patch) {
-	if (!isTextChannelContent(base) && !isTextChannelContent(patch))
-		return { ...base, ...patch }
-	if (!isTextChannelContent(base) || !isTextChannelContent(patch))
-		throw new Error('text edit patch requires type text message')
-	const baseObj = channelMessageContentObject(base)
-	const patchObj = channelMessageContentObject(patch)
-	return channelMessageContentObject({
+	const baseKind = channelMessageKind(base)
+	const patchKind = channelMessageKind(patch)
+	if (baseKind !== 'text' && patchKind !== 'text')
+		return normalizeChannelMessage({ ...base, ...patch, content: String(patch?.content ?? base?.content ?? '') })
+	if (baseKind !== 'text' || patchKind !== 'text')
+		throw new Error('text edit patch requires text message')
+	const baseObj = normalizeChannelMessage(base)
+	const patchObj = normalizeChannelMessage(patch)
+	return normalizeChannelMessage({
 		...baseObj,
-		...textChannelContent(String(patchObj.content ?? baseObj.content ?? ''), {
+		...channelMessage(String(patchObj.content ?? baseObj.content ?? ''), {
 			content_for_show: patchObj.content_for_show ?? baseObj.content_for_show,
 			content_for_edit: patchObj.content_for_edit ?? baseObj.content_for_edit,
 		}),
@@ -56,16 +58,13 @@ export function linesIncludingOverlaysForTargets(lines, eventIds) {
 /**
  * 将单条 message_edit 的 content 应用到已合并的展示行。
  * @param {object} row 展示用 message 行
- * @param {{ newContent?: object, fileCount?: number }} editContent message_edit.content
+ * @param {{ newContent?: object }} editContent message_edit.content
  * @returns {object} 更新后的行
  */
 export function applyMessageEditToRow(row, editContent) {
 	const patchContent = editContent?.newContent
 	if (!row || !patchContent) return row
-	const content = {
-		...mergeMessageContent(row.content, patchContent),
-		...editContent.fileCount != null ? { fileCount: editContent.fileCount } : {},
-	}
+	const content = mergeMessageContent(row.content, patchContent)
 	if ('is_generating' in patchContent)
 		content.is_generating = !!patchContent.is_generating
 	return { ...row, content, wasEdited: true }
@@ -144,10 +143,7 @@ export function mergeChannelMessagesForDisplay(messages) {
 			const patch = edits.get(targetId)
 			const patchContent = patch?.newContent
 			if (patchContent) {
-				const content = {
-					...mergeMessageContent(row.content, patchContent),
-					...patch.fileCount != null ? { fileCount: patch.fileCount } : {},
-				}
+				const content = mergeMessageContent(row.content, patchContent)
 				if ('is_generating' in patchContent)
 					content.is_generating = !!patchContent.is_generating
 				merged.push(withFeedback(attachDecryptView({ ...row, content, wasEdited: true }), feedback))

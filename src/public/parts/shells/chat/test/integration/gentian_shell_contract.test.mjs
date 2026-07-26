@@ -75,9 +75,9 @@ Deno.test('Gentian OnMessage: owner repeat command replies inline', async () => 
 	await waitUntil(async () => {
 		const session = getVirtualBridgeSession(username, groupId)
 		const logs = session?.channels.default?.logs || []
-		// fount log 正文为 string；outbound handler 收到的是平台 DTO（{type:'text', content}）
+		// fount log 正文为 string；outbound handler 收到的是频道 content 对象（{ content: string, ... }）
 		return logs.some(row => String(row.content || '').includes('hello gentian'))
-			|| outbound.some(row => String(row.content?.content || '').includes('hello gentian'))
+			|| outbound.some(row => String(typeof row.content === 'string' ? row.content : (row.content?.content ?? '')).includes('hello gentian'))
 	}, 15000)
 })
 
@@ -264,7 +264,7 @@ Deno.test('Gentian Telegram DM: owner call easter egg then plain message trigger
 		const session = getVirtualBridgeSession(username, groupId)
 		const logs = session?.channels.default?.logs || []
 		return logs.some(row => String(row.content || '') === '主人')
-			|| outbound.some(row => String(row.content?.content || '') === '主人')
+			|| outbound.some(row => String(typeof row.content === 'string' ? row.content : (row.content?.content ?? '')) === '主人')
 	}, 15000)
 
 	const sessionAfterCall = getVirtualBridgeSession(username, groupId)
@@ -276,7 +276,7 @@ Deno.test('Gentian Telegram DM: owner call easter egg then plain message trigger
 	const repliesBefore = onMessageProbe.replies
 	await ingest('活着吗', 902)
 	await waitUntil(() => outbound.some(row =>
-		String(row.content?.content || '').includes('gentian_shell_contract reply')), 15000)
+		String(typeof row.content === 'string' ? row.content : (row.content?.content ?? '')).includes('gentian_shell_contract reply')), 15000)
 
 	assert(onMessageProbe.replies > repliesBefore)
 	assert(typingCalls.length >= 1)

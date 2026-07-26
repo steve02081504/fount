@@ -14,7 +14,7 @@ const peers = await chatApi('GET', `/groups/${groupId}/peers`)
 const nodeHash = peers.json.selfNodeHash
 
 const post = await chatApi('POST', `/groups/${groupId}/channels/${channelId}/messages`, {
-	content: { type: 'text', content: 'read-marker-live' },
+	content: { content: 'read-marker-live' },
 })
 const eventId = post.json?.event?.id
 const seq = post.json?.event?.seq

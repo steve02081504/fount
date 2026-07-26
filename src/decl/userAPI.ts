@@ -1,4 +1,4 @@
-import { channelMessageContent_t, chatReplyRequest_t, type chatViewer_t, file_t } from '../public/parts/shells/chat/decl/chatLog.ts'
+import { channelMessage_t, chatReplyRequest_t, type chatViewer_t, file_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
@@ -105,7 +105,7 @@ export class UserAPI_t {
 			/**
 			 * 真人发送前拦截：可改写 input/files，或通过 reject 拒绝（服务端语义）。
 			 * @param {object} ctx - 发送上下文。
-			 * @returns {Promise<{ input?: channelMessageContent_t, files?: file_t[], reject?: string } | undefined>} - 改写/拒绝；undefined 透传。
+			 * @returns {Promise<{ input?: channelMessage_t, files?: file_t[], reject?: string } | undefined>} - 改写/拒绝；undefined 透传。
 			 */
 			BeforeUserSend?: (ctx: {
 				groupId: string
@@ -113,10 +113,10 @@ export class UserAPI_t {
 				username: string
 				personaname?: string
 				memberId: string
-				input: channelMessageContent_t
+				input: channelMessage_t
 				files?: file_t[]
 			}) => Promise<{
-				input?: channelMessageContent_t
+				input?: channelMessage_t
 				files?: file_t[]
 				reject?: string
 			} | undefined>
@@ -138,9 +138,9 @@ export class UserAPI_t {
 				memberId: string
 				eventId: string
 				original: object
-				edited: channelMessageContent_t
+				edited: channelMessage_t
 			}) => Promise<{
-				edited?: channelMessageContent_t
+				edited?: channelMessage_t
 				reject?: string
 			} | undefined>
 			/**

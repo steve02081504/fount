@@ -2,7 +2,7 @@
  * 【文件】chatLogAppend.mjs — 聊天日志追加与 DAG 同步入口
  * 【职责】将 chatLogEntry 写入内存元数据、持久化 context sidecar；同步到 DAG；角色消息发系统通知。
  * 【原理】appendLogCore 恒定 push 到 chatLog（内存 = hydration 缓存）；world AddChatLogEntry/AfterAddChatLogEntry 改由 messageCommit / broadcastAndPersist 唯一触发。
- * 【数据结构】chatMetadata.chatLog、entry.extension.groupChannelId、侧车 channelId。
+ * 【数据结构】chatMetadata.chatLog、`entry.extension.chat.channelId`、侧车 channelId。
  * 【关联】persistence、chatRequest、triggerReply、dag/chatLogMirror、broadcast（间接）、generation 再导出。
  */
 /** @typedef {import('../../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
@@ -33,7 +33,7 @@ import { groupMetadatas } from './wsLifecycle.mjs'
 async function appendLogCore(groupId, chatMetadata, entry) {
 	chatMetadata.chatLog.push(entry)
 
-	const sidecarChannel = await resolveGroupChannelId(chatMetadata.username, groupId, entry.extension?.groupChannelId)
+	const sidecarChannel = await resolveGroupChannelId(chatMetadata.username, groupId, entry.extension?.chat?.channelId)
 	await persistLogContextSidecar(chatMetadata.username, groupId, sidecarChannel, entry)
 
 	chatMetadata.timeLines = [entry]

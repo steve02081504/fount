@@ -1,14 +1,14 @@
 /**
  * 【文件】viewerLogProject.mjs — viewer entries → 频道行 DTO 投影（纯函数，无 I/O）
- * 【职责】按 dagEventId 可见集投影；改写覆盖 text content；overlay 行透传。
+ * 【职责】按 extension.chat.eventId 可见集投影；改写覆盖 content/content_for_show；overlay 行透传。
  * 【关联】materializeViewerLog、pure 测试。
  */
 /** @typedef {import('../../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 
 import {
-	channelMessageAgentText,
-	channelMessageShowText,
-	textChannelContent,
+	channelMessage,
+	messageAgentText,
+	messageShowText,
 } from '../../../public/shared/channelContent.mjs'
 
 /**
@@ -21,7 +21,7 @@ export function projectViewerEntriesToRows(rawLines, entries) {
 	/** @type {Map<string, chatLogEntry_t>} */
 	const byEventId = new Map()
 	for (const entry of entries) {
-		const eventId = entry.extension?.dagEventId
+		const eventId = entry.extension?.chat?.eventId
 		if (eventId) byEventId.set(String(eventId), entry)
 	}
 
@@ -36,14 +36,13 @@ export function projectViewerEntriesToRows(rawLines, entries) {
 
 		const entry = byEventId.get(eventId)
 		const { content } = line
-		// decryptView 失败行 content 为 null；非 text 类（贴纸/投票等）不做正文改写
-		if (content?.type !== 'text') {
+		if (!content || typeof content !== 'object') {
 			out.push(line)
 			continue
 		}
 
-		const originalAgent = channelMessageAgentText(content)
-		const originalShow = channelMessageShowText(content)
+		const originalAgent = messageAgentText(content)
+		const originalShow = messageShowText(content)
 		const nextAgent = String(entry.content ?? '')
 		const nextShow = String(entry.content_for_show ?? entry.content ?? '')
 		const rewritten = nextAgent !== originalAgent || nextShow !== originalShow
@@ -59,7 +58,7 @@ export function projectViewerEntriesToRows(rawLines, entries) {
 			content_for_edit: _omitEdit,
 			...restContent
 		} = content
-		const nextContent = textChannelContent(nextAgent, {
+		const nextContent = channelMessage(nextAgent, {
 			...restContent,
 			...nextShow !== nextAgent ? { content_for_show: nextShow } : {},
 			...entry.content_for_edit != null ? { content_for_edit: String(entry.content_for_edit) } : {},

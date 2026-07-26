@@ -6,6 +6,7 @@
  */
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
+import { chatExtensionOf } from '../../public/shared/channelContent.mjs'
 import { deriveMessageAttribution, isTrustedOwnerAttribution } from '../chat/lib/attribution.mjs'
 
 import { loadEntityIdentity } from './identity.mjs'
@@ -27,17 +28,23 @@ export async function resolveDeclaredOwnerEntityHash(username, entityHash) {
 }
 
 /**
- * 取归因/桥接用的线载荷：ChatClient `sourceContent` 或尚未投影的 DAG content 对象。
- * fount chatLog / Message.content（string）不参与。
- * @param {object} message 消息行或 Message
- * @returns {object} 线载荷或空对象
+ * @param {object} message 消息行、chatLog 条目或 Message
+ * @returns {object} wire content 对象
  */
 function wireContentOf(message) {
-	if (message?.sourceContent && typeof message.sourceContent === 'object')
-		return message.sourceContent
 	if (message?.content && typeof message.content === 'object')
 		return message.content
 	return {}
+}
+
+/**
+ * @param {object} message 消息行、chatLog 条目或 Message
+ * @returns {object} extension.chat 侧车
+ */
+function chatSidecarOf(message) {
+	return chatExtensionOf(wireContentOf(message))
+		|| message?.extension?.chat
+		|| {}
 }
 
 /**
@@ -48,10 +55,9 @@ function wireContentOf(message) {
  */
 export function resolveCryptographicAuthorEntityHash(eventOrLine, state = null) {
 	const message = eventOrLine?.message || eventOrLine
-	const wire = wireContentOf(message)
-	const bridge = message?.extension?.bridge
-		|| wire.extension?.bridge
-		|| eventOrLine?.chatReplyRequest?.extension?.bridge
+	const chat = chatSidecarOf(message)
+	const bridge = chat.bridge
+		|| eventOrLine?.chatReplyRequest?.extension?.chat?.bridge
 	if (bridge?.authorEntityHash && isEntityHash128(String(bridge.authorEntityHash)))
 		return String(bridge.authorEntityHash).toLowerCase()
 
@@ -98,8 +104,9 @@ export async function resolveTrustedOwnerContext({
 	const declaredOwnerEntityHash = await resolveDeclaredOwnerEntityHash(username, agentEntityHash)
 	const message = eventOrLine?.message || eventOrLine
 	const wire = wireContentOf(message)
+	const chat = chatSidecarOf(message)
 	const signerEntityHash = authorEntityHash || resolveCryptographicAuthorEntityHash(eventOrLine, state)
-	const attribution = message?.extension?.attribution
+	const attribution = chat.attribution
 		|| deriveMessageAttribution(wire, {
 			sender: message?.sender || eventOrLine?.sender,
 			signerEntityHash,

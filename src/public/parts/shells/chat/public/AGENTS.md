@@ -21,7 +21,7 @@ Less-common entity traps (`member_join`, avatars, Load reentrancy, session tip f
 ## ChatClient
 
 - Entry: `src/api/client/index.mjs` → `getChatClient(username, entityHash?)` (default = operator). API surface: `public/llms.txt`.
-- **Message.content is fount text (`string`)**, same as `chatLogEntry_t` / `OnMessage` / `chat_log`. DAG wire lives on `Message.sourceContent` when present — chars must not unpack `{ type: 'text', content }` themselves.
+- **Message.content is fount text (`string`)**, same as `chatLogEntry_t` / `OnMessage` / `chat_log`. Canonical DAG wire is `{ content: string, name?, avatar?, files?, extension?: { chat?: … } }` — chars must not unpack legacy `{ type: 'text', content }` themselves. Shell sidecars live only under `extension.chat` (`eventId`, `channelId`, `bridge`, `replyTo`, `vote`, `call`, …). `fileId` exists only on wire `files[]`; hydrated / ChatClient `files[].buffer` is a lazy getter.
 - **Plugins**: per-group `local_plugins.json` (node-only, not DAG). World may inject via `GetChatPlugins` (local name wins). Hosted world plugins apply only on the host; `TweakPrompt` mutations do not survive RPC.
 - `OnMessage` may hydrate via `client.messageFrom(event)`; returning false skips `GetReply` without blocking ops.
 - **Platform bots (Discord/Telegram/WeChat)**: in-memory **virtual** sessions (`bridge:{platform}:{platformChatId}`), not real Hub groups / DAG. Duck-typed via `bridgeOperations`; `getChatClient` → `group(virtualId)` returns virtual Group/Channel/Message; `group.bridgeBot().stop()` / `client.bridgeBots()`.

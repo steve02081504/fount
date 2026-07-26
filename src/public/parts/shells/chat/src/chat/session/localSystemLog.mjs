@@ -3,6 +3,7 @@
  */
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 
+import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
 import { broadcastGroupEvent } from './broadcast.mjs'
 import { getActiveGroupRuntime } from './persistence.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
@@ -22,11 +23,11 @@ export async function appendLocalSystemChatLog(groupId, channelId, text) {
 		content: text,
 		content_for_show: text,
 		extension: {
-			groupChannelId: channelId || 'default',
 			localOnly: true,
 			timeSlice: chatMetadata.LastTimeSlice || { personas: {}, chars: {}, plugins: {} },
 		},
 	}
+	ensureChatExtension(entry).channelId = channelId || 'default'
 	chatMetadata.chatLog.push(entry)
 	chatMetadata.timeLines = [entry]
 	chatMetadata.timeLineIndex = 0

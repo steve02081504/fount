@@ -3,7 +3,7 @@
  * 【职责】频道归档 JSON 的纯格式：常量、校验、反应计数折叠、PostSnapshot → portable。
  * 【原理】无 I/O；供 channelArchive 与 pure 测试共用。
  */
-import { channelMessageContentObject } from '../../public/shared/channelContent.mjs'
+import { normalizeChannelMessage } from '../../public/shared/channelContent.mjs'
 
 /** @type {string} */
 export const CHANNEL_ARCHIVE_FORMAT = 'fount-channel-archive'
@@ -30,9 +30,9 @@ export function reactionCountsFromList(reactions) {
  */
 export function portableMessageFromSnapshot(snap) {
 	const content = snap.content && typeof snap.content === 'object'
-		? channelMessageContentObject(snap.content)
+		? normalizeChannelMessage(snap.content)
 		: snap.content ?? null
-	const fileIds = Array.isArray(content?.fileIds) ? content.fileIds : []
+	const files = Array.isArray(content?.files) ? content.files : []
 	const sender = snap.sender ? String(snap.sender).trim().toLowerCase() : null
 	const sourceEntityHash = snap.sourceEntityHash
 		? String(snap.sourceEntityHash).trim().toLowerCase()
@@ -54,8 +54,12 @@ export function portableMessageFromSnapshot(snap) {
 		wasEdited: false,
 		pinned: !!snap.pinned,
 		reactionCounts: reactionCountsFromList(snap.reactions),
-		attachments: fileIds.length
-			? fileIds.map(id => ({ name: String(id), mimeType: 'application/octet-stream', size: 0 }))
+		attachments: files.length
+			? files.map(file => ({
+				name: String(file.name || file.fileId || 'file'),
+				mimeType: String(file.mime_type || 'application/octet-stream'),
+				size: Number(file.size) || 0,
+			}))
 			: [],
 	}
 }

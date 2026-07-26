@@ -12,6 +12,7 @@ import {
 	attributionFromHubMessage,
 } from '/parts/shells:chat/shared/attribution.mjs'
 import { renderAttributionWarningIconHtml } from '/parts/shells:chat/shared/entityProfileCard.mjs'
+import { channelMessageKind, chatExtensionOf } from '../../../shared/channelContent.mjs'
 import { hubDeliveryReadIcon, hubDeliverySentIcon } from '../../../src/lib/emojiSvg.mjs'
 import { buildMessagesByEventId } from '../../../src/ui/channelDisplay.mjs'
 import { authorPresentationKeys, avatarColor, avatarInitial, avatarTextColor, formatTimeAttrs, timeI18nAttrFragment } from '../../core/domUtils.mjs'
@@ -157,8 +158,8 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 		? ` data-author-pubkey-hash="${escapeHtml(message.authorPubKeyHash)}"`
 		: ''
 	const charAttr = message.charId ? ` data-char-id="${escapeHtml(String(message.charId))}"` : ''
-	const snapDisplay = message.content?.displayName || message.extension?.display?.name
-	const snapAvatar = message.content?.displayAvatar || message.extension?.display?.avatar
+	const snapDisplay = message.content?.name || message.extension?.display?.name
+	const snapAvatar = message.content?.avatar || message.extension?.display?.avatar
 	const presentation = authorPresentationKeys(authorKey)
 	const displayAuthor = snapDisplay || presentation.displayName
 	const avatarKey = presentation.profileKey
@@ -225,10 +226,11 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 			: ''
 		const stickerHtml = !decryptHtml ? await renderStickerBlock(message) : null
 		const groupInviteHtml = !decryptHtml && !stickerHtml ? await renderGroupInviteBlock(message) : null
+		const messageKind = channelMessageKind(message.content || {})
 		const useCall = !decryptHtml && !stickerHtml && !groupInviteHtml
-			&& message.content?.type === 'call'
+			&& messageKind === 'call'
 		const useVote = !decryptHtml && !stickerHtml && !groupInviteHtml && !useCall
-			&& message.content?.type === 'vote' && allMessages.length
+			&& messageKind === 'vote' && allMessages.length
 		const usePlainMd = !decryptHtml && !stickerHtml && !groupInviteHtml && !useVote && !useCall
 			&& plainText.length > 0 && message.eventId
 
@@ -253,7 +255,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 		}
 		else bodyCore = await renderMessageContent(plainText)
 
-		const forwardedFrom = message.content?.forwardedFrom
+		const forwardedFrom = chatExtensionOf(message.content)?.forwardedFrom
 		const forwardedFromHtml = forwardedFrom
 			? renderForwardedFromHtml(forwardedFrom)
 			: ''
@@ -269,7 +271,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 			const revealLabel = geti18n('chat.hub.revealContent') || 'Reveal'
 			mainBody = wrapContentWarningHtml(mainBody, { warningLabel: cwLabel, revealLabel })
 		}
-		else if (message.content?.sensitive_media && (filesHtml || message.content?.fileIds?.length)) {
+		else if (message.content?.sensitive_media && (filesHtml || message.content?.files?.length)) {
 			const warnLabel = geti18n('chat.hub.sensitiveMedia') || ''
 			const revealLabel = geti18n('chat.hub.revealMedia') || 'Reveal'
 			mainBody = wrapSensitiveMediaHtml(mainBody, { warningLabel: warnLabel, revealLabel })

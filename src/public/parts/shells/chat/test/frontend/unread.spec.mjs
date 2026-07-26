@@ -21,7 +21,7 @@ async function postMessageViaApi(baseUrl, apiKey, groupId, channelId, text) {
 	await withApiRequest(async req => {
 		const res = await req.post(
 			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/messages?fount-apikey=${encodeURIComponent(apiKey)}`,
-			{ data: { content: { type: 'text', content: text } } },
+			{ data: { content: { content: text } } },
 		)
 		if (!res.ok()) throw new Error(`postMessage failed: ${res.status()}`)
 	})

@@ -5,7 +5,7 @@ import { join } from 'node:path'
 
 import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
-import { messageLineShowText } from '../../../public/shared/channelContent.mjs'
+import { messageLineShowText, chatExtensionOf } from '../../../public/shared/channelContent.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
 
 import { createJsonlInboxStore } from './jsonlInboxStore.mjs'
@@ -119,14 +119,14 @@ export function resolveAuthorFromSender(state, senderMemberKey) {
 export function resolveAuthorFromMessageLine(state, messageLine) {
 	// message_edit 的桥接归因藏在 newContent 里（content 顶层只有 targetId/newContent）。
 	const content = messageLine?.content
-	const bridge = (messageLine?.type === 'message_edit' ? content?.newContent : content)?.extension?.bridge
-		|| content?.extension?.bridge
-	if (bridge?.authorEntityHash) 
+	const wire = messageLine?.type === 'message_edit' ? content?.newContent : content
+	const bridge = chatExtensionOf(wire)?.bridge
+	if (bridge?.authorEntityHash)
 		return {
 			authorEntityHash: String(bridge.authorEntityHash).trim().toLowerCase(),
 			authorDisplayName: String(bridge.authorDisplayName || '').trim() || 'unknown',
 		}
-	
+
 	const senderKey = String(messageLine?.sender || '').trim().toLowerCase()
 	return resolveAuthorFromSender(state, senderKey)
 }

@@ -4,7 +4,7 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { channelMessageContentObject } from '../../public/shared/channelContent.mjs'
+import { channelMessage } from '../../public/shared/channelContent.mjs'
 import {
 	sanitizeAlt,
 	sanitizeContentWarning,
@@ -30,32 +30,35 @@ Deno.test('sanitizeLocale / content_warning / alt truncate', () => {
 Deno.test('sanitizeMessageExtras drops empty extras and embeds', () => {
 	const eventId = 'abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd'
 	const out = sanitizeMessageExtras({
-		type: 'text',
 		content: 'hi https://example.com',
 		locale: 'en-US',
 		content_warning: 'spoilers',
 		sensitive_media: true,
 		embeds: [{ url: 'https://example.com', title: 'Example' }, { url: 'ftp://bad' }],
-		forwardedFrom: {
-			groupId: 'g1',
-			channelId: 'default',
-			eventId,
-			senderName: 'bob',
-		},
-		replyTo: {
-			eventId,
-			senderName: 'alice',
-			preview: 'hello world',
+		extension: {
+			chat: {
+				forwardedFrom: {
+					groupId: 'g1',
+					channelId: 'default',
+					eventId,
+					senderName: 'bob',
+				},
+				replyTo: {
+					eventId,
+					senderName: 'alice',
+					preview: 'hello world',
+				},
+			},
 		},
 	})
 	assertEquals(out.locale, 'en-US')
 	assertEquals(out.content_warning, 'spoilers')
 	assertEquals(out.sensitive_media, true)
 	assertEquals(out.embeds, undefined)
-	assertEquals(out.forwardedFrom.groupId, 'g1')
-	assertEquals(out.replyTo.eventId, eventId)
-	assertEquals(out.replyTo.senderName, 'alice')
-	assertEquals(out.replyTo.preview, 'hello world')
+	assertEquals(out.extension?.chat?.forwardedFrom?.groupId, 'g1')
+	assertEquals(out.extension?.chat?.replyTo?.eventId, eventId)
+	assertEquals(out.extension?.chat?.replyTo?.senderName, 'alice')
+	assertEquals(out.extension?.chat?.replyTo?.preview, 'hello world')
 })
 
 Deno.test('sanitizeReplyTo requires hex64 eventId', () => {
@@ -65,10 +68,8 @@ Deno.test('sanitizeReplyTo requires hex64 eventId', () => {
 	assertEquals(sanitizeReplyTo({ eventId, preview: '  a  b  ' })?.preview, 'a b')
 })
 
-Deno.test('channelMessageContentObject sanitizes text extras', () => {
-	const content = channelMessageContentObject({
-		type: 'text',
-		content: 'hello',
+Deno.test('channelMessage sanitizes text extras', () => {
+	const content = channelMessage('hello', {
 		locale: 'ja',
 		content_warning: '  nsfw  ',
 		embeds: [{ url: 'https://fount.example', title: 't' }],

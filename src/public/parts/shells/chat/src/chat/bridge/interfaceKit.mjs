@@ -119,7 +119,7 @@ export async function postBridgeDelete(username, dto) {
  */
 export async function postBridgeMessage(username, dto) {
 	const { entry, session } = await appendVirtualBridgeMessage(username, dto)
-	return { id: entry.extension.virtualEventId, groupId: session.groupId, entry }
+	return { id: entry.extension?.chat?.virtualEventId, groupId: session.groupId, entry }
 }
 
 /**

@@ -15,6 +15,7 @@
 
 
 
+import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
 import { broadcastGroupEvent } from './broadcast.mjs'
 import { getChatRequest } from './chatRequest.mjs'
 import { abortAllGenerations, createGenerationStream } from './generationAbort.mjs'
@@ -67,7 +68,7 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 		const timeSlice = previousEntry.extension.timeSlice
 		const greeting_type = timeSlice.greeting_type
 			|| previousEntry.extension?.greetingType
-			|| (previousEntry.extension?.isGreeting ? 'single' : undefined)
+			|| (previousEntry.extension?.chat?.isGreeting ? 'single' : undefined)
 
 		const newEntry = new chatLogEntry_t()
 		newEntry.id = crypto.randomUUID()
@@ -75,8 +76,8 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 		if (greeting_type)
 			newEntry.extension.timeSlice.greeting_type = greeting_type
 		newEntry.extension.timeSlice.charname = timeSlice.charname
-		if (previousEntry.extension?.isGreeting || greeting_type) {
-			newEntry.extension.isGreeting = true
+		if (previousEntry.extension?.chat?.isGreeting || greeting_type) {
+			ensureChatExtension(newEntry).isGreeting = true
 			newEntry.extension.greetingType = greeting_type
 		}
 

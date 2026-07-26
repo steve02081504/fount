@@ -1,6 +1,7 @@
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
+import { channelMessage, normalizeChannelMessage } from '../../public/shared/channelContent.mjs'
 import { getState } from '../chat/dag/materialize.mjs'
 import { memberEntityHash } from '../entity/member.mjs'
 import { resolveMemberKey } from '../group/access.mjs'
@@ -78,11 +79,13 @@ export function peerPubKeyFromEntityHash(entityHash) {
  */
 export function normalizeReplyContent(reply) {
 	if (typeof reply === 'string')
-		return { type: 'text', content: reply }
+		return channelMessage(reply)
 	if (reply && typeof reply === 'object') {
-		if (reply.type) return reply
+		if (typeof reply.content === 'string')
+			return normalizeChannelMessage(reply)
 		const text = reply.text ?? reply.content
-		if (text != null) return { type: 'text', content: String(text) }
+		if (text != null)
+			return channelMessage(String(text))
 	}
 	throw new Error('reply must be a string or content object')
 }

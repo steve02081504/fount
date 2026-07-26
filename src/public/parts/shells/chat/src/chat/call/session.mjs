@@ -11,6 +11,7 @@ import { dirname } from 'node:path'
 import { loadJsonFileIfExists, saveJsonFile } from '../../../../../../../scripts/json_loader.mjs'
 import { getAllUserNames } from '../../../../../../../server/auth/index.mjs'
 import { resolveActiveMemberKey } from '../../group/access.mjs'
+import { channelMessage, normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
 import { postChannelMessage } from '../channel/postMessage.mjs'
 import { appendFinalEditWithRetry } from '../dag/chatLogMirror.mjs'
 import { peekLocalSignerPubKeyHash } from '../dag/localSigner.mjs'
@@ -94,8 +95,7 @@ function uniqHashes(participants) {
  */
 function buildCallContent(session) {
 	const participants = uniqHashes(session.everJoined || [])
-	const content = {
-		type: 'call',
+	const call = {
 		callId: session.callId,
 		status: session.status,
 		startedAt: session.startedAt,
@@ -104,10 +104,13 @@ function buildCallContent(session) {
 		current: uniqHashes(session.current || []),
 	}
 	if (session.status === 'ended') {
-		content.endedAt = session.endedAt
-		content.duration = Math.max(0, (session.endedAt || Date.now()) - session.startedAt)
+		call.endedAt = session.endedAt
+		call.duration = Math.max(0, (session.endedAt || Date.now()) - session.startedAt)
 	}
-	return content
+	const fallbackText = session.status === 'ended' ? 'Call ended' : 'Call in progress'
+	return normalizeChannelMessage(channelMessage(fallbackText, {
+		extension: { chat: { call } },
+	}))
 }
 
 /**
@@ -332,17 +335,22 @@ export async function reconcileOrphanedCalls(username) {
 					timestamp: endedAt,
 					content: {
 						targetId: row.messageEventId,
-						newContent: {
-							type: 'call',
-							callId: row.callId,
-							status: 'ended',
-							startedAt: row.startedAt,
-							endedAt,
-							duration: Math.max(0, endedAt - (row.startedAt || endedAt)),
-							initiator: row.initiator,
-							participants: uniqHashes(row.everJoined || []),
-							current: [],
-						},
+						newContent: normalizeChannelMessage(channelMessage('Call ended', {
+							extension: {
+								chat: {
+									call: {
+										callId: row.callId,
+										status: 'ended',
+										startedAt: row.startedAt,
+										endedAt,
+										duration: Math.max(0, endedAt - (row.startedAt || endedAt)),
+										initiator: row.initiator,
+										participants: uniqHashes(row.everJoined || []),
+										current: [],
+									},
+								},
+							},
+						})),
 					},
 				}, { entityHash: row.initiator })
 			}

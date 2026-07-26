@@ -9,7 +9,7 @@ import { HEX_ID_64 as EVENT_ID_HEX } from 'npm:@steve02081504/fount-p2p/core/hex
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
-import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
+import { normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
 import { isEventArchivedInManifest, loadArchiveManifest } from '../archive/index.mjs'
 import { postSnapshotToMessageLine } from '../archive/postSnapshot.mjs'
 import { readArchiveMonth } from '../archive/reader.mjs'
@@ -80,11 +80,12 @@ export async function findChannelMessageRow(username, groupId, channelId, eventI
  * @returns {Promise<object>} 签名后事件
  */
 export async function appendChannelMessageEdit(username, groupId, channelId, eventId, newContent) {
-	const contentObj = channelMessageContentObject(newContent)
-	if (!contentObj?.content && !contentObj?.type) throw new Error('content required')
+	const contentObj = normalizeChannelMessage(newContent)
+	if (!contentObj?.content) throw new Error('content required')
 	const row = await findChannelMessageRow(username, groupId, channelId, eventId)
 	if (!row) throw new Error('message not found')
 	const targetId = channelMessageTargetId(row)
+	const entryId = row.content?.extension?.chat?.entryId
 	const event = await appendSignedLocalEvent(username, groupId, {
 		type: 'message_edit',
 		channelId,
@@ -92,7 +93,7 @@ export async function appendChannelMessageEdit(username, groupId, channelId, eve
 		content: {
 			targetId,
 			newContent: contentObj,
-			chatLogEntryId: row.content?.chatLogEntryId,
+			...entryId ? { extension: { chat: { entryId } } } : {},
 		},
 	})
 	const { refreshArchivedSnapshotIfPresent } = await import('../archive/refreshSnapshot.mjs')
@@ -112,13 +113,14 @@ export async function appendChannelMessageDelete(username, groupId, channelId, e
 	const row = await findChannelMessageRow(username, groupId, channelId, eventId)
 	if (!row) throw new Error('message not found')
 	const targetId = channelMessageTargetId(row)
+	const entryId = row.content?.extension?.chat?.entryId
 	const event = await appendSignedLocalEvent(username, groupId, {
 		type: 'message_delete',
 		channelId,
 		timestamp: Date.now(),
 		content: {
 			targetId,
-			chatLogEntryId: row.content?.chatLogEntryId,
+			...entryId ? { extension: { chat: { entryId } } } : {},
 		},
 	})
 	const { refreshArchivedSnapshotIfPresent } = await import('../archive/refreshSnapshot.mjs')
@@ -143,6 +145,7 @@ export async function appendChannelMessageFeedback(username, groupId, channelId,
 	if (!row) throw new Error('message not found')
 	if (!row.charId) throw new Error('feedback only for char messages')
 	const targetId = channelMessageTargetId(row)
+	const entryId = row.content?.extension?.chat?.entryId
 	const { sender } = await resolveLocalEventSigner(username, groupId)
 	return appendSignedLocalEvent(username, groupId, {
 		type: 'message_feedback',
@@ -153,7 +156,7 @@ export async function appendChannelMessageFeedback(username, groupId, channelId,
 			charOwner: sender,
 			feedbackType: type,
 			feedbackContent: String(reason || '').slice(0, 4000),
-			chatLogEntryId: row.content?.chatLogEntryId,
+			...entryId ? { extension: { chat: { entryId } } } : {},
 		},
 	})
 }

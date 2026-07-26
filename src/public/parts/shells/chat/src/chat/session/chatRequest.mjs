@@ -78,7 +78,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	let effectiveChannelId = resolveChannelId(channelId, '')
 	if (!effectiveChannelId)
 		for (let index = chatMetadata.chatLog.length - 1; index >= 0; index--) {
-			const fromLog = resolveChannelId(chatMetadata.chatLog[index].extension?.groupChannelId, '')
+			const fromLog = resolveChannelId(chatMetadata.chatLog[index].extension?.chat?.channelId, '')
 			if (fromLog) {
 				effectiveChannelId = fromLog
 				break

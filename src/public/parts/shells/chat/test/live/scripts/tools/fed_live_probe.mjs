@@ -26,12 +26,12 @@ await sleep(8000)
 
 console.log('\n--- firing events (warm) ---')
 const eventIdA = (await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-	content: { type: 'text', content: 'live-message-a' },
+	content: { content: 'live-message-a' },
 })).json.event?.id
 const chanExtra = (await Api(FedA, 'POST', `/groups/${gid}/channels`, { name: 'live-chan', type: 'text' })).json.channelId
 await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/reactions`, { targetEventId: eventIdA, emoji: THUMBS_UP })
 const eventIdB = (await Api(FedB, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-	content: { type: 'text', content: 'live-message-b' },
+	content: { content: 'live-message-b' },
 })).json.event?.id
 
 const r1 = await pollUntil(async () => {

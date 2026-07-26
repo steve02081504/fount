@@ -4,7 +4,7 @@
  * 【原理】与 postMessage BeforeUserSend 对称；persona 先于 world；reject → httpError(400)。
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
+import { normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
 import { getMaterializedSession } from '../session/dagSession.mjs'
 import { resolveWorld } from '../session/resolvePart.mjs'
@@ -29,8 +29,8 @@ async function resolvePersonaContext(username, groupId) {
  */
 function normalizeEditedResult(result, fallback) {
 	if (result?.reject) throw httpError(400, String(result.reject))
-	if (result?.edited != null) return channelMessageContentObject(result.edited)
-	if (result?.type || result?.content) return channelMessageContentObject(result)
+	if (result?.edited != null) return normalizeChannelMessage(result.edited)
+	if (result && typeof result.content === 'string') return normalizeChannelMessage(result)
 	return fallback
 }
 
@@ -45,7 +45,7 @@ function normalizeEditedResult(result, fallback) {
  * @returns {Promise<object>} 最终 content
  */
 export async function applyChannelMessageEditHooks(username, groupId, channelId, eventId, row, edited) {
-	let content = channelMessageContentObject(edited)
+	let content = normalizeChannelMessage(edited)
 	const { player, personaname, memberId } = await resolvePersonaContext(username, groupId)
 	const baseCtx = {
 		groupId,

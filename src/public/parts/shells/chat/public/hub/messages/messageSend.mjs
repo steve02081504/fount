@@ -1,4 +1,5 @@
 import { primaryLocale } from '../../../../../scripts/i18n/index.mjs'
+import { channelMessage, ensureChatExtension } from '../../shared/channelContent.mjs'
 import { sendGroupMessage } from '../../src/api/groupChannel.mjs'
 import { clearComposerExtras, getContentWarning, getSensitiveMedia } from '../composerExtras.mjs'
 import { clearSelectedFiles, selectedFiles } from '../composerFiles.mjs'
@@ -150,22 +151,24 @@ export async function retryFailedPendingMessage(tempId) {
 }
 
 /**
- * 构建发送用富内容对象（含 CW/sensitive/locale/replyTo）。
+ * 构建发送用富内容对象（含 CW/sensitive/locale/extension.chat.replyTo）。
  * @param {string} text 文本内容
  * @returns {object} content object
  */
 function buildComposerContent(text) {
-	const contentObj = { type: 'text', content: text, locale: primaryLocale() }
+	const extra = { locale: primaryLocale() }
 	const cw = getContentWarning()
-	if (cw) contentObj.content_warning = cw
-	if (getSensitiveMedia()) contentObj.sensitive_media = true
+	if (cw) extra.content_warning = cw
+	if (getSensitiveMedia()) extra.sensitive_media = true
+	const contentObj = channelMessage(text, extra)
 	const reply = getReplyTarget()
-	if (reply)
-		contentObj.replyTo = {
+	if (reply) {
+		ensureChatExtension(contentObj).replyTo = {
 			eventId: reply.eventId,
 			senderName: reply.senderName,
 			preview: reply.preview,
 		}
+	}
 	return contentObj
 }
 

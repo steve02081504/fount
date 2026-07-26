@@ -336,11 +336,11 @@ Deno.test('mergeChannelMessagesForDisplay marks edited messages', async () => {
 	const baseId = 'a'.repeat(64)
 	const editId = 'b'.repeat(64)
 	const rows = [
-		{ type: 'message', eventId: baseId, content: { type: 'text', content: 'hi' } },
+		{ type: 'message', eventId: baseId, content: { content: 'hi' } },
 		{
 			type: 'message_edit',
 			eventId: editId,
-			content: { targetId: baseId, newContent: { type: 'text', content: 'edited' } },
+			content: { targetId: baseId, newContent: { content: 'edited' } },
 		},
 	]
 	const merged = mergeChannelMessagesForDisplay(rows)
@@ -349,7 +349,7 @@ Deno.test('mergeChannelMessagesForDisplay marks edited messages', async () => {
 	assertEquals(merged[0].content.content, 'edited')
 })
 
-Deno.test('mergeChannelMessagesForDisplay preserves displayName from message_edit', async () => {
+Deno.test('mergeChannelMessagesForDisplay preserves name from message_edit', async () => {
 	const { mergeChannelMessagesForDisplay } = await import('../../public/shared/messageMerge.mjs')
 	const baseId = 'a'.repeat(64)
 	const rows = [
@@ -357,10 +357,9 @@ Deno.test('mergeChannelMessagesForDisplay preserves displayName from message_edi
 			type: 'message',
 			eventId: baseId,
 			content: {
-				type: 'text',
 				content: '',
-				displayName: 'host',
-				displayAvatar: '👤',
+				name: 'host',
+				avatar: '👤',
 				is_generating: true,
 			},
 		},
@@ -370,18 +369,17 @@ Deno.test('mergeChannelMessagesForDisplay preserves displayName from message_edi
 			content: {
 				targetId: baseId,
 				newContent: {
-					type: 'text',
 					content: 'char reply',
-					displayName: '写路径 Agent',
-					displayAvatar: '🤖',
+					name: '写路径 Agent',
+					avatar: '🤖',
 					is_generating: false,
 				},
 			},
 		},
 	]
 	const merged = mergeChannelMessagesForDisplay(rows)
-	assertEquals(merged[0].content.displayName, '写路径 Agent')
-	assertEquals(merged[0].content.displayAvatar, '🤖')
+	assertEquals(merged[0].content.name, '写路径 Agent')
+	assertEquals(merged[0].content.avatar, '🤖')
 	assertEquals(merged[0].content.content, 'char reply')
 })
 
@@ -391,13 +389,13 @@ Deno.test('linesIncludingOverlaysForTargets pulls message_edit for target id', a
 	const editId = 'd'.repeat(64)
 	const otherId = 'e'.repeat(64)
 	const rows = [
-		{ type: 'message', eventId: baseId, content: { type: 'text', content: '', is_generating: true } },
+		{ type: 'message', eventId: baseId, content: { content: '', is_generating: true } },
 		{
 			type: 'message_edit',
 			eventId: editId,
-			content: { targetId: baseId, newContent: { type: 'text', content: 'err', is_generating: false } },
+			content: { targetId: baseId, newContent: { content: 'err', is_generating: false } },
 		},
-		{ type: 'message', eventId: otherId, content: { type: 'text', content: 'other' } },
+		{ type: 'message', eventId: otherId, content: { content: 'other' } },
 	]
 	const filtered = linesIncludingOverlaysForTargets(rows, [baseId])
 	assertEquals(filtered.map(row => row.eventId).sort(), [baseId, editId].sort())
@@ -412,10 +410,10 @@ Deno.test('applyMessageEditToRow clears is_generating from WS payload', async ()
 	const row = {
 		type: 'message',
 		eventId: 'f'.repeat(64),
-		content: { type: 'text', content: 'partial', is_generating: true, displayName: 'bot' },
+		content: { content: 'partial', is_generating: true, name: 'bot' },
 	}
 	const patched = applyMessageEditToRow(row, {
-		newContent: { type: 'text', content: '```\nError:\nboom\n```', is_generating: false, displayName: 'bot' },
+		newContent: { content: '```\nError:\nboom\n```', is_generating: false, name: 'bot' },
 	})
 	assertEquals(patched.content.is_generating, false)
 	assertEquals(patched.content.content.includes('Error:'), true)

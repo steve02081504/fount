@@ -6,6 +6,7 @@
  * 【关联】channelMessageStore、../core/domUtils、../core/state、render/text
  */
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { channelMessageKind, chatExtensionOf } from '../../shared/channelContent.mjs'
 import { store } from '../core/state.mjs'
 
 import { fetchRowsForMessageEvent } from './channelMessageStore.mjs'
@@ -43,14 +44,14 @@ export function pinPreviewTemplateFields(descriptor) {
 function previewFromMessage(message) {
 	const text = getMessageText(message).trim().replace(/\s+/gu, ' ')
 	if (!text) return { text: '' }
-	const type = message?.content?.type
-	if (type === 'sticker') return { i18n: 'chat.hub.pinPreviewSticker' }
-	if (type === 'vote') {
-		const question = message.content?.question || ''
+	const kind = channelMessageKind(message?.content)
+	if (kind === 'sticker') return { i18n: 'chat.hub.pinPreviewSticker' }
+	if (kind === 'vote') {
+		const question = chatExtensionOf(message.content)?.vote?.question || ''
 		return { i18n: 'chat.hub.pinPreviewVote', params: { question } }
 	}
-	if (type === 'group_invite') {
-		const groupName = message.content?.groupName || ''
+	if (kind === 'group_invite') {
+		const groupName = chatExtensionOf(message.content)?.group_invite?.groupName || ''
 		return { i18n: 'chat.hub.pinPreviewInvite', params: { groupName } }
 	}
 	return { text: text.length > 40 ? `${text.slice(0, 40)}…` : text }

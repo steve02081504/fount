@@ -26,7 +26,7 @@ await testCase('A set hotLatestMessageCount=1', async () => {
 await testCase('A posts archive candidates', async () => {
 	for (let i = 1; i <= 4; i++) {
 		const postResponse = await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-			content: { type: 'text', content: `archive-message-${i}` },
+			content: { content: `archive-message-${i}` },
 		})
 		if (postResponse.status !== 201) throw new Error(`message ${i} status ${postResponse.status}`)
 	}

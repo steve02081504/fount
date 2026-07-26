@@ -45,7 +45,6 @@ export function normalizeUserSendPayload(input, defaults = {}) {
 	if (typeof input === 'string')
 		return {
 			content: {
-				type: 'text',
 				content: input,
 				locale: fallbackLocale,
 			},
@@ -56,7 +55,6 @@ export function normalizeUserSendPayload(input, defaults = {}) {
 		throw new Error('fount.user.send expects string or chatLogEntry')
 
 	const content = {
-		type: 'text',
 		content: String(input.content ?? ''),
 		locale: input.locale != null ? String(input.locale) : fallbackLocale,
 	}

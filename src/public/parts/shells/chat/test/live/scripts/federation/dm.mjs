@@ -239,7 +239,7 @@ await testCase('creator sends DM-A', async () => {
 	cid = await resolveUsableChannelId(creator, gid, cid)
 	if (!cid) throw new Error('creator channel not materialized')
 	const r = await Api(creator, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-		content: { type: 'text', content: 'dm-A-to-B' },
+		content: { content: 'dm-A-to-B' },
 	})
 	if (r.status !== 201) throw new Error(`send ${r.status}`)
 	aMsg = r.json.event?.id
@@ -267,7 +267,7 @@ await testCase('joiner sends DM-B', async () => {
 	}, 90, 3)
 	if (!ready) throw new Error('joiner channels not materialized')
 	const r = await Api(joiner, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-		content: { type: 'text', content: 'dm-B-to-A' },
+		content: { content: 'dm-B-to-A' },
 	})
 	if (r.status !== 201) throw new Error(`send ${r.status}: ${r.raw}`)
 	bMsg = r.json.event?.id

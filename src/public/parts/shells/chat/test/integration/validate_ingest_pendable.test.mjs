@@ -79,7 +79,7 @@ Deno.test('federation message without SEND_MESSAGES is not pendable', async () =
 		type: 'message',
 		sender: SENDER,
 		channelId: 'default',
-		content: { type: 'text', content: 'hi' },
+		content: { content: 'hi' },
 	}
 	let thrown
 	try {

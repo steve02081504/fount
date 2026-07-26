@@ -1,7 +1,7 @@
 /**
  * 【文件】logEntries.mjs — 聊天日志条目装配工具
  * 【职责】buildChatLogEntryFromCharReply / buildChatLogEntryFromUserMessage 将部件接口返回值转为 chatLogEntry_t；getChannelForCharStream 推断流式回复所属频道。
- * 【原理】角色条目合并 getPartDetails 的 name/avatar；用户条目写入 extension.groupChannelId；getChannelForCharStream 向前扫描 chatLog 找最近 user 消息的频道。
+ * 【原理】角色条目合并 getPartDetails 的 name/avatar；用户条目写入 `extension.chat.channelId`；getChannelForCharStream 向前扫描 chatLog 找最近 user 消息的频道。
  * 【数据结构】chatLogEntry_t 字段（role/content/extension.timeSlice/files/extension/logContext*）。
  * 【关联】models、channelContent、messages、triggerReply、chatRequest.AddChatLogEntry。
  */
@@ -11,6 +11,7 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
+import { ensureChatExtension } from '../../../public/shared/messageFields.mjs'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
 import { resolveChannelId } from '../lib/channelId.mjs'
@@ -28,9 +29,9 @@ export function getChannelForCharStream(chatMetadata, placeholderEntry) {
 	const placeholderIndex = chatMetadata.chatLog.findIndex(entry => entry.id === placeholderEntry.id)
 	for (let index = placeholderIndex - 1; index >= 0; index--) {
 		const logEntry = chatMetadata.chatLog[index]
-		const groupChannelId = logEntry.extension?.groupChannelId
+		const channelId = logEntry.extension?.chat?.channelId
 		if (logEntry.role === 'user') {
-			const fromLog = resolveChannelId(groupChannelId, '')
+			const fromLog = resolveChannelId(channelId, '')
 			if (fromLog) return fromLog
 		}
 	}
@@ -88,7 +89,7 @@ export async function buildChatLogEntryFromUserMessage(result, timeSlice, user, 
 	const { info } = (personaname ? await getPartDetails(username, `personas/${personaname}`) : undefined) || {}
 	const { timeSlice: _drop, ...extension } = result.extension || {}
 	const groupChannelId = resolveChannelId(result.groupChannelId, '')
-	if (groupChannelId) extension.groupChannelId = groupChannelId
+	if (groupChannelId) ensureChatExtension({ extension }).channelId = groupChannelId
 	const entry = new chatLogEntry_t()
 	Object.assign(entry, {
 		name: result.name || info?.name || timeSlice.player_id || username,

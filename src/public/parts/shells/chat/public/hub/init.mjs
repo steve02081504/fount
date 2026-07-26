@@ -10,6 +10,7 @@ import { mountDockedStickerPicker } from '../../../../scripts/components/sticker
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { fetchStickerPayload } from '../providers/sticker.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
+import { channelMessage, normalizeChannelMessage } from '../shared/channelContent.mjs'
 import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { sendGroupMessage } from '../src/api/groupChannel.mjs'
@@ -107,11 +108,16 @@ async function sendPickedEmojiAsSticker(item) {
 	const { groupId, channelId } = emojiGetContext()
 	if (!groupId || !channelId) return
 	try {
-		await sendGroupMessage(groupId, channelId, {
-			type: 'sticker',
-			emojiRef: item.emojiRef,
-			stickerName: item.emojiId || 'emoji',
-		})
+		await sendGroupMessage(groupId, channelId, normalizeChannelMessage(channelMessage('', {
+			extension: {
+				chat: {
+					sticker: {
+						emojiRef: item.emojiRef,
+						stickerName: item.emojiId || 'emoji',
+					},
+				},
+			},
+		})))
 		const { loadMessages } = await messagesApi()
 		await loadMessages()
 	}
@@ -132,13 +138,18 @@ async function sendPickedHubSticker(sticker) {
 	try {
 		if (stickerUrl) {
 			const { stickerBase64, mimeType } = await fetchStickerPayload(stickerUrl)
-			await sendGroupMessage(groupId, channelId, {
-				type: 'sticker',
-				stickerId,
-				stickerName: stickerId,
-				mimeType,
-				stickerBase64,
-			})
+			await sendGroupMessage(groupId, channelId, normalizeChannelMessage(channelMessage('', {
+				extension: {
+					chat: {
+						sticker: {
+							stickerId,
+							stickerName: stickerId,
+							stickerBase64,
+							mimeType,
+						},
+					},
+				},
+			})))
 			const viewerEntityHash = emojiViewerEntityHash()
 			if (viewerEntityHash)
 				void fetch(`/api/parts/shells:chat/stickers/recent/${encodeURIComponent(stickerId)}`, {

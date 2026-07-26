@@ -12,6 +12,7 @@ import {
 	mentionTextFromMessageLine,
 	resolveAuthorFromMessageLine,
 } from '../lib/inbox.mjs'
+import { chatExtensionOf } from '../../../public/shared/channelContent.mjs'
 import { messageMentionsEntity } from '../lib/mentionFacts.mjs'
 import {
 	shouldAppendMessageInboxRow,
@@ -69,7 +70,7 @@ export async function dispatchMessageFanout(username, groupId, channelId, messag
 		: messageLine.content
 	if (payload?.is_generating) return { mentions: { entityHashes: [], roleIds: [], everyone: false } }
 	// 通话卡片生命周期（create/roster/end）会多次 message_edit；不当作收件箱/推送/触发管线信号
-	if (payload?.type === 'call') return { mentions: { entityHashes: [], roleIds: [], everyone: false } }
+	if (chatExtensionOf(payload)?.call) return { mentions: { entityHashes: [], roleIds: [], everyone: false } }
 
 	const { state } = await getState(username, groupId)
 	const mentions = buildMentionsFromMessageLine(channelId, messageLine, state, options)

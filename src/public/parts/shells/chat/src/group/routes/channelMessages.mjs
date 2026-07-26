@@ -10,7 +10,7 @@ import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
+import { normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
 import {
 	applyChannelMessageDeleteHooks,
 	applyChannelMessageEditHooks,
@@ -103,7 +103,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const { username, state } = membership
 		ensureChannel(state, channelId)
 
-		const contentObj = channelMessageContentObject(rawContent)
+		const contentObj = normalizeChannelMessage(rawContent)
 		const row = await findChannelMessageRow(username, groupId, channelId, eventId)
 		if (!row) throw httpError(404, 'message not found')
 		const finalContent = await applyChannelMessageEditHooks(

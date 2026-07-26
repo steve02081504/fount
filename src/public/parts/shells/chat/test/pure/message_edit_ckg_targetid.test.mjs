@@ -65,21 +65,22 @@ function baseState(overrides = {}) {
 	}
 }
 
-Deno.test('plaintextCkgContentFields exposes targetId for message_edit; vote metadata for message', () => {
-	assertEquals(plaintextCkgContentFields('message_edit'), ['targetId'])
-	assertEquals(plaintextCkgContentFields('message'), ['type', 'deadline', 'question', 'options'])
+Deno.test('plaintextCkgContentFields exposes targetId for message_edit; extension for message', () => {
+	assertEquals(plaintextCkgContentFields('message_edit'), ['targetId', 'extension'])
+	assertEquals(plaintextCkgContentFields('message'), ['extension'])
 })
 
 Deno.test('message_edit ckg envelope keeps targetId plaintext and encrypts the body', () => {
 	const content = {
 		targetId: TARGET,
-		newContent: { type: 'text', content: 'secret body' },
-		chatLogEntryId: 'entry-1',
+		newContent: { content: 'secret body' },
+		extension: { chat: { entryId: 'entry-1' } },
 	}
 	const envelope = encryptLikeAppend(content, plaintextCkgContentFields('message_edit'))
 
-	// targetId 明文可见；正文已加密（不出现在信封顶层）。
+	// targetId 与 extension.chat.entryId 明文可见；正文已加密（不出现在信封顶层）。
 	assertEquals(envelope.targetId, TARGET)
+	assertEquals(envelope.extension, { chat: { entryId: 'entry-1' } })
 	assertEquals(envelope.newContent, undefined)
 	assert(isCkgEncryptedContent(envelope))
 	// 入站 CKG 校验通过（仍是 ckg 密文）。
@@ -89,29 +90,45 @@ Deno.test('message_edit ckg envelope keeps targetId plaintext and encrypts the b
 	assertEquals(decryptLikeRead(envelope), content)
 })
 
-Deno.test('message ckg envelope keeps type plaintext and encrypts user body', () => {
-	const content = { type: 'text', content: 'hello' }
+Deno.test('message ckg envelope keeps extension plaintext and encrypts user body', () => {
+	const content = { content: 'hello' }
 	const envelope = encryptLikeAppend(content, plaintextCkgContentFields('message'))
-	assertEquals(clearFieldsFromCkgEnvelope(envelope), { type: 'text' })
+	assertEquals(clearFieldsFromCkgEnvelope(envelope), {})
 	assertEquals(envelope.content, undefined)
 	assertEquals(decryptLikeRead(envelope), content)
 })
 
-Deno.test('vote message ckg envelope keeps ballot metadata plaintext', () => {
+Deno.test('vote message ckg envelope keeps ballot metadata plaintext via extension', () => {
 	const content = {
-		type: 'vote',
-		question: 'pick one',
-		options: ['a', 'b'],
-		deadline: '2099-01-01T00:00:00.000Z',
+		content: 'pick one',
+		extension: {
+			chat: {
+				vote: {
+					question: 'pick one',
+					options: ['a', 'b'],
+					deadline: '2099-01-01T00:00:00.000Z',
+				},
+			},
+		},
 	}
 	const envelope = encryptLikeAppend(content, plaintextCkgContentFields('message'))
-	assertEquals(clearFieldsFromCkgEnvelope(envelope), content)
+	assertEquals(clearFieldsFromCkgEnvelope(envelope), {
+		extension: {
+			chat: {
+				vote: {
+					question: 'pick one',
+					options: ['a', 'b'],
+					deadline: '2099-01-01T00:00:00.000Z',
+				},
+			},
+		},
+	})
 	assert(isCkgEncryptedContent(envelope))
 })
 
 Deno.test('authorizeEvent reads targetId from encrypted message_edit and authorizes author', async () => {
 	const content = encryptLikeAppend(
-		{ targetId: TARGET, newContent: { type: 'text', content: 'x' } },
+		{ targetId: TARGET, newContent: { content: 'x' } },
 		plaintextCkgContentFields('message_edit'),
 	)
 	const event = { type: 'message_edit', channelId: CHANNEL, sender: AUTHOR, content }
@@ -120,7 +137,7 @@ Deno.test('authorizeEvent reads targetId from encrypted message_edit and authori
 
 Deno.test('encrypted message_edit passes outbound federation relay ACL', async () => {
 	const content = encryptLikeAppend(
-		{ targetId: TARGET, newContent: { type: 'text', content: 'x' } },
+		{ targetId: TARGET, newContent: { content: 'x' } },
 		plaintextCkgContentFields('message_edit'),
 	)
 	const event = { type: 'message_edit', channelId: CHANNEL, sender: AUTHOR, content }
@@ -129,7 +146,7 @@ Deno.test('encrypted message_edit passes outbound federation relay ACL', async (
 
 Deno.test('encrypted message_edit with absent target stays deferrable (quarantine, not drop)', async () => {
 	const content = encryptLikeAppend(
-		{ targetId: TARGET, newContent: { type: 'text', content: 'x' } },
+		{ targetId: TARGET, newContent: { content: 'x' } },
 		plaintextCkgContentFields('message_edit'),
 	)
 	const event = { type: 'message_edit', channelId: CHANNEL, sender: AUTHOR, content }

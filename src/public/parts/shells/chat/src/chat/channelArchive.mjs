@@ -11,8 +11,8 @@ import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
 import {
-	channelMessageContentObject,
-	textChannelContent,
+	channelMessage,
+	normalizeChannelMessage,
 } from '../../public/shared/channelContent.mjs'
 import { mergeChannelMessagesForDisplay } from '../../public/shared/messageMerge.mjs'
 
@@ -70,24 +70,21 @@ function reactionCountsFromOverlay(overlay, eventId) {
 
 /**
  * @param {object} state 物化状态
- * @param {string[]} fileIds 附件 id
+ * @param {object[]} files 落盘 files 描述符
  * @returns {Array<{ name: string, mimeType: string, size: number }>} 附件元数据
  */
-function attachmentMetaFromFileIds(state, fileIds) {
-	if (!Array.isArray(fileIds) || !fileIds.length) return []
+function attachmentMetaFromFiles(state, files) {
+	if (!Array.isArray(files) || !files.length) return []
 	const index = state.messageOverlay?.fileIndex
 	/** @type {Array<{ name: string, mimeType: string, size: number }>} */
 	const out = []
-	for (const fileId of fileIds) {
-		const meta = index instanceof Map ? index.get(fileId) : index?.[fileId]
-		if (!meta) {
-			out.push({ name: String(fileId), mimeType: 'application/octet-stream', size: 0 })
-			continue
-		}
+	for (const file of files) {
+		const fileId = String(file?.fileId || '').trim()
+		const meta = fileId && index instanceof Map ? index.get(fileId) : index?.[fileId]
 		out.push({
-			name: String(meta.name || fileId),
-			mimeType: String(meta.mime_type || meta.mimeType || 'application/octet-stream'),
-			size: Number(meta.size) || 0,
+			name: String(file?.name || meta?.name || fileId || 'file'),
+			mimeType: String(file?.mime_type || meta?.mime_type || meta?.mimeType || 'application/octet-stream'),
+			size: Number(file?.size ?? meta?.size) || 0,
 		})
 	}
 	return out
@@ -107,7 +104,7 @@ async function portableFromHotRow(username, groupId, channelId, row, state, flag
 	let decryptView = row.decryptView
 	if (!decryptView?.failed && content) {
 		const result = await decryptEventContent(username, groupId, channelId, content)
-		if (result.ok && result.content?.type)
+		if (result.ok && result.content)
 			content = result.content
 		else {
 			content = null
@@ -128,9 +125,9 @@ async function portableFromHotRow(username, groupId, channelId, row, state, flag
 		deleted: flags.deleted ?? snap.deleted,
 	})
 	portable.wasEdited = !!flags.wasEdited || !!row.wasEdited
-	portable.attachments = attachmentMetaFromFileIds(
+	portable.attachments = attachmentMetaFromFiles(
 		state,
-		Array.isArray(content?.fileIds) ? content.fileIds : [],
+		Array.isArray(content?.files) ? content.files : [],
 	)
 	portable.reactionCounts = reactionCountsFromOverlay(state.messageOverlay, String(row.eventId).trim())
 	if (row.extension?.feedback)
@@ -160,9 +157,9 @@ export async function exportChannelArchive(username, groupId, channelId) {
 			const id = String(snap.eventId || '').trim()
 			if (!id) continue
 			const portable = portableMessageFromSnapshot(snap)
-			portable.attachments = attachmentMetaFromFileIds(
+			portable.attachments = attachmentMetaFromFiles(
 				state,
-				Array.isArray(snap.content?.fileIds) ? snap.content.fileIds : [],
+				Array.isArray(snap.content?.files) ? snap.content.files : [],
 			)
 			byId.set(id, portable)
 		}
@@ -228,20 +225,11 @@ export async function exportChannelArchive(username, groupId, channelId) {
  * @returns {object} 写入 content
  */
 function buildImportContent(msg, source, signer = {}) {
-	const displayName = String(msg.display?.name || '').trim() || '?'
-	const displayAvatar = msg.display?.avatar ? String(msg.display.avatar).trim() : null
-	const base = msg.content?.type
-		? channelMessageContentObject(msg.content)
-		: textChannelContent(msg.content)
-
-	const {
-		fileIds: _dropIds,
-		fileCount: _dropCount,
-		fileAlts: _dropAlts,
-		sessionSnapshot: _dropSnap,
-		chatLogEntryId: _dropEntry,
-		...rest
-	} = base
+	const name = String(msg.display?.name || '').trim() || '?'
+	const avatar = msg.display?.avatar ? String(msg.display.avatar).trim() : null
+	const base = msg.content && typeof msg.content === 'object' && msg.content.content != null
+		? normalizeChannelMessage(msg.content)
+		: channelMessage(String(msg.content ?? ''))
 
 	const sourceSenderPubKeyHash = msg.sourceSenderPubKeyHash
 		? String(msg.sourceSenderPubKeyHash).trim().toLowerCase()
@@ -261,10 +249,8 @@ function buildImportContent(msg, source, signer = {}) {
 		attributionMismatch: true,
 	}
 
-	return channelMessageContentObject({
-		...rest,
-		displayName,
-		...displayAvatar ? { displayAvatar } : {},
+	const chat = {
+		...(base.extension?.chat && typeof base.extension.chat === 'object' ? base.extension.chat : {}),
 		importedFrom,
 		...Object.keys(msg.reactionCounts || {}).length
 			? { importedReactions: msg.reactionCounts }
@@ -272,6 +258,13 @@ function buildImportContent(msg, source, signer = {}) {
 		...Array.isArray(msg.attachments) && msg.attachments.length
 			? { importedAttachments: msg.attachments }
 			: {},
+	}
+
+	return normalizeChannelMessage({
+		...base,
+		name,
+		...avatar ? { avatar } : {},
+		extension: { ...base.extension, chat },
 	})
 }
 
@@ -321,24 +314,28 @@ export async function importChannelArchive(username, groupId, archive, options =
 	for (const msg of data.messages) {
 		if (!msg || typeof msg !== 'object') continue
 		if (msg.decryptView?.failed && !msg.content) {
-			const tombstone = textChannelContent('[decrypt failed]', {
-				displayName: String(msg.display?.name || '?'),
-				...msg.display?.avatar ? { displayAvatar: msg.display.avatar } : {},
-				importedFrom: {
-					groupId: source.groupId,
-					channelId: source.channelId,
-					eventId: msg.sourceEventId,
-					decryptFailed: true,
-					attributionMismatch: true,
-					...signerInfo,
-					...msg.sourceSenderPubKeyHash
-						? { sourceSenderPubKeyHash: String(msg.sourceSenderPubKeyHash).toLowerCase() }
-						: {},
-					...msg.sourceEntityHash
-						? { sourceEntityHash: String(msg.sourceEntityHash).toLowerCase() }
-						: {},
+			const tombstone = normalizeChannelMessage(channelMessage('[decrypt failed]', {
+				name: String(msg.display?.name || '?'),
+				...msg.display?.avatar ? { avatar: msg.display.avatar } : {},
+				extension: {
+					chat: {
+						importedFrom: {
+							groupId: source.groupId,
+							channelId: source.channelId,
+							eventId: msg.sourceEventId,
+							decryptFailed: true,
+							attributionMismatch: true,
+							...signerInfo,
+							...msg.sourceSenderPubKeyHash
+								? { sourceSenderPubKeyHash: String(msg.sourceSenderPubKeyHash).toLowerCase() }
+								: {},
+							...msg.sourceEntityHash
+								? { sourceEntityHash: String(msg.sourceEntityHash).toLowerCase() }
+								: {},
+						},
+					},
 				},
-			})
+			}))
 			const event = await commitChannelMessageEvent({
 				username,
 				groupId,
