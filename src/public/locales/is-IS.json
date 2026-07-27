@@ -3786,7 +3786,8 @@
 			"safetyTitle": "Öryggi og vörn",
 			"safetyHint": "Hafa umsjón með lokuðum og földum listum.",
 			"mutedKeywords": {
-				"placeholder": "Sláðu inn leitarorð eða #tags"
+				"placeholder": "Sláðu inn leitarorð eða #tags",
+				"aria-label": "Lokaðu fyrir orð eða merki"
 			},
 			"taste": {
 				"rebuild": "Endurbyggja óskir",

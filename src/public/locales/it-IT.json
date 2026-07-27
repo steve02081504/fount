@@ -3786,7 +3786,8 @@
 			"safetyTitle": "Sicurezza e schermatura",
 			"safetyHint": "Gestisci elenchi bloccati e nascosti.",
 			"mutedKeywords": {
-				"placeholder": "Inserisci parole chiave o #tag"
+				"placeholder": "Inserisci parole chiave o #tag",
+				"aria-label": "Blocca parole o tag"
 			},
 			"taste": {
 				"rebuild": "Ricostruire il profilo del gusto",

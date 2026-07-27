@@ -3786,7 +3786,8 @@
 			"safetyTitle": "Seguridad y blindaje",
 			"safetyHint": "Administrar listas bloqueadas y ocultas.",
 			"mutedKeywords": {
-				"placeholder": "Introduzca palabras clave o #etiquetas"
+				"placeholder": "Introduzca palabras clave o #etiquetas",
+				"aria-label": "Bloquear palabras o etiquetas"
 			},
 			"taste": {
 				"rebuild": "Reconstruir preferencias",

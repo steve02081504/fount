@@ -3786,7 +3786,8 @@
 			"safetyTitle": "An ninh và che chắn",
 			"safetyHint": "Quản lý danh sách bị chặn và ẩn.",
 			"mutedKeywords": {
-				"placeholder": "Nhập từ khóa hoặc #tags"
+				"placeholder": "Nhập từ khóa hoặc #tags",
+				"aria-label": "Chặn từ hoặc thẻ"
 			},
 			"taste": {
 				"rebuild": "Xây dựng lại tùy chọn",

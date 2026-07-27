@@ -3786,7 +3786,8 @@
 			"safetyTitle": "안전 및 차단",
 			"safetyHint": "차단 및 숨김 목록을 관리하세요.",
 			"mutedKeywords": {
-				"placeholder": "키워드 또는 #태그를 입력하세요."
+				"placeholder": "키워드 또는 #태그를 입력하세요.",
+				"aria-label": "단어 또는 태그 차단"
 			},
 			"taste": {
 				"rebuild": "기본 설정 재구성",

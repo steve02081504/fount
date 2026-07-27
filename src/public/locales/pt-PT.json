@@ -3786,7 +3786,8 @@
 			"safetyTitle": "Segurança e blindagem",
 			"safetyHint": "Gira listas de bloqueados e ocultos.",
 			"mutedKeywords": {
-				"placeholder": "Insira palavras-chave ou #tags"
+				"placeholder": "Insira palavras-chave ou #tags",
+				"aria-label": "Bloquear palavras ou tags"
 			},
 			"taste": {
 				"rebuild": "Reconstruir preferências",

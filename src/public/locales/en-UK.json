@@ -3781,7 +3781,8 @@
 			"safetyTitle": "Security and shielding",
 			"safetyHint": "Manage blocked and hidden lists.",
 			"mutedKeywords": {
-				"placeholder": "Enter keywords or #tags"
+				"placeholder": "Enter keywords or #tags",
+				"aria-label": "Block words or tags"
 			},
 			"taste": {
 				"rebuild": "Rebuild taste profile",

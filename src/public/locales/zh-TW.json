@@ -3785,7 +3785,8 @@
 			"safetyTitle": "安全與遮蔽",
 			"safetyHint": "管理拉黑與隱藏列表。",
 			"mutedKeywords": {
-				"placeholder": "輸入關鍵詞或 #標籤"
+				"placeholder": "輸入關鍵詞或 #標籤",
+				"aria-label": "屏蔽詞或標籤"
 			},
 			"taste": {
 				"rebuild": "重建偏好",

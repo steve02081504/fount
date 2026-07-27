@@ -3786,7 +3786,8 @@
 			"safetyTitle": "الأمن والتدريع",
 			"safetyHint": "إدارة القوائم المحظورة والمخفية.",
 			"mutedKeywords": {
-				"placeholder": "أدخل الكلمات الرئيسية أو #tags"
+				"placeholder": "أدخل الكلمات الرئيسية أو #tags",
+				"aria-label": "حظر الكلمات أو العلامات"
 			},
 			"taste": {
 				"rebuild": "إعادة بناء التفضيلات",

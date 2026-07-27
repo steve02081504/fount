@@ -3786,7 +3786,8 @@
 			"safetyTitle": "Beveiliging en afscherming",
 			"safetyHint": "Beheer geblokkeerde en verborgen lijsten.",
 			"mutedKeywords": {
-				"placeholder": "Voer trefwoorden of #tags in"
+				"placeholder": "Voer trefwoorden of #tags in",
+				"aria-label": "Blokkeer woorden of tags"
 			},
 			"taste": {
 				"rebuild": "Voorkeuren opnieuw opbouwen",
