@@ -1575,6 +1575,9 @@
 				"tip": "번역 및 통합 P2P 설정"
 			},
 			"prefsSubtitle": "번역 및 연합 연결",
+			"prefsNav": {
+				"aria-label": "선호 파티션"
+			},
 			"federationTooltip": {
 				"title": "연합 P2P 설정",
 				"tip": "연합 P2P 설정"

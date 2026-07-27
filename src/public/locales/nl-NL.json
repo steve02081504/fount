@@ -1575,6 +1575,9 @@
 				"tip": "Vertaal- en federatieve P2P-instellingen"
 			},
 			"prefsSubtitle": "Vertaal- en federatieverbinding",
+			"prefsNav": {
+				"aria-label": "Voorkeur partitie"
+			},
 			"federationTooltip": {
 				"title": "Federatieve P2P-instellingen",
 				"tip": "Federatieve P2P-instellingen"

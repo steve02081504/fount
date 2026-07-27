@@ -1575,6 +1575,9 @@
 				"tip": "Þýðing og sameinuð P2P stillingar"
 			},
 			"prefsSubtitle": "Þýðing og sambandstenging",
+			"prefsNav": {
+				"aria-label": "Forgangs skipting"
+			},
 			"federationTooltip": {
 				"title": "Sambands-P2P-stillingar",
 				"tip": "Sambands-P2P-stillingar"

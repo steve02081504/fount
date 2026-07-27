@@ -1575,6 +1575,9 @@
 				"tip": "Paramètres de traduction et de P2P fédéré"
 			},
 			"prefsSubtitle": "Connexion traduction et fédération",
+			"prefsNav": {
+				"aria-label": "Partition de préférence"
+			},
 			"federationTooltip": {
 				"title": "Paramètres P2P fédérés",
 				"tip": "Paramètres P2P fédérés"

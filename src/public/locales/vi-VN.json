@@ -1575,6 +1575,9 @@
 				"tip": "Cài đặt dịch thuật và P2P liên kết"
 			},
 			"prefsSubtitle": "Dịch thuật và kết nối liên đoàn",
+			"prefsNav": {
+				"aria-label": "Phân vùng ưu tiên"
+			},
 			"federationTooltip": {
 				"title": "Cài đặt P2P liên kết",
 				"tip": "Cài đặt P2P liên kết"
