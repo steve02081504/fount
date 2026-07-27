@@ -306,8 +306,14 @@ export async function refreshHubAfterSfwChange() {
 		await hydrateAuthorLabels(messageList)
 	}
 	if (memberList instanceof HTMLElement) {
-		memberList.querySelectorAll('[data-avatar-for]').forEach(av => { delete av.dataset.avatarLoaded })
-		applyAvatarsTo(memberList)
+		if (store.context.currentState) {
+			const { renderMemberList } = await import('./sidebar/index.mjs')
+			await renderMemberList(store.context.currentState)
+		}
+		else {
+			memberList.querySelectorAll('[data-avatar-for]').forEach(av => { delete av.dataset.avatarLoaded })
+			applyAvatarsTo(memberList)
+		}
 	}
 
 	const { refreshViewerHubPresentation } = await import('./init.mjs')

@@ -316,12 +316,15 @@ function persistActiveMediaFields() {
 	const avatarValue = avatarUrl instanceof HTMLInputElement ? avatarUrl.value.trim() : ''
 	const bannerValue = bannerUrl instanceof HTMLInputElement ? bannerUrl.value.trim() : ''
 	const avatarUpload = editDialog?.querySelector('#profile-edit-avatar-upload')
+	const bannerUpload = editDialog?.querySelector('#profile-edit-banner-upload')
 	const hasPendingAvatar = avatarUpload instanceof HTMLInputElement && !!avatarUpload.files?.[0]
+	const hasPendingBanner = bannerUpload instanceof HTMLInputElement && !!bannerUpload.files?.[0]
 	if (editingSfwMode) {
 		// 空或与普通一致 → 不存 SFW 槽（回退普通）；有未保存上传时保留预览
 		const nextAvatar = hasPendingAvatar && !avatarValue ? editingSfwAvatarPreview : avatarValue
+		const nextBanner = hasPendingBanner && !bannerValue ? editingSfwBannerPreview : bannerValue
 		editingSfwAvatarPreview = pruneSfwString(nextAvatar, editingAvatarPreview) || ''
-		editingSfwBannerPreview = pruneSfwString(bannerValue, editingBannerCleared ? '' : editingBannerPreview) || ''
+		editingSfwBannerPreview = pruneSfwString(nextBanner, editingBannerCleared ? '' : editingBannerPreview) || ''
 	}
 	else {
 		editingAvatarPreview = hasPendingAvatar && !avatarValue ? editingAvatarPreview : avatarValue

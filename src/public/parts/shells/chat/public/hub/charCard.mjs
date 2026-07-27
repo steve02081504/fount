@@ -135,7 +135,9 @@ async function renderCharInfoCardInner(name, details, { active }) {
 		 */
 		const repaint = async () => {
 			if (generation !== charInfoCardRenderGeneration) return
-			await renderCharInfoCardInner(name, await getCharDetails(name), { active })
+			const details = await getCharDetails(name)
+			if (generation !== charInfoCardRenderGeneration) return
+			await renderCharInfoCardInner(name, details, { active })
 		}
 		await wireEntityProfileCardActions(card, entity, {
 			profile,
