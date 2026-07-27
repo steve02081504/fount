@@ -172,21 +172,21 @@ export async function buildPostCard(item, options = {}) {
 	const treatAsOwn = canManage
 	const blockButton = treatAsOwn
 		? ''
-		: `<button type="button" class="danger-item" data-block="${item.entityHash}"><span class="icon icon-block" aria-hidden="true"></span><span data-i18n="social.actions.block"></span></button>`
+		: `<li><button type="button" class="text-error" data-block="${item.entityHash}"><span class="icon icon-block" aria-hidden="true"></span><span data-i18n="social.actions.block"></span></button></li>`
 	const hideButton = treatAsOwn
 		? ''
-		: `<button type="button" data-hide="${item.entityHash}"><span class="icon icon-hide" aria-hidden="true"></span><span data-i18n="social.actions.hide"></span></button>`
+		: `<li><button type="button" data-hide="${item.entityHash}"><span class="icon icon-hide" aria-hidden="true"></span><span data-i18n="social.actions.hide"></span></button></li>`
 	const muteButton = treatAsOwn
 		? ''
-		: `<button type="button" data-mute="${item.entityHash}"><span class="icon icon-mute" aria-hidden="true"></span><span data-i18n="social.actions.mute"></span></button>`
+		: `<li><button type="button" data-mute="${item.entityHash}"><span class="icon icon-mute" aria-hidden="true"></span><span data-i18n="social.actions.mute"></span></button></li>`
 	const deleteButton = canDelete
-		? `<button type="button" class="danger-item" data-delete="${item.postId}" data-delete-entity="${item.entityHash}"><span class="icon icon-delete" aria-hidden="true"></span><span data-i18n="social.actions.delete"></span></button>`
+		? `<li><button type="button" class="text-error" data-delete="${item.postId}" data-delete-entity="${item.entityHash}"><span class="icon icon-delete" aria-hidden="true"></span><span data-i18n="social.actions.delete"></span></button></li>`
 		: ''
 	const editButton = canManage
-		? `<button type="button" data-edit="${actionKey}"><span class="icon icon-edit" aria-hidden="true"></span><span data-i18n="social.actions.edit"></span></button>`
+		? `<li><button type="button" data-edit="${actionKey}"><span class="icon icon-edit" aria-hidden="true"></span><span data-i18n="social.actions.edit"></span></button></li>`
 		: ''
 	const editHistoryButton = canManage && item.post?.revisions?.length
-		? `<button type="button" data-edit-history="${actionKey}"><span class="icon icon-history" aria-hidden="true"></span><span data-i18n="social.post.editHistory"></span></button>`
+		? `<li><button type="button" data-edit-history="${actionKey}"><span class="icon icon-history" aria-hidden="true"></span><span data-i18n="social.post.editHistory"></span></button></li>`
 		: ''
 
 	const topNote = item.communityNote?.topNote

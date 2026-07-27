@@ -43,7 +43,7 @@ export async function handleComposerFeedClick(target) {
 	if (target.closest('#pollComposerToggle')) {
 		const panel = document.getElementById('pollComposerPanel')
 		panel?.classList.toggle('hidden')
-		document.getElementById('pollComposerToggle')?.classList.toggle('active', !panel?.classList.contains('hidden'))
+		document.getElementById('pollComposerToggle')?.classList.toggle('btn-active', !panel?.classList.contains('hidden'))
 	}
 	if (target.closest('#composerCwToggle'))
 		setComposerContentWarningOpen()
@@ -58,7 +58,7 @@ export async function handleComposerFeedClick(target) {
 			? { options, multi, deadline: deadlineRaw ? new Date(deadlineRaw).toISOString() : null }
 			: null
 		document.getElementById('pollComposerPanel')?.classList.add('hidden')
-		document.getElementById('pollComposerToggle')?.classList.toggle('active', Boolean(state.pendingPoll))
+		document.getElementById('pollComposerToggle')?.classList.toggle('btn-active', Boolean(state.pendingPoll))
 	}
 	if (target.closest('#notificationsMarkAllButton'))
 		void markNotificationsSeen()

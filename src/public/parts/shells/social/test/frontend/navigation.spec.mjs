@@ -38,6 +38,17 @@ test.describe('Social navigation', () => {
 		await expect(page).toHaveURL(/#explore$/)
 	})
 
+	test('mobile dock navigates views', async ({ page }) => {
+		await page.setViewportSize({ width: 390, height: 844 })
+		const dock = page.locator('nav.mobile-tabbar.dock')
+		await expect(dock).toBeVisible()
+		await dock.locator('.nav-btn[data-view="explore"]').click()
+		await expect(page.locator('#exploreView')).toBeVisible()
+		await expect(page).toHaveURL(/#explore$/)
+		await dock.locator('.nav-btn[data-view="feed"]').click()
+		await expect(page.locator('#feedView')).toBeVisible()
+	})
+
 	test('videos view opens fullscreen and compose returns to feed', async ({ page }) => {
 		const feedPromise = page.waitForResponse(res => {
 			if (res.request().method() !== 'GET' || res.status() !== 200) return false

@@ -148,19 +148,6 @@ export async function handlePostProfileActionsClick(target) {
 		return true
 	}
 
-	const moreToggle = target.closest('[data-more-toggle]')
-	if (moreToggle instanceof HTMLElement && moreToggle.dataset.moreToggle) {
-		const card = moreToggle.closest('.post-card')
-		const menu = card?.querySelector(`[data-more-menu="${CSS.escape(moreToggle.dataset.moreToggle)}"]`)
-			|| document.querySelector(`[data-more-menu="${CSS.escape(moreToggle.dataset.moreToggle)}"]`)
-		if (menu instanceof HTMLElement) {
-			const willOpen = menu.classList.contains('hidden')
-			closePostMoreMenus(willOpen ? menu : null)
-			menu.classList.toggle('hidden')
-		}
-		return true
-	}
-
 	const deleteButton = target.closest('button[data-delete]')
 	if (deleteButton instanceof HTMLElement && deleteButton.dataset.delete) {
 		const card = deleteButton.closest('.post-card')

@@ -142,7 +142,7 @@ export function setComposerAdvancedOpen(open) {
 	if (!panel) return
 	const next = open ?? panel.classList.contains('hidden')
 	panel.classList.toggle('hidden', !next)
-	document.getElementById('composerAdvancedToggle')?.classList.toggle('active', next)
+	document.getElementById('composerAdvancedToggle')?.classList.toggle('btn-active', next)
 }
 
 /**
@@ -155,7 +155,7 @@ export function setComposerContentWarningOpen(open) {
 	if (!(input instanceof HTMLInputElement)) return
 	const next = open ?? input.classList.contains('hidden')
 	input.classList.toggle('hidden', !next)
-	document.getElementById('composerCwToggle')?.classList.toggle('active', next)
+	document.getElementById('composerCwToggle')?.classList.toggle('btn-active', next)
 	if (next) input.focus()
 	else input.value = ''
 }
@@ -293,7 +293,7 @@ export async function clearComposer(options = {}) {
 	state.pendingPoll = null
 	if (!options.keepDraftId)
 		state.activeDraftId = null
-	document.getElementById('pollComposerToggle')?.classList.remove('active')
+	document.getElementById('pollComposerToggle')?.classList.remove('btn-active')
 	document.getElementById('pollComposerPanel')?.classList.add('hidden')
 	const pollOptions = document.getElementById('pollComposerOptions')
 	if (pollOptions instanceof HTMLTextAreaElement) pollOptions.value = ''
@@ -391,7 +391,7 @@ export async function loadDraftIntoComposer(row) {
 
 	if (body.poll && Array.isArray(body.poll.options) && body.poll.options.length >= 2) {
 		state.pendingPoll = structuredClone(body.poll)
-		document.getElementById('pollComposerToggle')?.classList.add('active')
+		document.getElementById('pollComposerToggle')?.classList.add('btn-active')
 		const pollOptions = document.getElementById('pollComposerOptions')
 		if (pollOptions instanceof HTMLTextAreaElement)
 			pollOptions.value = body.poll.options.join('\n')

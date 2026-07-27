@@ -1,8 +1,10 @@
-<section class="settings-card card">
-	<h3 class="settings-card-title" data-i18n="${titleKey}"></h3>
-	<p class="settings-hint" data-i18n="${hintKey}"></p>
-	<label class="settings-toggle">
-		<input type="checkbox" id="${inputId}" ${checkedAttr} />
-		<span data-i18n="${labelKey}"></span>
-	</label>
+<section class="settings-card card bg-base-200 shadow-sm">
+	<div class="card-body gap-2">
+		<h3 class="card-title text-base" data-i18n="${titleKey}"></h3>
+		<p class="settings-hint text-sm opacity-70" data-i18n="${hintKey}"></p>
+		<label class="label cursor-pointer justify-start gap-3">
+			<input type="checkbox" class="toggle" id="${inputId}" ${checkedAttr} />
+			<span data-i18n="${labelKey}"></span>
+		</label>
+	</div>
 </section>

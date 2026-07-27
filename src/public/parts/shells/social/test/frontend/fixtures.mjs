@@ -136,7 +136,7 @@ export async function openHome(page, baseUrl) {
  */
 export async function openPostMoreMenu(card) {
 	await card.locator('[data-more-toggle]').click()
-	await expect(card.locator('.post-more-menu')).not.toHaveClass(/hidden/)
+	await expect(card.locator('details.post-more-dropdown')).toHaveAttribute('open', '')
 }
 
 /**

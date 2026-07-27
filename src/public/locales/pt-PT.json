@@ -2198,6 +2198,7 @@
 			"reputationSlashAlert": "A reputação do membro ${target}… é lembrada da dedução.",
 			"profileEdit": {
 				"previewHint": "As alterações aparecem imediatamente na visualização e são salvas e sincronizadas no Chat e nas redes sociais.",
+				"sfwMode": "Conteúdo Seguro",
 				"livePreview": "Visualização ao vivo",
 				"languageVersion": "Versão do idioma",
 				"localeHint": "Clique no rótulo para alternar ou editar o código; pressione Enter na caixa de entrada no final para copiá-lo para um novo idioma.",
@@ -3785,7 +3786,8 @@
 			"safetyTitle": "Segurança e blindagem",
 			"safetyHint": "Gira listas de bloqueados e ocultos.",
 			"mutedKeywords": {
-				"placeholder": "Insira palavras-chave ou #tags"
+				"placeholder": "Insira palavras-chave ou #tags",
+				"aria-label": "Inserir palavra-chave ou etiqueta"
 			},
 			"taste": {
 				"rebuild": "Reconstruir preferências",
@@ -3908,14 +3910,9 @@
 			"replayDivider": "Terminada a leitura, navegue novamente",
 			"trending": {
 				"title": "Tópicos quentes",
-				"tabsLabel": {
-					"aria-label": "Âmbito das tendências"
-				},
 				"postCount": {
 					"title": "${n} postagens"
 				},
-				"scopeLocal": "Máquina local",
-				"scopeNearby": "Próximo",
 				"empty": "Ainda não há tópicos quentes",
 				"aria-label": "Tópicos quentes"
 			}
@@ -4200,6 +4197,7 @@
 			"apply": "Aplicar votação",
 			"closed": "A votação terminou",
 			"deadline": "Prazo: ${deadline}",
+			"deadlineLabel": "Prazo de votação",
 			"options": {
 				"placeholder": "Uma opção por linha (mínimo 2 itens)"
 			}
@@ -4282,6 +4280,10 @@
 	"cabinet": {
 		"title": "Armário",
 		"description": "Armários P2P pessoais e partilhados",
+		"entries": {
+			"title": "Lista de itens",
+			"aria-label": "Lista de itens"
+		},
 		"openCabinets": {
 			"title": "Abrir lista de armários",
 			"aria-label": "Abrir lista de armários"
@@ -4332,6 +4334,10 @@
 		"created": "Criar: ${stamp}",
 		"modified": "Modificar: ${stamp}",
 		"statusCount": "${count} itens, ${selected} selecionados",
+		"newCabinet": {
+			"title": "Novo armário",
+			"aria-label": "Novo armário"
+		},
 		"newCabinetPrompt": "Nome do novo armário",
 		"newFolderPrompt": "Novo nome de pasta",
 		"renamePrompt": "Novo nome",

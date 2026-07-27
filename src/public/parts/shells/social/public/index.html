@@ -25,7 +25,7 @@
 	<div id="shell" class="shell">
 		<nav class="side-nav" data-i18n="social.nav.side">
 			<div class="side-nav-brand">
-				<h1 class="brand-title" data-i18n="social.title"></h1>
+				<p class="brand-title" aria-hidden="true" data-i18n="social.title"></p>
 			</div>
 			<div class="side-nav-links">
 				<button type="button" data-view="feed" class="nav-btn btn btn-ghost justify-start active" data-i18n="social.nav.feed">
@@ -69,6 +69,7 @@
 		</nav>
 
 		<main class="timeline-col">
+			<h1 class="sr-only" data-i18n="social.title"></h1>
 			<section id="composer" class="composer">
 				<div class="composer-inner">
 					<div id="viewerComposerAvatar" class="composer-avatar-slot" aria-hidden="true"></div>
@@ -77,19 +78,22 @@
 						<div id="groupRefPreview" class="group-ref-preview hidden"></div>
 						<textarea id="postText" rows="3" data-i18n="social.composer" placeholder=""></textarea>
 						<input id="postContentWarning" type="text" class="input input-bordered input-sm composer-cw hidden" maxlength="200" data-i18n="social.composer.contentWarning" placeholder="" />
-						<div id="pollComposerPanel" class="composer-panel poll-composer hidden">
+						<div id="pollComposerPanel" class="composer-panel card card-compact bg-base-200 shadow-sm poll-composer hidden">
 							<textarea id="pollComposerOptions" rows="3" class="textarea textarea-bordered textarea-sm poll-composer-options" data-i18n="social.poll.options" placeholder=""></textarea>
-							<div class="poll-composer-row">
-								<label class="composer-check">
+							<div class="poll-composer-row flex flex-wrap items-center gap-2">
+								<label class="label cursor-pointer justify-start gap-2 px-0">
 									<input id="pollComposerMulti" type="checkbox" class="checkbox checkbox-sm" />
-									<span data-i18n="social.poll.multi"></span>
+									<span class="label-text" data-i18n="social.poll.multi"></span>
 								</label>
-								<input id="pollComposerDeadline" type="datetime-local" class="input input-bordered input-sm" />
+								<label class="flex flex-col gap-0.5 text-xs">
+									<span data-i18n="social.poll.deadlineLabel"></span>
+									<input id="pollComposerDeadline" type="datetime-local" class="input input-bordered input-sm" />
+								</label>
 								<button type="button" id="pollComposerApply" class="btn btn-primary btn-xs" data-i18n="social.poll.apply"></button>
 							</div>
 						</div>
 						<div id="mediaPreview" class="media-preview hidden"></div>
-						<div id="composerAdvancedPanel" class="composer-panel composer-advanced hidden">
+						<div id="composerAdvancedPanel" class="composer-panel card card-compact bg-base-200 shadow-sm composer-advanced hidden">
 							<label class="composer-field hidden" data-visibility-field>
 								<span class="composer-field-label" data-i18n="social.composer.visibility.allowLabel"></span>
 								<input data-visibility-allow type="text" class="input input-bordered input-sm" data-i18n="social.composer.visibility.allow" placeholder="" />
@@ -125,9 +129,9 @@
 								<span class="composer-field-label" data-i18n="social.profile.albums.pickerLabel"></span>
 								<select id="postAlbumSelect" class="select select-bordered select-sm" multiple size="3"></select>
 							</label>
-							<label class="composer-check composer-advanced-full">
+							<label class="label cursor-pointer justify-start gap-2 px-0 composer-advanced-full">
 								<input id="postSensitiveMedia" type="checkbox" class="checkbox checkbox-sm" />
-								<span data-i18n="social.composer.sensitiveMedia"></span>
+								<span class="label-text" data-i18n="social.composer.sensitiveMedia"></span>
 							</label>
 						</div>
 						<div class="composer-toolbar">
@@ -145,7 +149,7 @@
 								<button id="composerCwToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.cwToggle">
 									<span class="icon icon-content-warning" aria-hidden="true"></span>
 								</button>
-								<select id="postVisibility" data-visibility-select class="select select-bordered select-sm composer-select composer-visibility" data-i18n="social.composer.visibility">
+								<select id="postVisibility" data-visibility-select class="select select-bordered select-sm composer-visibility rounded-full max-w-40" data-i18n="social.composer.visibility">
 									<option value="public" data-i18n="social.composer.visibility.public"></option>
 									<option value="unlisted" data-i18n="social.composer.visibility.unlisted"></option>
 									<option value="followers" data-i18n="social.composer.visibility.followers"></option>
@@ -159,8 +163,8 @@
 								</button>
 								<input id="postLocale" type="hidden" value="zh-CN" data-i18n="social.composer.locale" />
 							</div>
-							<button id="saveDraftButton" type="button" class="composer-draft-btn btn btn-ghost btn-sm" data-i18n="social.composer.saveDraft"></button>
-							<button id="postButton" type="button" class="composer-post-btn btn btn-primary btn-sm" data-i18n="social.composer.publish"></button>
+							<button id="saveDraftButton" type="button" class="btn btn-ghost btn-sm" data-i18n="social.composer.saveDraft"></button>
+							<button id="postButton" type="button" class="btn btn-primary btn-sm" data-i18n="social.composer.publish"></button>
 						</div>
 					</div>
 				</div>
@@ -169,18 +173,18 @@
 			<section id="feedView" class="view">
 				<header class="view-header">
 					<h2 class="view-title" data-i18n="social.nav.feed.title"></h2>
-					<div class="feed-ranking-tabs" role="tablist" data-i18n="social.feed.tabsLabel">
-						<button type="button" class="btn btn-ghost btn-xs active" role="tab" aria-selected="true" data-feed-ranking="latest" data-i18n="social.feed.tabLatest"></button>
-						<button type="button" class="btn btn-ghost btn-xs" role="tab" aria-selected="false" data-feed-ranking="for_you" data-i18n="social.feed.tabForYou"></button>
+					<div class="feed-ranking-tabs tabs tabs-box tabs-xs" role="tablist" data-i18n="social.feed.tabsLabel">
+						<button type="button" class="tab tab-active" role="tab" aria-selected="true" data-feed-ranking="latest" data-i18n="social.feed.tabLatest"></button>
+						<button type="button" class="tab" role="tab" aria-selected="false" data-feed-ranking="for_you" data-i18n="social.feed.tabForYou"></button>
 					</div>
-					<button type="button" id="feedSearchOpenButton" class="view-header-btn btn btn-ghost btn-sm btn-circle mobile-only-btn" data-i18n="social.search.open">
+					<button type="button" id="feedSearchOpenButton" class="btn btn-ghost btn-sm btn-circle mobile-only-btn" data-i18n="social.search.open">
 						<span class="icon icon-search" aria-hidden="true"></span>
 					</button>
-					<button type="button" id="feedRefreshButton" class="view-header-btn btn btn-ghost btn-sm btn-circle tooltip" data-i18n="social.feed.refresh">
+					<button type="button" id="feedRefreshButton" class="btn btn-ghost btn-sm btn-circle tooltip" data-i18n="social.feed.refresh">
 						<span class="icon icon-refresh" aria-hidden="true"></span>
 					</button>
 				</header>
-				<div id="feedList" class="feed-list"></div>
+				<div id="feedList" class="feed-list flex flex-col"></div>
 			</section>
 
 			<section id="exploreView" class="view hidden">
@@ -215,13 +219,13 @@
 				<section class="explore-section" aria-labelledby="explorePostsTitle">
 					<div class="explore-section-header">
 						<h3 id="explorePostsTitle" class="section-title" data-i18n="social.explore.posts"></h3>
-						<label class="explore-media-toggle">
-							<input type="checkbox" id="exploreMediaOnly" />
+						<label class="label cursor-pointer justify-start gap-2 text-sm font-semibold">
+							<input type="checkbox" id="exploreMediaOnly" class="toggle toggle-xs" />
 							<span class="icon icon-media" aria-hidden="true"></span>
 							<span data-i18n="social.explore.mediaOnly"></span>
 						</label>
 					</div>
-					<div id="explorePostList" class="explore-post-list"></div>
+					<div id="explorePostList" class="explore-post-list flex flex-col"></div>
 				</section>
 			</section>
 
@@ -232,20 +236,20 @@
 						<button type="button" id="notificationsMarkAllButton" class="view-header-text-btn btn btn-ghost btn-sm" data-i18n="social.notifications.markAllRead"></button>
 					</div>
 				</header>
-				<div class="inbox-filter-tabs" role="tablist" data-i18n="social.inbox.filtersLabel">
-					<button type="button" class="inbox-filter-tab btn btn-ghost btn-xs active" data-notif-filter="all" data-i18n="social.inbox.tabs.all"></button>
-					<button type="button" class="inbox-filter-tab btn btn-ghost btn-xs" data-notif-filter="mention" data-i18n="social.inbox.tabs.mention"></button>
-					<button type="button" class="inbox-filter-tab btn btn-ghost btn-xs" data-notif-filter="reply" data-i18n="social.inbox.tabs.reply"></button>
-					<button type="button" class="inbox-filter-tab btn btn-ghost btn-xs" data-notif-filter="like" data-i18n="social.inbox.tabs.like"></button>
-					<button type="button" class="inbox-filter-tab btn btn-ghost btn-xs" data-notif-filter="follow" data-i18n="social.inbox.tabs.follow"></button>
-					<button type="button" class="inbox-filter-tab btn btn-ghost btn-xs" data-notif-filter="repost" data-i18n="social.inbox.tabs.repost"></button>
+				<div class="inbox-filter-tabs tabs tabs-box tabs-xs flex-wrap" role="tablist" data-i18n="social.inbox.filtersLabel">
+					<button type="button" class="inbox-filter-tab tab tab-active" role="tab" aria-selected="true" data-notif-filter="all" data-i18n="social.inbox.tabs.all"></button>
+					<button type="button" class="inbox-filter-tab tab" role="tab" aria-selected="false" data-notif-filter="mention" data-i18n="social.inbox.tabs.mention"></button>
+					<button type="button" class="inbox-filter-tab tab" role="tab" aria-selected="false" data-notif-filter="reply" data-i18n="social.inbox.tabs.reply"></button>
+					<button type="button" class="inbox-filter-tab tab" role="tab" aria-selected="false" data-notif-filter="like" data-i18n="social.inbox.tabs.like"></button>
+					<button type="button" class="inbox-filter-tab tab" role="tab" aria-selected="false" data-notif-filter="follow" data-i18n="social.inbox.tabs.follow"></button>
+					<button type="button" class="inbox-filter-tab tab" role="tab" aria-selected="false" data-notif-filter="repost" data-i18n="social.inbox.tabs.repost"></button>
 				</div>
 			</section>
 
 			<section id="savedView" class="view hidden">
 				<header class="view-header">
 					<h2 class="view-title" data-i18n="social.nav.saved.title"></h2>
-					<button type="button" id="createFolderButton" class="view-header-btn" data-i18n="social.saved.createFolder">
+					<button type="button" id="createFolderButton" class="btn btn-ghost btn-sm btn-circle" data-i18n="social.saved.createFolder">
 						<span class="icon icon-folder-plus" aria-hidden="true"></span>
 					</button>
 				</header>
@@ -261,7 +265,7 @@
 
 			<section id="settingsView" class="view hidden">
 				<header class="view-header">
-					<button type="button" class="view-header-btn btn btn-ghost btn-sm btn-circle" data-view="profile" data-i18n="social.settings.back">
+					<button type="button" class="btn btn-ghost btn-sm btn-circle" data-view="profile" data-i18n="social.settings.back">
 						<span class="icon icon-home" aria-hidden="true"></span>
 					</button>
 					<h2 class="view-title" data-i18n="social.settings.title"></h2>
@@ -299,7 +303,7 @@
 						<button type="button" id="searchViewButton" class="btn btn-primary btn-sm" data-i18n="social.search.submit"></button>
 					</div>
 				</div>
-				<div id="searchViewResults" class="feed-list"></div>
+				<div id="searchViewResults" class="feed-list flex flex-col"></div>
 			</section>
 
 			<section id="topicView" class="view hidden">
@@ -307,7 +311,7 @@
 					<h2 class="view-title topic-view-title">#</h2>
 					<button type="button" id="topicFollowButton" class="btn btn-primary btn-sm" data-i18n="social.topic.follow"></button>
 				</header>
-				<div id="topicPostList" class="feed-list"></div>
+				<div id="topicPostList" class="feed-list flex flex-col"></div>
 			</section>
 
 			<section id="postDetailView" class="view hidden"></section>
@@ -346,7 +350,7 @@
 		</main>
 
 		<section id="videosView" class="view hidden" tabindex="-1" data-i18n="social.video.view">
-			<button type="button" class="view-back-btn" id="videosViewBackButton" data-i18n="social.video.back">
+			<button type="button" class="view-back-btn btn btn-circle btn-ghost" id="videosViewBackButton" data-i18n="social.video.back">
 				<span class="icon icon-home" aria-hidden="true"></span>
 			</button>
 			<div class="vertical-snap-view" id="videoSnapContainer"></div>
@@ -354,7 +358,7 @@
 
 		<section id="liveView" class="view hidden" aria-label="Live streams">
 			<div class="live-top-bar">
-				<button type="button" class="view-back-btn" id="liveViewBackButton" data-i18n="social.live.back">
+				<button type="button" class="view-back-btn btn btn-circle btn-ghost" id="liveViewBackButton" data-i18n="social.live.back">
 					<span class="icon icon-home" aria-hidden="true"></span>
 				</button>
 				<div id="liveScopeTabs" class="live-scope-tabs" role="tablist">
@@ -381,39 +385,47 @@
 			</div>
 		</aside>
 
-		<nav class="mobile-tabbar bg-base-100 border-t border-base-300" data-i18n="social.nav.mobile">
-			<button type="button" data-view="feed" class="nav-btn btn btn-ghost btn-sm active" data-i18n="social.nav.feed">
+		<nav class="mobile-tabbar dock dock-sm" data-i18n="social.nav.mobile">
+			<button type="button" data-view="feed" class="nav-btn dock-active" data-i18n="social.nav.feed">
 				<span class="icon icon-home" aria-hidden="true"></span>
+				<span class="dock-label" data-i18n="social.nav.feed.title"></span>
 			</button>
-			<button type="button" data-view="explore" class="nav-btn btn btn-ghost btn-sm" data-i18n="social.nav.explore">
+			<button type="button" data-view="explore" class="nav-btn" data-i18n="social.nav.explore">
 				<span class="icon icon-explore" aria-hidden="true"></span>
+				<span class="dock-label" data-i18n="social.nav.explore.title"></span>
 			</button>
-			<button type="button" data-view="notifications" class="nav-btn btn btn-ghost btn-sm" data-i18n="social.nav.notifications">
+			<button type="button" data-view="notifications" class="nav-btn" data-i18n="social.nav.notifications">
 				<span class="icon icon-bell" aria-hidden="true"></span>
 				<span id="mobileNotificationsBadge" class="nav-badge badge badge-primary badge-xs hidden"></span>
+				<span class="dock-label" data-i18n="social.nav.notifications.title"></span>
 			</button>
-			<button type="button" data-view="saved" class="nav-btn btn btn-ghost btn-sm" data-i18n="social.nav.saved">
+			<button type="button" data-view="saved" class="nav-btn" data-i18n="social.nav.saved">
 				<span class="icon icon-bookmark" aria-hidden="true"></span>
+				<span class="dock-label" data-i18n="social.nav.saved.title"></span>
 			</button>
-			<button type="button" data-view="profile" class="nav-btn btn btn-ghost btn-sm" data-i18n="social.nav.profile">
+			<button type="button" data-view="profile" class="nav-btn" data-i18n="social.nav.profile">
 				<span class="icon icon-user" aria-hidden="true"></span>
+				<span class="dock-label" data-i18n="social.nav.profile.title"></span>
 			</button>
 		</nav>
 
-		<button type="button" id="composeFab" class="compose-fab btn btn-primary btn-circle" data-i18n="social.composer.fab">
-			<span class="icon icon-compose" aria-hidden="true"></span>
-		</button>
+		<div class="fab compose-fab-wrap">
+			<button type="button" id="composeFab" class="btn btn-primary btn-lg btn-circle" data-i18n="social.composer.fab">
+				<span class="icon icon-compose" aria-hidden="true"></span>
+			</button>
+		</div>
 
-		<div id="saveModal" class="save-modal hidden" role="dialog" aria-modal="true" aria-labelledby="saveModalTitle">
-			<div class="save-modal-card card bg-base-200 shadow-xl">
-				<h3 id="saveModalTitle" data-i18n="social.saved.pickFolderTitle"></h3>
+		<dialog id="saveModal" class="modal" aria-labelledby="saveModalTitle">
+			<div class="modal-box space-y-3">
+				<h3 id="saveModalTitle" class="font-bold text-lg" data-i18n="social.saved.pickFolderTitle"></h3>
 				<select id="saveFolderSelect" class="select select-bordered w-full" data-i18n="social.saved.folderSelect"></select>
-				<div class="save-modal-actions">
-					<button type="button" id="saveConfirmButton" class="btn btn-primary btn-sm" data-i18n="social.saved.confirm"></button>
-					<button type="button" id="saveCancelButton" class="btn btn-ghost btn-sm link-btn" data-i18n="social.saved.cancel"></button>
+				<div class="modal-action">
+					<form method="dialog"><button type="submit" id="saveCancelButton" class="btn" data-i18n="social.saved.cancel"></button></form>
+					<button type="button" id="saveConfirmButton" class="btn btn-primary" data-i18n="social.saved.confirm"></button>
 				</div>
 			</div>
-		</div>
+			<form method="dialog" class="modal-backdrop"><button type="submit"></button></form>
+		</dialog>
 	</div>
 	<script type="module" src="/parts/shells:social/index.mjs"></script>
 </body>

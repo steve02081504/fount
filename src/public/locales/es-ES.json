@@ -2198,6 +2198,7 @@
 			"reputationSlashAlert": "La reputación del miembro ${target}… se recuerda de la deducción.",
 			"profileEdit": {
 				"previewHint": "Los cambios aparecen inmediatamente en la vista previa y se guardan y sincronizan en Chat y Social.",
+				"sfwMode": "Contenido seguro",
 				"livePreview": "Vista previa en vivo",
 				"languageVersion": "Versión de idioma",
 				"localeHint": "Haz clic en la etiqueta para cambiar o editar el código; presione Entrar en el cuadro de entrada al final para copiarlo a un nuevo idioma.",
@@ -3785,7 +3786,8 @@
 			"safetyTitle": "Seguridad y blindaje",
 			"safetyHint": "Administrar listas bloqueadas y ocultas.",
 			"mutedKeywords": {
-				"placeholder": "Introduzca palabras clave o #etiquetas"
+				"placeholder": "Introduzca palabras clave o #etiquetas",
+				"aria-label": "Introducir palabra clave o etiqueta"
 			},
 			"taste": {
 				"rebuild": "Reconstruir preferencias",
@@ -3908,14 +3910,9 @@
 			"replayDivider": "Lectura terminada, navegar de nuevo",
 			"trending": {
 				"title": "temas candentes",
-				"tabsLabel": {
-					"aria-label": "Alcance de tendencias"
-				},
 				"postCount": {
 					"title": "${n} publicaciones"
 				},
-				"scopeLocal": "local",
-				"scopeNearby": "cercano",
 				"empty": "Aún no hay temas candentes",
 				"aria-label": "temas candentes"
 			}
@@ -4200,6 +4197,7 @@
 			"apply": "Aplicar votación",
 			"closed": "La votación ha terminado.",
 			"deadline": "Plazo: ${deadline}",
+			"deadlineLabel": "Fecha límite de votación",
 			"options": {
 				"placeholder": "Una opción por línea (mínimo 2 artículos)"
 			}
@@ -4282,6 +4280,10 @@
 	"cabinet": {
 		"title": "archivo",
 		"description": "Archivoes personales y compartidos P2P",
+		"entries": {
+			"title": "Lista de elementos",
+			"aria-label": "Lista de elementos"
+		},
 		"openCabinets": {
 			"title": "Abrir lista de archivoes",
 			"aria-label": "Abrir lista de archivoes"
@@ -4332,6 +4334,10 @@
 		"created": "Crear: ${stamp}",
 		"modified": "Modificar: ${stamp}",
 		"statusCount": "${count} artículos, ${selected} seleccionado",
+		"newCabinet": {
+			"title": "Nuevo archivo",
+			"aria-label": "Nuevo archivo"
+		},
 		"newCabinetPrompt": "Nuevo nombre del archivo",
 		"newFolderPrompt": "Nuevo nombre de carpeta",
 		"renamePrompt": "nuevo nombre",

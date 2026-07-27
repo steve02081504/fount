@@ -2198,6 +2198,7 @@
 			"reputationSlashAlert": "De reputatie van lid ${target}… wordt herinnerd aan de aftrek.",
 			"profileEdit": {
 				"previewHint": "Wijzigingen verschijnen onmiddellijk in het voorbeeld en worden opgeslagen en gesynchroniseerd via Chat en Sociaal.",
+				"sfwMode": "Veilige inhoud",
 				"livePreview": "Live-voorbeeld",
 				"languageVersion": "Taalversie",
 				"localeHint": "Klik op het label om de code te wijzigen of te bewerken; druk op Enter in het invoervak ​​aan het einde om het naar een nieuwe taal te kopiëren.",
@@ -3785,7 +3786,8 @@
 			"safetyTitle": "Beveiliging en afscherming",
 			"safetyHint": "Beheer geblokkeerde en verborgen lijsten.",
 			"mutedKeywords": {
-				"placeholder": "Voer trefwoorden of #tags in"
+				"placeholder": "Voer trefwoorden of #tags in",
+				"aria-label": "Trefwoord of tag invoeren"
 			},
 			"taste": {
 				"rebuild": "Voorkeuren opnieuw opbouwen",
@@ -3908,14 +3910,9 @@
 			"replayDivider": "Klaar met lezen, blader opnieuw",
 			"trending": {
 				"title": "Trending",
-				"tabsLabel": {
-					"aria-label": "Trending-bereik"
-				},
 				"postCount": {
 					"title": "${n} berichten"
 				},
-				"scopeLocal": "Lokaal",
-				"scopeNearby": "In de buurt",
 				"empty": "Nog geen actuele onderwerpen",
 				"aria-label": "Trending"
 			}
@@ -4200,6 +4197,7 @@
 			"apply": "Stemmen toepassen",
 			"closed": "Het stemmen is beëindigd",
 			"deadline": "Deadline: ${deadline}",
+			"deadlineLabel": "Stemdeadline",
 			"options": {
 				"placeholder": "Eén optie per regel (minimaal 2 items)"
 			}
@@ -4282,6 +4280,10 @@
 	"cabinet": {
 		"title": "Cabinet",
 		"description": "P2P persoonlijke en gedeelde archiefkasten",
+		"entries": {
+			"title": "Items",
+			"aria-label": "Items"
+		},
 		"openCabinets": {
 			"title": "Archiefkastlijst openen",
 			"aria-label": "Archiefkastlijst openen"
@@ -4332,6 +4334,10 @@
 		"created": "Maken: ${stamp}",
 		"modified": "Wijzigen: ${stamp}",
 		"statusCount": "${count} items, ${selected} geselecteerd",
+		"newCabinet": {
+			"title": "Nieuw Cabinet",
+			"aria-label": "Nieuw Cabinet"
+		},
 		"newCabinetPrompt": "Nieuwe naam Cabinet",
 		"newFolderPrompt": "Nieuwe mapnaam",
 		"renamePrompt": "nieuwe naam",

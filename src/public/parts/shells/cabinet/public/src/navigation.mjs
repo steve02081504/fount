@@ -1,7 +1,8 @@
 /**
  * 柜导航：hash、开柜、列表、面包屑、boot。
  */
-import { confirmI18n, promptI18n } from '/scripts/i18n/index.mjs'
+import { geti18n } from '/scripts/i18n/index.mjs'
+import { confirmAction, promptText } from '/scripts/features/promptDialog.mjs'
 
 import { api, unlockHeaders } from './api.mjs'
 import { promptUnlock } from './entryActions.mjs'
@@ -59,9 +60,11 @@ export function renderCabinetList() {
 		const li = document.createElement('li')
 		const a = document.createElement('a')
 		a.href = `#${locationHashFor(cabinet.cabinet_id)}`
-		a.className = cabinet.cabinet_id === cabinetStore.currentCabinetId ? 'active' : ''
+		a.className = cabinet.cabinet_id === cabinetStore.currentCabinetId ? 'menu-active' : ''
 		const badge = cabinet.type === 'shared' ? '🔗 ' : ''
 		a.textContent = `${badge}${cabinet.name}`
+		if (cabinet.cabinet_id === cabinetStore.currentCabinetId) a.setAttribute('aria-current', 'page')
+		else a.removeAttribute('aria-current')
 		a.addEventListener('click', event => {
 			event.preventDefault()
 			cabinetStore.navStack.length = 0
@@ -88,15 +91,15 @@ async function cabinetContext(cabinet) {
 		await openCabinet(cabinet.cabinet_id)
 		return
 	}
-	const action = await promptI18n('cabinet.cabinetActionPrompt')
+	const action = await promptText(geti18n('cabinet.cabinetActionPrompt') || 'cabinet.cabinetActionPrompt')
 	if (action === 'rename') {
-		const name = await promptI18n('cabinet.renamePrompt', cabinet.name)
+		const name = await promptText(geti18n('cabinet.renamePrompt') || 'cabinet.renamePrompt', cabinet.name)
 		if (!name) return
 		await api('PATCH', `/cabinets/${encodeURIComponent(cabinet.cabinet_id)}`, { name })
 		await refreshCabinets()
 	}
 	else if (action === 'delete') {
-		if (!await confirmI18n('cabinet.confirmDeleteCabinet')) return
+		if (!await confirmAction(geti18n('cabinet.confirmDeleteCabinet') || 'cabinet.confirmDeleteCabinet')) return
 		const wasCurrent = cabinetStore.currentCabinetId === cabinet.cabinet_id
 		await api('DELETE', `/cabinets/${encodeURIComponent(cabinet.cabinet_id)}`)
 		await refreshCabinets()
@@ -107,7 +110,10 @@ async function cabinetContext(cabinet) {
 		}
 	}
 	else if (action === 'visibility') {
-		const visibility = await promptI18n('cabinet.visibilityPrompt', cabinet.visibility?.visibility || 'private')
+		const visibility = await promptText(
+			geti18n('cabinet.visibilityPrompt') || 'cabinet.visibilityPrompt',
+			cabinet.visibility?.visibility || 'private',
+		)
 		if (!visibility) return
 		await api('PATCH', `/cabinets/${encodeURIComponent(cabinet.cabinet_id)}`, { visibility: { visibility } })
 		await refreshCabinets()
@@ -172,9 +178,9 @@ async function renderBreadcrumb() {
 	const { navStack, folderTrail, currentCabinet, currentCabinetId } = cabinetStore
 	if (navStack.length) {
 		const back = document.createElement('li')
-		back.className = 'breadcrumb-back'
 		const button = document.createElement('button')
 		button.type = 'button'
+		button.className = 'btn btn-ghost btn-xs'
 		button.dataset.i18n = 'cabinet.back'
 		button.textContent = '←'
 		button.addEventListener('click', () => {
@@ -194,18 +200,21 @@ async function renderBreadcrumb() {
 		const label = segment.root ? `⌂  ${segment.name}` : segment.name
 		if (isCurrent) {
 			const current = document.createElement('span')
-			current.className = 'breadcrumb-current'
+			current.className = 'breadcrumb-current font-semibold'
 			current.textContent = label
 			current.title = segment.name
 			current.setAttribute('aria-current', 'page')
 			li.appendChild(current)
 		}
 		else {
-			const button = document.createElement('button')
-			button.type = 'button'
+			const button = document.createElement('a')
+			button.href = `#${locationHashFor(currentCabinetId, segment.id)}`
 			button.textContent = label
 			button.title = segment.name
-			button.addEventListener('click', () => void openCabinet(currentCabinetId, segment.id))
+			button.addEventListener('click', event => {
+				event.preventDefault()
+				void openCabinet(currentCabinetId, segment.id)
+			})
 			li.appendChild(button)
 		}
 		ul.appendChild(li)
