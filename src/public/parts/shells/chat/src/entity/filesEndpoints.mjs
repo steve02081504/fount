@@ -6,6 +6,7 @@ import { canReadManifest, canWriteManifestPath } from 'npm:@steve02081504/fount-
 import { loadFileManifest, putFileManifestFromStream, readManifestPlaintextStream } from 'npm:@steve02081504/fount-p2p/files/evfs'
 
 import { applySafeContentHeaders } from '../../../../../../scripts/http_content.mjs'
+import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { isAllowedImageUpload, pickUploadedFile } from '../../../../../../server/web_server/multipart_upload.mjs'
 
 import { entityFileUrl } from './filesUrl.mjs'
@@ -139,20 +140,20 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 		const entityHash = String(req.params.entityHash || '').toLowerCase()
 		const logicalPath = parseEvfsLogicalPath(readWildcardPath(req.params.logicalPath))
 		if (!isEntityHash128(entityHash) || !logicalPath)
-			return res.status(400).json({ error: 'invalid path' })
+			throw httpError(400, 'invalid path')
 
 		const { username } = getUserByReq(req)
 		const file = pickUploadedFile(req, 'file')
-		if (!file) return res.status(400).json({ error: 'No file uploaded' })
+		if (!file) throw httpError(400, 'No file uploaded')
 		if (file.buffer.length > MAX_EVFS_UPLOAD_BYTES)
-			return res.status(413).json({ error: 'file too large' })
+			throw httpError(413, 'file too large')
 
 		const profileMedia = PROFILE_MEDIA[logicalPath]
 		if (profileMedia)
 			return handleProfileMediaUpload(res, username, entityHash, logicalPath, file, profileMedia)
 
 		if (!await canWriteManifestPath(username, entityHash, logicalPath))
-			return res.status(403).json({ error: 'Permission denied' })
+			throw httpError(403, 'Permission denied')
 
 		const mimeType = file.mimetype || 'application/octet-stream'
 		const filename = file.originalname || logicalPath.split('/').pop() || 'file'
@@ -183,7 +184,7 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
  */
 async function handleProfileMediaUpload(res, username, entityHash, logicalPath, file, media) {
 	if (!await isAllowedImageUpload(file))
-		return void res.status(400).json({ error: 'Only image files are allowed' })
+		throw httpError(400, 'Only image files are allowed')
 
 	const defaultName = logicalPath.split('/').pop() || media.kind
 	const filename = file.originalname || defaultName
@@ -191,18 +192,19 @@ async function handleProfileMediaUpload(res, username, entityHash, logicalPath, 
 
 	if (await isWritableLocalEntityForUser(username, entityHash)) {
 		if (!await canWriteManifestPath(username, entityHash, logicalPath))
-			return void res.status(403).json({ error: 'Permission denied' })
+			throw httpError(403, 'Permission denied')
 		const url = media.kind === 'avatar'
 			? await uploadAvatar(username, entityHash, file.buffer, filename, mimeType, { sfw: media.sfw })
 			: await uploadBanner(username, entityHash, file.buffer, filename, mimeType, { sfw: media.sfw })
-		return void res.status(200).json({ url })
+		res.status(200).json({ url })
+		return
 	}
 
 	const operatorHash = await resolveOperatorEntityHashForUser(username)
-	if (!operatorHash) return void res.status(400).json({ error: 'operator identity not configured' })
+	if (!operatorHash) throw httpError(400, 'operator identity not configured')
 	const profile = await getProfile(entityHash, username, { skipPresentation: true, fetchRemote: true })
 	if (String(profile?.ownerEntityHash || '').toLowerCase() !== operatorHash)
-		return void res.status(403).json({ error: 'Permission denied' })
+		throw httpError(403, 'Permission denied')
 
 	const payload = {
 		buffer: file.buffer,

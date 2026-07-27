@@ -41,9 +41,10 @@ export function renderAvatarHtml(entityHash, profile, sizeClass = '') {
 	if (!isAvatarImageUrl(avatar))
 		return `<div class="${cls}" style="background:${background};color:${color};font-size:1.1em">${escapeHtml(avatar)}</div>`
 
-	// 有图片 URL 时不再叠首字母：透明/默认 SVG 会透出字母造成重叠。
+	// 首字母垫底；成功加载后由 CSS（:has(.is-loaded)）隐藏字母，失败则去掉 img 露出字母。
 	return `<div class="${cls}" style="background:${background};color:${color}">`
+		+ `<span class="hash-avatar-letter" aria-hidden="true">${initial}</span>`
 		+ `<img class="hash-avatar-img" src="${escapeHtml(avatar)}" alt="" loading="lazy"`
-		+ ' onerror="this.remove()" />'
+		+ ' onload="this.classList.add(\'is-loaded\')" onerror="this.remove()" />'
 		+ '</div>'
 }

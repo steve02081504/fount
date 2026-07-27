@@ -13,6 +13,10 @@ import {
 } from '../../../../scripts/features/template.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
+import {
+	dismissProfilePopupLayer,
+	openProfilePopupLayer,
+} from '../shared/entityProfilePopup.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 
 import { store } from './core/state.mjs'
@@ -28,9 +32,7 @@ const LAYER_ID = 'profile-popup-layer'
 
 /** @returns {void} */
 export function dismissProfilePopup() {
-	const el = document.getElementById(LAYER_ID)
-	if (el instanceof HTMLDialogElement) el.close()
-	else el?.remove()
+	dismissProfilePopupLayer(LAYER_ID)
 }
 
 /**
@@ -181,16 +183,8 @@ export async function showProfilePopup(entity) {
 	hideHoverCard()
 	usingTemplates('/parts/shells:chat/src/templates')
 
-	const layer = document.createElement('dialog')
-	layer.id = LAYER_ID
-	layer.className = 'modal profile-popup-dialog'
-	layer.addEventListener('click', event => { if (event.target === layer) layer.close() })
-	layer.addEventListener('close', () => layer.remove())
-
 	const popup = await renderTemplate('hub/profile_popup', {})
-	layer.appendChild(popup)
-	document.body.appendChild(layer)
-	layer.showModal()
+	openProfilePopupLayer(LAYER_ID, popup)
 
 	popup.querySelector('[data-profile-popup-close]')?.addEventListener('click', () => dismissProfilePopup())
 

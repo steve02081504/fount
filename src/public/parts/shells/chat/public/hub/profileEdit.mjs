@@ -315,13 +315,16 @@ function persistActiveMediaFields() {
 	const bannerUrl = editDialog?.querySelector('#profile-edit-banner-url')
 	const avatarValue = avatarUrl instanceof HTMLInputElement ? avatarUrl.value.trim() : ''
 	const bannerValue = bannerUrl instanceof HTMLInputElement ? bannerUrl.value.trim() : ''
+	const avatarUpload = editDialog?.querySelector('#profile-edit-avatar-upload')
+	const hasPendingAvatar = avatarUpload instanceof HTMLInputElement && !!avatarUpload.files?.[0]
 	if (editingSfwMode) {
-		// 空或与普通一致 → 不存 SFW 槽（回退普通）
-		editingSfwAvatarPreview = pruneSfwString(avatarValue, editingAvatarPreview) || ''
+		// 空或与普通一致 → 不存 SFW 槽（回退普通）；有未保存上传时保留预览
+		const nextAvatar = hasPendingAvatar && !avatarValue ? editingSfwAvatarPreview : avatarValue
+		editingSfwAvatarPreview = pruneSfwString(nextAvatar, editingAvatarPreview) || ''
 		editingSfwBannerPreview = pruneSfwString(bannerValue, editingBannerCleared ? '' : editingBannerPreview) || ''
 	}
 	else {
-		editingAvatarPreview = avatarValue || editingAvatarPreview
+		editingAvatarPreview = hasPendingAvatar && !avatarValue ? editingAvatarPreview : avatarValue
 		if (!editingBannerCleared)
 			editingBannerPreview = bannerValue || editingBannerPreview
 	}
@@ -697,20 +700,22 @@ async function handleSaveProfile() {
 			editingBannerCleared = true
 		}
 
-		// 把当前媒体槽写回 localized，并去掉与普通内容重复的 sfw_*
-		editingLocalized = Object.fromEntries(
-			Object.entries(editingLocalized).map(([key, slice]) => {
-				const next = { ...slice }
-				if (sfw) {
-					const sfwAvatar = pruneSfwString(editingSfwAvatarPreview, editingAvatarPreview)
-					if (sfwAvatar === undefined) delete next.sfw_avatar
-					else next.sfw_avatar = sfwAvatar
-				}
-				else
-					next.avatar = editingAvatarPreview
-				return [key, pruneLocaleSfwFields(next)]
-			}),
-		)
+		// 把当前媒体槽写回 active locale，并去掉与普通内容重复的 sfw_*
+		const localeKey = activeLocaleKey
+		if (localeKey) {
+			const slice = { ...editingLocalized[localeKey] || {} }
+			if (sfw) {
+				const sfwAvatar = pruneSfwString(editingSfwAvatarPreview, editingAvatarPreview)
+				if (sfwAvatar === undefined) delete slice.sfw_avatar
+				else slice.sfw_avatar = sfwAvatar
+			}
+			else
+				slice.avatar = editingAvatarPreview
+			editingLocalized = {
+				...editingLocalized,
+				[localeKey]: pruneLocaleSfwFields(slice),
+			}
+		}
 		editingSfwAvatarPreview = firstLocalizedAvatar(editingLocalized, 'sfw_avatar')
 
 		const banner = editingBannerCleared ? '' : editingBannerPreview

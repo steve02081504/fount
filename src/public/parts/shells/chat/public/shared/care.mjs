@@ -2,14 +2,19 @@ import { CHAT_API_CLIENT_PREFIX } from './apiPaths.mjs'
 
 const CARE_API = `${CHAT_API_CLIENT_PREFIX}/care`
 
+/** @type {string[] | null} */
+let caredCache = null
+
 /**
  * @returns {Promise<string[]>} cared entityHashes（恒为 operator）
  */
 export async function listCared() {
+	if (caredCache) return caredCache
 	const response = await fetch(CARE_API, { credentials: 'include' })
 	const data = await response.json()
 	if (!response.ok) throw new Error(data.error || 'load care failed')
-	return Array.isArray(data.cared) ? data.cared : []
+	caredCache = Array.isArray(data.cared) ? data.cared : []
+	return caredCache
 }
 
 /**
@@ -26,7 +31,8 @@ export async function setCared(targetEntityHash, cared) {
 	})
 	const data = await response.json()
 	if (!response.ok) throw new Error(data.error || 'set care failed')
-	return Array.isArray(data.cared) ? data.cared : []
+	caredCache = Array.isArray(data.cared) ? data.cared : []
+	return caredCache
 }
 
 /**

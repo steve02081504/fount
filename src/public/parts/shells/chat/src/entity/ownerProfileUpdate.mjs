@@ -17,6 +17,7 @@ import { publishMailboxRecord, requestMailboxFromNetwork } from 'npm:@steve02081
 import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
 
+import { mimeAndExtFromBuffer } from '../../../../../../scripts/mimetype.mjs'
 import { assignEntityShellData, loadEntityShellData } from '../../../../../../server/setting_loader.mjs'
 
 import {
@@ -337,6 +338,19 @@ function isTombstonePlain(plain) {
 }
 
 /**
+ * 嗅探并校验主人发布的头像/横幅明文（拒非法格式）。
+ * @param {Buffer | null | undefined} plain EVFS 明文
+ * @param {string} basename 无扩展名文件名
+ * @returns {Promise<{ buffer: Buffer, filename: string, mimeType: string } | null>} 合法图片或 null
+ */
+async function resolveAllowedOwnerImage(plain, basename) {
+	if (!plain?.length || isTombstonePlain(plain)) return null
+	const detected = await mimeAndExtFromBuffer(plain)
+	if (!detected?.mime.startsWith('image/')) return null
+	return { buffer: plain, filename: `${basename}.${detected.ext}`, mimeType: detected.mime }
+}
+
+/**
  * home 端拉取并应用主人发布的资料更新。
  * @param {string} username 宿主 replica
  * @param {string} targetEntityHash 本机被管实体
@@ -390,20 +404,24 @@ export async function pullOwnerProfileUpdate(username, targetEntityHash) {
 	await updateProfile(username, target, sanitized, { skipPresentation: true })
 
 	const avatarPlain = await readPublicFile(username, ownerEntityHash, ownedProfileUpdatePath(target, 'avatar'))
-	if (avatarPlain?.length && !isTombstonePlain(avatarPlain))
-		await uploadAvatar(username, target, avatarPlain, 'avatar.png', 'image/png')
+	const avatar = await resolveAllowedOwnerImage(avatarPlain, 'avatar')
+	if (avatar)
+		await uploadAvatar(username, target, avatar.buffer, avatar.filename, avatar.mimeType)
 
 	const bannerPlain = await readPublicFile(username, ownerEntityHash, ownedProfileUpdatePath(target, 'banner'))
-	if (bannerPlain?.length && !isTombstonePlain(bannerPlain))
-		await uploadBanner(username, target, bannerPlain, 'banner.png', 'image/png')
+	const banner = await resolveAllowedOwnerImage(bannerPlain, 'banner')
+	if (banner)
+		await uploadBanner(username, target, banner.buffer, banner.filename, banner.mimeType)
 
 	const sfwAvatarPlain = await readPublicFile(username, ownerEntityHash, ownedProfileUpdatePath(target, 'sfw_avatar'))
-	if (sfwAvatarPlain?.length && !isTombstonePlain(sfwAvatarPlain))
-		await uploadAvatar(username, target, sfwAvatarPlain, 'sfw_avatar.png', 'image/png', { sfw: true })
+	const sfwAvatar = await resolveAllowedOwnerImage(sfwAvatarPlain, 'sfw_avatar')
+	if (sfwAvatar)
+		await uploadAvatar(username, target, sfwAvatar.buffer, sfwAvatar.filename, sfwAvatar.mimeType, { sfw: true })
 
 	const sfwBannerPlain = await readPublicFile(username, ownerEntityHash, ownedProfileUpdatePath(target, 'sfw_banner'))
-	if (sfwBannerPlain?.length && !isTombstonePlain(sfwBannerPlain))
-		await uploadBanner(username, target, sfwBannerPlain, 'sfw_banner.png', 'image/png', { sfw: true })
+	const sfwBanner = await resolveAllowedOwnerImage(sfwBannerPlain, 'sfw_banner')
+	if (sfwBanner)
+		await uploadBanner(username, target, sfwBanner.buffer, sfwBanner.filename, sfwBanner.mimeType, { sfw: true })
 
 
 	await writeLastAppliedTs(target, ts)

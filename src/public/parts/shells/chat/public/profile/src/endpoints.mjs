@@ -83,7 +83,7 @@ export async function uploadEntityFile(entityHash, logicalPath, file) {
 	formData.append('file', file)
 	const response = await fetch(
 		`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/files/${String(logicalPath || '').replace(/^\/+/, '')}`,
-		{ method: 'POST', body: formData },
+		{ method: 'POST', credentials: 'include', body: formData },
 	)
 	const data = await response.json().catch(() => ({}))
 	if (!response.ok)
