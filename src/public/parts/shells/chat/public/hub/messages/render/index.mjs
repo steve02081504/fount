@@ -328,7 +328,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 			avatarBg: avatarColor(avatarKey),
 			avatarTextColor: avatarTextColor(avatarKey),
 			avatarHtml: snapAvatar
-				? `<img src="${escapeHtml(String(snapAvatar))}" class="w-full h-full object-cover rounded-full" alt="" role="presentation" />`
+				? `<img src="${escapeHtml(String(snapAvatar))}" class="w-full h-full object-cover rounded-full" alt="" role="presentation" svg-inliner-ignore />`
 				: escapeHtml(avatarInitial(displayAuthor)),
 			headerHtml,
 			contentHtml: bodyHtml,
