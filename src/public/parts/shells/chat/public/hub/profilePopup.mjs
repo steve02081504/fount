@@ -11,30 +11,28 @@ import {
 	renderTemplate,
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
-import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
-import { isCared, setCared } from '../shared/care.mjs'
+import { aliasForEntity } from '../shared/aliases.mjs'
 import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
+import {
+	dismissProfilePopupLayer,
+	openProfilePopupLayer,
+} from '../shared/entityProfilePopup.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
-import { promptText } from '../shared/promptText.mjs'
-import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 
-import { refreshAliasDependentUi } from './aliasUi.mjs'
 import { store } from './core/state.mjs'
 import {
 	loadEntityProfile,
 	paintEntityProfileUi,
-	wireProfileEditButton,
+	wireEntityProfileCardActions,
 } from './entityProfile.mjs'
-import { charAgentEntityHash, isViewerEntityHash } from './entityResolve.mjs'
-import { dispatchFriendChat } from './friendChat.mjs'
+import { charAgentEntityHash } from './entityResolve.mjs'
 import { hideHoverCard } from './presence.mjs'
 
 const LAYER_ID = 'profile-popup-layer'
 
 /** @returns {void} */
 export function dismissProfilePopup() {
-	document.getElementById(LAYER_ID)?.remove()
+	dismissProfilePopupLayer(LAYER_ID)
 }
 
 /**
@@ -162,102 +160,16 @@ async function paintProfilePopup(popup, entity) {
 		paintEntityProfileExtras(popup, { attribution: entity.attribution || null })
 	}
 
-	const alias = aliasForEntity(entityHash)
-	if (alias) {
-		const nameElement = popup.querySelector('[data-entity-profile-name]')
-		if (nameElement) nameElement.textContent = alias
-	}
-
-	const editButton = popup.querySelector('[data-profile-popup-edit]')
-	const dmButton = popup.querySelector('[data-profile-popup-dm]')
-	const socialButton = popup.querySelector('[data-profile-popup-social]')
-
-	if (editButton instanceof HTMLButtonElement && entityHash)
-		wireProfileEditButton(popup, entityHash, {
-			profile,
-			/**
-			 * 资料保存后刷新弹窗与侧栏角色卡。
-			 * @returns {Promise<void>}
-			 */
-			onSaved: async () => {
-				await paintProfilePopup(popup, entity)
-				if (entity.charname) {
-					const { renderCharInfoCardActive, getCharDetails } = await import('./charCard.mjs')
-					await renderCharInfoCardActive(entity.charname, await getCharDetails(entity.charname))
-				}
-				if (isViewerEntityHash(entityHash))
-					void import('./init.mjs').then(({ refreshViewerHubPresentation }) => refreshViewerHubPresentation())
-			},
-		})
-
-	if (dmButton instanceof HTMLButtonElement) {
-		const isSelf = isViewerEntityHash(entityHash)
-		const canDm = !isSelf && (entity.charname || isHex64(entity.pubKeyHex))
-		dmButton.hidden = !canDm
-		dmButton.dataset.i18n = entity.charname
-			? 'chat.hub.profilePopup.dmChar'
-			: 'chat.hub.profilePopup.dmFed'
-	}
-
-	if (socialButton instanceof HTMLButtonElement)
-		socialButton.hidden = !isEntityHash128(entityHash)
-
-	const aliasButton = popup.querySelector('[data-profile-popup-alias]')
-	if (aliasButton instanceof HTMLButtonElement) {
-		aliasButton.hidden = !isEntityHash128(entityHash)
-		if (!aliasButton.hidden)
-			/**
-			 *
-			 */
-			aliasButton.onclick = () => {
-				void (async () => {
-					const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
-					const current = popup.querySelector('[data-entity-profile-name]')?.textContent?.trim() || ''
-					const next = await promptText(
-						geti18n('chat.hub.profilePopup.setAliasPrompt', { name: current }),
-						aliasForEntity(entityHash),
-					)
-					if (next == null) return
-					await setEntityAlias(entityHash, next)
-					showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
-					await paintProfilePopup(popup, entity)
-					await refreshAliasDependentUi()
-				})().catch(error => {
-					showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
-				})
-			}
-	}
-
-	const careButton = popup.querySelector('[data-profile-popup-care]')
-	if (careButton instanceof HTMLButtonElement) {
-		const isSelf = isViewerEntityHash(entityHash)
-		const canCare = !isSelf && isEntityHash128(entityHash) && !!store.viewer?.operatorEntityHash
-		careButton.hidden = !canCare
-		if (canCare) {
-			const cared = await isCared(entityHash)
-			careButton.dataset.i18n = cared
-				? 'chat.hub.profilePopup.careRemove'
-				: 'chat.hub.profilePopup.care'
-			/**
-			 *
-			 */
-			careButton.onclick = () => {
-				void (async () => {
-					const next = !await isCared(entityHash)
-					await setCared(entityHash, next)
-					showToastI18n('success', next ? 'chat.hub.memberContext.careAdded' : 'chat.hub.memberContext.careRemoved')
-					careButton.dataset.i18n = next
-						? 'chat.hub.profilePopup.careRemove'
-						: 'chat.hub.profilePopup.care'
-					const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
-					careButton.textContent = geti18n(careButton.dataset.i18n)
-				})().catch(error => {
-					showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
-				})
-			}
-		}
-	}
-
+	await wireEntityProfileCardActions(popup, entity, {
+		profile,
+		onBeforeDm: dismissProfilePopup,
+		/**
+		 *
+		 */
+		onRepaint: async () => {
+			await paintProfilePopup(popup, entity)
+		},
+	})
 }
 
 /**
@@ -271,33 +183,10 @@ export async function showProfilePopup(entity) {
 	hideHoverCard()
 	usingTemplates('/parts/shells:chat/src/templates')
 
-	const layer = document.createElement('div')
-	layer.id = LAYER_ID
-	layer.className = 'profile-popup-backdrop show'
-	layer.addEventListener('click', (event) => {
-		if (event.target === layer) dismissProfilePopup()
-	})
-
 	const popup = await renderTemplate('hub/profile_popup', {})
-	layer.appendChild(popup)
-	document.body.appendChild(layer)
+	openProfilePopupLayer(LAYER_ID, popup)
 
 	popup.querySelector('[data-profile-popup-close]')?.addEventListener('click', () => dismissProfilePopup())
-
-	popup.querySelector('[data-profile-popup-dm]')?.addEventListener('click', () => {
-		dismissProfilePopup()
-		const dmEntity = entity.charname
-			? { type: 'char', id: entity.charname, displayName: entity.displayName, entityHash: entity.entityHash }
-			: { type: 'user', displayName: entity.displayName, pubKeyHex: entity.pubKeyHex, entityHash: entity.entityHash }
-		void dispatchFriendChat(dmEntity).catch(error => {
-			showToastI18n('error', 'chat.hub.profilePopup.dmFailed', { error: error.message })
-		})
-	})
-
-	popup.querySelector('[data-profile-popup-social]')?.addEventListener('click', () => {
-		if (!isEntityHash128(entity.entityHash)) return
-		window.location.href = formatSocialProfileHref(entity.entityHash)
-	})
 
 	await paintProfilePopup(popup, entity)
 }

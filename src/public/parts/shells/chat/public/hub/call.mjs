@@ -287,12 +287,14 @@ async function applyVoiceRingAvatar(voiceHost, options) {
 	if (!avatar) return
 	if (avatarEl.tagName === 'IMG') {
 		avatarEl.src = avatar
+		avatarEl.setAttribute('svg-inliner-ignore', '')
 		return
 	}
 	const img = document.createElement('img')
 	img.className = 'voice-ring-avatar'
 	img.alt = options.label || ''
 	img.src = avatar
+	img.setAttribute('svg-inliner-ignore', '')
 	avatarEl.replaceWith(img)
 }
 

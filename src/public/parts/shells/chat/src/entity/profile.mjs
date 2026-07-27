@@ -6,10 +6,17 @@ import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identit
 import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
 
 import { localesForUser } from '../../../../../../scripts/locale.mjs'
+import { getUserByUsername } from '../../../../../../server/auth/index.mjs'
 
-import { profileAvatarFileUrl, profileBannerFileUrl } from './filesUrl.mjs'
+import {
+	profileAvatarFileUrl,
+	profileBannerFileUrl,
+	profileSfwAvatarFileUrl,
+	profileSfwBannerFileUrl,
+} from './filesUrl.mjs'
 import {
 	applyAvatarToAllLocales,
+	applySfwAvatarToAllLocales,
 	normalizeLocalizedMap,
 	resolveProfilePresentation,
 } from './localized.mjs'
@@ -56,6 +63,7 @@ function getDefaultProfile(entityHash, parsed) {
 		handle: '',
 		themeColor: '',
 		banner: '',
+		sfw_banner: '',
 		activePubKeyHex: '',
 		keyGeneration: 0,
 		localized: {},
@@ -85,6 +93,7 @@ function toStoredProfile(profileData) {
 	const themeRaw = String(profileData.themeColor ?? '').trim()
 	const themeColor = THEME_COLOR_RE.test(themeRaw) ? themeRaw.toLowerCase() : ''
 	const banner = String(profileData.banner ?? '').trim()
+	const sfw_banner = String(profileData.sfw_banner ?? '').trim()
 	const activePub = String(profileData.activePubKeyHex || '').trim().toLowerCase()
 	return {
 		entityHash: profileData.entityHash,
@@ -94,6 +103,7 @@ function toStoredProfile(profileData) {
 		handle,
 		themeColor,
 		banner,
+		sfw_banner,
 		activePubKeyHex: /^[\da-f]{64}$/i.test(activePub) ? activePub : '',
 		keyGeneration: Number(profileData.keyGeneration ?? 0) || 0,
 		localized: normalizeLocalizedMap(profileData.localized),
@@ -123,6 +133,7 @@ function toPublicProfilePayload(stored) {
 		handle: stored.handle || '',
 		themeColor: stored.themeColor || '',
 		banner: stored.banner || '',
+		sfw_banner: stored.sfw_banner || '',
 		activePubKeyHex: stored.activePubKeyHex || '',
 		keyGeneration: Number(stored.keyGeneration ?? 0) || 0,
 		localized: stored.localized,
@@ -234,6 +245,15 @@ export async function fetchAndCacheRemoteProfile(replicaUsername, entityHash) {
 }
 
 /**
+ * @param {string | null | undefined} replicaUsername 查看者 / 副本用户
+ * @returns {boolean} 是否启用 SFW
+ */
+function viewerSfw(replicaUsername) {
+	if (!replicaUsername) return false
+	return !!getUserByUsername(replicaUsername)?.sfw
+}
+
+/**
  * @param {string} entityHash 128 位 entityHash
  * @param {string | null} [replicaUsername] 展示默认字段用
  * @param {{ groupId?: string, skipPresentation?: boolean, locales?: string[], infoDefaults?: object, fetchRemote?: boolean }} [options] 选项；`fetchRemote` 仅显式查看/搜索路径
@@ -276,13 +296,18 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
 	if (!infoDefaults)
 		infoDefaults = { name: `${parsed.subjectHash.slice(0, 8)}…${parsed.subjectHash.slice(-4)}`, avatar: '', description: '', description_markdown: '', version: '', author: '', home_page: '', issue_page: '', tags: [], links: [] }
 
-	const resolved = resolveProfilePresentation(merged, locales, infoDefaults)
+	const sfw = viewerSfw(replicaUsername)
+	const resolved = resolveProfilePresentation(merged, locales, infoDefaults, { sfw })
 	const charPartName = replicaUsername
 		? resolveAgentCharPartName(replicaUsername, parsed.entityHash)
 		: null
 	return {
 		...merged,
 		...resolved,
+		// 顶层 banner 保持磁盘原值，展示用 displayBanner（已按 sfw overlay）
+		banner: merged.banner || '',
+		sfw_banner: merged.sfw_banner || '',
+		displayBanner: resolved.banner || '',
 		infoDefaults,
 		localeKeys: Object.keys(merged.localized),
 		charPartName: charPartName || null,
@@ -325,8 +350,16 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 			const locales = options.locales || localesForUser(replicaUsername)
 			const profile = await getProfile(entityHash, replicaUsername, { groupId: options.groupId, skipPresentation: true })
 			const infoDefaults = await getInfoDefaultsForEntity(replicaUsername, entityHash, locales)
-			const resolved = resolveProfilePresentation(profile, locales, infoDefaults)
-			return { ...profile, ...resolved, infoDefaults, localeKeys: Object.keys(profile.localized) }
+			const resolved = resolveProfilePresentation(profile, locales, infoDefaults, { sfw: viewerSfw(replicaUsername) })
+			return {
+				...profile,
+				...resolved,
+				banner: profile.banner || '',
+				sfw_banner: profile.sfw_banner || '',
+				displayBanner: resolved.banner || '',
+				infoDefaults,
+				localeKeys: Object.keys(profile.localized),
+			}
 		}
 	}
 
@@ -372,6 +405,9 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 		banner: updates.banner !== undefined
 			? String(updates.banner || '').trim()
 			: profile.banner || '',
+		sfw_banner: updates.sfw_banner !== undefined
+			? String(updates.sfw_banner || '').trim()
+			: profile.sfw_banner || '',
 		activePubKeyHex,
 		keyGeneration,
 		localized,
@@ -388,14 +424,23 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 		|| updates.handle !== undefined
 		|| updates.themeColor !== undefined
 		|| updates.banner !== undefined
+		|| updates.sfw_banner !== undefined
 	if (staticTouched)
 		await publishStaticProfile(replicaUsername, entityHash, updatedProfile).catch(() => { })
 
 	if (options.skipPresentation) return updatedProfile
 	const locales = options.locales || localesForUser(replicaUsername)
 	const infoDefaults = await getInfoDefaultsForEntity(replicaUsername, entityHash, locales)
-	const resolved = resolveProfilePresentation(updatedProfile, locales, infoDefaults)
-	return { ...updatedProfile, ...resolved, infoDefaults, localeKeys: Object.keys(updatedProfile.localized) }
+	const resolved = resolveProfilePresentation(updatedProfile, locales, infoDefaults, { sfw: viewerSfw(replicaUsername) })
+	return {
+		...updatedProfile,
+		...resolved,
+		banner: updatedProfile.banner || '',
+		sfw_banner: updatedProfile.sfw_banner || '',
+		displayBanner: resolved.banner || '',
+		infoDefaults,
+		localeKeys: Object.keys(updatedProfile.localized),
+	}
 }
 
 /**
@@ -404,9 +449,10 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
  * @param {Buffer} fileBuffer 文件缓冲区
  * @param {string} filename 文件名
  * @param {string} [mimeType] MIME
+ * @param {{ sfw?: boolean }} [options] `sfw` 时写入 profile/sfw_avatar
  * @returns {Promise<string>} 头像 URL
  */
-export async function uploadAvatar(replicaUsername, entityHash, fileBuffer, filename, mimeType = 'image/png') {
+export async function uploadAvatar(replicaUsername, entityHash, fileBuffer, filename, mimeType = 'image/png', options = {}) {
 	if (!isWritableLocalEntity(entityHash))
 		throw new Error('entity not writable on this replica')
 
@@ -416,20 +462,23 @@ export async function uploadAvatar(replicaUsername, entityHash, fileBuffer, file
 	if (!recoverySecretKeyHex || !recoveryPubKeyHex)
 		throw new Error('recovery key unavailable for public avatar publish')
 
+	const sfw = !!options.sfw
 	await publishPublicFile({
 		ownerEntityHash: entityHash,
-		logicalPath: 'profile/avatar',
+		logicalPath: sfw ? 'profile/sfw_avatar' : 'profile/avatar',
 		plaintext: fileBuffer,
-		name: filename || 'avatar',
+		name: filename || (sfw ? 'sfw_avatar' : 'avatar'),
 		mimeType: mimeType || 'image/png',
 		entitySecretKey: Buffer.from(recoverySecretKeyHex, 'hex'),
 		entityPubKeyHex: recoveryPubKeyHex,
 	})
 
-	const avatarUrl = profileAvatarFileUrl(entityHash)
+	const avatarUrl = sfw ? profileSfwAvatarFileUrl(entityHash) : profileAvatarFileUrl(entityHash)
 	const profile = await getProfile(entityHash, replicaUsername, { skipPresentation: true })
 	await updateProfile(replicaUsername, entityHash, {
-		localized: applyAvatarToAllLocales(profile.localized, avatarUrl),
+		localized: sfw
+			? applySfwAvatarToAllLocales(profile.localized, avatarUrl)
+			: applyAvatarToAllLocales(profile.localized, avatarUrl),
 	}, { skipPresentation: true })
 	return avatarUrl
 }
@@ -440,9 +489,10 @@ export async function uploadAvatar(replicaUsername, entityHash, fileBuffer, file
  * @param {Buffer} fileBuffer 文件缓冲区
  * @param {string} filename 文件名
  * @param {string} [mimeType] MIME
+ * @param {{ sfw?: boolean }} [options] `sfw` 时写入 profile/sfw_banner
  * @returns {Promise<string>} 横幅 URL
  */
-export async function uploadBanner(replicaUsername, entityHash, fileBuffer, filename, mimeType = 'image/png') {
+export async function uploadBanner(replicaUsername, entityHash, fileBuffer, filename, mimeType = 'image/png', options = {}) {
 	if (!isWritableLocalEntity(entityHash))
 		throw new Error('entity not writable on this replica')
 
@@ -452,18 +502,21 @@ export async function uploadBanner(replicaUsername, entityHash, fileBuffer, file
 	if (!recoverySecretKeyHex || !recoveryPubKeyHex)
 		throw new Error('recovery key unavailable for public banner publish')
 
+	const sfw = !!options.sfw
 	await publishPublicFile({
 		ownerEntityHash: entityHash,
-		logicalPath: 'profile/banner',
+		logicalPath: sfw ? 'profile/sfw_banner' : 'profile/banner',
 		plaintext: fileBuffer,
-		name: filename || 'banner',
+		name: filename || (sfw ? 'sfw_banner' : 'banner'),
 		mimeType: mimeType || 'image/png',
 		entitySecretKey: Buffer.from(recoverySecretKeyHex, 'hex'),
 		entityPubKeyHex: recoveryPubKeyHex,
 	})
 
-	const bannerUrl = profileBannerFileUrl(entityHash)
-	await updateProfile(replicaUsername, entityHash, { banner: bannerUrl }, { skipPresentation: true })
+	const bannerUrl = sfw ? profileSfwBannerFileUrl(entityHash) : profileBannerFileUrl(entityHash)
+	await updateProfile(replicaUsername, entityHash, sfw
+		? { sfw_banner: bannerUrl }
+		: { banner: bannerUrl }, { skipPresentation: true })
 	return bannerUrl
 }
 

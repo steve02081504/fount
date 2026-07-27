@@ -18,10 +18,38 @@ import {
 const LAYER_ID = 'shared-entity-profile-popup-layer'
 
 /**
+ * 创建并展示资料弹层（DaisyUI modal + modal-box）；同 ID 层先移除再挂。
+ * @param {string} layerId dialog id
+ * @param {HTMLElement} content 弹层内容（通常为人物卡）
+ * @returns {HTMLDialogElement} 已 showModal 的 dialog
+ */
+export function openProfilePopupLayer(layerId, content) {
+	document.getElementById(layerId)?.remove()
+	const layer = document.createElement('dialog')
+	layer.id = layerId
+	layer.className = 'modal profile-popup-dialog'
+	layer.addEventListener('click', event => { if (event.target === layer) layer.close() })
+	layer.addEventListener('close', () => layer.remove())
+	content.classList.add('modal-box')
+	layer.appendChild(content)
+	document.body.appendChild(layer)
+	layer.showModal()
+	return layer
+}
+
+/**
+ * @param {string} layerId dialog id
+ * @returns {void}
+ */
+export function dismissProfilePopupLayer(layerId) {
+	document.getElementById(layerId)?.remove()
+}
+
+/**
  * @returns {void}
  */
 export function dismissEntityProfilePopup() {
-	document.getElementById(LAYER_ID)?.remove()
+	dismissProfilePopupLayer(LAYER_ID)
 }
 
 /**
@@ -79,16 +107,8 @@ export async function showEntityProfilePopup(entity) {
 	if (!entity?.entityHash && !entity?.displayName) return
 	dismissEntityProfilePopup()
 
-	const layer = document.createElement('div')
-	layer.id = LAYER_ID
-	layer.className = 'profile-popup-backdrop show'
-	layer.addEventListener('click', event => {
-		if (event.target === layer) dismissEntityProfilePopup()
-	})
-
 	const popup = await createEntityProfileCardElement('popup')
-	layer.appendChild(popup)
-	document.body.appendChild(layer)
+	openProfilePopupLayer(LAYER_ID, popup)
 
 	popup.querySelector('[data-profile-popup-close]')?.addEventListener('click', () => dismissEntityProfilePopup())
 	popup.querySelector('[data-profile-popup-social]')?.addEventListener('click', () => {

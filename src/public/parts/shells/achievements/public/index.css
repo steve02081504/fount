@@ -3,8 +3,8 @@
 }
 
 .achievement-card.unlocked {
-	border-color: oklch(var(--su));
-	box-shadow: 0 0 15px oklch(var(--su) / 0.5);
+	border-color: var(--color-success);
+	box-shadow: 0 0 15px color-mix(in oklch, var(--color-success) 50%, transparent);
 }
 
 .achievement-icon {

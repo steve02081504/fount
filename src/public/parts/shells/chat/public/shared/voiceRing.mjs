@@ -43,6 +43,7 @@ export function mountVoiceRing(options) {
 		avatar.className = 'voice-ring-avatar'
 		avatar.alt = ''
 		avatar.src = avatarUrl
+		avatar.setAttribute('svg-inliner-ignore', '')
 	}
 	else {
 		avatar = document.createElement('div')

@@ -1575,6 +1575,9 @@
 				"tip": "Übersetzung und föderierte P2P-Einstellungen"
 			},
 			"prefsSubtitle": "Übersetzung und Föderationsverbindung",
+			"prefsNav": {
+				"aria-label": "Einstellungskategorien"
+			},
 			"federationTooltip": {
 				"title": "Föderierte P2P-Einstellungen",
 				"tip": "Föderierte P2P-Einstellungen"

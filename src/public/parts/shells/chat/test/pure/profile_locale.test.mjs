@@ -130,3 +130,93 @@ Deno.test('resolveProfilePresentation rewrites relative avatar to EVFS URL', () 
 	)
 	assertEquals(resolved.avatar, `/api/parts/shells:chat/entities/${hash}/files/profile/avatar`)
 })
+
+Deno.test('normalizeLocalizedMap keeps sfw_* display fields', () => {
+	const localized = normalizeLocalizedMap({
+		'zh-CN': {
+			name: '日常',
+			avatar: '🔥',
+			sfw_name: '安全名',
+			sfw_avatar: '🙂',
+			sfw_tags: ['#安全'],
+			sfw_links: [{ name: 'Home', url: 'https://example.test' }],
+		},
+	})
+	assertEquals(localized['zh-CN'].sfw_name, '安全名')
+	assertEquals(localized['zh-CN'].sfw_avatar, '🙂')
+	assertEquals(localized['zh-CN'].sfw_tags, ['安全'])
+	assertEquals(localized['zh-CN'].sfw_links, [{ icon: '', name: 'Home', url: 'https://example.test' }])
+})
+
+Deno.test('resolveProfilePresentation overlays sfw_* when sfw true', () => {
+	const hash = 'a'.repeat(128)
+	const stored = {
+		entityHash: hash,
+		subjectHash: 'b'.repeat(64),
+		banner: 'https://example.test/nsfw-banner.png',
+		sfw_banner: 'https://example.test/sfw-banner.png',
+		localized: {
+			'zh-CN': {
+				name: '日常名',
+				avatar: '🔥',
+				description: 'nsfw bio',
+				description_markdown: 'nsfw **bio**',
+				tags: ['nsfw'],
+				sfw_name: '安全名',
+				sfw_avatar: '🙂',
+				sfw_description: 'sfw bio',
+				sfw_description_markdown: 'sfw **bio**',
+				sfw_tags: ['safe'],
+			},
+		},
+	}
+	const defaults = {
+		name: '默认名', tags: [], links: [], description: '', description_markdown: '',
+		avatar: '', version: '', author: '', home_page: '', issue_page: '',
+	}
+	const off = resolveProfilePresentation(stored, ['zh-CN'], defaults, { sfw: false })
+	assertEquals(off.name, '日常名')
+	assertEquals(off.avatar, '🔥')
+	assertEquals(off.description_markdown, 'nsfw **bio**')
+	assertEquals(off.tags, ['nsfw'])
+	assertEquals(off.banner, 'https://example.test/nsfw-banner.png')
+
+	const on = resolveProfilePresentation(stored, ['zh-CN'], defaults, { sfw: true })
+	assertEquals(on.name, '安全名')
+	assertEquals(on.avatar, '🙂')
+	assertEquals(on.description_markdown, 'sfw **bio**')
+	assertEquals(on.tags, ['safe'])
+	assertEquals(on.banner, 'https://example.test/sfw-banner.png')
+})
+
+Deno.test('resolveProfilePresentation sfw falls back to baseline when sfw_* absent', () => {
+	const resolved = resolveProfilePresentation(
+		{
+			entityHash: 'a'.repeat(128),
+			subjectHash: 'b'.repeat(64),
+			banner: 'https://example.test/b.png',
+			localized: { 'zh-CN': { name: '仅基线', avatar: '🟢' } },
+		},
+		['zh-CN'],
+		{ name: '默认名', tags: ['助手'], links: [], description: '', description_markdown: '', avatar: '', version: '', author: '', home_page: '', issue_page: '' },
+		{ sfw: true },
+	)
+	assertEquals(resolved.name, '仅基线')
+	assertEquals(resolved.avatar, '🟢')
+	assertEquals(resolved.banner, 'https://example.test/b.png')
+})
+
+Deno.test('resolveProfilePresentation rewrites sfw logical avatar path', () => {
+	const hash = 'a'.repeat(128)
+	const resolved = resolveProfilePresentation(
+		{
+			entityHash: hash,
+			subjectHash: 'b'.repeat(64),
+			localized: { 'zh-CN': { name: '用户', sfw_avatar: 'profile/sfw_avatar' } },
+		},
+		['zh-CN'],
+		{ name: '默认名', tags: [], links: [], description: '', description_markdown: '', avatar: '', version: '', author: '', home_page: '', issue_page: '' },
+		{ sfw: true },
+	)
+	assertEquals(resolved.avatar, `/api/parts/shells:chat/entities/${hash}/files/profile/sfw_avatar`)
+})

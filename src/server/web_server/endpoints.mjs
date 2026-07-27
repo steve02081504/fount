@@ -31,7 +31,7 @@ import { getRegistry } from '../registries.mjs'
 import { skip_report, config, save_config } from '../server.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
-import { register as registerNotifier } from './event_dispatcher.mjs'
+import { register as registerNotifier, sendEventToUser } from './event_dispatcher.mjs'
 import { evalServiceWebSocketHandler, logServiceWebSocketHandler } from './log_service/index.mjs'
 import { addPushSubscription, getVapidPublicKey, removePushSubscription } from './notify/webPush.mjs'
 import { registerP2pEndpoints } from './p2p_endpoints.mjs'
@@ -453,6 +453,8 @@ export function registerEndpoints(router) {
 		if (key === null) delete user[key]
 		else user[key] = value
 		save_config()
+		if (key != null)
+			sendEventToUser(user.username, 'user-setting-changed', { key, value })
 		res.status(200).json({ message: 'success' })
 	})
 }

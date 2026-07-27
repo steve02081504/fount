@@ -154,7 +154,7 @@ export async function renderListChannel(container, groupId, channelId, channel, 
 
 	const editor = await renderTemplateNoScriptActivation('hub/channels/list_editor', {})
 	editor.className = 'list-editor'
-	const ta = /** @type {HTMLTextAreaElement} */ editor.querySelector('.list-editor-input')
+	const ta = /** @type {HTMLTextAreaElement} */ editor.querySelector('.list-editor-textarea')
 	const hint = editor.querySelector('.list-editor-hint')
 	ta.value = JSON.stringify(items, null, 2)
 	editor.querySelector('.list-save')?.addEventListener('click', async () => {

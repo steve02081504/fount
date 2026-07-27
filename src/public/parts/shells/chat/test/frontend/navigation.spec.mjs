@@ -51,7 +51,7 @@ test.describe('Chat hub navigation', () => {
 		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 		await openGroupSettingsPage(page, baseUrl, groupId)
 		await expect(page.locator('#save-group-settings')).toBeVisible({ timeout: 30_000 })
-		await expect(page.locator('.settings-nav-item[data-section="general"]')).toHaveClass(/settings-nav-item-active/)
+		await expect(page.locator('.settings-nav-item[data-section="general"]')).toHaveClass(/tab-active/)
 		await expect(page.locator('.settings-nav-item[data-section="general"]')).toHaveAttribute('aria-selected', 'true')
 		await expect(page.locator('#group-name')).toBeVisible()
 		await expect(page.locator('.settings-advanced').first()).not.toHaveAttribute('open', '')
@@ -85,11 +85,11 @@ test.describe('Chat hub navigation', () => {
 
 		const prefsShell = page.locator('#settings-modal .prefs-shell')
 		await expect(prefsShell).toBeVisible({ timeout: 15_000 })
-		await expect(page.locator('#settings-modal [data-prefs-section="translation"]')).toHaveClass(/prefs-nav-item--active/)
+		await expect(page.locator('#settings-modal [data-prefs-section="translation"]')).toHaveClass(/tab-active/)
 		await expect(page.locator('#settings-modal #auto-translate')).toBeVisible()
 
 		await page.locator('#settings-modal [data-prefs-section="federation"]').click()
-		await expect(page.locator('#settings-modal [data-prefs-section="federation"]')).toHaveClass(/prefs-nav-item--active/)
+		await expect(page.locator('#settings-modal [data-prefs-section="federation"]')).toHaveClass(/tab-active/)
 		await expect(page.locator('#overlay-body #federation-relay-urls')).toBeVisible({ timeout: 30_000 })
 		const relayTip = page.locator('.info-tip').first()
 		await expect(relayTip).toHaveClass(/tooltip/)

@@ -94,6 +94,10 @@ function wireExternalJoinRefresh() {
 	})
 	window.addEventListener('focus', scheduleHubGroupsRefresh)
 	onServerEvent('chat-group-joined', () => { scheduleHubGroupsRefresh() })
+	onServerEvent('user-setting-changed', (data) => {
+		if (data?.key !== 'sfw') return
+		void import('../presence.mjs').then(({ refreshHubAfterSfwChange }) => refreshHubAfterSfwChange())
+	})
 	void import('../../src/hubBroadcast.mjs').then(({ wireHubGroupJoinedListener }) => {
 		wireHubGroupJoinedListener(() => { scheduleHubGroupsRefresh() })
 	})

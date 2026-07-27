@@ -19,10 +19,28 @@ export function profileAvatarFileUrl(entityHash) {
 }
 
 /**
+ * profile SFW 头像 EVFS 路径 URL。
+ * @param {string} entityHash 128 位十六进制
+ * @returns {string} SFW 头像 HTTP 地址
+ */
+export function profileSfwAvatarFileUrl(entityHash) {
+	return entityFileUrl(entityHash, 'profile/sfw_avatar')
+}
+
+/**
  * profile 横幅 EVFS 路径 URL。
  * @param {string} entityHash 128 位十六进制
  * @returns {string} profile 横幅 HTTP 地址
  */
 export function profileBannerFileUrl(entityHash) {
 	return entityFileUrl(entityHash, 'profile/banner')
+}
+
+/**
+ * profile SFW 横幅 EVFS 路径 URL。
+ * @param {string} entityHash 128 位十六进制
+ * @returns {string} SFW 横幅 HTTP 地址
+ */
+export function profileSfwBannerFileUrl(entityHash) {
+	return entityFileUrl(entityHash, 'profile/sfw_banner')
 }

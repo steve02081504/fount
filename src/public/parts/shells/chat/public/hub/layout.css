@@ -150,8 +150,8 @@
 	height: 18px;
 	padding: 0 4px;
 	border-radius: 999px;
-	background: hsl(var(--er));
-	color: hsl(var(--erc));
+	background: var(--color-error);
+	color: var(--color-error-content);
 	font-size: 11px;
 	font-weight: 700;
 	line-height: 18px;
@@ -186,7 +186,7 @@
 	align-items: center;
 	gap: 12px;
 	margin: 12px 0;
-	color: hsl(var(--er));
+	color: var(--color-error);
 	font-size: 12px;
 	font-weight: 600;
 	text-transform: uppercase;
@@ -198,7 +198,7 @@
 	content: '';
 	flex: 1;
 	height: 1px;
-	background: hsl(var(--er) / 0.45);
+	background: color-mix(in oklch, var(--color-error) 45%, transparent);
 }
 
 .server-divider {

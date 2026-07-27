@@ -11,10 +11,12 @@ Day-to-day rules: [AGENTS.md](AGENTS.md).
 ## Entity profile card
 
 - Single paint path: `hub/profile_popup` + `shared/entityProfileCard.mjs` (`paintEntityProfileCard` / `configureEntityProfileCard`).
+- SFW: locale `sfw_*` + top-level `sfw_banner`（`scripts/sfw.mjs` `applySfwOverlay`，与 part.info 同构）。`getProfile` 按查看者 `user.sfw` 解析；编辑模态有独立模式 toggle。`user-setting-changed` `{ key: 'sfw' }` → Hub/Social 清缓存重绘。
 - Modes: `popup`, `hover` (`shared/entityProfileHoverCard.mjs` — one card + serial paint; `showGeneration` invalidates superseded work), `embedded` / `preview`.
 - Hub avatar/author hover → document-delegated `wireEntityProfileHover` only. Friends/search rows → `bindEntityProfileHoverAnchor`.
 - Click → `profilePopup.mjs`. Cross-shell → `shared/entityProfilePopup.mjs`.
-- Agent "reset from char part" only when `profile.charPartName` is set. Banner: EVFS `profile/banner` or hash texture. Locale/tag editing: `profileLocaleEditor.mjs`.
+- Agent "reset from char part" only when `profile.charPartName` is set. Banner: EVFS `profile/banner`（SFW: `profile/sfw_banner`）或 hash 纹理。Locale/tag editing: `profileLocaleEditor.mjs`.
+- Entity files: `GET/HEAD/PUT/POST …/entities/:hash/files/*logicalPath`（POST=multipart 任意路径；`profile/{sfw_,}avatar|banner` 额外回写 profile 字段）。
 
 ## Message module layout
 

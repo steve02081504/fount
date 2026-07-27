@@ -23,7 +23,7 @@ async function renderGroupEmojis(context) {
 			? `<button type="button" class="btn btn-ghost btn-xs text-error" data-delete-emoji="${escapeHtml(entry.emojiId)}" data-i18n-aria-label="chat.group.settingsPage.emojisDelete">×</button>`
 			: ''
 		return `<div class="flex flex-col items-center gap-1 p-2 rounded-lg bg-base-300">
-<img src="${src}" alt="${escapeHtml(entry.name || entry.emojiId)}" class="w-12 h-12 object-contain" loading="lazy" />
+<img src="${src}" alt="${escapeHtml(entry.name || entry.emojiId)}" class="w-12 h-12 object-contain" loading="lazy" svg-inliner-ignore />
 <span class="text-xs truncate max-w-full">${escapeHtml(entry.name || entry.emojiId)}</span>
 ${del}
 </div>`

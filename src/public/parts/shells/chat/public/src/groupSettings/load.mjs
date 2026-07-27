@@ -56,7 +56,7 @@ export async function updateSettingsTabsVisibility(context) {
 		.some(id => sectionVisibility[id])
 	document.querySelector('[data-nav-group="advanced"]')?.classList.toggle('hidden', !advancedVisible)
 
-	const active = document.querySelector('.settings-nav-item.settings-nav-item-active')
+	const active = document.querySelector('.settings-nav-item.tab-active')
 	if (!active || active.classList.contains('hidden'))
 		activateSection('general')
 }

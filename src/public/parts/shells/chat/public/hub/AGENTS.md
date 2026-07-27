@@ -30,7 +30,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms
 - **`fount.user.send`**: Hub bootstrap registers `globalThis.fount.user.send(string | chatLogEntry)` → current channel. Normalize in `shared/fountUserSend.mjs` (Deno-pure — do not import `/scripts/*` or relative `pages/scripts/*` from there).
 - Errors: `handleUIError` (toast + `console.error` + Sentry). Background: `toError` + console + Sentry, no toast.
 - Prefer `renderTemplate` / `mountTemplate`. Modals: `openDialogFromTemplate` (`modal-box` only). Cross-shell shared modules: `withTemplates`, never bare `usingTemplates`.
-- Reusable widgets: short semantic class + CSS; atomic/Tailwind only for DaisyUI and one-off layout. Context menus: `hub/core/positionContextMenu.mjs` + `bindDismissOnDocumentInteraction`.
+- Reusable widgets: short semantic class + CSS; atomic/Tailwind only for DaisyUI and one-off layout. Composer: `fieldset` + `textarea textarea-ghost`; settings shell: `#settings-modal.modal` + `modal-box`. Prefer DaisyUI `tabs`/`tab-active`, `btn`, `modal-box`, `dropdown`/`menu`, `chat`. Context menus: `/scripts/components/positionContextMenu.mjs` + `contextMenuDismiss` (Hub `hub/core/*` re-exports). Shared prompts: `/scripts/features/promptDialog.mjs`.
 - State: `core/state.mjs`. No setter-injected appContext bags — import exported bindings; heavy modules use call-site `await import()`.
 - No hardcoded user-visible strings; `data-i18n` / `setElementI18n` + `zh-CN.json`.
 - **@-mention autocomplete**: same as Social — on `<textarea>` use only `aria-controls` / `aria-activedescendant`; do not add `role="combobox"` / `aria-expanded` (axe fails).

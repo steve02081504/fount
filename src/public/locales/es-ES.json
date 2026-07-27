@@ -1575,6 +1575,9 @@
 				"tip": "Configuración de traducción y P2P federado"
 			},
 			"prefsSubtitle": "Conexión de traducción y federación.",
+			"prefsNav": {
+				"aria-label": "Secciones de configuración"
+			},
 			"federationTooltip": {
 				"title": "Configuración de P2P federado",
 				"tip": "Configuración de P2P federado"

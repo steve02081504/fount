@@ -224,14 +224,13 @@
 	opacity: 1;
 }
 
-/* 操作栏按钮尺寸与图标（仅图标按钮为 28px 方形） */
-.message-action {
-	width: 28px;
-	height: 28px;
-	padding: 0;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
+/* 操作栏：下拉菜单项撑满整行（覆盖 btn-xs 方形约束） */
+.dropdown-content .message-action {
+	width: 100%;
+	height: auto;
+	min-height: 1.85rem;
+	padding: 0.25rem 0.5rem;
+	justify-content: flex-start;
 }
 
 .message-action .action-icon {
@@ -242,15 +241,6 @@
 
 .message-action-menu {
 	min-width: 28px;
-}
-
-/* 下拉菜单项：带文字标签，需撑满整行、自适应高度并左对齐（覆盖 28px 方形约束） */
-.dropdown-content .message-action {
-	width: 100%;
-	height: auto;
-	min-height: 1.85rem;
-	padding: 0.25rem 0.5rem;
-	justify-content: flex-start;
 }
 
 /* 菜单项标签 */
@@ -352,21 +342,4 @@
 	max-height: 0;
 	margin: 0 !important;
 	transform: scaleY(0);
-}
-
-.empty {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	flex: 1;
-	padding: 48px 24px;
-	text-align: center;
-	color: var(--text-muted);
-}
-
-.empty-icon {
-	font-size: 48px;
-	margin-bottom: 16px;
-	opacity: 0.5;
 }

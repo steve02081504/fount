@@ -178,7 +178,7 @@ function groupTabInnerHtml(group, isCurrent) {
 	if (isCurrent)
 		return `<span class="emoji-tab-glyph" aria-hidden="true">${CURRENT_GROUP_EMOJI_TAB_GLYPH}</span>`
 	if (group.avatar)
-		return `<img src="${escapeHtml(group.avatar)}" class="emoji-tab-icon emoji-tab-avatar" width="20" height="20" alt="" aria-hidden="true" />`
+		return `<img src="${escapeHtml(group.avatar)}" class="emoji-tab-icon emoji-tab-avatar" width="20" height="20" alt="" aria-hidden="true" svg-inliner-ignore />`
 	return `<span class="emoji-tab-glyph" aria-hidden="true">${GROUP_EMOJI_TAB_GLYPH}</span>`
 }
 

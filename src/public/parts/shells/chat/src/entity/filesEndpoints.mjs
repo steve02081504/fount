@@ -1,9 +1,12 @@
+import { Readable } from 'node:stream'
+
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { assertSafeEvfsLogicalPath } from 'npm:@steve02081504/fount-p2p/core/evfs_logical_path'
 import { canReadManifest, canWriteManifestPath } from 'npm:@steve02081504/fount-p2p/files/acl'
 import { loadFileManifest, putFileManifestFromStream, readManifestPlaintextStream } from 'npm:@steve02081504/fount-p2p/files/evfs'
 
 import { applySafeContentHeaders } from '../../../../../../scripts/http_content.mjs'
+import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { isAllowedImageUpload, pickUploadedFile } from '../../../../../../server/web_server/multipart_upload.mjs'
 
 import { entityFileUrl } from './filesUrl.mjs'
@@ -14,6 +17,14 @@ import { getProfile, uploadAvatar, uploadBanner } from './profile.mjs'
 
 const CHAT_PREFIX = '/api/parts/shells:chat'
 const MAX_EVFS_UPLOAD_BYTES = 64 * 1024 * 1024
+
+/** profile 媒体：写 EVFS 同时回写 profile 字段 */
+const PROFILE_MEDIA = {
+	'profile/avatar': { kind: 'avatar', sfw: false },
+	'profile/sfw_avatar': { kind: 'avatar', sfw: true },
+	'profile/banner': { kind: 'banner', sfw: false },
+	'profile/sfw_banner': { kind: 'banner', sfw: true },
+}
 
 /**
  * @param {string} rawPath URL 解码后的路径段
@@ -124,85 +135,85 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 		})
 	})
 
-	router.post(`${CHAT_PREFIX}/entities/:entityHash/files/profile/avatar`, authenticate, async (req, res) => {
+	/** multipart 写任意 EVFS 路径；`profile/{sfw_,}avatar|banner` 额外回写 profile 字段 */
+	router.post(filesPath, authenticate, async (req, res) => {
 		const entityHash = String(req.params.entityHash || '').toLowerCase()
+		const logicalPath = parseEvfsLogicalPath(readWildcardPath(req.params.logicalPath))
+		if (!isEntityHash128(entityHash) || !logicalPath)
+			throw httpError(400, 'invalid path')
+
 		const { username } = getUserByReq(req)
-		if (!isEntityHash128(entityHash))
-			return res.status(400).json({ error: 'invalid entityHash' })
-
-		const file = pickUploadedFile(req, 'avatar') || pickUploadedFile(req, 'file')
-		if (!file) return res.status(400).json({ error: 'No file uploaded' })
-		if (!await isAllowedImageUpload(file))
-			return res.status(400).json({ error: 'Only image files are allowed' })
+		const file = pickUploadedFile(req, 'file')
+		if (!file) throw httpError(400, 'No file uploaded')
 		if (file.buffer.length > MAX_EVFS_UPLOAD_BYTES)
-			return res.status(413).json({ error: 'file too large' })
+			throw httpError(413, 'file too large')
 
-		if (await isWritableLocalEntityForUser(username, entityHash)) {
-			if (!await canWriteManifestPath(username, entityHash, 'profile/avatar'))
-				return res.status(403).json({ error: 'Permission denied' })
-			const avatarUrl = await uploadAvatar(
-				username,
-				entityHash,
-				file.buffer,
-				file.originalname || 'avatar',
-				file.mimetype || 'image/png',
-			)
-			return res.status(200).json({ avatarUrl })
-		}
+		const profileMedia = PROFILE_MEDIA[logicalPath]
+		if (profileMedia)
+			return handleProfileMediaUpload(res, username, entityHash, logicalPath, file, profileMedia)
 
-		const operatorHash = await resolveOperatorEntityHashForUser(username)
-		if (!operatorHash) return res.status(400).json({ error: 'operator identity not configured' })
-		const profile = await getProfile(entityHash, username, { skipPresentation: true, fetchRemote: true })
-		if (String(profile?.ownerEntityHash || '').toLowerCase() !== operatorHash)
-			return res.status(403).json({ error: 'Permission denied' })
-		const queued = await publishOwnerProfileUpdate(username, operatorHash, entityHash, {}, {
-			avatar: {
-				buffer: file.buffer,
-				filename: file.originalname || 'avatar',
-				mimeType: file.mimetype || 'image/png',
-			},
+		if (!await canWriteManifestPath(username, entityHash, logicalPath))
+			throw httpError(403, 'Permission denied')
+
+		const mimeType = file.mimetype || 'application/octet-stream'
+		const filename = file.originalname || logicalPath.split('/').pop() || 'file'
+		const manifest = await putFileManifestFromStream({
+			ownerEntityHash: entityHash,
+			logicalPath,
+			readable: Readable.from(file.buffer),
+			plainSize: file.buffer.length,
+			name: filename,
+			mimeType,
+			ceMode: 'convergent',
 		})
-		res.status(202).json({ ...queued, avatarUrl: null })
-	})
-
-	router.post(`${CHAT_PREFIX}/entities/:entityHash/files/profile/banner`, authenticate, async (req, res) => {
-		const entityHash = String(req.params.entityHash || '').toLowerCase()
-		const { username } = getUserByReq(req)
-		if (!isEntityHash128(entityHash))
-			return res.status(400).json({ error: 'invalid entityHash' })
-
-		const file = pickUploadedFile(req, 'banner') || pickUploadedFile(req, 'file')
-		if (!file) return res.status(400).json({ error: 'No file uploaded' })
-		if (!await isAllowedImageUpload(file))
-			return res.status(400).json({ error: 'Only image files are allowed' })
-		if (file.buffer.length > MAX_EVFS_UPLOAD_BYTES)
-			return res.status(413).json({ error: 'file too large' })
-
-		if (await isWritableLocalEntityForUser(username, entityHash)) {
-			if (!await canWriteManifestPath(username, entityHash, 'profile/banner'))
-				return res.status(403).json({ error: 'Permission denied' })
-			const bannerUrl = await uploadBanner(
-				username,
-				entityHash,
-				file.buffer,
-				file.originalname || 'banner',
-				file.mimetype || 'image/png',
-			)
-			return res.status(200).json({ bannerUrl })
-		}
-
-		const operatorHash = await resolveOperatorEntityHashForUser(username)
-		if (!operatorHash) return res.status(400).json({ error: 'operator identity not configured' })
-		const profile = await getProfile(entityHash, username, { skipPresentation: true, fetchRemote: true })
-		if (String(profile?.ownerEntityHash || '').toLowerCase() !== operatorHash)
-			return res.status(403).json({ error: 'Permission denied' })
-		const queued = await publishOwnerProfileUpdate(username, operatorHash, entityHash, {}, {
-			banner: {
-				buffer: file.buffer,
-				filename: file.originalname || 'banner',
-				mimeType: file.mimetype || 'image/png',
-			},
+		res.status(200).json({
+			manifest,
+			url: entityFileUrl(entityHash, logicalPath),
 		})
-		res.status(202).json({ ...queued, bannerUrl: null })
 	})
+}
+
+/**
+ * @param {import('npm:express').Response} res 响应
+ * @param {string} username 用户
+ * @param {string} entityHash 实体
+ * @param {string} logicalPath EVFS 路径
+ * @param {{ buffer: Buffer, originalname?: string, mimetype?: string }} file 上传文件
+ * @param {{ kind: 'avatar' | 'banner', sfw: boolean }} media 媒体种类
+ * @returns {Promise<void>}
+ */
+async function handleProfileMediaUpload(res, username, entityHash, logicalPath, file, media) {
+	if (!await isAllowedImageUpload(file))
+		throw httpError(400, 'Only image files are allowed')
+
+	const defaultName = logicalPath.split('/').pop() || media.kind
+	const filename = file.originalname || defaultName
+	const mimeType = file.mimetype || 'image/png'
+
+	if (await isWritableLocalEntityForUser(username, entityHash)) {
+		if (!await canWriteManifestPath(username, entityHash, logicalPath))
+			throw httpError(403, 'Permission denied')
+		const url = media.kind === 'avatar'
+			? await uploadAvatar(username, entityHash, file.buffer, filename, mimeType, { sfw: media.sfw })
+			: await uploadBanner(username, entityHash, file.buffer, filename, mimeType, { sfw: media.sfw })
+		res.status(200).json({ url })
+		return
+	}
+
+	const operatorHash = await resolveOperatorEntityHashForUser(username)
+	if (!operatorHash) throw httpError(400, 'operator identity not configured')
+	const profile = await getProfile(entityHash, username, { skipPresentation: true, fetchRemote: true })
+	if (String(profile?.ownerEntityHash || '').toLowerCase() !== operatorHash)
+		throw httpError(403, 'Permission denied')
+
+	const payload = {
+		buffer: file.buffer,
+		filename,
+		mimeType,
+		sfw: media.sfw,
+	}
+	const queued = await publishOwnerProfileUpdate(username, operatorHash, entityHash, {}, media.kind === 'avatar'
+		? { avatar: payload }
+		: { banner: payload })
+	res.status(202).json({ ...queued, url: null })
 }

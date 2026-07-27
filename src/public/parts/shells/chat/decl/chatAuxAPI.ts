@@ -80,6 +80,12 @@ export interface ProfileLink {
  */
 export type ProfileLocaleSlice = Partial<import('../../../../../decl/basedefs.ts').single_lang_info_t> & {
 	links?: ProfileLink[]
+	sfw_name?: string
+	sfw_avatar?: string
+	sfw_description?: string
+	sfw_description_markdown?: string
+	sfw_tags?: string[]
+	sfw_links?: ProfileLink[]
 }
 
 /**
@@ -95,6 +101,8 @@ export interface UserProfile {
 	themeColor?: string
 	/** 自定义横幅图 URL；空串回退主题色纹理 */
 	banner?: string
+	/** SFW 横幅图 URL */
+	sfw_banner?: string
 	/** 多语言展示字段，键为 locale（如 `zh-CN`） */
 	localized: Record<string, ProfileLocaleSlice>
 	status: UserStatus
@@ -122,6 +130,8 @@ export interface UserProfilePresentation extends UserProfile {
 	issue_page: string
 	tags: string[]
 	links: ProfileLink[]
+	/** 按查看者 sfw 解析后的横幅；磁盘原值仍在 `banner` / `sfw_banner` */
+	displayBanner?: string
 	effectiveStatus?: UserStatus
 	infoDefaults?: ProfileLocaleSlice & { links: ProfileLink[] }
 	localeKeys?: string[]

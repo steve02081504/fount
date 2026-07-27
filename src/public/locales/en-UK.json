@@ -1570,6 +1570,9 @@
 				"tip": "Translation and Federated P2P Settings"
 			},
 			"prefsSubtitle": "Translation and federation connection",
+			"prefsNav": {
+				"aria-label": "Settings sections"
+			},
 			"federationTooltip": {
 				"title": "Federated P2P settings",
 				"tip": "Federated P2P settings"

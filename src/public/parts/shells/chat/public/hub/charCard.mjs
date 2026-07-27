@@ -1,9 +1,9 @@
 /**
  * 【文件】public/hub/charCard.mjs
  * 【职责】角色（char part）资料卡渲染：拉取角色详情、展示简介与进入私聊/编辑资料入口。
- * 【原理】`renderCharInfoCard` / `renderCharInfoCardActive` 填充主栏角色信息区模板。
+ * 【原理】`renderCharInfoCard` / `renderCharInfoCardActive` 填充主栏角色信息区；资料卡与悬停/弹层共用 `profile_popup` 全量渲染。
  * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
- * 【关联】../../../../scripts/template、core/domUtils、core/state、entityProfile、entityResolve、presence、privateGroup
+ * 【关联】../../../../scripts/template、core/domUtils、core/state、entityProfile、entityResolve、presence
  */
 import {
 	mountTemplate,
@@ -11,6 +11,7 @@ import {
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { createEntityProfileCardElement } from '../shared/entityProfileCard.mjs'
 import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
 
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
@@ -20,11 +21,13 @@ import {
 	paintBioMarkdown,
 	paintEntityProfileUi,
 	profileDescriptionText,
-	wireProfileEditButton,
+	wireEntityProfileCardActions,
 } from './entityProfile.mjs'
 import { charAgentEntityHash } from './entityResolve.mjs'
 import { applyAvatarsTo } from './presence.mjs'
-import { enterPrivateGroup } from './privateGroup.mjs'
+
+/** 角色信息卡渲染世代：切换角色时递增，作废过期的异步重绘。 */
+let charInfoCardRenderGeneration = 0
 
 /**
  * 从 API 拉取角色详情。
@@ -61,10 +64,13 @@ async function charAvatarHtml(name, avatarUrl) {
  * @returns {Promise<void>}
  */
 async function renderCharInfoCardInner(name, details, { active }) {
+	const generation = ++charInfoCardRenderGeneration
 	usingTemplates('/parts/shells:chat/src/templates')
 	const entityHash = await charAgentEntityHash(name)
+	if (generation !== charInfoCardRenderGeneration) return
 	const groupId = store.context.currentGroupId || undefined
 	const profile = entityHash ? await loadEntityProfile(entityHash, { groupId }) : null
+	if (generation !== charInfoCardRenderGeneration) return
 	const info = details?.info || {}
 	const charDisplayName = profile?.name || info.name || name
 	const avatarUrl = displayProfileAvatar(profile)
@@ -73,6 +79,7 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	const memberList = document.getElementById('member-list')
 	const charName = escapeHtml(charDisplayName)
 	const charAvatarInner = await charAvatarHtml(charDisplayName, avatarUrl)
+	if (generation !== charInfoCardRenderGeneration) return
 	const charAvatarSeed = entityHash || name
 	const sidebarTpl = active ? 'hub/char/member_sidebar_active' : 'hub/char/member_sidebar_preview'
 
@@ -87,6 +94,7 @@ async function renderCharInfoCardInner(name, details, { active }) {
 		myAvatarTextColor: viewerEntityHash ? avatarTextColor(viewerEntityHash) : '',
 		myAvatarInitial: viewerDisplayName ? escapeHtml(avatarInitial(viewerDisplayName)) : '',
 	})
+	if (generation !== charInfoCardRenderGeneration) return
 
 	const descriptionElement = memberList.querySelector('.char-description-md')
 	if (descriptionElement instanceof HTMLElement)
@@ -97,41 +105,49 @@ async function renderCharInfoCardInner(name, details, { active }) {
 				: info.description_markdown || info.description || info.summary || details?.description || '',
 			entityHash || '',
 		)
+	if (generation !== charInfoCardRenderGeneration) return
 
 	const infoCardHost = document.getElementById('info-card-host')
-	const infoTpl = active ? 'hub/char/info_card_active' : 'hub/char/info_card_preview'
-	await mountTemplate(infoCardHost, infoTpl, {
-		charName,
-		charNameRaw: escapeHtml(name),
-		entityHash: escapeHtml(entityHash || ''),
-		charAvatarHtml: charAvatarInner,
-		avatarBg: avatarColor(charAvatarSeed),
-		avatarTextColor: avatarTextColor(charAvatarSeed),
-		descriptionPreview: '',
-	})
+	infoCardHost.replaceChildren()
+	const card = await createEntityProfileCardElement('sidebar')
+	if (generation !== charInfoCardRenderGeneration) return
+	infoCardHost.appendChild(card)
 
-	const card = infoCardHost?.querySelector('.info-card')
-	if (card instanceof HTMLElement && profile) {
-		await paintEntityProfileUi(card, profile)
-		if (entityHash)
-			wireProfileEditButton(card, entityHash, {
-				profile,
-				/**
-				 * 资料保存后重绘角色信息卡。
-				 * @returns {Promise<void>}
-				 */
-				onSaved: async () => {
-					await renderCharInfoCardInner(name, await getCharDetails(name), { active })
-				},
-			})
+	const entity = {
+		entityHash,
+		charname: name,
+		pubKeyHex: null,
+		pubKeyHash: null,
+		displayName: charDisplayName,
 	}
+
+	if (profile)
+		await paintEntityProfileUi(card, profile)
+	else {
+		const nameElement = card.querySelector('[data-entity-profile-name]')
+		if (nameElement) nameElement.textContent = charDisplayName
+	}
+	if (generation !== charInfoCardRenderGeneration) return
+
+	if (entityHash) {
+		/**
+		 *
+		 */
+		const repaint = async () => {
+			if (generation !== charInfoCardRenderGeneration) return
+			const details = await getCharDetails(name)
+			if (generation !== charInfoCardRenderGeneration) return
+			await renderCharInfoCardInner(name, details, { active })
+		}
+		await wireEntityProfileCardActions(card, entity, {
+			profile,
+			onRepaint: repaint,
+		})
+	}
+	if (generation !== charInfoCardRenderGeneration) return
 
 	if (active)
 		applyAvatarsTo(memberList)
-	else
-		infoCardHost?.querySelector('.info-cta')?.addEventListener('click', () => {
-			void enterPrivateGroup(name)
-		})
 }
 
 /**

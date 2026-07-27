@@ -1575,6 +1575,9 @@
 				"tip": "翻訳とフェデレーション P2P 設定"
 			},
 			"prefsSubtitle": "翻訳とフェデレーション接続",
+			"prefsNav": {
+				"aria-label": "設定カテゴリ"
+			},
 			"federationTooltip": {
 				"title": "フェデレーション P2P 設定",
 				"tip": "フェデレーション P2P 設定"
