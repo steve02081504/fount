@@ -241,8 +241,6 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 					careButton.dataset.i18n = next
 						? 'chat.hub.profilePopup.careRemove'
 						: 'chat.hub.profilePopup.care'
-					const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
-					careButton.textContent = geti18n(careButton.dataset.i18n)
 				})().catch(error => {
 					showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
 				})

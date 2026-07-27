@@ -224,6 +224,10 @@ async function paintHoverCard(generation, anchor, options) {
 			},
 		})
 	}
+	else
+		for (const button of card.querySelectorAll('[data-profile-popup-*]'))
+			if (button instanceof HTMLElement) button.hidden = true
+
 
 	positionNearAnchor(card, anchor)
 }

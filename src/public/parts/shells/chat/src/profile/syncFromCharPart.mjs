@@ -75,10 +75,15 @@ function localizedIsBlank(localized) {
 	return keys.every((key) => {
 		const slice = localized[key] || {}
 		return !String(slice.name || '').trim()
+			&& !String(slice.sfw_name || '').trim()
 			&& !String(slice.avatar || '').trim()
+			&& !String(slice.sfw_avatar || '').trim()
 			&& !String(slice.description || '').trim()
+			&& !String(slice.sfw_description || '').trim()
 			&& !String(slice.description_markdown || '').trim()
+			&& !String(slice.sfw_description_markdown || '').trim()
 			&& !(Array.isArray(slice.tags) && slice.tags.length)
+			&& !(Array.isArray(slice.sfw_tags) && slice.sfw_tags.length)
 	})
 }
 
@@ -312,7 +317,7 @@ export async function syncAgentProfileFromCharPart(username, entityHash, options
 		}
 		else if (!sfwMaterialized) return null
 
-		if (sfwMaterialized)
+		if (sfwMaterialized && needsSfwAvatarBackfill)
 			await applyMaterializedAvatar(
 				(await getProfile(hash, username, { skipPresentation: true })).localized,
 				sfwMaterialized,

@@ -107,7 +107,7 @@ export async function openHubPrefsModal(options = {}) {
 	})
 
 	nav.addEventListener('keydown', event => {
-		const currentIndex = tabs.indexOf(/** @type {HTMLElement} */document.activeElement)
+		const currentIndex = tabs.indexOf(/** @type {HTMLElement} */ document.activeElement)
 		if (currentIndex < 0) return
 		let nextIndex
 		if (event.key === 'ArrowDown' || event.key === 'ArrowRight')
