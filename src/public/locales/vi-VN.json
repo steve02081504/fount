@@ -3787,7 +3787,7 @@
 			"safetyHint": "Quản lý danh sách bị chặn và ẩn.",
 			"mutedKeywords": {
 				"placeholder": "Nhập từ khóa hoặc #tags",
-				"aria-label": "Chặn từ hoặc thẻ"
+				"aria-label": "Nhập từ khóa hoặc thẻ"
 			},
 			"taste": {
 				"rebuild": "Xây dựng lại tùy chọn",

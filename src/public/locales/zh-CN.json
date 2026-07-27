@@ -3793,7 +3793,7 @@
 			"safetyHint": "管理拉黑与隐藏列表。",
 			"mutedKeywords": {
 				"placeholder": "输入关键词或 #标签",
-				"aria-label": "屏蔽词或标签"
+				"aria-label": "输入屏蔽词或标签"
 			},
 			"taste": {
 				"rebuild": "重建偏好",

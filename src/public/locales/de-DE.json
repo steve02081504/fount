@@ -3787,7 +3787,7 @@
 			"safetyHint": "Verwalten Sie blockierte und ausgeblendete Listen.",
 			"mutedKeywords": {
 				"placeholder": "Geben Sie Schlüsselwörter oder #Tags ein",
-				"aria-label": "Blockieren Sie Wörter oder Tags"
+				"aria-label": "Stichwort oder Tag eingeben"
 			},
 			"taste": {
 				"rebuild": "Einstellungen neu erstellen",

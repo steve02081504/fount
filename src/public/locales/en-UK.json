@@ -3782,7 +3782,7 @@
 			"safetyHint": "Manage blocked and hidden lists.",
 			"mutedKeywords": {
 				"placeholder": "Enter keywords or #tags",
-				"aria-label": "Block words or tags"
+				"aria-label": "Enter keyword or tag to block"
 			},
 			"taste": {
 				"rebuild": "Rebuild taste profile",

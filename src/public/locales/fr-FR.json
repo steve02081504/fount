@@ -3787,7 +3787,7 @@
 			"safetyHint": "Gérez les listes bloquées et masquées.",
 			"mutedKeywords": {
 				"placeholder": "Saisissez des mots-clés ou des #tags",
-				"aria-label": "Bloquer des mots ou des tags"
+				"aria-label": "Saisir un mot-clé ou un tag"
 			},
 			"taste": {
 				"rebuild": "Reconstruire les préférences",

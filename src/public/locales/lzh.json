@@ -3787,7 +3787,7 @@
 			"safetyHint": "掌理屏絕與隱名錄。",
 			"mutedKeywords": {
 				"placeholder": "輸入關鍵詞或 #標籤",
-				"aria-label": "屏蔽词或标签"
+				"aria-label": "輸入禁語或標籤"
 			},
 			"taste": {
 				"rebuild": "建建偏好",

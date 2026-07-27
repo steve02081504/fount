@@ -3787,7 +3787,7 @@
 			"safetyHint": "ブロック・非表示リストを管理します。",
 			"mutedKeywords": {
 				"placeholder": "キーワードまたは #タグを入力",
-				"aria-label": "単語やタグをブロックする"
+				"aria-label": "ミュートする語句またはタグを入力"
 			},
 			"taste": {
 				"rebuild": "再構築設定",

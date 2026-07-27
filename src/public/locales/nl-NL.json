@@ -3787,7 +3787,7 @@
 			"safetyHint": "Beheer geblokkeerde en verborgen lijsten.",
 			"mutedKeywords": {
 				"placeholder": "Voer trefwoorden of #tags in",
-				"aria-label": "Blokkeer woorden of tags"
+				"aria-label": "Trefwoord of tag invoeren"
 			},
 			"taste": {
 				"rebuild": "Voorkeuren opnieuw opbouwen",

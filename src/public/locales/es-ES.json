@@ -3787,7 +3787,7 @@
 			"safetyHint": "Administrar listas bloqueadas y ocultas.",
 			"mutedKeywords": {
 				"placeholder": "Introduzca palabras clave o #etiquetas",
-				"aria-label": "Bloquear palabras o etiquetas"
+				"aria-label": "Introducir palabra clave o etiqueta"
 			},
 			"taste": {
 				"rebuild": "Reconstruir preferencias",

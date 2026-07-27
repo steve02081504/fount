@@ -3787,7 +3787,7 @@
 			"safetyHint": "Gira listas de bloqueados e ocultos.",
 			"mutedKeywords": {
 				"placeholder": "Insira palavras-chave ou #tags",
-				"aria-label": "Bloquear palavras ou tags"
+				"aria-label": "Inserir palavra-chave ou etiqueta"
 			},
 			"taste": {
 				"rebuild": "Reconstruir preferências",
