@@ -26,14 +26,18 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 
 ## UI conventions
 
-- CSS: page-local, no `social-` prefix. Icons `.icon` + `.icon-*`. Ready-gate: `SOCIAL_GATE` / `fount:social-*`.
-- Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder` (not `fooPlaceholder`). Templates: `${...}` only. Prefer `renderTemplate` / `mountTemplate`.
+- CSS: page-local, no `social-` prefix. Icons `.icon` + `.icon-*`. Prefer DaisyUI `tabs`/`dock`/`fab`/`dropdown`/`menu`/`modal`/`toggle`/`card`/`btn`/`list`/`list-row`/`alert`/`badge`/`join`; custom chrome uses `.surface` (not `.card`). Empty states: `alert alert-ghost` + `.empty-state` modifiers via `emptyState.mjs`. Composer panel toggles: `btn-active` on tool buttons. Ready-gate: `SOCIAL_GATE` / `fount:social-*`.
+- **`.hidden`**: defined in `/base.css` as `display: none !important` so page-local `display: flex|grid` cannot un-hide toggled chrome. Do not re-declare `.hidden` in shell CSS.
+- Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder` (not `fooPlaceholder`). Templates: `${...}` only. Prefer `renderTemplate` / `mountTemplate`. Dialogs: `/scripts/features/promptDialog.mjs` (or `lib/dialog.mjs` re-export).
 - **@-mention autocomplete**: keep `<textarea>` as implicit textbox; only `aria-controls` + `aria-activedescendant` (+ `aria-autocomplete`). Do not set `role="combobox"` / `aria-expanded` on textarea (axe fails).
 - HTTP: `endpoints/shared.mjs` `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.
 - Hash routing: `switchView` / `activateView` — [ui-details.md](ui-details.md#hash-routing). **`activateView(name)`** → `#${name}View` (`data-view` and section id share the stem: `videos` → `#videosView`).
 - Search / replies / own-write feed insert traps: [ui-details.md](ui-details.md#search--replies--own-write-feed).
 - Avatars/names/@id: chat `entityAvatar.mjs` / `resolveDisplayName` / `formatEntityAtId`. Profile: `rememberEntityHandle` before posts. Hover: `lib/profileHover.mjs` → chat hover card.
 - Bio/post Markdown: chat `shared/trustedMarkdown.mjs`. Trusted: self / local-char / declared master / trust list. Remote self-declared `ownerEntityHash` does not elevate.
+- Explore post snippets use the same `mountMarkdown` path as bios (not `escapeHtml`).
+- Hashtag extraction (`src/lib/hashtags.mjs`) skips Markdown fenced/inline code; trending.json is a flat tag→count map — bad shape is discarded and rebuilt from timelines.
+- Trending aside shows nearby aggregation only (no local/nearby tabs): paint session cache or local first, then refresh from `scope=nearby`.
 - Browser imports of chat: absolute `/parts/shells:chat/...` URLs.
 
 ## Identity / private state

@@ -62,7 +62,7 @@ test.describe('Social secondary views', () => {
 	test('notifications view loads', async ({ page }) => {
 		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
 		await expect(page.locator('#notificationsView')).toBeVisible()
-		await expect(page.locator('#notificationsView .empty, #notificationsView .notification-card').first())
+		await expect(page.locator('#notificationsView .empty-state, #notificationsView .notification-card').first())
 			.toBeVisible({ timeout: 20_000 })
 	})
 
@@ -205,6 +205,46 @@ test.describe('Social secondary views', () => {
 			() => page.locator('#notificationsView .notification-card').count(),
 			{ timeout: 15_000 },
 		).toBeGreaterThan(firstPageSize)
+	})
+
+	test('explore post renders markdown and image avatar without letter overlay', async ({ page, publishPost, baseUrl, apiKey }) => {
+		const tag = `exploremark${Date.now().toString(36)}`
+		const snippet = `## ExploreMd\n\n**粗体** #${tag}`
+		await publishPost(snippet)
+		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
+		await expect(page.locator('[data-profile-settings]')).toBeVisible({ timeout: 20_000 })
+		await page.locator('[data-profile-settings]').click()
+		await expect(page.locator('#settingsView')).toBeVisible({ timeout: 20_000 })
+		const protectedInput = page.locator('#exploreProtectedInput')
+		await expect(protectedInput).toBeVisible({ timeout: 10_000 })
+		if (await protectedInput.isChecked())
+			await Promise.all([
+				page.waitForResponse(res =>
+					res.url().includes('/api/parts/shells:social/profile/meta')
+					&& res.request().method() === 'POST'
+					&& res.status() === 200,
+				),
+				protectedInput.setChecked(false),
+			])
+		await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes('/api/parts/shells:social/explore/posts')
+				&& res.status() === 200,
+			),
+			page.locator('.side-nav .nav-btn[data-view="explore"]').click(),
+		])
+		const postCard = page.locator('#exploreView .explore-post-card', {
+			has: page.locator(`[data-explore-snippet] a[href*="#topic:${tag}"], .explore-snippet a[href*="#topic:${tag}"]`),
+		}).first()
+		await expect(postCard).toBeVisible({ timeout: 30_000 })
+		await expect(postCard.locator('.explore-snippet.markdown-body strong, .explore-snippet.markdown-body b').first()).toBeVisible()
+		await expect(postCard.locator('.explore-snippet')).not.toContainText('## ExploreMd')
+		const avatar = postCard.locator('.explore-post-avatar').first()
+		await expect(avatar).toBeVisible()
+		const letterCount = await avatar.locator('.hash-avatar-letter').count()
+		const imgCount = await avatar.locator('img.hash-avatar-img').count()
+		if (imgCount > 0)
+			expect(letterCount).toBe(0)
 	})
 
 	test('explore post link opens profile', async ({ page, publishPost }) => {

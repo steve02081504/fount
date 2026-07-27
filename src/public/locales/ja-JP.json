@@ -2198,6 +2198,7 @@
 			"reputationSlashAlert": "メンバー ${target}… の評判が減点を思い出させます。",
 			"profileEdit": {
 				"previewHint": "変更はすぐにプレビューに表示され、保存され、チャットとソーシャル全体で同期されます。",
+				"sfwMode": "一般コンテンツ",
 				"livePreview": "ライブプレビュー",
 				"languageVersion": "言語バージョン",
 				"localeHint": "ラベルをクリックしてコードを切り替えるか編集します。最後に入力ボックスで Enter キーを押して、新しい言語にコピーします。",
@@ -3785,7 +3786,8 @@
 			"safetyTitle": "安全とブロック",
 			"safetyHint": "ブロック・非表示リストを管理します。",
 			"mutedKeywords": {
-				"placeholder": "キーワードまたは #タグを入力"
+				"placeholder": "キーワードまたは #タグを入力",
+				"aria-label": "ミュートする語句またはタグを入力"
 			},
 			"taste": {
 				"rebuild": "再構築設定",
@@ -3908,14 +3910,9 @@
 			"replayDivider": "読み終わりました、もう一度閲覧してください",
 			"trending": {
 				"title": "ホットトピック",
-				"tabsLabel": {
-					"aria-label": "トレンドの範囲"
-				},
 				"postCount": {
 					"title": "${n} 件の投稿"
 				},
-				"scopeLocal": "ローカルマシン",
-				"scopeNearby": "近く",
 				"empty": "まだホットトピックはありません",
 				"aria-label": "ホットトピック"
 			}
@@ -4200,6 +4197,7 @@
 			"apply": "投票の申し込み",
 			"closed": "投票は終了しました",
 			"deadline": "締め切り: ${deadline}",
+			"deadlineLabel": "投票期限",
 			"options": {
 				"placeholder": "1 行に 1 つのオプション (最低 2 項目)"
 			}
@@ -4282,6 +4280,10 @@
 	"cabinet": {
 		"title": "ファイルキャビネット",
 		"description": "P2P 個人および共有ファイル キャビネット",
+		"entries": {
+			"title": "項目一覧",
+			"aria-label": "項目一覧"
+		},
 		"openCabinets": {
 			"title": "ファイルキャビネットリストを開く",
 			"aria-label": "ファイルキャビネットリストを開く"
@@ -4332,6 +4334,10 @@
 		"created": "作成: ${stamp}",
 		"modified": "変更: ${stamp}",
 		"statusCount": "${count} 個のアイテム、${selected} 個が選択されました",
+		"newCabinet": {
+			"title": "新しいファイルキャビネット",
+			"aria-label": "新しいファイルキャビネット"
+		},
 		"newCabinetPrompt": "新しいファイルキャビネット名",
 		"newFolderPrompt": "新しいフォルダー名",
 		"renamePrompt": "新しい名前",

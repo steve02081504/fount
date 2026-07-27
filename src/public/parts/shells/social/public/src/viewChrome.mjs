@@ -32,8 +32,11 @@ export function currentMainView() {
 export function activateView(view) {
 	activeMainView = view
 	const highlight = OVERLAY_PARENT[view] || view
-	for (const button of document.querySelectorAll('.nav-btn'))
-		button.classList.toggle('active', button.dataset.view === highlight)
+	for (const button of document.querySelectorAll('.nav-btn')) {
+		const active = button.dataset.view === highlight
+		button.classList.toggle('active', active)
+		button.classList.toggle('dock-active', active)
+	}
 	for (const section of document.querySelectorAll('.view')) {
 		const show = section.id === `${view}View`
 		section.classList.toggle('hidden', !show)

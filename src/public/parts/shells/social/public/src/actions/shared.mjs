@@ -3,14 +3,14 @@ import { state } from '../state.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
 /**
- * 关闭所有帖子溢出菜单（可选排除某一菜单）。
- * @param {HTMLElement | null} [exceptMenu] 保留打开的菜单
+ * 关闭所有帖子溢出菜单（可选排除某一容器）。
+ * @param {HTMLElement | null} [exceptContainer] 保留打开的容器
  * @returns {void}
  */
-export function closePostMoreMenus(exceptMenu = null) {
-	for (const menu of document.querySelectorAll('.post-more-menu'))
-		if (menu !== exceptMenu)
-			menu.classList.add('hidden')
+export function closePostMoreMenus(exceptContainer = null) {
+	for (const details of document.querySelectorAll('.post-more-dropdown'))
+		if (details !== exceptContainer && /** @type {HTMLDetailsElement} */ (details).open)
+			/** @type {HTMLDetailsElement} */ (details).open = false
 }
 
 /**

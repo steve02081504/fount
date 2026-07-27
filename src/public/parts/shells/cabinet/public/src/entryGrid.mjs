@@ -59,8 +59,13 @@ export function renderStatus() {
  */
 export function syncSelectionClasses() {
 	const { selected } = cabinetStore
-	for (const card of document.getElementById('entryGrid').querySelectorAll('.entry-card'))
-		card.classList.toggle('selected', selected.has(card.dataset.id))
+	for (const card of document.getElementById('entryGrid').querySelectorAll('.entry-card')) {
+		const isSelected = selected.has(card.dataset.id)
+		card.classList.toggle('selected', isSelected)
+		card.classList.toggle('ring-2', isSelected)
+		card.classList.toggle('ring-primary', isSelected)
+		card.setAttribute('aria-selected', isSelected ? 'true' : 'false')
+	}
 	renderStatus()
 }
 
@@ -78,8 +83,9 @@ export async function renderEntries() {
 			: `<div class="entry-thumb flex items-center justify-center text-2xl">${iconFor(entry)}</div>`
 		const card = await renderTemplate('entry_card', {
 			id: escapeHtml(entry.id),
-			selectedClass: selected.has(entry.id) ? ' selected' : '',
-			brokenClass: entry.kind === 'link' && entry._broken ? ' broken' : '',
+			selectedClass: selected.has(entry.id) ? ' selected ring-2 ring-primary' : '',
+			brokenClass: entry.kind === 'link' && entry._broken ? ' opacity-50' : '',
+			ariaSelected: selected.has(entry.id) ? 'true' : 'false',
 			thumbHtml,
 			name: escapeHtml(entry.name),
 			subtitle: escapeHtml(entry.description || entry.mime_type || ''),

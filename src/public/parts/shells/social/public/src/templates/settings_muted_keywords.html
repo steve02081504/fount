@@ -1,13 +1,15 @@
-<section class="settings-card card">
-	<h3 class="settings-card-title" data-i18n="social.settings.mutedKeywordsTitle"></h3>
-	<p class="settings-hint" data-i18n="social.settings.mutedKeywordsHint"></p>
-	<form id="mutedKeywordForm" class="muted-keyword-form">
-		<input type="text" id="mutedKeywordInput" maxlength="64" data-i18n="social.settings.mutedKeywords" />
-		<label class="muted-keyword-match-tags">
-			<input type="checkbox" id="mutedKeywordMatchTags" checked />
-			<span data-i18n="social.settings.mutedKeywordsMatchTags"></span>
-		</label>
-		<button type="submit" class="btn btn-primary btn-sm" data-i18n="social.settings.mutedKeywordsAdd"></button>
-	</form>
-	<div class="muted-keyword-chips" id="mutedKeywordChips"></div>
+<section class="settings-card card bg-base-200 shadow-sm">
+	<div class="card-body gap-2">
+		<h3 class="card-title text-base" data-i18n="social.settings.mutedKeywordsTitle"></h3>
+		<p class="settings-hint text-sm opacity-70" data-i18n="social.settings.mutedKeywordsHint"></p>
+		<form id="mutedKeywordForm" class="join join-vertical sm:join-horizontal w-full gap-2 flex flex-wrap items-center">
+			<input type="text" id="mutedKeywordInput" class="input input-bordered input-sm join-item flex-1 min-w-40" maxlength="64" data-i18n="social.settings.mutedKeywords" />
+			<label class="label cursor-pointer justify-start gap-2 px-1">
+				<input type="checkbox" id="mutedKeywordMatchTags" class="checkbox checkbox-sm" checked />
+				<span class="text-sm" data-i18n="social.settings.mutedKeywordsMatchTags"></span>
+			</label>
+			<button type="submit" class="btn btn-primary btn-sm join-item" data-i18n="social.settings.mutedKeywordsAdd"></button>
+		</form>
+		<div class="muted-keyword-chips flex flex-wrap gap-2" id="mutedKeywordChips"></div>
+	</div>
 </section>

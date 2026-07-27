@@ -4,8 +4,8 @@
 		<span class="taste-hash">${tagHashShort}</span>
 		<span class="taste-weight" data-i18n="social.settings.taste.weight" data-weight="${weight}"></span>
 	</div>
-	<form class="taste-rename-form" data-tag-hash="${tagHash}">
-		<input type="text" maxlength="64" data-i18n="social.settings.taste.name" value="${labelValue}" />
-		<button type="submit" class="btn btn-ghost btn-xs" data-i18n="social.settings.taste.save"></button>
+	<form class="taste-rename-form join w-full" data-tag-hash="${tagHash}">
+		<input type="text" maxlength="64" class="input input-bordered input-sm join-item flex-1 min-w-0" data-i18n="social.settings.taste.name" value="${labelValue}" />
+		<button type="submit" class="btn btn-ghost btn-xs join-item" data-i18n="social.settings.taste.save"></button>
 	</form>
 </article>

@@ -22,7 +22,25 @@ let savedCache = null
  */
 export function closeSaveModal() {
 	state.pendingSave = null
-	document.getElementById('saveModal')?.classList.add('hidden')
+	const modal = document.getElementById('saveModal')
+	if (modal instanceof HTMLDialogElement && modal.open) modal.close()
+	else modal?.classList.add('hidden')
+}
+
+let saveModalCloseBound = false
+
+/**
+ * 绑定原生 dialog 关闭（含 Escape / backdrop）时清除 pendingSave。
+ * @returns {void}
+ */
+function bindSaveModalCloseCleanup() {
+	if (saveModalCloseBound) return
+	const modal = document.getElementById('saveModal')
+	if (!(modal instanceof HTMLDialogElement)) return
+	saveModalCloseBound = true
+	modal.addEventListener('close', () => {
+		state.pendingSave = null
+	})
 }
 
 /**
@@ -33,12 +51,14 @@ export function closeSaveModal() {
  * @returns {Promise<void>}
  */
 export async function openSaveModal(entityHash, postId, button) {
+	bindSaveModalCloseCleanup()
 	state.pendingSave = { entityHash, postId, button }
 	const modal = document.getElementById('saveModal')
 	const select = document.getElementById('saveFolderSelect')
 	if (!modal || !select) return
 	select.innerHTML = `<option value="">${escapeHtml(geti18n('social.saved.unfiled'))}</option>`
-	modal.classList.remove('hidden')
+	if (modal instanceof HTMLDialogElement) modal.showModal()
+	else modal.classList.remove('hidden')
 	const savedData = await socialApi('/saved-posts').catch(() => ({ folders: {} }))
 	state.savedFoldersCache = savedData.folders || {}
 	for (const [folderId, folder] of Object.entries(state.savedFoldersCache)) {
@@ -103,17 +123,17 @@ function buildSavedRow(ref, folderId, folderName) {
 	const actionKey = formatActionKey(ref.entityHash, ref.postId)
 	const author = savedAuthorLabel(ref.authorName, ref.entityHash)
 	const row = document.createElement('article')
-	row.className = 'saved-row'
+	row.className = 'list-row saved-row'
 	row.innerHTML = `
-		<a href="${escapeHtml(formatSocialProfileHref(ref.entityHash, ref.postId))}" class="saved-link">
+		<a href="${escapeHtml(formatSocialProfileHref(ref.entityHash, ref.postId))}" class="saved-link flex-1 min-w-0">
 			${renderAvatarHtml(ref.entityHash, { name: author }, 'saved-row-avatar')}
 			<span class="saved-link-body">
 				<strong class="saved-author">${escapeHtml(author)}</strong>
 				<span class="saved-preview">${escapeHtml(savedPreviewLabel(ref.preview, ref.postId))}</span>
-				${folderName ? `<span class="saved-folder-badge">${escapeHtml(folderName)}</span>` : ''}
+				${folderName ? `<span class="badge badge-sm badge-ghost saved-folder-badge">${escapeHtml(folderName)}</span>` : ''}
 			</span>
 		</a>
-		<button type="button" class="saved-row-action" data-remove-saved="${escapeHtml(actionKey)}"${folderId ? ` data-saved-folder="${escapeHtml(folderId)}"` : ''} aria-label="${escapeHtml(geti18n('social.saved.remove'))}">
+		<button type="button" class="btn btn-ghost btn-sm btn-circle saved-row-action" data-remove-saved="${escapeHtml(actionKey)}"${folderId ? ` data-saved-folder="${escapeHtml(folderId)}"` : ''} aria-label="${escapeHtml(geti18n('social.saved.remove'))}">
 			<span class="icon icon-bookmark-off" aria-hidden="true"></span>
 		</button>
 	`
@@ -132,10 +152,10 @@ function buildSavedSection(title, count, opts = {}) {
 	const actions = opts.folderId
 		? `
 			<div class="saved-folder-actions">
-				<button type="button" class="saved-icon-btn" data-rename-folder="${escapeHtml(opts.folderId)}" aria-label="${escapeHtml(geti18n('social.saved.renameFolder'))}" title="${escapeHtml(geti18n('social.saved.renameFolder'))}">
+				<button type="button" class="btn btn-ghost btn-sm btn-circle saved-icon-btn" data-rename-folder="${escapeHtml(opts.folderId)}" aria-label="${escapeHtml(geti18n('social.saved.renameFolder'))}" title="${escapeHtml(geti18n('social.saved.renameFolder'))}">
 					<span class="icon icon-edit" aria-hidden="true"></span>
 				</button>
-				<button type="button" class="saved-icon-btn saved-icon-btn-danger" data-delete-folder="${escapeHtml(opts.folderId)}" aria-label="${escapeHtml(geti18n('social.saved.deleteFolder'))}" title="${escapeHtml(geti18n('social.saved.deleteFolder'))}">
+				<button type="button" class="btn btn-ghost btn-sm btn-circle text-error saved-icon-btn saved-icon-btn-danger" data-delete-folder="${escapeHtml(opts.folderId)}" aria-label="${escapeHtml(geti18n('social.saved.deleteFolder'))}" title="${escapeHtml(geti18n('social.saved.deleteFolder'))}">
 					<span class="icon icon-delete" aria-hidden="true"></span>
 				</button>
 			</div>
@@ -146,7 +166,7 @@ function buildSavedSection(title, count, opts = {}) {
 			<div class="saved-section-title-wrap">
 				<span class="icon ${opts.folderId ? 'icon-folder' : 'icon-bookmark'} saved-section-icon" aria-hidden="true"></span>
 				<h3 class="saved-section-title">${escapeHtml(title)}</h3>
-				<span class="saved-count">${count}</span>
+				<span class="badge badge-xs badge-ghost saved-count">${count}</span>
 			</div>
 			${actions}
 		</div>
@@ -251,14 +271,14 @@ export async function renderSavedPanel() {
 		toolbar.innerHTML = `
 			<div class="feed-search-wrap saved-search-wrap">
 				<span class="icon icon-search search-icon" aria-hidden="true"></span>
-				<input type="search" id="savedSearchInput" class="feed-search-input" value="${escapeHtml(savedQuery)}" data-i18n="social.saved.search" autocomplete="off" />
+				<input type="search" id="savedSearchInput" class="feed-search-input input input-bordered input-sm w-full" value="${escapeHtml(savedQuery)}" data-i18n="social.saved.search" autocomplete="off" />
 			</div>
 		`
 		panel.appendChild(toolbar)
 	}
 
 	const tabs = document.createElement('div')
-	tabs.className = 'saved-folder-tabs'
+	tabs.className = 'saved-folder-tabs tabs tabs-box tabs-sm flex-wrap px-4 pb-3 border-b border-base-300'
 	tabs.setAttribute('role', 'tablist')
 	const tabSpecs = [
 		{ id: 'all', label: geti18n('social.saved.all'), count: total },
@@ -272,20 +292,20 @@ export async function renderSavedPanel() {
 	for (const tab of tabSpecs) {
 		const button = document.createElement('button')
 		button.type = 'button'
-		button.className = `saved-folder-tab${savedFilter === tab.id ? ' active' : ''}`
+		button.className = `tab gap-1${savedFilter === tab.id ? ' tab-active' : ''}`
 		button.dataset.savedFilter = tab.id
 		button.setAttribute('role', 'tab')
 		button.setAttribute('aria-selected', savedFilter === tab.id ? 'true' : 'false')
 		button.innerHTML = `
 			<span class="saved-folder-tab-label">${escapeHtml(tab.label)}</span>
-			<span class="saved-folder-tab-count">${tab.count}</span>
+			<span class="badge badge-sm badge-ghost saved-folder-tab-count">${tab.count}</span>
 		`
 		tabs.appendChild(button)
 	}
 	panel.appendChild(tabs)
 
 	const listHost = document.createElement('div')
-	listHost.className = 'saved-list'
+	listHost.className = 'saved-list list'
 	panel.appendChild(listHost)
 
 	/**

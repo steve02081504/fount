@@ -13,6 +13,7 @@ import {
 	socialTrendingIndexPath,
 } from './paths.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
+import { listLocalTimelineDirs } from './timeline/ownerIndex.mjs'
 import { maybeDecryptPostContent } from './vault_crypto/vault.mjs'
 
 /**
@@ -40,15 +41,30 @@ async function writeReplyIndex(username, index) {
 
 /**
  * @param {string} username replica
- * @returns {Promise<Record<string, number>>} 话题计数
+ * @returns {Promise<object | null>} 原始趋势文件
  */
-async function readTrendingCounts(username) {
+async function readTrendingFile(username) {
 	try {
 		return JSON.parse(await readFile(socialTrendingIndexPath(username), 'utf8'))
 	}
 	catch {
-		return {}
+		return null
 	}
+}
+
+/**
+ * @param {unknown} raw 原始趋势文件
+ * @returns {Record<string, number> | null} 合法计数表；否则 null
+ */
+function parseTrendingCounts(raw) {
+	if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+	/** @type {Record<string, number>} */
+	const counts = {}
+	for (const [tag, count] of Object.entries(raw)) {
+		if (typeof count !== 'number' || !Number.isFinite(count) || count < 0) return null
+		if (count) counts[tag] = count
+	}
+	return counts
 }
 
 /**
@@ -62,6 +78,44 @@ async function writeTrendingCounts(username, counts) {
 }
 
 /**
+ * 从本地物化时间线重建话题计数（跳过 Markdown 代码区）。
+ * @param {string} username replica
+ * @returns {Promise<Record<string, number>>} 重建后的计数
+ */
+async function rebuildTrendingCounts(username) {
+	/** @type {Record<string, number>} */
+	const counts = {}
+	for (const owner of await listLocalTimelineDirs(username)) {
+		const view = await getTimelineMaterialized(username, owner)
+		for (const post of view.posts || []) {
+			const content = await maybeDecryptPostContent(username, owner, post.content)
+			if (!content?.text) continue
+			for (const tag of extractHashtagsFromText(content.text))
+				counts[tag] = (counts[tag] || 0) + 1
+		}
+	}
+	return counts
+}
+
+/**
+ * 读取话题计数；文件缺失返回空，形状不对则扔掉重建。
+ * @param {string} username replica
+ * @returns {Promise<Record<string, number>>} 话题计数
+ */
+async function loadTrendingCounts(username) {
+	return withAsyncMutex(`social-trending:${username}`, async () => {
+		const raw = await readTrendingFile(username)
+		if (raw == null) return {}
+		const parsed = parseTrendingCounts(raw)
+		if (parsed) return { ...parsed }
+
+		const counts = await rebuildTrendingCounts(username)
+		await writeTrendingCounts(username, counts)
+		return counts
+	})
+}
+
+/**
  * @param {string} username replica
  * @param {string[]} tags 话题
  * @param {number} delta 增量
@@ -70,7 +124,14 @@ async function writeTrendingCounts(username, counts) {
 async function bumpTrendingTags(username, tags, delta) {
 	if (!tags.length || !delta) return
 	await withAsyncMutex(`social-trending:${username}`, async () => {
-		const counts = await readTrendingCounts(username)
+		const raw = await readTrendingFile(username)
+		const parsed = parseTrendingCounts(raw)
+		if (raw != null && !parsed) {
+			await writeTrendingCounts(username, await rebuildTrendingCounts(username))
+			return
+		}
+		/** @type {Record<string, number>} */
+		const counts = parsed ? { ...parsed } : {}
 		for (const tag of tags) {
 			const next = Math.max(0, (counts[tag] || 0) + delta)
 			if (next) counts[tag] = next
@@ -90,6 +151,8 @@ async function ensureTimelineIndexed(username, ownerEntityHash) {
 	const meta = await getShardMeta(indexDir, ownerEntityHash)
 	if ((meta.docCount || 0) > 0) return
 	const view = await getTimelineMaterialized(username, ownerEntityHash)
+	/** @type {string[]} */
+	const pendingTags = []
 	for (const post of view.posts || []) {
 		const content = await maybeDecryptPostContent(username, ownerEntityHash, post.content)
 		if (!content?.text) continue
@@ -102,9 +165,22 @@ async function ensureTimelineIndexed(username, ownerEntityHash) {
 		const replyTo = content.replyTo
 		if (replyTo?.entityHash && replyTo?.postId)
 			await indexReplyRef(username, ownerEntityHash, post.id, replyTo.entityHash, replyTo.postId, Number(post.hlc?.wall || Date.now()))
-		for (const tag of extractHashtagsFromText(content.text))
-			await bumpTrendingTags(username, [tag], 1)
+		pendingTags.push(...extractHashtagsFromText(content.text))
 	}
+	await withAsyncMutex(`social-trending:${username}`, async () => {
+		const raw = await readTrendingFile(username)
+		const parsed = parseTrendingCounts(raw)
+		if (raw != null && !parsed) {
+			await writeTrendingCounts(username, await rebuildTrendingCounts(username))
+			return
+		}
+		if (!pendingTags.length) return
+		/** @type {Record<string, number>} */
+		const counts = parsed ? { ...parsed } : {}
+		for (const tag of pendingTags)
+			counts[tag] = (counts[tag] || 0) + 1
+		await writeTrendingCounts(username, counts)
+	})
 }
 
 /**
@@ -248,7 +324,7 @@ export async function queryReplyIndex(username, targetEntityHash, targetPostId) 
  * @returns {Promise<{ tags: { tag: string, count: number }[] }>} 热门话题计数
  */
 export async function readTrendingHashtagCounts(username, limit = 12) {
-	const counts = await readTrendingCounts(username)
+	const counts = await loadTrendingCounts(username)
 	const tags = Object.entries(counts)
 		.sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
 		.slice(0, limit)

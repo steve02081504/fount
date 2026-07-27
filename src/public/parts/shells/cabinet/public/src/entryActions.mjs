@@ -1,7 +1,8 @@
 /**
  * 条目打开 / 下载 / 上传 / CRUD / 剪贴板 / 可恢复删除。
  */
-import { confirmI18n, promptI18n } from '/scripts/i18n/index.mjs'
+import { geti18n } from '/scripts/i18n/index.mjs'
+import { confirmAction, promptText } from '/scripts/features/promptDialog.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { arrayBufferToBase64, blobToBase64 } from '/scripts/lib/base64.mjs'
 
@@ -169,7 +170,7 @@ export async function uploadFiles(files) {
  */
 export async function createFolder() {
 	if (!canWrite()) return
-	const name = await promptI18n('cabinet.newFolderPrompt')
+	const name = await promptText(geti18n('cabinet.newFolderPrompt') || 'cabinet.newFolderPrompt')
 	if (!name) return
 	const { entry } = await cabinetApi('POST', '/entries', {
 		kind: 'folder',
@@ -295,7 +296,7 @@ export async function renameSelection() {
 	if (!canWrite()) return
 	const [entry] = selectedEntries()
 	if (!entry) return
-	const name = await promptI18n('cabinet.renamePrompt', entry.name)
+	const name = await promptText(geti18n('cabinet.renamePrompt') || 'cabinet.renamePrompt', entry.name)
 	if (!name || name === entry.name) return
 	await cabinetApi('PATCH', `/entries/${encodeURIComponent(entry.id)}`, { name })
 	await refreshEntries()
@@ -315,8 +316,8 @@ export async function deleteSelection() {
 	if (!canWrite()) return
 	const rows = selectedEntries()
 	if (!rows.length) return
-	if (rows.some(row => row.attrs?.system) && !await confirmI18n('cabinet.confirmDeleteSystem')) return
-	if (!rows.some(row => row.attrs?.system) && !await confirmI18n('cabinet.confirmDelete')) return
+	if (rows.some(row => row.attrs?.system) && !await confirmAction(geti18n('cabinet.confirmDeleteSystem') || 'cabinet.confirmDeleteSystem')) return
+	if (!rows.some(row => row.attrs?.system) && !await confirmAction(geti18n('cabinet.confirmDelete') || 'cabinet.confirmDelete')) return
 	const ids = rows.map(row => row.id)
 	const cabinetId = cabinetStore.currentCabinetId
 	const result = await recoverableDelete(cabinetId, ids)

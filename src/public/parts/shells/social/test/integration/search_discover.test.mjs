@@ -63,3 +63,18 @@ Deno.test('buildTrendingHashtags counts visible hashtag posts', async () => {
 	const { tags } = await trending.buildTrendingHashtags(username, { limit: 20 })
 	assert(tags.some(row => row.tag === 'trendtagsearch' && row.count >= 1))
 })
+
+Deno.test('buildTrendingHashtags skips hashtags inside code fences', async () => {
+	const { username, operator } = await getSession()
+	await append.commitTimelineEvent(username, operator, {
+		type: 'post',
+		content: {
+			text: 'real #TrendOutsideCode\n```js\n#feedlist\n#plug\n```\n',
+			visibility: 'public',
+		},
+	}, { fanout: false })
+
+	const { tags } = await trending.buildTrendingHashtags(username, { limit: 32 })
+	assert(tags.some(row => row.tag === 'trendoutsidecode' && row.count >= 1))
+	assert(!tags.some(row => row.tag === 'feedlist' || row.tag === 'plug'))
+})

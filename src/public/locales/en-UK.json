@@ -2193,6 +2193,7 @@
 			"reputationSlashAlert": "The reputation of member ${target}… is reminded of the deduction.",
 			"profileEdit": {
 				"previewHint": "Changes appear immediately in the preview and are saved and synced across Chat and Social.",
+				"sfwMode": "Safe for Work",
 				"livePreview": "Live preview",
 				"languageVersion": "Language version",
 				"localeHint": "Click the label to switch or edit the code; press Enter in the input box at the end to copy it to a new language.",
@@ -3780,7 +3781,8 @@
 			"safetyTitle": "Security and shielding",
 			"safetyHint": "Manage blocked and hidden lists.",
 			"mutedKeywords": {
-				"placeholder": "Enter keywords or #tags"
+				"placeholder": "Enter keywords or #tags",
+				"aria-label": "Enter keyword or tag to block"
 			},
 			"taste": {
 				"rebuild": "Rebuild taste profile",
@@ -3905,14 +3907,9 @@
 			"replayDivider": "You're all caught up — start over",
 			"trending": {
 				"title": "Trending",
-				"tabsLabel": {
-					"aria-label": "Trending scope"
-				},
 				"postCount": {
 					"title": "${n} posts"
 				},
-				"scopeLocal": "This device",
-				"scopeNearby": "Nearby",
 				"empty": "Nothing trending yet",
 				"aria-label": "Trending"
 			}
@@ -4197,6 +4194,7 @@
 			"apply": "Cast vote",
 			"closed": "Voting has ended",
 			"deadline": "Deadline: ${deadline}",
+			"deadlineLabel": "Deadline",
 			"options": {
 				"placeholder": "One option per line (minimum 2 items)"
 			}
@@ -4279,6 +4277,10 @@
 	"cabinet": {
 		"title": "Cabinet",
 		"description": "P2P personal and shared cabinets",
+		"entries": {
+			"title": "Items",
+			"aria-label": "Items"
+		},
 		"openCabinets": {
 			"title": "Open file cabinet list",
 			"aria-label": "Open file cabinet list"
@@ -4329,6 +4331,10 @@
 		"created": "Created: ${stamp}",
 		"modified": "Modified: ${stamp}",
 		"statusCount": "${count} items, ${selected} selected",
+		"newCabinet": {
+			"title": "New cabinet",
+			"aria-label": "New cabinet"
+		},
 		"newCabinetPrompt": "New file cabinet name",
 		"newFolderPrompt": "New folder name",
 		"renamePrompt": "new name",

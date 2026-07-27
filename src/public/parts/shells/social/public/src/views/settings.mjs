@@ -43,7 +43,7 @@ async function renderMutedKeywordsSection(panel, entries) {
 		for (const entry of list) {
 			const chip = document.createElement('button')
 			chip.type = 'button'
-			chip.className = 'muted-keyword-chip'
+			chip.className = 'badge badge-outline gap-1 cursor-pointer muted-keyword-chip'
 			chip.dataset.pattern = entry.pattern
 			chip.dataset.i18n = 'social.settings.mutedKeywordsRemove'
 			const tagHint = entry.matchTags === false ? '' : ' #Tag'

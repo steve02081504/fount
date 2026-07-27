@@ -423,7 +423,6 @@ export async function pullOwnerProfileUpdate(username, targetEntityHash) {
 	if (sfwBanner)
 		await uploadBanner(username, target, sfwBanner.buffer, sfwBanner.filename, sfwBanner.mimeType, { sfw: true })
 
-
 	await writeLastAppliedTs(target, ts)
 
 	const ownerActivePub = normalizeHex64(

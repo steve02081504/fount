@@ -2198,6 +2198,7 @@
 			"reputationSlashAlert": "👤 ${target}… ⭐⬇️🔔",
 			"profileEdit": {
 				"previewHint": "✏️ ➡️ 👀📍；💾 ➡️ 🔄 💬 ➕ 🏛️",
+				"sfwMode": "😇",
 				"livePreview": "⏱️👀",
 				"languageVersion": "🗣️🔢",
 				"localeHint": "👆🏷️🔄✏️；📤↩️ ➡️ 🆕🗣️",
@@ -3785,7 +3786,8 @@
 			"safetyTitle": "🛡️🚫",
 			"safetyHint": "🛡️🚫👤 ➕ 🙈📋",
 			"mutedKeywords": {
-				"placeholder": "✍️🔑 / #️⃣🏷️"
+				"placeholder": "✍️🔑 / #️⃣🏷️",
+				"aria-label": "✍️🚫🔑/#️⃣🏷️"
 			},
 			"taste": {
 				"rebuild": "♻️❤️",
@@ -3908,14 +3910,9 @@
 			"replayDivider": "✅👀 · 🔁👀",
 			"trending": {
 				"title": "🔥#️⃣",
-				"tabsLabel": {
-					"aria-label": "🔥#️⃣📏"
-				},
 				"postCount": {
 					"title": "${n}📄"
 				},
-				"scopeLocal": "💻",
-				"scopeNearby": "📍🧭",
 				"empty": "🔥#️⃣📭",
 				"aria-label": "🔥#️⃣"
 			}
@@ -4200,6 +4197,7 @@
 			"apply": "✅🗳️",
 			"closed": "🗳️⏹️",
 			"deadline": "⏰${deadline}",
+			"deadlineLabel": "🗳️⏰",
 			"options": {
 				"placeholder": "1️⃣🔘/line（⬆️2📌）"
 			}
@@ -4282,6 +4280,10 @@
 	"cabinet": {
 		"title": "🗄️",
 		"description": "P2P 🫵🗄️➕🤝🗄️",
+		"entries": {
+			"title": "📄📋",
+			"aria-label": "📄📋"
+		},
 		"openCabinets": {
 			"title": "📂🗄️📋",
 			"aria-label": "📂🗄️📋"
@@ -4332,6 +4334,10 @@
 		"created": "➕：${stamp}",
 		"modified": "✏️：${stamp}",
 		"statusCount": "${count} 📌，✅👆 ${selected}",
+		"newCabinet": {
+			"title": "🆕🗄️",
+			"aria-label": "🆕🗄️"
+		},
 		"newCabinetPrompt": "🆕🗄️🏷️",
 		"newFolderPrompt": "📂🏷️🆕",
 		"renamePrompt": "🆕🏷️",

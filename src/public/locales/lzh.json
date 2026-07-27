@@ -2198,6 +2198,7 @@
 			"reputationSlashAlert": "成員 ${target}… 之聲譽受到扣減提醒",
 			"profileEdit": {
 				"previewHint": "改動即現於預覽；存後同步用於 Chat 與 Social。",
+				"sfwMode": "淨域",
 				"livePreview": "實時預覽",
 				"languageVersion": "語言版本",
 				"localeHint": "觸標籤以切換或修符碼；於末尾輸入框回車可謄錄為新語言。",
@@ -3785,7 +3786,8 @@
 			"safetyTitle": "安全與屏絕",
 			"safetyHint": "掌理屏絕與隱名錄。",
 			"mutedKeywords": {
-				"placeholder": "輸入關鍵詞或 #標籤"
+				"placeholder": "輸入關鍵詞或 #標籤",
+				"aria-label": "輸入禁語或標籤"
 			},
 			"taste": {
 				"rebuild": "建建偏好",
@@ -3908,14 +3910,9 @@
 			"replayDivider": "已閱畢，建覽",
 			"trending": {
 				"title": "熱門話題",
-				"tabsLabel": {
-					"aria-label": "熱議之域"
-				},
 				"postCount": {
 					"title": "${n} 則言"
 				},
-				"scopeLocal": "本機",
-				"scopeNearby": "附近",
 				"empty": "暫無熱門話題",
 				"aria-label": "熱門話題"
 			}
@@ -4200,6 +4197,7 @@
 			"apply": "應用投票",
 			"closed": "投票已終",
 			"deadline": "截止：${deadline}",
+			"deadlineLabel": "投票限期",
 			"options": {
 				"placeholder": "每行一選項（至少 2 項）"
 			}
@@ -4282,6 +4280,10 @@
 	"cabinet": {
 		"title": "藏經閣",
 		"description": "P2P 個人與共享藏經閣",
+		"entries": {
+			"title": "卷目",
+			"aria-label": "卷目"
+		},
 		"openCabinets": {
 			"title": "啟藏經閣名錄",
 			"aria-label": "啟藏經閣名錄"
@@ -4332,6 +4334,10 @@
 		"created": "立：${stamp}",
 		"modified": "修：${stamp}",
 		"statusCount": "${count} 項，已選 ${selected}",
+		"newCabinet": {
+			"title": "新建藏經閣",
+			"aria-label": "新建藏經閣"
+		},
 		"newCabinetPrompt": "新藏經閣名稱",
 		"newFolderPrompt": "新帙名",
 		"renamePrompt": "新名稱",

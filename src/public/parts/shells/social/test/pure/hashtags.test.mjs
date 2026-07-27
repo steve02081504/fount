@@ -17,7 +17,22 @@ Deno.test('extractHashtagsFromText dedupes case', () => {
 	assertEquals(extractHashtagsFromText('#Foo #foo'), ['foo'])
 })
 
+Deno.test('extractHashtagsFromText skips fenced code blocks', () => {
+	const tags = extractHashtagsFromText('intro #keep\n```mjs\nconst x = "#feedlist"\n#plug\n```\noutro #also')
+	assertEquals(tags, ['keep', 'also'])
+})
+
+Deno.test('extractHashtagsFromText skips tilde fences and inline code', () => {
+	const tags = extractHashtagsFromText('see `#inline` and\n~~~\n#fence\n~~~\nplus #real')
+	assertEquals(tags, ['real'])
+})
+
+Deno.test('extractHashtagsFromText skips multi-backtick inline code', () => {
+	assertEquals(extractHashtagsFromText('code `` `#nested` `` then #ok'), ['ok'])
+})
+
 Deno.test('postMatchesQuery uses hashtag tokens only', () => {
 	assertEquals(postMatchesQuery({ content: { text: 'say hello' } }, '#hello'), false)
 	assertEquals(postMatchesQuery({ content: { text: '#hello world' } }, '#hello'), true)
+	assertEquals(postMatchesQuery({ content: { text: '```\n#hello\n```' } }, '#hello'), false)
 })
