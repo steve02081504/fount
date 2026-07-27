@@ -11,6 +11,7 @@ import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { getLocalizedInfo } from '../scripts/locale.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
 import { doProfile } from '../scripts/profiler.mjs'
+import { applySfwOverlay } from '../scripts/sfw.mjs'
 
 import { getAllUsers, getUserByUsername, getUserDictionary } from './auth/index.mjs'
 import { __dirname } from './base.mjs'
@@ -1062,22 +1063,6 @@ async function nocacheGetPartBaseDetails(username, partpath) {
 }
 
 /**
- * 获取“对工作安全”的信息。
- * @param {object} info - 要处理的信息对象。
- * @returns {object} 处理后的信息对象。
- */
-function getSfwInfo(info) {
-	if (!info) return info
-	const sfwInfo = { ...info }
-	for (const key in info)
-		if (key.startsWith('sfw_')) {
-			const originalKey = key.substring(4) // remove 'sfw_'
-			sfwInfo[originalKey] = info[key]
-		}
-	return sfwInfo
-}
-
-/**
  * 检索关于部件的详细信息，可以从缓存中或通过加载部件来获取。
  *
  * @async
@@ -1096,7 +1081,7 @@ export async function getPartDetails(username, partpath, nocache = false) {
 		new Promise(resolve => setTimeout(resolve, 500)),
 	])
 	let info = getLocalizedInfo(details.info, user.locales)
-	if (user.sfw) info = getSfwInfo(info)
+	if (user.sfw) info = applySfwOverlay(info)
 
 	return { ...details, info }
 }
@@ -1132,7 +1117,7 @@ export async function getAllCachedPartDetails(username, partpath) {
 			])
 
 		let info = getLocalizedInfo(details.info, user.locales)
-		if (user.sfw) info = getSfwInfo(info)
+		if (user.sfw) info = applySfwOverlay(info)
 
 		// Return keyed by NAME, not full path, to likely match frontend expectations for a list
 		const name = path.basename(cachedPath)

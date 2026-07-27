@@ -1,11 +1,15 @@
 /**
  * 【文件】public/hub/entityProfile.mjs
- * 【职责】实体（用户/角色）资料数据到 Hub UI 的绘制：简介 Markdown、编辑按钮绑定。
- * 【原理】`paintEntityProfileUi`、`paintBioMarkdown`、`wireProfileEditButton` 更新资料卡 DOM。
+ * 【职责】实体（用户/角色）资料数据到 Hub UI 的绘制：简介 Markdown、资料卡操作按钮绑定。
+ * 【原理】`paintEntityProfileUi`、`paintBioMarkdown`、`wireEntityProfileCardActions` 更新资料卡 DOM。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../src/entityProfileApi、core/state、entityResolve、presence、profileEdit。
  */
-import { aliasForEntity } from '../shared/aliases.mjs'
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
+import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
+import { isCared, setCared } from '../shared/care.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
 import {
 	paintEntityProfileBio,
@@ -13,13 +17,16 @@ import {
 	paintEntityProfileExtras,
 	profileDescriptionText as sharedProfileDescriptionText,
 } from '../shared/entityProfileCard.mjs'
+import { promptText } from '../shared/promptText.mjs'
+import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 import { fetchEntityProfileApi, cachedProfileFromApi } from '../src/entityProfileApi.mjs'
 
+import { refreshAliasDependentUi } from './aliasUi.mjs'
 import { store } from './core/state.mjs'
-import { canEditEntityProfile } from './entityResolve.mjs'
+import { canEditEntityProfile, isViewerEntityHash } from './entityResolve.mjs'
+import { dispatchFriendChat } from './friendChat.mjs'
 import {
 	fetchUserProfile,
-	invalidateUserProfileCache,
 } from './presence.mjs'
 import { openHubProfileEdit } from './profileEdit.mjs'
 
@@ -114,15 +121,131 @@ export function wireProfileEditButton(root, entityHash, options = {}) {
 	 * @returns {void}
 	 */
 	editButton.onclick = () => {
-		void openHubProfileEdit(entityHash, {
+		void openHubProfileEdit(entityHash, { onSaved: options.onSaved })
+	}
+}
+
+/**
+ * 绑定资料卡全套操作按钮（编辑 / 私聊 / Social / 别名 / 关心）。
+ * @param {HTMLElement} root 人物卡根节点
+ * @param {object} entity 实体（含 `entityHash`）
+ * @param {{
+ *   profile?: object | null,
+ *   onSaved?: () => void | Promise<void>,
+ *   onRepaint?: () => void | Promise<void>,
+ *   onBeforeDm?: () => void,
+ * }} [options] 保存后 / 重绘 / 私聊前回调
+ * @returns {Promise<void>}
+ */
+export async function wireEntityProfileCardActions(root, entity, options = {}) {
+	if (!(root instanceof HTMLElement) || !entity) return
+	const entityHash = String(entity.entityHash || '').trim().toLowerCase()
+	const profile = options.profile ?? null
+
+	const alias = entityHash ? aliasForEntity(entityHash) : ''
+	if (alias) {
+		const nameElement = root.querySelector('[data-entity-profile-name]')
+		if (nameElement) nameElement.textContent = alias
+	}
+
+	if (entityHash)
+		wireProfileEditButton(root, entityHash, {
+			profile,
 			/**
-			 * 保存后失效缓存并调用外部刷新回调。
-			 * @returns {Promise<void>}
+			 *
 			 */
 			onSaved: async () => {
-				invalidateUserProfileCache(entityHash)
 				await options.onSaved?.()
+				await options.onRepaint?.()
 			},
 		})
+
+	const dmButton = root.querySelector('[data-profile-popup-dm]')
+	if (dmButton instanceof HTMLButtonElement) {
+		const isSelf = isViewerEntityHash(entityHash)
+		const canDm = !isSelf && (entity.charname || isHex64(entity.pubKeyHex))
+		dmButton.hidden = !canDm
+		dmButton.dataset.i18n = entity.charname
+			? 'chat.hub.profilePopup.dmChar'
+			: 'chat.hub.profilePopup.dmFed'
+		/**
+		 *
+		 */
+		dmButton.onclick = () => {
+			options.onBeforeDm?.()
+			const dmEntity = entity.charname
+				? { type: 'char', id: entity.charname, displayName: entity.displayName, entityHash }
+				: { type: 'user', displayName: entity.displayName, pubKeyHex: entity.pubKeyHex, entityHash }
+			void dispatchFriendChat(dmEntity).catch(error => {
+				showToastI18n('error', 'chat.hub.profilePopup.dmFailed', { error: error.message })
+			})
+		}
+	}
+
+	const socialButton = root.querySelector('[data-profile-popup-social]')
+	if (socialButton instanceof HTMLButtonElement) {
+		socialButton.hidden = !isEntityHash128(entityHash)
+		/**
+		 *
+		 */
+		socialButton.onclick = () => {
+			if (!isEntityHash128(entityHash)) return
+			window.location.href = formatSocialProfileHref(entityHash)
+		}
+	}
+
+	const aliasButton = root.querySelector('[data-profile-popup-alias]')
+	if (aliasButton instanceof HTMLButtonElement) {
+		aliasButton.hidden = !isEntityHash128(entityHash)
+		/**
+		 *
+		 */
+		aliasButton.onclick = () => {
+			void (async () => {
+				const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
+				const current = root.querySelector('[data-entity-profile-name]')?.textContent?.trim() || ''
+				const next = await promptText(
+					geti18n('chat.hub.profilePopup.setAliasPrompt', { name: current }),
+					aliasForEntity(entityHash),
+				)
+				if (next == null) return
+				await setEntityAlias(entityHash, next)
+				showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
+				await options.onRepaint?.()
+				await refreshAliasDependentUi()
+			})().catch(error => {
+				showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+			})
+		}
+	}
+
+	const careButton = root.querySelector('[data-profile-popup-care]')
+	if (careButton instanceof HTMLButtonElement) {
+		const isSelf = isViewerEntityHash(entityHash)
+		const canCare = !isSelf && isEntityHash128(entityHash) && !!store.viewer?.operatorEntityHash
+		careButton.hidden = !canCare
+		if (canCare) {
+			const cared = await isCared(entityHash)
+			careButton.dataset.i18n = cared
+				? 'chat.hub.profilePopup.careRemove'
+				: 'chat.hub.profilePopup.care'
+			/**
+			 *
+			 */
+			careButton.onclick = () => {
+				void (async () => {
+					const next = !await isCared(entityHash)
+					await setCared(entityHash, next)
+					showToastI18n('success', next ? 'chat.hub.memberContext.careAdded' : 'chat.hub.memberContext.careRemoved')
+					careButton.dataset.i18n = next
+						? 'chat.hub.profilePopup.careRemove'
+						: 'chat.hub.profilePopup.care'
+					const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
+					careButton.textContent = geti18n(careButton.dataset.i18n)
+				})().catch(error => {
+					showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+				})
+			}
+		}
 	}
 }

@@ -41,9 +41,9 @@ export function renderAvatarHtml(entityHash, profile, sizeClass = '') {
 	if (!isAvatarImageUrl(avatar))
 		return `<div class="${cls}" style="background:${background};color:${color};font-size:1.1em">${escapeHtml(avatar)}</div>`
 
+	// 有图片 URL 时不再叠首字母：透明/默认 SVG 会透出字母造成重叠。
 	return `<div class="${cls}" style="background:${background};color:${color}">`
-		+ `<span class="hash-avatar-letter">${initial}</span>`
 		+ `<img class="hash-avatar-img" src="${escapeHtml(avatar)}" alt="" loading="lazy"`
-		+ ' onload="this.classList.add(\'is-loaded\')" onerror="this.remove()" />'
+		+ ' onerror="this.remove()" />'
 		+ '</div>'
 }

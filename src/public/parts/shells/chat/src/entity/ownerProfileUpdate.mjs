@@ -276,20 +276,20 @@ export async function publishOwnerProfileUpdate(username, publisherEntityHash, t
 		await publishAsOwner(
 			username,
 			publisher,
-			ownedProfileUpdatePath(target, 'avatar'),
+			ownedProfileUpdatePath(target, files.avatar.sfw ? 'sfw_avatar' : 'avatar'),
 			files.avatar.buffer,
 			files.avatar.mimeType || 'image/png',
-			files.avatar.filename || 'avatar',
+			files.avatar.filename || (files.avatar.sfw ? 'sfw_avatar' : 'avatar'),
 		)
 
 	if (files.banner?.buffer)
 		await publishAsOwner(
 			username,
 			publisher,
-			ownedProfileUpdatePath(target, 'banner'),
+			ownedProfileUpdatePath(target, files.banner.sfw ? 'sfw_banner' : 'banner'),
 			files.banner.buffer,
 			files.banner.mimeType || 'image/png',
-			files.banner.filename || 'banner',
+			files.banner.filename || (files.banner.sfw ? 'sfw_banner' : 'banner'),
 		)
 
 
@@ -396,6 +396,14 @@ export async function pullOwnerProfileUpdate(username, targetEntityHash) {
 	const bannerPlain = await readPublicFile(username, ownerEntityHash, ownedProfileUpdatePath(target, 'banner'))
 	if (bannerPlain?.length && !isTombstonePlain(bannerPlain))
 		await uploadBanner(username, target, bannerPlain, 'banner.png', 'image/png')
+
+	const sfwAvatarPlain = await readPublicFile(username, ownerEntityHash, ownedProfileUpdatePath(target, 'sfw_avatar'))
+	if (sfwAvatarPlain?.length && !isTombstonePlain(sfwAvatarPlain))
+		await uploadAvatar(username, target, sfwAvatarPlain, 'sfw_avatar.png', 'image/png', { sfw: true })
+
+	const sfwBannerPlain = await readPublicFile(username, ownerEntityHash, ownedProfileUpdatePath(target, 'sfw_banner'))
+	if (sfwBannerPlain?.length && !isTombstonePlain(sfwBannerPlain))
+		await uploadBanner(username, target, sfwBannerPlain, 'sfw_banner.png', 'image/png', { sfw: true })
 
 
 	await writeLastAppliedTs(target, ts)
@@ -559,9 +567,9 @@ export async function updateEntityProfileAsActor(username, actorEntityHash, targ
 
 	if (canLocalWrite) {
 		if (avatar?.buffer)
-			await uploadAvatar(username, target, avatar.buffer, avatar.filename || 'avatar.png', avatar.mimeType)
+			await uploadAvatar(username, target, avatar.buffer, avatar.filename || 'avatar.png', avatar.mimeType, { sfw: !!avatar.sfw })
 		if (banner?.buffer)
-			await uploadBanner(username, target, banner.buffer, banner.filename || 'banner.png', banner.mimeType)
+			await uploadBanner(username, target, banner.buffer, banner.filename || 'banner.png', banner.mimeType, { sfw: !!banner.sfw })
 		const profile = await updateProfile(username, target, fields, {
 			groupId: options.groupId,
 			locales: options.locales,

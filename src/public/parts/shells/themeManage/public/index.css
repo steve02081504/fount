@@ -11,7 +11,7 @@
 
 .selected-theme {
 	outline: 4px solid;
-	outline-color: oklch(var(--p));
+	outline-color: var(--color-primary);
 	outline-offset: 2px;
 }
 

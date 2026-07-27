@@ -2161,6 +2161,7 @@ export type LocaleData = {
 			reputationSlashAlert: string
 			profileEdit: {
 				previewHint: string
+				sfwMode: string
 				livePreview: string
 				languageVersion: string
 				localeHint: string
@@ -3877,14 +3878,9 @@ export type LocaleData = {
 			replayDivider: string
 			trending: {
 				title: string
-				tabsLabel: {
-					'aria-label': string
-				}
 				postCount: {
 					title: string
 				}
-				scopeLocal: string
-				scopeNearby: string
 				empty: string
 				'aria-label': string
 			}
@@ -4173,6 +4169,7 @@ export type LocaleData = {
 			apply: string
 			closed: string
 			deadline: string
+			deadlineLabel: string
 			options: {
 				placeholder: string
 			}
@@ -4257,6 +4254,10 @@ export type LocaleData = {
 	cabinet: {
 		title: string
 		description: string
+		entries: {
+			title: string
+			'aria-label': string
+		}
 		openCabinets: {
 			title: string
 			'aria-label': string
@@ -4307,6 +4308,10 @@ export type LocaleData = {
 		created: string
 		modified: string
 		statusCount: string
+		newCabinet: {
+			title: string
+			'aria-label': string
+		}
 		newCabinetPrompt: string
 		newFolderPrompt: string
 		renamePrompt: string

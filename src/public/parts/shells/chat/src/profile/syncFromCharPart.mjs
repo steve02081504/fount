@@ -124,6 +124,17 @@ function localizedSlicesFromPartInfo(info) {
 		if (raw.author) slice.author = String(raw.author).trim()
 		if (raw.home_page) slice.home_page = String(raw.home_page).trim()
 		if (raw.issue_page) slice.issue_page = String(raw.issue_page).trim()
+
+		const sfwName = String(raw.sfw_name || '').trim()
+		if (sfwName) slice.sfw_name = sfwName
+		if (raw.sfw_description != null) slice.sfw_description = String(raw.sfw_description)
+		const sfwMd = raw.sfw_description_markdown != null
+			? String(raw.sfw_description_markdown)
+			: raw.sfw_description != null ? String(raw.sfw_description) : ''
+		if (sfwMd) slice.sfw_description_markdown = sfwMd
+		const sfwTags = normalizeTags(raw.sfw_tags)
+		if (sfwTags.length) slice.sfw_tags = sfwTags
+
 		if (Object.keys(slice).length) out[localeKey] = slice
 	}
 	return out
@@ -131,14 +142,31 @@ function localizedSlicesFromPartInfo(info) {
 
 /**
  * @param {Record<string, object>} info part.info
+ * @param {'avatar' | 'sfw_avatar'} field 头像字段名
  * @returns {string} 首选头像字符串（跨 locale 第一个非空）
  */
-function pickPartAvatar(info) {
+function pickPartAvatarField(info, field = 'avatar') {
 	for (const raw of Object.values(info || {})) {
-		const avatar = String(raw?.avatar || '').trim()
+		const avatar = String(raw?.[field] || '').trim()
 		if (avatar) return avatar
 	}
 	return ''
+}
+
+/**
+ * @param {Record<string, object>} info part.info
+ * @returns {string} 首选头像字符串（跨 locale 第一个非空）
+ */
+function pickPartAvatar(info) {
+	return pickPartAvatarField(info, 'avatar')
+}
+
+/**
+ * @param {Record<string, object>} info part.info
+ * @returns {string} 首选 SFW 头像
+ */
+function pickPartSfwAvatar(info) {
+	return pickPartAvatarField(info, 'sfw_avatar')
 }
 
 /**
@@ -214,17 +242,21 @@ async function loadCharPartInfoMap(username, charname) {
  * @param {{ kind: 'emoji', value: string } | { kind: 'file', buffer: Buffer, mimeType: string, filename: string }} materialized 头像
  * @param {string} username replica
  * @param {string} hash entityHash
+ * @param {{ sfw?: boolean }} [options] SFW 时写 sfw_avatar
  * @returns {Promise<void>}
  */
-async function applyMaterializedAvatar(localized, materialized, username, hash) {
+async function applyMaterializedAvatar(localized, materialized, username, hash, options = {}) {
+	const sfw = !!options.sfw
 	if (materialized.kind === 'emoji') {
 		for (const key of Object.keys(localized))
-			localized[key] = { ...localized[key], avatar: materialized.value }
+			localized[key] = sfw
+				? { ...localized[key], sfw_avatar: materialized.value }
+				: { ...localized[key], avatar: materialized.value }
 		await updateProfile(username, hash, { localized }, { skipPresentation: true })
 		return
 	}
 	await updateProfile(username, hash, { localized }, { skipPresentation: true })
-	await uploadAvatar(username, hash, materialized.buffer, materialized.filename, materialized.mimeType)
+	await uploadAvatar(username, hash, materialized.buffer, materialized.filename, materialized.mimeType, { sfw })
 }
 
 /**
@@ -248,8 +280,12 @@ export async function syncAgentProfileFromCharPart(username, entityHash, options
 
 	const info = await loadCharPartInfoMap(username, charname)
 	const avatarRaw = pickPartAvatar(info)
+	const sfwAvatarRaw = pickPartSfwAvatar(info)
 	const materialized = avatarRaw
 		? await materializePartAvatar(username, charname, avatarRaw).catch(() => null)
+		: null
+	const sfwMaterialized = sfwAvatarRaw
+		? await materializePartAvatar(username, charname, sfwAvatarRaw).catch(() => null)
 		: null
 
 	// 已有文案但缺头像：只补头像，不覆盖用户改过的 name/tags
@@ -274,6 +310,15 @@ export async function syncAgentProfileFromCharPart(username, entityHash, options
 		await applyMaterializedAvatar(localized, materialized, username, hash)
 	else
 		await updateProfile(username, hash, { localized }, { skipPresentation: true })
+
+	if (sfwMaterialized)
+		await applyMaterializedAvatar(
+			(await getProfile(hash, username, { skipPresentation: true })).localized,
+			sfwMaterialized,
+			username,
+			hash,
+			{ sfw: true },
+		)
 
 	return getProfile(hash, username, { skipPresentation: true })
 }

@@ -1,8 +1,7 @@
 /**
  * 【文件】public/shared/entityProfileHoverCard.mjs
  * 【职责】跨壳人物卡悬浮层：与点击弹层共用 profile_popup + paintEntityProfileCard。
- * 【原理】单例卡 + 单队列串行绘制：任意时刻最多一条 paint 流水线写 DOM；新悬停只抬世代号，
- * 排队中的旧请求直接跳过，进行中的在每个 await 后退出。从根上避免内容串台，不靠「事后检查补洞」。
+ * 【原理】单例卡 + 单队列串行绘制；与点击弹层共用 `profile_popup` 全量模板与 `wireEntityProfileCardActions`。
  */
 import { cachedProfileFromApi, fetchEntityProfileApi } from '../src/entityProfileApi.mjs'
 
@@ -132,6 +131,7 @@ function positionNearAnchor(card, anchor) {
  *   loadProfile?: () => Promise<object | null>,
  *   paintOptions?: object,
  *   attribution?: object | null,
+ *   entity?: object | null,
  * }} options 选项
  * @returns {Promise<void>}
  */
@@ -200,6 +200,29 @@ async function paintHoverCard(generation, anchor, options) {
 		ownerName,
 		attribution: options.attribution || null,
 	})
+
+	const entity = options.entity || {
+		entityHash: resolvedHash || null,
+		charname: null,
+		pubKeyHex: null,
+		pubKeyHash: null,
+		displayName: name,
+		attribution: options.attribution || null,
+	}
+	const { wireEntityProfileCardActions } = await import('../hub/entityProfile.mjs')
+	await wireEntityProfileCardActions(card, entity, {
+		profile: profile || null,
+		onBeforeDm: hideEntityProfileHoverCard,
+		/**
+		 *
+		 */
+		onRepaint: async () => {
+			if (!isCurrentShow(generation) || card.dataset.cacheKey !== options.cacheKey) return
+			delete card.dataset.cacheKey
+			await paintHoverCard(generation, anchor, options)
+		},
+	})
+
 	positionNearAnchor(card, anchor)
 }
 
@@ -215,6 +238,7 @@ async function paintHoverCard(generation, anchor, options) {
  *   loadProfile?: () => Promise<object | null>,
  *   paintOptions?: object,
  *   attribution?: object | null,
+ *   entity?: object | null,
  * }} options 选项
  * @returns {Promise<void>}
  */

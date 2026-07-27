@@ -3,6 +3,11 @@
 	opacity: 0.3;
 }
 
+[un-cloak],
+.hidden {
+	display: none !important;
+}
+
 .text-icon {
 	color: var(--color-base-content);
 }

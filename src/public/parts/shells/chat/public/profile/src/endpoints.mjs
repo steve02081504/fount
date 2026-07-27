@@ -1,8 +1,8 @@
 /**
  * 【文件】public/profile/src/endpoints.mjs
- * 【职责】实体资料 REST 薄封装：GET/PUT /entities/:entityHash 与头像 multipart 上传。
+ * 【职责】实体资料 REST 薄封装：GET/PUT /entities/:entityHash、rebuild、EVFS multipart 上传。
  * 【原理】localeQueryString 附加 groupId；credentials include；错误时附带 response 的 Error。
- * 【数据结构】entityHash(128 hex)、updates 对象、File 头像。
+ * 【数据结构】entityHash(128 hex)、updates 对象、File。
  * 【关联】entityProfileApi.mjs；profile/index.mjs、Hub 资料编辑。
  */
 import { localeQueryString } from '../../src/entityProfileApi.mjs'
@@ -72,39 +72,21 @@ export async function rebuildProfileFromPart(entityHash, groupId) {
 }
 
 /**
- * @param {string} entityHash 128 位 entityHash
- * @param {File} file 头像文件
- * @returns {Promise<object>} 上传结果 JSON
+ * multipart 写任意实体 EVFS 路径。
+ * @param {string} entityHash 128 hex
+ * @param {string} logicalPath EVFS 逻辑路径
+ * @param {File|Blob} file 文件
+ * @returns {Promise<object>} `{ url, manifest? }`
  */
-export async function uploadAvatar(entityHash, file) {
+export async function uploadEntityFile(entityHash, logicalPath, file) {
 	const formData = new FormData()
-	formData.append('avatar', file)
-	const response = await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/files/profile/avatar`, {
-		method: 'POST',
-		body: formData,
-	})
+	formData.append('file', file)
+	const response = await fetch(
+		`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/files/${String(logicalPath || '').replace(/^\/+/, '')}`,
+		{ method: 'POST', body: formData },
+	)
 	const data = await response.json().catch(() => ({}))
 	if (!response.ok)
 		throw Object.assign(new Error(data.error || response.statusText), data, { response })
-
-	return data
-}
-
-/**
- * @param {string} entityHash 128 位 entityHash
- * @param {File} file 横幅文件
- * @returns {Promise<object>} 上传结果 JSON
- */
-export async function uploadBanner(entityHash, file) {
-	const formData = new FormData()
-	formData.append('banner', file)
-	const response = await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/files/profile/banner`, {
-		method: 'POST',
-		body: formData,
-	})
-	const data = await response.json().catch(() => ({}))
-	if (!response.ok)
-		throw Object.assign(new Error(data.error || response.statusText), data, { response })
-
 	return data
 }

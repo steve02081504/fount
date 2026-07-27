@@ -43,60 +43,12 @@
 .settings-nav {
 	position: sticky;
 	top: 1rem;
-	display: flex;
-	flex-direction: column;
-	gap: 0.25rem;
-	padding: 0.45rem;
-	border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
-	border-radius: 1rem;
-	background: color-mix(in srgb, currentColor 2.5%, transparent);
 }
 
 .settings-nav-group {
-	display: flex;
-	flex-direction: column;
-	gap: 0.25rem;
 	margin-top: 0.55rem;
 	padding-top: 0.55rem;
 	border-top: 1px solid color-mix(in srgb, currentColor 10%, transparent);
-}
-
-.settings-nav-group-label {
-	padding: 0.15rem 0.7rem 0.35rem;
-	font-size: 0.7rem;
-	font-weight: 700;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-	opacity: 0.55;
-}
-
-.settings-nav-item {
-	display: block;
-	width: 100%;
-	padding: 0.55rem 0.75rem;
-	border: 1px solid transparent;
-	border-radius: 0.7rem;
-	background: transparent;
-	color: inherit;
-	font: inherit;
-	font-size: 0.9rem;
-	text-align: left;
-	cursor: pointer;
-}
-
-.settings-nav-item:hover {
-	background: color-mix(in srgb, currentColor 6%, transparent);
-}
-
-.settings-nav-item:focus-visible {
-	outline: 2px solid var(--color-primary);
-	outline-offset: 1px;
-}
-
-.settings-nav-item-active {
-	border-color: color-mix(in srgb, currentColor 12%, transparent);
-	background: var(--color-base-100);
-	font-weight: 600;
 }
 
 .settings-content {

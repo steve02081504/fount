@@ -40,9 +40,9 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 		const body = document.getElementById('overlay-body')
 		if (!body) return
 		host = document.createElement('div')
-		host.className = 'overlay-section space-y-3'
+		host.className = 'card card-border bg-base-100 p-4 space-y-3'
 		host.id = 'character-chat-config-host'
-		const firstSection = body.querySelector('.overlay-section')
+		const firstSection = body.querySelector('.card')
 		if (firstSection)
 			firstSection.insertAdjacentElement('afterend', host)
 		else body.appendChild(host)

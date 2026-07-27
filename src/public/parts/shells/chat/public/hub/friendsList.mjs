@@ -81,6 +81,13 @@ function bindFriendProfileHover(el, target) {
 			entityHash,
 			displayName: target.displayName,
 			groupId: target.groupId || undefined,
+			entity: {
+				entityHash,
+				charname: target.charname || null,
+				pubKeyHex: null,
+				pubKeyHash: null,
+				displayName: target.displayName,
+			},
 			paintOptions: friendHoverPaintOptions(),
 		}
 	})

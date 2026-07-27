@@ -20,7 +20,7 @@ let mountGeneration = 0
 function markActiveNav(nav, section) {
 	for (const button of nav.querySelectorAll('[data-prefs-section]')) {
 		const active = button.getAttribute('data-prefs-section') === section
-		button.classList.toggle('prefs-nav-item--active', active)
+		button.classList.toggle('tab-active', active)
 		button.setAttribute('aria-selected', active ? 'true' : 'false')
 	}
 }

@@ -6,6 +6,8 @@
  * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../src/entityProfileApi、../src/lib/entityHash、core/avatarCover、core/domUtils、core/state、profilePopup、shared/entityProfileHoverCard
  */
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import { memoizePromise } from '../../../../scripts/lib/memo.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { deriveMessageAttribution } from '../shared/attribution.mjs'
@@ -167,6 +169,170 @@ export function invalidateUserProfileCache(entityHash) {
 }
 
 /**
+ * 清空全部实体资料缓存（如 user.sfw 切换后）。
+ * @returns {void}
+ */
+export function invalidateAllUserProfileCaches() {
+	loadProfileCached.deleteMatching(() => true)
+}
+
+/**
+ * 清除容器内指定作者键的头像已加载标记。
+ * @param {HTMLElement} root 容器
+ * @param {Set<string>} authorKeys 小写作者键
+ * @returns {void}
+ */
+function clearAvatarLoadedForAuthorKeys(root, authorKeys) {
+	if (!authorKeys.size) return
+	root.querySelectorAll('[data-avatar-for]').forEach((av) => {
+		const key = av.dataset.avatarFor?.trim().toLowerCase()
+		if (key && authorKeys.has(key))
+			delete av.dataset.avatarLoaded
+	})
+}
+
+/**
+ * 收集与 entityHash 关联的 `data-avatar-for` 键。
+ * @param {string} entityHash 128 位 entityHash
+ * @returns {Promise<Set<string>>} 小写作者键
+ */
+async function authorKeysForEntityHash(entityHash) {
+	const key = String(entityHash || '').trim().toLowerCase()
+	/** @type {Set<string>} */
+	const keys = new Set()
+	if (!isEntityHash128(key)) return keys
+	keys.add(key)
+
+	for (const member of store.context.currentState?.members || []) {
+		if (String(member.entityHash || '').toLowerCase() !== key) continue
+		if (member.memberKey) keys.add(String(member.memberKey).toLowerCase())
+		if (member.pubKeyHash) keys.add(String(member.pubKeyHash).toLowerCase())
+		if (member.charname) keys.add(String(member.charname).toLowerCase())
+	}
+
+	const { charAgentEntityHash } = await import('./entityResolve.mjs')
+	const { resolveFriendBinding } = await import('./friendBindings.mjs')
+
+	for (const agent of store.viewer.agents || []) {
+		if (String(agent.entityHash || '').toLowerCase() !== key) continue
+		const name = String(agent.charPartName || '').trim()
+		if (name) keys.add(name.toLowerCase())
+	}
+
+	for (const group of store.sidebar.groups) {
+		const binding = resolveFriendBinding(group)
+		if (String(binding?.entityHash || '').toLowerCase() !== key) continue
+		if (binding.charname) keys.add(String(binding.charname).toLowerCase())
+	}
+
+	const charname = store.privateGroup?.charname
+	if (charname) {
+		const eh = await charAgentEntityHash(charname)
+		if (eh === key) keys.add(String(charname).toLowerCase())
+	}
+
+	return keys
+}
+
+/**
+ * 资料保存或从角色 part 强制同步后重绘 Hub 可见资料面。
+ * @param {string} entityHash 128 位 entityHash
+ * @returns {Promise<void>}
+ */
+export async function refreshHubAfterProfileChange(entityHash) {
+	const key = String(entityHash || '').trim().toLowerCase()
+	if (!isEntityHash128(key)) return
+
+	invalidateUserProfileCache(key)
+	hideEntityProfileHoverCard()
+	const authorKeys = await authorKeysForEntityHash(key)
+
+	const messageList = document.getElementById('messages')
+	const memberList = document.getElementById('member-list')
+	if (messageList instanceof HTMLElement) {
+		clearAvatarLoadedForAuthorKeys(messageList, authorKeys)
+		applyAvatarsTo(messageList)
+		await hydrateAuthorLabels(messageList)
+	}
+	if (memberList instanceof HTMLElement) {
+		clearAvatarLoadedForAuthorKeys(memberList, authorKeys)
+		applyAvatarsTo(memberList)
+	}
+
+	const viewerEh = String(store.viewer?.viewerEntityHash || '').toLowerCase()
+	if (viewerEh === key) {
+		const { refreshViewerHubPresentation } = await import('./init.mjs')
+		await refreshViewerHubPresentation()
+	}
+
+	const charname = store.privateGroup?.charname
+	if (charname) {
+		const { charAgentEntityHash } = await import('./entityResolve.mjs')
+		if ((await charAgentEntityHash(charname)) === key) {
+			const { getCharDetails, renderCharInfoCardActive } = await import('./charCard.mjs')
+			await renderCharInfoCardActive(charname, await getCharDetails(charname))
+		}
+	}
+
+	const { resolveFriendBinding } = await import('./friendBindings.mjs')
+	const inFriends = store.sidebar.groups.some((group) => {
+		const binding = resolveFriendBinding(group)
+		return String(binding?.entityHash || '').toLowerCase() === key
+	})
+	if (store.context.currentMode === 'friends' || inFriends) {
+		const { loadFriendsList, renderFriendsColumn } = await import('./friendsList.mjs')
+		await renderFriendsColumn(await loadFriendsList())
+	}
+
+	const inCurrentMembers = (store.context.currentState?.members || [])
+		.some(member => String(member.entityHash || '').toLowerCase() === key)
+	if (inCurrentMembers && store.context.currentState) {
+		const { renderMemberList } = await import('./sidebar/index.mjs')
+		await renderMemberList(store.context.currentState)
+	}
+}
+
+/**
+ * SFW 开关变更后重绘 Hub 可见资料面。
+ * @returns {Promise<void>}
+ */
+export async function refreshHubAfterSfwChange() {
+	invalidateAllUserProfileCaches()
+	const messageList = document.getElementById('messages')
+	const memberList = document.getElementById('member-list')
+	if (messageList instanceof HTMLElement) {
+		messageList.querySelectorAll('[data-avatar-for]').forEach(av => { delete av.dataset.avatarLoaded })
+		applyAvatarsTo(messageList)
+		await hydrateAuthorLabels(messageList)
+	}
+	if (memberList instanceof HTMLElement) {
+		memberList.querySelectorAll('[data-avatar-for]').forEach(av => { delete av.dataset.avatarLoaded })
+		applyAvatarsTo(memberList)
+	}
+
+	const charname = store.privateGroup?.charname
+	if (charname) {
+		const { getCharDetails, renderCharInfoCardActive } = await import('./charCard.mjs')
+		await renderCharInfoCardActive(charname, await getCharDetails(charname))
+	}
+
+	if (store.context.currentMode === 'friends') {
+		const { loadFriendsList, renderFriendsColumn } = await import('./friendsList.mjs')
+		await renderFriendsColumn(await loadFriendsList())
+	}
+
+	const myAvatar = document.getElementById('my-avatar')
+	if (myAvatar instanceof HTMLElement && store.viewer?.viewerEntityHash) {
+		const profile = await fetchUserProfile(store.viewer.viewerEntityHash)
+		await applyProfileAvatarToHost(myAvatar, {
+			seed: store.viewer.viewerEntityHash,
+			label: profile?.name || store.viewer.viewerDisplayName || '',
+			avatar: displayProfileAvatar(profile),
+		})
+	}
+}
+
+/**
  * @param {string} authorKey 发送者键
  * @param {HTMLElement} [anchorElement] 锚点（优先走 resolveEntityFromAnchor）
  * @returns {Promise<object | null>} hover 卡选项
@@ -198,6 +364,13 @@ async function hoverOptionsForAuthor(authorKey, anchorElement) {
 		displayName: fallbackName,
 		groupId,
 		loadProfile,
+		entity: entity || {
+			entityHash: resolvedEntityHash || (isEntityHash128(profileKey) ? profileKey : null),
+			charname: null,
+			pubKeyHex: null,
+			pubKeyHash: isHex64(profileKey) ? profileKey : null,
+			displayName: fallbackName,
+		},
 		paintOptions: {
 			selfEntityHash: store.viewer?.viewerEntityHash,
 			nodeHash: store.viewer?.nodeHash,

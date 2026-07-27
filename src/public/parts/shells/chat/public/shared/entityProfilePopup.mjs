@@ -21,7 +21,9 @@ const LAYER_ID = 'shared-entity-profile-popup-layer'
  * @returns {void}
  */
 export function dismissEntityProfilePopup() {
-	document.getElementById(LAYER_ID)?.remove()
+	const el = document.getElementById(LAYER_ID)
+	if (el instanceof HTMLDialogElement) el.close()
+	else el?.remove()
 }
 
 /**
@@ -79,16 +81,16 @@ export async function showEntityProfilePopup(entity) {
 	if (!entity?.entityHash && !entity?.displayName) return
 	dismissEntityProfilePopup()
 
-	const layer = document.createElement('div')
+	const layer = document.createElement('dialog')
 	layer.id = LAYER_ID
-	layer.className = 'profile-popup-backdrop show'
-	layer.addEventListener('click', event => {
-		if (event.target === layer) dismissEntityProfilePopup()
-	})
+	layer.className = 'modal profile-popup-dialog'
+	layer.addEventListener('click', event => { if (event.target === layer) layer.close() })
+	layer.addEventListener('close', () => layer.remove())
 
 	const popup = await createEntityProfileCardElement('popup')
 	layer.appendChild(popup)
 	document.body.appendChild(layer)
+	layer.showModal()
 
 	popup.querySelector('[data-profile-popup-close]')?.addEventListener('click', () => dismissEntityProfilePopup())
 	popup.querySelector('[data-profile-popup-social]')?.addEventListener('click', () => {

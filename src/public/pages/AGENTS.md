@@ -19,9 +19,12 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 
 ## UI & Theming
 
+- **`base.css`**: shared page chrome. `.hidden { display: none !important }` — do not re-declare in shells; page-local `display: flex|grid` must not un-hide toggled UI.
 - **`theme.mjs`**: DaisyUI theme management. Call `applyTheme()` first.
 - **`template.mjs`**: `renderTemplate` / `mountTemplate` / `renderTemplateAsHtmlString` / `withTemplates(path, fn)`. Cross-shell shared modules must **not** call bare `usingTemplates` — use `withTemplates` or direct DOM.
 - **`dialog.mjs`**: `openDialogFromTemplate` / `pickFromDialog`. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do not nest another `<dialog>`.
+- **`promptDialog.mjs`**: shared DaisyUI `promptText` / `promptTextArea` / `confirmAction` (templates under `scripts/features/templates/`). Prefer over `window.prompt` / `confirm` / shell-local copies.
+- **`components/positionContextMenu.mjs`** + **`components/contextMenuDismiss.mjs`**: shared floating-menu placement / dismiss (Chat Hub re-exports from `hub/core/` for compatibility).
 - **`contentReveal/`**: `wrapSensitiveMediaHtml`, `wrapContentWarningHtml`, `bindContentReveal`.
 - **`translate.mjs`**: `mountTranslationBlock`, `requestTranslation`, `resolveTargetLang` (-> `primaryLocale()`).
 - **`toast.mjs`**: `showToast`, `showToastI18n`.
