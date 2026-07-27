@@ -1576,7 +1576,7 @@
 			},
 			"prefsSubtitle": "Переклад і об'єднання",
 			"prefsNav": {
-				"aria-label": "Розділ переваг"
+				"aria-label": "Розділи налаштувань"
 			},
 			"federationTooltip": {
 				"title": "Об'єднані налаштування P2P",

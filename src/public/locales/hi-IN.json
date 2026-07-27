@@ -1576,7 +1576,7 @@
 			},
 			"prefsSubtitle": "अनुवाद और फेडरेशन कनेक्शन",
 			"prefsNav": {
-				"aria-label": "वरीयता विभाजन"
+				"aria-label": "सेटिंग श्रेणियाँ"
 			},
 			"federationTooltip": {
 				"title": "फ़ेडरेटेड P2P सेटिंग्स",

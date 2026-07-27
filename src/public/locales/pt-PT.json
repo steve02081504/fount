@@ -1576,7 +1576,7 @@
 			},
 			"prefsSubtitle": "Conexão de tradução e federação",
 			"prefsNav": {
-				"aria-label": "Partição de preferência"
+				"aria-label": "Secções de definições"
 			},
 			"federationTooltip": {
 				"title": "Definições P2P federadas",

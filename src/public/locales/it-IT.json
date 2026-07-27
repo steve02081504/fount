@@ -1576,7 +1576,7 @@
 			},
 			"prefsSubtitle": "Traduzione e collegamento federativo",
 			"prefsNav": {
-				"aria-label": "Partizione preferenziale"
+				"aria-label": "Sezioni impostazioni"
 			},
 			"federationTooltip": {
 				"title": "Impostazioni P2P federate",

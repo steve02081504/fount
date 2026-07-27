@@ -1576,7 +1576,7 @@
 			},
 			"prefsSubtitle": "Dịch thuật và kết nối liên đoàn",
 			"prefsNav": {
-				"aria-label": "Phân vùng ưu tiên"
+				"aria-label": "Danh mục cài đặt"
 			},
 			"federationTooltip": {
 				"title": "Cài đặt P2P liên kết",

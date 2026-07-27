@@ -1576,7 +1576,7 @@
 			},
 			"prefsSubtitle": "翻訳とフェデレーション接続",
 			"prefsNav": {
-				"aria-label": "優先パーティション"
+				"aria-label": "設定カテゴリ"
 			},
 			"federationTooltip": {
 				"title": "フェデレーション P2P 設定",

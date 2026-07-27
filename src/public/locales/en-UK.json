@@ -1571,7 +1571,7 @@
 			},
 			"prefsSubtitle": "Translation and federation connection",
 			"prefsNav": {
-				"aria-label": "Preference partition"
+				"aria-label": "Settings sections"
 			},
 			"federationTooltip": {
 				"title": "Federated P2P settings",

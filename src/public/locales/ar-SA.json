@@ -1576,7 +1576,7 @@
 			},
 			"prefsSubtitle": "اتصال الترجمة والاتحاد",
 			"prefsNav": {
-				"aria-label": "قسم التفضيل"
+				"aria-label": "أقسام الإعدادات"
 			},
 			"federationTooltip": {
 				"title": "إعدادات الاتحاد P2P",

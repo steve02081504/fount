@@ -1576,7 +1576,7 @@
 			},
 			"prefsSubtitle": "Перевод и подключение к федерации",
 			"prefsNav": {
-				"aria-label": "Раздел предпочтений"
+				"aria-label": "Разделы настроек"
 			},
 			"federationTooltip": {
 				"title": "Настройки федеративного P2P",
