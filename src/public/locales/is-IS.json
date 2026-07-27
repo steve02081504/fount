@@ -2195,6 +2195,7 @@
 			"reputationSlashAlert": "Orðspor meðlims ${target}... er minnt á frádráttinn.",
 			"profileEdit": {
 				"previewHint": "Breytingar birtast strax í forskoðuninni og eru vistaðar og samstilltar í Chat og Social.",
+				"sfwMode": "Vinnustaðavænt",
 				"livePreview": "Forskoðun í beinni",
 				"languageVersion": "Tungumálaútgáfa",
 				"localeHint": "Smelltu á merkimiðann til að skipta um eða breyta kóðanum; ýttu á Enter í innsláttarreitnum í lokin til að afrita það á nýtt tungumál.",
@@ -3905,14 +3906,9 @@
 			"replayDivider": "Búin að lesa, flettu aftur",
 			"trending": {
 				"title": "Vinsælt efni",
-				"tabsLabel": {
-					"aria-label": "Umfang vinsælla umræðuefna"
-				},
 				"postCount": {
 					"title": "${n} færslur"
 				},
-				"scopeLocal": "Staðvært",
-				"scopeNearby": "Nálægt",
 				"empty": "Ekkert heitt umræðuefni ennþá",
 				"aria-label": "Vinsælt efni"
 			}
@@ -4197,6 +4193,7 @@
 			"apply": "Sækja um atkvæðagreiðslu",
 			"closed": "Atkvæðagreiðslu er lokið",
 			"deadline": "Frestur: ${deadline}",
+			"deadlineLabel": "Atkvæðagreiðslufrestur",
 			"options": {
 				"placeholder": "Einn valkostur í hverri línu (lágmark 2 atriði)"
 			}
@@ -4279,6 +4276,10 @@
 	"cabinet": {
 		"title": "Skjalaskápur",
 		"description": "P2P persónulegir og sameiginlegir skjalaskápar",
+		"entries": {
+			"title": "Atriðalisti",
+			"aria-label": "Atriðalisti"
+		},
 		"openCabinets": {
 			"title": "Opnaðu skjalaskápalista",
 			"aria-label": "Opnaðu skjalaskápalista"
@@ -4329,6 +4330,10 @@
 		"created": "Búa til: ${stamp}",
 		"modified": "Breyta: ${stamp}",
 		"statusCount": "${count} atriði, ${selected} valin",
+		"newCabinet": {
+			"title": "Nýr skjalaskápur",
+			"aria-label": "Nýr skjalaskápur"
+		},
 		"newCabinetPrompt": "Nýtt nafn skjalaskáps",
 		"newFolderPrompt": "Nýtt möppuheiti",
 		"renamePrompt": "Nýtt nafn",

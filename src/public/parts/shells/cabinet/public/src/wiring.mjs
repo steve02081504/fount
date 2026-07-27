@@ -1,7 +1,8 @@
 /**
  * DOM 接线（工具栏、上传、快捷键、属性保存）。
  */
-import { promptI18n } from '/scripts/i18n/index.mjs'
+import { geti18n } from '/scripts/i18n/index.mjs'
+import { promptText } from '/scripts/features/promptDialog.mjs'
 
 import { matchCabinetShortcut } from '../shared/keyboard.mjs'
 
@@ -19,9 +20,9 @@ import { cabinetStore } from './state.mjs'
 export function wireBootstrap() {
 	/* eslint-disable jsdoc/require-jsdoc -- DOM onclick/onchange wiring */
 	const createCabinet = async () => {
-		const name = await promptI18n('cabinet.newCabinetPrompt')
+		const name = await promptText(geti18n('cabinet.newCabinetPrompt') || 'cabinet.newCabinetPrompt')
 		if (!name) return
-		const visibility = await promptI18n('cabinet.visibilityPrompt', 'private') || 'private'
+		const visibility = await promptText(geti18n('cabinet.visibilityPrompt') || 'cabinet.visibilityPrompt', 'private') || 'private'
 		const { cabinet } = await api('POST', '/cabinets', { name, visibility: { visibility }, type: 'personal' })
 		await refreshCabinets()
 		if (cabinet?.cabinet_id) await openCabinet(cabinet.cabinet_id)
@@ -42,8 +43,9 @@ export function wireBootstrap() {
 	document.getElementById('showHidden').onchange = () => void refreshEntries()
 	document.getElementById('propSave').onclick = () => void saveProps()
 	document.getElementById('entryGrid').addEventListener('contextmenu', event => showContextMenu(event))
-	document.addEventListener('click', hideContextMenu)
+	document.getElementById('statusBar').setAttribute('aria-live', 'polite')
 	document.addEventListener('keydown', event => {
+		if (event.key === 'Escape') hideContextMenu()
 		const command = matchCabinetShortcut(event)
 		if (!command) return
 		event.preventDefault()

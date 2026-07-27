@@ -2197,6 +2197,7 @@
 			"reputationSlashAlert": "成员 ${target}… 的声誉受到扣减提醒",
 			"profileEdit": {
 				"previewHint": "修改会立即显示在预览中，保存后同步用于 Chat 与 Social。",
+				"sfwMode": "安全内容",
 				"livePreview": "实时预览",
 				"languageVersion": "语言版本",
 				"localeHint": "点击标签切换或编辑代码；在末尾输入框回车可复制为新语言。",
@@ -3913,14 +3914,9 @@
 			"replayDivider": "已看完，重新浏览",
 			"trending": {
 				"title": "热门话题",
-				"tabsLabel": {
-					"aria-label": "热门话题范围"
-				},
 				"postCount": {
 					"title": "${n} 条帖子"
 				},
-				"scopeLocal": "本机",
-				"scopeNearby": "附近",
 				"empty": "暂无热门话题",
 				"aria-label": "热门话题"
 			}
@@ -4209,6 +4205,7 @@
 			"apply": "应用投票",
 			"closed": "投票已结束",
 			"deadline": "截止：${deadline}",
+			"deadlineLabel": "截止时间",
 			"options": {
 				"placeholder": "每行一个选项（至少 2 项）"
 			}
@@ -4293,6 +4290,10 @@
 	"cabinet": {
 		"title": "文件柜",
 		"description": "P2P 个人与共享文件柜",
+		"entries": {
+			"title": "内容列表",
+			"aria-label": "内容列表"
+		},
 		"openCabinets": {
 			"title": "打开文件柜列表",
 			"aria-label": "打开文件柜列表"
@@ -4343,6 +4344,10 @@
 		"created": "创建：${stamp}",
 		"modified": "修改：${stamp}",
 		"statusCount": "${count} 项，已选 ${selected}",
+		"newCabinet": {
+			"title": "新建文件柜",
+			"aria-label": "新建文件柜"
+		},
 		"newCabinetPrompt": "新文件柜名称",
 		"newFolderPrompt": "新文件夹名称",
 		"renamePrompt": "新名称",

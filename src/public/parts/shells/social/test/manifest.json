@@ -266,7 +266,10 @@
 					"name": "composer",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/composer.spec.mjs",
+						"src/public/parts/shells/social/public/index.html",
+						"src/public/parts/shells/social/public/styles.css",
 						"src/public/parts/shells/social/public/src/composer.mjs",
+						"src/public/parts/shells/social/public/src/composerState.mjs",
 						"src/public/parts/shells/social/public/src/visibilityPicker.mjs",
 						"src/public/parts/shells/social/public/src/actions/composerFeed.mjs"
 					]

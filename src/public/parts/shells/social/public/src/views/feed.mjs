@@ -14,6 +14,14 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 /** @type {(() => void) | null} */
 let unbindDwell = null
 
+/** 会话内附近趋势缓存 */
+/** @type {{ tag: string, count: number }[] | null} */
+let trendingCache = null
+
+/** 在途附近趋势请求（去重） */
+/** @type {Promise<{ tag: string, count: number }[] | null> | null} */
+let trendingInFlight = null
+
 /**
  * 更新 feed 侧栏搜索清除按钮可见性。
  * @returns {void}
@@ -145,52 +153,66 @@ export async function loadSuggestedAccounts() {
 }
 
 /**
- * 加载并渲染热门话题标签。
- * @param {'local' | 'nearby'} [scope='local'] 范围
+ * 加载并渲染热门话题（附近聚合；缓存/本机即时回退）。
  * @param {string} [containerId='feedTrending'] 容器 id
  * @returns {Promise<void>}
  */
-export async function loadTrendingHashtags(scope = 'local', containerId = 'feedTrending') {
+export async function loadTrendingHashtags(containerId = 'feedTrending') {
 	const aside = document.getElementById(containerId)
 	if (!aside) return
-	const currentScope = scope === 'nearby' ? 'nearby' : 'local'
-	aside.dataset.trendingScope = currentScope
-	const data = await socialApi(`/hashtags/trending?limit=12&scope=${currentScope}`).catch(() => ({ tags: [] }))
-	const tags = data.tags || []
-	aside.classList.remove('hidden')
-	aside.replaceChildren()
-	aside.appendChild(await renderTemplate('trending_header', {
-		localActive: currentScope === 'local' ? 'active' : '',
-		nearbyActive: currentScope === 'nearby' ? 'active' : '',
-		localSelected: currentScope === 'local' ? 'true' : 'false',
-		nearbySelected: currentScope === 'nearby' ? 'true' : 'false',
-	}))
-	const list = document.createElement('div')
-	list.className = 'trending-tags'
-	if (!tags.length)
-		await mountEmptyState(list, { titleKey: 'social.feed.trending.empty', modClass: ' empty-state--hint' })
-	else
-		for (const row of tags) {
-			const link = document.createElement('a')
-			link.className = 'trending-tag link-btn'
-			link.href = formatSocialTopicHref(row.tag)
-			link.textContent = `#${row.tag}`
-			const count = document.createElement('span')
-			count.className = 'trending-count'
-			count.textContent = String(row.count)
-			link.appendChild(count)
-			link.dataset.n = String(row.count)
-			link.dataset.i18n = 'social.feed.trending.postCount'
-			list.appendChild(link)
-		}
 
-	aside.appendChild(list)
-	aside.querySelectorAll('[data-trending-scope]').forEach(btn => {
-		btn.addEventListener('click', () => {
-			const next = btn.getAttribute('data-trending-scope') === 'nearby' ? 'nearby' : 'local'
-			void loadTrendingHashtags(next, containerId)
-		})
-	})
+	/**
+	 * @param {{ tag: string, count: number }[]} tags 话题行
+	 * @returns {Promise<void>}
+	 */
+	async function paint(tags) {
+		aside.classList.remove('hidden')
+		aside.replaceChildren()
+		aside.appendChild(await renderTemplate('trending_header', {}))
+		const list = document.createElement('div')
+		list.className = 'trending-tags'
+		if (!tags.length)
+			await mountEmptyState(list, { titleKey: 'social.feed.trending.empty', modClass: ' empty-state--hint' })
+		else
+			for (const row of tags) {
+				const link = document.createElement('a')
+				link.className = 'trending-tag link-btn'
+				link.href = formatSocialTopicHref(row.tag)
+				link.textContent = `#${row.tag}`
+				const count = document.createElement('span')
+				count.className = 'trending-count'
+				count.textContent = String(row.count)
+				link.appendChild(count)
+				link.dataset.n = String(row.count)
+				link.dataset.i18n = 'social.feed.trending.postCount'
+				list.appendChild(link)
+			}
+		aside.appendChild(list)
+	}
+
+	if (trendingCache)
+		await paint(trendingCache)
+
+	if (!trendingInFlight)
+		trendingInFlight = socialApi('/hashtags/trending?limit=12&scope=nearby')
+			.then(data => {
+				trendingCache = data.tags || []
+				return trendingCache
+			})
+			.catch(() => trendingCache)
+			.finally(() => {
+				trendingInFlight = null
+			})
+	const nearbyPromise = trendingInFlight
+
+	if (!trendingCache) {
+		const local = await socialApi('/hashtags/trending?limit=12&scope=local').catch(() => ({ tags: [] }))
+		await paint(local.tags || [])
+	}
+
+	const nearbyTags = await nearbyPromise
+	if (nearbyTags)
+		await paint(nearbyTags)
 }
 
 /**
@@ -253,6 +275,7 @@ export function updateFeedRankingTabs() {
 		if (!(tab instanceof HTMLElement)) continue
 		const active = tab.dataset.feedRanking === state.feedRanking
 		tab.classList.toggle('active', active)
+		tab.classList.toggle('tab-active', active)
 		tab.setAttribute('aria-selected', active ? 'true' : 'false')
 		tab.setAttribute('role', 'tab')
 	}

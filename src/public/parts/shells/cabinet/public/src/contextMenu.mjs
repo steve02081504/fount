@@ -2,6 +2,8 @@
  * 右键菜单。
  */
 import { geti18n } from '/scripts/i18n/index.mjs'
+import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
+import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 
 import {
 	copySelection,
@@ -17,6 +19,9 @@ import { invertSelection, selectAllEntries, selectedEntries, syncSelectionClasse
 import { goUp, openCurrentInNewWindow } from './navigation.mjs'
 import { openProps } from './properties.mjs'
 import { canWrite, cabinetStore, hasClipboard, hotkeys } from './state.mjs'
+
+/** @type {(() => void) & { unbind?: () => void } | null} */
+let dismissBinding = null
 
 /**
  * @param {string} label i18n key
@@ -79,6 +84,8 @@ function compactMenuActions(actions) {
  * @returns {void}
  */
 export function hideContextMenu() {
+	dismissBinding?.unbind?.()
+	dismissBinding = null
 	document.getElementById('contextMenu').classList.add('hidden')
 }
 
@@ -143,13 +150,17 @@ export function showContextMenu(event, entry) {
 	for (const action of compactMenuActions(actions)) {
 		if (action === false) {
 			const separator = document.createElement('li')
-			separator.className = 'menu-separator'
+			const hr = document.createElement('hr')
+			hr.className = 'my-1 border-base-300'
+			separator.appendChild(hr)
 			menu.appendChild(separator)
 			continue
 		}
 		const li = document.createElement('li')
+		li.setAttribute('role', 'none')
 		const button = document.createElement('button')
 		button.type = 'button'
+		button.setAttribute('role', 'menuitem')
 		button.textContent = action.label
 		if (action.danger) button.classList.add('text-error')
 		/**
@@ -164,8 +175,9 @@ export function showContextMenu(event, entry) {
 	}
 	const host = document.getElementById('contextMenu')
 	host.classList.remove('hidden')
-	const left = Math.min(event.clientX, window.innerWidth - host.offsetWidth - 8)
-	const top = Math.min(event.clientY, window.innerHeight - host.offsetHeight - 8)
-	host.style.left = `${Math.max(8, left)}px`
-	host.style.top = `${Math.max(8, top)}px`
+	positionContextMenu(host, { x: event.clientX, y: event.clientY, minWidth: '12rem' })
+	dismissBinding?.unbind?.()
+	dismissBinding = bindDismissOnDocumentInteraction(hideContextMenu, {
+		ignoreSelectors: ['#contextMenu'],
+	})
 }

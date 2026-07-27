@@ -1,6 +1,8 @@
-<div class="entry-card${selectedClass}${brokenClass}" data-id="${id}" tabindex="0" role="button">
-	${thumbHtml}
-	<div class="font-medium text-sm truncate mt-1">${name}</div>
-	<div class="text-xs opacity-60 truncate">${subtitle}</div>
-	<div class="text-[10px] truncate text-base-content/70">${modified}</div>
+<div class="entry-card card card-border bg-base-100${selectedClass}${brokenClass}" data-id="${id}" tabindex="0" role="option" aria-selected="${ariaSelected}">
+	<figure class="px-3 pt-3">${thumbHtml}</figure>
+	<div class="card-body p-3 gap-0.5">
+		<div class="font-medium text-sm truncate">${name}</div>
+		<div class="text-xs opacity-60 truncate">${subtitle}</div>
+		<div class="text-[10px] truncate text-base-content/70">${modified}</div>
+	</div>
 </div>

@@ -87,6 +87,20 @@
 						"src/public/parts/shells/cabinet/public/shared/commandHistory.mjs",
 						"src/public/parts/shells/cabinet/public/src/clipboard.mjs"
 					]
+				},
+				{
+					"name": "daisyui",
+					"triggers": [
+						"src/public/parts/shells/cabinet/test/frontend/daisyui.spec.mjs",
+						"src/public/parts/shells/cabinet/test/frontend/fixtures.mjs",
+						"src/public/parts/shells/cabinet/public/index.html",
+						"src/public/parts/shells/cabinet/public/index.css",
+						"src/public/parts/shells/cabinet/public/src/contextMenu.mjs",
+						"src/public/parts/shells/cabinet/public/src/entryGrid.mjs",
+						"src/public/parts/shells/cabinet/public/src/navigation.mjs",
+						"src/public/pages/scripts/features/promptDialog.mjs",
+						"src/public/pages/scripts/components/positionContextMenu.mjs"
+					]
 				}
 			],
 			"run": [

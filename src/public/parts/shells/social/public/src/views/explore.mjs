@@ -2,10 +2,10 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
-import { authorLabel, entityHandle, formatTimeHtml, mountMarkdown, renderAvatarHtml } from '../lib/display.mjs'
+import { authorLabel, entityHandle, formatTimeHtml, mountMarkdown, rememberEntityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { renderSuggestedAccountRows } from '../lib/suggestedAccounts.mjs'
-import { appendTemplate, renderTemplate } from '/scripts/features/template.mjs'
+import { renderTemplate } from '/scripts/features/template.mjs'
 import { state } from '../state.mjs'
 
 let exploreToolbarBound = false
@@ -106,21 +106,18 @@ export async function loadExplore() {
 	}
 
 	for (const post of postRows) {
-		const href = escapeHtml(formatSocialPostHref(post.entityHash, post.postId))
+		const href = formatSocialPostHref(post.entityHash, post.postId)
 		const authorHref = escapeHtml(formatSocialProfileHref(post.entityHash))
-		const snippet = post.textSnippet || (post.mediaThumbs?.length
-			? '' // filled via data-i18n below when empty text
-			: '')
 		const name = authorLabel(post.entityHash, post.authorProfile)
 		const handle = entityHandle(post.entityHash, post.authorProfile)
+		rememberEntityHandle(post.entityHash, post.authorProfile)
 		const timeHtml = formatTimeHtml(post.hlc?.wall)
 		const snippetHtml = post.textSnippet
-			? `<p class="explore-snippet">${escapeHtml(post.textSnippet)}</p>`
+			? '<div class="explore-snippet" data-explore-snippet></div>'
 			: post.mediaThumbs?.length
 				? '<p class="explore-snippet" data-i18n="social.profile.mediaOnly"></p>'
 				: ''
-		await appendTemplate(postList, 'explore_post', {
-			href,
+		const row = await renderTemplate('explore_post', {
 			authorHref,
 			name: escapeHtml(name),
 			handle: escapeHtml(handle),
@@ -129,6 +126,15 @@ export async function loadExplore() {
 			snippetHtml,
 			thumbsHtml: renderExploreThumbs(post.mediaThumbs),
 		})
+		const snippetHost = row.querySelector('[data-explore-snippet]')
+		if (snippetHost instanceof HTMLElement && post.textSnippet)
+			await mountMarkdown(snippetHost, post.textSnippet, post.entityHash)
+		row.querySelector('.explore-post-body')?.addEventListener('click', event => {
+			if (!(event.target instanceof Element)) return
+			if (event.target.closest('a, button')) return
+			location.assign(href)
+		})
+		postList.appendChild(row)
 	}
 
 	const exploreSuggestedHost = document.getElementById('exploreSuggested')
@@ -146,5 +152,5 @@ export async function loadExplore() {
 	}
 
 	const { loadTrendingHashtags } = await import('./feed.mjs')
-	await loadTrendingHashtags('local', 'exploreTrending')
+	await loadTrendingHashtags('exploreTrending')
 }

@@ -1,3 +1,4 @@
+import { onServerEvent } from '../../../../scripts/api/server_events.mjs'
 import { wireEmojiPickerButton } from '../../../../scripts/components/emojiPicker.mjs'
 import { createReadyGate } from '/scripts/test/ready_gate.mjs'
 import { loadAliases } from '/parts/shells:chat/shared/aliases.mjs'
@@ -5,6 +6,7 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { groupRefLabel } from '../shared/groupRef.mjs'
 
 import { handleMainClick } from './actions.mjs'
+import { closePostMoreMenus } from './actions/shared.mjs'
 import {
 	addComposerMedia,
 	initComposerVisibilityPicker,
@@ -36,6 +38,44 @@ const socialGate = createReadyGate(SOCIAL_GATE)
 
 const FEED_WS_TIMEOUT_MS = 30_000
 const FEED_WS_RECONNECT_MAX_MS = 30_000
+
+/**
+ * user.sfw 变更后重拉 viewer 头像、资料页与 feed。
+ * @returns {Promise<void>}
+ */
+async function refreshSocialAfterSfwChange() {
+	try {
+		const viewer = await chatApi('/viewer')
+		state.viewerDisplayName = viewer.profile?.name || state.viewerDisplayName
+		state.viewerProfile = viewer.profile
+			? {
+				name: viewer.profile.name || null,
+				handle: viewer.profile.handle || null,
+				avatar: viewer.profile.avatar || null,
+				infoDefaults: viewer.profile.infoDefaults
+					? { avatar: viewer.profile.infoDefaults.avatar || '' }
+					: null,
+			}
+			: state.viewerProfile
+		if (state.viewerEntityHash)
+			rememberEntityHandle(state.viewerEntityHash, state.viewerProfile)
+		const avatarSlot = document.getElementById('viewerComposerAvatar')
+		if (avatarSlot && state.viewerEntityHash)
+			avatarSlot.innerHTML = renderAvatarHtml(state.viewerEntityHash, state.viewerProfile)
+	}
+	catch { /* viewer 暂不可用则跳过侧栏 */ }
+
+	if (state.profileEntityHash) {
+		const { loadProfileFor } = await import('./views/profile.mjs')
+		await loadProfileFor(state.profileEntityHash)
+	}
+
+	const feedView = document.getElementById('feedView')
+	if (feedView && !feedView.classList.contains('hidden')) {
+		const { loadFeed } = await import('./views/feed.mjs')
+		await loadFeed(false)
+	}
+}
 
 /**
  * 处理 feed WebSocket 消息。
@@ -134,6 +174,11 @@ export async function bootstrap() {
 		})
 		const shellRoot = document.getElementById('shell')
 		shellRoot?.addEventListener('click', event => { void handleMainClick(event) })
+		shellRoot?.addEventListener('toggle', event => {
+			const details = event.target
+			if (details instanceof HTMLElement && details.classList.contains('post-more-dropdown') && /** @type {HTMLDetailsElement} */ (details).open)
+				closePostMoreMenus(details)
+		}, { capture: true })
 		bindContentReveal(shellRoot)
 		bindMediaCarousel(shellRoot)
 		shellRoot?.addEventListener('click', event => {
@@ -196,6 +241,11 @@ export async function bootstrap() {
 		const avatarSlot = document.getElementById('viewerComposerAvatar')
 		if (avatarSlot && state.viewerEntityHash)
 			avatarSlot.innerHTML = renderAvatarHtml(state.viewerEntityHash, state.viewerProfile)
+
+		onServerEvent('user-setting-changed', (data) => {
+			if (data?.key !== 'sfw') return
+			void refreshSocialAfterSfwChange()
+		})
 
 		document.getElementById('linkGroupSelect')?.addEventListener('change', event => {
 			const select = event.target

@@ -2195,6 +2195,7 @@
 			"reputationSlashAlert": "Der Ruf des Mitglieds ${target}… wird an den Abzug erinnert.",
 			"profileEdit": {
 				"previewHint": "Änderungen werden sofort in der Vorschau angezeigt und im Chat und in den sozialen Netzwerken gespeichert und synchronisiert.",
+				"sfwMode": "Sichere Inhalte",
 				"livePreview": "Live-Vorschau",
 				"languageVersion": "Sprachversion",
 				"localeHint": "Klicken Sie auf die Beschriftung, um den Code zu ändern oder zu bearbeiten. Drücken Sie am Ende im Eingabefeld die Eingabetaste, um es in eine neue Sprache zu kopieren.",
@@ -3905,14 +3906,9 @@
 			"replayDivider": "Alles gelesen – von vorn",
 			"trending": {
 				"title": "Trend-Themen",
-				"tabsLabel": {
-					"aria-label": "Trendbereich"
-				},
 				"postCount": {
 					"title": "${n} Beiträge"
 				},
-				"scopeLocal": "Lokal",
-				"scopeNearby": "In der Nähe",
 				"empty": "Noch keine Trend-Themen",
 				"aria-label": "Trend-Themen"
 			}
@@ -4197,6 +4193,7 @@
 			"apply": "Abstimmung anwenden",
 			"closed": "Die Abstimmung ist beendet",
 			"deadline": "Frist: ${deadline}",
+			"deadlineLabel": "Abstimmungsschluss",
 			"options": {
 				"placeholder": "Eine Option pro Zeile (mindestens 2)"
 			}
@@ -4279,6 +4276,10 @@
 	"cabinet": {
 		"title": "Cabinet",
 		"description": "Persönliche und gemeinsam genutzte P2P-Aktenschränke",
+		"entries": {
+			"title": "Einträge",
+			"aria-label": "Einträge"
+		},
 		"openCabinets": {
 			"title": "Cabinetliste öffnen",
 			"aria-label": "Cabinetliste öffnen"
@@ -4329,6 +4330,10 @@
 		"created": "Erstellen: ${stamp}",
 		"modified": "Ändern: ${stamp}",
 		"statusCount": "${count} Artikel, ${selected} ausgewählt",
+		"newCabinet": {
+			"title": "Neues Cabinet",
+			"aria-label": "Neues Cabinet"
+		},
 		"newCabinetPrompt": "Neuer Archivname",
 		"newFolderPrompt": "Neuer Ordnername",
 		"renamePrompt": "Neuer Name",

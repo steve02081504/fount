@@ -2195,6 +2195,7 @@
 			"reputationSlashAlert": "سمعة العضو ${target}... تذكرنا بالخصم.",
 			"profileEdit": {
 				"previewHint": "تظهر التغييرات على الفور في المعاينة ويتم حفظها ومزامنتها عبر الدردشة والتواصل الاجتماعي.",
+				"sfwMode": "محتوى آمن",
 				"livePreview": "معاينة حية",
 				"languageVersion": "نسخة اللغة",
 				"localeHint": "انقر فوق الملصق لتبديل الرمز أو تحريره؛ اضغط على Enter في مربع الإدخال في النهاية لنسخه إلى لغة جديدة.",
@@ -3905,14 +3906,9 @@
 			"replayDivider": "انتهيت من القراءة، تصفح مرة أخرى",
 			"trending": {
 				"title": "مواضيع ساخنة",
-				"tabsLabel": {
-					"aria-label": "نطاق المواضيع الرائجة"
-				},
 				"postCount": {
 					"title": "${n} مشاركات"
 				},
-				"scopeLocal": "آلة محلية",
-				"scopeNearby": "قريب",
 				"empty": "لا توجد مواضيع ساخنة بعد",
 				"aria-label": "مواضيع ساخنة"
 			}
@@ -4197,6 +4193,7 @@
 			"apply": "تطبيق التصويت",
 			"closed": "انتهى التصويت",
 			"deadline": "الموعد النهائي: ${deadline}",
+			"deadlineLabel": "الموعد النهائي للتصويت",
 			"options": {
 				"placeholder": "خيار واحد لكل سطر (عنصران على الأقل)"
 			}
@@ -4279,6 +4276,10 @@
 	"cabinet": {
 		"title": "خزانة الملفات",
 		"description": "خزائن الملفات الشخصية والمشتركة P2P",
+		"entries": {
+			"title": "قائمة العناصر",
+			"aria-label": "قائمة العناصر"
+		},
 		"openCabinets": {
 			"title": "فتح قائمة خزانة الملفات",
 			"aria-label": "فتح قائمة خزانة الملفات"
@@ -4329,6 +4330,10 @@
 		"created": "إنشاء: ${stamp}",
 		"modified": "تعديل: ${stamp}",
 		"statusCount": "${count} من العناصر، تم تحديد ${selected}.",
+		"newCabinet": {
+			"title": "خزانة ملفات جديدة",
+			"aria-label": "خزانة ملفات جديدة"
+		},
 		"newCabinetPrompt": "اسم خزانة الملفات الجديد",
 		"newFolderPrompt": "اسم المجلد الجديد",
 		"renamePrompt": "اسم جديد",

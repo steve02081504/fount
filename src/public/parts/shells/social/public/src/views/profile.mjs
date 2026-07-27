@@ -326,7 +326,7 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 			entityHash: escapeHtml(entityHash),
 			isFollowing: data.isFollowing ? '1' : '0',
 			followKey: data.isFollowing ? 'social.actions.following' : 'social.actions.follow',
-			primaryClass: data.isFollowing ? '' : 'primary',
+			primaryClass: data.isFollowing ? 'btn-outline' : 'btn-primary',
 			isCared: cared ? '1' : '0',
 			careKey: cared ? 'social.actions.careRemove' : 'social.actions.care',
 		})

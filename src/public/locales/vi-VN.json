@@ -2195,6 +2195,7 @@
 			"reputationSlashAlert": "Danh tiếng của thành viên ${target}… bị nhắc nhở về việc khấu trừ.",
 			"profileEdit": {
 				"previewHint": "Các thay đổi sẽ xuất hiện ngay trong bản xem trước và được lưu cũng như đồng bộ hóa trên Trò chuyện và Mạng xã hội.",
+				"sfwMode": "Nội dung an toàn",
 				"livePreview": "Xem trước trực tiếp",
 				"languageVersion": "Phiên bản ngôn ngữ",
 				"localeHint": "Nhấp vào nhãn để chuyển đổi hoặc chỉnh sửa mã; nhấn Enter vào hộp nhập ở cuối để sao chép nó sang ngôn ngữ mới.",
@@ -3905,14 +3906,9 @@
 			"replayDivider": "Đọc xong, duyệt lại",
 			"trending": {
 				"title": "chủ đề nóng",
-				"tabsLabel": {
-					"aria-label": "Phạm vi xu hướng"
-				},
 				"postCount": {
 					"title": "${n} bài đăng"
 				},
-				"scopeLocal": "máy cục bộ",
-				"scopeNearby": "gần đó",
 				"empty": "Chưa có chủ đề nóng",
 				"aria-label": "chủ đề nóng"
 			}
@@ -4197,6 +4193,7 @@
 			"apply": "Áp dụng biểu quyết",
 			"closed": "Cuộc bình chọn đã kết thúc",
 			"deadline": "Hạn chót: ${deadline}",
+			"deadlineLabel": "Thời hạn bỏ phiếu",
 			"options": {
 				"placeholder": "Một tùy chọn trên mỗi dòng (tối thiểu 2 mục)"
 			}
@@ -4279,6 +4276,10 @@
 	"cabinet": {
 		"title": "Tủ hồ sơ",
 		"description": "Tủ hồ sơ cá nhân và chia sẻ P2P",
+		"entries": {
+			"title": "Danh sách mục",
+			"aria-label": "Danh sách mục"
+		},
 		"openCabinets": {
 			"title": "Mở danh sách tủ hồ sơ",
 			"aria-label": "Mở danh sách tủ hồ sơ"
@@ -4329,6 +4330,10 @@
 		"created": "Tạo: ${stamp}",
 		"modified": "Sửa đổi: ${stamp}",
 		"statusCount": "${count} mục, ${selected} đã chọn",
+		"newCabinet": {
+			"title": "Tủ hồ sơ mới",
+			"aria-label": "Tủ hồ sơ mới"
+		},
 		"newCabinetPrompt": "Tên tủ hồ sơ mới",
 		"newFolderPrompt": "Tên thư mục mới",
 		"renamePrompt": "tên mới",

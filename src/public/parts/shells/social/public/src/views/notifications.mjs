@@ -3,6 +3,7 @@ import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, ins
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { authorLabel, formatTimeHtml, renderAvatarHtml } from '../lib/display.mjs'
+import { buildEmptyState } from '../lib/emptyState.mjs'
 import { state } from '../state.mjs'
 
 /** @type {number | null} */
@@ -178,7 +179,7 @@ function notificationHref(row) {
  */
 function renderNotificationCard(row, seenAt) {
 	const card = document.createElement('article')
-	card.className = `notification-card${row.at > seenAt ? ' unread' : ''}`
+	card.className = `list-row notification-card${row.at > seenAt ? ' unread' : ''}`
 	if (row.aggregateKey) card.dataset.aggregateKey = row.aggregateKey
 	card.dataset.actorCount = String(Number(row.actorCount) || 1)
 	card.dataset.at = String(Number(row.at) || 0)
@@ -234,7 +235,7 @@ export function mergeIncomingNotification(notification) {
 		return false
 	const container = document.getElementById('notificationsView')
 	if (!container) return false
-	container.querySelector('.empty')?.remove()
+	container.querySelector('.empty-state')?.remove()
 	const toolbar = document.getElementById('notificationsToolbar')
 	if (toolbar) toolbar.classList.remove('hidden')
 	const seenAt = getNotificationsSeenAt()
@@ -287,6 +288,7 @@ export function syncNotificationFilterTabs() {
 		if (!(button instanceof HTMLButtonElement)) continue
 		const active = button.dataset.notifFilter === filter
 		button.classList.toggle('active', active)
+		button.classList.toggle('tab-active', active)
 		button.setAttribute('aria-selected', active ? 'true' : 'false')
 		button.setAttribute('role', 'tab')
 	}
@@ -348,13 +350,13 @@ export async function loadNotifications(append = false) {
 		state.lastNotificationUnreadCount = Number(data.unreadCount) || 0
 
 		if (!append) {
-			container.querySelectorAll('.notification-card, .empty').forEach(node => node.remove())
+			container.querySelectorAll('.notification-card, .empty-state').forEach(node => node.remove())
 			if (!rows.length) {
 				if (toolbar) toolbar.classList.add('hidden')
-				const empty = document.createElement('div')
-				empty.className = 'empty'
-				empty.dataset.i18n = 'social.empty.notifications'
-				container.appendChild(empty)
+				container.appendChild(await buildEmptyState({
+					titleKey: 'social.empty.notifications',
+					modClass: ' empty-state--plain',
+				}))
 				await markNotificationsSeen()
 				disconnectInfiniteScroll()
 				return

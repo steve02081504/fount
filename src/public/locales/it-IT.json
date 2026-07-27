@@ -2195,6 +2195,7 @@
 			"reputationSlashAlert": "La reputazione del membro ${target}… viene ricordata nella detrazione.",
 			"profileEdit": {
 				"previewHint": "Le modifiche vengono visualizzate immediatamente nell'anteprima e vengono salvate e sincronizzate su Chat e Social.",
+				"sfwMode": "Contenuto sicuro",
 				"livePreview": "Anteprima dal vivo",
 				"languageVersion": "Versione linguistica",
 				"localeHint": "Fare clic sull'etichetta per cambiare o modificare il codice; premere Invio nella casella di input alla fine per copiarlo in una nuova lingua.",
@@ -3905,14 +3906,9 @@
 			"replayDivider": "Sei tutto preso: ricomincia da capo",
 			"trending": {
 				"title": "Tendenza",
-				"tabsLabel": {
-					"aria-label": "Ambito tendenze"
-				},
 				"postCount": {
 					"title": "${n} post"
 				},
-				"scopeLocal": "Questo dispositivo",
-				"scopeNearby": "Nelle vicinanze",
 				"empty": "Niente di trend per ora",
 				"aria-label": "Tendenza"
 			}
@@ -4197,6 +4193,7 @@
 			"apply": "Voto espresso",
 			"closed": "La votazione è terminata",
 			"deadline": "Scadenza: ${deadline}",
+			"deadlineLabel": "Termine per la votazione",
 			"options": {
 				"placeholder": "Una opzione per riga (minimo 2 articoli)"
 			}
@@ -4279,6 +4276,10 @@
 	"cabinet": {
 		"title": "Mobiletto",
 		"description": "Armadi personali e condivisi P2P",
+		"entries": {
+			"title": "Elenco elementi",
+			"aria-label": "Elenco elementi"
+		},
 		"openCabinets": {
 			"title": "Apri l'elenco degli schedari",
 			"aria-label": "Apri l'elenco degli schedari"
@@ -4329,6 +4330,10 @@
 		"created": "Creato: ${stamp}",
 		"modified": "Modificato: ${stamp}",
 		"statusCount": "${count} elementi, ${selected} selezionati",
+		"newCabinet": {
+			"title": "Nuovo schedario",
+			"aria-label": "Nuovo schedario"
+		},
 		"newCabinetPrompt": "Nuovo nome dello schedario",
 		"newFolderPrompt": "Nuovo nome della cartella",
 		"renamePrompt": "nuovo nome",

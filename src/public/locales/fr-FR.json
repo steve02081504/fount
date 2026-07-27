@@ -2195,6 +2195,7 @@
 			"reputationSlashAlert": "La réputation du membre ${target}… est rappelée par la déduction.",
 			"profileEdit": {
 				"previewHint": "Les modifications apparaissent immédiatement dans l'aperçu et sont enregistrées et synchronisées dans Chat et Social.",
+				"sfwMode": "Contenu sûr",
 				"livePreview": "Aperçu en direct",
 				"languageVersion": "Version linguistique",
 				"localeHint": "Cliquez sur l'étiquette pour changer ou modifier le code ; appuyez sur Entrée dans la zone de saisie à la fin pour le copier dans une nouvelle langue.",
@@ -3905,14 +3906,9 @@
 			"replayDivider": "Lecture terminée, naviguez à nouveau",
 			"trending": {
 				"title": "Tendances",
-				"tabsLabel": {
-					"aria-label": "Portée des tendances"
-				},
 				"postCount": {
 					"title": "${n} messages"
 				},
-				"scopeLocal": "Cet appareil",
-				"scopeNearby": "À proximité",
 				"empty": "Pas encore de sujets d'actualité",
 				"aria-label": "Tendances"
 			}
@@ -4197,6 +4193,7 @@
 			"apply": "Appliquer le vote",
 			"closed": "Le vote est terminé",
 			"deadline": "Date limite : ${deadline}",
+			"deadlineLabel": "Date limite de vote",
 			"options": {
 				"placeholder": "Une option par ligne (minimum 2 éléments)"
 			}
@@ -4279,6 +4276,10 @@
 	"cabinet": {
 		"title": "Armoire",
 		"description": "Armoires personnelles et partagées en P2P",
+		"entries": {
+			"title": "Liste des éléments",
+			"aria-label": "Liste des éléments"
+		},
 		"openCabinets": {
 			"title": "Ouvrir la liste des armoires",
 			"aria-label": "Ouvrir la liste des armoires"
@@ -4329,6 +4330,10 @@
 		"created": "Créer : ${stamp}",
 		"modified": "Modifier : ${stamp}",
 		"statusCount": "${count} articles, ${selected} sélectionnés",
+		"newCabinet": {
+			"title": "Nouvelle armoire",
+			"aria-label": "Nouvelle armoire"
+		},
 		"newCabinetPrompt": "Nom de la nouvelle armoire",
 		"newFolderPrompt": "Nouveau nom de dossier",
 		"renamePrompt": "nouveau nom",

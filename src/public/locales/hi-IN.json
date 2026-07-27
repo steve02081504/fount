@@ -2195,6 +2195,7 @@
 			"reputationSlashAlert": "सदस्य ${target}… की प्रतिष्ठा कटौती की याद दिलाती है।",
 			"profileEdit": {
 				"previewHint": "परिवर्तन तुरंत पूर्वावलोकन में दिखाई देते हैं और चैट और सोशल में सहेजे और समन्वयित किए जाते हैं।",
+				"sfwMode": "सुरक्षित सामग्री",
 				"livePreview": "लाइव पूर्वावलोकन",
 				"languageVersion": "भाषा संस्करण",
 				"localeHint": "कोड बदलने या संपादित करने के लिए लेबल पर क्लिक करें; इसे नई भाषा में कॉपी करने के लिए अंत में इनपुट बॉक्स में Enter दबाएँ।",
@@ -3905,14 +3906,9 @@
 			"replayDivider": "पढ़ना समाप्त करें, पुनः ब्राउज़ करें",
 			"trending": {
 				"title": "ट्रेंडिंग विषय",
-				"tabsLabel": {
-					"aria-label": "ट्रेंडिंग दायरा"
-				},
 				"postCount": {
 					"title": "${n} पोस्ट"
 				},
-				"scopeLocal": "इस डिवाइस",
-				"scopeNearby": "आस-पास",
 				"empty": "अभी तक कोई गर्म विषय नहीं है",
 				"aria-label": "ट्रेंडिंग विषय"
 			}
@@ -4197,6 +4193,7 @@
 			"apply": "मतदान लागू करें",
 			"closed": "मतदान समाप्त हो गया है",
 			"deadline": "समयसीमा: ${deadline}",
+			"deadlineLabel": "मतदान की समय सीमा",
 			"options": {
 				"placeholder": "प्रति पंक्ति एक विकल्प (न्यूनतम 2 आइटम)"
 			}
@@ -4279,6 +4276,10 @@
 	"cabinet": {
 		"title": "फ़ाइल कैबिनेट",
 		"description": "P2P व्यक्तिगत और साझा फ़ाइल कैबिनेट",
+		"entries": {
+			"title": "आइटम सूची",
+			"aria-label": "आइटम सूची"
+		},
 		"openCabinets": {
 			"title": "फ़ाइल कैबिनेट सूची खोलें",
 			"aria-label": "फ़ाइल कैबिनेट सूची खोलें"
@@ -4329,6 +4330,10 @@
 		"created": "बनाएं: ${stamp}",
 		"modified": "संशोधित करें: ${stamp}",
 		"statusCount": "${count} आइटम, ${selected} चयनित",
+		"newCabinet": {
+			"title": "नई फ़ाइल कैबिनेट",
+			"aria-label": "नई फ़ाइल कैबिनेट"
+		},
 		"newCabinetPrompt": "नई फ़ाइल कैबिनेट का नाम",
 		"newFolderPrompt": "नये फ़ोल्डर का नाम",
 		"renamePrompt": "नया नाम",

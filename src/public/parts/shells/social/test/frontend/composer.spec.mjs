@@ -17,6 +17,37 @@ test.describe('Social composer', () => {
 		await openHome(page, baseUrl)
 	})
 
+	test('collapsible composer chrome stays hidden until toggled', async ({ page }) => {
+		const poll = page.locator('#pollComposerPanel')
+		const advanced = page.locator('#composerAdvancedPanel')
+		const cw = page.locator('#postContentWarning')
+		const media = page.locator('#mediaPreview')
+		const quote = page.locator('#quotePreview')
+
+		await expect(poll).toBeHidden()
+		await expect(advanced).toBeHidden()
+		await expect(cw).toBeHidden()
+		await expect(media).toBeHidden()
+		await expect(quote).toBeHidden()
+		await expect(page.locator('#pollComposerOptions')).toBeHidden()
+		await expect(page.locator('#postReplyPolicy')).toBeHidden()
+		await expect(page.locator('#pollComposerDeadline')).toBeHidden()
+
+		await page.locator('#pollComposerToggle').click()
+		await expect(poll).toBeVisible()
+		await expect(page.locator('#pollComposerOptions')).toBeVisible()
+		await expect(advanced).toBeHidden()
+		await page.locator('#pollComposerToggle').click()
+		await expect(poll).toBeHidden()
+
+		await page.locator('#composerAdvancedToggle').click()
+		await expect(advanced).toBeVisible()
+		await expect(page.locator('#postReplyPolicy')).toBeVisible()
+		await expect(poll).toBeHidden()
+		await page.locator('#composerAdvancedToggle').click()
+		await expect(advanced).toBeHidden()
+	})
+
 	test('publishes a post via composer', async ({ publishPost }) => {
 		const text = `playwright e2e ${Date.now()}`
 		const { postJson } = await publishPost(text)
