@@ -1,31 +1,19 @@
-.profile-popup-backdrop {
-	position: fixed;
-	inset: 0;
-	z-index: 1090;
-	display: none;
-	align-items: center;
-	justify-content: center;
+/* profile-popup-dialog 继承 DaisyUI modal 布局；::backdrop 提供模糊遮罩 */
+.profile-popup-dialog {
 	padding: 16px;
-	box-sizing: border-box;
+}
+
+.profile-popup-dialog::backdrop {
 	background: rgb(5 8 15 / 62%);
 	backdrop-filter: blur(7px);
 }
 
-.profile-popup-backdrop.show {
-	display: flex;
-}
-
 .profile-popup {
-	--entity-card-accent: #5865f2;
+	--entity-card-accent: var(--color-primary);
 	position: relative;
 	width: min(340px, calc(100vw - 32px));
 	max-height: calc(100dvh - 32px);
 	overflow: hidden auto;
-	border: 1px solid color-mix(in srgb, var(--text-normal, var(--color-base-content)) 11%, transparent);
-	border-radius: 20px;
-	background: var(--popover-bg, var(--color-base-200));
-	color: var(--text-normal, var(--color-base-content));
-	box-shadow: 0 26px 70px rgb(0 0 0 / 38%);
 	isolation: isolate;
 }
 
@@ -329,7 +317,8 @@
 	position: fixed;
 	z-index: 1000;
 	width: min(320px, calc(100vw - 24px));
-	max-height: min(420px, calc(100dvh - 24px));
+	max-height: min(520px, calc(100dvh - 24px));
+	overflow-y: auto;
 	opacity: 0;
 	pointer-events: none;
 	transition: opacity 0.12s ease;
@@ -366,11 +355,27 @@
 }
 
 .entity-profile-card--embedded,
-.entity-profile-card--preview {
+.entity-profile-card--preview,
+.entity-profile-card--sidebar {
 	width: 100%;
 	max-height: none;
 	overflow: hidden;
 	box-shadow: 0 18px 50px rgb(0 0 0 / 16%);
+}
+
+.entity-profile-card--sidebar {
+	margin: 0 12px 16px;
+	border: 1px solid var(--border-subtle, rgb(255 255 255 / 8%));
+	box-shadow: 0 2px 8px var(--shadow, rgb(0 0 0 / 20%));
+}
+
+.entity-profile-card--sidebar .profile-popup-banner {
+	height: 64px;
+}
+
+.entity-profile-card--sidebar .profile-popup-body {
+	margin-top: -28px;
+	padding: 0 12px 12px;
 }
 
 .entity-profile-card--embedded .profile-popup-banner {

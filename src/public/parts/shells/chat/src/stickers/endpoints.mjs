@@ -3,15 +3,15 @@
  * 【职责】贴纸包与用户收藏的 REST：CRUD 包、上传贴纸、安装/收藏/最近使用及媒体文件下发。
  * 【原理】registerStickerRoutes 按 apiBase 正则挂路由；鉴权后 getReplicaFromReq；写操作校验作者 entity；二进制经 betterSendFile 从 resolveStickerFilePath 读取。
  * 【数据结构】packId、stickerId、multipart 上传、collection 安装列表、favorite/recent 条目。
- * 【关联】被 chat/src/endpoints.mjs 调用；依赖 stickers.mjs、upload/fromRequest、replica.mjs。
+ * 【关联】被 chat/src/endpoints.mjs 调用；依赖 stickers.mjs、multipart_upload、replica.mjs。
  */
 import fs from 'node:fs'
 import path from 'node:path'
 
 import { authenticate } from '../../../../../../server/auth/index.mjs'
+import { isAllowedImageUpload, pickUploadedFile } from '../../../../../../server/web_server/multipart_upload.mjs'
 import { betterSendFile } from '../../../../../../server/web_server/resources.mjs'
 import { getReplicaFromReq } from '../chat/lib/replica.mjs'
-import { isAllowedImageUpload, pickUploadedFile } from '../upload/fromRequest.mjs'
 
 import {
 	getStickerPacks,

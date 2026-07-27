@@ -86,7 +86,7 @@ export function normalizeEntityProfile(profile, entityHash) {
 		name: profile?.name || (key ? entityHashLabel(key) : '?'),
 		handle: profile?.handle || null,
 		themeColor: profile?.themeColor || '',
-		banner: String(profile?.banner || '').trim(),
+		banner: String(profile?.displayBanner || profile?.banner || '').trim(),
 		description: profile?.description || '',
 		description_markdown: profile?.description_markdown || '',
 		tags: Array.isArray(profile?.tags) ? profile.tags : [],
@@ -103,7 +103,7 @@ export function normalizeEntityProfile(profile, entityHash) {
 
 /**
  * 克隆共享人物卡 DOM（`hub/profile_popup`）；不经 `usingTemplates`，跨壳安全。
- * @param {'popup'|'embedded'|'preview'|'hover'} [mode='popup'] 使用场景
+ * @param {'popup'|'embedded'|'preview'|'hover'|'sidebar'} [mode='popup'] 使用场景
  * @returns {Promise<HTMLElement>} 人物卡根节点
  */
 export async function createEntityProfileCardElement(mode = 'popup') {
@@ -122,7 +122,7 @@ export async function createEntityProfileCardElement(mode = 'popup') {
 /**
  * 设置共享人物卡的嵌入模式；悬停、弹窗、资料页和编辑预览使用同一份结构。
  * @param {HTMLElement} root 人物卡根节点
- * @param {'popup'|'embedded'|'preview'|'hover'} mode 使用场景
+ * @param {'popup'|'embedded'|'preview'|'hover'|'sidebar'} mode 使用场景
  * @returns {void}
  */
 export function configureEntityProfileCard(root, mode = 'popup') {
@@ -130,14 +130,17 @@ export function configureEntityProfileCard(root, mode = 'popup') {
 	root.classList.toggle('entity-profile-card--embedded', mode === 'embedded')
 	root.classList.toggle('entity-profile-card--preview', mode === 'preview')
 	root.classList.toggle('entity-profile-card--hover', mode === 'hover')
+	root.classList.toggle('entity-profile-card--sidebar', mode === 'sidebar')
 	if (mode === 'hover') {
 		root.setAttribute('role', 'region')
 		root.dataset.i18n = 'chat.hub.profilePopup'
 	}
 	if (mode === 'popup') return
 	root.querySelector('[data-profile-popup-close]')?.remove()
-	for (const button of root.querySelectorAll('[data-profile-popup-edit], [data-profile-popup-care], [data-profile-popup-alias], [data-profile-popup-dm], [data-profile-popup-social]'))
-		button.remove()
+	if (mode === 'preview' || mode === 'embedded') 
+		for (const button of root.querySelectorAll('[data-profile-popup-edit], [data-profile-popup-care], [data-profile-popup-alias], [data-profile-popup-dm], [data-profile-popup-social]'))
+			button.remove()
+	
 }
 
 /**

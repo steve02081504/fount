@@ -40,11 +40,15 @@ function insertAtCursor(inputElement, token) {
 function renderTabButton(tab, provider, activeTabId) {
 	const tabButton = document.createElement('button')
 	tabButton.type = 'button'
-	tabButton.className = 'emoji-tab'
+	tabButton.className = 'emoji-tab tab px-2 min-h-8'
 	tabButton.dataset.tab = tab.id
+	tabButton.setAttribute('role', 'tab')
+	const active = tab.id === activeTabId
+	tabButton.setAttribute('aria-selected', active ? 'true' : 'false')
+	tabButton.tabIndex = active ? 0 : -1
 	if (tab.i18nKey) tabButton.dataset.i18n = tab.i18nKey
 	if (tab.title) tabButton.title = tab.title
-	tabButton.classList.toggle('active', tab.id === activeTabId)
+	tabButton.classList.toggle('tab-active', active)
 
 	if (tab.type === 'group' && provider.groupTabInnerHtml)
 		tabButton.innerHTML = provider.groupTabInnerHtml(
@@ -111,8 +115,12 @@ function renderGridMessage(grid, i18nKey) {
  * @returns {void}
  */
 function setActiveTabButton(tabsElement, tabId) {
-	for (const tabButton of tabsElement.querySelectorAll('.emoji-tab'))
-		tabButton.classList.toggle('active', tabButton.dataset.tab === tabId)
+	for (const tabButton of tabsElement.querySelectorAll('.emoji-tab')) {
+		const active = tabButton.dataset.tab === tabId
+		tabButton.classList.toggle('tab-active', active)
+		tabButton.setAttribute('aria-selected', active ? 'true' : 'false')
+		tabButton.tabIndex = active ? 0 : -1
+	}
 }
 
 /** @type {WeakMap<HTMLElement, number>} */
@@ -276,7 +284,8 @@ export async function mountEmojiPicker(anchor, onInsert, pickerContext = {}) {
 	positionFloatingPanel(panel, anchor)
 
 	const tabsElement = document.createElement('div')
-	tabsElement.className = 'emoji-tabs'
+	tabsElement.className = 'emoji-tabs tabs tabs-box tabs-xs'
+	tabsElement.setAttribute('role', 'tablist')
 	const gridElement = document.createElement('div')
 	gridElement.className = 'emoji-grid'
 	panel.append(tabsElement, gridElement)

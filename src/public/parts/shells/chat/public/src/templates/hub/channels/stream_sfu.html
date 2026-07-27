@@ -2,7 +2,7 @@
 	<div class="stream-title" ${useChannelName ? '' : ' data-i18n="chat.hub.streamDefaultName"' }>${channelName}</div>
 	${mode === 'iframe' ? `
 	<div class="stream-toolbar">
-		<button type="button" class="stream-refresh-button" data-i18n="chat.hub.streamRefreshToken"></button>
+		<button type="button" class="btn btn-ghost btn-xs stream-refresh-button" data-i18n="chat.hub.streamRefreshToken"></button>
 	</div>
 	<iframe class="stream-frame" id="stream-iframe" src="${escapeHtml(src)}" referrerpolicy="no-referrer" allow="autoplay; fullscreen; picture-in-picture"></iframe>
 	${streamError ? `<p class="stream-empty">${escapeHtml(streamError)}</p>` : ''}

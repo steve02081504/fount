@@ -36,7 +36,7 @@ export function activateSection(section) {
 	const nextSection = target.dataset.section
 	for (const item of items) {
 		const active = item === target
-		item.classList.toggle('settings-nav-item-active', active)
+		item.classList.toggle('tab-active', active)
 		item.setAttribute('aria-selected', String(active))
 		item.tabIndex = active ? 0 : -1
 	}

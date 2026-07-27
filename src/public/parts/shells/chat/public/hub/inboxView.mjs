@@ -198,7 +198,7 @@ async function switchInboxKind(kind) {
 	disconnectInfiniteScroll()
 	for (const tab of document.querySelectorAll('.inbox-tab')) {
 		const active = tab.dataset.kind === kind
-		tab.classList.toggle('inbox-tab-active', active)
+		tab.classList.toggle('tab-active', active)
 		tab.setAttribute('aria-selected', String(active))
 		tab.tabIndex = active ? 0 : -1
 	}

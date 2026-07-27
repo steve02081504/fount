@@ -1,23 +1,23 @@
 <div class="char-settings-body">
-	<div class="overlay-section space-y-3">
-		<h3 data-i18n="chat.hub.sessionInfo"></h3>
+	<div class="card card-border bg-base-100 p-4 space-y-3">
+		<h3 class="font-semibold text-sm" data-i18n="chat.hub.sessionInfo"></h3>
 		<div class="overlay-info-row"><span data-i18n="chat.hub.sessionRole"></span><span>${escapeHtml(charname)}</span></div>
 		<div class="overlay-info-row"><span data-i18n="chat.hub.sessionId"></span><span>${escapeHtml(groupId)}</span></div>
 		<div class="overlay-info-row"><span data-i18n="chat.hub.sessionMessages"></span><span>${logLength}</span></div>
 	</div>
-	<div class="overlay-section space-y-3" id="character-chat-config-host"></div>
-	<div class="overlay-section space-y-3">
-		<h3 data-i18n="chat.hub.quickActions"></h3>
-		<div class="overlay-toggle-row flex items-center justify-between gap-2 rounded-lg bg-base-200 p-3" id="character-chat-advanced" style="cursor:pointer;">
+	<div class="card card-border bg-base-100 p-4 space-y-3" id="character-chat-config-host"></div>
+	<div class="card card-border bg-base-100 p-4 space-y-3">
+		<h3 class="font-semibold text-sm" data-i18n="chat.hub.quickActions"></h3>
+		<button type="button" class="flex items-center justify-between gap-2 rounded-lg bg-base-200 p-3 cursor-pointer w-full text-left" id="character-chat-advanced">
 			<div>
-				<div class="overlay-toggle-title" data-i18n="chat.hub.advancedSettings"></div>
-				<div class="overlay-toggle-description" data-i18n="chat.hub.advancedSettingsDescription"></div>
+				<div class="font-medium text-sm" data-i18n="chat.hub.advancedSettings"></div>
+				<div class="text-xs opacity-60" data-i18n="chat.hub.advancedSettingsDescription"></div>
 			</div>
 			<span class="text-primary">↗</span>
-		</div>
+		</button>
 	</div>
-	<div class="overlay-section space-y-3">
-		<h3 data-i18n="chat.hub.dangerZone"></h3>
+	<div class="card card-border bg-base-100 p-4 space-y-3">
+		<h3 class="font-semibold text-sm" data-i18n="chat.hub.dangerZone"></h3>
 		${friendBound
 		? '<div class="text-sm text-base-content/50 mb-2" data-i18n="chat.hub.unbindFriendDescription"></div>'
 		: '<div class="text-sm text-base-content/50 mb-2" data-i18n="chat.hub.deleteSessionDescription"></div>'}
@@ -25,7 +25,7 @@
 </div>
 <div class="char-settings-footer">
 	${friendBound
-	? '<button type="button" class="overlay-button overlay-button-danger btn btn-error btn-outline" id="character-chat-unbind" data-i18n="chat.hub.unbindFriend"></button>'
-	: '<button type="button" class="overlay-button overlay-button-danger btn btn-error btn-outline" id="character-chat-delete" data-i18n="chat.hub.deleteSession"></button>'}
-	<button type="button" class="overlay-button overlay-button-cancel btn btn-ghost" id="character-chat-close" data-i18n="chat.hub.modalClose"></button>
+	? '<button type="button" class="btn btn-error btn-outline" id="character-chat-unbind" data-i18n="chat.hub.unbindFriend"></button>'
+	: '<button type="button" class="btn btn-error btn-outline" id="character-chat-delete" data-i18n="chat.hub.deleteSession"></button>'}
+	<button type="button" class="btn btn-ghost" id="character-chat-close" data-i18n="chat.hub.modalClose"></button>
 </div>

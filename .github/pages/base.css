@@ -1,6 +1,11 @@
+.disabled {
+	pointer-events: none;
+	opacity: 0.3;
+}
+
 [un-cloak],
 .hidden {
-	display: none;
+	display: none !important;
 }
 
 .text-icon {

@@ -16,16 +16,16 @@ export async function createPOWCaptcha(container) {
 	styleElement ??= document.head.appendChild(Object.assign(document.createElement('style'), {
 		textContent: /* css */ `\
 cap-widget {
-	--cap-background: oklch(var(--b1));
-	--cap-border-color: oklch(var(--b3));
-	--cap-border-radius: var(--rounded-box, 1rem);
-	--cap-color: oklch(var(--bc));
-	--cap-checkbox-border: 1px solid oklch(var(--in));
-	--cap-checkbox-border-radius: var(--rounded-btn, 0.5rem);
-	--cap-checkbox-background: oklch(var(--b2));
+	--cap-background: var(--color-base-100);
+	--cap-border-color: var(--color-base-300);
+	--cap-border-radius: var(--radius-box, 1rem);
+	--cap-color: var(--color-base-content);
+	--cap-checkbox-border: 1px solid var(--color-info);
+	--cap-checkbox-border-radius: var(--radius-field, 0.5rem);
+	--cap-checkbox-background: var(--color-base-200);
 	--cap-font: inherit;
-	--cap-spinner-color: oklch(var(--p));
-	--cap-spinner-background-color: oklch(var(--s));
+	--cap-spinner-color: var(--color-primary);
+	--cap-spinner-background-color: var(--color-secondary);
 }
 `
 	}))

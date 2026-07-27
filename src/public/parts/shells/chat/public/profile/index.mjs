@@ -5,6 +5,7 @@
  * 【数据结构】currentEntityHash、currentProfile；localized 各 locale 字段。
  * 【关联】profile/src/endpoints.mjs、ownerSettingsPanel.mjs；hub/entityProfile.mjs、profileEdit.mjs。
  */
+import { onServerEvent } from '../../../scripts/api/server_events.mjs'
 import {
 	renderTemplate,
 	usingTemplates,
@@ -82,6 +83,11 @@ async function init() {
 		if (currentProfile) await renderProfile(currentProfile)
 		await loadUserGroups()
 		await loadUserChannels()
+	})
+
+	onServerEvent('user-setting-changed', (data) => {
+		if (data?.key !== 'sfw' || !currentEntityHash) return
+		void loadProfile(currentEntityHash)
 	})
 
 	try {

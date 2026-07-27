@@ -41,9 +41,10 @@ export function renderAvatarHtml(entityHash, profile, sizeClass = '') {
 	if (!isAvatarImageUrl(avatar))
 		return `<div class="${cls}" style="background:${background};color:${color};font-size:1.1em">${escapeHtml(avatar)}</div>`
 
+	// 首字母垫底；成功加载后由 CSS（:has(.is-loaded)）隐藏字母，失败则去掉 img 露出字母。
 	return `<div class="${cls}" style="background:${background};color:${color}">`
-		+ `<span class="hash-avatar-letter">${initial}</span>`
-		+ `<img class="hash-avatar-img" src="${escapeHtml(avatar)}" alt="" loading="lazy"`
+		+ `<span class="hash-avatar-letter" aria-hidden="true">${initial}</span>`
+		+ `<img class="hash-avatar-img" src="${escapeHtml(avatar)}" alt="" loading="lazy" svg-inliner-ignore`
 		+ ' onload="this.classList.add(\'is-loaded\')" onerror="this.remove()" />'
 		+ '</div>'
 }
