@@ -2,28 +2,43 @@ import { createDocumentFragmentFromHtmlString } from '../features/template.mjs'
 
 const IconCache = {}
 
+/** 用户内容等勿 inline 的 img 标记（保持 `<img>`，避免 fetch+脚本激活）。 */
+export const SVG_INLINER_IGNORE = 'svg-inliner-ignore'
+
 /**
- * currentColor在img的从url导入的svg中不起作用，此函数旨在解决这个问题。
+ * @param {string} url SVG URL
+ * @returns {Promise<string>} SVG 文本（id 已加 uuid 后缀）
+ */
+async function loadSvgText(url) {
+	IconCache[url] ??= fetch(url).then(response => response.text())
+	let data = IconCache[url] = await IconCache[url]
+	const uuid = Math.random().toString(36).slice(2)
+	for (const match of data.matchAll(/id="([^"]+)"/g))
+		data = data.replaceAll(match[1], `${match[1]}-${uuid}`)
+	return data
+}
+
+/**
+ * currentColor 在 img 引用的外部 SVG 上无效；将未标记 ignore 的 `.svg` img inline。
+ * 用户头像/贴纸等加 `svg-inliner-ignore`，保持 `<img>`。
  * @param {DocumentFragmentOrElement} DOM - 要处理的 DOM。
  * @returns {Promise<DocumentFragmentOrElement>} - 处理后的 DOM。
  */
 export async function svgInliner(DOM) {
-	const svgs = DOM.querySelectorAll('img[src$=".svg"]')
-	await Promise.all([...svgs].map(async svg => {
-		const url = svg.getAttribute('src')
-		IconCache[url] ??= fetch(url).then(response => response.text())
-		let data = IconCache[url] = await IconCache[url]
-		// 对于每个id="xx"的match，在id后追加uuid
-		const uuid = Math.random().toString(36).slice(2)
-		const matches = data.matchAll(/id="([^"]+)"/g)
-		for (const match of matches) data = data.replaceAll(match[1], `${match[1]}-${uuid}`)
+	const svgs = DOM.querySelectorAll(`img[src$=".svg"]:not([${SVG_INLINER_IGNORE}])`)
+	await Promise.all([...svgs].map(async img => {
+		const url = img.getAttribute('src')
+		const data = await loadSvgText(url)
 		const newSvg = createDocumentFragmentFromHtmlString(data)
-		for (const attr of svg.attributes)
-			newSvg.querySelector('svg')?.setAttribute?.(attr.name, attr.value)
-		svg.replaceWith(newSvg)
+		const root = newSvg.querySelector('svg')
+		if (!root) return
+		for (const attr of img.attributes)
+			root.setAttribute(attr.name, attr.value)
+		img.replaceWith(newSvg)
 	})).catch(console.error)
 	return DOM
 }
+
 /**
  * 获取 SVG 图标。
  * @param {string} url - 图标的 URL。
@@ -31,14 +46,10 @@ export async function svgInliner(DOM) {
  * @returns {Promise<SVGElement>} - SVG 元素。
  */
 export async function getSvgIcon(url, attributes = {}) {
-	IconCache[url] ??= fetch(url).then(response => response.text())
-	let data = IconCache[url] = await IconCache[url]
-	// 对于每个id="xx"的match，在id后追加uuid
-	const uuid = Math.random().toString(36).slice(2)
-	const matches = data.matchAll(/id="([^"]+)"/g)
-	for (const match of matches) data = data.replaceAll(match[1], `${match[1]}-${uuid}`)
+	const data = await loadSvgText(url)
 	const newSvg = createDocumentFragmentFromHtmlString(data)
+	const root = newSvg.querySelector('svg')
 	for (const attr in attributes)
-		newSvg.querySelector('svg').setAttribute(attr, attributes[attr])
-	return newSvg.querySelector('svg')
+		root.setAttribute(attr, attributes[attr])
+	return root
 }
