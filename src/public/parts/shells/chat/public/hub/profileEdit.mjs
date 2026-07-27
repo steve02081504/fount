@@ -599,7 +599,7 @@ function initEditState(entityHash, profile, { initialSfwMode = false } = {}) {
 	editingBaseProfile = profile
 	editingInfoDefaults = profile.infoDefaults || null
 	editingSfwMode = initialSfwMode
-	editingLocalized = { ...profile.localized || {} }
+	editingLocalized = { ...profile.localized }
 	editingAvatarPreview = firstLocalizedAvatar(editingLocalized, 'avatar') || String(profile.avatar || '').trim()
 	editingSfwAvatarPreview = firstLocalizedAvatar(editingLocalized, 'sfw_avatar')
 	editingBannerPreview = String(profile.banner || '').trim()
@@ -703,7 +703,7 @@ async function handleSaveProfile() {
 		// 把当前媒体槽写回 active locale，并去掉与普通内容重复的 sfw_*
 		const localeKey = activeLocaleKey
 		if (localeKey) {
-			const slice = { ...editingLocalized[localeKey] || {} }
+			const slice = { ...editingLocalized[localeKey] }
 			if (sfw) {
 				const sfwAvatar = pruneSfwString(editingSfwAvatarPreview, editingAvatarPreview)
 				if (sfwAvatar === undefined) delete slice.sfw_avatar
