@@ -26,6 +26,9 @@ import {
 import { charAgentEntityHash } from './entityResolve.mjs'
 import { applyAvatarsTo } from './presence.mjs'
 
+/** 角色信息卡渲染世代：切换角色时递增，作废过期的异步重绘。 */
+let charInfoCardRenderGeneration = 0
+
 /**
  * 从 API 拉取角色详情。
  * @param {string} name - 角色 part 名称
@@ -61,10 +64,13 @@ async function charAvatarHtml(name, avatarUrl) {
  * @returns {Promise<void>}
  */
 async function renderCharInfoCardInner(name, details, { active }) {
+	const generation = ++charInfoCardRenderGeneration
 	usingTemplates('/parts/shells:chat/src/templates')
 	const entityHash = await charAgentEntityHash(name)
+	if (generation !== charInfoCardRenderGeneration) return
 	const groupId = store.context.currentGroupId || undefined
 	const profile = entityHash ? await loadEntityProfile(entityHash, { groupId }) : null
+	if (generation !== charInfoCardRenderGeneration) return
 	const info = details?.info || {}
 	const charDisplayName = profile?.name || info.name || name
 	const avatarUrl = displayProfileAvatar(profile)
@@ -73,6 +79,7 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	const memberList = document.getElementById('member-list')
 	const charName = escapeHtml(charDisplayName)
 	const charAvatarInner = await charAvatarHtml(charDisplayName, avatarUrl)
+	if (generation !== charInfoCardRenderGeneration) return
 	const charAvatarSeed = entityHash || name
 	const sidebarTpl = active ? 'hub/char/member_sidebar_active' : 'hub/char/member_sidebar_preview'
 
@@ -87,6 +94,7 @@ async function renderCharInfoCardInner(name, details, { active }) {
 		myAvatarTextColor: viewerEntityHash ? avatarTextColor(viewerEntityHash) : '',
 		myAvatarInitial: viewerDisplayName ? escapeHtml(avatarInitial(viewerDisplayName)) : '',
 	})
+	if (generation !== charInfoCardRenderGeneration) return
 
 	const descriptionElement = memberList.querySelector('.char-description-md')
 	if (descriptionElement instanceof HTMLElement)
@@ -97,10 +105,12 @@ async function renderCharInfoCardInner(name, details, { active }) {
 				: info.description_markdown || info.description || info.summary || details?.description || '',
 			entityHash || '',
 		)
+	if (generation !== charInfoCardRenderGeneration) return
 
 	const infoCardHost = document.getElementById('info-card-host')
 	infoCardHost.replaceChildren()
 	const card = await createEntityProfileCardElement('sidebar')
+	if (generation !== charInfoCardRenderGeneration) return
 	infoCardHost.appendChild(card)
 
 	const entity = {
@@ -117,19 +127,24 @@ async function renderCharInfoCardInner(name, details, { active }) {
 		const nameElement = card.querySelector('[data-entity-profile-name]')
 		if (nameElement) nameElement.textContent = charDisplayName
 	}
+	if (generation !== charInfoCardRenderGeneration) return
 
 	if (entityHash) {
 		/**
 		 *
 		 */
 		const repaint = async () => {
-			await renderCharInfoCardInner(name, await getCharDetails(name), { active })
+			if (generation !== charInfoCardRenderGeneration) return
+			const details = await getCharDetails(name)
+			if (generation !== charInfoCardRenderGeneration) return
+			await renderCharInfoCardInner(name, details, { active })
 		}
 		await wireEntityProfileCardActions(card, entity, {
 			profile,
 			onRepaint: repaint,
 		})
 	}
+	if (generation !== charInfoCardRenderGeneration) return
 
 	if (active)
 		applyAvatarsTo(memberList)

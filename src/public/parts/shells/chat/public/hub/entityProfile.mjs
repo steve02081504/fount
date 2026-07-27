@@ -7,6 +7,7 @@
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
+import { promptText } from '../../../../scripts/features/promptDialog.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { isCared, setCared } from '../shared/care.mjs'
@@ -17,7 +18,6 @@ import {
 	paintEntityProfileExtras,
 	profileDescriptionText as sharedProfileDescriptionText,
 } from '../shared/entityProfileCard.mjs'
-import { promptText } from '../shared/promptText.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 import { fetchEntityProfileApi, cachedProfileFromApi } from '../src/entityProfileApi.mjs'
 
@@ -225,7 +225,7 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 		const canCare = !isSelf && isEntityHash128(entityHash) && !!store.viewer?.operatorEntityHash
 		careButton.hidden = !canCare
 		if (canCare) {
-			const cared = await isCared(entityHash)
+			let cared = await isCared(entityHash)
 			careButton.dataset.i18n = cared
 				? 'chat.hub.profilePopup.careRemove'
 				: 'chat.hub.profilePopup.care'
@@ -234,14 +234,13 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 			 */
 			careButton.onclick = () => {
 				void (async () => {
-					const next = !await isCared(entityHash)
+					const next = !cared
 					await setCared(entityHash, next)
+					cared = next
 					showToastI18n('success', next ? 'chat.hub.memberContext.careAdded' : 'chat.hub.memberContext.careRemoved')
 					careButton.dataset.i18n = next
 						? 'chat.hub.profilePopup.careRemove'
 						: 'chat.hub.profilePopup.care'
-					const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
-					careButton.textContent = geti18n(careButton.dataset.i18n)
 				})().catch(error => {
 					showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
 				})

@@ -268,7 +268,7 @@ export async function refreshHubAfterProfileChange(entityHash) {
 	const charname = store.privateGroup?.charname
 	if (charname) {
 		const { charAgentEntityHash } = await import('./entityResolve.mjs')
-		if ((await charAgentEntityHash(charname)) === key) {
+		if (await charAgentEntityHash(charname) === key) {
 			const { getCharDetails, renderCharInfoCardActive } = await import('./charCard.mjs')
 			await renderCharInfoCardActive(charname, await getCharDetails(charname))
 		}
@@ -306,9 +306,18 @@ export async function refreshHubAfterSfwChange() {
 		await hydrateAuthorLabels(messageList)
 	}
 	if (memberList instanceof HTMLElement) {
-		memberList.querySelectorAll('[data-avatar-for]').forEach(av => { delete av.dataset.avatarLoaded })
-		applyAvatarsTo(memberList)
+		if (store.context.currentState) {
+			const { renderMemberList } = await import('./sidebar/index.mjs')
+			await renderMemberList(store.context.currentState)
+		}
+		else {
+			memberList.querySelectorAll('[data-avatar-for]').forEach(av => { delete av.dataset.avatarLoaded })
+			applyAvatarsTo(memberList)
+		}
 	}
+
+	const { refreshViewerHubPresentation } = await import('./init.mjs')
+	await refreshViewerHubPresentation()
 
 	const charname = store.privateGroup?.charname
 	if (charname) {
@@ -319,16 +328,6 @@ export async function refreshHubAfterSfwChange() {
 	if (store.context.currentMode === 'friends') {
 		const { loadFriendsList, renderFriendsColumn } = await import('./friendsList.mjs')
 		await renderFriendsColumn(await loadFriendsList())
-	}
-
-	const myAvatar = document.getElementById('my-avatar')
-	if (myAvatar instanceof HTMLElement && store.viewer?.viewerEntityHash) {
-		const profile = await fetchUserProfile(store.viewer.viewerEntityHash)
-		await applyProfileAvatarToHost(myAvatar, {
-			seed: store.viewer.viewerEntityHash,
-			label: profile?.name || store.viewer.viewerDisplayName || '',
-			avatar: displayProfileAvatar(profile),
-		})
 	}
 }
 
@@ -364,6 +363,7 @@ async function hoverOptionsForAuthor(authorKey, anchorElement) {
 		displayName: fallbackName,
 		groupId,
 		loadProfile,
+		wireActions: true,
 		entity: entity || {
 			entityHash: resolvedEntityHash || (isEntityHash128(profileKey) ? profileKey : null),
 			charname: null,

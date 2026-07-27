@@ -1574,6 +1574,9 @@
 				"tip": "翻譯與聯邦 P2P 設定"
 			},
 			"prefsSubtitle": "翻譯與聯邦連線",
+			"prefsNav": {
+				"aria-label": "設定分類"
+			},
 			"federationTooltip": {
 				"title": "聯邦 P2P 設定",
 				"tip": "聯邦 P2P 設定"

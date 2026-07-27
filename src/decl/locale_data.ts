@@ -1541,6 +1541,9 @@ export type LocaleData = {
 				tip: string
 			}
 			prefsSubtitle: string
+			prefsNav: {
+				'aria-label': string
+			}
 			federationTooltip: {
 				title: string
 				tip: string

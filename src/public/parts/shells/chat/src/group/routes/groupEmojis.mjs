@@ -6,9 +6,9 @@ import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat
 import { applySafeContentHeaders } from '../../../../../../../scripts/http_content.mjs'
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
+import { isAllowedImageUpload, pickUploadedFile } from '../../../../../../../server/web_server/multipart_upload.mjs'
 import { replicateGroupEmojiManifestToUserRoom } from '../../chat/federation/groupEmojiFederation.mjs'
 import { ensureFederationRoom } from '../../chat/federation/room.mjs'
-import { isAllowedImageUpload, pickUploadedFile } from '../../upload/fromRequest.mjs'
 import { governanceChannelId } from '../access.mjs'
 import { resolveGroupEmojiContent } from '../emojiContentResolve.mjs'
 import {

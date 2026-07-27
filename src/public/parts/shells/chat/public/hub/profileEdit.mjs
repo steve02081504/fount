@@ -55,12 +55,36 @@ let editingSfwBannerPreview = ''
 let editingBannerCleared = false
 /** @type {boolean} */
 let editingSfwMode = false
+/** @type {{ avatar: File | null, banner: File | null }} */
+let pendingNormalMedia = { avatar: null, banner: null }
+/** @type {{ avatar: File | null, banner: File | null }} */
+let pendingSfwMedia = { avatar: null, banner: null }
 /** @type {string[]} */
 let editingTags = []
 /** @type {{ name?: string, url: string, icon?: string }[]} */
 let editingLinks = []
 /** @type {(() => void | Promise<void>) | null} */
 let onSavedCallback = null
+
+/**
+ * @returns {{ avatar: File | null, banner: File | null }} 当前模式的待上传文件
+ */
+function activePendingMedia() {
+	return editingSfwMode ? pendingSfwMedia : pendingNormalMedia
+}
+
+/**
+ * @param {HTMLInputElement} input file input
+ * @param {File | null} file 待恢复文件
+ * @returns {void}
+ */
+function restoreFileInput(input, file) {
+	input.value = ''
+	if (!file) return
+	const transfer = new DataTransfer()
+	transfer.items.add(file)
+	input.files = transfer.files
+}
 
 /**
  * @param {Record<string, object>} localized 多语言表
@@ -215,6 +239,7 @@ async function ensureEditDialog() {
 	editDialog.querySelector('#profile-edit-avatar-upload')?.addEventListener('change', (event) => {
 		const file = event.target?.files?.[0]
 		if (!file) return
+		activePendingMedia().avatar = file
 		const reader = new FileReader()
 		/** @param {ProgressEvent<FileReader>} loadEvent 读取完成 */
 		reader.onload = (loadEvent) => {
@@ -229,6 +254,7 @@ async function ensureEditDialog() {
 	editDialog.querySelector('#profile-edit-avatar-url')?.addEventListener('input', (event) => {
 		const upload = editDialog?.querySelector('#profile-edit-avatar-upload')
 		if (upload instanceof HTMLInputElement) upload.value = ''
+		activePendingMedia().avatar = null
 		const value = event.target?.value?.trim() || ''
 		if (editingSfwMode) editingSfwAvatarPreview = value
 		else editingAvatarPreview = value
@@ -237,6 +263,7 @@ async function ensureEditDialog() {
 	editDialog.querySelector('#profile-edit-banner-upload')?.addEventListener('change', (event) => {
 		const file = event.target?.files?.[0]
 		if (!file) return
+		activePendingMedia().banner = file
 		const reader = new FileReader()
 		/** @param {ProgressEvent<FileReader>} loadEvent 读取完成 */
 		reader.onload = (loadEvent) => {
@@ -255,6 +282,7 @@ async function ensureEditDialog() {
 	editDialog.querySelector('#profile-edit-banner-url')?.addEventListener('input', (event) => {
 		const upload = editDialog?.querySelector('#profile-edit-banner-upload')
 		if (upload instanceof HTMLInputElement) upload.value = ''
+		activePendingMedia().banner = null
 		const value = event.target?.value?.trim() || ''
 		if (editingSfwMode)
 			editingSfwBannerPreview = value
@@ -271,6 +299,7 @@ async function ensureEditDialog() {
 			editingBannerPreview = ''
 			editingBannerCleared = true
 		}
+		activePendingMedia().banner = null
 		const upload = editDialog?.querySelector('#profile-edit-banner-upload')
 		if (upload instanceof HTMLInputElement) upload.value = ''
 		const url = editDialog?.querySelector('#profile-edit-banner-url')
@@ -315,13 +344,24 @@ function persistActiveMediaFields() {
 	const bannerUrl = editDialog?.querySelector('#profile-edit-banner-url')
 	const avatarValue = avatarUrl instanceof HTMLInputElement ? avatarUrl.value.trim() : ''
 	const bannerValue = bannerUrl instanceof HTMLInputElement ? bannerUrl.value.trim() : ''
+	const avatarUpload = editDialog?.querySelector('#profile-edit-avatar-upload')
+	const bannerUpload = editDialog?.querySelector('#profile-edit-banner-upload')
+	const pending = activePendingMedia()
+	if (avatarUpload instanceof HTMLInputElement && avatarUpload.files?.[0])
+		pending.avatar = avatarUpload.files[0]
+	if (bannerUpload instanceof HTMLInputElement && bannerUpload.files?.[0])
+		pending.banner = bannerUpload.files[0]
+	const hasPendingAvatar = !!pending.avatar
+	const hasPendingBanner = !!pending.banner
 	if (editingSfwMode) {
-		// 空或与普通一致 → 不存 SFW 槽（回退普通）
-		editingSfwAvatarPreview = pruneSfwString(avatarValue, editingAvatarPreview) || ''
-		editingSfwBannerPreview = pruneSfwString(bannerValue, editingBannerCleared ? '' : editingBannerPreview) || ''
+		// 空或与普通一致 → 不存 SFW 槽（回退普通）；有未保存上传时保留预览
+		const nextAvatar = hasPendingAvatar && !avatarValue ? editingSfwAvatarPreview : avatarValue
+		const nextBanner = hasPendingBanner && !bannerValue ? editingSfwBannerPreview : bannerValue
+		editingSfwAvatarPreview = pruneSfwString(nextAvatar, editingAvatarPreview) || ''
+		editingSfwBannerPreview = pruneSfwString(nextBanner, editingBannerCleared ? '' : editingBannerPreview) || ''
 	}
 	else {
-		editingAvatarPreview = avatarValue || editingAvatarPreview
+		editingAvatarPreview = hasPendingAvatar && !avatarValue ? editingAvatarPreview : avatarValue
 		if (!editingBannerCleared)
 			editingBannerPreview = bannerValue || editingBannerPreview
 	}
@@ -329,10 +369,11 @@ function persistActiveMediaFields() {
 
 /** @returns {void} */
 function loadActiveMediaFields() {
+	const pending = activePendingMedia()
 	const avatarUpload = editDialog?.querySelector('#profile-edit-avatar-upload')
-	if (avatarUpload instanceof HTMLInputElement) avatarUpload.value = ''
+	if (avatarUpload instanceof HTMLInputElement) restoreFileInput(avatarUpload, pending.avatar)
 	const bannerUpload = editDialog?.querySelector('#profile-edit-banner-upload')
-	if (bannerUpload instanceof HTMLInputElement) bannerUpload.value = ''
+	if (bannerUpload instanceof HTMLInputElement) restoreFileInput(bannerUpload, pending.banner)
 	const avatarUrl = editDialog?.querySelector('#profile-edit-avatar-url')
 	if (avatarUrl instanceof HTMLInputElement)
 		avatarUrl.value = activeAvatarPreview()
@@ -596,12 +637,14 @@ function initEditState(entityHash, profile, { initialSfwMode = false } = {}) {
 	editingBaseProfile = profile
 	editingInfoDefaults = profile.infoDefaults || null
 	editingSfwMode = initialSfwMode
-	editingLocalized = { ...profile.localized || {} }
+	editingLocalized = { ...profile.localized }
 	editingAvatarPreview = firstLocalizedAvatar(editingLocalized, 'avatar') || String(profile.avatar || '').trim()
 	editingSfwAvatarPreview = firstLocalizedAvatar(editingLocalized, 'sfw_avatar')
 	editingBannerPreview = String(profile.banner || '').trim()
 	editingSfwBannerPreview = String(profile.sfw_banner || '').trim()
 	editingBannerCleared = false
+	pendingNormalMedia = { avatar: null, banner: null }
+	pendingSfwMedia = { avatar: null, banner: null }
 	let keys = Object.keys(editingLocalized)
 	if (!keys.length)
 		editingLocalized[primaryLocale()] = {}
@@ -662,27 +705,41 @@ async function handleSaveProfile() {
 	persistActiveMediaFields()
 	const groupId = store.context.currentGroupId || undefined
 	const sfw = editingSfwMode
+	const pending = activePendingMedia()
 	try {
-		const avatarFile = editDialog.querySelector('#profile-edit-avatar-upload')?.files?.[0]
+		const avatarFile = editDialog.querySelector('#profile-edit-avatar-upload')?.files?.[0] || pending.avatar
 		let avatarQueued = false
 		if (avatarFile) {
 			const avatarPath = sfw ? 'profile/sfw_avatar' : 'profile/avatar'
 			const avatarResult = await uploadEntityFile(editingEntityHash, avatarPath, avatarFile)
-			if (avatarResult?.queued)
+			if (avatarResult?.queued) {
 				avatarQueued = true
+				// 媒体已走主人 EVFS 入队；丢掉 FileReader 临时 data URL，避免写进后续 profile 负载
+				if (sfw)
+					editingSfwAvatarPreview = firstLocalizedAvatar(editingLocalized, 'sfw_avatar')
+				else
+					editingAvatarPreview = firstLocalizedAvatar(editingLocalized, 'avatar')
+						|| String(editingBaseProfile?.avatar || '').trim()
+			}
 			else if (avatarResult?.url) 
 				if (sfw) editingSfwAvatarPreview = avatarResult.url
 				else editingAvatarPreview = avatarResult.url
 			
+			pending.avatar = null
 		}
 
-		const bannerFile = editDialog.querySelector('#profile-edit-banner-upload')?.files?.[0]
+		const bannerFile = editDialog.querySelector('#profile-edit-banner-upload')?.files?.[0] || pending.banner
 		let bannerQueued = false
 		if (bannerFile && (sfw || !editingBannerCleared)) {
 			const bannerPath = sfw ? 'profile/sfw_banner' : 'profile/banner'
 			const bannerResult = await uploadEntityFile(editingEntityHash, bannerPath, bannerFile)
-			if (bannerResult?.queued)
+			if (bannerResult?.queued) {
 				bannerQueued = true
+				if (sfw)
+					editingSfwBannerPreview = String(editingBaseProfile?.sfw_banner || '').trim()
+				else
+					editingBannerPreview = String(editingBaseProfile?.banner || '').trim()
+			}
 			else if (bannerResult?.url) 
 				if (sfw)
 					editingSfwBannerPreview = bannerResult.url
@@ -691,26 +748,29 @@ async function handleSaveProfile() {
 					editingBannerCleared = false
 				}
 			
+			pending.banner = null
 		}
 		else if (!sfw && editingBannerCleared) {
 			editingBannerPreview = ''
 			editingBannerCleared = true
 		}
 
-		// 把当前媒体槽写回 localized，并去掉与普通内容重复的 sfw_*
-		editingLocalized = Object.fromEntries(
-			Object.entries(editingLocalized).map(([key, slice]) => {
-				const next = { ...slice }
-				if (sfw) {
-					const sfwAvatar = pruneSfwString(editingSfwAvatarPreview, editingAvatarPreview)
-					if (sfwAvatar === undefined) delete next.sfw_avatar
-					else next.sfw_avatar = sfwAvatar
-				}
-				else
-					next.avatar = editingAvatarPreview
-				return [key, pruneLocaleSfwFields(next)]
-			}),
-		)
+		// 把当前媒体槽写回 active locale，并去掉与普通内容重复的 sfw_*
+		const localeKey = activeLocaleKey
+		if (localeKey) {
+			const slice = { ...editingLocalized[localeKey] }
+			if (sfw) {
+				const sfwAvatar = pruneSfwString(editingSfwAvatarPreview, editingAvatarPreview)
+				if (sfwAvatar === undefined) delete slice.sfw_avatar
+				else slice.sfw_avatar = sfwAvatar
+			}
+			else
+				slice.avatar = editingAvatarPreview
+			editingLocalized = {
+				...editingLocalized,
+				[localeKey]: pruneLocaleSfwFields(slice),
+			}
+		}
 		editingSfwAvatarPreview = firstLocalizedAvatar(editingLocalized, 'sfw_avatar')
 
 		const banner = editingBannerCleared ? '' : editingBannerPreview

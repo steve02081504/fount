@@ -2,17 +2,17 @@
  * 【文件】group/routes/channelArchive.mjs
  * 【职责】频道完整归档 HTTP：GET export、POST import（multipart JSON）。
  * 【原理】export 需 VIEW_CHANNEL；import 需 MANAGE_CHANNELS，新建 text 频道后 backfill 写入。
- * 【关联】channelArchive.mjs、channels.mjs、upload/fromRequest。
+ * 【关联】channelArchive.mjs、channels.mjs、multipart_upload。
  */
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
+import { pickUploadedFile } from '../../../../../../../server/web_server/multipart_upload.mjs'
 import {
 	exportChannelArchive,
 	importChannelArchive,
 	validateChannelArchive,
 } from '../../chat/channelArchive.mjs'
-import { pickUploadedFile } from '../../upload/fromRequest.mjs'
 
 import {
 	ensureCanInChannel,

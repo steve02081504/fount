@@ -75,10 +75,15 @@ function localizedIsBlank(localized) {
 	return keys.every((key) => {
 		const slice = localized[key] || {}
 		return !String(slice.name || '').trim()
+			&& !String(slice.sfw_name || '').trim()
 			&& !String(slice.avatar || '').trim()
+			&& !String(slice.sfw_avatar || '').trim()
 			&& !String(slice.description || '').trim()
+			&& !String(slice.sfw_description || '').trim()
 			&& !String(slice.description_markdown || '').trim()
+			&& !String(slice.sfw_description_markdown || '').trim()
 			&& !(Array.isArray(slice.tags) && slice.tags.length)
+			&& !(Array.isArray(slice.sfw_tags) && slice.sfw_tags.length)
 	})
 }
 
@@ -88,6 +93,14 @@ function localizedIsBlank(localized) {
  */
 function localizedHasAvatar(localized) {
 	return Object.values(localized || {}).some(slice => String(slice?.avatar || '').trim())
+}
+
+/**
+ * @param {object} localized 已规范化的 localized
+ * @returns {boolean} 任一 locale 已有 sfw_avatar
+ */
+function localizedHasSfwAvatar(localized) {
+	return Object.values(localized || {}).some(slice => String(slice?.sfw_avatar || '').trim())
 }
 
 /**
@@ -276,7 +289,8 @@ export async function syncAgentProfileFromCharPart(username, entityHash, options
 	const existing = normalizeLocalizedMap(current.localized)
 	const blank = localizedIsBlank(existing)
 	const needsAvatarBackfill = !blank && !localizedHasAvatar(existing)
-	if (!options.force && !blank && !needsAvatarBackfill) return null
+	const needsSfwAvatarBackfill = !blank && !localizedHasSfwAvatar(existing)
+	if (!options.force && !blank && !needsAvatarBackfill && !needsSfwAvatarBackfill) return null
 
 	const info = await loadCharPartInfoMap(username, charname)
 	const avatarRaw = pickPartAvatar(info)
@@ -289,16 +303,28 @@ export async function syncAgentProfileFromCharPart(username, entityHash, options
 		: null
 
 	// 已有文案但缺头像：只补头像，不覆盖用户改过的 name/tags
-	if (!options.force && needsAvatarBackfill) {
-		if (!materialized) return null
-		if (materialized.kind === 'emoji') {
-			const localized = { ...existing }
-			for (const key of Object.keys(localized))
-				localized[key] = { ...localized[key], avatar: materialized.value }
-			await updateProfile(username, hash, { localized }, { skipPresentation: true })
+	if (!options.force && (needsAvatarBackfill || needsSfwAvatarBackfill)) {
+		if (needsAvatarBackfill) {
+			if (!materialized && !sfwMaterialized) return null
+			if (materialized?.kind === 'emoji') {
+				const localized = { ...existing }
+				for (const key of Object.keys(localized))
+					localized[key] = { ...localized[key], avatar: materialized.value }
+				await updateProfile(username, hash, { localized }, { skipPresentation: true })
+			}
+			else if (materialized)
+				await uploadAvatar(username, hash, materialized.buffer, materialized.filename, materialized.mimeType)
 		}
-		else
-			await uploadAvatar(username, hash, materialized.buffer, materialized.filename, materialized.mimeType)
+		else if (!sfwMaterialized) return null
+
+		if (sfwMaterialized && needsSfwAvatarBackfill)
+			await applyMaterializedAvatar(
+				(await getProfile(hash, username, { skipPresentation: true })).localized,
+				sfwMaterialized,
+				username,
+				hash,
+				{ sfw: true },
+			)
 		return getProfile(hash, username, { skipPresentation: true })
 	}
 

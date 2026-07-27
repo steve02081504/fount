@@ -60,7 +60,10 @@ export function promptTextArea(title, value = '') {
 		 * @param {HTMLDialogElement} dialog 对话框
 		 * @returns {string | null} 文本或 null
 		 */
-		mapResult: dialog => dialog.querySelector('#promptInput')?.value.trim() || null,
+		mapResult: dialog => {
+			const input = dialog.querySelector('#promptInput')
+			return input instanceof HTMLTextAreaElement ? input.value.trim() : null
+		},
 	}))
 }
 

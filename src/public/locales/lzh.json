@@ -1575,6 +1575,9 @@
 				"tip": "翻譯與諸邦 P2P 樞機"
 			},
 			"prefsSubtitle": "翻譯與諸邦通",
+			"prefsNav": {
+				"aria-label": "樞機分區"
+			},
 			"federationTooltip": {
 				"title": "諸邦 P2P 樞機",
 				"tip": "諸邦 P2P 樞機"

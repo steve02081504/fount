@@ -15,14 +15,21 @@ let mountGeneration = 0
 /**
  * @param {HTMLElement} nav 导航根
  * @param {string} section 当前分区
+ * @param {{ focus?: boolean }} [options] 是否把焦点移到激活 tab
  * @returns {void}
  */
-function markActiveNav(nav, section) {
+function markActiveNav(nav, section, options = {}) {
+	/** @type {HTMLElement | null} */
+	let activeButton = null
 	for (const button of nav.querySelectorAll('[data-prefs-section]')) {
+		if (!(button instanceof HTMLElement)) continue
 		const active = button.getAttribute('data-prefs-section') === section
 		button.classList.toggle('tab-active', active)
 		button.setAttribute('aria-selected', active ? 'true' : 'false')
+		button.tabIndex = active ? 0 : -1
+		if (active) activeButton = button
 	}
+	if (options.focus) activeButton?.focus()
 }
 
 /**
@@ -73,20 +80,50 @@ export async function openHubPrefsModal(options = {}) {
 	if (!(nav instanceof HTMLElement) || !(panel instanceof HTMLElement) || !(footer instanceof HTMLElement))
 		return
 
+	const tabs = Array.from(nav.querySelectorAll('[data-prefs-section]'))
+		.filter(el => el instanceof HTMLElement)
+
+	/**
+	 * @param {string} next 分区 id
+	 * @param {{ focus?: boolean }} [navOptions] 是否聚焦
+	 * @returns {void}
+	 */
+	function selectSection(next, navOptions = {}) {
+		if (!next || next === activeSection) {
+			if (navOptions.focus) markActiveNav(nav, activeSection || next, { focus: true })
+			return
+		}
+		activeSection = /** @type {'translation' | 'federation'} */ next
+		markActiveNav(nav, activeSection, navOptions)
+		void mountSection(panel, footer, activeSection)
+	}
+
 	nav.addEventListener('click', event => {
 		const button = event.target instanceof Element
 			? event.target.closest('[data-prefs-section]')
 			: null
 		const next = button?.getAttribute('data-prefs-section')
-		if (!next || next === activeSection) return
-		activeSection = /** @type {'translation' | 'federation'} */ next
-		markActiveNav(nav, activeSection)
-		void mountSection(panel, footer, activeSection)
+		if (next) selectSection(next)
 	})
 
-	activeSection = section
-	markActiveNav(nav, section)
-	await mountSection(panel, footer, section)
+	nav.addEventListener('keydown', event => {
+		const currentIndex = tabs.indexOf(/** @type {HTMLElement} */ document.activeElement)
+		if (currentIndex < 0) return
+		let nextIndex
+		if (event.key === 'ArrowDown' || event.key === 'ArrowRight')
+			nextIndex = (currentIndex + 1) % tabs.length
+		else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft')
+			nextIndex = (currentIndex - 1 + tabs.length) % tabs.length
+		else if (event.key === 'Home') nextIndex = 0
+		else if (event.key === 'End') nextIndex = tabs.length - 1
+		else return
+		event.preventDefault()
+		const next = tabs[nextIndex].getAttribute('data-prefs-section')
+		if (next) selectSection(next, { focus: true })
+	})
+
+	activeSection = null
+	selectSection(section, { focus: true })
 }
 
 /**

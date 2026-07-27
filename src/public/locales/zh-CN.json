@@ -1577,6 +1577,9 @@
 				"tip": "翻译与联邦 P2P 设置"
 			},
 			"prefsSubtitle": "翻译与联邦连接",
+			"prefsNav": {
+				"aria-label": "设置分类"
+			},
 			"federationTooltip": {
 				"title": "联邦 P2P 设置",
 				"tip": "联邦 P2P 设置"
