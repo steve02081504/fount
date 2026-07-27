@@ -712,8 +712,15 @@ async function handleSaveProfile() {
 		if (avatarFile) {
 			const avatarPath = sfw ? 'profile/sfw_avatar' : 'profile/avatar'
 			const avatarResult = await uploadEntityFile(editingEntityHash, avatarPath, avatarFile)
-			if (avatarResult?.queued)
+			if (avatarResult?.queued) {
 				avatarQueued = true
+				// 媒体已走主人 EVFS 入队；丢掉 FileReader 临时 data URL，避免写进后续 profile 负载
+				if (sfw)
+					editingSfwAvatarPreview = firstLocalizedAvatar(editingLocalized, 'sfw_avatar')
+				else
+					editingAvatarPreview = firstLocalizedAvatar(editingLocalized, 'avatar')
+						|| String(editingBaseProfile?.avatar || '').trim()
+			}
 			else if (avatarResult?.url) 
 				if (sfw) editingSfwAvatarPreview = avatarResult.url
 				else editingAvatarPreview = avatarResult.url
@@ -726,8 +733,13 @@ async function handleSaveProfile() {
 		if (bannerFile && (sfw || !editingBannerCleared)) {
 			const bannerPath = sfw ? 'profile/sfw_banner' : 'profile/banner'
 			const bannerResult = await uploadEntityFile(editingEntityHash, bannerPath, bannerFile)
-			if (bannerResult?.queued)
+			if (bannerResult?.queued) {
 				bannerQueued = true
+				if (sfw)
+					editingSfwBannerPreview = String(editingBaseProfile?.sfw_banner || '').trim()
+				else
+					editingBannerPreview = String(editingBaseProfile?.banner || '').trim()
+			}
 			else if (bannerResult?.url) 
 				if (sfw)
 					editingSfwBannerPreview = bannerResult.url
