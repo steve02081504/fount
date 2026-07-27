@@ -27,6 +27,22 @@ export function closeSaveModal() {
 	else modal?.classList.add('hidden')
 }
 
+let saveModalCloseBound = false
+
+/**
+ * 绑定原生 dialog 关闭（含 Escape / backdrop）时清除 pendingSave。
+ * @returns {void}
+ */
+function bindSaveModalCloseCleanup() {
+	if (saveModalCloseBound) return
+	const modal = document.getElementById('saveModal')
+	if (!(modal instanceof HTMLDialogElement)) return
+	saveModalCloseBound = true
+	modal.addEventListener('close', () => {
+		state.pendingSave = null
+	})
+}
+
 /**
  * 打开收藏帖模态框并填充文件夹选项。
  * @param {string} entityHash 作者
@@ -35,6 +51,7 @@ export function closeSaveModal() {
  * @returns {Promise<void>}
  */
 export async function openSaveModal(entityHash, postId, button) {
+	bindSaveModalCloseCleanup()
 	state.pendingSave = { entityHash, postId, button }
 	const modal = document.getElementById('saveModal')
 	const select = document.getElementById('saveFolderSelect')

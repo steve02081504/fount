@@ -13,9 +13,3 @@
 body.cabinet-remote .cabinet-local-only {
 	display: none !important;
 }
-
-@media (max-width: 480px) {
-	.cabinet-breadcrumb .breadcrumbs > ul > li > * {
-		max-width: 8rem;
-	}
-}

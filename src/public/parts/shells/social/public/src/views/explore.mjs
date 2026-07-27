@@ -118,6 +118,7 @@ export async function loadExplore() {
 				? '<p class="explore-snippet" data-i18n="social.profile.mediaOnly"></p>'
 				: ''
 		const row = await renderTemplate('explore_post', {
+			href: escapeHtml(href),
 			authorHref,
 			name: escapeHtml(name),
 			handle: escapeHtml(handle),
@@ -129,11 +130,6 @@ export async function loadExplore() {
 		const snippetHost = row.querySelector('[data-explore-snippet]')
 		if (snippetHost instanceof HTMLElement && post.textSnippet)
 			await mountMarkdown(snippetHost, post.textSnippet, post.entityHash)
-		row.querySelector('.explore-post-body')?.addEventListener('click', event => {
-			if (!(event.target instanceof Element)) return
-			if (event.target.closest('a, button')) return
-			location.assign(href)
-		})
 		postList.appendChild(row)
 	}
 

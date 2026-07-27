@@ -65,6 +65,23 @@ test.describe('Social post actions', () => {
 			await expect(card.locator('.translation-block')).toBeVisible({ timeout: 20_000 })
 	})
 
+	test('save modal native dismiss clears pending save', async ({ page, publishPost }) => {
+		const { postId } = await publishPost(`escape-save ${Date.now()}`)
+		const card = await findPostCard(page, postId)
+		await card.locator('[data-save]').click()
+		const saveModal = page.locator('#saveModal')
+		await expect(saveModal).toBeVisible({ timeout: 20_000 })
+		// Native dialog.close() is the same path Escape / backdrop use
+		await saveModal.evaluate(el => {
+			if (el instanceof HTMLDialogElement) el.close()
+		})
+		await expect(saveModal).toBeHidden({ timeout: 10_000 })
+		// pendingSave 必须已清；否则强制点确认仍会收藏
+		await page.locator('#saveConfirmButton').click({ force: true })
+		await page.locator('.side-nav .nav-btn[data-view="saved"]').click()
+		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toHaveCount(0, { timeout: 10_000 })
+	})
+
 	test('save modal confirm bookmarks post', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`modal-save ${Date.now()}`)
 		const card = await findPostCard(page, postId)

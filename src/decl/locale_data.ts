@@ -3757,6 +3757,7 @@ export type LocaleData = {
 			safetyHint: string
 			mutedKeywords: {
 				placeholder: string
+				'aria-label': string
 			}
 			taste: {
 				rebuild: string

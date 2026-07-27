@@ -415,7 +415,7 @@
 			</button>
 		</div>
 
-		<dialog id="saveModal" class="modal">
+		<dialog id="saveModal" class="modal" aria-labelledby="saveModalTitle">
 			<div class="modal-box space-y-3">
 				<h3 id="saveModalTitle" class="font-bold text-lg" data-i18n="social.saved.pickFolderTitle"></h3>
 				<select id="saveFolderSelect" class="select select-bordered w-full" data-i18n="social.saved.folderSelect"></select>
@@ -424,7 +424,7 @@
 					<button type="button" id="saveConfirmButton" class="btn btn-primary" data-i18n="social.saved.confirm"></button>
 				</div>
 			</div>
-			<form method="dialog" class="modal-backdrop"><button data-i18n="util.common.close">close</button></form>
+			<form method="dialog" class="modal-backdrop"><button type="submit"></button></form>
 		</dialog>
 	</div>
 	<script type="module" src="/parts/shells:social/index.mjs"></script>

@@ -423,15 +423,6 @@ export async function pullOwnerProfileUpdate(username, targetEntityHash) {
 	if (sfwBanner)
 		await uploadBanner(username, target, sfwBanner.buffer, sfwBanner.filename, sfwBanner.mimeType, { sfw: true })
 
-	const sfwAvatarPlain = await readPublicFile(username, ownerEntityHash, ownedProfileUpdatePath(target, 'sfw_avatar'))
-	if (sfwAvatarPlain?.length && !isTombstonePlain(sfwAvatarPlain))
-		await uploadAvatar(username, target, sfwAvatarPlain, 'sfw_avatar.png', 'image/png', { sfw: true })
-
-	const sfwBannerPlain = await readPublicFile(username, ownerEntityHash, ownedProfileUpdatePath(target, 'sfw_banner'))
-	if (sfwBannerPlain?.length && !isTombstonePlain(sfwBannerPlain))
-		await uploadBanner(username, target, sfwBannerPlain, 'sfw_banner.png', 'image/png', { sfw: true })
-
-
 	await writeLastAppliedTs(target, ts)
 
 	const ownerActivePub = normalizeHex64(

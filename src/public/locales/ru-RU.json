@@ -2106,7 +2106,7 @@
 				"aria-label": "Закрыть"
 			},
 			"memberBar": {
-				"aria-label": "Список элементов"
+				"aria-label": "Список участников"
 			},
 			"channelBar": {
 				"aria-label": "Список каналов"

@@ -150,6 +150,7 @@ export function showContextMenu(event, entry) {
 	for (const action of compactMenuActions(actions)) {
 		if (action === false) {
 			const separator = document.createElement('li')
+			separator.setAttribute('role', 'none')
 			const hr = document.createElement('hr')
 			hr.className = 'my-1 border-base-300'
 			separator.appendChild(hr)
