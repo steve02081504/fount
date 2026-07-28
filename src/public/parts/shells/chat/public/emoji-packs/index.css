@@ -33,7 +33,7 @@
 	gap: 0.75rem;
 	padding: 1rem;
 	border-radius: 1rem;
-	background: oklch(var(--b2));
+	background: var(--color-base-200);
 	min-height: 100%;
 }
 
@@ -55,7 +55,7 @@
 .emoji-pack-offer-avatar-fallback {
 	display: grid;
 	place-items: center;
-	background: oklch(var(--b3));
+	background: var(--color-base-300);
 	font-weight: 700;
 }
 

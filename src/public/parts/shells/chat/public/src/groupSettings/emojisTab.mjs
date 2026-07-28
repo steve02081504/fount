@@ -3,7 +3,7 @@ import { mountTemplate } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { packEmojiContentUrl } from '../../providers/emoji.mjs'
+import { packEmojiContentUrl, resolveActivePackId } from '../../providers/emoji.mjs'
 import { viewerCanManageMessages } from '../groupViewerPermissions.mjs'
 
 /**
@@ -17,9 +17,10 @@ function buildPackOptionsHtml(packs, selected, groupId) {
 	const ids = packs.map(p => String(p.packId || '').trim()).filter(Boolean)
 	if (!ids.includes(groupId)) ids.unshift(groupId)
 	const unique = [...new Set(ids)]
+	const groupSuffix = geti18n('chat.group.settingsPage.emojisPackGroupSuffix') || 'group'
 	return unique.map(packId => {
 		const pack = packs.find(p => p.packId === packId)
-		const label = packId === groupId ? `${packId} (group)` : packId
+		const label = packId === groupId ? `${packId} (${groupSuffix})` : packId
 		const count = pack?.itemCount ?? pack?.items?.length
 		const suffix = Number.isFinite(count) ? ` · ${count}` : ''
 		return `<option value="${escapeHtml(packId)}"${packId === current ? ' selected' : ''}>${escapeHtml(label + suffix)}</option>`
@@ -41,10 +42,7 @@ async function renderGroupEmojis(context) {
 
 	const packIds = packsPayload.map(p => p.packId).filter(Boolean)
 	if (!packIds.includes(context.groupId)) packIds.unshift(context.groupId)
-	let activePackId = String(context.activeEmojiPackId || '').trim()
-	if (!activePackId || !packIds.includes(activePackId))
-		activePackId = String(context.state?.groupSettings?.defaultEmojiPackId || '').trim() || context.groupId
-	if (!packIds.includes(activePackId)) activePackId = packIds[0] || context.groupId
+	const activePackId = resolveActivePackId(context, packIds, context.groupId)
 	context.activeEmojiPackId = activePackId
 
 	const [canManage, packDetail] = await Promise.all([

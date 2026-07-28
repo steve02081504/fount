@@ -39,8 +39,9 @@ export function entityDefaultLinkKey(entityHash) {
 export function applyDefaultPackConverge(packIds, oldDefaultPackId, newDefaultPackId) {
 	const next = String(newDefaultPackId || '').trim()
 	if (!next) return [...packIds]
-	const packs = [...packIds]
 	const old = String(oldDefaultPackId || '').trim()
+	if (old === next) return [...packIds]
+	const packs = [...packIds]
 	const oldIdx = old ? packs.indexOf(old) : -1
 	if (oldIdx >= 0) 
 		if (!packs.includes(next)) packs[oldIdx] = next

@@ -2,7 +2,7 @@
  * emoji order / presentation 纯函数用例。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import {
 	countUsageInWindow,

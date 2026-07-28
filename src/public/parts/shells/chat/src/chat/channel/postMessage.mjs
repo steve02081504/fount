@@ -248,11 +248,11 @@ export async function postChannelMessage(username, groupId, channelId, payload =
 	if (origin === 'human')
 	;({ content, files } = await applyBeforeUserSend(username, groupId, channelId, content, files))
 
-	const { content: finalized, fileIds } = await attachFilesToContent(username, groupId, content, files, maxBytes)
-	content = finalized
-
 	const { canonicalizeMessageContentEmojis } = await import('../../emojiAltText.mjs')
 	content = await canonicalizeMessageContentEmojis(username, content)
+
+	const { content: finalized, fileIds } = await attachFilesToContent(username, groupId, content, files, maxBytes)
+	content = finalized
 
 	if (origin === 'human') {
 		void unlockAchievement(username, 'shells/chat', 'first_chat')

@@ -55,6 +55,32 @@ function tokenForSelection(item) {
 }
 
 /**
+ * 群默认 packId：显式设置优先，否则回落 groupId（与 emojiCollectionLogic 同语义）。
+ * @param {object} pack pack 摘要
+ * @returns {boolean} 是否为该群默认包
+ */
+function isDefaultGroupPack(pack) {
+	const defaultId = String(pack.defaultEmojiPackId || '').trim() || String(pack.groupId || '').trim()
+	return !!defaultId && defaultId === pack.packId
+}
+
+/**
+ * 解析设置面板当前编辑 pack。
+ * @param {{ activeEmojiPackId?: string, state?: { groupSettings?: { defaultEmojiPackId?: string } } }} context 设置上下文
+ * @param {string[]} packIds 可用 packId
+ * @param {string} groupId 群 ID
+ * @returns {string} 活动 packId
+ */
+export function resolveActivePackId(context, packIds, groupId) {
+	const ids = packIds.filter(Boolean)
+	let active = String(context?.activeEmojiPackId || '').trim()
+	if (!active || !ids.includes(active))
+		active = String(context?.state?.groupSettings?.defaultEmojiPackId || '').trim() || groupId
+	if (!ids.includes(active)) active = ids[0] || groupId
+	return active
+}
+
+/**
  * Chat shell emoji registry provider。
  */
 export default {
@@ -93,8 +119,7 @@ export default {
 				groupId: pack.groupId,
 				joinedAt: pack.joinedAt,
 				defaultEmojiPackId: pack.defaultEmojiPackId,
-				isDefault: pack.defaultEmojiPackId === pack.packId
-					|| (!pack.defaultEmojiPackId && pack.packId === pack.groupId),
+				isDefault: isDefaultGroupPack(pack),
 				localized: pack.localized,
 				infoDefaults: pack.infoDefaults,
 				name: presentation.name,
@@ -183,26 +208,32 @@ export default {
 		/**
 		 * 将包加入收藏。
 		 * @param {string} packId 包 ID
-		 * @returns {Promise<void>}
+		 * @returns {Promise<{ packIds: string[], emojiIds: string[] }>} 更新后收藏
 		 */
 		async add(packId) {
-			await fetch(`${CHAT_API}/emoji-usage/collection/packs`, {
+			const r = await fetch(`${CHAT_API}/emoji-usage/collection/packs`, {
 				method: 'POST',
 				credentials: 'include',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ packId }),
 			})
+			if (!r.ok) throw new Error(await r.text() || r.statusText)
+			const data = await r.json().catch(() => ({}))
+			return data.collection || data
 		},
 		/**
 		 * 从收藏移除包。
 		 * @param {string} packId 包 ID
-		 * @returns {Promise<void>}
+		 * @returns {Promise<{ packIds: string[], emojiIds: string[] }>} 更新后收藏
 		 */
 		async remove(packId) {
-			await fetch(`${CHAT_API}/emoji-usage/collection/packs/${encodeURIComponent(packId)}`, {
+			const r = await fetch(`${CHAT_API}/emoji-usage/collection/packs/${encodeURIComponent(packId)}`, {
 				method: 'DELETE',
 				credentials: 'include',
 			})
+			if (!r.ok) throw new Error(await r.text() || r.statusText)
+			const data = await r.json().catch(() => ({}))
+			return data.collection || data
 		},
 	},
 

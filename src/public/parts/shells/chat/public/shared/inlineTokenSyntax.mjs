@@ -1,12 +1,12 @@
 /** Canonical inline token 格式（chat/social 共用）。 */
 
-/** emojiId 位允许 unicode 别名（name/alt）；packId 仍为稳定 id。 */
-const EMOJI_ID_IN_TOKEN = '[^\\]\\r\\n]+?'
+/** emojiId 位允许 unicode 别名（name/alt）；不含 `/`，以免吞掉额外 path 段。 */
+const EMOJI_ID_IN_TOKEN = '[^\\]/\\r\\n]+?'
 
 /**
  *
  */
-export const EMOJI_TOKEN_RE = new RegExp(`:\\[emoji:([\\w.-]+)\\/(${EMOJI_ID_IN_TOKEN})\\]:`, 'g')
+export const EMOJI_TOKEN_RE = new RegExp(`:\\[emoji:([\\w.-]+)\\/(${EMOJI_ID_IN_TOKEN})\\]:`, 'giu')
 
 /**
  *
@@ -34,7 +34,7 @@ export const INLINE_TOKEN_RE = new RegExp(
  * @returns {{ packId: string, emojiId: string } | null} 解析结果
  */
 export function parseEmojiToken(ref) {
-	const m = new RegExp(`:\\[emoji:([\\w.-]+)\\/(${EMOJI_ID_IN_TOKEN})\\]:`).exec(String(ref || ''))
+	const m = new RegExp(`:\\[emoji:([\\w.-]+)\\/(${EMOJI_ID_IN_TOKEN})\\]:`, 'iu').exec(String(ref || ''))
 	return m ? { packId: m[1], emojiId: m[2] } : null
 }
 

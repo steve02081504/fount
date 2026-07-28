@@ -136,12 +136,12 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId, optio
  */
 export async function resolvePackEmojiContent(username, packId, emojiId, options = {}) {
 	const located = await findPackAcrossGroups(username, packId)
-	if (located) 
+	if (located)
 		return resolveGroupEmojiContent(username, located.groupId, emojiId, {
 			contentHash: options.contentHash,
 			packId,
 		})
-	
+
 	const { findPackAcrossEntities, readEntityPackEmojiBinary } = await import('../entity/entityEmojis.mjs')
 	const entityLocated = await findPackAcrossEntities(packId)
 	if (!entityLocated) return null
@@ -151,6 +151,25 @@ export async function resolvePackEmojiContent(username, packId, emojiId, options
 		packId,
 		emojiId,
 	)
-	if (!local) return null
-	return local
+	if (local) return local
+
+	const entry = (entityLocated.manifest?.items || []).find(row => row?.emojiId === emojiId)
+	const hintedHash = String(options.contentHash || '').trim().toLowerCase()
+	const contentHash = entry?.contentHash || (isHex64(hintedHash) ? hintedHash : null)
+	if (!contentHash) return null
+
+	await ensureUserRoom({ replicaUsername: username }).catch(() => null)
+	const chunk = await fetchChunk({
+		username,
+		ciphertextHash: contentHash,
+	}).catch(() => null)
+	if (!chunk?.byteLength) return null
+	const buffer = Buffer.from(chunk)
+	const mimeType = entry?.mimeType || 'image/png'
+	return {
+		buffer,
+		mimeType,
+		entry: { ...entry || { emojiId }, contentHash },
+		packId,
+	}
 }

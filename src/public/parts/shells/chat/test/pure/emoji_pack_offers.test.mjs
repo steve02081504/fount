@@ -2,7 +2,7 @@
  * emoji pack offer 清洗。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std/assert/mod.ts'
+import { assertEquals } from 'jsr:@std/assert'
 
 import { sanitizeEmojiPackOffer } from '../../src/emojiPacks/discoverNetwork.mjs'
 
@@ -25,4 +25,13 @@ Deno.test('sanitizeEmojiPackOffer rejects incomplete rows', () => {
 	assertEquals(sanitizeEmojiPackOffer(null), null)
 	assertEquals(sanitizeEmojiPackOffer({ packId: 'p1' }), null)
 	assertEquals(sanitizeEmojiPackOffer({ sourceId: 'g1' }), null)
+})
+
+Deno.test('sanitizeEmojiPackOffer drops non-hex nodeHash', () => {
+	const offer = sanitizeEmojiPackOffer({
+		packId: 'p1',
+		sourceId: 'g1',
+		nodeHash: 'not-hex!!',
+	})
+	assertEquals(offer?.nodeHash, '')
 })

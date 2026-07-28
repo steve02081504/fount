@@ -22,6 +22,8 @@ export function sanitizeEmojiPackOffer(raw) {
 	const sourceKind = String(/** @type {{ sourceKind?: unknown }} */raw.sourceKind || 'group').trim() || 'group'
 	const itemCount = Math.min(Math.max(Number(/** @type {{ itemCount?: unknown }} */raw.itemCount) || 0, 0), 10_000)
 	const localized = /** @type {{ localized?: unknown }} */raw.localized
+	const nodeHashRaw = String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || '').trim().toLowerCase().slice(0, 128)
+	const nodeHash = /^[\da-f]+$/u.test(nodeHashRaw) ? nodeHashRaw : ''
 	return {
 		packId,
 		sourceKind,
@@ -32,7 +34,7 @@ export function sanitizeEmojiPackOffer(raw) {
 			? raw.infoDefaults
 			: {},
 		joinPolicy: String(/** @type {{ joinPolicy?: unknown }} */raw.joinPolicy || '').trim() || null,
-		nodeHash: String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || '').trim().toLowerCase().slice(0, 128),
+		nodeHash,
 	}
 }
 
@@ -54,21 +56,18 @@ export async function localGroupPackOffersHandler(inboundContext, query) {
 	const { resolveActiveMemberKeyForLocalReplica } = await import('../group/access.mjs')
 	const { listGroupPacks } = await import('../group/groupEmojis.mjs')
 
-	/** @type {object[]} */
-	const offers = []
-
-	for (const groupId of await listUserGroups(username)) {
-		if (offers.length >= limit) break
+	const groupIds = await listUserGroups(username)
+	const settled = await Promise.all(groupIds.map(async groupId => {
 		let state
 		try {
 			({ state } = await getState(username, groupId, { skipLeftPurge: true }))
 		}
 		catch {
-			continue
+			return []
 		}
-		if (!state?.groupSettings?.discoveryPublic) continue
+		if (!state?.groupSettings?.discoveryPublic) return []
 		const memberKey = await resolveActiveMemberKeyForLocalReplica(username, groupId, state)
-		if (!memberKey) continue
+		if (!memberKey) return []
 
 		const infoDefaults = {
 			name: state.groupMeta?.name || groupId,
@@ -77,21 +76,18 @@ export async function localGroupPackOffersHandler(inboundContext, query) {
 		}
 		const joinPolicy = state.groupSettings?.joinPolicy || 'invite-only'
 		const packs = await listGroupPacks(username, groupId)
-		for (const pack of packs) {
-			if (offers.length >= limit) break
-			offers.push({
-				packId: pack.packId,
-				sourceKind: 'group',
-				sourceId: groupId,
-				localized: pack.localized || {},
-				itemCount: Array.isArray(pack.items) ? pack.items.length : 0,
-				infoDefaults,
-				joinPolicy,
-				nodeHash,
-			})
-		}
-	}
-	return offers
+		return packs.map(pack => ({
+			packId: pack.packId,
+			sourceKind: 'group',
+			sourceId: groupId,
+			localized: pack.localized || {},
+			itemCount: Array.isArray(pack.items) ? pack.items.length : 0,
+			infoDefaults,
+			joinPolicy,
+			nodeHash,
+		}))
+	}))
+	return settled.flat().slice(0, limit)
 }
 
 /**

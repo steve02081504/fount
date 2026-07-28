@@ -7,6 +7,7 @@ import { applySafeContentHeaders } from '../../../../../../../scripts/http_conte
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { isAllowedImageUpload, pickUploadedFile } from '../../../../../../../server/web_server/multipart_upload.mjs'
+import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { replicateGroupEmojiManifestToUserRoom } from '../../chat/federation/groupEmojiFederation.mjs'
 import { ensureFederationRoom } from '../../chat/federation/room.mjs'
 import { governanceChannelId } from '../access.mjs'
@@ -143,9 +144,16 @@ export function registerGroupEmojiRoutes(router, authenticate) {
 		const { username, groupId, state, member } = req.groupContext
 		const channelId = governanceChannelId(state)
 		ensureCanInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId, 'MANAGE_MESSAGES required')
-		const ok = await deletePack(username, groupId, req.params.packId)
+		const packId = req.params.packId
+		const ok = await deletePack(username, groupId, packId)
 		if (!ok) throw httpError(404, 'pack not found')
-		res.status(200).json({ packId: req.params.packId, deleted: true })
+		if (state.groupSettings?.defaultEmojiPackId === packId)
+			await appendSignedLocalEvent(username, groupId, {
+				type: 'group_settings_update',
+				timestamp: Date.now(),
+				content: { defaultEmojiPackId: null },
+			})
+		res.status(200).json({ packId, deleted: true })
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/emoji-packs/:packId/emojis`, authenticate, requireGroupMember(), async (req, res) => {
@@ -157,7 +165,12 @@ export function registerGroupEmojiRoutes(router, authenticate) {
 		if (!file || !await isAllowedImageUpload(file))
 			throw httpError(400, 'invalid emoji image')
 		if (!await loadPackManifest(username, groupId, packId))
-			await createPack(username, groupId, { packId })
+			try {
+				await createPack(username, groupId, { packId })
+			}
+			catch (error) {
+				throw httpError(400, error?.message || 'create pack failed')
+			}
 		const entry = await uploadPackEmoji(
 			username,
 			groupId,

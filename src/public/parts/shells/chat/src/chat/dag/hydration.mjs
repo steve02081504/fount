@@ -323,16 +323,23 @@ async function buildChatLogEntryFromDagMessage(
 		? editOverride.content
 		: messageAgentText(content) || resolvedShow || decryptUnavailableFallback
 
-	if (replicaUsername && entry.content && /:\[emoji:/.test(entry.content)) {
-		const { degradeTextEmojisAsync } = await import('../../emojiAltText.mjs')
-		entry.content = await degradeTextEmojisAsync(replicaUsername, entry.content)
-	}
-
 	if (isText) {
 		const show = editOverride?.content_for_show ?? messageShowText(content)
 		if (show && show !== entry.content) entry.content_for_show = show
 		const edit = editOverride?.content_for_edit ?? messageEditText(content)
 		if (edit && edit !== entry.content) entry.content_for_edit = edit
+	}
+
+	if (replicaUsername) {
+		const fields = ['content', 'content_for_show', 'content_for_edit']
+		const needsDegrade = fields.some(field => typeof entry[field] === 'string' && /:\[emoji:/i.test(entry[field]))
+		if (needsDegrade) {
+			const { degradeTextEmojisAsync } = await import('../../emojiAltText.mjs')
+			for (const field of fields) {
+				if (typeof entry[field] !== 'string' || !/:\[emoji:/i.test(entry[field])) continue
+				entry[field] = await degradeTextEmojisAsync(replicaUsername, entry[field])
+			}
+		}
 	}
 
 	if (content.locale) entry.locale = content.locale

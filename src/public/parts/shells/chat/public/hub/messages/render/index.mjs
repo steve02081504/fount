@@ -194,7 +194,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 		: ''
 	const saveEmojiButton = emojiRef
 		? await renderTemplateAsHtmlString('hub/messages/save_emoji_button', {
-			groupId: escapeHtml(emojiRef.packId),
+			packId: escapeHtml(emojiRef.packId),
 			emojiId: escapeHtml(emojiRef.emojiId),
 		})
 		: ''

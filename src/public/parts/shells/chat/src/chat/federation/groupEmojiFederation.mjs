@@ -6,6 +6,7 @@
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
 
+import { isSafePackId } from '../../emojiPacks/packStore.mjs'
 import {
 	bufferToDataUrl,
 	listGroupPacks,
@@ -51,7 +52,9 @@ function waitKey(username, groupId, emojiId, packId) {
  * @returns {string} 返回值
  */
 function resolvePayloadPackId(data, groupId) {
-	return String(data?.packId || groupId || '').trim() || groupId
+	const raw = String(data?.packId || '').trim()
+	if (raw && isSafePackId(raw)) return raw
+	return groupId
 }
 
 /**
@@ -332,7 +335,7 @@ export async function replicateGroupEmojiToFederation(username, groupId, emojiId
 }
 
 /**
- * 新 peer 入房时推送本群全部 pack 的 manifest + 二进制。
+ * 新 peer 入房时推送本群 pack manifest；二进制由对端按需 `fed_emoji_want`。
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {string} peerId 对端
@@ -340,40 +343,26 @@ export async function replicateGroupEmojiToFederation(username, groupId, emojiId
  * @returns {Promise<void>} 返回值
  */
 export async function replicateGroupEmojisToPeer(username, groupId, peerId, slot) {
-	if (!slot?.sendEmojiData || !peerId) return
+	if (!slot?.sendEmojiManifest || !peerId) return
 	const packs = await listGroupPacks(username, groupId)
 	for (const pack of packs) {
 		const packId = pack.packId
 		for (const entry of pack.items || []) {
 			const emojiId = String(entry?.emojiId || '').trim()
 			if (!emojiId) continue
-			if (slot.sendEmojiManifest)
-				try {
-					slot.sendEmojiManifest({
-						packId,
-						emojiId,
-						name: entry.name,
-						mimeType: entry.mimeType,
-						ext: entry.ext,
-						animated: entry.animated,
-						contentHash: entry.contentHash,
-					}, peerId)
-				}
-				catch (error) {
-					console.warn('federation: fed_emoji_manifest peer replicate failed', error)
-				}
-			const local = await readGroupEmojiBinary(username, groupId, emojiId, packId)
-			if (!local) continue
 			try {
-				slot.sendEmojiData({
+				slot.sendEmojiManifest({
 					packId,
 					emojiId,
-					dataUrl: bufferToDataUrl(local.buffer, local.mimeType),
-					mimeType: local.mimeType,
+					name: entry.name,
+					mimeType: entry.mimeType,
+					ext: entry.ext,
+					animated: entry.animated,
+					contentHash: entry.contentHash,
 				}, peerId)
 			}
 			catch (error) {
-				console.warn('federation: fed_emoji_data peer replicate failed', error)
+				console.warn('federation: fed_emoji_manifest peer replicate failed', error)
 			}
 		}
 	}

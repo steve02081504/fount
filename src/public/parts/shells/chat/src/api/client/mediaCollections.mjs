@@ -19,13 +19,13 @@ export function createMediaCollectionsMethods(apiContext) {
 				},
 				/**
 				 * @param {object[]} _entries 忽略
-				 * @returns {Promise<{ entries: object[] }>} 空列表
+				 * @returns {never} 始终抛错，提示改用 addPack/removePack
 				 */
 				async set(_entries) {
-					return { entries: [] }
+					throw new Error('emojis.set unsupported; use addPack/removePack')
 				},
 				/**
-				 * @param {{ groupId?: string, packId?: string, emojiId?: string, dataUrl?: string }} fields 保存字段
+				 * @param {{ groupId?: string, packId?: string, emojiId?: string }} fields 保存字段（收藏 pack；emojiId 仅回显）
 				 * @returns {Promise<{ entry: object }>} 写入结果
 				 */
 				async save({ groupId, packId, emojiId }) {

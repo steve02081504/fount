@@ -7,7 +7,7 @@
  */
 import { assignShellData, loadShellData } from '../../../../../server/setting_loader.mjs'
 import { channelMessageKind, messageShowText } from '../public/shared/channelContent.mjs'
-import { EMOJI_TOKEN_RE } from '../public/shared/inlineTokenSyntax.mjs'
+import { EMOJI_TOKEN_RE, parseEmojiToken } from '../public/shared/inlineTokenSyntax.mjs'
 
 import {
 	applyDefaultPackConverge,
@@ -16,6 +16,9 @@ import {
 	resolveGroupDefaultPackId,
 } from './emojiCollectionLogic.mjs'
 
+/**
+ *
+ */
 export {
 	applyDefaultPackConverge,
 	entityDefaultLinkKey,
@@ -142,11 +145,9 @@ export function recordEmojiUsageFromMessageContent(username, entityHashOrContent
 	const content = maybeContent !== undefined ? maybeContent : entityHashOrContent
 	if (!content || typeof content !== 'object') return
 	if (channelMessageKind(content) === 'sticker') {
-		const emojiRef = String(content.emojiRef || '').trim()
-		const match = /:\[emoji:([\w.-]+)\/([\w.-]+)\]:/.exec(emojiRef)
-			|| /:\[([\w.-]+)\/([\w.-]+)\]:/.exec(emojiRef)
-		if (match)
-			recordEmojiUsage(username, { kind: 'pack', packId: match[1], emojiId: match[2] })
+		const parsed = parseEmojiToken(String(content.emojiRef || '').trim())
+		if (parsed)
+			recordEmojiUsage(username, { kind: 'pack', packId: parsed.packId, emojiId: parsed.emojiId })
 		return
 	}
 	const text = messageShowText(content)
@@ -252,10 +253,13 @@ export function convergeLinkedDefault(username, linkKey, newDefaultPackId) {
 	const state = loadEmojiUsage(username)
 	const old = String(state.linkedDefaults[key] || '').trim()
 	if (old === next) return
-	convergeDefaultPack(username, old || null, next)
-	const after = loadEmojiUsage(username)
-	after.linkedDefaults[key] = next
-	saveEmojiUsage(username, after)
+	state.collection.packIds = applyDefaultPackConverge(
+		state.collection.packIds,
+		old || null,
+		next,
+	)
+	state.linkedDefaults[key] = next
+	saveEmojiUsage(username, state)
 }
 
 /**

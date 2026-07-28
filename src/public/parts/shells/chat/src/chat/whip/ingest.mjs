@@ -103,7 +103,8 @@ export async function startWhipIngest(roomId, offerSdp, options = {}) {
 
 	const sessionId = senderHex
 	/**
-	 *
+	 * 关闭 WHIP 入站会话并撤销 publish meta。
+	 * @returns {void}
 	 */
 	const close = () => {
 		whip.close()

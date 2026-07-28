@@ -1,7 +1,6 @@
 /**
  * 实体作者表情包：`entities/{hash}/emoji_packs/{packId}/`。
  */
-import fs from 'node:fs'
 import fsp from 'node:fs/promises'
 
 import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
@@ -15,6 +14,10 @@ import * as store from '../emojiPacks/packStore.mjs'
 
 /** 复用 packStore.packSummary。 */
 export { packSummary } from '../emojiPacks/packStore.mjs'
+
+/** @type {Map<string, { replicaUsername: string, authorEntityHash: string } | null>} */
+const packHostCache = new Map()
+const PACK_HOST_CACHE_MAX = 256
 
 /**
  * @param {string} entityHash 作者 entityHash
@@ -35,21 +38,37 @@ export function packsRoot(replicaUsername, entityHash) {
 
 /**
  * @param {string} packId pack id
- * @returns {{ replicaUsername: string, authorEntityHash: string } | null} 托管位置
+ * @returns {Promise<{ replicaUsername: string, authorEntityHash: string } | null>} 托管位置
  */
-export function findEntityPackHost(packId) {
+export async function findEntityPackHost(packId) {
 	const pid = String(packId || '').trim()
-	if (!pid) return null
+	if (!pid || !store.isSafePackId(pid)) return null
+	if (packHostCache.has(pid)) return packHostCache.get(pid)
+	/** @type {{ replicaUsername: string, authorEntityHash: string } | null} */
+	let found = null
 	for (const replicaUsername of getAllUserNames()) {
 		const entitiesRoot = userEntitiesRoot(replicaUsername)
-		if (!fs.existsSync(entitiesRoot)) continue
-		for (const authorEntityHash of fs.readdirSync(entitiesRoot)) {
-			const manifestPath = store.packManifestPath(packsRoot(replicaUsername, authorEntityHash), pid)
-			if (fs.existsSync(manifestPath))
-				return { replicaUsername, authorEntityHash }
+		let authors
+		try {
+			authors = await fsp.readdir(entitiesRoot)
 		}
+		catch {
+			continue
+		}
+		for (const authorEntityHash of authors) {
+			const manifestPath = store.packManifestPath(packsRoot(replicaUsername, authorEntityHash), pid)
+			try {
+				await fsp.access(manifestPath)
+				found = { replicaUsername, authorEntityHash }
+				break
+			}
+			catch { /* miss */ }
+		}
+		if (found) break
 	}
-	return null
+	if (packHostCache.size >= PACK_HOST_CACHE_MAX) packHostCache.clear()
+	packHostCache.set(pid, found)
+	return found
 }
 
 /**
@@ -57,7 +76,7 @@ export function findEntityPackHost(packId) {
  * @returns {Promise<{ replicaUsername: string, authorEntityHash: string, manifest: object } | null>} 定位结果
  */
 export async function findPackAcrossEntities(packId) {
-	const host = findEntityPackHost(packId)
+	const host = await findEntityPackHost(packId)
 	if (!host) return null
 	const manifest = await store.loadPackManifest(
 		packsRoot(host.replicaUsername, host.authorEntityHash),
