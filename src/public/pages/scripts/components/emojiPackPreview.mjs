@@ -6,6 +6,7 @@ import { findCollectionCapability, listEmojiProviders } from '../features/emoji/
 import { showToastI18n } from '../features/toast.mjs'
 import { geti18n, loadPreferredLangs, primaryLocale } from '../i18n/index.mjs'
 import { escapeHtml } from '../lib/escapeHtml.mjs'
+import { isSafeHtmlUrl } from '../lib/sanitizeHtml.mjs'
 
 const CSS_ID = 'fount-emoji-pack-preview-css'
 const CSS_HREF = '/scripts/components/emojiPackPreview.css'
@@ -96,6 +97,22 @@ function wirePreviewOutsideClose(panel, alsoInside) {
 }
 
 /**
+ * @param {string | null | undefined} url 候选 URL
+ * @returns {string | null} 同源绝对 URL；否则 null
+ */
+function sameOriginHref(url) {
+	const raw = String(url ?? '').trim()
+	if (!raw || !isSafeHtmlUrl(raw)) return null
+	try {
+		const resolved = new URL(raw, location.href)
+		return resolved.origin === location.origin ? resolved.href : null
+	}
+	catch {
+		return null
+	}
+}
+
+/**
  * @param {string[]} locales locales
  * @param {object} pack pack
  * @returns {object} 展示字段
@@ -154,12 +171,14 @@ export async function showEmojiPackPreview(anchor, options) {
 	const card = ensureCard()
 	const pack = options.pack
 	const provider = options.provider || pack._provider || null
-	const locales = loadPreferredLangs().length ? loadPreferredLangs() : [primaryLocale()]
+	const preferredLangs = loadPreferredLangs()
+	const locales = preferredLangs.length ? preferredLangs : [primaryLocale()]
 	const presentation = presentationOf(locales, pack)
 	const available = options.available !== false
 
-	const avatarHtml = presentation.avatar
-		? `<img class="emoji-pack-preview-avatar" src="${escapeHtml(presentation.avatar)}" alt="" />`
+	const avatarUrl = isSafeHtmlUrl(presentation.avatar) ? String(presentation.avatar).trim() : ''
+	const avatarHtml = avatarUrl
+		? `<img class="emoji-pack-preview-avatar svg-inliner-ignore" src="${escapeHtml(avatarUrl)}" alt="" />`
 		: `<div class="emoji-pack-preview-avatar-fallback" aria-hidden="true">${escapeHtml((presentation.name || '?').slice(0, 1))}</div>`
 
 	const tagsHtml = (presentation.tags || []).map(tag =>
@@ -168,7 +187,7 @@ export async function showEmojiPackPreview(anchor, options) {
 
 	const linksHtml = (presentation.links || []).map(link => {
 		const url = String(link?.url || '').trim()
-		if (!url) return ''
+		if (!isSafeHtmlUrl(url)) return ''
 		const name = String(link?.name || url).trim()
 		return `<a class="emoji-pack-preview-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(name)}</a>`
 	}).join('')
@@ -210,8 +229,8 @@ export async function showEmojiPackPreview(anchor, options) {
 		metaEl.textContent = geti18n('chat.emoji.previewGroupMeta', { name: title }) || title
 		if (preview.isMember)
 			appendAction(actions, 'chat.emoji.alreadyMember', 'btn btn-ghost btn-sm', () => {
-				window.location.href = preview.hubUrl
-					|| `/parts/shells:chat/hub/#group:${encodeURIComponent(sourcePreview.groupId)}:default`
+				const fallback = `/parts/shells:chat/hub/#group:${encodeURIComponent(sourcePreview.groupId)}:default`
+				window.location.href = sameOriginHref(preview.hubUrl) || fallback
 			})
 		else if (preview.canJoin)
 			appendAction(actions, 'chat.emoji.joinGroup', 'btn btn-primary btn-sm', async () => {

@@ -14,15 +14,20 @@ export async function discoverEmojiPackOffers(options = {}) {
 	const seen = new Set()
 	for (const provider of providers) {
 		if (!provider.discoverPacks) continue
-		const list = await provider.discoverPacks(options)
-		for (const offer of list || []) {
-			const packId = offer?.packId
-			const sourceId = offer?.source?.id || offer?.sourceId || offer?.groupId || offer?.entityHash
-			if (!packId || !sourceId) continue
-			const key = `${offer.source?.kind || offer.sourceKind || '?'}:${sourceId}:${packId}`
-			if (seen.has(key)) continue
-			seen.add(key)
-			offers.push({ ...offer, _provider: provider })
+		try {
+			const list = await provider.discoverPacks(options)
+			for (const offer of list || []) {
+				const packId = offer?.packId
+				const sourceId = offer?.source?.id || offer?.sourceId || offer?.groupId || offer?.entityHash
+				if (!packId || !sourceId) continue
+				const key = `${offer.source?.kind || offer.sourceKind || '?'}:${sourceId}:${packId}`
+				if (seen.has(key)) continue
+				seen.add(key)
+				offers.push({ ...offer, _provider: provider })
+			}
+		}
+		catch (error) {
+			console.warn('[emoji] provider.discoverPacks failed', provider, error)
 		}
 	}
 	return offers

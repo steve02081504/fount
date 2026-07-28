@@ -126,7 +126,6 @@ export function packCountsFromLog(log) {
 export function orderPackSections({ packs, contextDefaultPackIds = [], log, lastUsedAtByPack = {} }) {
 	const packById = new Map((packs || []).map(p => [p.packId, p]))
 	const packCounts = packCountsFromLog(log)
-	const contextSet = new Set((contextDefaultPackIds || []).filter(id => packById.has(id)))
 	/** @type {Set<string>} */
 	const placed = new Set()
 	/** @type {{ tier: number, packId: string }[]} */
@@ -160,6 +159,5 @@ export function orderPackSections({ packs, contextDefaultPackIds = [], log, last
 	for (const packId of rest)
 		out.push({ tier: 4, packId })
 
-	void contextSet
 	return out
 }

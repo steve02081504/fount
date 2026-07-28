@@ -39,9 +39,14 @@ export async function aggregateEmojiPacks(context = {}) {
 		if (provider.usage && !usage) usage = provider.usage
 		if (provider.collection && !collection) collection = provider.collection
 		if (!provider.listPacks) continue
-		const list = await provider.listPacks(context)
-		for (const pack of list || [])
-			packs.push({ ...pack, _provider: provider })
+		try {
+			const list = await provider.listPacks(context)
+			for (const pack of list || [])
+				packs.push({ ...pack, _provider: provider })
+		}
+		catch (error) {
+			console.warn('[emoji] provider.listPacks failed', provider, error)
+		}
 	}
 
 	return { packs, providers, usage, collection }
