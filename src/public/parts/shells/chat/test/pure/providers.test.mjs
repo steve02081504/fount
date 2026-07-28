@@ -13,21 +13,15 @@ import { formatEmojiToken, parseEmojiToken } from '../../public/shared/inlineTok
  */
 function tokenForSelection(item) {
 	if (item.kind === 'unicode' && item.unicode) return item.unicode
-	if (item.unicode) return item.unicode
-	const packId = item.packId || item.groupId
-	if (packId && item.emojiId) return formatEmojiToken(packId, item.emojiId)
+	if (item.packId && item.emojiId) return formatEmojiToken(item.packId, item.emojiId)
 	return item.emojiRef || ''
 }
 
 Deno.test('tokenForSelection handles unicode and pack refs', () => {
-	assertEquals(tokenForSelection({ unicode: '👍' }), '👍')
+	assertEquals(tokenForSelection({ kind: 'unicode', unicode: '👍' }), '👍')
 	assertEquals(
 		tokenForSelection({ packId: 'g1', emojiId: 'e1', emojiRef: formatEmojiToken('g1', 'e1') }),
 		formatEmojiToken('g1', 'e1'),
-	)
-	assertEquals(
-		tokenForSelection({ groupId: 'g2', emojiId: 'e2' }),
-		formatEmojiToken('g2', 'e2'),
 	)
 })
 

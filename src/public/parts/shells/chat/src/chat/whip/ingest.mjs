@@ -109,7 +109,7 @@ export async function startWhipIngest(roomId, offerSdp, options = {}) {
 	const close = () => {
 		whip.close()
 		sessionsByRoom.delete(roomId)
-		if (options.onPublishMeta)
+		if (publishedVideoMeta || publishedAudioMeta)
 			injectAvRelayControl(roomId, { type: 'publish_meta_revoke', senderId: senderHex })
 	}
 	sessionsByRoom.set(roomId, { close })

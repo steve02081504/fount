@@ -139,10 +139,6 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 | POST | `/groups/:groupId/emoji-packs/:packId/emojis` | 上传表情（multipart `emoji`） |
 | DELETE | `/groups/:groupId/emoji-packs/:packId/emojis/:emojiId` | 删除表情 |
 | GET | `/groups/:groupId/emoji-packs/:packId/emojis/:emojiId/data` | 表情二进制；`?json=1` → dataUrl |
-| GET | `/groups/:groupId/emojis` | 兼容：展平全部 pack items |
-| POST | `/groups/:groupId/emojis` | 兼容：写入默认 pack（packId=groupId） |
-| DELETE | `/groups/:groupId/emojis/:emojiId` | 兼容删除 |
-| GET | `/groups/:groupId/emojis/:emojiId/data` | 兼容内容 |
 | GET | `/emoji-content/:packId/:emojiId` | 按 packId 解析内容（群包 ∪ 实体作者包） |
 | GET | `/emoji-packs` | 可用 pack 列表（已加入群包 ∪ 自有实体包） |
 | GET | `/entities/:entityHash/emoji-packs` | 实体作者包摘要 |

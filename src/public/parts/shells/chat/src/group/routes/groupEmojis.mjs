@@ -15,16 +15,12 @@ import { resolveGroupEmojiContent, resolvePackEmojiContent } from '../emojiConte
 import {
 	bufferToDataUrl,
 	createPack,
-	deleteGroupEmoji,
 	deletePack,
 	deletePackEmoji,
-	ensureDefaultGroupPack,
 	listGroupPacks,
-	loadGroupEmojiManifest,
 	loadPackManifest,
 	packSummary,
 	updatePack,
-	uploadGroupEmoji,
 	uploadPackEmoji,
 } from '../groupEmojis.mjs'
 
@@ -200,43 +196,6 @@ export function registerGroupEmojiRoutes(router, authenticate) {
 		return sendEmojiContentResponse(req, res, username, groupId, emojiId, packId)
 	})
 
-	// —— 兼容旧路径：默认 pack（packId === groupId）——
-	router.get(`${GROUPS_PREFIX}/:groupId/emojis`, authenticate, requireGroupMember(), async (req, res) => {
-		const { username, groupId } = req.groupContext
-		const entries = await loadGroupEmojiManifest(username, groupId)
-		res.status(200).json({ entries })
-	})
-
-	router.post(`${GROUPS_PREFIX}/:groupId/emojis`, authenticate, requireGroupMember(), async (req, res) => {
-		const { username, groupId, state, member } = req.groupContext
-		const channelId = governanceChannelId(state)
-		ensureCanInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId, 'MANAGE_MESSAGES required')
-		const file = pickUploadedFile(req, 'emoji')
-		if (!file || !await isAllowedImageUpload(file))
-			throw httpError(400, 'invalid emoji image')
-		await ensureDefaultGroupPack(username, groupId)
-		const entry = await uploadGroupEmoji(
-			username,
-			groupId,
-			file.buffer,
-			file.originalname,
-			file.mimetype,
-			req.body?.name,
-		)
-		await replicateAfterUpload(username, groupId, entry)
-		res.status(201).json({ entry })
-	})
-
-	router.delete(`${GROUPS_PREFIX}/:groupId/emojis/:emojiId`, authenticate, requireGroupMember(), async (req, res) => {
-		const { username, groupId, state, member } = req.groupContext
-		const { emojiId } = req.params
-		const channelId = governanceChannelId(state)
-		ensureCanInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId, 'MANAGE_MESSAGES required')
-		const ok = await deleteGroupEmoji(username, groupId, emojiId)
-		if (!ok) throw httpError(404, 'emoji not found')
-		res.status(200).json({ emojiId, deleted: true })
-	})
-
 	router.get(`${CHAT_API_PREFIX}/emoji-content/:packId/:emojiId`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { packId, emojiId } = req.params
@@ -266,11 +225,5 @@ export function registerGroupEmojiRoutes(router, authenticate) {
 			? await listAvailableEntityPacksForUser(username, operatorEntityHash)
 			: []
 		res.status(200).json({ packs: [...groupPacks, ...entityPacks] })
-	})
-
-	router.get(`${GROUPS_PREFIX}/:groupId/emojis/:emojiId/data`, authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		const { groupId, emojiId } = req.params
-		return sendEmojiContentResponse(req, res, username, groupId, emojiId)
 	})
 }

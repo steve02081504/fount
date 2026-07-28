@@ -30,7 +30,7 @@ export const INLINE_TOKEN_RE = new RegExp(
 )
 
 /**
- * @param {string} ref emoji token 或任意字符串
+ * @param {string} ref `:[emoji:packId/emojiId]:`
  * @returns {{ packId: string, emojiId: string } | null} 解析结果
  */
 export function parseEmojiToken(ref) {

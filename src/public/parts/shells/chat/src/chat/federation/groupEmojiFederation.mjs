@@ -108,14 +108,6 @@ export async function handleFedEmojiData(username, groupId, data) {
 		pendingFetches.delete(key)
 		pending.resolve({ dataUrl, mimeType })
 	}
-	// 兼容旧 waitKey（无 packId 段）
-	const legacyKey = `${username}\0${groupId}\0${emojiId}`
-	const legacyPending = pendingFetches.get(legacyKey)
-	if (legacyPending) {
-		clearTimeout(legacyPending.timer)
-		pendingFetches.delete(legacyKey)
-		legacyPending.resolve({ dataUrl, mimeType })
-	}
 	await persistGroupEmojiFromDataUrl(username, groupId, emojiId, dataUrl, mimeType, undefined, packId)
 		.catch(error => console.warn('federation: fed_emoji_data persist failed', error))
 }

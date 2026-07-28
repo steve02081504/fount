@@ -494,8 +494,8 @@ await testCase('GET mailbox/summary', async () => {
 	return r.status === 200
 })
 
-await testCase('GET group emojis', async () => {
-	const r = await chatApi('GET', `/groups/${gid}/emojis`)
+await testCase('GET group emoji-packs', async () => {
+	const r = await chatApi('GET', `/groups/${gid}/emoji-packs`)
 	return r.status === 200
 })
 

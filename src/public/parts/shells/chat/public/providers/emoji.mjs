@@ -49,8 +49,7 @@ async function fetchAvailablePacks(context = {}) {
  */
 function tokenForSelection(item) {
 	if (item.kind === 'unicode' && item.unicode) return item.unicode
-	const packId = item.packId || item.groupId
-	if (packId && item.emojiId) return formatEmojiToken(packId, item.emojiId)
+	if (item.packId && item.emojiId) return formatEmojiToken(item.packId, item.emojiId)
 	return item.emojiRef || ''
 }
 
@@ -242,9 +241,9 @@ export default {
 	/**
 	 * 判断条目是否为群/包自定义表情。
 	 * @param {object} item picker 或消息条目
-	 * @returns {boolean} 含 packId/groupId 与 emojiId 时为 true
+	 * @returns {boolean} 含 packId 与 emojiId 时为 true
 	 */
 	isGroupEmojiItem(item) {
-		return !!(item?.packId || item?.groupId) && !!item?.emojiId
+		return !!item?.packId && !!item?.emojiId
 	},
 }

@@ -375,7 +375,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		}
 		const content = responseEvent.content || {}
 		const { recordEmojiUsageFromMessageContent } = await import('../../emojiUsage.mjs')
-		recordEmojiUsageFromMessageContent(username, client.entityHash, content)
+		recordEmojiUsageFromMessageContent(username, content)
 		res.status(201).json({ event: responseEvent })
 	})
 

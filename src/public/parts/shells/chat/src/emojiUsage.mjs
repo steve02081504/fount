@@ -108,17 +108,10 @@ export function appendUsageLog(state, usageId, at = Date.now()) {
 
 /**
  * @param {string} username 用户名
- * @param {{ kind: 'unicode', unicode: string } | { kind: 'pack' | 'custom', packId?: string, groupId?: string, emojiId: string }} item 用量项
- * @param {string} [_entityHash] 兼容旧调用（已忽略）
+ * @param {{ kind: 'unicode', unicode: string } | { kind: 'pack', packId: string, emojiId: string }} item 用量项
  * @returns {void} 返回值
  */
-export function recordEmojiUsage(username, item, _entityHash) {
-	// 兼容 (username, entityHash, item)
-	if (typeof item === 'string' && _entityHash && typeof _entityHash === 'object') {
-		const realItem = _entityHash
-		_entityHash = item
-		item = realItem
-	}
+export function recordEmojiUsage(username, item) {
 	const state = loadEmojiUsage(username)
 	let usageId = ''
 	if (item.kind === 'unicode') {
@@ -127,7 +120,7 @@ export function recordEmojiUsage(username, item, _entityHash) {
 		usageId = unicodeUsageId(unicode)
 	}
 	else {
-		const packId = String(item.packId || item.groupId || '').trim()
+		const packId = String(item.packId || '').trim()
 		const emojiId = String(item.emojiId || '').trim()
 		if (!packId || !emojiId) return
 		usageId = packEmojiUsageId(packId, emojiId)
@@ -137,12 +130,10 @@ export function recordEmojiUsage(username, item, _entityHash) {
 
 /**
  * @param {string} username 用户名
- * @param {string | Record<string, unknown>} entityHashOrContent 兼容旧签名
- * @param {Record<string, unknown>} [maybeContent] 参数
+ * @param {Record<string, unknown>} content 消息 content
  * @returns {void} 返回值
  */
-export function recordEmojiUsageFromMessageContent(username, entityHashOrContent, maybeContent) {
-	const content = maybeContent !== undefined ? maybeContent : entityHashOrContent
+export function recordEmojiUsageFromMessageContent(username, content) {
 	if (!content || typeof content !== 'object') return
 	if (channelMessageKind(content) === 'sticker') {
 		const parsed = parseEmojiToken(String(content.emojiRef || '').trim())
@@ -264,16 +255,13 @@ export function convergeLinkedDefault(username, linkKey, newDefaultPackId) {
 
 /**
  * @param {string} username 用户名
- * @param {number | string} [limitOrEntityHash] 条数，或旧签名下的 entityHash
- * @param {number} [maybeLimit] 参数
+ * @param {number} [limit] 条数上限
  * @returns {object[]} 返回值
  */
-export function listFrequentEmojis(username, limitOrEntityHash = 32, maybeLimit) {
-	const limit = typeof limitOrEntityHash === 'number'
-		? limitOrEntityHash
-		: maybeLimit ?? 32
+export function listFrequentEmojis(username, limit = 32) {
+	const cap = Math.min(64, Math.max(1, limit))
 	const { log } = loadUsagePayload(username)
-	/** @type {Map<string, { id: string, count: number, lastUsedAt: number, kind: string, unicode?: string, packId?: string, groupId?: string, emojiId?: string }>} */
+	/** @type {Map<string, { id: string, count: number, lastUsedAt: number, kind: string, unicode?: string, packId?: string, emojiId?: string }>} */
 	const map = new Map()
 	for (const entry of log) {
 		const id = entry.id
@@ -286,16 +274,15 @@ export function listFrequentEmojis(username, limitOrEntityHash = 32, maybeLimit)
 		}
 		if (id.startsWith('u:'))
 			map.set(id, { id, kind: 'unicode', unicode: id.slice(2), count: 1, lastUsedAt: at })
-		else if (id.startsWith('p:') || id.startsWith('g:')) {
+		else if (id.startsWith('p:')) {
 			const body = id.slice(2)
 			const slash = body.indexOf('/')
 			if (slash <= 0) continue
 			const packId = body.slice(0, slash)
 			const emojiId = body.slice(slash + 1)
-			map.set(id, { id, kind: 'custom', packId, groupId: packId, emojiId, count: 1, lastUsedAt: at })
+			map.set(id, { id, kind: 'pack', packId, emojiId, count: 1, lastUsedAt: at })
 		}
 	}
-	const cap = Math.min(64, Math.max(1, limit))
 	return [...map.values()]
 		.sort((a, b) => b.count - a.count || b.lastUsedAt - a.lastUsedAt)
 		.slice(0, cap)

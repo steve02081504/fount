@@ -5,6 +5,7 @@ import fsp from 'node:fs/promises'
 
 import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 
+import { createLruMap } from '../../../../../../scripts/memo.mjs'
 import { getAllUserNames } from '../../../../../../server/auth/index.mjs'
 import {
 	entityEmojiPacksRoot,
@@ -15,9 +16,9 @@ import * as store from '../emojiPacks/packStore.mjs'
 /** 复用 packStore.packSummary。 */
 export { packSummary } from '../emojiPacks/packStore.mjs'
 
-/** @type {Map<string, { replicaUsername: string, authorEntityHash: string } | null>} */
-const packHostCache = new Map()
 const PACK_HOST_CACHE_MAX = 256
+/** @type {Map<string, { replicaUsername: string, authorEntityHash: string } | null> & { touch: Function }} */
+const packHostCache = createLruMap(PACK_HOST_CACHE_MAX)
 
 /**
  * @param {string} entityHash 作者 entityHash
@@ -43,7 +44,11 @@ export function packsRoot(replicaUsername, entityHash) {
 export async function findEntityPackHost(packId) {
 	const pid = String(packId || '').trim()
 	if (!pid || !store.isSafePackId(pid)) return null
-	if (packHostCache.has(pid)) return packHostCache.get(pid)
+	if (packHostCache.has(pid)) {
+		const hit = packHostCache.get(pid)
+		packHostCache.touch(pid, hit)
+		return hit
+	}
 	/** @type {{ replicaUsername: string, authorEntityHash: string } | null} */
 	let found = null
 	for (const replicaUsername of getAllUserNames()) {
@@ -66,8 +71,7 @@ export async function findEntityPackHost(packId) {
 		}
 		if (found) break
 	}
-	if (packHostCache.size >= PACK_HOST_CACHE_MAX) packHostCache.clear()
-	packHostCache.set(pid, found)
+	packHostCache.touch(pid, found)
 	return found
 }
 
@@ -118,11 +122,13 @@ export async function loadEntityPackManifest(replicaUsername, authorEntityHash, 
  */
 export async function createEntityPack(replicaUsername, authorEntityHash, fields = {}) {
 	const packId = String(fields.packId || '').trim() || prefixedRandomId('epack_')
-	return store.createPack(
+	const manifest = await store.createPack(
 		packsRoot(replicaUsername, authorEntityHash),
 		entitySource(authorEntityHash),
 		{ ...fields, packId },
 	)
+	packHostCache.touch(packId, { replicaUsername, authorEntityHash })
+	return manifest
 }
 
 /**
@@ -133,12 +139,14 @@ export async function createEntityPack(replicaUsername, authorEntityHash, fields
  * @returns {Promise<object>} manifest
  */
 export async function updateEntityPack(replicaUsername, authorEntityHash, packId, patch = {}) {
-	return store.updatePack(
+	const manifest = await store.updatePack(
 		packsRoot(replicaUsername, authorEntityHash),
 		entitySource(authorEntityHash),
 		packId,
 		patch,
 	)
+	packHostCache.delete(String(packId || '').trim())
+	return manifest
 }
 
 /**
@@ -148,7 +156,9 @@ export async function updateEntityPack(replicaUsername, authorEntityHash, packId
  * @returns {Promise<boolean>} 是否删除
  */
 export async function deleteEntityPack(replicaUsername, authorEntityHash, packId) {
-	return store.deletePack(packsRoot(replicaUsername, authorEntityHash), packId)
+	const ok = await store.deletePack(packsRoot(replicaUsername, authorEntityHash), packId)
+	packHostCache.delete(String(packId || '').trim())
+	return ok
 }
 
 /**

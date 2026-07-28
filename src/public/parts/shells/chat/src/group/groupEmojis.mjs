@@ -111,17 +111,6 @@ export async function deletePack(username, groupId, packId) {
 /**
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @returns {Promise<object>} 默认 pack
- */
-export async function ensureDefaultGroupPack(username, groupId) {
-	const existing = await loadPackManifest(username, groupId, groupId)
-	if (existing) return existing
-	return createPack(username, groupId, { packId: groupId })
-}
-
-/**
- * @param {string} username 用户名
- * @param {string} groupId 群 ID
  * @param {string} packId 表情包 ID
  * @param {string} emojiId 表情 ID
  * @returns {Promise<object | null>} 条目
@@ -245,25 +234,6 @@ export async function resolveGroupEmojiBinaryPath(username, groupId, emojiId, pa
 /**
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @returns {Promise<object[]>} 展平条目
- */
-export async function loadGroupEmojiManifest(username, groupId) {
-	const packs = await listGroupPacks(username, groupId)
-	/** @type {object[]} */
-	const entries = []
-	for (const pack of packs)
-		for (const item of pack.items || [])
-			entries.push({
-				...item,
-				packId: pack.packId,
-				name: store.itemDisplayName(item) || item.emojiId,
-			})
-	return entries
-}
-
-/**
- * @param {string} username 用户名
- * @param {string} groupId 群 ID
  * @param {string} packId 表情包 ID
  * @param {Buffer} buffer 图片字节
  * @param {string} originalname 原始文件名
@@ -287,39 +257,12 @@ export async function uploadPackEmoji(username, groupId, packId, buffer, origina
 /**
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @param {Buffer} buffer 图片字节
- * @param {string} originalname 原始文件名
- * @param {string} mimeType MIME
- * @param {string} [name] 显示名
- * @returns {Promise<object>} 新条目
- */
-export async function uploadGroupEmoji(username, groupId, buffer, originalname, mimeType, name) {
-	await ensureDefaultGroupPack(username, groupId)
-	return uploadPackEmoji(username, groupId, groupId, buffer, originalname, mimeType, name)
-}
-
-/**
- * @param {string} username 用户名
- * @param {string} groupId 群 ID
  * @param {string} packId 表情包 ID
  * @param {string} emojiId 表情 ID
  * @returns {Promise<boolean>} 是否删除
  */
 export async function deletePackEmoji(username, groupId, packId, emojiId) {
 	return store.deletePackEmoji(groupEmojiPacksRoot(username, groupId), groupSource(groupId), packId, emojiId)
-}
-
-/**
- * @param {string} username 用户名
- * @param {string} groupId 群 ID
- * @param {string} emojiId 表情 ID
- * @returns {Promise<boolean>} 是否删除
- */
-export async function deleteGroupEmoji(username, groupId, emojiId) {
-	if (await deletePackEmoji(username, groupId, groupId, emojiId)) return true
-	const found = await findEmojiInGroupPacks(username, groupId, emojiId)
-	if (!found) return false
-	return deletePackEmoji(username, groupId, found.packId, emojiId)
 }
 
 /**
