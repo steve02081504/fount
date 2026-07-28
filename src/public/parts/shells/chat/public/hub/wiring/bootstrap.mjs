@@ -205,7 +205,6 @@ function wireComposerMoreMenu() {
 		['composer-more-photo', 'photo-button'],
 		['composer-more-upload', 'upload-button'],
 		['composer-more-vote', 'vote-button'],
-		['composer-more-sticker', 'sticker-button'],
 	]
 	for (const [moreId, desktopId] of map)
 		document.getElementById(moreId)?.addEventListener('click', () => {

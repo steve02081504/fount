@@ -1,7 +1,6 @@
 /**
  * WHIP SDP：解析 offer 媒体行，生成 answer。
  */
-/* eslint-disable jsdoc/require-returns-description, jsdoc/require-param-description */
 import nodeDataChannel from 'npm:node-datachannel'
 
 const { PeerConnection, Video, Audio, RtcpReceivingSession } = nodeDataChannel
@@ -16,7 +15,7 @@ const { PeerConnection, Video, Audio, RtcpReceivingSession } = nodeDataChannel
 
 /**
  * @param {string} sdp SDP 文本
- * @returns {WhipMediaInfo}
+ * @returns {WhipMediaInfo} H264/Opus payload type 与 mid
  */
 export function parseOfferMedia(sdp) {
 	const info = {
@@ -50,8 +49,8 @@ export function parseOfferMedia(sdp) {
 /**
  * @param {string} offerSdp WHIP offer SDP（如 OBS 推流）
  * @param {object} handlers 轨道回调
- * @param {(track: import('npm:node-datachannel').Track, kind: 'video' | 'audio', info: WhipMediaInfo) => void} handlers.onTrack
- * @returns {Promise<{ answerSdp: string, pc: import('npm:node-datachannel').PeerConnection, info: WhipMediaInfo, close: () => void }>}
+ * @param {(track: import('npm:node-datachannel').Track, kind: 'video' | 'audio', info: WhipMediaInfo, rtp: Buffer) => void} handlers.onTrack 每收到 RTP 包时调用
+ * @returns {Promise<{ answerSdp: string, pc: import('npm:node-datachannel').PeerConnection, info: WhipMediaInfo, close: () => void }>} answer SDP 与 PeerConnection 句柄
  */
 export async function acceptWhipOffer(offerSdp, handlers) {
 	const info = parseOfferMedia(offerSdp)

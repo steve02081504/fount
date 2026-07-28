@@ -64,6 +64,7 @@ function getDefaultProfile(entityHash, parsed) {
 		themeColor: '',
 		banner: '',
 		sfw_banner: '',
+		defaultEmojiPackId: '',
 		activePubKeyHex: '',
 		keyGeneration: 0,
 		localized: {},
@@ -94,6 +95,7 @@ function toStoredProfile(profileData) {
 	const themeColor = THEME_COLOR_RE.test(themeRaw) ? themeRaw.toLowerCase() : ''
 	const banner = String(profileData.banner ?? '').trim()
 	const sfw_banner = String(profileData.sfw_banner ?? '').trim()
+	const defaultEmojiPackId = String(profileData.defaultEmojiPackId ?? '').trim()
 	const activePub = String(profileData.activePubKeyHex || '').trim().toLowerCase()
 	return {
 		entityHash: profileData.entityHash,
@@ -104,6 +106,7 @@ function toStoredProfile(profileData) {
 		themeColor,
 		banner,
 		sfw_banner,
+		defaultEmojiPackId,
 		activePubKeyHex: /^[\da-f]{64}$/i.test(activePub) ? activePub : '',
 		keyGeneration: Number(profileData.keyGeneration ?? 0) || 0,
 		localized: normalizeLocalizedMap(profileData.localized),
@@ -134,6 +137,7 @@ function toPublicProfilePayload(stored) {
 		themeColor: stored.themeColor || '',
 		banner: stored.banner || '',
 		sfw_banner: stored.sfw_banner || '',
+		defaultEmojiPackId: stored.defaultEmojiPackId || '',
 		activePubKeyHex: stored.activePubKeyHex || '',
 		keyGeneration: Number(stored.keyGeneration ?? 0) || 0,
 		localized: stored.localized,
@@ -408,6 +412,9 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 		sfw_banner: updates.sfw_banner !== undefined
 			? String(updates.sfw_banner || '').trim()
 			: profile.sfw_banner || '',
+		defaultEmojiPackId: updates.defaultEmojiPackId !== undefined
+			? String(updates.defaultEmojiPackId || '').trim()
+			: profile.defaultEmojiPackId || '',
 		activePubKeyHex,
 		keyGeneration,
 		localized,
@@ -425,6 +432,7 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 		|| updates.themeColor !== undefined
 		|| updates.banner !== undefined
 		|| updates.sfw_banner !== undefined
+		|| updates.defaultEmojiPackId !== undefined
 	if (staticTouched)
 		await publishStaticProfile(replicaUsername, entityHash, updatedProfile).catch(() => { })
 

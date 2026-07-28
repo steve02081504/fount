@@ -3,7 +3,6 @@
  * 【职责】WebCodecs + AV relay 精简客户端（推流 / 解码播画）；导出帧协议工具。Social live 复用 joinAvRelayRoom。
  * 【原理】26 字节帧头与 chat `avRelay.mjs` 一致；支持 av/audio/video 模式、publish_meta 协商、VAD 门限。
  */
-/* eslint-disable jsdoc/require-param-description, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-description */
 /* global VideoEncoder VideoDecoder EncodedVideoChunk VideoFrame MediaStreamTrackProcessor AudioEncoder AudioDecoder EncodedAudioChunk AudioData */
 
 import { buildWebSocketUrl } from '../src/wsUrl.mjs'
@@ -56,7 +55,8 @@ export const AUDIO_BPS = 32_000
  */
 
 /**
- * @param {{ close?: () => unknown } | null | undefined} resource
+ * 安全关闭带 `close()` 的资源（忽略异常）。
+ * @param {{ close?: () => unknown } | null | undefined} resource 可关闭对象
  * @returns {void}
  */
 export function safeClose(resource) {
@@ -68,17 +68,19 @@ export function safeClose(resource) {
 }
 
 /**
- *
- * @param roomId
+ * 构建 chat av-relay WebSocket URL。
+ * @param {string} roomId 房间 ID
+ * @returns {string} ws URL
  */
 export function buildChatAvRelayWsUrl(roomId) {
 	return buildWebSocketUrl(`/ws/parts/shells:chat/av-relay/${encodeURIComponent(roomId)}`)
 }
 
 /**
- *
- * @param groupId
- * @param channelId
+ * 构建群通话 WebSocket URL。
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @returns {string} ws URL
  */
 export function buildChatCallWsUrl(groupId, channelId) {
 	return buildWebSocketUrl(
@@ -87,13 +89,14 @@ export function buildChatCallWsUrl(groupId, channelId) {
 }
 
 /**
- *
- * @param frameType
- * @param isKey
- * @param data
- * @param selfId
- * @param t0
- * @param seqRef
+ * 打包 av-relay 二进制帧（26 字节头 + 载荷）。
+ * @param {number} frameType 帧类型（0 视频 / 1 音频 / 2 屏幕）
+ * @param {boolean} isKey 是否关键帧
+ * @param {ArrayBufferView} data 编码载荷
+ * @param {Uint8Array} selfId 16 字节发送者 ID
+ * @param {number} t0 会话起点 `performance.now()`
+ * @param {{ seq: number }} seqRef 递增序号容器
+ * @returns {ArrayBuffer} 完整帧
  */
 export function packAvFrame(frameType, isKey, data, selfId, t0, seqRef) {
 	const out = new Uint8Array(FRAME_HEADER_BYTES + data.byteLength)
@@ -108,8 +111,9 @@ export function packAvFrame(frameType, isKey, data, selfId, t0, seqRef) {
 }
 
 /**
- *
- * @param buf
+ * 解包 av-relay 二进制帧。
+ * @param {ArrayBuffer} buf 原始帧
+ * @returns {{ frameType: number, isKey: boolean, sender: string, data: ArrayBuffer } | null} 解析结果；过短为 null
  */
 export function unpackAvFrame(buf) {
 	if (buf.byteLength < FRAME_HEADER_BYTES) return null
@@ -123,8 +127,9 @@ export function unpackAvFrame(buf) {
 }
 
 /**
- * @param {object | null | undefined} videoMeta
- * @returns {string}
+ * 从 publish_meta 推导 WebCodecs 视频 codec 字符串。
+ * @param {object | null | undefined} videoMeta `publish_meta.video`
+ * @returns {string} WebCodecs codec 字符串
  */
 function videoCodecString(videoMeta) {
 	if (!videoMeta) return PRESET.codec
@@ -134,8 +139,19 @@ function videoCodecString(videoMeta) {
 }
 
 /**
- * @param {object} options
- * @returns {Promise<AvRelaySession>}
+ * 加入 av-relay 房间：推流或订阅解码。
+ * @param {object} options 会话选项
+ * @param {string} options.wsUrl WebSocket URL
+ * @param {(buf: ArrayBuffer) => void} [options.onBinaryFrame] 收到原始帧
+ * @param {(count: number) => void} [options.onPeerCount] 对端数量变化
+ * @param {(meta: object) => void} [options.onPublishMeta] 远端 publish_meta
+ * @param {boolean} [options.asPublisher] 是否推流
+ * @param {HTMLCanvasElement | null} [options.canvas] 远端视频画布
+ * @param {HTMLVideoElement | null} [options.videoLocal] 本地预览
+ * @param {HTMLElement | null} [options.voiceRingHost] 声波环宿主
+ * @param {'full' | 'preview'} [options.mode] 订阅模式
+ * @param {'av' | 'audio' | 'video'} [options.media] 媒体子集
+ * @returns {Promise<AvRelaySession>} 会话句柄
  */
 export async function joinAvRelayRoom(options) {
 	const {
@@ -191,7 +207,8 @@ export async function joinAvRelayRoom(options) {
 	let remoteSender = ''
 
 	/**
-	 *
+	 * 向 relay 广播本端 publish_meta。
+	 * @returns {void}
 	 */
 	const sendPublishMeta = () => {
 		if (!asPublisher || ws.readyState !== WebSocket.OPEN) return
@@ -205,9 +222,10 @@ export async function joinAvRelayRoom(options) {
 	}
 
 	/**
-	 *
-	 * @param sender
-	 * @param meta
+	 * 按远端 meta 懒创建 VideoDecoder 并绑定画布。
+	 * @param {string} sender 发送者 hex ID
+	 * @param {object | null | undefined} meta publish_meta
+	 * @returns {void}
 	 */
 	const ensureVideoDecoder = (sender, meta) => {
 		if (!canvas || videoDecoder) return
@@ -219,16 +237,16 @@ export async function joinAvRelayRoom(options) {
 		canvas.height = h
 		videoDecoder = new VideoDecoder({
 			/**
-			 *
-			 * @param frame
+			 * @param {VideoFrame} frame 解码帧
+			 * @returns {void}
 			 */
 			output: frame => {
 				ctx2d.drawImage(frame, 0, 0, w, h)
 				frame.close()
 			},
 			/**
-			 *
-			 * @param err
+			 * @param {DOMException} err 解码错误
+			 * @returns {void}
 			 */
 			error: err => console.error('VideoDecoder:', err),
 		})
@@ -238,15 +256,16 @@ export async function joinAvRelayRoom(options) {
 	}
 
 	/**
-	 *
+	 * 懒创建 AudioDecoder 与播放链路。
+	 * @returns {void}
 	 */
 	const ensureAudioDecoder = () => {
 		if (audioDecoder || mode === 'preview') return
 		audioCtx = new AudioContext({ sampleRate: AUDIO_SAMPLE_RATE })
 		audioDecoder = new AudioDecoder({
 			/**
-			 *
-			 * @param audioData
+			 * @param {AudioData} audioData 解码 PCM
+			 * @returns {void}
 			 */
 			output: audioData => {
 				const analyser = audioCtx.createAnalyser()
@@ -278,8 +297,8 @@ export async function joinAvRelayRoom(options) {
 				audioData.close()
 			},
 			/**
-			 *
-			 * @param err
+			 * @param {DOMException} err 解码错误
+			 * @returns {void}
 			 */
 			error: err => console.error('AudioDecoder:', err),
 		})
@@ -294,8 +313,9 @@ export async function joinAvRelayRoom(options) {
 	if (!asPublisher && wantsAudio && mode === 'full') ensureAudioDecoder()
 
 	/**
-	 *
-	 * @param arrayBuffer
+	 * 处理入站二进制帧：解码或转发给回调。
+	 * @param {ArrayBuffer} arrayBuffer 原始帧
+	 * @returns {void}
 	 */
 	const handleInbound = arrayBuffer => {
 		onBinaryFrame?.(arrayBuffer)
@@ -342,8 +362,9 @@ export async function joinAvRelayRoom(options) {
 	}
 
 	/**
-	 *
-	 * @param event
+	 * WebSocket 消息：二进制帧或 JSON 控制。
+	 * @param {MessageEvent} event 消息事件
+	 * @returns {void}
 	 */
 	ws.onmessage = event => {
 		if (event.data instanceof ArrayBuffer) {
@@ -379,7 +400,8 @@ export async function joinAvRelayRoom(options) {
 	/** @type {MediaStream | null} */
 	let mediaStream = null
 	/**
-	 *
+	 * 停止采集与编码循环。
+	 * @returns {void}
 	 */
 	let stopCapture = () => { }
 	let videoEnabled = wantsVideo
@@ -415,11 +437,13 @@ export async function joinAvRelayRoom(options) {
 				wantsAudio,
 				audioGate,
 				/**
-				 *
+				 * 视频轨道是否应编码发送。
+				 * @returns {boolean} 是否发送
 				 */
 				isVideoSending: () => videoEnabled && ws.readyState === WebSocket.OPEN,
 				/**
-				 *
+				 * 音频轨道是否应编码发送（含静音与 VAD）。
+				 * @returns {boolean} 是否发送
 				 */
 				isAudioSending: () => !audioMuted && ws.readyState === WebSocket.OPEN,
 			})
@@ -432,7 +456,8 @@ export async function joinAvRelayRoom(options) {
 
 	return {
 		/**
-		 *
+		 * 关闭会话、释放编解码器与媒体轨道。
+		 * @returns {void}
 		 */
 		close: () => {
 			stopCapture()
@@ -446,7 +471,8 @@ export async function joinAvRelayRoom(options) {
 			ws.close()
 		},
 		/**
-		 *
+		 * 切换麦克风静音。
+		 * @returns {boolean} 切换后是否静音
 		 */
 		toggleMute: () => {
 			audioMuted = !audioMuted
@@ -455,7 +481,8 @@ export async function joinAvRelayRoom(options) {
 			return audioMuted
 		},
 		/**
-		 *
+		 * 切换摄像头开关。
+		 * @returns {boolean} 切换后是否关闭视频
 		 */
 		toggleVideo: () => {
 			if (!wantsVideo) return true
@@ -465,8 +492,9 @@ export async function joinAvRelayRoom(options) {
 			return !videoEnabled
 		},
 		/**
-		 *
-		 * @param next
+		 * 切换订阅模式（full 含音频 / preview 仅关键帧视频）。
+		 * @param {'full' | 'preview'} next 目标模式
+		 * @returns {void}
 		 */
 		setMode: next => {
 			const target = next === 'preview' ? 'preview' : 'full'
@@ -488,12 +516,14 @@ export async function joinAvRelayRoom(options) {
 				ws.send(JSON.stringify({ type: 'subscribe', mode }))
 		},
 		/**
-		 *
+		 * 当前订阅模式。
+		 * @returns {'full' | 'preview'} 当前模式
 		 */
 		getMode: () => mode,
 		/**
-		 *
-		 * @param senderId
+		 * 环形频带电平（0..1），用于声波 UI。
+		 * @param {string} [senderId] 发送者 hex；省略用最近远端或本端
+		 * @returns {number[]} 16 段电平
 		 */
 		getAudioLevels: (senderId = '') => {
 			const sid = String(senderId || remoteSender || 'default').toLowerCase()
@@ -518,7 +548,8 @@ export async function joinAvRelayRoom(options) {
 			return entry?.levels?.length ? entry.levels : Array(16).fill(0.05)
 		},
 		/**
-		 *
+		 * 本端 publish_meta 快照。
+		 * @returns {object} publish_meta 形对象
 		 */
 		getLocalPublishMeta: () => ({
 			type: 'publish_meta',
@@ -530,8 +561,20 @@ export async function joinAvRelayRoom(options) {
 }
 
 /**
- * @param {object} options
- * @returns {Promise<() => void>}
+ * 从 MediaStream 编码并推送 av-relay 帧。
+ * @param {object} options 推流参数
+ * @param {MediaStream} options.mediaStream 采集流
+ * @param {WebSocket} options.ws 已连接的 relay socket
+ * @param {Uint8Array} options.selfId 发送者 ID
+ * @param {number} options.t0 会话起点
+ * @param {{ seq: number }} options.videoSeq 视频序号
+ * @param {{ seq: number }} options.audioSeq 音频序号
+ * @param {boolean} options.wantsVideo 是否推视频
+ * @param {boolean} options.wantsAudio 是否推音频
+ * @param {ReturnType<typeof createAudioGate>} options.audioGate VAD 门控
+ * @param {() => boolean} options.isVideoSending 是否发送视频
+ * @param {() => boolean} options.isAudioSending 是否发送音频
+ * @returns {Promise<() => void>} 停止推流的清理函数
  */
 async function startPublish(options) {
 	const {
@@ -551,8 +594,8 @@ async function startPublish(options) {
 	if (vTrack && 'MediaStreamTrackProcessor' in globalThis) {
 		vEnc = new VideoEncoder({
 			/**
-			 *
-			 * @param chunk
+			 * @param {EncodedVideoChunk} chunk 编码块
+			 * @returns {void}
 			 */
 			output: chunk => {
 				if (!isVideoSending()) return
@@ -561,8 +604,8 @@ async function startPublish(options) {
 				ws.send(packAvFrame(FRAME_VIDEO, chunk.type === 'key', raw, selfId, t0, videoSeq))
 			},
 			/**
-			 *
-			 * @param err
+			 * @param {DOMException} err 编码错误
+			 * @returns {void}
 			 */
 			error: err => console.error('VideoEncoder:', err),
 		})
@@ -589,7 +632,8 @@ async function startPublish(options) {
 			reader.releaseLock()
 		})()
 		/**
-		 *
+		 * 停止视频采集循环。
+		 * @returns {void}
 		 */
 		stopVideo = () => { running = false }
 	}
@@ -602,8 +646,8 @@ async function startPublish(options) {
 	if (aTrack && 'MediaStreamTrackProcessor' in globalThis) {
 		aEnc = new AudioEncoder({
 			/**
-			 *
-			 * @param chunk
+			 * @param {EncodedAudioChunk} chunk 编码块
+			 * @returns {void}
 			 */
 			output: chunk => {
 				if (!isAudioSending()) return
@@ -612,8 +656,8 @@ async function startPublish(options) {
 				ws.send(packAvFrame(FRAME_AUDIO, chunk.type === 'key', raw, selfId, t0, audioSeq))
 			},
 			/**
-			 *
-			 * @param err
+			 * @param {DOMException} err 编码错误
+			 * @returns {void}
 			 */
 			error: err => console.error('AudioEncoder:', err),
 		})
@@ -635,7 +679,8 @@ async function startPublish(options) {
 			reader.releaseLock()
 		})()
 		/**
-		 *
+		 * 停止音频采集循环。
+		 * @returns {void}
 		 */
 		stopAudio = () => { running = false }
 	}

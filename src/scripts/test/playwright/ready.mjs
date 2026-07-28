@@ -2,7 +2,6 @@
  * Playwright 等待 shell 前端 bootstrap 就绪（轮询 `globalThis.fount.test.getState`）。
  */
 import { HUB_GATE } from 'fount/public/parts/shells/chat/public/hub/gate.mjs'
-import { STICKERS_PAGE_GATE } from 'fount/public/parts/shells/chat/public/stickers/gate.mjs'
 import { SOCIAL_GATE } from 'fount/public/parts/shells/social/public/src/gate.mjs'
 import { ms } from 'fount/scripts/ms.mjs'
 
@@ -51,18 +50,5 @@ export function waitForSocialReady(page) {
 		...SOCIAL_GATE,
 		label: 'Social',
 		timeout: ms('90s'),
-	})
-}
-
-/**
- * 等待 Chat 贴纸商店页 bootstrap 就绪。
- * @param {import('npm:@playwright/test').Page} page Playwright 页面
- * @returns {Promise<void>}
- */
-export function waitForStickersPageReady(page) {
-	return waitForReadyGate(page, {
-		...STICKERS_PAGE_GATE,
-		label: 'Stickers',
-		timeout: ms('1m'),
 	})
 }

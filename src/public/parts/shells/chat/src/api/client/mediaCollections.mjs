@@ -1,119 +1,94 @@
-import { createChatShellJsonNamespace } from './helpers.mjs'
-
 /**
  * @param {import('../internal.mjs').ChatApiContext} apiContext API 上下文
- * @returns {object} 表情 / 贴纸 / care 方法
+ * @returns {object} 表情 / care 方法
  */
 export function createMediaCollectionsMethods(apiContext) {
 	return {
 		/**
-		 * @returns {{ list: Function, set: Function, save: Function, frequent: Function, record: Function }} 自定义表情与用量
+		 * @returns {object} 表情用量与收藏
 		 */
 		get emojis() {
-			const customEmojis = createChatShellJsonNamespace(apiContext, 'customEmojis', stored => ({
-				entries: Array.isArray(stored.entries) ? stored.entries : Array.isArray(stored) ? stored : [],
-			}))
 			return {
 				/**
-				 * @returns {Promise<{ entries: object[] }>} 自定义表情
+				 * @returns {Promise<{ entries: object[] }>} 收藏映射条目
 				 */
-				list: () => customEmojis.list(),
-				/**
-				 * @param {object[]} entries 表情条目
-				 * @returns {Promise<{ entries: object[] }>} 写入后的列表
-				 */
-				async set(entries) {
-					return customEmojis.set({ entries: Array.isArray(entries) ? entries : [] })
+				async list() {
+					const { listCollection } = await import('../../emojiUsage.mjs')
+					const collection = listCollection(apiContext.username)
+					return { entries: collection.packIds.map(packId => ({ id: packId, packId })) }
 				},
 				/**
-				 * @param {{ groupId: string, emojiId: string, dataUrl: string }} fields 保存字段
-				 * @returns {Promise<{ entry: object }>} 新条目
+				 * @param {object[]} _entries 忽略
+				 * @returns {never} 始终抛错，提示改用 addPack/removePack
 				 */
-				async save({ groupId, emojiId, dataUrl }) {
-					const { loadEntityShellData, assignEntityShellData } = await import('../../../../../../../server/setting_loader.mjs')
-					const gid = String(groupId || '').trim()
-					const eid = String(emojiId || '').trim()
-					const url = String(dataUrl || '').trim()
-					if (!gid || !eid) throw new Error('groupId and emojiId required')
-					if (!url.startsWith('data:')) throw new Error('dataUrl required (data:…)')
-					const entries = [...loadEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'customEmojis').entries || []]
-					const id = `${gid}/${eid}`
-					const next = { id, groupId: gid, emojiId: eid, dataUrl: url, savedAt: Date.now() }
-					const existingIndex = entries.findIndex(entry => entry?.id === id)
-					if (existingIndex >= 0) entries[existingIndex] = next
-					else entries.push(next)
-					assignEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'customEmojis', { entries })
-					return { entry: next }
+				async set(_entries) {
+					throw new Error('emojis.set unsupported; use addPack/removePack')
 				},
 				/**
-				 * @param {number} [limit] 条数上限
-				 * @returns {Promise<object[]>} 常用表情
+				 * @param {{ packId?: string, emojiId?: string }} fields 保存字段（收藏 pack；emojiId 仅回显）
+				 * @returns {Promise<{ entry: object }>} 写入结果
+				 */
+				async save({ packId, emojiId }) {
+					const { addPackToCollection } = await import('../../emojiUsage.mjs')
+					const pid = String(packId || '').trim()
+					if (!pid) throw new Error('emojis.save requires packId')
+					addPackToCollection(apiContext.username, pid)
+					return {
+						entry: {
+							id: emojiId ? `${pid}/${emojiId}` : pid,
+							packId: pid,
+							emojiId: emojiId || null,
+							savedAt: Date.now(),
+						},
+					}
+				},
+				/**
+				 * @param {number} [limit] 参数
+				 * @returns {Promise<object[]>} 返回值
 				 */
 				async frequent(limit = 32) {
 					const { listFrequentEmojis } = await import('../../emojiUsage.mjs')
-					return listFrequentEmojis(apiContext.username, apiContext.entityHash, limit)
+					return listFrequentEmojis(apiContext.username, limit)
 				},
 				/**
-				 * @param {{ kind: string, unicode?: string, groupId?: string, emojiId?: string }} item 表情
-				 * @returns {Promise<void>}
+				 * @param {{ kind: string, unicode?: string, packId?: string, emojiId?: string }} item 用量项
+				 * @returns {Promise<void>} 返回值
 				 */
 				async record(item) {
 					const { recordEmojiUsage } = await import('../../emojiUsage.mjs')
-					recordEmojiUsage(apiContext.username, apiContext.entityHash, item)
-				},
-			}
-		},
-		/**
-		 * @returns {{ get: Function, install: Function, uninstall: Function, addFavorite: Function, removeFavorite: Function, recordRecent: Function }} 贴纸收藏
-		 */
-		get stickers() {
-			return {
-				/**
-				 * @returns {Promise<object>} 贴纸收藏
-				 */
-				async get() {
-					const { getUserCollection } = await import('../../stickers/stickers.mjs')
-					return getUserCollection(apiContext.username, apiContext.entityHash)
+					recordEmojiUsage(apiContext.username, item)
 				},
 				/**
-				 * @param {string} packId 包 id
-				 * @returns {Promise<void>}
+				 * @returns {Promise<{ packIds: string[], emojiIds: string[] }>} 收藏
 				 */
-				async install(packId) {
-					const { installPack } = await import('../../stickers/stickers.mjs')
-					await installPack(apiContext.username, apiContext.entityHash, packId)
+				async listCollection() {
+					const { listCollection } = await import('../../emojiUsage.mjs')
+					return listCollection(apiContext.username)
 				},
 				/**
-				 * @param {string} packId 包 id
-				 * @returns {Promise<void>}
+				 * @param {string} packId 表情包 ID
+				 * @returns {Promise<{ packIds: string[], emojiIds: string[] }>} 更新后收藏
 				 */
-				async uninstall(packId) {
-					const { uninstallPack } = await import('../../stickers/stickers.mjs')
-					await uninstallPack(apiContext.username, apiContext.entityHash, packId)
+				async addPack(packId) {
+					const { addPackToCollection, listCollection } = await import('../../emojiUsage.mjs')
+					addPackToCollection(apiContext.username, packId)
+					return listCollection(apiContext.username)
 				},
 				/**
-				 * @param {string} stickerId 贴纸 id
-				 * @returns {Promise<void>}
+				 * @param {string} packId 表情包 ID
+				 * @returns {Promise<{ packIds: string[], emojiIds: string[] }>} 更新后收藏
 				 */
-				async addFavorite(stickerId) {
-					const { addToFavorites } = await import('../../stickers/stickers.mjs')
-					await addToFavorites(apiContext.username, apiContext.entityHash, stickerId)
+				async removePack(packId) {
+					const { removePackFromCollection, listCollection } = await import('../../emojiUsage.mjs')
+					removePackFromCollection(apiContext.username, packId)
+					return listCollection(apiContext.username)
 				},
 				/**
-				 * @param {string} stickerId 贴纸 id
-				 * @returns {Promise<void>}
+				 * @returns {Promise<object>} 用量日志 + collection + linkedDefaults
 				 */
-				async removeFavorite(stickerId) {
-					const { removeFromFavorites } = await import('../../stickers/stickers.mjs')
-					await removeFromFavorites(apiContext.username, apiContext.entityHash, stickerId)
-				},
-				/**
-				 * @param {string} stickerId 贴纸 id
-				 * @returns {Promise<void>}
-				 */
-				async recordRecent(stickerId) {
-					const { recordRecentUse } = await import('../../stickers/stickers.mjs')
-					await recordRecentUse(apiContext.username, apiContext.entityHash, stickerId)
+				async loadUsage() {
+					const { loadEmojiUsage } = await import('../../emojiUsage.mjs')
+					return loadEmojiUsage(apiContext.username)
 				},
 			}
 		},

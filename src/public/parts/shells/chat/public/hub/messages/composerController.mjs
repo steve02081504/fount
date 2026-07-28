@@ -12,7 +12,6 @@ const COMPOSER_TOOL_IDS = [
 	'upload-button',
 	'voice-button',
 	'photo-button',
-	'sticker-button',
 	'vote-button',
 	'send-button',
 	'composer-more-button',

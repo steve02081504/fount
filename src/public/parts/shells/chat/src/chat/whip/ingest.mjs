@@ -1,7 +1,6 @@
 /**
  * WHIP ingest 会话：RTP → av-relay 二进制帧。
  */
-/* eslint-disable jsdoc/require-returns-description, jsdoc/require-param-description */
 import { Buffer } from 'node:buffer'
 import { randomBytes } from 'node:crypto'
 
@@ -26,7 +25,7 @@ const sessionsByRoom = new Map()
  * @param {Buffer} data 载荷
  * @param {number} t0 起点 ms
  * @param {{ seq: number }} seqRef 序号
- * @returns {Buffer}
+ * @returns {Buffer} av-relay 二进制帧
  */
 function packFrame(senderId, frameType, isKey, data, t0, seqRef) {
 	const out = Buffer.alloc(AV_RELAY_HEADER_SIZE + data.length)
@@ -42,9 +41,9 @@ function packFrame(senderId, frameType, isKey, data, t0, seqRef) {
 /**
  * @param {string} roomId av-relay 房间
  * @param {string} offerSdp WHIP offer
- * @param {object} [options]
- * @param {(meta: object) => void} [options.onPublishMeta]
- * @returns {Promise<{ answerSdp: string, sessionId: string, close: () => void }>}
+ * @param {object} [options] 可选回调
+ * @param {(meta: object) => void} [options.onPublishMeta] 首帧视频元数据就绪时调用
+ * @returns {Promise<{ answerSdp: string, sessionId: string, close: () => void }>} WHIP answer 与会话句柄
  */
 export async function startWhipIngest(roomId, offerSdp, options = {}) {
 	const existing = sessionsByRoom.get(roomId)
@@ -61,10 +60,10 @@ export async function startWhipIngest(roomId, offerSdp, options = {}) {
 
 	const whip = await acceptWhipOffer(offerSdp, {
 		/**
-		 * @param {import('npm:node-datachannel').Track} _track
-		 * @param {'video' | 'audio'} kind
-		 * @param {import('./sdp.mjs').WhipMediaInfo} info
-		 * @param {Buffer} rtp
+		 * @param {import('npm:node-datachannel').Track} _track 入站轨道（未用）
+		 * @param {'video' | 'audio'} kind 媒体类型
+		 * @param {import('./sdp.mjs').WhipMediaInfo} info offer 解析出的编解码信息
+		 * @param {Buffer} rtp RTP 包
 		 * @returns {void}
 		 */
 		onTrack(_track, kind, info, rtp) {
@@ -104,12 +103,13 @@ export async function startWhipIngest(roomId, offerSdp, options = {}) {
 
 	const sessionId = senderHex
 	/**
-	 *
+	 * 关闭 WHIP 入站会话并撤销 publish meta。
+	 * @returns {void}
 	 */
 	const close = () => {
 		whip.close()
 		sessionsByRoom.delete(roomId)
-		if (options.onPublishMeta)
+		if (publishedVideoMeta || publishedAudioMeta)
 			injectAvRelayControl(roomId, { type: 'publish_meta_revoke', senderId: senderHex })
 	}
 	sessionsByRoom.set(roomId, { close })

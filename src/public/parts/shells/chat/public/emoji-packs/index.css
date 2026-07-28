@@ -1,0 +1,97 @@
+.emoji-packs-page {
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 1.5rem 1.25rem 3rem;
+}
+
+.emoji-packs-header {
+	display: grid;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+.emoji-packs-kicker,
+.emoji-packs-subtitle,
+.emoji-packs-status {
+	opacity: 0.7;
+}
+
+.emoji-packs-subtitle {
+	margin-top: 0.35rem;
+	max-width: 42rem;
+}
+
+.emoji-packs-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	gap: 1rem;
+}
+
+.emoji-pack-offer {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	padding: 1rem;
+	border-radius: 1rem;
+	background: var(--color-base-200);
+	min-height: 100%;
+}
+
+.emoji-pack-offer-head {
+	display: flex;
+	gap: 0.75rem;
+	align-items: center;
+}
+
+.emoji-pack-offer-avatar,
+.emoji-pack-offer-avatar-fallback {
+	width: 48px;
+	height: 48px;
+	border-radius: 12px;
+	flex: 0 0 auto;
+	object-fit: cover;
+}
+
+.emoji-pack-offer-avatar-fallback {
+	display: grid;
+	place-items: center;
+	background: var(--color-base-300);
+	font-weight: 700;
+}
+
+.emoji-pack-offer-name {
+	margin: 0;
+	font-size: 1.05rem;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.emoji-pack-offer-source {
+	margin: 0.15rem 0 0;
+	font-size: 0.8rem;
+	opacity: 0.65;
+}
+
+.emoji-pack-offer-desc {
+	margin: 0;
+	font-size: 0.9rem;
+	line-height: 1.45;
+	opacity: 0.85;
+	flex: 1;
+}
+
+.emoji-pack-offer-meta {
+	margin: 0;
+	font-size: 0.8rem;
+	opacity: 0.6;
+}
+
+.emoji-pack-offer-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.emoji-packs-empty {
+	justify-content: center;
+}

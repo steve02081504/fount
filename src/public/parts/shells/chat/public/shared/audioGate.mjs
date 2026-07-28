@@ -1,7 +1,6 @@
 /**
  * 采集侧音频门限：RMS 迟滞 VAD，门关时不编码 = 零带宽。
  */
-/* eslint-disable jsdoc/require-returns-description */
 
 const STORAGE_KEY = 'fount.av.audioGateThreshold'
 const DEFAULT_OPEN = 0.012
@@ -50,7 +49,7 @@ export function audioDataRms(audioData) {
  * @param {object} [options] 选项
  * @param {number} [options.threshold] 开门阈值
  * @param {number} [options.hangoverMs] 关门迟滞
- * @returns {{ update: (audioData: AudioData) => boolean, getLevel: () => number, isOpen: () => boolean, setThreshold: (n: number) => void }}
+ * @returns {{ update: (audioData: AudioData) => boolean, getLevel: () => number, isOpen: () => boolean, setThreshold: (n: number) => void }} VAD 门控句柄
  */
 export function createAudioGate(options = {}) {
 	let threshold = options.threshold ?? loadAudioGateThreshold()

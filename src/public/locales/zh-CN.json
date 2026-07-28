@@ -1076,6 +1076,7 @@
 				"emojisCreatePackPrompt": "表情包 ID",
 				"emojisCreatePackOk": "表情包已创建",
 				"emojisCreatePackFailed": "创建失败：${error}",
+				"emojisPackGroupSuffix": "群",
 				"activeEmojiPackLabel": "当前编辑的表情包",
 				"emojisDelete": "删除表情",
 				"emojisEmpty": "暂无群表情",

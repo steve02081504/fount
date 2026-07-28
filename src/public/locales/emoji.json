@@ -1074,6 +1074,7 @@
 				"emojisCreatePackPrompt": "😀📦🆔",
 				"emojisCreatePackOk": "😀📦✅",
 				"emojisCreatePackFailed": "➕❌：${error}",
+				"emojisPackGroupSuffix": "群",
 				"activeEmojiPackLabel": "✏️😀📦",
 				"emojisDelete": "🗑️😀",
 				"emojisEmpty": "📭👥😀",

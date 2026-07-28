@@ -1,7 +1,7 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
-import { saveCustomEmojiFromRef } from '../../src/customEmojis.mjs'
-import { saveStickerFromMessage } from '../../src/saveStickerFromMessage.mjs'
+import { parseEmojiToken } from '../../shared/inlineTokenSyntax.mjs'
+import { addPackToCollection, saveStickerFromMessage } from '../../src/saveStickerFromMessage.mjs'
 import { showTrustAuthorDialog } from '../../src/trustAuthorDialog.mjs'
 import { handleUIError } from '../../src/ui/errors.mjs'
 import { store } from '../core/state.mjs'
@@ -32,9 +32,9 @@ export async function handleMessageBubbleClick(event) {
 		return true
 	}
 	const saveEmojiButton = event.target.closest('.save-emoji-button')
-	if (saveEmojiButton?.dataset?.emojiGroup && saveEmojiButton?.dataset?.emojiId) {
+	if (saveEmojiButton?.dataset?.emojiPack) {
 		try {
-			await saveCustomEmojiFromRef(saveEmojiButton.dataset.emojiGroup, saveEmojiButton.dataset.emojiId)
+			await addPackToCollection(saveEmojiButton.dataset.emojiPack)
 			showToastI18n('success', 'chat.hub.saveEmojiOk')
 		}
 		catch (error) {
@@ -48,6 +48,7 @@ export async function handleMessageBubbleClick(event) {
 		const messageId = messageRow?.getAttribute('data-message-id')
 		const channelMessage = store.messages.channelMessages.find(entry => String(entry.eventId) === messageId)
 		if (!channelMessage?.content) return true
+		if (!parseEmojiToken(channelMessage.content.emojiRef)?.packId) return true
 		try {
 			await saveStickerFromMessage(channelMessage.content)
 			showToastI18n('success', 'chat.hub.saveStickerOk')

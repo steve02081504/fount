@@ -1074,6 +1074,7 @@
 				"emojisCreatePackPrompt": "ID набора",
 				"emojisCreatePackOk": "Набор эмодзи создан",
 				"emojisCreatePackFailed": "Не удалось создать: ${error}",
+				"emojisPackGroupSuffix": "по умолчанию",
 				"activeEmojiPackLabel": "Редактируемый набор",
 				"emojisDelete": "Удалить смайлик",
 				"emojisEmpty": "Групповых выражений пока нет",

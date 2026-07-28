@@ -1074,6 +1074,7 @@
 				"emojisCreatePackPrompt": "Pakket-ID",
 				"emojisCreatePackOk": "Emoji-pakket aangemaakt",
 				"emojisCreatePackFailed": "Aanmaken mislukt: ${error}",
+				"emojisPackGroupSuffix": "groepsstandaard",
 				"activeEmojiPackLabel": "Pakket in bewerking",
 				"emojisDelete": "Emoticon verwijderen",
 				"emojisEmpty": "Nog geen groepsuitdrukkingen",

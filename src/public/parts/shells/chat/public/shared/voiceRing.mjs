@@ -1,7 +1,6 @@
 /**
  * 纯音频直播/通话：头像 + 主题色环形声波。
  */
-/* eslint-disable jsdoc/require-returns-description */
 
 import { avatarColor, avatarInitial, avatarTextColor } from './hashAvatar.mjs'
 
@@ -15,7 +14,7 @@ const BAR_COUNT = 48
  * @param {string} [options.avatarLabel] 字母占位文案
  * @param {string} [options.themeColor] CSS 颜色
  * @param {() => number[]} options.getLevels 频带电平 0..1
- * @returns {{ destroy: () => void }}
+ * @returns {{ destroy: () => void }} 挂载句柄；`destroy` 停止动画并清空宿主
  */
 export function mountVoiceRing(options) {
 	const {

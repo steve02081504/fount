@@ -6,7 +6,7 @@ import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/t
 import { bindContentReveal, wrapContentWarningHtml, wrapSensitiveMediaHtml } from '/scripts/features/contentReveal/index.mjs'
 import { geti18n } from '../../../../../../scripts/i18n/index.mjs'
 import { channelMessageKind, chatExtensionOf } from '../../../shared/channelContent.mjs'
-import { firstCustomEmojiRef } from '../../../src/customEmojis.mjs'
+import { firstEmojiTokenInText } from '../../../shared/inlineTokenSyntax.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isFirstMessageInAuthorGroup } from '/parts/shells:chat/shared/hashAvatar.mjs'
 import {
@@ -182,7 +182,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 		? '<span class="streaming-typing inline-flex items-center gap-1 text-base-content/60 text-xs"><span class="loading loading-dots loading-xs"></span><span data-i18n="chat.hub.charTyping"></span></span>'
 		: ''
 
-	const emojiRef = firstCustomEmojiRef(getMessageText(message))
+	const emojiRef = firstEmojiTokenInText(getMessageText(message))
 	const remoteBadge = message.isRemote
 		? await renderTemplateAsHtmlString('hub/messages/remote_badge', {})
 		: ''
@@ -194,7 +194,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 		: ''
 	const saveEmojiButton = emojiRef
 		? await renderTemplateAsHtmlString('hub/messages/save_emoji_button', {
-			groupId: escapeHtml(emojiRef.groupId),
+			packId: escapeHtml(emojiRef.packId),
 			emojiId: escapeHtml(emojiRef.emojiId),
 		})
 		: ''

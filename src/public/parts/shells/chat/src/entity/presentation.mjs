@@ -1,7 +1,7 @@
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
-import { getLocalizedInfo, localesForUser } from '../../../../../../scripts/locale.mjs'
+import { pickLocalizedSlice, localesForUser } from '../../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../../server/auth/index.mjs'
 import { getAnyDefaultPart, getPartDetails } from '../../../../../../server/parts_loader.mjs'
 
@@ -109,7 +109,7 @@ export async function getInfoDefaultsForEntity(replicaUsername, entityHash, loca
 	const charname = resolveAgentCharPartName(replicaUsername, entityHash)
 	if (charname) {
 		const details = await getPartDetails(replicaUsername, `chars/${charname}`).catch(() => null) || {}
-		const li = getLocalizedInfo(details.info, locales) || getLocalizedInfo(details.info, ['']) || {}
+		const li = pickLocalizedSlice(details.info, locales) || {}
 		const defaults = infoLiToDefaults(li)
 		return { ...defaults, name: defaults.name || charname }
 	}
@@ -122,7 +122,7 @@ export async function getInfoDefaultsForEntity(replicaUsername, entityHash, loca
 	let defaults = infoLiToDefaults({ name: presentation.displayName, avatar: presentation.avatar })
 	if (personaname) {
 		const details = await getPartDetails(replicaUsername, `personas/${personaname}`).catch(() => null) || {}
-		const li = getLocalizedInfo(details.info, locales) || getLocalizedInfo(details.info, ['']) || {}
+		const li = pickLocalizedSlice(details.info, locales) || {}
 		defaults = { ...infoLiToDefaults(li), name: defaults.name || presentation.displayName, avatar: defaults.avatar || presentation.avatar }
 	}
 	return defaults

@@ -467,9 +467,23 @@ await testCase('GET/PUT group-folders', async () => {
 	return g.status === 200 && p.status === 200
 })
 
-await testCase('GET/PUT custom-emojis', async () => {
-	const g = await chatApi('GET', '/custom-emojis')
-	return g.status === 200
+await testCase('GET/POST/DELETE emoji-usage collection', async () => {
+	const g = await chatApi('GET', '/emoji-usage')
+	if (g.status !== 200 || g.json.collection == null) throw new Error(`get ${g.status}`)
+	const packId = `e2e_pack_${Date.now().toString(36)}`
+	const created = await chatApi('POST', `/groups/${encodeURIComponent(gid)}/emoji-packs`, { packId })
+	if (created.status !== 201) throw new Error(`create pack ${created.status}`)
+	try {
+		const add = await chatApi('POST', '/emoji-usage/collection/packs', { packId })
+		if (add.status !== 200) throw new Error(`add ${add.status}`)
+		const del = await chatApi('DELETE', `/emoji-usage/collection/packs/${encodeURIComponent(packId)}`)
+		if (del.status !== 200) throw new Error(`del collection ${del.status}`)
+		return true
+	}
+	finally {
+		await chatApi('DELETE', `/emoji-usage/collection/packs/${encodeURIComponent(packId)}`)
+		await chatApi('DELETE', `/groups/${encodeURIComponent(gid)}/emoji-packs/${encodeURIComponent(packId)}`)
+	}
 })
 
 await testCase('GET emoji-usage/frequent', async () => {
@@ -487,9 +501,9 @@ await testCase('GET mailbox/summary', async () => {
 	return r.status === 200
 })
 
-await testCase('GET group emojis', async () => {
-	const r = await chatApi('GET', `/groups/${gid}/emojis`)
-	return r.status === 200
+await testCase('GET group emoji-packs', async () => {
+	const r = await chatApi('GET', `/groups/${gid}/emoji-packs`)
+	return r.status === 200 && Array.isArray(r.json?.packs)
 })
 
 await testCase('GET audit-log', async () => {
@@ -497,10 +511,10 @@ await testCase('GET audit-log', async () => {
 	return r.status === 200
 })
 
-await testCase('GET stickers/packs + collection', async () => {
-	const a = await chatApi('GET', '/stickers/packs')
-	const b = await chatApi('GET', '/stickers/collection')
-	return a.status === 200 && b.status === 200
+await testCase('GET emoji-packs + emoji-usage', async () => {
+	const a = await chatApi('GET', '/emoji-packs')
+	const b = await chatApi('GET', '/emoji-usage')
+	return a.status === 200 && b.status === 200 && Array.isArray(a.json?.packs)
 })
 
 await testCase('GET channel export', async () => {
