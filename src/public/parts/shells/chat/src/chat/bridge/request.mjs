@@ -1,7 +1,7 @@
 /**
  * 从虚拟会话组装 chatReplyRequest（Uid 语义与 getChatRequest 一致）。
  */
-import { getLocalizedInfo, localesForUser } from '../../../../../../../scripts/locale.mjs'
+import { pickLocalizedSlice, localesForUser } from '../../../../../../../scripts/locale.mjs'
 import { resolveDeclaredOwnerEntityHash } from '../../entity/master.mjs'
 import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
@@ -24,7 +24,7 @@ export async function buildVirtualBridgeChatRequest(username, groupId, channelId
 	const channel = session.channels[channelId] || session.channels.default
 	const chat_log = [...channel?.logs || []]
 	const locales = localesForUser(username)
-	const charInfo = getLocalizedInfo(charAPI.info, locales) || {}
+	const charInfo = pickLocalizedSlice(charAPI.info, locales) || {}
 	const operatorUid = (await resolveOperatorEntityHash(username))?.toLowerCase() || 'user'
 	const charUid = (await ensureLocalAgentEntityHash(username, charname)).toLowerCase()
 	const declaredOwnerEntityHash = (await resolveDeclaredOwnerEntityHash(username, charUid))?.toLowerCase()
@@ -34,7 +34,7 @@ export async function buildVirtualBridgeChatRequest(username, groupId, channelId
 	try {
 		const { loadAnyPreferredDefaultPart } = await import('../../../../../../../server/parts_loader.mjs')
 		const persona = await loadAnyPreferredDefaultPart(username, 'personas')
-		const personaInfo = getLocalizedInfo(persona?.info, locales)
+		const personaInfo = pickLocalizedSlice(persona?.info, locales)
 		if (personaInfo?.name) operatorName = personaInfo.name
 	}
 	catch { /* builtin */ }

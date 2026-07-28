@@ -467,9 +467,9 @@ await testCase('GET/PUT group-folders', async () => {
 	return g.status === 200 && p.status === 200
 })
 
-await testCase('GET/PUT custom-emojis', async () => {
-	const g = await chatApi('GET', '/custom-emojis')
-	return g.status === 200
+await testCase('GET/PUT emoji-usage collection', async () => {
+	const g = await chatApi('GET', '/emoji-usage')
+	return g.status === 200 && g.json.collection != null
 })
 
 await testCase('GET emoji-usage/frequent', async () => {
@@ -497,10 +497,10 @@ await testCase('GET audit-log', async () => {
 	return r.status === 200
 })
 
-await testCase('GET stickers/packs + collection', async () => {
-	const a = await chatApi('GET', '/stickers/packs')
-	const b = await chatApi('GET', '/stickers/collection')
-	return a.status === 200 && b.status === 200
+await testCase('GET emoji-packs + emoji-usage', async () => {
+	const a = await chatApi('GET', '/emoji-packs')
+	const b = await chatApi('GET', '/emoji-usage')
+	return a.status === 200 && b.status === 200 && Array.isArray(a.json?.packs)
 })
 
 await testCase('GET channel export', async () => {

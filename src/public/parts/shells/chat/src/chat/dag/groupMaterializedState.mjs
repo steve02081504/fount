@@ -63,6 +63,8 @@ export const DEFAULT_GROUP_SETTINGS = {
 	discoveryPublic: false,
 	discoveryTitle: null,
 	discoveryBlurb: null,
+	/** 加群时自动进收藏的默认表情包；空则回落 packId===groupId */
+	defaultEmojiPackId: null,
 }
 
 /**

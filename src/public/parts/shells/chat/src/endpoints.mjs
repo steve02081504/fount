@@ -2,7 +2,7 @@
  * 【文件】src/endpoints.mjs
  * 【职责】chat shell 的 HTTP/WebSocket 路由注册中心，覆盖用户偏好、联邦设置、群会话 CRUD、附件与实时信令等对外 API。
  * 【原理】setEndpoints(router) 在 authenticate 之后挂路由：REST 读写 shellData；群联邦路由见 group/endpoints.mjs；本子模块按域装配 prefs / discovery / mailbox / sessions / WS 等。
- * 【关联】被 main.mjs Load 调用；聚合 endpoints/*、profile、stickers。
+ * 【关联】被 main.mjs Load 调用；聚合 endpoints/*、profile、entity emoji packs。
  */
 import { authenticate } from '../../../../../server/auth/index.mjs'
 
@@ -20,7 +20,7 @@ import { registerTranslationPrefsRoutes } from './endpoints/translationPrefs.mjs
 import { registerTrustedAuthorsRoutes } from './endpoints/trustedAuthors.mjs'
 import { registerWsRoutes } from './endpoints/ws.mjs'
 import { registerEntityEndpoints } from './entity/endpoints.mjs'
-import { registerStickerRoutes } from './stickers/endpoints.mjs'
+import { registerEntityEmojiRoutes } from './entity/entityEmojiRoutes.mjs'
 
 /**
  * 为聊天功能设置API端点。
@@ -29,7 +29,7 @@ import { registerStickerRoutes } from './stickers/endpoints.mjs'
  */
 export function setEndpoints(router) {
 	registerEntityEndpoints(router)
-	registerStickerRoutes(router, '/api/parts/shells:chat/stickers')
+	registerEntityEmojiRoutes(router, authenticate)
 
 	registerPrefsRoutes(router)
 	registerTranslateRoutes(router)

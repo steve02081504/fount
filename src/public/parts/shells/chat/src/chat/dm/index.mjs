@@ -282,6 +282,12 @@ export async function performMemberJoin(username, groupId, options = {}) {
 		const { state: afterJoin } = await getState(username, groupId)
 		await maybeAssignEcdhDmAdmin(username, groupId, afterJoin)
 		defaultChannelId = afterJoin.groupSettings?.defaultChannelId || 'default'
+		const { convergeLinkedDefault, groupDefaultLinkKey, resolveGroupDefaultPackId } = await import('../../emojiUsage.mjs')
+		convergeLinkedDefault(
+			username,
+			groupDefaultLinkKey(groupId),
+			resolveGroupDefaultPackId(afterJoin.groupSettings, groupId),
+		)
 	}
 
 	await bindJoinFederation(username, groupId)

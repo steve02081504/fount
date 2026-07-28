@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta property="og:title" content="fount Emoji Packs" />
+	<meta property="og:url" content="https://steve02081504.github.io/fount/protocol?url=fount://page/parts/shells:chat/emoji-packs/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:description" content="Discover emoji packs from public groups and authors on fount." />
+	<meta name="description" content="Discover emoji packs from public groups and authors on fount." />
+	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
+	<title data-i18n="chat.emojiPacks.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link href="./index.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body class="bg-base-100 min-h-screen">
+	<main class="emoji-packs-page">
+		<header class="emoji-packs-header">
+			<a class="btn btn-ghost btn-sm" href="/parts/shells:chat/hub/">
+				<span aria-hidden="true">←</span>
+				<span data-i18n="chat.emojiPacks.back"></span>
+			</a>
+			<div>
+				<p class="emoji-packs-kicker" data-i18n="chat.emojiPacks.kicker"></p>
+				<h1 class="text-3xl font-bold" data-i18n="chat.emojiPacks.title"></h1>
+				<p class="emoji-packs-subtitle" data-i18n="chat.emojiPacks.description"></p>
+			</div>
+		</header>
+
+		<p id="emoji-packs-status" class="emoji-packs-status" data-i18n="chat.emojiPacks.loading"></p>
+		<div id="emoji-packs-grid" class="emoji-packs-grid" hidden></div>
+		<p id="emoji-packs-empty" class="emoji-packs-empty alert alert-ghost hidden" data-i18n="chat.emojiPacks.empty"></p>
+	</main>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

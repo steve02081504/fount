@@ -1,9 +1,12 @@
 /** Canonical inline token 格式（chat/social 共用）。 */
 
+/** emojiId 位允许 unicode 别名（name/alt）；packId 仍为稳定 id。 */
+const EMOJI_ID_IN_TOKEN = '[^\\]\\r\\n]+?'
+
 /**
  *
  */
-export const EMOJI_TOKEN_RE = /:\[emoji:([\w.-]+)\/([\w.-]+)\]:/g
+export const EMOJI_TOKEN_RE = new RegExp(`:\\[emoji:([\\w.-]+)\\/(${EMOJI_ID_IN_TOKEN})\\]:`, 'g')
 
 /**
  *
@@ -21,15 +24,100 @@ export const CHANNEL_TOKEN_RE = /#\[channel:([\w.-]+)\/([\w.-]+)\]/g
 export const GROUP_TOKEN_RE = /#\[group:([\w.-]+)\]/g
 
 /** 匹配顺序：@mention → #message → #channel → #group → :emoji: */
-export const INLINE_TOKEN_RE = /@\[([^\]]+)\]|#\[message:([\w.-]+)\/([\w.-]+)\/([\w.-]+)\]|#\[channel:([\w.-]+)\/([\w.-]+)\]|#\[group:([\w.-]+)\]|:\[emoji:([\w.-]+)\/([\w.-]+)\]:/giu
+export const INLINE_TOKEN_RE = new RegExp(
+	`@\\[([^\\]]+)\\]|#\\[message:([\\w.-]+)\\/([\\w.-]+)\\/([\\w.-]+)\\]|#\\[channel:([\\w.-]+)\\/([\\w.-]+)\\]|#\\[group:([\\w.-]+)\\]|:\\[emoji:([\\w.-]+)\\/(${EMOJI_ID_IN_TOKEN})\\]:`,
+	'giu',
+)
 
 /**
- * @param {string} groupId 群 ID
- * @param {string} emojiId 表情 ID
- * @returns {string} `:[emoji:groupId/emojiId]:`
+ * @param {string} ref emoji token 或任意字符串
+ * @returns {{ packId: string, emojiId: string } | null} 解析结果
  */
-export function formatEmojiToken(groupId, emojiId) {
-	return `:[emoji:${groupId}/${emojiId}]:`
+export function parseEmojiToken(ref) {
+	const m = new RegExp(`:\\[emoji:([\\w.-]+)\\/(${EMOJI_ID_IN_TOKEN})\\]:`).exec(String(ref || ''))
+	return m ? { packId: m[1], emojiId: m[2] } : null
+}
+
+/**
+ * 正文中首个 emoji token。
+ * @param {string} text 正文
+ * @returns {{ packId: string, emojiId: string } | null} 首个匹配
+ */
+export function firstEmojiTokenInText(text) {
+	EMOJI_TOKEN_RE.lastIndex = 0
+	const m = EMOJI_TOKEN_RE.exec(String(text || ''))
+	return m ? { packId: m[1], emojiId: m[2] } : null
+}
+
+/**
+ * @param {string} packId 表情包 ID（单包群常与 groupId 相同）
+ * @param {string} emojiId 表情 ID
+ * @returns {string} `:[emoji:packId/emojiId]:`
+ */
+export function formatEmojiToken(packId, emojiId) {
+	return `:[emoji:${packId}/${emojiId}]:`
+}
+
+/**
+ * 将正文中的 emoji token 降级为纯文字（LLM / 读屏）。
+ * @param {string} text 正文
+ * @param {(packId: string, emojiId: string) => string | null | undefined} resolveAlt 解析 alt；无则回落 emojiId
+ * @returns {string} 降级后正文
+ */
+export function degradeEmojiTokensToAlt(text, resolveAlt) {
+	return String(text || '').replace(EMOJI_TOKEN_RE, (_m, packId, emojiId) => {
+		const alt = resolveAlt?.(packId, emojiId)
+		return alt != null && String(alt).trim() ? String(alt).trim() : emojiId
+	})
+}
+
+/**
+ * 用别名（alt/name）解析为 emojiId；index 由 buildEmojiAliasIndex 生成。
+ * @param {Map<string, string> | Record<string, string>} aliasIndex 别名表
+ * @param {string} tokenOrAlias emojiId 或别名
+ * @returns {string | null} emojiId
+ */
+export function resolveEmojiIdFromAlias(aliasIndex, tokenOrAlias) {
+	const key = String(tokenOrAlias || '').trim()
+	if (!key) return null
+	if (aliasIndex instanceof Map) return aliasIndex.get(key) || null
+	return aliasIndex[key] || null
+}
+
+/**
+ * 将 token 内 emojiId 位的 name/alt 别名改写成规范 emojiId。
+ * @param {string} text 正文
+ * @param {(packId: string, emojiOrAlias: string) => string | null | undefined} resolveId 解析器
+ * @returns {string} 改写后正文
+ */
+export function rewriteEmojiAliasesInText(text, resolveId) {
+	return String(text || '').replace(EMOJI_TOKEN_RE, (_m, packId, emojiOrAlias) => {
+		const resolved = resolveId?.(packId, emojiOrAlias)
+		const emojiId = resolved != null && String(resolved).trim() ? String(resolved).trim() : emojiOrAlias
+		return formatEmojiToken(packId, emojiId)
+	})
+}
+
+/**
+ * 跨 locale 别名索引：alt / name → emojiId（先到先得）。
+ * @param {object[]} items 包内表情
+ * @returns {Map<string, string>} 别名到 emojiId 的映射
+ */
+export function buildEmojiAliasIndex(items) {
+	/** @type {Map<string, string>} */
+	const index = new Map()
+	for (const item of items || []) {
+		const emojiId = String(item?.emojiId || '').trim()
+		if (!emojiId) continue
+		if (!index.has(emojiId)) index.set(emojiId, emojiId)
+		const localized = item.localized || {}
+		for (const slice of Object.values(localized))
+			for (const key of ['alt', 'name']) {
+				const alias = String(slice?.[key] || '').trim()
+				if (alias && !index.has(alias)) index.set(alias, emojiId)
+			}
+	}
+	return index
 }
 
 /**

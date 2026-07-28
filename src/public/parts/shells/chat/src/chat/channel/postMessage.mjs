@@ -251,6 +251,9 @@ export async function postChannelMessage(username, groupId, channelId, payload =
 	const { content: finalized, fileIds } = await attachFilesToContent(username, groupId, content, files, maxBytes)
 	content = finalized
 
+	const { canonicalizeMessageContentEmojis } = await import('../../emojiAltText.mjs')
+	content = await canonicalizeMessageContentEmojis(username, content)
+
 	if (origin === 'human') {
 		void unlockAchievement(username, 'shells/chat', 'first_chat')
 		if ((files || []).some(file => String(file.mime_type || '').startsWith('image/')))

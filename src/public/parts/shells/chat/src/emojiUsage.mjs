@@ -1,126 +1,164 @@
 /**
- * 【文件】src/emojiUsage.mjs
- * 【职责】按实体统计 Unicode 与群自定义表情（:[groupId/emojiId]）的使用频次，供选择器「常用」排序。
- * 【原理】数据存于实体私有 shell data（dataname emoji_usage），键 u:{unicode} 或 g:{groupId}/{emojiId}；
- *   每次 recordEmojiUsage 递增 count 并更新 lastUsedAt；超过 MAX_STORED(512) 时按 count、lastUsedAt 淘汰最少使用的条目。
- *   recordEmojiUsageFromMessageContent 从发送的 channel content 正则提取（sticker 类型走 emojiRef）。
- * 【数据结构】entries: Record<id, { id, kind, count, lastUsedAt, unicode? | groupId?, emojiId? }>。
- * 【关联】endpoints 暴露 list API；发送消息路径调用 record；依赖 channelContent 取文本。
+ * emoji 使用统计（700 条滚动日志）与收藏 —— chat shell data 宿主。
+ *
+ * shellData `emoji_usage`:
+ * { log: [{ id, at }], lastUsedAtByPack: {}, collection: { packIds: [], emojiIds: [] },
+ *   linkedDefaults: { 'group:…'|`entity:…`: packId } }
  */
-import { assignEntityShellData, loadEntityShellData } from '../../../../../server/setting_loader.mjs'
+import { assignShellData, loadShellData } from '../../../../../server/setting_loader.mjs'
 import { channelMessageKind, messageShowText } from '../public/shared/channelContent.mjs'
+import { EMOJI_TOKEN_RE } from '../public/shared/inlineTokenSyntax.mjs'
 
-const SHELL_DATANAME = 'emoji_usage'
-const MAX_STORED = 512
+import {
+	applyDefaultPackConverge,
+	entityDefaultLinkKey,
+	groupDefaultLinkKey,
+	resolveGroupDefaultPackId,
+} from './emojiCollectionLogic.mjs'
 
-const CUSTOM_EMOJI_REF = /:\[([\w.-]+)\/([\w.-]+)\](?!:)/g
+export {
+	applyDefaultPackConverge,
+	entityDefaultLinkKey,
+	groupDefaultLinkKey,
+	resolveGroupDefaultPackId,
+}
+
+/** shellData 键名（与 HTTP `/emoji-usage` 对齐） */
+export const EMOJI_USAGE_DATANAME = 'emoji_usage'
+/** 滚动用量窗口上限 */
+export const USAGE_WINDOW = 700
+
 const UNICODE_EMOJI = /\p{Extended_Pictographic}/gu
 
 /**
- * @param {'unicode' | 'custom'} kind 类型
- * @param {{ unicode?: string, groupId?: string, emojiId?: string }} fields 字段
- * @returns {string} 存储键
+ * @param {string} username 用户名
+ * @returns {object} 返回值
  */
-function usageEntryId(kind, fields) {
-	if (kind === 'unicode') return `u:${fields.unicode}`
-	return `g:${fields.groupId}/${fields.emojiId}`
+export function loadEmojiUsage(username) {
+	const data = loadShellData(username, 'chat', EMOJI_USAGE_DATANAME) || {}
+	return {
+		log: Array.isArray(data.log) ? data.log : [],
+		lastUsedAtByPack: data.lastUsedAtByPack && typeof data.lastUsedAtByPack === 'object' ? { ...data.lastUsedAtByPack } : {},
+		collection: {
+			packIds: Array.isArray(data.collection?.packIds) ? [...data.collection.packIds] : [],
+			emojiIds: Array.isArray(data.collection?.emojiIds) ? [...data.collection.emojiIds] : [],
+		},
+		linkedDefaults: data.linkedDefaults && typeof data.linkedDefaults === 'object'
+			? { ...data.linkedDefaults }
+			: {},
+	}
 }
 
 /**
- * @param {string} username 用户
- * @param {string} entityHash 实体
- * @returns {Record<string, object>} id → 统计条目
+ * @param {string} username 用户名
+ * @param {object} data 载荷
+ * @returns {void} 返回值
  */
-function loadUsageEntries(username, entityHash) {
-	return loadEntityShellData(username, 'chat', entityHash, SHELL_DATANAME)?.entries || {}
+export function saveEmojiUsage(username, data) {
+	assignShellData(username, 'chat', EMOJI_USAGE_DATANAME, {
+		log: data.log || [],
+		lastUsedAtByPack: data.lastUsedAtByPack || {},
+		collection: {
+			packIds: data.collection?.packIds || [],
+			emojiIds: data.collection?.emojiIds || [],
+		},
+		linkedDefaults: data.linkedDefaults || {},
+	})
 }
 
 /**
- * @param {Record<string, object>} entries 条目表
- * @returns {Record<string, object>} 修剪后条目表
+ * @param {string} packId 表情包 ID
+ * @param {string} emojiId 表情 ID
+ * @returns {string} 返回值
  */
-function pruneUsageEntries(entries) {
-	const keys = Object.keys(entries)
-	if (keys.length <= MAX_STORED) return entries
-	const drop = keys
-		.sort((a, b) => {
-			const ea = entries[a]
-			const eb = entries[b]
-			if (ea.count !== eb.count) return ea.count - eb.count
-			return ea.lastUsedAt - eb.lastUsedAt
-		})
-		.slice(0, keys.length - MAX_STORED)
-	for (const key of drop) delete entries[key]
-	return entries
+export function packEmojiUsageId(packId, emojiId) {
+	return `p:${packId}/${emojiId}`
 }
 
 /**
- * 记录一次表情使用（发送消息或选择器使用时调用）。
- * @param {string} username 用户
- * @param {string} entityHash 实体
- * @param {{ kind: 'unicode', unicode: string } | { kind: 'custom', groupId: string, emojiId: string }} item 表情
- * @returns {void}
+ * @param {string} unicode Unicode 字形
+ * @returns {string} 返回值
  */
-export function recordEmojiUsage(username, entityHash, item) {
+export function unicodeUsageId(unicode) {
+	return `u:${unicode}`
+}
+
+/**
+ * @param {object} state 状态
+ * @param {string} usageId 用量 ID
+ * @param {number} [at] 参数
+ * @returns {object} 返回值
+ */
+export function appendUsageLog(state, usageId, at = Date.now()) {
+	const id = String(usageId || '').trim()
+	if (!id) return state
+	const log = [...state.log || [], { id, at }]
+	const trimmed = log.length > USAGE_WINDOW ? log.slice(-USAGE_WINDOW) : log
+	const next = { ...state, log: trimmed, lastUsedAtByPack: { ...state.lastUsedAtByPack } }
+	if (id.startsWith('p:')) {
+		const body = id.slice(2)
+		const slash = body.indexOf('/')
+		if (slash > 0) next.lastUsedAtByPack[body.slice(0, slash)] = at
+	}
+	return next
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {{ kind: 'unicode', unicode: string } | { kind: 'pack' | 'custom', packId?: string, groupId?: string, emojiId: string }} item 用量项
+ * @param {string} [_entityHash] 兼容旧调用（已忽略）
+ * @returns {void} 返回值
+ */
+export function recordEmojiUsage(username, item, _entityHash) {
+	// 兼容 (username, entityHash, item)
+	if (typeof item === 'string' && _entityHash && typeof _entityHash === 'object') {
+		const realItem = _entityHash
+		_entityHash = item
+		item = realItem
+	}
+	const state = loadEmojiUsage(username)
+	let usageId = ''
 	if (item.kind === 'unicode') {
 		const unicode = String(item.unicode || '').trim()
 		if (!unicode) return
-		const id = usageEntryId('unicode', { unicode })
-		const entries = loadUsageEntries(username, entityHash)
-		const prev = entries[id]
-		entries[id] = {
-			id,
-			kind: 'unicode',
-			unicode,
-			count: (prev?.count || 0) + 1,
-			lastUsedAt: Date.now(),
-		}
-		assignEntityShellData(username, 'chat', entityHash, SHELL_DATANAME, { entries: pruneUsageEntries(entries) })
-		return
+		usageId = unicodeUsageId(unicode)
 	}
-	const groupId = String(item.groupId || '').trim()
-	const emojiId = String(item.emojiId || '').trim()
-	if (!groupId || !emojiId) return
-	const id = usageEntryId('custom', { groupId, emojiId })
-	const entries = loadUsageEntries(username, entityHash)
-	const prev = entries[id]
-	entries[id] = {
-		id,
-		kind: 'custom',
-		groupId,
-		emojiId,
-		count: (prev?.count || 0) + 1,
-		lastUsedAt: Date.now(),
+	else {
+		const packId = String(item.packId || item.groupId || '').trim()
+		const emojiId = String(item.emojiId || '').trim()
+		if (!packId || !emojiId) return
+		usageId = packEmojiUsageId(packId, emojiId)
 	}
-	assignEntityShellData(username, 'chat', entityHash, SHELL_DATANAME, { entries: pruneUsageEntries(entries) })
+	saveEmojiUsage(username, appendUsageLog(state, usageId))
 }
 
 /**
- * 从频道消息 content 提取并累计表情使用次数。
- * @param {string} username 发送者
- * @param {string} entityHash 实体
- * @param {Record<string, unknown>} content 消息 content
- * @returns {void}
+ * @param {string} username 用户名
+ * @param {string | Record<string, unknown>} entityHashOrContent 兼容旧签名
+ * @param {Record<string, unknown>} [maybeContent] 参数
+ * @returns {void} 返回值
  */
-export function recordEmojiUsageFromMessageContent(username, entityHash, content) {
-	if (!content) return
+export function recordEmojiUsageFromMessageContent(username, entityHashOrContent, maybeContent) {
+	const content = maybeContent !== undefined ? maybeContent : entityHashOrContent
+	if (!content || typeof content !== 'object') return
 	if (channelMessageKind(content) === 'sticker') {
 		const emojiRef = String(content.emojiRef || '').trim()
-		const match = /:\[([\w.-]+)\/([\w.-]+)]:/.exec(emojiRef)
+		const match = /:\[emoji:([\w.-]+)\/([\w.-]+)\]:/.exec(emojiRef)
+			|| /:\[([\w.-]+)\/([\w.-]+)\]:/.exec(emojiRef)
 		if (match)
-			recordEmojiUsage(username, entityHash, { kind: 'custom', groupId: match[1], emojiId: match[2] })
+			recordEmojiUsage(username, { kind: 'pack', packId: match[1], emojiId: match[2] })
 		return
 	}
 	const text = messageShowText(content)
 	if (!text) return
 
-	CUSTOM_EMOJI_REF.lastIndex = 0
+	EMOJI_TOKEN_RE.lastIndex = 0
 	const customSeen = new Set()
-	for (const match of text.matchAll(CUSTOM_EMOJI_REF)) {
+	for (const match of text.matchAll(EMOJI_TOKEN_RE)) {
 		const key = `${match[1]}/${match[2]}`
 		if (customSeen.has(key)) continue
 		customSeen.add(key)
-		recordEmojiUsage(username, entityHash, { kind: 'custom', groupId: match[1], emojiId: match[2] })
+		recordEmojiUsage(username, { kind: 'pack', packId: match[1], emojiId: match[2] })
 	}
 
 	UNICODE_EMOJI.lastIndex = 0
@@ -129,20 +167,132 @@ export function recordEmojiUsageFromMessageContent(username, entityHash, content
 		const glyph = match[0]
 		if (!glyph || unicodeSeen.has(glyph)) continue
 		unicodeSeen.add(glyph)
-		recordEmojiUsage(username, entityHash, { kind: 'unicode', unicode: glyph })
+		recordEmojiUsage(username, { kind: 'unicode', unicode: glyph })
 	}
 }
 
 /**
- * 按发送次数列出常用表情。
- * @param {string} username 用户
- * @param {string} entityHash 实体
- * @param {number} [limit=32] 返回条数上限
- * @returns {object[]} 统计条目，按 count、lastUsedAt 降序
+ * @param {string} username 用户名
+ * @returns {object} usage 载荷（供 provider.usage.load）
  */
-export function listFrequentEmojis(username, entityHash, limit = 32) {
+export function loadUsagePayload(username) {
+	const state = loadEmojiUsage(username)
+	return {
+		log: state.log.slice(-USAGE_WINDOW),
+		lastUsedAtByPack: state.lastUsedAtByPack,
+	}
+}
+
+/**
+ * @param {string} username 用户名
+ * @returns {{ packIds: string[], emojiIds: string[] }} 收藏
+ */
+export function listCollection(username) {
+	return loadEmojiUsage(username).collection
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {string} packId 表情包 ID
+ * @returns {void} 返回值
+ */
+export function addPackToCollection(username, packId) {
+	const id = String(packId || '').trim()
+	if (!id) return
+	const state = loadEmojiUsage(username)
+	if (state.collection.packIds.includes(id)) return
+	state.collection.packIds = [...state.collection.packIds, id]
+	saveEmojiUsage(username, state)
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {string} packId 表情包 ID
+ * @returns {void} 返回值
+ */
+export function removePackFromCollection(username, packId) {
+	const id = String(packId || '').trim()
+	if (!id) return
+	const state = loadEmojiUsage(username)
+	state.collection.packIds = state.collection.packIds.filter(p => p !== id)
+	saveEmojiUsage(username, state)
+}
+
+/**
+ * 默认包收敛：
+ * - 首次链接（无旧默认）：写入收藏
+ * - 旧默认在收藏内：换成新默认
+ * - 旧默认不在收藏：尊重手动移除，不动
+ * @param {string} username 用户名
+ * @param {string | null | undefined} oldDefaultPackId 旧默认包
+ * @param {string | null | undefined} newDefaultPackId 新默认包
+ * @returns {void} 返回值
+ */
+export function convergeDefaultPack(username, oldDefaultPackId, newDefaultPackId) {
+	const state = loadEmojiUsage(username)
+	state.collection.packIds = applyDefaultPackConverge(
+		state.collection.packIds,
+		oldDefaultPackId,
+		newDefaultPackId,
+	)
+	saveEmojiUsage(username, state)
+}
+
+/**
+ * 按来源链接键收敛默认包，并记录最近见到的默认 packId。
+ * @param {string} username 用户名
+ * @param {string} linkKey `group:…` / `entity:…`
+ * @param {string | null | undefined} newDefaultPackId 当前默认包
+ * @returns {void}
+ */
+export function convergeLinkedDefault(username, linkKey, newDefaultPackId) {
+	const key = String(linkKey || '').trim()
+	const next = String(newDefaultPackId || '').trim()
+	if (!key || !next) return
+	const state = loadEmojiUsage(username)
+	const old = String(state.linkedDefaults[key] || '').trim()
+	if (old === next) return
+	convergeDefaultPack(username, old || null, next)
+	const after = loadEmojiUsage(username)
+	after.linkedDefaults[key] = next
+	saveEmojiUsage(username, after)
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {number | string} [limitOrEntityHash] 条数，或旧签名下的 entityHash
+ * @param {number} [maybeLimit] 参数
+ * @returns {object[]} 返回值
+ */
+export function listFrequentEmojis(username, limitOrEntityHash = 32, maybeLimit) {
+	const limit = typeof limitOrEntityHash === 'number'
+		? limitOrEntityHash
+		: maybeLimit ?? 32
+	const { log } = loadUsagePayload(username)
+	/** @type {Map<string, { id: string, count: number, lastUsedAt: number, kind: string, unicode?: string, packId?: string, groupId?: string, emojiId?: string }>} */
+	const map = new Map()
+	for (const entry of log) {
+		const id = entry.id
+		const prev = map.get(id)
+		const at = entry.at || 0
+		if (prev) {
+			prev.count += 1
+			prev.lastUsedAt = Math.max(prev.lastUsedAt, at)
+			continue
+		}
+		if (id.startsWith('u:'))
+			map.set(id, { id, kind: 'unicode', unicode: id.slice(2), count: 1, lastUsedAt: at })
+		else if (id.startsWith('p:') || id.startsWith('g:')) {
+			const body = id.slice(2)
+			const slash = body.indexOf('/')
+			if (slash <= 0) continue
+			const packId = body.slice(0, slash)
+			const emojiId = body.slice(slash + 1)
+			map.set(id, { id, kind: 'custom', packId, groupId: packId, emojiId, count: 1, lastUsedAt: at })
+		}
+	}
 	const cap = Math.min(64, Math.max(1, limit))
-	return Object.values(loadUsageEntries(username, entityHash))
+	return [...map.values()]
 		.sort((a, b) => b.count - a.count || b.lastUsedAt - a.lastUsedAt)
 		.slice(0, cap)
 }

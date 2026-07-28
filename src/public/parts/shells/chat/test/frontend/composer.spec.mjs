@@ -53,13 +53,14 @@ test.describe('Chat composer', () => {
 	test('emoji picker opens from composer', async ({ page, groupChannel: _ }) => {
 		await page.locator('#emoji-button').click()
 		await expect(page.locator('#emoji-picker')).toHaveClass(/show/)
-		await expect(page.locator('#emoji-tabs .emoji-tab').first()).toBeVisible({ timeout: 30_000 })
-	})
-
-	test('sticker picker opens from composer', async ({ page, groupChannel: _ }) => {
-		await page.locator('#sticker-button').click()
-		await expect(page.locator('#sticker-picker')).toHaveClass(/show/)
-		await expect(page.locator('#sticker-grid')).toBeVisible()
+		const picker = page.locator('#emoji-picker')
+		await expect(picker.locator('.emoji-rail, [role="toolbar"]').first()).toBeVisible({ timeout: 30_000 })
+		await expect(picker.locator('.emoji-rail-jump-unicode')).toBeVisible()
+		await picker.locator('.emoji-rail-item').first().click()
+		await expect(picker.locator('.emoji-section').first()).toBeVisible()
+		const gridButton = picker.locator('.emoji-grid-button').first()
+		await expect(gridButton).toBeVisible({ timeout: 30_000 })
+		await expect(gridButton).not.toHaveAttribute('title', '')
 	})
 
 	test('vote modal opens and cancels', async ({ page, groupChannel: _ }) => {

@@ -1,3 +1,4 @@
+import { parseEmojiToken } from './inlineTokenSyntax.mjs'
 import { sanitizeAlt, sanitizeMessageExtras } from './messageFields.mjs'
 
 /**
@@ -108,7 +109,7 @@ function normalizeStickerContent(input) {
 	const emojiRef = String(input.emojiRef || '').trim()
 	const stickerBase64 = String(input.stickerBase64 || '')
 	if (!emojiRef && !stickerBase64) throw new Error('sticker requires emojiRef or stickerBase64')
-	const compactEmoji = emojiRef && /:\[[\w.-]+\/[\w.-]+\](?!:)/.test(emojiRef)
+	const compactEmoji = !!parseEmojiToken(emojiRef)
 	return withDisplayFields(input, {
 		type: 'sticker',
 		...compactEmoji || emojiRef ? { emojiRef } : {},

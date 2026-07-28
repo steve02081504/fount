@@ -2,9 +2,8 @@
 @import url("../shared/entityProfileBanner.css");
 @import url("../shared/entityProfileCard.css");
 
-/* === Emoji / Sticker picker === */
-.emoji-picker,
-.sticker-picker {
+/* === Emoji picker === */
+.emoji-picker {
 	position: absolute;
 	bottom: 56px;
 	right: 0;
@@ -15,20 +14,11 @@
 	box-shadow: 0 8px 16px var(--shadow);
 	z-index: 50;
 	display: none;
-}
-
-.emoji-picker {
 	width: min(320px, calc(100vw - 16px));
 	max-height: 360px;
 }
 
-.sticker-picker {
-	width: min(360px, calc(100vw - 16px));
-	max-height: 400px;
-}
-
-.emoji-picker.show,
-.sticker-picker.show {
+.emoji-picker.show {
 	display: block;
 }
 
@@ -73,42 +63,7 @@
 	display: block;
 }
 
-.sticker-grid {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 6px;
-	min-height: 60px;
-	max-height: 340px;
-	overflow-y: auto;
-}
-
-.sticker-item {
-	aspect-ratio: 1;
-	background: var(--bg-input);
-	border: none;
-	border-radius: 6px;
-	padding: 4px;
-	cursor: pointer;
-	transition: background 0.1s ease, transform 0.1s ease;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.sticker-item:hover {
-	background: var(--active);
-	transform: scale(1.05);
-}
-
-.sticker-item img {
-	max-width: 100%;
-	max-height: 100%;
-	object-fit: contain;
-}
-
-.emoji-grid-empty,
-.sticker-empty,
-.sticker-load-failed {
+.emoji-grid-empty {
 	grid-column: 1 / -1;
 	padding: 16px 8px;
 	text-align: center;

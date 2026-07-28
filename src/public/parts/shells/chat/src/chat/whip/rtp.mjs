@@ -1,7 +1,6 @@
 /**
  * RTP 解包：Opus 直通；H264 RFC 6184 → Annex B access unit。
  */
-/* eslint-disable jsdoc/require-returns-description */
 import { Buffer } from 'node:buffer'
 
 const NAL_TYPE_SPS = 7
@@ -10,7 +9,7 @@ const NAL_TYPE_IDR = 5
 
 /**
  * @param {Buffer} packet RTP 包
- * @returns {{ payloadType: number, marker: boolean, timestamp: number, payload: Buffer } | null}
+ * @returns {{ payloadType: number, marker: boolean, timestamp: number, payload: Buffer } | null} 头字段；无效包为 null
  */
 export function parseRtpHeader(packet) {
 	if (!Buffer.isBuffer(packet) || packet.length < 12) return null
@@ -46,7 +45,7 @@ function toAnnexB(nalu) {
 
 /**
  * H264 RTP 重组器。
- * @returns {{ feed: (packet: Buffer) => { annexB: Buffer, key: boolean, sps?: Buffer, pps?: Buffer, width?: number, height?: number } | null, reset: () => void }}
+ * @returns {{ feed: (packet: Buffer) => { annexB: Buffer, key: boolean, sps?: Buffer, pps?: Buffer, width?: number, height?: number } | null, reset: () => void }} `feed` 喂入 RTP 包；`reset` 清空 FU 缓冲
  */
 export function createH264Depacketizer() {
 	/** @type {Buffer[]} */
@@ -59,7 +58,7 @@ export function createH264Depacketizer() {
 
 	/**
 	 * @param {Buffer} spsNal SPS NAL
-	 * @returns {{ width?: number, height?: number }}
+	 * @returns {{ width?: number, height?: number }} 解析出的分辨率（当前为占位）
 	 */
 	const parseSpsDims = spsNal => {
 		if (spsNal.length < 4) return {}
@@ -75,7 +74,7 @@ export function createH264Depacketizer() {
 		},
 		/**
 		 * @param {Buffer} packet RTP
-		 * @returns {{ annexB: Buffer, key: boolean, sps?: Buffer, pps?: Buffer, width?: number, height?: number } | null}
+		 * @returns {{ annexB: Buffer, key: boolean, sps?: Buffer, pps?: Buffer, width?: number, height?: number } | null} 完整 access unit；未凑齐为 null
 		 */
 		feed(packet) {
 			const hdr = parseRtpHeader(packet)

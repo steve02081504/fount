@@ -2,9 +2,10 @@
  * 【文件】public/hub/messages/render/blocks.mjs
  * 【职责】特殊内容块：解密占位、贴纸、群邀请、语义引用气泡。
  */
+import { resolvePackEmojiUrl } from '../../../../../../scripts/features/emoji/packIndex.mjs'
 import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { channelMessageKind, chatExtensionOf } from '../../../shared/channelContent.mjs'
-import { resolveEmojiUrlBestEffort } from '../../../src/emojiCache.mjs'
+import { parseEmojiToken } from '../../../shared/inlineTokenSyntax.mjs'
 import { buildInviteJoinShareUrl } from '../../../src/inviteQr.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { authorPresentationKeys } from '../../core/domUtils.mjs'
@@ -38,9 +39,9 @@ export async function renderStickerBlock(message) {
 	if (!content || channelMessageKind(content) !== 'sticker') return null
 	let src = String(content.stickerBase64 || '')
 	if (!src && content.emojiRef) {
-		const refMatch = /:\[([\w.-]+)\/([\w.-]+)]:/.exec(String(content.emojiRef))
+		const refMatch = parseEmojiToken(content.emojiRef)
 		if (refMatch)
-			src = await resolveEmojiUrlBestEffort(refMatch[1], refMatch[2]) || ''
+			src = await resolvePackEmojiUrl(refMatch.packId, refMatch.emojiId) || ''
 	}
 	const name = escapeHtml(content.stickerName || content.stickerId || 'sticker')
 	if (src.startsWith('data:') || src.startsWith('https://') || src.startsWith('http://') || src.startsWith('/'))
