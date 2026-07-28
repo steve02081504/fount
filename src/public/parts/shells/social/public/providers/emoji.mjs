@@ -5,8 +5,7 @@ import { primaryLocale, loadPreferredLangs } from '/scripts/i18n/index.mjs'
 import { resolveEmojiItemLabels, resolvePackPresentation } from '/scripts/features/emoji/packPresentation.mjs'
 import { entityFileUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 import { formatEmojiToken } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
-
-const SOCIAL_API = '/api/parts/shells:social'
+import { SOCIAL_API } from '../src/lib/apiClient.mjs'
 
 /**
  * @param {object} item pack item

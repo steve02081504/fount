@@ -323,11 +323,6 @@ async function buildChatLogEntryFromDagMessage(
 		? editOverride.content
 		: messageAgentText(content) || resolvedShow || decryptUnavailableFallback
 
-	if (replicaUsername && entry.content && /:\[emoji:/.test(entry.content)) {
-		const { degradeTextEmojisAsync } = await import('../../emojiAltText.mjs')
-		entry.content = await degradeTextEmojisAsync(replicaUsername, entry.content)
-	}
-
 	if (isText) {
 		const show = editOverride?.content_for_show ?? messageShowText(content)
 		if (show && show !== entry.content) entry.content_for_show = show

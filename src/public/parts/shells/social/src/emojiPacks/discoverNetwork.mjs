@@ -65,7 +65,13 @@ export async function localAuthorPackOffersHandler(inboundContext, query) {
 	const offers = []
 	for (const entityHash of entityHashes) {
 		if (offers.length >= limit) break
-		const packs = await listLocalEntityPacks(username, entityHash)
+		let packs = []
+		try {
+			packs = await listLocalEntityPacks(username, entityHash)
+		}
+		catch {
+			packs = []
+		}
 		const profile = await getProfile(entityHash, username, { fetchRemote: false }).catch(() => null)
 		const infoDefaults = {
 			name: String(profile?.name || entityHash.slice(0, 8)),

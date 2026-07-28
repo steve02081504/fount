@@ -186,7 +186,7 @@ test.describe('Social composer', () => {
 		else await picker.locator('.emoji-rail-item').last().click()
 		const gridButton = picker.locator('.emoji-grid-button').first()
 		await expect(gridButton).toBeVisible({ timeout: 30_000 })
-		await expect(gridButton).not.toHaveAttribute('title', '')
+		await expect(gridButton).toHaveAttribute('title', /\S/)
 		await gridButton.click()
 		await expect(page.locator('#postText')).not.toHaveValue('hello ')
 	})

@@ -144,7 +144,6 @@ await testCase('B preview hides join for invite-only private group', async () =>
 	return Boolean(ok)
 })
 
-console.log('\n=== Author default pack → follower collection ===')
 let authorPackId = null
 await testCase('A creates social emoji pack + sets as default', async () => {
 	const viewerA = (await ShellApi(FedA, 'chat', 'GET', '/viewer')).json.viewerEntityHash

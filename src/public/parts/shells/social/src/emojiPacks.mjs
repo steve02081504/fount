@@ -11,6 +11,7 @@ import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
 
 import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
 import { entityEmojiPackDir, entityEmojiPacksRoot } from '../../../chat/src/chat/lib/paths.mjs'
+import { assertSafePackId, isSafePackId, MAX_EMOJI_BYTES } from '../../../chat/src/emojiPacks/packStore.mjs'
 import {
 	convergeLinkedDefault,
 	entityDefaultLinkKey,
@@ -21,8 +22,6 @@ import { listFollowedTimelineOwners } from './following.mjs'
 import { putVaultFileManifest } from './socialVaultIndex.mjs'
 import { commitTimelineEvent } from './timeline/append.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
-
-const MAX_EMOJI_BYTES = 512 * 1024
 
 /**
  * @param {string} filePath 路径
@@ -53,7 +52,7 @@ export function computeEmojiContentHash(buffer) {
  * @returns {string} manifest 路径
  */
 function packManifestPath(username, entityHash, packId) {
-	return path.join(entityEmojiPackDir(username, entityHash, packId), 'manifest.json')
+	return path.join(entityEmojiPackDir(username, entityHash, assertSafePackId(packId)), 'manifest.json')
 }
 
 /**
@@ -65,7 +64,7 @@ function packManifestPath(username, entityHash, packId) {
  */
 function emptyPackManifest(username, entityHash, packId, localized = {}) {
 	void username
-	const id = String(packId || '').trim() || prefixedRandomId('epack_')
+	const id = assertSafePackId(String(packId || '').trim() || prefixedRandomId('epack_'))
 	return {
 		packId: id,
 		source: { kind: 'entity', id: entityHash },
@@ -104,7 +103,7 @@ function manifestEventContent(manifest) {
  * @returns {Promise<void>} 无返回
  */
 async function saveLocalManifest(username, entityHash, manifest) {
-	const packId = String(manifest.packId || '').trim()
+	const packId = assertSafePackId(String(manifest.packId || '').trim())
 	const dir = entityEmojiPackDir(username, entityHash, packId)
 	if (!await fileExists(dir)) await fs.mkdir(dir, { recursive: true })
 	await saveJsonFile(packManifestPath(username, entityHash, packId), {
@@ -124,7 +123,7 @@ async function saveLocalManifest(username, entityHash, manifest) {
  */
 export async function loadLocalEntityPack(username, entityHash, packId) {
 	const pid = String(packId || '').trim()
-	if (!pid) return null
+	if (!isSafePackId(pid)) return null
 	const p = packManifestPath(username, entityHash, pid)
 	if (!await fileExists(p)) return null
 	const raw = await loadJsonFile(p)
@@ -177,7 +176,7 @@ export async function listTimelineEntityPacks(username, entityHash) {
  * @returns {Promise<object>} 结果
  */
 export async function createEntityPack(username, entityHash, fields = {}) {
-	const packId = String(fields.packId || '').trim() || prefixedRandomId('epack_')
+	const packId = assertSafePackId(String(fields.packId || '').trim() || prefixedRandomId('epack_'))
 	const existing = await loadLocalEntityPack(username, entityHash, packId)
 	if (existing) throw new Error('pack already exists')
 	const manifest = emptyPackManifest(username, entityHash, packId, fields.localized)
@@ -219,6 +218,7 @@ export async function updateEntityPack(username, entityHash, packId, patch = {})
  */
 export async function deleteEntityPack(username, entityHash, packId) {
 	const pid = String(packId || '').trim()
+	if (!isSafePackId(pid)) return false
 	const dir = entityEmojiPackDir(username, entityHash, pid)
 	if (!await fileExists(dir)) return false
 	await fs.rm(dir, { recursive: true, force: true })
@@ -243,13 +243,14 @@ export async function uploadEntityPackEmoji(username, entityHash, packId, buffer
 	void filename
 	if (!Buffer.isBuffer(buffer) || buffer.byteLength < 1 || buffer.byteLength > MAX_EMOJI_BYTES)
 		throw new Error('invalid emoji image')
-	let manifest = await loadLocalEntityPack(username, entityHash, packId)
+	const pid = assertSafePackId(packId)
+	let manifest = await loadLocalEntityPack(username, entityHash, pid)
 	if (!manifest)
-		manifest = await createEntityPack(username, entityHash, { packId })
+		manifest = await createEntityPack(username, entityHash, { packId: pid })
 
 	const emojiId = prefixedRandomId('e_')
 	const resolvedMime = mimeType || 'image/png'
-	const displayName = String(name || emojiId).trim() || emojiId
+	const displayName = String(name || emojiId).trim().slice(0, 64) || emojiId
 	const contentHash = computeEmojiContentHash(buffer)
 	await putChunk(contentHash, buffer)
 
