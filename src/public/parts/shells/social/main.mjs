@@ -111,11 +111,13 @@ export default {
 		const { POST_SEARCH_KIND, localPostSearchHandler } = await import('./src/search/network.mjs')
 		const { POST_DISCOVER_KIND, localPostDiscoverHandler } = await import('./src/discover/postDiscover.mjs')
 		const { LIVE_FEED_KIND, localLiveFeedHandler } = await import('./src/live/network.mjs')
+		const { EMOJI_PACK_OFFERS_KIND, localAuthorPackOffersHandler } = await import('./src/emojiPacks/discoverNetwork.mjs')
 		registerSocialQueryKinds({
 			[TRENDING_HASHTAGS_KIND]: localTrendingHashtagsHandler,
 			[POST_SEARCH_KIND]: localPostSearchHandler,
 			[POST_DISCOVER_KIND]: localPostDiscoverHandler,
 			[LIVE_FEED_KIND]: localLiveFeedHandler,
+			[EMOJI_PACK_OFFERS_KIND]: localAuthorPackOffersHandler,
 		})
 		setEndpoints(router)
 		const { bootstrapPollDeadlineWatchers } = await import('./src/lib/pollDeadlineWatcher.mjs')

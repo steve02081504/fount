@@ -38,6 +38,8 @@ export function createSocialTimelineState() {
 		albums: new Map(),
 		/** @type {Map<string, Set<string>>} postId → albumIds */
 		albumsByPost: new Map(),
+		/** @type {Map<string, object>} packId → emoji pack manifest */
+		emojiPacks: new Map(),
 		entityKeyHistory: [],
 		recoveryPubKeyHex: null,
 	}
@@ -426,6 +428,41 @@ function reduceUnblock(state, event) {
 }
 
 /**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceEmojiPackUpsert(state, event) {
+	const packId = String(event.content?.packId || '').trim()
+	if (!packId) return state
+	state.emojiPacks.set(packId, {
+		packId,
+		source: event.content?.source && typeof event.content.source === 'object'
+			? event.content.source
+			: null,
+		localized: event.content?.localized && typeof event.content.localized === 'object'
+			? event.content.localized
+			: {},
+		items: Array.isArray(event.content?.items) ? event.content.items : [],
+		visibility: event.content?.visibility || 'followers',
+		updatedAt: event.hlc?.wall || event.timestamp || Date.now(),
+		eventId: event.id,
+	})
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceEmojiPackDelete(state, event) {
+	const packId = String(event.content?.packId || '').trim()
+	if (packId) state.emojiPacks.delete(packId)
+	return state
+}
+
+/**
  * @param {object} state 物化状态
  * @returns {object} 原样返回
  */
@@ -469,6 +506,8 @@ export const SOCIAL_TIMELINE_REDUCERS = {
 	album_delete: reduceAlbumDelete,
 	album_post_add: reduceAlbumPostAdd,
 	album_post_remove: reduceAlbumPostRemove,
+	emoji_pack_upsert: reduceEmojiPackUpsert,
+	emoji_pack_delete: reduceEmojiPackDelete,
 }
 
 /**
@@ -550,6 +589,7 @@ export function finalizeSocialTimelineView(state, order) {
 		albumsByPost: Object.fromEntries(
 			[...state.albumsByPost.entries()].map(([postId, set]) => [postId, [...set]]),
 		),
+		emojiPacks: Object.fromEntries(state.emojiPacks),
 		entityKeyHistory: state.entityKeyHistory,
 		recoveryPubKeyHex: state.recoveryPubKeyHex,
 		tipIds: order.length ? [order[order.length - 1]] : [],

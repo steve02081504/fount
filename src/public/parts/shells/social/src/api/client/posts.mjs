@@ -135,11 +135,15 @@ async function createTimelinePost(apiContext, draft) {
 		if (!allowed) throw httpError(403, 'reply not allowed by author policy')
 	}
 
+	const { canonicalizeEmojiTokensInText } = await import(
+		'../../../../chat/src/emojiAltText.mjs'
+	)
+	const text = await canonicalizeEmojiTokensInText(apiContext.username, String(draft.text ?? ''))
 	const draftContent = {
-		text: String(draft.text ?? ''),
+		text,
 		mediaRefs: sanitizeMediaRefs([
 			...draft.mediaRefs ?? [],
-			...await buildEmojiMediaRefsForPost(apiContext.username, String(draft.text ?? '')),
+			...await buildEmojiMediaRefsForPost(apiContext.username, text),
 		]),
 		replyTo: draft.replyTo,
 		quoteRef: draft.quoteRef,

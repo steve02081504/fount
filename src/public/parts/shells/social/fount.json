@@ -9,6 +9,13 @@
 				"path": "markdown_extensions/index.mjs"
 			}
 		],
+		"emoji": [
+			{
+				"id": "socialEmoji",
+				"level": 10,
+				"path": "providers/emoji.mjs"
+			}
+		],
 		"home_function_buttons": [
 			{
 				"id": "function_buttons",
