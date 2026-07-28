@@ -4,7 +4,7 @@
 import { primaryLocale, loadPreferredLangs } from '/scripts/i18n/index.mjs'
 import { resolveEmojiItemLabels, resolvePackPresentation } from '/scripts/features/emoji/packPresentation.mjs'
 
-import { formatEmojiToken } from '../shared/inlineTokenSyntax.mjs'
+import { formatEmojiToken, tokenForSelection } from '../shared/inlineTokenSyntax.mjs'
 
 const CHAT_API = '/api/parts/shells:chat'
 
@@ -40,17 +40,6 @@ async function fetchAvailablePacks(context = {}) {
 	if (!r.ok) return []
 	const data = await r.json()
 	return Array.isArray(data.packs) ? data.packs : []
-}
-
-/**
- * 将 picker 选中项转为插入 token。
- * @param {object} item picker 条目
- * @returns {string} Unicode 字符或 `:[emoji:…]:` 引用
- */
-function tokenForSelection(item) {
-	if (item.kind === 'unicode' && item.unicode) return item.unicode
-	if (item.packId && item.emojiId) return formatEmojiToken(item.packId, item.emojiId)
-	return item.emojiRef || ''
 }
 
 /**

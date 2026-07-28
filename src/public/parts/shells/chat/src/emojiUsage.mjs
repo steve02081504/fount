@@ -97,25 +97,42 @@ export function appendUsageLog(state, usageId, at = Date.now()) {
 }
 
 /**
+ * @param {{ kind: 'unicode', unicode: string } | { kind: 'pack', packId: string, emojiId: string }} item 用量项
+ * @returns {string} 用量 id；无效为空串
+ */
+function usageIdFromItem(item) {
+	if (item.kind === 'unicode') {
+		const unicode = String(item.unicode || '').trim()
+		return unicode ? unicodeUsageId(unicode) : ''
+	}
+	const packId = String(item.packId || '').trim()
+	const emojiId = String(item.emojiId || '').trim()
+	return packId && emojiId ? packEmojiUsageId(packId, emojiId) : ''
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {string[]} usageIds 用量 id 列表（已去重）
+ * @returns {void}
+ */
+function appendAndSaveUsageIds(username, usageIds) {
+	if (!usageIds.length) return
+	let state = loadEmojiUsage(username)
+	const at = Date.now()
+	for (const usageId of usageIds)
+		state = appendUsageLog(state, usageId, at)
+	saveEmojiUsage(username, state)
+}
+
+/**
  * @param {string} username 用户名
  * @param {{ kind: 'unicode', unicode: string } | { kind: 'pack', packId: string, emojiId: string }} item 用量项
  * @returns {void} 返回值
  */
 export function recordEmojiUsage(username, item) {
-	const state = loadEmojiUsage(username)
-	let usageId = ''
-	if (item.kind === 'unicode') {
-		const unicode = String(item.unicode || '').trim()
-		if (!unicode) return
-		usageId = unicodeUsageId(unicode)
-	}
-	else {
-		const packId = String(item.packId || '').trim()
-		const emojiId = String(item.emojiId || '').trim()
-		if (!packId || !emojiId) return
-		usageId = packEmojiUsageId(packId, emojiId)
-	}
-	saveEmojiUsage(username, appendUsageLog(state, usageId))
+	const usageId = usageIdFromItem(item)
+	if (!usageId) return
+	appendAndSaveUsageIds(username, [usageId])
 }
 
 /**
@@ -134,23 +151,27 @@ export function recordEmojiUsageFromMessageContent(username, content) {
 	const text = messageShowText(content)
 	if (!text) return
 
+	/** @type {string[]} */
+	const usageIds = []
+	const seen = new Set()
+
 	EMOJI_TOKEN_RE.lastIndex = 0
-	const customSeen = new Set()
 	for (const match of text.matchAll(EMOJI_TOKEN_RE)) {
-		const key = `${match[1]}/${match[2]}`
-		if (customSeen.has(key)) continue
-		customSeen.add(key)
-		recordEmojiUsage(username, { kind: 'pack', packId: match[1], emojiId: match[2] })
+		const usageId = packEmojiUsageId(match[1], match[2])
+		if (!usageId || seen.has(usageId)) continue
+		seen.add(usageId)
+		usageIds.push(usageId)
 	}
 
 	UNICODE_EMOJI.lastIndex = 0
-	const unicodeSeen = new Set()
 	for (const match of text.matchAll(UNICODE_EMOJI)) {
-		const glyph = match[0]
-		if (!glyph || unicodeSeen.has(glyph)) continue
-		unicodeSeen.add(glyph)
-		recordEmojiUsage(username, { kind: 'unicode', unicode: glyph })
+		const usageId = unicodeUsageId(match[0])
+		if (!usageId || seen.has(usageId)) continue
+		seen.add(usageId)
+		usageIds.push(usageId)
 	}
+
+	appendAndSaveUsageIds(username, usageIds)
 }
 
 /**

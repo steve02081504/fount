@@ -59,6 +59,17 @@ export function formatEmojiToken(packId, emojiId) {
 }
 
 /**
+ * 将 picker 选中项转为插入 token。
+ * @param {object} item picker 条目
+ * @returns {string} Unicode 字符或 `:[emoji:…]:` 引用
+ */
+export function tokenForSelection(item) {
+	if (item.kind === 'unicode' && item.unicode) return item.unicode
+	if (item.packId && item.emojiId) return formatEmojiToken(item.packId, item.emojiId)
+	return item.emojiRef || ''
+}
+
+/**
  * 将正文中的 emoji token 降级为纯文字（LLM / 读屏）。
  * @param {string} text 正文
  * @param {(packId: string, emojiId: string) => string | null | undefined} resolveAlt 解析 alt；无则回落 emojiId
