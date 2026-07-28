@@ -93,7 +93,7 @@ chat shell data 键与 HTTP 前缀均为 **`emoji_usage`**（per fount 用户）
 { log: [{ id, at }] ≤700, lastUsedAtByPack: {}, collection: { packIds: [], emojiIds: [] } }
 ```
 
-- `id`：`u:{unicode}` 或 `p:{packId}/{emojiId}`。
+- `id`：unicode 字形本身，或 pack 的 `packId/emojiId`。
 - 一份 700 日志同时喂「最近使用（单表情次数降序）」与「包窗口内次数」。
 - `lastUsedAtByPack` 覆盖已滑出窗口的包。
 - 取代昔日 512 条聚合表与 `customEmojis`（旧 API 名已废弃，不迁移）。

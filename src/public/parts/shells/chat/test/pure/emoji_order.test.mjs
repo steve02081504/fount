@@ -9,6 +9,7 @@ import {
 	orderPackSections,
 	packCountsFromLog,
 	packEmojiUsageId,
+	parseUsageId,
 	recentEmojisFromLog,
 	trimUsageLog,
 	unicodeUsageId,
@@ -20,8 +21,14 @@ import {
 import { buildEmojiAliasIndex } from '../../public/shared/inlineTokenSyntax.mjs'
 
 Deno.test('trimUsageLog keeps last N', () => {
-	const log = Array.from({ length: 5 }, (_, i) => ({ id: `u:${i}`, at: i }))
-	assertEquals(trimUsageLog(log, 3).map(e => e.id), ['u:2', 'u:3', 'u:4'])
+	const log = Array.from({ length: 5 }, (_, i) => ({ id: String(i), at: i }))
+	assertEquals(trimUsageLog(log, 3).map(e => e.id), ['2', '3', '4'])
+})
+
+Deno.test('parseUsageId pack vs unicode', () => {
+	assertEquals(parseUsageId('p1/a'), { kind: 'pack', packId: 'p1', emojiId: 'a' })
+	assertEquals(parseUsageId('😀'), { kind: 'unicode', unicode: '😀' })
+	assertEquals(parseUsageId(''), null)
 })
 
 Deno.test('recentEmojisFromLog sorts by count', () => {
