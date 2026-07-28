@@ -42,6 +42,21 @@ function isSourceDefaultPack(pack) {
 }
 
 /**
+ * 把 manifest 条目补成 grid 可渲染的 pack item。
+ * @param {string} packId 所属包
+ * @param {object} item manifest 条目
+ * @returns {object} 带 kind / packId / emojiRef 的条目
+ */
+function enrichPackItem(packId, item) {
+	return {
+		...item,
+		kind: 'pack',
+		packId,
+		emojiRef: item.emojiRef || (item.emojiId ? `:[emoji:${packId}/${item.emojiId}]:` : ''),
+	}
+}
+
+/**
  * @returns {void}
  */
 function ensureEmojiPickerCss() {
@@ -138,9 +153,9 @@ async function buildSections(context = {}) {
 	const visiblePacks = packs.filter(p => collectionIds.has(p.packId) || usedPackIds.has(p.packId) || isSourceDefaultPack(p))
 	const contextDefaultPackIds = []
 	if (context.groupId) {
-		const groupPacks = packs.filter(p => p.groupId === context.groupId || p.source?.id === context.groupId)
-		const def = groupPacks.find(isSourceDefaultPack) || groupPacks[0]
-		if (def) contextDefaultPackIds.push(def.packId)
+		const groupPack = packs.find(p =>
+			(p.groupId === context.groupId || p.source?.id === context.groupId) && isSourceDefaultPack(p))
+		if (groupPack) contextDefaultPackIds.push(groupPack.packId)
 	}
 	if (context.replyToEntityHash) {
 		const entityPack = packs.find(p =>
@@ -167,7 +182,7 @@ async function buildSections(context = {}) {
 			}
 			const pack = packById.get(parsed.packId)
 			const item = pack?.items?.find(i => i.emojiId === parsed.emojiId)
-			if (item) items.push(item)
+			if (item) items.push(enrichPackItem(parsed.packId, item))
 			else {
 				const previewUrl = await resolvePackEmojiUrl(parsed.packId, parsed.emojiId, {
 					providers: pack?._provider ? [pack._provider] : undefined,
@@ -209,7 +224,7 @@ async function buildSections(context = {}) {
 			pack,
 			avatar: pack.avatar,
 			title: pack.name || packId,
-			items: pack.items || [],
+			items: (pack.items || []).map(item => enrichPackItem(packId, item)),
 		})
 	}
 
@@ -347,11 +362,14 @@ function renderContinuousPicker(host, sections, handlers) {
 		const sectionEl = document.createElement('section')
 		sectionEl.className = 'emoji-section'
 		sectionEl.dataset.section = section.id
-		const header = document.createElement('h3')
+		const header = document.createElement(section.kind === 'pack' ? 'button' : 'h3')
 		header.className = section.kind === 'pack'
 			? 'emoji-section-header emoji-section-header-pack'
 			: 'emoji-section-header'
-		if (section.kind === 'pack') header.dataset.packPreview = '1'
+		if (section.kind === 'pack') {
+			header.type = 'button'
+			header.dataset.packPreview = '1'
+		}
 		if (section.i18nKey) header.dataset.i18n = section.i18nKey
 		header.textContent = section.title || ''
 		const grid = document.createElement('div')

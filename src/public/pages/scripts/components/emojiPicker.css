@@ -77,6 +77,11 @@
 }
 
 .emoji-section-header.emoji-section-header-pack {
+	display: block;
+	width: 100%;
+	border: none;
+	font: inherit;
+	text-align: left;
 	cursor: pointer;
 }
 
