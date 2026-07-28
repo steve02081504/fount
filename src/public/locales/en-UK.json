@@ -1069,7 +1069,7 @@
 				"emojisCreatePackPrompt": "Emoji pack ID",
 				"emojisCreatePackOk": "Emoji pack created",
 				"emojisCreatePackFailed": "Couldn't create: ${error}",
-				"emojisPackGroupSuffix": "default",
+				"emojisPackGroupSuffix": "group",
 				"activeEmojiPackLabel": "Pack being edited",
 				"emojisDelete": "Delete emoji",
 				"emojisEmpty": "No custom emoji yet",

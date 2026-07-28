@@ -1074,7 +1074,7 @@
 				"emojisCreatePackPrompt": "पैक ID",
 				"emojisCreatePackOk": "इमोजी पैक बन गया",
 				"emojisCreatePackFailed": "बनाने में विफल: ${error}",
-				"emojisPackGroupSuffix": "डिफ़ॉल्ट",
+				"emojisPackGroupSuffix": "समूह",
 				"activeEmojiPackLabel": "संपादन में पैक",
 				"emojisDelete": "इमोटिकॉन हटाएँ",
 				"emojisEmpty": "अभी तक कोई समूह अभिव्यक्ति नहीं",
