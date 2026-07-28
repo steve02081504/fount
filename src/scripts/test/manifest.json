@@ -385,6 +385,24 @@
 				"src/scripts/test/selftest/shell_load_probe.test.mjs",
 				"src/scripts/test/shellLoadProbe.mjs"
 			]
+		},
+		{
+			"name": "locale_match",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/locale_match.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/locale_match.test.mjs",
+				"src/scripts/i18n/locale_match.mjs",
+				"src/public/pages/scripts/i18n/locale_match.mjs"
+			]
 		}
 	]
 }

@@ -11,6 +11,18 @@ import { loadJsonFile } from '../json_loader.mjs'
 import { ms } from '../ms.mjs'
 import { escapeRegExp } from '../regex.mjs'
 
+import { FALLBACK_LOCALE, getBestLocale } from './locale_match.mjs'
+
+/**
+ *
+ */
+export {
+	FALLBACK_LOCALE,
+	getBestLocale,
+	matchLocale,
+	pickLocalizedSlice,
+} from './locale_match.mjs'
+
 /**
  * 区域设置数据
  * @typedef {import('../../decl/locale_data.ts').LocaleData} LocaleData
@@ -56,28 +68,6 @@ export const fountLocaleList = fs.readFileSync(__dirname + '/src/public/locales/
 	})
 	.filter(locale => locale.id)
 
-/**
- * 从首选区域设置列表中获取最佳匹配的区域设置。
- * @param {string[]} preferredlocaleList - 首选区域设置的列表。
- * @param {{id: string}[]} localeList - 可用区域设置的列表。
- * @returns {string} 最佳匹配的区域设置。
- */
-export function getbestlocale(preferredlocaleList, localeList) {
-	const available = new Set(localeList.map(l => l.id))
-
-	for (const preferred of preferredlocaleList) {
-		if (available.has(preferred))
-			return preferred
-
-		const prefix = preferred.split('-')[0]
-		for (const locale of available)
-			if (locale.startsWith(prefix))
-				return locale
-	}
-
-	return 'en-UK'
-}
-
 const fountLocaleCache = {}
 
 /**
@@ -86,7 +76,7 @@ const fountLocaleCache = {}
  * @returns {LocaleData} 区域设置数据。
  */
 export function getLocaleData(localeList) {
-	const resultLocale = getbestlocale(localeList, fountLocaleList)
+	const resultLocale = getBestLocale(localeList, fountLocaleList)
 	return fountLocaleCache[resultLocale] ??= loadJsonFile(__dirname + `/src/public/locales/${resultLocale}.json`)
 }
 
@@ -102,7 +92,7 @@ export const localhostLocales = [...new Set([
 		await exec('locale -uU').then(r => r.stdout.trim()).catch(() => undefined),
 	].filter(Boolean).map(locale => locale.split('.')[0].replace('_', '-')),
 	...navigator.languages || [navigator.language],
-	'en-UK',
+	FALLBACK_LOCALE,
 ].filter(Boolean))]
 /**
  * 本地主机的区域设置数据。

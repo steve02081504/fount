@@ -11,7 +11,7 @@ import { loadJsonFile } from '../json_loader.mjs'
 import { localesForUser } from '../locale.mjs'
 
 import {
-	getbestlocale,
+	getBestLocale,
 	geti18nFromLocaleData,
 	getLocaleData,
 	localhostLocales,
@@ -48,7 +48,7 @@ export async function getLocaleDataForUser(username, preferredlocaleList) {
 		let partdata
 		if (fs.statSync(fsPath).isDirectory()) {
 			const localeFiles = fs.readdirSync(fsPath).filter(f => f.endsWith('.json'))
-			const resultLocale = getbestlocale(effectivePreferred, localeFiles.map(f => ({ id: f.slice(0, -5) })))
+			const resultLocale = getBestLocale(effectivePreferred, localeFiles.map(f => f.slice(0, -5)))
 			partsLocaleCache[entry.partpath] ??= {}
 			partdata = partsLocaleCache[entry.partpath][resultLocale]
 				??= loadJsonFile(path.join(fsPath, `${resultLocale}.json`))

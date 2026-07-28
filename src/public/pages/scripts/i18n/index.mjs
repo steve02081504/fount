@@ -126,20 +126,14 @@ export async function setLocales(langs) {
 }
 
 /**
- * 从优先列表中选取与可用列表最匹配的区域设置。
- * @param {string[]} preferredlocaleList - 优先区域设置列表。
- * @param {string[]} localeList - 可用区域设置列表。
- * @returns {string} 最佳匹配的区域设置代码。
+ *
  */
-export function getBestLocale(preferredlocaleList, localeList) {
-	for (const preferredlocale of preferredlocaleList) {
-		if (localeList.includes(preferredlocale))
-			return preferredlocale
-		const temp = localeList.find(name => name.startsWith(preferredlocale.split('-')[0]))
-		if (temp) return temp
-	}
-	return 'en-UK'
-}
+export {
+	FALLBACK_LOCALE,
+	getBestLocale,
+	matchLocale,
+	pickLocalizedSlice,
+} from './locale_match.mjs'
 
 /**
  * initTranslations 共用流程：更新状态、加载 bundle、应用到 DOM。
