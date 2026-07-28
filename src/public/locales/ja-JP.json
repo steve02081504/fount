@@ -1074,7 +1074,7 @@
 				"emojisCreatePackPrompt": "絵文字パック ID",
 				"emojisCreatePackOk": "絵文字パックを作成しました",
 				"emojisCreatePackFailed": "作成に失敗しました：${error}",
-				"emojisPackGroupSuffix": "グループのデフォルト",
+				"emojisPackGroupSuffix": "グループ既定",
 				"activeEmojiPackLabel": "編集中のパック",
 				"emojisDelete": "絵文字の削除",
 				"emojisEmpty": "グループ式はまだありません",

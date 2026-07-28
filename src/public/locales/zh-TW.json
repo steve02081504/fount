@@ -1073,7 +1073,7 @@
 				"emojisCreatePackPrompt": "表情包 ID",
 				"emojisCreatePackOk": "表情包已建立",
 				"emojisCreatePackFailed": "建立失敗：${error}",
-				"emojisPackGroupSuffix": "群預設",
+				"emojisPackGroupSuffix": "群組預設",
 				"activeEmojiPackLabel": "目前編輯的表情包",
 				"emojisDelete": "刪除表情",
 				"emojisEmpty": "暫無群表情",

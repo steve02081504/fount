@@ -1074,7 +1074,7 @@
 				"emojisCreatePackPrompt": "이모티콘 팩 ID",
 				"emojisCreatePackOk": "이모티콘 팩이 생성되었습니다",
 				"emojisCreatePackFailed": "생성 실패: ${error}",
-				"emojisPackGroupSuffix": "그룹 기본값",
+				"emojisPackGroupSuffix": "그룹 기본",
 				"activeEmojiPackLabel": "편집 중인 팩",
 				"emojisDelete": "이모티콘 삭제",
 				"emojisEmpty": "아직 그룹 표정이 없습니다.",
