@@ -1,5 +1,5 @@
 /**
- * 浮动面板定位与外侧点击关闭（emoji / sticker picker 共用）。
+ * 浮动面板定位与外侧点击关闭（emoji picker 等共用）。
  */
 
 /**

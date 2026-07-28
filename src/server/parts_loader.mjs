@@ -8,7 +8,7 @@ import { mapDelete, mapGet, mapSet } from 'npm:@steve02081504/fount-p2p/core/com
 import { backupGitUncommittedChanges, run_git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n/index.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
-import { getLocalizedInfo } from '../scripts/locale.mjs'
+import { pickLocalizedSlice } from '../scripts/locale.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
 import { doProfile } from '../scripts/profiler.mjs'
 import { applySfwOverlay } from '../scripts/sfw.mjs'
@@ -1080,7 +1080,7 @@ export async function getPartDetails(username, partpath, nocache = false) {
 		nocacheGetPartBaseDetails(username, partpath).then(result => details = result),
 		new Promise(resolve => setTimeout(resolve, 500)),
 	])
-	let info = getLocalizedInfo(details.info, user.locales)
+	let info = pickLocalizedSlice(details.info, user.locales)
 	if (user.sfw) info = applySfwOverlay(info)
 
 	return { ...details, info }
@@ -1116,7 +1116,7 @@ export async function getAllCachedPartDetails(username, partpath) {
 				new Promise(resolve => setTimeout(resolve, 500)),
 			])
 
-		let info = getLocalizedInfo(details.info, user.locales)
+		let info = pickLocalizedSlice(details.info, user.locales)
 		if (user.sfw) info = applySfwOverlay(info)
 
 		// Return keyed by NAME, not full path, to likely match frontend expectations for a list

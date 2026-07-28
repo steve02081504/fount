@@ -18,7 +18,7 @@ alwaysApply: false
 - `public/`: Frontend assets. `public/llms.txt`: AI-readable API docs.
 - `src/endpoints.mjs`: Routes via `router.get/post/ws`. Path: `/api/parts/shells\:<name>/...`.
 - **HTTP API**: Success = 2xx JSON (no `success` wrapper); failures = `throw httpError(code, message, { json?, skip_report? })` from `@src/scripts/http_error.mjs`.
-- **`fount.json` → `registries`**: `[{ id, level, path }]` for `markdown_extensions`, `emoji`, `sticker`, `locales`, `home_*`, `achievements`.
+- **`fount.json` → `registries`**: `[{ id, level, path }]` for `markdown_extensions`, `emoji`, `locales`, `home_*`, `achievements`.
 - **`home_function_buttons.info`**: locale **object** with `title` (e.g. `achievements.home_function_buttons.main`), not a page-level string. Home reads `geti18n(info).title`.
 - **`home_function_buttons.level`**: ascending sort; same level → load-order unstable. See existing shells for conventional bands (chat/components low, settings/access high).
 - **Iconify `button` HTML**: verify the URL returns SVG (404 body `"Not found"` is injected as icon text).

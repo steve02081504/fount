@@ -1,27 +1,52 @@
 /**
- * 共享 emoji picker：消费 registries.emoji 提供商（停靠 / 浮动两种模式）。
+ * 共享 emoji picker：包头像 rail + 连续滚动分区（Discord 式）。
  */
-import { importRegistryModules } from '../api/registries.mjs'
+import {
+	orderPackSections,
+	parseUsageId,
+	recentEmojisFromLog,
+	trimUsageLog,
+	USAGE_WINDOW,
+} from '../features/emoji/order.mjs'
+import { aggregateEmojiPacks } from '../features/emoji/providers.mjs'
+import {
+	loadUnicodeEmojiByGroup,
+	RECENT_EMOJI_SECTION_GLYPH,
+	RECENT_EMOJI_SECTION_KEY,
+	unicodeEmojiGroupGlyph,
+	unicodeEmojiGroupI18nKey,
+	unicodeEmojiSectionKey,
+} from '../features/emoji/unicodeData.mjs'
+import { geti18n } from '../i18n/index.mjs'
 import { escapeHtml } from '../lib/escapeHtml.mjs'
 
+import { showEmojiPackPreview } from './emojiPackPreview.mjs'
 import { positionFloatingPanel, wireOutsideClickClose } from './floatingPanel.mjs'
 
 /**
- * @returns {Promise<object | null>} 首个可用 emoji 提供商
+ *
  */
-async function resolveEmojiProvider() {
-	const modules = await importRegistryModules('emoji')
-	for (const { module } of modules) {
-		const provider = module?.default ?? module
-		if (provider?.listTabs && provider?.loadTabItems)
-			return provider
-	}
-	return null
+export { showEmojiPackPreview } from './emojiPackPreview.mjs'
+
+const CSS_ID = 'fount-emoji-picker-css'
+const CSS_HREF = '/scripts/components/emojiPicker.css'
+
+/**
+ * @returns {void}
+ */
+function ensureEmojiPickerCss() {
+	if (document.getElementById(CSS_ID)) return
+	const link = document.createElement('link')
+	link.id = CSS_ID
+	link.rel = 'stylesheet'
+	link.href = CSS_HREF
+	document.head.appendChild(link)
 }
 
 /**
- * @param {HTMLTextAreaElement | HTMLInputElement} inputElement 输入框
- * @param {string} token 待插入文本
+ * 在输入框光标处插入 token。
+ * @param {HTMLTextAreaElement | HTMLInputElement} inputElement 目标输入框
+ * @param {string} token 要插入的文本或表情引用
  * @returns {void}
  */
 function insertAtCursor(inputElement, token) {
@@ -32,52 +57,37 @@ function insertAtCursor(inputElement, token) {
 }
 
 /**
- * @param {object} tab 标签页描述
- * @param {object} provider emoji 提供商
- * @param {string | null} activeTabId 当前激活标签 id
- * @returns {HTMLButtonElement} 标签按钮元素
+ * 包 rail 按钮内部 HTML（头像或首字）。
+ * @param {object} pack 包展示字段
+ * @returns {string} rail 按钮 innerHTML
  */
-function renderTabButton(tab, provider, activeTabId) {
-	const tabButton = document.createElement('button')
-	tabButton.type = 'button'
-	tabButton.className = 'emoji-tab tab px-2 min-h-8'
-	tabButton.dataset.tab = tab.id
-	tabButton.setAttribute('role', 'tab')
-	const active = tab.id === activeTabId
-	tabButton.setAttribute('aria-selected', active ? 'true' : 'false')
-	tabButton.tabIndex = active ? 0 : -1
-	if (tab.i18nKey) tabButton.dataset.i18n = tab.i18nKey
-	if (tab.title) tabButton.title = tab.title
-	tabButton.classList.toggle('tab-active', active)
-
-	if (tab.type === 'group' && provider.groupTabInnerHtml)
-		tabButton.innerHTML = provider.groupTabInnerHtml(
-			{ groupId: tab.groupId, name: tab.title, avatar: tab.avatar },
-			!!tab.isCurrent,
-		)
-	else if (tab.glyph)
-		tabButton.innerHTML = `<span class="emoji-tab-glyph" aria-hidden="true">${escapeHtml(tab.glyph)}</span>`
-
-	return tabButton
+function packRailInnerHtml(pack) {
+	if (pack.avatar)
+		return `<img class="emoji-rail-avatar" src="${escapeHtml(pack.avatar)}" alt="" loading="lazy" />`
+	const glyph = (pack.name || pack.packId || '?').slice(0, 1)
+	return `<span class="emoji-rail-glyph" aria-hidden="true">${escapeHtml(glyph)}</span>`
 }
 
 /**
- * @param {HTMLElement} grid 网格容器
- * @param {object} item emoji 项
+ * 向网格追加单个表情按钮。
+ * @param {HTMLElement} grid 表情网格容器
+ * @param {object} item 包表情、自定义表情或 Unicode 项
  * @returns {void}
  */
 function appendEmojiGridItem(grid, item) {
-	if (item.kind === 'custom' || (item.groupId && item.emojiId)) {
+	if (item.kind === 'pack' || item.kind === 'custom' || (item.packId && item.emojiId) || (item.groupId && item.emojiId)) {
+		const packId = item.packId || item.groupId
 		const gridButton = document.createElement('button')
 		gridButton.type = 'button'
 		gridButton.className = 'emoji-grid-button group-emoji-grid-button'
+		gridButton.dataset.packId = packId
 		gridButton.dataset.groupEmojiId = item.emojiId
-		gridButton.dataset.groupEmojiRef = item.emojiRef
-		gridButton.title = item.label || item.emojiId
+		gridButton.dataset.groupEmojiRef = item.emojiRef || ''
+		gridButton.title = item.name || item.label || item.emojiId
 		if (item.previewUrl) {
 			const img = document.createElement('img')
 			img.src = item.previewUrl
-			img.alt = ''
+			img.alt = item.alt || item.name || ''
 			img.loading = 'lazy'
 			img.className = 'group-emoji-img'
 			gridButton.appendChild(img)
@@ -91,127 +101,390 @@ function appendEmojiGridItem(grid, item) {
 		gridButton.type = 'button'
 		gridButton.className = 'emoji-grid-button'
 		gridButton.dataset.emoji = item.unicode
+		gridButton.title = item.name || item.unicode
 		gridButton.textContent = item.unicode
 		grid.appendChild(gridButton)
 	}
 }
 
 /**
- * @param {HTMLElement} grid 网格容器
- * @param {string} i18nKey 空态/错误文案 i18n 键
+ * 聚合 provider 数据并构建 picker 分区列表。
+ * @param {object} [context] 选择器上下文（群、回复对象等）
+ * @returns {Promise<{ sections: object[], usage: object | null }>} 分区与 usage 能力
+ */
+async function buildSections(context = {}) {
+	const { packs, usage, collection } = await aggregateEmojiPacks(context)
+	const usagePayload = usage ? await usage.load() : { log: [], lastUsedAtByPack: {} }
+	const log = trimUsageLog(usagePayload.log || [], USAGE_WINDOW)
+	const collectionIds = new Set((await collection?.list())?.packIds || [])
+	const usedPackIds = new Set()
+	for (const entry of log) {
+		const parsed = parseUsageId(entry.id)
+		if (parsed?.kind === 'pack') usedPackIds.add(parsed.packId)
+	}
+
+	const visiblePacks = packs.filter(p => collectionIds.has(p.packId) || usedPackIds.has(p.packId) || p.isDefault)
+	const contextDefaultPackIds = []
+	if (context.groupId) {
+		const groupPacks = packs.filter(p => p.groupId === context.groupId || p.source?.id === context.groupId)
+		const def = groupPacks.find(p => p.isDefault) || groupPacks[0]
+		if (def) contextDefaultPackIds.push(def.packId)
+	}
+	if (context.replyToEntityHash) {
+		const entityPack = packs.find(p => p.source?.kind === 'entity' && p.source.id === context.replyToEntityHash && p.isDefault)
+		if (entityPack) contextDefaultPackIds.push(entityPack.packId)
+	}
+	for (const id of contextDefaultPackIds) {
+		const p = packs.find(x => x.packId === id)
+		if (p && !visiblePacks.some(v => v.packId === id)) visiblePacks.push(p)
+	}
+
+	/** @type {object[]} */
+	const sections = []
+
+	const recent = recentEmojisFromLog(log)
+	if (recent.length) {
+		const packById = new Map(packs.map(p => [p.packId, p]))
+		/** @type {object[]} */
+		const items = []
+		for (const { parsed } of recent) {
+			if (parsed.kind === 'unicode') {
+				items.push({ kind: 'unicode', unicode: parsed.unicode, name: parsed.unicode })
+				continue
+			}
+			const pack = packById.get(parsed.packId)
+			const item = pack?.items?.find(i => i.emojiId === parsed.emojiId)
+			if (item) items.push(item)
+			else
+				items.push({
+					kind: 'pack',
+					packId: parsed.packId,
+					emojiId: parsed.emojiId,
+					emojiRef: `:[emoji:${parsed.packId}/${parsed.emojiId}]:`,
+					name: parsed.emojiId,
+					previewUrl: pack?._provider?.packContentUrl?.(parsed.packId, parsed.emojiId),
+				})
+		}
+		sections.push({
+			id: RECENT_EMOJI_SECTION_KEY,
+			kind: 'recent',
+			glyph: RECENT_EMOJI_SECTION_GLYPH,
+			i18nKey: 'chat.emoji.recent',
+			title: geti18n('chat.emoji.recent') || 'Recent',
+			items,
+		})
+	}
+
+	const ordered = orderPackSections({
+		packs: visiblePacks,
+		contextDefaultPackIds,
+		log,
+		lastUsedAtByPack: usagePayload.lastUsedAtByPack || {},
+	})
+	const packById = new Map(visiblePacks.map(p => [p.packId, p]))
+	for (const { packId } of ordered) {
+		const pack = packById.get(packId)
+		if (!pack) continue
+		sections.push({
+			id: `pack:${packId}`,
+			kind: 'pack',
+			packId,
+			pack,
+			avatar: pack.avatar,
+			title: pack.name || packId,
+			items: pack.items || [],
+		})
+	}
+
+	const { byGroup, order } = await loadUnicodeEmojiByGroup()
+	for (const groupName of order) {
+		const codes = byGroup[groupName] || []
+		if (!codes.length) continue
+		sections.push({
+			id: unicodeEmojiSectionKey(groupName),
+			kind: 'unicode',
+			glyph: unicodeEmojiGroupGlyph(groupName),
+			i18nKey: unicodeEmojiGroupI18nKey(groupName),
+			title: groupName,
+			items: codes.map(unicode => ({ kind: 'unicode', unicode, name: unicode })),
+		})
+	}
+
+	return { sections, usage }
+}
+
+/**
+ * 绑定 rail 与滚动区的 intersection 高亮。
+ * @param {HTMLElement} rail 左侧 rail 容器
+ * @param {HTMLElement} scroll 右侧滚动区
+ * @param {object[]} sections 分区元数据
+ * @returns {() => void} 断开 observer 的清理函数
+ */
+function wireScrollSpy(rail, scroll, sections) {
+	const buttons = [...rail.querySelectorAll('[data-section]')]
+	/** @type {Map<string, number>} */
+	const ratios = new Map()
+	const observer = new IntersectionObserver(entries => {
+		for (const entry of entries)
+			ratios.set(entry.target.dataset.section, entry.intersectionRatio)
+		let bestId = null
+		let bestRatio = 0
+		for (const [id, ratio] of ratios)
+			if (ratio > bestRatio) {
+				bestRatio = ratio
+				bestId = id
+			}
+		if (!bestId) return
+		for (const btn of buttons) {
+			const active = btn.dataset.section === bestId
+			btn.classList.toggle('emoji-rail-active', active)
+			btn.setAttribute('aria-current', active ? 'true' : 'false')
+		}
+	}, { root: scroll, threshold: [0, 0.25, 0.5, 0.75, 1] })
+
+	for (const section of sections) {
+		const el = scroll.querySelector(`[data-section="${CSS.escape(section.id)}"]`)
+		if (el) observer.observe(el)
+	}
+	return () => observer.disconnect()
+}
+
+/**
+ * @param {HTMLElement} anchor 锚点
+ * @param {object} section 分区
  * @returns {void}
  */
-function renderGridMessage(grid, i18nKey) {
-	grid.replaceChildren()
-	const emptyMessage = document.createElement('div')
-	emptyMessage.className = 'emoji-grid-empty'
-	emptyMessage.dataset.i18n = i18nKey
-	grid.appendChild(emptyMessage)
+function openSectionPackPreview(anchor, section) {
+	if (section?.kind !== 'pack' || !section.pack) return
+	void showEmojiPackPreview(anchor, {
+		pack: section.pack,
+		provider: section.pack._provider,
+		available: true,
+	})
 }
 
 /**
- * @param {HTMLElement} tabsElement 标签容器
- * @param {string} tabId 标签 id
- * @returns {void}
+ * 渲染连续滚动式 picker 主体。
+ * @param {HTMLElement} host 挂载容器
+ * @param {object[]} sections 分区列表
+ * @param {{ onInsert: (token: string) => void, usage?: object | null }} handlers 插入与 usage 回调
+ * @returns {{ disconnect: () => void, scrollElement: HTMLElement, railElement: HTMLElement }} DOM 引用与清理句柄
  */
-function setActiveTabButton(tabsElement, tabId) {
-	for (const tabButton of tabsElement.querySelectorAll('.emoji-tab')) {
-		const active = tabButton.dataset.tab === tabId
-		tabButton.classList.toggle('tab-active', active)
-		tabButton.setAttribute('aria-selected', active ? 'true' : 'false')
-		tabButton.tabIndex = active ? 0 : -1
+function renderContinuousPicker(host, sections, handlers) {
+	ensureEmojiPickerCss()
+	host.replaceChildren()
+
+	const sectionById = new Map(sections.map(section => [section.id, section]))
+
+	const railWrap = document.createElement('div')
+	railWrap.className = 'emoji-rail-wrap'
+	const jumpStart = document.createElement('button')
+	jumpStart.type = 'button'
+	jumpStart.className = 'emoji-rail-jump emoji-rail-jump-start'
+	jumpStart.dataset.i18n = 'chat.emoji.jumpToStart'
+	jumpStart.title = geti18n('chat.emoji.jumpToStart') || 'Top'
+	jumpStart.textContent = '↑'
+
+	const rail = document.createElement('div')
+	rail.className = 'emoji-rail'
+	rail.setAttribute('role', 'toolbar')
+
+	const jumpUnicode = document.createElement('button')
+	jumpUnicode.type = 'button'
+	jumpUnicode.className = 'emoji-rail-jump emoji-rail-jump-unicode'
+	jumpUnicode.dataset.i18n = 'chat.emoji.jumpToUnicode'
+	jumpUnicode.title = geti18n('chat.emoji.jumpToUnicode') || 'Unicode'
+	jumpUnicode.textContent = '😀'
+
+	railWrap.append(jumpStart, rail, jumpUnicode)
+
+	const scroll = document.createElement('div')
+	scroll.className = 'emoji-scroll'
+	scroll.id = 'emoji-scroll'
+
+	const firstUnicodeId = sections.find(s => s.kind === 'unicode')?.id
+
+	for (const section of sections) {
+		const railBtn = document.createElement('button')
+		railBtn.type = 'button'
+		railBtn.className = 'emoji-rail-item'
+		railBtn.dataset.section = section.id
+		railBtn.title = section.title || ''
+		railBtn.setAttribute('aria-current', 'false')
+		if (section.kind === 'pack' && section.avatar)
+			railBtn.innerHTML = `<img class="emoji-rail-avatar" src="${escapeHtml(section.avatar)}" alt="" loading="lazy" />`
+		else if (section.kind === 'pack')
+			railBtn.innerHTML = packRailInnerHtml({ name: section.title, packId: section.packId })
+		else
+			railBtn.innerHTML = `<span class="emoji-rail-glyph" aria-hidden="true">${escapeHtml(section.glyph || '?')}</span>`
+		rail.appendChild(railBtn)
+
+		const sectionEl = document.createElement('section')
+		sectionEl.className = 'emoji-section'
+		sectionEl.dataset.section = section.id
+		const header = document.createElement('h3')
+		header.className = section.kind === 'pack'
+			? 'emoji-section-header emoji-section-header-pack'
+			: 'emoji-section-header'
+		if (section.kind === 'pack') header.dataset.packPreview = '1'
+		if (section.i18nKey) header.dataset.i18n = section.i18nKey
+		header.textContent = section.title || ''
+		const grid = document.createElement('div')
+		grid.className = 'emoji-grid'
+		for (const item of section.items)
+			appendEmojiGridItem(grid, item)
+		sectionEl.append(header, grid)
+		scroll.appendChild(sectionEl)
+	}
+
+	host.append(railWrap, scroll)
+
+	const footer = document.createElement('div')
+	footer.className = 'emoji-picker-footer'
+	const discoverLink = document.createElement('a')
+	discoverLink.className = 'emoji-picker-discover'
+	discoverLink.href = '/parts/shells:chat/emoji-packs/'
+	discoverLink.target = '_blank'
+	discoverLink.rel = 'noopener'
+	discoverLink.dataset.i18n = 'chat.emoji.discoverPacks'
+	discoverLink.textContent = geti18n('chat.emoji.discoverPacks') || 'Discover packs'
+	footer.appendChild(discoverLink)
+	host.appendChild(footer)
+
+	const disconnectSpy = wireScrollSpy(rail, scroll, sections)
+
+	/**
+	 * 平滑滚动到指定分区。
+	 * @param {string} sectionId 分区 ID
+	 * @returns {void}
+	 */
+	function scrollToSection(sectionId) {
+		const el = scroll.querySelector(`[data-section="${CSS.escape(sectionId)}"]`)
+		el?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+		const railBtn = rail.querySelector(`[data-section="${CSS.escape(sectionId)}"]`)
+		railBtn?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+	}
+
+	jumpStart.addEventListener('click', () => {
+		scroll.scrollTo({ top: 0, behavior: 'smooth' })
+		rail.scrollTo({ left: 0, behavior: 'smooth' })
+	})
+	jumpUnicode.addEventListener('click', () => {
+		if (firstUnicodeId) scrollToSection(firstUnicodeId)
+	})
+	rail.addEventListener('click', event => {
+		const btn = event.target.closest('[data-section]')
+		if (!btn) return
+		const section = sectionById.get(btn.dataset.section)
+		if (section?.kind === 'pack' && (event.altKey || event.button === 1)) {
+			event.preventDefault()
+			openSectionPackPreview(btn, section)
+			return
+		}
+		scrollToSection(btn.dataset.section)
+	})
+	rail.addEventListener('contextmenu', event => {
+		const btn = event.target.closest('[data-section]')
+		if (!btn) return
+		const section = sectionById.get(btn.dataset.section)
+		if (section?.kind !== 'pack') return
+		event.preventDefault()
+		openSectionPackPreview(btn, section)
+	})
+	rail.addEventListener('auxclick', event => {
+		if (event.button !== 1) return
+		const btn = event.target.closest('[data-section]')
+		if (!btn) return
+		const section = sectionById.get(btn.dataset.section)
+		if (section?.kind !== 'pack') return
+		event.preventDefault()
+		openSectionPackPreview(btn, section)
+	})
+
+	scroll.addEventListener('click', event => {
+		const header = event.target.closest('[data-pack-preview]')
+		if (header) {
+			const sectionEl = header.closest('[data-section]')
+			const section = sectionById.get(sectionEl?.dataset?.section)
+			openSectionPackPreview(header, section)
+			return
+		}
+		const groupButton = event.target.closest('[data-group-emoji-ref]')
+		if (groupButton) {
+			const ref = groupButton.dataset.groupEmojiRef || ''
+			const packId = groupButton.dataset.packId
+			const emojiId = groupButton.dataset.groupEmojiId
+			if (packId && emojiId)
+				void handlers.usage?.record?.({ kind: 'pack', packId, emojiId })
+			if (ref) handlers.onInsert(ref)
+			return
+		}
+		const gridButton = event.target.closest('[data-emoji]')
+		if (!gridButton?.dataset.emoji) return
+		const { emoji } = gridButton.dataset
+		void handlers.usage?.record?.({ kind: 'unicode', unicode: emoji })
+		handlers.onInsert(emoji)
+	})
+
+	return {
+		disconnect: disconnectSpy,
+		scrollElement: scroll,
+		railElement: rail,
 	}
 }
 
-/** @type {WeakMap<HTMLElement, number>} */
-const emojiGridRenderIds = new WeakMap()
-
 /**
- * @param {object} provider emoji 提供商
- * @param {object} tab 标签页
- * @param {HTMLElement} grid 网格容器
- * @param {object} pickerContext picker 上下文
- * @returns {Promise<void>}
- */
-async function renderEmojiTabGrid(provider, tab, grid, pickerContext) {
-	const renderId = (emojiGridRenderIds.get(grid) ?? 0) + 1
-	emojiGridRenderIds.set(grid, renderId)
-	grid.replaceChildren()
-	const { items, emptyI18n, errorI18n } = await provider.loadTabItems(tab, pickerContext)
-	if (emojiGridRenderIds.get(grid) !== renderId) return
-	if (errorI18n) {
-		renderGridMessage(grid, errorI18n)
-		return
-	}
-	if (emptyI18n) {
-		renderGridMessage(grid, emptyI18n)
-		return
-	}
-	for (const item of items)
-		appendEmojiGridItem(grid, item)
-}
-
-/**
- * @typedef {object} DockedEmojiPickerOptions
- * @property {HTMLElement} pickerElement
- * @property {HTMLElement} tabsElement
- * @property {HTMLElement} gridElement
- * @property {HTMLElement} triggerButton
- * @property {HTMLTextAreaElement | HTMLInputElement} [inputElement]
- * @property {object} [pickerContext]
- * @property {() => object} [getPickerContext] 每次刷新时取最新上下文
- * @property {(token: string) => void} [onInsert]
- * @property {HTMLElement} [closeWhenOpening]
- */
-
-/**
- * 挂载停靠式 emoji 选择器（Chat Hub 等已有 DOM 结构）。
- * @param {DockedEmojiPickerOptions} options 停靠式选择器选项
- * @returns {Promise<{ refresh: () => Promise<void> } | null>} 刷新句柄或 null（无提供商）
+ * 在 Hub composer 等位置挂载停靠式 emoji picker。
+ * @param {object} options 挂载选项
+ * @param {HTMLElement} options.pickerElement picker 根元素
+ * @param {HTMLElement} options.triggerButton 触发按钮
+ * @param {HTMLTextAreaElement | HTMLInputElement} [options.inputElement] 插入目标输入框
+ * @param {object} [options.pickerContext] 静态上下文
+ * @param {() => object} [options.getPickerContext] 动态上下文
+ * @param {(token: string) => void} [options.onInsert] 无 inputElement 时的插入回调
+ * @param {HTMLElement} [options.closeWhenOpening] 打开时需关闭的互斥面板
+ * @returns {Promise<{ refresh: () => Promise<void>, scrollElement: HTMLElement | null } | null>} 刷新句柄与滚动元素
  */
 export async function mountDockedEmojiPicker(options) {
 	const {
-		pickerElement, tabsElement, gridElement, triggerButton, inputElement,
+		pickerElement, triggerButton, inputElement,
 		pickerContext = {}, getPickerContext, onInsert, closeWhenOpening,
 	} = options
 
-	/**
-	 * @returns {object} 最新 picker 上下文
-	 */
+	ensureEmojiPickerCss()
+	/** @returns {object} 当前 picker 上下文 */
 	const resolvePickerContext = () => getPickerContext?.() ?? pickerContext
 
-	const provider = await resolveEmojiProvider()
-	if (!provider) return null
-
-	/** @type {string | null} */
-	let activeTabId = null
-
-	/**
-	 * @param {string} tabId 标签 id
-	 * @returns {void}
-	 */
-	function setActiveTab(tabId) {
-		activeTabId = tabId
-		setActiveTabButton(tabsElement, tabId)
-	}
+	/** @type {(() => void) | null} */
+	let disconnect = null
+	/** @type {HTMLElement | null} */
+	let scrollElement = null
 
 	/**
 	 * @returns {Promise<void>}
 	 */
 	async function refresh() {
+		disconnect?.()
 		const liveContext = resolvePickerContext()
-		const tabs = await provider.listTabs(liveContext)
-		const prevTab = activeTabId
-		tabsElement.replaceChildren()
-		for (const tab of tabs)
-			tabsElement.appendChild(renderTabButton(tab, provider, prevTab))
-
-		const tabExists = prevTab && tabsElement.querySelector(`[data-tab="${CSS.escape(prevTab)}"]`)
-		const tabId = tabExists ? prevTab : tabs[0]?.id ?? null
-		if (!tabId) return
-		setActiveTab(tabId)
-		const tab = tabs.find(tab => tab.id === tabId)
-		if (tab) await renderEmojiTabGrid(provider, tab, gridElement, liveContext)
+		const { sections, usage } = await buildSections(liveContext)
+		let body = pickerElement.querySelector('.emoji-picker-body')
+		if (!body) {
+			pickerElement.replaceChildren()
+			body = document.createElement('div')
+			body.className = 'emoji-picker-body'
+			pickerElement.appendChild(body)
+		}
+		const result = renderContinuousPicker(body, sections, {
+			usage,
+			/** @param {string} token 插入的文本或表情引用 */
+			onInsert: token => {
+				if (inputElement) insertAtCursor(inputElement, token)
+				else onInsert?.(token)
+				pickerElement.classList.remove('show')
+			},
+		})
+		disconnect = result.disconnect
+		scrollElement = result.scrollElement
 	}
 
 	triggerButton.addEventListener('click', event => {
@@ -222,37 +495,6 @@ export async function mountDockedEmojiPicker(options) {
 			void refresh()
 	})
 
-	tabsElement.addEventListener('click', event => {
-		const tabButton = event.target.closest('[data-tab]')
-		if (!tabButton) return
-		const tabId = tabButton.dataset.tab
-		setActiveTab(tabId)
-		void (async () => {
-			const liveContext = resolvePickerContext()
-			const tabs = await provider.listTabs(liveContext)
-			const tab = tabs.find(tab => tab.id === tabId)
-			if (tab) await renderEmojiTabGrid(provider, tab, gridElement, liveContext)
-		})()
-	})
-
-	gridElement.addEventListener('click', event => {
-		const groupButton = event.target.closest('[data-group-emoji-ref]')
-		if (groupButton) {
-			const ref = groupButton.dataset.groupEmojiRef || ''
-			if (inputElement) insertAtCursor(inputElement, ref)
-			else if (ref) onInsert?.(ref)
-			pickerElement.classList.remove('show')
-			return
-		}
-
-		const gridButton = event.target.closest('[data-emoji]')
-		if (!gridButton?.dataset.emoji) return
-		const { emoji } = gridButton.dataset
-		if (inputElement) insertAtCursor(inputElement, emoji)
-		else onInsert?.(emoji)
-		pickerElement.classList.remove('show')
-	})
-
 	document.addEventListener('click', event => {
 		if (pickerElement.classList.contains('show')
 			&& !pickerElement.contains(event.target)
@@ -260,78 +502,55 @@ export async function mountDockedEmojiPicker(options) {
 			pickerElement.classList.remove('show')
 	})
 
-	return { refresh }
+	return {
+		refresh,
+		/** @returns {HTMLElement | null} 当前滚动区元素 */
+		get scrollElement() { return scrollElement },
+	}
 }
 
 /**
- * 浮动 emoji 选择器（带 tab）。
+ * 在锚点附近弹出浮动 emoji picker。
  * @param {HTMLElement} anchor 定位锚点
- * @param {(text: string) => void} onInsert 选中后插入回调
- * @param {object} [pickerContext] picker 上下文
+ * @param {(text: string) => void} onInsert 选中后的插入回调
+ * @param {object} [pickerContext] 选择器上下文
  * @returns {Promise<void>}
  */
 export async function mountEmojiPicker(anchor, onInsert, pickerContext = {}) {
 	document.getElementById('fount-shared-emoji-picker')?.remove()
-	const provider = await resolveEmojiProvider()
-	if (!provider) return
+	ensureEmojiPickerCss()
 
 	const panel = document.createElement('div')
 	panel.id = 'fount-shared-emoji-picker'
 	panel.className = 'emoji-picker show'
 	panel.setAttribute('role', 'dialog')
 	panel.dataset.i18n = 'chat.emoji.pickerTitle'
-	panel.style.cssText = 'position:fixed;z-index:10000;width:320px;'
+	panel.style.cssText = 'position:fixed;z-index:10000;width:320px;height:360px;'
 	positionFloatingPanel(panel, anchor)
 
-	const tabsElement = document.createElement('div')
-	tabsElement.className = 'emoji-tabs tabs tabs-box tabs-xs'
-	tabsElement.setAttribute('role', 'tablist')
-	const gridElement = document.createElement('div')
-	gridElement.className = 'emoji-grid'
-	panel.append(tabsElement, gridElement)
+	const body = document.createElement('div')
+	body.className = 'emoji-picker-body'
+	panel.appendChild(body)
 	document.body.appendChild(panel)
 
-	const tabs = await provider.listTabs(pickerContext)
-	let activeTabId = tabs[0]?.id
-	for (const tab of tabs)
-		tabsElement.appendChild(renderTabButton(tab, provider, activeTabId))
-	if (activeTabId) {
-		const tab = tabs.find(tab => tab.id === activeTabId)
-		if (tab) await renderEmojiTabGrid(provider, tab, gridElement, pickerContext)
-	}
-
-	tabsElement.addEventListener('click', event => {
-		const tabButton = event.target.closest('[data-tab]')
-		if (!tabButton) return
-		activeTabId = tabButton.dataset.tab
-		setActiveTabButton(tabsElement, activeTabId)
-		void (async () => {
-			const liveTabs = await provider.listTabs(pickerContext)
-			const tab = liveTabs.find(tab => tab.id === activeTabId)
-			if (tab) await renderEmojiTabGrid(provider, tab, gridElement, pickerContext)
-		})()
-	})
-
-	gridElement.addEventListener('click', event => {
-		const groupButton = event.target.closest('[data-group-emoji-ref]')
-		if (groupButton) {
-			onInsert(groupButton.dataset.groupEmojiRef || '')
+	const { sections, usage } = await buildSections(pickerContext)
+	renderContinuousPicker(body, sections, {
+		usage,
+		/** @param {string} token 插入的文本或表情引用 */
+		onInsert: token => {
+			onInsert(token)
 			panel.remove()
-			return
-		}
-		const gridButton = event.target.closest('[data-emoji]')
-		if (!gridButton?.dataset.emoji) return
-		onInsert(gridButton.dataset.emoji)
-		panel.remove()
+		},
 	})
 
 	wireOutsideClickClose(panel, () => panel.remove(), anchor)
 }
 
 /**
+ * 为按钮绑定点击弹出 emoji picker。
  * @param {HTMLElement} button 触发按钮
- * @param {(text: string) => void} onInsert 选中后插入回调
- * @param {object} [pickerContext] picker 上下文
+ * @param {(text: string) => void} onInsert 选中后的插入回调
+ * @param {object} [pickerContext] 选择器上下文
  * @returns {void}
  */
 export function wireEmojiPickerButton(button, onInsert, pickerContext = {}) {
