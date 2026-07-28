@@ -1,16 +1,15 @@
 /**
  * 【文件】federation/groupEmojiFederation.mjs
- * 【职责】群自定义表情经 P2P fed_emoji_want/data 在 P2P 邻居间拉取与缓存，避免仅靠 HTTP 上传侧存储。
- * 【原理】attachFedEmojiHandlers 在 room join 时注册；本地有二进制则响应 dataUrl，请求方 persistGroupEmojiFromDataUrl。与 fed_chunk 类似采用 pendingFetches + 超时，拉黑 peer 不响应。
- * 【数据结构】载荷 { emojiId, dataUrl?, mimeType? }；等待键 username\0groupId\0emojiId。
- * 【关联】room.mjs、group/groupEmojis.mjs、wire_ingress.mjs、governance/peers 拉黑检查。
+ * 【职责】群表情经 P2P fed_emoji_want/data/manifest 在邻居间拉取与缓存。
+ * 【原理】attachFedEmojiHandlers 在 room join 时注册；本地有二进制则响应 dataUrl。载荷含 packId（缺省回落 groupId）。
  */
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
 
+import { isSafePackId } from '../../emojiPacks/packStore.mjs'
 import {
 	bufferToDataUrl,
-	loadGroupEmojiManifest,
+	listGroupPacks,
 	persistGroupEmojiFromDataUrl,
 	readGroupEmojiBinary,
 	upsertGroupEmojiManifestEntry,
@@ -36,25 +35,38 @@ function consumeEmojiWant(bucketKey) {
 }
 
 /**
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {string} emojiId 表情 ID
- * @returns {string} 等待键
+ * @param {string} [packId] 参数
+ * @returns {string} 返回值
  */
-function waitKey(username, groupId, emojiId) {
-	return `${username}\0${groupId}\0${emojiId}`
+function waitKey(username, groupId, emojiId, packId) {
+	const pid = String(packId || groupId || '').trim()
+	return `${username}\0${groupId}\0${pid}\0${emojiId}`
+}
+
+/**
+ * @param {unknown} data 载荷
+ * @param {string} groupId 群 ID
+ * @returns {string} 返回值
+ */
+function resolvePayloadPackId(data, groupId) {
+	const raw = String(data?.packId || '').trim()
+	if (raw && isSafePackId(raw)) return raw
+	return groupId
 }
 
 /**
  * 处理入站 `fed_emoji_want`：本地有则回复 `fed_emoji_data`。
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {unknown} data 载荷
  * @param {string} peerId 对端
  * @param {(payload: unknown, peerId: string) => void} sendEmojiData 发送 fed_emoji_data
  * @param {(id: string) => boolean} isBlockedPeer 拉黑检查
- * @param {Map<string, string>} peerToNode peer → nodeId
- * @returns {Promise<void>}
+ * @param {Map<string, string>} peerToNode peer→node 映射
+ * @returns {Promise<void>} 返回值
  */
 export async function handleFedEmojiWant(username, groupId, data, peerId, sendEmojiData, isBlockedPeer, peerToNode) {
 	if (!isPlainObject(data)) return
@@ -63,11 +75,12 @@ export async function handleFedEmojiWant(username, groupId, data, peerId, sendEm
 	if (remoteNode && isBlockedPeer(remoteNode)) return
 	const emojiId = String(data.emojiId || '').trim()
 	if (!emojiId) return
-	const local = await readGroupEmojiBinary(username, groupId, emojiId)
+	const packId = resolvePayloadPackId(data, groupId)
+	const local = await readGroupEmojiBinary(username, groupId, emojiId, packId)
 	if (!local) return
 	const dataUrl = bufferToDataUrl(local.buffer, local.mimeType)
 	try {
-		sendEmojiData({ emojiId, dataUrl, mimeType: local.mimeType }, peerId)
+		sendEmojiData({ emojiId, packId: local.packId || packId, dataUrl, mimeType: local.mimeType }, peerId)
 	}
 	catch (error) {
 		console.warn('federation: fed_emoji_data send failed', error)
@@ -76,42 +89,44 @@ export async function handleFedEmojiWant(username, groupId, data, peerId, sendEm
 
 /**
  * 处理入站 `fed_emoji_data`：写入本地并兑现等待中的 Promise。
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {unknown} data 载荷
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 返回值
  */
 export async function handleFedEmojiData(username, groupId, data) {
 	if (!isPlainObject(data)) return
 	const emojiId = String(data.emojiId || '').trim()
 	const dataUrl = String(data.dataUrl || '').trim()
 	const mimeType = String(data.mimeType || 'image/png')
+	const packId = resolvePayloadPackId(data, groupId)
 	if (!emojiId || !/^data:[^;]+;base64,.+$/u.test(dataUrl)) return
-	const key = waitKey(username, groupId, emojiId)
+	const key = waitKey(username, groupId, emojiId, packId)
 	const pending = pendingFetches.get(key)
 	if (pending) {
 		clearTimeout(pending.timer)
 		pendingFetches.delete(key)
 		pending.resolve({ dataUrl, mimeType })
 	}
-	// 无论清单条目是否已存在，始终写入本地二进制（防止清单已同步但文件未下载时丢弃 push 数据）
-	await persistGroupEmojiFromDataUrl(username, groupId, emojiId, dataUrl, mimeType)
+	await persistGroupEmojiFromDataUrl(username, groupId, emojiId, dataUrl, mimeType, undefined, packId)
 		.catch(error => console.warn('federation: fed_emoji_data persist failed', error))
 }
 
 /**
- * 处理入站 `fed_emoji_manifest`：合并远端 manifest 条目（contentHash 等元数据）。
- * @param {string} username 用户
+ * 处理入站 `fed_emoji_manifest`：合并远端 manifest 条目。
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {unknown} data 载荷
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 返回值
  */
 export async function handleFedEmojiManifest(username, groupId, data) {
 	if (!isPlainObject(data)) return
 	const emojiId = String(data.emojiId || '').trim()
 	if (!emojiId) return
+	const packId = resolvePayloadPackId(data, groupId)
 	await upsertGroupEmojiManifestEntry(username, groupId, {
 		emojiId,
+		packId,
 		name: data.name,
 		mimeType: data.mimeType,
 		ext: data.ext,
@@ -122,16 +137,18 @@ export async function handleFedEmojiManifest(username, groupId, data) {
 }
 
 /**
- * 经 user-room node scope 向已连接 / trust-graph 邻居索要群表情（非成员预览路径）。
- * @param {string} username 用户
+ * 经 user-room node scope 向邻居索要群表情。
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {string} emojiId 表情 ID
- * @returns {Promise<{ dataUrl: string, mimeType: string } | null>} 对端返回的 data URL，超时为 null
+ * @param {string} [packId] 表情包 ID
+ * @returns {Promise<{ dataUrl: string, mimeType: string } | null>} 拉取结果
  */
-export async function requestGroupEmojiFromUserRoom(username, groupId, emojiId) {
+export async function requestGroupEmojiFromUserRoom(username, groupId, emojiId, packId) {
 	if (!consumeEmojiWant(waitKey(username, groupId, EMOJI_WANT_BUCKET_KEY))) return null
-	const key = waitKey(username, groupId, emojiId)
-	const payload = { groupId, emojiId }
+	const pid = String(packId || groupId).trim() || groupId
+	const key = waitKey(username, groupId, emojiId, pid)
+	const payload = { groupId, emojiId, packId: pid }
 	const resultPromise = new Promise(resolve => {
 		const timer = setTimeout(() => {
 			pendingFetches.delete(key)
@@ -148,10 +165,10 @@ export async function requestGroupEmojiFromUserRoom(username, groupId, emojiId) 
 }
 
 /**
- * 在 node scope user-room 注册 fed_emoji_want / fed_emoji_data（非成员不经群联邦房间拉表情）。
- * @param {string} username replica 用户名
- * @param {{ on: (name: string, handler: (payload: unknown, peerId: string) => void) => void, send: (name: string, payload: unknown, peerId: string | null) => void }} wire node scope 派发
- * @returns {void}
+ * 在 node scope user-room 注册 fed_emoji_*。
+ * @param {string} username 用户名
+ * @param {{ on: (name: string, handler: (payload: unknown, peerId: string) => void) => void, send: (name: string, payload: unknown, peerId: string | null) => void }} wire user-room wire
+ * @returns {void} 返回值
  */
 export function attachUserRoomEmojiHandlers(username, wire) {
 	wire.on('fed_emoji_want', (data, peerId) => {
@@ -186,28 +203,27 @@ export function attachUserRoomEmojiHandlers(username, wire) {
 
 /**
  * 向联邦邻居广播索要群表情。
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {string} emojiId 表情 ID
- * @param {object | null} slot 联邦房间槽
- * @returns {Promise<{ dataUrl: string, mimeType: string } | null>} 对端返回的 data URL，超时为 null
+ * @param {object | null} slot 联邦槽
+ * @param {string} [packId] 表情包 ID
+ * @returns {Promise<{ dataUrl: string, mimeType: string } | null>} 拉取结果
  */
-export async function requestGroupEmojiFromPeers(username, groupId, emojiId, slot) {
+export async function requestGroupEmojiFromPeers(username, groupId, emojiId, slot, packId) {
 	if (!slot) return null
 	if (!consumeEmojiWant(waitKey(username, groupId, EMOJI_WANT_BUCKET_KEY))) return null
 	if (!slot.sendEmojiWant) return null
-	const key = waitKey(username, groupId, emojiId)
+	const pid = String(packId || groupId).trim() || groupId
+	const key = waitKey(username, groupId, emojiId, pid)
 	return await new Promise(resolve => {
 		const timer = setTimeout(() => {
 			pendingFetches.delete(key)
 			resolve(null)
 		}, FETCH_TIMEOUT_MS)
 		pendingFetches.set(key, { resolve, timer })
-		// 向当前在线的所有 peer 发 want；roster 为空时不提前退出——
-		// A 在新 peer 入房后会主动推送 fed_emoji_data（replicateGroupEmojisToPeer），
-		// handleFedEmojiData 会通过 pending promise 兑现结果（非成员预览路径）。
 		const roster = slot.getRoster()
-		const payload = { emojiId }
+		const payload = { emojiId, packId: pid }
 		for (const { peerId } of roster)
 			try {
 				slot.sendEmojiWant(payload, peerId)
@@ -219,17 +235,19 @@ export async function requestGroupEmojiFromPeers(username, groupId, emojiId, slo
 }
 
 /**
- * 经 user-room 向已连接邻居推送 manifest（群 roster 未就绪时的补充路径）。
- * @param {string} username 用户
+ * 经 user-room 推送 manifest。
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {object} entry manifest 条目
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 返回值
  */
 export async function replicateGroupEmojiManifestToUserRoom(username, groupId, entry) {
 	if (!entry?.emojiId) return
+	const packId = String(entry.packId || groupId).trim() || groupId
 	const { deliverToUserRoomPeers } = await import('npm:@steve02081504/fount-p2p/transport/user_room')
 	await deliverToUserRoomPeers(username, 'fed_emoji_manifest', {
 		groupId,
+		packId,
 		emojiId: entry.emojiId,
 		name: entry.name,
 		mimeType: entry.mimeType,
@@ -240,16 +258,18 @@ export async function replicateGroupEmojiManifestToUserRoom(username, groupId, e
 }
 
 /**
- * 向联邦邻居广播群表情 manifest 条目（轻量，供对端清单 / CAS 路径）。
- * @param {string} username 用户
+ * 向联邦邻居广播群表情 manifest 条目。
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {object} entry manifest 条目
  * @param {object | null} slot 联邦槽
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 返回值
  */
 export async function replicateGroupEmojiManifestToFederation(username, groupId, entry, slot) {
 	if (!slot?.sendEmojiManifest || !entry?.emojiId) return
+	const packId = String(entry.packId || groupId).trim() || groupId
 	const payload = {
+		packId,
 		emojiId: entry.emojiId,
 		name: entry.name,
 		mimeType: entry.mimeType,
@@ -274,20 +294,22 @@ export async function replicateGroupEmojiManifestToFederation(username, groupId,
 }
 
 /**
- * 上传后向邻居推送群表情数据（best-effort）。
- * @param {string} username 用户
+ * 上传后向邻居推送群表情数据。
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {string} emojiId 表情 ID
  * @param {object | null} slot 联邦槽
- * @returns {Promise<void>}
+ * @param {string} [packId] 参数
+ * @returns {Promise<void>} 返回值
  */
-export async function replicateGroupEmojiToFederation(username, groupId, emojiId, slot) {
+export async function replicateGroupEmojiToFederation(username, groupId, emojiId, slot, packId) {
 	if (!slot) return
-	const local = await readGroupEmojiBinary(username, groupId, emojiId)
+	const pid = String(packId || groupId).trim() || groupId
+	const local = await readGroupEmojiBinary(username, groupId, emojiId, pid)
 	if (!local) return
 	if (!slot.sendEmojiData) return
 	const dataUrl = bufferToDataUrl(local.buffer, local.mimeType)
-	const payload = { emojiId, dataUrl, mimeType: local.mimeType }
+	const payload = { emojiId, packId: local.packId || pid, dataUrl, mimeType: local.mimeType }
 	for (let attempt = 0; attempt < 120; attempt++) {
 		const roster = slot.getRoster()
 		if (roster.length) {
@@ -305,22 +327,24 @@ export async function replicateGroupEmojiToFederation(username, groupId, emojiId
 }
 
 /**
- * 新 peer 入房时向其推送本群全部表情 manifest + 二进制。
- * @param {string} username 用户
+ * 新 peer 入房时推送本群 pack manifest；二进制由对端按需 `fed_emoji_want`。
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @param {string} peerId 对端 nodeHash
+ * @param {string} peerId 对端
  * @param {object | null} slot 联邦槽
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 返回值
  */
 export async function replicateGroupEmojisToPeer(username, groupId, peerId, slot) {
-	if (!slot?.sendEmojiData || !peerId) return
-	const entries = await loadGroupEmojiManifest(username, groupId)
-	for (const entry of entries) {
-		const emojiId = String(entry?.emojiId || '').trim()
-		if (!emojiId) continue
-		if (slot.sendEmojiManifest)
+	if (!slot?.sendEmojiManifest || !peerId) return
+	const packs = await listGroupPacks(username, groupId)
+	for (const pack of packs) {
+		const packId = pack.packId
+		for (const entry of pack.items || []) {
+			const emojiId = String(entry?.emojiId || '').trim()
+			if (!emojiId) continue
 			try {
 				slot.sendEmojiManifest({
+					packId,
 					emojiId,
 					name: entry.name,
 					mimeType: entry.mimeType,
@@ -332,25 +356,14 @@ export async function replicateGroupEmojisToPeer(username, groupId, peerId, slot
 			catch (error) {
 				console.warn('federation: fed_emoji_manifest peer replicate failed', error)
 			}
-		const local = await readGroupEmojiBinary(username, groupId, emojiId)
-		if (!local) continue
-		try {
-			slot.sendEmojiData({
-				emojiId,
-				dataUrl: bufferToDataUrl(local.buffer, local.mimeType),
-				mimeType: local.mimeType,
-			}, peerId)
-		}
-		catch (error) {
-			console.warn('federation: fed_emoji_data peer replicate failed', error)
 		}
 	}
 }
 
 /**
- * 在联邦房间注册 `fed_emoji_want` / `fed_emoji_data` 处理器。
- * @param {object} roomContext 房间上下文（与 roomHandlers 相同 wireAction 形状）
- * @returns {void}
+ * 在联邦房间注册 `fed_emoji_*` 处理器。
+ * @param {object} roomContext 房间上下文
+ * @returns {void} 返回值
  */
 export function attachFedEmojiHandlers(roomContext) {
 	const { username, groupId, key, fedOut, rtcLimits, peerToNode, isBlockedPeer, slot } = roomContext
@@ -387,15 +400,16 @@ export function attachFedEmojiHandlers(roomContext) {
 
 	/**
 	 * @param {string} emojiId 表情 ID
-	 * @returns {Promise<{ dataUrl: string, mimeType: string } | null>} P2P 拉取结果
+	 * @param {string} [packId] 表情包 ID
+	 * @returns {Promise<{ dataUrl: string, mimeType: string } | null>} 拉取结果
 	 */
-	slot.requestGroupEmoji = function requestGroupEmoji(emojiId) {
-		return requestGroupEmojiFromPeers(username, groupId, emojiId, slot)
+	slot.requestGroupEmoji = function requestGroupEmoji(emojiId, packId) {
+		return requestGroupEmojiFromPeers(username, groupId, emojiId, slot, packId)
 	}
 
 	/**
 	 * @param {object} entry manifest 条目
-	 * @returns {Promise<void>}
+	 * @returns {Promise<void>} 返回值
 	 */
 	slot.replicateGroupEmojiManifest = function replicateGroupEmojiManifest(entry) {
 		return replicateGroupEmojiManifestToFederation(username, groupId, entry, slot)
@@ -403,9 +417,10 @@ export function attachFedEmojiHandlers(roomContext) {
 
 	/**
 	 * @param {string} emojiId 表情 ID
-	 * @returns {Promise<void>}
+	 * @param {string} [packId] 参数
+	 * @returns {Promise<void>} 返回值
 	 */
-	slot.replicateGroupEmoji = function replicateGroupEmoji(emojiId) {
-		return replicateGroupEmojiToFederation(username, groupId, emojiId, slot)
+	slot.replicateGroupEmoji = function replicateGroupEmoji(emojiId, packId) {
+		return replicateGroupEmojiToFederation(username, groupId, emojiId, slot, packId)
 	}
 }

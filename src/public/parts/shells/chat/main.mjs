@@ -30,6 +30,10 @@ import {
 import { registerChatManifestAcl, unregisterChatManifestAcl } from './src/chat/manifestAcl.mjs'
 import { registerChatManifestTransfer, unregisterChatManifestTransfer } from './src/chat/manifestTransfer.mjs'
 import {
+	registerChatEmojiPackOffersHandler,
+	unregisterChatEmojiPackOffersHandler,
+} from './src/emojiPacks/discoverNetwork.mjs'
+import {
 	registerChatEntitySearchHandler,
 	unregisterChatEntitySearchHandler,
 } from './src/entity/entitySearch.mjs'
@@ -60,21 +64,6 @@ async function handleAction(user, action, params) {
 	if (profileActions[action])
 		return profileActions[action]({ user, ...params })
 
-	const stickerActionMap = {
-		'sticker-list': 'list',
-		'sticker-create': 'create',
-		'sticker-info': 'info',
-		'sticker-install': 'install',
-		'sticker-uninstall': 'uninstall',
-		'sticker-delete': 'delete',
-	}
-	const stickerKey = stickerActionMap[action]
-	if (stickerKey) {
-		const { actions: stickerActions } = await import('./src/stickers/actions.mjs')
-		if (stickerActions[stickerKey])
-			return stickerActions[stickerKey]({ user, ...params })
-	}
-
 	throw new Error(`Unknown action: ${action}. Available actions: ${Object.keys(actions).join(', ')}`)
 }
 
@@ -93,6 +82,7 @@ export default {
 		loadCount++
 		registerShellPartpath('chat', 'shells/chat')
 		registerChatEntitySearchHandler()
+		registerChatEmojiPackOffersHandler()
 		registerChatEventTypeDefs()
 		registerChatGroupEmojiPostEmbed()
 		registerChatUserRoomEmojiHandlers()
@@ -117,6 +107,7 @@ export default {
 		loadCount--
 		if (!loadCount) {
 			unregisterChatEntitySearchHandler()
+			unregisterChatEmojiPackOffersHandler()
 			unregisterShellPartpath('chat')
 			unregisterChatEventTypeDefs()
 			unregisterChatGroupEmojiPostEmbed()

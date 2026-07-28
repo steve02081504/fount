@@ -46,6 +46,7 @@ const UPDATE_FIELD_WHITELIST = new Set([
 	'handle',
 	'themeColor',
 	'banner',
+	'defaultEmojiPackId',
 	'status',
 	'customStatus',
 	'ownerEntityHash',

@@ -1,7 +1,5 @@
 import { Buffer } from 'node:buffer'
 
-import { waitForStickersPageReady } from 'fount/scripts/test/playwright/ready.mjs'
-
 import {
 	test,
 	expect,
@@ -44,14 +42,6 @@ test.describe('Chat secondary pages', () => {
 		await page.waitForURL(/\/parts\/shells:chat\/hub\/#group:/, { timeout: 60_000 })
 		const hash = new URL(page.url()).hash
 		expect(hash).toMatch(new RegExp(`#group:${groupId}:imported_`))
-	})
-
-	test('stickers store page loads', async ({ page, baseUrl }) => {
-		await page.goto(`${baseUrl}/parts/shells:chat/stickers/`, { waitUntil: 'domcontentloaded' })
-		await waitForStickersPageReady(page)
-		await expect(page.locator('#sticker-create-pack-button')).toBeVisible({ timeout: 30_000 })
-		await expect(page.locator('#packs-container')).toBeVisible()
-		await expect(page.locator('#search-input')).toBeVisible()
 	})
 
 	test('settings page switches sections', async ({ page, baseUrl, apiKey }) => {
@@ -156,15 +146,5 @@ test.describe('Chat secondary pages', () => {
 		expect(layout.overflowX).toBe('auto')
 		await page.locator('.settings-nav-item[data-section="members"]').click()
 		await expect(page.locator('#panel-members')).toBeVisible()
-	})
-
-	test('stickers page switches tabs', async ({ page, baseUrl }) => {
-		await page.goto(`${baseUrl}/parts/shells:chat/stickers/`, { waitUntil: 'domcontentloaded' })
-		await waitForStickersPageReady(page)
-		await expect(page.locator('.tabs .tab[data-tab="all"]')).toBeVisible({ timeout: 30_000 })
-		await expect(page.locator('.tabs .tab[data-tab="all"]')).toHaveClass(/tab-active/)
-		await page.locator('.tabs .tab[data-tab="my-packs"]').click()
-		await expect(page.locator('.tabs .tab[data-tab="my-packs"]')).toHaveClass(/tab-active/, { timeout: 10_000 })
-		await expect(page.locator('#packs-container')).toBeVisible()
 	})
 })

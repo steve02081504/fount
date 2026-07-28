@@ -6,9 +6,7 @@
  * 【关联】hub 页面加载时调用；串联 messages、stream、hashNav、chat、presence、wireEvents。
  */
 import { mountDockedEmojiPicker } from '../../../../scripts/components/emojiPicker.mjs'
-import { mountDockedStickerPicker } from '../../../../scripts/components/stickerPicker.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { fetchStickerPayload } from '../providers/sticker.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { normalizeChannelMessage } from '../shared/channelContent.mjs'
 import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
@@ -68,11 +66,6 @@ async function loadMe() {
 	startIdleWatcher()
 }
 
-/** @returns {string|null} 当前 operator entityHash */
-function emojiViewerEntityHash() {
-	return store.viewer.viewerEntityHash
-}
-
 /** @returns {{ groupId: string|null, channelId: string|null, privateGroupId: string|null }} 当前群/私聊上下文 */
 function emojiGetContext() {
 	const privateGroupId = store.privateGroup.groupId
@@ -100,8 +93,8 @@ function hubEmojiPickerContext() {
 }
 
 /**
- * 群表情长按：作为贴纸消息发送。
- * @param {{ emojiRef?: string, emojiId?: string }} item - 选中的群表情。
+ * 表情长按/右键：作为贴纸消息发送。
+ * @param {{ emojiRef?: string, emojiId?: string }} item - 选中的表情。
  * @returns {Promise<void>}
  */
 async function sendPickedEmojiAsSticker(item) {
@@ -115,42 +108,6 @@ async function sendPickedEmojiAsSticker(item) {
 		}))
 		const { loadMessages } = await messagesApi()
 		await loadMessages()
-	}
-	catch (err) {
-		showToastI18n('error', 'chat.hub.sendStickerFailed', { error: err.message })
-	}
-}
-
-/**
- * 选中收藏贴纸并发送到当前频道。
- * @param {{ stickerId?: string, stickerUrl?: string }} sticker - 贴纸条目。
- * @returns {Promise<void>}
- */
-async function sendPickedHubSticker(sticker) {
-	const { groupId, channelId } = emojiGetContext()
-	if (!groupId || !channelId) return
-	const { stickerId, stickerUrl } = sticker
-	try {
-		if (stickerUrl) {
-			const { stickerBase64, mimeType } = await fetchStickerPayload(stickerUrl)
-			await sendGroupMessage(groupId, channelId, normalizeChannelMessage({
-				type: 'sticker',
-				stickerId,
-				stickerName: stickerId,
-				stickerBase64,
-				mimeType,
-			}))
-			const viewerEntityHash = emojiViewerEntityHash()
-			if (viewerEntityHash)
-				void fetch(`/api/parts/shells:chat/stickers/recent/${encodeURIComponent(stickerId)}`, {
-					method: 'POST',
-					credentials: 'include',
-				})
-			const { loadMessages } = await messagesApi()
-			await loadMessages()
-		}
-		else
-			showToastI18n('error', 'chat.hub.sendStickerFailed')
 	}
 	catch (err) {
 		showToastI18n('error', 'chat.hub.sendStickerFailed', { error: err.message })
@@ -182,41 +139,23 @@ async function wireHubHeavyFeatures() {
 }
 
 /**
- * 挂载 Hub 停靠式表情/贴纸选择器（共享 picker + Chat provider）。
+ * 挂载 Hub 停靠式表情选择器（点击插 token；长按/右键发贴纸）。
  * @returns {Promise<void>}
  */
 async function wireHubPickers() {
 	const emojiPickerElement = document.getElementById('emoji-picker')
-	const emojiTabsElement = document.getElementById('emoji-tabs')
-	const emojiGridElement = document.getElementById('emoji-grid')
 	const emojiButton = document.getElementById('emoji-button')
-	const stickerPickerElement = document.getElementById('sticker-picker')
-	const stickerGridElement = document.getElementById('sticker-grid')
-	const stickerButton = document.getElementById('sticker-button')
 	const messageInput = document.getElementById('message-input')
 
-	if (emojiPickerElement && emojiTabsElement && emojiGridElement && emojiButton) {
+	if (emojiPickerElement && emojiButton) {
 		await mountDockedEmojiPicker({
 			pickerElement: emojiPickerElement,
-			tabsElement: emojiTabsElement,
-			gridElement: emojiGridElement,
 			triggerButton: emojiButton,
 			inputElement: messageInput instanceof HTMLTextAreaElement ? messageInput : undefined,
-			closeWhenOpening: stickerPickerElement,
 			getPickerContext: hubEmojiPickerContext,
 		})
-		wireHubGroupEmojiStickerGestures(emojiGridElement, emojiPickerElement, sendPickedEmojiAsSticker)
+		wireHubGroupEmojiStickerGestures(emojiPickerElement, emojiPickerElement, sendPickedEmojiAsSticker)
 	}
-
-	if (stickerPickerElement && stickerGridElement && stickerButton)
-		await mountDockedStickerPicker({
-			pickerElement: stickerPickerElement,
-			gridElement: stickerGridElement,
-			triggerButton: stickerButton,
-			closeWhenOpening: emojiPickerElement,
-			context: {},
-			onSelect: sendPickedHubSticker,
-		})
 }
 
 /** @returns {Promise<void>} Hub 页面入口初始化（重型特性；导航由 initCore 完成） */

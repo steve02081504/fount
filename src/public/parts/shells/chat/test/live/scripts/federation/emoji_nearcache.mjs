@@ -20,8 +20,8 @@ let contentHash = null
 let firstHitDataUrlLen = 0
 
 console.log('\n=== A uploads emoji (contentHash in manifest) ===')
-await testCase('A POST /groups/:id/emojis', async () => {
-	const r = await ApiMultipart(FedA, 'POST', `/groups/${gid}/emojis`, { name: 'nc-emoji' }, 'emoji', 'fed.png', FedPngBytes)
+await testCase('A POST /groups/:id/emoji-packs/:packId/emojis', async () => {
+	const r = await ApiMultipart(FedA, 'POST', `/groups/${gid}/emoji-packs/${gid}/emojis`, { name: 'nc-emoji' }, 'emoji', 'fed.png', FedPngBytes)
 	if (r.status !== 201) throw new Error(`upload ${r.status}: ${r.raw}`)
 	emojiId = r.json.entry?.emojiId
 	contentHash = r.json.entry?.contentHash
@@ -30,9 +30,9 @@ await testCase('A POST /groups/:id/emojis', async () => {
 
 console.log('\n=== B near-cache via /emoji-content ===')
 await testCase('B manifest lists contentHash after federation sync', async () => pollUntil(async () => {
-	const r = await Api(FedB, 'GET', `/groups/${gid}/emojis`)
+	const r = await Api(FedB, 'GET', `/groups/${gid}/emoji-packs/${gid}`)
 	if (r.status !== 200) return false
-	const e = r.json.entries?.find(row => row.emojiId === emojiId)
+	const e = r.json.pack?.items?.find(row => row.emojiId === emojiId)
 	return Boolean(e && e.contentHash === contentHash)
 }, 90, 3))
 

@@ -1074,6 +1074,7 @@
 				"emojisCreatePackPrompt": "Auðkenni pakka",
 				"emojisCreatePackOk": "Broskallapakki búinn til",
 				"emojisCreatePackFailed": "Mistókst að búa til: ${error}",
+				"emojisPackGroupSuffix": "hópur",
 				"activeEmojiPackLabel": "Pakki í breytingu",
 				"emojisDelete": "Eyða broskörlum",
 				"emojisEmpty": "Engar hóptjáningar ennþá",

@@ -67,7 +67,7 @@ await testCase('A creates invite-only group', async () => {
 })
 
 await testCase('A uploads group emoji', async () => {
-	const r = await ApiMultipart(FedA, 'POST', `/groups/${gid}/emojis`, { name: 'cross-emoji' }, 'emoji', 'fed.png', FedPngBytes)
+	const r = await ApiMultipart(FedA, 'POST', `/groups/${gid}/emoji-packs/${gid}/emojis`, { name: 'cross-emoji' }, 'emoji', 'fed.png', FedPngBytes)
 	if (r.status !== 201) throw new Error(`upload ${r.status}: ${r.raw}`)
 	emojiId = r.json.entry?.emojiId
 	emojiContentHash = r.json.entry?.contentHash

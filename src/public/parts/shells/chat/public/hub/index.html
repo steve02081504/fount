@@ -230,7 +230,6 @@
 									<li><button type="button" id="composer-more-photo" data-i18n="chat.chatArea.photoButton"></button></li>
 									<li><button type="button" id="composer-more-upload" data-i18n="chat.hub.uploadTitle"></button></li>
 									<li><button type="button" id="composer-more-vote" data-i18n="chat.hub.voteTitle"></button></li>
-									<li><button type="button" id="composer-more-sticker" data-i18n="chat.hub.stickerTitle"></button></li>
 								</ul>
 							</div>
 							<button type="button" class="icon-button btn btn-ghost btn-circle btn-sm composer-desktop-tool" id="voice-button" data-i18n="chat.chatArea.voiceButton" disabled>
@@ -250,28 +249,13 @@
 							<button type="button" class="icon-button btn btn-ghost btn-circle btn-sm composer-desktop-tool" id="vote-button" data-i18n="chat.hub.voteTitle" disabled>
 								<img src="https://api.iconify.design/line-md/confirm.svg" alt="" aria-hidden="true" />
 							</button>
-							<button type="button" class="icon-button btn btn-ghost btn-circle btn-sm composer-desktop-tool" id="sticker-button" data-i18n="chat.hub.stickerTitle" disabled>
-								<img src="https://api.iconify.design/mdi/sticker-plus-outline.svg" alt="" aria-hidden="true" />
-							</button>
 							<button type="button" class="composer-stop-button btn btn-error btn-sm !h-9 !w-9 !min-h-0 rounded-lg" id="stop-generation-button" data-i18n="chat.hub.stopGenerateTitle" hidden>
 								<img src="https://api.iconify.design/mdi/stop.svg" width="14" height="14" alt="" aria-hidden="true" />
 							</button>
 							<button type="button" class="btn btn-primary btn-sm !h-8 !w-9 !min-h-0 rounded-md" id="send-button" data-i18n="chat.hub.sendTitle" disabled>
 								<img src="https://api.iconify.design/line-md/telegram.svg" alt="" aria-hidden="true" />
 							</button>
-							<div class="sticker-picker" id="sticker-picker">
-								<div class="flex justify-between items-center mb-2">
-									<span class="font-semibold text-sm text-[var(--text-bright)]" data-i18n="chat.hub.stickersPanelTitle"></span>
-									<a href="/parts/shells:chat/stickers" target="_blank" rel="noopener" class="text-xs text-[var(--accent)] no-underline" data-i18n="chat.hub.stickersManage"></a>
-								</div>
-								<div class="sticker-grid" id="sticker-grid">
-									<div class="col-span-full text-center text-[var(--text-muted)] p-5 text-[13px]" data-i18n="chat.hub.stickersLoading"></div>
-								</div>
-							</div>
-							<div class="emoji-picker" id="emoji-picker">
-								<div class="emoji-tabs tabs tabs-box tabs-xs" id="emoji-tabs" role="tablist"></div>
-								<div class="emoji-grid" id="emoji-grid"></div>
-							</div>
+							<div class="emoji-picker" id="emoji-picker"></div>
 							</div>
 						</fieldset>
 					</div>

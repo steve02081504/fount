@@ -1,283 +1,376 @@
 /**
- * 【文件】group/groupEmojis.mjs
- * 【职责】群自定义表情（group_emojis）的 manifest 与二进制存储、上传删除及 data URL 持久化。
- * 【原理】每群 replica 磁盘下 manifest.json + binaries/；上传校验 512KB；联邦拉取经 persistGroupEmojiFromDataUrl 落盘；对外暴露 /emojis/:id/data API 路径。
- * 【数据结构】manifest entries（emojiId、mimeType、ext、animated）、Buffer/data URL。
- * 【关联】被 group/routes/groupEmojis.mjs、chat 消息 emoji 用法记录调用；依赖 chat/lib/paths、json_loader。
+ * 群表情包（emoji_packs）：多 pack 的 manifest / 二进制存储与解析。
+ * 布局：`{groupDir}/emoji_packs/{packId}/{manifest.json,binaries/}`；旧 `group_emojis/` 不读。
  */
-import { Buffer } from 'node:buffer'
-import { createHash } from 'node:crypto'
-import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
-import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
-
-import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
 import { groupDir } from '../chat/lib/paths.mjs'
+import { listUserGroups } from '../chat/lib/userGroups.mjs'
+import * as store from '../emojiPacks/packStore.mjs'
 
-const MAX_EMOJI_BYTES = 512 * 1024
-
-/**
- * @param {Buffer} buffer 图片字节
- * @returns {string} sha256 hex（64 字符）
- */
-export function computeEmojiContentHash(buffer) {
-	return createHash('sha256').update(buffer).digest('hex')
-}
-
-/**
- * 将表情二进制写入全局 CAS（明文 contentHash）。
- * @param {Buffer} buffer 图片字节
- * @returns {Promise<string>} contentHash
- */
-export async function storeEmojiInCas(buffer) {
-	const contentHash = computeEmojiContentHash(buffer)
-	await putChunk(contentHash, buffer)
-	return contentHash
-}
+/** 复用 packStore 中的通用工具与常量。 */
+export {
+	computeEmojiContentHash,
+	storeEmojiInCas,
+	itemDisplayName,
+	packSummary,
+	bufferToDataUrl,
+	MAX_EMOJI_BYTES,
+} from '../emojiPacks/packStore.mjs'
 
 /**
- * @param {string} filePath 文件路径
- * @returns {Promise<boolean>} 文件存在则为 true
- */
-async function fileExists(filePath) {
-	try {
-		await fs.access(filePath)
-		return true
-	}
-	catch {
-		return false
-	}
-}
-
-/**
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @returns {string} group_emojis 根目录
+ * @returns {string} emoji_packs 根目录
  */
-export function groupEmojisRoot(username, groupId) {
-	return path.join(groupDir(username, groupId), 'group_emojis')
+export function groupEmojiPacksRoot(username, groupId) {
+	return path.join(groupDir(username, groupId), 'emoji_packs')
 }
 
 /**
- * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @returns {string} manifest.json 路径
+ * @returns {{ kind: 'group', id: string }} source
  */
-function manifestPath(username, groupId) {
-	return path.join(groupEmojisRoot(username, groupId), 'manifest.json')
+function groupSource(groupId) {
+	return { kind: 'group', id: groupId }
 }
 
 /**
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @returns {string} binaries 目录
+ * @param {string} packId 表情包 ID
+ * @returns {string} 包目录
  */
-function binariesDir(username, groupId) {
-	return path.join(groupEmojisRoot(username, groupId), 'binaries')
+export function packDir(username, groupId, packId) {
+	return store.packDir(groupEmojiPacksRoot(username, groupId), packId)
 }
 
 /**
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @returns {Promise<object[]>} manifest 条目列表
+ * @returns {Promise<string[]>} packId 列表
  */
-export async function loadGroupEmojiManifest(username, groupId) {
-	const p = manifestPath(username, groupId)
-	if (!await fileExists(p)) return []
-	const raw = await loadJsonFile(p)
-	return Array.isArray(raw?.entries) ? raw.entries : []
+export async function listGroupPackIds(username, groupId) {
+	return store.listPackIds(groupEmojiPacksRoot(username, groupId))
 }
 
 /**
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @param {object[]} entries manifest
- * @returns {Promise<void>}
+ * @param {string} packId 表情包 ID
+ * @returns {Promise<object | null>} manifest
  */
-async function saveGroupEmojiManifest(username, groupId, entries) {
-	const root = groupEmojisRoot(username, groupId)
-	if (!await fileExists(root)) await fs.mkdir(root, { recursive: true })
-	if (!await fileExists(binariesDir(username, groupId)))
-		await fs.mkdir(binariesDir(username, groupId), { recursive: true })
-	await saveJsonFile(manifestPath(username, groupId), { entries })
+export async function loadPackManifest(username, groupId, packId) {
+	return store.loadPackManifest(groupEmojiPacksRoot(username, groupId), packId, groupSource(groupId))
 }
 
 /**
- * @param {string} username 用户
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @returns {Promise<object[]>} pack 列表
+ */
+export async function listGroupPacks(username, groupId) {
+	return store.listPacks(groupEmojiPacksRoot(username, groupId), groupSource(groupId))
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @param {{ packId?: string, localized?: object }} [fields] 创建字段
+ * @returns {Promise<object>} manifest
+ */
+export async function createPack(username, groupId, fields = {}) {
+	const packId = String(fields.packId || groupId).trim() || groupId
+	return store.createPack(groupEmojiPacksRoot(username, groupId), groupSource(groupId), {
+		...fields,
+		packId,
+	})
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @param {string} packId 表情包 ID
+ * @param {{ localized?: object }} patch 更新字段
+ * @returns {Promise<object>} manifest
+ */
+export async function updatePack(username, groupId, packId, patch = {}) {
+	return store.updatePack(groupEmojiPacksRoot(username, groupId), groupSource(groupId), packId, patch)
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @param {string} packId 表情包 ID
+ * @returns {Promise<boolean>} 是否删除
+ */
+export async function deletePack(username, groupId, packId) {
+	return store.deletePack(groupEmojiPacksRoot(username, groupId), packId)
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @param {string} packId 表情包 ID
+ * @param {string} emojiId 表情 ID
+ * @returns {Promise<object | null>} 条目
+ */
+export async function getPackEmojiEntry(username, groupId, packId, emojiId) {
+	return store.getPackEmojiEntry(groupEmojiPacksRoot(username, groupId), groupSource(groupId), packId, emojiId)
+}
+
+/**
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {string} emojiId 表情 ID
- * @returns {Promise<object | null>} manifest 条目
+ * @returns {Promise<{ packId: string, entry: object } | null>} 命中
  */
-export async function getGroupEmojiEntry(username, groupId, emojiId) {
-	const entries = await loadGroupEmojiManifest(username, groupId)
-	return entries.find(e => e?.emojiId === emojiId) || null
+export async function findEmojiInGroupPacks(username, groupId, emojiId) {
+	const eid = String(emojiId || '').trim()
+	if (!eid) return null
+	for (const packId of await listGroupPackIds(username, groupId)) {
+		const entry = await getPackEmojiEntry(username, groupId, packId, eid)
+		if (entry) return { packId, entry }
+	}
+	return null
 }
 
 /**
- * @param {object} entry manifest 条目
- * @returns {string} 磁盘文件名
+ * @param {string} username 用户名
+ * @param {string} packId 表情包 ID
+ * @returns {Promise<{ groupId: string, packId: string, manifest: object } | null>} 定位结果
  */
-function binaryFilename(entry) {
-	return `${entry.emojiId}${entry.ext || '.png'}`
+export async function findPackAcrossGroups(username, packId) {
+	const pid = String(packId || '').trim()
+	if (!pid) return null
+	const direct = await loadPackManifest(username, pid, pid)
+	if (direct) return { groupId: pid, packId: pid, manifest: direct }
+	for (const groupId of await listUserGroups(username)) {
+		if (groupId === pid) continue
+		const manifest = await loadPackManifest(username, groupId, pid)
+		if (manifest) return { groupId, packId: pid, manifest }
+	}
+	return null
 }
 
 /**
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
+ * @param {string} packId 表情包 ID
  * @param {string} emojiId 表情 ID
- * @returns {Promise<string | null>} 二进制绝对路径
+ * @returns {Promise<string | null>} 文件路径
  */
-export async function resolveGroupEmojiBinaryPath(username, groupId, emojiId) {
-	const entry = await getGroupEmojiEntry(username, groupId, emojiId)
+export async function resolvePackEmojiBinaryPath(username, groupId, packId, emojiId) {
+	const entry = await getPackEmojiEntry(username, groupId, packId, emojiId)
 	if (!entry) return null
-	const filePath = path.join(binariesDir(username, groupId), binaryFilename(entry))
-	return await fileExists(filePath) ? filePath : null
+	const filePath = path.join(
+		store.packBinariesDir(groupEmojiPacksRoot(username, groupId), packId),
+		store.binaryFilename(entry),
+	)
+	return await store.fileExists(filePath) ? filePath : null
 }
 
 /**
- * @param {string} username 用户
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @param {string} packId 表情包 ID
+ * @param {string} emojiId 表情 ID
+ * @returns {Promise<{ buffer: Buffer, mimeType: string, entry: object, packId: string } | null>} 二进制
+ */
+export async function readPackEmojiBinary(username, groupId, packId, emojiId) {
+	return store.readPackEmojiBinary(groupEmojiPacksRoot(username, groupId), groupSource(groupId), packId, emojiId)
+}
+
+/**
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {string} emojiId 表情 ID
- * @returns {Promise<{ buffer: Buffer, mimeType: string, entry: object } | null>} 二进制与 manifest 条目；无文件时为 null
+ * @param {string} [packId] 表情包 ID
+ * @returns {Promise<{ buffer: Buffer, mimeType: string, entry: object, packId: string } | null>} 二进制
  */
-export async function readGroupEmojiBinary(username, groupId, emojiId) {
-	const entry = await getGroupEmojiEntry(username, groupId, emojiId)
-	if (!entry) return null
-	const filePath = path.join(binariesDir(username, groupId), binaryFilename(entry))
-	if (!await fileExists(filePath)) return null
-	return {
-		buffer: await fs.readFile(filePath),
-		mimeType: entry.mimeType || 'image/png',
-		entry,
-	}
+export async function readGroupEmojiBinary(username, groupId, emojiId, packId) {
+	const pid = String(packId || '').trim()
+	if (pid) return readPackEmojiBinary(username, groupId, pid, emojiId)
+	const direct = await readPackEmojiBinary(username, groupId, groupId, emojiId)
+	if (direct) return direct
+	const found = await findEmojiInGroupPacks(username, groupId, emojiId)
+	if (!found) return null
+	return readPackEmojiBinary(username, groupId, found.packId, emojiId)
 }
 
 /**
- * @param {Buffer} buffer 图片字节
- * @param {string} mimeType MIME
- * @returns {string} data URL 字符串
- */
-export function bufferToDataUrl(buffer, mimeType) {
-	const baseMime = String(mimeType || 'image/png').split(';')[0].trim() || 'image/png'
-	return `data:${baseMime};base64,${buffer.toString('base64')}`
-}
-
-/**
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @param {Buffer} buffer 图片
+ * @param {string} emojiId 表情 ID
+ * @param {string} [packId] 表情包 ID
+ * @returns {Promise<object | null>} 条目
+ */
+export async function getGroupEmojiEntry(username, groupId, emojiId, packId) {
+	const pid = String(packId || '').trim()
+	if (pid) return getPackEmojiEntry(username, groupId, pid, emojiId)
+	const direct = await getPackEmojiEntry(username, groupId, groupId, emojiId)
+	if (direct) return direct
+	const found = await findEmojiInGroupPacks(username, groupId, emojiId)
+	return found?.entry || null
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @param {string} emojiId 表情 ID
+ * @param {string} [packId] 表情包 ID
+ * @returns {Promise<string | null>} 文件路径
+ */
+export async function resolveGroupEmojiBinaryPath(username, groupId, emojiId, packId) {
+	const pid = String(packId || '').trim()
+	if (pid) return resolvePackEmojiBinaryPath(username, groupId, pid, emojiId)
+	const direct = await resolvePackEmojiBinaryPath(username, groupId, groupId, emojiId)
+	if (direct) return direct
+	const found = await findEmojiInGroupPacks(username, groupId, emojiId)
+	if (!found) return null
+	return resolvePackEmojiBinaryPath(username, groupId, found.packId, emojiId)
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @param {string} packId 表情包 ID
+ * @param {Buffer} buffer 图片字节
  * @param {string} originalname 原始文件名
  * @param {string} mimeType MIME
  * @param {string} [name] 显示名
- * @returns {Promise<object>} 新 manifest 条目
+ * @returns {Promise<object>} 新条目
  */
-export async function uploadGroupEmoji(username, groupId, buffer, originalname, mimeType, name) {
-	if (buffer.byteLength > MAX_EMOJI_BYTES) throw new Error('emoji file too large')
-	const ext = path.extname(originalname || '').toLowerCase() || (mimeType.includes('gif') ? '.gif' : '.png')
-	const emojiId = prefixedRandomId('emoji_')
-	const entry = {
-		emojiId,
-		name: String(name || originalname || emojiId).slice(0, 64),
-		mimeType: mimeType || 'image/png',
-		ext,
-		animated: mimeType.includes('gif'),
-		uploadedAt: Date.now(),
-		uploadedBy: username,
-	}
-	const root = groupEmojisRoot(username, groupId)
-	const binDir = binariesDir(username, groupId)
-	if (!await fileExists(binDir)) await fs.mkdir(binDir, { recursive: true })
-	await fs.writeFile(path.join(binDir, binaryFilename(entry)), buffer)
-	const contentHash = await storeEmojiInCas(buffer)
-	entry.contentHash = contentHash
-	const entries = await loadGroupEmojiManifest(username, groupId)
-	entries.push(entry)
-	await saveGroupEmojiManifest(username, groupId, entries)
-	return entry
+export async function uploadPackEmoji(username, groupId, packId, buffer, originalname, mimeType, name) {
+	return store.uploadPackEmoji(
+		groupEmojiPacksRoot(username, groupId),
+		groupSource(groupId),
+		packId,
+		buffer,
+		originalname,
+		mimeType,
+		name,
+		username,
+	)
 }
 
 /**
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
+ * @param {string} packId 表情包 ID
  * @param {string} emojiId 表情 ID
- * @returns {Promise<boolean>} 是否删除成功
+ * @returns {Promise<boolean>} 是否删除
  */
-export async function deleteGroupEmoji(username, groupId, emojiId) {
-	const entries = await loadGroupEmojiManifest(username, groupId)
-	const entry = entries.find(e => e?.emojiId === emojiId)
-	if (!entry) return false
-	const next = entries.filter(e => e?.emojiId !== emojiId)
-	await saveGroupEmojiManifest(username, groupId, next)
-	const filePath = path.join(binariesDir(username, groupId), binaryFilename(entry))
-	if (await fileExists(filePath)) await fs.unlink(filePath)
-	return true
+export async function deletePackEmoji(username, groupId, packId, emojiId) {
+	return store.deletePackEmoji(groupEmojiPacksRoot(username, groupId), groupSource(groupId), packId, emojiId)
 }
 
 /**
- * 合并联邦同步的 manifest 条目（可无本地二进制）。
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @param {object} entry manifest 片段（至少含 emojiId）
- * @returns {Promise<object>} 合并后的条目
+ * @param {object} entry 至少含 emojiId；可含 packId
+ * @returns {Promise<object>} 合并后条目
  */
 export async function upsertGroupEmojiManifestEntry(username, groupId, entry) {
 	const emojiId = String(entry?.emojiId || '').trim()
 	if (!emojiId) throw new Error('emojiId required')
-	const entries = await loadGroupEmojiManifest(username, groupId)
-	const existing = entries.find(row => row?.emojiId === emojiId)
+	const packId = String(entry.packId || groupId).trim() || groupId
+	const root = groupEmojiPacksRoot(username, groupId)
+	const source = groupSource(groupId)
+	let manifest = await store.loadPackManifest(root, packId, source)
+	if (!manifest) {
+		manifest = store.emptyPackManifest(source, packId)
+		await store.savePackManifest(root, manifest)
+		manifest = await store.loadPackManifest(root, packId, source)
+	}
+	const existing = manifest.items.find(row => row?.emojiId === emojiId)
+	const name = String(entry.name ?? store.itemDisplayName(existing) ?? emojiId)
+	const mimeType = String(entry.mimeType || existing?.mimeType || 'image/png')
+	const ext = String(entry.ext || existing?.ext || store.extFromMime(mimeType))
+	const animated = entry.animated != null ? Boolean(entry.animated) : Boolean(existing?.animated ?? mimeType.includes('gif'))
+	const contentHashRaw = String(entry.contentHash || '').trim().toLowerCase()
+	const contentHash = /^[\da-f]{64}$/u.test(contentHashRaw) ? contentHashRaw : undefined
 	const merged = {
 		...existing || {
 			emojiId,
-			name: emojiId,
-			mimeType: 'image/png',
-			ext: '.png',
-			animated: false,
+			localized: store.localizedFromName(name),
 			uploadedAt: Date.now(),
 			uploadedBy: 'federation',
 		},
-		...entry,
 		emojiId,
+		name,
+		mimeType,
+		ext,
+		animated,
+		...contentHash ? { contentHash } : {},
 	}
+	if (entry.name && !entry.localized)
+		merged.localized = { ...merged.localized, ...store.localizedFromName(name) }
 	if (existing) Object.assign(existing, merged)
-	else entries.push(merged)
-	await saveGroupEmojiManifest(username, groupId, entries)
-	return merged
+	else manifest.items.push(merged)
+	await store.savePackManifest(root, manifest)
+	return { ...merged, packId }
 }
 
 /**
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {string} emojiId 表情 ID
  * @param {string} dataUrl data URL
  * @param {string} mimeType MIME
- * @param {string} [name] 名称
- * @returns {Promise<object>} manifest 条目
+ * @param {string} [name] 显示名
+ * @param {string} [packId] 表情包 ID
+ * @returns {Promise<object>} 条目
  */
-export async function persistGroupEmojiFromDataUrl(username, groupId, emojiId, dataUrl, mimeType, name) {
-	const match = /^data:([^;]+);base64,(.+)$/u.exec(dataUrl)
-	if (!match) throw new Error('invalid dataUrl')
-	const buffer = Buffer.from(match[2], 'base64')
-	const entries = await loadGroupEmojiManifest(username, groupId)
-	const existing = entries.find(e => e?.emojiId === emojiId)
-	const ext = mimeType.includes('gif') ? '.gif' : '.png'
-	const entry = existing || {
+export async function persistGroupEmojiFromDataUrl(username, groupId, emojiId, dataUrl, mimeType, name, packId) {
+	const pid = String(packId || groupId).trim() || groupId
+	return store.persistEmojiFromDataUrl(
+		groupEmojiPacksRoot(username, groupId),
+		groupSource(groupId),
+		pid,
 		emojiId,
-		name: name || emojiId,
-		mimeType: match[1] || mimeType,
-		ext,
-		animated: (match[1] || mimeType).includes('gif'),
-		uploadedAt: Date.now(),
-		uploadedBy: 'federation',
-	}
-	if (!existing) entries.push(entry)
-	else Object.assign(entry, { mimeType: match[1] || mimeType })
-	const binDir = binariesDir(username, groupId)
-	if (!await fileExists(binDir)) await fs.mkdir(binDir, { recursive: true })
-	await fs.writeFile(path.join(binDir, binaryFilename(entry)), buffer)
-	const contentHash = await storeEmojiInCas(buffer)
-	entry.contentHash = contentHash
-	await saveGroupEmojiManifest(username, groupId, entries)
-	return entry
+		dataUrl,
+		mimeType,
+		name,
+	)
+}
+
+/**
+ * @param {string} username 用户名
+ * @param {{ groupId?: string }} [options] 可选过滤
+ * @returns {Promise<object[]>} 可用 pack
+ */
+export async function listAvailableGroupPacksForUser(username, options = {}) {
+	const filterGroupId = String(options.groupId || '').trim() || null
+	const { getState } = await import('../chat/dag/materialize.mjs')
+	const { resolveActiveMemberKeyForLocalReplica } = await import('./access.mjs')
+
+	const groupIds = filterGroupId ? [filterGroupId] : await listUserGroups(username)
+	const settled = await Promise.all(groupIds.map(async groupId => {
+		let state
+		try {
+			({ state } = await getState(username, groupId, { skipLeftPurge: true }))
+		}
+		catch {
+			return []
+		}
+		const memberKey = await resolveActiveMemberKeyForLocalReplica(username, groupId, state)
+		if (!memberKey) return []
+		const member = state.members?.[memberKey]
+		const joinedAt = member?.joinedAt ?? null
+		const defaultEmojiPackId = state.groupSettings?.defaultEmojiPackId || null
+		const infoDefaults = {
+			name: state.groupMeta?.name || groupId,
+			avatar: state.groupMeta?.avatar ?? null,
+		}
+		const packs = await listGroupPacks(username, groupId)
+		return packs.map(pack => ({
+			...pack,
+			groupId,
+			joinedAt,
+			defaultEmojiPackId,
+			infoDefaults,
+		}))
+	}))
+	return settled.flat()
 }

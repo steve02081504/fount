@@ -305,90 +305,85 @@ await testCase('DELETE /archive?before= (local prune)', async () => {
 })
 
 // ---------------------------------------------------------------------------
-writeLiveSection('D. Stickers — full write path')
+writeLiveSection('D. Entity emoji packs — write path')
+let entityHash = null
 let packId = null
-let stickerId = null
-let stickerFile = null
-let importStickerId = null
+let emojiId = null
 
-await testCase('POST /stickers/packs create', async () => {
-	const r = await api('POST', '/stickers/packs', { name: 'E2E-extended-pack', description: 'extended', isPublic: true })
+await testCase('GET /viewer for entity packs', async () => {
+	const r = await api('GET', '/viewer')
+	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
+	entityHash = r.json.viewerEntityHash
+	return Boolean(entityHash)
+})
+
+await testCase('POST /entities/:hash/emoji-packs create', async () => {
+	const r = await api('POST', `/entities/${entityHash}/emoji-packs`, {
+		localized: { 'en-UK': { name: 'E2E-entity-pack' } },
+	})
 	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
-	packId = r.json.pack?.packId ?? r.json.pack?.id
+	packId = r.json.pack?.packId
 	return Boolean(packId)
 })
 
-await testCase('GET /stickers/packs/:id', async () => {
-	const r = await api('GET', `/stickers/packs/${packId}`)
+await testCase('GET /entities/:hash/emoji-packs/:id', async () => {
+	const r = await api('GET', `/entities/${entityHash}/emoji-packs/${packId}`)
 	return r.status === 200 && r.json.pack?.packId === packId
 })
 
-await testCase('PUT /stickers/packs/:id', async () => {
-	const r = await api('PUT', `/stickers/packs/${packId}`, { name: 'E2E-extended-pack-2', description: 'updated' })
-	return r.status === 200 && r.json.pack?.name === 'E2E-extended-pack-2'
+await testCase('PUT /entities/:hash/emoji-packs/:id', async () => {
+	const r = await api('PUT', `/entities/${entityHash}/emoji-packs/${packId}`, {
+		localized: { 'en-UK': { name: 'E2E-entity-pack-2' } },
+	})
+	return r.status === 200 && r.json.pack?.localized?.['en-UK']?.name === 'E2E-entity-pack-2'
 })
 
-await testCase('POST /stickers/packs/:id/stickers upload', async () => {
-	const r = await chatApiMultipart('POST', `/stickers/packs/${packId}/stickers`, { name: 'e2e-sticker' }, 'sticker', 'e2e.png', pngBytes)
+await testCase('POST /entities/:hash/emoji-packs/:id/emojis upload', async () => {
+	const r = await chatApiMultipart(
+		'POST',
+		`/entities/${entityHash}/emoji-packs/${packId}/emojis`,
+		{ name: 'e2e-emoji' },
+		'emoji',
+		'e2e.png',
+		pngBytes,
+	)
 	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
-	stickerId = r.json.sticker?.id ?? r.json.sticker?.stickerId
-	const stickerUrl = String(r.json.sticker?.url ?? '')
-	const match = stickerUrl.match(/\/file\/([^/?]+)/)
-	stickerFile = match?.[1] ?? r.json.sticker?.file
-	return Boolean(stickerId)
+	emojiId = r.json.emoji?.emojiId
+	return Boolean(emojiId)
 })
 
-await testCase('GET /stickers/packs/:id/file/:name', async () => {
-	if (!stickerFile) throw new Error('sticker file name missing')
-	const r = await api('GET', `/stickers/packs/${packId}/file/${stickerFile}`)
-	return r.status === 200 && r.raw.length > 0
+await testCase('GET emoji-content/:packId/:emojiId', async () => {
+	const r = await api('GET', `/emoji-content/${packId}/${emojiId}?json=1`)
+	return r.status === 200 && String(r.json?.dataUrl || '').startsWith('data:')
 })
 
-await testCase('POST /stickers/install/:packId', async () => {
-	const r = await api('POST', `/stickers/install/${packId}`, {})
+await testCase('POST emoji-usage/collection/packs', async () => {
+	const r = await api('POST', '/emoji-usage/collection/packs', { packId })
 	return r.status === 200
 })
 
-await testCase('GET /stickers/collection installed', async () => {
-	const r = await api('GET', '/stickers/collection')
-	return r.status === 200 && r.json.collection?.installedPacks?.includes(packId)
+await testCase('GET emoji-usage has collected pack', async () => {
+	const r = await api('GET', '/emoji-usage')
+	return r.status === 200 && r.json.collection?.packIds?.includes(packId)
 })
 
-await testCase('POST /stickers/favorites/:stickerId', async () => {
-	const r = await api('POST', `/stickers/favorites/${stickerId}`, {})
+await testCase('GET emoji-packs includes entity pack', async () => {
+	const r = await api('GET', '/emoji-packs')
+	return r.status === 200 && (r.json.packs || []).some(p => p.packId === packId)
+})
+
+await testCase('DELETE /entities/:hash/emoji-packs/:id/emojis/:emojiId', async () => {
+	const r = await api('DELETE', `/entities/${entityHash}/emoji-packs/${packId}/emojis/${emojiId}`)
 	return r.status === 200
 })
 
-await testCase('DELETE /stickers/favorites/:stickerId', async () => {
-	const r = await api('DELETE', `/stickers/favorites/${stickerId}`)
+await testCase('DELETE emoji-usage/collection/packs/:packId', async () => {
+	const r = await api('DELETE', `/emoji-usage/collection/packs/${packId}`)
 	return r.status === 200
 })
 
-await testCase('POST /stickers/import', async () => {
-	const r = await api('POST', '/stickers/import', { dataUrl: pngDataUrl, name: 'imported-ext' })
-	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
-	importStickerId = r.json.sticker?.id ?? r.json.sticker?.stickerId
-	return Boolean(importStickerId)
-})
-
-await testCase('POST /stickers/recent/:stickerId', async () => {
-	const sid = importStickerId || stickerId
-	const r = await api('POST', `/stickers/recent/${sid}`, {})
-	return r.status === 200
-})
-
-await testCase('DELETE /stickers/packs/:id/stickers/:stickerId', async () => {
-	const r = await api('DELETE', `/stickers/packs/${packId}/stickers/${stickerId}`)
-	return r.status === 200
-})
-
-await testCase('POST /stickers/uninstall/:packId', async () => {
-	const r = await api('POST', `/stickers/uninstall/${packId}`, {})
-	return r.status === 200
-})
-
-await testCase('DELETE /stickers/packs/:id', async () => {
-	const r = await api('DELETE', `/stickers/packs/${packId}`)
+await testCase('DELETE /entities/:hash/emoji-packs/:id', async () => {
+	const r = await api('DELETE', `/entities/${entityHash}/emoji-packs/${packId}`)
 	return r.status === 200
 })
 
@@ -396,26 +391,26 @@ await testCase('DELETE /stickers/packs/:id', async () => {
 writeLiveSection('E. Group emojis — write')
 let gEmojiId = null
 
-await testCase('POST /groups/:id/emojis', async () => {
-	const r = await chatApiMultipart('POST', `/groups/${gid}/emojis`, { name: 'ext-emoji' }, 'emoji', 'emoji.png', pngBytes)
+await testCase('POST /groups/:id/emoji-packs/:packId/emojis', async () => {
+	const r = await chatApiMultipart('POST', `/groups/${gid}/emoji-packs/${gid}/emojis`, { name: 'ext-emoji' }, 'emoji', 'emoji.png', pngBytes)
 	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
 	gEmojiId = r.json.entry?.emojiId
 	return Boolean(gEmojiId)
 })
 
-await testCase('GET /groups/:id/emojis/:id/data (json)', async () => {
-	const r = await api('GET', `/groups/${gid}/emojis/${gEmojiId}/data?json=1`)
+await testCase('GET /groups/:id/emoji-packs/:packId/emojis/:id/data (json)', async () => {
+	const r = await api('GET', `/groups/${gid}/emoji-packs/${gid}/emojis/${gEmojiId}/data?json=1`)
 	return r.status === 200 && String(r.json.dataUrl ?? '').startsWith('data:')
 })
 
-await testCase('POST /custom-emojis/save (from group emoji)', async () => {
-	const r = await api('POST', '/custom-emojis/save', { groupId: gid, emojiId: gEmojiId, dataUrl: pngDataUrl })
+await testCase('POST emoji-usage/collection/packs (from group emoji pack)', async () => {
+	const r = await api('POST', '/emoji-usage/collection/packs', { packId: gid })
 	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
-	return Boolean(r.json.entry?.id)
+	return r.json.collection?.packIds?.includes(gid)
 })
 
-await testCase('DELETE /groups/:id/emojis/:id', async () => {
-	const r = await api('DELETE', `/groups/${gid}/emojis/${gEmojiId}`)
+await testCase('DELETE /groups/:id/emoji-packs/:packId/emojis/:id', async () => {
+	const r = await api('DELETE', `/groups/${gid}/emoji-packs/${gid}/emojis/${gEmojiId}`)
 	return r.status === 200
 })
 
@@ -424,9 +419,9 @@ writeLiveSection('F. Sessions & misc writes')
 let pluginName = null
 let pluginAddStatus = null
 
-await testCase('GET /custom-emojis contains saved entry', async () => {
-	const r = await api('GET', '/custom-emojis')
-	return r.status === 200 && (r.json.entries?.filter(row => row.groupId === gid).length ?? 0) >= 1
+await testCase('GET emoji-usage contains collected pack', async () => {
+	const r = await api('GET', '/emoji-usage')
+	return r.status === 200 && (r.json.collection?.packIds || []).includes(gid)
 })
 
 await testCase('channel archive export/import round-trip', async () => {

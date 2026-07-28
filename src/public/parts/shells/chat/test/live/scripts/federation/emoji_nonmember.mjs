@@ -49,7 +49,7 @@ await testCase('A creates group (B stays non-member)', async () => {
 })
 
 await testCase('A uploads group emoji', async () => {
-	const r = await ApiMultipart(FedA, 'POST', `/groups/${gid}/emojis`, { name: 'nm-emoji' }, 'emoji', 'fed.png', FedPngBytes)
+	const r = await ApiMultipart(FedA, 'POST', `/groups/${gid}/emoji-packs/${gid}/emojis`, { name: 'nm-emoji' }, 'emoji', 'fed.png', FedPngBytes)
 	if (r.status !== 201) throw new Error(`upload ${r.status}: ${r.raw}`)
 	emojiId = r.json.entry?.emojiId
 	emojiContentHash = r.json.entry?.contentHash

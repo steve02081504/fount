@@ -290,10 +290,10 @@ function userEntityAvatarsDir(replicaUsername, entityHash) {
 /**
  * @param {string} replicaUsername replica 所有者
  * @param {string} entityHash 作者 entityHash
- * @returns {string} stickers/packs 目录绝对路径
+ * @returns {string} emoji_packs 目录绝对路径
  */
-function userEntityStickerPacksDir(replicaUsername, entityHash) {
-	return join(userEntityDir(replicaUsername, entityHash), 'stickers', 'packs')
+function userEntityEmojiPacksDir(replicaUsername, entityHash) {
+	return join(userEntityDir(replicaUsername, entityHash), 'emoji_packs')
 }
 
 /**
@@ -335,28 +335,28 @@ export function entityAvatarsDir(replicaUsername, entityHash) {
 /**
  * @param {string} replicaUsername replica 所有者
  * @param {string} entityHash 作者 entityHash
- * @returns {string} stickers/packs 目录绝对路径
+ * @returns {string} emoji_packs 目录绝对路径
  */
-export function entityStickersPacksRoot(replicaUsername, entityHash) {
-	return userEntityStickerPacksDir(replicaUsername, entityHash)
+export function entityEmojiPacksRoot(replicaUsername, entityHash) {
+	return userEntityEmojiPacksDir(replicaUsername, entityHash)
 }
 
 /**
  * @param {string} replicaUsername replica 所有者
  * @param {string} authorEntityHash 作者 entityHash
- * @param {string} packId 贴纸包 ID
- * @returns {string} 贴纸包目录绝对路径
+ * @param {string} packId 表情包 ID
+ * @returns {string} 表情包目录绝对路径
  */
-export function entityStickerPackDir(replicaUsername, authorEntityHash, packId) {
-	return join(entityStickersPacksRoot(replicaUsername, authorEntityHash), packId)
+export function entityEmojiPackDir(replicaUsername, authorEntityHash, packId) {
+	return join(entityEmojiPacksRoot(replicaUsername, authorEntityHash), packId)
 }
 
 /**
  * @param {string} replicaUsername replica 所有者
  * @param {string} authorEntityHash 作者 entityHash
- * @param {string} packId 贴纸包 ID
- * @returns {string} 贴纸媒体目录绝对路径
+ * @param {string} packId 表情包 ID
+ * @returns {string} 表情包 binaries 目录绝对路径
  */
-export function entityStickerPackMediaDir(replicaUsername, authorEntityHash, packId) {
-	return join(entityStickerPackDir(replicaUsername, authorEntityHash, packId), 'media')
+export function entityEmojiPackBinariesDir(replicaUsername, authorEntityHash, packId) {
+	return join(entityEmojiPackDir(replicaUsername, authorEntityHash, packId), 'binaries')
 }

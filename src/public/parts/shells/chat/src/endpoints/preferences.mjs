@@ -1,5 +1,14 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { authenticate } from '../../../../../../server/auth/index.mjs'
+import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
+import { isPackAvailableToUser } from '../emojiAvailability.mjs'
+import {
+	addPackToCollection,
+	listCollection,
+	loadEmojiUsage,
+	loadUsagePayload,
+	recordEmojiUsage,
+	removePackFromCollection,
+} from '../emojiUsage.mjs'
 import { CHAT_API_PREFIX } from '../group/routes/path.mjs'
 
 import { chatClientFromReq } from './shared.mjs'
@@ -27,22 +36,33 @@ export function registerPrefsRoutes(router) {
 		res.status(200).json(await client.groupFolders.set(req.body.folders || []))
 	})
 
-	router.get(`${CHAT_API_PREFIX}/custom-emojis`, authenticate, async (req, res) => {
-		const { client } = await chatClientFromReq(req)
-		res.status(200).json(await client.emojis.list())
+	router.get(`${CHAT_API_PREFIX}/emoji-usage`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const state = loadEmojiUsage(username)
+		res.status(200).json({
+			log: state.log,
+			lastUsedAtByPack: state.lastUsedAtByPack,
+			collection: state.collection,
+		})
 	})
-	router.put(`${CHAT_API_PREFIX}/custom-emojis`, authenticate, async (req, res) => {
-		const { client } = await chatClientFromReq(req)
-		res.status(200).json(await client.emojis.set(req.body.entries || []))
+	router.post(`${CHAT_API_PREFIX}/emoji-usage/record`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		recordEmojiUsage(username, req.body || {})
+		res.status(200).json(loadUsagePayload(username))
 	})
-	router.post(`${CHAT_API_PREFIX}/custom-emojis/save`, authenticate, async (req, res) => {
-		const { client } = await chatClientFromReq(req)
-		try {
-			res.status(200).json(await client.emojis.save(req.body || {}))
-		}
-		catch (error) {
-			throw httpError(400, error?.message || 'save custom emoji failed')
-		}
+	router.post(`${CHAT_API_PREFIX}/emoji-usage/collection/packs`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const packId = String(req.body?.packId || '').trim()
+		if (!packId) throw httpError(400, 'packId required')
+		if (!await isPackAvailableToUser(username, packId))
+			throw httpError(404, 'pack not available')
+		addPackToCollection(username, packId)
+		res.status(200).json({ collection: listCollection(username) })
+	})
+	router.delete(`${CHAT_API_PREFIX}/emoji-usage/collection/packs/:packId`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		removePackFromCollection(username, req.params.packId)
+		res.status(200).json({ collection: listCollection(username) })
 	})
 
 	router.get(`${CHAT_API_PREFIX}/emoji-usage/frequent`, authenticate, async (req, res) => {

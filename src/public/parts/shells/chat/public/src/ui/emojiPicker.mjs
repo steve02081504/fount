@@ -1,9 +1,8 @@
 /**
  * 【文件】public/src/ui/emojiPicker.mjs
- * 【职责】浮动表情选择器：常用 emoji、Unicode 分组、群/自定义表情 Tab。
- * 【原理】showEmojiPicker 定位浮层；onClickOutside 关闭；拉取 fetchFrequentEmojis 与 loadUnicodeEmojiByGroup。
- * 【数据结构】COMMON_EMOJIS 常量、onPick(emoji) 回调。
- * 【关联】clickOutside.mjs、emojiUsageApi、unicodeEmojiData、customEmojis。
+ * 【职责】反应条用 Unicode 选择器（emoji-picker-element）；composer 用共享 components/emojiPicker。
+ * 【原理】showEmojiPicker 定位浮层；onClickOutside 关闭。
+ * 【关联】clickOutside.mjs；reactionWire。
  */
 import { onClickOutside } from './clickOutside.mjs'
 

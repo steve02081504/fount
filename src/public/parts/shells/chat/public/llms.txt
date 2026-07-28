@@ -12,6 +12,7 @@ WebSocket：`/ws/parts/shells:chat/groups/:ownerNodeHash/:groupId`（Hub、群�
 |------|------|
 | `GET /parts/shells:chat/` | 重定向至 `/parts/shells:chat/hub/`，保留 `location.hash` |
 | `GET /parts/shells:chat/hub/` | 主壳：会话列表、频道、消息；`#group:{groupId}:{channelId}`；`?char=` 角色直达 |
+| `GET /parts/shells:chat/emoji-packs/` | 表情包探索：附近公开群包 / 作者包；仅加群或关注 |
 
 ---
 
@@ -125,13 +126,27 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 | GET/PUT | `/translation-prefs` | `{ prefs: { autoTranslate, targetLocale?, excludeLocales? } }`（实体私有） |
 | POST | `/translate` | body `{ text, targetLang }` → `{ translated, cached }` |
 | GET/PUT | `/care` | 特别关心列表；PUT body `{ targetEntityHash, cared? }` |
-| GET/PUT | `/custom-emojis` | 自定义表情（operator 实体私有） |
-| POST | `/custom-emojis/save` | 保存他人表情到库 |
-| GET | `/groups/:groupId/emojis` | 群自定义表情 manifest |
-| POST | `/groups/:groupId/emojis` | 上传群表情（multipart `emoji`） |
-| DELETE | `/groups/:groupId/emojis/:emojiId` | 删除群表情 |
-| GET | `/groups/:groupId/emojis/:emojiId/data` | 表情二进制；按 contentHash CAS 就近复用；`?json=1` 返回 dataUrl + contentHash |
-| GET | `/emoji-content/:groupId/:emojiId` | 非成员可读表情内容（同上解析路径） |
+| GET | `/emoji-usage` | 表情用量与收藏 `{ log, lastUsedAtByPack, collection }` |
+| POST | `/emoji-usage/record` | 记录用量 body item（unicode / pack） |
+| POST | `/emoji-usage/collection/packs` | 收藏 pack body `{ packId }`（须可用） |
+| DELETE | `/emoji-usage/collection/packs/:packId` | 取消收藏 |
+| GET | `/emoji-usage/frequent?limit=` | 700 窗口内常用表情 `{ entries }` |
+| GET | `/groups/:groupId/emoji-packs` | 群表情包摘要列表 |
+| POST | `/groups/:groupId/emoji-packs` | 创建 pack `{ packId?, localized? }` |
+| GET | `/groups/:groupId/emoji-packs/:packId` | pack manifest |
+| PUT | `/groups/:groupId/emoji-packs/:packId` | 更新 pack localized |
+| DELETE | `/groups/:groupId/emoji-packs/:packId` | 删除 pack |
+| POST | `/groups/:groupId/emoji-packs/:packId/emojis` | 上传表情（multipart `emoji`） |
+| DELETE | `/groups/:groupId/emoji-packs/:packId/emojis/:emojiId` | 删除表情 |
+| GET | `/groups/:groupId/emoji-packs/:packId/emojis/:emojiId/data` | 表情二进制；`?json=1` → dataUrl |
+| GET | `/emoji-content/:packId/:emojiId` | 按 packId 解析内容（群包 ∪ 实体作者包） |
+| GET | `/emoji-packs` | 可用 pack 列表（已加入群包 ∪ 自有实体包） |
+| GET | `/entities/:entityHash/emoji-packs` | 实体作者包摘要 |
+| POST | `/entities/:entityHash/emoji-packs` | 创建作者包 `{ packId?, localized? }` |
+| GET/PUT/DELETE | `/entities/:entityHash/emoji-packs/:packId` | 读写删 pack |
+| POST | `/entities/:entityHash/emoji-packs/:packId/emojis` | multipart `emoji` 上传 |
+| DELETE | `/entities/:entityHash/emoji-packs/:packId/emojis/:emojiId` | 删除表情 |
+| GET | `/entities/:entityHash/emoji-packs/:packId/emojis/:emojiId/data` | 表情二进制；`?json=1` → dataUrl |
 | GET | `/groups/:groupId/preview` | 群卡片预览（公开信息；私密群隐藏加入入口） |
 | GET | `/discovery` | 本地群发现索引（`?limit=`）；条目含 `sources[]` 来源 node |
 | POST | `/discovery/refresh` | 向已加入群联邦邻居广播 `discovery_announce` |
@@ -144,7 +159,8 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 **HLC 入站**：联邦相关类型若未来 skew 超 `hlcMaxSkewMs`，消息类写入 `quarantine.jsonl` 待时钟恢复后重放，其余 aclGated 类型硬拒；`session_*` 仅本地 append 允许，联邦入站拒收。
 
-**贴纸**（前缀 `/api/parts/shells:chat/stickers/`）：`POST /import` body `{ dataUrl: "data:image/…;base64,…", name? }` — 写入用户「我的收藏」包并加入收藏（§6）。
+**贴纸消息**：wire `type:'sticker'` + `emojiRef`（`:[emoji:packId/emojiId]:`）；与行内 emoji 同源，composer 单按钮——点击插 token，长按/右键发贴纸。不再有独立 `/stickers/*` API。
+
 | POST | `/attachments` | multipart 聊天附件入库，响应 `{ hashes: string[] }` |
 | GET | `/attachments/:hash` | 按 BLAKE2b hash 取附件字节 |
 
@@ -284,7 +300,7 @@ import 入口：`src/public/parts/shells/chat/src/api/client/index.mjs` → `get
 - **写事件**：该实体 per-group `local_signer_seed` 自签；权限主体恒为 `sender`。无代签 / `acting*` 归因字段。
 - **对象**：`ChatClient` → `Group` → `Channel` / `Member` / `Role`；`Message` 由 `channel.send` 或 `client.messageFrom(onMessageEvent)` 水合。`Message.content` 恒为 fount 正文（`string`，同 `chatLogEntry_t` / `OnMessage`）；附件在 `Message.files`。
 - **生命周期**：`createGroup` / `openDm` / `join` 均以绑定实体签名（DM 对端须为可解析用户 pubKeyHash）。
-- **私有状态**：`bookmarks` / `groupFolders` / `aliases` / `readMarkers` / `notifications` / `inbox` / `emojis` / `stickers` / `care` 均挂在绑定实体目录下。
+- **私有状态**：`bookmarks` / `groupFolders` / `aliases` / `readMarkers` / `notifications` / `inbox` / `emojis`（emoji_usage）/ `care` 均挂在绑定实体或用户 shellData 下。
 - **会话 / 联邦 / 节点**：`Group.session.*`、`Group.federation.catchup/setTuning`、`Group.fork/blockOpposingFork`、`Group.reputation`、`ChatClient.reputation`、`ChatClient.nodeDenylist`、`Channel.triggerReply` / `streamingAuth`、`updateProfile` / `updateEntityProfile` / `setOwner`。
 - **写路径**：消息发送走 `commitChannelMessageEvent`；其余写操作走 `appendSignedLocalEvent(..., { entityHash })`。
 - **桥接（虚拟会话）**：平台 bot 不建真实 Hub 群。虚拟群 id = `bridge:{platform}:{platformChatId}`；进程内 chat log + `bridgeOperations` 出站。`group.bridge` 含 `platform` / `platformChatId` / `chatKind` / `botname`；`group.bridgeBot().stop()` / `client.bridgeBots()`。无 char 级杀进程。

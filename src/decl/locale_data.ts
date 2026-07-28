@@ -1040,6 +1040,7 @@ export type LocaleData = {
 				emojisCreatePackPrompt: string
 				emojisCreatePackOk: string
 				emojisCreatePackFailed: string
+				emojisPackGroupSuffix: string
 				activeEmojiPackLabel: string
 				emojisDelete: string
 				emojisEmpty: string

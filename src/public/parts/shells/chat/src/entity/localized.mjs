@@ -1,5 +1,6 @@
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
+import { pickLocalizedSlice } from '../../../../../../scripts/i18n/locale_match.mjs'
 import { applySfwOverlay } from '../../../../../../scripts/sfw.mjs'
 
 import { profileAvatarFileUrl, profileSfwAvatarFileUrl } from './filesUrl.mjs'
@@ -86,23 +87,6 @@ export function normalizeLocalizedMap(localizedInput) {
 		if (Object.keys(slice).length) out[localeKey] = slice
 	}
 	return out
-}
-
-/**
- * @param {Record<string, object>} localized 多语言切片
- * @param {string[]} locales 区域设置优先级
- * @returns {object | null} 匹配的语言切片
- */
-function pickLocalizedSlice(localized, locales) {
-	const keys = Object.keys(localized || {})
-	if (!keys.length) return null
-	for (const locale of locales || []) {
-		if (localized[locale]) return localized[locale]
-		const prefix = String(locale).split('-')[0]
-		const hit = keys.find(k => k === prefix || k.startsWith(`${prefix}-`))
-		if (hit) return localized[hit]
-	}
-	return localized[keys[0]]
 }
 
 /**

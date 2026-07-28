@@ -282,6 +282,17 @@ export async function performMemberJoin(username, groupId, options = {}) {
 		const { state: afterJoin } = await getState(username, groupId)
 		await maybeAssignEcdhDmAdmin(username, groupId, afterJoin)
 		defaultChannelId = afterJoin.groupSettings?.defaultChannelId || 'default'
+		try {
+			const { convergeLinkedDefault, groupDefaultLinkKey, resolveGroupDefaultPackId } = await import('../../emojiUsage.mjs')
+			convergeLinkedDefault(
+				username,
+				groupDefaultLinkKey(groupId),
+				resolveGroupDefaultPackId(afterJoin.groupSettings, groupId),
+			)
+		}
+		catch (error) {
+			console.warn('federation: emoji default converge after join failed', error)
+		}
 	}
 
 	await bindJoinFederation(username, groupId)

@@ -16,13 +16,6 @@
 				"path": "providers/emoji.mjs"
 			}
 		],
-		"sticker": [
-			{
-				"id": "chatSticker",
-				"level": 0,
-				"path": "providers/sticker.mjs"
-			}
-		],
 		"home_function_buttons": [
 			{
 				"id": "function_buttons",

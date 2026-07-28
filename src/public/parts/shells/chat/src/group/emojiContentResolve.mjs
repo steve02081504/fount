@@ -14,6 +14,7 @@ import { ensureFederationRoom } from '../chat/federation/room.mjs'
 import { resolveActiveMemberKeyForLocalUser } from './access.mjs'
 import {
 	computeEmojiContentHash,
+	findPackAcrossGroups,
 	getGroupEmojiEntry,
 	persistGroupEmojiFromDataUrl,
 	readGroupEmojiBinary,
@@ -36,14 +37,15 @@ async function isLocalActiveGroupMember(username, groupId) {
 }
 
 /**
- * @param {string} username 用户
+ * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {string} emojiId 表情 ID
- * @param {{ contentHash?: string }} [options] 可选 contentHash（如 Social mediaRef 或查询参数）
- * @returns {Promise<{ buffer: Buffer, mimeType: string, entry: object } | null>} 表情二进制或 null。
+ * @param {{ contentHash?: string, packId?: string }} [options] 可选 contentHash / packId
+ * @returns {Promise<{ buffer: Buffer, mimeType: string, entry: object, packId?: string } | null>} 表情二进制
  */
 export async function resolveGroupEmojiContent(username, groupId, emojiId, options = {}) {
-	let local = await readGroupEmojiBinary(username, groupId, emojiId)
+	const packId = String(options.packId || '').trim() || undefined
+	let local = await readGroupEmojiBinary(username, groupId, emojiId, packId)
 	if (local) {
 		if (!local.entry.contentHash) {
 			const contentHash = await storeEmojiInCas(local.buffer).catch(() => null)
@@ -52,10 +54,11 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId, optio
 		return local
 	}
 
-	const entry = await getGroupEmojiEntry(username, groupId, emojiId)
+	const entry = await getGroupEmojiEntry(username, groupId, emojiId, packId)
 	const hintedHash = String(options.contentHash || '').trim().toLowerCase()
 	const contentHash = entry?.contentHash || (isHex64(hintedHash) ? hintedHash : null)
 	const mimeType = entry?.mimeType || 'image/png'
+	const resolvedPackId = packId || local?.packId || groupId
 
 	if (contentHash) {
 		await ensureUserRoom({ replicaUsername: username }).catch(() => null)
@@ -83,17 +86,18 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId, optio
 				`data:${mimeType};base64,${buffer.toString('base64')}`,
 				mimeType,
 				entry?.name,
+				resolvedPackId,
 			).catch(() => { })
-			local = await readGroupEmojiBinary(username, groupId, emojiId)
+			local = await readGroupEmojiBinary(username, groupId, emojiId, resolvedPackId)
 			if (local) return local
 			return {
 				buffer,
 				mimeType,
 				entry: { ...entry || { emojiId }, contentHash: contentHash || computeEmojiContentHash(buffer) },
+				packId: resolvedPackId,
 			}
 		}
-		// CAS 未命中：A 可能在等待期间已主动推送 fed_emoji_data 并写入本地（replicateGroupEmojisToPeer）
-		local = await readGroupEmojiBinary(username, groupId, emojiId)
+		local = await readGroupEmojiBinary(username, groupId, emojiId, resolvedPackId)
 		if (local) return local
 	}
 
@@ -101,11 +105,11 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId, optio
 	const slot = isMember ? await ensureFederationRoom(username, groupId).catch(() => null) : null
 	await ensureUserRoom({ replicaUsername: username }).catch(() => null)
 	const fetched = slot?.requestGroupEmoji
-		? await slot.requestGroupEmoji(emojiId)
+		? await slot.requestGroupEmoji(emojiId, resolvedPackId)
 		: null
 	const userRoomFetched = fetched?.dataUrl
 		? fetched
-		: await requestGroupEmojiFromUserRoom(username, groupId, emojiId)
+		: await requestGroupEmojiFromUserRoom(username, groupId, emojiId, resolvedPackId)
 	if (userRoomFetched?.dataUrl) {
 		await persistGroupEmojiFromDataUrl(
 			username,
@@ -113,11 +117,59 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId, optio
 			emojiId,
 			userRoomFetched.dataUrl,
 			userRoomFetched.mimeType,
+			undefined,
+			resolvedPackId,
 		).catch(() => { })
-		return readGroupEmojiBinary(username, groupId, emojiId)
+		return readGroupEmojiBinary(username, groupId, emojiId, resolvedPackId)
 	}
 
-	// emoji-want 超时后再做一次本地检查：A 在等待期内推送了 fed_emoji_data 并由 handleFedEmojiData 写盘
-	return readGroupEmojiBinary(username, groupId, emojiId)
+	return readGroupEmojiBinary(username, groupId, emojiId, resolvedPackId)
+}
 
+/**
+ * 按全局 packId 解析内容（扫本机群目录定位 pack）。
+ * @param {string} username 用户名
+ * @param {string} packId 表情包 ID
+ * @param {string} emojiId 表情 ID
+ * @param {{ contentHash?: string }} [options] 可选 contentHash
+ * @returns {Promise<{ buffer: Buffer, mimeType: string, entry: object, packId?: string } | null>} 表情二进制
+ */
+export async function resolvePackEmojiContent(username, packId, emojiId, options = {}) {
+	const located = await findPackAcrossGroups(username, packId)
+	if (located)
+		return resolveGroupEmojiContent(username, located.groupId, emojiId, {
+			contentHash: options.contentHash,
+			packId,
+		})
+
+	const { findPackAcrossEntities, readEntityPackEmojiBinary } = await import('../entity/entityEmojis.mjs')
+	const entityLocated = await findPackAcrossEntities(packId)
+	if (!entityLocated) return null
+	const local = await readEntityPackEmojiBinary(
+		entityLocated.replicaUsername,
+		entityLocated.authorEntityHash,
+		packId,
+		emojiId,
+	)
+	if (local) return local
+
+	const entry = (entityLocated.manifest?.items || []).find(row => row?.emojiId === emojiId)
+	const hintedHash = String(options.contentHash || '').trim().toLowerCase()
+	const contentHash = entry?.contentHash || (isHex64(hintedHash) ? hintedHash : null)
+	if (!contentHash) return null
+
+	await ensureUserRoom({ replicaUsername: username }).catch(() => null)
+	const chunk = await fetchChunk({
+		username,
+		ciphertextHash: contentHash,
+	}).catch(() => null)
+	if (!chunk?.byteLength) return null
+	const buffer = Buffer.from(chunk)
+	const mimeType = entry?.mimeType || 'image/png'
+	return {
+		buffer,
+		mimeType,
+		entry: { ...entry || { emojiId }, contentHash },
+		packId,
+	}
 }
