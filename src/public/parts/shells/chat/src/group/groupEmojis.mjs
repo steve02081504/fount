@@ -111,17 +111,6 @@ export async function deletePack(username, groupId, packId) {
 /**
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @returns {Promise<object>} 默认 pack
- */
-export async function ensureDefaultGroupPack(username, groupId) {
-	const existing = await loadPackManifest(username, groupId, groupId)
-	if (existing) return existing
-	return createPack(username, groupId, { packId: groupId })
-}
-
-/**
- * @param {string} username 用户名
- * @param {string} groupId 群 ID
  * @param {string} packId 表情包 ID
  * @param {string} emojiId 表情 ID
  * @returns {Promise<object | null>} 条目
@@ -245,25 +234,6 @@ export async function resolveGroupEmojiBinaryPath(username, groupId, emojiId, pa
 /**
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @returns {Promise<object[]>} 展平条目
- */
-export async function loadGroupEmojiManifest(username, groupId) {
-	const packs = await listGroupPacks(username, groupId)
-	/** @type {object[]} */
-	const entries = []
-	for (const pack of packs)
-		for (const item of pack.items || [])
-			entries.push({
-				...item,
-				packId: pack.packId,
-				name: store.itemDisplayName(item) || item.emojiId,
-			})
-	return entries
-}
-
-/**
- * @param {string} username 用户名
- * @param {string} groupId 群 ID
  * @param {string} packId 表情包 ID
  * @param {Buffer} buffer 图片字节
  * @param {string} originalname 原始文件名
@@ -287,39 +257,12 @@ export async function uploadPackEmoji(username, groupId, packId, buffer, origina
 /**
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @param {Buffer} buffer 图片字节
- * @param {string} originalname 原始文件名
- * @param {string} mimeType MIME
- * @param {string} [name] 显示名
- * @returns {Promise<object>} 新条目
- */
-export async function uploadGroupEmoji(username, groupId, buffer, originalname, mimeType, name) {
-	await ensureDefaultGroupPack(username, groupId)
-	return uploadPackEmoji(username, groupId, groupId, buffer, originalname, mimeType, name)
-}
-
-/**
- * @param {string} username 用户名
- * @param {string} groupId 群 ID
  * @param {string} packId 表情包 ID
  * @param {string} emojiId 表情 ID
  * @returns {Promise<boolean>} 是否删除
  */
 export async function deletePackEmoji(username, groupId, packId, emojiId) {
 	return store.deletePackEmoji(groupEmojiPacksRoot(username, groupId), groupSource(groupId), packId, emojiId)
-}
-
-/**
- * @param {string} username 用户名
- * @param {string} groupId 群 ID
- * @param {string} emojiId 表情 ID
- * @returns {Promise<boolean>} 是否删除
- */
-export async function deleteGroupEmoji(username, groupId, emojiId) {
-	if (await deletePackEmoji(username, groupId, groupId, emojiId)) return true
-	const found = await findEmojiInGroupPacks(username, groupId, emojiId)
-	if (!found) return false
-	return deletePackEmoji(username, groupId, found.packId, emojiId)
 }
 
 /**
@@ -341,25 +284,28 @@ export async function upsertGroupEmojiManifestEntry(username, groupId, entry) {
 		manifest = await store.loadPackManifest(root, packId, source)
 	}
 	const existing = manifest.items.find(row => row?.emojiId === emojiId)
-	const displayName = String(entry.name || store.itemDisplayName(existing) || emojiId)
-	const { packId: _omitPackId, ...entryFields } = entry
-	void _omitPackId
+	const name = String(entry.name ?? store.itemDisplayName(existing) ?? emojiId)
+	const mimeType = String(entry.mimeType || existing?.mimeType || 'image/png')
+	const ext = String(entry.ext || existing?.ext || store.extFromMime(mimeType))
+	const animated = entry.animated != null ? Boolean(entry.animated) : Boolean(existing?.animated ?? mimeType.includes('gif'))
+	const contentHashRaw = String(entry.contentHash || '').trim().toLowerCase()
+	const contentHash = /^[\da-f]{64}$/u.test(contentHashRaw) ? contentHashRaw : undefined
 	const merged = {
 		...existing || {
 			emojiId,
-			localized: store.localizedFromName(displayName),
-			name: displayName,
-			mimeType: 'image/png',
-			ext: '.png',
-			animated: false,
+			localized: store.localizedFromName(name),
 			uploadedAt: Date.now(),
 			uploadedBy: 'federation',
 		},
-		...entryFields,
 		emojiId,
+		name,
+		mimeType,
+		ext,
+		animated,
+		...contentHash ? { contentHash } : {},
 	}
 	if (entry.name && !entry.localized)
-		merged.localized = { ...merged.localized, ...store.localizedFromName(entry.name) }
+		merged.localized = { ...merged.localized, ...store.localizedFromName(name) }
 	if (existing) Object.assign(existing, merged)
 	else manifest.items.push(merged)
 	await store.savePackManifest(root, manifest)
@@ -400,18 +346,16 @@ export async function listAvailableGroupPacksForUser(username, options = {}) {
 	const { resolveActiveMemberKeyForLocalReplica } = await import('./access.mjs')
 
 	const groupIds = filterGroupId ? [filterGroupId] : await listUserGroups(username)
-	/** @type {object[]} */
-	const out = []
-	for (const groupId of groupIds) {
+	const settled = await Promise.all(groupIds.map(async groupId => {
 		let state
 		try {
 			({ state } = await getState(username, groupId, { skipLeftPurge: true }))
 		}
 		catch {
-			continue
+			return []
 		}
 		const memberKey = await resolveActiveMemberKeyForLocalReplica(username, groupId, state)
-		if (!memberKey) continue
+		if (!memberKey) return []
 		const member = state.members?.[memberKey]
 		const joinedAt = member?.joinedAt ?? null
 		const defaultEmojiPackId = state.groupSettings?.defaultEmojiPackId || null
@@ -420,14 +364,13 @@ export async function listAvailableGroupPacksForUser(username, options = {}) {
 			avatar: state.groupMeta?.avatar ?? null,
 		}
 		const packs = await listGroupPacks(username, groupId)
-		for (const pack of packs)
-			out.push({
-				...pack,
-				groupId,
-				joinedAt,
-				defaultEmojiPackId,
-				infoDefaults,
-			})
-	}
-	return out
+		return packs.map(pack => ({
+			...pack,
+			groupId,
+			joinedAt,
+			defaultEmojiPackId,
+			infoDefaults,
+		}))
+	}))
+	return settled.flat()
 }

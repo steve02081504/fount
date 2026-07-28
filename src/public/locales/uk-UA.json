@@ -1074,6 +1074,7 @@
 				"emojisCreatePackPrompt": "ID набору",
 				"emojisCreatePackOk": "Набір емодзі створено",
 				"emojisCreatePackFailed": "Не вдалося створити: ${error}",
+				"emojisPackGroupSuffix": "група",
 				"activeEmojiPackLabel": "Набір у редагуванні",
 				"emojisDelete": "Видалити смайлик",
 				"emojisEmpty": "Групових виразів ще немає",

@@ -8,6 +8,7 @@ import {
 	trimUsageLog,
 	USAGE_WINDOW,
 } from '../features/emoji/order.mjs'
+import { resolvePackEmojiUrl } from '../features/emoji/packIndex.mjs'
 import { aggregateEmojiPacks } from '../features/emoji/providers.mjs'
 import {
 	loadUnicodeEmojiByGroup,
@@ -30,6 +31,30 @@ export { showEmojiPackPreview } from './emojiPackPreview.mjs'
 
 const CSS_ID = 'fount-emoji-picker-css'
 const CSS_HREF = '/scripts/components/emojiPicker.css'
+
+/**
+ * 来源侧默认包：provider 回显的 defaultEmojiPackId 与 packId 对齐。
+ * @param {object} pack pack
+ * @returns {boolean} 是否为来源默认包
+ */
+function isSourceDefaultPack(pack) {
+	return Boolean(pack?.packId && pack.defaultEmojiPackId === pack.packId)
+}
+
+/**
+ * 把 manifest 条目补成 grid 可渲染的 pack item。
+ * @param {string} packId 所属包
+ * @param {object} item manifest 条目
+ * @returns {object} 带 kind / packId / emojiRef 的条目
+ */
+function enrichPackItem(packId, item) {
+	return {
+		...item,
+		kind: 'pack',
+		packId,
+		emojiRef: item.emojiRef || (item.emojiId ? `:[emoji:${packId}/${item.emojiId}]:` : ''),
+	}
+}
 
 /**
  * @returns {void}
@@ -82,7 +107,7 @@ function appendEmojiGridItem(grid, item) {
 		gridButton.className = 'emoji-grid-button group-emoji-grid-button'
 		gridButton.dataset.packId = packId
 		gridButton.dataset.groupEmojiId = item.emojiId
-		gridButton.dataset.groupEmojiRef = item.emojiRef || ''
+		gridButton.dataset.groupEmojiRef = item.emojiRef || (packId && item.emojiId ? `:[emoji:${packId}/${item.emojiId}]:` : '')
 		gridButton.title = item.name || item.label || item.emojiId
 		if (item.previewUrl) {
 			const img = document.createElement('img')
@@ -92,6 +117,8 @@ function appendEmojiGridItem(grid, item) {
 			img.className = 'group-emoji-img'
 			gridButton.appendChild(img)
 		}
+		else
+			gridButton.textContent = item.name || item.label || item.emojiId || '?'
 		grid.appendChild(gridButton)
 		return
 	}
@@ -123,15 +150,16 @@ async function buildSections(context = {}) {
 		if (parsed?.kind === 'pack') usedPackIds.add(parsed.packId)
 	}
 
-	const visiblePacks = packs.filter(p => collectionIds.has(p.packId) || usedPackIds.has(p.packId) || p.isDefault)
+	const visiblePacks = packs.filter(p => collectionIds.has(p.packId) || usedPackIds.has(p.packId) || isSourceDefaultPack(p))
 	const contextDefaultPackIds = []
 	if (context.groupId) {
-		const groupPacks = packs.filter(p => p.groupId === context.groupId || p.source?.id === context.groupId)
-		const def = groupPacks.find(p => p.isDefault) || groupPacks[0]
-		if (def) contextDefaultPackIds.push(def.packId)
+		const groupPack = packs.find(p =>
+			(p.groupId === context.groupId || p.source?.id === context.groupId) && isSourceDefaultPack(p))
+		if (groupPack) contextDefaultPackIds.push(groupPack.packId)
 	}
 	if (context.replyToEntityHash) {
-		const entityPack = packs.find(p => p.source?.kind === 'entity' && p.source.id === context.replyToEntityHash && p.isDefault)
+		const entityPack = packs.find(p =>
+			p.source?.kind === 'entity' && p.source.id === context.replyToEntityHash && isSourceDefaultPack(p))
 		if (entityPack) contextDefaultPackIds.push(entityPack.packId)
 	}
 	for (const id of contextDefaultPackIds) {
@@ -154,16 +182,20 @@ async function buildSections(context = {}) {
 			}
 			const pack = packById.get(parsed.packId)
 			const item = pack?.items?.find(i => i.emojiId === parsed.emojiId)
-			if (item) items.push(item)
-			else
+			if (item) items.push(enrichPackItem(parsed.packId, item))
+			else {
+				const previewUrl = await resolvePackEmojiUrl(parsed.packId, parsed.emojiId, {
+					providers: pack?._provider ? [pack._provider] : undefined,
+				})
 				items.push({
 					kind: 'pack',
 					packId: parsed.packId,
 					emojiId: parsed.emojiId,
 					emojiRef: `:[emoji:${parsed.packId}/${parsed.emojiId}]:`,
 					name: parsed.emojiId,
-					previewUrl: pack?._provider?.packContentUrl?.(parsed.packId, parsed.emojiId),
+					previewUrl,
 				})
+			}
 		}
 		sections.push({
 			id: RECENT_EMOJI_SECTION_KEY,
@@ -192,11 +224,19 @@ async function buildSections(context = {}) {
 			pack,
 			avatar: pack.avatar,
 			title: pack.name || packId,
-			items: pack.items || [],
+			items: (pack.items || []).map(item => enrichPackItem(packId, item)),
 		})
 	}
 
-	const { byGroup, order } = await loadUnicodeEmojiByGroup()
+	let byGroup = {}
+	/** @type {string[]} */
+	let order = []
+	try {
+		;({ byGroup, order } = await loadUnicodeEmojiByGroup())
+	}
+	catch (error) {
+		console.warn('[emoji] unicode data load failed', error)
+	}
 	for (const groupName of order) {
 		const codes = byGroup[groupName] || []
 		if (!codes.length) continue
@@ -322,11 +362,14 @@ function renderContinuousPicker(host, sections, handlers) {
 		const sectionEl = document.createElement('section')
 		sectionEl.className = 'emoji-section'
 		sectionEl.dataset.section = section.id
-		const header = document.createElement('h3')
+		const header = document.createElement(section.kind === 'pack' ? 'button' : 'h3')
 		header.className = section.kind === 'pack'
 			? 'emoji-section-header emoji-section-header-pack'
 			: 'emoji-section-header'
-		if (section.kind === 'pack') header.dataset.packPreview = '1'
+		if (section.kind === 'pack') {
+			header.type = 'button'
+			header.dataset.packPreview = '1'
+		}
 		if (section.i18nKey) header.dataset.i18n = section.i18nKey
 		header.textContent = section.title || ''
 		const grid = document.createElement('div')

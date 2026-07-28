@@ -335,6 +335,18 @@ async function buildChatLogEntryFromDagMessage(
 		if (edit && edit !== entry.content) entry.content_for_edit = edit
 	}
 
+	if (replicaUsername) {
+		const fields = ['content', 'content_for_show', 'content_for_edit']
+		const needsDegrade = fields.some(field => typeof entry[field] === 'string' && /:\[emoji:/i.test(entry[field]))
+		if (needsDegrade) {
+			const { degradeTextEmojisAsync } = await import('../../emojiAltText.mjs')
+			for (const field of fields) {
+				if (typeof entry[field] !== 'string' || !/:\[emoji:/i.test(entry[field])) continue
+				entry[field] = await degradeTextEmojisAsync(replicaUsername, entry[field])
+			}
+		}
+	}
+
 	if (content.locale) entry.locale = content.locale
 	if (content.content_warning) entry.content_warning = content.content_warning
 	if (content.sensitive_media) entry.sensitive_media = content.sensitive_media

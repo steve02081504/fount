@@ -60,7 +60,9 @@ test.describe('Chat composer', () => {
 		await expect(picker.locator('.emoji-section').first()).toBeVisible()
 		const gridButton = picker.locator('.emoji-grid-button').first()
 		await expect(gridButton).toBeVisible({ timeout: 30_000 })
-		await expect(gridButton).not.toHaveAttribute('title', '')
+		const title = await gridButton.getAttribute('title')
+		expect(title).toBeTruthy()
+		expect(String(title).trim().length).toBeGreaterThan(0)
 	})
 
 	test('vote modal opens and cancels', async ({ page, groupChannel: _ }) => {

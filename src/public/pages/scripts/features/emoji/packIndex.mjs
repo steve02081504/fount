@@ -7,17 +7,24 @@ const EMOJI_DB = 'fount_emoji_pack_cache'
 const EMOJI_STORE = 'emojis'
 const EMOJI_VER = 1
 
+/** @type {Promise<IDBDatabase> | null} */
+let dbPromise = null
+
 /**
- * 打开 pack 表情 IndexedDB。
+ * 打开（并复用）pack 表情 IndexedDB。
  * @returns {Promise<IDBDatabase>} 数据库连接
  */
 function openEmojiDb() {
-	return new Promise((resolve, reject) => {
+	if (dbPromise) return dbPromise
+	dbPromise = new Promise((resolve, reject) => {
 		const request = indexedDB.open(EMOJI_DB, EMOJI_VER)
 		/**
 		 * @returns {void}
 		 */
-		request.onerror = () => reject(request.error)
+		request.onerror = () => {
+			dbPromise = null
+			reject(request.error)
+		}
 		/**
 		 * @returns {void}
 		 */
@@ -29,8 +36,23 @@ function openEmojiDb() {
 		/**
 		 * @returns {void}
 		 */
-		request.onsuccess = () => resolve(request.result)
+		request.onsuccess = () => {
+			const database = request.result
+			/**
+			 *
+			 */
+			database.onclose = () => { dbPromise = null }
+			/**
+			 *
+			 */
+			database.onversionchange = () => {
+				database.close()
+				dbPromise = null
+			}
+			resolve(database)
+		}
 	})
+	return dbPromise
 }
 
 /**
@@ -72,27 +94,30 @@ export async function getCachedPackEmoji(packId, emojiId) {
 }
 
 /**
- * 写入表情缓存。
+ * 写入表情缓存（best-effort；存储失败视为 miss）。
  * @param {string} packId 包 ID
  * @param {string} emojiId 表情 ID
  * @param {string} dataUrlOrUrl data URL 或远程 URL
  * @returns {Promise<void>}
  */
 export async function putCachedPackEmoji(packId, emojiId, dataUrlOrUrl) {
-	const database = await openEmojiDb()
-	const cacheKey = packEmojiCacheKey(packId, emojiId)
-	await new Promise((resolve, reject) => {
-		const transaction = database.transaction(EMOJI_STORE, 'readwrite')
-		transaction.objectStore(EMOJI_STORE).put({ k: cacheKey, v: dataUrlOrUrl })
-		/**
-		 * @returns {void}
-		 */
-		transaction.oncomplete = () => resolve()
-		/**
-		 * @returns {void}
-		 */
-		transaction.onerror = () => reject(transaction.error)
-	})
+	try {
+		const database = await openEmojiDb()
+		const cacheKey = packEmojiCacheKey(packId, emojiId)
+		await new Promise((resolve, reject) => {
+			const transaction = database.transaction(EMOJI_STORE, 'readwrite')
+			transaction.objectStore(EMOJI_STORE).put({ k: cacheKey, v: dataUrlOrUrl })
+			/**
+			 * @returns {void}
+			 */
+			transaction.oncomplete = () => resolve()
+			/**
+			 * @returns {void}
+			 */
+			transaction.onerror = () => reject(transaction.error)
+		})
+	}
+	catch { /* best-effort cache */ }
 }
 
 /**

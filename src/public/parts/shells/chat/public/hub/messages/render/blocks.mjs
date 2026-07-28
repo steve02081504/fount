@@ -38,15 +38,16 @@ export async function renderStickerBlock(message) {
 	const content = message?.content
 	if (!content || channelMessageKind(content) !== 'sticker') return null
 	let src = String(content.stickerBase64 || '')
-	if (!src && content.emojiRef) {
-		const refMatch = parseEmojiToken(content.emojiRef)
-		if (refMatch)
-			src = await resolvePackEmojiUrl(refMatch.packId, refMatch.emojiId) || ''
-	}
+	const refMatch = parseEmojiToken(content.emojiRef)
+	if (!src && refMatch)
+		src = await resolvePackEmojiUrl(refMatch.packId, refMatch.emojiId) || ''
 	const name = escapeHtml(content.stickerName || content.stickerId || 'sticker')
+	const saveButtonHtml = refMatch?.packId
+		? '<button type="button" class="save-sticker-button" data-i18n="chat.hub.saveSticker"></button>'
+		: ''
 	if (src.startsWith('data:') || src.startsWith('https://') || src.startsWith('http://') || src.startsWith('/'))
-		return renderTemplateAsHtmlString('hub/messages/sticker_block', { src: escapeHtml(src), name })
-	return renderTemplateAsHtmlString('hub/messages/sticker_block_fallback', { name })
+		return renderTemplateAsHtmlString('hub/messages/sticker_block', { src: escapeHtml(src), name, saveButtonHtml })
+	return renderTemplateAsHtmlString('hub/messages/sticker_block_fallback', { name, saveButtonHtml })
 }
 
 /**

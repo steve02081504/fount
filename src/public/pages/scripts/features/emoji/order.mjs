@@ -14,13 +14,18 @@
  */
 export const USAGE_WINDOW = 700
 
+/** pack 用量 id：`packId/emojiId`（与 inline emoji token 内段同形，无 `:[emoji:…]:` 包裹） */
+const PACK_USAGE_ID_RE = /^([\w.-]+)\/([^\r\n/]+)$/u
+
 /**
  * @param {string} packId 包 id
  * @param {string} emojiId 表情 id
  * @returns {string} 日志 id
  */
 export function packEmojiUsageId(packId, emojiId) {
-	return `p:${packId}/${emojiId}`
+	const pid = String(packId || '').trim()
+	const eid = String(emojiId || '').trim()
+	return pid && eid ? `${pid}/${eid}` : ''
 }
 
 /**
@@ -28,7 +33,7 @@ export function packEmojiUsageId(packId, emojiId) {
  * @returns {string} 日志 id
  */
 export function unicodeUsageId(unicode) {
-	return `u:${unicode}`
+	return String(unicode || '').trim()
 }
 
 /**
@@ -58,32 +63,15 @@ export function countUsageInWindow(log) {
 }
 
 /**
- * @param {string} usageId `p:packId/emojiId` 或 `u:…`
+ * @param {string} usageId `packId/emojiId` 或 unicode 字形
  * @returns {{ kind: 'pack', packId: string, emojiId: string } | { kind: 'unicode', unicode: string } | null} 解析结果
  */
 export function parseUsageId(usageId) {
-	const id = String(usageId || '')
-	if (id.startsWith('u:')) {
-		const unicode = id.slice(2)
-		return unicode ? { kind: 'unicode', unicode } : null
-	}
-	if (id.startsWith('p:')) {
-		const body = id.slice(2)
-		const slash = body.indexOf('/')
-		if (slash <= 0) return null
-		const packId = body.slice(0, slash)
-		const emojiId = body.slice(slash + 1)
-		if (!packId || !emojiId) return null
-		return { kind: 'pack', packId, emojiId }
-	}
-	// 兼容旧 g:groupId/emojiId
-	if (id.startsWith('g:')) {
-		const body = id.slice(2)
-		const slash = body.indexOf('/')
-		if (slash <= 0) return null
-		return { kind: 'pack', packId: body.slice(0, slash), emojiId: body.slice(slash + 1) }
-	}
-	return null
+	const id = String(usageId || '').trim()
+	if (!id) return null
+	const pack = PACK_USAGE_ID_RE.exec(id)
+	if (pack) return { kind: 'pack', packId: pack[1], emojiId: pack[2] }
+	return { kind: 'unicode', unicode: id }
 }
 
 /**
@@ -126,7 +114,6 @@ export function packCountsFromLog(log) {
 export function orderPackSections({ packs, contextDefaultPackIds = [], log, lastUsedAtByPack = {} }) {
 	const packById = new Map((packs || []).map(p => [p.packId, p]))
 	const packCounts = packCountsFromLog(log)
-	const contextSet = new Set((contextDefaultPackIds || []).filter(id => packById.has(id)))
 	/** @type {Set<string>} */
 	const placed = new Set()
 	/** @type {{ tier: number, packId: string }[]} */
@@ -160,6 +147,5 @@ export function orderPackSections({ packs, contextDefaultPackIds = [], log, last
 	for (const packId of rest)
 		out.push({ tier: 4, packId })
 
-	void contextSet
 	return out
 }

@@ -45,7 +45,7 @@ function toAnnexB(nalu) {
 
 /**
  * H264 RTP 重组器。
- * @returns {{ feed: (packet: Buffer) => { annexB: Buffer, key: boolean, sps?: Buffer, pps?: Buffer, width?: number, height?: number } | null, reset: () => void }} `feed` 喂入 RTP 包；`reset` 清空 FU 缓冲
+ * @returns {{ feed: (packet: Buffer) => { annexB: Buffer, key: boolean, sps?: Buffer, pps?: Buffer, width?: number, height?: number } | null, reset: () => void }} `feed` 喂入 RTP 包；`reset` 清空 FU-A 分片缓冲并丢弃未完成帧
  */
 export function createH264Depacketizer() {
 	/** @type {Buffer[]} */

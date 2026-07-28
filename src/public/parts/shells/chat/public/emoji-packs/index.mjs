@@ -19,6 +19,26 @@ const CHAT_API = '/api/parts/shells:chat'
 const SOCIAL_API = '/api/parts/shells:social'
 
 /**
+ * @param {HTMLElement} actions 操作区
+ * @param {{ i18nKey: string, fallback: string, className: string, onClick: () => void | Promise<void> }} options 按钮选项
+ * @returns {HTMLButtonElement} 已挂到 actions 的按钮
+ */
+function addActionButton(actions, { i18nKey, fallback, className, onClick }) {
+	const button = document.createElement('button')
+	button.type = 'button'
+	button.className = className
+	button.dataset.i18n = i18nKey
+	button.textContent = geti18n(i18nKey) || fallback
+	button.addEventListener('click', () => {
+		void Promise.resolve(onClick()).catch(error => {
+			showToastI18n('error', 'chat.emoji.previewActionFailed', { error: error.message || String(error) })
+		})
+	})
+	actions.appendChild(button)
+	return button
+}
+
+/**
  * @param {object} offer offer
  * @returns {HTMLElement} 卡片
  */
@@ -54,68 +74,64 @@ function renderOfferCard(offer) {
 	}) || `${offer.itemCount || 0}`
 
 	const actions = card.querySelector('.emoji-pack-offer-actions')
-	const previewBtn = document.createElement('button')
-	previewBtn.type = 'button'
-	previewBtn.className = 'btn btn-ghost btn-sm'
-	previewBtn.dataset.i18n = 'chat.emojiPacks.preview'
-	previewBtn.textContent = geti18n('chat.emojiPacks.preview') || 'Preview'
-	previewBtn.addEventListener('click', () => {
-		void showEmojiPackPreview(previewBtn, {
-			pack: offer,
-			provider: offer._provider,
-			available: false,
-		})
+	/** @type {HTMLButtonElement} */
+	let previewBtn
+	/** @returns {void | Promise<void>} 打开预览 */
+	const openPreview = () => showEmojiPackPreview(previewBtn, {
+		pack: offer,
+		provider: offer._provider,
+		available: false,
 	})
-	actions.appendChild(previewBtn)
+	previewBtn = addActionButton(actions, {
+		i18nKey: 'chat.emojiPacks.preview',
+		fallback: 'Preview',
+		className: 'btn btn-ghost btn-sm',
+		onClick: openPreview,
+	})
 
 	if (sourceKind === 'group' && sourceId) {
-		const joinBtn = document.createElement('button')
-		joinBtn.type = 'button'
-		joinBtn.className = 'btn btn-primary btn-sm'
-		joinBtn.dataset.i18n = 'chat.emojiPacks.joinGroup'
-		joinBtn.textContent = geti18n('chat.emojiPacks.joinGroup') || 'Join'
-		joinBtn.addEventListener('click', () => {
-			void (async () => {
-				const r = await fetch(`${CHAT_API}/groups/${encodeURIComponent(sourceId)}/join`, {
-					method: 'POST',
-					credentials: 'include',
-					headers: { 'Content-Type': 'application/json' },
-					body: '{}',
-				})
-				if (!r.ok) throw new Error(await r.text() || r.statusText)
-				window.location.href = `/parts/shells:chat/hub/#group:${encodeURIComponent(sourceId)}:default`
-			})().catch(error => {
-				showToastI18n('error', 'chat.emoji.previewActionFailed', { error: error.message || String(error) })
+		/** @returns {Promise<void>} 加入来源群 */
+		const joinGroup = async () => {
+			const r = await fetch(`${CHAT_API}/groups/${encodeURIComponent(sourceId)}/join`, {
+				method: 'POST',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: '{}',
 			})
+			if (!r.ok) throw new Error(await r.text() || r.statusText)
+			window.location.href = `/parts/shells:chat/hub/#group:${encodeURIComponent(sourceId)}:default`
+		}
+		addActionButton(actions, {
+			i18nKey: 'chat.emojiPacks.joinGroup',
+			fallback: 'Join',
+			className: 'btn btn-primary btn-sm',
+			onClick: joinGroup,
 		})
-		actions.appendChild(joinBtn)
 	}
 	else if (sourceKind === 'entity' && sourceId) {
-		const followBtn = document.createElement('button')
-		followBtn.type = 'button'
-		followBtn.className = 'btn btn-primary btn-sm'
-		followBtn.dataset.i18n = 'chat.emojiPacks.followAuthor'
-		followBtn.textContent = geti18n('chat.emojiPacks.followAuthor') || 'Follow'
-		followBtn.addEventListener('click', () => {
-			void (async () => {
-				const r = await fetch(`${SOCIAL_API}/relationships/follow`, {
-					method: 'POST',
-					credentials: 'include',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ entityHash: sourceId, follow: true }),
-				})
-				if (!r.ok) throw new Error(await r.text() || r.statusText)
-				showToastI18n('success', 'chat.emoji.followSuccess')
-				followBtn.disabled = true
-				followBtn.dataset.i18n = 'chat.emoji.alreadyFollowing'
-				followBtn.textContent = geti18n('chat.emoji.alreadyFollowing') || 'Following'
-			})().catch(error => {
-				showToastI18n('error', 'chat.emoji.previewActionFailed', { error: error.message || String(error) })
+		/** @type {HTMLButtonElement} */
+		let followBtn
+		/** @returns {Promise<void>} 关注作者 */
+		const followAuthor = async () => {
+			const r = await fetch(`${SOCIAL_API}/relationships/follow`, {
+				method: 'POST',
+				credentials: 'include',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ entityHash: sourceId, follow: true }),
 			})
+			if (!r.ok) throw new Error(await r.text() || r.statusText)
+			showToastI18n('success', 'chat.emoji.followSuccess')
+			followBtn.disabled = true
+			followBtn.dataset.i18n = 'chat.emoji.alreadyFollowing'
+			followBtn.textContent = geti18n('chat.emoji.alreadyFollowing') || 'Following'
+		}
+		followBtn = addActionButton(actions, {
+			i18nKey: 'chat.emojiPacks.followAuthor',
+			fallback: 'Follow',
+			className: 'btn btn-primary btn-sm',
+			onClick: followAuthor,
 		})
-		actions.appendChild(followBtn)
 	}
-
 	return card
 }
 

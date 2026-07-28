@@ -14,6 +14,9 @@ import {
 import { findPackAcrossEntities } from './entity/entityEmojis.mjs'
 import { findPackAcrossGroups } from './group/groupEmojis.mjs'
 
+/** 单条消息内最多解析的不同 packId 数（防恶意 token 扫盘）。 */
+const MAX_PACKS_PER_TEXT = 32
+
 /**
  * @param {string} username 操作用户名
  * @param {string} packId 包 ID
@@ -54,12 +57,18 @@ export async function lookupEmojiAlt(username, packId, emojiId, locales) {
 export async function degradeTextEmojisAsync(username, text, locales) {
 	const loc = locales || localesForUser(username)
 	const raw = String(text || '')
-	const re = new RegExp(EMOJI_TOKEN_RE.source, 'g')
+	const re = new RegExp(EMOJI_TOKEN_RE.source, 'giu')
 	/** @type {Map<string, string>} */
 	const cache = new Map()
+	/** @type {Set<string>} */
+	const packs = new Set()
 	for (const match of raw.matchAll(re)) {
 		const key = `${match[1]}/${match[2]}`
 		if (cache.has(key)) continue
+		if (!packs.has(match[1])) {
+			if (packs.size >= MAX_PACKS_PER_TEXT) continue
+			packs.add(match[1])
+		}
 		cache.set(key, await lookupEmojiAlt(username, match[1], match[2], loc))
 	}
 	return degradeEmojiTokensToAlt(raw, (packId, emojiId) => cache.get(`${packId}/${emojiId}`))
@@ -74,12 +83,13 @@ export async function degradeTextEmojisAsync(username, text, locales) {
 export async function canonicalizeEmojiTokensInText(username, text) {
 	const raw = String(text || '')
 	if (!raw.includes(':[emoji:')) return raw
-	const re = new RegExp(EMOJI_TOKEN_RE.source, 'g')
+	const re = new RegExp(EMOJI_TOKEN_RE.source, 'giu')
 	/** @type {Map<string, Map<string, string>>} */
 	const indexes = new Map()
 	for (const match of raw.matchAll(re)) {
 		const packId = match[1]
 		if (indexes.has(packId)) continue
+		if (indexes.size >= MAX_PACKS_PER_TEXT) break
 		const manifest = await loadPackManifestForUser(username, packId)
 		indexes.set(packId, buildEmojiAliasIndex(manifest?.items || []))
 	}

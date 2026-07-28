@@ -4,7 +4,7 @@
 import { primaryLocale, loadPreferredLangs } from '/scripts/i18n/index.mjs'
 import { resolveEmojiItemLabels, resolvePackPresentation } from '/scripts/features/emoji/packPresentation.mjs'
 
-import { formatEmojiToken } from '../shared/inlineTokenSyntax.mjs'
+import { formatEmojiToken, tokenForSelection } from '../shared/inlineTokenSyntax.mjs'
 
 const CHAT_API = '/api/parts/shells:chat'
 
@@ -43,15 +43,29 @@ async function fetchAvailablePacks(context = {}) {
 }
 
 /**
- * 将 picker 选中项转为插入 token。
- * @param {object} item picker 条目
- * @returns {string} Unicode 字符或 `:[emoji:…]:` 引用
+ * 群默认 packId：显式设置优先，否则回落 groupId（与 emojiCollectionLogic 同语义）。
+ * @param {object} pack pack 摘要
+ * @returns {boolean} 是否为该群默认包
  */
-function tokenForSelection(item) {
-	if (item.kind === 'unicode' && item.unicode) return item.unicode
-	const packId = item.packId || item.groupId
-	if (packId && item.emojiId) return formatEmojiToken(packId, item.emojiId)
-	return item.emojiRef || ''
+function isDefaultGroupPack(pack) {
+	const defaultId = String(pack.defaultEmojiPackId || '').trim() || String(pack.groupId || '').trim()
+	return !!defaultId && defaultId === pack.packId
+}
+
+/**
+ * 解析设置面板当前编辑 pack。
+ * @param {{ activeEmojiPackId?: string, state?: { groupSettings?: { defaultEmojiPackId?: string } } }} context 设置上下文
+ * @param {string[]} packIds 可用 packId
+ * @param {string} groupId 群 ID
+ * @returns {string} 活动 packId
+ */
+export function resolveActivePackId(context, packIds, groupId) {
+	const ids = packIds.filter(Boolean)
+	let active = String(context?.activeEmojiPackId || '').trim()
+	if (!active || !ids.includes(active))
+		active = String(context?.state?.groupSettings?.defaultEmojiPackId || '').trim() || groupId
+	if (!ids.includes(active)) active = ids[0] || groupId
+	return active
 }
 
 /**
@@ -93,8 +107,7 @@ export default {
 				groupId: pack.groupId,
 				joinedAt: pack.joinedAt,
 				defaultEmojiPackId: pack.defaultEmojiPackId,
-				isDefault: pack.defaultEmojiPackId === pack.packId
-					|| (!pack.defaultEmojiPackId && pack.packId === pack.groupId),
+				isDefault: isDefaultGroupPack(pack),
 				localized: pack.localized,
 				infoDefaults: pack.infoDefaults,
 				name: presentation.name,
@@ -183,26 +196,32 @@ export default {
 		/**
 		 * 将包加入收藏。
 		 * @param {string} packId 包 ID
-		 * @returns {Promise<void>}
+		 * @returns {Promise<{ packIds: string[], emojiIds: string[] }>} 更新后收藏
 		 */
 		async add(packId) {
-			await fetch(`${CHAT_API}/emoji-usage/collection/packs`, {
+			const r = await fetch(`${CHAT_API}/emoji-usage/collection/packs`, {
 				method: 'POST',
 				credentials: 'include',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ packId }),
 			})
+			if (!r.ok) throw new Error(await r.text() || r.statusText)
+			const data = await r.json().catch(() => ({}))
+			return data.collection || data
 		},
 		/**
 		 * 从收藏移除包。
 		 * @param {string} packId 包 ID
-		 * @returns {Promise<void>}
+		 * @returns {Promise<{ packIds: string[], emojiIds: string[] }>} 更新后收藏
 		 */
 		async remove(packId) {
-			await fetch(`${CHAT_API}/emoji-usage/collection/packs/${encodeURIComponent(packId)}`, {
+			const r = await fetch(`${CHAT_API}/emoji-usage/collection/packs/${encodeURIComponent(packId)}`, {
 				method: 'DELETE',
 				credentials: 'include',
 			})
+			if (!r.ok) throw new Error(await r.text() || r.statusText)
+			const data = await r.json().catch(() => ({}))
+			return data.collection || data
 		},
 	},
 
@@ -211,9 +230,9 @@ export default {
 	/**
 	 * 判断条目是否为群/包自定义表情。
 	 * @param {object} item picker 或消息条目
-	 * @returns {boolean} 含 packId/groupId 与 emojiId 时为 true
+	 * @returns {boolean} 含 packId 与 emojiId 时为 true
 	 */
 	isGroupEmojiItem(item) {
-		return !!(item?.packId || item?.groupId) && !!item?.emojiId
+		return !!item?.packId && !!item?.emojiId
 	},
 }

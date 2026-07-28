@@ -1074,6 +1074,7 @@
 				"emojisCreatePackPrompt": "ID du pack",
 				"emojisCreatePackOk": "Pack d'émojis créé",
 				"emojisCreatePackFailed": "Échec de la création : ${error}",
+				"emojisPackGroupSuffix": "groupe",
 				"activeEmojiPackLabel": "Pack en cours d'édition",
 				"emojisDelete": "Supprimer l'émoticône",
 				"emojisEmpty": "Aucune Émojis de groupe pour l'instant",

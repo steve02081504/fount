@@ -15,28 +15,28 @@ export function createMediaCollectionsMethods(apiContext) {
 				async list() {
 					const { listCollection } = await import('../../emojiUsage.mjs')
 					const collection = listCollection(apiContext.username)
-					return { entries: collection.packIds.map(packId => ({ id: packId, packId, groupId: packId })) }
+					return { entries: collection.packIds.map(packId => ({ id: packId, packId })) }
 				},
 				/**
 				 * @param {object[]} _entries 忽略
-				 * @returns {Promise<{ entries: object[] }>} 空列表
+				 * @returns {never} 始终抛错，提示改用 addPack/removePack
 				 */
 				async set(_entries) {
-					return { entries: [] }
+					throw new Error('emojis.set unsupported; use addPack/removePack')
 				},
 				/**
-				 * @param {{ groupId?: string, packId?: string, emojiId?: string, dataUrl?: string }} fields 保存字段
+				 * @param {{ packId?: string, emojiId?: string }} fields 保存字段（收藏 pack；emojiId 仅回显）
 				 * @returns {Promise<{ entry: object }>} 写入结果
 				 */
-				async save({ groupId, packId, emojiId }) {
+				async save({ packId, emojiId }) {
 					const { addPackToCollection } = await import('../../emojiUsage.mjs')
-					const pid = String(packId || groupId || '').trim()
-					if (pid) addPackToCollection(apiContext.username, pid)
+					const pid = String(packId || '').trim()
+					if (!pid) throw new Error('emojis.save requires packId')
+					addPackToCollection(apiContext.username, pid)
 					return {
 						entry: {
-							id: pid && emojiId ? `${pid}/${emojiId}` : pid || null,
-							packId: pid || null,
-							groupId: pid || null,
+							id: emojiId ? `${pid}/${emojiId}` : pid,
+							packId: pid,
 							emojiId: emojiId || null,
 							savedAt: Date.now(),
 						},
@@ -51,7 +51,7 @@ export function createMediaCollectionsMethods(apiContext) {
 					return listFrequentEmojis(apiContext.username, limit)
 				},
 				/**
-				 * @param {{ kind: string, unicode?: string, packId?: string, groupId?: string, emojiId?: string }} item 用量项
+				 * @param {{ kind: string, unicode?: string, packId?: string, emojiId?: string }} item 用量项
 				 * @returns {Promise<void>} 返回值
 				 */
 				async record(item) {

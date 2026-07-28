@@ -391,15 +391,15 @@ await testCase('DELETE /entities/:hash/emoji-packs/:id', async () => {
 writeLiveSection('E. Group emojis — write')
 let gEmojiId = null
 
-await testCase('POST /groups/:id/emojis', async () => {
-	const r = await chatApiMultipart('POST', `/groups/${gid}/emojis`, { name: 'ext-emoji' }, 'emoji', 'emoji.png', pngBytes)
+await testCase('POST /groups/:id/emoji-packs/:packId/emojis', async () => {
+	const r = await chatApiMultipart('POST', `/groups/${gid}/emoji-packs/${gid}/emojis`, { name: 'ext-emoji' }, 'emoji', 'emoji.png', pngBytes)
 	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
 	gEmojiId = r.json.entry?.emojiId
 	return Boolean(gEmojiId)
 })
 
-await testCase('GET /groups/:id/emojis/:id/data (json)', async () => {
-	const r = await api('GET', `/groups/${gid}/emojis/${gEmojiId}/data?json=1`)
+await testCase('GET /groups/:id/emoji-packs/:packId/emojis/:id/data (json)', async () => {
+	const r = await api('GET', `/groups/${gid}/emoji-packs/${gid}/emojis/${gEmojiId}/data?json=1`)
 	return r.status === 200 && String(r.json.dataUrl ?? '').startsWith('data:')
 })
 
@@ -409,8 +409,8 @@ await testCase('POST emoji-usage/collection/packs (from group emoji pack)', asyn
 	return r.json.collection?.packIds?.includes(gid)
 })
 
-await testCase('DELETE /groups/:id/emojis/:id', async () => {
-	const r = await api('DELETE', `/groups/${gid}/emojis/${gEmojiId}`)
+await testCase('DELETE /groups/:id/emoji-packs/:packId/emojis/:id', async () => {
+	const r = await api('DELETE', `/groups/${gid}/emoji-packs/${gid}/emojis/${gEmojiId}`)
 	return r.status === 200
 })
 

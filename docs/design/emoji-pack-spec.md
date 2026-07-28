@@ -18,7 +18,7 @@
 
 ## 架构
 
-```
+```text
 核心前端：picker UI / 五档排序 / provider 聚合 / pack 展示解析 / unicode 数据 / packIndex（内容 URL + IndexedDB）
 chat：群包 + usage/collection 宿主（shell data）+ 默认包链接（群设置）
 social：作者包 + 关注时跨壳写收藏 + 默认包链接（实体 profile）
@@ -30,7 +30,7 @@ social：作者包 + 关注时跨壳写收藏 + 默认包链接（实体 profile
 
 ## Pack 模型
 
-```
+```js
 {
   packId,                       // 全局唯一
   source: { kind: 'group'|'entity', id },
@@ -60,7 +60,7 @@ social：作者包 + 关注时跨壳写收藏 + 默认包链接（实体 profile
 
 ## Token 语法
 
-```
+```text
 :[emoji:packId/emojiId]:
 ```
 
@@ -89,11 +89,11 @@ export default {
 
 chat shell data 键与 HTTP 前缀均为 **`emoji_usage`**（per fount 用户）：
 
-```
+```js
 { log: [{ id, at }] ≤700, lastUsedAtByPack: {}, collection: { packIds: [], emojiIds: [] } }
 ```
 
-- `id`：`u:{unicode}` 或 `p:{packId}/{emojiId}`。
+- `id`：unicode 字形本身，或 pack 的 `packId/emojiId`。
 - 一份 700 日志同时喂「最近使用（单表情次数降序）」与「包窗口内次数」。
 - `lastUsedAtByPack` 覆盖已滑出窗口的包。
 - 取代昔日 512 条聚合表与 `customEmojis`（旧 API 名已废弃，不迁移）。
@@ -147,6 +147,7 @@ chat shell data 键与 HTTP 前缀均为 **`emoji_usage`**（per fount 用户）
 | 旧 512 聚合表、`customEmojis`、`emojiUsageApi` | 改为 700 日志 + collection（同名 `emoji_usage`） |
 | 旧单包 `group_emojis/manifest.json` 读取 | 不迁移 |
 | 独立贴纸广场 / `POST /stickers/install` | 探索页仅加群/关注 |
+
 ## Locale 匹配
 
 前后端各自 `i18n/locale_match.mjs` 导出同名同签名：

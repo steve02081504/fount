@@ -15,6 +15,52 @@ import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loade
 /** 单张表情二进制上限（字节）。 */
 export const MAX_EMOJI_BYTES = 512 * 1024
 
+/** packId / 磁盘段：与 inline token pack 位一致。 */
+const SAFE_PACK_ID_RE = /^[\w.-]+$/u
+/** 允许落盘的扩展名。 */
+const SAFE_EMOJI_EXT = new Set(['.png', '.gif', '.webp', '.jpg', '.jpeg'])
+
+/**
+ * @param {unknown} packId 候选
+ * @returns {boolean} 是否为规范、路径安全的 packId
+ */
+export function isSafePackId(packId) {
+	const id = String(packId || '').trim()
+	return !!id && id !== '.' && id !== '..' && !id.includes('/') && !id.includes('\\') && SAFE_PACK_ID_RE.test(id)
+}
+
+/**
+ * @param {unknown} packId 候选
+ * @returns {string} 规范 packId
+ */
+export function assertSafePackId(packId) {
+	const id = String(packId || '').trim()
+	if (!isSafePackId(id)) throw new Error('invalid packId')
+	return id
+}
+
+/**
+ * @param {unknown} emojiId 候选
+ * @returns {string} 规范 emojiId
+ */
+export function assertSafeEmojiId(emojiId) {
+	const id = String(emojiId || '').trim()
+	if (!id || id === '.' || id === '..' || id.includes('/') || id.includes('\\') || id.includes('\0'))
+		throw new Error('invalid emojiId')
+	return id
+}
+
+/**
+ * @param {unknown} ext 扩展名
+ * @returns {string} 白名单扩展名
+ */
+function assertSafeExt(ext) {
+	const value = String(ext || '').trim().toLowerCase()
+	const normalized = value.startsWith('.') ? value : `.${value}`
+	if (!SAFE_EMOJI_EXT.has(normalized)) throw new Error('invalid emoji ext')
+	return normalized
+}
+
 /**
  * @param {Buffer} buffer 图片字节
  * @returns {string} sha256 hex
@@ -52,8 +98,9 @@ export async function fileExists(filePath) {
  * @returns {string} 磁盘文件名
  */
 export function binaryFilename(item) {
-	const ext = item.ext || (String(item.mimeType || '').includes('gif') ? '.gif' : '.png')
-	return `${item.emojiId}${ext}`
+	const emojiId = assertSafeEmojiId(item.emojiId)
+	const ext = assertSafeExt(item.ext || (String(item.mimeType || '').includes('gif') ? '.gif' : '.png'))
+	return `${emojiId}${ext}`
 }
 
 /**
@@ -94,7 +141,7 @@ export function itemDisplayName(item) {
  * @returns {string} 包目录
  */
 export function packDir(packsRoot, packId) {
-	return path.join(packsRoot, packId)
+	return path.join(packsRoot, assertSafePackId(packId))
 }
 
 /**
@@ -147,8 +194,8 @@ export async function listPackIds(packsRoot) {
  * @returns {Promise<object | null>} manifest
  */
 export async function loadPackManifest(packsRoot, packId, defaultSource) {
+	if (!isSafePackId(packId)) return null
 	const pid = String(packId || '').trim()
-	if (!pid) return null
 	const p = packManifestPath(packsRoot, pid)
 	if (!await fileExists(p)) return null
 	const raw = await loadJsonFile(p)
@@ -220,7 +267,7 @@ export function packSummary(manifest) {
  * @returns {Promise<object>} 新建 manifest
  */
 export async function createPack(packsRoot, source, fields = {}) {
-	const packId = String(fields.packId || '').trim() || prefixedRandomId('pack_')
+	const packId = assertSafePackId(String(fields.packId || '').trim() || prefixedRandomId('pack_'))
 	const existing = await loadPackManifest(packsRoot, packId, source)
 	if (existing) throw new Error('pack already exists')
 	const manifest = emptyPackManifest(source, packId, fields.localized)
@@ -250,6 +297,7 @@ export async function updatePack(packsRoot, source, packId, patch = {}) {
  * @returns {Promise<boolean>} 是否删除
  */
 export async function deletePack(packsRoot, packId) {
+	if (!isSafePackId(packId)) return false
 	const root = packDir(packsRoot, packId)
 	if (!await fileExists(root)) return false
 	await fs.rm(root, { recursive: true, force: true })
@@ -289,6 +337,27 @@ export async function readPackEmojiBinary(packsRoot, source, packId, emojiId) {
 }
 
 /**
+ * 写入表情二进制 + CAS + 更新 manifest（先落盘再记 hash，最后 save）。
+ * @param {string} packsRoot 包根目录
+ * @param {string} packId pack id
+ * @param {object} manifest manifest（就地更新 items）
+ * @param {object} entry 条目（须含 emojiId / ext）
+ * @param {Buffer} buffer 图片字节
+ * @returns {Promise<object>} 带 contentHash 的条目
+ */
+async function writeEmojiEntry(packsRoot, packId, manifest, entry, buffer) {
+	assertSafePackId(packId)
+	assertSafeEmojiId(entry.emojiId)
+	entry.ext = assertSafeExt(entry.ext || extFromMime(entry.mimeType))
+	const binDir = packBinariesDir(packsRoot, packId)
+	if (!await fileExists(binDir)) await fs.mkdir(binDir, { recursive: true })
+	await fs.writeFile(path.join(binDir, binaryFilename(entry)), buffer)
+	entry.contentHash = await storeEmojiInCas(buffer)
+	await savePackManifest(packsRoot, manifest)
+	return entry
+}
+
+/**
  * @param {string} packsRoot 包根目录
  * @param {{ kind: string, id: string }} source 来源
  * @param {string} packId pack id
@@ -301,9 +370,10 @@ export async function readPackEmojiBinary(packsRoot, source, packId, emojiId) {
  */
 export async function uploadPackEmoji(packsRoot, source, packId, buffer, originalname, mimeType, name, uploadedBy = '') {
 	if (buffer.byteLength > MAX_EMOJI_BYTES) throw new Error('emoji file too large')
-	let manifest = await loadPackManifest(packsRoot, packId, source)
+	const pid = assertSafePackId(packId)
+	let manifest = await loadPackManifest(packsRoot, pid, source)
 	if (!manifest)
-		manifest = await createPack(packsRoot, source, { packId })
+		manifest = await createPack(packsRoot, source, { packId: pid })
 	const ext = path.extname(originalname || '').toLowerCase() || extFromMime(mimeType)
 	const emojiId = prefixedRandomId('emoji_')
 	const displayName = String(name || originalname || emojiId).slice(0, 64)
@@ -317,12 +387,8 @@ export async function uploadPackEmoji(packsRoot, source, packId, buffer, origina
 		uploadedAt: Date.now(),
 		uploadedBy: uploadedBy || '',
 	}
-	const binDir = packBinariesDir(packsRoot, packId)
-	if (!await fileExists(binDir)) await fs.mkdir(binDir, { recursive: true })
-	await fs.writeFile(path.join(binDir, binaryFilename(entry)), buffer)
-	entry.contentHash = await storeEmojiInCas(buffer)
 	manifest.items.push(entry)
-	await savePackManifest(packsRoot, manifest)
+	await writeEmojiEntry(packsRoot, pid, manifest, entry, buffer)
 	return { ...entry, packId: manifest.packId }
 }
 
@@ -370,19 +436,21 @@ export async function persistEmojiFromDataUrl(packsRoot, source, packId, emojiId
 	const match = /^data:([^;]+);base64,(.+)$/u.exec(dataUrl)
 	if (!match) throw new Error('invalid dataUrl')
 	const buffer = Buffer.from(match[2], 'base64')
-	const pid = String(packId || '').trim()
+	if (buffer.byteLength > MAX_EMOJI_BYTES) throw new Error('emoji file too large')
+	const pid = assertSafePackId(packId)
+	const eid = assertSafeEmojiId(emojiId)
 	let manifest = await loadPackManifest(packsRoot, pid, source)
 	if (!manifest) {
 		manifest = emptyPackManifest(source, pid)
 		await savePackManifest(packsRoot, manifest)
 		manifest = await loadPackManifest(packsRoot, pid, source)
 	}
-	const existing = manifest.items.find(e => e?.emojiId === emojiId)
+	const existing = manifest.items.find(e => e?.emojiId === eid)
 	const resolvedMime = match[1] || mimeType || 'image/png'
 	const ext = extFromMime(resolvedMime)
-	const displayName = name || itemDisplayName(existing) || emojiId
+	const displayName = name || itemDisplayName(existing) || eid
 	const entry = existing || {
-		emojiId,
+		emojiId: eid,
 		localized: localizedFromName(displayName),
 		name: displayName,
 		mimeType: resolvedMime,
@@ -393,10 +461,6 @@ export async function persistEmojiFromDataUrl(packsRoot, source, packId, emojiId
 	}
 	if (!existing) manifest.items.push(entry)
 	else Object.assign(entry, { mimeType: resolvedMime, ext })
-	const binDir = packBinariesDir(packsRoot, pid)
-	if (!await fileExists(binDir)) await fs.mkdir(binDir, { recursive: true })
-	await fs.writeFile(path.join(binDir, binaryFilename(entry)), buffer)
-	entry.contentHash = await storeEmojiInCas(buffer)
-	await savePackManifest(packsRoot, manifest)
+	await writeEmojiEntry(packsRoot, pid, manifest, entry, buffer)
 	return { ...entry, packId: pid }
 }
