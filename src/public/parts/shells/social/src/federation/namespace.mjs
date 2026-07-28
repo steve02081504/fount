@@ -74,6 +74,8 @@ export const SOCIAL_TIMELINE_EVENT_TYPES = new Set([
 	'album_delete',
 	'album_post_add',
 	'album_post_remove',
+	'emoji_pack_upsert',
+	'emoji_pack_delete',
 ])
 
 /** @type {Set<string>} */

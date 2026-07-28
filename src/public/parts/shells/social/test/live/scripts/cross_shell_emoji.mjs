@@ -144,6 +144,38 @@ await testCase('B preview hides join for invite-only private group', async () =>
 	return Boolean(ok)
 })
 
+let authorPackId = null
+await testCase('A creates social emoji pack + sets as default', async () => {
+	const viewerA = (await ShellApi(FedA, 'chat', 'GET', '/viewer')).json.viewerEntityHash
+	const created = await ShellApi(FedA, 'social', 'POST', '/emoji-packs', {
+		localized: { 'en-UK': { name: 'A default pack' } },
+	})
+	if (created.status !== 201) throw new Error(`create pack ${created.status}: ${created.raw}`)
+	authorPackId = created.json.pack?.packId
+	if (!authorPackId) throw new Error('no packId')
+	const put = await ShellApi(FedA, 'chat', 'PUT', `/entities/${viewerA}`, {
+		defaultEmojiPackId: authorPackId,
+	})
+	if (put.status !== 200 && put.status !== 202)
+		throw new Error(`profile update ${put.status}: ${put.raw}`)
+	return true
+})
+
+await testCase('B follow converges author default pack into collection', async () => {
+	const viewerA = (await ShellApi(FedA, 'chat', 'GET', '/viewer')).json.viewerEntityHash
+	await ShellApi(FedB, 'social', 'POST', '/relationships/follow', { entityHash: viewerA, follow: true })
+	const ok = await pollUntil(async () => {
+		await ShellApi(FedB, 'social', 'GET', '/emoji-packs/available')
+		const usage = await ShellApi(FedB, 'chat', 'GET', '/emoji-usage')
+		return usage.status === 200 && (usage.json.collection?.packIds || []).includes(authorPackId)
+	}, 60, 3)
+	if (!ok) {
+		const usage = await ShellApi(FedB, 'chat', 'GET', '/emoji-usage')
+		throw new Error(`collection missing ${authorPackId}: ${JSON.stringify(usage.json?.collection)}`)
+	}
+	return true
+})
+
 await ClearFedGroup(gid)
 WriteFedSummary('CROSS-SHELL-EMOJI', gid)
 completeLiveScript()

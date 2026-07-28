@@ -108,18 +108,31 @@ export function showContextMenu(event, entry) {
 	const one = rows.length === 1
 	const writable = canWrite()
 	const hist = historyMenuItems()
-	/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-returns -- context menu action callbacks */
 	/** 不可用项直接省略，不用 disabled + 文案解释 */
 	const actions = entry
 		? [
-			one ? { label: menuLabel('cabinet.open'), run: () => onEntryOpen(rows[0]) } : null,
+			one ? {
+				label: menuLabel('cabinet.open'),
+				/**
+				 * @returns {unknown} 打开选中条目
+				 */
+				run: () => onEntryOpen(rows[0]),
+			} : null,
 			rows.some(row => row.kind === 'file' || row.kind === 'folder')
 				? { label: menuLabel('cabinet.download'), run: downloadSelection }
 				: null,
 			false,
 			writable && one ? { label: menuLabel('cabinet.rename', hotkeys.rename), run: renameSelection } : null,
-			{ label: menuLabel('cabinet.copy', hotkeys.copy), run: () => copySelection('copy') },
-			writable ? { label: menuLabel('cabinet.cut', hotkeys.cut), run: () => copySelection('cut') } : null,
+			{
+				label: menuLabel('cabinet.copy', hotkeys.copy),
+				/** @returns {void} 复制选中条目到剪贴板 */
+				run: () => copySelection('copy'),
+			},
+			writable ? {
+				label: menuLabel('cabinet.cut', hotkeys.cut),
+				/** @returns {void} 剪切选中条目 */
+				run: () => copySelection('cut'),
+			} : null,
 			false,
 			...hist,
 			hist.length ? false : null,
@@ -127,13 +140,29 @@ export function showContextMenu(event, entry) {
 			writable ? { label: menuLabel('cabinet.delete', hotkeys.delete), danger: true, run: deleteSelection } : null,
 		]
 		: [
-			writable ? { label: menuLabel('cabinet.upload'), run: () => document.getElementById('fileInput').click() } : null,
-			writable ? { label: menuLabel('cabinet.uploadFolder'), run: () => document.getElementById('folderInput').click() } : null,
+			writable ? {
+				label: menuLabel('cabinet.upload'),
+				/** @returns {void} 触发文件选择上传 */
+				run: () => document.getElementById('fileInput').click(),
+			} : null,
+			writable ? {
+				label: menuLabel('cabinet.uploadFolder'),
+				/** @returns {void} 触发文件夹选择上传 */
+				run: () => document.getElementById('folderInput').click(),
+			} : null,
 			writable ? { label: menuLabel('cabinet.newFolder'), run: createFolder } : null,
 			{ label: menuLabel('cabinet.newWindow', hotkeys.newWindow), run: openCurrentInNewWindow },
 			false,
-			writable && hasClipboard() ? { label: menuLabel('cabinet.paste', hotkeys.paste), run: () => pasteClipboard() } : null,
-			writable && hasClipboard() ? { label: menuLabel('cabinet.pasteLink', hotkeys.pasteLink), run: () => pasteClipboard(true) } : null,
+			writable && hasClipboard() ? {
+				label: menuLabel('cabinet.paste', hotkeys.paste),
+				/** @returns {Promise<void>} 粘贴剪贴板条目 */
+				run: () => pasteClipboard(),
+			} : null,
+			writable && hasClipboard() ? {
+				label: menuLabel('cabinet.pasteLink', hotkeys.pasteLink),
+				/** @returns {Promise<void>} 以链接形式粘贴 */
+				run: () => pasteClipboard(true),
+			} : null,
 			false,
 			...hist,
 			hist.length ? false : null,
@@ -141,10 +170,13 @@ export function showContextMenu(event, entry) {
 			entries.length ? { label: menuLabel('cabinet.invert'), run: invertSelection } : null,
 			currentParentId ? { label: menuLabel('cabinet.goUp', hotkeys.goUp), run: goUp } : null,
 			!remoteEntityHash
-				? { label: menuLabel('cabinet.downloadZip'), run: () => downloadFolder(currentParentId, currentCabinet?.name) }
+				? {
+					label: menuLabel('cabinet.downloadZip'),
+					/** @returns {Promise<void>} 打包下载当前目录 */
+					run: () => downloadFolder(currentParentId, currentCabinet?.name),
+				}
 				: null,
 		]
-	/* eslint-enable jsdoc/require-jsdoc, jsdoc/require-returns */
 	const menu = document.querySelector('#contextMenu ul')
 	menu.replaceChildren()
 	for (const action of compactMenuActions(actions)) {
@@ -164,9 +196,7 @@ export function showContextMenu(event, entry) {
 		button.setAttribute('role', 'menuitem')
 		button.textContent = action.label
 		if (action.danger) button.classList.add('text-error')
-		/**
-		 *
-		 */
+		/** @returns {void} 执行菜单项并关闭菜单 */
 		button.onclick = () => {
 			hideContextMenu()
 			void action.run()

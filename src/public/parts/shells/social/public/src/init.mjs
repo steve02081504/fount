@@ -5,8 +5,8 @@ import { loadAliases } from '/parts/shells:chat/shared/aliases.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { groupRefLabel } from '../shared/groupRef.mjs'
 
-import { handleMainClick } from './actions.mjs'
 import { closePostMoreMenus } from './actions/shared.mjs'
+import { handleMainClick } from './actions.mjs'
 import {
 	addComposerMedia,
 	initComposerVisibilityPicker,
@@ -176,7 +176,7 @@ export async function bootstrap() {
 		shellRoot?.addEventListener('click', event => { void handleMainClick(event) })
 		shellRoot?.addEventListener('toggle', event => {
 			const details = event.target
-			if (details instanceof HTMLElement && details.classList.contains('post-more-dropdown') && /** @type {HTMLDetailsElement} */ (details).open)
+			if (details instanceof HTMLElement && details.classList.contains('post-more-dropdown') && /** @type {HTMLDetailsElement} */ details.open)
 				closePostMoreMenus(details)
 		}, { capture: true })
 		bindContentReveal(shellRoot)

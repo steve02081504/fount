@@ -9,8 +9,8 @@ import { geti18n } from '/scripts/i18n/index.mjs'
  */
 export function closePostMoreMenus(exceptContainer = null) {
 	for (const details of document.querySelectorAll('.post-more-dropdown'))
-		if (details !== exceptContainer && /** @type {HTMLDetailsElement} */ (details).open)
-			/** @type {HTMLDetailsElement} */ (details).open = false
+		if (details !== exceptContainer && /** @type {HTMLDetailsElement} */ details.open)
+			/** @type {HTMLDetailsElement} */ details.open = false
 }
 
 /**

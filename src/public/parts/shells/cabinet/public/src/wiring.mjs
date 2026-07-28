@@ -18,7 +18,9 @@ import { cabinetStore } from './state.mjs'
  * @returns {void}
  */
 export function wireBootstrap() {
-	/* eslint-disable jsdoc/require-jsdoc -- DOM onclick/onchange wiring */
+	/**
+	 * @returns {Promise<void>} 创建个人柜并打开
+	 */
 	const createCabinet = async () => {
 		const name = await promptText(geti18n('cabinet.newCabinetPrompt') || 'cabinet.newCabinetPrompt')
 		if (!name) return
@@ -30,7 +32,7 @@ export function wireBootstrap() {
 	for (const el of document.querySelectorAll('[data-action="new-cabinet"]'))
 		el.onclick = createCabinet
 	/**
-	 * @param {Event} event change
+	 * @param {Event} event 文件/文件夹选择变更
 	 * @returns {Promise<void>}
 	 */
 	const onUploadChange = async event => {
@@ -40,8 +42,16 @@ export function wireBootstrap() {
 	}
 	document.getElementById('fileInput').onchange = onUploadChange
 	document.getElementById('folderInput').onchange = onUploadChange
-	document.getElementById('showHidden').onchange = () => void refreshEntries()
-	document.getElementById('propSave').onclick = () => void saveProps()
+	/**
+	 * @returns {void} 切换显示隐藏项后刷新列表
+	 */
+	const onShowHiddenChange = () => { void refreshEntries() }
+	document.getElementById('showHidden').onchange = onShowHiddenChange
+	/**
+	 * @returns {void} 保存属性面板
+	 */
+	const onPropSave = () => { void saveProps() }
+	document.getElementById('propSave').onclick = onPropSave
 	document.getElementById('entryGrid').addEventListener('contextmenu', event => showContextMenu(event))
 	document.getElementById('statusBar').setAttribute('aria-live', 'polite')
 	document.addEventListener('keydown', event => {
@@ -55,5 +65,4 @@ export function wireBootstrap() {
 	window.addEventListener('pagehide', () => {
 		void cabinetStore.history.dispose()
 	})
-	/* eslint-enable jsdoc/require-jsdoc */
 }
