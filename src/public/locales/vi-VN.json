@@ -1074,6 +1074,7 @@
 				"emojisCreatePackPrompt": "ID gói",
 				"emojisCreatePackOk": "Đã tạo gói emoji",
 				"emojisCreatePackFailed": "Tạo thất bại: ${error}",
+				"emojisPackGroupSuffix": "Nhóm mặc định",
 				"activeEmojiPackLabel": "Gói đang chỉnh sửa",
 				"emojisDelete": "Xóa biểu tượng cảm xúc",
 				"emojisEmpty": "Chưa có biểu thức nhóm nào",

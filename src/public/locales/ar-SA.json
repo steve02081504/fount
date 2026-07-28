@@ -1074,6 +1074,7 @@
 				"emojisCreatePackPrompt": "معرّف الحزمة",
 				"emojisCreatePackOk": "تم إنشاء حزمة الإيموجي",
 				"emojisCreatePackFailed": "فشل الإنشاء: ${error}",
+				"emojisPackGroupSuffix": "المجموعة الافتراضية",
 				"activeEmojiPackLabel": "الحزمة قيد التحرير",
 				"emojisDelete": "حذف التعبيرات",
 				"emojisEmpty": "لا توجد تعبيرات جماعية حتى الآن",
