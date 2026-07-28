@@ -916,12 +916,42 @@ export type LocaleData = {
 			pickerTitle: {
 				'aria-label': string
 			}
+			recent: string
+			jumpToStart: string
+			jumpToUnicode: string
+			discoverPacks: string
 			categoryFace: string
 			categoryGesture: string
 			categoryHeart: string
 			categoryAnimal: string
 			categoryFood: string
 			categoryObject: string
+			addToCollection: string
+			addedToCollection: string
+			joinGroup: string
+			alreadyMember: string
+			followAuthor: string
+			alreadyFollowing: string
+			followSuccess: string
+			openAuthor: string
+			previewGroupMeta: string
+			previewAuthorMeta: string
+			previewActionFailed: string
+		}
+		emojiPacks: {
+			title: string
+			kicker: string
+			description: string
+			back: string
+			loading: string
+			empty: string
+			loadFailed: string
+			preview: string
+			joinGroup: string
+			followAuthor: string
+			sourceGroup: string
+			sourceAuthor: string
+			itemCount: string
 		}
 		unicodeEmojiGroups: {
 			Smileys_and_Emotion: {
@@ -1006,6 +1036,11 @@ export type LocaleData = {
 				emojisTitle: string
 				emojisHint: string
 				emojisUpload: string
+				emojisCreatePack: string
+				emojisCreatePackPrompt: string
+				emojisCreatePackOk: string
+				emojisCreatePackFailed: string
+				activeEmojiPackLabel: string
 				emojisDelete: string
 				emojisEmpty: string
 				emojisUploadOk: string
@@ -1013,6 +1048,10 @@ export type LocaleData = {
 				emojisDeleteConfirm: string
 				emojisDeleteOk: string
 				emojisDeleteFailed: string
+				defaultEmojiPackLabel: string
+				defaultEmojiPackHint: string
+				defaultEmojiPackOk: string
+				defaultEmojiPackFailed: string
 				membersTitle: string
 				overviewTitle: string
 				overviewHint: string
@@ -5353,6 +5392,10 @@ export type LocaleKeyParams = {
 	'chat.dragAndDrop.pluginAdded': { partName: string | number }
 	'chat.dragAndDrop.unsupportedPartType': { partType: string | number }
 	'chat.dragAndDrop.worldSet': { partName: string | number }
+	'chat.emoji.previewActionFailed': { error: string | number }
+	'chat.emoji.previewGroupMeta': { name: string | number }
+	'chat.emojiPacks.itemCount': { count: string | number }
+	'chat.emojiPacks.loadFailed': { error: string | number }
 	'chat.entityProfile.ownedBy': { owner: string | number }
 	'chat.group.attachmentsHint': { n: string | number }
 	'chat.group.auditLog.event.channel_create': { channelName: string | number }
@@ -5407,6 +5450,7 @@ export type LocaleKeyParams = {
 	'chat.group.settingsPage.createRoleFailed': { error: string | number }
 	'chat.group.settingsPage.deleteFailed': { error: string | number }
 	'chat.group.settingsPage.deleteRoleFailed': { error: string | number }
+	'chat.group.settingsPage.emojisCreatePackFailed': { error: string | number }
 	'chat.group.settingsPage.emojisDeleteFailed': { error: string | number }
 	'chat.group.settingsPage.emojisUploadFailed': { error: string | number }
 	'chat.group.settingsPage.gshGenerationNearLimit': { generation: string | number; maxGenerations: string | number }
