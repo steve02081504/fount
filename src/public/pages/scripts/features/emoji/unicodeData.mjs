@@ -73,11 +73,20 @@ export function loadUnicodeEmojiByGroup() {
 }
 
 /**
+ * unicode-emoji-json 分组名 → 稳定键片段（空格→`_`、`&`→`and`）。
+ * @param {string} groupName 官方分组名
+ * @returns {string} 归一化键
+ */
+export function normalizeUnicodeEmojiGroupKey(groupName) {
+	return String(groupName).replace(/\s+/g, '_').replace(/&/g, 'and')
+}
+
+/**
  * @param {string} groupName unicode-emoji-json 分组名
  * @returns {string} 分区键
  */
 export function unicodeEmojiSectionKey(groupName) {
-	return `u:${String(groupName).replace(/\s+/g, '_').replace(/&/g, 'and')}`
+	return `u:${normalizeUnicodeEmojiGroupKey(groupName)}`
 }
 
 /**
@@ -85,7 +94,7 @@ export function unicodeEmojiSectionKey(groupName) {
  * @returns {string} data-i18n 键
  */
 export function unicodeEmojiGroupI18nKey(groupName) {
-	return `chat.unicodeEmojiGroups.${String(groupName).replace(/\s+/g, '_').replace(/&/g, 'and')}`
+	return `chat.unicodeEmojiGroups.${normalizeUnicodeEmojiGroupKey(groupName)}`
 }
 
 /**
@@ -97,7 +106,7 @@ export function unicodeEmojiGroupFromSectionKey(sectionKey, order) {
 	if (!sectionKey?.startsWith('u:')) return null
 	const tabKey = sectionKey.slice(2)
 	for (const name of order)
-		if (String(name).replace(/\s+/g, '_').replace(/&/g, 'and') === tabKey) return name
+		if (normalizeUnicodeEmojiGroupKey(name) === tabKey) return name
 	return null
 }
 

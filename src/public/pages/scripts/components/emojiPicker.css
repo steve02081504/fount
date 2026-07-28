@@ -76,6 +76,14 @@
 	background: var(--bg-panel, var(--bg-channel, #1e1e1e));
 }
 
+.emoji-section-header.emoji-section-header-pack {
+	cursor: pointer;
+}
+
+.emoji-section-header.emoji-section-header-pack:hover {
+	color: var(--text-normal, #ddd);
+}
+
 .emoji-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
