@@ -171,7 +171,9 @@ test.describe('Social composer', () => {
 
 	test('emoji picker opens from composer', async ({ page }) => {
 		await page.locator('#emojiPickButton').click()
-		await expect(page.locator('#fount-shared-emoji-picker')).toBeVisible({ timeout: 20_000 })
+		const picker = page.locator('#fount-shared-emoji-picker')
+		await expect(picker).toBeVisible({ timeout: 20_000 })
+		await expect(picker.locator('.emoji-rail, [role="toolbar"]').first()).toBeVisible({ timeout: 30_000 })
 	})
 
 	test('emoji picker inserts token into composer', async ({ page }) => {
@@ -179,12 +181,12 @@ test.describe('Social composer', () => {
 		await page.locator('#emojiPickButton').click()
 		const picker = page.locator('#fount-shared-emoji-picker')
 		await expect(picker).toBeVisible({ timeout: 20_000 })
-		// Recent tab may be empty; switch to first non-recent tab (unicode emoji group)
-		const firstNonRecentTab = picker.locator('.emoji-tab:not([data-tab="__recent__"])').first()
-		await expect(firstNonRecentTab).toBeVisible({ timeout: 30_000 })
-		await firstNonRecentTab.click()
+		const unicodeRail = picker.locator('.emoji-rail-jump-unicode')
+		if (await unicodeRail.isVisible()) await unicodeRail.click()
+		else await picker.locator('.emoji-rail-item').last().click()
 		const gridButton = picker.locator('.emoji-grid-button').first()
 		await expect(gridButton).toBeVisible({ timeout: 30_000 })
+		await expect(gridButton).toHaveAttribute('title', /\S/)
 		await gridButton.click()
 		await expect(page.locator('#postText')).not.toHaveValue('hello ')
 	})

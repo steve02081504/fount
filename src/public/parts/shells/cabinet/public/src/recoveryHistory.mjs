@@ -49,9 +49,11 @@ export async function restoreRecovery(cabinetId, recoveryToken, unlock) {
 function makeRecoveryHistory({ label, cabinetId, ids, token, create, unlock }) {
 	let recoveryToken = token
 	const unlockToken = unlock
-	/* eslint-disable jsdoc/require-jsdoc -- history callbacks */
 	return {
 		label,
+		/**
+		 *
+		 */
 		async undo() {
 			if (create) recoveryToken = (await recoverableDelete(cabinetId, ids, unlockToken)).recovery_token
 			else if (recoveryToken) {
@@ -60,6 +62,9 @@ function makeRecoveryHistory({ label, cabinetId, ids, token, create, unlock }) {
 			}
 			await refreshEntries()
 		},
+		/**
+		 *
+		 */
 		async redo() {
 			if (create) {
 				if (!recoveryToken) return
@@ -69,6 +74,9 @@ function makeRecoveryHistory({ label, cabinetId, ids, token, create, unlock }) {
 			else recoveryToken = (await recoverableDelete(cabinetId, ids, unlockToken)).recovery_token
 			await refreshEntries()
 		},
+		/**
+		 *
+		 */
 		async discard() {
 			if (recoveryToken) await finalizeRecovery(cabinetId, recoveryToken)
 			recoveryToken = undefined
@@ -105,13 +113,18 @@ export function makeDeleteHistory(ids, initialToken, cabinetId, unlock = current
  */
 export function makePatchHistory({ entryId, before, after, label = 'patch', cabinetId }) {
 	const path = `/entries/${encodeURIComponent(entryId)}`
-	/* eslint-disable jsdoc/require-jsdoc -- history callbacks */
 	return {
 		label,
+		/**
+		 *
+		 */
 		async undo() {
 			await cabinetApi('PATCH', path, before, { cabinetId })
 			await refreshEntries()
 		},
+		/**
+		 *
+		 */
 		async redo() {
 			await cabinetApi('PATCH', path, after, { cabinetId })
 			await refreshEntries()

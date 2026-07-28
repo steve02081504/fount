@@ -4,6 +4,7 @@ import { resolveSocialEntity } from '../../federation/hosting.mjs'
 
 import { createAlbumsMethods } from './albums.mjs'
 import { createDraftsMethods } from './drafts.mjs'
+import { createEmojiPackMethods } from './emojiPacks.mjs'
 import { createFeedMethods } from './feed.mjs'
 import { createFollowMethods } from './follow.mjs'
 import { createLiveMethods } from './live.mjs'
@@ -55,6 +56,7 @@ export function createSocialClient(apiContext) {
 		...createTasteMethods(apiContext),
 		...createProfileMethods(apiContext),
 		...createAlbumsMethods(apiContext),
+		...createEmojiPackMethods(apiContext),
 	}
 }
 
