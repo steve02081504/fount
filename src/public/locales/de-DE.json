@@ -949,10 +949,22 @@
 			"multipleMembers": "Mehrere Mitglieder tippen..."
 		},
 		"emoji": {
-			"pickerTitle": "Emoticon auswählen",
-			"recent": "Zuletzt verwendet",
-			"jumpToStart": "Zum Anfang",
-			"jumpToUnicode": "Zu Unicode",
+			"pickerTitle": {
+				"aria-label": "Emoticon auswählen",
+				"textContent": "Emoticon auswählen"
+			},
+			"recent": {
+				"title": "Zuletzt verwendet",
+				"aria-label": "Zuletzt verwendet"
+			},
+			"jumpToStart": {
+				"title": "Zum Anfang",
+				"aria-label": "Zum Anfang"
+			},
+			"jumpToUnicode": {
+				"title": "Zu Unicode",
+				"aria-label": "Zu Unicode"
+			},
 			"discoverPacks": "Emoji-Pakete entdecken →",
 			"categoryFace": "Emoji",
 			"categoryGesture": "Geste",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "Smiley-Gesichter und Emotionen"
+				"title": "Smiley-Gesichter und Emotionen",
+				"aria-label": "Smiley-Gesichter und Emotionen"
 			},
 			"People_and_Body": {
-				"title": "Figuren und Körper"
+				"title": "Figuren und Körper",
+				"aria-label": "Figuren und Körper"
 			},
 			"Animals_and_Nature": {
-				"title": "Tiere und Natur"
+				"title": "Tiere und Natur",
+				"aria-label": "Tiere und Natur"
 			},
 			"Food_and_Drink": {
-				"title": "Essen und Trinken"
+				"title": "Essen und Trinken",
+				"aria-label": "Essen und Trinken"
 			},
 			"Travel_and_Places": {
-				"title": "Reisen und Orte"
+				"title": "Reisen und Orte",
+				"aria-label": "Reisen und Orte"
 			},
 			"Activities": {
-				"title": "Aktivität"
+				"title": "Aktivität",
+				"aria-label": "Aktivität"
 			},
 			"Objects": {
-				"title": "Ding"
+				"title": "Ding",
+				"aria-label": "Ding"
 			},
 			"Symbols": {
-				"title": "Symbol"
+				"title": "Symbol",
+				"aria-label": "Symbol"
 			},
 			"Flags": {
-				"title": "Banner"
-			},
-			"Component": {
-				"title": "Komponenten"
+				"title": "Banner",
+				"aria-label": "Banner"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "Heimlichkeit",
 				"offline": "Offline"
 			},
-			"changeStatusTitle": "Status wechseln",
+			"changeStatusTitle": {
+				"aria-label": "Status wechseln"
+			},
 			"aboutSection": "Um",
 			"bioEmpty": "Dieser Benutzer hat noch kein Profil.",
 			"statusOffline": {
@@ -2446,9 +2466,6 @@
 			"deliveryRead": "Lesen",
 			"translate": "Übersetzen",
 			"translating": "Übersetzen…",
-			"translateShowOriginal": "Originaltext anzeigen",
-			"translateShowTranslation": "Übersetzung anzeigen",
-			"translateLabel": "Übersetzung",
 			"translateFailed": "Die Übersetzung ist fehlgeschlagen",
 			"editImage": "Bild bearbeiten",
 			"draftRestored": "Entwurf wiederhergestellt",
@@ -2807,6 +2824,9 @@
 			"advancedKicker": "Nach Bedarf konfigurieren",
 			"advancedSettings": "Erweiterte Einstellungen",
 			"advancedDescription": "Für den Alltag ist keine Anpassung nötig.",
+			"cardHost": {
+				"aria-label": "Profilkarte"
+			},
 			"edit": "Profil bearbeiten",
 			"save": "Speichern",
 			"cancel": "Abbrechen",
@@ -3869,7 +3889,15 @@
 			"editImage": "Bearbeiten",
 			"editCrop": "Zuschneiden",
 			"editMosaic": "Verpixeln",
-			"editBrush": "Bürste",
+			"editBrush": "Pinsel",
+			"editBrushColor": {
+				"title": "Pinselfarbe",
+				"aria-label": "Pinselfarbe"
+			},
+			"editBrushSize": {
+				"title": "Pinselgröße",
+				"aria-label": "Pinselgröße"
+			},
 			"editApply": "Übernehmen",
 			"editCancel": "Abbrechen",
 			"replyPolicyEveryone": "Jeder kann antworten",
@@ -3909,13 +3937,48 @@
 			},
 			"visibility": {
 				"label": "Sichtbarer Bereich",
-				"public": "Öffentlich",
-				"unlisted": "Nicht öffentlich gelistet",
-				"followers": "Nur Follower",
-				"followers7d": "Sichtbar nach 7 Tagen Nachverfolgung",
-				"followers30d": "Sichtbar nach 30-tägiger Nachverfolgung",
-				"selected": "Für bestimmte Personen sichtbar",
-				"private": "Nur für Sie selbst sichtbar",
+				"public": {
+					"title": "Öffentlich",
+					"aria-label": "Öffentlich",
+					"label": "Öffentlich",
+					"textContent": "Öffentlich"
+				},
+				"unlisted": {
+					"title": "Nicht gelistet",
+					"aria-label": "Nicht gelistet",
+					"label": "Nicht gelistet",
+					"textContent": "Nicht gelistet"
+				},
+				"followers": {
+					"title": "Nur Follower",
+					"aria-label": "Nur Follower",
+					"label": "Nur Follower",
+					"textContent": "Nur Follower"
+				},
+				"followers7d": {
+					"title": "Sichtbar nach 7 Tagen Follow",
+					"aria-label": "Sichtbar nach 7 Tagen Follow",
+					"label": "Sichtbar nach 7 Tagen Follow",
+					"textContent": "Sichtbar nach 7 Tagen Follow"
+				},
+				"followers30d": {
+					"title": "Sichtbar nach 30 Tagen Follow",
+					"aria-label": "Sichtbar nach 30 Tagen Follow",
+					"label": "Sichtbar nach 30 Tagen Follow",
+					"textContent": "Sichtbar nach 30 Tagen Follow"
+				},
+				"selected": {
+					"title": "Für ausgewählte Personen",
+					"aria-label": "Für ausgewählte Personen",
+					"label": "Für ausgewählte Personen",
+					"textContent": "Für ausgewählte Personen"
+				},
+				"private": {
+					"title": "Nur für mich",
+					"aria-label": "Nur für mich",
+					"label": "Nur für mich",
+					"textContent": "Nur für mich"
+				},
 				"allowLabel": "Sichtbare Menschen",
 				"exceptLabel": "Ausgeschlossene Personen",
 				"allow": {
@@ -3951,6 +4014,7 @@
 			"trending": {
 				"title": "Trend-Themen",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} Beiträge"
 				},
 				"empty": "Noch keine Trend-Themen",
@@ -3987,10 +4051,19 @@
 			"folderSelect": "Sammlungsordner",
 			"confirm": "Bestätigen",
 			"cancel": "Abbrechen",
-			"remove": "Favoriten entfernen",
-			"renameFolder": "Umbenennen",
+			"remove": {
+				"title": "Aus Merkliste entfernen",
+				"aria-label": "Aus Merkliste entfernen"
+			},
+			"renameFolder": {
+				"title": "Umbenennen",
+				"aria-label": "Umbenennen"
+			},
 			"renameFolderPrompt": "Neuer Ordnername",
-			"deleteFolder": "Ordner löschen",
+			"deleteFolder": {
+				"title": "Ordner löschen",
+				"aria-label": "Ordner löschen"
+			},
 			"deleteFolderConfirm": "Ordner löschen? Die dortigen Beiträge werden in den Bereich „Nicht archiviert“ verschoben.",
 			"searchEmpty": "Keine passende Sammlung",
 			"folderEmpty": "Dieser Ordner ist leer",
@@ -4004,7 +4077,10 @@
 			"emptyHint": "Schreiben Sie etwas in das Eingabefeld und klicken Sie auf „Entwurf speichern“, um später weiterzubearbeiten.",
 			"saved": "Entwurf gespeichert",
 			"deleted": "Entwurf gelöscht",
-			"delete": "Entwurf löschen",
+			"delete": {
+				"title": "Entwurf löschen",
+				"aria-label": "Entwurf löschen"
+			},
 			"empty": "Der Entwurf ist leer",
 			"saveFailed": "Entwurf konnte nicht gespeichert werden: ${error}",
 			"loadFailed": "Entwurf konnte nicht geöffnet werden: ${error}",
@@ -4165,15 +4241,30 @@
 			}
 		},
 		"actions": {
-			"like": "Gefällt mir",
-			"unlike": "Gefällt mir nicht mehr",
-			"dislike": "Disliken",
-			"undislike": "Abneigung abbrechen",
+			"like": {
+				"title": "Gefällt mir",
+				"aria-label": "Gefällt mir"
+			},
+			"unlike": {
+				"title": "Gefällt mir nicht mehr",
+				"aria-label": "Gefällt mir nicht mehr"
+			},
+			"dislike": {
+				"title": "Gefällt mir nicht",
+				"aria-label": "Gefällt mir nicht"
+			},
+			"undislike": {
+				"title": "Dislike zurücknehmen",
+				"aria-label": "Dislike zurücknehmen"
+			},
 			"repost": "Weiterleiten",
 			"quote": "Zitat",
 			"delete": "Löschen",
 			"edit": "Bearbeiten",
-			"save": "Speichern",
+			"save": {
+				"title": "Merken",
+				"aria-label": "Merken"
+			},
 			"saved": "Gesammelt",
 			"translate": "Übersetzen",
 			"dm": "Private Nachricht senden",
@@ -4289,9 +4380,6 @@
 			"quoting": "Zitieren",
 			"clear": "Zitat entfernen",
 			"viewOriginal": "Originalbeitrag ansehen"
-		},
-		"translate": {
-			"label": "Übersetzung:"
 		},
 		"time": {
 			"justNow": "Nur",
@@ -5249,7 +5337,8 @@
 			"confirm": "Bestätigen",
 			"close": "Schließen",
 			"translate": {
-				"showOriginal": "Originaltext anzeigen",
+				"label": "Übersetzung:",
+				"showOriginal": "Original anzeigen",
 				"showTranslation": "Übersetzung anzeigen"
 			}
 		},

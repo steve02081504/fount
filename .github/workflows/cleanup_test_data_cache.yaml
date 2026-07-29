@@ -1,0 +1,21 @@
+name: Cleanup test data cache
+
+on:
+  delete:
+
+jobs:
+  cleanup:
+    # delete 事件的 ref 是短名（与 push 的 github.ref_name 一致），不是 refs/heads/…
+    if: github.event.ref_type == 'branch' && github.event.ref != github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    # gh cache delete 需要 actions: write
+    permissions:
+      actions: write
+    steps:
+      - name: Delete test data cache for deleted branch
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          CACHE_KEY: fount-test-data-${{ github.event.ref }}
+        run: gh cache delete "$CACHE_KEY"

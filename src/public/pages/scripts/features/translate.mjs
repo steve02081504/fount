@@ -11,38 +11,25 @@ export function resolveTargetLang() {
 /**
  * 在容器内挂载或更新译文块，带原文/译文切换（不重复 append）。
  * @param {HTMLElement} container 挂载容器
- * @param {{
- *   originalText: string
- *   translatedText: string
- *   showOriginalLabel: string
- *   showTranslationLabel: string
- *   translationLabel?: string
- * }} options 文案与内容
+ * @param {{ originalText: string, translatedText: string }} options 原文与译文
  * @returns {HTMLElement} 译文块根元素
  */
-export function mountTranslationBlock(container, {
-	originalText,
-	translatedText,
-	showOriginalLabel,
-	showTranslationLabel,
-	translationLabel = '',
-}) {
+export function mountTranslationBlock(container, { originalText, translatedText }) {
 	if (!(container instanceof HTMLElement)) throw new Error('mountTranslationBlock: invalid container')
 
 	let block = container.querySelector(':scope > .translation-block')
 	if (!block) {
 		block = document.createElement('div')
 		block.className = 'translation-block'
-		const content = document.createElement('div')
-		content.className = 'translation-content'
-		const toggle = document.createElement('button')
-		toggle.type = 'button'
-		toggle.className = 'translation-toggle btn btn-ghost btn-xs'
-		block.appendChild(content)
-		block.appendChild(toggle)
+		block.innerHTML = `\
+<div class="translation-content">
+	<strong class="translation-label" data-i18n="util.common.translate.label"></strong>
+	<span class="translation-text" user-content></span>
+</div>
+<button type="button" class="translation-toggle btn btn-ghost btn-xs" data-i18n="util.common.translate.showOriginal"></button>
+`
 		container.appendChild(block)
-
-		toggle.addEventListener('click', () => {
+		block.querySelector('.translation-toggle').addEventListener('click', () => {
 			const showingTranslated = block.dataset.showingTranslated !== '0'
 			block.dataset.showingTranslated = showingTranslated ? '0' : '1'
 			paintTranslationBlock(block)
@@ -51,9 +38,6 @@ export function mountTranslationBlock(container, {
 
 	block.dataset.originalText = originalText
 	block.dataset.translatedText = translatedText
-	block.dataset.showOriginalLabel = showOriginalLabel
-	block.dataset.showTranslationLabel = showTranslationLabel
-	if (translationLabel) block.dataset.translationLabel = translationLabel
 	block.dataset.showingTranslated ??= '1'
 	paintTranslationBlock(block)
 	return block
@@ -65,18 +49,17 @@ export function mountTranslationBlock(container, {
  */
 function paintTranslationBlock(block) {
 	const showingTranslated = block.dataset.showingTranslated !== '0'
-	const content = block.querySelector('.translation-content')
+	const label = block.querySelector('.translation-label')
+	const text = block.querySelector('.translation-text')
 	const toggle = block.querySelector('.translation-toggle')
-	if (!(content instanceof HTMLElement) || !(toggle instanceof HTMLButtonElement)) return
+	if (!(text instanceof HTMLElement) || !(toggle instanceof HTMLButtonElement)) return
 
-	const text = showingTranslated ? block.dataset.translatedText : block.dataset.originalText
-	const prefix = showingTranslated && block.dataset.translationLabel
-		? `${block.dataset.translationLabel} `
-		: ''
-	content.textContent = `${prefix}${text ?? ''}`
-	toggle.textContent = showingTranslated
-		? block.dataset.showOriginalLabel
-		: block.dataset.showTranslationLabel
+	if (label instanceof HTMLElement)
+		label.hidden = !showingTranslated
+	text.textContent = (showingTranslated ? block.dataset.translatedText : block.dataset.originalText) ?? ''
+	toggle.dataset.i18n = showingTranslated
+		? 'util.common.translate.showOriginal'
+		: 'util.common.translate.showTranslation'
 }
 
 /**

@@ -51,8 +51,23 @@ try {
 		},
 		playwrightArgs: process.argv.slice(2),
 	})
+	// idle watchdog 只认 stdout 活跃（与 serial.mjs 同）；无独立 heartbeat API
+	process.stdout.write(`[pages] playwright exited code=${process.exitCode}\n`)
 }
 finally {
-	if (server) await server.close().catch(() => {})
-	if (releaseAll) await releaseAll().catch(() => {})
+	try {
+		if (server) {
+			await server.close()
+			process.stdout.write('[pages] server closed\n')
+		}
+	}
+	finally {
+		if (releaseAll) try {
+			await releaseAll()
+		}
+		catch (error) {
+			console.error('[pages] releaseAll failed', error)
+			if (!process.exitCode) process.exitCode = 1
+		}
+	}
 }

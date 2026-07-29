@@ -95,6 +95,8 @@ export function startPagesServer({ port = 8080, projectRoot = REPO_ROOT, host = 
 				 * @returns {Promise<void>}
 				 */
 				close: () => new Promise((closeResolve, closeReject) => {
+					// Playwright 退出后 keep-alive 连接可能仍挂着；不强制掐断则 server.close 会一直等
+					server.closeAllConnections?.()
 					server.close(error => error ? closeReject(error) : closeResolve())
 				}),
 			})

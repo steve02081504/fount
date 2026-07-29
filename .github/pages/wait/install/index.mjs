@@ -101,6 +101,8 @@ async function playHeroAnimation() {
 	const applyFinalState = () => {
 		heroOverlay.classList.add('visible-after-intro')
 		heroContent.classList.add('visible-after-intro')
+		heroOverlay.removeAttribute('aria-hidden')
+		heroContent.removeAttribute('aria-hidden')
 		heroElement.classList.add('bg-image-loaded')
 		heroAnimationBg.remove()
 		document.body.classList.remove('scroll-lock')
@@ -108,11 +110,32 @@ async function playHeroAnimation() {
 
 	/**
 	 * 使用 View Transition API 将 SVG 动画末帧平滑过渡到最终状态。
+	 * 跨文档 VT（根页 → install）未结束时再开 hero VT 可能挂死 finished；超时后强制落终态。
 	 * @returns {Promise<void>}
 	 */
 	const showFinalState = async () => {
 		await bgImageReady
-		await viewTransition(applyFinalState, { types: ['hero-intro'] })
+		let applied = false
+		/**
+		 * @returns {void}
+		 */
+		const applyOnce = () => {
+			if (applied) return
+			applied = true
+			applyFinalState()
+		}
+		try {
+			await Promise.race([
+				viewTransition(applyOnce, { types: ['hero-intro'] }),
+				new Promise((_, reject) => setTimeout(() => reject(Object.assign(new Error('hero-vt-timeout'), { name: 'TimeoutError' })), 2500)),
+			])
+		}
+		catch (error) {
+			console.error('Hero final-state transition failed:', error)
+		}
+		finally {
+			applyOnce()
+		}
 	}
 
 	try {
@@ -129,9 +152,8 @@ async function playHeroAnimation() {
 		heroAnimationBg.appendChild(svgElement)
 
 		animateSVG(svgElement)
-		const durationMs = 3100
-
-		setTimeout(showFinalState, durationMs)
+		await new Promise(resolve => setTimeout(resolve, 3100))
+		await showFinalState()
 	}
 	catch (error) {
 		console.error('Hero animation failed:', error)

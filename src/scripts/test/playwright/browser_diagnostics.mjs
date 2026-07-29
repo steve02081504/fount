@@ -98,6 +98,32 @@ export async function waitForTestWatchCycle(page, sinceMs = 0, timeoutMs = 8000)
 }
 
 /**
+ * 强制中日英三语各检查一轮（短测不靠每秒轮换也能覆盖脚本断言）；
+ * `cycleLocales` 内每语种附带一轮 a11y。
+ * @param {import('npm:@playwright/test').Page} page Playwright 页面
+ * @param {number} [timeoutMs=30000] 超时
+ * @returns {Promise<void>}
+ */
+export async function waitForLocaleCycle(page, timeoutMs = 30_000) {
+	let timer
+	try {
+		await Promise.race([
+			page.evaluate(async () => {
+				await globalThis.fount?.test?.cycleLocales?.()
+			}),
+			new Promise((_, reject) => {
+				timer = setTimeout(() => {
+					reject(new Error(`waitForLocaleCycle timed out after ${timeoutMs}ms`))
+				}, timeoutMs)
+			}),
+		])
+	}
+	finally {
+		clearTimeout(timer)
+	}
+}
+
+/**
  * 创建绑定到单个 Playwright page 的诊断收集器。
  * @param {object} [options] 选项
  * @param {(url: string) => boolean} [options.shouldRecordNetwork] 返回 false 则忽略该 URL 的网络异常

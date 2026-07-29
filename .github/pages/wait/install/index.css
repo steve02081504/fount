@@ -4,6 +4,7 @@
 
 /* View Transition：hero-intro 类型 — SVG 动画末帧淡出，最终状态淡入 */
 @media (prefers-reduced-motion: no-preference) {
+
 	html:active-view-transition-type(hero-intro)::view-transition-old(root),
 	html:active-view-transition-type(hero-intro)::view-transition-new(root) {
 		animation-duration: 0.8s;
@@ -213,6 +214,7 @@ body.scroll-lock {
 
 /* --- Easter Egg Shake Animation --- */
 @keyframes shake {
+
 	0%,
 	100% {
 		transform: translate(0, 0) rotate(0);

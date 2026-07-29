@@ -1,7 +1,7 @@
 /**
  * 从 unicode-emoji-json CDN 加载 RGI emoji 分组数据。
  */
-const UNICODE_EMOJI_CDN = 'https://cdn.jsdelivr.net/npm/unicode-emoji-json@0.9.0/data-by-group.json'
+const UNICODE_EMOJI_CDN = 'https://cdn.jsdelivr.net/npm/unicode-emoji-json/data-by-group.json'
 
 /** @type {Record<string, string[]> | null} */
 let emojiByGroup = null
@@ -12,19 +12,27 @@ let emojiGroupOrder = []
 /** @type {Promise<{ byGroup: Record<string, string[]>, order: string[] }> | null} */
 let loadPromise = null
 
-/** unicode-emoji-json 官方分组 → rail / 分区标志性 emoji */
-export const UNICODE_EMOJI_GROUP_TAB_GLYPH = {
-	'Smileys & Emotion': '😀',
-	'People & Body': '👋',
-	'Animals & Nature': '🐱',
-	'Food & Drink': '🍔',
-	'Travel & Places': '✈️',
-	Activities: '⚽',
-	Objects: '💡',
-	Symbols: '❤️',
-	Flags: '🏳️',
-	Component: '🧩',
-}
+/**
+ * unicode-emoji-json 官方分组名 → data-i18n 键（静态维护；CDN 增删分组时改这里）。
+ * @type {Readonly<Record<string, string>>}
+ */
+export const UNICODE_EMOJI_GROUP_I18N_KEYS = Object.freeze({
+	'Smileys & Emotion': 'chat.unicodeEmojiGroups.Smileys_and_Emotion',
+	'People & Body': 'chat.unicodeEmojiGroups.People_and_Body',
+	'Animals & Nature': 'chat.unicodeEmojiGroups.Animals_and_Nature',
+	'Food & Drink': 'chat.unicodeEmojiGroups.Food_and_Drink',
+	'Travel & Places': 'chat.unicodeEmojiGroups.Travel_and_Places',
+	Activities: 'chat.unicodeEmojiGroups.Activities',
+	Objects: 'chat.unicodeEmojiGroups.Objects',
+	Symbols: 'chat.unicodeEmojiGroups.Symbols',
+	Flags: 'chat.unicodeEmojiGroups.Flags',
+})
+
+/**
+ * 分区标志 glyph：加载后由各组第一个 emoji 填充。
+ * @type {Record<string, string>}
+ */
+export const UNICODE_EMOJI_GROUP_TAB_GLYPH = {}
 
 /** 最近使用分区键 */
 export const RECENT_EMOJI_SECTION_KEY = '__recent__'
@@ -37,7 +45,9 @@ export const RECENT_EMOJI_SECTION_GLYPH = '🕒'
  * @returns {string} 单字符或 ZWJ 序列
  */
 export function unicodeEmojiGroupGlyph(groupName) {
-	return UNICODE_EMOJI_GROUP_TAB_GLYPH[groupName] || '❓'
+	return UNICODE_EMOJI_GROUP_TAB_GLYPH[groupName]
+		|| emojiByGroup?.[groupName]?.[0]
+		|| '❓'
 }
 
 /**
@@ -56,11 +66,15 @@ export function loadUnicodeEmojiByGroup() {
 				if (!Array.isArray(data)) throw new Error('unicode-emoji-json: expected grouped array')
 				emojiByGroup = {}
 				emojiGroupOrder = []
+				for (const key of Object.keys(UNICODE_EMOJI_GROUP_TAB_GLYPH))
+					delete UNICODE_EMOJI_GROUP_TAB_GLYPH[key]
 				for (const block of data) {
 					const name = String(block?.name || '').trim()
 					if (!name) continue
-					emojiByGroup[name] = (block.emojis || []).map(item => item.emoji).filter(Boolean)
+					const emojis = (block.emojis || []).map(item => item.emoji).filter(Boolean)
+					emojiByGroup[name] = emojis
 					emojiGroupOrder.push(name)
+					if (emojis[0]) UNICODE_EMOJI_GROUP_TAB_GLYPH[name] = emojis[0]
 				}
 				return { byGroup: emojiByGroup, order: emojiGroupOrder }
 			})
@@ -91,10 +105,10 @@ export function unicodeEmojiSectionKey(groupName) {
 
 /**
  * @param {string} groupName unicode-emoji-json 分组名
- * @returns {string} data-i18n 键
+ * @returns {string | undefined} data-i18n 键；未映射则无
  */
 export function unicodeEmojiGroupI18nKey(groupName) {
-	return `chat.unicodeEmojiGroups.${normalizeUnicodeEmojiGroupKey(groupName)}`
+	return UNICODE_EMOJI_GROUP_I18N_KEYS[groupName]
 }
 
 /**
@@ -108,59 +122,4 @@ export function unicodeEmojiGroupFromSectionKey(sectionKey, order) {
 	for (const name of order)
 		if (normalizeUnicodeEmojiGroupKey(name) === tabKey) return name
 	return null
-}
-
-/** @deprecated 兼容旧 chat 导入 */
-export const RECENT_EMOJI_TAB_KEY = RECENT_EMOJI_SECTION_KEY
-/** @deprecated */
-export const RECENT_EMOJI_TAB_GLYPH = RECENT_EMOJI_SECTION_GLYPH
-/**
- * @param {string} groupName unicode-emoji-json 分组名
- * @returns {string} 旧版 tab 键（不含 `u:` 前缀）
- * @deprecated
- */
-export const unicodeEmojiTabKey = (groupName) => unicodeEmojiSectionKey(groupName).slice(2)
-/** @deprecated */
-export const unicodeEmojiGroupTabGlyph = unicodeEmojiGroupGlyph
-/**
- * @param {string} tabKey 旧版 tab 键
- * @param {string[]} order 分组顺序
- * @returns {string | null} 分组名
- * @deprecated
- */
-export const unicodeEmojiGroupFromTabKey = (tabKey, order) => {
-	for (const name of order)
-		if (unicodeEmojiTabKey(name) === tabKey) return name
-	return null
-}
-/** @deprecated */
-export const GROUP_EMOJI_TAB_PREFIX = '__g__:'
-/** @deprecated */
-export const GROUP_EMOJI_TAB_GLYPH = '👥'
-/** @deprecated */
-export const CURRENT_GROUP_EMOJI_TAB_GLYPH = '⭐'
-/**
- * @param {string} groupId 群 ID
- * @returns {string} 旧版群 tab 键
- * @deprecated
- */
-export function groupTabKey(groupId) {
-	return `${GROUP_EMOJI_TAB_PREFIX}${groupId}`
-}
-/**
- * @param {string} tabKey 旧版 tab 键
- * @returns {string | null} 群 ID
- * @deprecated
- */
-export function extractGroupIdFromTabKey(tabKey) {
-	if (!tabKey?.startsWith(GROUP_EMOJI_TAB_PREFIX)) return null
-	return tabKey.slice(GROUP_EMOJI_TAB_PREFIX.length) || null
-}
-/**
- * @param {string} glyph 标志 emoji
- * @returns {string} tab 按钮 HTML
- * @deprecated
- */
-export function emojiTabGlyphHtml(glyph) {
-	return `<span class="emoji-tab-glyph" aria-hidden="true">${glyph}</span>`
 }

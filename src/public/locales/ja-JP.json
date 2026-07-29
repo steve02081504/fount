@@ -949,10 +949,22 @@
 			"multipleMembers": "複数のメンバーが入力しています..."
 		},
 		"emoji": {
-			"pickerTitle": "絵文字を選択",
-			"recent": "最近使ったもの",
-			"jumpToStart": "先頭へ",
-			"jumpToUnicode": "Unicode へ",
+			"pickerTitle": {
+				"aria-label": "絵文字を選択",
+				"textContent": "絵文字を選択"
+			},
+			"recent": {
+				"title": "最近使ったもの",
+				"aria-label": "最近使ったもの"
+			},
+			"jumpToStart": {
+				"title": "先頭へ",
+				"aria-label": "先頭へ"
+			},
+			"jumpToUnicode": {
+				"title": "Unicode へ",
+				"aria-label": "Unicode へ"
+			},
 			"discoverPacks": "絵文字パックを探す →",
 			"categoryFace": "絵文字",
 			"categoryGesture": "ジェスチャー",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "笑顔と感情"
+				"title": "笑顔と感情",
+				"aria-label": "笑顔と感情"
 			},
 			"People_and_Body": {
-				"title": "フィギュアとボディ"
+				"title": "フィギュアとボディ",
+				"aria-label": "フィギュアとボディ"
 			},
 			"Animals_and_Nature": {
-				"title": "動物と自然"
+				"title": "動物と自然",
+				"aria-label": "動物と自然"
 			},
 			"Food_and_Drink": {
-				"title": "飲食"
+				"title": "飲食",
+				"aria-label": "飲食"
 			},
 			"Travel_and_Places": {
-				"title": "旅行と場所"
+				"title": "旅行と場所",
+				"aria-label": "旅行と場所"
 			},
 			"Activities": {
-				"title": "活動"
+				"title": "活動",
+				"aria-label": "活動"
 			},
 			"Objects": {
-				"title": "もの"
+				"title": "もの",
+				"aria-label": "もの"
 			},
 			"Symbols": {
-				"title": "シンボル"
+				"title": "シンボル",
+				"aria-label": "シンボル"
 			},
 			"Flags": {
-				"title": "バナー"
-			},
-			"Component": {
-				"title": "コンポーネント"
+				"title": "旗",
+				"aria-label": "旗"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "非表示",
 				"offline": "オフライン"
 			},
-			"changeStatusTitle": "ステータスを変更",
+			"changeStatusTitle": {
+				"aria-label": "ステータスを変更"
+			},
 			"aboutSection": "概要",
 			"bioEmpty": "このユーザーにはまだプロフィールがありません。",
 			"statusOffline": {
@@ -2446,9 +2466,6 @@
 			"deliveryRead": "読む",
 			"translate": "翻訳する",
 			"translating": "翻訳中…",
-			"translateShowOriginal": "元のテキストを表示",
-			"translateShowTranslation": "翻訳を表示",
-			"translateLabel": "翻訳",
 			"translateFailed": "翻訳に失敗しました",
 			"editImage": "画像を編集する",
 			"draftRestored": "ドラフトが復元されました",
@@ -2807,6 +2824,9 @@
 			"advancedKicker": "オンデマンドで構成する",
 			"advancedSettings": "詳細設定",
 			"advancedDescription": "毎日の使用には調整の必要はありません。",
+			"cardHost": {
+				"aria-label": "プロフィールカード"
+			},
 			"edit": "プロフィールの編集",
 			"save": "保存",
 			"cancel": "キャンセル",
@@ -3870,6 +3890,14 @@
 			"editCrop": "トリミング",
 			"editMosaic": "モザイク",
 			"editBrush": "ブラシ",
+			"editBrushColor": {
+				"title": "ブラシの色",
+				"aria-label": "ブラシの色"
+			},
+			"editBrushSize": {
+				"title": "ブラシの太さ",
+				"aria-label": "ブラシの太さ"
+			},
 			"editApply": "適用",
 			"editCancel": "キャンセル",
 			"replyPolicyEveryone": "全員",
@@ -3909,13 +3937,48 @@
 			},
 			"visibility": {
 				"label": "可視範囲",
-				"public": "公開",
-				"unlisted": "非公開",
-				"followers": "フォロワーのみ",
-				"followers7d": "7日間フォローすると表示されます",
-				"followers30d": "30日間フォローすると表示されます",
-				"selected": "指定した人に表示される",
-				"private": "自分だけに表示される",
+				"public": {
+					"title": "公開",
+					"aria-label": "公開",
+					"label": "公開",
+					"textContent": "公開"
+				},
+				"unlisted": {
+					"title": "公開（一覧非表示）",
+					"aria-label": "公開（一覧非表示）",
+					"label": "公開（一覧非表示）",
+					"textContent": "公開（一覧非表示）"
+				},
+				"followers": {
+					"title": "フォロワーのみ",
+					"aria-label": "フォロワーのみ",
+					"label": "フォロワーのみ",
+					"textContent": "フォロワーのみ"
+				},
+				"followers7d": {
+					"title": "フォロー7日後から表示",
+					"aria-label": "フォロー7日後から表示",
+					"label": "フォロー7日後から表示",
+					"textContent": "フォロー7日後から表示"
+				},
+				"followers30d": {
+					"title": "フォロー30日後から表示",
+					"aria-label": "フォロー30日後から表示",
+					"label": "フォロー30日後から表示",
+					"textContent": "フォロー30日後から表示"
+				},
+				"selected": {
+					"title": "指定したユーザーに公開",
+					"aria-label": "指定したユーザーに公開",
+					"label": "指定したユーザーに公開",
+					"textContent": "指定したユーザーに公開"
+				},
+				"private": {
+					"title": "自分のみ",
+					"aria-label": "自分のみ",
+					"label": "自分のみ",
+					"textContent": "自分のみ"
+				},
 				"allowLabel": "目に見える人々",
 				"exceptLabel": "人を排除する",
 				"allow": {
@@ -3951,6 +4014,7 @@
 			"trending": {
 				"title": "ホットトピック",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} 件の投稿"
 				},
 				"empty": "まだホットトピックはありません",
@@ -3987,10 +4051,19 @@
 			"folderSelect": "お気に入りフォルダ",
 			"confirm": "確認",
 			"cancel": "キャンセル",
-			"remove": "お気に入りを削除する",
-			"renameFolder": "名前の変更",
+			"remove": {
+				"title": "ブックマークから削除",
+				"aria-label": "ブックマークから削除"
+			},
+			"renameFolder": {
+				"title": "名前を変更",
+				"aria-label": "名前を変更"
+			},
 			"renameFolderPrompt": "新しいフォルダー名",
-			"deleteFolder": "フォルダを削除する",
+			"deleteFolder": {
+				"title": "フォルダを削除",
+				"aria-label": "フォルダを削除"
+			},
 			"deleteFolderConfirm": "フォルダを削除しますか?そこにある投稿は「未アーカイブ」に移動されます。",
 			"searchEmpty": "一致するコレクションがありません",
 			"folderEmpty": "このフォルダは空です",
@@ -4004,7 +4077,10 @@
 			"emptyHint": "投稿欄に内容を書いて「下書きを保存」を押すと、次回も編集を続けられます。",
 			"saved": "下書きが保存されました",
 			"deleted": "下書きが削除されました",
-			"delete": "下書きの削除",
+			"delete": {
+				"title": "下書きを削除",
+				"aria-label": "下書きを削除"
+			},
 			"empty": "ドラフトは空です",
 			"saveFailed": "下書きの保存に失敗しました: ${error}",
 			"loadFailed": "下書きを開けませんでした: ${error}",
@@ -4165,15 +4241,30 @@
 			}
 		},
 		"actions": {
-			"like": "のように",
-			"unlike": "とは異なり",
-			"dislike": "踏む",
-			"undislike": "嫌いをキャンセル",
+			"like": {
+				"title": "いいね",
+				"aria-label": "いいね"
+			},
+			"unlike": {
+				"title": "いいねを取り消す",
+				"aria-label": "いいねを取り消す"
+			},
+			"dislike": {
+				"title": "よくないね",
+				"aria-label": "よくないね"
+			},
+			"undislike": {
+				"title": "よくないねを取り消す",
+				"aria-label": "よくないねを取り消す"
+			},
 			"repost": "フォワード",
 			"quote": "引用",
 			"delete": "削除",
 			"edit": "編集",
-			"save": "保存",
+			"save": {
+				"title": "ブックマーク",
+				"aria-label": "ブックマーク"
+			},
 			"saved": "集めた",
 			"translate": "翻訳する",
 			"dm": "プライベートメッセージを送信する",
@@ -4289,9 +4380,6 @@
 			"quoting": "引用",
 			"clear": "逆参照",
 			"viewOriginal": "元の投稿を見る"
-		},
-		"translate": {
-			"label": "翻訳："
 		},
 		"time": {
 			"justNow": "ただ",
@@ -5249,8 +5337,9 @@
 			"confirm": "確認",
 			"close": "閉じる",
 			"translate": {
-				"showOriginal": "元のテキストを表示",
-				"showTranslation": "翻訳を表示"
+				"label": "訳文：",
+				"showOriginal": "原文を表示",
+				"showTranslation": "訳文を表示"
 			}
 		},
 		"code_block": {

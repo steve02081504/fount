@@ -949,10 +949,22 @@
 			"multipleMembers": "여러 회원이 입력 중입니다..."
 		},
 		"emoji": {
-			"pickerTitle": "이모지 선택",
-			"recent": "최근 사용",
-			"jumpToStart": "맨 위로",
-			"jumpToUnicode": "유니코드로",
+			"pickerTitle": {
+				"aria-label": "이모지 선택",
+				"textContent": "이모지 선택"
+			},
+			"recent": {
+				"title": "최근 사용",
+				"aria-label": "최근 사용"
+			},
+			"jumpToStart": {
+				"title": "맨 위로",
+				"aria-label": "맨 위로"
+			},
+			"jumpToUnicode": {
+				"title": "유니코드로",
+				"aria-label": "유니코드로"
+			},
 			"discoverPacks": "이모티콘 팩 둘러보기 →",
 			"categoryFace": "표정",
 			"categoryGesture": "제스처",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "스마일리 및 감정"
+				"title": "스마일리 및 감정",
+				"aria-label": "스마일리 및 감정"
 			},
 			"People_and_Body": {
-				"title": "사람 및 신체"
+				"title": "사람 및 신체",
+				"aria-label": "사람 및 신체"
 			},
 			"Animals_and_Nature": {
-				"title": "동물 및 자연"
+				"title": "동물 및 자연",
+				"aria-label": "동물 및 자연"
 			},
 			"Food_and_Drink": {
-				"title": "음식 및 음료"
+				"title": "음식 및 음료",
+				"aria-label": "음식 및 음료"
 			},
 			"Travel_and_Places": {
-				"title": "여행 및 장소"
+				"title": "여행 및 장소",
+				"aria-label": "여행 및 장소"
 			},
 			"Activities": {
-				"title": "활동"
+				"title": "활동",
+				"aria-label": "활동"
 			},
 			"Objects": {
-				"title": "사물"
+				"title": "사물",
+				"aria-label": "사물"
 			},
 			"Symbols": {
-				"title": "기호"
+				"title": "기호",
+				"aria-label": "기호"
 			},
 			"Flags": {
-				"title": "깃발"
-			},
-			"Component": {
-				"title": "구성 요소"
+				"title": "깃발",
+				"aria-label": "깃발"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "몰래 ",
 				"offline": "오프라인"
 			},
-			"changeStatusTitle": "스위치 상태",
+			"changeStatusTitle": {
+				"aria-label": "스위치 상태"
+			},
 			"aboutSection": "정보",
 			"bioEmpty": "이 사용자는 아직 프로필이 없습니다.",
 			"statusOffline": {
@@ -2446,9 +2466,6 @@
 			"deliveryRead": "읽음",
 			"translate": "번역",
 			"translating": "번역 중…",
-			"translateShowOriginal": "원본 텍스트 표시",
-			"translateShowTranslation": "번역 표시",
-			"translateLabel": "번역",
 			"translateFailed": "번역 실패",
 			"editImage": "사진 편집",
 			"draftRestored": "초안이 복원되었습니다.",
@@ -2807,6 +2824,9 @@
 			"advancedKicker": "필요 시 설정",
 			"advancedSettings": "고급 설정",
 			"advancedDescription": "일상 사용에는 조정할 필요가 없습니다.",
+			"cardHost": {
+				"aria-label": "프로필 카드"
+			},
 			"edit": "프로필 편집",
 			"save": "저장",
 			"cancel": "취소",
@@ -3870,6 +3890,14 @@
 			"editCrop": "자르기",
 			"editMosaic": "모자이크",
 			"editBrush": "브러시",
+			"editBrushColor": {
+				"title": "브러시 색상",
+				"aria-label": "브러시 색상"
+			},
+			"editBrushSize": {
+				"title": "브러시 크기",
+				"aria-label": "브러시 크기"
+			},
 			"editApply": "적용",
 			"editCancel": "취소",
 			"replyPolicyEveryone": "누구나 답글을 달 수 있습니다.",
@@ -3909,13 +3937,48 @@
 			},
 			"visibility": {
 				"label": "가시 범위",
-				"public": "공개",
-				"unlisted": "공개적으로 나열되지 않음",
-				"followers": "팔로어만",
-				"followers7d": "7일 동안 팔로우한 후 표시됨",
-				"followers30d": "30일 동안 팔로우한 후 표시됨",
-				"selected": "지정된 사용자에게 공개",
-				"private": "본인에게만 표시됩니다.",
+				"public": {
+					"title": "공개",
+					"aria-label": "공개",
+					"label": "공개",
+					"textContent": "공개"
+				},
+				"unlisted": {
+					"title": "미등록",
+					"aria-label": "미등록",
+					"label": "미등록",
+					"textContent": "미등록"
+				},
+				"followers": {
+					"title": "팔로워만",
+					"aria-label": "팔로워만",
+					"label": "팔로워만",
+					"textContent": "팔로워만"
+				},
+				"followers7d": {
+					"title": "팔로우 7일 후 공개",
+					"aria-label": "팔로우 7일 후 공개",
+					"label": "팔로우 7일 후 공개",
+					"textContent": "팔로우 7일 후 공개"
+				},
+				"followers30d": {
+					"title": "팔로우 30일 후 공개",
+					"aria-label": "팔로우 30일 후 공개",
+					"label": "팔로우 30일 후 공개",
+					"textContent": "팔로우 30일 후 공개"
+				},
+				"selected": {
+					"title": "선택한 사람에게 공개",
+					"aria-label": "선택한 사람에게 공개",
+					"label": "선택한 사람에게 공개",
+					"textContent": "선택한 사람에게 공개"
+				},
+				"private": {
+					"title": "나만 보기",
+					"aria-label": "나만 보기",
+					"label": "나만 보기",
+					"textContent": "나만 보기"
+				},
 				"allowLabel": "표시 사람들",
 				"exceptLabel": "사람을 제외",
 				"allow": {
@@ -3951,6 +4014,7 @@
 			"trending": {
 				"title": "뜨거운 주제",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n}개의 게시물"
 				},
 				"empty": "아직 인기 주제가 없습니다.",
@@ -3987,10 +4051,19 @@
 			"folderSelect": "즐겨찾는 폴더",
 			"confirm": "확인",
 			"cancel": "취소",
-			"remove": "즐겨찾기 제거",
-			"renameFolder": "이름 바꾸기",
+			"remove": {
+				"title": "북마크에서 제거",
+				"aria-label": "북마크에서 제거"
+			},
+			"renameFolder": {
+				"title": "이름 바꾸기",
+				"aria-label": "이름 바꾸기"
+			},
 			"renameFolderPrompt": "새 폴더 이름",
-			"deleteFolder": "폴더 삭제",
+			"deleteFolder": {
+				"title": "폴더 삭제",
+				"aria-label": "폴더 삭제"
+			},
 			"deleteFolderConfirm": "폴더를 삭제하시겠습니까? 해당 게시물은 '보관 취소됨'으로 이동됩니다.",
 			"searchEmpty": "일치하는 컬렉션이 없습니다.",
 			"folderEmpty": "이 폴더는 비어 있습니다.",
@@ -4004,7 +4077,10 @@
 			"emptyHint": "게시물 상자에 내용을 작성하고 다음 번에 계속 편집하려면 \"초안 저장\"을 클릭하세요.",
 			"saved": "초안이 저장되었습니다.",
 			"deleted": "초안이 삭제되었습니다.",
-			"delete": "초안 삭제",
+			"delete": {
+				"title": "초안 삭제",
+				"aria-label": "초안 삭제"
+			},
 			"empty": "초안이 비어 있습니다.",
 			"saveFailed": "초안 저장 실패: ${error}",
 			"loadFailed": "초안을 열지 못했습니다: ${error}",
@@ -4165,15 +4241,30 @@
 			}
 		},
 		"actions": {
-			"like": "좋아요",
-			"unlike": "같지 않은",
-			"dislike": "밟다",
-			"undislike": "싫어요 취소",
+			"like": {
+				"title": "좋아요",
+				"aria-label": "좋아요"
+			},
+			"unlike": {
+				"title": "좋아요 취소",
+				"aria-label": "좋아요 취소"
+			},
+			"dislike": {
+				"title": "싫어요",
+				"aria-label": "싫어요"
+			},
+			"undislike": {
+				"title": "싫어요 취소",
+				"aria-label": "싫어요 취소"
+			},
 			"repost": "앞으로",
 			"quote": "인용",
 			"delete": "삭제",
 			"edit": "편집",
-			"save": "모으다",
+			"save": {
+				"title": "북마크",
+				"aria-label": "북마크"
+			},
 			"saved": "모은",
 			"translate": "번역",
 			"dm": "비공개 메시지 보내기",
@@ -4289,9 +4380,6 @@
 			"quoting": "인용",
 			"clear": "역참조",
 			"viewOriginal": "원본 게시물 보기"
-		},
-		"translate": {
-			"label": "번역:"
 		},
 		"time": {
 			"justNow": "방금",
@@ -5249,8 +5337,9 @@
 			"confirm": "확인",
 			"close": "폐쇄",
 			"translate": {
-				"showOriginal": "원본 텍스트 표시",
-				"showTranslation": "번역 표시"
+				"label": "번역:",
+				"showOriginal": "원문 보기",
+				"showTranslation": "번역 보기"
 			}
 		},
 		"code_block": {
