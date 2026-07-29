@@ -202,6 +202,6 @@ export async function showStatusMenu(anchorElement) {
 	statusMenuDismissClose = bindDismissOnDocumentInteraction(dismissStatusMenu, {
 		contextMenu: false,
 		// capture 关闭若先拆掉菜单，`<a data-profile-link>` 的导航/点击会丢
-		ignoreSelectors: ['.menu'],
+		ignoreSelectors: ['.status-menu'],
 	})
 }

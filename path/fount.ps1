@@ -1630,11 +1630,14 @@ function Get-FountTestLidAc {
 }
 function Set-FountTestLidAc([int]$Index) {
 	& powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS $script:FountTestLidActionGuid $Index | Out-Null
+	if ($LASTEXITCODE) { throw "powercfg /setacvalueindex failed (exit $LASTEXITCODE)" }
 	& powercfg /setactive SCHEME_CURRENT | Out-Null
+	if ($LASTEXITCODE) { throw "powercfg /setactive failed (exit $LASTEXITCODE)" }
 }
 function Invoke-FountTestKeepAwakeLocked([scriptblock]$Body) {
 	$mutex = [System.Threading.Mutex]::new($false, 'Local\FountTestKeepAwake')
-	[void]$mutex.WaitOne()
+	try { [void]$mutex.WaitOne() }
+	catch [System.Threading.AbandonedMutexException] { } # 前持有者崩溃：已获所有权，继续
 	try { & $Body }
 	finally {
 		[void]$mutex.ReleaseMutex()
@@ -1646,21 +1649,16 @@ function Read-FountTestKeepAwakeState {
 	if (-not (Test-Path -LiteralPath $path)) {
 		return @{ lidAc = $null; holders = @() }
 	}
-	try {
-		$raw = Get-Content -LiteralPath $path -Raw -ErrorAction Stop | ConvertFrom-Json
-		$holders = @(
-			foreach ($h in @($raw.holders)) {
-				if ($null -ne $h -and "$h" -ne '') { [int]$h }
-			}
-		)
-		$lidAc = $null
-		if ($null -ne $raw.lidAc -and "$($raw.lidAc)" -ne '') { $lidAc = [int]$raw.lidAc }
-		return @{ lidAc = $lidAc; holders = $holders }
-	}
-	catch {
-		Write-Verbose "Read-FountTestKeepAwakeState: $($_.Exception.Message)"
-		return @{ lidAc = $null; holders = @() }
-	}
+	# 不可读/损坏时抛出，避免返回空默认态后被 Write 清掉唯一的 lidAc 存档
+	$raw = Get-Content -LiteralPath $path -Raw -ErrorAction Stop | ConvertFrom-Json
+	$holders = @(
+		foreach ($h in @($raw.holders)) {
+			if ($null -ne $h -and "$h" -ne '') { [int]$h }
+		}
+	)
+	$lidAc = $null
+	if ($null -ne $raw.lidAc -and "$($raw.lidAc)" -ne '') { $lidAc = [int]$raw.lidAc }
+	return @{ lidAc = $lidAc; holders = $holders }
 }
 function Write-FountTestKeepAwakeState($State) {
 	$path = Get-FountTestKeepAwakeStatePath
@@ -1675,7 +1673,9 @@ function Write-FountTestKeepAwakeState($State) {
 		lidAc = $State.lidAc
 		holders = $holders
 	}
-	($payload | ConvertTo-Json -Compress) + "`n" | Set-Content -LiteralPath $path -Encoding utf8 -NoNewline
+	$tmp = Join-Path $dir "keep_awake.$PID.tmp"
+	($payload | ConvertTo-Json -Compress) + "`n" | Set-Content -LiteralPath $tmp -Encoding utf8 -NoNewline
+	Move-Item -LiteralPath $tmp -Destination $path -Force
 }
 function Update-FountTestKeepAwakeState([scriptblock]$Mutator) {
 	Invoke-FountTestKeepAwakeLocked {
@@ -1745,9 +1745,11 @@ function Disable-FountTestKeepAwake {
 			$script:FountTestLidHolder = $false
 		}
 		if ($state.holders.Count -eq 0 -and $null -ne $state.lidAc) {
-			try { Set-FountTestLidAc $state.lidAc }
+			try {
+				Set-FountTestLidAc $state.lidAc
+				$state.lidAc = $null
+			}
 			catch { Write-Verbose "Disable-FountTestKeepAwake Set-FountTestLidAc: $($_.Exception.Message)" }
-			$state.lidAc = $null
 		}
 	}
 }
@@ -1758,7 +1760,10 @@ function Restore-FountTestKeepAwakeArchive {
 		$state = Read-FountTestKeepAwakeState
 		if ($null -ne $state.lidAc) {
 			try { Set-FountTestLidAc $state.lidAc }
-			catch { Write-Verbose "Restore-FountTestKeepAwakeArchive Set-FountTestLidAc: $($_.Exception.Message)" }
+			catch {
+				Write-Verbose "Restore-FountTestKeepAwakeArchive Set-FountTestLidAc: $($_.Exception.Message)"
+				return
+			}
 		}
 		Remove-Item -LiteralPath (Get-FountTestKeepAwakeStatePath) -Force -ErrorAction Ignore
 		$script:FountTestLidHolder = $false
