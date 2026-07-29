@@ -2466,9 +2466,6 @@
 			"deliveryRead": "Прочитано",
 			"translate": "Перекладати",
 			"translating": "Переклад…",
-			"translateShowOriginal": "Показати оригінальний текст",
-			"translateShowTranslation": "Показати переклад",
-			"translateLabel": "Переклад",
 			"translateFailed": "Помилка перекладу",
 			"editImage": "Редагувати малюнок",
 			"draftRestored": "Чернетку відновлено",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "За потреби",
 			"advancedSettings": "Розширені налаштування",
 			"advancedDescription": "Для щоденного використання змінювати не потрібно.",
+			"cardHost": {
+				"aria-label": "профільна картка"
+			},
 			"edit": "Редагувати профіль",
 			"save": "Зберегти",
 			"cancel": "Скасувати",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "Гарячі теми",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} дописів"
 				},
 				"empty": "Актуальних тем ще немає",
@@ -4371,9 +4372,6 @@
 			"quoting": "Цитування",
 			"clear": "Прибрати цитату",
 			"viewOriginal": "Переглянути оригінальний допис"
-		},
-		"translate": {
-			"label": "Переклад:"
 		},
 		"time": {
 			"justNow": "Щойно",
@@ -5331,6 +5329,7 @@
 			"confirm": "підтвердити",
 			"close": "Закрити",
 			"translate": {
+				"label": "Переклад:",
 				"showOriginal": "Показати оригінальний текст",
 				"showTranslation": "Показати переклад"
 			}

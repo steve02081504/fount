@@ -2466,9 +2466,6 @@
 			"deliveryRead": "Lu",
 			"translate": "Traduire",
 			"translating": "Traduire…",
-			"translateShowOriginal": "Afficher le texte original",
-			"translateShowTranslation": "Afficher la traduction",
-			"translateLabel": "Traduction",
 			"translateFailed": "La traduction a échoué",
 			"editImage": "Modifier l'image",
 			"draftRestored": "Brouillon restauré",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "Configuration à la demande",
 			"advancedSettings": "Paramètres avancés",
 			"advancedDescription": "Aucun réglage n'est nécessaire pour une utilisation quotidienne.",
+			"cardHost": {
+				"aria-label": "carte de profil"
+			},
 			"edit": "Modifier le profil",
 			"save": "Enregistrer",
 			"cancel": "Annuler",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "Tendances",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} messages"
 				},
 				"empty": "Pas encore de sujets d'actualité",
@@ -4371,9 +4372,6 @@
 			"quoting": "Citation",
 			"clear": "Retirer la citation",
 			"viewOriginal": "Afficher le message original"
-		},
-		"translate": {
-			"label": "Traduction :"
 		},
 		"time": {
 			"justNow": "À l'instant",
@@ -5331,6 +5329,7 @@
 			"confirm": "Confirmer",
 			"close": "Fermer",
 			"translate": {
+				"label": "Traduction:",
 				"showOriginal": "Afficher le texte original",
 				"showTranslation": "Afficher la traduction"
 			}

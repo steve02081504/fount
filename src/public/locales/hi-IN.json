@@ -2466,9 +2466,6 @@
 			"deliveryRead": "पढ़ना",
 			"translate": "अनुवाद",
 			"translating": "अनुवाद हो रहा है…",
-			"translateShowOriginal": "मूल पाठ दिखाएँ",
-			"translateShowTranslation": "अनुवाद दिखाएँ",
-			"translateLabel": "अनुवाद",
 			"translateFailed": "अनुवाद विफल",
 			"editImage": "चित्र संपादित करें",
 			"draftRestored": "ड्राफ्ट बहाल किया गया",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "ज़रूरत पड़ने पर करें",
 			"advancedSettings": "उन्नत सेटिंग",
 			"advancedDescription": "दैनिक उपयोग के लिए किसी समायोजन की आवश्यकता नहीं है।",
+			"cardHost": {
+				"aria-label": "प्रोफ़ाइल कार्ड"
+			},
 			"edit": "प्रोफ़ाइल संपादित करें",
 			"save": "सहेजें",
 			"cancel": "रद्द करें",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "ट्रेंडिंग विषय",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} पोस्ट"
 				},
 				"empty": "अभी तक कोई गर्म विषय नहीं है",
@@ -4371,9 +4372,6 @@
 			"quoting": "का हवाला देते हुए",
 			"clear": "भिन्नता",
 			"viewOriginal": "मूल पोस्ट देखें"
-		},
-		"translate": {
-			"label": "अनुवाद:"
 		},
 		"time": {
 			"justNow": "अभी",
@@ -5331,6 +5329,7 @@
 			"confirm": "पुष्टि करें",
 			"close": "बंद करें",
 			"translate": {
+				"label": "अनुवाद:",
 				"showOriginal": "मूल पाठ दिखाएँ",
 				"showTranslation": "अनुवाद दिखाएँ"
 			}

@@ -2466,9 +2466,6 @@
 			"deliveryRead": "✅👀",
 			"translate": "🌐",
 			"translating": "🌐⏳…",
-			"translateShowOriginal": "👀📝",
-			"translateShowTranslation": "👀🌐",
-			"translateLabel": "🌐📝",
 			"translateFailed": "🌐❌",
 			"editImage": "✏️🖼️",
 			"draftRestored": "✅♻️📝",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "🎯⚙️",
 			"advancedSettings": "🔧⚙️🎛️",
 			"advancedDescription": "😌👌🚫🔧",
+			"cardHost": {
+				"aria-label": "个人资料卡"
+			},
 			"edit": "✏️👤",
 			"save": "💾",
 			"cancel": "↩️",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "🔥#️⃣",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n}📄"
 				},
 				"empty": "🔥#️⃣📭",
@@ -4371,9 +4372,6 @@
 			"quoting": "▶️🔗",
 			"clear": "↩️🔗",
 			"viewOriginal": "👀📄"
-		},
-		"translate": {
-			"label": "🌐📝："
 		},
 		"time": {
 			"justNow": "⏱️✨",
@@ -5331,6 +5329,7 @@
 			"confirm": "✅",
 			"close": "✖️",
 			"translate": {
+				"label": "译文：",
 				"showOriginal": "👀📝",
 				"showTranslation": "👀🌐"
 			}

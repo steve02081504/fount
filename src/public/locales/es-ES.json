@@ -2466,9 +2466,6 @@
 			"deliveryRead": "Leer",
 			"translate": "traducir",
 			"translating": "Traductorio…",
-			"translateShowOriginal": "Mostrar texto original",
-			"translateShowTranslation": "Mostrar traducción",
-			"translateLabel": "traducción",
 			"translateFailed": "La traducción falló",
 			"editImage": "Editar imagen",
 			"draftRestored": "Borrador restaurado",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "Configurar bajo demanda",
 			"advancedSettings": "Ajustes avanzados",
 			"advancedDescription": "No hace falta tocar nada para el uso diario.",
+			"cardHost": {
+				"aria-label": "tarjeta de perfil"
+			},
 			"edit": "Editar perfil",
 			"save": "Guardar",
 			"cancel": "Cancelar",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "temas candentes",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} publicaciones"
 				},
 				"empty": "Aún no hay temas candentes",
@@ -4371,9 +4372,6 @@
 			"quoting": "Citando",
 			"clear": "desreferenciación",
 			"viewOriginal": "Ver publicación original"
-		},
-		"translate": {
-			"label": "Traducción:"
 		},
 		"time": {
 			"justNow": "justo",
@@ -5331,6 +5329,7 @@
 			"confirm": "confirm",
 			"close": "Cerrar",
 			"translate": {
+				"label": "Traducción:",
 				"showOriginal": "Mostrar texto original",
 				"showTranslation": "Mostrar traducción"
 			}

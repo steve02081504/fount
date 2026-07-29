@@ -2466,9 +2466,6 @@
 			"deliveryRead": "Читать",
 			"translate": "переводить",
 			"translating": "Перевод…",
-			"translateShowOriginal": "Показать исходный текст",
-			"translateShowTranslation": "Показать перевод",
-			"translateLabel": "перевод",
 			"translateFailed": "Не удалось перевести",
 			"editImage": "Редактировать изображение",
 			"draftRestored": "Черновик восстановлен",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "Настройка по необходимости",
 			"advancedSettings": "Расширенные настройки",
 			"advancedDescription": "Для повседневного использования настройка не требуется.",
+			"cardHost": {
+				"aria-label": "карточка профиля"
+			},
 			"edit": "Редактировать профиль",
 			"save": "Сохранить",
 			"cancel": "Отмена",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "Популярные темы",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} сообщений"
 				},
 				"empty": "Горячих тем пока нет",
@@ -4371,9 +4372,6 @@
 			"quoting": "Цитирование",
 			"clear": "Убрать цитату",
 			"viewOriginal": "Посмотреть исходное сообщение"
-		},
-		"translate": {
-			"label": "Перевод:"
 		},
 		"time": {
 			"justNow": "Только что",
@@ -5331,6 +5329,7 @@
 			"confirm": "Подтвердить",
 			"close": "Закрыть",
 			"translate": {
+				"label": "Перевод:",
 				"showOriginal": "Показать исходный текст",
 				"showTranslation": "Показать перевод"
 			}

@@ -2465,9 +2465,6 @@
 			"deliveryRead": "已讀",
 			"translate": "翻譯",
 			"translating": "翻譯中…",
-			"translateShowOriginal": "顯示原文",
-			"translateShowTranslation": "顯示譯文",
-			"translateLabel": "譯文",
 			"translateFailed": "翻譯失敗",
 			"editImage": "編輯圖片",
 			"draftRestored": "已恢復草稿",
@@ -2826,6 +2823,9 @@
 			"advancedKicker": "依需求設定",
 			"advancedSettings": "高階設定",
 			"advancedDescription": "日常使用無需調整。",
+			"cardHost": {
+				"aria-label": "個人資料卡"
+			},
 			"edit": "編輯資料",
 			"save": "儲存",
 			"cancel": "取消",
@@ -4005,6 +4005,7 @@
 			"trending": {
 				"title": "熱門話題",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} 條帖子"
 				},
 				"empty": "暫無熱門話題",
@@ -4370,9 +4371,6 @@
 			"quoting": "正在引用",
 			"clear": "取消引用",
 			"viewOriginal": "檢視原帖"
-		},
-		"translate": {
-			"label": "譯文："
 		},
 		"time": {
 			"justNow": "剛剛",
@@ -5330,6 +5328,7 @@
 			"confirm": "確認",
 			"close": "關閉",
 			"translate": {
+				"label": "譯文：",
 				"showOriginal": "顯示原文",
 				"showTranslation": "顯示譯文"
 			}

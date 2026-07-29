@@ -2466,9 +2466,6 @@
 			"deliveryRead": "مقروء",
 			"translate": "ترجمة",
 			"translating": "ترجمة…",
-			"translateShowOriginal": "عرض النص الأصلي",
-			"translateShowTranslation": "عرض الترجمة",
-			"translateLabel": "ترجمة",
 			"translateFailed": "فشلت الترجمة",
 			"editImage": "تحرير الصورة",
 			"draftRestored": "تمت استعادة المسودة",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "عند الحاجة فقط",
 			"advancedSettings": "الإعدادات المتقدمة",
 			"advancedDescription": "لا حاجة لتعديلها في الاستخدام اليومي.",
+			"cardHost": {
+				"aria-label": "بطاقة الملف الشخصي"
+			},
 			"edit": "تعديل الملف الشخصي",
 			"save": "حفظ",
 			"cancel": "إلغاء",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "مواضيع ساخنة",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} مشاركات"
 				},
 				"empty": "لا توجد مواضيع ساخنة بعد",
@@ -4371,9 +4372,6 @@
 			"quoting": "اقتباس",
 			"clear": "إلغاء الاقتباس",
 			"viewOriginal": "عرض المنشور الأصلي"
-		},
-		"translate": {
-			"label": "الترجمة:"
 		},
 		"time": {
 			"justNow": "الآن",
@@ -5331,6 +5329,7 @@
 			"confirm": "تأكيد",
 			"close": "إغلاق",
 			"translate": {
+				"label": "ترجمة:",
 				"showOriginal": "عرض النص الأصلي",
 				"showTranslation": "عرض الترجمة"
 			}

@@ -2466,9 +2466,6 @@
 			"deliveryRead": "読む",
 			"translate": "翻訳する",
 			"translating": "翻訳中…",
-			"translateShowOriginal": "元のテキストを表示",
-			"translateShowTranslation": "翻訳を表示",
-			"translateLabel": "翻訳",
 			"translateFailed": "翻訳に失敗しました",
 			"editImage": "画像を編集する",
 			"draftRestored": "ドラフトが復元されました",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "オンデマンドで構成する",
 			"advancedSettings": "詳細設定",
 			"advancedDescription": "毎日の使用には調整の必要はありません。",
+			"cardHost": {
+				"aria-label": "プロフィールカード"
+			},
 			"edit": "プロフィールの編集",
 			"save": "保存",
 			"cancel": "キャンセル",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "ホットトピック",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} 件の投稿"
 				},
 				"empty": "まだホットトピックはありません",
@@ -4371,9 +4372,6 @@
 			"quoting": "引用",
 			"clear": "逆参照",
 			"viewOriginal": "元の投稿を見る"
-		},
-		"translate": {
-			"label": "翻訳："
 		},
 		"time": {
 			"justNow": "ただ",
@@ -5331,6 +5329,7 @@
 			"confirm": "確認",
 			"close": "閉じる",
 			"translate": {
+				"label": "翻訳：",
 				"showOriginal": "元のテキストを表示",
 				"showTranslation": "翻訳を表示"
 			}

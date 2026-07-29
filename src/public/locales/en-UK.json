@@ -2461,9 +2461,6 @@
 			"deliveryRead": "Read",
 			"translate": "Translate",
 			"translating": "Translating…",
-			"translateShowOriginal": "Show original text",
-			"translateShowTranslation": "Show translation",
-			"translateLabel": "Translation",
 			"translateFailed": "Translation failed",
 			"editImage": "Edit image",
 			"draftRestored": "Draft restored",
@@ -2822,6 +2819,9 @@
 			"advancedKicker": "When you need it",
 			"advancedSettings": "Advanced settings",
 			"advancedDescription": "You won't need these for everyday use.",
+			"cardHost": {
+				"aria-label": "profile card"
+			},
 			"edit": "Edit profile",
 			"save": "Save",
 			"cancel": "Cancel",
@@ -4003,6 +4003,7 @@
 			"trending": {
 				"title": "Trending",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} posts"
 				},
 				"empty": "Nothing trending yet",
@@ -4368,9 +4369,6 @@
 			"quoting": "Quoting",
 			"clear": "Clear quote",
 			"viewOriginal": "View original post"
-		},
-		"translate": {
-			"label": "Translation:"
 		},
 		"time": {
 			"justNow": "just",
@@ -5328,6 +5326,7 @@
 			"confirm": "Confirm",
 			"close": "Close",
 			"translate": {
+				"label": "Translation:",
 				"showOriginal": "Show original text",
 				"showTranslation": "Show translation"
 			}

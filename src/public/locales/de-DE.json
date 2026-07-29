@@ -2466,9 +2466,6 @@
 			"deliveryRead": "Lesen",
 			"translate": "Übersetzen",
 			"translating": "Übersetzen…",
-			"translateShowOriginal": "Originaltext anzeigen",
-			"translateShowTranslation": "Übersetzung anzeigen",
-			"translateLabel": "Übersetzung",
 			"translateFailed": "Die Übersetzung ist fehlgeschlagen",
 			"editImage": "Bild bearbeiten",
 			"draftRestored": "Entwurf wiederhergestellt",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "Nach Bedarf konfigurieren",
 			"advancedSettings": "Erweiterte Einstellungen",
 			"advancedDescription": "Für den Alltag ist keine Anpassung nötig.",
+			"cardHost": {
+				"aria-label": "Profilkarte"
+			},
 			"edit": "Profil bearbeiten",
 			"save": "Speichern",
 			"cancel": "Abbrechen",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "Trend-Themen",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} Beiträge"
 				},
 				"empty": "Noch keine Trend-Themen",
@@ -4371,9 +4372,6 @@
 			"quoting": "Zitieren",
 			"clear": "Zitat entfernen",
 			"viewOriginal": "Originalbeitrag ansehen"
-		},
-		"translate": {
-			"label": "Übersetzung:"
 		},
 		"time": {
 			"justNow": "Nur",
@@ -5331,6 +5329,7 @@
 			"confirm": "Bestätigen",
 			"close": "Schließen",
 			"translate": {
+				"label": "Übersetzung:",
 				"showOriginal": "Originaltext anzeigen",
 				"showTranslation": "Übersetzung anzeigen"
 			}

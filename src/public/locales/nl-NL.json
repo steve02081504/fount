@@ -2466,9 +2466,6 @@
 			"deliveryRead": "Lezen",
 			"translate": "Vertalen",
 			"translating": "Vertalen…",
-			"translateShowOriginal": "Toon originele tekst",
-			"translateShowTranslation": "Laat vertaling zien",
-			"translateLabel": "Vertaling",
 			"translateFailed": "Vertaling mislukt",
 			"editImage": "Afbeelding bewerken",
 			"draftRestored": "Diepgang hersteld",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "Op aanvraag configureren",
 			"advancedSettings": "Geavanceerde instellingen",
 			"advancedDescription": "Voor dagelijks gebruik is geen aanpassing nodig.",
+			"cardHost": {
+				"aria-label": "profiel kaart"
+			},
 			"edit": "Profiel bewerken",
 			"save": "Opslaan",
 			"cancel": "Annuleren",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "Trending",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} berichten"
 				},
 				"empty": "Nog geen actuele onderwerpen",
@@ -4371,9 +4372,6 @@
 			"quoting": "Citeren",
 			"clear": "Citaat verwijderen",
 			"viewOriginal": "Bekijk origineel bericht"
-		},
-		"translate": {
-			"label": "Vertaling:"
 		},
 		"time": {
 			"justNow": "Zojuist",
@@ -5331,6 +5329,7 @@
 			"confirm": "Bevestigen",
 			"close": "Sluiten",
 			"translate": {
+				"label": "Vertaling:",
 				"showOriginal": "Toon originele tekst",
 				"showTranslation": "Laat vertaling zien"
 			}

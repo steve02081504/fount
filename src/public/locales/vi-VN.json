@@ -2466,9 +2466,6 @@
 			"deliveryRead": "Đọc",
 			"translate": "Dịch",
 			"translating": "Đang dịch…",
-			"translateShowOriginal": "Hiển thị văn bản gốc",
-			"translateShowTranslation": "Hiển thị bản dịch",
-			"translateLabel": "dịch thuật",
 			"translateFailed": "Dịch không thành công",
 			"editImage": "Chỉnh sửa ảnh",
 			"draftRestored": "Đã khôi phục bản nháp",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "Cấu hình theo yêu cầu",
 			"advancedSettings": "Cài đặt nâng cao",
 			"advancedDescription": "Không cần điều chỉnh để sử dụng hàng ngày.",
+			"cardHost": {
+				"aria-label": "thẻ hồ sơ"
+			},
 			"edit": "Chỉnh sửa hồ sơ",
 			"save": "Lưu",
 			"cancel": "Hủy",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "chủ đề nóng",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} bài đăng"
 				},
 				"empty": "Chưa có chủ đề nóng",
@@ -4371,9 +4372,6 @@
 			"quoting": "Trích dẫn",
 			"clear": "sự vô lễ",
 			"viewOriginal": "Xem bài viết gốc"
-		},
-		"translate": {
-			"label": "Bản dịch:"
 		},
 		"time": {
 			"justNow": "Chỉ",
@@ -5331,6 +5329,7 @@
 			"confirm": "xác nhận",
 			"close": "Đóng",
 			"translate": {
+				"label": "Bản dịch:",
 				"showOriginal": "Hiển thị văn bản gốc",
 				"showTranslation": "Hiển thị bản dịch"
 			}

@@ -2466,9 +2466,6 @@
 			"deliveryRead": "已讀",
 			"translate": "翻譯",
 			"translating": "方翻譯…",
-			"translateShowOriginal": "示原文",
-			"translateShowTranslation": "示譯文",
-			"translateLabel": "譯文",
 			"translateFailed": "翻譯未遂",
 			"editImage": "編輯圖片",
 			"draftRestored": "已恢復底稿",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "相機而設",
 			"advancedSettings": "樞機之制",
 			"advancedDescription": "日用無需調整。",
+			"cardHost": {
+				"aria-label": "个人资料卡"
+			},
 			"edit": "修簿牒",
 			"save": "存",
 			"cancel": "止",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "熱門話題",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} 則言"
 				},
 				"empty": "暫無熱門話題",
@@ -4371,9 +4372,6 @@
 			"quoting": "方引用",
 			"clear": "否引用",
 			"viewOriginal": "覽原信"
-		},
-		"translate": {
-			"label": "譯文："
 		},
 		"time": {
 			"justNow": "甫爾",
@@ -5331,6 +5329,7 @@
 			"confirm": "允",
 			"close": "闔",
 			"translate": {
+				"label": "译文：",
 				"showOriginal": "示原文",
 				"showTranslation": "示譯文"
 			}

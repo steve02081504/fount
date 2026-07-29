@@ -2466,9 +2466,6 @@
 			"deliveryRead": "읽음",
 			"translate": "번역",
 			"translating": "번역 중…",
-			"translateShowOriginal": "원본 텍스트 표시",
-			"translateShowTranslation": "번역 표시",
-			"translateLabel": "번역",
 			"translateFailed": "번역 실패",
 			"editImage": "사진 편집",
 			"draftRestored": "초안이 복원되었습니다.",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "필요 시 설정",
 			"advancedSettings": "고급 설정",
 			"advancedDescription": "일상 사용에는 조정할 필요가 없습니다.",
+			"cardHost": {
+				"aria-label": "프로필 카드"
+			},
 			"edit": "프로필 편집",
 			"save": "저장",
 			"cancel": "취소",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "뜨거운 주제",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n}개의 게시물"
 				},
 				"empty": "아직 인기 주제가 없습니다.",
@@ -4371,9 +4372,6 @@
 			"quoting": "인용",
 			"clear": "역참조",
 			"viewOriginal": "원본 게시물 보기"
-		},
-		"translate": {
-			"label": "번역:"
 		},
 		"time": {
 			"justNow": "방금",
@@ -5331,6 +5329,7 @@
 			"confirm": "확인",
 			"close": "폐쇄",
 			"translate": {
+				"label": "번역:",
 				"showOriginal": "원본 텍스트 표시",
 				"showTranslation": "번역 표시"
 			}

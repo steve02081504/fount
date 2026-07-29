@@ -2466,9 +2466,6 @@
 			"deliveryRead": "Lestu",
 			"translate": "Þýða",
 			"translating": "Þýðir…",
-			"translateShowOriginal": "Sýna upprunalegan texta",
-			"translateShowTranslation": "Sýna þýðingu",
-			"translateLabel": "Þýðing",
 			"translateFailed": "Þýðing mistókst",
 			"editImage": "Breyta mynd",
 			"draftRestored": "Drög endurheimt",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "Stilla eftir þörfum",
 			"advancedSettings": "Ítarlegar stillingar",
 			"advancedDescription": "Engar breytingar þarf fyrir daglega notkun.",
+			"cardHost": {
+				"aria-label": "prófílkort"
+			},
 			"edit": "Breyta prófíl",
 			"save": "Vista",
 			"cancel": "Hætta við",
@@ -4006,6 +4006,7 @@
 			"trending": {
 				"title": "Vinsælt efni",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} færslur"
 				},
 				"empty": "Ekkert heitt umræðuefni ennþá",
@@ -4371,9 +4372,6 @@
 			"quoting": "Tilvitnun",
 			"clear": "Tillitsleysi",
 			"viewOriginal": "Skoða upprunalega færslu"
-		},
-		"translate": {
-			"label": "Þýðing:"
 		},
 		"time": {
 			"justNow": "Rétt núna",
@@ -5331,6 +5329,7 @@
 			"confirm": "Staðfesta",
 			"close": "Loka",
 			"translate": {
+				"label": "Þýðing:",
 				"showOriginal": "Sýna upprunalegan texta",
 				"showTranslation": "Sýna þýðingu"
 			}

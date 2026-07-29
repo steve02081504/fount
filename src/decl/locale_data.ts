@@ -3,8 +3,8 @@
 // 此文件为 i18n 键提供类型定义，实现自动补全。
 
 /**
- * 表示所有可能的语言环境数据类型。
- */
+* 表示所有可能的语言环境数据类型。
+*/
 export type LocaleData = {
 	lang: string
 	name: string
@@ -2434,9 +2434,6 @@ export type LocaleData = {
 			deliveryRead: string
 			translate: string
 			translating: string
-			translateShowOriginal: string
-			translateShowTranslation: string
-			translateLabel: string
 			translateFailed: string
 			editImage: string
 			draftRestored: string
@@ -2795,6 +2792,9 @@ export type LocaleData = {
 			advancedKicker: string
 			advancedSettings: string
 			advancedDescription: string
+			cardHost: {
+				'aria-label': string
+			}
 			edit: string
 			save: string
 			cancel: string
@@ -3899,13 +3899,48 @@ export type LocaleData = {
 			}
 			visibility: {
 				label: string
-				public: string
-				unlisted: string
-				followers: string
-				followers7d: string
-				followers30d: string
-				selected: string
-				private: string
+				public: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
+				unlisted: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
+				followers: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
+				followers7d: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
+				followers30d: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
+				selected: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
+				private: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
 				allowLabel: string
 				exceptLabel: string
 				allow: {
@@ -3941,6 +3976,7 @@ export type LocaleData = {
 			trending: {
 				title: string
 				postCount: {
+					textContent: string
 					title: string
 				}
 				empty: string
@@ -3979,10 +4015,19 @@ export type LocaleData = {
 			}
 			confirm: string
 			cancel: string
-			remove: string
-			renameFolder: string
+			remove: {
+				title: string
+				'aria-label': string
+			}
+			renameFolder: {
+				title: string
+				'aria-label': string
+			}
 			renameFolderPrompt: string
-			deleteFolder: string
+			deleteFolder: {
+				title: string
+				'aria-label': string
+			}
 			deleteFolderConfirm: string
 			searchEmpty: string
 			folderEmpty: string
@@ -3996,7 +4041,10 @@ export type LocaleData = {
 			emptyHint: string
 			saved: string
 			deleted: string
-			delete: string
+			delete: {
+				title: string
+				'aria-label': string
+			}
 			empty: string
 			saveFailed: string
 			loadFailed: string
@@ -4159,15 +4207,30 @@ export type LocaleData = {
 			}
 		}
 		actions: {
-			like: string
-			unlike: string
-			dislike: string
-			undislike: string
+			like: {
+				title: string
+				'aria-label': string
+			}
+			unlike: {
+				title: string
+				'aria-label': string
+			}
+			dislike: {
+				title: string
+				'aria-label': string
+			}
+			undislike: {
+				title: string
+				'aria-label': string
+			}
 			repost: string
 			quote: string
 			delete: string
 			edit: string
-			save: string
+			save: {
+				title: string
+				'aria-label': string
+			}
 			saved: string
 			translate: string
 			dm: string
@@ -4285,9 +4348,6 @@ export type LocaleData = {
 			quoting: string
 			clear: string
 			viewOriginal: string
-		}
-		translate: {
-			label: string
 		}
 		time: {
 			justNow: string
@@ -5245,6 +5305,7 @@ export type LocaleData = {
 			confirm: string
 			close: string
 			translate: {
+				label: string
 				showOriginal: string
 				showTranslation: string
 			}
@@ -5373,19 +5434,19 @@ type Join<K, P> = K extends string | number
 	: never
 
 /**
- * 表示语言环境数据所有可能的点表示法键。
- * 这为在 `geti18n` 中使用的键提供自动补全。
- *
- * @example
- * 'home.title'
- * 'login.errors.password_mismatch'
- */
+* 表示语言环境数据所有可能的点表示法键。
+* 这为在 `geti18n` 中使用的键提供自动补全。
+*
+* @example
+* 'home.title'
+* 'login.errors.password_mismatch'
+*/
 export type LocaleKey = Paths<LocaleData>
 
 /**
- * 将语言环境键映射到其预期参数对象的类型。
- * 如果键不需要参数，则不包含在此类型中。
- */
+* 将语言环境键映射到其预期参数对象的类型。
+* 如果键不需要参数，则不包含在此类型中。
+*/
 export type LocaleKeyParams = {
 	'achievements.error.load_failed': { message: string | number }
 	'achievements.unlocked_on': { date: string | number }
@@ -5815,6 +5876,7 @@ export type LocaleKeyParams = {
 	'social.drafts.loadFailed': { error: string | number }
 	'social.drafts.saveFailed': { error: string | number }
 	'social.feed.repostedBy': { author: string | number }
+	'social.feed.trending.postCount.textContent': { n: string | number }
 	'social.feed.trending.postCount.title': { n: string | number }
 	'social.inbox.aggregated.follow': { author1: string | number; author2: string | number; count: string | number }
 	'social.inbox.aggregated.followTwo': { author1: string | number; author2: string | number }
@@ -5883,11 +5945,11 @@ export type LocaleKeyParams = {
 }
 
 /**
- * 表示所有需要参数的语言环境键的类型。
- */
+* 表示所有需要参数的语言环境键的类型。
+*/
 export type LocaleKeyWithParams = keyof LocaleKeyParams
 
 /**
- * 表示所有不需要参数的语言环境键的类型。
- */
+* 表示所有不需要参数的语言环境键的类型。
+*/
 export type LocaleKeyWithoutParams = Exclude<LocaleKey, LocaleKeyWithParams>
