@@ -16,5 +16,6 @@ jobs:
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           CACHE_KEY: fount-test-data-${{ github.event.ref }}
-        run: gh cache delete "$CACHE_KEY" || true
+        run: gh cache delete "$CACHE_KEY"

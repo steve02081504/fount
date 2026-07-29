@@ -1749,7 +1749,7 @@
 			"filesNewFolderPrompt": "帙名",
 			"filesRename": "重命名",
 			"filesRenameFolderPrompt": "重命名帙「${name}」為：",
-			"filesDeleteFolderConfirm": "確刪此帙？夾內文牘不將自行刪。",
+			"filesDeleteFolderConfirm": "確刪此帙？帙內文牘不將自行刪。",
 			"filesUpload": "傳",
 			"filesDownload": "拓存",
 			"filesDelete": "刪",
@@ -4061,8 +4061,8 @@
 			},
 			"renameFolderPrompt": "新帙名",
 			"deleteFolder": {
-				"title": "刪除夾",
-				"aria-label": "刪除夾"
+				"title": "刪除帙",
+				"aria-label": "刪除帙"
 			},
 			"deleteFolderConfirm": "刪帙？其中言將移至「未歸檔」。",
 			"searchEmpty": "未見所契之藏",
@@ -4078,8 +4078,8 @@
 			"saved": "底稿已存",
 			"deleted": "底稿已刪",
 			"delete": {
-				"title": "刪除草稿",
-				"aria-label": "刪除草稿"
+				"title": "刪除底稿",
+				"aria-label": "刪除底稿"
 			},
 			"empty": "底稿為空",
 			"saveFailed": "存底稿未遂：${error}",
