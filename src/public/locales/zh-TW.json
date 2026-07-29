@@ -3941,22 +3941,22 @@
 					"textContent": "不公開列出"
 				},
 				"followers": {
-					"title": "僅關注者",
-					"aria-label": "僅關注者",
-					"label": "僅關注者",
-					"textContent": "僅關注者"
+					"title": "僅追蹤者",
+					"aria-label": "僅追蹤者",
+					"label": "僅追蹤者",
+					"textContent": "僅追蹤者"
 				},
 				"followers7d": {
-					"title": "關注滿 7 天可見",
-					"aria-label": "關注滿 7 天可見",
-					"label": "關注滿 7 天可見",
-					"textContent": "關注滿 7 天可見"
+					"title": "追蹤滿 7 天可見",
+					"aria-label": "追蹤滿 7 天可見",
+					"label": "追蹤滿 7 天可見",
+					"textContent": "追蹤滿 7 天可見"
 				},
 				"followers30d": {
-					"title": "關注滿 30 天可見",
-					"aria-label": "關注滿 30 天可見",
-					"label": "關注滿 30 天可見",
-					"textContent": "關注滿 30 天可見"
+					"title": "追蹤滿 30 天可見",
+					"aria-label": "追蹤滿 30 天可見",
+					"label": "追蹤滿 30 天可見",
+					"textContent": "追蹤滿 30 天可見"
 				},
 				"selected": {
 					"title": "指定人員可見",
@@ -4006,7 +4006,7 @@
 				"title": "熱門話題",
 				"postCount": {
 					"textContent": "${n}",
-					"title": "${n} 條帖子"
+					"title": "${n} 則貼文"
 				},
 				"empty": "暫無熱門話題",
 				"aria-label": "熱門話題"
@@ -4233,20 +4233,20 @@
 		},
 		"actions": {
 			"like": {
-				"title": "點贊",
-				"aria-label": "點贊"
+				"title": "按讚",
+				"aria-label": "按讚"
 			},
 			"unlike": {
-				"title": "取消贊",
-				"aria-label": "取消贊"
+				"title": "收回讚",
+				"aria-label": "收回讚"
 			},
 			"dislike": {
-				"title": "踩",
-				"aria-label": "踩"
+				"title": "噓",
+				"aria-label": "噓"
 			},
 			"undislike": {
-				"title": "取消踩",
-				"aria-label": "取消踩"
+				"title": "收回噓",
+				"aria-label": "收回噓"
 			},
 			"repost": "轉發",
 			"quote": "引用",

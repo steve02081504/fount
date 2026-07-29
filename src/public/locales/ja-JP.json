@@ -3936,10 +3936,10 @@
 					"textContent": "公開"
 				},
 				"unlisted": {
-					"title": "非公開",
-					"aria-label": "非公開",
-					"label": "非公開",
-					"textContent": "非公開"
+					"title": "未掲載",
+					"aria-label": "未掲載",
+					"label": "未掲載",
+					"textContent": "未掲載"
 				},
 				"followers": {
 					"title": "フォロワーのみ",
@@ -3948,28 +3948,28 @@
 					"textContent": "フォロワーのみ"
 				},
 				"followers7d": {
-					"title": "7日間フォローすると表示されます",
-					"aria-label": "7日間フォローすると表示されます",
-					"label": "7日間フォローすると表示されます",
-					"textContent": "7日間フォローすると表示されます"
+					"title": "フォロー7日後から表示",
+					"aria-label": "フォロー7日後から表示",
+					"label": "フォロー7日後から表示",
+					"textContent": "フォロー7日後から表示"
 				},
 				"followers30d": {
-					"title": "30日間フォローすると表示されます",
-					"aria-label": "30日間フォローすると表示されます",
-					"label": "30日間フォローすると表示されます",
-					"textContent": "30日間フォローすると表示されます"
+					"title": "フォロー30日後から表示",
+					"aria-label": "フォロー30日後から表示",
+					"label": "フォロー30日後から表示",
+					"textContent": "フォロー30日後から表示"
 				},
 				"selected": {
-					"title": "指定した人に表示される",
-					"aria-label": "指定した人に表示される",
-					"label": "指定した人に表示される",
-					"textContent": "指定した人に表示される"
+					"title": "指定したユーザーに公開",
+					"aria-label": "指定したユーザーに公開",
+					"label": "指定したユーザーに公開",
+					"textContent": "指定したユーザーに公開"
 				},
 				"private": {
-					"title": "自分だけに表示される",
-					"aria-label": "自分だけに表示される",
-					"label": "自分だけに表示される",
-					"textContent": "自分だけに表示される"
+					"title": "自分のみ",
+					"aria-label": "自分のみ",
+					"label": "自分のみ",
+					"textContent": "自分のみ"
 				},
 				"allowLabel": "目に見える人々",
 				"exceptLabel": "人を排除する",
@@ -4044,17 +4044,17 @@
 			"confirm": "確認",
 			"cancel": "キャンセル",
 			"remove": {
-				"title": "お気に入りを削除する",
-				"aria-label": "お気に入りを削除する"
+				"title": "ブックマークから削除",
+				"aria-label": "ブックマークから削除"
 			},
 			"renameFolder": {
-				"title": "名前の変更",
-				"aria-label": "名前の変更"
+				"title": "名前を変更",
+				"aria-label": "名前を変更"
 			},
 			"renameFolderPrompt": "新しいフォルダー名",
 			"deleteFolder": {
-				"title": "フォルダを削除する",
-				"aria-label": "フォルダを削除する"
+				"title": "フォルダを削除",
+				"aria-label": "フォルダを削除"
 			},
 			"deleteFolderConfirm": "フォルダを削除しますか?そこにある投稿は「未アーカイブ」に移動されます。",
 			"searchEmpty": "一致するコレクションがありません",
@@ -4070,8 +4070,8 @@
 			"saved": "下書きが保存されました",
 			"deleted": "下書きが削除されました",
 			"delete": {
-				"title": "下書きの削除",
-				"aria-label": "下書きの削除"
+				"title": "下書きを削除",
+				"aria-label": "下書きを削除"
 			},
 			"empty": "ドラフトは空です",
 			"saveFailed": "下書きの保存に失敗しました: ${error}",
@@ -4234,28 +4234,28 @@
 		},
 		"actions": {
 			"like": {
-				"title": "のように",
-				"aria-label": "のように"
+				"title": "いいね",
+				"aria-label": "いいね"
 			},
 			"unlike": {
-				"title": "とは異なり",
-				"aria-label": "とは異なり"
+				"title": "いいねを取り消す",
+				"aria-label": "いいねを取り消す"
 			},
 			"dislike": {
-				"title": "踏む",
-				"aria-label": "踏む"
+				"title": "よくないね",
+				"aria-label": "よくないね"
 			},
 			"undislike": {
-				"title": "嫌いをキャンセル",
-				"aria-label": "嫌いをキャンセル"
+				"title": "よくないねを取り消す",
+				"aria-label": "よくないねを取り消す"
 			},
 			"repost": "フォワード",
 			"quote": "引用",
 			"delete": "削除",
 			"edit": "編集",
 			"save": {
-				"title": "保存",
-				"aria-label": "保存"
+				"title": "ブックマーク",
+				"aria-label": "ブックマーク"
 			},
 			"saved": "集めた",
 			"translate": "翻訳する",
@@ -5329,9 +5329,9 @@
 			"confirm": "確認",
 			"close": "閉じる",
 			"translate": {
-				"label": "翻訳：",
-				"showOriginal": "元のテキストを表示",
-				"showTranslation": "翻訳を表示"
+				"label": "訳文：",
+				"showOriginal": "原文を表示",
+				"showTranslation": "訳文を表示"
 			}
 		},
 		"code_block": {

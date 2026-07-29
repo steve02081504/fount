@@ -2825,7 +2825,7 @@
 			"advancedSettings": "Impostazioni avanzate",
 			"advancedDescription": "Non è necessaria alcuna regolazione per l'uso quotidiano.",
 			"cardHost": {
-				"aria-label": "scheda profilo"
+				"aria-label": "Scheda profilo"
 			},
 			"edit": "Modifica profilo",
 			"save": "Salva",
@@ -3930,46 +3930,46 @@
 			"visibility": {
 				"label": "Gamma visibile",
 				"public": {
-					"title": "pubblico",
-					"aria-label": "pubblico",
-					"label": "pubblico",
-					"textContent": "pubblico"
+					"title": "Pubblico",
+					"aria-label": "Pubblico",
+					"label": "Pubblico",
+					"textContent": "Pubblico"
 				},
 				"unlisted": {
-					"title": "Non elencato pubblicamente",
-					"aria-label": "Non elencato pubblicamente",
-					"label": "Non elencato pubblicamente",
-					"textContent": "Non elencato pubblicamente"
+					"title": "Non in elenco",
+					"aria-label": "Non in elenco",
+					"label": "Non in elenco",
+					"textContent": "Non in elenco"
 				},
 				"followers": {
-					"title": "solo follower",
-					"aria-label": "solo follower",
-					"label": "solo follower",
-					"textContent": "solo follower"
+					"title": "Solo follower",
+					"aria-label": "Solo follower",
+					"label": "Solo follower",
+					"textContent": "Solo follower"
 				},
 				"followers7d": {
-					"title": "Visibile dopo aver seguito per 7 giorni",
-					"aria-label": "Visibile dopo aver seguito per 7 giorni",
-					"label": "Visibile dopo aver seguito per 7 giorni",
-					"textContent": "Visibile dopo aver seguito per 7 giorni"
+					"title": "Visibile dopo 7 giorni di follow",
+					"aria-label": "Visibile dopo 7 giorni di follow",
+					"label": "Visibile dopo 7 giorni di follow",
+					"textContent": "Visibile dopo 7 giorni di follow"
 				},
 				"followers30d": {
-					"title": "Visibile dopo aver seguito per 30 giorni",
-					"aria-label": "Visibile dopo aver seguito per 30 giorni",
-					"label": "Visibile dopo aver seguito per 30 giorni",
-					"textContent": "Visibile dopo aver seguito per 30 giorni"
+					"title": "Visibile dopo 30 giorni di follow",
+					"aria-label": "Visibile dopo 30 giorni di follow",
+					"label": "Visibile dopo 30 giorni di follow",
+					"textContent": "Visibile dopo 30 giorni di follow"
 				},
 				"selected": {
-					"title": "Visibile alle persone specificate",
-					"aria-label": "Visibile alle persone specificate",
-					"label": "Visibile alle persone specificate",
-					"textContent": "Visibile alle persone specificate"
+					"title": "Visibile a persone selezionate",
+					"aria-label": "Visibile a persone selezionate",
+					"label": "Visibile a persone selezionate",
+					"textContent": "Visibile a persone selezionate"
 				},
 				"private": {
-					"title": "Visibile solo a te stesso",
-					"aria-label": "Visibile solo a te stesso",
-					"label": "Visibile solo a te stesso",
-					"textContent": "Visibile solo a te stesso"
+					"title": "Solo io",
+					"aria-label": "Solo io",
+					"label": "Solo io",
+					"textContent": "Solo io"
 				},
 				"allowLabel": "Persone visibili",
 				"exceptLabel": "escludere le persone",
@@ -4044,12 +4044,12 @@
 			"confirm": "Confermare",
 			"cancel": "Annulla",
 			"remove": {
-				"title": "Rimuovi da salvato",
-				"aria-label": "Rimuovi da salvato"
+				"title": "Rimuovi dai salvati",
+				"aria-label": "Rimuovi dai salvati"
 			},
 			"renameFolder": {
-				"title": "Rinominare",
-				"aria-label": "Rinominare"
+				"title": "Rinomina",
+				"aria-label": "Rinomina"
 			},
 			"renameFolderPrompt": "Nuovo nome della cartella",
 			"deleteFolder": {
@@ -4234,20 +4234,20 @@
 		},
 		"actions": {
 			"like": {
-				"title": "Come",
-				"aria-label": "Come"
+				"title": "Mi piace",
+				"aria-label": "Mi piace"
 			},
 			"unlike": {
-				"title": "A differenza di",
-				"aria-label": "A differenza di"
+				"title": "Rimuovi mi piace",
+				"aria-label": "Rimuovi mi piace"
 			},
 			"dislike": {
-				"title": "Antipatia",
-				"aria-label": "Antipatia"
+				"title": "Non mi piace",
+				"aria-label": "Non mi piace"
 			},
 			"undislike": {
-				"title": "Cancella la antipatia",
-				"aria-label": "Cancella la antipatia"
+				"title": "Rimuovi non mi piace",
+				"aria-label": "Rimuovi non mi piace"
 			},
 			"repost": "Ripubblica",
 			"quote": "Citazione",
@@ -5330,8 +5330,8 @@
 			"close": "Vicino",
 			"translate": {
 				"label": "Traduzione:",
-				"showOriginal": "Mostra il testo originale",
-				"showTranslation": "Mostra la traduzione"
+				"showOriginal": "Mostra originale",
+				"showTranslation": "Mostra traduzione"
 			}
 		},
 		"code_block": {

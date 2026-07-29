@@ -3,7 +3,6 @@
  * 【职责】手动翻译消息并挂载译文块。
  */
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
-import { geti18n } from '../../../../../../scripts/i18n/index.mjs'
 import { getMessageText } from '../render/text.mjs'
 
 /**
@@ -25,11 +24,7 @@ export async function handleTranslate(button, row, channelMessage) {
 			mountTranslationBlock(bubble, {
 				originalText: text,
 				translatedText: translated,
-				showOriginalLabel: geti18n('chat.hub.translateShowOriginal') || 'Original',
-				showTranslationLabel: geti18n('chat.hub.translateShowTranslation') || 'Translation',
-				translationLabel: geti18n('chat.hub.translateLabel') || '',
 			})
-
 	}
 	catch (error) {
 		showToastI18n('error', 'chat.hub.translateFailed', { error: error?.message || String(error) })

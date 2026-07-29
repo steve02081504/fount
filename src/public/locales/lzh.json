@@ -2825,7 +2825,7 @@
 			"advancedSettings": "樞機之制",
 			"advancedDescription": "日用無需調整。",
 			"cardHost": {
-				"aria-label": "个人资料卡"
+				"aria-label": "人格簡卡"
 			},
 			"edit": "修簿牒",
 			"save": "存",
@@ -3936,10 +3936,10 @@
 					"textContent": "公開"
 				},
 				"unlisted": {
-					"title": "不公開列出",
-					"aria-label": "不公開列出",
-					"label": "不公開列出",
-					"textContent": "不公開列出"
+					"title": "不列於表",
+					"aria-label": "不列於表",
+					"label": "不列於表",
+					"textContent": "不列於表"
 				},
 				"followers": {
 					"title": "僅關注者",
@@ -3948,28 +3948,28 @@
 					"textContent": "僅關注者"
 				},
 				"followers7d": {
-					"title": "關注滿 7 日可見",
-					"aria-label": "關注滿 7 日可見",
-					"label": "關注滿 7 日可見",
-					"textContent": "關注滿 7 日可見"
+					"title": "關注滿七日可見",
+					"aria-label": "關注滿七日可見",
+					"label": "關注滿七日可見",
+					"textContent": "關注滿七日可見"
 				},
 				"followers30d": {
-					"title": "關注滿 30 日可見",
-					"aria-label": "關注滿 30 日可見",
-					"label": "關注滿 30 日可見",
-					"textContent": "關注滿 30 日可見"
+					"title": "關注滿三十日可見",
+					"aria-label": "關注滿三十日可見",
+					"label": "關注滿三十日可見",
+					"textContent": "關注滿三十日可見"
 				},
 				"selected": {
-					"title": "指定人員可見",
-					"aria-label": "指定人員可見",
-					"label": "指定人員可見",
-					"textContent": "指定人員可見"
+					"title": "指定之人可見",
+					"aria-label": "指定之人可見",
+					"label": "指定之人可見",
+					"textContent": "指定之人可見"
 				},
 				"private": {
-					"title": "僅自己可見",
-					"aria-label": "僅自己可見",
-					"label": "僅自己可見",
-					"textContent": "僅自己可見"
+					"title": "僅己可見",
+					"aria-label": "僅己可見",
+					"label": "僅己可見",
+					"textContent": "僅己可見"
 				},
 				"allowLabel": "可見人員",
 				"exceptLabel": "排除人員",
@@ -4007,7 +4007,7 @@
 				"title": "熱門話題",
 				"postCount": {
 					"textContent": "${n}",
-					"title": "${n} 則言"
+					"title": "${n} 則帖"
 				},
 				"empty": "暫無熱門話題",
 				"aria-label": "熱門話題"
@@ -4044,17 +4044,17 @@
 			"confirm": "允",
 			"cancel": "止",
 			"remove": {
-				"title": "移除收藏",
-				"aria-label": "移除收藏"
+				"title": "移出收藏",
+				"aria-label": "移出收藏"
 			},
 			"renameFolder": {
-				"title": "重命名",
-				"aria-label": "重命名"
+				"title": "更名",
+				"aria-label": "更名"
 			},
 			"renameFolderPrompt": "新帙名",
 			"deleteFolder": {
-				"title": "刪帙",
-				"aria-label": "刪帙"
+				"title": "刪除夾",
+				"aria-label": "刪除夾"
 			},
 			"deleteFolderConfirm": "刪帙？其中言將移至「未歸檔」。",
 			"searchEmpty": "未見所契之藏",
@@ -4070,8 +4070,8 @@
 			"saved": "底稿已存",
 			"deleted": "底稿已刪",
 			"delete": {
-				"title": "刪底稿",
-				"aria-label": "刪底稿"
+				"title": "刪除草稿",
+				"aria-label": "刪除草稿"
 			},
 			"empty": "底稿為空",
 			"saveFailed": "存底稿未遂：${error}",
@@ -4234,16 +4234,16 @@
 		},
 		"actions": {
 			"like": {
-				"title": "善",
-				"aria-label": "善"
+				"title": "贊",
+				"aria-label": "贊"
 			},
 			"unlike": {
 				"title": "撤讚",
 				"aria-label": "撤讚"
 			},
 			"dislike": {
-				"title": "惡",
-				"aria-label": "惡"
+				"title": "貶",
+				"aria-label": "貶"
 			},
 			"undislike": {
 				"title": "撤貶",
@@ -5329,7 +5329,7 @@
 			"confirm": "允",
 			"close": "闔",
 			"translate": {
-				"label": "译文：",
+				"label": "譯文：",
 				"showOriginal": "示原文",
 				"showTranslation": "示譯文"
 			}

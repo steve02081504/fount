@@ -2825,7 +2825,7 @@
 			"advancedSettings": "Paramètres avancés",
 			"advancedDescription": "Aucun réglage n'est nécessaire pour une utilisation quotidienne.",
 			"cardHost": {
-				"aria-label": "carte de profil"
+				"aria-label": "Carte de profil"
 			},
 			"edit": "Modifier le profil",
 			"save": "Enregistrer",
@@ -3948,28 +3948,28 @@
 					"textContent": "Abonnés uniquement"
 				},
 				"followers7d": {
-					"title": "Visible après avoir suivi pendant 7 jours",
-					"aria-label": "Visible après avoir suivi pendant 7 jours",
-					"label": "Visible après avoir suivi pendant 7 jours",
-					"textContent": "Visible après avoir suivi pendant 7 jours"
+					"title": "Visible après 7 jours d'abonnement",
+					"aria-label": "Visible après 7 jours d'abonnement",
+					"label": "Visible après 7 jours d'abonnement",
+					"textContent": "Visible après 7 jours d'abonnement"
 				},
 				"followers30d": {
-					"title": "Visible après avoir suivi pendant 30 jours",
-					"aria-label": "Visible après avoir suivi pendant 30 jours",
-					"label": "Visible après avoir suivi pendant 30 jours",
-					"textContent": "Visible après avoir suivi pendant 30 jours"
+					"title": "Visible après 30 jours d'abonnement",
+					"aria-label": "Visible après 30 jours d'abonnement",
+					"label": "Visible après 30 jours d'abonnement",
+					"textContent": "Visible après 30 jours d'abonnement"
 				},
 				"selected": {
-					"title": "Visible par les personnes spécifiées",
-					"aria-label": "Visible par les personnes spécifiées",
-					"label": "Visible par les personnes spécifiées",
-					"textContent": "Visible par les personnes spécifiées"
+					"title": "Visible pour des personnes choisies",
+					"aria-label": "Visible pour des personnes choisies",
+					"label": "Visible pour des personnes choisies",
+					"textContent": "Visible pour des personnes choisies"
 				},
 				"private": {
-					"title": "Visible uniquement par vous-même",
-					"aria-label": "Visible uniquement par vous-même",
-					"label": "Visible uniquement par vous-même",
-					"textContent": "Visible uniquement par vous-même"
+					"title": "Moi uniquement",
+					"aria-label": "Moi uniquement",
+					"label": "Moi uniquement",
+					"textContent": "Moi uniquement"
 				},
 				"allowLabel": "Personnes visibles",
 				"exceptLabel": "Exclure des personnes",
@@ -4007,7 +4007,7 @@
 				"title": "Tendances",
 				"postCount": {
 					"textContent": "${n}",
-					"title": "${n} messages"
+					"title": "${n} publications"
 				},
 				"empty": "Pas encore de sujets d'actualité",
 				"aria-label": "Tendances"
@@ -4044,8 +4044,8 @@
 			"confirm": "Confirmer",
 			"cancel": "Annuler",
 			"remove": {
-				"title": "Supprimer les favoris",
-				"aria-label": "Supprimer les favoris"
+				"title": "Retirer des favoris",
+				"aria-label": "Retirer des favoris"
 			},
 			"renameFolder": {
 				"title": "Renommer",
@@ -4246,8 +4246,8 @@
 				"aria-label": "Je n'aime pas"
 			},
 			"undislike": {
-				"title": "Annuler le refus",
-				"aria-label": "Annuler le refus"
+				"title": "Retirer le dislike",
+				"aria-label": "Retirer le dislike"
 			},
 			"repost": "Republier",
 			"quote": "Citation",
@@ -5329,8 +5329,8 @@
 			"confirm": "Confirmer",
 			"close": "Fermer",
 			"translate": {
-				"label": "Traduction:",
-				"showOriginal": "Afficher le texte original",
+				"label": "Traduction :",
+				"showOriginal": "Afficher l'original",
 				"showTranslation": "Afficher la traduction"
 			}
 		},

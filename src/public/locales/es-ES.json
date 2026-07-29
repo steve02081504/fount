@@ -2825,7 +2825,7 @@
 			"advancedSettings": "Ajustes avanzados",
 			"advancedDescription": "No hace falta tocar nada para el uso diario.",
 			"cardHost": {
-				"aria-label": "tarjeta de perfil"
+				"aria-label": "Tarjeta de perfil"
 			},
 			"edit": "Editar perfil",
 			"save": "Guardar",
@@ -3930,46 +3930,46 @@
 			"visibility": {
 				"label": "rango visible",
 				"public": {
-					"title": "público",
-					"aria-label": "público",
-					"label": "público",
-					"textContent": "público"
+					"title": "Público",
+					"aria-label": "Público",
+					"label": "Público",
+					"textContent": "Público"
 				},
 				"unlisted": {
-					"title": "No listado públicamente",
-					"aria-label": "No listado públicamente",
-					"label": "No listado públicamente",
-					"textContent": "No listado públicamente"
+					"title": "Sin listar",
+					"aria-label": "Sin listar",
+					"label": "Sin listar",
+					"textContent": "Sin listar"
 				},
 				"followers": {
-					"title": "solo seguidores",
-					"aria-label": "solo seguidores",
-					"label": "solo seguidores",
-					"textContent": "solo seguidores"
+					"title": "Solo seguidores",
+					"aria-label": "Solo seguidores",
+					"label": "Solo seguidores",
+					"textContent": "Solo seguidores"
 				},
 				"followers7d": {
-					"title": "Visible después de seguir durante 7 días.",
-					"aria-label": "Visible después de seguir durante 7 días.",
-					"label": "Visible después de seguir durante 7 días.",
-					"textContent": "Visible después de seguir durante 7 días."
+					"title": "Visible tras 7 días siguiendo",
+					"aria-label": "Visible tras 7 días siguiendo",
+					"label": "Visible tras 7 días siguiendo",
+					"textContent": "Visible tras 7 días siguiendo"
 				},
 				"followers30d": {
-					"title": "Visible después de seguir durante 30 días.",
-					"aria-label": "Visible después de seguir durante 30 días.",
-					"label": "Visible después de seguir durante 30 días.",
-					"textContent": "Visible después de seguir durante 30 días."
+					"title": "Visible tras 30 días siguiendo",
+					"aria-label": "Visible tras 30 días siguiendo",
+					"label": "Visible tras 30 días siguiendo",
+					"textContent": "Visible tras 30 días siguiendo"
 				},
 				"selected": {
-					"title": "Visible para personas específicas",
-					"aria-label": "Visible para personas específicas",
-					"label": "Visible para personas específicas",
-					"textContent": "Visible para personas específicas"
+					"title": "Visible para personas seleccionadas",
+					"aria-label": "Visible para personas seleccionadas",
+					"label": "Visible para personas seleccionadas",
+					"textContent": "Visible para personas seleccionadas"
 				},
 				"private": {
-					"title": "Visible solo para ti",
-					"aria-label": "Visible solo para ti",
-					"label": "Visible solo para ti",
-					"textContent": "Visible solo para ti"
+					"title": "Solo yo",
+					"aria-label": "Solo yo",
+					"label": "Solo yo",
+					"textContent": "Solo yo"
 				},
 				"allowLabel": "personas visibles",
 				"exceptLabel": "excluir personas",
@@ -4044,17 +4044,17 @@
 			"confirm": "confirm",
 			"cancel": "Cancelar",
 			"remove": {
-				"title": "Eliminar favoritos",
-				"aria-label": "Eliminar favoritos"
+				"title": "Quitar de guardados",
+				"aria-label": "Quitar de guardados"
 			},
 			"renameFolder": {
-				"title": "Rebautizar",
-				"aria-label": "Rebautizar"
+				"title": "Renombrar",
+				"aria-label": "Renombrar"
 			},
 			"renameFolderPrompt": "Nuevo nombre de carpeta",
 			"deleteFolder": {
-				"title": "eliminar carpeta",
-				"aria-label": "eliminar carpeta"
+				"title": "Eliminar carpeta",
+				"aria-label": "Eliminar carpeta"
 			},
 			"deleteFolderConfirm": "¿Eliminar carpeta? Las publicaciones allí se moverán a \"Sin archivar\".",
 			"searchEmpty": "No hay colección coincidente",
@@ -4246,16 +4246,16 @@
 				"aria-label": "No me gusta"
 			},
 			"undislike": {
-				"title": "Cancelar no me gusta",
-				"aria-label": "Cancelar no me gusta"
+				"title": "Quitar no me gusta",
+				"aria-label": "Quitar no me gusta"
 			},
 			"repost": "Repostear",
 			"quote": "Cita",
 			"delete": "borrar",
 			"edit": "editar",
 			"save": {
-				"title": "Favoritos",
-				"aria-label": "Favoritos"
+				"title": "Guardar",
+				"aria-label": "Guardar"
 			},
 			"saved": "Coleccionado",
 			"translate": "traducir",
@@ -5330,7 +5330,7 @@
 			"close": "Cerrar",
 			"translate": {
 				"label": "Traducción:",
-				"showOriginal": "Mostrar texto original",
+				"showOriginal": "Mostrar original",
 				"showTranslation": "Mostrar traducción"
 			}
 		},

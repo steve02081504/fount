@@ -2825,7 +2825,7 @@
 			"advancedSettings": "Definições avançadas",
 			"advancedDescription": "Não é necessário ajustar para o uso quotidiano.",
 			"cardHost": {
-				"aria-label": "cartão de perfil"
+				"aria-label": "Cartão de perfil"
 			},
 			"edit": "Editar perfil",
 			"save": "Guardar",
@@ -3936,10 +3936,10 @@
 					"textContent": "Público"
 				},
 				"unlisted": {
-					"title": "Não listado publicamente",
-					"aria-label": "Não listado publicamente",
-					"label": "Não listado publicamente",
-					"textContent": "Não listado publicamente"
+					"title": "Não listado",
+					"aria-label": "Não listado",
+					"label": "Não listado",
+					"textContent": "Não listado"
 				},
 				"followers": {
 					"title": "Apenas seguidores",
@@ -3948,28 +3948,28 @@
 					"textContent": "Apenas seguidores"
 				},
 				"followers7d": {
-					"title": "Visível após seguir por 7 dias",
-					"aria-label": "Visível após seguir por 7 dias",
-					"label": "Visível após seguir por 7 dias",
-					"textContent": "Visível após seguir por 7 dias"
+					"title": "Visível após 7 dias a seguir",
+					"aria-label": "Visível após 7 dias a seguir",
+					"label": "Visível após 7 dias a seguir",
+					"textContent": "Visível após 7 dias a seguir"
 				},
 				"followers30d": {
-					"title": "Visível após seguir por 30 dias",
-					"aria-label": "Visível após seguir por 30 dias",
-					"label": "Visível após seguir por 30 dias",
-					"textContent": "Visível após seguir por 30 dias"
+					"title": "Visível após 30 dias a seguir",
+					"aria-label": "Visível após 30 dias a seguir",
+					"label": "Visível após 30 dias a seguir",
+					"textContent": "Visível após 30 dias a seguir"
 				},
 				"selected": {
-					"title": "Visível para pessoas específicas",
-					"aria-label": "Visível para pessoas específicas",
-					"label": "Visível para pessoas específicas",
-					"textContent": "Visível para pessoas específicas"
+					"title": "Visível para pessoas selecionadas",
+					"aria-label": "Visível para pessoas selecionadas",
+					"label": "Visível para pessoas selecionadas",
+					"textContent": "Visível para pessoas selecionadas"
 				},
 				"private": {
-					"title": "Visível apenas para",
-					"aria-label": "Visível apenas para",
-					"label": "Visível apenas para",
-					"textContent": "Visível apenas para"
+					"title": "Só eu",
+					"aria-label": "Só eu",
+					"label": "Só eu",
+					"textContent": "Só eu"
 				},
 				"allowLabel": "Pessoas visíveis",
 				"exceptLabel": "Eliminar pessoas",
@@ -4007,7 +4007,7 @@
 				"title": "Tópicos quentes",
 				"postCount": {
 					"textContent": "${n}",
-					"title": "${n} postagens"
+					"title": "${n} publicações"
 				},
 				"empty": "Ainda não há tópicos quentes",
 				"aria-label": "Tópicos quentes"
@@ -4044,8 +4044,8 @@
 			"confirm": "Confirmar",
 			"cancel": "Cancelar",
 			"remove": {
-				"title": "Remover from saved",
-				"aria-label": "Remover from saved"
+				"title": "Remover dos guardados",
+				"aria-label": "Remover dos guardados"
 			},
 			"renameFolder": {
 				"title": "Renomear",
@@ -4053,8 +4053,8 @@
 			},
 			"renameFolderPrompt": "Novo nome de pasta",
 			"deleteFolder": {
-				"title": "Eliminar folder",
-				"aria-label": "Eliminar folder"
+				"title": "Eliminar pasta",
+				"aria-label": "Eliminar pasta"
 			},
 			"deleteFolderConfirm": "Eliminar esta pasta? As publicações serão movidas para Não arquivado.",
 			"searchEmpty": "Nenhuma coleção correspondente",
@@ -4070,8 +4070,8 @@
 			"saved": "Rascunho salvo",
 			"deleted": "Rascunho eliminado",
 			"delete": {
-				"title": "Eliminar draft",
-				"aria-label": "Eliminar draft"
+				"title": "Eliminar rascunho",
+				"aria-label": "Eliminar rascunho"
 			},
 			"empty": "O rascunho está vazio",
 			"saveFailed": "Falha ao save draft: ${error}",
@@ -4234,20 +4234,20 @@
 		},
 		"actions": {
 			"like": {
-				"title": "Gostos",
-				"aria-label": "Gostos"
+				"title": "Gosto",
+				"aria-label": "Gosto"
 			},
 			"unlike": {
-				"title": "Diferente",
-				"aria-label": "Diferente"
+				"title": "Remover gosto",
+				"aria-label": "Remover gosto"
 			},
 			"dislike": {
-				"title": "Pisar",
-				"aria-label": "Pisar"
+				"title": "Não gosto",
+				"aria-label": "Não gosto"
 			},
 			"undislike": {
-				"title": "Cancelar antipatia",
-				"aria-label": "Cancelar antipatia"
+				"title": "Remover não gosto",
+				"aria-label": "Remover não gosto"
 			},
 			"repost": "Avançar",
 			"quote": "Citar",
@@ -5330,8 +5330,8 @@
 			"close": "Encerramento",
 			"translate": {
 				"label": "Tradução:",
-				"showOriginal": "Mostrar original text",
-				"showTranslation": "Mostrar translation"
+				"showOriginal": "Mostrar original",
+				"showTranslation": "Mostrar tradução"
 			}
 		},
 		"code_block": {

@@ -2825,7 +2825,7 @@
 			"advancedSettings": "🔧⚙️🎛️",
 			"advancedDescription": "😌👌🚫🔧",
 			"cardHost": {
-				"aria-label": "个人资料卡"
+				"aria-label": "👤🪪"
 			},
 			"edit": "✏️👤",
 			"save": "💾",
@@ -3936,10 +3936,10 @@
 					"textContent": "🌍"
 				},
 				"unlisted": {
-					"title": "🚫📋",
-					"aria-label": "🚫📋",
-					"label": "🚫📋",
-					"textContent": "🚫📋"
+					"title": "🔗🚫📋",
+					"aria-label": "🔗🚫📋",
+					"label": "🔗🚫📋",
+					"textContent": "🔗🚫📋"
 				},
 				"followers": {
 					"title": "🔒➕👀",
@@ -3948,22 +3948,22 @@
 					"textContent": "🔒➕👀"
 				},
 				"followers7d": {
-					"title": "➕👀✅7📅",
-					"aria-label": "➕👀✅7📅",
-					"label": "➕👀✅7📅",
-					"textContent": "➕👀✅7📅"
+					"title": "7️⃣📅👀",
+					"aria-label": "7️⃣📅👀",
+					"label": "7️⃣📅👀",
+					"textContent": "7️⃣📅👀"
 				},
 				"followers30d": {
-					"title": "➕👀✅30📅",
-					"aria-label": "➕👀✅30📅",
-					"label": "➕👀✅30📅",
-					"textContent": "➕👀✅30📅"
+					"title": "3️⃣0️⃣📅👀",
+					"aria-label": "3️⃣0️⃣📅👀",
+					"label": "3️⃣0️⃣📅👀",
+					"textContent": "3️⃣0️⃣📅👀"
 				},
 				"selected": {
-					"title": "👤👀",
-					"aria-label": "👤👀",
-					"label": "👤👀",
-					"textContent": "👤👀"
+					"title": "🎯👥",
+					"aria-label": "🎯👥",
+					"label": "🎯👥",
+					"textContent": "🎯👥"
 				},
 				"private": {
 					"title": "🔒🫵",
@@ -4048,8 +4048,8 @@
 				"aria-label": "🗑️⭐"
 			},
 			"renameFolder": {
-				"title": "✏️🏷️",
-				"aria-label": "✏️🏷️"
+				"title": "✏️📁",
+				"aria-label": "✏️📁"
 			},
 			"renameFolderPrompt": "📁🏷️🆕",
 			"deleteFolder": {
@@ -5329,7 +5329,7 @@
 			"confirm": "✅",
 			"close": "✖️",
 			"translate": {
-				"label": "译文：",
+				"label": "🌐📝：",
 				"showOriginal": "👀📝",
 				"showTranslation": "👀🌐"
 			}

@@ -3936,40 +3936,40 @@
 					"textContent": "공개"
 				},
 				"unlisted": {
-					"title": "공개적으로 나열되지 않음",
-					"aria-label": "공개적으로 나열되지 않음",
-					"label": "공개적으로 나열되지 않음",
-					"textContent": "공개적으로 나열되지 않음"
+					"title": "미등록",
+					"aria-label": "미등록",
+					"label": "미등록",
+					"textContent": "미등록"
 				},
 				"followers": {
-					"title": "팔로어만",
-					"aria-label": "팔로어만",
-					"label": "팔로어만",
-					"textContent": "팔로어만"
+					"title": "팔로워만",
+					"aria-label": "팔로워만",
+					"label": "팔로워만",
+					"textContent": "팔로워만"
 				},
 				"followers7d": {
-					"title": "7일 동안 팔로우한 후 표시됨",
-					"aria-label": "7일 동안 팔로우한 후 표시됨",
-					"label": "7일 동안 팔로우한 후 표시됨",
-					"textContent": "7일 동안 팔로우한 후 표시됨"
+					"title": "팔로우 7일 후 공개",
+					"aria-label": "팔로우 7일 후 공개",
+					"label": "팔로우 7일 후 공개",
+					"textContent": "팔로우 7일 후 공개"
 				},
 				"followers30d": {
-					"title": "30일 동안 팔로우한 후 표시됨",
-					"aria-label": "30일 동안 팔로우한 후 표시됨",
-					"label": "30일 동안 팔로우한 후 표시됨",
-					"textContent": "30일 동안 팔로우한 후 표시됨"
+					"title": "팔로우 30일 후 공개",
+					"aria-label": "팔로우 30일 후 공개",
+					"label": "팔로우 30일 후 공개",
+					"textContent": "팔로우 30일 후 공개"
 				},
 				"selected": {
-					"title": "지정된 사용자에게 공개",
-					"aria-label": "지정된 사용자에게 공개",
-					"label": "지정된 사용자에게 공개",
-					"textContent": "지정된 사용자에게 공개"
+					"title": "선택한 사람에게 공개",
+					"aria-label": "선택한 사람에게 공개",
+					"label": "선택한 사람에게 공개",
+					"textContent": "선택한 사람에게 공개"
 				},
 				"private": {
-					"title": "본인에게만 표시됩니다.",
-					"aria-label": "본인에게만 표시됩니다.",
-					"label": "본인에게만 표시됩니다.",
-					"textContent": "본인에게만 표시됩니다."
+					"title": "나만 보기",
+					"aria-label": "나만 보기",
+					"label": "나만 보기",
+					"textContent": "나만 보기"
 				},
 				"allowLabel": "표시 사람들",
 				"exceptLabel": "사람을 제외",
@@ -4044,8 +4044,8 @@
 			"confirm": "확인",
 			"cancel": "취소",
 			"remove": {
-				"title": "즐겨찾기 제거",
-				"aria-label": "즐겨찾기 제거"
+				"title": "북마크에서 제거",
+				"aria-label": "북마크에서 제거"
 			},
 			"renameFolder": {
 				"title": "이름 바꾸기",
@@ -4238,12 +4238,12 @@
 				"aria-label": "좋아요"
 			},
 			"unlike": {
-				"title": "같지 않은",
-				"aria-label": "같지 않은"
+				"title": "좋아요 취소",
+				"aria-label": "좋아요 취소"
 			},
 			"dislike": {
-				"title": "밟다",
-				"aria-label": "밟다"
+				"title": "싫어요",
+				"aria-label": "싫어요"
 			},
 			"undislike": {
 				"title": "싫어요 취소",
@@ -4254,8 +4254,8 @@
 			"delete": "삭제",
 			"edit": "편집",
 			"save": {
-				"title": "모으다",
-				"aria-label": "모으다"
+				"title": "북마크",
+				"aria-label": "북마크"
 			},
 			"saved": "모은",
 			"translate": "번역",
@@ -5330,8 +5330,8 @@
 			"close": "폐쇄",
 			"translate": {
 				"label": "번역:",
-				"showOriginal": "원본 텍스트 표시",
-				"showTranslation": "번역 표시"
+				"showOriginal": "원문 보기",
+				"showTranslation": "번역 보기"
 			}
 		},
 		"code_block": {
