@@ -320,13 +320,7 @@ def main():
 
 	print("\n--- 处理完成 ---")
 	print(f"已从 {removed_count} 个 locales.json 的 info 块中移除遗留 provider 字段。")
-	issues = (
-		product_info_missing_provider
-		or emoji_warnings
-		or avatar_404_refs
-		or emoji_no_avatar_paths
-		or achievement_icon_404_refs
-	)
+	issues = product_info_missing_provider or emoji_warnings or avatar_404_refs or emoji_no_avatar_paths or achievement_icon_404_refs
 	if not issues:
 		print("未发现 product_info 缺 provider、emoji 本地化问题、avatar 404、emoji 无 avatar 或成就 icon 404。")
 	else:

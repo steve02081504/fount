@@ -944,10 +944,22 @@
 			"multipleMembers": "Multiple members are typing..."
 		},
 		"emoji": {
-			"pickerTitle": "Select emoji",
-			"recent": "Recently used",
-			"jumpToStart": "Back to top",
-			"jumpToUnicode": "Jump to Unicode",
+			"pickerTitle": {
+				"aria-label": "Select emoji",
+				"textContent": "Select emoji"
+			},
+			"recent": {
+				"title": "Recently used",
+				"aria-label": "Recently used"
+			},
+			"jumpToStart": {
+				"title": "Back to top",
+				"aria-label": "Back to top"
+			},
+			"jumpToUnicode": {
+				"title": "Jump to Unicode",
+				"aria-label": "Jump to Unicode"
+			},
 			"discoverPacks": "Explore emoji packs →",
 			"categoryFace": "Emoji",
 			"categoryGesture": "gesture",
@@ -984,34 +996,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "Smiley faces and emotions"
+				"title": "Smiley faces and emotions",
+				"aria-label": "Smiley faces and emotions"
 			},
 			"People_and_Body": {
-				"title": "Figures and bodies"
+				"title": "Figures and bodies",
+				"aria-label": "Figures and bodies"
 			},
 			"Animals_and_Nature": {
-				"title": "animals and nature"
+				"title": "animals and nature",
+				"aria-label": "animals and nature"
 			},
 			"Food_and_Drink": {
-				"title": "food and drink"
+				"title": "food and drink",
+				"aria-label": "food and drink"
 			},
 			"Travel_and_Places": {
-				"title": "Travel and Places"
+				"title": "Travel and Places",
+				"aria-label": "Travel and Places"
 			},
 			"Activities": {
-				"title": "Activity"
+				"title": "Activity",
+				"aria-label": "Activity"
 			},
 			"Objects": {
-				"title": "Thing"
+				"title": "Thing",
+				"aria-label": "Thing"
 			},
 			"Symbols": {
-				"title": "Symbol"
+				"title": "Symbol",
+				"aria-label": "Symbol"
 			},
 			"Flags": {
-				"title": "Banner"
-			},
-			"Component": {
-				"title": "Components"
+				"title": "Banner",
+				"aria-label": "Banner"
 			}
 		},
 		"sessionSettings": {
@@ -1857,7 +1875,9 @@
 				"invisible": "Invisible",
 				"offline": "Offline"
 			},
-			"changeStatusTitle": "Change status",
+			"changeStatusTitle": {
+				"aria-label": "Change status"
+			},
 			"aboutSection": "About",
 			"bioEmpty": "This user does not have a profile yet.",
 			"statusOffline": {
@@ -2441,9 +2461,6 @@
 			"deliveryRead": "Read",
 			"translate": "Translate",
 			"translating": "Translating…",
-			"translateShowOriginal": "Show original text",
-			"translateShowTranslation": "Show translation",
-			"translateLabel": "Translation",
 			"translateFailed": "Translation failed",
 			"editImage": "Edit image",
 			"draftRestored": "Draft restored",
@@ -2802,6 +2819,9 @@
 			"advancedKicker": "When you need it",
 			"advancedSettings": "Advanced settings",
 			"advancedDescription": "You won't need these for everyday use.",
+			"cardHost": {
+				"aria-label": "Profile card"
+			},
 			"edit": "Edit profile",
 			"save": "Save",
 			"cancel": "Cancel",
@@ -3865,9 +3885,17 @@
 			"sensitiveMedia": "media sensitivity mask",
 			"editImage": "edit",
 			"editCrop": "Crop",
-			"editMosaic": "coding",
-			"editBrush": "brush",
-			"editApply": "application",
+			"editMosaic": "Pixelate",
+			"editBrush": "Brush",
+			"editBrushColor": {
+				"title": "Brush colour",
+				"aria-label": "Brush colour"
+			},
+			"editBrushSize": {
+				"title": "Brush size",
+				"aria-label": "Brush size"
+			},
+			"editApply": "Apply",
 			"editCancel": "Cancel",
 			"replyPolicyEveryone": "Anyone can reply",
 			"replyPolicyFollowers7d": "Followers for more than 7 days",
@@ -3906,13 +3934,48 @@
 			},
 			"visibility": {
 				"label": "Visible range",
-				"public": "Public",
-				"unlisted": "Not publicly listed",
-				"followers": "followers only",
-				"followers7d": "Visible after following for 7 days",
-				"followers30d": "Visible after following for 30 days",
-				"selected": "Visible to specified people",
-				"private": "Visible only to yourself",
+				"public": {
+					"title": "Public",
+					"aria-label": "Public",
+					"label": "Public",
+					"textContent": "Public"
+				},
+				"unlisted": {
+					"title": "Unlisted",
+					"aria-label": "Unlisted",
+					"label": "Unlisted",
+					"textContent": "Unlisted"
+				},
+				"followers": {
+					"title": "Followers only",
+					"aria-label": "Followers only",
+					"label": "Followers only",
+					"textContent": "Followers only"
+				},
+				"followers7d": {
+					"title": "Visible after 7 days of following",
+					"aria-label": "Visible after 7 days of following",
+					"label": "Visible after 7 days of following",
+					"textContent": "Visible after 7 days of following"
+				},
+				"followers30d": {
+					"title": "Visible after 30 days of following",
+					"aria-label": "Visible after 30 days of following",
+					"label": "Visible after 30 days of following",
+					"textContent": "Visible after 30 days of following"
+				},
+				"selected": {
+					"title": "Visible to selected people",
+					"aria-label": "Visible to selected people",
+					"label": "Visible to selected people",
+					"textContent": "Visible to selected people"
+				},
+				"private": {
+					"title": "Only me",
+					"aria-label": "Only me",
+					"label": "Only me",
+					"textContent": "Only me"
+				},
 				"allowLabel": "Visible people",
 				"exceptLabel": "exclude people",
 				"allow": {
@@ -3948,6 +4011,7 @@
 			"trending": {
 				"title": "Trending",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} posts"
 				},
 				"empty": "Nothing trending yet",
@@ -3984,10 +4048,19 @@
 			"folderSelect": "Saved folder",
 			"confirm": "Confirm",
 			"cancel": "Cancel",
-			"remove": "Remove from saved",
-			"renameFolder": "Rename",
+			"remove": {
+				"title": "Remove from bookmarks",
+				"aria-label": "Remove from bookmarks"
+			},
+			"renameFolder": {
+				"title": "Rename",
+				"aria-label": "Rename"
+			},
 			"renameFolderPrompt": "New folder name",
-			"deleteFolder": "Delete folder",
+			"deleteFolder": {
+				"title": "Delete folder",
+				"aria-label": "Delete folder"
+			},
 			"deleteFolderConfirm": "Delete this folder? Posts inside will move to Unsorted.",
 			"searchEmpty": "No matching saves",
 			"folderEmpty": "This folder is empty",
@@ -4001,7 +4074,10 @@
 			"emptyHint": "Write some content in the post box and click \"Save Draft\" to continue editing next time",
 			"saved": "Draft saved",
 			"deleted": "Draft deleted",
-			"delete": "Delete draft",
+			"delete": {
+				"title": "Delete draft",
+				"aria-label": "Delete draft"
+			},
 			"empty": "Draft is empty",
 			"saveFailed": "Failed to save draft: ${error}",
 			"loadFailed": "Failed to open draft: ${error}",
@@ -4162,15 +4238,30 @@
 			}
 		},
 		"actions": {
-			"like": "Like",
-			"unlike": "Unlike",
-			"dislike": "Dislike",
-			"undislike": "Cancel dislike",
+			"like": {
+				"title": "Like",
+				"aria-label": "Like"
+			},
+			"unlike": {
+				"title": "Unlike",
+				"aria-label": "Unlike"
+			},
+			"dislike": {
+				"title": "Dislike",
+				"aria-label": "Dislike"
+			},
+			"undislike": {
+				"title": "Remove dislike",
+				"aria-label": "Remove dislike"
+			},
 			"repost": "Repost",
 			"quote": "Quote",
 			"delete": "Delete",
 			"edit": "Edit",
-			"save": "Save",
+			"save": {
+				"title": "Bookmark",
+				"aria-label": "Bookmark"
+			},
 			"saved": "Saved",
 			"translate": "Translate",
 			"dm": "Send DM",
@@ -4286,9 +4377,6 @@
 			"quoting": "Quoting",
 			"clear": "Clear quote",
 			"viewOriginal": "View original post"
-		},
-		"translate": {
-			"label": "Translation:"
 		},
 		"time": {
 			"justNow": "just",
@@ -5246,7 +5334,8 @@
 			"confirm": "Confirm",
 			"close": "Close",
 			"translate": {
-				"showOriginal": "Show original text",
+				"label": "Translation:",
+				"showOriginal": "Show original",
 				"showTranslation": "Show translation"
 			}
 		},

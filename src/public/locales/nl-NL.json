@@ -949,10 +949,22 @@
 			"multipleMembers": "Meerdere leden zijn aan het typen..."
 		},
 		"emoji": {
-			"pickerTitle": "Selecteer emoticon",
-			"recent": "Recent gebruikt",
-			"jumpToStart": "Naar het begin",
-			"jumpToUnicode": "Naar Unicode",
+			"pickerTitle": {
+				"aria-label": "Selecteer emoticon",
+				"textContent": "Selecteer emoticon"
+			},
+			"recent": {
+				"title": "Recent gebruikt",
+				"aria-label": "Recent gebruikt"
+			},
+			"jumpToStart": {
+				"title": "Naar het begin",
+				"aria-label": "Naar het begin"
+			},
+			"jumpToUnicode": {
+				"title": "Naar Unicode",
+				"aria-label": "Naar Unicode"
+			},
 			"discoverPacks": "Emoji-pakketten ontdekken →",
 			"categoryFace": "Emoji",
 			"categoryGesture": "Gebaar",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "Smileygezichten en emoties"
+				"title": "Smileygezichten en emoties",
+				"aria-label": "Smileygezichten en emoties"
 			},
 			"People_and_Body": {
-				"title": "Figuren en lichamen"
+				"title": "Figuren en lichamen",
+				"aria-label": "Figuren en lichamen"
 			},
 			"Animals_and_Nature": {
-				"title": "Dieren en natuur"
+				"title": "Dieren en natuur",
+				"aria-label": "Dieren en natuur"
 			},
 			"Food_and_Drink": {
-				"title": "Eten en drinken"
+				"title": "Eten en drinken",
+				"aria-label": "Eten en drinken"
 			},
 			"Travel_and_Places": {
-				"title": "Reizen en plaatsen"
+				"title": "Reizen en plaatsen",
+				"aria-label": "Reizen en plaatsen"
 			},
 			"Activities": {
-				"title": "Activiteit"
+				"title": "Activiteit",
+				"aria-label": "Activiteit"
 			},
 			"Objects": {
-				"title": "Ding"
+				"title": "Ding",
+				"aria-label": "Ding"
 			},
 			"Symbols": {
-				"title": "Symbool"
+				"title": "Symbool",
+				"aria-label": "Symbool"
 			},
 			"Flags": {
-				"title": "Spandoek"
-			},
-			"Component": {
-				"title": "Componenten"
+				"title": "Vlaggen",
+				"aria-label": "Vlaggen"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "Stealth",
 				"offline": "Offline"
 			},
-			"changeStatusTitle": "Status wijzigen",
+			"changeStatusTitle": {
+				"aria-label": "Status wijzigen"
+			},
 			"aboutSection": "Over",
 			"bioEmpty": "Deze gebruiker heeft nog geen profiel.",
 			"statusOffline": {
@@ -2446,9 +2466,6 @@
 			"deliveryRead": "Lezen",
 			"translate": "Vertalen",
 			"translating": "Vertalen…",
-			"translateShowOriginal": "Toon originele tekst",
-			"translateShowTranslation": "Laat vertaling zien",
-			"translateLabel": "Vertaling",
 			"translateFailed": "Vertaling mislukt",
 			"editImage": "Afbeelding bewerken",
 			"draftRestored": "Diepgang hersteld",
@@ -2807,6 +2824,9 @@
 			"advancedKicker": "Op aanvraag configureren",
 			"advancedSettings": "Geavanceerde instellingen",
 			"advancedDescription": "Voor dagelijks gebruik is geen aanpassing nodig.",
+			"cardHost": {
+				"aria-label": "Profielkaart"
+			},
 			"edit": "Profiel bewerken",
 			"save": "Opslaan",
 			"cancel": "Annuleren",
@@ -3870,6 +3890,14 @@
 			"editCrop": "Bijsnijden",
 			"editMosaic": "Verpixelen",
 			"editBrush": "Penseel",
+			"editBrushColor": {
+				"title": "Penseelkleur",
+				"aria-label": "Penseelkleur"
+			},
+			"editBrushSize": {
+				"title": "Penseeldikte",
+				"aria-label": "Penseeldikte"
+			},
 			"editApply": "Toepassen",
 			"editCancel": "Annuleren",
 			"replyPolicyEveryone": "Iedereen kan antwoorden",
@@ -3909,13 +3937,48 @@
 			},
 			"visibility": {
 				"label": "Zichtbaar bereik",
-				"public": "Publiek",
-				"unlisted": "Niet openbaar vermeld",
-				"followers": "alleen volgers",
-				"followers7d": "Zichtbaar na 7 dagen volgen",
-				"followers30d": "Zichtbaar na 30 dagen volgen",
-				"selected": "Zichtbaar voor gespecificeerde personen",
-				"private": "Alleen zichtbaar voor jezelf",
+				"public": {
+					"title": "Openbaar",
+					"aria-label": "Openbaar",
+					"label": "Openbaar",
+					"textContent": "Openbaar"
+				},
+				"unlisted": {
+					"title": "Niet vermeld",
+					"aria-label": "Niet vermeld",
+					"label": "Niet vermeld",
+					"textContent": "Niet vermeld"
+				},
+				"followers": {
+					"title": "Alleen volgers",
+					"aria-label": "Alleen volgers",
+					"label": "Alleen volgers",
+					"textContent": "Alleen volgers"
+				},
+				"followers7d": {
+					"title": "Zichtbaar na 7 dagen volgen",
+					"aria-label": "Zichtbaar na 7 dagen volgen",
+					"label": "Zichtbaar na 7 dagen volgen",
+					"textContent": "Zichtbaar na 7 dagen volgen"
+				},
+				"followers30d": {
+					"title": "Zichtbaar na 30 dagen volgen",
+					"aria-label": "Zichtbaar na 30 dagen volgen",
+					"label": "Zichtbaar na 30 dagen volgen",
+					"textContent": "Zichtbaar na 30 dagen volgen"
+				},
+				"selected": {
+					"title": "Zichtbaar voor geselecteerde personen",
+					"aria-label": "Zichtbaar voor geselecteerde personen",
+					"label": "Zichtbaar voor geselecteerde personen",
+					"textContent": "Zichtbaar voor geselecteerde personen"
+				},
+				"private": {
+					"title": "Alleen ik",
+					"aria-label": "Alleen ik",
+					"label": "Alleen ik",
+					"textContent": "Alleen ik"
+				},
 				"allowLabel": "Zichtbare mensen",
 				"exceptLabel": "mensen uitsluiten",
 				"allow": {
@@ -3951,6 +4014,7 @@
 			"trending": {
 				"title": "Trending",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} berichten"
 				},
 				"empty": "Nog geen actuele onderwerpen",
@@ -3987,10 +4051,19 @@
 			"folderSelect": "favoriete map",
 			"confirm": "Bevestigen",
 			"cancel": "Annuleren",
-			"remove": "Verwijder favorieten",
-			"renameFolder": "Hernoemen",
+			"remove": {
+				"title": "Verwijderen uit opgeslagen",
+				"aria-label": "Verwijderen uit opgeslagen"
+			},
+			"renameFolder": {
+				"title": "Hernoemen",
+				"aria-label": "Hernoemen"
+			},
 			"renameFolderPrompt": "Nieuwe mapnaam",
-			"deleteFolder": "map verwijderen",
+			"deleteFolder": {
+				"title": "Map verwijderen",
+				"aria-label": "Map verwijderen"
+			},
 			"deleteFolderConfirm": "Map verwijderen? De berichten daar worden verplaatst naar 'Niet gearchiveerd'.",
 			"searchEmpty": "Geen bijpassende collectie",
 			"folderEmpty": "Deze map is leeg",
@@ -4004,7 +4077,10 @@
 			"emptyHint": "Schrijf iets in het invoerveld en klik op «Concept opslaan» om later verder te gaan",
 			"saved": "Concept opgeslagen",
 			"deleted": "Concept verwijderd",
-			"delete": "Concept verwijderen",
+			"delete": {
+				"title": "Concept verwijderen",
+				"aria-label": "Concept verwijderen"
+			},
 			"empty": "Concept is leeg",
 			"saveFailed": "Kan concept niet opslaan: ${error}",
 			"loadFailed": "Kan concept niet openen: ${error}",
@@ -4165,15 +4241,30 @@
 			}
 		},
 		"actions": {
-			"like": "Leuk vinden",
-			"unlike": "Like ongedaan",
-			"dislike": "Disliken",
-			"undislike": "Dislike ongedaan",
+			"like": {
+				"title": "Leuk vinden",
+				"aria-label": "Leuk vinden"
+			},
+			"unlike": {
+				"title": "Like ongedaan maken",
+				"aria-label": "Like ongedaan maken"
+			},
+			"dislike": {
+				"title": "Niet leuk vinden",
+				"aria-label": "Niet leuk vinden"
+			},
+			"undislike": {
+				"title": "Dislike ongedaan maken",
+				"aria-label": "Dislike ongedaan maken"
+			},
 			"repost": "Reposten",
 			"quote": "Citaat",
 			"delete": "Verwijderen",
 			"edit": "Bewerking",
-			"save": "Opslaan",
+			"save": {
+				"title": "Opslaan",
+				"aria-label": "Opslaan"
+			},
 			"saved": "Verzameld",
 			"translate": "Vertalen",
 			"dm": "Stuur een privébericht",
@@ -4289,9 +4380,6 @@
 			"quoting": "Citeren",
 			"clear": "Citaat verwijderen",
 			"viewOriginal": "Bekijk origineel bericht"
-		},
-		"translate": {
-			"label": "Vertaling:"
 		},
 		"time": {
 			"justNow": "Zojuist",
@@ -5249,8 +5337,9 @@
 			"confirm": "Bevestigen",
 			"close": "Sluiten",
 			"translate": {
-				"showOriginal": "Toon originele tekst",
-				"showTranslation": "Laat vertaling zien"
+				"label": "Vertaling:",
+				"showOriginal": "Origineel tonen",
+				"showTranslation": "Vertaling tonen"
 			}
 		},
 		"code_block": {

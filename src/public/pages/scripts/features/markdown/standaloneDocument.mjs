@@ -254,16 +254,38 @@ export async function materializeStandaloneAttachments(files) {
 }
 
 /**
- * 触发浏览器下载 HTML 字符串。
+ * 从完整 HTML 文档的 `<title>` 生成可落盘文件名（含 `.html`）。
+ * @param {string} html 完整 HTML 文档
+ * @param {string} [fallback='export'] title 缺失时的基名
+ * @returns {string} 安全文件名
+ */
+export function fileNameFromHtmlTitle(html, fallback = 'export') {
+	const title = new DOMParser()
+		.parseFromString(html, 'text/html')
+		.querySelector('title')
+		?.textContent
+		?.trim()
+		|| fallback
+	const safe = title
+		.replaceAll(/[<>:"/\\|?*\u0000-\u001f]/g, '_')
+		.replaceAll(/[. ]+$/g, '')
+		.trim()
+		.slice(0, 120)
+		|| fallback
+	return /\.html$/i.test(safe) ? safe : `${safe}.html`
+}
+
+/**
+ * 触发浏览器下载 HTML 字符串；未传 `fileName` 时用文档 `<title>`。
  * @param {string} html HTML 文档
- * @param {string} fileName 文件名
+ * @param {string} [fileName] 文件名
  * @returns {void}
  */
 export function downloadHtmlDocument(html, fileName) {
 	const url = URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' }))
 	const anchor = document.createElement('a')
 	anchor.href = url
-	anchor.download = fileName
+	anchor.download = fileName || fileNameFromHtmlTitle(html)
 	document.body.appendChild(anchor)
 	anchor.click()
 	anchor.remove()

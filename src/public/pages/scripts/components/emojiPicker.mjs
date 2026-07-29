@@ -18,7 +18,6 @@ import {
 	unicodeEmojiGroupI18nKey,
 	unicodeEmojiSectionKey,
 } from '../features/emoji/unicodeData.mjs'
-import { geti18n } from '../i18n/index.mjs'
 import { escapeHtml } from '../lib/escapeHtml.mjs'
 
 import { showEmojiPackPreview } from './emojiPackPreview.mjs'
@@ -29,11 +28,14 @@ import { positionFloatingPanel, wireOutsideClickClose } from './floatingPanel.mj
  */
 export { showEmojiPackPreview } from './emojiPackPreview.mjs'
 
+const JUMP_START_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16v2H4V4zm8 3l6 6h-4v7h-4v-7H6l6-6z"/></svg>'
+const JUMP_UNICODE_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-4.5-7.5c.83 0 1.5-.67 1.5-1.5S8.33 9.5 7.5 9.5 6 10.17 6 11s.67 1.5 1.5 1.5zm9 0c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zm-4.5 5.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>'
 const CSS_ID = 'fount-emoji-picker-css'
 const CSS_HREF = '/scripts/components/emojiPicker.css'
 
+
 /**
- * 来源侧默认包：provider 回显的 defaultEmojiPackId 与 packId 对齐。
+ * 来源侧默认包：由 provider/API 回显的 defaultEmojiPackId（已在后端 resolve）判定。
  * @param {object} pack pack
  * @returns {boolean} 是否为来源默认包
  */
@@ -202,7 +204,6 @@ async function buildSections(context = {}) {
 			kind: 'recent',
 			glyph: RECENT_EMOJI_SECTION_GLYPH,
 			i18nKey: 'chat.emoji.recent',
-			title: geti18n('chat.emoji.recent') || 'Recent',
 			items,
 		})
 	}
@@ -222,8 +223,6 @@ async function buildSections(context = {}) {
 			kind: 'pack',
 			packId,
 			pack,
-			avatar: pack.avatar,
-			title: pack.name || packId,
 			items: (pack.items || []).map(item => enrichPackItem(packId, item)),
 		})
 	}
@@ -232,7 +231,7 @@ async function buildSections(context = {}) {
 	/** @type {string[]} */
 	let order = []
 	try {
-		;({ byGroup, order } = await loadUnicodeEmojiByGroup())
+		({ byGroup, order } = await loadUnicodeEmojiByGroup())
 	}
 	catch (error) {
 		console.warn('[emoji] unicode data load failed', error)
@@ -245,7 +244,6 @@ async function buildSections(context = {}) {
 			kind: 'unicode',
 			glyph: unicodeEmojiGroupGlyph(groupName),
 			i18nKey: unicodeEmojiGroupI18nKey(groupName),
-			title: groupName,
 			items: codes.map(unicode => ({ kind: 'unicode', unicode, name: unicode })),
 		})
 	}
@@ -254,16 +252,30 @@ async function buildSections(context = {}) {
 }
 
 /**
- * 绑定 rail 与滚动区的 intersection 高亮。
+ * 绑定 rail 与滚动区的 intersection 高亮，并按位置显隐跳转按钮。
  * @param {HTMLElement} rail 左侧 rail 容器
  * @param {HTMLElement} scroll 右侧滚动区
  * @param {object[]} sections 分区元数据
- * @returns {() => void} 断开 observer 的清理函数
+ * @param {{ jumpStart: HTMLElement, jumpUnicode: HTMLElement, firstUnicodeId: string | undefined, sectionById: Map<string, object> }} jump 跳转按钮与 unicode 首分区
+ * @returns {() => void} 断开 observer / scroll 监听的清理函数
  */
-function wireScrollSpy(rail, scroll, sections) {
+function wireScrollSpy(rail, scroll, sections, jump) {
 	const buttons = [...rail.querySelectorAll('[data-section]')]
 	/** @type {Map<string, number>} */
 	const ratios = new Map()
+	/** @type {string | null} */
+	let activeSectionId = null
+
+	/**
+	 * 已在顶部则藏「回开头」；已在 unicode 区则藏「跳到 unicode」。
+	 * @returns {void}
+	 */
+	function updateJumpVisibility() {
+		jump.jumpStart.classList.toggle('hidden', scroll.scrollTop < 8)
+		const active = activeSectionId ? jump.sectionById.get(activeSectionId) : null
+		jump.jumpUnicode.classList.toggle('hidden', !jump.firstUnicodeId || active?.kind === 'unicode')
+	}
+
 	const observer = new IntersectionObserver(entries => {
 		for (const entry of entries)
 			ratios.set(entry.target.dataset.section, entry.intersectionRatio)
@@ -275,18 +287,25 @@ function wireScrollSpy(rail, scroll, sections) {
 				bestId = id
 			}
 		if (!bestId) return
+		activeSectionId = bestId
 		for (const btn of buttons) {
 			const active = btn.dataset.section === bestId
 			btn.classList.toggle('emoji-rail-active', active)
 			btn.setAttribute('aria-current', active ? 'true' : 'false')
 		}
+		updateJumpVisibility()
 	}, { root: scroll, threshold: [0, 0.25, 0.5, 0.75, 1] })
 
 	for (const section of sections) {
 		const el = scroll.querySelector(`[data-section="${CSS.escape(section.id)}"]`)
 		if (el) observer.observe(el)
 	}
-	return () => observer.disconnect()
+	scroll.addEventListener('scroll', updateJumpVisibility, { passive: true })
+	updateJumpVisibility()
+	return () => {
+		observer.disconnect()
+		scroll.removeEventListener('scroll', updateJumpVisibility)
+	}
 }
 
 /**
@@ -322,8 +341,7 @@ function renderContinuousPicker(host, sections, handlers) {
 	jumpStart.type = 'button'
 	jumpStart.className = 'emoji-rail-jump emoji-rail-jump-start'
 	jumpStart.dataset.i18n = 'chat.emoji.jumpToStart'
-	jumpStart.title = geti18n('chat.emoji.jumpToStart') || 'Top'
-	jumpStart.textContent = '↑'
+	jumpStart.innerHTML = JUMP_START_ICON
 
 	const rail = document.createElement('div')
 	rail.className = 'emoji-rail'
@@ -333,8 +351,7 @@ function renderContinuousPicker(host, sections, handlers) {
 	jumpUnicode.type = 'button'
 	jumpUnicode.className = 'emoji-rail-jump emoji-rail-jump-unicode'
 	jumpUnicode.dataset.i18n = 'chat.emoji.jumpToUnicode'
-	jumpUnicode.title = geti18n('chat.emoji.jumpToUnicode') || 'Unicode'
-	jumpUnicode.textContent = '😀'
+	jumpUnicode.innerHTML = JUMP_UNICODE_ICON
 
 	railWrap.append(jumpStart, rail, jumpUnicode)
 
@@ -345,24 +362,23 @@ function renderContinuousPicker(host, sections, handlers) {
 	const firstUnicodeId = sections.find(s => s.kind === 'unicode')?.id
 
 	for (const section of sections) {
+		const packName = section.kind === 'pack' ? section.pack?.name || section.packId || '' : ''
 		const railBtn = document.createElement('button')
 		railBtn.type = 'button'
 		railBtn.className = 'emoji-rail-item'
 		railBtn.dataset.section = section.id
-		railBtn.title = section.title || ''
 		railBtn.setAttribute('aria-current', 'false')
-		if (section.kind === 'pack' && section.avatar)
-			railBtn.innerHTML = `<img class="emoji-rail-avatar" src="${escapeHtml(section.avatar)}" alt="" loading="lazy" />`
+		if (section.kind === 'pack' && section.pack?.avatar)
+			railBtn.innerHTML = `<img class="emoji-rail-avatar" src="${escapeHtml(section.pack.avatar)}" alt="" loading="lazy" />`
 		else if (section.kind === 'pack')
-			railBtn.innerHTML = packRailInnerHtml({ name: section.title, packId: section.packId })
+			railBtn.innerHTML = packRailInnerHtml({ name: packName, packId: section.packId })
 		else
 			railBtn.innerHTML = `<span class="emoji-rail-glyph" aria-hidden="true">${escapeHtml(section.glyph || '?')}</span>`
-		rail.appendChild(railBtn)
 
 		const sectionEl = document.createElement('section')
 		sectionEl.className = 'emoji-section'
 		sectionEl.dataset.section = section.id
-		const header = document.createElement(section.kind === 'pack' ? 'button' : 'h3')
+		const header = document.createElement(section.kind === 'pack' ? 'button' : 'h2')
 		header.className = section.kind === 'pack'
 			? 'emoji-section-header emoji-section-header-pack'
 			: 'emoji-section-header'
@@ -370,8 +386,16 @@ function renderContinuousPicker(host, sections, handlers) {
 			header.type = 'button'
 			header.dataset.packPreview = '1'
 		}
-		if (section.i18nKey) header.dataset.i18n = section.i18nKey
-		header.textContent = section.title || ''
+		if (section.i18nKey) {
+			railBtn.dataset.i18n = section.i18nKey
+			header.dataset.i18n = `${section.i18nKey}.title`
+		}
+		else if (packName) {
+			railBtn.title = packName
+			railBtn.setAttribute('aria-label', packName)
+			header.textContent = packName
+		}
+		rail.appendChild(railBtn)
 		const grid = document.createElement('div')
 		grid.className = 'emoji-grid'
 		for (const item of section.items)
@@ -390,11 +414,15 @@ function renderContinuousPicker(host, sections, handlers) {
 	discoverLink.target = '_blank'
 	discoverLink.rel = 'noopener'
 	discoverLink.dataset.i18n = 'chat.emoji.discoverPacks'
-	discoverLink.textContent = geti18n('chat.emoji.discoverPacks') || 'Discover packs'
 	footer.appendChild(discoverLink)
 	host.appendChild(footer)
 
-	const disconnectSpy = wireScrollSpy(rail, scroll, sections)
+	const disconnectSpy = wireScrollSpy(rail, scroll, sections, {
+		jumpStart,
+		jumpUnicode,
+		firstUnicodeId,
+		sectionById,
+	})
 
 	/**
 	 * 平滑滚动到指定分区。
@@ -567,13 +595,19 @@ export async function mountEmojiPicker(anchor, onInsert, pickerContext = {}) {
 	panel.id = 'fount-shared-emoji-picker'
 	panel.className = 'emoji-picker show'
 	panel.setAttribute('role', 'dialog')
-	panel.dataset.i18n = 'chat.emoji.pickerTitle'
 	panel.style.cssText = 'position:fixed;z-index:10000;width:320px;height:360px;'
 	positionFloatingPanel(panel, anchor)
 
+	// 标题单独挂 data-i18n，避免字符串形态 locale 写 innerHTML 清掉 picker body。
+	const title = document.createElement('span')
+	title.className = 'sr-only'
+	title.id = 'fount-shared-emoji-picker-title'
+	title.dataset.i18n = 'chat.emoji.pickerTitle'
+	panel.setAttribute('aria-labelledby', title.id)
+
 	const body = document.createElement('div')
 	body.className = 'emoji-picker-body'
-	panel.appendChild(body)
+	panel.append(title, body)
 	document.body.appendChild(panel)
 
 	const { sections, usage } = await buildSections(pickerContext)

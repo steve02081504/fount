@@ -915,10 +915,20 @@ export type LocaleData = {
 		emoji: {
 			pickerTitle: {
 				'aria-label': string
+				textContent: string
 			}
-			recent: string
-			jumpToStart: string
-			jumpToUnicode: string
+			recent: {
+				title: string
+				'aria-label': string
+			}
+			jumpToStart: {
+				title: string
+				'aria-label': string
+			}
+			jumpToUnicode: {
+				title: string
+				'aria-label': string
+			}
 			discoverPacks: string
 			categoryFace: string
 			categoryGesture: string
@@ -956,33 +966,39 @@ export type LocaleData = {
 		unicodeEmojiGroups: {
 			Smileys_and_Emotion: {
 				title: string
+				'aria-label': string
 			}
 			People_and_Body: {
 				title: string
+				'aria-label': string
 			}
 			Animals_and_Nature: {
 				title: string
+				'aria-label': string
 			}
 			Food_and_Drink: {
 				title: string
+				'aria-label': string
 			}
 			Travel_and_Places: {
 				title: string
+				'aria-label': string
 			}
 			Activities: {
 				title: string
+				'aria-label': string
 			}
 			Objects: {
 				title: string
+				'aria-label': string
 			}
 			Symbols: {
 				title: string
+				'aria-label': string
 			}
 			Flags: {
 				title: string
-			}
-			Component: {
-				title: string
+				'aria-label': string
 			}
 		}
 		sessionSettings: {
@@ -1828,7 +1844,9 @@ export type LocaleData = {
 				invisible: string
 				offline: string
 			}
-			changeStatusTitle: string
+			changeStatusTitle: {
+				'aria-label': string
+			}
 			aboutSection: string
 			bioEmpty: string
 			statusOffline: {
@@ -2416,9 +2434,6 @@ export type LocaleData = {
 			deliveryRead: string
 			translate: string
 			translating: string
-			translateShowOriginal: string
-			translateShowTranslation: string
-			translateLabel: string
 			translateFailed: string
 			editImage: string
 			draftRestored: string
@@ -2777,6 +2792,9 @@ export type LocaleData = {
 			advancedKicker: string
 			advancedSettings: string
 			advancedDescription: string
+			cardHost: {
+				'aria-label': string
+			}
 			edit: string
 			save: string
 			cancel: string
@@ -3842,6 +3860,14 @@ export type LocaleData = {
 			editCrop: string
 			editMosaic: string
 			editBrush: string
+			editBrushColor: {
+				title: string
+				'aria-label': string
+			}
+			editBrushSize: {
+				title: string
+				'aria-label': string
+			}
 			editApply: string
 			editCancel: string
 			replyPolicyEveryone: string
@@ -3881,13 +3907,48 @@ export type LocaleData = {
 			}
 			visibility: {
 				label: string
-				public: string
-				unlisted: string
-				followers: string
-				followers7d: string
-				followers30d: string
-				selected: string
-				private: string
+				public: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
+				unlisted: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
+				followers: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
+				followers7d: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
+				followers30d: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
+				selected: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
+				private: {
+					title: string
+					'aria-label': string
+					label: string
+					textContent: string
+				}
 				allowLabel: string
 				exceptLabel: string
 				allow: {
@@ -3923,6 +3984,7 @@ export type LocaleData = {
 			trending: {
 				title: string
 				postCount: {
+					textContent: string
 					title: string
 				}
 				empty: string
@@ -3961,10 +4023,19 @@ export type LocaleData = {
 			}
 			confirm: string
 			cancel: string
-			remove: string
-			renameFolder: string
+			remove: {
+				title: string
+				'aria-label': string
+			}
+			renameFolder: {
+				title: string
+				'aria-label': string
+			}
 			renameFolderPrompt: string
-			deleteFolder: string
+			deleteFolder: {
+				title: string
+				'aria-label': string
+			}
 			deleteFolderConfirm: string
 			searchEmpty: string
 			folderEmpty: string
@@ -3978,7 +4049,10 @@ export type LocaleData = {
 			emptyHint: string
 			saved: string
 			deleted: string
-			delete: string
+			delete: {
+				title: string
+				'aria-label': string
+			}
 			empty: string
 			saveFailed: string
 			loadFailed: string
@@ -4141,15 +4215,30 @@ export type LocaleData = {
 			}
 		}
 		actions: {
-			like: string
-			unlike: string
-			dislike: string
-			undislike: string
+			like: {
+				title: string
+				'aria-label': string
+			}
+			unlike: {
+				title: string
+				'aria-label': string
+			}
+			dislike: {
+				title: string
+				'aria-label': string
+			}
+			undislike: {
+				title: string
+				'aria-label': string
+			}
 			repost: string
 			quote: string
 			delete: string
 			edit: string
-			save: string
+			save: {
+				title: string
+				'aria-label': string
+			}
 			saved: string
 			translate: string
 			dm: string
@@ -4267,9 +4356,6 @@ export type LocaleData = {
 			quoting: string
 			clear: string
 			viewOriginal: string
-		}
-		translate: {
-			label: string
 		}
 		time: {
 			justNow: string
@@ -5227,6 +5313,7 @@ export type LocaleData = {
 			confirm: string
 			close: string
 			translate: {
+				label: string
 				showOriginal: string
 				showTranslation: string
 			}
@@ -5797,6 +5884,7 @@ export type LocaleKeyParams = {
 	'social.drafts.loadFailed': { error: string | number }
 	'social.drafts.saveFailed': { error: string | number }
 	'social.feed.repostedBy': { author: string | number }
+	'social.feed.trending.postCount.textContent': { n: string | number }
 	'social.feed.trending.postCount.title': { n: string | number }
 	'social.inbox.aggregated.follow': { author1: string | number; author2: string | number; count: string | number }
 	'social.inbox.aggregated.followTwo': { author1: string | number; author2: string | number }

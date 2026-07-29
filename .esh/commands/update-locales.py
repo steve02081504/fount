@@ -88,10 +88,7 @@ def print(*args, **kwargs):  # noqa: A001 — 并发时串行化日志，避免�
 			_REAL_PRINT(*args, **kwargs)
 		except UnicodeEncodeError:
 			encoding = getattr(kwargs.get("file") or sys.stdout, "encoding", None) or "utf-8"
-			safe = [
-				str(a).encode(encoding, errors="replace").decode(encoding, errors="replace")
-				for a in args
-			]
+			safe = [str(a).encode(encoding, errors="replace").decode(encoding, errors="replace") for a in args]
 			_REAL_PRINT(*safe, **kwargs)
 
 
@@ -171,10 +168,7 @@ def ensure_allowed_to_run():
 	).strip()
 	if branch == "master":
 		return
-	print(
-		"此脚本只在主分支（master）和 CI（GitHub Actions）中运行。\n"
-		"非主分支会在 PR 时自动运行；开发期间本地化调整众多，没必要时刻同步到其他语言。"
-	)
+	print("此脚本只在主分支（master）和 CI（GitHub Actions）中运行。\n非主分支会在 PR 时自动运行；开发期间本地化调整众多，没必要时刻同步到其他语言。")
 	sys.exit(0)
 
 
@@ -667,10 +661,7 @@ def sync_localized_block(block_data, available_lang_codes):
 	if source_val is None:
 		return False
 	# 缺失或含 null 的 locale 需要补齐；空串是合法值，不重翻
-	missing_langs = [
-		lang for lang in available_lang_codes
-		if lang != source_lang and (lang not in block_data or contains_null(block_data[lang]))
-	]
+	missing_langs = [lang for lang in available_lang_codes if lang != source_lang and (lang not in block_data or contains_null(block_data[lang]))]
 
 	def fill_lang(target_lang):
 		if is_translation_aborted():
@@ -1163,9 +1154,7 @@ def find_canonical_placeholder_list(placeholders_by_lang: dict[str, list[str]], 
 	return None
 
 
-def align_single_translation_placeholders(
-	lang_code: str, lang_info: dict, key_path: str, most_frequent_count: int, canonical_placeholder_list_ordered: list[str], lang_file_data: OrderedDict, placeholders_by_lang: dict[str, list[str]], source_text: str | None, source_lang_code: str | None
-) -> bool:
+def align_single_translation_placeholders(lang_code: str, lang_info: dict, key_path: str, most_frequent_count: int, canonical_placeholder_list_ordered: list[str], lang_file_data: OrderedDict, placeholders_by_lang: dict[str, list[str]], source_text: str | None, source_lang_code: str | None) -> bool:
 	"""对单个语言条目的占位符进行对齐，返回是否发生更改。"""
 	original_text = lang_info["text"]
 	current_ph_list_ordered = placeholders_by_lang.get(lang_code, [])
@@ -1249,9 +1238,7 @@ def perform_global_placeholder_alignment(all_data_files, languages_map, referenc
 			lang_file_data = all_data_files.get(lang_info["file_path"])
 			if not lang_file_data:
 				return False
-			return align_single_translation_placeholders(
-				lang_code, lang_info, key_path, canonical_count, canonical_list, lang_file_data, placeholders_by_lang, source_text, source_lang_code
-			)
+			return align_single_translation_placeholders(lang_code, lang_info, key_path, canonical_count, canonical_list, lang_file_data, placeholders_by_lang, source_text, source_lang_code)
 
 		if any(run_per_lang(align_one, targets)):
 			overall_changes_made = True

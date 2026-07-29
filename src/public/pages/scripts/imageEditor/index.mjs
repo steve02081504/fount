@@ -19,7 +19,7 @@ function ensureImageEditorStyles() {
 
 /**
  * @param {File | Blob} file 源图片
- * @param {{ title?: string, cropLabel?: string, mosaicLabel?: string, brushLabel?: string, applyLabel?: string, cancelLabel?: string }} [labels] 文案
+ * @param {{ titleI18n?: string, cropI18n?: string, mosaicI18n?: string, brushI18n?: string, brushColorI18n?: string, brushSizeI18n?: string, applyI18n?: string, cancelI18n?: string }} [labels] 文案键
  * @returns {Promise<File | null>} 编辑后的文件；取消为 null
  */
 export function openImageEditor(file, labels = {}) {
@@ -28,32 +28,34 @@ export function openImageEditor(file, labels = {}) {
 		const objectUrl = URL.createObjectURL(file)
 		const dialog = document.createElement('dialog')
 		dialog.className = 'modal image-editor-modal'
-		const title = escapeHtml(labels.title || 'Edit image')
-		const cropLabel = escapeHtml(labels.cropLabel || 'Crop')
-		const mosaicLabel = escapeHtml(labels.mosaicLabel || 'Mosaic')
-		const brushLabel = escapeHtml(labels.brushLabel || 'Brush')
-		const cancelLabel = escapeHtml(labels.cancelLabel || 'Cancel')
-		const applyLabel = escapeHtml(labels.applyLabel || 'Apply')
-		dialog.innerHTML = `
-			<div class="modal-box image-editor-box">
-				<h3 class="font-bold text-lg">${title}</h3>
-				<div class="image-editor-toolbar">
-					<button type="button" class="btn btn-sm" data-tool="crop">${cropLabel}</button>
-					<button type="button" class="btn btn-sm" data-tool="mosaic">${mosaicLabel}</button>
-					<button type="button" class="btn btn-sm" data-tool="brush">${brushLabel}</button>
-					<input type="color" data-brush-color value="#ff0000" title="brush color" />
-					<input type="range" min="2" max="48" value="12" data-brush-size title="brush size" />
-				</div>
-				<div class="image-editor-canvas-wrap">
-					<canvas></canvas>
-				</div>
-				<div class="modal-action">
-					<button type="button" class="btn" data-cancel>${cancelLabel}</button>
-					<button type="button" class="btn btn-primary" data-apply>${applyLabel}</button>
-				</div>
-			</div>
-			<form method="dialog" class="modal-backdrop"><button>close</button></form>
-		`
+		const titleI18n = escapeHtml(labels.titleI18n || 'social.composer.editImage')
+		const cropI18n = escapeHtml(labels.cropI18n || 'social.composer.editCrop')
+		const mosaicI18n = escapeHtml(labels.mosaicI18n || 'social.composer.editMosaic')
+		const brushI18n = escapeHtml(labels.brushI18n || 'social.composer.editBrush')
+		const brushColorI18n = escapeHtml(labels.brushColorI18n || 'social.composer.editBrushColor')
+		const brushSizeI18n = escapeHtml(labels.brushSizeI18n || 'social.composer.editBrushSize')
+		const cancelI18n = escapeHtml(labels.cancelI18n || 'social.composer.editCancel')
+		const applyI18n = escapeHtml(labels.applyI18n || 'social.composer.editApply')
+		dialog.innerHTML = `\
+<div class="modal-box image-editor-box">
+	<h3 class="font-bold text-lg" data-i18n="${titleI18n}"></h3>
+	<div class="image-editor-toolbar">
+		<button type="button" class="btn btn-sm" data-tool="crop" data-i18n="${cropI18n}"></button>
+		<button type="button" class="btn btn-sm" data-tool="mosaic" data-i18n="${mosaicI18n}"></button>
+		<button type="button" class="btn btn-sm" data-tool="brush" data-i18n="${brushI18n}"></button>
+		<input type="color" data-brush-color value="#ff0000" data-i18n="${brushColorI18n}" />
+		<input type="range" min="2" max="48" value="12" data-brush-size data-i18n="${brushSizeI18n}" />
+	</div>
+	<div class="image-editor-canvas-wrap">
+		<canvas></canvas>
+	</div>
+	<div class="modal-action">
+		<button type="button" class="btn" data-cancel data-i18n="${cancelI18n}"></button>
+		<button type="button" class="btn btn-primary" data-apply data-i18n="${applyI18n}"></button>
+	</div>
+</div>
+<form method="dialog" class="modal-backdrop"><button>close</button></form>
+`
 		document.body.appendChild(dialog)
 		const canvas = dialog.querySelector('canvas')
 		if (!(canvas instanceof HTMLCanvasElement)) {

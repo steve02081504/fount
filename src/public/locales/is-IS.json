@@ -949,10 +949,22 @@
 			"multipleMembers": "Margir meðlimir eru að skrifa..."
 		},
 		"emoji": {
-			"pickerTitle": "Velja broskalla",
-			"recent": "Nýlega notað",
-			"jumpToStart": "Fara efst",
-			"jumpToUnicode": "Fara í Unicode",
+			"pickerTitle": {
+				"aria-label": "Velja broskalla",
+				"textContent": "Velja broskalla"
+			},
+			"recent": {
+				"title": "Nýlega notað",
+				"aria-label": "Nýlega notað"
+			},
+			"jumpToStart": {
+				"title": "Fara efst",
+				"aria-label": "Fara efst"
+			},
+			"jumpToUnicode": {
+				"title": "Fara í Unicode",
+				"aria-label": "Fara í Unicode"
+			},
 			"discoverPacks": "Skoða broskallapakka →",
 			"categoryFace": "Broskarlar",
 			"categoryGesture": "Bendingar",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "Brosandi andlit og tilfinningar"
+				"title": "Brosandi andlit og tilfinningar",
+				"aria-label": "Brosandi andlit og tilfinningar"
 			},
 			"People_and_Body": {
-				"title": "Myndir og líkamar"
+				"title": "Myndir og líkamar",
+				"aria-label": "Myndir og líkamar"
 			},
 			"Animals_and_Nature": {
-				"title": "Dýr og náttúru"
+				"title": "Dýr og náttúru",
+				"aria-label": "Dýr og náttúru"
 			},
 			"Food_and_Drink": {
-				"title": "Matur og drykk"
+				"title": "Matur og drykk",
+				"aria-label": "Matur og drykk"
 			},
 			"Travel_and_Places": {
-				"title": "Ferðalög og staðir"
+				"title": "Ferðalög og staðir",
+				"aria-label": "Ferðalög og staðir"
 			},
 			"Activities": {
-				"title": "Virkni"
+				"title": "Virkni",
+				"aria-label": "Virkni"
 			},
 			"Objects": {
-				"title": "Hlutir"
+				"title": "Hlutir",
+				"aria-label": "Hlutir"
 			},
 			"Symbols": {
-				"title": "Tákn"
+				"title": "Tákn",
+				"aria-label": "Tákn"
 			},
 			"Flags": {
-				"title": "Fánar"
-			},
-			"Component": {
-				"title": "Íhlutir"
+				"title": "Fánar",
+				"aria-label": "Fánar"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "Laumuspil",
 				"offline": "Ótengdur"
 			},
-			"changeStatusTitle": "Skipta um stöðu",
+			"changeStatusTitle": {
+				"aria-label": "Skipta um stöðu"
+			},
 			"aboutSection": "Um",
 			"bioEmpty": "Þessi notandi er ekki með prófíl ennþá.",
 			"statusOffline": {
@@ -2446,9 +2466,6 @@
 			"deliveryRead": "Lestu",
 			"translate": "Þýða",
 			"translating": "Þýðir…",
-			"translateShowOriginal": "Sýna upprunalegan texta",
-			"translateShowTranslation": "Sýna þýðingu",
-			"translateLabel": "Þýðing",
 			"translateFailed": "Þýðing mistókst",
 			"editImage": "Breyta mynd",
 			"draftRestored": "Drög endurheimt",
@@ -2807,6 +2824,9 @@
 			"advancedKicker": "Stilla eftir þörfum",
 			"advancedSettings": "Ítarlegar stillingar",
 			"advancedDescription": "Engar breytingar þarf fyrir daglega notkun.",
+			"cardHost": {
+				"aria-label": "Prófílkort"
+			},
 			"edit": "Breyta prófíl",
 			"save": "Vista",
 			"cancel": "Hætta við",
@@ -3867,9 +3887,17 @@
 			},
 			"sensitiveMedia": "Næmisfjölmiðlahúð",
 			"editImage": "Breyta",
-			"editCrop": "Skera",
-			"editMosaic": "Mósaík",
+			"editCrop": "Klippa",
+			"editMosaic": "Pixla",
 			"editBrush": "Pensill",
+			"editBrushColor": {
+				"title": "Litur pensils",
+				"aria-label": "Litur pensils"
+			},
+			"editBrushSize": {
+				"title": "Stærð pensils",
+				"aria-label": "Stærð pensils"
+			},
 			"editApply": "Nota",
 			"editCancel": "Hætta við",
 			"replyPolicyEveryone": "Hver sem er getur svarað",
@@ -3909,13 +3937,48 @@
 			},
 			"visibility": {
 				"label": "Sýnilegt svið",
-				"public": "Opinbert",
-				"unlisted": "Ekki skráð opinberlega",
-				"followers": "Eingöngu fylgjendur",
-				"followers7d": "Sýnist eftir að hafa fylgst með í 7 daga",
-				"followers30d": "Sýnilegt eftir að hafa fylgst með í 30 daga",
-				"selected": "Sýnilegt tilteknu fólki",
-				"private": "Aðeins sýnilegt sjálfum þér",
+				"public": {
+					"title": "Opinbert",
+					"aria-label": "Opinbert",
+					"label": "Opinbert",
+					"textContent": "Opinbert"
+				},
+				"unlisted": {
+					"title": "Óskráð",
+					"aria-label": "Óskráð",
+					"label": "Óskráð",
+					"textContent": "Óskráð"
+				},
+				"followers": {
+					"title": "Aðeins fylgjendur",
+					"aria-label": "Aðeins fylgjendur",
+					"label": "Aðeins fylgjendur",
+					"textContent": "Aðeins fylgjendur"
+				},
+				"followers7d": {
+					"title": "Sýnilegt eftir 7 daga fylgd",
+					"aria-label": "Sýnilegt eftir 7 daga fylgd",
+					"label": "Sýnilegt eftir 7 daga fylgd",
+					"textContent": "Sýnilegt eftir 7 daga fylgd"
+				},
+				"followers30d": {
+					"title": "Sýnilegt eftir 30 daga fylgd",
+					"aria-label": "Sýnilegt eftir 30 daga fylgd",
+					"label": "Sýnilegt eftir 30 daga fylgd",
+					"textContent": "Sýnilegt eftir 30 daga fylgd"
+				},
+				"selected": {
+					"title": "Sýnilegt fyrir valda",
+					"aria-label": "Sýnilegt fyrir valda",
+					"label": "Sýnilegt fyrir valda",
+					"textContent": "Sýnilegt fyrir valda"
+				},
+				"private": {
+					"title": "Aðeins ég",
+					"aria-label": "Aðeins ég",
+					"label": "Aðeins ég",
+					"textContent": "Aðeins ég"
+				},
 				"allowLabel": "Sýnilegt fólk",
 				"exceptLabel": "Útiloka fólk",
 				"allow": {
@@ -3951,6 +4014,7 @@
 			"trending": {
 				"title": "Vinsælt efni",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} færslur"
 				},
 				"empty": "Ekkert heitt umræðuefni ennþá",
@@ -3987,10 +4051,19 @@
 			"folderSelect": "Uppáhalds mappa",
 			"confirm": "Staðfesta",
 			"cancel": "Hætta við",
-			"remove": "Fjarlægja eftirlæti",
-			"renameFolder": "Endurnefna",
+			"remove": {
+				"title": "Fjarlægja úr vistuðum",
+				"aria-label": "Fjarlægja úr vistuðum"
+			},
+			"renameFolder": {
+				"title": "Endurnefna",
+				"aria-label": "Endurnefna"
+			},
 			"renameFolderPrompt": "Nýtt möppuheiti",
-			"deleteFolder": "Eyða möppu",
+			"deleteFolder": {
+				"title": "Eyða möppu",
+				"aria-label": "Eyða möppu"
+			},
 			"deleteFolderConfirm": "Eyða möppu? Færslurnar þar verða færðar í „Óflokkað“.",
 			"searchEmpty": "Ekkert samsvarandi safn",
 			"folderEmpty": "Þessi mappa er tóm",
@@ -4004,7 +4077,10 @@
 			"emptyHint": "Skrifaðu eitthvað efni í pósthólfið og smelltu á \"Vista uppkast\" til að halda áfram að breyta næst",
 			"saved": "Drög vistuð",
 			"deleted": "Drögum eytt",
-			"delete": "Eyða drögum",
+			"delete": {
+				"title": "Eyða drögum",
+				"aria-label": "Eyða drögum"
+			},
 			"empty": "Drög eru tóm",
 			"saveFailed": "Mistókst að vista drög: ${error}",
 			"loadFailed": "Mistókst að opna drög: ${error}",
@@ -4165,15 +4241,30 @@
 			}
 		},
 		"actions": {
-			"like": "Líka",
-			"unlike": "Af líka",
-			"dislike": "Mis líka",
-			"undislike": "Hætta við mislíkar",
+			"like": {
+				"title": "Líka við",
+				"aria-label": "Líka við"
+			},
+			"unlike": {
+				"title": "Af líka",
+				"aria-label": "Af líka"
+			},
+			"dislike": {
+				"title": "Mis líka",
+				"aria-label": "Mis líka"
+			},
+			"undislike": {
+				"title": "Af mislíka",
+				"aria-label": "Af mislíka"
+			},
 			"repost": "Endurbirta",
 			"quote": "Tilvitnun",
 			"delete": "Eyða",
 			"edit": "Breyta",
-			"save": "Vista",
+			"save": {
+				"title": "Vista",
+				"aria-label": "Vista"
+			},
 			"saved": "Safnað",
 			"translate": "Þýða",
 			"dm": "Sendið einkaskilaboð",
@@ -4289,9 +4380,6 @@
 			"quoting": "Tilvitnun",
 			"clear": "Tillitsleysi",
 			"viewOriginal": "Skoða upprunalega færslu"
-		},
-		"translate": {
-			"label": "Þýðing:"
 		},
 		"time": {
 			"justNow": "Rétt núna",
@@ -5249,7 +5337,8 @@
 			"confirm": "Staðfesta",
 			"close": "Loka",
 			"translate": {
-				"showOriginal": "Sýna upprunalegan texta",
+				"label": "Þýðing:",
+				"showOriginal": "Sýna frumtexta",
 				"showTranslation": "Sýna þýðingu"
 			}
 		},

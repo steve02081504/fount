@@ -948,10 +948,22 @@
 			"multipleMembers": "多個成員正在輸入..."
 		},
 		"emoji": {
-			"pickerTitle": "選擇表情",
-			"recent": "最近使用",
-			"jumpToStart": "回到開頭",
-			"jumpToUnicode": "跳到 Unicode",
+			"pickerTitle": {
+				"aria-label": "選擇表情",
+				"textContent": "選擇表情"
+			},
+			"recent": {
+				"title": "最近使用",
+				"aria-label": "最近使用"
+			},
+			"jumpToStart": {
+				"title": "回到開頭",
+				"aria-label": "回到開頭"
+			},
+			"jumpToUnicode": {
+				"title": "跳到 Unicode",
+				"aria-label": "跳到 Unicode"
+			},
 			"discoverPacks": "探索表情包 →",
 			"categoryFace": "表情",
 			"categoryGesture": "手勢",
@@ -988,34 +1000,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "笑臉與情緒"
+				"title": "笑臉與情緒",
+				"aria-label": "笑臉與情緒"
 			},
 			"People_and_Body": {
-				"title": "人物與身體"
+				"title": "人物與身體",
+				"aria-label": "人物與身體"
 			},
 			"Animals_and_Nature": {
-				"title": "動物與自然"
+				"title": "動物與自然",
+				"aria-label": "動物與自然"
 			},
 			"Food_and_Drink": {
-				"title": "食物與飲料"
+				"title": "食物與飲料",
+				"aria-label": "食物與飲料"
 			},
 			"Travel_and_Places": {
-				"title": "旅行與地點"
+				"title": "旅行與地點",
+				"aria-label": "旅行與地點"
 			},
 			"Activities": {
-				"title": "活動"
+				"title": "活動",
+				"aria-label": "活動"
 			},
 			"Objects": {
-				"title": "物品"
+				"title": "物品",
+				"aria-label": "物品"
 			},
 			"Symbols": {
-				"title": "符號"
+				"title": "符號",
+				"aria-label": "符號"
 			},
 			"Flags": {
-				"title": "旗幟"
-			},
-			"Component": {
-				"title": "元件"
+				"title": "旗幟",
+				"aria-label": "旗幟"
 			}
 		},
 		"sessionSettings": {
@@ -1861,7 +1879,9 @@
 				"invisible": "隱身",
 				"offline": "離線"
 			},
-			"changeStatusTitle": "切換狀態",
+			"changeStatusTitle": {
+				"aria-label": "切換狀態"
+			},
 			"aboutSection": "關於",
 			"bioEmpty": "這位使用者還沒有簡介。",
 			"statusOffline": {
@@ -2445,9 +2465,6 @@
 			"deliveryRead": "已讀",
 			"translate": "翻譯",
 			"translating": "翻譯中…",
-			"translateShowOriginal": "顯示原文",
-			"translateShowTranslation": "顯示譯文",
-			"translateLabel": "譯文",
 			"translateFailed": "翻譯失敗",
 			"editImage": "編輯圖片",
 			"draftRestored": "已恢復草稿",
@@ -2806,6 +2823,9 @@
 			"advancedKicker": "依需求設定",
 			"advancedSettings": "高階設定",
 			"advancedDescription": "日常使用無需調整。",
+			"cardHost": {
+				"aria-label": "個人資料卡"
+			},
 			"edit": "編輯資料",
 			"save": "儲存",
 			"cancel": "取消",
@@ -3869,6 +3889,14 @@
 			"editCrop": "裁剪",
 			"editMosaic": "打碼",
 			"editBrush": "畫筆",
+			"editBrushColor": {
+				"title": "畫筆顏色",
+				"aria-label": "畫筆顏色"
+			},
+			"editBrushSize": {
+				"title": "畫筆粗細",
+				"aria-label": "畫筆粗細"
+			},
 			"editApply": "應用",
 			"editCancel": "取消",
 			"replyPolicyEveryone": "所有人可回覆",
@@ -3908,13 +3936,48 @@
 			},
 			"visibility": {
 				"label": "可見範圍",
-				"public": "公開",
-				"unlisted": "不公開列出",
-				"followers": "僅關注者",
-				"followers7d": "關注滿 7 天可見",
-				"followers30d": "關注滿 30 天可見",
-				"selected": "指定人員可見",
-				"private": "僅自己可見",
+				"public": {
+					"title": "公開",
+					"aria-label": "公開",
+					"label": "公開",
+					"textContent": "公開"
+				},
+				"unlisted": {
+					"title": "不公開列出",
+					"aria-label": "不公開列出",
+					"label": "不公開列出",
+					"textContent": "不公開列出"
+				},
+				"followers": {
+					"title": "僅追蹤者",
+					"aria-label": "僅追蹤者",
+					"label": "僅追蹤者",
+					"textContent": "僅追蹤者"
+				},
+				"followers7d": {
+					"title": "追蹤滿 7 天可見",
+					"aria-label": "追蹤滿 7 天可見",
+					"label": "追蹤滿 7 天可見",
+					"textContent": "追蹤滿 7 天可見"
+				},
+				"followers30d": {
+					"title": "追蹤滿 30 天可見",
+					"aria-label": "追蹤滿 30 天可見",
+					"label": "追蹤滿 30 天可見",
+					"textContent": "追蹤滿 30 天可見"
+				},
+				"selected": {
+					"title": "指定人員可見",
+					"aria-label": "指定人員可見",
+					"label": "指定人員可見",
+					"textContent": "指定人員可見"
+				},
+				"private": {
+					"title": "僅自己可見",
+					"aria-label": "僅自己可見",
+					"label": "僅自己可見",
+					"textContent": "僅自己可見"
+				},
 				"allowLabel": "可見人員",
 				"exceptLabel": "排除人員",
 				"allow": {
@@ -3950,7 +4013,8 @@
 			"trending": {
 				"title": "熱門話題",
 				"postCount": {
-					"title": "${n} 條帖子"
+					"textContent": "${n}",
+					"title": "${n} 則貼文"
 				},
 				"empty": "暫無熱門話題",
 				"aria-label": "熱門話題"
@@ -3986,10 +4050,19 @@
 			"folderSelect": "收藏資料夾",
 			"confirm": "確認",
 			"cancel": "取消",
-			"remove": "移除收藏",
-			"renameFolder": "重新命名",
+			"remove": {
+				"title": "移除收藏",
+				"aria-label": "移除收藏"
+			},
+			"renameFolder": {
+				"title": "重新命名",
+				"aria-label": "重新命名"
+			},
 			"renameFolderPrompt": "新資料夾名稱",
-			"deleteFolder": "刪除資料夾",
+			"deleteFolder": {
+				"title": "刪除資料夾",
+				"aria-label": "刪除資料夾"
+			},
 			"deleteFolderConfirm": "刪除資料夾？其中的帖子將移到「未歸檔」。",
 			"searchEmpty": "沒有匹配的收藏",
 			"folderEmpty": "此資料夾為空",
@@ -4003,7 +4076,10 @@
 			"emptyHint": "在發帖框寫點內容後點「存草稿」，下次可繼續編輯",
 			"saved": "草稿已儲存",
 			"deleted": "草稿已刪除",
-			"delete": "刪除草稿",
+			"delete": {
+				"title": "刪除草稿",
+				"aria-label": "刪除草稿"
+			},
 			"empty": "草稿為空",
 			"saveFailed": "儲存草稿失敗：${error}",
 			"loadFailed": "開啟草稿失敗：${error}",
@@ -4164,15 +4240,30 @@
 			}
 		},
 		"actions": {
-			"like": "點贊",
-			"unlike": "取消贊",
-			"dislike": "踩",
-			"undislike": "取消踩",
+			"like": {
+				"title": "按讚",
+				"aria-label": "按讚"
+			},
+			"unlike": {
+				"title": "收回讚",
+				"aria-label": "收回讚"
+			},
+			"dislike": {
+				"title": "噓",
+				"aria-label": "噓"
+			},
+			"undislike": {
+				"title": "收回噓",
+				"aria-label": "收回噓"
+			},
 			"repost": "轉發",
 			"quote": "引用",
 			"delete": "刪除",
 			"edit": "編輯",
-			"save": "收藏",
+			"save": {
+				"title": "收藏",
+				"aria-label": "收藏"
+			},
 			"saved": "已收藏",
 			"translate": "翻譯",
 			"dm": "發私信",
@@ -4288,9 +4379,6 @@
 			"quoting": "正在引用",
 			"clear": "取消引用",
 			"viewOriginal": "檢視原帖"
-		},
-		"translate": {
-			"label": "譯文："
 		},
 		"time": {
 			"justNow": "剛剛",
@@ -5248,6 +5336,7 @@
 			"confirm": "確認",
 			"close": "關閉",
 			"translate": {
+				"label": "譯文：",
 				"showOriginal": "顯示原文",
 				"showTranslation": "顯示譯文"
 			}

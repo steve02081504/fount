@@ -105,24 +105,34 @@ export function primaryLocale() {
 }
 
 /**
- * 保存首选语言。
- * @param {string[]} langs - 首选语言列表。
+ * 设置界面语言并立刻应用到 DOM。
+ * 本机 fount / 静态 Pages 共用此入口；bundle 加载由各自 `i18n/base.mjs` 负责。
+ * @param {string[]} preferredLangs 首选语言列表（至少一项）
  * @returns {Promise<void>}
  */
-export async function savePreferredLangs(langs) {
+export async function setLanguage(preferredLangs) {
 	const oldLangs = loadPreferredLangs()
-	if (JSON.stringify(langs) == JSON.stringify(oldLangs)) return
-	await setLocales(langs)
+	if (JSON.stringify(preferredLangs) === JSON.stringify(oldLangs)) return
+	localStorage.setItem(preferredLangsStorageKey, JSON.stringify(preferredLangs))
+	await initTranslations()
 }
 
 /**
- * 写入首选语言并重新加载翻译。
- * @param {string[]} langs - 首选语言列表。
+ * @param {string[]} langs 首选语言列表
  * @returns {Promise<void>}
+ * @deprecated 用 {@link setLanguage}
+ */
+export async function savePreferredLangs(langs) {
+	await setLanguage(langs)
+}
+
+/**
+ * @param {string[]} langs 首选语言列表
+ * @returns {Promise<void>}
+ * @deprecated 用 {@link setLanguage}
  */
 export async function setLocales(langs) {
-	localStorage.setItem(preferredLangsStorageKey, JSON.stringify(langs || []))
-	await initTranslations()
+	await setLanguage(langs)
 }
 
 /**
@@ -151,7 +161,7 @@ export async function runInitTranslations(pageid, preferredLangs, loadBundle) {
 			if (pageid) saved_pageid = pageid
 			lastKnownLangs = preferredLangs
 		}
-		applyTranslations()
+		await applyTranslations()
 	}
 	catch (error) {
 		console.error('Error initializing translations:', error)
@@ -615,11 +625,19 @@ function translateSingularElement(element) {
 					if (translation) updateAttribute(attr, translation)
 				}
 				const values = ['textContent', 'innerHTML']
+				let bodyUpdated = false
 				for (const attr of values) {
 					const specificKey = `${key}.${attr}`
 					const translation = geti18n_nowarn(specificKey, element.dataset)
-					if (translation) updateValue(attr, translation)
+					if (translation) {
+						updateValue(attr, translation)
+						bodyUpdated = true
+					}
 				}
+				// 仅属性对象（icon-only 等）：清掉上一语种字符串 locale 写入的正文，保留子元素图标
+				if (!bodyUpdated && nested.textContent === undefined && nested.innerHTML === undefined
+					&& !element.children.length && element.textContent)
+					updateValue('textContent', '')
 				const dataset = geti18n_nowarn(`${key}.dataset`)
 				if (dataset) Object.assign(element.dataset, dataset)
 				updated = true
@@ -639,9 +657,9 @@ function translateSingularElement(element) {
 /**
  * 将翻译应用到 DOM 元素。
  * @private
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function applyTranslations() {
+async function applyTranslations() {
 	// 翻译 <title> 标签
 	document.title = geti18n(`${saved_pageid}.title`)
 
@@ -651,7 +669,7 @@ function applyTranslations() {
 	document.documentElement.lang = geti18n('lang')
 
 	i18nElement(document, { skip_report: true })
-	runLanguageChange()
+	await runLanguageChange()
 }
 
 /**
@@ -725,6 +743,7 @@ else window.addEventListener('DOMContentLoaded', observeBody)
 export {
 	preferredLangsStorageKey,
 	initTranslations,
+	loadLocaleData,
 	getAvailableLocales,
 	getLocaleNames,
 } from './base.mjs'

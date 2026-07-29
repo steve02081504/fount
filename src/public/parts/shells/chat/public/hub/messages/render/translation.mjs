@@ -2,7 +2,6 @@
  * 【文件】public/hub/messages/render/translation.mjs
  * 【职责】消息列表自动翻译挂载。
  */
-import { geti18n } from '../../../../../../scripts/i18n/index.mjs'
 
 /**
  * 自动翻译：拉取偏好后，对需要翻译的消息 mount 译文块。
@@ -39,9 +38,6 @@ export async function autoTranslateMessages(container) {
 				mountTranslationBlock(bubble, {
 					originalText: text,
 					translatedText: translated,
-					showOriginalLabel: geti18n('chat.hub.translateShowOriginal') || 'Original',
-					showTranslationLabel: geti18n('chat.hub.translateShowTranslation') || 'Translation',
-					translationLabel: geti18n('chat.hub.translateLabel') || '',
 				})
 			}
 			catch { /* 翻译失败静默跳过 */ }

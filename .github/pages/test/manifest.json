@@ -4,7 +4,12 @@
 		{
 			"name": "frontend",
 			"run": [
-				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
 				"./.github/pages/test/frontend/run.mjs"
 			],
 			"triggers": [

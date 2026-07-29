@@ -9,6 +9,7 @@ alwaysApply: false
 Domain harness (federation join, channel-key asserts, `launchNode`, fixtures, disposable paths): [docs/domain-harness.md](docs/domain-harness.md).
 Plan / verdict / continue reasons: [docs/continue-report.md](docs/continue-report.md).
 Suite packing / optimistic overlap: [docs/resource-scheduling.md](docs/resource-scheduling.md).
+Host keep-awake / sleep interrupts: [docs/host-keep-awake.md](docs/host-keep-awake.md).
 
 ## Architecture
 
@@ -34,7 +35,7 @@ Suite packing / optimistic overlap: [docs/resource-scheduling.md](docs/resource-
 | `frontend/` | Playwright (`playwright/`) |
 | `sim/` | In-process simulation harness |
 
-**Frontend**: fixtures, browser binary, network noise, i18n-missing / a11y hard-fail, GitHub Pages — [playwright.md](docs/playwright.md).
+**Frontend**: fixtures, browser binary, network noise, i18n-missing / a11y / locale-script hard-fail, GitHub Pages — [playwright.md](docs/playwright.md). Prefer `[data-i18n]` selectors over locale-specific copy. Drive locale via `setLanguage` / `loadLocaleData` — do not fetch `/api/getlocaledata` from tests.
 
 **pure/ boundary**: tested modules must not statically `import` `src/server/**` (P2P/native graph; Windows Deno child exit can hang). Use dynamic import or promote to `integration/`.
 
@@ -62,7 +63,8 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 ## Operator tools
 
-- **Hung run**: `data/test/state/logs/`; rerun `deno run --allow-scripts --allow-all -c deno.json <probe.mjs>` with env from the log. Idle watchdog (10m no stdall) fails the suite; wall-clock jump ≥ 5× poll interval (30s) is treated as host sleep → abort and re-run that suite up to 5 attempts (`MAX_SLEEP_INTERRUPT_ATTEMPTS` in `suite_run.mjs`), then `terminated` (not a silent hang).
+- **Hung run**: `data/test/state/logs/`; rerun `deno run --allow-scripts --allow-all -c deno.json <probe.mjs>` with env from the log. Idle watchdog (10m no stdall) fails the suite. Host sleep (wall-clock jump) aborts and retries — details in [host-keep-awake.md](docs/host-keep-awake.md).
+- **Keep-awake**: wrappers keep the machine awake during runs — [host-keep-awake.md](docs/host-keep-awake.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`.
 - **OOM / heap**: [heap-snapshots.md](docs/heap-snapshots.md).
 - **Deno panic auto-report**: `core/deno_panic.mjs` → GitHub issue on `denoland/deno` (if `gh` + auth); dedup `data/test/deno_panics.json`. Override via `FOUNT_DENO_PANIC_REPO`. `testkit` excluded.
 - **Selftests**: `fount test testkit`. Fixtures: `selftest/fixtures.mjs` (`makeSuite` / `makeStateEntry`). Keep manifest id `testkit`.

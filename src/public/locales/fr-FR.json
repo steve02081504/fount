@@ -949,10 +949,22 @@
 			"multipleMembers": "Plusieurs membres écrivent..."
 		},
 		"emoji": {
-			"pickerTitle": "Sélectionnez une émoticône",
-			"recent": "Récents",
-			"jumpToStart": "Retour au début",
-			"jumpToUnicode": "Aller à Unicode",
+			"pickerTitle": {
+				"aria-label": "Sélectionnez une émoticône",
+				"textContent": "Sélectionnez une émoticône"
+			},
+			"recent": {
+				"title": "Récents",
+				"aria-label": "Récents"
+			},
+			"jumpToStart": {
+				"title": "Retour au début",
+				"aria-label": "Retour au début"
+			},
+			"jumpToUnicode": {
+				"title": "Aller à Unicode",
+				"aria-label": "Aller à Unicode"
+			},
 			"discoverPacks": "Explorer les packs d'émojis →",
 			"categoryFace": "Émojis",
 			"categoryGesture": "geste",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "Smileys et émotions"
+				"title": "Smileys et émotions",
+				"aria-label": "Smileys et émotions"
 			},
 			"People_and_Body": {
-				"title": "Personnages et corps"
+				"title": "Personnages et corps",
+				"aria-label": "Personnages et corps"
 			},
 			"Animals_and_Nature": {
-				"title": "les animaux et la nature"
+				"title": "les animaux et la nature",
+				"aria-label": "les animaux et la nature"
 			},
 			"Food_and_Drink": {
-				"title": "Nourriture et boisson"
+				"title": "Nourriture et boisson",
+				"aria-label": "Nourriture et boisson"
 			},
 			"Travel_and_Places": {
-				"title": "Voyages et lieux"
+				"title": "Voyages et lieux",
+				"aria-label": "Voyages et lieux"
 			},
 			"Activities": {
-				"title": "Activité"
+				"title": "Activité",
+				"aria-label": "Activité"
 			},
 			"Objects": {
-				"title": "Chose"
+				"title": "Chose",
+				"aria-label": "Chose"
 			},
 			"Symbols": {
-				"title": "Symbole"
+				"title": "Symbole",
+				"aria-label": "Symbole"
 			},
 			"Flags": {
-				"title": "Bannière"
-			},
-			"Component": {
-				"title": "Composants"
+				"title": "Bannière",
+				"aria-label": "Bannière"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "Furtivité",
 				"offline": "Hors ligne"
 			},
-			"changeStatusTitle": "Statut du commutateur",
+			"changeStatusTitle": {
+				"aria-label": "Statut du commutateur"
+			},
 			"aboutSection": "à propos",
 			"bioEmpty": "Cet utilisateur n'a pas encore de profil.",
 			"statusOffline": {
@@ -2446,9 +2466,6 @@
 			"deliveryRead": "Lu",
 			"translate": "Traduire",
 			"translating": "Traduire…",
-			"translateShowOriginal": "Afficher le texte original",
-			"translateShowTranslation": "Afficher la traduction",
-			"translateLabel": "Traduction",
 			"translateFailed": "La traduction a échoué",
 			"editImage": "Modifier l'image",
 			"draftRestored": "Brouillon restauré",
@@ -2807,6 +2824,9 @@
 			"advancedKicker": "Configuration à la demande",
 			"advancedSettings": "Paramètres avancés",
 			"advancedDescription": "Aucun réglage n'est nécessaire pour une utilisation quotidienne.",
+			"cardHost": {
+				"aria-label": "Carte de profil"
+			},
 			"edit": "Modifier le profil",
 			"save": "Enregistrer",
 			"cancel": "Annuler",
@@ -3868,8 +3888,16 @@
 			"sensitiveMedia": "Média sensible",
 			"editImage": "Modifier",
 			"editCrop": "Recadrer",
-			"editMosaic": "Mosaïque",
+			"editMosaic": "Pixeliser",
 			"editBrush": "Pinceau",
+			"editBrushColor": {
+				"title": "Couleur du pinceau",
+				"aria-label": "Couleur du pinceau"
+			},
+			"editBrushSize": {
+				"title": "Taille du pinceau",
+				"aria-label": "Taille du pinceau"
+			},
 			"editApply": "Appliquer",
 			"editCancel": "Annuler",
 			"replyPolicyEveryone": "N'importe qui peut répondre",
@@ -3909,13 +3937,48 @@
 			},
 			"visibility": {
 				"label": "Portée visible",
-				"public": "Public",
-				"unlisted": "Non répertorié",
-				"followers": "Abonnés uniquement",
-				"followers7d": "Visible après avoir suivi pendant 7 jours",
-				"followers30d": "Visible après avoir suivi pendant 30 jours",
-				"selected": "Visible par les personnes spécifiées",
-				"private": "Visible uniquement par vous-même",
+				"public": {
+					"title": "Public",
+					"aria-label": "Public",
+					"label": "Public",
+					"textContent": "Public"
+				},
+				"unlisted": {
+					"title": "Non répertorié",
+					"aria-label": "Non répertorié",
+					"label": "Non répertorié",
+					"textContent": "Non répertorié"
+				},
+				"followers": {
+					"title": "Abonnés uniquement",
+					"aria-label": "Abonnés uniquement",
+					"label": "Abonnés uniquement",
+					"textContent": "Abonnés uniquement"
+				},
+				"followers7d": {
+					"title": "Visible après 7 jours d'abonnement",
+					"aria-label": "Visible après 7 jours d'abonnement",
+					"label": "Visible après 7 jours d'abonnement",
+					"textContent": "Visible après 7 jours d'abonnement"
+				},
+				"followers30d": {
+					"title": "Visible après 30 jours d'abonnement",
+					"aria-label": "Visible après 30 jours d'abonnement",
+					"label": "Visible après 30 jours d'abonnement",
+					"textContent": "Visible après 30 jours d'abonnement"
+				},
+				"selected": {
+					"title": "Visible pour des personnes choisies",
+					"aria-label": "Visible pour des personnes choisies",
+					"label": "Visible pour des personnes choisies",
+					"textContent": "Visible pour des personnes choisies"
+				},
+				"private": {
+					"title": "Moi uniquement",
+					"aria-label": "Moi uniquement",
+					"label": "Moi uniquement",
+					"textContent": "Moi uniquement"
+				},
 				"allowLabel": "Personnes visibles",
 				"exceptLabel": "Exclure des personnes",
 				"allow": {
@@ -3951,7 +4014,8 @@
 			"trending": {
 				"title": "Tendances",
 				"postCount": {
-					"title": "${n} messages"
+					"textContent": "${n}",
+					"title": "${n} publications"
 				},
 				"empty": "Pas encore de sujets d'actualité",
 				"aria-label": "Tendances"
@@ -3987,10 +4051,19 @@
 			"folderSelect": "Dossier de favoris",
 			"confirm": "Confirmer",
 			"cancel": "Annuler",
-			"remove": "Supprimer les favoris",
-			"renameFolder": "Renommer",
+			"remove": {
+				"title": "Retirer des favoris",
+				"aria-label": "Retirer des favoris"
+			},
+			"renameFolder": {
+				"title": "Renommer",
+				"aria-label": "Renommer"
+			},
 			"renameFolderPrompt": "Nouveau nom de dossier",
-			"deleteFolder": "Supprimer le dossier",
+			"deleteFolder": {
+				"title": "Supprimer le dossier",
+				"aria-label": "Supprimer le dossier"
+			},
 			"deleteFolderConfirm": "Supprimer le dossier ? Les messages qui s'y trouvent seront déplacés vers \"Non archivés\".",
 			"searchEmpty": "Aucune collection correspondante",
 			"folderEmpty": "Ce dossier est vide",
@@ -4004,7 +4077,10 @@
 			"emptyHint": "Rédigez dans le compositeur et cliquez sur « Enregistrer le brouillon » pour reprendre plus tard.",
 			"saved": "Brouillon enregistré",
 			"deleted": "Brouillon supprimé",
-			"delete": "Supprimer le brouillon",
+			"delete": {
+				"title": "Supprimer le brouillon",
+				"aria-label": "Supprimer le brouillon"
+			},
 			"empty": "Le brouillon est vide",
 			"saveFailed": "Échec de l'enregistrement du brouillon : ${error}",
 			"loadFailed": "Échec de l'ouverture du brouillon : ${error}",
@@ -4165,15 +4241,30 @@
 			}
 		},
 		"actions": {
-			"like": "J'aime",
-			"unlike": "Je n'aime plus",
-			"dislike": "Je n'aime pas",
-			"undislike": "Annuler le refus",
+			"like": {
+				"title": "J'aime",
+				"aria-label": "J'aime"
+			},
+			"unlike": {
+				"title": "Je n'aime plus",
+				"aria-label": "Je n'aime plus"
+			},
+			"dislike": {
+				"title": "Je n'aime pas",
+				"aria-label": "Je n'aime pas"
+			},
+			"undislike": {
+				"title": "Retirer le dislike",
+				"aria-label": "Retirer le dislike"
+			},
 			"repost": "Republier",
 			"quote": "Citation",
 			"delete": "Supprimer",
 			"edit": "Modifier",
-			"save": "Enregistrer",
+			"save": {
+				"title": "Enregistrer",
+				"aria-label": "Enregistrer"
+			},
 			"saved": "Enregistré",
 			"translate": "Traduire",
 			"dm": "Envoyer un message privé",
@@ -4289,9 +4380,6 @@
 			"quoting": "Citation",
 			"clear": "Retirer la citation",
 			"viewOriginal": "Afficher le message original"
-		},
-		"translate": {
-			"label": "Traduction :"
 		},
 		"time": {
 			"justNow": "À l'instant",
@@ -5249,7 +5337,8 @@
 			"confirm": "Confirmer",
 			"close": "Fermer",
 			"translate": {
-				"showOriginal": "Afficher le texte original",
+				"label": "Traduction :",
+				"showOriginal": "Afficher l'original",
 				"showTranslation": "Afficher la traduction"
 			}
 		},

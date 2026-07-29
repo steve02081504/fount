@@ -211,14 +211,7 @@ export function refreshMediaPreview() {
 			onEditImage: async (index, ref) => {
 				const source = ref.file
 				if (!(source instanceof Blob)) return
-				const edited = await openImageEditor(source, {
-					title: geti18n('social.composer.editImage'),
-					cropLabel: geti18n('social.composer.editCrop'),
-					mosaicLabel: geti18n('social.composer.editMosaic'),
-					brushLabel: geti18n('social.composer.editBrush'),
-					applyLabel: geti18n('social.composer.editApply'),
-					cancelLabel: geti18n('social.composer.editCancel'),
-				})
+				const edited = await openImageEditor(source)
 				if (!edited) return
 				if (ref.objectUrl) URL.revokeObjectURL(ref.objectUrl)
 				state.pendingMediaRefs[index] = {

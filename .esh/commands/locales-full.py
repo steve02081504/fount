@@ -47,11 +47,7 @@ def _is_lang_block(data: dict) -> bool:
 
 
 def find_part_locales_json(root: Path) -> list[str]:
-    return [
-        str(p.relative_to(root)).replace("\\", "/")
-        for p in root.rglob(LOCALES_FILENAME)
-        if not any(part in IGNORE_DIRS for part in p.parts)
-    ]
+    return [str(p.relative_to(root)).replace("\\", "/") for p in root.rglob(LOCALES_FILENAME) if not any(part in IGNORE_DIRS for part in p.parts)]
 
 
 def load_json(path: Path) -> dict:

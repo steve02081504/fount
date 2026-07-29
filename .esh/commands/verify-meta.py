@@ -26,9 +26,18 @@ REQUIRED_TAGS = [
 ]
 
 # ARIA in HTML：aside 允许的显式 role（含原生隐式 complementary）
-ASIDE_ALLOWED_ROLES = frozenset({
-	"complementary", "feed", "none", "note", "presentation", "region", "search", "status",
-})
+ASIDE_ALLOWED_ROLES = frozenset(
+	{
+		"complementary",
+		"feed",
+		"none",
+		"note",
+		"presentation",
+		"region",
+		"search",
+		"status",
+	}
+)
 
 # --- 脚本主体 ---
 

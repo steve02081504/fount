@@ -8,26 +8,28 @@ import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 import { svgInliner } from './scripts/lib/svgInliner.mjs'
 
 let skipBreadcrumb = false
-if (!globalThis.fount?.test?.enabled) try { Sentry.init({
-	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
-	/**
-	 * 在 Sentry 捕获面包屑事件之前进行处理。
-	 * @param {object} breadcrumb - 面包屑对象。
-	 * @param {object} hint - 提示对象。
-	 * @returns {object | null} 修改后的面包屑，或返回 null 以丢弃它。
-	 */
-	beforeBreadcrumb: (breadcrumb, hint) => {
-		if (skipBreadcrumb) return null
-		return breadcrumb
-	},
-	sendDefaultPii: true,
-	integrations: [
-		Sentry.browserTracingIntegration()
-	],
-	// Performance Monitoring
-	tracesSampleRate: 1.0,
-	tracePropagationTargets: [window.location.origin || 'https://steve02081504.github.io'],
-})} catch (error) { console.error(error) }
+if (!globalThis.fount?.test?.enabled) try {
+	Sentry.init({
+		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
+		/**
+		 * 在 Sentry 捕获面包屑事件之前进行处理。
+		 * @param {object} breadcrumb - 面包屑对象。
+		 * @param {object} hint - 提示对象。
+		 * @returns {object | null} 修改后的面包屑，或返回 null 以丢弃它。
+		 */
+		beforeBreadcrumb: (breadcrumb, hint) => {
+			if (skipBreadcrumb) return null
+			return breadcrumb
+		},
+		sendDefaultPii: true,
+		integrations: [
+			Sentry.browserTracingIntegration()
+		],
+		// Performance Monitoring
+		tracesSampleRate: 1.0,
+		tracePropagationTargets: [window.location.origin || 'https://steve02081504.github.io'],
+	})
+} catch (error) { console.error(error) }
 console.noBreadcrumb = {
 	/**
 	 * 写入日志并跳过面包屑记录

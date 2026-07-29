@@ -30,7 +30,6 @@ update_locale_data @restructure.py
 """
 
 
-
 def split_key(key):
 	if key is None or key == "":
 		return []
@@ -240,14 +239,17 @@ def process_locale_files(script_to_run):
 				def order(parent, *sibling_keys):
 					order_nested_keys(data, parent, *sibling_keys)
 
-				exec(script_to_run, {
-					"get": get,
-					"has": has,
-					"keys": keys,
-					"set": set,
-					"move": move,
-					"order": order,
-				})
+				exec(
+					script_to_run,
+					{
+						"get": get,
+						"has": has,
+						"keys": keys,
+						"set": set,
+						"move": move,
+						"order": order,
+					},
+				)
 
 				updated_content = json.dumps(data, indent="\t", ensure_ascii=False)
 				with open(file_path, "w", encoding="utf-8", newline="\n") as f:

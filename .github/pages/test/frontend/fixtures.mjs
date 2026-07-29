@@ -2,7 +2,7 @@
  * GitHub Pages 静态站 Playwright fixture（无登录、无 fount 节点）。
  */
 import { test as base, expect } from '@playwright/test'
-import { createBrowserDiagnostics, waitForTestWatchCycle } from 'fount/scripts/test/playwright/browser_diagnostics.mjs'
+import { createBrowserDiagnostics, waitForLocaleCycle } from 'fount/scripts/test/playwright/browser_diagnostics.mjs'
 import { requireTestBaseUrl } from 'fount/scripts/test/playwright/env.mjs'
 
 /**
@@ -67,10 +67,8 @@ export function createPagesFixtures(options = {}) {
 			const page = await context.newPage()
 			diagnostics.attach(page)
 			await use(page)
-			let since = Date.now()
-			await waitForTestWatchCycle(page, since).catch(() => { /* 未挂载 test_watch 则跳过 */ })
-			since = Date.now()
-			await waitForTestWatchCycle(page, since).catch(() => {})
+			// 收尾：中日英脚本检查 + 每语种一轮 a11y；未挂载 test_watch 则跳过
+			await waitForLocaleCycle(page).catch(() => { /* 未挂载 test_watch 则跳过 */ })
 			diagnostics.flushNetworkDiagnostics()
 			expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
 			expect(diagnostics.testWatchErrors, 'unexpected test_watch console output').toEqual([])

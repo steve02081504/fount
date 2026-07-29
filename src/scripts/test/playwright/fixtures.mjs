@@ -3,7 +3,7 @@ import { test as base, expect, request } from '@playwright/test'
 import { ms } from '../../ms.mjs'
 
 import { loginWithApiKey } from './auth.mjs'
-import { createBrowserDiagnostics, waitForTestWatchCycle } from './browser_diagnostics.mjs'
+import { createBrowserDiagnostics, waitForLocaleCycle } from './browser_diagnostics.mjs'
 import { requireTestBaseUrl } from './env.mjs'
 import { assertIsolatedFrontendTest } from './guards.mjs'
 
@@ -77,11 +77,8 @@ export function createFountFixtures(options = {}) {
 			const page = await context.newPage()
 			diagnostics.attach(page)
 			await use(page)
-			// 测试体结束后 kick 两轮 test_watch（确认命中）；未挂载则超时跳过
-			let since = Date.now()
-			await waitForTestWatchCycle(page, since).catch(() => { /* 未挂载 test_watch 则跳过 */ })
-			since = Date.now()
-			await waitForTestWatchCycle(page, since).catch(() => { })
+			// 收尾：中日英脚本检查 + 每语种一轮 a11y；未挂载 test_watch 则跳过
+			await waitForLocaleCycle(page).catch(() => { /* 未挂载 test_watch 则跳过 */ })
 			diagnostics.flushNetworkDiagnostics()
 			expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
 			expect(diagnostics.testWatchErrors, 'unexpected test_watch console output').toEqual([])
