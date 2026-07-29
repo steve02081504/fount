@@ -915,10 +915,20 @@ export type LocaleData = {
 		emoji: {
 			pickerTitle: {
 				'aria-label': string
+				textContent: string
 			}
-			recent: string
-			jumpToStart: string
-			jumpToUnicode: string
+			recent: {
+				title: string
+				'aria-label': string
+			}
+			jumpToStart: {
+				title: string
+				'aria-label': string
+			}
+			jumpToUnicode: {
+				title: string
+				'aria-label': string
+			}
 			discoverPacks: string
 			categoryFace: string
 			categoryGesture: string
@@ -956,33 +966,39 @@ export type LocaleData = {
 		unicodeEmojiGroups: {
 			Smileys_and_Emotion: {
 				title: string
+				'aria-label': string
 			}
 			People_and_Body: {
 				title: string
+				'aria-label': string
 			}
 			Animals_and_Nature: {
 				title: string
+				'aria-label': string
 			}
 			Food_and_Drink: {
 				title: string
+				'aria-label': string
 			}
 			Travel_and_Places: {
 				title: string
+				'aria-label': string
 			}
 			Activities: {
 				title: string
+				'aria-label': string
 			}
 			Objects: {
 				title: string
+				'aria-label': string
 			}
 			Symbols: {
 				title: string
+				'aria-label': string
 			}
 			Flags: {
 				title: string
-			}
-			Component: {
-				title: string
+				'aria-label': string
 			}
 		}
 		sessionSettings: {
@@ -1828,7 +1844,9 @@ export type LocaleData = {
 				invisible: string
 				offline: string
 			}
-			changeStatusTitle: string
+			changeStatusTitle: {
+				'aria-label': string
+			}
 			aboutSection: string
 			bioEmpty: string
 			statusOffline: {

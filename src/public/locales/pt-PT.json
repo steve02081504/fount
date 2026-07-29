@@ -949,10 +949,22 @@
 			"multipleMembers": "Vários membros estão a escrever..."
 		},
 		"emoji": {
-			"pickerTitle": "Selecione o emoticon",
-			"recent": "Usados recentemente",
-			"jumpToStart": "Voltar ao início",
-			"jumpToUnicode": "Ir para Unicode",
+			"pickerTitle": {
+				"aria-label": "Selecione o emoticon",
+				"textContent": "Selecione o emoticon"
+			},
+			"recent": {
+				"title": "Usados recentemente",
+				"aria-label": "Usados recentemente"
+			},
+			"jumpToStart": {
+				"title": "Voltar ao início",
+				"aria-label": "Voltar ao início"
+			},
+			"jumpToUnicode": {
+				"title": "Ir para Unicode",
+				"aria-label": "Ir para Unicode"
+			},
 			"discoverPacks": "Explorar packs de emoji →",
 			"categoryFace": "Expressão",
 			"categoryGesture": "Gesto",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "Rostos sorridentes e emoções"
+				"title": "Rostos sorridentes e emoções",
+				"aria-label": "Rostos sorridentes e emoções"
 			},
 			"People_and_Body": {
-				"title": "Figuras e corpos"
+				"title": "Figuras e corpos",
+				"aria-label": "Figuras e corpos"
 			},
 			"Animals_and_Nature": {
-				"title": "Animais e natureza"
+				"title": "Animais e natureza",
+				"aria-label": "Animais e natureza"
 			},
 			"Food_and_Drink": {
-				"title": "Comida e bebida"
+				"title": "Comida e bebida",
+				"aria-label": "Comida e bebida"
 			},
 			"Travel_and_Places": {
-				"title": "Viagens e lugares"
+				"title": "Viagens e lugares",
+				"aria-label": "Viagens e lugares"
 			},
 			"Activities": {
-				"title": "Atividade"
+				"title": "Atividade",
+				"aria-label": "Atividade"
 			},
 			"Objects": {
-				"title": "Coisa"
+				"title": "Coisa",
+				"aria-label": "Coisa"
 			},
 			"Symbols": {
-				"title": "Símbolo"
+				"title": "Símbolo",
+				"aria-label": "Símbolo"
 			},
 			"Flags": {
-				"title": "Bandeira"
-			},
-			"Component": {
-				"title": "Componentes"
+				"title": "Bandeira",
+				"aria-label": "Bandeira"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "Furtivo",
 				"offline": "Off-line"
 			},
-			"changeStatusTitle": "Mudar status",
+			"changeStatusTitle": {
+				"aria-label": "Mudar status"
+			},
 			"aboutSection": "Sobre",
 			"bioEmpty": "Este utilizador ainda não possui um perfil.",
 			"statusOffline": {
@@ -3909,13 +3929,48 @@
 			},
 			"visibility": {
 				"label": "Alcance visível",
-				"public": "Público",
-				"unlisted": "Não listado publicamente",
-				"followers": "Apenas seguidores",
-				"followers7d": "Visível após seguir por 7 dias",
-				"followers30d": "Visível após seguir por 30 dias",
-				"selected": "Visível para pessoas específicas",
-				"private": "Visível apenas para",
+				"public": {
+					"title": "Público",
+					"aria-label": "Público",
+					"label": "Público",
+					"textContent": "Público"
+				},
+				"unlisted": {
+					"title": "Não listado publicamente",
+					"aria-label": "Não listado publicamente",
+					"label": "Não listado publicamente",
+					"textContent": "Não listado publicamente"
+				},
+				"followers": {
+					"title": "Apenas seguidores",
+					"aria-label": "Apenas seguidores",
+					"label": "Apenas seguidores",
+					"textContent": "Apenas seguidores"
+				},
+				"followers7d": {
+					"title": "Visível após seguir por 7 dias",
+					"aria-label": "Visível após seguir por 7 dias",
+					"label": "Visível após seguir por 7 dias",
+					"textContent": "Visível após seguir por 7 dias"
+				},
+				"followers30d": {
+					"title": "Visível após seguir por 30 dias",
+					"aria-label": "Visível após seguir por 30 dias",
+					"label": "Visível após seguir por 30 dias",
+					"textContent": "Visível após seguir por 30 dias"
+				},
+				"selected": {
+					"title": "Visível para pessoas específicas",
+					"aria-label": "Visível para pessoas específicas",
+					"label": "Visível para pessoas específicas",
+					"textContent": "Visível para pessoas específicas"
+				},
+				"private": {
+					"title": "Visível apenas para",
+					"aria-label": "Visível apenas para",
+					"label": "Visível apenas para",
+					"textContent": "Visível apenas para"
+				},
 				"allowLabel": "Pessoas visíveis",
 				"exceptLabel": "Eliminar pessoas",
 				"allow": {
@@ -3987,10 +4042,19 @@
 			"folderSelect": "Pasta favorita",
 			"confirm": "Confirmar",
 			"cancel": "Cancelar",
-			"remove": "Remover from saved",
-			"renameFolder": "Renomear",
+			"remove": {
+				"title": "Remover from saved",
+				"aria-label": "Remover from saved"
+			},
+			"renameFolder": {
+				"title": "Renomear",
+				"aria-label": "Renomear"
+			},
 			"renameFolderPrompt": "Novo nome de pasta",
-			"deleteFolder": "Eliminar folder",
+			"deleteFolder": {
+				"title": "Eliminar folder",
+				"aria-label": "Eliminar folder"
+			},
 			"deleteFolderConfirm": "Eliminar esta pasta? As publicações serão movidas para Não arquivado.",
 			"searchEmpty": "Nenhuma coleção correspondente",
 			"folderEmpty": "Esta pasta está vazia",
@@ -4004,7 +4068,10 @@
 			"emptyHint": "Escreva algum conteúdo na caixa de postagem e clique em \"Guardar rascunho\" para continuar editando na próxima vez",
 			"saved": "Rascunho salvo",
 			"deleted": "Rascunho eliminado",
-			"delete": "Eliminar draft",
+			"delete": {
+				"title": "Eliminar draft",
+				"aria-label": "Eliminar draft"
+			},
 			"empty": "O rascunho está vazio",
 			"saveFailed": "Falha ao save draft: ${error}",
 			"loadFailed": "Falha ao open draft: ${error}",
@@ -4165,15 +4232,30 @@
 			}
 		},
 		"actions": {
-			"like": "Gostos",
-			"unlike": "Diferente",
-			"dislike": "Pisar",
-			"undislike": "Cancelar antipatia",
+			"like": {
+				"title": "Gostos",
+				"aria-label": "Gostos"
+			},
+			"unlike": {
+				"title": "Diferente",
+				"aria-label": "Diferente"
+			},
+			"dislike": {
+				"title": "Pisar",
+				"aria-label": "Pisar"
+			},
+			"undislike": {
+				"title": "Cancelar antipatia",
+				"aria-label": "Cancelar antipatia"
+			},
 			"repost": "Avançar",
 			"quote": "Citar",
 			"delete": "Eliminar",
 			"edit": "Editar",
-			"save": "Guardar",
+			"save": {
+				"title": "Guardar",
+				"aria-label": "Guardar"
+			},
 			"saved": "Guardados",
 			"translate": "Traduzir",
 			"dm": "Enviar mensagem privada",

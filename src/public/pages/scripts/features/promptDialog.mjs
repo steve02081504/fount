@@ -1,5 +1,6 @@
 /**
  * 共享 DaisyUI 文本输入 / 确认对话框（替代 window.prompt / window.confirm）。
+ * 标题 / 确认文案一律走 i18n key（data-i18n），随语言轮换；勿传入已翻译字符串。
  */
 import { escapeHtml } from '../lib/escapeHtml.mjs'
 
@@ -22,15 +23,29 @@ function withSharedTemplates(fn) {
 }
 
 /**
- * @param {string} title 对话框标题
+ * @param {Record<string, string | number>} [params] i18n 插值（写入 data-*）
+ * @returns {string} 属性串
+ */
+function i18nParamAttrs(params = {}) {
+	return Object.entries(params)
+		.map(([key, value]) => ` data-${escapeHtml(key)}="${escapeHtml(String(value))}"`)
+		.join('')
+}
+
+/**
+ * @param {string} i18nKey 标题 i18n 键
  * @param {string} [value=''] 初始输入
+ * @param {Record<string, string | number>} [params] 标题插值
  * @returns {Promise<string | null>} 用户输入；取消为 null
  */
-export function promptText(title, value = '') {
+export function promptText(i18nKey, value = '', params = {}) {
+	const key = String(i18nKey || '').trim()
+	if (!key) throw new Error('promptText requires i18n key')
 	return withSharedTemplates(() => pickFromDialog('text_prompt_modal', {
-		title,
+		titleI18n: key,
+		titleParamsAttrs: i18nParamAttrs(params),
 		boxClass: '',
-		bodyHtml: `<input type="text" class="input input-bordered w-full" id="promptInput" aria-label="${escapeHtml(title)}" value="${escapeHtml(value)}" autofocus />`,
+		bodyHtml: `<input type="text" class="input input-bordered w-full" id="promptInput" aria-labelledby="promptDialogTitle" value="${escapeHtml(value)}" autofocus user-content />`,
 		actionsHtml: CANCEL_OK,
 	}, {
 		/**
@@ -45,15 +60,19 @@ export function promptText(title, value = '') {
 }
 
 /**
- * @param {string} title 标题
+ * @param {string} i18nKey 标题 i18n 键
  * @param {string} [value=''] 初始值
+ * @param {Record<string, string | number>} [params] 标题插值
  * @returns {Promise<string | null>} 输入或取消
  */
-export function promptTextArea(title, value = '') {
+export function promptTextArea(i18nKey, value = '', params = {}) {
+	const key = String(i18nKey || '').trim()
+	if (!key) throw new Error('promptTextArea requires i18n key')
 	return withSharedTemplates(() => pickFromDialog('text_prompt_modal', {
-		title,
+		titleI18n: key,
+		titleParamsAttrs: i18nParamAttrs(params),
 		boxClass: '',
-		bodyHtml: `<textarea class="textarea textarea-bordered w-full min-h-32" id="promptInput" aria-label="${escapeHtml(title)}" maxlength="2000" rows="6" autofocus>${escapeHtml(value)}</textarea>`,
+		bodyHtml: `<textarea class="textarea textarea-bordered w-full min-h-32" id="promptInput" aria-labelledby="promptDialogTitle" maxlength="2000" rows="6" autofocus user-content>${escapeHtml(value)}</textarea>`,
 		actionsHtml: CANCEL_OK,
 	}, {
 		/**
@@ -68,9 +87,15 @@ export function promptTextArea(title, value = '') {
 }
 
 /**
- * @param {string} message 确认文案
+ * @param {string} i18nKey 确认文案 i18n 键
+ * @param {Record<string, string | number>} [params] 插值
  * @returns {Promise<boolean>} 用户确认
  */
-export async function confirmAction(message) {
-	return await withSharedTemplates(() => pickFromDialog('confirm_modal', { message })) === 'ok'
+export async function confirmAction(i18nKey, params = {}) {
+	const key = String(i18nKey || '').trim()
+	if (!key) throw new Error('confirmAction requires i18n key')
+	return await withSharedTemplates(() => pickFromDialog('confirm_modal', {
+		messageI18n: key,
+		messageParamsAttrs: i18nParamAttrs(params),
+	})) === 'ok'
 }

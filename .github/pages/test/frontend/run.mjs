@@ -51,8 +51,11 @@ try {
 		},
 		playwrightArgs: process.argv.slice(2),
 	})
+	// 给 orchestrator idle watchdog 一条收尾心跳（Playwright 摘要后仍可能卡在关服）
+	process.stdout.write(`[pages] playwright exited code=${process.exitCode}\n`)
 }
 finally {
-	if (server) await server.close().catch(() => {})
-	if (releaseAll) await releaseAll().catch(() => {})
+	if (server) await server.close().catch(() => { })
+	process.stdout.write('[pages] server closed\n')
+	if (releaseAll) await releaseAll().catch(() => { })
 }

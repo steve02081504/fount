@@ -10,7 +10,7 @@ inputs:
   deno-clean-entrypoints:
     description: Newline-separated extra entrypoints for deno clean --except
     required: false
-    default: ''
+    default: ""
 runs:
   using: composite
   steps:

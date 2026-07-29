@@ -949,10 +949,22 @@
 			"multipleMembers": "अनेक सदस्य टाइप कर रहे हैं..."
 		},
 		"emoji": {
-			"pickerTitle": "इमोटिकॉन चुनें",
-			"recent": "हाल ही में इस्तेमाल",
-			"jumpToStart": "शुरुआत पर जाएँ",
-			"jumpToUnicode": "Unicode पर जाएँ",
+			"pickerTitle": {
+				"aria-label": "इमोटिकॉन चुनें",
+				"textContent": "इमोटिकॉन चुनें"
+			},
+			"recent": {
+				"title": "हाल ही में इस्तेमाल",
+				"aria-label": "हाल ही में इस्तेमाल"
+			},
+			"jumpToStart": {
+				"title": "शुरुआत पर जाएँ",
+				"aria-label": "शुरुआत पर जाएँ"
+			},
+			"jumpToUnicode": {
+				"title": "Unicode पर जाएँ",
+				"aria-label": "Unicode पर जाएँ"
+			},
 			"discoverPacks": "इमोजी पैक देखें →",
 			"categoryFace": "इमोजी",
 			"categoryGesture": "हावभाव",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "मुस्कुराते चेहरे और भावनाएं"
+				"title": "मुस्कुराते चेहरे और भावनाएं",
+				"aria-label": "मुस्कुराते चेहरे और भावनाएं"
 			},
 			"People_and_Body": {
-				"title": "आँकड़े और शरीर"
+				"title": "आँकड़े और शरीर",
+				"aria-label": "आँकड़े और शरीर"
 			},
 			"Animals_and_Nature": {
-				"title": "जानवर और प्रकृति"
+				"title": "जानवर और प्रकृति",
+				"aria-label": "जानवर और प्रकृति"
 			},
 			"Food_and_Drink": {
-				"title": "खाद्य और पेय"
+				"title": "खाद्य और पेय",
+				"aria-label": "खाद्य और पेय"
 			},
 			"Travel_and_Places": {
-				"title": "यात्रा और स्थान"
+				"title": "यात्रा और स्थान",
+				"aria-label": "यात्रा और स्थान"
 			},
 			"Activities": {
-				"title": "गतिविधि"
+				"title": "गतिविधि",
+				"aria-label": "गतिविधि"
 			},
 			"Objects": {
-				"title": "वस्तुएँ"
+				"title": "वस्तुएँ",
+				"aria-label": "वस्तुएँ"
 			},
 			"Symbols": {
-				"title": "प्रतीक"
+				"title": "प्रतीक",
+				"aria-label": "प्रतीक"
 			},
 			"Flags": {
-				"title": "झंडे"
-			},
-			"Component": {
-				"title": "घटक"
+				"title": "झंडे",
+				"aria-label": "झंडे"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "चुपके से",
 				"offline": "ऑफ़लाइन"
 			},
-			"changeStatusTitle": "स्थिति बदलें",
+			"changeStatusTitle": {
+				"aria-label": "स्थिति बदलें"
+			},
 			"aboutSection": "के बारे में",
 			"bioEmpty": "इस उपयोगकर्ता के पास अभी तक कोई प्रोफ़ाइल नहीं है.",
 			"statusOffline": {
@@ -3909,13 +3929,48 @@
 			},
 			"visibility": {
 				"label": "दृश्यमान सीमा",
-				"public": "सार्वजनिक",
-				"unlisted": "सार्वजनिक रूप से सूचीबद्ध नहीं",
-				"followers": "केवल फ़ॉलोअर्स",
-				"followers7d": "7 दिन तक फॉलो करने के बाद दिखाई देगा",
-				"followers30d": "30 दिन तक फॉलो करने के बाद दिखेगा",
-				"selected": "निर्दिष्ट लोगों के लिए दृश्यमान",
-				"private": "केवल अपने आप को दिखाई देता है",
+				"public": {
+					"title": "सार्वजनिक",
+					"aria-label": "सार्वजनिक",
+					"label": "सार्वजनिक",
+					"textContent": "सार्वजनिक"
+				},
+				"unlisted": {
+					"title": "सार्वजनिक रूप से सूचीबद्ध नहीं",
+					"aria-label": "सार्वजनिक रूप से सूचीबद्ध नहीं",
+					"label": "सार्वजनिक रूप से सूचीबद्ध नहीं",
+					"textContent": "सार्वजनिक रूप से सूचीबद्ध नहीं"
+				},
+				"followers": {
+					"title": "केवल फ़ॉलोअर्स",
+					"aria-label": "केवल फ़ॉलोअर्स",
+					"label": "केवल फ़ॉलोअर्स",
+					"textContent": "केवल फ़ॉलोअर्स"
+				},
+				"followers7d": {
+					"title": "7 दिन तक फॉलो करने के बाद दिखाई देगा",
+					"aria-label": "7 दिन तक फॉलो करने के बाद दिखाई देगा",
+					"label": "7 दिन तक फॉलो करने के बाद दिखाई देगा",
+					"textContent": "7 दिन तक फॉलो करने के बाद दिखाई देगा"
+				},
+				"followers30d": {
+					"title": "30 दिन तक फॉलो करने के बाद दिखेगा",
+					"aria-label": "30 दिन तक फॉलो करने के बाद दिखेगा",
+					"label": "30 दिन तक फॉलो करने के बाद दिखेगा",
+					"textContent": "30 दिन तक फॉलो करने के बाद दिखेगा"
+				},
+				"selected": {
+					"title": "निर्दिष्ट लोगों के लिए दृश्यमान",
+					"aria-label": "निर्दिष्ट लोगों के लिए दृश्यमान",
+					"label": "निर्दिष्ट लोगों के लिए दृश्यमान",
+					"textContent": "निर्दिष्ट लोगों के लिए दृश्यमान"
+				},
+				"private": {
+					"title": "केवल अपने आप को दिखाई देता है",
+					"aria-label": "केवल अपने आप को दिखाई देता है",
+					"label": "केवल अपने आप को दिखाई देता है",
+					"textContent": "केवल अपने आप को दिखाई देता है"
+				},
 				"allowLabel": "दर्शनीय लोग",
 				"exceptLabel": "लोगों को बाहर करें",
 				"allow": {
@@ -3987,10 +4042,19 @@
 			"folderSelect": "पसंदीदा फ़ोल्डर",
 			"confirm": "पुष्टि करें",
 			"cancel": "रद्द करें",
-			"remove": "सेव हटाएँ",
-			"renameFolder": "नाम बदलें",
+			"remove": {
+				"title": "सेव हटाएँ",
+				"aria-label": "सेव हटाएँ"
+			},
+			"renameFolder": {
+				"title": "नाम बदलें",
+				"aria-label": "नाम बदलें"
+			},
 			"renameFolderPrompt": "नये फ़ोल्डर का नाम",
-			"deleteFolder": "फ़ोल्डर हटाएँ",
+			"deleteFolder": {
+				"title": "फ़ोल्डर हटाएँ",
+				"aria-label": "फ़ोल्डर हटाएँ"
+			},
 			"deleteFolderConfirm": "फ़ोल्डर हटाएं? वहां मौजूद पोस्टों को \"अनआर्काइव्ड\" में ले जाया जाएगा।",
 			"searchEmpty": "कोई मिलान वाला संग्रह नहीं",
 			"folderEmpty": "यह फ़ोल्डर खाली है",
@@ -4004,7 +4068,10 @@
 			"emptyHint": "पोस्ट बॉक्स में कुछ सामग्री लिखें और अगली बार संपादन जारी रखने के लिए \"ड्राफ़्ट सहेजें\" पर क्लिक करें",
 			"saved": "ड्राफ्ट सहेजा गया",
 			"deleted": "ड्राफ्ट हटा दिया गया",
-			"delete": "ड्राफ्ट हटाएं",
+			"delete": {
+				"title": "ड्राफ्ट हटाएं",
+				"aria-label": "ड्राफ्ट हटाएं"
+			},
 			"empty": "ड्राफ्ट खाली है",
 			"saveFailed": "ड्राफ्ट सहेजने में विफल: ${error}",
 			"loadFailed": "ड्राफ्ट खोलने में विफल: ${error}",
@@ -4165,15 +4232,30 @@
 			}
 		},
 		"actions": {
-			"like": "लाइक",
-			"unlike": "लाइक हटाएँ",
-			"dislike": "डिसलाइक",
-			"undislike": "डिसलाइक हटाएँ",
+			"like": {
+				"title": "लाइक",
+				"aria-label": "लाइक"
+			},
+			"unlike": {
+				"title": "लाइक हटाएँ",
+				"aria-label": "लाइक हटाएँ"
+			},
+			"dislike": {
+				"title": "डिसलाइक",
+				"aria-label": "डिसलाइक"
+			},
+			"undislike": {
+				"title": "डिसलाइक हटाएँ",
+				"aria-label": "डिसलाइक हटाएँ"
+			},
 			"repost": "रीपोस्ट",
 			"quote": "कोट",
 			"delete": "हटाएँ",
 			"edit": "संपादित करें",
-			"save": "सेव करें",
+			"save": {
+				"title": "सेव करें",
+				"aria-label": "सेव करें"
+			},
 			"saved": "सेव किया",
 			"translate": "अनुवाद",
 			"dm": "निजी संदेश भेजें",

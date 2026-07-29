@@ -949,10 +949,22 @@
 			"multipleMembers": "Несколько участников печатают..."
 		},
 		"emoji": {
-			"pickerTitle": "Выбрать эмодзи",
-			"recent": "Недавние",
-			"jumpToStart": "К началу",
-			"jumpToUnicode": "К Unicode",
+			"pickerTitle": {
+				"aria-label": "Выбрать эмодзи",
+				"textContent": "Выбрать эмодзи"
+			},
+			"recent": {
+				"title": "Недавние",
+				"aria-label": "Недавние"
+			},
+			"jumpToStart": {
+				"title": "К началу",
+				"aria-label": "К началу"
+			},
+			"jumpToUnicode": {
+				"title": "К Unicode",
+				"aria-label": "К Unicode"
+			},
 			"discoverPacks": "Наборы эмодзи →",
 			"categoryFace": "Эмодзи",
 			"categoryGesture": "Жесты",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "Смайлы и эмоции"
+				"title": "Смайлы и эмоции",
+				"aria-label": "Смайлы и эмоции"
 			},
 			"People_and_Body": {
-				"title": "Люди и тело"
+				"title": "Люди и тело",
+				"aria-label": "Люди и тело"
 			},
 			"Animals_and_Nature": {
-				"title": "Животные и природа"
+				"title": "Животные и природа",
+				"aria-label": "Животные и природа"
 			},
 			"Food_and_Drink": {
-				"title": "Еда и напитки"
+				"title": "Еда и напитки",
+				"aria-label": "Еда и напитки"
 			},
 			"Travel_and_Places": {
-				"title": "Путешествия и места"
+				"title": "Путешествия и места",
+				"aria-label": "Путешествия и места"
 			},
 			"Activities": {
-				"title": "Активности"
+				"title": "Активности",
+				"aria-label": "Активности"
 			},
 			"Objects": {
-				"title": "Предметы"
+				"title": "Предметы",
+				"aria-label": "Предметы"
 			},
 			"Symbols": {
-				"title": "Символы"
+				"title": "Символы",
+				"aria-label": "Символы"
 			},
 			"Flags": {
-				"title": "Флаги"
-			},
-			"Component": {
-				"title": "Компоненты"
+				"title": "Флаги",
+				"aria-label": "Флаги"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "Невидимка",
 				"offline": "Не в сети"
 			},
-			"changeStatusTitle": "Сменить статус",
+			"changeStatusTitle": {
+				"aria-label": "Сменить статус"
+			},
 			"aboutSection": "О приложении",
 			"bioEmpty": "У этого пользователя пока нет описания.",
 			"statusOffline": {
@@ -3909,13 +3929,48 @@
 			},
 			"visibility": {
 				"label": "Область видимости",
-				"public": "Публичный",
-				"unlisted": "Не в публичном списке",
-				"followers": "Только подписчики",
-				"followers7d": "Видно после подписки в течение 7 дней",
-				"followers30d": "Видно после подписки в течение 30 дней",
-				"selected": "Для выбранных людей",
-				"private": "Только для меня",
+				"public": {
+					"title": "Публичный",
+					"aria-label": "Публичный",
+					"label": "Публичный",
+					"textContent": "Публичный"
+				},
+				"unlisted": {
+					"title": "Не в публичном списке",
+					"aria-label": "Не в публичном списке",
+					"label": "Не в публичном списке",
+					"textContent": "Не в публичном списке"
+				},
+				"followers": {
+					"title": "Только подписчики",
+					"aria-label": "Только подписчики",
+					"label": "Только подписчики",
+					"textContent": "Только подписчики"
+				},
+				"followers7d": {
+					"title": "Видно после подписки в течение 7 дней",
+					"aria-label": "Видно после подписки в течение 7 дней",
+					"label": "Видно после подписки в течение 7 дней",
+					"textContent": "Видно после подписки в течение 7 дней"
+				},
+				"followers30d": {
+					"title": "Видно после подписки в течение 30 дней",
+					"aria-label": "Видно после подписки в течение 30 дней",
+					"label": "Видно после подписки в течение 30 дней",
+					"textContent": "Видно после подписки в течение 30 дней"
+				},
+				"selected": {
+					"title": "Для выбранных людей",
+					"aria-label": "Для выбранных людей",
+					"label": "Для выбранных людей",
+					"textContent": "Для выбранных людей"
+				},
+				"private": {
+					"title": "Только для меня",
+					"aria-label": "Только для меня",
+					"label": "Только для меня",
+					"textContent": "Только для меня"
+				},
 				"allowLabel": "Кому видно",
 				"exceptLabel": "Исключить",
 				"allow": {
@@ -3987,10 +4042,19 @@
 			"folderSelect": "любимая папка",
 			"confirm": "Подтвердить",
 			"cancel": "Отмена",
-			"remove": "Удалить избранное",
-			"renameFolder": "Переименовать",
+			"remove": {
+				"title": "Удалить избранное",
+				"aria-label": "Удалить избранное"
+			},
+			"renameFolder": {
+				"title": "Переименовать",
+				"aria-label": "Переименовать"
+			},
 			"renameFolderPrompt": "Новое имя папки",
-			"deleteFolder": "удалить папку",
+			"deleteFolder": {
+				"title": "удалить папку",
+				"aria-label": "удалить папку"
+			},
 			"deleteFolderConfirm": "Удалить папку? Сообщения там будут перенесены в «Разархивированные».",
 			"searchEmpty": "Нет подходящей коллекции",
 			"folderEmpty": "Эта папка пуста",
@@ -4004,7 +4068,10 @@
 			"emptyHint": "Напишите текст в почтовом ящике и нажмите «Сохранить черновик», чтобы продолжить редактирование в следующий раз.",
 			"saved": "Черновик сохранен.",
 			"deleted": "Черновик удален.",
-			"delete": "Удалить черновик",
+			"delete": {
+				"title": "Удалить черновик",
+				"aria-label": "Удалить черновик"
+			},
 			"empty": "Черновик пуст",
 			"saveFailed": "Не удалось сохранить черновик: ${error}",
 			"loadFailed": "Не удалось открыть черновик: ${error}",
@@ -4165,15 +4232,30 @@
 			}
 		},
 		"actions": {
-			"like": "Нравится",
-			"unlike": "Убрать лайк",
-			"dislike": "Дизлайк",
-			"undislike": "Убрать дизлайк",
+			"like": {
+				"title": "Нравится",
+				"aria-label": "Нравится"
+			},
+			"unlike": {
+				"title": "Убрать лайк",
+				"aria-label": "Убрать лайк"
+			},
+			"dislike": {
+				"title": "Дизлайк",
+				"aria-label": "Дизлайк"
+			},
+			"undislike": {
+				"title": "Убрать дизлайк",
+				"aria-label": "Убрать дизлайк"
+			},
 			"repost": "Репост",
 			"quote": "Цитата",
 			"delete": "Удалить",
 			"edit": "Редактировать",
-			"save": "В избранное",
+			"save": {
+				"title": "В избранное",
+				"aria-label": "В избранное"
+			},
 			"saved": "В избранном",
 			"translate": "Перевести",
 			"dm": "Написать в ЛС",

@@ -950,11 +950,21 @@
 		},
 		"emoji": {
 			"pickerTitle": {
-				"aria-label": "选择表情"
+				"aria-label": "选择表情",
+				"textContent": "选择表情"
 			},
-			"recent": "最近使用",
-			"jumpToStart": "回到开头",
-			"jumpToUnicode": "跳到 Unicode",
+			"recent": {
+				"title": "最近使用",
+				"aria-label": "最近使用"
+			},
+			"jumpToStart": {
+				"title": "回到开头",
+				"aria-label": "回到开头"
+			},
+			"jumpToUnicode": {
+				"title": "跳到 Unicode",
+				"aria-label": "跳到 Unicode"
+			},
 			"discoverPacks": "探索表情包 →",
 			"categoryFace": "表情",
 			"categoryGesture": "手势",
@@ -991,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "笑脸与情绪"
+				"title": "笑脸与情绪",
+				"aria-label": "笑脸与情绪"
 			},
 			"People_and_Body": {
-				"title": "人物与身体"
+				"title": "人物与身体",
+				"aria-label": "人物与身体"
 			},
 			"Animals_and_Nature": {
-				"title": "动物与自然"
+				"title": "动物与自然",
+				"aria-label": "动物与自然"
 			},
 			"Food_and_Drink": {
-				"title": "食物与饮料"
+				"title": "食物与饮料",
+				"aria-label": "食物与饮料"
 			},
 			"Travel_and_Places": {
-				"title": "旅行与地点"
+				"title": "旅行与地点",
+				"aria-label": "旅行与地点"
 			},
 			"Activities": {
-				"title": "活动"
+				"title": "活动",
+				"aria-label": "活动"
 			},
 			"Objects": {
-				"title": "物品"
+				"title": "物品",
+				"aria-label": "物品"
 			},
 			"Symbols": {
-				"title": "符号"
+				"title": "符号",
+				"aria-label": "符号"
 			},
 			"Flags": {
-				"title": "旗帜"
-			},
-			"Component": {
-				"title": "组件"
+				"title": "旗帜",
+				"aria-label": "旗帜"
 			}
 		},
 		"sessionSettings": {
@@ -1864,7 +1880,9 @@
 				"invisible": "隐身",
 				"offline": "离线"
 			},
-			"changeStatusTitle": "切换状态",
+			"changeStatusTitle": {
+				"aria-label": "切换状态"
+			},
 			"aboutSection": "关于",
 			"bioEmpty": "这位用户还没有简介。",
 			"statusOffline": {
@@ -2452,9 +2470,6 @@
 			"deliveryRead": "已读",
 			"translate": "翻译",
 			"translating": "翻译中…",
-			"translateShowOriginal": "显示原文",
-			"translateShowTranslation": "显示译文",
-			"translateLabel": "译文",
 			"translateFailed": "翻译失败",
 			"editImage": "编辑图片",
 			"draftRestored": "已恢复草稿",
@@ -2813,6 +2828,9 @@
 			"advancedKicker": "按需配置",
 			"advancedSettings": "高级设置",
 			"advancedDescription": "日常使用无需调整。",
+			"cardHost": {
+				"aria-label": "个人资料卡"
+			},
 			"edit": "编辑资料",
 			"save": "保存",
 			"cancel": "取消",
@@ -3917,13 +3935,48 @@
 			},
 			"visibility": {
 				"label": "可见范围",
-				"public": "公开",
-				"unlisted": "不公开列出",
-				"followers": "仅关注者",
-				"followers7d": "关注满 7 天可见",
-				"followers30d": "关注满 30 天可见",
-				"selected": "指定人员可见",
-				"private": "仅自己可见",
+				"public": {
+					"title": "公开",
+					"aria-label": "公开",
+					"label": "公开",
+					"textContent": "公开"
+				},
+				"unlisted": {
+					"title": "不公开列出",
+					"aria-label": "不公开列出",
+					"label": "不公开列出",
+					"textContent": "不公开列出"
+				},
+				"followers": {
+					"title": "仅关注者",
+					"aria-label": "仅关注者",
+					"label": "仅关注者",
+					"textContent": "仅关注者"
+				},
+				"followers7d": {
+					"title": "关注满 7 天可见",
+					"aria-label": "关注满 7 天可见",
+					"label": "关注满 7 天可见",
+					"textContent": "关注满 7 天可见"
+				},
+				"followers30d": {
+					"title": "关注满 30 天可见",
+					"aria-label": "关注满 30 天可见",
+					"label": "关注满 30 天可见",
+					"textContent": "关注满 30 天可见"
+				},
+				"selected": {
+					"title": "指定人员可见",
+					"aria-label": "指定人员可见",
+					"label": "指定人员可见",
+					"textContent": "指定人员可见"
+				},
+				"private": {
+					"title": "仅自己可见",
+					"aria-label": "仅自己可见",
+					"label": "仅自己可见",
+					"textContent": "仅自己可见"
+				},
 				"allowLabel": "可见人员",
 				"exceptLabel": "排除人员",
 				"allow": {
@@ -3959,6 +4012,7 @@
 			"trending": {
 				"title": "热门话题",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} 条帖子"
 				},
 				"empty": "暂无热门话题",
@@ -3997,10 +4051,19 @@
 			},
 			"confirm": "确认",
 			"cancel": "取消",
-			"remove": "移除收藏",
-			"renameFolder": "重命名",
+			"remove": {
+				"title": "移除收藏",
+				"aria-label": "移除收藏"
+			},
+			"renameFolder": {
+				"title": "重命名",
+				"aria-label": "重命名"
+			},
 			"renameFolderPrompt": "新文件夹名称",
-			"deleteFolder": "删除文件夹",
+			"deleteFolder": {
+				"title": "删除文件夹",
+				"aria-label": "删除文件夹"
+			},
 			"deleteFolderConfirm": "删除文件夹？其中的帖子将移到「未归档」。",
 			"searchEmpty": "没有匹配的收藏",
 			"folderEmpty": "此文件夹为空",
@@ -4014,7 +4077,10 @@
 			"emptyHint": "在发帖框写点内容后点「存草稿」，下次可继续编辑",
 			"saved": "草稿已保存",
 			"deleted": "草稿已删除",
-			"delete": "删除草稿",
+			"delete": {
+				"title": "删除草稿",
+				"aria-label": "删除草稿"
+			},
 			"empty": "草稿为空",
 			"saveFailed": "保存草稿失败：${error}",
 			"loadFailed": "打开草稿失败：${error}",
@@ -4177,15 +4243,30 @@
 			}
 		},
 		"actions": {
-			"like": "点赞",
-			"unlike": "取消赞",
-			"dislike": "踩",
-			"undislike": "取消踩",
+			"like": {
+				"title": "点赞",
+				"aria-label": "点赞"
+			},
+			"unlike": {
+				"title": "取消赞",
+				"aria-label": "取消赞"
+			},
+			"dislike": {
+				"title": "踩",
+				"aria-label": "踩"
+			},
+			"undislike": {
+				"title": "取消踩",
+				"aria-label": "取消踩"
+			},
 			"repost": "转发",
 			"quote": "引用",
 			"delete": "删除",
 			"edit": "编辑",
-			"save": "收藏",
+			"save": {
+				"title": "收藏",
+				"aria-label": "收藏"
+			},
 			"saved": "已收藏",
 			"translate": "翻译",
 			"dm": "发私信",
@@ -4303,9 +4384,6 @@
 			"quoting": "正在引用",
 			"clear": "取消引用",
 			"viewOriginal": "查看原帖"
-		},
-		"translate": {
-			"label": "译文："
 		},
 		"time": {
 			"justNow": "刚刚",
@@ -5263,6 +5341,7 @@
 			"confirm": "确认",
 			"close": "关闭",
 			"translate": {
+				"label": "译文：",
 				"showOriginal": "显示原文",
 				"showTranslation": "显示译文"
 			}

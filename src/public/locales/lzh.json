@@ -949,10 +949,22 @@
 			"multipleMembers": "眾人筆耕不輟..."
 		},
 		"emoji": {
-			"pickerTitle": "擇表情",
-			"recent": "近用",
-			"jumpToStart": "返首",
-			"jumpToUnicode": "至 Unicode",
+			"pickerTitle": {
+				"aria-label": "擇表情",
+				"textContent": "擇表情"
+			},
+			"recent": {
+				"title": "近用",
+				"aria-label": "近用"
+			},
+			"jumpToStart": {
+				"title": "返首",
+				"aria-label": "返首"
+			},
+			"jumpToUnicode": {
+				"title": "至 Unicode",
+				"aria-label": "至 Unicode"
+			},
 			"discoverPacks": "覓表情包 →",
 			"categoryFace": "表情",
 			"categoryGesture": "手勢",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "笑臉與情緒"
+				"title": "笑臉與情緒",
+				"aria-label": "笑臉與情緒"
 			},
 			"People_and_Body": {
-				"title": "人物與身體"
+				"title": "人物與身體",
+				"aria-label": "人物與身體"
 			},
 			"Animals_and_Nature": {
-				"title": "動物與自然"
+				"title": "動物與自然",
+				"aria-label": "動物與自然"
 			},
 			"Food_and_Drink": {
-				"title": "食物與飲料"
+				"title": "食物與飲料",
+				"aria-label": "食物與飲料"
 			},
 			"Travel_and_Places": {
-				"title": "旅行與地點"
+				"title": "旅行與地點",
+				"aria-label": "旅行與地點"
 			},
 			"Activities": {
-				"title": "活動"
+				"title": "活動",
+				"aria-label": "活動"
 			},
 			"Objects": {
-				"title": "物品"
+				"title": "物品",
+				"aria-label": "物品"
 			},
 			"Symbols": {
-				"title": "符號"
+				"title": "符號",
+				"aria-label": "符號"
 			},
 			"Flags": {
-				"title": "旗幟"
-			},
-			"Component": {
-				"title": "機巧"
+				"title": "旗幟",
+				"aria-label": "旗幟"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "隱跡",
 				"offline": "退席"
 			},
-			"changeStatusTitle": "切換狀態",
+			"changeStatusTitle": {
+				"aria-label": "切換狀態"
+			},
 			"aboutSection": "關於",
 			"bioEmpty": "履歷尚空。",
 			"statusOffline": {
@@ -3909,13 +3929,48 @@
 			},
 			"visibility": {
 				"label": "可見範圍",
-				"public": "公開",
-				"unlisted": "不公開列出",
-				"followers": "僅關注者",
-				"followers7d": "關注滿 7 日可見",
-				"followers30d": "關注滿 30 日可見",
-				"selected": "指定人員可見",
-				"private": "僅自己可見",
+				"public": {
+					"title": "公開",
+					"aria-label": "公開",
+					"label": "公開",
+					"textContent": "公開"
+				},
+				"unlisted": {
+					"title": "不公開列出",
+					"aria-label": "不公開列出",
+					"label": "不公開列出",
+					"textContent": "不公開列出"
+				},
+				"followers": {
+					"title": "僅關注者",
+					"aria-label": "僅關注者",
+					"label": "僅關注者",
+					"textContent": "僅關注者"
+				},
+				"followers7d": {
+					"title": "關注滿 7 日可見",
+					"aria-label": "關注滿 7 日可見",
+					"label": "關注滿 7 日可見",
+					"textContent": "關注滿 7 日可見"
+				},
+				"followers30d": {
+					"title": "關注滿 30 日可見",
+					"aria-label": "關注滿 30 日可見",
+					"label": "關注滿 30 日可見",
+					"textContent": "關注滿 30 日可見"
+				},
+				"selected": {
+					"title": "指定人員可見",
+					"aria-label": "指定人員可見",
+					"label": "指定人員可見",
+					"textContent": "指定人員可見"
+				},
+				"private": {
+					"title": "僅自己可見",
+					"aria-label": "僅自己可見",
+					"label": "僅自己可見",
+					"textContent": "僅自己可見"
+				},
 				"allowLabel": "可見人員",
 				"exceptLabel": "排除人員",
 				"allow": {
@@ -3987,10 +4042,19 @@
 			"folderSelect": "收藏帙",
 			"confirm": "允",
 			"cancel": "止",
-			"remove": "移除收藏",
-			"renameFolder": "重命名",
+			"remove": {
+				"title": "移除收藏",
+				"aria-label": "移除收藏"
+			},
+			"renameFolder": {
+				"title": "重命名",
+				"aria-label": "重命名"
+			},
 			"renameFolderPrompt": "新帙名",
-			"deleteFolder": "刪帙",
+			"deleteFolder": {
+				"title": "刪帙",
+				"aria-label": "刪帙"
+			},
 			"deleteFolderConfirm": "刪帙？其中言將移至「未歸檔」。",
 			"searchEmpty": "未見所契之藏",
 			"folderEmpty": "此帙為空",
@@ -4004,7 +4068,10 @@
 			"emptyHint": "於發帖框書數語後觸「存底稿」，他日可續編",
 			"saved": "底稿已存",
 			"deleted": "底稿已刪",
-			"delete": "刪底稿",
+			"delete": {
+				"title": "刪底稿",
+				"aria-label": "刪底稿"
+			},
 			"empty": "底稿為空",
 			"saveFailed": "存底稿未遂：${error}",
 			"loadFailed": "開底稿未遂：${error}",
@@ -4165,15 +4232,30 @@
 			}
 		},
 		"actions": {
-			"like": "善",
-			"unlike": "撤讚",
-			"dislike": "惡",
-			"undislike": "撤貶",
+			"like": {
+				"title": "善",
+				"aria-label": "善"
+			},
+			"unlike": {
+				"title": "撤讚",
+				"aria-label": "撤讚"
+			},
+			"dislike": {
+				"title": "惡",
+				"aria-label": "惡"
+			},
+			"undislike": {
+				"title": "撤貶",
+				"aria-label": "撤貶"
+			},
 			"repost": "轉述",
 			"quote": "引用",
 			"delete": "刪",
 			"edit": "修",
-			"save": "收藏",
+			"save": {
+				"title": "收藏",
+				"aria-label": "收藏"
+			},
 			"saved": "已收藏",
 			"translate": "翻譯",
 			"dm": "發密信",

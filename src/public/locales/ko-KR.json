@@ -949,10 +949,22 @@
 			"multipleMembers": "여러 회원이 입력 중입니다..."
 		},
 		"emoji": {
-			"pickerTitle": "이모지 선택",
-			"recent": "최근 사용",
-			"jumpToStart": "맨 위로",
-			"jumpToUnicode": "유니코드로",
+			"pickerTitle": {
+				"aria-label": "이모지 선택",
+				"textContent": "이모지 선택"
+			},
+			"recent": {
+				"title": "최근 사용",
+				"aria-label": "최근 사용"
+			},
+			"jumpToStart": {
+				"title": "맨 위로",
+				"aria-label": "맨 위로"
+			},
+			"jumpToUnicode": {
+				"title": "유니코드로",
+				"aria-label": "유니코드로"
+			},
 			"discoverPacks": "이모티콘 팩 둘러보기 →",
 			"categoryFace": "표정",
 			"categoryGesture": "제스처",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "스마일리 및 감정"
+				"title": "스마일리 및 감정",
+				"aria-label": "스마일리 및 감정"
 			},
 			"People_and_Body": {
-				"title": "사람 및 신체"
+				"title": "사람 및 신체",
+				"aria-label": "사람 및 신체"
 			},
 			"Animals_and_Nature": {
-				"title": "동물 및 자연"
+				"title": "동물 및 자연",
+				"aria-label": "동물 및 자연"
 			},
 			"Food_and_Drink": {
-				"title": "음식 및 음료"
+				"title": "음식 및 음료",
+				"aria-label": "음식 및 음료"
 			},
 			"Travel_and_Places": {
-				"title": "여행 및 장소"
+				"title": "여행 및 장소",
+				"aria-label": "여행 및 장소"
 			},
 			"Activities": {
-				"title": "활동"
+				"title": "활동",
+				"aria-label": "활동"
 			},
 			"Objects": {
-				"title": "사물"
+				"title": "사물",
+				"aria-label": "사물"
 			},
 			"Symbols": {
-				"title": "기호"
+				"title": "기호",
+				"aria-label": "기호"
 			},
 			"Flags": {
-				"title": "깃발"
-			},
-			"Component": {
-				"title": "구성 요소"
+				"title": "깃발",
+				"aria-label": "깃발"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "몰래 ",
 				"offline": "오프라인"
 			},
-			"changeStatusTitle": "스위치 상태",
+			"changeStatusTitle": {
+				"aria-label": "스위치 상태"
+			},
 			"aboutSection": "정보",
 			"bioEmpty": "이 사용자는 아직 프로필이 없습니다.",
 			"statusOffline": {
@@ -3909,13 +3929,48 @@
 			},
 			"visibility": {
 				"label": "가시 범위",
-				"public": "공개",
-				"unlisted": "공개적으로 나열되지 않음",
-				"followers": "팔로어만",
-				"followers7d": "7일 동안 팔로우한 후 표시됨",
-				"followers30d": "30일 동안 팔로우한 후 표시됨",
-				"selected": "지정된 사용자에게 공개",
-				"private": "본인에게만 표시됩니다.",
+				"public": {
+					"title": "공개",
+					"aria-label": "공개",
+					"label": "공개",
+					"textContent": "공개"
+				},
+				"unlisted": {
+					"title": "공개적으로 나열되지 않음",
+					"aria-label": "공개적으로 나열되지 않음",
+					"label": "공개적으로 나열되지 않음",
+					"textContent": "공개적으로 나열되지 않음"
+				},
+				"followers": {
+					"title": "팔로어만",
+					"aria-label": "팔로어만",
+					"label": "팔로어만",
+					"textContent": "팔로어만"
+				},
+				"followers7d": {
+					"title": "7일 동안 팔로우한 후 표시됨",
+					"aria-label": "7일 동안 팔로우한 후 표시됨",
+					"label": "7일 동안 팔로우한 후 표시됨",
+					"textContent": "7일 동안 팔로우한 후 표시됨"
+				},
+				"followers30d": {
+					"title": "30일 동안 팔로우한 후 표시됨",
+					"aria-label": "30일 동안 팔로우한 후 표시됨",
+					"label": "30일 동안 팔로우한 후 표시됨",
+					"textContent": "30일 동안 팔로우한 후 표시됨"
+				},
+				"selected": {
+					"title": "지정된 사용자에게 공개",
+					"aria-label": "지정된 사용자에게 공개",
+					"label": "지정된 사용자에게 공개",
+					"textContent": "지정된 사용자에게 공개"
+				},
+				"private": {
+					"title": "본인에게만 표시됩니다.",
+					"aria-label": "본인에게만 표시됩니다.",
+					"label": "본인에게만 표시됩니다.",
+					"textContent": "본인에게만 표시됩니다."
+				},
 				"allowLabel": "표시 사람들",
 				"exceptLabel": "사람을 제외",
 				"allow": {
@@ -3987,10 +4042,19 @@
 			"folderSelect": "즐겨찾는 폴더",
 			"confirm": "확인",
 			"cancel": "취소",
-			"remove": "즐겨찾기 제거",
-			"renameFolder": "이름 바꾸기",
+			"remove": {
+				"title": "즐겨찾기 제거",
+				"aria-label": "즐겨찾기 제거"
+			},
+			"renameFolder": {
+				"title": "이름 바꾸기",
+				"aria-label": "이름 바꾸기"
+			},
 			"renameFolderPrompt": "새 폴더 이름",
-			"deleteFolder": "폴더 삭제",
+			"deleteFolder": {
+				"title": "폴더 삭제",
+				"aria-label": "폴더 삭제"
+			},
 			"deleteFolderConfirm": "폴더를 삭제하시겠습니까? 해당 게시물은 '보관 취소됨'으로 이동됩니다.",
 			"searchEmpty": "일치하는 컬렉션이 없습니다.",
 			"folderEmpty": "이 폴더는 비어 있습니다.",
@@ -4004,7 +4068,10 @@
 			"emptyHint": "게시물 상자에 내용을 작성하고 다음 번에 계속 편집하려면 \"초안 저장\"을 클릭하세요.",
 			"saved": "초안이 저장되었습니다.",
 			"deleted": "초안이 삭제되었습니다.",
-			"delete": "초안 삭제",
+			"delete": {
+				"title": "초안 삭제",
+				"aria-label": "초안 삭제"
+			},
 			"empty": "초안이 비어 있습니다.",
 			"saveFailed": "초안 저장 실패: ${error}",
 			"loadFailed": "초안을 열지 못했습니다: ${error}",
@@ -4165,15 +4232,30 @@
 			}
 		},
 		"actions": {
-			"like": "좋아요",
-			"unlike": "같지 않은",
-			"dislike": "밟다",
-			"undislike": "싫어요 취소",
+			"like": {
+				"title": "좋아요",
+				"aria-label": "좋아요"
+			},
+			"unlike": {
+				"title": "같지 않은",
+				"aria-label": "같지 않은"
+			},
+			"dislike": {
+				"title": "밟다",
+				"aria-label": "밟다"
+			},
+			"undislike": {
+				"title": "싫어요 취소",
+				"aria-label": "싫어요 취소"
+			},
 			"repost": "앞으로",
 			"quote": "인용",
 			"delete": "삭제",
 			"edit": "편집",
-			"save": "모으다",
+			"save": {
+				"title": "모으다",
+				"aria-label": "모으다"
+			},
 			"saved": "모은",
 			"translate": "번역",
 			"dm": "비공개 메시지 보내기",

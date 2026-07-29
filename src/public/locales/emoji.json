@@ -949,10 +949,22 @@
 			"multipleMembers": "👥✍️…"
 		},
 		"emoji": {
-			"pickerTitle": "😀👆",
-			"recent": "🕘",
-			"jumpToStart": "⬆️",
-			"jumpToUnicode": "🔤⬇️",
+			"pickerTitle": {
+				"aria-label": "😀👆",
+				"textContent": "😀👆"
+			},
+			"recent": {
+				"title": "🕘",
+				"aria-label": "🕘"
+			},
+			"jumpToStart": {
+				"title": "⬆️",
+				"aria-label": "⬆️"
+			},
+			"jumpToUnicode": {
+				"title": "🔤⬇️",
+				"aria-label": "🔤⬇️"
+			},
 			"discoverPacks": "🧭😀📦➡️",
 			"categoryFace": "😀",
 			"categoryGesture": "👋",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "😀💭"
+				"title": "😀💭",
+				"aria-label": "😀💭"
 			},
 			"People_and_Body": {
-				"title": "🧍"
+				"title": "🧍",
+				"aria-label": "🧍"
 			},
 			"Animals_and_Nature": {
-				"title": "🌿🐾"
+				"title": "🌿🐾",
+				"aria-label": "🌿🐾"
 			},
 			"Food_and_Drink": {
-				"title": "🍽️"
+				"title": "🍽️",
+				"aria-label": "🍽️"
 			},
 			"Travel_and_Places": {
-				"title": "✈️🗺️"
+				"title": "✈️🗺️",
+				"aria-label": "✈️🗺️"
 			},
 			"Activities": {
-				"title": "🎯"
+				"title": "🎯",
+				"aria-label": "🎯"
 			},
 			"Objects": {
-				"title": "📦"
+				"title": "📦",
+				"aria-label": "📦"
 			},
 			"Symbols": {
-				"title": "🔣"
+				"title": "🔣",
+				"aria-label": "🔣"
 			},
 			"Flags": {
-				"title": "🏳️"
-			},
-			"Component": {
-				"title": "🧩"
+				"title": "🏳️",
+				"aria-label": "🏳️"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "👻",
 				"offline": "⚫"
 			},
-			"changeStatusTitle": "🔄💬",
+			"changeStatusTitle": {
+				"aria-label": "🔄💬"
+			},
 			"aboutSection": "ℹ️",
 			"bioEmpty": "📝📭",
 			"statusOffline": {
@@ -3909,13 +3929,48 @@
 			},
 			"visibility": {
 				"label": "👀📏",
-				"public": "🌍",
-				"unlisted": "🚫📋",
-				"followers": "🔒➕👀",
-				"followers7d": "➕👀✅7📅",
-				"followers30d": "➕👀✅30📅",
-				"selected": "👤👀",
-				"private": "🔒🫵",
+				"public": {
+					"title": "🌍",
+					"aria-label": "🌍",
+					"label": "🌍",
+					"textContent": "🌍"
+				},
+				"unlisted": {
+					"title": "🚫📋",
+					"aria-label": "🚫📋",
+					"label": "🚫📋",
+					"textContent": "🚫📋"
+				},
+				"followers": {
+					"title": "🔒➕👀",
+					"aria-label": "🔒➕👀",
+					"label": "🔒➕👀",
+					"textContent": "🔒➕👀"
+				},
+				"followers7d": {
+					"title": "➕👀✅7📅",
+					"aria-label": "➕👀✅7📅",
+					"label": "➕👀✅7📅",
+					"textContent": "➕👀✅7📅"
+				},
+				"followers30d": {
+					"title": "➕👀✅30📅",
+					"aria-label": "➕👀✅30📅",
+					"label": "➕👀✅30📅",
+					"textContent": "➕👀✅30📅"
+				},
+				"selected": {
+					"title": "👤👀",
+					"aria-label": "👤👀",
+					"label": "👤👀",
+					"textContent": "👤👀"
+				},
+				"private": {
+					"title": "🔒🫵",
+					"aria-label": "🔒🫵",
+					"label": "🔒🫵",
+					"textContent": "🔒🫵"
+				},
 				"allowLabel": "👀👤",
 				"exceptLabel": "🚫👤",
 				"allow": {
@@ -3987,10 +4042,19 @@
 			"folderSelect": "⭐📁",
 			"confirm": "✅",
 			"cancel": "↩️",
-			"remove": "🗑️⭐",
-			"renameFolder": "✏️🏷️",
+			"remove": {
+				"title": "🗑️⭐",
+				"aria-label": "🗑️⭐"
+			},
+			"renameFolder": {
+				"title": "✏️🏷️",
+				"aria-label": "✏️🏷️"
+			},
 			"renameFolderPrompt": "📁🏷️🆕",
-			"deleteFolder": "🗑️📁",
+			"deleteFolder": {
+				"title": "🗑️📁",
+				"aria-label": "🗑️📁"
+			},
 			"deleteFolderConfirm": "🗑️📁❓ ➡️ 📄➡️📂🈳",
 			"searchEmpty": "🔍⭐📭",
 			"folderEmpty": "📁📭",
@@ -4004,7 +4068,10 @@
 			"emptyHint": "✍️📰 ➡️ 💾📝 ➡️ 🔁✏️",
 			"saved": "📝💾✅",
 			"deleted": "📝🗑️✅",
-			"delete": "🗑️📝",
+			"delete": {
+				"title": "🗑️📝",
+				"aria-label": "🗑️📝"
+			},
 			"empty": "📝📭",
 			"saveFailed": "💾📝❌: ${error}",
 			"loadFailed": "📂📝❌: ${error}",
@@ -4165,15 +4232,30 @@
 			}
 		},
 		"actions": {
-			"like": "👍",
-			"unlike": "↩️👍",
-			"dislike": "👎",
-			"undislike": "↩️👎",
+			"like": {
+				"title": "👍",
+				"aria-label": "👍"
+			},
+			"unlike": {
+				"title": "↩️👍",
+				"aria-label": "↩️👍"
+			},
+			"dislike": {
+				"title": "👎",
+				"aria-label": "👎"
+			},
+			"undislike": {
+				"title": "↩️👎",
+				"aria-label": "↩️👎"
+			},
 			"repost": "↪️",
 			"quote": "💬🔗",
 			"delete": "🗑️",
 			"edit": "✏️",
-			"save": "⭐",
+			"save": {
+				"title": "⭐",
+				"aria-label": "⭐"
+			},
 			"saved": "⭐✅",
 			"translate": "🌐",
 			"dm": "📤🤫💬",

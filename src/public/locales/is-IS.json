@@ -949,10 +949,22 @@
 			"multipleMembers": "Margir meðlimir eru að skrifa..."
 		},
 		"emoji": {
-			"pickerTitle": "Velja broskalla",
-			"recent": "Nýlega notað",
-			"jumpToStart": "Fara efst",
-			"jumpToUnicode": "Fara í Unicode",
+			"pickerTitle": {
+				"aria-label": "Velja broskalla",
+				"textContent": "Velja broskalla"
+			},
+			"recent": {
+				"title": "Nýlega notað",
+				"aria-label": "Nýlega notað"
+			},
+			"jumpToStart": {
+				"title": "Fara efst",
+				"aria-label": "Fara efst"
+			},
+			"jumpToUnicode": {
+				"title": "Fara í Unicode",
+				"aria-label": "Fara í Unicode"
+			},
 			"discoverPacks": "Skoða broskallapakka →",
 			"categoryFace": "Broskarlar",
 			"categoryGesture": "Bendingar",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "Brosandi andlit og tilfinningar"
+				"title": "Brosandi andlit og tilfinningar",
+				"aria-label": "Brosandi andlit og tilfinningar"
 			},
 			"People_and_Body": {
-				"title": "Myndir og líkamar"
+				"title": "Myndir og líkamar",
+				"aria-label": "Myndir og líkamar"
 			},
 			"Animals_and_Nature": {
-				"title": "Dýr og náttúru"
+				"title": "Dýr og náttúru",
+				"aria-label": "Dýr og náttúru"
 			},
 			"Food_and_Drink": {
-				"title": "Matur og drykk"
+				"title": "Matur og drykk",
+				"aria-label": "Matur og drykk"
 			},
 			"Travel_and_Places": {
-				"title": "Ferðalög og staðir"
+				"title": "Ferðalög og staðir",
+				"aria-label": "Ferðalög og staðir"
 			},
 			"Activities": {
-				"title": "Virkni"
+				"title": "Virkni",
+				"aria-label": "Virkni"
 			},
 			"Objects": {
-				"title": "Hlutir"
+				"title": "Hlutir",
+				"aria-label": "Hlutir"
 			},
 			"Symbols": {
-				"title": "Tákn"
+				"title": "Tákn",
+				"aria-label": "Tákn"
 			},
 			"Flags": {
-				"title": "Fánar"
-			},
-			"Component": {
-				"title": "Íhlutir"
+				"title": "Fánar",
+				"aria-label": "Fánar"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "Laumuspil",
 				"offline": "Ótengdur"
 			},
-			"changeStatusTitle": "Skipta um stöðu",
+			"changeStatusTitle": {
+				"aria-label": "Skipta um stöðu"
+			},
 			"aboutSection": "Um",
 			"bioEmpty": "Þessi notandi er ekki með prófíl ennþá.",
 			"statusOffline": {
@@ -3909,13 +3929,48 @@
 			},
 			"visibility": {
 				"label": "Sýnilegt svið",
-				"public": "Opinbert",
-				"unlisted": "Ekki skráð opinberlega",
-				"followers": "Eingöngu fylgjendur",
-				"followers7d": "Sýnist eftir að hafa fylgst með í 7 daga",
-				"followers30d": "Sýnilegt eftir að hafa fylgst með í 30 daga",
-				"selected": "Sýnilegt tilteknu fólki",
-				"private": "Aðeins sýnilegt sjálfum þér",
+				"public": {
+					"title": "Opinbert",
+					"aria-label": "Opinbert",
+					"label": "Opinbert",
+					"textContent": "Opinbert"
+				},
+				"unlisted": {
+					"title": "Ekki skráð opinberlega",
+					"aria-label": "Ekki skráð opinberlega",
+					"label": "Ekki skráð opinberlega",
+					"textContent": "Ekki skráð opinberlega"
+				},
+				"followers": {
+					"title": "Eingöngu fylgjendur",
+					"aria-label": "Eingöngu fylgjendur",
+					"label": "Eingöngu fylgjendur",
+					"textContent": "Eingöngu fylgjendur"
+				},
+				"followers7d": {
+					"title": "Sýnist eftir að hafa fylgst með í 7 daga",
+					"aria-label": "Sýnist eftir að hafa fylgst með í 7 daga",
+					"label": "Sýnist eftir að hafa fylgst með í 7 daga",
+					"textContent": "Sýnist eftir að hafa fylgst með í 7 daga"
+				},
+				"followers30d": {
+					"title": "Sýnilegt eftir að hafa fylgst með í 30 daga",
+					"aria-label": "Sýnilegt eftir að hafa fylgst með í 30 daga",
+					"label": "Sýnilegt eftir að hafa fylgst með í 30 daga",
+					"textContent": "Sýnilegt eftir að hafa fylgst með í 30 daga"
+				},
+				"selected": {
+					"title": "Sýnilegt tilteknu fólki",
+					"aria-label": "Sýnilegt tilteknu fólki",
+					"label": "Sýnilegt tilteknu fólki",
+					"textContent": "Sýnilegt tilteknu fólki"
+				},
+				"private": {
+					"title": "Aðeins sýnilegt sjálfum þér",
+					"aria-label": "Aðeins sýnilegt sjálfum þér",
+					"label": "Aðeins sýnilegt sjálfum þér",
+					"textContent": "Aðeins sýnilegt sjálfum þér"
+				},
 				"allowLabel": "Sýnilegt fólk",
 				"exceptLabel": "Útiloka fólk",
 				"allow": {
@@ -3987,10 +4042,19 @@
 			"folderSelect": "Uppáhalds mappa",
 			"confirm": "Staðfesta",
 			"cancel": "Hætta við",
-			"remove": "Fjarlægja eftirlæti",
-			"renameFolder": "Endurnefna",
+			"remove": {
+				"title": "Fjarlægja eftirlæti",
+				"aria-label": "Fjarlægja eftirlæti"
+			},
+			"renameFolder": {
+				"title": "Endurnefna",
+				"aria-label": "Endurnefna"
+			},
 			"renameFolderPrompt": "Nýtt möppuheiti",
-			"deleteFolder": "Eyða möppu",
+			"deleteFolder": {
+				"title": "Eyða möppu",
+				"aria-label": "Eyða möppu"
+			},
 			"deleteFolderConfirm": "Eyða möppu? Færslurnar þar verða færðar í „Óflokkað“.",
 			"searchEmpty": "Ekkert samsvarandi safn",
 			"folderEmpty": "Þessi mappa er tóm",
@@ -4004,7 +4068,10 @@
 			"emptyHint": "Skrifaðu eitthvað efni í pósthólfið og smelltu á \"Vista uppkast\" til að halda áfram að breyta næst",
 			"saved": "Drög vistuð",
 			"deleted": "Drögum eytt",
-			"delete": "Eyða drögum",
+			"delete": {
+				"title": "Eyða drögum",
+				"aria-label": "Eyða drögum"
+			},
 			"empty": "Drög eru tóm",
 			"saveFailed": "Mistókst að vista drög: ${error}",
 			"loadFailed": "Mistókst að opna drög: ${error}",
@@ -4165,15 +4232,30 @@
 			}
 		},
 		"actions": {
-			"like": "Líka",
-			"unlike": "Af líka",
-			"dislike": "Mis líka",
-			"undislike": "Hætta við mislíkar",
+			"like": {
+				"title": "Líka",
+				"aria-label": "Líka"
+			},
+			"unlike": {
+				"title": "Af líka",
+				"aria-label": "Af líka"
+			},
+			"dislike": {
+				"title": "Mis líka",
+				"aria-label": "Mis líka"
+			},
+			"undislike": {
+				"title": "Hætta við mislíkar",
+				"aria-label": "Hætta við mislíkar"
+			},
 			"repost": "Endurbirta",
 			"quote": "Tilvitnun",
 			"delete": "Eyða",
 			"edit": "Breyta",
-			"save": "Vista",
+			"save": {
+				"title": "Vista",
+				"aria-label": "Vista"
+			},
 			"saved": "Safnað",
 			"translate": "Þýða",
 			"dm": "Sendið einkaskilaboð",

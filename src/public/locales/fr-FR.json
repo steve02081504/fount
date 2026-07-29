@@ -949,10 +949,22 @@
 			"multipleMembers": "Plusieurs membres écrivent..."
 		},
 		"emoji": {
-			"pickerTitle": "Sélectionnez une émoticône",
-			"recent": "Récents",
-			"jumpToStart": "Retour au début",
-			"jumpToUnicode": "Aller à Unicode",
+			"pickerTitle": {
+				"aria-label": "Sélectionnez une émoticône",
+				"textContent": "Sélectionnez une émoticône"
+			},
+			"recent": {
+				"title": "Récents",
+				"aria-label": "Récents"
+			},
+			"jumpToStart": {
+				"title": "Retour au début",
+				"aria-label": "Retour au début"
+			},
+			"jumpToUnicode": {
+				"title": "Aller à Unicode",
+				"aria-label": "Aller à Unicode"
+			},
 			"discoverPacks": "Explorer les packs d'émojis →",
 			"categoryFace": "Émojis",
 			"categoryGesture": "geste",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "Smileys et émotions"
+				"title": "Smileys et émotions",
+				"aria-label": "Smileys et émotions"
 			},
 			"People_and_Body": {
-				"title": "Personnages et corps"
+				"title": "Personnages et corps",
+				"aria-label": "Personnages et corps"
 			},
 			"Animals_and_Nature": {
-				"title": "les animaux et la nature"
+				"title": "les animaux et la nature",
+				"aria-label": "les animaux et la nature"
 			},
 			"Food_and_Drink": {
-				"title": "Nourriture et boisson"
+				"title": "Nourriture et boisson",
+				"aria-label": "Nourriture et boisson"
 			},
 			"Travel_and_Places": {
-				"title": "Voyages et lieux"
+				"title": "Voyages et lieux",
+				"aria-label": "Voyages et lieux"
 			},
 			"Activities": {
-				"title": "Activité"
+				"title": "Activité",
+				"aria-label": "Activité"
 			},
 			"Objects": {
-				"title": "Chose"
+				"title": "Chose",
+				"aria-label": "Chose"
 			},
 			"Symbols": {
-				"title": "Symbole"
+				"title": "Symbole",
+				"aria-label": "Symbole"
 			},
 			"Flags": {
-				"title": "Bannière"
-			},
-			"Component": {
-				"title": "Composants"
+				"title": "Bannière",
+				"aria-label": "Bannière"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "Furtivité",
 				"offline": "Hors ligne"
 			},
-			"changeStatusTitle": "Statut du commutateur",
+			"changeStatusTitle": {
+				"aria-label": "Statut du commutateur"
+			},
 			"aboutSection": "à propos",
 			"bioEmpty": "Cet utilisateur n'a pas encore de profil.",
 			"statusOffline": {
@@ -3909,13 +3929,48 @@
 			},
 			"visibility": {
 				"label": "Portée visible",
-				"public": "Public",
-				"unlisted": "Non répertorié",
-				"followers": "Abonnés uniquement",
-				"followers7d": "Visible après avoir suivi pendant 7 jours",
-				"followers30d": "Visible après avoir suivi pendant 30 jours",
-				"selected": "Visible par les personnes spécifiées",
-				"private": "Visible uniquement par vous-même",
+				"public": {
+					"title": "Public",
+					"aria-label": "Public",
+					"label": "Public",
+					"textContent": "Public"
+				},
+				"unlisted": {
+					"title": "Non répertorié",
+					"aria-label": "Non répertorié",
+					"label": "Non répertorié",
+					"textContent": "Non répertorié"
+				},
+				"followers": {
+					"title": "Abonnés uniquement",
+					"aria-label": "Abonnés uniquement",
+					"label": "Abonnés uniquement",
+					"textContent": "Abonnés uniquement"
+				},
+				"followers7d": {
+					"title": "Visible après avoir suivi pendant 7 jours",
+					"aria-label": "Visible après avoir suivi pendant 7 jours",
+					"label": "Visible après avoir suivi pendant 7 jours",
+					"textContent": "Visible après avoir suivi pendant 7 jours"
+				},
+				"followers30d": {
+					"title": "Visible après avoir suivi pendant 30 jours",
+					"aria-label": "Visible après avoir suivi pendant 30 jours",
+					"label": "Visible après avoir suivi pendant 30 jours",
+					"textContent": "Visible après avoir suivi pendant 30 jours"
+				},
+				"selected": {
+					"title": "Visible par les personnes spécifiées",
+					"aria-label": "Visible par les personnes spécifiées",
+					"label": "Visible par les personnes spécifiées",
+					"textContent": "Visible par les personnes spécifiées"
+				},
+				"private": {
+					"title": "Visible uniquement par vous-même",
+					"aria-label": "Visible uniquement par vous-même",
+					"label": "Visible uniquement par vous-même",
+					"textContent": "Visible uniquement par vous-même"
+				},
 				"allowLabel": "Personnes visibles",
 				"exceptLabel": "Exclure des personnes",
 				"allow": {
@@ -3987,10 +4042,19 @@
 			"folderSelect": "Dossier de favoris",
 			"confirm": "Confirmer",
 			"cancel": "Annuler",
-			"remove": "Supprimer les favoris",
-			"renameFolder": "Renommer",
+			"remove": {
+				"title": "Supprimer les favoris",
+				"aria-label": "Supprimer les favoris"
+			},
+			"renameFolder": {
+				"title": "Renommer",
+				"aria-label": "Renommer"
+			},
 			"renameFolderPrompt": "Nouveau nom de dossier",
-			"deleteFolder": "Supprimer le dossier",
+			"deleteFolder": {
+				"title": "Supprimer le dossier",
+				"aria-label": "Supprimer le dossier"
+			},
 			"deleteFolderConfirm": "Supprimer le dossier ? Les messages qui s'y trouvent seront déplacés vers \"Non archivés\".",
 			"searchEmpty": "Aucune collection correspondante",
 			"folderEmpty": "Ce dossier est vide",
@@ -4004,7 +4068,10 @@
 			"emptyHint": "Rédigez dans le compositeur et cliquez sur « Enregistrer le brouillon » pour reprendre plus tard.",
 			"saved": "Brouillon enregistré",
 			"deleted": "Brouillon supprimé",
-			"delete": "Supprimer le brouillon",
+			"delete": {
+				"title": "Supprimer le brouillon",
+				"aria-label": "Supprimer le brouillon"
+			},
 			"empty": "Le brouillon est vide",
 			"saveFailed": "Échec de l'enregistrement du brouillon : ${error}",
 			"loadFailed": "Échec de l'ouverture du brouillon : ${error}",
@@ -4165,15 +4232,30 @@
 			}
 		},
 		"actions": {
-			"like": "J'aime",
-			"unlike": "Je n'aime plus",
-			"dislike": "Je n'aime pas",
-			"undislike": "Annuler le refus",
+			"like": {
+				"title": "J'aime",
+				"aria-label": "J'aime"
+			},
+			"unlike": {
+				"title": "Je n'aime plus",
+				"aria-label": "Je n'aime plus"
+			},
+			"dislike": {
+				"title": "Je n'aime pas",
+				"aria-label": "Je n'aime pas"
+			},
+			"undislike": {
+				"title": "Annuler le refus",
+				"aria-label": "Annuler le refus"
+			},
 			"repost": "Republier",
 			"quote": "Citation",
 			"delete": "Supprimer",
 			"edit": "Modifier",
-			"save": "Enregistrer",
+			"save": {
+				"title": "Enregistrer",
+				"aria-label": "Enregistrer"
+			},
 			"saved": "Enregistré",
 			"translate": "Traduire",
 			"dm": "Envoyer un message privé",

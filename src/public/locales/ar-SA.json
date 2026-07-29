@@ -949,10 +949,22 @@
 			"multipleMembers": "عدة أعضاء يكتبون..."
 		},
 		"emoji": {
-			"pickerTitle": "حدد التعبيرات",
-			"recent": "استُخدمت مؤخرًا",
-			"jumpToStart": "إلى البداية",
-			"jumpToUnicode": "إلى Unicode",
+			"pickerTitle": {
+				"aria-label": "حدد التعبيرات",
+				"textContent": "حدد التعبيرات"
+			},
+			"recent": {
+				"title": "استُخدمت مؤخرًا",
+				"aria-label": "استُخدمت مؤخرًا"
+			},
+			"jumpToStart": {
+				"title": "إلى البداية",
+				"aria-label": "إلى البداية"
+			},
+			"jumpToUnicode": {
+				"title": "إلى Unicode",
+				"aria-label": "إلى Unicode"
+			},
 			"discoverPacks": "استكشاف حزم الإيموجي →",
 			"categoryFace": "تعبير",
 			"categoryGesture": "إيماءة",
@@ -989,34 +1001,40 @@
 		},
 		"unicodeEmojiGroups": {
 			"Smileys_and_Emotion": {
-				"title": "الوجوه المبتسمة والعواطف"
+				"title": "الوجوه المبتسمة والعواطف",
+				"aria-label": "الوجوه المبتسمة والعواطف"
 			},
 			"People_and_Body": {
-				"title": "شخصيات وأجساد"
+				"title": "شخصيات وأجساد",
+				"aria-label": "شخصيات وأجساد"
 			},
 			"Animals_and_Nature": {
-				"title": "الحيوانات والطبيعة"
+				"title": "الحيوانات والطبيعة",
+				"aria-label": "الحيوانات والطبيعة"
 			},
 			"Food_and_Drink": {
-				"title": "الطعام والشراب"
+				"title": "الطعام والشراب",
+				"aria-label": "الطعام والشراب"
 			},
 			"Travel_and_Places": {
-				"title": "السفر والأماكن"
+				"title": "السفر والأماكن",
+				"aria-label": "السفر والأماكن"
 			},
 			"Activities": {
-				"title": "نشاط"
+				"title": "نشاط",
+				"aria-label": "نشاط"
 			},
 			"Objects": {
-				"title": "شيء"
+				"title": "شيء",
+				"aria-label": "شيء"
 			},
 			"Symbols": {
-				"title": "رمز"
+				"title": "رمز",
+				"aria-label": "رمز"
 			},
 			"Flags": {
-				"title": "راية"
-			},
-			"Component": {
-				"title": "عناصر"
+				"title": "راية",
+				"aria-label": "راية"
 			}
 		},
 		"sessionSettings": {
@@ -1862,7 +1880,9 @@
 				"invisible": "التخفي",
 				"offline": "غير متصل"
 			},
-			"changeStatusTitle": "تبديل الحالة",
+			"changeStatusTitle": {
+				"aria-label": "تبديل الحالة"
+			},
 			"aboutSection": "عن",
 			"bioEmpty": "هذا المستخدم ليس لديه ملف شخصي بعد.",
 			"statusOffline": {
@@ -3909,13 +3929,48 @@
 			},
 			"visibility": {
 				"label": "نطاق مرئي",
-				"public": "عام",
-				"unlisted": "غير مدرجة علنا",
-				"followers": "متابعين فقط",
-				"followers7d": "مرئية بعد المتابعة لمدة 7 أيام",
-				"followers30d": "مرئية بعد المتابعة لمدة 30 يومًا",
-				"selected": "مرئية لأشخاص محددين",
-				"private": "مرئية لنفسك فقط",
+				"public": {
+					"title": "عام",
+					"aria-label": "عام",
+					"label": "عام",
+					"textContent": "عام"
+				},
+				"unlisted": {
+					"title": "غير مدرجة علنا",
+					"aria-label": "غير مدرجة علنا",
+					"label": "غير مدرجة علنا",
+					"textContent": "غير مدرجة علنا"
+				},
+				"followers": {
+					"title": "متابعين فقط",
+					"aria-label": "متابعين فقط",
+					"label": "متابعين فقط",
+					"textContent": "متابعين فقط"
+				},
+				"followers7d": {
+					"title": "مرئية بعد المتابعة لمدة 7 أيام",
+					"aria-label": "مرئية بعد المتابعة لمدة 7 أيام",
+					"label": "مرئية بعد المتابعة لمدة 7 أيام",
+					"textContent": "مرئية بعد المتابعة لمدة 7 أيام"
+				},
+				"followers30d": {
+					"title": "مرئية بعد المتابعة لمدة 30 يومًا",
+					"aria-label": "مرئية بعد المتابعة لمدة 30 يومًا",
+					"label": "مرئية بعد المتابعة لمدة 30 يومًا",
+					"textContent": "مرئية بعد المتابعة لمدة 30 يومًا"
+				},
+				"selected": {
+					"title": "مرئية لأشخاص محددين",
+					"aria-label": "مرئية لأشخاص محددين",
+					"label": "مرئية لأشخاص محددين",
+					"textContent": "مرئية لأشخاص محددين"
+				},
+				"private": {
+					"title": "مرئية لنفسك فقط",
+					"aria-label": "مرئية لنفسك فقط",
+					"label": "مرئية لنفسك فقط",
+					"textContent": "مرئية لنفسك فقط"
+				},
 				"allowLabel": "الأشخاص المرئيين",
 				"exceptLabel": "استبعاد الناس",
 				"allow": {
@@ -3987,10 +4042,19 @@
 			"folderSelect": "المجلد المفضل",
 			"confirm": "تأكيد",
 			"cancel": "إلغاء",
-			"remove": "إزالة المفضلة",
-			"renameFolder": "إعادة تسمية",
+			"remove": {
+				"title": "إزالة المفضلة",
+				"aria-label": "إزالة المفضلة"
+			},
+			"renameFolder": {
+				"title": "إعادة تسمية",
+				"aria-label": "إعادة تسمية"
+			},
 			"renameFolderPrompt": "اسم المجلد الجديد",
-			"deleteFolder": "حذف المجلد",
+			"deleteFolder": {
+				"title": "حذف المجلد",
+				"aria-label": "حذف المجلد"
+			},
 			"deleteFolderConfirm": "هل تريد حذف المجلد؟ سيتم نقل المشاركات هناك إلى \"غير مؤرشفة\".",
 			"searchEmpty": "لا توجد مجموعة مطابقة",
 			"folderEmpty": "هذا المجلد فارغ",
@@ -4004,7 +4068,10 @@
 			"emptyHint": "اكتب بعض المحتوى في مربع النشر وانقر على \"حفظ المسودة\" لمواصلة التحرير في المرة القادمة",
 			"saved": "تم حفظ المسودة",
 			"deleted": "تم حذف المسودة",
-			"delete": "حذف المسودة",
+			"delete": {
+				"title": "حذف المسودة",
+				"aria-label": "حذف المسودة"
+			},
 			"empty": "المسودة فارغة",
 			"saveFailed": "فشل حفظ المسودة: ${error}",
 			"loadFailed": "فشل فتح المسودة: ${error}",
@@ -4165,15 +4232,30 @@
 			}
 		},
 		"actions": {
-			"like": "إعجاب",
-			"unlike": "على عكس",
-			"dislike": "خطوة على",
-			"undislike": "إلغاء عدم الإعجاب",
+			"like": {
+				"title": "إعجاب",
+				"aria-label": "إعجاب"
+			},
+			"unlike": {
+				"title": "على عكس",
+				"aria-label": "على عكس"
+			},
+			"dislike": {
+				"title": "خطوة على",
+				"aria-label": "خطوة على"
+			},
+			"undislike": {
+				"title": "إلغاء عدم الإعجاب",
+				"aria-label": "إلغاء عدم الإعجاب"
+			},
 			"repost": "إعادة نشر",
 			"quote": "اقتباس",
 			"delete": "حذف",
 			"edit": "تعديل",
-			"save": "حفظ",
+			"save": {
+				"title": "حفظ",
+				"aria-label": "حفظ"
+			},
 			"saved": "تم جمعها",
 			"translate": "ترجمة",
 			"dm": "إرسال رسالة خاصة",

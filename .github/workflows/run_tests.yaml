@@ -20,16 +20,26 @@ permissions:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    env:
+      # 落盘始终写本分支；restore 由 pick 脚本在 miss 时选 diff 最近的分支缓存
+      TEST_DATA_CACHE_KEY: fount-test-data-${{ github.ref_name }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+      - name: Pick test data cache
+        id: pick-cache
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          TEST_DATA_CACHE_PREFIX: fount-test-data-
+        run: bash .github/workflows/scripts/pick_test_data_cache.sh
       - name: Restore test data cache
         uses: actions/cache/restore@v5
         with:
           path: ./data/test
-          key: fount-test-data
+          key: ${{ steps.pick-cache.outputs.restore_key }}
       - uses: ./.github/actions/fount-ci
         with:
           run-step-name: Run tests
@@ -44,7 +54,7 @@ jobs:
         shell: bash
         run: |
           gh extension install actions/gh-actions-cache || true
-          gh actions-cache delete "fount-test-data" --confirm || true
+          gh actions-cache delete "$TEST_DATA_CACHE_KEY" --confirm || true
         env:
           GH_TOKEN: ${{ github.token }}
       - name: clean test data before cache save
@@ -61,4 +71,4 @@ jobs:
         uses: actions/cache/save@v5
         with:
           path: ./data/test
-          key: fount-test-data
+          key: ${{ env.TEST_DATA_CACHE_KEY }}

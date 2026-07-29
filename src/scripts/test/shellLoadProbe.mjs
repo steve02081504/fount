@@ -189,11 +189,11 @@ export async function collectModuleExports(repoRoot, file, cache = new Map()) {
 		names.add('default')
 
 	EXPORT_LIST_RE.lastIndex = 0
-	while ((match = EXPORT_LIST_RE.exec(text)) !== null) 
+	while ((match = EXPORT_LIST_RE.exec(text)) !== null)
 		// `export { a as b } from 'npm:…'` — 对外名即本模块导出；远端是否可解析无关
 		for (const name of parseBindingNames(match[1], 'export'))
 			names.add(name)
-	
+
 
 	EXPORT_STAR_RE.lastIndex = 0
 	while ((match = EXPORT_STAR_RE.exec(text)) !== null) {
