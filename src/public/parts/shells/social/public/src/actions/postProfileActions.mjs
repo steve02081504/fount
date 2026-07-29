@@ -25,7 +25,7 @@ export async function handlePostProfileActionsClick(target) {
 			closePostMoreMenus()
 			const card = editButton.closest('.post-card')
 			const current = decodeURIComponent(card?.dataset.postText || '')
-			const next = await promptText(geti18n('social.post.editPrompt'), current)
+			const next = await promptText('social.post.editPrompt', current)
 			if (next == null || next === current) return true
 			await runWrite('edit', () => socialApi(
 				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/edit`,
@@ -47,7 +47,7 @@ export async function handlePostProfileActionsClick(target) {
 				const item = (data.items || []).find(row => row.postId === postId)
 				const revisions = item?.post?.revisions || []
 				const lines = revisions.map((rev, idx) => `#${idx + 1} ${rev.text || ''}`).join('\n---\n')
-				await showText(lines || geti18n('social.post.editHistoryEmpty'), geti18n('social.post.editHistory'))
+				await showText(lines || geti18n('social.post.editHistoryEmpty'), 'social.post.editHistory')
 			})
 		}
 		return true
@@ -58,7 +58,7 @@ export async function handlePostProfileActionsClick(target) {
 		const parsed = parseActionKey(addNoteButton.dataset.addNote)
 		if (parsed) {
 			closePostMoreMenus()
-			const text = await promptTextArea(geti18n('social.notes.prompt'))
+			const text = await promptTextArea('social.notes.prompt')
 			if (!text?.trim()) return true
 			await runWrite('addNote', () => socialApi(
 				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/notes`,
@@ -93,7 +93,7 @@ export async function handlePostProfileActionsClick(target) {
 			)
 			await showText((data.notes || []).map(note =>
 				`[${note.score >= 0 ? '+' : ''}${note.score}] ${note.text || ''}`).join('\n---\n')
-				|| geti18n('social.notes.empty'), geti18n('social.notes.listTitle'))
+				|| geti18n('social.notes.empty'), 'social.notes.listTitle')
 		}
 		return true
 	}
@@ -104,7 +104,7 @@ export async function handlePostProfileActionsClick(target) {
 		if (parsed) {
 			const { entityHash, postId } = parsed
 			await copyTextToClipboard(formatSocialShareHttpsUrl(entityHash, postId))
-			flashCopiedLabel(copyLinkButton.querySelector('[data-i18n="social.actions.copyLink"]'))
+			flashCopiedLabel(copyLinkButton.querySelector('[data-i18n="social.actions.copyLink"]'), 'social.actions.copyLink')
 			closePostMoreMenus()
 		}
 		return true
@@ -124,10 +124,10 @@ export async function handlePostProfileActionsClick(target) {
 				const content = data?.item?.post?.content || data?.post?.content || {
 					text: fallbackText,
 				}
-				await downloadPostHtml(content, `post-${parsed.postId}.html`)
+				await downloadPostHtml(content)
 			}
 			catch {
-				await downloadPostHtml({ text: fallbackText }, `post-${parsed.postId}.html`)
+				await downloadPostHtml({ text: fallbackText })
 			}
 		}
 		return true
@@ -141,7 +141,9 @@ export async function handlePostProfileActionsClick(target) {
 			if (result === 'copied')
 				flashCopiedLabel(
 					shareButton.querySelector('[data-i18n="social.actions.share"]')
-					|| shareButton.querySelector('.action-count'),
+					|| shareButton.querySelector('.action-count')
+					|| shareButton.querySelector('.sr-only'),
+					'social.actions.share',
 				)
 			closePostMoreMenus()
 		}

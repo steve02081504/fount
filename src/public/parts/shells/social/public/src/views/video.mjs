@@ -12,7 +12,6 @@ import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { renderRepliesPanel } from './replies.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 /** @type {{ disconnect: () => void, observe: (el: HTMLElement) => void } | null} */
 let snapBind = null
@@ -401,19 +400,20 @@ function buildVideoSlide(item) {
 					<span class="video-author">${escapeHtml(label)}</span>
 					<span class="video-author-handle">${escapeHtml(handle)}</span>
 				</a>
-				${caption ? `<div class="video-caption">${escapeHtml(caption.slice(0, 180))}</div>` : ''}
+				${caption ? `<div class="video-caption" user-content>${escapeHtml(caption.slice(0, 180))}</div>` : ''}
 			</div>
 			<div class="video-comment-ticker hidden" data-comment-ticker aria-hidden="true"></div>
 			<div class="video-actions">
-				<button type="button" class="video-action-btn video-like-btn${liked ? ' is-active' : ''}" data-action="like" aria-label="${escapeHtml(geti18n('social.actions.like'))}">
+				<button type="button" class="video-action-btn video-like-btn${liked ? ' is-active' : ''}" data-action="like" data-i18n="social.actions.like">
 					<span class="icon icon-like" aria-hidden="true"></span>
 					<span class="video-like-count">${likeCount}</span>
 				</button>
-				<button type="button" class="video-action-btn video-comment-btn" data-action="comment" data-replies="${escapeHtml(actionKey)}" aria-label="${escapeHtml(geti18n('social.actions.replies'))}">
+				<button type="button" class="video-action-btn video-comment-btn" data-action="comment" data-replies="${escapeHtml(actionKey)}">
+					<span class="sr-only" data-i18n="social.actions.replies"></span>
 					<span class="icon icon-reply" aria-hidden="true"></span>
 					<span class="action-count">${replyCount}</span>
 				</button>
-				<button type="button" class="video-action-btn video-share-btn" data-action="share" data-share="${escapeHtml(actionKey)}" aria-label="${escapeHtml(geti18n('social.actions.share'))}">
+				<button type="button" class="video-action-btn video-share-btn" data-action="share" data-share="${escapeHtml(actionKey)}">
 					<span class="icon icon-share" aria-hidden="true"></span>
 					<span class="action-count" data-i18n="social.actions.share"></span>
 				</button>

@@ -7,12 +7,15 @@ import { getTimelineMaterialized } from './timeline/materialize.mjs'
  * @param {string} entityHash 时间线 owner
  * @param {object} patch 可写字段
  * @param {boolean} [patch.hideFromDiscovery] 是否从探索隐藏
+ * @param {string | null} [patch.defaultEmojiPackId] 作者默认表情包
  * @returns {Promise<object>} 物化后的 socialMeta
  */
 export async function updateSocialMeta(username, entityHash, patch) {
 	/** @type {Record<string, unknown>} */
 	const content = {}
 	if (patch.hideFromDiscovery !== undefined) content.hideFromDiscovery = patch.hideFromDiscovery
+	if (patch.defaultEmojiPackId !== undefined)
+		content.defaultEmojiPackId = String(patch.defaultEmojiPackId || '').trim() || null
 	if (!Object.keys(content).length)
 		return (await getTimelineMaterialized(username, entityHash)).socialMeta
 

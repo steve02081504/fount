@@ -19,6 +19,19 @@ export async function runWrite(actionKey, fn) {
 }
 
 /**
+ * @param {HTMLElement} button like / dislike 按钮
+ * @param {'liked' | 'disliked'} key 状态键
+ * @param {boolean} active 是否激活
+ * @returns {void}
+ */
+function syncReactionI18n(button, key, active) {
+	if (!button.dataset.i18n) return
+	button.dataset.i18n = key === 'liked'
+		? active ? 'social.actions.unlike' : 'social.actions.like'
+		: active ? 'social.actions.undislike' : 'social.actions.dislike'
+}
+
+/**
  * @param {HTMLElement} button 按钮
  * @param {string} key dataset 键 liked|disliked
  * @param {string} className 激活 class
@@ -30,6 +43,7 @@ function applyReactionOptimistic(button, key, className, next) {
 	const snapshot = { [key]: button.dataset[key] || '0', count: Number(countEl?.textContent) || 0 }
 	button.dataset[key] = next ? '1' : '0'
 	button.classList.toggle(className, next)
+	syncReactionI18n(button, /** @type {'liked' | 'disliked'} */ key, next)
 	if (countEl) countEl.textContent = String(Math.max(0, /** @type {number} */ snapshot.count + (next ? 1 : -1)))
 	return snapshot
 }
@@ -45,6 +59,7 @@ function rollbackReaction(button, key, className, snapshot) {
 	const countEl = button.querySelector('.action-count')
 	button.dataset[key] = String(snapshot[key])
 	button.classList.toggle(className, snapshot[key] === '1')
+	syncReactionI18n(button, /** @type {'liked' | 'disliked'} */ key, snapshot[key] === '1')
 	if (countEl) countEl.textContent = String(snapshot.count)
 }
 
@@ -61,6 +76,7 @@ function clearReactionOnCard(cardRoot, selector, key, className) {
 	const countEl = button.querySelector('.action-count')
 	button.dataset[key] = '0'
 	button.classList.remove(className)
+	syncReactionI18n(button, /** @type {'liked' | 'disliked'} */ key, false)
 	if (countEl) countEl.textContent = String(Math.max(0, (Number(countEl.textContent) || 0) - 1))
 }
 

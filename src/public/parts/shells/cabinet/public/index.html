@@ -41,22 +41,20 @@
 				<input id="folderInput" type="file" webkitdirectory multiple class="hidden" />
 				<div id="entryGrid" class="p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 overflow-y-auto flex-1" role="listbox" aria-multiselectable="true" data-i18n="cabinet.entries"></div>
 				<div id="statusBar" class="text-xs opacity-70 p-2 border-t border-base-300 cabinet-status-bar"></div>
+				<ul id="contextMenu" class="menu menu-sm fixed hidden z-50 min-w-48 rounded-box border border-base-300 bg-base-100 p-1 shadow-xl" role="menu"></ul>
 			</main>
 		</div>
 		<div class="drawer-side z-40">
 			<label for="cabinet-drawer-toggle" class="drawer-overlay md:hidden"></label>
 			<aside class="w-64 min-h-full bg-base-100 border-r border-base-300 p-3 flex flex-col gap-2">
 				<div class="flex items-center justify-between gap-2">
-					<h1 class="text-lg font-semibold hidden md:block" data-i18n="cabinet.title"></h1>
-					<button id="btnNewCabinetDesktop" type="button" data-action="new-cabinet" class="btn btn-primary btn-sm btn-circle cabinet-local-only hidden md:inline-flex" data-i18n="cabinet.newCabinet">+</button>
+					<h1 class="text-lg font-semibold max-md:hidden" data-i18n="cabinet.title"></h1>
+					<button id="btnNewCabinetDesktop" type="button" data-action="new-cabinet" class="btn btn-primary btn-sm btn-circle cabinet-local-only max-md:hidden md:inline-flex" data-i18n="cabinet.newCabinet">+</button>
 					<label for="cabinet-drawer-toggle" class="btn btn-ghost btn-sm btn-circle md:hidden" data-i18n="cabinet.closeCabinets">×</label>
 				</div>
 				<ul id="cabinetList" class="menu menu-sm flex-1 overflow-y-auto"></ul>
 			</aside>
 		</div>
-	</div>
-	<div id="contextMenu" class="fixed hidden z-50 min-w-48 rounded-box border border-base-300 bg-base-100 p-1 shadow-xl" role="menu">
-		<ul class="menu menu-sm"></ul>
 	</div>
 	<dialog id="propsDialog" class="modal">
 		<div class="modal-box space-y-3 w-11/12 max-w-lg">

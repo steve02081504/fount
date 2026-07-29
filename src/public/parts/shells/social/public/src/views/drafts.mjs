@@ -3,7 +3,6 @@ import { escapeHtml } from '../../../../../scripts/lib/escapeHtml.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { formatTimeHtml } from '../lib/display.mjs'
 import { buildEmptyState } from '../lib/emptyState.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 /**
  * 渲染草稿箱列表。
@@ -23,14 +22,17 @@ export async function loadDrafts() {
 		return
 	}
 	panel.innerHTML = `<ul class="drafts-list list">${drafts.map(row => {
-		const preview = String(row.preview || '').trim() || geti18n('social.drafts.untitled')
+		const preview = String(row.preview || '').trim()
+		const previewHtml = preview
+			? `<p class="draft-row-preview" user-content>${escapeHtml(preview)}</p>`
+			: '<p class="draft-row-preview" data-i18n="social.drafts.untitled"></p>'
 		return `
 			<li class="list-row draft-row" data-draft-id="${escapeHtml(row.draftId)}">
 				<button type="button" class="draft-row-main flex flex-col items-start gap-1 flex-1 min-w-0 text-left bg-transparent border-0 text-inherit cursor-pointer p-0" data-open-draft="${escapeHtml(row.draftId)}">
-					<p class="draft-row-preview">${escapeHtml(preview)}</p>
+					${previewHtml}
 					${formatTimeHtml(row.updatedAt, 'draft-row-meta')}
 				</button>
-				<button type="button" class="btn btn-ghost btn-sm btn-circle draft-row-action" data-delete-draft="${escapeHtml(row.draftId)}" aria-label="${escapeHtml(geti18n('social.drafts.delete'))}">
+				<button type="button" class="btn btn-ghost btn-sm btn-circle draft-row-action" data-delete-draft="${escapeHtml(row.draftId)}" data-i18n="social.drafts.delete">
 					<span class="icon icon-delete" aria-hidden="true"></span>
 				</button>
 			</li>

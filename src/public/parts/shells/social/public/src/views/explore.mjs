@@ -113,7 +113,7 @@ export async function loadExplore() {
 		rememberEntityHandle(post.entityHash, post.authorProfile)
 		const timeHtml = formatTimeHtml(post.hlc?.wall)
 		const snippetHtml = post.textSnippet
-			? '<div class="explore-snippet" data-explore-snippet></div>'
+			? '<div class="explore-snippet" data-explore-snippet user-content></div>'
 			: post.mediaThumbs?.length
 				? '<p class="explore-snippet" data-i18n="social.profile.mediaOnly"></p>'
 				: ''

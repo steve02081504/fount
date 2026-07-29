@@ -9,14 +9,14 @@ import path from 'node:path'
 import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
 
-import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
-import { entityEmojiPackDir, entityEmojiPacksRoot } from '../../../chat/src/chat/lib/paths.mjs'
-import { assertSafePackId, isSafePackId, MAX_EMOJI_BYTES } from '../../../chat/src/emojiPacks/packStore.mjs'
+import { loadJsonFile, saveJsonFile } from '../../../../../scripts/json_loader.mjs'
+import { entityEmojiPackDir, entityEmojiPacksRoot } from '../../chat/src/chat/lib/paths.mjs'
+import { assertSafePackId, isSafePackId, MAX_EMOJI_BYTES } from '../../chat/src/emojiPacks/packStore.mjs'
 import {
 	convergeLinkedDefault,
 	entityDefaultLinkKey,
-} from '../../../chat/src/emojiUsage.mjs'
-import { getProfile } from '../../../chat/src/entity/profile.mjs'
+} from '../../chat/src/emojiUsage.mjs'
+import { getProfile } from '../../chat/src/entity/profile.mjs'
 
 import { listFollowedTimelineOwners } from './following.mjs'
 import { putVaultFileManifest } from './socialVaultIndex.mjs'
@@ -304,8 +304,9 @@ export async function deleteEntityPackEmoji(username, entityHash, packId, emojiI
 
 /**
  * 可用作者包 = 自身 ∪ 已关注作者时间线中的 packs。
+ * 拉列表时同步时间线并收敛默认包（emoji-pack-spec）。
  * @param {string} username replica
- * @param {{ viewerEntityHash?: string, skipConverge?: boolean }} [options] 选项
+ * @param {{ viewerEntityHash?: string }} [options] 选项
  * @returns {Promise<object[]>} pack 列表
  */
 export async function listAvailableEntityPacksForUser(username, options = {}) {
@@ -313,11 +314,17 @@ export async function listAvailableEntityPacksForUser(username, options = {}) {
 	/** @type {object[]} */
 	const out = []
 	const seen = new Set()
+	const { syncTimelineForEntity } = await import('./timeline/sync.mjs')
 
 	for (const owner of owners) {
-		const profile = await getProfile(owner, username, { skipPresentation: true, fetchRemote: true }).catch(() => null)
-		const defaultEmojiPackId = String(profile?.defaultEmojiPackId || '').trim() || null
-		if (defaultEmojiPackId && !options.skipConverge)
+		try {
+			await syncTimelineForEntity(username, owner)
+		}
+		catch (error) {
+			console.warn('social: emoji pack timeline sync failed', owner, error)
+		}
+		const defaultEmojiPackId = await resolveAuthorDefaultPackId(username, owner)
+		if (defaultEmojiPackId)
 			convergeLinkedDefault(username, entityDefaultLinkKey(owner), defaultEmojiPackId)
 
 		let packs = await listLocalEntityPacks(username, owner)
@@ -351,10 +358,14 @@ export async function listAvailableEntityPacksForUser(username, options = {}) {
 export async function findEntityPackForUser(username, packId) {
 	const pid = String(packId || '').trim()
 	if (!pid) return null
-	const packs = await listAvailableEntityPacksForUser(username, { skipConverge: true })
-	const hit = packs.find(p => p.packId === pid)
-	if (!hit) return null
-	return { entityHash: hit.entityHash || hit.source?.id, pack: hit }
+	const owners = await listFollowedTimelineOwners(username)
+	for (const owner of owners) {
+		const local = await loadLocalEntityPack(username, owner, pid)
+		if (local) return { entityHash: owner, pack: local }
+		const fromTl = (await listTimelineEntityPacks(username, owner)).find(p => p.packId === pid)
+		if (fromTl) return { entityHash: owner, pack: fromTl }
+	}
+	return null
 }
 
 /**
@@ -368,6 +379,25 @@ export async function isEntityPackAvailableToUser(username, packId) {
 }
 
 /**
+ * 关注作者的默认包：时间线 social_meta 优先；否则显式 fetchRemote 重验 EVFS profile。
+ * @param {string} username replica
+ * @param {string} entityHash 作者
+ * @returns {Promise<string | null>} 默认 packId
+ */
+async function resolveAuthorDefaultPackId(username, entityHash) {
+	const hash = String(entityHash || '').trim().toLowerCase()
+	if (!hash) return null
+	const view = await getTimelineMaterialized(username, hash)
+	const fromMeta = String(view?.socialMeta?.defaultEmojiPackId || '').trim()
+	if (fromMeta) return fromMeta
+	const profile = await getProfile(hash, username, {
+		skipPresentation: true,
+		fetchRemote: true,
+	}).catch(() => null)
+	return String(profile?.defaultEmojiPackId || '').trim() || null
+}
+
+/**
  * 关注成功后：把对方默认表情包写入 chat 收藏（与 POST /emoji-usage/collection/packs 同效）。
  * @param {string} username replica
  * @param {string} targetEntityHash 被关注者
@@ -376,8 +406,14 @@ export async function isEntityPackAvailableToUser(username, packId) {
 export async function linkFollowedAuthorDefaultPack(username, targetEntityHash) {
 	const hash = String(targetEntityHash || '').trim().toLowerCase()
 	if (!hash) return
-	const profile = await getProfile(hash, username, { skipPresentation: true, fetchRemote: true }).catch(() => null)
-	const packId = String(profile?.defaultEmojiPackId || '').trim()
+	const { syncTimelineForEntity } = await import('./timeline/sync.mjs')
+	try {
+		await syncTimelineForEntity(username, hash)
+	}
+	catch (error) {
+		console.warn('social: follow default-pack timeline sync failed', hash, error)
+	}
+	const packId = await resolveAuthorDefaultPackId(username, hash)
 	if (!packId) return
 	convergeLinkedDefault(username, entityDefaultLinkKey(hash), packId)
 }

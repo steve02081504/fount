@@ -76,7 +76,7 @@
 					<div class="composer-body">
 						<div id="quotePreview" class="quote-preview hidden"></div>
 						<div id="groupRefPreview" class="group-ref-preview hidden"></div>
-						<textarea id="postText" rows="3" data-i18n="social.composer" placeholder=""></textarea>
+						<textarea id="postText" rows="3" data-i18n="social.composer" placeholder="" user-content></textarea>
 						<input id="postContentWarning" type="text" class="input input-bordered input-sm composer-cw hidden" maxlength="200" data-i18n="social.composer.contentWarning" placeholder="" />
 						<div id="pollComposerPanel" class="composer-panel card card-compact bg-base-200 shadow-sm poll-composer hidden">
 							<textarea id="pollComposerOptions" rows="3" class="textarea textarea-bordered textarea-sm poll-composer-options" data-i18n="social.poll.options" placeholder=""></textarea>
@@ -123,7 +123,7 @@
 							</label>
 							<label id="linkGroupField" class="composer-field hidden">
 								<span class="composer-field-label" data-i18n="social.groupRef.linking"></span>
-								<select id="linkGroupSelect" class="select select-bordered select-sm" data-i18n="social.groupRef.select"></select>
+								<select id="linkGroupSelect" class="select select-bordered select-sm"></select>
 							</label>
 							<label id="postAlbumField" class="composer-field hidden">
 								<span class="composer-field-label" data-i18n="social.profile.albums.pickerLabel"></span>
@@ -375,10 +375,10 @@
 				<div class="feed-search-wrap">
 					<span class="icon icon-search search-icon" aria-hidden="true"></span>
 					<input type="search" id="feedSearchInput" class="feed-search-input input input-bordered input-sm w-full" autocomplete="off" data-i18n="social.search" />
-					<button type="button" id="feedSearchClearButton" class="search-clear-btn hidden" data-i18n="social.search.clear">×</button>
+					<button type="button" id="feedSearchClearButton" class="search-clear-btn hidden" data-i18n="social.search.clear"></button>
 				</div>
 			</div>
-			<div id="feedTrending" class="feed-trending card bg-base-200 shadow-sm hidden" data-i18n="social.feed.trending"></div>
+			<div id="feedTrending" class="feed-trending card bg-base-200 shadow-sm hidden" role="region" aria-labelledby="feedTrendingTitle"></div>
 			<div id="asideSuggested" class="aside-suggested card bg-base-200 shadow-sm hidden">
 				<h3 class="aside-card-title" data-i18n="social.aside.suggested"></h3>
 				<div id="asideSuggestedList" class="aside-suggested-list"></div>
@@ -424,7 +424,7 @@
 					<button type="button" id="saveConfirmButton" class="btn btn-primary" data-i18n="social.saved.confirm"></button>
 				</div>
 			</div>
-			<form method="dialog" class="modal-backdrop"><button type="submit"></button></form>
+			<form method="dialog" class="modal-backdrop"><button type="submit" data-i18n="social.dialog.close"></button></form>
 		</dialog>
 	</div>
 	<script type="module" src="/parts/shells:social/index.mjs"></script>

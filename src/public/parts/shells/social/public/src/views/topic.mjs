@@ -3,10 +3,21 @@ import { socialApi } from '../lib/apiClient.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { activateView } from '../viewChrome.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 let topicGeneration = 0
 let currentTopicTag = null
+
+/**
+ * @param {HTMLElement} button 关注按钮
+ * @param {boolean} isFollowed 是否已关注
+ * @returns {void}
+ */
+function paintTopicFollowButton(button, isFollowed) {
+	button.dataset.followed = String(isFollowed)
+	button.dataset.i18n = isFollowed ? 'social.topic.unfollow' : 'social.topic.follow'
+	button.classList.toggle('btn-primary', !isFollowed)
+	button.classList.toggle('btn-outline', isFollowed)
+}
 
 /**
  * 初始化话题视图事件绑定（只调用一次）。
@@ -24,10 +35,7 @@ export function initTopicView() {
 				method: 'POST',
 				body: JSON.stringify({ tag, follow: !isFollowed }),
 			})
-			followButton.dataset.followed = String(!isFollowed)
-			followButton.textContent = geti18n(!isFollowed ? 'social.topic.unfollow' : 'social.topic.follow')
-			followButton.classList.toggle('btn-primary', isFollowed)
-			followButton.classList.toggle('btn-outline', !isFollowed)
+			paintTopicFollowButton(followButton, !isFollowed)
 		}
 		catch { /* ignore */ }
 	})
@@ -57,16 +65,12 @@ export async function loadTopicView(tag) {
 	const followButton = document.getElementById('topicFollowButton')
 	if (followButton) {
 		followButton.dataset.tag = normalizedTag
-		followButton.dataset.followed = 'false'
-		followButton.textContent = geti18n('social.topic.follow')
 		followButton.className = 'btn btn-primary btn-sm'
+		paintTopicFollowButton(followButton, false)
 		socialApi('/topics/followed').then(data => {
 			const tags = (data.tags || []).map(t => t.toLowerCase())
 			const isFollowed = tags.includes(normalizedTag.toLowerCase())
-			followButton.dataset.followed = String(isFollowed)
-			followButton.textContent = geti18n(isFollowed ? 'social.topic.unfollow' : 'social.topic.follow')
-			followButton.classList.toggle('btn-primary', !isFollowed)
-			followButton.classList.toggle('btn-outline', isFollowed)
+			paintTopicFollowButton(followButton, isFollowed)
 		}).catch(() => { })
 	}
 

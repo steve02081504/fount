@@ -122,7 +122,7 @@ async function setFollowRelation(apiContext, target, follow) {
 		}
 		await syncTimelineForEntity(apiContext.username, hash)
 		const { linkFollowedAuthorDefaultPack } = await import('../../emojiPacks.mjs')
-		await linkFollowedAuthorDefaultPack(apiContext.username, hash).catch(() => { })
+		await linkFollowedAuthorDefaultPack(apiContext.username, hash)
 	}
 	return { entityHash: hash, isFollowing: follow }
 }

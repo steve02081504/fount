@@ -126,7 +126,7 @@ test.describe('Social short videos', () => {
 			Object.defineProperty(navigator, 'share', { value: undefined, configurable: true })
 		})
 		await slide.locator('.video-share-btn').click()
-		await expect(slide.locator('.video-share-btn .action-count')).toHaveText('已复制', { timeout: 5_000 })
+		await expect(slide.locator('.video-share-btn .action-count[data-i18n="social.actions.copied"]')).toBeVisible({ timeout: 5_000 })
 	})
 
 	test('comment ticker shows existing replies', async ({ page, baseUrl, apiKey }) => {

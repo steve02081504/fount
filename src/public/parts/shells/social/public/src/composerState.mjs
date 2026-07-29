@@ -9,7 +9,6 @@ import { state } from './state.mjs'
 import { bindVisibilityPicker, applyVisibilityPicker } from './visibilityPicker.mjs'
 import { formatChannelToken, stripChannelTokens } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
 import { openImageEditor } from '/scripts/imageEditor/index.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 const SOCIAL_CW_IDS = { cwId: 'postContentWarning', sensitiveId: 'postSensitiveMedia' }
 
@@ -168,7 +167,7 @@ export async function loadGroupPickerOptions() {
 	const select = document.getElementById('linkGroupSelect')
 	const field = document.getElementById('linkGroupField')
 	if (!select) return
-	select.innerHTML = `<option value="">${geti18n('social.groupRef.pick')}</option>`
+	select.innerHTML = '<option value="" data-i18n="social.groupRef.pick"></option>'
 	try {
 		const rows = await chatApi('/groups/')
 		const groups = Array.isArray(rows) ? rows : []
@@ -203,7 +202,7 @@ export function refreshMediaPreview() {
 		state.pendingMediaRefs,
 		() => refreshMediaPreview(),
 		{
-			editLabel: geti18n('social.composer.editImage'),
+			editI18n: 'social.composer.editImage',
 			/**
 			 * @param {number} index 媒体下标
 			 * @param {object} ref 媒体引用
@@ -211,14 +210,7 @@ export function refreshMediaPreview() {
 			onEditImage: async (index, ref) => {
 				const source = ref.file
 				if (!(source instanceof Blob)) return
-				const edited = await openImageEditor(source, {
-					title: geti18n('social.composer.editImage'),
-					cropLabel: geti18n('social.composer.editCrop'),
-					mosaicLabel: geti18n('social.composer.editMosaic'),
-					brushLabel: geti18n('social.composer.editBrush'),
-					applyLabel: geti18n('social.composer.editApply'),
-					cancelLabel: geti18n('social.composer.editCancel'),
-				})
+				const edited = await openImageEditor(source)
 				if (!edited) return
 				if (ref.objectUrl) URL.revokeObjectURL(ref.objectUrl)
 				state.pendingMediaRefs[index] = {

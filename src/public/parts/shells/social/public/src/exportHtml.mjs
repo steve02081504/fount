@@ -49,12 +49,12 @@ export async function generatePostStandaloneHtml(content = {}) {
 }
 
 /**
- * 下载帖子为独立 HTML。
+ * 下载帖子为独立 HTML（文件名取自文档 `<title>`）。
  * @param {{ text?: string, mediaRefs?: object[] }} content 帖子 content
- * @param {string} [fileName] 文件名
+ * @param {string} [fileName] 覆盖文件名；省略则用 title
  * @returns {Promise<void>}
  */
 export async function downloadPostHtml(content, fileName) {
 	const html = await generatePostStandaloneHtml(content)
-	downloadHtmlDocument(html, fileName || 'post-export.html')
+	downloadHtmlDocument(html, fileName)
 }

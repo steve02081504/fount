@@ -99,7 +99,7 @@ export async function buildPostCard(item, options = {}) {
 			href: escapeHtml(formatSocialPostHref(replyContext.entityHash, replyContext.postId)),
 			author: escapeHtml(entityHandle(replyContext.entityHash, replyContext.authorProfile)),
 			snippetHtml: replyContext.text
-				? `<span class="reply-context-snippet">${escapeHtml(String(replyContext.text).slice(0, 120))}</span>`
+				? `<span class="reply-context-snippet" user-content>${escapeHtml(String(replyContext.text).slice(0, 120))}</span>`
 				: '',
 		})
 		: ''
@@ -114,7 +114,7 @@ export async function buildPostCard(item, options = {}) {
 	const liveRefHtml = liveRef && !decryptFailed
 		? await renderLiveRefHtml(liveRef)
 		: ''
-	let contentBlock = `${pollHtml}${mediaHtmlRaw}${liveRefHtml}<div class="body markdown-body">${markdownBody}</div>`
+	let contentBlock = `${pollHtml}${mediaHtmlRaw}${liveRefHtml}<div class="body markdown-body" user-content>${markdownBody}</div>`
 	if (contentWarning && !decryptFailed)
 		contentBlock = wrapContentWarningHtml(contentBlock, {
 			warningLabel: contentWarning,
@@ -144,7 +144,7 @@ export async function buildPostCard(item, options = {}) {
 		? await renderTemplateAsHtmlString('repost_banner', { author: escapeHtml(label) })
 		: ''
 	const repostCommentHtml = isRepost && item.repostComment
-		? `<div class="body markdown-body repost-comment">${await renderTrustedPostMarkdown(item.repostComment, item.entityHash, {
+		? `<div class="body markdown-body repost-comment" user-content>${await renderTrustedPostMarkdown(item.repostComment, item.entityHash, {
 			ownerEntityHash: item.ownerEntityHash || item.authorProfile?.ownerEntityHash,
 		})}</div>`
 		: ''
@@ -206,8 +206,6 @@ export async function buildPostCard(item, options = {}) {
 			})
 			: ''
 
-	const { geti18n } = await import('/scripts/i18n/index.mjs')
-	const visLabel = geti18n(vis.labelKey)
 	const card = await renderTemplate('post_card', {
 		postId: item.postId,
 		postTextEncoded: encodeURIComponent(decryptFailed ? '' : text),
@@ -223,7 +221,7 @@ export async function buildPostCard(item, options = {}) {
 		postTimeAttrs,
 		postTimeText,
 		editedBadge,
-		visibilityIcon: `<span class="icon icon-${vis.icon} post-visibility-icon" role="img" title="${escapeHtml(visLabel)}" aria-label="${escapeHtml(visLabel)}"></span>`,
+		visibilityIcon: `<span class="icon icon-${vis.icon} post-visibility-icon" role="img" aria-labelledby="post-vis-${escapeHtml(item.postId)}"><span id="post-vis-${escapeHtml(item.postId)}" class="sr-only" data-i18n="${escapeHtml(vis.labelKey)}"></span></span>`,
 		quoteHtml,
 		replyContextHtml,
 		groupRefHtml,
