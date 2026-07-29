@@ -3895,8 +3895,8 @@
 				"aria-label": "브러시 색상"
 			},
 			"editBrushSize": {
-				"title": "브러시 두께",
-				"aria-label": "브러시 두께"
+				"title": "브러시 크기",
+				"aria-label": "브러시 크기"
 			},
 			"editApply": "적용",
 			"editCancel": "취소",

@@ -3885,17 +3885,17 @@
 			"sensitiveMedia": "media sensitivity mask",
 			"editImage": "edit",
 			"editCrop": "Crop",
-			"editMosaic": "coding",
-			"editBrush": "brush",
+			"editMosaic": "Pixelate",
+			"editBrush": "Brush",
 			"editBrushColor": {
-				"title": "brush color",
-				"aria-label": "brush color"
+				"title": "Brush colour",
+				"aria-label": "Brush colour"
 			},
 			"editBrushSize": {
-				"title": "brush thickness",
-				"aria-label": "brush thickness"
+				"title": "Brush size",
+				"aria-label": "Brush size"
 			},
-			"editApply": "application",
+			"editApply": "Apply",
 			"editCancel": "Cancel",
 			"replyPolicyEveryone": "Anyone can reply",
 			"replyPolicyFollowers7d": "Followers for more than 7 days",

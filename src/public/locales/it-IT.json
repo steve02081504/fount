@@ -3887,18 +3887,18 @@
 			},
 			"sensitiveMedia": "maschera di sensibilità ai media",
 			"editImage": "modificare",
-			"editCrop": "Raccolto",
-			"editMosaic": "codifica",
-			"editBrush": "spazzola",
+			"editCrop": "Ritaglia",
+			"editMosaic": "Pixelizza",
+			"editBrush": "Pennello",
 			"editBrushColor": {
-				"title": "colore del pennello",
-				"aria-label": "colore del pennello"
+				"title": "Colore del pennello",
+				"aria-label": "Colore del pennello"
 			},
 			"editBrushSize": {
-				"title": "spessore del pennello",
-				"aria-label": "spessore del pennello"
+				"title": "Dimensione del pennello",
+				"aria-label": "Dimensione del pennello"
 			},
-			"editApply": "applicazione",
+			"editApply": "Applica",
 			"editCancel": "Annulla",
 			"replyPolicyEveryone": "Chiunque può rispondere",
 			"replyPolicyFollowers7d": "Follower da più di 7 giorni",

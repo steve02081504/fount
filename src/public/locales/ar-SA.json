@@ -3888,17 +3888,17 @@
 			"sensitiveMedia": "قناع حساسية الوسائط",
 			"editImage": "تعديل",
 			"editCrop": "اقتصاص",
-			"editMosaic": "الترميز",
+			"editMosaic": "تمويه",
 			"editBrush": "فرشاة",
 			"editBrushColor": {
 				"title": "لون الفرشاة",
 				"aria-label": "لون الفرشاة"
 			},
 			"editBrushSize": {
-				"title": "سمك الفرشاة",
-				"aria-label": "سمك الفرشاة"
+				"title": "سُمك الفرشاة",
+				"aria-label": "سُمك الفرشاة"
 			},
-			"editApply": "طلب",
+			"editApply": "تطبيق",
 			"editCancel": "إلغاء",
 			"replyPolicyEveryone": "يمكن لأي شخص الرد",
 			"replyPolicyFollowers7d": "متابعون لأكثر من 7 أيام",

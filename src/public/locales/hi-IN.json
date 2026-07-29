@@ -3888,15 +3888,15 @@
 			"sensitiveMedia": "मीडिया संवेदनशील मीडिया मास्क",
 			"editImage": "संपादित करें",
 			"editCrop": "क्रॉप",
-			"editMosaic": "मोज़ेक",
+			"editMosaic": "पिक्सेलेट",
 			"editBrush": "ब्रश",
 			"editBrushColor": {
 				"title": "ब्रश का रंग",
 				"aria-label": "ब्रश का रंग"
 			},
 			"editBrushSize": {
-				"title": "ब्रश की मोटाई",
-				"aria-label": "ब्रश की मोटाई"
+				"title": "ब्रश का आकार",
+				"aria-label": "ब्रश का आकार"
 			},
 			"editApply": "लागू करें",
 			"editCancel": "रद्द करें",

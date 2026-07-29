@@ -3887,18 +3887,18 @@
 			},
 			"sensitiveMedia": "mặt nạ nhạy cảm với phương tiện truyền thông",
 			"editImage": "biên tập",
-			"editCrop": "Mùa vụ",
-			"editMosaic": "mã hóa",
-			"editBrush": "Chải",
+			"editCrop": "Cắt",
+			"editMosaic": "Che pixel",
+			"editBrush": "Cọ",
 			"editBrushColor": {
-				"title": "màu cọ",
-				"aria-label": "màu cọ"
+				"title": "Màu cọ",
+				"aria-label": "Màu cọ"
 			},
 			"editBrushSize": {
-				"title": "độ dày bàn chải",
-				"aria-label": "độ dày bàn chải"
+				"title": "Độ dày cọ",
+				"aria-label": "Độ dày cọ"
 			},
-			"editApply": "ứng dụng",
+			"editApply": "Áp dụng",
 			"editCancel": "Hủy bỏ",
 			"replyPolicyEveryone": "Bất cứ ai cũng có thể trả lời",
 			"replyPolicyFollowers7d": "Người theo dõi trong hơn 7 ngày",

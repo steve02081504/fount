@@ -3888,15 +3888,15 @@
 			"sensitiveMedia": "Размытие чувствительного контента",
 			"editImage": "Редактировать",
 			"editCrop": "Обрезать",
-			"editMosaic": "Размытие",
+			"editMosaic": "Пикселизация",
 			"editBrush": "Кисть",
 			"editBrushColor": {
-				"title": "цвет кисти",
-				"aria-label": "цвет кисти"
+				"title": "Цвет кисти",
+				"aria-label": "Цвет кисти"
 			},
 			"editBrushSize": {
-				"title": "толщина кисти",
-				"aria-label": "толщина кисти"
+				"title": "Размер кисти",
+				"aria-label": "Размер кисти"
 			},
 			"editApply": "Применить",
 			"editCancel": "Отмена",

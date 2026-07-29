@@ -3887,16 +3887,16 @@
 			},
 			"sensitiveMedia": "Næmisfjölmiðlahúð",
 			"editImage": "Breyta",
-			"editCrop": "Skera",
-			"editMosaic": "Mósaík",
+			"editCrop": "Klippa",
+			"editMosaic": "Pixla",
 			"editBrush": "Pensill",
 			"editBrushColor": {
-				"title": "litur bursta",
-				"aria-label": "litur bursta"
+				"title": "Litur pensils",
+				"aria-label": "Litur pensils"
 			},
 			"editBrushSize": {
-				"title": "þykkt bursta",
-				"aria-label": "þykkt bursta"
+				"title": "Stærð pensils",
+				"aria-label": "Stærð pensils"
 			},
 			"editApply": "Nota",
 			"editCancel": "Hætta við",

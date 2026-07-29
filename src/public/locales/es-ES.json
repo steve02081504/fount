@@ -3887,18 +3887,18 @@
 			},
 			"sensitiveMedia": "máscara de sensibilidad a los medios",
 			"editImage": "editar",
-			"editCrop": "Cultivo",
-			"editMosaic": "codificación",
-			"editBrush": "cepillar",
+			"editCrop": "Recortar",
+			"editMosaic": "Pixelar",
+			"editBrush": "Pincel",
 			"editBrushColor": {
-				"title": "color del pincel",
-				"aria-label": "color del pincel"
+				"title": "Color del pincel",
+				"aria-label": "Color del pincel"
 			},
 			"editBrushSize": {
-				"title": "espesor del cepillo",
-				"aria-label": "espesor del cepillo"
+				"title": "Tamaño del pincel",
+				"aria-label": "Tamaño del pincel"
 			},
-			"editApply": "solicitud",
+			"editApply": "Aplicar",
 			"editCancel": "Cancelar",
 			"replyPolicyEveryone": "Cualquiera puede responder",
 			"replyPolicyFollowers7d": "Seguidores por más de 7 días.",

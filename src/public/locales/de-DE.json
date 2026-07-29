@@ -3889,14 +3889,14 @@
 			"editImage": "Bearbeiten",
 			"editCrop": "Zuschneiden",
 			"editMosaic": "Verpixeln",
-			"editBrush": "Bürste",
+			"editBrush": "Pinsel",
 			"editBrushColor": {
 				"title": "Pinselfarbe",
 				"aria-label": "Pinselfarbe"
 			},
 			"editBrushSize": {
-				"title": "Bürstenstärke",
-				"aria-label": "Bürstenstärke"
+				"title": "Pinselgröße",
+				"aria-label": "Pinselgröße"
 			},
 			"editApply": "Übernehmen",
 			"editCancel": "Abbrechen",

@@ -3888,15 +3888,15 @@
 			"sensitiveMedia": "Média sensible",
 			"editImage": "Modifier",
 			"editCrop": "Recadrer",
-			"editMosaic": "Mosaïque",
+			"editMosaic": "Pixeliser",
 			"editBrush": "Pinceau",
 			"editBrushColor": {
-				"title": "couleur du pinceau",
-				"aria-label": "couleur du pinceau"
+				"title": "Couleur du pinceau",
+				"aria-label": "Couleur du pinceau"
 			},
 			"editBrushSize": {
-				"title": "épaisseur du pinceau",
-				"aria-label": "épaisseur du pinceau"
+				"title": "Taille du pinceau",
+				"aria-label": "Taille du pinceau"
 			},
 			"editApply": "Appliquer",
 			"editCancel": "Annuler",

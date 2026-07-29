@@ -3891,12 +3891,12 @@
 			"editMosaic": "打碼",
 			"editBrush": "畫筆",
 			"editBrushColor": {
-				"title": "画笔颜色",
-				"aria-label": "画笔颜色"
+				"title": "畫筆之色",
+				"aria-label": "畫筆之色"
 			},
 			"editBrushSize": {
-				"title": "画笔粗细",
-				"aria-label": "画笔粗细"
+				"title": "畫筆粗細",
+				"aria-label": "畫筆粗細"
 			},
 			"editApply": "應用",
 			"editCancel": "罷",

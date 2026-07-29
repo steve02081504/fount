@@ -3888,15 +3888,15 @@
 			"sensitiveMedia": "Máscara de sensibilidade à mídia",
 			"editImage": "Editar",
 			"editCrop": "Recortar",
-			"editMosaic": "Codificação",
-			"editBrush": "Escovar",
+			"editMosaic": "Pixelizar",
+			"editBrush": "Pincel",
 			"editBrushColor": {
-				"title": "cor do pincel",
-				"aria-label": "cor do pincel"
+				"title": "Cor do pincel",
+				"aria-label": "Cor do pincel"
 			},
 			"editBrushSize": {
-				"title": "espessura do pincel",
-				"aria-label": "espessura do pincel"
+				"title": "Tamanho do pincel",
+				"aria-label": "Tamanho do pincel"
 			},
 			"editApply": "Aplicar",
 			"editCancel": "Cancelar",

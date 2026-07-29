@@ -3887,16 +3887,16 @@
 			},
 			"sensitiveMedia": "Затемнення чутливих медіа",
 			"editImage": "Редагувати",
-			"editCrop": "Кадрування",
-			"editMosaic": "Заблюрити",
+			"editCrop": "Обрізати",
+			"editMosaic": "Пікселізація",
 			"editBrush": "Пензлик",
 			"editBrushColor": {
-				"title": "колір кисті",
-				"aria-label": "колір кисті"
+				"title": "Колір пензлика",
+				"aria-label": "Колір пензлика"
 			},
 			"editBrushSize": {
-				"title": "товщина кисті",
-				"aria-label": "товщина кисті"
+				"title": "Розмір пензлика",
+				"aria-label": "Розмір пензлика"
 			},
 			"editApply": "Застосувати",
 			"editCancel": "Скасувати",

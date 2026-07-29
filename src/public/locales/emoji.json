@@ -3891,12 +3891,12 @@
 			"editMosaic": "🔲",
 			"editBrush": "🖌️",
 			"editBrushColor": {
-				"title": "画笔颜色",
-				"aria-label": "画笔颜色"
+				"title": "🎨",
+				"aria-label": "🎨"
 			},
 			"editBrushSize": {
-				"title": "画笔粗细",
-				"aria-label": "画笔粗细"
+				"title": "📏",
+				"aria-label": "📏"
 			},
 			"editApply": "✅",
 			"editCancel": "↩️",

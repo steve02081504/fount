@@ -3891,12 +3891,12 @@
 			"editMosaic": "Verpixelen",
 			"editBrush": "Penseel",
 			"editBrushColor": {
-				"title": "borstel kleur",
-				"aria-label": "borstel kleur"
+				"title": "Penseelkleur",
+				"aria-label": "Penseelkleur"
 			},
 			"editBrushSize": {
-				"title": "dikte van de borstel",
-				"aria-label": "dikte van de borstel"
+				"title": "Penseeldikte",
+				"aria-label": "Penseeldikte"
 			},
 			"editApply": "Toepassen",
 			"editCancel": "Annuleren",
