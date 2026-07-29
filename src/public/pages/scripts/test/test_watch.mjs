@@ -359,15 +359,17 @@ async function cycleLocales() {
 	}
 	dirty = false
 	const i18n = await import('../i18n/index.mjs')
-	for (const locale of LOCALE_CYCLE) {
-		await withIgnoredMutations(async () => {
-			await i18n.setLanguage([locale])
-			localeIndex = LOCALE_CYCLE.indexOf(locale)
-			await runLocaleScriptCheck(i18n.main_locale || locale)
-		})
-		// enqueueWatch 已记日志；此处吞掉 rejection，避免打断后续语种
-		await enqueueWatch(() => runA11y()).catch(() => { })
-	}
+	for (const locale of LOCALE_CYCLE) 
+		// 与 watchChain 串行：避免 axe / advanceLocale 与切语种重叠
+		await enqueueWatch(async () => {
+			await withIgnoredMutations(async () => {
+				await i18n.setLanguage([locale])
+				localeIndex = LOCALE_CYCLE.indexOf(locale)
+				await runLocaleScriptCheck(i18n.main_locale || locale)
+			})
+			await runA11y()
+		}).catch(() => { })
+	
 	ensureLocaleTimer()
 }
 
@@ -395,11 +397,11 @@ domObserver.observe(document.documentElement, {
 
 if (!document.querySelector('[data-i18n]'))
 	openLocaleGate()
-else import('../i18n/index.mjs').then(({ onLanguageChange, offLanguageChange, loadPreferredLangs }) => {
+else import('../i18n/index.mjs').then(({ onLanguageChange, offLanguageChange, loadPreferredLangs, matchLocale }) => {
 	const preferred = loadPreferredLangs()[0]
 	if (preferred) {
-		const idx = LOCALE_CYCLE.indexOf(preferred)
-		if (idx >= 0) localeIndex = idx
+		const matched = matchLocale([preferred], LOCALE_CYCLE)
+		if (matched) localeIndex = LOCALE_CYCLE.indexOf(matched)
 	}
 	/**
 	 * @returns {void}

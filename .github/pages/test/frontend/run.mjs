@@ -62,6 +62,12 @@ finally {
 		}
 	}
 	finally {
-		if (releaseAll) await releaseAll().catch(() => { })
+		if (releaseAll) try {
+			await releaseAll()
+		}
+		catch (error) {
+			console.error('[pages] releaseAll failed', error)
+			if (!process.exitCode) process.exitCode = 1
+		}
 	}
 }

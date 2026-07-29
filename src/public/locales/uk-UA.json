@@ -1005,8 +1005,8 @@
 				"aria-label": "Усміхнені обличчя та емоції"
 			},
 			"People_and_Body": {
-				"title": "Фігури і тіла",
-				"aria-label": "Фігури і тіла"
+				"title": "Люди та тіло",
+				"aria-label": "Люди та тіло"
 			},
 			"Animals_and_Nature": {
 				"title": "Тварини і природа",
@@ -1033,8 +1033,8 @@
 				"aria-label": "Символ"
 			},
 			"Flags": {
-				"title": "Банер",
-				"aria-label": "Банер"
+				"title": "Прапори",
+				"aria-label": "Прапори"
 			}
 		},
 		"sessionSettings": {
