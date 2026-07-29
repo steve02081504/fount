@@ -25,6 +25,8 @@ let idleTimer = null
 let lastManualStatus = 'online'
 /** @type {HTMLElement | null} */
 let openStatusMenuElement = null
+/** @type {(ReturnType<typeof bindDismissOnDocumentInteraction>) | null} */
+let statusMenuDismissClose = null
 
 const MANUAL_STATUSES = ['online', 'idle', 'dnd', 'invisible']
 
@@ -160,6 +162,8 @@ export function startIdleWatcher() {
 
 /** @returns {void} */
 function dismissStatusMenu() {
+	statusMenuDismissClose?.unbind()
+	statusMenuDismissClose = null
 	if (!openStatusMenuElement) return
 	openStatusMenuElement.remove()
 	openStatusMenuElement = null
@@ -195,7 +199,7 @@ export async function showStatusMenu(anchorElement) {
 	host.append(menu)
 	openStatusMenuElement = menu
 
-	bindDismissOnDocumentInteraction(dismissStatusMenu, {
+	statusMenuDismissClose = bindDismissOnDocumentInteraction(dismissStatusMenu, {
 		contextMenu: false,
 		// capture 关闭若先拆掉菜单，`<a data-profile-link>` 的导航/点击会丢
 		ignoreSelectors: ['.menu'],

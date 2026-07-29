@@ -1646,15 +1646,21 @@ function Read-FountTestKeepAwakeState {
 	if (-not (Test-Path -LiteralPath $path)) {
 		return @{ lidAc = $null; holders = @() }
 	}
-	$raw = Get-Content -LiteralPath $path -Raw -ErrorAction Stop | ConvertFrom-Json
-	$holders = @(
-		foreach ($h in @($raw.holders)) {
-			if ($null -ne $h -and "$h" -ne '') { [int]$h }
-		}
-	)
-	$lidAc = $null
-	if ($null -ne $raw.lidAc -and "$($raw.lidAc)" -ne '') { $lidAc = [int]$raw.lidAc }
-	return @{ lidAc = $lidAc; holders = $holders }
+	try {
+		$raw = Get-Content -LiteralPath $path -Raw -ErrorAction Stop | ConvertFrom-Json
+		$holders = @(
+			foreach ($h in @($raw.holders)) {
+				if ($null -ne $h -and "$h" -ne '') { [int]$h }
+			}
+		)
+		$lidAc = $null
+		if ($null -ne $raw.lidAc -and "$($raw.lidAc)" -ne '') { $lidAc = [int]$raw.lidAc }
+		return @{ lidAc = $lidAc; holders = $holders }
+	}
+	catch {
+		Write-Verbose "Read-FountTestKeepAwakeState: $($_.Exception.Message)"
+		return @{ lidAc = $null; holders = @() }
+	}
 }
 function Write-FountTestKeepAwakeState($State) {
 	$path = Get-FountTestKeepAwakeStatePath
@@ -1726,7 +1732,8 @@ public static class FountKeepAwake {
 }
 function Disable-FountTestKeepAwake {
 	if ($script:FountTestKeepAwakeActive) {
-		try { [void][FountKeepAwake]::SetThreadExecutionState([Convert]::ToUInt32('80000000', 16)) } catch {}
+		try { [void][FountKeepAwake]::SetThreadExecutionState([Convert]::ToUInt32('80000000', 16)) }
+		catch { Write-Verbose "Disable-FountTestKeepAwake SetThreadExecutionState: $($_.Exception.Message)" }
 		$script:FountTestKeepAwakeActive = $false
 	}
 	if (-not $IsWindows) { return }
@@ -1738,7 +1745,8 @@ function Disable-FountTestKeepAwake {
 			$script:FountTestLidHolder = $false
 		}
 		if ($state.holders.Count -eq 0 -and $null -ne $state.lidAc) {
-			try { Set-FountTestLidAc $state.lidAc } catch {}
+			try { Set-FountTestLidAc $state.lidAc }
+			catch { Write-Verbose "Disable-FountTestKeepAwake Set-FountTestLidAc: $($_.Exception.Message)" }
 			$state.lidAc = $null
 		}
 	}
@@ -1749,7 +1757,8 @@ function Restore-FountTestKeepAwakeArchive {
 	Invoke-FountTestKeepAwakeLocked {
 		$state = Read-FountTestKeepAwakeState
 		if ($null -ne $state.lidAc) {
-			try { Set-FountTestLidAc $state.lidAc } catch {}
+			try { Set-FountTestLidAc $state.lidAc }
+			catch { Write-Verbose "Restore-FountTestKeepAwakeArchive Set-FountTestLidAc: $($_.Exception.Message)" }
 		}
 		Remove-Item -LiteralPath (Get-FountTestKeepAwakeStatePath) -Force -ErrorAction Ignore
 		$script:FountTestLidHolder = $false
@@ -1757,7 +1766,8 @@ function Restore-FountTestKeepAwakeArchive {
 }
 
 if ($args[0] -eq 'test') {
-	Enable-FountTestKeepAwake
+	try { Enable-FountTestKeepAwake }
+	catch { Write-Verbose "Enable-FountTestKeepAwake: $($_.Exception.Message)" }
 	$testExit = 0
 	try {
 		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/scripts/test/cli.mjs" @(if ($args.Count -gt 1) { $args[1..($args.Count - 1)] })

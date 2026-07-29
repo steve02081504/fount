@@ -34,9 +34,13 @@ import { closeGroupWebSocket } from './stream/index.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null
+/** @type {(ReturnType<typeof bindDismissOnDocumentInteraction>) | null} */
+let menuDismissClose = null
 
 /** 关闭已打开的群操作菜单。 @returns {void} */
 export function dismissGroupActionMenu() {
+	menuDismissClose?.unbind()
+	menuDismissClose = null
 	if (!openMenuElement) return
 	openMenuElement.remove()
 	openMenuElement = null
@@ -196,7 +200,7 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 	positionContextMenu(menu, { x: left, y: top, maxWidth: 200 })
 	openMenuElement = menu
 
-	bindDismissOnDocumentInteraction(dismissGroupActionMenu)
+	menuDismissClose = bindDismissOnDocumentInteraction(dismissGroupActionMenu)
 
 	menu.querySelector('.group-menu-manage')?.addEventListener('click', () => {
 		dismissGroupActionMenu()

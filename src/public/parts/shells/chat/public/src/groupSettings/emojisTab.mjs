@@ -92,20 +92,28 @@ ${del}
 		defaultSelect.setAttribute('user-content', '')
 		if (canManage)
 			defaultSelect.addEventListener('change', async () => {
+				const previousValue = String(context.state?.groupSettings?.defaultEmojiPackId || '').trim() || context.groupId
 				const packId = String(defaultSelect.value || '').trim()
-				const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/settings`, {
-					method: 'PUT',
-					credentials: 'include',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ defaultEmojiPackId: packId || null }),
-				})
-				if (!resp.ok) {
-					showToastI18n('error', 'chat.group.settingsPage.defaultEmojiPackFailed')
-					return
+				try {
+					const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/settings`, {
+						method: 'PUT',
+						credentials: 'include',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ defaultEmojiPackId: packId || null }),
+					})
+					if (!resp.ok) {
+						showToastI18n('error', 'chat.group.settingsPage.defaultEmojiPackFailed')
+						defaultSelect.value = previousValue
+						return
+					}
+					showToastI18n('success', 'chat.group.settingsPage.defaultEmojiPackOk')
+					if (context.state?.groupSettings)
+						context.state.groupSettings.defaultEmojiPackId = packId || null
 				}
-				showToastI18n('success', 'chat.group.settingsPage.defaultEmojiPackOk')
-				if (context.state?.groupSettings)
-					context.state.groupSettings.defaultEmojiPackId = packId || null
+				catch {
+					showToastI18n('error', 'chat.group.settingsPage.defaultEmojiPackFailed')
+					defaultSelect.value = previousValue
+				}
 			})
 	}
 
