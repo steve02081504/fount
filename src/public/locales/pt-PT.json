@@ -3890,6 +3890,14 @@
 			"editCrop": "Recortar",
 			"editMosaic": "Codificação",
 			"editBrush": "Escovar",
+			"editBrushColor": {
+				"title": "cor do pincel",
+				"aria-label": "cor do pincel"
+			},
+			"editBrushSize": {
+				"title": "espessura do pincel",
+				"aria-label": "espessura do pincel"
+			},
 			"editApply": "Aplicar",
 			"editCancel": "Cancelar",
 			"replyPolicyEveryone": "Qualquer um pode responder",

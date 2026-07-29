@@ -3890,6 +3890,14 @@
 			"editCrop": "トリミング",
 			"editMosaic": "モザイク",
 			"editBrush": "ブラシ",
+			"editBrushColor": {
+				"title": "ブラシの色",
+				"aria-label": "ブラシの色"
+			},
+			"editBrushSize": {
+				"title": "ブラシの太さ",
+				"aria-label": "ブラシの太さ"
+			},
 			"editApply": "適用",
 			"editCancel": "キャンセル",
 			"replyPolicyEveryone": "全員",

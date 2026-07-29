@@ -3890,6 +3890,14 @@
 			"editCrop": "Кадрування",
 			"editMosaic": "Заблюрити",
 			"editBrush": "Пензлик",
+			"editBrushColor": {
+				"title": "колір кисті",
+				"aria-label": "колір кисті"
+			},
+			"editBrushSize": {
+				"title": "товщина кисті",
+				"aria-label": "товщина кисті"
+			},
 			"editApply": "Застосувати",
 			"editCancel": "Скасувати",
 			"replyPolicyEveryone": "Будь-хто може відповісти",

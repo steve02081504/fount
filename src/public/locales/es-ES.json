@@ -3890,6 +3890,14 @@
 			"editCrop": "Cultivo",
 			"editMosaic": "codificación",
 			"editBrush": "cepillar",
+			"editBrushColor": {
+				"title": "color del pincel",
+				"aria-label": "color del pincel"
+			},
+			"editBrushSize": {
+				"title": "espesor del cepillo",
+				"aria-label": "espesor del cepillo"
+			},
 			"editApply": "solicitud",
 			"editCancel": "Cancelar",
 			"replyPolicyEveryone": "Cualquiera puede responder",

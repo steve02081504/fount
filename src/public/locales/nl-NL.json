@@ -3890,6 +3890,14 @@
 			"editCrop": "Bijsnijden",
 			"editMosaic": "Verpixelen",
 			"editBrush": "Penseel",
+			"editBrushColor": {
+				"title": "borstel kleur",
+				"aria-label": "borstel kleur"
+			},
+			"editBrushSize": {
+				"title": "dikte van de borstel",
+				"aria-label": "dikte van de borstel"
+			},
 			"editApply": "Toepassen",
 			"editCancel": "Annuleren",
 			"replyPolicyEveryone": "Iedereen kan antwoorden",

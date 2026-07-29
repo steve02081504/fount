@@ -3890,6 +3890,14 @@
 			"editCrop": "Zuschneiden",
 			"editMosaic": "Verpixeln",
 			"editBrush": "Bürste",
+			"editBrushColor": {
+				"title": "Pinselfarbe",
+				"aria-label": "Pinselfarbe"
+			},
+			"editBrushSize": {
+				"title": "Bürstenstärke",
+				"aria-label": "Bürstenstärke"
+			},
 			"editApply": "Übernehmen",
 			"editCancel": "Abbrechen",
 			"replyPolicyEveryone": "Jeder kann antworten",

@@ -3890,6 +3890,14 @@
 			"editCrop": "Mùa vụ",
 			"editMosaic": "mã hóa",
 			"editBrush": "Chải",
+			"editBrushColor": {
+				"title": "màu cọ",
+				"aria-label": "màu cọ"
+			},
+			"editBrushSize": {
+				"title": "độ dày bàn chải",
+				"aria-label": "độ dày bàn chải"
+			},
 			"editApply": "ứng dụng",
 			"editCancel": "Hủy bỏ",
 			"replyPolicyEveryone": "Bất cứ ai cũng có thể trả lời",

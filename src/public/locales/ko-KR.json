@@ -3890,6 +3890,14 @@
 			"editCrop": "자르기",
 			"editMosaic": "모자이크",
 			"editBrush": "브러시",
+			"editBrushColor": {
+				"title": "브러시 색상",
+				"aria-label": "브러시 색상"
+			},
+			"editBrushSize": {
+				"title": "브러시 두께",
+				"aria-label": "브러시 두께"
+			},
 			"editApply": "적용",
 			"editCancel": "취소",
 			"replyPolicyEveryone": "누구나 답글을 달 수 있습니다.",

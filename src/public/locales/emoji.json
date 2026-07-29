@@ -3890,6 +3890,14 @@
 			"editCrop": "✂️",
 			"editMosaic": "🔲",
 			"editBrush": "🖌️",
+			"editBrushColor": {
+				"title": "画笔颜色",
+				"aria-label": "画笔颜色"
+			},
+			"editBrushSize": {
+				"title": "画笔粗细",
+				"aria-label": "画笔粗细"
+			},
 			"editApply": "✅",
 			"editCancel": "↩️",
 			"replyPolicyEveryone": "🌍💬",

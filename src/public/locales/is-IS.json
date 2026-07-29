@@ -3890,6 +3890,14 @@
 			"editCrop": "Skera",
 			"editMosaic": "Mósaík",
 			"editBrush": "Pensill",
+			"editBrushColor": {
+				"title": "litur bursta",
+				"aria-label": "litur bursta"
+			},
+			"editBrushSize": {
+				"title": "þykkt bursta",
+				"aria-label": "þykkt bursta"
+			},
 			"editApply": "Nota",
 			"editCancel": "Hætta við",
 			"replyPolicyEveryone": "Hver sem er getur svarað",

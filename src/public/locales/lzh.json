@@ -3890,6 +3890,14 @@
 			"editCrop": "裁剪",
 			"editMosaic": "打碼",
 			"editBrush": "畫筆",
+			"editBrushColor": {
+				"title": "画笔颜色",
+				"aria-label": "画笔颜色"
+			},
+			"editBrushSize": {
+				"title": "画笔粗细",
+				"aria-label": "画笔粗细"
+			},
 			"editApply": "應用",
 			"editCancel": "罷",
 			"replyPolicyEveryone": "天下皆可論",

@@ -3,8 +3,8 @@
 // 此文件为 i18n 键提供类型定义，实现自动补全。
 
 /**
-* 表示所有可能的语言环境数据类型。
-*/
+ * 表示所有可能的语言环境数据类型。
+ */
 export type LocaleData = {
 	lang: string
 	name: string
@@ -5442,19 +5442,19 @@ type Join<K, P> = K extends string | number
 	: never
 
 /**
-* 表示语言环境数据所有可能的点表示法键。
-* 这为在 `geti18n` 中使用的键提供自动补全。
-*
-* @example
-* 'home.title'
-* 'login.errors.password_mismatch'
-*/
+ * 表示语言环境数据所有可能的点表示法键。
+ * 这为在 `geti18n` 中使用的键提供自动补全。
+ *
+ * @example
+ * 'home.title'
+ * 'login.errors.password_mismatch'
+ */
 export type LocaleKey = Paths<LocaleData>
 
 /**
-* 将语言环境键映射到其预期参数对象的类型。
-* 如果键不需要参数，则不包含在此类型中。
-*/
+ * 将语言环境键映射到其预期参数对象的类型。
+ * 如果键不需要参数，则不包含在此类型中。
+ */
 export type LocaleKeyParams = {
 	'achievements.error.load_failed': { message: string | number }
 	'achievements.unlocked_on': { date: string | number }
@@ -5953,11 +5953,11 @@ export type LocaleKeyParams = {
 }
 
 /**
-* 表示所有需要参数的语言环境键的类型。
-*/
+ * 表示所有需要参数的语言环境键的类型。
+ */
 export type LocaleKeyWithParams = keyof LocaleKeyParams
 
 /**
-* 表示所有不需要参数的语言环境键的类型。
-*/
+ * 表示所有不需要参数的语言环境键的类型。
+ */
 export type LocaleKeyWithoutParams = Exclude<LocaleKey, LocaleKeyWithParams>

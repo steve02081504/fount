@@ -3890,6 +3890,14 @@
 			"editCrop": "Recadrer",
 			"editMosaic": "Mosaïque",
 			"editBrush": "Pinceau",
+			"editBrushColor": {
+				"title": "couleur du pinceau",
+				"aria-label": "couleur du pinceau"
+			},
+			"editBrushSize": {
+				"title": "épaisseur du pinceau",
+				"aria-label": "épaisseur du pinceau"
+			},
 			"editApply": "Appliquer",
 			"editCancel": "Annuler",
 			"replyPolicyEveryone": "N'importe qui peut répondre",

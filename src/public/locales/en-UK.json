@@ -3887,6 +3887,14 @@
 			"editCrop": "Crop",
 			"editMosaic": "coding",
 			"editBrush": "brush",
+			"editBrushColor": {
+				"title": "brush color",
+				"aria-label": "brush color"
+			},
+			"editBrushSize": {
+				"title": "brush thickness",
+				"aria-label": "brush thickness"
+			},
 			"editApply": "application",
 			"editCancel": "Cancel",
 			"replyPolicyEveryone": "Anyone can reply",

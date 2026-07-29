@@ -3890,6 +3890,14 @@
 			"editCrop": "اقتصاص",
 			"editMosaic": "الترميز",
 			"editBrush": "فرشاة",
+			"editBrushColor": {
+				"title": "لون الفرشاة",
+				"aria-label": "لون الفرشاة"
+			},
+			"editBrushSize": {
+				"title": "سمك الفرشاة",
+				"aria-label": "سمك الفرشاة"
+			},
 			"editApply": "طلب",
 			"editCancel": "إلغاء",
 			"replyPolicyEveryone": "يمكن لأي شخص الرد",

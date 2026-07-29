@@ -3890,6 +3890,14 @@
 			"editCrop": "क्रॉप",
 			"editMosaic": "मोज़ेक",
 			"editBrush": "ब्रश",
+			"editBrushColor": {
+				"title": "ब्रश का रंग",
+				"aria-label": "ब्रश का रंग"
+			},
+			"editBrushSize": {
+				"title": "ब्रश की मोटाई",
+				"aria-label": "ब्रश की मोटाई"
+			},
 			"editApply": "लागू करें",
 			"editCancel": "रद्द करें",
 			"replyPolicyEveryone": "कोई भी उत्तर दे सकता है",

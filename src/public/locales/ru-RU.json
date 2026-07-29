@@ -3890,6 +3890,14 @@
 			"editCrop": "Обрезать",
 			"editMosaic": "Размытие",
 			"editBrush": "Кисть",
+			"editBrushColor": {
+				"title": "цвет кисти",
+				"aria-label": "цвет кисти"
+			},
+			"editBrushSize": {
+				"title": "толщина кисти",
+				"aria-label": "толщина кисти"
+			},
 			"editApply": "Применить",
 			"editCancel": "Отмена",
 			"replyPolicyEveryone": "Ответ могут все",

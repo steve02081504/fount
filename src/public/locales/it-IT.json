@@ -3890,6 +3890,14 @@
 			"editCrop": "Raccolto",
 			"editMosaic": "codifica",
 			"editBrush": "spazzola",
+			"editBrushColor": {
+				"title": "colore del pennello",
+				"aria-label": "colore del pennello"
+			},
+			"editBrushSize": {
+				"title": "spessore del pennello",
+				"aria-label": "spessore del pennello"
+			},
 			"editApply": "applicazione",
 			"editCancel": "Annulla",
 			"replyPolicyEveryone": "Chiunque può rispondere",
