@@ -78,38 +78,43 @@ ${del}
 	})
 
 	const activeSelect = document.getElementById('group-active-emoji-pack')
-	if (activeSelect)
+	if (activeSelect) {
+		activeSelect.setAttribute('user-content', '')
 		activeSelect.addEventListener('change', async () => {
 			context.activeEmojiPackId = String(activeSelect.value || '').trim() || context.groupId
 			context.emojisPanelReady = false
 			await ensureGroupEmojisPanel(context)
 		})
+	}
 
 	const defaultSelect = document.getElementById('group-default-emoji-pack')
-	if (defaultSelect && canManage)
-		defaultSelect.addEventListener('change', async () => {
-			const packId = String(defaultSelect.value || '').trim()
-			const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/settings`, {
-				method: 'PUT',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ defaultEmojiPackId: packId || null }),
+	if (defaultSelect) {
+		defaultSelect.setAttribute('user-content', '')
+		if (canManage)
+			defaultSelect.addEventListener('change', async () => {
+				const packId = String(defaultSelect.value || '').trim()
+				const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/settings`, {
+					method: 'PUT',
+					credentials: 'include',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ defaultEmojiPackId: packId || null }),
+				})
+				if (!resp.ok) {
+					showToastI18n('error', 'chat.group.settingsPage.defaultEmojiPackFailed')
+					return
+				}
+				showToastI18n('success', 'chat.group.settingsPage.defaultEmojiPackOk')
+				if (context.state?.groupSettings)
+					context.state.groupSettings.defaultEmojiPackId = packId || null
 			})
-			if (!resp.ok) {
-				showToastI18n('error', 'chat.group.settingsPage.defaultEmojiPackFailed')
-				return
-			}
-			showToastI18n('success', 'chat.group.settingsPage.defaultEmojiPackOk')
-			if (context.state?.groupSettings)
-				context.state.groupSettings.defaultEmojiPackId = packId || null
-		})
+	}
 
 	const createBtn = document.getElementById('group-emoji-pack-create')
 	if (createBtn && canManage)
 		createBtn.addEventListener('click', async () => {
 			const suggested = `pack_${Date.now().toString(36)}`
 			const packId = await promptText(
-				geti18n('chat.group.settingsPage.emojisCreatePackPrompt') || 'Pack id',
+				'chat.group.settingsPage.emojisCreatePackPrompt',
 				suggested,
 			)
 			if (packId == null) return

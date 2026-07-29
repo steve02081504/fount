@@ -73,6 +73,7 @@ async function paintGroupHubChrome(state) {
 	const groupNameElement = document.getElementById('group-name-display')
 	delete groupNameElement.dataset.i18n
 	groupNameElement.textContent = await groupDisplayName(store.context.currentGroupId, state.groupMeta.name)
+	groupNameElement.setAttribute('user-content', '')
 	await renderChannelList(state)
 	await renderMemberList(state)
 	store.context.currentMode = 'groups'

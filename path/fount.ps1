@@ -1615,9 +1615,158 @@ public class ExplorerRefresher {
 	}
 }
 
+# fount test 防休眠：ES_SYSTEM_REQUIRED 挂 pwsh；AC 合盖经 keep_awake.json 引用计数，
+# 末个活 holder 还原。硬杀后存档仍在，之后任意 fount test finally / clean 顺手恢复。
+$script:FountTestLidActionGuid = '5ca83367-6e45-459f-a27b-476b1d01c936'
+$script:FountTestKeepAwakeActive = $false
+$script:FountTestLidHolder = $false
+function Get-FountTestKeepAwakeStatePath { "$FOUNT_DIR/data/test/state/keep_awake.json" }
+function Get-FountTestLidAc {
+	$query = & powercfg /Qh SCHEME_CURRENT SUB_BUTTONS $script:FountTestLidActionGuid 2>&1 | Out-String
+	if ($query -match '(?:Current AC Power Setting Index|当前交流电源设置索引)\s*:\s*0x([0-9a-fA-F]+)') {
+		return [Convert]::ToInt32($Matches[1], 16)
+	}
+	return $null
+}
+function Set-FountTestLidAc([int]$Index) {
+	& powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS $script:FountTestLidActionGuid $Index | Out-Null
+	& powercfg /setactive SCHEME_CURRENT | Out-Null
+}
+function Invoke-FountTestKeepAwakeLocked([scriptblock]$Body) {
+	$mutex = [System.Threading.Mutex]::new($false, 'Local\FountTestKeepAwake')
+	[void]$mutex.WaitOne()
+	try { & $Body }
+	finally {
+		[void]$mutex.ReleaseMutex()
+		$mutex.Dispose()
+	}
+}
+function Read-FountTestKeepAwakeState {
+	$path = Get-FountTestKeepAwakeStatePath
+	if (-not (Test-Path -LiteralPath $path)) {
+		return @{ lidAc = $null; holders = @() }
+	}
+	$raw = Get-Content -LiteralPath $path -Raw -ErrorAction Stop | ConvertFrom-Json
+	$holders = @(
+		foreach ($h in @($raw.holders)) {
+			if ($null -ne $h -and "$h" -ne '') { [int]$h }
+		}
+	)
+	$lidAc = $null
+	if ($null -ne $raw.lidAc -and "$($raw.lidAc)" -ne '') { $lidAc = [int]$raw.lidAc }
+	return @{ lidAc = $lidAc; holders = $holders }
+}
+function Write-FountTestKeepAwakeState($State) {
+	$path = Get-FountTestKeepAwakeStatePath
+	$dir = Split-Path -Parent $path
+	$holders = @($State.holders)
+	if ($null -eq $State.lidAc -and $holders.Count -eq 0) {
+		Remove-Item -LiteralPath $path -Force -ErrorAction Ignore
+		return
+	}
+	New-Item -ItemType Directory -Force -Path $dir | Out-Null
+	$payload = [ordered]@{
+		lidAc = $State.lidAc
+		holders = $holders
+	}
+	($payload | ConvertTo-Json -Compress) + "`n" | Set-Content -LiteralPath $path -Encoding utf8 -NoNewline
+}
+function Update-FountTestKeepAwakeState([scriptblock]$Mutator) {
+	Invoke-FountTestKeepAwakeLocked {
+		$state = Read-FountTestKeepAwakeState
+		$state.holders = @(
+			foreach ($h in @($state.holders)) {
+				if (Get-Process -Id $h -ErrorAction SilentlyContinue) { $h }
+			}
+		)
+		# 外部已手动改回合盖且无 holder → 清掉过期存档
+		if ($state.holders.Count -eq 0 -and $null -ne $state.lidAc) {
+			$current = Get-FountTestLidAc
+			if ($null -ne $current -and $current -eq $state.lidAc) { $state.lidAc = $null }
+		}
+		& $Mutator $state
+		Write-FountTestKeepAwakeState $state
+	}
+}
+function Enable-FountTestKeepAwake {
+	if (-not $IsWindows) { return }
+	if (-not $env:FOUNT_TEST_ALLOW_SLEEP) {
+		if (-not ('FountKeepAwake' -as [type])) {
+			Add-Type -TypeDefinition @'
+using System.Runtime.InteropServices;
+public static class FountKeepAwake {
+	[DllImport("kernel32.dll")]
+	public static extern uint SetThreadExecutionState(uint esFlags);
+}
+'@
+		}
+		# 0x80000001：PS 字面量先走 Int32 会溢出，必须按十六进制字符串转 UInt32
+		[void][FountKeepAwake]::SetThreadExecutionState([Convert]::ToUInt32('80000001', 16))
+		$script:FountTestKeepAwakeActive = $true
+		Update-FountTestKeepAwakeState {
+			param($state)
+			if ($state.holders.Count -eq 0) {
+				if ($null -eq $state.lidAc) {
+					$current = Get-FountTestLidAc
+					if ($null -ne $current -and $current -ne 0) {
+						$state.lidAc = $current
+						Set-FountTestLidAc 0
+					}
+				}
+				else {
+					# 继承硬杀留下的存档；确保测试期间合盖仍是 Do nothing
+					$current = Get-FountTestLidAc
+					if ($null -ne $current -and $current -ne 0) { Set-FountTestLidAc 0 }
+				}
+			}
+			if ($PID -notin $state.holders) { $state.holders = @($state.holders) + $PID }
+			$script:FountTestLidHolder = $true
+		}
+	}
+}
+function Disable-FountTestKeepAwake {
+	if ($script:FountTestKeepAwakeActive) {
+		try { [void][FountKeepAwake]::SetThreadExecutionState([Convert]::ToUInt32('80000000', 16)) } catch {}
+		$script:FountTestKeepAwakeActive = $false
+	}
+	if (-not $IsWindows) { return }
+	# 含 FOUNT_TEST_ALLOW_SLEEP：无 holder 时仍清孤儿存档
+	Update-FountTestKeepAwakeState {
+		param($state)
+		if ($script:FountTestLidHolder) {
+			$state.holders = @($state.holders | Where-Object { $_ -ne $PID })
+			$script:FountTestLidHolder = $false
+		}
+		if ($state.holders.Count -eq 0 -and $null -ne $state.lidAc) {
+			try { Set-FountTestLidAc $state.lidAc } catch {}
+			$state.lidAc = $null
+		}
+	}
+}
+function Restore-FountTestKeepAwakeArchive {
+	# clean 等：无视仍登记的死/活 holder，强制按存档还原后清文件
+	if (-not $IsWindows) { return }
+	Invoke-FountTestKeepAwakeLocked {
+		$state = Read-FountTestKeepAwakeState
+		if ($null -ne $state.lidAc) {
+			try { Set-FountTestLidAc $state.lidAc } catch {}
+		}
+		Remove-Item -LiteralPath (Get-FountTestKeepAwakeStatePath) -Force -ErrorAction Ignore
+		$script:FountTestLidHolder = $false
+	}
+}
+
 if ($args[0] -eq 'test') {
-	deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/scripts/test/cli.mjs" @(if ($args.Count -gt 1) { $args[1..($args.Count - 1)] })
-	exit $LASTEXITCODE
+	Enable-FountTestKeepAwake
+	$testExit = 0
+	try {
+		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/scripts/test/cli.mjs" @(if ($args.Count -gt 1) { $args[1..($args.Count - 1)] })
+		$testExit = $LASTEXITCODE
+	}
+	finally {
+		Disable-FountTestKeepAwake
+	}
+	exit $testExit
 }
 elseif ($args[0] -eq 'clean') {
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
@@ -1627,6 +1776,7 @@ elseif ($args[0] -eq 'clean') {
 			Get-ChildItem -Path "$FOUNT_DIR" -Filter "*_cache.json" -Recurse | Remove-Item -Force -ErrorAction Ignore
 		}
 	}
+	Restore-FountTestKeepAwakeArchive
 	Remove-Item -Path "$FOUNT_DIR/data/test" -Recurse -Force -ErrorAction Ignore
 	Write-Host (Get-I18n -key 'clean.cleaningDenoCaches')
 	deno clean -e "$FOUNT_DIR/src/server/index.mjs"

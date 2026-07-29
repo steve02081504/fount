@@ -337,6 +337,26 @@ export async function persistGroupEmojiFromDataUrl(username, groupId, emojiId, d
 
 /**
  * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @param {object | null | undefined} [groupSettings] 群设置（缺省时仅按 groupId 回落）
+ * @returns {Promise<object | null>} 默认包 manifest
+ */
+export async function ensureDefaultGroupPack(username, groupId, groupSettings = null) {
+	const { resolveGroupDefaultPackId } = await import('../emojiCollectionLogic.mjs')
+	const defaultId = resolveGroupDefaultPackId(groupSettings, groupId)
+	if (!defaultId) return null
+	const existing = await loadPackManifest(username, groupId, defaultId)
+	if (existing) return existing
+	try {
+		return await createPack(username, groupId, { packId: defaultId })
+	}
+	catch {
+		return loadPackManifest(username, groupId, defaultId)
+	}
+}
+
+/**
+ * @param {string} username 用户名
  * @param {{ groupId?: string }} [options] 可选过滤
  * @returns {Promise<object[]>} 可用 pack
  */
@@ -344,6 +364,7 @@ export async function listAvailableGroupPacksForUser(username, options = {}) {
 	const filterGroupId = String(options.groupId || '').trim() || null
 	const { getState } = await import('../chat/dag/materialize.mjs')
 	const { resolveActiveMemberKeyForLocalReplica } = await import('./access.mjs')
+	const { resolveGroupDefaultPackId, convergeLinkedDefault, groupDefaultLinkKey } = await import('../emojiUsage.mjs')
 
 	const groupIds = filterGroupId ? [filterGroupId] : await listUserGroups(username)
 	const settled = await Promise.all(groupIds.map(async groupId => {
@@ -358,11 +379,13 @@ export async function listAvailableGroupPacksForUser(username, options = {}) {
 		if (!memberKey) return []
 		const member = state.members?.[memberKey]
 		const joinedAt = member?.joinedAt ?? null
-		const defaultEmojiPackId = state.groupSettings?.defaultEmojiPackId || null
+		const defaultEmojiPackId = resolveGroupDefaultPackId(state.groupSettings, groupId)
+		convergeLinkedDefault(username, groupDefaultLinkKey(groupId), defaultEmojiPackId)
 		const infoDefaults = {
 			name: state.groupMeta?.name || groupId,
 			avatar: state.groupMeta?.avatar ?? null,
 		}
+		await ensureDefaultGroupPack(username, groupId, state.groupSettings)
 		const packs = await listGroupPacks(username, groupId)
 		return packs.map(pack => ({
 			...pack,

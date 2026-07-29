@@ -721,10 +721,10 @@ async function handleSaveProfile() {
 					editingAvatarPreview = firstLocalizedAvatar(editingLocalized, 'avatar')
 						|| String(editingBaseProfile?.avatar || '').trim()
 			}
-			else if (avatarResult?.url) 
+			else if (avatarResult?.url)
 				if (sfw) editingSfwAvatarPreview = avatarResult.url
 				else editingAvatarPreview = avatarResult.url
-			
+
 			pending.avatar = null
 		}
 
@@ -740,14 +740,14 @@ async function handleSaveProfile() {
 				else
 					editingBannerPreview = String(editingBaseProfile?.banner || '').trim()
 			}
-			else if (bannerResult?.url) 
+			else if (bannerResult?.url)
 				if (sfw)
 					editingSfwBannerPreview = bannerResult.url
 				else {
 					editingBannerPreview = bannerResult.url
 					editingBannerCleared = false
 				}
-			
+
 			pending.banner = null
 		}
 		else if (!sfw && editingBannerCleared) {

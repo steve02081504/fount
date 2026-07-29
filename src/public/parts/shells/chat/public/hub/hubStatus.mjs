@@ -8,13 +8,12 @@
 import { renderTemplate, renderTemplateAsHtmlString, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 
-import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
+import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { store } from './core/state.mjs'
 import {
 	applySelfStatusToMemberList,
 	applyStatusDot,
 	fetchUserProfile,
-	formatStatusLabel,
 	invalidateUserProfileCache,
 } from './presence.mjs'
 
@@ -38,8 +37,18 @@ export async function applyMyStatusUI(status, customStatus = '') {
 	const dot = document.getElementById('my-status-dot')
 	const text = document.getElementById('my-status-text')
 	applyStatusDot(dot, status)
-	if (text)
-		text.textContent = await formatStatusLabel(status, customStatus)
+	if (text) {
+		const custom = String(customStatus || '').trim()
+		if (custom) {
+			delete text.dataset.i18n
+			text.setAttribute('user-content', '')
+			text.textContent = custom
+		}
+		else {
+			text.removeAttribute('user-content')
+			text.dataset.i18n = `chat.hub.status.${status || 'offline'}`
+		}
+	}
 }
 
 /**
@@ -181,7 +190,9 @@ export async function showStatusMenu(anchorElement) {
 	}
 	menu.querySelector('[data-profile-link]')?.addEventListener('click', (clickEvent) => clickEvent.stopPropagation())
 
-	document.body.append(menu)
+	// 挂在 channel-bar（complementary landmark）内，避免 axe region 把 body 级浮层判为未包进 landmark
+	const host = document.getElementById('channel-bar') || document.body
+	host.append(menu)
 	openStatusMenuElement = menu
 
 	bindDismissOnDocumentInteraction(dismissStatusMenu, {

@@ -50,9 +50,6 @@ export function recordVirtualBridgeTyping(username, groupId, channelId, entityHa
 	bucket.set(hash, now + TYPING_TTL_MS)
 }
 
-/** @deprecated 兼容原生群 channel.typing 仍可能调用 */
-export const recordChannelTyping = recordVirtualBridgeTyping
-
 /**
  * @param {string} username replica
  * @param {string} groupId 群 ID
@@ -68,9 +65,6 @@ export function listVirtualBridgeTyping(username, groupId, channelId) {
 	if (!bucket.size) typingByChannel.delete(key)
 	return [...bucket.keys()]
 }
-
-/** @deprecated */
-export const listTypingEntities = listVirtualBridgeTyping
 
 /**
  * 平台 typing 入账虚拟会话。

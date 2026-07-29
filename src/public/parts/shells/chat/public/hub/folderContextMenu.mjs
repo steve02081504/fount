@@ -8,8 +8,8 @@
  */
 import { geti18n, promptI18n } from '../../../../scripts/i18n/index.mjs'
 
-import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
-import { positionContextMenu } from './core/positionContextMenu.mjs'
+import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
+import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
 
 /** @type {HTMLElement | null} */

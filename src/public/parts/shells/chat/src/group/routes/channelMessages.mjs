@@ -61,8 +61,8 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		ensureChannel(state, parentChannelId)
 
 		const normalizedParentEventId = parentEventId ? String(parentEventId).trim().toLowerCase() : null
-		if (normalizedParentEventId) 
-			for (const [channelId, channel] of Object.entries(state.channels || {})) 
+		if (normalizedParentEventId)
+			for (const [channelId, channel] of Object.entries(state.channels || {}))
 				if (
 					channel?.parentChannelId === parentChannelId
 					&& String(channel.parentEventId || '').trim().toLowerCase() === normalizedParentEventId
@@ -70,8 +70,6 @@ export function registerChannelMessageRoutes(router, authenticate) {
 					res.status(200).json({ channelId })
 					return
 				}
-			
-		
 
 		const newChannelId = `thread_${Date.now()}_${randomUUID().slice(0, 8)}`
 		await appendSignedLocalEvent(username, groupId, {
