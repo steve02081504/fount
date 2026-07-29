@@ -2466,9 +2466,6 @@
 			"deliveryRead": "✅👀",
 			"translate": "🌐",
 			"translating": "🌐⏳…",
-			"translateShowOriginal": "👀📝",
-			"translateShowTranslation": "👀🌐",
-			"translateLabel": "🌐📝",
 			"translateFailed": "🌐❌",
 			"editImage": "✏️🖼️",
 			"draftRestored": "✅♻️📝",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "🎯⚙️",
 			"advancedSettings": "🔧⚙️🎛️",
 			"advancedDescription": "😌👌🚫🔧",
+			"cardHost": {
+				"aria-label": "👤🪪"
+			},
 			"edit": "✏️👤",
 			"save": "💾",
 			"cancel": "↩️",
@@ -3890,6 +3890,14 @@
 			"editCrop": "✂️",
 			"editMosaic": "🔲",
 			"editBrush": "🖌️",
+			"editBrushColor": {
+				"title": "🎨",
+				"aria-label": "🎨"
+			},
+			"editBrushSize": {
+				"title": "📏",
+				"aria-label": "📏"
+			},
 			"editApply": "✅",
 			"editCancel": "↩️",
 			"replyPolicyEveryone": "🌍💬",
@@ -3936,10 +3944,10 @@
 					"textContent": "🌍"
 				},
 				"unlisted": {
-					"title": "🚫📋",
-					"aria-label": "🚫📋",
-					"label": "🚫📋",
-					"textContent": "🚫📋"
+					"title": "🔗🚫📋",
+					"aria-label": "🔗🚫📋",
+					"label": "🔗🚫📋",
+					"textContent": "🔗🚫📋"
 				},
 				"followers": {
 					"title": "🔒➕👀",
@@ -3948,22 +3956,22 @@
 					"textContent": "🔒➕👀"
 				},
 				"followers7d": {
-					"title": "➕👀✅7📅",
-					"aria-label": "➕👀✅7📅",
-					"label": "➕👀✅7📅",
-					"textContent": "➕👀✅7📅"
+					"title": "7️⃣📅👀",
+					"aria-label": "7️⃣📅👀",
+					"label": "7️⃣📅👀",
+					"textContent": "7️⃣📅👀"
 				},
 				"followers30d": {
-					"title": "➕👀✅30📅",
-					"aria-label": "➕👀✅30📅",
-					"label": "➕👀✅30📅",
-					"textContent": "➕👀✅30📅"
+					"title": "3️⃣0️⃣📅👀",
+					"aria-label": "3️⃣0️⃣📅👀",
+					"label": "3️⃣0️⃣📅👀",
+					"textContent": "3️⃣0️⃣📅👀"
 				},
 				"selected": {
-					"title": "👤👀",
-					"aria-label": "👤👀",
-					"label": "👤👀",
-					"textContent": "👤👀"
+					"title": "🎯👥",
+					"aria-label": "🎯👥",
+					"label": "🎯👥",
+					"textContent": "🎯👥"
 				},
 				"private": {
 					"title": "🔒🫵",
@@ -4006,6 +4014,7 @@
 			"trending": {
 				"title": "🔥#️⃣",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n}📄"
 				},
 				"empty": "🔥#️⃣📭",
@@ -4047,8 +4056,8 @@
 				"aria-label": "🗑️⭐"
 			},
 			"renameFolder": {
-				"title": "✏️🏷️",
-				"aria-label": "✏️🏷️"
+				"title": "✏️📁",
+				"aria-label": "✏️📁"
 			},
 			"renameFolderPrompt": "📁🏷️🆕",
 			"deleteFolder": {
@@ -4371,9 +4380,6 @@
 			"quoting": "▶️🔗",
 			"clear": "↩️🔗",
 			"viewOriginal": "👀📄"
-		},
-		"translate": {
-			"label": "🌐📝："
 		},
 		"time": {
 			"justNow": "⏱️✨",
@@ -5331,6 +5337,7 @@
 			"confirm": "✅",
 			"close": "✖️",
 			"translate": {
+				"label": "🌐📝：",
 				"showOriginal": "👀📝",
 				"showTranslation": "👀🌐"
 			}

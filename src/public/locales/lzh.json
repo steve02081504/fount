@@ -1749,7 +1749,7 @@
 			"filesNewFolderPrompt": "帙名",
 			"filesRename": "重命名",
 			"filesRenameFolderPrompt": "重命名帙「${name}」為：",
-			"filesDeleteFolderConfirm": "確刪此帙？夾內文牘不將自行刪。",
+			"filesDeleteFolderConfirm": "確刪此帙？帙內文牘不將自行刪。",
 			"filesUpload": "傳",
 			"filesDownload": "拓存",
 			"filesDelete": "刪",
@@ -2466,9 +2466,6 @@
 			"deliveryRead": "已讀",
 			"translate": "翻譯",
 			"translating": "方翻譯…",
-			"translateShowOriginal": "示原文",
-			"translateShowTranslation": "示譯文",
-			"translateLabel": "譯文",
 			"translateFailed": "翻譯未遂",
 			"editImage": "編輯圖片",
 			"draftRestored": "已恢復底稿",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "相機而設",
 			"advancedSettings": "樞機之制",
 			"advancedDescription": "日用無需調整。",
+			"cardHost": {
+				"aria-label": "簿牒簡卡"
+			},
 			"edit": "修簿牒",
 			"save": "存",
 			"cancel": "止",
@@ -3890,6 +3890,14 @@
 			"editCrop": "裁剪",
 			"editMosaic": "打碼",
 			"editBrush": "畫筆",
+			"editBrushColor": {
+				"title": "畫筆之色",
+				"aria-label": "畫筆之色"
+			},
+			"editBrushSize": {
+				"title": "畫筆粗細",
+				"aria-label": "畫筆粗細"
+			},
 			"editApply": "應用",
 			"editCancel": "罷",
 			"replyPolicyEveryone": "天下皆可論",
@@ -3936,10 +3944,10 @@
 					"textContent": "公開"
 				},
 				"unlisted": {
-					"title": "不公開列出",
-					"aria-label": "不公開列出",
-					"label": "不公開列出",
-					"textContent": "不公開列出"
+					"title": "不列於表",
+					"aria-label": "不列於表",
+					"label": "不列於表",
+					"textContent": "不列於表"
 				},
 				"followers": {
 					"title": "僅關注者",
@@ -3948,28 +3956,28 @@
 					"textContent": "僅關注者"
 				},
 				"followers7d": {
-					"title": "關注滿 7 日可見",
-					"aria-label": "關注滿 7 日可見",
-					"label": "關注滿 7 日可見",
-					"textContent": "關注滿 7 日可見"
+					"title": "關注滿七日可見",
+					"aria-label": "關注滿七日可見",
+					"label": "關注滿七日可見",
+					"textContent": "關注滿七日可見"
 				},
 				"followers30d": {
-					"title": "關注滿 30 日可見",
-					"aria-label": "關注滿 30 日可見",
-					"label": "關注滿 30 日可見",
-					"textContent": "關注滿 30 日可見"
+					"title": "關注滿三十日可見",
+					"aria-label": "關注滿三十日可見",
+					"label": "關注滿三十日可見",
+					"textContent": "關注滿三十日可見"
 				},
 				"selected": {
-					"title": "指定人員可見",
-					"aria-label": "指定人員可見",
-					"label": "指定人員可見",
-					"textContent": "指定人員可見"
+					"title": "指定之人可見",
+					"aria-label": "指定之人可見",
+					"label": "指定之人可見",
+					"textContent": "指定之人可見"
 				},
 				"private": {
-					"title": "僅自己可見",
-					"aria-label": "僅自己可見",
-					"label": "僅自己可見",
-					"textContent": "僅自己可見"
+					"title": "僅己可見",
+					"aria-label": "僅己可見",
+					"label": "僅己可見",
+					"textContent": "僅己可見"
 				},
 				"allowLabel": "可見人員",
 				"exceptLabel": "排除人員",
@@ -4006,7 +4014,8 @@
 			"trending": {
 				"title": "熱門話題",
 				"postCount": {
-					"title": "${n} 則言"
+					"textContent": "${n}",
+					"title": "${n} 則帖"
 				},
 				"empty": "暫無熱門話題",
 				"aria-label": "熱門話題"
@@ -4043,17 +4052,17 @@
 			"confirm": "允",
 			"cancel": "止",
 			"remove": {
-				"title": "移除收藏",
-				"aria-label": "移除收藏"
+				"title": "移出收藏",
+				"aria-label": "移出收藏"
 			},
 			"renameFolder": {
-				"title": "重命名",
-				"aria-label": "重命名"
+				"title": "更名",
+				"aria-label": "更名"
 			},
 			"renameFolderPrompt": "新帙名",
 			"deleteFolder": {
-				"title": "刪帙",
-				"aria-label": "刪帙"
+				"title": "刪除帙",
+				"aria-label": "刪除帙"
 			},
 			"deleteFolderConfirm": "刪帙？其中言將移至「未歸檔」。",
 			"searchEmpty": "未見所契之藏",
@@ -4069,8 +4078,8 @@
 			"saved": "底稿已存",
 			"deleted": "底稿已刪",
 			"delete": {
-				"title": "刪底稿",
-				"aria-label": "刪底稿"
+				"title": "刪除底稿",
+				"aria-label": "刪除底稿"
 			},
 			"empty": "底稿為空",
 			"saveFailed": "存底稿未遂：${error}",
@@ -4233,16 +4242,16 @@
 		},
 		"actions": {
 			"like": {
-				"title": "善",
-				"aria-label": "善"
+				"title": "贊",
+				"aria-label": "贊"
 			},
 			"unlike": {
 				"title": "撤讚",
 				"aria-label": "撤讚"
 			},
 			"dislike": {
-				"title": "惡",
-				"aria-label": "惡"
+				"title": "貶",
+				"aria-label": "貶"
 			},
 			"undislike": {
 				"title": "撤貶",
@@ -4371,9 +4380,6 @@
 			"quoting": "方引用",
 			"clear": "否引用",
 			"viewOriginal": "覽原信"
-		},
-		"translate": {
-			"label": "譯文："
 		},
 		"time": {
 			"justNow": "甫爾",
@@ -5331,6 +5337,7 @@
 			"confirm": "允",
 			"close": "闔",
 			"translate": {
+				"label": "譯文：",
 				"showOriginal": "示原文",
 				"showTranslation": "示譯文"
 			}

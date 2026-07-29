@@ -2461,9 +2461,6 @@
 			"deliveryRead": "Read",
 			"translate": "Translate",
 			"translating": "Translating…",
-			"translateShowOriginal": "Show original text",
-			"translateShowTranslation": "Show translation",
-			"translateLabel": "Translation",
 			"translateFailed": "Translation failed",
 			"editImage": "Edit image",
 			"draftRestored": "Draft restored",
@@ -2822,6 +2819,9 @@
 			"advancedKicker": "When you need it",
 			"advancedSettings": "Advanced settings",
 			"advancedDescription": "You won't need these for everyday use.",
+			"cardHost": {
+				"aria-label": "Profile card"
+			},
 			"edit": "Edit profile",
 			"save": "Save",
 			"cancel": "Cancel",
@@ -3885,9 +3885,17 @@
 			"sensitiveMedia": "media sensitivity mask",
 			"editImage": "edit",
 			"editCrop": "Crop",
-			"editMosaic": "coding",
-			"editBrush": "brush",
-			"editApply": "application",
+			"editMosaic": "Pixelate",
+			"editBrush": "Brush",
+			"editBrushColor": {
+				"title": "Brush colour",
+				"aria-label": "Brush colour"
+			},
+			"editBrushSize": {
+				"title": "Brush size",
+				"aria-label": "Brush size"
+			},
+			"editApply": "Apply",
 			"editCancel": "Cancel",
 			"replyPolicyEveryone": "Anyone can reply",
 			"replyPolicyFollowers7d": "Followers for more than 7 days",
@@ -3933,40 +3941,40 @@
 					"textContent": "Public"
 				},
 				"unlisted": {
-					"title": "Not publicly listed",
-					"aria-label": "Not publicly listed",
-					"label": "Not publicly listed",
-					"textContent": "Not publicly listed"
+					"title": "Unlisted",
+					"aria-label": "Unlisted",
+					"label": "Unlisted",
+					"textContent": "Unlisted"
 				},
 				"followers": {
-					"title": "followers only",
-					"aria-label": "followers only",
-					"label": "followers only",
-					"textContent": "followers only"
+					"title": "Followers only",
+					"aria-label": "Followers only",
+					"label": "Followers only",
+					"textContent": "Followers only"
 				},
 				"followers7d": {
-					"title": "Visible after following for 7 days",
-					"aria-label": "Visible after following for 7 days",
-					"label": "Visible after following for 7 days",
-					"textContent": "Visible after following for 7 days"
+					"title": "Visible after 7 days of following",
+					"aria-label": "Visible after 7 days of following",
+					"label": "Visible after 7 days of following",
+					"textContent": "Visible after 7 days of following"
 				},
 				"followers30d": {
-					"title": "Visible after following for 30 days",
-					"aria-label": "Visible after following for 30 days",
-					"label": "Visible after following for 30 days",
-					"textContent": "Visible after following for 30 days"
+					"title": "Visible after 30 days of following",
+					"aria-label": "Visible after 30 days of following",
+					"label": "Visible after 30 days of following",
+					"textContent": "Visible after 30 days of following"
 				},
 				"selected": {
-					"title": "Visible to specified people",
-					"aria-label": "Visible to specified people",
-					"label": "Visible to specified people",
-					"textContent": "Visible to specified people"
+					"title": "Visible to selected people",
+					"aria-label": "Visible to selected people",
+					"label": "Visible to selected people",
+					"textContent": "Visible to selected people"
 				},
 				"private": {
-					"title": "Visible only to yourself",
-					"aria-label": "Visible only to yourself",
-					"label": "Visible only to yourself",
-					"textContent": "Visible only to yourself"
+					"title": "Only me",
+					"aria-label": "Only me",
+					"label": "Only me",
+					"textContent": "Only me"
 				},
 				"allowLabel": "Visible people",
 				"exceptLabel": "exclude people",
@@ -4003,6 +4011,7 @@
 			"trending": {
 				"title": "Trending",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} posts"
 				},
 				"empty": "Nothing trending yet",
@@ -4040,8 +4049,8 @@
 			"confirm": "Confirm",
 			"cancel": "Cancel",
 			"remove": {
-				"title": "Remove from saved",
-				"aria-label": "Remove from saved"
+				"title": "Remove from bookmarks",
+				"aria-label": "Remove from bookmarks"
 			},
 			"renameFolder": {
 				"title": "Rename",
@@ -4242,16 +4251,16 @@
 				"aria-label": "Dislike"
 			},
 			"undislike": {
-				"title": "Cancel dislike",
-				"aria-label": "Cancel dislike"
+				"title": "Remove dislike",
+				"aria-label": "Remove dislike"
 			},
 			"repost": "Repost",
 			"quote": "Quote",
 			"delete": "Delete",
 			"edit": "Edit",
 			"save": {
-				"title": "Save",
-				"aria-label": "Save"
+				"title": "Bookmark",
+				"aria-label": "Bookmark"
 			},
 			"saved": "Saved",
 			"translate": "Translate",
@@ -4368,9 +4377,6 @@
 			"quoting": "Quoting",
 			"clear": "Clear quote",
 			"viewOriginal": "View original post"
-		},
-		"translate": {
-			"label": "Translation:"
 		},
 		"time": {
 			"justNow": "just",
@@ -5328,7 +5334,8 @@
 			"confirm": "Confirm",
 			"close": "Close",
 			"translate": {
-				"showOriginal": "Show original text",
+				"label": "Translation:",
+				"showOriginal": "Show original",
 				"showTranslation": "Show translation"
 			}
 		},

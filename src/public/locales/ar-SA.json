@@ -2466,9 +2466,6 @@
 			"deliveryRead": "مقروء",
 			"translate": "ترجمة",
 			"translating": "ترجمة…",
-			"translateShowOriginal": "عرض النص الأصلي",
-			"translateShowTranslation": "عرض الترجمة",
-			"translateLabel": "ترجمة",
 			"translateFailed": "فشلت الترجمة",
 			"editImage": "تحرير الصورة",
 			"draftRestored": "تمت استعادة المسودة",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "عند الحاجة فقط",
 			"advancedSettings": "الإعدادات المتقدمة",
 			"advancedDescription": "لا حاجة لتعديلها في الاستخدام اليومي.",
+			"cardHost": {
+				"aria-label": "بطاقة الملف الشخصي"
+			},
 			"edit": "تعديل الملف الشخصي",
 			"save": "حفظ",
 			"cancel": "إلغاء",
@@ -3888,9 +3888,17 @@
 			"sensitiveMedia": "قناع حساسية الوسائط",
 			"editImage": "تعديل",
 			"editCrop": "اقتصاص",
-			"editMosaic": "الترميز",
+			"editMosaic": "تمويه",
 			"editBrush": "فرشاة",
-			"editApply": "طلب",
+			"editBrushColor": {
+				"title": "لون الفرشاة",
+				"aria-label": "لون الفرشاة"
+			},
+			"editBrushSize": {
+				"title": "سُمك الفرشاة",
+				"aria-label": "سُمك الفرشاة"
+			},
+			"editApply": "تطبيق",
 			"editCancel": "إلغاء",
 			"replyPolicyEveryone": "يمكن لأي شخص الرد",
 			"replyPolicyFollowers7d": "متابعون لأكثر من 7 أيام",
@@ -3936,40 +3944,40 @@
 					"textContent": "عام"
 				},
 				"unlisted": {
-					"title": "غير مدرجة علنا",
-					"aria-label": "غير مدرجة علنا",
-					"label": "غير مدرجة علنا",
-					"textContent": "غير مدرجة علنا"
+					"title": "غير مدرج علنًا",
+					"aria-label": "غير مدرج علنًا",
+					"label": "غير مدرج علنًا",
+					"textContent": "غير مدرج علنًا"
 				},
 				"followers": {
-					"title": "متابعين فقط",
-					"aria-label": "متابعين فقط",
-					"label": "متابعين فقط",
-					"textContent": "متابعين فقط"
+					"title": "المتابعون فقط",
+					"aria-label": "المتابعون فقط",
+					"label": "المتابعون فقط",
+					"textContent": "المتابعون فقط"
 				},
 				"followers7d": {
-					"title": "مرئية بعد المتابعة لمدة 7 أيام",
-					"aria-label": "مرئية بعد المتابعة لمدة 7 أيام",
-					"label": "مرئية بعد المتابعة لمدة 7 أيام",
-					"textContent": "مرئية بعد المتابعة لمدة 7 أيام"
+					"title": "مرئي بعد 7 أيام من المتابعة",
+					"aria-label": "مرئي بعد 7 أيام من المتابعة",
+					"label": "مرئي بعد 7 أيام من المتابعة",
+					"textContent": "مرئي بعد 7 أيام من المتابعة"
 				},
 				"followers30d": {
-					"title": "مرئية بعد المتابعة لمدة 30 يومًا",
-					"aria-label": "مرئية بعد المتابعة لمدة 30 يومًا",
-					"label": "مرئية بعد المتابعة لمدة 30 يومًا",
-					"textContent": "مرئية بعد المتابعة لمدة 30 يومًا"
+					"title": "مرئي بعد 30 يومًا من المتابعة",
+					"aria-label": "مرئي بعد 30 يومًا من المتابعة",
+					"label": "مرئي بعد 30 يومًا من المتابعة",
+					"textContent": "مرئي بعد 30 يومًا من المتابعة"
 				},
 				"selected": {
-					"title": "مرئية لأشخاص محددين",
-					"aria-label": "مرئية لأشخاص محددين",
-					"label": "مرئية لأشخاص محددين",
-					"textContent": "مرئية لأشخاص محددين"
+					"title": "مرئي لأشخاص محددين",
+					"aria-label": "مرئي لأشخاص محددين",
+					"label": "مرئي لأشخاص محددين",
+					"textContent": "مرئي لأشخاص محددين"
 				},
 				"private": {
-					"title": "مرئية لنفسك فقط",
-					"aria-label": "مرئية لنفسك فقط",
-					"label": "مرئية لنفسك فقط",
-					"textContent": "مرئية لنفسك فقط"
+					"title": "أنا فقط",
+					"aria-label": "أنا فقط",
+					"label": "أنا فقط",
+					"textContent": "أنا فقط"
 				},
 				"allowLabel": "الأشخاص المرئيين",
 				"exceptLabel": "استبعاد الناس",
@@ -4006,7 +4014,8 @@
 			"trending": {
 				"title": "مواضيع ساخنة",
 				"postCount": {
-					"title": "${n} مشاركات"
+					"textContent": "${n}",
+					"title": "${n} منشورات"
 				},
 				"empty": "لا توجد مواضيع ساخنة بعد",
 				"aria-label": "مواضيع ساخنة"
@@ -4043,8 +4052,8 @@
 			"confirm": "تأكيد",
 			"cancel": "إلغاء",
 			"remove": {
-				"title": "إزالة المفضلة",
-				"aria-label": "إزالة المفضلة"
+				"title": "إزالة من المحفوظات",
+				"aria-label": "إزالة من المحفوظات"
 			},
 			"renameFolder": {
 				"title": "إعادة تسمية",
@@ -4237,12 +4246,12 @@
 				"aria-label": "إعجاب"
 			},
 			"unlike": {
-				"title": "على عكس",
-				"aria-label": "على عكس"
+				"title": "إلغاء الإعجاب",
+				"aria-label": "إلغاء الإعجاب"
 			},
 			"dislike": {
-				"title": "خطوة على",
-				"aria-label": "خطوة على"
+				"title": "عدم إعجاب",
+				"aria-label": "عدم إعجاب"
 			},
 			"undislike": {
 				"title": "إلغاء عدم الإعجاب",
@@ -4371,9 +4380,6 @@
 			"quoting": "اقتباس",
 			"clear": "إلغاء الاقتباس",
 			"viewOriginal": "عرض المنشور الأصلي"
-		},
-		"translate": {
-			"label": "الترجمة:"
 		},
 		"time": {
 			"justNow": "الآن",
@@ -5331,6 +5337,7 @@
 			"confirm": "تأكيد",
 			"close": "إغلاق",
 			"translate": {
+				"label": "الترجمة:",
 				"showOriginal": "عرض النص الأصلي",
 				"showTranslation": "عرض الترجمة"
 			}

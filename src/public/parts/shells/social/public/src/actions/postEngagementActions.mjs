@@ -20,7 +20,6 @@ import { renderRepliesPanel } from '../views/replies.mjs'
 import { syncVideoCommentTicker } from '../views/video.mjs'
 
 import { closePostMoreMenus } from './shared.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 /**
  * @param {HTMLElement} target 点击目标元素
@@ -177,9 +176,6 @@ export async function handlePostEngagementClick(target) {
 		mountTranslationBlock(cardBody, {
 			originalText: text,
 			translatedText: translated,
-			translationLabel: geti18n('social.translate.label'),
-			showOriginalLabel: geti18n('util.common.translate.showOriginal'),
-			showTranslationLabel: geti18n('util.common.translate.showTranslation'),
 		})
 		closePostMoreMenus()
 	}

@@ -2466,9 +2466,6 @@
 			"deliveryRead": "Đọc",
 			"translate": "Dịch",
 			"translating": "Đang dịch…",
-			"translateShowOriginal": "Hiển thị văn bản gốc",
-			"translateShowTranslation": "Hiển thị bản dịch",
-			"translateLabel": "dịch thuật",
 			"translateFailed": "Dịch không thành công",
 			"editImage": "Chỉnh sửa ảnh",
 			"draftRestored": "Đã khôi phục bản nháp",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "Cấu hình theo yêu cầu",
 			"advancedSettings": "Cài đặt nâng cao",
 			"advancedDescription": "Không cần điều chỉnh để sử dụng hàng ngày.",
+			"cardHost": {
+				"aria-label": "Thẻ hồ sơ"
+			},
 			"edit": "Chỉnh sửa hồ sơ",
 			"save": "Lưu",
 			"cancel": "Hủy",
@@ -3887,10 +3887,18 @@
 			},
 			"sensitiveMedia": "mặt nạ nhạy cảm với phương tiện truyền thông",
 			"editImage": "biên tập",
-			"editCrop": "Mùa vụ",
-			"editMosaic": "mã hóa",
-			"editBrush": "Chải",
-			"editApply": "ứng dụng",
+			"editCrop": "Cắt",
+			"editMosaic": "Che pixel",
+			"editBrush": "Cọ",
+			"editBrushColor": {
+				"title": "Màu cọ",
+				"aria-label": "Màu cọ"
+			},
+			"editBrushSize": {
+				"title": "Độ dày cọ",
+				"aria-label": "Độ dày cọ"
+			},
+			"editApply": "Áp dụng",
 			"editCancel": "Hủy bỏ",
 			"replyPolicyEveryone": "Bất cứ ai cũng có thể trả lời",
 			"replyPolicyFollowers7d": "Người theo dõi trong hơn 7 ngày",
@@ -3930,22 +3938,22 @@
 			"visibility": {
 				"label": "Phạm vi hiển thị",
 				"public": {
-					"title": "công cộng",
-					"aria-label": "công cộng",
-					"label": "công cộng",
-					"textContent": "công cộng"
+					"title": "Công khai",
+					"aria-label": "Công khai",
+					"label": "Công khai",
+					"textContent": "Công khai"
 				},
 				"unlisted": {
-					"title": "Không được niêm yết công khai",
-					"aria-label": "Không được niêm yết công khai",
-					"label": "Không được niêm yết công khai",
-					"textContent": "Không được niêm yết công khai"
+					"title": "Không liệt kê",
+					"aria-label": "Không liệt kê",
+					"label": "Không liệt kê",
+					"textContent": "Không liệt kê"
 				},
 				"followers": {
-					"title": "chỉ những người theo dõi",
-					"aria-label": "chỉ những người theo dõi",
-					"label": "chỉ những người theo dõi",
-					"textContent": "chỉ những người theo dõi"
+					"title": "Chỉ người theo dõi",
+					"aria-label": "Chỉ người theo dõi",
+					"label": "Chỉ người theo dõi",
+					"textContent": "Chỉ người theo dõi"
 				},
 				"followers7d": {
 					"title": "Hiển thị sau 7 ngày theo dõi",
@@ -3960,16 +3968,16 @@
 					"textContent": "Hiển thị sau 30 ngày theo dõi"
 				},
 				"selected": {
-					"title": "Hiển thị với những người được chỉ định",
-					"aria-label": "Hiển thị với những người được chỉ định",
-					"label": "Hiển thị với những người được chỉ định",
-					"textContent": "Hiển thị với những người được chỉ định"
+					"title": "Hiển thị với người được chọn",
+					"aria-label": "Hiển thị với người được chọn",
+					"label": "Hiển thị với người được chọn",
+					"textContent": "Hiển thị với người được chọn"
 				},
 				"private": {
-					"title": "Chỉ hiển thị với chính bạn",
-					"aria-label": "Chỉ hiển thị với chính bạn",
-					"label": "Chỉ hiển thị với chính bạn",
-					"textContent": "Chỉ hiển thị với chính bạn"
+					"title": "Chỉ mình tôi",
+					"aria-label": "Chỉ mình tôi",
+					"label": "Chỉ mình tôi",
+					"textContent": "Chỉ mình tôi"
 				},
 				"allowLabel": "Người có thể nhìn thấy",
 				"exceptLabel": "loại trừ mọi người",
@@ -4006,6 +4014,7 @@
 			"trending": {
 				"title": "chủ đề nóng",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} bài đăng"
 				},
 				"empty": "Chưa có chủ đề nóng",
@@ -4043,8 +4052,8 @@
 			"confirm": "xác nhận",
 			"cancel": "Hủy bỏ",
 			"remove": {
-				"title": "Xóa mục yêu thích",
-				"aria-label": "Xóa mục yêu thích"
+				"title": "Xóa khỏi mục đã lưu",
+				"aria-label": "Xóa khỏi mục đã lưu"
 			},
 			"renameFolder": {
 				"title": "Đổi tên",
@@ -4052,8 +4061,8 @@
 			},
 			"renameFolderPrompt": "Tên thư mục mới",
 			"deleteFolder": {
-				"title": "xóa thư mục",
-				"aria-label": "xóa thư mục"
+				"title": "Xóa thư mục",
+				"aria-label": "Xóa thư mục"
 			},
 			"deleteFolderConfirm": "Xóa thư mục? Các bài đăng ở đó sẽ được chuyển đến \"Không được lưu trữ\".",
 			"searchEmpty": "Không có bộ sưu tập phù hợp",
@@ -4233,20 +4242,20 @@
 		},
 		"actions": {
 			"like": {
-				"title": "Giống",
-				"aria-label": "Giống"
+				"title": "Thích",
+				"aria-label": "Thích"
 			},
 			"unlike": {
-				"title": "Không giống",
-				"aria-label": "Không giống"
+				"title": "Bỏ thích",
+				"aria-label": "Bỏ thích"
 			},
 			"dislike": {
-				"title": "bước lên",
-				"aria-label": "bước lên"
+				"title": "Không thích",
+				"aria-label": "Không thích"
 			},
 			"undislike": {
-				"title": "Hủy không thích",
-				"aria-label": "Hủy không thích"
+				"title": "Bỏ không thích",
+				"aria-label": "Bỏ không thích"
 			},
 			"repost": "Phía trước",
 			"quote": "Trích dẫn",
@@ -4371,9 +4380,6 @@
 			"quoting": "Trích dẫn",
 			"clear": "sự vô lễ",
 			"viewOriginal": "Xem bài viết gốc"
-		},
-		"translate": {
-			"label": "Bản dịch:"
 		},
 		"time": {
 			"justNow": "Chỉ",
@@ -5331,8 +5337,9 @@
 			"confirm": "xác nhận",
 			"close": "Đóng",
 			"translate": {
-				"showOriginal": "Hiển thị văn bản gốc",
-				"showTranslation": "Hiển thị bản dịch"
+				"label": "Bản dịch:",
+				"showOriginal": "Xem bản gốc",
+				"showTranslation": "Xem bản dịch"
 			}
 		},
 		"code_block": {

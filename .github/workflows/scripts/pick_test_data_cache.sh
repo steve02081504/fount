@@ -21,7 +21,7 @@ emit() {
 # 其它分支 tip 需要完整 refs；checkout fetch-depth:0 通常已带，再补一次更稳
 git fetch --prune --no-tags origin '+refs/heads/*:refs/remotes/origin/*' 2>/dev/null || true
 
-json="$(gh cache list --key "${PREFIX}" --limit 100 --json key,createdAt)"
+json="$(gh cache list --key "${PREFIX}" --limit 100 --json key,createdAt 2>/dev/null || true)"
 if [[ -z "${json}" || "${json}" == '[]' ]]; then
 	echo "no caches with prefix ${PREFIX}; fallback ${DEFAULT_KEY}"
 	emit "${DEFAULT_KEY}"

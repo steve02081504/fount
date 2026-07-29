@@ -2466,9 +2466,6 @@
 			"deliveryRead": "Lesen",
 			"translate": "Übersetzen",
 			"translating": "Übersetzen…",
-			"translateShowOriginal": "Originaltext anzeigen",
-			"translateShowTranslation": "Übersetzung anzeigen",
-			"translateLabel": "Übersetzung",
 			"translateFailed": "Die Übersetzung ist fehlgeschlagen",
 			"editImage": "Bild bearbeiten",
 			"draftRestored": "Entwurf wiederhergestellt",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "Nach Bedarf konfigurieren",
 			"advancedSettings": "Erweiterte Einstellungen",
 			"advancedDescription": "Für den Alltag ist keine Anpassung nötig.",
+			"cardHost": {
+				"aria-label": "Profilkarte"
+			},
 			"edit": "Profil bearbeiten",
 			"save": "Speichern",
 			"cancel": "Abbrechen",
@@ -3889,7 +3889,15 @@
 			"editImage": "Bearbeiten",
 			"editCrop": "Zuschneiden",
 			"editMosaic": "Verpixeln",
-			"editBrush": "Bürste",
+			"editBrush": "Pinsel",
+			"editBrushColor": {
+				"title": "Pinselfarbe",
+				"aria-label": "Pinselfarbe"
+			},
+			"editBrushSize": {
+				"title": "Pinselgröße",
+				"aria-label": "Pinselgröße"
+			},
 			"editApply": "Übernehmen",
 			"editCancel": "Abbrechen",
 			"replyPolicyEveryone": "Jeder kann antworten",
@@ -3936,10 +3944,10 @@
 					"textContent": "Öffentlich"
 				},
 				"unlisted": {
-					"title": "Nicht öffentlich gelistet",
-					"aria-label": "Nicht öffentlich gelistet",
-					"label": "Nicht öffentlich gelistet",
-					"textContent": "Nicht öffentlich gelistet"
+					"title": "Nicht gelistet",
+					"aria-label": "Nicht gelistet",
+					"label": "Nicht gelistet",
+					"textContent": "Nicht gelistet"
 				},
 				"followers": {
 					"title": "Nur Follower",
@@ -3948,28 +3956,28 @@
 					"textContent": "Nur Follower"
 				},
 				"followers7d": {
-					"title": "Sichtbar nach 7 Tagen Nachverfolgung",
-					"aria-label": "Sichtbar nach 7 Tagen Nachverfolgung",
-					"label": "Sichtbar nach 7 Tagen Nachverfolgung",
-					"textContent": "Sichtbar nach 7 Tagen Nachverfolgung"
+					"title": "Sichtbar nach 7 Tagen Follow",
+					"aria-label": "Sichtbar nach 7 Tagen Follow",
+					"label": "Sichtbar nach 7 Tagen Follow",
+					"textContent": "Sichtbar nach 7 Tagen Follow"
 				},
 				"followers30d": {
-					"title": "Sichtbar nach 30-tägiger Nachverfolgung",
-					"aria-label": "Sichtbar nach 30-tägiger Nachverfolgung",
-					"label": "Sichtbar nach 30-tägiger Nachverfolgung",
-					"textContent": "Sichtbar nach 30-tägiger Nachverfolgung"
+					"title": "Sichtbar nach 30 Tagen Follow",
+					"aria-label": "Sichtbar nach 30 Tagen Follow",
+					"label": "Sichtbar nach 30 Tagen Follow",
+					"textContent": "Sichtbar nach 30 Tagen Follow"
 				},
 				"selected": {
-					"title": "Für bestimmte Personen sichtbar",
-					"aria-label": "Für bestimmte Personen sichtbar",
-					"label": "Für bestimmte Personen sichtbar",
-					"textContent": "Für bestimmte Personen sichtbar"
+					"title": "Für ausgewählte Personen",
+					"aria-label": "Für ausgewählte Personen",
+					"label": "Für ausgewählte Personen",
+					"textContent": "Für ausgewählte Personen"
 				},
 				"private": {
-					"title": "Nur für Sie selbst sichtbar",
-					"aria-label": "Nur für Sie selbst sichtbar",
-					"label": "Nur für Sie selbst sichtbar",
-					"textContent": "Nur für Sie selbst sichtbar"
+					"title": "Nur für mich",
+					"aria-label": "Nur für mich",
+					"label": "Nur für mich",
+					"textContent": "Nur für mich"
 				},
 				"allowLabel": "Sichtbare Menschen",
 				"exceptLabel": "Ausgeschlossene Personen",
@@ -4006,6 +4014,7 @@
 			"trending": {
 				"title": "Trend-Themen",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} Beiträge"
 				},
 				"empty": "Noch keine Trend-Themen",
@@ -4043,8 +4052,8 @@
 			"confirm": "Bestätigen",
 			"cancel": "Abbrechen",
 			"remove": {
-				"title": "Favoriten entfernen",
-				"aria-label": "Favoriten entfernen"
+				"title": "Aus Merkliste entfernen",
+				"aria-label": "Aus Merkliste entfernen"
 			},
 			"renameFolder": {
 				"title": "Umbenennen",
@@ -4241,20 +4250,20 @@
 				"aria-label": "Gefällt mir nicht mehr"
 			},
 			"dislike": {
-				"title": "Disliken",
-				"aria-label": "Disliken"
+				"title": "Gefällt mir nicht",
+				"aria-label": "Gefällt mir nicht"
 			},
 			"undislike": {
-				"title": "Abneigung abbrechen",
-				"aria-label": "Abneigung abbrechen"
+				"title": "Dislike zurücknehmen",
+				"aria-label": "Dislike zurücknehmen"
 			},
 			"repost": "Weiterleiten",
 			"quote": "Zitat",
 			"delete": "Löschen",
 			"edit": "Bearbeiten",
 			"save": {
-				"title": "Speichern",
-				"aria-label": "Speichern"
+				"title": "Merken",
+				"aria-label": "Merken"
 			},
 			"saved": "Gesammelt",
 			"translate": "Übersetzen",
@@ -4371,9 +4380,6 @@
 			"quoting": "Zitieren",
 			"clear": "Zitat entfernen",
 			"viewOriginal": "Originalbeitrag ansehen"
-		},
-		"translate": {
-			"label": "Übersetzung:"
 		},
 		"time": {
 			"justNow": "Nur",
@@ -5331,7 +5337,8 @@
 			"confirm": "Bestätigen",
 			"close": "Schließen",
 			"translate": {
-				"showOriginal": "Originaltext anzeigen",
+				"label": "Übersetzung:",
+				"showOriginal": "Original anzeigen",
 				"showTranslation": "Übersetzung anzeigen"
 			}
 		},
