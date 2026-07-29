@@ -1033,8 +1033,8 @@
 				"aria-label": "シンボル"
 			},
 			"Flags": {
-				"title": "バナー",
-				"aria-label": "バナー"
+				"title": "旗",
+				"aria-label": "旗"
 			}
 		},
 		"sessionSettings": {
@@ -3936,10 +3936,10 @@
 					"textContent": "公開"
 				},
 				"unlisted": {
-					"title": "未掲載",
-					"aria-label": "未掲載",
-					"label": "未掲載",
-					"textContent": "未掲載"
+					"title": "公開（一覧非表示）",
+					"aria-label": "公開（一覧非表示）",
+					"label": "公開（一覧非表示）",
+					"textContent": "公開（一覧非表示）"
 				},
 				"followers": {
 					"title": "フォロワーのみ",

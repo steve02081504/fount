@@ -365,7 +365,8 @@ async function cycleLocales() {
 			localeIndex = LOCALE_CYCLE.indexOf(locale)
 			await runLocaleScriptCheck(i18n.main_locale || locale)
 		})
-		await enqueueWatch(() => runA11y())
+		// enqueueWatch 已记日志；此处吞掉 rejection，避免打断后续语种
+		await enqueueWatch(() => runA11y()).catch(() => { })
 	}
 	ensureLocaleTimer()
 }

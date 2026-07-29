@@ -2825,7 +2825,7 @@
 			"advancedSettings": "樞機之制",
 			"advancedDescription": "日用無需調整。",
 			"cardHost": {
-				"aria-label": "人格簡卡"
+				"aria-label": "簿牒簡卡"
 			},
 			"edit": "修簿牒",
 			"save": "存",

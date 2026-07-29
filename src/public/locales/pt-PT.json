@@ -1005,8 +1005,8 @@
 				"aria-label": "Rostos sorridentes e emoções"
 			},
 			"People_and_Body": {
-				"title": "Figuras e corpos",
-				"aria-label": "Figuras e corpos"
+				"title": "Pessoas e corpo",
+				"aria-label": "Pessoas e corpo"
 			},
 			"Animals_and_Nature": {
 				"title": "Animais e natureza",
@@ -1021,20 +1021,20 @@
 				"aria-label": "Viagens e lugares"
 			},
 			"Activities": {
-				"title": "Atividade",
-				"aria-label": "Atividade"
+				"title": "Atividades",
+				"aria-label": "Atividades"
 			},
 			"Objects": {
-				"title": "Coisa",
-				"aria-label": "Coisa"
+				"title": "Objetos",
+				"aria-label": "Objetos"
 			},
 			"Symbols": {
-				"title": "Símbolo",
-				"aria-label": "Símbolo"
+				"title": "Símbolos",
+				"aria-label": "Símbolos"
 			},
 			"Flags": {
-				"title": "Bandeira",
-				"aria-label": "Bandeira"
+				"title": "Bandeiras",
+				"aria-label": "Bandeiras"
 			}
 		},
 		"sessionSettings": {

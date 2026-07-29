@@ -29,6 +29,8 @@ export function getLocaleNames() {
 
 /** preferred → { bundle, locale }；语种轮换时免重复拉包 */
 const localeBundleCache = new Map()
+/** preferred → 进行中的拉取 Promise；并发同 key 去重 */
+const localeBundleInflight = new Map()
 
 /**
  * 按首选链拉取一份 locale bundle（不写 DOM / 不改偏好）。
@@ -39,15 +41,27 @@ export async function loadLocaleData(preferredLangs) {
 	const cacheKey = preferredLangs.join(',')
 	const cached = localeBundleCache.get(cacheKey)
 	if (cached) return cached.bundle
-	const url = new URL('/api/getlocaledata', location.origin)
-	url.searchParams.set('preferred', preferredLangs.join(','))
-	const response = await fetch(url)
-	if (!response.ok)
-		throw new Error(`Failed to fetch translations: ${response.status} ${response.statusText}`)
-	const locale = [...preferredLangs, navigator.language, ...navigator.languages, 'en-UK'].filter(Boolean)[0]
-	const result = { bundle: await response.json(), locale }
-	localeBundleCache.set(cacheKey, result)
-	return result.bundle
+	const inflight = localeBundleInflight.get(cacheKey)
+	if (inflight) return inflight
+
+	const request = (async () => {
+		const url = new URL('/api/getlocaledata', location.origin)
+		url.searchParams.set('preferred', preferredLangs.join(','))
+		const response = await fetch(url)
+		if (!response.ok)
+			throw new Error(`Failed to fetch translations: ${response.status} ${response.statusText}`)
+		const locale = [...preferredLangs, navigator.language, ...navigator.languages, 'en-UK'].filter(Boolean)[0]
+		const result = { bundle: await response.json(), locale }
+		localeBundleCache.set(cacheKey, result)
+		return result.bundle
+	})()
+	localeBundleInflight.set(cacheKey, request)
+	try {
+		return await request
+	}
+	finally {
+		localeBundleInflight.delete(cacheKey)
+	}
 }
 
 /**
@@ -66,5 +80,6 @@ export async function initTranslations(pageid = saved_pageid, preferredLangs = l
 
 onServerEvent('locale-updated', async () => {
 	localeBundleCache.clear()
+	localeBundleInflight.clear()
 	await initTranslations()
 })

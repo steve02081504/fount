@@ -3860,6 +3860,14 @@ export type LocaleData = {
 			editCrop: string
 			editMosaic: string
 			editBrush: string
+			editBrushColor: {
+				title: string
+				'aria-label': string
+			}
+			editBrushSize: {
+				title: string
+				'aria-label': string
+			}
 			editApply: string
 			editCancel: string
 			replyPolicyEveryone: string

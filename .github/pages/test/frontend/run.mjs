@@ -51,11 +51,17 @@ try {
 		},
 		playwrightArgs: process.argv.slice(2),
 	})
-	// 给 orchestrator idle watchdog 一条收尾心跳（Playwright 摘要后仍可能卡在关服）
+	// idle watchdog 只认 stdout 活跃（与 serial.mjs 同）；无独立 heartbeat API
 	process.stdout.write(`[pages] playwright exited code=${process.exitCode}\n`)
 }
 finally {
-	if (server) await server.close().catch(() => { })
-	process.stdout.write('[pages] server closed\n')
-	if (releaseAll) await releaseAll().catch(() => { })
+	try {
+		if (server) {
+			await server.close()
+			process.stdout.write('[pages] server closed\n')
+		}
+	}
+	finally {
+		if (releaseAll) await releaseAll().catch(() => { })
+	}
 }
