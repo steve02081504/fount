@@ -148,7 +148,7 @@ export function buildTerminateReason(trigger, { label, startedAt, lastActivityAt
 	}
 	if (trigger === 'idle') {
 		const idleSec = Math.round((now - lastActivityAt) / 1000)
-		return geti18n('fountConsole.test.terminateIdle', {
+		return geti18n('fountConsole.test.terminate.idle', {
 			label,
 			minutes: Math.round(IDLE_TIMEOUT_MS / 60_000),
 			idleSec,
@@ -157,12 +157,12 @@ export function buildTerminateReason(trigger, { label, startedAt, lastActivityAt
 	}
 	const durationLimitMs = getDurationWatchdogLimitMs(baselineDurationMs)
 	if (baselineDurationMs == null || baselineDurationMs <= 0)
-		return geti18n('fountConsole.test.terminateDurationDefault', {
+		return geti18n('fountConsole.test.terminate.durationDefault', {
 			label,
 			elapsed: formatDuration(elapsedMs),
 			limit: formatDuration(durationLimitMs),
 		})
-	return geti18n('fountConsole.test.terminateDuration', {
+	return geti18n('fountConsole.test.terminate.duration', {
 		label,
 		elapsed: formatDuration(elapsedMs),
 		baseline: formatDuration(baselineDurationMs),
@@ -197,10 +197,10 @@ export async function runCommand(command, extraEnv = {}, options) {
 		if (terminated || sleepInterrupted || abortController.signal.aborted) return
 		terminated = true
 		terminateReason = reason === SPECULATIVE_ABORT_REASON
-			? geti18n('fountConsole.test.terminateSpeculative', { label })
+			? geti18n('fountConsole.test.terminate.speculative', { label })
 			: typeof reason === 'string' && reason
 				? reason
-				: geti18n('fountConsole.test.terminateUnknown', { label })
+				: geti18n('fountConsole.test.terminate.unknown', { label })
 		abortController.abort()
 	}
 	if (externalSignal)
@@ -304,8 +304,8 @@ export async function runCommand(command, extraEnv = {}, options) {
 		clearInterval(watchdog)
 		clearInterval(resourceSampler)
 		if (sleepInterrupted || terminated || error?.name === 'AbortError') {
-			const reason = terminateReason ?? geti18n('fountConsole.test.terminateUnknown', { label })
-			const marker = geti18n('fountConsole.test.terminateMarker', { reason })
+			const reason = terminateReason ?? geti18n('fountConsole.test.terminate.unknown', { label })
+			const marker = geti18n('fountConsole.test.terminate.marker', { reason })
 			const output = `${outputTail}${outputTail.endsWith('\n') ? '' : '\n'}${marker}\n`
 			const { peakMemMb, avgCpuPct } = usageResult()
 			return {

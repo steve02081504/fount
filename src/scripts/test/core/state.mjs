@@ -640,7 +640,7 @@ export function buildStateMarkdown(allSuites, state, staleKeys) {
 		'',
 		`## ${geti18n('fountConsole.test.state.sectionOverview')}`,
 		'',
-		`| ${geti18n('fountConsole.test.state.columnSuite')} | ${geti18n('fountConsole.test.state.columnStatus')} | ${geti18n('fountConsole.test.state.columnCommit')} | ${geti18n('fountConsole.test.state.columnRanAt')} | ${geti18n('fountConsole.test.state.columnDuration')} | ${geti18n('fountConsole.test.state.columnLog')} |`,
+		`| ${geti18n('fountConsole.test.state.column.suite')} | ${geti18n('fountConsole.test.state.column.status')} | ${geti18n('fountConsole.test.state.column.commit')} | ${geti18n('fountConsole.test.state.column.ranAt')} | ${geti18n('fountConsole.test.state.column.duration')} | ${geti18n('fountConsole.test.state.column.log')} |`,
 		'| --- | --- | --- | --- | --- | --- |',
 	]
 
