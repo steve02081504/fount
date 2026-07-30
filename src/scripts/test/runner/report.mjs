@@ -245,25 +245,25 @@ function buildRunMarkdown(summary, completed) {
 		'',
 		`| ${geti18n('fountConsole.test.report.tableHeaderItem')} | ${geti18n('fountConsole.test.report.tableHeaderValue')} |`,
 		'| --- | --- |',
-		`| ${geti18n('fountConsole.test.report.fieldRunId')} | \`${summary.runId}\` |`,
-		`| ${geti18n('fountConsole.test.report.fieldCommand')} | \`${summary.command ?? geti18n('fountConsole.test.report.commandDefault')}\` |`,
-		`| ${geti18n('fountConsole.test.report.fieldExit')} | ${exitLabel} |`,
-		`| ${geti18n('fountConsole.test.report.fieldProgress')} | ${geti18n('fountConsole.test.report.progressFormat', { completed: completed.length, total: summary.slots.length })} |`,
-		`| ${geti18n('fountConsole.test.report.fieldSuites')} | ${geti18n('fountConsole.test.report.suitesFormat', { passed, completed: completed.length })} |`,
-		`| ${geti18n('fountConsole.test.report.fieldFailed')} | ${failed} |`,
-		`| ${geti18n('fountConsole.test.report.fieldNoisyPassed')} | ${noisy} |`,
-		`| ${geti18n('fountConsole.test.state.columnBlocked')} | ${blocked} |`,
-		`| ${geti18n('fountConsole.test.report.fieldReused')} | ${reused} |`,
-		`| ${geti18n('fountConsole.test.report.fieldSuiteSumDuration')} | ${formatDuration(suiteSumMs)} |`,
-		`| ${geti18n('fountConsole.test.report.fieldWallClock')} | ${formatDuration(totalMs)} |`,
-		`| ${geti18n('fountConsole.test.report.fieldParallelRate')} | ${formatParallelRatePct(ratePct)} |`,
+		`| ${geti18n('fountConsole.test.report.field.runId')} | \`${summary.runId}\` |`,
+		`| ${geti18n('fountConsole.test.report.field.command')} | \`${summary.command ?? geti18n('fountConsole.test.report.commandDefault')}\` |`,
+		`| ${geti18n('fountConsole.test.report.field.exit')} | ${exitLabel} |`,
+		`| ${geti18n('fountConsole.test.report.field.progress')} | ${geti18n('fountConsole.test.report.progressFormat', { completed: completed.length, total: summary.slots.length })} |`,
+		`| ${geti18n('fountConsole.test.report.field.suites')} | ${geti18n('fountConsole.test.report.suitesFormat', { passed, completed: completed.length })} |`,
+		`| ${geti18n('fountConsole.test.report.field.failed')} | ${failed} |`,
+		`| ${geti18n('fountConsole.test.report.field.noisyPassed')} | ${noisy} |`,
+		`| ${geti18n('fountConsole.test.state.column.blocked')} | ${blocked} |`,
+		`| ${geti18n('fountConsole.test.report.field.reused')} | ${reused} |`,
+		`| ${geti18n('fountConsole.test.report.field.suiteSumDuration')} | ${formatDuration(suiteSumMs)} |`,
+		`| ${geti18n('fountConsole.test.report.field.wallClock')} | ${formatDuration(totalMs)} |`,
+		`| ${geti18n('fountConsole.test.report.field.parallelRate')} | ${formatParallelRatePct(ratePct)} |`,
 	]
 
 	// 剩余全是复用/预计阻塞时 ETA≈0，无信息量，略去。
 	if (summary.estimate?.runCount)
 		lines.push(
-			`| ${geti18n('fountConsole.test.report.fieldEstimatedRemaining')} | ${formatEstimatePoint(summary.estimate.etaMs)} |`,
-			`| ${geti18n('fountConsole.test.report.fieldEstimatedParallelRate')} | ${formatParallelRatePct(summary.estimate.parallelRatePct)} |`,
+			`| ${geti18n('fountConsole.test.report.field.estimatedRemaining')} | ${formatEstimatePoint(summary.estimate.etaMs)} |`,
+			`| ${geti18n('fountConsole.test.report.field.estimatedParallelRate')} | ${formatParallelRatePct(summary.estimate.parallelRatePct)} |`,
 		)
 
 	lines.push(
@@ -275,24 +275,24 @@ function buildRunMarkdown(summary, completed) {
 	appendContinueReasonsLink(lines, summary)
 	appendTriggerWarnings(lines, summary.triggerWarnings)
 
-	appendSection(lines, geti18n('fountConsole.test.report.sectionFailed'), completed.filter(s => s.status === 'failed'))
+	appendSection(lines, geti18n('fountConsole.test.report.section.failed'), completed.filter(s => s.status === 'failed'))
 	appendSection(lines, geti18n('fountConsole.test.state.sectionBlocked'), completed.filter(s => s.status === 'blocked'))
-	appendSection(lines, geti18n('fountConsole.test.report.sectionNoisyPassed'), completed.filter(s => s.status === 'noisy'))
+	appendSection(lines, geti18n('fountConsole.test.report.section.noisyPassed'), completed.filter(s => s.status === 'noisy'))
 	appendSilentPassed(lines, completed.filter(s => s.status === 'passed'))
 
 	const pending = summary.slots.filter(slot => slot.state === 'pending')
 	if (pending.length) {
-		lines.push(`## ${geti18n('fountConsole.test.report.sectionPending')}`, '')
+		lines.push(`## ${geti18n('fountConsole.test.report.section.pending')}`, '')
 		if (summary.estimate?.runCount) {
-			lines.push(geti18n('fountConsole.test.report.pendingEstimate', {
+			lines.push(geti18n('fountConsole.test.report.pending.estimate', {
 				eta: formatDuration(summary.estimate.etaMs),
 			}))
 			if (summary.estimate.serial) {
-				lines.push(geti18n('fountConsole.test.report.pendingParallelEstimate', {
+				lines.push(geti18n('fountConsole.test.report.pending.parallelEstimate', {
 					eta: formatDuration(summary.estimate.parallelEtaMs),
 					rate: formatParallelRatePct(summary.estimate.parallelRatePct),
 				}))
-				lines.push(geti18n('fountConsole.test.report.pendingSavings', {
+				lines.push(geti18n('fountConsole.test.report.pending.savings', {
 					savings: formatDuration(summary.estimate.savingsMs),
 				}))
 			}
@@ -302,16 +302,16 @@ function buildRunMarkdown(summary, completed) {
 			const key = suiteKey(slot.manifestId, slot.name)
 			const task = summary.estimateTasks?.[key]
 			let mark = ''
-			if (task?.reused) mark = ` ${geti18n('fountConsole.test.report.labelReused')}`
-			else if (task?.blocked) mark = ` ${geti18n('fountConsole.test.report.labelExpectedBlocked')}`
+			if (task?.reused) mark = ` ${geti18n('fountConsole.test.report.label.reused')}`
+			else if (task?.blocked) mark = ` ${geti18n('fountConsole.test.report.label.expectedBlocked')}`
 			const expected = mark ? null : formatExpectedDuration(task?.durationMs ?? null)
 			const expectedMark = expected
-				? ` — ${geti18n('fountConsole.test.report.pendingItemExpected', { expected })}`
+				? ` — ${geti18n('fountConsole.test.report.pending.itemExpected', { expected })}`
 				: ''
 			lines.push(`- ${slot.manifestId}:${slot.name}${mark}${expectedMark}`)
 		}
 		lines.push('')
-		lines.push(`## ${geti18n('fountConsole.test.report.sectionContinue')}`, '', '```shell', summary.command || 'fount test', '```', '')
+		lines.push(`## ${geti18n('fountConsole.test.report.section.continue')}`, '', '```shell', summary.command || 'fount test', '```', '')
 	}
 
 	return lines.join('\n')
@@ -344,23 +344,23 @@ function shortHash(hash) {
 function formatReasonKindLabel(kind, { strict = false } = {}) {
 	switch (kind) {
 		case 'imperfect_failed':
-			return geti18n('fountConsole.test.report.reasonImperfectFailed')
+			return geti18n('fountConsole.test.report.reason.imperfect.failed')
 		case 'imperfect_noisy':
-			return geti18n('fountConsole.test.report.reasonImperfectNoisy')
+			return geti18n('fountConsole.test.report.reason.imperfect.noisy')
 		case 'imperfect_blocked':
-			return geti18n('fountConsole.test.report.reasonImperfectBlocked')
+			return geti18n('fountConsole.test.report.reason.imperfect.blocked')
 		case 'imperfect_dependent':
-			return geti18n('fountConsole.test.report.reasonImperfectDependent')
+			return geti18n('fountConsole.test.report.reason.imperfect.dependent')
 		case 'missing_state_record':
-			return geti18n('fountConsole.test.report.reasonMissingRecord')
+			return geti18n('fountConsole.test.report.reason.missingRecord')
 		case 'stale_content':
-			return geti18n('fountConsole.test.report.reasonStaleContent')
+			return geti18n('fountConsole.test.report.reason.staleContent')
 		case 'trigger_hash_drift':
-			return geti18n('fountConsole.test.report.reasonTriggerHashDrift')
+			return geti18n('fountConsole.test.report.reason.triggerHashDrift')
 		case 'explicit_selected':
-			return geti18n('fountConsole.test.report.reasonExplicitSelected')
+			return geti18n('fountConsole.test.report.reason.explicitSelected')
 		case 'dependency_required':
-			return geti18n('fountConsole.test.report.reasonDependencyRequired')
+			return geti18n('fountConsole.test.report.reason.dependencyRequired')
 	}
 	if (strict)
 		throw new Error(`unknown continue reason kind: ${kind}`)
@@ -383,29 +383,29 @@ function formatContinueReasonLabel(reason) {
 function appendContinueReasonEvidence(lines, reason, depth = 0) {
 	const indent = depth ? '  '.repeat(depth) : ''
 	if (reason.fromCommit != null || reason.toCommit)
-		lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelCommitRange')}: \`${shortHash(reason.fromCommit)}\` → \`${shortHash(reason.toCommit)}\``)
+		lines.push(`${indent}- ${geti18n('fountConsole.test.report.label.commitRange')}: \`${shortHash(reason.fromCommit)}\` → \`${shortHash(reason.toCommit)}\``)
 	if (reason.fromUncommittedHash != null || reason.toUncommittedHash != null) {
 		const from = shortHash(reason.fromUncommittedHash)
 		const to = shortHash(reason.toUncommittedHash)
 		if (from !== to)
-			lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelUncommittedHashRange')}: \`${from}\` → \`${to}\``)
+			lines.push(`${indent}- ${geti18n('fountConsole.test.report.label.uncommittedHashRange')}: \`${from}\` → \`${to}\``)
 	}
 	if (reason.blockedBy?.length)
 		lines.push(`${indent}- ${geti18n('fountConsole.test.state.labelBlockedBy')}: ${reason.blockedBy.join(', ')}`)
 	if (reason.matchedTriggerSets?.length) {
-		lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelMatchedTriggerSets')}:`)
+		lines.push(`${indent}- ${geti18n('fountConsole.test.report.label.matchedTriggerSets')}:`)
 		for (const setName of reason.matchedTriggerSets) lines.push(`${indent}  - \`${setName}\``)
 	}
 	if (reason.matchedTriggers?.length) {
-		lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelMatchedTriggers')}:`)
+		lines.push(`${indent}- ${geti18n('fountConsole.test.report.label.matchedTriggers')}:`)
 		for (const trigger of reason.matchedTriggers) lines.push(`${indent}  - \`${trigger}\``)
 	}
 	if (reason.matchedPaths?.length) {
-		lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelMatchedPaths')}:`)
+		lines.push(`${indent}- ${geti18n('fountConsole.test.report.label.matchedPaths')}:`)
 		for (const path of reason.matchedPaths) lines.push(`${indent}  - \`${path}\``)
 	}
 	if (reason.triggerHashDrift || reason.kind === 'trigger_hash_drift')
-		lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelTriggerHashDrift')}`)
+		lines.push(`${indent}- ${geti18n('fountConsole.test.report.label.triggerHashDrift')}`)
 }
 
 /**
@@ -414,7 +414,7 @@ function appendContinueReasonEvidence(lines, reason, depth = 0) {
  */
 function appendDependencyReasonDetail(lines, reason) {
 	if (reason.requiredBy)
-		lines.push(`- ${geti18n('fountConsole.test.report.labelDirectRequiredBy')}: \`${reason.requiredBy}\``)
+		lines.push(`- ${geti18n('fountConsole.test.report.label.directRequiredBy')}: \`${reason.requiredBy}\``)
 }
 
 /**
@@ -432,7 +432,7 @@ function formatTriggerWarningScope(warning) {
  */
 function appendTriggerWarnings(lines, warnings) {
 	if (!warnings?.length) return
-	lines.push(`## ${geti18n('fountConsole.test.report.sectionDeadTriggers')}`, '')
+	lines.push(`## ${geti18n('fountConsole.test.report.section.deadTriggers')}`, '')
 	lines.push(geti18n('fountConsole.test.report.deadTriggersHint'), '')
 	/** @type {Map<string, TriggerWarning[]>} */
 	const byScope = new Map()
@@ -469,13 +469,13 @@ function buildContinueReasonsMarkdown(summary) {
 	const slots = summary.slots.filter(slot => slot.continueReason)
 	if (!slots.length) return ''
 
-	const lines = [`# ${geti18n('fountConsole.test.report.sectionContinueReasons')}`, '']
+	const lines = [`# ${geti18n('fountConsole.test.report.section.continueReasons')}`, '']
 	for (const slot of slots) {
 		lines.push(`## ${slot.manifestId}:${slot.name}`, '')
 		if (slot.continueReason.kind === 'dependency_required')
 			appendDependencyReasonDetail(lines, slot.continueReason)
 		else {
-			lines.push(`- ${geti18n('fountConsole.test.report.labelContinueReason')}: ${formatContinueReasonLabel(slot.continueReason)}`)
+			lines.push(`- ${geti18n('fountConsole.test.report.label.continueReason')}: ${formatContinueReasonLabel(slot.continueReason)}`)
 			appendContinueReasonEvidence(lines, slot.continueReason)
 		}
 		lines.push('')
@@ -492,22 +492,22 @@ function appendSection(lines, title, entries) {
 	if (!entries.length) return
 	lines.push(`## ${title}`, '')
 	for (const entry of entries) {
-		const reusedMark = entry.reused ? ` ${geti18n('fountConsole.test.report.labelReused')}` : ''
+		const reusedMark = entry.reused ? ` ${geti18n('fountConsole.test.report.label.reused')}` : ''
 		lines.push(`### ${entry.manifestId}:${entry.name}${reusedMark}`, '')
 		if (entry.status !== 'blocked')
-			lines.push(`- ${geti18n('fountConsole.test.report.labelDuration')}: ${formatDuration(entry.durationMs)}`)
+			lines.push(`- ${geti18n('fountConsole.test.report.label.duration')}: ${formatDuration(entry.durationMs)}`)
 		if (entry.blockedBy?.length)
 			lines.push(`- ${geti18n('fountConsole.test.state.labelBlockedBy')}: ${entry.blockedBy.join(', ')}`)
 		if (entry.terminateReason)
-			lines.push(`- ${geti18n('fountConsole.test.report.labelTerminateReason')}: ${entry.terminateReason}`)
+			lines.push(`- ${geti18n('fountConsole.test.report.label.terminateReason')}: ${entry.terminateReason}`)
 		if (entry.logPath) {
 			const logLink = `./state/${entry.logPath.replace(/^\.\//, '')}`
-			lines.push(`- ${geti18n('fountConsole.test.report.labelLog')}: [${logLink}](${logLink})`)
+			lines.push(`- ${geti18n('fountConsole.test.report.label.log')}: [${logLink}](${logLink})`)
 		}
 		if (entry.noiseHits?.length)
-			lines.push(`- ${geti18n('fountConsole.test.report.labelNoise')}: ${entry.noiseHits.join(', ')}`)
+			lines.push(`- ${geti18n('fountConsole.test.report.label.noise')}: ${entry.noiseHits.join(', ')}`)
 		if (entry.failedFiles?.length) {
-			lines.push(`- ${geti18n('fountConsole.test.report.labelFailedFiles')}:`)
+			lines.push(`- ${geti18n('fountConsole.test.report.label.failedFiles')}:`)
 			for (const file of entry.failedFiles) lines.push(`  - \`${file}\``)
 		}
 		lines.push('')
@@ -520,11 +520,11 @@ function appendSection(lines, title, entries) {
  */
 function appendSilentPassed(lines, entries) {
 	if (!entries.length) return
-	lines.push(`## ${geti18n('fountConsole.test.report.sectionSilentPassed')}`, '')
+	lines.push(`## ${geti18n('fountConsole.test.report.section.silentPassed')}`, '')
 	lines.push(`| ${geti18n('fountConsole.test.report.columnSuite')} | ${geti18n('fountConsole.test.report.columnDuration')} |`)
 	lines.push('| --- | --- |')
 	for (const entry of entries) {
-		const reusedMark = entry.reused ? ` ${geti18n('fountConsole.test.report.labelReused')}` : ''
+		const reusedMark = entry.reused ? ` ${geti18n('fountConsole.test.report.label.reused')}` : ''
 		lines.push(`| ${entry.manifestId}:${entry.name}${reusedMark} | ${formatDuration(entry.durationMs)} |`)
 	}
 	lines.push('')

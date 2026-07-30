@@ -10,6 +10,19 @@ Never delete then refill from zh-CN: `fake` / `emoji` and other non-Google targe
 
 When updating call sites, rewrite only quoted i18n key strings — do not blind-replace `profile.xxx` object fields or module paths.
 
+**写回 locale JSON 只用 Python**（`update_locale_data.py` / `update-locales.py` / `reshape_i18n_keys.py`）。JS `JSON.stringify` 会把纯数字键（如 `"404"`）排到对象最前，打乱键序。
+
+## Prefix nest reshape
+
+同级 ≥4 个驼峰共享前缀时，用：
+
+```text
+python .esh/commands/reshape_i18n_keys.py
+python .esh/commands/reshape_i18n_keys.py path/to/extra_renames.json
+```
+
+会嵌套全部 locale、写出 `data/test/i18n_key_rename_map.json`，并改写仓库内引号中的旧键。第二遍 exact 补洞仍可用 `src/scripts/checks/tools/rewrite_i18n_exact_pass.mjs`（只改源码，不写 locale）。
+
 ## Reshape string → `{ title, aria-label }`
 
 Icon / tooltip-only controls: keep each locale's existing string, wrap in place — do **not** retranslate via `update-locales.py`.

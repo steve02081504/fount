@@ -116,7 +116,7 @@ process.exit(await (async () => {
 	const parsed = parseGroupSelectors(positionals, knownIds, allSuites)
 
 	if ('error' in parsed) {
-		console.errorI18n('fountConsole.test.unknownManifestId', { ids: parsed.token })
+		console.errorI18n('fountConsole.test.unknown.manifestId', { ids: parsed.token })
 		console.errorI18n('fountConsole.test.available', { ids: knownIds.join(', ') })
 		process.exit(2)
 	}

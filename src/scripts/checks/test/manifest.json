@@ -1,0 +1,62 @@
+{
+	"id": "checks",
+	"suites": [
+		{
+			"name": "html_meta",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/html_meta.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/html_meta.mjs",
+				"src/scripts/checks/walk.mjs",
+				"src/scripts/checks/test/html_meta.test.mjs",
+				"**/*.html"
+			]
+		},
+		{
+			"name": "info",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/info.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/info.mjs",
+				"src/scripts/checks/walk.mjs",
+				"src/scripts/checks/test/info.test.mjs",
+				"src/public/parts/**/locales.json",
+				"src/public/parts/**/achievements_registry.json"
+			]
+		},
+		{
+			"name": "i18n_keys",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/i18n_keys.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/i18n_keys.mjs",
+				"src/scripts/checks/test/i18n_keys.test.mjs",
+				"src/public/locales/zh-CN.json"
+			]
+		}
+	]
+}

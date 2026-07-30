@@ -1327,11 +1327,11 @@ def run_synchronization_loop(all_data, languages, ref_path):
 	mode = f"并发 ({len(other_paths)} 线程)" if IN_GITHUB_ACTIONS and len(other_paths) > 1 else "串行"
 	print(f"\n--- 开始同步内容和结构 (locales)，模式: {mode}，参考: {ref_lang} ---")
 
-	for i in range(1, MAX_SYNC_ITERATIONS + 1):
+	for synchronization_iteration in range(1, MAX_SYNC_ITERATIONS + 1):
 		if is_translation_aborted():
 			print("\n翻译已中止，结束内容同步循环。")
 			break
-		print(f"\n--- 同步迭代轮次 {i}/{MAX_SYNC_ITERATIONS} ---")
+		print(f"\n--- 同步迭代轮次 {synchronization_iteration}/{MAX_SYNC_ITERATIONS} ---")
 
 		def sync_one(other_path):
 			# 深拷贝参考数据：并发时各线程只改自己的目标语言树，避免竞态
@@ -1348,7 +1348,7 @@ def run_synchronization_loop(all_data, languages, ref_path):
 		if not changes_in_iter:
 			print("\n内容同步完成，本轮无更改。")
 			break
-		elif i == MAX_SYNC_ITERATIONS:
+		elif synchronization_iteration == MAX_SYNC_ITERATIONS:
 			print("\n警告：达到最大同步迭代次数，内容可能未完全收敛。")
 
 
@@ -1432,24 +1432,32 @@ def generate_locale_data_ts(ref_data, output_path):
 	"""Generates the locale_data.ts file for i18n key type completion."""
 	print(f"\n--- Generating {os.path.basename(output_path)} for type safety ---")
 
-	def collect_placeholder_keys_recursive(data, prefix=""):
-		"""Recursively finds all keys that have string values with placeholders."""
-		keys = {}
-		for key, value in data.items():
-			path = f"{prefix}.{key}" if prefix else key
-			if isinstance(value, (OrderedDict, dict)):
-				keys.update(collect_placeholder_keys_recursive(value, path))
-			elif isinstance(value, str):
-				placeholders = extract_placeholders(value)
-				if placeholders:
-					keys[path] = sorted(list(set(placeholders)))
-		return keys
-
 	def sanitize_ts_key(key):
 		"""Sanitizes a key for use in TypeScript types. If not a valid identifier, wraps in single quotes."""
 		if re.match(r"^[a-zA-Z_$][a-zA-Z0-9_$]*$", key):
 			return key
 		return f"'{key}'"
+
+	def merge_locale_values_for_type(values):
+		"""Merge locale values so later entries contribute fields/element types."""
+		if all(isinstance(value, str) for value in values):
+			return values[0]
+		if all(isinstance(value, (OrderedDict, dict)) for value in values):
+			merged = OrderedDict()
+			for value in values:
+				for key, child in value.items():
+					if key not in merged:
+						merged[key] = child
+					else:
+						merged[key] = merge_locale_values_for_type([merged[key], child])
+			return merged
+		if all(isinstance(value, list) for value in values):
+			merged_elements = []
+			for value in values:
+				merged_elements.extend(value)
+			return merged_elements
+		types = ", ".join(type(value).__name__ for value in values)
+		raise TypeError(f"Cannot merge mixed or unsupported locale value types: {types}")
 
 	def generate_ts_type_recursive(data, indent_level):
 		"""Recursively generates a TypeScript type string from a dictionary."""
@@ -1457,15 +1465,57 @@ def generate_locale_data_ts(ref_data, output_path):
 		indent = "\t" * indent_level
 		for key, value in data.items():
 			ts_key = sanitize_ts_key(key)
-			if isinstance(value, (OrderedDict, dict)):
+			if isinstance(value, list):
+				parts.append(f"{indent}{ts_key}: {generate_ts_array_type(value, indent_level)}")
+			elif isinstance(value, (OrderedDict, dict)):
 				parts.append(f"{indent}{ts_key}: {generate_ts_type_recursive(value, indent_level + 1)}")
 			elif isinstance(value, str):
 				parts.append(f"{indent}{ts_key}: string")
 		parts.append("\t" * (indent_level - 1) + "}")
 		return "\n".join(parts)
 
-	locale_data_type_str = generate_ts_type_recursive(ref_data, indent_level=1)
+	def generate_ts_array_type(array_values, indent_level):
+		"""Infer a TypeScript array type from every locale list element."""
+		if not array_values:
+			return "unknown[]"
+		if all(isinstance(element, str) for element in array_values):
+			return "string[]"
+		if all(isinstance(element, (OrderedDict, dict)) for element in array_values):
+			merged_object = merge_locale_values_for_type(array_values)
+			return f"Array<{generate_ts_type_recursive(merged_object, indent_level + 1)}>"
+		if all(isinstance(element, list) for element in array_values):
+			nested_elements = []
+			for element in array_values:
+				nested_elements.extend(element)
+			return f"Array<{generate_ts_array_type(nested_elements, indent_level)}>"
+		types = ", ".join(type(element).__name__ for element in array_values)
+		raise TypeError(f"Cannot merge mixed or unsupported locale value types: {types}")
 
+	def merge_placeholder_maps(target, source):
+		for path, placeholders in source.items():
+			target[path] = sorted(set(target.get(path, [])) | set(placeholders))
+
+	def collect_placeholder_keys_recursive(data, prefix=""):
+		"""Recursively finds all keys that have string values with placeholders."""
+		keys = {}
+		# Arrays are not Paths-compatible placeholder keys; skip `${number}` paths.
+		if isinstance(data, list):
+			return keys
+		if not isinstance(data, (OrderedDict, dict)):
+			return keys
+		for key, value in data.items():
+			path = f"{prefix}.{key}" if prefix else key
+			if isinstance(value, list):
+				continue
+			if isinstance(value, (OrderedDict, dict)):
+				merge_placeholder_maps(keys, collect_placeholder_keys_recursive(value, path))
+			elif isinstance(value, str):
+				placeholders = extract_placeholders(value)
+				if placeholders:
+					keys[path] = sorted(list(set(placeholders)))
+		return keys
+
+	locale_data_type_str = generate_ts_type_recursive(ref_data, indent_level=1)
 	placeholder_keys = collect_placeholder_keys_recursive(ref_data)
 	params_map_parts = ["{"]
 	for key, placeholders in sorted(placeholder_keys.items()):
@@ -1484,11 +1534,13 @@ def generate_locale_data_ts(ref_data, output_path):
  */
 export type LocaleData = {locale_data_type_str}
 // 用于从嵌套对象生成点表示法键的实用类型。
-type Prev = [never, 0, 1, 2, 3, 4, 5, ...0[]]
+type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ...0[]]
 
-type Paths<T, D extends number = 5> = [D] extends [never]
+type Paths<T, D extends number = 8> = [D] extends [never]
 	? never
-	: T extends object
+	: T extends readonly (infer ArrayElement)[]
+		? `${{number}}` | Join<`${{number}}`, Paths<ArrayElement, Prev[D]>>
+		: T extends object
 		? {{ [K in keyof T]-?: K extends string | number
 			? `${{K}}` | Join<K, Paths<T[K], Prev[D]>>
 			: never
