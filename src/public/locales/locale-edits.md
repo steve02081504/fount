@@ -7,7 +7,7 @@ Day-to-day i18n rules: [root AGENTS.md](../../../AGENTS.md).
 Scan sibling keys under each object in `zh-CN.json` (structure is the contract for all locales):
 
 1. **No Suffix/Prefix affix keys** — a segment must not start or end with `Suffix` / `Prefix`. Prefer a full sentence template with `${param}`; do not hard-concatenate affix fragments.
-2. **Nest flat camelCase clusters** — if ≥4 siblings share the same camelCase prefix (`channelPermsHint`…), nest as `channelPerms: { hint, … }`. Single-segment prefixes count too (`tabMembers`… → `tabs: { members, … }`). Nest longest prefixes first.
+2. **Nest flat camelCase clusters** — if ≥4 siblings share the same camelCase prefix (`channelPermsHint`…), nest as `channelPerms: { hint, … }`. Single-segment prefixes count too (`tabMembers`… → `tabs: { members, … }`). Nest longest prefixes first. **SCREAMING_SNAKE 常量键**（`SEND_MESSAGES` / `VIEW_CHANNEL`）不参与簇扫描；嵌套后缀若本身是 SCREAMING_SNAKE 则保持原样（`permSEND_MESSAGES` → `perm.SEND_MESSAGES`，勿写成 `sEND_MESSAGES`）。
 3. **No numbered key tails** — keys matching `name1` / `item2` (`/^[A-Za-z][A-Za-z]*\d+$/`) fail; use meaningful names or arrays. Pure numeric keys like `404` are fine.
 
 Always move keys with `.esh/commands/update_locale_data.py` (below) — never hand-edit every locale JSON.

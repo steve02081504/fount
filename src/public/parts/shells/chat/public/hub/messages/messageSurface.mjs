@@ -164,7 +164,7 @@ export function createMessageSurfacePipeline({
 		 * @param {object} row 行
 		 * @returns {string} key
 		 */
-		getItemKey: row => String(row.eventId || ''),
+		getItemKey: row => String(row?.eventId || ''),
 		initialIndex: initialIndex ?? Math.max(0, getMessages().length - 1),
 		onRenderComplete: onDecorate,
 	})

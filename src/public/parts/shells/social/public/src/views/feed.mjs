@@ -112,8 +112,10 @@ function scheduleFeedPrefetch() {
  * @returns {Promise<void>}
  */
 async function replayFeedItems() {
-	const items = state.feedShownItems
-	if (!items?.length) return
+	const items = (state.feedShownItems || []).filter(item =>
+		!state.suppressedFeedPostIds?.has(String(item.postId || '')),
+	)
+	if (!items.length) return
 	const list = document.getElementById('feedList')
 	if (!list) return
 	// 哨兵须已在尾；追加不重绑 observer
@@ -233,6 +235,7 @@ export async function prependFeedItem(item, options = {}) {
 	if (!list) return false
 	const postId = String(item.postId || '')
 	const entityHash = String(item.entityHash || '').toLowerCase()
+	if (postId && state.suppressedFeedPostIds?.has(postId)) return false
 	const insertKey = postId && entityHash ? `${entityHash}:${postId}` : ''
 	// 已在列表：在 cursor 门闩之前返回，避免本机 force 插入后 WS 再弹「有新帖」
 	if (insertKey && list.querySelector(
@@ -248,6 +251,8 @@ export async function prependFeedItem(item, options = {}) {
 		document.getElementById('feedNewPostsBanner')?.remove()
 		const card = await buildPostCard(item).catch(() => null)
 		if (!card) return false
+		// buildPostCard 期间可能已删除：再挡一次迟到回插
+		if (postId && state.suppressedFeedPostIds?.has(postId)) return false
 		if (insertKey && list.querySelector(
 			`.post-card[data-post-id="${CSS.escape(postId)}"][data-author-entity="${CSS.escape(entityHash)}"]`,
 		))
@@ -361,29 +366,33 @@ export async function loadFeed(append = false) {
 	}
 	if (feedGeneration !== gen) return
 
+	const visibleItems = (items || []).filter(item =>
+		!state.suppressedFeedPostIds?.has(String(item.postId || '')),
+	)
+
 	state.feedCursor = nextCursor || null
 	if (!append) {
 		feedUserScrolled = false
 		window.removeEventListener('scroll', onFeedWindowScroll)
 		window.addEventListener('scroll', onFeedWindowScroll, { passive: true, once: true })
-		state.feedShownItems = [...items]
+		state.feedShownItems = [...visibleItems]
 		state.feedPrefetch = null
 	}
-	else if (items.length)
-		state.feedShownItems = [...state.feedShownItems || [], ...items]
+	else if (visibleItems.length)
+		state.feedShownItems = [...state.feedShownItems || [], ...visibleItems]
 
-	if (!append && !items.length) {
+	if (!append && !visibleItems.length) {
 		await mountEmptyState(list, { titleKey: 'social.empty.feed', modClass: ' empty-state--plain' })
 		state.feedShownItems = null
 	}
 	else if (!append) {
 		list.replaceChildren()
-		await appendFeedItemsWithThreads(list, items, item => buildPostCard(item).catch(() => null))
+		await appendFeedItemsWithThreads(list, visibleItems, item => buildPostCard(item).catch(() => null))
 		if (feedGeneration !== gen) return
 		updateFeedRankingTabs()
 	}
 	else
-		await appendFeedItemsWithThreads(list, items, item => buildPostCard(item).catch(() => null))
+		await appendFeedItemsWithThreads(list, visibleItems, item => buildPostCard(item).catch(() => null))
 
 	bindFeedInfiniteScroll()
 	scheduleFeedPrefetch()

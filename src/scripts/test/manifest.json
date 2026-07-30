@@ -324,13 +324,18 @@
 				"--allow-all",
 				"-c",
 				"./deno.json",
-				"./src/scripts/test/selftest/browser_diagnostics.test.mjs"
+				"./src/scripts/test/selftest/browser_diagnostics.test.mjs",
+				"./src/scripts/test/selftest/cdn_cache.test.mjs"
 			],
 			"triggers": [
 				"src/scripts/test/selftest/browser_diagnostics.test.mjs",
+				"src/scripts/test/selftest/cdn_cache.test.mjs",
 				"src/scripts/test/playwright/browser_diagnostics.mjs",
+				"src/scripts/test/playwright/cdn_cache.mjs",
 				"src/scripts/test/playwright/fixtures.mjs",
-				"src/scripts/test/core/output_filter.mjs"
+				"src/scripts/test/core/output_filter.mjs",
+				"src/scripts/test/core/paths.mjs",
+				"src/scripts/checks/i18n_keys.mjs"
 			]
 		},
 		{

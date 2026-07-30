@@ -97,8 +97,11 @@ export async function setMode(mode) {
 			await renderHubChannelSidebar(store.context.currentState)
 		else
 			await renderFriendsColumn(await loadFriendsList())
-		if (!keepPrivateGroupSession)
+		if (!keepPrivateGroupSession) {
+			const { destroyChannelVirtualList } = await import('./messages/messageVirtualList.mjs')
+			destroyChannelVirtualList()
 			await mountTemplate(document.getElementById('messages'), 'hub/empty/friends')
+		}
 	}
 	else if (mode === 'groups')
 		if (!store.context.currentGroupId || !store.context.currentState) {

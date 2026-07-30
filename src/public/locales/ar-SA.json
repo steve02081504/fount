@@ -1506,25 +1506,23 @@
 						"roleSuccess": "تم إنشاء الدور"
 					},
 					"perm": {
-						"aDD_REACTIONS": "إضافة رد فعل",
-						"aDMIN": "مسؤول",
-						"bAN_MEMBERS": "حظر الأعضاء",
-						"bYPASS_RATE_LIMIT": "تجاوز حد معدل الرسائل",
-						"cREATE_THREADS": "إنشاء قنوات فرعية",
-						"iNVITE_MEMBERS": "دعوة الأعضاء",
-						"kICK_MEMBERS": "عضو ركلة",
-						"mANAGE_": {
-							"cHANNELS": "إدارة القناة",
-							"fILES": "إدارة الملفات",
-							"mESSAGES": "رسائل الإدارة",
-							"rOLES": "إدارة الأدوار"
-						},
-						"pIN_MESSAGES": "تثبيت الرسائل",
-						"sEND_MESSAGES": "أرسل رسالة",
-						"sEND_STICKERS": "إرسال الملصقات",
-						"sTREAM": "صوت",
-						"uPLOAD_FILES": "رفع الملفات",
-						"vIEW_CHANNEL": "شاهد القناة"
+						"ADD_REACTIONS": "إضافة رد فعل",
+						"ADMIN": "مسؤول",
+						"BAN_MEMBERS": "حظر الأعضاء",
+						"BYPASS_RATE_LIMIT": "تجاوز حد معدل الرسائل",
+						"CREATE_THREADS": "إنشاء قنوات فرعية",
+						"INVITE_MEMBERS": "دعوة الأعضاء",
+						"KICK_MEMBERS": "عضو ركلة",
+						"MANAGE_CHANNELS": "إدارة القناة",
+						"MANAGE_FILES": "إدارة الملفات",
+						"MANAGE_MESSAGES": "رسائل الإدارة",
+						"MANAGE_ROLES": "إدارة الأدوار",
+						"PIN_MESSAGES": "تثبيت الرسائل",
+						"SEND_MESSAGES": "أرسل رسالة",
+						"SEND_STICKERS": "إرسال الملصقات",
+						"STREAM": "صوت",
+						"UPLOAD_FILES": "رفع الملفات",
+						"VIEW_CHANNEL": "شاهد القناة"
 					},
 					"kick": {
 						"main": "طرد",

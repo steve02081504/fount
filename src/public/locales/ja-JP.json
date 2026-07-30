@@ -1506,25 +1506,23 @@
 						"roleSuccess": "ロールが作成されました"
 					},
 					"perm": {
-						"aDD_REACTIONS": "リアクションを追加する",
-						"aDMIN": "管理者",
-						"bAN_MEMBERS": "禁止メンバー",
-						"bYPASS_RATE_LIMIT": "メッセージレート制限をバイパスする",
-						"cREATE_THREADS": "サブチャンネルの作成",
-						"iNVITE_MEMBERS": "メンバーを招待する",
-						"kICK_MEMBERS": "キックメンバー",
-						"mANAGE_": {
-							"cHANNELS": "チャンネルの管理",
-							"fILES": "ファイルの管理",
-							"mESSAGES": "管理メッセージ",
-							"rOLES": "管理の役割"
-						},
-						"pIN_MESSAGES": "固定メッセージ",
-						"sEND_MESSAGES": "メッセージを送信する",
-						"sEND_STICKERS": "ステッカーを送信する",
-						"sTREAM": "声",
-						"uPLOAD_FILES": "ファイルをアップロードする",
-						"vIEW_CHANNEL": "チャンネルを見る"
+						"ADD_REACTIONS": "リアクションを追加する",
+						"ADMIN": "管理者",
+						"BAN_MEMBERS": "禁止メンバー",
+						"BYPASS_RATE_LIMIT": "メッセージレート制限をバイパスする",
+						"CREATE_THREADS": "サブチャンネルの作成",
+						"INVITE_MEMBERS": "メンバーを招待する",
+						"KICK_MEMBERS": "キックメンバー",
+						"MANAGE_CHANNELS": "チャンネルの管理",
+						"MANAGE_FILES": "ファイルの管理",
+						"MANAGE_MESSAGES": "管理メッセージ",
+						"MANAGE_ROLES": "管理の役割",
+						"PIN_MESSAGES": "固定メッセージ",
+						"SEND_MESSAGES": "メッセージを送信する",
+						"SEND_STICKERS": "ステッカーを送信する",
+						"STREAM": "声",
+						"UPLOAD_FILES": "ファイルをアップロードする",
+						"VIEW_CHANNEL": "チャンネルを見る"
 					},
 					"kick": {
 						"main": "追い出す",

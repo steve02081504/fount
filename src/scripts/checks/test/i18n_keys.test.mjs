@@ -22,6 +22,8 @@ import {
 Deno.test('camelPrefixes / decapitalize / findPrefixClusters', () => {
 	assertEquals(camelPrefixes('channelPermsHint'), ['channel', 'channelPerms'])
 	assertEquals(decapitalize('Hint'), 'hint')
+	assertEquals(camelPrefixes('SEND_MESSAGES'), [])
+	assertEquals(decapitalize('SEND_MESSAGES'), 'SEND_MESSAGES')
 	const clusters = findPrefixClusters([
 		'channelPermsHint',
 		'channelPermsSelectChannel',
@@ -31,6 +33,33 @@ Deno.test('camelPrefixes / decapitalize / findPrefixClusters', () => {
 	])
 	assertEquals(clusters[0]?.prefix, 'channelPerms')
 	assertEquals(clusters[0]?.members.length, 4)
+	assertEquals(findPrefixClusters([
+		'SEND_MESSAGES',
+		'VIEW_CHANNEL',
+		'MANAGE_CHANNELS',
+		'MANAGE_ROLES',
+		'MANAGE_FILES',
+		'MANAGE_MESSAGES',
+	]), [])
+})
+
+Deno.test('nestAllPrefixClusters preserves SCREAMING_SNAKE remainders under perm', () => {
+	const obj = {
+		permSEND_MESSAGES: '发消息',
+		permVIEW_CHANNEL: '查看',
+		permADD_REACTIONS: '反应',
+		permUPLOAD_FILES: '上传',
+		permMANAGE_CHANNELS: '管频道',
+	}
+	nestAllPrefixClusters(obj)
+	assertEquals(obj.perm, {
+		SEND_MESSAGES: '发消息',
+		VIEW_CHANNEL: '查看',
+		ADD_REACTIONS: '反应',
+		UPLOAD_FILES: '上传',
+		MANAGE_CHANNELS: '管频道',
+	})
+	assertEquals(scanI18nKeyStructure(obj), [])
 })
 
 Deno.test('scan catches affix / numbered / prefix_cluster', () => {

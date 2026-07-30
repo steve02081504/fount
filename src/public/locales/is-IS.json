@@ -1506,25 +1506,23 @@
 						"roleSuccess": "Hlutverk búið til"
 					},
 					"perm": {
-						"aDD_REACTIONS": "Bæta við viðbrögðum",
-						"aDMIN": "Stjórnandi",
-						"bAN_MEMBERS": "Bannað meðlim",
-						"bYPASS_RATE_LIMIT": "Sleppa takmörkun skilaboðahraða",
-						"cREATE_THREADS": "Búa til undirrás",
-						"iNVITE_MEMBERS": "Bjóða félagsmönnum",
-						"kICK_MEMBERS": "Sparka meðlim",
-						"mANAGE_": {
-							"cHANNELS": "Stjórna rás",
-							"fILES": "Stjórna skrám",
-							"mESSAGES": "Skilaboð stjórnenda",
-							"rOLES": "Stjórnunarhlutverki"
-						},
-						"pIN_MESSAGES": "Fest skilaboð",
-						"sEND_MESSAGES": "Sendu skilaboð",
-						"sEND_STICKERS": "Sendu límmiða",
-						"sTREAM": "Rödd",
-						"uPLOAD_FILES": "Hladdu upp skrám",
-						"vIEW_CHANNEL": "Skoða rás"
+						"ADD_REACTIONS": "Bæta við viðbrögðum",
+						"ADMIN": "Stjórnandi",
+						"BAN_MEMBERS": "Bannað meðlim",
+						"BYPASS_RATE_LIMIT": "Sleppa takmörkun skilaboðahraða",
+						"CREATE_THREADS": "Búa til undirrás",
+						"INVITE_MEMBERS": "Bjóða félagsmönnum",
+						"KICK_MEMBERS": "Sparka meðlim",
+						"MANAGE_CHANNELS": "Stjórna rás",
+						"MANAGE_FILES": "Stjórna skrám",
+						"MANAGE_MESSAGES": "Skilaboð stjórnenda",
+						"MANAGE_ROLES": "Stjórnunarhlutverki",
+						"PIN_MESSAGES": "Fest skilaboð",
+						"SEND_MESSAGES": "Sendu skilaboð",
+						"SEND_STICKERS": "Sendu límmiða",
+						"STREAM": "Rödd",
+						"UPLOAD_FILES": "Hladdu upp skrám",
+						"VIEW_CHANNEL": "Skoða rás"
 					},
 					"kick": {
 						"main": "Sparka út",

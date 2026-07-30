@@ -1505,25 +1505,23 @@
 						"roleSuccess": "角色已建立"
 					},
 					"perm": {
-						"aDD_REACTIONS": "新增反應",
-						"aDMIN": "管理員",
-						"bAN_MEMBERS": "封禁成員",
-						"bYPASS_RATE_LIMIT": "繞過訊息限速",
-						"cREATE_THREADS": "建立子頻道",
-						"iNVITE_MEMBERS": "邀請成員",
-						"kICK_MEMBERS": "踢出成員",
-						"mANAGE_": {
-							"cHANNELS": "管理頻道",
-							"fILES": "管理檔案",
-							"mESSAGES": "管理訊息",
-							"rOLES": "管理角色"
-						},
-						"pIN_MESSAGES": "置頂訊息",
-						"sEND_MESSAGES": "傳送訊息",
-						"sEND_STICKERS": "傳送貼紙",
-						"sTREAM": "語音",
-						"uPLOAD_FILES": "上傳檔案",
-						"vIEW_CHANNEL": "檢影片道"
+						"ADD_REACTIONS": "新增反應",
+						"ADMIN": "管理員",
+						"BAN_MEMBERS": "封禁成員",
+						"BYPASS_RATE_LIMIT": "繞過訊息限速",
+						"CREATE_THREADS": "建立子頻道",
+						"INVITE_MEMBERS": "邀請成員",
+						"KICK_MEMBERS": "踢出成員",
+						"MANAGE_CHANNELS": "管理頻道",
+						"MANAGE_FILES": "管理檔案",
+						"MANAGE_MESSAGES": "管理訊息",
+						"MANAGE_ROLES": "管理角色",
+						"PIN_MESSAGES": "置頂訊息",
+						"SEND_MESSAGES": "傳送訊息",
+						"SEND_STICKERS": "傳送貼紙",
+						"STREAM": "語音",
+						"UPLOAD_FILES": "上傳檔案",
+						"VIEW_CHANNEL": "檢影片道"
 					},
 					"kick": {
 						"main": "踢出",

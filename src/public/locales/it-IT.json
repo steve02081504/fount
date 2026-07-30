@@ -1506,25 +1506,23 @@
 						"roleSuccess": "Ruolo creato"
 					},
 					"perm": {
-						"aDD_REACTIONS": "Aggiungi reazioni",
-						"aDMIN": "Ammin",
-						"bAN_MEMBERS": "Membro bannato",
-						"bYPASS_RATE_LIMIT": "Ignora il limite di velocità dei messaggi",
-						"cREATE_THREADS": "Crea discussioni",
-						"iNVITE_MEMBERS": "Invita membri",
-						"kICK_MEMBERS": "Calcia i membri",
-						"mANAGE_": {
-							"cHANNELS": "Gestisci canale",
-							"fILES": "Gestisci file",
-							"mESSAGES": "Gestisci i messaggi",
-							"rOLES": "Gestire i ruoli"
-						},
-						"pIN_MESSAGES": "Messaggio appuntato",
-						"sEND_MESSAGES": "Invia messaggio",
-						"sEND_STICKERS": "Invia adesivi",
-						"sTREAM": "Voce",
-						"uPLOAD_FILES": "Carica file",
-						"vIEW_CHANNEL": "Visualizza canale"
+						"ADD_REACTIONS": "Aggiungi reazioni",
+						"ADMIN": "Ammin",
+						"BAN_MEMBERS": "Membro bannato",
+						"BYPASS_RATE_LIMIT": "Ignora il limite di velocità dei messaggi",
+						"CREATE_THREADS": "Crea discussioni",
+						"INVITE_MEMBERS": "Invita membri",
+						"KICK_MEMBERS": "Calcia i membri",
+						"MANAGE_CHANNELS": "Gestisci canale",
+						"MANAGE_FILES": "Gestisci file",
+						"MANAGE_MESSAGES": "Gestisci i messaggi",
+						"MANAGE_ROLES": "Gestire i ruoli",
+						"PIN_MESSAGES": "Messaggio appuntato",
+						"SEND_MESSAGES": "Invia messaggio",
+						"SEND_STICKERS": "Invia adesivi",
+						"STREAM": "Voce",
+						"UPLOAD_FILES": "Carica file",
+						"VIEW_CHANNEL": "Visualizza canale"
 					},
 					"kick": {
 						"main": "Calcio",

@@ -40,6 +40,7 @@ PREFIX_CLUSTER_MIN = 4
 I18N_REWRITE_SUFFIXES = (".mjs", ".js", ".ts", ".html", ".ps1", ".py")
 AFFIX_RE = re.compile(r"^(?:Suffix|Prefix)|(?:Suffix|Prefix)$")
 NUMBERED_RE = re.compile(r"^[A-Za-z][A-Za-z]*\d+$")
+SCREAMING_SNAKE_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
 UPDATE_LOCALE_DATA_HINT = (
 	"搬键请用 `.esh/commands/update_locale_data.py`（get → set(new) → set(old, None)），"
 	"勿手改各语言 JSON。详见 src/public/locales/locale-edits.md。"
@@ -55,7 +56,14 @@ def dumps_locale(data) -> str:
 	return json.dumps(data, ensure_ascii=False, indent="\t") + "\n"
 
 
+def is_screaming_snake_key(key: str) -> bool:
+	return bool(SCREAMING_SNAKE_RE.match(key))
+
+
 def camel_prefixes(key: str) -> list[str]:
+	# SEND_MESSAGES 等常量键不当驼峰簇成员，避免嵌成 sEND_MESSAGES / mANAGE_.cHANNELS
+	if is_screaming_snake_key(key):
+		return []
 	prefixes = []
 	for index in range(1, len(key)):
 		if key[index].isupper():
@@ -65,6 +73,9 @@ def camel_prefixes(key: str) -> list[str]:
 
 def decapitalize(remainder: str) -> str:
 	if not remainder:
+		return remainder
+	# 后缀本身是 SCREAMING_SNAKE 时保持原样（perm + SEND_MESSAGES → SEND_MESSAGES）
+	if is_screaming_snake_key(remainder):
 		return remainder
 	return remainder[0].lower() + remainder[1:]
 

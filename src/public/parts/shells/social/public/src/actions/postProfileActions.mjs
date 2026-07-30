@@ -151,12 +151,16 @@ export async function handlePostProfileActionsClick(target) {
 
 	const deleteButton = target.closest('button[data-delete]')
 	if (deleteButton instanceof HTMLElement && deleteButton.dataset.delete) {
+		const postId = deleteButton.dataset.delete
 		const card = deleteButton.closest('.post-card')
 		const parent = card?.parentElement
 		const next = card?.nextSibling
-		const postId = deleteButton.dataset.delete
 		const purged = purgeFeedShownPost(state, postId)
-		card?.remove()
+		state.suppressedFeedPostIds ??= new Set()
+		state.suppressedFeedPostIds.add(postId)
+		// 清掉所有同 id 卡片（含 WS/loadFeed 竞态留下的重复）
+		for (const el of document.querySelectorAll(`[data-post-id="${CSS.escape(postId)}"]`))
+			el.remove()
 		closePostMoreMenus()
 		const entityHash = deleteButton.dataset.deleteEntity
 			|| state.viewerEntityHash
@@ -167,10 +171,12 @@ export async function handlePostProfileActionsClick(target) {
 			}))
 		}
 		catch {
+			state.suppressedFeedPostIds.delete(postId)
 			restoreFeedShownItems(state, purged)
 			if (card && parent)
 				parent.insertBefore(card, next)
 		}
+		return true
 	}
 
 	return false

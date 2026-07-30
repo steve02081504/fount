@@ -16,6 +16,10 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 
 `browser.mjs`: reuse PATH Chrome/Edge locally (no download). On `GITHUB_ACTIONS=true` without a system browser, `playwright install --with-deps chrome` then `channel: 'chrome'`. Launch args include `--disable-component-update` (avoids mid-flight cert-verifier swaps that cancel esm.sh loads). Fixtures use `serviceWorkers: 'block'` so `page.route` is not bypassed by the app SW.
 
+## CDN response cache
+
+`cdn_cache.mjs`（`createFountFixtures` / Pages fixtures 的 `context`）：对 `esm.sh` / `api.iconify.design` / `cdn.jsdelivr.net` 的 GET/HEAD 做内存 + `data/test/cdn_cache` 磁盘复用，减轻跨用例外网 flaky。只缓存 2xx/3xx；4xx 仍走真响应（坏 Iconify 名照记噪声）。`FOUNT_TEST_CDN_CACHE=0` 关闭。CDN 上可用 `route.fetch`；对本机同 URL 禁止（见 Social EVFS stub）。
+
 ## Network diagnostics
 
 `browser_diagnostics.mjs` (wired in `createFountFixtures` / `createPagesFixtures`): `response ≥ 400` / `requestfailed` → `[browser:network]` noise → imperfect wave; `pageerror`, `[test:…]` console (from `scripts/test/test_watch.mjs`), and `[i18n:missing]` (from `geti18n`, no dedup) hard-fail. `net::ERR_BLOCKED_BY_ORB` is dropped (Opaque Response Blocking; display via `<img>` etc. usually fine). Pages fixtures ignore `/api/ping` and `:8930` installer probes only (no fount node). Locale load goes through i18n `loadLocaleData` / `setLanguage` (Pages static JSON; fount API) — do not fetch `/api/getlocaledata` from test code. `pages_server.close` calls `closeAllConnections()` before `close()` — otherwise keep-alive sockets can hang the driver past the idle watchdog.

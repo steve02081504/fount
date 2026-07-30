@@ -1506,25 +1506,23 @@
 						"roleSuccess": "Rôle créé"
 					},
 					"perm": {
-						"aDD_REACTIONS": "ajouter une réaction",
-						"aDMIN": "administrateur",
-						"bAN_MEMBERS": "Bannir un membre",
-						"bYPASS_RATE_LIMIT": "Contourner la limite de débit de messages",
-						"cREATE_THREADS": "Créer un sous-canal",
-						"iNVITE_MEMBERS": "Inviter des membres",
-						"kICK_MEMBERS": "donner un coup de pied à un membre",
-						"mANAGE_": {
-							"cHANNELS": "Gérer la chaîne",
-							"fILES": "Gérer les fichiers",
-							"mESSAGES": "Messages de gestion",
-							"rOLES": "rôle de gestion"
-						},
-						"pIN_MESSAGES": "Message épinglé",
-						"sEND_MESSAGES": "Envoyer un message",
-						"sEND_STICKERS": "Envoyer des autocollants",
-						"sTREAM": "voix",
-						"uPLOAD_FILES": "Télécharger des fichiers",
-						"vIEW_CHANNEL": "Voir la chaîne"
+						"ADD_REACTIONS": "ajouter une réaction",
+						"ADMIN": "administrateur",
+						"BAN_MEMBERS": "Bannir un membre",
+						"BYPASS_RATE_LIMIT": "Contourner la limite de débit de messages",
+						"CREATE_THREADS": "Créer un sous-canal",
+						"INVITE_MEMBERS": "Inviter des membres",
+						"KICK_MEMBERS": "donner un coup de pied à un membre",
+						"MANAGE_CHANNELS": "Gérer la chaîne",
+						"MANAGE_FILES": "Gérer les fichiers",
+						"MANAGE_MESSAGES": "Messages de gestion",
+						"MANAGE_ROLES": "rôle de gestion",
+						"PIN_MESSAGES": "Message épinglé",
+						"SEND_MESSAGES": "Envoyer un message",
+						"SEND_STICKERS": "Envoyer des autocollants",
+						"STREAM": "voix",
+						"UPLOAD_FILES": "Télécharger des fichiers",
+						"VIEW_CHANNEL": "Voir la chaîne"
 					},
 					"kick": {
 						"main": "Expulser",
