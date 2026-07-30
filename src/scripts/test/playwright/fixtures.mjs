@@ -4,6 +4,7 @@ import { ms } from '../../ms.mjs'
 
 import { loginWithApiKey } from './auth.mjs'
 import { createBrowserDiagnostics, waitForLocaleCycle } from './browser_diagnostics.mjs'
+import { installCdnResponseCache } from './cdn_cache.mjs'
 import { requireTestBaseUrl } from './env.mjs'
 import { assertIsolatedFrontendTest } from './guards.mjs'
 
@@ -55,6 +56,7 @@ export function createFountFixtures(options = {}) {
 			const storageState = await api.storageState()
 			await api.dispose()
 			const context = await browser.newContext({ storageState, locale, serviceWorkers: 'block' })
+			await installCdnResponseCache(context)
 			await context.addInitScript(language => {
 				localStorage.setItem('userPreferredLanguages', JSON.stringify([language]))
 			}, locale)

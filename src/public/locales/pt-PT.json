@@ -1506,25 +1506,23 @@
 						"roleSuccess": "Função criada"
 					},
 					"perm": {
-						"aDD_REACTIONS": "Adicionar reactions",
-						"aDMIN": "Administrador",
-						"bAN_MEMBERS": "Banir membro",
-						"bYPASS_RATE_LIMIT": "Ignorar limite de taxa de mensagens",
-						"cREATE_THREADS": "Criar threads",
-						"iNVITE_MEMBERS": "Convidar membros",
-						"kICK_MEMBERS": "Expulsar membro",
-						"mANAGE_": {
-							"cHANNELS": "Gerir canal",
-							"fILES": "Gerir ficheiros",
-							"mESSAGES": "Mensagens de gestão",
-							"rOLES": "Função de gestão"
-						},
-						"pIN_MESSAGES": "Mensagem fixada",
-						"sEND_MESSAGES": "Enviar mensagem",
-						"sEND_STICKERS": "Enviar autocolantes",
-						"sTREAM": "Voz",
-						"uPLOAD_FILES": "Carregar ficheiros",
-						"vIEW_CHANNEL": "Ver canal"
+						"ADD_REACTIONS": "Adicionar reactions",
+						"ADMIN": "Administrador",
+						"BAN_MEMBERS": "Banir membro",
+						"BYPASS_RATE_LIMIT": "Ignorar limite de taxa de mensagens",
+						"CREATE_THREADS": "Criar threads",
+						"INVITE_MEMBERS": "Convidar membros",
+						"KICK_MEMBERS": "Expulsar membro",
+						"MANAGE_CHANNELS": "Gerir canal",
+						"MANAGE_FILES": "Gerir ficheiros",
+						"MANAGE_MESSAGES": "Mensagens de gestão",
+						"MANAGE_ROLES": "Função de gestão",
+						"PIN_MESSAGES": "Mensagem fixada",
+						"SEND_MESSAGES": "Enviar mensagem",
+						"SEND_STICKERS": "Enviar autocolantes",
+						"STREAM": "Voz",
+						"UPLOAD_FILES": "Carregar ficheiros",
+						"VIEW_CHANNEL": "Ver canal"
 					},
 					"kick": {
 						"main": "Expulsar",

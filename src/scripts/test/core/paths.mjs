@@ -70,6 +70,15 @@ export function playwrightOutputDir(repoRoot, manifestId = 'default') {
 }
 
 /**
+ * 返回前端测试跨用例 CDN 响应缓存目录。
+ * @param {string} repoRoot 仓库根
+ * @returns {string} data/test/cdn_cache 绝对路径
+ */
+export function cdnCacheDir(repoRoot) {
+	return join(testDataRoot(repoRoot), 'cdn_cache')
+}
+
+/**
  * 返回单次运行报告 Markdown 路径。
  * @param {string} repoRoot 仓库根
  * @returns {string} data/test/report.md

@@ -1506,25 +1506,23 @@
 						"roleSuccess": "भूमिका बनाई गई"
 					},
 					"perm": {
-						"aDD_REACTIONS": "प्रतिक्रिया जोड़ें",
-						"aDMIN": "प्रशासक",
-						"bAN_MEMBERS": "सदस्य पर प्रतिबंध लगाएं",
-						"bYPASS_RATE_LIMIT": "संदेश दर सीमा को बायपास करें",
-						"cREATE_THREADS": "उपचैनल बनाएं",
-						"iNVITE_MEMBERS": "सदस्यों को आमंत्रित करो",
-						"kICK_MEMBERS": "सदस्य को लात मारो",
-						"mANAGE_": {
-							"cHANNELS": "चैनल प्रबंधित करें",
-							"fILES": "फ़ाइलें प्रबंधित करें",
-							"mESSAGES": "प्रबंधन संदेश",
-							"rOLES": "प्रबंधन भूमिका"
-						},
-						"pIN_MESSAGES": "पिन किया गया संदेश",
-						"sEND_MESSAGES": "मेसेज भेजें",
-						"sEND_STICKERS": "स्टिकर भेजें",
-						"sTREAM": "आवाज़",
-						"uPLOAD_FILES": "फाइलें अपलोड करें",
-						"vIEW_CHANNEL": "चैनल देखें"
+						"ADD_REACTIONS": "प्रतिक्रिया जोड़ें",
+						"ADMIN": "प्रशासक",
+						"BAN_MEMBERS": "सदस्य पर प्रतिबंध लगाएं",
+						"BYPASS_RATE_LIMIT": "संदेश दर सीमा को बायपास करें",
+						"CREATE_THREADS": "उपचैनल बनाएं",
+						"INVITE_MEMBERS": "सदस्यों को आमंत्रित करो",
+						"KICK_MEMBERS": "सदस्य को लात मारो",
+						"MANAGE_CHANNELS": "चैनल प्रबंधित करें",
+						"MANAGE_FILES": "फ़ाइलें प्रबंधित करें",
+						"MANAGE_MESSAGES": "प्रबंधन संदेश",
+						"MANAGE_ROLES": "प्रबंधन भूमिका",
+						"PIN_MESSAGES": "पिन किया गया संदेश",
+						"SEND_MESSAGES": "मेसेज भेजें",
+						"SEND_STICKERS": "स्टिकर भेजें",
+						"STREAM": "आवाज़",
+						"UPLOAD_FILES": "फाइलें अपलोड करें",
+						"VIEW_CHANNEL": "चैनल देखें"
 					},
 					"kick": {
 						"main": "बाहर निकाल देना",

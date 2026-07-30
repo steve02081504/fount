@@ -1506,25 +1506,23 @@
 						"roleSuccess": "Rol gemaakt"
 					},
 					"perm": {
-						"aDD_REACTIONS": "reactie toevoegen",
-						"aDMIN": "Beheerder",
-						"bAN_MEMBERS": "Lid Bannen",
-						"bYPASS_RATE_LIMIT": "Omzeil de limiet voor de berichtsnelheid",
-						"cREATE_THREADS": "Subkanaal maken",
-						"iNVITE_MEMBERS": "Nodig leden uit",
-						"kICK_MEMBERS": "kick lid",
-						"mANAGE_": {
-							"cHANNELS": "Kanaal beheren",
-							"fILES": "Beheer bestanden",
-							"mESSAGES": "Management berichten",
-							"rOLES": "Managementrol"
-						},
-						"pIN_MESSAGES": "Vastgezet bericht",
-						"sEND_MESSAGES": "Bericht verzenden",
-						"sEND_STICKERS": "Stuur stickers",
-						"sTREAM": "Stem",
-						"uPLOAD_FILES": "Bestanden uploaden",
-						"vIEW_CHANNEL": "Kanaal bekijken"
+						"ADD_REACTIONS": "reactie toevoegen",
+						"ADMIN": "Beheerder",
+						"BAN_MEMBERS": "Lid Bannen",
+						"BYPASS_RATE_LIMIT": "Omzeil de limiet voor de berichtsnelheid",
+						"CREATE_THREADS": "Subkanaal maken",
+						"INVITE_MEMBERS": "Nodig leden uit",
+						"KICK_MEMBERS": "kick lid",
+						"MANAGE_CHANNELS": "Kanaal beheren",
+						"MANAGE_FILES": "Beheer bestanden",
+						"MANAGE_MESSAGES": "Berichten beheren",
+						"MANAGE_ROLES": "Rollen beheren",
+						"PIN_MESSAGES": "Berichten vastzetten",
+						"SEND_MESSAGES": "Bericht verzenden",
+						"SEND_STICKERS": "Stuur stickers",
+						"STREAM": "Streamen",
+						"UPLOAD_FILES": "Bestanden uploaden",
+						"VIEW_CHANNEL": "Kanaal bekijken"
 					},
 					"kick": {
 						"main": "Verwijderen",

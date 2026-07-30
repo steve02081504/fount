@@ -27,6 +27,7 @@ update_locale_data "order('a', 'b', 'c', 'd')"
 update_locale_data @restructure.py
 
 # 还有 has(key)、keys(parent='') 可用；after/before 可写完整路径或同级短名
+# file_name 为当前 locale 文件名（如 'it-IT.json'），可按语言分支
 """
 
 
@@ -219,7 +220,8 @@ def process_locale_files(script_to_run):
 
 			try:
 				with open(file_path, "r", encoding="utf-8") as f:
-					data = json.load(f)
+					original_content = f.read()
+					data = json.loads(original_content)
 
 				def get(key):
 					return get_nested_value(data, key)
@@ -248,12 +250,16 @@ def process_locale_files(script_to_run):
 						"set": set,
 						"move": move,
 						"order": order,
+						"file_name": file_name,
 					},
 				)
 
-				updated_content = json.dumps(data, indent="\t", ensure_ascii=False)
+				updated_content = json.dumps(data, indent="\t", ensure_ascii=False) + "\n"
+				if updated_content == original_content:
+					print(f"Unchanged {file_name}.")
+					continue
 				with open(file_path, "w", encoding="utf-8", newline="\n") as f:
-					f.write(updated_content + "\n")
+					f.write(updated_content)
 				print(f"Successfully updated {file_name}.")
 
 			except Exception as err:

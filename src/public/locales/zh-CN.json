@@ -1506,25 +1506,23 @@
 						"roleSuccess": "角色已创建"
 					},
 					"perm": {
-						"aDD_REACTIONS": "添加反应",
-						"aDMIN": "管理员",
-						"bAN_MEMBERS": "封禁成员",
-						"bYPASS_RATE_LIMIT": "绕过消息限速",
-						"cREATE_THREADS": "创建子频道",
-						"iNVITE_MEMBERS": "邀请成员",
-						"kICK_MEMBERS": "踢出成员",
-						"mANAGE_": {
-							"cHANNELS": "管理频道",
-							"fILES": "管理文件",
-							"mESSAGES": "管理消息",
-							"rOLES": "管理角色"
-						},
-						"pIN_MESSAGES": "置顶消息",
-						"sEND_MESSAGES": "发送消息",
-						"sEND_STICKERS": "发送贴纸",
-						"sTREAM": "语音",
-						"uPLOAD_FILES": "上传文件",
-						"vIEW_CHANNEL": "查看频道"
+						"ADD_REACTIONS": "添加反应",
+						"ADMIN": "管理员",
+						"BAN_MEMBERS": "封禁成员",
+						"BYPASS_RATE_LIMIT": "绕过消息限速",
+						"CREATE_THREADS": "创建子频道",
+						"INVITE_MEMBERS": "邀请成员",
+						"KICK_MEMBERS": "踢出成员",
+						"MANAGE_CHANNELS": "管理频道",
+						"MANAGE_FILES": "管理文件",
+						"MANAGE_MESSAGES": "管理消息",
+						"MANAGE_ROLES": "管理角色",
+						"PIN_MESSAGES": "置顶消息",
+						"SEND_MESSAGES": "发送消息",
+						"SEND_STICKERS": "发送贴纸",
+						"STREAM": "语音",
+						"UPLOAD_FILES": "上传文件",
+						"VIEW_CHANNEL": "查看频道"
 					},
 					"kick": {
 						"main": "踢出",

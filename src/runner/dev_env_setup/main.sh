@@ -12,7 +12,7 @@ if [[ "${OSTYPE:-}" == msys || "${OSTYPE:-}" == cygwin ]]; then
 fi
 
 if [ -t 1 ]; then
-	cat imgs/icon_ansi.txt
+	cat imgs/icon_ansi_ascii.txt
 else
 	cat imgs/icon_ascii.txt
 fi

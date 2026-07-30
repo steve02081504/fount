@@ -558,16 +558,15 @@ export function createVirtualList({
 	async function replaceItem(index, item) {
 		if (!item) throw new Error('item is required')
 		if (index < 0 || index >= state.totalCount) return
-		const queueIndex = index - state.startIndex
-		if (!state.queue[queueIndex]) {
-			console.warn(`[virtualList] replaceItem called for index ${index} which is not in view.`)
-			return
-		}
 		await getMutex()
 		try {
-			const oldElement = state.renderedElements.get(index)
-			if (!oldElement) return
+			const queueIndex = index - state.startIndex
 			const oldItem = state.queue[queueIndex]
+			const oldElement = state.renderedElements.get(index)
+			if (!oldItem || !oldElement) {
+				console.warn(`[virtualList] replaceItem called for index ${index} which is not in view.`)
+				return
+			}
 			const newElement = await Promise.resolve(renderItem(item, index))
 			await Promise.resolve(replaceItemRenderer(oldElement, newElement, item))
 			state.queue[queueIndex] = item

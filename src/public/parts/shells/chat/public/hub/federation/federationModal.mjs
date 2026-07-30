@@ -233,14 +233,14 @@ function wireFederationModalEvents(root, groupId) {
  */
 export async function mountFederationPrefsPanel(panel, footer, groupId) {
 	usingTemplates('/parts/shells:chat/src/templates')
-	const tooltipText = Object.fromEntries([
-		'fedRelayUrlsTip',
-		'fedBatterySaverTip',
-		'fedGroupRecoveryTip',
-		'fedRepTip',
-		'fedSlashTip',
-		'fedDmLinkTip',
-	].map(key => [key, escapeHtml(geti18n(`chat.hub.${key}`))]))
+	const tooltipText = Object.fromEntries(Object.entries({
+		fedRelayUrlsTip: 'chat.hub.fed.relayUrlsTip',
+		fedBatterySaverTip: 'chat.hub.fed.batterySaverTip',
+		fedGroupRecoveryTip: 'chat.hub.fed.groupRecoveryTip',
+		fedRepTip: 'chat.hub.fed.repTip',
+		fedSlashTip: 'chat.hub.fed.slash.tip',
+		fedDmLinkTip: 'chat.hub.fed.dm.linkTip',
+	}).map(([key, i18nKey]) => [key, escapeHtml(geti18n(i18nKey))]))
 
 	/** @type {object} */
 	let fedSettings = {}

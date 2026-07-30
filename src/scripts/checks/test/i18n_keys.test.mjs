@@ -22,6 +22,8 @@ import {
 Deno.test('camelPrefixes / decapitalize / findPrefixClusters', () => {
 	assertEquals(camelPrefixes('channelPermsHint'), ['channel', 'channelPerms'])
 	assertEquals(decapitalize('Hint'), 'hint')
+	assertEquals(camelPrefixes('SEND_MESSAGES'), [])
+	assertEquals(decapitalize('SEND_MESSAGES'), 'SEND_MESSAGES')
 	const clusters = findPrefixClusters([
 		'channelPermsHint',
 		'channelPermsSelectChannel',
@@ -31,6 +33,49 @@ Deno.test('camelPrefixes / decapitalize / findPrefixClusters', () => {
 	])
 	assertEquals(clusters[0]?.prefix, 'channelPerms')
 	assertEquals(clusters[0]?.members.length, 4)
+	assertEquals(findPrefixClusters([
+		'SEND_MESSAGES',
+		'VIEW_CHANNEL',
+		'MANAGE_CHANNELS',
+		'MANAGE_ROLES',
+		'MANAGE_FILES',
+		'MANAGE_MESSAGES',
+	]), [])
+})
+
+Deno.test('nestAllPrefixClusters preserves SCREAMING_SNAKE remainders under perm', async () => {
+	const obj = {
+		permSEND_MESSAGES: '发消息',
+		permVIEW_CHANNEL: '查看',
+		permADD_REACTIONS: '反应',
+		permUPLOAD_FILES: '上传',
+		permMANAGE_CHANNELS: '管频道',
+	}
+	nestAllPrefixClusters(obj)
+	assertEquals(obj.perm, {
+		SEND_MESSAGES: '发消息',
+		VIEW_CHANNEL: '查看',
+		ADD_REACTIONS: '反应',
+		UPLOAD_FILES: '上传',
+		MANAGE_CHANNELS: '管频道',
+	})
+	assertEquals(scanI18nKeyStructure(obj), [])
+
+	const { readdir } = await import('node:fs/promises')
+	const localesDir = join(REPO_ROOT, 'src/public/locales')
+	const localeFiles = (await readdir(localesDir)).filter(name => name.endsWith('.json'))
+	assert(localeFiles.length > 0, 'expected locale JSON files')
+	for (const fileName of localeFiles) {
+		const data = JSON.parse(await readFile(join(localesDir, fileName), 'utf8'))
+		const perm = data?.chat?.group?.settings?.page?.perm
+		assert(perm && typeof perm === 'object', `${fileName}: missing chat.group.settings.page.perm`)
+		assert(Object.hasOwn(perm, 'SEND_MESSAGES'), `${fileName}: missing perm.SEND_MESSAGES`)
+		assert(Object.hasOwn(perm, 'MANAGE_CHANNELS'), `${fileName}: missing perm.MANAGE_CHANNELS`)
+		assert(!Object.hasOwn(perm, 'mANAGE_'), `${fileName}: bad key mANAGE_`)
+		assert(!Object.keys(perm).some(key => /^[a-z][A-Z0-9_]*$/.test(key) && key.includes('_')),
+			`${fileName}: unexpected mangled SCREAMING_SNAKE remainder under perm`)
+		assertEquals(scanI18nKeyStructure({ perm }), [], `${fileName}: perm structure issues`)
+	}
 })
 
 Deno.test('scan catches affix / numbered / prefix_cluster', () => {

@@ -5,7 +5,7 @@ $RepoRoot = (Resolve-Path "$PSScriptRoot/../../..").Path
 Set-Location $RepoRoot
 
 $supportsVt = $Host.UI.SupportsVirtualTerminal -and -not [System.Console]::IsOutputRedirected
-$logoName = if ($supportsVt) { 'icon_ansi.txt' } else { 'icon_ascii.txt' }
+$logoName = if ($supportsVt) { 'icon_ansi_ascii.txt' } else { 'icon_ascii.txt' }
 [Console]::Write([IO.File]::ReadAllText((Join-Path $RepoRoot "imgs/$logoName")))
 
 function Test-CmdInPath([string]$Name) {

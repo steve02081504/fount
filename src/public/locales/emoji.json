@@ -1506,25 +1506,23 @@
 						"roleSuccess": "🎭🆕✅"
 					},
 					"perm": {
-						"aDD_REACTIONS": "➕😀",
-						"aDMIN": "🛡️👤",
-						"bAN_MEMBERS": "🔨👥",
-						"bYPASS_RATE_LIMIT": "⏭️🐢",
-						"cREATE_THREADS": "➕🧵📺",
-						"iNVITE_MEMBERS": "🎟️👥",
-						"kICK_MEMBERS": "👢👥",
-						"mANAGE_": {
-							"cHANNELS": "📺⚙️",
-							"fILES": "📁⚙️",
-							"mESSAGES": "💬⚙️",
-							"rOLES": "🎭⚙️"
-						},
-						"pIN_MESSAGES": "📌📨",
-						"sEND_MESSAGES": "📤📨",
-						"sEND_STICKERS": "📤🏷️😀",
-						"sTREAM": "🎙️",
-						"uPLOAD_FILES": "⬆️📁",
-						"vIEW_CHANNEL": "👀📺"
+						"ADD_REACTIONS": "➕😀",
+						"ADMIN": "🛡️👤",
+						"BAN_MEMBERS": "🔨👥",
+						"BYPASS_RATE_LIMIT": "⏭️🐢",
+						"CREATE_THREADS": "➕🧵📺",
+						"INVITE_MEMBERS": "🎟️👥",
+						"KICK_MEMBERS": "👢👥",
+						"MANAGE_CHANNELS": "📺⚙️",
+						"MANAGE_FILES": "📁⚙️",
+						"MANAGE_MESSAGES": "💬⚙️",
+						"MANAGE_ROLES": "🎭⚙️",
+						"PIN_MESSAGES": "📌📨",
+						"SEND_MESSAGES": "📤📨",
+						"SEND_STICKERS": "📤🏷️😀",
+						"STREAM": "🎙️",
+						"UPLOAD_FILES": "⬆️📁",
+						"VIEW_CHANNEL": "👀📺"
 					},
 					"kick": {
 						"main": "👢",

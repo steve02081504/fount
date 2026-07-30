@@ -1501,25 +1501,23 @@
 						"roleSuccess": "Role created"
 					},
 					"perm": {
-						"aDD_REACTIONS": "Add reactions",
-						"aDMIN": "Admin",
-						"bAN_MEMBERS": "Ban member",
-						"bYPASS_RATE_LIMIT": "Bypass message rate limit",
-						"cREATE_THREADS": "Create threads",
-						"iNVITE_MEMBERS": "Invite members",
-						"kICK_MEMBERS": "Kick members",
-						"mANAGE_": {
-							"cHANNELS": "Manage channel",
-							"fILES": "Manage files",
-							"mESSAGES": "Manage messages",
-							"rOLES": "Manage roles"
-						},
-						"pIN_MESSAGES": "Pinned message",
-						"sEND_MESSAGES": "Send message",
-						"sEND_STICKERS": "Send stickers",
-						"sTREAM": "Voice",
-						"uPLOAD_FILES": "Upload files",
-						"vIEW_CHANNEL": "View channel"
+						"ADD_REACTIONS": "Add reactions",
+						"ADMIN": "Admin",
+						"BAN_MEMBERS": "Ban member",
+						"BYPASS_RATE_LIMIT": "Bypass message rate limit",
+						"CREATE_THREADS": "Create threads",
+						"INVITE_MEMBERS": "Invite members",
+						"KICK_MEMBERS": "Kick members",
+						"MANAGE_CHANNELS": "Manage channel",
+						"MANAGE_FILES": "Manage files",
+						"MANAGE_MESSAGES": "Manage messages",
+						"MANAGE_ROLES": "Manage roles",
+						"PIN_MESSAGES": "Pinned message",
+						"SEND_MESSAGES": "Send message",
+						"SEND_STICKERS": "Send stickers",
+						"STREAM": "Voice",
+						"UPLOAD_FILES": "Upload files",
+						"VIEW_CHANNEL": "View channel"
 					},
 					"kick": {
 						"main": "Kick",

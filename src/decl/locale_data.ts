@@ -1474,25 +1474,23 @@ export type LocaleData = {
 						roleSuccess: string
 					}
 					perm: {
-						aDD_REACTIONS: string
-						aDMIN: string
-						bAN_MEMBERS: string
-						bYPASS_RATE_LIMIT: string
-						cREATE_THREADS: string
-						iNVITE_MEMBERS: string
-						kICK_MEMBERS: string
-						mANAGE_: {
-							cHANNELS: string
-							fILES: string
-							mESSAGES: string
-							rOLES: string
-						}
-						pIN_MESSAGES: string
-						sEND_MESSAGES: string
-						sEND_STICKERS: string
-						sTREAM: string
-						uPLOAD_FILES: string
-						vIEW_CHANNEL: string
+						ADD_REACTIONS: string
+						ADMIN: string
+						BAN_MEMBERS: string
+						BYPASS_RATE_LIMIT: string
+						CREATE_THREADS: string
+						INVITE_MEMBERS: string
+						KICK_MEMBERS: string
+						MANAGE_CHANNELS: string
+						MANAGE_FILES: string
+						MANAGE_MESSAGES: string
+						MANAGE_ROLES: string
+						PIN_MESSAGES: string
+						SEND_MESSAGES: string
+						SEND_STICKERS: string
+						STREAM: string
+						UPLOAD_FILES: string
+						VIEW_CHANNEL: string
 					}
 					kick: {
 						main: string

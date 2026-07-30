@@ -3,6 +3,7 @@
  */
 import { test as base, expect } from '@playwright/test'
 import { createBrowserDiagnostics, waitForLocaleCycle } from 'fount/scripts/test/playwright/browser_diagnostics.mjs'
+import { installCdnResponseCache } from 'fount/scripts/test/playwright/cdn_cache.mjs'
 import { requireTestBaseUrl } from 'fount/scripts/test/playwright/env.mjs'
 
 /**
@@ -29,7 +30,8 @@ export function createPagesFixtures(options = {}) {
 		 * @param {(context: import('npm:@playwright/test').BrowserContext) => Promise<void>} use fixture use
 		 */
 		context: async ({ browser }, use) => {
-			const context = await browser.newContext({ locale })
+			const context = await browser.newContext({ locale, serviceWorkers: 'block' })
+			await installCdnResponseCache(context)
 			await context.addInitScript(language => {
 				try {
 					localStorage.setItem('userPreferredLanguages', JSON.stringify([language]))
