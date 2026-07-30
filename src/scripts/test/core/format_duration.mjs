@@ -37,20 +37,20 @@ export function formatDuration(ms) {
 	if (ms < 1000) return geti18n(`${I18N}.durationMs`, { ms })
 
 	const sec = Math.round(ms / 1000)
-	if (sec < SEC_PER_MIN) return unit(sec, 'durationUnitSec')
+	if (sec < SEC_PER_MIN) return unit(sec, 'durationUnit.sec')
 
 	const { day, hour, min, sec: remSec } = splitDurationSec(sec)
 	/** @type {string[]} */
 	const parts = []
-	if (day > 0) parts.push(unit(day, 'durationUnitDay'))
-	if (hour > 0) parts.push(unit(hour, 'durationUnitHour'))
+	if (day > 0) parts.push(unit(day, 'durationUnit.day'))
+	if (hour > 0) parts.push(unit(hour, 'durationUnit.hour'))
 	if (min > 0)
 		parts.push(remSec > 0
-			? unit(min, 'durationUnitMin')
-			: unit(min, 'durationUnitMinute'))
+			? unit(min, 'durationUnit.min')
+			: unit(min, 'durationUnit.minute'))
 
 	if (remSec > 0 || parts.length === 0)
-		parts.push(unit(remSec, 'durationUnitSec'))
+		parts.push(unit(remSec, 'durationUnit.sec'))
 
 	return parts.join(' ')
 }

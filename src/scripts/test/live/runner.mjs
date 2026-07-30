@@ -132,7 +132,7 @@ export async function runLiveSuite({
 }) {
 	const spec = suites[suiteName]
 	if (!spec) {
-		console.errorI18n('fountConsole.test.unknownSuite', { name: suiteName })
+		console.errorI18n('fountConsole.test.unknown.suite', { name: suiteName })
 		console.errorI18n('fountConsole.test.available', { ids: Object.keys(suites).join(', ') })
 		return 2
 	}

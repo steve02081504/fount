@@ -255,7 +255,7 @@ function logPendingEstimate(reportWriter) {
 	const estimate = reportWriter.summarizePendingEstimate()
 	if (!estimate || !estimate.runCount) return
 	const completed = reportWriter.slots.filter(slot => slot.state === 'done').length
-	console.logI18n('fountConsole.test.estimatedRemaining', {
+	console.logI18n('fountConsole.test.estimated.remaining', {
 		eta: formatDuration(estimate.etaMs),
 		completed,
 		total: reportWriter.slots.length,
@@ -352,23 +352,23 @@ async function executeWave(context) {
 		const estimate = summarizeEstimate(estimateTasks, estimateOptions)
 		if (estimate.runCount) {
 			if (estimateSerial) {
-				console.logI18n('fountConsole.test.estimatedRunSerial', {
+				console.logI18n('fountConsole.test.estimated.runSerial', {
 					eta: formatDuration(estimate.etaMs),
 				})
 				if (Math.abs(estimate.savingsMs) > 100)
-					console.logI18n('fountConsole.test.estimatedRunSerialHint', {
+					console.logI18n('fountConsole.test.estimated.runSerialHint', {
 						eta: formatDuration(estimate.parallelEtaMs),
 						rate: formatParallelRatePct(estimate.parallelRatePct),
 						savings: formatDuration(estimate.savingsMs),
 					})
 			}
 			else
-				console.logI18n('fountConsole.test.estimatedRun', {
+				console.logI18n('fountConsole.test.estimated.run', {
 					eta: formatDuration(estimate.etaMs),
 					rate: formatParallelRatePct(estimate.parallelRatePct),
 				})
 			if (estimate.reusedCount || estimate.blockedCount)
-				console.logI18n('fountConsole.test.estimatedRunSkipped', {
+				console.logI18n('fountConsole.test.estimated.runSkipped', {
 					reused: estimate.reusedCount,
 					blocked: estimate.blockedCount,
 				})
@@ -600,7 +600,7 @@ export async function runTests(options = {}) {
 	if (options.groups?.length) {
 		const { groups: resolved, unmatched } = resolveGroups(options.groups, knownIds, allSuites)
 		if (unmatched.length) {
-			console.errorI18n('fountConsole.test.unknownManifestId', {
+			console.errorI18n('fountConsole.test.unknown.manifestId', {
 				ids: unmatched.join(', '),
 			})
 			console.errorI18n('fountConsole.test.available', { ids: knownIds.join(', ') })
@@ -610,7 +610,7 @@ export async function runTests(options = {}) {
 		explicitSuites = resolved.some(group => group.suiteSelectors.length)
 		const unknownSuites = unmatchedSuiteSelectors(allSuites, resolved)
 		if (unknownSuites.length) {
-			console.errorI18n('fountConsole.test.unknownSuiteSelector', { ids: unknownSuites.join(', ') })
+			console.errorI18n('fountConsole.test.unknown.suiteSelector', { ids: unknownSuites.join(', ') })
 			const scope = manifestIds?.length
 				? allSuites.filter(s => manifestIds.includes(s.manifestId))
 				: allSuites
@@ -627,9 +627,9 @@ export async function runTests(options = {}) {
 			for (const err of filterErrors) {
 				const names = err.missing.join(', ')
 				if (err.kind === 'subtest')
-					console.errorI18n('fountConsole.test.unknownSubtestFilter', { suite: err.suiteId, names })
+					console.errorI18n('fountConsole.test.unknown.subtestFilter', { suite: err.suiteId, names })
 				else if (err.kind === 'file')
-					console.errorI18n('fountConsole.test.unknownFileFilter', { suite: err.suiteId, names })
+					console.errorI18n('fountConsole.test.unknown.fileFilter', { suite: err.suiteId, names })
 				else
 					console.errorI18n('fountConsole.test.unsupportedSubtestFilter', { suite: err.suiteId, names })
 			}

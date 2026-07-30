@@ -19,6 +19,8 @@ ignore-parent = true
 # locale = "en-gb"
 # 仅忽略特定上下文，不全局放行
 extend-ignore-re = [
+	# 下一行整行忽略：// typos:ignore-next-line
+	"(?s)//\\s*typos:ignore-next-line[^\\n]*\\n[^\\n]*",
 	# npm package name
 	"'npm:[^ ']+'",
 	# 单引号内的长 base64/hash（如 Telegram file_id），避免误报 BA/TYE/UE 等
