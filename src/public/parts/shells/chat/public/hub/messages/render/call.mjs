@@ -29,26 +29,26 @@ export async function renderCallBlock(message) {
 	if (status === 'ongoing') {
 		const started = Number(call.startedAt) || 0
 		const timeText = started ? new Date(started).toLocaleTimeString() : ''
-		metaHtml = `<span data-i18n="chat.hub.callStartedAt" data-time="${escapeHtml(timeText)}"></span>`
-			+ ` · <span data-i18n="chat.hub.callParticipants" data-n="${hashes.length}"></span>`
+		metaHtml = `<span data-i18n="chat.hub.call.startedAt" data-time="${escapeHtml(timeText)}"></span>`
+			+ ` · <span data-i18n="chat.hub.call.participants" data-n="${hashes.length}"></span>`
 	}
 	else {
 		const durationMs = Number(call.duration) || 0
 		const secs = Math.max(0, Math.round(durationMs / 1000))
 		const mm = String(Math.floor(secs / 60)).padStart(2, '0')
 		const ss = String(secs % 60).padStart(2, '0')
-		metaHtml = `<span data-i18n="chat.hub.callDuration" data-duration="${mm}:${ss}"></span>`
-			+ ` · <span data-i18n="chat.hub.callParticipants" data-n="${hashes.length}"></span>`
+		metaHtml = `<span data-i18n="chat.hub.call.duration" data-duration="${mm}:${ss}"></span>`
+			+ ` · <span data-i18n="chat.hub.call.participants" data-n="${hashes.length}"></span>`
 	}
 	const joinButtonHtml = status === 'ongoing'
-		? '<button type="button" class="btn btn-sm btn-primary call-join-btn" data-i18n="chat.hub.callJoin"></button>'
+		? '<button type="button" class="btn btn-sm btn-primary call-join-btn" data-i18n="chat.hub.call.join"></button>'
 		: ''
 	return renderTemplateAsHtmlString('hub/messages/call_block', {
 		callId: escapeHtml(String(call.callId || message.eventId || '')),
 		status,
-		titleI18n: status === 'ended' ? 'chat.hub.callEnded' : 'chat.hub.callInProgress',
+		titleI18n: status === 'ended' ? 'chat.hub.call.ended' : 'chat.hub.call.inProgress',
 		metaHtml,
-		avatarsHtml: avatarsHtml || '<span class="call-avatars-empty" data-i18n="chat.hub.callNoParticipants"></span>',
+		avatarsHtml: avatarsHtml || '<span class="call-avatars-empty" data-i18n="chat.hub.call.noParticipants"></span>',
 		joinButtonHtml,
 	})
 }

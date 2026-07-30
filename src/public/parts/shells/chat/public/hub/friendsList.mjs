@@ -206,7 +206,7 @@ async function deleteFriendSession(friend) {
 			const data = await r.json().catch(() => ({}))
 			throw new Error(data.error || `HTTP ${r.status}`)
 		}
-		showToastI18n('success', 'chat.hub.sessionDeleted')
+		showToastI18n('success', 'chat.hub.session.deleted')
 		if (store.privateGroup.groupId === friend.groupId) {
 			const { clearPrivateGroupState } = await import('./privateGroup.mjs')
 			clearPrivateGroupState()
@@ -217,7 +217,7 @@ async function deleteFriendSession(friend) {
 		await renderFriendsColumn(friends)
 	}
 	catch (err) {
-		showToastI18n('error', 'chat.hub.sessionDeleteFailed', { error: err.message })
+		showToastI18n('error', 'chat.hub.session.deleteFailed', { error: err.message })
 	}
 }
 
@@ -236,7 +236,7 @@ function showFriendContextMenu(event, friend) {
 
 	const items = []
 	if (friend.charname)
-		items.push('<li><button type="button" class="w-full text-left" data-action="new-chat" data-i18n="chat.hub.friendsContextNewChat"></button></li>')
+		items.push('<li><button type="button" class="w-full text-left" data-action="new-chat" data-i18n="chat.hub.friends.contextNewChat"></button></li>')
 	items.push('<li><button type="button" class="w-full text-left text-error" data-action="delete-session" data-i18n="chat.hub.deleteSession"></button></li>')
 	menu.innerHTML = items.join('')
 	document.body.appendChild(menu)
@@ -257,14 +257,14 @@ function showFriendContextMenu(event, friend) {
 	menu.querySelector('[data-action="new-chat"]')?.addEventListener('click', () => {
 		closeOnce()
 		void (async () => {
-			if (!confirmI18n('chat.hub.friendsRestartConfirm', { name: friend.charname }))
+			if (!confirmI18n('chat.hub.friends.restartConfirm', { name: friend.charname }))
 				return
 			try {
 				await restartPrivateGroup(friend.charname, friend.groupId)
-				showToastI18n('success', 'chat.hub.friendsRestartOk')
+				showToastI18n('success', 'chat.hub.friends.restartOk')
 			}
 			catch (err) {
-				showToastI18n('error', 'chat.hub.friendsRestartFailed', { error: err.message })
+				showToastI18n('error', 'chat.hub.friends.restartFailed', { error: err.message })
 			}
 		})()
 	})
@@ -282,7 +282,7 @@ function showFriendContextMenu(event, friend) {
 export async function renderFriendsColumn(friends) {
 	const header = document.getElementById('group-name-display')
 	const container = document.getElementById('channel-list')
-	header.dataset.i18n = 'chat.hub.friendsTag'
+	header.dataset.i18n = 'chat.hub.friends.tag'
 
 	const wrap = document.createElement('div')
 	wrap.className = 'friends-wrap flex flex-col gap-2 h-full min-h-0'
@@ -305,7 +305,7 @@ export async function renderFriendsColumn(friends) {
 	})
 
 	if (!friends.length) {
-		await mountTemplate(body, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noFriends' })
+		await mountTemplate(body, 'hub/nav/side_muted', { i18nKey: 'chat.hub.no.friends' })
 		return
 	}
 	const charFriends = friends.filter(f => f.charname)
@@ -316,7 +316,7 @@ export async function renderFriendsColumn(friends) {
 	))
 	await mountTemplate(body, 'hub/mode/chars_column', {
 		count: String(friends.length),
-		countI18nKey: 'chat.hub.friendsCount',
+		countI18nKey: 'chat.hub.friends.count',
 		items: rows,
 	})
 	body.querySelectorAll('.char-list-item').forEach((el) => {
@@ -359,7 +359,7 @@ async function searchLocalChars(q) {
 			kind: 'char',
 			charname: name,
 			label: displayName || name,
-			subtitle: displayName && displayName !== name ? name : geti18n('chat.hub.friendsSearchLocalChar'),
+			subtitle: displayName && displayName !== name ? name : geti18n('chat.hub.friends.search.localChar'),
 			avatar: String(details?.info?.avatar || '').trim() || undefined,
 		})
 		if (hits.length >= 20) break
@@ -395,7 +395,7 @@ async function appendFriendsSearchHit(hit, resultsHost) {
 		label: escapeHtml(hit.label),
 		handle: escapeHtml(hit.subtitle),
 		showPin: isChar ? '' : '1',
-		actionI18n: isChar ? 'chat.hub.friendsSearchChat' : 'chat.hub.friendsSearchDm',
+		actionI18n: isChar ? 'chat.hub.friends.search.chat' : 'chat.hub.friends.search.dm',
 		...listAvatarTemplateFields(seed, hit.label, isChar ? hit.avatar : ''),
 	})
 	if (isChar || isEntityHash128(hit.entityHash))
@@ -414,7 +414,7 @@ async function appendFriendsSearchHit(hit, resultsHost) {
 				)
 				if (next == null) return
 				await setEntityAlias(hit.entityHash, next)
-				showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
+				showToastI18n('success', 'chat.hub.member.context.aliasSaved')
 				hit.alias = next
 				hit.label = resolveDisplayName({
 					entityHash: hit.entityHash,
@@ -470,7 +470,7 @@ async function runFriendsEntitySearch(input, resultsHost) {
 		resultsHost.replaceChildren()
 		if (q.length === 1) {
 			resultsHost.appendChild(await renderTemplate('hub/friends/search_hint', {
-				i18nKey: 'chat.hub.friendsSearchTooShort',
+				i18nKey: 'chat.hub.friends.search.tooShort',
 			}))
 			resultsHost.classList.remove('hidden')
 		}
@@ -524,7 +524,7 @@ async function runFriendsEntitySearch(input, resultsHost) {
 	resultsHost.classList.remove('hidden')
 	if (!hits.length) {
 		resultsHost.appendChild(await renderTemplate('hub/friends/search_hint', {
-			i18nKey: 'chat.hub.friendsSearchEmpty',
+			i18nKey: 'chat.hub.friends.search.empty',
 		}))
 		return
 	}

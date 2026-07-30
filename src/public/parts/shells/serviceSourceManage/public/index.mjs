@@ -63,7 +63,7 @@ async function loadPartBranches() {
 		partBranches = await getPartBranches()
 	}
 	catch (error) {
-		handleFetchError('serviceSource_manager.alerts.fetchBranchesFailed')(error)
+		handleFetchError('serviceSource_manager.alerts.fetch.branchesFailed')(error)
 		partBranches = {}
 	}
 }
@@ -199,7 +199,7 @@ async function setSubtype(nextSubtype) {
  * @returns {Promise<void>}
  */
 async function fetchFileList() {
-	fileList = await getPartList(currentServiceSourcePath).catch(handleFetchError('serviceSource_manager.alerts.fetchFileListFailed'))
+	fileList = await getPartList(currentServiceSourcePath).catch(handleFetchError('serviceSource_manager.alerts.fetch.fileListFailed'))
 	await renderFileList()
 }
 
@@ -209,7 +209,7 @@ async function fetchFileList() {
  */
 async function fetchGeneratorList() {
 	const generatorPath = resolvePath(`serviceGenerators/${currentSubtype}`, 'serviceGenerators')
-	generatorList = await getPartList(generatorPath).catch(handleFetchError('serviceSource_manager.alerts.fetchGeneratorListFailed'))
+	generatorList = await getPartList(generatorPath).catch(handleFetchError('serviceSource_manager.alerts.fetch.generatorListFailed'))
 	renderGeneratorSelect()
 }
 
@@ -218,7 +218,7 @@ async function fetchGeneratorList() {
  * @returns {Promise<void>}
  */
 async function fetchDefaultParts() {
-	defaultParts = await getAllDefaultParts().catch(handleFetchError('serviceSource_manager.alerts.fetchDefaultsFailed'))
+	defaultParts = await getAllDefaultParts().catch(handleFetchError('serviceSource_manager.alerts.fetch.defaultsFailed'))
 	updateDefaultPartDisplay()
 }
 
@@ -303,7 +303,7 @@ function renderGeneratorSelect() {
  */
 async function fetchConfigTemplate(generatorName) {
 	if (!generatorName) return null
-	return await getConfigTemplate(generatorName, activeFile, currentServiceSourcePath).catch(handleFetchError('serviceSource_manager.alerts.fetchConfigTemplateFailed'))
+	return await getConfigTemplate(generatorName, activeFile, currentServiceSourcePath).catch(handleFetchError('serviceSource_manager.alerts.fetch.configTemplateFailed'))
 }
 
 /**
@@ -473,7 +473,7 @@ async function loadEditor(fileName) {
 	if (activeItem) activeItem.classList.add('active')
 
 	activeFile = fileName
-	const data = await getServiceSourceFile(fileName, currentServiceSourcePath).catch(handleFetchError('serviceSource_manager.alerts.fetchFileDataFailed'))
+	const data = await getServiceSourceFile(fileName, currentServiceSourcePath).catch(handleFetchError('serviceSource_manager.alerts.fetch.fileDataFailed'))
 	const subtypeFromData = getSubtypeFromPath(currentServiceSourcePath)
 	if (subtypeFromData && subtypeFromData !== currentSubtype) {
 		await setSubtype(subtypeFromData)

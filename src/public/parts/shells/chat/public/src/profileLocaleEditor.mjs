@@ -224,17 +224,17 @@ export function renderLinksEditor(host, links, onChange) {
 		nameInput.type = 'text'
 		nameInput.className = 'input input-bordered input-sm'
 		nameInput.value = link.name || ''
-		nameInput.dataset.i18n = 'chat.hub.profileEdit.linkName'
+		nameInput.dataset.i18n = 'chat.hub.profileEdit.link.name'
 		const urlInput = document.createElement('input')
 		urlInput.type = 'url'
 		urlInput.className = 'input input-bordered input-sm'
 		urlInput.value = link.url || ''
-		urlInput.dataset.i18n = 'chat.hub.profileEdit.linkUrl'
+		urlInput.dataset.i18n = 'chat.hub.profileEdit.link.url'
 		const remove = document.createElement('button')
 		remove.type = 'button'
 		remove.className = 'btn btn-ghost btn-sm'
 		remove.textContent = '×'
-		remove.dataset.i18n = 'chat.hub.profileEdit.linkRemove'
+		remove.dataset.i18n = 'chat.hub.profileEdit.link.remove'
 
 		/**
 		 *

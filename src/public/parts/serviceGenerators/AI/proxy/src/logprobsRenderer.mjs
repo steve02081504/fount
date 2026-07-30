@@ -28,7 +28,7 @@ export function buildContentForShowFromLogprobs(sourceResult, renderOptions = {}
 	const useThemeStyles = renderOptions.useThemeStyles ?? true
 	const localeList = [...renderOptions.locales ?? [], ...localhostLocales]
 	const useFountI18nKeys = !!renderOptions.supported_functions?.fount_i18nkeys
-	const naLabel = geti18nForLocales(localeList, 'chat.messageView.logprobsNotApplicable') ?? 'N/A'
+	const naLabel = geti18nForLocales(localeList, 'chat.message.view.logprobsNotApplicable') ?? 'N/A'
 
 	/**
 	 * 从 logprob 条目提取 token 文本。
@@ -75,7 +75,7 @@ export function buildContentForShowFromLogprobs(sourceResult, renderOptions = {}
 	 * @returns {string} 带 fount-logprob-meta 的 HTML 片段。
 	 */
 	const topLogprobsMetaHtml = (tokenVisibleForHtml) => {
-		const raw = geti18nForLocales(localeList, 'chat.messageView.logprobsTopLogprobsMeta', {
+		const raw = geti18nForLocales(localeList, 'chat.message.view.logprobsTopLogprobsMeta', {
 			token: tokenVisibleForHtml,
 		})
 		const text = raw ?? `top_logprobs (selected: ${tokenVisibleForHtml})`
@@ -88,10 +88,10 @@ export function buildContentForShowFromLogprobs(sourceResult, renderOptions = {}
 	 * @returns {string} 页脚 span 的 HTML。
 	 */
 	const metricsFooterHtml = (parts) => {
-		const raw = geti18nForLocales(localeList, 'chat.messageView.logprobsMetricsFooter', parts)
+		const raw = geti18nForLocales(localeList, 'chat.message.view.logprobsMetricsFooter', parts)
 		const text = raw ?? `TTFT: ${parts.ttft} | Time: ${parts.time} | Tokens: ${parts.tokens} | Speed: ${parts.speed}`
 		const i18nAttrs = useFountI18nKeys
-			? ` data-i18n="chat.messageView.logprobsMetricsFooter" data-ttft="${escapeHtml(parts.ttft)}" data-time="${escapeHtml(parts.time)}" data-tokens="${escapeHtml(parts.tokens)}" data-speed="${escapeHtml(parts.speed)}"`
+			? ` data-i18n="chat.message.view.logprobsMetricsFooter" data-ttft="${escapeHtml(parts.ttft)}" data-time="${escapeHtml(parts.time)}" data-tokens="${escapeHtml(parts.tokens)}" data-speed="${escapeHtml(parts.speed)}"`
 			: ''
 		return /* html */ `<span class="fount-logprob-footer"${i18nAttrs}>${escapeHtml(text)}</span>`
 	}

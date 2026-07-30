@@ -179,7 +179,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 
 	const timeAttrs = formatTimeAttrs(time)
 	const typingLabelHtml = generating
-		? '<span class="streaming-typing inline-flex items-center gap-1 text-base-content/60 text-xs"><span class="loading loading-dots loading-xs"></span><span data-i18n="chat.hub.charTyping"></span></span>'
+		? '<span class="streaming-typing inline-flex items-center gap-1 text-base-content/60 text-xs"><span class="loading loading-dots loading-xs"></span><span data-i18n="chat.hub.char.typing"></span></span>'
 		: ''
 
 	const emojiRef = firstEmojiTokenInText(getMessageText(message))

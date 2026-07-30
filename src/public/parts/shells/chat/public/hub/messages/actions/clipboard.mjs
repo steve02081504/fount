@@ -79,12 +79,12 @@ export async function handleClipboardAction(button, row, channelMessage, action)
 	}
 	if (action === 'share') {
 		try {
-			showToastI18n('info', 'chat.messageView.share.uploading')
+			showToastI18n('info', 'chat.message.view.share.uploading')
 			const html = await generateMessageStandaloneHtml(channelMessage, row)
 			const blob = new Blob([html], { type: 'text/html' })
 			const link = await createShareLink(blob, `message-${button.dataset.eventId || 'export'}.html`, button.dataset.time || '24h')
 			await navigator.clipboard.writeText(link)
-			showToastI18n('success', 'chat.messageView.share.success', {
+			showToastI18n('success', 'chat.message.view.share.success', {
 				provider: 'litterbox.moe',
 				sponsorLink: 'https://store.catbox.moe/',
 			})

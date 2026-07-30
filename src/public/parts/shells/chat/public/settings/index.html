@@ -10,7 +10,7 @@
 	<meta property="og:description" content="Manage group profile, members, permissions, and advanced chat tools in fount." />
 	<meta name="description" content="Manage group profile, members, permissions, and advanced chat tools in fount." />
 	<meta property="og:image" content="https://repository-images.githubusercontent.com/862251163/0ac90205-ae40-4fc6-af67-1e28d074c76b" />
-	<title data-i18n="chat.group.settingsPage.title"></title>
+	<title data-i18n="chat.group.settings.page.title"></title>
 	<link rel="icon" href="/favicon.ico" />
 	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 	<script blocking="render" type="module" src="/preload.mjs"></script>
@@ -26,27 +26,27 @@
 		<header class="settings-header">
 			<a class="btn btn-ghost btn-sm settings-back" href="/parts/shells:chat/hub/">
 				<span aria-hidden="true">←</span>
-				<span data-i18n="chat.group.settingsPage.backToChat"></span>
+				<span data-i18n="chat.group.settings.page.backToChat"></span>
 			</a>
 			<div>
-				<p class="settings-kicker" data-i18n="chat.group.settingsPage.kicker"></p>
-				<h1 class="text-3xl font-bold" data-i18n="chat.group.settingsPage.title"></h1>
-				<p class="settings-subtitle" data-i18n="chat.group.settingsPage.subtitle"></p>
+				<p class="settings-kicker" data-i18n="chat.group.settings.page.kicker"></p>
+				<h1 class="text-3xl font-bold" data-i18n="chat.group.settings.page.title"></h1>
+				<p class="settings-subtitle" data-i18n="chat.group.settings.page.subtitle"></p>
 			</div>
 		</header>
 
 		<div class="settings-layout">
-			<nav class="settings-nav menu bg-base-200 rounded-box w-full p-2" role="tablist" aria-orientation="vertical" data-i18n-aria-label="chat.group.settingsPage.navigationLabel">
-				<button type="button" role="tab" class="settings-nav-item tab justify-start tab-active" id="nav-general" data-section="general" aria-controls="panel-general" aria-selected="true" tabindex="0" data-i18n="chat.group.settingsPage.tabGeneral"></button>
-				<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-members" data-section="members" aria-controls="panel-members" aria-selected="false" tabindex="-1" data-i18n="chat.group.settingsPage.tabMembers"></button>
-				<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-emojis" data-section="emojis" aria-controls="panel-emojis" aria-selected="false" tabindex="-1" data-i18n="chat.group.settingsPage.tabEmojis"></button>
+			<nav class="settings-nav menu bg-base-200 rounded-box w-full p-2" role="tablist" aria-orientation="vertical" data-i18n-aria-label="chat.group.settings.page.navigationLabel">
+				<button type="button" role="tab" class="settings-nav-item tab justify-start tab-active" id="nav-general" data-section="general" aria-controls="panel-general" aria-selected="true" tabindex="0" data-i18n="chat.group.settings.page.tabs.general"></button>
+				<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-members" data-section="members" aria-controls="panel-members" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.tabs.members"></button>
+				<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-emojis" data-section="emojis" aria-controls="panel-emojis" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.tabs.emojis"></button>
 
 				<div class="settings-nav-group hidden" data-nav-group="advanced">
-					<p class="menu-title settings-nav-group-label" data-i18n="chat.group.settingsPage.advancedHubTitle"></p>
-					<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-permissions" data-section="permissions" aria-controls="panel-permissions" aria-selected="false" tabindex="-1" data-i18n="chat.group.settingsPage.tabPermissions"></button>
-					<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-channel-perms" data-section="channel-perms" aria-controls="panel-channel-perms" aria-selected="false" tabindex="-1" data-i18n="chat.group.settingsPage.tabChannelPermissions"></button>
-					<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-storage" data-section="storage" aria-controls="panel-storage" aria-selected="false" tabindex="-1" data-i18n="chat.group.settingsPage.tabStorage"></button>
-					<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-audit" data-section="audit" aria-controls="panel-audit" aria-selected="false" tabindex="-1" data-i18n="chat.group.settingsPage.tabAudit"></button>
+					<p class="menu-title settings-nav-group-label" data-i18n="chat.group.settings.page.advanced.hubTitle"></p>
+					<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-permissions" data-section="permissions" aria-controls="panel-permissions" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.tabs.permissions"></button>
+					<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-channel-perms" data-section="channel-perms" aria-controls="panel-channel-perms" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.tabs.channelPermissions"></button>
+					<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-storage" data-section="storage" aria-controls="panel-storage" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.tabs.storage"></button>
+					<button type="button" role="tab" class="settings-nav-item tab justify-start hidden" id="nav-audit" data-section="audit" aria-controls="panel-audit" aria-selected="false" tabindex="-1" data-i18n="chat.group.settings.page.tabs.audit"></button>
 				</div>
 			</nav>
 
@@ -58,7 +58,7 @@
 				<div id="panel-members" class="settings-panel hidden" role="tabpanel" aria-labelledby="nav-members" hidden>
 					<div class="card bg-base-200 settings-card">
 						<div class="card-body">
-							<h2 class="card-title mb-4" data-i18n="chat.group.settingsPage.membersTitle"></h2>
+							<h2 class="card-title mb-4" data-i18n="chat.group.settings.page.membersTitle"></h2>
 							<div id="members-list" class="space-y-2"></div>
 						</div>
 					</div>
@@ -96,10 +96,10 @@
 							</div>
 							<div id="audit-log-container" class="hidden">
 								<div class="grid grid-cols-[minmax(7rem,auto)_minmax(5rem,8rem)_minmax(6rem,9rem)_1fr] gap-2 px-2 py-2 text-xs font-semibold opacity-70 border-b border-base-300">
-									<span data-i18n="chat.group.auditLog.colTime"></span>
-									<span data-i18n="chat.group.auditLog.colType"></span>
-									<span data-i18n="chat.group.auditLog.colActor"></span>
-									<span data-i18n="chat.group.auditLog.colSummary"></span>
+									<span data-i18n="chat.group.auditLog.col.time"></span>
+									<span data-i18n="chat.group.auditLog.col.type"></span>
+									<span data-i18n="chat.group.auditLog.col.actor"></span>
+									<span data-i18n="chat.group.auditLog.col.summary"></span>
 								</div>
 								<div id="audit-log-scroll" class="overflow-y-auto max-h-[min(60vh,32rem)]"></div>
 							</div>

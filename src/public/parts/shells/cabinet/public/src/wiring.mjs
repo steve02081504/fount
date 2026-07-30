@@ -21,7 +21,7 @@ export function wireBootstrap() {
 	 * @returns {Promise<void>} 创建个人柜并打开
 	 */
 	const createCabinet = async () => {
-		const name = await promptText('cabinet.newCabinetPrompt')
+		const name = await promptText('cabinet.new.cabinetPrompt')
 		if (!name) return
 		const visibility = await promptText('cabinet.visibilityPrompt', 'private') || 'private'
 		const { cabinet } = await api('POST', '/cabinets', { name, visibility: { visibility }, type: 'personal' })

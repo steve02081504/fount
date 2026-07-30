@@ -15,7 +15,7 @@ export async function runHubAction(action, options = {}) {
 		return true
 	}
 	catch (error) {
-		handleUIError(error, options.errorKey || 'chat.hub.messageActionFailed')
+		handleUIError(error, options.errorKey || 'chat.hub.message.action.failed')
 		return false
 	}
 }

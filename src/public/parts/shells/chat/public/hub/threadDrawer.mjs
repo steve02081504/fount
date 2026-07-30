@@ -217,7 +217,7 @@ function wireThreadComposer(drawer, messageContainer) {
 			await renderThreadMessages(messageContainer)
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.sendFailed', { error: error.message })
+			showToastI18n('error', 'chat.hub.send.failed', { error: error.message })
 		}
 		finally {
 			sendButton.disabled = false
@@ -277,9 +277,9 @@ export async function openThread(groupId, parentChannelId, parentEventId, title 
 			wireThreadComposer(drawer, messageContainer)
 		}
 		if (createdNew)
-			showToastI18n('success', 'chat.hub.threadCreated')
+			showToastI18n('success', 'chat.hub.thread.created')
 	}
 	catch (error) {
-		showToastI18n('error', 'chat.hub.threadCreateFailed', { error: error.message })
+		showToastI18n('error', 'chat.hub.thread.createFailed', { error: error.message })
 	}
 }

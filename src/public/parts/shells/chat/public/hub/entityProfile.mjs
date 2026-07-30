@@ -95,7 +95,7 @@ export async function paintEntityProfileUi(root, profile, extras = {}) {
  */
 export async function paintBioMarkdown(descriptionElement, bio, entityHash = '') {
 	await paintEntityProfileBio(descriptionElement, bio, entityHash, {
-		emptyI18n: 'chat.hub.charDescriptionEmpty',
+		emptyI18n: 'chat.hub.char.descriptionEmpty',
 		selfEntityHash: store.viewer?.viewerEntityHash,
 		nodeHash: store.viewer?.nodeHash,
 		viewerOwnerEntityHash: store.viewer?.ownerEntityHash,
@@ -166,8 +166,8 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 		const canDm = !isSelf && (entity.charname || isHex64(entity.pubKeyHex))
 		dmButton.hidden = !canDm
 		dmButton.dataset.i18n = entity.charname
-			? 'chat.hub.profilePopup.dmChar'
-			: 'chat.hub.profilePopup.dmFed'
+			? 'chat.hub.profilePopup.dm.char'
+			: 'chat.hub.profilePopup.dm.fed'
 		/**
 		 *
 		 */
@@ -177,7 +177,7 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 				? { type: 'char', id: entity.charname, displayName: entity.displayName, entityHash }
 				: { type: 'user', displayName: entity.displayName, pubKeyHex: entity.pubKeyHex, entityHash }
 			void dispatchFriendChat(dmEntity).catch(error => {
-				showToastI18n('error', 'chat.hub.profilePopup.dmFailed', { error: error.message })
+				showToastI18n('error', 'chat.hub.profilePopup.dm.failed', { error: error.message })
 			})
 		}
 	}
@@ -210,7 +210,7 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 				)
 				if (next == null) return
 				await setEntityAlias(entityHash, next)
-				showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
+				showToastI18n('success', 'chat.hub.member.context.aliasSaved')
 				await options.onRepaint?.()
 				await refreshAliasDependentUi()
 			})().catch(error => {
@@ -237,7 +237,7 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 					const next = !cared
 					await setCared(entityHash, next)
 					cared = next
-					showToastI18n('success', next ? 'chat.hub.memberContext.careAdded' : 'chat.hub.memberContext.careRemoved')
+					showToastI18n('success', next ? 'chat.hub.member.context.careAdded' : 'chat.hub.member.context.careRemoved')
 					careButton.dataset.i18n = next
 						? 'chat.hub.profilePopup.careRemove'
 						: 'chat.hub.profilePopup.care'

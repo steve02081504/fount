@@ -92,7 +92,7 @@ async function loadSupportedEditors() {
 		const p = Object.assign(document.createElement('p'), {
 			className: 'text-sm text-error'
 		})
-		p.dataset.i18n = 'ide_integration.supportedEditorsError'
+		p.dataset.i18n = 'ide_integration.supportedEditors.error'
 		p.dataset.message = error.message
 		container.appendChild(p)
 	}
@@ -134,7 +134,7 @@ async function updateZedConfig() {
 
 	if (!scriptUrl) {
 		const placeholder = document.createElement('span')
-		placeholder.dataset.i18n = 'ide_integration.acpConfig'
+		placeholder.dataset.i18n = 'ide_integration.acp.config'
 		configContainer.appendChild(placeholder)
 		return
 	}
@@ -171,7 +171,7 @@ async function loadCharList() {
 	acpCharSelect.innerHTML = ''
 	const empty = document.createElement('option')
 	empty.value = ''
-	empty.dataset.i18n = 'ide_integration.acpChar'
+	empty.dataset.i18n = 'ide_integration.acp.char'
 	acpCharSelect.appendChild(empty)
 	for (const id of list) {
 		const opt = document.createElement('option')
@@ -189,7 +189,7 @@ async function loadCharList() {
 document.getElementById('copy-script-url').addEventListener('click', () => {
 	const url = scriptUrlInput.value
 	if (!url) {
-		showToastI18n('warning', 'ide_integration.acpConfig')
+		showToastI18n('warning', 'ide_integration.acp.config')
 		return
 	}
 	navigator.clipboard.writeText(url)
@@ -229,9 +229,9 @@ async function generateApiKey() {
 		renderApiKey()
 		buildScriptUrl()
 		updateZedConfig()
-		showToastI18n('success', 'ide_integration.apiKeyCopied')
+		showToastI18n('success', 'ide_integration.apiKey.copied')
 	} catch (error) {
-		showToastI18n('error', 'ide_integration.apiKeyCreateError', { message: error.message })
+		showToastI18n('error', 'ide_integration.apiKey.createError', { message: error.message })
 	}
 }
 
@@ -246,14 +246,14 @@ function renderApiKey() {
 		div.className = 'space-y-2'
 		div.innerHTML = `
 			<div class="join w-full">
-				<input type="password" id="ide-apikey-input" class="input input-bordered join-item flex-1" value="${apiKey.replace(/"/g, '&quot;')}" readonly data-i18n="ide_integration.apiKeyInput" />
+				<input type="password" id="ide-apikey-input" class="input input-bordered join-item flex-1" value="${apiKey.replace(/"/g, '&quot;')}" readonly data-i18n="ide_integration.apiKey.input" />
 				<button type="button" id="ide-apikey-copy" class="btn btn-primary join-item" data-i18n="ide_integration.copyButton"></button>
 			</div>
 		`
 		section.appendChild(div)
 		document.getElementById('ide-apikey-copy').addEventListener('click', () => {
 			navigator.clipboard.writeText(apiKey)
-			showToastI18n('success', 'ide_integration.apiKeyCopied')
+			showToastI18n('success', 'ide_integration.apiKey.copied')
 		})
 	} else {
 		const button = document.createElement('button')

@@ -69,8 +69,8 @@ export async function refreshDagForkBanner() {
 	}
 	banner.removeAttribute('hidden')
 	textElement.dataset.i18n = governanceFork && tips.length < 2
-		? 'chat.hub.banners.forkGovernance'
-		: 'chat.hub.banners.forkTips'
+		? 'chat.hub.banners.fork.governance'
+		: 'chat.hub.banners.fork.tips'
 	textElement.dataset.count = String(tips.length)
 	if (mergeButton) mergeButton.disabled = tips.length < 2
 	refreshLocalViewBanner()
@@ -87,7 +87,7 @@ export async function refreshDagForkBanner() {
 					id: escapeHtml(id),
 					short: escapeHtml(short),
 					score: Number.isFinite(score) ? String(Math.floor(score)) : '',
-					i18nKey: Number.isFinite(score) ? 'chat.hub.banners.forkTipScore' : '',
+					i18nKey: Number.isFinite(score) ? 'chat.hub.banners.fork.tipScore' : '',
 					selected: id === preferred,
 				}
 			})

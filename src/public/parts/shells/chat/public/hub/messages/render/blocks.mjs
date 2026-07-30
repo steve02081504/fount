@@ -43,7 +43,7 @@ export async function renderStickerBlock(message) {
 		src = await resolvePackEmojiUrl(refMatch.packId, refMatch.emojiId) || ''
 	const name = escapeHtml(content.stickerName || content.stickerId || 'sticker')
 	const saveButtonHtml = refMatch?.packId
-		? '<button type="button" class="save-sticker-button" data-i18n="chat.hub.saveSticker"></button>'
+		? '<button type="button" class="save-sticker-button" data-i18n="chat.hub.save.sticker"></button>'
 		: ''
 	if (src.startsWith('data:') || src.startsWith('https://') || src.startsWith('http://') || src.startsWith('/'))
 		return renderTemplateAsHtmlString('hub/messages/sticker_block', { src: escapeHtml(src), name, saveButtonHtml })

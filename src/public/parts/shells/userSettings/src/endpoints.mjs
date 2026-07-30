@@ -141,7 +141,7 @@ export function setEndpoints(router) {
 		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { tokenJti, password } = req.body
 		if (!tokenJti || !password)
-			return res.status(400).json({ i18nKey: 'userSettings.userDevices.revokeMissingParams' })
+			return res.status(400).json({ i18nKey: 'userSettings.userDevices.revoke.missingParams' })
 
 		await revokeUserDeviceByJti(user.username, tokenJti, password)
 		res.status(200).json({})

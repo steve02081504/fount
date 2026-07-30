@@ -25,6 +25,6 @@ export async function renderGroupInfoCard(state) {
 		groupName: escapeHtml(displayName),
 		nameI18nAttr: '',
 		description: escapeHtml(description),
-		descriptionI18nAttr: description ? '' : ' data-i18n="chat.hub.groupDescriptionEmpty"',
+		descriptionI18nAttr: description ? '' : ' data-i18n="chat.hub.group.descriptionEmpty"',
 	})
 }

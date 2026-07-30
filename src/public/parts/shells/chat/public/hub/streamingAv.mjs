@@ -79,9 +79,9 @@ export async function joinHubAvSession(options) {
 		activeChannelId = null
 		const errorMessage = error?.message || String(error)
 		if (errorMessage.includes('WebCodecs'))
-			showToastI18n('error', 'chat.hub.streamAvNoCodecs')
+			showToastI18n('error', 'chat.hub.stream.av.noCodecs')
 		else
-			showToastI18n('error', 'chat.hub.streamAvJoinFailed', { error: errorMessage })
+			showToastI18n('error', 'chat.hub.stream.av.joinFailed', { error: errorMessage })
 	}
 }
 
@@ -99,11 +99,11 @@ export async function wireHubAvToolbar(toolbar, handlers) {
 	byRole.leave?.addEventListener('click', () => { void handlers.onLeave() })
 	byRole.mute?.addEventListener('click', () => {
 		const muted = handlers.onMute()
-		byRole.mute.dataset.i18n = muted ? 'chat.hub.streamAvUnmute' : 'chat.hub.streamAvMute'
+		byRole.mute.dataset.i18n = muted ? 'chat.hub.stream.av.unmute' : 'chat.hub.stream.av.mute'
 	})
 	byRole.video?.addEventListener('click', () => {
 		const off = handlers.onVideo()
-		byRole.video.dataset.i18n = off ? 'chat.hub.streamAvVideoOn' : 'chat.hub.streamAvVideo'
+		byRole.video.dataset.i18n = off ? 'chat.hub.stream.av.videoOn' : 'chat.hub.stream.av.video'
 	})
 	toolbar.dataset.avJoinButton = '1'
 	toolbar.dataset.avLeaveButton = '1'

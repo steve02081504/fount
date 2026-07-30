@@ -25,7 +25,7 @@ export function setupPartDragDrop() {
 		if (!partData) return
 		const groupId = store.privateGroup.groupId || store.context.currentGroupId
 		if (!groupId) {
-			showToastI18n('warning', 'chat.hub.noActiveChat')
+			showToastI18n('warning', 'chat.hub.no.activeChat')
 			return
 		}
 		const [partType, partName] = partData.split('/')

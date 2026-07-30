@@ -86,7 +86,7 @@ export async function setMode(mode) {
 		setState('context.currentState', null)
 		const { disableComposer } = await import('./messages/composerController.mjs')
 		disableComposer()
-		document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.friendsHeader'
+		document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.friends.header'
 	}
 
 	const { refreshHubHeaderButtons } = await import('./messages/composerController.mjs')

@@ -36,8 +36,8 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
 		catchup = await federationCatchUp(groupId, { waitMs: options.waitMs ?? 1400 })
 	}
 	catch (error) {
-		const catchupError = handleUIError(error, 'chat.hub.syncFailed').message
-		setSyncBanner(true, { i18nKey: 'chat.hub.syncFailed', params: { error: catchupError } })
+		const catchupError = handleUIError(error, 'chat.hub.sync.failed').message
+		setSyncBanner(true, { i18nKey: 'chat.hub.sync.failed', params: { error: catchupError } })
 		return
 	}
 
@@ -54,14 +54,14 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
 	const stillMissing = Number(catchup.wantIdsStillMissing) || 0
 	const tipsCollected = Number(catchup.tipsCollected) || 0
 	if (catchup.wantIdsRateLimited)
-		setSyncBanner(true, { i18nKey: 'chat.hub.syncRateLimited' })
+		setSyncBanner(true, { i18nKey: 'chat.hub.sync.rateLimited' })
 	else if (stillMissing > 0)
 		setSyncBanner(true, {
-			i18nKey: 'chat.hub.syncIncomplete',
+			i18nKey: 'chat.hub.sync.incomplete',
 			params: { missing: stillMissing, total: catchup.wantIds },
 		})
 	else if (tipsCollected === 0 && !catchup.wantIds && !catchup.eventsFilled)
-		setSyncBanner(true, { i18nKey: 'chat.hub.syncNoPeers' })
+		setSyncBanner(true, { i18nKey: 'chat.hub.sync.noPeers' })
 	else
 		setSyncBanner(false)
 }
@@ -91,7 +91,7 @@ async function showGroupJoinRequiredState() {
 	updateHash(store.context.currentGroupId, null)
 	disableComposer()
 	await mountTemplate(document.getElementById('messages'), 'hub/empty/error', {
-		i18nKey: 'chat.hub.groupJoinRequired',
+		i18nKey: 'chat.hub.group.joinRequired',
 		errorMessage: '',
 	})
 	setPinsBookmarksWrapVisible(false)
@@ -117,7 +117,7 @@ export async function ensureGroupMembership(groupId, state) {
 		})
 		const groupNameElement = document.getElementById('group-name-display')
 		groupNameElement.textContent = ''
-		groupNameElement.dataset.i18n = 'chat.hub.groupTag'
+		groupNameElement.dataset.i18n = 'chat.hub.group.tag'
 		await renderChannelList(state)
 		await renderMemberList(state)
 		await renderGroupInfoCard(state)

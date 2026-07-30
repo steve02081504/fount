@@ -33,7 +33,7 @@ export async function selectChannel(channelId) {
 		await renderHubChannelSidebar(store.context.currentState)
 		const { mountTemplate } = await import('../../../../../scripts/features/template.mjs')
 		await mountTemplate(document.getElementById('messages'), 'hub/nav/side_muted', {
-			i18nKey: 'chat.hub.noChannels',
+			i18nKey: 'chat.hub.no.channels',
 		})
 		updateStatusBanners()
 		return
@@ -59,7 +59,7 @@ export async function selectChannel(channelId) {
 	headerIcon.innerHTML = await channelTypeIconHtml(channelType)
 
 	if (channelType === 'list' || channelType === 'streaming')
-		disableComposer(channelType === 'list' ? 'chat.hub.channelReadonlyList' : 'chat.hub.channelReadonlyStream')
+		disableComposer(channelType === 'list' ? 'chat.hub.channel.readonlyList' : 'chat.hub.channel.readonlyStream')
 	else if (store.context.currentState?.suspectedRemoved)
 		disableComposer('chat.hub.composerSuspectedRemoved')
 	else

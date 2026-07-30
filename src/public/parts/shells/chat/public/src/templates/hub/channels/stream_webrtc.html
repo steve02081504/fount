@@ -1,5 +1,5 @@
 <div class="stream-wrap">
-	<div class="stream-title" ${useChannelName ? '' : ' data-i18n="chat.hub.streamDefaultName"' }>${channelName}</div>
+	<div class="stream-title" ${useChannelName ? '' : ' data-i18n="chat.hub.stream.defaultName"' }>${channelName}</div>
 	<div class="stream-toolbar streaming-av-controls">
 		<select class="streaming-av-preset-sel" id="streaming-av-preset">
 			${presets.map(p => `<option value="${p.key}" data-i18n="${p.i18nKey}" ${p.selected ? ' selected' : '' }></option>`).join('')}
@@ -10,7 +10,7 @@
 	<div class="streaming-av-grid" id="streaming-av-grid">
 		<div class="streaming-av-tile relative rounded-lg overflow-hidden bg-black min-h-0" data-peer-id="local">
 			<video id="streaming-av-local-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
-			<div class="absolute bottom-1 left-1 text-xs text-white bg-black/50 rounded px-1" data-i18n="chat.hub.streamAvYou"></div>
+			<div class="absolute bottom-1 left-1 text-xs text-white bg-black/50 rounded px-1" data-i18n="chat.hub.stream.av.you"></div>
 		</div>
 	</div>
 </div>

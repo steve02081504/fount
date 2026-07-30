@@ -1472,8 +1472,8 @@ function run {
 		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
 	}
 	if (isRoot) {
-		Write-Warning (Get-I18n -key 'install.rootWarning1')
-		Write-Warning (Get-I18n -key 'install.rootWarning2')
+		Write-Warning (Get-I18n -key 'install.rootWarningAsRoot')
+		Write-Warning (Get-I18n -key 'install.rootWarningPreferUser')
 	}
 	Write-TaskbarProgress -Percent 5
 	$originalTitle = Get-Title

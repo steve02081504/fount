@@ -202,7 +202,7 @@ export function refreshMediaPreview() {
 		state.pendingMediaRefs,
 		() => refreshMediaPreview(),
 		{
-			editI18n: 'social.composer.editImage',
+			editI18n: 'social.composer.edit.image',
 			/**
 			 * @param {number} index 媒体下标
 			 * @param {object} ref 媒体引用

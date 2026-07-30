@@ -89,23 +89,23 @@ async function paintInboxRows(host, rows, replace = false) {
 const EMPTY_STATES = {
 	mention: {
 		icon: 'line-md/at',
-		titleKey: 'chat.hub.inbox.emptyMentionTitle',
-		descriptionKey: 'chat.hub.inbox.emptyMentionDescription',
+		titleKey: 'chat.hub.inbox.empty.mentionTitle',
+		descriptionKey: 'chat.hub.inbox.empty.mentionDescription',
 	},
 	message: {
 		icon: 'line-md/chat',
-		titleKey: 'chat.hub.inbox.emptyMessageTitle',
-		descriptionKey: 'chat.hub.inbox.emptyMessageDescription',
+		titleKey: 'chat.hub.inbox.empty.messageTitle',
+		descriptionKey: 'chat.hub.inbox.empty.messageDescription',
 	},
 	care: {
 		icon: 'line-md/heart',
-		titleKey: 'chat.hub.inbox.emptyCareTitle',
-		descriptionKey: 'chat.hub.inbox.emptyCareDescription',
+		titleKey: 'chat.hub.inbox.empty.careTitle',
+		descriptionKey: 'chat.hub.inbox.empty.careDescription',
 	},
 	vote_closed: {
 		icon: 'line-md/confirm-circle',
-		titleKey: 'chat.hub.inbox.emptyVoteTitle',
-		descriptionKey: 'chat.hub.inbox.emptyVoteDescription',
+		titleKey: 'chat.hub.inbox.empty.voteTitle',
+		descriptionKey: 'chat.hub.inbox.empty.voteDescription',
 	},
 }
 

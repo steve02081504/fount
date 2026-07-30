@@ -47,7 +47,7 @@ export async function handleEdit(button, actions) {
 			await reload?.()
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.messageActionFailed', { error: error?.message || String(error) })
+			showToastI18n('error', 'chat.hub.message.action.failed', { error: error?.message || String(error) })
 		}
 		finally {
 			if (saveButton instanceof HTMLButtonElement) saveButton.disabled = false

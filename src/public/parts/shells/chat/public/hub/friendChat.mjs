@@ -249,7 +249,7 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	const input = document.getElementById('message-input')
 	if (binding.charname) {
 		input.dataset.name = binding.charname
-		input.setAttribute('data-i18n', 'chat.hub.charChatComposer')
+		input.setAttribute('data-i18n', 'chat.hub.char.chat.composer')
 	}
 	else {
 		delete input.dataset.name
@@ -322,7 +322,7 @@ export async function dispatchFriendChat(entity) {
 			? String(entity.entityHash).toLowerCase()
 			: await (await import('./entityResolve.mjs')).charAgentEntityHash(entity.id)
 		if (!entityHash) {
-			showToastI18n('error', 'chat.hub.noUsername')
+			showToastI18n('error', 'chat.hub.no.username')
 			return
 		}
 		await enterFriendChat({

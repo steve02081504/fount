@@ -81,7 +81,7 @@ export function wireForkActions() {
 			location.reload()
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.forkSplitFailed')
+			handleUIError(error, 'chat.hub.forkSplit.failed')
 		}
 		finally {
 			if (submitButton) submitButton.disabled = false
@@ -92,7 +92,7 @@ export function wireForkActions() {
 		if (!store.context.currentGroupId) return
 		const accepted = selectedForkTipId()
 		if (!accepted) return
-		if (!confirmI18n('chat.hub.blockOpposingConfirm')) return
+		if (!confirmI18n('chat.hub.block.opposingConfirm')) return
 		const blockOpposingButton = document.getElementById('fork-block-opposing-button')
 		if (blockOpposingButton) blockOpposingButton.disabled = true
 		try {
@@ -100,10 +100,10 @@ export function wireForkActions() {
 			await loadMessages()
 			setState('context.currentState', await getGroupState(store.context.currentGroupId))
 			await refreshDagForkBanner()
-			showToastI18n('success', 'chat.hub.blockOpposingOk', { count: blocked.length })
+			showToastI18n('success', 'chat.hub.block.opposingOk', { count: blocked.length })
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.blockOpposingFailed')
+			handleUIError(error, 'chat.hub.block.opposingFailed')
 		}
 		finally {
 			if (blockOpposingButton) blockOpposingButton.disabled = false

@@ -17,13 +17,14 @@ function buildPackOptionsHtml(packs, selected, groupId) {
 	const ids = packs.map(p => String(p.packId || '').trim()).filter(Boolean)
 	if (!ids.includes(groupId)) ids.unshift(groupId)
 	const unique = [...new Set(ids)]
-	const groupSuffix = geti18n('chat.group.settingsPage.emojisPackGroupSuffix') || 'group'
 	return unique.map(packId => {
 		const pack = packs.find(p => p.packId === packId)
-		const label = packId === groupId ? `${packId} (${groupSuffix})` : packId
+		const label = packId === groupId
+			? (geti18n('chat.group.settings.page.emojis.packGroupOption', { packId }) || packId)
+			: packId
 		const count = pack?.itemCount ?? pack?.items?.length
-		const suffix = Number.isFinite(count) ? ` · ${count}` : ''
-		return `<option value="${escapeHtml(packId)}"${packId === current ? ' selected' : ''}>${escapeHtml(label + suffix)}</option>`
+		const countSuffix = Number.isFinite(count) ? ` · ${count}` : ''
+		return `<option value="${escapeHtml(packId)}"${packId === current ? ' selected' : ''}>${escapeHtml(label + countSuffix)}</option>`
 	}).join('')
 }
 
@@ -58,7 +59,7 @@ async function renderGroupEmojis(context) {
 	const entriesHtml = entries.map(entry => {
 		const src = packEmojiContentUrl(activePackId, entry.emojiId)
 		const del = canManage
-			? `<button type="button" class="btn btn-ghost btn-xs text-error" data-delete-emoji="${escapeHtml(entry.emojiId)}" data-i18n-aria-label="chat.group.settingsPage.emojisDelete">×</button>`
+			? `<button type="button" class="btn btn-ghost btn-xs text-error" data-delete-emoji="${escapeHtml(entry.emojiId)}" data-i18n-aria-label="chat.group.settings.page.emojis.delete">×</button>`
 			: ''
 		const label = entry.name || entry.emojiId
 		return `<div class="flex flex-col items-center gap-1 p-2 rounded-lg bg-base-300">
@@ -102,16 +103,16 @@ ${del}
 						body: JSON.stringify({ defaultEmojiPackId: packId || null }),
 					})
 					if (!resp.ok) {
-						showToastI18n('error', 'chat.group.settingsPage.defaultEmojiPackFailed')
+						showToastI18n('error', 'chat.group.settings.page.defaultEmojiPack.failed')
 						defaultSelect.value = previousValue
 						return
 					}
-					showToastI18n('success', 'chat.group.settingsPage.defaultEmojiPackOk')
+					showToastI18n('success', 'chat.group.settings.page.defaultEmojiPack.ok')
 					if (context.state?.groupSettings)
 						context.state.groupSettings.defaultEmojiPackId = packId || null
 				}
 				catch {
-					showToastI18n('error', 'chat.group.settingsPage.defaultEmojiPackFailed')
+					showToastI18n('error', 'chat.group.settings.page.defaultEmojiPack.failed')
 					defaultSelect.value = previousValue
 				}
 			})
@@ -122,7 +123,7 @@ ${del}
 		createBtn.addEventListener('click', async () => {
 			const suggested = `pack_${Date.now().toString(36)}`
 			const packId = await promptText(
-				'chat.group.settingsPage.emojisCreatePackPrompt',
+				'chat.group.settings.page.emojis.create.packPrompt',
 				suggested,
 			)
 			if (packId == null) return
@@ -135,10 +136,10 @@ ${del}
 			})
 			const data = await resp.json().catch(() => ({}))
 			if (!resp.ok) {
-				showToastI18n('error', 'chat.group.settingsPage.emojisCreatePackFailed', { error: data.error || resp.statusText })
+				showToastI18n('error', 'chat.group.settings.page.emojis.create.packFailed', { error: data.error || resp.statusText })
 				return
 			}
-			showToastI18n('success', 'chat.group.settingsPage.emojisCreatePackOk')
+			showToastI18n('success', 'chat.group.settings.page.emojis.create.packOk')
 			context.activeEmojiPackId = data.pack?.packId || id
 			context.emojisPanelReady = false
 			await ensureGroupEmojisPanel(context)
@@ -159,10 +160,10 @@ ${del}
 			)
 			const upData = await up.json()
 			if (!up.ok) {
-				showToastI18n('error', 'chat.group.settingsPage.emojisUploadFailed', { error: upData.error || up.statusText })
+				showToastI18n('error', 'chat.group.settings.page.emojis.uploadFailed', { error: upData.error || up.statusText })
 				return
 			}
-			showToastI18n('success', 'chat.group.settingsPage.emojisUploadOk')
+			showToastI18n('success', 'chat.group.settings.page.emojis.uploadOk')
 			context.emojisPanelReady = false
 			await ensureGroupEmojisPanel(context)
 		})
@@ -170,7 +171,7 @@ ${del}
 	container.querySelectorAll('[data-delete-emoji]').forEach(deleteEmojiButton => {
 		deleteEmojiButton.addEventListener('click', async () => {
 			const emojiId = deleteEmojiButton.getAttribute('data-delete-emoji')
-			if (!emojiId || !confirmI18n('chat.group.settingsPage.emojisDeleteConfirm')) return
+			if (!emojiId || !confirmI18n('chat.group.settings.page.emojis.deleteConfirm')) return
 			const packId = context.activeEmojiPackId || context.groupId
 			const del = await fetch(
 				`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/emoji-packs/${encodeURIComponent(packId)}/emojis/${encodeURIComponent(emojiId)}`,
@@ -178,10 +179,10 @@ ${del}
 			)
 			const delData = await del.json()
 			if (!del.ok) {
-				showToastI18n('error', 'chat.group.settingsPage.emojisDeleteFailed', { error: delData.error || '' })
+				showToastI18n('error', 'chat.group.settings.page.emojis.deleteFailed', { error: delData.error || '' })
 				return
 			}
-			showToastI18n('success', 'chat.group.settingsPage.emojisDeleteOk')
+			showToastI18n('success', 'chat.group.settings.page.emojis.deleteOk')
 			context.emojisPanelReady = false
 			await ensureGroupEmojisPanel(context)
 		})

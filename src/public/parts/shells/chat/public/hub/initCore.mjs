@@ -49,7 +49,7 @@ async function navigateHubFromLocation() {
 			applied = await applyChatRunUri(runUri)
 		}
 		catch (e) {
-			handleUIError(e, 'chat.hub.loadGroupFailed')
+			handleUIError(e, 'chat.hub.load.groupFailed')
 		}
 		if (applied?.groupId) {
 			groupId = applied.groupId
@@ -104,7 +104,7 @@ export async function initCore() {
 	}
 	catch (error) {
 		store.sidebar.groups = []
-		handleUIError(error, 'chat.hub.loadGroupFailed')
+		handleUIError(error, 'chat.hub.load.groupFailed')
 	}
 	await navigateHubFromLocation()
 }

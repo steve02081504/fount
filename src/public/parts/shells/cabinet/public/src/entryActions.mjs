@@ -169,7 +169,7 @@ export async function uploadFiles(files) {
  */
 export async function createFolder() {
 	if (!canWrite()) return
-	const name = await promptText('cabinet.newFolderPrompt')
+	const name = await promptText('cabinet.new.folderPrompt')
 	if (!name) return
 	const { entry } = await cabinetApi('POST', '/entries', {
 		kind: 'folder',

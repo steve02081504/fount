@@ -124,21 +124,21 @@ function renderOwnCharFeedbackInline(eventId, charId, feedbackUpClass, feedbackD
 			action: 'regen',
 			attrs: `data-event-id="${eventId}" data-char-id="${charId}"`,
 			icon: hubActionRegenIcon,
-			i18nKey: 'chat.hub.messageActionRegen',
+			i18nKey: 'chat.hub.message.action.regen',
 		}))
 	parts.push(
 		actionButton({
 			action: 'feedback-up',
 			attrs: `data-event-id="${eventId}"`,
 			icon: hubActionThumbUpIcon,
-			i18nKey: 'chat.hub.messageActionFeedbackUp',
+			i18nKey: 'chat.hub.message.action.feedbackUp',
 			classes: feedbackUpClass,
 		}),
 		actionButton({
 			action: 'feedback-down',
 			attrs: `data-event-id="${eventId}"`,
 			icon: hubActionThumbDownIcon,
-			i18nKey: 'chat.hub.messageActionFeedbackDown',
+			i18nKey: 'chat.hub.message.action.feedbackDown',
 			classes: feedbackDownClass,
 		}),
 	)
@@ -152,11 +152,11 @@ function renderOwnCharFeedbackInline(eventId, charId, feedbackUpClass, feedbackD
  */
 function copySubmenu(eventId) {
 	const items = [
-		menuActionItem('copy-md', `data-event-id="${eventId}"`, hubActionCopyIcon, 'chat.hub.menuMD'),
-		menuActionItem('copy-text', `data-event-id="${eventId}"`, hubActionCopyTextIcon, 'chat.hub.menuTXT'),
-		menuActionItem('copy-html', `data-event-id="${eventId}"`, hubActionCopyHtmlIcon, 'chat.hub.menuHTML'),
+		menuActionItem('copy-md', `data-event-id="${eventId}"`, hubActionCopyIcon, 'chat.hub.menu.mD'),
+		menuActionItem('copy-text', `data-event-id="${eventId}"`, hubActionCopyTextIcon, 'chat.hub.menu.tXT'),
+		menuActionItem('copy-html', `data-event-id="${eventId}"`, hubActionCopyHtmlIcon, 'chat.hub.menu.hTML'),
 	].join('')
-	return menuSubmenu('chat.hub.menuCopy', hubActionCopyIcon, items)
+	return menuSubmenu('chat.hub.menu.copy', hubActionCopyIcon, items)
 }
 
 /**
@@ -166,9 +166,9 @@ function copySubmenu(eventId) {
  */
 function shareSubmenu(eventId) {
 	const items = ['1h', '12h', '24h', '72h'].map(time =>
-		menuActionItem('share', `data-event-id="${eventId}" data-time="${time}"`, hubActionShareIcon, `chat.hub.menuShare.${time}`),
+		menuActionItem('share', `data-event-id="${eventId}" data-time="${time}"`, hubActionShareIcon, `chat.hub.menu.share.${time}`),
 	).join('')
-	return menuSubmenu('chat.hub.menuShareGroup', hubActionShareIcon, items)
+	return menuSubmenu('chat.hub.menu.shareGroup', hubActionShareIcon, items)
 }
 
 /**
@@ -183,10 +183,10 @@ function buildMenuItems(eventId, { canDelete = false } = {}) {
 		shareSubmenu(eventId),
 		menuActionItem('copy-share-link', `data-event-id="${eventId}"`, hubActionCopyLinkIcon, 'chat.hub.copyShareLink'),
 		menuActionItem('forward', `data-event-id="${eventId}"`, hubActionForwardIcon, 'chat.hub.forward'),
-		menuActionItem('download', `data-event-id="${eventId}"`, hubActionDownloadIcon, 'chat.hub.menuDownload'),
+		menuActionItem('download', `data-event-id="${eventId}"`, hubActionDownloadIcon, 'chat.hub.menu.download'),
 	]
 	if (canDelete)
-		parts.push(menuActionItem('delete', `data-event-id="${eventId}"`, hubActionDeleteIcon, 'chat.hub.menuDelete', 'text-error'))
+		parts.push(menuActionItem('delete', `data-event-id="${eventId}"`, hubActionDeleteIcon, 'chat.hub.menu.delete', 'text-error'))
 	return parts.join('')
 }
 
@@ -202,7 +202,7 @@ function buildShiftActions(eventId, canDelete) {
 			action: 'download',
 			attrs: `data-event-id="${eventId}"`,
 			icon: hubActionDownloadIcon,
-			i18nKey: 'chat.hub.menuDownload',
+			i18nKey: 'chat.hub.menu.download',
 			classes: 'text-success',
 		}),
 	]
@@ -211,7 +211,7 @@ function buildShiftActions(eventId, canDelete) {
 			action: 'delete',
 			attrs: `data-event-id="${eventId}"`,
 			icon: hubActionDeleteIcon,
-			i18nKey: 'chat.hub.menuDelete',
+			i18nKey: 'chat.hub.menu.delete',
 			classes: 'text-error',
 		}))
 	return parts.join('')
@@ -278,14 +278,14 @@ export async function renderMessageActionsHtml(message, options) {
 			action: 'bookmark',
 			attrs: `data-event-id="${escapedEventId}"`,
 			icon: hubActionBookmarkIcon,
-			i18nKey: 'chat.hub.messageActionBookmark',
+			i18nKey: 'chat.hub.message.action.bookmark',
 		}))
 		if (options.canPinMessages)
 			hoverInlineParts.push(actionButton({
 				action: 'pin',
 				attrs: `data-event-id="${escapedEventId}" data-pinned="${isPinned ? '1' : '0'}"`,
 				icon: isPinned ? hubActionUnpinIcon : hubActionPinIcon,
-				i18nKey: isPinned ? 'chat.hub.messageActionUnpin' : 'chat.hub.messageActionPin',
+				i18nKey: isPinned ? 'chat.hub.message.action.unpin' : 'chat.hub.message.action.pin',
 			}))
 	}
 
@@ -297,7 +297,7 @@ export async function renderMessageActionsHtml(message, options) {
 			action: 'edit',
 			attrs: `data-event-id="${escapedEventId}"`,
 			icon: hubActionEditIcon,
-			i18nKey: 'chat.hub.messageActionEdit',
+			i18nKey: 'chat.hub.message.action.edit',
 		}))
 
 	// 翻译按钮（仅有文本内容时显示；不依赖 DAG id）

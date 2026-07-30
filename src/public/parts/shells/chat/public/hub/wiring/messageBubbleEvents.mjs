@@ -35,10 +35,10 @@ export async function handleMessageBubbleClick(event) {
 	if (saveEmojiButton?.dataset?.emojiPack) {
 		try {
 			await addPackToCollection(saveEmojiButton.dataset.emojiPack)
-			showToastI18n('success', 'chat.hub.saveEmojiOk')
+			showToastI18n('success', 'chat.hub.save.emojiOk')
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.saveEmojiFailed')
+			handleUIError(error, 'chat.hub.save.emojiFailed')
 		}
 		return true
 	}
@@ -51,16 +51,16 @@ export async function handleMessageBubbleClick(event) {
 		if (!parseEmojiToken(channelMessage.content.emojiRef)?.packId) return true
 		try {
 			await saveStickerFromMessage(channelMessage.content)
-			showToastI18n('success', 'chat.hub.saveStickerOk')
+			showToastI18n('success', 'chat.hub.save.stickerOk')
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.saveStickerFailed')
+			handleUIError(error, 'chat.hub.save.stickerFailed')
 		}
 		return true
 	}
 	const blockAuthorButton = event.target.closest('.block-author-button')
 	if (blockAuthorButton?.dataset?.blockPub && store.context.currentGroupId) {
-		if (!confirmI18n('chat.hub.blockConfirm')) return true
+		if (!confirmI18n('chat.hub.block.confirm')) return true
 		try {
 			const response = await fetch('/api/p2p/denylist', {
 				method: 'POST',
@@ -77,7 +77,7 @@ export async function handleMessageBubbleClick(event) {
 				handleUIError(new Error(data.error || response.statusText), 'chat.hub.operationFailed')
 				return true
 			}
-			showToastI18n('success', 'chat.hub.blockOk')
+			showToastI18n('success', 'chat.hub.block.ok')
 		}
 		catch (error) {
 			handleUIError(error, 'chat.hub.operationFailed')

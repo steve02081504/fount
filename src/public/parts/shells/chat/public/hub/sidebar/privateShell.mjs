@@ -46,7 +46,7 @@ export async function backToFriendsList() {
 	await mountTemplate(document.getElementById('messages'), 'hub/empty/idle', {
 		iconHtml: '<img src="https://api.iconify.design/mdi/account-group-outline.svg" class="empty-icon-img" width="48" height="48" alt="" aria-hidden="true" />',
 	})
-	document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.friendsHeader'
+	document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.friends.header'
 	document.getElementById('info-card-host').innerHTML = ''
 	await renderFriendsColumn(await loadFriendsList())
 	refreshHubHeaderButtons()

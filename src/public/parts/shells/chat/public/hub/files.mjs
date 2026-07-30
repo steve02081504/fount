@@ -105,7 +105,7 @@ export async function refreshFilesDrawer(drawer) {
 	if (!cabinets.length) {
 		const empty = document.createElement('p')
 		empty.className = 'text-sm opacity-60 p-2'
-		empty.setAttribute('data-i18n', 'chat.hub.filesNoCabinets')
+		empty.setAttribute('data-i18n', 'chat.hub.files.no.cabinets')
 		empty.textContent = '当前角色没有可访问的文件柜'
 		list.appendChild(empty)
 	}
@@ -118,7 +118,7 @@ export async function refreshFilesDrawer(drawer) {
 			const addBtn = document.createElement('button')
 			addBtn.type = 'button'
 			addBtn.className = 'btn btn-primary btn-sm'
-			addBtn.setAttribute('data-i18n', 'chat.hub.filesBindCabinet')
+			addBtn.setAttribute('data-i18n', 'chat.hub.files.bindCabinet')
 			addBtn.textContent = '添加文件柜'
 			addBtn.addEventListener('click', () => {
 				void bindCabinetFlow(drawer.groupId, state).then(() => refreshFilesDrawer(drawer)).catch(handleUIError)

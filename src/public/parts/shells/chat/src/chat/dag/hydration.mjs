@@ -72,7 +72,7 @@ export async function loadDagHydrationI18n(username) {
 		geti18nForUser(username, 'chat.group.e2eDecryptUnavailable'),
 		geti18nForUser(username, 'chat.group.contentRefBodyPending'),
 		geti18nForUser(username, 'chat.group.contentRefHashMismatch'),
-		geti18nForUser(username, 'chat.group.streamGenerationFailed'),
+		geti18nForUser(username, 'chat.group.stream.generationFailed'),
 	])
 	return { decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText, streamFailedNote }
 }

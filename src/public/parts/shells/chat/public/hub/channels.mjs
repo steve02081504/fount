@@ -22,10 +22,10 @@ import {
 } from './streamingAv.mjs'
 
 const AV_PRESETS = [
-	{ key: 'thumb', i18nKey: 'chat.hub.streamAvPresetThumb' },
-	{ key: 'low', i18nKey: 'chat.hub.streamAvPresetLow' },
-	{ key: 'med', i18nKey: 'chat.hub.streamAvPresetMed', selected: true },
-	{ key: 'high', i18nKey: 'chat.hub.streamAvPresetHigh' },
+	{ key: 'thumb', i18nKey: 'chat.hub.stream.av.preset.thumb' },
+	{ key: 'low', i18nKey: 'chat.hub.stream.av.preset.low' },
+	{ key: 'med', i18nKey: 'chat.hub.stream.av.preset.med', selected: true },
+	{ key: 'high', i18nKey: 'chat.hub.stream.av.preset.high' },
 ]
 
 /**
@@ -168,14 +168,14 @@ export async function renderListChannel(container, groupId, channelId, channel, 
 			if (!Array.isArray(parsed)) throw new Error('expected JSON array')
 		}
 		catch (e) {
-			setListEditorHint(hint, 'chat.hub.listJsonInvalid', { message: e.message })
+			setListEditorHint(hint, 'chat.hub.list.jsonInvalid', { message: e.message })
 			return
 		}
 		try {
 			await options.onSave(parsed)
 			await renderListItems(listHost, channelId, channel, onOpenChannel, parsed)
 			channel.manualItems = parsed
-			setListEditorHint(hint, 'chat.hub.listSaved')
+			setListEditorHint(hint, 'chat.hub.list.saved')
 		}
 		catch (error) {
 			if (!(hint instanceof HTMLElement)) return
@@ -184,7 +184,7 @@ export async function renderListChannel(container, groupId, channelId, channel, 
 				delete hint.dataset.i18n
 				hint.textContent = errorMessage
 			}
-			else setListEditorHint(hint, 'chat.hub.listSaveFailed')
+			else setListEditorHint(hint, 'chat.hub.list.saveFailed')
 		}
 	})
 	container.appendChild(editor)
@@ -219,8 +219,8 @@ export async function renderStreamingChannel(container, channel, options = {}) {
 	const emptyI18nKey = options.streamError
 		? ''
 		: wss
-			? 'chat.hub.streamEmbedHttpsRequired'
-			: 'chat.hub.streamWebRtcHint'
+			? 'chat.hub.stream.embedHttpsRequired'
+			: 'chat.hub.stream.webRtcHint'
 	await mountTemplate(container, 'hub/channels/stream_sfu', {
 		...title,
 		mode: 'empty',
@@ -265,7 +265,7 @@ export async function renderCodecsAvStreamingChannel(container, channel, options
 				 * @returns {void}
 				 */
 				onPeerCount: count => {
-					setElementI18n(peerLabel, 'chat.hub.streamAvPeers', { count })
+					setElementI18n(peerLabel, 'chat.hub.stream.av.peers', { count })
 				},
 			})
 			setHubAvToolbarInCall(toolbar, !!getHubAvSession())

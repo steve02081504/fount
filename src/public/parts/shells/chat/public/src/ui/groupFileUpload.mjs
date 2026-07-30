@@ -164,7 +164,7 @@ export function createFileHandlers(hub) {
 		try {
 			const modeRaw = String(getCurrentState?.()?.groupSettings?.fileCeMode || 'convergent').trim().toLowerCase()
 			const ceMode = modeRaw === 'random' ? 'random' : 'convergent'
-			progress.set(3, 'chat.hub.fileUploadChecking')
+			progress.set(3, 'chat.hub.file.uploadChecking')
 			const fileId = crypto.randomUUID()
 			const contentHash = await sha256HexFromBlob(file, CHUNK_UPLOAD_MAX_BYTES)
 			const partCount = Math.max(1, Math.ceil(file.size / CHUNK_UPLOAD_MAX_BYTES))
@@ -178,7 +178,7 @@ export function createFileHandlers(hub) {
 				const sliceBuf = await slice.arrayBuffer()
 				const plainB64 = arrayBufferToBase64(sliceBuf)
 				const partFileId = partCount === 1 ? fileId : `${fileId}:${partIndex}`
-				progress.set(10 + Math.floor((partIndex / partCount) * 55), 'chat.hub.fileUploadingChunk')
+				progress.set(10 + Math.floor((partIndex / partCount) * 55), 'chat.hub.file.uploadingChunk')
 				const chunk = await uploadEncryptedChunk(groupId, partFileId, plainB64, sliceBuf.byteLength, uploadChannelId, ceMode)
 				if (chunk.have) skippedAny = true
 				parts.push({
@@ -193,7 +193,7 @@ export function createFileHandlers(hub) {
 				})
 			}
 
-			progress.set(72, 'chat.hub.fileUploadRegistering')
+			progress.set(72, 'chat.hub.file.uploadRegistering')
 			/** @type {Record<string, unknown>} */
 			const manifestBody = {
 				fileId,
@@ -225,17 +225,17 @@ export function createFileHandlers(hub) {
 			})
 			if (!fileEventResponse.ok) {
 				progress.fail()
-				handleUIError(new Error(`uploadGroupFile files HTTP ${fileEventResponse.status}`), 'chat.hub.fileUploadFailed')
+				handleUIError(new Error(`uploadGroupFile files HTTP ${fileEventResponse.status}`), 'chat.hub.file.uploadFailed')
 				return
 			}
-			progress.set(100, 'chat.hub.fileUploaded')
-			showToastI18n('success', skippedAny ? 'chat.hub.fileSkippedDedup' : 'chat.hub.fileUploaded')
+			progress.set(100, 'chat.hub.file.uploaded')
+			showToastI18n('success', skippedAny ? 'chat.hub.file.skippedDedup' : 'chat.hub.file.uploaded')
 			progress.done()
 			await loadMessages()
 		}
 		catch (error) {
 			progress.fail()
-			handleUIError(error, 'chat.hub.fileUploadFailed')
+			handleUIError(error, 'chat.hub.file.uploadFailed')
 		}
 	}
 
@@ -288,13 +288,13 @@ export function createFileHandlers(hub) {
 		try {
 			const metaResponse = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files/${encodeURIComponent(fileId)}/meta`)
 			if (!metaResponse.ok) {
-				handleUIError(new Error(`downloadGroupFile meta HTTP ${metaResponse.status}`), 'chat.hub.fileDownloadFailed')
+				handleUIError(new Error(`downloadGroupFile meta HTTP ${metaResponse.status}`), 'chat.hub.file.downloadFailed')
 				return
 			}
 			const meta = await metaResponse.json()
 			const hasParts = Array.isArray(meta.parts) && meta.parts.length
 			if (!meta.contentHash || (!hasParts && !meta.storageLocator)) {
-				handleUIError(new Error('downloadGroupFile: missing blob meta'), 'chat.hub.fileNoKey')
+				handleUIError(new Error('downloadGroupFile: missing blob meta'), 'chat.hub.file.noKey')
 				return
 			}
 			if (hasParts)
@@ -312,7 +312,7 @@ export function createFileHandlers(hub) {
 			const entityHash = groupEntityHash(groupId)
 			const plainResponse = await fetch(entityFileUrl(entityHash, `chat/${fileIdForEvfs}`), { credentials: 'include' })
 			if (!plainResponse.ok) {
-				handleUIError(new Error('downloadGroupFile decrypt failed'), 'chat.hub.fileDownloadFailed')
+				handleUIError(new Error('downloadGroupFile decrypt failed'), 'chat.hub.file.downloadFailed')
 				return
 			}
 			const plain = new Uint8Array(await plainResponse.arrayBuffer())
@@ -338,7 +338,7 @@ export function createFileHandlers(hub) {
 			}
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.fileDownloadFailed')
+			handleUIError(error, 'chat.hub.file.downloadFailed')
 		}
 	}
 
@@ -350,7 +350,7 @@ export function createFileHandlers(hub) {
 	 */
 	const fetchGroupFileAsBlob = (fileId, mimeType) =>
 		fetchGroupFileAsBlobUrl(groupId, fileId).catch(error => {
-			handleUIError(error, 'chat.hub.fileLoadFailed')
+			handleUIError(error, 'chat.hub.file.loadFailed')
 			return null
 		})
 

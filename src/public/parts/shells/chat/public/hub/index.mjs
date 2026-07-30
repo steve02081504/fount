@@ -34,7 +34,7 @@ export async function bootHub() {
 	catch (error) {
 		hubGate.markFailed(error)
 		const { handleUIError } = await import('../src/ui/errors.mjs')
-		handleUIError(error, 'chat.hub.loadGroupFailed')
+		handleUIError(error, 'chat.hub.load.groupFailed')
 		throw error
 	}
 }

@@ -15,7 +15,7 @@ export function wireVoteEvents() {
 		if (!store.context.currentGroupId || !store.context.currentChannelId) return
 		voteQuestion.value = ''
 		voteOptions.value = ''
-		voteOptions.dataset.i18n = 'chat.hub.voteOptionDefault'
+		voteOptions.dataset.i18n = 'chat.hub.vote.optionDefault'
 		voteHours.value = '24'
 		voteModal.showModal()
 	})
@@ -27,7 +27,7 @@ export function wireVoteEvents() {
 		const optsRaw = voteOptions.value
 		const options = optsRaw.split(/[\n,，]/u).map(s => s.trim()).filter(Boolean)
 		if (options.length < 2) {
-			showToastI18n('error', 'chat.hub.voteMinOptions')
+			showToastI18n('error', 'chat.hub.vote.minOptions')
 			return
 		}
 		const hoursVal = Number(voteHours.value)
@@ -42,7 +42,7 @@ export function wireVoteEvents() {
 			await loadMessages()
 		}
 		catch (err) {
-			handleUIError(err, 'chat.hub.voteCreateFailed')
+			handleUIError(err, 'chat.hub.vote.createFailed')
 		}
 	})
 }
@@ -86,7 +86,7 @@ export function handleVoteClosedWire(wireMessage, channelId) {
 	if (!closedLabel) {
 		closedLabel = document.createElement('div')
 		closedLabel.className = 'vote-closed-label'
-		closedLabel.dataset.i18n = 'chat.hub.voteClosed'
+		closedLabel.dataset.i18n = 'chat.hub.vote.closed'
 		block.prepend(closedLabel)
 	}
 }

@@ -93,7 +93,7 @@ export async function showMemberContextMenu(event, memberElement) {
 			if (!entityHash) return
 			const cared = await isCared(entityHash)
 			await setCared(entityHash, !cared)
-			showToastI18n('success', cared ? 'chat.hub.memberContext.careRemoved' : 'chat.hub.memberContext.careAdded')
+			showToastI18n('success', cared ? 'chat.hub.member.context.careRemoved' : 'chat.hub.member.context.careAdded')
 		})().catch(error => {
 			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
 		})
@@ -103,13 +103,13 @@ export async function showMemberContextMenu(event, memberElement) {
 		void (async () => {
 			if (!entityHash) return
 			const next = await promptText(
-				'chat.hub.memberContext.setAliasPrompt',
+				'chat.hub.member.context.setAliasPrompt',
 				aliasForEntity(entityHash),
 				{ name: displayName },
 			)
 			if (next == null) return
 			await setEntityAlias(entityHash, next)
-			showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
+			showToastI18n('success', 'chat.hub.member.context.aliasSaved')
 			store.context.currentState = await getGroupState(store.context.currentGroupId)
 			await refreshAliasDependentUi()
 		})().catch(error => {
@@ -125,15 +125,15 @@ export async function showMemberContextMenu(event, memberElement) {
 				await dispatchFriendChat(entity)
 			}
 		})().catch(error => {
-			showToastI18n('error', 'chat.hub.profilePopup.dmFailed', { error: error.message })
+			showToastI18n('error', 'chat.hub.profilePopup.dm.failed', { error: error.message })
 		})
 		closeOnce()
 	})
 	menu.querySelector('.member-menu-kick')?.addEventListener('click', async () => {
 		if (memberKey.toLowerCase() === viewer.toLowerCase())
-			if (!confirmI18n('chat.hub.memberContext.kickSelfNodeWarning', { name: displayName })) return
+			if (!confirmI18n('chat.hub.member.context.kickSelfNodeWarning', { name: displayName })) return
 
-		if (!confirmI18n('chat.group.settingsPage.kickConfirm', { name: displayName })) return
+		if (!confirmI18n('chat.group.settings.page.kick.confirm', { name: displayName })) return
 		const groupId = store.context.currentGroupId
 		const resp = await fetch(
 			`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/members/${encodeURIComponent(memberKey)}/kick`,
@@ -144,19 +144,19 @@ export async function showMemberContextMenu(event, memberElement) {
 			showToastI18n('error', 'chat.hub.operationFailed', { error: data.error || resp.statusText })
 			return
 		}
-		showToastI18n('success', 'chat.group.settingsPage.kickSuccess')
+		showToastI18n('success', 'chat.group.settings.page.kick.success')
 		store.context.currentState = await getGroupState(store.context.currentGroupId)
 		void renderMemberList(store.context.currentState)
 		closeOnce()
 	})
 	menu.querySelector('.member-menu-ban')?.addEventListener('click', async () => {
-		if (!confirmI18n('chat.group.settingsPage.banConfirm', { name: displayName })) return
+		if (!confirmI18n('chat.group.settings.page.banConfirm', { name: displayName })) return
 		const picked = await pickBanScope({ displayName })
 		if (!picked) return
 		const { banMemberWithScope } = await import('../src/api/groupBan.mjs')
 		try {
 			await banMemberWithScope(store.context.currentGroupId, memberKey, picked)
-			showToastI18n('success', 'chat.group.settingsPage.banSuccess')
+			showToastI18n('success', 'chat.group.settings.page.banSuccess')
 			store.context.currentState = await getGroupState(store.context.currentGroupId)
 			void renderMemberList(store.context.currentState)
 		}
@@ -166,11 +166,11 @@ export async function showMemberContextMenu(event, memberElement) {
 		closeOnce()
 	})
 	menu.querySelector('.member-menu-personal-block')?.addEventListener('click', async () => {
-		if (!confirmI18n('chat.hub.memberContext.personalBlockConfirm', { name: displayName })) return
+		if (!confirmI18n('chat.hub.member.context.personalBlockConfirm', { name: displayName })) return
 		const { postPersonalBlock } = await import('./personalFilter.mjs')
 		try {
 			await postPersonalBlock(entityHash, true)
-			showToastI18n('success', 'chat.hub.memberContext.personalBlockSuccess')
+			showToastI18n('success', 'chat.hub.member.context.personalBlockSuccess')
 			store.context.currentState = await getGroupState(store.context.currentGroupId)
 			void renderMemberList(store.context.currentState)
 		}

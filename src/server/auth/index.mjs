@@ -800,7 +800,7 @@ export async function revokeUserDeviceByJti(username, tokenJti, password) {
 		authMutationFail(400, { i18nKey: 'userSettings.userDevices.listNotFound' })
 
 	if (!await verifyPassword(password, user.auth.password))
-		authMutationFail(401, { i18nKey: 'userSettings.userDevices.revokeWrongPassword' })
+		authMutationFail(401, { i18nKey: 'userSettings.userDevices.revoke.wrongPassword' })
 
 	const tokenIndex = user.auth.refreshTokens.findIndex(token => token.jti === tokenJti)
 	if (tokenIndex === -1)

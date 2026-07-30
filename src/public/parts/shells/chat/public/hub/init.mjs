@@ -110,7 +110,7 @@ async function sendPickedEmojiAsSticker(item) {
 		await loadMessages()
 	}
 	catch (err) {
-		showToastI18n('error', 'chat.hub.sendStickerFailed', { error: err.message })
+		showToastI18n('error', 'chat.hub.send.stickerFailed', { error: err.message })
 	}
 }
 

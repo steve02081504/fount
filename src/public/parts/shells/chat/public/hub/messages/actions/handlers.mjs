@@ -118,7 +118,7 @@ export function bindChannelMessageActions(container) {
 				await retryFailedPendingMessage(tempId)
 			}
 			catch (error) {
-				showToastI18n('error', 'chat.hub.sendFailed', { error: error?.message || String(error) })
+				showToastI18n('error', 'chat.hub.send.failed', { error: error?.message || String(error) })
 			}
 			return
 		}

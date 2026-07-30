@@ -101,7 +101,7 @@ export async function refreshPinsBookmarks() {
 				...previewFields,
 			}))
 		}
-	else await mountTemplate(pinsHost, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noPins' })
+	else await mountTemplate(pinsHost, 'hub/nav/side_muted', { i18nKey: 'chat.hub.no.pins' })
 	setPopCount('pins-count', pinEntries.length)
 
 	pinsHost.querySelectorAll('.pinned-message-row').forEach(pinRow => {
@@ -134,7 +134,7 @@ export async function refreshPinsBookmarks() {
 	bookmarksHost.replaceChildren()
 	if (!valid.length) {
 		if (pinEntries.length)
-			await mountTemplate(bookmarksHost, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noBookmarks' })
+			await mountTemplate(bookmarksHost, 'hub/nav/side_muted', { i18nKey: 'chat.hub.no.bookmarks' })
 		return
 	}
 

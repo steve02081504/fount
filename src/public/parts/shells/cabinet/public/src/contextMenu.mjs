@@ -169,8 +169,8 @@ export function showContextMenu(event, entry) {
 				/** @returns {void} 触发文件夹选择上传 */
 				run: () => document.getElementById('folderInput').click(),
 			} : null,
-			writable ? { i18n: 'cabinet.newFolder', run: createFolder } : null,
-			{ i18n: 'cabinet.newWindow', shortcut: hotkeys.newWindow, run: openCurrentInNewWindow },
+			writable ? { i18n: 'cabinet.new.folder', run: createFolder } : null,
+			{ i18n: 'cabinet.new.window', shortcut: hotkeys.newWindow, run: openCurrentInNewWindow },
 			false,
 			writable && hasClipboard() ? {
 				i18n: 'cabinet.paste',

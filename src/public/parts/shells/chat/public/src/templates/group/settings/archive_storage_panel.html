@@ -1,21 +1,21 @@
 <div class="card bg-base-200 settings-card">
 	<div class="card-body">
-		<h2 class="card-title" data-i18n="chat.group.settingsArchiveTitle"></h2>
-		<p class="text-sm opacity-70" data-i18n="chat.group.settingsArchiveHint"></p>
+		<h2 class="card-title" data-i18n="chat.group.settings.archive.title"></h2>
+		<p class="text-sm opacity-70" data-i18n="chat.group.settings.archive.hint"></p>
 
 		${canManageArchive ? `
 		<div>
-			<h3 class="font-semibold text-sm mb-2" data-i18n="chat.group.settingsArchiveFilesTitle"></h3>
-			${archiveRowsHtml || `<p class="text-sm opacity-60" data-i18n="chat.group.settingsArchiveEmpty"></p>`}
+			<h3 class="font-semibold text-sm mb-2" data-i18n="chat.group.settings.archive.filesTitle"></h3>
+			${archiveRowsHtml || `<p class="text-sm opacity-60" data-i18n="chat.group.settings.archive.empty"></p>`}
 			<div class="flex flex-wrap items-end gap-3 mt-4">
 				<div class="form-control">
-					<label class="label" for="archive-delete-before-month"><span class="label-text" data-i18n="chat.group.settingsArchiveDeleteBefore"></span></label>
+					<label class="label" for="archive-delete-before-month"><span class="label-text" data-i18n="chat.group.settings.archive.delete.before"></span></label>
 					<input type="month" id="archive-delete-before-month" class="input input-bordered input-sm">
 				</div>
-				<button type="button" id="archive-delete-button" class="btn btn-error btn-sm" data-i18n="chat.group.settingsArchiveDeleteButton"></button>
+				<button type="button" id="archive-delete-button" class="btn btn-error btn-sm" data-i18n="chat.group.settings.archive.delete.button"></button>
 			</div>
-			<p class="text-xs opacity-60" data-i18n="chat.group.settingsArchiveDeleteHint"></p>
+			<p class="text-xs opacity-60" data-i18n="chat.group.settings.archive.delete.hint"></p>
 		</div>
-		` : `<p class="text-sm opacity-60" data-i18n="chat.group.settingsArchiveAdminOnly"></p>`}
+		` : `<p class="text-sm opacity-60" data-i18n="chat.group.settings.archive.adminOnly"></p>`}
 	</div>
 </div>

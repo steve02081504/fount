@@ -153,10 +153,6 @@
 			"passedLabel": "Bestanden",
 			"failedLabel": "Fehlgeschlagen",
 			"noiseHits": "(Rauschen: ${hits})",
-			"unknownManifestId": "Unbekannte manifest id: ${ids}",
-			"unknownSuiteSelector": "Unbekannte Suite-Angabe: ${ids}",
-			"unknownSubtestFilter": "Unbekannter Subtest-Filter: ${suite} → ${names}",
-			"unknownFileFilter": "Unbekannter Testdatei-Filter: ${suite} → ${names}",
 			"unsupportedSubtestFilter": "Suite unterstützt keinen Subtest-/Dateifilter: ${suite} (${names})",
 			"available": "Verfügbar: ${ids}",
 			"manifestMatched": "Manifest-Treffer: ${ids}",
@@ -178,28 +174,16 @@
 			},
 			"reusedSuite": "\n>>> Wiederverwendung ${manifestId}:${name} (trigger unverändert, letzter ${status})",
 			"noisyOnlyRemain": "Noch ${count} Suites bestanden mit Rauschen: ${suites}",
-			"estimatedRun": "Geschätzte Laufzeit ≈ ${eta} (Parallelrate ${rate})",
-			"estimatedRunSerial": "Geschätzte Laufzeit ≈ ${eta} (seriell)",
-			"estimatedRunSkipped": "Zusätzlich ${reused} wiederverwendet, ${blocked} voraussichtlich blockiert (nicht in Schätzung)",
 			"noRealRunPlanned": "Kein echter Lauf nötig: ${reused} wiederverwendet, ${blocked} voraussichtlich blockiert (trigger unverändert)",
 			"allReusedHint": "Kein echter Lauf: Fehler stammen vom letzten Ergebnis, Blockierung bleibt (Dateien unverändert). Nach Fix erneut ausführen oder fount test --force für echten Lauf.",
-			"estimatedRemaining": "Geschätzte Restzeit ≈ ${eta} (${completed}/${total} Suites)",
-			"estimatedRunSerialHint": "Bei Parallelität ≈ ${eta} (Rate ${rate}), Ersparnis ≈ ${savings} (--no-parallel entfernen)",
 			"failuresSaved": "Fehlerliste gespeichert: ${path} (${count} Suites)",
 			"failuresCleared": "manifest ${manifestId} vollständig bestanden, Fehlerliste gelöscht.",
 			"terminated": "Timeout-Abbruch: ${label} — ${reason}",
-			"terminateIdle": "Abgebrochen ${label}: über ${minutes} Min. ohne stdall-Ausgabe (Leerlauf ${idleSec} s, Laufzeit ${elapsed})",
-			"terminateDuration": "Abgebrochen ${label}: Laufzeit über Watchdog-Baseline (Laufzeit ${elapsed}, Baseline ${baseline}, Limit ${limit})",
-			"terminateDurationDefault": "Abgebrochen ${label}: Laufzeit über Standard-Watchdog-Limit (Laufzeit ${elapsed}, Limit ${limit})",
 			"sleepDetected": "Systemschlaf erkannt (Watchdog-Intervall sprang um ${gap} ≥ ${limit}); ${label} abgebrochen und bereit zum erneuten Lauf (gelaufen ${elapsed})",
 			"sleepRetry": "Durch Systemschlaf unterbrochen; ${label} wird erneut ausgeführt (Versuch ${attempt})",
-			"terminateMarker": "[Abbruchgrund: ${reason}]",
-			"terminateUnknown": "Abgebrochen ${label}: Test unterbrochen",
-			"terminateSpeculative": "Abgebrochen ${label}: spekulative Abhängigkeit nicht bestanden, Frühstopp aufgehoben",
 			"nothingToContinue": "Alles grün, nichts Veraltetes – kein weiterer Lauf nötig.",
 			"triggerNoMatch": "trigger traf keine Datei: ${scope} — ${pattern}",
 			"triggerNoMatchSummary": "${count} trigger trafen keine Repo-Datei (siehe report.md)",
-			"unknownSuite": "Unbekannte Suite: ${name}",
 			"federationCleanupPre": "Föderationstest-Bereinigung (vor Lauf) fehlgeschlagen: ${output}",
 			"federationCleanupPost": "Föderationstest-Bereinigung (nach Lauf) fehlgeschlagen: ${output}",
 			"suiteHeader": "\n=== Suite ${name} ===",
@@ -233,25 +217,7 @@
 				"title": "Fount-Testbericht",
 				"tableHeaderItem": "Eintrag",
 				"tableHeaderValue": "Wert",
-				"fieldRunId": "Lauf-ID",
-				"fieldCommand": "Befehl",
-				"fieldExit": "Exit-Status",
-				"fieldProgress": "Fortschritt",
-				"fieldSuites": "Suites",
-				"fieldFailed": "Fehlgeschlagen",
-				"fieldNoisyPassed": "Bestanden mit Rauschen",
-				"fieldReused": "Wiederverwendet",
-				"fieldSuiteSumDuration": "Suite-Summenlaufzeit",
-				"fieldWallClock": "Gesamtlaufzeit",
-				"fieldParallelRate": "Parallelrate",
-				"fieldEstimatedRemaining": "Geschätzte Restzeit",
-				"fieldEstimatedParallelRate": "Geschätzte Parallelrate",
 				"estimatePoint": "≈ ${eta}",
-				"pendingEstimate": "Geschätzte Restzeit ≈ ${eta}",
-				"pendingParallelEstimate": "Parallele Schätzung ≈ ${eta} (Rate ${rate})",
-				"pendingSavings": "Geschätzte Ersparnis ≈ ${savings}",
-				"pendingItemExpected": "erwartet ${expected}",
-				"fieldDuration": "Dauer",
 				"commandDefault": "(Standard)",
 				"exitPassed": "Bestanden",
 				"exitFailed": "Fehlgeschlagen",
@@ -259,54 +225,86 @@
 				"progressFormat": "${completed}/${total} Suites",
 				"suitesFormat": "${passed}/${completed} bestanden",
 				"artifacts": "Artefaktverzeichnis: `${path}`",
-				"sectionFailed": "Fehlgeschlagene Suites",
-				"sectionNoisyPassed": "Bestanden mit Rauschen",
-				"sectionSilentPassed": "Bestanden",
-				"sectionPending": "Ausstehend",
-				"sectionContinue": "Unvollendete fortsetzen",
-				"sectionReplay": "Fehlgeschlagene wiederholen",
-				"sectionReplayImperfect": "Unvollkommene wiederholen",
 				"columnSuite": "Suite",
 				"columnDuration": "Dauer",
-				"labelReused": "(wiederverwendet)",
-				"labelExpectedBlocked": "(vorauss. blockiert)",
-				"labelDuration": "Dauer",
-				"labelLog": "Log",
-				"labelNoise": "Rauschen",
-				"labelFailedFiles": "Fehlgeschlagene Dateien",
-				"labelTerminateReason": "Abbruchgrund",
-				"sectionContinueReasons": "Auslösegründe",
 				"continueReasonsLink": "Auslösegründe: siehe [${path}](${path})",
-				"labelContinueReason": "Grund",
-				"reasonImperfectFailed": "Früher fehlgeschlagen",
-				"reasonImperfectNoisy": "Früher bestanden mit Rauschen",
-				"reasonImperfectBlocked": "Früher blockiert",
-				"reasonImperfectDependent": "Upstream-Fehler zieht Downstream mit",
-				"reasonMissingRecord": "Kein state-Eintrag, automatisch nachlaufen",
-				"reasonStaleContent": "Inhalt geändert, Neulauf nötig",
-				"reasonTriggerHashDrift": "Trigger-Fingerabdruck driftet (kein Pfadtreffer)",
-				"reasonExplicitSelected": "Explizit ausgewählt",
-				"reasonDependencyRequired": "Über Abhängigkeit eingeschlossen",
-				"labelRootCause": "Ursache",
-				"labelDirectRequiredBy": "Direkt eingeschlossen von",
-				"labelInclusionPath": "Einschlusskette",
-				"labelPullUpstream": "Upstream-Zug: Abhängigkeit von ${requiredBy} nicht grün",
-				"labelPullDownstream": "Downstream-Zug: ${requiredBy} unvollkommen, mit eingeschlossen",
-				"labelGateReason": "Laufgrund",
-				"labelCommitRange": "Commit-Bereich",
-				"labelUncommittedHashRange": "Uncommitteter Digest",
-				"labelMatchedTriggers": "Getroffene trigger",
-				"labelMatchedTriggerSets": "Getroffenes trigger set",
-				"labelMatchedPaths": "Getroffene Pfade",
-				"labelTriggerHashDrift": "Trigger-Fingerabdruck weicht vom Arbeitsbereich ab (dirty→clean ignoriert)",
-				"sectionDeadTriggers": "Tote trigger",
 				"deadTriggersHint": "Folgende globs trafen keine Datei im Repo (git-tracked + nicht ignorierte untracked):",
 				"durationMs": "${ms} ms",
-				"durationUnitSec": "${n} s",
-				"durationUnitMin": "${n} Min.",
-				"durationUnitMinute": "${n} Minuten",
-				"durationUnitHour": "${n} Std.",
-				"durationUnitDay": "${n} Tage"
+				"durationUnit": {
+					"day": "${n} Tage",
+					"hour": "${n} Std.",
+					"min": "${n} Min.",
+					"minute": "${n} Minuten",
+					"sec": "${n} s"
+				},
+				"section": {
+					"continue": "Unvollendete fortsetzen",
+					"continueReasons": "Auslösegründe",
+					"deadTriggers": "Tote trigger",
+					"failed": "Fehlgeschlagene Suites",
+					"noisyPassed": "Bestanden mit Rauschen",
+					"pending": "Ausstehend",
+					"replay": "Fehlgeschlagene wiederholen",
+					"replayImperfect": "Unvollkommene wiederholen",
+					"silentPassed": "Bestanden"
+				},
+				"pending": {
+					"estimate": "Geschätzte Restzeit ≈ ${eta}",
+					"itemExpected": "erwartet ${expected}",
+					"parallelEstimate": "Parallele Schätzung ≈ ${eta} (Rate ${rate})",
+					"savings": "Geschätzte Ersparnis ≈ ${savings}"
+				},
+				"reason": {
+					"dependencyRequired": "Über Abhängigkeit eingeschlossen",
+					"explicitSelected": "Explizit ausgewählt",
+					"imperfect": {
+						"blocked": "Früher blockiert",
+						"dependent": "Upstream-Fehler zieht Downstream mit",
+						"failed": "Früher fehlgeschlagen",
+						"noisy": "Früher bestanden mit Rauschen"
+					},
+					"missingRecord": "Kein state-Eintrag, automatisch nachlaufen",
+					"staleContent": "Inhalt geändert, Neulauf nötig",
+					"triggerHashDrift": "Trigger-Fingerabdruck driftet (kein Pfadtreffer)"
+				},
+				"label": {
+					"commitRange": "Commit-Bereich",
+					"continueReason": "Grund",
+					"directRequiredBy": "Direkt eingeschlossen von",
+					"duration": "Dauer",
+					"expectedBlocked": "(vorauss. blockiert)",
+					"failedFiles": "Fehlgeschlagene Dateien",
+					"gateReason": "Laufgrund",
+					"inclusionPath": "Einschlusskette",
+					"log": "Log",
+					"matchedPaths": "Getroffene Pfade",
+					"matchedTriggerSets": "Getroffenes trigger set",
+					"matchedTriggers": "Getroffene trigger",
+					"noise": "Rauschen",
+					"pullDownstream": "Downstream-Zug: ${requiredBy} unvollkommen, mit eingeschlossen",
+					"pullUpstream": "Upstream-Zug: Abhängigkeit von ${requiredBy} nicht grün",
+					"reused": "(wiederverwendet)",
+					"rootCause": "Ursache",
+					"terminateReason": "Abbruchgrund",
+					"triggerHashDrift": "Trigger-Fingerabdruck weicht vom Arbeitsbereich ab (dirty→clean ignoriert)",
+					"uncommittedHashRange": "Uncommitteter Digest"
+				},
+				"field": {
+					"command": "Befehl",
+					"duration": "Dauer",
+					"estimatedParallelRate": "Geschätzte Parallelrate",
+					"estimatedRemaining": "Geschätzte Restzeit",
+					"exit": "Exit-Status",
+					"failed": "Fehlgeschlagen",
+					"noisyPassed": "Bestanden mit Rauschen",
+					"parallelRate": "Parallelrate",
+					"progress": "Fortschritt",
+					"reused": "Wiederverwendet",
+					"runId": "Lauf-ID",
+					"suiteSumDuration": "Suite-Summenlaufzeit",
+					"suites": "Suites",
+					"wallClock": "Gesamtlaufzeit"
+				}
 			},
 			"state": {
 				"title": "Fount-Teststatus",
@@ -314,16 +312,40 @@
 				"sectionDependencyTree": "Abhängigkeitsbaum",
 				"sectionOverview": "Suite-Status",
 				"sectionBlocked": "Blockierte Suites",
-				"columnSuite": "Suite",
-				"columnStatus": "Status",
-				"columnCommit": "Commit",
-				"columnRanAt": "Letzter Lauf",
-				"columnDuration": "Dauer",
-				"columnLog": "Log",
-				"columnBlocked": "Blockiert",
 				"labelBlockedBy": "Blockiert durch",
 				"statusUnknown": "Nicht gelaufen",
-				"statusOutdated": "Veraltet"
+				"statusOutdated": "Veraltet",
+				"column": {
+					"blocked": "Blockiert",
+					"commit": "Commit",
+					"duration": "Dauer",
+					"log": "Log",
+					"ranAt": "Letzter Lauf",
+					"status": "Status",
+					"suite": "Suite"
+				}
+			},
+			"terminate": {
+				"duration": "Abgebrochen ${label}: Laufzeit über Watchdog-Baseline (Laufzeit ${elapsed}, Baseline ${baseline}, Limit ${limit})",
+				"durationDefault": "Abgebrochen ${label}: Laufzeit über Standard-Watchdog-Limit (Laufzeit ${elapsed}, Limit ${limit})",
+				"idle": "Abgebrochen ${label}: über ${minutes} Min. ohne stdall-Ausgabe (Leerlauf ${idleSec} s, Laufzeit ${elapsed})",
+				"marker": "[Abbruchgrund: ${reason}]",
+				"speculative": "Abgebrochen ${label}: spekulative Abhängigkeit nicht bestanden, Frühstopp aufgehoben",
+				"unknown": "Abgebrochen ${label}: Test unterbrochen"
+			},
+			"estimated": {
+				"remaining": "Geschätzte Restzeit ≈ ${eta} (${completed}/${total} Suites)",
+				"run": "Geschätzte Laufzeit ≈ ${eta} (Parallelrate ${rate})",
+				"runSerial": "Geschätzte Laufzeit ≈ ${eta} (seriell)",
+				"runSerialHint": "Bei Parallelität ≈ ${eta} (Rate ${rate}), Ersparnis ≈ ${savings} (--no-parallel entfernen)",
+				"runSkipped": "Zusätzlich ${reused} wiederverwendet, ${blocked} voraussichtlich blockiert (nicht in Schätzung)"
+			},
+			"unknown": {
+				"fileFilter": "Unbekannter Testdatei-Filter: ${suite} → ${names}",
+				"manifestId": "Unbekannte manifest id: ${ids}",
+				"subtestFilter": "Unbekannter Subtest-Filter: ${suite} → ${names}",
+				"suite": "Unbekannte Suite: ${name}",
+				"suiteSelector": "Unbekannte Suite-Angabe: ${ids}"
 			}
 		},
 		"path": {
@@ -385,10 +407,10 @@
 				"packageFailed": "Fehler: Die Installation von ${package} ist fehlgeschlagen.",
 				"browserMissing": "Standardbrowser nicht erkannt, Installation wird versucht...",
 				"untrustedPartsWarning": "Installieren Sie keine nicht vertrauenswürdigen Quellkomponenten auf Ihrem System, sie können alles bewirken.",
-				"rootWarning1": "Nicht empfohlen: Wenn Sie fount als Root ausführen, erhalten Sie vollständigen Systemzugriff auf alle fount-Komponenten.",
-				"rootWarning2": "Sofern Sie nicht wissen, was Sie tun, wird empfohlen, fount als normaler Benutzer auszuführen.",
 				"permissionDeniedAsRoot": "Fehler: Es konnte nicht in das fount-Verzeichnis „${path}“ geschrieben werden. Sie werden als Root ausgeführt, aber der Zugriff ist weiterhin verweigert. Bitte überprüfen und korrigieren Sie die Sicherheitsberechtigungen dieses Ordners, um dem aktuellen Benutzer Vollzugriff zu gewähren.",
-				"permissionDeniedNotRoot": "Fehler: Es konnte nicht in das fount-Verzeichnis „${path}“ geschrieben werden. Bitte korrigieren Sie die Sicherheitsberechtigungen des Ordners, um dem aktuellen Benutzer Schreibzugriff zu gewähren, oder führen Sie fount als Root aus."
+				"permissionDeniedNotRoot": "Fehler: Es konnte nicht in das fount-Verzeichnis „${path}“ geschrieben werden. Bitte korrigieren Sie die Sicherheitsberechtigungen des Ordners, um dem aktuellen Benutzer Schreibzugriff zu gewähren, oder führen Sie fount als Root aus.",
+				"rootWarningAsRoot": "Nicht empfohlen: Wenn Sie fount als Root ausführen, erhalten Sie vollständigen Systemzugriff auf alle fount-Komponenten.",
+				"rootWarningPreferUser": "Sofern Sie nicht wissen, was Sie tun, wird empfohlen, fount als normaler Benutzer auszuführen."
 			},
 			"clean": {
 				"removingCaches": "Cache wird entfernt...",
@@ -409,41 +431,49 @@
 				"editorRemoved": "fount-Konfiguration aus Editor-Terminal-Tastenkürzeln entfernt: `${path}`"
 			},
 			"remove": {
-				"removingDesktopShortcut": "Desktop-Verknüpfung wird entfernt...",
-				"removingTerminalKeybindings": "Terminal-Tastenkürzel-Patch wird entfernt...",
-				"removingFount": "fount wird entfernt...",
 				"fountUninstallationComplete": "Font-Deinstallation abgeschlossen.",
-				"removingFountInstallationDir": "fount-Installationsverzeichnis wird entfernt...",
 				"fountInstallationDirRemoved": "Das fount-Installationsverzeichnis wurde entfernt.",
-				"removingFountFromPath": "fount wird aus PATH entfernt...",
-				"removingProtocolHandler": "`fount://`-Protokollhandler wird entfernt...",
 				"protocolHandlerRemoved": "Der `fount://`-Protokollhandler wurde entfernt.",
-				"removeProtocolHandlerFailed": "`fount://`-Protokollhandler konnte nicht entfernt werden: ${message}",
-				"removingFountFromGitSafeDir": "fount wird aus dem Git-Safe-Verzeichnis entfernt...",
-				"removingInstalledSystemPackages": "Installierte Systempakete werden entfernt...",
-				"uninstallingDeno": "Deno deinstallieren...",
-				"removeDenoFailed": "Deno konnte nicht entfernt werden: ${message}",
-				"removingFountPwshFromProfile": "`fount-pwsh` aus PowerShell-Profil entfernen...",
 				"fountPwshRemovedFromProfile": "fount-pwsh wurde aus dem PowerShell-Profil entfernt.",
 				"pwshProfileNotFound": "PowerShell-Profil nicht gefunden, das Entfernen von `fount-pwsh` aus dem Profil wird übersprungen.",
-				"uninstallingFountPwsh": "`fount-pwsh` wird deinstalliert...",
 				"uninstallFountPwshFailed": "Die Deinstallation von `fount-pwsh` ist fehlgeschlagen: ${message}",
-				"removingTerminalProfile": "Windows-Terminalprofil wird entfernt...",
 				"terminalProfileRemoved": "Das Windows-Terminalprofilverzeichnis wurde entfernt.",
 				"terminalProfileNotFound": "Windows-Terminalprofilverzeichnis nicht gefunden.",
 				"desktopShortcutRemoved": "Desktop-Verknüpfung entfernt.",
 				"desktopShortcutNotFound": "Desktop-Verknüpfung nicht gefunden.",
-				"removingStartMenuShortcut": "Startmenü-Verknüpfungen werden entfernt...",
 				"startMenuShortcutRemoved": "Die Verknüpfung im Startmenü wurde entfernt.",
 				"startMenuShortcutNotFound": "Startmenüverknüpfung nicht gefunden.",
-				"removingInstalledPwshModules": "Installiertes pwsh-Modul wird entfernt...",
 				"moduleRemoved": "${module} wurde entfernt.",
-				"removeModuleFailed": "Das Entfernen von ${module} ist fehlgeschlagen: ${message}",
-				"uninstallingGit": "Git deinstallieren...",
-				"uninstallingChrome": "Chrome wird deinstalliert...",
-				"uninstallingWinget": "Winget wird deinstalliert...",
-				"removingBackgroundRunner": "Hintergrundprogramme werden entfernt...",
-				"removeBackgroundRunnerFailed": "Das im Hintergrund laufende Programm konnte nicht entfernt werden: ${message}"
+				"uninstalling": {
+					"chrome": "Chrome wird deinstalliert...",
+					"deno": "Deno deinstallieren...",
+					"fountPwsh": "`fount-pwsh` wird deinstalliert...",
+					"git": "Git deinstallieren...",
+					"winget": "Winget wird deinstalliert..."
+				},
+				"removing": {
+					"backgroundRunner": "Hintergrundprogramme werden entfernt...",
+					"desktopShortcut": "Desktop-Verknüpfung wird entfernt...",
+					"fount": {
+						"main": "fount wird entfernt...",
+						"fromGitSafeDir": "fount wird aus dem Git-Safe-Verzeichnis entfernt...",
+						"fromPath": "fount wird aus PATH entfernt...",
+						"installationDir": "fount-Installationsverzeichnis wird entfernt...",
+						"pwshFromProfile": "`fount-pwsh` aus PowerShell-Profil entfernen..."
+					},
+					"installedPwshModules": "Installiertes pwsh-Modul wird entfernt...",
+					"installedSystemPackages": "Installierte Systempakete werden entfernt...",
+					"protocolHandler": "`fount://`-Protokollhandler wird entfernt...",
+					"startMenuShortcut": "Startmenü-Verknüpfungen werden entfernt...",
+					"terminalKeybindings": "Terminal-Tastenkürzel-Patch wird entfernt...",
+					"terminalProfile": "Windows-Terminalprofil wird entfernt..."
+				},
+				"remove": {
+					"backgroundRunnerFailed": "Das im Hintergrund laufende Programm konnte nicht entfernt werden: ${message}",
+					"denoFailed": "Deno konnte nicht entfernt werden: ${message}",
+					"moduleFailed": "Das Entfernen von ${module} ist fehlgeschlagen: ${message}",
+					"protocolHandlerFailed": "`fount://`-Protokollhandler konnte nicht entfernt werden: ${message}"
+				}
 			}
 		}
 	},
@@ -453,22 +483,6 @@
 		"hero": {
 			"title": "Ein Geistesblitz, aus Gedanken geboren",
 			"description": "fount ist eine KI-gestützte Charakter-Interaktionsplattform, die <i>Sie</i> befähigt. Es ist eine Brücke, die Sie mit Ihren imaginären Charakteren verbindet und es Ihnen ermöglicht, problemlos mit ihnen zu sprechen, Ihre eigenen Charaktere zu erstellen und sie mit der Welt zu teilen."
-		},
-		"feature1": {
-			"title": "Nahtlose Dialoge – überall",
-			"description": "Chatten Sie auf Ihrem Computer und fahren Sie nahtlos auf Ihrem Telefon oder Tablet fort. fount hält Ihre Gespräche synchron, sodass Sie überall mit Ihren Charakteren in Kontakt bleiben. Läuft unter Windows, macOS, Linux und sogar Android."
-		},
-		"feature2": {
-			"title": "Schöne, anpassbare Benutzeroberfläche",
-			"description": "Wählen Sie aus über 30 wunderschönen Designs oder erstellen Sie Ihr eigenes. fount ist Ihre persönliche Leinwand. Drücken Sie sich aus, passen Sie die Umgebung an Ihre Vorlieben an und schaffen Sie ein wirklich persönliches Erlebnis."
-		},
-		"feature3": {
-			"title": "Ausdrucksstarker, immersiver Chat",
-			"description": "fount nutzt die volle Leistungsfähigkeit von HTML und ermöglicht es Charakteren, sich durch Rich Text, Bilder und sogar interaktive Elemente auszudrücken. Führen Sie dynamische und ansprechende Gruppenchats mit mehreren Charakteren gleichzeitig."
-		},
-		"feature4": {
-			"title": "Uneingeschränkte Integration von KI-fount",
-			"description": "fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-fount – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Macht des Codes geformt."
 		},
 		"language_selector": {
 			"button": {
@@ -487,8 +501,8 @@
 		},
 		"mini_game": {
 			"title": "Spielen Sie ein kleines Spiel",
-			"description1": "Dauert die Installation zu lange?",
-			"description2": "Hier ist ein kleines Spiel, um sich die Zeit zu vertreiben."
+			"slowInstallHint": "Dauert die Installation zu lange?",
+			"playWhileWaiting": "Hier ist ein kleines Spiel, um sich die Zeit zu vertreiben."
 		},
 		"testimonials": {
 			"anonymous": "anonymer Benutzer",
@@ -530,9 +544,27 @@
 			"title": "Installation fehlgeschlagen!",
 			"description": "Mit dem fount-Installationsprogramm scheint etwas nicht zu stimmen.",
 			"connection_failed": "Verbindung fehlgeschlagen!",
-			"description1": "Mit dem fount-Installationsprogramm scheint etwas nicht zu stimmen.",
-			"description2": "Bitte überprüfen Sie Ihr Terminal und versuchen Sie es erneut.",
-			"close_page": "Seite schließen"
+			"close_page": "Seite schließen",
+			"summary": "Mit dem fount-Installationsprogramm scheint etwas nicht zu stimmen.",
+			"retryHint": "Bitte überprüfen Sie Ihr Terminal und versuchen Sie es erneut."
+		},
+		"features": {
+			"seamlessChat": {
+				"title": "Nahtlose Dialoge – überall",
+				"description": "Chatten Sie auf Ihrem Computer und fahren Sie nahtlos auf Ihrem Telefon oder Tablet fort. fount hält Ihre Gespräche synchron, sodass Sie überall mit Ihren Charakteren in Kontakt bleiben. Läuft unter Windows, macOS, Linux und sogar Android."
+			},
+			"customUi": {
+				"title": "Schöne, anpassbare Benutzeroberfläche",
+				"description": "Wählen Sie aus über 30 wunderschönen Designs oder erstellen Sie Ihr eigenes. fount ist Ihre persönliche Leinwand. Drücken Sie sich aus, passen Sie die Umgebung an Ihre Vorlieben an und schaffen Sie ein wirklich persönliches Erlebnis."
+			},
+			"expressiveChat": {
+				"title": "Ausdrucksstarker, immersiver Chat",
+				"description": "fount nutzt die volle Leistungsfähigkeit von HTML und ermöglicht es Charakteren, sich durch Rich Text, Bilder und sogar interaktive Elemente auszudrücken. Führen Sie dynamische und ansprechende Gruppenchats mit mehreren Charakteren gleichzeitig."
+			},
+			"aiSources": {
+				"title": "Uneingeschränkte Integration von KI-fount",
+				"description": "fount bietet beispiellose Auswahl und Flexibilität. Verbinden Sie sich mit <i>jeder</i> KI-fount – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI usw. Die Kommunikationslogik wird nach <i>Ihrem</i> Willen durch die Macht des Codes geformt."
+			}
 		}
 	},
 	"protocolhandler": {
@@ -617,10 +649,6 @@
 			"passwordMismatch": "Passwörter stimmen nicht überein.",
 			"loginError": "Fehler beim Anmelden.",
 			"registrationError": "Fehler bei der Registrierung.",
-			"verificationCodeError": "Verifizierungscode falsch oder abgelaufen.",
-			"verificationCodeSent": "Verifizierungscode erfolgreich gesendet.",
-			"verificationCodeSendError": "Verifizierungscode konnte nicht gesendet werden.",
-			"verificationCodeRateLimit": "Zu viele Anfragen zum Senden des Verifizierungscodes. Bitte später erneut versuchen.",
 			"lowPasswordStrength": "Passwort ist zu schwach.",
 			"accountAlreadyExists": "Konto existiert bereits",
 			"powNotSolved": "Bitte schließen Sie zuerst die PoW-Überprüfung ab.",
@@ -630,26 +658,36 @@
 			"accountLockedAttempts": "Das Konto wurde aufgrund zu vieler fehlgeschlagener Anmeldeversuche vorübergehend gesperrt.",
 			"powValidationFailed": "Die Sicherheitsüberprüfung ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
 			"tokenAndSolutionsRequired": "Token und solutions sind erforderlich.",
-			"apiErrorBodyUnreadable": "Der Server hat Informationen zurückgegeben, die nicht analysiert werden konnten. Bitte versuchen Sie es später noch einmal."
+			"apiErrorBodyUnreadable": "Der Server hat Informationen zurückgegeben, die nicht analysiert werden konnten. Bitte versuchen Sie es später noch einmal.",
+			"verificationCode": {
+				"error": "Verifizierungscode falsch oder abgelaufen.",
+				"rateLimit": "Zu viele Anfragen zum Senden des Verifizierungscodes. Bitte später erneut versuchen.",
+				"sendError": "Verifizierungscode konnte nicht gesendet werden.",
+				"sent": "Verifizierungscode erfolgreich gesendet."
+			}
 		},
 		"webauthn": {
 			"loginButton": "Melden Sie sich mit dem Sicherheitsschlüssel/Passkey an",
-			"errorLoadLibrary": "Die WebAuthn-Hilfsbibliothek konnte nicht geladen werden. Bitte überprüfen Sie das Netzwerk und versuchen Sie es erneut.",
-			"errorCancelled": "Der Sicherheitsschlüssel wurde storniert oder nicht zur Verwendung autorisiert.",
-			"errorSessionMissing": "Der Server hat keine gültige Anmeldesitzung zurückgegeben. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.",
-			"errorBadBeginResponse": "Der Server hat ungültige Anmeldedaten zurückgegeben. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.",
-			"errorCredentialRequired": "Gültige Passkey-Anmeldedaten fehlen.",
-			"errorAuthSessionRequired": "Das Anmeldesitzungstoken fehlt. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.",
 			"apiSessionExpired": "Die Passkey-Anmeldesitzung ist abgelaufen. Bitte versuchen Sie es erneut.",
 			"apiUnknownPasskey": "Der Passkey wird nicht erkannt. Bitte verwenden Sie einen gebundenen Schlüssel.",
 			"apiPasskeyVerificationFailed": "Die Passkey-Verifizierung ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
-			"registrationUserNotFound": "Benutzerkonto nicht gefunden.",
-			"registrationSessionExpired": "Die Bindungssitzung ist abgelaufen. Bitte versuchen Sie es erneut von Anfang an.",
-			"registrationVerifyFailed": "Die Überprüfung der Passkey-Registrierung konnte nicht abgeschlossen werden.",
-			"registrationFailed": "Die Registrierung des Passkeys ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
 			"removeUserNotFound": "Benutzer- oder Anmeldedaten nicht gefunden.",
 			"removeInvalidPassword": "Falsches Passwort.",
-			"removePasskeyNotFound": "Der Passkey wurde nicht gefunden."
+			"removePasskeyNotFound": "Der Passkey wurde nicht gefunden.",
+			"registration": {
+				"failed": "Die Registrierung des Passkeys ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+				"sessionExpired": "Die Bindungssitzung ist abgelaufen. Bitte versuchen Sie es erneut von Anfang an.",
+				"userNotFound": "Benutzerkonto nicht gefunden.",
+				"verifyFailed": "Die Überprüfung der Passkey-Registrierung konnte nicht abgeschlossen werden."
+			},
+			"error": {
+				"authSessionRequired": "Das Anmeldesitzungstoken fehlt. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.",
+				"badBeginResponse": "Der Server hat ungültige Anmeldedaten zurückgegeben. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut.",
+				"cancelled": "Der Sicherheitsschlüssel wurde storniert oder nicht zur Verwendung autorisiert.",
+				"credentialRequired": "Gültige Passkey-Anmeldedaten fehlen.",
+				"loadLibrary": "Die WebAuthn-Hilfsbibliothek konnte nicht geladen werden. Bitte überprüfen Sie das Netzwerk und versuchen Sie es erneut.",
+				"sessionMissing": "Der Server hat keine gültige Anmeldesitzung zurückgegeben. Bitte aktualisieren Sie die Seite und versuchen Sie es erneut."
+			}
 		}
 	},
 	"login_info": {
@@ -808,84 +846,86 @@
 					}
 				}
 			},
-			"serviceGenerators": {
-				"title": "Service-Generator",
-				"subtitle": "Verwandeln Sie das Unsichtbare in etwas Greifbares, machen Sie das Mögliche zur Realität.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Als Standarddienstgenerator festlegen"
-					}
-				}
-			},
-			"serviceGenerators/AI": {
-				"title": "KI-Dienstgenerator",
-				"subtitle": "Weben Sie Fäden der Weisheit und verbinden Sie Gedankenbrücken.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Als Standard-KI-Dienstgenerator festlegen"
-					}
-				}
-			},
-			"serviceGenerators/search": {
-				"title": "Suchdienstgenerator",
-				"subtitle": "Entzünde im Ozean der Informationen das Licht für dich.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Als Standardsuchgenerator festlegen"
-					}
-				}
-			},
-			"serviceGenerators/translate": {
-				"title": "Generator für Übersetzungsdienste",
-				"subtitle": "Überwinden Sie Sprachgrenzen und lassen Sie Ihren Ideen freien Lauf.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Als Standard-Übersetzungsdienstgenerator festlegen"
-					}
-				}
-			},
-			"serviceSources": {
-				"title": "Servicequelle",
-				"subtitle": "Sie sammeln die Rinnsale und werden zu riesigen Flüssen.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Als Standarddienstquelle festlegen"
-					}
-				}
-			},
-			"serviceSources/AI": {
-				"title": "KI-Dienstquelle",
-				"subtitle": "Die Quelle der Weisheit und der Ausgangspunkt des Denkens.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Als Standard-KI-Dienstquelle festlegen"
-					}
-				}
-			},
-			"serviceSources/search": {
-				"title": "Suchdienstquelle",
-				"subtitle": "Eine Fundgrube an Wissen und Ausgangspunkt für Erkundungen.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Als Standardsuchquelle festlegen"
-					}
-				}
-			},
-			"serviceSources/translate": {
-				"title": "Quelle des Übersetzungsdienstes",
-				"subtitle": "Die Brücke der Sprache und das Bindeglied der Kommunikation.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Als Standard-Übersetzungsdienstquelle festlegen"
-					}
-				}
-			},
 			"shells": {
 				"title": "Shell-Auswahl",
 				"subtitle": "Wählen Sie ein Fenster und sehen Sie eine neue Welt.",
 				"card": {
 					"defaultCheckbox": {
 						"title": "Als Standard-Shell festlegen"
+					}
+				}
+			},
+			"service": {
+				"generators": {
+					"title": "Service-Generator",
+					"subtitle": "Verwandeln Sie das Unsichtbare in etwas Greifbares, machen Sie das Mögliche zur Realität.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Als Standarddienstgenerator festlegen"
+						}
+					}
+				},
+				"generators/AI": {
+					"title": "KI-Dienstgenerator",
+					"subtitle": "Weben Sie Fäden der Weisheit und verbinden Sie Gedankenbrücken.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Als Standard-KI-Dienstgenerator festlegen"
+						}
+					}
+				},
+				"generators/search": {
+					"title": "Suchdienstgenerator",
+					"subtitle": "Entzünde im Ozean der Informationen das Licht für dich.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Als Standardsuchgenerator festlegen"
+						}
+					}
+				},
+				"generators/translate": {
+					"title": "Generator für Übersetzungsdienste",
+					"subtitle": "Überwinden Sie Sprachgrenzen und lassen Sie Ihren Ideen freien Lauf.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Als Standard-Übersetzungsdienstgenerator festlegen"
+						}
+					}
+				},
+				"sources": {
+					"title": "Servicequelle",
+					"subtitle": "Sie sammeln die Rinnsale und werden zu riesigen Flüssen.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Als Standarddienstquelle festlegen"
+						}
+					}
+				},
+				"sources/AI": {
+					"title": "KI-Dienstquelle",
+					"subtitle": "Die Quelle der Weisheit und der Ausgangspunkt des Denkens.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Als Standard-KI-Dienstquelle festlegen"
+						}
+					}
+				},
+				"sources/search": {
+					"title": "Suchdienstquelle",
+					"subtitle": "Eine Fundgrube an Wissen und Ausgangspunkt für Erkundungen.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Als Standardsuchquelle festlegen"
+						}
+					}
+				},
+				"sources/translate": {
+					"title": "Quelle des Übersetzungsdienstes",
+					"subtitle": "Die Brücke der Sprache und das Bindeglied der Kommunikation.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Als Standard-Übersetzungsdienstquelle festlegen"
+						}
 					}
 				}
 			}
@@ -966,12 +1006,6 @@
 				"aria-label": "Zu Unicode"
 			},
 			"discoverPacks": "Emoji-Pakete entdecken →",
-			"categoryFace": "Emoji",
-			"categoryGesture": "Geste",
-			"categoryHeart": "Herz",
-			"categoryAnimal": "Tier",
-			"categoryFood": "Essen",
-			"categoryObject": "Ding",
 			"addToCollection": "Zu Favoriten hinzufügen",
 			"addedToCollection": "Zu Favoriten hinzugefügt",
 			"joinGroup": "Gruppe beitreten",
@@ -982,7 +1016,15 @@
 			"openAuthor": "Autor anzeigen",
 			"previewGroupMeta": "Aus Gruppe: ${name}",
 			"previewAuthorMeta": "Vom Autor",
-			"previewActionFailed": "Aktion fehlgeschlagen: ${error}"
+			"previewActionFailed": "Aktion fehlgeschlagen: ${error}",
+			"category": {
+				"animal": "Tier",
+				"face": "Emoji",
+				"food": "Essen",
+				"gesture": "Geste",
+				"heart": "Herz",
+				"object": "Ding"
+			}
 		},
 		"emojiPacks": {
 			"title": "Emoji-Pakete entdecken",
@@ -1043,12 +1085,14 @@
 			"modeSingle": "Einzelnes Zeichen",
 			"modeEmpty": "Leere Gruppe",
 			"subtitleRoles": "${count} Zeichen sind in diesem Chat",
-			"statusSaved": "Gespeichert",
-			"statusSaving": "Sparen…",
-			"statusDirty": "Es gibt nicht gespeicherte Änderungen",
-			"statusSaveFailed": "Speichern fehlgeschlagen",
 			"saveSuccess": "Gruppenchat-Einstellungen gespeichert",
-			"saveFailed": "Gruppenchat-Einstellungen können nicht gespeichert werden"
+			"saveFailed": "Gruppenchat-Einstellungen können nicht gespeichert werden",
+			"status": {
+				"dirty": "Es gibt nicht gespeicherte Änderungen",
+				"saveFailed": "Speichern fehlgeschlagen",
+				"saved": "Gespeichert",
+				"saving": "Sparen…"
+			}
 		},
 		"group": {
 			"defaults": {
@@ -1057,167 +1101,6 @@
 				"dmChatName": "Chat",
 				"dmDmName": "Privater Chat",
 				"threadName": "Untergeordneter Thread"
-			},
-			"settingsPage": {
-				"title": "Gruppeneinstellungen",
-				"kicker": "Gruppenleitung",
-				"subtitle": "Verwalten Sie Gruppeninformationen, Mitglieder und allgemeine Funktionen. Low-Frequency-Berechtigungen, Speicher und Überwachungstools sind in erweiterten Einstellungen zentralisiert.",
-				"backToChat": "Zurück zum Chat",
-				"navigationLabel": "Klassifizierung der Gruppeneinstellungen",
-				"advancedNavigationLabel": "Kategorie „Erweiterte Einstellungen“.",
-				"tabGeneral": "Basic",
-				"tabPermissions": "Rollenberechtigungen",
-				"tabMembers": "Mitglied",
-				"tabAudit": "Audit-Protokoll",
-				"tabEmojis": "Emoji",
-				"tabAdvanced": "Fortschrittlich",
-				"tabStorage": "Speicherung und Archivierung",
-				"tabChannelPermissions": "Kanalberechtigungen",
-				"advancedHubTitle": "Erweiterte Einstellungen",
-				"advancedHubDescription": "Diese Funktionen ändern die Berechtigungsstruktur, historische Daten oder Governance-Datensätze der Gruppe. Passen Sie die Einstellungen nur an, wenn dies eindeutig erforderlich ist.",
-				"channelPermsHint": "Legen Sie Rollenberechtigungsüberschreibungen für bestimmte Kanäle fest. Aufgedeckte Elemente erben Gruppenrollenberechtigungen.",
-				"channelPermsSelectChannel": "Kanal",
-				"channelPermsAddRole": "Rollenüberschreibung hinzufügen",
-				"channelPermsRemoveRole": "Entfernen Sie diese Rollenüberschreibung",
-				"channelPermsStateNeutral": "Erben",
-				"channelPermsStateAllow": "Erlauben",
-				"channelPermsStateDeny": "Ablehnen",
-				"channelPermsUpdated": "Kanalberechtigungen aktualisiert",
-				"channelPermsUpdateFailed": "Kanalberechtigungen konnten nicht aktualisiert werden: ${error}",
-				"channelPermsNoChannels": "Derzeit gibt es keinen zu konfigurierenden Kanal",
-				"emojisTitle": "Benutzerdefinierte Ausdrücke gruppieren",
-				"emojisHint": "Mitglieder können diese Emoticons im Chat einfügen oder senden; Deinstallierte Images werden bei Bedarf über Verbundknoten abgerufen.",
-				"emojisUpload": "Laden Sie Emoticons hoch",
-				"emojisCreatePack": "Neues Emoji-Paket",
-				"emojisCreatePackPrompt": "Emoji-Paket-ID",
-				"emojisCreatePackOk": "Emoji-Paket erstellt",
-				"emojisCreatePackFailed": "Erstellen fehlgeschlagen: ${error}",
-				"emojisPackGroupSuffix": "Standard",
-				"activeEmojiPackLabel": "Bearbeitetes Paket",
-				"emojisDelete": "Emoticon löschen",
-				"emojisEmpty": "Noch keine Gruppenausdrücke",
-				"emojisUploadOk": "Der Emoji wurde hochgeladen",
-				"emojisUploadFailed": "Hochladen fehlgeschlagen: ${error}",
-				"emojisDeleteConfirm": "Sind Sie sicher, dass Sie diese Gruppe von Emoticons löschen möchten?",
-				"emojisDeleteOk": "Emoticon wurde gelöscht",
-				"emojisDeleteFailed": "Löschen fehlgeschlagen: ${error}",
-				"defaultEmojiPackLabel": "Standard-Emoji-Paket",
-				"defaultEmojiPackHint": "Wird Mitgliedern beim Beitritt automatisch zu den Favoriten hinzugefügt. Nach Änderung wird nur das alte Standardpaket ersetzt, sofern es noch in den Favoriten liegt.",
-				"defaultEmojiPackOk": "Standard-Emoji-Paket aktualisiert",
-				"defaultEmojiPackFailed": "Standard-Emoji-Paket konnte nicht gesetzt werden",
-				"membersTitle": "Mitgliederliste",
-				"overviewTitle": "Gruppenübersicht",
-				"overviewHint": "Nur-Lese-Übersicht. Mit Governance-Berechtigung können Sie Gruppeninfos und Richtlinien unter „Basis“ bearbeiten.",
-				"channelArchiveTitle": "Kanalarchiv",
-				"channelArchiveHint": "Durch den Import des vollständigen JSON-Archivs des Kanals wird ein neuer gewöhnlicher Textkanal in dieser Gruppe erstellt und der Verlauf wiederhergestellt (von Ihnen neu signiert; Anhänge behalten nur Metadaten).",
-				"channelArchiveImport": "Kanal-JSON importieren",
-				"channelArchiveImportOk": "${count} Nachrichten importiert, neuer Kanal eröffnet...",
-				"channelArchiveImportFailed": "Import fehlgeschlagen: ${error}",
-				"governanceHint": "Schreiben Sie die Richtlinien auf Gruppenebene der DAG. Administrator- oder MANAGE_ADMINS-Berechtigungen sind erforderlich.",
-				"governanceDenied": "Sie sind nicht berechtigt, Gruppen-Governance-Einstellungen zu ändern.",
-				"rolesDenied": "Sie verfügen nicht über die MANAGE_ROLES-Berechtigung zum Bearbeiten von Rollen.",
-				"channelPermsDenied": "Sie verfügen nicht über die MANAGE_CHANNELS-Berechtigung zum Bearbeiten von Kanalberechtigungsüberschreibungen.",
-				"notMember": "Sie sind kein Mitglied dieser Gruppe mehr; Die Daten dieser Gruppe wurden nach dem Verlassen der Gruppe automatisch gelöscht.",
-				"basicTitle": "Gruppenverwaltung",
-				"profileSectionTitle": "Gruppeninformationen",
-				"profileSectionHint": "Der Name, die Einführung und die Art und Weise des Beitritts zur Gruppe werden in die Gruppenmetadaten geschrieben.",
-				"behaviorSectionTitle": "Laufverhalten",
-				"networkSectionTitle": "Föderation und Verbindung",
-				"retentionSectionTitle": "Aufbewahrung & Ratenlimits",
-				"mediaSectionTitle": "Anrufe & Dateien",
-				"nameLabel": "Gruppenname",
-				"descriptionLabel": "Gruppenbeschreibung",
-				"joinPolicyLabel": "Gruppeneintrittsstrategie",
-				"joinInviteOnly": "Nur mit Einladung",
-				"joinPow": "PoW erforderlich",
-				"powDifficultyLabel": "PoW-Schwierigkeit",
-				"advancedTitle": "Erweiterte Einstellungen",
-				"advancedDescription": "Netzwerk-, Speicher-, Geschwindigkeitsbegrenzungs- und Verschlüsselungsparameter; Bitte behalten Sie die Standardeinstellungen bei, wenn Sie sich nicht sicher sind",
-				"securityAdvancedTitle": "Sicherheits- und Gruppeneigentümeroperationen",
-				"securityAdvancedDescription": "Schlüsselrotation und Nachfolge von Gruppenleitern; Falsche Vorgänge können den Mitgliederzugriff beeinträchtigen",
-				"powDifficultyTip": "Nachweis der Arbeitsschwierigkeit. Je höher der Wert, desto länger ist die Berechnungszeit, die Fremde benötigen, um der Öffentlichen Gruppe beizutreten.",
-				"maxDagPayloadTip": "Die Obergrenze der Daten, die von einem einzelnen Gruppenereignis übertragen werden dürfen. Wenn es zu groß ist, erhöht es den Synchronisierungsspeicher und den Netzwerkaufwand.",
-				"trustedPeersTip": "Die Anzahl der Föderationsnachbarn mit hohem Ruf, die vorrangig in Verbindung bleiben sollen.",
-				"gossipTtlTip": "Die maximale Anzahl an Bundesknoten, über die die Nachricht weitergeleitet werden kann. Eine Erhöhung erhöht die Abdeckung und erhöht auch den Verkehr.",
-				"hlcTip": "Die maximale Zeit, die die Uhr des Remote-Knotens schneller sein darf als die Uhr des lokalen Knotens, wird verwendet, um abnormale zukünftige Ereignisse abzulehnen.",
-				"sfuTip": "Optionale externe Audio- und Video-Weiterleitungsdienstadresse. Lassen Sie das Feld leer, um integrierte Punkt-zu-Punkt-/Relay-Anrufe zu verwenden.",
-				"iceTip": "Helfen Sie WebRTC, in den Router einzudringen. Wenn die direkte Verbindung fehlschlägt, leitet TURN in seinem Namen Audio-, Video- und Verbunddatenverkehr weiter.",
-				"fileEncryptionTip": "Konvergente Verschlüsselung dedupliziert, legt aber die Tatsache offen, dass die Dateien identisch sind. Zufallsschlüssel sind privater, nehmen aber mehr Platz ein.",
-				"keyManagementTitle": "Schlüsselverwaltung",
-				"keyManagementTip": "Neue Schlüssel müssen nach der Rotation an die Mitglieder neu verteilt werden. Manuelle Maßnahmen sollten nur dann ergriffen werden, wenn Sie den Verdacht haben, dass ein Schlüssel kompromittiert wurde.",
-				"allowDangerousHtml": "Nachrichten vertrauenswürdiger Autoren ermöglichen Inline-HTML",
-				"deleteGroup": "Gruppe löschen",
-				"save": "Einstellungen speichern",
-				"inviteTitle": "Einladen",
-				"inviteHint": "Generieren Sie einen kurzfristigen Einladungscode (Standard 1 Stunde). Die andere Partei gibt die Gruppen-ID und den Einladungscode unter „Gruppe beitreten“ ein.",
-				"inviteMint": "Einladungscode generieren",
-				"inviteGroupId": "Gruppen-ID",
-				"inviteCode": "Einladungscode",
-				"inviteExpires": "Ablauf: ${date}",
-				"inviteCopy": "Gruppeninformationen kopieren",
-				"inviteCopied": "Gruppeninformationen kopiert",
-				"inviteCopyFailed": "Der Kopiervorgang ist fehlgeschlagen",
-				"inviteClipboard": "Gruppen-ID: ${groupId}\nEinladungscode: ${code}\nBeitreten: ${url}",
-				"loadFailed": "Gruppeneinstellungen konnten nicht geladen werden: ${error}",
-				"saveSuccess": "Gruppeneinstellungen gespeichert",
-				"saveFailed": "Einstellungen konnten nicht gespeichert werden: ${error}",
-				"deleteConfirm": "Diese Gruppe wirklich löschen? Unwiderruflich – alle Nachrichten und Mitgliederdaten werden dauerhaft gelöscht.",
-				"deleteSuccess": "Gruppe gelöscht",
-				"deleteFailed": "Gruppe konnte nicht gelöscht werden: ${error}",
-				"rolesTitle": "Rollen und Berechtigungen",
-				"createRole": "Erstellen Sie eine Rolle",
-				"roleDefault": "Standard",
-				"deleteRole": "Rolle löschen",
-				"deleteRoleConfirm": "Sind Sie sicher, dass Sie diese Rolle löschen möchten?",
-				"deleteRoleSuccess": "Rolle gelöscht",
-				"deleteRoleFailed": "Rolle konnte nicht gelöscht werden: ${error}",
-				"createRolePrompt": "Geben Sie den Charakternamen ein:",
-				"createRoleSuccess": "Rolle erstellt",
-				"createRoleFailed": "Rolle konnte nicht erstellt werden: ${error}",
-				"permissionUpdated": "Berechtigungen aktualisiert",
-				"permissionUpdateFailed": "Berechtigungen konnten nicht aktualisiert werden: ${error}",
-				"noMembers": "Noch keine Mitglieder",
-				"memberRoles": "Rolle:",
-				"kick": "Rausschmeißen",
-				"ban": "Verbot",
-				"kickConfirm": "Sind Sie sicher, dass Sie Mitglied ${name} rausschmeißen möchten?",
-				"kickSelfNodeWarning": "Warnung: Dieses Mitglied verwendet dieselbe Knotenidentität wie Sie. Auch nach dem Rauswurf werden Sie aus der Gruppe entfernt. Sind Sie sicher, dass Sie fortfahren möchten?",
-				"kickSuccess": "Mitglied rausgeschmissen",
-				"kickFailed": "Mitglied konnte nicht rausgeschmissen werden: ${error}",
-				"banConfirm": "Sind Sie sicher, dass Sie Mitglied ${name} sperren möchten?",
-				"banSuccess": "Mitglied wurde gesperrt",
-				"banFailed": "Mitglied konnte nicht gesperrt werden: ${error}",
-				"bannedTitle": "Gesperrtes Mitglied",
-				"unban": "Entsperren",
-				"unbanConfirm": "Sind Sie sicher, dass Sie Mitglied ${name} entsperren möchten?",
-				"unbanSuccess": "Das Mitglied wurde entsperrt",
-				"unbanFailed": "Entsperren fehlgeschlagen: ${error}",
-				"keyRotate": "Hauptschlüssel der Gruppendatei rotieren",
-				"keyRotateConfirm": "Sind Sie sicher, dass Sie den Hauptschlüssel dieser Gruppendatei manuell rotieren möchten? Neue Mitglieder müssen den Verlaufsdateischlüssel neu synchronisieren.",
-				"keyRotateOk": "Schlüssel wurde gedreht",
-				"keyRotateFailed": "Schlüsselrotation fehlgeschlagen: ${error}",
-				"gshGenerationRetentionHint": "Derzeit werden nur die letzten 64 Generationen des Dateihauptschlüsselverlaufs gespeichert. Die ältesten historischen Dateien können nach Überschreitung möglicherweise nicht mehr entschlüsselt werden. Es wird daher empfohlen, wichtige Daten regelmäßig zu archivieren.",
-				"gshGenerationNearLimit": "Derzeit rotiert zur Generation ${generation} von Dateihauptschlüsseln (bis zu ${maxGenerations} Generationen). Die Fortsetzung der häufigen Rotation führt dazu, dass die ältesten historischen Schlüssel ausgemustert werden.",
-				"ownerSuccession": "Nachfolge des Gruppenleiters",
-				"ownerSuccessionOk": "Die Nachfolge der Gruppenleiter ist in Kraft getreten",
-				"ownerSuccessionFailed": "Nachfolge des Gruppenleiters fehlgeschlagen: ${error}",
-				"permVIEW_CHANNEL": "Kanal ansehen",
-				"permSEND_MESSAGES": "Nachricht senden",
-				"permSEND_STICKERS": "Sticker verschicken",
-				"permADD_REACTIONS": "Reaktion hinzufügen",
-				"permMANAGE_MESSAGES": "Managementnachrichten",
-				"permMANAGE_CHANNELS": "Kanal verwalten",
-				"permKICK_MEMBERS": "Kick-Mitglied",
-				"permBAN_MEMBERS": "Ban-Mitglied",
-				"permMANAGE_ROLES": "Führungsrolle",
-				"permINVITE_MEMBERS": "Mitglieder Einladen",
-				"permSTREAM": "Stimme",
-				"permCREATE_THREADS": "Unterkanal erstellen",
-				"permUPLOAD_FILES": "Dateien hochladen",
-				"permMANAGE_FILES": "Dateien verwalten",
-				"permPIN_MESSAGES": "Angeheftete Nachricht",
-				"permADMIN": "Administrator",
-				"permBYPASS_RATE_LIMIT": "Beschränkung der Nachrichtenrate umgehen"
 			},
 			"auditLog": {
 				"title": "Gruppenüberwachungsprotokoll",
@@ -1228,10 +1111,6 @@
 				"loadMore": "Ältere Datensätze laden",
 				"empty": "Noch keine Audit-Aufzeichnungen",
 				"loadFailed": "Audit-Log konnte nicht geladen werden: ${error}",
-				"colTime": "Zeit",
-				"colType": "Typ",
-				"colActor": "Operator",
-				"colSummary": "Zusammenfassung",
 				"type": {
 					"member_join": "Mitglieder treten bei",
 					"member_leave": "Mitglieder gehen",
@@ -1288,167 +1167,44 @@
 					"unpin_message": "${channelName} an ${targetEventId} lösen",
 					"file_upload": "Datei ${fileName} hochladen",
 					"file_delete": "Datei ${fileName} löschen"
+				},
+				"col": {
+					"actor": "Operator",
+					"summary": "Zusammenfassung",
+					"time": "Zeit",
+					"type": "Typ"
 				}
 			},
-			"messagePrefixSticker": "Sticker",
 			"membersEmpty": "(noch keine Mitglieder)",
 			"channelEncryptionGsh": "Kanalschlüssel-Ende-zu-Ende-Verschlüsselung (CKG)",
-			"ownerSuccession": "Starten Sie eine Nachfolgeabstimmung",
-			"ownerSuccessionDescription": "Übertragen Sie die höchste Verwaltungsberechtigung der Gruppe (MANAGE_ADMINS) auf das angegebene Mitglied. Nur Administratoren können arbeiten.",
-			"ownerSuccessionAutoSignHint": "Nach der Übermittlung signiert die Maschine automatisch den Signatur-Seed der Gruppe, ohne den privaten Schlüssel einzugeben. In einer Gruppe mit mehreren Administratoren muss mehr als die Hälfte der Administratoren lokal denselben Stimmzettel (gleiche Stimmzettel-ID und gleicher Kandidat) einreichen.",
-			"ownerSuccessionCandidateLabel": "Nachfolge-Hash des Öffentlichen Schlüssels",
-			"ownerSuccessionSelfButton": "Nominieren Sie sich",
-			"ownerSuccessionSubmitted": "Ihre Unterschrift wurde auf dem Nachfolgewahlzettel vermerkt.",
-			"ownerSuccessionNeedHash": "Bitte geben Sie den Hash des Öffentlichen Schlüssels des Nachfolgers ein",
-			"ownerSuccessionFailed": "Die Einreichung der Nachfolgeabstimmung ist fehlgeschlagen",
 			"e2eDecryptUnavailable": "Die Nachricht ist verschlüsselt und kann vom aktuellen Gerät nicht entschlüsselt werden",
 			"contentRefBodyPending": "Externer Linktext (content_ref, noch nicht zur Überprüfung abgerufen)",
 			"contentRefHashMismatch": "Der externe Linktext stimmt nicht mit der Speicherüberprüfung überein (Hash stimmt nicht überein)",
-			"streamGenerationFailed": "Die KI-Generierung ist abgelaufen und wurde nicht abgeschlossen. Aktualisierungen wurden gestoppt.",
 			"convergentEncryptWarn": "Gruppendateien nutzen konvergente Verschlüsselung: Wenn der Angreifer den Leerentext einer Datei kennt, kann er den Schlüssel ableiten und den entsprechenden Chiffretextblock entschlüsseln. Verlassen Sie sich zum Schutz hochsensibler und einzigartig privater Dokumente nicht ausschließlich auf die Gruppenverschlüsselung.",
-			"settingsStreamGeneratingIdle": "Von der KI generierter Platzhalter-Leerlauf-Timeout (Millisekunden)",
-			"settingsAutoReplyFrequency": "Rollenantworten automatisch auslösen (nach jeweils N Benutzernachrichten, 0 ist ausgeschaltet)",
-			"settingsAutoReplyFrequencyHint": "0 bedeutet aus; @Erwähnungen werden weiterhin sofort ausgelöst",
-			"settingsMaxDagPayload": "DAG maximale Anzahl von Bytes für ein einzelnes Ereignis",
-			"settingsBatterySaver": "Energiesparmodus (verkleinerter Verbundverbindungspool und Relay)",
-			"settingsDiscoveryPublic": "Diese Gruppe in der Verbunderkennung verfügbar machen (ohne dem Gruppenschlüssel beizutreten)",
-			"settingsDiscoveryTitle": "Titel der Discovery-Liste (optional)",
-			"settingsDiscoveryBlurb": "Discovery-Einführung (optional)",
-			"settingsTrustedPeers": "Vertrauenswürdiger Nachbarslot (Top-K)",
-			"settingsExplorePeers": "Entdecken Sie benachbarte Slots",
-			"settingsMaxPeers": "Föderationsverbindungsobergrenze",
-			"settingsGossipTtl": "Gossipweiterleitung TTL (Hop-Anzahl)",
-			"settingsWantIdsBudget": "Einzelnes WantIds-Budget",
-			"settingsHlcMaxSkew": "HLC-Future-Offset-Obergrenze (Millisekunden)",
 			"dagForkDetected": "Nicht zusammengeführter DAG-Fork erkannt",
 			"mergeDagTips": "DAG-Forks zusammenführen",
 			"mergeDagTipsOk": "Fork zusammengeführt",
 			"mergeDagTipsFailed": "Fork-Zusammenführung fehlgeschlagen",
-			"settingsStreamingSfu": "Streaming-SFU-WebSocket-Adresse (optional)",
-			"settingsMessageRetention": "Der Nachrichtentext wird automatisch gelöscht",
-			"settingsMessageRetentionForever": "Permanente Aufbewahrung (nur komprimierte DAG-Ereignisse)",
-			"settingsMessageRetention30d": "Vor 30 Tagen",
-			"settingsMessageRetention90d": "Vor 90 Tagen",
-			"settingsMessageRetention1y": "Vor 1 Jahr",
-			"settingsMessageRetentionHint": "Der sichtbare Verlauf wird standardmäßig nicht automatisch gelöscht. Wenn diese Option aktiviert ist, wird nur der Hot-Cache für lokale Nachrichten bereinigt. Die endgültigen Nachrichten werden im kalten Archiv und am Prüfpunkt aufbewahrt.",
-			"settingsHotLatest": "Hot-Zone-Aufbewahrung (aktuellste Anzahl von Beiträgen pro Kanal)",
-			"settingsPinContext": "Top-Nachbarschaft (±N Nachbarn)",
-			"settingsHotWindowHint": "Hot-Zone-Beiträge werden im Prüfpunkt und im Nachrichtencache gespeichert; Die verbleibenden Beiträge werden nach der Materialisierung in das monatliche Cold-Archiv geschrieben und dann aus den DAG-Prozessereignissen ausgeblendet.",
-			"settingsArchiveTitle": "Lagerung und Kaltarchivierung",
-			"settingsArchiveHint": "Das Kaltarchiv ist der Endzustand des lokalen Leerentextbeitrags (Dateien unterteilt nach Monat). Durch das Löschen des Archivs wird die DAG nicht geändert. Wenn der Verlauf fehlt, kann er von den Verbundnachbarn abgerufen werden.",
-			"settingsArchiveFilesTitle": "Archivierte Dateien",
-			"settingsArchiveEmpty": "Es sind noch keine kalten Archivdateien vorhanden.",
-			"settingsArchiveColChannel": "Kanal",
-			"settingsArchiveColMonth": "Monat",
-			"settingsArchiveColSize": "Größe",
-			"settingsArchiveDeleteBefore": "Diesen Monat vorher löschen",
-			"settingsArchiveDeleteButton": "Kaltes Archiv löschen",
-			"settingsArchiveDeleteHint": "Nur das lokale Archiv/*.jsonl wird gelöscht; Hotspots und DAG-Anker sind nicht betroffen.",
-			"settingsArchiveAdminOnly": "Dieser Computer verfügt noch nicht über kalte Archivdaten für diese Gruppe.",
-			"settingsArchiveDeleteInvalidMonth": "Bitte wählen Sie einen gültigen Monat JJJJ-MM aus.",
-			"settingsArchiveDeleteConfirm": "Alle kalten Archivdateien löschen, die älter als ${month} sind? Nicht rückgängig zu machen.",
-			"settingsArchiveDeleteOk": "${files} Archivdateien gelöscht.",
-			"settingsArchiveDeleteFailed": "Archiv konnte nicht gelöscht werden: ${error}",
-			"settingsEventRetentionDepth": "Aufbewahrungstiefe für DAG-Ereignisse",
-			"settingsEventRetentionMs": "Aufbewahrungszeit des DAG-Ereignisses",
-			"settingsCompactTriggerDepth": "Tiefe des materialisierten Komprimierungstriggers",
-			"settingsMessageRateLimit": "Begrenzung der Nachrichtenrate (Nachricht/Minute/Entität)",
-			"settingsAutoReplyTokenBucket": "Automatische Antwortdruckplanung (Token Bucket)",
-			"settingsAutoReplyTokenBucketHint": "Nach der Aktivierung verwaltet jeder Charakter einen Token-Bucket pro Kanal; onMessage wird vorübergehend nicht ausgelöst, wenn der Bucket leer ist, was eine kontinuierliche Bildschirmaktualisierung in Spitzenzeiten verhindern kann.",
-			"settingsIceServers": "ICE/TURN-Server",
-			"settingsIceServersAdd": "Server hinzufügen",
-			"settingsIceServersHint": "Für WebRTC und föderiertes P2P-NAT-Traversal. TURN-Benutzername und -Passwort werden nur lokal gespeichert und nicht über die Föderation synchronisiert.",
-			"settingsIceUrl": {
-				"aria-label": "ICE-Serveradresse",
-				"placeholder": "stun:host:19302"
-			},
-			"settingsIceUser": {
-				"aria-label": "TURN-Benutzername",
-				"placeholder": "Benutzername (optional)"
-			},
-			"settingsIceCred": {
-				"aria-label": "TURN-Passwort",
-				"placeholder": "Passwort (optional)"
-			},
-			"settingsIceRemove": {
-				"aria-label": "Diesen Server entfernen"
-			},
-			"settingsFileCeMode": "Dateiverschlüsselungsmodus",
-			"settingsFileCeModeConvergent": "Konvergente Verschlüsselung (kann Duplikate entfernen)",
-			"settingsFileCeModeRandom": "Hoher Datenschutzmodus (zufällige Schlüssel, keine Deduplizierung)",
-			"settingsFileCeModeHint": "Der hohe Datenschutzmodus verwendet einen zufälligen ContentKey für jeden Block und markiert ceMode=random; Dies verringert das Risiko, dass Leerentext erraten werden kann, erhöht jedoch die Speicher- und Bandbreitennutzung.",
 			"channelsTitle": "Kanal",
-			"createGroup": "Neue Gruppe erstellen",
 			"members": "Mitglied",
 			"membersHint": "Die Mitgliederliste wird durch Checkpoint synchronisiert (Platzhalter)",
-			"streamTest": "Testen Sie Mediengeräte",
 			"loadError": "Die Gruppe konnte nicht geladen werden",
-			"remoteNodeTimeout": "Der Remote-Knoten antwortet nicht. Bitte versuchen Sie es später erneut.",
-			"remoteUnavailable": "Die Remote-Komponente ist nicht verfügbar oder kann den RPC nicht weiterleiten",
 			"messagesLoadFailed": "Das Laden der Nachricht ist fehlgeschlagen",
 			"sendFailed": "Das Senden ist fehlgeschlagen",
 			"chatNotLoaded": "Der Hauptchat ist nicht geladen: Bitte öffnen Sie eine Konversation mit derselben ID wie die Gruppe auf der Hauptoberfläche und versuchen Sie es erneut.",
-			"createFailed": "Die Gruppe konnte nicht erstellt werden",
 			"newGroupName": "Neue Gruppe",
-			"streamOk": "Medienstream erfasst (gestoppt, nicht gesendet)",
-			"remoteUnsafe": "Diese Nachricht stammt von einem entfernten Standort und der Autor befindet sich nicht in der lokalen Vertrauensliste. Die Rich-Text-Gefällt mirdergabe wurde deaktiviert.",
 			"trustAuthor": {
 				"textContent": "Vertrauen",
 				"title": "Diesem Autor vertrauen (gefährliches HTML zulassen)"
 			},
 			"trustAuthorOk": "Dieser Autor ist vertrauenswürdig und gibt Rich Text wieder",
-			"voteCast": "Abstimmung",
 			"listEmpty": "(Es gibt noch keine Navigationselemente. Administratoren können Listenelemente über die API aktualisieren.)",
 			"listChannelReadonly": {
 				"placeholder": "Listenkanäle zeigen nur Navigationskarten an und senden keine Nachrichten"
 			},
-			"streamNoEmbed": {
-				"textContent": "Die Streaming-Adresse muss eine einbettbare https://-Seite sein, oder die Gruppeneinstellungen müssen zuerst konfiguriert und aktualisiert werden, um ein Anzeigetoken zu erhalten."
-			},
-			"streamNoSfu": {
-				"textContent": "StreamingSfuWss ist nicht konfiguriert; Administratoren können die LiveKit/mediasoup-Anzeigeadresse in den Gruppeneinstellungen eingeben."
-			},
-			"messageDeleted": "Nachricht gelöscht",
-			"messageDeletedBracket": "[Nachricht gelöscht]",
-			"messageWithAttachments": "${text} (${n} Anhänge)",
-			"voteBlockHeading": "[${prefix}] ${question}",
-			"voteBlockHeadingTagged": "[Abstimmung] ${question}",
-			"voteCastLine": "[${prefix}] Abstimmung: ${choice}",
-			"voteCastLineTagged": "[Abstimmung] Abstimmung: ${choice}",
-			"voteOptionsPreview": "[${prefix}] ${options}",
-			"voteOptionsPreviewTagged": "[Abstimmung] ${options}",
-			"voteDeadlineLineOpen": "Frist: ${date}",
-			"voteDeadlineLineClosed": "Ende: ${date} [Ended]",
-			"pinMessageLine": "[Oben] ${targetId}",
-			"unpinMessageLine": "[Entpinnen] ${targetId}",
-			"stickerPrefixLine": "[${label}]",
-			"stickerPrefixLineTagged": "[Sticker]",
-			"feedbackDagLine": "[${label}]",
-			"feedbackDagLineWithNote": "[${label}] ${note}",
-			"feedbackPreviewLine": "${tag}${sep}${note}",
-			"feedbackPreviewTaggedNote": "${tag} ${note}",
 			"mentionHandle": "@${name}",
 			"mentionInsert": "@${name}",
-			"feedbackUp": "Likes",
-			"feedbackDown": "Disliken",
 			"attachmentsHint": "(${n} Anhänge)",
-			"pinMessage": "Nach oben stecken",
-			"unpinMessage": "Lösen",
-			"pinThisMessage": "Schreiben Sie diesen Artikel an die DAG und pinnen Sie ihn oben an",
-			"pinAction": {
-				"textContent": "Nach oben stecken",
-				"title": "Schreiben Sie diesen Artikel an die DAG und pinnen Sie ihn oben an"
-			},
-			"unpinAction": {
-				"textContent": "Lösen",
-				"title": "Lösen"
-			},
-			"pinOk": "Aufgenommen und gepinnt",
-			"unpinOk": "Nicht angepinnt",
-			"pinFailed": "Pin ist fehlgeschlagen",
-			"menuCopyText": "Text kopieren",
-			"menuExportHtml": "Export nach HTML",
-			"menuCopyId": "Nachrichten-ID kopieren",
 			"copied": "Kopiert",
 			"addBookmark": {
 				"title": "Aktuellen Kanal als Lesezeichen speichern"
@@ -1456,9 +1212,6 @@
 			"bookmarkExists": "Das Lesezeichen existiert bereits",
 			"bookmarkAdded": "Mit Lesezeichen versehen",
 			"bookmarkSaveFailed": "Lesezeichen konnten nicht gespeichert werden",
-			"remoteTyping": "${name} tippt...",
-			"remoteTypingTwo": "${name1}, ${name2} Eingabe...",
-			"remoteTypingMany": "${name} und ${count} andere tippen…",
 			"localAiLabel": "Native Rolle:",
 			"forceTriggerOne": {
 				"title": "Erzwinge, dass Trigger ${name} spricht"
@@ -1467,23 +1220,10 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "Alle lokalen Charaktere zum Sprechen zwingen"
 			},
-			"messageRefAnchor": "Zitatnachricht: ${id}",
-			"settingsFedPartition": "Anzahl der Bundesabteilungen",
-			"settingsRtcBudget": "RTC-Verbindungsbudget",
-			"settingsRtcJoinRate": "RTC hat ein Limit pro Minute hinzugefügt",
-			"settingsFedTuningHint": "DAG-Gruppeneinstellungen schreiben; Nach der Änderung wird empfohlen, den Föderationsraum erneut zu binden.",
-			"settingsAutoChannelGc": "Stumme Kanäle automatisch löschen",
-			"settingsAutoChannelGcHint": "Höchstens 2 isolierte Inselkanäle, die seit ≥30 Tagen still waren und nicht erreichbar sind, werden gelöscht, wenn sie realisiert werden.",
 			"quoteHeader": "> **${sender}**${sep}${time}",
 			"quoteHeaderWithTime": "> **${sender}** · ${time}",
 			"quoteHeaderWithoutTime": "> **${sender}**",
 			"stopGenerating": "Hören Sie auf zu generieren",
-			"messageAborted": "Unterbrochen",
-			"avStart": "Medien starten",
-			"avMute": "Stummschalten",
-			"avSwap": "Startbildschirm",
-			"avStop": "Stoppen",
-			"avNeedStreamChannel": "Bitte verwenden Sie Audio und Video in Kanälen vom Typ „Streaming Media“.",
 			"reactionAdd": {
 				"title": "Antwort hinzufügen"
 			},
@@ -1494,25 +1234,11 @@
 				"title": "Emoticons hinzufügen"
 			},
 			"reactionPrompt": "Emoji eingeben (Unicode)",
-			"channelTypeLabel": "Kanaltyp",
-			"channelTypeText": "Chat-Kanal",
-			"channelTypeList": "Liste/Forumkanal",
-			"channelTypeStreaming": "Streaming-Kanal",
 			"convertToText": "In Chat-Kanal konvertieren",
 			"convertToList": "In Listen-/Forumkanal konvertieren",
 			"setAsDefault": "Als Gruppenstandardkanal festlegen",
 			"isDefault": "Aktueller Standard",
-			"defaultChannelSet": "Als Standardkanal festlegen",
-			"defaultChannelSetFailed": "Das Festlegen des Standardkanals ist fehlgeschlagen",
 			"channelUpdateFailed": "Die Kanalaktualisierung ist fehlgeschlagen",
-			"voteCreate": "Starten Sie eine Abstimmung",
-			"votePromptDeadline": "Frist (für keine zeitliche Begrenzung leer lassen, Format 01.01.2026 23:59)",
-			"voteTooFewOptions": "Es sind mindestens zwei Optionen erforderlich",
-			"voteCreateFailed": "Die Umfrage konnte nicht erstellt werden",
-			"voteFor": "Investiere ${option}",
-			"voteDeadline": "Frist",
-			"voteEnded": "Beendet",
-			"voteTotal": "Insgesamt ${n} Stimmen",
 			"record": "Aufnahme",
 			"fileDownload": {
 				"title": "Datei herunterladen"
@@ -1526,44 +1252,438 @@
 			"saveSticker": {
 				"title": "Speichern Sie Sticker/Emoticons in Ihren Favoriten"
 			},
-			"stickerSaved": "In der Stickerbibliothek gespeichert",
-			"stickerDefaultName": "Sticker",
 			"deleteMessage": {
 				"title": "Nachricht löschen"
 			},
 			"deleteConfirm": "Bestätigen, um diese Nachricht zu löschen?",
-			"editMessage": {
-				"title": "Nachricht bearbeiten"
-			},
 			"saveEdit": "Speichern",
 			"cancelEdit": "Abbrechen",
 			"editingMessage": "Bearbeitung",
-			"editConfirm": "Bestätigen (Strg+Eingabe)",
-			"editCancel": "Abbrechen (Esc)",
-			"editHint": "Strg+Enter Bestätigen · Esc Abbrechen",
-			"editEmptyText": "Der Nachrichteninhalt darf nicht leer sein",
-			"createGroupTitle": "Neue Gruppe erstellen",
 			"groupNameLabel": "Gruppenname",
 			"groupName": {
 				"placeholder": "Meine Gruppen"
 			},
-			"defaultChannelLabel": "Standardkanal",
-			"defaultChannel": {
-				"placeholder": "Allgemein"
-			},
-			"createGroupFailed": "Die Gruppe konnte nicht erstellt werden",
-			"createChannelFailed": "Kanal konnte nicht erstellt werden",
 			"moreActions": {
 				"title": "Weitere Aktionen"
 			},
-			"thread": "Untergeordneter Thread",
-			"threadBack": "Zurück",
-			"threadBreadcrumbRootTitle": "Zum Pfadstartpunkt springen (erste Ebene)",
-			"threadBreadcrumbMiddleTitle": "Erweitern Sie die mittlere Ebene und wählen Sie die Ebene aus, zu der Sie springen möchten",
-			"threadBreadcrumbMiddleSummary": "mittlere ${count}-Ebene",
-			"menuShareExternal": "Teilen mit externem Link",
 			"shareExternalOk": "Link hochgeladen und kopiert",
-			"shareExternalFailed": "Der Upload ist fehlgeschlagen. Bitte überprüfen Sie das Netzwerk"
+			"shareExternalFailed": "Der Upload ist fehlgeschlagen. Bitte überprüfen Sie das Netzwerk",
+			"ownerSuccession": {
+				"main": "Starten Sie eine Nachfolgeabstimmung",
+				"autoSignHint": "Nach der Übermittlung signiert die Maschine automatisch den Signatur-Seed der Gruppe, ohne den privaten Schlüssel einzugeben. In einer Gruppe mit mehreren Administratoren muss mehr als die Hälfte der Administratoren lokal denselben Stimmzettel (gleiche Stimmzettel-ID und gleicher Kandidat) einreichen.",
+				"candidateLabel": "Nachfolge-Hash des Öffentlichen Schlüssels",
+				"description": "Übertragen Sie die höchste Verwaltungsberechtigung der Gruppe (MANAGE_ADMINS) auf das angegebene Mitglied. Nur Administratoren können arbeiten.",
+				"failed": "Die Einreichung der Nachfolgeabstimmung ist fehlgeschlagen",
+				"needHash": "Bitte geben Sie den Hash des Öffentlichen Schlüssels des Nachfolgers ein",
+				"selfButton": "Nominieren Sie sich",
+				"submitted": "Ihre Unterschrift wurde auf dem Nachfolgewahlzettel vermerkt."
+			},
+			"channelType": {
+				"label": "Kanaltyp",
+				"list": "Liste/Forumkanal",
+				"streaming": "Streaming-Kanal",
+				"text": "Chat-Kanal"
+			},
+			"settings": {
+				"archive": {
+					"adminOnly": "Dieser Computer verfügt noch nicht über kalte Archivdaten für diese Gruppe.",
+					"colChannel": "Kanal",
+					"colMonth": "Monat",
+					"colSize": "Größe",
+					"delete": {
+						"before": "Diesen Monat vorher löschen",
+						"button": "Kaltes Archiv löschen",
+						"confirm": "Alle kalten Archivdateien löschen, die älter als ${month} sind? Nicht rückgängig zu machen.",
+						"failed": "Archiv konnte nicht gelöscht werden: ${error}",
+						"hint": "Nur das lokale Archiv/*.jsonl wird gelöscht; Hotspots und DAG-Anker sind nicht betroffen.",
+						"invalidMonth": "Bitte wählen Sie einen gültigen Monat JJJJ-MM aus.",
+						"ok": "${files} Archivdateien gelöscht."
+					},
+					"empty": "Es sind noch keine kalten Archivdateien vorhanden.",
+					"filesTitle": "Archivierte Dateien",
+					"hint": "Das Kaltarchiv ist der Endzustand des lokalen Leerentextbeitrags (Dateien unterteilt nach Monat). Durch das Löschen des Archivs wird die DAG nicht geändert. Wenn der Verlauf fehlt, kann er von den Verbundnachbarn abgerufen werden.",
+					"title": "Lagerung und Kaltarchivierung"
+				},
+				"autoChannelGc": "Stumme Kanäle automatisch löschen",
+				"autoChannelGcHint": "Höchstens 2 isolierte Inselkanäle, die seit ≥30 Tagen still waren und nicht erreichbar sind, werden gelöscht, wenn sie realisiert werden.",
+				"autoReply": {
+					"frequency": "Rollenantworten automatisch auslösen (nach jeweils N Benutzernachrichten, 0 ist ausgeschaltet)",
+					"frequencyHint": "0 bedeutet aus; @Erwähnungen werden weiterhin sofort ausgelöst",
+					"tokenBucket": "Automatische Antwortdruckplanung (Token Bucket)",
+					"tokenBucketHint": "Nach der Aktivierung verwaltet jeder Charakter einen Token-Bucket pro Kanal; onMessage wird vorübergehend nicht ausgelöst, wenn der Bucket leer ist, was eine kontinuierliche Bildschirmaktualisierung in Spitzenzeiten verhindern kann."
+				},
+				"batterySaver": "Energiesparmodus (verkleinerter Verbundverbindungspool und Relay)",
+				"compactTriggerDepth": "Tiefe des materialisierten Komprimierungstriggers",
+				"discoveryBlurb": "Discovery-Einführung (optional)",
+				"discoveryPublic": "Diese Gruppe in der Verbunderkennung verfügbar machen (ohne dem Gruppenschlüssel beizutreten)",
+				"discoveryTitle": "Titel der Discovery-Liste (optional)",
+				"eventRetentionDepth": "Aufbewahrungstiefe für DAG-Ereignisse",
+				"eventRetentionMs": "Aufbewahrungszeit des DAG-Ereignisses",
+				"explorePeers": "Entdecken Sie benachbarte Slots",
+				"fedPartition": "Anzahl der Bundesabteilungen",
+				"fedTuningHint": "DAG-Gruppeneinstellungen schreiben; Nach der Änderung wird empfohlen, den Föderationsraum erneut zu binden.",
+				"fileCe": {
+					"mode": "Dateiverschlüsselungsmodus",
+					"modeConvergent": "Konvergente Verschlüsselung (kann Duplikate entfernen)",
+					"modeHint": "Der hohe Datenschutzmodus verwendet einen zufälligen ContentKey für jeden Block und markiert ceMode=random; Dies verringert das Risiko, dass Leerentext erraten werden kann, erhöht jedoch die Speicher- und Bandbreitennutzung.",
+					"modeRandom": "Hoher Datenschutzmodus (zufällige Schlüssel, keine Deduplizierung)"
+				},
+				"gossipTtl": "Gossipweiterleitung TTL (Hop-Anzahl)",
+				"hlcMaxSkew": "HLC-Future-Offset-Obergrenze (Millisekunden)",
+				"hotLatest": "Hot-Zone-Aufbewahrung (aktuellste Anzahl von Beiträgen pro Kanal)",
+				"hotWindowHint": "Hot-Zone-Beiträge werden im Prüfpunkt und im Nachrichtencache gespeichert; Die verbleibenden Beiträge werden nach der Materialisierung in das monatliche Cold-Archiv geschrieben und dann aus den DAG-Prozessereignissen ausgeblendet.",
+				"ice": {
+					"cred": {
+						"aria-label": "TURN-Passwort",
+						"placeholder": "Passwort (optional)"
+					},
+					"remove": {
+						"aria-label": "Diesen Server entfernen"
+					},
+					"servers": "ICE/TURN-Server",
+					"serversAdd": "Server hinzufügen",
+					"serversHint": "Für WebRTC und föderiertes P2P-NAT-Traversal. TURN-Benutzername und -Passwort werden nur lokal gespeichert und nicht über die Föderation synchronisiert.",
+					"url": {
+						"aria-label": "ICE-Serveradresse",
+						"placeholder": "stun:host:19302"
+					},
+					"user": {
+						"aria-label": "TURN-Benutzername",
+						"placeholder": "Benutzername (optional)"
+					}
+				},
+				"maxDagPayload": "DAG maximale Anzahl von Bytes für ein einzelnes Ereignis",
+				"maxPeers": "Föderationsverbindungsobergrenze",
+				"message": {
+					"rateLimit": "Begrenzung der Nachrichtenrate (Nachricht/Minute/Entität)",
+					"retention": "Der Nachrichtentext wird automatisch gelöscht",
+					"retention1y": "Vor 1 Jahr",
+					"retention30d": "Vor 30 Tagen",
+					"retention90d": "Vor 90 Tagen",
+					"retentionForever": "Permanente Aufbewahrung (nur komprimierte DAG-Ereignisse)",
+					"retentionHint": "Der sichtbare Verlauf wird standardmäßig nicht automatisch gelöscht. Wenn diese Option aktiviert ist, wird nur der Hot-Cache für lokale Nachrichten bereinigt. Die endgültigen Nachrichten werden im kalten Archiv und am Prüfpunkt aufbewahrt."
+				},
+				"page": {
+					"title": "Gruppeneinstellungen",
+					"kicker": "Gruppenleitung",
+					"subtitle": "Verwalten Sie Gruppeninformationen, Mitglieder und allgemeine Funktionen. Low-Frequency-Berechtigungen, Speicher und Überwachungstools sind in erweiterten Einstellungen zentralisiert.",
+					"backToChat": "Zurück zum Chat",
+					"navigationLabel": "Klassifizierung der Gruppeneinstellungen",
+					"activeEmojiPackLabel": "Bearbeitetes Paket",
+					"membersTitle": "Mitgliederliste",
+					"overviewTitle": "Gruppenübersicht",
+					"overviewHint": "Nur-Lese-Übersicht. Mit Governance-Berechtigung können Sie Gruppeninfos und Richtlinien unter „Basis“ bearbeiten.",
+					"governanceHint": "Schreiben Sie die Richtlinien auf Gruppenebene der DAG. Administrator- oder MANAGE_ADMINS-Berechtigungen sind erforderlich.",
+					"governanceDenied": "Sie sind nicht berechtigt, Gruppen-Governance-Einstellungen zu ändern.",
+					"rolesDenied": "Sie verfügen nicht über die MANAGE_ROLES-Berechtigung zum Bearbeiten von Rollen.",
+					"notMember": "Sie sind kein Mitglied dieser Gruppe mehr; Die Daten dieser Gruppe wurden nach dem Verlassen der Gruppe automatisch gelöscht.",
+					"basicTitle": "Gruppenverwaltung",
+					"profileSectionTitle": "Gruppeninformationen",
+					"profileSectionHint": "Der Name, die Einführung und die Art und Weise des Beitritts zur Gruppe werden in die Gruppenmetadaten geschrieben.",
+					"behaviorSectionTitle": "Laufverhalten",
+					"networkSectionTitle": "Föderation und Verbindung",
+					"retentionSectionTitle": "Aufbewahrung & Ratenlimits",
+					"mediaSectionTitle": "Anrufe & Dateien",
+					"nameLabel": "Gruppenname",
+					"descriptionLabel": "Gruppenbeschreibung",
+					"joinPolicyLabel": "Gruppeneintrittsstrategie",
+					"joinInviteOnly": "Nur mit Einladung",
+					"joinPow": "PoW erforderlich",
+					"powDifficultyLabel": "PoW-Schwierigkeit",
+					"securityAdvancedTitle": "Sicherheits- und Gruppeneigentümeroperationen",
+					"securityAdvancedDescription": "Schlüsselrotation und Nachfolge von Gruppenleitern; Falsche Vorgänge können den Mitgliederzugriff beeinträchtigen",
+					"powDifficultyTip": "Nachweis der Arbeitsschwierigkeit. Je höher der Wert, desto länger ist die Berechnungszeit, die Fremde benötigen, um der Öffentlichen Gruppe beizutreten.",
+					"maxDagPayloadTip": "Die Obergrenze der Daten, die von einem einzelnen Gruppenereignis übertragen werden dürfen. Wenn es zu groß ist, erhöht es den Synchronisierungsspeicher und den Netzwerkaufwand.",
+					"trustedPeersTip": "Die Anzahl der Föderationsnachbarn mit hohem Ruf, die vorrangig in Verbindung bleiben sollen.",
+					"gossipTtlTip": "Die maximale Anzahl an Bundesknoten, über die die Nachricht weitergeleitet werden kann. Eine Erhöhung erhöht die Abdeckung und erhöht auch den Verkehr.",
+					"hlcTip": "Die maximale Zeit, die die Uhr des Remote-Knotens schneller sein darf als die Uhr des lokalen Knotens, wird verwendet, um abnormale zukünftige Ereignisse abzulehnen.",
+					"sfuTip": "Optionale externe Audio- und Video-Weiterleitungsdienstadresse. Lassen Sie das Feld leer, um integrierte Punkt-zu-Punkt-/Relay-Anrufe zu verwenden.",
+					"iceTip": "Helfen Sie WebRTC, in den Router einzudringen. Wenn die direkte Verbindung fehlschlägt, leitet TURN in seinem Namen Audio-, Video- und Verbunddatenverkehr weiter.",
+					"fileEncryptionTip": "Konvergente Verschlüsselung dedupliziert, legt aber die Tatsache offen, dass die Dateien identisch sind. Zufallsschlüssel sind privater, nehmen aber mehr Platz ein.",
+					"allowDangerousHtml": "Nachrichten vertrauenswürdiger Autoren ermöglichen Inline-HTML",
+					"save": "Einstellungen speichern",
+					"loadFailed": "Gruppeneinstellungen konnten nicht geladen werden: ${error}",
+					"saveSuccess": "Gruppeneinstellungen gespeichert",
+					"saveFailed": "Einstellungen konnten nicht gespeichert werden: ${error}",
+					"rolesTitle": "Rollen und Berechtigungen",
+					"roleDefault": "Standard",
+					"permissionUpdated": "Berechtigungen aktualisiert",
+					"permissionUpdateFailed": "Berechtigungen konnten nicht aktualisiert werden: ${error}",
+					"noMembers": "Noch keine Mitglieder",
+					"memberRoles": "Rolle:",
+					"ban": "Verbot",
+					"banConfirm": "Sind Sie sicher, dass Sie Mitglied ${name} sperren möchten?",
+					"banSuccess": "Mitglied wurde gesperrt",
+					"banFailed": "Mitglied konnte nicht gesperrt werden: ${error}",
+					"bannedTitle": "Gesperrtes Mitglied",
+					"unban": "Entsperren",
+					"unbanConfirm": "Sind Sie sicher, dass Sie Mitglied ${name} entsperren möchten?",
+					"unbanSuccess": "Das Mitglied wurde entsperrt",
+					"unbanFailed": "Entsperren fehlgeschlagen: ${error}",
+					"gshGenerationRetentionHint": "Derzeit werden nur die letzten 64 Generationen des Dateihauptschlüsselverlaufs gespeichert. Die ältesten historischen Dateien können nach Überschreitung möglicherweise nicht mehr entschlüsselt werden. Es wird daher empfohlen, wichtige Daten regelmäßig zu archivieren.",
+					"gshGenerationNearLimit": "Derzeit rotiert zur Generation ${generation} von Dateihauptschlüsseln (bis zu ${maxGenerations} Generationen). Die Fortsetzung der häufigen Rotation führt dazu, dass die ältesten historischen Schlüssel ausgemustert werden.",
+					"ownerSuccession": "Nachfolge des Gruppenleiters",
+					"ownerSuccessionOk": "Die Nachfolge der Gruppenleiter ist in Kraft getreten",
+					"ownerSuccessionFailed": "Nachfolge des Gruppenleiters fehlgeschlagen: ${error}",
+					"defaultEmojiPack": {
+						"failed": "Standard-Emoji-Paket konnte nicht gesetzt werden",
+						"hint": "Wird Mitgliedern beim Beitritt automatisch zu den Favoriten hinzugefügt. Nach Änderung wird nur das alte Standardpaket ersetzt, sofern es noch in den Favoriten liegt.",
+						"label": "Standard-Emoji-Paket",
+						"ok": "Standard-Emoji-Paket aktualisiert"
+					},
+					"channelArchive": {
+						"hint": "Durch den Import des vollständigen JSON-Archivs des Kanals wird ein neuer gewöhnlicher Textkanal in dieser Gruppe erstellt und der Verlauf wiederhergestellt (von Ihnen neu signiert; Anhänge behalten nur Metadaten).",
+						"import": "Kanal-JSON importieren",
+						"importFailed": "Import fehlgeschlagen: ${error}",
+						"importOk": "${count} Nachrichten importiert, neuer Kanal eröffnet...",
+						"title": "Kanalarchiv"
+					},
+					"channelPerms": {
+						"addRole": "Rollenüberschreibung hinzufügen",
+						"denied": "Sie verfügen nicht über die MANAGE_CHANNELS-Berechtigung zum Bearbeiten von Kanalberechtigungsüberschreibungen.",
+						"hint": "Legen Sie Rollenberechtigungsüberschreibungen für bestimmte Kanäle fest. Aufgedeckte Elemente erben Gruppenrollenberechtigungen.",
+						"noChannels": "Derzeit gibt es keinen zu konfigurierenden Kanal",
+						"removeRole": "Entfernen Sie diese Rollenüberschreibung",
+						"selectChannel": "Kanal",
+						"stateAllow": "Erlauben",
+						"stateDeny": "Ablehnen",
+						"stateNeutral": "Erben",
+						"updateFailed": "Kanalberechtigungen konnten nicht aktualisiert werden: ${error}",
+						"updated": "Kanalberechtigungen aktualisiert"
+					},
+					"advanced": {
+						"description": "Netzwerk-, Speicher-, Geschwindigkeitsbegrenzungs- und Verschlüsselungsparameter; Bitte behalten Sie die Standardeinstellungen bei, wenn Sie sich nicht sicher sind",
+						"hubDescription": "Diese Funktionen ändern die Berechtigungsstruktur, historische Daten oder Governance-Datensätze der Gruppe. Passen Sie die Einstellungen nur an, wenn dies eindeutig erforderlich ist.",
+						"hubTitle": "Erweiterte Einstellungen",
+						"navigationLabel": "Kategorie „Erweiterte Einstellungen“.",
+						"title": "Erweiterte Einstellungen"
+					},
+					"emojis": {
+						"create": {
+							"pack": "Neues Emoji-Paket",
+							"packFailed": "Erstellen fehlgeschlagen: ${error}",
+							"packOk": "Emoji-Paket erstellt",
+							"packPrompt": "Emoji-Paket-ID"
+						},
+						"delete": "Emoticon löschen",
+						"deleteConfirm": "Sind Sie sicher, dass Sie diese Gruppe von Emoticons löschen möchten?",
+						"deleteFailed": "Löschen fehlgeschlagen: ${error}",
+						"deleteOk": "Emoticon wurde gelöscht",
+						"empty": "Noch keine Gruppenausdrücke",
+						"hint": "Mitglieder können diese Emoticons im Chat einfügen oder senden; Deinstallierte Images werden bei Bedarf über Verbundknoten abgerufen.",
+						"packGroupOption": "${packId} (Standard)",
+						"title": "Benutzerdefinierte Ausdrücke gruppieren",
+						"upload": "Laden Sie Emoticons hoch",
+						"uploadFailed": "Hochladen fehlgeschlagen: ${error}",
+						"uploadOk": "Der Emoji wurde hochgeladen"
+					},
+					"invite": {
+						"clipboard": "Gruppen-ID: ${groupId}\nEinladungscode: ${code}\nBeitreten: ${url}",
+						"code": "Einladungscode",
+						"copied": "Gruppeninformationen kopiert",
+						"copy": "Gruppeninformationen kopieren",
+						"copyFailed": "Der Kopiervorgang ist fehlgeschlagen",
+						"expires": "Ablauf: ${date}",
+						"groupId": "Gruppen-ID",
+						"hint": "Generieren Sie einen kurzfristigen Einladungscode (Standard 1 Stunde). Die andere Partei gibt die Gruppen-ID und den Einladungscode unter „Gruppe beitreten“ ein.",
+						"mint": "Einladungscode generieren",
+						"title": "Einladen"
+					},
+					"delete": {
+						"confirm": "Diese Gruppe wirklich löschen? Unwiderruflich – alle Nachrichten und Mitgliederdaten werden dauerhaft gelöscht.",
+						"failed": "Gruppe konnte nicht gelöscht werden: ${error}",
+						"group": "Gruppe löschen",
+						"role": "Rolle löschen",
+						"roleConfirm": "Sind Sie sicher, dass Sie diese Rolle löschen möchten?",
+						"roleFailed": "Rolle konnte nicht gelöscht werden: ${error}",
+						"roleSuccess": "Rolle gelöscht",
+						"success": "Gruppe gelöscht"
+					},
+					"create": {
+						"role": "Erstellen Sie eine Rolle",
+						"roleFailed": "Rolle konnte nicht erstellt werden: ${error}",
+						"rolePrompt": "Geben Sie den Charakternamen ein:",
+						"roleSuccess": "Rolle erstellt"
+					},
+					"perm": {
+						"aDD_REACTIONS": "Reaktion hinzufügen",
+						"aDMIN": "Administrator",
+						"bAN_MEMBERS": "Ban-Mitglied",
+						"bYPASS_RATE_LIMIT": "Beschränkung der Nachrichtenrate umgehen",
+						"cREATE_THREADS": "Unterkanal erstellen",
+						"iNVITE_MEMBERS": "Mitglieder Einladen",
+						"kICK_MEMBERS": "Kick-Mitglied",
+						"mANAGE_": {
+							"cHANNELS": "Kanal verwalten",
+							"fILES": "Dateien verwalten",
+							"mESSAGES": "Managementnachrichten",
+							"rOLES": "Führungsrolle"
+						},
+						"pIN_MESSAGES": "Angeheftete Nachricht",
+						"sEND_MESSAGES": "Nachricht senden",
+						"sEND_STICKERS": "Sticker verschicken",
+						"sTREAM": "Stimme",
+						"uPLOAD_FILES": "Dateien hochladen",
+						"vIEW_CHANNEL": "Kanal ansehen"
+					},
+					"kick": {
+						"main": "Rausschmeißen",
+						"confirm": "Sind Sie sicher, dass Sie Mitglied ${name} rausschmeißen möchten?",
+						"failed": "Mitglied konnte nicht rausgeschmissen werden: ${error}",
+						"selfNodeWarning": "Warnung: Dieses Mitglied verwendet dieselbe Knotenidentität wie Sie. Auch nach dem Rauswurf werden Sie aus der Gruppe entfernt. Sind Sie sicher, dass Sie fortfahren möchten?",
+						"success": "Mitglied rausgeschmissen"
+					},
+					"tabs": {
+						"advanced": "Fortschrittlich",
+						"audit": "Audit-Protokoll",
+						"channelPermissions": "Kanalberechtigungen",
+						"emojis": "Emoji",
+						"general": "Basic",
+						"members": "Mitglied",
+						"permissions": "Rollenberechtigungen",
+						"storage": "Speicherung und Archivierung"
+					},
+					"key": {
+						"managementTip": "Neue Schlüssel müssen nach der Rotation an die Mitglieder neu verteilt werden. Manuelle Maßnahmen sollten nur dann ergriffen werden, wenn Sie den Verdacht haben, dass ein Schlüssel kompromittiert wurde.",
+						"managementTitle": "Schlüsselverwaltung",
+						"rotate": "Hauptschlüssel der Gruppendatei rotieren",
+						"rotateConfirm": "Sind Sie sicher, dass Sie den Hauptschlüssel dieser Gruppendatei manuell rotieren möchten? Neue Mitglieder müssen den Verlaufsdateischlüssel neu synchronisieren.",
+						"rotateFailed": "Schlüsselrotation fehlgeschlagen: ${error}",
+						"rotateOk": "Schlüssel wurde gedreht"
+					}
+				},
+				"pinContext": "Top-Nachbarschaft (±N Nachbarn)",
+				"rtcBudget": "RTC-Verbindungsbudget",
+				"rtcJoinRate": "RTC hat ein Limit pro Minute hinzugefügt",
+				"streamGeneratingIdle": "Von der KI generierter Platzhalter-Leerlauf-Timeout (Millisekunden)",
+				"streamingSfu": "Streaming-SFU-WebSocket-Adresse (optional)",
+				"trustedPeers": "Vertrauenswürdiger Nachbarslot (Top-K)",
+				"wantIdsBudget": "Einzelnes WantIds-Budget"
+			},
+			"feedback": {
+				"dagLine": "[${label}]",
+				"dagLineWithNote": "[${label}] ${note}",
+				"down": "Disliken",
+				"previewLine": "${tag}${sep}${note}",
+				"previewTaggedNote": "${tag} ${note}",
+				"up": "Likes"
+			},
+			"message": {
+				"aborted": "Unterbrochen",
+				"deleted": "Nachricht gelöscht",
+				"deletedBracket": "[Nachricht gelöscht]",
+				"prefixSticker": "Sticker",
+				"refAnchor": "Zitatnachricht: ${id}",
+				"withAttachments": "${text} (${n} Anhänge)"
+			},
+			"default": {
+				"channel": {
+					"placeholder": "Allgemein"
+				},
+				"channelLabel": "Standardkanal",
+				"channelSet": "Als Standardkanal festlegen",
+				"channelSetFailed": "Das Festlegen des Standardkanals ist fehlgeschlagen"
+			},
+			"sticker": {
+				"defaultName": "Sticker",
+				"prefixLine": "[${label}]",
+				"prefixLineTagged": "[Sticker]",
+				"saved": "In der Stickerbibliothek gespeichert"
+			},
+			"remote": {
+				"nodeTimeout": "Der Remote-Knoten antwortet nicht. Bitte versuchen Sie es später erneut.",
+				"typing": "${name} tippt...",
+				"typingMany": "${name} und ${count} andere tippen…",
+				"typingTwo": "${name1}, ${name2} Eingabe...",
+				"unavailable": "Die Remote-Komponente ist nicht verfügbar oder kann den RPC nicht weiterleiten",
+				"unsafe": "Diese Nachricht stammt von einem entfernten Standort und der Autor befindet sich nicht in der lokalen Vertrauensliste. Die Rich-Text-Gefällt mirdergabe wurde deaktiviert."
+			},
+			"create": {
+				"channelFailed": "Kanal konnte nicht erstellt werden",
+				"failed": "Die Gruppe konnte nicht erstellt werden",
+				"group": "Neue Gruppe erstellen",
+				"groupFailed": "Die Gruppe konnte nicht erstellt werden",
+				"groupTitle": "Neue Gruppe erstellen"
+			},
+			"stream": {
+				"generationFailed": "Die KI-Generierung ist abgelaufen und wurde nicht abgeschlossen. Aktualisierungen wurden gestoppt.",
+				"noEmbed": {
+					"textContent": "Die Streaming-Adresse muss eine einbettbare https://-Seite sein, oder die Gruppeneinstellungen müssen zuerst konfiguriert und aktualisiert werden, um ein Anzeigetoken zu erhalten."
+				},
+				"noSfu": {
+					"textContent": "StreamingSfuWss ist nicht konfiguriert; Administratoren können die LiveKit/mediasoup-Anzeigeadresse in den Gruppeneinstellungen eingeben."
+				},
+				"ok": "Medienstream erfasst (gestoppt, nicht gesendet)",
+				"test": "Testen Sie Mediengeräte"
+			},
+			"thread": {
+				"main": "Untergeordneter Thread",
+				"back": "Zurück",
+				"breadcrumbMiddleSummary": "mittlere ${count}-Ebene",
+				"breadcrumbMiddleTitle": "Erweitern Sie die mittlere Ebene und wählen Sie die Ebene aus, zu der Sie springen möchten",
+				"breadcrumbRootTitle": "Zum Pfadstartpunkt springen (erste Ebene)"
+			},
+			"unpin": {
+				"action": {
+					"textContent": "Lösen",
+					"title": "Lösen"
+				},
+				"message": "Lösen",
+				"messageLine": "[Entpinnen] ${targetId}",
+				"ok": "Nicht angepinnt"
+			},
+			"vote": {
+				"blockHeading": "[${prefix}] ${question}",
+				"blockHeadingTagged": "[Abstimmung] ${question}",
+				"cast": "Abstimmung",
+				"castLine": "[${prefix}] Abstimmung: ${choice}",
+				"castLineTagged": "[Abstimmung] Abstimmung: ${choice}",
+				"create": "Starten Sie eine Abstimmung",
+				"createFailed": "Die Umfrage konnte nicht erstellt werden",
+				"deadline": "Frist",
+				"deadlineLineClosed": "Ende: ${date} [Ended]",
+				"deadlineLineOpen": "Frist: ${date}",
+				"ended": "Beendet",
+				"for": "Investiere ${option}",
+				"optionsPreview": "[${prefix}] ${options}",
+				"optionsPreviewTagged": "[Abstimmung] ${options}",
+				"promptDeadline": "Frist (für keine zeitliche Begrenzung leer lassen, Format 01.01.2026 23:59)",
+				"tooFewOptions": "Es sind mindestens zwei Optionen erforderlich",
+				"total": "Insgesamt ${n} Stimmen"
+			},
+			"edit": {
+				"cancel": "Abbrechen (Esc)",
+				"confirm": "Bestätigen (Strg+Eingabe)",
+				"emptyText": "Der Nachrichteninhalt darf nicht leer sein",
+				"hint": "Strg+Enter Bestätigen · Esc Abbrechen",
+				"message": {
+					"title": "Nachricht bearbeiten"
+				}
+			},
+			"menu": {
+				"copyId": "Nachrichten-ID kopieren",
+				"copyText": "Text kopieren",
+				"exportHtml": "Export nach HTML",
+				"shareExternal": "Teilen mit externem Link"
+			},
+			"pin": {
+				"action": {
+					"textContent": "Nach oben stecken",
+					"title": "Schreiben Sie diesen Artikel an die DAG und pinnen Sie ihn oben an"
+				},
+				"failed": "Pin ist fehlgeschlagen",
+				"message": "Nach oben stecken",
+				"messageLine": "[Oben] ${targetId}",
+				"ok": "Aufgenommen und gepinnt",
+				"thisMessage": "Schreiben Sie diesen Artikel an die DAG und pinnen Sie ihn oben an"
+			},
+			"av": {
+				"mute": "Stummschalten",
+				"needStreamChannel": "Bitte verwenden Sie Audio und Video in Kanälen vom Typ „Streaming Media“.",
+				"start": "Medien starten",
+				"stop": "Stoppen",
+				"swap": "Startbildschirm"
+			}
 		},
 		"hub": {
 			"title": "Chat",
@@ -1576,10 +1696,6 @@
 				"title": "Charaktere",
 				"tip": "Charaktere"
 			},
-			"friendsTooltip": {
-				"title": "Freunde",
-				"tip": "Freunde"
-			},
 			"inboxTooltip": {
 				"title": "Posteingang",
 				"tip": "Gruppenübergreifender Posteingang"
@@ -1587,18 +1703,6 @@
 			"inbox": {
 				"title": "Posteingang",
 				"filtersLabel": "Posteingangsnachrichten filtern",
-				"tabMention": "Erwähnungen",
-				"tabMessage": "Alle Nachrichten",
-				"tabCare": "Besondere Beobachtung",
-				"tabVoteClosed": "Abstimmung beendet",
-				"emptyMentionTitle": "Bisher hat Sie noch niemand erwähnt",
-				"emptyMentionDescription": "Wenn Sie in Gruppenchats @ erwähnt werden, erscheinen die Nachrichten hier.",
-				"emptyMessageTitle": "Der Posteingang ist leer",
-				"emptyMessageDescription": "Hier werden Nachrichtenaktualisierungen aus verschiedenen Gruppenchats und Kanälen angezeigt.",
-				"emptyCareTitle": "Noch keine Beiträge von besonderer Beobachtung",
-				"emptyCareDescription": "Neue Nachrichten von Mitgliedern unter besonderer Beobachtung erscheinen hier zuerst.",
-				"emptyVoteTitle": "Keine abgeschlossenen Abstimmungen",
-				"emptyVoteDescription": "Sobald die teilnehmenden Umfragen geschlossen sind, werden die Ergebnisse hier zusammengefasst.",
 				"rowLabel": {
 					"aria-label": "${author} sagte in ${group} von ${channel}: ${preview}"
 				},
@@ -1606,7 +1710,23 @@
 				"badgeFetchFailed": "Aktualisierung des ungelesenen Badges fehlgeschlagen: ${error}",
 				"loadFailed": "Das Laden des Posteingangs ist fehlgeschlagen: ${error}",
 				"markSeenFailed": "Aktualisierung des Lesestatus des Posteingangs fehlgeschlagen: ${error}",
-				"jumpFailed": "Diese Nachricht kann nicht geöffnet werden: ${error}"
+				"jumpFailed": "Diese Nachricht kann nicht geöffnet werden: ${error}",
+				"empty": {
+					"careDescription": "Neue Nachrichten von Mitgliedern unter besonderer Beobachtung erscheinen hier zuerst.",
+					"careTitle": "Noch keine Beiträge von besonderer Beobachtung",
+					"mentionDescription": "Wenn Sie in Gruppenchats @ erwähnt werden, erscheinen die Nachrichten hier.",
+					"mentionTitle": "Bisher hat Sie noch niemand erwähnt",
+					"messageDescription": "Hier werden Nachrichtenaktualisierungen aus verschiedenen Gruppenchats und Kanälen angezeigt.",
+					"messageTitle": "Der Posteingang ist leer",
+					"voteDescription": "Sobald die teilnehmenden Umfragen geschlossen sind, werden die Ergebnisse hier zusammengefasst.",
+					"voteTitle": "Keine abgeschlossenen Abstimmungen"
+				},
+				"tabs": {
+					"care": "Besondere Beobachtung",
+					"mention": "Erwähnungen",
+					"message": "Alle Nachrichten",
+					"voteClosed": "Abstimmung beendet"
+				}
 			},
 			"notifyPrefs": {
 				"title": "Benachrichtigungseinstellungen",
@@ -1623,11 +1743,6 @@
 				"muteForever": "Bis es manuell eingeschaltet wird",
 				"saved": "Benachrichtigungseinstellungen gespeichert"
 			},
-			"voteClosed": "Beendet",
-			"discoveryTooltip": {
-				"title": "Gruppenentdeckung",
-				"tip": "Gruppenentdeckung"
-			},
 			"prefsTooltip": {
 				"title": "Aufstellen",
 				"tip": "Übersetzung und föderierte P2P-Einstellungen"
@@ -1636,65 +1751,6 @@
 			"prefsNav": {
 				"aria-label": "Einstellungskategorien"
 			},
-			"federationTooltip": {
-				"title": "Föderierte P2P-Einstellungen",
-				"tip": "Föderierte P2P-Einstellungen"
-			},
-			"federationTitle": "Föderierte P2P-Einstellungen",
-			"federationSubtitle": "Steuern Sie geräteübergreifende Verbindungen. Behalten Sie in den meisten Fällen die Standardeinstellungen bei",
-			"federationLoadFailed": "Laden fehlgeschlagen: ${error}",
-			"fedConnectionTitle": "Vernetzen und entdecken",
-			"discoveryRefresh": "Entdeckungsliste aktualisieren",
-			"fedRelayUrlsLabel": "Netzwerk-Relay-Adresse",
-			"fedRelayUrlsTip": "Helfen Sie Geräten, sich im Internet gegenseitig zu entdecken. Geben Sie pro Zeile eine wss://-Adresse ein; Lassen Sie das Feld leer, um das Standardrelais zu verwenden.",
-			"fedBatterySaverLabel": "Energiesparmodus",
-			"fedBatterySaverTip": "Durch die Reduzierung der Anzahl der Hintergrundverbindungen und der Netzwerkaktivität kann die Nachrichtensynchronisierung etwas langsamer werden.",
-			"fedAdvancedTitle": "Erweiterte Einstellungen",
-			"fedAdvancedDescription": "Fehlerbehebungen, Reputationsmanagement und manuelle Linkvergabe",
-			"fedGroupRecoveryTitle": "Fehlerbehebung bei der Gruppenverbindung",
-			"fedGroupRecoveryTip": "Wird nur verwendet, wenn die Einladung durchgesickert ist oder das neue Gerät den Verlauf nicht synchronisieren kann.",
-			"fedRotateRoomSecret": "Gruppenraum-Passwort rotieren",
-			"fedRotateRoomSecretConfirm": "Nach der Rotation können Einladungen, die das alte Raumpasswort verwenden, keine Verbindung mehr herstellen. Sind Sie sicher, dass Sie fortfahren möchten?",
-			"fedRotateRoomSecretOk": "Das Raumpasswort wurde geändert",
-			"fedRepairJoinSnapshot": "Ich bitte die Nachbarn, sich der Gruppen-Snapshot-Reparatur anzuWeniger anzeigen",
-			"fedRepairJoinSnapshotOk": "Gruppen-Snapshot angewendet (${channels} Kanalverlauf)",
-			"fedRepairJoinSnapshotFailed": "Gruppen-Snapshot konnte nicht repariert werden: ${error}",
-			"fedRepTitle": "Subjektive Glaubwürdigkeit dieser Gruppe",
-			"fedRepTip": "Verbindungspräferenzwerte, die nativ auf der Grundlage des Verhaltens von Verbundknoten berechnet werden, sind keine Öffentlichen Bewertungen von Gruppenmitgliedern.",
-			"fedRepEmpty": "(null)",
-			"fedSlashTitle": "Reputationsstrafe",
-			"fedSlashTip": "Schreibt eine negative Reputationsaussage zu einem Knoten in das Gruppenereignisdiagramm. Nur zur Verwendung durch Administratoren, die Verbundprotokolle verstehen.",
-			"fedSlashTargetLabel": "Ziel pubKeyHash(64 hex)",
-			"fedSlashTarget": {
-				"placeholder": "Hash des Öffentlichen Schlüssels des Mitglieds"
-			},
-			"fedSlashClaimLabel": "Anspruchsstärkeanspruch (0–1)",
-			"fedSlashVerifiedLabel": "Überprüfbar (Nachweis-Ereignis-ID erforderlich)",
-			"fedSlashProofLabel": "Proof.eventId (optional)",
-			"fedSlashProof": {
-				"placeholder": "64 Hex-Ereignis-ID"
-			},
-			"fedSlashSubmitLabel": "Beitragsreputation_slash",
-			"fedResetSubmitLabel": "Setzen Sie den Ruf des Ziels zurück",
-			"fedSlashNeedHash": "Erfordert 64-Bit-Hex-PubKeyHash",
-			"fedSlashOk": "„reputation_slash“ wird in die DAG geschrieben",
-			"fedResetOk": "Reputation_reset wurde geschrieben",
-			"fedDmLinkTitle": "Geben Sie manuell einen Freund-Link aus",
-			"fedDmLinkTip": "Erfordert die Signatur mit einem nativen Identitätsschlüssel. Der private Schlüssel wird auf dieser Seite nur an den lokalen Dienst übermittelt und nicht an andere Knoten gesendet.",
-			"fedDmLinkDescription": "Geeignet für Debugging oder manuelle Identitätsmigration; Wenn Sie täglich Freunde hinzufügen, müssen Sie diese Felder nicht ausfüllen.",
-			"fedDmPubKeyLabel": "Öffentlicher Schlüssel hex(64)",
-			"fedDmSecretLabel": "Private-Key-Seed-Hex (64)",
-			"fedDmNodeLabel": "Optionale Knoten-URL",
-			"fedDmInvalidateTitle": "Lassen Sie alte Empfehlungslinks ablaufen",
-			"fedDmInvalidateDescription": "Danach werden alle zuvor ausgegebenen Freundeslinks sofort ungültig – nicht widerrufbar.",
-			"fedDmRotateLabel": "Alte Links ungültig machen",
-			"fedDmRotateConfirm": "Alle zuvor ausgegebenen Freundeslinks werden sofort ungültig und können nicht wiederhergestellt werden. Fortfahren?",
-			"fedDmIssueLabel": "DM-Link ausstellen",
-			"fedDmNeedPubKey": "Erfordert einen Öffentlichen 64-Hex-Schlüssel",
-			"fedDmNeedSecretKey": "Erfordert einen 64-Hex-Privatschlüssel-Seed",
-			"fedDmIssued": "DM-Link signiert und in die Zwischenablage kopiert",
-			"fedNonceRotated": "nonce gedreht (${nonce}…)",
-			"fedSaved": "Gespeichert",
 			"addServerTooltip": {
 				"title": "Erstellen Sie eine Gruppe oder treten Sie einer bei",
 				"tip": "Erstellen Sie eine Gruppe oder treten Sie einer bei"
@@ -1733,129 +1789,37 @@
 			"settingsTitle": {
 				"title": "Aufstellen"
 			},
-			"filesTitle": {
-				"title": "Gruppendatei"
-			},
-			"filesDrawerTitle": "Gruppendatei",
-			"filesLoading": "Gruppendateien werden geladen...",
-			"filesLoadFailed": "Gruppendatei konnte nicht geladen werden: ${error}",
-			"filesNoGroup": "Bitte wählen Sie zunächst eine Gruppe aus",
-			"filesNoCabinets": "Für die aktuelle Rolle sind keine Aktenschränke verfügbar",
-			"filesBindCabinet": "Fügen Sie einen Cabinet hinzu",
-			"filesNoChannel": "Bitte betreten Sie zunächst den Textkanal, über den Sie Nachrichten senden können",
-			"filesUploadTo": "Hochladen auf",
-			"filesRootFolder": "Stammverzeichnis",
-			"filesNewFolder": "Neuen Ordner erstellen",
-			"filesNewFolderPrompt": "Ordnername",
-			"filesRename": "Umbenennen",
-			"filesRenameFolderPrompt": "Benennen Sie den Ordner „${name}“ um in:",
-			"filesDeleteFolderConfirm": "Sind Sie sicher, dass Sie diesen Ordner löschen möchten? Dateien im Ordner werden nicht automatisch gelöscht.",
-			"filesUpload": "Hochladen",
-			"filesDownload": "Herunterladen",
-			"filesDelete": "Löschen",
-			"filesDeleteConfirm": "Sind Sie sicher, dass Sie diese Datei löschen möchten?",
-			"filesFoldersTitle": "Ordner",
-			"filesListTitle": "Dokumentieren",
-			"filesEmpty": "Derzeit befinden sich keine Dateien in diesem Verzeichnis",
-			"filesNoFolders": "Noch keine Unterordner",
 			"uploadTitle": {
 				"title": "Dateien hochladen"
 			},
 			"emojiTitle": {
 				"title": "Emoji"
 			},
-			"voteTitle": {
-				"title": "Starten Sie eine Abstimmung"
-			},
 			"shareGroupTitle": {
 				"title": "Gruppenlink teilen"
 			},
 			"shareGroupOk": "Geteilte Gruppeneinladungskarte",
-			"messageActionFailed": "Vorgang fehlgeschlagen: ${error}",
 			"inviteJoinButton": "Treten Sie der Gruppe bei",
 			"inviteLinkNeedsRoomSecret": "Diese Gruppe hat die Verbundsynchronisierung noch nicht aktiviert. Bitte generieren Sie den Einladungslink neu, bevor Sie ihn teilen.",
 			"inviteCardMembers": "${count} Mitglieder",
-			"syncFailed": "Föderationssynchronisierung fehlgeschlagen: ${error}",
-			"syncRateLimited": "Die Geschwindigkeitsbegrenzung für die Bundessynchronisierung läuft, bitte versuchen Sie es später noch einmal.",
-			"syncIncomplete": "${missing}/${total} Ereignisse bleiben unsynchronisiert",
-			"syncNoPeers": "Da keine Verbindung zum Verbundnachbarn besteht, können historische Nachrichten nicht vorübergehend synchronisiert werden. Bitte verwenden Sie den vollständigen Einladungslink und versuchen Sie es später erneut",
 			"attachmentLoadFailed": "Das Laden des Anhangs ist fehlgeschlagen",
-			"messageEditUpload": "Anhang hochladen",
 			"timeToday": "Heute ${time}",
 			"timeYesterday": "Gestern ${time}",
 			"stickerTitle": {
 				"title": "Sticker"
 			},
-			"sendTitle": {
-				"title": "Senden (Strg+Eingabe)"
-			},
-			"messageInput": {
-				"placeholder": "Gruppennachricht… Strg+Eingabe zum Senden",
-				"aria-label": "Nachricht"
-			},
 			"stopGenerateTitle": {
 				"title": "Hören Sie auf zu generieren"
 			},
-			"charTyping": "Betreten…",
-			"messageActionPrev": {
-				"title": "Vorherige Zeitleiste"
-			},
-			"messageActionNext": {
-				"title": "Nächste Zeitleiste"
-			},
-			"messageActionRegen": {
-				"title": "Regenerieren"
-			},
-			"messageActionEdit": {
-				"title": "Nachricht bearbeiten"
-			},
-			"messageActionFeedbackUp": {
-				"title": "Gefällt mir"
-			},
-			"messageActionFeedbackDown": {
-				"title": "Klicken Sie, um es nicht zu mögen"
-			},
-			"messageActionDelete": {
-				"title": "Nachricht löschen"
-			},
 			"confirmDeleteLong": "Diese Nachricht ist zu lang. Sind Sie sicher, dass Sie es löschen möchten?",
-			"messageActionCopyHtml": {
-				"title": "HTML kopieren"
-			},
 			"forceReply": "Antwort erzwingen",
 			"removeChar": "Zeichen entfernen",
-			"loadMore": "Ältere Nachrichten werden geladen…",
-			"charChatsTitle": "Historische Gespräche mit ${name}",
 			"newGroupWith": "+ Erstellen Sie eine neue Konversation mit ${name}",
-			"messageActionBookmark": {
-				"title": "Lesezeichen"
-			},
-			"messageActionPin": {
-				"title": "Nach oben stecken"
-			},
-			"messageActionUnpin": {
-				"title": "Lösen"
-			},
-			"blockAuthor": {
-				"title": "Blockieren Sie diesen Autor"
-			},
-			"pinUnpinSidebar": {
-				"title": "Lösen"
-			},
 			"meAuthor": "ICH",
-			"messageEditSave": "Speichern",
-			"messageEditCancel": "Abbrechen",
-			"messageEditArea": {
-				"aria-label": "Nachricht bearbeiten"
-			},
 			"feedbackReasonPrompt": "Grund für die Ablehnung (optional)",
 			"feedbackReasonInput": {
 				"placeholder": "Grund für die Ablehnung (optional)"
 			},
-			"messageFeedbackSubmit": "Feedback abgeben",
-			"stickersPanelTitle": "Sticker",
-			"stickersManage": "Sticker verwalten →",
-			"stickersLoading": "Laden…",
 			"recentEmojiTab": {
 				"title": "Häufig verwendet"
 			},
@@ -1863,11 +1827,6 @@
 			"currentGroupEmojiTab": {
 				"title": "Aktuelle Gruppen-Emoticons"
 			},
-			"groupEmojiTab": {
-				"title": "Gruppe"
-			},
-			"groupEmojisEmpty": "Derzeit gibt es keine Gruppen-Emoticons. Sie können diese in den Gruppeneinstellungen hochladen.",
-			"groupEmojisLoadFailed": "Gruppen-Emoticons konnten nicht geladen werden",
 			"profileLinkTitle": {
 				"title": "Profil",
 				"textContent": "Profil"
@@ -1885,22 +1844,6 @@
 			},
 			"aboutSection": "Um",
 			"bioEmpty": "Dieser Benutzer hat noch kein Profil.",
-			"statusOffline": {
-				"title": "Offline",
-				"textContent": "Offline"
-			},
-			"statusOnline": {
-				"title": "Online",
-				"textContent": "Online"
-			},
-			"statusIdle": {
-				"title": "Abwesend",
-				"textContent": "Abwesend"
-			},
-			"statusDnd": {
-				"title": "Bitte nicht stören",
-				"textContent": "Bitte nicht stören"
-			},
 			"banners": {
 				"gshBuffer": "Nach der Schlüsselrotation warten ${total} Nachrichten darauf, entschlüsselt zu werden",
 				"plaintextSidecar": "Dieser Kanal wird bei Bedarf synchronisiert; Der Sidecar für lokale Nachrichten speichert den Inhalt im Leerentext zwischen.",
@@ -1909,10 +1852,6 @@
 				"syncing": "Synchronisierung mit Bundesnachbarn…",
 				"archiveCoverageIncomplete": "Einige der Kaltarchive der Monate wurden noch nicht von der Föderation synchronisiert.",
 				"archiveSyncButton": "Synchrone Archivierung",
-				"forkGovernance": "Es gibt eine Verzweigung im Berechtigungsdatensatz und dieser befindet sich derzeit in der lokalen Ansicht.",
-				"forkTips": "${count} nicht zusammengeführte Zweige erkannt, Nachrichtenreihenfolge ist möglicherweise inkonsistent.",
-				"forkTipLabel": "DAG-Blatt",
-				"forkTipScore": "${short} · Ruf ${score}",
 				"applyBranch": "Zweig der Übernehmensgovernance",
 				"autoBranch": "Automatische Reputationsauswahl",
 				"mergeDag": "Forks zusammenführen",
@@ -1920,55 +1859,28 @@
 				"blockOpposing": "Gegenüberliegende Zweige sind nicht zugänglich",
 				"suspectedRemoved": "Möglicherweise aus dieser Gruppe entfernt: ${count} bekannte Knoten zur Verifizierung angefragt, alle abgelehnt. Sie können an die lokale Historie erinnern oder diese Gruppenkopie löschen.",
 				"suspectedRemovedKeep": "Nehmen Sie ein Souvenir mit",
-				"suspectedRemovedLeave": "Gruppe löschen"
+				"suspectedRemovedLeave": "Gruppe löschen",
+				"fork": {
+					"governance": "Es gibt eine Verzweigung im Berechtigungsdatensatz und dieser befindet sich derzeit in der lokalen Ansicht.",
+					"tipLabel": "DAG-Blatt",
+					"tipScore": "${short} · Ruf ${score}",
+					"tips": "${count} nicht zusammengeführte Zweige erkannt, Nachrichtenreihenfolge ist möglicherweise inkonsistent."
+				}
 			},
-			"blockOpposingConfirm": "Fügen Sie die Governance-Emittenten, die nicht an der aktuellen Wahl teilnehmen, zur schwarzen Liste hinzu und lehnen Sie diese Gruppe von Föderationsrelais ab. weitermachen?",
-			"blockOpposingOk": "${count} Betreffzeilen wurden als nicht erreichbar markiert",
-			"blockOpposingFailed": "Markierung fehlgeschlagen: ${error}",
 			"applyBranchOk": "Governance-Zweig angewendet",
 			"applyBranchFailed": "Zweig anwenden fehlgeschlagen: ${error}",
 			"autoBranchOk": "Automatische Auswahl nach Gefällt mirderherstellung des Rufs",
 			"autoBranchFailed": "Automatische Auswahl fehlgeschlagen: ${error}",
-			"saveEmoji": {
-				"title": "Speichern Sie Emoticons"
-			},
-			"saveEmojiOk": "Das Emoticon wurde in der Datenbank gespeichert",
-			"saveEmojiFailed": "Emoticon konnte nicht gespeichert werden: ${error}",
-			"saveSticker": {
-				"title": "Speichern Sie Sticker"
-			},
-			"saveStickerOk": "Der Sticker wurde Ihrer Stickerbibliothek hinzugefügt",
-			"saveStickerFailed": "Sticker konnten nicht gespeichert werden: ${error}",
 			"revealRemoteMd": "Volltext erweitern",
-			"voteModalTitle": "Starten Sie eine Abstimmung",
-			"voteModalSubmit": "Umfrage erstellen",
-			"voteCreateFailed": "Umfrage konnte nicht erstellt werden: ${error}",
 			"composer": {
 				"placeholder": "An #${channel} senden"
 			},
 			"composerSuspectedRemoved": {
 				"placeholder": "Möglicherweise wurden Sie aus dieser Gruppe entfernt und können keine Nachrichten mehr senden."
 			},
-			"channelReadonlyList": {
-				"placeholder": "Listenkanal schreibgeschützt"
-			},
-			"channelReadonlyStream": {
-				"placeholder": "Streaming-Kanal schreibgeschützt"
-			},
-			"noChannels": "Noch kein Gespräch",
-			"noMembers": "Noch keine Mitglieder",
-			"noPins": "Noch keine Pins",
-			"noBookmarks": "Noch keine Lesezeichen",
 			"adminSection": "Administrator",
-			"memberSection": "Mitglied",
-			"membersDigestOk": "Mitglied Merkle einstimmig · ${root}",
-			"membersDigestOkPaged": "Mitglied-Merkle-Konsens (${pages} Seiten) · ${root}",
-			"membersDigestMismatch": "Inkonsistenter Member-Digest · ${root}",
-			"membersDigestPending": "Überprüfen Sie die Mitgliederübersicht…",
-			"membersDigestFetchFailed": "Mitglieder konnten nicht nach Seite gezogen werden",
 			"copyEntityId": "Entitäts-ID kopieren",
 			"copyEntityIdOk": "Entitäts-ID kopiert",
-			"memberJoined": "Habe mich an der Unterhaltung beteiligt",
 			"remoteBadge": {
 				"textContent": "Fernbedienung",
 				"title": "Föderierter Remote-Autor"
@@ -1978,49 +1890,15 @@
 				"title": "Diesem Autor vertrauen (gefährliches HTML zulassen)"
 			},
 			"stickerInline": "Sticker",
-			"voteDeadline": "Frist: ${date}",
-			"voteNoOptions": "Keine Optionen",
-			"voteTotal": "Insgesamt ${total} Stimmen",
-			"voteCount": "${count} Tickets · ${pct}%",
-			"loadGroupFailed": "Gruppe konnte nicht geladen werden: ${error}",
-			"groupJoinRequired": "Die Gruppe kann nicht geöffnet werden. Bitte verwenden Sie den Einladungslink oder den Einladungscode, um beizutreten",
-			"sendFailed": "Senden fehlgeschlagen: ${error}",
-			"sendFailedPending": "Das Senden ist fehlgeschlagen",
 			"markdownRenderFailed": "Das Rendern der Nachricht ist fehlgeschlagen",
 			"retrySend": "Versuchen Sie es erneut",
-			"sendImageFailed": "Bild konnte nicht gesendet werden: ${error}",
-			"sendStickerFailed": "Sticker konnte nicht gesendet werden: ${error}",
-			"voteMinOptions": "Erfordert mindestens 2 Optionen",
 			"mergeDagOk": "Fork zusammengeführt",
 			"mergeDagFailed": "Zusammenführung fehlgeschlagen: ${error}",
-			"forkSplitFailed": "Aufteilung fehlgeschlagen: ${error}",
-			"forkSplitPrompt": "Neuer Gruppenname (kann leer bleiben)",
-			"forkSplitModalTitle": "In neue Gruppe aufteilen",
-			"forkSplitModalSubmit": "Erstellen",
 			"typing": "${names} tippt...",
 			"charsHeader": "Rolle",
-			"friendsHeader": "Freunde",
 			"settingsModalTitle": "Aufstellen",
 			"modalClose": "Schließen",
-			"groupTag": "Gruppe",
-			"groupUnnamed": "Unbenannte Gruppe ·${suffix}",
-			"groupHeaderMenu": {
-				"title": "Gruppenmenü: Einstellungen, Einladungen usw."
-			},
-			"groupDescriptionEmpty": "Für diese Gruppe gibt es noch kein Profil.",
-			"serverActionPickerTitle": "Gruppe",
-			"serverActionPickerSubtitle": "Erstellen Sie eine neue Gruppe oder treten Sie einer bestehenden Gruppe per ID bei",
-			"serverActionPickerCreate": "Gruppe erstellen",
-			"serverActionPickerCreateDescription": "Fangen Sie bei Null an und laden Sie Freunde ein",
-			"serverActionPickerJoin": "Treten Sie der Gruppe bei",
-			"serverActionPickerJoinDescription": "Gruppen-ID verwenden",
 			"cancel": "Abbrechen",
-			"folderDefault": "Ordner",
-			"folderRename": "Ordner umbenennen",
-			"folderRenamePrompt": "Benennen Sie den Ordner „${name}“ um in:",
-			"folderCollapse": "Ordner einklappen",
-			"folderExpand": "Ordner erweitern",
-			"folderDissolve": "Ordner Weniger anzeigen",
 			"bookmarkLocal": "Lokal",
 			"groupsSection": "Gruppe",
 			"ungrouped": "Nicht gruppiert",
@@ -2030,46 +1908,13 @@
 				"title": "Lesezeichen entfernen",
 				"aria-label": "Lesezeichen entfernen"
 			},
-			"loadMessagesFailed": "Das Laden der Nachricht ist fehlgeschlagen: ${error}",
 			"unreadDivider": "Neue Nachrichten",
-			"noUsername": "Benutzername nicht erhalten",
-			"stickersEmpty": "Noch keine Sticker",
-			"stickersMarketLink": "Gehen Sie zum Installieren zu Sticker Square",
-			"stickersLoadFailed": "Laden fehlgeschlagen: ${error}",
-			"noChars": "Es sind noch keine Rollen vorhanden, bitte installieren Sie zuerst welche.",
-			"noFriends": "Noch keine privaten Chats",
-			"friendsEmptyTitle": "Beginnen Sie ein neues Gespräch",
-			"friendsEmptyDescription": "Suchen Sie nach Benutzern in der lokalen Rolle oder anderen Knoten. Sie können auch die Mitgliederprofilkarte im Gruppenchat öffnen, um eine private Nachricht zu initiieren.",
-			"friendsEmptyAction": "Suchen Sie nach einer Rolle oder einem Benutzer",
-			"friendsSearchEmpty": "Keine passende Rolle oder kein passender Benutzer",
-			"friendsSearchTooShort": "Bitte geben Sie mindestens 2 Zeichen ein",
-			"friendsSearchDm": "Private Nachricht senden",
-			"friendsSearchChat": "Beginnen Sie ein Gespräch",
-			"friendsSearchLocalChar": "Lokale Rolle",
-			"friendsSearchPin": "Als Alias ​​festlegen",
-			"charCount": "${count} Rollen",
-			"friendsCount": "${count} Freunde",
-			"charTag": "Rolle",
-			"friendsTag": "Freunde",
 			"backToFriends": "Zurück zu Freunden",
 			"dmTopicsTitle": "Thema",
-			"friendsContextNewChat": "Neuer Chat",
-			"friendsRestartConfirm": "Der private Chat mit „${name}“ wird aufgehoben und eine neue Konversation erstellt. Bist du sicher?",
-			"friendsRestartOk": "Ein neuer privater Chat wurde geöffnet",
-			"friendsRestartFailed": "Fehler beim Erstellen eines neuen privaten Chats: ${error}",
-			"charDescriptionEmpty": "Der Charakter muss sich noch vorstellen.",
-			"charIntro": "Einführen",
 			"participants": "Abonnent",
-			"charTagSolo": "Charaktere · 1:1-Dialog",
 			"startChatWith": "💬 Beginnen Sie mit ${name} zu chatten",
 			"loading": "Laden…",
-			"charChatStart": "Beginnen Sie eine Unterhaltung mit ${name}",
-			"charChatEmpty": "Es liegt noch keine Nachricht vor, starten Sie Ihren ersten Chat!",
-			"loadCharChatFailed": "Das Laden der Nachricht ist fehlgeschlagen",
 			"createChatFailed": "Sitzung konnte nicht erstellt werden: ${error}",
-			"charChatComposer": {
-				"placeholder": "Senden Sie eine Nachricht an ${name} (Strg+Eingabetaste zum Senden)"
-			},
 			"friendChatComposer": {
 				"placeholder": "Nachricht senden (Strg+Eingabe zum Senden)"
 			},
@@ -2089,75 +1934,13 @@
 				"confirmSecond": "Klicken Sie erneut, um den Vorgang abzuWeniger anzeigen",
 				"cancel": "Abbrechen"
 			},
-			"blockConfirm": "Diese Person zur Blacklist hinzufügen? Der Verband dieser Gruppe wird ihre Weiterleitung ablehnen.",
-			"blockOk": "Blockiert",
-			"charChatSettings": "Charakter-Chat-Einstellungen",
-			"charChatSubtitle": "Sitzung mit ${name}",
-			"sessionInfo": "Sitzungsinformationen",
-			"sessionRole": "Rolle",
-			"sessionId": "Sitzungs-ID",
-			"sessionMessages": "Anzahl der Nachrichten",
 			"quickActions": "Schnelle Bedienung",
 			"advancedSettings": "Erweiterte Einstellungen (Charakter/Welt/Plugins)",
 			"advancedSettingsDescription": "Öffnen Sie die vollständigen Einstellungen für die Gruppe im Hub in einem neuen Tab",
 			"dangerZone": "Gefahrenbereich",
-			"unbindFriendDescription": "Nach dem Aufheben der Bindung kehrt die Konversation zur Gruppenliste auf der linken Seite zurück und die Nachrichtenaufzeichnungen bleiben erhalten.",
-			"unbindFriend": "Lösen",
-			"unbindFriendConfirm": "Sind Sie sicher, dass Sie die Verbindung zum privaten Chat mit ${name} aufheben? Die Konversation wird zurück in die Gruppenliste verschoben.",
-			"unbindFriendOk": "Ungebunden",
-			"unbindFriendFailed": "Aufheben der Bindung fehlgeschlagen: ${error}",
 			"deleteSessionDescription": "Diese Konversation löschen? Alle Nachrichten werden dauerhaft entfernt – nicht rückgängig zu machen.",
 			"deleteSession": "Sitzung löschen",
 			"deleteSessionConfirm": "Sind Sie sicher, dass Sie die Sitzung mit ${name} löschen möchten? Dieser Vorgang ist irreversibel.",
-			"sessionDeleted": "Konversation gelöscht",
-			"sessionDeleteFailed": "Löschen fehlgeschlagen: ${error}",
-			"streamTokenFailed": "Anzeige-Token konnte nicht ausgestellt werden",
-			"streamAvJoin": "Stimme/Video hinzufügen",
-			"streamAvLeave": "Abwesend",
-			"streamAvMute": "Stummschalten",
-			"streamAvUnmute": "Stummschaltung aufheben",
-			"streamAvVideo": "Kamera ausschalten",
-			"streamAvVideoOn": "Kamera einschalten",
-			"streamAvYou": "Du",
-			"streamAvJoinFailed": "Anruf konnte nicht gestartet werden: ${error}",
-			"streamAvNoCodecs": "Dieser Browser unterstützt keine WebCodecs (erfordert Chrome 94+ / Edge 94+ / Firefox 130+)",
-			"streamAvPeers": "${count} Personen online",
-			"streamAvPresetThumb": "Abgekürzt 64 kbps",
-			"streamAvPresetLow": "Niedrige Qualität 200 kbps",
-			"streamAvPresetMed": "Mittel 600 kbps",
-			"streamAvPresetHigh": "Hochwertige 1,5 Mbit/s",
-			"callButton": {
-				"title": "Starten Sie einen Anruf oder nehmen Sie daran teil",
-				"aria-label": "Starten Sie einen Anruf oder nehmen Sie daran teil"
-			},
-			"callInProgress": "Anruf läuft",
-			"callEnded": "Der Anruf ist beendet",
-			"callJoin": "Nehmen Sie am Anruf teil",
-			"callHangup": "Auflegen",
-			"callScreenShare": "Bildschirm teilen",
-			"callScreenStop": "Hören Sie auf zu teilen",
-			"callJumpBack": "Zurück zum Anrufkanal",
-			"callJoinFailed": "Dem Anruf konnte nicht beigetreten werden: ${error}",
-			"callScreenFailed": "Bildschirmfreigabe fehlgeschlagen: ${error}",
-			"callStartedAt": "Begonnen um ${time}",
-			"callDuration": "Dauer ${duration}",
-			"callParticipants": "${n} Leute",
-			"callPeerCount": "${n}",
-			"callNoParticipants": "Noch keine Abonnent",
-			"listChannelEmpty": "Die Liste ist leer.",
-			"listItemUntitled": "Unbenannt",
-			"listEditorTitle": "Listenelemente bearbeiten (JSON-Array)",
-			"listSaveToDag": "Im DAG speichern",
-			"listJsonInvalid": "Ungültiger JSON: ${message}",
-			"listSaved": "Gespeichert",
-			"listSaveFailed": "Speichern fehlgeschlagen",
-			"streamDefaultName": "Streaming-Medien",
-			"streamRefreshToken": "Überwachungstoken aktualisieren",
-			"streamEmbedHttpsRequired": "Die Streaming-Adresse muss eine einbettbare https://-Seite sein, oder die Gruppeneinstellungen müssen zuerst konfiguriert und aktualisiert werden, um ein Anzeigetoken zu erhalten.",
-			"streamWebRtcHint": "Es ist keine externe SFU konfiguriert. Dieser Kanal verwendet gruppeninternes WebRTC (kein StreamingSfuWss erforderlich).",
-			"pinPreviewSticker": "[Sticker]",
-			"pinPreviewVote": "[Abstimmung] ${question}",
-			"pinPreviewInvite": "[Einladen] ${groupName}",
 			"reactionRemovePrompt": "Wessen ${emoji} soll entfernt werden?\n${candidates}",
 			"ariaDagTip": {
 				"aria-label": "DAG-Gabelspitze"
@@ -2165,58 +1948,11 @@
 			"ariaClose": {
 				"aria-label": "Schließen"
 			},
-			"memberBar": {
-				"aria-label": "Mitgliederliste"
-			},
-			"channelBar": {
-				"aria-label": "Kanalliste"
-			},
 			"serverBar": {
 				"aria-label": "Gruppen und Navigation"
 			},
-			"membersDigestPagesTitle": {
-				"title": "${expected}\n${pages} Seiten"
-			},
-			"discoveryTitle": "Gruppenentdeckung",
-			"discoveryEyebrow": "Entdecken Sie die Community",
-			"discoveryDescription": "Durchsuchen Sie Öffentliche Gruppen im Verbundnetzwerk, wählen Sie eine InteressengeMeinschaft aus und treten Sie bei.",
-			"discoverySidebarHint": "Durchsuchen Sie rechts Öffentliche Gruppen und treten Sie ihnen bei",
-			"discoveryEmptyTitle": "Es wurden noch keine Öffentlichen Gruppen gefunden",
-			"discoveryEmpty": "Derzeit gibt es keine empfohlene Gruppe. Nach dem Aktivieren der Verbundsynchronisierung wird die Erkennungsliste von Nachbarn synchronisiert.",
-			"discoveryNoDescription": "Der Gruppeneigentümer hat das Profil noch nicht ausgefüllt.",
-			"discoverySourceCount": "${count} Verbundquellen",
-			"discoveryJoin": "Treten Sie der Gruppe bei",
-			"discoveryOpen": "Offene Gruppe",
-			"discoveryLoadFailed": "Erkennungsliste konnte nicht geladen werden: ${message}",
 			"operationFailed": "Vorgang fehlgeschlagen: ${error}",
 			"shareGroupFailed": "Gruppenlink konnte nicht geteilt werden: ${error}",
-			"blockAuthorTitle": "Blockieren Sie diesen Autor",
-			"configTitle": "Konversationskonfiguration",
-			"configSaved": "Gespeichert",
-			"configSaveFailed": "Speichern fehlgeschlagen: ${error}",
-			"configLoadFailed": "Konfiguration konnte nicht geladen werden: ${error}",
-			"noActiveChat": "Bitte öffnen Sie zunächst eine Sitzung, bevor Sie das Teil hineinziehen",
-			"groupContext": {
-				"manage": "Managementgruppe",
-				"notifyPrefs": "Benachrichtigungseinstellungen",
-				"invite": "Laden Sie andere ein",
-				"inviteCopied": "Einladungslink in die Zwischenablage kopiert",
-				"addChar": "Rolle hinzufügen",
-				"addCharLabel": "Rolle auswählen",
-				"addCharSubmit": "Hinzufügen zu",
-				"noChars": "Keine Rolle verfügbar",
-				"setAlias": "Gruppenalias festlegen",
-				"setAliasPrompt": "Legen Sie einen lokalen Alias ​​für „${name}“ fest (zum Löschen leer lassen):",
-				"aliasSaved": "Gruppenalias aktualisiert",
-				"leave": "Verlasse die Gruppe",
-				"leaveConfirm": "Sind Sie sicher, dass Sie die Gruppe „${name}“ Abwesend möchten? Sie können Nachrichten in dieser Gruppe nicht mehr anzeigen.",
-				"leaveOk": "Verließ die Gruppe",
-				"leaveBatch": "Verlassen Sie die ausgewählte Gruppe (${count})",
-				"leaveConfirmBatch": "Sind Sie sicher, dass Sie die ausgewählten ${count}-Gruppen Abwesend möchten? Die Maschine speichert keine Daten mehr für diese Gruppen.",
-				"leaveBatchPending": "${count} Gruppen wurden aus der Liste entfernt und werden im Hintergrund beendet ...",
-				"leaveBatchOk": "${count}-Gruppen wurden Abwesend",
-				"leaveBatchPartial": "${failed} / ${total} Gruppen konnten nicht beendet werden, die Liste wurde aktualisiert"
-			},
 			"replyInline": {
 				"title": "Antwort"
 			},
@@ -2226,35 +1962,8 @@
 			"replyInThread": {
 				"title": "Im untergeordneten Thread antworten"
 			},
-			"syncTruncated": "Das DAG-Inkrement ist nicht voll. Sie können es später noch einmal versuchen oder das Limit erhöhen.",
-			"syncTruncatedHint": "Die DAG-Geschichte ist zu lang. Sie können es später noch einmal versuchen oder das Limit erhöhen.",
-			"newChannelButton": "Neuen Kanal erstellen",
-			"newChannelSuccess": "Kanal erstellt",
-			"newChannelFailed": "Kanal konnte nicht erstellt werden",
-			"newChannelTitle": "Neuen Kanal erstellen",
-			"channelName": "Kanalname",
-			"channelType": "Kanaltyp",
-			"channelTypeText": "Chat-Kanal",
-			"channelTypeList": "Liste/Forumkanal",
-			"channelTypeStreaming": "Streaming-Kanal",
-			"channelNameInput": {
-				"placeholder": "Allgemein"
-			},
 			"localMaterializedView": "Es handelt sich derzeit um eine lokal materialisierte Ansicht, und die Berechtigungen und der Verlauf stimmen möglicherweise nicht mit denen anderer Knoten überein.",
 			"convergentEncryptWarn": "Gruppendateien nutzen konvergente Verschlüsselung: Wenn der Angreifer den Leerentext einer Datei kennt, kann er den Schlüssel ableiten und den entsprechenden Chiffretextblock entschlüsseln. Verlassen Sie sich zum Schutz hochsensibler und einzigartig privater Dokumente nicht ausschließlich auf die Gruppenverschlüsselung.",
-			"votePromptQuestion": "Stimmtitel",
-			"votePromptOptions": "Optionen (mindestens zwei, durch Kommas getrennt)",
-			"voteOptionDefault": "Zustimmen, dagegen sein",
-			"votePromptDeadlineHours": "Frist (Stunden, leer lassen = keine Frist)",
-			"messagePrefixVote": "Abstimmung",
-			"threadCreated": "Untergeordneter Thread wurde erstellt",
-			"threadCreateFailed": "Untergeordneter Thread konnte nicht erstellt werden. Bitte versuchen Sie es später noch einmal",
-			"threadDrawer": {
-				"aria-label": "Untergeordneter Thread"
-			},
-			"threadClose": {
-				"title": "Untergeordneten Thread Weniger anzeigen"
-			},
 			"reputationSlashAlert": "Der Ruf des Mitglieds ${target}… wird an den Abzug erinnert.",
 			"profileEdit": {
 				"previewHint": "Änderungen werden sofort in der Vorschau angezeigt und im Chat und in den sozialen Netzwerken gespeichert und synchronisiert.",
@@ -2263,23 +1972,14 @@
 				"languageVersion": "Sprachversion",
 				"localeHint": "Klicken Sie auf die Beschriftung, um den Code zu ändern oder zu bearbeiten. Drücken Sie am Ende im Eingabefeld die Eingabetaste, um es in eine neue Sprache zu kopieren.",
 				"themeColorHint": "Wird zum Generieren von Texturen verwendet, wenn kein benutzerdefiniertes Banner vorhanden ist, und wird auch für Live-Schallwellenschleifen verwendet",
-				"bannerLabel": "Banner-Hintergrund",
-				"bannerHint": "Sie können die Bild-URL eingeben oder eine Datei hochladen; Sie können die Texturerstellung auch jederzeit fortsetzen",
-				"bannerClear": "Setzen Sie die Bannererstellung fort",
 				"linksPreview": "${count} Öffentliche Links",
 				"unsavedHint": "Durch das Schließen des Fensters werden nicht gespeicherte Änderungen verworfen",
 				"tagsLabel": "Etikett",
 				"tagAdd": "Hinzufügen zu",
 				"tagRemove": "Tag löschen",
 				"linksLabel": "Link",
-				"linkAdd": "Link hinzufügen",
-				"linkRemove": "Link entfernen",
 				"handleLabel": "Benutzerdefinierte ID",
 				"handleHint": "Kann von anderen Knoten im Netzwerk durchsucht werden; Die Eindeutigkeit ist nicht garantiert und Konflikte werden anhand der Vertrauensliste eindeutig gelöst.",
-				"resetFromPart": "Vom Charakterteil zurückgesetzt",
-				"resetFromPartConfirm": "Aktuelle Informationen werden durch die des Rollenteils überschrieben. Fortfahren?",
-				"resetFromPartDone": "Aus Charakterteilen rekonstruiertes Profil",
-				"resetFromPartFailed": "Neuerstellung fehlgeschlagen: ${error}",
 				"newLocale": {
 					"placeholder": "Neuer Sprachcode, z. B. en-UK"
 				},
@@ -2295,23 +1995,38 @@
 				"avatarUpload": {
 					"aria-label": "Avatar hochladen"
 				},
-				"bannerUrl": {
-					"placeholder": "Bannerbild-URL oder laden Sie die Datei unten hoch"
-				},
-				"bannerUpload": {
-					"aria-label": "Banner hochladen"
-				},
 				"tag": {
 					"placeholder": "Nach Eingabe des Tags hinzufügen"
 				},
-				"linkName": {
-					"placeholder": "Text anzeigen"
-				},
-				"linkUrl": {
-					"placeholder": "https://… oder fount://…"
-				},
 				"handle": {
 					"placeholder": "Zum Beispiel Steve (2–32 alphanumerische Kleinbuchstaben._-)"
+				},
+				"resetFrom": {
+					"part": "Vom Charakterteil zurückgesetzt",
+					"partConfirm": "Aktuelle Informationen werden durch die des Rollenteils überschrieben. Fortfahren?",
+					"partDone": "Aus Charakterteilen rekonstruiertes Profil",
+					"partFailed": "Neuerstellung fehlgeschlagen: ${error}"
+				},
+				"banner": {
+					"clear": "Setzen Sie die Bannererstellung fort",
+					"hint": "Sie können die Bild-URL eingeben oder eine Datei hochladen; Sie können die Texturerstellung auch jederzeit fortsetzen",
+					"label": "Banner-Hintergrund",
+					"upload": {
+						"aria-label": "Banner hochladen"
+					},
+					"url": {
+						"placeholder": "Bannerbild-URL oder laden Sie die Datei unten hoch"
+					}
+				},
+				"link": {
+					"add": "Link hinzufügen",
+					"name": {
+						"placeholder": "Text anzeigen"
+					},
+					"remove": "Link entfernen",
+					"url": {
+						"placeholder": "https://… oder fount://…"
+					}
 				}
 			},
 			"profilePopup": {
@@ -2321,72 +2036,22 @@
 				},
 				"editSaved": "Daten gespeichert",
 				"editQueued": "VerÖffentlicht und wartet darauf, dass der andere Knoten es abruft",
-				"dmChar": "Chatte privat mit einem Charakter",
-				"dmUser": "Private Nachricht senden",
-				"dmFed": "Private Nachricht des Bundes",
 				"noFedIdentity": "Bitte konfigurieren Sie zunächst natives activePubKeyHex in den Verbundeinstellungen",
 				"peerNoIdentity": "Die andere Partei hat keinen Bundesstatus und kann keine private Bundesnachricht initiieren.",
-				"dmFailed": "Private Nachricht kann nicht geöffnet werden: ${error}",
 				"care": "Besondere Beobachtung",
 				"careRemove": "Sonderpflege abbrechen",
 				"setAlias": "Alias ​​festlegen",
-				"setAliasPrompt": "Legen Sie einen lokalen Alias ​​für „${name}“ fest (zum Löschen leer lassen):"
-			},
-			"channelContext": {
-				"copyLinkDone": "Kanallink kopiert",
-				"notifyPrefs": "Einstellungen für Kanalbenachrichtigungen",
-				"rename": "Kanal umbenennen",
-				"renameOk": "Der Kanal wurde umbenannt",
-				"delete": "Kanal löschen",
-				"deleteOk": "Kanal gelöscht",
-				"deleteConfirm": "Sind Sie sicher, dass Sie den Kanal „${name}“ löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-				"setDefault": "Als Standardkanal festlegen",
-				"setDefaultOk": "Bereits als Standardkanal eingestellt",
-				"copyLink": "Kanallink kopieren",
-				"exportJson": "JSON exportieren",
-				"exportOk": "Kanalarchiv heruntergeladen",
-				"exportFailed": "Export fehlgeschlagen: ${error}"
-			},
-			"memberContext": {
-				"copyName": "Anzeigenamen kopieren",
-				"mention": "Erwähnungen",
-				"care": "Besondere Beobachtung",
-				"careAdded": "Besonderes Anliegen wurde bereits hinzugefügt",
-				"careRemoved": "Sonderbetreuung abgesagt",
-				"setAlias": "Alias ​​festlegen",
 				"setAliasPrompt": "Legen Sie einen lokalen Alias ​​für „${name}“ fest (zum Löschen leer lassen):",
-				"aliasSaved": "Alias ​​aktualisiert",
-				"copyPubKey": "Kopieren Sie den Hash des Öffentlichen Schlüssels",
-				"copyEntityId": "Entitäts-ID kopieren",
-				"dm": "Private Nachricht senden",
-				"kick": "Kick-Mitglied",
-				"kickSelfNodeWarning": "Warnung: Dieses Mitglied verwendet dieselbe Knotenidentität wie Sie. Auch nach dem Rauswurf werden Sie aus der Gruppe entfernt. Sind Sie sicher, dass Sie fortfahren möchten?",
-				"ban": "Verbot…",
-				"personalBlock": "Persönliche Sperre",
-				"personalBlockConfirm": "${name} zu Ihrer Sperrliste hinzufügen? Menschen, die Ihnen folgen, werden dieses Signal wahrnehmen und möglicherweise weniger Vertrauen in sie haben.",
-				"personalBlockSuccess": "Bereits zur Blacklist hinzugefügt",
-				"banTitle": "Wählen Sie den Sperrbereich aus",
-				"banEntity": "Verbotene Entitäten (128-Bit-EntityHash)",
-				"banNode": "Ban-Knoten (homeNodeHash)"
+				"dm": {
+					"char": "Chatte privat mit einem Charakter",
+					"failed": "Private Nachricht kann nicht geöffnet werden: ${error}",
+					"fed": "Private Nachricht des Bundes",
+					"user": "Private Nachricht senden"
+				}
 			},
-			"messageContext": {
-				"edit": "Nachricht bearbeiten",
-				"delete": "Nachricht löschen"
-			},
-			"charStreaming": "Generieren…",
 			"gshDecryptPending": "Warten auf Kanalschlüssel (Generation ${gen})",
 			"gshDecryptFailed": "Diese Nachricht kann ohne Kanalschlüssel nicht entschlüsselt werden",
-			"fileDecryptFailed": "Auf diese Datei kann ohne Dateischlüssel nicht zugegriffen werden",
 			"reactionFailed": "Der Antwortvorgang ist fehlgeschlagen",
-			"fileUploadChecking": "Es wird geprüft, ob derselbe Inhalt bereits vorhanden ist...",
-			"fileUploadingChunk": "Verschlüsselte Blöcke werden hochgeladen...",
-			"fileUploadRegistering": "Dateien registrieren…",
-			"fileUploaded": "Datei erfolgreich hochgeladen",
-			"fileUploadFailed": "Das Hochladen der Datei ist fehlgeschlagen",
-			"fileSkippedDedup": "Doppelte Blockübertragung übersprungen",
-			"fileDownloadFailed": "Der Dateidownload ist fehlgeschlagen",
-			"fileNoKey": "Entschlüsselung nicht möglich (Schlüssel fehlt)",
-			"fileLoadFailed": "Das Laden der Datei ist fehlgeschlagen",
 			"createModal": {
 				"title": "Gruppe erstellen",
 				"subtitle": "Gruppen sind private Räume zum Chatten mit Freunden.",
@@ -2399,14 +2064,16 @@
 				"description": {
 					"placeholder": "(Optional) Stellen Sie diese Gruppe vor"
 				},
-				"joinSection": "Wer kann mitmachen?",
-				"joinInviteOnly": "Nur mit Einladung",
-				"joinInviteOnlyDescription": "Für den Beitritt ist ein Einladungscode erforderlich",
-				"joinPow": "Proof of Work",
-				"joinPowDescription": "Sie müssen die PoW-Herausforderung abWeniger anzeigen, bevor Sie beitreten können",
 				"cancel": "Zurück",
 				"submit": "Gruppe erstellen",
-				"failed": "Gruppe konnte nicht erstellt werden: ${error}"
+				"failed": "Gruppe konnte nicht erstellt werden: ${error}",
+				"join": {
+					"inviteOnly": "Nur mit Einladung",
+					"inviteOnlyDescription": "Für den Beitritt ist ein Einladungscode erforderlich",
+					"pow": "Proof of Work",
+					"powDescription": "Sie müssen die PoW-Herausforderung abWeniger anzeigen, bevor Sie beitreten können",
+					"section": "Wer kann mitmachen?"
+				}
 			},
 			"joinModal": {
 				"title": "Treten Sie der Gruppe bei",
@@ -2423,28 +2090,9 @@
 				"cancel": "Zurück",
 				"submit": "Treten Sie der Gruppe bei"
 			},
-			"menuCopy": "Kopie",
-			"menuMD": "Abschlag",
-			"menuTXT": "Leerentext",
-			"menuHTML": "HTML",
-			"menuDownload": "Laden Sie HTML herunter",
-			"menuDelete": "Löschen",
-			"menuShareGroup": "Link teilen",
-			"menuPrev": "Vorheriger Artikel",
-			"menuNext": "Nächster Artikel",
-			"menuShare": {
-				"1h": "Teilen Sie den 1-Stunden-Link",
-				"12h": "Teilen Sie den 12-Stunden-Link",
-				"24h": "Teilen Sie den 24-Stunden-Link",
-				"72h": "Teilen Sie den 72-Stunden-Link"
-			},
-			"noGroups": "Noch keine Gruppe",
 			"myGroups": "Meine Gruppen",
 			"joinGroup": "Treten Sie der Gruppe bei",
 			"createGroup": "Neue Gruppe erstellen",
-			"noDescription": "Noch keine Beschreibung",
-			"memberCountLabel": "${count} Mitglieder",
-			"loadListFailed": "Gruppenliste konnte nicht geladen werden: ${error}",
 			"contentWarning": "Inhaltswarnung",
 			"sensitiveMedia": "Sensible Medien",
 			"revealContent": "Inhalte anzeigen",
@@ -2479,12 +2127,6 @@
 				"saved": "Übersetzungseinstellungen gespeichert",
 				"saveFailed": "Speichern fehlgeschlagen: ${error}"
 			},
-			"friendsSearch": {
-				"placeholder": "Suchen Sie nach lokaler Rolle/benutzerdefinierter ID/Name…"
-			},
-			"threadComposer": {
-				"placeholder": "Im Unterthread antworten…"
-			},
 			"altImage": {
 				"placeholder": "Fügen Sie dem Bild eine Beschreibung hinzu ...",
 				"label": "Bildbeschreibung (alt)"
@@ -2495,7 +2137,587 @@
 				"aria-label": "Erwähnungsvorschläge"
 			},
 			"clickToLoad": "Klicken Sie zum Laden",
-			"send": "Schicken"
+			"serverActionPicker": {
+				"create": "Gruppe erstellen",
+				"createDescription": "Fangen Sie bei Null an und laden Sie Freunde ein",
+				"join": "Treten Sie der Gruppe bei",
+				"joinDescription": "Gruppen-ID verwenden",
+				"subtitle": "Erstellen Sie eine neue Gruppe oder treten Sie einer bestehenden Gruppe per ID bei",
+				"title": "Gruppe"
+			},
+			"membersDigest": {
+				"fetchFailed": "Mitglieder konnten nicht nach Seite gezogen werden",
+				"mismatch": "Inkonsistenter Member-Digest · ${root}",
+				"ok": "Mitglied Merkle einstimmig · ${root}",
+				"okPaged": "Mitglied-Merkle-Konsens (${pages} Seiten) · ${root}",
+				"pagesTitle": {
+					"title": "${expected}\n${pages} Seiten"
+				},
+				"pending": "Überprüfen Sie die Mitgliederübersicht…"
+			},
+			"unbindFriend": {
+				"main": "Lösen",
+				"confirm": "Sind Sie sicher, dass Sie die Verbindung zum privaten Chat mit ${name} aufheben? Die Konversation wird zurück in die Gruppenliste verschoben.",
+				"description": "Nach dem Aufheben der Bindung kehrt die Konversation zur Gruppenliste auf der linken Seite zurück und die Nachrichtenaufzeichnungen bleiben erhalten.",
+				"failed": "Aufheben der Bindung fehlgeschlagen: ${error}",
+				"ok": "Ungebunden"
+			},
+			"federation": {
+				"loadFailed": "Laden fehlgeschlagen: ${error}",
+				"subtitle": "Steuern Sie geräteübergreifende Verbindungen. Behalten Sie in den meisten Fällen die Standardeinstellungen bei",
+				"title": "Föderierte P2P-Einstellungen",
+				"tooltip": {
+					"title": "Föderierte P2P-Einstellungen",
+					"tip": "Föderierte P2P-Einstellungen"
+				}
+			},
+			"newChannel": {
+				"button": "Neuen Kanal erstellen",
+				"failed": "Kanal konnte nicht erstellt werden",
+				"success": "Kanal erstellt",
+				"title": "Neuen Kanal erstellen"
+			},
+			"discovery": {
+				"description": "Durchsuchen Sie Öffentliche Gruppen im Verbundnetzwerk, wählen Sie eine InteressengeMeinschaft aus und treten Sie bei.",
+				"empty": "Derzeit gibt es keine empfohlene Gruppe. Nach dem Aktivieren der Verbundsynchronisierung wird die Erkennungsliste von Nachbarn synchronisiert.",
+				"emptyTitle": "Es wurden noch keine Öffentlichen Gruppen gefunden",
+				"eyebrow": "Entdecken Sie die Community",
+				"join": "Treten Sie der Gruppe bei",
+				"loadFailed": "Erkennungsliste konnte nicht geladen werden: ${message}",
+				"noDescription": "Der Gruppeneigentümer hat das Profil noch nicht ausgefüllt.",
+				"open": "Offene Gruppe",
+				"refresh": "Entdeckungsliste aktualisieren",
+				"sidebarHint": "Durchsuchen Sie rechts Öffentliche Gruppen und treten Sie ihnen bei",
+				"sourceCount": "${count} Verbundquellen",
+				"title": "Gruppenentdeckung",
+				"tooltip": {
+					"title": "Gruppenentdeckung",
+					"tip": "Gruppenentdeckung"
+				}
+			},
+			"forkSplit": {
+				"failed": "Aufteilung fehlgeschlagen: ${error}",
+				"modalSubmit": "Erstellen",
+				"modalTitle": "In neue Gruppe aufteilen",
+				"prompt": "Neuer Gruppenname (kann leer bleiben)"
+			},
+			"stickers": {
+				"empty": "Noch keine Sticker",
+				"loadFailed": "Laden fehlgeschlagen: ${error}",
+				"loading": "Laden…",
+				"manage": "Sticker verwalten →",
+				"marketLink": "Gehen Sie zum Installieren zu Sticker Square",
+				"panelTitle": "Sticker"
+			},
+			"friends": {
+				"contextNewChat": "Neuer Chat",
+				"count": "${count} Freunde",
+				"emptyAction": "Suchen Sie nach einer Rolle oder einem Benutzer",
+				"emptyDescription": "Suchen Sie nach Benutzern in der lokalen Rolle oder anderen Knoten. Sie können auch die Mitgliederprofilkarte im Gruppenchat öffnen, um eine private Nachricht zu initiieren.",
+				"emptyTitle": "Beginnen Sie ein neues Gespräch",
+				"header": "Freunde",
+				"restartConfirm": "Der private Chat mit „${name}“ wird aufgehoben und eine neue Konversation erstellt. Bist du sicher?",
+				"restartFailed": "Fehler beim Erstellen eines neuen privaten Chats: ${error}",
+				"restartOk": "Ein neuer privater Chat wurde geöffnet",
+				"search": {
+					"placeholder": "Suchen Sie nach lokaler Rolle/benutzerdefinierter ID/Name…",
+					"chat": "Beginnen Sie ein Gespräch",
+					"dm": "Private Nachricht senden",
+					"empty": "Keine passende Rolle oder kein passender Benutzer",
+					"localChar": "Lokale Rolle",
+					"pin": "Als Alias ​​festlegen",
+					"tooShort": "Bitte geben Sie mindestens 2 Zeichen ein"
+				},
+				"tag": "Freunde",
+				"tooltip": {
+					"title": "Freunde",
+					"tip": "Freunde"
+				}
+			},
+			"channel": {
+				"bar": {
+					"aria-label": "Kanalliste"
+				},
+				"context": {
+					"copyLinkDone": "Kanallink kopiert",
+					"notifyPrefs": "Einstellungen für Kanalbenachrichtigungen",
+					"rename": "Kanal umbenennen",
+					"renameOk": "Der Kanal wurde umbenannt",
+					"delete": "Kanal löschen",
+					"deleteOk": "Kanal gelöscht",
+					"deleteConfirm": "Sind Sie sicher, dass Sie den Kanal „${name}“ löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+					"setDefault": "Als Standardkanal festlegen",
+					"setDefaultOk": "Bereits als Standardkanal eingestellt",
+					"copyLink": "Kanallink kopieren",
+					"exportJson": "JSON exportieren",
+					"exportOk": "Kanalarchiv heruntergeladen",
+					"exportFailed": "Export fehlgeschlagen: ${error}"
+				},
+				"name": "Kanalname",
+				"nameInput": {
+					"placeholder": "Allgemein"
+				},
+				"readonlyList": {
+					"placeholder": "Listenkanal schreibgeschützt"
+				},
+				"readonlyStream": {
+					"placeholder": "Streaming-Kanal schreibgeschützt"
+				},
+				"type": "Kanaltyp",
+				"typeList": "Liste/Forumkanal",
+				"typeStreaming": "Streaming-Kanal",
+				"typeText": "Chat-Kanal"
+			},
+			"message": {
+				"action": {
+					"bookmark": {
+						"title": "Lesezeichen"
+					},
+					"copyHtml": {
+						"title": "HTML kopieren"
+					},
+					"delete": {
+						"title": "Nachricht löschen"
+					},
+					"edit": {
+						"title": "Nachricht bearbeiten"
+					},
+					"failed": "Vorgang fehlgeschlagen: ${error}",
+					"feedbackDown": {
+						"title": "Klicken Sie, um es nicht zu mögen"
+					},
+					"feedbackUp": {
+						"title": "Gefällt mir"
+					},
+					"next": {
+						"title": "Nächste Zeitleiste"
+					},
+					"pin": {
+						"title": "Nach oben stecken"
+					},
+					"prev": {
+						"title": "Vorherige Zeitleiste"
+					},
+					"regen": {
+						"title": "Regenerieren"
+					},
+					"unpin": {
+						"title": "Lösen"
+					}
+				},
+				"context": {
+					"edit": "Nachricht bearbeiten",
+					"delete": "Nachricht löschen"
+				},
+				"edit": {
+					"area": {
+						"aria-label": "Nachricht bearbeiten"
+					},
+					"cancel": "Abbrechen",
+					"save": "Speichern",
+					"upload": "Anhang hochladen"
+				},
+				"feedbackSubmit": "Feedback abgeben",
+				"input": {
+					"placeholder": "Gruppennachricht… Strg+Eingabe zum Senden",
+					"aria-label": "Nachricht"
+				},
+				"prefixVote": "Abstimmung"
+			},
+			"session": {
+				"deleteFailed": "Löschen fehlgeschlagen: ${error}",
+				"deleted": "Konversation gelöscht",
+				"id": "Sitzungs-ID",
+				"info": "Sitzungsinformationen",
+				"messages": "Anzahl der Nachrichten",
+				"role": "Rolle"
+			},
+			"folder": {
+				"collapse": "Ordner einklappen",
+				"default": "Ordner",
+				"dissolve": "Ordner Weniger anzeigen",
+				"expand": "Ordner erweitern",
+				"rename": "Ordner umbenennen",
+				"renamePrompt": "Benennen Sie den Ordner „${name}“ um in:"
+			},
+			"stream": {
+				"av": {
+					"join": "Stimme/Video hinzufügen",
+					"joinFailed": "Anruf konnte nicht gestartet werden: ${error}",
+					"leave": "Abwesend",
+					"mute": "Stummschalten",
+					"noCodecs": "Dieser Browser unterstützt keine WebCodecs (erfordert Chrome 94+ / Edge 94+ / Firefox 130+)",
+					"peers": "${count} Personen online",
+					"preset": {
+						"high": "Hochwertige 1,5 Mbit/s",
+						"low": "Niedrige Qualität 200 kbps",
+						"med": "Mittel 600 kbps",
+						"thumb": "Abgekürzt 64 kbps"
+					},
+					"unmute": "Stummschaltung aufheben",
+					"video": "Kamera ausschalten",
+					"videoOn": "Kamera einschalten",
+					"you": "Du"
+				},
+				"defaultName": "Streaming-Medien",
+				"embedHttpsRequired": "Die Streaming-Adresse muss eine einbettbare https://-Seite sein, oder die Gruppeneinstellungen müssen zuerst konfiguriert und aktualisiert werden, um ein Anzeigetoken zu erhalten.",
+				"refreshToken": "Überwachungstoken aktualisieren",
+				"tokenFailed": "Anzeige-Token konnte nicht ausgestellt werden",
+				"webRtcHint": "Es ist keine externe SFU konfiguriert. Dieser Kanal verwendet gruppeninternes WebRTC (kein StreamingSfuWss erforderlich)."
+			},
+			"member": {
+				"bar": {
+					"aria-label": "Mitgliederliste"
+				},
+				"context": {
+					"copyName": "Anzeigenamen kopieren",
+					"mention": "Erwähnungen",
+					"care": "Besondere Beobachtung",
+					"careAdded": "Besonderes Anliegen wurde bereits hinzugefügt",
+					"careRemoved": "Sonderbetreuung abgesagt",
+					"setAlias": "Alias ​​festlegen",
+					"setAliasPrompt": "Legen Sie einen lokalen Alias ​​für „${name}“ fest (zum Löschen leer lassen):",
+					"aliasSaved": "Alias ​​aktualisiert",
+					"copyPubKey": "Kopieren Sie den Hash des Öffentlichen Schlüssels",
+					"copyEntityId": "Entitäts-ID kopieren",
+					"dm": "Private Nachricht senden",
+					"kick": "Kick-Mitglied",
+					"kickSelfNodeWarning": "Warnung: Dieses Mitglied verwendet dieselbe Knotenidentität wie Sie. Auch nach dem Rauswurf werden Sie aus der Gruppe entfernt. Sind Sie sicher, dass Sie fortfahren möchten?",
+					"ban": "Verbot…",
+					"personalBlock": "Persönliche Sperre",
+					"personalBlockConfirm": "${name} zu Ihrer Sperrliste hinzufügen? Menschen, die Ihnen folgen, werden dieses Signal wahrnehmen und möglicherweise weniger Vertrauen in sie haben.",
+					"personalBlockSuccess": "Bereits zur Blacklist hinzugefügt",
+					"banTitle": "Wählen Sie den Sperrbereich aus",
+					"banEntity": "Verbotene Entitäten (128-Bit-EntityHash)",
+					"banNode": "Ban-Knoten (homeNodeHash)"
+				},
+				"countLabel": "${count} Mitglieder",
+				"joined": "Habe mich an der Unterhaltung beteiligt",
+				"section": "Mitglied"
+			},
+			"thread": {
+				"close": {
+					"title": "Untergeordneten Thread Weniger anzeigen"
+				},
+				"composer": {
+					"placeholder": "Im Unterthread antworten…"
+				},
+				"createFailed": "Untergeordneter Thread konnte nicht erstellt werden. Bitte versuchen Sie es später noch einmal",
+				"created": "Untergeordneter Thread wurde erstellt",
+				"drawer": {
+					"aria-label": "Untergeordneter Thread"
+				}
+			},
+			"config": {
+				"loadFailed": "Konfiguration konnte nicht geladen werden: ${error}",
+				"saveFailed": "Speichern fehlgeschlagen: ${error}",
+				"saved": "Gespeichert",
+				"title": "Konversationskonfiguration"
+			},
+			"statusItems": {
+				"dnd": {
+					"title": "Bitte nicht stören",
+					"textContent": "Bitte nicht stören"
+				},
+				"idle": {
+					"title": "Abwesend",
+					"textContent": "Abwesend"
+				},
+				"offline": {
+					"title": "Offline",
+					"textContent": "Offline"
+				},
+				"online": {
+					"title": "Online",
+					"textContent": "Online"
+				}
+			},
+			"files": {
+				"bindCabinet": "Fügen Sie einen Cabinet hinzu",
+				"delete": "Löschen",
+				"deleteConfirm": "Sind Sie sicher, dass Sie diese Datei löschen möchten?",
+				"deleteFolderConfirm": "Sind Sie sicher, dass Sie diesen Ordner löschen möchten? Dateien im Ordner werden nicht automatisch gelöscht.",
+				"download": "Herunterladen",
+				"drawerTitle": "Gruppendatei",
+				"empty": "Derzeit befinden sich keine Dateien in diesem Verzeichnis",
+				"foldersTitle": "Ordner",
+				"listTitle": "Dokumentieren",
+				"loadFailed": "Gruppendatei konnte nicht geladen werden: ${error}",
+				"loading": "Gruppendateien werden geladen...",
+				"newFolder": "Neuen Ordner erstellen",
+				"newFolderPrompt": "Ordnername",
+				"no": {
+					"cabinets": "Für die aktuelle Rolle sind keine Aktenschränke verfügbar",
+					"channel": "Bitte betreten Sie zunächst den Textkanal, über den Sie Nachrichten senden können",
+					"folders": "Noch keine Unterordner",
+					"group": "Bitte wählen Sie zunächst eine Gruppe aus"
+				},
+				"rename": "Umbenennen",
+				"renameFolderPrompt": "Benennen Sie den Ordner „${name}“ um in:",
+				"rootFolder": "Stammverzeichnis",
+				"title": {
+					"title": "Gruppendatei"
+				},
+				"upload": "Hochladen",
+				"uploadTo": "Hochladen auf"
+			},
+			"group": {
+				"context": {
+					"manage": "Managementgruppe",
+					"notifyPrefs": "Benachrichtigungseinstellungen",
+					"invite": "Laden Sie andere ein",
+					"inviteCopied": "Einladungslink in die Zwischenablage kopiert",
+					"addChar": "Rolle hinzufügen",
+					"addCharLabel": "Rolle auswählen",
+					"addCharSubmit": "Hinzufügen zu",
+					"noChars": "Keine Rolle verfügbar",
+					"setAlias": "Gruppenalias festlegen",
+					"setAliasPrompt": "Legen Sie einen lokalen Alias ​​für „${name}“ fest (zum Löschen leer lassen):",
+					"aliasSaved": "Gruppenalias aktualisiert",
+					"leave": {
+						"main": "Verlasse die Gruppe",
+						"batch": "Verlassen Sie die ausgewählte Gruppe (${count})",
+						"batchOk": "${count}-Gruppen wurden Abwesend",
+						"batchPartial": "${failed} / ${total} Gruppen konnten nicht beendet werden, die Liste wurde aktualisiert",
+						"batchPending": "${count} Gruppen wurden aus der Liste entfernt und werden im Hintergrund beendet ...",
+						"confirm": "Sind Sie sicher, dass Sie die Gruppe „${name}“ Abwesend möchten? Sie können Nachrichten in dieser Gruppe nicht mehr anzeigen.",
+						"confirmBatch": "Sind Sie sicher, dass Sie die ausgewählten ${count}-Gruppen Abwesend möchten? Die Maschine speichert keine Daten mehr für diese Gruppen.",
+						"ok": "Verließ die Gruppe"
+					}
+				},
+				"descriptionEmpty": "Für diese Gruppe gibt es noch kein Profil.",
+				"emojiTab": {
+					"title": "Gruppe"
+				},
+				"emojisEmpty": "Derzeit gibt es keine Gruppen-Emoticons. Sie können diese in den Gruppeneinstellungen hochladen.",
+				"emojisLoadFailed": "Gruppen-Emoticons konnten nicht geladen werden",
+				"headerMenu": {
+					"title": "Gruppenmenü: Einstellungen, Einladungen usw."
+				},
+				"joinRequired": "Die Gruppe kann nicht geöffnet werden. Bitte verwenden Sie den Einladungslink oder den Einladungscode, um beizutreten",
+				"tag": "Gruppe",
+				"unnamed": "Unbenannte Gruppe ·${suffix}"
+			},
+			"block": {
+				"author": {
+					"title": "Blockieren Sie diesen Autor"
+				},
+				"authorTitle": "Blockieren Sie diesen Autor",
+				"confirm": "Diese Person zur Blacklist hinzufügen? Der Verband dieser Gruppe wird ihre Weiterleitung ablehnen.",
+				"ok": "Blockiert",
+				"opposingConfirm": "Fügen Sie die Governance-Emittenten, die nicht an der aktuellen Wahl teilnehmen, zur schwarzen Liste hinzu und lehnen Sie diese Gruppe von Föderationsrelais ab. weitermachen?",
+				"opposingFailed": "Markierung fehlgeschlagen: ${error}",
+				"opposingOk": "${count} Betreffzeilen wurden als nicht erreichbar markiert"
+			},
+			"call": {
+				"button": {
+					"title": "Starten Sie einen Anruf oder nehmen Sie daran teil",
+					"aria-label": "Starten Sie einen Anruf oder nehmen Sie daran teil"
+				},
+				"duration": "Dauer ${duration}",
+				"ended": "Der Anruf ist beendet",
+				"hangup": "Auflegen",
+				"inProgress": "Anruf läuft",
+				"join": "Nehmen Sie am Anruf teil",
+				"joinFailed": "Dem Anruf konnte nicht beigetreten werden: ${error}",
+				"jumpBack": "Zurück zum Anrufkanal",
+				"noParticipants": "Noch keine Abonnent",
+				"participants": "${n} Leute",
+				"peerCount": "${n}",
+				"screenFailed": "Bildschirmfreigabe fehlgeschlagen: ${error}",
+				"screenShare": "Bildschirm teilen",
+				"screenStop": "Hören Sie auf zu teilen",
+				"startedAt": "Begonnen um ${time}"
+			},
+			"vote": {
+				"closed": "Beendet",
+				"count": "${count} Tickets · ${pct}%",
+				"createFailed": "Umfrage konnte nicht erstellt werden: ${error}",
+				"deadline": "Frist: ${date}",
+				"minOptions": "Erfordert mindestens 2 Optionen",
+				"modalSubmit": "Umfrage erstellen",
+				"modalTitle": "Starten Sie eine Abstimmung",
+				"noOptions": "Keine Optionen",
+				"optionDefault": "Zustimmen, dagegen sein",
+				"promptDeadlineHours": "Frist (Stunden, leer lassen = keine Frist)",
+				"promptOptions": "Optionen (mindestens zwei, durch Kommas getrennt)",
+				"promptQuestion": "Stimmtitel",
+				"title": {
+					"title": "Starten Sie eine Abstimmung"
+				},
+				"total": "Insgesamt ${total} Stimmen"
+			},
+			"file": {
+				"decryptFailed": "Auf diese Datei kann ohne Dateischlüssel nicht zugegriffen werden",
+				"downloadFailed": "Der Dateidownload ist fehlgeschlagen",
+				"loadFailed": "Das Laden der Datei ist fehlgeschlagen",
+				"noKey": "Entschlüsselung nicht möglich (Schlüssel fehlt)",
+				"skippedDedup": "Doppelte Blockübertragung übersprungen",
+				"uploadChecking": "Es wird geprüft, ob derselbe Inhalt bereits vorhanden ist...",
+				"uploadFailed": "Das Hochladen der Datei ist fehlgeschlagen",
+				"uploadRegistering": "Dateien registrieren…",
+				"uploaded": "Datei erfolgreich hochgeladen",
+				"uploadingChunk": "Verschlüsselte Blöcke werden hochgeladen..."
+			},
+			"menu": {
+				"copy": "Kopie",
+				"delete": "Löschen",
+				"download": "Laden Sie HTML herunter",
+				"hTML": "HTML",
+				"mD": "Abschlag",
+				"next": "Nächster Artikel",
+				"prev": "Vorheriger Artikel",
+				"share": {
+					"1h": "Teilen Sie den 1-Stunden-Link",
+					"12h": "Teilen Sie den 12-Stunden-Link",
+					"24h": "Teilen Sie den 24-Stunden-Link",
+					"72h": "Teilen Sie den 72-Stunden-Link"
+				},
+				"shareGroup": "Link teilen",
+				"tXT": "Leerentext"
+			},
+			"char": {
+				"chat": {
+					"composer": {
+						"placeholder": "Senden Sie eine Nachricht an ${name} (Strg+Eingabetaste zum Senden)"
+					},
+					"empty": "Es liegt noch keine Nachricht vor, starten Sie Ihren ersten Chat!",
+					"settings": "Charakter-Chat-Einstellungen",
+					"start": "Beginnen Sie eine Unterhaltung mit ${name}",
+					"subtitle": "Sitzung mit ${name}"
+				},
+				"chatsTitle": "Historische Gespräche mit ${name}",
+				"count": "${count} Rollen",
+				"descriptionEmpty": "Der Charakter muss sich noch vorstellen.",
+				"intro": "Einführen",
+				"streaming": "Generieren…",
+				"tag": "Rolle",
+				"tagSolo": "Charaktere · 1:1-Dialog",
+				"typing": "Betreten…"
+			},
+			"list": {
+				"channelEmpty": "Die Liste ist leer.",
+				"editorTitle": "Listenelemente bearbeiten (JSON-Array)",
+				"itemUntitled": "Unbenannt",
+				"jsonInvalid": "Ungültiger JSON: ${message}",
+				"saveFailed": "Speichern fehlgeschlagen",
+				"saveToDag": "Im DAG speichern",
+				"saved": "Gespeichert"
+			},
+			"save": {
+				"emoji": {
+					"title": "Speichern Sie Emoticons"
+				},
+				"emojiFailed": "Emoticon konnte nicht gespeichert werden: ${error}",
+				"emojiOk": "Das Emoticon wurde in der Datenbank gespeichert",
+				"sticker": {
+					"title": "Speichern Sie Sticker"
+				},
+				"stickerFailed": "Sticker konnten nicht gespeichert werden: ${error}",
+				"stickerOk": "Der Sticker wurde Ihrer Stickerbibliothek hinzugefügt"
+			},
+			"sync": {
+				"failed": "Föderationssynchronisierung fehlgeschlagen: ${error}",
+				"incomplete": "${missing}/${total} Ereignisse bleiben unsynchronisiert",
+				"noPeers": "Da keine Verbindung zum Verbundnachbarn besteht, können historische Nachrichten nicht vorübergehend synchronisiert werden. Bitte verwenden Sie den vollständigen Einladungslink und versuchen Sie es später erneut",
+				"rateLimited": "Die Geschwindigkeitsbegrenzung für die Bundessynchronisierung läuft, bitte versuchen Sie es später noch einmal.",
+				"truncated": "Das DAG-Inkrement ist nicht voll. Sie können es später noch einmal versuchen oder das Limit erhöhen.",
+				"truncatedHint": "Die DAG-Geschichte ist zu lang. Sie können es später noch einmal versuchen oder das Limit erhöhen."
+			},
+			"load": {
+				"charChatFailed": "Das Laden der Nachricht ist fehlgeschlagen",
+				"groupFailed": "Gruppe konnte nicht geladen werden: ${error}",
+				"listFailed": "Gruppenliste konnte nicht geladen werden: ${error}",
+				"messagesFailed": "Das Laden der Nachricht ist fehlgeschlagen: ${error}",
+				"more": "Ältere Nachrichten werden geladen…"
+			},
+			"send": {
+				"main": "Schicken",
+				"failed": "Senden fehlgeschlagen: ${error}",
+				"failedPending": "Das Senden ist fehlgeschlagen",
+				"imageFailed": "Bild konnte nicht gesendet werden: ${error}",
+				"stickerFailed": "Sticker konnte nicht gesendet werden: ${error}",
+				"title": {
+					"title": "Senden (Strg+Eingabe)"
+				}
+			},
+			"fed": {
+				"advancedDescription": "Fehlerbehebungen, Reputationsmanagement und manuelle Linkvergabe",
+				"advancedTitle": "Erweiterte Einstellungen",
+				"batterySaverLabel": "Energiesparmodus",
+				"batterySaverTip": "Durch die Reduzierung der Anzahl der Hintergrundverbindungen und der Netzwerkaktivität kann die Nachrichtensynchronisierung etwas langsamer werden.",
+				"connectionTitle": "Vernetzen und entdecken",
+				"dm": {
+					"invalidateDescription": "Danach werden alle zuvor ausgegebenen Freundeslinks sofort ungültig – nicht widerrufbar.",
+					"invalidateTitle": "Lassen Sie alte Empfehlungslinks ablaufen",
+					"issueLabel": "DM-Link ausstellen",
+					"issued": "DM-Link signiert und in die Zwischenablage kopiert",
+					"linkDescription": "Geeignet für Debugging oder manuelle Identitätsmigration; Wenn Sie täglich Freunde hinzufügen, müssen Sie diese Felder nicht ausfüllen.",
+					"linkTip": "Erfordert die Signatur mit einem nativen Identitätsschlüssel. Der private Schlüssel wird auf dieser Seite nur an den lokalen Dienst übermittelt und nicht an andere Knoten gesendet.",
+					"linkTitle": "Geben Sie manuell einen Freund-Link aus",
+					"needPubKey": "Erfordert einen Öffentlichen 64-Hex-Schlüssel",
+					"needSecretKey": "Erfordert einen 64-Hex-Privatschlüssel-Seed",
+					"nodeLabel": "Optionale Knoten-URL",
+					"pubKeyLabel": "Öffentlicher Schlüssel hex(64)",
+					"rotateConfirm": "Alle zuvor ausgegebenen Freundeslinks werden sofort ungültig und können nicht wiederhergestellt werden. Fortfahren?",
+					"rotateLabel": "Alte Links ungültig machen",
+					"secretLabel": "Private-Key-Seed-Hex (64)"
+				},
+				"groupRecoveryTip": "Wird nur verwendet, wenn die Einladung durchgesickert ist oder das neue Gerät den Verlauf nicht synchronisieren kann.",
+				"groupRecoveryTitle": "Fehlerbehebung bei der Gruppenverbindung",
+				"nonceRotated": "nonce gedreht (${nonce}…)",
+				"relayUrlsLabel": "Netzwerk-Relay-Adresse",
+				"relayUrlsTip": "Helfen Sie Geräten, sich im Internet gegenseitig zu entdecken. Geben Sie pro Zeile eine wss://-Adresse ein; Lassen Sie das Feld leer, um das Standardrelais zu verwenden.",
+				"repEmpty": "(null)",
+				"repTip": "Verbindungspräferenzwerte, die nativ auf der Grundlage des Verhaltens von Verbundknoten berechnet werden, sind keine Öffentlichen Bewertungen von Gruppenmitgliedern.",
+				"repTitle": "Subjektive Glaubwürdigkeit dieser Gruppe",
+				"repairJoinSnapshot": "Ich bitte die Nachbarn, sich der Gruppen-Snapshot-Reparatur anzuWeniger anzeigen",
+				"repairJoinSnapshotFailed": "Gruppen-Snapshot konnte nicht repariert werden: ${error}",
+				"repairJoinSnapshotOk": "Gruppen-Snapshot angewendet (${channels} Kanalverlauf)",
+				"resetOk": "Reputation_reset wurde geschrieben",
+				"resetSubmitLabel": "Setzen Sie den Ruf des Ziels zurück",
+				"rotateRoomSecret": "Gruppenraum-Passwort rotieren",
+				"rotateRoomSecretConfirm": "Nach der Rotation können Einladungen, die das alte Raumpasswort verwenden, keine Verbindung mehr herstellen. Sind Sie sicher, dass Sie fortfahren möchten?",
+				"rotateRoomSecretOk": "Das Raumpasswort wurde geändert",
+				"saved": "Gespeichert",
+				"slash": {
+					"claimLabel": "Anspruchsstärkeanspruch (0–1)",
+					"needHash": "Erfordert 64-Bit-Hex-PubKeyHash",
+					"ok": "„reputation_slash“ wird in die DAG geschrieben",
+					"proof": {
+						"placeholder": "64 Hex-Ereignis-ID"
+					},
+					"proofLabel": "Proof.eventId (optional)",
+					"submitLabel": "Beitragsreputation_slash",
+					"target": {
+						"placeholder": "Hash des Öffentlichen Schlüssels des Mitglieds"
+					},
+					"targetLabel": "Ziel pubKeyHash(64 hex)",
+					"tip": "Schreibt eine negative Reputationsaussage zu einem Knoten in das Gruppenereignisdiagramm. Nur zur Verwendung durch Administratoren, die Verbundprotokolle verstehen.",
+					"title": "Reputationsstrafe",
+					"verifiedLabel": "Überprüfbar (Nachweis-Ereignis-ID erforderlich)"
+				}
+			},
+			"pin": {
+				"previewInvite": "[Einladen] ${groupName}",
+				"previewSticker": "[Sticker]",
+				"previewVote": "[Abstimmung] ${question}",
+				"unpinSidebar": {
+					"title": "Lösen"
+				}
+			},
+			"no": {
+				"activeChat": "Bitte öffnen Sie zunächst eine Sitzung, bevor Sie das Teil hineinziehen",
+				"bookmarks": "Noch keine Lesezeichen",
+				"channels": "Noch kein Gespräch",
+				"chars": "Es sind noch keine Rollen vorhanden, bitte installieren Sie zuerst welche.",
+				"description": "Noch keine Beschreibung",
+				"friends": "Noch keine privaten Chats",
+				"groups": "Noch keine Gruppe",
+				"members": "Noch keine Mitglieder",
+				"pins": "Noch keine Pins",
+				"username": "Benutzername nicht erhalten"
+			}
 		},
 		"sidebar": {
 			"settings": {
@@ -2593,144 +2815,8 @@
 				"alt": "Foto-Symbol"
 			}
 		},
-		"messageList": {
-			"confirmDeleteMessage": "Diese Nachricht wirklich löschen?"
-		},
 		"voiceRecording": {
 			"errorAccessingMicrophone": "Fehler beim Zugriff auf das Mikrofon."
-		},
-		"messageView": {
-			"buttons": {
-				"edit": {
-					"title": "Bearbeiten"
-				},
-				"editIcon": {
-					"alt": "Bearbeiten-Symbol"
-				},
-				"more": {
-					"title": "Mehr"
-				},
-				"moreIcon": {
-					"alt": "Mehr-Symbol"
-				},
-				"delete": {
-					"alt": "Löschen"
-				},
-				"deleteIcon": {
-					"alt": "Löschen-Symbol"
-				},
-				"downloadHtml": {
-					"alt": "Als HTML herunterladen"
-				},
-				"downloadHtmlIcon": {
-					"alt": "HTML-Download-Symbol"
-				}
-			},
-			"copyButton": {
-				"title": "Kopieren"
-			},
-			"copyButtonIcon": {
-				"alt": "Kopieren"
-			},
-			"copySuccess": "In die Zwischenablage kopiert",
-			"dropdown": {
-				"delete": "Löschen",
-				"deleteIcon": {
-					"alt": "Löschen-Symbol"
-				},
-				"copyMarkdown": "Als Markdown kopieren",
-				"copyMarkdownIcon": {
-					"alt": "Als Markdown kopieren Symbol"
-				},
-				"copyText": "Als reinen Text kopieren",
-				"copyTextIcon": {
-					"alt": "Als reinen Text kopieren Symbol"
-				},
-				"copyHtml": "Als HTML kopieren",
-				"copyHtmlIcon": {
-					"alt": "Als HTML kopieren Symbol"
-				},
-				"downloadHtml": "Als HTML herunterladen",
-				"downloadHtmlIcon": {
-					"alt": "HTML-Download-Symbol"
-				},
-				"share": {
-					"textContent": "Teilen",
-					"1h": "1 Stunde",
-					"12h": "12 Stunden",
-					"24h": "24 Stunden",
-					"72h": "72 Stunden"
-				},
-				"shareIcon": {
-					"alt": "Teilen-Symbol"
-				}
-			},
-			"share": {
-				"uploading": "Link wird erstellt...",
-				"success": "Erfolgreich geteilt! Link in die Zwischenablage kopiert. <br>Diese Funktion wird von ${provider} unterstützt. <br>[Unterstützen Sie sie.](${sponsorLink})"
-			},
-			"commonToolCalling": "Tool wird aufgerufen",
-			"toolRunningLang": "${lang} wird ausgeführt",
-			"toolSearchingContent": "Suche ${content}",
-			"toolOverridingFilepath": "${filepath} wird überschrieben",
-			"toolReplacingFilepath": "${filepath} wird teilweise ersetzt",
-			"toolReadingFilepath": "${filepath} wird gelesen",
-			"reasoningDetailsTitle": "Argumentationsprozess",
-			"logprobsNotApplicable": "nicht anwendbar",
-			"logprobsTopLogprobsMeta": "top_logprobs (ausgewählt: ${token})",
-			"logprobsMetricsFooter": "Latenz bis zum ersten Token: ${ttft} | Dauer: ${time} | Token: ${tokens} | Geschwindigkeit: ${speed}",
-			"noReplyContent": "(Kein Inhalt)",
-			"feedback": {
-				"thumbsUp": {
-					"title": "Gefällt mir"
-				},
-				"thumbsDown": {
-					"title": "Gefällt mir nicht"
-				},
-				"regenerate": {
-					"title": "Neu generieren"
-				},
-				"reason": {
-					"placeholder": "Optional: Grund angeben"
-				},
-				"submit": "Absenden",
-				"cancel": "Abbrechen"
-			}
-		},
-		"messageEdit": {
-			"input": {
-				"placeholder": "Inhalt eingeben..."
-			},
-			"buttons": {
-				"confirm": {
-					"title": "Bestätigen"
-				},
-				"confirmIcon": {
-					"alt": "Bestätigen-Symbol"
-				},
-				"cancel": {
-					"title": "Abbrechen"
-				},
-				"cancelIcon": {
-					"alt": "Abbrechen-Symbol"
-				},
-				"upload": {
-					"title": "Hochladen"
-				},
-				"uploadIcon": {
-					"alt": "Hochladen-Symbol"
-				}
-			}
-		},
-		"messageGenerating": {
-			"tips": "Die Rolle generiert eine Antwort, bitte warten...",
-			"stop": {
-				"textContent": "Stopp",
-				"title": "Hören Sie auf zu generieren"
-			},
-			"stopIcon": {
-				"alt": "Stopp-Symbol"
-			}
 		},
 		"attachment": {
 			"buttons": {
@@ -2840,34 +2926,6 @@
 			"avatarLabel": "Avatar",
 			"themeColorLabel": "Themenfarbe",
 			"uploadAvatar": "Avatar hochladen",
-			"ownerTitle": "Mein Meister",
-			"ownerSummary": "Stellvertretung",
-			"ownerDescription": "Nach der Einrichtung kann Ihr Meister Ihre Chat-Nachrichten, Social-Beiträge und Ihr Profil in Ihrem Namen bearbeiten oder löschen; der Inhalt wird lokal als unsicheres Markdown gerendert (kann Skripte enthalten). Beliebiger Entitäts-Hash, jederzeit löschbar.",
-			"ownerEntityHashLabel": "Meister-Entitäts-Hash (128 hex)",
-			"ownerSave": "Meister speichern",
-			"ownerClear": "Meister entfernen",
-			"ownerSaved": "Meister aktualisiert",
-			"ownerCleared": "Meister entfernt",
-			"ownerSaveFailed": "Speichern fehlgeschlagen: ${error}",
-			"ownerConfirmTitle": "Meister festlegen?",
-			"ownerConfirmWarningTitle": "Hohes Risiko – bitte sorgfältig lesen",
-			"ownerConfirmEditBody": "Nach der Einrichtung kann die andere Partei Ihre Chat-Nachrichten, Social-Beiträge und Ihr Profil ohne Ihre Zustimmung bearbeiten oder löschen. Versehentlich oder durch Täuschung einen Meister setzen = sofort Kontrolle über Ihre Inhalte verlieren.",
-			"ownerConfirmRenderBody": "Chat-Nachrichten und Social-Beiträge der anderen Partei werden in Ihrem Browser als vollständiges Markdown gerendert (inkl. HTML/Skripte). Das erlaubt der anderen Partei, ohne erneute Zustimmung beliebigen Code auf Ihrem Gerät auszuführen. Nur fortfahren, wenn Sie der Person vollständig vertrauen.",
-			"ownerConfirmCooldown": "Risiken gelesen (${seconds})",
-			"ownerConfirmFirst": "Risiken verstanden, fortfahren",
-			"ownerConfirmSecond": "Erneut klicken zur endgültigen Bestätigung",
-			"ownerConfirmCancel": "Abbrechen",
-			"federationTitle": "Föderation & Synchronisation",
-			"federationSummary": "Relay-Server und Energiesparmodus",
-			"federationDescription": "Nostr-Relay-URL und Energiesparmodus konfigurieren. Die Föderationssynchronisation einer Gruppe wird automatisch aktiviert, wenn Sie erstmals jemanden einladen oder eine föderierte Direktnachricht erstellen.",
-			"federationAdvanced": "Erweiterte Optionen",
-			"federationRelayUrlsLabel": "Relay-Server (einer pro Zeile, leer = Standard)",
-			"federationBatterySaverLabel": "Energiesparmodus",
-			"federationSave": "Netzwerkeinstellungen speichern",
-			"federationResetDefault": "Empfohlene Standardkonfiguration wiederherstellen",
-			"federationSaved": "Gespeichert",
-			"federationResetOk": "Empfohlene Standardkonfiguration wiederhergestellt",
-			"federationSaveFailed": "Speichern fehlgeschlagen: ${error}",
 			"preferences": "Einstellungen",
 			"language": "Sprache",
 			"theme": "Design",
@@ -2925,20 +2983,9 @@
 			"noGroups": "Noch keiner Gruppe beigetreten",
 			"noChannels": "Noch keine Kanäle",
 			"overview": "Profilübersicht",
-			"summaryUserId": "Benutzer-ID",
-			"summaryAccountStatus": "Kontostatus",
-			"summaryEmailVisibility": "E-Mail-Sichtbarkeit",
-			"summaryThemePref": "Design",
-			"summaryLanguagePref": "Sprache",
-			"summarySocialCount": "Social-Links",
-			"summaryLinksCount": "Externe Links",
 			"groupDescriptionEmpty": "Keine Beschreibung",
 			"groupMembers": "${members} Mitglieder · ${channels} Kanäle",
 			"channelPrivate": " · Privat",
-			"channelTypeText": "Textkanal",
-			"channelTypeList": "Listenkanal",
-			"channelTypeVoice": "Sprachkanal",
-			"channelTypeStreaming": "Streaming-Kanal",
 			"errors": {
 				"loadFailed": "Profil konnte nicht geladen werden",
 				"saveFailed": "Profil konnte nicht gespeichert werden",
@@ -2952,8 +2999,57 @@
 				"saved": "Profil gespeichert",
 				"avatarUploaded": "Avatar hochgeladen"
 			},
-			"ownerEntityHash": {
-				"placeholder": "Entitäts-Hash des Meisters eingeben"
+			"channelType": {
+				"list": "Listenkanal",
+				"streaming": "Streaming-Kanal",
+				"text": "Textkanal",
+				"voice": "Sprachkanal"
+			},
+			"federation": {
+				"advanced": "Erweiterte Optionen",
+				"batterySaverLabel": "Energiesparmodus",
+				"description": "Nostr-Relay-URL und Energiesparmodus konfigurieren. Die Föderationssynchronisation einer Gruppe wird automatisch aktiviert, wenn Sie erstmals jemanden einladen oder eine föderierte Direktnachricht erstellen.",
+				"relayUrlsLabel": "Relay-Server (einer pro Zeile, leer = Standard)",
+				"resetDefault": "Empfohlene Standardkonfiguration wiederherstellen",
+				"resetOk": "Empfohlene Standardkonfiguration wiederhergestellt",
+				"save": "Netzwerkeinstellungen speichern",
+				"saveFailed": "Speichern fehlgeschlagen: ${error}",
+				"saved": "Gespeichert",
+				"summary": "Relay-Server und Energiesparmodus",
+				"title": "Föderation & Synchronisation"
+			},
+			"summary": {
+				"accountStatus": "Kontostatus",
+				"emailVisibility": "E-Mail-Sichtbarkeit",
+				"languagePref": "Sprache",
+				"linksCount": "Externe Links",
+				"socialCount": "Social-Links",
+				"themePref": "Design",
+				"userId": "Benutzer-ID"
+			},
+			"owner": {
+				"clear": "Meister entfernen",
+				"cleared": "Meister entfernt",
+				"confirm": {
+					"cancel": "Abbrechen",
+					"cooldown": "Risiken gelesen (${seconds})",
+					"editBody": "Nach der Einrichtung kann die andere Partei Ihre Chat-Nachrichten, Social-Beiträge und Ihr Profil ohne Ihre Zustimmung bearbeiten oder löschen. Versehentlich oder durch Täuschung einen Meister setzen = sofort Kontrolle über Ihre Inhalte verlieren.",
+					"first": "Risiken verstanden, fortfahren",
+					"renderBody": "Chat-Nachrichten und Social-Beiträge der anderen Partei werden in Ihrem Browser als vollständiges Markdown gerendert (inkl. HTML/Skripte). Das erlaubt der anderen Partei, ohne erneute Zustimmung beliebigen Code auf Ihrem Gerät auszuführen. Nur fortfahren, wenn Sie der Person vollständig vertrauen.",
+					"second": "Erneut klicken zur endgültigen Bestätigung",
+					"title": "Meister festlegen?",
+					"warningTitle": "Hohes Risiko – bitte sorgfältig lesen"
+				},
+				"description": "Nach der Einrichtung kann Ihr Meister Ihre Chat-Nachrichten, Social-Beiträge und Ihr Profil in Ihrem Namen bearbeiten oder löschen; der Inhalt wird lokal als unsicheres Markdown gerendert (kann Skripte enthalten). Beliebiger Entitäts-Hash, jederzeit löschbar.",
+				"entityHash": {
+					"placeholder": "Entitäts-Hash des Meisters eingeben"
+				},
+				"entityHashLabel": "Meister-Entitäts-Hash (128 hex)",
+				"save": "Meister speichern",
+				"saveFailed": "Speichern fehlgeschlagen: ${error}",
+				"saved": "Meister aktualisiert",
+				"summary": "Stellvertretung",
+				"title": "Mein Meister"
 			}
 		},
 		"entityProfile": {
@@ -2988,30 +3084,12 @@
 			},
 			"searchLabel": "Stickerpakete suchen",
 			"emptyPacks": "Keine Stickerpakete",
-			"packNameLabel": "Name des Stickerpakets",
-			"packName": {
-				"placeholder": "Name des Stickerpakets eingeben"
-			},
-			"packDescriptionLabel": "Beschreibung",
-			"packDescription": {
-				"placeholder": "Beschreibung eingeben"
-			},
-			"stickerNameLabel": "Stickername",
-			"stickerName": {
-				"placeholder": "Stickername eingeben"
-			},
-			"selectPack": "Stickerpaket auswählen",
-			"selectPackOption": {
-				"textContent": "Stickerpaket auswählen"
-			},
-			"selectImage": "Bild auswählen",
 			"tagsLabel": "Tags (kommagetrennt)",
 			"tags": {
 				"placeholder": "Z. B. süß, Emoji, Tier"
 			},
 			"author": "Autor",
 			"authorLabel": "Autor: ${author}",
-			"stickerCount": "${count} Sticker",
 			"badgeMine": "Meins",
 			"noDescription": "Keine Beschreibung",
 			"noStickersInPack": "Keine Sticker",
@@ -3027,8 +3105,6 @@
 			"importPackName": "Meine Sammlung",
 			"importPackDescription": "Aus Nachrichten gespeicherte Sticker",
 			"nameRequired": "Bitte Stickerpaketname eingeben",
-			"stickerNameRequired": "Bitte Stickername eingeben",
-			"selectPackRequired": "Bitte Stickerpaket auswählen",
 			"fileRequired": "Bitte Bilddatei auswählen",
 			"loadDetailFailed": "Stickerpaketdetails konnten nicht geladen werden",
 			"deleteConfirm": "Dieses Stickerpaket dauerhaft löschen? Alle Sticker werden entfernt – nicht rückgängig zu machen.",
@@ -3046,6 +3122,174 @@
 				"uninstalled": "Deinstalliert",
 				"created": "Stickerpaket erstellt",
 				"deleted": "Gelöscht"
+			},
+			"sticker": {
+				"count": "${count} Sticker",
+				"name": {
+					"placeholder": "Stickername eingeben"
+				},
+				"nameLabel": "Stickername",
+				"nameRequired": "Bitte Stickername eingeben"
+			},
+			"select": {
+				"image": "Bild auswählen",
+				"pack": "Stickerpaket auswählen",
+				"packOption": {
+					"textContent": "Stickerpaket auswählen"
+				},
+				"packRequired": "Bitte Stickerpaket auswählen"
+			},
+			"pack": {
+				"description": {
+					"placeholder": "Beschreibung eingeben"
+				},
+				"descriptionLabel": "Beschreibung",
+				"name": {
+					"placeholder": "Name des Stickerpakets eingeben"
+				},
+				"nameLabel": "Name des Stickerpakets"
+			}
+		},
+		"message": {
+			"edit": {
+				"input": {
+					"placeholder": "Inhalt eingeben..."
+				},
+				"buttons": {
+					"confirm": {
+						"title": "Bestätigen"
+					},
+					"confirmIcon": {
+						"alt": "Bestätigen-Symbol"
+					},
+					"cancel": {
+						"title": "Abbrechen"
+					},
+					"cancelIcon": {
+						"alt": "Abbrechen-Symbol"
+					},
+					"upload": {
+						"title": "Hochladen"
+					},
+					"uploadIcon": {
+						"alt": "Hochladen-Symbol"
+					}
+				}
+			},
+			"generating": {
+				"tips": "Die Rolle generiert eine Antwort, bitte warten...",
+				"stop": {
+					"textContent": "Stopp",
+					"title": "Hören Sie auf zu generieren"
+				},
+				"stopIcon": {
+					"alt": "Stopp-Symbol"
+				}
+			},
+			"list": {
+				"confirmDeleteMessage": "Diese Nachricht wirklich löschen?"
+			},
+			"view": {
+				"buttons": {
+					"edit": {
+						"title": "Bearbeiten"
+					},
+					"editIcon": {
+						"alt": "Bearbeiten-Symbol"
+					},
+					"more": {
+						"title": "Mehr"
+					},
+					"moreIcon": {
+						"alt": "Mehr-Symbol"
+					},
+					"delete": {
+						"alt": "Löschen"
+					},
+					"deleteIcon": {
+						"alt": "Löschen-Symbol"
+					},
+					"downloadHtml": {
+						"alt": "Als HTML herunterladen"
+					},
+					"downloadHtmlIcon": {
+						"alt": "HTML-Download-Symbol"
+					}
+				},
+				"copyButton": {
+					"title": "Kopieren"
+				},
+				"copyButtonIcon": {
+					"alt": "Kopieren"
+				},
+				"copySuccess": "In die Zwischenablage kopiert",
+				"dropdown": {
+					"delete": "Löschen",
+					"deleteIcon": {
+						"alt": "Löschen-Symbol"
+					},
+					"downloadHtml": "Als HTML herunterladen",
+					"downloadHtmlIcon": {
+						"alt": "HTML-Download-Symbol"
+					},
+					"share": {
+						"textContent": "Teilen",
+						"1h": "1 Stunde",
+						"12h": "12 Stunden",
+						"24h": "24 Stunden",
+						"72h": "72 Stunden"
+					},
+					"shareIcon": {
+						"alt": "Teilen-Symbol"
+					},
+					"copy": {
+						"html": "Als HTML kopieren",
+						"htmlIcon": {
+							"alt": "Als HTML kopieren Symbol"
+						},
+						"markdown": "Als Markdown kopieren",
+						"markdownIcon": {
+							"alt": "Als Markdown kopieren Symbol"
+						},
+						"text": "Als reinen Text kopieren",
+						"textIcon": {
+							"alt": "Als reinen Text kopieren Symbol"
+						}
+					}
+				},
+				"share": {
+					"uploading": "Link wird erstellt...",
+					"success": "Erfolgreich geteilt! Link in die Zwischenablage kopiert. <br>Diese Funktion wird von ${provider} unterstützt. <br>[Unterstützen Sie sie.](${sponsorLink})"
+				},
+				"commonToolCalling": "Tool wird aufgerufen",
+				"reasoningDetailsTitle": "Argumentationsprozess",
+				"logprobsNotApplicable": "nicht anwendbar",
+				"logprobsTopLogprobsMeta": "top_logprobs (ausgewählt: ${token})",
+				"logprobsMetricsFooter": "Latenz bis zum ersten Token: ${ttft} | Dauer: ${time} | Token: ${tokens} | Geschwindigkeit: ${speed}",
+				"noReplyContent": "(Kein Inhalt)",
+				"feedback": {
+					"thumbsUp": {
+						"title": "Gefällt mir"
+					},
+					"thumbsDown": {
+						"title": "Gefällt mir nicht"
+					},
+					"regenerate": {
+						"title": "Neu generieren"
+					},
+					"reason": {
+						"placeholder": "Optional: Grund angeben"
+					},
+					"submit": "Absenden",
+					"cancel": "Abbrechen"
+				},
+				"tool": {
+					"overridingFilepath": "${filepath} wird überschrieben",
+					"readingFilepath": "${filepath} wird gelesen",
+					"replacingFilepath": "${filepath} wird teilweise ersetzt",
+					"runningLang": "${lang} wird ausgeführt",
+					"searchingContent": "Suche ${content}"
+				}
 			}
 		}
 	},
@@ -3098,21 +3342,6 @@
 				"label": "Erste Nachricht",
 				"placeholder": "Die erste Nachricht, die der Charakter sagt."
 			},
-			"personaDef": {
-				"heading": "Persona-Definition"
-			},
-			"personaUserName": {
-				"label": "Ihr Name im Chat",
-				"placeholder": "Zum Beispiel: Kapitän, Entdecker"
-			},
-			"personaAppearance": {
-				"label": "Aussehen",
-				"placeholder": "Beschreiben Sie Ihr Aussehen."
-			},
-			"personaPersonality": {
-				"label": "Persönlichkeit",
-				"placeholder": "Beschreiben Sie Ihre Persönlichkeitsmerkmale."
-			},
 			"worldDef": {
 				"heading": "Welt-Definition"
 			},
@@ -3144,7 +3373,24 @@
 				"label": "Problemseite",
 				"placeholder": "URL der Problemseite der Komponente"
 			},
-			"createButton": "Komponente erstellen"
+			"createButton": "Komponente erstellen",
+			"persona": {
+				"appearance": {
+					"label": "Aussehen",
+					"placeholder": "Beschreiben Sie Ihr Aussehen."
+				},
+				"def": {
+					"heading": "Persona-Definition"
+				},
+				"personality": {
+					"label": "Persönlichkeit",
+					"placeholder": "Beschreiben Sie Ihre Persönlichkeitsmerkmale."
+				},
+				"userName": {
+					"label": "Ihr Name im Chat",
+					"placeholder": "Zum Beispiel: Kapitän, Entdecker"
+				}
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -3455,21 +3701,23 @@
 			"noModelsMatched": "Keine passenden Modelle gefunden",
 			"currentModelTitle": "${name} (${model})",
 			"providerLabel": "Anbieter: ${provider}",
-			"metaContext": "Kontext: ${context} Token",
-			"metaOutputLimit": "Max. Ausgabe: ${output} Token",
-			"metaInputPrice": "Eingabepreis: ${price} / 1 Mio. Token",
-			"metaOutputPrice": "Ausgabepreis: ${price} / 1 Mio. Token",
-			"metaCachePrice": "Cache-Lesen/Schreiben: ${read} / ${write}",
-			"metaModalities": "Modalitäten: Eingabe ${input}, Ausgabe ${output}",
-			"metaReasoning": "Reasoning-fähig",
-			"metaToolCall": "Unterstützt Tool-Aufrufe",
-			"metaVision": "Unterstützt visuelle Eingabe",
-			"metaOpenWeights": "Offene Gewichte",
-			"metaKnowledge": "Wissensstand: ${knowledge}",
-			"metaReleaseDate": "Veröffentlichungsdatum: ${date}",
 			"providerDocLink": "[Anbieterdokumentation anzeigen](${url})",
 			"modelSearch": {
 				"placeholder": "Suchen Sie nach Modellname, Hersteller, Funktionen ..."
+			},
+			"meta": {
+				"cachePrice": "Cache-Lesen/Schreiben: ${read} / ${write}",
+				"context": "Kontext: ${context} Token",
+				"inputPrice": "Eingabepreis: ${price} / 1 Mio. Token",
+				"knowledge": "Wissensstand: ${knowledge}",
+				"modalities": "Modalitäten: Eingabe ${input}, Ausgabe ${output}",
+				"openWeights": "Offene Gewichte",
+				"outputLimit": "Max. Ausgabe: ${output} Token",
+				"outputPrice": "Ausgabepreis: ${price} / 1 Mio. Token",
+				"reasoning": "Reasoning-fähig",
+				"releaseDate": "Veröffentlichungsdatum: ${date}",
+				"toolCall": "Unterstützt Tool-Aufrufe",
+				"vision": "Unterstützt visuelle Eingabe"
 			}
 		},
 		"prompts": {
@@ -3495,21 +3743,23 @@
 			"unsavedChangesBeforeUnload": "Sie haben nicht gespeicherte Änderungen. Sind Sie sicher, dass Sie diese Seite verlassen möchten?"
 		},
 		"alerts": {
-			"fetchFileListFailed": "Dateiliste konnte nicht abgerufen werden: ${error}",
-			"fetchGeneratorListFailed": "Generatorliste konnte nicht abgerufen werden: ${error}",
-			"fetchDefaultsFailed": "Standardkomponente konnte nicht abgerufen werden: ${error}",
-			"fetchFileDataFailed": "Dateidaten konnten nicht abgerufen werden: ${error}",
-			"fetchConfigTemplateFailed": "Konfigurationsvorlage konnte nicht abgerufen werden",
 			"saveFileFailed": "Datei konnte nicht gespeichert werden: ${error}",
 			"deleteFileFailed": "Datei konnte nicht gelöscht werden: ${error}",
 			"addFileFailed": "Datei konnte nicht hinzugefügt werden: ${error}",
 			"setDefaultFailed": "Standarddienstquelle konnte nicht festgelegt werden: ${error}",
-			"fetchBranchesFailed": "Komponentenbaum konnte nicht abgerufen werden: ${error}",
 			"noFileSelectedSave": "Keine Datei zum Speichern ausgewählt.",
 			"noFileSelectedDelete": "Keine Dateien zum Löschen ausgewählt.",
 			"noGeneratorSelectedSave": "Bitte wählen Sie vor dem Speichern den Generator aus",
 			"savedAsNewFile": "Als neue Dienstquelle gespeichert: ${name}",
-			"invalidFileName": "Der Dateiname darf die folgenden Zeichen nicht enthalten: / \\ : * ? \" < > |"
+			"invalidFileName": "Der Dateiname darf die folgenden Zeichen nicht enthalten: / \\ : * ? \" < > |",
+			"fetch": {
+				"branchesFailed": "Komponentenbaum konnte nicht abgerufen werden: ${error}",
+				"configTemplateFailed": "Konfigurationsvorlage konnte nicht abgerufen werden",
+				"defaultsFailed": "Standardkomponente konnte nicht abgerufen werden: ${error}",
+				"fileDataFailed": "Dateidaten konnten nicht abgerufen werden: ${error}",
+				"fileListFailed": "Dateiliste konnte nicht abgerufen werden: ${error}",
+				"generatorListFailed": "Generatorliste konnte nicht abgerufen werden: ${error}"
+			}
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -3832,14 +4082,6 @@
 			"privacyHint": "Steuert, ob Ihr Konto in Entdecken und Empfehlungen erscheint.",
 			"tasteTitle": "Empfehlungen & Vorlieben",
 			"tasteHint": "Grenzen und Bezeichnungen für „Für Sie“ anpassen.",
-			"mutedKeywordsTitle": "Stichwörter & Tags",
-			"mutedKeywordsHint": "Beiträge mit Treffern im Text, Content-Warning oder Tags werden aus Feed, Entdecken, Suche und Benachrichtigungen ausgeblendet. Nur lokal gespeichert.",
-			"mutedKeywordsMatchTags": "Auch Tags abgleichen",
-			"mutedKeywordsAdd": "Hinzufügen",
-			"mutedKeywordsRemove": {
-				"title": "Stichwort entfernen"
-			},
-			"mutedKeywordsEmpty": "Noch keine Stichwörter",
 			"autoTranslateTitle": "Automatische Übersetzung",
 			"autoTranslateHint": "Wenn diese Option aktiviert ist, fordern fremdsprachige Beiträge automatisch eine Übersetzung an und können auf den Originaltext umgestellt werden.",
 			"autoTranslateEnable": "Beiträge in anderen Sprachen automatisch übersetzen",
@@ -3847,19 +4089,29 @@
 			"safetyHint": "Verwalten Sie blockierte und ausgeblendete Listen.",
 			"mutedKeywords": {
 				"placeholder": "Geben Sie Schlüsselwörter oder #Tags ein",
-				"aria-label": "Stichwort oder Tag eingeben"
+				"aria-label": "Stichwort oder Tag eingeben",
+				"add": "Hinzufügen",
+				"empty": "Noch keine Stichwörter",
+				"hint": "Beiträge mit Treffern im Text, Content-Warning oder Tags werden aus Feed, Entdecken, Suche und Benachrichtigungen ausgeblendet. Nur lokal gespeichert.",
+				"matchTags": "Auch Tags abgleichen",
+				"remove": {
+					"title": "Stichwort entfernen"
+				},
+				"title": "Stichwörter & Tags"
 			},
 			"taste": {
 				"rebuild": "Einstellungen neu erstellen",
-				"privacyPublishPreferences": "Öffentliche Tag-Benennung und Zusammenführungserkennung",
-				"privacyPublishPreferencesHint": "Nach dem Schließen können Freunde Ihre Tag-Benennung und Zusammenführungsanweisungen nicht mehr sehen und können nicht zum Konsens beitragen.",
-				"privacyPublishReactions": "Öffentliche Vorlieben und Abneigungen",
-				"privacyPublishReactionsHint": "Nach dem Schließen erhält das Poster keine Likes/Dislikes mehr, Ihre Reaktionen werden nicht in die Empfehlungen anderer einbezogen und Sie werden den Beitrag nicht mehr für eine erneute Verbreitung bewerben.",
 				"empty": "Es gibt noch kein Präferenz-Tag, es wird automatisch nach mehr Likes/Dislikes gruppiert",
 				"weight": "Gewicht ${weight}",
 				"save": "Speichern",
 				"name": {
 					"placeholder": "Lokaler Anzeigename"
+				},
+				"privacyPublish": {
+					"preferences": "Öffentliche Tag-Benennung und Zusammenführungserkennung",
+					"preferencesHint": "Nach dem Schließen können Freunde Ihre Tag-Benennung und Zusammenführungsanweisungen nicht mehr sehen und können nicht zum Konsens beitragen.",
+					"reactions": "Öffentliche Vorlieben und Abneigungen",
+					"reactionsHint": "Nach dem Schließen erhält das Poster keine Likes/Dislikes mehr, Ihre Reaktionen werden nicht in die Empfehlungen anderer einbezogen und Sie werden den Beitrag nicht mehr für eine erneute Verbreitung bewerben."
 				}
 			},
 			"blocklist": {
@@ -3886,27 +4138,6 @@
 				"placeholder": "Inhaltswarnung (optional)"
 			},
 			"sensitiveMedia": "Sensible Medien verbergen",
-			"editImage": "Bearbeiten",
-			"editCrop": "Zuschneiden",
-			"editMosaic": "Verpixeln",
-			"editBrush": "Pinsel",
-			"editBrushColor": {
-				"title": "Pinselfarbe",
-				"aria-label": "Pinselfarbe"
-			},
-			"editBrushSize": {
-				"title": "Pinselgröße",
-				"aria-label": "Pinselgröße"
-			},
-			"editApply": "Übernehmen",
-			"editCancel": "Abbrechen",
-			"replyPolicyEveryone": "Jeder kann antworten",
-			"replyPolicyFollowers7d": "Follower seit mehr als 7 Tagen",
-			"replyPolicyAuthorFollows": "Menschen, denen ich folge",
-			"replyPolicyLabel": "Wer kann antworten?",
-			"replyDisplayAll": "Alle Antworten anzeigen",
-			"replyDisplayFeaturedOnly": "Nur ausgewählte Antworten",
-			"replyDisplayLabel": "Antworten anzeigen",
 			"scheduleLabel": "Zeitgesteuert veröffentlichen",
 			"scheduleSuccess": "Der Beitrag wurde zur geplanten Warteschlange hinzugefügt",
 			"emojiButton": {
@@ -3988,6 +4219,33 @@
 					"placeholder": "Wer sollte es nicht zeigen (optional)"
 				},
 				"aria-label": "Sichtbarer Bereich"
+			},
+			"reply": {
+				"displayAll": "Alle Antworten anzeigen",
+				"displayFeaturedOnly": "Nur ausgewählte Antworten",
+				"displayLabel": "Antworten anzeigen",
+				"policy": {
+					"authorFollows": "Menschen, denen ich folge",
+					"everyone": "Jeder kann antworten",
+					"followers7d": "Follower seit mehr als 7 Tagen",
+					"label": "Wer kann antworten?"
+				}
+			},
+			"edit": {
+				"apply": "Übernehmen",
+				"brush": "Pinsel",
+				"brushColor": {
+					"title": "Pinselfarbe",
+					"aria-label": "Pinselfarbe"
+				},
+				"brushSize": {
+					"title": "Pinselgröße",
+					"aria-label": "Pinselgröße"
+				},
+				"cancel": "Abbrechen",
+				"crop": "Zuschneiden",
+				"image": "Bearbeiten",
+				"mosaic": "Verpixeln"
 			}
 		},
 		"feed": {
@@ -4094,21 +4352,11 @@
 			},
 			"mediaOnly": "[Medien]",
 			"hideFromExplore": "Konto auf der Erkundungsseite ausblenden",
-			"tabPosts": "Beiträge",
-			"tabAlbums": "Alben",
-			"tabLikes": "Gefällt mir",
-			"tabCabinets": "Cabinet",
 			"tabsLabel": {
 				"aria-label": "Profilbereiche"
 			},
 			"cabinetsEmpty": "Derzeit gibt es keine öffentlichen Cabinets",
 			"cabinetsFailed": "Das Laden des Archivs ist fehlgeschlagen: ${error}",
-			"statsGroup": {
-				"aria-label": "Statistiken"
-			},
-			"statsPosts": "Beiträge",
-			"statsFollowing": "Folge ich",
-			"statsFollowers": "Follower",
 			"followingTitle": "Folge ich",
 			"followersTitle": "Follower",
 			"albums": {
@@ -4125,6 +4373,20 @@
 				"deleteWithPosts": "Album löschen und Beitrag löschen",
 				"pickerLabel": "Zum Album hinzufügen",
 				"defaultName": "Standardalbum"
+			},
+			"stats": {
+				"followers": "Follower",
+				"following": "Folge ich",
+				"group": {
+					"aria-label": "Statistiken"
+				},
+				"posts": "Beiträge"
+			},
+			"tabs": {
+				"albums": "Alben",
+				"cabinets": "Cabinet",
+				"likes": "Gefällt mir",
+				"posts": "Beiträge"
 			}
 		},
 		"video": {
@@ -4174,10 +4436,6 @@
 			"broadcast": {
 				"title": "Beginnen Sie mit der Übertragung",
 				"open": "Gehen Sie zur Übertragung",
-				"mediaAv": "Audio und Video",
-				"mediaAudio": "Reiner Klang",
-				"mediaVideo": "Reines Bild",
-				"mediaWhip": "WHIP-Push-Streaming (z. B. OBS)",
 				"whipUrl": "WHIP-Adresse",
 				"whipToken": "Inhabertoken",
 				"whipWaiting": "Warten auf WHIP-Streaming-Verbindung (Streaming-Software wie OBS kann verwendet werden)…",
@@ -4187,6 +4445,12 @@
 				"stopped": "Die Liveübertragung wurde gestoppt",
 				"titleInput": {
 					"placeholder": "Live-Titel (optional)"
+				},
+				"media": {
+					"audio": "Reiner Klang",
+					"av": "Audio und Video",
+					"video": "Reines Bild",
+					"whip": "WHIP-Push-Streaming (z. B. OBS)"
 				}
 			},
 			"danmaku": {
@@ -4210,30 +4474,32 @@
 			"trustScore": "Vertrauen ${score}",
 			"viewTitle": "Suchen",
 			"loading": "Suche...",
-			"filterAuthor": {
-				"placeholder": "Autor",
-				"aria-label": "Autor"
-			},
-			"filterMedia": {
-				"aria-label": "Medientyp"
-			},
-			"filterMediaAll": "Alle Medien",
-			"filterMediaImage": "Bild",
-			"filterMediaVideo": "Video",
-			"filterTag": {
-				"placeholder": "#Etikett",
-				"aria-label": "Etikett"
-			},
-			"filterSort": {
-				"aria-label": "Sortieren nach"
-			},
 			"sortRecent": "Neueste",
 			"sortPopular": "Beliebt",
-			"filterScope": {
-				"aria-label": "Suchbereich"
-			},
 			"scopeLocal": "Lokal",
-			"scopeNearby": "In der Nähe"
+			"scopeNearby": "In der Nähe",
+			"filter": {
+				"author": {
+					"placeholder": "Autor",
+					"aria-label": "Autor"
+				},
+				"media": {
+					"aria-label": "Medientyp"
+				},
+				"mediaAll": "Alle Medien",
+				"mediaImage": "Bild",
+				"mediaVideo": "Video",
+				"scope": {
+					"aria-label": "Suchbereich"
+				},
+				"sort": {
+					"aria-label": "Sortieren nach"
+				},
+				"tag": {
+					"placeholder": "#Etikett",
+					"aria-label": "Etikett"
+				}
+			}
 		},
 		"dialog": {
 			"close": {
@@ -4428,7 +4694,6 @@
 		},
 		"upload": "Hochladen",
 		"uploadFolder": "Ordner hochladen",
-		"newFolder": "Neuen Ordner erstellen",
 		"open": "Offen",
 		"download": "Herunterladen",
 		"downloadZip": "Ordner herunterladen",
@@ -4462,12 +4727,6 @@
 		"created": "Erstellen: ${stamp}",
 		"modified": "Ändern: ${stamp}",
 		"statusCount": "${count} Artikel, ${selected} ausgewählt",
-		"newCabinet": {
-			"title": "Neues Cabinet",
-			"aria-label": "Neues Cabinet"
-		},
-		"newCabinetPrompt": "Neuer Archivname",
-		"newFolderPrompt": "Neuer Ordnername",
 		"renamePrompt": "Neuer Name",
 		"visibilityPrompt": "Sichtbarkeit (Öffentlich/nicht gelistet/Follower/privat/ausgewählt)",
 		"cabinetActionPrompt": "Aktion: umbenennen/löschen/sichtbar",
@@ -4478,12 +4737,21 @@
 		"cutDone": "Schneiden",
 		"undo": "Abbrechen",
 		"redo": "Gefällt mirderholen",
-		"newWindow": "Neues Fenster öffnenAktueller Standort",
 		"goUp": "Zurück zur vorherigen Ebene",
 		"brokenLink": "Link ist defekt: ${reason}",
 		"noDownload": "Keine herunterladbaren Inhalte",
 		"groupDownloadHint": "Bitte erhalten Sie Gruppendateien über Nachrichtenanhänge oder nachfolgende Download-Links.",
-		"remoteEntity": "Entfernte Entität"
+		"remoteEntity": "Entfernte Entität",
+		"new": {
+			"cabinet": {
+				"title": "Neues Cabinet",
+				"aria-label": "Neues Cabinet"
+			},
+			"cabinetPrompt": "Neuer Archivname",
+			"folder": "Neuen Ordner erstellen",
+			"folderPrompt": "Neuer Ordnername",
+			"window": "Neues Fenster öffnenAktueller Standort"
+		}
 	},
 	"browser_integration": {
 		"title": "Browserintegration",
@@ -4613,27 +4881,10 @@
 		"title": "IDE-Integration",
 		"heading": "IDE-Integration",
 		"instruction": "Verwenden Sie fount-Rollen, um die Programmierung in ACP-fähigen Editoren (wie Zed, JetBrains, Neovim usw.) zu unterstützen.",
-		"supportedEditorsTitle": "Unterstützte Editoren und Clients",
-		"supportedEditorsIntro": "Folgende Clients arbeiten mit fount:",
-		"supportedEditorsLoading": "Laden…",
-		"supportedEditorsError": "Liste konnte nicht geladen werden: ${message}",
-		"acpTitle": "Konfigurieren Sie das fount-ACP-Skript",
-		"acpDesc": "Sehen Sie sich das folgende Beispiel an, um das fount-ACP-Skript zu konfigurieren:",
-		"acpCharLabel": "Rolle",
 		"charListError": "Rollenliste konnte nicht abgerufen werden",
-		"acpScriptLabel": "ACP-Skript-URL",
-		"acpConfigSample": "Konfigurationsbeispiel:",
-		"acpConfigHint": "Die Rollen-ID wird im Rollen-Dropdown auf dieser Seite angezeigt und der API-Schlüssel kann in den Benutzereinstellungen verwaltet werden.",
 		"copyButton": "Kopieren",
 		"copied": "In die Zwischenablage kopiert",
-		"apiKeySectionTitle": "API-Schlüssel",
-		"apiKeyHint": "Wird für die ACP-Skript-Verbindungsquelle verwendet (gleicher Schlüsselsatz wie API-Proxy, kann in den Benutzereinstellungen erstellt werden).",
 		"generateApiKeyButton": "Neuen Schlüssel generieren",
-		"apiKeyCopied": "API-Schlüssel kopiert",
-		"apiKeyCreateError": "API-Schlüssel konnte nicht erstellt werden: ${message}",
-		"apiKeyInput": {
-			"aria-label": "API-Schlüssel"
-		},
 		"home_function_buttons": {
 			"integration_related": "Integrationsbezogen",
 			"ide_integration_config": {
@@ -4647,8 +4898,31 @@
 				"locked_description": "Stellen Sie eine Verbindung zur fount-Rolle in einer externen IDE her und schließen Sie eine Sitzung ab."
 			}
 		},
-		"acpChar": "Rolle auswählen",
-		"acpConfig": "Bitte wählen Sie eine Rolle aus und generieren Sie zunächst einen API-Schlüssel"
+		"supportedEditors": {
+			"error": "Liste konnte nicht geladen werden: ${message}",
+			"intro": "Folgende Clients arbeiten mit fount:",
+			"loading": "Laden…",
+			"title": "Unterstützte Editoren und Clients"
+		},
+		"apiKey": {
+			"copied": "API-Schlüssel kopiert",
+			"createError": "API-Schlüssel konnte nicht erstellt werden: ${message}",
+			"hint": "Wird für die ACP-Skript-Verbindungsquelle verwendet (gleicher Schlüsselsatz wie API-Proxy, kann in den Benutzereinstellungen erstellt werden).",
+			"input": {
+				"aria-label": "API-Schlüssel"
+			},
+			"sectionTitle": "API-Schlüssel"
+		},
+		"acp": {
+			"char": "Rolle auswählen",
+			"charLabel": "Rolle",
+			"config": "Bitte wählen Sie eine Rolle aus und generieren Sie zunächst einen API-Schlüssel",
+			"configHint": "Die Rollen-ID wird im Rollen-Dropdown auf dieser Seite angezeigt und der API-Schlüssel kann in den Benutzereinstellungen verwaltet werden.",
+			"configSample": "Konfigurationsbeispiel:",
+			"desc": "Sehen Sie sich das folgende Beispiel an, um das fount-ACP-Skript zu konfigurieren:",
+			"scriptLabel": "ACP-Skript-URL",
+			"title": "Konfigurieren Sie das fount-ACP-Skript"
+		}
 	},
 	"deskpet": {
 		"title": "Desktop-Haustiere",
@@ -4939,11 +5213,6 @@
 			"deviceInfo": "Geräte-ID: ${deviceId}",
 			"thisDevice": "Dieses Gerät",
 			"deviceDetails": "Zuletzt online: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "Widerrufen",
-			"revokeConfirm": "Sind Sie sicher, dass Sie sich von diesem Gerät/dieser Sitzung abmelden möchten?",
-			"revokeSuccess": "Das Gerät/Die Sitzung wurde erfolgreich widerrufen.",
-			"revokeMissingParams": "Bitte geben Sie das Geräte- und Sitzungspasswort an, das Sie widerrufen möchten.",
-			"revokeWrongPassword": "Das Passwort ist falsch.",
 			"listNotFound": "Geräteliste nicht gefunden.",
 			"deviceNotFound": "Das Gerät oder die Sitzung wurde nicht gefunden.",
 			"refreshButton": {
@@ -4951,6 +5220,13 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "Aktualisieren-Symbol"
+			},
+			"revoke": {
+				"button": "Widerrufen",
+				"confirm": "Sind Sie sicher, dass Sie sich von diesem Gerät/dieser Sitzung abmelden möchten?",
+				"missingParams": "Bitte geben Sie das Geräte- und Sitzungspasswort an, das Sie widerrufen möchten.",
+				"success": "Das Gerät/Die Sitzung wurde erfolgreich widerrufen.",
+				"wrongPassword": "Das Passwort ist falsch."
 			}
 		},
 		"apiKeys": {
@@ -4964,14 +5240,8 @@
 			"keyDetails": "Beschreibung: ${description} | Erstellt in: ${createdAt} | Zuletzt gebraucht: ${lastUsed}",
 			"neverUsed": "Nie benutzt",
 			"noKeysForUser": "API-Schlüsseldaten nicht gefunden.",
-			"revokeWrongPassword": "Das Passwort ist falsch.",
 			"keyNotFound": "Der API-Schlüssel wurde nicht gefunden.",
-			"revokeMissingJti": "Bitte geben Sie den zu widerrufenden Schlüssel an.",
-			"revokeMissingPassword": "Für das Sperren eines Schlüssels ist ein Passwort erforderlich.",
 			"verifyMissingApiKey": "Bitte geben Sie einen API-Schlüssel an.",
-			"revokeButton": "Widerrufen",
-			"revokeConfirm": "Sind Sie sicher, dass Sie diesen API-Schlüssel widerrufen möchten?",
-			"revokeSuccess": "Der API-Schlüssel wurde erfolgreich widerrufen.",
 			"errorDescriptionRequired": "Eine Beschreibung ist erforderlich.",
 			"createSuccess": "Der API-Schlüssel wurde erfolgreich erstellt.",
 			"refreshButton": {
@@ -4979,6 +5249,14 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "Aktualisieren-Symbol"
+			},
+			"revoke": {
+				"button": "Widerrufen",
+				"confirm": "Sind Sie sicher, dass Sie diesen API-Schlüssel widerrufen möchten?",
+				"missingJti": "Bitte geben Sie den zu widerrufenden Schlüssel an.",
+				"missingPassword": "Für das Sperren eines Schlüssels ist ein Passwort erforderlich.",
+				"success": "Der API-Schlüssel wurde erfolgreich widerrufen.",
+				"wrongPassword": "Das Passwort ist falsch."
 			}
 		},
 		"newApiKey": {
@@ -5000,14 +5278,16 @@
 			"argsTemplateHint": "Platzhalter: \\${file} \\${line} \\${column}",
 			"presetOptionPathAvailable": "${label} (im PATH vorhanden)",
 			"presetOptionPathUnavailable": "${label} (nicht im PATH)",
-			"testPathInput": {
-				"placeholder": "Pfad zu einer Datei zum Ausprobieren, z. B. C:/work/project/src/main.mjs"
-			},
-			"testButton": "Testweise öffnen",
 			"saveButton": "Konfiguration speichern",
 			"saveSuccess": "Befehl für externen Editor gespeichert.",
-			"testPathRequired": "Bitte zuerst einen Pfad zur Testdatei angeben.",
-			"testSuccess": "Befehl zum Öffnen im Editor wurde ausgeführt."
+			"test": {
+				"button": "Testweise öffnen",
+				"pathInput": {
+					"placeholder": "Pfad zu einer Datei zum Ausprobieren, z. B. C:/work/project/src/main.mjs"
+				},
+				"pathRequired": "Bitte zuerst einen Pfad zur Testdatei angeben.",
+				"success": "Befehl zum Öffnen im Editor wurde ausgeführt."
+			}
 		},
 		"logout": {
 			"title": "Abmelden",
@@ -5020,12 +5300,12 @@
 			"title": "Konto löschen",
 			"warning": "Warnung: Diese Aktion löscht Ihr Konto und alle zugehörigen Daten dauerhaft und kann nicht wiederhergestellt werden.",
 			"submitButton": "Mein Konto löschen",
-			"confirmMessage1": "Warnung! Sind Sie sicher, dass Sie Ihr Konto dauerhaft löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
-			"confirmMessage2": "Um die Löschung zu bestätigen, geben Sie bitte Ihren Benutzernamen \"${username}\" ein:",
 			"usernameMismatch": "Der eingegebene Benutzername stimmt nicht mit dem aktuellen Benutzer überein. Der Löschvorgang wurde abgebrochen.",
 			"success": "Das Konto wurde erfolgreich gelöscht. Sie werden jetzt abgemeldet.",
 			"missingPassword": "Bitte geben Sie Ihr Passwort ein.",
-			"wrongPassword": "Das Passwort ist falsch."
+			"wrongPassword": "Das Passwort ist falsch.",
+			"confirmWarning": "Warnung! Sind Sie sicher, dass Sie Ihr Konto dauerhaft löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+			"confirmUsernamePrompt": "Um die Löschung zu bestätigen, geben Sie bitte Ihren Benutzernamen \"${username}\" ein:"
 		},
 		"passwordConfirm": {
 			"title": "Vorgang bestätigen",
@@ -5076,19 +5356,13 @@
 		"instruction": "Erstellen und verwalten Sie auf dieser Seite Ihre API-Schlüssel, um fount in andere Anwendungen zu integrieren.",
 		"endpointSectionTitle": "API-Endpunkt",
 		"endpointInstruction": "Dies ist die Basis-URL für die Integration mit anderen Diensten.",
-		"apiUrlInput": {
-			"aria-label": "API-Endpunkt"
-		},
 		"usageExampleTitle": "Anwendungsbeispiel",
 		"usageExampleInstruction": "Hier ist ein Beispiel, wie Sie mit `curl` die Liste der verfügbaren Modelle abrufen können.",
 		"copyButton": "Kopieren",
 		"copied": "In die Zwischenablage kopiert",
-		"apiKeySectionTitle": "Ihre API-Schlüssel",
-		"apiKey": "Ihr API-Schlüssel:",
 		"noApiKey": "Sie haben noch keinen API-Schlüssel für diese Seite generiert.",
 		"generateApiKeyButton": "Neuen Schlüssel generieren",
 		"copyApiKeyButton": "Kopieren",
-		"apiKeyCopied": "API-Schlüssel kopiert!",
 		"queryStringSectionTitle": "API-Schlüssel kann nicht im Anfrage-Header gesetzt werden? (Unsicher)",
 		"queryStringWarning": "Verwenden Sie diese alternative Methode, wenn Ihre Anwendung das Senden des API-Schlüssels im Anfrage-Header (Authorization-Header) nicht unterstützt. Bitte beachten Sie: Das direkte Platzieren des API-Schlüssels in der URL stellt ein Sicherheitsrisiko dar, da er in Serverprotokollen oder im Browserverlauf protokolliert werden könnte.",
 		"copyQueryStringUrlButton": "URL mit API-Schlüssel (Query-String)",
@@ -5100,6 +5374,14 @@
 						"title": "Als Proxy"
 					}
 				}
+			}
+		},
+		"api": {
+			"key": "Ihr API-Schlüssel:",
+			"keyCopied": "API-Schlüssel kopiert!",
+			"keySectionTitle": "Ihre API-Schlüssel",
+			"urlInput": {
+				"aria-label": "API-Endpunkt"
 			}
 		}
 	},
@@ -5273,11 +5555,7 @@
 		"failed": "Fehlgeschlagen",
 		"copySuccess": "Debug-Bericht in die Zwischenablage kopiert",
 		"copyFailed": "Fehler beim Kopieren des Berichts",
-		"updateNow": "Jetzt aktualisieren und neu starten",
 		"alreadyLatest": "Bereits die neueste Version",
-		"updateRestarting": "Neustart...",
-		"updateSuccess": "Der Server wird neu gestartet",
-		"updateFailed": "Die Aktualisierungsanforderung ist fehlgeschlagen",
 		"autoUpdateNotEnabled": "Automatische Updates sind nicht aktiviert",
 		"home_function_buttons": {
 			"debug": {
@@ -5285,6 +5563,12 @@
 					"title": "Debug-Panel öffnen"
 				}
 			}
+		},
+		"update": {
+			"failed": "Die Aktualisierungsanforderung ist fehlgeschlagen",
+			"now": "Jetzt aktualisieren und neu starten",
+			"restarting": "Neustart...",
+			"success": "Der Server wird neu gestartet"
 		}
 	},
 	"badges_maker": {

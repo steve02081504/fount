@@ -71,9 +71,9 @@ export function showFolderContextMenu(event, folderIndex) {
 	const menu = document.createElement('ul')
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
 
-	menu.appendChild(menuItem(geti18n('chat.hub.folderRename'), async () => {
+	menu.appendChild(menuItem(geti18n('chat.hub.folder.rename'), async () => {
 		dismissFolderContextMenu()
-		const next = promptI18n('chat.hub.folderRenamePrompt', { name: folder.name || '' })
+		const next = promptI18n('chat.hub.folder.renamePrompt', { name: folder.name || '' })
 		if (next == null) return
 		folder.name = String(next).trim()
 		folder.nameIsDefault = !folder.name
@@ -81,7 +81,7 @@ export function showFolderContextMenu(event, folderIndex) {
 	}))
 
 	menu.appendChild(menuItem(
-		geti18n(folder.collapsed ? 'chat.hub.folderExpand' : 'chat.hub.folderCollapse'),
+		geti18n(folder.collapsed ? 'chat.hub.folder.expand' : 'chat.hub.folder.collapse'),
 		async () => {
 			dismissFolderContextMenu()
 			folder.collapsed = !folder.collapsed
@@ -89,7 +89,7 @@ export function showFolderContextMenu(event, folderIndex) {
 		},
 	))
 
-	menu.appendChild(menuItem(geti18n('chat.hub.folderDissolve'), async () => {
+	menu.appendChild(menuItem(geti18n('chat.hub.folder.dissolve'), async () => {
 		dismissFolderContextMenu()
 		store.sidebar.groupFoldersState.folders = (store.sidebar.groupFoldersState.folders || [])
 			.filter(item => item !== folder)
