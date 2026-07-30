@@ -14,7 +14,7 @@ export const I18N_REWRITE_SUFFIXES = Object.freeze([
 /**
  * i18n 改写应跳过的相对路径。
  * @param {string} rel 相对仓库根、正斜杠
- * @returns {boolean}
+ * @returns {boolean} 应跳过则为 true
  */
 export function isI18nRewriteExcluded(rel) {
 	return rel.startsWith('src/public/locales/')

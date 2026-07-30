@@ -61,7 +61,7 @@ export function hasEmojiLocaleWarning(emojiBlock) {
  */
 export function localesWithInfoProvider(info) {
 	return Object.entries(info)
-		.filter(([, value]) => value && typeof value === 'object' && !Array.isArray(value) && 'provider' in /** @type {object} */ (value))
+		.filter(([, value]) => value && typeof value === 'object' && !Array.isArray(value) && 'provider' in /** @type {object} */ value)
 		.map(([key]) => key)
 }
 
@@ -72,7 +72,7 @@ export function localesWithInfoProvider(info) {
  */
 export function localesMissingProvider(block) {
 	return Object.entries(block)
-		.filter(([, value]) => value && typeof value === 'object' && !Array.isArray(value) && !('provider' in /** @type {object} */ (value)))
+		.filter(([, value]) => value && typeof value === 'object' && !Array.isArray(value) && !('provider' in /** @type {object} */ value))
 		.map(([key]) => key)
 }
 
@@ -176,34 +176,34 @@ export function scanLocalesData(relPath, data) {
 		return { issues, avatarUrls, emojiMissingAvatar }
 	}
 
-	const root = /** @type {Record<string, unknown>} */ (data)
-	const info = /** @type {Record<string, unknown>} */ (root.info)
+	const root = /** @type {Record<string, unknown>} */ data
+	const info = /** @type {Record<string, unknown>} */ root.info
 	if (info && typeof info === 'object' && !Array.isArray(info)) {
-		const withProvider = localesWithInfoProvider(/** @type {Record<string, unknown>} */ (info))
+		const withProvider = localesWithInfoProvider(/** @type {Record<string, unknown>} */ info)
 		if (withProvider.length)
 			issues.push({ path: relPath, message: `info 残留 provider（应只在 product_info）: ${withProvider.join(', ')}` })
 
-		const emojiBlock = /** @type {Record<string, unknown>} */ (info.emoji)
+		const emojiBlock = /** @type {Record<string, unknown>} */ info.emoji
 		if (emojiBlock && typeof emojiBlock === 'object' && !Array.isArray(emojiBlock)) {
-			const { warn, langs } = hasEmojiLocaleWarning(/** @type {Record<string, unknown>} */ (emojiBlock))
+			const { warn, langs } = hasEmojiLocaleWarning(/** @type {Record<string, unknown>} */ emojiBlock)
 			if (warn)
 				issues.push({ path: relPath, message: `emoji 内字符串含 ${langs.join('/')}，请确认 emoji 本地化` })
-			const av = /** @type {Record<string, unknown>} */ (emojiBlock).avatar
+			const av = /** @type {Record<string, unknown>} */ emojiBlock.avatar
 			if (av == null || av === '')
 				emojiMissingAvatar = true
 		}
 
 		for (const value of Object.values(info)) {
 			if (!value || typeof value !== 'object' || Array.isArray(value)) continue
-			const url = /** @type {Record<string, unknown>} */ (value).avatar
+			const url = /** @type {Record<string, unknown>} */ value.avatar
 			if (typeof url === 'string' && url.trim())
 				avatarUrls.push(url.trim())
 		}
 	}
 
-	const productInfo = /** @type {Record<string, unknown>} */ (root.product_info)
+	const productInfo = /** @type {Record<string, unknown>} */ root.product_info
 	if (productInfo && typeof productInfo === 'object' && !Array.isArray(productInfo)) {
-		const missing = localesMissingProvider(/** @type {Record<string, unknown>} */ (productInfo))
+		const missing = localesMissingProvider(/** @type {Record<string, unknown>} */ productInfo)
 		if (missing.length)
 			issues.push({ path: relPath, message: `product_info 缺少 provider: ${missing.join(', ')}` })
 	}
@@ -227,14 +227,14 @@ export function scanAchievementsData(relPath, data) {
 		return { issues, iconUrls }
 	}
 
-	const achievements = /** @type {Record<string, unknown>} */ (/** @type {Record<string, unknown>} */ (data).achievements)
+	const achievements = /** @type {Record<string, unknown>} */ /** @type {Record<string, unknown>} */ data.achievements
 	if (!achievements || typeof achievements !== 'object' || Array.isArray(achievements))
 		return { issues, iconUrls }
 
 	for (const [achId, ach] of Object.entries(achievements)) {
 		if (!ach || typeof ach !== 'object' || Array.isArray(ach)) continue
-		for (const key of /** @type {const} */ (['icon', 'locked_icon'])) {
-			const url = /** @type {Record<string, unknown>} */ (ach)[key]
+		for (const key of /** @type {const} */ ['icon', 'locked_icon']) {
+			const url = /** @type {Record<string, unknown>} */ ach[key]
 			if (typeof url === 'string' && url.trim())
 				iconUrls.push({ achievementId: achId, key, url: url.trim() })
 		}

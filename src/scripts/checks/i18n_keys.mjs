@@ -8,9 +8,15 @@
  * 搬键请用 .esh/commands/update_locale_data.py（见 locale-edits.md）。
  */
 
+/**
+ *
+ */
 export const UPDATE_LOCALE_DATA_HINT =
 	'搬键请用 `.esh/commands/update_locale_data.py`（get → set(new) → set(old, None)），勿手改各语言 JSON。详见 src/public/locales/locale-edits.md。'
 
+/**
+ *
+ */
 export const AFFIX_HINT =
 	'应用 `${param}` 格式化完整句子，不要用 Suffix/Prefix 碎片硬拼字符串。'
 
@@ -19,6 +25,9 @@ export const PLURAL_CONTAINER = Object.freeze({
 	tab: 'tabs',
 })
 
+/**
+ *
+ */
 export const PREFIX_CLUSTER_MIN = 4
 
 const AFFIX_RE = /^(?:Suffix|Prefix)|(?:Suffix|Prefix)$/
@@ -32,9 +41,9 @@ const PURE_DIGITS_RE = /^\d+$/
 export function camelPrefixes(key) {
 	/** @type {string[]} */
 	const prefixes = []
-	for (let index = 1; index < key.length; index++) {
+	for (let index = 1; index < key.length; index++) 
 		if (/[A-Z]/.test(key[index])) prefixes.push(key.slice(0, index))
-	}
+	
 	return prefixes
 }
 
@@ -57,12 +66,13 @@ export function containerKeyForPrefix(prefix) {
 
 /**
  * @param {string[]} keys 同级键名
+ * @param min
  * @returns {{ prefix: string, members: string[] }[]} 按前缀长度降序的簇（members≥阈值）
  */
 export function findPrefixClusters(keys, min = PREFIX_CLUSTER_MIN) {
 	/** @type {Map<string, string[]>} */
 	const byPrefix = new Map()
-	for (const key of keys) {
+	for (const key of keys) 
 		for (const prefix of camelPrefixes(key)) {
 			const rest = key.slice(prefix.length)
 			if (!rest || !/^[A-Z]/.test(rest)) continue
@@ -70,7 +80,7 @@ export function findPrefixClusters(keys, min = PREFIX_CLUSTER_MIN) {
 			list.push(key)
 			byPrefix.set(prefix, list)
 		}
-	}
+	
 	return [...byPrefix.entries()]
 		.filter(([, members]) => members.length >= min)
 		.map(([prefix, members]) => ({ prefix, members: [...members].sort() }))
@@ -96,25 +106,25 @@ export function scanI18nKeyStructure(data, path = '') {
 
 	/** @type {I18nKeyIssue[]} */
 	const issues = []
-	const obj = /** @type {Record<string, unknown>} */ (data)
+	const obj = /** @type {Record<string, unknown>} */ data
 	const keys = Object.keys(obj)
 
 	for (const key of keys) {
 		const full = path ? `${path}.${key}` : key
-		if (AFFIX_RE.test(key)) {
+		if (AFFIX_RE.test(key)) 
 			issues.push({
 				kind: 'affix',
 				path: full,
 				message: `键名「${key}」以 Suffix/Prefix 开头或结尾。${AFFIX_HINT} ${UPDATE_LOCALE_DATA_HINT}`,
 			})
-		}
-		if (NUMBERED_RE.test(key) && !PURE_DIGITS_RE.test(key)) {
+		
+		if (NUMBERED_RE.test(key) && !PURE_DIGITS_RE.test(key)) 
 			issues.push({
 				kind: 'numbered',
 				path: full,
 				message: `键名「${key}」以编号结尾；请用有意义的名字，如需枚举请用数组。${UPDATE_LOCALE_DATA_HINT}`,
 			})
-		}
+		
 	}
 
 	for (const { prefix, members } of findPrefixClusters(keys)) {
@@ -164,10 +174,10 @@ export function pickContainerName(obj, prefix, members, preferredContainer) {
 		`${preferredContainer}Items`,
 		`${prefix}Items`,
 	]
-	for (const name of [...new Set(candidates)]) {
+	for (const name of [...new Set(candidates)]) 
 		if (canUseContainer(obj, prefix, members, name))
 			return name
-	}
+	
 	throw new Error(`无法为前缀「${prefix}」找到无冲突的容器键（尝试了 ${candidates.join(', ')}）`)
 }
 
@@ -183,7 +193,7 @@ function canUseContainer(obj, prefix, members, containerName) {
 	const bucket = {}
 	const existing = obj[containerName]
 	if (existing && typeof existing === 'object' && !Array.isArray(existing))
-		Object.assign(bucket, /** @type {Record<string, unknown>} */ (existing))
+		Object.assign(bucket, /** @type {Record<string, unknown>} */ existing)
 	else if (existing !== undefined && !members.includes(containerName)) {
 		if ('main' in bucket) return false
 		bucket.main = existing
@@ -210,7 +220,7 @@ export function applyPrefixNest(obj, prefix, members, preferredContainer, onMove
 	const bucket = {}
 	const existing = obj[containerName]
 	if (existing && typeof existing === 'object' && !Array.isArray(existing))
-		Object.assign(bucket, /** @type {Record<string, unknown>} */ (existing))
+		Object.assign(bucket, /** @type {Record<string, unknown>} */ existing)
 	else if (existing !== undefined && !members.includes(containerName)) {
 		bucket.main = existing
 		onMove?.(containerName, `${containerName}.main`)
@@ -236,10 +246,10 @@ export function nestAllPrefixClusters(obj) {
 	let count = 0
 	while (nestLongestPrefixCluster(obj))
 		count++
-	for (const value of Object.values(obj)) {
+	for (const value of Object.values(obj)) 
 		if (value && typeof value === 'object' && !Array.isArray(value))
-			count += nestAllPrefixClusters(/** @type {Record<string, unknown>} */ (value))
-	}
+			count += nestAllPrefixClusters(/** @type {Record<string, unknown>} */ value)
+	
 	return count
 }
 
@@ -270,11 +280,11 @@ export function nestAllPrefixClustersWithMap(obj, path = '', map = new Map()) {
 		})
 		count++
 	}
-	for (const [key, value] of Object.entries(obj)) {
+	for (const [key, value] of Object.entries(obj)) 
 		if (value && typeof value === 'object' && !Array.isArray(value)) {
 			const childPath = path ? `${path}.${key}` : key
-			count += nestAllPrefixClustersWithMap(/** @type {Record<string, unknown>} */ (value), childPath, map)
+			count += nestAllPrefixClustersWithMap(/** @type {Record<string, unknown>} */ value, childPath, map)
 		}
-	}
+	
 	return count
 }

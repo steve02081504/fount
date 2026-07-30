@@ -43,7 +43,7 @@ Deno.test('scan catches affix / numbered / prefix_cluster', () => {
 		tabAudit: 'a',
 		tabEmojis: 'e',
 		tabAdvanced: 'v',
-		'404': { title: 'ok' },
+		404: { title: 'ok' },
 	})
 	assert(issues.some(keyIssue => keyIssue.kind === 'affix' && keyIssue.path.includes('packGroupSuffix')))
 	assert(issues.some(keyIssue => keyIssue.kind === 'affix' && keyIssue.message.includes(AFFIX_HINT)))

@@ -28,8 +28,8 @@ import {
 const LOCALES_DIR = join(REPO_ROOT, 'src/public/locales')
 
 /**
- * @param {string | undefined} arg
- * @returns {Promise<Record<string, string>>}
+ * @param {string | undefined} arg 可选的 extra renames JSON 路径
+ * @returns {Promise<Record<string, string>>} 手动改名表
  */
 async function loadExtraManualMap(arg) {
 	if (!arg) return {}
@@ -38,9 +38,9 @@ async function loadExtraManualMap(arg) {
 }
 
 /**
- * @param {Map<string, string>} map
- * @param {string} from
- * @param {string} to
+ * @param {Map<string, string>} map 路径映射
+ * @param {string} from 旧路径
+ * @param {string} to 新路径
  */
 function mapPut(map, from, to) {
 	map.set(from, to)
@@ -53,9 +53,9 @@ function mapPut(map, from, to) {
 
 /**
  * 自动嵌套映射为底，extraManual 后写入（同键以手动为准，并连锁更新中间目标）。
- * @param {Map<string, string>} autoMap
- * @param {Record<string, string>} extraManual
- * @returns {Map<string, string>}
+ * @param {Map<string, string>} autoMap 嵌套产生的映射
+ * @param {Record<string, string>} extraManual 手动改名
+ * @returns {Map<string, string>} 合并后的映射
  */
 function combineMaps(autoMap, extraManual) {
 	/** @type {Map<string, string>} */
@@ -66,9 +66,9 @@ function combineMaps(autoMap, extraManual) {
 }
 
 /**
- * @param {string} text
- * @param {Map<string, string>} map
- * @returns {{ text: string, hits: number }}
+ * @param {string} text 源码文本
+ * @param {Map<string, string>} map old→new 键路径
+ * @returns {{ text: string, hits: number }} 改写结果
  */
 function rewriteQuotedKeys(text, map) {
 	const entries = [...map.entries()].sort((a, b) => b[0].length - a[0].length)
@@ -77,7 +77,7 @@ function rewriteQuotedKeys(text, map) {
 	for (const [from, to] of entries) {
 		if (from === to) continue
 		const allowPrefix = !to.startsWith(`${from}.`)
-		for (const quote of ["'", '"', '`']) {
+		for (const quote of ['\'', '"', '`']) {
 			const exact = `${quote}${from}${quote}`
 			const exactRepl = `${quote}${to}${quote}`
 			if (out.includes(exact)) {
@@ -100,8 +100,8 @@ function rewriteQuotedKeys(text, map) {
 
 /**
  * After automatic nesting, chase manual old→new targets that were nested further.
- * @param {Map<string, string>} pathMap
- * @param {Record<string, string>} extraManual
+ * @param {Map<string, string>} pathMap 合并后的映射
+ * @param {Record<string, string>} extraManual 手动改名表
  */
 function reconcileExtraThroughNest(pathMap, extraManual) {
 	for (const [from, to] of Object.entries(extraManual)) {
@@ -116,6 +116,9 @@ function reconcileExtraThroughNest(pathMap, extraManual) {
 	}
 }
 
+/**
+ *
+ */
 async function main() {
 	const extraManual = await loadExtraManualMap(process.argv[2])
 	const localeFiles = (await readdir(LOCALES_DIR)).filter(f => f.endsWith('.json'))

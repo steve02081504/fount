@@ -18,8 +18,8 @@ const renameMap = JSON.parse(
 
 /**
  * 将链式 old→new 展平为终态目标，再按键长降序。
- * @param {Record<string, string>} map
- * @returns {[string, string][]}
+ * @param {Record<string, string>} map 原始 rename map
+ * @returns {[string, string][]} 展平后的条目
  */
 function flattenRenameEntries(map) {
 	/** @type {Map<string, string>} */
@@ -44,21 +44,21 @@ function flattenRenameEntries(map) {
 const entries = flattenRenameEntries(renameMap)
 
 /**
- * @param {string} text
- * @returns {{ text: string, hits: number }}
+ * @param {string} text 源码文本
+ * @returns {{ text: string, hits: number }} 改写结果
  */
 function rewriteExact(text) {
 	let hits = 0
 	let out = text
-	for (const [from, to] of entries) {
-		for (const quote of ["'", '"', '`']) {
+	for (const [from, to] of entries) 
+		for (const quote of ['\'', '"', '`']) {
 			const exact = `${quote}${from}${quote}`
 			if (!out.includes(exact)) continue
 			const parts = out.split(exact)
 			hits += parts.length - 1
 			out = parts.join(`${quote}${to}${quote}`)
 		}
-	}
+	
 	return { text: out, hits }
 }
 
