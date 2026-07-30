@@ -17,9 +17,9 @@ import {
 	resolveManifestSelectors,
 } from './core/manifest.mjs'
 import { parseArgsOrExit } from './core/parse_args_or_exit.mjs'
+import { finishTestProgress } from './core/progress.mjs'
 import { REPO_ROOT } from './core/repo_root.mjs'
 import { isBareSuiteContinuation, resolveSelector } from './core/selector.mjs'
-import { finishTestProgress } from './core/progress.mjs'
 import { runTests } from './runner/index.mjs'
 
 const { positionals, values } = parseArgsOrExit({
@@ -121,7 +121,7 @@ process.exit(await (async () => {
 		process.exit(2)
 	}
 
-	let exitCode = 0
+	let exitCode = 1
 	try {
 		exitCode = await runTests({
 			runAll: values.all,

@@ -22,7 +22,7 @@ reviews:
   in_progress_fortune: false
 
   path_filters:
-    - "!**/.svg"
+    - "!**/*.svg"
 
   path_instructions:
     # ── 全局审美与架构 ──────────────────────────────────────────────────
@@ -114,7 +114,7 @@ reviews:
     - path: "src/public/locales/**"
       instructions: |
         - 键树：shell 文案挂 shell id 下（如 `chat.profile`）；共享挂 `util.*`；顶层仅 `tips` / `404` / `directoryListing` / `fountConsole`。
-    - emoji 除非不得已否则不应出现文字，而是使用emoji进行意译。
+        - emoji 除非不得已否则不应出现文字，而是使用emoji进行意译。
 
     # ── 后端 ────────────────────────────────────────────────────────────
     - path: "src/server/**/*.mjs,src/server/**/*.js,src/server/**/*.ts,src/scripts/**/*.mjs,src/scripts/**/*.js,src/public/parts/**/src/**/*.mjs,src/public/parts/**/src/**/*.js,src/public/parts/**/main.mjs"

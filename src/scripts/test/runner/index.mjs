@@ -22,8 +22,8 @@ import {
 	resolveManifestSelectors,
 } from '../core/manifest.mjs'
 import { detectNoiseHits, stripNoiseMarkers } from '../core/output_filter.mjs'
-import { beginTestProgress, syncTestProgress } from '../core/progress.mjs'
 import { buildPlan } from '../core/plan.mjs'
+import { beginTestProgress, syncTestProgress } from '../core/progress.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { formatExpectedDuration, formatParallelRatePct } from '../core/run_timing.mjs'
 import {
