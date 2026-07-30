@@ -1506,25 +1506,23 @@
 						"roleSuccess": "역할이 생성되었습니다."
 					},
 					"perm": {
-						"aDD_REACTIONS": "반응 추가",
-						"aDMIN": "관리자",
-						"bAN_MEMBERS": "멤버 차단",
-						"bYPASS_RATE_LIMIT": "메시지 속도 제한 우회",
-						"cREATE_THREADS": "하위 채널 만들기",
-						"iNVITE_MEMBERS": "멤버 초대",
-						"kICK_MEMBERS": "킥 멤버",
-						"mANAGE_": {
-							"cHANNELS": "채널 관리",
-							"fILES": "파일 관리",
-							"mESSAGES": "관리 메시지",
-							"rOLES": "관리 역할"
-						},
-						"pIN_MESSAGES": "고정된 메시지",
-						"sEND_MESSAGES": "메시지 보내기",
-						"sEND_STICKERS": "스티커 보내기",
-						"sTREAM": "음성",
-						"uPLOAD_FILES": "파일 업로드",
-						"vIEW_CHANNEL": "채널 보기"
+						"ADD_REACTIONS": "반응 추가",
+						"ADMIN": "관리자",
+						"BAN_MEMBERS": "멤버 차단",
+						"BYPASS_RATE_LIMIT": "메시지 속도 제한 우회",
+						"CREATE_THREADS": "하위 채널 만들기",
+						"INVITE_MEMBERS": "멤버 초대",
+						"KICK_MEMBERS": "킥 멤버",
+						"MANAGE_CHANNELS": "채널 관리",
+						"MANAGE_FILES": "파일 관리",
+						"MANAGE_MESSAGES": "관리 메시지",
+						"MANAGE_ROLES": "관리 역할",
+						"PIN_MESSAGES": "고정된 메시지",
+						"SEND_MESSAGES": "메시지 보내기",
+						"SEND_STICKERS": "스티커 보내기",
+						"STREAM": "음성",
+						"UPLOAD_FILES": "파일 업로드",
+						"VIEW_CHANNEL": "채널 보기"
 					},
 					"kick": {
 						"main": "쫓겨나다",

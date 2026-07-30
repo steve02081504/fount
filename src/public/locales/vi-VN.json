@@ -1506,25 +1506,23 @@
 						"roleSuccess": "Đã tạo vai trò"
 					},
 					"perm": {
-						"aDD_REACTIONS": "thêm phản ứng",
-						"aDMIN": "quản trị viên",
-						"bAN_MEMBERS": "Cấm thành viên",
-						"bYPASS_RATE_LIMIT": "Bỏ qua giới hạn tốc độ tin nhắn",
-						"cREATE_THREADS": "Tạo kênh phụ",
-						"iNVITE_MEMBERS": "Mời thành viên",
-						"kICK_MEMBERS": "đá thành viên",
-						"mANAGE_": {
-							"cHANNELS": "Quản lý kênh",
-							"fILES": "Quản lý tập tin",
-							"mESSAGES": "Thông báo quản lý",
-							"rOLES": "vai trò quản lý"
-						},
-						"pIN_MESSAGES": "Tin nhắn được ghim",
-						"sEND_MESSAGES": "Gửi tin nhắn",
-						"sEND_STICKERS": "Gửi nhãn dán",
-						"sTREAM": "tiếng nói",
-						"uPLOAD_FILES": "Tải tập tin lên",
-						"vIEW_CHANNEL": "Xem kênh"
+						"ADD_REACTIONS": "thêm phản ứng",
+						"ADMIN": "quản trị viên",
+						"BAN_MEMBERS": "Cấm thành viên",
+						"BYPASS_RATE_LIMIT": "Bỏ qua giới hạn tốc độ tin nhắn",
+						"CREATE_THREADS": "Tạo kênh phụ",
+						"INVITE_MEMBERS": "Mời thành viên",
+						"KICK_MEMBERS": "đá thành viên",
+						"MANAGE_CHANNELS": "Quản lý kênh",
+						"MANAGE_FILES": "Quản lý tập tin",
+						"MANAGE_MESSAGES": "Quản lý tin nhắn",
+						"MANAGE_ROLES": "Quản lý vai trò",
+						"PIN_MESSAGES": "Tin nhắn được ghim",
+						"SEND_MESSAGES": "Gửi tin nhắn",
+						"SEND_STICKERS": "Gửi nhãn dán",
+						"STREAM": "tiếng nói",
+						"UPLOAD_FILES": "Tải tập tin lên",
+						"VIEW_CHANNEL": "Xem kênh"
 					},
 					"kick": {
 						"main": "Đuổi",

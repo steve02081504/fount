@@ -16,6 +16,10 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 
 `browser.mjs`: reuse PATH Chrome/Edge locally (no download). On `GITHUB_ACTIONS=true` without a system browser, `playwright install --with-deps chrome` then `channel: 'chrome'`. Launch args include `--disable-component-update` (avoids mid-flight cert-verifier swaps that cancel esm.sh loads). Fixtures use `serviceWorkers: 'block'` so `page.route` is not bypassed by the app SW.
 
+## CDN response cache
+
+`cdn_cache.mjs` (wired into `createFountFixtures` / Pages fixtures `context`): memory + `data/test/cdn_cache` disk reuse for GET/HEAD to `esm.sh` / `api.iconify.design` / `cdn.jsdelivr.net`, cutting cross-case network flakiness. Cache keys include method so GET and HEAD never share an entry. Cached GET fulfill headers drop `content-encoding` and set `content-length` to the plaintext body size; HEAD fulfills keep the upstream headers (empty body must not rewrite `content-length`). Requests with `Range` bypass the cache. Only 2xx/3xx are cached; 4xx stay live (bad Iconify names still count as noise). `FOUNT_TEST_CDN_CACHE=0` disables. `route.fetch` is fine for CDN URLs; do not fetch same-origin local URLs that way (see Social EVFS stub).
+
 ## Network diagnostics
 
 `browser_diagnostics.mjs` (wired in `createFountFixtures` / `createPagesFixtures`): `response ≥ 400` / `requestfailed` → `[browser:network]` noise → imperfect wave; `pageerror`, `[test:…]` console (from `scripts/test/test_watch.mjs`), and `[i18n:missing]` (from `geti18n`, no dedup) hard-fail. `net::ERR_BLOCKED_BY_ORB` is dropped (Opaque Response Blocking; display via `<img>` etc. usually fine). Pages fixtures ignore `/api/ping` and `:8930` installer probes only (no fount node). Locale load goes through i18n `loadLocaleData` / `setLanguage` (Pages static JSON; fount API) — do not fetch `/api/getlocaledata` from test code. `pages_server.close` calls `closeAllConnections()` before `close()` — otherwise keep-alive sockets can hang the driver past the idle watchdog.

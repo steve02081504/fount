@@ -7,6 +7,8 @@ For maintainers of `docs/design/` and `docs/review/`.
 | `docs/design/` | Baselines, specs, unscheduled directions |
 | `docs/review/` | Gap analysis vs current state; code and tests are ground truth — do not re-describe landed work as long prose |
 
+**Language**: `docs/design/` and `docs/review/` are **human-facing Chinese** (keep Chinese). Every `AGENTS.md` and other agent-facing linked guides stay **English** — enforced by `fount test checks:agents_md_english` (`docs/design|review` exempt from CJK).
+
 Milestone codes (`M1` / `G4` etc.) are fine in design/review while a batch is open; **never** leak them into source / test names / `llms.txt` (see root `AGENTS.md`).
 
 ## What every gap entry must state

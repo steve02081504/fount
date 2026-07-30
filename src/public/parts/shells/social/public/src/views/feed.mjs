@@ -108,12 +108,26 @@ function scheduleFeedPrefetch() {
 }
 
 /**
+ * 构建帖子卡片；若构建期间该帖已被压制则返回 null。
+ * @param {object} item feed 条目
+ * @returns {Promise<HTMLElement | null>} 卡片，或构建中被压制时为 null
+ */
+async function buildFeedCardUnlessSuppressed(item) {
+	const card = await buildPostCard(item).catch(() => null)
+	if (!card) return null
+	if (state.suppressedFeedPostIds.has(item.postId)) return null
+	return card
+}
+
+/**
  * 循环重放已展示条目。
  * @returns {Promise<void>}
  */
 async function replayFeedItems() {
-	const items = state.feedShownItems
-	if (!items?.length) return
+	const items = (state.feedShownItems || []).filter(item =>
+		!state.suppressedFeedPostIds.has(item.postId),
+	)
+	if (!items.length) return
 	const list = document.getElementById('feedList')
 	if (!list) return
 	// 哨兵须已在尾；追加不重绑 observer
@@ -124,7 +138,7 @@ async function replayFeedItems() {
 		divider.className = 'feed-replay-divider text-center text-sm opacity-50 py-3'
 		divider.dataset.i18n = 'social.feed.replayDivider'
 		insertBeforeScrollSentinel(list, divider)
-		await appendFeedItemsWithThreads(list, items, item => buildPostCard(item).catch(() => null))
+		await appendFeedItemsWithThreads(list, items, buildFeedCardUnlessSuppressed)
 	}
 	finally {
 		delete list.dataset.feedReplaying
@@ -231,24 +245,25 @@ export async function prependFeedItem(item, options = {}) {
 	if (!feedView || feedView.classList.contains('hidden')) return false
 	const list = document.getElementById('feedList')
 	if (!list) return false
-	const postId = String(item.postId || '')
-	const entityHash = String(item.entityHash || '').toLowerCase()
-	const insertKey = postId && entityHash ? `${entityHash}:${postId}` : ''
+	const postId = item.postId
+	const entityHash = item.entityHash
+	if (state.suppressedFeedPostIds.has(postId)) return false
+	const insertKey = `${entityHash}:${postId}`
 	// 已在列表：在 cursor 门闩之前返回，避免本机 force 插入后 WS 再弹「有新帖」
-	if (insertKey && list.querySelector(
+	if (list.querySelector(
 		`.post-card[data-post-id="${CSS.escape(postId)}"][data-author-entity="${CSS.escape(entityHash)}"]`,
 	))
 		return true
 	if (!options.force && state.feedCursor) return false
-	if (insertKey) {
-		if (pendingFeedInserts.has(insertKey)) return true
-		pendingFeedInserts.add(insertKey)
-	}
+	if (pendingFeedInserts.has(insertKey)) return true
+	pendingFeedInserts.add(insertKey)
 	try {
 		document.getElementById('feedNewPostsBanner')?.remove()
 		const card = await buildPostCard(item).catch(() => null)
 		if (!card) return false
-		if (insertKey && list.querySelector(
+		// buildPostCard 期间可能已删除：再挡一次迟到回插
+		if (state.suppressedFeedPostIds.has(postId)) return false
+		if (list.querySelector(
 			`.post-card[data-post-id="${CSS.escape(postId)}"][data-author-entity="${CSS.escape(entityHash)}"]`,
 		))
 			return true
@@ -259,7 +274,7 @@ export async function prependFeedItem(item, options = {}) {
 		return true
 	}
 	finally {
-		if (insertKey) pendingFeedInserts.delete(insertKey)
+		pendingFeedInserts.delete(insertKey)
 	}
 }
 
@@ -361,29 +376,33 @@ export async function loadFeed(append = false) {
 	}
 	if (feedGeneration !== gen) return
 
+	const visibleItems = (items || []).filter(item =>
+		!state.suppressedFeedPostIds.has(item.postId),
+	)
+
 	state.feedCursor = nextCursor || null
 	if (!append) {
 		feedUserScrolled = false
 		window.removeEventListener('scroll', onFeedWindowScroll)
 		window.addEventListener('scroll', onFeedWindowScroll, { passive: true, once: true })
-		state.feedShownItems = [...items]
+		state.feedShownItems = [...visibleItems]
 		state.feedPrefetch = null
 	}
-	else if (items.length)
-		state.feedShownItems = [...state.feedShownItems || [], ...items]
+	else if (visibleItems.length)
+		state.feedShownItems = [...state.feedShownItems || [], ...visibleItems]
 
-	if (!append && !items.length) {
+	if (!append && !visibleItems.length && !state.feedCursor) {
 		await mountEmptyState(list, { titleKey: 'social.empty.feed', modClass: ' empty-state--plain' })
 		state.feedShownItems = null
 	}
 	else if (!append) {
 		list.replaceChildren()
-		await appendFeedItemsWithThreads(list, items, item => buildPostCard(item).catch(() => null))
+		await appendFeedItemsWithThreads(list, visibleItems, buildFeedCardUnlessSuppressed)
 		if (feedGeneration !== gen) return
 		updateFeedRankingTabs()
 	}
 	else
-		await appendFeedItemsWithThreads(list, items, item => buildPostCard(item).catch(() => null))
+		await appendFeedItemsWithThreads(list, visibleItems, buildFeedCardUnlessSuppressed)
 
 	bindFeedInfiniteScroll()
 	scheduleFeedPrefetch()

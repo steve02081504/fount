@@ -5,6 +5,7 @@
 用法（在仓库根）:
   python .esh/commands/reshape_i18n_keys.py
   python .esh/commands/reshape_i18n_keys.py path/to/extra_renames.json
+  python .esh/commands/reshape_i18n_keys.py --self-test
 
 extra_renames.json 为一次性语义改名表 { "old.path": "new.path", ... }（临时文件，不进仓库）。
 省略则只做前缀嵌套 + 引用改写。
@@ -40,6 +41,7 @@ PREFIX_CLUSTER_MIN = 4
 I18N_REWRITE_SUFFIXES = (".mjs", ".js", ".ts", ".html", ".ps1", ".py")
 AFFIX_RE = re.compile(r"^(?:Suffix|Prefix)|(?:Suffix|Prefix)$")
 NUMBERED_RE = re.compile(r"^[A-Za-z][A-Za-z]*\d+$")
+SCREAMING_SNAKE_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
 UPDATE_LOCALE_DATA_HINT = (
 	"搬键请用 `.esh/commands/update_locale_data.py`（get → set(new) → set(old, None)），"
 	"勿手改各语言 JSON。详见 src/public/locales/locale-edits.md。"
@@ -55,7 +57,14 @@ def dumps_locale(data) -> str:
 	return json.dumps(data, ensure_ascii=False, indent="\t") + "\n"
 
 
+def is_screaming_snake_key(key: str) -> bool:
+	return bool(SCREAMING_SNAKE_RE.match(key))
+
+
 def camel_prefixes(key: str) -> list[str]:
+	# SEND_MESSAGES 等常量键不当驼峰簇成员，避免嵌成 sEND_MESSAGES / mANAGE_.cHANNELS
+	if is_screaming_snake_key(key):
+		return []
 	prefixes = []
 	for index in range(1, len(key)):
 		if key[index].isupper():
@@ -65,6 +74,9 @@ def camel_prefixes(key: str) -> list[str]:
 
 def decapitalize(remainder: str) -> str:
 	if not remainder:
+		return remainder
+	# 后缀本身是 SCREAMING_SNAKE 时保持原样（perm + SEND_MESSAGES → SEND_MESSAGES）
+	if is_screaming_snake_key(remainder):
 		return remainder
 	return remainder[0].lower() + remainder[1:]
 
@@ -377,6 +389,32 @@ def iter_source_files(gitignore_spec, exclude_prefixes: list[str]):
 			yield rel
 
 
+def self_test() -> int:
+	"""CLI smoke: SCREAMING_SNAKE remainders stay intact through nest + dumps/loads."""
+	obj = loads_locale(json.dumps({
+		"permSEND_MESSAGES": "send",
+		"permVIEW_CHANNEL": "view",
+		"permADD_REACTIONS": "react",
+		"permUPLOAD_FILES": "upload",
+		"permMANAGE_CHANNELS": "channels",
+	}, ensure_ascii=False))
+	nest_all_prefix_clusters_with_map(obj)
+	if "perm" not in obj:
+		print("missing perm after nest", file=sys.stderr)
+		return 1
+	keys = list(obj["perm"].keys())
+	expected = {"SEND_MESSAGES", "VIEW_CHANNEL", "ADD_REACTIONS", "UPLOAD_FILES", "MANAGE_CHANNELS"}
+	if set(keys) != expected:
+		print(f"perm keys {keys!r} != {sorted(expected)!r}", file=sys.stderr)
+		return 1
+	rewritten = loads_locale(dumps_locale(obj))
+	if rewritten["perm"]["SEND_MESSAGES"] != "send":
+		print("dumps/loads corrupted SEND_MESSAGES", file=sys.stderr)
+		return 1
+	print(json.dumps({"ok": True, "perm": sorted(rewritten["perm"].keys())}))
+	return 0
+
+
 def main() -> int:
 	extra_manual = load_extra_manual(sys.argv[1] if len(sys.argv) > 1 else None)
 	locale_files = sorted(name for name in os.listdir(LOCALES_DIR) if name.endswith(".json"))
@@ -430,4 +468,6 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+	if len(sys.argv) > 1 and sys.argv[1] == "--self-test":
+		sys.exit(self_test())
 	sys.exit(main())

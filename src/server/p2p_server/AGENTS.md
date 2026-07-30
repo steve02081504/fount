@@ -40,6 +40,8 @@ Core: [@steve02081504/fount-p2p](https://www.npmjs.com/package/@steve02081504/fo
 
 ## Related
 
+- Overlay / wire protocol baseline: [p2p-overlay.md](../../../docs/design/p2p-overlay.md)
+- Signaling / glare / handshake traps (live fed): [signaling.md](../../scripts/p2p/docs/signaling.md)
 - Permissions: `shells/chat/src/permissions/chat.mjs`
 - Cold archive: [archive/AGENTS.md](../../public/parts/shells/chat/src/chat/archive/AGENTS.md)
 - Hub: [hub/AGENTS.md](../../public/parts/shells/chat/public/hub/AGENTS.md)

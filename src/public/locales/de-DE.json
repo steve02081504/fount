@@ -1506,25 +1506,23 @@
 						"roleSuccess": "Rolle erstellt"
 					},
 					"perm": {
-						"aDD_REACTIONS": "Reaktion hinzufügen",
-						"aDMIN": "Administrator",
-						"bAN_MEMBERS": "Ban-Mitglied",
-						"bYPASS_RATE_LIMIT": "Beschränkung der Nachrichtenrate umgehen",
-						"cREATE_THREADS": "Unterkanal erstellen",
-						"iNVITE_MEMBERS": "Mitglieder Einladen",
-						"kICK_MEMBERS": "Kick-Mitglied",
-						"mANAGE_": {
-							"cHANNELS": "Kanal verwalten",
-							"fILES": "Dateien verwalten",
-							"mESSAGES": "Managementnachrichten",
-							"rOLES": "Führungsrolle"
-						},
-						"pIN_MESSAGES": "Angeheftete Nachricht",
-						"sEND_MESSAGES": "Nachricht senden",
-						"sEND_STICKERS": "Sticker verschicken",
-						"sTREAM": "Stimme",
-						"uPLOAD_FILES": "Dateien hochladen",
-						"vIEW_CHANNEL": "Kanal ansehen"
+						"ADD_REACTIONS": "Reaktion hinzufügen",
+						"ADMIN": "Administrator",
+						"BAN_MEMBERS": "Ban-Mitglied",
+						"BYPASS_RATE_LIMIT": "Beschränkung der Nachrichtenrate umgehen",
+						"CREATE_THREADS": "Unterkanal erstellen",
+						"INVITE_MEMBERS": "Mitglieder Einladen",
+						"KICK_MEMBERS": "Kick-Mitglied",
+						"MANAGE_CHANNELS": "Kanal verwalten",
+						"MANAGE_FILES": "Dateien verwalten",
+						"MANAGE_MESSAGES": "Managementnachrichten",
+						"MANAGE_ROLES": "Führungsrolle",
+						"PIN_MESSAGES": "Angeheftete Nachricht",
+						"SEND_MESSAGES": "Nachricht senden",
+						"SEND_STICKERS": "Sticker verschicken",
+						"STREAM": "Stimme",
+						"UPLOAD_FILES": "Dateien hochladen",
+						"VIEW_CHANNEL": "Kanal ansehen"
 					},
 					"kick": {
 						"main": "Rausschmeißen",

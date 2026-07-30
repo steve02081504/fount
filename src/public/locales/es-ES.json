@@ -1506,25 +1506,23 @@
 						"roleSuccess": "Rol creado"
 					},
 					"perm": {
-						"aDD_REACTIONS": "agregar reacción",
-						"aDMIN": "administrador",
-						"bAN_MEMBERS": "Miembro prohibido",
-						"bYPASS_RATE_LIMIT": "Omitir límite de velocidad de mensajes",
-						"cREATE_THREADS": "Crear subcanal",
-						"iNVITE_MEMBERS": "Invitar miembros",
-						"kICK_MEMBERS": "miembro de patada",
-						"mANAGE_": {
-							"cHANNELS": "Administrar canal",
-							"fILES": "Administrar archivos",
-							"mESSAGES": "Mensajes de gestión",
-							"rOLES": "rol de gestión"
-						},
-						"pIN_MESSAGES": "Mensaje fijado",
-						"sEND_MESSAGES": "enviar mensaje",
-						"sEND_STICKERS": "Enviar stickers",
-						"sTREAM": "voz",
-						"uPLOAD_FILES": "Subir archivos",
-						"vIEW_CHANNEL": "Ver canal"
+						"ADD_REACTIONS": "agregar reacción",
+						"ADMIN": "administrador",
+						"BAN_MEMBERS": "Miembro prohibido",
+						"BYPASS_RATE_LIMIT": "Omitir límite de velocidad de mensajes",
+						"CREATE_THREADS": "Crear subcanal",
+						"INVITE_MEMBERS": "Invitar miembros",
+						"KICK_MEMBERS": "miembro de patada",
+						"MANAGE_CHANNELS": "Administrar canal",
+						"MANAGE_FILES": "Administrar archivos",
+						"MANAGE_MESSAGES": "Mensajes de gestión",
+						"MANAGE_ROLES": "rol de gestión",
+						"PIN_MESSAGES": "Mensaje fijado",
+						"SEND_MESSAGES": "enviar mensaje",
+						"SEND_STICKERS": "Enviar stickers",
+						"STREAM": "voz",
+						"UPLOAD_FILES": "Subir archivos",
+						"VIEW_CHANNEL": "Ver canal"
 					},
 					"kick": {
 						"main": "echar",

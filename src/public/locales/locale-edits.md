@@ -7,10 +7,10 @@ Day-to-day i18n rules: [root AGENTS.md](../../../AGENTS.md).
 Scan sibling keys under each object in `zh-CN.json` (structure is the contract for all locales):
 
 1. **No Suffix/Prefix affix keys** — a segment must not start or end with `Suffix` / `Prefix`. Prefer a full sentence template with `${param}`; do not hard-concatenate affix fragments.
-2. **Nest flat camelCase clusters** — if ≥4 siblings share the same camelCase prefix (`channelPermsHint`…), nest as `channelPerms: { hint, … }`. Single-segment prefixes count too (`tabMembers`… → `tabs: { members, … }`). Nest longest prefixes first.
+2. **Nest flat camelCase clusters** — if ≥4 siblings share the same camelCase prefix (`channelPermsHint`…), nest as `channelPerms: { hint, … }`. Single-segment prefixes count too (`tabMembers`… → `tabs: { members, … }`). Nest longest prefixes first. **SCREAMING_SNAKE constant keys** (`SEND_MESSAGES` / `VIEW_CHANNEL`) are excluded from cluster scans; nested suffixes that are themselves SCREAMING_SNAKE stay as-is (`permSEND_MESSAGES` → `perm.SEND_MESSAGES`, never `sEND_MESSAGES`).
 3. **No numbered key tails** — keys matching `name1` / `item2` (`/^[A-Za-z][A-Za-z]*\d+$/`) fail; use meaningful names or arrays. Pure numeric keys like `404` are fine.
 
-Always move keys with `.esh/commands/update_locale_data.py` (below) — never hand-edit every locale JSON.
+Always move keys with `.esh/commands/update_locale_data.py` (below) — never hand-edit every locale JSON. The script exposes `file_name` (e.g. `'it-IT.json'`) so a branch can touch one locale; unchanged files are skipped on write.
 
 ## Moving keys
 
@@ -20,18 +20,18 @@ Never delete then refill from zh-CN: `fake` / `emoji` and other non-Google targe
 
 When updating call sites, rewrite only quoted i18n key strings — do not blind-replace `profile.xxx` object fields or module paths.
 
-**写回 locale JSON 只用 Python**（`update_locale_data.py` / `update-locales.py` / `reshape_i18n_keys.py`）。JS `JSON.stringify` 会把纯数字键（如 `"404"`）排到对象最前，打乱键序。
+**Locale JSON writeback**: Python tools (`update_locale_data.py` / `update-locales.py` / `reshape_i18n_keys.py`) own structural key changes and preserve JSON key order. After generation, hand-fixing a single non-zh-CN locale's translation is fine. Avoid JS `JSON.stringify` for locale files — it reorders pure numeric keys like `"404"` to the front of the object.
 
 ## Prefix nest reshape
 
-同级 ≥4 个驼峰共享前缀时，用：
+When ≥4 camelCase siblings share a prefix:
 
 ```text
 python .esh/commands/reshape_i18n_keys.py
 python .esh/commands/reshape_i18n_keys.py path/to/extra_renames.json
 ```
 
-会嵌套全部 locale、写出 `data/test/i18n_key_rename_map.json`，并改写仓库内引号中的旧键。第二遍 exact 补洞仍可用 `src/scripts/checks/tools/rewrite_i18n_exact_pass.mjs`（只改源码，不写 locale）。
+Nests all locales, writes `data/test/i18n_key_rename_map.json`, and rewrites quoted old keys in-repo. A second exact pass may still use `src/scripts/checks/tools/rewrite_i18n_exact_pass.mjs` (source only — does not write locale JSON).
 
 ## Reshape string → `{ title, aria-label }`
 

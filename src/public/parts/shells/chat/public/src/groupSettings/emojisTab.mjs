@@ -20,7 +20,7 @@ function buildPackOptionsHtml(packs, selected, groupId) {
 	return unique.map(packId => {
 		const pack = packs.find(p => p.packId === packId)
 		const label = packId === groupId
-			? (geti18n('chat.group.settings.page.emojis.packGroupOption', { packId }) || packId)
+			? geti18n('chat.group.settings.page.emojis.packGroupOption', { packId }) || packId
 			: packId
 		const count = pack?.itemCount ?? pack?.items?.length
 		const countSuffix = Number.isFinite(count) ? ` · ${count}` : ''

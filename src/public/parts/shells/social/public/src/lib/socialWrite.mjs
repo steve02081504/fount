@@ -193,32 +193,52 @@ export function restoreFeedShownItems(state, items) {
 }
 
 /**
- * 乐观移除指定作者的全部帖子卡片。
- * @param {string} entityHash 作者 entityHash
- * @returns {HTMLElement[]} 被移除的节点（用于回滚）
+ * @typedef {{ card: HTMLElement, parent: HTMLElement | null, nextSibling: ChildNode | null }} RemovedPostCard
  */
-export function removePostsByAuthor(entityHash) {
-	const norm = String(entityHash || '').trim().toLowerCase()
-	/** @type {HTMLElement[]} */
+
+/**
+ * 乐观移除指定帖子 id 的全部卡片（含重复节点）。
+ * @param {string} postId 帖子 id
+ * @returns {RemovedPostCard[]} 被移除的节点与原位置（用于回滚）
+ */
+export function removePostsById(postId) {
+	/** @type {RemovedPostCard[]} */
 	const removed = []
-	for (const card of document.querySelectorAll('.post-card[data-author-entity]')) {
+	for (const card of document.querySelectorAll(`[data-post-id="${CSS.escape(postId)}"]`)) {
 		if (!(card instanceof HTMLElement)) continue
-		if (String(card.dataset.authorEntity || '').trim().toLowerCase() !== norm) continue
-		removed.push(card)
+		removed.push({ card, parent: card.parentElement, nextSibling: card.nextSibling })
 		card.remove()
 	}
 	return removed
 }
 
 /**
- * 回滚 removePostsByAuthor 移除的卡片。
- * @param {HTMLElement[]} cards 被移除的卡片
- * @param {HTMLElement | null} anchor 插入锚点（缺省追加到 feedList）
+ * 乐观移除指定作者的全部帖子卡片。
+ * @param {string} entityHash 作者 entityHash
+ * @returns {RemovedPostCard[]} 被移除的节点与原位置（用于回滚）
+ */
+export function removePostsByAuthor(entityHash) {
+	const normalizedEntityHash = entityHash.trim().toLowerCase()
+	/** @type {RemovedPostCard[]} */
+	const removed = []
+	for (const card of document.querySelectorAll('.post-card[data-author-entity]')) {
+		if (!(card instanceof HTMLElement)) continue
+		if (card.dataset.authorEntity.trim().toLowerCase() !== normalizedEntityHash) continue
+		removed.push({ card, parent: card.parentElement, nextSibling: card.nextSibling })
+		card.remove()
+	}
+	return removed
+}
+
+/**
+ * 按原父节点与插入点回滚移除的卡片（逆序）。
+ * @param {RemovedPostCard[]} entries 被移除的卡片条目
  * @returns {void}
  */
-export function restoreRemovedPosts(cards, anchor = null) {
-	const list = anchor || document.getElementById('feedList') || document.getElementById('profilePostsPanel')
-	if (!list) return
-	for (const card of cards)
-		list.appendChild(card)
+export function restoreRemovedPosts(entries) {
+	for (let index = entries.length - 1; index >= 0; index--) {
+		const { card, parent, nextSibling } = entries[index]
+		if (!parent) continue
+		parent.insertBefore(card, nextSibling?.parentNode === parent ? nextSibling : null)
+	}
 }

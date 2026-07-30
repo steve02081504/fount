@@ -1506,25 +1506,23 @@
 						"roleSuccess": "角色已立"
 					},
 					"perm": {
-						"aDD_REACTIONS": "添反應",
-						"aDMIN": "掌事",
-						"bAN_MEMBERS": "封禁成員",
-						"bYPASS_RATE_LIMIT": "繞過札限速",
-						"cREATE_THREADS": "立子分苑",
-						"iNVITE_MEMBERS": "邀請成員",
-						"kICK_MEMBERS": "踢出成員",
-						"mANAGE_": {
-							"cHANNELS": "管理分苑",
-							"fILES": "管理文牘",
-							"mESSAGES": "掌札",
-							"rOLES": "管理角色"
-						},
-						"pIN_MESSAGES": "高懸之札",
-						"sEND_MESSAGES": "發札",
-						"sEND_STICKERS": "發送貼紙",
-						"sTREAM": "語音",
-						"uPLOAD_FILES": "傳文牘",
-						"vIEW_CHANNEL": "查看分苑"
+						"ADD_REACTIONS": "添反應",
+						"ADMIN": "掌事",
+						"BAN_MEMBERS": "封禁成員",
+						"BYPASS_RATE_LIMIT": "繞過札限速",
+						"CREATE_THREADS": "立子分苑",
+						"INVITE_MEMBERS": "邀請成員",
+						"KICK_MEMBERS": "踢出成員",
+						"MANAGE_CHANNELS": "管理分苑",
+						"MANAGE_FILES": "管理文牘",
+						"MANAGE_MESSAGES": "掌札",
+						"MANAGE_ROLES": "管理角色",
+						"PIN_MESSAGES": "高懸之札",
+						"SEND_MESSAGES": "發札",
+						"SEND_STICKERS": "發送貼紙",
+						"STREAM": "語音",
+						"UPLOAD_FILES": "傳文牘",
+						"VIEW_CHANNEL": "查看分苑"
 					},
 					"kick": {
 						"main": "踢出",

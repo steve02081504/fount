@@ -9,9 +9,15 @@
  * 批量前缀嵌套写回 locale：.esh/commands/reshape_i18n_keys.py（勿用 JS 写 locale JSON，会打乱如 404 的键序）。
  */
 
+/**
+ *
+ */
 export const UPDATE_LOCALE_DATA_HINT =
 	'搬键请用 `.esh/commands/update_locale_data.py`（get → set(new) → set(old, None)），勿手改各语言 JSON。详见 src/public/locales/locale-edits.md。'
 
+/**
+ *
+ */
 export const AFFIX_HINT =
 	'应用 `${param}` 格式化完整句子，不要用 Suffix/Prefix 碎片硬拼字符串。'
 
@@ -20,16 +26,30 @@ export const PLURAL_CONTAINER = Object.freeze({
 	tab: 'tabs',
 })
 
+/**
+ *
+ */
 export const PREFIX_CLUSTER_MIN = 4
 
 const AFFIX_RE = /^(?:Suffix|Prefix)|(?:Suffix|Prefix)$/
 const NUMBERED_RE = /^[A-Za-z][A-Za-z]*\d+$/
+/** SCREAMING_SNAKE / 全大写常量（如 SEND_MESSAGES）——不做驼峰前缀簇嵌套 */
+const SCREAMING_SNAKE_RE = /^[A-Z][A-Z0-9_]*$/
+
+/**
+ * @param {string} key 键名
+ * @returns {boolean} 是否为 SCREAMING_SNAKE 常量键
+ */
+export function isScreamingSnakeKey(key) {
+	return SCREAMING_SNAKE_RE.test(key)
+}
 
 /**
  * @param {string} key 驼峰键
  * @returns {string[]} 驼峰边界前缀（不含整键自身）
  */
 export function camelPrefixes(key) {
+	if (isScreamingSnakeKey(key)) return []
 	/** @type {string[]} */
 	const prefixes = []
 	for (let index = 1; index < key.length; index++)
@@ -39,10 +59,11 @@ export function camelPrefixes(key) {
 
 /**
  * @param {string} remainder 去掉前缀后的段（首字母大写）
- * @returns {string} 首字母小写的子键
+ * @returns {string} 子键（SCREAMING_SNAKE 保持原样，否则首字母小写）
  */
 export function decapitalize(remainder) {
 	if (!remainder) return remainder
+	if (isScreamingSnakeKey(remainder)) return remainder
 	return remainder[0].toLowerCase() + remainder.slice(1)
 }
 
@@ -95,7 +116,7 @@ export function scanI18nKeyStructure(data, path = '') {
 
 	/** @type {I18nKeyIssue[]} */
 	const issues = []
-	const keys = Object.keys(/** @type {Record<string, unknown>} */ (data))
+	const keys = Object.keys(/** @type {Record<string, unknown>} */ data)
 
 	for (const key of keys) {
 		const full = path ? `${path}.${key}` : key
@@ -124,7 +145,7 @@ export function scanI18nKeyStructure(data, path = '') {
 	}
 
 	for (const key of keys) {
-		const value = /** @type {Record<string, unknown>} */ (data)[key]
+		const value = /** @type {Record<string, unknown>} */ data[key]
 		const full = path ? `${path}.${key}` : key
 		if (value && typeof value === 'object' && !Array.isArray(value))
 			issues.push(...scanI18nKeyStructure(value, full))
@@ -164,7 +185,7 @@ function canUseContainer(obj, prefix, members, containerName) {
 	const bucket = {}
 	const existing = obj[containerName]
 	if (existing && typeof existing === 'object' && !Array.isArray(existing))
-		Object.assign(bucket, /** @type {Record<string, unknown>} */ (existing))
+		Object.assign(bucket, /** @type {Record<string, unknown>} */ existing)
 	else if (existing !== undefined && !members.includes(containerName))
 		bucket.main = existing
 	for (const key of members) {
@@ -189,7 +210,7 @@ export function applyPrefixNest(obj, prefix, members, preferredContainer, onMove
 	const bucket = {}
 	const existing = obj[containerName]
 	if (existing && typeof existing === 'object' && !Array.isArray(existing))
-		Object.assign(bucket, /** @type {Record<string, unknown>} */ (existing))
+		Object.assign(bucket, /** @type {Record<string, unknown>} */ existing)
 	else if (existing !== undefined && !members.includes(containerName)) {
 		bucket.main = existing
 		onMove?.(containerName, `${containerName}.main`)
@@ -236,7 +257,7 @@ export function nestAllPrefixClustersWithMap(obj, path = '', map = new Map()) {
 	for (const [key, value] of Object.entries(obj))
 		if (value && typeof value === 'object' && !Array.isArray(value)) {
 			const childPath = path ? `${path}.${key}` : key
-			count += nestAllPrefixClustersWithMap(/** @type {Record<string, unknown>} */ (value), childPath, map)
+			count += nestAllPrefixClustersWithMap(/** @type {Record<string, unknown>} */ value, childPath, map)
 		}
 	return count
 }

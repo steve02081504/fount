@@ -9,6 +9,8 @@ export const state = {
 	feedCursor: null,
 	/** @type {object[] | null} 已展示的 feed 原始条目（循环重放源） */
 	feedShownItems: null,
+	/** @type {Set<string>} 已删帖 id：挡住迟到的 WS/本机 prepend 回插 */
+	suppressedFeedPostIds: new Set(),
 	/** @type {{ cursor: string, items: object[], nextCursor: string | null } | null} */
 	feedPrefetch: null,
 	/** @type {Promise<void> | null} */

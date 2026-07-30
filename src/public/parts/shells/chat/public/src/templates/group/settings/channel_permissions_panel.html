@@ -18,6 +18,7 @@
 			</div>
 			<div class="flex-1 min-w-0">
 				<div class="flex flex-wrap items-center gap-2 mb-4">
+					<label class="sr-only" for="channel-perms-add-role" data-i18n="chat.group.settings.page.channelPerms.addRole"></label>
 					<select id="channel-perms-add-role" class="select select-bordered select-sm">
 						<option value="">—</option>
 						${addableRoles.map(r => `
@@ -37,7 +38,7 @@
 							<div class="settings-role-perms">
 								${panel.permRows.map(row => `
 								<div class="flex items-center justify-between gap-2 py-1">
-									<span class="text-sm" data-i18n="chat.group.settings.page.perm${row.perm}"></span>
+									<span class="text-sm" data-i18n="chat.group.settings.page.perm.${row.perm}"></span>
 									<div class="join join-horizontal" role="group" data-role-id="${escapeHtml(panel.roleId)}" data-perm="${row.perm}">
 										<button type="button" class="btn btn-xs join-item ${row.state === 'neutral' ? 'btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="neutral" data-i18n="chat.group.settings.page.channelPerms.stateNeutral"></button>
 										<button type="button" class="btn btn-xs join-item ${row.state === 'allow' ? 'btn-success btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="allow" data-i18n="chat.group.settings.page.channelPerms.stateAllow"></button>
