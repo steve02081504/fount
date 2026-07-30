@@ -1617,16 +1617,19 @@ public class ExplorerRefresher {
 
 # fount test 防休眠：ES_SYSTEM_REQUIRED 挂 pwsh；AC 合盖经 keep_awake.json 引用计数，
 # 末个活 holder 还原。硬杀后存档仍在，之后任意 fount test finally / clean 顺手恢复。
+$script:FountTestLidSubButtonsGuid = '4f971e89-eebd-4455-a8de-9e59040e7347'
 $script:FountTestLidActionGuid = '5ca83367-6e45-459f-a27b-476b1d01c936'
 $script:FountTestKeepAwakeActive = $false
 $script:FountTestLidHolder = $false
 function Get-FountTestKeepAwakeStatePath { "$FOUNT_DIR/data/test/state/keep_awake.json" }
 function Get-FountTestLidAc {
-	$query = & powercfg /Qh SCHEME_CURRENT SUB_BUTTONS $script:FountTestLidActionGuid 2>&1 | Out-String
-	if ($query -match '(?:Current AC Power Setting Index|当前交流电源设置索引)\s*:\s*0x([0-9a-fA-F]+)') {
-		return [Convert]::ToInt32($Matches[1], 16)
-	}
-	return $null
+	# 读活动方案注册表，避免 powercfg 标签随系统语言变化
+	$active = (Get-ItemProperty -LiteralPath 'HKLM:\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes' -Name ActivePowerScheme -ErrorAction SilentlyContinue).ActivePowerScheme
+	if (-not $active) { return $null }
+	$lidPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes\$active\$($script:FountTestLidSubButtonsGuid)\$($script:FountTestLidActionGuid)"
+	$ac = (Get-ItemProperty -LiteralPath $lidPath -Name ACSettingIndex -ErrorAction SilentlyContinue).ACSettingIndex
+	if ($null -eq $ac) { return $null }
+	return [int]$ac
 }
 function Set-FountTestLidAc([int]$Index) {
 	& powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS $script:FountTestLidActionGuid $Index | Out-Null
