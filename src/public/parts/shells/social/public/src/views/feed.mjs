@@ -108,12 +108,25 @@ function scheduleFeedPrefetch() {
 }
 
 /**
+ * 构建帖子卡片；若构建期间该帖已被压制则返回 null。
+ * @param {object} item feed 条目
+ * @returns {Promise<HTMLElement | null>} 卡片，或构建中被压制时为 null
+ */
+async function buildFeedCardUnlessSuppressed(item) {
+	const card = await buildPostCard(item).catch(() => null)
+	if (!card) return null
+	const postId = String(item.postId || '')
+	if (postId && state.suppressedFeedPostIds.has(postId)) return null
+	return card
+}
+
+/**
  * 循环重放已展示条目。
  * @returns {Promise<void>}
  */
 async function replayFeedItems() {
 	const items = (state.feedShownItems || []).filter(item =>
-		!state.suppressedFeedPostIds?.has(String(item.postId || '')),
+		!state.suppressedFeedPostIds.has(String(item.postId || '')),
 	)
 	if (!items.length) return
 	const list = document.getElementById('feedList')
@@ -126,7 +139,7 @@ async function replayFeedItems() {
 		divider.className = 'feed-replay-divider text-center text-sm opacity-50 py-3'
 		divider.dataset.i18n = 'social.feed.replayDivider'
 		insertBeforeScrollSentinel(list, divider)
-		await appendFeedItemsWithThreads(list, items, item => buildPostCard(item).catch(() => null))
+		await appendFeedItemsWithThreads(list, items, buildFeedCardUnlessSuppressed)
 	}
 	finally {
 		delete list.dataset.feedReplaying
@@ -235,7 +248,7 @@ export async function prependFeedItem(item, options = {}) {
 	if (!list) return false
 	const postId = String(item.postId || '')
 	const entityHash = String(item.entityHash || '').toLowerCase()
-	if (postId && state.suppressedFeedPostIds?.has(postId)) return false
+	if (postId && state.suppressedFeedPostIds.has(postId)) return false
 	const insertKey = postId && entityHash ? `${entityHash}:${postId}` : ''
 	// 已在列表：在 cursor 门闩之前返回，避免本机 force 插入后 WS 再弹「有新帖」
 	if (insertKey && list.querySelector(
@@ -252,7 +265,7 @@ export async function prependFeedItem(item, options = {}) {
 		const card = await buildPostCard(item).catch(() => null)
 		if (!card) return false
 		// buildPostCard 期间可能已删除：再挡一次迟到回插
-		if (postId && state.suppressedFeedPostIds?.has(postId)) return false
+		if (postId && state.suppressedFeedPostIds.has(postId)) return false
 		if (insertKey && list.querySelector(
 			`.post-card[data-post-id="${CSS.escape(postId)}"][data-author-entity="${CSS.escape(entityHash)}"]`,
 		))
@@ -367,7 +380,7 @@ export async function loadFeed(append = false) {
 	if (feedGeneration !== gen) return
 
 	const visibleItems = (items || []).filter(item =>
-		!state.suppressedFeedPostIds?.has(String(item.postId || '')),
+		!state.suppressedFeedPostIds.has(String(item.postId || '')),
 	)
 
 	state.feedCursor = nextCursor || null
@@ -387,12 +400,12 @@ export async function loadFeed(append = false) {
 	}
 	else if (!append) {
 		list.replaceChildren()
-		await appendFeedItemsWithThreads(list, visibleItems, item => buildPostCard(item).catch(() => null))
+		await appendFeedItemsWithThreads(list, visibleItems, buildFeedCardUnlessSuppressed)
 		if (feedGeneration !== gen) return
 		updateFeedRankingTabs()
 	}
 	else
-		await appendFeedItemsWithThreads(list, visibleItems, item => buildPostCard(item).catch(() => null))
+		await appendFeedItemsWithThreads(list, visibleItems, buildFeedCardUnlessSuppressed)
 
 	bindFeedInfiniteScroll()
 	scheduleFeedPrefetch()

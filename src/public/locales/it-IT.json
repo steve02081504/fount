@@ -1507,8 +1507,8 @@
 					},
 					"perm": {
 						"ADD_REACTIONS": "Aggiungi reazioni",
-						"ADMIN": "Ammin",
-						"BAN_MEMBERS": "Membro bannato",
+						"ADMIN": "Amministratore",
+						"BAN_MEMBERS": "Banna membri",
 						"BYPASS_RATE_LIMIT": "Ignora il limite di velocità dei messaggi",
 						"CREATE_THREADS": "Crea discussioni",
 						"INVITE_MEMBERS": "Invita membri",
@@ -1517,10 +1517,10 @@
 						"MANAGE_FILES": "Gestisci file",
 						"MANAGE_MESSAGES": "Gestisci i messaggi",
 						"MANAGE_ROLES": "Gestire i ruoli",
-						"PIN_MESSAGES": "Messaggio appuntato",
+						"PIN_MESSAGES": "Appunta messaggi",
 						"SEND_MESSAGES": "Invia messaggio",
 						"SEND_STICKERS": "Invia adesivi",
-						"STREAM": "Voce",
+						"STREAM": "Trasmetti",
 						"UPLOAD_FILES": "Carica file",
 						"VIEW_CHANNEL": "Visualizza canale"
 					},

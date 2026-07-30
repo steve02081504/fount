@@ -152,12 +152,12 @@ export function createBrowserDiagnostics(options = {}) {
 	 */
 	function attach(page) {
 		page.on('pageerror', err => {
-			const msg = String(err?.message || err)
+			const message = String(err?.message || err)
 			const stack = err?.stack ? String(err.stack) : ''
 			if (stack) 
 				console.error('[pageerror-stack]', stack)
 			
-			pageErrors.push(stack || msg)
+			pageErrors.push(stack || message)
 		})
 		page.on('console', msg => {
 			const text = msg.text()

@@ -334,8 +334,7 @@
 				"src/scripts/test/playwright/cdn_cache.mjs",
 				"src/scripts/test/playwright/fixtures.mjs",
 				"src/scripts/test/core/output_filter.mjs",
-				"src/scripts/test/core/paths.mjs",
-				"src/scripts/checks/i18n_keys.mjs"
+				"src/scripts/test/core/paths.mjs"
 			]
 		},
 		{

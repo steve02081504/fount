@@ -92,16 +92,17 @@ export async function setMode(mode) {
 	const { refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
 	refreshHubHeaderButtons()
 	if (mode === 'friends') {
+		if (!keepPrivateGroupSession) {
+			const { destroyChannelVirtualList } = await import('./messages/messageVirtualList.mjs')
+			destroyChannelVirtualList()
+		}
 		// 先挂侧栏（含 #friends-search-input），再挂空态 CTA——否则 label[for] / focus 会打到尚未存在的 input。
 		if (isPrivateChatActive() && store.context.currentState)
 			await renderHubChannelSidebar(store.context.currentState)
 		else
 			await renderFriendsColumn(await loadFriendsList())
-		if (!keepPrivateGroupSession) {
-			const { destroyChannelVirtualList } = await import('./messages/messageVirtualList.mjs')
-			destroyChannelVirtualList()
+		if (!keepPrivateGroupSession)
 			await mountTemplate(document.getElementById('messages'), 'hub/empty/friends')
-		}
 	}
 	else if (mode === 'groups')
 		if (!store.context.currentGroupId || !store.context.currentState) {

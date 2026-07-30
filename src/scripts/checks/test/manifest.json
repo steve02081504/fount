@@ -55,7 +55,8 @@
 			"triggers": [
 				"src/scripts/checks/i18n_keys.mjs",
 				"src/scripts/checks/test/i18n_keys.test.mjs",
-				"src/public/locales/zh-CN.json"
+				".esh/commands/reshape_i18n_keys.py",
+				"src/public/locales/*.json"
 			]
 		},
 		{
@@ -73,9 +74,7 @@
 			"triggers": [
 				"src/scripts/checks/agents_md_english.mjs",
 				"src/scripts/checks/test/agents_md_english.test.mjs",
-				"**/AGENTS.md",
-				"docs/**/*.md",
-				"src/**/*.md"
+				"**/*.md"
 			]
 		}
 	]

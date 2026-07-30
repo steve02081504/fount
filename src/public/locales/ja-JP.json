@@ -1520,7 +1520,7 @@
 						"PIN_MESSAGES": "固定メッセージ",
 						"SEND_MESSAGES": "メッセージを送信する",
 						"SEND_STICKERS": "ステッカーを送信する",
-						"STREAM": "声",
+						"STREAM": "ストリーミング",
 						"UPLOAD_FILES": "ファイルをアップロードする",
 						"VIEW_CHANNEL": "チャンネルを見る"
 					},
