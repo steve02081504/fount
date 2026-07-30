@@ -221,7 +221,7 @@ export function hydrateWireFiles(username, groupId, state, wireFiles) {
 			 */
 			get() {
 				if (bufferCache) return bufferCache
-				void ensureBuffer().catch(() => {})
+				void ensureBuffer().catch(() => { })
 				return bufferCache ?? Buffer.alloc(0)
 			},
 		})

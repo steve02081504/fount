@@ -2466,9 +2466,6 @@
 			"deliveryRead": "Lestu",
 			"translate": "Þýða",
 			"translating": "Þýðir…",
-			"translateShowOriginal": "Sýna upprunalegan texta",
-			"translateShowTranslation": "Sýna þýðingu",
-			"translateLabel": "Þýðing",
 			"translateFailed": "Þýðing mistókst",
 			"editImage": "Breyta mynd",
 			"draftRestored": "Drög endurheimt",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "Stilla eftir þörfum",
 			"advancedSettings": "Ítarlegar stillingar",
 			"advancedDescription": "Engar breytingar þarf fyrir daglega notkun.",
+			"cardHost": {
+				"aria-label": "Prófílkort"
+			},
 			"edit": "Breyta prófíl",
 			"save": "Vista",
 			"cancel": "Hætta við",
@@ -3887,9 +3887,17 @@
 			},
 			"sensitiveMedia": "Næmisfjölmiðlahúð",
 			"editImage": "Breyta",
-			"editCrop": "Skera",
-			"editMosaic": "Mósaík",
+			"editCrop": "Klippa",
+			"editMosaic": "Pixla",
 			"editBrush": "Pensill",
+			"editBrushColor": {
+				"title": "Litur pensils",
+				"aria-label": "Litur pensils"
+			},
+			"editBrushSize": {
+				"title": "Stærð pensils",
+				"aria-label": "Stærð pensils"
+			},
 			"editApply": "Nota",
 			"editCancel": "Hætta við",
 			"replyPolicyEveryone": "Hver sem er getur svarað",
@@ -3936,40 +3944,40 @@
 					"textContent": "Opinbert"
 				},
 				"unlisted": {
-					"title": "Ekki skráð opinberlega",
-					"aria-label": "Ekki skráð opinberlega",
-					"label": "Ekki skráð opinberlega",
-					"textContent": "Ekki skráð opinberlega"
+					"title": "Óskráð",
+					"aria-label": "Óskráð",
+					"label": "Óskráð",
+					"textContent": "Óskráð"
 				},
 				"followers": {
-					"title": "Eingöngu fylgjendur",
-					"aria-label": "Eingöngu fylgjendur",
-					"label": "Eingöngu fylgjendur",
-					"textContent": "Eingöngu fylgjendur"
+					"title": "Aðeins fylgjendur",
+					"aria-label": "Aðeins fylgjendur",
+					"label": "Aðeins fylgjendur",
+					"textContent": "Aðeins fylgjendur"
 				},
 				"followers7d": {
-					"title": "Sýnist eftir að hafa fylgst með í 7 daga",
-					"aria-label": "Sýnist eftir að hafa fylgst með í 7 daga",
-					"label": "Sýnist eftir að hafa fylgst með í 7 daga",
-					"textContent": "Sýnist eftir að hafa fylgst með í 7 daga"
+					"title": "Sýnilegt eftir 7 daga fylgd",
+					"aria-label": "Sýnilegt eftir 7 daga fylgd",
+					"label": "Sýnilegt eftir 7 daga fylgd",
+					"textContent": "Sýnilegt eftir 7 daga fylgd"
 				},
 				"followers30d": {
-					"title": "Sýnilegt eftir að hafa fylgst með í 30 daga",
-					"aria-label": "Sýnilegt eftir að hafa fylgst með í 30 daga",
-					"label": "Sýnilegt eftir að hafa fylgst með í 30 daga",
-					"textContent": "Sýnilegt eftir að hafa fylgst með í 30 daga"
+					"title": "Sýnilegt eftir 30 daga fylgd",
+					"aria-label": "Sýnilegt eftir 30 daga fylgd",
+					"label": "Sýnilegt eftir 30 daga fylgd",
+					"textContent": "Sýnilegt eftir 30 daga fylgd"
 				},
 				"selected": {
-					"title": "Sýnilegt tilteknu fólki",
-					"aria-label": "Sýnilegt tilteknu fólki",
-					"label": "Sýnilegt tilteknu fólki",
-					"textContent": "Sýnilegt tilteknu fólki"
+					"title": "Sýnilegt fyrir valda",
+					"aria-label": "Sýnilegt fyrir valda",
+					"label": "Sýnilegt fyrir valda",
+					"textContent": "Sýnilegt fyrir valda"
 				},
 				"private": {
-					"title": "Aðeins sýnilegt sjálfum þér",
-					"aria-label": "Aðeins sýnilegt sjálfum þér",
-					"label": "Aðeins sýnilegt sjálfum þér",
-					"textContent": "Aðeins sýnilegt sjálfum þér"
+					"title": "Aðeins ég",
+					"aria-label": "Aðeins ég",
+					"label": "Aðeins ég",
+					"textContent": "Aðeins ég"
 				},
 				"allowLabel": "Sýnilegt fólk",
 				"exceptLabel": "Útiloka fólk",
@@ -4006,6 +4014,7 @@
 			"trending": {
 				"title": "Vinsælt efni",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} færslur"
 				},
 				"empty": "Ekkert heitt umræðuefni ennþá",
@@ -4043,8 +4052,8 @@
 			"confirm": "Staðfesta",
 			"cancel": "Hætta við",
 			"remove": {
-				"title": "Fjarlægja eftirlæti",
-				"aria-label": "Fjarlægja eftirlæti"
+				"title": "Fjarlægja úr vistuðum",
+				"aria-label": "Fjarlægja úr vistuðum"
 			},
 			"renameFolder": {
 				"title": "Endurnefna",
@@ -4233,8 +4242,8 @@
 		},
 		"actions": {
 			"like": {
-				"title": "Líka",
-				"aria-label": "Líka"
+				"title": "Líka við",
+				"aria-label": "Líka við"
 			},
 			"unlike": {
 				"title": "Af líka",
@@ -4245,8 +4254,8 @@
 				"aria-label": "Mis líka"
 			},
 			"undislike": {
-				"title": "Hætta við mislíkar",
-				"aria-label": "Hætta við mislíkar"
+				"title": "Af mislíka",
+				"aria-label": "Af mislíka"
 			},
 			"repost": "Endurbirta",
 			"quote": "Tilvitnun",
@@ -4371,9 +4380,6 @@
 			"quoting": "Tilvitnun",
 			"clear": "Tillitsleysi",
 			"viewOriginal": "Skoða upprunalega færslu"
-		},
-		"translate": {
-			"label": "Þýðing:"
 		},
 		"time": {
 			"justNow": "Rétt núna",
@@ -5331,7 +5337,8 @@
 			"confirm": "Staðfesta",
 			"close": "Loka",
 			"translate": {
-				"showOriginal": "Sýna upprunalegan texta",
+				"label": "Þýðing:",
+				"showOriginal": "Sýna frumtexta",
 				"showTranslation": "Sýna þýðingu"
 			}
 		},

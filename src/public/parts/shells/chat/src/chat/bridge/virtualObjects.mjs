@@ -91,7 +91,7 @@ export function createVirtualBridgeGroup(apiContext, groupId) {
 					memberKind: 'user',
 					displayName: row.displayName || entityHash.slice(64, 72),
 					platformUserId: String(row.platformUserId),
-					extension: { bridge: { platformUserId: String(row.platformUserId) }},
+					extension: { bridge: { platformUserId: String(row.platformUserId) } },
 				})
 			}))
 			return { page: 1, pageCount: 1, members }
@@ -137,17 +137,17 @@ export function createVirtualBridgeGroup(apiContext, groupId) {
 				/** @returns {Promise<null>} 虚拟群无 greeting */
 				async addChar() { return null },
 				/** @returns {Promise<void>} noop */
-				async removeChar() {},
+				async removeChar() { },
 				/** @returns {Promise<void>} noop */
-				async setPersona() {},
+				async setPersona() { },
 				/** @returns {Promise<null>} noop */
 				async bindWorld() { return null },
 				/** @returns {Promise<void>} noop */
-				async addPlugin() {},
+				async addPlugin() { },
 				/** @returns {Promise<void>} noop */
-				async removePlugin() {},
+				async removePlugin() { },
 				/** @returns {Promise<void>} noop */
-				async setCharReplyFrequency() {},
+				async setCharReplyFrequency() { },
 			}
 		},
 	}
@@ -228,7 +228,7 @@ export function createVirtualBridgeChannel(apiContext, groupId, channelId) {
 		/** @returns {Promise<null>} noop */
 		async markRead() { return null },
 		/** @returns {Promise<void>} noop — 虚拟群不走 DAG triggerReply */
-		async triggerReply() {},
+		async triggerReply() { },
 	}
 }
 
@@ -305,17 +305,17 @@ export function createVirtualBridgeMessage(apiContext, groupId, entry, mentions)
 			return createVirtualBridgeChannel(apiContext, groupId, channelId).send(reply)
 		},
 		/** @returns {Promise<void>} 虚拟消息不支持编辑回写平台（壳层走 DTO edit） */
-		async edit() {},
+		async edit() { },
 		/** @returns {Promise<void>} 同上 */
-		async delete() {},
+		async delete() { },
 		/** @returns {Promise<void>} noop */
-		async react() {},
+		async react() { },
 		/** @returns {Promise<void>} noop */
-		async unreact() {},
+		async unreact() { },
 		/** @returns {Promise<void>} noop */
-		async pin() {},
+		async pin() { },
 		/** @returns {Promise<void>} noop */
-		async unpin() {},
+		async unpin() { },
 		/**
 		 * @param {string} hash entityHash
 		 * @returns {Promise<boolean>} 是否命中

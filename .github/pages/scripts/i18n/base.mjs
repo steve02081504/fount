@@ -15,6 +15,8 @@ const localeNames = new Map()
 
 /** locale → bundle */
 const localeBundleCache = new Map()
+/** locale → 进行中的拉取 Promise；并发同语种去重 */
+const localeBundleInflight = new Map()
 
 /**
  * 获取可用的 locale 代码列表。
@@ -69,12 +71,24 @@ export async function loadLocaleData(preferredLangs) {
 		)
 	const cached = localeBundleCache.get(lang)
 	if (cached) return cached
-	const translationResponse = await fetch(base_dir + `/locales/${lang}.json`)
-	if (!translationResponse.ok)
-		throw new Error(`Failed to fetch translations: ${translationResponse.status} ${translationResponse.statusText}`)
-	const bundle = await translationResponse.json()
-	localeBundleCache.set(lang, bundle)
-	return bundle
+	const inflight = localeBundleInflight.get(lang)
+	if (inflight) return inflight
+
+	const request = (async () => {
+		const translationResponse = await fetch(base_dir + `/locales/${lang}.json`)
+		if (!translationResponse.ok)
+			throw new Error(`Failed to fetch translations: ${translationResponse.status} ${translationResponse.statusText}`)
+		const bundle = await translationResponse.json()
+		localeBundleCache.set(lang, bundle)
+		return bundle
+	})()
+	localeBundleInflight.set(lang, request)
+	try {
+		return await request
+	}
+	finally {
+		localeBundleInflight.delete(lang)
+	}
 }
 
 /**

@@ -305,7 +305,7 @@ export async function refreshHubAfterSfwChange() {
 		applyAvatarsTo(messageList)
 		await hydrateAuthorLabels(messageList)
 	}
-	if (memberList instanceof HTMLElement) 
+	if (memberList instanceof HTMLElement)
 		if (store.context.currentState) {
 			const { renderMemberList } = await import('./sidebar/index.mjs')
 			await renderMemberList(store.context.currentState)
@@ -314,7 +314,6 @@ export async function refreshHubAfterSfwChange() {
 			memberList.querySelectorAll('[data-avatar-for]').forEach(av => { delete av.dataset.avatarLoaded })
 			applyAvatarsTo(memberList)
 		}
-	
 
 	const { refreshViewerHubPresentation } = await import('./init.mjs')
 	await refreshViewerHubPresentation()

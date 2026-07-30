@@ -70,7 +70,7 @@ export async function handleClipboardAction(button, row, channelMessage, action)
 	}
 	if (action === 'download') {
 		try {
-			await downloadMessageHtml(channelMessage, row, `message-${button.dataset.eventId || 'export'}.html`)
+			await downloadMessageHtml(channelMessage, row)
 		}
 		catch (error) {
 			console.error(error)

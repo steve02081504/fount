@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 
 
 import { normalizeChannelMessage } from '../../public/shared/channelContent.mjs'
-import { recordChannelTyping } from '../chat/bridge/typing.mjs'
+import { listVirtualBridgeTyping, recordVirtualBridgeTyping } from '../chat/bridge/typing.mjs'
 import { postChannelMessage } from '../chat/channel/postMessage.mjs'
 import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
 import { buildConversationContext } from '../chat/lib/conversationContext.mjs'
@@ -156,7 +156,7 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 		 * @returns {Promise<void>} 无
 		 */
 		async typing() {
-			recordChannelTyping(apiContext.username, groupId, channelId, apiContext.entityHash)
+			recordVirtualBridgeTyping(apiContext.username, groupId, channelId, apiContext.entityHash)
 			const state = await loadGroupState(apiContext, groupId)
 			if (state.groupSettings?.bridge) {
 				await dispatchBridgeTyping(apiContext, groupId, state, channelId)
@@ -173,8 +173,7 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 		 * @returns {Promise<string[]>} 当前频道正在输入的 entityHash 列表
 		 */
 		async typingUsers() {
-			const { listTypingEntities } = await import('../chat/bridge/typing.mjs')
-			return listTypingEntities(apiContext.username, groupId, channelId)
+			return listVirtualBridgeTyping(apiContext.username, groupId, channelId)
 		},
 		/**
 		 * @param {{ limit?: number, before?: string }} [options] 分页

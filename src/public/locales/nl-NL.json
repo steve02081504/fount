@@ -1033,8 +1033,8 @@
 				"aria-label": "Symbool"
 			},
 			"Flags": {
-				"title": "Spandoek",
-				"aria-label": "Spandoek"
+				"title": "Vlaggen",
+				"aria-label": "Vlaggen"
 			}
 		},
 		"sessionSettings": {
@@ -2466,9 +2466,6 @@
 			"deliveryRead": "Lezen",
 			"translate": "Vertalen",
 			"translating": "Vertalen…",
-			"translateShowOriginal": "Toon originele tekst",
-			"translateShowTranslation": "Laat vertaling zien",
-			"translateLabel": "Vertaling",
 			"translateFailed": "Vertaling mislukt",
 			"editImage": "Afbeelding bewerken",
 			"draftRestored": "Diepgang hersteld",
@@ -2827,6 +2824,9 @@
 			"advancedKicker": "Op aanvraag configureren",
 			"advancedSettings": "Geavanceerde instellingen",
 			"advancedDescription": "Voor dagelijks gebruik is geen aanpassing nodig.",
+			"cardHost": {
+				"aria-label": "Profielkaart"
+			},
 			"edit": "Profiel bewerken",
 			"save": "Opslaan",
 			"cancel": "Annuleren",
@@ -3890,6 +3890,14 @@
 			"editCrop": "Bijsnijden",
 			"editMosaic": "Verpixelen",
 			"editBrush": "Penseel",
+			"editBrushColor": {
+				"title": "Penseelkleur",
+				"aria-label": "Penseelkleur"
+			},
+			"editBrushSize": {
+				"title": "Penseeldikte",
+				"aria-label": "Penseeldikte"
+			},
 			"editApply": "Toepassen",
 			"editCancel": "Annuleren",
 			"replyPolicyEveryone": "Iedereen kan antwoorden",
@@ -3930,22 +3938,22 @@
 			"visibility": {
 				"label": "Zichtbaar bereik",
 				"public": {
-					"title": "Publiek",
-					"aria-label": "Publiek",
-					"label": "Publiek",
-					"textContent": "Publiek"
+					"title": "Openbaar",
+					"aria-label": "Openbaar",
+					"label": "Openbaar",
+					"textContent": "Openbaar"
 				},
 				"unlisted": {
-					"title": "Niet openbaar vermeld",
-					"aria-label": "Niet openbaar vermeld",
-					"label": "Niet openbaar vermeld",
-					"textContent": "Niet openbaar vermeld"
+					"title": "Niet vermeld",
+					"aria-label": "Niet vermeld",
+					"label": "Niet vermeld",
+					"textContent": "Niet vermeld"
 				},
 				"followers": {
-					"title": "alleen volgers",
-					"aria-label": "alleen volgers",
-					"label": "alleen volgers",
-					"textContent": "alleen volgers"
+					"title": "Alleen volgers",
+					"aria-label": "Alleen volgers",
+					"label": "Alleen volgers",
+					"textContent": "Alleen volgers"
 				},
 				"followers7d": {
 					"title": "Zichtbaar na 7 dagen volgen",
@@ -3960,16 +3968,16 @@
 					"textContent": "Zichtbaar na 30 dagen volgen"
 				},
 				"selected": {
-					"title": "Zichtbaar voor gespecificeerde personen",
-					"aria-label": "Zichtbaar voor gespecificeerde personen",
-					"label": "Zichtbaar voor gespecificeerde personen",
-					"textContent": "Zichtbaar voor gespecificeerde personen"
+					"title": "Zichtbaar voor geselecteerde personen",
+					"aria-label": "Zichtbaar voor geselecteerde personen",
+					"label": "Zichtbaar voor geselecteerde personen",
+					"textContent": "Zichtbaar voor geselecteerde personen"
 				},
 				"private": {
-					"title": "Alleen zichtbaar voor jezelf",
-					"aria-label": "Alleen zichtbaar voor jezelf",
-					"label": "Alleen zichtbaar voor jezelf",
-					"textContent": "Alleen zichtbaar voor jezelf"
+					"title": "Alleen ik",
+					"aria-label": "Alleen ik",
+					"label": "Alleen ik",
+					"textContent": "Alleen ik"
 				},
 				"allowLabel": "Zichtbare mensen",
 				"exceptLabel": "mensen uitsluiten",
@@ -4006,6 +4014,7 @@
 			"trending": {
 				"title": "Trending",
 				"postCount": {
+					"textContent": "${n}",
 					"title": "${n} berichten"
 				},
 				"empty": "Nog geen actuele onderwerpen",
@@ -4043,8 +4052,8 @@
 			"confirm": "Bevestigen",
 			"cancel": "Annuleren",
 			"remove": {
-				"title": "Verwijder favorieten",
-				"aria-label": "Verwijder favorieten"
+				"title": "Verwijderen uit opgeslagen",
+				"aria-label": "Verwijderen uit opgeslagen"
 			},
 			"renameFolder": {
 				"title": "Hernoemen",
@@ -4052,8 +4061,8 @@
 			},
 			"renameFolderPrompt": "Nieuwe mapnaam",
 			"deleteFolder": {
-				"title": "map verwijderen",
-				"aria-label": "map verwijderen"
+				"title": "Map verwijderen",
+				"aria-label": "Map verwijderen"
 			},
 			"deleteFolderConfirm": "Map verwijderen? De berichten daar worden verplaatst naar 'Niet gearchiveerd'.",
 			"searchEmpty": "Geen bijpassende collectie",
@@ -4237,16 +4246,16 @@
 				"aria-label": "Leuk vinden"
 			},
 			"unlike": {
-				"title": "Like ongedaan",
-				"aria-label": "Like ongedaan"
+				"title": "Like ongedaan maken",
+				"aria-label": "Like ongedaan maken"
 			},
 			"dislike": {
-				"title": "Disliken",
-				"aria-label": "Disliken"
+				"title": "Niet leuk vinden",
+				"aria-label": "Niet leuk vinden"
 			},
 			"undislike": {
-				"title": "Dislike ongedaan",
-				"aria-label": "Dislike ongedaan"
+				"title": "Dislike ongedaan maken",
+				"aria-label": "Dislike ongedaan maken"
 			},
 			"repost": "Reposten",
 			"quote": "Citaat",
@@ -4371,9 +4380,6 @@
 			"quoting": "Citeren",
 			"clear": "Citaat verwijderen",
 			"viewOriginal": "Bekijk origineel bericht"
-		},
-		"translate": {
-			"label": "Vertaling:"
 		},
 		"time": {
 			"justNow": "Zojuist",
@@ -5331,8 +5337,9 @@
 			"confirm": "Bevestigen",
 			"close": "Sluiten",
 			"translate": {
-				"showOriginal": "Toon originele tekst",
-				"showTranslation": "Laat vertaling zien"
+				"label": "Vertaling:",
+				"showOriginal": "Origineel tonen",
+				"showTranslation": "Vertaling tonen"
 			}
 		},
 		"code_block": {

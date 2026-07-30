@@ -2465,9 +2465,6 @@
 			"deliveryRead": "已讀",
 			"translate": "翻譯",
 			"translating": "翻譯中…",
-			"translateShowOriginal": "顯示原文",
-			"translateShowTranslation": "顯示譯文",
-			"translateLabel": "譯文",
 			"translateFailed": "翻譯失敗",
 			"editImage": "編輯圖片",
 			"draftRestored": "已恢復草稿",
@@ -2826,6 +2823,9 @@
 			"advancedKicker": "依需求設定",
 			"advancedSettings": "高階設定",
 			"advancedDescription": "日常使用無需調整。",
+			"cardHost": {
+				"aria-label": "個人資料卡"
+			},
 			"edit": "編輯資料",
 			"save": "儲存",
 			"cancel": "取消",
@@ -3889,6 +3889,14 @@
 			"editCrop": "裁剪",
 			"editMosaic": "打碼",
 			"editBrush": "畫筆",
+			"editBrushColor": {
+				"title": "畫筆顏色",
+				"aria-label": "畫筆顏色"
+			},
+			"editBrushSize": {
+				"title": "畫筆粗細",
+				"aria-label": "畫筆粗細"
+			},
 			"editApply": "應用",
 			"editCancel": "取消",
 			"replyPolicyEveryone": "所有人可回覆",
@@ -3941,22 +3949,22 @@
 					"textContent": "不公開列出"
 				},
 				"followers": {
-					"title": "僅關注者",
-					"aria-label": "僅關注者",
-					"label": "僅關注者",
-					"textContent": "僅關注者"
+					"title": "僅追蹤者",
+					"aria-label": "僅追蹤者",
+					"label": "僅追蹤者",
+					"textContent": "僅追蹤者"
 				},
 				"followers7d": {
-					"title": "關注滿 7 天可見",
-					"aria-label": "關注滿 7 天可見",
-					"label": "關注滿 7 天可見",
-					"textContent": "關注滿 7 天可見"
+					"title": "追蹤滿 7 天可見",
+					"aria-label": "追蹤滿 7 天可見",
+					"label": "追蹤滿 7 天可見",
+					"textContent": "追蹤滿 7 天可見"
 				},
 				"followers30d": {
-					"title": "關注滿 30 天可見",
-					"aria-label": "關注滿 30 天可見",
-					"label": "關注滿 30 天可見",
-					"textContent": "關注滿 30 天可見"
+					"title": "追蹤滿 30 天可見",
+					"aria-label": "追蹤滿 30 天可見",
+					"label": "追蹤滿 30 天可見",
+					"textContent": "追蹤滿 30 天可見"
 				},
 				"selected": {
 					"title": "指定人員可見",
@@ -4005,7 +4013,8 @@
 			"trending": {
 				"title": "熱門話題",
 				"postCount": {
-					"title": "${n} 條帖子"
+					"textContent": "${n}",
+					"title": "${n} 則貼文"
 				},
 				"empty": "暫無熱門話題",
 				"aria-label": "熱門話題"
@@ -4232,20 +4241,20 @@
 		},
 		"actions": {
 			"like": {
-				"title": "點贊",
-				"aria-label": "點贊"
+				"title": "按讚",
+				"aria-label": "按讚"
 			},
 			"unlike": {
-				"title": "取消贊",
-				"aria-label": "取消贊"
+				"title": "收回讚",
+				"aria-label": "收回讚"
 			},
 			"dislike": {
-				"title": "踩",
-				"aria-label": "踩"
+				"title": "噓",
+				"aria-label": "噓"
 			},
 			"undislike": {
-				"title": "取消踩",
-				"aria-label": "取消踩"
+				"title": "收回噓",
+				"aria-label": "收回噓"
 			},
 			"repost": "轉發",
 			"quote": "引用",
@@ -4370,9 +4379,6 @@
 			"quoting": "正在引用",
 			"clear": "取消引用",
 			"viewOriginal": "檢視原帖"
-		},
-		"translate": {
-			"label": "譯文："
 		},
 		"time": {
 			"justNow": "剛剛",
@@ -5330,6 +5336,7 @@
 			"confirm": "確認",
 			"close": "關閉",
 			"translate": {
+				"label": "譯文：",
 				"showOriginal": "顯示原文",
 				"showTranslation": "顯示譯文"
 			}

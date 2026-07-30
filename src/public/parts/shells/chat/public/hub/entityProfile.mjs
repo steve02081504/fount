@@ -202,11 +202,11 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 		 */
 		aliasButton.onclick = () => {
 			void (async () => {
-				const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
 				const current = root.querySelector('[data-entity-profile-name]')?.textContent?.trim() || ''
 				const next = await promptText(
-					geti18n('chat.hub.profilePopup.setAliasPrompt', { name: current }),
+					'chat.hub.profilePopup.setAliasPrompt',
 					aliasForEntity(entityHash),
+					{ name: current },
 				)
 				if (next == null) return
 				await setEntityAlias(entityHash, next)

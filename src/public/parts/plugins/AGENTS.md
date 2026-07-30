@@ -17,6 +17,5 @@ alwaysApply: false
 ## Guidelines
 
 - I18n: add global strings to `src/public/locales/zh-CN.json`; plugin-specific copy may use part-local `locales.json`.
-- `eslint --fix --quiet` after changes. No console logs unless error/warning.
 
 **Example**: `src/public/parts/plugins/moltbook/` — tag-based tool handling and logging.

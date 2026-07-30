@@ -51,7 +51,10 @@ export async function selectChannel(channelId) {
 	if (store.context.currentGroupId)
 		rebindFederationRoomQuiet(store.context.currentGroupId, { channelId })
 	const channelType = channel.type || 'text'
-	document.getElementById('channel-name-display').textContent = channel.name || channelId
+	const titleEl = document.getElementById('channel-name-display')
+	delete titleEl.dataset.i18n
+	titleEl.textContent = channel.name || channelId
+	titleEl.setAttribute('user-content', '')
 	const headerIcon = document.querySelector('.main-header-icon')
 	headerIcon.innerHTML = await channelTypeIconHtml(channelType)
 
