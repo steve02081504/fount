@@ -1488,7 +1488,8 @@ def generate_locale_data_ts(ref_data, output_path):
 			for element in array_values:
 				nested_elements.extend(element)
 			return f"Array<{generate_ts_array_type(nested_elements, indent_level)}>"
-		return "unknown[]"
+		types = ", ".join(type(element).__name__ for element in array_values)
+		raise TypeError(f"Cannot merge mixed or unsupported locale value types: {types}")
 
 	def merge_placeholder_maps(target, source):
 		for path, placeholders in source.items():

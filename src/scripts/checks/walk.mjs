@@ -19,9 +19,8 @@ export const I18N_REWRITE_SUFFIXES = Object.freeze([
  * @returns {boolean} 应跳过则为 true
  */
 export function isI18nRewriteExcluded(relativePath) {
-	const slashPrefixed = `/${relativePath}`
 	return I18N_REWRITE_EXCLUDE_PREFIXES.some(prefix =>
-		relativePath.startsWith(prefix) || slashPrefixed.includes(`/${prefix}`))
+		relativePath.startsWith(prefix) || `/${relativePath}`.includes(`/${prefix}`))
 }
 
 /**

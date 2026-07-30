@@ -26,8 +26,13 @@ function flattenRenameEntries(map) {
 	const entries = []
 	for (const from of Object.keys(map)) {
 		let cur = from
-		while (Object.hasOwn(map, cur) && map[cur] !== cur)
+		const visited = new Set()
+		while (Object.hasOwn(map, cur) && map[cur] !== cur) {
+			if (visited.has(cur))
+				throw new Error(`Rename map cycle detected involving ${cur}`)
+			visited.add(cur)
 			cur = map[cur]
+		}
 		if (cur !== from) entries.push([from, cur])
 	}
 	return entries

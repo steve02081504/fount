@@ -140,7 +140,7 @@ def apply_prefix_nest(obj: OrderedDict, prefix: str, members: list[str], preferr
 
 def map_put(path_map: dict[str, str], from_path: str, to_path: str) -> None:
 	path_map[from_path] = to_path
-	for key, value in list(path_map.items()):
+	for key, value in path_map.items():
 		if key == from_path:
 			continue
 		if value == from_path or value.startswith(f"{from_path}."):
@@ -259,13 +259,26 @@ def delete_at(obj, path: str) -> None:
 def set_at(obj, path: str, value) -> None:
 	parts = path.split(".")
 	cur = obj
-	for part in parts[:-1]:
-		nxt = cur.get(part, _MISSING) if isinstance(cur, dict) else _MISSING
-		if not isinstance(nxt, dict):
+	for i, part in enumerate(parts[:-1]):
+		if not isinstance(cur, dict):
+			raise TypeError(f"Cannot set {path!r}: {'.'.join(parts[:i])!r} is not a dict")
+		nxt = cur.get(part, _MISSING)
+		if nxt is _MISSING:
 			nxt = OrderedDict()
 			cur[part] = nxt
+		elif not isinstance(nxt, dict):
+			raise TypeError(f"Cannot set {path!r}: {'.'.join(parts[:i + 1])!r} is not a dict")
 		cur = nxt
+	if not isinstance(cur, dict):
+		raise TypeError(f"Cannot set {path!r}: parent is not a dict")
 	cur[parts[-1]] = value
+
+
+def _validate_path_map_targets(targets: list[str]) -> None:
+	for i, a in enumerate(targets):
+		for b in targets[i + 1:]:
+			if a == b or a.startswith(f"{b}.") or b.startswith(f"{a}."):
+				raise ValueError(f"Conflicting path map targets: {a!r} and {b!r}")
 
 
 def apply_path_map(data, path_map: dict[str, str]) -> None:
@@ -277,6 +290,7 @@ def apply_path_map(data, path_map: dict[str, str]) -> None:
 		if value is _MISSING:
 			continue
 		planned.append((from_path, to_path, value))
+	_validate_path_map_targets([to_path for _from_path, to_path, _value in planned])
 	for from_path, _to_path, _value in sorted(planned, key=lambda item: -item[0].count(".")):
 		delete_at(data, from_path)
 	for _from_path, to_path, value in sorted(planned, key=lambda item: item[1].count(".")):
