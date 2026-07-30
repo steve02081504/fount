@@ -221,7 +221,7 @@ export async function buildPostCard(item, options = {}) {
 		postTimeAttrs,
 		postTimeText,
 		editedBadge,
-		visibilityIcon: `<span class="icon icon-${vis.icon} post-visibility-icon" role="img" aria-labelledby="post-vis-${escapeHtml(item.postId)}"><span id="post-vis-${escapeHtml(item.postId)}" class="sr-only" data-i18n="${escapeHtml(vis.labelKey)}"></span></span>`,
+		visibilityIcon: `<span class="icon icon-${vis.icon} post-visibility-icon" role="img" aria-labelledby="post-vis-${escapeHtml(item.entityHash)}-${escapeHtml(item.postId)}"><span id="post-vis-${escapeHtml(item.entityHash)}-${escapeHtml(item.postId)}" class="sr-only" data-i18n="${escapeHtml(vis.labelKey)}"></span></span>`,
 		quoteHtml,
 		replyContextHtml,
 		groupRefHtml,

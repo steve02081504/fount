@@ -203,15 +203,20 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 				trendingInFlight = null
 			})
 	const nearbyPromise = trendingInFlight
-
-	if (!trendingCache?.length) {
-		const local = await socialApi('/hashtags/trending?limit=12&scope=local').catch(() => ({ tags: [] }))
-		await paint(local.tags || [])
-	}
+	const localPromise = !trendingCache?.length
+		? socialApi('/hashtags/trending?limit=12&scope=local').catch(() => ({ tags: [] }))
+		: null
 
 	const nearbyTags = await nearbyPromise
-	if (nearbyTags?.length)
+	if (nearbyTags?.length) {
 		await paint(nearbyTags)
+		return
+	}
+
+	if (localPromise) {
+		const local = await localPromise
+		await paint(local.tags || [])
+	}
 }
 
 /**

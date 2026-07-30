@@ -304,29 +304,20 @@ export async function deleteEntityPackEmoji(username, entityHash, packId, emojiI
 
 /**
  * 可用作者包 = 自身 ∪ 已关注作者时间线中的 packs。
- * 拉列表时同步时间线并收敛默认包（emoji-pack-spec）。
+ * 拉列表时对 owner 做有界并发同步并收敛默认包（emoji-pack-spec）；超时/失败不挡列表。
  * @param {string} username replica
  * @param {{ viewerEntityHash?: string }} [options] 选项
  * @returns {Promise<object[]>} pack 列表
  */
 export async function listAvailableEntityPacksForUser(username, options = {}) {
 	const owners = await listFollowedTimelineOwners(username, options.viewerEntityHash)
+	await syncOwnersForPackDiscovery(username, owners)
+
 	/** @type {object[]} */
 	const out = []
 	const seen = new Set()
-	const { syncTimelineForEntity } = await import('./timeline/sync.mjs')
-
 	for (const owner of owners) {
-		try {
-			await syncTimelineForEntity(username, owner)
-		}
-		catch (error) {
-			console.warn('social: emoji pack timeline sync failed', owner, error)
-		}
-		const defaultEmojiPackId = await resolveAuthorDefaultPackId(username, owner)
-		if (defaultEmojiPackId)
-			convergeLinkedDefault(username, entityDefaultLinkKey(owner), defaultEmojiPackId)
-
+		const defaultEmojiPackId = await peekAuthorDefaultPackId(username, owner)
 		let packs = await listLocalEntityPacks(username, owner)
 		if (!packs.length)
 			packs = await listTimelineEntityPacks(username, owner)
@@ -348,6 +339,54 @@ export async function listAvailableEntityPacksForUser(username, options = {}) {
 		}
 	}
 	return out
+}
+
+/** 列表同步：并发上限与时间预算，避免串行联邦拖死 UI。 */
+const PACK_OWNER_SYNC_CONCURRENCY = 4
+const PACK_OWNER_SYNC_BUDGET_MS = 2500
+
+/**
+ * 有界并发同步关注作者时间线并收敛默认包；超时则停同步，调用方仍读本地/缓存。
+ * @param {string} username replica
+ * @param {string[]} owners owner hashes
+ * @returns {Promise<void>}
+ */
+async function syncOwnersForPackDiscovery(username, owners) {
+	if (!owners.length) return
+	const { syncTimelineForEntity } = await import('./timeline/sync.mjs')
+	const deadline = Date.now() + PACK_OWNER_SYNC_BUDGET_MS
+	let cursor = 0
+	await Promise.all(Array.from(
+		{ length: Math.min(PACK_OWNER_SYNC_CONCURRENCY, owners.length) },
+		async () => {
+			while (cursor < owners.length) {
+				if (Date.now() >= deadline) return
+				const owner = owners[cursor++]
+				try {
+					await syncTimelineForEntity(username, owner)
+					const defaultEmojiPackId = await resolveAuthorDefaultPackId(username, owner)
+					if (defaultEmojiPackId)
+						convergeLinkedDefault(username, entityDefaultLinkKey(owner), defaultEmojiPackId)
+				}
+				catch (error) {
+					console.warn('social: emoji pack timeline sync failed', owner, error)
+				}
+			}
+		},
+	))
+}
+
+/**
+ * 仅读已物化时间线中的默认包（列表阶段不额外 fetchRemote）。
+ * @param {string} username replica
+ * @param {string} entityHash 作者
+ * @returns {Promise<string | null>} 默认 packId
+ */
+async function peekAuthorDefaultPackId(username, entityHash) {
+	const hash = String(entityHash || '').trim().toLowerCase()
+	if (!hash) return null
+	const view = await getTimelineMaterialized(username, hash)
+	return String(view?.socialMeta?.defaultEmojiPackId || '').trim() || null
 }
 
 /**
@@ -406,13 +445,6 @@ async function resolveAuthorDefaultPackId(username, entityHash) {
 export async function linkFollowedAuthorDefaultPack(username, targetEntityHash) {
 	const hash = String(targetEntityHash || '').trim().toLowerCase()
 	if (!hash) return
-	const { syncTimelineForEntity } = await import('./timeline/sync.mjs')
-	try {
-		await syncTimelineForEntity(username, hash)
-	}
-	catch (error) {
-		console.warn('social: follow default-pack timeline sync failed', hash, error)
-	}
 	const packId = await resolveAuthorDefaultPackId(username, hash)
 	if (!packId) return
 	convergeLinkedDefault(username, entityDefaultLinkKey(hash), packId)

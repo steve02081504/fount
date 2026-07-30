@@ -53,6 +53,11 @@ export async function shareOrCopyPostLink(entityHash, postId, title) {
 	return 'copied'
 }
 
+/** @type {WeakMap<HTMLElement, string>} */
+const flashCopiedOriginalKeys = new WeakMap()
+/** @type {WeakMap<HTMLElement, ReturnType<typeof setTimeout>>} */
+const flashCopiedTimers = new WeakMap()
+
 /**
  * 短暂把标签文案切成「已复制」再还原（依赖 data-i18n）。
  * @param {HTMLElement | null | undefined} label 文案节点
@@ -61,10 +66,17 @@ export async function shareOrCopyPostLink(entityHash, postId, title) {
  */
 export function flashCopiedLabel(label, restoreKey) {
 	if (!(label instanceof HTMLElement)) return
-	const restore = restoreKey || label.dataset.i18n
+	const candidate = restoreKey || label.dataset.i18n
+	if (candidate && candidate !== 'social.actions.copied')
+		flashCopiedOriginalKeys.set(label, candidate)
+	const restore = flashCopiedOriginalKeys.get(label)
 	if (!restore) return
+	const prev = flashCopiedTimers.get(label)
+	if (prev) clearTimeout(prev)
 	label.dataset.i18n = 'social.actions.copied'
-	setTimeout(() => {
+	flashCopiedTimers.set(label, setTimeout(() => {
 		label.dataset.i18n = restore
-	}, 1500)
+		flashCopiedOriginalKeys.delete(label)
+		flashCopiedTimers.delete(label)
+	}, 1500))
 }

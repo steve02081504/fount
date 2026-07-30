@@ -404,7 +404,7 @@ function buildVideoSlide(item) {
 			</div>
 			<div class="video-comment-ticker hidden" data-comment-ticker aria-hidden="true"></div>
 			<div class="video-actions">
-				<button type="button" class="video-action-btn video-like-btn${liked ? ' is-active' : ''}" data-action="like" data-i18n="social.actions.like">
+				<button type="button" class="video-action-btn video-like-btn${liked ? ' is-active' : ''}" data-action="like" data-i18n="${liked ? 'social.actions.unlike' : 'social.actions.like'}">
 					<span class="icon icon-like" aria-hidden="true"></span>
 					<span class="video-like-count">${likeCount}</span>
 				</button>
@@ -600,6 +600,7 @@ async function doVideoLike(slide) {
 		socialApi(`/posts/${entityHash}/${postId}/like`, { method: 'POST' }),
 	)
 	btn?.classList.add('is-active')
+	if (btn) btn.dataset.i18n = 'social.actions.unlike'
 	const countEl = slide.querySelector('.video-like-count')
 	if (countEl) countEl.textContent = String(Number(countEl.textContent) + 1)
 }

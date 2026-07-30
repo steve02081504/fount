@@ -1,6 +1,6 @@
 import { socialApi, viewerEntityHash } from '../lib/apiClient.mjs'
 import { buildPostCard } from '../postCard.mjs'
-import { bindVisibilityPicker, readVisibilityPicker, renderVisibilityPickerHtml } from '../visibilityPicker.mjs'
+import { bindVisibilityPicker, readVisibilityPicker, renderVisibilityPickerHtml, visibilityDisplay } from '../visibilityPicker.mjs'
 import { openDialogFromTemplate } from '/scripts/features/dialog.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
@@ -57,7 +57,7 @@ export async function renderProfileAlbums(entityHash, container) {
 		card.className = 'album-card'
 		card.dataset.albumOpen = entityHash
 		card.dataset.albumId = album.albumId
-		const visKey = album.visibility === 'followers_since' ? 'followers7d' : album.visibility || 'public'
+		const vis = visibilityDisplay(album.visibility, album.minFollowMs)
 		const nameHtml = album.virtual
 			? '<strong data-i18n="social.profile.albums.defaultName"></strong>'
 			: `<strong>${escapeHtml(album.name)}</strong>`
@@ -68,7 +68,7 @@ export async function renderProfileAlbums(entityHash, container) {
 			${album.coverMediaRef ? renderAlbumCoverHtml(album.coverMediaRef, album.virtual ? '' : album.name) : coverFallback}
 			<div class="album-card-meta">
 				${nameHtml}
-				<span class="muted"><span class="album-post-count">${album.postCount || 0}</span> · <span data-i18n="social.composer.visibility.${visKey}"></span></span>
+				<span class="muted"><span class="album-post-count">${album.postCount || 0}</span> · <span data-i18n="${escapeHtml(vis.labelKey)}"></span></span>
 			</div>
 		`
 		card.addEventListener('click', () => {

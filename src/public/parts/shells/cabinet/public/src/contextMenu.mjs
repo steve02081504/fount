@@ -217,6 +217,7 @@ export function showContextMenu(event, entry) {
 	}
 	menu.classList.remove('hidden')
 	positionContextMenu(menu, { x: event.clientX, y: event.clientY, minWidth: '12rem' })
+	dismissBinding?.unbind?.()
 	dismissBinding = bindDismissOnDocumentInteraction(hideContextMenu, {
 		ignoreSelectors: ['#contextMenu'],
 	})

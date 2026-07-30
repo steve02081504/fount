@@ -141,7 +141,6 @@ export async function handlePostProfileActionsClick(target) {
 			if (result === 'copied')
 				flashCopiedLabel(
 					shareButton.querySelector('[data-i18n="social.actions.share"]')
-					|| shareButton.querySelector('.action-count')
 					|| shareButton.querySelector('.sr-only'),
 					'social.actions.share',
 				)
