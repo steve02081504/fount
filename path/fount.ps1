@@ -1738,36 +1738,43 @@ function Disable-FountTestKeepAwake {
 	}
 	if (-not $IsWindows) { return }
 	# 含 FOUNT_TEST_ALLOW_SLEEP：无 holder 时仍清孤儿存档
-	Update-FountTestKeepAwakeState {
-		param($state)
-		if ($script:FountTestLidHolder) {
-			$state.holders = @($state.holders | Where-Object { $_ -ne $PID })
-			$script:FountTestLidHolder = $false
-		}
-		if ($state.holders.Count -eq 0 -and $null -ne $state.lidAc) {
-			try {
-				Set-FountTestLidAc $state.lidAc
-				$state.lidAc = $null
+	# 损坏态 Read 故意抛：此处吞掉，避免 test finally 冲掉 deno exit code
+	try {
+		Update-FountTestKeepAwakeState {
+			param($state)
+			if ($script:FountTestLidHolder) {
+				$state.holders = @($state.holders | Where-Object { $_ -ne $PID })
+				$script:FountTestLidHolder = $false
 			}
-			catch { Write-Verbose "Disable-FountTestKeepAwake Set-FountTestLidAc: $($_.Exception.Message)" }
+			if ($state.holders.Count -eq 0 -and $null -ne $state.lidAc) {
+				try {
+					Set-FountTestLidAc $state.lidAc
+					$state.lidAc = $null
+				}
+				catch { Write-Verbose "Disable-FountTestKeepAwake Set-FountTestLidAc: $($_.Exception.Message)" }
+			}
 		}
 	}
+	catch { Write-Verbose "Disable-FountTestKeepAwake Update-FountTestKeepAwakeState: $($_.Exception.Message)" }
 }
 function Restore-FountTestKeepAwakeArchive {
 	# clean 等：无视仍登记的死/活 holder，强制按存档还原后清文件
 	if (-not $IsWindows) { return }
-	Invoke-FountTestKeepAwakeLocked {
-		$state = Read-FountTestKeepAwakeState
-		if ($null -ne $state.lidAc) {
-			try { Set-FountTestLidAc $state.lidAc }
-			catch {
-				Write-Verbose "Restore-FountTestKeepAwakeArchive Set-FountTestLidAc: $($_.Exception.Message)"
-				return
+	try {
+		Invoke-FountTestKeepAwakeLocked {
+			$state = Read-FountTestKeepAwakeState
+			if ($null -ne $state.lidAc) {
+				try { Set-FountTestLidAc $state.lidAc }
+				catch {
+					Write-Verbose "Restore-FountTestKeepAwakeArchive Set-FountTestLidAc: $($_.Exception.Message)"
+					return
+				}
 			}
+			Remove-Item -LiteralPath (Get-FountTestKeepAwakeStatePath) -Force -ErrorAction Ignore
+			$script:FountTestLidHolder = $false
 		}
-		Remove-Item -LiteralPath (Get-FountTestKeepAwakeStatePath) -Force -ErrorAction Ignore
-		$script:FountTestLidHolder = $false
 	}
+	catch { Write-Verbose "Restore-FountTestKeepAwakeArchive: $($_.Exception.Message)" }
 }
 
 if ($args[0] -eq 'test') {
