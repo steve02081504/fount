@@ -36,7 +36,7 @@ export async function handleFeedbackSubmitCancel(button, actions) {
 		await reload?.()
 	}
 	catch (error) {
-		showToastI18n('error', 'chat.hub.messageActionFailed', { error: error?.message || String(error) })
+		showToastI18n('error', 'chat.hub.message.action.failed', { error: error?.message || String(error) })
 	}
 	finally { button.disabled = false }
 	return true

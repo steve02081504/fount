@@ -178,11 +178,11 @@ async function loadAndDisplayDevices() {
 			const revokeButton = li.querySelector('.device-revoke-btn')
 			if (revokeButton)
 				revokeButton.addEventListener('click', async () => {
-					if (confirmI18n('userSettings.userDevices.revokeConfirm')) try {
+					if (confirmI18n('userSettings.userDevices.revoke.confirm')) try {
 						const password = await requestPasswordConfirmation()
 						await revokeDevice(device.jti, password)
 						cacheVerifiedPassword(password)
-						showToastI18n('success', 'userSettings.userDevices.revokeSuccess')
+						showToastI18n('success', 'userSettings.userDevices.revoke.success')
 						loadAndDisplayDevices()
 					} catch (error) {
 						invalidateCachedPassword()
@@ -222,10 +222,10 @@ logoutButton.addEventListener('click', async () => {
 
 
 deleteAccountButton.addEventListener('click', async () => {
-	if (!confirmI18n('userSettings.deleteAccount.confirmMessage1')) return
+	if (!confirmI18n('userSettings.deleteAccount.confirmWarning')) return
 
 	const usernameToConfirm = userInfoUsername.textContent
-	const enteredUsername = promptI18n('userSettings.deleteAccount.confirmMessage2', { username: usernameToConfirm })
+	const enteredUsername = promptI18n('userSettings.deleteAccount.confirmUsernamePrompt', { username: usernameToConfirm })
 
 	if (enteredUsername === null) return
 	if (enteredUsername !== usernameToConfirm)
@@ -276,12 +276,12 @@ async function loadAndDisplayApiKeys() {
 			const revokeButton = li.querySelector('.apikey-revoke-btn')
 			if (revokeButton)
 				revokeButton.addEventListener('click', async () => {
-					if (confirmI18n('userSettings.apiKeys.revokeConfirm')) try {
+					if (confirmI18n('userSettings.apiKeys.revoke.confirm')) try {
 						const password = await requestPasswordConfirmation()
 						await revokeApiKey(key.jti, password)
 						cacheVerifiedPassword(password)
 
-						showToastI18n('success', 'userSettings.apiKeys.revokeSuccess')
+						showToastI18n('success', 'userSettings.apiKeys.revoke.success')
 						loadAndDisplayApiKeys()
 					} catch (error) {
 						invalidateCachedPassword()
@@ -389,12 +389,12 @@ editorCommandForm.addEventListener('submit', async event => {
 testEditorCommandButton.addEventListener('click', async () => {
 	const filePath = editorTestPath.value.trim()
 	if (!filePath)
-		return showToastI18n('error', 'userSettings.editorCommand.testPathRequired')
+		return showToastI18n('error', 'userSettings.editorCommand.test.pathRequired')
 	try {
 		const line = Number(editorTestLine.value) || 1
 		const column = Number(editorTestColumn.value) || 1
 		await openEditor(filePath, line, column)
-		showToastI18n('success', 'userSettings.editorCommand.testSuccess')
+		showToastI18n('success', 'userSettings.editorCommand.test.success')
 	}
 	catch (error) {
 		showToastI18n('error', 'userSettings.generalError', { message: error.message })

@@ -262,45 +262,45 @@ function renderDetailCard(detailCard, entry) {
 	provider.dataset.i18n = 'serviceSource_manager.common_config_interface.providerLabel'
 	provider.dataset.provider = entry.providerName
 
-	appendMetaRow(card, 'serviceSource_manager.common_config_interface.metaContext', {
+	appendMetaRow(card, 'serviceSource_manager.common_config_interface.meta.context', {
 		context: entry.context ?? '—',
 	})
-	appendMetaRow(card, 'serviceSource_manager.common_config_interface.metaOutputLimit', {
+	appendMetaRow(card, 'serviceSource_manager.common_config_interface.meta.outputLimit', {
 		output: entry.outputLimit ?? '—',
 	})
-	appendMetaRow(card, 'serviceSource_manager.common_config_interface.metaInputPrice', {
+	appendMetaRow(card, 'serviceSource_manager.common_config_interface.meta.inputPrice', {
 		price: formatTokenPrice(entry.cost?.input),
 	})
-	appendMetaRow(card, 'serviceSource_manager.common_config_interface.metaOutputPrice', {
+	appendMetaRow(card, 'serviceSource_manager.common_config_interface.meta.outputPrice', {
 		price: formatTokenPrice(entry.cost?.output),
 	})
 	if (entry.cost?.cache_read != null || entry.cost?.cache_write != null)
-		appendMetaRow(card, 'serviceSource_manager.common_config_interface.metaCachePrice', {
+		appendMetaRow(card, 'serviceSource_manager.common_config_interface.meta.cachePrice', {
 			read: formatTokenPrice(entry.cost?.cache_read),
 			write: formatTokenPrice(entry.cost?.cache_write),
 		})
 
 	const inputModalities = (entry.modalities?.input || []).join(', ') || '—'
 	const outputModalities = (entry.modalities?.output || []).join(', ') || '—'
-	appendMetaRow(card, 'serviceSource_manager.common_config_interface.metaModalities', {
+	appendMetaRow(card, 'serviceSource_manager.common_config_interface.meta.modalities', {
 		input: inputModalities,
 		output: outputModalities,
 	})
 
 	if (entry.reasoning)
-		appendMetaRow(card, 'serviceSource_manager.common_config_interface.metaReasoning', {})
+		appendMetaRow(card, 'serviceSource_manager.common_config_interface.meta.reasoning', {})
 	if (entry.toolCall)
-		appendMetaRow(card, 'serviceSource_manager.common_config_interface.metaToolCall', {})
+		appendMetaRow(card, 'serviceSource_manager.common_config_interface.meta.toolCall', {})
 	if ((entry.modalities?.input || []).includes('image'))
-		appendMetaRow(card, 'serviceSource_manager.common_config_interface.metaVision', {})
+		appendMetaRow(card, 'serviceSource_manager.common_config_interface.meta.vision', {})
 	if (entry.openWeights)
-		appendMetaRow(card, 'serviceSource_manager.common_config_interface.metaOpenWeights', {})
+		appendMetaRow(card, 'serviceSource_manager.common_config_interface.meta.openWeights', {})
 	if (entry.knowledge)
-		appendMetaRow(card, 'serviceSource_manager.common_config_interface.metaKnowledge', {
+		appendMetaRow(card, 'serviceSource_manager.common_config_interface.meta.knowledge', {
 			knowledge: entry.knowledge,
 		})
 	if (entry.releaseDate)
-		appendMetaRow(card, 'serviceSource_manager.common_config_interface.metaReleaseDate', {
+		appendMetaRow(card, 'serviceSource_manager.common_config_interface.meta.releaseDate', {
 			date: entry.releaseDate,
 		})
 

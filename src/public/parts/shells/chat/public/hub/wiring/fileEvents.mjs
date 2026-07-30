@@ -19,13 +19,13 @@ export function wireFileEvents() {
 		}
 		catch (err) {
 			const { handleUIError } = await import('../../src/ui/errors.mjs')
-			handleUIError(err, 'chat.hub.sendImageFailed')
+			handleUIError(err, 'chat.hub.send.imageFailed')
 		}
 	})
 
 	document.getElementById('header-files-button').addEventListener('click', () => {
 		if (!store.context.currentGroupId) {
-			showToastI18n('warning', 'chat.hub.filesNoGroup')
+			showToastI18n('warning', 'chat.hub.files.no.group')
 			return
 		}
 		const open = !isFilesDrawerOpen()

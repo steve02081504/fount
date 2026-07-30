@@ -1,9 +1,9 @@
 <div class="char-settings-body">
 	<div class="card card-border bg-base-100 p-4 space-y-3">
-		<h3 class="font-semibold text-sm" data-i18n="chat.hub.sessionInfo"></h3>
-		<div class="overlay-info-row"><span data-i18n="chat.hub.sessionRole"></span><span>${escapeHtml(charname)}</span></div>
-		<div class="overlay-info-row"><span data-i18n="chat.hub.sessionId"></span><span>${escapeHtml(groupId)}</span></div>
-		<div class="overlay-info-row"><span data-i18n="chat.hub.sessionMessages"></span><span>${logLength}</span></div>
+		<h3 class="font-semibold text-sm" data-i18n="chat.hub.session.info"></h3>
+		<div class="overlay-info-row"><span data-i18n="chat.hub.session.role"></span><span>${escapeHtml(charname)}</span></div>
+		<div class="overlay-info-row"><span data-i18n="chat.hub.session.id"></span><span>${escapeHtml(groupId)}</span></div>
+		<div class="overlay-info-row"><span data-i18n="chat.hub.session.messages"></span><span>${logLength}</span></div>
 	</div>
 	<div class="card card-border bg-base-100 p-4 space-y-3" id="character-chat-config-host"></div>
 	<div class="card card-border bg-base-100 p-4 space-y-3">
@@ -19,13 +19,13 @@
 	<div class="card card-border bg-base-100 p-4 space-y-3">
 		<h3 class="font-semibold text-sm" data-i18n="chat.hub.dangerZone"></h3>
 		${friendBound
-		? '<div class="text-sm text-base-content/50 mb-2" data-i18n="chat.hub.unbindFriendDescription"></div>'
+		? '<div class="text-sm text-base-content/50 mb-2" data-i18n="chat.hub.unbindFriend.description"></div>'
 		: '<div class="text-sm text-base-content/50 mb-2" data-i18n="chat.hub.deleteSessionDescription"></div>'}
 	</div>
 </div>
 <div class="char-settings-footer">
 	${friendBound
-	? '<button type="button" class="btn btn-error btn-outline" id="character-chat-unbind" data-i18n="chat.hub.unbindFriend"></button>'
+	? '<button type="button" class="btn btn-error btn-outline" id="character-chat-unbind" data-i18n="chat.hub.unbindFriend.main"></button>'
 	: '<button type="button" class="btn btn-error btn-outline" id="character-chat-delete" data-i18n="chat.hub.deleteSession"></button>'}
 	<button type="button" class="btn btn-ghost" id="character-chat-close" data-i18n="chat.hub.modalClose"></button>
 </div>

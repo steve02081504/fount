@@ -177,7 +177,7 @@ export async function groupDisplayName(groupId, name) {
 	const raw = String(name || '').trim()
 	if (raw && raw !== String(groupId || '')) return raw
 	const { geti18n } = await import('/scripts/i18n/index.mjs')
-	return geti18n('chat.hub.groupUnnamed', { suffix: String(groupId || '').slice(-4) })
+	return geti18n('chat.hub.group.unnamed', { suffix: String(groupId || '').slice(-4) })
 }
 
 /**

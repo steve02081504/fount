@@ -1,5 +1,5 @@
 ${items.map(item => {
-const title = item.title ? escapeHtml(item.title) : '<span data-i18n="chat.hub.listItemUntitled"></span>'
+const title = item.title ? escapeHtml(item.title) : '<span data-i18n="chat.hub.list.itemUntitled"></span>'
 const target = String(item.targetChannelId || '').trim()
 const externalUrl = String(item.url || '').trim()
 const linkHtml = externalUrl && !target

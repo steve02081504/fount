@@ -151,9 +151,9 @@ export async function selectGroup(groupId, presetChannelId = null) {
 	catch (error) {
 		setPinsBookmarksWrapVisible(false)
 		updateStatusBanners()
-		const err = handleUIError(error, 'chat.hub.loadGroupFailed')
+		const err = handleUIError(error, 'chat.hub.load.groupFailed')
 		await mountTemplate(document.getElementById('messages'), 'hub/empty/error', {
-			i18nKey: 'chat.hub.loadGroupFailed',
+			i18nKey: 'chat.hub.load.groupFailed',
 			errorMessage: err.message,
 		})
 	}

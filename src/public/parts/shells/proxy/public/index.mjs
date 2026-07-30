@@ -67,7 +67,7 @@ async function renderApiKey() {
 
 		document.getElementById('copyApiKeyButton').addEventListener('click', () => {
 			navigator.clipboard.writeText(apiKey)
-			showToastI18n('success', 'proxy.apiKeyCopied')
+			showToastI18n('success', 'proxy.api.keyCopied')
 		})
 
 		const apiKeyInput = document.getElementById('apiKeyInput')

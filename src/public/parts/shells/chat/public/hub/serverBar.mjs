@@ -150,7 +150,7 @@ export async function renderServerBar() {
 				miniIconsHtml: mini.html,
 				miniModifier: mini.modifier,
 				folderName: escapeHtml(folder.name),
-				folderNameI18nAttr: folder.nameIsDefault ? ' data-i18n="chat.hub.folderDefault"' : '',
+				folderNameI18nAttr: folder.nameIsDefault ? ' data-i18n="chat.hub.folder.default"' : '',
 			})
 			list.appendChild(folderElement)
 			if (!collapsed) {

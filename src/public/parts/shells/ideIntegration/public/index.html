@@ -33,17 +33,17 @@
 			<section class="flex flex-col gap-6">
 				<div class="card bg-base-100 shadow-xl">
 					<div class="card-body">
-						<h2 class="card-title" data-i18n="ide_integration.apiKeySectionTitle"></h2>
-						<p class="text-sm text-base-content/70" data-i18n="ide_integration.apiKeyHint"></p>
+						<h2 class="card-title" data-i18n="ide_integration.apiKey.sectionTitle"></h2>
+						<p class="text-sm text-base-content/70" data-i18n="ide_integration.apiKey.hint"></p>
 						<div id="api-key-section" class="mt-2"></div>
 					</div>
 				</div>
 				<div class="card bg-base-100 shadow-xl">
 					<div class="card-body">
-						<h2 class="card-title" data-i18n="ide_integration.supportedEditorsTitle"></h2>
-						<p class="text-sm text-base-content/70" data-i18n="ide_integration.supportedEditorsIntro"></p>
+						<h2 class="card-title" data-i18n="ide_integration.supportedEditors.title"></h2>
+						<p class="text-sm text-base-content/70" data-i18n="ide_integration.supportedEditors.intro"></p>
 						<div id="supported-editors-container" class="mt-2 min-h-[2rem]">
-							<span class="loading loading-dots loading-sm" data-i18n="ide_integration.supportedEditorsLoading"></span>
+							<span class="loading loading-dots loading-sm" data-i18n="ide_integration.supportedEditors.loading"></span>
 						</div>
 					</div>
 				</div>
@@ -52,22 +52,22 @@
 			<section class="flex flex-col gap-6">
 				<div class="card bg-base-100 shadow-xl">
 					<div class="card-body">
-						<h2 class="card-title" data-i18n="ide_integration.acpTitle"></h2>
-						<p data-i18n="ide_integration.acpDesc"></p>
+						<h2 class="card-title" data-i18n="ide_integration.acp.title"></h2>
+						<p data-i18n="ide_integration.acp.desc"></p>
 						<div class="form-control mt-2">
-							<label class="label" for="acp-char-select"><span class="label-text" data-i18n="ide_integration.acpCharLabel"></span></label>
+							<label class="label" for="acp-char-select"><span class="label-text" data-i18n="ide_integration.acp.charLabel"></span></label>
 							<select id="acp-char-select" class="select select-bordered w-full"></select>
 						</div>
 						<div class="form-control mt-2">
-							<label class="label" for="bridge-script-url"><span class="label-text" data-i18n="ide_integration.acpScriptLabel"></span></label>
+							<label class="label" for="bridge-script-url"><span class="label-text" data-i18n="ide_integration.acp.scriptLabel"></span></label>
 							<div class="join w-full">
 								<input type="text" id="bridge-script-url" class="input input-bordered join-item w-full" readonly />
 								<button type="button" id="copy-script-url" class="btn btn-primary join-item" data-i18n="ide_integration.copyButton"></button>
 							</div>
 						</div>
-						<p class="text-sm mt-2" data-i18n="ide_integration.acpConfigSample"></p>
+						<p class="text-sm mt-2" data-i18n="ide_integration.acp.configSample"></p>
 						<div class="mt-2 markdown-body" id="acp-config-container"></div>
-						<p class="text-sm text-base-content/70 mt-2" data-i18n="ide_integration.acpConfigHint"></p>
+						<p class="text-sm text-base-content/70 mt-2" data-i18n="ide_integration.acp.configHint"></p>
 					</div>
 				</div>
 			</section>

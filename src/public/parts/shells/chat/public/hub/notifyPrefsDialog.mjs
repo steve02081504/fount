@@ -48,7 +48,7 @@ export async function openChannelNotifyPrefsDialog(groupId, channelId) {
 	const group = groupPrefs(prefs, groupId)
 	const current = group.channels?.[channelId] || {}
 	await openNotifyPrefsDialog({
-		titleKey: 'chat.hub.channelContext.notifyPrefs',
+		titleKey: 'chat.hub.channel.context.notifyPrefs',
 		current,
 		/**
 		 * @param {HTMLDialogElement} dialog 对话框元素

@@ -91,7 +91,7 @@ function resetCallUi() {
  */
 function setPeerCountLabel(peerLabel, count) {
 	if (!(peerLabel instanceof HTMLElement)) return
-	setElementI18n(peerLabel, 'chat.hub.callParticipants', { n: count })
+	setElementI18n(peerLabel, 'chat.hub.call.participants', { n: count })
 }
 
 /**
@@ -226,9 +226,9 @@ async function doJoinChannelCall(groupId, channelId, options = {}) {
 		setCallButtonActive(false)
 		const errorText = error?.message || String(error)
 		if (errorText.includes('WebCodecs'))
-			showToastI18n('error', 'chat.hub.streamAvNoCodecs')
+			showToastI18n('error', 'chat.hub.stream.av.noCodecs')
 		else
-			showToastI18n('error', 'chat.hub.callJoinFailed', { error: errorText })
+			showToastI18n('error', 'chat.hub.call.joinFailed', { error: errorText })
 	}
 }
 
@@ -269,7 +269,7 @@ async function hydrateLocalVoiceAvatar(voiceLocal) {
 		label: resolveDisplayName({
 			entityHash,
 			profileName: profile?.name,
-			fallbackLabel: geti18n('chat.hub.streamAvYou') || 'you',
+			fallbackLabel: geti18n('chat.hub.stream.av.you') || 'you',
 		}),
 	})
 }
@@ -390,12 +390,12 @@ function wireCallDockControls(dock) {
 		]),
 	)
 
-	setCallControlIcon(byRole.mute, CALL_ICONS.mute, 'chat.hub.streamAvMute')
-	setCallControlIcon(byRole.video, CALL_ICONS.video, 'chat.hub.streamAvVideo')
-	setCallControlIcon(byRole.screen, CALL_ICONS.screen, 'chat.hub.callScreenShare')
-	setCallControlIcon(byRole.hangup, CALL_ICONS.hangup, 'chat.hub.callHangup')
+	setCallControlIcon(byRole.mute, CALL_ICONS.mute, 'chat.hub.stream.av.mute')
+	setCallControlIcon(byRole.video, CALL_ICONS.video, 'chat.hub.stream.av.video')
+	setCallControlIcon(byRole.screen, CALL_ICONS.screen, 'chat.hub.call.screenShare')
+	setCallControlIcon(byRole.hangup, CALL_ICONS.hangup, 'chat.hub.call.hangup')
 	if (byRole.jump instanceof HTMLElement) {
-		byRole.jump.title = geti18n('chat.hub.callJumpBack') || ''
+		byRole.jump.title = geti18n('chat.hub.call.jumpBack') || ''
 		byRole.jump.setAttribute('aria-label', byRole.jump.title)
 	}
 
@@ -404,7 +404,7 @@ function wireCallDockControls(dock) {
 		setCallControlIcon(
 			byRole.mute,
 			muted ? CALL_ICONS.unmute : CALL_ICONS.mute,
-			muted ? 'chat.hub.streamAvUnmute' : 'chat.hub.streamAvMute',
+			muted ? 'chat.hub.stream.av.unmute' : 'chat.hub.stream.av.mute',
 			!!muted,
 		)
 	})
@@ -413,7 +413,7 @@ function wireCallDockControls(dock) {
 		setCallControlIcon(
 			byRole.video,
 			off ? CALL_ICONS.videoOff : CALL_ICONS.video,
-			off ? 'chat.hub.streamAvVideoOn' : 'chat.hub.streamAvVideo',
+			off ? 'chat.hub.stream.av.videoOn' : 'chat.hub.stream.av.video',
 			!!off,
 		)
 	})
@@ -424,12 +424,12 @@ function wireCallDockControls(dock) {
 				setCallControlIcon(
 					byRole.screen,
 					on ? CALL_ICONS.screenOff : CALL_ICONS.screen,
-					on ? 'chat.hub.callScreenStop' : 'chat.hub.callScreenShare',
+					on ? 'chat.hub.call.screenStop' : 'chat.hub.call.screenShare',
 					!!on,
 				)
 			}
 			catch (error) {
-				showToastI18n('error', 'chat.hub.callScreenFailed', { error: error?.message || String(error) })
+				showToastI18n('error', 'chat.hub.call.screenFailed', { error: error?.message || String(error) })
 			}
 		})()
 	})

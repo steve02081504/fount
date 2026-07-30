@@ -37,7 +37,7 @@ export async function renderVoteBlock(message, allMessages) {
 			disabled: closed ? 'disabled' : '',
 		}
 	})
-	const questionHtml = question || '<span data-i18n="chat.hub.messagePrefixVote"></span>'
+	const questionHtml = question || '<span data-i18n="chat.hub.message.prefixVote"></span>'
 	return renderTemplateAsHtmlString('hub/messages/vote_block', {
 		ballotId,
 		questionHtml,
@@ -45,6 +45,6 @@ export async function renderVoteBlock(message, allMessages) {
 		voteOptions,
 		total,
 		closedClass: closed ? ' vote-block--closed' : '',
-		closedLabel: closed ? '<div class="vote-closed-label" data-i18n="chat.hub.voteClosed"></div>' : '',
+		closedLabel: closed ? '<div class="vote-closed-label" data-i18n="chat.hub.vote.closed"></div>' : '',
 	})
 }

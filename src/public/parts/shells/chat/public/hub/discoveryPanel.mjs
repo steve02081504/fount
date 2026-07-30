@@ -34,8 +34,8 @@ async function paintDiscoveryEntries(grid, entries) {
 			blurb: escapeHtml(entry.blurb || ''),
 			sourceCount: String(entry.sources?.length || 0),
 			actionKey: joinedIds.has(String(entry.groupId))
-				? 'chat.hub.discoveryOpen'
-				: 'chat.hub.discoveryJoin',
+				? 'chat.hub.discovery.open'
+				: 'chat.hub.discovery.join',
 		})
 	})))
 }
@@ -59,9 +59,9 @@ async function loadDiscoveryEntries(root) {
 	}
 	catch (error) {
 		if (generation !== loadGeneration || !root.isConnected) return
-		handleUIError(error, 'chat.hub.discoveryLoadFailed')
+		handleUIError(error, 'chat.hub.discovery.loadFailed')
 		await mountTemplate(grid, 'hub/empty/error', {
-			i18nKey: 'chat.hub.discoveryLoadFailed',
+			i18nKey: 'chat.hub.discovery.loadFailed',
 			errorMessage: error.message,
 		})
 	}
@@ -87,11 +87,11 @@ export async function activateDiscoveryView() {
 
 	const channelList = document.getElementById('channel-list')
 	if (channelList)
-		await mountTemplate(channelList, 'hub/nav/side_muted', { i18nKey: 'chat.hub.discoverySidebarHint' })
+		await mountTemplate(channelList, 'hub/nav/side_muted', { i18nKey: 'chat.hub.discovery.sidebarHint' })
 	document.getElementById('member-list').replaceChildren()
 	document.getElementById('info-card-host').replaceChildren()
-	document.getElementById('group-name-display').dataset.i18n = 'chat.hub.discoveryTitle'
-	document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.discoveryTitle'
+	document.getElementById('group-name-display').dataset.i18n = 'chat.hub.discovery.title'
+	document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.discovery.title'
 
 	const messagesHost = document.getElementById('messages')
 	await mountTemplate(messagesHost, 'hub/discovery/panel')
@@ -104,7 +104,7 @@ export async function activateDiscoveryView() {
 		const target = event.target instanceof Element ? event.target.closest('[data-group-id]') : null
 		const groupId = target?.getAttribute('data-group-id')
 		if (!groupId) return
-		void selectGroup(groupId).catch(error => handleUIError(error, 'chat.hub.loadGroupFailed'))
+		void selectGroup(groupId).catch(error => handleUIError(error, 'chat.hub.load.groupFailed'))
 	})
 
 	const { disableComposer, refreshHubHeaderButtons } = await import('./messages/composerController.mjs')

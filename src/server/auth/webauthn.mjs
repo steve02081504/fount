@@ -111,7 +111,7 @@ export function getWebAuthnRelyingParty(req) {
  */
 export async function webauthnRegistrationBegin(username, req) {
 	const user = getUserByUsername(username)
-	if (!user?.auth) return { status: 404, i18nKey: 'auth.webauthn.registrationUserNotFound' }
+	if (!user?.auth) return { status: 404, i18nKey: 'auth.webauthn.registration.userNotFound' }
 	user.auth.webauthnCredentials ??= []
 
 	const { rpID, origin, rpName } = getWebAuthnRelyingParty(req)
@@ -148,10 +148,10 @@ export async function webauthnRegistrationBegin(username, req) {
 export async function webauthnRegistrationComplete(username, credentialResponse, nickname, req) {
 	const pending = takeWebAuthnChallengeEntry(`registration:${username}`)
 	if (!pending)
-		return { status: 401, i18nKey: 'auth.webauthn.registrationSessionExpired' }
+		return { status: 401, i18nKey: 'auth.webauthn.registration.sessionExpired' }
 
 	const user = getUserByUsername(username)
-	if (!user?.auth) return { status: 404, i18nKey: 'auth.webauthn.registrationUserNotFound' }
+	if (!user?.auth) return { status: 404, i18nKey: 'auth.webauthn.registration.userNotFound' }
 	user.auth.webauthnCredentials ??= []
 
 	const { rpID, origin } = getWebAuthnRelyingParty(req)
@@ -166,7 +166,7 @@ export async function webauthnRegistrationComplete(username, credentialResponse,
 		})
 
 		if (!result.verified || !result.registrationInfo)
-			return { status: 400, i18nKey: 'auth.webauthn.registrationVerifyFailed' }
+			return { status: 400, i18nKey: 'auth.webauthn.registration.verifyFailed' }
 
 		const { credential, credentialDeviceType, credentialBackedUp } = result.registrationInfo
 		const publicKeyB64 = Buffer.from(credential.publicKey).toString('base64url')
@@ -185,7 +185,7 @@ export async function webauthnRegistrationComplete(username, credentialResponse,
 		return { status: 200 }
 	} catch (error) {
 		console.error('Passkey registration verification failed:', error)
-		return { status: 400, i18nKey: 'auth.webauthn.registrationFailed' }
+		return { status: 400, i18nKey: 'auth.webauthn.registration.failed' }
 	}
 }
 

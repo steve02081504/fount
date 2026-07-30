@@ -153,10 +153,6 @@
 			"passedLabel": "PASSED",
 			"failedLabel": "FAILED",
 			"noiseHits": "(noise: ${hits})",
-			"unknownManifestId": "unknown manifest id: ${ids}",
-			"unknownSuiteSelector": "Unknown suite: ${ids}",
-			"unknownSubtestFilter": "Unknown subtest filter: ${suite} → ${names}",
-			"unknownFileFilter": "Unknown test file filter: ${suite} → ${names}",
 			"unsupportedSubtestFilter": "Suite doesn't support subtest/file filtering: ${suite} (${names})",
 			"available": "available: ${ids}",
 			"manifestMatched": "manifest matched: ${ids}",
@@ -173,28 +169,16 @@
 			"runningSuite": "\n>>> running ${manifestId}/${name}",
 			"reusedSuite": ">>> Reusing ${manifestId}:${name} (trigger unchanged — using last ${status})",
 			"noisyOnlyRemain": "${count} suite(s) still passing with noise: ${suites}",
-			"estimatedRun": "Estimated run time ≈ ${eta} (parallel rate ${rate})",
-			"estimatedRunSerial": "Estimated run time ≈ ${eta} (serial)",
-			"estimatedRunSkipped": "Also ${reused} reused, ${blocked} expected blocked (not counted)",
 			"noRealRunPlanned": "No real run this time: ${reused} reused, ${blocked} expected blocked (trigger unchanged)",
 			"allReusedHint": "No suite actually ran: failure is inherited from the last run; blocks remain unresolved (files unchanged). Fix the files and rerun, or use `fount test --force`.",
-			"estimatedRemaining": "Estimated remaining ≈ ${eta} (${completed}/${total} suites)",
-			"estimatedRunSerialHint": "With parallelism ≈ ${eta} (rate ${rate}), savings ≈ ${savings} (drop --no-parallel)",
 			"failuresSaved": "saved failure list: ${path} (${count} suites)",
 			"failuresCleared": "manifest ${manifestId} all passed; failure list cleared.",
 			"terminated": "Timed out: ${label} — ${reason}",
-			"terminateIdle": "Aborted ${label}: no stdout/stderr for ${minutes} min (idle ${idleSec}s, elapsed ${elapsed})",
-			"terminateDuration": "Aborted ${label}: exceeded watchdog baseline (elapsed ${elapsed}, baseline ${baseline}, limit ${limit})",
-			"terminateDurationDefault": "Aborted ${label}: exceeded default watchdog limit (elapsed ${elapsed}, limit ${limit})",
 			"sleepDetected": "System sleep detected (watchdog interval jumped ${gap} ≥ ${limit}); aborted ${label} for rerun (ran ${elapsed})",
 			"sleepRetry": "Interrupted by system sleep; rerunning ${label} (attempt ${attempt})",
-			"terminateMarker": "[Termination reason: ${reason}]",
-			"terminateUnknown": "TERMINATED ${label}: test interrupted",
-			"terminateSpeculative": "Aborted ${label}: speculative dependency not passed — early stop cancelled",
 			"nothingToContinue": "All green with nothing stale — no rerun needed.",
 			"triggerNoMatch": "trigger matched no files: ${scope} — ${pattern}",
 			"triggerNoMatchSummary": "${count} trigger(s) matched no repo files (see report.md)",
-			"unknownSuite": "unknown suite: ${name}",
 			"federationCleanupPre": "federation cleanup pre: ${output}",
 			"federationCleanupPost": "federation cleanup post: ${output}",
 			"suiteHeader": "\n=== SUITE ${name} ===",
@@ -228,25 +212,7 @@
 				"title": "fount test report",
 				"tableHeaderItem": "item",
 				"tableHeaderValue": "value",
-				"fieldRunId": "runId",
-				"fieldCommand": "command",
-				"fieldExit": "exit",
-				"fieldProgress": "progress",
-				"fieldSuites": "suites",
-				"fieldFailed": "failed",
-				"fieldNoisyPassed": "noisy (passed)",
-				"fieldReused": "Reused",
-				"fieldSuiteSumDuration": "Suite time (sum)",
-				"fieldWallClock": "Wall time",
-				"fieldParallelRate": "Parallelism",
-				"fieldEstimatedRemaining": "Est. remaining",
-				"fieldEstimatedParallelRate": "Est. parallel rate",
 				"estimatePoint": "≈ ${eta}",
-				"pendingEstimate": "Estimated remaining time ≈ ${eta}",
-				"pendingParallelEstimate": "Parallel est. ≈ ${eta} (rate ${rate})",
-				"pendingSavings": "Est. savings ≈ ${savings}",
-				"pendingItemExpected": "expected ${expected}",
-				"fieldDuration": "duration",
 				"commandDefault": "(default)",
 				"exitPassed": "PASSED",
 				"exitFailed": "FAILED",
@@ -254,54 +220,86 @@
 				"progressFormat": "${completed}/${total} suites",
 				"suitesFormat": "${passed}/${completed} passed",
 				"artifacts": "Artifacts: `${path}`",
-				"sectionFailed": "Failed suites",
-				"sectionNoisyPassed": "Passed with noise",
-				"sectionSilentPassed": "Passed (silent)",
-				"sectionPending": "Pending",
-				"sectionContinue": "Continue unfinished",
-				"sectionReplay": "Rerun failures",
-				"sectionReplayImperfect": "Rerun imperfect",
 				"columnSuite": "suite",
 				"columnDuration": "duration",
-				"labelReused": "(reused)",
-				"labelExpectedBlocked": "(expected block)",
-				"labelDuration": "duration",
-				"labelLog": "log",
-				"labelNoise": "noise",
-				"labelFailedFiles": "failed files",
-				"labelTerminateReason": "Termination reason",
-				"sectionContinueReasons": "Why rerun",
 				"continueReasonsLink": "Trigger reasons: see [${path}](${path})",
-				"labelContinueReason": "reason",
-				"reasonImperfectFailed": "previous failure",
-				"reasonImperfectNoisy": "passed with noise",
-				"reasonImperfectBlocked": "was blocked",
-				"reasonImperfectDependent": "upstream failure pulled in",
-				"reasonMissingRecord": "no state record — auto rerun",
-				"reasonStaleContent": "content changed — rerun needed",
-				"reasonTriggerHashDrift": "trigger fingerprint drift (no path hit)",
-				"reasonExplicitSelected": "explicitly selected",
-				"reasonDependencyRequired": "pulled in by dependency",
-				"labelRootCause": "root cause",
-				"labelDirectRequiredBy": "required by",
-				"labelInclusionPath": "inclusion chain",
-				"labelPullUpstream": "upstream pull: ${requiredBy}'s dependency not green",
-				"labelPullDownstream": "downstream pull: ${requiredBy} imperfect — included too",
-				"labelGateReason": "run reason",
-				"labelCommitRange": "commit range",
-				"labelUncommittedHashRange": "uncommitted digest",
-				"labelMatchedTriggers": "matched triggers",
-				"labelMatchedTriggerSets": "matched trigger sets",
-				"labelMatchedPaths": "matched paths",
-				"labelTriggerHashDrift": "trigger fingerprint differs from workspace (dirty→clean ignored)",
-				"sectionDeadTriggers": "dead triggers",
 				"deadTriggersHint": "These globs match no files in the repo (git-tracked + untracked, not ignored):",
 				"durationMs": "${ms}ms",
-				"durationUnitSec": "${n} seconds",
-				"durationUnitMin": "${n} min",
-				"durationUnitMinute": "${n} minutes",
-				"durationUnitHour": "${n} hours",
-				"durationUnitDay": "${n} days"
+				"durationUnit": {
+					"day": "${n} days",
+					"hour": "${n} hours",
+					"min": "${n} min",
+					"minute": "${n} minutes",
+					"sec": "${n} seconds"
+				},
+				"section": {
+					"continue": "Continue unfinished",
+					"continueReasons": "Why rerun",
+					"deadTriggers": "dead triggers",
+					"failed": "Failed suites",
+					"noisyPassed": "Passed with noise",
+					"pending": "Pending",
+					"replay": "Rerun failures",
+					"replayImperfect": "Rerun imperfect",
+					"silentPassed": "Passed (silent)"
+				},
+				"pending": {
+					"estimate": "Estimated remaining time ≈ ${eta}",
+					"itemExpected": "expected ${expected}",
+					"parallelEstimate": "Parallel est. ≈ ${eta} (rate ${rate})",
+					"savings": "Est. savings ≈ ${savings}"
+				},
+				"reason": {
+					"dependencyRequired": "pulled in by dependency",
+					"explicitSelected": "explicitly selected",
+					"imperfect": {
+						"blocked": "was blocked",
+						"dependent": "upstream failure pulled in",
+						"failed": "previous failure",
+						"noisy": "passed with noise"
+					},
+					"missingRecord": "no state record — auto rerun",
+					"staleContent": "content changed — rerun needed",
+					"triggerHashDrift": "trigger fingerprint drift (no path hit)"
+				},
+				"label": {
+					"commitRange": "commit range",
+					"continueReason": "reason",
+					"directRequiredBy": "required by",
+					"duration": "duration",
+					"expectedBlocked": "(expected block)",
+					"failedFiles": "failed files",
+					"gateReason": "run reason",
+					"inclusionPath": "inclusion chain",
+					"log": "log",
+					"matchedPaths": "matched paths",
+					"matchedTriggerSets": "matched trigger sets",
+					"matchedTriggers": "matched triggers",
+					"noise": "noise",
+					"pullDownstream": "downstream pull: ${requiredBy} imperfect — included too",
+					"pullUpstream": "upstream pull: ${requiredBy}'s dependency not green",
+					"reused": "(reused)",
+					"rootCause": "root cause",
+					"terminateReason": "Termination reason",
+					"triggerHashDrift": "trigger fingerprint differs from workspace (dirty→clean ignored)",
+					"uncommittedHashRange": "uncommitted digest"
+				},
+				"field": {
+					"command": "command",
+					"duration": "duration",
+					"estimatedParallelRate": "Est. parallel rate",
+					"estimatedRemaining": "Est. remaining",
+					"exit": "exit",
+					"failed": "failed",
+					"noisyPassed": "noisy (passed)",
+					"parallelRate": "Parallelism",
+					"progress": "progress",
+					"reused": "Reused",
+					"runId": "runId",
+					"suiteSumDuration": "Suite time (sum)",
+					"suites": "suites",
+					"wallClock": "Wall time"
+				}
 			},
 			"state": {
 				"title": "fount test status",
@@ -309,16 +307,40 @@
 				"sectionDependencyTree": "Dependency tree",
 				"sectionOverview": "Suite status",
 				"sectionBlocked": "Blocked suites",
-				"columnSuite": "Suite",
-				"columnStatus": "Status",
-				"columnCommit": "commit",
-				"columnRanAt": "last run",
-				"columnDuration": "Duration",
-				"columnLog": "log",
-				"columnBlocked": "Blocked",
 				"labelBlockedBy": "Blocked by",
 				"statusUnknown": "Not run",
-				"statusOutdated": "Stale"
+				"statusOutdated": "Stale",
+				"column": {
+					"blocked": "Blocked",
+					"commit": "commit",
+					"duration": "Duration",
+					"log": "log",
+					"ranAt": "last run",
+					"status": "Status",
+					"suite": "Suite"
+				}
+			},
+			"terminate": {
+				"duration": "Aborted ${label}: exceeded watchdog baseline (elapsed ${elapsed}, baseline ${baseline}, limit ${limit})",
+				"durationDefault": "Aborted ${label}: exceeded default watchdog limit (elapsed ${elapsed}, limit ${limit})",
+				"idle": "Aborted ${label}: no stdout/stderr for ${minutes} min (idle ${idleSec}s, elapsed ${elapsed})",
+				"marker": "[Termination reason: ${reason}]",
+				"speculative": "Aborted ${label}: speculative dependency not passed — early stop cancelled",
+				"unknown": "TERMINATED ${label}: test interrupted"
+			},
+			"estimated": {
+				"remaining": "Estimated remaining ≈ ${eta} (${completed}/${total} suites)",
+				"run": "Estimated run time ≈ ${eta} (parallel rate ${rate})",
+				"runSerial": "Estimated run time ≈ ${eta} (serial)",
+				"runSerialHint": "With parallelism ≈ ${eta} (rate ${rate}), savings ≈ ${savings} (drop --no-parallel)",
+				"runSkipped": "Also ${reused} reused, ${blocked} expected blocked (not counted)"
+			},
+			"unknown": {
+				"fileFilter": "Unknown test file filter: ${suite} → ${names}",
+				"manifestId": "unknown manifest id: ${ids}",
+				"subtestFilter": "Unknown subtest filter: ${suite} → ${names}",
+				"suite": "unknown suite: ${name}",
+				"suiteSelector": "Unknown suite: ${ids}"
 			}
 		},
 		"path": {
@@ -380,10 +402,10 @@
 				"packageFailed": "Error: Installation of ${package} failed.",
 				"browserMissing": "Default browser not detected, trying to install...",
 				"untrustedPartsWarning": "Do not install any untrusted fount components on your system, they can do anything.",
-				"rootWarning1": "Not recommended: running fount as root grants full system access to all fount components.",
-				"rootWarning2": "Unless you know what you are doing, it is recommended to run fount as a normal user.",
 				"permissionDeniedAsRoot": "Error: Cannot write to fount directory '${path}'. You are running as root but access is still denied — please check and fix the folder's security permissions to grant the current user full control.",
-				"permissionDeniedNotRoot": "Error: Cannot write to fount directory '${path}'. Please fix the folder's security permissions to grant the current user write access, or run fount as root."
+				"permissionDeniedNotRoot": "Error: Cannot write to fount directory '${path}'. Please fix the folder's security permissions to grant the current user write access, or run fount as root.",
+				"rootWarningAsRoot": "Not recommended: running fount as root grants full system access to all fount components.",
+				"rootWarningPreferUser": "Unless you know what you are doing, it is recommended to run fount as a normal user."
 			},
 			"clean": {
 				"removingCaches": "Removing cache...",
@@ -404,41 +426,49 @@
 				"editorRemoved": "Removed fount configuration from editor terminal keybindings: `${path}`"
 			},
 			"remove": {
-				"removingDesktopShortcut": "Removing desktop shortcut...",
-				"removingTerminalKeybindings": "Removing terminal keybinding patch...",
-				"removingFount": "Removing fount...",
 				"fountUninstallationComplete": "fount uninstallation completed.",
-				"removingFountInstallationDir": "Removing fount installation directory...",
 				"fountInstallationDirRemoved": "The fount installation directory has been removed.",
-				"removingFountFromPath": "Removing fount from PATH...",
-				"removingProtocolHandler": "Removing `fount://` protocol handler...",
 				"protocolHandlerRemoved": "The `fount://` protocol handler has been removed.",
-				"removeProtocolHandlerFailed": "Failed to remove `fount://` protocol handler: ${message}",
-				"removingFountFromGitSafeDir": "Removing fount from `git safe.directory`...",
-				"removingInstalledSystemPackages": "Removing installed system packages...",
-				"uninstallingDeno": "Uninstalling Deno...",
-				"removeDenoFailed": "Failed to remove Deno: ${message}",
-				"removingFountPwshFromProfile": "Removing `fount-pwsh` from PowerShell Profile...",
 				"fountPwshRemovedFromProfile": "fount-pwsh has been removed from PowerShell Profile.",
 				"pwshProfileNotFound": "PowerShell Profile not found, skipping removing `fount-pwsh` from profile.",
-				"uninstallingFountPwsh": "Uninstalling `fount-pwsh`...",
 				"uninstallFountPwshFailed": "Uninstalling `fount-pwsh` failed: ${message}",
-				"removingTerminalProfile": "Removing Windows Terminal Profile...",
 				"terminalProfileRemoved": "The Windows Terminal Profile directory has been removed.",
 				"terminalProfileNotFound": "Windows Terminal Profile directory not found.",
 				"desktopShortcutRemoved": "Desktop shortcut removed.",
 				"desktopShortcutNotFound": "Desktop shortcut not found.",
-				"removingStartMenuShortcut": "Removing start menu shortcuts...",
 				"startMenuShortcutRemoved": "Start menu shortcut has been removed.",
 				"startMenuShortcutNotFound": "Start menu shortcut not found.",
-				"removingInstalledPwshModules": "Removing installed pwsh module...",
 				"moduleRemoved": "${module} has been removed.",
-				"removeModuleFailed": "Removing ${module} failed: ${message}",
-				"uninstallingGit": "Uninstalling Git...",
-				"uninstallingChrome": "Uninstalling Chrome...",
-				"uninstallingWinget": "Uninstalling Winget...",
-				"removingBackgroundRunner": "Removing background programs...",
-				"removeBackgroundRunnerFailed": "Failed to remove background running program: ${message}"
+				"uninstalling": {
+					"chrome": "Uninstalling Chrome...",
+					"deno": "Uninstalling Deno...",
+					"fountPwsh": "Uninstalling `fount-pwsh`...",
+					"git": "Uninstalling Git...",
+					"winget": "Uninstalling Winget..."
+				},
+				"removing": {
+					"backgroundRunner": "Removing background programs...",
+					"desktopShortcut": "Removing desktop shortcut...",
+					"fount": {
+						"main": "Removing fount...",
+						"fromGitSafeDir": "Removing fount from `git safe.directory`...",
+						"fromPath": "Removing fount from PATH...",
+						"installationDir": "Removing fount installation directory...",
+						"pwshFromProfile": "Removing `fount-pwsh` from PowerShell Profile..."
+					},
+					"installedPwshModules": "Removing installed pwsh module...",
+					"installedSystemPackages": "Removing installed system packages...",
+					"protocolHandler": "Removing `fount://` protocol handler...",
+					"startMenuShortcut": "Removing start menu shortcuts...",
+					"terminalKeybindings": "Removing terminal keybinding patch...",
+					"terminalProfile": "Removing Windows Terminal Profile..."
+				},
+				"remove": {
+					"backgroundRunnerFailed": "Failed to remove background running program: ${message}",
+					"denoFailed": "Failed to remove Deno: ${message}",
+					"moduleFailed": "Removing ${module} failed: ${message}",
+					"protocolHandlerFailed": "Failed to remove `fount://` protocol handler: ${message}"
+				}
 			}
 		}
 	},
@@ -448,22 +478,6 @@
 		"hero": {
 			"title": "Imagination, Given Voice.",
 			"description": "fount is an AI-powered role interaction platform designed to empower <i>you</i>. It is a bridge that connects you with your imagined characters, allowing you to easily talk to them, create your own characters, and share them with the world."
-		},
-		"feature1": {
-			"title": "Seamless dialogue, anywhere",
-			"description": "Start chatting on your computer and continue seamlessly on your phone or tablet. fount keeps your conversations in sync and stay in touch with your character wherever you go. Runs on Windows, macOS, Linux and even Android."
-		},
-		"feature2": {
-			"title": "Beautiful, customisable interface",
-			"description": "Choose from over 30 beautiful themes, or create your own. fount is your personal canvas. Express yourself, customise the environment to your preferences, and get a truly personalised experience."
-		},
-		"feature3": {
-			"title": "Expressive, immersive chat",
-			"description": "fount takes advantage of the power of HTML, allowing characters to express themselves through rich text, images, and even interactive elements. Have dynamic and engaging group chats with multiple characters at the same time."
-		},
-		"feature4": {
-			"title": "Unbound AI source integration",
-			"description": "fount offers unparalleled choice and flexibility. Connect to <i>any</i> AI sources—OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI, etc. Communication logic will be shaped by the power of code according to your wishes."
 		},
 		"language_selector": {
 			"button": {
@@ -482,8 +496,8 @@
 		},
 		"mini_game": {
 			"title": "Play a little game",
-			"description1": "Installation taking too long?",
-			"description2": "Here's a mini game to pass the time."
+			"slowInstallHint": "Installation taking too long?",
+			"playWhileWaiting": "Here's a mini game to pass the time."
 		},
 		"testimonials": {
 			"anonymous": "anonymous user",
@@ -525,9 +539,27 @@
 			"title": "Installation failed!",
 			"description": "There seems to be something wrong with the fount installer.",
 			"connection_failed": "Connection failed!",
-			"description1": "There seems to be something wrong with the fount installer.",
-			"description2": "Please check your terminal and try again.",
-			"close_page": "Close page"
+			"close_page": "Close page",
+			"summary": "There seems to be something wrong with the fount installer.",
+			"retryHint": "Please check your terminal and try again."
+		},
+		"features": {
+			"seamlessChat": {
+				"title": "Seamless dialogue, anywhere",
+				"description": "Start chatting on your computer and continue seamlessly on your phone or tablet. fount keeps your conversations in sync and stay in touch with your character wherever you go. Runs on Windows, macOS, Linux and even Android."
+			},
+			"customUi": {
+				"title": "Beautiful, customisable interface",
+				"description": "Choose from over 30 beautiful themes, or create your own. fount is your personal canvas. Express yourself, customise the environment to your preferences, and get a truly personalised experience."
+			},
+			"expressiveChat": {
+				"title": "Expressive, immersive chat",
+				"description": "fount takes advantage of the power of HTML, allowing characters to express themselves through rich text, images, and even interactive elements. Have dynamic and engaging group chats with multiple characters at the same time."
+			},
+			"aiSources": {
+				"title": "Unbound AI source integration",
+				"description": "fount offers unparalleled choice and flexibility. Connect to <i>any</i> AI sources—OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI, etc. Communication logic will be shaped by the power of code according to your wishes."
+			}
 		}
 	},
 	"protocolhandler": {
@@ -612,10 +644,6 @@
 			"passwordMismatch": "Passwords do not match.",
 			"loginError": "Login error.",
 			"registrationError": "Registration error.",
-			"verificationCodeError": "Verification code is incorrect or has expired.",
-			"verificationCodeSent": "Verification code sent successfully.",
-			"verificationCodeSendError": "Failed to send verification code.",
-			"verificationCodeRateLimit": "Too many verification code requests. Please try again later.",
 			"lowPasswordStrength": "Password strength is too low.",
 			"accountAlreadyExists": "Account already exists.",
 			"powNotSolved": "Please complete PoW verification first",
@@ -625,26 +653,36 @@
 			"accountLockedAttempts": "The account has been temporarily locked due to too many failed login attempts.",
 			"powValidationFailed": "Verification check failed. Please try again.",
 			"tokenAndSolutionsRequired": "Token and solutions are required.",
-			"apiErrorBodyUnreadable": "The server returned information that could not be parsed. Please try again later."
+			"apiErrorBodyUnreadable": "The server returned information that could not be parsed. Please try again later.",
+			"verificationCode": {
+				"error": "Verification code is incorrect or has expired.",
+				"rateLimit": "Too many verification code requests. Please try again later.",
+				"sendError": "Failed to send verification code.",
+				"sent": "Verification code sent successfully."
+			}
 		},
 		"webauthn": {
 			"loginButton": "Sign in with security key / Passkey",
-			"errorLoadLibrary": "Could not load the WebAuthn helper library. Check your network and try again.",
-			"errorCancelled": "Security key sign-in was cancelled or not allowed.",
-			"errorSessionMissing": "The server did not return a valid login session, please refresh the page and try again.",
-			"errorBadBeginResponse": "The server returned invalid login data, please refresh the page and try again.",
-			"errorCredentialRequired": "Valid Passkey credential data is missing.",
-			"errorAuthSessionRequired": "The login session token is missing, please refresh the page and try again.",
 			"apiSessionExpired": "Passkey login session has expired, please try again.",
 			"apiUnknownPasskey": "The Passkey is not recognized, please use a bound key.",
 			"apiPasskeyVerificationFailed": "Passkey verification failed, please try again.",
-			"registrationUserNotFound": "User account not found.",
-			"registrationSessionExpired": "The binding session has expired, please try again from the beginning.",
-			"registrationVerifyFailed": "Unable to complete Passkey registration verification.",
-			"registrationFailed": "Passkey registration failed, please try again.",
 			"removeUserNotFound": "User or credential data not found.",
 			"removeInvalidPassword": "Wrong password.",
-			"removePasskeyNotFound": "The Passkey was not found."
+			"removePasskeyNotFound": "The Passkey was not found.",
+			"registration": {
+				"failed": "Passkey registration failed, please try again.",
+				"sessionExpired": "The binding session has expired, please try again from the beginning.",
+				"userNotFound": "User account not found.",
+				"verifyFailed": "Unable to complete Passkey registration verification."
+			},
+			"error": {
+				"authSessionRequired": "The login session token is missing, please refresh the page and try again.",
+				"badBeginResponse": "The server returned invalid login data, please refresh the page and try again.",
+				"cancelled": "Security key sign-in was cancelled or not allowed.",
+				"credentialRequired": "Valid Passkey credential data is missing.",
+				"loadLibrary": "Could not load the WebAuthn helper library. Check your network and try again.",
+				"sessionMissing": "The server did not return a valid login session, please refresh the page and try again."
+			}
 		}
 	},
 	"login_info": {
@@ -803,84 +841,86 @@
 					}
 				}
 			},
-			"serviceGenerators": {
-				"title": "service builder",
-				"subtitle": "Turn the invisible into something tangible, make the possible a reality.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Set as default service generator"
-					}
-				}
-			},
-			"serviceGenerators/AI": {
-				"title": "AI service generator",
-				"subtitle": "Weave threads of wisdom and connect bridges of thought.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Set as default AI service generator"
-					}
-				}
-			},
-			"serviceGenerators/search": {
-				"title": "Search service generator",
-				"subtitle": "In the ocean of information, light up the light for you.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Set as default search generator"
-					}
-				}
-			},
-			"serviceGenerators/translate": {
-				"title": "Translation service generator",
-				"subtitle": "Cross language boundaries and let ideas flow freely.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Set as default translation service generator"
-					}
-				}
-			},
-			"serviceSources": {
-				"title": "Service source",
-				"subtitle": "Gathering the trickles, they become vast rivers.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Set as default service source"
-					}
-				}
-			},
-			"serviceSources/AI": {
-				"title": "AI service source",
-				"subtitle": "The source of wisdom and the starting point of thought.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Set as default AI service source"
-					}
-				}
-			},
-			"serviceSources/search": {
-				"title": "Search service source",
-				"subtitle": "A treasure trove of knowledge and a starting point for exploration.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Set as default search source"
-					}
-				}
-			},
-			"serviceSources/translate": {
-				"title": "Translation service source",
-				"subtitle": "The bridge of language and the link of communication.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Set as default translation service source"
-					}
-				}
-			},
 			"shells": {
 				"title": "Shell Selection",
 				"subtitle": "Choose a window and see a new world.",
 				"card": {
 					"defaultCheckbox": {
 						"title": "Set as default shell"
+					}
+				}
+			},
+			"service": {
+				"generators": {
+					"title": "service builder",
+					"subtitle": "Turn the invisible into something tangible, make the possible a reality.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Set as default service generator"
+						}
+					}
+				},
+				"generators/AI": {
+					"title": "AI service generator",
+					"subtitle": "Weave threads of wisdom and connect bridges of thought.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Set as default AI service generator"
+						}
+					}
+				},
+				"generators/search": {
+					"title": "Search service generator",
+					"subtitle": "In the ocean of information, light up the light for you.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Set as default search generator"
+						}
+					}
+				},
+				"generators/translate": {
+					"title": "Translation service generator",
+					"subtitle": "Cross language boundaries and let ideas flow freely.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Set as default translation service generator"
+						}
+					}
+				},
+				"sources": {
+					"title": "Service source",
+					"subtitle": "Gathering the trickles, they become vast rivers.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Set as default service source"
+						}
+					}
+				},
+				"sources/AI": {
+					"title": "AI service source",
+					"subtitle": "The source of wisdom and the starting point of thought.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Set as default AI service source"
+						}
+					}
+				},
+				"sources/search": {
+					"title": "Search service source",
+					"subtitle": "A treasure trove of knowledge and a starting point for exploration.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Set as default search source"
+						}
+					}
+				},
+				"sources/translate": {
+					"title": "Translation service source",
+					"subtitle": "The bridge of language and the link of communication.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Set as default translation service source"
+						}
 					}
 				}
 			}
@@ -961,12 +1001,6 @@
 				"aria-label": "Jump to Unicode"
 			},
 			"discoverPacks": "Explore emoji packs →",
-			"categoryFace": "Emoji",
-			"categoryGesture": "gesture",
-			"categoryHeart": "Heart",
-			"categoryAnimal": "animal",
-			"categoryFood": "food",
-			"categoryObject": "thing",
 			"addToCollection": "Add to favourites",
 			"addedToCollection": "Added to favourites",
 			"joinGroup": "Join group",
@@ -977,7 +1011,15 @@
 			"openAuthor": "View author",
 			"previewGroupMeta": "From group: ${name}",
 			"previewAuthorMeta": "From author",
-			"previewActionFailed": "Action failed: ${error}"
+			"previewActionFailed": "Action failed: ${error}",
+			"category": {
+				"animal": "animal",
+				"face": "Emoji",
+				"food": "food",
+				"gesture": "gesture",
+				"heart": "Heart",
+				"object": "thing"
+			}
 		},
 		"emojiPacks": {
 			"title": "Explore emoji packs",
@@ -1038,12 +1080,14 @@
 			"modeSingle": "single character",
 			"modeEmpty": "empty group",
 			"subtitleRoles": "${count} characters are in this chat",
-			"statusSaved": "saved",
-			"statusSaving": "Saving…",
-			"statusDirty": "There are unsaved changes",
-			"statusSaveFailed": "Save failed",
 			"saveSuccess": "Group chat settings saved",
-			"saveFailed": "Unable to save group chat settings"
+			"saveFailed": "Unable to save group chat settings",
+			"status": {
+				"dirty": "There are unsaved changes",
+				"saveFailed": "Save failed",
+				"saved": "saved",
+				"saving": "Saving…"
+			}
 		},
 		"group": {
 			"defaults": {
@@ -1052,167 +1096,6 @@
 				"dmChatName": "chat",
 				"dmDmName": "private chat",
 				"threadName": "thread"
-			},
-			"settingsPage": {
-				"title": "Group settings",
-				"kicker": "Group settings",
-				"subtitle": "Manage group information, members and common functions. Low-frequency permissions, storage, and auditing tools are centralized in advanced settings.",
-				"backToChat": "Back to chat",
-				"navigationLabel": "Group settings classification",
-				"advancedNavigationLabel": "Advanced settings category",
-				"tabGeneral": "basic",
-				"tabPermissions": "Role permissions",
-				"tabMembers": "Members",
-				"tabAudit": "Audit log",
-				"tabEmojis": "Emoji",
-				"tabAdvanced": "advanced",
-				"tabStorage": "Storage and archiving",
-				"tabChannelPermissions": "Channel permissions",
-				"advancedHubTitle": "Advanced settings",
-				"advancedHubDescription": "These features change the group's permission structure, historical data, or governance records; adjust only when clearly needed.",
-				"channelPermsHint": "Set role permission overrides for specific channels. Uncovered items inherit group role permissions.",
-				"channelPermsSelectChannel": "Channels",
-				"channelPermsAddRole": "Add role override",
-				"channelPermsRemoveRole": "Remove this role override",
-				"channelPermsStateNeutral": "inherit",
-				"channelPermsStateAllow": "allow",
-				"channelPermsStateDeny": "reject",
-				"channelPermsUpdated": "Channel permissions updated",
-				"channelPermsUpdateFailed": "Failed to update channel permissions: ${error}",
-				"channelPermsNoChannels": "There is currently no channel to configure",
-				"emojisTitle": "Custom group emoji",
-				"emojisHint": "Members can insert or send these emojis in chat; uninstalled images are pulled on demand through federated nodes.",
-				"emojisUpload": "Upload emojis",
-				"emojisCreatePack": "New emoji pack",
-				"emojisCreatePackPrompt": "Emoji pack ID",
-				"emojisCreatePackOk": "Emoji pack created",
-				"emojisCreatePackFailed": "Couldn't create: ${error}",
-				"emojisPackGroupSuffix": "group",
-				"activeEmojiPackLabel": "Pack being edited",
-				"emojisDelete": "Delete emoji",
-				"emojisEmpty": "No custom emoji yet",
-				"emojisUploadOk": "Emoji uploaded",
-				"emojisUploadFailed": "Upload failed: ${error}",
-				"emojisDeleteConfirm": "Are you sure you want to delete this group of emojis?",
-				"emojisDeleteOk": "Emoji has been deleted",
-				"emojisDeleteFailed": "Delete failed: ${error}",
-				"defaultEmojiPackLabel": "Default emoji pack",
-				"defaultEmojiPackHint": "Added to members' favourites when they join. Changing it only replaces the old default if it's still in their favourites.",
-				"defaultEmojiPackOk": "Default emoji pack updated",
-				"defaultEmojiPackFailed": "Couldn't set default emoji pack",
-				"membersTitle": "Member list",
-				"overviewTitle": "Group overview",
-				"overviewHint": "Read-only overview. With governance permissions, edit group info and policies under Basic.",
-				"channelArchiveTitle": "Channel archive",
-				"channelArchiveHint": "Importing the complete channel JSON archive will create a new ordinary Text channel in this group and restore the history (re-signed by you; attachments only retain metadata).",
-				"channelArchiveImport": "Import channel JSON",
-				"channelArchiveImportOk": "Imported ${count} messages, opening new channel...",
-				"channelArchiveImportFailed": "Import failed: ${error}",
-				"governanceHint": "Write group-level DAG policy; requires admin or MANAGE_ADMINS.",
-				"governanceDenied": "You do not have permission to modify group governance settings.",
-				"rolesDenied": "You do not have MANAGE_ROLES permission to edit roles.",
-				"channelPermsDenied": "You do not have MANAGE_CHANNELS permission to edit channel permission overrides.",
-				"notMember": "You are no longer a member of this group; the data of this group has been automatically cleared after leaving the group.",
-				"basicTitle": "Group governance",
-				"profileSectionTitle": "Group info",
-				"profileSectionHint": "The name, introduction and method of joining the group will be written into the group metadata.",
-				"behaviorSectionTitle": "Run behaviour",
-				"networkSectionTitle": "federation and connection",
-				"retentionSectionTitle": "Reserve and rate limit",
-				"mediaSectionTitle": "Calls and files",
-				"nameLabel": "Group name",
-				"descriptionLabel": "Group description",
-				"joinPolicyLabel": "Group entry strategy",
-				"joinInviteOnly": "Invite only",
-				"joinPow": "PoW required",
-				"powDifficultyLabel": "PoW difficulty",
-				"advancedTitle": "Advanced settings",
-				"advancedDescription": "Network, storage, speed limit and encryption parameters; please keep the defaults if you are unsure",
-				"securityAdvancedTitle": "Security and group owner operations",
-				"securityAdvancedDescription": "Key rotation and owner succession — mistakes can lock members out",
-				"powDifficultyTip": "Proof of work difficulty. The higher the value, the longer the calculation time required for strangers to join the public group.",
-				"maxDagPayloadTip": "The upper limit of data allowed to be carried by a single group event. If it is too large, it will increase synchronisation memory and network overhead.",
-				"trustedPeersTip": "The number of high-reputation federation neighbors that are prioritized to stay connected.",
-				"gossipTtlTip": "The maximum number of federated nodes through which the message can be forwarded. Increasing it increases coverage and also increases traffic.",
-				"hlcTip": "The maximum amount of time that the remote node's clock is allowed to be faster than the local node's clock, used to reject abnormal future events.",
-				"sfuTip": "Optional external AV relay address. Leave blank for built-in P2P/relay calling.",
-				"iceTip": "Help WebRTC penetrate the router; when the direct connection fails, TURN will forward audio, video and federated traffic on its behalf.",
-				"fileEncryptionTip": "Convergent encryption deduplicates but exposes the fact that the files are the same; random keys are more private but take up more space.",
-				"keyManagementTitle": "Key management",
-				"keyManagementTip": "New keys need to be redistributed to members after rotation. Manual action should only be taken if you suspect a key has been compromised.",
-				"allowDangerousHtml": "Trusted author messages allow inline HTML",
-				"deleteGroup": "Delete group",
-				"save": "Save settings",
-				"inviteTitle": "Invite",
-				"inviteHint": "Generate a short-term invitation code (default 1 hour). The other party fills in the group ID and invitation code in \"Join Group\".",
-				"inviteMint": "Generate invitation code",
-				"inviteGroupId": "Group ID",
-				"inviteCode": "Invitation code",
-				"inviteExpires": "Expiration: ${date}",
-				"inviteCopy": "Copy group invite",
-				"inviteCopied": "Group invite copied",
-				"inviteCopyFailed": "Copy failed",
-				"inviteClipboard": "Group ID: ${groupId}\nInvitation code: ${code}\nJoin: ${url}",
-				"loadFailed": "Failed to load group settings: ${error}",
-				"saveSuccess": "Group settings saved",
-				"saveFailed": "Failed to save settings: ${error}",
-				"deleteConfirm": "Are you sure you want to delete this group? This action is irreversible and all messages and member data will be permanently deleted.",
-				"deleteSuccess": "Group deleted",
-				"deleteFailed": "Failed to delete group: ${error}",
-				"rolesTitle": "Roles and permissions",
-				"createRole": "Create a role",
-				"roleDefault": "default",
-				"deleteRole": "Delete role",
-				"deleteRoleConfirm": "Are you sure you want to delete this role?",
-				"deleteRoleSuccess": "Role deleted",
-				"deleteRoleFailed": "Failed to delete role: ${error}",
-				"createRolePrompt": "Enter character name:",
-				"createRoleSuccess": "Role created",
-				"createRoleFailed": "Failed to create role: ${error}",
-				"permissionUpdated": "Permissions updated",
-				"permissionUpdateFailed": "Failed to update permissions: ${error}",
-				"noMembers": "No members yet",
-				"memberRoles": "Role:",
-				"kick": "Kick",
-				"ban": "ban",
-				"kickConfirm": "Are you sure you want to Kick members ${name}?",
-				"kickSelfNodeWarning": "Warning: This member uses the same node identity as you. You will also be removed from the group after being kicked out. Are you sure you want to continue?",
-				"kickSuccess": "Member kicked out",
-				"kickFailed": "Failed to Kick members out: ${error}",
-				"banConfirm": "Are you sure you want to ban member ${name}?",
-				"banSuccess": "Member has been banned",
-				"banFailed": "Failed to ban member: ${error}",
-				"bannedTitle": "Banned member",
-				"unban": "Unblock",
-				"unbanConfirm": "Are you sure you want to unblock member ${name}?",
-				"unbanSuccess": "Member has been unblocked",
-				"unbanFailed": "Unblocking failed: ${error}",
-				"keyRotate": "Rotate group file master key",
-				"keyRotateConfirm": "Are you sure you want to manually rotate the master key of this Group files? New members need to resynchronize the history file key.",
-				"keyRotateOk": "Key has been rotated",
-				"keyRotateFailed": "Key rotation failed: ${error}",
-				"gshGenerationRetentionHint": "Currently only the most recent 64 generations of file master key history are retained. The oldest historical files may not be able to be decrypted after it is exceeded, and it is recommended to archive important data regularly.",
-				"gshGenerationNearLimit": "Currently rotated to generation ${generation} of file master keys (up to ${maxGenerations} generations). Continuing frequent rotation will result in the oldest historical keys being retired.",
-				"ownerSuccession": "Owner succession",
-				"ownerSuccessionOk": "Owner succession applied",
-				"ownerSuccessionFailed": "Owner succession failed: ${error}",
-				"permVIEW_CHANNEL": "View channel",
-				"permSEND_MESSAGES": "Send message",
-				"permSEND_STICKERS": "Send stickers",
-				"permADD_REACTIONS": "Add reactions",
-				"permMANAGE_MESSAGES": "Manage messages",
-				"permMANAGE_CHANNELS": "Manage channel",
-				"permKICK_MEMBERS": "Kick members",
-				"permBAN_MEMBERS": "Ban member",
-				"permMANAGE_ROLES": "Manage roles",
-				"permINVITE_MEMBERS": "Invite members",
-				"permSTREAM": "Voice",
-				"permCREATE_THREADS": "Create threads",
-				"permUPLOAD_FILES": "Upload files",
-				"permMANAGE_FILES": "Manage files",
-				"permPIN_MESSAGES": "Pinned message",
-				"permADMIN": "Admin",
-				"permBYPASS_RATE_LIMIT": "Bypass message rate limit"
 			},
 			"auditLog": {
 				"title": "Group audit log",
@@ -1223,10 +1106,6 @@
 				"loadMore": "Load older records",
 				"empty": "No audit records yet",
 				"loadFailed": "Failed to load audit log: ${error}",
-				"colTime": "Time",
-				"colType": "Type",
-				"colActor": "Actor",
-				"colSummary": "Summary",
 				"type": {
 					"member_join": "Member joined",
 					"member_leave": "Member left",
@@ -1283,167 +1162,44 @@
 					"unpin_message": "Unpinned ${targetEventId} in ${channelName}",
 					"file_upload": "Upload file ${fileName}",
 					"file_delete": "Delete file ${fileName}"
+				},
+				"col": {
+					"actor": "Actor",
+					"summary": "Summary",
+					"time": "Time",
+					"type": "Type"
 				}
 			},
-			"messagePrefixSticker": "Sticker",
 			"membersEmpty": "(no members yet)",
 			"channelEncryptionGsh": "Channel Key End-to-End Encryption (CKG)",
-			"ownerSuccession": "Initiate a succession vote",
-			"ownerSuccessionDescription": "Transfer the group's top admin permission (MANAGE_ADMINS) to a member. Admins only.",
-			"ownerSuccessionAutoSignHint": "After submission, the device will automatically sign the signature seed of the group without entering the private key. In a multi-administrator group, more than half of the administrators must submit the same ballot (same ballotId and candidate) locally.",
-			"ownerSuccessionCandidateLabel": "Successor public key hash",
-			"ownerSuccessionSelfButton": "Nominate yourself",
-			"ownerSuccessionSubmitted": "Your signature has been recorded on the Succession Ballot.",
-			"ownerSuccessionNeedHash": "Please fill in the successor's public key hash",
-			"ownerSuccessionFailed": "Succession vote submission failed",
 			"e2eDecryptUnavailable": "The message is encrypted and cannot be decrypted by the current device",
 			"contentRefBodyPending": "External link text (content_ref, not yet pulled for verification)",
 			"contentRefHashMismatch": "The external link text is inconsistent with the storage verification (hash does not match)",
-			"streamGenerationFailed": "AI generation timed out — updates stopped",
 			"convergentEncryptWarn": "Group files use convergent encryption: if an attacker knows a file's plaintext, they can derive the key and decrypt matching ciphertext. Don't rely on group encryption alone for highly sensitive, unique documents.",
-			"settingsStreamGeneratingIdle": "AI generated placeholder idle timeout (milliseconds)",
-			"settingsAutoReplyFrequency": "Automatically trigger role replies (after every N user messages, 0 is off)",
-			"settingsAutoReplyFrequencyHint": "0 means off; @mentions will still trigger immediately",
-			"settingsMaxDagPayload": "DAG maximum number of bytes for a single event",
-			"settingsBatterySaver": "Battery saver (smaller federation pool and relays)",
-			"settingsDiscoveryPublic": "Expose this group in federated discovery (without joining the group key)",
-			"settingsDiscoveryTitle": "Discovery list title (optional)",
-			"settingsDiscoveryBlurb": "Discovery blurb (optional)",
-			"settingsTrustedPeers": "Trust neighbor slot (Top-K)",
-			"settingsExplorePeers": "Explore neighbor slots",
-			"settingsMaxPeers": "Federation connection cap",
-			"settingsGossipTtl": "Gossip TTL (hops)",
-			"settingsWantIdsBudget": "Single wantIds budget",
-			"settingsHlcMaxSkew": "HLC max future skew (ms)",
 			"dagForkDetected": "Unmerged DAG fork detected",
 			"mergeDagTips": "Merge DAG forks",
 			"mergeDagTipsOk": "Fork merged",
 			"mergeDagTipsFailed": "Merge fork failed",
-			"settingsStreamingSfu": "Streaming SFU WebSocket address (optional)",
-			"settingsMessageRetention": "Message text is automatically deleted",
-			"settingsMessageRetentionForever": "Permanent retention (compressed DAG events only)",
-			"settingsMessageRetention30d": "Older than 30 days",
-			"settingsMessageRetention90d": "Older than 90 days",
-			"settingsMessageRetention1y": "Older than 1 year",
-			"settingsMessageRetentionHint": "Visible history is not automatically deleted by default. When enabled, only the local messages hot cache will be pruned; final messages will be retained in the cold archive and checkpoint.",
-			"settingsHotLatest": "Hot zone retention (latest number of posts per channel)",
-			"settingsPinContext": "Top neighborhood (±N neighbors)",
-			"settingsHotWindowHint": "Hot zone posts are kept in the checkpoint and messages cache; the remaining posts are written to the monthly cold archive after materialization, and then collapsed from the DAG process events.",
-			"settingsArchiveTitle": "Storage and cold archiving",
-			"settingsArchiveHint": "The cold archive is the final state of the local clear text post (files divided by month). Deleting the archive will not change the DAG; if the history is missing, it can be pulled from federated neighbors.",
-			"settingsArchiveFilesTitle": "Archived files",
-			"settingsArchiveEmpty": "There are no cold archive files yet.",
-			"settingsArchiveColChannel": "Channel",
-			"settingsArchiveColMonth": "Month",
-			"settingsArchiveColSize": "Size",
-			"settingsArchiveDeleteBefore": "Delete this month before",
-			"settingsArchiveDeleteButton": "Delete cold archive",
-			"settingsArchiveDeleteHint": "Only local archive/*.jsonl is deleted; hotspots and DAG anchors are not affected.",
-			"settingsArchiveAdminOnly": "This machine does not yet have cold archive data for this group.",
-			"settingsArchiveDeleteInvalidMonth": "Please select a valid month YYYY-MM.",
-			"settingsArchiveDeleteConfirm": "Are you sure you want to delete all cold archive files older than ${month}? This operation is irreversible.",
-			"settingsArchiveDeleteOk": "${files} archive files deleted.",
-			"settingsArchiveDeleteFailed": "Failed to delete archive: ${error}",
-			"settingsEventRetentionDepth": "DAG event retention depth",
-			"settingsEventRetentionMs": "DAG event retention time",
-			"settingsCompactTriggerDepth": "Materialized compression trigger depth",
-			"settingsMessageRateLimit": "Message rate limit (message/minute/entity)",
-			"settingsAutoReplyTokenBucket": "Automatic reply pressure scheduling (Token Bucket)",
-			"settingsAutoReplyTokenBucketHint": "Each role gets a per-channel token bucket; when empty, onMessage is skipped to curb peak-time spam.",
-			"settingsIceServers": "ICE/TURN server",
-			"settingsIceServersAdd": "Add server",
-			"settingsIceServersHint": "Used for WebRTC and federated P2P NAT traversal. TURN username and password are stored only on this device and are not synced through the federation.",
-			"settingsIceUrl": {
-				"aria-label": "ICE server address",
-				"placeholder": "stun:host:19302"
-			},
-			"settingsIceUser": {
-				"aria-label": "TURN username",
-				"placeholder": "Username (optional)"
-			},
-			"settingsIceCred": {
-				"aria-label": "TURN password",
-				"placeholder": "Password (optional)"
-			},
-			"settingsIceRemove": {
-				"aria-label": "Remove this server"
-			},
-			"settingsFileCeMode": "File encryption mode",
-			"settingsFileCeModeConvergent": "Convergent encryption (deduplication)",
-			"settingsFileCeModeRandom": "High privacy (random keys, no dedup)",
-			"settingsFileCeModeHint": "High privacy mode uses random contentKey for each block and marks ceMode=random; this reduces the risk of plaintext being guessable, but increases storage and bandwidth usage.",
 			"channelsTitle": "Channels",
-			"createGroup": "Create New group",
 			"members": "Members",
 			"membersHint": "The member list is synchronized by Viewpoint (placeholder)",
-			"streamTest": "Test media devices",
 			"loadError": "Failed to load group",
-			"remoteNodeTimeout": "Remote node not responding — try again later",
-			"remoteUnavailable": "Remote part unavailable or RPC unroutable",
 			"messagesLoadFailed": "Failed to load messages",
 			"sendFailed": "Failed to send",
 			"chatNotLoaded": "The main chat is not loaded: Please open a conversation with the same ID as the group on the main interface and try again.",
-			"createFailed": "Failed to create group",
 			"newGroupName": "New group",
-			"streamOk": "Media stream acquired (stopped, not broadcast)",
-			"remoteUnsafe": "This message comes from a remote location and the author is not in the local trust list. Rich text rendering has been disabled.",
 			"trustAuthor": {
 				"textContent": "Trust",
 				"title": "Trust this author (allow dangerous HTML)"
 			},
 			"trustAuthorOk": "This author has been trusted and renders rich text",
-			"voteCast": "Poll",
 			"listEmpty": "(There are no navigation items yet, administrators can update list-items through API)",
 			"listChannelReadonly": {
 				"placeholder": "List channels only display navigation cards and do not send messages"
 			},
-			"streamNoEmbed": {
-				"textContent": "The stream URL must be an embeddable https:// page, or configure group settings and refresh to get a viewing token."
-			},
-			"streamNoSfu": {
-				"textContent": "streamingSfuWss is not configured; admins can set the LiveKit/mediasoup URL in group settings."
-			},
-			"messageDeleted": "Message deleted",
-			"messageDeletedBracket": "[Message deleted]",
-			"messageWithAttachments": "${text} (${n} attachments)",
-			"voteBlockHeading": "[${prefix}] ${question}",
-			"voteBlockHeadingTagged": "[Vote] ${question}",
-			"voteCastLine": "[${prefix}] Vote: ${choice}",
-			"voteCastLineTagged": "[Vote] Vote: ${choice}",
-			"voteOptionsPreview": "[${prefix}] ${options}",
-			"voteOptionsPreviewTagged": "[Vote] ${options}",
-			"voteDeadlineLineOpen": "Deadline: ${date}",
-			"voteDeadlineLineClosed": "Ending: ${date} [Ended]",
-			"pinMessageLine": "[Top] ${targetId}",
-			"unpinMessageLine": "[Unpin] ${targetId}",
-			"stickerPrefixLine": "[${label}]",
-			"stickerPrefixLineTagged": "[sticker]",
-			"feedbackDagLine": "[${label}]",
-			"feedbackDagLineWithNote": "[${label}] ${note}",
-			"feedbackPreviewLine": "${tag}${sep}${note}",
-			"feedbackPreviewTaggedNote": "${tag} ${note}",
 			"mentionHandle": "@${name}",
 			"mentionInsert": "@${name}",
-			"feedbackUp": "Likes",
-			"feedbackDown": "Dislike",
 			"attachmentsHint": "(${n} attachments)",
-			"pinMessage": "Pinned",
-			"unpinMessage": "Unpin",
-			"pinThisMessage": "Write this article to DAG and pin it to the top",
-			"pinAction": {
-				"textContent": "Pinned",
-				"title": "Write this article to DAG and pin it to the top"
-			},
-			"unpinAction": {
-				"textContent": "Unpin",
-				"title": "Unpin"
-			},
-			"pinOk": "Recorded and pinned",
-			"unpinOk": "Unpinned",
-			"pinFailed": "Pin failed",
-			"menuCopyText": "copy text",
-			"menuExportHtml": "Export to HTML",
-			"menuCopyId": "Copy message ID",
 			"copied": "Copied",
 			"addBookmark": {
 				"title": "Bookmark current channel"
@@ -1451,9 +1207,6 @@
 			"bookmarkExists": "The bookmark already exists",
 			"bookmarkAdded": "Bookmarked",
 			"bookmarkSaveFailed": "Failed to save bookmarks",
-			"remoteTyping": "${name} is typing...",
-			"remoteTypingTwo": "${name1}, ${name2} Typing...",
-			"remoteTypingMany": "${name} and ${count} others are typing…",
 			"localAiLabel": "Local role:",
 			"forceTriggerOne": {
 				"title": "Force trigger ${name} to speak"
@@ -1462,23 +1215,10 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "Force all local characters to speak"
 			},
-			"messageRefAnchor": "Quote message: ${id}",
-			"settingsFedPartition": "Number of federated divisions",
-			"settingsRtcBudget": "RTC connection budget",
-			"settingsRtcJoinRate": "RTC added limit per minute",
-			"settingsFedTuningHint": "Write DAG group settings; after modification, it is recommended to rebind the federation room.",
-			"settingsAutoChannelGc": "Automatically clear silent channels",
-			"settingsAutoChannelGcHint": "At most 2 isolated island channels that have been silent for ≥30 days and are unreachable will be deleted when materialized.",
 			"quoteHeader": "> **${sender}**${sep}${time}",
 			"quoteHeaderWithTime": "> **${sender}** · ${time}",
 			"quoteHeaderWithoutTime": "> **${sender}**",
 			"stopGenerating": "Stop generating",
-			"messageAborted": "Interrupted",
-			"avStart": "start media",
-			"avMute": "mute",
-			"avSwap": "Home screen",
-			"avStop": "stop",
-			"avNeedStreamChannel": "Please use audio and video in \"streaming media\" type channels",
 			"reactionAdd": {
 				"title": "add response"
 			},
@@ -1489,25 +1229,11 @@
 				"title": "Add emojis"
 			},
 			"reactionPrompt": "Enter emoji (Unicode)",
-			"channelTypeLabel": "Channel type",
-			"channelTypeText": "chat channel",
-			"channelTypeList": "List/Forum Channel",
-			"channelTypeStreaming": "Streaming channel",
 			"convertToText": "Convert to chat channel",
 			"convertToList": "Convert to list/forum channel",
 			"setAsDefault": "Set as group default channel",
 			"isDefault": "Current default",
-			"defaultChannelSet": "Set as default channel",
-			"defaultChannelSetFailed": "Setting default channel failed",
 			"channelUpdateFailed": "Channel update failed",
-			"voteCreate": "Start a poll",
-			"votePromptDeadline": "Deadline (leave blank for none, format 2026-01-01 23:59)",
-			"voteTooFewOptions": "At least two options are required",
-			"voteCreateFailed": "Failed to create poll",
-			"voteFor": "Invest ${option}",
-			"voteDeadline": "Deadline",
-			"voteEnded": "ended",
-			"voteTotal": "Total ${n} votes",
 			"record": "recording",
 			"fileDownload": {
 				"title": "Download file"
@@ -1521,44 +1247,438 @@
 			"saveSticker": {
 				"title": "Save sticker/emojis to favourites"
 			},
-			"stickerSaved": "Saved to sticker library",
-			"stickerDefaultName": "Stickers",
 			"deleteMessage": {
 				"title": "Delete message"
 			},
 			"deleteConfirm": "Delete this message?",
-			"editMessage": {
-				"title": "Edit message"
-			},
 			"saveEdit": "save",
 			"cancelEdit": "Cancel",
 			"editingMessage": "Editing",
-			"editConfirm": "Confirm (Ctrl+Enter)",
-			"editCancel": "Cancel (Esc)",
-			"editHint": "Ctrl+Enter confirm · Esc cancel",
-			"editEmptyText": "Message content cannot be empty",
-			"createGroupTitle": "Create New group",
 			"groupNameLabel": "Group name",
 			"groupName": {
 				"placeholder": "my group"
 			},
-			"defaultChannelLabel": "default channel",
-			"defaultChannel": {
-				"placeholder": "general"
-			},
-			"createGroupFailed": "Failed to create group",
-			"createChannelFailed": "Failed to create channel",
 			"moreActions": {
 				"title": "More actions"
 			},
-			"thread": "thread",
-			"threadBack": "Back",
-			"threadBreadcrumbRootTitle": "Jump to path starting point (first level)",
-			"threadBreadcrumbMiddleTitle": "Show more the middle layer and select the level you want to jump to",
-			"threadBreadcrumbMiddleSummary": "middle ${count} layer",
-			"menuShareExternal": "Share to external link",
 			"shareExternalOk": "Uploaded and copied link",
-			"shareExternalFailed": "Upload failed, please check the network"
+			"shareExternalFailed": "Upload failed, please check the network",
+			"ownerSuccession": {
+				"main": "Initiate a succession vote",
+				"autoSignHint": "After submission, the device will automatically sign the signature seed of the group without entering the private key. In a multi-administrator group, more than half of the administrators must submit the same ballot (same ballotId and candidate) locally.",
+				"candidateLabel": "Successor public key hash",
+				"description": "Transfer the group's top admin permission (MANAGE_ADMINS) to a member. Admins only.",
+				"failed": "Succession vote submission failed",
+				"needHash": "Please fill in the successor's public key hash",
+				"selfButton": "Nominate yourself",
+				"submitted": "Your signature has been recorded on the Succession Ballot."
+			},
+			"channelType": {
+				"label": "Channel type",
+				"list": "List/Forum Channel",
+				"streaming": "Streaming channel",
+				"text": "chat channel"
+			},
+			"settings": {
+				"archive": {
+					"adminOnly": "This machine does not yet have cold archive data for this group.",
+					"colChannel": "Channel",
+					"colMonth": "Month",
+					"colSize": "Size",
+					"delete": {
+						"before": "Delete this month before",
+						"button": "Delete cold archive",
+						"confirm": "Are you sure you want to delete all cold archive files older than ${month}? This operation is irreversible.",
+						"failed": "Failed to delete archive: ${error}",
+						"hint": "Only local archive/*.jsonl is deleted; hotspots and DAG anchors are not affected.",
+						"invalidMonth": "Please select a valid month YYYY-MM.",
+						"ok": "${files} archive files deleted."
+					},
+					"empty": "There are no cold archive files yet.",
+					"filesTitle": "Archived files",
+					"hint": "The cold archive is the final state of the local clear text post (files divided by month). Deleting the archive will not change the DAG; if the history is missing, it can be pulled from federated neighbors.",
+					"title": "Storage and cold archiving"
+				},
+				"autoChannelGc": "Automatically clear silent channels",
+				"autoChannelGcHint": "At most 2 isolated island channels that have been silent for ≥30 days and are unreachable will be deleted when materialized.",
+				"autoReply": {
+					"frequency": "Automatically trigger role replies (after every N user messages, 0 is off)",
+					"frequencyHint": "0 means off; @mentions will still trigger immediately",
+					"tokenBucket": "Automatic reply pressure scheduling (Token Bucket)",
+					"tokenBucketHint": "Each role gets a per-channel token bucket; when empty, onMessage is skipped to curb peak-time spam."
+				},
+				"batterySaver": "Battery saver (smaller federation pool and relays)",
+				"compactTriggerDepth": "Materialized compression trigger depth",
+				"discoveryBlurb": "Discovery blurb (optional)",
+				"discoveryPublic": "Expose this group in federated discovery (without joining the group key)",
+				"discoveryTitle": "Discovery list title (optional)",
+				"eventRetentionDepth": "DAG event retention depth",
+				"eventRetentionMs": "DAG event retention time",
+				"explorePeers": "Explore neighbor slots",
+				"fedPartition": "Number of federated divisions",
+				"fedTuningHint": "Write DAG group settings; after modification, it is recommended to rebind the federation room.",
+				"fileCe": {
+					"mode": "File encryption mode",
+					"modeConvergent": "Convergent encryption (deduplication)",
+					"modeHint": "High privacy mode uses random contentKey for each block and marks ceMode=random; this reduces the risk of plaintext being guessable, but increases storage and bandwidth usage.",
+					"modeRandom": "High privacy (random keys, no dedup)"
+				},
+				"gossipTtl": "Gossip TTL (hops)",
+				"hlcMaxSkew": "HLC max future skew (ms)",
+				"hotLatest": "Hot zone retention (latest number of posts per channel)",
+				"hotWindowHint": "Hot zone posts are kept in the checkpoint and messages cache; the remaining posts are written to the monthly cold archive after materialization, and then collapsed from the DAG process events.",
+				"ice": {
+					"cred": {
+						"aria-label": "TURN password",
+						"placeholder": "Password (optional)"
+					},
+					"remove": {
+						"aria-label": "Remove this server"
+					},
+					"servers": "ICE/TURN server",
+					"serversAdd": "Add server",
+					"serversHint": "Used for WebRTC and federated P2P NAT traversal. TURN username and password are stored only on this device and are not synced through the federation.",
+					"url": {
+						"aria-label": "ICE server address",
+						"placeholder": "stun:host:19302"
+					},
+					"user": {
+						"aria-label": "TURN username",
+						"placeholder": "Username (optional)"
+					}
+				},
+				"maxDagPayload": "DAG maximum number of bytes for a single event",
+				"maxPeers": "Federation connection cap",
+				"message": {
+					"rateLimit": "Message rate limit (message/minute/entity)",
+					"retention": "Message text is automatically deleted",
+					"retention1y": "Older than 1 year",
+					"retention30d": "Older than 30 days",
+					"retention90d": "Older than 90 days",
+					"retentionForever": "Permanent retention (compressed DAG events only)",
+					"retentionHint": "Visible history is not automatically deleted by default. When enabled, only the local messages hot cache will be pruned; final messages will be retained in the cold archive and checkpoint."
+				},
+				"page": {
+					"title": "Group settings",
+					"kicker": "Group settings",
+					"subtitle": "Manage group information, members and common functions. Low-frequency permissions, storage, and auditing tools are centralized in advanced settings.",
+					"backToChat": "Back to chat",
+					"navigationLabel": "Group settings classification",
+					"activeEmojiPackLabel": "Pack being edited",
+					"membersTitle": "Member list",
+					"overviewTitle": "Group overview",
+					"overviewHint": "Read-only overview. With governance permissions, edit group info and policies under Basic.",
+					"governanceHint": "Write group-level DAG policy; requires admin or MANAGE_ADMINS.",
+					"governanceDenied": "You do not have permission to modify group governance settings.",
+					"rolesDenied": "You do not have MANAGE_ROLES permission to edit roles.",
+					"notMember": "You are no longer a member of this group; the data of this group has been automatically cleared after leaving the group.",
+					"basicTitle": "Group governance",
+					"profileSectionTitle": "Group info",
+					"profileSectionHint": "The name, introduction and method of joining the group will be written into the group metadata.",
+					"behaviorSectionTitle": "Run behaviour",
+					"networkSectionTitle": "federation and connection",
+					"retentionSectionTitle": "Reserve and rate limit",
+					"mediaSectionTitle": "Calls and files",
+					"nameLabel": "Group name",
+					"descriptionLabel": "Group description",
+					"joinPolicyLabel": "Group entry strategy",
+					"joinInviteOnly": "Invite only",
+					"joinPow": "PoW required",
+					"powDifficultyLabel": "PoW difficulty",
+					"securityAdvancedTitle": "Security and group owner operations",
+					"securityAdvancedDescription": "Key rotation and owner succession — mistakes can lock members out",
+					"powDifficultyTip": "Proof of work difficulty. The higher the value, the longer the calculation time required for strangers to join the public group.",
+					"maxDagPayloadTip": "The upper limit of data allowed to be carried by a single group event. If it is too large, it will increase synchronisation memory and network overhead.",
+					"trustedPeersTip": "The number of high-reputation federation neighbors that are prioritized to stay connected.",
+					"gossipTtlTip": "The maximum number of federated nodes through which the message can be forwarded. Increasing it increases coverage and also increases traffic.",
+					"hlcTip": "The maximum amount of time that the remote node's clock is allowed to be faster than the local node's clock, used to reject abnormal future events.",
+					"sfuTip": "Optional external AV relay address. Leave blank for built-in P2P/relay calling.",
+					"iceTip": "Help WebRTC penetrate the router; when the direct connection fails, TURN will forward audio, video and federated traffic on its behalf.",
+					"fileEncryptionTip": "Convergent encryption deduplicates but exposes the fact that the files are the same; random keys are more private but take up more space.",
+					"allowDangerousHtml": "Trusted author messages allow inline HTML",
+					"save": "Save settings",
+					"loadFailed": "Failed to load group settings: ${error}",
+					"saveSuccess": "Group settings saved",
+					"saveFailed": "Failed to save settings: ${error}",
+					"rolesTitle": "Roles and permissions",
+					"roleDefault": "default",
+					"permissionUpdated": "Permissions updated",
+					"permissionUpdateFailed": "Failed to update permissions: ${error}",
+					"noMembers": "No members yet",
+					"memberRoles": "Role:",
+					"ban": "ban",
+					"banConfirm": "Are you sure you want to ban member ${name}?",
+					"banSuccess": "Member has been banned",
+					"banFailed": "Failed to ban member: ${error}",
+					"bannedTitle": "Banned member",
+					"unban": "Unblock",
+					"unbanConfirm": "Are you sure you want to unblock member ${name}?",
+					"unbanSuccess": "Member has been unblocked",
+					"unbanFailed": "Unblocking failed: ${error}",
+					"gshGenerationRetentionHint": "Currently only the most recent 64 generations of file master key history are retained. The oldest historical files may not be able to be decrypted after it is exceeded, and it is recommended to archive important data regularly.",
+					"gshGenerationNearLimit": "Currently rotated to generation ${generation} of file master keys (up to ${maxGenerations} generations). Continuing frequent rotation will result in the oldest historical keys being retired.",
+					"ownerSuccession": "Owner succession",
+					"ownerSuccessionOk": "Owner succession applied",
+					"ownerSuccessionFailed": "Owner succession failed: ${error}",
+					"defaultEmojiPack": {
+						"failed": "Couldn't set default emoji pack",
+						"hint": "Added to members' favourites when they join. Changing it only replaces the old default if it's still in their favourites.",
+						"label": "Default emoji pack",
+						"ok": "Default emoji pack updated"
+					},
+					"channelArchive": {
+						"hint": "Importing the complete channel JSON archive will create a new ordinary Text channel in this group and restore the history (re-signed by you; attachments only retain metadata).",
+						"import": "Import channel JSON",
+						"importFailed": "Import failed: ${error}",
+						"importOk": "Imported ${count} messages, opening new channel...",
+						"title": "Channel archive"
+					},
+					"channelPerms": {
+						"addRole": "Add role override",
+						"denied": "You do not have MANAGE_CHANNELS permission to edit channel permission overrides.",
+						"hint": "Set role permission overrides for specific channels. Uncovered items inherit group role permissions.",
+						"noChannels": "There is currently no channel to configure",
+						"removeRole": "Remove this role override",
+						"selectChannel": "Channels",
+						"stateAllow": "allow",
+						"stateDeny": "reject",
+						"stateNeutral": "inherit",
+						"updateFailed": "Failed to update channel permissions: ${error}",
+						"updated": "Channel permissions updated"
+					},
+					"advanced": {
+						"description": "Network, storage, speed limit and encryption parameters; please keep the defaults if you are unsure",
+						"hubDescription": "These features change the group's permission structure, historical data, or governance records; adjust only when clearly needed.",
+						"hubTitle": "Advanced settings",
+						"navigationLabel": "Advanced settings category",
+						"title": "Advanced settings"
+					},
+					"emojis": {
+						"create": {
+							"pack": "New emoji pack",
+							"packFailed": "Couldn't create: ${error}",
+							"packOk": "Emoji pack created",
+							"packPrompt": "Emoji pack ID"
+						},
+						"delete": "Delete emoji",
+						"deleteConfirm": "Are you sure you want to delete this group of emojis?",
+						"deleteFailed": "Delete failed: ${error}",
+						"deleteOk": "Emoji has been deleted",
+						"empty": "No custom emoji yet",
+						"hint": "Members can insert or send these emojis in chat; uninstalled images are pulled on demand through federated nodes.",
+						"packGroupOption": "${packId} (group)",
+						"title": "Custom group emoji",
+						"upload": "Upload emojis",
+						"uploadFailed": "Upload failed: ${error}",
+						"uploadOk": "Emoji uploaded"
+					},
+					"invite": {
+						"clipboard": "Group ID: ${groupId}\nInvitation code: ${code}\nJoin: ${url}",
+						"code": "Invitation code",
+						"copied": "Group invite copied",
+						"copy": "Copy group invite",
+						"copyFailed": "Copy failed",
+						"expires": "Expiration: ${date}",
+						"groupId": "Group ID",
+						"hint": "Generate a short-term invitation code (default 1 hour). The other party fills in the group ID and invitation code in \"Join Group\".",
+						"mint": "Generate invitation code",
+						"title": "Invite"
+					},
+					"delete": {
+						"confirm": "Are you sure you want to delete this group? This action is irreversible and all messages and member data will be permanently deleted.",
+						"failed": "Failed to delete group: ${error}",
+						"group": "Delete group",
+						"role": "Delete role",
+						"roleConfirm": "Are you sure you want to delete this role?",
+						"roleFailed": "Failed to delete role: ${error}",
+						"roleSuccess": "Role deleted",
+						"success": "Group deleted"
+					},
+					"create": {
+						"role": "Create a role",
+						"roleFailed": "Failed to create role: ${error}",
+						"rolePrompt": "Enter character name:",
+						"roleSuccess": "Role created"
+					},
+					"perm": {
+						"aDD_REACTIONS": "Add reactions",
+						"aDMIN": "Admin",
+						"bAN_MEMBERS": "Ban member",
+						"bYPASS_RATE_LIMIT": "Bypass message rate limit",
+						"cREATE_THREADS": "Create threads",
+						"iNVITE_MEMBERS": "Invite members",
+						"kICK_MEMBERS": "Kick members",
+						"mANAGE_": {
+							"cHANNELS": "Manage channel",
+							"fILES": "Manage files",
+							"mESSAGES": "Manage messages",
+							"rOLES": "Manage roles"
+						},
+						"pIN_MESSAGES": "Pinned message",
+						"sEND_MESSAGES": "Send message",
+						"sEND_STICKERS": "Send stickers",
+						"sTREAM": "Voice",
+						"uPLOAD_FILES": "Upload files",
+						"vIEW_CHANNEL": "View channel"
+					},
+					"kick": {
+						"main": "Kick",
+						"confirm": "Are you sure you want to Kick members ${name}?",
+						"failed": "Failed to Kick members out: ${error}",
+						"selfNodeWarning": "Warning: This member uses the same node identity as you. You will also be removed from the group after being kicked out. Are you sure you want to continue?",
+						"success": "Member kicked out"
+					},
+					"tabs": {
+						"advanced": "advanced",
+						"audit": "Audit log",
+						"channelPermissions": "Channel permissions",
+						"emojis": "Emoji",
+						"general": "basic",
+						"members": "Members",
+						"permissions": "Role permissions",
+						"storage": "Storage and archiving"
+					},
+					"key": {
+						"managementTip": "New keys need to be redistributed to members after rotation. Manual action should only be taken if you suspect a key has been compromised.",
+						"managementTitle": "Key management",
+						"rotate": "Rotate group file master key",
+						"rotateConfirm": "Are you sure you want to manually rotate the master key of this Group files? New members need to resynchronize the history file key.",
+						"rotateFailed": "Key rotation failed: ${error}",
+						"rotateOk": "Key has been rotated"
+					}
+				},
+				"pinContext": "Top neighborhood (±N neighbors)",
+				"rtcBudget": "RTC connection budget",
+				"rtcJoinRate": "RTC added limit per minute",
+				"streamGeneratingIdle": "AI generated placeholder idle timeout (milliseconds)",
+				"streamingSfu": "Streaming SFU WebSocket address (optional)",
+				"trustedPeers": "Trust neighbor slot (Top-K)",
+				"wantIdsBudget": "Single wantIds budget"
+			},
+			"feedback": {
+				"dagLine": "[${label}]",
+				"dagLineWithNote": "[${label}] ${note}",
+				"down": "Dislike",
+				"previewLine": "${tag}${sep}${note}",
+				"previewTaggedNote": "${tag} ${note}",
+				"up": "Likes"
+			},
+			"message": {
+				"aborted": "Interrupted",
+				"deleted": "Message deleted",
+				"deletedBracket": "[Message deleted]",
+				"prefixSticker": "Sticker",
+				"refAnchor": "Quote message: ${id}",
+				"withAttachments": "${text} (${n} attachments)"
+			},
+			"default": {
+				"channel": {
+					"placeholder": "general"
+				},
+				"channelLabel": "default channel",
+				"channelSet": "Set as default channel",
+				"channelSetFailed": "Setting default channel failed"
+			},
+			"sticker": {
+				"defaultName": "Stickers",
+				"prefixLine": "[${label}]",
+				"prefixLineTagged": "[sticker]",
+				"saved": "Saved to sticker library"
+			},
+			"remote": {
+				"nodeTimeout": "Remote node not responding — try again later",
+				"typing": "${name} is typing...",
+				"typingMany": "${name} and ${count} others are typing…",
+				"typingTwo": "${name1}, ${name2} Typing...",
+				"unavailable": "Remote part unavailable or RPC unroutable",
+				"unsafe": "This message comes from a remote location and the author is not in the local trust list. Rich text rendering has been disabled."
+			},
+			"create": {
+				"channelFailed": "Failed to create channel",
+				"failed": "Failed to create group",
+				"group": "Create New group",
+				"groupFailed": "Failed to create group",
+				"groupTitle": "Create New group"
+			},
+			"stream": {
+				"generationFailed": "AI generation timed out — updates stopped",
+				"noEmbed": {
+					"textContent": "The stream URL must be an embeddable https:// page, or configure group settings and refresh to get a viewing token."
+				},
+				"noSfu": {
+					"textContent": "streamingSfuWss is not configured; admins can set the LiveKit/mediasoup URL in group settings."
+				},
+				"ok": "Media stream acquired (stopped, not broadcast)",
+				"test": "Test media devices"
+			},
+			"thread": {
+				"main": "thread",
+				"back": "Back",
+				"breadcrumbMiddleSummary": "middle ${count} layer",
+				"breadcrumbMiddleTitle": "Show more the middle layer and select the level you want to jump to",
+				"breadcrumbRootTitle": "Jump to path starting point (first level)"
+			},
+			"unpin": {
+				"action": {
+					"textContent": "Unpin",
+					"title": "Unpin"
+				},
+				"message": "Unpin",
+				"messageLine": "[Unpin] ${targetId}",
+				"ok": "Unpinned"
+			},
+			"vote": {
+				"blockHeading": "[${prefix}] ${question}",
+				"blockHeadingTagged": "[Vote] ${question}",
+				"cast": "Poll",
+				"castLine": "[${prefix}] Vote: ${choice}",
+				"castLineTagged": "[Vote] Vote: ${choice}",
+				"create": "Start a poll",
+				"createFailed": "Failed to create poll",
+				"deadline": "Deadline",
+				"deadlineLineClosed": "Ending: ${date} [Ended]",
+				"deadlineLineOpen": "Deadline: ${date}",
+				"ended": "ended",
+				"for": "Invest ${option}",
+				"optionsPreview": "[${prefix}] ${options}",
+				"optionsPreviewTagged": "[Vote] ${options}",
+				"promptDeadline": "Deadline (leave blank for none, format 2026-01-01 23:59)",
+				"tooFewOptions": "At least two options are required",
+				"total": "Total ${n} votes"
+			},
+			"edit": {
+				"cancel": "Cancel (Esc)",
+				"confirm": "Confirm (Ctrl+Enter)",
+				"emptyText": "Message content cannot be empty",
+				"hint": "Ctrl+Enter confirm · Esc cancel",
+				"message": {
+					"title": "Edit message"
+				}
+			},
+			"menu": {
+				"copyId": "Copy message ID",
+				"copyText": "copy text",
+				"exportHtml": "Export to HTML",
+				"shareExternal": "Share to external link"
+			},
+			"pin": {
+				"action": {
+					"textContent": "Pinned",
+					"title": "Write this article to DAG and pin it to the top"
+				},
+				"failed": "Pin failed",
+				"message": "Pinned",
+				"messageLine": "[Top] ${targetId}",
+				"ok": "Recorded and pinned",
+				"thisMessage": "Write this article to DAG and pin it to the top"
+			},
+			"av": {
+				"mute": "mute",
+				"needStreamChannel": "Please use audio and video in \"streaming media\" type channels",
+				"start": "start media",
+				"stop": "stop",
+				"swap": "Home screen"
+			}
 		},
 		"hub": {
 			"title": "Chat",
@@ -1571,10 +1691,6 @@
 				"title": "Role",
 				"tip": "Role"
 			},
-			"friendsTooltip": {
-				"title": "Friends",
-				"tip": "friends"
-			},
 			"inboxTooltip": {
 				"title": "Inbox",
 				"tip": "Cross-group inbox"
@@ -1582,18 +1698,6 @@
 			"inbox": {
 				"title": "Inbox",
 				"filtersLabel": "Filter inbox messages",
-				"tabMention": "Mentions",
-				"tabMessage": "All messages",
-				"tabCare": "Close friends",
-				"tabVoteClosed": "Voting ends",
-				"emptyMentionTitle": "No one has mentioned you yet",
-				"emptyMentionDescription": "When other members @ you in the group chat, the messages will be displayed here.",
-				"emptyMessageTitle": "Inbox is empty",
-				"emptyMessageDescription": "Message posts from various group chats and channels will appear here.",
-				"emptyCareTitle": "Close friends: nothing yet",
-				"emptyCareDescription": "When new messages are sent from members you particularly care about, you can see them here as soon as possible.",
-				"emptyVoteTitle": "No closed polls",
-				"emptyVoteDescription": "Once polls close, results will appear here.",
 				"rowLabel": {
 					"aria-label": "${author} said in ${group} of ${channel}: ${preview}"
 				},
@@ -1601,7 +1705,23 @@
 				"badgeFetchFailed": "Unread badge Refresh failed: ${error}",
 				"loadFailed": "Couldn't load inbox: ${error}",
 				"markSeenFailed": "Inbox read status update failed: ${error}",
-				"jumpFailed": "Unable to open this message: ${error}"
+				"jumpFailed": "Unable to open this message: ${error}",
+				"empty": {
+					"careDescription": "When new messages are sent from members you particularly care about, you can see them here as soon as possible.",
+					"careTitle": "Close friends: nothing yet",
+					"mentionDescription": "When other members @ you in the group chat, the messages will be displayed here.",
+					"mentionTitle": "No one has mentioned you yet",
+					"messageDescription": "Message posts from various group chats and channels will appear here.",
+					"messageTitle": "Inbox is empty",
+					"voteDescription": "Once polls close, results will appear here.",
+					"voteTitle": "No closed polls"
+				},
+				"tabs": {
+					"care": "Close friends",
+					"mention": "Mentions",
+					"message": "All messages",
+					"voteClosed": "Voting ends"
+				}
 			},
 			"notifyPrefs": {
 				"title": "Notification settings",
@@ -1618,11 +1738,6 @@
 				"muteForever": "until manually turned on",
 				"saved": "Notification settings saved"
 			},
-			"voteClosed": "ended",
-			"discoveryTooltip": {
-				"title": "Group discovery",
-				"tip": "Group discovery"
-			},
 			"prefsTooltip": {
 				"title": "Settings",
 				"tip": "Translation and Federated P2P Settings"
@@ -1631,65 +1746,6 @@
 			"prefsNav": {
 				"aria-label": "Settings sections"
 			},
-			"federationTooltip": {
-				"title": "Federated P2P settings",
-				"tip": "Federated P2P settings"
-			},
-			"federationTitle": "Federated P2P settings",
-			"federationSubtitle": "Control cross-device connections — defaults are fine for most people",
-			"federationLoadFailed": "Couldn't load: ${error}",
-			"fedConnectionTitle": "Connect and discover",
-			"discoveryRefresh": "Refresh discovery list",
-			"fedRelayUrlsLabel": "network relay address",
-			"fedRelayUrlsTip": "Help devices find each other on the internet. One wss:// per line; leave blank for defaults.",
-			"fedBatterySaverLabel": "low power mode",
-			"fedBatterySaverTip": "Reducing the number of background connections and network activity may make message synchronisation slightly slower.",
-			"fedAdvancedTitle": "Advanced settings",
-			"fedAdvancedDescription": "Bug fixes, reputation management and manual link issuance",
-			"fedGroupRecoveryTitle": "Group connection fix",
-			"fedGroupRecoveryTip": "Only used if the invitation is leaked or the new device cannot sync history.",
-			"fedRotateRoomSecret": "Rotate group room password",
-			"fedRotateRoomSecretConfirm": "After the rotation, invitations using the old room password will not be able to connect. Are you sure you want to continue?",
-			"fedRotateRoomSecretOk": "Room password has been rotated",
-			"fedRepairJoinSnapshot": "Requesting neighbors to join the group snapshot repair",
-			"fedRepairJoinSnapshotOk": "Group snapshot applied (${channels} channel history)",
-			"fedRepairJoinSnapshotFailed": "Failed to repair group snapshot: ${error}",
-			"fedRepTitle": "Subjective credibility of this group",
-			"fedRepTip": "Connection preference scores calculated locally based on federated node behaviour are not public ratings of group members.",
-			"fedRepEmpty": "(null)",
-			"fedSlashTitle": "Reputation penalty",
-			"fedSlashTip": "Writes a negative reputation statement about a node to the group event graph. For use only by administrators who understand federation protocols.",
-			"fedSlashTargetLabel": "target pubKeyHash(64 hex)",
-			"fedSlashTarget": {
-				"placeholder": "Member public key hash"
-			},
-			"fedSlashClaimLabel": "Claim strength claim (0–1)",
-			"fedSlashVerifiedLabel": "Verifiable (proof event id required)",
-			"fedSlashProofLabel": "proof.eventId (optional)",
-			"fedSlashProof": {
-				"placeholder": "64 hex event id"
-			},
-			"fedSlashSubmitLabel": "Post reputation_slash",
-			"fedResetSubmitLabel": "Reset target reputation",
-			"fedSlashNeedHash": "Requires 64-bit hex pubKeyHash",
-			"fedSlashOk": "reputation_slash written to DAG",
-			"fedResetOk": "reputation_reset has been written",
-			"fedDmLinkTitle": "Manually issue a friend link",
-			"fedDmLinkTip": "Requires signing using local identity key. The private key is only submitted to the local service on this page and will not be sent to other nodes.",
-			"fedDmLinkDescription": "Suitable for debugging or manual identity migration; there is no need to fill in these fields when adding friends on a daily basis.",
-			"fedDmPubKeyLabel": "Public key hex(64)",
-			"fedDmSecretLabel": "Private key seed hex(64)",
-			"fedDmNodeLabel": "Optional node URL",
-			"fedDmInvalidateTitle": "Let old referral links expire",
-			"fedDmInvalidateDescription": "After execution, all friend-adding links previously issued will become invalid immediately and cannot be revoked.",
-			"fedDmRotateLabel": "Invalidate old links",
-			"fedDmRotateConfirm": "All friend-adding links previously issued will become invalid immediately and cannot be restored. Are you sure you want to continue?",
-			"fedDmIssueLabel": "Issue DM link",
-			"fedDmNeedPubKey": "Requires 64 hex public key",
-			"fedDmNeedSecretKey": "Requires 64 hex private key seed",
-			"fedDmIssued": "DM link signed and copied to clipboard",
-			"fedNonceRotated": "nonce rotated (${nonce}…)",
-			"fedSaved": "Saved",
 			"addServerTooltip": {
 				"title": "Create or join a group",
 				"tip": "Create or join a group"
@@ -1728,129 +1784,37 @@
 			"settingsTitle": {
 				"title": "Settings"
 			},
-			"filesTitle": {
-				"title": "Group files"
-			},
-			"filesDrawerTitle": "Group files",
-			"filesLoading": "Loading Group filess...",
-			"filesLoadFailed": "Failed to load Group files: ${error}",
-			"filesNoGroup": "Please select a group first",
-			"filesNoCabinets": "There are no file cabinets accessible for the current role",
-			"filesBindCabinet": "Add a cabinet",
-			"filesNoChannel": "Please first enter the Text channel where you can send messages",
-			"filesUploadTo": "Upload to",
-			"filesRootFolder": "Root",
-			"filesNewFolder": "Create new folder",
-			"filesNewFolderPrompt": "Folder name",
-			"filesRename": "Rename",
-			"filesRenameFolderPrompt": "Rename the folder \"${name}\" to:",
-			"filesDeleteFolderConfirm": "Are you sure you want to delete this folder? Files in the folder will not be automatically deleted.",
-			"filesUpload": "Upload",
-			"filesDownload": "Download",
-			"filesDelete": "Delete",
-			"filesDeleteConfirm": "Are you sure you want to delete this file?",
-			"filesFoldersTitle": "Folders",
-			"filesListTitle": "Files",
-			"filesEmpty": "There are currently no files in this directory",
-			"filesNoFolders": "No subfolders yet",
 			"uploadTitle": {
 				"title": "Upload files"
 			},
 			"emojiTitle": {
 				"title": "Emoji"
 			},
-			"voteTitle": {
-				"title": "Start a poll"
-			},
 			"shareGroupTitle": {
 				"title": "Share group link"
 			},
 			"shareGroupOk": "Shared group invitation card",
-			"messageActionFailed": "Operation failed: ${error}",
 			"inviteJoinButton": "Join group",
 			"inviteLinkNeedsRoomSecret": "This group has not yet enabled federated synchronisation. Please regenerate the invitation link before sharing.",
 			"inviteCardMembers": "${count} members",
-			"syncFailed": "Federation synchronisation failed: ${error}",
-			"syncRateLimited": "Federated synchronisation speed limit is in progress, please try again later.",
-			"syncIncomplete": "${missing}/${total} events remain unsynced",
-			"syncNoPeers": "Not connected to the federated neighbor, historical messages cannot be synchronized temporarily; please use the full invitation link and try again later",
 			"attachmentLoadFailed": "Couldn't load attachment",
-			"messageEditUpload": "Upload attachment",
 			"timeToday": "Today ${time}",
 			"timeYesterday": "Yesterday ${time}",
 			"stickerTitle": {
 				"title": "Stickers"
 			},
-			"sendTitle": {
-				"title": "Send (Ctrl+Enter)"
-			},
-			"messageInput": {
-				"placeholder": "Message… Ctrl+Enter to send",
-				"aria-label": "Message"
-			},
 			"stopGenerateTitle": {
 				"title": "Stop generating"
 			},
-			"charTyping": "Typing…",
-			"messageActionPrev": {
-				"title": "Previous timeline"
-			},
-			"messageActionNext": {
-				"title": "next timeline"
-			},
-			"messageActionRegen": {
-				"title": "Regenerate"
-			},
-			"messageActionEdit": {
-				"title": "Edit message"
-			},
-			"messageActionFeedbackUp": {
-				"title": "Like"
-			},
-			"messageActionFeedbackDown": {
-				"title": "Dislike"
-			},
-			"messageActionDelete": {
-				"title": "Delete message"
-			},
 			"confirmDeleteLong": "This message is too long. Are you sure you want to delete it?",
-			"messageActionCopyHtml": {
-				"title": "Copy HTML"
-			},
 			"forceReply": "Reply anyway",
 			"removeChar": "Remove role",
-			"loadMore": "Load earlier messages…",
-			"charChatsTitle": "Historical conversations with ${name}",
 			"newGroupWith": "+ Create a new conversation with ${name}",
-			"messageActionBookmark": {
-				"title": "Bookmark"
-			},
-			"messageActionPin": {
-				"title": "Pin"
-			},
-			"messageActionUnpin": {
-				"title": "Unpin"
-			},
-			"blockAuthor": {
-				"title": "Block this author"
-			},
-			"pinUnpinSidebar": {
-				"title": "Unpin"
-			},
 			"meAuthor": "I",
-			"messageEditSave": "Save",
-			"messageEditCancel": "Cancel",
-			"messageEditArea": {
-				"aria-label": "Edit message"
-			},
 			"feedbackReasonPrompt": "Reason for dislike (optional)",
 			"feedbackReasonInput": {
 				"placeholder": "Reason for dislike (optional)"
 			},
-			"messageFeedbackSubmit": "Submit feedback",
-			"stickersPanelTitle": "Stickers",
-			"stickersManage": "Manage stickers →",
-			"stickersLoading": "Loading…",
 			"recentEmojiTab": {
 				"title": "Recent"
 			},
@@ -1858,11 +1822,6 @@
 			"currentGroupEmojiTab": {
 				"title": "Current group emojis"
 			},
-			"groupEmojiTab": {
-				"title": "Group"
-			},
-			"groupEmojisEmpty": "There are currently no group emojis. You can upload them in the group settings.",
-			"groupEmojisLoadFailed": "Failed to load group emojis",
 			"profileLinkTitle": {
 				"title": "Profile",
 				"textContent": "Profile"
@@ -1880,22 +1839,6 @@
 			},
 			"aboutSection": "About",
 			"bioEmpty": "This user does not have a profile yet.",
-			"statusOffline": {
-				"title": "Offline",
-				"textContent": "Offline"
-			},
-			"statusOnline": {
-				"title": "Online",
-				"textContent": "Online"
-			},
-			"statusIdle": {
-				"title": "Away",
-				"textContent": "Away"
-			},
-			"statusDnd": {
-				"title": "Do not disturb",
-				"textContent": "Do not disturb"
-			},
 			"banners": {
 				"gshBuffer": "There are ${total} messages waiting to be decrypted after key rotation",
 				"plaintextSidecar": "This channel is synchronized on demand; the local messages sidecar caches content in clear text.",
@@ -1904,10 +1847,6 @@
 				"syncing": "Syncing with federation peers…",
 				"archiveCoverageIncomplete": "Some of the months' cold archives have not yet been synchronized from the federation.",
 				"archiveSyncButton": "Sync archives",
-				"forkGovernance": "There is a fork in the permissions record and it is currently in local view.",
-				"forkTips": "${count} unmerged branches detected, message order may be inconsistent.",
-				"forkTipLabel": "DAG leaf",
-				"forkTipScore": "${short} · Reputation ${score}",
 				"applyBranch": "Apply governance branch",
 				"autoBranch": "Auto-select by reputation",
 				"mergeDag": "Merge forks",
@@ -1915,55 +1854,28 @@
 				"blockOpposing": "Opposing branches blocked",
 				"suspectedRemoved": "You may have been removed from this group: you have asked ${count} known nodes for verification, but all of them have been rejected. You can commemorate local history or delete this group copy.",
 				"suspectedRemovedKeep": "Keep local copy",
-				"suspectedRemovedLeave": "Delete group"
+				"suspectedRemovedLeave": "Delete group",
+				"fork": {
+					"governance": "There is a fork in the permissions record and it is currently in local view.",
+					"tipLabel": "DAG leaf",
+					"tipScore": "${short} · Reputation ${score}",
+					"tips": "${count} unmerged branches detected, message order may be inconsistent."
+				}
 			},
-			"blockOpposingConfirm": "Add the governance issuers who are not on the current election to the Block list and deny this group of federation relays. continue?",
-			"blockOpposingOk": "${count} subjects marked as unreachable",
-			"blockOpposingFailed": "Marking failed: ${error}",
 			"applyBranchOk": "Governance branch applied",
 			"applyBranchFailed": "Apply branch failed: ${error}",
 			"autoBranchOk": "Automatic selection after restored reputation",
 			"autoBranchFailed": "Automatic selection failed: ${error}",
-			"saveEmoji": {
-				"title": "Save emojis"
-			},
-			"saveEmojiOk": "The emoji has been saved to the database",
-			"saveEmojiFailed": "Failed to save emoji: ${error}",
-			"saveSticker": {
-				"title": "Save sticker"
-			},
-			"saveStickerOk": "Sticker added to your library",
-			"saveStickerFailed": "Failed to save stickers: ${error}",
 			"revealRemoteMd": "Show full text",
-			"voteModalTitle": "Start a poll",
-			"voteModalSubmit": "Create poll",
-			"voteCreateFailed": "Failed to create poll: ${error}",
 			"composer": {
 				"placeholder": "Send to #${channel}"
 			},
 			"composerSuspectedRemoved": {
 				"placeholder": "You may have been removed from this group and cannot continue to send messages."
 			},
-			"channelReadonlyList": {
-				"placeholder": "List channel is read-only"
-			},
-			"channelReadonlyStream": {
-				"placeholder": "Streaming channel is read-only"
-			},
-			"noChannels": "No channels yet",
-			"noMembers": "No members yet",
-			"noPins": "No pins yet",
-			"noBookmarks": "No bookmarks yet",
 			"adminSection": "Admins",
-			"memberSection": "Members",
-			"membersDigestOk": "Member Merkle unanimous · ${root}",
-			"membersDigestOkPaged": "Member Merkle consensus (${pages} pages) · ${root}",
-			"membersDigestMismatch": "Inconsistent member digest · ${root}",
-			"membersDigestPending": "View member summary…",
-			"membersDigestFetchFailed": "Failed to pull members by page",
 			"copyEntityId": "Copy entity ID",
 			"copyEntityIdOk": "Entity ID copied",
-			"memberJoined": "Joined the conversation",
 			"remoteBadge": {
 				"textContent": "remote",
 				"title": "federated remote author"
@@ -1973,49 +1885,15 @@
 				"title": "Trust this author (allow dangerous HTML)"
 			},
 			"stickerInline": "Stickers",
-			"voteDeadline": "Deadline: ${date}",
-			"voteNoOptions": "No options",
-			"voteTotal": "Total ${total} votes",
-			"voteCount": "${count} tickets · ${pct}%",
-			"loadGroupFailed": "Failed to load group: ${error}",
-			"groupJoinRequired": "The group cannot be opened, please use the invitation link or invitation code to join",
-			"sendFailed": "Failed to send: ${error}",
-			"sendFailedPending": "Failed to send",
 			"markdownRenderFailed": "Message rendering failed",
 			"retrySend": "Try again",
-			"sendImageFailed": "Failed to send picture: ${error}",
-			"sendStickerFailed": "Failed to send sticker: ${error}",
-			"voteMinOptions": "Requires at least 2 options",
 			"mergeDagOk": "Fork merged",
 			"mergeDagFailed": "Merge failed: ${error}",
-			"forkSplitFailed": "Split failed: ${error}",
-			"forkSplitPrompt": "New group name (can be left blank)",
-			"forkSplitModalTitle": "Split into New group",
-			"forkSplitModalSubmit": "create",
 			"typing": "${names} is typing...",
 			"charsHeader": "Role",
-			"friendsHeader": "friends",
 			"settingsModalTitle": "Settings",
 			"modalClose": "Close",
-			"groupTag": "group",
-			"groupUnnamed": "Unnamed group ·${suffix}",
-			"groupHeaderMenu": {
-				"title": "Group menu: settings, invitations, etc."
-			},
-			"groupDescriptionEmpty": "There is no profile for this group yet.",
-			"serverActionPickerTitle": "Group",
-			"serverActionPickerSubtitle": "Create a New group or join an existing group by ID",
-			"serverActionPickerCreate": "Create group",
-			"serverActionPickerCreateDescription": "Start from scratch and invite friends",
-			"serverActionPickerJoin": "Join group",
-			"serverActionPickerJoinDescription": "Use group ID",
 			"cancel": "Cancel",
-			"folderDefault": "Folders",
-			"folderRename": "Rename folder",
-			"folderRenamePrompt": "Rename the folder \"${name}\" to:",
-			"folderCollapse": "Collapse folder",
-			"folderExpand": "Show more folder",
-			"folderDissolve": "Dismiss folder",
 			"bookmarkLocal": "local",
 			"groupsSection": "group",
 			"ungrouped": "Not grouped",
@@ -2025,46 +1903,13 @@
 				"title": "Remove bookmark",
 				"aria-label": "Remove bookmark"
 			},
-			"loadMessagesFailed": "Failed to load messages: ${error}",
 			"unreadDivider": "new messages",
-			"noUsername": "Username not obtained",
-			"stickersEmpty": "No stickers yet",
-			"stickersMarketLink": "Go to the sticker gallery to install packs",
-			"stickersLoadFailed": "Couldn't load stickers: ${error}",
-			"noChars": "There are no roles yet, please install some first.",
-			"noFriends": "No private chats yet",
-			"friendsEmptyTitle": "Start a new conversation",
-			"friendsEmptyDescription": "Search for users on the local role or other nodes, and you can also open the member profile card in the group chat to initiate a DM.",
-			"friendsEmptyAction": "Search for a role or user",
-			"friendsSearchEmpty": "No matching role or user",
-			"friendsSearchTooShort": "Please enter at least 2 characters",
-			"friendsSearchDm": "Send DM",
-			"friendsSearchChat": "Start a conversation",
-			"friendsSearchLocalChar": "local role",
-			"friendsSearchPin": "Set as alias",
-			"charCount": "${count} roles",
-			"friendsCount": "${count} friends",
-			"charTag": "Role",
-			"friendsTag": "friends",
 			"backToFriends": "Return to friends",
 			"dmTopicsTitle": "Topic",
-			"friendsContextNewChat": "New chat",
-			"friendsRestartConfirm": "The private chat with \"${name}\" will be unbound and a new conversation will be created. Are you sure?",
-			"friendsRestartOk": "A new private chat has been opened",
-			"friendsRestartFailed": "Failed to create a new private chat: ${error}",
-			"charDescriptionEmpty": "The character has yet to introduce himself.",
-			"charIntro": "introduce",
 			"participants": "Participants",
-			"charTagSolo": "Characters · 1:1 dialogue",
 			"startChatWith": "💬 Start chatting with ${name}",
 			"loading": "loading…",
-			"charChatStart": "Start a conversation with ${name}",
-			"charChatEmpty": "There is no message yet, start your first chat!",
-			"loadCharChatFailed": "Failed to load messages",
 			"createChatFailed": "Failed to create session: ${error}",
-			"charChatComposer": {
-				"placeholder": "Send a message to ${name} (Ctrl+Enter to send)"
-			},
 			"friendChatComposer": {
 				"placeholder": "Send message (Ctrl+Enter to send)"
 			},
@@ -2084,75 +1929,13 @@
 				"confirmSecond": "Click again to confirm",
 				"cancel": "Cancel"
 			},
-			"blockConfirm": "Add this person to the blacklist? The federation of this group will reject its relay.",
-			"blockOk": "Blocked",
-			"charChatSettings": "Character chat settings",
-			"charChatSubtitle": "Session with ${name}",
-			"sessionInfo": "Session info",
-			"sessionRole": "Role",
-			"sessionId": "Session ID",
-			"sessionMessages": "Messages",
 			"quickActions": "Quick actions",
 			"advancedSettings": "Advanced Settings (Character/World/Plugins)",
 			"advancedSettingsDescription": "Open the full settings for the group in the Hub in a new tab",
 			"dangerZone": "Danger zone",
-			"unbindFriendDescription": "After unbinding, the conversation will return to the group list on the left and message records will be retained.",
-			"unbindFriend": "Unbind",
-			"unbindFriendConfirm": "Are you sure to unbind the private chat with ${name}? The conversation will be moved back to the group list.",
-			"unbindFriendOk": "Unbound",
-			"unbindFriendFailed": "Unbinding failed: ${error}",
 			"deleteSessionDescription": "Deleting this conversation will permanently remove all messages and is irreversible.",
 			"deleteSession": "Delete session",
 			"deleteSessionConfirm": "Are you sure you want to delete the session with ${name}? This operation is irreversible.",
-			"sessionDeleted": "Conversation deleted",
-			"sessionDeleteFailed": "Delete failed: ${error}",
-			"streamTokenFailed": "Unable to issue viewing token",
-			"streamAvJoin": "Add voice/video",
-			"streamAvLeave": "Away",
-			"streamAvMute": "mute",
-			"streamAvUnmute": "Unmute",
-			"streamAvVideo": "Turn off camera",
-			"streamAvVideoOn": "Turn on camera",
-			"streamAvYou": "you",
-			"streamAvJoinFailed": "Unable to start call: ${error}",
-			"streamAvNoCodecs": "This browser does not support WebCodecs (requires Chrome 94+ / Edge 94+ / Firefox 130+)",
-			"streamAvPeers": "${count} people online",
-			"streamAvPresetThumb": "abbreviated 64kbps",
-			"streamAvPresetLow": "Low quality 200kbps",
-			"streamAvPresetMed": "Medium 600kbps",
-			"streamAvPresetHigh": "High quality 1.5Mbps",
-			"callButton": {
-				"title": "Start or join a call",
-				"aria-label": "Start or join a call"
-			},
-			"callInProgress": "Call in progress",
-			"callEnded": "The call has ended",
-			"callJoin": "Join the call",
-			"callHangup": "hang up",
-			"callScreenShare": "share screen",
-			"callScreenStop": "Stop sharing",
-			"callJumpBack": "Return to call channel",
-			"callJoinFailed": "Unable to join call: ${error}",
-			"callScreenFailed": "Screen sharing failed: ${error}",
-			"callStartedAt": "Started at ${time}",
-			"callDuration": "Duration ${duration}",
-			"callParticipants": "${n} people",
-			"callPeerCount": "${n}",
-			"callNoParticipants": "No participants yet",
-			"listChannelEmpty": "The list is empty.",
-			"listItemUntitled": "Unnamed",
-			"listEditorTitle": "Edit list items (JSON array)",
-			"listSaveToDag": "Save to DAG",
-			"listJsonInvalid": "Invalid JSON: ${message}",
-			"listSaved": "saved",
-			"listSaveFailed": "Save failed",
-			"streamDefaultName": "streaming media",
-			"streamRefreshToken": "Refresh watch token",
-			"streamEmbedHttpsRequired": "The stream URL must be an embeddable https:// page, or configure group settings and refresh to get a viewing token.",
-			"streamWebRtcHint": "No external SFU is configured; this channel will use in-group WebRTC (no streamingSfuWss required).",
-			"pinPreviewSticker": "[sticker]",
-			"pinPreviewVote": "[Vote] ${question}",
-			"pinPreviewInvite": "[Invite] ${groupName}",
 			"reactionRemovePrompt": "Whose ${emoji} to remove?\n${candidates}",
 			"ariaDagTip": {
 				"aria-label": "DAG fork tip"
@@ -2160,58 +1943,11 @@
 			"ariaClose": {
 				"aria-label": "Close"
 			},
-			"memberBar": {
-				"aria-label": "Member list"
-			},
-			"channelBar": {
-				"aria-label": "Channel list"
-			},
 			"serverBar": {
 				"aria-label": "Groups and navigation"
 			},
-			"membersDigestPagesTitle": {
-				"title": "${expected}\n${pages} pages"
-			},
-			"discoveryTitle": "Group discovery",
-			"discoveryEyebrow": "Explore the community",
-			"discoveryDescription": "Browse public groups from the federation network, pick a community of interest and join.",
-			"discoverySidebarHint": "Browse and join public groups on the right",
-			"discoveryEmptyTitle": "No public groups found yet",
-			"discoveryEmpty": "There is currently no For youed group; after turning on federation synchronisation, the discovery list will be synchronized from neighbors.",
-			"discoveryNoDescription": "The group owner has not filled in the profile yet.",
-			"discoverySourceCount": "${count} federated sources",
-			"discoveryJoin": "Join group",
-			"discoveryOpen": "Open group",
-			"discoveryLoadFailed": "Failed to load discovery list: ${message}",
 			"operationFailed": "Operation failed: ${error}",
 			"shareGroupFailed": "Failed to share group link: ${error}",
-			"blockAuthorTitle": "Block this author",
-			"configTitle": "Conversation configuration",
-			"configSaved": "saved",
-			"configSaveFailed": "Save failed: ${error}",
-			"configLoadFailed": "Failed to load configuration: ${error}",
-			"noActiveChat": "Open a chat first, then drag the part in",
-			"groupContext": {
-				"manage": "Manage group",
-				"notifyPrefs": "Notification settings",
-				"invite": "Invite others",
-				"inviteCopied": "Invitation link copied to clipboard",
-				"addChar": "Add role",
-				"addCharLabel": "Select role",
-				"addCharSubmit": "Add",
-				"noChars": "No role available",
-				"setAlias": "Set group alias",
-				"setAliasPrompt": "Set a local alias for \"${name}\" (leave blank to clear):",
-				"aliasSaved": "Group alias updated",
-				"leave": "Leave group",
-				"leaveConfirm": "Are you sure you want to leave the group \"${name}\"? You will no longer be able to view messages in this group.",
-				"leaveOk": "Left the group",
-				"leaveBatch": "Exit the selected group (${count})",
-				"leaveConfirmBatch": "Are you sure you want to leave the ${count} selected groups? This device will no longer retain data for these groups.",
-				"leaveBatchPending": "${count} groups have been removed from the list, exiting in the background...",
-				"leaveBatchOk": "Exited ${count} groups",
-				"leaveBatchPartial": "${failed} / ${total} groups failed to exit, the list has been Refreshed"
-			},
 			"replyInline": {
 				"title": "Reply"
 			},
@@ -2221,35 +1957,8 @@
 			"replyInThread": {
 				"title": "Reply in thread"
 			},
-			"syncTruncated": "The DAG increment is not full. You can try again later or increase the limit.",
-			"syncTruncatedHint": "The DAG history is too long. You can try again later or increase the limit.",
-			"newChannelButton": "Create new channel",
-			"newChannelSuccess": "Channel created",
-			"newChannelFailed": "Failed to create channel",
-			"newChannelTitle": "Create new channel",
-			"channelName": "Channel name",
-			"channelType": "Channel type",
-			"channelTypeText": "chat channel",
-			"channelTypeList": "List/Forum Channel",
-			"channelTypeStreaming": "Streaming channel",
-			"channelNameInput": {
-				"placeholder": "general"
-			},
 			"localMaterializedView": "It is currently a local materialized view, and the permissions and history may be inconsistent with other nodes.",
 			"convergentEncryptWarn": "Group files use convergent encryption: if an attacker knows the plaintext of a file, they can derive the key and decrypt the corresponding ciphertext block. Do not rely solely on group encryption for protection of highly sensitive and uniquely private documents.",
-			"votePromptQuestion": "Poll question",
-			"votePromptOptions": "Options (at least two, separated by commas)",
-			"voteOptionDefault": "Yes, No",
-			"votePromptDeadlineHours": "Deadline (hours, leave blank = no deadline)",
-			"messagePrefixVote": "Poll",
-			"threadCreated": "Thread has been created",
-			"threadCreateFailed": "Failed to create thread, please try again later",
-			"threadDrawer": {
-				"aria-label": "thread"
-			},
-			"threadClose": {
-				"title": "Close thread"
-			},
 			"reputationSlashAlert": "The reputation of member ${target}… is reminded of the deduction.",
 			"profileEdit": {
 				"previewHint": "Changes appear immediately in the preview and are saved and synced across Chat and Social.",
@@ -2258,23 +1967,14 @@
 				"languageVersion": "Language version",
 				"localeHint": "Click the label to switch or edit the code; press Enter in the input box at the end to copy it to a new language.",
 				"themeColorHint": "Used to generate textures when there is no custom banner, and also used for live sound wave loops",
-				"bannerLabel": "banner background",
-				"bannerHint": "You can fill in the image URL or upload a file; you can also resume generating textures at any time",
-				"bannerClear": "Resume banner generation",
 				"linksPreview": "${count} public links",
 				"unsavedHint": "Closing the window will discard unsaved changes",
 				"tagsLabel": "Label",
 				"tagAdd": "Add",
 				"tagRemove": "Delete tag",
 				"linksLabel": "Link",
-				"linkAdd": "Add link",
-				"linkRemove": "Remove link",
 				"handleLabel": "Custom ID",
 				"handleHint": "Can be searched by other nodes in the network; uniqueness is not guaranteed, and conflicts will be disambiguated according to the trust list.",
-				"resetFromPart": "Reset from character part",
-				"resetFromPartConfirm": "The current information will be overwritten with the role part's info. Are you sure?",
-				"resetFromPartDone": "Profile reconstructed from character parts",
-				"resetFromPartFailed": "Rebuild failed: ${error}",
 				"newLocale": {
 					"placeholder": "New language code, such as en-UK"
 				},
@@ -2290,23 +1990,38 @@
 				"avatarUpload": {
 					"aria-label": "Upload avatar"
 				},
-				"bannerUrl": {
-					"placeholder": "Banner image URL, or upload file below"
-				},
-				"bannerUpload": {
-					"aria-label": "Upload banner"
-				},
 				"tag": {
 					"placeholder": "Add after entering tag"
 				},
-				"linkName": {
-					"placeholder": "Show text"
-				},
-				"linkUrl": {
-					"placeholder": "https://… or fount://…"
-				},
 				"handle": {
 					"placeholder": "For example steve (2–32 lowercase alphanumeric characters._-)"
+				},
+				"resetFrom": {
+					"part": "Reset from character part",
+					"partConfirm": "The current information will be overwritten with the role part's info. Are you sure?",
+					"partDone": "Profile reconstructed from character parts",
+					"partFailed": "Rebuild failed: ${error}"
+				},
+				"banner": {
+					"clear": "Resume banner generation",
+					"hint": "You can fill in the image URL or upload a file; you can also resume generating textures at any time",
+					"label": "banner background",
+					"upload": {
+						"aria-label": "Upload banner"
+					},
+					"url": {
+						"placeholder": "Banner image URL, or upload file below"
+					}
+				},
+				"link": {
+					"add": "Add link",
+					"name": {
+						"placeholder": "Show text"
+					},
+					"remove": "Remove link",
+					"url": {
+						"placeholder": "https://… or fount://…"
+					}
 				}
 			},
 			"profilePopup": {
@@ -2316,72 +2031,22 @@
 				},
 				"editSaved": "Profile saved",
 				"editQueued": "Published, waiting for the other node to pull it",
-				"dmChar": "Chat privately with a character",
-				"dmUser": "Send DM",
-				"dmFed": "Federated DM",
 				"noFedIdentity": "Please configure local activePubKeyHex in federation settings first",
 				"peerNoIdentity": "The other party does not have federated status and cannot initiate a federated DM.",
-				"dmFailed": "Unable to open DM: ${error}",
 				"care": "Close friends",
 				"careRemove": "Remove from close friends",
 				"setAlias": "Set alias",
-				"setAliasPrompt": "Set a local alias for \"${name}\" (leave blank to clear):"
-			},
-			"channelContext": {
-				"copyLinkDone": "Channel link copied",
-				"notifyPrefs": "Channel notification settings",
-				"rename": "Rename channel",
-				"renameOk": "Channel has been renamed",
-				"delete": "Delete channel",
-				"deleteOk": "Channel deleted",
-				"deleteConfirm": "Are you sure you want to delete channel \"${name}\"? This action cannot be undone.",
-				"setDefault": "Set as default channel",
-				"setDefaultOk": "Already set as default channel",
-				"copyLink": "Copy channel link",
-				"exportJson": "Export JSON",
-				"exportOk": "Channel archive downloaded",
-				"exportFailed": "Export failed: ${error}"
-			},
-			"memberContext": {
-				"copyName": "Copy display name",
-				"mention": "Mention",
-				"care": "Close friends",
-				"careAdded": "Added to close friends",
-				"careRemoved": "Removed from close friends",
-				"setAlias": "Set alias",
 				"setAliasPrompt": "Set a local alias for \"${name}\" (leave blank to clear):",
-				"aliasSaved": "Alias ​​updated",
-				"copyPubKey": "Copy public key hash",
-				"copyEntityId": "Copy entity ID",
-				"dm": "Send DM",
-				"kick": "Kick member",
-				"kickSelfNodeWarning": "Warning: This member uses the same node identity as you. You will also be removed from the group after being kicked out. Are you sure you want to continue?",
-				"ban": "Ban…",
-				"personalBlock": "Personal block",
-				"personalBlockConfirm": "Add ${name} to your block list? People who follow you will pick up on this signal and may have less trust in them.",
-				"personalBlockSuccess": "Already added to blacklist",
-				"banTitle": "Select ban range",
-				"banEntity": "Banned entities (128-bit entityHash)",
-				"banNode": "Ban node (homeNodeHash)"
+				"dm": {
+					"char": "Chat privately with a character",
+					"failed": "Unable to open DM: ${error}",
+					"fed": "Federated DM",
+					"user": "Send DM"
+				}
 			},
-			"messageContext": {
-				"edit": "Edit message",
-				"delete": "Delete message"
-			},
-			"charStreaming": "Generating…",
 			"gshDecryptPending": "Waiting for channel key (generation ${gen})",
 			"gshDecryptFailed": "Unable to decrypt this message without channel key",
-			"fileDecryptFailed": "Unable to access this file without file key",
 			"reactionFailed": "Reaction failed",
-			"fileUploadChecking": "Viewing for existing content…",
-			"fileUploadingChunk": "Uploading encrypted blocks...",
-			"fileUploadRegistering": "Registering file…",
-			"fileUploaded": "File uploaded successfully",
-			"fileUploadFailed": "File upload failed",
-			"fileSkippedDedup": "Skipped duplicate blocks",
-			"fileDownloadFailed": "File download failed",
-			"fileNoKey": "Can't decrypt — missing key",
-			"fileLoadFailed": "Couldn't load file",
 			"createModal": {
 				"title": "Create group",
 				"subtitle": "Groups are private spaces for you and your friends to chat together",
@@ -2394,14 +2059,16 @@
 				"description": {
 					"placeholder": "(Optional) Introduce this group"
 				},
-				"joinSection": "Who can join",
-				"joinInviteOnly": "Invite only",
-				"joinInviteOnlyDescription": "An invitation code is required to join",
-				"joinPow": "Proof of work",
-				"joinPowDescription": "You need to complete the PoW challenge before joining",
 				"cancel": "Back",
 				"submit": "Create group",
-				"failed": "Failed to create group: ${error}"
+				"failed": "Failed to create group: ${error}",
+				"join": {
+					"inviteOnly": "Invite only",
+					"inviteOnlyDescription": "An invitation code is required to join",
+					"pow": "Proof of work",
+					"powDescription": "You need to complete the PoW challenge before joining",
+					"section": "Who can join"
+				}
 			},
 			"joinModal": {
 				"title": "Join group",
@@ -2418,28 +2085,9 @@
 				"cancel": "Back",
 				"submit": "Join group"
 			},
-			"menuCopy": "Copy",
-			"menuMD": "Markdown",
-			"menuTXT": "plain text",
-			"menuHTML": "HTML",
-			"menuDownload": "Download HTML",
-			"menuDelete": "Delete",
-			"menuShareGroup": "Share link",
-			"menuPrev": "Previous",
-			"menuNext": "Next",
-			"menuShare": {
-				"1h": "Share 1 hour link",
-				"12h": "Share 12 hour link",
-				"24h": "Share 24 hour link",
-				"72h": "Share 72 hours link"
-			},
-			"noGroups": "No groups yet",
 			"myGroups": "My groups",
 			"joinGroup": "Join group",
 			"createGroup": "Create New group",
-			"noDescription": "No description yet",
-			"memberCountLabel": "${count} members",
-			"loadListFailed": "Failed to load group list: ${error}",
 			"contentWarning": "Content warning",
 			"sensitiveMedia": "Sensitive media",
 			"revealContent": "Show content",
@@ -2474,12 +2122,6 @@
 				"saved": "Translation settings saved",
 				"saveFailed": "Save failed: ${error}"
 			},
-			"friendsSearch": {
-				"placeholder": "Search local characters, handles or names…"
-			},
-			"threadComposer": {
-				"placeholder": "Reply in subthread…"
-			},
 			"altImage": {
 				"placeholder": "Add a description to the image…",
 				"label": "Image description (alt)"
@@ -2490,7 +2132,587 @@
 				"aria-label": "Mention suggestions"
 			},
 			"clickToLoad": "Click to load",
-			"send": "Send"
+			"serverActionPicker": {
+				"create": "Create group",
+				"createDescription": "Start from scratch and invite friends",
+				"join": "Join group",
+				"joinDescription": "Use group ID",
+				"subtitle": "Create a New group or join an existing group by ID",
+				"title": "Group"
+			},
+			"membersDigest": {
+				"fetchFailed": "Failed to pull members by page",
+				"mismatch": "Inconsistent member digest · ${root}",
+				"ok": "Member Merkle unanimous · ${root}",
+				"okPaged": "Member Merkle consensus (${pages} pages) · ${root}",
+				"pagesTitle": {
+					"title": "${expected}\n${pages} pages"
+				},
+				"pending": "View member summary…"
+			},
+			"unbindFriend": {
+				"main": "Unbind",
+				"confirm": "Are you sure to unbind the private chat with ${name}? The conversation will be moved back to the group list.",
+				"description": "After unbinding, the conversation will return to the group list on the left and message records will be retained.",
+				"failed": "Unbinding failed: ${error}",
+				"ok": "Unbound"
+			},
+			"federation": {
+				"loadFailed": "Couldn't load: ${error}",
+				"subtitle": "Control cross-device connections — defaults are fine for most people",
+				"title": "Federated P2P settings",
+				"tooltip": {
+					"title": "Federated P2P settings",
+					"tip": "Federated P2P settings"
+				}
+			},
+			"newChannel": {
+				"button": "Create new channel",
+				"failed": "Failed to create channel",
+				"success": "Channel created",
+				"title": "Create new channel"
+			},
+			"discovery": {
+				"description": "Browse public groups from the federation network, pick a community of interest and join.",
+				"empty": "There is currently no For youed group; after turning on federation synchronisation, the discovery list will be synchronized from neighbors.",
+				"emptyTitle": "No public groups found yet",
+				"eyebrow": "Explore the community",
+				"join": "Join group",
+				"loadFailed": "Failed to load discovery list: ${message}",
+				"noDescription": "The group owner has not filled in the profile yet.",
+				"open": "Open group",
+				"refresh": "Refresh discovery list",
+				"sidebarHint": "Browse and join public groups on the right",
+				"sourceCount": "${count} federated sources",
+				"title": "Group discovery",
+				"tooltip": {
+					"title": "Group discovery",
+					"tip": "Group discovery"
+				}
+			},
+			"forkSplit": {
+				"failed": "Split failed: ${error}",
+				"modalSubmit": "create",
+				"modalTitle": "Split into New group",
+				"prompt": "New group name (can be left blank)"
+			},
+			"stickers": {
+				"empty": "No stickers yet",
+				"loadFailed": "Couldn't load stickers: ${error}",
+				"loading": "Loading…",
+				"manage": "Manage stickers →",
+				"marketLink": "Go to the sticker gallery to install packs",
+				"panelTitle": "Stickers"
+			},
+			"friends": {
+				"contextNewChat": "New chat",
+				"count": "${count} friends",
+				"emptyAction": "Search for a role or user",
+				"emptyDescription": "Search for users on the local role or other nodes, and you can also open the member profile card in the group chat to initiate a DM.",
+				"emptyTitle": "Start a new conversation",
+				"header": "friends",
+				"restartConfirm": "The private chat with \"${name}\" will be unbound and a new conversation will be created. Are you sure?",
+				"restartFailed": "Failed to create a new private chat: ${error}",
+				"restartOk": "A new private chat has been opened",
+				"search": {
+					"placeholder": "Search local characters, handles or names…",
+					"chat": "Start a conversation",
+					"dm": "Send DM",
+					"empty": "No matching role or user",
+					"localChar": "local role",
+					"pin": "Set as alias",
+					"tooShort": "Please enter at least 2 characters"
+				},
+				"tag": "friends",
+				"tooltip": {
+					"title": "Friends",
+					"tip": "friends"
+				}
+			},
+			"channel": {
+				"bar": {
+					"aria-label": "Channel list"
+				},
+				"context": {
+					"copyLinkDone": "Channel link copied",
+					"notifyPrefs": "Channel notification settings",
+					"rename": "Rename channel",
+					"renameOk": "Channel has been renamed",
+					"delete": "Delete channel",
+					"deleteOk": "Channel deleted",
+					"deleteConfirm": "Are you sure you want to delete channel \"${name}\"? This action cannot be undone.",
+					"setDefault": "Set as default channel",
+					"setDefaultOk": "Already set as default channel",
+					"copyLink": "Copy channel link",
+					"exportJson": "Export JSON",
+					"exportOk": "Channel archive downloaded",
+					"exportFailed": "Export failed: ${error}"
+				},
+				"name": "Channel name",
+				"nameInput": {
+					"placeholder": "general"
+				},
+				"readonlyList": {
+					"placeholder": "List channel is read-only"
+				},
+				"readonlyStream": {
+					"placeholder": "Streaming channel is read-only"
+				},
+				"type": "Channel type",
+				"typeList": "List/Forum Channel",
+				"typeStreaming": "Streaming channel",
+				"typeText": "chat channel"
+			},
+			"message": {
+				"action": {
+					"bookmark": {
+						"title": "Bookmark"
+					},
+					"copyHtml": {
+						"title": "Copy HTML"
+					},
+					"delete": {
+						"title": "Delete message"
+					},
+					"edit": {
+						"title": "Edit message"
+					},
+					"failed": "Operation failed: ${error}",
+					"feedbackDown": {
+						"title": "Dislike"
+					},
+					"feedbackUp": {
+						"title": "Like"
+					},
+					"next": {
+						"title": "next timeline"
+					},
+					"pin": {
+						"title": "Pin"
+					},
+					"prev": {
+						"title": "Previous timeline"
+					},
+					"regen": {
+						"title": "Regenerate"
+					},
+					"unpin": {
+						"title": "Unpin"
+					}
+				},
+				"context": {
+					"edit": "Edit message",
+					"delete": "Delete message"
+				},
+				"edit": {
+					"area": {
+						"aria-label": "Edit message"
+					},
+					"cancel": "Cancel",
+					"save": "Save",
+					"upload": "Upload attachment"
+				},
+				"feedbackSubmit": "Submit feedback",
+				"input": {
+					"placeholder": "Message… Ctrl+Enter to send",
+					"aria-label": "Message"
+				},
+				"prefixVote": "Poll"
+			},
+			"session": {
+				"deleteFailed": "Delete failed: ${error}",
+				"deleted": "Conversation deleted",
+				"id": "Session ID",
+				"info": "Session info",
+				"messages": "Messages",
+				"role": "Role"
+			},
+			"folder": {
+				"collapse": "Collapse folder",
+				"default": "Folders",
+				"dissolve": "Dismiss folder",
+				"expand": "Show more folder",
+				"rename": "Rename folder",
+				"renamePrompt": "Rename the folder \"${name}\" to:"
+			},
+			"stream": {
+				"av": {
+					"join": "Add voice/video",
+					"joinFailed": "Unable to start call: ${error}",
+					"leave": "Away",
+					"mute": "mute",
+					"noCodecs": "This browser does not support WebCodecs (requires Chrome 94+ / Edge 94+ / Firefox 130+)",
+					"peers": "${count} people online",
+					"preset": {
+						"high": "High quality 1.5Mbps",
+						"low": "Low quality 200kbps",
+						"med": "Medium 600kbps",
+						"thumb": "abbreviated 64kbps"
+					},
+					"unmute": "Unmute",
+					"video": "Turn off camera",
+					"videoOn": "Turn on camera",
+					"you": "you"
+				},
+				"defaultName": "streaming media",
+				"embedHttpsRequired": "The stream URL must be an embeddable https:// page, or configure group settings and refresh to get a viewing token.",
+				"refreshToken": "Refresh watch token",
+				"tokenFailed": "Unable to issue viewing token",
+				"webRtcHint": "No external SFU is configured; this channel will use in-group WebRTC (no streamingSfuWss required)."
+			},
+			"member": {
+				"bar": {
+					"aria-label": "Member list"
+				},
+				"context": {
+					"copyName": "Copy display name",
+					"mention": "Mention",
+					"care": "Close friends",
+					"careAdded": "Added to close friends",
+					"careRemoved": "Removed from close friends",
+					"setAlias": "Set alias",
+					"setAliasPrompt": "Set a local alias for \"${name}\" (leave blank to clear):",
+					"aliasSaved": "Alias ​​updated",
+					"copyPubKey": "Copy public key hash",
+					"copyEntityId": "Copy entity ID",
+					"dm": "Send DM",
+					"kick": "Kick member",
+					"kickSelfNodeWarning": "Warning: This member uses the same node identity as you. You will also be removed from the group after being kicked out. Are you sure you want to continue?",
+					"ban": "Ban…",
+					"personalBlock": "Personal block",
+					"personalBlockConfirm": "Add ${name} to your block list? People who follow you will pick up on this signal and may have less trust in them.",
+					"personalBlockSuccess": "Already added to blacklist",
+					"banTitle": "Select ban range",
+					"banEntity": "Banned entities (128-bit entityHash)",
+					"banNode": "Ban node (homeNodeHash)"
+				},
+				"countLabel": "${count} members",
+				"joined": "Joined the conversation",
+				"section": "Members"
+			},
+			"thread": {
+				"close": {
+					"title": "Close thread"
+				},
+				"composer": {
+					"placeholder": "Reply in subthread…"
+				},
+				"createFailed": "Failed to create thread, please try again later",
+				"created": "Thread has been created",
+				"drawer": {
+					"aria-label": "thread"
+				}
+			},
+			"config": {
+				"loadFailed": "Failed to load configuration: ${error}",
+				"saveFailed": "Save failed: ${error}",
+				"saved": "saved",
+				"title": "Conversation configuration"
+			},
+			"statusItems": {
+				"dnd": {
+					"title": "Do not disturb",
+					"textContent": "Do not disturb"
+				},
+				"idle": {
+					"title": "Away",
+					"textContent": "Away"
+				},
+				"offline": {
+					"title": "Offline",
+					"textContent": "Offline"
+				},
+				"online": {
+					"title": "Online",
+					"textContent": "Online"
+				}
+			},
+			"files": {
+				"bindCabinet": "Add a cabinet",
+				"delete": "Delete",
+				"deleteConfirm": "Are you sure you want to delete this file?",
+				"deleteFolderConfirm": "Are you sure you want to delete this folder? Files in the folder will not be automatically deleted.",
+				"download": "Download",
+				"drawerTitle": "Group files",
+				"empty": "There are currently no files in this directory",
+				"foldersTitle": "Folders",
+				"listTitle": "Files",
+				"loadFailed": "Failed to load Group files: ${error}",
+				"loading": "Loading Group filess...",
+				"newFolder": "Create new folder",
+				"newFolderPrompt": "Folder name",
+				"no": {
+					"cabinets": "There are no file cabinets accessible for the current role",
+					"channel": "Please first enter the Text channel where you can send messages",
+					"folders": "No subfolders yet",
+					"group": "Please select a group first"
+				},
+				"rename": "Rename",
+				"renameFolderPrompt": "Rename the folder \"${name}\" to:",
+				"rootFolder": "Root",
+				"title": {
+					"title": "Group files"
+				},
+				"upload": "Upload",
+				"uploadTo": "Upload to"
+			},
+			"group": {
+				"context": {
+					"manage": "Manage group",
+					"notifyPrefs": "Notification settings",
+					"invite": "Invite others",
+					"inviteCopied": "Invitation link copied to clipboard",
+					"addChar": "Add role",
+					"addCharLabel": "Select role",
+					"addCharSubmit": "Add",
+					"noChars": "No role available",
+					"setAlias": "Set group alias",
+					"setAliasPrompt": "Set a local alias for \"${name}\" (leave blank to clear):",
+					"aliasSaved": "Group alias updated",
+					"leave": {
+						"main": "Leave group",
+						"batch": "Exit the selected group (${count})",
+						"batchOk": "Exited ${count} groups",
+						"batchPartial": "${failed} / ${total} groups failed to exit, the list has been Refreshed",
+						"batchPending": "${count} groups have been removed from the list, exiting in the background...",
+						"confirm": "Are you sure you want to leave the group \"${name}\"? You will no longer be able to view messages in this group.",
+						"confirmBatch": "Are you sure you want to leave the ${count} selected groups? This device will no longer retain data for these groups.",
+						"ok": "Left the group"
+					}
+				},
+				"descriptionEmpty": "There is no profile for this group yet.",
+				"emojiTab": {
+					"title": "Group"
+				},
+				"emojisEmpty": "There are currently no group emojis. You can upload them in the group settings.",
+				"emojisLoadFailed": "Failed to load group emojis",
+				"headerMenu": {
+					"title": "Group menu: settings, invitations, etc."
+				},
+				"joinRequired": "The group cannot be opened, please use the invitation link or invitation code to join",
+				"tag": "group",
+				"unnamed": "Unnamed group ·${suffix}"
+			},
+			"block": {
+				"author": {
+					"title": "Block this author"
+				},
+				"authorTitle": "Block this author",
+				"confirm": "Add this person to the blacklist? The federation of this group will reject its relay.",
+				"ok": "Blocked",
+				"opposingConfirm": "Add the governance issuers who are not on the current election to the Block list and deny this group of federation relays. continue?",
+				"opposingFailed": "Marking failed: ${error}",
+				"opposingOk": "${count} subjects marked as unreachable"
+			},
+			"call": {
+				"button": {
+					"title": "Start or join a call",
+					"aria-label": "Start or join a call"
+				},
+				"duration": "Duration ${duration}",
+				"ended": "The call has ended",
+				"hangup": "hang up",
+				"inProgress": "Call in progress",
+				"join": "Join the call",
+				"joinFailed": "Unable to join call: ${error}",
+				"jumpBack": "Return to call channel",
+				"noParticipants": "No participants yet",
+				"participants": "${n} people",
+				"peerCount": "${n}",
+				"screenFailed": "Screen sharing failed: ${error}",
+				"screenShare": "share screen",
+				"screenStop": "Stop sharing",
+				"startedAt": "Started at ${time}"
+			},
+			"vote": {
+				"closed": "ended",
+				"count": "${count} tickets · ${pct}%",
+				"createFailed": "Failed to create poll: ${error}",
+				"deadline": "Deadline: ${date}",
+				"minOptions": "Requires at least 2 options",
+				"modalSubmit": "Create poll",
+				"modalTitle": "Start a poll",
+				"noOptions": "No options",
+				"optionDefault": "Yes, No",
+				"promptDeadlineHours": "Deadline (hours, leave blank = no deadline)",
+				"promptOptions": "Options (at least two, separated by commas)",
+				"promptQuestion": "Poll question",
+				"title": {
+					"title": "Start a poll"
+				},
+				"total": "Total ${total} votes"
+			},
+			"file": {
+				"decryptFailed": "Unable to access this file without file key",
+				"downloadFailed": "File download failed",
+				"loadFailed": "Couldn't load file",
+				"noKey": "Can't decrypt — missing key",
+				"skippedDedup": "Skipped duplicate blocks",
+				"uploadChecking": "Viewing for existing content…",
+				"uploadFailed": "File upload failed",
+				"uploadRegistering": "Registering file…",
+				"uploaded": "File uploaded successfully",
+				"uploadingChunk": "Uploading encrypted blocks..."
+			},
+			"menu": {
+				"copy": "Copy",
+				"delete": "Delete",
+				"download": "Download HTML",
+				"hTML": "HTML",
+				"mD": "Markdown",
+				"next": "Next",
+				"prev": "Previous",
+				"share": {
+					"1h": "Share 1 hour link",
+					"12h": "Share 12 hour link",
+					"24h": "Share 24 hour link",
+					"72h": "Share 72 hours link"
+				},
+				"shareGroup": "Share link",
+				"tXT": "plain text"
+			},
+			"char": {
+				"chat": {
+					"composer": {
+						"placeholder": "Send a message to ${name} (Ctrl+Enter to send)"
+					},
+					"empty": "There is no message yet, start your first chat!",
+					"settings": "Character chat settings",
+					"start": "Start a conversation with ${name}",
+					"subtitle": "Session with ${name}"
+				},
+				"chatsTitle": "Historical conversations with ${name}",
+				"count": "${count} roles",
+				"descriptionEmpty": "The character has yet to introduce himself.",
+				"intro": "introduce",
+				"streaming": "Generating…",
+				"tag": "Role",
+				"tagSolo": "Characters · 1:1 dialogue",
+				"typing": "Typing…"
+			},
+			"list": {
+				"channelEmpty": "The list is empty.",
+				"editorTitle": "Edit list items (JSON array)",
+				"itemUntitled": "Unnamed",
+				"jsonInvalid": "Invalid JSON: ${message}",
+				"saveFailed": "Save failed",
+				"saveToDag": "Save to DAG",
+				"saved": "saved"
+			},
+			"save": {
+				"emoji": {
+					"title": "Save emojis"
+				},
+				"emojiFailed": "Failed to save emoji: ${error}",
+				"emojiOk": "The emoji has been saved to the database",
+				"sticker": {
+					"title": "Save sticker"
+				},
+				"stickerFailed": "Failed to save stickers: ${error}",
+				"stickerOk": "Sticker added to your library"
+			},
+			"sync": {
+				"failed": "Federation synchronisation failed: ${error}",
+				"incomplete": "${missing}/${total} events remain unsynced",
+				"noPeers": "Not connected to the federated neighbor, historical messages cannot be synchronized temporarily; please use the full invitation link and try again later",
+				"rateLimited": "Federated synchronisation speed limit is in progress, please try again later.",
+				"truncated": "The DAG increment is not full. You can try again later or increase the limit.",
+				"truncatedHint": "The DAG history is too long. You can try again later or increase the limit."
+			},
+			"load": {
+				"charChatFailed": "Failed to load messages",
+				"groupFailed": "Failed to load group: ${error}",
+				"listFailed": "Failed to load group list: ${error}",
+				"messagesFailed": "Failed to load messages: ${error}",
+				"more": "Load earlier messages…"
+			},
+			"send": {
+				"main": "Send",
+				"failed": "Failed to send: ${error}",
+				"failedPending": "Failed to send",
+				"imageFailed": "Failed to send picture: ${error}",
+				"stickerFailed": "Failed to send sticker: ${error}",
+				"title": {
+					"title": "Send (Ctrl+Enter)"
+				}
+			},
+			"fed": {
+				"advancedDescription": "Bug fixes, reputation management and manual link issuance",
+				"advancedTitle": "Advanced settings",
+				"batterySaverLabel": "low power mode",
+				"batterySaverTip": "Reducing the number of background connections and network activity may make message synchronisation slightly slower.",
+				"connectionTitle": "Connect and discover",
+				"dm": {
+					"invalidateDescription": "After execution, all friend-adding links previously issued will become invalid immediately and cannot be revoked.",
+					"invalidateTitle": "Let old referral links expire",
+					"issueLabel": "Issue DM link",
+					"issued": "DM link signed and copied to clipboard",
+					"linkDescription": "Suitable for debugging or manual identity migration; there is no need to fill in these fields when adding friends on a daily basis.",
+					"linkTip": "Requires signing using local identity key. The private key is only submitted to the local service on this page and will not be sent to other nodes.",
+					"linkTitle": "Manually issue a friend link",
+					"needPubKey": "Requires 64 hex public key",
+					"needSecretKey": "Requires 64 hex private key seed",
+					"nodeLabel": "Optional node URL",
+					"pubKeyLabel": "Public key hex(64)",
+					"rotateConfirm": "All friend-adding links previously issued will become invalid immediately and cannot be restored. Are you sure you want to continue?",
+					"rotateLabel": "Invalidate old links",
+					"secretLabel": "Private key seed hex(64)"
+				},
+				"groupRecoveryTip": "Only used if the invitation is leaked or the new device cannot sync history.",
+				"groupRecoveryTitle": "Group connection fix",
+				"nonceRotated": "nonce rotated (${nonce}…)",
+				"relayUrlsLabel": "network relay address",
+				"relayUrlsTip": "Help devices find each other on the internet. One wss:// per line; leave blank for defaults.",
+				"repEmpty": "(null)",
+				"repTip": "Connection preference scores calculated locally based on federated node behaviour are not public ratings of group members.",
+				"repTitle": "Subjective credibility of this group",
+				"repairJoinSnapshot": "Requesting neighbors to join the group snapshot repair",
+				"repairJoinSnapshotFailed": "Failed to repair group snapshot: ${error}",
+				"repairJoinSnapshotOk": "Group snapshot applied (${channels} channel history)",
+				"resetOk": "reputation_reset has been written",
+				"resetSubmitLabel": "Reset target reputation",
+				"rotateRoomSecret": "Rotate group room password",
+				"rotateRoomSecretConfirm": "After the rotation, invitations using the old room password will not be able to connect. Are you sure you want to continue?",
+				"rotateRoomSecretOk": "Room password has been rotated",
+				"saved": "Saved",
+				"slash": {
+					"claimLabel": "Claim strength claim (0–1)",
+					"needHash": "Requires 64-bit hex pubKeyHash",
+					"ok": "reputation_slash written to DAG",
+					"proof": {
+						"placeholder": "64 hex event id"
+					},
+					"proofLabel": "proof.eventId (optional)",
+					"submitLabel": "Post reputation_slash",
+					"target": {
+						"placeholder": "Member public key hash"
+					},
+					"targetLabel": "target pubKeyHash(64 hex)",
+					"tip": "Writes a negative reputation statement about a node to the group event graph. For use only by administrators who understand federation protocols.",
+					"title": "Reputation penalty",
+					"verifiedLabel": "Verifiable (proof event id required)"
+				}
+			},
+			"pin": {
+				"previewInvite": "[Invite] ${groupName}",
+				"previewSticker": "[sticker]",
+				"previewVote": "[Vote] ${question}",
+				"unpinSidebar": {
+					"title": "Unpin"
+				}
+			},
+			"no": {
+				"activeChat": "Open a chat first, then drag the part in",
+				"bookmarks": "No bookmarks yet",
+				"channels": "No channels yet",
+				"chars": "There are no roles yet, please install some first.",
+				"description": "No description yet",
+				"friends": "No private chats yet",
+				"groups": "No groups yet",
+				"members": "No members yet",
+				"pins": "No pins yet",
+				"username": "Username not obtained"
+			}
 		},
 		"sidebar": {
 			"settings": {
@@ -2588,144 +2810,8 @@
 				"alt": "Photo Icon"
 			}
 		},
-		"messageList": {
-			"confirmDeleteMessage": "Are you sure you want to delete this message?"
-		},
 		"voiceRecording": {
 			"errorAccessingMicrophone": "Failed to access microphone"
-		},
-		"messageView": {
-			"buttons": {
-				"edit": {
-					"title": "Edit"
-				},
-				"editIcon": {
-					"alt": "Edit Icon"
-				},
-				"more": {
-					"title": "More"
-				},
-				"moreIcon": {
-					"alt": "More Icon"
-				},
-				"delete": {
-					"alt": "Delete"
-				},
-				"deleteIcon": {
-					"alt": "Delete Icon"
-				},
-				"downloadHtml": {
-					"alt": "Download as HTML"
-				},
-				"downloadHtmlIcon": {
-					"alt": "Download HTML icon"
-				}
-			},
-			"copyButton": {
-				"title": "Copy"
-			},
-			"copyButtonIcon": {
-				"alt": "Copy"
-			},
-			"copySuccess": "Copied to clipboard",
-			"dropdown": {
-				"delete": "Delete",
-				"deleteIcon": {
-					"alt": "Delete Icon"
-				},
-				"copyMarkdown": "Copy as Markdown",
-				"copyMarkdownIcon": {
-					"alt": "Copy as Markdown Icon"
-				},
-				"copyText": "Copy as Plain Text",
-				"copyTextIcon": {
-					"alt": "Copy Text Icon"
-				},
-				"copyHtml": "Copy as HTML",
-				"copyHtmlIcon": {
-					"alt": "Copy HTML Icon"
-				},
-				"downloadHtml": "Download as HTML",
-				"downloadHtmlIcon": {
-					"alt": "Download HTML icon"
-				},
-				"share": {
-					"textContent": "Share",
-					"1h": "1 hour",
-					"12h": "12 hours",
-					"24h": "24 hours",
-					"72h": "72 hours"
-				},
-				"shareIcon": {
-					"alt": "share icon"
-				}
-			},
-			"share": {
-				"uploading": "Creating link...",
-				"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
-			},
-			"commonToolCalling": "Calling tool",
-			"toolRunningLang": "Running ${lang}",
-			"toolSearchingContent": "Searching ${content}",
-			"toolOverridingFilepath": "Overwriting ${filepath}",
-			"toolReplacingFilepath": "Replacing in ${filepath}",
-			"toolReadingFilepath": "Reading ${filepath}",
-			"reasoningDetailsTitle": "Reasoning",
-			"logprobsNotApplicable": "N/A",
-			"logprobsTopLogprobsMeta": "top_logprobs (selected: ${token})",
-			"logprobsMetricsFooter": "TTFT: ${ttft} | Duration: ${time} | Tokens: ${tokens} | Speed: ${speed}",
-			"noReplyContent": "(No reply content)",
-			"feedback": {
-				"thumbsUp": {
-					"title": "Like"
-				},
-				"thumbsDown": {
-					"title": "Dislike"
-				},
-				"regenerate": {
-					"title": "Regenerate"
-				},
-				"reason": {
-					"placeholder": "Optional: explain why"
-				},
-				"submit": "Submit",
-				"cancel": "Cancel"
-			}
-		},
-		"messageEdit": {
-			"input": {
-				"placeholder": "Enter content..."
-			},
-			"buttons": {
-				"confirm": {
-					"title": "Confirm"
-				},
-				"confirmIcon": {
-					"alt": "Confirm Icon"
-				},
-				"cancel": {
-					"title": "Cancel"
-				},
-				"cancelIcon": {
-					"alt": "Cancel Icon"
-				},
-				"upload": {
-					"title": "Upload"
-				},
-				"uploadIcon": {
-					"alt": "Upload Icon"
-				}
-			}
-		},
-		"messageGenerating": {
-			"tips": "Generating a reply…",
-			"stop": {
-				"textContent": "stop",
-				"title": "Stop generating"
-			},
-			"stopIcon": {
-				"alt": "stop icon"
-			}
 		},
 		"attachment": {
 			"buttons": {
@@ -2835,34 +2921,6 @@
 			"avatarLabel": "Avatar",
 			"themeColorLabel": "Theme colour",
 			"uploadAvatar": "Upload avatar",
-			"ownerTitle": "My owner",
-			"ownerSummary": "Delegation",
-			"ownerDescription": "Once set, your owner can edit or delete your chat messages, social posts and profile on your behalf. Their content is also rendered locally as unsafe Markdown (may include scripts). Enter any entity hash; you can clear it at any time.",
-			"ownerEntityHashLabel": "Owner entity hash (128 hex)",
-			"ownerSave": "Save owner",
-			"ownerClear": "Clear owner",
-			"ownerSaved": "Owner updated",
-			"ownerCleared": "Owner cleared",
-			"ownerSaveFailed": "Save failed: ${error}",
-			"ownerConfirmTitle": "Set an owner?",
-			"ownerConfirmWarningTitle": "High-risk action — read carefully",
-			"ownerConfirmEditBody": "Once set, they can edit or delete your chat messages, social posts and profile without asking again. Setting an owner by mistake — or being tricked into it — means handing over control immediately.",
-			"ownerConfirmRenderBody": "Their chat messages and social posts render as full Markdown (including HTML/scripts) in your browser. That lets them run arbitrary code on your machine without further consent. Only continue if you fully trust them.",
-			"ownerConfirmCooldown": "I've read the risks (${seconds})",
-			"ownerConfirmFirst": "I understand the risks — continue",
-			"ownerConfirmSecond": "Click again to confirm",
-			"ownerConfirmCancel": "Cancel",
-			"federationTitle": "Federation & sync",
-			"federationSummary": "Relay servers and battery saver",
-			"federationDescription": "Configure Nostr relay URLs and power-saving mode. Group federation sync turns on automatically the first time you invite someone or start a federated DM.",
-			"federationAdvanced": "Advanced options",
-			"federationRelayUrlsLabel": "Relay servers (one per line, leave blank to use default)",
-			"federationBatterySaverLabel": "Battery saver mode",
-			"federationSave": "Save network settings",
-			"federationResetDefault": "Restore recommended defaults",
-			"federationSaved": "Saved",
-			"federationResetOk": "Recommended defaults restored",
-			"federationSaveFailed": "Save failed: ${error}",
 			"preferences": "Preferences",
 			"language": "Language",
 			"theme": "Theme",
@@ -2920,20 +2978,9 @@
 			"noGroups": "You haven't joined any groups yet",
 			"noChannels": "No channels yet",
 			"overview": "Profile overview",
-			"summaryUserId": "User ID",
-			"summaryAccountStatus": "Account status",
-			"summaryEmailVisibility": "Email visibility",
-			"summaryThemePref": "Theme preference",
-			"summaryLanguagePref": "Language preference",
-			"summarySocialCount": "Social links",
-			"summaryLinksCount": "External links",
 			"groupDescriptionEmpty": "No description yet",
 			"groupMembers": "${members} members · ${channels} channels",
 			"channelPrivate": "· Private",
-			"channelTypeText": "Text channel",
-			"channelTypeList": "List channel",
-			"channelTypeVoice": "Voice channel",
-			"channelTypeStreaming": "Streaming channel",
 			"errors": {
 				"loadFailed": "Couldn't load profile",
 				"saveFailed": "Couldn't save profile",
@@ -2947,8 +2994,57 @@
 				"saved": "Profile saved",
 				"avatarUploaded": "Avatar uploaded"
 			},
-			"ownerEntityHash": {
-				"placeholder": "Enter your owner's entity hash"
+			"channelType": {
+				"list": "List channel",
+				"streaming": "Streaming channel",
+				"text": "Text channel",
+				"voice": "Voice channel"
+			},
+			"federation": {
+				"advanced": "Advanced options",
+				"batterySaverLabel": "Battery saver mode",
+				"description": "Configure Nostr relay URLs and power-saving mode. Group federation sync turns on automatically the first time you invite someone or start a federated DM.",
+				"relayUrlsLabel": "Relay servers (one per line, leave blank to use default)",
+				"resetDefault": "Restore recommended defaults",
+				"resetOk": "Recommended defaults restored",
+				"save": "Save network settings",
+				"saveFailed": "Save failed: ${error}",
+				"saved": "Saved",
+				"summary": "Relay servers and battery saver",
+				"title": "Federation & sync"
+			},
+			"summary": {
+				"accountStatus": "Account status",
+				"emailVisibility": "Email visibility",
+				"languagePref": "Language preference",
+				"linksCount": "External links",
+				"socialCount": "Social links",
+				"themePref": "Theme preference",
+				"userId": "User ID"
+			},
+			"owner": {
+				"clear": "Clear owner",
+				"cleared": "Owner cleared",
+				"confirm": {
+					"cancel": "Cancel",
+					"cooldown": "I've read the risks (${seconds})",
+					"editBody": "Once set, they can edit or delete your chat messages, social posts and profile without asking again. Setting an owner by mistake — or being tricked into it — means handing over control immediately.",
+					"first": "I understand the risks — continue",
+					"renderBody": "Their chat messages and social posts render as full Markdown (including HTML/scripts) in your browser. That lets them run arbitrary code on your machine without further consent. Only continue if you fully trust them.",
+					"second": "Click again to confirm",
+					"title": "Set an owner?",
+					"warningTitle": "High-risk action — read carefully"
+				},
+				"description": "Once set, your owner can edit or delete your chat messages, social posts and profile on your behalf. Their content is also rendered locally as unsafe Markdown (may include scripts). Enter any entity hash; you can clear it at any time.",
+				"entityHash": {
+					"placeholder": "Enter your owner's entity hash"
+				},
+				"entityHashLabel": "Owner entity hash (128 hex)",
+				"save": "Save owner",
+				"saveFailed": "Save failed: ${error}",
+				"saved": "Owner updated",
+				"summary": "Delegation",
+				"title": "My owner"
 			}
 		},
 		"entityProfile": {
@@ -2983,30 +3079,12 @@
 			},
 			"searchLabel": "Search sticker packs",
 			"emptyPacks": "No sticker packs yet",
-			"packNameLabel": "Sticker pack name",
-			"packName": {
-				"placeholder": "Enter sticker pack name"
-			},
-			"packDescriptionLabel": "Description",
-			"packDescription": {
-				"placeholder": "Enter description"
-			},
-			"stickerNameLabel": "Sticker name",
-			"stickerName": {
-				"placeholder": "Enter sticker name"
-			},
-			"selectPack": "Select sticker pack",
-			"selectPackOption": {
-				"textContent": "Select a sticker pack"
-			},
-			"selectImage": "Select image",
 			"tagsLabel": "Tags (separated by commas)",
 			"tags": {
 				"placeholder": "e.g. cute, emoji, animals"
 			},
 			"author": "Author",
 			"authorLabel": "Author: ${author}",
-			"stickerCount": "${count} stickers",
 			"badgeMine": "Mine",
 			"noDescription": "No description yet",
 			"noStickersInPack": "No stickers yet",
@@ -3022,8 +3100,6 @@
 			"importPackName": "My favourites",
 			"importPackDescription": "Stickers saved from messages",
 			"nameRequired": "Please enter sticker pack name",
-			"stickerNameRequired": "Please enter sticker name",
-			"selectPackRequired": "Select a sticker pack",
 			"fileRequired": "Please select image file",
 			"loadDetailFailed": "Failed to load sticker pack details",
 			"deleteConfirm": "Are you sure you want to permanently delete this sticker pack? All stickers will be removed and this action is irreversible.",
@@ -3041,6 +3117,174 @@
 				"uninstalled": "Uninstalled successfully",
 				"created": "Sticker pack created successfully",
 				"deleted": "Deleted"
+			},
+			"sticker": {
+				"count": "${count} stickers",
+				"name": {
+					"placeholder": "Enter sticker name"
+				},
+				"nameLabel": "Sticker name",
+				"nameRequired": "Please enter sticker name"
+			},
+			"select": {
+				"image": "Select image",
+				"pack": "Select sticker pack",
+				"packOption": {
+					"textContent": "Select a sticker pack"
+				},
+				"packRequired": "Select a sticker pack"
+			},
+			"pack": {
+				"description": {
+					"placeholder": "Enter description"
+				},
+				"descriptionLabel": "Description",
+				"name": {
+					"placeholder": "Enter sticker pack name"
+				},
+				"nameLabel": "Sticker pack name"
+			}
+		},
+		"message": {
+			"edit": {
+				"input": {
+					"placeholder": "Enter content..."
+				},
+				"buttons": {
+					"confirm": {
+						"title": "Confirm"
+					},
+					"confirmIcon": {
+						"alt": "Confirm Icon"
+					},
+					"cancel": {
+						"title": "Cancel"
+					},
+					"cancelIcon": {
+						"alt": "Cancel Icon"
+					},
+					"upload": {
+						"title": "Upload"
+					},
+					"uploadIcon": {
+						"alt": "Upload Icon"
+					}
+				}
+			},
+			"generating": {
+				"tips": "Generating a reply…",
+				"stop": {
+					"textContent": "stop",
+					"title": "Stop generating"
+				},
+				"stopIcon": {
+					"alt": "stop icon"
+				}
+			},
+			"list": {
+				"confirmDeleteMessage": "Are you sure you want to delete this message?"
+			},
+			"view": {
+				"buttons": {
+					"edit": {
+						"title": "Edit"
+					},
+					"editIcon": {
+						"alt": "Edit Icon"
+					},
+					"more": {
+						"title": "More"
+					},
+					"moreIcon": {
+						"alt": "More Icon"
+					},
+					"delete": {
+						"alt": "Delete"
+					},
+					"deleteIcon": {
+						"alt": "Delete Icon"
+					},
+					"downloadHtml": {
+						"alt": "Download as HTML"
+					},
+					"downloadHtmlIcon": {
+						"alt": "Download HTML icon"
+					}
+				},
+				"copyButton": {
+					"title": "Copy"
+				},
+				"copyButtonIcon": {
+					"alt": "Copy"
+				},
+				"copySuccess": "Copied to clipboard",
+				"dropdown": {
+					"delete": "Delete",
+					"deleteIcon": {
+						"alt": "Delete Icon"
+					},
+					"downloadHtml": "Download as HTML",
+					"downloadHtmlIcon": {
+						"alt": "Download HTML icon"
+					},
+					"share": {
+						"textContent": "Share",
+						"1h": "1 hour",
+						"12h": "12 hours",
+						"24h": "24 hours",
+						"72h": "72 hours"
+					},
+					"shareIcon": {
+						"alt": "share icon"
+					},
+					"copy": {
+						"html": "Copy as HTML",
+						"htmlIcon": {
+							"alt": "Copy HTML Icon"
+						},
+						"markdown": "Copy as Markdown",
+						"markdownIcon": {
+							"alt": "Copy as Markdown Icon"
+						},
+						"text": "Copy as Plain Text",
+						"textIcon": {
+							"alt": "Copy Text Icon"
+						}
+					}
+				},
+				"share": {
+					"uploading": "Creating link...",
+					"success": "Link created successfully! Copied to clipboard. <br>This feature is supported by ${provider}. <br>[Sponsor them.](${sponsorLink})"
+				},
+				"commonToolCalling": "Calling tool",
+				"reasoningDetailsTitle": "Reasoning",
+				"logprobsNotApplicable": "N/A",
+				"logprobsTopLogprobsMeta": "top_logprobs (selected: ${token})",
+				"logprobsMetricsFooter": "TTFT: ${ttft} | Duration: ${time} | Tokens: ${tokens} | Speed: ${speed}",
+				"noReplyContent": "(No reply content)",
+				"feedback": {
+					"thumbsUp": {
+						"title": "Like"
+					},
+					"thumbsDown": {
+						"title": "Dislike"
+					},
+					"regenerate": {
+						"title": "Regenerate"
+					},
+					"reason": {
+						"placeholder": "Optional: explain why"
+					},
+					"submit": "Submit",
+					"cancel": "Cancel"
+				},
+				"tool": {
+					"overridingFilepath": "Overwriting ${filepath}",
+					"readingFilepath": "Reading ${filepath}",
+					"replacingFilepath": "Replacing in ${filepath}",
+					"runningLang": "Running ${lang}",
+					"searchingContent": "Searching ${content}"
+				}
 			}
 		}
 	},
@@ -3093,21 +3337,6 @@
 				"label": "First Message",
 				"placeholder": "The first message the character says."
 			},
-			"personaDef": {
-				"heading": "Persona Definition"
-			},
-			"personaUserName": {
-				"label": "Your Name in Chat",
-				"placeholder": "e.g., Captain, Explorer"
-			},
-			"personaAppearance": {
-				"label": "Appearance",
-				"placeholder": "Describe your appearance."
-			},
-			"personaPersonality": {
-				"label": "Personality",
-				"placeholder": "Describe your personality traits."
-			},
 			"worldDef": {
 				"heading": "World Definition"
 			},
@@ -3139,7 +3368,24 @@
 				"label": "Issue Page",
 				"placeholder": "URL of the component's issue page"
 			},
-			"createButton": "Create Component"
+			"createButton": "Create Component",
+			"persona": {
+				"appearance": {
+					"label": "Appearance",
+					"placeholder": "Describe your appearance."
+				},
+				"def": {
+					"heading": "Persona Definition"
+				},
+				"personality": {
+					"label": "Personality",
+					"placeholder": "Describe your personality traits."
+				},
+				"userName": {
+					"label": "Your Name in Chat",
+					"placeholder": "e.g., Captain, Explorer"
+				}
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -3450,21 +3696,23 @@
 			"noModelsMatched": "No matching models found",
 			"currentModelTitle": "${name} (${model})",
 			"providerLabel": "Provider: ${provider}",
-			"metaContext": "Context: ${context} tokens",
-			"metaOutputLimit": "Max output: ${output} tokens",
-			"metaInputPrice": "Input price: ${price} / 1M tokens",
-			"metaOutputPrice": "Output price: ${price} / 1M tokens",
-			"metaCachePrice": "Cache read/write: ${read} / ${write}",
-			"metaModalities": "Modalities: input ${input}, output ${output}",
-			"metaReasoning": "Supports reasoning",
-			"metaToolCall": "Supports tool calling",
-			"metaVision": "Supports vision input",
-			"metaOpenWeights": "Open weights",
-			"metaKnowledge": "Knowledge cutoff: ${knowledge}",
-			"metaReleaseDate": "Release date: ${date}",
 			"providerDocLink": "[View provider documentation](${url})",
 			"modelSearch": {
 				"placeholder": "Search model name, manufacturer, capabilities..."
+			},
+			"meta": {
+				"cachePrice": "Cache read/write: ${read} / ${write}",
+				"context": "Context: ${context} tokens",
+				"inputPrice": "Input price: ${price} / 1M tokens",
+				"knowledge": "Knowledge cutoff: ${knowledge}",
+				"modalities": "Modalities: input ${input}, output ${output}",
+				"openWeights": "Open weights",
+				"outputLimit": "Max output: ${output} tokens",
+				"outputPrice": "Output price: ${price} / 1M tokens",
+				"reasoning": "Supports reasoning",
+				"releaseDate": "Release date: ${date}",
+				"toolCall": "Supports tool calling",
+				"vision": "Supports vision input"
 			}
 		},
 		"prompts": {
@@ -3490,21 +3738,23 @@
 			"unsavedChangesBeforeUnload": "You have unsaved changes. Are you sure you want to leave this page?"
 		},
 		"alerts": {
-			"fetchFileListFailed": "Failed to get file list: ${error}",
-			"fetchGeneratorListFailed": "Failed to get generator list: ${error}",
-			"fetchDefaultsFailed": "Failed to get default component: ${error}",
-			"fetchFileDataFailed": "Failed to obtain file data: ${error}",
-			"fetchConfigTemplateFailed": "Failed to obtain configuration template",
 			"saveFileFailed": "Failed to save file: ${error}",
 			"deleteFileFailed": "Failed to delete file: ${error}",
 			"addFileFailed": "Failed to add file: ${error}",
 			"setDefaultFailed": "Failed to set default service source: ${error}",
-			"fetchBranchesFailed": "Failed to get component tree: ${error}",
 			"noFileSelectedSave": "No file selected to save.",
 			"noFileSelectedDelete": "No files selected for deletion.",
 			"noGeneratorSelectedSave": "Please select the generator before saving",
 			"savedAsNewFile": "Saved as new service source: ${name}",
-			"invalidFileName": "The file name cannot contain the following characters: / \\ : * ? \" < > |"
+			"invalidFileName": "The file name cannot contain the following characters: / \\ : * ? \" < > |",
+			"fetch": {
+				"branchesFailed": "Failed to get component tree: ${error}",
+				"configTemplateFailed": "Failed to obtain configuration template",
+				"defaultsFailed": "Failed to get default component: ${error}",
+				"fileDataFailed": "Failed to obtain file data: ${error}",
+				"fileListFailed": "Failed to get file list: ${error}",
+				"generatorListFailed": "Failed to get generator list: ${error}"
+			}
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -3827,14 +4077,6 @@
 			"privacyHint": "Controls whether accounts appear in Discovery and Recommendations.",
 			"tasteTitle": "Recommendations and Preferences",
 			"tasteHint": "Adjust the privacy boundaries and label naming of \"Recommended for You\".",
-			"mutedKeywordsTitle": "Block words and tags",
-			"mutedKeywordsHint": "Posts that hit body text, Content warnings, or labels will be hidden from the stream, explore, search, and notifications. Only saved locally.",
-			"mutedKeywordsMatchTags": "Match tags at the same time",
-			"mutedKeywordsAdd": "Add",
-			"mutedKeywordsRemove": {
-				"title": "Remove blocked words"
-			},
-			"mutedKeywordsEmpty": "No blocking words added yet",
 			"autoTranslateTitle": "automatic translation",
 			"autoTranslateHint": "When turned on, foreign language posts will automatically request translation and can be switched to the original text.",
 			"autoTranslateEnable": "Automatically translate posts in languages ​​other than your own",
@@ -3842,19 +4084,29 @@
 			"safetyHint": "Manage blocked and hidden lists.",
 			"mutedKeywords": {
 				"placeholder": "Enter keywords or #tags",
-				"aria-label": "Enter keyword or tag to block"
+				"aria-label": "Enter keyword or tag to block",
+				"add": "Add",
+				"empty": "No blocking words added yet",
+				"hint": "Posts that hit body text, Content warnings, or labels will be hidden from the stream, explore, search, and notifications. Only saved locally.",
+				"matchTags": "Match tags at the same time",
+				"remove": {
+					"title": "Remove blocked words"
+				},
+				"title": "Block words and tags"
 			},
 			"taste": {
 				"rebuild": "Rebuild taste profile",
-				"privacyPublishPreferences": "Public tag naming and merge discovery",
-				"privacyPublishPreferencesHint": "When off, friends won't see your tag names or merge proposals, and can't contribute to consensus.",
-				"privacyPublishReactions": "Share likes and dislikes",
-				"privacyPublishReactionsHint": "After closing, the poster will not receive your likes/dislikes, your reactions will not be included in others' For youations, and you will no longer promote the post to spread again.",
 				"empty": "No taste tags yet — like or dislike more posts to build your profile",
 				"weight": "Weight: ${weight}",
 				"save": "Save",
 				"name": {
 					"placeholder": "Local display name"
+				},
+				"privacyPublish": {
+					"preferences": "Public tag naming and merge discovery",
+					"preferencesHint": "When off, friends won't see your tag names or merge proposals, and can't contribute to consensus.",
+					"reactions": "Share likes and dislikes",
+					"reactionsHint": "After closing, the poster will not receive your likes/dislikes, your reactions will not be included in others' For youations, and you will no longer promote the post to spread again."
 				}
 			},
 			"blocklist": {
@@ -3883,27 +4135,6 @@
 				"placeholder": "Content warning (optional)"
 			},
 			"sensitiveMedia": "media sensitivity mask",
-			"editImage": "edit",
-			"editCrop": "Crop",
-			"editMosaic": "Pixelate",
-			"editBrush": "Brush",
-			"editBrushColor": {
-				"title": "Brush colour",
-				"aria-label": "Brush colour"
-			},
-			"editBrushSize": {
-				"title": "Brush size",
-				"aria-label": "Brush size"
-			},
-			"editApply": "Apply",
-			"editCancel": "Cancel",
-			"replyPolicyEveryone": "Anyone can reply",
-			"replyPolicyFollowers7d": "Followers for more than 7 days",
-			"replyPolicyAuthorFollows": "People I follow",
-			"replyPolicyLabel": "Who can reply",
-			"replyDisplayAll": "Show all replies",
-			"replyDisplayFeaturedOnly": "Selected replies only",
-			"replyDisplayLabel": "Reply to show",
 			"scheduleLabel": "Release regularly",
 			"scheduleSuccess": "The post has been added to the scheduled queue",
 			"emojiButton": {
@@ -3985,6 +4216,33 @@
 					"placeholder": "Who should not show it (optional)"
 				},
 				"aria-label": "Visible range"
+			},
+			"reply": {
+				"displayAll": "Show all replies",
+				"displayFeaturedOnly": "Selected replies only",
+				"displayLabel": "Reply to show",
+				"policy": {
+					"authorFollows": "People I follow",
+					"everyone": "Anyone can reply",
+					"followers7d": "Followers for more than 7 days",
+					"label": "Who can reply"
+				}
+			},
+			"edit": {
+				"apply": "Apply",
+				"brush": "Brush",
+				"brushColor": {
+					"title": "Brush colour",
+					"aria-label": "Brush colour"
+				},
+				"brushSize": {
+					"title": "Brush size",
+					"aria-label": "Brush size"
+				},
+				"cancel": "Cancel",
+				"crop": "Crop",
+				"image": "edit",
+				"mosaic": "Pixelate"
 			}
 		},
 		"feed": {
@@ -4091,21 +4349,11 @@
 			},
 			"mediaOnly": "[media]",
 			"hideFromExplore": "Hide account from explore page",
-			"tabPosts": "Posts",
-			"tabAlbums": "Albums",
-			"tabLikes": "Like",
-			"tabCabinets": "Cabinets",
 			"tabsLabel": {
 				"aria-label": "Profile sections"
 			},
 			"cabinetsEmpty": "No public cabinets yet",
 			"cabinetsFailed": "Couldn't load file cabinets: ${error}",
-			"statsGroup": {
-				"aria-label": "Statistics"
-			},
-			"statsPosts": "Posts",
-			"statsFollowing": "Following",
-			"statsFollowers": "Followers",
 			"followingTitle": "Following",
 			"followersTitle": "Followers",
 			"albums": {
@@ -4122,6 +4370,20 @@
 				"deleteWithPosts": "Delete album and delete post",
 				"pickerLabel": "Add album",
 				"defaultName": "Default album"
+			},
+			"stats": {
+				"followers": "Followers",
+				"following": "Following",
+				"group": {
+					"aria-label": "Statistics"
+				},
+				"posts": "Posts"
+			},
+			"tabs": {
+				"albums": "Albums",
+				"cabinets": "Cabinets",
+				"likes": "Like",
+				"posts": "Posts"
 			}
 		},
 		"video": {
@@ -4171,10 +4433,6 @@
 			"broadcast": {
 				"title": "Start broadcasting",
 				"open": "Go to broadcast",
-				"mediaAv": "Audio and video",
-				"mediaAudio": "Pure audio",
-				"mediaVideo": "pure picture",
-				"mediaWhip": "WHIP push streaming (such as OBS)",
 				"whipUrl": "WHIP address",
 				"whipToken": "Bearer Token",
 				"whipWaiting": "Waiting for WHIP streaming connection (streaming software such as OBS can be used)…",
@@ -4184,6 +4442,12 @@
 				"stopped": "Live broadcast has stopped",
 				"titleInput": {
 					"placeholder": "Live title (optional)"
+				},
+				"media": {
+					"audio": "Pure audio",
+					"av": "Audio and video",
+					"video": "pure picture",
+					"whip": "WHIP push streaming (such as OBS)"
 				}
 			},
 			"danmaku": {
@@ -4207,30 +4471,32 @@
 			"trustScore": "Trust ${score}",
 			"viewTitle": "Search",
 			"loading": "Searching…",
-			"filterAuthor": {
-				"placeholder": "Author",
-				"aria-label": "Author"
-			},
-			"filterMedia": {
-				"aria-label": "Media type"
-			},
-			"filterMediaAll": "All media",
-			"filterMediaImage": "Images",
-			"filterMediaVideo": "Videos",
-			"filterTag": {
-				"placeholder": "#Label",
-				"aria-label": "Label"
-			},
-			"filterSort": {
-				"aria-label": "Sort by"
-			},
 			"sortRecent": "Latest",
 			"sortPopular": "Popular",
-			"filterScope": {
-				"aria-label": "Search scope"
-			},
 			"scopeLocal": "This device",
-			"scopeNearby": "Nearby"
+			"scopeNearby": "Nearby",
+			"filter": {
+				"author": {
+					"placeholder": "Author",
+					"aria-label": "Author"
+				},
+				"media": {
+					"aria-label": "Media type"
+				},
+				"mediaAll": "All media",
+				"mediaImage": "Images",
+				"mediaVideo": "Videos",
+				"scope": {
+					"aria-label": "Search scope"
+				},
+				"sort": {
+					"aria-label": "Sort by"
+				},
+				"tag": {
+					"placeholder": "#Label",
+					"aria-label": "Label"
+				}
+			}
 		},
 		"dialog": {
 			"close": {
@@ -4425,7 +4691,6 @@
 		},
 		"upload": "Upload",
 		"uploadFolder": "Upload folder",
-		"newFolder": "Create new folder",
 		"open": "Open",
 		"download": "Download",
 		"downloadZip": "Download folder",
@@ -4459,12 +4724,6 @@
 		"created": "Created: ${stamp}",
 		"modified": "Modified: ${stamp}",
 		"statusCount": "${count} items, ${selected} selected",
-		"newCabinet": {
-			"title": "New cabinet",
-			"aria-label": "New cabinet"
-		},
-		"newCabinetPrompt": "New file cabinet name",
-		"newFolderPrompt": "New folder name",
 		"renamePrompt": "new name",
 		"visibilityPrompt": "Visibility (public/unlisted/followers/private/selected)",
 		"cabinetActionPrompt": "Action: rename/delete/visibility",
@@ -4475,12 +4734,21 @@
 		"cutDone": "Cut",
 		"undo": "Undo",
 		"redo": "Redo",
-		"newWindow": "Open in new window",
 		"goUp": "Go up",
 		"brokenLink": "Link is broken: ${reason}",
 		"noDownload": "No downloadable content",
 		"groupDownloadHint": "Please obtain Group filess through message attachments or subsequent download links.",
-		"remoteEntity": "remote entity"
+		"remoteEntity": "remote entity",
+		"new": {
+			"cabinet": {
+				"title": "New cabinet",
+				"aria-label": "New cabinet"
+			},
+			"cabinetPrompt": "New file cabinet name",
+			"folder": "Create new folder",
+			"folderPrompt": "New folder name",
+			"window": "Open in new window"
+		}
 	},
 	"browser_integration": {
 		"title": "Browser integration",
@@ -4610,27 +4878,10 @@
 		"title": "IDE integration",
 		"heading": "IDE integration",
 		"instruction": "Use fount roles to assist programming in ACP-enabled editors (such as Zed, JetBrains, Neovim, etc.).",
-		"supportedEditorsTitle": "Supported editors and clients",
-		"supportedEditorsIntro": "The following clients work with fount:",
-		"supportedEditorsLoading": "Loading…",
-		"supportedEditorsError": "Failed to load list: ${message}",
-		"acpTitle": "Configure fount ACP script",
-		"acpDesc": "Refer to the following example to configure the fount ACP script:",
-		"acpCharLabel": "Role",
 		"charListError": "Failed to get role list",
-		"acpScriptLabel": "ACP script URL",
-		"acpConfigSample": "Configuration example:",
-		"acpConfigHint": "The role id is shown in the role drop-down on this page, and the API key can be managed in user settings.",
 		"copyButton": "Copy",
 		"copied": "Copied to clipboard",
-		"apiKeySectionTitle": "API key",
-		"apiKeyHint": "Used for ACP script connection to fount (same set of keys as API proxy, can be created in user settings).",
 		"generateApiKeyButton": "Generate new key",
-		"apiKeyCopied": "API key copied",
-		"apiKeyCreateError": "Failed to create API key: ${message}",
-		"apiKeyInput": {
-			"aria-label": "API key"
-		},
 		"home_function_buttons": {
 			"integration_related": "Integration related",
 			"ide_integration_config": {
@@ -4644,8 +4895,31 @@
 				"locked_description": "Connect to the fount role in an external IDE and complete a session."
 			}
 		},
-		"acpChar": "Select role",
-		"acpConfig": "Please select a role and generate an API key first"
+		"supportedEditors": {
+			"error": "Failed to load list: ${message}",
+			"intro": "The following clients work with fount:",
+			"loading": "Loading…",
+			"title": "Supported editors and clients"
+		},
+		"apiKey": {
+			"copied": "API key copied",
+			"createError": "Failed to create API key: ${message}",
+			"hint": "Used for ACP script connection to fount (same set of keys as API proxy, can be created in user settings).",
+			"input": {
+				"aria-label": "API key"
+			},
+			"sectionTitle": "API key"
+		},
+		"acp": {
+			"char": "Select role",
+			"charLabel": "Role",
+			"config": "Please select a role and generate an API key first",
+			"configHint": "The role id is shown in the role drop-down on this page, and the API key can be managed in user settings.",
+			"configSample": "Configuration example:",
+			"desc": "Refer to the following example to configure the fount ACP script:",
+			"scriptLabel": "ACP script URL",
+			"title": "Configure fount ACP script"
+		}
 	},
 	"deskpet": {
 		"title": "Desktop pets",
@@ -4936,11 +5210,6 @@
 			"deviceInfo": "Device ID: ${deviceId}",
 			"thisDevice": "This Device",
 			"deviceDetails": "Last online: ${lastSeen} | IP: ${ipAddress} | User Agent: ${userAgent}",
-			"revokeButton": "Revoke",
-			"revokeConfirm": "Are you sure you want to revoke this device/session?",
-			"revokeSuccess": "Device/session successfully revoked.",
-			"revokeMissingParams": "Please provide the device and session password you want to revoke.",
-			"revokeWrongPassword": "The password is incorrect.",
 			"listNotFound": "Device list not found.",
 			"deviceNotFound": "The device or session was not found.",
 			"refreshButton": {
@@ -4948,6 +5217,13 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "Refresh Icon"
+			},
+			"revoke": {
+				"button": "Revoke",
+				"confirm": "Are you sure you want to revoke this device/session?",
+				"missingParams": "Please provide the device and session password you want to revoke.",
+				"success": "Device/session successfully revoked.",
+				"wrongPassword": "The password is incorrect."
 			}
 		},
 		"apiKeys": {
@@ -4961,14 +5237,8 @@
 			"keyDetails": "Description: ${description} | Created in: ${createdAt} | Last used: ${lastUsed}",
 			"neverUsed": "Never used",
 			"noKeysForUser": "API key data not found.",
-			"revokeWrongPassword": "The password is incorrect.",
 			"keyNotFound": "The API key was not found.",
-			"revokeMissingJti": "Please specify the key to revoke.",
-			"revokeMissingPassword": "Revoking a key requires a password.",
 			"verifyMissingApiKey": "Please provide an API key.",
-			"revokeButton": "Revoke",
-			"revokeConfirm": "Are you sure you want to revoke this API key?",
-			"revokeSuccess": "The API key has been successfully revoked.",
 			"errorDescriptionRequired": "A description is required.",
 			"createSuccess": "The API key was created successfully.",
 			"refreshButton": {
@@ -4976,6 +5246,14 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "Refresh Icon"
+			},
+			"revoke": {
+				"button": "Revoke",
+				"confirm": "Are you sure you want to revoke this API key?",
+				"missingJti": "Please specify the key to revoke.",
+				"missingPassword": "Revoking a key requires a password.",
+				"success": "The API key has been successfully revoked.",
+				"wrongPassword": "The password is incorrect."
 			}
 		},
 		"newApiKey": {
@@ -4997,14 +5275,16 @@
 			"argsTemplateHint": "Placeholders: \\${file} \\${line} \\${column}",
 			"presetOptionPathAvailable": "${label} (on PATH)",
 			"presetOptionPathUnavailable": "${label} (not on PATH)",
-			"testPathInput": {
-				"placeholder": "Path to a file to try, e.g. C:/work/project/src/main.mjs"
-			},
-			"testButton": "Try opening",
 			"saveButton": "Save configuration",
 			"saveSuccess": "External editor command saved.",
-			"testPathRequired": "Enter a test file path first.",
-			"testSuccess": "Ran the command to open your editor."
+			"test": {
+				"button": "Try opening",
+				"pathInput": {
+					"placeholder": "Path to a file to try, e.g. C:/work/project/src/main.mjs"
+				},
+				"pathRequired": "Enter a test file path first.",
+				"success": "Ran the command to open your editor."
+			}
 		},
 		"logout": {
 			"title": "Log Out",
@@ -5017,12 +5297,12 @@
 			"title": "Delete Account",
 			"warning": "Warning: This action will permanently delete your account and all related data, and it cannot be recovered.",
 			"submitButton": "Delete My Account",
-			"confirmMessage1": "Warning! Are you sure you want to permanently delete your account? This action cannot be undone.",
-			"confirmMessage2": "To confirm deletion, please enter your username \"${username}\":",
 			"usernameMismatch": "The entered username does not match the current user. Deletion has been cancelled.",
 			"success": "Account successfully deleted. You will now be logged out.",
 			"missingPassword": "Please enter your password.",
-			"wrongPassword": "The password is incorrect."
+			"wrongPassword": "The password is incorrect.",
+			"confirmWarning": "Warning! Are you sure you want to permanently delete your account? This action cannot be undone.",
+			"confirmUsernamePrompt": "To confirm deletion, please enter your username \"${username}\":"
 		},
 		"passwordConfirm": {
 			"title": "Confirm Operation",
@@ -5073,19 +5353,13 @@
 		"instruction": "Generate and manage your API keys on this page to integrate fount with other applications.",
 		"endpointSectionTitle": "API Endpoint",
 		"endpointInstruction": "This is the base URL for integration with other services.",
-		"apiUrlInput": {
-			"aria-label": "API endpoint"
-		},
 		"usageExampleTitle": "Usage Example",
 		"usageExampleInstruction": "Here is an example of how to get the list of available models using `curl`.",
 		"copyButton": "Copy",
 		"copied": "Copied to clipboard",
-		"apiKeySectionTitle": "Your API Keys",
-		"apiKey": "Your API Key:",
 		"noApiKey": "You have not generated an API key for this page yet.",
 		"generateApiKeyButton": "Generate New Key",
 		"copyApiKeyButton": "Copy",
-		"apiKeyCopied": "API key copied!",
 		"queryStringSectionTitle": "Can't set APIKey in request header? (Insecure)",
 		"queryStringWarning": "Use this alternative method when your application does not support sending the API key in the request header (Authorization header). Please note: Placing the API key directly in the URL poses a security risk as it may be logged in server logs or browser history.",
 		"copyQueryStringUrlButton": "URL with API Key (Query String)",
@@ -5097,6 +5371,14 @@
 						"title": "As Proxy"
 					}
 				}
+			}
+		},
+		"api": {
+			"key": "Your API Key:",
+			"keyCopied": "API key copied!",
+			"keySectionTitle": "Your API Keys",
+			"urlInput": {
+				"aria-label": "API endpoint"
 			}
 		}
 	},
@@ -5270,11 +5552,7 @@
 		"failed": "Failed",
 		"copySuccess": "Debug report copied to clipboard",
 		"copyFailed": "Failed to copy report",
-		"updateNow": "Update and restart now",
 		"alreadyLatest": "Already the latest version",
-		"updateRestarting": "Restarting...",
-		"updateSuccess": "Server is restarting",
-		"updateFailed": "Update request failed",
 		"autoUpdateNotEnabled": "Automatic updates are not enabled",
 		"home_function_buttons": {
 			"debug": {
@@ -5282,6 +5560,12 @@
 					"title": "Open Debug Panel"
 				}
 			}
+		},
+		"update": {
+			"failed": "Update request failed",
+			"now": "Update and restart now",
+			"restarting": "Restarting...",
+			"success": "Server is restarting"
 		}
 	},
 	"badges_maker": {

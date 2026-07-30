@@ -18,13 +18,13 @@ function renderToolCallingPlaceholder(args) {
 	 * 获取本地化「正在调用工具」占位文案。
 	 * @returns {string} 本地化文案
 	 */
-	const toolCallingText = () => getChatI18n(args, 'chat.messageView.commonToolCalling')
+	const toolCallingText = () => getChatI18n(args, 'chat.message.view.commonToolCalling')
 	if (args.supported_functions.html)
 		return `\
 <div class="tool-call-placeholder card bg-base-100 shadow-xl">
 	<div class="card-body">
 	${args.supported_functions.fount_i18nkeys
-				? '<span class="tool-call-placeholder-text" data-i18n="chat.messageView.commonToolCalling"></span>'
+				? '<span class="tool-call-placeholder-text" data-i18n="chat.message.view.commonToolCalling"></span>'
 				: `<span class="tool-call-placeholder-text">${toolCallingText()}</span>`}
 	</div>
 </div>

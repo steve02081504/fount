@@ -37,7 +37,7 @@ async function renderMutedKeywordsSection(panel, entries) {
 	async function paintChips(list) {
 		chips.replaceChildren()
 		if (!list.length) {
-			await mountEmptyState(chips, { titleKey: 'social.settings.mutedKeywordsEmpty', modClass: ' empty-state--hint' })
+			await mountEmptyState(chips, { titleKey: 'social.settings.mutedKeywords.empty', modClass: ' empty-state--hint' })
 			return
 		}
 		for (const entry of list) {
@@ -45,7 +45,7 @@ async function renderMutedKeywordsSection(panel, entries) {
 			chip.type = 'button'
 			chip.className = 'badge badge-outline gap-1 cursor-pointer muted-keyword-chip'
 			chip.dataset.pattern = entry.pattern
-			chip.dataset.i18n = 'social.settings.mutedKeywordsRemove'
+			chip.dataset.i18n = 'social.settings.mutedKeywords.remove'
 			const tagHint = entry.matchTags === false ? '' : ' #Tag'
 			chip.innerHTML = `<span>${escapeHtml(entry.pattern)}${escapeHtml(tagHint)}</span><span aria-hidden="true">×</span>`
 			chips.appendChild(chip)

@@ -51,10 +51,10 @@ function applyDatasetI18n(el, i18nKey, params = {}) {
  * @returns {string} `chat.profile.channelType*` i18n 键
  */
 function channelTypeI18nKey(type) {
-	if (type === 'text') return 'chat.profile.channelTypeText'
-	if (type === 'list') return 'chat.profile.channelTypeList'
-	if (type === 'streaming') return 'chat.profile.channelTypeStreaming'
-	return 'chat.profile.channelTypeVoice'
+	if (type === 'text') return 'chat.profile.channelType.text'
+	if (type === 'list') return 'chat.profile.channelType.list'
+	if (type === 'streaming') return 'chat.profile.channelType.streaming'
+	return 'chat.profile.channelType.voice'
 }
 
 /**

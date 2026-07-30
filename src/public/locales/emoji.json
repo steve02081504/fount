@@ -153,10 +153,6 @@
 			"passedLabel": "✅",
 			"failedLabel": "❌",
 			"noiseHits": "(🔊: ${hits})",
-			"unknownManifestId": "🚫📋 `id`：${ids}",
-			"unknownSuiteSelector": "🚫📦📛：${ids}",
-			"unknownSubtestFilter": "🚫🔬🔽：${suite} → ${names}",
-			"unknownFileFilter": "🚫🧪📁🔽：${suite} → ${names}",
 			"unsupportedSubtestFilter": "📦🚫🔬／📁🔽：${suite}（${names}）",
 			"available": "✅📋：${ids}",
 			"manifestMatched": "📋🎯：${ids}",
@@ -178,28 +174,16 @@
 			},
 			"reusedSuite": "\n>>> ♻️ ${manifestId}:${name}（⚡⌀Δ，⏮ ${status}）",
 			"noisyOnlyRemain": "＋ ${count} 📦 ✅＋🔊：${suites}",
-			"estimatedRun": "⏱️ ≈ ${eta}（🔀 ${rate}）",
-			"estimatedRunSerial": "⏱️ ≈ ${eta}（📦→→）",
-			"estimatedRunSkipped": "＋♻️ ${reused}，🚫⏸️ ${blocked}（∉⏱️）",
 			"noRealRunPlanned": "🚫🏃：♻️ ${reused}、🚫⏸️ ${blocked}（⚡⌀Δ）",
 			"allReusedHint": "🚫🏃：❌＝⏮♻️，🚫⏸️⌀Δ（📁⌀Δ）🔧📁→🔁，／ `fount test --force`→💥🏃",
-			"estimatedRemaining": "⏱️⏳ ≈ ${eta}（${completed}/${total} 📦）",
-			"estimatedRunSerialHint": "🔀≈ ${eta}（${rate}），💰 ≈ ${savings}（➖ `--no-parallel`）",
 			"failuresSaved": "💾 ❌📋：${path}（${count} 📦）",
 			"failuresCleared": "📋 ${manifestId} 💚∞，❌📋🗑️",
 			"terminated": "⏰⏹：${label} — ${reason}",
-			"terminateIdle": "⏹️ ${label}：＞${minutes}m 🚫`stdall`（💤 ${idleSec}s，🏃 ${elapsed}）",
-			"terminateDuration": "⏹️ ${label}：＞`watchdog` 📏（🏃 ${elapsed}，📏 ${baseline}，🔝 ${limit}）",
-			"terminateDurationDefault": "⏹️ ${label}：＞⭐`watchdog`🔝（🏃 ${elapsed}，🔝 ${limit}）",
 			"sleepDetected": "💤🖥️（`watchdog` ⏱️↗️ ${gap} ≥ ${limit}）⏹️ ${label} → 🔁（🏃 ${elapsed}）",
 			"sleepRetry": "💤🛑 → 🔁 ${label}（#${attempt}）",
-			"terminateMarker": "[⏹️: ${reason}]",
-			"terminateUnknown": "⏹️ ${label}：🧪🛑",
-			"terminateSpeculative": "⏹️ ${label}：🔮🔗🚫，❌⏹",
 			"nothingToContinue": "💚∞，🚫⏰，🚫🏃",
 			"triggerNoMatch": "⚡🚫📁：${scope} — ${pattern}",
 			"triggerNoMatchSummary": "${count} ⚡🚫📁（👉 `report.md`）",
-			"unknownSuite": "🚫 📦: ${name}",
 			"federationCleanupPre": "🌐🧪🧹（🔝）❌：${output}",
 			"federationCleanupPost": "🌐🧪🧹（🔚）❌：${output}",
 			"suiteHeader": "\n=== 📦🧪 ${name} ===",
@@ -233,25 +217,7 @@
 				"title": "⛲ 🧪📊",
 				"tableHeaderItem": "📌",
 				"tableHeaderValue": "🔢",
-				"fieldRunId": "🏃🆔",
-				"fieldCommand": "⌨️",
-				"fieldExit": "🚪",
-				"fieldProgress": "📊",
-				"fieldSuites": "📦🧪",
-				"fieldFailed": "❌ #",
-				"fieldNoisyPassed": "✅+🔊",
-				"fieldReused": "♻️ #",
-				"fieldSuiteSumDuration": "📦 Σ ⏱️",
-				"fieldWallClock": "Σ ⏱️",
-				"fieldParallelRate": "🔀",
-				"fieldEstimatedRemaining": "⏱️⏳≈",
-				"fieldEstimatedParallelRate": "🔀≈",
 				"estimatePoint": "≈ ${eta}",
-				"pendingEstimate": "⏱️⏳≈ ${eta}",
-				"pendingParallelEstimate": "🔀⏱️≈ ${eta}（🔀 ${rate}）",
-				"pendingSavings": "💰≈ ${savings}",
-				"pendingItemExpected": "🔮 ${expected}",
-				"fieldDuration": "⏱️",
 				"commandDefault": "（⭐）",
 				"exitPassed": "✅",
 				"exitFailed": "❌",
@@ -259,54 +225,86 @@
 				"progressFormat": "${completed}/${total} 📦",
 				"suitesFormat": "${passed}/${completed} ✅",
 				"artifacts": "📁: `${path}`",
-				"sectionFailed": "❌ 📦",
-				"sectionNoisyPassed": "✅+🔊",
-				"sectionSilentPassed": "✅",
-				"sectionPending": "⏳",
-				"sectionContinue": "▶️⏳",
-				"sectionReplay": "🔁 ❌",
-				"sectionReplayImperfect": "🔁⌀💚",
 				"columnSuite": "📦🧪",
 				"columnDuration": "⏱️",
-				"labelReused": "(♻️)",
-				"labelExpectedBlocked": "（🚫⏸️≈）",
-				"labelDuration": "⏱️",
-				"labelLog": "📜",
-				"labelNoise": "🔊",
-				"labelFailedFiles": "❌ 📁",
-				"labelTerminateReason": "⏹️❔",
-				"sectionContinueReasons": "⚡❔",
 				"continueReasonsLink": "⚡❔：👉 [${path}](${path})",
-				"labelContinueReason": "⚡❔",
-				"reasonImperfectFailed": "📜 ❌",
-				"reasonImperfectNoisy": "📜 ✅+🔊",
-				"reasonImperfectBlocked": "📜 🚫⏸️",
-				"reasonImperfectDependent": "⬆️ ❌ → ⬇️",
-				"reasonMissingRecord": "`state` ∅ → 🏃",
-				"reasonStaleContent": "📄✏️ → 🔁",
-				"reasonTriggerHashDrift": "⚡🔢🌊（🚫📁🎯）",
-				"reasonExplicitSelected": "👆📛",
-				"reasonDependencyRequired": "🔗📥",
-				"labelRootCause": "🌱",
-				"labelDirectRequiredBy": "👆📥",
-				"labelInclusionPath": "📥🔗",
-				"labelPullUpstream": "⬆️：${requiredBy} 🔗⌀💚",
-				"labelPullDownstream": "⬇️：${requiredBy} ⌀💚 → 🔗📥",
-				"labelGateReason": "🏃❔",
-				"labelCommitRange": "📜↔️",
-				"labelUncommittedHashRange": "🚫📤 `digest`",
-				"labelMatchedTriggers": "⚡🎯",
-				"labelMatchedTriggerSets": "⚡📦🎯",
-				"labelMatchedPaths": "📁🎯",
-				"labelTriggerHashDrift": "⚡🔢≠🗂️（💩→✨ 🙈）",
-				"sectionDeadTriggers": "💀⚡",
 				"deadTriggersHint": "⬇️ `glob` 📦▶️（`git` ✅👣＋🚫🙈👣）🚫🎯📁：",
 				"durationMs": "${ms} ⏱️",
-				"durationUnitSec": "${n} s",
-				"durationUnitMin": "${n} ⏱️",
-				"durationUnitMinute": "${n} ⏱️",
-				"durationUnitHour": "${n} h",
-				"durationUnitDay": "${n} d"
+				"durationUnit": {
+					"day": "${n} d",
+					"hour": "${n} h",
+					"min": "${n} ⏱️",
+					"minute": "${n} ⏱️",
+					"sec": "${n} s"
+				},
+				"section": {
+					"continue": "▶️⏳",
+					"continueReasons": "⚡❔",
+					"deadTriggers": "💀⚡",
+					"failed": "❌ 📦",
+					"noisyPassed": "✅+🔊",
+					"pending": "⏳",
+					"replay": "🔁 ❌",
+					"replayImperfect": "🔁⌀💚",
+					"silentPassed": "✅"
+				},
+				"pending": {
+					"estimate": "⏱️⏳≈ ${eta}",
+					"itemExpected": "🔮 ${expected}",
+					"parallelEstimate": "🔀⏱️≈ ${eta}（🔀 ${rate}）",
+					"savings": "💰≈ ${savings}"
+				},
+				"reason": {
+					"dependencyRequired": "🔗📥",
+					"explicitSelected": "👆📛",
+					"imperfect": {
+						"blocked": "📜 🚫⏸️",
+						"dependent": "⬆️ ❌ → ⬇️",
+						"failed": "📜 ❌",
+						"noisy": "📜 ✅+🔊"
+					},
+					"missingRecord": "`state` ∅ → 🏃",
+					"staleContent": "📄✏️ → 🔁",
+					"triggerHashDrift": "⚡🔢🌊（🚫📁🎯）"
+				},
+				"label": {
+					"commitRange": "📜↔️",
+					"continueReason": "⚡❔",
+					"directRequiredBy": "👆📥",
+					"duration": "⏱️",
+					"expectedBlocked": "（🚫⏸️≈）",
+					"failedFiles": "❌ 📁",
+					"gateReason": "🏃❔",
+					"inclusionPath": "📥🔗",
+					"log": "📜",
+					"matchedPaths": "📁🎯",
+					"matchedTriggerSets": "⚡📦🎯",
+					"matchedTriggers": "⚡🎯",
+					"noise": "🔊",
+					"pullDownstream": "⬇️：${requiredBy} ⌀💚 → 🔗📥",
+					"pullUpstream": "⬆️：${requiredBy} 🔗⌀💚",
+					"reused": "(♻️)",
+					"rootCause": "🌱",
+					"terminateReason": "⏹️❔",
+					"triggerHashDrift": "⚡🔢≠🗂️（💩→✨ 🙈）",
+					"uncommittedHashRange": "🚫📤 `digest`"
+				},
+				"field": {
+					"command": "⌨️",
+					"duration": "⏱️",
+					"estimatedParallelRate": "🔀≈",
+					"estimatedRemaining": "⏱️⏳≈",
+					"exit": "🚪",
+					"failed": "❌ #",
+					"noisyPassed": "✅+🔊",
+					"parallelRate": "🔀",
+					"progress": "📊",
+					"reused": "♻️ #",
+					"runId": "🏃🆔",
+					"suiteSumDuration": "📦 Σ ⏱️",
+					"suites": "📦🧪",
+					"wallClock": "Σ ⏱️"
+				}
 			},
 			"state": {
 				"title": "⛲🧪📶",
@@ -314,16 +312,40 @@
 				"sectionDependencyTree": "🔗🌳",
 				"sectionOverview": "📦📶",
 				"sectionBlocked": "🚫⏸️ 📦",
-				"columnSuite": "📦🧪",
-				"columnStatus": "📶",
-				"columnCommit": "📜",
-				"columnRanAt": "⏮🏃",
-				"columnDuration": "⏱️",
-				"columnLog": "📜",
-				"columnBlocked": "🚫 #",
 				"labelBlockedBy": "🚫←",
 				"statusUnknown": "🚫🏃",
-				"statusOutdated": "⏰"
+				"statusOutdated": "⏰",
+				"column": {
+					"blocked": "🚫 #",
+					"commit": "📜",
+					"duration": "⏱️",
+					"log": "📜",
+					"ranAt": "⏮🏃",
+					"status": "📶",
+					"suite": "📦🧪"
+				}
+			},
+			"terminate": {
+				"duration": "⏹️ ${label}：＞`watchdog` 📏（🏃 ${elapsed}，📏 ${baseline}，🔝 ${limit}）",
+				"durationDefault": "⏹️ ${label}：＞⭐`watchdog`🔝（🏃 ${elapsed}，🔝 ${limit}）",
+				"idle": "⏹️ ${label}：＞${minutes}m 🚫`stdall`（💤 ${idleSec}s，🏃 ${elapsed}）",
+				"marker": "[⏹️: ${reason}]",
+				"speculative": "⏹️ ${label}：🔮🔗🚫，❌⏹",
+				"unknown": "⏹️ ${label}：🧪🛑"
+			},
+			"estimated": {
+				"remaining": "⏱️⏳ ≈ ${eta}（${completed}/${total} 📦）",
+				"run": "⏱️ ≈ ${eta}（🔀 ${rate}）",
+				"runSerial": "⏱️ ≈ ${eta}（📦→→）",
+				"runSerialHint": "🔀≈ ${eta}（${rate}），💰 ≈ ${savings}（➖ `--no-parallel`）",
+				"runSkipped": "＋♻️ ${reused}，🚫⏸️ ${blocked}（∉⏱️）"
+			},
+			"unknown": {
+				"fileFilter": "🚫🧪📁🔽：${suite} → ${names}",
+				"manifestId": "🚫📋 `id`：${ids}",
+				"subtestFilter": "🚫🔬🔽：${suite} → ${names}",
+				"suite": "🚫 📦: ${name}",
+				"suiteSelector": "🚫📦📛：${ids}"
 			}
 		},
 		"path": {
@@ -385,10 +407,10 @@
 				"packageFailed": "❌: ${package} 📥💥",
 				"browserMissing": "🚫🌐, 🔄📥…",
 				"untrustedPartsWarning": "🚫❓ ⛲🧩 ➡️ ☣️",
-				"rootWarning1": "⚠️👑 ⛲ ➡️ 💥",
-				"rootWarning2": "🙂👍 ⛲ ✅",
 				"permissionDeniedAsRoot": "❌✍️ ⛲📁 '${path}' 👑✅❌🔒 — 🔧🔐📁 ➡️ 👤💯",
-				"permissionDeniedNotRoot": "❌✍️ ⛲📁 '${path}' 🔧🔐📁 ➡️ 👤✍️ 🔄 👑 ⛲"
+				"permissionDeniedNotRoot": "❌✍️ ⛲📁 '${path}' 🔧🔐📁 ➡️ 👤✍️ 🔄 👑 ⛲",
+				"rootWarningAsRoot": "⚠️👑 ⛲ ➡️ 💥",
+				"rootWarningPreferUser": "🙂👍 ⛲ ✅"
 			},
 			"clean": {
 				"removingCaches": "🧹🗑️…",
@@ -409,41 +431,49 @@
 				"editorRemoved": "✅ 👋 ⛲ ⌨️ @ 📝🖥️ `${path}`"
 			},
 			"remove": {
-				"removingDesktopShortcut": "🗑️🖥️🔗…",
-				"removingTerminalKeybindings": "👋 ⌨️🗺️ 🩹…",
-				"removingFount": "👋 ⛲…",
 				"fountUninstallationComplete": "✅ ⛲ 👋💯",
-				"removingFountInstallationDir": "👋 ⛲ 📁…",
 				"fountInstallationDirRemoved": "✅ ⛲ 📁 👋",
-				"removingFountFromPath": "👋 ⛲ @ 🛣️",
-				"removingProtocolHandler": "👋 🔗⛲://",
 				"protocolHandlerRemoved": "✅ 👋 🔗⛲://",
-				"removeProtocolHandlerFailed": "❌ 👋 🔗⛲://: ${message}",
-				"removingFountFromGitSafeDir": "👋 ⛲ @ 🐙🐱🔒",
-				"removingInstalledSystemPackages": "👋 📦…",
-				"uninstallingDeno": "👋 🦕…",
-				"removeDenoFailed": "❌ 👋 🦕: ${message}",
-				"removingFountPwshFromProfile": "👋 ⛲ @ 💪🐚",
 				"fountPwshRemovedFromProfile": "✅ 👋 ⛲ @ 💪🐚",
 				"pwshProfileNotFound": "❓ 💪🐚 Profile",
-				"uninstallingFountPwsh": "👋 ⛲-💪🐚",
 				"uninstallFountPwshFailed": "❌ 👋 ⛲-💪🐚: ${message}",
-				"removingTerminalProfile": "👋 🪟🖥️",
 				"terminalProfileRemoved": "✅ 👋 🪟🖥️",
 				"terminalProfileNotFound": "❓ 🪟🖥️",
 				"desktopShortcutRemoved": "✅ 👋 🖥️",
 				"desktopShortcutNotFound": "❓ 🖥️",
-				"removingStartMenuShortcut": "👋 🏁…",
 				"startMenuShortcutRemoved": "✅ 👋 🏁",
 				"startMenuShortcutNotFound": "❓ 🏁",
-				"removingInstalledPwshModules": "👋 pwsh 📦…",
 				"moduleRemoved": "✅ 👋 ${module}",
-				"removeModuleFailed": "❌ 👋 ${module}: ${message}",
-				"uninstallingGit": "👋 🐙🐱…",
-				"uninstallingChrome": "👋 🌐…",
-				"uninstallingWinget": "👋 winget…",
-				"removingBackgroundRunner": "👋 🏃‍♂️💨…",
-				"removeBackgroundRunnerFailed": "❌ 👋 🏃‍♂️💨: ${message}"
+				"uninstalling": {
+					"chrome": "👋 🌐…",
+					"deno": "👋 🦕…",
+					"fountPwsh": "👋 ⛲-💪🐚",
+					"git": "👋 🐙🐱…",
+					"winget": "👋 winget…"
+				},
+				"removing": {
+					"backgroundRunner": "👋 🏃‍♂️💨…",
+					"desktopShortcut": "🗑️🖥️🔗…",
+					"fount": {
+						"main": "👋 ⛲…",
+						"fromGitSafeDir": "👋 ⛲ @ 🐙🐱🔒",
+						"fromPath": "👋 ⛲ @ 🛣️",
+						"installationDir": "👋 ⛲ 📁…",
+						"pwshFromProfile": "👋 ⛲ @ 💪🐚"
+					},
+					"installedPwshModules": "👋 pwsh 📦…",
+					"installedSystemPackages": "👋 📦…",
+					"protocolHandler": "👋 🔗⛲://",
+					"startMenuShortcut": "👋 🏁…",
+					"terminalKeybindings": "👋 ⌨️🗺️ 🩹…",
+					"terminalProfile": "👋 🪟🖥️"
+				},
+				"remove": {
+					"backgroundRunnerFailed": "❌ 👋 🏃‍♂️💨: ${message}",
+					"denoFailed": "❌ 👋 🦕: ${message}",
+					"moduleFailed": "❌ 👋 ${module}: ${message}",
+					"protocolHandlerFailed": "❌ 👋 🔗⛲://: ${message}"
+				}
 			}
 		}
 	},
@@ -453,22 +483,6 @@
 		"hero": {
 			"title": "✨🤖🤝",
 			"description": "⛲: 🗣️🤖, ✍️👤, 🤝🌍"
-		},
-		"feature1": {
-			"title": "☁️💬 💻📱",
-			"description": "💻🐧🤖🍎"
-		},
-		"feature2": {
-			"title": "🎨🖌️",
-			"description": "✨ 30+ 🎨"
-		},
-		"feature3": {
-			"title": "💬🖼️🎮",
-			"description": "📝 🖼️ 🎮"
-		},
-		"feature4": {
-			"title": "🔗🤖🌐",
-			"description": "⛲ ➡️ 🤖🌐∞ : OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI… 💻⚙️🪄"
 		},
 		"language_selector": {
 			"button": {
@@ -487,8 +501,8 @@
 		},
 		"mini_game": {
 			"title": "🎮",
-			"description1": "⏳🐌❓",
-			"description2": "🎮⏰"
+			"slowInstallHint": "⏳🐌❓",
+			"playWhileWaiting": "🎮⏰"
 		},
 		"testimonials": {
 			"anonymous": "🙈",
@@ -530,9 +544,27 @@
 			"title": "📥❌❗️",
 			"description": "⛲📥😵",
 			"connection_failed": "🔌❌❗️",
-			"description1": "⛲📥😵",
-			"description2": "💻👀 🔄",
-			"close_page": "📄➡️🗑️"
+			"close_page": "📄➡️🗑️",
+			"summary": "⛲📥😵",
+			"retryHint": "💻👀 🔄"
+		},
+		"features": {
+			"seamlessChat": {
+				"title": "☁️💬 💻📱",
+				"description": "💻🐧🤖🍎"
+			},
+			"customUi": {
+				"title": "🎨🖌️",
+				"description": "✨ 30+ 🎨"
+			},
+			"expressiveChat": {
+				"title": "💬🖼️🎮",
+				"description": "📝 🖼️ 🎮"
+			},
+			"aiSources": {
+				"title": "🔗🤖🌐",
+				"description": "⛲ ➡️ 🤖🌐∞ : OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI… 💻⚙️🪄"
+			}
 		}
 	},
 	"protocolhandler": {
@@ -617,10 +649,6 @@
 			"passwordMismatch": "🔑 ≠ 🔑🔁",
 			"loginError": "🚪➡️❌",
 			"registrationError": "🆕👤❌",
-			"verificationCodeError": "🔢❌/⏳",
-			"verificationCodeSent": "🔢➡️✅",
-			"verificationCodeSendError": "🔢➡️❌",
-			"verificationCodeRateLimit": "🔢➡️⏳",
 			"lowPasswordStrength": "🔑👎",
 			"accountAlreadyExists": "👤🙅",
 			"powNotSolved": "1️⃣🧩",
@@ -630,26 +658,36 @@
 			"accountLockedAttempts": "🔒❌🔄",
 			"powValidationFailed": "🤖✅❌🔁",
 			"tokenAndSolutionsRequired": "🏷️🧮❌",
-			"apiErrorBodyUnreadable": "🖥️📄❓🔁"
+			"apiErrorBodyUnreadable": "🖥️📄❓🔁",
+			"verificationCode": {
+				"error": "🔢❌/⏳",
+				"rateLimit": "🔢➡️⏳",
+				"sendError": "🔢➡️❌",
+				"sent": "🔢➡️✅"
+			}
 		},
 		"webauthn": {
 			"loginButton": "🔐🔑➡️🚪📱🔑",
-			"errorLoadLibrary": "📚🔐❌🌐🔁",
-			"errorCancelled": "🙅🔑➕🚪❓",
-			"errorSessionMissing": "🖥️❌🎫🔁📄",
-			"errorBadBeginResponse": "🖥️📄❌🔁📄",
-			"errorCredentialRequired": "📱🔑📋❌",
-			"errorAuthSessionRequired": "🎫❌🔁📄",
 			"apiSessionExpired": "🕐⌛️📱🔑🔁",
 			"apiUnknownPasskey": "❓📱🔑🔗",
 			"apiPasskeyVerificationFailed": "📱🔑✅❌🔁",
-			"registrationUserNotFound": "👤❌",
-			"registrationSessionExpired": "🔗⌛️🔁",
-			"registrationVerifyFailed": "📱🔑📝❌",
-			"registrationFailed": "📱🔑❌🔁",
 			"removeUserNotFound": "👤📋❌",
 			"removeInvalidPassword": "🔑❌",
-			"removePasskeyNotFound": "📱🔑❌"
+			"removePasskeyNotFound": "📱🔑❌",
+			"registration": {
+				"failed": "📱🔑❌🔁",
+				"sessionExpired": "🔗⌛️🔁",
+				"userNotFound": "👤❌",
+				"verifyFailed": "📱🔑📝❌"
+			},
+			"error": {
+				"authSessionRequired": "🎫❌🔁📄",
+				"badBeginResponse": "🖥️📄❌🔁📄",
+				"cancelled": "🙅🔑➕🚪❓",
+				"credentialRequired": "📱🔑📋❌",
+				"loadLibrary": "📚🔐❌🌐🔁",
+				"sessionMissing": "🖥️❌🎫🔁📄"
+			}
 		}
 	},
 	"login_info": {
@@ -808,84 +846,86 @@
 					}
 				}
 			},
-			"serviceGenerators": {
-				"title": "🏭✨",
-				"subtitle": "👻➡️📦, ✨➡️✅",
-				"card": {
-					"defaultCheckbox": {
-						"title": "📌⭐ ⚙️✨"
-					}
-				}
-			},
-			"serviceGenerators/AI": {
-				"title": "🤖⚙️✨",
-				"subtitle": "🧶🧠, 🌉💭",
-				"card": {
-					"defaultCheckbox": {
-						"title": "📌🤖⚙️✨"
-					}
-				}
-			},
-			"serviceGenerators/search": {
-				"title": "🔍⚙️✨",
-				"subtitle": "🌊ℹ️ ➡️ 💡🕯️",
-				"card": {
-					"defaultCheckbox": {
-						"title": "📌🔍⚙️✨"
-					}
-				}
-			},
-			"serviceGenerators/translate": {
-				"title": "🌐⚙️✨",
-				"subtitle": "🚧🗣️ ➡️ 💭🌊",
-				"card": {
-					"defaultCheckbox": {
-						"title": "📌🌐⚙️✨"
-					}
-				}
-			},
-			"serviceSources": {
-				"title": "⛲",
-				"subtitle": "💧➕💧 ➡️ 🌊",
-				"card": {
-					"defaultCheckbox": {
-						"title": "📌⛲"
-					}
-				}
-			},
-			"serviceSources/AI": {
-				"title": "🤖🚰",
-				"subtitle": "⛲🧠, 🏁💭",
-				"card": {
-					"defaultCheckbox": {
-						"title": "📌🤖🚰"
-					}
-				}
-			},
-			"serviceSources/search": {
-				"title": "🔍🚰",
-				"subtitle": "💰📚, 🏁🧭",
-				"card": {
-					"defaultCheckbox": {
-						"title": "📌🔍🚰"
-					}
-				}
-			},
-			"serviceSources/translate": {
-				"title": "🌐🚰",
-				"subtitle": "🌉🗣️, 🔗💬",
-				"card": {
-					"defaultCheckbox": {
-						"title": "📌🌐🚰"
-					}
-				}
-			},
 			"shells": {
 				"title": "🖥️👈",
 				"subtitle": "🖼️👈, 👀🆕🌍",
 				"card": {
 					"defaultCheckbox": {
 						"title": "📌🖥️"
+					}
+				}
+			},
+			"service": {
+				"generators": {
+					"title": "🏭✨",
+					"subtitle": "👻➡️📦, ✨➡️✅",
+					"card": {
+						"defaultCheckbox": {
+							"title": "📌⭐ ⚙️✨"
+						}
+					}
+				},
+				"generators/AI": {
+					"title": "🤖⚙️✨",
+					"subtitle": "🧶🧠, 🌉💭",
+					"card": {
+						"defaultCheckbox": {
+							"title": "📌🤖⚙️✨"
+						}
+					}
+				},
+				"generators/search": {
+					"title": "🔍⚙️✨",
+					"subtitle": "🌊ℹ️ ➡️ 💡🕯️",
+					"card": {
+						"defaultCheckbox": {
+							"title": "📌🔍⚙️✨"
+						}
+					}
+				},
+				"generators/translate": {
+					"title": "🌐⚙️✨",
+					"subtitle": "🚧🗣️ ➡️ 💭🌊",
+					"card": {
+						"defaultCheckbox": {
+							"title": "📌🌐⚙️✨"
+						}
+					}
+				},
+				"sources": {
+					"title": "⛲",
+					"subtitle": "💧➕💧 ➡️ 🌊",
+					"card": {
+						"defaultCheckbox": {
+							"title": "📌⛲"
+						}
+					}
+				},
+				"sources/AI": {
+					"title": "🤖🚰",
+					"subtitle": "⛲🧠, 🏁💭",
+					"card": {
+						"defaultCheckbox": {
+							"title": "📌🤖🚰"
+						}
+					}
+				},
+				"sources/search": {
+					"title": "🔍🚰",
+					"subtitle": "💰📚, 🏁🧭",
+					"card": {
+						"defaultCheckbox": {
+							"title": "📌🔍🚰"
+						}
+					}
+				},
+				"sources/translate": {
+					"title": "🌐🚰",
+					"subtitle": "🌉🗣️, 🔗💬",
+					"card": {
+						"defaultCheckbox": {
+							"title": "📌🌐🚰"
+						}
 					}
 				}
 			}
@@ -966,12 +1006,6 @@
 				"aria-label": "🔤⬇️"
 			},
 			"discoverPacks": "🧭😀📦➡️",
-			"categoryFace": "😀",
-			"categoryGesture": "👋",
-			"categoryHeart": "❤️",
-			"categoryAnimal": "🐾",
-			"categoryFood": "🍔",
-			"categoryObject": "📦",
 			"addToCollection": "➕⭐",
 			"addedToCollection": "⭐✅",
 			"joinGroup": "➕👥",
@@ -982,7 +1016,15 @@
 			"openAuthor": "👤👀",
 			"previewGroupMeta": "👥：${name}",
 			"previewAuthorMeta": "👤➡️",
-			"previewActionFailed": "❌：${error}"
+			"previewActionFailed": "❌：${error}",
+			"category": {
+				"animal": "🐾",
+				"face": "😀",
+				"food": "🍔",
+				"gesture": "👋",
+				"heart": "❤️",
+				"object": "📦"
+			}
 		},
 		"emojiPacks": {
 			"title": "😀📦🧭",
@@ -1043,12 +1085,14 @@
 			"modeSingle": "1️⃣🎭",
 			"modeEmpty": "🈳👥",
 			"subtitleRoles": "🎭${count} 💬➡️",
-			"statusSaved": "💾✅",
-			"statusSaving": "💾⏳…",
-			"statusDirty": "⚠️💾📝",
-			"statusSaveFailed": "💾❌",
 			"saveSuccess": "👥💬💾✅",
-			"saveFailed": "👥💬💾❌"
+			"saveFailed": "👥💬💾❌",
+			"status": {
+				"dirty": "⚠️💾📝",
+				"saveFailed": "💾❌",
+				"saved": "💾✅",
+				"saving": "💾⏳…"
+			}
 		},
 		"group": {
 			"defaults": {
@@ -1057,167 +1101,6 @@
 				"dmChatName": "💬",
 				"dmDmName": "🤫💬",
 				"threadName": "🧵"
-			},
-			"settingsPage": {
-				"title": "👥⚙️",
-				"kicker": "👥🛡️",
-				"subtitle": "👥📋➕👤🔧🔽🔐、💾📜🔧 📚▶️🔧⚙️",
-				"backToChat": "🔙💬",
-				"navigationLabel": "👥⚙️🗂️",
-				"advancedNavigationLabel": "🔧⚙️🗂️",
-				"tabGeneral": "📌",
-				"tabPermissions": "🎭🔐",
-				"tabMembers": "👥",
-				"tabAudit": "📜🔍",
-				"tabEmojis": "😀",
-				"tabAdvanced": "🔧",
-				"tabStorage": "💾📦",
-				"tabChannelPermissions": "📺🔐",
-				"advancedHubTitle": "🔧⚙️🎛️",
-				"advancedHubDescription": "👇🔧 ✏️👥🔐🏗️、📜💾／🏛️📜；🔒✋🫵 ✋➡️🔧",
-				"channelPermsHint": "⭐📺 ➡️ 🎭🔐 🔁🚫✍️ ➡️ ↩️👥🎭🔐",
-				"channelPermsSelectChannel": "📺",
-				"channelPermsAddRole": "➕🎭🔐",
-				"channelPermsRemoveRole": "🗑️🎭🔐",
-				"channelPermsStateNeutral": "↩️",
-				"channelPermsStateAllow": "✅",
-				"channelPermsStateDeny": "❌",
-				"channelPermsUpdated": "📺🔐🔄✅",
-				"channelPermsUpdateFailed": "📺🔐🔄❌：${error}",
-				"channelPermsNoChannels": "📭📺⚙️",
-				"emojisTitle": "👥😀",
-				"emojisHint": "👤✅💬📍／📤👥😀；🚫📥🖼️ ➡️ 🌐🔗📥⏳",
-				"emojisUpload": "⬆️😀",
-				"emojisCreatePack": "➕😀📦",
-				"emojisCreatePackPrompt": "😀📦🆔",
-				"emojisCreatePackOk": "😀📦✅",
-				"emojisCreatePackFailed": "➕❌：${error}",
-				"emojisPackGroupSuffix": "群",
-				"activeEmojiPackLabel": "✏️😀📦",
-				"emojisDelete": "🗑️😀",
-				"emojisEmpty": "📭👥😀",
-				"emojisUploadOk": "😀⬆️✅",
-				"emojisUploadFailed": "⬆️❌：${error}",
-				"emojisDeleteConfirm": "🗑️👥😀 ✅❓",
-				"emojisDeleteOk": "😀🗑️✅",
-				"emojisDeleteFailed": "🗑️❌：${error}",
-				"defaultEmojiPackLabel": "⭐😀📦",
-				"defaultEmojiPackHint": "➕👥➡️⭐；🔄➡️🔁旧⭐∈⭐",
-				"defaultEmojiPackOk": "⭐😀📦✅",
-				"defaultEmojiPackFailed": "⭐😀📦❌",
-				"membersTitle": "👥📋",
-				"overviewTitle": "👥👀📊",
-				"overviewHint": "👀ℹ️🏛️🔐 ➡️ 📍「📌」✏️👥📋⚙️",
-				"channelArchiveTitle": "📺📦",
-				"channelArchiveHint": "📥✅📺📊📦 ➡️ 👥🆕📝📺♻️📜（🫵✍️；📎💾📋）",
-				"channelArchiveImport": "📥📺📊",
-				"channelArchiveImportOk": "✅📥${count}📨，📺▶️…",
-				"channelArchiveImportFailed": "📥❌：${error}",
-				"governanceHint": "💾🔗📊👥📋；🛡️／🛡️👑⚙️ 🔐🔒",
-				"governanceDenied": "🫵🚫🔐✏️👥🏛️⚙️",
-				"rolesDenied": "🫵🚫🎭⚙️🔐，🚫✏️🎭",
-				"channelPermsDenied": "🫵🚫📺⚙️🔐，🚫✏️📺🔐",
-				"notMember": "🚫👥👤；💻👥💾⬅️👥🧹",
-				"basicTitle": "👥🏛️",
-				"profileSectionTitle": "👥📋",
-				"profileSectionHint": "🏷️📝➕👥🛣️ ➡️ 💾👥📋",
-				"behaviorSectionTitle": "🏃⚙️",
-				"networkSectionTitle": "🌐🔗",
-				"retentionSectionTitle": "💾🐢",
-				"mediaSectionTitle": "📞📁",
-				"nameLabel": "👥🏷️",
-				"descriptionLabel": "👥📝",
-				"joinPolicyLabel": "➕👥📋",
-				"joinInviteOnly": "🔒📨",
-				"joinPow": "⛏️📊",
-				"powDifficultyLabel": "⛏️📊",
-				"advancedTitle": "🔧⚙️🎛️",
-				"advancedDescription": "🌐💾🐢🔐⚙️；🤷 ➡️ ⭐",
-				"securityAdvancedTitle": "🛡️👑⚙️",
-				"securityAdvancedDescription": "🔄🔑👑➡️；⚠️⚙️❌ ➡️ 👤🚪⚡",
-				"powDifficultyTip": "⛏️📊📊⬆️ ➡️ 👤➕🌐👥➕💻⏱️",
-				"maxDagPayloadTip": "1️⃣👥📨📦🔝⬆️ ➡️ ➕🔄💾➕🌐📶",
-				"trustedPeersTip": "🔝🔗⭐🌐👥",
-				"gossipTtlTip": "💬🔝🔢🌐↪️⬆️📶➕📶",
-				"hlcTip": "🔗⏰➡️💻⏩🔝，🚫🔮📨",
-				"sfuTip": "🔘🔊📹↪️📡📍⬜ ➡️ 📦P2P/📡📞",
-				"iceTip": "🌐📞🔀；P2P❌🔄📡↪️🔊📹🌐📶",
-				"fileEncryptionTip": "🔄🔐♻️📁👀；🎲🔑🔒⬆️➕💾📦",
-				"keyManagementTitle": "🔑🛡️",
-				"keyManagementTip": "🔄📤🆕🔑➡️👤🔑💧✋🔄",
-				"allowDangerousHtml": "🤝✍️💬✅📝✨",
-				"deleteGroup": "🗑️👥",
-				"save": "💾⚙️",
-				"inviteTitle": "🎟️",
-				"inviteHint": "⚙️⏱️🎟️（⭐1⏰）👤➡️「➕👥」✍️👥🆔➕🎟️",
-				"inviteMint": "⚙️🎟️",
-				"inviteGroupId": "👥🆔",
-				"inviteCode": "🎟️",
-				"inviteExpires": "⏰💀：${date}",
-				"inviteCopy": "📋➕👥",
-				"inviteCopied": "✅📋➕👥",
-				"inviteCopyFailed": "📋❌",
-				"inviteClipboard": "👥🆔：${groupId}\n🎟️：${code}\n➕：${url}",
-				"loadFailed": "📥👥⚙️❌: ${error}",
-				"saveSuccess": "👥⚙️💾✅",
-				"saveFailed": "💾⚙️❌: ${error}",
-				"deleteConfirm": "🗑️👥 ✅❓🚫↩️，📨👤♾️🗑️",
-				"deleteSuccess": "👥🗑️✅",
-				"deleteFailed": "🗑️👥❌: ${error}",
-				"rolesTitle": "🎭🔐",
-				"createRole": "➕🎭",
-				"roleDefault": "⭐",
-				"deleteRole": "🗑️🎭",
-				"deleteRoleConfirm": "🗑️🎭 ✅❓",
-				"deleteRoleSuccess": "🎭🗑️✅",
-				"deleteRoleFailed": "🗑️🎭❌: ${error}",
-				"createRolePrompt": "✍️🎭🏷️:",
-				"createRoleSuccess": "🎭🆕✅",
-				"createRoleFailed": "➕🎭❌: ${error}",
-				"permissionUpdated": "🔐🔄✅",
-				"permissionUpdateFailed": "🔐🔄❌: ${error}",
-				"noMembers": "👥📭",
-				"memberRoles": "🎭:",
-				"kick": "👢",
-				"ban": "🔨",
-				"kickConfirm": "👢👤 ${name} ✅❓",
-				"kickSelfNodeWarning": "⚠️👤🤝🔗🆔，👢➡️🫵⬅️👥✅❓",
-				"kickSuccess": "👤👢✅",
-				"kickFailed": "👢❌: ${error}",
-				"banConfirm": "🔨👤 ${name} ✅❓",
-				"banSuccess": "👤🔨✅",
-				"banFailed": "🔨❌: ${error}",
-				"bannedTitle": "🔨👥",
-				"unban": "🔓",
-				"unbanConfirm": "🔓👤 ${name} ✅❓",
-				"unbanSuccess": "👤🔓✅",
-				"unbanFailed": "🔓❌：${error}",
-				"keyRotate": "🔄👥📁👑🔑",
-				"keyRotateConfirm": "✋🔄👥📁👑🔑 ✅❓🆕👤🔄📜📁🔑",
-				"keyRotateOk": "🔑🔄✅",
-				"keyRotateFailed": "🔑🔄❌：${error}",
-				"gshGenerationRetentionHint": "💾🔝6️⃣4️⃣🔄#️⃣📁👑🔑⬆️🔝📜📁🚫🔓，💡❄️📦🔒📄",
-				"gshGenerationNearLimit": "👉🔄#️⃣${generation}📁👑🔑（🔝${maxGenerations}🔄#️⃣）➕🔄 ➡️ 🔝📜🔑🗑️",
-				"ownerSuccession": "👑➡️",
-				"ownerSuccessionOk": "👑➡️✅",
-				"ownerSuccessionFailed": "👑➡️❌：${error}",
-				"permVIEW_CHANNEL": "👀📺",
-				"permSEND_MESSAGES": "📤📨",
-				"permSEND_STICKERS": "📤🏷️😀",
-				"permADD_REACTIONS": "➕😀",
-				"permMANAGE_MESSAGES": "💬⚙️",
-				"permMANAGE_CHANNELS": "📺⚙️",
-				"permKICK_MEMBERS": "👢👥",
-				"permBAN_MEMBERS": "🔨👥",
-				"permMANAGE_ROLES": "🎭⚙️",
-				"permINVITE_MEMBERS": "🎟️👥",
-				"permSTREAM": "🎙️",
-				"permCREATE_THREADS": "➕🧵📺",
-				"permUPLOAD_FILES": "⬆️📁",
-				"permMANAGE_FILES": "📁⚙️",
-				"permPIN_MESSAGES": "📌📨",
-				"permADMIN": "🛡️👤",
-				"permBYPASS_RATE_LIMIT": "⏭️🐢"
 			},
 			"auditLog": {
 				"title": "👥📜🔍",
@@ -1228,10 +1111,6 @@
 				"loadMore": "📥⬅️📜",
 				"empty": "📭📜",
 				"loadFailed": "📥📜❌: ${error}",
-				"colTime": "⏰",
-				"colType": "🏷️",
-				"colActor": "👤",
-				"colSummary": "📋",
 				"type": {
 					"member_join": "➕👤",
 					"member_leave": "👥🚶",
@@ -1288,167 +1167,44 @@
 					"unpin_message": "📍${channelName} ↩️📌${targetEventId}",
 					"file_upload": "⬆️📁 ${fileName}",
 					"file_delete": "🗑️📁 ${fileName}"
+				},
+				"col": {
+					"actor": "👤",
+					"summary": "📋",
+					"time": "⏰",
+					"type": "🏷️"
 				}
 			},
-			"messagePrefixSticker": "🏷️😀",
 			"membersEmpty": "（👥📭）",
 			"channelEncryptionGsh": "📺🔑🔐🔗（📺🔑👥）",
-			"ownerSuccession": "👑🗳️",
-			"ownerSuccessionDescription": "➡️👑🔐（🛡️👑⚙️）➡️📌👤🔒🛡️👀",
-			"ownerSuccessionAutoSignHint": "📤💻👥✍️🌱➡️🗳️，🚫🔐⌨️🛡️➕💻➡️🗳️（🗳️🆔➕👤）",
-			"ownerSuccessionCandidateLabel": "👑➡️🔑🧬#️⃣",
-			"ownerSuccessionSelfButton": "📝🫵",
-			"ownerSuccessionSubmitted": "👑➡️🗳️✅🫵",
-			"ownerSuccessionNeedHash": "🙏✍️👑➡️🔑🧬#️⃣",
-			"ownerSuccessionFailed": "👑➡️🗳️📤❌",
 			"e2eDecryptUnavailable": "💬🔐，💻🚫🔓",
 			"contentRefBodyPending": "🔗📝（📝🔗，⏳📥✅）",
 			"contentRefHashMismatch": "🔗📝≠💾✅（🧬#️⃣🚫🎯）",
-			"streamGenerationFailed": "🤖⏰❌，⏹️🔄",
 			"convergentEncryptWarn": "👥📁🔄🔐：👀📄➡️🔑🔓🚫🔒📄⛔👥🔐",
-			"settingsStreamGeneratingIdle": "🤖😴⏰🔝（⏱️）",
-			"settingsAutoReplyFrequency": "⚡🎭（N📤👤📨，0⏹️）",
-			"settingsAutoReplyFrequencyHint": "0⏹️；@⚡",
-			"settingsMaxDagPayload": "🔗📊1️⃣📨📦🔝",
-			"settingsBatterySaver": "🔋💤（📉🌐🔗📡）",
-			"settingsDiscoveryPublic": "🌐🔍👥（🚫➕👥🔑）",
-			"settingsDiscoveryTitle": "🔍📋🏷️（🔘）",
-			"settingsDiscoveryBlurb": "🔍📝（🔘）",
-			"settingsTrustedPeers": "🤝🔝K",
-			"settingsExplorePeers": "🔍👥",
-			"settingsMaxPeers": "🌐🔗🔝",
-			"settingsGossipTtl": "💬↪️🔢",
-			"settingsWantIdsBudget": "1️⃣📋🆔💰",
-			"settingsHlcMaxSkew": "⏰🔗🔮↔️🔝（⏱️）",
 			"dagForkDetected": "🔍🔗📊🔀❌",
 			"mergeDagTips": "🔗🌳🔀",
 			"mergeDagTipsOk": "🔀✅",
 			"mergeDagTipsFailed": "🔀❌",
-			"settingsStreamingSfu": "🌊📡🔗📍（🔘）",
-			"settingsMessageRetention": "📨📄⏱️🗑️",
-			"settingsMessageRetentionForever": "♾️（🗜️🔗📊📨）",
-			"settingsMessageRetention30d": "3️⃣0📅⬅️",
-			"settingsMessageRetention90d": "9️⃣0📅⬅️",
-			"settingsMessageRetention1y": "1️⃣📅⬅️",
-			"settingsMessageRetentionHint": "⭐🚫⏱️🗑️📜⏹️✂️💻📨🔥；📨❄️📦➕✅📍",
-			"settingsHotLatest": "🔥（📺🔝📨🔢）",
-			"settingsPinContext": "📌±N📨",
-			"settingsHotWindowHint": "🔥📨➡️✅📍➕📨💾；➡️📅❄️📦，🔗📊🗜️📨",
-			"settingsArchiveTitle": "💾❄️📦",
-			"settingsArchiveHint": "❄️📦=💻📨（📅📁）🗑️≠🔗📊；📜➡️🌐👥📥",
-			"settingsArchiveFilesTitle": "✅📦📁",
-			"settingsArchiveEmpty": "📭❄️📦📁",
-			"settingsArchiveColChannel": "📺",
-			"settingsArchiveColMonth": "📅",
-			"settingsArchiveColSize": "⚖️",
-			"settingsArchiveDeleteBefore": "🗑️📅⬅️",
-			"settingsArchiveDeleteButton": "🗑️❄️📦",
-			"settingsArchiveDeleteHint": "🗑️💻❄️📦/*📊；🔥➕🔗📊⚓✅",
-			"settingsArchiveAdminOnly": "💻📭👥❄️📦",
-			"settingsArchiveDeleteInvalidMonth": "🙏✅📅📋",
-			"settingsArchiveDeleteConfirm": "🗑️${month}⬅️❄️📦 ✅❓🚫↩️",
-			"settingsArchiveDeleteOk": "🗑️${files}📦📁",
-			"settingsArchiveDeleteFailed": "🗑️📦❌：${error}",
-			"settingsEventRetentionDepth": "🔗📊📨💾🔝",
-			"settingsEventRetentionMs": "🔗📊📨💾⏰",
-			"settingsCompactTriggerDepth": "🧱🗜️🔝",
-			"settingsMessageRateLimit": "💬🐢（📨/⏱️/🪪）",
-			"settingsAutoReplyTokenBucket": "⚡🎫🪣",
-			"settingsAutoReplyTokenBucketHint": "⏹️🎭📺🎫🪣；🈳⏸️⚡📨，📉📈📨",
-			"settingsIceServers": "🔀🌐／🔄📡🖥️",
-			"settingsIceServersAdd": "➕🖥️",
-			"settingsIceServersHint": "🌐📞➕🌐P2P🔀NAT；TURN👤🔑💻only，🚫🌐🔄",
-			"settingsIceUrl": {
-				"aria-label": "ICE🖥️📍",
-				"placeholder": "stun:host:19302"
-			},
-			"settingsIceUser": {
-				"aria-label": "TURN👤",
-				"placeholder": "👤（optional）"
-			},
-			"settingsIceCred": {
-				"aria-label": "TURN🔑",
-				"placeholder": "🔑（optional）"
-			},
-			"settingsIceRemove": {
-				"aria-label": "🗑️🖥️"
-			},
-			"settingsFileCeMode": "📁🔐🎛️",
-			"settingsFileCeModeConvergent": "🔄🔐（♻️）",
-			"settingsFileCeModeRandom": "🔒⬆️（🎲🔑，🚫♻️）",
-			"settingsFileCeModeHint": "🔒🎛️🎲📦🔑，ceMode=🎲；⬇️📄⚠️，➕💾📶",
 			"channelsTitle": "📺",
-			"createGroup": "🆕👥",
 			"members": "👥",
 			"membersHint": "👥📋➡️✅📍🔄（⏳）",
-			"streamTest": "🧪📹🎙️",
 			"loadError": "📥👥❌",
-			"remoteNodeTimeout": "🔗⏰❌，🔁⏳",
-			"remoteUnavailable": "🔗🧩🚫／🚫📡RPC",
 			"messagesLoadFailed": "📥📨❌",
 			"sendFailed": "📤❌",
 			"chatNotLoaded": "💬🚫📥：➡️💻🆔👥💬",
-			"createFailed": "➕👥❌",
 			"newGroupName": "🆕👥",
-			"streamOk": "✅🌊（⏹️，🚫📡）",
-			"remoteUnsafe": "🔗💬✍️🚫🤝，⏹️✨📝",
 			"trustAuthor": {
 				"textContent": "🤝",
 				"title": "🤝✍️（✅⚠️📝✨）"
 			},
 			"trustAuthorOk": "✅🤝✍️➡️✨📝",
-			"voteCast": "🗳️",
 			"listEmpty": "（📭🗂️，🛡️🔌📡🔄list-items）",
 			"listChannelReadonly": {
 				"placeholder": "📋📺🗂️，🚫💬"
 			},
-			"streamNoEmbed": {
-				"textContent": "🌊📍🔒🔗embed / ⚙️👥🔄🎫"
-			},
-			"streamNoSfu": {
-				"textContent": "🚫⚙️🌊📡🔗；🛡️➡️👥⚙️📺🔧📍"
-			},
-			"messageDeleted": "📨🗑️",
-			"messageDeletedBracket": "[📨🗑️]",
-			"messageWithAttachments": "${text}（${n}📎）",
-			"voteBlockHeading": "[${prefix}] ${question}",
-			"voteBlockHeadingTagged": "[🗳️] ${question}",
-			"voteCastLine": "[${prefix}] 🗳️：${choice}",
-			"voteCastLineTagged": "[🗳️] 🗳️：${choice}",
-			"voteOptionsPreview": "[${prefix}] ${options}",
-			"voteOptionsPreviewTagged": "[🗳️] ${options}",
-			"voteDeadlineLineOpen": "⏰：${date}",
-			"voteDeadlineLineClosed": "⏰：${date} [⏹️]",
-			"pinMessageLine": "[📌] ${targetId}",
-			"unpinMessageLine": "[↩️📌] ${targetId}",
-			"stickerPrefixLine": "[${label}]",
-			"stickerPrefixLineTagged": "[🏷️😀]",
-			"feedbackDagLine": "[${label}]",
-			"feedbackDagLineWithNote": "[${label}] ${note}",
-			"feedbackPreviewLine": "${tag}${sep}${note}",
-			"feedbackPreviewTaggedNote": "${tag} ${note}",
 			"mentionHandle": "@${name}",
 			"mentionInsert": "@${name} ",
-			"feedbackUp": "👍",
-			"feedbackDown": "👎",
 			"attachmentsHint": "（${n}📎）",
-			"pinMessage": "📌",
-			"unpinMessage": "↩️📌",
-			"pinThisMessage": "➡️📨💾🔗📊📌",
-			"pinAction": {
-				"textContent": "📌",
-				"title": "➡️📨💾🔗📊📌"
-			},
-			"unpinAction": {
-				"textContent": "↩️📌",
-				"title": "↩️📌"
-			},
-			"pinOk": "📌✅",
-			"unpinOk": "↩️📌✅",
-			"pinFailed": "📌❌",
-			"menuCopyText": "📋📝",
-			"menuExportHtml": "📤📝✨",
-			"menuCopyId": "📋📨🆔",
 			"copied": "✅📋",
 			"addBookmark": {
 				"title": "➕📺🔖"
@@ -1456,9 +1212,6 @@
 			"bookmarkExists": "🔖✅",
 			"bookmarkAdded": "✅➕🔖",
 			"bookmarkSaveFailed": "💾🔖❌",
-			"remoteTyping": "${name} ⌨️…",
-			"remoteTypingTwo": "${name1}、${name2} ⌨️…",
-			"remoteTypingMany": "${name} ➕${count} ⌨️…",
 			"localAiLabel": "💻🎭：",
 			"forceTriggerOne": {
 				"title": "⚡${name} 💬"
@@ -1467,23 +1220,10 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "⚡💻🎭💬"
 			},
-			"messageRefAnchor": "📎📨：${id}",
-			"settingsFedPartition": "🌐📂🔢",
-			"settingsRtcBudget": "📞🔗💰",
-			"settingsRtcJoinRate": "📞⏱️➕🔝",
-			"settingsFedTuningHint": "💾🔗📊👥⚙️；🔄💡🔄🌐🏠",
-			"settingsAutoChannelGc": "🧹📺😴",
-			"settingsAutoChannelGcHint": "🧱🗑️🔝2😴≥3️⃣0📅🏝️📺",
 			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
 			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
 			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
 			"stopGenerating": "⏹️🔄",
-			"messageAborted": "⛔⏹️",
-			"avStart": "▶️📹🎙️",
-			"avMute": "🔇",
-			"avSwap": "🖼️⭐",
-			"avStop": "⏹️",
-			"avNeedStreamChannel": "➡️🌊📺📹🎙️",
 			"reactionAdd": {
 				"title": "➕😀"
 			},
@@ -1494,25 +1234,11 @@
 				"title": "➕😀"
 			},
 			"reactionPrompt": "✍️😀（🔣）",
-			"channelTypeLabel": "📺🏷️",
-			"channelTypeText": "💬📺",
-			"channelTypeList": "📋/🗣️📺",
-			"channelTypeStreaming": "🌊📺",
 			"convertToText": "➡️💬📺",
 			"convertToList": "➡️📋/🗣️📺",
 			"setAsDefault": "⭐👥📺",
 			"isDefault": "⭐📍",
-			"defaultChannelSet": "✅⭐📺",
-			"defaultChannelSetFailed": "⭐📺❌",
 			"channelUpdateFailed": "📺🔄❌",
-			"voteCreate": "🗳️➕",
-			"votePromptDeadline": "⏰🔚（⬜♾️，📅⏰）",
-			"voteTooFewOptions": "≥2️⃣",
-			"voteCreateFailed": "🗳️❌",
-			"voteFor": "🗳️ ${option}",
-			"voteDeadline": "⏰",
-			"voteEnded": "⏹️",
-			"voteTotal": "🔢${n}🗳️",
 			"record": "🎙️⏺️",
 			"fileDownload": {
 				"title": "⬇️📁"
@@ -1526,44 +1252,438 @@
 			"saveSticker": {
 				"title": "💾🏷️😀➡️⭐"
 			},
-			"stickerSaved": "✅💾🏷️😀",
-			"stickerDefaultName": "🏷️😀",
 			"deleteMessage": {
 				"title": "🗑️📨"
 			},
 			"deleteConfirm": "🗑️📨 ✅❓",
-			"editMessage": {
-				"title": "✏️📨"
-			},
 			"saveEdit": "💾",
 			"cancelEdit": "↩️",
 			"editingMessage": "✏️⏳",
-			"editConfirm": "✅（⌃⏎）",
-			"editCancel": "↩️（⎋）",
-			"editHint": "⌃⏎✅ · ⎋↩️",
-			"editEmptyText": "📨🈳🚫",
-			"createGroupTitle": "🆕👥",
 			"groupNameLabel": "👥🏷️",
 			"groupName": {
 				"placeholder": "🫵👥"
 			},
-			"defaultChannelLabel": "⭐📺",
-			"defaultChannel": {
-				"placeholder": "📋"
-			},
-			"createGroupFailed": "➕👥❌",
-			"createChannelFailed": "➕📺❌",
 			"moreActions": {
 				"title": "⋯⚙️"
 			},
-			"thread": "🧵",
-			"threadBack": "🔙",
-			"threadBreadcrumbRootTitle": "⏩🛤️🔝（1️⃣）",
-			"threadBreadcrumbMiddleTitle": "📂➡️⏩",
-			"threadBreadcrumbMiddleSummary": "📂${count}",
-			"menuShareExternal": "🔗📤",
 			"shareExternalOk": "⬆️✅📋🔗",
-			"shareExternalFailed": "⬆️❌，🌐🔍"
+			"shareExternalFailed": "⬆️❌，🌐🔍",
+			"ownerSuccession": {
+				"main": "👑🗳️",
+				"autoSignHint": "📤💻👥✍️🌱➡️🗳️，🚫🔐⌨️🛡️➕💻➡️🗳️（🗳️🆔➕👤）",
+				"candidateLabel": "👑➡️🔑🧬#️⃣",
+				"description": "➡️👑🔐（🛡️👑⚙️）➡️📌👤🔒🛡️👀",
+				"failed": "👑➡️🗳️📤❌",
+				"needHash": "🙏✍️👑➡️🔑🧬#️⃣",
+				"selfButton": "📝🫵",
+				"submitted": "👑➡️🗳️✅🫵"
+			},
+			"channelType": {
+				"label": "📺🏷️",
+				"list": "📋/🗣️📺",
+				"streaming": "🌊📺",
+				"text": "💬📺"
+			},
+			"settings": {
+				"archive": {
+					"adminOnly": "💻📭👥❄️📦",
+					"colChannel": "📺",
+					"colMonth": "📅",
+					"colSize": "⚖️",
+					"delete": {
+						"before": "🗑️📅⬅️",
+						"button": "🗑️❄️📦",
+						"confirm": "🗑️${month}⬅️❄️📦 ✅❓🚫↩️",
+						"failed": "🗑️📦❌：${error}",
+						"hint": "🗑️💻❄️📦/*📊；🔥➕🔗📊⚓✅",
+						"invalidMonth": "🙏✅📅📋",
+						"ok": "🗑️${files}📦📁"
+					},
+					"empty": "📭❄️📦📁",
+					"filesTitle": "✅📦📁",
+					"hint": "❄️📦=💻📨（📅📁）🗑️≠🔗📊；📜➡️🌐👥📥",
+					"title": "💾❄️📦"
+				},
+				"autoChannelGc": "🧹📺😴",
+				"autoChannelGcHint": "🧱🗑️🔝2😴≥3️⃣0📅🏝️📺",
+				"autoReply": {
+					"frequency": "⚡🎭（N📤👤📨，0⏹️）",
+					"frequencyHint": "0⏹️；@⚡",
+					"tokenBucket": "⚡🎫🪣",
+					"tokenBucketHint": "⏹️🎭📺🎫🪣；🈳⏸️⚡📨，📉📈📨"
+				},
+				"batterySaver": "🔋💤（📉🌐🔗📡）",
+				"compactTriggerDepth": "🧱🗜️🔝",
+				"discoveryBlurb": "🔍📝（🔘）",
+				"discoveryPublic": "🌐🔍👥（🚫➕👥🔑）",
+				"discoveryTitle": "🔍📋🏷️（🔘）",
+				"eventRetentionDepth": "🔗📊📨💾🔝",
+				"eventRetentionMs": "🔗📊📨💾⏰",
+				"explorePeers": "🔍👥",
+				"fedPartition": "🌐📂🔢",
+				"fedTuningHint": "💾🔗📊👥⚙️；🔄💡🔄🌐🏠",
+				"fileCe": {
+					"mode": "📁🔐🎛️",
+					"modeConvergent": "🔄🔐（♻️）",
+					"modeHint": "🔒🎛️🎲📦🔑，ceMode=🎲；⬇️📄⚠️，➕💾📶",
+					"modeRandom": "🔒⬆️（🎲🔑，🚫♻️）"
+				},
+				"gossipTtl": "💬↪️🔢",
+				"hlcMaxSkew": "⏰🔗🔮↔️🔝（⏱️）",
+				"hotLatest": "🔥（📺🔝📨🔢）",
+				"hotWindowHint": "🔥📨➡️✅📍➕📨💾；➡️📅❄️📦，🔗📊🗜️📨",
+				"ice": {
+					"cred": {
+						"aria-label": "TURN🔑",
+						"placeholder": "🔑（optional）"
+					},
+					"remove": {
+						"aria-label": "🗑️🖥️"
+					},
+					"servers": "🔀🌐／🔄📡🖥️",
+					"serversAdd": "➕🖥️",
+					"serversHint": "🌐📞➕🌐P2P🔀NAT；TURN👤🔑💻only，🚫🌐🔄",
+					"url": {
+						"aria-label": "ICE🖥️📍",
+						"placeholder": "stun:host:19302"
+					},
+					"user": {
+						"aria-label": "TURN👤",
+						"placeholder": "👤（optional）"
+					}
+				},
+				"maxDagPayload": "🔗📊1️⃣📨📦🔝",
+				"maxPeers": "🌐🔗🔝",
+				"message": {
+					"rateLimit": "💬🐢（📨/⏱️/🪪）",
+					"retention": "📨📄⏱️🗑️",
+					"retention1y": "1️⃣📅⬅️",
+					"retention30d": "3️⃣0📅⬅️",
+					"retention90d": "9️⃣0📅⬅️",
+					"retentionForever": "♾️（🗜️🔗📊📨）",
+					"retentionHint": "⭐🚫⏱️🗑️📜⏹️✂️💻📨🔥；📨❄️📦➕✅📍"
+				},
+				"page": {
+					"title": "👥⚙️",
+					"kicker": "👥🛡️",
+					"subtitle": "👥📋➕👤🔧🔽🔐、💾📜🔧 📚▶️🔧⚙️",
+					"backToChat": "🔙💬",
+					"navigationLabel": "👥⚙️🗂️",
+					"activeEmojiPackLabel": "✏️😀📦",
+					"membersTitle": "👥📋",
+					"overviewTitle": "👥👀📊",
+					"overviewHint": "👀ℹ️🏛️🔐 ➡️ 📍「📌」✏️👥📋⚙️",
+					"governanceHint": "💾🔗📊👥📋；🛡️／🛡️👑⚙️ 🔐🔒",
+					"governanceDenied": "🫵🚫🔐✏️👥🏛️⚙️",
+					"rolesDenied": "🫵🚫🎭⚙️🔐，🚫✏️🎭",
+					"notMember": "🚫👥👤；💻👥💾⬅️👥🧹",
+					"basicTitle": "👥🏛️",
+					"profileSectionTitle": "👥📋",
+					"profileSectionHint": "🏷️📝➕👥🛣️ ➡️ 💾👥📋",
+					"behaviorSectionTitle": "🏃⚙️",
+					"networkSectionTitle": "🌐🔗",
+					"retentionSectionTitle": "💾🐢",
+					"mediaSectionTitle": "📞📁",
+					"nameLabel": "👥🏷️",
+					"descriptionLabel": "👥📝",
+					"joinPolicyLabel": "➕👥📋",
+					"joinInviteOnly": "🔒📨",
+					"joinPow": "⛏️📊",
+					"powDifficultyLabel": "⛏️📊",
+					"securityAdvancedTitle": "🛡️👑⚙️",
+					"securityAdvancedDescription": "🔄🔑👑➡️；⚠️⚙️❌ ➡️ 👤🚪⚡",
+					"powDifficultyTip": "⛏️📊📊⬆️ ➡️ 👤➕🌐👥➕💻⏱️",
+					"maxDagPayloadTip": "1️⃣👥📨📦🔝⬆️ ➡️ ➕🔄💾➕🌐📶",
+					"trustedPeersTip": "🔝🔗⭐🌐👥",
+					"gossipTtlTip": "💬🔝🔢🌐↪️⬆️📶➕📶",
+					"hlcTip": "🔗⏰➡️💻⏩🔝，🚫🔮📨",
+					"sfuTip": "🔘🔊📹↪️📡📍⬜ ➡️ 📦P2P/📡📞",
+					"iceTip": "🌐📞🔀；P2P❌🔄📡↪️🔊📹🌐📶",
+					"fileEncryptionTip": "🔄🔐♻️📁👀；🎲🔑🔒⬆️➕💾📦",
+					"allowDangerousHtml": "🤝✍️💬✅📝✨",
+					"save": "💾⚙️",
+					"loadFailed": "📥👥⚙️❌: ${error}",
+					"saveSuccess": "👥⚙️💾✅",
+					"saveFailed": "💾⚙️❌: ${error}",
+					"rolesTitle": "🎭🔐",
+					"roleDefault": "⭐",
+					"permissionUpdated": "🔐🔄✅",
+					"permissionUpdateFailed": "🔐🔄❌: ${error}",
+					"noMembers": "👥📭",
+					"memberRoles": "🎭:",
+					"ban": "🔨",
+					"banConfirm": "🔨👤 ${name} ✅❓",
+					"banSuccess": "👤🔨✅",
+					"banFailed": "🔨❌: ${error}",
+					"bannedTitle": "🔨👥",
+					"unban": "🔓",
+					"unbanConfirm": "🔓👤 ${name} ✅❓",
+					"unbanSuccess": "👤🔓✅",
+					"unbanFailed": "🔓❌：${error}",
+					"gshGenerationRetentionHint": "💾🔝6️⃣4️⃣🔄#️⃣📁👑🔑⬆️🔝📜📁🚫🔓，💡❄️📦🔒📄",
+					"gshGenerationNearLimit": "👉🔄#️⃣${generation}📁👑🔑（🔝${maxGenerations}🔄#️⃣）➕🔄 ➡️ 🔝📜🔑🗑️",
+					"ownerSuccession": "👑➡️",
+					"ownerSuccessionOk": "👑➡️✅",
+					"ownerSuccessionFailed": "👑➡️❌：${error}",
+					"defaultEmojiPack": {
+						"failed": "⭐😀📦❌",
+						"hint": "➕👥➡️⭐；🔄➡️🔁旧⭐∈⭐",
+						"label": "⭐😀📦",
+						"ok": "⭐😀📦✅"
+					},
+					"channelArchive": {
+						"hint": "📥✅📺📊📦 ➡️ 👥🆕📝📺♻️📜（🫵✍️；📎💾📋）",
+						"import": "📥📺📊",
+						"importFailed": "📥❌：${error}",
+						"importOk": "✅📥${count}📨，📺▶️…",
+						"title": "📺📦"
+					},
+					"channelPerms": {
+						"addRole": "➕🎭🔐",
+						"denied": "🫵🚫📺⚙️🔐，🚫✏️📺🔐",
+						"hint": "⭐📺 ➡️ 🎭🔐 🔁🚫✍️ ➡️ ↩️👥🎭🔐",
+						"noChannels": "📭📺⚙️",
+						"removeRole": "🗑️🎭🔐",
+						"selectChannel": "📺",
+						"stateAllow": "✅",
+						"stateDeny": "❌",
+						"stateNeutral": "↩️",
+						"updateFailed": "📺🔐🔄❌：${error}",
+						"updated": "📺🔐🔄✅"
+					},
+					"advanced": {
+						"description": "🌐💾🐢🔐⚙️；🤷 ➡️ ⭐",
+						"hubDescription": "👇🔧 ✏️👥🔐🏗️、📜💾／🏛️📜；🔒✋🫵 ✋➡️🔧",
+						"hubTitle": "🔧⚙️🎛️",
+						"navigationLabel": "🔧⚙️🗂️",
+						"title": "🔧⚙️🎛️"
+					},
+					"emojis": {
+						"create": {
+							"pack": "➕😀📦",
+							"packFailed": "➕❌：${error}",
+							"packOk": "😀📦✅",
+							"packPrompt": "😀📦🆔"
+						},
+						"delete": "🗑️😀",
+						"deleteConfirm": "🗑️👥😀 ✅❓",
+						"deleteFailed": "🗑️❌：${error}",
+						"deleteOk": "😀🗑️✅",
+						"empty": "📭👥😀",
+						"hint": "👤✅💬📍／📤👥😀；🚫📥🖼️ ➡️ 🌐🔗📥⏳",
+						"packGroupOption": "${packId} (群)",
+						"title": "👥😀",
+						"upload": "⬆️😀",
+						"uploadFailed": "⬆️❌：${error}",
+						"uploadOk": "😀⬆️✅"
+					},
+					"invite": {
+						"clipboard": "👥🆔：${groupId}\n🎟️：${code}\n➕：${url}",
+						"code": "🎟️",
+						"copied": "✅📋➕👥",
+						"copy": "📋➕👥",
+						"copyFailed": "📋❌",
+						"expires": "⏰💀：${date}",
+						"groupId": "👥🆔",
+						"hint": "⚙️⏱️🎟️（⭐1⏰）👤➡️「➕👥」✍️👥🆔➕🎟️",
+						"mint": "⚙️🎟️",
+						"title": "🎟️"
+					},
+					"delete": {
+						"confirm": "🗑️👥 ✅❓🚫↩️，📨👤♾️🗑️",
+						"failed": "🗑️👥❌: ${error}",
+						"group": "🗑️👥",
+						"role": "🗑️🎭",
+						"roleConfirm": "🗑️🎭 ✅❓",
+						"roleFailed": "🗑️🎭❌: ${error}",
+						"roleSuccess": "🎭🗑️✅",
+						"success": "👥🗑️✅"
+					},
+					"create": {
+						"role": "➕🎭",
+						"roleFailed": "➕🎭❌: ${error}",
+						"rolePrompt": "✍️🎭🏷️:",
+						"roleSuccess": "🎭🆕✅"
+					},
+					"perm": {
+						"aDD_REACTIONS": "➕😀",
+						"aDMIN": "🛡️👤",
+						"bAN_MEMBERS": "🔨👥",
+						"bYPASS_RATE_LIMIT": "⏭️🐢",
+						"cREATE_THREADS": "➕🧵📺",
+						"iNVITE_MEMBERS": "🎟️👥",
+						"kICK_MEMBERS": "👢👥",
+						"mANAGE_": {
+							"cHANNELS": "📺⚙️",
+							"fILES": "📁⚙️",
+							"mESSAGES": "💬⚙️",
+							"rOLES": "🎭⚙️"
+						},
+						"pIN_MESSAGES": "📌📨",
+						"sEND_MESSAGES": "📤📨",
+						"sEND_STICKERS": "📤🏷️😀",
+						"sTREAM": "🎙️",
+						"uPLOAD_FILES": "⬆️📁",
+						"vIEW_CHANNEL": "👀📺"
+					},
+					"kick": {
+						"main": "👢",
+						"confirm": "👢👤 ${name} ✅❓",
+						"failed": "👢❌: ${error}",
+						"selfNodeWarning": "⚠️👤🤝🔗🆔，👢➡️🫵⬅️👥✅❓",
+						"success": "👤👢✅"
+					},
+					"tabs": {
+						"advanced": "🔧",
+						"audit": "📜🔍",
+						"channelPermissions": "📺🔐",
+						"emojis": "😀",
+						"general": "📌",
+						"members": "👥",
+						"permissions": "🎭🔐",
+						"storage": "💾📦"
+					},
+					"key": {
+						"managementTip": "🔄📤🆕🔑➡️👤🔑💧✋🔄",
+						"managementTitle": "🔑🛡️",
+						"rotate": "🔄👥📁👑🔑",
+						"rotateConfirm": "✋🔄👥📁👑🔑 ✅❓🆕👤🔄📜📁🔑",
+						"rotateFailed": "🔑🔄❌：${error}",
+						"rotateOk": "🔑🔄✅"
+					}
+				},
+				"pinContext": "📌±N📨",
+				"rtcBudget": "📞🔗💰",
+				"rtcJoinRate": "📞⏱️➕🔝",
+				"streamGeneratingIdle": "🤖😴⏰🔝（⏱️）",
+				"streamingSfu": "🌊📡🔗📍（🔘）",
+				"trustedPeers": "🤝🔝K",
+				"wantIdsBudget": "1️⃣📋🆔💰"
+			},
+			"feedback": {
+				"dagLine": "[${label}]",
+				"dagLineWithNote": "[${label}] ${note}",
+				"down": "👎",
+				"previewLine": "${tag}${sep}${note}",
+				"previewTaggedNote": "${tag} ${note}",
+				"up": "👍"
+			},
+			"message": {
+				"aborted": "⛔⏹️",
+				"deleted": "📨🗑️",
+				"deletedBracket": "[📨🗑️]",
+				"prefixSticker": "🏷️😀",
+				"refAnchor": "📎📨：${id}",
+				"withAttachments": "${text}（${n}📎）"
+			},
+			"default": {
+				"channel": {
+					"placeholder": "📋"
+				},
+				"channelLabel": "⭐📺",
+				"channelSet": "✅⭐📺",
+				"channelSetFailed": "⭐📺❌"
+			},
+			"sticker": {
+				"defaultName": "🏷️😀",
+				"prefixLine": "[${label}]",
+				"prefixLineTagged": "[🏷️😀]",
+				"saved": "✅💾🏷️😀"
+			},
+			"remote": {
+				"nodeTimeout": "🔗⏰❌，🔁⏳",
+				"typing": "${name} ⌨️…",
+				"typingMany": "${name} ➕${count} ⌨️…",
+				"typingTwo": "${name1}、${name2} ⌨️…",
+				"unavailable": "🔗🧩🚫／🚫📡RPC",
+				"unsafe": "🔗💬✍️🚫🤝，⏹️✨📝"
+			},
+			"create": {
+				"channelFailed": "➕📺❌",
+				"failed": "➕👥❌",
+				"group": "🆕👥",
+				"groupFailed": "➕👥❌",
+				"groupTitle": "🆕👥"
+			},
+			"stream": {
+				"generationFailed": "🤖⏰❌，⏹️🔄",
+				"noEmbed": {
+					"textContent": "🌊📍🔒🔗embed / ⚙️👥🔄🎫"
+				},
+				"noSfu": {
+					"textContent": "🚫⚙️🌊📡🔗；🛡️➡️👥⚙️📺🔧📍"
+				},
+				"ok": "✅🌊（⏹️，🚫📡）",
+				"test": "🧪📹🎙️"
+			},
+			"thread": {
+				"main": "🧵",
+				"back": "🔙",
+				"breadcrumbMiddleSummary": "📂${count}",
+				"breadcrumbMiddleTitle": "📂➡️⏩",
+				"breadcrumbRootTitle": "⏩🛤️🔝（1️⃣）"
+			},
+			"unpin": {
+				"action": {
+					"textContent": "↩️📌",
+					"title": "↩️📌"
+				},
+				"message": "↩️📌",
+				"messageLine": "[↩️📌] ${targetId}",
+				"ok": "↩️📌✅"
+			},
+			"vote": {
+				"blockHeading": "[${prefix}] ${question}",
+				"blockHeadingTagged": "[🗳️] ${question}",
+				"cast": "🗳️",
+				"castLine": "[${prefix}] 🗳️：${choice}",
+				"castLineTagged": "[🗳️] 🗳️：${choice}",
+				"create": "🗳️➕",
+				"createFailed": "🗳️❌",
+				"deadline": "⏰",
+				"deadlineLineClosed": "⏰：${date} [⏹️]",
+				"deadlineLineOpen": "⏰：${date}",
+				"ended": "⏹️",
+				"for": "🗳️ ${option}",
+				"optionsPreview": "[${prefix}] ${options}",
+				"optionsPreviewTagged": "[🗳️] ${options}",
+				"promptDeadline": "⏰🔚（⬜♾️，📅⏰）",
+				"tooFewOptions": "≥2️⃣",
+				"total": "🔢${n}🗳️"
+			},
+			"edit": {
+				"cancel": "↩️（⎋）",
+				"confirm": "✅（⌃⏎）",
+				"emptyText": "📨🈳🚫",
+				"hint": "⌃⏎✅ · ⎋↩️",
+				"message": {
+					"title": "✏️📨"
+				}
+			},
+			"menu": {
+				"copyId": "📋📨🆔",
+				"copyText": "📋📝",
+				"exportHtml": "📤📝✨",
+				"shareExternal": "🔗📤"
+			},
+			"pin": {
+				"action": {
+					"textContent": "📌",
+					"title": "➡️📨💾🔗📊📌"
+				},
+				"failed": "📌❌",
+				"message": "📌",
+				"messageLine": "[📌] ${targetId}",
+				"ok": "📌✅",
+				"thisMessage": "➡️📨💾🔗📊📌"
+			},
+			"av": {
+				"mute": "🔇",
+				"needStreamChannel": "➡️🌊📺📹🎙️",
+				"start": "▶️📹🎙️",
+				"stop": "⏹️",
+				"swap": "🖼️⭐"
+			}
 		},
 		"hub": {
 			"title": "💬",
@@ -1576,10 +1696,6 @@
 				"title": "🎭",
 				"tip": "🎭"
 			},
-			"friendsTooltip": {
-				"title": "👫",
-				"tip": "👫"
-			},
 			"inboxTooltip": {
 				"title": "📬",
 				"tip": "🌐👥📬"
@@ -1587,18 +1703,6 @@
 			"inbox": {
 				"title": "📬",
 				"filtersLabel": "🔽📬💬",
-				"tabMention": "@️⃣",
-				"tabMessage": "📨📋",
-				"tabCare": "⭐💖",
-				"tabVoteClosed": "🗳️✅",
-				"emptyMentionTitle": "@️⃣📭",
-				"emptyMentionDescription": "👥💬@️⃣🫵 ➡️ 📬📋",
-				"emptyMessageTitle": "📬📭",
-				"emptyMessageDescription": "🌐👥📺 💬📰 ➡️ 👀📍",
-				"emptyCareTitle": "⭐💖📭",
-				"emptyCareDescription": "⭐👤 📨🆕 ➡️ ⚡👀📍",
-				"emptyVoteTitle": "🗳️✅📭",
-				"emptyVoteDescription": "🗳️⏹️ 📊 ➡️ 📬📋",
 				"rowLabel": {
 					"aria-label": "${author} 📍 ${group} #️⃣${channel} 💬：${preview}"
 				},
@@ -1606,7 +1710,23 @@
 				"badgeFetchFailed": "🔴🔔🔄❌：${error}",
 				"loadFailed": "📬📥❌：${error}",
 				"markSeenFailed": "📬✅👀🔄❌：${error}",
-				"jumpFailed": "💬🔗🚫：${error}"
+				"jumpFailed": "💬🔗🚫：${error}",
+				"empty": {
+					"careDescription": "⭐👤 📨🆕 ➡️ ⚡👀📍",
+					"careTitle": "⭐💖📭",
+					"mentionDescription": "👥💬@️⃣🫵 ➡️ 📬📋",
+					"mentionTitle": "@️⃣📭",
+					"messageDescription": "🌐👥📺 💬📰 ➡️ 👀📍",
+					"messageTitle": "📬📭",
+					"voteDescription": "🗳️⏹️ 📊 ➡️ 📬📋",
+					"voteTitle": "🗳️✅📭"
+				},
+				"tabs": {
+					"care": "⭐💖",
+					"mention": "@️⃣",
+					"message": "📨📋",
+					"voteClosed": "🗳️✅"
+				}
 			},
 			"notifyPrefs": {
 				"title": "🔔⚙️",
@@ -1623,11 +1743,6 @@
 				"muteForever": "🔇♾️👆",
 				"saved": "🔔💾✅"
 			},
-			"voteClosed": "✅⏹️",
-			"discoveryTooltip": {
-				"title": "🔭👥",
-				"tip": "🔭👥"
-			},
 			"prefsTooltip": {
 				"title": "⚙️",
 				"tip": "🌐🔄⚙️"
@@ -1636,65 +1751,6 @@
 			"prefsNav": {
 				"aria-label": "⚙️📂"
 			},
-			"federationTooltip": {
-				"title": "🌐🔗⚙️",
-				"tip": "🌐🔗⚙️"
-			},
-			"federationTitle": "🌐🔗⚙️",
-			"federationSubtitle": "🖥️🔗🎛️ · 👌🔧⭐",
-			"federationLoadFailed": "📥❌：${error}",
-			"fedConnectionTitle": "🔗🔭",
-			"discoveryRefresh": "🔄🔭📋",
-			"fedRelayUrlsLabel": "📡🌐📍",
-			"fedRelayUrlsTip": "📡🔍🖥️➡️🖥️ · 1️⃣📍🔒wss:// · 📭⭐📡",
-			"fedBatterySaverLabel": "🔋💤",
-			"fedBatterySaverTip": "🔋💤 ➖🔗📶 · 💬🔄🐢",
-			"fedAdvancedTitle": "🔧⚙️",
-			"fedAdvancedDescription": "🔧⭐⚖️ ✍️🔗",
-			"fedGroupRecoveryTitle": "👥🔗🔧",
-			"fedGroupRecoveryTip": "⚠️📨💨／🆕🖥️🚫📜 ⏰🔧",
-			"fedRotateRoomSecret": "🔄🔐👥",
-			"fedRotateRoomSecretConfirm": "🔄🔐👥 ➡️ 🕰️📨🚫🔗 · ❓▶️❓",
-			"fedRotateRoomSecretOk": "✅🔄🔐",
-			"fedRepairJoinSnapshot": "🤝📸👥🔧",
-			"fedRepairJoinSnapshotOk": "✅📸👥（${channels} 📺📜）",
-			"fedRepairJoinSnapshotFailed": "📸👥🔧❌：${error}",
-			"fedRepTitle": "👥⭐🧠",
-			"fedRepTip": "🖥️🌐🔗⭐🔢 · 🚫👥👀",
-			"fedRepEmpty": "（📭）",
-			"fedSlashTitle": "⚔️⭐",
-			"fedSlashTip": "📊🌳➖⭐🔗 · 🛡️🔧👑",
-			"fedSlashTargetLabel": "🎯🔑#️⃣（64🔣）",
-			"fedSlashTarget": {
-				"placeholder": "👤🔑#️⃣"
-			},
-			"fedSlashClaimLabel": "💪📢（0–1）",
-			"fedSlashVerifiedLabel": "✅🔍（📌📎🆔）",
-			"fedSlashProofLabel": "📎🆔🔣（🔘）",
-			"fedSlashProof": {
-				"placeholder": "64🔣 📅🆔"
-			},
-			"fedSlashSubmitLabel": "📤⚔️⭐",
-			"fedResetSubmitLabel": "🔄🎯⭐",
-			"fedSlashNeedHash": "📌64🔣🔑#️⃣",
-			"fedSlashOk": "⚔️⭐✅📊🌳",
-			"fedResetOk": "🔄⭐✅💾",
-			"fedDmLinkTitle": "✍️🤝🔗",
-			"fedDmLinkTip": "🆔🔑✍️ · 🔐🖥️🔒🚫📤",
-			"fedDmLinkDescription": "🔧🔄🆔 · ☀️🤝🚫📋",
-			"fedDmPubKeyLabel": "🔑🔣（64）",
-			"fedDmSecretLabel": "🔐🌱🔣（64）",
-			"fedDmNodeLabel": "🔘🖥️🔗",
-			"fedDmInvalidateTitle": "🗑️🔗🕰️",
-			"fedDmInvalidateDescription": "⏩➡️ 📨🤝🔗 🚫⚡🚫↩️",
-			"fedDmRotateLabel": "🗑️🔗",
-			"fedDmRotateConfirm": "📨🤝🔗 🚫♻️ · ❓▶️❓",
-			"fedDmIssueLabel": "✍️💬🔗",
-			"fedDmNeedPubKey": "📌64🔣🔑",
-			"fedDmNeedSecretKey": "📌64🔣🔐🌱",
-			"fedDmIssued": "✅💬🔗📋",
-			"fedNonceRotated": "🎲#️⃣🔄（${nonce}…）",
-			"fedSaved": "💾✅",
 			"addServerTooltip": {
 				"title": "➕👥",
 				"tip": "➕👥"
@@ -1733,129 +1789,37 @@
 			"settingsTitle": {
 				"title": "⚙️"
 			},
-			"filesTitle": {
-				"title": "👥📁"
-			},
-			"filesDrawerTitle": "👥📁",
-			"filesLoading": "📥👥📁…",
-			"filesLoadFailed": "📥👥📁❌：${error}",
-			"filesNoGroup": "👆👥📍",
-			"filesNoCabinets": "🎭🚫🗄️",
-			"filesBindCabinet": "➕🗄️",
-			"filesNoChannel": "👆📝📺💬",
-			"filesUploadTo": "⬆️➡️",
-			"filesRootFolder": "📁🏠",
-			"filesNewFolder": "➕📂",
-			"filesNewFolderPrompt": "📂🏷️",
-			"filesRename": "✏️🏷️",
-			"filesRenameFolderPrompt": "✏️📂「${name}」➡️：",
-			"filesDeleteFolderConfirm": "❓🗑️📂❓（📁📦✅）",
-			"filesUpload": "⬆️",
-			"filesDownload": "⬇️",
-			"filesDelete": "🗑️",
-			"filesDeleteConfirm": "❓🗑️📄❓",
-			"filesFoldersTitle": "📂",
-			"filesListTitle": "📄",
-			"filesEmpty": "📁📭",
-			"filesNoFolders": "📂📭",
 			"uploadTitle": {
 				"title": "⬆️📄"
 			},
 			"emojiTitle": {
 				"title": "😀"
 			},
-			"voteTitle": {
-				"title": "➕🗳️"
-			},
 			"shareGroupTitle": {
 				"title": "🔗👥"
 			},
 			"shareGroupOk": "✅📤👥🎟️",
-			"messageActionFailed": "⚙️❌：${error}",
 			"inviteJoinButton": "➕👥",
 			"inviteLinkNeedsRoomSecret": "👥🚫🌐🔗 · 🔁📨🔗",
 			"inviteCardMembers": "${count} 👤",
-			"syncFailed": "🌐🔄❌：${error}",
-			"syncRateLimited": "🌐🔄🐢⏳",
-			"syncIncomplete": "⏳${missing}/${total} 📅🚫🔄",
-			"syncNoPeers": "🚫🤝🌐 · 📨🔗🔁",
 			"attachmentLoadFailed": "📎📥❌",
-			"messageEditUpload": "⬆️📎",
 			"timeToday": "📅🕐 ${time}",
 			"timeYesterday": "📅⬅️ ${time}",
 			"stickerTitle": {
 				"title": "🏷️"
 			},
-			"sendTitle": {
-				"title": "📤（Ctrl+Enter）"
-			},
-			"messageInput": {
-				"placeholder": "👥📨… ⌃⏎📤",
-				"aria-label": "💬"
-			},
 			"stopGenerateTitle": {
 				"title": "⏹️🔄#️⃣"
 			},
-			"charTyping": "⌨️…",
-			"messageActionPrev": {
-				"title": "⬅️⏱️"
-			},
-			"messageActionNext": {
-				"title": "➡️⏱️"
-			},
-			"messageActionRegen": {
-				"title": "🔄✨"
-			},
-			"messageActionEdit": {
-				"title": "✏️💬"
-			},
-			"messageActionFeedbackUp": {
-				"title": "👍"
-			},
-			"messageActionFeedbackDown": {
-				"title": "👎"
-			},
-			"messageActionDelete": {
-				"title": "🗑️💬"
-			},
 			"confirmDeleteLong": "📜💬 · ❓🗑️❓",
-			"messageActionCopyHtml": {
-				"title": "📋🌐📄"
-			},
 			"forceReply": "💪↩️",
 			"removeChar": "🗑️🎭",
-			"loadMore": "📥⬆️💬…",
-			"charChatsTitle": "📜💬 ${name}",
 			"newGroupWith": "➕💬 ${name}",
-			"messageActionBookmark": {
-				"title": "🔖"
-			},
-			"messageActionPin": {
-				"title": "📌"
-			},
-			"messageActionUnpin": {
-				"title": "↩️📌"
-			},
-			"blockAuthor": {
-				"title": "🚫✍️"
-			},
-			"pinUnpinSidebar": {
-				"title": "↩️📌"
-			},
 			"meAuthor": "🫵",
-			"messageEditSave": "💾",
-			"messageEditCancel": "↩️",
-			"messageEditArea": {
-				"aria-label": "✏️💬"
-			},
 			"feedbackReasonPrompt": "👎📝（🔘）",
 			"feedbackReasonInput": {
 				"placeholder": "👎📝（🔘）"
 			},
-			"messageFeedbackSubmit": "📤💬",
-			"stickersPanelTitle": "🏷️",
-			"stickersManage": "🏷️⚙️➡️",
-			"stickersLoading": "📥…",
 			"recentEmojiTab": {
 				"title": "⭐😀"
 			},
@@ -1863,11 +1827,6 @@
 			"currentGroupEmojiTab": {
 				"title": "👥😀"
 			},
-			"groupEmojiTab": {
-				"title": "👥"
-			},
-			"groupEmojisEmpty": "📭👥😀 · 👥⚙️⬆️",
-			"groupEmojisLoadFailed": "📥👥😀❌",
 			"profileLinkTitle": {
 				"title": "👤📋",
 				"textContent": "👤📋"
@@ -1885,22 +1844,6 @@
 			},
 			"aboutSection": "ℹ️",
 			"bioEmpty": "📝📭",
-			"statusOffline": {
-				"title": "⚫",
-				"textContent": "⚫"
-			},
-			"statusOnline": {
-				"title": "🟢",
-				"textContent": "🟢"
-			},
-			"statusIdle": {
-				"title": "🟡🚶",
-				"textContent": "🟡🚶"
-			},
-			"statusDnd": {
-				"title": "🔕",
-				"textContent": "🔕"
-			},
 			"banners": {
 				"gshBuffer": "🔐🔄⏳ ${total} 💬🔓",
 				"plaintextSidecar": "📺👆🔄 · 💾💬📎 📝👀",
@@ -1909,10 +1852,6 @@
 				"syncing": "🌐🤝🔄…",
 				"archiveCoverageIncomplete": "📦❄️📅 🚫✅🔄",
 				"archiveSyncButton": "🔄📦",
-				"forkGovernance": "🔐📊🔀 · 🖥️👀",
-				"forkTips": "🔀🌿 ${count} · 💬🔢⚠️",
-				"forkTipLabel": "📊🌳🍃",
-				"forkTipScore": "${short} · ⭐${score}",
 				"applyBranch": "✅🏛️🌿",
 				"autoBranch": "⭐🤖🌿",
 				"mergeDag": "🔀🔗",
@@ -1920,55 +1859,28 @@
 				"blockOpposing": "🚫🌿👊",
 				"suspectedRemoved": "🚪👥 · 🔍🤝${count}🖥️🚫 · 📸💾／🗑️👥",
 				"suspectedRemovedKeep": "📸💾",
-				"suspectedRemovedLeave": "🗑️👥"
+				"suspectedRemovedLeave": "🗑️👥",
+				"fork": {
+					"governance": "🔐📊🔀 · 🖥️👀",
+					"tipLabel": "📊🌳🍃",
+					"tipScore": "${short} · ⭐${score}",
+					"tips": "🔀🌿 ${count} · 💬🔢⚠️"
+				}
 			},
-			"blockOpposingConfirm": "🚫🌿✍️🏛️ · ❓▶️❓",
-			"blockOpposingOk": "✅🚫 ${count} 🪪",
-			"blockOpposingFailed": "🚫❌：${error}",
 			"applyBranchOk": "✅🏛️🌿",
 			"applyBranchFailed": "🌿❌：${error}",
 			"autoBranchOk": "✅⭐🤖🌿",
 			"autoBranchFailed": "🤖🌿❌：${error}",
-			"saveEmoji": {
-				"title": "💾😀"
-			},
-			"saveEmojiOk": "😀✅💾",
-			"saveEmojiFailed": "💾😀❌：${error}",
-			"saveSticker": {
-				"title": "💾🏷️"
-			},
-			"saveStickerOk": "🏷️✅➕🗄️",
-			"saveStickerFailed": "💾🏷️❌：${error}",
 			"revealRemoteMd": "📖🔽",
-			"voteModalTitle": "➕🗳️",
-			"voteModalSubmit": "➕🗳️",
-			"voteCreateFailed": "➕🗳️❌：${error}",
 			"composer": {
 				"placeholder": "📤➡️ #${channel}"
 			},
 			"composerSuspectedRemoved": {
 				"placeholder": "🚪👥 · 🚫📤"
 			},
-			"channelReadonlyList": {
-				"placeholder": "📋👀🔒"
-			},
-			"channelReadonlyStream": {
-				"placeholder": "📺🌊👀🔒"
-			},
-			"noChannels": "💬📭",
-			"noMembers": "👥📭",
-			"noPins": "📌📭",
-			"noBookmarks": "🔖📭",
 			"adminSection": "🛡️👑",
-			"memberSection": "👥",
-			"membersDigestOk": "👥🌳✅ · ${root}",
-			"membersDigestOkPaged": "👥🌳✅（${pages}📄）· ${root}",
-			"membersDigestMismatch": "👥📋⚠️ · ${root}",
-			"membersDigestPending": "🔍👥📋…",
-			"membersDigestFetchFailed": "👥📄📥❌",
 			"copyEntityId": "📋🪪🆔",
 			"copyEntityIdOk": "✅📋🪪🆔",
-			"memberJoined": "➕💬",
 			"remoteBadge": {
 				"textContent": "🌐📡",
 				"title": "🌐🔗✍️"
@@ -1978,49 +1890,15 @@
 				"title": "🤝✍️⚠️🌐📄"
 			},
 			"stickerInline": "🏷️",
-			"voteDeadline": "⏰：${date}",
-			"voteNoOptions": "🗳️📭",
-			"voteTotal": "📊${total}🗳️",
-			"voteCount": "${count}🗳️ · ${pct}%",
-			"loadGroupFailed": "📥👥❌：${error}",
-			"groupJoinRequired": "🚫👥 · 📨🔗🎟️",
-			"sendFailed": "📤❌：${error}",
-			"sendFailedPending": "📤❌",
 			"markdownRenderFailed": "💬🎨❌",
 			"retrySend": "🔄",
-			"sendImageFailed": "📤🖼️❌：${error}",
-			"sendStickerFailed": "📤🏷️❌：${error}",
-			"voteMinOptions": "⬇️2️⃣☑️",
 			"mergeDagOk": "🔀✅🔗",
 			"mergeDagFailed": "🔀❌：${error}",
-			"forkSplitFailed": "✂️👥❌：${error}",
-			"forkSplitPrompt": "🆕👥🏷️（🔘）",
-			"forkSplitModalTitle": "✂️🆕👥",
-			"forkSplitModalSubmit": "➕",
 			"typing": "${names} ⌨️…",
 			"charsHeader": "🎭",
-			"friendsHeader": "👫",
 			"settingsModalTitle": "⚙️",
 			"modalClose": "✖️",
-			"groupTag": "👥",
-			"groupUnnamed": "🏷️📭👥 ·${suffix}",
-			"groupHeaderMenu": {
-				"title": "👥📋⚙️📨"
-			},
-			"groupDescriptionEmpty": "📝📭👥",
-			"serverActionPickerTitle": "👥",
-			"serverActionPickerSubtitle": "➕🆕👥 · 🆔➕",
-			"serverActionPickerCreate": "➕👥",
-			"serverActionPickerCreateDescription": "🆕0️⃣ · 📨👫",
-			"serverActionPickerJoin": "➕👥",
-			"serverActionPickerJoinDescription": "🆔👥",
 			"cancel": "↩️",
-			"folderDefault": "📁",
-			"folderRename": "✏️📁",
-			"folderRenamePrompt": "✏️📁「${name}」➡️：",
-			"folderCollapse": "🔽📁",
-			"folderExpand": "🔼📁",
-			"folderDissolve": "💥📁",
 			"bookmarkLocal": "🏠",
 			"groupsSection": "👥",
 			"ungrouped": "📭🗂️",
@@ -2030,46 +1908,13 @@
 				"title": "🗑️🔖",
 				"aria-label": "🗑️🔖"
 			},
-			"loadMessagesFailed": "📥💬❌：${error}",
 			"unreadDivider": "🆕💬",
-			"noUsername": "🏷️📭",
-			"stickersEmpty": "🏷️📭",
-			"stickersMarketLink": "🏪🏷️➡️",
-			"stickersLoadFailed": "📥❌：${error}",
-			"noChars": "🎭📭 · ➕📦",
-			"noFriends": "💬📭",
-			"friendsEmptyTitle": "➕💬",
-			"friendsEmptyDescription": "🔍🎭🌐👤 · 👥📇💬",
-			"friendsEmptyAction": "🔍🎭👤",
-			"friendsSearchEmpty": "🔍📭",
-			"friendsSearchTooShort": "✍️⬆️2️⃣🔣",
-			"friendsSearchDm": "💬📨",
-			"friendsSearchChat": "▶️💬",
-			"friendsSearchLocalChar": "🏠🎭",
-			"friendsSearchPin": "📌🏷️",
-			"charCount": "${count} 🎭",
-			"friendsCount": "${count} 👫",
-			"charTag": "🎭",
-			"friendsTag": "👫",
 			"backToFriends": "🔙👫",
 			"dmTopicsTitle": "#️⃣💬",
-			"friendsContextNewChat": "🆕💬",
-			"friendsRestartConfirm": "🔓✉️「${name}」➕🆕💬❓",
-			"friendsRestartOk": "✅🆕✉️",
-			"friendsRestartFailed": "🆕✉️❌：${error}",
-			"charDescriptionEmpty": "🎭📭👋",
-			"charIntro": "👋📖",
 			"participants": "👥🤝",
-			"charTagSolo": "🎭 · 1️⃣:1️⃣ 💬",
 			"startChatWith": "💬 ▶️ ${name}",
 			"loading": "📥⏳…",
-			"charChatStart": "▶️💬 ${name}",
-			"charChatEmpty": "📭💬 ▶️🆕❗",
-			"loadCharChatFailed": "📥💬❌",
 			"createChatFailed": "➕💬❌：${error}",
-			"charChatComposer": {
-				"placeholder": "➡️ ${name} 📤（⌃⏎）"
-			},
 			"friendChatComposer": {
 				"placeholder": "📤💬（⌃⏎）"
 			},
@@ -2089,75 +1934,13 @@
 				"confirmSecond": "👆👆✅🔒",
 				"cancel": "↩️"
 			},
-			"blockConfirm": "🚫📋❓👥🌐 ➡️ 🚫📡",
-			"blockOk": "✅🚫",
-			"charChatSettings": "🎭💬⚙️",
-			"charChatSubtitle": "💬 ${name}",
-			"sessionInfo": "💬ℹ️",
-			"sessionRole": "🎭",
-			"sessionId": "💬🆔",
-			"sessionMessages": "📨#️⃣",
 			"quickActions": "⚡🎮",
 			"advancedSettings": "🔧⚙️（🎭 / 🌍 / 🧩）",
 			"advancedSettingsDescription": "🆕📑 ➡️ 💬🏠 👥⚙️",
 			"dangerZone": "⚠️🗺️",
-			"unbindFriendDescription": "🔓➡️ 💬 ⬅️👥📋 📜💾",
-			"unbindFriend": "🔓🔗",
-			"unbindFriendConfirm": "🔓✉️ ${name}❓💬 ➡️ 👥📋",
-			"unbindFriendOk": "✅🔓",
-			"unbindFriendFailed": "🔓❌：${error}",
 			"deleteSessionDescription": "🗑️💬 ♾️ 📜 🚫♻️",
 			"deleteSession": "🗑️💬",
 			"deleteSessionConfirm": "🗑️💬 ${name}❓🚫♻️",
-			"sessionDeleted": "✅🗑️💬",
-			"sessionDeleteFailed": "🗑️❌：${error}",
-			"streamTokenFailed": "🚫🎫👀",
-			"streamAvJoin": "🎙️➕📹",
-			"streamAvLeave": "🚪",
-			"streamAvMute": "🔇",
-			"streamAvUnmute": "🔊",
-			"streamAvVideo": "📷⏹️",
-			"streamAvVideoOn": "📷▶️",
-			"streamAvYou": "🫵",
-			"streamAvJoinFailed": "📞❌：${error}",
-			"streamAvNoCodecs": "🌐🚫 🎬🔢（🌐94+）",
-			"streamAvPeers": "🟢 ${count} 👤",
-			"streamAvPresetThumb": "🔍 64📶",
-			"streamAvPresetLow": "⬇️ 200📶",
-			"streamAvPresetMed": "↔️ 600📶",
-			"streamAvPresetHigh": "⬆️ 1.5📶",
-			"callButton": {
-				"title": "📞➕🔗",
-				"aria-label": "📞➕🔗"
-			},
-			"callInProgress": "📞▶️",
-			"callEnded": "📞✅",
-			"callJoin": "📞➕",
-			"callHangup": "📞⏹️",
-			"callScreenShare": "🖥️📤",
-			"callScreenStop": "⏹️🖥️",
-			"callJumpBack": "↩️📞📺",
-			"callJoinFailed": "📞❌：${error}",
-			"callScreenFailed": "🖥️📤❌：${error}",
-			"callStartedAt": "▶️ ${time}",
-			"callDuration": "⏱️ ${duration}",
-			"callParticipants": "${n} 👤",
-			"callPeerCount": "${n}",
-			"callNoParticipants": "📭👤",
-			"listChannelEmpty": "📋📭",
-			"listItemUntitled": "🏷️📭",
-			"listEditorTitle": "✏️📋（📊🔢）",
-			"listSaveToDag": "💾➡️🌳",
-			"listJsonInvalid": "📊🚫：${message}",
-			"listSaved": "💾✅",
-			"listSaveFailed": "💾❌",
-			"streamDefaultName": "🌊📺",
-			"streamRefreshToken": "🔄🎫",
-			"streamEmbedHttpsRequired": "🌊📺 🔒🔗 https:// 📄，⚙️👥🔄🎫",
-			"streamWebRtcHint": "🚫📡🌐；📺 ➡️ 👥 🌐📹（🚫 📡🔗）",
-			"pinPreviewSticker": "[🏷️😀]",
-			"pinPreviewVote": "[🗳️] ${question}",
-			"pinPreviewInvite": "[🎟️] ${groupName}",
 			"reactionRemovePrompt": "🗑️👤 ${emoji}❓\n${candidates}",
 			"ariaDagTip": {
 				"aria-label": "🌳🔀 🍃"
@@ -2165,58 +1948,11 @@
 			"ariaClose": {
 				"aria-label": "✖️"
 			},
-			"memberBar": {
-				"aria-label": "👤📋"
-			},
-			"channelBar": {
-				"aria-label": "#️⃣📋"
-			},
 			"serverBar": {
 				"aria-label": "👥🧭"
 			},
-			"membersDigestPagesTitle": {
-				"title": "${expected}\n${pages} 📄"
-			},
-			"discoveryTitle": "🔭👥",
-			"discoveryEyebrow": "🔍🏛️",
-			"discoveryDescription": "👀🌐👥 ➕ 🔍🏛️",
-			"discoverySidebarHint": "➡️👀➕👥",
-			"discoveryEmptyTitle": "📭🔭👥",
-			"discoveryEmpty": "📭⭐👥；🌐🔄 ➡️ 🔍📋",
-			"discoveryNoDescription": "👑📭📝",
-			"discoverySourceCount": "${count} 🌐📡",
-			"discoveryJoin": "➕👥",
-			"discoveryOpen": "📂👥",
-			"discoveryLoadFailed": "📥🔭❌：${message}",
 			"operationFailed": "⚙️❌：${error}",
 			"shareGroupFailed": "📤👥🔗❌：${error}",
-			"blockAuthorTitle": "🚫✍️",
-			"configTitle": "💬⚙️",
-			"configSaved": "💾✅",
-			"configSaveFailed": "💾❌：${error}",
-			"configLoadFailed": "📥⚙️❌：${error}",
-			"noActiveChat": "🙏📂💬 🔁📥🧩",
-			"groupContext": {
-				"manage": "👥⚙️",
-				"notifyPrefs": "🔔⚙️",
-				"invite": "📨👤",
-				"inviteCopied": "🎟️✅📋",
-				"addChar": "➕🎭",
-				"addCharLabel": "👆🎭",
-				"addCharSubmit": "➕",
-				"noChars": "📭🎭",
-				"setAlias": "⚙️👥🏷️",
-				"setAliasPrompt": "「${name}」🏷️💻（⬜🧹）：",
-				"aliasSaved": "👥🏷️✅",
-				"leave": "⬅️👥",
-				"leaveConfirm": "⬅️👥「${name}」❓🚫👀💬",
-				"leaveOk": "✅⬅️👥",
-				"leaveBatch": "⬅️👥（${count}）",
-				"leaveConfirmBatch": "⬅️ ${count} 👥❓💻🚫💾",
-				"leaveBatchPending": "⬅️ ${count} 👥 ⏳…",
-				"leaveBatchOk": "✅⬅️ ${count} 👥",
-				"leaveBatchPartial": "${failed} / ${total} 👥⬅️❌ 📋🔄"
-			},
 			"replyInline": {
 				"title": "💬↩️"
 			},
@@ -2226,35 +1962,8 @@
 			"replyInThread": {
 				"title": "🧵💬"
 			},
-			"syncTruncated": "🌳📥⏳ 🔁⬆️ 🔢",
-			"syncTruncatedHint": "🌳📜↔️ 🔁⬆️ 🔢",
-			"newChannelButton": "🆕📺",
-			"newChannelSuccess": "📺✅🎉",
-			"newChannelFailed": "➕📺❌",
-			"newChannelTitle": "🆕📺",
-			"channelName": "📺🏷️",
-			"channelType": "📺🔖",
-			"channelTypeText": "💬📺",
-			"channelTypeList": "📋🗣️📺",
-			"channelTypeStreaming": "🌊📺",
-			"channelNameInput": {
-				"placeholder": "general"
-			},
 			"localMaterializedView": "💻🧱📺 🔐📜 ↔️🔗🚫",
 			"convergentEncryptWarn": "👥📁 🔐🔄：📝👀 ➡️ 🔑➡️🔓🚫🔐📄➡️👥🔒",
-			"votePromptQuestion": "🗳️🏷️",
-			"votePromptOptions": "☑️（，⏱️ ⬆️2️⃣）",
-			"voteOptionDefault": "👍,👎",
-			"votePromptDeadlineHours": "⏰（⏱️ 📭=♾️）",
-			"messagePrefixVote": "🗳️",
-			"threadCreated": "🧵✅🎉",
-			"threadCreateFailed": "➕🧵❌ 🔁",
-			"threadDrawer": {
-				"aria-label": "🧵"
-			},
-			"threadClose": {
-				"title": "✖️🧵"
-			},
 			"reputationSlashAlert": "👤 ${target}… ⭐⬇️🔔",
 			"profileEdit": {
 				"previewHint": "✏️ ➡️ 👀📍；💾 ➡️ 🔄 💬 ➕ 🏛️",
@@ -2263,23 +1972,14 @@
 				"languageVersion": "🗣️🔢",
 				"localeHint": "👆🏷️🔄✏️；📤↩️ ➡️ 🆕🗣️",
 				"themeColorHint": "🚫🖼️ ➡️ 🎨🌊；📡🔊💫",
-				"bannerLabel": "🖼️🎨",
-				"bannerHint": "🔗🖼️ ⬆️📁；♻️🎨",
-				"bannerClear": "♻️🖼️",
 				"linksPreview": "${count} 🔗🌐",
 				"unsavedHint": "✖️ ➡️ 🚫💾✏️",
 				"tagsLabel": "🏷️",
 				"tagAdd": "➕",
 				"tagRemove": "🗑️🏷️",
 				"linksLabel": "🔗",
-				"linkAdd": "➕🔗",
-				"linkRemove": "🗑️🔗",
 				"handleLabel": "🔧🆔",
 				"handleHint": "🌐🔍；🚫1️⃣ 🤝📋🔀",
-				"resetFromPart": "⬅️🎭🧩🔄",
-				"resetFromPartConfirm": "🎭🧩 ℹ️ ➡️ 👤📋❓",
-				"resetFromPartDone": "✅🎭🧩♻️",
-				"resetFromPartFailed": "♻️❌：${error}",
 				"newLocale": {
 					"placeholder": "🆕🗣️💻 🇬🇧"
 				},
@@ -2295,23 +1995,38 @@
 				"avatarUpload": {
 					"aria-label": "⬆️🖼️👤"
 				},
-				"bannerUrl": {
-					"placeholder": "🖼️🔗 ⬇️⬆️📁"
-				},
-				"bannerUpload": {
-					"aria-label": "⬆️🖼️🏳️"
-				},
 				"tag": {
 					"placeholder": "📤🏷️ ➕"
 				},
-				"linkName": {
-					"placeholder": "👀🔤"
-				},
-				"linkUrl": {
-					"placeholder": "https://… ⛲://…"
-				},
 				"handle": {
 					"placeholder": "steve（2–32 🔤_-）"
+				},
+				"resetFrom": {
+					"part": "⬅️🎭🧩🔄",
+					"partConfirm": "🎭🧩 ℹ️ ➡️ 👤📋❓",
+					"partDone": "✅🎭🧩♻️",
+					"partFailed": "♻️❌：${error}"
+				},
+				"banner": {
+					"clear": "♻️🖼️",
+					"hint": "🔗🖼️ ⬆️📁；♻️🎨",
+					"label": "🖼️🎨",
+					"upload": {
+						"aria-label": "⬆️🖼️🏳️"
+					},
+					"url": {
+						"placeholder": "🖼️🔗 ⬇️⬆️📁"
+					}
+				},
+				"link": {
+					"add": "➕🔗",
+					"name": {
+						"placeholder": "👀🔤"
+					},
+					"remove": "🗑️🔗",
+					"url": {
+						"placeholder": "https://… ⛲://…"
+					}
 				}
 			},
 			"profilePopup": {
@@ -2321,72 +2036,22 @@
 				},
 				"editSaved": "👤📋💾✅",
 				"editQueued": "📤✅ ⏳📥",
-				"dmChar": "✉️🎭",
-				"dmUser": "📤✉️",
-				"dmFed": "🌐✉️",
 				"noFedIdentity": "🙏⚙️🌐 🔑🟢#️⃣64",
 				"peerNoIdentity": "👤🚫🌐🆔 ✉️🚫",
-				"dmFailed": "✉️❌：${error}",
 				"care": "💖",
 				"careRemove": "↩️💖",
 				"setAlias": "⚙️🏷️",
-				"setAliasPrompt": "「${name}」🏷️💻（⬜🧹）："
-			},
-			"channelContext": {
-				"copyLinkDone": "📺🔗✅📋",
-				"notifyPrefs": "📺🔔⚙️",
-				"rename": "✏️📺🏷️",
-				"renameOk": "📺🏷️✅",
-				"delete": "🗑️📺",
-				"deleteOk": "📺🗑️✅",
-				"deleteConfirm": "🗑️📺「${name}」❓🚫↩️",
-				"setDefault": "⭐📺",
-				"setDefaultOk": "✅⭐📺",
-				"copyLink": "📋📺🔗",
-				"exportJson": "📤📊",
-				"exportOk": "📺📦⬇️✅",
-				"exportFailed": "📤❌：${error}"
-			},
-			"memberContext": {
-				"copyName": "📋🏷️",
-				"mention": "@️⃣",
-				"care": "💖",
-				"careAdded": "✅💖",
-				"careRemoved": "↩️💖",
-				"setAlias": "⚙️🏷️",
 				"setAliasPrompt": "「${name}」🏷️💻（⬜🧹）：",
-				"aliasSaved": "🏷️✅",
-				"copyPubKey": "📋🔑#️⃣",
-				"copyEntityId": "📋👤🆔",
-				"dm": "📤✉️",
-				"kick": "👢👤",
-				"kickSelfNodeWarning": "⚠️：🟰🔗🆔 👢 ➡️ 🫵⬅️👥▶️❓",
-				"ban": "🔨…",
-				"personalBlock": "👤🚫",
-				"personalBlockConfirm": "🚫 ${name}❓👀👤 ⬇️🤝",
-				"personalBlockSuccess": "✅🚫📋",
-				"banTitle": "👆🔨📏",
-				"banEntity": "🔨👤（128🔢 👤#️⃣）",
-				"banNode": "🔨🔗（🏠🔗#️⃣）"
+				"dm": {
+					"char": "✉️🎭",
+					"failed": "✉️❌：${error}",
+					"fed": "🌐✉️",
+					"user": "📤✉️"
+				}
 			},
-			"messageContext": {
-				"edit": "✏️💬",
-				"delete": "🗑️💬"
-			},
-			"charStreaming": "⚙️▶️…",
 			"gshDecryptPending": "⏳📺🔑（🔄#️⃣ ${gen}）",
 			"gshDecryptFailed": "🚫📺🔑 🔓🚫",
-			"fileDecryptFailed": "🚫📁🔑 📂🚫",
 			"reactionFailed": "↩️❌",
-			"fileUploadChecking": "🔍♻️📁…",
-			"fileUploadingChunk": "⬆️🔐🧱…",
-			"fileUploadRegistering": "📝📁…",
-			"fileUploaded": "📁⬆️✅🎉",
-			"fileUploadFailed": "📁⬆️❌",
-			"fileSkippedDedup": "⏭️♻️🧱",
-			"fileDownloadFailed": "📁⬇️❌",
-			"fileNoKey": "🔓🚫（📭🔑）",
-			"fileLoadFailed": "📁📥❌",
 			"createModal": {
 				"title": "➕👥",
 				"subtitle": "👥 🔒💬 🤝",
@@ -2399,14 +2064,16 @@
 				"description": {
 					"placeholder": "（🔘）👥📝…"
 				},
-				"joinSection": "👤➕🔐",
-				"joinInviteOnly": "🔒🎟️",
-				"joinInviteOnlyDescription": "🎟️➡️➕",
-				"joinPow": "⛏️✅",
-				"joinPowDescription": "➕▶️ ⛏️✅",
 				"cancel": "🔙",
 				"submit": "➕👥",
-				"failed": "➕👥❌：${error}"
+				"failed": "➕👥❌：${error}",
+				"join": {
+					"inviteOnly": "🔒🎟️",
+					"inviteOnlyDescription": "🎟️➡️➕",
+					"pow": "⛏️✅",
+					"powDescription": "➕▶️ ⛏️✅",
+					"section": "👤➕🔐"
+				}
 			},
 			"joinModal": {
 				"title": "➕👥",
@@ -2423,28 +2090,9 @@
 				"cancel": "🔙",
 				"submit": "➕👥"
 			},
-			"menuCopy": "📋",
-			"menuMD": "📝🖼️",
-			"menuTXT": "📝",
-			"menuHTML": "🔗📜",
-			"menuDownload": "⬇️🔗📜",
-			"menuDelete": "🗑️",
-			"menuShareGroup": "🔗👥",
-			"menuPrev": "⬆️📄",
-			"menuNext": "⬇️📄",
-			"menuShare": {
-				"1h": "🔗 1️⃣⏰",
-				"12h": "🔗 1️⃣2️⃣⏰",
-				"24h": "🔗 2️⃣4️⃣⏰",
-				"72h": "🔗 7️⃣2️⃣⏰"
-			},
-			"noGroups": "📭👥",
 			"myGroups": "🫵👥",
 			"joinGroup": "➕👥",
 			"createGroup": "🆕👥",
-			"noDescription": "📝📭",
-			"memberCountLabel": "${count} 👥",
-			"loadListFailed": "📥👥📋❌：${error}",
 			"contentWarning": "⚠️📄",
 			"sensitiveMedia": "⚠️🖼️",
 			"revealContent": "👀📄",
@@ -2479,12 +2127,6 @@
 				"saved": "🌐⚙️✅",
 				"saveFailed": "💾❌：${error}"
 			},
-			"friendsSearch": {
-				"placeholder": "🔍🎭 / 🔧🆔 / 🏷️…"
-			},
-			"threadComposer": {
-				"placeholder": "🧵💬…"
-			},
 			"altImage": {
 				"placeholder": "🖼️📝…",
 				"label": "🖼️📝"
@@ -2495,7 +2137,587 @@
 				"aria-label": "@️⃣💡"
 			},
 			"clickToLoad": "👆📥",
-			"send": "📤"
+			"serverActionPicker": {
+				"create": "➕👥",
+				"createDescription": "🆕0️⃣ · 📨👫",
+				"join": "➕👥",
+				"joinDescription": "🆔👥",
+				"subtitle": "➕🆕👥 · 🆔➕",
+				"title": "👥"
+			},
+			"membersDigest": {
+				"fetchFailed": "👥📄📥❌",
+				"mismatch": "👥📋⚠️ · ${root}",
+				"ok": "👥🌳✅ · ${root}",
+				"okPaged": "👥🌳✅（${pages}📄）· ${root}",
+				"pagesTitle": {
+					"title": "${expected}\n${pages} 📄"
+				},
+				"pending": "🔍👥📋…"
+			},
+			"unbindFriend": {
+				"main": "🔓🔗",
+				"confirm": "🔓✉️ ${name}❓💬 ➡️ 👥📋",
+				"description": "🔓➡️ 💬 ⬅️👥📋 📜💾",
+				"failed": "🔓❌：${error}",
+				"ok": "✅🔓"
+			},
+			"federation": {
+				"loadFailed": "📥❌：${error}",
+				"subtitle": "🖥️🔗🎛️ · 👌🔧⭐",
+				"title": "🌐🔗⚙️",
+				"tooltip": {
+					"title": "🌐🔗⚙️",
+					"tip": "🌐🔗⚙️"
+				}
+			},
+			"newChannel": {
+				"button": "🆕📺",
+				"failed": "➕📺❌",
+				"success": "📺✅🎉",
+				"title": "🆕📺"
+			},
+			"discovery": {
+				"description": "👀🌐👥 ➕ 🔍🏛️",
+				"empty": "📭⭐👥；🌐🔄 ➡️ 🔍📋",
+				"emptyTitle": "📭🔭👥",
+				"eyebrow": "🔍🏛️",
+				"join": "➕👥",
+				"loadFailed": "📥🔭❌：${message}",
+				"noDescription": "👑📭📝",
+				"open": "📂👥",
+				"refresh": "🔄🔭📋",
+				"sidebarHint": "➡️👀➕👥",
+				"sourceCount": "${count} 🌐📡",
+				"title": "🔭👥",
+				"tooltip": {
+					"title": "🔭👥",
+					"tip": "🔭👥"
+				}
+			},
+			"forkSplit": {
+				"failed": "✂️👥❌：${error}",
+				"modalSubmit": "➕",
+				"modalTitle": "✂️🆕👥",
+				"prompt": "🆕👥🏷️（🔘）"
+			},
+			"stickers": {
+				"empty": "🏷️📭",
+				"loadFailed": "📥❌：${error}",
+				"loading": "📥…",
+				"manage": "🏷️⚙️➡️",
+				"marketLink": "🏪🏷️➡️",
+				"panelTitle": "🏷️"
+			},
+			"friends": {
+				"contextNewChat": "🆕💬",
+				"count": "${count} 👫",
+				"emptyAction": "🔍🎭👤",
+				"emptyDescription": "🔍🎭🌐👤 · 👥📇💬",
+				"emptyTitle": "➕💬",
+				"header": "👫",
+				"restartConfirm": "🔓✉️「${name}」➕🆕💬❓",
+				"restartFailed": "🆕✉️❌：${error}",
+				"restartOk": "✅🆕✉️",
+				"search": {
+					"placeholder": "🔍🎭 / 🔧🆔 / 🏷️…",
+					"chat": "▶️💬",
+					"dm": "💬📨",
+					"empty": "🔍📭",
+					"localChar": "🏠🎭",
+					"pin": "📌🏷️",
+					"tooShort": "✍️⬆️2️⃣🔣"
+				},
+				"tag": "👫",
+				"tooltip": {
+					"title": "👫",
+					"tip": "👫"
+				}
+			},
+			"channel": {
+				"bar": {
+					"aria-label": "#️⃣📋"
+				},
+				"context": {
+					"copyLinkDone": "📺🔗✅📋",
+					"notifyPrefs": "📺🔔⚙️",
+					"rename": "✏️📺🏷️",
+					"renameOk": "📺🏷️✅",
+					"delete": "🗑️📺",
+					"deleteOk": "📺🗑️✅",
+					"deleteConfirm": "🗑️📺「${name}」❓🚫↩️",
+					"setDefault": "⭐📺",
+					"setDefaultOk": "✅⭐📺",
+					"copyLink": "📋📺🔗",
+					"exportJson": "📤📊",
+					"exportOk": "📺📦⬇️✅",
+					"exportFailed": "📤❌：${error}"
+				},
+				"name": "📺🏷️",
+				"nameInput": {
+					"placeholder": "general"
+				},
+				"readonlyList": {
+					"placeholder": "📋👀🔒"
+				},
+				"readonlyStream": {
+					"placeholder": "📺🌊👀🔒"
+				},
+				"type": "📺🔖",
+				"typeList": "📋🗣️📺",
+				"typeStreaming": "🌊📺",
+				"typeText": "💬📺"
+			},
+			"message": {
+				"action": {
+					"bookmark": {
+						"title": "🔖"
+					},
+					"copyHtml": {
+						"title": "📋🌐📄"
+					},
+					"delete": {
+						"title": "🗑️💬"
+					},
+					"edit": {
+						"title": "✏️💬"
+					},
+					"failed": "⚙️❌：${error}",
+					"feedbackDown": {
+						"title": "👎"
+					},
+					"feedbackUp": {
+						"title": "👍"
+					},
+					"next": {
+						"title": "➡️⏱️"
+					},
+					"pin": {
+						"title": "📌"
+					},
+					"prev": {
+						"title": "⬅️⏱️"
+					},
+					"regen": {
+						"title": "🔄✨"
+					},
+					"unpin": {
+						"title": "↩️📌"
+					}
+				},
+				"context": {
+					"edit": "✏️💬",
+					"delete": "🗑️💬"
+				},
+				"edit": {
+					"area": {
+						"aria-label": "✏️💬"
+					},
+					"cancel": "↩️",
+					"save": "💾",
+					"upload": "⬆️📎"
+				},
+				"feedbackSubmit": "📤💬",
+				"input": {
+					"placeholder": "👥📨… ⌃⏎📤",
+					"aria-label": "💬"
+				},
+				"prefixVote": "🗳️"
+			},
+			"session": {
+				"deleteFailed": "🗑️❌：${error}",
+				"deleted": "✅🗑️💬",
+				"id": "💬🆔",
+				"info": "💬ℹ️",
+				"messages": "📨#️⃣",
+				"role": "🎭"
+			},
+			"folder": {
+				"collapse": "🔽📁",
+				"default": "📁",
+				"dissolve": "💥📁",
+				"expand": "🔼📁",
+				"rename": "✏️📁",
+				"renamePrompt": "✏️📁「${name}」➡️："
+			},
+			"stream": {
+				"av": {
+					"join": "🎙️➕📹",
+					"joinFailed": "📞❌：${error}",
+					"leave": "🚪",
+					"mute": "🔇",
+					"noCodecs": "🌐🚫 🎬🔢（🌐94+）",
+					"peers": "🟢 ${count} 👤",
+					"preset": {
+						"high": "⬆️ 1.5📶",
+						"low": "⬇️ 200📶",
+						"med": "↔️ 600📶",
+						"thumb": "🔍 64📶"
+					},
+					"unmute": "🔊",
+					"video": "📷⏹️",
+					"videoOn": "📷▶️",
+					"you": "🫵"
+				},
+				"defaultName": "🌊📺",
+				"embedHttpsRequired": "🌊📺 🔒🔗 https:// 📄，⚙️👥🔄🎫",
+				"refreshToken": "🔄🎫",
+				"tokenFailed": "🚫🎫👀",
+				"webRtcHint": "🚫📡🌐；📺 ➡️ 👥 🌐📹（🚫 📡🔗）"
+			},
+			"member": {
+				"bar": {
+					"aria-label": "👤📋"
+				},
+				"context": {
+					"copyName": "📋🏷️",
+					"mention": "@️⃣",
+					"care": "💖",
+					"careAdded": "✅💖",
+					"careRemoved": "↩️💖",
+					"setAlias": "⚙️🏷️",
+					"setAliasPrompt": "「${name}」🏷️💻（⬜🧹）：",
+					"aliasSaved": "🏷️✅",
+					"copyPubKey": "📋🔑#️⃣",
+					"copyEntityId": "📋👤🆔",
+					"dm": "📤✉️",
+					"kick": "👢👤",
+					"kickSelfNodeWarning": "⚠️：🟰🔗🆔 👢 ➡️ 🫵⬅️👥▶️❓",
+					"ban": "🔨…",
+					"personalBlock": "👤🚫",
+					"personalBlockConfirm": "🚫 ${name}❓👀👤 ⬇️🤝",
+					"personalBlockSuccess": "✅🚫📋",
+					"banTitle": "👆🔨📏",
+					"banEntity": "🔨👤（128🔢 👤#️⃣）",
+					"banNode": "🔨🔗（🏠🔗#️⃣）"
+				},
+				"countLabel": "${count} 👥",
+				"joined": "➕💬",
+				"section": "👥"
+			},
+			"thread": {
+				"close": {
+					"title": "✖️🧵"
+				},
+				"composer": {
+					"placeholder": "🧵💬…"
+				},
+				"createFailed": "➕🧵❌ 🔁",
+				"created": "🧵✅🎉",
+				"drawer": {
+					"aria-label": "🧵"
+				}
+			},
+			"config": {
+				"loadFailed": "📥⚙️❌：${error}",
+				"saveFailed": "💾❌：${error}",
+				"saved": "💾✅",
+				"title": "💬⚙️"
+			},
+			"statusItems": {
+				"dnd": {
+					"title": "🔕",
+					"textContent": "🔕"
+				},
+				"idle": {
+					"title": "🟡🚶",
+					"textContent": "🟡🚶"
+				},
+				"offline": {
+					"title": "⚫",
+					"textContent": "⚫"
+				},
+				"online": {
+					"title": "🟢",
+					"textContent": "🟢"
+				}
+			},
+			"files": {
+				"bindCabinet": "➕🗄️",
+				"delete": "🗑️",
+				"deleteConfirm": "❓🗑️📄❓",
+				"deleteFolderConfirm": "❓🗑️📂❓（📁📦✅）",
+				"download": "⬇️",
+				"drawerTitle": "👥📁",
+				"empty": "📁📭",
+				"foldersTitle": "📂",
+				"listTitle": "📄",
+				"loadFailed": "📥👥📁❌：${error}",
+				"loading": "📥👥📁…",
+				"newFolder": "➕📂",
+				"newFolderPrompt": "📂🏷️",
+				"no": {
+					"cabinets": "🎭🚫🗄️",
+					"channel": "👆📝📺💬",
+					"folders": "📂📭",
+					"group": "👆👥📍"
+				},
+				"rename": "✏️🏷️",
+				"renameFolderPrompt": "✏️📂「${name}」➡️：",
+				"rootFolder": "📁🏠",
+				"title": {
+					"title": "👥📁"
+				},
+				"upload": "⬆️",
+				"uploadTo": "⬆️➡️"
+			},
+			"group": {
+				"context": {
+					"manage": "👥⚙️",
+					"notifyPrefs": "🔔⚙️",
+					"invite": "📨👤",
+					"inviteCopied": "🎟️✅📋",
+					"addChar": "➕🎭",
+					"addCharLabel": "👆🎭",
+					"addCharSubmit": "➕",
+					"noChars": "📭🎭",
+					"setAlias": "⚙️👥🏷️",
+					"setAliasPrompt": "「${name}」🏷️💻（⬜🧹）：",
+					"aliasSaved": "👥🏷️✅",
+					"leave": {
+						"main": "⬅️👥",
+						"batch": "⬅️👥（${count}）",
+						"batchOk": "✅⬅️ ${count} 👥",
+						"batchPartial": "${failed} / ${total} 👥⬅️❌ 📋🔄",
+						"batchPending": "⬅️ ${count} 👥 ⏳…",
+						"confirm": "⬅️👥「${name}」❓🚫👀💬",
+						"confirmBatch": "⬅️ ${count} 👥❓💻🚫💾",
+						"ok": "✅⬅️👥"
+					}
+				},
+				"descriptionEmpty": "📝📭👥",
+				"emojiTab": {
+					"title": "👥"
+				},
+				"emojisEmpty": "📭👥😀 · 👥⚙️⬆️",
+				"emojisLoadFailed": "📥👥😀❌",
+				"headerMenu": {
+					"title": "👥📋⚙️📨"
+				},
+				"joinRequired": "🚫👥 · 📨🔗🎟️",
+				"tag": "👥",
+				"unnamed": "🏷️📭👥 ·${suffix}"
+			},
+			"block": {
+				"author": {
+					"title": "🚫✍️"
+				},
+				"authorTitle": "🚫✍️",
+				"confirm": "🚫📋❓👥🌐 ➡️ 🚫📡",
+				"ok": "✅🚫",
+				"opposingConfirm": "🚫🌿✍️🏛️ · ❓▶️❓",
+				"opposingFailed": "🚫❌：${error}",
+				"opposingOk": "✅🚫 ${count} 🪪"
+			},
+			"call": {
+				"button": {
+					"title": "📞➕🔗",
+					"aria-label": "📞➕🔗"
+				},
+				"duration": "⏱️ ${duration}",
+				"ended": "📞✅",
+				"hangup": "📞⏹️",
+				"inProgress": "📞▶️",
+				"join": "📞➕",
+				"joinFailed": "📞❌：${error}",
+				"jumpBack": "↩️📞📺",
+				"noParticipants": "📭👤",
+				"participants": "${n} 👤",
+				"peerCount": "${n}",
+				"screenFailed": "🖥️📤❌：${error}",
+				"screenShare": "🖥️📤",
+				"screenStop": "⏹️🖥️",
+				"startedAt": "▶️ ${time}"
+			},
+			"vote": {
+				"closed": "✅⏹️",
+				"count": "${count}🗳️ · ${pct}%",
+				"createFailed": "➕🗳️❌：${error}",
+				"deadline": "⏰：${date}",
+				"minOptions": "⬇️2️⃣☑️",
+				"modalSubmit": "➕🗳️",
+				"modalTitle": "➕🗳️",
+				"noOptions": "🗳️📭",
+				"optionDefault": "👍,👎",
+				"promptDeadlineHours": "⏰（⏱️ 📭=♾️）",
+				"promptOptions": "☑️（，⏱️ ⬆️2️⃣）",
+				"promptQuestion": "🗳️🏷️",
+				"title": {
+					"title": "➕🗳️"
+				},
+				"total": "📊${total}🗳️"
+			},
+			"file": {
+				"decryptFailed": "🚫📁🔑 📂🚫",
+				"downloadFailed": "📁⬇️❌",
+				"loadFailed": "📁📥❌",
+				"noKey": "🔓🚫（📭🔑）",
+				"skippedDedup": "⏭️♻️🧱",
+				"uploadChecking": "🔍♻️📁…",
+				"uploadFailed": "📁⬆️❌",
+				"uploadRegistering": "📝📁…",
+				"uploaded": "📁⬆️✅🎉",
+				"uploadingChunk": "⬆️🔐🧱…"
+			},
+			"menu": {
+				"copy": "📋",
+				"delete": "🗑️",
+				"download": "⬇️🔗📜",
+				"hTML": "🔗📜",
+				"mD": "📝🖼️",
+				"next": "⬇️📄",
+				"prev": "⬆️📄",
+				"share": {
+					"1h": "🔗 1️⃣⏰",
+					"12h": "🔗 1️⃣2️⃣⏰",
+					"24h": "🔗 2️⃣4️⃣⏰",
+					"72h": "🔗 7️⃣2️⃣⏰"
+				},
+				"shareGroup": "🔗👥",
+				"tXT": "📝"
+			},
+			"char": {
+				"chat": {
+					"composer": {
+						"placeholder": "➡️ ${name} 📤（⌃⏎）"
+					},
+					"empty": "📭💬 ▶️🆕❗",
+					"settings": "🎭💬⚙️",
+					"start": "▶️💬 ${name}",
+					"subtitle": "💬 ${name}"
+				},
+				"chatsTitle": "📜💬 ${name}",
+				"count": "${count} 🎭",
+				"descriptionEmpty": "🎭📭👋",
+				"intro": "👋📖",
+				"streaming": "⚙️▶️…",
+				"tag": "🎭",
+				"tagSolo": "🎭 · 1️⃣:1️⃣ 💬",
+				"typing": "⌨️…"
+			},
+			"list": {
+				"channelEmpty": "📋📭",
+				"editorTitle": "✏️📋（📊🔢）",
+				"itemUntitled": "🏷️📭",
+				"jsonInvalid": "📊🚫：${message}",
+				"saveFailed": "💾❌",
+				"saveToDag": "💾➡️🌳",
+				"saved": "💾✅"
+			},
+			"save": {
+				"emoji": {
+					"title": "💾😀"
+				},
+				"emojiFailed": "💾😀❌：${error}",
+				"emojiOk": "😀✅💾",
+				"sticker": {
+					"title": "💾🏷️"
+				},
+				"stickerFailed": "💾🏷️❌：${error}",
+				"stickerOk": "🏷️✅➕🗄️"
+			},
+			"sync": {
+				"failed": "🌐🔄❌：${error}",
+				"incomplete": "⏳${missing}/${total} 📅🚫🔄",
+				"noPeers": "🚫🤝🌐 · 📨🔗🔁",
+				"rateLimited": "🌐🔄🐢⏳",
+				"truncated": "🌳📥⏳ 🔁⬆️ 🔢",
+				"truncatedHint": "🌳📜↔️ 🔁⬆️ 🔢"
+			},
+			"load": {
+				"charChatFailed": "📥💬❌",
+				"groupFailed": "📥👥❌：${error}",
+				"listFailed": "📥👥📋❌：${error}",
+				"messagesFailed": "📥💬❌：${error}",
+				"more": "📥⬆️💬…"
+			},
+			"send": {
+				"main": "📤",
+				"failed": "📤❌：${error}",
+				"failedPending": "📤❌",
+				"imageFailed": "📤🖼️❌：${error}",
+				"stickerFailed": "📤🏷️❌：${error}",
+				"title": {
+					"title": "📤（Ctrl+Enter）"
+				}
+			},
+			"fed": {
+				"advancedDescription": "🔧⭐⚖️ ✍️🔗",
+				"advancedTitle": "🔧⚙️",
+				"batterySaverLabel": "🔋💤",
+				"batterySaverTip": "🔋💤 ➖🔗📶 · 💬🔄🐢",
+				"connectionTitle": "🔗🔭",
+				"dm": {
+					"invalidateDescription": "⏩➡️ 📨🤝🔗 🚫⚡🚫↩️",
+					"invalidateTitle": "🗑️🔗🕰️",
+					"issueLabel": "✍️💬🔗",
+					"issued": "✅💬🔗📋",
+					"linkDescription": "🔧🔄🆔 · ☀️🤝🚫📋",
+					"linkTip": "🆔🔑✍️ · 🔐🖥️🔒🚫📤",
+					"linkTitle": "✍️🤝🔗",
+					"needPubKey": "📌64🔣🔑",
+					"needSecretKey": "📌64🔣🔐🌱",
+					"nodeLabel": "🔘🖥️🔗",
+					"pubKeyLabel": "🔑🔣（64）",
+					"rotateConfirm": "📨🤝🔗 🚫♻️ · ❓▶️❓",
+					"rotateLabel": "🗑️🔗",
+					"secretLabel": "🔐🌱🔣（64）"
+				},
+				"groupRecoveryTip": "⚠️📨💨／🆕🖥️🚫📜 ⏰🔧",
+				"groupRecoveryTitle": "👥🔗🔧",
+				"nonceRotated": "🎲#️⃣🔄（${nonce}…）",
+				"relayUrlsLabel": "📡🌐📍",
+				"relayUrlsTip": "📡🔍🖥️➡️🖥️ · 1️⃣📍🔒wss:// · 📭⭐📡",
+				"repEmpty": "（📭）",
+				"repTip": "🖥️🌐🔗⭐🔢 · 🚫👥👀",
+				"repTitle": "👥⭐🧠",
+				"repairJoinSnapshot": "🤝📸👥🔧",
+				"repairJoinSnapshotFailed": "📸👥🔧❌：${error}",
+				"repairJoinSnapshotOk": "✅📸👥（${channels} 📺📜）",
+				"resetOk": "🔄⭐✅💾",
+				"resetSubmitLabel": "🔄🎯⭐",
+				"rotateRoomSecret": "🔄🔐👥",
+				"rotateRoomSecretConfirm": "🔄🔐👥 ➡️ 🕰️📨🚫🔗 · ❓▶️❓",
+				"rotateRoomSecretOk": "✅🔄🔐",
+				"saved": "💾✅",
+				"slash": {
+					"claimLabel": "💪📢（0–1）",
+					"needHash": "📌64🔣🔑#️⃣",
+					"ok": "⚔️⭐✅📊🌳",
+					"proof": {
+						"placeholder": "64🔣 📅🆔"
+					},
+					"proofLabel": "📎🆔🔣（🔘）",
+					"submitLabel": "📤⚔️⭐",
+					"target": {
+						"placeholder": "👤🔑#️⃣"
+					},
+					"targetLabel": "🎯🔑#️⃣（64🔣）",
+					"tip": "📊🌳➖⭐🔗 · 🛡️🔧👑",
+					"title": "⚔️⭐",
+					"verifiedLabel": "✅🔍（📌📎🆔）"
+				}
+			},
+			"pin": {
+				"previewInvite": "[🎟️] ${groupName}",
+				"previewSticker": "[🏷️😀]",
+				"previewVote": "[🗳️] ${question}",
+				"unpinSidebar": {
+					"title": "↩️📌"
+				}
+			},
+			"no": {
+				"activeChat": "🙏📂💬 🔁📥🧩",
+				"bookmarks": "🔖📭",
+				"channels": "💬📭",
+				"chars": "🎭📭 · ➕📦",
+				"description": "📝📭",
+				"friends": "💬📭",
+				"groups": "📭👥",
+				"members": "👥📭",
+				"pins": "📌📭",
+				"username": "🏷️📭"
+			}
 		},
 		"sidebar": {
 			"settings": {
@@ -2593,144 +2815,8 @@
 				"alt": "📷"
 			}
 		},
-		"messageList": {
-			"confirmDeleteMessage": "🤔🗑️📨❓"
-		},
 		"voiceRecording": {
 			"errorAccessingMicrophone": "🚫🎤"
-		},
-		"messageView": {
-			"buttons": {
-				"edit": {
-					"title": "✍️"
-				},
-				"editIcon": {
-					"alt": "✍️"
-				},
-				"more": {
-					"title": "➕"
-				},
-				"moreIcon": {
-					"alt": "➕"
-				},
-				"delete": {
-					"alt": "🗑️"
-				},
-				"deleteIcon": {
-					"alt": "🗑️"
-				},
-				"downloadHtml": {
-					"alt": "💾🌐"
-				},
-				"downloadHtmlIcon": {
-					"alt": "💾🌐"
-				}
-			},
-			"copyButton": {
-				"title": "📋"
-			},
-			"copyButtonIcon": {
-				"alt": "📋"
-			},
-			"copySuccess": "✅📋",
-			"dropdown": {
-				"delete": "🗑️",
-				"deleteIcon": {
-					"alt": "🗑️"
-				},
-				"copyMarkdown": "📋⬇️",
-				"copyMarkdownIcon": {
-					"alt": "📋⬇️"
-				},
-				"copyText": "📋📝",
-				"copyTextIcon": {
-					"alt": "📋📝"
-				},
-				"copyHtml": "📋🌐",
-				"copyHtmlIcon": {
-					"alt": "📋🌐"
-				},
-				"downloadHtml": "💾🌐",
-				"downloadHtmlIcon": {
-					"alt": "💾🌐"
-				},
-				"share": {
-					"textContent": "🔗",
-					"1h": "⏳1h",
-					"12h": "⏳12h",
-					"24h": "⏳24h",
-					"72h": "⏳72h"
-				},
-				"shareIcon": {
-					"alt": "🔗"
-				}
-			},
-			"share": {
-				"uploading": "⏳🔗…",
-				"success": "✅🔗📋❗ <br>✨ ${provider} <br>[💖](${sponsorLink})"
-			},
-			"commonToolCalling": "🛠️🔄",
-			"toolRunningLang": "▶️ ${lang}",
-			"toolSearchingContent": "🔍 ${content}",
-			"toolOverridingFilepath": "📝 ${filepath}",
-			"toolReplacingFilepath": "🔄 ${filepath}",
-			"toolReadingFilepath": "📖 ${filepath}",
-			"reasoningDetailsTitle": "🧠📜",
-			"logprobsNotApplicable": "N/A",
-			"logprobsTopLogprobsMeta": "📊 top_logprobs 👉 ${token}",
-			"logprobsMetricsFooter": "1️⃣⏱️ ${ttft} | ⏱️ ${time} | 🪙 ${tokens} | 🚀 ${speed}",
-			"noReplyContent": "💬🍃",
-			"feedback": {
-				"thumbsUp": {
-					"title": "👍"
-				},
-				"thumbsDown": {
-					"title": "👎"
-				},
-				"regenerate": {
-					"title": "🔄"
-				},
-				"reason": {
-					"placeholder": "💬❓"
-				},
-				"submit": "✅",
-				"cancel": "❌"
-			}
-		},
-		"messageEdit": {
-			"input": {
-				"placeholder": "✍️…"
-			},
-			"buttons": {
-				"confirm": {
-					"title": "✅"
-				},
-				"confirmIcon": {
-					"alt": "✅"
-				},
-				"cancel": {
-					"title": "❌"
-				},
-				"cancelIcon": {
-					"alt": "❌"
-				},
-				"upload": {
-					"title": "⬆️"
-				},
-				"uploadIcon": {
-					"alt": "⬆️"
-				}
-			}
-		},
-		"messageGenerating": {
-			"tips": "🎭🔄💬，⏳…",
-			"stop": {
-				"textContent": "⏹️",
-				"title": "⏹️🔄"
-			},
-			"stopIcon": {
-				"alt": "⏹️"
-			}
 		},
 		"attachment": {
 			"buttons": {
@@ -2840,34 +2926,6 @@
 			"avatarLabel": "🖼️",
 			"themeColorLabel": "🎨🌈",
 			"uploadAvatar": "⬆️🖼️",
-			"ownerTitle": "👑🫵",
-			"ownerSummary": "👑⚙️",
-			"ownerDescription": "⚙️➡️ 👑 ➡️ ✏️/🗑️ 🫵💬📨 ➕ 🏛️📰 ➕ 👤📋；👉📄 ➡️ 💻 ⚠️📝🖼️⚡（⚠️📜⚡）✍️✅ 🎲🧬#️⃣，♾️🗑️👑",
-			"ownerEntityHashLabel": "👑🧬#️⃣（128🔣）",
-			"ownerSave": "💾👑",
-			"ownerClear": "🗑️👑",
-			"ownerSaved": "👑✅🔄",
-			"ownerCleared": "👑✅🗑️",
-			"ownerSaveFailed": "💾❌: ${error}",
-			"ownerConfirmTitle": "👑⚠️✅❓",
-			"ownerConfirmWarningTitle": "⚠️🚨📖👀",
-			"ownerConfirmEditBody": "⚙️➡️ 👤➡️ 🚫🙏🫵 👍 ➡️ ✏️/🗑️ 🫵💬📨 ➕ 🏛️📰 ➕ 👤📋⚠️👆/🎣👑 = ⚡📤🎮📄",
-			"ownerConfirmRenderBody": "👤➡️📨💬 ➕ 🏛️📰 ➡️ 🫵🌐💻 💯📝🖼️⚡（➕ HTML/📜⚡）= ✅ 👤➡️ 💻▶️🎲📜 🚫🔁🙏.1️⃣🤝💯👤➡️➡️",
-			"ownerConfirmCooldown": "⚠️📖✅ (${seconds})",
-			"ownerConfirmFirst": "⚠️👌➡️",
-			"ownerConfirmSecond": "👆👆✅🔒",
-			"ownerConfirmCancel": "↩️",
-			"federationTitle": "🌐🔄",
-			"federationSummary": "📡🔋",
-			"federationDescription": "⚙️📡Nostr🔗 ➕ 🔋🎛️👥🌐🔄 1️⃣🎟️👤➕/➕🌐🤫💬 ➡️ 🤖✅▶️",
-			"federationAdvanced": "🔧➕",
-			"federationRelayUrlsLabel": "📡📝⬜️➡️🔧",
-			"federationBatterySaverLabel": "🔋💤",
-			"federationSave": "💾🌐",
-			"federationResetDefault": "↩️🔧⭐",
-			"federationSaved": "💾✅",
-			"federationResetOk": "↩️✅🔧",
-			"federationSaveFailed": "💾❌: ${error}",
 			"preferences": "❤️⚙️",
 			"language": "🗣️",
 			"theme": "🎨",
@@ -2925,20 +2983,9 @@
 			"noGroups": "👥🏠📭",
 			"noChannels": "📭📺",
 			"overview": "👤📊👀",
-			"summaryUserId": "🆔👤",
-			"summaryAccountStatus": "👤💬",
-			"summaryEmailVisibility": "📧👀",
-			"summaryThemePref": "🎨❤️",
-			"summaryLanguagePref": "🗣️❤️",
-			"summarySocialCount": "🏛️🔗#️⃣",
-			"summaryLinksCount": "🔗🌐#️⃣",
 			"groupDescriptionEmpty": "📝📭",
 			"groupMembers": "👥${members} · 📺${channels}",
 			"channelPrivate": " · 🔒",
-			"channelTypeText": "📝📺",
-			"channelTypeList": "📋📺",
-			"channelTypeVoice": "🎙️📺",
-			"channelTypeStreaming": "📡📺",
 			"errors": {
 				"loadFailed": "📥👤❌",
 				"saveFailed": "💾👤❌",
@@ -2952,8 +2999,57 @@
 				"saved": "💾👤✅",
 				"avatarUploaded": "✅⬆️🖼️"
 			},
-			"ownerEntityHash": {
-				"placeholder": "✍️👑🧬#️⃣"
+			"channelType": {
+				"list": "📋📺",
+				"streaming": "📡📺",
+				"text": "📝📺",
+				"voice": "🎙️📺"
+			},
+			"federation": {
+				"advanced": "🔧➕",
+				"batterySaverLabel": "🔋💤",
+				"description": "⚙️📡Nostr🔗 ➕ 🔋🎛️👥🌐🔄 1️⃣🎟️👤➕/➕🌐🤫💬 ➡️ 🤖✅▶️",
+				"relayUrlsLabel": "📡📝⬜️➡️🔧",
+				"resetDefault": "↩️🔧⭐",
+				"resetOk": "↩️✅🔧",
+				"save": "💾🌐",
+				"saveFailed": "💾❌: ${error}",
+				"saved": "💾✅",
+				"summary": "📡🔋",
+				"title": "🌐🔄"
+			},
+			"summary": {
+				"accountStatus": "👤💬",
+				"emailVisibility": "📧👀",
+				"languagePref": "🗣️❤️",
+				"linksCount": "🔗🌐#️⃣",
+				"socialCount": "🏛️🔗#️⃣",
+				"themePref": "🎨❤️",
+				"userId": "🆔👤"
+			},
+			"owner": {
+				"clear": "🗑️👑",
+				"cleared": "👑✅🗑️",
+				"confirm": {
+					"cancel": "↩️",
+					"cooldown": "⚠️📖✅ (${seconds})",
+					"editBody": "⚙️➡️ 👤➡️ 🚫🙏🫵 👍 ➡️ ✏️/🗑️ 🫵💬📨 ➕ 🏛️📰 ➕ 👤📋⚠️👆/🎣👑 = ⚡📤🎮📄",
+					"first": "⚠️👌➡️",
+					"renderBody": "👤➡️📨💬 ➕ 🏛️📰 ➡️ 🫵🌐💻 💯📝🖼️⚡（➕ HTML/📜⚡）= ✅ 👤➡️ 💻▶️🎲📜 🚫🔁🙏.1️⃣🤝💯👤➡️➡️",
+					"second": "👆👆✅🔒",
+					"title": "👑⚠️✅❓",
+					"warningTitle": "⚠️🚨📖👀"
+				},
+				"description": "⚙️➡️ 👑 ➡️ ✏️/🗑️ 🫵💬📨 ➕ 🏛️📰 ➕ 👤📋；👉📄 ➡️ 💻 ⚠️📝🖼️⚡（⚠️📜⚡）✍️✅ 🎲🧬#️⃣，♾️🗑️👑",
+				"entityHash": {
+					"placeholder": "✍️👑🧬#️⃣"
+				},
+				"entityHashLabel": "👑🧬#️⃣（128🔣）",
+				"save": "💾👑",
+				"saveFailed": "💾❌: ${error}",
+				"saved": "👑✅🔄",
+				"summary": "👑⚙️",
+				"title": "👑🫵"
 			}
 		},
 		"entityProfile": {
@@ -2988,30 +3084,12 @@
 			},
 			"searchLabel": "🔍📦",
 			"emptyPacks": "📭🏷️📦",
-			"packNameLabel": "🏷️📦🏷️",
-			"packName": {
-				"placeholder": "✍️🏷️📦🏷️"
-			},
-			"packDescriptionLabel": "📝",
-			"packDescription": {
-				"placeholder": "✍️📝"
-			},
-			"stickerNameLabel": "🏷️😀🏷️",
-			"stickerName": {
-				"placeholder": "✍️🏷️😀🏷️"
-			},
-			"selectPack": "👆🏷️📦",
-			"selectPackOption": {
-				"textContent": "🙏👆🏷️📦"
-			},
-			"selectImage": "👆🖼️",
 			"tagsLabel": "🏷️（，🔢⏱️）",
 			"tags": {
 				"placeholder": "💡: 🥰, 😀, 🐾"
 			},
 			"author": "✍️",
 			"authorLabel": "✍️: ${author}",
-			"stickerCount": "🏷️😀 ×${count}",
 			"badgeMine": "🫵",
 			"noDescription": "📝📭",
 			"noStickersInPack": "📭🏷️😀",
@@ -3027,8 +3105,6 @@
 			"importPackName": "🫵⭐",
 			"importPackDescription": "⬅️📨💾🏷️",
 			"nameRequired": "🙏✍️🏷️📦🏷️",
-			"stickerNameRequired": "🙏✍️🏷️😀🏷️",
-			"selectPackRequired": "🙏👆🏷️📦",
 			"fileRequired": "👆🙏🖼️📁",
 			"loadDetailFailed": "❌📥🏷️📦📋",
 			"deleteConfirm": "🗑️🏷️📦♾️❓🏷️😀➡️🗑️，🎮🚫↩️",
@@ -3046,6 +3122,174 @@
 				"uninstalled": "✅🗑️📦",
 				"created": "🏷️📦➕✅",
 				"deleted": "✅🗑️"
+			},
+			"sticker": {
+				"count": "🏷️😀 ×${count}",
+				"name": {
+					"placeholder": "✍️🏷️😀🏷️"
+				},
+				"nameLabel": "🏷️😀🏷️",
+				"nameRequired": "🙏✍️🏷️😀🏷️"
+			},
+			"select": {
+				"image": "👆🖼️",
+				"pack": "👆🏷️📦",
+				"packOption": {
+					"textContent": "🙏👆🏷️📦"
+				},
+				"packRequired": "🙏👆🏷️📦"
+			},
+			"pack": {
+				"description": {
+					"placeholder": "✍️📝"
+				},
+				"descriptionLabel": "📝",
+				"name": {
+					"placeholder": "✍️🏷️📦🏷️"
+				},
+				"nameLabel": "🏷️📦🏷️"
+			}
+		},
+		"message": {
+			"edit": {
+				"input": {
+					"placeholder": "✍️…"
+				},
+				"buttons": {
+					"confirm": {
+						"title": "✅"
+					},
+					"confirmIcon": {
+						"alt": "✅"
+					},
+					"cancel": {
+						"title": "❌"
+					},
+					"cancelIcon": {
+						"alt": "❌"
+					},
+					"upload": {
+						"title": "⬆️"
+					},
+					"uploadIcon": {
+						"alt": "⬆️"
+					}
+				}
+			},
+			"generating": {
+				"tips": "🎭🔄💬，⏳…",
+				"stop": {
+					"textContent": "⏹️",
+					"title": "⏹️🔄"
+				},
+				"stopIcon": {
+					"alt": "⏹️"
+				}
+			},
+			"list": {
+				"confirmDeleteMessage": "🤔🗑️📨❓"
+			},
+			"view": {
+				"buttons": {
+					"edit": {
+						"title": "✍️"
+					},
+					"editIcon": {
+						"alt": "✍️"
+					},
+					"more": {
+						"title": "➕"
+					},
+					"moreIcon": {
+						"alt": "➕"
+					},
+					"delete": {
+						"alt": "🗑️"
+					},
+					"deleteIcon": {
+						"alt": "🗑️"
+					},
+					"downloadHtml": {
+						"alt": "💾🌐"
+					},
+					"downloadHtmlIcon": {
+						"alt": "💾🌐"
+					}
+				},
+				"copyButton": {
+					"title": "📋"
+				},
+				"copyButtonIcon": {
+					"alt": "📋"
+				},
+				"copySuccess": "✅📋",
+				"dropdown": {
+					"delete": "🗑️",
+					"deleteIcon": {
+						"alt": "🗑️"
+					},
+					"downloadHtml": "💾🌐",
+					"downloadHtmlIcon": {
+						"alt": "💾🌐"
+					},
+					"share": {
+						"textContent": "🔗",
+						"1h": "⏳1h",
+						"12h": "⏳12h",
+						"24h": "⏳24h",
+						"72h": "⏳72h"
+					},
+					"shareIcon": {
+						"alt": "🔗"
+					},
+					"copy": {
+						"html": "📋🌐",
+						"htmlIcon": {
+							"alt": "📋🌐"
+						},
+						"markdown": "📋⬇️",
+						"markdownIcon": {
+							"alt": "📋⬇️"
+						},
+						"text": "📋📝",
+						"textIcon": {
+							"alt": "📋📝"
+						}
+					}
+				},
+				"share": {
+					"uploading": "⏳🔗…",
+					"success": "✅🔗📋❗ <br>✨ ${provider} <br>[💖](${sponsorLink})"
+				},
+				"commonToolCalling": "🛠️🔄",
+				"reasoningDetailsTitle": "🧠📜",
+				"logprobsNotApplicable": "N/A",
+				"logprobsTopLogprobsMeta": "📊 top_logprobs 👉 ${token}",
+				"logprobsMetricsFooter": "1️⃣⏱️ ${ttft} | ⏱️ ${time} | 🪙 ${tokens} | 🚀 ${speed}",
+				"noReplyContent": "💬🍃",
+				"feedback": {
+					"thumbsUp": {
+						"title": "👍"
+					},
+					"thumbsDown": {
+						"title": "👎"
+					},
+					"regenerate": {
+						"title": "🔄"
+					},
+					"reason": {
+						"placeholder": "💬❓"
+					},
+					"submit": "✅",
+					"cancel": "❌"
+				},
+				"tool": {
+					"overridingFilepath": "📝 ${filepath}",
+					"readingFilepath": "📖 ${filepath}",
+					"replacingFilepath": "🔄 ${filepath}",
+					"runningLang": "▶️ ${lang}",
+					"searchingContent": "🔍 ${content}"
+				}
 			}
 		}
 	},
@@ -3098,21 +3342,6 @@
 				"label": "1️⃣💬",
 				"placeholder": "🤖1️⃣💬"
 			},
-			"personaDef": {
-				"heading": "👤"
-			},
-			"personaUserName": {
-				"label": "➡️💬🏷️",
-				"placeholder": "🧑‍✈️, 🧭"
-			},
-			"personaAppearance": {
-				"label": "💅",
-				"placeholder": "✍️💅"
-			},
-			"personaPersonality": {
-				"label": "🧠",
-				"placeholder": "✍️🧠"
-			},
 			"worldDef": {
 				"heading": "🌍"
 			},
@@ -3144,7 +3373,24 @@
 				"label": "❓",
 				"placeholder": "🧩❓🌐"
 			},
-			"createButton": "✨🧩"
+			"createButton": "✨🧩",
+			"persona": {
+				"appearance": {
+					"label": "💅",
+					"placeholder": "✍️💅"
+				},
+				"def": {
+					"heading": "👤"
+				},
+				"personality": {
+					"label": "🧠",
+					"placeholder": "✍️🧠"
+				},
+				"userName": {
+					"label": "➡️💬🏷️",
+					"placeholder": "🧑‍✈️, 🧭"
+				}
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -3455,21 +3701,23 @@
 			"noModelsMatched": "🤷‍♂️🧠❓",
 			"currentModelTitle": "${name} (${model})",
 			"providerLabel": "🏭: ${provider}",
-			"metaContext": "📏 ${context} 🔤",
-			"metaOutputLimit": "📤 max ${output} 🔤",
-			"metaInputPrice": "💰⬇️ ${price}/1M",
-			"metaOutputPrice": "💰⬆️ ${price}/1M",
-			"metaCachePrice": "💾 ${read}/${write}",
-			"metaModalities": "🎭 ⬇️${input} ⬆️${output}",
-			"metaReasoning": "🧠💭✅",
-			"metaToolCall": "🔧✅",
-			"metaVision": "👁️✅",
-			"metaOpenWeights": "🔓⚖️",
-			"metaKnowledge": "📅📚 ${knowledge}",
-			"metaReleaseDate": "📅 ${date}",
 			"providerDocLink": "[📄🏭](${url})",
 			"modelSearch": {
 				"placeholder": "🔍🤖🏷️、🏭、💪…"
+			},
+			"meta": {
+				"cachePrice": "💾 ${read}/${write}",
+				"context": "📏 ${context} 🔤",
+				"inputPrice": "💰⬇️ ${price}/1M",
+				"knowledge": "📅📚 ${knowledge}",
+				"modalities": "🎭 ⬇️${input} ⬆️${output}",
+				"openWeights": "🔓⚖️",
+				"outputLimit": "📤 max ${output} 🔤",
+				"outputPrice": "💰⬆️ ${price}/1M",
+				"reasoning": "🧠💭✅",
+				"releaseDate": "📅 ${date}",
+				"toolCall": "🔧✅",
+				"vision": "👁️✅"
 			}
 		},
 		"prompts": {
@@ -3495,21 +3743,23 @@
 			"unsavedChangesBeforeUnload": "💾❓ ➡️ 🚪❓"
 		},
 		"alerts": {
-			"fetchFileListFailed": "📄📥❌: ${error}",
-			"fetchGeneratorListFailed": "⚙️📥❌: ${error}",
-			"fetchDefaultsFailed": "❤️📥❌: ${error}",
-			"fetchFileDataFailed": "📄💾📥❌: ${error}",
-			"fetchConfigTemplateFailed": "⚙️📥❌",
 			"saveFileFailed": "💾❌: ${error}",
 			"deleteFileFailed": "🗑️❌: ${error}",
 			"addFileFailed": "➕📄❌: ${error}",
 			"setDefaultFailed": "❤️❌: ${error}",
-			"fetchBranchesFailed": "🌳❌: ${error}",
 			"noFileSelectedSave": "🤷‍♂️💾",
 			"noFileSelectedDelete": "🤷‍♂️🗑️",
 			"noGeneratorSelectedSave": "🛑⚙️➡️💾",
 			"savedAsNewFile": "💾✅ 🆕🚰: ${name}",
-			"invalidFileName": "🚫 / \\ : * ❓ \" < > |"
+			"invalidFileName": "🚫 / \\ : * ❓ \" < > |",
+			"fetch": {
+				"branchesFailed": "🌳❌: ${error}",
+				"configTemplateFailed": "⚙️📥❌",
+				"defaultsFailed": "❤️📥❌: ${error}",
+				"fileDataFailed": "📄💾📥❌: ${error}",
+				"fileListFailed": "📄📥❌: ${error}",
+				"generatorListFailed": "⚙️📥❌: ${error}"
+			}
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -3832,14 +4082,6 @@
 			"privacyHint": "🎮👤 🔭⭐ 👀",
 			"tasteTitle": "⭐❤️",
 			"tasteHint": "🎛️⭐📰 🔒➕ 🏷️",
-			"mutedKeywordsTitle": "🚫🔑🏷️",
-			"mutedKeywordsHint": "🎯📄/⚠️/🏷️ ➡️ 🙈📰🔭🔍🔔 · 💾💻",
-			"mutedKeywordsMatchTags": "🏷️✅➕",
-			"mutedKeywordsAdd": "➕",
-			"mutedKeywordsRemove": {
-				"title": "🗑️🚫🔑"
-			},
-			"mutedKeywordsEmpty": "🚫🔑📭",
 			"autoTranslateTitle": "🌐🤖",
 			"autoTranslateHint": "▶️➡️ 🌐📰 🤖📥🌐📝 ➕ 🔄📄",
 			"autoTranslateEnable": "🤖🌐📰",
@@ -3847,19 +4089,29 @@
 			"safetyHint": "🛡️🚫👤 ➕ 🙈📋",
 			"mutedKeywords": {
 				"placeholder": "✍️🔑 / #️⃣🏷️",
-				"aria-label": "✍️🚫🔑/#️⃣🏷️"
+				"aria-label": "✍️🚫🔑/#️⃣🏷️",
+				"add": "➕",
+				"empty": "🚫🔑📭",
+				"hint": "🎯📄/⚠️/🏷️ ➡️ 🙈📰🔭🔍🔔 · 💾💻",
+				"matchTags": "🏷️✅➕",
+				"remove": {
+					"title": "🗑️🚫🔑"
+				},
+				"title": "🚫🔑🏷️"
 			},
 			"taste": {
 				"rebuild": "♻️❤️",
-				"privacyPublishPreferences": "🌐🏷️🔗🔍",
-				"privacyPublishPreferencesHint": "⏹️➡️ 👍🤝🚫👀🫵🏷️📢 · 🚫🤝",
-				"privacyPublishReactions": "🌐👍👎",
-				"privacyPublishReactionsHint": "⏹️➡️ ✍️🚫📥👍👎 · 🫵🚫⭐ · 🚫📤2️⃣",
 				"empty": "❤️🏷️📭 · ⬆️👍👎🤖",
 				"weight": "⚖️${weight}",
 				"save": "💾",
 				"name": {
 					"placeholder": "💻🏷️"
+				},
+				"privacyPublish": {
+					"preferences": "🌐🏷️🔗🔍",
+					"preferencesHint": "⏹️➡️ 👍🤝🚫👀🫵🏷️📢 · 🚫🤝",
+					"reactions": "🌐👍👎",
+					"reactionsHint": "⏹️➡️ ✍️🚫📥👍👎 · 🫵🚫⭐ · 🚫📤2️⃣"
 				}
 			},
 			"blocklist": {
@@ -3886,27 +4138,6 @@
 				"placeholder": "⚠️📝（🔘）"
 			},
 			"sensitiveMedia": "🔞🖼️🙈",
-			"editImage": "✏️",
-			"editCrop": "✂️",
-			"editMosaic": "🔲",
-			"editBrush": "🖌️",
-			"editBrushColor": {
-				"title": "🎨",
-				"aria-label": "🎨"
-			},
-			"editBrushSize": {
-				"title": "📏",
-				"aria-label": "📏"
-			},
-			"editApply": "✅",
-			"editCancel": "↩️",
-			"replyPolicyEveryone": "🌍💬",
-			"replyPolicyFollowers7d": "7️⃣📅➕👀",
-			"replyPolicyAuthorFollows": "🫵➕👀",
-			"replyPolicyLabel": "💬🔐",
-			"replyDisplayAll": "👀💬📋",
-			"replyDisplayFeaturedOnly": "⭐💬",
-			"replyDisplayLabel": "💬👀",
 			"scheduleLabel": "⏰📤",
 			"scheduleSuccess": "📰⏰📋✅",
 			"emojiButton": {
@@ -3988,6 +4219,33 @@
 					"placeholder": "🚫👀（🔘）"
 				},
 				"aria-label": "👀📏"
+			},
+			"reply": {
+				"displayAll": "👀💬📋",
+				"displayFeaturedOnly": "⭐💬",
+				"displayLabel": "💬👀",
+				"policy": {
+					"authorFollows": "🫵➕👀",
+					"everyone": "🌍💬",
+					"followers7d": "7️⃣📅➕👀",
+					"label": "💬🔐"
+				}
+			},
+			"edit": {
+				"apply": "✅",
+				"brush": "🖌️",
+				"brushColor": {
+					"title": "🎨",
+					"aria-label": "🎨"
+				},
+				"brushSize": {
+					"title": "📏",
+					"aria-label": "📏"
+				},
+				"cancel": "↩️",
+				"crop": "✂️",
+				"image": "✏️",
+				"mosaic": "🔲"
 			}
 		},
 		"feed": {
@@ -4094,21 +4352,11 @@
 			},
 			"mediaOnly": "[🖼️]",
 			"hideFromExplore": "🙈🔭👤",
-			"tabPosts": "📰",
-			"tabAlbums": "🖼️📚",
-			"tabLikes": "👍",
-			"tabCabinets": "🗄️",
 			"tabsLabel": {
 				"aria-label": "👤📂"
 			},
 			"cabinetsEmpty": "🗄️🌍📭",
 			"cabinetsFailed": "🗄️📥❌: ${error}",
-			"statsGroup": {
-				"aria-label": "👤📊"
-			},
-			"statsPosts": "📰",
-			"statsFollowing": "➕👀",
-			"statsFollowers": "👥❤️",
 			"followingTitle": "➕👀",
 			"followersTitle": "👥❤️",
 			"albums": {
@@ -4125,6 +4373,20 @@
 				"deleteWithPosts": "🗑️🖼️📚➕📄",
 				"pickerLabel": "➕🖼️📚",
 				"defaultName": "⭐🖼️📚"
+			},
+			"stats": {
+				"followers": "👥❤️",
+				"following": "➕👀",
+				"group": {
+					"aria-label": "👤📊"
+				},
+				"posts": "📰"
+			},
+			"tabs": {
+				"albums": "🖼️📚",
+				"cabinets": "🗄️",
+				"likes": "👍",
+				"posts": "📰"
 			}
 		},
 		"video": {
@@ -4174,10 +4436,6 @@
 			"broadcast": {
 				"title": "📡▶️",
 				"open": "➡️📡▶️",
-				"mediaAv": "🎙️➕🖼️",
-				"mediaAudio": "🎙️",
-				"mediaVideo": "🖼️",
-				"mediaWhip": "📡⬆️WHIP（📹💻）",
 				"whipUrl": "📡⬆️📍",
 				"whipToken": "🎟️🔐",
 				"whipWaiting": "⏳📡⬆️WHIP（📹💻）…",
@@ -4187,6 +4445,12 @@
 				"stopped": "📡✅⏹️",
 				"titleInput": {
 					"placeholder": "📡🏷️（🔘）"
+				},
+				"media": {
+					"audio": "🎙️",
+					"av": "🎙️➕🖼️",
+					"video": "🖼️",
+					"whip": "📡⬆️WHIP（📹💻）"
 				}
 			},
 			"danmaku": {
@@ -4210,30 +4474,32 @@
 			"trustScore": "🤝${score}",
 			"viewTitle": "🔍",
 			"loading": "🔍…",
-			"filterAuthor": {
-				"placeholder": "✍️",
-				"aria-label": "✍️"
-			},
-			"filterMedia": {
-				"aria-label": "🖼️🎬"
-			},
-			"filterMediaAll": "✅🖼️",
-			"filterMediaImage": "🖼️",
-			"filterMediaVideo": "🎬",
-			"filterTag": {
-				"placeholder": "#️⃣🏷️",
-				"aria-label": "#️⃣🏷️"
-			},
-			"filterSort": {
-				"aria-label": "🔀"
-			},
 			"sortRecent": "🆕",
 			"sortPopular": "🔥",
-			"filterScope": {
-				"aria-label": "🔎📏"
-			},
 			"scopeLocal": "💻",
-			"scopeNearby": "📍🧭"
+			"scopeNearby": "📍🧭",
+			"filter": {
+				"author": {
+					"placeholder": "✍️",
+					"aria-label": "✍️"
+				},
+				"media": {
+					"aria-label": "🖼️🎬"
+				},
+				"mediaAll": "✅🖼️",
+				"mediaImage": "🖼️",
+				"mediaVideo": "🎬",
+				"scope": {
+					"aria-label": "🔎📏"
+				},
+				"sort": {
+					"aria-label": "🔀"
+				},
+				"tag": {
+					"placeholder": "#️⃣🏷️",
+					"aria-label": "#️⃣🏷️"
+				}
+			}
 		},
 		"dialog": {
 			"close": {
@@ -4428,7 +4694,6 @@
 		},
 		"upload": "⬆️",
 		"uploadFolder": "⬆️📂",
-		"newFolder": "➕📂",
 		"open": "📂",
 		"download": "⬇️",
 		"downloadZip": "⬇️📂",
@@ -4462,12 +4727,6 @@
 		"created": "➕：${stamp}",
 		"modified": "✏️：${stamp}",
 		"statusCount": "${count} 📌，✅👆 ${selected}",
-		"newCabinet": {
-			"title": "🆕🗄️",
-			"aria-label": "🆕🗄️"
-		},
-		"newCabinetPrompt": "🆕🗄️🏷️",
-		"newFolderPrompt": "📂🏷️🆕",
 		"renamePrompt": "🆕🏷️",
 		"visibilityPrompt": "👀🌍（public/unlisted/followers/private/selected）",
 		"cabinetActionPrompt": "🎮：rename / delete / visibility",
@@ -4478,12 +4737,21 @@
 		"cutDone": "✅✂️",
 		"undo": "➖",
 		"redo": "↪️",
-		"newWindow": "🪟📂👉📍",
 		"goUp": "⬆️📂",
 		"brokenLink": "🔗💔：${reason}",
 		"noDownload": "🚫⬇️📄",
 		"groupDownloadHint": "👥📁➡️💬📎／⬇️🔗📥",
-		"remoteEntity": "🔗👤"
+		"remoteEntity": "🔗👤",
+		"new": {
+			"cabinet": {
+				"title": "🆕🗄️",
+				"aria-label": "🆕🗄️"
+			},
+			"cabinetPrompt": "🆕🗄️🏷️",
+			"folder": "➕📂",
+			"folderPrompt": "📂🏷️🆕",
+			"window": "🪟📂👉📍"
+		}
 	},
 	"browser_integration": {
 		"title": "🌐🔗",
@@ -4613,27 +4881,10 @@
 		"title": "⛲🔗",
 		"heading": "⛲🔗",
 		"instruction": "⛲ 🎭 ➡️ 💻 (Zed, JetBrains, Neovim) 🔗 ACP",
-		"supportedEditorsTitle": "✅💻 & 📱",
-		"supportedEditorsIntro": "⬇️ 🔌 🤝 ⛲:",
-		"supportedEditorsLoading": "⏳…",
-		"supportedEditorsError": "❌📋: ${message}",
-		"acpTitle": "⚙️ ⛲ ACP 📋",
-		"acpDesc": "👀👇 ➡️ ⚙️ ⛲ ACP 📋:",
-		"acpCharLabel": "🎭",
 		"charListError": "❌🎭📋",
-		"acpScriptLabel": "ACP 📋 URL",
-		"acpConfigSample": "⚙️🌰:",
-		"acpConfigHint": "🎭ID ➡️ 📄⬇️, 🗝️ ➡️ 👤⚙️",
 		"copyButton": "📋",
 		"copied": "✅📋",
-		"apiKeySectionTitle": "🗝️",
-		"apiKeyHint": "🔌📋 🔗 ⛲ (🟰 🕵️🗝️)",
 		"generateApiKeyButton": "🔨🆕🗝️",
-		"apiKeyCopied": "🗝️✅📋",
-		"apiKeyCreateError": "❌🔨🗝️: ${message}",
-		"apiKeyInput": {
-			"aria-label": "🗝️"
-		},
 		"home_function_buttons": {
 			"integration_related": "🔗✨",
 			"ide_integration_config": {
@@ -4647,8 +4898,31 @@
 				"locked_description": "🔗⛲🎭 ➡️ 🌍💻 & ✅🗣️"
 			}
 		},
-		"acpChar": "👆🎭",
-		"acpConfig": "👆🙏🎭➕🔑⚙️ API 🔑"
+		"supportedEditors": {
+			"error": "❌📋: ${message}",
+			"intro": "⬇️ 🔌 🤝 ⛲:",
+			"loading": "⏳…",
+			"title": "✅💻 & 📱"
+		},
+		"apiKey": {
+			"copied": "🗝️✅📋",
+			"createError": "❌🔨🗝️: ${message}",
+			"hint": "🔌📋 🔗 ⛲ (🟰 🕵️🗝️)",
+			"input": {
+				"aria-label": "🗝️"
+			},
+			"sectionTitle": "🗝️"
+		},
+		"acp": {
+			"char": "👆🎭",
+			"charLabel": "🎭",
+			"config": "👆🙏🎭➕🔑⚙️ API 🔑",
+			"configHint": "🎭ID ➡️ 📄⬇️, 🗝️ ➡️ 👤⚙️",
+			"configSample": "⚙️🌰:",
+			"desc": "👀👇 ➡️ ⚙️ ⛲ ACP 📋:",
+			"scriptLabel": "ACP 📋 URL",
+			"title": "⚙️ ⛲ ACP 📋"
+		}
 	},
 	"deskpet": {
 		"title": "🖥️🐾",
@@ -4939,11 +5213,6 @@
 			"deviceInfo": "💻🆔: ${deviceId}",
 			"thisDevice": "👉💻",
 			"deviceDetails": "⏳: ${lastSeen} | 🌐: ${ipAddress} | 💻: ${userAgent}",
-			"revokeButton": "➖",
-			"revokeConfirm": "🤔➖💻❓",
-			"revokeSuccess": "💻➖✅",
-			"revokeMissingParams": "💻🔑📋❌",
-			"revokeWrongPassword": "🔑❌",
 			"listNotFound": "📋❌💻",
 			"deviceNotFound": "💻❌",
 			"refreshButton": {
@@ -4951,6 +5220,13 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "🔄"
+			},
+			"revoke": {
+				"button": "➖",
+				"confirm": "🤔➖💻❓",
+				"missingParams": "💻🔑📋❌",
+				"success": "💻➖✅",
+				"wrongPassword": "🔑❌"
 			}
 		},
 		"apiKeys": {
@@ -4964,14 +5240,8 @@
 			"keyDetails": "📝 ${description} 🗓️ ${createdAt} ⏳ ${lastUsed}",
 			"neverUsed": "⏳",
 			"noKeysForUser": "🔑📋❌",
-			"revokeWrongPassword": "🔑❌",
 			"keyNotFound": "🔑❌",
-			"revokeMissingJti": "🔑🆔❌",
-			"revokeMissingPassword": "🔑📋❌",
 			"verifyMissingApiKey": "🔑❌",
-			"revokeButton": "🗑️",
-			"revokeConfirm": "🤔🗑️❓",
-			"revokeSuccess": "✅🗑️",
 			"errorDescriptionRequired": "❗️✍️",
 			"createSuccess": "✅✨",
 			"refreshButton": {
@@ -4979,6 +5249,14 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "🔄"
+			},
+			"revoke": {
+				"button": "🗑️",
+				"confirm": "🤔🗑️❓",
+				"missingJti": "🔑🆔❌",
+				"missingPassword": "🔑📋❌",
+				"success": "✅🗑️",
+				"wrongPassword": "🔑❌"
 			}
 		},
 		"newApiKey": {
@@ -5000,14 +5278,16 @@
 			"argsTemplateHint": "🏷️ \\${file} \\${line} \\${column}",
 			"presetOptionPathAvailable": "${label}（✅ PATH）",
 			"presetOptionPathUnavailable": "${label}（❌ PATH）",
-			"testPathInput": {
-				"placeholder": "📂 C:/work/project/src/main.mjs"
-			},
-			"testButton": "▶️✏️",
 			"saveButton": "💾⚙️",
 			"saveSuccess": "💾✅ ✏️📟",
-			"testPathRequired": "⚠️📂❓",
-			"testSuccess": "✅▶️🖥️📂"
+			"test": {
+				"button": "▶️✏️",
+				"pathInput": {
+					"placeholder": "📂 C:/work/project/src/main.mjs"
+				},
+				"pathRequired": "⚠️📂❓",
+				"success": "✅▶️🖥️📂"
+			}
 		},
 		"logout": {
 			"title": "🚪",
@@ -5020,12 +5300,12 @@
 			"title": "🗑️👤",
 			"warning": "⚠️➡️🗑️👤💾",
 			"submitButton": "🗑️👤",
-			"confirmMessage1": "⚠️🤔🗑️👤❓",
-			"confirmMessage2": "✍️👤 \"${username}\":",
 			"usernameMismatch": "👤 ≠ 👤, 🗑️❌",
 			"success": "👤🗑️✅, ➡️🚪…",
 			"missingPassword": "🔑📋❌",
-			"wrongPassword": "🔑❌"
+			"wrongPassword": "🔑❌",
+			"confirmWarning": "⚠️🤔🗑️👤❓",
+			"confirmUsernamePrompt": "✍️👤 \"${username}\":"
 		},
 		"passwordConfirm": {
 			"title": "✅",
@@ -5076,19 +5356,13 @@
 		"instruction": "🔑➡️⛲🤝💻",
 		"endpointSectionTitle": "🌐📍",
 		"endpointInstruction": "🔗➡️🌍",
-		"apiUrlInput": {
-			"aria-label": "🤖🔗"
-		},
 		"usageExampleTitle": "🧑‍💻💡",
 		"usageExampleInstruction": "`curl` ➡️❓➡️🤖",
 		"copyButton": "📋",
 		"copied": "📋✅",
-		"apiKeySectionTitle": "🔑✨",
-		"apiKey": "🔑:",
 		"noApiKey": "🤷‍♂️🔑❓",
 		"generateApiKeyButton": "➕🔑",
 		"copyApiKeyButton": "📋",
-		"apiKeyCopied": "🔑📋✅",
 		"queryStringSectionTitle": "🚫👤🔑❓ (🔓💥)",
 		"queryStringWarning": "⚠️🔑➡️🌐 ➡️ 📜🕵️‍♂️",
 		"copyQueryStringUrlButton": "🌐❓🔑=…",
@@ -5100,6 +5374,14 @@
 						"title": "🤖🔄"
 					}
 				}
+			}
+		},
+		"api": {
+			"key": "🔑:",
+			"keyCopied": "🔑📋✅",
+			"keySectionTitle": "🔑✨",
+			"urlInput": {
+				"aria-label": "🤖🔗"
 			}
 		}
 	},
@@ -5273,11 +5555,7 @@
 		"failed": "❌",
 		"copySuccess": "✅📋",
 		"copyFailed": "❌📋",
-		"updateNow": "🆕🔄▶️",
 		"alreadyLatest": "👍",
-		"updateRestarting": "🔄…",
-		"updateSuccess": "🔄✅",
-		"updateFailed": "❌🔄",
 		"autoUpdateNotEnabled": "🚫🔄",
 		"home_function_buttons": {
 			"debug": {
@@ -5285,6 +5563,12 @@
 					"title": "🐞🪟"
 				}
 			}
+		},
+		"update": {
+			"failed": "❌🔄",
+			"now": "🆕🔄▶️",
+			"restarting": "🔄…",
+			"success": "🔄✅"
 		}
 	},
 	"badges_maker": {
