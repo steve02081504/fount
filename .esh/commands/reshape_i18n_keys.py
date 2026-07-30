@@ -91,7 +91,7 @@ def find_prefix_clusters(keys: list[str], minimum: int = PREFIX_CLUSTER_MIN) -> 
 def can_use_container(obj: OrderedDict, prefix: str, members: list[str], container_name: str) -> bool:
 	bucket: OrderedDict = OrderedDict()
 	existing = obj.get(container_name, _MISSING)
-	if existing is not _MISSING and isinstance(existing, OrderedDict):
+	if existing is not _MISSING and isinstance(existing, dict):
 		bucket.update(existing)
 	elif existing is not _MISSING and container_name not in members:
 		if "main" in bucket:
@@ -120,7 +120,7 @@ def apply_prefix_nest(obj: OrderedDict, prefix: str, members: list[str], preferr
 	container_name = pick_container_name(obj, prefix, members, preferred)
 	bucket: OrderedDict = OrderedDict()
 	existing = obj.get(container_name, _MISSING)
-	if existing is not _MISSING and isinstance(existing, OrderedDict):
+	if existing is not _MISSING and isinstance(existing, dict):
 		bucket.update(existing)
 	elif existing is not _MISSING and container_name not in members:
 		bucket["main"] = existing
@@ -152,7 +152,7 @@ def nest_all_prefix_clusters(obj: OrderedDict) -> int:
 	while nest_longest_prefix_cluster(obj):
 		count += 1
 	for value in list(obj.values()):
-		if isinstance(value, OrderedDict):
+		if isinstance(value, dict):
 			count += nest_all_prefix_clusters(value)
 	return count
 
@@ -184,14 +184,14 @@ def nest_all_prefix_clusters_with_map(obj: OrderedDict, path: str = "", path_map
 		count += 1
 
 	for key, value in list(obj.items()):
-		if isinstance(value, OrderedDict):
+		if isinstance(value, dict):
 			child_path = f"{path}.{key}" if path else key
 			count += nest_all_prefix_clusters_with_map(value, child_path, path_map)
 	return count
 
 
 def scan_i18n_key_structure(data, path: str = "") -> list[dict]:
-	if not isinstance(data, OrderedDict):
+	if not isinstance(data, dict):
 		return []
 	issues = []
 	keys = list(data.keys())
@@ -224,7 +224,7 @@ def scan_i18n_key_structure(data, path: str = "") -> list[dict]:
 			),
 		})
 	for key, value in data.items():
-		if isinstance(value, OrderedDict):
+		if isinstance(value, dict):
 			full = f"{path}.{key}" if path else key
 			issues.extend(scan_i18n_key_structure(value, full))
 	return issues
