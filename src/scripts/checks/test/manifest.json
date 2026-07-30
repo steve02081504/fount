@@ -55,8 +55,18 @@
 			"triggers": [
 				"src/scripts/checks/i18n_keys.mjs",
 				"src/scripts/checks/test/i18n_keys.test.mjs",
-				".esh/commands/reshape_i18n_keys.py",
 				"src/public/locales/*.json"
+			]
+		},
+		{
+			"name": "reshape_i18n_keys",
+			"run": [
+				"python",
+				".esh/commands/reshape_i18n_keys.py",
+				"--self-test"
+			],
+			"triggers": [
+				".esh/commands/reshape_i18n_keys.py"
 			]
 		},
 		{

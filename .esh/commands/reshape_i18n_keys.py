@@ -5,6 +5,7 @@
 用法（在仓库根）:
   python .esh/commands/reshape_i18n_keys.py
   python .esh/commands/reshape_i18n_keys.py path/to/extra_renames.json
+  python .esh/commands/reshape_i18n_keys.py --self-test
 
 extra_renames.json 为一次性语义改名表 { "old.path": "new.path", ... }（临时文件，不进仓库）。
 省略则只做前缀嵌套 + 引用改写。
@@ -388,6 +389,35 @@ def iter_source_files(gitignore_spec, exclude_prefixes: list[str]):
 			yield rel
 
 
+def self_test() -> int:
+	"""CLI smoke: SCREAMING_SNAKE remainders stay intact through nest + dumps/loads."""
+	obj = loads_locale(json.dumps({
+		"permSEND_MESSAGES": "send",
+		"permVIEW_CHANNEL": "view",
+		"permADD_REACTIONS": "react",
+		"permUPLOAD_FILES": "upload",
+		"permMANAGE_CHANNELS": "channels",
+	}, ensure_ascii=False))
+	nest_all_prefix_clusters_with_map(obj)
+	if "perm" not in obj:
+		print("missing perm after nest", file=sys.stderr)
+		return 1
+	keys = list(obj["perm"].keys())
+	expected = {"SEND_MESSAGES", "VIEW_CHANNEL", "ADD_REACTIONS", "UPLOAD_FILES", "MANAGE_CHANNELS"}
+	if set(keys) != expected:
+		print(f"perm keys {keys!r} != {sorted(expected)!r}", file=sys.stderr)
+		return 1
+	if "sEND_MESSAGES" in obj["perm"] or "mANAGE_CHANNELS" in obj["perm"]:
+		print("mangled SCREAMING_SNAKE remainder", file=sys.stderr)
+		return 1
+	rewritten = loads_locale(dumps_locale(obj))
+	if rewritten["perm"]["SEND_MESSAGES"] != "send":
+		print("dumps/loads corrupted SEND_MESSAGES", file=sys.stderr)
+		return 1
+	print(json.dumps({"ok": True, "perm": sorted(rewritten["perm"].keys())}))
+	return 0
+
+
 def main() -> int:
 	extra_manual = load_extra_manual(sys.argv[1] if len(sys.argv) > 1 else None)
 	locale_files = sorted(name for name in os.listdir(LOCALES_DIR) if name.endswith(".json"))
@@ -441,4 +471,6 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+	if len(sys.argv) > 1 and sys.argv[1] == "--self-test":
+		sys.exit(self_test())
 	sys.exit(main())

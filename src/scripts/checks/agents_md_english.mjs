@@ -8,7 +8,29 @@ import { join, relative } from 'node:path'
 /** Han / Hiragana / Katakana / Hangul — same `\p{Script=…}` style as `test_watch.mjs` */
 export const CJK_RE = /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}|\p{Script=Hangul}/u
 
-const MD_LINK_RE = /\]\(([^)#]+\.md)(?:#[^)]*)?\)/gi
+/**
+ * Local `.md` destinations with optional angle brackets, fragments, and titles:
+ * `](path.md)`, `](<path.md#frag>)`, `](path.md "title")`.
+ */
+const MD_LINK_RE = /\]\(\s*(?:<([^>\n#]+?\.md)(?:#[^>\s]*)?>|([^)\s#]+?\.md)(?:#[^)\s]*)?)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/gi
+
+/**
+ * Collect local `.md` link destinations from Markdown text (fragments stripped).
+ * @param {string} text Markdown source
+ * @returns {string[]} link targets without fragments
+ */
+export function localMdLinkTargets(text) {
+	/** @type {string[]} */
+	const targets = []
+	MD_LINK_RE.lastIndex = 0
+	let match
+	while (match = MD_LINK_RE.exec(text)) {
+		const target = match[1] || match[2]
+		if (!target || /^[a-z][a-z0-9+.-]*:/i.test(target) || target.startsWith('//')) continue
+		targets.push(target)
+	}
+	return targets
+}
 
 /**
  * Human-readable design/review baselines — Chinese allowed.
@@ -96,10 +118,8 @@ export async function scanAgentsMdEnglish(repoRoot) {
 				issues.push({ path: relativePath, lines: hitLines })
 		}
 
-		MD_LINK_RE.lastIndex = 0
-		let match
-		while (match = MD_LINK_RE.exec(text)) {
-			const resolved = resolveMdLink(relativePath, match[1])
+		for (const target of localMdLinkTargets(text)) {
+			const resolved = resolveMdLink(relativePath, target)
 			if (!resolved || seen.has(resolved)) continue
 			seen.add(resolved)
 			try {

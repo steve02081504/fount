@@ -78,56 +78,6 @@ Deno.test('nestAllPrefixClusters preserves SCREAMING_SNAKE remainders under perm
 	}
 })
 
-Deno.test('Python reshape_i18n_keys preserves SCREAMING_SNAKE remainders', async () => {
-	const { mkdtemp, writeFile, rm } = await import('node:fs/promises')
-	const { tmpdir } = await import('node:os')
-	const dir = await mkdtemp(join(tmpdir(), 'reshape-i18n-'))
-	const scriptPath = join(dir, 'reshape_smoke.py')
-	const commandsDir = join(REPO_ROOT, '.esh', 'commands')
-	await writeFile(scriptPath, `\
-import json, sys
-sys.path.insert(0, ${JSON.stringify(commandsDir)})
-from reshape_i18n_keys import nest_all_prefix_clusters_with_map, dumps_locale, loads_locale
-
-obj = loads_locale(json.dumps({
-	"permSEND_MESSAGES": "send",
-	"permVIEW_CHANNEL": "view",
-	"permADD_REACTIONS": "react",
-	"permUPLOAD_FILES": "upload",
-	"permMANAGE_CHANNELS": "channels",
-}, ensure_ascii=False))
-nest_all_prefix_clusters_with_map(obj)
-assert "perm" in obj
-keys = list(obj["perm"].keys())
-assert set(keys) == {"SEND_MESSAGES", "VIEW_CHANNEL", "ADD_REACTIONS", "UPLOAD_FILES", "MANAGE_CHANNELS"}, keys
-assert "sEND_MESSAGES" not in obj["perm"]
-assert "mANAGE_CHANNELS" not in obj["perm"]
-rewritten = loads_locale(dumps_locale(obj))
-assert rewritten["perm"]["SEND_MESSAGES"] == "send"
-print(json.dumps({"ok": True, "perm": sorted(rewritten["perm"].keys())}))
-`, 'utf8')
-	try {
-		const command = new Deno.Command('python', {
-			args: [scriptPath],
-			cwd: REPO_ROOT,
-			stdout: 'piped',
-			stderr: 'piped',
-		})
-		const { code, stdout, stderr } = await command.output()
-		const out = new TextDecoder().decode(stdout).trim()
-		const err = new TextDecoder().decode(stderr).trim()
-		assertEquals(code, 0, err || out || 'python reshape failed')
-		const result = JSON.parse(out)
-		assertEquals(result.ok, true)
-		assertEquals(result.perm, [
-			'ADD_REACTIONS', 'MANAGE_CHANNELS', 'SEND_MESSAGES', 'UPLOAD_FILES', 'VIEW_CHANNEL',
-		])
-	}
-	finally {
-		await rm(dir, { recursive: true, force: true })
-	}
-})
-
 Deno.test('scan catches affix / numbered / prefix_cluster', () => {
 	const issues = scanI18nKeyStructure({
 		packGroupSuffix: 'x',

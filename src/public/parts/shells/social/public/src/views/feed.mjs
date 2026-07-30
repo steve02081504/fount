@@ -394,7 +394,7 @@ export async function loadFeed(append = false) {
 	else if (visibleItems.length)
 		state.feedShownItems = [...state.feedShownItems || [], ...visibleItems]
 
-	if (!append && !visibleItems.length) {
+	if (!append && !visibleItems.length && !state.feedCursor) {
 		await mountEmptyState(list, { titleKey: 'social.empty.feed', modClass: ' empty-state--plain' })
 		state.feedShownItems = null
 	}

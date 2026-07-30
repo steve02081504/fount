@@ -4,7 +4,13 @@ import { parseActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { promptText, promptTextArea, showText } from '../lib/dialog.mjs'
 import { handlePollVoteClick } from '../lib/pollUi.mjs'
-import { purgeFeedShownPost, restoreFeedShownItems, runWrite } from '../lib/socialWrite.mjs'
+import {
+	purgeFeedShownPost,
+	removePostsById,
+	restoreFeedShownItems,
+	restoreRemovedPosts,
+	runWrite,
+} from '../lib/socialWrite.mjs'
 import { refreshVisiblePosts } from '../navigation.mjs'
 import { state } from '../state.mjs'
 
@@ -152,14 +158,10 @@ export async function handlePostProfileActionsClick(target) {
 	const deleteButton = target.closest('button[data-delete]')
 	if (deleteButton instanceof HTMLElement && deleteButton.dataset.delete) {
 		const postId = deleteButton.dataset.delete
-		const card = deleteButton.closest('.post-card')
-		const parentElement = card?.parentElement
-		const nextSibling = card?.nextSibling
 		const purged = purgeFeedShownPost(state, postId)
 		state.suppressedFeedPostIds.add(postId)
-		// 清掉所有同 id 卡片（含 WS/loadFeed 竞态留下的重复）
-		for (const postCard of document.querySelectorAll(`[data-post-id="${CSS.escape(postId)}"]`))
-			postCard.remove()
+		// 清掉所有同 id 卡片（含 WS/loadFeed 竞态留下的重复），并记下原位置以便回滚
+		const removed = removePostsById(postId)
 		closePostMoreMenus()
 		const entityHash = deleteButton.dataset.deleteEntity
 			|| state.viewerEntityHash
@@ -172,8 +174,7 @@ export async function handlePostProfileActionsClick(target) {
 		catch {
 			state.suppressedFeedPostIds.delete(postId)
 			restoreFeedShownItems(state, purged)
-			if (card && parentElement)
-				parentElement.insertBefore(card, nextSibling)
+			restoreRemovedPosts(removed)
 		}
 		return true
 	}

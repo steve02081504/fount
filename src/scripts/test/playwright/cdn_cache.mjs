@@ -140,7 +140,8 @@ async function fetchWithRetries(route) {
 		}
 		catch (error) {
 			lastError = error
-			await new Promise(resolve => setTimeout(resolve, 250 * (attempt + 1)))
+			if (attempt < 2)
+				await new Promise(resolve => setTimeout(resolve, 250 * (attempt + 1)))
 		}
 	
 	return { response, lastError }
@@ -168,7 +169,9 @@ async function fetchCacheAndFulfill(route, dir, method, url) {
 	}
 	const status = response.status()
 	const body = Buffer.from(await response.body())
-	const headers = headersForCachedBody(response.headers(), body)
+	const headers = method === 'HEAD'
+		? { ...response.headers() }
+		: headersForCachedBody(response.headers(), body)
 	if (status >= 200 && status < 400) {
 		const entry = { status, headers, body }
 		memory.set(cacheKey(method, url), entry)
@@ -198,6 +201,10 @@ export async function installCdnResponseCache(context) {
 			await route.continue()
 			return
 		}
+		if (req.headers().range) {
+			await route.continue()
+			return
+		}
 		const url = req.url()
 		const key = cacheKey(method, url)
 		let hit = memory.get(key)
@@ -211,4 +218,12 @@ export async function installCdnResponseCache(context) {
 		}
 		await fetchCacheAndFulfill(route, dir, method, url)
 	})
+}
+
+/**
+ * 测试用：清空内存缓存（磁盘不动）。
+ * @returns {void}
+ */
+export function clearCdnResponseMemoryCache() {
+	memory.clear()
 }

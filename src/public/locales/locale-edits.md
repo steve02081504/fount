@@ -10,7 +10,7 @@ Scan sibling keys under each object in `zh-CN.json` (structure is the contract f
 2. **Nest flat camelCase clusters** — if ≥4 siblings share the same camelCase prefix (`channelPermsHint`…), nest as `channelPerms: { hint, … }`. Single-segment prefixes count too (`tabMembers`… → `tabs: { members, … }`). Nest longest prefixes first. **SCREAMING_SNAKE constant keys** (`SEND_MESSAGES` / `VIEW_CHANNEL`) are excluded from cluster scans; nested suffixes that are themselves SCREAMING_SNAKE stay as-is (`permSEND_MESSAGES` → `perm.SEND_MESSAGES`, never `sEND_MESSAGES`).
 3. **No numbered key tails** — keys matching `name1` / `item2` (`/^[A-Za-z][A-Za-z]*\d+$/`) fail; use meaningful names or arrays. Pure numeric keys like `404` are fine.
 
-Always move keys with `.esh/commands/update_locale_data.py` (below) — never hand-edit every locale JSON.
+Always move keys with `.esh/commands/update_locale_data.py` (below) — never hand-edit every locale JSON. The script exposes `file_name` (e.g. `'it-IT.json'`) so a branch can touch one locale; unchanged files are skipped on write.
 
 ## Moving keys
 
