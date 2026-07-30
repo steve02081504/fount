@@ -90,7 +90,8 @@ export async function scanAgentsMdEnglish(repoRoot) {
 	const roots = []
 	await collectAgentsMd(repoRoot, repoRoot, roots)
 	const queue = [...roots]
-	const seen = new Set(queue)
+	const checkedTargets = new Set(queue)
+	const files = new Set(queue)
 	/** @type {{ path: string, lines: number[], missing?: boolean, from?: string }[]} */
 	const issues = []
 
@@ -120,17 +121,23 @@ export async function scanAgentsMdEnglish(repoRoot) {
 
 		for (const target of localMdLinkTargets(text)) {
 			const resolved = resolveMdLink(relativePath, target)
-			if (!resolved || seen.has(resolved)) continue
-			seen.add(resolved)
+			if (!resolved || checkedTargets.has(resolved)) continue
+			checkedTargets.add(resolved)
 			try {
 				const fileStats = await stat(join(repoRoot, resolved))
-				if (fileStats.isFile()) queue.push(resolved)
+				if (fileStats.isFile()) {
+					files.add(resolved)
+					queue.push(resolved)
+				}
 			}
-			catch {
-				issues.push({ path: resolved, lines: [0], missing: true, from: relativePath })
+			catch (error) {
+				if (error?.code === 'ENOENT')
+					issues.push({ path: resolved, lines: [0], missing: true, from: relativePath })
+				else
+					throw error
 			}
 		}
 	}
 
-	return { files: [...seen].sort(), issues }
+	return { files: [...files].sort(), issues }
 }

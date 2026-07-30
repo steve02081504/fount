@@ -115,8 +115,7 @@ function scheduleFeedPrefetch() {
 async function buildFeedCardUnlessSuppressed(item) {
 	const card = await buildPostCard(item).catch(() => null)
 	if (!card) return null
-	const postId = String(item.postId || '')
-	if (postId && state.suppressedFeedPostIds.has(postId)) return null
+	if (state.suppressedFeedPostIds.has(item.postId)) return null
 	return card
 }
 
@@ -126,7 +125,7 @@ async function buildFeedCardUnlessSuppressed(item) {
  */
 async function replayFeedItems() {
 	const items = (state.feedShownItems || []).filter(item =>
-		!state.suppressedFeedPostIds.has(String(item.postId || '')),
+		!state.suppressedFeedPostIds.has(item.postId),
 	)
 	if (!items.length) return
 	const list = document.getElementById('feedList')
@@ -246,27 +245,25 @@ export async function prependFeedItem(item, options = {}) {
 	if (!feedView || feedView.classList.contains('hidden')) return false
 	const list = document.getElementById('feedList')
 	if (!list) return false
-	const postId = String(item.postId || '')
-	const entityHash = String(item.entityHash || '').toLowerCase()
-	if (postId && state.suppressedFeedPostIds.has(postId)) return false
-	const insertKey = postId && entityHash ? `${entityHash}:${postId}` : ''
+	const postId = item.postId
+	const entityHash = item.entityHash
+	if (state.suppressedFeedPostIds.has(postId)) return false
+	const insertKey = `${entityHash}:${postId}`
 	// 已在列表：在 cursor 门闩之前返回，避免本机 force 插入后 WS 再弹「有新帖」
-	if (insertKey && list.querySelector(
+	if (list.querySelector(
 		`.post-card[data-post-id="${CSS.escape(postId)}"][data-author-entity="${CSS.escape(entityHash)}"]`,
 	))
 		return true
 	if (!options.force && state.feedCursor) return false
-	if (insertKey) {
-		if (pendingFeedInserts.has(insertKey)) return true
-		pendingFeedInserts.add(insertKey)
-	}
+	if (pendingFeedInserts.has(insertKey)) return true
+	pendingFeedInserts.add(insertKey)
 	try {
 		document.getElementById('feedNewPostsBanner')?.remove()
 		const card = await buildPostCard(item).catch(() => null)
 		if (!card) return false
 		// buildPostCard 期间可能已删除：再挡一次迟到回插
-		if (postId && state.suppressedFeedPostIds.has(postId)) return false
-		if (insertKey && list.querySelector(
+		if (state.suppressedFeedPostIds.has(postId)) return false
+		if (list.querySelector(
 			`.post-card[data-post-id="${CSS.escape(postId)}"][data-author-entity="${CSS.escape(entityHash)}"]`,
 		))
 			return true
@@ -277,7 +274,7 @@ export async function prependFeedItem(item, options = {}) {
 		return true
 	}
 	finally {
-		if (insertKey) pendingFeedInserts.delete(insertKey)
+		pendingFeedInserts.delete(insertKey)
 	}
 }
 
@@ -380,7 +377,7 @@ export async function loadFeed(append = false) {
 	if (feedGeneration !== gen) return
 
 	const visibleItems = (items || []).filter(item =>
-		!state.suppressedFeedPostIds.has(String(item.postId || '')),
+		!state.suppressedFeedPostIds.has(item.postId),
 	)
 
 	state.feedCursor = nextCursor || null

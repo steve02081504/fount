@@ -55,12 +55,26 @@ Deno.test('angle-bracket and titled .md links are discovered and scanned recursi
 			'',
 		].join('\n'), 'utf8')
 		await mkdir(join(dir, 'nested'))
-		await writeFile(join(dir, 'nested', 'guide.md'), '# Guide\n\nSee [leaf](leaf.md).\n', 'utf8')
-		await writeFile(join(dir, 'nested', 'other.md'), '# Other\n', 'utf8')
+		await writeFile(join(dir, 'nested', 'guide.md'), [
+			'# Guide',
+			'',
+			'See [leaf](leaf.md).',
+			'中文说明',
+			'',
+		].join('\n'), 'utf8')
+		await writeFile(join(dir, 'nested', 'other.md'), [
+			'# Other',
+			'',
+			'See [missing](gone.md).',
+			'',
+		].join('\n'), 'utf8')
 		await writeFile(join(dir, 'nested', 'leaf.md'), '# Leaf\n', 'utf8')
 
 		const { files, issues } = await scanAgentsMdEnglish(dir)
-		assertEquals(issues, [])
+		assertEquals(issues, [
+			{ path: 'nested/guide.md', lines: [4] },
+			{ path: 'nested/gone.md', lines: [0], missing: true, from: 'nested/other.md' },
+		])
 		assertEquals(files, [
 			'AGENTS.md',
 			'nested/guide.md',

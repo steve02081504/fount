@@ -4,7 +4,6 @@
 /* global Deno */
 /* eslint-disable jsdoc/require-returns, jsdoc/require-param-type, jsdoc/require-param-description -- route/response fakes */
 import { Buffer } from 'node:buffer'
-import { createHash } from 'node:crypto'
 import { mkdir, unlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -13,6 +12,7 @@ import { assertEquals, assert } from 'jsr:@std/assert'
 import { cdnCacheDir } from '../core/paths.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import {
+	cacheFileName,
 	clearCdnResponseMemoryCache,
 	installCdnResponseCache,
 	isExternalCdnUrl,
@@ -26,15 +26,6 @@ Deno.test('isExternalCdnUrl matches known CDN hosts only', () => {
 	assertEquals(isExternalCdnUrl('https://example.com/x'), false)
 	assertEquals(isExternalCdnUrl('not-a-url'), false)
 })
-
-/**
- * @param {string} method HTTP 方法
- * @param {string} url 完整 URL
- * @returns {string} 磁盘缓存文件名
- */
-function cacheFileName(method, url) {
-	return `${createHash('sha256').update(`${method}\n${url}`).digest('hex')}.json`
-}
 
 /**
  * @returns {{ context: { route: Function }, handlers: Array<{ predicate: Function, handler: Function }> }} 假 context 与已注册 handler
@@ -113,7 +104,7 @@ function fakeRoute({ method = 'GET', url, headers = {}, fetchImpl } = {}) {
  * @returns {{ status: () => number, headers: () => Record<string, string>, body: () => Promise<Buffer> }} 假 APIResponse
  */
 function fakeResponse({ status = 200, headers = {}, body = '' } = {}) {
-	const buf = Buffer.isBuffer(body) ? body : Buffer.from(body)
+	const bodyBuffer = Buffer.isBuffer(body) ? body : Buffer.from(body)
 	return {
 		/**
 		 *
@@ -126,13 +117,13 @@ function fakeResponse({ status = 200, headers = {}, body = '' } = {}) {
 		/**
 		 *
 		 */
-		body: async () => buf,
+		body: async () => bodyBuffer,
 	}
 }
 
 Deno.test('installCdnResponseCache: GET/HEAD isolation, cache headers, disk refill, fetch fallback', async () => {
 	clearCdnResponseMemoryCache()
-	const prev = process.env.FOUNT_TEST_CDN_CACHE
+	const previousCdnCacheFlag = process.env.FOUNT_TEST_CDN_CACHE
 	delete process.env.FOUNT_TEST_CDN_CACHE
 	const dir = cdnCacheDir(REPO_ROOT)
 	await mkdir(dir, { recursive: true })
@@ -142,8 +133,6 @@ Deno.test('installCdnResponseCache: GET/HEAD isolation, cache headers, disk refi
 	const diskUrl = `https://esm.sh/${stamp}/disk.js`
 	const failUrl = `https://esm.sh/${stamp}/fail.js`
 	const rangeUrl = `https://esm.sh/${stamp}/range.js`
-	const diskPath = join(dir, cacheFileName('GET', diskUrl))
-	const written = []
 
 	try {
 		const { context, handlers } = fakeContext()
@@ -226,14 +215,13 @@ Deno.test('installCdnResponseCache: GET/HEAD isolation, cache headers, disk refi
 		}
 
 		{
-			await writeFile(diskPath, JSON.stringify({
+			await writeFile(join(dir, cacheFileName('GET', diskUrl)), JSON.stringify({
 				method: 'GET',
 				url: diskUrl,
 				status: 200,
 				headers: { 'content-type': 'text/plain', 'content-length': '4' },
 				bodyBase64: Buffer.from('disk').toString('base64'),
 			}))
-			written.push(diskPath)
 			clearCdnResponseMemoryCache()
 			const fromDisk = fakeRoute({ url: diskUrl })
 			await handler(fromDisk.route)
@@ -271,18 +259,15 @@ Deno.test('installCdnResponseCache: GET/HEAD isolation, cache headers, disk refi
 	}
 	finally {
 		clearCdnResponseMemoryCache()
-		if (prev === undefined) delete process.env.FOUNT_TEST_CDN_CACHE
-		else process.env.FOUNT_TEST_CDN_CACHE = prev
-		for (const path of written)
-			await unlink(path).catch(() => { /* already gone */ })
+		if (previousCdnCacheFlag === undefined) delete process.env.FOUNT_TEST_CDN_CACHE
+		else process.env.FOUNT_TEST_CDN_CACHE = previousCdnCacheFlag
 		for (const [method, url] of [
 			['GET', getUrl],
 			['HEAD', headUrl],
 			['HEAD', getUrl],
+			['GET', diskUrl],
 			['GET', failUrl],
-		]) {
-			const path = join(dir, cacheFileName(method, url))
-			await unlink(path).catch(() => { /* may not exist on fail path */ })
-		}
+		])
+			await unlink(join(dir, cacheFileName(method, url))).catch(() => { /* may not exist */ })
 	}
 })

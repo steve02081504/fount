@@ -202,11 +202,9 @@ export function restoreFeedShownItems(state, items) {
  * @returns {RemovedPostCard[]} 被移除的节点与原位置（用于回滚）
  */
 export function removePostsById(postId) {
-	const id = String(postId || '')
 	/** @type {RemovedPostCard[]} */
 	const removed = []
-	if (!id) return removed
-	for (const card of document.querySelectorAll(`[data-post-id="${CSS.escape(id)}"]`)) {
+	for (const card of document.querySelectorAll(`[data-post-id="${CSS.escape(postId)}"]`)) {
 		if (!(card instanceof HTMLElement)) continue
 		removed.push({ card, parent: card.parentElement, nextSibling: card.nextSibling })
 		card.remove()
@@ -220,12 +218,12 @@ export function removePostsById(postId) {
  * @returns {RemovedPostCard[]} 被移除的节点与原位置（用于回滚）
  */
 export function removePostsByAuthor(entityHash) {
-	const norm = String(entityHash || '').trim().toLowerCase()
+	const normalizedEntityHash = entityHash.trim().toLowerCase()
 	/** @type {RemovedPostCard[]} */
 	const removed = []
 	for (const card of document.querySelectorAll('.post-card[data-author-entity]')) {
 		if (!(card instanceof HTMLElement)) continue
-		if (String(card.dataset.authorEntity || '').trim().toLowerCase() !== norm) continue
+		if (card.dataset.authorEntity.trim().toLowerCase() !== normalizedEntityHash) continue
 		removed.push({ card, parent: card.parentElement, nextSibling: card.nextSibling })
 		card.remove()
 	}
@@ -241,7 +239,6 @@ export function restoreRemovedPosts(entries) {
 	for (let index = entries.length - 1; index >= 0; index--) {
 		const { card, parent, nextSibling } = entries[index]
 		if (!parent) continue
-		const anchor = nextSibling?.parentNode === parent ? nextSibling : null
-		parent.insertBefore(card, anchor)
+		parent.insertBefore(card, nextSibling?.parentNode === parent ? nextSibling : null)
 	}
 }

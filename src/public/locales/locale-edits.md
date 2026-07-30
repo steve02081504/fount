@@ -20,7 +20,7 @@ Never delete then refill from zh-CN: `fake` / `emoji` and other non-Google targe
 
 When updating call sites, rewrite only quoted i18n key strings — do not blind-replace `profile.xxx` object fields or module paths.
 
-**Write locale JSON only via Python** (`update_locale_data.py` / `update-locales.py` / `reshape_i18n_keys.py`). JS `JSON.stringify` reorders pure numeric keys like `"404"` to the front of the object.
+**Locale JSON writeback**: Python tools (`update_locale_data.py` / `update-locales.py` / `reshape_i18n_keys.py`) own structural key changes and preserve JSON key order. After generation, hand-fixing a single non-zh-CN locale's translation is fine. Avoid JS `JSON.stringify` for locale files — it reorders pure numeric keys like `"404"` to the front of the object.
 
 ## Prefix nest reshape
 

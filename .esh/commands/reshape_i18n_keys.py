@@ -407,9 +407,6 @@ def self_test() -> int:
 	if set(keys) != expected:
 		print(f"perm keys {keys!r} != {sorted(expected)!r}", file=sys.stderr)
 		return 1
-	if "sEND_MESSAGES" in obj["perm"] or "mANAGE_CHANNELS" in obj["perm"]:
-		print("mangled SCREAMING_SNAKE remainder", file=sys.stderr)
-		return 1
 	rewritten = loads_locale(dumps_locale(obj))
 	if rewritten["perm"]["SEND_MESSAGES"] != "send":
 		print("dumps/loads corrupted SEND_MESSAGES", file=sys.stderr)

@@ -48,7 +48,7 @@ function cacheKey(method, url) {
  * @param {string} url 完整 URL
  * @returns {string} 磁盘文件名（sha256 hex）
  */
-function cacheFileName(method, url) {
+export function cacheFileName(method, url) {
 	return `${createHash('sha256').update(cacheKey(method, url)).digest('hex')}.json`
 }
 
@@ -159,18 +159,17 @@ async function fetchCacheAndFulfill(route, dir, method, url) {
 	const { response, lastError } = await fetchWithRetries(route)
 	if (!response) {
 		// 首次拉取仍失败：放行浏览器自取，避免 route 抛错关掉 context
+		console.warn('[cdn_cache] fetch failed:', lastError?.message || lastError)
 		try {
 			await route.continue()
 		}
-		catch {
-			if (lastError) console.warn('[cdn_cache] fetch failed:', lastError?.message || lastError)
-		}
+		catch { /* continue 失败不覆盖原 fetch 诊断 */ }
 		return
 	}
 	const status = response.status()
 	const body = Buffer.from(await response.body())
 	const headers = method === 'HEAD'
-		? { ...response.headers() }
+		? response.headers()
 		: headersForCachedBody(response.headers(), body)
 	if (status >= 200 && status < 400) {
 		const entry = { status, headers, body }
@@ -197,11 +196,7 @@ export async function installCdnResponseCache(context) {
 	await context.route(isExternalCdnUrl, async route => {
 		const req = route.request()
 		const method = req.method()
-		if (method !== 'GET' && method !== 'HEAD') {
-			await route.continue()
-			return
-		}
-		if (req.headers().range) {
+		if ((method !== 'GET' && method !== 'HEAD') || req.headers().range) {
 			await route.continue()
 			return
 		}
