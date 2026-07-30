@@ -20,6 +20,7 @@ import {
 import { parseArgsOrExit } from './core/parse_args_or_exit.mjs'
 import { REPO_ROOT } from './core/repo_root.mjs'
 import { isBareSuiteContinuation, resolveSelector } from './core/selector.mjs'
+import { finishTestProgress } from './core/progress.mjs'
 import { runTests } from './runner/index.mjs'
 
 const { positionals, values } = parseArgsOrExit({
@@ -122,13 +123,19 @@ process.exit(await (async () => {
 	}
 
 	const runStarted = Date.now()
-	const exitCode = await runTests({
-		runAll: values.all,
-		noParallel: values['no-parallel'],
-		force: values.force,
-		groups: parsed.groups,
-	})
-	if (Date.now() - runStarted > ms('5m'))
-		process.stdout.write('\x07\x07\x07')
+	let exitCode = 0
+	try {
+		exitCode = await runTests({
+			runAll: values.all,
+			noParallel: values['no-parallel'],
+			force: values.force,
+			groups: parsed.groups,
+		})
+		if (Date.now() - runStarted > ms('5m'))
+			process.stdout.write('\x07\x07\x07')
+	}
+	finally {
+		finishTestProgress(exitCode)
+	}
 	return exitCode
 })())

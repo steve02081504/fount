@@ -22,6 +22,7 @@ import {
 	resolveManifestSelectors,
 } from '../core/manifest.mjs'
 import { detectNoiseHits, stripNoiseMarkers } from '../core/output_filter.mjs'
+import { beginTestProgress, syncTestProgress } from '../core/progress.mjs'
 import { buildPlan } from '../core/plan.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { formatExpectedDuration, formatParallelRatePct } from '../core/run_timing.mjs'
@@ -331,6 +332,7 @@ async function executeWave(context) {
 		triggerWarnings,
 	})
 	const reportPath = await reportWriter.init()
+	beginTestProgress()
 	console.logI18n('fountConsole.test.reportPath', {
 		path: reportPath.replace(/\\/g, '/'),
 	})
@@ -388,6 +390,7 @@ async function executeWave(context) {
 	 */
 	const recordSuiteResult = async (index, entry, { reused = false, logEstimate = true } = {}) => {
 		if (index != null) await reportWriter.recordResult(index, entry, { reused })
+		syncTestProgress(reportWriter)
 		if (logEstimate) logPendingEstimate(reportWriter)
 	}
 
