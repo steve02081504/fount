@@ -244,16 +244,16 @@ export function scanAchievementsData(relPath, data) {
 
 /**
  * @param {string} repoRoot 仓库根
- * @param {string} rel 相对路径
+ * @param {string} relativePath 相对路径
  * @param {InfoScanIssue[]} issues 问题列表
  * @returns {Promise<unknown | undefined>} 解析后的 JSON，失败时 undefined
  */
-async function readJsonSafe(repoRoot, rel, issues) {
+async function readJsonSafe(repoRoot, relativePath, issues) {
 	try {
-		return JSON.parse(await readFile(join(repoRoot, rel), 'utf8'))
+		return JSON.parse(await readFile(join(repoRoot, relativePath), 'utf8'))
 	}
 	catch (error) {
-		issues.push({ path: rel, message: `无法读取/解析: ${error}` })
+		issues.push({ path: relativePath, message: `无法读取/解析: ${error}` })
 		return undefined
 	}
 }
@@ -308,28 +308,28 @@ export async function scanPartsInfo({
 	/** @type {Map<string, UrlRef[]>} */
 	const urlRefs = new Map()
 
-	for (const rel of localesPaths) {
-		const data = await readJsonSafe(repoRoot, rel, issues)
+	for (const relativePath of localesPaths) {
+		const data = await readJsonSafe(repoRoot, relativePath, issues)
 		if (data === undefined) continue
-		const scanned = scanLocalesData(rel, data)
+		const scanned = scanLocalesData(relativePath, data)
 		issues.push(...scanned.issues)
 		if (scanned.emojiMissingAvatar)
-			issues.push({ path: rel, message: 'info.emoji 无 avatar（无字段或空串）' })
+			issues.push({ path: relativePath, message: 'info.emoji 无 avatar（无字段或空串）' })
 		for (const url of scanned.avatarUrls) {
 			const list = urlRefs.get(url) ?? []
-			list.push({ kind: 'avatar', path: rel })
+			list.push({ kind: 'avatar', path: relativePath })
 			urlRefs.set(url, list)
 		}
 	}
 
-	for (const rel of achievementPaths) {
-		const data = await readJsonSafe(repoRoot, rel, issues)
+	for (const relativePath of achievementPaths) {
+		const data = await readJsonSafe(repoRoot, relativePath, issues)
 		if (data === undefined) continue
-		const scanned = scanAchievementsData(rel, data)
+		const scanned = scanAchievementsData(relativePath, data)
 		issues.push(...scanned.issues)
 		for (const { achievementId, key, url } of scanned.iconUrls) {
 			const list = urlRefs.get(url) ?? []
-			list.push({ kind: 'achievement', path: rel, achievementId, key })
+			list.push({ kind: 'achievement', path: relativePath, achievementId, key })
 			urlRefs.set(url, list)
 		}
 	}

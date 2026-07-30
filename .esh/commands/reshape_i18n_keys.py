@@ -28,6 +28,9 @@ MY_DIR = os.path.dirname(os.path.abspath(__file__))
 FOUNT_DIR = os.path.abspath(os.path.join(MY_DIR, "../.."))
 LOCALES_DIR = os.path.join(FOUNT_DIR, "src", "public", "locales")
 MAP_PATH = os.path.join(FOUNT_DIR, "data", "test", "i18n_key_rename_map.json")
+EXCLUDE_PREFIXES_PATH = os.path.join(
+	FOUNT_DIR, "src", "scripts", "checks", "i18n_rewrite_exclude_prefixes.json"
+)
 
 _MISSING = object()
 
@@ -37,7 +40,6 @@ PREFIX_CLUSTER_MIN = 4
 I18N_REWRITE_SUFFIXES = (".mjs", ".js", ".ts", ".html", ".ps1", ".py")
 AFFIX_RE = re.compile(r"^(?:Suffix|Prefix)|(?:Suffix|Prefix)$")
 NUMBERED_RE = re.compile(r"^[A-Za-z][A-Za-z]*\d+$")
-PURE_DIGITS_RE = re.compile(r"^\d+$")
 UPDATE_LOCALE_DATA_HINT = (
 	"搬键请用 `.esh/commands/update_locale_data.py`（get → set(new) → set(old, None)），"
 	"勿手改各语言 JSON。详见 src/public/locales/locale-edits.md。"
@@ -94,8 +96,6 @@ def can_use_container(obj: OrderedDict, prefix: str, members: list[str], contain
 	if existing is not _MISSING and isinstance(existing, dict):
 		bucket.update(existing)
 	elif existing is not _MISSING and container_name not in members:
-		if "main" in bucket:
-			return False
 		bucket["main"] = existing
 	for key in members:
 		child = decapitalize(key[len(prefix):])
@@ -138,23 +138,13 @@ def apply_prefix_nest(obj: OrderedDict, prefix: str, members: list[str], preferr
 	return container_name
 
 
-def nest_longest_prefix_cluster(obj: OrderedDict) -> bool:
-	clusters = find_prefix_clusters(list(obj.keys()))
-	if not clusters:
-		return False
-	cluster = clusters[0]
-	apply_prefix_nest(obj, cluster["prefix"], cluster["members"], container_key_for_prefix(cluster["prefix"]))
-	return True
-
-
-def nest_all_prefix_clusters(obj: OrderedDict) -> int:
-	count = 0
-	while nest_longest_prefix_cluster(obj):
-		count += 1
-	for value in list(obj.values()):
-		if isinstance(value, dict):
-			count += nest_all_prefix_clusters(value)
-	return count
+def map_put(path_map: dict[str, str], from_path: str, to_path: str) -> None:
+	path_map[from_path] = to_path
+	for key, value in list(path_map.items()):
+		if key == from_path:
+			continue
+		if value == from_path or value.startswith(f"{from_path}."):
+			path_map[key] = to_path + value[len(from_path):]
 
 
 def nest_all_prefix_clusters_with_map(obj: OrderedDict, path: str = "", path_map: dict | None = None) -> int:
@@ -173,12 +163,7 @@ def nest_all_prefix_clusters_with_map(obj: OrderedDict, path: str = "", path_map
 		def on_move(old_key, new_rel, _path=path, _map=path_map):
 			old_path = f"{_path}.{old_key}" if _path else old_key
 			new_path = f"{_path}.{new_rel}" if _path else new_rel
-			_map[old_path] = new_path
-			for from_path, to_path in list(_map.items()):
-				if from_path == old_path:
-					continue
-				if to_path == old_path or to_path.startswith(f"{old_path}."):
-					_map[from_path] = new_path + to_path[len(old_path):]
+			map_put(_map, old_path, new_path)
 
 		apply_prefix_nest(obj, prefix, members, preferred, on_move)
 		count += 1
@@ -203,7 +188,7 @@ def scan_i18n_key_structure(data, path: str = "") -> list[dict]:
 				"path": full,
 				"message": f"键名「{key}」以 Suffix/Prefix 开头或结尾。{AFFIX_HINT} {UPDATE_LOCALE_DATA_HINT}",
 			})
-		if NUMBERED_RE.match(key) and not PURE_DIGITS_RE.match(key):
+		if NUMBERED_RE.match(key):
 			issues.append({
 				"kind": "numbered",
 				"path": full,
@@ -230,15 +215,6 @@ def scan_i18n_key_structure(data, path: str = "") -> list[dict]:
 	return issues
 
 
-def map_put(path_map: dict[str, str], from_path: str, to_path: str) -> None:
-	path_map[from_path] = to_path
-	for key, value in list(path_map.items()):
-		if key == from_path:
-			continue
-		if value == from_path or value.startswith(f"{from_path}."):
-			path_map[key] = to_path + value[len(from_path):]
-
-
 def combine_maps(auto_map: dict[str, str], extra_manual: dict[str, str]) -> dict[str, str]:
 	path_map = dict(auto_map)
 	for from_path, to_path in extra_manual.items():
@@ -258,6 +234,53 @@ def reconcile_extra_through_nest(path_map: dict[str, str], extra_manual: dict[st
 				break
 		if cur != to_path:
 			map_put(path_map, from_path, cur)
+
+
+def get_at(obj, path: str):
+	cur = obj
+	for part in path.split("."):
+		if not isinstance(cur, dict) or part not in cur:
+			return _MISSING
+		cur = cur[part]
+	return cur
+
+
+def delete_at(obj, path: str) -> None:
+	parts = path.split(".")
+	parent = obj
+	for part in parts[:-1]:
+		if not isinstance(parent, dict) or part not in parent:
+			return
+		parent = parent[part]
+	if isinstance(parent, dict):
+		parent.pop(parts[-1], None)
+
+
+def set_at(obj, path: str, value) -> None:
+	parts = path.split(".")
+	cur = obj
+	for part in parts[:-1]:
+		nxt = cur.get(part, _MISSING) if isinstance(cur, dict) else _MISSING
+		if not isinstance(nxt, dict):
+			nxt = OrderedDict()
+			cur[part] = nxt
+		cur = nxt
+	cur[parts[-1]] = value
+
+
+def apply_path_map(data, path_map: dict[str, str]) -> None:
+	planned = []
+	for from_path, to_path in path_map.items():
+		if from_path == to_path:
+			continue
+		value = get_at(data, from_path)
+		if value is _MISSING:
+			continue
+		planned.append((from_path, to_path, value))
+	for from_path, _to_path, _value in sorted(planned, key=lambda item: -item[0].count(".")):
+		delete_at(data, from_path)
+	for _from_path, to_path, value in sorted(planned, key=lambda item: item[1].count(".")):
+		set_at(data, to_path, value)
 
 
 def rewrite_quoted_keys(text: str, path_map: dict[str, str]) -> tuple[str, int]:
@@ -302,17 +325,19 @@ def load_gitignore_spec():
 		return pathspec.PathSpec.from_lines("gitwildmatch", handle)
 
 
-def is_i18n_rewrite_excluded(rel: str) -> bool:
-	return (
-		rel.startswith("src/public/locales/")
-		or rel.startswith("src/decl/")
-		or rel.startswith("src/scripts/checks/tools/")
-		or rel.startswith("tmp_")
-		or "/tmp_" in rel
-	)
+def load_exclude_prefixes() -> list[str]:
+	with open(EXCLUDE_PREFIXES_PATH, "r", encoding="utf-8") as handle:
+		return json.load(handle)
 
 
-def iter_source_files(gitignore_spec):
+def is_i18n_rewrite_excluded(rel: str, prefixes: list[str] | None = None) -> bool:
+	if prefixes is None:
+		prefixes = load_exclude_prefixes()
+	slash_prefixed = f"/{rel}"
+	return any(rel.startswith(prefix) or f"/{prefix}" in slash_prefixed for prefix in prefixes)
+
+
+def iter_source_files(gitignore_spec, exclude_prefixes: list[str]):
 	for root, dirnames, filenames in os.walk(FOUNT_DIR):
 		rel_root = os.path.relpath(root, FOUNT_DIR).replace("\\", "/")
 		if rel_root == ".":
@@ -333,7 +358,7 @@ def iter_source_files(gitignore_spec):
 				continue
 			if not any(rel.endswith(suffix) for suffix in I18N_REWRITE_SUFFIXES):
 				continue
-			if is_i18n_rewrite_excluded(rel):
+			if is_i18n_rewrite_excluded(rel, exclude_prefixes):
 				continue
 			yield rel
 
@@ -344,12 +369,13 @@ def main() -> int:
 
 	zh_path = os.path.join(LOCALES_DIR, "zh-CN.json")
 	with open(zh_path, "r", encoding="utf-8") as handle:
-		zh_data = loads_locale(handle.read())
+		zh_original = loads_locale(handle.read())
 
+	zh_nested = loads_locale(dumps_locale(zh_original))
 	auto_map: dict[str, str] = {}
-	nest_all_prefix_clusters_with_map(zh_data, "", auto_map)
+	nest_all_prefix_clusters_with_map(zh_nested, "", auto_map)
 
-	leftover = scan_i18n_key_structure(zh_data)
+	leftover = scan_i18n_key_structure(zh_nested)
 	if leftover:
 		print("zh-CN still has issues after nest:", file=sys.stderr)
 		for issue in leftover:
@@ -359,21 +385,20 @@ def main() -> int:
 	path_map = combine_maps(auto_map, extra_manual)
 	reconcile_extra_through_nest(path_map, extra_manual)
 
-	with open(zh_path, "w", encoding="utf-8", newline="\n") as handle:
-		handle.write(dumps_locale(zh_data))
-
 	for file_name in locale_files:
-		if file_name == "zh-CN.json":
-			continue
 		abs_path = os.path.join(LOCALES_DIR, file_name)
-		with open(abs_path, "r", encoding="utf-8") as handle:
-			data = loads_locale(handle.read())
-		nest_all_prefix_clusters(data)
+		if file_name == "zh-CN.json":
+			data = zh_original
+		else:
+			with open(abs_path, "r", encoding="utf-8") as handle:
+				data = loads_locale(handle.read())
+		apply_path_map(data, path_map)
 		with open(abs_path, "w", encoding="utf-8", newline="\n") as handle:
 			handle.write(dumps_locale(data))
 
+	exclude_prefixes = load_exclude_prefixes()
 	gitignore_spec = load_gitignore_spec()
-	for rel in iter_source_files(gitignore_spec):
+	for rel in iter_source_files(gitignore_spec, exclude_prefixes):
 		abs_path = os.path.join(FOUNT_DIR, rel)
 		with open(abs_path, "r", encoding="utf-8") as handle:
 			raw = handle.read()

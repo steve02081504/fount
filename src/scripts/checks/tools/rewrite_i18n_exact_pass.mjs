@@ -22,21 +22,15 @@ const renameMap = JSON.parse(
  * @returns {[string, string][]} 展平后的条目
  */
 function flattenRenameEntries(map) {
-	/** @type {Map<string, string>} */
-	const flattened = new Map()
+	/** @type {[string, string][]} */
+	const entries = []
 	for (const from of Object.keys(map)) {
 		let cur = from
-		const seen = new Set()
-		while (Object.hasOwn(map, cur) && map[cur] !== cur) {
-			if (seen.has(cur)) break
-			seen.add(cur)
-			const next = map[cur]
-			if (!next || next === cur) break
-			cur = next
-		}
-		if (cur !== from) flattened.set(from, cur)
+		while (Object.hasOwn(map, cur) && map[cur] !== cur)
+			cur = map[cur]
+		if (cur !== from) entries.push([from, cur])
 	}
-	return [...flattened.entries()]
+	return entries
 		.filter(([from, to]) => from !== to && !to.startsWith(`${from}.`))
 		.sort((a, b) => b[0].length - a[0].length)
 }

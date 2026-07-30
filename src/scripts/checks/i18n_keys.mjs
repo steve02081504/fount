@@ -33,7 +33,6 @@ export const PREFIX_CLUSTER_MIN = 4
 
 const AFFIX_RE = /^(?:Suffix|Prefix)|(?:Suffix|Prefix)$/
 const NUMBERED_RE = /^[A-Za-z][A-Za-z]*\d+$/
-const PURE_DIGITS_RE = /^\d+$/
 
 /**
  * @param {string} key 驼峰键
@@ -67,7 +66,7 @@ export function containerKeyForPrefix(prefix) {
 
 /**
  * @param {string[]} keys 同级键名
- * @param min
+ * @param {number} [min] 成簇最小成员数
  * @returns {{ prefix: string, members: string[] }[]} 按前缀长度降序的簇（members≥阈值）
  */
 export function findPrefixClusters(keys, min = PREFIX_CLUSTER_MIN) {
@@ -99,7 +98,7 @@ export function findPrefixClusters(keys, min = PREFIX_CLUSTER_MIN) {
  * 扫描一棵 locale 对象树。
  * @param {unknown} data locale JSON 根
  * @param {string} [path=''] 当前路径
- * @returns {I18nKeyIssue[]}
+ * @returns {I18nKeyIssue[]} 结构问题列表
  */
 export function scanI18nKeyStructure(data, path = '') {
 	if (!data || typeof data !== 'object' || Array.isArray(data))
@@ -107,8 +106,7 @@ export function scanI18nKeyStructure(data, path = '') {
 
 	/** @type {I18nKeyIssue[]} */
 	const issues = []
-	const obj = /** @type {Record<string, unknown>} */ data
-	const keys = Object.keys(obj)
+	const keys = Object.keys(/** @type {Record<string, unknown>} */ data)
 
 	for (const key of keys) {
 		const full = path ? `${path}.${key}` : key
@@ -119,7 +117,7 @@ export function scanI18nKeyStructure(data, path = '') {
 				message: `键名「${key}」以 Suffix/Prefix 开头或结尾。${AFFIX_HINT} ${UPDATE_LOCALE_DATA_HINT}`,
 			})
 		
-		if (NUMBERED_RE.test(key) && !PURE_DIGITS_RE.test(key)) 
+		if (NUMBERED_RE.test(key)) 
 			issues.push({
 				kind: 'numbered',
 				path: full,
@@ -139,27 +137,13 @@ export function scanI18nKeyStructure(data, path = '') {
 	}
 
 	for (const key of keys) {
-		const value = obj[key]
+		const value = /** @type {Record<string, unknown>} */ data[key]
 		const full = path ? `${path}.${key}` : key
 		if (value && typeof value === 'object' && !Array.isArray(value))
 			issues.push(...scanI18nKeyStructure(value, full))
 	}
 
 	return issues
-}
-
-/**
- * 在单个 object 上嵌套最长前缀簇一次；返回是否有改动。
- * @param {Record<string, unknown>} obj 同级对象
- * @returns {boolean} 是否嵌套了
- */
-export function nestLongestPrefixCluster(obj) {
-	const clusters = findPrefixClusters(Object.keys(obj))
-	if (!clusters.length) return false
-	const { prefix, members } = clusters[0]
-	const preferred = containerKeyForPrefix(prefix)
-	applyPrefixNest(obj, prefix, members, preferred)
-	return true
 }
 
 /**
@@ -175,7 +159,7 @@ export function pickContainerName(obj, prefix, members, preferredContainer) {
 		`${preferredContainer}Items`,
 		`${prefix}Items`,
 	]
-	for (const name of [...new Set(candidates)]) 
+	for (const name of new Set(candidates)) 
 		if (canUseContainer(obj, prefix, members, name))
 			return name
 	
@@ -187,7 +171,7 @@ export function pickContainerName(obj, prefix, members, preferredContainer) {
  * @param {string} prefix 前缀
  * @param {string[]} members 成员键
  * @param {string} containerName 候选容器
- * @returns {boolean}
+ * @returns {boolean} 无冲突则为 true
  */
 function canUseContainer(obj, prefix, members, containerName) {
 	/** @type {Record<string, unknown>} */
@@ -195,10 +179,9 @@ function canUseContainer(obj, prefix, members, containerName) {
 	const existing = obj[containerName]
 	if (existing && typeof existing === 'object' && !Array.isArray(existing))
 		Object.assign(bucket, /** @type {Record<string, unknown>} */ existing)
-	else if (existing !== undefined && !members.includes(containerName)) {
-		if ('main' in bucket) return false
+	else if (existing !== undefined && !members.includes(containerName))
 		bucket.main = existing
-	}
+	
 	for (const key of members) {
 		const child = decapitalize(key.slice(prefix.length))
 		if (child in bucket && bucket[child] !== obj[key])
@@ -239,28 +222,12 @@ export function applyPrefixNest(obj, prefix, members, preferredContainer, onMove
 }
 
 /**
- * 递归嵌套直到该子树无前缀簇违规。
- * @param {Record<string, unknown>} obj locale 对象
- * @returns {number} 嵌套次数
- */
-export function nestAllPrefixClusters(obj) {
-	let count = 0
-	while (nestLongestPrefixCluster(obj))
-		count++
-	for (const value of Object.values(obj)) 
-		if (value && typeof value === 'object' && !Array.isArray(value))
-			count += nestAllPrefixClusters(/** @type {Record<string, unknown>} */ value)
-	
-	return count
-}
-
-/**
  * 记录嵌套前后的点分路径映射（仅叶子路径会在调用点替换时用到；也映射中间路径）。
  * 通过对比太难；改为在 nest 时显式收集。
- * @param {Record<string, unknown>} obj
- * @param {string} path
- * @param {Map<string, string>} map old → new
- * @returns {number}
+ * @param {Record<string, unknown>} obj locale 对象
+ * @param {string} [path] 当前点分路径
+ * @param {Map<string, string>} [map] old → new
+ * @returns {number} 嵌套次数
  */
 export function nestAllPrefixClustersWithMap(obj, path = '', map = new Map()) {
 	let count = 0
@@ -273,7 +240,7 @@ export function nestAllPrefixClustersWithMap(obj, path = '', map = new Map()) {
 			const oldPath = path ? `${path}.${oldKey}` : oldKey
 			const newPath = path ? `${path}.${newRel}` : newRel
 			map.set(oldPath, newPath)
-			for (const [from, to] of [...map.entries()]) {
+			for (const [from, to] of map.entries()) {
 				if (from === oldPath) continue
 				if (to === oldPath || to.startsWith(`${oldPath}.`))
 					map.set(from, newPath + to.slice(oldPath.length))
@@ -288,4 +255,13 @@ export function nestAllPrefixClustersWithMap(obj, path = '', map = new Map()) {
 		}
 	
 	return count
+}
+
+/**
+ * 递归嵌套直到该子树无前缀簇违规。
+ * @param {Record<string, unknown>} obj locale 对象
+ * @returns {number} 嵌套次数
+ */
+export function nestAllPrefixClusters(obj) {
+	return nestAllPrefixClustersWithMap(obj)
 }

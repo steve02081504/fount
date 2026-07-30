@@ -1456,7 +1456,8 @@ def generate_locale_data_ts(ref_data, output_path):
 			for value in values:
 				merged_elements.extend(value)
 			return merged_elements
-		return values[0]
+		types = ", ".join(type(value).__name__ for value in values)
+		raise TypeError(f"Cannot merge mixed or unsupported locale value types: {types}")
 
 	def generate_ts_type_recursive(data, indent_level):
 		"""Recursively generates a TypeScript type string from a dictionary."""
@@ -1496,21 +1497,16 @@ def generate_locale_data_ts(ref_data, output_path):
 	def collect_placeholder_keys_recursive(data, prefix=""):
 		"""Recursively finds all keys that have string values with placeholders."""
 		keys = {}
+		# Arrays are not Paths-compatible placeholder keys; skip `${number}` paths.
 		if isinstance(data, list):
-			path = f"{prefix}.${{number}}" if prefix else "${number}"
-			for item in data:
-				if isinstance(item, (OrderedDict, dict, list)):
-					merge_placeholder_maps(keys, collect_placeholder_keys_recursive(item, path))
-				elif isinstance(item, str):
-					placeholders = extract_placeholders(item)
-					if placeholders:
-						merge_placeholder_maps(keys, {path: placeholders})
 			return keys
 		if not isinstance(data, (OrderedDict, dict)):
 			return keys
 		for key, value in data.items():
 			path = f"{prefix}.{key}" if prefix else key
-			if isinstance(value, (OrderedDict, dict, list)):
+			if isinstance(value, list):
+				continue
+			if isinstance(value, (OrderedDict, dict)):
 				merge_placeholder_maps(keys, collect_placeholder_keys_recursive(value, path))
 			elif isinstance(value, str):
 				placeholders = extract_placeholders(value)

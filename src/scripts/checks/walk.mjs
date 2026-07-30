@@ -6,6 +6,8 @@ import { join, relative } from 'node:path'
 
 import createIgnore from 'npm:ignore'
 
+import I18N_REWRITE_EXCLUDE_PREFIXES from './i18n_rewrite_exclude_prefixes.json' with { type: 'json' }
+
 /** 两遍 i18n 键改写共享的源码后缀。 */
 export const I18N_REWRITE_SUFFIXES = Object.freeze([
 	'.mjs', '.js', '.ts', '.html', '.ps1', '.py',
@@ -13,15 +15,13 @@ export const I18N_REWRITE_SUFFIXES = Object.freeze([
 
 /**
  * i18n 改写应跳过的相对路径。
- * @param {string} rel 相对仓库根、正斜杠
+ * @param {string} relativePath 相对仓库根、正斜杠
  * @returns {boolean} 应跳过则为 true
  */
-export function isI18nRewriteExcluded(rel) {
-	return rel.startsWith('src/public/locales/')
-		|| rel.startsWith('src/decl/')
-		|| rel.startsWith('src/scripts/checks/tools/')
-		|| rel.startsWith('tmp_')
-		|| rel.includes('/tmp_')
+export function isI18nRewriteExcluded(relativePath) {
+	const slashPrefixed = `/${relativePath}`
+	return I18N_REWRITE_EXCLUDE_PREFIXES.some(prefix =>
+		relativePath.startsWith(prefix) || slashPrefixed.includes(`/${prefix}`))
 }
 
 /**
