@@ -31,11 +31,11 @@ const PURE_DIGITS_RE = /^\d+$/
  */
 export function camelPrefixes(key) {
 	/** @type {string[]} */
-	const out = []
-	for (let i = 1; i < key.length; i++) {
-		if (/[A-Z]/.test(key[i])) out.push(key.slice(0, i))
+	const prefixes = []
+	for (let index = 1; index < key.length; index++) {
+		if (/[A-Z]/.test(key[index])) prefixes.push(key.slice(0, index))
 	}
-	return out
+	return prefixes
 }
 
 /**
@@ -234,20 +234,11 @@ export function applyPrefixNest(obj, prefix, members, preferredContainer, onMove
  */
 export function nestAllPrefixClusters(obj) {
 	let count = 0
-	for (;;) {
-		let progressed = false
-		while (nestLongestPrefixCluster(obj)) {
-			count++
-			progressed = true
-		}
-		for (const value of Object.values(obj)) {
-			if (value && typeof value === 'object' && !Array.isArray(value)) {
-				const n = nestAllPrefixClusters(/** @type {Record<string, unknown>} */ (value))
-				count += n
-				if (n) progressed = true
-			}
-		}
-		if (!progressed) break
+	while (nestLongestPrefixCluster(obj))
+		count++
+	for (const value of Object.values(obj)) {
+		if (value && typeof value === 'object' && !Array.isArray(value))
+			count += nestAllPrefixClusters(/** @type {Record<string, unknown>} */ (value))
 	}
 	return count
 }
@@ -263,34 +254,27 @@ export function nestAllPrefixClusters(obj) {
 export function nestAllPrefixClustersWithMap(obj, path = '', map = new Map()) {
 	let count = 0
 	for (;;) {
-		let progressed = false
-		for (;;) {
-			const clusters = findPrefixClusters(Object.keys(obj))
-			if (!clusters.length) break
-			const { prefix, members } = clusters[0]
-			const preferred = containerKeyForPrefix(prefix)
-			applyPrefixNest(obj, prefix, members, preferred, (oldKey, newRel) => {
-				const oldPath = path ? `${path}.${oldKey}` : oldKey
-				const newPath = path ? `${path}.${newRel}` : newRel
-				map.set(oldPath, newPath)
-				for (const [from, to] of [...map.entries()]) {
-					if (from === oldPath) continue
-					if (to === oldPath || to.startsWith(`${oldPath}.`))
-						map.set(from, newPath + to.slice(oldPath.length))
-				}
-			})
-			count++
-			progressed = true
-		}
-		for (const [key, value] of Object.entries(obj)) {
-			if (value && typeof value === 'object' && !Array.isArray(value)) {
-				const childPath = path ? `${path}.${key}` : key
-				const n = nestAllPrefixClustersWithMap(/** @type {Record<string, unknown>} */ (value), childPath, map)
-				count += n
-				if (n) progressed = true
+		const clusters = findPrefixClusters(Object.keys(obj))
+		if (!clusters.length) break
+		const { prefix, members } = clusters[0]
+		const preferred = containerKeyForPrefix(prefix)
+		applyPrefixNest(obj, prefix, members, preferred, (oldKey, newRel) => {
+			const oldPath = path ? `${path}.${oldKey}` : oldKey
+			const newPath = path ? `${path}.${newRel}` : newRel
+			map.set(oldPath, newPath)
+			for (const [from, to] of [...map.entries()]) {
+				if (from === oldPath) continue
+				if (to === oldPath || to.startsWith(`${oldPath}.`))
+					map.set(from, newPath + to.slice(oldPath.length))
 			}
+		})
+		count++
+	}
+	for (const [key, value] of Object.entries(obj)) {
+		if (value && typeof value === 'object' && !Array.isArray(value)) {
+			const childPath = path ? `${path}.${key}` : key
+			count += nestAllPrefixClustersWithMap(/** @type {Record<string, unknown>} */ (value), childPath, map)
 		}
-		if (!progressed) break
 	}
 	return count
 }

@@ -32,9 +32,9 @@ function collectStrings(obj, out) {
 		for (const item of obj) collectStrings(item, out)
 		return
 	}
-	if (obj && typeof obj === 'object') 
+	if (obj && typeof obj === 'object')
 		for (const value of Object.values(obj)) collectStrings(value, out)
-	
+
 }
 
 /**
@@ -61,7 +61,7 @@ export function hasEmojiLocaleWarning(emojiBlock) {
  */
 export function localesWithInfoProvider(info) {
 	return Object.entries(info)
-		.filter(([, value]) => value && typeof value === 'object' && !Array.isArray(value) && 'provider' in /** @type {object} */ value)
+		.filter(([, value]) => value && typeof value === 'object' && !Array.isArray(value) && 'provider' in /** @type {object} */ (value))
 		.map(([key]) => key)
 }
 
@@ -72,7 +72,7 @@ export function localesWithInfoProvider(info) {
  */
 export function localesMissingProvider(block) {
 	return Object.entries(block)
-		.filter(([, value]) => value && typeof value === 'object' && !Array.isArray(value) && !('provider' in /** @type {object} */ value))
+		.filter(([, value]) => value && typeof value === 'object' && !Array.isArray(value) && !('provider' in /** @type {object} */ (value)))
 		.map(([key]) => key)
 }
 
@@ -155,6 +155,10 @@ async function mapPool(items, concurrency, worker) {
  */
 
 /**
+ * @typedef {{ kind: 'avatar', path: string } | { kind: 'achievement', path: string, achievementId: string, key: string }} UrlRef
+ */
+
+/**
  * 扫描单个 locales.json。
  * @param {string} relPath 相对路径
  * @param {unknown} data JSON
@@ -172,33 +176,34 @@ export function scanLocalesData(relPath, data) {
 		return { issues, avatarUrls, emojiMissingAvatar }
 	}
 
-	const info = /** @type {Record<string, unknown>} */ data.info
+	const root = /** @type {Record<string, unknown>} */ (data)
+	const info = /** @type {Record<string, unknown>} */ (root.info)
 	if (info && typeof info === 'object' && !Array.isArray(info)) {
-		const withProvider = localesWithInfoProvider(/** @type {Record<string, unknown>} */ info)
+		const withProvider = localesWithInfoProvider(/** @type {Record<string, unknown>} */ (info))
 		if (withProvider.length)
 			issues.push({ path: relPath, message: `info 残留 provider（应只在 product_info）: ${withProvider.join(', ')}` })
 
-		const emojiBlock = /** @type {Record<string, unknown>} */ info.emoji
+		const emojiBlock = /** @type {Record<string, unknown>} */ (info.emoji)
 		if (emojiBlock && typeof emojiBlock === 'object' && !Array.isArray(emojiBlock)) {
-			const { warn, langs } = hasEmojiLocaleWarning(/** @type {Record<string, unknown>} */ emojiBlock)
+			const { warn, langs } = hasEmojiLocaleWarning(/** @type {Record<string, unknown>} */ (emojiBlock))
 			if (warn)
 				issues.push({ path: relPath, message: `emoji 内字符串含 ${langs.join('/')}，请确认 emoji 本地化` })
-			const av = /** @type {Record<string, unknown>} */ emojiBlock.avatar
+			const av = /** @type {Record<string, unknown>} */ (emojiBlock).avatar
 			if (av == null || av === '')
 				emojiMissingAvatar = true
 		}
 
 		for (const value of Object.values(info)) {
 			if (!value || typeof value !== 'object' || Array.isArray(value)) continue
-			const url = /** @type {Record<string, unknown>} */ value.avatar
+			const url = /** @type {Record<string, unknown>} */ (value).avatar
 			if (typeof url === 'string' && url.trim())
 				avatarUrls.push(url.trim())
 		}
 	}
 
-	const productInfo = /** @type {Record<string, unknown>} */ data.product_info
+	const productInfo = /** @type {Record<string, unknown>} */ (root.product_info)
 	if (productInfo && typeof productInfo === 'object' && !Array.isArray(productInfo)) {
-		const missing = localesMissingProvider(/** @type {Record<string, unknown>} */ productInfo)
+		const missing = localesMissingProvider(/** @type {Record<string, unknown>} */ (productInfo))
 		if (missing.length)
 			issues.push({ path: relPath, message: `product_info 缺少 provider: ${missing.join(', ')}` })
 	}
@@ -222,19 +227,65 @@ export function scanAchievementsData(relPath, data) {
 		return { issues, iconUrls }
 	}
 
-	const achievements = /** @type {Record<string, unknown>} */ data.achievements
+	const achievements = /** @type {Record<string, unknown>} */ (/** @type {Record<string, unknown>} */ (data).achievements)
 	if (!achievements || typeof achievements !== 'object' || Array.isArray(achievements))
 		return { issues, iconUrls }
 
 	for (const [achId, ach] of Object.entries(achievements)) {
 		if (!ach || typeof ach !== 'object' || Array.isArray(ach)) continue
-		for (const key of /** @type {const} */ ['icon', 'locked_icon']) {
-			const url = /** @type {Record<string, unknown>} */ ach[key]
+		for (const key of /** @type {const} */ (['icon', 'locked_icon'])) {
+			const url = /** @type {Record<string, unknown>} */ (ach)[key]
 			if (typeof url === 'string' && url.trim())
 				iconUrls.push({ achievementId: achId, key, url: url.trim() })
 		}
 	}
 	return { issues, iconUrls }
+}
+
+/**
+ * @param {string} repoRoot 仓库根
+ * @param {string} rel 相对路径
+ * @param {InfoScanIssue[]} issues 问题列表
+ * @returns {Promise<unknown | undefined>} 解析后的 JSON，失败时 undefined
+ */
+async function readJsonSafe(repoRoot, rel, issues) {
+	try {
+		return JSON.parse(await readFile(join(repoRoot, rel), 'utf8'))
+	}
+	catch (error) {
+		issues.push({ path: rel, message: `无法读取/解析: ${error}` })
+		return undefined
+	}
+}
+
+/**
+ * @param {Map<string, UrlRef[]>} urlRefs URL → 引用
+ * @param {Set<string>} badUrls 不可用 URL
+ * @param {InfoScanIssue[]} issues 问题列表
+ */
+function reportBadUrls(urlRefs, badUrls, issues) {
+	for (const url of badUrls) {
+		const refs = urlRefs.get(url) || []
+		/** @type {Set<string>} */
+		const seen = new Set()
+		for (const ref of refs)
+			if (ref.kind === 'avatar') {
+				const key = `avatar:${ref.path}:${url}`
+				if (seen.has(key)) continue
+				seen.add(key)
+				issues.push({ path: ref.path, message: `avatar URL 不可用: ${url}` })
+			}
+			else {
+				const key = `ach:${ref.path}:${ref.achievementId}:${ref.key}:${url}`
+				if (seen.has(key)) continue
+				seen.add(key)
+				issues.push({
+					path: ref.path,
+					message: `成就 '${ref.achievementId}' 的 ${ref.key} 不可用: ${url}`,
+				})
+			}
+
+	}
 }
 
 /**
@@ -254,18 +305,12 @@ export async function scanPartsInfo({
 }) {
 	/** @type {InfoScanIssue[]} */
 	const issues = []
-	/** @type {Map<string, Array<{ kind: 'avatar', path: string } | { kind: 'achievement', path: string, achievementId: string, key: string }>>} */
+	/** @type {Map<string, UrlRef[]>} */
 	const urlRefs = new Map()
 
 	for (const rel of localesPaths) {
-		let data
-		try {
-			data = JSON.parse(await readFile(join(repoRoot, rel), 'utf8'))
-		}
-		catch (error) {
-			issues.push({ path: rel, message: `无法读取/解析: ${error}` })
-			continue
-		}
+		const data = await readJsonSafe(repoRoot, rel, issues)
+		if (data === undefined) continue
 		const scanned = scanLocalesData(rel, data)
 		issues.push(...scanned.issues)
 		if (scanned.emojiMissingAvatar)
@@ -278,14 +323,8 @@ export async function scanPartsInfo({
 	}
 
 	for (const rel of achievementPaths) {
-		let data
-		try {
-			data = JSON.parse(await readFile(join(repoRoot, rel), 'utf8'))
-		}
-		catch (error) {
-			issues.push({ path: rel, message: `无法读取/解析: ${error}` })
-			continue
-		}
+		const data = await readJsonSafe(repoRoot, rel, issues)
+		if (data === undefined) continue
 		const scanned = scanAchievementsData(rel, data)
 		issues.push(...scanned.issues)
 		for (const { achievementId, key, url } of scanned.iconUrls) {
@@ -303,28 +342,6 @@ export async function scanPartsInfo({
 			badUrls.add(url)
 	})
 
-	for (const url of badUrls) {
-		const refs = urlRefs.get(url) || []
-		/** @type {Set<string>} */
-		const seen = new Set()
-		for (const ref of refs) 
-			if (ref.kind === 'avatar') {
-				const key = `avatar:${ref.path}:${url}`
-				if (seen.has(key)) continue
-				seen.add(key)
-				issues.push({ path: ref.path, message: `avatar URL 不可用: ${url}` })
-			}
-			else {
-				const key = `ach:${ref.path}:${ref.achievementId}:${ref.key}:${url}`
-				if (seen.has(key)) continue
-				seen.add(key)
-				issues.push({
-					path: ref.path,
-					message: `成就 '${ref.achievementId}' 的 ${ref.key} 不可用: ${url}`,
-				})
-			}
-		
-	}
-
+	reportBadUrls(urlRefs, badUrls, issues)
 	return issues
 }
