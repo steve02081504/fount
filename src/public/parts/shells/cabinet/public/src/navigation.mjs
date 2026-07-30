@@ -1,7 +1,6 @@
 /**
  * 柜导航：hash、开柜、列表、面包屑、boot。
  */
-import { geti18n } from '/scripts/i18n/index.mjs'
 import { confirmAction, promptText } from '/scripts/features/promptDialog.mjs'
 
 import { api, unlockHeaders } from './api.mjs'
@@ -59,7 +58,8 @@ export function renderCabinetList() {
 	for (const cabinet of cabinetStore.cabinets) {
 		const li = document.createElement('li')
 		const a = document.createElement('a')
-		a.href = `#${locationHashFor(cabinet.cabinet_id)}`
+		// pathname+#hash：避免抽屉离屏时 a[href^="#"] 被 axe 当成 skip-link
+		a.href = `${location.pathname}#${locationHashFor(cabinet.cabinet_id)}`
 		a.className = cabinet.cabinet_id === cabinetStore.currentCabinetId ? 'menu-active' : ''
 		const badge = cabinet.type === 'shared' ? '🔗 ' : ''
 		a.textContent = `${badge}${cabinet.name}`
@@ -91,15 +91,15 @@ async function cabinetContext(cabinet) {
 		await openCabinet(cabinet.cabinet_id)
 		return
 	}
-	const action = await promptText(geti18n('cabinet.cabinetActionPrompt') || 'cabinet.cabinetActionPrompt')
+	const action = await promptText('cabinet.cabinetActionPrompt')
 	if (action === 'rename') {
-		const name = await promptText(geti18n('cabinet.renamePrompt') || 'cabinet.renamePrompt', cabinet.name)
+		const name = await promptText('cabinet.renamePrompt', cabinet.name)
 		if (!name) return
 		await api('PATCH', `/cabinets/${encodeURIComponent(cabinet.cabinet_id)}`, { name })
 		await refreshCabinets()
 	}
 	else if (action === 'delete') {
-		if (!await confirmAction(geti18n('cabinet.confirmDeleteCabinet') || 'cabinet.confirmDeleteCabinet')) return
+		if (!await confirmAction('cabinet.confirmDeleteCabinet')) return
 		const wasCurrent = cabinetStore.currentCabinetId === cabinet.cabinet_id
 		await api('DELETE', `/cabinets/${encodeURIComponent(cabinet.cabinet_id)}`)
 		await refreshCabinets()
@@ -111,7 +111,7 @@ async function cabinetContext(cabinet) {
 	}
 	else if (action === 'visibility') {
 		const visibility = await promptText(
-			geti18n('cabinet.visibilityPrompt') || 'cabinet.visibilityPrompt',
+			'cabinet.visibilityPrompt',
 			cabinet.visibility?.visibility || 'private',
 		)
 		if (!visibility) return
@@ -208,7 +208,7 @@ async function renderBreadcrumb() {
 		}
 		else {
 			const button = document.createElement('a')
-			button.href = `#${locationHashFor(currentCabinetId, segment.id)}`
+			button.href = `${location.pathname}#${locationHashFor(currentCabinetId, segment.id)}`
 			button.textContent = label
 			button.title = segment.name
 			button.addEventListener('click', event => {

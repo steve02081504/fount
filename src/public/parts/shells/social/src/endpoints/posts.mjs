@@ -63,14 +63,13 @@ export function registerPostsRoutes(router) {
 	for (const { path, flag, on, off } of [
 		{ path: 'like', flag: 'like', on: 'like', off: 'unlike' },
 		{ path: 'dislike', flag: 'dislike', on: 'dislike', off: 'undislike' },
-	]) 
+	])
 		router.post(`/api/parts/shells\\:social/posts/:entityHash/:postId/${path}`, authenticate, socialJson(async (req, { client }) => {
 			const post = await postFromParams(req, client)
 			return {
 				event: req.body?.[flag] === false ? await post[off]() : await post[on](),
 			}
 		}))
-	
 
 	router.post('/api/parts/shells\\:social/posts/:entityHash/:postId/repost', authenticate, socialJson(async (req, { client }) => {
 		const post = await postFromParams(req, client)

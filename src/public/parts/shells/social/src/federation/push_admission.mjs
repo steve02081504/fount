@@ -1,5 +1,5 @@
 /**
- * 联邦 push（part_timeline_put）接纳：已关注或共同群成员。
+ * 联邦 push（part_timeline_put）接纳：已关注 ∪ 共同群 ∪ 指向本机实体的 follow/unfollow。
  * pull（syncFollowingTimelines）已按关注拉取，不经此门。
  */
 import { join } from 'node:path'
@@ -12,7 +12,7 @@ import { listUserGroups } from '../../../chat/src/chat/lib/userGroups.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../chat/src/entity/identity.mjs'
 import { loadFollowingForActor } from '../following.mjs'
 
-import { listLocalAgentEntities } from './hosting.mjs'
+import { listLocalAgentEntities, resolveSocialEntity } from './hosting.mjs'
 
 /**
  * 本机 operator + agent 是否关注目标（含自关注）。
@@ -55,15 +55,32 @@ async function isCoGroupMember(username, entityHash) {
 }
 
 /**
- * push 是否接纳该时间线 owner（关注 ∪ 共群；denylist/信誉仍由 ingest 链处理）。
+ * follow/unfollow 指向本机托管实体时接纳（否则被关注方永远收不到反向关注图，pull 导出 followsOwner 恒假）。
+ * @param {string} username replica
+ * @param {object | null | undefined} event 入站事件
+ * @returns {Promise<boolean>} 是否为本机被关注通知
+ */
+async function isFollowTargetingLocalEntity(username, event) {
+	const type = event?.type
+	if (type !== 'follow' && type !== 'unfollow') return false
+	const target = String(event?.content?.targetEntityHash || '').trim().toLowerCase()
+	if (!parseEntityHash(target)) return false
+	const resolved = await resolveSocialEntity(target)
+	return Boolean(resolved?.local && resolved.replicaUsername === username)
+}
+
+/**
+ * push 是否接纳该时间线 owner（关注 ∪ 共群 ∪ 本机被关注；denylist/信誉仍由 ingest 链处理）。
  * @param {string} username replica
  * @param {string} entityHash 时间线 owner
+ * @param {object | null | undefined} [event] 入站事件（follow 目标判定）
  * @returns {Promise<boolean>} 是否接纳
  */
-export async function isRemoteTimelinePushAdmitted(username, entityHash) {
+export async function isRemoteTimelinePushAdmitted(username, entityHash, event = null) {
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed) return false
 	if (await isFollowedByLocalEntities(username, parsed.entityHash)) return true
 	if (await isCoGroupMember(username, parsed.entityHash)) return true
+	if (await isFollowTargetingLocalEntity(username, event)) return true
 	return false
 }

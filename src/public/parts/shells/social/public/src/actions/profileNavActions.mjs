@@ -22,7 +22,6 @@ import {
 } from '../views/profile.mjs'
 
 import { closePostMoreMenus } from './shared.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 /**
  * 乐观隐藏作者帖子，失败回滚。
@@ -134,7 +133,7 @@ export async function handleProfileNavClick(target) {
 	const aliasButton = target.closest('[data-set-alias]')
 	if (aliasButton instanceof HTMLElement && aliasButton.dataset.setAlias) {
 		const entityHash = aliasButton.dataset.setAlias
-		const next = await promptText(geti18n('social.actions.setAliasPrompt'), aliasForEntity(entityHash) || '')
+		const next = await promptText('social.actions.setAliasPrompt', aliasForEntity(entityHash) || '')
 		if (next != null) {
 			await setEntityAlias(entityHash, next)
 			showToastI18n('success', 'social.actions.aliasSaved')

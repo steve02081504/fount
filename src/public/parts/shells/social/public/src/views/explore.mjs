@@ -86,7 +86,7 @@ export async function loadExplore() {
 				name: escapeHtml(account.name),
 				handle: escapeHtml(entityHandle(account.entityHash, account)),
 				avatarHtml: renderAvatarHtml(account.entityHash, { name: account.name, avatar: account.avatarUrl }, 'explore-account-avatar'),
-				bioHtml: account.bio ? '<div class="explore-account-bio" data-explore-bio></div>' : '',
+				bioHtml: account.bio ? '<div class="explore-account-bio" data-explore-bio user-content></div>' : '',
 			})
 			const bioHost = row.querySelector('[data-explore-bio]')
 			if (bioHost instanceof HTMLElement && account.bio)
@@ -113,7 +113,7 @@ export async function loadExplore() {
 		rememberEntityHandle(post.entityHash, post.authorProfile)
 		const timeHtml = formatTimeHtml(post.hlc?.wall)
 		const snippetHtml = post.textSnippet
-			? '<div class="explore-snippet" data-explore-snippet></div>'
+			? '<div class="explore-snippet" data-explore-snippet user-content></div>'
 			: post.mediaThumbs?.length
 				? '<p class="explore-snippet" data-i18n="social.profile.mediaOnly"></p>'
 				: ''

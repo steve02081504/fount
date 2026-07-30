@@ -37,4 +37,4 @@ Feed/profile/search cards (`openDetail !== false`) collapse markdown code `<deta
 
 - `templates/empty_state.html` via `lib/emptyState.mjs`. Snap feeds: `lib/snapCursorFeed.mjs`. Suggested accounts: `lib/suggestedAccounts.mjs`. Engagement: `templates/engagement_bar.html` + `lib/engagementBar.mjs`.
 - Governance optimistic UX: `socialWrite.mjs` + `runWrite` failure toasts.
-- **Download HTML**: post more menu → `exportHtml.mjs` → shared `markdown/standaloneDocument.mjs` (full offline document, including mediaRefs data URLs); same source as Chat message export.
+- **Download HTML**: post more menu → `exportHtml.mjs` → shared `markdown/standaloneDocument.mjs` (full offline document, including mediaRefs data URLs); same source as Chat message export. Saved filename follows the document `<title>`.

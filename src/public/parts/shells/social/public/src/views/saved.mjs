@@ -6,7 +6,6 @@ import { renderAvatarHtml } from '../lib/display.mjs'
 import { buildEmptyState } from '../lib/emptyState.mjs'
 import { runWrite } from '../lib/socialWrite.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 import { state } from '../state.mjs'
 
 /** @type {'all' | 'unfiled' | string} */
@@ -56,7 +55,7 @@ export async function openSaveModal(entityHash, postId, button) {
 	const modal = document.getElementById('saveModal')
 	const select = document.getElementById('saveFolderSelect')
 	if (!modal || !select) return
-	select.innerHTML = `<option value="">${escapeHtml(geti18n('social.saved.unfiled'))}</option>`
+	select.innerHTML = '<option value="" data-i18n="social.saved.unfiled"></option>'
 	if (modal instanceof HTMLDialogElement) modal.showModal()
 	else modal.classList.remove('hidden')
 	const savedData = await socialApi('/saved-posts').catch(() => ({ folders: {} }))
@@ -77,8 +76,8 @@ export async function confirmSaveModal() {
 	if (!state.pendingSave) return
 	const folderId = document.getElementById('saveFolderSelect')?.value || undefined
 	const { button } = state.pendingSave
-	const prevText = button.textContent
-	button.textContent = geti18n('social.actions.saved')
+	const restoreKey = button.dataset.i18n || 'social.actions.save'
+	button.dataset.i18n = 'social.actions.saved'
 	try {
 		await runWrite('save', () => socialApi('/saved-posts/add', {
 			method: 'POST',
@@ -91,7 +90,7 @@ export async function confirmSaveModal() {
 		closeSaveModal()
 	}
 	catch {
-		button.textContent = prevText
+		button.dataset.i18n = restoreKey
 	}
 }
 
@@ -116,34 +115,39 @@ function savedPreviewLabel(preview, postId) {
 /**
  * @param {object} ref 收藏引用
  * @param {string} [folderId] 文件夹
- * @param {string} [folderName] 文件夹名（搜索结果角标）
+ * @param {{ folderName?: string, folderNameI18n?: string }} [badge] 角标
  * @returns {HTMLElement} 行节点
  */
-function buildSavedRow(ref, folderId, folderName) {
+function buildSavedRow(ref, folderId, badge = {}) {
 	const actionKey = formatActionKey(ref.entityHash, ref.postId)
 	const author = savedAuthorLabel(ref.authorName, ref.entityHash)
 	const row = document.createElement('article')
 	row.className = 'list-row saved-row'
-	row.innerHTML = `
-		<a href="${escapeHtml(formatSocialProfileHref(ref.entityHash, ref.postId))}" class="saved-link flex-1 min-w-0">
-			${renderAvatarHtml(ref.entityHash, { name: author }, 'saved-row-avatar')}
-			<span class="saved-link-body">
-				<strong class="saved-author">${escapeHtml(author)}</strong>
-				<span class="saved-preview">${escapeHtml(savedPreviewLabel(ref.preview, ref.postId))}</span>
-				${folderName ? `<span class="badge badge-sm badge-ghost saved-folder-badge">${escapeHtml(folderName)}</span>` : ''}
-			</span>
-		</a>
-		<button type="button" class="btn btn-ghost btn-sm btn-circle saved-row-action" data-remove-saved="${escapeHtml(actionKey)}"${folderId ? ` data-saved-folder="${escapeHtml(folderId)}"` : ''} aria-label="${escapeHtml(geti18n('social.saved.remove'))}">
-			<span class="icon icon-bookmark-off" aria-hidden="true"></span>
-		</button>
-	`
+	const folderBadge = badge.folderNameI18n
+		? `<span class="badge badge-sm badge-ghost saved-folder-badge" data-i18n="${escapeHtml(badge.folderNameI18n)}"></span>`
+		: badge.folderName
+			? `<span class="badge badge-sm badge-ghost saved-folder-badge">${escapeHtml(badge.folderName)}</span>`
+			: ''
+	row.innerHTML = `\
+<a href="${escapeHtml(formatSocialProfileHref(ref.entityHash, ref.postId))}" class="saved-link flex-1 min-w-0">
+	${renderAvatarHtml(ref.entityHash, { name: author }, 'saved-row-avatar')}
+	<span class="saved-link-body">
+		<strong class="saved-author" user-content>${escapeHtml(author)}</strong>
+		<span class="saved-preview" user-content>${escapeHtml(savedPreviewLabel(ref.preview, ref.postId))}</span>
+		${folderBadge}
+	</span>
+</a>
+<button type="button" class="btn btn-ghost btn-sm btn-circle saved-row-action" data-remove-saved="${escapeHtml(actionKey)}"${folderId ? ` data-saved-folder="${escapeHtml(folderId)}"` : ''} data-i18n="social.saved.remove">
+	<span class="icon icon-bookmark-off" aria-hidden="true"></span>
+</button>
+`
 	return row
 }
 
 /**
- * @param {string} title 标题
+ * @param {string} title 标题（用户文件夹名；与 titleI18n 二选一）
  * @param {number} count 数量
- * @param {{ folderId?: string, emptyKey?: string }} [opts] 选项
+ * @param {{ folderId?: string, emptyKey?: string, titleI18n?: string }} [opts] 选项
  * @returns {HTMLElement} 分区
  */
 function buildSavedSection(title, count, opts = {}) {
@@ -152,20 +156,23 @@ function buildSavedSection(title, count, opts = {}) {
 	const actions = opts.folderId
 		? `
 			<div class="saved-folder-actions">
-				<button type="button" class="btn btn-ghost btn-sm btn-circle saved-icon-btn" data-rename-folder="${escapeHtml(opts.folderId)}" aria-label="${escapeHtml(geti18n('social.saved.renameFolder'))}" title="${escapeHtml(geti18n('social.saved.renameFolder'))}">
+				<button type="button" class="btn btn-ghost btn-sm btn-circle saved-icon-btn" data-rename-folder="${escapeHtml(opts.folderId)}" data-i18n="social.saved.renameFolder">
 					<span class="icon icon-edit" aria-hidden="true"></span>
 				</button>
-				<button type="button" class="btn btn-ghost btn-sm btn-circle text-error saved-icon-btn saved-icon-btn-danger" data-delete-folder="${escapeHtml(opts.folderId)}" aria-label="${escapeHtml(geti18n('social.saved.deleteFolder'))}" title="${escapeHtml(geti18n('social.saved.deleteFolder'))}">
+				<button type="button" class="btn btn-ghost btn-sm btn-circle text-error saved-icon-btn saved-icon-btn-danger" data-delete-folder="${escapeHtml(opts.folderId)}" data-i18n="social.saved.deleteFolder">
 					<span class="icon icon-delete" aria-hidden="true"></span>
 				</button>
 			</div>
 		`
 		: ''
+	const titleHtml = opts.titleI18n
+		? `<h3 class="saved-section-title" data-i18n="${escapeHtml(opts.titleI18n)}"></h3>`
+		: `<h3 class="saved-section-title">${escapeHtml(title)}</h3>`
 	section.innerHTML = `
 		<div class="saved-section-header">
 			<div class="saved-section-title-wrap">
 				<span class="icon ${opts.folderId ? 'icon-folder' : 'icon-bookmark'} saved-section-icon" aria-hidden="true"></span>
-				<h3 class="saved-section-title">${escapeHtml(title)}</h3>
+				${titleHtml}
 				<span class="badge badge-xs badge-ghost saved-count">${count}</span>
 			</div>
 			${actions}
@@ -176,7 +183,7 @@ function buildSavedSection(title, count, opts = {}) {
 	if (!count && opts.emptyKey) {
 		const empty = document.createElement('div')
 		empty.className = 'saved-section-empty'
-		empty.textContent = geti18n(opts.emptyKey)
+		empty.dataset.i18n = opts.emptyKey
 		list.appendChild(empty)
 	}
 	section.appendChild(list)
@@ -281,8 +288,8 @@ export async function renderSavedPanel() {
 	tabs.className = 'saved-folder-tabs tabs tabs-box tabs-sm flex-wrap px-4 pb-3 border-b border-base-300'
 	tabs.setAttribute('role', 'tablist')
 	const tabSpecs = [
-		{ id: 'all', label: geti18n('social.saved.all'), count: total },
-		{ id: 'unfiled', label: geti18n('social.saved.unfiled'), count: unfiled.length },
+		{ id: 'all', i18n: 'social.saved.all', count: total },
+		{ id: 'unfiled', i18n: 'social.saved.unfiled', count: unfiled.length },
 		...folderEntries.map(([folderId, folder]) => ({
 			id: folderId,
 			label: folder.name || folderId,
@@ -296,10 +303,14 @@ export async function renderSavedPanel() {
 		button.dataset.savedFilter = tab.id
 		button.setAttribute('role', 'tab')
 		button.setAttribute('aria-selected', savedFilter === tab.id ? 'true' : 'false')
-		button.innerHTML = `
-			<span class="saved-folder-tab-label">${escapeHtml(tab.label)}</span>
-			<span class="badge badge-sm badge-ghost saved-folder-tab-count">${tab.count}</span>
-		`
+		const label = document.createElement('span')
+		label.className = 'saved-folder-tab-label'
+		if (tab.i18n) label.dataset.i18n = tab.i18n
+		else label.textContent = tab.label
+		const count = document.createElement('span')
+		count.className = 'badge badge-sm badge-ghost saved-folder-tab-count'
+		count.textContent = String(tab.count)
+		button.append(label, count)
 		tabs.appendChild(button)
 	}
 	panel.appendChild(tabs)
@@ -311,26 +322,26 @@ export async function renderSavedPanel() {
 	/**
 	 * @param {object[]} refs 引用
 	 * @param {string | undefined} folderId 文件夹
-	 * @param {string} [folderName] 角标名
+	 * @param {{ folderName?: string, folderNameI18n?: string }} [badge] 角标
 	 * @returns {object[]} 过滤后
 	 */
-	const filterRefs = (refs, folderId, folderName) => {
+	const filterRefs = (refs, folderId, badge = {}) => {
 		const out = []
 		for (const ref of refs || []) {
 			if (!matchesSavedQuery(ref, query)) continue
-			out.push({ ref, folderId, folderName })
+			out.push({ ref, folderId, ...badge })
 		}
 		return out
 	}
 
 	if (query) {
-		/** @type {{ ref: object, folderId?: string, folderName?: string }[]} */
+		/** @type {{ ref: object, folderId?: string, folderName?: string, folderNameI18n?: string }[]} */
 		const hits = []
 		if (savedFilter === 'all' || savedFilter === 'unfiled')
-			hits.push(...filterRefs(unfiled, undefined, geti18n('social.saved.unfiled')))
+			hits.push(...filterRefs(unfiled, undefined, { folderNameI18n: 'social.saved.unfiled' }))
 		for (const [folderId, folder] of folderEntries) {
 			if (savedFilter !== 'all' && savedFilter !== folderId) continue
-			hits.push(...filterRefs(folder.posts, folderId, folder.name || folderId))
+			hits.push(...filterRefs(folder.posts, folderId, { folderName: folder.name || folderId }))
 		}
 		if (!hits.length) {
 			listHost.replaceChildren(await buildEmptyState({
@@ -341,18 +352,20 @@ export async function renderSavedPanel() {
 			return
 		}
 		for (const hit of hits)
-			listHost.appendChild(buildSavedRow(hit.ref, hit.folderId, savedFilter === 'all' ? hit.folderName : undefined))
+			listHost.appendChild(buildSavedRow(hit.ref, hit.folderId, savedFilter === 'all'
+				? { folderName: hit.folderName, folderNameI18n: hit.folderNameI18n }
+				: {}))
 		return
 	}
 
 	/**
-	 * @param {string} title 标题
 	 * @param {object[]} refs 引用
-	 * @param {{ folderId?: string }} [opts] 选项
+	 * @param {{ folderId?: string, title?: string, titleI18n?: string }} [opts] 选项
 	 */
-	const appendSection = (title, refs, opts = {}) => {
-		const section = buildSavedSection(title, refs.length, {
+	const appendSection = (refs, opts = {}) => {
+		const section = buildSavedSection(opts.title || '', refs.length, {
 			folderId: opts.folderId,
+			titleI18n: opts.titleI18n,
 			emptyKey: 'social.saved.folderEmpty',
 		})
 		const sectionList = section.querySelector('.saved-section-list')
@@ -363,19 +376,19 @@ export async function renderSavedPanel() {
 
 	if (savedFilter === 'all') {
 		for (const [folderId, folder] of folderEntries)
-			appendSection(folder.name || folderId, folder.posts || [], { folderId })
-		appendSection(geti18n('social.saved.unfiled'), unfiled)
+			appendSection(folder.posts || [], { folderId, title: folder.name || folderId })
+		appendSection(unfiled, { titleI18n: 'social.saved.unfiled' })
 		return
 	}
 
 	if (savedFilter === 'unfiled') {
-		appendSection(geti18n('social.saved.unfiled'), unfiled)
+		appendSection(unfiled, { titleI18n: 'social.saved.unfiled' })
 		return
 	}
 
 	const folder = folders[savedFilter]
 	if (folder)
-		appendSection(folder.name || savedFilter, folder.posts || [], { folderId: savedFilter })
+		appendSection(folder.posts || [], { folderId: savedFilter, title: folder.name || savedFilter })
 }
 
 /**
@@ -384,12 +397,6 @@ export async function renderSavedPanel() {
  */
 export async function loadSaved() {
 	bindSavedSearch()
-	const createButton = document.getElementById('createFolderButton')
-	if (createButton) {
-		const label = geti18n('social.saved.createFolder')
-		createButton.setAttribute('aria-label', label)
-		createButton.setAttribute('title', label)
-	}
 	const data = await socialApi('/saved-posts')
 	savedCache = data
 	state.savedFoldersCache = data.folders || {}

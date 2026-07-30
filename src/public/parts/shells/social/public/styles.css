@@ -577,6 +577,10 @@
 	cursor: pointer;
 }
 
+.search-clear-btn:empty::before {
+	content: '×';
+}
+
 .feed-trending {
 	padding: 0.85rem 1rem;
 }
@@ -732,6 +736,10 @@
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+}
+
+.author-avatar.hash-avatar:has(.hash-avatar-img.is-loaded) .hash-avatar-letter {
+	visibility: hidden;
 }
 
 .author-avatar.profile-avatar {
@@ -1850,11 +1858,11 @@
 	white-space: normal;
 }
 
-.explore-snippet.markdown-body > :first-child {
+.explore-snippet.markdown-body> :first-child {
 	margin-top: 0;
 }
 
-.explore-snippet.markdown-body > :last-child {
+.explore-snippet.markdown-body> :last-child {
 	margin-bottom: 0;
 }
 

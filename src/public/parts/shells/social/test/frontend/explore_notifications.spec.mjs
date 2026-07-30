@@ -148,7 +148,7 @@ test.describe('Social secondary views', () => {
 		}).first()
 		await expect(card).toBeVisible({ timeout: 20_000 })
 		await expect(card).toHaveAttribute('data-actor-count', '2')
-		await expect(card.locator('.notification-type')).toContainText('和')
+		await expect(card.locator('.notification-type[data-i18n="social.inbox.aggregated.likeTwo"]')).toBeVisible()
 	})
 
 	test('notification snippet is visible on inbox card', async ({ page, publishPost, baseUrl, apiKey }) => {
@@ -241,10 +241,11 @@ test.describe('Social secondary views', () => {
 		await expect(postCard.locator('.explore-snippet')).not.toContainText('## ExploreMd')
 		const avatar = postCard.locator('.explore-post-avatar').first()
 		await expect(avatar).toBeVisible()
-		const letterCount = await avatar.locator('.hash-avatar-letter').count()
-		const imgCount = await avatar.locator('img.hash-avatar-img').count()
-		if (imgCount > 0)
-			expect(letterCount).toBe(0)
+		const img = avatar.locator('img.hash-avatar-img')
+		if (await img.count() > 0) {
+			await expect(img).toHaveClass(/is-loaded/, { timeout: 10_000 })
+			await expect(avatar.locator('.hash-avatar-letter')).toBeHidden()
+		}
 	})
 
 	test('explore post link opens profile', async ({ page, publishPost }) => {

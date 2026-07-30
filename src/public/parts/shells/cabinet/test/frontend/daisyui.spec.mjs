@@ -38,7 +38,7 @@ test.describe('Cabinet DaisyUI chrome', () => {
 		const menu = page.locator('#contextMenu[role="menu"]')
 		await expect(menu).toBeVisible({ timeout: 10_000 })
 		await expect(menu.locator('hr').first()).toBeVisible()
-		await menu.getByRole('menuitem').filter({ hasText: /重命名|Rename/i }).click()
+		await menu.locator('[data-i18n="cabinet.rename"]').click()
 		const dialog = page.locator('dialog.modal[open]')
 		await expect(dialog).toBeVisible({ timeout: 10_000 })
 		await expect(dialog.locator('.modal-box')).toBeVisible()

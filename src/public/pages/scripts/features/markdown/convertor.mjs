@@ -399,7 +399,7 @@ function rehypeMermaid({ securityLevel = 'loose' } = {}) {
 				parent.children.splice(index, 1, ...svgHast)
 			} catch (error) {
 				console.error('Mermaid diagram render failed:', error)
-				const fallback = h('pre.mermaid-error-fallback', `\
+				const fallback = h('pre.mermaid-error-fallback', { tabIndex: 0 }, `\
 ❌ Mermaid Diagram Failed to Render
 Error: ${error.message}
 --- Diagram Source ---

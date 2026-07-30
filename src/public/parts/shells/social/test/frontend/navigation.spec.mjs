@@ -60,7 +60,7 @@ test.describe('Social navigation', () => {
 		await expect(page.locator('#composer')).toBeHidden()
 		const empty = page.locator('#videosView .empty-state--video')
 		if (await empty.isVisible()) {
-			await expect(page.locator('#videosView .empty-state-title')).toHaveText('暂无短视频')
+			await expect(page.locator('#videosView .empty-state-title[data-i18n="social.video.empty"]')).toBeVisible()
 			await page.locator('#videosView [data-video-compose]').click()
 		}
 		else

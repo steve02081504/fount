@@ -161,7 +161,7 @@ export function formatTimeHtml(ts, className = 'post-meta', tag = 'span', extraA
 export async function renderQuoteBlockHtml(quoteRef) {
 	if (!quoteRef?.entityHash || !quoteRef?.postId) return ''
 	const snippetHtml = quoteRef.text
-		? `<p class="quote-snippet">${escapeHtml(quoteRef.text.slice(0, 200))}${quoteRef.text.length > 200 ? '…' : ''}</p>`
+		? `<p class="quote-snippet" user-content>${escapeHtml(quoteRef.text.slice(0, 200))}${quoteRef.text.length > 200 ? '…' : ''}</p>`
 		: ''
 	return renderTemplateAsHtmlString('quote_block', {
 		href: escapeHtml(formatSocialPostHref(quoteRef.entityHash, quoteRef.postId)),

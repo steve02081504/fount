@@ -2276,6 +2276,18 @@ log)
 	;;
 test)
 	shift
+	original_title=$(get_title)
+	set_title '𝒻ℴ𝓊𝓃𝓉 𝓽𝓮𝓼𝓽'
+	test_exit=0
+	# shellcheck disable=SC2329
+	test_cleanup() {
+		set_title "$original_title"
+		if [ "$test_exit" -eq 0 ]; then
+			write_taskbar_progress_clear
+		fi
+		taskbar_progress_enabled && printf '\007'
+	}
+	trap 'test_cleanup' EXIT
 	# macOS: caffeinate -w $$ 随 shell 退出；Linux: inhibit 直接包 deno（函数不能做 argv[0]）
 	if [ -z "${FOUNT_TEST_ALLOW_SLEEP:-}" ]; then
 		if command -v caffeinate >/dev/null 2>&1; then
@@ -2292,11 +2304,13 @@ test)
 			systemd-inhibit --what=idle:sleep:handle-lid-switch --who=fount-test \
 				--why='fount test running' --mode=block \
 				"${deno_argv[@]}" run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/scripts/test/cli.mjs" "$@"
-			exit $?
+			test_exit=$?
+			exit $test_exit
 		fi
 	fi
 	run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/scripts/test/cli.mjs" "$@"
-	exit $?
+	test_exit=$?
+	exit $test_exit
 	;;
 debug)
 	trap 'write_taskbar_progress_clear' EXIT INT TERM

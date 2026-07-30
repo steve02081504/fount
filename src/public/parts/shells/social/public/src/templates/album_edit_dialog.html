@@ -1,5 +1,5 @@
 <div class="modal-box album-edit-dialog">
-	<h3 class="font-bold text-lg">${title}</h3>
+	<h3 class="font-bold text-lg" data-i18n="${titleI18n}"></h3>
 	<label class="form-control">
 		<span class="label-text" data-i18n="social.profile.albums.name"></span>
 		<input type="text" class="input input-bordered" data-album-name value="${name}" />
@@ -14,6 +14,6 @@
 	</div>
 	<div class="modal-action">
 		<form method="dialog"><button class="btn btn-ghost" data-i18n="social.profile.albums.cancel"></button></form>
-		<button type="button" class="btn btn-primary" data-album-submit>${submitLabel}</button>
+		<button type="button" class="btn btn-primary" data-album-submit data-i18n="${submitI18n}"></button>
 	</div>
 </div>

@@ -4,8 +4,6 @@ import { rememberEntityHandle } from '../lib/display.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state } from '../state.mjs'
 import { activateView } from '../viewChrome.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 import { renderRepliesPanel } from './replies.mjs'
 
@@ -28,7 +26,7 @@ export async function loadPostDetail(entityHash, postId) {
 
 	const container = document.getElementById('postDetailView')
 	if (!container) return
-	container.innerHTML = `<div class="post-detail-loading">${escapeHtml(geti18n('social.post.loading'))}</div>`
+	container.innerHTML = '<div class="post-detail-loading" data-i18n="social.post.loading"></div>'
 
 	let data
 	try {
@@ -37,11 +35,11 @@ export async function loadPostDetail(entityHash, postId) {
 	catch (error) {
 		const msg = String(error?.message || '')
 		const key = /post not found/i.test(msg) ? 'social.post.notFound' : 'social.post.loadFailed'
-		container.innerHTML = `<div class="empty">${escapeHtml(geti18n(key))}</div>`
+		container.innerHTML = `<div class="empty" data-i18n="${key}"></div>`
 		return
 	}
 	if (!data?.item) {
-		container.innerHTML = `<div class="empty">${escapeHtml(geti18n('social.post.notFound'))}</div>`
+		container.innerHTML = '<div class="empty" data-i18n="social.post.notFound"></div>'
 		return
 	}
 
@@ -59,8 +57,8 @@ export async function loadPostDetail(entityHash, postId) {
 	const header = document.createElement('header')
 	header.className = 'view-header post-detail-header'
 	header.innerHTML = `
-		<button type="button" class="btn btn-ghost btn-sm" data-post-detail-back>${escapeHtml(geti18n('social.post.back'))}</button>
-		<h2 class="view-title">${escapeHtml(geti18n('social.post.detailTitle'))}</h2>
+		<button type="button" class="btn btn-ghost btn-sm" data-post-detail-back data-i18n="social.post.back"></button>
+		<h2 class="view-title" data-i18n="social.post.detailTitle"></h2>
 	`
 	header.querySelector('[data-post-detail-back]')?.addEventListener('click', () => {
 		history.back()

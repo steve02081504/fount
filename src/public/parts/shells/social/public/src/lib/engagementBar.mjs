@@ -1,5 +1,4 @@
 import { renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 /**
  * 从 feed item / reply 组装互动栏模板数据。
@@ -16,12 +15,8 @@ export function engagementBarTemplateData(item, actionKey) {
 		dislikedClass: disliked ? ' disliked' : '',
 		likedFlag: liked ? '1' : '0',
 		dislikedFlag: disliked ? '1' : '0',
-		likeLabel: liked ? geti18n('social.actions.unlike') : geti18n('social.actions.like'),
-		dislikeLabel: disliked ? geti18n('social.actions.undislike') : geti18n('social.actions.dislike'),
-		replyLabel: geti18n('social.actions.replies'),
-		repostLabel: geti18n('social.actions.repost'),
-		saveLabel: geti18n('social.actions.save'),
-		shareLabel: geti18n('social.actions.share'),
+		likeI18n: liked ? 'social.actions.unlike' : 'social.actions.like',
+		dislikeI18n: disliked ? 'social.actions.undislike' : 'social.actions.dislike',
 		likeCount: item.likeCount || 0,
 		dislikeCount: item.dislikeCount || 0,
 		repostCount: item.repostCount || 0,

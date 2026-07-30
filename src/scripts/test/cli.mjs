@@ -10,7 +10,6 @@ import 'fount/scripts/test/env.mjs'
 import process from 'node:process'
 
 import { geti18n } from '../i18n/bare.mjs'
-import { ms } from '../ms.mjs'
 
 import {
 	listManifestIds,
@@ -18,6 +17,7 @@ import {
 	resolveManifestSelectors,
 } from './core/manifest.mjs'
 import { parseArgsOrExit } from './core/parse_args_or_exit.mjs'
+import { finishTestProgress } from './core/progress.mjs'
 import { REPO_ROOT } from './core/repo_root.mjs'
 import { isBareSuiteContinuation, resolveSelector } from './core/selector.mjs'
 import { runTests } from './runner/index.mjs'
@@ -121,14 +121,17 @@ process.exit(await (async () => {
 		process.exit(2)
 	}
 
-	const runStarted = Date.now()
-	const exitCode = await runTests({
-		runAll: values.all,
-		noParallel: values['no-parallel'],
-		force: values.force,
-		groups: parsed.groups,
-	})
-	if (Date.now() - runStarted > ms('5m'))
-		process.stdout.write('\x07\x07\x07')
+	let exitCode = 1
+	try {
+		exitCode = await runTests({
+			runAll: values.all,
+			noParallel: values['no-parallel'],
+			force: values.force,
+			groups: parsed.groups,
+		})
+	}
+	finally {
+		finishTestProgress(exitCode)
+	}
 	return exitCode
 })())

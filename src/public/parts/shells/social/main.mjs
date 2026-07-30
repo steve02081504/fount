@@ -52,7 +52,7 @@ async function handleEntityKeyRotated(payload) {
 async function handleTimelinePut(username, data) {
 	const entityHash = data.timelineEntityHash.toLowerCase()
 	if (!parseEntityHash(entityHash)) throw new Error('invalid_timeline_put')
-	if (!await isRemoteTimelinePushAdmitted(username, entityHash))
+	if (!await isRemoteTimelinePushAdmitted(username, entityHash, data.event))
 		return { result: { ok: false } }
 	const ok = await ingestRemoteTimelineEvent(username, entityHash, data.event)
 	return { result: { ok } }
@@ -120,6 +120,9 @@ export default {
 			[EMOJI_PACK_OFFERS_KIND]: localAuthorPackOffersHandler,
 		})
 		setEndpoints(router)
+		const { registerEntityPackAvailabilityChecker } = await import('../chat/src/emojiAvailability.mjs')
+		const { isEntityPackAvailableToUser } = await import('./src/emojiPacks.mjs')
+		registerEntityPackAvailabilityChecker(isEntityPackAvailableToUser)
 		const { bootstrapPollDeadlineWatchers } = await import('./src/lib/pollDeadlineWatcher.mjs')
 		void bootstrapPollDeadlineWatchers()
 		const { bootstrapScheduledPostWatchers } = await import('./src/lib/scheduledPostWatcher.mjs')

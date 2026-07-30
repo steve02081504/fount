@@ -45,6 +45,11 @@ export function isTimelineEventVisibleForFederation(event, ownerEntityHash, requ
 
 	if (type === 'social_meta') return !requesterContext.hideFromDiscovery
 
+	if (type === 'emoji_pack_upsert' || type === 'emoji_pack_delete') {
+		if (requesterContext.isOwner || requesterContext.followsOwner) return true
+		return String(event.content?.visibility || 'followers') === 'public'
+	}
+
 	if (type === 'post' || type === 'repost')
 		return canViewPost(
 			{ entityHash: ownerEntityHash, content: event.content },

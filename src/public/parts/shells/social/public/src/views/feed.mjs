@@ -181,16 +181,15 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 				link.textContent = `#${row.tag}`
 				const count = document.createElement('span')
 				count.className = 'trending-count'
-				count.textContent = String(row.count)
+				count.dataset.n = String(row.count)
+				count.dataset.i18n = 'social.feed.trending.postCount'
 				link.appendChild(count)
-				link.dataset.n = String(row.count)
-				link.dataset.i18n = 'social.feed.trending.postCount'
 				list.appendChild(link)
 			}
 		aside.appendChild(list)
 	}
 
-	if (trendingCache)
+	if (trendingCache?.length)
 		await paint(trendingCache)
 
 	if (!trendingInFlight)
@@ -204,15 +203,20 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 				trendingInFlight = null
 			})
 	const nearbyPromise = trendingInFlight
-
-	if (!trendingCache) {
-		const local = await socialApi('/hashtags/trending?limit=12&scope=local').catch(() => ({ tags: [] }))
-		await paint(local.tags || [])
-	}
+	const localPromise = !trendingCache?.length
+		? socialApi('/hashtags/trending?limit=12&scope=local').catch(() => ({ tags: [] }))
+		: null
 
 	const nearbyTags = await nearbyPromise
-	if (nearbyTags)
+	if (nearbyTags?.length) {
 		await paint(nearbyTags)
+		return
+	}
+
+	if (localPromise) {
+		const local = await localPromise
+		await paint(local.tags || [])
+	}
 }
 
 /**

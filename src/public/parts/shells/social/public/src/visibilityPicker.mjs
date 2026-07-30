@@ -1,4 +1,3 @@
-import { geti18n } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 /** UI 档位选项 */
@@ -71,7 +70,7 @@ export function renderVisibilityPickerHtml(options = {}) {
 	const selected = options.selected || 'public'
 	const idPrefix = options.idPrefix || ''
 	const optionHtml = VISIBILITY_OPTIONS.map(opt =>
-		`<option value="${opt.value}"${opt.value === selected ? ' selected' : ''}>${escapeHtml(geti18n(opt.i18n))}</option>`,
+		`<option value="${opt.value}"${opt.value === selected ? ' selected' : ''} data-i18n="${opt.i18n}"></option>`,
 	).join('')
 	const showAllow = selected === 'selected' ? '' : ' hidden'
 	const showExcept = ['public', 'unlisted', 'followers', 'followers_7d', 'followers_30d'].includes(selected) ? '' : ' hidden'
@@ -81,10 +80,10 @@ export function renderVisibilityPickerHtml(options = {}) {
 				${optionHtml}
 			</select>
 			<input data-visibility-allow type="text" class="input input-bordered input-sm visibility-allow${showAllow}"
-				placeholder="${escapeHtml(geti18n('social.composer.visibility.allow.placeholder'))}"
+				data-i18n="social.composer.visibility.allow"
 				value="${escapeHtml(options.allow || '')}" />
 			<input data-visibility-except type="text" class="input input-bordered input-sm visibility-except${showExcept}"
-				placeholder="${escapeHtml(geti18n('social.composer.visibility.except.placeholder'))}"
+				data-i18n="social.composer.visibility.except"
 				value="${escapeHtml(options.except || '')}" />
 		</div>
 	`
