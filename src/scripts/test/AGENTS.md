@@ -34,7 +34,7 @@ Host keep-awake / sleep interrupts: [docs/host-keep-awake.md](docs/host-keep-awa
 | `live/` | Real fount node + HTTP/WS |
 | `frontend/` | Playwright (`playwright/`) |
 | `sim/` | In-process simulation harness |
-| `checks/` | Repo static health (`checks` manifest under `src/scripts/checks/`): HTML meta/landmarks/`drawer-toggle`/aside ARIA; parts `locales.json` / `achievements_registry.json` info + remote icon URL; **i18n key structure** (`checks:i18n_keys` — no Suffix/Prefix affix keys, no ≥4 flat camelCase siblings sharing a prefix, no `xxx1`-style numbered keys). Formerly `.esh/commands/verify-meta.py` / `verify-info.py`. |
+| `checks/` | Repo static health (`checks` manifest under `src/scripts/checks/`): HTML meta/landmarks/`drawer-toggle`/aside ARIA; parts `locales.json` / `achievements_registry.json` info + remote icon URL; **i18n key structure** (`checks:i18n_keys` — no Suffix/Prefix affix keys, no ≥4 flat camelCase siblings sharing a prefix, no `xxx1`-style numbered keys). Prefix-nest **writeback** of locale JSON: `.esh/commands/reshape_i18n_keys.py` (Python only — JS stringify reorders numeric keys like `404`). Formerly `.esh/commands/verify-meta.py` / `verify-info.py`. |
 
 **Frontend**: fixtures, browser binary, network noise, i18n-missing / a11y / locale-script hard-fail, GitHub Pages — [playwright.md](docs/playwright.md). Prefer `[data-i18n]` selectors over locale-specific copy. Drive locale via `setLanguage` / `loadLocaleData` — do not fetch `/api/getlocaledata` from tests.
 

@@ -6,6 +6,23 @@ import { join, relative } from 'node:path'
 
 import createIgnore from 'npm:ignore'
 
+import I18N_REWRITE_EXCLUDE_PREFIXES from './i18n_rewrite_exclude_prefixes.json' with { type: 'json' }
+
+/** 两遍 i18n 键改写共享的源码后缀。 */
+export const I18N_REWRITE_SUFFIXES = Object.freeze([
+	'.mjs', '.js', '.ts', '.html', '.ps1', '.py',
+])
+
+/**
+ * i18n 改写应跳过的相对路径。
+ * @param {string} relativePath 相对仓库根、正斜杠
+ * @returns {boolean} 应跳过则为 true
+ */
+export function isI18nRewriteExcluded(relativePath) {
+	return I18N_REWRITE_EXCLUDE_PREFIXES.some(prefix =>
+		relativePath.startsWith(prefix) || `/${relativePath}`.includes(`/${prefix}`))
+}
+
 /**
  * 加载仓库根的 .gitignore 为 ignore 过滤器。
  * @param {string} repoRoot 仓库根绝对路径
@@ -45,11 +62,12 @@ export async function listRepoFiles(repoRoot, suffixes, options = {}) {
 		for (const ent of await readdir(dir, { withFileTypes: true })) {
 			const abs = join(dir, ent.name)
 			const rel = relative(repoRoot, abs).replaceAll('\\', '/')
-			if (filter.ignores(rel)) continue
 			if (ent.isDirectory()) {
+				if (filter.ignores(`${rel}/`)) continue
 				await walk(abs)
 				continue
 			}
+			if (filter.ignores(rel)) continue
 			if (suffixes.some(suffix => rel.endsWith(suffix)))
 				out.push(rel)
 		}

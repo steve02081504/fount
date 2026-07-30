@@ -15,6 +15,7 @@ import {
 	decapitalize,
 	findPrefixClusters,
 	nestAllPrefixClusters,
+	nestAllPrefixClustersWithMap,
 	scanI18nKeyStructure,
 } from '../i18n_keys.mjs'
 
@@ -42,14 +43,14 @@ Deno.test('scan catches affix / numbered / prefix_cluster', () => {
 		tabAudit: 'a',
 		tabEmojis: 'e',
 		tabAdvanced: 'v',
-		'404': { title: 'ok' },
+		404: { title: 'ok' },
 	})
-	assert(issues.some(i => i.kind === 'affix' && i.path.includes('packGroupSuffix')))
-	assert(issues.some(i => i.kind === 'affix' && i.message.includes(AFFIX_HINT)))
-	assert(issues.some(i => i.kind === 'numbered' && i.path.includes('item1')))
-	assert(issues.some(i => i.kind === 'prefix_cluster' && i.message.includes('tabs:')))
-	assert(issues.every(i => i.message.includes(UPDATE_LOCALE_DATA_HINT)))
-	assert(!issues.some(i => i.path === '404' || i.path.startsWith('404.')))
+	assert(issues.some(keyIssue => keyIssue.kind === 'affix' && keyIssue.path.includes('packGroupSuffix')))
+	assert(issues.some(keyIssue => keyIssue.kind === 'affix' && keyIssue.message.includes(AFFIX_HINT)))
+	assert(issues.some(keyIssue => keyIssue.kind === 'numbered' && keyIssue.path.includes('item1')))
+	assert(issues.some(keyIssue => keyIssue.kind === 'prefix_cluster' && keyIssue.message.includes('tabs:')))
+	assert(issues.every(keyIssue => keyIssue.message.includes(UPDATE_LOCALE_DATA_HINT)))
+	assert(!issues.some(keyIssue => keyIssue.path === '404' || keyIssue.path.startsWith('404.')))
 })
 
 Deno.test('nestAllPrefixClusters nests tab* into tabs', () => {
@@ -91,12 +92,57 @@ Deno.test('nestAllPrefixClusters folds prefix leaf into main and uses Items on c
 	assertEquals(scanI18nKeyStructure(status), [])
 })
 
+Deno.test('nestAllPrefixClustersWithMap records old→new paths', () => {
+	const removing = {
+		removingFount: 'base',
+		removingFountInstallationDir: 'dir',
+		removingFountFromPath: 'path',
+		removingFountFromGitSafeDir: 'git',
+		removingFountPwshFromProfile: 'pwsh',
+	}
+	/** @type {Map<string, string>} */
+	const removingMap = new Map()
+	nestAllPrefixClustersWithMap(removing, '', removingMap)
+	assertEquals(removingMap.get('removingFount'), 'removingFount.main')
+	assertEquals(removingMap.get('removingFountInstallationDir'), 'removingFount.installationDir')
+	assertEquals(removing.removingFount.main, 'base')
+
+	const status = {
+		status: { online: '在线', dnd: '勿扰' },
+		statusOnline: { title: '在线' },
+		statusIdle: { title: '离开' },
+		statusDnd: { title: '勿扰' },
+		statusOffline: { title: '离线' },
+	}
+	/** @type {Map<string, string>} */
+	const statusMap = new Map()
+	nestAllPrefixClustersWithMap(status, '', statusMap)
+	assertEquals(statusMap.get('statusOnline'), 'statusItems.online')
+	assertEquals(status.statusItems.online, { title: '在线' })
+	assertEquals(scanI18nKeyStructure(status), [])
+
+	const nested = {
+		parent: {
+			tabMembers: 'm',
+			tabAudit: 'a',
+			tabEmojis: 'e',
+			tabAdvanced: 'v',
+		},
+	}
+	/** @type {Map<string, string>} */
+	const nestedMap = new Map()
+	nestAllPrefixClustersWithMap(nested, '', nestedMap)
+	assertEquals(nestedMap.get('parent.tabMembers'), 'parent.tabs.members')
+	assertEquals(nested.parent.tabs.members, 'm')
+	assertEquals(scanI18nKeyStructure(nested), [])
+})
+
 Deno.test('zh-CN.json passes i18n key structure rules', async () => {
 	const data = JSON.parse(await readFile(join(REPO_ROOT, 'src/public/locales/zh-CN.json'), 'utf8'))
 	const issues = scanI18nKeyStructure(data)
 	assertEquals(
-		issues.map(i => `[${i.kind}] ${i.path}: ${i.message}`),
+		issues.map(keyIssue => `[${keyIssue.kind}] ${keyIssue.path}: ${keyIssue.message}`),
 		[],
-		issues.map(i => `[${i.kind}] ${i.path}: ${i.message}`).join('\n'),
+		issues.map(keyIssue => `[${keyIssue.kind}] ${keyIssue.path}: ${keyIssue.message}`).join('\n'),
 	)
 })

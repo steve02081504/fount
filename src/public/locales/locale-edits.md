@@ -12,16 +12,6 @@ Scan sibling keys under each object in `zh-CN.json` (structure is the contract f
 
 Always move keys with `.esh/commands/update_locale_data.py` (below) — never hand-edit every locale JSON.
 
-Bulk nest / call-site rewrite helpers (after large structural changes): `src/scripts/checks/tools/reshape_i18n_keys.mjs` and `rewrite_i18n_exact_pass.mjs`.
-
-`reshape_i18n_keys.mjs` only nests prefix clusters by default. Pass a throwaway JSON map for one-shot semantic renames (same idea as `update_locale_data.py` `@script.py`):
-
-```text
-deno run --allow-scripts --allow-all -c deno.json src/scripts/checks/tools/reshape_i18n_keys.mjs tmp_renames.json
-```
-
-`tmp_renames.json` shape: `{ "old.key.path": "new.key.path", ... }`. Do not bake that table into the tool. Output of a run lands in `data/test/i18n_key_rename_map.json` for `rewrite_i18n_exact_pass.mjs`.
-
 ## Moving keys
 
 Use `.esh/commands/update_locale_data.py` — **move with `get(old)` → `set(new, value)` → `set(old, None)`** so each locale keeps its existing copy.
@@ -29,6 +19,19 @@ Use `.esh/commands/update_locale_data.py` — **move with `get(old)` → `set(ne
 Never delete then refill from zh-CN: `fake` / `emoji` and other non-Google targets collapse to Chinese.
 
 When updating call sites, rewrite only quoted i18n key strings — do not blind-replace `profile.xxx` object fields or module paths.
+
+**写回 locale JSON 只用 Python**（`update_locale_data.py` / `update-locales.py` / `reshape_i18n_keys.py`）。JS `JSON.stringify` 会把纯数字键（如 `"404"`）排到对象最前，打乱键序。
+
+## Prefix nest reshape
+
+同级 ≥4 个驼峰共享前缀时，用：
+
+```text
+python .esh/commands/reshape_i18n_keys.py
+python .esh/commands/reshape_i18n_keys.py path/to/extra_renames.json
+```
+
+会嵌套全部 locale、写出 `data/test/i18n_key_rename_map.json`，并改写仓库内引号中的旧键。第二遍 exact 补洞仍可用 `src/scripts/checks/tools/rewrite_i18n_exact_pass.mjs`（只改源码，不写 locale）。
 
 ## Reshape string → `{ title, aria-label }`
 

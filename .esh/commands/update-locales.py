@@ -1327,11 +1327,11 @@ def run_synchronization_loop(all_data, languages, ref_path):
 	mode = f"并发 ({len(other_paths)} 线程)" if IN_GITHUB_ACTIONS and len(other_paths) > 1 else "串行"
 	print(f"\n--- 开始同步内容和结构 (locales)，模式: {mode}，参考: {ref_lang} ---")
 
-	for i in range(1, MAX_SYNC_ITERATIONS + 1):
+	for synchronization_iteration in range(1, MAX_SYNC_ITERATIONS + 1):
 		if is_translation_aborted():
 			print("\n翻译已中止，结束内容同步循环。")
 			break
-		print(f"\n--- 同步迭代轮次 {i}/{MAX_SYNC_ITERATIONS} ---")
+		print(f"\n--- 同步迭代轮次 {synchronization_iteration}/{MAX_SYNC_ITERATIONS} ---")
 
 		def sync_one(other_path):
 			# 深拷贝参考数据：并发时各线程只改自己的目标语言树，避免竞态
@@ -1348,7 +1348,7 @@ def run_synchronization_loop(all_data, languages, ref_path):
 		if not changes_in_iter:
 			print("\n内容同步完成，本轮无更改。")
 			break
-		elif i == MAX_SYNC_ITERATIONS:
+		elif synchronization_iteration == MAX_SYNC_ITERATIONS:
 			print("\n警告：达到最大同步迭代次数，内容可能未完全收敛。")
 
 
@@ -1438,6 +1438,27 @@ def generate_locale_data_ts(ref_data, output_path):
 			return key
 		return f"'{key}'"
 
+	def merge_locale_values_for_type(values):
+		"""Merge locale values so later entries contribute fields/element types."""
+		if all(isinstance(value, str) for value in values):
+			return values[0]
+		if all(isinstance(value, (OrderedDict, dict)) for value in values):
+			merged = OrderedDict()
+			for value in values:
+				for key, child in value.items():
+					if key not in merged:
+						merged[key] = child
+					else:
+						merged[key] = merge_locale_values_for_type([merged[key], child])
+			return merged
+		if all(isinstance(value, list) for value in values):
+			merged_elements = []
+			for value in values:
+				merged_elements.extend(value)
+			return merged_elements
+		types = ", ".join(type(value).__name__ for value in values)
+		raise TypeError(f"Cannot merge mixed or unsupported locale value types: {types}")
+
 	def generate_ts_type_recursive(data, indent_level):
 		"""Recursively generates a TypeScript type string from a dictionary."""
 		parts = ["{"]
@@ -1453,37 +1474,41 @@ def generate_locale_data_ts(ref_data, output_path):
 		parts.append("\t" * (indent_level - 1) + "}")
 		return "\n".join(parts)
 
-	def generate_ts_array_type(arr, indent_level):
-		"""Infer a TypeScript array type from a locale list value."""
-		if not arr:
+	def generate_ts_array_type(array_values, indent_level):
+		"""Infer a TypeScript array type from every locale list element."""
+		if not array_values:
 			return "unknown[]"
-		if all(isinstance(x, str) for x in arr):
+		if all(isinstance(element, str) for element in array_values):
 			return "string[]"
-		if all(isinstance(x, (OrderedDict, dict)) for x in arr):
-			return f"Array<{generate_ts_type_recursive(arr[0], indent_level + 1)}>"
-		if all(isinstance(x, list) for x in arr):
-			return f"Array<{generate_ts_array_type(arr[0], indent_level)}>"
-		return "unknown[]"
+		if all(isinstance(element, (OrderedDict, dict)) for element in array_values):
+			merged_object = merge_locale_values_for_type(array_values)
+			return f"Array<{generate_ts_type_recursive(merged_object, indent_level + 1)}>"
+		if all(isinstance(element, list) for element in array_values):
+			nested_elements = []
+			for element in array_values:
+				nested_elements.extend(element)
+			return f"Array<{generate_ts_array_type(nested_elements, indent_level)}>"
+		types = ", ".join(type(element).__name__ for element in array_values)
+		raise TypeError(f"Cannot merge mixed or unsupported locale value types: {types}")
+
+	def merge_placeholder_maps(target, source):
+		for path, placeholders in source.items():
+			target[path] = sorted(set(target.get(path, [])) | set(placeholders))
 
 	def collect_placeholder_keys_recursive(data, prefix=""):
 		"""Recursively finds all keys that have string values with placeholders."""
 		keys = {}
+		# Arrays are not Paths-compatible placeholder keys; skip `${number}` paths.
 		if isinstance(data, list):
-			for index, item in enumerate(data):
-				path = f"{prefix}.{index}" if prefix else str(index)
-				if isinstance(item, (OrderedDict, dict, list)):
-					keys.update(collect_placeholder_keys_recursive(item, path))
-				elif isinstance(item, str):
-					placeholders = extract_placeholders(item)
-					if placeholders:
-						keys[path] = sorted(list(set(placeholders)))
 			return keys
 		if not isinstance(data, (OrderedDict, dict)):
 			return keys
 		for key, value in data.items():
 			path = f"{prefix}.{key}" if prefix else key
-			if isinstance(value, (OrderedDict, dict, list)):
-				keys.update(collect_placeholder_keys_recursive(value, path))
+			if isinstance(value, list):
+				continue
+			if isinstance(value, (OrderedDict, dict)):
+				merge_placeholder_maps(keys, collect_placeholder_keys_recursive(value, path))
 			elif isinstance(value, str):
 				placeholders = extract_placeholders(value)
 				if placeholders:
@@ -1513,8 +1538,8 @@ type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ...0[]]
 
 type Paths<T, D extends number = 8> = [D] extends [never]
 	? never
-	: T extends readonly unknown[]
-		? ''
+	: T extends readonly (infer ArrayElement)[]
+		? `${{number}}` | Join<`${{number}}`, Paths<ArrayElement, Prev[D]>>
 		: T extends object
 		? {{ [K in keyof T]-?: K extends string | number
 			? `${{K}}` | Join<K, Paths<T[K], Prev[D]>>
@@ -1570,189 +1595,6 @@ export type LocaleKeyWithoutParams = Exclude<LocaleKey, LocaleKeyWithParams>
 
 	except Exception as e:
 		print(f"  - Error: Failed to write to {output_path}: {e}")
-
-
-
-# --- 主逻辑辅助函数 ---
-def load_single_locale_file(filepath):
-	"""Loads a single locale file and returns its data."""
-	lang = get_lang_from_filename(filepath)
-	if not lang:
-		print(f"  - 警告: 无法从 '{os.path.basename(filepath)}' 提取语言代码，跳过。")
-		return None
-	try:
-		with open(filepath, "r", encoding="utf-8") as f:
-			data = loads_locale_json(f.read())
-		if not isinstance(data, OrderedDict):
-			print(f"  - 警告: 文件 {os.path.basename(filepath)} 根部不是对象，跳过。")
-			return None
-		print(f"  - 已加载: {os.path.basename(filepath)} ({lang})")
-		return filepath, lang, data
-	except Exception as e:
-		print(f"  - 错误: 加载或解析 {os.path.basename(filepath)} 失败: {e}。跳过。")
-		return None
-
-
-def load_locale_files():
-	"""从 LOCALE_DIR 并行加载所有 .json 文件（一文件一线程）。"""
-	if not os.path.isdir(LOCALE_DIR):
-		print(f"错误: 目录 '{LOCALE_DIR}' 不存在。")
-		sys.exit(1)
-
-	all_data, languages, lang_to_path = OrderedDict(), {}, {}
-	filepaths = [os.path.join(LOCALE_DIR, filename) for filename in sorted(os.listdir(LOCALE_DIR)) if filename.endswith(".json")]
-	print(f"加载本地化文件 ({len(filepaths)} 个，并行)...")
-
-	with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, len(filepaths))) as executor:
-		results = list(executor.map(load_single_locale_file, filepaths))
-
-	for result in results:
-		if result:
-			filepath, lang, data = result
-			all_data[filepath] = data
-			languages[filepath] = lang
-			if lang in lang_to_path:
-				print(f"  - 警告: 语言代码 '{lang}' 重复。将使用后加载的文件 '{os.path.basename(filepath)}'。")
-			lang_to_path[lang] = filepath
-
-	if not all_data:
-		print("未找到或加载任何有效的本地化文件。")
-		sys.exit(1)
-	return all_data, languages, lang_to_path
-
-
-def find_reference_language(lang_to_path, all_data, languages):
-	"""根据优先级列表确定参考语言和路径。"""
-	for lang_code in REFERENCE_LANG_CODES:
-		if lang_code in lang_to_path:
-			ref_path = lang_to_path[lang_code]
-			print(f"\n找到优先参考语言文件: {os.path.basename(ref_path)} ({lang_code})")
-			return ref_path, lang_code
-
-	first_path = next(iter(all_data.keys()))
-	ref_lang = languages[first_path]
-	print(f"\n警告: 未找到配置的参考语言。使用第一个加载的文件 '{os.path.basename(first_path)}' ({ref_lang}) 作为参考。")
-	return first_path, ref_lang
-
-
-def run_synchronization_loop(all_data, languages, ref_path):
-	"""
-	将各语言与参考语言对齐；以参考语言为唯一真相源。
-	GitHub Actions 下按语言并发（一语言一线程）；本地串行。
-	"""
-	if len(all_data) < 2:
-		print("文件少于两个，跳过内容同步。")
-		return
-
-	ref_lang = languages[ref_path]
-	other_paths = sorted(p for p in all_data if p != ref_path)
-	# 并发路径只改目标语言；参考语言根字段在此串行校正
-	if all_data[ref_path].get("lang") != ref_lang:
-		all_data[ref_path]["lang"] = ref_lang
-
-	mode = f"并发 ({len(other_paths)} 线程)" if IN_GITHUB_ACTIONS and len(other_paths) > 1 else "串行"
-	print(f"\n--- 开始同步内容和结构 (locales)，模式: {mode}，参考: {ref_lang} ---")
-
-	for i in range(1, MAX_SYNC_ITERATIONS + 1):
-		if is_translation_aborted():
-			print("\n翻译已中止，结束内容同步循环。")
-			break
-		print(f"\n--- 同步迭代轮次 {i}/{MAX_SYNC_ITERATIONS} ---")
-
-		def sync_one(other_path):
-			# 深拷贝参考数据：并发时各线程只改自己的目标语言树，避免竞态
-			ref_copy = copy.deepcopy(all_data[ref_path])
-			lang_b = languages[other_path]
-			print(f"  ↔ 同步 {ref_lang} → {lang_b}")
-			return normalize_and_sync_dicts(ref_copy, all_data[other_path], ref_lang, lang_b, REFERENCE_LANG_CODES)
-
-		changes_in_iter = any(run_per_lang(sync_one, other_paths))
-
-		if is_translation_aborted():
-			print("\n翻译已中止，结束内容同步循环。")
-			break
-		if not changes_in_iter:
-			print("\n内容同步完成，本轮无更改。")
-			break
-		elif i == MAX_SYNC_ITERATIONS:
-			print("\n警告：达到最大同步迭代次数，内容可能未完全收敛。")
-
-
-def save_locale_files(all_data, ref_path):
-	"""根据参考文件对所有文件进行排序并保存，仅在内容更改时写入。"""
-	if ref_path not in all_data:
-		print(f"\n错误: 参考文件 '{os.path.basename(ref_path)}' 丢失，无法排序。")
-		if not all_data:
-			print("无数据可保存。")
-			return
-		ref_path = next(iter(all_data.keys()))
-		print(f"将使用 '{os.path.basename(ref_path)}' 作为新的排序参考。")
-
-	print(f"\n--- 开始根据参考文件 '{os.path.basename(ref_path)}' 排序并保存所有文件 ---")
-	ref_data = all_data[ref_path]
-	# First, reorder all data in memory
-	for filepath, data in all_data.items():
-		all_data[filepath] = reorder_keys_like_reference(data, ref_data)
-
-	# Then, iterate and save if changed
-	for filepath, ordered_data in sorted(all_data.items()):
-		try:
-			# 1. Generate new content as a string
-			new_content_str = json.dumps(ordered_data, ensure_ascii=False, indent="\t", default=str) + "\n"
-
-			# 2. Read old content if file exists
-			old_content_str = ""
-			if os.path.exists(filepath):
-				try:
-					with open(filepath, "r", encoding="utf-8") as f:
-						old_content_str = f.read()
-				except Exception as e:
-					print(f"  - 警告: 无法读取现有文件 {os.path.basename(filepath)} 进行比较: {e}")
-					# Force save if reading fails
-					old_content_str = ""
-
-			# 3. Compare and write only if different
-			if old_content_str != new_content_str:
-				with open(filepath, "w", encoding="utf-8", newline="\n", errors="replace") as f:
-					f.write(new_content_str)
-				print(f"  - 已保存 (已修改): {os.path.basename(filepath)}")
-		except Exception as e:
-			print(f"  - 错误: 保存 {os.path.basename(filepath)} 时出错: {e}")
-
-
-def generate_list_csv(all_data):
-	"""Generates list.csv from all loaded locale data."""
-	print("\n--- Generating list.csv ---")
-	csv_path = os.path.join(LOCALE_DIR, "list.csv")
-
-	header = "lang,name\n"
-	rows = []
-
-	lang_data = {}
-	for file_path, data in all_data.items():
-		lang_code_from_file = get_lang_from_filename(file_path)
-		lang = data.get("lang", lang_code_from_file)
-		if lang != lang_code_from_file:
-			print(f"  - Warning: lang in {os.path.basename(file_path)} ('{lang}') differs from filename ('{lang_code_from_file}'). Using filename.")
-			lang = lang_code_from_file
-		name = data.get("name")
-		if lang and name:
-			lang_data[lang] = name
-		else:
-			print(f"  - Warning: Missing 'lang' or 'name' in {os.path.basename(file_path)}. Skipping.")
-
-	sorted_langs = sorted(lang_data.keys())
-	for lang in sorted_langs:
-		rows.append(f"{lang},{lang_data[lang]}\n")
-
-	try:
-		with open(csv_path, "w", encoding="utf-8", newline="") as f:
-			f.write(header)
-			f.writelines(rows)
-		print(f"  - Successfully generated list.csv with {len(rows)} entries.")
-	except Exception as e:
-		print(f"  - Error: Failed to write to {csv_path}: {e}")
-
 
 
 # --- 主逻辑 (重构后) ---
