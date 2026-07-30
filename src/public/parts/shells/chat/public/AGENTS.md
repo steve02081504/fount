@@ -28,7 +28,7 @@ Less-common entity traps (`member_join`, avatars, Load reentrancy, session tip f
 
 ## Private state (per-entity)
 
-Root: `{userDict}/shells/chat/entities/{entityHash}/` — bookmarks, folders, aliases, read markers, notify prefs, care via `ChatClient.*` / matching `lib/*`. Emoji usage/collection：用户级 shellData `emoji_usage`。Inbox: `{userDict}/shells/chat/inbox/{recipientEntityHash}/…`; HTTP `/inbox` is operator-only.
+Root: `{userDict}/shells/chat/entities/{entityHash}/` — bookmarks, folders, aliases, read markers, notify prefs, care via `ChatClient.*` / matching `lib/*`. Emoji usage/collection: user-level shellData `emoji_usage`. Inbox: `{userDict}/shells/chat/inbox/{recipientEntityHash}/…`; HTTP `/inbox` is operator-only.
 
 ## Files
 

@@ -8,15 +8,19 @@
  */
 import { geti18n, promptI18n } from '../../../../scripts/i18n/index.mjs'
 
-import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
-import { positionContextMenu } from './core/positionContextMenu.mjs'
+import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
+import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null
+/** @type {(ReturnType<typeof bindDismissOnDocumentInteraction>) | null} */
+let menuDismissClose = null
 
 /** 关闭已打开的文件夹菜单。 @returns {void} */
 export function dismissFolderContextMenu() {
+	menuDismissClose?.unbind()
+	menuDismissClose = null
 	if (!openMenuElement) return
 	openMenuElement.remove()
 	openMenuElement = null
@@ -96,5 +100,5 @@ export function showFolderContextMenu(event, folderIndex) {
 	positionContextMenu(menu, { x: event.clientX, y: event.clientY, minWidth: '9rem', maxWidth: 200 })
 	openMenuElement = menu
 
-	bindDismissOnDocumentInteraction(dismissFolderContextMenu)
+	menuDismissClose = bindDismissOnDocumentInteraction(dismissFolderContextMenu)
 }

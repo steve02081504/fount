@@ -143,7 +143,9 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 			try {
 				const { openImageEditor } = await import('/scripts/imageEditor/index.mjs')
 				const blob = base64ToBlob(file.buffer, file.mime_type)
-				const edited = await openImageEditor(new File([blob], file.name, { type: file.mime_type }))
+				const edited = await openImageEditor(new File([blob], file.name, { type: file.mime_type }), {
+					titleI18n: 'chat.hub.editImage',
+				})
 				if (!edited) return
 				file.buffer = arrayBufferToBase64(await edited.arrayBuffer())
 				file.name = edited.name

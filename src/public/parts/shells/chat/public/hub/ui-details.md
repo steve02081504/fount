@@ -28,7 +28,7 @@ Day-to-day rules: [AGENTS.md](AGENTS.md).
 ## Message shortcuts / composer
 
 - Shift → action bar download/delete. Drag non-body → `messageDragExport.mjs`. Char timeline: bubble swipe/arrow (`chatGestures.mjs`).
-- HTML export (download / share / copy HTML / drag): `messages/exportHtml.mjs` → `scripts/features/markdown/standaloneDocument.mjs` (full offline document + group attachment data URLs); do not emit bare Markdown fragments alone.
+- HTML export (download / share / copy HTML / drag): `messages/exportHtml.mjs` → `scripts/features/markdown/standaloneDocument.mjs` (full offline document + group attachment data URLs); do not emit bare Markdown fragments alone. Download / drag-to-desktop filenames follow the exported document `<title>`.
 - Composer disable: `disabled` only when surface CSS hides the input. Visible disabled: object-key `{ placeholder }` i18n — string keys write `innerHTML` into textarea.
 - Optimistic `pending:…`: no chain writes until `isDagEventId`. On WS confirm with `composerPendingId`, `applyIncomingMessage*` must `pipeline.refresh()`.
 
@@ -40,7 +40,7 @@ Bind/unbind and `role_access` changes require `ADMIN`/`MANAGE_ADMINS` (`POST …
 
 - Unread: `channel.messageSeq` − per-entity `readMarkers.json`. Hub: `hub/unread.mjs`. Open channel → mark read immediately. After long awaits in `selectGroup`, re-read channel from `parseHash()`.
 - Inbox: `{userDict}/shells/chat/inbox/{recipientEntityHash}/`. Skip `content.type === 'call'`. Syntax `@[entity:<128hex>]`. API operator-only; agents via `getChatClient(…, agentHash).inbox`.
-- Aliases: warm `loadAliases()` before render. Set-alias UI: `shared/promptText.mjs`, never `window.prompt`. Names: `shared/nameResolve.mjs`. `@id`: `formatEntityAtId`. Deep links: `#group:@{alias}:{channelId}` via `parseHash`.
+- Aliases: warm `loadAliases()` before render. Set-alias UI: `/scripts/features/promptDialog.mjs`, never `window.prompt`. Names: `shared/nameResolve.mjs`. `@id`: `formatEntityAtId`. Deep links: `#group:@{alias}:{channelId}` via `parseHash`.
 
 ## Message extras
 

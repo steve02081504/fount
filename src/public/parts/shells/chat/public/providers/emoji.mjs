@@ -43,13 +43,12 @@ async function fetchAvailablePacks(context = {}) {
 }
 
 /**
- * 群默认 packId：显式设置优先，否则回落 groupId（与 emojiCollectionLogic 同语义）。
+ * 群默认 pack：API 已 resolve 的 defaultEmojiPackId 与 packId 对齐。
  * @param {object} pack pack 摘要
  * @returns {boolean} 是否为该群默认包
  */
 function isDefaultGroupPack(pack) {
-	const defaultId = String(pack.defaultEmojiPackId || '').trim() || String(pack.groupId || '').trim()
-	return !!defaultId && defaultId === pack.packId
+	return Boolean(pack?.packId && pack.defaultEmojiPackId === pack.packId)
 }
 
 /**

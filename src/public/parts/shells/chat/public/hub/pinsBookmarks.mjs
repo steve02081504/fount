@@ -12,7 +12,7 @@ import { getGroupState } from '../src/api/groupCore.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { setPinsBookmarksWrapVisible, refreshChannelPinsBar } from './banners.mjs'
-import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
+import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { store } from './core/state.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
 import { pinPreviewTemplateFields, resolvePinMessagePreview } from './messages/pinPreview.mjs'

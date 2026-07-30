@@ -7,14 +7,14 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { isCared, setCared } from '../shared/care.mjs'
-import { promptText } from '../shared/promptText.mjs'
+import { promptText } from '/scripts/features/promptDialog.mjs'
 import { getGroupState } from '../src/api/groupCore.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 
 import { refreshAliasDependentUi } from './aliasUi.mjs'
 import { pickBanScope } from './banScopePicker.mjs'
-import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
-import { positionContextMenu } from './core/positionContextMenu.mjs'
+import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
+import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
 import { dispatchFriendChat } from './friendChat.mjs'
 import { insertComposerMention } from './mentionAutocomplete.mjs'
@@ -102,10 +102,10 @@ export async function showMemberContextMenu(event, memberElement) {
 	menu.querySelector('.member-menu-alias')?.addEventListener('click', () => {
 		void (async () => {
 			if (!entityHash) return
-			const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
 			const next = await promptText(
-				geti18n('chat.hub.memberContext.setAliasPrompt', { name: displayName }),
+				'chat.hub.memberContext.setAliasPrompt',
 				aliasForEntity(entityHash),
+				{ name: displayName },
 			)
 			if (next == null) return
 			await setEntityAlias(entityHash, next)

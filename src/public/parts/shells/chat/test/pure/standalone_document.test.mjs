@@ -2,13 +2,16 @@
  * standaloneDocument：完整离线 HTML 包装（OG / DaisyUI / github-markdown-css / 附件）。
  */
 /* global Deno */
-import { assert, assertStringIncludes } from 'jsr:@std/assert'
+import { assert, assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
 import { installMarkdownTestDom } from './markdown_test_dom.mjs'
 
 installMarkdownTestDom()
 
-const { wrapStandaloneMarkdownDocument } = await import('../../../../../pages/scripts/features/markdown/standaloneDocument.mjs')
+const {
+	fileNameFromHtmlTitle,
+	wrapStandaloneMarkdownDocument,
+} = await import('../../../../../pages/scripts/features/markdown/standaloneDocument.mjs')
 
 Deno.test('wrapStandaloneMarkdownDocument emits full document shell', () => {
 	const html = wrapStandaloneMarkdownDocument('<h1>Hello</h1><p>world body</p>', {
@@ -33,6 +36,17 @@ Deno.test('wrapStandaloneMarkdownDocument uses first heading of any level as tit
 	)
 	assertStringIncludes(html, '<title>🎯 ZL-31 多格式渲染压力测试</title>')
 	assert(!html.includes('<title>🎯 ZL-31 多格式渲染压力测试 这是一段'), 'title must not spill into body text')
+})
+
+Deno.test('fileNameFromHtmlTitle uses document title and sanitizes path chars', () => {
+	const html = wrapStandaloneMarkdownDocument(
+		'<h2>a/b:c&lt;d&gt;</h2><p>body</p>',
+	)
+	assertEquals(fileNameFromHtmlTitle(html), 'a_b_c_d_.html')
+})
+
+Deno.test('fileNameFromHtmlTitle falls back when title missing', () => {
+	assertEquals(fileNameFromHtmlTitle('<html><body></body></html>'), 'export.html')
 })
 
 Deno.test('wrapStandaloneMarkdownDocument embeds image attachment + modal', () => {

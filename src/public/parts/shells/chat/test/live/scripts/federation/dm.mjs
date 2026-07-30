@@ -16,6 +16,7 @@ import {
 	RootApi,
 	testCase,
 	WaitFedMembers,
+	WarmupFedNodeLinks,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
 
@@ -149,11 +150,12 @@ await testCase('lower-pubkey node POST template=dm', async () => {
 })
 
 console.log('\n=== 2. Peer joins DM (intro + room creds) ===')
+await WarmupFedNodeLinks([creator, joiner])
 await testCase('invite-ticket room creds on creator', async () => {
 	const inv = await Api(creator, 'POST', `/groups/${gid}/invite-ticket`, { ttlMs: ms('1h') })
 	if (inv.status !== 201 && inv.status !== 200) throw new Error(`invite ${inv.status}`)
 	dmInv = inv.json
-	return Boolean(dmInv?.roomSecret)
+	return Boolean(dmInv?.roomSecret && dmInv?.introducerNodeHash)
 })
 
 await testCase('peer join with dmIntro proof', async () => {
@@ -163,7 +165,7 @@ await testCase('peer join with dmIntro proof', async () => {
 			signalingAppId: dmInv.signalingAppId,
 			dmSessionTag: dmInv.dmSessionTag,
 			introducerPubKeyHash: intro.pubKeyHex,
-			introducerNodeHash: creatorPub,
+			introducerNodeHash: dmInv.introducerNodeHash,
 			dmIntroNonce: intro.dmIntroNonce,
 			dmIntroSignatureHex: intro.dmIntroSignatureHex,
 		})
@@ -173,7 +175,7 @@ await testCase('peer join with dmIntro proof', async () => {
 	}, 120, 4)
 	if (!joined) throw new Error('join did not return 200')
 	if (joined.json?.defaultChannelId) cid = joined.json.defaultChannelId
-	return pollUntil(async () => {
+	const channelsReady = await pollUntil(async () => {
 		await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('6s') })
 		await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('6s') })
 		await Api(joiner, 'POST', `/groups/${gid}/dag/merge-tips`, {})
@@ -187,6 +189,8 @@ await testCase('peer join with dmIntro proof', async () => {
 		}
 		return Object.keys(st.json.meta?.channels ?? {}).length >= 1
 	}, 180, 4)
+	if (!channelsReady) throw new Error('joiner channels not materialized after DM join')
+	return true
 })
 
 console.log('\n=== 3. Federation health gate ===')

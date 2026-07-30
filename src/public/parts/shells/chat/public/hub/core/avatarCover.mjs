@@ -36,14 +36,16 @@ export function paintHashAvatarHost(host, { seed, label, letterId, letterClass =
 
 /**
  * 在 hash 占位基础上应用 profile.avatar（URL 图 / 表情文本；加载失败回退字母）。
+ * `label` 只用于字母占位；图旁通常已有显示名，默认空 alt，避免 image-redundant-alt。
  * @param {HTMLElement} host 圆形容器
- * @param {{ seed?: string, label?: string, avatar?: string | null, emojiFontSize?: string, letterId?: string, letterClass?: string }} options 绘制选项
+ * @param {{ seed?: string, label?: string, alt?: string, avatar?: string | null, emojiFontSize?: string, letterId?: string, letterClass?: string }} options 绘制选项
  * @returns {Promise<void>}
  */
 export async function applyProfileAvatarToHost(host, options) {
 	const {
 		seed,
 		label,
+		alt = '',
 		avatar,
 		emojiFontSize = '20px',
 		letterId,
@@ -56,7 +58,7 @@ export async function applyProfileAvatarToHost(host, options) {
 	if (isAvatarImageUrl(avatarVal)) {
 		const img = document.createElement('img')
 		img.src = avatarVal
-		img.alt = String(label || '')
+		img.alt = String(alt)
 		img.setAttribute('svg-inliner-ignore', '')
 		if (!img.alt) img.role = 'presentation'
 		img.style.cssText = 'width:100%;height:100%;object-fit:cover;'

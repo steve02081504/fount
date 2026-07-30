@@ -14,9 +14,9 @@ import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
 import { isDagEventId } from '../../src/lib/eventId.mjs'
 import { createShareLink } from '../../src/share.mjs'
 import { setReplyTarget } from '../composerReply.mjs'
-import { bindDismissOnDocumentInteraction } from '../core/contextMenuDismiss.mjs'
+import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { authorPresentationKeys } from '../core/domUtils.mjs'
-import { positionContextMenu } from '../core/positionContextMenu.mjs'
+import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from '../core/state.mjs'
 import { openThread } from '../threadDrawer.mjs'
 
@@ -52,7 +52,7 @@ async function copyMessageText(message, row) {
  * @returns {Promise<void>}
  */
 async function exportMessageHtml(message, row) {
-	await downloadMessageHtml(message, row, `message-${message.eventId || 'export'}.html`)
+	await downloadMessageHtml(message, row)
 }
 
 /**
