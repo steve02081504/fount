@@ -15,15 +15,15 @@ import {
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { aliasForGroup, setGroupAlias } from '../shared/aliases.mjs'
-import { promptText } from '../shared/promptText.mjs'
+import { promptText } from '/scripts/features/promptDialog.mjs'
 import { groupRequest } from '../src/api/groupClient.mjs'
 import { createGroupInvite, leaveGroups } from '../src/api/groupCore.mjs'
 import { buildInviteJoinShareUrl } from '../src/inviteQr.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
-import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
+import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { groupDisplayName } from './core/domUtils.mjs'
-import { positionContextMenu } from './core/positionContextMenu.mjs'
+import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
 import { clearGroupSelection, contextMenuTargetGroupIds } from './groupSelection.mjs'
 import { openGroupNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
@@ -34,9 +34,13 @@ import { closeGroupWebSocket } from './stream/index.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null
+/** @type {(ReturnType<typeof bindDismissOnDocumentInteraction>) | null} */
+let menuDismissClose = null
 
 /** 关闭已打开的群操作菜单。 @returns {void} */
 export function dismissGroupActionMenu() {
+	menuDismissClose?.unbind()
+	menuDismissClose = null
 	if (!openMenuElement) return
 	openMenuElement.remove()
 	openMenuElement = null
@@ -196,7 +200,7 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 	positionContextMenu(menu, { x: left, y: top, maxWidth: 200 })
 	openMenuElement = menu
 
-	bindDismissOnDocumentInteraction(dismissGroupActionMenu)
+	menuDismissClose = bindDismissOnDocumentInteraction(dismissGroupActionMenu)
 
 	menu.querySelector('.group-menu-manage')?.addEventListener('click', () => {
 		dismissGroupActionMenu()
@@ -235,10 +239,10 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 	menu.querySelector('.group-menu-alias')?.addEventListener('click', () => {
 		dismissGroupActionMenu()
 		void (async () => {
-			const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
 			const next = await promptText(
-				geti18n('chat.hub.groupContext.setAliasPrompt', { name: groupName }),
+				'chat.hub.groupContext.setAliasPrompt',
 				aliasForGroup(groupId),
+				{ name: groupName },
 			)
 			if (next == null) return
 			await setGroupAlias(groupId, next)

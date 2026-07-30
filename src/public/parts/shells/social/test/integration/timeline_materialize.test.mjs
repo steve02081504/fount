@@ -114,6 +114,18 @@ Deno.test('updateSocialMeta patches hideFromDiscovery', async () => {
 	await socialMeta.updateSocialMeta(username, operator, { hideFromDiscovery: false })
 })
 
+Deno.test('updateSocialMeta patches defaultEmojiPackId alone', async () => {
+	const { username, operator } = await getSession()
+	const meta = await socialMeta.updateSocialMeta(username, operator, {
+		defaultEmojiPackId: 'pack_solo',
+	})
+	assertEquals(meta.defaultEmojiPackId, 'pack_solo')
+	const cleared = await socialMeta.updateSocialMeta(username, operator, {
+		defaultEmojiPackId: null,
+	})
+	assertEquals(cleared.defaultEmojiPackId, null)
+})
+
 Deno.test('getEntityProfile returns profile for operator', async () => {
 	const { username, operator } = await getSession()
 	const profile = await entityProfile.getEntityProfile(username, operator)

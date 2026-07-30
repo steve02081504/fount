@@ -91,12 +91,12 @@ function createFakeDiscordClient(options = {}) {
 					/**
 					 * @returns {Promise<void>} noop
 					 */
-					kick: async () => {},
+					kick: async () => { },
 				},
 				/**
 				 * @returns {Promise<void>} noop
 				 */
-				leave: async () => {},
+				leave: async () => { },
 				invites: {
 					/**
 					 * @returns {Promise<object>} 空邀请集合

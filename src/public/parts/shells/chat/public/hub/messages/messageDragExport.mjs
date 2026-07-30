@@ -4,6 +4,8 @@
  * 【原理】对齐旧 chat：非正文区 mousedown 才 draggable；mousedown 预生成 HTML Blob；
  *   mouseup / mouseleave / dragend 取消 draggable；Blob 在拖拽结束或未拖拽松开时回收。
  */
+import { fileNameFromHtmlTitle } from '../../../../../scripts/features/markdown/standaloneDocument.mjs'
+
 import { generateMessageStandaloneHtml } from './exportHtml.mjs'
 import { findContextMessage, getChannelMessageActionsContext } from './messageActionsState.mjs'
 import { getMessageText } from './render/text.mjs'
@@ -23,7 +25,7 @@ const NO_DRAG_SELECTOR = [
 ].join(', ')
 
 /**
- * @typedef {{ url: string, markdown: string, htmlSnippet: string }} DragPayload
+ * @typedef {{ url: string, fileName: string, markdown: string, htmlSnippet: string }} DragPayload
  */
 
 /** @type {WeakMap<HTMLElement, DragPayload>} */
@@ -61,6 +63,7 @@ async function prepareDragPayload(row) {
 	clearDragPayload(row)
 	dragPayloads.set(row, {
 		url: URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' })),
+		fileName: fileNameFromHtmlTitle(html),
 		markdown,
 		htmlSnippet: contentEl?.innerHTML || '',
 	})
@@ -149,13 +152,14 @@ export function bindMessageDragExport(container) {
 
 		// HTML Blob 未就绪时退化为同步 markdown 文件，保证拖到桌面总能落盘
 		const useHtml = !!payload?.url
-		const fileName = useHtml ? `message-${eventId}.html` : `message-${eventId}.md`
+		const fileName = useHtml ? payload.fileName : `message-${eventId}.md`
 		const mime = useHtml ? 'text/html' : 'text/markdown'
 		let blobUrl = payload?.url
 		if (!blobUrl) {
 			blobUrl = URL.createObjectURL(new Blob([markdown], { type: 'text/markdown;charset=utf-8' }))
 			dragPayloads.set(row, {
 				url: blobUrl,
+				fileName,
 				markdown,
 				htmlSnippet: contentEl?.innerHTML || '',
 			})

@@ -106,11 +106,11 @@ export function registerWsRoutes(router) {
 				if (handleClientWsControlFrame(wireMessage)) return
 				if (wireMessage.type === 'typing') {
 					void (async () => {
-						const { recordChannelTyping } = await import('../chat/bridge/typing.mjs')
+						const { recordVirtualBridgeTyping } = await import('../chat/bridge/typing.mjs')
 						const { resolveOperatorEntityHash } = await import('../chat/lib/replica.mjs')
 						const entityHash = await resolveOperatorEntityHash(username)
 						if (entityHash)
-							recordChannelTyping(username, groupId, String(wireMessage.payload?.channelId || 'default'), entityHash)
+							recordVirtualBridgeTyping(username, groupId, String(wireMessage.payload?.channelId || 'default'), entityHash)
 					})()
 					return
 				}

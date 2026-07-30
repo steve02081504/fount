@@ -155,8 +155,13 @@
 	gap: 8px;
 	padding: 8px 10px;
 	margin: 8px;
+	width: calc(100% - 16px);
+	border: 0;
 	background: var(--overlay-subtle);
 	border-radius: var(--radius-md);
+	color: inherit;
+	font: inherit;
+	text-align: start;
 	cursor: pointer;
 	transition: background 0.12s ease;
 	flex-shrink: 0;

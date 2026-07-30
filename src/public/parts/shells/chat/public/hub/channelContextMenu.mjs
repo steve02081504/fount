@@ -20,8 +20,8 @@ import {
 import { getGroupState } from '../src/api/groupCore.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
-import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
-import { positionContextMenu } from './core/positionContextMenu.mjs'
+import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
+import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
 import { openChannelNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { renderHubChannelSidebar, selectChannel } from './sidebar/index.mjs'

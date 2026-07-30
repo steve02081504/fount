@@ -58,13 +58,13 @@ export async function generateMessageStandaloneHtml(message, row = null, options
 }
 
 /**
- * 下载消息为独立 HTML。
+ * 下载消息为独立 HTML（文件名取自文档 `<title>`）。
  * @param {object | null | undefined} message 消息
  * @param {HTMLElement | null} [row] DOM 行
- * @param {string} [fileName] 文件名
+ * @param {string} [fileName] 覆盖文件名；省略则用 title
  * @returns {Promise<void>}
  */
 export async function downloadMessageHtml(message, row = null, fileName) {
 	const html = await generateMessageStandaloneHtml(message, row)
-	downloadHtmlDocument(html, fileName || `message-${message?.eventId || 'export'}.html`)
+	downloadHtmlDocument(html, fileName)
 }

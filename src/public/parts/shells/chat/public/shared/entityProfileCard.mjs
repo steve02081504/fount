@@ -137,10 +137,9 @@ export function configureEntityProfileCard(root, mode = 'popup') {
 	}
 	if (mode === 'popup') return
 	root.querySelector('[data-profile-popup-close]')?.remove()
-	if (mode === 'preview' || mode === 'embedded') 
+	if (mode === 'preview' || mode === 'embedded')
 		for (const button of root.querySelectorAll('[data-profile-popup-edit], [data-profile-popup-care], [data-profile-popup-alias], [data-profile-popup-dm], [data-profile-popup-social]'))
 			button.remove()
-	
 }
 
 /**
@@ -279,10 +278,12 @@ export async function paintEntityProfileBio(bioElement, markdown, entityHash = '
 	if (!text) {
 		bioElement.replaceChildren()
 		bioElement.classList.remove('markdown-body')
+		bioElement.removeAttribute('user-content')
 		bioElement.dataset.i18n = emptyI18n
 		return
 	}
 	delete bioElement.dataset.i18n
+	bioElement.setAttribute('user-content', '')
 	await mountTrustedMarkdown(bioElement, text, entityHash, {
 		selfEntityHash: options.selfEntityHash,
 		nodeHash: options.nodeHash,

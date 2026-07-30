@@ -442,7 +442,7 @@ async function pickAndLoadInitialFile() {
 async function setDefaultIfFirstFile(fileName) {
 	try {
 		await setDefaultPart(currentServiceSourcePath, fileName)
-		(defaultParts[currentServiceSourcePath] ||= []).push(fileName)
+		; (defaultParts[currentServiceSourcePath] ||= []).push(fileName)
 		unlockAchievement('shells/serviceSourceManage', 'set_default_aisource')
 		updateDefaultPartDisplay()
 	}

@@ -1,15 +1,15 @@
 /**
  * 为 LLM / 读屏路径解析 emoji alt 文本；发帖时把 name/alt 别名改成规范 emojiId。
  */
-import { pickLocalizedSlice } from '../../../../../../scripts/i18n/locale_match.mjs'
-import { localesForUser } from '../../../../../../scripts/locale.mjs'
+import { pickLocalizedSlice } from '../../../../../scripts/i18n/locale_match.mjs'
+import { localesForUser } from '../../../../../scripts/locale.mjs'
 import {
 	buildEmojiAliasIndex,
 	degradeEmojiTokensToAlt,
 	EMOJI_TOKEN_RE,
 	resolveEmojiIdFromAlias,
 	rewriteEmojiAliasesInText,
-} from '../../public/shared/inlineTokenSyntax.mjs'
+} from '../public/shared/inlineTokenSyntax.mjs'
 
 import { findPackAcrossEntities } from './entity/entityEmojis.mjs'
 import { findPackAcrossGroups } from './group/groupEmojis.mjs'

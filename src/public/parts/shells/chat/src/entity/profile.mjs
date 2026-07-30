@@ -205,12 +205,6 @@ export function computeEffectiveStatus(profile, viewerEntityHash, options = {}) 
 }
 
 /**
- * @param {string} entityHash 128 位 entityHash
- * @param {string | null} [replicaUsername] 展示默认字段用
- * @param {{ groupId?: string, skipPresentation?: boolean, locales?: string[], infoDefaults?: object }} [options] 选项
- * @returns {Promise<object>} 资料对象
- */
-/**
  * 远端实体：经 EVFS 拉签名 profile 落盘（显式路径用；带负缓存）。
  * @param {string} replicaUsername replica
  * @param {string} entityHash 128 hex
@@ -279,7 +273,9 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
 		if (replicaUsername)
 			await publishStaticProfile(replicaUsername, parsed.entityHash, stored).catch(() => { })
 	}
-	else if (options.fetchRemote && replicaUsername) {
+
+	if (!isWritableLocalEntity(parsed.entityHash) && options.fetchRemote && replicaUsername) {
+		remoteProfileNegativeCache.delete(parsed.entityHash)
 		const remote = await fetchAndCacheRemoteProfile(replicaUsername, parsed.entityHash)
 		if (remote) stored = remote
 	}
@@ -434,7 +430,16 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 		|| updates.sfw_banner !== undefined
 		|| updates.defaultEmojiPackId !== undefined
 	if (staticTouched)
-		await publishStaticProfile(replicaUsername, entityHash, updatedProfile).catch(() => { })
+		await publishStaticProfile(replicaUsername, entityHash, updatedProfile)
+
+	if (updates.defaultEmojiPackId !== undefined) {
+		const { ensureEntitySocialReady } = await import('../../../social/src/lib/bootstrap.mjs')
+		const { updateSocialMeta } = await import('../../../social/src/socialMeta.mjs')
+		await ensureEntitySocialReady(replicaUsername, entityHash)
+		await updateSocialMeta(replicaUsername, entityHash, {
+			defaultEmojiPackId: updatedProfile.defaultEmojiPackId || null,
+		})
+	}
 
 	if (options.skipPresentation) return updatedProfile
 	const locales = options.locales || localesForUser(replicaUsername)

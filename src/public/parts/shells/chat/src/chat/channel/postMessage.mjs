@@ -246,7 +246,7 @@ export async function postChannelMessage(username, groupId, channelId, payload =
 
 	let files = Array.isArray(payload.files) ? payload.files : undefined
 	if (origin === 'human')
-	;({ content, files } = await applyBeforeUserSend(username, groupId, channelId, content, files))
+		({ content, files } = await applyBeforeUserSend(username, groupId, channelId, content, files))
 
 	const { content: finalized, fileIds } = await attachFilesToContent(username, groupId, content, files, maxBytes)
 	content = finalized

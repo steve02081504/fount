@@ -43,10 +43,9 @@ export function applyDefaultPackConverge(packIds, oldDefaultPackId, newDefaultPa
 	if (old === next) return [...packIds]
 	const packs = [...packIds]
 	const oldIdx = old ? packs.indexOf(old) : -1
-	if (oldIdx >= 0) 
+	if (oldIdx >= 0)
 		if (!packs.includes(next)) packs[oldIdx] = next
 		else packs.splice(oldIdx, 1)
-	
 	else if (!old && !packs.includes(next))
 		packs.push(next)
 	return packs

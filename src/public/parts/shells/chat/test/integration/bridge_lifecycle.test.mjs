@@ -57,7 +57,7 @@ Deno.test('unregisterBridgeOperations clears registry and outbound handlers', as
 	const outboundLines = []
 	registerBridgeOperations(username, 'mock', 'clear-bot', {
 		/** @returns {Promise<void>} */
-		sendTyping: async () => {},
+		sendTyping: async () => { },
 	}, {
 		/** @returns {Promise<void>} */
 		teardown: async () => {
@@ -130,11 +130,11 @@ Deno.test('client.bridgeBots() lists running per-bot instances', async () => {
 
 	registerBridgeOperations(username, 'telegram', 'list-a', {
 		/** @returns {Promise<void>} */
-		sendTyping: async () => {},
+		sendTyping: async () => { },
 	})
 	registerBridgeOperations(username, 'discord', 'list-b', {
 		/** @returns {Promise<void>} */
-		sendTyping: async () => {},
+		sendTyping: async () => { },
 	})
 
 	const client = await getChatClient(username)

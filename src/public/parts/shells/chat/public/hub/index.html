@@ -59,7 +59,7 @@
 						<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" />
 					</div>
 					<div class="channel-list flex-1 overflow-y-auto py-2" id="channel-list"></div>
-					<div class="user-bar" id="user-bar">
+					<button type="button" class="user-bar" id="user-bar" aria-haspopup="menu">
 						<div class="avatar-wrap user-avatar-wrap">
 							<div class="avatar" id="my-avatar">?</div>
 							<span class="status-dot user-status-dot" id="my-status-dot" data-status="offline"></span>
@@ -70,7 +70,7 @@
 								<span id="my-status-text"></span>
 							</div>
 						</div>
-					</div>
+					</button>
 				</div>
 
 				<div id="hub-main" class="main flex-1 min-w-0 flex flex-col bg-[var(--bg-main)]">
@@ -221,41 +221,41 @@
 					<div class="input-area composer-wrap">
 						<fieldset class="fieldset bg-base-200 border border-base-300 rounded-box px-3 py-2 min-h-11 shadow-sm transition-[border-color,box-shadow] focus-within:border-primary/40 focus-within:shadow-md">
 							<div class="flex items-end gap-2 relative min-h-9">
-							<div class="dropdown dropdown-top composer-more">
-								<button type="button" tabindex="0" class="icon-button btn btn-ghost btn-circle btn-sm" id="composer-more-button" data-i18n="chat.hub.composerMore" disabled>
-									<img src="https://api.iconify.design/mdi/plus.svg" alt="" aria-hidden="true" />
+								<div class="dropdown dropdown-top composer-more">
+									<button type="button" tabindex="0" class="icon-button btn btn-ghost btn-circle btn-sm" id="composer-more-button" data-i18n="chat.hub.composerMore" disabled>
+										<img src="https://api.iconify.design/mdi/plus.svg" alt="" aria-hidden="true" />
+									</button>
+									<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-44 p-2 shadow border border-base-300 mb-2" role="menu">
+										<li><button type="button" id="composer-more-voice" data-i18n="chat.chatArea.voiceButton"></button></li>
+										<li><button type="button" id="composer-more-photo" data-i18n="chat.chatArea.photoButton"></button></li>
+										<li><button type="button" id="composer-more-upload" data-i18n="chat.hub.uploadTitle"></button></li>
+										<li><button type="button" id="composer-more-vote" data-i18n="chat.hub.voteTitle"></button></li>
+									</ul>
+								</div>
+								<button type="button" class="icon-button btn btn-ghost btn-circle btn-sm composer-desktop-tool" id="voice-button" data-i18n="chat.chatArea.voiceButton" disabled>
+									<img src="https://api.iconify.design/material-symbols/mic.svg" alt="" aria-hidden="true" />
 								</button>
-								<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-44 p-2 shadow border border-base-300 mb-2" role="menu">
-									<li><button type="button" id="composer-more-voice" data-i18n="chat.chatArea.voiceButton"></button></li>
-									<li><button type="button" id="composer-more-photo" data-i18n="chat.chatArea.photoButton"></button></li>
-									<li><button type="button" id="composer-more-upload" data-i18n="chat.hub.uploadTitle"></button></li>
-									<li><button type="button" id="composer-more-vote" data-i18n="chat.hub.voteTitle"></button></li>
-								</ul>
-							</div>
-							<button type="button" class="icon-button btn btn-ghost btn-circle btn-sm composer-desktop-tool" id="voice-button" data-i18n="chat.chatArea.voiceButton" disabled>
-								<img src="https://api.iconify.design/material-symbols/mic.svg" alt="" aria-hidden="true" />
-							</button>
-							<button type="button" class="icon-button btn btn-ghost btn-circle btn-sm composer-desktop-tool" id="photo-button" data-i18n="chat.chatArea.photoButton" disabled>
-								<img src="https://api.iconify.design/proicons/photo.svg" alt="" aria-hidden="true" />
-							</button>
-							<button type="button" class="icon-button btn btn-ghost btn-circle btn-sm composer-desktop-tool" id="upload-button" data-i18n="chat.hub.uploadTitle" disabled>
-								<img src="https://api.iconify.design/mdi/paperclip.svg" alt="" aria-hidden="true" />
-							</button>
-							<input type="file" id="image-upload-input" multiple hidden />
-							<textarea id="message-input" class="textarea textarea-ghost flex-1 min-h-9 max-h-40 resize-none border-0 bg-transparent px-0 py-2 text-base leading-normal focus:outline-none" rows="1" data-i18n="chat.hub.messageInput" disabled></textarea>
-							<button type="button" class="icon-button btn btn-ghost btn-circle btn-sm" id="emoji-button" data-i18n="chat.hub.emojiTitle" disabled>
-								<img src="https://api.iconify.design/line-md/emoji-smile.svg" alt="" aria-hidden="true" />
-							</button>
-							<button type="button" class="icon-button btn btn-ghost btn-circle btn-sm composer-desktop-tool" id="vote-button" data-i18n="chat.hub.voteTitle" disabled>
-								<img src="https://api.iconify.design/line-md/confirm.svg" alt="" aria-hidden="true" />
-							</button>
-							<button type="button" class="composer-stop-button btn btn-error btn-sm !h-9 !w-9 !min-h-0 rounded-lg" id="stop-generation-button" data-i18n="chat.hub.stopGenerateTitle" hidden>
-								<img src="https://api.iconify.design/mdi/stop.svg" width="14" height="14" alt="" aria-hidden="true" />
-							</button>
-							<button type="button" class="btn btn-primary btn-sm !h-8 !w-9 !min-h-0 rounded-md" id="send-button" data-i18n="chat.hub.sendTitle" disabled>
-								<img src="https://api.iconify.design/line-md/telegram.svg" alt="" aria-hidden="true" />
-							</button>
-							<div class="emoji-picker" id="emoji-picker"></div>
+								<button type="button" class="icon-button btn btn-ghost btn-circle btn-sm composer-desktop-tool" id="photo-button" data-i18n="chat.chatArea.photoButton" disabled>
+									<img src="https://api.iconify.design/proicons/photo.svg" alt="" aria-hidden="true" />
+								</button>
+								<button type="button" class="icon-button btn btn-ghost btn-circle btn-sm composer-desktop-tool" id="upload-button" data-i18n="chat.hub.uploadTitle" disabled>
+									<img src="https://api.iconify.design/mdi/paperclip.svg" alt="" aria-hidden="true" />
+								</button>
+								<input type="file" id="image-upload-input" multiple hidden />
+								<textarea id="message-input" class="textarea textarea-ghost flex-1 min-h-9 max-h-40 resize-none border-0 bg-transparent px-0 py-2 text-base leading-normal focus:outline-none" rows="1" data-i18n="chat.hub.messageInput" disabled user-content></textarea>
+								<button type="button" class="icon-button btn btn-ghost btn-circle btn-sm" id="emoji-button" data-i18n="chat.hub.emojiTitle" disabled>
+									<img src="https://api.iconify.design/line-md/emoji-smile.svg" alt="" aria-hidden="true" />
+								</button>
+								<button type="button" class="icon-button btn btn-ghost btn-circle btn-sm composer-desktop-tool" id="vote-button" data-i18n="chat.hub.voteTitle" disabled>
+									<img src="https://api.iconify.design/line-md/confirm.svg" alt="" aria-hidden="true" />
+								</button>
+								<button type="button" class="composer-stop-button btn btn-error btn-sm !h-9 !w-9 !min-h-0 rounded-lg" id="stop-generation-button" data-i18n="chat.hub.stopGenerateTitle" hidden>
+									<img src="https://api.iconify.design/mdi/stop.svg" width="14" height="14" alt="" aria-hidden="true" />
+								</button>
+								<button type="button" class="btn btn-primary btn-sm !h-8 !w-9 !min-h-0 rounded-md" id="send-button" data-i18n="chat.hub.sendTitle" disabled>
+									<img src="https://api.iconify.design/line-md/telegram.svg" alt="" aria-hidden="true" />
+								</button>
+								<div class="emoji-picker" id="emoji-picker"></div>
 							</div>
 						</fieldset>
 					</div>

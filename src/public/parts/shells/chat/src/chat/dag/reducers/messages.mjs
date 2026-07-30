@@ -21,13 +21,13 @@ export const messageReducers = {
 			state.channels[channelId].messageSeq = (Number(state.channels[channelId].messageSeq) || 0) + 1
 			state.channels[channelId].lastEventId = eventId
 		}
-		if (isHex64(eventId)) 
+		if (isHex64(eventId))
 			state.messageSenderIndex[eventId] = {
 				sender: event.sender,
 				charId: event.charId || null,
 				channelId,
 			}
-		
+
 		const content = event.content
 		if (content?.type === 'vote') {
 			state.voteBallots ??= {}

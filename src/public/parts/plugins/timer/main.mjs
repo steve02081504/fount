@@ -69,8 +69,7 @@ export default {
 						console.info(`timer: 定时器"${reason}"通过活跃频道触发成功`)
 						return
 					}
-				}
-				catch (e) { console.error('timer: 活跃频道触发失败，尝试下一个', e) }
+				} catch (e) { console.error('timer: 活跃频道触发失败，尝试下一个', e) }
 
 				// ── Level 2/3：chat 模块处理 group 回落 ─────────────────────────
 				const fallback = await handleTimerGroupFallback(username, uid, callbackdata, {

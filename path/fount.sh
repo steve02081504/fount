@@ -2276,6 +2276,25 @@ log)
 	;;
 test)
 	shift
+	# macOS: caffeinate -w $$ 随 shell 退出；Linux: inhibit 直接包 deno（函数不能做 argv[0]）
+	if [ -z "${FOUNT_TEST_ALLOW_SLEEP:-}" ]; then
+		if command -v caffeinate >/dev/null 2>&1; then
+			caffeinate -dims -w $$ &
+		elif command -v systemd-inhibit >/dev/null 2>&1; then
+			deno_argv=(deno)
+			if [ "${IN_TERMUX:-0}" -eq 1 ]; then
+				if command -v deno.glibc.sh &>/dev/null; then
+					deno_argv=(deno.glibc.sh)
+				elif command -v glibc-runner &>/dev/null; then
+					deno_argv=(glibc-runner "$(command -v deno)")
+				fi
+			fi
+			systemd-inhibit --what=idle:sleep:handle-lid-switch --who=fount-test \
+				--why='fount test running' --mode=block \
+				"${deno_argv[@]}" run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/scripts/test/cli.mjs" "$@"
+			exit $?
+		fi
+	fi
 	run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/scripts/test/cli.mjs" "$@"
 	exit $?
 	;;

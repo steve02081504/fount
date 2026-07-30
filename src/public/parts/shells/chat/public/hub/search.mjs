@@ -7,7 +7,7 @@ import { setElementI18n } from '../../../../scripts/i18n/index.mjs'
 import { searchAllChatGroups, searchGroupChannelMessages } from '../src/api/groupChannel.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
-import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
+import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { store } from './core/state.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
 import { selectChannel } from './sidebar/index.mjs'

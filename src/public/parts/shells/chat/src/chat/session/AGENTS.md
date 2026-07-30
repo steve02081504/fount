@@ -6,16 +6,17 @@ alwaysApply: false
 
 # Chat Session Viewer Guide
 
-World distribution product model: [docs/design/world-distribution-spec.md](../../../../../../../../docs/design/world-distribution-spec.md).
+World distribution: [world-distribution-spec.md](../../../../../../../../docs/design/world-distribution-spec.md).
 Multi-node bind / fixture probes: [test domain-harness](../../../../../../../../src/scripts/test/docs/domain-harness.md).
+World shared state / `WorldChatHost`: [world-host.md](world-host.md).
 
 ## Speaker identity (`Uid`)
 
 - Request: `UserUid` / `CharUid` / `ReplyToUid?` (symmetric with `*Charname`). Log rows: `chatLogEntry_t.uid` (required; always serialized).
 - **Hard security rule**: `User*` = local operator/owner; `Char*` = the agent generating the reply; `ReplyTo*` = reply target (may be a stranger); `chat_log[].uid` = that row's speaker (may be a stranger). **Never** put a Discord/Telegram/Social message author into `User*` — the char can operate this machine; mistaking the owner is dangerous.
 - Opaque comparable strings (`===` / JSON); fount chat uses entityHash; bridges use `authorEntityHash`. **Not** RFC UUID. Simple dual-party shells (shellassist / ide) may use `'user'` / `'char'`.
-- `name` / `*Charname` are display only; identity compares **only** via `uid` / `*Uid` (no display-name fallback).
-- Hydration: `hydration.resolveSpeakerUid`; Hub `getChatRequest` fills top-level Uids and `ReplyTo*` from the latest `extension.chat.replyTo.senderEntityHash`. Discord/Telegram/WeChat use **virtual bridge sessions** (`chat/bridge/session.mjs` + `buildVirtualBridgeChatRequest`) — same Uid rules; do not hand-build the request or call `newGroup` for platform chats.
+- `name` / `*Charname` are display only; identity compares **only** via `uid` / `*Uid`.
+- Hydration: `hydration.resolveSpeakerUid`; Hub `getChatRequest` fills top-level Uids and `ReplyTo*` from the latest `extension.chat.replyTo.senderEntityHash`. Platform bots use **virtual bridge sessions** (`chat/bridge/session.mjs` + `buildVirtualBridgeChatRequest`) — same Uid rules; never hand-build the request or call `newGroup` for platform chats.
 - `AddLongTimeLog` without `uid` fills from request `CharUid` / `UserUid` by `role` (else `'system'`).
 
 ## Viewer symmetry
@@ -33,16 +34,11 @@ Multi-node bind / fixture probes: [test domain-harness](../../../../../../../../
 - `session/builtinParts.mjs`: `BUILTIN_WORLD` (`distribution: 'local'`), `BUILTIN_PERSONA`. Returned when unbound / not installed — **never `null`**.
 - They pass through or no-op; they deliberately omit `GetSpeakingOrder` / `GetCharReply` / `GetGreeting` / `MessageEdit`/`MessageDelete` (implementing any would replace defaults).
 
-## World distribution
+## World distribution & plugins
 
 - `WorldAPI_t.distribution?: 'local' | 'replicated' | 'hosted'` (default `hosted`); written into `session_world_bind*` on bind. Resolve rules: [world-distribution-spec.md](../../../../../../../../docs/design/world-distribution-spec.md).
 - **`GetChatPlugins`**: live objects; local same-name wins; hosted host-only (no RPC). **`TweakPrompt` hosted RPC**: in-place mutation lost across JSON.
-
-## Local plugins
-
-`groups/{groupId}/local_plugins.json` via `session/localPlugins.mjs` — node-private; not federated.
-
-World shared state / `WorldChatHost`: [world-host.md](world-host.md).
+- Local plugins: `groups/{groupId}/local_plugins.json` via `session/localPlugins.mjs` — node-private; not federated.
 
 ## member_roles / greeting
 

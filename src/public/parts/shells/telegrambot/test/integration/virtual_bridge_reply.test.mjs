@@ -36,7 +36,7 @@ function createFakeTelegraf() {
 		/**
 		 * @returns {Promise<void>} typing
 		 */
-		sendChatAction: async () => {},
+		sendChatAction: async () => { },
 		/**
 		 * @returns {Promise<object>} 假 chat
 		 */

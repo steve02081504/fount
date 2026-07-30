@@ -17,11 +17,11 @@ import { formatEntityAtId, isEntityHash128 } from '../shared/entityHash.mjs'
 import { bindEntityProfileHoverAnchor } from '../shared/entityProfileHoverCard.mjs'
 import { displayProfileAvatar, listAvatarTemplateFields } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
-import { promptText } from '../shared/promptText.mjs'
+import { promptText } from '/scripts/features/promptDialog.mjs'
 
 import { getCharDetails } from './charCard.mjs'
-import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
-import { positionContextMenu } from './core/positionContextMenu.mjs'
+import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
+import { positionContextMenu } from '/scripts/components/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
 import { charAgentEntityHash } from './entityResolve.mjs'
 import { resolveFriendBinding } from './friendBindings.mjs'
@@ -408,8 +408,9 @@ async function appendFriendsSearchHit(hit, resultsHost) {
 		row.querySelector('[data-pin]')?.addEventListener('click', () => {
 			void (async () => {
 				const next = await promptText(
-					geti18n('chat.hub.profilePopup.setAliasPrompt', { name: hit.label }),
+					'chat.hub.profilePopup.setAliasPrompt',
 					hit.alias || '',
+					{ name: hit.label },
 				)
 				if (next == null) return
 				await setEntityAlias(hit.entityHash, next)

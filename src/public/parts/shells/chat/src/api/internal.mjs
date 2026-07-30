@@ -23,9 +23,9 @@ const MEMBERS_PAGE_SIZE = 500
  */
 export function resolveMemberKeyByEntityHash(state, entityHash) {
 	const hash = String(entityHash || '').trim().toLowerCase()
-	for (const [key, member] of Object.entries(state.members || {})) 
+	for (const [key, member] of Object.entries(state.members || {}))
 		if (memberEntityHash(member)?.toLowerCase() === hash) return key
-	
+
 	return resolveMemberKey(state, hash)
 }
 

@@ -108,14 +108,14 @@ export async function createGroup(username, body) {
 	const genesisSecretKey = memberJoinSecretKey || (await getLocalSignerForNewGroup(username, groupId, entityHash)).secretKey
 	const genesisSender = owner
 	let declaredOwner = body.ownerEntityHash
-	if (declaredOwner === undefined) 
+	if (declaredOwner === undefined)
 		try {
 			declaredOwner = (await loadEntityIdentity(username, entityHash)).ownerEntityHash
 		}
 		catch {
 			declaredOwner = null
 		}
-	
+
 
 	/** @param {object} event 创世事件体（含 sender） */
 	const genesisAppend = async event => {
@@ -223,6 +223,14 @@ export async function createGroup(username, body) {
 
 	invalidateKnownMemberIndex(username)
 	const defaultChannelId = state.groupSettings?.defaultChannelId ?? initialChannelId
+	const { ensureDefaultGroupPack } = await import('../../group/groupEmojis.mjs')
+	await ensureDefaultGroupPack(username, groupId, state.groupSettings)
+	const { convergeLinkedDefault, groupDefaultLinkKey, resolveGroupDefaultPackId } = await import('../../emojiUsage.mjs')
+	convergeLinkedDefault(
+		username,
+		groupDefaultLinkKey(groupId),
+		resolveGroupDefaultPackId(state.groupSettings, groupId),
+	)
 	return {
 		groupId,
 		checkpoint: null,
