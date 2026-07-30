@@ -18,7 +18,7 @@ API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, 
 
 ## CDN response cache
 
-`cdn_cache.mjs`（`createFountFixtures` / Pages fixtures 的 `context`）：对 `esm.sh` / `api.iconify.design` / `cdn.jsdelivr.net` 的 GET/HEAD 做内存 + `data/test/cdn_cache` 磁盘复用，减轻跨用例外网 flaky。只缓存 2xx/3xx；4xx 仍走真响应（坏 Iconify 名照记噪声）。`FOUNT_TEST_CDN_CACHE=0` 关闭。CDN 上可用 `route.fetch`；对本机同 URL 禁止（见 Social EVFS stub）。
+`cdn_cache.mjs` (wired into `createFountFixtures` / Pages fixtures `context`): memory + `data/test/cdn_cache` disk reuse for GET/HEAD to `esm.sh` / `api.iconify.design` / `cdn.jsdelivr.net`, cutting cross-case network flakiness. Only 2xx/3xx are cached; 4xx stay live (bad Iconify names still count as noise). `FOUNT_TEST_CDN_CACHE=0` disables. `route.fetch` is fine for CDN URLs; do not fetch same-origin local URLs that way (see Social EVFS stub).
 
 ## Network diagnostics
 

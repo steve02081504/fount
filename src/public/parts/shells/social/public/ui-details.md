@@ -30,7 +30,7 @@ Feed/profile/search cards (`openDetail !== false`) collapse markdown code `<deta
 
 - Shared: `/scripts/infiniteScroll.mjs` (`data-scroll-sentinel` + `insertBeforeScrollSentinel`). Do not `appendChild` past the sentinel. Rising-edge arm; after replay do not rebind while intersecting. `data-feed-replaying` marks an in-flight loop replay. If loader has its own mutex, bind **after** releasing it.
 - Always `observe` the sentinel even when `hasMore()` is currently false (so a later scroll can enable replay). Feed arms `feedUserScrolled` with a one-shot `window` scroll listener and rebinds when cursor is already exhausted. Notifications: bind only on first page, then `queueMicrotask` one page-ahead fetch (long lists leave the sentinel below the fold so IO alone is unreliable).
-- Prefetch next cursor into `state.feedPrefetch`. Replay when `nextCursor` exhausted: re-append shown items (`.feed-replay-divider`); requires real scroll. Delete/hide/block/mute must `purgeFeedShownPost` / `purgeFeedShownAuthor`；delete 另写入 `state.suppressedFeedPostIds`，`prependFeedItem` 跳过（挡迟到 WS 回插），失败回滚时移出 set。
+- Prefetch next cursor into `state.feedPrefetch`. Replay when `nextCursor` exhausted: re-append shown items (`.feed-replay-divider`); requires real scroll. Delete/hide/block/mute must `purgeFeedShownPost` / `purgeFeedShownAuthor`. Deletes also enter `state.suppressedFeedPostIds` so `prependFeedItem` skips late WS re-inserts; remove from the set on failed-write rollback.
 - Hashtag/trending → `#topic:…`; search deep links → `#searchView`.
 
 ## Empty states / shared widgets

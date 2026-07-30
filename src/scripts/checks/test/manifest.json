@@ -57,6 +57,26 @@
 				"src/scripts/checks/test/i18n_keys.test.mjs",
 				"src/public/locales/zh-CN.json"
 			]
+		},
+		{
+			"name": "agents_md_english",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/agents_md_english.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/agents_md_english.mjs",
+				"src/scripts/checks/test/agents_md_english.test.mjs",
+				"**/AGENTS.md",
+				"docs/**/*.md",
+				"src/**/*.md"
+			]
 		}
 	]
 }
