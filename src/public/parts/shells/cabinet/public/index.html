@@ -25,11 +25,12 @@
 		<input id="cabinet-drawer-toggle" type="checkbox" class="drawer-toggle" aria-hidden="true" tabindex="-1" />
 		<div class="drawer-content flex flex-col min-h-screen min-w-0">
 			<main class="flex-1 flex flex-col min-w-0 min-h-screen">
+				<h1 class="sr-only" data-i18n="cabinet.title"></h1>
 				<div class="bg-base-100 border-b border-base-300 p-2 flex flex-wrap gap-1 items-center">
 					<label for="cabinet-drawer-toggle" class="btn btn-ghost btn-sm btn-square md:hidden" data-i18n="cabinet.openCabinets">
 						<img src="https://api.iconify.design/mdi/menu.svg" width="18" height="18" alt="" aria-hidden="true" />
 					</label>
-					<h1 class="text-base font-semibold md:hidden" data-i18n="cabinet.title"></h1>
+					<p class="text-base font-semibold md:hidden" aria-hidden="true" data-i18n="cabinet.title"></p>
 					<nav id="breadcrumb" class="cabinet-breadcrumb breadcrumbs flex-1 min-w-0 text-sm overflow-x-auto" aria-label="Breadcrumb"></nav>
 					<label class="label cursor-pointer gap-1">
 						<input id="showHidden" type="checkbox" class="checkbox checkbox-xs" />
@@ -48,7 +49,7 @@
 			<label for="cabinet-drawer-toggle" class="drawer-overlay md:hidden"></label>
 			<aside class="w-64 min-h-full bg-base-100 border-r border-base-300 p-3 flex flex-col gap-2">
 				<div class="flex items-center justify-between gap-2">
-					<h1 class="text-lg font-semibold max-md:hidden" data-i18n="cabinet.title"></h1>
+					<p class="text-lg font-semibold max-md:hidden" aria-hidden="true" data-i18n="cabinet.title"></p>
 					<button id="btnNewCabinetDesktop" type="button" data-action="new-cabinet" class="btn btn-primary btn-sm btn-circle cabinet-local-only max-md:hidden md:inline-flex" data-i18n="cabinet.newCabinet">+</button>
 					<label for="cabinet-drawer-toggle" class="btn btn-ghost btn-sm btn-circle md:hidden" data-i18n="cabinet.closeCabinets">×</label>
 				</div>

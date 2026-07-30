@@ -2281,6 +2281,7 @@ test)
 	# shellcheck disable=SC2329
 	test_cleanup() {
 		set_title "$original_title"
+		write_taskbar_progress_clear
 		taskbar_progress_enabled && printf '\007'
 	}
 	trap 'test_cleanup' EXIT

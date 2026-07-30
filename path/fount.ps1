@@ -1793,6 +1793,7 @@ if ($args[0] -eq 'test') {
 	finally {
 		Disable-FountTestKeepAwake
 		Set-Title $script:originalTitle
+		Write-TaskbarProgressClear
 		Write-Host -NoNewline $script:TaskbarProgressBel
 	}
 	exit $testExit

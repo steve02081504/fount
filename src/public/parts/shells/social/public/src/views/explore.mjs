@@ -86,7 +86,7 @@ export async function loadExplore() {
 				name: escapeHtml(account.name),
 				handle: escapeHtml(entityHandle(account.entityHash, account)),
 				avatarHtml: renderAvatarHtml(account.entityHash, { name: account.name, avatar: account.avatarUrl }, 'explore-account-avatar'),
-				bioHtml: account.bio ? '<div class="explore-account-bio" data-explore-bio></div>' : '',
+				bioHtml: account.bio ? '<div class="explore-account-bio" data-explore-bio user-content></div>' : '',
 			})
 			const bioHost = row.querySelector('[data-explore-bio]')
 			if (bioHost instanceof HTMLElement && account.bio)

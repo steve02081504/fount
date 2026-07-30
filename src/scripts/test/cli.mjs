@@ -10,7 +10,6 @@ import 'fount/scripts/test/env.mjs'
 import process from 'node:process'
 
 import { geti18n } from '../i18n/bare.mjs'
-import { ms } from '../ms.mjs'
 
 import {
 	listManifestIds,
@@ -122,7 +121,6 @@ process.exit(await (async () => {
 		process.exit(2)
 	}
 
-	const runStarted = Date.now()
 	let exitCode = 0
 	try {
 		exitCode = await runTests({
@@ -131,8 +129,6 @@ process.exit(await (async () => {
 			force: values.force,
 			groups: parsed.groups,
 		})
-		if (Date.now() - runStarted > ms('5m'))
-			process.stdout.write('\x07\x07\x07')
 	}
 	finally {
 		finishTestProgress(exitCode)
