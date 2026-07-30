@@ -41,10 +41,10 @@ export async function showCreateChannelModal() {
 					const { renderHubChannelSidebar } = await import('./index.mjs')
 					await renderHubChannelSidebar(store.context.currentState)
 					await selectChannel(channelId)
-					showToastI18n('success', 'chat.hub.newChannelSuccess')
+					showToastI18n('success', 'chat.hub.newChannel.success')
 				}
 				catch (error) {
-					handleUIError(error, 'chat.hub.newChannelFailed')
+					handleUIError(error, 'chat.hub.newChannel.failed')
 				}
 			})
 		},

@@ -683,18 +683,18 @@ function initEditState(entityHash, profile, { initialSfwMode = false } = {}) {
  */
 async function handleResetFromPart() {
 	if (!editingEntityHash || !editingBaseProfile?.charPartName || !editDialog) return
-	if (!confirmI18n('chat.hub.profileEdit.resetFromPartConfirm')) return
+	if (!confirmI18n('chat.hub.profileEdit.resetFrom.partConfirm')) return
 	const groupId = store.context.currentGroupId || undefined
 	try {
 		const data = await rebuildProfileFromPart(editingEntityHash, groupId)
 		if (!data?.profile) throw new Error(data?.error || 'rebuild failed')
 		initEditState(editingEntityHash, data.profile, { initialSfwMode: editingSfwMode })
-		showToastI18n('success', 'chat.hub.profileEdit.resetFromPartDone')
+		showToastI18n('success', 'chat.hub.profileEdit.resetFrom.partDone')
 		await refreshHubAfterProfileChange(editingEntityHash)
 		await onSavedCallback?.()
 	}
 	catch (error) {
-		handleUIError(error, 'chat.hub.profileEdit.resetFromPartFailed')
+		handleUIError(error, 'chat.hub.profileEdit.resetFrom.partFailed')
 	}
 }
 

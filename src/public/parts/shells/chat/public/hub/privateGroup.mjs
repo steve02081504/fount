@@ -47,7 +47,7 @@ export async function restartPrivateGroup(charname, previousGroupId) {
 	const { charAgentEntityHash } = await import('./entityResolve.mjs')
 	const entityHash = await charAgentEntityHash(charname)
 	if (!entityHash) {
-		showToastI18n('error', 'chat.hub.noUsername')
+		showToastI18n('error', 'chat.hub.no.username')
 		return
 	}
 	const { enterFriendChat } = await import('./friendChat.mjs')
@@ -71,7 +71,7 @@ export async function enterPrivateGroup(charname, options = {}) {
 		const { charAgentEntityHash } = await import('./entityResolve.mjs')
 		const entityHash = await charAgentEntityHash(charname)
 		if (!entityHash) {
-			showToastI18n('error', 'chat.hub.noUsername')
+			showToastI18n('error', 'chat.hub.no.username')
 			return
 		}
 		binding = buildCharFriendBinding(entityHash, charname)
@@ -98,8 +98,8 @@ export async function openGroupSettingsModal(groupId) {
 		friendBound,
 	})
 	openOverlayModal({
-		titleKey: 'chat.hub.charChatSettings',
-		subtitleKey: 'chat.hub.charChatSubtitle',
+		titleKey: 'chat.hub.char.chat.settings',
+		subtitleKey: 'chat.hub.char.chat.subtitle',
 		subtitleParams: { name: charname },
 		body: settingsRoot.querySelector('.char-settings-body'),
 		footer: settingsRoot.querySelector('.char-settings-footer'),
@@ -113,20 +113,20 @@ export async function openGroupSettingsModal(groupId) {
 		)
 	})
 	document.getElementById('character-chat-unbind')?.addEventListener('click', async () => {
-		if (!confirmI18n('chat.hub.unbindFriendConfirm', { name: charname })) return
+		if (!confirmI18n('chat.hub.unbindFriend.confirm', { name: charname })) return
 		try {
 			const binding = friendBindingForGroup(groupId)
 			await unbindFriendGroup(groupId, { charname: binding?.charname })
 			const { loadGroups } = await import('./serverBar.mjs')
 			await loadGroups()
-			showToastI18n('success', 'chat.hub.unbindFriendOk')
+			showToastI18n('success', 'chat.hub.unbindFriend.ok')
 			closeOverlayModal()
 			clearPrivateGroupState()
 			const { onEnterFriendChat } = await import('./friendChat.mjs')
 			onEnterFriendChat(null)
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.unbindFriendFailed', { error: error.message })
+			showToastI18n('error', 'chat.hub.unbindFriend.failed', { error: error.message })
 		}
 	})
 	document.getElementById('character-chat-delete')?.addEventListener('click', async () => {
@@ -141,7 +141,7 @@ export async function openGroupSettingsModal(groupId) {
 				throw new Error(data.error || 'Session delete failed')
 			}
 			await response.json()
-			showToastI18n('success', 'chat.hub.sessionDeleted')
+			showToastI18n('success', 'chat.hub.session.deleted')
 			setTimeout(async () => {
 				closeOverlayModal()
 				clearPrivateGroupState()
@@ -150,7 +150,7 @@ export async function openGroupSettingsModal(groupId) {
 			}, 600)
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.sessionDeleteFailed', { error: error.message })
+			showToastI18n('error', 'chat.hub.session.deleteFailed', { error: error.message })
 		}
 	})
 	void mountChatConfigPanel(groupId, store.privateGroup.channelId, { canEditWorldPlugins: true })

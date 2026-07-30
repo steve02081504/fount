@@ -89,7 +89,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 				await refreshViewerHubPresentation()
 				if (store.context.currentState)
 					await renderMemberList(store.context.currentState)
-				showOverlayNotice('success', '', 'chat.hub.configSaved')
+				showOverlayNotice('success', '', 'chat.hub.config.saved')
 			}
 			catch (err) {
 				showOverlayNotice('error', err.message)
@@ -101,7 +101,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 				const v = changeEvent.target.value || null
 				try {
 					await groupRequest(groupId, 'world', 'PUT', { worldname: v, channelId })
-					showOverlayNotice('success', '', 'chat.hub.configSaved')
+					showOverlayNotice('success', '', 'chat.hub.config.saved')
 				}
 				catch (err) {
 					showOverlayNotice('error', err.message)
@@ -115,7 +115,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 				try {
 					await groupRequest(groupId, 'plugin', 'POST', { pluginname })
 					await mountChatConfigPanel(groupId, channelId, options)
-					showOverlayNotice('success', '', 'chat.hub.configSaved')
+					showOverlayNotice('success', '', 'chat.hub.config.saved')
 				}
 				catch (err) {
 					showOverlayNotice('error', err.message)
@@ -129,7 +129,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 					try {
 						await groupRequest(groupId, `plugin/${encodeURIComponent(pluginname)}`, 'DELETE')
 						await mountChatConfigPanel(groupId, channelId, options)
-						showOverlayNotice('success', '', 'chat.hub.configSaved')
+						showOverlayNotice('success', '', 'chat.hub.config.saved')
 					}
 					catch (err) {
 						showOverlayNotice('error', err.message)
@@ -148,7 +148,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 					await groupRequest(groupId, `char/${encodeURIComponent(charname)}/frequency`, 'PUT', { frequency })
 				}
 				catch (err) {
-					showToastI18n('error', 'chat.hub.configSaveFailed', { error: err.message })
+					showToastI18n('error', 'chat.hub.config.saveFailed', { error: err.message })
 				}
 			})
 		})
@@ -159,7 +159,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 				if (!charname) return
 				try {
 					await triggerChannelReply(groupId, channelId, charname)
-					showOverlayNotice('success', '', 'chat.hub.configSaved')
+					showOverlayNotice('success', '', 'chat.hub.config.saved')
 				}
 				catch (err) {
 					showOverlayNotice('error', err.message)
@@ -174,7 +174,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 				try {
 					await groupRequest(groupId, `char/${encodeURIComponent(charname)}`, 'DELETE')
 					await mountChatConfigPanel(groupId, channelId, options)
-					showOverlayNotice('success', '', 'chat.hub.configSaved')
+					showOverlayNotice('success', '', 'chat.hub.config.saved')
 				}
 				catch (err) {
 					showOverlayNotice('error', err.message)

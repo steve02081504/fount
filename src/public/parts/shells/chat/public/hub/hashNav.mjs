@@ -65,7 +65,7 @@ async function navigateFromHashInner() {
 		if (eventId) await scrollToAndHighlightEventId(eventId)
 	}
 	catch (error) {
-		handleUIError(error, 'chat.hub.loadGroupFailed')
+		handleUIError(error, 'chat.hub.load.groupFailed')
 	}
 }
 

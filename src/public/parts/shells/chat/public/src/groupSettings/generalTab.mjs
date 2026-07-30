@@ -37,7 +37,7 @@ export async function showOwnerSuccessionModal(context) {
 			dialog.querySelector('[data-owner-succ-submit]')?.addEventListener('click', async () => {
 				const proposedOwnerPubKeyHash = input instanceof HTMLInputElement ? input.value.trim().toLowerCase() : ''
 				if (!proposedOwnerPubKeyHash) {
-					showToastI18n('warning', 'chat.group.ownerSuccessionNeedHash')
+					showToastI18n('warning', 'chat.group.ownerSuccession.needHash')
 					return
 				}
 				if (submitButton instanceof HTMLButtonElement) submitButton.disabled = true
@@ -46,12 +46,12 @@ export async function showOwnerSuccessionModal(context) {
 						proposedOwnerPubKeyHash,
 						ballotId: crypto.randomUUID(),
 					})
-					showToastI18n('success', 'chat.group.settingsPage.ownerSuccessionOk')
+					showToastI18n('success', 'chat.group.settings.page.ownerSuccessionOk')
 					closeModal()
 					await context.reload(context.groupId)
 				}
 				catch (error) {
-					showToastI18n('error', 'chat.group.settingsPage.ownerSuccessionFailed', { error: error.message })
+					showToastI18n('error', 'chat.group.settings.page.ownerSuccessionFailed', { error: error.message })
 				}
 				finally {
 					if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false
@@ -64,7 +64,7 @@ export async function showOwnerSuccessionModal(context) {
 /** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
 export async function saveGroupSettings(context) {
 	if (!context.settingsCaps?.canEditGroupSettings) {
-		showToastI18n('error', 'chat.group.settingsPage.governanceDenied')
+		showToastI18n('error', 'chat.group.settings.page.governanceDenied')
 		return
 	}
 	const metaResponse = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/meta`, {
@@ -138,24 +138,24 @@ export async function saveGroupSettings(context) {
 			await postFederationTuning(context.groupId, tuningPatch)
 	}
 
-	showToastI18n('success', 'chat.group.settingsPage.saveSuccess')
+	showToastI18n('success', 'chat.group.settings.page.saveSuccess')
 	await context.reload(context.groupId)
 }
 
 /** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
 export async function deleteGroup(context) {
 	if (!context.settingsCaps?.canDeleteGroup) {
-		showToastI18n('error', 'chat.group.settingsPage.governanceDenied')
+		showToastI18n('error', 'chat.group.settings.page.governanceDenied')
 		return
 	}
-	if (!confirmI18n('chat.group.settingsPage.deleteConfirm')) return
+	if (!confirmI18n('chat.group.settings.page.delete.confirm')) return
 	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}`, {
 		method: 'DELETE',
 		credentials: 'include'
 	})
 	const data = await resp.json()
 	if (!resp.ok) throw new Error(data.error)
-	showToastI18n('success', 'chat.group.settingsPage.deleteSuccess')
+	showToastI18n('success', 'chat.group.settings.page.delete.success')
 	window.location.href = '/parts/shells:chat/hub/'
 }
 
@@ -169,7 +169,7 @@ export async function renderGroupSettings(context) {
 
 	if (!context.settingsCaps.isMember) {
 		await appendTemplate(container, 'group/settings/settings_panel_denied', {
-			messageKey: 'chat.group.settingsPage.notMember',
+			messageKey: 'chat.group.settings.page.notMember',
 		})
 		return
 	}
@@ -203,21 +203,21 @@ export async function renderGroupSettings(context) {
 	}
 
 	document.getElementById('group-settings-key-rotate-button')?.addEventListener('click', async () => {
-		if (!context.groupId || !confirmI18n('chat.group.settingsPage.keyRotateConfirm')) return
+		if (!context.groupId || !confirmI18n('chat.group.settings.page.key.rotateConfirm')) return
 		try {
 			const result = await rotateGroupKey(context.groupId)
-			showToastI18n('success', 'chat.group.settingsPage.keyRotateOk')
+			showToastI18n('success', 'chat.group.settings.page.key.rotateOk')
 			const generation = Number(result?.generation)
 			const maxGenerations = Number(result?.maxGenerations) || 64
 			if (Number.isFinite(generation) && generation >= maxGenerations - 4)
-				showToastI18n('warning', 'chat.group.settingsPage.gshGenerationNearLimit', {
+				showToastI18n('warning', 'chat.group.settings.page.gshGenerationNearLimit', {
 					generation: String(generation),
 					maxGenerations: String(maxGenerations),
 				})
 			await context.reload(context.groupId)
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.group.settingsPage.keyRotateFailed', { error: error.message })
+			showToastI18n('error', 'chat.group.settings.page.key.rotateFailed', { error: error.message })
 		}
 	})
 	document.getElementById('group-settings-owner-succession-button')?.addEventListener('click', () => {

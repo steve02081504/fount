@@ -17,15 +17,15 @@ import { memberDisplaysAsAdmin } from '../memberDisplay.mjs'
 async function kickMember(context, username) {
 	const viewerKey = String(context.state?.viewerMemberPubKeyHash || '').toLowerCase()
 	if (viewerKey && username.toLowerCase() === viewerKey)
-		if (!confirmI18n('chat.group.settingsPage.kickSelfNodeWarning', { name: username })) return
+		if (!confirmI18n('chat.group.settings.page.kick.selfNodeWarning', { name: username })) return
 
-	if (!confirmI18n('chat.group.settingsPage.kickConfirm', { name: username })) return
+	if (!confirmI18n('chat.group.settings.page.kick.confirm', { name: username })) return
 	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/members/${encodeURIComponent(username)}/kick`, {
 		method: 'POST',
 		credentials: 'include'
 	})
 	if (!resp.ok) throw new Error(resp.statusText)
-	showToastI18n('success', 'chat.group.settingsPage.kickSuccess')
+	showToastI18n('success', 'chat.group.settings.page.kick.success')
 	await context.reload(context.groupId)
 }
 
@@ -41,11 +41,11 @@ async function banMember(context, username) {
 	try {
 		const { banMemberWithScope } = await import('../api/groupBan.mjs')
 		await banMemberWithScope(context.groupId, username, picked)
-		showToastI18n('success', 'chat.group.settingsPage.banSuccess')
+		showToastI18n('success', 'chat.group.settings.page.banSuccess')
 		await context.reload(context.groupId)
 	}
 	catch (error) {
-		showToastI18n('error', 'chat.group.settingsPage.banFailed', { error: error.message })
+		showToastI18n('error', 'chat.group.settings.page.banFailed', { error: error.message })
 	}
 }
 
@@ -55,14 +55,14 @@ async function banMember(context, username) {
  * @returns {Promise<void>}
  */
 async function unbanMemberAction(context, username) {
-	if (!confirmI18n('chat.group.settingsPage.unbanConfirm', { name: username })) return
+	if (!confirmI18n('chat.group.settings.page.unbanConfirm', { name: username })) return
 	try {
 		await unbanMember(context.groupId, username)
-		showToastI18n('success', 'chat.group.settingsPage.unbanSuccess')
+		showToastI18n('success', 'chat.group.settings.page.unbanSuccess')
 		await context.reload(context.groupId)
 	}
 	catch (error) {
-		showToastI18n('error', 'chat.group.settingsPage.unbanFailed', { error: error.message })
+		showToastI18n('error', 'chat.group.settings.page.unbanFailed', { error: error.message })
 	}
 }
 

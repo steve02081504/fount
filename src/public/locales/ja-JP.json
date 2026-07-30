@@ -153,10 +153,6 @@
 			"passedLabel": "合格",
 			"failedLabel": "失敗",
 			"noiseHits": "(ノイズ: ${hits})",
-			"unknownManifestId": "不明なマニフェスト ID: ${ids}",
-			"unknownSuiteSelector": "不明なスイートの指定: ${ids}",
-			"unknownSubtestFilter": "不明なサブテストのフィルタリング: ${suite} → ${names}",
-			"unknownFileFilter": "不明なテスト ファイルのフィルタリング: ${suite} → ${names}",
 			"unsupportedSubtestFilter": "スイートはサブテスト/ファイル フィルタリングをサポートしていません: ${suite}(${names})",
 			"available": "利用可能なアイテム: ${ids}",
 			"manifestMatched": "マニフェストの一致結果: ${ids}",
@@ -178,28 +174,16 @@
 			},
 			"reusedSuite": ">>> ${manifestId}:${name} を再利用 (トリガーは変更されず、最後の ${status} が使用されます)",
 			"noisyOnlyRemain": "まだ ${count} 個のスイートが通過していますが、ノイズが発生しています: ${suites}",
-			"estimatedRun": "この実行には ≈ ${eta} (推定並列速度 ${rate}) かかると推定されます",
-			"estimatedRunSerial": "この実行には ≈ ${eta} (シリアル) かかると予想されます",
-			"estimatedRunSkipped": "ほかに再利用 ${reused} 件、ブロック予定 ${blocked} 件（見積もり外）",
 			"noRealRunPlanned": "今回は実行不要: 再利用 ${reused} 件、ブロック予定 ${blocked} 件（trigger 不変）",
 			"allReusedHint": "今回は実際にスイートを実行していません。失敗は前回結果の引き継ぎ、ブロックも未解消（関連ファイル不変）です。修正後に再実行するか、fount test --force で強制実行してください。",
-			"estimatedRemaining": "推定残り時間 ≈ ${eta} (${completed}/${total} スイート)",
-			"estimatedRunSerialHint": "並列処理が期待される場合 ≈ ${eta} (並列レート ${rate})、節約額 ≈ ${savings} (--no-parallel を削除)",
 			"failuresSaved": "失敗リストを保存: ${path}（スイート ${count} 件）",
 			"failuresCleared": "マニフェスト ${manifestId} はすべて合格し、失敗リストはクリアされました。",
 			"terminated": "タイムアウト終了: ${label} — ${reason}",
-			"terminateIdle": "${label} を終了: ${minutes} 分以上 stdout/stderr 出力なし（アイドル ${idleSec} 秒、実行 ${elapsed}）",
-			"terminateDuration": "${label} を終了: watchdog 基準時間超過（実行 ${elapsed}、基準 ${baseline}、上限 ${limit}）",
-			"terminateDurationDefault": "${label} を終了: デフォルト watchdog 上限超過（実行 ${elapsed}、上限 ${limit}）",
 			"sleepDetected": "システムスリープを検出（watchdog 間隔が ${gap} ≥ ${limit} に跳ねた）。${label} を中止し、再実行待ち（実行済み ${elapsed}）",
 			"sleepRetry": "システムスリープにより中断。${label} を再実行（${attempt} 回目）",
-			"terminateMarker": "[終了理由: ${reason}]",
-			"terminateUnknown": "${label} を終了: テストが中断されました",
-			"terminateSpeculative": "${label} を終了: 投機的依存が未通過のため早期停止をキャンセル",
 			"nothingToContinue": "すべて緑で期限切れなし。再実行の必要はありません。",
 			"triggerNoMatch": "トリガーはどのファイルにも一致しませんでした: ${scope} — ${pattern}",
 			"triggerNoMatchSummary": "trigger ${count} 件がリポジトリ内のファイルに一致しません（詳細は report.md）",
-			"unknownSuite": "不明なスイート: ${name}",
 			"federationCleanupPre": "フェデレーションテストのクリーンアップ (実行前) が失敗しました: ${output}",
 			"federationCleanupPost": "フェデレーションテストのクリーンアップ (実行後) が失敗しました: ${output}",
 			"suiteHeader": "\n=== スイート ${name} ===",
@@ -233,25 +217,7 @@
 				"title": "fount テストレポート",
 				"tableHeaderItem": "アイテム",
 				"tableHeaderValue": "値",
-				"fieldRunId": "実行ID",
-				"fieldCommand": "コマンド",
-				"fieldExit": "終了ステータス",
-				"fieldProgress": "進捗",
-				"fieldSuites": "スイート",
-				"fieldFailed": "失敗数",
-				"fieldNoisyPassed": "合格（ノイズあり）",
-				"fieldReused": "再利用回数",
-				"fieldSuiteSumDuration": "スイートに費やした合計時間",
-				"fieldWallClock": "費やした合計時間",
-				"fieldParallelRate": "並列率",
-				"fieldEstimatedRemaining": "推定残り時間",
-				"fieldEstimatedParallelRate": "推定並列処理速度",
 				"estimatePoint": "≈ ${eta}",
-				"pendingEstimate": "推定残り時間 ≈ ${eta}",
-				"pendingParallelEstimate": "推定並列時間消費量 ≈ ${eta} (推定並列速度 ${rate})",
-				"pendingSavings": "推定節約額 ≈ ${savings}",
-				"pendingItemExpected": "期待される ${expected}",
-				"fieldDuration": "所要時間",
 				"commandDefault": "（デフォルト）",
 				"exitPassed": "合格",
 				"exitFailed": "失敗",
@@ -259,54 +225,86 @@
 				"progressFormat": "スイート ${completed}/${total}",
 				"suitesFormat": "${passed}/${completed} 合格",
 				"artifacts": "製品ディレクトリ: `${path}`",
-				"sectionFailed": "失敗したスイート",
-				"sectionNoisyPassed": "合格（ノイズあり）",
-				"sectionSilentPassed": "合格",
-				"sectionPending": "未実行",
-				"sectionContinue": "未完成の項目を続ける",
-				"sectionReplay": "失敗したアイテムを再実行する",
-				"sectionReplayImperfect": "不完全な再実行",
 				"columnSuite": "スイート",
 				"columnDuration": "所要時間",
-				"labelReused": "（再利用）",
-				"labelExpectedBlocked": "(ブロックが予想される)",
-				"labelDuration": "所要時間",
-				"labelLog": "ログ",
-				"labelNoise": "ノイズ",
-				"labelFailedFiles": "失敗ファイル",
-				"labelTerminateReason": "終了理由",
-				"sectionContinueReasons": "トリガー理由",
 				"continueReasonsLink": "トリガー理由: 詳細は [${path}](${path})",
-				"labelContinueReason": "理由",
-				"reasonImperfectFailed": "過去の失敗",
-				"reasonImperfectNoisy": "過去は合格だがノイズあり",
-				"reasonImperfectBlocked": "過去にブロック",
-				"reasonImperfectDependent": "上流の失敗により下流も対象",
-				"reasonMissingRecord": "state に記録なし、自動実行",
-				"reasonStaleContent": "内容変更のため再実行が必要",
-				"reasonTriggerHashDrift": "指紋ドリフトのトリガー (パスがヒットしない)",
-				"reasonExplicitSelected": "明示的に指定",
-				"reasonDependencyRequired": "依存により実行対象",
-				"labelRootCause": "根本的な原因",
-				"labelDirectRequiredBy": "直接の依存元",
-				"labelInclusionPath": "包含連鎖",
-				"labelPullUpstream": "アップストリーム プル: ${requiredBy} の依存関係は緑色ではありません",
-				"labelPullDownstream": "ダウンストリーム プル: ${requiredBy} は完璧ではないため、一緒に含まれます",
-				"labelGateReason": "実行理由",
-				"labelCommitRange": "コミットスコープ",
-				"labelUncommittedHashRange": "ダイジェストは提出されていません",
-				"labelMatchedTriggers": "ヒットトリガー",
-				"labelMatchedTriggerSets": "ヒットトリガーセット",
-				"labelMatchedPaths": "ヒットパス",
-				"labelTriggerHashDrift": "トリガーのフィンガープリントが現在のワークスペースと一致しません (ダーティ→ネットは無視されます)",
-				"sectionDeadTriggers": "無効なトリガー",
 				"deadTriggersHint": "次の glob は、リポジトリ内のどのファイルとも一致しません (git 追跡 + 無視されず、追跡されていません)。",
 				"durationMs": "${ms} ミリ秒",
-				"durationUnitSec": "${n} 秒",
-				"durationUnitMin": "${n} 分",
-				"durationUnitMinute": "${n} 分",
-				"durationUnitHour": "${n} 時間",
-				"durationUnitDay": "${n} 日"
+				"durationUnit": {
+					"day": "${n} 日",
+					"hour": "${n} 時間",
+					"min": "${n} 分",
+					"minute": "${n} 分",
+					"sec": "${n} 秒"
+				},
+				"section": {
+					"continue": "未完成の項目を続ける",
+					"continueReasons": "トリガー理由",
+					"deadTriggers": "無効なトリガー",
+					"failed": "失敗したスイート",
+					"noisyPassed": "合格（ノイズあり）",
+					"pending": "未実行",
+					"replay": "失敗したアイテムを再実行する",
+					"replayImperfect": "不完全な再実行",
+					"silentPassed": "合格"
+				},
+				"pending": {
+					"estimate": "推定残り時間 ≈ ${eta}",
+					"itemExpected": "期待される ${expected}",
+					"parallelEstimate": "推定並列時間消費量 ≈ ${eta} (推定並列速度 ${rate})",
+					"savings": "推定節約額 ≈ ${savings}"
+				},
+				"reason": {
+					"dependencyRequired": "依存により実行対象",
+					"explicitSelected": "明示的に指定",
+					"imperfect": {
+						"blocked": "過去にブロック",
+						"dependent": "上流の失敗により下流も対象",
+						"failed": "過去の失敗",
+						"noisy": "過去は合格だがノイズあり"
+					},
+					"missingRecord": "state に記録なし、自動実行",
+					"staleContent": "内容変更のため再実行が必要",
+					"triggerHashDrift": "指紋ドリフトのトリガー (パスがヒットしない)"
+				},
+				"label": {
+					"commitRange": "コミットスコープ",
+					"continueReason": "理由",
+					"directRequiredBy": "直接の依存元",
+					"duration": "所要時間",
+					"expectedBlocked": "(ブロックが予想される)",
+					"failedFiles": "失敗ファイル",
+					"gateReason": "実行理由",
+					"inclusionPath": "包含連鎖",
+					"log": "ログ",
+					"matchedPaths": "ヒットパス",
+					"matchedTriggerSets": "ヒットトリガーセット",
+					"matchedTriggers": "ヒットトリガー",
+					"noise": "ノイズ",
+					"pullDownstream": "ダウンストリーム プル: ${requiredBy} は完璧ではないため、一緒に含まれます",
+					"pullUpstream": "アップストリーム プル: ${requiredBy} の依存関係は緑色ではありません",
+					"reused": "（再利用）",
+					"rootCause": "根本的な原因",
+					"terminateReason": "終了理由",
+					"triggerHashDrift": "トリガーのフィンガープリントが現在のワークスペースと一致しません (ダーティ→ネットは無視されます)",
+					"uncommittedHashRange": "ダイジェストは提出されていません"
+				},
+				"field": {
+					"command": "コマンド",
+					"duration": "所要時間",
+					"estimatedParallelRate": "推定並列処理速度",
+					"estimatedRemaining": "推定残り時間",
+					"exit": "終了ステータス",
+					"failed": "失敗数",
+					"noisyPassed": "合格（ノイズあり）",
+					"parallelRate": "並列率",
+					"progress": "進捗",
+					"reused": "再利用回数",
+					"runId": "実行ID",
+					"suiteSumDuration": "スイートに費やした合計時間",
+					"suites": "スイート",
+					"wallClock": "費やした合計時間"
+				}
 			},
 			"state": {
 				"title": "fount テスト状態",
@@ -314,16 +312,40 @@
 				"sectionDependencyTree": "依存関係ツリー",
 				"sectionOverview": "各スイートの状態",
 				"sectionBlocked": "ブロックされたスイート",
-				"columnSuite": "スイート",
-				"columnStatus": "ステータス",
-				"columnCommit": "commit",
-				"columnRanAt": "最後の実行",
-				"columnDuration": "所要時間",
-				"columnLog": "ログ",
-				"columnBlocked": "ブロック数",
 				"labelBlockedBy": "ブロックされている",
 				"statusUnknown": "未実行",
-				"statusOutdated": "古い"
+				"statusOutdated": "古い",
+				"column": {
+					"blocked": "ブロック数",
+					"commit": "commit",
+					"duration": "所要時間",
+					"log": "ログ",
+					"ranAt": "最後の実行",
+					"status": "ステータス",
+					"suite": "スイート"
+				}
+			},
+			"terminate": {
+				"duration": "${label} を終了: watchdog 基準時間超過（実行 ${elapsed}、基準 ${baseline}、上限 ${limit}）",
+				"durationDefault": "${label} を終了: デフォルト watchdog 上限超過（実行 ${elapsed}、上限 ${limit}）",
+				"idle": "${label} を終了: ${minutes} 分以上 stdout/stderr 出力なし（アイドル ${idleSec} 秒、実行 ${elapsed}）",
+				"marker": "[終了理由: ${reason}]",
+				"speculative": "${label} を終了: 投機的依存が未通過のため早期停止をキャンセル",
+				"unknown": "${label} を終了: テストが中断されました"
+			},
+			"estimated": {
+				"remaining": "推定残り時間 ≈ ${eta} (${completed}/${total} スイート)",
+				"run": "この実行には ≈ ${eta} (推定並列速度 ${rate}) かかると推定されます",
+				"runSerial": "この実行には ≈ ${eta} (シリアル) かかると予想されます",
+				"runSerialHint": "並列処理が期待される場合 ≈ ${eta} (並列レート ${rate})、節約額 ≈ ${savings} (--no-parallel を削除)",
+				"runSkipped": "ほかに再利用 ${reused} 件、ブロック予定 ${blocked} 件（見積もり外）"
+			},
+			"unknown": {
+				"fileFilter": "不明なテスト ファイルのフィルタリング: ${suite} → ${names}",
+				"manifestId": "不明なマニフェスト ID: ${ids}",
+				"subtestFilter": "不明なサブテストのフィルタリング: ${suite} → ${names}",
+				"suite": "不明なスイート: ${name}",
+				"suiteSelector": "不明なスイートの指定: ${ids}"
 			}
 		},
 		"path": {
@@ -385,10 +407,10 @@
 				"packageFailed": "エラー: ${package} のインストールに失敗しました。",
 				"browserMissing": "デフォルトのブラウザが検出されません。インストールしようとしています...",
 				"untrustedPartsWarning": "信頼できない fount コンポーネントはシステムにインストールしないでください。コンポーネントは何でもできるからです。",
-				"rootWarning1": "推奨されません: root として fount を実行すると、すべての fount コンポーネントへの完全なシステム アクセスが許可されます。",
-				"rootWarning2": "自分が何をしているのかよくわからない場合は、通常のユーザーとして fount を実行することをお勧めします。",
 				"permissionDeniedAsRoot": "エラー: ディレクトリ '${path}' に書き込めません。 root として実行していますが、アクセスはまだ拒否されています。このフォルダーのセキュリティ権限を確認して修正し、現在のユーザーにフル コントロールを付与してください。",
-				"permissionDeniedNotRoot": "エラー: ディレクトリ '${path}' に書き込めません。フォルダーのセキュリティ権限を修正して現在のユーザーに書き込みアクセスを許可するか、root として fount を実行してください。"
+				"permissionDeniedNotRoot": "エラー: ディレクトリ '${path}' に書き込めません。フォルダーのセキュリティ権限を修正して現在のユーザーに書き込みアクセスを許可するか、root として fount を実行してください。",
+				"rootWarningAsRoot": "推奨されません: root として fount を実行すると、すべての fount コンポーネントへの完全なシステム アクセスが許可されます。",
+				"rootWarningPreferUser": "自分が何をしているのかよくわからない場合は、通常のユーザーとして fount を実行することをお勧めします。"
 			},
 			"clean": {
 				"removingCaches": "キャッシュを削除しています...",
@@ -409,41 +431,49 @@
 				"editorRemoved": "エディターのターミナルキーバインドから fount の設定を削除しました: `${path}`"
 			},
 			"remove": {
-				"removingDesktopShortcut": "デスクトップのショートカットを削除しています...",
-				"removingTerminalKeybindings": "ターミナルのキーバインドパッチを削除しています...",
-				"removingFount": "フォントを削除しています...",
 				"fountUninstallationComplete": "fountのアンインストールが完了しました。",
-				"removingFountInstallationDir": "fount インストール ディレクトリを削除しています...",
 				"fountInstallationDirRemoved": "fount のインストール ディレクトリは削除されました。",
-				"removingFountFromPath": "PATH からフォントを削除しています...",
-				"removingProtocolHandler": "`fount://` プロトコル ハンドラーを削除しています...",
 				"protocolHandlerRemoved": "`fount://` プロトコル ハンドラーは削除されました。",
-				"removeProtocolHandlerFailed": "`fount://` プロトコル ハンドラーの削除に失敗しました: ${message}",
-				"removingFountFromGitSafeDir": "gitsafe.directory から fount を削除しています...",
-				"removingInstalledSystemPackages": "インストールされているシステム パッケージを削除しています...",
-				"uninstallingDeno": "Deno をアンインストールしています...",
-				"removeDenoFailed": "Deno を削除できませんでした: ${message}",
-				"removingFountPwshFromProfile": "PowerShell プロファイルから `fount-pwsh` を削除しています...",
 				"fountPwshRemovedFromProfile": "fount-pwsh は PowerShell プロファイルから削除されました。",
 				"pwshProfileNotFound": "PowerShell プロファイルが見つかりません。プロファイルからの `fount-pwsh` の削除はスキップされます。",
-				"uninstallingFountPwsh": "`fount-pwsh` をアンインストールしています...",
 				"uninstallFountPwshFailed": "`fount-pwsh` のアンインストールに失敗しました: ${message}",
-				"removingTerminalProfile": "Windows ターミナル プロファイルを削除しています...",
 				"terminalProfileRemoved": "Windows ターミナル プロファイル ディレクトリが削除されました。",
 				"terminalProfileNotFound": "Windows ターミナル プロファイル ディレクトリが見つかりません。",
 				"desktopShortcutRemoved": "デスクトップのショートカットが削除されました。",
 				"desktopShortcutNotFound": "デスクトップショートカットが見つかりません。",
-				"removingStartMenuShortcut": "スタート メニューのショートカットを削除しています...",
 				"startMenuShortcutRemoved": "「スタート」メニューのショートカットが削除されました。",
 				"startMenuShortcutNotFound": "[スタート] メニューのショートカットが見つかりません。",
-				"removingInstalledPwshModules": "インストールされている pwsh モジュールを削除しています...",
 				"moduleRemoved": "${module} が削除されました。",
-				"removeModuleFailed": "${module} の削除に失敗しました: ${message}",
-				"uninstallingGit": "Git をアンインストールしています...",
-				"uninstallingChrome": "Chrome をアンインストールしています...",
-				"uninstallingWinget": "Winget をアンインストールしています...",
-				"removingBackgroundRunner": "バックグラウンド プログラムを削除しています...",
-				"removeBackgroundRunnerFailed": "バックグラウンドで実行中のプログラムを削除できませんでした: ${message}"
+				"uninstalling": {
+					"chrome": "Chrome をアンインストールしています...",
+					"deno": "Deno をアンインストールしています...",
+					"fountPwsh": "`fount-pwsh` をアンインストールしています...",
+					"git": "Git をアンインストールしています...",
+					"winget": "Winget をアンインストールしています..."
+				},
+				"removing": {
+					"backgroundRunner": "バックグラウンド プログラムを削除しています...",
+					"desktopShortcut": "デスクトップのショートカットを削除しています...",
+					"fount": {
+						"main": "フォントを削除しています...",
+						"fromGitSafeDir": "gitsafe.directory から fount を削除しています...",
+						"fromPath": "PATH からフォントを削除しています...",
+						"installationDir": "fount インストール ディレクトリを削除しています...",
+						"pwshFromProfile": "PowerShell プロファイルから `fount-pwsh` を削除しています..."
+					},
+					"installedPwshModules": "インストールされている pwsh モジュールを削除しています...",
+					"installedSystemPackages": "インストールされているシステム パッケージを削除しています...",
+					"protocolHandler": "`fount://` プロトコル ハンドラーを削除しています...",
+					"startMenuShortcut": "スタート メニューのショートカットを削除しています...",
+					"terminalKeybindings": "ターミナルのキーバインドパッチを削除しています...",
+					"terminalProfile": "Windows ターミナル プロファイルを削除しています..."
+				},
+				"remove": {
+					"backgroundRunnerFailed": "バックグラウンドで実行中のプログラムを削除できませんでした: ${message}",
+					"denoFailed": "Deno を削除できませんでした: ${message}",
+					"moduleFailed": "${module} の削除に失敗しました: ${message}",
+					"protocolHandlerFailed": "`fount://` プロトコル ハンドラーの削除に失敗しました: ${message}"
+				}
 			}
 		}
 	},
@@ -453,22 +483,6 @@
 		"hero": {
 			"title": "心に通じ、想いより生ず",
 			"description": "fountは、<i>あなた</i>の可能性を最大限に引き出すために設計された、AI搭載のキャラクター対話プラットフォームです。想像の世界のキャラクターとあなたを繋ぐ架け橋となり、気軽に会話を楽しんだり、自分だけのキャラクターを創り出して世界と共有したりすることを可能にします。"
-		},
-		"feature1": {
-			"title": "どこでもシームレスな対話を",
-			"description": "PCで始めたチャットを、スマートフォンやタブレットでシームレスに継続。fountが会話を常に同期し、どこにいてもあなたのキャラクターと繋がっていられます。Windows、macOS、Linux、そしてAndroidにも対応しています。"
-		},
-		"feature2": {
-			"title": "美しく、カスタマイズ可能なインターフェース",
-			"description": "30種類以上の美しいテーマから選択、または独自のテーマを作成しましょう。fountはあなたのパーソナルキャンバスです。自分らしさを表現し、好みに合わせて環境をカスタマイズして、真にパーソナルな体験を手に入れましょう。"
-		},
-		"feature3": {
-			"title": "表現力豊かで、没入感あふれるチャット",
-			"description": "fountはHTMLの力を最大限に活用し、キャラクターがリッチテキスト、画像、さらにはインタラクティブな要素を通じて自己表現することを可能にします。複数のキャラクターと同時に、ダイナミックで魅力的なグループチャットをお楽しみください。"
-		},
-		"feature4": {
-			"title": "AIソースとの自由な連携",
-			"description": "fountは、比類のない選択肢と柔軟性を提供します。OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、[Evolink](${evolinkLink})、OpenRouter、NovelAIなど、<i>あらゆる</i>AIソースに接続可能です。コミュニケーションのロジックは、あなたの意のままに、コードの力によって形作られます。"
 		},
 		"language_selector": {
 			"button": {
@@ -487,8 +501,8 @@
 		},
 		"mini_game": {
 			"title": "ミニゲームでひと息",
-			"description1": "インストールに時間がかかりすぎていませんか？",
-			"description2": "ここでミニゲームをして、少し時間を潰しましょう。"
+			"slowInstallHint": "インストールに時間がかかりすぎていませんか？",
+			"playWhileWaiting": "ここでミニゲームをして、少し時間を潰しましょう。"
 		},
 		"testimonials": {
 			"anonymous": "匿名ユーザー",
@@ -530,9 +544,27 @@
 			"title": "インストールに失敗しました！",
 			"description": "fountインストーラーに問題が発生したようです。",
 			"connection_failed": "接続に失敗しました！",
-			"description1": "fountインストーラーに問題が発生したようです。",
-			"description2": "ターミナルを確認して、もう一度お試しください。",
-			"close_page": "ページを閉じる"
+			"close_page": "ページを閉じる",
+			"summary": "fountインストーラーに問題が発生したようです。",
+			"retryHint": "ターミナルを確認して、もう一度お試しください。"
+		},
+		"features": {
+			"seamlessChat": {
+				"title": "どこでもシームレスな対話を",
+				"description": "PCで始めたチャットを、スマートフォンやタブレットでシームレスに継続。fountが会話を常に同期し、どこにいてもあなたのキャラクターと繋がっていられます。Windows、macOS、Linux、そしてAndroidにも対応しています。"
+			},
+			"customUi": {
+				"title": "美しく、カスタマイズ可能なインターフェース",
+				"description": "30種類以上の美しいテーマから選択、または独自のテーマを作成しましょう。fountはあなたのパーソナルキャンバスです。自分らしさを表現し、好みに合わせて環境をカスタマイズして、真にパーソナルな体験を手に入れましょう。"
+			},
+			"expressiveChat": {
+				"title": "表現力豊かで、没入感あふれるチャット",
+				"description": "fountはHTMLの力を最大限に活用し、キャラクターがリッチテキスト、画像、さらにはインタラクティブな要素を通じて自己表現することを可能にします。複数のキャラクターと同時に、ダイナミックで魅力的なグループチャットをお楽しみください。"
+			},
+			"aiSources": {
+				"title": "AIソースとの自由な連携",
+				"description": "fountは、比類のない選択肢と柔軟性を提供します。OpenAI、Claude、[Atlas Cloud](${atlasCloudLink})、[Evolink](${evolinkLink})、OpenRouter、NovelAIなど、<i>あらゆる</i>AIソースに接続可能です。コミュニケーションのロジックは、あなたの意のままに、コードの力によって形作られます。"
+			}
 		}
 	},
 	"protocolhandler": {
@@ -617,10 +649,6 @@
 			"passwordMismatch": "パスワードが一致しません。",
 			"loginError": "ログイン中にエラーが発生しました。",
 			"registrationError": "登録中にエラーが発生しました。",
-			"verificationCodeError": "認証コードが正しくないか、有効期限が切れています。",
-			"verificationCodeSent": "認証コードを正常に送信しました。",
-			"verificationCodeSendError": "認証コードの送信に失敗しました。",
-			"verificationCodeRateLimit": "認証コードの送信リクエストが多すぎます。しばらくしてから再度お試しください。",
 			"lowPasswordStrength": "パスワードの強度が低すぎます。",
 			"accountAlreadyExists": "このアカウントは既に存在します。",
 			"powNotSolved": "最初にPoW検証を完了してください",
@@ -630,26 +658,36 @@
 			"accountLockedAttempts": "ログイン試行の失敗回数が多すぎるため、アカウントは一時的にロックされました。",
 			"powValidationFailed": "セキュリティ検証に失敗しました。もう一度お試しください。",
 			"tokenAndSolutionsRequired": "token と solutions が必要です。",
-			"apiErrorBodyUnreadable": "サーバーは解析できない情報を返しました。後でもう一度試してください。"
+			"apiErrorBodyUnreadable": "サーバーは解析できない情報を返しました。後でもう一度試してください。",
+			"verificationCode": {
+				"error": "認証コードが正しくないか、有効期限が切れています。",
+				"rateLimit": "認証コードの送信リクエストが多すぎます。しばらくしてから再度お試しください。",
+				"sendError": "認証コードの送信に失敗しました。",
+				"sent": "認証コードを正常に送信しました。"
+			}
 		},
 		"webauthn": {
 			"loginButton": "セキュリティキー/パスキーを使用してログインする",
-			"errorLoadLibrary": "WebAuthn 補助ライブラリをロードできません。ネットワークを確認して再試行してください。",
-			"errorCancelled": "セキュリティ キーがキャンセルされているか、使用が許可されていません。",
-			"errorSessionMissing": "サーバーは有効なログイン セッションを返しませんでした。ページを更新して再試行してください。",
-			"errorBadBeginResponse": "サーバーから無効なログイン データが返されました。ページを更新して再試行してください。",
-			"errorCredentialRequired": "有効なパスキー資格情報データがありません。",
-			"errorAuthSessionRequired": "ログイン セッション トークンが見つかりません。ページを更新して再試行してください。",
 			"apiSessionExpired": "パスキー ログイン セッションの有効期限が切れました。もう一度お試しください。",
 			"apiUnknownPasskey": "パスキーが認識されません。バインドされたキーを使用してください。",
 			"apiPasskeyVerificationFailed": "パスキーの検証に失敗しました。もう一度お試しください。",
-			"registrationUserNotFound": "ユーザーアカウントが見つかりません。",
-			"registrationSessionExpired": "バインディング セッションの有効期限が切れました。最初からやり直してください。",
-			"registrationVerifyFailed": "パスキー登録の検証を完了できません。",
-			"registrationFailed": "パスキーの登録に失敗しました。もう一度お試しください。",
 			"removeUserNotFound": "ユーザーまたは資格情報のデータが見つかりません。",
 			"removeInvalidPassword": "パスワードが間違っています。",
-			"removePasskeyNotFound": "パスキーが見つかりませんでした。"
+			"removePasskeyNotFound": "パスキーが見つかりませんでした。",
+			"registration": {
+				"failed": "パスキーの登録に失敗しました。もう一度お試しください。",
+				"sessionExpired": "バインディング セッションの有効期限が切れました。最初からやり直してください。",
+				"userNotFound": "ユーザーアカウントが見つかりません。",
+				"verifyFailed": "パスキー登録の検証を完了できません。"
+			},
+			"error": {
+				"authSessionRequired": "ログイン セッション トークンが見つかりません。ページを更新して再試行してください。",
+				"badBeginResponse": "サーバーから無効なログイン データが返されました。ページを更新して再試行してください。",
+				"cancelled": "セキュリティ キーがキャンセルされているか、使用が許可されていません。",
+				"credentialRequired": "有効なパスキー資格情報データがありません。",
+				"loadLibrary": "WebAuthn 補助ライブラリをロードできません。ネットワークを確認して再試行してください。",
+				"sessionMissing": "サーバーは有効なログイン セッションを返しませんでした。ページを更新して再試行してください。"
+			}
 		}
 	},
 	"login_info": {
@@ -808,84 +846,86 @@
 					}
 				}
 			},
-			"serviceGenerators": {
-				"title": "サービスジェネレーター",
-				"subtitle": "目に見えないものを目に見えるものに変え、可能性を現実にします。",
-				"card": {
-					"defaultCheckbox": {
-						"title": "デフォルトのサービスジェネレータとして設定"
-					}
-				}
-			},
-			"serviceGenerators/AI": {
-				"title": "AIサービスジェネレーター",
-				"subtitle": "知恵の糸を紡ぎ、思考の橋を繋ぎます。",
-				"card": {
-					"defaultCheckbox": {
-						"title": "デフォルトの AI サービス ジェネレーターとして設定"
-					}
-				}
-			},
-			"serviceGenerators/search": {
-				"title": "検索サービスジェネレーター",
-				"subtitle": "あなたのための明かりを灯す。",
-				"card": {
-					"defaultCheckbox": {
-						"title": "デフォルトの検索ジェネレーターとして設定"
-					}
-				}
-			},
-			"serviceGenerators/translate": {
-				"title": "翻訳サービスジェネレーター",
-				"subtitle": "言語の境界を越えて、アイデアを自由に飛び交わせましょう。",
-				"card": {
-					"defaultCheckbox": {
-						"title": "デフォルトの翻訳サービスジェネレーターとして設定"
-					}
-				}
-			},
-			"serviceSources": {
-				"title": "サービスソース",
-				"subtitle": "細流を集めて大河と為す。",
-				"card": {
-					"defaultCheckbox": {
-						"title": "デフォルトのサービスソースとして設定"
-					}
-				}
-			},
-			"serviceSources/AI": {
-				"title": "AIサービスソース",
-				"subtitle": "知恵の源であり、思考の原点。",
-				"card": {
-					"defaultCheckbox": {
-						"title": "デフォルトの AI サービス ソースとして設定"
-					}
-				}
-			},
-			"serviceSources/search": {
-				"title": "サービスソースの検索",
-				"subtitle": "知識の宝庫であり、探求の出発点です。",
-				"card": {
-					"defaultCheckbox": {
-						"title": "デフォルトの検索ソースとして設定"
-					}
-				}
-			},
-			"serviceSources/translate": {
-				"title": "翻訳サービスのソース",
-				"subtitle": "言葉の架け橋、コミュニケーションの架け橋。",
-				"card": {
-					"defaultCheckbox": {
-						"title": "デフォルトの翻訳サービスソースとして設定"
-					}
-				}
-			},
 			"shells": {
 				"title": "インタラクティブなインターフェースの選択",
 				"subtitle": "窓を選ぶと、新しい世界が見えてきます。",
 				"card": {
 					"defaultCheckbox": {
 						"title": "デフォルトのシェルとして設定"
+					}
+				}
+			},
+			"service": {
+				"generators": {
+					"title": "サービスジェネレーター",
+					"subtitle": "目に見えないものを目に見えるものに変え、可能性を現実にします。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "デフォルトのサービスジェネレータとして設定"
+						}
+					}
+				},
+				"generators/AI": {
+					"title": "AIサービスジェネレーター",
+					"subtitle": "知恵の糸を紡ぎ、思考の橋を繋ぎます。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "デフォルトの AI サービス ジェネレーターとして設定"
+						}
+					}
+				},
+				"generators/search": {
+					"title": "検索サービスジェネレーター",
+					"subtitle": "あなたのための明かりを灯す。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "デフォルトの検索ジェネレーターとして設定"
+						}
+					}
+				},
+				"generators/translate": {
+					"title": "翻訳サービスジェネレーター",
+					"subtitle": "言語の境界を越えて、アイデアを自由に飛び交わせましょう。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "デフォルトの翻訳サービスジェネレーターとして設定"
+						}
+					}
+				},
+				"sources": {
+					"title": "サービスソース",
+					"subtitle": "細流を集めて大河と為す。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "デフォルトのサービスソースとして設定"
+						}
+					}
+				},
+				"sources/AI": {
+					"title": "AIサービスソース",
+					"subtitle": "知恵の源であり、思考の原点。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "デフォルトの AI サービス ソースとして設定"
+						}
+					}
+				},
+				"sources/search": {
+					"title": "サービスソースの検索",
+					"subtitle": "知識の宝庫であり、探求の出発点です。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "デフォルトの検索ソースとして設定"
+						}
+					}
+				},
+				"sources/translate": {
+					"title": "翻訳サービスのソース",
+					"subtitle": "言葉の架け橋、コミュニケーションの架け橋。",
+					"card": {
+						"defaultCheckbox": {
+							"title": "デフォルトの翻訳サービスソースとして設定"
+						}
 					}
 				}
 			}
@@ -966,12 +1006,6 @@
 				"aria-label": "Unicode へ"
 			},
 			"discoverPacks": "絵文字パックを探す →",
-			"categoryFace": "絵文字",
-			"categoryGesture": "ジェスチャー",
-			"categoryHeart": "心臓",
-			"categoryAnimal": "動物",
-			"categoryFood": "食べ物",
-			"categoryObject": "もの",
 			"addToCollection": "お気に入りに追加",
 			"addedToCollection": "お気に入りに追加しました",
 			"joinGroup": "グループに参加",
@@ -982,7 +1016,15 @@
 			"openAuthor": "作者を表示",
 			"previewGroupMeta": "グループ：${name}",
 			"previewAuthorMeta": "作者より",
-			"previewActionFailed": "操作に失敗しました：${error}"
+			"previewActionFailed": "操作に失敗しました：${error}",
+			"category": {
+				"animal": "動物",
+				"face": "絵文字",
+				"food": "食べ物",
+				"gesture": "ジェスチャー",
+				"heart": "心臓",
+				"object": "もの"
+			}
 		},
 		"emojiPacks": {
 			"title": "絵文字パックを探す",
@@ -1043,12 +1085,14 @@
 			"modeSingle": "単一の文字",
 			"modeEmpty": "空のグループ",
 			"subtitleRoles": "${count} 文字がこのチャットに参加しています",
-			"statusSaved": "保存しました",
-			"statusSaving": "保存中…",
-			"statusDirty": "未保存の変更があります",
-			"statusSaveFailed": "保存に失敗しました",
 			"saveSuccess": "グループチャット設定が保存されました",
-			"saveFailed": "グループチャット設定を保存できません"
+			"saveFailed": "グループチャット設定を保存できません",
+			"status": {
+				"dirty": "未保存の変更があります",
+				"saveFailed": "保存に失敗しました",
+				"saved": "保存しました",
+				"saving": "保存中…"
+			}
 		},
 		"group": {
 			"defaults": {
@@ -1057,167 +1101,6 @@
 				"dmChatName": "チャット",
 				"dmDmName": "プライベートチャット",
 				"threadName": "子スレッド"
-			},
-			"settingsPage": {
-				"title": "グループ設定",
-				"kicker": "グループ経営",
-				"subtitle": "グループ情報、メンバー、共通機能を管理します。低頻度のアクセス許可、ストレージ、監査ツールは詳細設定に一元化されています。",
-				"backToChat": "チャットに戻る",
-				"navigationLabel": "グループ設定の分類",
-				"advancedNavigationLabel": "詳細設定カテゴリ",
-				"tabGeneral": "基本的な",
-				"tabPermissions": "役割の権限",
-				"tabMembers": "メンバー",
-				"tabAudit": "監査ログ",
-				"tabEmojis": "絵文字",
-				"tabAdvanced": "高度な",
-				"tabStorage": "ストレージとアーカイブ",
-				"tabChannelPermissions": "チャンネル権限",
-				"advancedHubTitle": "詳細設定",
-				"advancedHubDescription": "これらの機能はグループの権限構造・履歴データ・ガバナンス記録を変えます。必要な場合のみ変更してください。",
-				"channelPermsHint": "特定のチャンネルに対してロール権限のオーバーライドを設定します。検出されていないアイテムは、グループの役割の権限を継承します。",
-				"channelPermsSelectChannel": "チャンネル",
-				"channelPermsAddRole": "ロールオーバーライドを追加",
-				"channelPermsRemoveRole": "この役割のオーバーライドを削除します",
-				"channelPermsStateNeutral": "継承する",
-				"channelPermsStateAllow": "許可する",
-				"channelPermsStateDeny": "拒否する",
-				"channelPermsUpdated": "チャンネル権限が更新されました",
-				"channelPermsUpdateFailed": "チャンネル権限を更新できませんでした: ${error}",
-				"channelPermsNoChannels": "現在、設定するチャンネルがありません",
-				"emojisTitle": "グループカスタム式",
-				"emojisHint": "メンバーはチャットにこれらの絵文字を挿入または送信できます。アンインストールされたイメージは、フェデレーション ノードを通じてオンデマンドでプルされます。",
-				"emojisUpload": "絵文字をアップロードする",
-				"emojisCreatePack": "絵文字パックを新規作成",
-				"emojisCreatePackPrompt": "絵文字パック ID",
-				"emojisCreatePackOk": "絵文字パックを作成しました",
-				"emojisCreatePackFailed": "作成に失敗しました：${error}",
-				"emojisPackGroupSuffix": "グループ既定",
-				"activeEmojiPackLabel": "編集中のパック",
-				"emojisDelete": "絵文字の削除",
-				"emojisEmpty": "グループ式はまだありません",
-				"emojisUploadOk": "式がアップロードされました",
-				"emojisUploadFailed": "アップロードに失敗しました: ${error}",
-				"emojisDeleteConfirm": "この絵文字グループを削除してもよろしいですか?",
-				"emojisDeleteOk": "絵文字は削除されました",
-				"emojisDeleteFailed": "削除に失敗しました: ${error}",
-				"defaultEmojiPackLabel": "デフォルトの絵文字パック",
-				"defaultEmojiPackHint": "メンバーが参加すると自動でお気に入りに追加されます。変更後は、まだお気に入りにある旧デフォルトパックだけが置き換えられます。",
-				"defaultEmojiPackOk": "デフォルトの絵文字パックを更新しました",
-				"defaultEmojiPackFailed": "デフォルトの絵文字パックを設定できませんでした",
-				"membersTitle": "メンバーリスト",
-				"overviewTitle": "グループ概要",
-				"overviewHint": "読み取り専用の情報。ガバナンス権限がある場合は、「基本」でグループ情報とポリシーを編集できます。",
-				"channelArchiveTitle": "チャンネルアーカイブ",
-				"channelArchiveHint": "チャンネル JSON アーカイブをインポートすると、このグループに新しいテキストチャンネルが作成され、履歴が復元されます（再署名が必要。添付はメタデータのみ保持）。",
-				"channelArchiveImport": "チャンネル JSON をインポート",
-				"channelArchiveImportOk": "${count} 件のメッセージをインポートしました。新しいチャンネルを開いています…",
-				"channelArchiveImportFailed": "インポートに失敗しました: ${error}",
-				"governanceHint": "DAG のグループレベルのポリシーを書き込みます。管理者または MANAGE_ADMINS 権限が必要です。",
-				"governanceDenied": "グループ ガバナンス設定を変更する権限がありません。",
-				"rolesDenied": "ロールを編集するための MANAGE_ROLES 権限がありません。",
-				"channelPermsDenied": "チャンネル権限のオーバーライドを編集するための MANAGE_CHANNELS 権限がありません。",
-				"notMember": "あなたはもうこのグループのメンバーではありません。このグループのデータは、グループを脱退すると自動的に消去されます。",
-				"basicTitle": "グループガバナンス",
-				"profileSectionTitle": "グループプロフィール",
-				"profileSectionHint": "グループの名前、紹介、参加方法がグループのメタデータに書き込まれます。",
-				"behaviorSectionTitle": "動作",
-				"networkSectionTitle": "フェデレーションと接続",
-				"retentionSectionTitle": "保持とレート制限",
-				"mediaSectionTitle": "通話とファイル",
-				"nameLabel": "グループ名",
-				"descriptionLabel": "グループの説明",
-				"joinPolicyLabel": "参加ポリシー",
-				"joinInviteOnly": "招待のみ",
-				"joinPow": "PoW が必要",
-				"powDifficultyLabel": "PoWの難易度",
-				"advancedTitle": "詳細設定",
-				"advancedDescription": "ネットワーク、ストレージ、速度制限、暗号化パラメータ。不明な場合はデフォルトのままにしてください",
-				"securityAdvancedTitle": "セキュリティとグループ所有者の操作",
-				"securityAdvancedDescription": "キーローテーションとグループリーダーの継承。操作を誤るとメンバーのアクセスに影響を与える可能性があります",
-				"powDifficultyTip": "Proof of Work の難易度。値が高いほど、見知らぬ人が公開グループに参加するのに時間がかかります。",
-				"maxDagPayloadTip": "1 つのグループ イベントで伝送できるデータの上限。大きすぎると、同期メモリとネットワークのオーバーヘッドが増加します。",
-				"trustedPeersTip": "接続を維持するために優先される、評判の高いフェデレーションネイバーの数。",
-				"gossipTtlTip": "メッセージを転送できる連邦ノードの最大数。この値を増やすと、カバレッジが増加し、トラフィックも増加します。",
-				"hlcTip": "将来の異常なイベントを拒否するために使用される、リモート ノードのクロックがローカル ノードのクロックより高速であることが許可される最大時間。",
-				"sfuTip": "オプションの外部オーディオおよびビデオ転送サービス アドレス。組み込みのポイントツーポイント/リレー通話を使用するには、空白のままにします。",
-				"iceTip": "WebRTC がルーターに侵入できるようにします。直接接続が失敗すると、TURN が代わりにオーディオ、ビデオ、およびフェデレーション トラフィックを転送します。",
-				"fileEncryptionTip": "集中暗号化は重複を排除しますが、ファイルが同じであるという事実を暴露します。ランダムキーはよりプライベートですが、より多くのスペースを必要とします。",
-				"keyManagementTitle": "鍵の管理",
-				"keyManagementTip": "古い鍵はフェデレーションネットワークに配布されるまで必要です。手動ローテーションは、メンバーが隔離されたドメインにいる場合のみ行ってください。",
-				"allowDangerousHtml": "信頼できる作成者メッセージによりインライン HTML が許可されます",
-				"deleteGroup": "グループの削除",
-				"save": "設定を保存する",
-				"inviteTitle": "招待する",
-				"inviteHint": "短期間の招待コード (デフォルトは 1 時間) を生成します。相手は「グループに参加」にグループIDと招待コードを入力します。",
-				"inviteMint": "招待コードを生成する",
-				"inviteGroupId": "グループID",
-				"inviteCode": "招待コード",
-				"inviteExpires": "有効期限: ${date}",
-				"inviteCopy": "グループ情報をコピーする",
-				"inviteCopied": "グループ情報をコピーしました",
-				"inviteCopyFailed": "コピーに失敗しました",
-				"inviteClipboard": "グループ ID: ${groupId}\n招待コード: ${code}\n参加: ${url}",
-				"loadFailed": "グループ設定のロードに失敗しました: ${error}",
-				"saveSuccess": "グループ設定が保存されました",
-				"saveFailed": "設定を保存できませんでした: ${error}",
-				"deleteConfirm": "このグループを削除してもよろしいですか?この操作は元に戻すことができず、すべてのメッセージとメンバー データは完全に削除されます。",
-				"deleteSuccess": "グループが削除されました",
-				"deleteFailed": "グループの削除に失敗しました: ${error}",
-				"rolesTitle": "役割と権限",
-				"createRole": "ロールを作成する",
-				"roleDefault": "デフォルト",
-				"deleteRole": "役割の削除",
-				"deleteRoleConfirm": "この役割を削除してもよろしいですか?",
-				"deleteRoleSuccess": "役割が削除されました",
-				"deleteRoleFailed": "ロールの削除に失敗しました: ${error}",
-				"createRolePrompt": "キャラクター名を入力してください:",
-				"createRoleSuccess": "ロールが作成されました",
-				"createRoleFailed": "ロールの作成に失敗しました: ${error}",
-				"permissionUpdated": "権限が更新されました",
-				"permissionUpdateFailed": "権限の更新に失敗しました: ${error}",
-				"noMembers": "まだメンバーがいません",
-				"memberRoles": "役割：",
-				"kick": "追い出す",
-				"ban": "禁止",
-				"kickConfirm": "メンバー ${name} をキックしてもよろしいですか?",
-				"kickSelfNodeWarning": "警告: このメンバーはあなたと同じノード ID を使用します。追放された場合もグループから削除されます。続行してもよろしいですか?",
-				"kickSuccess": "メンバーが追い出された",
-				"kickFailed": "メンバーを追い出せませんでした: ${error}",
-				"banConfirm": "メンバー ${name} を禁止してもよろしいですか?",
-				"banSuccess": "メンバーが出入り禁止になった",
-				"banFailed": "メンバーを禁止できませんでした: ${error}",
-				"bannedTitle": "禁止メンバー",
-				"unban": "ブロックを解除する",
-				"unbanConfirm": "メンバー ${name} のブロックを解除してもよろしいですか?",
-				"unbanSuccess": "メンバーのブロックが解除されました",
-				"unbanFailed": "ブロックの解除に失敗しました: ${error}",
-				"keyRotate": "グループ ファイル マスター キーのローテーション",
-				"keyRotateConfirm": "このグループ ファイルのマスター キーを手動でローテーションしてもよろしいですか?新しいメンバーは履歴ファイルのキーを再同期する必要があります。",
-				"keyRotateOk": "キーが回転されました",
-				"keyRotateFailed": "キーのローテーションが失敗しました: ${error}",
-				"gshGenerationRetentionHint": "現在、ファイル マスター キー履歴の最新の 64 世代のみが保持されます。最も古い履歴ファイルは、それを超えると復号化できなくなる可能性があるため、重要なデータは定期的にアーカイブすることをお勧めします。",
-				"gshGenerationNearLimit": "現在、ファイル マスター キーの世代 ${generation} までローテーションされています (最大 ${maxGenerations} 世代)。頻繁なローテーションを続けると、最も古い履歴キーが廃止されます。",
-				"ownerSuccession": "グループリーダーの継承",
-				"ownerSuccessionOk": "グループリーダーの継承が発効しました",
-				"ownerSuccessionFailed": "グループ リーダーの継承に失敗しました: ${error}",
-				"permVIEW_CHANNEL": "チャンネルを見る",
-				"permSEND_MESSAGES": "メッセージを送信する",
-				"permSEND_STICKERS": "ステッカーを送信する",
-				"permADD_REACTIONS": "リアクションを追加する",
-				"permMANAGE_MESSAGES": "管理メッセージ",
-				"permMANAGE_CHANNELS": "チャンネルの管理",
-				"permKICK_MEMBERS": "キックメンバー",
-				"permBAN_MEMBERS": "禁止メンバー",
-				"permMANAGE_ROLES": "管理の役割",
-				"permINVITE_MEMBERS": "メンバーを招待する",
-				"permSTREAM": "声",
-				"permCREATE_THREADS": "サブチャンネルの作成",
-				"permUPLOAD_FILES": "ファイルをアップロードする",
-				"permMANAGE_FILES": "ファイルの管理",
-				"permPIN_MESSAGES": "固定メッセージ",
-				"permADMIN": "管理者",
-				"permBYPASS_RATE_LIMIT": "メッセージレート制限をバイパスする"
 			},
 			"auditLog": {
 				"title": "グループ監査ログ",
@@ -1228,10 +1111,6 @@
 				"loadMore": "古いレコードをロードする",
 				"empty": "監査記録はまだありません",
 				"loadFailed": "監査ログのロードに失敗しました: ${error}",
-				"colTime": "時間",
-				"colType": "タイプ",
-				"colActor": "オペレーター",
-				"colSummary": "まとめ",
 				"type": {
 					"member_join": "メンバーが参加する",
 					"member_leave": "メンバーが脱退する",
@@ -1288,167 +1167,44 @@
 					"unpin_message": "${channelName} で ${targetEventId} の固定を解除します",
 					"file_upload": "ファイル ${fileName} をアップロードします",
 					"file_delete": "ファイル ${fileName} を削除します"
+				},
+				"col": {
+					"actor": "オペレーター",
+					"summary": "まとめ",
+					"time": "時間",
+					"type": "タイプ"
 				}
 			},
-			"messagePrefixSticker": "ステッカー",
 			"membersEmpty": "(まだメンバーはいません)",
 			"channelEncryptionGsh": "チャンネルキーのエンドツーエンド暗号化 (CKG)",
-			"ownerSuccession": "後継者投票を開始する",
-			"ownerSuccessionDescription": "グループの最高の管理権限 (MANAGE_ADMINS) を指定されたメンバーに譲渡します。管理者のみが操作できます。",
-			"ownerSuccessionAutoSignHint": "送信後、マシンは秘密キーを入力せずに、グループの署名シードに自動的に署名します。複数管理者グループでは、管理者の半数以上が同じ投票用紙 (同じ投票 ID と候補者) をローカルで送信する必要があります。",
-			"ownerSuccessionCandidateLabel": "後継公開鍵ハッシュ",
-			"ownerSuccessionSelfButton": "あなた自身を推薦してください",
-			"ownerSuccessionSubmitted": "あなたの署名は後継者投票用紙に記録されました。",
-			"ownerSuccessionNeedHash": "後継者の公開鍵ハッシュを入力してください",
-			"ownerSuccessionFailed": "後継投票の送信に失敗しました",
 			"e2eDecryptUnavailable": "メッセージは暗号化されており、現在のデバイスでは復号化できません",
 			"contentRefBodyPending": "外部リンクテキスト (content_ref、検証のためにまだ取得されていません)",
 			"contentRefHashMismatch": "外部リンクのテキストがストレージ検証と矛盾しています (ハッシュが一致しません)",
-			"streamGenerationFailed": "AI の生成がタイムアウトして完了せず、更新が停止されました。",
 			"convergentEncryptWarn": "グループ ファイルは収束暗号化を使用します。攻撃者がファイルの平文を知っている場合、キーを導出して、対応する暗号文ブロックを復号化できます。機密性の高い独自のプライベート文書を保護するために、グループ暗号化のみに依存しないでください。",
-			"settingsStreamGeneratingIdle": "AI が生成したプレースホルダーのアイドル タイムアウト (ミリ秒)",
-			"settingsAutoReplyFrequency": "ロール応答を自動的にトリガーします (N 個のユーザー メッセージごとに、0 はオフになります)",
-			"settingsAutoReplyFrequencyHint": "0はオフを意味します。 @メンションは引き続き即時にトリガーされます",
-			"settingsMaxDagPayload": "単一イベントの DAG 最大バイト数",
-			"settingsBatterySaver": "低電力モード (縮小されたフェデレーション接続プールとリレー)",
-			"settingsDiscoveryPublic": "このグループをフェデレーション検出で公開します (グループ キーに参加せずに)",
-			"settingsDiscoveryTitle": "ディスカバリーリストのタイトル (オプション)",
-			"settingsDiscoveryBlurb": "ディスカバリーの概要 (オプション)",
-			"settingsTrustedPeers": "トラストネイバースロット (Top-K)",
-			"settingsExplorePeers": "隣接スロットを探索する",
-			"settingsMaxPeers": "フェデレーション接続キャップ",
-			"settingsGossipTtl": "ゴシップ転送 TTL (ホップ数)",
-			"settingsWantIdsBudget": "単一の wantID 予算",
-			"settingsHlcMaxSkew": "HLC 将来オフセット上限 (ミリ秒)",
 			"dagForkDetected": "マージされていない DAG フォークが検出されました",
 			"mergeDagTips": "DAG フォークをマージする",
 			"mergeDagTipsOk": "フォークがマージされました",
 			"mergeDagTipsFailed": "マージフォークが失敗しました",
-			"settingsStreamingSfu": "ストリーミング SFU WebSocket アドレス (オプション)",
-			"settingsMessageRetention": "メッセージテキストは自動的に削除されます",
-			"settingsMessageRetentionForever": "永久保持 (圧縮 DAG イベントのみ)",
-			"settingsMessageRetention30d": "30日前",
-			"settingsMessageRetention90d": "90日前",
-			"settingsMessageRetention1y": "1年前",
-			"settingsMessageRetentionHint": "デフォルトでは、表示された履歴は自動的に削除されません。有効にすると、ローカル メッセージのホット キャッシュのみがプルーニングされます。最終メッセージはコールド アーカイブとチェックポイントに保持されます。",
-			"settingsHotLatest": "ホット ゾーンの保持 (チャンネルごとの最新の投稿数)",
-			"settingsPinContext": "最上位近傍 (±N 近傍)",
-			"settingsHotWindowHint": "ホット ゾーンの投稿はチェックポイントとメッセージ キャッシュに保存されます。残りの投稿は具体化後に月次コールド アーカイブに書き込まれ、DAG プロセス イベントから折りたたまれます。",
-			"settingsArchiveTitle": "ストレージとコールドアーカイブ",
-			"settingsArchiveHint": "コールド アーカイブは、ローカルのクリア テキスト投稿 (月ごとに分割されたファイル) の最終状態です。アーカイブを削除しても DAG は変更されません。履歴が欠落している場合は、近隣連合から取得できます。",
-			"settingsArchiveFilesTitle": "アーカイブされたファイル",
-			"settingsArchiveEmpty": "コールド アーカイブ ファイルはまだありません。",
-			"settingsArchiveColChannel": "チャンネル",
-			"settingsArchiveColMonth": "月",
-			"settingsArchiveColSize": "サイズ",
-			"settingsArchiveDeleteBefore": "今月より前に削除",
-			"settingsArchiveDeleteButton": "コールドアーカイブを削除する",
-			"settingsArchiveDeleteHint": "ローカルの archive/*.jsonl のみが削除されます。ホットスポットと DAG アンカーは影響を受けません。",
-			"settingsArchiveAdminOnly": "このマシンには、このグループのコールド アーカイブ データがまだありません。",
-			"settingsArchiveDeleteInvalidMonth": "YYYY-MM 形式で入力してください。",
-			"settingsArchiveDeleteConfirm": "${month} より古いコールド アーカイブ ファイルをすべて削除してもよろしいですか?この操作は元に戻すことができません。",
-			"settingsArchiveDeleteOk": "${files} 個のアーカイブ ファイルが削除されました。",
-			"settingsArchiveDeleteFailed": "アーカイブの削除に失敗しました: ${error}",
-			"settingsEventRetentionDepth": "DAG イベント保持の深さ",
-			"settingsEventRetentionMs": "DAG イベント保持時間",
-			"settingsCompactTriggerDepth": "実体化された圧縮トリガーの深さ",
-			"settingsMessageRateLimit": "メッセージレート制限 (メッセージ/分/エンティティ)",
-			"settingsAutoReplyTokenBucket": "自動返信プレッシャースケジューリング（トークンバケット）",
-			"settingsAutoReplyTokenBucketHint": "有効になった後、各キャラクターはチャンネルごとにトークン バケットを維持します。バケットが空の場合、onMessage は一時的にトリガーされないため、ピーク時の継続的な画面更新が妨げられる可能性があります。",
-			"settingsIceServers": "ICE/TURNサーバー",
-			"settingsIceServersAdd": "サーバーの追加",
-			"settingsIceServersHint": "WebRTC およびフェデレーション P2P の NAT 越えに使います。TURN のユーザー名とパスワードはこの端末にのみ保存され、フェデレーションには同期されません。",
-			"settingsIceUrl": {
-				"aria-label": "ICE サーバーのアドレス",
-				"placeholder": "stun:host:19302"
-			},
-			"settingsIceUser": {
-				"aria-label": "TURN ユーザー名",
-				"placeholder": "ユーザー名（任意）"
-			},
-			"settingsIceCred": {
-				"aria-label": "TURN パスワード",
-				"placeholder": "パスワード（任意）"
-			},
-			"settingsIceRemove": {
-				"aria-label": "このサーバーを削除"
-			},
-			"settingsFileCeMode": "ファイル暗号化モード",
-			"settingsFileCeModeConvergent": "集中暗号化 (重複を削除可能)",
-			"settingsFileCeModeRandom": "高プライバシー モード (ランダム キー、重複排除なし)",
-			"settingsFileCeModeHint": "高プライバシー モードでは、ブロックごとにランダムな contentKey を使用し、ceMode=random とマークします。これにより、平文が推測されるリスクは軽減されますが、ストレージと帯域幅の使用量が増加します。",
 			"channelsTitle": "チャンネル",
-			"createGroup": "新しいグループを作成する",
 			"members": "メンバー",
 			"membersHint": "メンバーリストはチェックポイント（プレースホルダー）によって同期されます",
-			"streamTest": "メディアデバイスのテスト",
 			"loadError": "グループのロードに失敗しました",
-			"remoteNodeTimeout": "リモートノードが応答していません。しばらくしてから再試行してください。",
-			"remoteUnavailable": "リモート コンポーネントが利用できないか、RPC をルーティングできません",
 			"messagesLoadFailed": "メッセージの読み込みに失敗しました",
 			"sendFailed": "送信に失敗しました",
 			"chatNotLoaded": "メイン チャットが読み込まれていません: メイン インターフェイスでグループと同じ ID で会話を開いて、もう一度お試しください。",
-			"createFailed": "グループの作成に失敗しました",
 			"newGroupName": "新しいグループ",
-			"streamOk": "メディア ストリームを取得 (停止、ブロードキャストではない)",
-			"remoteUnsafe": "このメッセージは遠隔地から送信されており、作成者はローカルの信頼リストに含まれていません。リッチテキストのレンダリングが無効になっています。",
 			"trustAuthor": {
 				"textContent": "信頼",
 				"title": "この作者を信頼します (危険な HTML を許可します)"
 			},
 			"trustAuthorOk": "この作成者は信頼されており、リッチ テキストを表示します",
-			"voteCast": "投票する",
 			"listEmpty": "(ナビゲーション項目はまだありません。管理者は API を通じてリスト項目を更新できます)",
 			"listChannelReadonly": {
 				"placeholder": "リスト チャンネルではナビゲーション カードのみが表示され、メッセージは送信されません。"
 			},
-			"streamNoEmbed": {
-				"textContent": "ストリーミング アドレスは埋め込み可能な https:// ページである必要があります。または、グループ設定を最初に構成し、表示トークンを取得するために更新する必要があります。"
-			},
-			"streamNoSfu": {
-				"textContent": "streamSfuWss が構成されていません。管理者は、グループ設定で LiveKit/mediasoup 表示アドレスを入力できます。"
-			},
-			"messageDeleted": "メッセージが削除されました",
-			"messageDeletedBracket": "[メッセージが削除されました]",
-			"messageWithAttachments": "${text} (${n} 個の添付ファイル)",
-			"voteBlockHeading": "[${prefix}] ${question}",
-			"voteBlockHeadingTagged": "[投票] ${question}",
-			"voteCastLine": "[${prefix}] 投票: ${choice}",
-			"voteCastLineTagged": "[投票] 投票: ${choice}",
-			"voteOptionsPreview": "[${prefix}] ${options}",
-			"voteOptionsPreviewTagged": "[投票] ${options}",
-			"voteDeadlineLineOpen": "締め切り: ${date}",
-			"voteDeadlineLineClosed": "終了: ${date} [終了]",
-			"pinMessageLine": "[トップ] ${targetId}",
-			"unpinMessageLine": "[固定を解除] ${targetId}",
-			"stickerPrefixLine": "[${label}]",
-			"stickerPrefixLineTagged": "[ステッカー]",
-			"feedbackDagLine": "[${label}]",
-			"feedbackDagLineWithNote": "[${label}] ${note}",
-			"feedbackPreviewLine": "${tag}${sep}${note}",
-			"feedbackPreviewTaggedNote": "${tag} ${note}",
 			"mentionHandle": "@${name}",
 			"mentionInsert": "@${name}",
-			"feedbackUp": "賞賛",
-			"feedbackDown": "踏む",
 			"attachmentsHint": "(${n} 個の添付ファイル)",
-			"pinMessage": "上にピンで留める",
-			"unpinMessage": "ピン留めを解除",
-			"pinThisMessage": "この記事を DAG に書き込み、上部に固定します",
-			"pinAction": {
-				"textContent": "上にピンで留める",
-				"title": "この記事を DAG に書き込み、上部に固定します"
-			},
-			"unpinAction": {
-				"textContent": "ピン留めを解除",
-				"title": "ピン留めを解除"
-			},
-			"pinOk": "記録して固定した",
-			"unpinOk": "固定されていない",
-			"pinFailed": "ピンが失敗しました",
-			"menuCopyText": "テキストをコピーする",
-			"menuExportHtml": "HTMLにエクスポート",
-			"menuCopyId": "メッセージIDをコピーする",
 			"copied": "コピーされました",
 			"addBookmark": {
 				"title": "現在のチャンネルをブックマークする"
@@ -1456,9 +1212,6 @@
 			"bookmarkExists": "ブックマークはすでに存在します",
 			"bookmarkAdded": "ブックマーク済み",
 			"bookmarkSaveFailed": "ブックマークの保存に失敗しました",
-			"remoteTyping": "${name} が入力中です...",
-			"remoteTypingTwo": "${name1}、${name2} 入力中...",
-			"remoteTypingMany": "${name} さんと ${count} 人が入力中です...",
 			"localAiLabel": "ネイティブの役割:",
 			"forceTriggerOne": {
 				"title": "トリガー ${name} を強制的に発言させます"
@@ -1467,23 +1220,10 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "すべてのローカルキャラクターを強制的に話すようにする"
 			},
-			"messageRefAnchor": "引用メッセージ: ${id}",
-			"settingsFedPartition": "連邦部門の数",
-			"settingsRtcBudget": "RTC 接続の予算",
-			"settingsRtcJoinRate": "RTC は 1 分あたりの制限を追加しました",
-			"settingsFedTuningHint": "DAG グループ設定を書き込みます。変更後は、フェデレーション ルームを再バインドすることをお勧めします。",
-			"settingsAutoChannelGc": "無音チャンネルを自動的にクリアする",
-			"settingsAutoChannelGcHint": "30 日以上沈黙しており、到達できない孤立した島のチャンネルは最大 2 つまで、具体化されると削除されます。",
 			"quoteHeader": "> **${sender}**${sep}${time}",
 			"quoteHeaderWithTime": "> **${sender}** · ${time}",
 			"quoteHeaderWithoutTime": "> **${sender}**",
 			"stopGenerating": "生成を停止する",
-			"messageAborted": "中断されました",
-			"avStart": "メディアを開始する",
-			"avMute": "ミュート",
-			"avSwap": "ホーム画面",
-			"avStop": "停止",
-			"avNeedStreamChannel": "ストリーミングメディアには専用のボイスチャンネルでビデオを使ってください。",
 			"reactionAdd": {
 				"title": "応答を追加"
 			},
@@ -1494,25 +1234,11 @@
 				"title": "絵文字を追加する"
 			},
 			"reactionPrompt": "絵文字（Unicode）を入力してください",
-			"channelTypeLabel": "チャンネルの種類",
-			"channelTypeText": "チャットチャンネル",
-			"channelTypeList": "リスト/フォーラムチャンネル",
-			"channelTypeStreaming": "ストリーミングチャンネル",
 			"convertToText": "チャット チャンネルに変換する",
 			"convertToList": "リスト/フォーラム チャンネルに変換する",
 			"setAsDefault": "グループのデフォルトチャンネルとして設定",
 			"isDefault": "現在のデフォルト",
-			"defaultChannelSet": "デフォルトのチャンネルとして設定",
-			"defaultChannelSetFailed": "デフォルトチャンネルの設定に失敗しました",
 			"channelUpdateFailed": "チャンネルの更新に失敗しました",
-			"voteCreate": "投票を作成",
-			"votePromptDeadline": "締切（期限なしの場合は空白のまま、形式 2026-01-01 23:59）",
-			"voteTooFewOptions": "少なくとも 2 つのオプションが必要です",
-			"voteCreateFailed": "投票の作成に失敗しました",
-			"voteFor": "${option} に投資する",
-			"voteDeadline": "締め切り",
-			"voteEnded": "終わった",
-			"voteTotal": "合計 ${n} 票",
 			"record": "録音",
 			"fileDownload": {
 				"title": "ファイルをダウンロードする"
@@ -1526,44 +1252,438 @@
 			"saveSticker": {
 				"title": "ステッカー/絵文字をお気に入りに保存する"
 			},
-			"stickerSaved": "ステッカーライブラリに保存されました",
-			"stickerDefaultName": "ステッカー",
 			"deleteMessage": {
 				"title": "メッセージを削除する"
 			},
 			"deleteConfirm": "このメッセージを削除しますか?",
-			"editMessage": {
-				"title": "メッセージを編集する"
-			},
 			"saveEdit": "保存",
 			"cancelEdit": "キャンセル",
 			"editingMessage": "編集",
-			"editConfirm": "確認(Ctrl+Enter)",
-			"editCancel": "キャンセル (Esc)",
-			"editHint": "Ctrl+Enter 確認 · Esc キャンセル",
-			"editEmptyText": "メッセージの内容を空にすることはできません",
-			"createGroupTitle": "新しいグループを作成する",
 			"groupNameLabel": "グループ名",
 			"groupName": {
 				"placeholder": "私のグループ"
 			},
-			"defaultChannelLabel": "デフォルトチャンネル",
-			"defaultChannel": {
-				"placeholder": "一般的な"
-			},
-			"createGroupFailed": "グループの作成に失敗しました",
-			"createChannelFailed": "チャンネルの作成に失敗しました",
 			"moreActions": {
 				"title": "さらなるアクション"
 			},
-			"thread": "子スレッド",
-			"threadBack": "戻る",
-			"threadBreadcrumbRootTitle": "パスの開始点 (第 1 レベル) にジャンプします",
-			"threadBreadcrumbMiddleTitle": "中間レイヤーを展開し、ジャンプ先のレベルを選択します",
-			"threadBreadcrumbMiddleSummary": "中間の ${count} 層",
-			"menuShareExternal": "外部リンクへ共有",
 			"shareExternalOk": "リンクをアップロードしてコピーしました",
-			"shareExternalFailed": "アップロードに失敗しました。ネットワークを確認してください"
+			"shareExternalFailed": "アップロードに失敗しました。ネットワークを確認してください",
+			"ownerSuccession": {
+				"main": "後継者投票を開始する",
+				"autoSignHint": "送信後、マシンは秘密キーを入力せずに、グループの署名シードに自動的に署名します。複数管理者グループでは、管理者の半数以上が同じ投票用紙 (同じ投票 ID と候補者) をローカルで送信する必要があります。",
+				"candidateLabel": "後継公開鍵ハッシュ",
+				"description": "グループの最高の管理権限 (MANAGE_ADMINS) を指定されたメンバーに譲渡します。管理者のみが操作できます。",
+				"failed": "後継投票の送信に失敗しました",
+				"needHash": "後継者の公開鍵ハッシュを入力してください",
+				"selfButton": "あなた自身を推薦してください",
+				"submitted": "あなたの署名は後継者投票用紙に記録されました。"
+			},
+			"channelType": {
+				"label": "チャンネルの種類",
+				"list": "リスト/フォーラムチャンネル",
+				"streaming": "ストリーミングチャンネル",
+				"text": "チャットチャンネル"
+			},
+			"settings": {
+				"archive": {
+					"adminOnly": "このマシンには、このグループのコールド アーカイブ データがまだありません。",
+					"colChannel": "チャンネル",
+					"colMonth": "月",
+					"colSize": "サイズ",
+					"delete": {
+						"before": "今月より前に削除",
+						"button": "コールドアーカイブを削除する",
+						"confirm": "${month} より古いコールド アーカイブ ファイルをすべて削除してもよろしいですか?この操作は元に戻すことができません。",
+						"failed": "アーカイブの削除に失敗しました: ${error}",
+						"hint": "ローカルの archive/*.jsonl のみが削除されます。ホットスポットと DAG アンカーは影響を受けません。",
+						"invalidMonth": "YYYY-MM 形式で入力してください。",
+						"ok": "${files} 個のアーカイブ ファイルが削除されました。"
+					},
+					"empty": "コールド アーカイブ ファイルはまだありません。",
+					"filesTitle": "アーカイブされたファイル",
+					"hint": "コールド アーカイブは、ローカルのクリア テキスト投稿 (月ごとに分割されたファイル) の最終状態です。アーカイブを削除しても DAG は変更されません。履歴が欠落している場合は、近隣連合から取得できます。",
+					"title": "ストレージとコールドアーカイブ"
+				},
+				"autoChannelGc": "無音チャンネルを自動的にクリアする",
+				"autoChannelGcHint": "30 日以上沈黙しており、到達できない孤立した島のチャンネルは最大 2 つまで、具体化されると削除されます。",
+				"autoReply": {
+					"frequency": "ロール応答を自動的にトリガーします (N 個のユーザー メッセージごとに、0 はオフになります)",
+					"frequencyHint": "0はオフを意味します。 @メンションは引き続き即時にトリガーされます",
+					"tokenBucket": "自動返信プレッシャースケジューリング（トークンバケット）",
+					"tokenBucketHint": "有効になった後、各キャラクターはチャンネルごとにトークン バケットを維持します。バケットが空の場合、onMessage は一時的にトリガーされないため、ピーク時の継続的な画面更新が妨げられる可能性があります。"
+				},
+				"batterySaver": "低電力モード (縮小されたフェデレーション接続プールとリレー)",
+				"compactTriggerDepth": "実体化された圧縮トリガーの深さ",
+				"discoveryBlurb": "ディスカバリーの概要 (オプション)",
+				"discoveryPublic": "このグループをフェデレーション検出で公開します (グループ キーに参加せずに)",
+				"discoveryTitle": "ディスカバリーリストのタイトル (オプション)",
+				"eventRetentionDepth": "DAG イベント保持の深さ",
+				"eventRetentionMs": "DAG イベント保持時間",
+				"explorePeers": "隣接スロットを探索する",
+				"fedPartition": "連邦部門の数",
+				"fedTuningHint": "DAG グループ設定を書き込みます。変更後は、フェデレーション ルームを再バインドすることをお勧めします。",
+				"fileCe": {
+					"mode": "ファイル暗号化モード",
+					"modeConvergent": "集中暗号化 (重複を削除可能)",
+					"modeHint": "高プライバシー モードでは、ブロックごとにランダムな contentKey を使用し、ceMode=random とマークします。これにより、平文が推測されるリスクは軽減されますが、ストレージと帯域幅の使用量が増加します。",
+					"modeRandom": "高プライバシー モード (ランダム キー、重複排除なし)"
+				},
+				"gossipTtl": "ゴシップ転送 TTL (ホップ数)",
+				"hlcMaxSkew": "HLC 将来オフセット上限 (ミリ秒)",
+				"hotLatest": "ホット ゾーンの保持 (チャンネルごとの最新の投稿数)",
+				"hotWindowHint": "ホット ゾーンの投稿はチェックポイントとメッセージ キャッシュに保存されます。残りの投稿は具体化後に月次コールド アーカイブに書き込まれ、DAG プロセス イベントから折りたたまれます。",
+				"ice": {
+					"cred": {
+						"aria-label": "TURN パスワード",
+						"placeholder": "パスワード（任意）"
+					},
+					"remove": {
+						"aria-label": "このサーバーを削除"
+					},
+					"servers": "ICE/TURNサーバー",
+					"serversAdd": "サーバーの追加",
+					"serversHint": "WebRTC およびフェデレーション P2P の NAT 越えに使います。TURN のユーザー名とパスワードはこの端末にのみ保存され、フェデレーションには同期されません。",
+					"url": {
+						"aria-label": "ICE サーバーのアドレス",
+						"placeholder": "stun:host:19302"
+					},
+					"user": {
+						"aria-label": "TURN ユーザー名",
+						"placeholder": "ユーザー名（任意）"
+					}
+				},
+				"maxDagPayload": "単一イベントの DAG 最大バイト数",
+				"maxPeers": "フェデレーション接続キャップ",
+				"message": {
+					"rateLimit": "メッセージレート制限 (メッセージ/分/エンティティ)",
+					"retention": "メッセージテキストは自動的に削除されます",
+					"retention1y": "1年前",
+					"retention30d": "30日前",
+					"retention90d": "90日前",
+					"retentionForever": "永久保持 (圧縮 DAG イベントのみ)",
+					"retentionHint": "デフォルトでは、表示された履歴は自動的に削除されません。有効にすると、ローカル メッセージのホット キャッシュのみがプルーニングされます。最終メッセージはコールド アーカイブとチェックポイントに保持されます。"
+				},
+				"page": {
+					"title": "グループ設定",
+					"kicker": "グループ経営",
+					"subtitle": "グループ情報、メンバー、共通機能を管理します。低頻度のアクセス許可、ストレージ、監査ツールは詳細設定に一元化されています。",
+					"backToChat": "チャットに戻る",
+					"navigationLabel": "グループ設定の分類",
+					"activeEmojiPackLabel": "編集中のパック",
+					"membersTitle": "メンバーリスト",
+					"overviewTitle": "グループ概要",
+					"overviewHint": "読み取り専用の情報。ガバナンス権限がある場合は、「基本」でグループ情報とポリシーを編集できます。",
+					"governanceHint": "DAG のグループレベルのポリシーを書き込みます。管理者または MANAGE_ADMINS 権限が必要です。",
+					"governanceDenied": "グループ ガバナンス設定を変更する権限がありません。",
+					"rolesDenied": "ロールを編集するための MANAGE_ROLES 権限がありません。",
+					"notMember": "あなたはもうこのグループのメンバーではありません。このグループのデータは、グループを脱退すると自動的に消去されます。",
+					"basicTitle": "グループガバナンス",
+					"profileSectionTitle": "グループプロフィール",
+					"profileSectionHint": "グループの名前、紹介、参加方法がグループのメタデータに書き込まれます。",
+					"behaviorSectionTitle": "動作",
+					"networkSectionTitle": "フェデレーションと接続",
+					"retentionSectionTitle": "保持とレート制限",
+					"mediaSectionTitle": "通話とファイル",
+					"nameLabel": "グループ名",
+					"descriptionLabel": "グループの説明",
+					"joinPolicyLabel": "参加ポリシー",
+					"joinInviteOnly": "招待のみ",
+					"joinPow": "PoW が必要",
+					"powDifficultyLabel": "PoWの難易度",
+					"securityAdvancedTitle": "セキュリティとグループ所有者の操作",
+					"securityAdvancedDescription": "キーローテーションとグループリーダーの継承。操作を誤るとメンバーのアクセスに影響を与える可能性があります",
+					"powDifficultyTip": "Proof of Work の難易度。値が高いほど、見知らぬ人が公開グループに参加するのに時間がかかります。",
+					"maxDagPayloadTip": "1 つのグループ イベントで伝送できるデータの上限。大きすぎると、同期メモリとネットワークのオーバーヘッドが増加します。",
+					"trustedPeersTip": "接続を維持するために優先される、評判の高いフェデレーションネイバーの数。",
+					"gossipTtlTip": "メッセージを転送できる連邦ノードの最大数。この値を増やすと、カバレッジが増加し、トラフィックも増加します。",
+					"hlcTip": "将来の異常なイベントを拒否するために使用される、リモート ノードのクロックがローカル ノードのクロックより高速であることが許可される最大時間。",
+					"sfuTip": "オプションの外部オーディオおよびビデオ転送サービス アドレス。組み込みのポイントツーポイント/リレー通話を使用するには、空白のままにします。",
+					"iceTip": "WebRTC がルーターに侵入できるようにします。直接接続が失敗すると、TURN が代わりにオーディオ、ビデオ、およびフェデレーション トラフィックを転送します。",
+					"fileEncryptionTip": "集中暗号化は重複を排除しますが、ファイルが同じであるという事実を暴露します。ランダムキーはよりプライベートですが、より多くのスペースを必要とします。",
+					"allowDangerousHtml": "信頼できる作成者メッセージによりインライン HTML が許可されます",
+					"save": "設定を保存する",
+					"loadFailed": "グループ設定のロードに失敗しました: ${error}",
+					"saveSuccess": "グループ設定が保存されました",
+					"saveFailed": "設定を保存できませんでした: ${error}",
+					"rolesTitle": "役割と権限",
+					"roleDefault": "デフォルト",
+					"permissionUpdated": "権限が更新されました",
+					"permissionUpdateFailed": "権限の更新に失敗しました: ${error}",
+					"noMembers": "まだメンバーがいません",
+					"memberRoles": "役割：",
+					"ban": "禁止",
+					"banConfirm": "メンバー ${name} を禁止してもよろしいですか?",
+					"banSuccess": "メンバーが出入り禁止になった",
+					"banFailed": "メンバーを禁止できませんでした: ${error}",
+					"bannedTitle": "禁止メンバー",
+					"unban": "ブロックを解除する",
+					"unbanConfirm": "メンバー ${name} のブロックを解除してもよろしいですか?",
+					"unbanSuccess": "メンバーのブロックが解除されました",
+					"unbanFailed": "ブロックの解除に失敗しました: ${error}",
+					"gshGenerationRetentionHint": "現在、ファイル マスター キー履歴の最新の 64 世代のみが保持されます。最も古い履歴ファイルは、それを超えると復号化できなくなる可能性があるため、重要なデータは定期的にアーカイブすることをお勧めします。",
+					"gshGenerationNearLimit": "現在、ファイル マスター キーの世代 ${generation} までローテーションされています (最大 ${maxGenerations} 世代)。頻繁なローテーションを続けると、最も古い履歴キーが廃止されます。",
+					"ownerSuccession": "グループリーダーの継承",
+					"ownerSuccessionOk": "グループリーダーの継承が発効しました",
+					"ownerSuccessionFailed": "グループ リーダーの継承に失敗しました: ${error}",
+					"defaultEmojiPack": {
+						"failed": "デフォルトの絵文字パックを設定できませんでした",
+						"hint": "メンバーが参加すると自動でお気に入りに追加されます。変更後は、まだお気に入りにある旧デフォルトパックだけが置き換えられます。",
+						"label": "デフォルトの絵文字パック",
+						"ok": "デフォルトの絵文字パックを更新しました"
+					},
+					"channelArchive": {
+						"hint": "チャンネル JSON アーカイブをインポートすると、このグループに新しいテキストチャンネルが作成され、履歴が復元されます（再署名が必要。添付はメタデータのみ保持）。",
+						"import": "チャンネル JSON をインポート",
+						"importFailed": "インポートに失敗しました: ${error}",
+						"importOk": "${count} 件のメッセージをインポートしました。新しいチャンネルを開いています…",
+						"title": "チャンネルアーカイブ"
+					},
+					"channelPerms": {
+						"addRole": "ロールオーバーライドを追加",
+						"denied": "チャンネル権限のオーバーライドを編集するための MANAGE_CHANNELS 権限がありません。",
+						"hint": "特定のチャンネルに対してロール権限のオーバーライドを設定します。検出されていないアイテムは、グループの役割の権限を継承します。",
+						"noChannels": "現在、設定するチャンネルがありません",
+						"removeRole": "この役割のオーバーライドを削除します",
+						"selectChannel": "チャンネル",
+						"stateAllow": "許可する",
+						"stateDeny": "拒否する",
+						"stateNeutral": "継承する",
+						"updateFailed": "チャンネル権限を更新できませんでした: ${error}",
+						"updated": "チャンネル権限が更新されました"
+					},
+					"advanced": {
+						"description": "ネットワーク、ストレージ、速度制限、暗号化パラメータ。不明な場合はデフォルトのままにしてください",
+						"hubDescription": "これらの機能はグループの権限構造・履歴データ・ガバナンス記録を変えます。必要な場合のみ変更してください。",
+						"hubTitle": "詳細設定",
+						"navigationLabel": "詳細設定カテゴリ",
+						"title": "詳細設定"
+					},
+					"emojis": {
+						"create": {
+							"pack": "絵文字パックを新規作成",
+							"packFailed": "作成に失敗しました：${error}",
+							"packOk": "絵文字パックを作成しました",
+							"packPrompt": "絵文字パック ID"
+						},
+						"delete": "絵文字の削除",
+						"deleteConfirm": "この絵文字グループを削除してもよろしいですか?",
+						"deleteFailed": "削除に失敗しました: ${error}",
+						"deleteOk": "絵文字は削除されました",
+						"empty": "グループ式はまだありません",
+						"hint": "メンバーはチャットにこれらの絵文字を挿入または送信できます。アンインストールされたイメージは、フェデレーション ノードを通じてオンデマンドでプルされます。",
+						"packGroupOption": "${packId} (グループ既定)",
+						"title": "グループカスタム式",
+						"upload": "絵文字をアップロードする",
+						"uploadFailed": "アップロードに失敗しました: ${error}",
+						"uploadOk": "式がアップロードされました"
+					},
+					"invite": {
+						"clipboard": "グループ ID: ${groupId}\n招待コード: ${code}\n参加: ${url}",
+						"code": "招待コード",
+						"copied": "グループ情報をコピーしました",
+						"copy": "グループ情報をコピーする",
+						"copyFailed": "コピーに失敗しました",
+						"expires": "有効期限: ${date}",
+						"groupId": "グループID",
+						"hint": "短期間の招待コード (デフォルトは 1 時間) を生成します。相手は「グループに参加」にグループIDと招待コードを入力します。",
+						"mint": "招待コードを生成する",
+						"title": "招待する"
+					},
+					"delete": {
+						"confirm": "このグループを削除してもよろしいですか?この操作は元に戻すことができず、すべてのメッセージとメンバー データは完全に削除されます。",
+						"failed": "グループの削除に失敗しました: ${error}",
+						"group": "グループの削除",
+						"role": "役割の削除",
+						"roleConfirm": "この役割を削除してもよろしいですか?",
+						"roleFailed": "ロールの削除に失敗しました: ${error}",
+						"roleSuccess": "役割が削除されました",
+						"success": "グループが削除されました"
+					},
+					"create": {
+						"role": "ロールを作成する",
+						"roleFailed": "ロールの作成に失敗しました: ${error}",
+						"rolePrompt": "キャラクター名を入力してください:",
+						"roleSuccess": "ロールが作成されました"
+					},
+					"perm": {
+						"aDD_REACTIONS": "リアクションを追加する",
+						"aDMIN": "管理者",
+						"bAN_MEMBERS": "禁止メンバー",
+						"bYPASS_RATE_LIMIT": "メッセージレート制限をバイパスする",
+						"cREATE_THREADS": "サブチャンネルの作成",
+						"iNVITE_MEMBERS": "メンバーを招待する",
+						"kICK_MEMBERS": "キックメンバー",
+						"mANAGE_": {
+							"cHANNELS": "チャンネルの管理",
+							"fILES": "ファイルの管理",
+							"mESSAGES": "管理メッセージ",
+							"rOLES": "管理の役割"
+						},
+						"pIN_MESSAGES": "固定メッセージ",
+						"sEND_MESSAGES": "メッセージを送信する",
+						"sEND_STICKERS": "ステッカーを送信する",
+						"sTREAM": "声",
+						"uPLOAD_FILES": "ファイルをアップロードする",
+						"vIEW_CHANNEL": "チャンネルを見る"
+					},
+					"kick": {
+						"main": "追い出す",
+						"confirm": "メンバー ${name} をキックしてもよろしいですか?",
+						"failed": "メンバーを追い出せませんでした: ${error}",
+						"selfNodeWarning": "警告: このメンバーはあなたと同じノード ID を使用します。追放された場合もグループから削除されます。続行してもよろしいですか?",
+						"success": "メンバーが追い出された"
+					},
+					"tabs": {
+						"advanced": "高度な",
+						"audit": "監査ログ",
+						"channelPermissions": "チャンネル権限",
+						"emojis": "絵文字",
+						"general": "基本的な",
+						"members": "メンバー",
+						"permissions": "役割の権限",
+						"storage": "ストレージとアーカイブ"
+					},
+					"key": {
+						"managementTip": "古い鍵はフェデレーションネットワークに配布されるまで必要です。手動ローテーションは、メンバーが隔離されたドメインにいる場合のみ行ってください。",
+						"managementTitle": "鍵の管理",
+						"rotate": "グループ ファイル マスター キーのローテーション",
+						"rotateConfirm": "このグループ ファイルのマスター キーを手動でローテーションしてもよろしいですか?新しいメンバーは履歴ファイルのキーを再同期する必要があります。",
+						"rotateFailed": "キーのローテーションが失敗しました: ${error}",
+						"rotateOk": "キーが回転されました"
+					}
+				},
+				"pinContext": "最上位近傍 (±N 近傍)",
+				"rtcBudget": "RTC 接続の予算",
+				"rtcJoinRate": "RTC は 1 分あたりの制限を追加しました",
+				"streamGeneratingIdle": "AI が生成したプレースホルダーのアイドル タイムアウト (ミリ秒)",
+				"streamingSfu": "ストリーミング SFU WebSocket アドレス (オプション)",
+				"trustedPeers": "トラストネイバースロット (Top-K)",
+				"wantIdsBudget": "単一の wantID 予算"
+			},
+			"feedback": {
+				"dagLine": "[${label}]",
+				"dagLineWithNote": "[${label}] ${note}",
+				"down": "踏む",
+				"previewLine": "${tag}${sep}${note}",
+				"previewTaggedNote": "${tag} ${note}",
+				"up": "賞賛"
+			},
+			"message": {
+				"aborted": "中断されました",
+				"deleted": "メッセージが削除されました",
+				"deletedBracket": "[メッセージが削除されました]",
+				"prefixSticker": "ステッカー",
+				"refAnchor": "引用メッセージ: ${id}",
+				"withAttachments": "${text} (${n} 個の添付ファイル)"
+			},
+			"default": {
+				"channel": {
+					"placeholder": "一般的な"
+				},
+				"channelLabel": "デフォルトチャンネル",
+				"channelSet": "デフォルトのチャンネルとして設定",
+				"channelSetFailed": "デフォルトチャンネルの設定に失敗しました"
+			},
+			"sticker": {
+				"defaultName": "ステッカー",
+				"prefixLine": "[${label}]",
+				"prefixLineTagged": "[ステッカー]",
+				"saved": "ステッカーライブラリに保存されました"
+			},
+			"remote": {
+				"nodeTimeout": "リモートノードが応答していません。しばらくしてから再試行してください。",
+				"typing": "${name} が入力中です...",
+				"typingMany": "${name} さんと ${count} 人が入力中です...",
+				"typingTwo": "${name1}、${name2} 入力中...",
+				"unavailable": "リモート コンポーネントが利用できないか、RPC をルーティングできません",
+				"unsafe": "このメッセージは遠隔地から送信されており、作成者はローカルの信頼リストに含まれていません。リッチテキストのレンダリングが無効になっています。"
+			},
+			"create": {
+				"channelFailed": "チャンネルの作成に失敗しました",
+				"failed": "グループの作成に失敗しました",
+				"group": "新しいグループを作成する",
+				"groupFailed": "グループの作成に失敗しました",
+				"groupTitle": "新しいグループを作成する"
+			},
+			"stream": {
+				"generationFailed": "AI の生成がタイムアウトして完了せず、更新が停止されました。",
+				"noEmbed": {
+					"textContent": "ストリーミング アドレスは埋め込み可能な https:// ページである必要があります。または、グループ設定を最初に構成し、表示トークンを取得するために更新する必要があります。"
+				},
+				"noSfu": {
+					"textContent": "streamSfuWss が構成されていません。管理者は、グループ設定で LiveKit/mediasoup 表示アドレスを入力できます。"
+				},
+				"ok": "メディア ストリームを取得 (停止、ブロードキャストではない)",
+				"test": "メディアデバイスのテスト"
+			},
+			"thread": {
+				"main": "子スレッド",
+				"back": "戻る",
+				"breadcrumbMiddleSummary": "中間の ${count} 層",
+				"breadcrumbMiddleTitle": "中間レイヤーを展開し、ジャンプ先のレベルを選択します",
+				"breadcrumbRootTitle": "パスの開始点 (第 1 レベル) にジャンプします"
+			},
+			"unpin": {
+				"action": {
+					"textContent": "ピン留めを解除",
+					"title": "ピン留めを解除"
+				},
+				"message": "ピン留めを解除",
+				"messageLine": "[固定を解除] ${targetId}",
+				"ok": "固定されていない"
+			},
+			"vote": {
+				"blockHeading": "[${prefix}] ${question}",
+				"blockHeadingTagged": "[投票] ${question}",
+				"cast": "投票する",
+				"castLine": "[${prefix}] 投票: ${choice}",
+				"castLineTagged": "[投票] 投票: ${choice}",
+				"create": "投票を作成",
+				"createFailed": "投票の作成に失敗しました",
+				"deadline": "締め切り",
+				"deadlineLineClosed": "終了: ${date} [終了]",
+				"deadlineLineOpen": "締め切り: ${date}",
+				"ended": "終わった",
+				"for": "${option} に投資する",
+				"optionsPreview": "[${prefix}] ${options}",
+				"optionsPreviewTagged": "[投票] ${options}",
+				"promptDeadline": "締切（期限なしの場合は空白のまま、形式 2026-01-01 23:59）",
+				"tooFewOptions": "少なくとも 2 つのオプションが必要です",
+				"total": "合計 ${n} 票"
+			},
+			"edit": {
+				"cancel": "キャンセル (Esc)",
+				"confirm": "確認(Ctrl+Enter)",
+				"emptyText": "メッセージの内容を空にすることはできません",
+				"hint": "Ctrl+Enter 確認 · Esc キャンセル",
+				"message": {
+					"title": "メッセージを編集する"
+				}
+			},
+			"menu": {
+				"copyId": "メッセージIDをコピーする",
+				"copyText": "テキストをコピーする",
+				"exportHtml": "HTMLにエクスポート",
+				"shareExternal": "外部リンクへ共有"
+			},
+			"pin": {
+				"action": {
+					"textContent": "上にピンで留める",
+					"title": "この記事を DAG に書き込み、上部に固定します"
+				},
+				"failed": "ピンが失敗しました",
+				"message": "上にピンで留める",
+				"messageLine": "[トップ] ${targetId}",
+				"ok": "記録して固定した",
+				"thisMessage": "この記事を DAG に書き込み、上部に固定します"
+			},
+			"av": {
+				"mute": "ミュート",
+				"needStreamChannel": "ストリーミングメディアには専用のボイスチャンネルでビデオを使ってください。",
+				"start": "メディアを開始する",
+				"stop": "停止",
+				"swap": "ホーム画面"
+			}
 		},
 		"hub": {
 			"title": "チャット",
@@ -1576,10 +1696,6 @@
 				"title": "ロール",
 				"tip": "ロール"
 			},
-			"friendsTooltip": {
-				"title": "友達",
-				"tip": "友達"
-			},
 			"inboxTooltip": {
 				"title": "受信箱",
 				"tip": "グループ間の受信トレイ"
@@ -1587,18 +1703,6 @@
 			"inbox": {
 				"title": "受信箱",
 				"filtersLabel": "受信箱メッセージをフィルタリングする",
-				"tabMention": "言及",
-				"tabMessage": "すべてのニュース",
-				"tabCare": "特別な懸念",
-				"tabVoteClosed": "投票終了",
-				"emptyMentionTitle": "まだ誰もあなたのことを言及していません",
-				"emptyMentionDescription": "グループチャットで他のメンバーがあなたに@を付けた場合、メッセージがここに表示されます。",
-				"emptyMessageTitle": "受信箱が空です",
-				"emptyMessageDescription": "さまざまなグループ チャットやチャンネルからのメッセージの更新情報がここに表示されます。",
-				"emptyCareTitle": "特別な懸念: まだニュースはありません",
-				"emptyCareDescription": "特に関心のあるメンバーから新しいメッセージが送信されると、ここですぐに見ることができます。",
-				"emptyVoteTitle": "終了した投票はありません",
-				"emptyVoteDescription": "参加投票が終了したら、結果はここにまとめられます。",
 				"rowLabel": {
 					"aria-label": "${author} は ${group} の ${channel} で次のように述べました: ${preview}"
 				},
@@ -1606,7 +1710,23 @@
 				"badgeFetchFailed": "未読バッジの更新に失敗しました: ${error}",
 				"loadFailed": "受信箱の読み込みに失敗しました: ${error}",
 				"markSeenFailed": "受信箱の読み取りステータスの更新に失敗しました: ${error}",
-				"jumpFailed": "このメッセージを開けません: ${error}"
+				"jumpFailed": "このメッセージを開けません: ${error}",
+				"empty": {
+					"careDescription": "特に関心のあるメンバーから新しいメッセージが送信されると、ここですぐに見ることができます。",
+					"careTitle": "特別な懸念: まだニュースはありません",
+					"mentionDescription": "グループチャットで他のメンバーがあなたに@を付けた場合、メッセージがここに表示されます。",
+					"mentionTitle": "まだ誰もあなたのことを言及していません",
+					"messageDescription": "さまざまなグループ チャットやチャンネルからのメッセージの更新情報がここに表示されます。",
+					"messageTitle": "受信箱が空です",
+					"voteDescription": "参加投票が終了したら、結果はここにまとめられます。",
+					"voteTitle": "終了した投票はありません"
+				},
+				"tabs": {
+					"care": "特別な懸念",
+					"mention": "言及",
+					"message": "すべてのニュース",
+					"voteClosed": "投票終了"
+				}
 			},
 			"notifyPrefs": {
 				"title": "通知設定",
@@ -1623,11 +1743,6 @@
 				"muteForever": "手動でオンにするまで",
 				"saved": "通知設定が保存されました"
 			},
-			"voteClosed": "終わった",
-			"discoveryTooltip": {
-				"title": "グループの発見",
-				"tip": "グループの発見"
-			},
 			"prefsTooltip": {
 				"title": "設定",
 				"tip": "翻訳とフェデレーション P2P 設定"
@@ -1636,65 +1751,6 @@
 			"prefsNav": {
 				"aria-label": "設定カテゴリ"
 			},
-			"federationTooltip": {
-				"title": "フェデレーション P2P 設定",
-				"tip": "フェデレーション P2P 設定"
-			},
-			"federationTitle": "フェデレーション P2P 設定",
-			"federationSubtitle": "クロスデバイス接続を制御します。ほとんどの場合はデフォルトのままにします",
-			"federationLoadFailed": "読み込みに失敗しました: ${error}",
-			"fedConnectionTitle": "接続して発見する",
-			"discoveryRefresh": "検出リストを更新する",
-			"fedRelayUrlsLabel": "ネットワークリレーアドレス",
-			"fedRelayUrlsTip": "デバイスがインターネット上で相互に検出できるようにします。 1 行に 1 つの wss:// アドレスを入力します。デフォルトのリレーを使用する場合は空白のままにします。",
-			"fedBatterySaverLabel": "低電力モード",
-			"fedBatterySaverTip": "バックグラウンド接続とネットワーク アクティビティの数を減らすと、メッセージの同期が若干遅くなる可能性があります。",
-			"fedAdvancedTitle": "詳細設定",
-			"fedAdvancedDescription": "バグ修正、評判管理、手動リンク発行",
-			"fedGroupRecoveryTitle": "グループ接続の修正",
-			"fedGroupRecoveryTip": "招待状が漏洩した場合、または新しいデバイスが履歴を同期できない場合にのみ使用されます。",
-			"fedRotateRoomSecret": "グループルームのパスワードを更新する",
-			"fedRotateRoomSecretConfirm": "ローテーション後は、古いルーム パスワードを使用した招待は接続できなくなります。続行してもよろしいですか?",
-			"fedRotateRoomSecretOk": "ルームのパスワードが更新されました",
-			"fedRepairJoinSnapshot": "ネイバーにグループのスナップショット修復への参加を要求する",
-			"fedRepairJoinSnapshotOk": "適用されたグループ スナップショット (${channels} チャンネル履歴)",
-			"fedRepairJoinSnapshotFailed": "グループ スナップショットの修復に失敗しました: ${error}",
-			"fedRepTitle": "このグループの主観的な信頼性",
-			"fedRepTip": "フェデレーション ノードの動作に基づいてネイティブに計算された接続優先スコアは、グループ メンバーの公開評価ではありません。",
-			"fedRepEmpty": "(ヌル)",
-			"fedSlashTitle": "評判ペナルティ",
-			"fedSlashTip": "ノードに関する否定的な評判ステートメントをグループ イベント グラフに書き込みます。フェデレーション プロトコルを理解している管理者のみが使用します。",
-			"fedSlashTargetLabel": "ターゲットの pubKeyHash(64 進数)",
-			"fedSlashTarget": {
-				"placeholder": "メンバーの公開鍵ハッシュ"
-			},
-			"fedSlashClaimLabel": "主張強度主張 (0–1)",
-			"fedSlashVerifiedLabel": "検証可能 (証明イベント ID が必要)",
-			"fedSlashProofLabel": "proof.eventId (オプション)",
-			"fedSlashProof": {
-				"placeholder": "64 16 進数のイベント ID"
-			},
-			"fedSlashSubmitLabel": "投稿の評判_スラッシュ",
-			"fedResetSubmitLabel": "ターゲットの評判をリセットする",
-			"fedSlashNeedHash": "64 ビット 16 進数の pubKeyHash が必要です",
-			"fedSlashOk": "DAG に書き込まれたreputation_slash",
-			"fedResetOk": "評判_リセットが書き込まれました",
-			"fedDmLinkTitle": "友達リンクを手動で発行する",
-			"fedDmLinkTip": "ネイティブ ID キーを使用した署名が必要です。秘密キーはこのページのローカル サービスにのみ送信され、他のノードには送信されません。",
-			"fedDmLinkDescription": "デバッグまたは手動による ID 移行に適しています。毎日友達を追加するときにこれらのフィールドに入力する必要はありません。",
-			"fedDmPubKeyLabel": "公開鍵の 16 進数(64)",
-			"fedDmSecretLabel": "秘密鍵シード 16 進数(64)",
-			"fedDmNodeLabel": "オプションのノード URL",
-			"fedDmInvalidateTitle": "古い紹介リンクを有効期限切れにする",
-			"fedDmInvalidateDescription": "実行後、以前に発行されたすべての友達追加リンクは直ちに無効になり、取り消すことはできません。",
-			"fedDmRotateLabel": "古いリンクを無効にする",
-			"fedDmRotateConfirm": "以前に発行された友達追加リンクはすべて直ちに無効になり、復元することはできません。続行してもよろしいですか?",
-			"fedDmIssueLabel": "DMリンクを発行する",
-			"fedDmNeedPubKey": "64 16 進数の公開キーが必要です",
-			"fedDmNeedSecretKey": "64 16 進数の秘密鍵シードが必要",
-			"fedDmIssued": "DM リンクが署名され、クリップボードにコピーされました",
-			"fedNonceRotated": "nonce が回転されました (${nonce}…)",
-			"fedSaved": "保存しました",
 			"addServerTooltip": {
 				"title": "グループを作成または参加する",
 				"tip": "グループを作成または参加する"
@@ -1733,129 +1789,37 @@
 			"settingsTitle": {
 				"title": "設定"
 			},
-			"filesTitle": {
-				"title": "グループファイル"
-			},
-			"filesDrawerTitle": "グループファイル",
-			"filesLoading": "グループファイルをロード中...",
-			"filesLoadFailed": "グループ ファイルのロードに失敗しました: ${error}",
-			"filesNoGroup": "最初にグループを選択してください",
-			"filesNoCabinets": "現在の役割でアクセスできるファイル キャビネットはありません",
-			"filesBindCabinet": "ファイルキャビネットを追加する",
-			"filesNoChannel": "まずメッセージを送信できるテキスト チャンネルを入力してください",
-			"filesUploadTo": "にアップロードする",
-			"filesRootFolder": "ルートディレクトリ",
-			"filesNewFolder": "新しいフォルダーを作成する",
-			"filesNewFolderPrompt": "フォルダ名",
-			"filesRename": "名前の変更",
-			"filesRenameFolderPrompt": "フォルダー「${name}」の名前を次のように変更します。",
-			"filesDeleteFolderConfirm": "このフォルダを削除してもよろしいですか?フォルダー内のファイルは自動的には削除されません。",
-			"filesUpload": "アップロード",
-			"filesDownload": "ダウンロード",
-			"filesDelete": "削除",
-			"filesDeleteConfirm": "このファイルを削除してもよろしいですか?",
-			"filesFoldersTitle": "フォルダ",
-			"filesListTitle": "書類",
-			"filesEmpty": "現在このディレクトリにはファイルがありません",
-			"filesNoFolders": "まだサブフォルダーがありません",
 			"uploadTitle": {
 				"title": "ファイルをアップロードする"
 			},
 			"emojiTitle": {
 				"title": "絵文字"
 			},
-			"voteTitle": {
-				"title": "投票を作成"
-			},
 			"shareGroupTitle": {
 				"title": "グループリンクを共有する"
 			},
 			"shareGroupOk": "共有グループ招待カード",
-			"messageActionFailed": "操作が失敗しました: ${error}",
 			"inviteJoinButton": "グループに参加する",
 			"inviteLinkNeedsRoomSecret": "このグループはフェデレーション同期または手動設定が必要です。公開前に招待リンクを生成してください。",
 			"inviteCardMembers": "${count} 人のメンバー",
-			"syncFailed": "フェデレーションの同期に失敗しました: ${error}",
-			"syncRateLimited": "連邦同期速度制限が進行中です。後でもう一度お試しください。",
-			"syncIncomplete": "${missing}/${total} イベントは同期されていないままです",
-			"syncNoPeers": "フェデレーションネイバーに接続されていないため、履歴メッセージを一時的に同期できません。完全な招待リンクを使用して、後でもう一度お試しください",
 			"attachmentLoadFailed": "添付ファイルの読み込みに失敗しました",
-			"messageEditUpload": "添付ファイルをアップロードする",
 			"timeToday": "今日 ${time}",
 			"timeYesterday": "昨日 ${time}",
 			"stickerTitle": {
 				"title": "ステッカー"
 			},
-			"sendTitle": {
-				"title": "送信 (Ctrl+Enter)"
-			},
-			"messageInput": {
-				"placeholder": "グループメッセージ... Ctrl+Enter 送信",
-				"aria-label": "メッセージを入力"
-			},
 			"stopGenerateTitle": {
 				"title": "生成を停止する"
 			},
-			"charTyping": "入力中…",
-			"messageActionPrev": {
-				"title": "以前のタイムライン"
-			},
-			"messageActionNext": {
-				"title": "次のタイムライン"
-			},
-			"messageActionRegen": {
-				"title": "再生する"
-			},
-			"messageActionEdit": {
-				"title": "メッセージを編集する"
-			},
-			"messageActionFeedbackUp": {
-				"title": "のように"
-			},
-			"messageActionFeedbackDown": {
-				"title": "クリックして嫌いにします"
-			},
-			"messageActionDelete": {
-				"title": "メッセージを削除する"
-			},
 			"confirmDeleteLong": "このメッセージは長すぎます。削除してもよろしいですか?",
-			"messageActionCopyHtml": {
-				"title": "HTMLをコピー"
-			},
 			"forceReply": "強制応答",
 			"removeChar": "文字を削除する",
-			"loadMore": "古いニュースを読み込んでいます…",
-			"charChatsTitle": "${name} との歴史的な会話",
 			"newGroupWith": "+ ${name} と新しい会話を作成します",
-			"messageActionBookmark": {
-				"title": "ブックマーク"
-			},
-			"messageActionPin": {
-				"title": "上にピンで留める"
-			},
-			"messageActionUnpin": {
-				"title": "ピン留めを解除"
-			},
-			"blockAuthor": {
-				"title": "この作者をブロックする"
-			},
-			"pinUnpinSidebar": {
-				"title": "ピン留めを解除"
-			},
 			"meAuthor": "私",
-			"messageEditSave": "保存",
-			"messageEditCancel": "キャンセル",
-			"messageEditArea": {
-				"aria-label": "メッセージを編集"
-			},
 			"feedbackReasonPrompt": "不承認の理由（任意）",
 			"feedbackReasonInput": {
 				"placeholder": "不承認の理由（任意）"
 			},
-			"messageFeedbackSubmit": "フィードバックを送信する",
-			"stickersPanelTitle": "ステッカー",
-			"stickersManage": "ステッカーの管理 →",
-			"stickersLoading": "読み込み中…",
 			"recentEmojiTab": {
 				"title": "よく使われる"
 			},
@@ -1863,11 +1827,6 @@
 			"currentGroupEmojiTab": {
 				"title": "現在のグループ絵文字"
 			},
-			"groupEmojiTab": {
-				"title": "グループ"
-			},
-			"groupEmojisEmpty": "現在、グループ絵文字はありません。グループ設定でアップロードできます。",
-			"groupEmojisLoadFailed": "グループ絵文字の読み込みに失敗しました",
 			"profileLinkTitle": {
 				"title": "個人情報",
 				"textContent": "個人情報"
@@ -1885,22 +1844,6 @@
 			},
 			"aboutSection": "概要",
 			"bioEmpty": "このユーザーにはまだプロフィールがありません。",
-			"statusOffline": {
-				"title": "オフライン",
-				"textContent": "オフライン"
-			},
-			"statusOnline": {
-				"title": "オンライン",
-				"textContent": "オンライン"
-			},
-			"statusIdle": {
-				"title": "離席中",
-				"textContent": "離席中"
-			},
-			"statusDnd": {
-				"title": "取り込み中",
-				"textContent": "取り込み中"
-			},
 			"banners": {
 				"gshBuffer": "キーのローテーション後に復号化を待機しているメッセージが ${total} 件あります",
 				"plaintextSidecar": "このチャンネルはオンデマンド同期です。ローカルの messages sidecar が平文でキャッシュ表示します。",
@@ -1909,10 +1852,6 @@
 				"syncing": "フェデレーションネイバーと同期中…",
 				"archiveCoverageIncomplete": "月のコールド アーカイブの一部はまだフェデレーションから同期されていません。",
 				"archiveSyncButton": "アーカイブを同期",
-				"forkGovernance": "アクセス許可レコードにフォークがあり、現在ローカル ビューにあります。",
-				"forkTips": "${count} 個のマージされていないブランチが検出されました。メッセージの順序が矛盾している可能性があります。",
-				"forkTipLabel": "DAGリーフ",
-				"forkTipScore": "${short} · 評判 ${score}",
 				"applyBranch": "ガバナンスブランチを適用",
 				"autoBranch": "信頼度で自動選択",
 				"mergeDag": "フォークをマージする",
@@ -1920,55 +1859,28 @@
 				"blockOpposing": "向かい合った枝にはアクセスできません",
 				"suspectedRemoved": "あなたはこのグループから削除された可能性があります。${count} 個の既知のノードに検証を依頼しましたが、すべて拒否されました。地元の歴史を記念したり、このグループのコピーを削除したりできます。",
 				"suspectedRemovedKeep": "お土産を持って行きましょう",
-				"suspectedRemovedLeave": "グループの削除"
+				"suspectedRemovedLeave": "グループの削除",
+				"fork": {
+					"governance": "アクセス許可レコードにフォークがあり、現在ローカル ビューにあります。",
+					"tipLabel": "DAGリーフ",
+					"tipScore": "${short} · 評判 ${score}",
+					"tips": "${count} 個のマージされていないブランチが検出されました。メッセージの順序が矛盾している可能性があります。"
+				}
 			},
-			"blockOpposingConfirm": "現在の選挙に参加していないガバナンス発行者をブラックリストに追加し、このグループの連盟リレーを拒否します。続く？",
-			"blockOpposingOk": "${count} 件の対象者が到達不能としてマークされています",
-			"blockOpposingFailed": "マーク付けに失敗しました: ${error}",
 			"applyBranchOk": "ガバナンス部門が適用されました",
 			"applyBranchFailed": "ブランチの適用に失敗しました: ${error}",
 			"autoBranchOk": "評判回復後の自動選択",
 			"autoBranchFailed": "自動選択に失敗しました: ${error}",
-			"saveEmoji": {
-				"title": "絵文字を保存する"
-			},
-			"saveEmojiOk": "絵文字はデータベースに保存されました",
-			"saveEmojiFailed": "絵文字を保存できませんでした: ${error}",
-			"saveSticker": {
-				"title": "ステッカーを保存する"
-			},
-			"saveStickerOk": "ステッカーがステッカー ライブラリに追加されました",
-			"saveStickerFailed": "ステッカーを保存できませんでした: ${error}",
 			"revealRemoteMd": "全文を展開する",
-			"voteModalTitle": "投票を作成",
-			"voteModalSubmit": "投票の作成",
-			"voteCreateFailed": "投票の作成に失敗しました: ${error}",
 			"composer": {
 				"placeholder": "#${channel} に送信する"
 			},
 			"composerSuspectedRemoved": {
 				"placeholder": "このグループから削除されたため、メッセージの送信を続けることができない可能性があります。"
 			},
-			"channelReadonlyList": {
-				"placeholder": "リストチャンネル読み取り専用"
-			},
-			"channelReadonlyStream": {
-				"placeholder": "ストリーミングチャンネルは読み取り専用です"
-			},
-			"noChannels": "まだ会話はありません",
-			"noMembers": "まだメンバーがいません",
-			"noPins": "まだピンがありません",
-			"noBookmarks": "まだブックマークはありません",
 			"adminSection": "管理者",
-			"memberSection": "メンバー",
-			"membersDigestOk": "メンバー マークル全会一致 · ${root}",
-			"membersDigestOkPaged": "メンバー マークルのコンセンサス (${pages} ページ) · ${root}",
-			"membersDigestMismatch": "一貫性のないメンバー ダイジェスト · ${root}",
-			"membersDigestPending": "メンバー概要を確認してください…",
-			"membersDigestFetchFailed": "ページごとにメンバーを取得できませんでした",
 			"copyEntityId": "エンティティIDをコピー",
 			"copyEntityIdOk": "エンティティIDがコピーされました",
-			"memberJoined": "会話に参加しました",
 			"remoteBadge": {
 				"textContent": "リモート",
 				"title": "フェデレーションリモート作成者"
@@ -1978,49 +1890,15 @@
 				"title": "この作者を信頼します (危険な HTML を許可します)"
 			},
 			"stickerInline": "ステッカー",
-			"voteDeadline": "締め切り: ${date}",
-			"voteNoOptions": "オプションなし",
-			"voteTotal": "合計 ${total} 票",
-			"voteCount": "${count} チケット · ${pct}%",
-			"loadGroupFailed": "グループのロードに失敗しました: ${error}",
-			"groupJoinRequired": "グループが見つかりません。招待リンクまたは招待コードで参加してください。",
-			"sendFailed": "送信失敗: ${error}",
-			"sendFailedPending": "送信に失敗しました",
 			"markdownRenderFailed": "メッセージのレンダリングに失敗しました",
 			"retrySend": "再試行",
-			"sendImageFailed": "画像の送信に失敗しました: ${error}",
-			"sendStickerFailed": "ステッカーの送信に失敗しました: ${error}",
-			"voteMinOptions": "少なくとも 2 つのオプションが必要です",
 			"mergeDagOk": "フォークがマージされました",
 			"mergeDagFailed": "マージに失敗しました: ${error}",
-			"forkSplitFailed": "分割に失敗しました: ${error}",
-			"forkSplitPrompt": "新しいグループ名 (空白のままでも可)",
-			"forkSplitModalTitle": "新しいグループに分かれる",
-			"forkSplitModalSubmit": "作成する",
 			"typing": "${names} が入力中です...",
 			"charsHeader": "ロール",
-			"friendsHeader": "友達",
 			"settingsModalTitle": "設定",
 			"modalClose": "閉じる",
-			"groupTag": "グループ",
-			"groupUnnamed": "名前のないグループ ·${suffix}",
-			"groupHeaderMenu": {
-				"title": "グループメニュー: 設定、招待状など。"
-			},
-			"groupDescriptionEmpty": "このグループにはまだプロフィールがありません。",
-			"serverActionPickerTitle": "グループ",
-			"serverActionPickerSubtitle": "新しいグループを作成するか、ID で既存のグループに参加します",
-			"serverActionPickerCreate": "グループを作成",
-			"serverActionPickerCreateDescription": "ゼロから始めて友達を招待する",
-			"serverActionPickerJoin": "グループに参加する",
-			"serverActionPickerJoinDescription": "グループIDを使用する",
 			"cancel": "キャンセル",
-			"folderDefault": "フォルダ",
-			"folderRename": "フォルダーの名前を変更する",
-			"folderRenamePrompt": "フォルダー「${name}」の名前を次のように変更します。",
-			"folderCollapse": "フォルダを折りたたむ",
-			"folderExpand": "フォルダを展開する",
-			"folderDissolve": "フォルダを閉じる",
 			"bookmarkLocal": "地元",
 			"groupsSection": "グループ",
 			"ungrouped": "グループ化されていない",
@@ -2030,46 +1908,13 @@
 				"title": "ブックマークを削除する",
 				"aria-label": "ブックマークを削除する"
 			},
-			"loadMessagesFailed": "メッセージの読み込みに失敗しました: ${error}",
 			"unreadDivider": "新しいニュース",
-			"noUsername": "ユーザー名が取得できませんでした",
-			"stickersEmpty": "ステッカーはまだありません",
-			"stickersMarketLink": "ステッカー広場に移動してインストールしてください",
-			"stickersLoadFailed": "読み込みに失敗しました: ${error}",
-			"noChars": "まだロールがありません。まずキャラクターをインストールしてください。",
-			"noFriends": "プライベートチャットはまだありません",
-			"friendsEmptyTitle": "新しい会話を開始する",
-			"friendsEmptyDescription": "ローカル ロールまたは他のノードでユーザーを検索し、グループ チャットでメンバー プロフィール カードを開いてプライベート メッセージを開始することもできます。",
-			"friendsEmptyAction": "ロールまたはユーザーを検索する",
-			"friendsSearchEmpty": "一致するロールまたはユーザーがありません",
-			"friendsSearchTooShort": "少なくとも 2 文字を入力してください",
-			"friendsSearchDm": "プライベートメッセージを送信する",
-			"friendsSearchChat": "会話を始める",
-			"friendsSearchLocalChar": "ローカルの役割",
-			"friendsSearchPin": "エイリアスとして設定",
-			"charCount": "${count} 個の役割",
-			"friendsCount": "${count} 人の友達",
-			"charTag": "ロール",
-			"friendsTag": "友達",
 			"backToFriends": "友達に戻る",
 			"dmTopicsTitle": "トピック",
-			"friendsContextNewChat": "新しいチャット",
-			"friendsRestartConfirm": "「${name}」とのプライベート チャットのバインドが解除され、新しい会話が作成されます。本気ですか？",
-			"friendsRestartOk": "新しいプライベートチャットが開設されました",
-			"friendsRestartFailed": "新しいプライベート チャットの作成に失敗しました: ${error}",
-			"charDescriptionEmpty": "キャラクターはまだ自己紹介をしていません。",
-			"charIntro": "導入",
 			"participants": "参加者",
-			"charTagSolo": "キャラクター・1:1ダイアログ",
 			"startChatWith": "💬 ${name} とチャットを開始",
 			"loading": "読み込み中…",
-			"charChatStart": "${name} と会話を始めてください",
-			"charChatEmpty": "まだメッセージがありません。最初のチャットを始めてください。",
-			"loadCharChatFailed": "メッセージの読み込みに失敗しました",
 			"createChatFailed": "セッションの作成に失敗しました: ${error}",
-			"charChatComposer": {
-				"placeholder": "${name} にメッセージを送信します (送信するには Ctrl+Enter)"
-			},
 			"friendChatComposer": {
 				"placeholder": "メッセージを送信 (Ctrl+Enter で送信)"
 			},
@@ -2089,75 +1934,13 @@
 				"confirmSecond": "もう一度クリックして確定",
 				"cancel": "キャンセル"
 			},
-			"blockConfirm": "この人をブラックリストに追加しますか?同団体の連盟は中継を拒否する。",
-			"blockOk": "ブロックされました",
-			"charChatSettings": "キャラクターチャット設定",
-			"charChatSubtitle": "${name} とのセッション",
-			"sessionInfo": "セッション情報",
-			"sessionRole": "ロール",
-			"sessionId": "セッションID",
-			"sessionMessages": "メッセージ数",
 			"quickActions": "素早い操作",
 			"advancedSettings": "詳細設定（キャラクター/ワールド/プラグイン）",
 			"advancedSettingsDescription": "新しいタブでハブ内のグループの完全な設定を開きます",
 			"dangerZone": "危険区域",
-			"unbindFriendDescription": "バインドを解除すると、会話は左側のグループ リストに戻り、メッセージ レコードは保持されます。",
-			"unbindFriend": "バインドを解除する",
-			"unbindFriendConfirm": "${name} とのプライベート チャットのバインドを解除してもよろしいですか?会話はグループ リストに戻ります。",
-			"unbindFriendOk": "束縛されていない",
-			"unbindFriendFailed": "バインド解除に失敗しました: ${error}",
 			"deleteSessionDescription": "この会話を削除するとすべてのメッセージが完全に削除され、元に戻すことはできません。",
 			"deleteSession": "セッションの削除",
 			"deleteSessionConfirm": "${name} のセッションを削除してもよろしいですか?この操作は元に戻すことができません。",
-			"sessionDeleted": "会話が削除されました",
-			"sessionDeleteFailed": "削除に失敗しました: ${error}",
-			"streamTokenFailed": "閲覧トークンを発行できません",
-			"streamAvJoin": "音声/ビデオを追加する",
-			"streamAvLeave": "離席中",
-			"streamAvMute": "ミュート",
-			"streamAvUnmute": "ミュートを解除する",
-			"streamAvVideo": "カメラをオフにする",
-			"streamAvVideoOn": "カメラをオンにする",
-			"streamAvYou": "あなた",
-			"streamAvJoinFailed": "通話を開始できません: ${error}",
-			"streamAvNoCodecs": "このブラウザは WebCodecs をサポートしていません (Chrome 94 以降 / Edge 94 以降 / Firefox 130 以降が必要です)",
-			"streamAvPeers": "${count} 人がオンライン",
-			"streamAvPresetThumb": "短縮64kbps",
-			"streamAvPresetLow": "低品質 200kbps",
-			"streamAvPresetMed": "中 600kbps",
-			"streamAvPresetHigh": "高画質1.5Mbps",
-			"callButton": {
-				"title": "通話を開始または参加する",
-				"aria-label": "通話を開始または参加する"
-			},
-			"callInProgress": "通話中",
-			"callEnded": "通話が終了しました",
-			"callJoin": "通話に参加する",
-			"callHangup": "電話を切る",
-			"callScreenShare": "画面を共有する",
-			"callScreenStop": "共有を停止する",
-			"callJumpBack": "通話チャンネルに戻る",
-			"callJoinFailed": "通話に参加できません: ${error}",
-			"callScreenFailed": "画面共有に失敗しました: ${error}",
-			"callStartedAt": "${time} に開始",
-			"callDuration": "期間 ${duration}",
-			"callParticipants": "${n} 人",
-			"callPeerCount": "${n}",
-			"callNoParticipants": "まだ参加者はいません",
-			"listChannelEmpty": "リストは空です。",
-			"listItemUntitled": "無名",
-			"listEditorTitle": "リスト項目の編集 (JSON 配列)",
-			"listSaveToDag": "DAG に保存",
-			"listJsonInvalid": "無効な JSON: ${message}",
-			"listSaved": "保存しました",
-			"listSaveFailed": "保存に失敗しました",
-			"streamDefaultName": "ストリーミングメディア",
-			"streamRefreshToken": "ウォッチトークンをリフレッシュ",
-			"streamEmbedHttpsRequired": "ストリーミング アドレスは埋め込み可能な https:// ページである必要があります。または、グループ設定を最初に構成し、表示トークンを取得するために更新する必要があります。",
-			"streamWebRtcHint": "外部 SFU は構成されていません。このチャンネルはグループ内 WebRTC を使用します (streamingSfuWss は必要ありません)。",
-			"pinPreviewSticker": "[ステッカー]",
-			"pinPreviewVote": "[投票] ${question}",
-			"pinPreviewInvite": "[招待] ${groupName}",
 			"reactionRemovePrompt": "誰の ${emoji} を削除しますか?\n${candidates}",
 			"ariaDagTip": {
 				"aria-label": "DAGフォークチップ"
@@ -2165,58 +1948,11 @@
 			"ariaClose": {
 				"aria-label": "閉じる"
 			},
-			"memberBar": {
-				"aria-label": "メンバー一覧"
-			},
-			"channelBar": {
-				"aria-label": "チャンネル一覧"
-			},
 			"serverBar": {
 				"aria-label": "グループとナビゲーション"
 			},
-			"membersDigestPagesTitle": {
-				"title": "${expected}\n${pages} ページ"
-			},
-			"discoveryTitle": "グループの発見",
-			"discoveryEyebrow": "コミュニティを探索する",
-			"discoveryDescription": "フェデレーション ネットワークからパブリック グループを参照し、興味のあるコミュニティを選択して参加します。",
-			"discoverySidebarHint": "右側で公開グループを参照して参加します",
-			"discoveryEmptyTitle": "公開グループはまだ見つかりません",
-			"discoveryEmpty": "現在、推奨されるグループはありません。フェデレーション同期をオンにすると、検出リストがネイバーから同期されます。",
-			"discoveryNoDescription": "グループ所有者はまだプロフィールを入力していません。",
-			"discoverySourceCount": "${count} 個のフェデレーション ソース",
-			"discoveryJoin": "グループに参加する",
-			"discoveryOpen": "オープングループ",
-			"discoveryLoadFailed": "検出リストのロードに失敗しました: ${message}",
 			"operationFailed": "操作が失敗しました: ${error}",
 			"shareGroupFailed": "グループリンクを共有できませんでした: ${error}",
-			"blockAuthorTitle": "この作者をブロックする",
-			"configTitle": "会話構成",
-			"configSaved": "保存しました",
-			"configSaveFailed": "保存に失敗しました: ${error}",
-			"configLoadFailed": "構成のロードに失敗しました: ${error}",
-			"noActiveChat": "パーツをドラッグする前に、まずセッションを開いてください。",
-			"groupContext": {
-				"manage": "管理グループ",
-				"notifyPrefs": "通知設定",
-				"invite": "他の人を招待する",
-				"inviteCopied": "招待リンクがクリップボードにコピーされました",
-				"addChar": "役割の追加",
-				"addCharLabel": "ロールを選択",
-				"addCharSubmit": "追加",
-				"noChars": "利用可能な役割がありません",
-				"setAlias": "グループエイリアスの設定",
-				"setAliasPrompt": "「${name}」のローカル エイリアスを設定します (クリアするには空白のままにします)。",
-				"aliasSaved": "グループエイリアスが更新されました",
-				"leave": "グループから抜け出す",
-				"leaveConfirm": "グループ「${name}」から退会してもよろしいですか?このグループのメッセージを表示できなくなります。",
-				"leaveOk": "グループを脱退",
-				"leaveBatch": "選択したグループを終了します (${count})",
-				"leaveConfirmBatch": "${count} 個の選択したグループを残してもよろしいですか?マシンはこれらのグループのデータを保持しなくなります。",
-				"leaveBatchPending": "${count} 個のグループがリストから削除され、バックグラウンドで終了しました...",
-				"leaveBatchOk": "${count} グループを終了しました",
-				"leaveBatchPartial": "${failed} / ${total} グループの終了に失敗しました。リストは更新されました"
-			},
 			"replyInline": {
 				"title": "返事"
 			},
@@ -2226,35 +1962,8 @@
 			"replyInThread": {
 				"title": "子スレッドで返信する"
 			},
-			"syncTruncated": "DAG 増分がいっぱいではありません。後でもう一度試すか、制限を増やすことができます。",
-			"syncTruncatedHint": "DAG 履歴が長すぎます。後でもう一度試すか、制限を増やすことができます。",
-			"newChannelButton": "新しいチャンネルを作成する",
-			"newChannelSuccess": "チャンネルが作成されました",
-			"newChannelFailed": "チャンネルの作成に失敗しました",
-			"newChannelTitle": "新しいチャンネルを作成する",
-			"channelName": "チャンネル名",
-			"channelType": "チャンネルの種類",
-			"channelTypeText": "チャットチャンネル",
-			"channelTypeList": "リスト/フォーラムチャンネル",
-			"channelTypeStreaming": "ストリーミングチャンネル",
-			"channelNameInput": {
-				"placeholder": "一般的な"
-			},
 			"localMaterializedView": "現在、これはローカルの実体化ビュー (具体化されたビュー) であり、権限と履歴が他のノードと矛盾している可能性があります。",
 			"convergentEncryptWarn": "グループ ファイルは収束暗号化を使用します。攻撃者がファイルの平文を知っている場合、キーを導出して、対応する暗号文ブロックを復号化できます。機密性の高い独自のプライベート文書を保護するために、グループ暗号化のみに依存しないでください。",
-			"votePromptQuestion": "投票タイトル",
-			"votePromptOptions": "オプション (カンマで区切って少なくとも 2 つ)",
-			"voteOptionDefault": "賛成、反対",
-			"votePromptDeadlineHours": "期限 (時間、空白のまま = 期限なし)",
-			"messagePrefixVote": "投票する",
-			"threadCreated": "子スレッドが作成されました",
-			"threadCreateFailed": "子スレッドの作成に失敗しました。後でもう一度お試しください。",
-			"threadDrawer": {
-				"aria-label": "子スレッド"
-			},
-			"threadClose": {
-				"title": "子スレッドを閉じる"
-			},
 			"reputationSlashAlert": "メンバー ${target}… の評判が減点を思い出させます。",
 			"profileEdit": {
 				"previewHint": "変更はすぐにプレビューに表示され、保存され、チャットとソーシャル全体で同期されます。",
@@ -2263,23 +1972,14 @@
 				"languageVersion": "言語バージョン",
 				"localeHint": "ラベルをクリックしてコードを切り替えるか編集します。最後に入力ボックスで Enter キーを押して、新しい言語にコピーします。",
 				"themeColorHint": "カスタム バナーがない場合にテクスチャを生成するために使用され、ライブ サウンド ウェーブ ループにも使用されます。",
-				"bannerLabel": "バナーの背景",
-				"bannerHint": "画像の URL を入力するか、ファイルをアップロードできます。いつでもテクスチャの生成を再開することもできます",
-				"bannerClear": "バナー生成を再開する",
 				"linksPreview": "${count} 個の公開リンク",
 				"unsavedHint": "ウィンドウを閉じると、保存されていない変更が破棄されます",
 				"tagsLabel": "ラベル",
 				"tagAdd": "追加",
 				"tagRemove": "タグの削除",
 				"linksLabel": "リンク",
-				"linkAdd": "リンクを追加",
-				"linkRemove": "リンクを削除する",
 				"handleLabel": "カスタムID",
 				"handleHint": "ネットワーク内の他のノードから検索できます。一意性は保証されず、競合は信頼リストに従って曖昧さが解消されます。",
-				"resetFromPart": "文字部分からリセット",
-				"resetFromPartConfirm": "現在の情報はロール パーツの情報で上書きされます。本気ですか？",
-				"resetFromPartDone": "キャラクターパーツから再構築したプロフィール",
-				"resetFromPartFailed": "再構築に失敗しました: ${error}",
 				"newLocale": {
 					"placeholder": "新しい言語コード (en-UK など)"
 				},
@@ -2295,23 +1995,38 @@
 				"avatarUpload": {
 					"aria-label": "アバターをアップロード"
 				},
-				"bannerUrl": {
-					"placeholder": "バナー画像のURL、または以下のファイルをアップロードしてください"
-				},
-				"bannerUpload": {
-					"aria-label": "バナーをアップロード"
-				},
 				"tag": {
 					"placeholder": "タグ入力後に追加"
 				},
-				"linkName": {
-					"placeholder": "テキストを表示"
-				},
-				"linkUrl": {
-					"placeholder": "https://…またはfount://…"
-				},
 				"handle": {
 					"placeholder": "たとえば、steve (2 ～ 32 文字の小文字の英数字。_-)"
+				},
+				"resetFrom": {
+					"part": "文字部分からリセット",
+					"partConfirm": "現在の情報はロール パーツの情報で上書きされます。本気ですか？",
+					"partDone": "キャラクターパーツから再構築したプロフィール",
+					"partFailed": "再構築に失敗しました: ${error}"
+				},
+				"banner": {
+					"clear": "バナー生成を再開する",
+					"hint": "画像の URL を入力するか、ファイルをアップロードできます。いつでもテクスチャの生成を再開することもできます",
+					"label": "バナーの背景",
+					"upload": {
+						"aria-label": "バナーをアップロード"
+					},
+					"url": {
+						"placeholder": "バナー画像のURL、または以下のファイルをアップロードしてください"
+					}
+				},
+				"link": {
+					"add": "リンクを追加",
+					"name": {
+						"placeholder": "テキストを表示"
+					},
+					"remove": "リンクを削除する",
+					"url": {
+						"placeholder": "https://…またはfount://…"
+					}
 				}
 			},
 			"profilePopup": {
@@ -2321,72 +2036,22 @@
 				},
 				"editSaved": "保存されたデータ",
 				"editQueued": "公開され、他のノードがプルするのを待っています",
-				"dmChar": "キャラクターとプライベートにチャットする",
-				"dmUser": "プライベートメッセージを送信する",
-				"dmFed": "フェデレーション DM",
 				"noFedIdentity": "最初にフェデレーション設定でネイティブの activePubKeyHex を構成してください",
 				"peerNoIdentity": "相手にフェデレーション ID がないため、フェデレーション DM を開始できません。",
-				"dmFailed": "DM を開けません: ${error}",
 				"care": "特別フォロー",
 				"careRemove": "特別フォローを解除",
 				"setAlias": "エイリアスの設定",
-				"setAliasPrompt": "「${name}」のローカル エイリアスを設定します (クリアするには空白のままにします)。"
-			},
-			"channelContext": {
-				"copyLinkDone": "チャンネルリンクがコピーされました",
-				"notifyPrefs": "チャンネル通知設定",
-				"rename": "チャンネル名の変更",
-				"renameOk": "チャンネル名が変更されました",
-				"delete": "チャンネルの削除",
-				"deleteOk": "チャンネルが削除されました",
-				"deleteConfirm": "チャンネル「${name}」を削除してもよろしいですか?この操作は元に戻すことができません。",
-				"setDefault": "デフォルトのチャンネルとして設定",
-				"setDefaultOk": "すでにデフォルトチャンネルとして設定されています",
-				"copyLink": "チャンネルリンクをコピーする",
-				"exportJson": "JSONのエクスポート",
-				"exportOk": "チャンネルアーカイブがダウンロードされました",
-				"exportFailed": "エクスポートに失敗しました: ${error}"
-			},
-			"memberContext": {
-				"copyName": "表示名をコピーする",
-				"mention": "言及",
-				"care": "特別な懸念",
-				"careAdded": "すでに特別な懸念事項が追加されています",
-				"careRemoved": "スペシャルケアは解除されました",
-				"setAlias": "エイリアスの設定",
 				"setAliasPrompt": "「${name}」のローカル エイリアスを設定します (クリアするには空白のままにします)。",
-				"aliasSaved": "エイリアスが更新されました",
-				"copyPubKey": "公開鍵ハッシュをコピーする",
-				"copyEntityId": "エンティティIDをコピー",
-				"dm": "プライベートメッセージを送信する",
-				"kick": "キックメンバー",
-				"kickSelfNodeWarning": "警告: このメンバーはあなたと同じノード ID を使用します。追放された場合もグループから削除されます。続行してもよろしいですか?",
-				"ban": "禁止…",
-				"personalBlock": "個人ブロック",
-				"personalBlockConfirm": "${name} をブロック リストに追加しますか?あなたをフォローしている人はこのシグナルを察知し、彼らに対する信頼が薄れる可能性があります。",
-				"personalBlockSuccess": "すでにブラックリストに追加されています",
-				"banTitle": "禁止範囲を選択してください",
-				"banEntity": "禁止されたエンティティ (128 ビットのエンティティハッシュ)",
-				"banNode": "禁止ノード (homeNodeHash)"
+				"dm": {
+					"char": "キャラクターとプライベートにチャットする",
+					"failed": "DM を開けません: ${error}",
+					"fed": "フェデレーション DM",
+					"user": "プライベートメッセージを送信する"
+				}
 			},
-			"messageContext": {
-				"edit": "メッセージを編集する",
-				"delete": "メッセージを削除する"
-			},
-			"charStreaming": "生成中…",
 			"gshDecryptPending": "チャンネルキーを待っています (世代 ${gen})",
 			"gshDecryptFailed": "チャンネルキーがなければこのメッセージを復号化できません",
-			"fileDecryptFailed": "ファイルキーがなければこのファイルにアクセスできません",
 			"reactionFailed": "応答操作が失敗しました",
-			"fileUploadChecking": "同じコンテンツが既に存在するかどうかを確認しています...",
-			"fileUploadingChunk": "暗号化されたブロックをアップロードしています...",
-			"fileUploadRegistering": "ファイルを登録中…",
-			"fileUploaded": "ファイルをアップロードしました",
-			"fileUploadFailed": "ファイルのアップロードに失敗しました",
-			"fileSkippedDedup": "重複ブロック転送はスキップされました",
-			"fileDownloadFailed": "ファイルのダウンロードに失敗しました",
-			"fileNoKey": "復号化できません (キーがありません)",
-			"fileLoadFailed": "ファイルの読み込みに失敗しました",
 			"createModal": {
 				"title": "グループを作成",
 				"subtitle": "グループは、あなたと友達が一緒にチャットできるプライベートなスペースです",
@@ -2399,14 +2064,16 @@
 				"description": {
 					"placeholder": "(オプション) このグループを紹介します"
 				},
-				"joinSection": "参加できる人",
-				"joinInviteOnly": "招待のみ",
-				"joinInviteOnlyDescription": "参加するには招待コードが必要です",
-				"joinPow": "仕事の証明",
-				"joinPowDescription": "参加する前に PoW チャレンジを完了する必要があります",
 				"cancel": "戻る",
 				"submit": "グループを作成",
-				"failed": "グループの作成に失敗しました: ${error}"
+				"failed": "グループの作成に失敗しました: ${error}",
+				"join": {
+					"inviteOnly": "招待のみ",
+					"inviteOnlyDescription": "参加するには招待コードが必要です",
+					"pow": "仕事の証明",
+					"powDescription": "参加する前に PoW チャレンジを完了する必要があります",
+					"section": "参加できる人"
+				}
 			},
 			"joinModal": {
 				"title": "グループに参加する",
@@ -2423,28 +2090,9 @@
 				"cancel": "戻る",
 				"submit": "グループに参加する"
 			},
-			"menuCopy": "コピー",
-			"menuMD": "マークダウン",
-			"menuTXT": "プレーンテキスト",
-			"menuHTML": "HTML",
-			"menuDownload": "HTMLをダウンロード",
-			"menuDelete": "削除",
-			"menuShareGroup": "リンクを共有する",
-			"menuPrev": "前の記事",
-			"menuNext": "次の記事",
-			"menuShare": {
-				"1h": "1 時間のリンクを共有する",
-				"12h": "12 時間リンクを共有する",
-				"24h": "24 時間リンクを共有する",
-				"72h": "72 時間のリンクを共有する"
-			},
-			"noGroups": "まだグループがありません",
 			"myGroups": "私のグループ",
 			"joinGroup": "グループに参加する",
 			"createGroup": "新しいグループを作成する",
-			"noDescription": "まだ説明がありません",
-			"memberCountLabel": "${count} 人のメンバー",
-			"loadListFailed": "グループリストのロードに失敗しました: ${error}",
 			"contentWarning": "コンテンツの警告",
 			"sensitiveMedia": "機密メディア",
 			"revealContent": "コンテンツを表示",
@@ -2479,12 +2127,6 @@
 				"saved": "翻訳設定が保存されました",
 				"saveFailed": "保存に失敗しました: ${error}"
 			},
-			"friendsSearch": {
-				"placeholder": "ローカルの役割/カスタム ID/名前を検索…"
-			},
-			"threadComposer": {
-				"placeholder": "サブスレッドで返信…"
-			},
 			"altImage": {
 				"placeholder": "画像に説明を追加します…",
 				"label": "画像の説明 (代替)"
@@ -2495,7 +2137,587 @@
 				"aria-label": "メンション候補"
 			},
 			"clickToLoad": "クリックしてロード",
-			"send": "送信"
+			"serverActionPicker": {
+				"create": "グループを作成",
+				"createDescription": "ゼロから始めて友達を招待する",
+				"join": "グループに参加する",
+				"joinDescription": "グループIDを使用する",
+				"subtitle": "新しいグループを作成するか、ID で既存のグループに参加します",
+				"title": "グループ"
+			},
+			"membersDigest": {
+				"fetchFailed": "ページごとにメンバーを取得できませんでした",
+				"mismatch": "一貫性のないメンバー ダイジェスト · ${root}",
+				"ok": "メンバー マークル全会一致 · ${root}",
+				"okPaged": "メンバー マークルのコンセンサス (${pages} ページ) · ${root}",
+				"pagesTitle": {
+					"title": "${expected}\n${pages} ページ"
+				},
+				"pending": "メンバー概要を確認してください…"
+			},
+			"unbindFriend": {
+				"main": "バインドを解除する",
+				"confirm": "${name} とのプライベート チャットのバインドを解除してもよろしいですか?会話はグループ リストに戻ります。",
+				"description": "バインドを解除すると、会話は左側のグループ リストに戻り、メッセージ レコードは保持されます。",
+				"failed": "バインド解除に失敗しました: ${error}",
+				"ok": "束縛されていない"
+			},
+			"federation": {
+				"loadFailed": "読み込みに失敗しました: ${error}",
+				"subtitle": "クロスデバイス接続を制御します。ほとんどの場合はデフォルトのままにします",
+				"title": "フェデレーション P2P 設定",
+				"tooltip": {
+					"title": "フェデレーション P2P 設定",
+					"tip": "フェデレーション P2P 設定"
+				}
+			},
+			"newChannel": {
+				"button": "新しいチャンネルを作成する",
+				"failed": "チャンネルの作成に失敗しました",
+				"success": "チャンネルが作成されました",
+				"title": "新しいチャンネルを作成する"
+			},
+			"discovery": {
+				"description": "フェデレーション ネットワークからパブリック グループを参照し、興味のあるコミュニティを選択して参加します。",
+				"empty": "現在、推奨されるグループはありません。フェデレーション同期をオンにすると、検出リストがネイバーから同期されます。",
+				"emptyTitle": "公開グループはまだ見つかりません",
+				"eyebrow": "コミュニティを探索する",
+				"join": "グループに参加する",
+				"loadFailed": "検出リストのロードに失敗しました: ${message}",
+				"noDescription": "グループ所有者はまだプロフィールを入力していません。",
+				"open": "オープングループ",
+				"refresh": "検出リストを更新する",
+				"sidebarHint": "右側で公開グループを参照して参加します",
+				"sourceCount": "${count} 個のフェデレーション ソース",
+				"title": "グループの発見",
+				"tooltip": {
+					"title": "グループの発見",
+					"tip": "グループの発見"
+				}
+			},
+			"forkSplit": {
+				"failed": "分割に失敗しました: ${error}",
+				"modalSubmit": "作成する",
+				"modalTitle": "新しいグループに分かれる",
+				"prompt": "新しいグループ名 (空白のままでも可)"
+			},
+			"stickers": {
+				"empty": "ステッカーはまだありません",
+				"loadFailed": "読み込みに失敗しました: ${error}",
+				"loading": "読み込み中…",
+				"manage": "ステッカーの管理 →",
+				"marketLink": "ステッカー広場に移動してインストールしてください",
+				"panelTitle": "ステッカー"
+			},
+			"friends": {
+				"contextNewChat": "新しいチャット",
+				"count": "${count} 人の友達",
+				"emptyAction": "ロールまたはユーザーを検索する",
+				"emptyDescription": "ローカル ロールまたは他のノードでユーザーを検索し、グループ チャットでメンバー プロフィール カードを開いてプライベート メッセージを開始することもできます。",
+				"emptyTitle": "新しい会話を開始する",
+				"header": "友達",
+				"restartConfirm": "「${name}」とのプライベート チャットのバインドが解除され、新しい会話が作成されます。本気ですか？",
+				"restartFailed": "新しいプライベート チャットの作成に失敗しました: ${error}",
+				"restartOk": "新しいプライベートチャットが開設されました",
+				"search": {
+					"placeholder": "ローカルの役割/カスタム ID/名前を検索…",
+					"chat": "会話を始める",
+					"dm": "プライベートメッセージを送信する",
+					"empty": "一致するロールまたはユーザーがありません",
+					"localChar": "ローカルの役割",
+					"pin": "エイリアスとして設定",
+					"tooShort": "少なくとも 2 文字を入力してください"
+				},
+				"tag": "友達",
+				"tooltip": {
+					"title": "友達",
+					"tip": "友達"
+				}
+			},
+			"channel": {
+				"bar": {
+					"aria-label": "チャンネル一覧"
+				},
+				"context": {
+					"copyLinkDone": "チャンネルリンクがコピーされました",
+					"notifyPrefs": "チャンネル通知設定",
+					"rename": "チャンネル名の変更",
+					"renameOk": "チャンネル名が変更されました",
+					"delete": "チャンネルの削除",
+					"deleteOk": "チャンネルが削除されました",
+					"deleteConfirm": "チャンネル「${name}」を削除してもよろしいですか?この操作は元に戻すことができません。",
+					"setDefault": "デフォルトのチャンネルとして設定",
+					"setDefaultOk": "すでにデフォルトチャンネルとして設定されています",
+					"copyLink": "チャンネルリンクをコピーする",
+					"exportJson": "JSONのエクスポート",
+					"exportOk": "チャンネルアーカイブがダウンロードされました",
+					"exportFailed": "エクスポートに失敗しました: ${error}"
+				},
+				"name": "チャンネル名",
+				"nameInput": {
+					"placeholder": "一般的な"
+				},
+				"readonlyList": {
+					"placeholder": "リストチャンネル読み取り専用"
+				},
+				"readonlyStream": {
+					"placeholder": "ストリーミングチャンネルは読み取り専用です"
+				},
+				"type": "チャンネルの種類",
+				"typeList": "リスト/フォーラムチャンネル",
+				"typeStreaming": "ストリーミングチャンネル",
+				"typeText": "チャットチャンネル"
+			},
+			"message": {
+				"action": {
+					"bookmark": {
+						"title": "ブックマーク"
+					},
+					"copyHtml": {
+						"title": "HTMLをコピー"
+					},
+					"delete": {
+						"title": "メッセージを削除する"
+					},
+					"edit": {
+						"title": "メッセージを編集する"
+					},
+					"failed": "操作が失敗しました: ${error}",
+					"feedbackDown": {
+						"title": "クリックして嫌いにします"
+					},
+					"feedbackUp": {
+						"title": "のように"
+					},
+					"next": {
+						"title": "次のタイムライン"
+					},
+					"pin": {
+						"title": "上にピンで留める"
+					},
+					"prev": {
+						"title": "以前のタイムライン"
+					},
+					"regen": {
+						"title": "再生する"
+					},
+					"unpin": {
+						"title": "ピン留めを解除"
+					}
+				},
+				"context": {
+					"edit": "メッセージを編集する",
+					"delete": "メッセージを削除する"
+				},
+				"edit": {
+					"area": {
+						"aria-label": "メッセージを編集"
+					},
+					"cancel": "キャンセル",
+					"save": "保存",
+					"upload": "添付ファイルをアップロードする"
+				},
+				"feedbackSubmit": "フィードバックを送信する",
+				"input": {
+					"placeholder": "グループメッセージ... Ctrl+Enter 送信",
+					"aria-label": "メッセージを入力"
+				},
+				"prefixVote": "投票する"
+			},
+			"session": {
+				"deleteFailed": "削除に失敗しました: ${error}",
+				"deleted": "会話が削除されました",
+				"id": "セッションID",
+				"info": "セッション情報",
+				"messages": "メッセージ数",
+				"role": "ロール"
+			},
+			"folder": {
+				"collapse": "フォルダを折りたたむ",
+				"default": "フォルダ",
+				"dissolve": "フォルダを閉じる",
+				"expand": "フォルダを展開する",
+				"rename": "フォルダーの名前を変更する",
+				"renamePrompt": "フォルダー「${name}」の名前を次のように変更します。"
+			},
+			"stream": {
+				"av": {
+					"join": "音声/ビデオを追加する",
+					"joinFailed": "通話を開始できません: ${error}",
+					"leave": "離席中",
+					"mute": "ミュート",
+					"noCodecs": "このブラウザは WebCodecs をサポートしていません (Chrome 94 以降 / Edge 94 以降 / Firefox 130 以降が必要です)",
+					"peers": "${count} 人がオンライン",
+					"preset": {
+						"high": "高画質1.5Mbps",
+						"low": "低品質 200kbps",
+						"med": "中 600kbps",
+						"thumb": "短縮64kbps"
+					},
+					"unmute": "ミュートを解除する",
+					"video": "カメラをオフにする",
+					"videoOn": "カメラをオンにする",
+					"you": "あなた"
+				},
+				"defaultName": "ストリーミングメディア",
+				"embedHttpsRequired": "ストリーミング アドレスは埋め込み可能な https:// ページである必要があります。または、グループ設定を最初に構成し、表示トークンを取得するために更新する必要があります。",
+				"refreshToken": "ウォッチトークンをリフレッシュ",
+				"tokenFailed": "閲覧トークンを発行できません",
+				"webRtcHint": "外部 SFU は構成されていません。このチャンネルはグループ内 WebRTC を使用します (streamingSfuWss は必要ありません)。"
+			},
+			"member": {
+				"bar": {
+					"aria-label": "メンバー一覧"
+				},
+				"context": {
+					"copyName": "表示名をコピーする",
+					"mention": "言及",
+					"care": "特別な懸念",
+					"careAdded": "すでに特別な懸念事項が追加されています",
+					"careRemoved": "スペシャルケアは解除されました",
+					"setAlias": "エイリアスの設定",
+					"setAliasPrompt": "「${name}」のローカル エイリアスを設定します (クリアするには空白のままにします)。",
+					"aliasSaved": "エイリアスが更新されました",
+					"copyPubKey": "公開鍵ハッシュをコピーする",
+					"copyEntityId": "エンティティIDをコピー",
+					"dm": "プライベートメッセージを送信する",
+					"kick": "キックメンバー",
+					"kickSelfNodeWarning": "警告: このメンバーはあなたと同じノード ID を使用します。追放された場合もグループから削除されます。続行してもよろしいですか?",
+					"ban": "禁止…",
+					"personalBlock": "個人ブロック",
+					"personalBlockConfirm": "${name} をブロック リストに追加しますか?あなたをフォローしている人はこのシグナルを察知し、彼らに対する信頼が薄れる可能性があります。",
+					"personalBlockSuccess": "すでにブラックリストに追加されています",
+					"banTitle": "禁止範囲を選択してください",
+					"banEntity": "禁止されたエンティティ (128 ビットのエンティティハッシュ)",
+					"banNode": "禁止ノード (homeNodeHash)"
+				},
+				"countLabel": "${count} 人のメンバー",
+				"joined": "会話に参加しました",
+				"section": "メンバー"
+			},
+			"thread": {
+				"close": {
+					"title": "子スレッドを閉じる"
+				},
+				"composer": {
+					"placeholder": "サブスレッドで返信…"
+				},
+				"createFailed": "子スレッドの作成に失敗しました。後でもう一度お試しください。",
+				"created": "子スレッドが作成されました",
+				"drawer": {
+					"aria-label": "子スレッド"
+				}
+			},
+			"config": {
+				"loadFailed": "構成のロードに失敗しました: ${error}",
+				"saveFailed": "保存に失敗しました: ${error}",
+				"saved": "保存しました",
+				"title": "会話構成"
+			},
+			"statusItems": {
+				"dnd": {
+					"title": "取り込み中",
+					"textContent": "取り込み中"
+				},
+				"idle": {
+					"title": "離席中",
+					"textContent": "離席中"
+				},
+				"offline": {
+					"title": "オフライン",
+					"textContent": "オフライン"
+				},
+				"online": {
+					"title": "オンライン",
+					"textContent": "オンライン"
+				}
+			},
+			"files": {
+				"bindCabinet": "ファイルキャビネットを追加する",
+				"delete": "削除",
+				"deleteConfirm": "このファイルを削除してもよろしいですか?",
+				"deleteFolderConfirm": "このフォルダを削除してもよろしいですか?フォルダー内のファイルは自動的には削除されません。",
+				"download": "ダウンロード",
+				"drawerTitle": "グループファイル",
+				"empty": "現在このディレクトリにはファイルがありません",
+				"foldersTitle": "フォルダ",
+				"listTitle": "書類",
+				"loadFailed": "グループ ファイルのロードに失敗しました: ${error}",
+				"loading": "グループファイルをロード中...",
+				"newFolder": "新しいフォルダーを作成する",
+				"newFolderPrompt": "フォルダ名",
+				"no": {
+					"cabinets": "現在の役割でアクセスできるファイル キャビネットはありません",
+					"channel": "まずメッセージを送信できるテキスト チャンネルを入力してください",
+					"folders": "まだサブフォルダーがありません",
+					"group": "最初にグループを選択してください"
+				},
+				"rename": "名前の変更",
+				"renameFolderPrompt": "フォルダー「${name}」の名前を次のように変更します。",
+				"rootFolder": "ルートディレクトリ",
+				"title": {
+					"title": "グループファイル"
+				},
+				"upload": "アップロード",
+				"uploadTo": "にアップロードする"
+			},
+			"group": {
+				"context": {
+					"manage": "管理グループ",
+					"notifyPrefs": "通知設定",
+					"invite": "他の人を招待する",
+					"inviteCopied": "招待リンクがクリップボードにコピーされました",
+					"addChar": "役割の追加",
+					"addCharLabel": "ロールを選択",
+					"addCharSubmit": "追加",
+					"noChars": "利用可能な役割がありません",
+					"setAlias": "グループエイリアスの設定",
+					"setAliasPrompt": "「${name}」のローカル エイリアスを設定します (クリアするには空白のままにします)。",
+					"aliasSaved": "グループエイリアスが更新されました",
+					"leave": {
+						"main": "グループから抜け出す",
+						"batch": "選択したグループを終了します (${count})",
+						"batchOk": "${count} グループを終了しました",
+						"batchPartial": "${failed} / ${total} グループの終了に失敗しました。リストは更新されました",
+						"batchPending": "${count} 個のグループがリストから削除され、バックグラウンドで終了しました...",
+						"confirm": "グループ「${name}」から退会してもよろしいですか?このグループのメッセージを表示できなくなります。",
+						"confirmBatch": "${count} 個の選択したグループを残してもよろしいですか?マシンはこれらのグループのデータを保持しなくなります。",
+						"ok": "グループを脱退"
+					}
+				},
+				"descriptionEmpty": "このグループにはまだプロフィールがありません。",
+				"emojiTab": {
+					"title": "グループ"
+				},
+				"emojisEmpty": "現在、グループ絵文字はありません。グループ設定でアップロードできます。",
+				"emojisLoadFailed": "グループ絵文字の読み込みに失敗しました",
+				"headerMenu": {
+					"title": "グループメニュー: 設定、招待状など。"
+				},
+				"joinRequired": "グループが見つかりません。招待リンクまたは招待コードで参加してください。",
+				"tag": "グループ",
+				"unnamed": "名前のないグループ ·${suffix}"
+			},
+			"block": {
+				"author": {
+					"title": "この作者をブロックする"
+				},
+				"authorTitle": "この作者をブロックする",
+				"confirm": "この人をブラックリストに追加しますか?同団体の連盟は中継を拒否する。",
+				"ok": "ブロックされました",
+				"opposingConfirm": "現在の選挙に参加していないガバナンス発行者をブラックリストに追加し、このグループの連盟リレーを拒否します。続く？",
+				"opposingFailed": "マーク付けに失敗しました: ${error}",
+				"opposingOk": "${count} 件の対象者が到達不能としてマークされています"
+			},
+			"call": {
+				"button": {
+					"title": "通話を開始または参加する",
+					"aria-label": "通話を開始または参加する"
+				},
+				"duration": "期間 ${duration}",
+				"ended": "通話が終了しました",
+				"hangup": "電話を切る",
+				"inProgress": "通話中",
+				"join": "通話に参加する",
+				"joinFailed": "通話に参加できません: ${error}",
+				"jumpBack": "通話チャンネルに戻る",
+				"noParticipants": "まだ参加者はいません",
+				"participants": "${n} 人",
+				"peerCount": "${n}",
+				"screenFailed": "画面共有に失敗しました: ${error}",
+				"screenShare": "画面を共有する",
+				"screenStop": "共有を停止する",
+				"startedAt": "${time} に開始"
+			},
+			"vote": {
+				"closed": "終わった",
+				"count": "${count} チケット · ${pct}%",
+				"createFailed": "投票の作成に失敗しました: ${error}",
+				"deadline": "締め切り: ${date}",
+				"minOptions": "少なくとも 2 つのオプションが必要です",
+				"modalSubmit": "投票の作成",
+				"modalTitle": "投票を作成",
+				"noOptions": "オプションなし",
+				"optionDefault": "賛成、反対",
+				"promptDeadlineHours": "期限 (時間、空白のまま = 期限なし)",
+				"promptOptions": "オプション (カンマで区切って少なくとも 2 つ)",
+				"promptQuestion": "投票タイトル",
+				"title": {
+					"title": "投票を作成"
+				},
+				"total": "合計 ${total} 票"
+			},
+			"file": {
+				"decryptFailed": "ファイルキーがなければこのファイルにアクセスできません",
+				"downloadFailed": "ファイルのダウンロードに失敗しました",
+				"loadFailed": "ファイルの読み込みに失敗しました",
+				"noKey": "復号化できません (キーがありません)",
+				"skippedDedup": "重複ブロック転送はスキップされました",
+				"uploadChecking": "同じコンテンツが既に存在するかどうかを確認しています...",
+				"uploadFailed": "ファイルのアップロードに失敗しました",
+				"uploadRegistering": "ファイルを登録中…",
+				"uploaded": "ファイルをアップロードしました",
+				"uploadingChunk": "暗号化されたブロックをアップロードしています..."
+			},
+			"menu": {
+				"copy": "コピー",
+				"delete": "削除",
+				"download": "HTMLをダウンロード",
+				"hTML": "HTML",
+				"mD": "マークダウン",
+				"next": "次の記事",
+				"prev": "前の記事",
+				"share": {
+					"1h": "1 時間のリンクを共有する",
+					"12h": "12 時間リンクを共有する",
+					"24h": "24 時間リンクを共有する",
+					"72h": "72 時間のリンクを共有する"
+				},
+				"shareGroup": "リンクを共有する",
+				"tXT": "プレーンテキスト"
+			},
+			"char": {
+				"chat": {
+					"composer": {
+						"placeholder": "${name} にメッセージを送信します (送信するには Ctrl+Enter)"
+					},
+					"empty": "まだメッセージがありません。最初のチャットを始めてください。",
+					"settings": "キャラクターチャット設定",
+					"start": "${name} と会話を始めてください",
+					"subtitle": "${name} とのセッション"
+				},
+				"chatsTitle": "${name} との歴史的な会話",
+				"count": "${count} 個の役割",
+				"descriptionEmpty": "キャラクターはまだ自己紹介をしていません。",
+				"intro": "導入",
+				"streaming": "生成中…",
+				"tag": "ロール",
+				"tagSolo": "キャラクター・1:1ダイアログ",
+				"typing": "入力中…"
+			},
+			"list": {
+				"channelEmpty": "リストは空です。",
+				"editorTitle": "リスト項目の編集 (JSON 配列)",
+				"itemUntitled": "無名",
+				"jsonInvalid": "無効な JSON: ${message}",
+				"saveFailed": "保存に失敗しました",
+				"saveToDag": "DAG に保存",
+				"saved": "保存しました"
+			},
+			"save": {
+				"emoji": {
+					"title": "絵文字を保存する"
+				},
+				"emojiFailed": "絵文字を保存できませんでした: ${error}",
+				"emojiOk": "絵文字はデータベースに保存されました",
+				"sticker": {
+					"title": "ステッカーを保存する"
+				},
+				"stickerFailed": "ステッカーを保存できませんでした: ${error}",
+				"stickerOk": "ステッカーがステッカー ライブラリに追加されました"
+			},
+			"sync": {
+				"failed": "フェデレーションの同期に失敗しました: ${error}",
+				"incomplete": "${missing}/${total} イベントは同期されていないままです",
+				"noPeers": "フェデレーションネイバーに接続されていないため、履歴メッセージを一時的に同期できません。完全な招待リンクを使用して、後でもう一度お試しください",
+				"rateLimited": "連邦同期速度制限が進行中です。後でもう一度お試しください。",
+				"truncated": "DAG 増分がいっぱいではありません。後でもう一度試すか、制限を増やすことができます。",
+				"truncatedHint": "DAG 履歴が長すぎます。後でもう一度試すか、制限を増やすことができます。"
+			},
+			"load": {
+				"charChatFailed": "メッセージの読み込みに失敗しました",
+				"groupFailed": "グループのロードに失敗しました: ${error}",
+				"listFailed": "グループリストのロードに失敗しました: ${error}",
+				"messagesFailed": "メッセージの読み込みに失敗しました: ${error}",
+				"more": "古いニュースを読み込んでいます…"
+			},
+			"send": {
+				"main": "送信",
+				"failed": "送信失敗: ${error}",
+				"failedPending": "送信に失敗しました",
+				"imageFailed": "画像の送信に失敗しました: ${error}",
+				"stickerFailed": "ステッカーの送信に失敗しました: ${error}",
+				"title": {
+					"title": "送信 (Ctrl+Enter)"
+				}
+			},
+			"fed": {
+				"advancedDescription": "バグ修正、評判管理、手動リンク発行",
+				"advancedTitle": "詳細設定",
+				"batterySaverLabel": "低電力モード",
+				"batterySaverTip": "バックグラウンド接続とネットワーク アクティビティの数を減らすと、メッセージの同期が若干遅くなる可能性があります。",
+				"connectionTitle": "接続して発見する",
+				"dm": {
+					"invalidateDescription": "実行後、以前に発行されたすべての友達追加リンクは直ちに無効になり、取り消すことはできません。",
+					"invalidateTitle": "古い紹介リンクを有効期限切れにする",
+					"issueLabel": "DMリンクを発行する",
+					"issued": "DM リンクが署名され、クリップボードにコピーされました",
+					"linkDescription": "デバッグまたは手動による ID 移行に適しています。毎日友達を追加するときにこれらのフィールドに入力する必要はありません。",
+					"linkTip": "ネイティブ ID キーを使用した署名が必要です。秘密キーはこのページのローカル サービスにのみ送信され、他のノードには送信されません。",
+					"linkTitle": "友達リンクを手動で発行する",
+					"needPubKey": "64 16 進数の公開キーが必要です",
+					"needSecretKey": "64 16 進数の秘密鍵シードが必要",
+					"nodeLabel": "オプションのノード URL",
+					"pubKeyLabel": "公開鍵の 16 進数(64)",
+					"rotateConfirm": "以前に発行された友達追加リンクはすべて直ちに無効になり、復元することはできません。続行してもよろしいですか?",
+					"rotateLabel": "古いリンクを無効にする",
+					"secretLabel": "秘密鍵シード 16 進数(64)"
+				},
+				"groupRecoveryTip": "招待状が漏洩した場合、または新しいデバイスが履歴を同期できない場合にのみ使用されます。",
+				"groupRecoveryTitle": "グループ接続の修正",
+				"nonceRotated": "nonce が回転されました (${nonce}…)",
+				"relayUrlsLabel": "ネットワークリレーアドレス",
+				"relayUrlsTip": "デバイスがインターネット上で相互に検出できるようにします。 1 行に 1 つの wss:// アドレスを入力します。デフォルトのリレーを使用する場合は空白のままにします。",
+				"repEmpty": "(ヌル)",
+				"repTip": "フェデレーション ノードの動作に基づいてネイティブに計算された接続優先スコアは、グループ メンバーの公開評価ではありません。",
+				"repTitle": "このグループの主観的な信頼性",
+				"repairJoinSnapshot": "ネイバーにグループのスナップショット修復への参加を要求する",
+				"repairJoinSnapshotFailed": "グループ スナップショットの修復に失敗しました: ${error}",
+				"repairJoinSnapshotOk": "適用されたグループ スナップショット (${channels} チャンネル履歴)",
+				"resetOk": "評判_リセットが書き込まれました",
+				"resetSubmitLabel": "ターゲットの評判をリセットする",
+				"rotateRoomSecret": "グループルームのパスワードを更新する",
+				"rotateRoomSecretConfirm": "ローテーション後は、古いルーム パスワードを使用した招待は接続できなくなります。続行してもよろしいですか?",
+				"rotateRoomSecretOk": "ルームのパスワードが更新されました",
+				"saved": "保存しました",
+				"slash": {
+					"claimLabel": "主張強度主張 (0–1)",
+					"needHash": "64 ビット 16 進数の pubKeyHash が必要です",
+					"ok": "DAG に書き込まれたreputation_slash",
+					"proof": {
+						"placeholder": "64 16 進数のイベント ID"
+					},
+					"proofLabel": "proof.eventId (オプション)",
+					"submitLabel": "投稿の評判_スラッシュ",
+					"target": {
+						"placeholder": "メンバーの公開鍵ハッシュ"
+					},
+					"targetLabel": "ターゲットの pubKeyHash(64 進数)",
+					"tip": "ノードに関する否定的な評判ステートメントをグループ イベント グラフに書き込みます。フェデレーション プロトコルを理解している管理者のみが使用します。",
+					"title": "評判ペナルティ",
+					"verifiedLabel": "検証可能 (証明イベント ID が必要)"
+				}
+			},
+			"pin": {
+				"previewInvite": "[招待] ${groupName}",
+				"previewSticker": "[ステッカー]",
+				"previewVote": "[投票] ${question}",
+				"unpinSidebar": {
+					"title": "ピン留めを解除"
+				}
+			},
+			"no": {
+				"activeChat": "パーツをドラッグする前に、まずセッションを開いてください。",
+				"bookmarks": "まだブックマークはありません",
+				"channels": "まだ会話はありません",
+				"chars": "まだロールがありません。まずキャラクターをインストールしてください。",
+				"description": "まだ説明がありません",
+				"friends": "プライベートチャットはまだありません",
+				"groups": "まだグループがありません",
+				"members": "まだメンバーがいません",
+				"pins": "まだピンがありません",
+				"username": "ユーザー名が取得できませんでした"
+			}
 		},
 		"sidebar": {
 			"settings": {
@@ -2593,144 +2815,8 @@
 				"alt": "写真アイコン"
 			}
 		},
-		"messageList": {
-			"confirmDeleteMessage": "このメッセージを削除しますか？"
-		},
 		"voiceRecording": {
 			"errorAccessingMicrophone": "マイクへのアクセスに失敗しました。"
-		},
-		"messageView": {
-			"buttons": {
-				"edit": {
-					"title": "編集"
-				},
-				"editIcon": {
-					"alt": "編集アイコン"
-				},
-				"more": {
-					"title": "その他"
-				},
-				"moreIcon": {
-					"alt": "その他アイコン"
-				},
-				"delete": {
-					"alt": "削除"
-				},
-				"deleteIcon": {
-					"alt": "削除アイコン"
-				},
-				"downloadHtml": {
-					"alt": "HTMLとしてダウンロード"
-				},
-				"downloadHtmlIcon": {
-					"alt": "HTMLダウンロードアイコン"
-				}
-			},
-			"copyButton": {
-				"title": "コピー"
-			},
-			"copyButtonIcon": {
-				"alt": "コピー"
-			},
-			"copySuccess": "クリップボードにコピーしました",
-			"dropdown": {
-				"delete": "削除",
-				"deleteIcon": {
-					"alt": "削除アイコン"
-				},
-				"copyMarkdown": "Markdownとしてコピー",
-				"copyMarkdownIcon": {
-					"alt": "Markdownとしてコピーアイコン"
-				},
-				"copyText": "プレーンテキストとしてコピー",
-				"copyTextIcon": {
-					"alt": "プレーンテキストとしてコピーアイコン"
-				},
-				"copyHtml": "HTMLとしてコピー",
-				"copyHtmlIcon": {
-					"alt": "HTMLとしてコピーアイコン"
-				},
-				"downloadHtml": "HTMLとしてダウンロード",
-				"downloadHtmlIcon": {
-					"alt": "HTMLダウンロードアイコン"
-				},
-				"share": {
-					"textContent": "共有",
-					"1h": "1時間",
-					"12h": "12時間",
-					"24h": "24時間",
-					"72h": "72時間"
-				},
-				"shareIcon": {
-					"alt": "共有アイコン"
-				}
-			},
-			"share": {
-				"uploading": "リンクを作成中...",
-				"success": "共有に成功しました！リンクがクリップボードにコピーしました。<br>この機能は ${provider} によって提供されています。<br>[支援する](${sponsorLink})"
-			},
-			"commonToolCalling": "ツールを呼び出し中",
-			"toolRunningLang": "${lang} を実行中",
-			"toolSearchingContent": "${content} を検索中",
-			"toolOverridingFilepath": "${filepath} を上書き中",
-			"toolReplacingFilepath": "${filepath} を置き換え中",
-			"toolReadingFilepath": "${filepath} を読み込み中",
-			"reasoningDetailsTitle": "推論プロセス",
-			"logprobsNotApplicable": "適用できない",
-			"logprobsTopLogprobsMeta": "top_logprobs (選択済み: ${token})",
-			"logprobsMetricsFooter": "初トークン遅延: ${ttft} | 時間: ${time} | トークン: ${tokens} | 速度: ${speed}",
-			"noReplyContent": "（返信内容なし）",
-			"feedback": {
-				"thumbsUp": {
-					"title": "いいね"
-				},
-				"thumbsDown": {
-					"title": "よくないね"
-				},
-				"regenerate": {
-					"title": "再生成"
-				},
-				"reason": {
-					"placeholder": "任意：理由を入力"
-				},
-				"submit": "送信",
-				"cancel": "キャンセル"
-			}
-		},
-		"messageEdit": {
-			"input": {
-				"placeholder": "内容を入力してください..."
-			},
-			"buttons": {
-				"confirm": {
-					"title": "確認"
-				},
-				"confirmIcon": {
-					"alt": "確認アイコン"
-				},
-				"cancel": {
-					"title": "キャンセル"
-				},
-				"cancelIcon": {
-					"alt": "キャンセルアイコン"
-				},
-				"upload": {
-					"title": "アップロード"
-				},
-				"uploadIcon": {
-					"alt": "アップロードアイコン"
-				}
-			}
-		},
-		"messageGenerating": {
-			"tips": "ロールが応答を生成中です。お待​​ちください...",
-			"stop": {
-				"textContent": "停止",
-				"title": "生成を停止する"
-			},
-			"stopIcon": {
-				"alt": "停止アイコン"
-			}
 		},
 		"attachment": {
 			"buttons": {
@@ -2840,34 +2926,6 @@
 			"avatarLabel": "アバター",
 			"themeColorLabel": "テーマカラー",
 			"uploadAvatar": "アバターをアップロード",
-			"ownerTitle": "主人",
-			"ownerSummary": "代行設定",
-			"ownerDescription": "設定すると、主人があなたに代わってチャットメッセージ・ソーシャル投稿・プロフィールを編集・削除できます。そのコンテンツは本機で安全でない Markdown（スクリプトを含む場合あり）として描画されます。任意のエンティティハッシュを設定でき、いつでも解除できます。",
-			"ownerEntityHashLabel": "主人のエンティティハッシュ（128 hex）",
-			"ownerSave": "主人を保存",
-			"ownerClear": "主人を解除",
-			"ownerSaved": "主人を更新しました",
-			"ownerCleared": "主人を解除しました",
-			"ownerSaveFailed": "保存に失敗しました: ${error}",
-			"ownerConfirmTitle": "主人を設定しますか？",
-			"ownerConfirmWarningTitle": "リスクの高い操作です。よくお読みください",
-			"ownerConfirmEditBody": "設定後、相手はあなたの同意なく、チャットメッセージ・ソーシャル投稿・プロフィールを代わりに編集・削除できます。誤設定や騙されて設定すると、即座にコンテンツの制御を失います。",
-			"ownerConfirmRenderBody": "相手からのチャットメッセージとソーシャル投稿は、ブラウザで完全な Markdown（HTML/スクリプト含む）として描画されます。完全に信頼できる相手の場合のみ続行してください。",
-			"ownerConfirmCooldown": "リスクを確認しました（${seconds}）",
-			"ownerConfirmFirst": "リスクを理解したうえで続行",
-			"ownerConfirmSecond": "もう一度クリックして確定",
-			"ownerConfirmCancel": "キャンセル",
-			"federationTitle": "フェデレーションと同期",
-			"federationSummary": "リレーサーバーと低電力モード",
-			"federationDescription": "Nostr リレー URL と省電力モードを設定します。グループのフェデレーション同期は、初めて誰かを招待するか、フェデレーション DM を作成したときに自動で有効になります。",
-			"federationAdvanced": "詳細オプション",
-			"federationRelayUrlsLabel": "リレーサーバー（1 行に 1 つ。空欄でデフォルト）",
-			"federationBatterySaverLabel": "低電力モード",
-			"federationSave": "ネットワーク設定を保存",
-			"federationResetDefault": "デフォルト設定に戻す",
-			"federationSaved": "保存しました",
-			"federationResetOk": "デフォルト設定に戻しました",
-			"federationSaveFailed": "保存に失敗しました: ${error}",
 			"preferences": "環境設定",
 			"language": "言語",
 			"theme": "テーマ",
@@ -2925,20 +2983,9 @@
 			"noGroups": "まだどのグループにも参加していません",
 			"noChannels": "まだチャンネルがありません",
 			"overview": "ユーザー情報の概要",
-			"summaryUserId": "ユーザーID",
-			"summaryAccountStatus": "アカウントのステータス",
-			"summaryEmailVisibility": "メールの公開設定",
-			"summaryThemePref": "テーマの設定",
-			"summaryLanguagePref": "言語の好み",
-			"summarySocialCount": "ソーシャルリンクの数",
-			"summaryLinksCount": "外部リンクの数",
 			"groupDescriptionEmpty": "まだ説明がありません",
 			"groupMembers": "メンバー ${members} 人 · チャンネル ${channels} 個",
 			"channelPrivate": "・ プライベート",
-			"channelTypeText": "テキストチャンネル",
-			"channelTypeList": "リストチャンネル",
-			"channelTypeVoice": "音声チャンネル",
-			"channelTypeStreaming": "ストリーミングチャンネル",
 			"errors": {
 				"loadFailed": "プロフィールの読み込みに失敗しました",
 				"saveFailed": "プロフィールの保存に失敗しました",
@@ -2952,8 +2999,57 @@
 				"saved": "プロフィールを保存しました",
 				"avatarUploaded": "アバターをアップロードしました"
 			},
-			"ownerEntityHash": {
-				"placeholder": "主人のエンティティハッシュを入力"
+			"channelType": {
+				"list": "リストチャンネル",
+				"streaming": "ストリーミングチャンネル",
+				"text": "テキストチャンネル",
+				"voice": "音声チャンネル"
+			},
+			"federation": {
+				"advanced": "詳細オプション",
+				"batterySaverLabel": "低電力モード",
+				"description": "Nostr リレー URL と省電力モードを設定します。グループのフェデレーション同期は、初めて誰かを招待するか、フェデレーション DM を作成したときに自動で有効になります。",
+				"relayUrlsLabel": "リレーサーバー（1 行に 1 つ。空欄でデフォルト）",
+				"resetDefault": "デフォルト設定に戻す",
+				"resetOk": "デフォルト設定に戻しました",
+				"save": "ネットワーク設定を保存",
+				"saveFailed": "保存に失敗しました: ${error}",
+				"saved": "保存しました",
+				"summary": "リレーサーバーと低電力モード",
+				"title": "フェデレーションと同期"
+			},
+			"summary": {
+				"accountStatus": "アカウントのステータス",
+				"emailVisibility": "メールの公開設定",
+				"languagePref": "言語の好み",
+				"linksCount": "外部リンクの数",
+				"socialCount": "ソーシャルリンクの数",
+				"themePref": "テーマの設定",
+				"userId": "ユーザーID"
+			},
+			"owner": {
+				"clear": "主人を解除",
+				"cleared": "主人を解除しました",
+				"confirm": {
+					"cancel": "キャンセル",
+					"cooldown": "リスクを確認しました（${seconds}）",
+					"editBody": "設定後、相手はあなたの同意なく、チャットメッセージ・ソーシャル投稿・プロフィールを代わりに編集・削除できます。誤設定や騙されて設定すると、即座にコンテンツの制御を失います。",
+					"first": "リスクを理解したうえで続行",
+					"renderBody": "相手からのチャットメッセージとソーシャル投稿は、ブラウザで完全な Markdown（HTML/スクリプト含む）として描画されます。完全に信頼できる相手の場合のみ続行してください。",
+					"second": "もう一度クリックして確定",
+					"title": "主人を設定しますか？",
+					"warningTitle": "リスクの高い操作です。よくお読みください"
+				},
+				"description": "設定すると、主人があなたに代わってチャットメッセージ・ソーシャル投稿・プロフィールを編集・削除できます。そのコンテンツは本機で安全でない Markdown（スクリプトを含む場合あり）として描画されます。任意のエンティティハッシュを設定でき、いつでも解除できます。",
+				"entityHash": {
+					"placeholder": "主人のエンティティハッシュを入力"
+				},
+				"entityHashLabel": "主人のエンティティハッシュ（128 hex）",
+				"save": "主人を保存",
+				"saveFailed": "保存に失敗しました: ${error}",
+				"saved": "主人を更新しました",
+				"summary": "代行設定",
+				"title": "主人"
 			}
 		},
 		"entityProfile": {
@@ -2988,30 +3084,12 @@
 			},
 			"searchLabel": "ステッカーパックを検索",
 			"emptyPacks": "ステッカーパックはまだありません",
-			"packNameLabel": "ステッカーパック名",
-			"packName": {
-				"placeholder": "ステッカーパック名を入力してください"
-			},
-			"packDescriptionLabel": "説明",
-			"packDescription": {
-				"placeholder": "説明を入力してください"
-			},
-			"stickerNameLabel": "ステッカー名",
-			"stickerName": {
-				"placeholder": "ステッカー名を入力してください"
-			},
-			"selectPack": "ステッカーパックを選択してください",
-			"selectPackOption": {
-				"textContent": "ステッカーパックを選択してください"
-			},
-			"selectImage": "画像を選択",
 			"tagsLabel": "タグ (カンマ区切り)",
 			"tags": {
 				"placeholder": "例: かわいい、絵文字、動物"
 			},
 			"author": "作者",
 			"authorLabel": "著者: ${author}",
-			"stickerCount": "${count} 個のステッカー",
 			"badgeMine": "マイページ",
 			"noDescription": "まだ説明がありません",
 			"noStickersInPack": "ステッカーはまだありません",
@@ -3027,8 +3105,6 @@
 			"importPackName": "私のコレクション",
 			"importPackDescription": "メッセージから保存したスタンプ",
 			"nameRequired": "ステッカーパック名を入力してください",
-			"stickerNameRequired": "ステッカー名を入力してください",
-			"selectPackRequired": "ステッカーパックを選択してください",
 			"fileRequired": "画像ファイルを選択してください",
 			"loadDetailFailed": "ステッカー パックの詳細をロードできませんでした",
 			"deleteConfirm": "このステッカーパックを完全に削除しますか？すべてのステッカーが削除され、元に戻せません。",
@@ -3046,6 +3122,174 @@
 				"uninstalled": "アンインストールしました",
 				"created": "ステッカー パックを作成しました",
 				"deleted": "削除しました"
+			},
+			"sticker": {
+				"count": "${count} 個のステッカー",
+				"name": {
+					"placeholder": "ステッカー名を入力してください"
+				},
+				"nameLabel": "ステッカー名",
+				"nameRequired": "ステッカー名を入力してください"
+			},
+			"select": {
+				"image": "画像を選択",
+				"pack": "ステッカーパックを選択してください",
+				"packOption": {
+					"textContent": "ステッカーパックを選択してください"
+				},
+				"packRequired": "ステッカーパックを選択してください"
+			},
+			"pack": {
+				"description": {
+					"placeholder": "説明を入力してください"
+				},
+				"descriptionLabel": "説明",
+				"name": {
+					"placeholder": "ステッカーパック名を入力してください"
+				},
+				"nameLabel": "ステッカーパック名"
+			}
+		},
+		"message": {
+			"edit": {
+				"input": {
+					"placeholder": "内容を入力してください..."
+				},
+				"buttons": {
+					"confirm": {
+						"title": "確認"
+					},
+					"confirmIcon": {
+						"alt": "確認アイコン"
+					},
+					"cancel": {
+						"title": "キャンセル"
+					},
+					"cancelIcon": {
+						"alt": "キャンセルアイコン"
+					},
+					"upload": {
+						"title": "アップロード"
+					},
+					"uploadIcon": {
+						"alt": "アップロードアイコン"
+					}
+				}
+			},
+			"generating": {
+				"tips": "ロールが応答を生成中です。お待​​ちください...",
+				"stop": {
+					"textContent": "停止",
+					"title": "生成を停止する"
+				},
+				"stopIcon": {
+					"alt": "停止アイコン"
+				}
+			},
+			"list": {
+				"confirmDeleteMessage": "このメッセージを削除しますか？"
+			},
+			"view": {
+				"buttons": {
+					"edit": {
+						"title": "編集"
+					},
+					"editIcon": {
+						"alt": "編集アイコン"
+					},
+					"more": {
+						"title": "その他"
+					},
+					"moreIcon": {
+						"alt": "その他アイコン"
+					},
+					"delete": {
+						"alt": "削除"
+					},
+					"deleteIcon": {
+						"alt": "削除アイコン"
+					},
+					"downloadHtml": {
+						"alt": "HTMLとしてダウンロード"
+					},
+					"downloadHtmlIcon": {
+						"alt": "HTMLダウンロードアイコン"
+					}
+				},
+				"copyButton": {
+					"title": "コピー"
+				},
+				"copyButtonIcon": {
+					"alt": "コピー"
+				},
+				"copySuccess": "クリップボードにコピーしました",
+				"dropdown": {
+					"delete": "削除",
+					"deleteIcon": {
+						"alt": "削除アイコン"
+					},
+					"downloadHtml": "HTMLとしてダウンロード",
+					"downloadHtmlIcon": {
+						"alt": "HTMLダウンロードアイコン"
+					},
+					"share": {
+						"textContent": "共有",
+						"1h": "1時間",
+						"12h": "12時間",
+						"24h": "24時間",
+						"72h": "72時間"
+					},
+					"shareIcon": {
+						"alt": "共有アイコン"
+					},
+					"copy": {
+						"html": "HTMLとしてコピー",
+						"htmlIcon": {
+							"alt": "HTMLとしてコピーアイコン"
+						},
+						"markdown": "Markdownとしてコピー",
+						"markdownIcon": {
+							"alt": "Markdownとしてコピーアイコン"
+						},
+						"text": "プレーンテキストとしてコピー",
+						"textIcon": {
+							"alt": "プレーンテキストとしてコピーアイコン"
+						}
+					}
+				},
+				"share": {
+					"uploading": "リンクを作成中...",
+					"success": "共有に成功しました！リンクがクリップボードにコピーしました。<br>この機能は ${provider} によって提供されています。<br>[支援する](${sponsorLink})"
+				},
+				"commonToolCalling": "ツールを呼び出し中",
+				"reasoningDetailsTitle": "推論プロセス",
+				"logprobsNotApplicable": "適用できない",
+				"logprobsTopLogprobsMeta": "top_logprobs (選択済み: ${token})",
+				"logprobsMetricsFooter": "初トークン遅延: ${ttft} | 時間: ${time} | トークン: ${tokens} | 速度: ${speed}",
+				"noReplyContent": "（返信内容なし）",
+				"feedback": {
+					"thumbsUp": {
+						"title": "いいね"
+					},
+					"thumbsDown": {
+						"title": "よくないね"
+					},
+					"regenerate": {
+						"title": "再生成"
+					},
+					"reason": {
+						"placeholder": "任意：理由を入力"
+					},
+					"submit": "送信",
+					"cancel": "キャンセル"
+				},
+				"tool": {
+					"overridingFilepath": "${filepath} を上書き中",
+					"readingFilepath": "${filepath} を読み込み中",
+					"replacingFilepath": "${filepath} を置き換え中",
+					"runningLang": "${lang} を実行中",
+					"searchingContent": "${content} を検索中"
+				}
 			}
 		}
 	},
@@ -3098,21 +3342,6 @@
 				"label": "最初のメッセージ",
 				"placeholder": "キャラクターが言う最初のメッセージ。"
 			},
-			"personaDef": {
-				"heading": "ペルソナ定義"
-			},
-			"personaUserName": {
-				"label": "チャットでのあなたの名前",
-				"placeholder": "例: キャプテン、探検家"
-			},
-			"personaAppearance": {
-				"label": "外見",
-				"placeholder": "あなたの外見を説明してください。"
-			},
-			"personaPersonality": {
-				"label": "性格",
-				"placeholder": "あなたの性格特性を説明してください。"
-			},
 			"worldDef": {
 				"heading": "ワールド定義"
 			},
@@ -3144,7 +3373,24 @@
 				"label": "問題報告ページ",
 				"placeholder": "コンポーネントの問題報告ページのURL"
 			},
-			"createButton": "コンポーネントを作成"
+			"createButton": "コンポーネントを作成",
+			"persona": {
+				"appearance": {
+					"label": "外見",
+					"placeholder": "あなたの外見を説明してください。"
+				},
+				"def": {
+					"heading": "ペルソナ定義"
+				},
+				"personality": {
+					"label": "性格",
+					"placeholder": "あなたの性格特性を説明してください。"
+				},
+				"userName": {
+					"label": "チャットでのあなたの名前",
+					"placeholder": "例: キャプテン、探検家"
+				}
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -3455,21 +3701,23 @@
 			"noModelsMatched": "一致するモデルが見つかりません",
 			"currentModelTitle": "${name}（${model}）",
 			"providerLabel": "プロバイダー: ${provider}",
-			"metaContext": "コンテキスト: ${context} トークン",
-			"metaOutputLimit": "最大出力: ${output} トークン",
-			"metaInputPrice": "入力単価: ${price} / 100万トークン",
-			"metaOutputPrice": "出力単価: ${price} / 100万トークン",
-			"metaCachePrice": "キャッシュ読み取り/書き込み: ${read} / ${write}",
-			"metaModalities": "モダリティ: 入力 ${input}、出力 ${output}",
-			"metaReasoning": "推論対応",
-			"metaToolCall": "ツール呼び出し対応",
-			"metaVision": "視覚入力対応",
-			"metaOpenWeights": "オープンウェイト",
-			"metaKnowledge": "知識カットオフ: ${knowledge}",
-			"metaReleaseDate": "リリース日: ${date}",
 			"providerDocLink": "[プロバイダーのドキュメントを表示](${url})",
 			"modelSearch": {
 				"placeholder": "モデル名、メーカー、機能を検索..."
+			},
+			"meta": {
+				"cachePrice": "キャッシュ読み取り/書き込み: ${read} / ${write}",
+				"context": "コンテキスト: ${context} トークン",
+				"inputPrice": "入力単価: ${price} / 100万トークン",
+				"knowledge": "知識カットオフ: ${knowledge}",
+				"modalities": "モダリティ: 入力 ${input}、出力 ${output}",
+				"openWeights": "オープンウェイト",
+				"outputLimit": "最大出力: ${output} トークン",
+				"outputPrice": "出力単価: ${price} / 100万トークン",
+				"reasoning": "推論対応",
+				"releaseDate": "リリース日: ${date}",
+				"toolCall": "ツール呼び出し対応",
+				"vision": "視覚入力対応"
 			}
 		},
 		"prompts": {
@@ -3495,21 +3743,23 @@
 			"unsavedChangesBeforeUnload": "未保存の変更があります。このページを離れてもよろしいですか?"
 		},
 		"alerts": {
-			"fetchFileListFailed": "ファイルリストの取得に失敗しました: ${error}",
-			"fetchGeneratorListFailed": "ジェネレータ リストの取得に失敗しました: ${error}",
-			"fetchDefaultsFailed": "デフォルトのコンポーネントを取得できませんでした: ${error}",
-			"fetchFileDataFailed": "ファイルデータの取得に失敗しました: ${error}",
-			"fetchConfigTemplateFailed": "構成テンプレートの取得に失敗しました",
 			"saveFileFailed": "ファイルの保存に失敗しました: ${error}",
 			"deleteFileFailed": "ファイルの削除に失敗しました: ${error}",
 			"addFileFailed": "ファイルの追加に失敗しました: ${error}",
 			"setDefaultFailed": "デフォルトのサービス ソースを設定できませんでした: ${error}",
-			"fetchBranchesFailed": "コンポーネント ツリーの取得に失敗しました: ${error}",
 			"noFileSelectedSave": "保存するファイルが選択されていません。",
 			"noFileSelectedDelete": "削除するファイルが選択されていません。",
 			"noGeneratorSelectedSave": "保存する前にジェネレータを選択してください",
 			"savedAsNewFile": "新しいサービスソースとして保存しました: ${name}",
-			"invalidFileName": "ファイル名には次の文字を含めることはできません: / \\ : * ? \" < > |"
+			"invalidFileName": "ファイル名には次の文字を含めることはできません: / \\ : * ? \" < > |",
+			"fetch": {
+				"branchesFailed": "コンポーネント ツリーの取得に失敗しました: ${error}",
+				"configTemplateFailed": "構成テンプレートの取得に失敗しました",
+				"defaultsFailed": "デフォルトのコンポーネントを取得できませんでした: ${error}",
+				"fileDataFailed": "ファイルデータの取得に失敗しました: ${error}",
+				"fileListFailed": "ファイルリストの取得に失敗しました: ${error}",
+				"generatorListFailed": "ジェネレータ リストの取得に失敗しました: ${error}"
+			}
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -3832,14 +4082,6 @@
 			"privacyHint": "アカウントを探索・おすすめに表示するかどうかを制御します。",
 			"tasteTitle": "おすすめと好み",
 			"tasteHint": "プライバシーの境界と「あなたにおすすめ」のラベル名を調整します。",
-			"mutedKeywordsTitle": "ミュートする語句とタグ",
-			"mutedKeywordsHint": "本文・コンテンツ警告・タグに一致する投稿は、フィード・探索・検索・通知から非表示になります。ローカルのみ保存。",
-			"mutedKeywordsMatchTags": "タグも対象にする",
-			"mutedKeywordsAdd": "追加",
-			"mutedKeywordsRemove": {
-				"title": "ブロックされた単語を削除する"
-			},
-			"mutedKeywordsEmpty": "まだブロックワードは追加されていません",
 			"autoTranslateTitle": "自動翻訳",
 			"autoTranslateHint": "有効にすると、外国語の投稿を自動翻訳し、原文と切り替えられます。",
 			"autoTranslateEnable": "自分の言語以外の投稿を自動翻訳",
@@ -3847,19 +4089,29 @@
 			"safetyHint": "ブロック・非表示リストを管理します。",
 			"mutedKeywords": {
 				"placeholder": "キーワードまたは #タグを入力",
-				"aria-label": "ミュートする語句またはタグを入力"
+				"aria-label": "ミュートする語句またはタグを入力",
+				"add": "追加",
+				"empty": "まだブロックワードは追加されていません",
+				"hint": "本文・コンテンツ警告・タグに一致する投稿は、フィード・探索・検索・通知から非表示になります。ローカルのみ保存。",
+				"matchTags": "タグも対象にする",
+				"remove": {
+					"title": "ブロックされた単語を削除する"
+				},
+				"title": "ミュートする語句とタグ"
 			},
 			"taste": {
 				"rebuild": "再構築設定",
-				"privacyPublishPreferences": "パブリックタグの命名とマージの検出",
-				"privacyPublishPreferencesHint": "閉じた後は、友達はタグの名前付けやマージステートメントを見ることができなくなり、コンセンサスに貢献できなくなります。",
-				"privacyPublishReactions": "世間の好き嫌い",
-				"privacyPublishReactionsHint": "閉じると、投稿者はあなたの「いいね！」/「嫌い」を受け取ることができなくなり、あなたの反応は他の人のおすすめに含まれなくなり、投稿を再度拡散することを促進することはなくなります。",
 				"empty": "まだ優先タグはありません。いいね/嫌いが増えると自動的にクラスター化されます。",
 				"weight": "体重 ${weight}",
 				"save": "保存",
 				"name": {
 					"placeholder": "ローカル表示名"
+				},
+				"privacyPublish": {
+					"preferences": "パブリックタグの命名とマージの検出",
+					"preferencesHint": "閉じた後は、友達はタグの名前付けやマージステートメントを見ることができなくなり、コンセンサスに貢献できなくなります。",
+					"reactions": "世間の好き嫌い",
+					"reactionsHint": "閉じると、投稿者はあなたの「いいね！」/「嫌い」を受け取ることができなくなり、あなたの反応は他の人のおすすめに含まれなくなり、投稿を再度拡散することを促進することはなくなります。"
 				}
 			},
 			"blocklist": {
@@ -3886,27 +4138,6 @@
 				"placeholder": "コンテンツ警告（任意）"
 			},
 			"sensitiveMedia": "センシティブメディアをぼかす",
-			"editImage": "編集",
-			"editCrop": "トリミング",
-			"editMosaic": "モザイク",
-			"editBrush": "ブラシ",
-			"editBrushColor": {
-				"title": "ブラシの色",
-				"aria-label": "ブラシの色"
-			},
-			"editBrushSize": {
-				"title": "ブラシの太さ",
-				"aria-label": "ブラシの太さ"
-			},
-			"editApply": "適用",
-			"editCancel": "キャンセル",
-			"replyPolicyEveryone": "全員",
-			"replyPolicyFollowers7d": "7日以上のフォロワー",
-			"replyPolicyAuthorFollows": "フォロー中のユーザー",
-			"replyPolicyLabel": "返信できる人",
-			"replyDisplayAll": "すべての返信を表示",
-			"replyDisplayFeaturedOnly": "注目の返信のみ",
-			"replyDisplayLabel": "返信の表示",
 			"scheduleLabel": "予約投稿",
 			"scheduleSuccess": "投稿を予約キューに追加しました",
 			"emojiButton": {
@@ -3988,6 +4219,33 @@
 					"placeholder": "見せてはいけない人（任意）"
 				},
 				"aria-label": "可視範囲"
+			},
+			"reply": {
+				"displayAll": "すべての返信を表示",
+				"displayFeaturedOnly": "注目の返信のみ",
+				"displayLabel": "返信の表示",
+				"policy": {
+					"authorFollows": "フォロー中のユーザー",
+					"everyone": "全員",
+					"followers7d": "7日以上のフォロワー",
+					"label": "返信できる人"
+				}
+			},
+			"edit": {
+				"apply": "適用",
+				"brush": "ブラシ",
+				"brushColor": {
+					"title": "ブラシの色",
+					"aria-label": "ブラシの色"
+				},
+				"brushSize": {
+					"title": "ブラシの太さ",
+					"aria-label": "ブラシの太さ"
+				},
+				"cancel": "キャンセル",
+				"crop": "トリミング",
+				"image": "編集",
+				"mosaic": "モザイク"
 			}
 		},
 		"feed": {
@@ -4094,21 +4352,11 @@
 			},
 			"mediaOnly": "[メディア]",
 			"hideFromExplore": "探索ページからアカウントを非表示にする",
-			"tabPosts": "動的",
-			"tabAlbums": "フォトアルバム",
-			"tabLikes": "のように",
-			"tabCabinets": "ファイルキャビネット",
 			"tabsLabel": {
 				"aria-label": "データパーティション"
 			},
 			"cabinetsEmpty": "現在、公開のファイルキャビネットはありません",
 			"cabinetsFailed": "ファイル キャビネットの読み込みに失敗しました: ${error}",
-			"statsGroup": {
-				"aria-label": "統計"
-			},
-			"statsPosts": "動的",
-			"statsFollowing": "焦点を当てる",
-			"statsFollowers": "ファン",
 			"followingTitle": "焦点を当てる",
 			"followersTitle": "ファン",
 			"albums": {
@@ -4125,6 +4373,20 @@
 				"deleteWithPosts": "アルバムを削除して投稿を削除する",
 				"pickerLabel": "アルバムに追加",
 				"defaultName": "デフォルトのアルバム"
+			},
+			"stats": {
+				"followers": "ファン",
+				"following": "焦点を当てる",
+				"group": {
+					"aria-label": "統計"
+				},
+				"posts": "動的"
+			},
+			"tabs": {
+				"albums": "フォトアルバム",
+				"cabinets": "ファイルキャビネット",
+				"likes": "のように",
+				"posts": "動的"
 			}
 		},
 		"video": {
@@ -4174,10 +4436,6 @@
 			"broadcast": {
 				"title": "放送を開始する",
 				"open": "放送へ行く",
-				"mediaAv": "オーディオとビデオ",
-				"mediaAudio": "ピュアオーディオ",
-				"mediaVideo": "純粋な絵",
-				"mediaWhip": "WHIPプッシュストリーミング(OBSなど)",
 				"whipUrl": "WIPアドレス",
 				"whipToken": "無記名トークン",
 				"whipWaiting": "WHIP ストリーミング接続を待機中 (OBS などのストリーミング ソフトウェアが使用可能)…",
@@ -4187,6 +4445,12 @@
 				"stopped": "生放送は停止しました",
 				"titleInput": {
 					"placeholder": "ライブタイトル（オプション）"
+				},
+				"media": {
+					"audio": "ピュアオーディオ",
+					"av": "オーディオとビデオ",
+					"video": "純粋な絵",
+					"whip": "WHIPプッシュストリーミング(OBSなど)"
 				}
 			},
 			"danmaku": {
@@ -4210,30 +4474,32 @@
 			"trustScore": "${score}を信頼する",
 			"viewTitle": "検索",
 			"loading": "検索中…",
-			"filterAuthor": {
-				"placeholder": "作者",
-				"aria-label": "作者"
-			},
-			"filterMedia": {
-				"aria-label": "メディアの種類"
-			},
-			"filterMediaAll": "すべてのメディア",
-			"filterMediaImage": "写真",
-			"filterMediaVideo": "ビデオ",
-			"filterTag": {
-				"placeholder": "＃ラベル",
-				"aria-label": "ラベル"
-			},
-			"filterSort": {
-				"aria-label": "並び替え"
-			},
 			"sortRecent": "最新の",
 			"sortPopular": "人気のある",
-			"filterScope": {
-				"aria-label": "検索範囲"
-			},
 			"scopeLocal": "ローカルマシン",
-			"scopeNearby": "近く"
+			"scopeNearby": "近く",
+			"filter": {
+				"author": {
+					"placeholder": "作者",
+					"aria-label": "作者"
+				},
+				"media": {
+					"aria-label": "メディアの種類"
+				},
+				"mediaAll": "すべてのメディア",
+				"mediaImage": "写真",
+				"mediaVideo": "ビデオ",
+				"scope": {
+					"aria-label": "検索範囲"
+				},
+				"sort": {
+					"aria-label": "並び替え"
+				},
+				"tag": {
+					"placeholder": "＃ラベル",
+					"aria-label": "ラベル"
+				}
+			}
 		},
 		"dialog": {
 			"close": {
@@ -4428,7 +4694,6 @@
 		},
 		"upload": "アップロード",
 		"uploadFolder": "アップロードフォルダー",
-		"newFolder": "新しいフォルダーを作成する",
 		"open": "開ける",
 		"download": "ダウンロード",
 		"downloadZip": "ダウンロードフォルダ",
@@ -4462,12 +4727,6 @@
 		"created": "作成: ${stamp}",
 		"modified": "変更: ${stamp}",
 		"statusCount": "${count} 個のアイテム、${selected} 個が選択されました",
-		"newCabinet": {
-			"title": "新しいファイルキャビネット",
-			"aria-label": "新しいファイルキャビネット"
-		},
-		"newCabinetPrompt": "新しいファイルキャビネット名",
-		"newFolderPrompt": "新しいフォルダー名",
 		"renamePrompt": "新しい名前",
 		"visibilityPrompt": "公開/非公開/フォロワー/非公開/選択済み)",
 		"cabinetActionPrompt": "アクション: 名前変更/削除/可視性",
@@ -4478,12 +4737,21 @@
 		"cutDone": "カット",
 		"undo": "キャンセル",
 		"redo": "やり直し",
-		"newWindow": "新しいウィンドウを開く現在地",
 		"goUp": "前のレベルに戻る",
 		"brokenLink": "リンクが壊れています: ${reason}",
 		"noDownload": "ダウンロード可能なコンテンツはありません",
 		"groupDownloadHint": "メッセージと添付をダウンロードします。次のブラウザー リンクからチャンネル ファイルを取得してください。",
-		"remoteEntity": "リモートエンティティ"
+		"remoteEntity": "リモートエンティティ",
+		"new": {
+			"cabinet": {
+				"title": "新しいファイルキャビネット",
+				"aria-label": "新しいファイルキャビネット"
+			},
+			"cabinetPrompt": "新しいファイルキャビネット名",
+			"folder": "新しいフォルダーを作成する",
+			"folderPrompt": "新しいフォルダー名",
+			"window": "新しいウィンドウを開く現在地"
+		}
 	},
 	"browser_integration": {
 		"title": "ブラウザの統合",
@@ -4613,27 +4881,10 @@
 		"title": "IDE連携",
 		"heading": "IDE連携",
 		"instruction": "fountロールを使用して、ACP 対応エディター (Zed、JetBrains、Neovim など) でのプログラミングを支援します。",
-		"supportedEditorsTitle": "サポートされているエディターとクライアント",
-		"supportedEditorsIntro": "以下のクライアントで fount が利用可能です。",
-		"supportedEditorsLoading": "読み込み中…",
-		"supportedEditorsError": "リストの読み込みに失敗しました: ${message}",
-		"acpTitle": "fount ACP スクリプトを構成する",
-		"acpDesc": "fount ACP スクリプトを構成するには、次の例を参照してください。",
-		"acpCharLabel": "ロール",
 		"charListError": "ロールリストの取得に失敗しました",
-		"acpScriptLabel": "ACP スクリプトの URL",
-		"acpConfigSample": "構成例:",
-		"acpConfigHint": "ロール ID はこのページのロール ドロップダウンに表示され、API キーはユーザー設定で管理できます。",
 		"copyButton": "コピー",
 		"copied": "クリップボードにコピー完了",
-		"apiKeySectionTitle": "APIキー",
-		"apiKeyHint": "ACP スクリプト接続の fountに使用されます (API プロキシと同じキーのセット。ユーザー設定で作成できます)。",
 		"generateApiKeyButton": "新しいキーを生成する",
-		"apiKeyCopied": "APIキーをクリップボードにコピーしました",
-		"apiKeyCreateError": "API キーの作成に失敗しました: ${message}",
-		"apiKeyInput": {
-			"aria-label": "APIキー"
-		},
 		"home_function_buttons": {
 			"integration_related": "統合関連",
 			"ide_integration_config": {
@@ -4647,8 +4898,31 @@
 				"locked_description": "外部 IDE で fount ロールに接続し、セッションを完了します。"
 			}
 		},
-		"acpChar": "ロールを選択",
-		"acpConfig": "最初にロールを選択し、API キーを生成してください"
+		"supportedEditors": {
+			"error": "リストの読み込みに失敗しました: ${message}",
+			"intro": "以下のクライアントで fount が利用可能です。",
+			"loading": "読み込み中…",
+			"title": "サポートされているエディターとクライアント"
+		},
+		"apiKey": {
+			"copied": "APIキーをクリップボードにコピーしました",
+			"createError": "API キーの作成に失敗しました: ${message}",
+			"hint": "ACP スクリプト接続の fountに使用されます (API プロキシと同じキーのセット。ユーザー設定で作成できます)。",
+			"input": {
+				"aria-label": "APIキー"
+			},
+			"sectionTitle": "APIキー"
+		},
+		"acp": {
+			"char": "ロールを選択",
+			"charLabel": "ロール",
+			"config": "最初にロールを選択し、API キーを生成してください",
+			"configHint": "ロール ID はこのページのロール ドロップダウンに表示され、API キーはユーザー設定で管理できます。",
+			"configSample": "構成例:",
+			"desc": "fount ACP スクリプトを構成するには、次の例を参照してください。",
+			"scriptLabel": "ACP スクリプトの URL",
+			"title": "fount ACP スクリプトを構成する"
+		}
 	},
 	"deskpet": {
 		"title": "デスクトップペット",
@@ -4939,11 +5213,6 @@
 			"deviceInfo": "デバイスID：${deviceId}",
 			"thisDevice": "このデバイス",
 			"deviceDetails": "最終オンライン：${lastSeen} | IPアドレス：${ipAddress} | UA：${userAgent}",
-			"revokeButton": "取り消し",
-			"revokeConfirm": "このデバイス/セッションのアクセス権を取り消しますか？",
-			"revokeSuccess": "デバイス/セッションを正常に取り消しました。",
-			"revokeMissingParams": "取り消したいデバイスとセッションのパスワードを入力してください。",
-			"revokeWrongPassword": "パスワードが間違っています。",
 			"listNotFound": "デバイスリストが見つかりません。",
 			"deviceNotFound": "デバイスまたはセッションが見つかりませんでした。",
 			"refreshButton": {
@@ -4951,6 +5220,13 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "更新アイコン"
+			},
+			"revoke": {
+				"button": "取り消し",
+				"confirm": "このデバイス/セッションのアクセス権を取り消しますか？",
+				"missingParams": "取り消したいデバイスとセッションのパスワードを入力してください。",
+				"success": "デバイス/セッションを正常に取り消しました。",
+				"wrongPassword": "パスワードが間違っています。"
 			}
 		},
 		"apiKeys": {
@@ -4964,14 +5240,8 @@
 			"keyDetails": "説明：${description} |作成：${createdAt} |最終使用：${lastUsed}",
 			"neverUsed": "未使用",
 			"noKeysForUser": "API キー データが見つかりません。",
-			"revokeWrongPassword": "パスワードが間違っています。",
 			"keyNotFound": "API キーが見つかりませんでした。",
-			"revokeMissingJti": "取り消すキーを指定してください。",
-			"revokeMissingPassword": "キーを取り消すにはパスワードが必要です。",
 			"verifyMissingApiKey": "API キーを指定してください。",
-			"revokeButton": "取り消す",
-			"revokeConfirm": "このAPIキーを取り消したいですか？",
-			"revokeSuccess": "APIキーは正常に取り消されました。",
 			"errorDescriptionRequired": "説明が必要です。",
 			"createSuccess": "APIキーは正常に作成されました。",
 			"refreshButton": {
@@ -4979,6 +5249,14 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "更新アイコン"
+			},
+			"revoke": {
+				"button": "取り消す",
+				"confirm": "このAPIキーを取り消したいですか？",
+				"missingJti": "取り消すキーを指定してください。",
+				"missingPassword": "キーを取り消すにはパスワードが必要です。",
+				"success": "APIキーは正常に取り消されました。",
+				"wrongPassword": "パスワードが間違っています。"
 			}
 		},
 		"newApiKey": {
@@ -5000,14 +5278,16 @@
 			"argsTemplateHint": "プレースホルダー: \\${file} \\${line} \\${column}",
 			"presetOptionPathAvailable": "${label}（PATH にあり）",
 			"presetOptionPathUnavailable": "${label}（PATH にない）",
-			"testPathInput": {
-				"placeholder": "試すファイルのパス（例: C:/work/project/src/main.mjs）"
-			},
-			"testButton": "試し開く",
 			"saveButton": "設定を保存",
 			"saveSuccess": "外部エディタのコマンド設定を保存しました。",
-			"testPathRequired": "先にテスト用のファイルパスを入力してください。",
-			"testSuccess": "外部エディタで開くコマンドを実行しました。"
+			"test": {
+				"button": "試し開く",
+				"pathInput": {
+					"placeholder": "試すファイルのパス（例: C:/work/project/src/main.mjs）"
+				},
+				"pathRequired": "先にテスト用のファイルパスを入力してください。",
+				"success": "外部エディタで開くコマンドを実行しました。"
+			}
 		},
 		"logout": {
 			"title": "ログアウト",
@@ -5020,12 +5300,12 @@
 			"title": "アカウント削除",
 			"warning": "警告：この操作を行うと、アカウントと関連する全てのデータが完全に削除され、元に戻すことはできません。",
 			"submitButton": "アカウントを削除",
-			"confirmMessage1": "警告！アカウントを完全に削除しますか？この操作は元に戻せません。",
-			"confirmMessage2": "削除を確認するには、ユーザー名「${username}」を入力してください：",
 			"usernameMismatch": "入力されたユーザー名が現在のアカウントと一致しません。削除処理はキャンセルされました。",
 			"success": "アカウントが正常に削除されました。ログアウトします。",
 			"missingPassword": "パスワードを入力してください。",
-			"wrongPassword": "パスワードが間違っています。"
+			"wrongPassword": "パスワードが間違っています。",
+			"confirmWarning": "警告！アカウントを完全に削除しますか？この操作は元に戻せません。",
+			"confirmUsernamePrompt": "削除を確認するには、ユーザー名「${username}」を入力してください："
 		},
 		"passwordConfirm": {
 			"title": "操作の確認",
@@ -5076,19 +5356,13 @@
 		"instruction": "このページでAPIキーを生成・管理し、fountを他のアプリケーションと統合します。",
 		"endpointSectionTitle": "APIエンドポイント",
 		"endpointInstruction": "これは他のサービスと統合するためのベースURLです。",
-		"apiUrlInput": {
-			"aria-label": "APIエンドポイント"
-		},
 		"usageExampleTitle": "使用例",
 		"usageExampleInstruction": "`curl`を使用して利用可能なモデルのリストを取得する方法の例です。",
 		"copyButton": "コピー",
 		"copied": "クリップボードにコピー完了",
-		"apiKeySectionTitle": "あなたのAPIキー",
-		"apiKey": "あなたのAPIキー：",
 		"noApiKey": "このページのAPIキーはまだ生成されていません。",
 		"generateApiKeyButton": "新しいキーを生成",
 		"copyApiKeyButton": "コピー",
-		"apiKeyCopied": "APIキーをコピーしました！",
 		"queryStringSectionTitle": "リクエストヘッダーにAPIKeyを設定できませんか？ (非推奨)",
 		"queryStringWarning": "アプリケーションがリクエストヘッダー（Authorizationヘッダー）でのAPIキー送信をサポートしていない場合、この代替方法を使用してください。注意：APIキーを直接URLに含めることは、サーバーのログやブラウザの履歴に記録される可能性があるため、セキュリティ上のリスクを伴います。",
 		"copyQueryStringUrlButton": "APIキーを含むURL（クエリ文字列）",
@@ -5100,6 +5374,14 @@
 						"title": "プロキシとして"
 					}
 				}
+			}
+		},
+		"api": {
+			"key": "あなたのAPIキー：",
+			"keyCopied": "APIキーをコピーしました！",
+			"keySectionTitle": "あなたのAPIキー",
+			"urlInput": {
+				"aria-label": "APIエンドポイント"
 			}
 		}
 	},
@@ -5273,11 +5555,7 @@
 		"failed": "エラー",
 		"copySuccess": "デバッグ レポートがクリップボードにコピーしました",
 		"copyFailed": "レポートのコピーに失敗しました",
-		"updateNow": "今すぐ更新して再起動",
 		"alreadyLatest": "すでに最新バージョンです",
-		"updateRestarting": "再起動中...",
-		"updateSuccess": "サーバーが再起動中です",
-		"updateFailed": "更新リクエストが失敗しました",
 		"autoUpdateNotEnabled": "自動更新が有効になっていません",
 		"home_function_buttons": {
 			"debug": {
@@ -5285,6 +5563,12 @@
 					"title": "デバッグパネルを開く"
 				}
 			}
+		},
+		"update": {
+			"failed": "更新リクエストが失敗しました",
+			"now": "今すぐ更新して再起動",
+			"restarting": "再起動中...",
+			"success": "サーバーが再起動中です"
 		}
 	},
 	"badges_maker": {

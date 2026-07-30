@@ -218,9 +218,9 @@ export function registerEndpoints(router) {
 		const { credential, deviceid, authSessionToken } = req.body
 		const token = String(authSessionToken ?? '').trim()
 		if (!credential)
-			return res.status(400).json({ i18nKey: 'auth.webauthn.errorCredentialRequired' })
+			return res.status(400).json({ i18nKey: 'auth.webauthn.error.credentialRequired' })
 		if (!token)
-			return res.status(400).json({ i18nKey: 'auth.webauthn.errorAuthSessionRequired' })
+			return res.status(400).json({ i18nKey: 'auth.webauthn.error.authSessionRequired' })
 		const deviceId = deviceid?.trim?.() || 'unknown'
 		const result = await webauthnLoginComplete(credential, token, deviceId, req)
 		const { status, accessToken, refreshToken, ...json } = result
@@ -245,7 +245,7 @@ export function registerEndpoints(router) {
 			if (!await ensurePowTokenOr401(req, res)) return
 
 			if (verifyVerificationCode(verificationcode, ip) === false) {
-				res.status(401).json({ i18nKey: 'auth.error.verificationCodeError' })
+				res.status(401).json({ i18nKey: 'auth.error.verificationCode.error' })
 				return
 			}
 		}
@@ -276,12 +276,12 @@ export function registerEndpoints(router) {
 	router.post('/api/apikey/revoke', authenticate, async (req, res) => {
 		const user = getUserByReq(req)
 		const { jti, password } = req.body
-		if (!jti) return res.status(400).json({ i18nKey: 'userSettings.apiKeys.revokeMissingJti' })
-		if (!password) return res.status(400).json({ i18nKey: 'userSettings.apiKeys.revokeMissingPassword' })
+		if (!jti) return res.status(400).json({ i18nKey: 'userSettings.apiKeys.revoke.missingJti' })
+		if (!password) return res.status(400).json({ i18nKey: 'userSettings.apiKeys.revoke.missingPassword' })
 		if (!user?.auth?.apiKeys?.length)
 			return res.status(400).json({ i18nKey: 'userSettings.apiKeys.noKeysForUser' })
 		if (!await verifyPassword(password, user.auth.password))
-			return res.status(401).json({ i18nKey: 'userSettings.apiKeys.revokeWrongPassword' })
+			return res.status(401).json({ i18nKey: 'userSettings.apiKeys.revoke.wrongPassword' })
 		if (!user.auth.apiKeys.some(key => key.jti === jti))
 			return res.status(400).json({ i18nKey: 'userSettings.apiKeys.keyNotFound' })
 

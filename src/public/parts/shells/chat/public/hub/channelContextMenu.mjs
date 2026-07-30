@@ -95,7 +95,7 @@ export async function showChannelContextMenu(event, channelId) {
 	menu.querySelector('.channel-menu-copy-link')?.addEventListener('click', async () => {
 		const url = `${window.location.origin}/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:${encodeURIComponent(channelId)}`
 		await navigator.clipboard.writeText(url)
-		showToastI18n('success', 'chat.hub.channelContext.copyLinkDone')
+		showToastI18n('success', 'chat.hub.channel.context.copyLinkDone')
 		closeOnce()
 	})
 
@@ -109,7 +109,7 @@ export async function showChannelContextMenu(event, channelId) {
 		}
 		try {
 			await updateChannel(groupId, channelId, { name: trimmed })
-			showToastI18n('success', 'chat.hub.channelContext.renameOk')
+			showToastI18n('success', 'chat.hub.channel.context.renameOk')
 			await refreshChannelsAfterManage(channelId)
 		}
 		catch (error) {
@@ -121,7 +121,7 @@ export async function showChannelContextMenu(event, channelId) {
 	menu.querySelector('.channel-menu-set-default')?.addEventListener('click', async () => {
 		try {
 			await setDefaultChannel(groupId, channelId)
-			showToastI18n('success', 'chat.hub.channelContext.setDefaultOk')
+			showToastI18n('success', 'chat.hub.channel.context.setDefaultOk')
 			await refreshChannelsAfterManage(channelId)
 		}
 		catch (error) {
@@ -136,18 +136,18 @@ export async function showChannelContextMenu(event, channelId) {
 			const archive = await exportChannelArchiveJson(groupId, channelId)
 			const safeName = String(channelName || channelId).replace(/[^\w.-]+/g, '_').slice(0, 64)
 			downloadChannelArchiveJson(archive, `channel-${safeName}.json`)
-			showToastI18n('success', 'chat.hub.channelContext.exportOk')
+			showToastI18n('success', 'chat.hub.channel.context.exportOk')
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.channelContext.exportFailed')
+			handleUIError(error, 'chat.hub.channel.context.exportFailed')
 		}
 	})
 
 	menu.querySelector('.channel-menu-delete')?.addEventListener('click', async () => {
-		if (!confirmI18n('chat.hub.channelContext.deleteConfirm', { name: channelName })) return
+		if (!confirmI18n('chat.hub.channel.context.deleteConfirm', { name: channelName })) return
 		try {
 			await deleteChannel(groupId, channelId)
-			showToastI18n('success', 'chat.hub.channelContext.deleteOk')
+			showToastI18n('success', 'chat.hub.channel.context.deleteOk')
 			await refreshChannelsAfterManage(channelId)
 		}
 		catch (error) {

@@ -15,12 +15,12 @@ export function wireInvitePanel(context) {
 			const expElement = document.getElementById('invite-exp')
 			if (expElement) {
 				expElement.dataset.date = new Date(expiresAt).toLocaleString()
-				expElement.dataset.i18n = 'chat.group.settingsPage.inviteExpires'
+				expElement.dataset.i18n = 'chat.group.settings.page.invite.expires'
 			}
 			document.getElementById('invite-result')?.classList.remove('hidden')
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.group.settingsPage.saveFailed', { error: error.message })
+			showToastI18n('error', 'chat.group.settings.page.saveFailed', { error: error.message })
 		}
 		finally {
 			button.disabled = false
@@ -31,10 +31,10 @@ export function wireInvitePanel(context) {
 			if (!context.lastInviteClipboardText)
 				throw new Error('no invite clipboard text')
 			await navigator.clipboard.writeText(context.lastInviteClipboardText)
-			showToastI18n('success', 'chat.group.settingsPage.inviteCopied')
+			showToastI18n('success', 'chat.group.settings.page.invite.copied')
 		}
 		catch {
-			showToastI18n('error', 'chat.group.settingsPage.inviteCopyFailed')
+			showToastI18n('error', 'chat.group.settings.page.invite.copyFailed')
 		}
 	})
 }

@@ -36,7 +36,7 @@ async function refreshMemberDigestBar(state) {
 	el.className = 'member-digest'
 	el.replaceChildren()
 	const pending = document.createElement('span')
-	pending.dataset.i18n = 'chat.hub.membersDigestPending'
+	pending.dataset.i18n = 'chat.hub.membersDigest.pending'
 	el.appendChild(pending)
 	const keys = collectActiveMemberHashes(state)
 	const local = keys.length ? await computeMembersMerkleRoot(keys) : null
@@ -46,7 +46,7 @@ async function refreshMemberDigestBar(state) {
 	el.className = ok ? 'member-digest is-ok' : 'member-digest is-warn'
 	if (pages > 1) {
 		const { setElementI18n } = await import('../../../../../scripts/i18n/index.mjs')
-		setElementI18n(el, 'chat.hub.membersDigestPagesTitle', { expected, pages: String(pages) })
+		setElementI18n(el, 'chat.hub.membersDigest.pagesTitle', { expected, pages: String(pages) })
 	}
 	else el.title = expected
 	el.replaceChildren()
@@ -71,8 +71,8 @@ async function refreshMemberDigestBar(state) {
 	label.dataset.root = short
 	label.dataset.pages = String(pages)
 	label.dataset.i18n = ok
-		? pages > 1 ? 'chat.hub.membersDigestOkPaged' : 'chat.hub.membersDigestOk'
-		: 'chat.hub.membersDigestMismatch'
+		? pages > 1 ? 'chat.hub.membersDigest.okPaged' : 'chat.hub.membersDigest.ok'
+		: 'chat.hub.membersDigest.mismatch'
 	row.appendChild(label)
 	el.appendChild(row)
 }
@@ -93,7 +93,7 @@ export async function renderMemberList(state) {
 		return !isHubMemberPersonallyFiltered(entityHash, memberKey)
 	})
 	if (!members.length) {
-		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noMembers' })
+		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.no.members' })
 		return
 	}
 	const roleDefs = state.roles || {}
@@ -157,7 +157,7 @@ export async function renderMemberList(state) {
 	}
 	container.replaceChildren()
 	await appendMemberGroup('chat.hub.adminSection', admins)
-	await appendMemberGroup('chat.hub.memberSection', others)
+	await appendMemberGroup('chat.hub.member.section', others)
 	container.querySelectorAll('.member-item').forEach(el => {
 		el.addEventListener('contextmenu', (event) => {
 			void showMemberContextMenu(event, el)

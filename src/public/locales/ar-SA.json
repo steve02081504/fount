@@ -153,10 +153,6 @@
 			"passedLabel": "نجح",
 			"failedLabel": "فشل",
 			"noiseHits": "(ضوضاء: ${hits})",
-			"unknownManifestId": "معرف البيان غير معروف: ${ids}",
-			"unknownSuiteSelector": "تعيين مجموعة غير معروف: ${ids}",
-			"unknownSubtestFilter": "تصفية اختبار فرعي غير معروف: ${suite} → ${names}",
-			"unknownFileFilter": "تصفية ملفات اختبار غير معروفة: ${suite} → ${names}",
 			"unsupportedSubtestFilter": "لا يدعم Suite تصفية الاختبار الفرعي/الملف: ${suite}(${names})",
 			"available": "العناصر المتوفرة: ${ids}",
 			"manifestMatched": "نتيجة مطابقة البيان: ${ids}",
@@ -178,28 +174,16 @@
 			},
 			"reusedSuite": ">>> أعد استخدام ${manifestId}:${name} (يظل المشغل بدون تغيير، ويتم استخدام آخر ${status})",
 			"noisyOnlyRemain": "لا تزال هناك أجنحة ${count} تمر ولكن مع وجود ضجيج: ${suites}",
-			"estimatedRun": "من المقدر أن يستغرق هذا التشغيل ≈ ${eta} (المعدل الموازي المقدر ${rate})",
-			"estimatedRunSerial": "من المتوقع أن يستغرق هذا التشغيل ≈ ${eta} (مسلسل)",
-			"estimatedRunSkipped": "هناك أيضًا قطع ${reused} التي يتم إعادة استخدامها وقطع ${blocked} التي من المتوقع أن يتم حظرها (غير مدرجة في التقدير)",
 			"noRealRunPlanned": "ليست هناك حاجة للتشغيل هذه المرة: تمت إعادة استخدام ${reused} ومن المتوقع أن يتم حظر ${blocked} (يظل المشغل بدون تغيير)",
 			"allReusedHint": "لم يتم تشغيل أي حزمة فعليًا هذه المرة: الفشل هو النتيجة الأخيرة الموروثة، ولم يتم حل الانسداد (تظل الملفات ذات الصلة دون تغيير). أصلح الملفات ذات الصلة وأعد تشغيلها، أو استخدم Fount test --force لفرض تشغيل حقيقي.",
-			"estimatedRemaining": "الوقت المتبقي المقدر ≈ ${eta} (حزمة (${completed}/${total})",
-			"estimatedRunSerialHint": "إذا كان التوازي متوقعًا ≈ ${eta} (المعدل الموازي ${rate})، والادخار ≈ ${savings} (إزالة --no-parallel)",
 			"failuresSaved": "قائمة الفشل المحفوظة: ${path} (حزمة ${count})",
 			"failuresCleared": "لقد مر البيان ${manifestId} بالكامل وتم مسح قائمة الفشل.",
 			"terminated": "إغلاق المهلة: ${label} — ${reason}",
-			"terminateIdle": "تم إحباط ${label}: لا يوجد إخراج قياسي لأكثر من ${minutes} دقيقة (خمول لمدة ${idleSec} ثانية، تشغيل ${elapsed})",
-			"terminateDuration": "تم إغلاق ${label}: استغرق أكثر من وقت خط الأساس للمراقبة (تشغيل ${elapsed}، خط الأساس ${baseline}، الحد الأعلى ${limit})",
-			"terminateDurationDefault": "تم الإنهاء ${label}: يتجاوز الوقت المستغرق الحد الأقصى لمدة المراقبة الافتراضية (تشغيل ${elapsed}، الحد الأعلى ${limit})",
 			"sleepDetected": "اكتُشف سبات النظام (قفز فاصل المراقب ${gap} ≥ ${limit})؛ أُلغي ${label} وجاهز لإعادة التشغيل (شغّل ${elapsed})",
 			"sleepRetry": "قاطعه سبات النظام؛ إعادة تشغيل ${label} (المحاولة ${attempt})",
-			"terminateMarker": "[سبب الإنهاء: ${reason}]",
-			"terminateUnknown": "تم إغلاق ${label}: تمت مقاطعة الاختبار",
-			"terminateSpeculative": "تم إغلاق ${label}: لم ينته اعتماد المضاربة، وتم إلغاء الإيقاف المبكر",
 			"nothingToContinue": "جميع العناصر خضراء ولا توجد عناصر منتهية الصلاحية، ولا حاجة للتشغيل مرة أخرى.",
 			"triggerNoMatch": "المشغل لم يطابق أي ملفات: ${scope} — ${pattern}",
 			"triggerNoMatchSummary": "لم يتطابق إجمالي مشغلات ${count} مع أي ملفات مستودع (راجع report.md للحصول على التفاصيل)",
-			"unknownSuite": "حزمة غير معروفة: ${name}",
 			"federationCleanupPre": "فشل تنظيف الاختبار الموحد (قبل التشغيل): ${output}",
 			"federationCleanupPost": "فشل تنظيف الاختبار الموحد (بعد التشغيل): ${output}",
 			"suiteHeader": "=== الحزمة ${name} ===",
@@ -233,25 +217,7 @@
 				"title": "تقرير اختبار fount",
 				"tableHeaderItem": "غرض",
 				"tableHeaderValue": "قيمة",
-				"fieldRunId": "تشغيل معرف",
-				"fieldCommand": "طلب",
-				"fieldExit": "حالة الخروج",
-				"fieldProgress": "جدول",
-				"fieldSuites": "عدة",
-				"fieldFailed": "عدد حالات الفشل",
-				"fieldNoisyPassed": "مرت ولكن صاخبة",
-				"fieldReused": "عدد مرات إعادة الاستخدام",
-				"fieldSuiteSumDuration": "إجمالي الوقت الذي يقضيه في المجموعة",
-				"fieldWallClock": "إجمالي الوقت الذي يقضيه",
-				"fieldParallelRate": "التوازي",
-				"fieldEstimatedRemaining": "الوقت المتبقي المقدر",
-				"fieldEstimatedParallelRate": "معدل التوازي المقدر",
 				"estimatePoint": "≈ ${eta}",
-				"pendingEstimate": "الوقت المتبقي المقدر ≈ ${eta}",
-				"pendingParallelEstimate": "استهلاك الوقت الموازي المقدر ≈ ${eta} (المعدل الموازي المقدر ${rate})",
-				"pendingSavings": "المدخرات المقدرة ≈ ${savings}",
-				"pendingItemExpected": "المتوقع ${expected}",
-				"fieldDuration": "مضيعة للوقت",
 				"commandDefault": "(تقصير)",
 				"exitPassed": "نجح",
 				"exitFailed": "فشل",
@@ -259,54 +225,86 @@
 				"progressFormat": "${completed}/${total} الحزم",
 				"suitesFormat": "تم اجتياز ${passed}/${completed}.",
 				"artifacts": "دليل المنتج: `${path}`",
-				"sectionFailed": "عدة فاشلة",
-				"sectionNoisyPassed": "مرت ولكن صاخبة",
-				"sectionSilentPassed": "نجح",
-				"sectionPending": "ليتم تشغيلها",
-				"sectionContinue": "مواصلة العناصر غير المكتملة",
-				"sectionReplay": "أعد تشغيل العناصر الفاشلة",
-				"sectionReplayImperfect": "عمليات إعادة غير مثالية",
 				"columnSuite": "عدة",
 				"columnDuration": "مضيعة للوقت",
-				"labelReused": "(إعادة الاستخدام)",
-				"labelExpectedBlocked": "(الحظر المتوقع)",
-				"labelDuration": "مضيعة للوقت",
-				"labelLog": "سجل",
-				"labelNoise": "ضوضاء",
-				"labelFailedFiles": "ملف الفشل",
-				"labelTerminateReason": "سبب الإنهاء",
-				"sectionContinueReasons": "سبب الزناد",
 				"continueReasonsLink": "سبب التشغيل: راجع [${path}](${path}) للحصول على التفاصيل",
-				"labelContinueReason": "سبب",
-				"reasonImperfectFailed": "فشل تاريخي",
-				"reasonImperfectNoisy": "التاريخ نجح ولكن بضجيج",
-				"reasonImperfectBlocked": "التاريخ محظور",
-				"reasonImperfectDependent": "فشل المنبع وطبقة واحدة المصب",
-				"reasonMissingRecord": "لم إشارات أي سجل، والمكياج التلقائي",
-				"reasonStaleContent": "لقد تغير المحتوى ويجب إعادة تشغيله.",
-				"reasonTriggerHashDrift": "تحريك بصمة الإصبع (لا يوجد مسار محدد)",
-				"reasonExplicitSelected": "تسمية صريحة",
-				"reasonDependencyRequired": "سحب التبعية",
-				"labelRootCause": "السبب الجذري",
-				"labelDirectRequiredBy": "حزب مدمج مباشرة",
-				"labelInclusionPath": "سلسلة الشمول",
-				"labelPullUpstream": "السحب من المنبع: تبعية ${requiredBy} ليست باللون الأخضر",
-				"labelPullDownstream": "السحب النهائي: ${requiredBy} ليس مثاليًا، وسيتم تضمينه معًا",
-				"labelGateReason": "سبب الجري",
-				"labelCommitRange": "نطاق الالتزام",
-				"labelUncommittedHashRange": "لم يتم تقديم الملخص",
-				"labelMatchedTriggers": "ضرب الزناد",
-				"labelMatchedTriggerSets": "ضرب مجموعة الزناد",
-				"labelMatchedPaths": "ضرب المسار",
-				"labelTriggerHashDrift": "بصمة التشغيل غير متوافقة مع مساحة العمل الحالية (تم تجاهل القذرة → net)",
-				"sectionDeadTriggers": "مشغل غير صالح",
 				"deadTriggersHint": "الكرة الأرضية التالية لا تتطابق مع أي ملفات داخل المستودع (git Tracked + not تجاهل غير متعقب):",
 				"durationMs": "${ms} ميلي ثانية",
-				"durationUnitSec": "${n} ثانية",
-				"durationUnitMin": "${n} نقطة",
-				"durationUnitMinute": "${n} دقيقة",
-				"durationUnitHour": "${n} ساعة",
-				"durationUnitDay": "${n} يوم"
+				"durationUnit": {
+					"day": "${n} يوم",
+					"hour": "${n} ساعة",
+					"min": "${n} نقطة",
+					"minute": "${n} دقيقة",
+					"sec": "${n} ثانية"
+				},
+				"section": {
+					"continue": "مواصلة العناصر غير المكتملة",
+					"continueReasons": "سبب الزناد",
+					"deadTriggers": "مشغل غير صالح",
+					"failed": "عدة فاشلة",
+					"noisyPassed": "مرت ولكن صاخبة",
+					"pending": "ليتم تشغيلها",
+					"replay": "أعد تشغيل العناصر الفاشلة",
+					"replayImperfect": "عمليات إعادة غير مثالية",
+					"silentPassed": "نجح"
+				},
+				"pending": {
+					"estimate": "الوقت المتبقي المقدر ≈ ${eta}",
+					"itemExpected": "المتوقع ${expected}",
+					"parallelEstimate": "استهلاك الوقت الموازي المقدر ≈ ${eta} (المعدل الموازي المقدر ${rate})",
+					"savings": "المدخرات المقدرة ≈ ${savings}"
+				},
+				"reason": {
+					"dependencyRequired": "سحب التبعية",
+					"explicitSelected": "تسمية صريحة",
+					"imperfect": {
+						"blocked": "التاريخ محظور",
+						"dependent": "فشل المنبع وطبقة واحدة المصب",
+						"failed": "فشل تاريخي",
+						"noisy": "التاريخ نجح ولكن بضجيج"
+					},
+					"missingRecord": "لم إشارات أي سجل، والمكياج التلقائي",
+					"staleContent": "لقد تغير المحتوى ويجب إعادة تشغيله.",
+					"triggerHashDrift": "تحريك بصمة الإصبع (لا يوجد مسار محدد)"
+				},
+				"label": {
+					"commitRange": "نطاق الالتزام",
+					"continueReason": "سبب",
+					"directRequiredBy": "حزب مدمج مباشرة",
+					"duration": "مضيعة للوقت",
+					"expectedBlocked": "(الحظر المتوقع)",
+					"failedFiles": "ملف الفشل",
+					"gateReason": "سبب الجري",
+					"inclusionPath": "سلسلة الشمول",
+					"log": "سجل",
+					"matchedPaths": "ضرب المسار",
+					"matchedTriggerSets": "ضرب مجموعة الزناد",
+					"matchedTriggers": "ضرب الزناد",
+					"noise": "ضوضاء",
+					"pullDownstream": "السحب النهائي: ${requiredBy} ليس مثاليًا، وسيتم تضمينه معًا",
+					"pullUpstream": "السحب من المنبع: تبعية ${requiredBy} ليست باللون الأخضر",
+					"reused": "(إعادة الاستخدام)",
+					"rootCause": "السبب الجذري",
+					"terminateReason": "سبب الإنهاء",
+					"triggerHashDrift": "بصمة التشغيل غير متوافقة مع مساحة العمل الحالية (تم تجاهل القذرة → net)",
+					"uncommittedHashRange": "لم يتم تقديم الملخص"
+				},
+				"field": {
+					"command": "طلب",
+					"duration": "مضيعة للوقت",
+					"estimatedParallelRate": "معدل التوازي المقدر",
+					"estimatedRemaining": "الوقت المتبقي المقدر",
+					"exit": "حالة الخروج",
+					"failed": "عدد حالات الفشل",
+					"noisyPassed": "مرت ولكن صاخبة",
+					"parallelRate": "التوازي",
+					"progress": "جدول",
+					"reused": "عدد مرات إعادة الاستخدام",
+					"runId": "تشغيل معرف",
+					"suiteSumDuration": "إجمالي الوقت الذي يقضيه في المجموعة",
+					"suites": "عدة",
+					"wallClock": "إجمالي الوقت الذي يقضيه"
+				}
 			},
 			"state": {
 				"title": "حالة اختبار fount",
@@ -314,16 +312,40 @@
 				"sectionDependencyTree": "شجرة التبعية",
 				"sectionOverview": "الوضع الحالي لكل حزمة",
 				"sectionBlocked": "جناح محظور",
-				"columnSuite": "عدة",
-				"columnStatus": "الحالة",
-				"columnCommit": "commit",
-				"columnRanAt": "المدى الأخير",
-				"columnDuration": "مضيعة للوقت",
-				"columnLog": "سجل",
-				"columnBlocked": "عدد الحظر",
 				"labelBlockedBy": "محظور في",
 				"statusUnknown": "لا يعمل",
-				"statusOutdated": "عفا عليه الزمن"
+				"statusOutdated": "عفا عليه الزمن",
+				"column": {
+					"blocked": "عدد الحظر",
+					"commit": "commit",
+					"duration": "مضيعة للوقت",
+					"log": "سجل",
+					"ranAt": "المدى الأخير",
+					"status": "الحالة",
+					"suite": "عدة"
+				}
+			},
+			"terminate": {
+				"duration": "تم إغلاق ${label}: استغرق أكثر من وقت خط الأساس للمراقبة (تشغيل ${elapsed}، خط الأساس ${baseline}، الحد الأعلى ${limit})",
+				"durationDefault": "تم الإنهاء ${label}: يتجاوز الوقت المستغرق الحد الأقصى لمدة المراقبة الافتراضية (تشغيل ${elapsed}، الحد الأعلى ${limit})",
+				"idle": "تم إحباط ${label}: لا يوجد إخراج قياسي لأكثر من ${minutes} دقيقة (خمول لمدة ${idleSec} ثانية، تشغيل ${elapsed})",
+				"marker": "[سبب الإنهاء: ${reason}]",
+				"speculative": "تم إغلاق ${label}: لم ينته اعتماد المضاربة، وتم إلغاء الإيقاف المبكر",
+				"unknown": "تم إغلاق ${label}: تمت مقاطعة الاختبار"
+			},
+			"estimated": {
+				"remaining": "الوقت المتبقي المقدر ≈ ${eta} (حزمة (${completed}/${total})",
+				"run": "من المقدر أن يستغرق هذا التشغيل ≈ ${eta} (المعدل الموازي المقدر ${rate})",
+				"runSerial": "من المتوقع أن يستغرق هذا التشغيل ≈ ${eta} (مسلسل)",
+				"runSerialHint": "إذا كان التوازي متوقعًا ≈ ${eta} (المعدل الموازي ${rate})، والادخار ≈ ${savings} (إزالة --no-parallel)",
+				"runSkipped": "هناك أيضًا قطع ${reused} التي يتم إعادة استخدامها وقطع ${blocked} التي من المتوقع أن يتم حظرها (غير مدرجة في التقدير)"
+			},
+			"unknown": {
+				"fileFilter": "تصفية ملفات اختبار غير معروفة: ${suite} → ${names}",
+				"manifestId": "معرف البيان غير معروف: ${ids}",
+				"subtestFilter": "تصفية اختبار فرعي غير معروف: ${suite} → ${names}",
+				"suite": "حزمة غير معروفة: ${name}",
+				"suiteSelector": "تعيين مجموعة غير معروف: ${ids}"
 			}
 		},
 		"path": {
@@ -385,10 +407,10 @@
 				"packageFailed": "خطأ: فشل تثبيت ${package}.",
 				"browserMissing": "لم يتم اكتشاف المتصفح الافتراضي، جاري محاولة التثبيت...",
 				"untrustedPartsWarning": "لا تقم بتثبيت أي مكونات غير موثوقة على نظامك، يمكنها فعل أي شيء.",
-				"rootWarning1": "غير مستحسن: تشغيل fount كجذر يمنح النظام وصولاً كاملاً إلى جميع مكونات fount.",
-				"rootWarning2": "ما لم تكن تعرف ما تفعله، فمن المستحسن تشغيل fount كمستخدم عادي.",
 				"permissionDeniedAsRoot": "خطأ: تعذّر الكتابة إلى مجلد fount '${path}'. أنت تعمل بصلاحيات root لكن الوصول لا يزال مرفوضًا — يرجى مراجعة أذونات الأمان لهذا المجلد وإصلاحها لمنح المستخدم الحالي التحكم الكامل.",
-				"permissionDeniedNotRoot": "خطأ: تعذّر الكتابة إلى مجلد fount '${path}'. يرجى إصلاح أذونات الأمان للمجلد لمنح المستخدم الحالي حق الكتابة، أو تشغيل fount بصلاحيات root."
+				"permissionDeniedNotRoot": "خطأ: تعذّر الكتابة إلى مجلد fount '${path}'. يرجى إصلاح أذونات الأمان للمجلد لمنح المستخدم الحالي حق الكتابة، أو تشغيل fount بصلاحيات root.",
+				"rootWarningAsRoot": "غير مستحسن: تشغيل fount كجذر يمنح النظام وصولاً كاملاً إلى جميع مكونات fount.",
+				"rootWarningPreferUser": "ما لم تكن تعرف ما تفعله، فمن المستحسن تشغيل fount كمستخدم عادي."
 			},
 			"clean": {
 				"removingCaches": "جارٍ إزالة ذاكرة التخزين المؤقت...",
@@ -409,41 +431,49 @@
 				"editorRemoved": "تمت إزالة إعدادات fount من اختصارات طرفية المحرّر: `${path}`"
 			},
 			"remove": {
-				"removingDesktopShortcut": "جارٍ إزالة اختصار سطح المكتب...",
-				"removingTerminalKeybindings": "جارٍ إزالة ترقيع اختصارات الطرفية...",
-				"removingFount": "جارٍ إزالة fount...",
 				"fountUninstallationComplete": "اكتملت عملية إلغاء التثبيت.",
-				"removingFountInstallationDir": "جارٍ إزالة دليل تثبيت fount...",
 				"fountInstallationDirRemoved": "تمت إزالة دليل التثبيت fount.",
-				"removingFountFromPath": "إزالة fount من PATH...",
-				"removingProtocolHandler": "جارٍ إزالة `fount://` معالج البروتوكول...",
 				"protocolHandlerRemoved": "تمت إزالة معالج البروتوكول `fount://`.",
-				"removeProtocolHandlerFailed": "فشل في إزالة معالج البروتوكول `fount://`: ${message}",
-				"removingFountFromGitSafeDir": "إزالة fount من git Safe.directory...",
-				"removingInstalledSystemPackages": "جارٍ إزالة حزم النظام المثبتة...",
-				"uninstallingDeno": "إلغاء تثبيت دينو...",
-				"removeDenoFailed": "فشلت إزالة Deno: ${message}",
-				"removingFountPwshFromProfile": "إزالة `fount-pwsh` من ملف تعريف PowerShell...",
 				"fountPwshRemovedFromProfile": "تمت إزالة fount-pwsh من ملف تعريف PowerShell.",
 				"pwshProfileNotFound": "لم يتم العثور على ملف تعريف PowerShell، مع تخطي إزالة `fount-pwsh` من الملف الشخصي.",
-				"uninstallingFountPwsh": "إلغاء تثبيت `fount-pwsh`...",
 				"uninstallFountPwshFailed": "فشل إلغاء تثبيت `fount-pwsh`: ${message}",
-				"removingTerminalProfile": "جارٍ إزالة ملف التعريف الطرفي لـ Windows...",
 				"terminalProfileRemoved": "تمت إزالة دليل ملف تعريف Windows Terminal.",
 				"terminalProfileNotFound": "لم يتم العثور على دليل ملف تعريف Windows Terminal.",
 				"desktopShortcutRemoved": "تمت إزالة اختصار سطح المكتب.",
 				"desktopShortcutNotFound": "لم يتم العثور على اختصار سطح المكتب.",
-				"removingStartMenuShortcut": "جارٍ إزالة اختصارات قائمة البدء...",
 				"startMenuShortcutRemoved": "تمت إزالة اختصار قائمة ابدأ.",
 				"startMenuShortcutNotFound": "لم يتم العثور على اختصار قائمة ابدأ.",
-				"removingInstalledPwshModules": "جارٍ إزالة وحدة pwsh المثبتة...",
 				"moduleRemoved": "تمت إزالة ${module}.",
-				"removeModuleFailed": "فشلت إزالة ${module}: ${message}",
-				"uninstallingGit": "إلغاء تثبيت جيت...",
-				"uninstallingChrome": "جارٍ إلغاء تثبيت Chrome...",
-				"uninstallingWinget": "إلغاء تثبيت وينجت...",
-				"removingBackgroundRunner": "إزالة برامج الخلفية...",
-				"removeBackgroundRunnerFailed": "فشل في إزالة البرنامج الذي يعمل في الخلفية: ${message}"
+				"uninstalling": {
+					"chrome": "جارٍ إلغاء تثبيت Chrome...",
+					"deno": "إلغاء تثبيت دينو...",
+					"fountPwsh": "إلغاء تثبيت `fount-pwsh`...",
+					"git": "إلغاء تثبيت جيت...",
+					"winget": "إلغاء تثبيت وينجت..."
+				},
+				"removing": {
+					"backgroundRunner": "إزالة برامج الخلفية...",
+					"desktopShortcut": "جارٍ إزالة اختصار سطح المكتب...",
+					"fount": {
+						"main": "جارٍ إزالة fount...",
+						"fromGitSafeDir": "إزالة fount من git Safe.directory...",
+						"fromPath": "إزالة fount من PATH...",
+						"installationDir": "جارٍ إزالة دليل تثبيت fount...",
+						"pwshFromProfile": "إزالة `fount-pwsh` من ملف تعريف PowerShell..."
+					},
+					"installedPwshModules": "جارٍ إزالة وحدة pwsh المثبتة...",
+					"installedSystemPackages": "جارٍ إزالة حزم النظام المثبتة...",
+					"protocolHandler": "جارٍ إزالة `fount://` معالج البروتوكول...",
+					"startMenuShortcut": "جارٍ إزالة اختصارات قائمة البدء...",
+					"terminalKeybindings": "جارٍ إزالة ترقيع اختصارات الطرفية...",
+					"terminalProfile": "جارٍ إزالة ملف التعريف الطرفي لـ Windows..."
+				},
+				"remove": {
+					"backgroundRunnerFailed": "فشل في إزالة البرنامج الذي يعمل في الخلفية: ${message}",
+					"denoFailed": "فشلت إزالة Deno: ${message}",
+					"moduleFailed": "فشلت إزالة ${module}: ${message}",
+					"protocolHandlerFailed": "فشل في إزالة معالج البروتوكول `fount://`: ${message}"
+				}
 			}
 		}
 	},
@@ -453,22 +483,6 @@
 		"hero": {
 			"title": "رفيقٌ من نسيج الخيال",
 			"description": "fount هي منصة تفاعل مع شخصيات مدعومة بالذكاء الاصطناعي، مصممة لتمكين<i>ك</i>. إنها جسر يربطك بالشخصيات التي تتخيلها، مما يتيح لك التحدث معهم بسهولة، وإنشاء شخصياتك الخاصة ومشاركتها مع العالم."
-		},
-		"feature1": {
-			"title": "محادثات سلسة، في أي وقت وفي أي مكان",
-			"description": "ابدأ محادثة على جهاز الكمبيوتر الخاص بك، واستكملها بسلاسة على هاتفك أو جهازك اللوحي. يحافظ fount على مزامنة محادثاتك، مما يجعلك على اتصال دائم بشخصياتك أينما ذهبت. يعمل على أنظمة Windows و macOS و Linux وحتى Android."
-		},
-		"feature2": {
-			"title": "واجهة جميلة وقابلة للتخصيص",
-			"description": "اختر من بين أكثر من 30 سمة رائعة، أو أنشئ سمتك الخاصة. fount هو لوحتك الشخصية. عبّر عن نفسك، وخصص بيئتك حسب رغبتك، واحصل على تجربة شخصية حقيقية."
-		},
-		"feature3": {
-			"title": "محادثة معبرة وغامرة",
-			"description": "يستفيد fount بالكامل من قوة HTML، مما يسمح للشخصيات بالتعبير عن أنفسهم من خلال النصوص المنسقة والصور وحتى العناصر التفاعلية. انخرط في محادثات جماعية ديناميكية وجذابة مع شخصيات متعددة في وقت واحد."
-		},
-		"feature4": {
-			"title": "تكامل غير مقيد لمصادر الذكاء الاصطناعي",
-			"description": "يوفر fount اختيارًا ومرونة لا مثيل لهما. اتصل بـ<i>أي</i> مصدر ذكاء اصطناعي - OpenAI، Claude، [Atlas Cloud](${atlasCloudLink})، [Evolink](${evolinkLink})، OpenRouter، NovelAI، وغيرها الكثير. سيتشكل منطق الاتصال وفقًا لإرادتك <i>أنت</i>، بقوة الكود."
 		},
 		"language_selector": {
 			"button": {
@@ -487,8 +501,8 @@
 		},
 		"mini_game": {
 			"title": "العب لعبة صغيرة",
-			"description1": "هل التثبيت بطيء جدًا؟",
-			"description2": "إليك لعبة صغيرة لتمضية الوقت."
+			"slowInstallHint": "هل التثبيت بطيء جدًا؟",
+			"playWhileWaiting": "إليك لعبة صغيرة لتمضية الوقت."
 		},
 		"testimonials": {
 			"anonymous": "مستخدم مجهول",
@@ -530,9 +544,27 @@
 			"title": "فشل التثبيت!",
 			"description": "يبدو أن هناك خطأ ما في برنامج تثبيت fount.",
 			"connection_failed": "فشل الاتصال!",
-			"description1": "يبدو أن هناك خطأ ما في برنامج تثبيت fount.",
-			"description2": "يرجى التحقق من الطرفية الخاصة بك والمحاولة مرة أخرى.",
-			"close_page": "إغلاق الصفحة"
+			"close_page": "إغلاق الصفحة",
+			"summary": "يبدو أن هناك خطأ ما في برنامج تثبيت fount.",
+			"retryHint": "يرجى التحقق من الطرفية الخاصة بك والمحاولة مرة أخرى."
+		},
+		"features": {
+			"seamlessChat": {
+				"title": "محادثات سلسة، في أي وقت وفي أي مكان",
+				"description": "ابدأ محادثة على جهاز الكمبيوتر الخاص بك، واستكملها بسلاسة على هاتفك أو جهازك اللوحي. يحافظ fount على مزامنة محادثاتك، مما يجعلك على اتصال دائم بشخصياتك أينما ذهبت. يعمل على أنظمة Windows و macOS و Linux وحتى Android."
+			},
+			"customUi": {
+				"title": "واجهة جميلة وقابلة للتخصيص",
+				"description": "اختر من بين أكثر من 30 سمة رائعة، أو أنشئ سمتك الخاصة. fount هو لوحتك الشخصية. عبّر عن نفسك، وخصص بيئتك حسب رغبتك، واحصل على تجربة شخصية حقيقية."
+			},
+			"expressiveChat": {
+				"title": "محادثة معبرة وغامرة",
+				"description": "يستفيد fount بالكامل من قوة HTML، مما يسمح للشخصيات بالتعبير عن أنفسهم من خلال النصوص المنسقة والصور وحتى العناصر التفاعلية. انخرط في محادثات جماعية ديناميكية وجذابة مع شخصيات متعددة في وقت واحد."
+			},
+			"aiSources": {
+				"title": "تكامل غير مقيد لمصادر الذكاء الاصطناعي",
+				"description": "يوفر fount اختيارًا ومرونة لا مثيل لهما. اتصل بـ<i>أي</i> مصدر ذكاء اصطناعي - OpenAI، Claude، [Atlas Cloud](${atlasCloudLink})، [Evolink](${evolinkLink})، OpenRouter، NovelAI، وغيرها الكثير. سيتشكل منطق الاتصال وفقًا لإرادتك <i>أنت</i>، بقوة الكود."
+			}
 		}
 	},
 	"protocolhandler": {
@@ -617,10 +649,6 @@
 			"passwordMismatch": "كلمتا المرور غير متطابقتين.",
 			"loginError": "حدث خطأ أثناء تسجيل الدخول.",
 			"registrationError": "حدث خطأ أثناء التسجيل.",
-			"verificationCodeError": "رمز التحقق خاطئ أو منتهي الصلاحية.",
-			"verificationCodeSent": "تم إرسال رمز التحقق بنجاح.",
-			"verificationCodeSendError": "فشل إرسال رمز التحقق.",
-			"verificationCodeRateLimit": "لقد أرسلت رموز التحقق بشكل متكرر جدًا، يرجى المحاولة لاحقًا.",
 			"lowPasswordStrength": "قوة كلمة المرور ضعيفة جدًا.",
 			"accountAlreadyExists": "الحساب موجود بالفعل",
 			"powNotSolved": "يرجى إكمال التحقق من إثبات العمل (PoW) أولاً",
@@ -630,26 +658,36 @@
 			"accountLockedAttempts": "تم قفل الحساب مؤقتًا بسبب محاولات تسجيل دخول فاشلة كثيرة.",
 			"powValidationFailed": "فشل التحقق الأمني، يرجى المحاولة مرة أخرى.",
 			"tokenAndSolutionsRequired": "يجب توفير token و solutions.",
-			"apiErrorBodyUnreadable": "قام الخادم بإرجاع معلومات لا يمكن تحليلها. يرجى المحاولة مرة أخرى لاحقا."
+			"apiErrorBodyUnreadable": "قام الخادم بإرجاع معلومات لا يمكن تحليلها. يرجى المحاولة مرة أخرى لاحقا.",
+			"verificationCode": {
+				"error": "رمز التحقق خاطئ أو منتهي الصلاحية.",
+				"rateLimit": "لقد أرسلت رموز التحقق بشكل متكرر جدًا، يرجى المحاولة لاحقًا.",
+				"sendError": "فشل إرسال رمز التحقق.",
+				"sent": "تم إرسال رمز التحقق بنجاح."
+			}
 		},
 		"webauthn": {
 			"loginButton": "قم بتسجيل الدخول باستخدام مفتاح الأمان / مفتاح المرور",
-			"errorLoadLibrary": "غير قادر على تحميل مكتبة WebAuthn المساعدة، يرجى التحقق من الشبكة والمحاولة مرة أخرى.",
-			"errorCancelled": "تم إلغاء مفتاح الأمان أو لم يتم التصريح باستخدامه.",
-			"errorSessionMissing": "لم يُرجع الخادم جلسة تسجيل دخول صالحة، يرجى تحديث الصفحة والمحاولة مرة أخرى.",
-			"errorBadBeginResponse": "قام الخادم بإرجاع بيانات تسجيل دخول غير صالحة، يرجى تحديث الصفحة والمحاولة مرة أخرى.",
-			"errorCredentialRequired": "بيانات اعتماد مفتاح المرور الصالحة مفقودة.",
-			"errorAuthSessionRequired": "رمز جلسة تسجيل الدخول مفقود، يرجى تحديث الصفحة والمحاولة مرة أخرى.",
 			"apiSessionExpired": "انتهت صلاحية جلسة تسجيل الدخول بمفتاح المرور، يرجى المحاولة مرة أخرى.",
 			"apiUnknownPasskey": "لم يتم التعرف على مفتاح المرور، يرجى استخدام مفتاح مرتبط.",
 			"apiPasskeyVerificationFailed": "فشل التحقق من مفتاح المرور، يرجى المحاولة مرة أخرى.",
-			"registrationUserNotFound": "لم يتم العثور على حساب المستخدم.",
-			"registrationSessionExpired": "لقد انتهت صلاحية الجلسة الملزمة، يرجى المحاولة مرة أخرى من البداية.",
-			"registrationVerifyFailed": "غير قادر على إكمال التحقق من تسجيل مفتاح المرور.",
-			"registrationFailed": "فشل تسجيل مفتاح المرور، يرجى المحاولة مرة أخرى.",
 			"removeUserNotFound": "لم يتم العثور على بيانات المستخدم أو بيانات الاعتماد.",
 			"removeInvalidPassword": "كلمة مرور خاطئة.",
-			"removePasskeyNotFound": "لم يتم العثور على مفتاح المرور."
+			"removePasskeyNotFound": "لم يتم العثور على مفتاح المرور.",
+			"registration": {
+				"failed": "فشل تسجيل مفتاح المرور، يرجى المحاولة مرة أخرى.",
+				"sessionExpired": "لقد انتهت صلاحية الجلسة الملزمة، يرجى المحاولة مرة أخرى من البداية.",
+				"userNotFound": "لم يتم العثور على حساب المستخدم.",
+				"verifyFailed": "غير قادر على إكمال التحقق من تسجيل مفتاح المرور."
+			},
+			"error": {
+				"authSessionRequired": "رمز جلسة تسجيل الدخول مفقود، يرجى تحديث الصفحة والمحاولة مرة أخرى.",
+				"badBeginResponse": "قام الخادم بإرجاع بيانات تسجيل دخول غير صالحة، يرجى تحديث الصفحة والمحاولة مرة أخرى.",
+				"cancelled": "تم إلغاء مفتاح الأمان أو لم يتم التصريح باستخدامه.",
+				"credentialRequired": "بيانات اعتماد مفتاح المرور الصالحة مفقودة.",
+				"loadLibrary": "غير قادر على تحميل مكتبة WebAuthn المساعدة، يرجى التحقق من الشبكة والمحاولة مرة أخرى.",
+				"sessionMissing": "لم يُرجع الخادم جلسة تسجيل دخول صالحة، يرجى تحديث الصفحة والمحاولة مرة أخرى."
+			}
 		}
 	},
 	"login_info": {
@@ -808,84 +846,86 @@
 					}
 				}
 			},
-			"serviceGenerators": {
-				"title": "منشئ الخدمة",
-				"subtitle": "تحويل غير المرئي إلى شيء ملموس، وجعل الممكن حقيقة.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "تعيين كمولد الخدمة الافتراضي"
-					}
-				}
-			},
-			"serviceGenerators/AI": {
-				"title": "مولد خدمة الذكاء الاصطناعي",
-				"subtitle": "نسج خيوط الحكمة وربط جسور الفكر.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "تعيين كمولد خدمة الذكاء الاصطناعي الافتراضي"
-					}
-				}
-			},
-			"serviceGenerators/search": {
-				"title": "مولد خدمة البحث",
-				"subtitle": "في محيط المعلومات، أشعل النور لك.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "تعيين كمولد البحث الافتراضي"
-					}
-				}
-			},
-			"serviceGenerators/translate": {
-				"title": "مولد خدمة الترجمة",
-				"subtitle": "عبور حدود اللغة والسماح للأفكار بالتدفق بحرية.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "تعيين كمولد خدمة الترجمة الافتراضي"
-					}
-				}
-			},
-			"serviceSources": {
-				"title": "مصدر الخدمة",
-				"subtitle": "وبجمع القطرات تصبح أنهارًا واسعة.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "تعيين كمصدر الخدمة الافتراضي"
-					}
-				}
-			},
-			"serviceSources/AI": {
-				"title": "مصدر خدمة الذكاء الاصطناعي",
-				"subtitle": "مصدر الحكمة ونقطة انطلاق الفكر.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "تعيين كمصدر خدمة AI افتراضي"
-					}
-				}
-			},
-			"serviceSources/search": {
-				"title": "مصدر خدمة البحث",
-				"subtitle": "كنز من المعرفة ونقطة انطلاق للاستكشاف.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "تعيين كمصدر بحث افتراضي"
-					}
-				}
-			},
-			"serviceSources/translate": {
-				"title": "مصدر خدمة الترجمة",
-				"subtitle": "جسر اللغة ورابط التواصل.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "تعيين كمصدر افتراضي لخدمة الترجمة"
-					}
-				}
-			},
 			"shells": {
 				"title": "اختيار الواجهة التفاعلية",
 				"subtitle": "اختر نافذة وشاهد عالمًا جديدًا.",
 				"card": {
 					"defaultCheckbox": {
 						"title": "تعيين كواجهة افتراضية"
+					}
+				}
+			},
+			"service": {
+				"generators": {
+					"title": "منشئ الخدمة",
+					"subtitle": "تحويل غير المرئي إلى شيء ملموس، وجعل الممكن حقيقة.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "تعيين كمولد الخدمة الافتراضي"
+						}
+					}
+				},
+				"generators/AI": {
+					"title": "مولد خدمة الذكاء الاصطناعي",
+					"subtitle": "نسج خيوط الحكمة وربط جسور الفكر.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "تعيين كمولد خدمة الذكاء الاصطناعي الافتراضي"
+						}
+					}
+				},
+				"generators/search": {
+					"title": "مولد خدمة البحث",
+					"subtitle": "في محيط المعلومات، أشعل النور لك.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "تعيين كمولد البحث الافتراضي"
+						}
+					}
+				},
+				"generators/translate": {
+					"title": "مولد خدمة الترجمة",
+					"subtitle": "عبور حدود اللغة والسماح للأفكار بالتدفق بحرية.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "تعيين كمولد خدمة الترجمة الافتراضي"
+						}
+					}
+				},
+				"sources": {
+					"title": "مصدر الخدمة",
+					"subtitle": "وبجمع القطرات تصبح أنهارًا واسعة.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "تعيين كمصدر الخدمة الافتراضي"
+						}
+					}
+				},
+				"sources/AI": {
+					"title": "مصدر خدمة الذكاء الاصطناعي",
+					"subtitle": "مصدر الحكمة ونقطة انطلاق الفكر.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "تعيين كمصدر خدمة AI افتراضي"
+						}
+					}
+				},
+				"sources/search": {
+					"title": "مصدر خدمة البحث",
+					"subtitle": "كنز من المعرفة ونقطة انطلاق للاستكشاف.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "تعيين كمصدر بحث افتراضي"
+						}
+					}
+				},
+				"sources/translate": {
+					"title": "مصدر خدمة الترجمة",
+					"subtitle": "جسر اللغة ورابط التواصل.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "تعيين كمصدر افتراضي لخدمة الترجمة"
+						}
 					}
 				}
 			}
@@ -966,12 +1006,6 @@
 				"aria-label": "إلى Unicode"
 			},
 			"discoverPacks": "استكشاف حزم الإيموجي →",
-			"categoryFace": "تعبير",
-			"categoryGesture": "إيماءة",
-			"categoryHeart": "قلب",
-			"categoryAnimal": "حيوان",
-			"categoryFood": "طعام",
-			"categoryObject": "شيء",
 			"addToCollection": "إضافة إلى المفضلة",
 			"addedToCollection": "أُضيفت إلى المفضلة",
 			"joinGroup": "الانضمام إلى المجموعة",
@@ -982,7 +1016,15 @@
 			"openAuthor": "عرض المؤلف",
 			"previewGroupMeta": "من المجموعة: ${name}",
 			"previewAuthorMeta": "من المؤلف",
-			"previewActionFailed": "فشلت العملية: ${error}"
+			"previewActionFailed": "فشلت العملية: ${error}",
+			"category": {
+				"animal": "حيوان",
+				"face": "تعبير",
+				"food": "طعام",
+				"gesture": "إيماءة",
+				"heart": "قلب",
+				"object": "شيء"
+			}
 		},
 		"emojiPacks": {
 			"title": "استكشاف حزم الإيموجي",
@@ -1043,12 +1085,14 @@
 			"modeSingle": "حرف واحد",
 			"modeEmpty": "مجموعة فارغة",
 			"subtitleRoles": "يوجد ${count} حرفًا في هذه الدردشة",
-			"statusSaved": "تم الحفظ",
-			"statusSaving": "توفير…",
-			"statusDirty": "هناك تغييرات غير محفوظة",
-			"statusSaveFailed": "فشل الحفظ",
 			"saveSuccess": "تم حفظ إعدادات الدردشة الجماعية",
-			"saveFailed": "غير قادر على حفظ إعدادات الدردشة الجماعية"
+			"saveFailed": "غير قادر على حفظ إعدادات الدردشة الجماعية",
+			"status": {
+				"dirty": "هناك تغييرات غير محفوظة",
+				"saveFailed": "فشل الحفظ",
+				"saved": "تم الحفظ",
+				"saving": "توفير…"
+			}
 		},
 		"group": {
 			"defaults": {
@@ -1057,167 +1101,6 @@
 				"dmChatName": "محادثة",
 				"dmDmName": "دردشة خاصة",
 				"threadName": "خيط الطفل"
-			},
-			"settingsPage": {
-				"title": "إعدادات المجموعة",
-				"kicker": "إدارة المجموعة",
-				"subtitle": "إدارة معلومات المجموعة والأعضاء والوظائف المشتركة. يتم مركزية الأذونات والتخزين وأدوات التدقيق ذات التردد المنخفض في الإعدادات المتقدمة.",
-				"backToChat": "العودة إلى الدردشة",
-				"navigationLabel": "تصنيف إعدادات المجموعة",
-				"advancedNavigationLabel": "فئة الإعدادات المتقدمة",
-				"tabGeneral": "أساسي",
-				"tabPermissions": "أذونات الدور",
-				"tabMembers": "عضو",
-				"tabAudit": "سجل التدقيق",
-				"tabEmojis": "تعبير",
-				"tabAdvanced": "متقدم",
-				"tabStorage": "التخزين والأرشفة",
-				"tabChannelPermissions": "أذونات القناة",
-				"advancedHubTitle": "الإعدادات المتقدمة",
-				"advancedHubDescription": "تعمل هذه الميزات على تغيير بنية أذونات المجموعة أو البيانات التاريخية أو سجلات الإدارة؛ اضبط فقط عند الحاجة الواضحة.",
-				"channelPermsHint": "قم بتعيين تجاوزات أذونات الدور لقنوات محددة. العناصر التي تم الكشف عنها ترث أذونات دور المجموعة.",
-				"channelPermsSelectChannel": "القنوات",
-				"channelPermsAddRole": "إضافة تجاوز الدور",
-				"channelPermsRemoveRole": "قم بإزالة تجاوز هذا الدور",
-				"channelPermsStateNeutral": "وراثة",
-				"channelPermsStateAllow": "سماح",
-				"channelPermsStateDeny": "رفض",
-				"channelPermsUpdated": "تم تحديث أذونات القناة",
-				"channelPermsUpdateFailed": "فشل تحديث أذونات القناة: ${error}",
-				"channelPermsNoChannels": "لا يوجد حاليا أي قناة لتكوينها",
-				"emojisTitle": "مجموعة التعبيرات المخصصة",
-				"emojisHint": "يمكن للأعضاء إدراج هذه الرموز أو إرسالها في الدردشة؛ يتم سحب الصور غير المثبتة عند الطلب من خلال العقد الموحدة.",
-				"emojisUpload": "تحميل الرموز",
-				"emojisCreatePack": "حزمة إيموجي جديدة",
-				"emojisCreatePackPrompt": "معرّف الحزمة",
-				"emojisCreatePackOk": "تم إنشاء حزمة الإيموجي",
-				"emojisCreatePackFailed": "فشل الإنشاء: ${error}",
-				"emojisPackGroupSuffix": "افتراضي المجموعة",
-				"activeEmojiPackLabel": "الحزمة قيد التحرير",
-				"emojisDelete": "حذف التعبيرات",
-				"emojisEmpty": "لا توجد تعبيرات جماعية حتى الآن",
-				"emojisUploadOk": "تم تحميل التعبير",
-				"emojisUploadFailed": "فشل التحميل: ${error}",
-				"emojisDeleteConfirm": "هل أنت متأكد أنك تريد حذف هذه المجموعة من الرموز؟",
-				"emojisDeleteOk": "تم حذف التعبيرات",
-				"emojisDeleteFailed": "فشل الحذف: ${error}",
-				"defaultEmojiPackLabel": "حزمة الإيموجي الافتراضية",
-				"defaultEmojiPackHint": "تُضاف تلقائيًا إلى مفضلة الأعضاء عند الانضمام. عند التغيير تُستبدل الحزمة الافتراضية القديمة فقط إن بقيت في المفضلة.",
-				"defaultEmojiPackOk": "تم تحديث الحزمة الافتراضية",
-				"defaultEmojiPackFailed": "تعذّر تعيين الحزمة الافتراضية",
-				"membersTitle": "قائمة الأعضاء",
-				"overviewTitle": "نظرة عامة على المجموعة",
-				"overviewHint": "معلومات للقراءة فقط. إذا كانت لديك أذونات الإدارة، فيمكنك تحرير معلومات وسياسات المجموعة في \"الأساسية\".",
-				"channelArchiveTitle": "أرشيف القناة",
-				"channelArchiveHint": "سيؤدي استيراد أرشيف JSON للقناة الكاملة إلى إنشاء قناة نصية عادية جديدة في هذه المجموعة واستعادة السجل (أعد التوقيع بواسطتك؛ وتحتفظ المرفقات بالبيانات التعريفية فقط).",
-				"channelArchiveImport": "استيراد قناة JSON",
-				"channelArchiveImportOk": "تم استيراد ${count} من الرسائل، وفتح قناة جديدة...",
-				"channelArchiveImportFailed": "فشل الاستيراد: ${error}",
-				"governanceHint": "كتابة السياسة على مستوى المجموعة الخاصة بـ DAG؛ مطلوبة أذونات المسؤول أو MANAGE_ADMINS.",
-				"governanceDenied": "ليس لديك الإذن بتعديل إعدادات إدارة المجموعة.",
-				"rolesDenied": "ليس لديك إذن MANAGE_ROLES لتعديل الأدوار.",
-				"channelPermsDenied": "ليس لديك إذن MANAGE_CHANNELS لتعديل تجاوزات أذونات القناة.",
-				"notMember": "لم تعد عضوًا في هذه المجموعة؛ تم مسح بيانات هذه المجموعة تلقائيًا بعد مغادرة المجموعة.",
-				"basicTitle": "حوكمة المجموعة",
-				"profileSectionTitle": "معلومات المجموعة",
-				"profileSectionHint": "سيتم كتابة الاسم والمقدمة وطريقة الانضمام إلى المجموعة في البيانات التعريفية للمجموعة.",
-				"behaviorSectionTitle": "تشغيل السلوك",
-				"networkSectionTitle": "الاتحاد والاتصال",
-				"retentionSectionTitle": "الاحتياطي والحد الأقصى للسعر",
-				"mediaSectionTitle": "المكالمات والملفات",
-				"nameLabel": "اسم المجموعة",
-				"descriptionLabel": "وصف المجموعة",
-				"joinPolicyLabel": "استراتيجية دخول المجموعة",
-				"joinInviteOnly": "دعوة فقط",
-				"joinPow": "مطلوب إثبات العمل",
-				"powDifficultyLabel": "صعوبة إثبات العمل",
-				"advancedTitle": "الإعدادات المتقدمة",
-				"advancedDescription": "الشبكة والتخزين والحد الأقصى للسرعة ومعلمات التشفير؛ يرجى الاحتفاظ بالإعدادات الافتراضية إذا لم تكن متأكدًا",
-				"securityAdvancedTitle": "عمليات الأمان ومالك المجموعة",
-				"securityAdvancedDescription": "التناوب الرئيسي وخلافة قائد المجموعة؛ قد تؤثر العمليات غير الصحيحة على وصول الأعضاء",
-				"powDifficultyTip": "إثبات صعوبة العمل. كلما ارتفعت القيمة، زاد وقت الحساب المطلوب للغرباء للانضمام إلى المجموعة العامة.",
-				"maxDagPayloadTip": "الحد الأعلى للبيانات المسموح بنقلها بواسطة حدث جماعي واحد. إذا كان حجمه كبيرًا جدًا، فسيؤدي ذلك إلى زيادة ذاكرة المزامنة وحمل الشبكة.",
-				"trustedPeersTip": "عدد جيران الاتحاد ذوي السمعة العالية الذين تم منحهم الأولوية للبقاء على اتصال.",
-				"gossipTtlTip": "الحد الأقصى لعدد العقد الفيدرالية التي يمكن من خلالها إعادة توجيه الرسالة. وتؤدي زيادته إلى زيادة التغطية وزيادة حركة المرور أيضًا.",
-				"hlcTip": "الحد الأقصى من الوقت المسموح به لساعة العقدة البعيدة أن تكون أسرع من ساعة العقدة المحلية، وتستخدم لرفض الأحداث المستقبلية غير الطبيعية.",
-				"sfuTip": "عنوان خدمة إعادة توجيه الصوت والفيديو الخارجي الاختياري. اتركه فارغًا لاستخدام الاتصال المضمن من نقطة إلى نقطة/الترحيل.",
-				"iceTip": "مساعدة WebRTC على اختراق جهاز التوجيه؛ عند فشل الاتصال المباشر، سيقوم TURN بإعادة توجيه الصوت والفيديو وحركة المرور الموحدة نيابة عنه.",
-				"fileEncryptionTip": "يؤدي التشفير المتقارب إلى إلغاء التكرارات ولكنه يكشف حقيقة أن الملفات متماثلة؛ المفاتيح العشوائية أكثر خصوصية ولكنها تشغل مساحة أكبر.",
-				"keyManagementTitle": "إدارة المفاتيح",
-				"keyManagementTip": "يجب إعادة توزيع المفاتيح الجديدة على الأعضاء بعد التناوب. ينبغي اتخاذ الإجراء اليدوي فقط إذا كنت تشك في تعرض أحد المفاتيح للاختراق.",
-				"allowDangerousHtml": "تسمح رسائل المؤلف الموثوق بها بتنسيق HTML المضمّن",
-				"deleteGroup": "حذف المجموعة",
-				"save": "حفظ الإعدادات",
-				"inviteTitle": "دعوة",
-				"inviteHint": "أنشئ رمز دعوة قصير المدى (ساعة واحدة افتراضيًا). يقوم الطرف الآخر بملء معرف المجموعة ورمز الدعوة في \"الانضمام إلى المجموعة\".",
-				"inviteMint": "إنشاء رمز الدعوة",
-				"inviteGroupId": "معرف المجموعة",
-				"inviteCode": "رمز الدعوة",
-				"inviteExpires": "انتهاء الصلاحية: ${date}",
-				"inviteCopy": "نسخ معلومات المجموعة",
-				"inviteCopied": "تم نسخ معلومات المجموعة",
-				"inviteCopyFailed": "فشل النسخ",
-				"inviteClipboard": "معرف المجموعة: ${groupId}\nرمز الدعوة: ${code}\nالانضمام: ${url}",
-				"loadFailed": "فشل تحميل إعدادات المجموعة: ${error}",
-				"saveSuccess": "تم حفظ إعدادات المجموعة",
-				"saveFailed": "فشل حفظ الإعدادات: ${error}",
-				"deleteConfirm": "هل أنت متأكد أنك تريد حذف هذه المجموعة؟ لا يمكن التراجع عن هذا الإجراء وسيتم حذف جميع الرسائل وبيانات الأعضاء نهائيًا.",
-				"deleteSuccess": "تم حذف المجموعة",
-				"deleteFailed": "فشل حذف المجموعة: ${error}",
-				"rolesTitle": "الأدوار والأذونات",
-				"createRole": "قم بإنشاء دور",
-				"roleDefault": "تقصير",
-				"deleteRole": "حذف الدور",
-				"deleteRoleConfirm": "هل أنت متأكد أنك تريد حذف هذا الدور؟",
-				"deleteRoleSuccess": "تم حذف الدور",
-				"deleteRoleFailed": "فشل حذف الدور: ${error}",
-				"createRolePrompt": "أدخل اسم الحرف:",
-				"createRoleSuccess": "تم إنشاء الدور",
-				"createRoleFailed": "فشل إنشاء الدور: ${error}",
-				"permissionUpdated": "تم تحديث الأذونات",
-				"permissionUpdateFailed": "فشل تحديث الأذونات: ${error}",
-				"noMembers": "لا يوجد أعضاء حتى الآن",
-				"memberRoles": "دور:",
-				"kick": "طرد",
-				"ban": "حظر",
-				"kickConfirm": "هل أنت متأكد أنك تريد طرد العضو ${name}؟",
-				"kickSelfNodeWarning": "تحذير: يستخدم هذا العضو نفس هوية العقدة التي تستخدمها. سيتم إزالتك أيضًا من المجموعة بعد طردك. هل أنت متأكد أنك تريد الاستمرار؟",
-				"kickSuccess": "تم طرد العضو",
-				"kickFailed": "فشل طرد العضو: ${error}",
-				"banConfirm": "هل أنت متأكد أنك تريد حظر العضو ${name}؟",
-				"banSuccess": "تم حظر العضو",
-				"banFailed": "فشل حظر العضو: ${error}",
-				"bannedTitle": "عضو محظور",
-				"unban": "إلغاء الحظر",
-				"unbanConfirm": "هل أنت متأكد أنك تريد رفع حظر العضو ${name}؟",
-				"unbanSuccess": "تم رفع الحظر عن العضو",
-				"unbanFailed": "فشل إلغاء الحظر: ${error}",
-				"keyRotate": "تدوير مفتاح ملف المجموعة الرئيسي",
-				"keyRotateConfirm": "هل أنت متأكد أنك تريد تدوير المفتاح الرئيسي لملف المجموعة هذا يدويًا؟ يحتاج الأعضاء الجدد إلى إعادة مزامنة مفتاح ملف السجل.",
-				"keyRotateOk": "تم تدوير المفتاح",
-				"keyRotateFailed": "فشل تدوير المفتاح: ${error}",
-				"gshGenerationRetentionHint": "حاليًا، يتم الاحتفاظ فقط بأحدث 64 جيلًا من محفوظات المفتاح الرئيسي للملف. قد لا يمكن فك تشفير الملفات التاريخية الأقدم بعد تجاوزها، ويوصى بأرشفة البيانات المهمة بانتظام.",
-				"gshGenerationNearLimit": "يتم التدوير حاليًا لإنشاء ${generation} من المفاتيح الرئيسية للملفات (ما يصل إلى أجيال ${maxGenerations}). سيؤدي استمرار التناوب المتكرر إلى تقاعد أقدم المفاتيح التاريخية.",
-				"ownerSuccession": "خلافة قائد المجموعة",
-				"ownerSuccessionOk": "أصبحت خلافة قائد المجموعة سارية المفعول",
-				"ownerSuccessionFailed": "فشل خلافة قائد المجموعة: ${error}",
-				"permVIEW_CHANNEL": "شاهد القناة",
-				"permSEND_MESSAGES": "أرسل رسالة",
-				"permSEND_STICKERS": "إرسال الملصقات",
-				"permADD_REACTIONS": "إضافة رد فعل",
-				"permMANAGE_MESSAGES": "رسائل الإدارة",
-				"permMANAGE_CHANNELS": "إدارة القناة",
-				"permKICK_MEMBERS": "عضو ركلة",
-				"permBAN_MEMBERS": "حظر الأعضاء",
-				"permMANAGE_ROLES": "إدارة الأدوار",
-				"permINVITE_MEMBERS": "دعوة الأعضاء",
-				"permSTREAM": "صوت",
-				"permCREATE_THREADS": "إنشاء قنوات فرعية",
-				"permUPLOAD_FILES": "رفع الملفات",
-				"permMANAGE_FILES": "إدارة الملفات",
-				"permPIN_MESSAGES": "تثبيت الرسائل",
-				"permADMIN": "مسؤول",
-				"permBYPASS_RATE_LIMIT": "تجاوز حد معدل الرسائل"
 			},
 			"auditLog": {
 				"title": "سجل تدقيق المجموعة",
@@ -1228,10 +1111,6 @@
 				"loadMore": "تحميل سجلات أقدم",
 				"empty": "لا سجلات تدقيق",
 				"loadFailed": "فشل تحميل سجل التدقيق: ${error}",
-				"colTime": "الوقت",
-				"colType": "النوع",
-				"colActor": "المُنفِّذ",
-				"colSummary": "ملخص",
 				"type": {
 					"member_join": "انضمام الأعضاء",
 					"member_leave": "يغادر الأعضاء",
@@ -1288,167 +1167,44 @@
 					"unpin_message": "إزالة تثبيت ${channelName} على ${targetEventId}",
 					"file_upload": "تحميل الملف ${fileName}",
 					"file_delete": "حذف الملف ${fileName}"
+				},
+				"col": {
+					"actor": "المُنفِّذ",
+					"summary": "ملخص",
+					"time": "الوقت",
+					"type": "النوع"
 				}
 			},
-			"messagePrefixSticker": "ملصق",
 			"membersEmpty": "(لا يوجد أعضاء بعد)",
 			"channelEncryptionGsh": "تشفير مفتاح القناة من طرف إلى طرف (CKG)",
-			"ownerSuccession": "بدء التصويت على الخلافة",
-			"ownerSuccessionDescription": "نقل أعلى سلطة إدارية للمجموعة (MANAGE_ADMINS) إلى العضو المحدد. يمكن للمسؤولين فقط العمل.",
-			"ownerSuccessionAutoSignHint": "بعد الإرسال، سيقوم الجهاز تلقائيًا بالتوقيع على بذرة التوقيع الخاصة بالمجموعة دون إدخال المفتاح الخاص. في المجموعة متعددة المسؤولين، يجب على أكثر من نصف المسؤولين إرسال نفس بطاقة الاقتراع (نفس بطاقة الاقتراع والمرشح) محليًا.",
-			"ownerSuccessionCandidateLabel": "تجزئة المفتاح العام اللاحق",
-			"ownerSuccessionSelfButton": "رشح نفسك",
-			"ownerSuccessionSubmitted": "لقد تم تسجيل توقيعك على ورقة اقتراع الخلافة.",
-			"ownerSuccessionNeedHash": "يرجى ملء تجزئة المفتاح العام للخلف",
-			"ownerSuccessionFailed": "فشل تقديم التصويت على الخلافة",
 			"e2eDecryptUnavailable": "الرسالة مشفرة ولا يمكن فك تشفيرها بواسطة الجهاز الحالي",
 			"contentRefBodyPending": "نص الرابط الخارجي (content_ref، لم يتم سحبه للتحقق بعد)",
 			"contentRefHashMismatch": "نص الرابط الخارجي غير متوافق مع التحقق من التخزين (التجزئة غير متطابقة)",
-			"streamGenerationFailed": "انتهت مهلة إنشاء الذكاء الاصطناعي ولم تكتمل، وتم إيقاف التحديثات.",
 			"convergentEncryptWarn": "تستخدم ملفات المجموعة التشفير المتقارب: إذا كان المهاجم يعرف النص العادي للملف، فيمكنه استخلاص المفتاح وفك تشفير كتلة النص المشفر المقابلة. لا تعتمد فقط على تشفير المجموعة لحماية المستندات الحساسة للغاية والخاصة بشكل فريد.",
-			"settingsStreamGeneratingIdle": "مهلة الخمول للعنصر النائب الذي تم إنشاؤه بواسطة الذكاء الاصطناعي (بالميلي ثانية)",
-			"settingsAutoReplyFrequency": "تشغيل ردود الدور تلقائيًا (بعد كل رسالة مستخدم N، يتم إيقاف تشغيل 0)",
-			"settingsAutoReplyFrequencyHint": "0 يعني إيقاف؛ سيستمر تشغيل الإشارات @ على الفور",
-			"settingsMaxDagPayload": "DAG الحد الأقصى لعدد البايتات لحدث واحد",
-			"settingsBatterySaver": "وضع الطاقة المنخفضة (تقلص تجمع اتصال الاتحاد والتتابع)",
-			"settingsDiscoveryPublic": "كشف هذه المجموعة في الاكتشاف الموحد (دون الانضمام إلى مفتاح المجموعة)",
-			"settingsDiscoveryTitle": "عنوان قائمة الاكتشاف (اختياري)",
-			"settingsDiscoveryBlurb": "مقدمة الاكتشاف (اختياري)",
-			"settingsTrustedPeers": "فتحة الجيران الموثوقة (Top-K)",
-			"settingsExplorePeers": "استكشاف فتحات الجيران",
-			"settingsMaxPeers": "غطاء اتصال الاتحاد",
-			"settingsGossipTtl": "إعادة توجيه القيل والقال TTL (عدد القفزات)",
-			"settingsWantIdsBudget": "ميزانية الرغبات الفردية",
-			"settingsHlcMaxSkew": "الحد الأعلى لإزاحة HLC المستقبلية (مللي ثانية)",
 			"dagForkDetected": "تم اكتشاف شوكة DAG غير مدمجة",
 			"mergeDagTips": "دمج شوكات DAG",
 			"mergeDagTipsOk": "تم دمج الشوكة",
 			"mergeDagTipsFailed": "فشل دمج الشوكة",
-			"settingsStreamingSfu": "عنوان SFU WebSocket المتدفق (اختياري)",
-			"settingsMessageRetention": "يتم حذف نص الرسالة تلقائيا",
-			"settingsMessageRetentionForever": "الاحتفاظ الدائم (أحداث DAG المضغوطة فقط)",
-			"settingsMessageRetention30d": "منذ 30 يوما",
-			"settingsMessageRetention90d": "منذ 90 يوما",
-			"settingsMessageRetention1y": "منذ سنة واحدة",
-			"settingsMessageRetentionHint": "لا يتم حذف السجل المرئي تلقائيًا بشكل افتراضي. عند التمكين، سيتم تقليم ذاكرة التخزين المؤقت للرسائل المحلية فقط؛ سيتم الاحتفاظ بالرسائل النهائية في الأرشيف البارد ونقطة التفتيش.",
-			"settingsHotLatest": "الاحتفاظ بالمنطقة الفعالة (أحدث عدد من المشاركات لكل قناة)",
-			"settingsPinContext": "الحي الأعلى (±N عدد الجيران)",
-			"settingsHotWindowHint": "يتم الاحتفاظ بمشاركات المنطقة الفعالة في نقطة التفتيش وذاكرة التخزين المؤقت للرسائل؛ تتم كتابة المنشورات المتبقية في الأرشيف البارد الشهري بعد تجسيدها، ثم يتم طيها من أحداث عملية DAG.",
-			"settingsArchiveTitle": "التخزين والأرشفة الباردة",
-			"settingsArchiveHint": "الأرشيف البارد هو الحالة النهائية للنشر النصي الواضح المحلي (الملفات مقسمة حسب الشهر). لن يؤدي حذف الأرشيف إلى تغيير DAG؛ إذا كان التاريخ مفقودًا، فيمكن سحبه من الدول المجاورة الفيدرالية.",
-			"settingsArchiveFilesTitle": "الملفات المؤرشفة",
-			"settingsArchiveEmpty": "لا توجد ملفات أرشيف باردة حتى الآن.",
-			"settingsArchiveColChannel": "القنوات",
-			"settingsArchiveColMonth": "شهر",
-			"settingsArchiveColSize": "مقاس",
-			"settingsArchiveDeleteBefore": "حذف هذا الشهر السابق",
-			"settingsArchiveDeleteButton": "حذف الأرشيف البارد",
-			"settingsArchiveDeleteHint": "يتم حذف الأرشيف المحلي/*.jsonl فقط؛ لا تتأثر نقاط الاتصال ومثبتات DAG.",
-			"settingsArchiveAdminOnly": "لا يحتوي هذا الجهاز حتى الآن على بيانات أرشيف باردة لهذه المجموعة.",
-			"settingsArchiveDeleteInvalidMonth": "الرجاء تحديد شهر صالح YYYY-MM.",
-			"settingsArchiveDeleteConfirm": "هل أنت متأكد أنك تريد حذف كافة ملفات الأرشيف الباردة الأقدم من ${month}؟ هذه العملية لا رجعة فيها.",
-			"settingsArchiveDeleteOk": "${files} تم حذف ملفات الأرشيف.",
-			"settingsArchiveDeleteFailed": "فشل حذف الأرشيف: ${error}",
-			"settingsEventRetentionDepth": "عمق الاحتفاظ بحدث DAG",
-			"settingsEventRetentionMs": "وقت الاحتفاظ بحدث DAG",
-			"settingsCompactTriggerDepth": "عمق الزناد المضغوط",
-			"settingsMessageRateLimit": "حد معدل الرسائل (رسالة/دقيقة/كيان)",
-			"settingsAutoReplyTokenBucket": "جدولة ضغط الرد التلقائي (دلو الرمز المميز)",
-			"settingsAutoReplyTokenBucketHint": "بعد التمكين، يحتفظ كل حرف بحاوية رمزية لكل قناة؛ لا يتم تشغيل onMessage مؤقتًا عندما تكون الحاوية فارغة، مما قد يمنع التحديث المستمر للشاشة خلال فترات الذروة.",
-			"settingsIceServers": "خادم ICE / TURN",
-			"settingsIceServersAdd": "إضافة خادم",
-			"settingsIceServersHint": "يُستخدم لاختراق NAT في WebRTC وP2P الفيدرالي. يُحفظ اسم مستخدم وكلمة مرور TURN على هذا الجهاز فقط ولا تُزامَن عبر الاتحاد.",
-			"settingsIceUrl": {
-				"aria-label": "عنوان خادم ICE",
-				"placeholder": "stun:host:19302"
-			},
-			"settingsIceUser": {
-				"aria-label": "اسم مستخدم TURN",
-				"placeholder": "اسم المستخدم (اختياري)"
-			},
-			"settingsIceCred": {
-				"aria-label": "كلمة مرور TURN",
-				"placeholder": "كلمة المرور (اختياري)"
-			},
-			"settingsIceRemove": {
-				"aria-label": "حذف هذا الخادم"
-			},
-			"settingsFileCeMode": "وضع تشفير الملفات",
-			"settingsFileCeModeConvergent": "التشفير المتقارب (يمكن إزالة التكرارات)",
-			"settingsFileCeModeRandom": "وضع الخصوصية العالية (مفاتيح عشوائية، عدم إلغاء البيانات المكررة)",
-			"settingsFileCeModeHint": "يستخدم وضع الخصوصية العالية مفتاح محتوى عشوائيًا لكل كتلة ويضع علامة ceMode=random; وهذا يقلل من خطر إمكانية تخمين النص العادي، ولكنه يزيد من استخدام التخزين وعرض النطاق الترددي.",
 			"channelsTitle": "القنوات",
-			"createGroup": "إنشاء مجموعة جديدة",
 			"members": "عضو",
 			"membersHint": "تتم مزامنة قائمة الأعضاء بواسطة Checkpoint (عنصر نائب)",
-			"streamTest": "اختبار أجهزة الوسائط",
 			"loadError": "فشل تحميل المجموعة",
-			"remoteNodeTimeout": "العقدة البعيدة لا تستجيب، يرجى المحاولة مرة أخرى لاحقًا.",
-			"remoteUnavailable": "المكون البعيد غير متوفر أو لا يمكنه توجيه RPC",
 			"messagesLoadFailed": "فشل تحميل الرسالة",
 			"sendFailed": "فشل الإرسال",
 			"chatNotLoaded": "لم يتم تحميل الدردشة الرئيسية: يرجى فتح محادثة بنفس معرف المجموعة على الواجهة الرئيسية والمحاولة مرة أخرى.",
-			"createFailed": "فشل إنشاء المجموعة",
 			"newGroupName": "مجموعة جديدة",
-			"streamOk": "تم الحصول على دفق الوسائط (تم إيقافه، ولم يتم بثه)",
-			"remoteUnsafe": "تأتي هذه الرسالة من مكان بعيد والكاتب ليس موجودًا في قائمة الثقة المحلية. تم تعطيل عرض النص المنسق.",
 			"trustAuthor": {
 				"textContent": "وثوق",
 				"title": "ثق بهذا المؤلف (السماح بـ HTML الخطير)"
 			},
 			"trustAuthorOk": "لقد تم الوثوق بهذا المؤلف ويقدم نصًا منسقًا",
-			"voteCast": "تصويت",
 			"listEmpty": "(لا توجد عناصر تنقل حتى الآن، يمكن للمسؤولين تحديث عناصر القائمة من خلال واجهة برمجة التطبيقات)",
 			"listChannelReadonly": {
 				"placeholder": "تعرض قائمة القنوات بطاقات التنقل فقط ولا ترسل رسائل"
 			},
-			"streamNoEmbed": {
-				"textContent": "يجب أن يكون عنوان البث صفحة https:// قابلة للتضمين، أو يجب تكوين إعدادات المجموعة أولاً وتحديثها للحصول على رمز العرض."
-			},
-			"streamNoSfu": {
-				"textContent": "لم يتم تكوين StreamSfuWss؛ يمكن للمسؤولين ملء عنوان عرض LiveKit/mediasoup في إعدادات المجموعة."
-			},
-			"messageDeleted": "تم حذف الرسالة",
-			"messageDeletedBracket": "[تم حذف الرسالة]",
-			"messageWithAttachments": "${text} ({n} مرفقات) ${n}",
-			"voteBlockHeading": "[${prefix}] ${question}",
-			"voteBlockHeadingTagged": "[تصويت] ${question}",
-			"voteCastLine": "[${prefix}] التصويت: ${choice}",
-			"voteCastLineTagged": "[تصويت] التصويت: ${choice}",
-			"voteOptionsPreview": "[${prefix}] ${options}",
-			"voteOptionsPreviewTagged": "[تصويت] ${options}",
-			"voteDeadlineLineOpen": "الموعد النهائي: ${date}",
-			"voteDeadlineLineClosed": "النهاية: ${date} [انتهى]",
-			"pinMessageLine": "[الأعلى] ${targetId}",
-			"unpinMessageLine": "[إزالة التثبيت] ${targetId}",
-			"stickerPrefixLine": "[${label}]",
-			"stickerPrefixLineTagged": "[ملصق]",
-			"feedbackDagLine": "[${label}]",
-			"feedbackDagLineWithNote": "[${label}] ${note}",
-			"feedbackPreviewLine": "${tag}${sep}${note}",
-			"feedbackPreviewTaggedNote": "${tag} ${note}",
 			"mentionHandle": "@${name}",
 			"mentionInsert": "@${name}",
-			"feedbackUp": "مدح",
-			"feedbackDown": "خطوة على",
 			"attachmentsHint": "(${n} مرفقات)",
-			"pinMessage": "دبوس إلى الأعلى",
-			"unpinMessage": "إزالة التثبيت",
-			"pinThisMessage": "اكتب هذه المقالة إلى DAG وقم بتثبيتها في الأعلى",
-			"pinAction": {
-				"textContent": "دبوس إلى الأعلى",
-				"title": "اكتب هذه المقالة إلى DAG وقم بتثبيتها في الأعلى"
-			},
-			"unpinAction": {
-				"textContent": "إزالة التثبيت",
-				"title": "إزالة التثبيت"
-			},
-			"pinOk": "تم التسجيل والمثبت",
-			"unpinOk": "غير مثبت",
-			"pinFailed": "فشل الدبوس",
-			"menuCopyText": "نسخ النص",
-			"menuExportHtml": "تصدير إلى HTML",
-			"menuCopyId": "انسخ معرف الرسالة",
 			"copied": "منقول",
 			"addBookmark": {
 				"title": "إشارة مرجعية للقناة الحالية"
@@ -1456,9 +1212,6 @@
 			"bookmarkExists": "الإشارة المرجعية موجودة بالفعل",
 			"bookmarkAdded": "إشارة مرجعية",
 			"bookmarkSaveFailed": "فشل حفظ الإشارات المرجعية",
-			"remoteTyping": "${name} يكتب...",
-			"remoteTypingTwo": "${name1}، ${name2} جاري الدخول...",
-			"remoteTypingMany": "${name} و${count} آخرون يكتبون...",
 			"localAiLabel": "الدور الأصلي:",
 			"forceTriggerOne": {
 				"title": "فرض تشغيل ${name} على التحدث"
@@ -1467,23 +1220,10 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "إجبار جميع الشخصيات المحلية على الكلام"
 			},
-			"messageRefAnchor": "رسالة الاقتباس: ${id}",
-			"settingsFedPartition": "عدد الأقسام الفيدرالية",
-			"settingsRtcBudget": "ميزانية اتصال RTC",
-			"settingsRtcJoinRate": "أضاف RTC حدًا للدقيقة",
-			"settingsFedTuningHint": "كتابة إعدادات مجموعة DAG؛ بعد التعديل، يوصى بإعادة ربط غرفة الاتحاد.",
-			"settingsAutoChannelGc": "مسح القنوات الصامتة تلقائيا",
-			"settingsAutoChannelGcHint": "سيتم حذف قناتين معزولتين على الأكثر ظلتا صامتتين لمدة ≥30 يومًا ولا يمكن الوصول إليهما عند حدوث ذلك.",
 			"quoteHeader": "> **${sender}**${sep}${time}",
 			"quoteHeaderWithTime": "> **${sender}** · ${time}",
 			"quoteHeaderWithoutTime": "> **${sender}**",
 			"stopGenerating": "توقف عن التوليد",
-			"messageAborted": "تمت مقاطعته",
-			"avStart": "بدء الوسائط",
-			"avMute": "صامت",
-			"avSwap": "الشاشة الرئيسية",
-			"avStop": "قف",
-			"avNeedStreamChannel": "الرجاء استخدام الصوت والفيديو في قنوات من نوع \"بث الوسائط\".",
 			"reactionAdd": {
 				"title": "إضافة رد"
 			},
@@ -1494,25 +1234,11 @@
 				"title": "إضافة الرموز"
 			},
 			"reactionPrompt": "أدخل الرموز التعبيرية (Unicode)",
-			"channelTypeLabel": "نوع القناة",
-			"channelTypeText": "قناة الدردشة",
-			"channelTypeList": "القائمة/قناة المنتدى",
-			"channelTypeStreaming": "قناة بث",
 			"convertToText": "تحويل إلى قناة الدردشة",
 			"convertToList": "تحويل إلى قائمة / قناة المنتدى",
 			"setAsDefault": "تعيين كقناة افتراضية للمجموعة",
 			"isDefault": "الافتراضي الحالي",
-			"defaultChannelSet": "تعيين كقناة افتراضية",
-			"defaultChannelSetFailed": "فشل تعيين القناة الافتراضية",
 			"channelUpdateFailed": "فشل تحديث القناة",
-			"voteCreate": "الشروع في التصويت",
-			"votePromptDeadline": "الموعد النهائي (اتركه فارغًا بدون حد زمني، التنسيق 2026-01-01 23:59)",
-			"voteTooFewOptions": "مطلوب خيارين على الأقل",
-			"voteCreateFailed": "فشل إنشاء الاستطلاع",
-			"voteFor": "استثمر ${option}",
-			"voteDeadline": "موعد التسليم",
-			"voteEnded": "انتهى",
-			"voteTotal": "إجمالي ${n} من الأصوات",
 			"record": "تسجيل",
 			"fileDownload": {
 				"title": "تنزيل الملف"
@@ -1526,44 +1252,438 @@
 			"saveSticker": {
 				"title": "حفظ الملصقات/الرموز في المفضلة"
 			},
-			"stickerSaved": "تم الحفظ في مكتبة الملصقات",
-			"stickerDefaultName": "ملصق",
 			"deleteMessage": {
 				"title": "حذف الرسالة"
 			},
 			"deleteConfirm": "هل تريد تأكيد حذف هذه الرسالة؟",
-			"editMessage": {
-				"title": "تحرير الرسالة"
-			},
 			"saveEdit": "حفظ",
 			"cancelEdit": "إلغاء",
 			"editingMessage": "التحرير",
-			"editConfirm": "تأكيد (Ctrl+Enter)",
-			"editCancel": "إلغاء (خروج)",
-			"editHint": "Ctrl+Enter تأكيد · إلغاء Esc",
-			"editEmptyText": "لا يمكن أن يكون محتوى الرسالة فارغًا",
-			"createGroupTitle": "إنشاء مجموعة جديدة",
 			"groupNameLabel": "اسم المجموعة",
 			"groupName": {
 				"placeholder": "مجموعاتي"
 			},
-			"defaultChannelLabel": "القناة الافتراضية",
-			"defaultChannel": {
-				"placeholder": "عام"
-			},
-			"createGroupFailed": "فشل إنشاء المجموعة",
-			"createChannelFailed": "فشل في إنشاء القناة",
 			"moreActions": {
 				"title": "المزيد من الإجراءات"
 			},
-			"thread": "خيط الطفل",
-			"threadBack": "رجوع",
-			"threadBreadcrumbRootTitle": "الانتقال إلى نقطة بداية المسار (المستوى الأول)",
-			"threadBreadcrumbMiddleTitle": "قم بتوسيع الطبقة الوسطى وحدد المستوى الذي تريد الانتقال إليه",
-			"threadBreadcrumbMiddleSummary": "طبقة ${count} الوسطى",
-			"menuShareExternal": "المشاركة على رابط خارجي",
 			"shareExternalOk": "تم تحميل الرابط ونسخه",
-			"shareExternalFailed": "فشل التحميل، يرجى التحقق من الشبكة"
+			"shareExternalFailed": "فشل التحميل، يرجى التحقق من الشبكة",
+			"ownerSuccession": {
+				"main": "بدء التصويت على الخلافة",
+				"autoSignHint": "بعد الإرسال، سيقوم الجهاز تلقائيًا بالتوقيع على بذرة التوقيع الخاصة بالمجموعة دون إدخال المفتاح الخاص. في المجموعة متعددة المسؤولين، يجب على أكثر من نصف المسؤولين إرسال نفس بطاقة الاقتراع (نفس بطاقة الاقتراع والمرشح) محليًا.",
+				"candidateLabel": "تجزئة المفتاح العام اللاحق",
+				"description": "نقل أعلى سلطة إدارية للمجموعة (MANAGE_ADMINS) إلى العضو المحدد. يمكن للمسؤولين فقط العمل.",
+				"failed": "فشل تقديم التصويت على الخلافة",
+				"needHash": "يرجى ملء تجزئة المفتاح العام للخلف",
+				"selfButton": "رشح نفسك",
+				"submitted": "لقد تم تسجيل توقيعك على ورقة اقتراع الخلافة."
+			},
+			"channelType": {
+				"label": "نوع القناة",
+				"list": "القائمة/قناة المنتدى",
+				"streaming": "قناة بث",
+				"text": "قناة الدردشة"
+			},
+			"settings": {
+				"archive": {
+					"adminOnly": "لا يحتوي هذا الجهاز حتى الآن على بيانات أرشيف باردة لهذه المجموعة.",
+					"colChannel": "القنوات",
+					"colMonth": "شهر",
+					"colSize": "مقاس",
+					"delete": {
+						"before": "حذف هذا الشهر السابق",
+						"button": "حذف الأرشيف البارد",
+						"confirm": "هل أنت متأكد أنك تريد حذف كافة ملفات الأرشيف الباردة الأقدم من ${month}؟ هذه العملية لا رجعة فيها.",
+						"failed": "فشل حذف الأرشيف: ${error}",
+						"hint": "يتم حذف الأرشيف المحلي/*.jsonl فقط؛ لا تتأثر نقاط الاتصال ومثبتات DAG.",
+						"invalidMonth": "الرجاء تحديد شهر صالح YYYY-MM.",
+						"ok": "${files} تم حذف ملفات الأرشيف."
+					},
+					"empty": "لا توجد ملفات أرشيف باردة حتى الآن.",
+					"filesTitle": "الملفات المؤرشفة",
+					"hint": "الأرشيف البارد هو الحالة النهائية للنشر النصي الواضح المحلي (الملفات مقسمة حسب الشهر). لن يؤدي حذف الأرشيف إلى تغيير DAG؛ إذا كان التاريخ مفقودًا، فيمكن سحبه من الدول المجاورة الفيدرالية.",
+					"title": "التخزين والأرشفة الباردة"
+				},
+				"autoChannelGc": "مسح القنوات الصامتة تلقائيا",
+				"autoChannelGcHint": "سيتم حذف قناتين معزولتين على الأكثر ظلتا صامتتين لمدة ≥30 يومًا ولا يمكن الوصول إليهما عند حدوث ذلك.",
+				"autoReply": {
+					"frequency": "تشغيل ردود الدور تلقائيًا (بعد كل رسالة مستخدم N، يتم إيقاف تشغيل 0)",
+					"frequencyHint": "0 يعني إيقاف؛ سيستمر تشغيل الإشارات @ على الفور",
+					"tokenBucket": "جدولة ضغط الرد التلقائي (دلو الرمز المميز)",
+					"tokenBucketHint": "بعد التمكين، يحتفظ كل حرف بحاوية رمزية لكل قناة؛ لا يتم تشغيل onMessage مؤقتًا عندما تكون الحاوية فارغة، مما قد يمنع التحديث المستمر للشاشة خلال فترات الذروة."
+				},
+				"batterySaver": "وضع الطاقة المنخفضة (تقلص تجمع اتصال الاتحاد والتتابع)",
+				"compactTriggerDepth": "عمق الزناد المضغوط",
+				"discoveryBlurb": "مقدمة الاكتشاف (اختياري)",
+				"discoveryPublic": "كشف هذه المجموعة في الاكتشاف الموحد (دون الانضمام إلى مفتاح المجموعة)",
+				"discoveryTitle": "عنوان قائمة الاكتشاف (اختياري)",
+				"eventRetentionDepth": "عمق الاحتفاظ بحدث DAG",
+				"eventRetentionMs": "وقت الاحتفاظ بحدث DAG",
+				"explorePeers": "استكشاف فتحات الجيران",
+				"fedPartition": "عدد الأقسام الفيدرالية",
+				"fedTuningHint": "كتابة إعدادات مجموعة DAG؛ بعد التعديل، يوصى بإعادة ربط غرفة الاتحاد.",
+				"fileCe": {
+					"mode": "وضع تشفير الملفات",
+					"modeConvergent": "التشفير المتقارب (يمكن إزالة التكرارات)",
+					"modeHint": "يستخدم وضع الخصوصية العالية مفتاح محتوى عشوائيًا لكل كتلة ويضع علامة ceMode=random; وهذا يقلل من خطر إمكانية تخمين النص العادي، ولكنه يزيد من استخدام التخزين وعرض النطاق الترددي.",
+					"modeRandom": "وضع الخصوصية العالية (مفاتيح عشوائية، عدم إلغاء البيانات المكررة)"
+				},
+				"gossipTtl": "إعادة توجيه القيل والقال TTL (عدد القفزات)",
+				"hlcMaxSkew": "الحد الأعلى لإزاحة HLC المستقبلية (مللي ثانية)",
+				"hotLatest": "الاحتفاظ بالمنطقة الفعالة (أحدث عدد من المشاركات لكل قناة)",
+				"hotWindowHint": "يتم الاحتفاظ بمشاركات المنطقة الفعالة في نقطة التفتيش وذاكرة التخزين المؤقت للرسائل؛ تتم كتابة المنشورات المتبقية في الأرشيف البارد الشهري بعد تجسيدها، ثم يتم طيها من أحداث عملية DAG.",
+				"ice": {
+					"cred": {
+						"aria-label": "كلمة مرور TURN",
+						"placeholder": "كلمة المرور (اختياري)"
+					},
+					"remove": {
+						"aria-label": "حذف هذا الخادم"
+					},
+					"servers": "خادم ICE / TURN",
+					"serversAdd": "إضافة خادم",
+					"serversHint": "يُستخدم لاختراق NAT في WebRTC وP2P الفيدرالي. يُحفظ اسم مستخدم وكلمة مرور TURN على هذا الجهاز فقط ولا تُزامَن عبر الاتحاد.",
+					"url": {
+						"aria-label": "عنوان خادم ICE",
+						"placeholder": "stun:host:19302"
+					},
+					"user": {
+						"aria-label": "اسم مستخدم TURN",
+						"placeholder": "اسم المستخدم (اختياري)"
+					}
+				},
+				"maxDagPayload": "DAG الحد الأقصى لعدد البايتات لحدث واحد",
+				"maxPeers": "غطاء اتصال الاتحاد",
+				"message": {
+					"rateLimit": "حد معدل الرسائل (رسالة/دقيقة/كيان)",
+					"retention": "يتم حذف نص الرسالة تلقائيا",
+					"retention1y": "منذ سنة واحدة",
+					"retention30d": "منذ 30 يوما",
+					"retention90d": "منذ 90 يوما",
+					"retentionForever": "الاحتفاظ الدائم (أحداث DAG المضغوطة فقط)",
+					"retentionHint": "لا يتم حذف السجل المرئي تلقائيًا بشكل افتراضي. عند التمكين، سيتم تقليم ذاكرة التخزين المؤقت للرسائل المحلية فقط؛ سيتم الاحتفاظ بالرسائل النهائية في الأرشيف البارد ونقطة التفتيش."
+				},
+				"page": {
+					"title": "إعدادات المجموعة",
+					"kicker": "إدارة المجموعة",
+					"subtitle": "إدارة معلومات المجموعة والأعضاء والوظائف المشتركة. يتم مركزية الأذونات والتخزين وأدوات التدقيق ذات التردد المنخفض في الإعدادات المتقدمة.",
+					"backToChat": "العودة إلى الدردشة",
+					"navigationLabel": "تصنيف إعدادات المجموعة",
+					"activeEmojiPackLabel": "الحزمة قيد التحرير",
+					"membersTitle": "قائمة الأعضاء",
+					"overviewTitle": "نظرة عامة على المجموعة",
+					"overviewHint": "معلومات للقراءة فقط. إذا كانت لديك أذونات الإدارة، فيمكنك تحرير معلومات وسياسات المجموعة في \"الأساسية\".",
+					"governanceHint": "كتابة السياسة على مستوى المجموعة الخاصة بـ DAG؛ مطلوبة أذونات المسؤول أو MANAGE_ADMINS.",
+					"governanceDenied": "ليس لديك الإذن بتعديل إعدادات إدارة المجموعة.",
+					"rolesDenied": "ليس لديك إذن MANAGE_ROLES لتعديل الأدوار.",
+					"notMember": "لم تعد عضوًا في هذه المجموعة؛ تم مسح بيانات هذه المجموعة تلقائيًا بعد مغادرة المجموعة.",
+					"basicTitle": "حوكمة المجموعة",
+					"profileSectionTitle": "معلومات المجموعة",
+					"profileSectionHint": "سيتم كتابة الاسم والمقدمة وطريقة الانضمام إلى المجموعة في البيانات التعريفية للمجموعة.",
+					"behaviorSectionTitle": "تشغيل السلوك",
+					"networkSectionTitle": "الاتحاد والاتصال",
+					"retentionSectionTitle": "الاحتياطي والحد الأقصى للسعر",
+					"mediaSectionTitle": "المكالمات والملفات",
+					"nameLabel": "اسم المجموعة",
+					"descriptionLabel": "وصف المجموعة",
+					"joinPolicyLabel": "استراتيجية دخول المجموعة",
+					"joinInviteOnly": "دعوة فقط",
+					"joinPow": "مطلوب إثبات العمل",
+					"powDifficultyLabel": "صعوبة إثبات العمل",
+					"securityAdvancedTitle": "عمليات الأمان ومالك المجموعة",
+					"securityAdvancedDescription": "التناوب الرئيسي وخلافة قائد المجموعة؛ قد تؤثر العمليات غير الصحيحة على وصول الأعضاء",
+					"powDifficultyTip": "إثبات صعوبة العمل. كلما ارتفعت القيمة، زاد وقت الحساب المطلوب للغرباء للانضمام إلى المجموعة العامة.",
+					"maxDagPayloadTip": "الحد الأعلى للبيانات المسموح بنقلها بواسطة حدث جماعي واحد. إذا كان حجمه كبيرًا جدًا، فسيؤدي ذلك إلى زيادة ذاكرة المزامنة وحمل الشبكة.",
+					"trustedPeersTip": "عدد جيران الاتحاد ذوي السمعة العالية الذين تم منحهم الأولوية للبقاء على اتصال.",
+					"gossipTtlTip": "الحد الأقصى لعدد العقد الفيدرالية التي يمكن من خلالها إعادة توجيه الرسالة. وتؤدي زيادته إلى زيادة التغطية وزيادة حركة المرور أيضًا.",
+					"hlcTip": "الحد الأقصى من الوقت المسموح به لساعة العقدة البعيدة أن تكون أسرع من ساعة العقدة المحلية، وتستخدم لرفض الأحداث المستقبلية غير الطبيعية.",
+					"sfuTip": "عنوان خدمة إعادة توجيه الصوت والفيديو الخارجي الاختياري. اتركه فارغًا لاستخدام الاتصال المضمن من نقطة إلى نقطة/الترحيل.",
+					"iceTip": "مساعدة WebRTC على اختراق جهاز التوجيه؛ عند فشل الاتصال المباشر، سيقوم TURN بإعادة توجيه الصوت والفيديو وحركة المرور الموحدة نيابة عنه.",
+					"fileEncryptionTip": "يؤدي التشفير المتقارب إلى إلغاء التكرارات ولكنه يكشف حقيقة أن الملفات متماثلة؛ المفاتيح العشوائية أكثر خصوصية ولكنها تشغل مساحة أكبر.",
+					"allowDangerousHtml": "تسمح رسائل المؤلف الموثوق بها بتنسيق HTML المضمّن",
+					"save": "حفظ الإعدادات",
+					"loadFailed": "فشل تحميل إعدادات المجموعة: ${error}",
+					"saveSuccess": "تم حفظ إعدادات المجموعة",
+					"saveFailed": "فشل حفظ الإعدادات: ${error}",
+					"rolesTitle": "الأدوار والأذونات",
+					"roleDefault": "تقصير",
+					"permissionUpdated": "تم تحديث الأذونات",
+					"permissionUpdateFailed": "فشل تحديث الأذونات: ${error}",
+					"noMembers": "لا يوجد أعضاء حتى الآن",
+					"memberRoles": "دور:",
+					"ban": "حظر",
+					"banConfirm": "هل أنت متأكد أنك تريد حظر العضو ${name}؟",
+					"banSuccess": "تم حظر العضو",
+					"banFailed": "فشل حظر العضو: ${error}",
+					"bannedTitle": "عضو محظور",
+					"unban": "إلغاء الحظر",
+					"unbanConfirm": "هل أنت متأكد أنك تريد رفع حظر العضو ${name}؟",
+					"unbanSuccess": "تم رفع الحظر عن العضو",
+					"unbanFailed": "فشل إلغاء الحظر: ${error}",
+					"gshGenerationRetentionHint": "حاليًا، يتم الاحتفاظ فقط بأحدث 64 جيلًا من محفوظات المفتاح الرئيسي للملف. قد لا يمكن فك تشفير الملفات التاريخية الأقدم بعد تجاوزها، ويوصى بأرشفة البيانات المهمة بانتظام.",
+					"gshGenerationNearLimit": "يتم التدوير حاليًا لإنشاء ${generation} من المفاتيح الرئيسية للملفات (ما يصل إلى أجيال ${maxGenerations}). سيؤدي استمرار التناوب المتكرر إلى تقاعد أقدم المفاتيح التاريخية.",
+					"ownerSuccession": "خلافة قائد المجموعة",
+					"ownerSuccessionOk": "أصبحت خلافة قائد المجموعة سارية المفعول",
+					"ownerSuccessionFailed": "فشل خلافة قائد المجموعة: ${error}",
+					"defaultEmojiPack": {
+						"failed": "تعذّر تعيين الحزمة الافتراضية",
+						"hint": "تُضاف تلقائيًا إلى مفضلة الأعضاء عند الانضمام. عند التغيير تُستبدل الحزمة الافتراضية القديمة فقط إن بقيت في المفضلة.",
+						"label": "حزمة الإيموجي الافتراضية",
+						"ok": "تم تحديث الحزمة الافتراضية"
+					},
+					"channelArchive": {
+						"hint": "سيؤدي استيراد أرشيف JSON للقناة الكاملة إلى إنشاء قناة نصية عادية جديدة في هذه المجموعة واستعادة السجل (أعد التوقيع بواسطتك؛ وتحتفظ المرفقات بالبيانات التعريفية فقط).",
+						"import": "استيراد قناة JSON",
+						"importFailed": "فشل الاستيراد: ${error}",
+						"importOk": "تم استيراد ${count} من الرسائل، وفتح قناة جديدة...",
+						"title": "أرشيف القناة"
+					},
+					"channelPerms": {
+						"addRole": "إضافة تجاوز الدور",
+						"denied": "ليس لديك إذن MANAGE_CHANNELS لتعديل تجاوزات أذونات القناة.",
+						"hint": "قم بتعيين تجاوزات أذونات الدور لقنوات محددة. العناصر التي تم الكشف عنها ترث أذونات دور المجموعة.",
+						"noChannels": "لا يوجد حاليا أي قناة لتكوينها",
+						"removeRole": "قم بإزالة تجاوز هذا الدور",
+						"selectChannel": "القنوات",
+						"stateAllow": "سماح",
+						"stateDeny": "رفض",
+						"stateNeutral": "وراثة",
+						"updateFailed": "فشل تحديث أذونات القناة: ${error}",
+						"updated": "تم تحديث أذونات القناة"
+					},
+					"advanced": {
+						"description": "الشبكة والتخزين والحد الأقصى للسرعة ومعلمات التشفير؛ يرجى الاحتفاظ بالإعدادات الافتراضية إذا لم تكن متأكدًا",
+						"hubDescription": "تعمل هذه الميزات على تغيير بنية أذونات المجموعة أو البيانات التاريخية أو سجلات الإدارة؛ اضبط فقط عند الحاجة الواضحة.",
+						"hubTitle": "الإعدادات المتقدمة",
+						"navigationLabel": "فئة الإعدادات المتقدمة",
+						"title": "الإعدادات المتقدمة"
+					},
+					"emojis": {
+						"create": {
+							"pack": "حزمة إيموجي جديدة",
+							"packFailed": "فشل الإنشاء: ${error}",
+							"packOk": "تم إنشاء حزمة الإيموجي",
+							"packPrompt": "معرّف الحزمة"
+						},
+						"delete": "حذف التعبيرات",
+						"deleteConfirm": "هل أنت متأكد أنك تريد حذف هذه المجموعة من الرموز؟",
+						"deleteFailed": "فشل الحذف: ${error}",
+						"deleteOk": "تم حذف التعبيرات",
+						"empty": "لا توجد تعبيرات جماعية حتى الآن",
+						"hint": "يمكن للأعضاء إدراج هذه الرموز أو إرسالها في الدردشة؛ يتم سحب الصور غير المثبتة عند الطلب من خلال العقد الموحدة.",
+						"packGroupOption": "${packId} (افتراضي المجموعة)",
+						"title": "مجموعة التعبيرات المخصصة",
+						"upload": "تحميل الرموز",
+						"uploadFailed": "فشل التحميل: ${error}",
+						"uploadOk": "تم تحميل التعبير"
+					},
+					"invite": {
+						"clipboard": "معرف المجموعة: ${groupId}\nرمز الدعوة: ${code}\nالانضمام: ${url}",
+						"code": "رمز الدعوة",
+						"copied": "تم نسخ معلومات المجموعة",
+						"copy": "نسخ معلومات المجموعة",
+						"copyFailed": "فشل النسخ",
+						"expires": "انتهاء الصلاحية: ${date}",
+						"groupId": "معرف المجموعة",
+						"hint": "أنشئ رمز دعوة قصير المدى (ساعة واحدة افتراضيًا). يقوم الطرف الآخر بملء معرف المجموعة ورمز الدعوة في \"الانضمام إلى المجموعة\".",
+						"mint": "إنشاء رمز الدعوة",
+						"title": "دعوة"
+					},
+					"delete": {
+						"confirm": "هل أنت متأكد أنك تريد حذف هذه المجموعة؟ لا يمكن التراجع عن هذا الإجراء وسيتم حذف جميع الرسائل وبيانات الأعضاء نهائيًا.",
+						"failed": "فشل حذف المجموعة: ${error}",
+						"group": "حذف المجموعة",
+						"role": "حذف الدور",
+						"roleConfirm": "هل أنت متأكد أنك تريد حذف هذا الدور؟",
+						"roleFailed": "فشل حذف الدور: ${error}",
+						"roleSuccess": "تم حذف الدور",
+						"success": "تم حذف المجموعة"
+					},
+					"create": {
+						"role": "قم بإنشاء دور",
+						"roleFailed": "فشل إنشاء الدور: ${error}",
+						"rolePrompt": "أدخل اسم الحرف:",
+						"roleSuccess": "تم إنشاء الدور"
+					},
+					"perm": {
+						"aDD_REACTIONS": "إضافة رد فعل",
+						"aDMIN": "مسؤول",
+						"bAN_MEMBERS": "حظر الأعضاء",
+						"bYPASS_RATE_LIMIT": "تجاوز حد معدل الرسائل",
+						"cREATE_THREADS": "إنشاء قنوات فرعية",
+						"iNVITE_MEMBERS": "دعوة الأعضاء",
+						"kICK_MEMBERS": "عضو ركلة",
+						"mANAGE_": {
+							"cHANNELS": "إدارة القناة",
+							"fILES": "إدارة الملفات",
+							"mESSAGES": "رسائل الإدارة",
+							"rOLES": "إدارة الأدوار"
+						},
+						"pIN_MESSAGES": "تثبيت الرسائل",
+						"sEND_MESSAGES": "أرسل رسالة",
+						"sEND_STICKERS": "إرسال الملصقات",
+						"sTREAM": "صوت",
+						"uPLOAD_FILES": "رفع الملفات",
+						"vIEW_CHANNEL": "شاهد القناة"
+					},
+					"kick": {
+						"main": "طرد",
+						"confirm": "هل أنت متأكد أنك تريد طرد العضو ${name}؟",
+						"failed": "فشل طرد العضو: ${error}",
+						"selfNodeWarning": "تحذير: يستخدم هذا العضو نفس هوية العقدة التي تستخدمها. سيتم إزالتك أيضًا من المجموعة بعد طردك. هل أنت متأكد أنك تريد الاستمرار؟",
+						"success": "تم طرد العضو"
+					},
+					"tabs": {
+						"advanced": "متقدم",
+						"audit": "سجل التدقيق",
+						"channelPermissions": "أذونات القناة",
+						"emojis": "تعبير",
+						"general": "أساسي",
+						"members": "عضو",
+						"permissions": "أذونات الدور",
+						"storage": "التخزين والأرشفة"
+					},
+					"key": {
+						"managementTip": "يجب إعادة توزيع المفاتيح الجديدة على الأعضاء بعد التناوب. ينبغي اتخاذ الإجراء اليدوي فقط إذا كنت تشك في تعرض أحد المفاتيح للاختراق.",
+						"managementTitle": "إدارة المفاتيح",
+						"rotate": "تدوير مفتاح ملف المجموعة الرئيسي",
+						"rotateConfirm": "هل أنت متأكد أنك تريد تدوير المفتاح الرئيسي لملف المجموعة هذا يدويًا؟ يحتاج الأعضاء الجدد إلى إعادة مزامنة مفتاح ملف السجل.",
+						"rotateFailed": "فشل تدوير المفتاح: ${error}",
+						"rotateOk": "تم تدوير المفتاح"
+					}
+				},
+				"pinContext": "الحي الأعلى (±N عدد الجيران)",
+				"rtcBudget": "ميزانية اتصال RTC",
+				"rtcJoinRate": "أضاف RTC حدًا للدقيقة",
+				"streamGeneratingIdle": "مهلة الخمول للعنصر النائب الذي تم إنشاؤه بواسطة الذكاء الاصطناعي (بالميلي ثانية)",
+				"streamingSfu": "عنوان SFU WebSocket المتدفق (اختياري)",
+				"trustedPeers": "فتحة الجيران الموثوقة (Top-K)",
+				"wantIdsBudget": "ميزانية الرغبات الفردية"
+			},
+			"feedback": {
+				"dagLine": "[${label}]",
+				"dagLineWithNote": "[${label}] ${note}",
+				"down": "خطوة على",
+				"previewLine": "${tag}${sep}${note}",
+				"previewTaggedNote": "${tag} ${note}",
+				"up": "مدح"
+			},
+			"message": {
+				"aborted": "تمت مقاطعته",
+				"deleted": "تم حذف الرسالة",
+				"deletedBracket": "[تم حذف الرسالة]",
+				"prefixSticker": "ملصق",
+				"refAnchor": "رسالة الاقتباس: ${id}",
+				"withAttachments": "${text} ({n} مرفقات) ${n}"
+			},
+			"default": {
+				"channel": {
+					"placeholder": "عام"
+				},
+				"channelLabel": "القناة الافتراضية",
+				"channelSet": "تعيين كقناة افتراضية",
+				"channelSetFailed": "فشل تعيين القناة الافتراضية"
+			},
+			"sticker": {
+				"defaultName": "ملصق",
+				"prefixLine": "[${label}]",
+				"prefixLineTagged": "[ملصق]",
+				"saved": "تم الحفظ في مكتبة الملصقات"
+			},
+			"remote": {
+				"nodeTimeout": "العقدة البعيدة لا تستجيب، يرجى المحاولة مرة أخرى لاحقًا.",
+				"typing": "${name} يكتب...",
+				"typingMany": "${name} و${count} آخرون يكتبون...",
+				"typingTwo": "${name1}، ${name2} جاري الدخول...",
+				"unavailable": "المكون البعيد غير متوفر أو لا يمكنه توجيه RPC",
+				"unsafe": "تأتي هذه الرسالة من مكان بعيد والكاتب ليس موجودًا في قائمة الثقة المحلية. تم تعطيل عرض النص المنسق."
+			},
+			"create": {
+				"channelFailed": "فشل في إنشاء القناة",
+				"failed": "فشل إنشاء المجموعة",
+				"group": "إنشاء مجموعة جديدة",
+				"groupFailed": "فشل إنشاء المجموعة",
+				"groupTitle": "إنشاء مجموعة جديدة"
+			},
+			"stream": {
+				"generationFailed": "انتهت مهلة إنشاء الذكاء الاصطناعي ولم تكتمل، وتم إيقاف التحديثات.",
+				"noEmbed": {
+					"textContent": "يجب أن يكون عنوان البث صفحة https:// قابلة للتضمين، أو يجب تكوين إعدادات المجموعة أولاً وتحديثها للحصول على رمز العرض."
+				},
+				"noSfu": {
+					"textContent": "لم يتم تكوين StreamSfuWss؛ يمكن للمسؤولين ملء عنوان عرض LiveKit/mediasoup في إعدادات المجموعة."
+				},
+				"ok": "تم الحصول على دفق الوسائط (تم إيقافه، ولم يتم بثه)",
+				"test": "اختبار أجهزة الوسائط"
+			},
+			"thread": {
+				"main": "خيط الطفل",
+				"back": "رجوع",
+				"breadcrumbMiddleSummary": "طبقة ${count} الوسطى",
+				"breadcrumbMiddleTitle": "قم بتوسيع الطبقة الوسطى وحدد المستوى الذي تريد الانتقال إليه",
+				"breadcrumbRootTitle": "الانتقال إلى نقطة بداية المسار (المستوى الأول)"
+			},
+			"unpin": {
+				"action": {
+					"textContent": "إزالة التثبيت",
+					"title": "إزالة التثبيت"
+				},
+				"message": "إزالة التثبيت",
+				"messageLine": "[إزالة التثبيت] ${targetId}",
+				"ok": "غير مثبت"
+			},
+			"vote": {
+				"blockHeading": "[${prefix}] ${question}",
+				"blockHeadingTagged": "[تصويت] ${question}",
+				"cast": "تصويت",
+				"castLine": "[${prefix}] التصويت: ${choice}",
+				"castLineTagged": "[تصويت] التصويت: ${choice}",
+				"create": "الشروع في التصويت",
+				"createFailed": "فشل إنشاء الاستطلاع",
+				"deadline": "موعد التسليم",
+				"deadlineLineClosed": "النهاية: ${date} [انتهى]",
+				"deadlineLineOpen": "الموعد النهائي: ${date}",
+				"ended": "انتهى",
+				"for": "استثمر ${option}",
+				"optionsPreview": "[${prefix}] ${options}",
+				"optionsPreviewTagged": "[تصويت] ${options}",
+				"promptDeadline": "الموعد النهائي (اتركه فارغًا بدون حد زمني، التنسيق 2026-01-01 23:59)",
+				"tooFewOptions": "مطلوب خيارين على الأقل",
+				"total": "إجمالي ${n} من الأصوات"
+			},
+			"edit": {
+				"cancel": "إلغاء (خروج)",
+				"confirm": "تأكيد (Ctrl+Enter)",
+				"emptyText": "لا يمكن أن يكون محتوى الرسالة فارغًا",
+				"hint": "Ctrl+Enter تأكيد · إلغاء Esc",
+				"message": {
+					"title": "تحرير الرسالة"
+				}
+			},
+			"menu": {
+				"copyId": "انسخ معرف الرسالة",
+				"copyText": "نسخ النص",
+				"exportHtml": "تصدير إلى HTML",
+				"shareExternal": "المشاركة على رابط خارجي"
+			},
+			"pin": {
+				"action": {
+					"textContent": "دبوس إلى الأعلى",
+					"title": "اكتب هذه المقالة إلى DAG وقم بتثبيتها في الأعلى"
+				},
+				"failed": "فشل الدبوس",
+				"message": "دبوس إلى الأعلى",
+				"messageLine": "[الأعلى] ${targetId}",
+				"ok": "تم التسجيل والمثبت",
+				"thisMessage": "اكتب هذه المقالة إلى DAG وقم بتثبيتها في الأعلى"
+			},
+			"av": {
+				"mute": "صامت",
+				"needStreamChannel": "الرجاء استخدام الصوت والفيديو في قنوات من نوع \"بث الوسائط\".",
+				"start": "بدء الوسائط",
+				"stop": "قف",
+				"swap": "الشاشة الرئيسية"
+			}
 		},
 		"hub": {
 			"title": "محادثة",
@@ -1576,10 +1696,6 @@
 				"title": "دور",
 				"tip": "دور"
 			},
-			"friendsTooltip": {
-				"title": "أصدقاء",
-				"tip": "أصدقاء"
-			},
 			"inboxTooltip": {
 				"title": "البريد الوارد",
 				"tip": "صندوق وارد عبر المجموعات"
@@ -1587,18 +1703,6 @@
 			"inbox": {
 				"title": "البريد الوارد",
 				"filtersLabel": "تصفية رسائل صندوق الوارد",
-				"tabMention": "إشارات",
-				"tabMessage": "كل الرسائل",
-				"tabCare": "متابعة خاصة",
-				"tabVoteClosed": "استطلاعات منتهية",
-				"emptyMentionTitle": "لا إشارات بعد",
-				"emptyMentionDescription": "عندما يذكرك أعضاء في الدردشة الجماعية، تظهر الرسائل هنا.",
-				"emptyMessageTitle": "صندوق الوارد فارغ",
-				"emptyMessageDescription": "تحديثات الرسائل من المجموعات والقنوات تظهر هنا.",
-				"emptyCareTitle": "لا تحديثات من المتابَعين بشكل خاص",
-				"emptyCareDescription": "عندما يرسل أعضاء تتابعهم بشكل خاص رسائل جديدة، تراها هنا أولاً.",
-				"emptyVoteTitle": "لا استطلاعات منتهية",
-				"emptyVoteDescription": "عند انتهاء الاستطلاعات التي شاركت فيها، تُجمَّع النتائج هنا.",
 				"rowLabel": {
 					"aria-label": "قال ${author} في ${group} من ${channel}: ${preview}"
 				},
@@ -1606,7 +1710,23 @@
 				"badgeFetchFailed": "فشل تحديث الشارة غير المقروءة: ${error}",
 				"loadFailed": "فشل تحميل البريد الوارد: ${error}",
 				"markSeenFailed": "فشل تحديث حالة قراءة البريد الوارد: ${error}",
-				"jumpFailed": "غير قادر على فتح هذه الرسالة: ${error}"
+				"jumpFailed": "غير قادر على فتح هذه الرسالة: ${error}",
+				"empty": {
+					"careDescription": "عندما يرسل أعضاء تتابعهم بشكل خاص رسائل جديدة، تراها هنا أولاً.",
+					"careTitle": "لا تحديثات من المتابَعين بشكل خاص",
+					"mentionDescription": "عندما يذكرك أعضاء في الدردشة الجماعية، تظهر الرسائل هنا.",
+					"mentionTitle": "لا إشارات بعد",
+					"messageDescription": "تحديثات الرسائل من المجموعات والقنوات تظهر هنا.",
+					"messageTitle": "صندوق الوارد فارغ",
+					"voteDescription": "عند انتهاء الاستطلاعات التي شاركت فيها، تُجمَّع النتائج هنا.",
+					"voteTitle": "لا استطلاعات منتهية"
+				},
+				"tabs": {
+					"care": "متابعة خاصة",
+					"mention": "إشارات",
+					"message": "كل الرسائل",
+					"voteClosed": "استطلاعات منتهية"
+				}
 			},
 			"notifyPrefs": {
 				"title": "إعدادات الإشعارات",
@@ -1623,11 +1743,6 @@
 				"muteForever": "حتى التفعيل اليدوي",
 				"saved": "تم حفظ إعدادات الإشعارات"
 			},
-			"voteClosed": "انتهى",
-			"discoveryTooltip": {
-				"title": "اكتشاف المجموعة",
-				"tip": "اكتشاف المجموعة"
-			},
 			"prefsTooltip": {
 				"title": "إعدادات",
 				"tip": "إعدادات الترجمة وP2P الموحدة"
@@ -1636,65 +1751,6 @@
 			"prefsNav": {
 				"aria-label": "أقسام الإعدادات"
 			},
-			"federationTooltip": {
-				"title": "إعدادات الاتحاد P2P",
-				"tip": "إعدادات الاتحاد P2P"
-			},
-			"federationTitle": "إعدادات الاتحاد P2P",
-			"federationSubtitle": "التحكم في الاتصالات عبر الأجهزة؛ ترك الإعدادات الافتراضية في معظم الحالات",
-			"federationLoadFailed": "فشل التحميل: ${error}",
-			"fedConnectionTitle": "تواصل واكتشف",
-			"discoveryRefresh": "تحديث قائمة الاكتشاف",
-			"fedRelayUrlsLabel": "عنوان ترحيل الشبكة",
-			"fedRelayUrlsTip": "مساعدة الأجهزة على اكتشاف بعضها البعض على الإنترنت. املأ عنوان wss:// واحد في كل سطر؛ اتركه فارغًا لاستخدام المرحل الافتراضي.",
-			"fedBatterySaverLabel": "وضع توفير الطاقة",
-			"fedBatterySaverTip": "قد يؤدي تقليل عدد اتصالات الخلفية ونشاط الشبكة إلى إبطاء مزامنة الرسائل قليلاً.",
-			"fedAdvancedTitle": "الإعدادات المتقدمة",
-			"fedAdvancedDescription": "إصلاحات الأخطاء وإدارة السمعة وإصدار الارتباط اليدوي",
-			"fedGroupRecoveryTitle": "إصلاح اتصال المجموعة",
-			"fedGroupRecoveryTip": "يُستخدم فقط في حالة تسريب الدعوة أو عدم قدرة الجهاز الجديد على مزامنة السجل.",
-			"fedRotateRoomSecret": "تدوير كلمة مرور غرفة المجموعة",
-			"fedRotateRoomSecretConfirm": "بعد التناوب، لن تتمكن الدعوات التي تستخدم كلمة مرور الغرفة القديمة من الاتصال. هل أنت متأكد أنك تريد الاستمرار؟",
-			"fedRotateRoomSecretOk": "تم تدوير كلمة مرور الغرفة",
-			"fedRepairJoinSnapshot": "طلب الجيران للانضمام إلى إصلاح لقطة المجموعة",
-			"fedRepairJoinSnapshotOk": "تم تطبيق لقطة المجموعة (سجل قناة {channels}) ${channels}",
-			"fedRepairJoinSnapshotFailed": "فشل إصلاح لقطة المجموعة: ${error}",
-			"fedRepTitle": "المصداقية الذاتية لهذه المجموعة",
-			"fedRepTip": "إن درجات تفضيلات الاتصال المحسوبة أصلاً بناءً على سلوك العقدة الموحدة ليست تقييمات عامة لأعضاء المجموعة.",
-			"fedRepEmpty": "(باطل)",
-			"fedSlashTitle": "عقوبة السمعة",
-			"fedSlashTip": "يكتب بيان سمعة سلبي حول عقدة في الرسم البياني لحدث المجموعة. للاستخدام فقط من قبل المسؤولين الذين يفهمون بروتوكولات الاتحاد.",
-			"fedSlashTargetLabel": "الهدف pubKeyHash (64 سداسي عشري)",
-			"fedSlashTarget": {
-				"placeholder": "تجزئة المفتاح العام للعضو"
-			},
-			"fedSlashClaimLabel": "مطالبة قوة المطالبة (0-1)",
-			"fedSlashVerifiedLabel": "يمكن التحقق منه (مطلوب معرف حدث الإثبات)",
-			"fedSlashProofLabel": "إثبات.الحدث (اختياري)",
-			"fedSlashProof": {
-				"placeholder": "64 معرف الحدث السداسي"
-			},
-			"fedSlashSubmitLabel": "نشر السمعة_slash",
-			"fedResetSubmitLabel": "إعادة تعيين سمعة الهدف",
-			"fedSlashNeedHash": "يتطلب إصدار 64 بت من نظام pubKeyHash",
-			"fedSlashOk": "السمعة_slash مكتوبة إلى DAG",
-			"fedResetOk": "لقد تمت كتابة السمعة_reset",
-			"fedDmLinkTitle": "قم بإصدار رابط صديق يدويًا",
-			"fedDmLinkTip": "يتطلب التوقيع باستخدام مفتاح الهوية الأصلي. يتم إرسال المفتاح الخاص فقط إلى الخدمة المحلية في هذه الصفحة ولن يتم إرساله إلى العقد الأخرى.",
-			"fedDmLinkDescription": "مناسب لتصحيح الأخطاء أو ترحيل الهوية يدويًا؛ ليست هناك حاجة لملء هذه الحقول عند إضافة الأصدقاء بشكل يومي.",
-			"fedDmPubKeyLabel": "مفتاح عام سداسي(64)",
-			"fedDmSecretLabel": "عرافة البذور الرئيسية الخاصة(64)",
-			"fedDmNodeLabel": "عنوان URL للعقدة الاختيارية",
-			"fedDmInvalidateTitle": "دع روابط الإحالة القديمة تنتهي صلاحيتها",
-			"fedDmInvalidateDescription": "بعد التنفيذ، ستصبح جميع روابط إضافة الأصدقاء التي تم إصدارها مسبقًا غير صالحة على الفور ولا يمكن إبطالها.",
-			"fedDmRotateLabel": "إبطال الروابط القديمة",
-			"fedDmRotateConfirm": "ستصبح جميع روابط إضافة الأصدقاء التي تم إصدارها مسبقًا غير صالحة على الفور ولا يمكن استعادتها. هل أنت متأكد أنك تريد الاستمرار؟",
-			"fedDmIssueLabel": "إصدار رابط DM",
-			"fedDmNeedPubKey": "يتطلب 64 مفتاحًا عامًا سداسيًا",
-			"fedDmNeedSecretKey": "يتطلب 64 بذرة مفتاح خاص سداسي عشرية",
-			"fedDmIssued": "تم توقيع رابط DM ونسخه إلى الحافظة",
-			"fedNonceRotated": "تم تدوير nonce (${nonce}…)",
-			"fedSaved": "تم الحفظ",
 			"addServerTooltip": {
 				"title": "إنشاء أو الانضمام إلى مجموعة",
 				"tip": "إنشاء أو الانضمام إلى مجموعة"
@@ -1733,129 +1789,37 @@
 			"settingsTitle": {
 				"title": "إعدادات"
 			},
-			"filesTitle": {
-				"title": "ملف المجموعة"
-			},
-			"filesDrawerTitle": "ملف المجموعة",
-			"filesLoading": "جارٍ تحميل ملفات المجموعة...",
-			"filesLoadFailed": "فشل تحميل ملف المجموعة: ${error}",
-			"filesNoGroup": "الرجاء تحديد مجموعة أولاً",
-			"filesNoCabinets": "لا توجد خزائن ملفات يمكن الوصول إليها للدور الحالي",
-			"filesBindCabinet": "إضافة خزانة الملفات",
-			"filesNoChannel": "يرجى أولاً الدخول إلى القناة النصية حيث يمكنك إرسال الرسائل",
-			"filesUploadTo": "تحميل إلى",
-			"filesRootFolder": "الدليل الجذر",
-			"filesNewFolder": "مجلد جديد",
-			"filesNewFolderPrompt": "اسم المجلد",
-			"filesRename": "إعادة تسمية",
-			"filesRenameFolderPrompt": "أعد تسمية المجلد \"${name}\" إلى:",
-			"filesDeleteFolderConfirm": "هل أنت متأكد أنك تريد حذف هذا المجلد؟ لن يتم حذف الملفات الموجودة في المجلد تلقائيًا.",
-			"filesUpload": "رفع",
-			"filesDownload": "تنزيل",
-			"filesDelete": "حذف",
-			"filesDeleteConfirm": "هل أنت متأكد أنك تريد حذف هذا الملف؟",
-			"filesFoldersTitle": "المجلد",
-			"filesListTitle": "وثيقة",
-			"filesEmpty": "لا يوجد حاليا أي ملفات في هذا الدليل",
-			"filesNoFolders": "لا توجد مجلدات فرعية حتى الآن",
 			"uploadTitle": {
 				"title": "رفع الملفات"
 			},
 			"emojiTitle": {
 				"title": "تعبير"
 			},
-			"voteTitle": {
-				"title": "الشروع في التصويت"
-			},
 			"shareGroupTitle": {
 				"title": "مشاركة رابط المجموعة"
 			},
 			"shareGroupOk": "بطاقة دعوة جماعية مشتركة",
-			"messageActionFailed": "فشلت العملية: ${error}",
 			"inviteJoinButton": "انضم إلى المجموعة",
 			"inviteLinkNeedsRoomSecret": "لم تقم هذه المجموعة بتمكين المزامنة الموحدة بعد. يرجى إعادة إنشاء رابط الدعوة قبل المشاركة.",
 			"inviteCardMembers": "${count} أعضاء",
-			"syncFailed": "فشلت مزامنة الاتحاد: ${error}",
-			"syncRateLimited": "الحد الأقصى لسرعة المزامنة الفيدرالية قيد التقدم، يرجى المحاولة مرة أخرى لاحقًا.",
-			"syncIncomplete": "تظل أحداث ${missing}/${total} غير متزامنة",
-			"syncNoPeers": "غير متصل بالجار المتحد، لا يمكن مزامنة الرسائل التاريخية مؤقتًا؛ يرجى استخدام رابط الدعوة الكامل والمحاولة مرة أخرى لاحقًا",
 			"attachmentLoadFailed": "فشل تحميل المرفقات",
-			"messageEditUpload": "تحميل المرفق",
 			"timeToday": "اليوم ${time}",
 			"timeYesterday": "أمس ${time}",
 			"stickerTitle": {
 				"title": "ملصق"
 			},
-			"sendTitle": {
-				"title": "إرسال (Ctrl+Enter)"
-			},
-			"messageInput": {
-				"placeholder": "رسالة جماعية… Ctrl+Enter للإرسال",
-				"aria-label": "رسالة"
-			},
 			"stopGenerateTitle": {
 				"title": "توقف عن التوليد"
 			},
-			"charTyping": "الدخول…",
-			"messageActionPrev": {
-				"title": "الجدول الزمني السابق"
-			},
-			"messageActionNext": {
-				"title": "الجدول الزمني القادم"
-			},
-			"messageActionRegen": {
-				"title": "تجديد"
-			},
-			"messageActionEdit": {
-				"title": "تحرير الرسالة"
-			},
-			"messageActionFeedbackUp": {
-				"title": "إعجاب"
-			},
-			"messageActionFeedbackDown": {
-				"title": "انقر لعدم الإعجاب"
-			},
-			"messageActionDelete": {
-				"title": "حذف الرسالة"
-			},
 			"confirmDeleteLong": "هذه الرسالة طويلة جدًا. هل أنت متأكد أنك تريد حذفه؟",
-			"messageActionCopyHtml": {
-				"title": "انسخ HTML"
-			},
 			"forceReply": "الرد بالقوة",
 			"removeChar": "إزالة الحرف",
-			"loadMore": "جارٍ تحميل الأخبار القديمة…",
-			"charChatsTitle": "محادثات تاريخية مع ${name}",
 			"newGroupWith": "+ إنشاء محادثة جديدة مع ${name}",
-			"messageActionBookmark": {
-				"title": "إشارة مرجعية"
-			},
-			"messageActionPin": {
-				"title": "دبوس إلى الأعلى"
-			},
-			"messageActionUnpin": {
-				"title": "إزالة التثبيت"
-			},
-			"blockAuthor": {
-				"title": "حظر هذا المؤلف"
-			},
-			"pinUnpinSidebar": {
-				"title": "إزالة التثبيت"
-			},
 			"meAuthor": "أنا",
-			"messageEditSave": "حفظ",
-			"messageEditCancel": "إلغاء",
-			"messageEditArea": {
-				"aria-label": "تعديل الرسالة"
-			},
 			"feedbackReasonPrompt": "سبب الرفض (اختياري)",
 			"feedbackReasonInput": {
 				"placeholder": "سبب الرفض (اختياري)"
 			},
-			"messageFeedbackSubmit": "إرسال ردود الفعل",
-			"stickersPanelTitle": "ملصق",
-			"stickersManage": "إدارة الملصقات →",
-			"stickersLoading": "تحميل…",
 			"recentEmojiTab": {
 				"title": "شائعة الاستخدام"
 			},
@@ -1863,11 +1827,6 @@
 			"currentGroupEmojiTab": {
 				"title": "رموز المجموعة الحالية"
 			},
-			"groupEmojiTab": {
-				"title": "مجموعة"
-			},
-			"groupEmojisEmpty": "لا يوجد حاليا أي رموز المجموعة. يمكنك تحميلها في إعدادات المجموعة.",
-			"groupEmojisLoadFailed": "فشل تحميل رموز المجموعة",
 			"profileLinkTitle": {
 				"title": "الملف الشخصي",
 				"textContent": "الملف الشخصي"
@@ -1885,22 +1844,6 @@
 			},
 			"aboutSection": "عن",
 			"bioEmpty": "هذا المستخدم ليس لديه ملف شخصي بعد.",
-			"statusOffline": {
-				"title": "غير متصل",
-				"textContent": "غير متصل"
-			},
-			"statusOnline": {
-				"title": "متصل",
-				"textContent": "متصل"
-			},
-			"statusIdle": {
-				"title": "بعيد",
-				"textContent": "بعيد"
-			},
-			"statusDnd": {
-				"title": "لا تخل",
-				"textContent": "لا تخل"
-			},
 			"banners": {
 				"gshBuffer": "توجد رسائل ${total} في انتظار فك تشفيرها بعد تدوير المفتاح",
 				"plaintextSidecar": "تتم مزامنة هذه القناة عند الطلب؛ يقوم الجانب الجانبي للرسائل المحلية بتخزين المحتوى مؤقتًا بنص واضح.",
@@ -1909,10 +1852,6 @@
 				"syncing": "المزامنة مع الجيران الفيدراليين ...",
 				"archiveCoverageIncomplete": "لم تتم مزامنة بعض أرشيفات الأشهر الباردة من الاتحاد بعد.",
 				"archiveSyncButton": "الأرشفة المتزامنة",
-				"forkGovernance": "يوجد تفرع في سجل الأذونات وهو موجود حاليًا في العرض المحلي.",
-				"forkTips": "تم اكتشاف ${count} فرعًا غير مدمج، وقد يكون ترتيب الرسائل غير متناسق.",
-				"forkTipLabel": "ورقة داغ",
-				"forkTipScore": "${short} · السمعة ${score}",
 				"applyBranch": "فرع حوكمة التطبيقات",
 				"autoBranch": "الاختيار التلقائي للسمعة",
 				"mergeDag": "دمج الشوكات",
@@ -1920,55 +1859,28 @@
 				"blockOpposing": "الفروع المتعارضة لا يمكن الوصول إليها",
 				"suspectedRemoved": "ربما تمت إزالتك من هذه المجموعة: لقد طلبت ${count} من العقد المعروفة للتحقق، ولكن تم رفضها جميعًا. يمكنك إحياء ذكرى التاريخ المحلي أو حذف نسخة المجموعة هذه.",
 				"suspectedRemovedKeep": "خذ هدية تذكارية",
-				"suspectedRemovedLeave": "حذف المجموعة"
+				"suspectedRemovedLeave": "حذف المجموعة",
+				"fork": {
+					"governance": "يوجد تفرع في سجل الأذونات وهو موجود حاليًا في العرض المحلي.",
+					"tipLabel": "ورقة داغ",
+					"tipScore": "${short} · السمعة ${score}",
+					"tips": "تم اكتشاف ${count} فرعًا غير مدمج، وقد يكون ترتيب الرسائل غير متناسق."
+				}
 			},
-			"blockOpposingConfirm": "أضف مصدري الحوكمة الذين ليسوا في الانتخابات الحالية إلى القائمة السوداء وحرموا هذه المجموعة من المرحلات الفيدرالية. يكمل؟",
-			"blockOpposingOk": "تم وضع علامة على ${count} من المواضيع على أنها غير قابلة للوصول",
-			"blockOpposingFailed": "فشل وضع العلامات: ${error}",
 			"applyBranchOk": "تطبيق فرع الحكم",
 			"applyBranchFailed": "فشل تطبيق الفرع: ${error}",
 			"autoBranchOk": "الاختيار التلقائي بعد استعادة السمعة",
 			"autoBranchFailed": "فشل التحديد التلقائي: ${error}",
-			"saveEmoji": {
-				"title": "حفظ الرموز"
-			},
-			"saveEmojiOk": "تم حفظ التعبيرات في قاعدة البيانات",
-			"saveEmojiFailed": "فشل حفظ الرمز التعبيري: ${error}",
-			"saveSticker": {
-				"title": "حفظ الملصقات"
-			},
-			"saveStickerOk": "تمت إضافة الملصق إلى مكتبة الملصقات الخاصة بك",
-			"saveStickerFailed": "فشل حفظ الملصقات: ${error}",
 			"revealRemoteMd": "قم بتوسيع النص الكامل",
-			"voteModalTitle": "الشروع في التصويت",
-			"voteModalSubmit": "إنشاء استطلاع",
-			"voteCreateFailed": "فشل إنشاء الاستطلاع: ${error}",
 			"composer": {
 				"placeholder": "أرسل إلى #${channel}"
 			},
 			"composerSuspectedRemoved": {
 				"placeholder": "ربما تمت إزالتك من هذه المجموعة ولا يمكنك الاستمرار في إرسال الرسائل."
 			},
-			"channelReadonlyList": {
-				"placeholder": "قائمة القنوات للقراءة فقط"
-			},
-			"channelReadonlyStream": {
-				"placeholder": "قناة البث للقراءة فقط"
-			},
-			"noChannels": "لا توجد محادثة بعد",
-			"noMembers": "لا يوجد أعضاء حتى الآن",
-			"noPins": "لا دبابيس بعد",
-			"noBookmarks": "لا توجد إشارات مرجعية حتى الآن",
 			"adminSection": "مسؤول",
-			"memberSection": "عضو",
-			"membersDigestOk": "العضوة ميركل بالإجماع · ${root}",
-			"membersDigestOkPaged": "إجماع الأعضاء ميركل (صفحات {{صفحات}) · ${pages} ${root}",
-			"membersDigestMismatch": "ملخص الأعضاء غير متناسق · ${root}",
-			"membersDigestPending": "التحقق من ملخص الأعضاء...",
-			"membersDigestFetchFailed": "فشل في سحب الأعضاء حسب الصفحة",
 			"copyEntityId": "انسخ معرف الكيان",
 			"copyEntityIdOk": "تم نسخ معرف الكيان",
-			"memberJoined": "انضم إلى المحادثة",
 			"remoteBadge": {
 				"textContent": "بعيد",
 				"title": "المؤلف البعيد الموحد"
@@ -1978,49 +1890,15 @@
 				"title": "ثق بهذا المؤلف (السماح بـ HTML الخطير)"
 			},
 			"stickerInline": "ملصق",
-			"voteDeadline": "الموعد النهائي: ${date}",
-			"voteNoOptions": "لا توجد خيارات",
-			"voteTotal": "إجمالي الأصوات ${total}.",
-			"voteCount": "${count} صوت · ${pct}%",
-			"loadGroupFailed": "فشل تحميل المجموعة: ${error}",
-			"groupJoinRequired": "لا يمكن فتح المجموعة، يرجى استخدام رابط الدعوة أو رمز الدعوة للانضمام",
-			"sendFailed": "فشل الإرسال: ${error}",
-			"sendFailedPending": "فشل الإرسال",
 			"markdownRenderFailed": "فشل عرض الرسالة",
 			"retrySend": "حاول ثانية",
-			"sendImageFailed": "فشل إرسال الصورة: ${error}",
-			"sendStickerFailed": "فشل إرسال الملصق: ${error}",
-			"voteMinOptions": "يتطلب خيارين على الأقل",
 			"mergeDagOk": "تم دمج الشوكة",
 			"mergeDagFailed": "فشل الدمج: ${error}",
-			"forkSplitFailed": "فشل التقسيم: ${error}",
-			"forkSplitPrompt": "اسم المجموعة الجديد (يمكن تركه فارغًا)",
-			"forkSplitModalTitle": "انقسموا إلى مجموعة جديدة",
-			"forkSplitModalSubmit": "إنشاء",
 			"typing": "${names} يكتب...",
 			"charsHeader": "دور",
-			"friendsHeader": "أصدقاء",
 			"settingsModalTitle": "إعدادات",
 			"modalClose": "إغلاق",
-			"groupTag": "مجموعة",
-			"groupUnnamed": "مجموعة غير محددة ·${suffix}",
-			"groupHeaderMenu": {
-				"title": "قائمة المجموعة: الإعدادات، والدعوات، وما إلى ذلك."
-			},
-			"groupDescriptionEmpty": "لا يوجد ملف شخصي لهذه المجموعة حتى الآن.",
-			"serverActionPickerTitle": "مجموعة",
-			"serverActionPickerSubtitle": "أنشئ مجموعة جديدة أو انضم إلى مجموعة موجودة عن طريق المعرف",
-			"serverActionPickerCreate": "إنشاء مجموعة",
-			"serverActionPickerCreateDescription": "ابدأ من الصفر وقم بدعوة الأصدقاء",
-			"serverActionPickerJoin": "انضم إلى المجموعة",
-			"serverActionPickerJoinDescription": "استخدم معرف المجموعة",
 			"cancel": "إلغاء",
-			"folderDefault": "المجلد",
-			"folderRename": "إعادة تسمية المجلد",
-			"folderRenamePrompt": "أعد تسمية المجلد \"${name}\" إلى:",
-			"folderCollapse": "طي المجلد",
-			"folderExpand": "قم بتوسيع المجلد",
-			"folderDissolve": "تجاهل المجلد",
 			"bookmarkLocal": "محلي",
 			"groupsSection": "مجموعة",
 			"ungrouped": "غير مجمعة",
@@ -2030,46 +1908,13 @@
 				"title": "إزالة الإشارة المرجعية",
 				"aria-label": "إزالة الإشارة المرجعية"
 			},
-			"loadMessagesFailed": "فشل تحميل الرسالة: ${error}",
 			"unreadDivider": "أخبار جديدة",
-			"noUsername": "لم يتم الحصول على اسم المستخدم",
-			"stickersEmpty": "لا توجد ملصقات",
-			"stickersMarketLink": "انتقل إلى ساحة الملصقات للتثبيت",
-			"stickersLoadFailed": "فشل التحميل: ${error}",
-			"noChars": "لا توجد أدوار حتى الآن، يرجى تثبيت بعضها أولاً.",
-			"noFriends": "لا توجد محادثات خاصة حتى الآن",
-			"friendsEmptyTitle": "ابدأ محادثة جديدة",
-			"friendsEmptyDescription": "ابحث عن المستخدمين في الدور المحلي أو العقد الأخرى، ويمكنك أيضًا فتح بطاقة ملف تعريف العضو في الدردشة الجماعية لبدء رسالة خاصة.",
-			"friendsEmptyAction": "ابحث عن دور أو مستخدم",
-			"friendsSearchEmpty": "لا يوجد دور أو مستخدم مطابق",
-			"friendsSearchTooShort": "الرجاء إدخال حرفين على الأقل",
-			"friendsSearchDm": "إرسال رسالة خاصة",
-			"friendsSearchChat": "ابدأ محادثة",
-			"friendsSearchLocalChar": "الدور المحلي",
-			"friendsSearchPin": "تعيين كاسم مستعار",
-			"charCount": "${count} الأدوار",
-			"friendsCount": "${count} من الأصدقاء",
-			"charTag": "دور",
-			"friendsTag": "أصدقاء",
 			"backToFriends": "العودة إلى الأصدقاء",
 			"dmTopicsTitle": "عنوان",
-			"friendsContextNewChat": "دردشة جديدة",
-			"friendsRestartConfirm": "سيتم إلغاء ربط الدردشة الخاصة مع \"${name}\" وسيتم إنشاء محادثة جديدة. هل أنت متأكد؟",
-			"friendsRestartOk": "تم فتح محادثة خاصة جديدة",
-			"friendsRestartFailed": "فشل إنشاء محادثة خاصة جديدة: ${error}",
-			"charDescriptionEmpty": "الشخصية لم تقدم نفسها بعد.",
-			"charIntro": "تعريف",
 			"participants": "مشاركون",
-			"charTagSolo": "الشخصيات · حوار 1:1",
 			"startChatWith": "💬 ابدأ الدردشة مع ${name}",
 			"loading": "تحميل…",
-			"charChatStart": "ابدأ محادثة مع ${name}",
-			"charChatEmpty": "لا توجد رسالة حتى الآن، ابدأ محادثتك الأولى!",
-			"loadCharChatFailed": "فشل تحميل الرسالة",
 			"createChatFailed": "فشل إنشاء الجلسة: ${error}",
-			"charChatComposer": {
-				"placeholder": "أرسل رسالة إلى ${name} (Ctrl+Enter للإرسال)"
-			},
 			"friendChatComposer": {
 				"placeholder": "إرسال رسالة (Ctrl+Enter للإرسال)"
 			},
@@ -2089,75 +1934,13 @@
 				"confirmSecond": "انقر مرة أخرى للتأكيد النهائي",
 				"cancel": "إلغاء"
 			},
-			"blockConfirm": "إضافة هذا الشخص إلى القائمة السوداء؟ اتحاد هذه المجموعة سيرفض تتابعه.",
-			"blockOk": "محظور",
-			"charChatSettings": "إعدادات الدردشة الشخصية",
-			"charChatSubtitle": "جلسة مع ${name}",
-			"sessionInfo": "معلومات الجلسة",
-			"sessionRole": "دور",
-			"sessionId": "معرف الجلسة",
-			"sessionMessages": "عدد الرسائل",
 			"quickActions": "عملية سريعة",
 			"advancedSettings": "الإعدادات المتقدمة (الشخصية/العالم/المكونات الإضافية)",
 			"advancedSettingsDescription": "افتح الإعدادات الكاملة للمجموعة في Hub في علامة تبويب جديدة",
 			"dangerZone": "منطقة الخطر",
-			"unbindFriendDescription": "بعد إلغاء الربط، ستعود المحادثة إلى قائمة المجموعة الموجودة على اليسار وسيتم الاحتفاظ بسجلات الرسائل.",
-			"unbindFriend": "فك الارتباط",
-			"unbindFriendConfirm": "هل أنت متأكد من إلغاء الدردشة الخاصة مع ${name}؟ سيتم نقل المحادثة مرة أخرى إلى قائمة المجموعة.",
-			"unbindFriendOk": "غير مجلد",
-			"unbindFriendFailed": "فشل إلغاء الربط: ${error}",
 			"deleteSessionDescription": "سيؤدي حذف هذه المحادثة إلى إزالة جميع الرسائل نهائيًا ولا يمكن التراجع عنه.",
 			"deleteSession": "حذف الجلسة",
 			"deleteSessionConfirm": "هل أنت متأكد أنك تريد حذف الجلسة مع ${name}؟ هذه العملية لا رجعة فيها.",
-			"sessionDeleted": "تم حذف المحادثة",
-			"sessionDeleteFailed": "فشل الحذف: ${error}",
-			"streamTokenFailed": "غير قادر على إصدار رمز العرض المميز",
-			"streamAvJoin": "إضافة صوت/فيديو",
-			"streamAvLeave": "بعيد",
-			"streamAvMute": "صامت",
-			"streamAvUnmute": "إلغاء كتم الصوت",
-			"streamAvVideo": "قم بإيقاف تشغيل الكاميرا",
-			"streamAvVideoOn": "قم بتشغيل الكاميرا",
-			"streamAvYou": "أنت",
-			"streamAvJoinFailed": "غير قادر على بدء المكالمة: ${error}",
-			"streamAvNoCodecs": "هذا المتصفح لا يدعم WebCodecs (يتطلب Chrome 94+ / Edge 94+ / Firefox 130+)",
-			"streamAvPeers": "${count} من الأشخاص المتصلين بالإنترنت",
-			"streamAvPresetThumb": "مختصرة 64 كيلوبت في الثانية",
-			"streamAvPresetLow": "جودة منخفضة 200 كيلو بايت في الثانية",
-			"streamAvPresetMed": "متوسطة 600 كيلو بايت في الثانية",
-			"streamAvPresetHigh": "جودة عالية 1.5 ميجابت في الثانية",
-			"callButton": {
-				"title": "ابدأ مكالمة أو انضم إليها",
-				"aria-label": "ابدأ مكالمة أو انضم إليها"
-			},
-			"callInProgress": "المكالمة جارية",
-			"callEnded": "انتهت المكالمة",
-			"callJoin": "انضم إلى المكالمة",
-			"callHangup": "إنهاء المكالمة",
-			"callScreenShare": "شاشة المشاركة",
-			"callScreenStop": "توقف عن المشاركة",
-			"callJumpBack": "العودة إلى قناة الاتصال",
-			"callJoinFailed": "غير قادر على الانضمام إلى المكالمة: ${error}",
-			"callScreenFailed": "فشلت مشاركة الشاشة: ${error}",
-			"callStartedAt": "بدأت في ${time}",
-			"callDuration": "المدة ${duration}",
-			"callParticipants": "${n} من الأشخاص",
-			"callPeerCount": "${n}",
-			"callNoParticipants": "لا يوجد مشاركين حتى الآن",
-			"listChannelEmpty": "القائمة فارغة.",
-			"listItemUntitled": "لم إشارات اسمه",
-			"listEditorTitle": "تحرير عناصر القائمة (صفيف JSON)",
-			"listSaveToDag": "حفظ إلى DAG",
-			"listJsonInvalid": "JSON غير صالح: ${message}",
-			"listSaved": "تم الحفظ",
-			"listSaveFailed": "فشل الحفظ",
-			"streamDefaultName": "وسائل الإعلام المتدفقة",
-			"streamRefreshToken": "تحديث رمز الساعة",
-			"streamEmbedHttpsRequired": "يجب أن يكون عنوان البث صفحة https:// قابلة للتضمين، أو يجب تكوين إعدادات المجموعة أولاً وتحديثها للحصول على رمز العرض.",
-			"streamWebRtcHint": "لم يُضبَط SFU خارجي؛ ستستخدم هذه القناة WebRTC داخل المجموعة (دون الحاجة إلى streamingSfuWss).",
-			"pinPreviewSticker": "[ملصق]",
-			"pinPreviewVote": "[تصويت] ${question}",
-			"pinPreviewInvite": "[دعوة] ${groupName}",
 			"reactionRemovePrompt": "من الذي تريد إزالة ${emoji} منه؟\n${candidates}",
 			"ariaDagTip": {
 				"aria-label": "طرف شوكة DAG"
@@ -2165,58 +1948,11 @@
 			"ariaClose": {
 				"aria-label": "إغلاق"
 			},
-			"memberBar": {
-				"aria-label": "قائمة الأعضاء"
-			},
-			"channelBar": {
-				"aria-label": "قائمة القنوات"
-			},
 			"serverBar": {
 				"aria-label": "المجموعات والتنقل"
 			},
-			"membersDigestPagesTitle": {
-				"title": "${expected}\n${pages} صفحة"
-			},
-			"discoveryTitle": "اكتشاف المجموعة",
-			"discoveryEyebrow": "استكشف المجتمع",
-			"discoveryDescription": "تصفح المجموعات العامة من شبكة الاتحاد، واختر المجتمع الذي يهمك وانضم إليه.",
-			"discoverySidebarHint": "تصفح وانضم إلى المجموعات العامة على اليمين",
-			"discoveryEmptyTitle": "لم يتم العثور على مجموعات عامة حتى الآن",
-			"discoveryEmpty": "لا يوجد حالياً أي مجموعة موصى بها؛ بعد تشغيل مزامنة الاتحاد، ستتم مزامنة قائمة الاكتشاف من الجيران.",
-			"discoveryNoDescription": "لم يقم مالك المجموعة بملء الملف الشخصي بعد.",
-			"discoverySourceCount": "${count} مصادر موحدة",
-			"discoveryJoin": "انضم إلى المجموعة",
-			"discoveryOpen": "افتح المجموعة",
-			"discoveryLoadFailed": "فشل تحميل قائمة الاكتشاف: ${message}",
 			"operationFailed": "فشلت العملية: ${error}",
 			"shareGroupFailed": "فشلت مشاركة رابط المجموعة: ${error}",
-			"blockAuthorTitle": "حظر هذا المؤلف",
-			"configTitle": "تكوين المحادثة",
-			"configSaved": "تم الحفظ",
-			"configSaveFailed": "فشل الحفظ: ${error}",
-			"configLoadFailed": "فشل تحميل التكوين: ${error}",
-			"noActiveChat": "يرجى فتح الجلسة أولاً قبل سحب الجزء",
-			"groupContext": {
-				"manage": "مجموعة الإدارة",
-				"notifyPrefs": "إعدادات الإشعارات",
-				"invite": "قم بدعوة الآخرين",
-				"inviteCopied": "تم نسخ رابط الدعوة إلى الحافظة",
-				"addChar": "إضافة دور",
-				"addCharLabel": "حدد الدور",
-				"addCharSubmit": "اضف إليه",
-				"noChars": "لا يوجد دور متاح",
-				"setAlias": "تعيين الاسم المستعار للمجموعة",
-				"setAliasPrompt": "قم بتعيين اسم مستعار محلي لـ \"${name}\" (اتركه فارغًا للمسح):",
-				"aliasSaved": "تم تحديث الاسم المستعار للمجموعة",
-				"leave": "اخرج من المجموعة",
-				"leaveConfirm": "هل أنت متأكد أنك تريد مغادرة المجموعة \"${name}\"؟ لن تتمكن بعد الآن من عرض الرسائل في هذه المجموعة.",
-				"leaveOk": "غادر المجموعة",
-				"leaveBatch": "الخروج من المجموعة المحددة (${count})",
-				"leaveConfirmBatch": "هل أنت متأكد أنك تريد مغادرة المجموعات المحددة ${count}؟ لن يحتفظ الجهاز ببيانات هذه المجموعات بعد الآن.",
-				"leaveBatchPending": "تمت إزالة مجموعات ${count} من القائمة، ويتم الخروج منها في الخلفية...",
-				"leaveBatchOk": "تم الخروج من مجموعات ${count}.",
-				"leaveBatchPartial": "فشل الخروج من مجموعات ${failed} / ${total}، وتم تحديث القائمة"
-			},
 			"replyInline": {
 				"title": "رد"
 			},
@@ -2226,35 +1962,8 @@
 			"replyInThread": {
 				"title": "الرد في موضوع الطفل"
 			},
-			"syncTruncated": "زيادة DAG ليست كاملة. يمكنك المحاولة مرة أخرى لاحقًا أو زيادة الحد.",
-			"syncTruncatedHint": "تاريخ DAG طويل جدًا. يمكنك المحاولة مرة أخرى لاحقًا أو زيادة الحد.",
-			"newChannelButton": "إنشاء قناة جديدة",
-			"newChannelSuccess": "تم إنشاء القناة",
-			"newChannelFailed": "فشل في إنشاء القناة",
-			"newChannelTitle": "إنشاء قناة جديدة",
-			"channelName": "اسم القناة",
-			"channelType": "نوع القناة",
-			"channelTypeText": "قناة الدردشة",
-			"channelTypeList": "القائمة/قناة المنتدى",
-			"channelTypeStreaming": "قناة بث",
-			"channelNameInput": {
-				"placeholder": "عام"
-			},
 			"localMaterializedView": "إنها حاليًا طريقة عرض محلية متحققة، وقد تكون الأذونات والتاريخ غير متسقين مع العقد الأخرى.",
 			"convergentEncryptWarn": "تستخدم ملفات المجموعة التشفير المتقارب: إذا كان المهاجم يعرف النص العادي للملف، فيمكنه استخلاص المفتاح وفك تشفير كتلة النص المشفر المقابلة. لا تعتمد فقط على تشفير المجموعة لحماية المستندات الحساسة للغاية والخاصة بشكل فريد.",
-			"votePromptQuestion": "عنوان التصويت",
-			"votePromptOptions": "الخيارات (اثنان على الأقل، مفصولة بفواصل)",
-			"voteOptionDefault": "أوافق، أعارض",
-			"votePromptDeadlineHours": "الموعد النهائي (ساعات، اتركه فارغًا = لا يوجد موعد نهائي)",
-			"messagePrefixVote": "تصويت",
-			"threadCreated": "تم إنشاء موضوع تابع",
-			"threadCreateFailed": "فشل إنشاء سلسلة رسائل فرعية، يرجى المحاولة مرة أخرى لاحقًا",
-			"threadDrawer": {
-				"aria-label": "خيط الطفل"
-			},
-			"threadClose": {
-				"title": "إغلاق موضوع الطفل"
-			},
 			"reputationSlashAlert": "سمعة العضو ${target}... تذكرنا بالخصم.",
 			"profileEdit": {
 				"previewHint": "تظهر التغييرات على الفور في المعاينة ويتم حفظها ومزامنتها عبر الدردشة والتواصل الاجتماعي.",
@@ -2263,23 +1972,14 @@
 				"languageVersion": "نسخة اللغة",
 				"localeHint": "انقر فوق الملصق لتبديل الرمز أو تحريره؛ اضغط على Enter في مربع الإدخال في النهاية لنسخه إلى لغة جديدة.",
 				"themeColorHint": "يستخدم لإنشاء الأنسجة عندما لا يكون هناك شعار مخصص، ويستخدم أيضًا في حلقات الموجات الصوتية الحية",
-				"bannerLabel": "خلفية لافتة",
-				"bannerHint": "يمكنك ملء عنوان URL للصورة أو تحميل ملف؛ يمكنك أيضًا استئناف إنشاء الأنسجة في أي وقت",
-				"bannerClear": "استئناف إنشاء الشعار",
 				"linksPreview": "${count} روابط عامة",
 				"unsavedHint": "سيؤدي إغلاق النافذة إلى تجاهل التغييرات غير المحفوظة",
 				"tagsLabel": "ملصق",
 				"tagAdd": "اضف إليه",
 				"tagRemove": "حذف العلامة",
 				"linksLabel": "وصلة",
-				"linkAdd": "إضافة رابط",
-				"linkRemove": "إزالة الرابط",
 				"handleLabel": "معرف مخصص",
 				"handleHint": "يمكن البحث فيها عن طريق العقد الأخرى في الشبكة؛ التفرد غير مضمون، وسيتم توضيح التعارضات وفقًا لقائمة الثقة.",
-				"resetFromPart": "إعادة التعيين من جزء الشخصية",
-				"resetFromPartConfirm": "سيتم استبدال المعلومات الحالية بمعلومات جزء الدور. هل أنت متأكد؟",
-				"resetFromPartDone": "تمت إعادة بناء الملف الشخصي من أجزاء الشخصية",
-				"resetFromPartFailed": "فشلت عملية إعادة الإنشاء: ${error}",
 				"newLocale": {
 					"placeholder": "رمز لغة جديد، مثل en-UK"
 				},
@@ -2295,23 +1995,38 @@
 				"avatarUpload": {
 					"aria-label": "رفع صورة الملف الشخصي"
 				},
-				"bannerUrl": {
-					"placeholder": "عنوان URL لصورة البانر، أو قم بتحميل الملف أدناه"
-				},
-				"bannerUpload": {
-					"aria-label": "رفع صورة الغلاف"
-				},
 				"tag": {
 					"placeholder": "أضف بعد إدخال العلامة"
 				},
-				"linkName": {
-					"placeholder": "إظهار النص"
-				},
-				"linkUrl": {
-					"placeholder": "https://… أو فاونت://…"
-				},
 				"handle": {
 					"placeholder": "على سبيل المثال ستيف (2–32 حرفًا أبجديًا رقميًا صغيرًا._-)"
+				},
+				"resetFrom": {
+					"part": "إعادة التعيين من جزء الشخصية",
+					"partConfirm": "سيتم استبدال المعلومات الحالية بمعلومات جزء الدور. هل أنت متأكد؟",
+					"partDone": "تمت إعادة بناء الملف الشخصي من أجزاء الشخصية",
+					"partFailed": "فشلت عملية إعادة الإنشاء: ${error}"
+				},
+				"banner": {
+					"clear": "استئناف إنشاء الشعار",
+					"hint": "يمكنك ملء عنوان URL للصورة أو تحميل ملف؛ يمكنك أيضًا استئناف إنشاء الأنسجة في أي وقت",
+					"label": "خلفية لافتة",
+					"upload": {
+						"aria-label": "رفع صورة الغلاف"
+					},
+					"url": {
+						"placeholder": "عنوان URL لصورة البانر، أو قم بتحميل الملف أدناه"
+					}
+				},
+				"link": {
+					"add": "إضافة رابط",
+					"name": {
+						"placeholder": "إظهار النص"
+					},
+					"remove": "إزالة الرابط",
+					"url": {
+						"placeholder": "https://… أو فاونت://…"
+					}
 				}
 			},
 			"profilePopup": {
@@ -2321,72 +2036,22 @@
 				},
 				"editSaved": "تم حفظ البيانات",
 				"editQueued": "تم النشر، في انتظار العقدة الأخرى لسحبها",
-				"dmChar": "الدردشة على انفراد مع شخصية",
-				"dmUser": "إرسال رسالة خاصة",
-				"dmFed": "رسالة الاتحادية الخاصة",
 				"noFedIdentity": "يرجى تكوين activePubKeyHex الأصلي في إعدادات الاتحاد أولاً",
 				"peerNoIdentity": "لا يتمتع الطرف الآخر بوضع فيدرالي ولا يمكنه بدء رسالة فيدرالية خاصة.",
-				"dmFailed": "غير قادر على فتح الرسالة الخاصة: ${error}",
 				"care": "متابعة خاصة",
 				"careRemove": "إلغاء الرعاية الخاصة",
 				"setAlias": "تعيين الاسم المستعار",
-				"setAliasPrompt": "قم بتعيين اسم مستعار محلي لـ \"${name}\" (اتركه فارغًا للمسح):"
-			},
-			"channelContext": {
-				"copyLinkDone": "تم نسخ رابط القناة",
-				"notifyPrefs": "إعدادات إشعارات القناة",
-				"rename": "إعادة تسمية القناة",
-				"renameOk": "تمت إعادة تسمية القناة",
-				"delete": "حذف القناة",
-				"deleteOk": "تم حذف القناة",
-				"deleteConfirm": "هل أنت متأكد أنك تريد حذف القناة \"${name}\"؟ لا يمكن التراجع عن هذا الإجراء.",
-				"setDefault": "تعيين كقناة افتراضية",
-				"setDefaultOk": "تم تعيينها بالفعل كقناة افتراضية",
-				"copyLink": "انسخ رابط القناة",
-				"exportJson": "تصدير JSON",
-				"exportOk": "تم تنزيل أرشيف القناة",
-				"exportFailed": "فشل التصدير: ${error}"
-			},
-			"memberContext": {
-				"copyName": "انسخ اسم العرض",
-				"mention": "إشارات",
-				"care": "متابعة خاصة",
-				"careAdded": "تمت إضافة متابعة خاصة بالفعل",
-				"careRemoved": "تم إلغاء الرعاية الخاصة",
-				"setAlias": "تعيين الاسم المستعار",
 				"setAliasPrompt": "قم بتعيين اسم مستعار محلي لـ \"${name}\" (اتركه فارغًا للمسح):",
-				"aliasSaved": "تم تحديث الاسم المستعار",
-				"copyPubKey": "انسخ تجزئة المفتاح العام",
-				"copyEntityId": "انسخ معرف الكيان",
-				"dm": "إرسال رسالة خاصة",
-				"kick": "عضو ركلة",
-				"kickSelfNodeWarning": "تحذير: يستخدم هذا العضو نفس هوية العقدة التي تستخدمها. سيتم إزالتك أيضًا من المجموعة بعد طردك. هل أنت متأكد أنك تريد الاستمرار؟",
-				"ban": "حظر…",
-				"personalBlock": "كتلة شخصية",
-				"personalBlockConfirm": "أضف ${name} إلى قائمة الحظر الخاصة بك؟ سوف يلتقط الأشخاص الذين يتابعونك هذه الإشارة وقد تكون ثقتهم بهم أقل.",
-				"personalBlockSuccess": "تمت إضافتها بالفعل إلى القائمة السوداء",
-				"banTitle": "حدد نطاق الحظر",
-				"banEntity": "الكيانات المحظورة (كيان 128 بتHash)",
-				"banNode": "عقدة الحظر (homeNodeHash)"
+				"dm": {
+					"char": "الدردشة على انفراد مع شخصية",
+					"failed": "غير قادر على فتح الرسالة الخاصة: ${error}",
+					"fed": "رسالة الاتحادية الخاصة",
+					"user": "إرسال رسالة خاصة"
+				}
 			},
-			"messageContext": {
-				"edit": "تحرير الرسالة",
-				"delete": "حذف الرسالة"
-			},
-			"charStreaming": "جارٍ الإنشاء…",
 			"gshDecryptPending": "في انتظار مفتاح القناة (الجيل ${gen})",
 			"gshDecryptFailed": "غير قادر على فك تشفير هذه الرسالة بدون مفتاح القناة",
-			"fileDecryptFailed": "غير قادر على الوصول إلى هذا الملف بدون مفتاح الملف",
 			"reactionFailed": "فشلت عملية الاستجابة",
-			"fileUploadChecking": "يتم الآن التحقق لمعرفة ما إذا كان نفس المحتوى موجودًا بالفعل...",
-			"fileUploadingChunk": "جارٍ تحميل الكتل المشفرة...",
-			"fileUploadRegistering": "تسجيل الملفات…",
-			"fileUploaded": "تم تحميل الملف بنجاح",
-			"fileUploadFailed": "فشل تحميل الملف",
-			"fileSkippedDedup": "تم تخطي نقل الكتلة المكررة",
-			"fileDownloadFailed": "فشل تنزيل الملف",
-			"fileNoKey": "غير قادر على فك التشفير (المفتاح المفقود)",
-			"fileLoadFailed": "فشل تحميل الملف",
 			"createModal": {
 				"title": "إنشاء مجموعة",
 				"subtitle": "المجموعات هي مساحات خاصة لك ولأصدقائك للدردشة معًا",
@@ -2399,14 +2064,16 @@
 				"description": {
 					"placeholder": "(اختياري) قدّم هذه المجموعة"
 				},
-				"joinSection": "من يمكنه الانضمام",
-				"joinInviteOnly": "دعوة فقط",
-				"joinInviteOnlyDescription": "مطلوب رمز الدعوة للانضمام",
-				"joinPow": "إثبات العمل",
-				"joinPowDescription": "تحتاج إلى إكمال تحدي إثبات العمل (PoW) قبل الانضمام",
 				"cancel": "رجوع",
 				"submit": "إنشاء مجموعة",
-				"failed": "فشل إنشاء المجموعة: ${error}"
+				"failed": "فشل إنشاء المجموعة: ${error}",
+				"join": {
+					"inviteOnly": "دعوة فقط",
+					"inviteOnlyDescription": "مطلوب رمز الدعوة للانضمام",
+					"pow": "إثبات العمل",
+					"powDescription": "تحتاج إلى إكمال تحدي إثبات العمل (PoW) قبل الانضمام",
+					"section": "من يمكنه الانضمام"
+				}
 			},
 			"joinModal": {
 				"title": "انضم إلى المجموعة",
@@ -2423,28 +2090,9 @@
 				"cancel": "رجوع",
 				"submit": "انضم إلى المجموعة"
 			},
-			"menuCopy": "نسخ",
-			"menuMD": "تخفيض السعر",
-			"menuTXT": "نص عادي",
-			"menuHTML": "HTML",
-			"menuDownload": "تحميل HTML",
-			"menuDelete": "حذف",
-			"menuShareGroup": "رابط المشاركة",
-			"menuPrev": "المادة السابقة",
-			"menuNext": "المقالة التالية",
-			"menuShare": {
-				"1h": "مشاركة الرابط لمدة ساعة واحدة",
-				"12h": "مشاركة رابط 12 ساعة",
-				"24h": "مشاركة رابط 24 ساعة",
-				"72h": "مشاركة رابط 72 ساعة"
-			},
-			"noGroups": "لا توجد مجموعة بعد",
 			"myGroups": "مجموعاتي",
 			"joinGroup": "انضم إلى المجموعة",
 			"createGroup": "إنشاء مجموعة جديدة",
-			"noDescription": "لا وصف",
-			"memberCountLabel": "${count} أعضاء",
-			"loadListFailed": "فشل تحميل قائمة المجموعة: ${error}",
 			"contentWarning": "تحذير المحتوى",
 			"sensitiveMedia": "الوسائط الحساسة",
 			"revealContent": "عرض المحتوى",
@@ -2479,12 +2127,6 @@
 				"saved": "تم حفظ إعدادات الترجمة",
 				"saveFailed": "فشل الحفظ: ${error}"
 			},
-			"friendsSearch": {
-				"placeholder": "ابحث عن الدور المحلي/المعرف المخصص/الاسم..."
-			},
-			"threadComposer": {
-				"placeholder": "الرد في الموضوع الفرعي..."
-			},
 			"altImage": {
 				"placeholder": "أضف وصفًا للصورة...",
 				"label": "وصف الصورة (بديل)"
@@ -2495,7 +2137,587 @@
 				"aria-label": "اقتراحات الإشارة"
 			},
 			"clickToLoad": "انقر للتحميل",
-			"send": "إرسال"
+			"serverActionPicker": {
+				"create": "إنشاء مجموعة",
+				"createDescription": "ابدأ من الصفر وقم بدعوة الأصدقاء",
+				"join": "انضم إلى المجموعة",
+				"joinDescription": "استخدم معرف المجموعة",
+				"subtitle": "أنشئ مجموعة جديدة أو انضم إلى مجموعة موجودة عن طريق المعرف",
+				"title": "مجموعة"
+			},
+			"membersDigest": {
+				"fetchFailed": "فشل في سحب الأعضاء حسب الصفحة",
+				"mismatch": "ملخص الأعضاء غير متناسق · ${root}",
+				"ok": "العضوة ميركل بالإجماع · ${root}",
+				"okPaged": "إجماع الأعضاء ميركل (صفحات {{صفحات}) · ${pages} ${root}",
+				"pagesTitle": {
+					"title": "${expected}\n${pages} صفحة"
+				},
+				"pending": "التحقق من ملخص الأعضاء..."
+			},
+			"unbindFriend": {
+				"main": "فك الارتباط",
+				"confirm": "هل أنت متأكد من إلغاء الدردشة الخاصة مع ${name}؟ سيتم نقل المحادثة مرة أخرى إلى قائمة المجموعة.",
+				"description": "بعد إلغاء الربط، ستعود المحادثة إلى قائمة المجموعة الموجودة على اليسار وسيتم الاحتفاظ بسجلات الرسائل.",
+				"failed": "فشل إلغاء الربط: ${error}",
+				"ok": "غير مجلد"
+			},
+			"federation": {
+				"loadFailed": "فشل التحميل: ${error}",
+				"subtitle": "التحكم في الاتصالات عبر الأجهزة؛ ترك الإعدادات الافتراضية في معظم الحالات",
+				"title": "إعدادات الاتحاد P2P",
+				"tooltip": {
+					"title": "إعدادات الاتحاد P2P",
+					"tip": "إعدادات الاتحاد P2P"
+				}
+			},
+			"newChannel": {
+				"button": "إنشاء قناة جديدة",
+				"failed": "فشل في إنشاء القناة",
+				"success": "تم إنشاء القناة",
+				"title": "إنشاء قناة جديدة"
+			},
+			"discovery": {
+				"description": "تصفح المجموعات العامة من شبكة الاتحاد، واختر المجتمع الذي يهمك وانضم إليه.",
+				"empty": "لا يوجد حالياً أي مجموعة موصى بها؛ بعد تشغيل مزامنة الاتحاد، ستتم مزامنة قائمة الاكتشاف من الجيران.",
+				"emptyTitle": "لم يتم العثور على مجموعات عامة حتى الآن",
+				"eyebrow": "استكشف المجتمع",
+				"join": "انضم إلى المجموعة",
+				"loadFailed": "فشل تحميل قائمة الاكتشاف: ${message}",
+				"noDescription": "لم يقم مالك المجموعة بملء الملف الشخصي بعد.",
+				"open": "افتح المجموعة",
+				"refresh": "تحديث قائمة الاكتشاف",
+				"sidebarHint": "تصفح وانضم إلى المجموعات العامة على اليمين",
+				"sourceCount": "${count} مصادر موحدة",
+				"title": "اكتشاف المجموعة",
+				"tooltip": {
+					"title": "اكتشاف المجموعة",
+					"tip": "اكتشاف المجموعة"
+				}
+			},
+			"forkSplit": {
+				"failed": "فشل التقسيم: ${error}",
+				"modalSubmit": "إنشاء",
+				"modalTitle": "انقسموا إلى مجموعة جديدة",
+				"prompt": "اسم المجموعة الجديد (يمكن تركه فارغًا)"
+			},
+			"stickers": {
+				"empty": "لا توجد ملصقات",
+				"loadFailed": "فشل التحميل: ${error}",
+				"loading": "تحميل…",
+				"manage": "إدارة الملصقات →",
+				"marketLink": "انتقل إلى ساحة الملصقات للتثبيت",
+				"panelTitle": "ملصق"
+			},
+			"friends": {
+				"contextNewChat": "دردشة جديدة",
+				"count": "${count} من الأصدقاء",
+				"emptyAction": "ابحث عن دور أو مستخدم",
+				"emptyDescription": "ابحث عن المستخدمين في الدور المحلي أو العقد الأخرى، ويمكنك أيضًا فتح بطاقة ملف تعريف العضو في الدردشة الجماعية لبدء رسالة خاصة.",
+				"emptyTitle": "ابدأ محادثة جديدة",
+				"header": "أصدقاء",
+				"restartConfirm": "سيتم إلغاء ربط الدردشة الخاصة مع \"${name}\" وسيتم إنشاء محادثة جديدة. هل أنت متأكد؟",
+				"restartFailed": "فشل إنشاء محادثة خاصة جديدة: ${error}",
+				"restartOk": "تم فتح محادثة خاصة جديدة",
+				"search": {
+					"placeholder": "ابحث عن الدور المحلي/المعرف المخصص/الاسم...",
+					"chat": "ابدأ محادثة",
+					"dm": "إرسال رسالة خاصة",
+					"empty": "لا يوجد دور أو مستخدم مطابق",
+					"localChar": "الدور المحلي",
+					"pin": "تعيين كاسم مستعار",
+					"tooShort": "الرجاء إدخال حرفين على الأقل"
+				},
+				"tag": "أصدقاء",
+				"tooltip": {
+					"title": "أصدقاء",
+					"tip": "أصدقاء"
+				}
+			},
+			"channel": {
+				"bar": {
+					"aria-label": "قائمة القنوات"
+				},
+				"context": {
+					"copyLinkDone": "تم نسخ رابط القناة",
+					"notifyPrefs": "إعدادات إشعارات القناة",
+					"rename": "إعادة تسمية القناة",
+					"renameOk": "تمت إعادة تسمية القناة",
+					"delete": "حذف القناة",
+					"deleteOk": "تم حذف القناة",
+					"deleteConfirm": "هل أنت متأكد أنك تريد حذف القناة \"${name}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+					"setDefault": "تعيين كقناة افتراضية",
+					"setDefaultOk": "تم تعيينها بالفعل كقناة افتراضية",
+					"copyLink": "انسخ رابط القناة",
+					"exportJson": "تصدير JSON",
+					"exportOk": "تم تنزيل أرشيف القناة",
+					"exportFailed": "فشل التصدير: ${error}"
+				},
+				"name": "اسم القناة",
+				"nameInput": {
+					"placeholder": "عام"
+				},
+				"readonlyList": {
+					"placeholder": "قائمة القنوات للقراءة فقط"
+				},
+				"readonlyStream": {
+					"placeholder": "قناة البث للقراءة فقط"
+				},
+				"type": "نوع القناة",
+				"typeList": "القائمة/قناة المنتدى",
+				"typeStreaming": "قناة بث",
+				"typeText": "قناة الدردشة"
+			},
+			"message": {
+				"action": {
+					"bookmark": {
+						"title": "إشارة مرجعية"
+					},
+					"copyHtml": {
+						"title": "انسخ HTML"
+					},
+					"delete": {
+						"title": "حذف الرسالة"
+					},
+					"edit": {
+						"title": "تحرير الرسالة"
+					},
+					"failed": "فشلت العملية: ${error}",
+					"feedbackDown": {
+						"title": "انقر لعدم الإعجاب"
+					},
+					"feedbackUp": {
+						"title": "إعجاب"
+					},
+					"next": {
+						"title": "الجدول الزمني القادم"
+					},
+					"pin": {
+						"title": "دبوس إلى الأعلى"
+					},
+					"prev": {
+						"title": "الجدول الزمني السابق"
+					},
+					"regen": {
+						"title": "تجديد"
+					},
+					"unpin": {
+						"title": "إزالة التثبيت"
+					}
+				},
+				"context": {
+					"edit": "تحرير الرسالة",
+					"delete": "حذف الرسالة"
+				},
+				"edit": {
+					"area": {
+						"aria-label": "تعديل الرسالة"
+					},
+					"cancel": "إلغاء",
+					"save": "حفظ",
+					"upload": "تحميل المرفق"
+				},
+				"feedbackSubmit": "إرسال ردود الفعل",
+				"input": {
+					"placeholder": "رسالة جماعية… Ctrl+Enter للإرسال",
+					"aria-label": "رسالة"
+				},
+				"prefixVote": "تصويت"
+			},
+			"session": {
+				"deleteFailed": "فشل الحذف: ${error}",
+				"deleted": "تم حذف المحادثة",
+				"id": "معرف الجلسة",
+				"info": "معلومات الجلسة",
+				"messages": "عدد الرسائل",
+				"role": "دور"
+			},
+			"folder": {
+				"collapse": "طي المجلد",
+				"default": "المجلد",
+				"dissolve": "تجاهل المجلد",
+				"expand": "قم بتوسيع المجلد",
+				"rename": "إعادة تسمية المجلد",
+				"renamePrompt": "أعد تسمية المجلد \"${name}\" إلى:"
+			},
+			"stream": {
+				"av": {
+					"join": "إضافة صوت/فيديو",
+					"joinFailed": "غير قادر على بدء المكالمة: ${error}",
+					"leave": "بعيد",
+					"mute": "صامت",
+					"noCodecs": "هذا المتصفح لا يدعم WebCodecs (يتطلب Chrome 94+ / Edge 94+ / Firefox 130+)",
+					"peers": "${count} من الأشخاص المتصلين بالإنترنت",
+					"preset": {
+						"high": "جودة عالية 1.5 ميجابت في الثانية",
+						"low": "جودة منخفضة 200 كيلو بايت في الثانية",
+						"med": "متوسطة 600 كيلو بايت في الثانية",
+						"thumb": "مختصرة 64 كيلوبت في الثانية"
+					},
+					"unmute": "إلغاء كتم الصوت",
+					"video": "قم بإيقاف تشغيل الكاميرا",
+					"videoOn": "قم بتشغيل الكاميرا",
+					"you": "أنت"
+				},
+				"defaultName": "وسائل الإعلام المتدفقة",
+				"embedHttpsRequired": "يجب أن يكون عنوان البث صفحة https:// قابلة للتضمين، أو يجب تكوين إعدادات المجموعة أولاً وتحديثها للحصول على رمز العرض.",
+				"refreshToken": "تحديث رمز الساعة",
+				"tokenFailed": "غير قادر على إصدار رمز العرض المميز",
+				"webRtcHint": "لم يُضبَط SFU خارجي؛ ستستخدم هذه القناة WebRTC داخل المجموعة (دون الحاجة إلى streamingSfuWss)."
+			},
+			"member": {
+				"bar": {
+					"aria-label": "قائمة الأعضاء"
+				},
+				"context": {
+					"copyName": "انسخ اسم العرض",
+					"mention": "إشارات",
+					"care": "متابعة خاصة",
+					"careAdded": "تمت إضافة متابعة خاصة بالفعل",
+					"careRemoved": "تم إلغاء الرعاية الخاصة",
+					"setAlias": "تعيين الاسم المستعار",
+					"setAliasPrompt": "قم بتعيين اسم مستعار محلي لـ \"${name}\" (اتركه فارغًا للمسح):",
+					"aliasSaved": "تم تحديث الاسم المستعار",
+					"copyPubKey": "انسخ تجزئة المفتاح العام",
+					"copyEntityId": "انسخ معرف الكيان",
+					"dm": "إرسال رسالة خاصة",
+					"kick": "عضو ركلة",
+					"kickSelfNodeWarning": "تحذير: يستخدم هذا العضو نفس هوية العقدة التي تستخدمها. سيتم إزالتك أيضًا من المجموعة بعد طردك. هل أنت متأكد أنك تريد الاستمرار؟",
+					"ban": "حظر…",
+					"personalBlock": "كتلة شخصية",
+					"personalBlockConfirm": "أضف ${name} إلى قائمة الحظر الخاصة بك؟ سوف يلتقط الأشخاص الذين يتابعونك هذه الإشارة وقد تكون ثقتهم بهم أقل.",
+					"personalBlockSuccess": "تمت إضافتها بالفعل إلى القائمة السوداء",
+					"banTitle": "حدد نطاق الحظر",
+					"banEntity": "الكيانات المحظورة (كيان 128 بتHash)",
+					"banNode": "عقدة الحظر (homeNodeHash)"
+				},
+				"countLabel": "${count} أعضاء",
+				"joined": "انضم إلى المحادثة",
+				"section": "عضو"
+			},
+			"thread": {
+				"close": {
+					"title": "إغلاق موضوع الطفل"
+				},
+				"composer": {
+					"placeholder": "الرد في الموضوع الفرعي..."
+				},
+				"createFailed": "فشل إنشاء سلسلة رسائل فرعية، يرجى المحاولة مرة أخرى لاحقًا",
+				"created": "تم إنشاء موضوع تابع",
+				"drawer": {
+					"aria-label": "خيط الطفل"
+				}
+			},
+			"config": {
+				"loadFailed": "فشل تحميل التكوين: ${error}",
+				"saveFailed": "فشل الحفظ: ${error}",
+				"saved": "تم الحفظ",
+				"title": "تكوين المحادثة"
+			},
+			"statusItems": {
+				"dnd": {
+					"title": "لا تخل",
+					"textContent": "لا تخل"
+				},
+				"idle": {
+					"title": "بعيد",
+					"textContent": "بعيد"
+				},
+				"offline": {
+					"title": "غير متصل",
+					"textContent": "غير متصل"
+				},
+				"online": {
+					"title": "متصل",
+					"textContent": "متصل"
+				}
+			},
+			"files": {
+				"bindCabinet": "إضافة خزانة الملفات",
+				"delete": "حذف",
+				"deleteConfirm": "هل أنت متأكد أنك تريد حذف هذا الملف؟",
+				"deleteFolderConfirm": "هل أنت متأكد أنك تريد حذف هذا المجلد؟ لن يتم حذف الملفات الموجودة في المجلد تلقائيًا.",
+				"download": "تنزيل",
+				"drawerTitle": "ملف المجموعة",
+				"empty": "لا يوجد حاليا أي ملفات في هذا الدليل",
+				"foldersTitle": "المجلد",
+				"listTitle": "وثيقة",
+				"loadFailed": "فشل تحميل ملف المجموعة: ${error}",
+				"loading": "جارٍ تحميل ملفات المجموعة...",
+				"newFolder": "مجلد جديد",
+				"newFolderPrompt": "اسم المجلد",
+				"no": {
+					"cabinets": "لا توجد خزائن ملفات يمكن الوصول إليها للدور الحالي",
+					"channel": "يرجى أولاً الدخول إلى القناة النصية حيث يمكنك إرسال الرسائل",
+					"folders": "لا توجد مجلدات فرعية حتى الآن",
+					"group": "الرجاء تحديد مجموعة أولاً"
+				},
+				"rename": "إعادة تسمية",
+				"renameFolderPrompt": "أعد تسمية المجلد \"${name}\" إلى:",
+				"rootFolder": "الدليل الجذر",
+				"title": {
+					"title": "ملف المجموعة"
+				},
+				"upload": "رفع",
+				"uploadTo": "تحميل إلى"
+			},
+			"group": {
+				"context": {
+					"manage": "مجموعة الإدارة",
+					"notifyPrefs": "إعدادات الإشعارات",
+					"invite": "قم بدعوة الآخرين",
+					"inviteCopied": "تم نسخ رابط الدعوة إلى الحافظة",
+					"addChar": "إضافة دور",
+					"addCharLabel": "حدد الدور",
+					"addCharSubmit": "اضف إليه",
+					"noChars": "لا يوجد دور متاح",
+					"setAlias": "تعيين الاسم المستعار للمجموعة",
+					"setAliasPrompt": "قم بتعيين اسم مستعار محلي لـ \"${name}\" (اتركه فارغًا للمسح):",
+					"aliasSaved": "تم تحديث الاسم المستعار للمجموعة",
+					"leave": {
+						"main": "اخرج من المجموعة",
+						"batch": "الخروج من المجموعة المحددة (${count})",
+						"batchOk": "تم الخروج من مجموعات ${count}.",
+						"batchPartial": "فشل الخروج من مجموعات ${failed} / ${total}، وتم تحديث القائمة",
+						"batchPending": "تمت إزالة مجموعات ${count} من القائمة، ويتم الخروج منها في الخلفية...",
+						"confirm": "هل أنت متأكد أنك تريد مغادرة المجموعة \"${name}\"؟ لن تتمكن بعد الآن من عرض الرسائل في هذه المجموعة.",
+						"confirmBatch": "هل أنت متأكد أنك تريد مغادرة المجموعات المحددة ${count}؟ لن يحتفظ الجهاز ببيانات هذه المجموعات بعد الآن.",
+						"ok": "غادر المجموعة"
+					}
+				},
+				"descriptionEmpty": "لا يوجد ملف شخصي لهذه المجموعة حتى الآن.",
+				"emojiTab": {
+					"title": "مجموعة"
+				},
+				"emojisEmpty": "لا يوجد حاليا أي رموز المجموعة. يمكنك تحميلها في إعدادات المجموعة.",
+				"emojisLoadFailed": "فشل تحميل رموز المجموعة",
+				"headerMenu": {
+					"title": "قائمة المجموعة: الإعدادات، والدعوات، وما إلى ذلك."
+				},
+				"joinRequired": "لا يمكن فتح المجموعة، يرجى استخدام رابط الدعوة أو رمز الدعوة للانضمام",
+				"tag": "مجموعة",
+				"unnamed": "مجموعة غير محددة ·${suffix}"
+			},
+			"block": {
+				"author": {
+					"title": "حظر هذا المؤلف"
+				},
+				"authorTitle": "حظر هذا المؤلف",
+				"confirm": "إضافة هذا الشخص إلى القائمة السوداء؟ اتحاد هذه المجموعة سيرفض تتابعه.",
+				"ok": "محظور",
+				"opposingConfirm": "أضف مصدري الحوكمة الذين ليسوا في الانتخابات الحالية إلى القائمة السوداء وحرموا هذه المجموعة من المرحلات الفيدرالية. يكمل؟",
+				"opposingFailed": "فشل وضع العلامات: ${error}",
+				"opposingOk": "تم وضع علامة على ${count} من المواضيع على أنها غير قابلة للوصول"
+			},
+			"call": {
+				"button": {
+					"title": "ابدأ مكالمة أو انضم إليها",
+					"aria-label": "ابدأ مكالمة أو انضم إليها"
+				},
+				"duration": "المدة ${duration}",
+				"ended": "انتهت المكالمة",
+				"hangup": "إنهاء المكالمة",
+				"inProgress": "المكالمة جارية",
+				"join": "انضم إلى المكالمة",
+				"joinFailed": "غير قادر على الانضمام إلى المكالمة: ${error}",
+				"jumpBack": "العودة إلى قناة الاتصال",
+				"noParticipants": "لا يوجد مشاركين حتى الآن",
+				"participants": "${n} من الأشخاص",
+				"peerCount": "${n}",
+				"screenFailed": "فشلت مشاركة الشاشة: ${error}",
+				"screenShare": "شاشة المشاركة",
+				"screenStop": "توقف عن المشاركة",
+				"startedAt": "بدأت في ${time}"
+			},
+			"vote": {
+				"closed": "انتهى",
+				"count": "${count} صوت · ${pct}%",
+				"createFailed": "فشل إنشاء الاستطلاع: ${error}",
+				"deadline": "الموعد النهائي: ${date}",
+				"minOptions": "يتطلب خيارين على الأقل",
+				"modalSubmit": "إنشاء استطلاع",
+				"modalTitle": "الشروع في التصويت",
+				"noOptions": "لا توجد خيارات",
+				"optionDefault": "أوافق، أعارض",
+				"promptDeadlineHours": "الموعد النهائي (ساعات، اتركه فارغًا = لا يوجد موعد نهائي)",
+				"promptOptions": "الخيارات (اثنان على الأقل، مفصولة بفواصل)",
+				"promptQuestion": "عنوان التصويت",
+				"title": {
+					"title": "الشروع في التصويت"
+				},
+				"total": "إجمالي الأصوات ${total}."
+			},
+			"file": {
+				"decryptFailed": "غير قادر على الوصول إلى هذا الملف بدون مفتاح الملف",
+				"downloadFailed": "فشل تنزيل الملف",
+				"loadFailed": "فشل تحميل الملف",
+				"noKey": "غير قادر على فك التشفير (المفتاح المفقود)",
+				"skippedDedup": "تم تخطي نقل الكتلة المكررة",
+				"uploadChecking": "يتم الآن التحقق لمعرفة ما إذا كان نفس المحتوى موجودًا بالفعل...",
+				"uploadFailed": "فشل تحميل الملف",
+				"uploadRegistering": "تسجيل الملفات…",
+				"uploaded": "تم تحميل الملف بنجاح",
+				"uploadingChunk": "جارٍ تحميل الكتل المشفرة..."
+			},
+			"menu": {
+				"copy": "نسخ",
+				"delete": "حذف",
+				"download": "تحميل HTML",
+				"hTML": "HTML",
+				"mD": "تخفيض السعر",
+				"next": "المقالة التالية",
+				"prev": "المادة السابقة",
+				"share": {
+					"1h": "مشاركة الرابط لمدة ساعة واحدة",
+					"12h": "مشاركة رابط 12 ساعة",
+					"24h": "مشاركة رابط 24 ساعة",
+					"72h": "مشاركة رابط 72 ساعة"
+				},
+				"shareGroup": "رابط المشاركة",
+				"tXT": "نص عادي"
+			},
+			"char": {
+				"chat": {
+					"composer": {
+						"placeholder": "أرسل رسالة إلى ${name} (Ctrl+Enter للإرسال)"
+					},
+					"empty": "لا توجد رسالة حتى الآن، ابدأ محادثتك الأولى!",
+					"settings": "إعدادات الدردشة الشخصية",
+					"start": "ابدأ محادثة مع ${name}",
+					"subtitle": "جلسة مع ${name}"
+				},
+				"chatsTitle": "محادثات تاريخية مع ${name}",
+				"count": "${count} الأدوار",
+				"descriptionEmpty": "الشخصية لم تقدم نفسها بعد.",
+				"intro": "تعريف",
+				"streaming": "جارٍ الإنشاء…",
+				"tag": "دور",
+				"tagSolo": "الشخصيات · حوار 1:1",
+				"typing": "الدخول…"
+			},
+			"list": {
+				"channelEmpty": "القائمة فارغة.",
+				"editorTitle": "تحرير عناصر القائمة (صفيف JSON)",
+				"itemUntitled": "لم إشارات اسمه",
+				"jsonInvalid": "JSON غير صالح: ${message}",
+				"saveFailed": "فشل الحفظ",
+				"saveToDag": "حفظ إلى DAG",
+				"saved": "تم الحفظ"
+			},
+			"save": {
+				"emoji": {
+					"title": "حفظ الرموز"
+				},
+				"emojiFailed": "فشل حفظ الرمز التعبيري: ${error}",
+				"emojiOk": "تم حفظ التعبيرات في قاعدة البيانات",
+				"sticker": {
+					"title": "حفظ الملصقات"
+				},
+				"stickerFailed": "فشل حفظ الملصقات: ${error}",
+				"stickerOk": "تمت إضافة الملصق إلى مكتبة الملصقات الخاصة بك"
+			},
+			"sync": {
+				"failed": "فشلت مزامنة الاتحاد: ${error}",
+				"incomplete": "تظل أحداث ${missing}/${total} غير متزامنة",
+				"noPeers": "غير متصل بالجار المتحد، لا يمكن مزامنة الرسائل التاريخية مؤقتًا؛ يرجى استخدام رابط الدعوة الكامل والمحاولة مرة أخرى لاحقًا",
+				"rateLimited": "الحد الأقصى لسرعة المزامنة الفيدرالية قيد التقدم، يرجى المحاولة مرة أخرى لاحقًا.",
+				"truncated": "زيادة DAG ليست كاملة. يمكنك المحاولة مرة أخرى لاحقًا أو زيادة الحد.",
+				"truncatedHint": "تاريخ DAG طويل جدًا. يمكنك المحاولة مرة أخرى لاحقًا أو زيادة الحد."
+			},
+			"load": {
+				"charChatFailed": "فشل تحميل الرسالة",
+				"groupFailed": "فشل تحميل المجموعة: ${error}",
+				"listFailed": "فشل تحميل قائمة المجموعة: ${error}",
+				"messagesFailed": "فشل تحميل الرسالة: ${error}",
+				"more": "جارٍ تحميل الأخبار القديمة…"
+			},
+			"send": {
+				"main": "إرسال",
+				"failed": "فشل الإرسال: ${error}",
+				"failedPending": "فشل الإرسال",
+				"imageFailed": "فشل إرسال الصورة: ${error}",
+				"stickerFailed": "فشل إرسال الملصق: ${error}",
+				"title": {
+					"title": "إرسال (Ctrl+Enter)"
+				}
+			},
+			"fed": {
+				"advancedDescription": "إصلاحات الأخطاء وإدارة السمعة وإصدار الارتباط اليدوي",
+				"advancedTitle": "الإعدادات المتقدمة",
+				"batterySaverLabel": "وضع توفير الطاقة",
+				"batterySaverTip": "قد يؤدي تقليل عدد اتصالات الخلفية ونشاط الشبكة إلى إبطاء مزامنة الرسائل قليلاً.",
+				"connectionTitle": "تواصل واكتشف",
+				"dm": {
+					"invalidateDescription": "بعد التنفيذ، ستصبح جميع روابط إضافة الأصدقاء التي تم إصدارها مسبقًا غير صالحة على الفور ولا يمكن إبطالها.",
+					"invalidateTitle": "دع روابط الإحالة القديمة تنتهي صلاحيتها",
+					"issueLabel": "إصدار رابط DM",
+					"issued": "تم توقيع رابط DM ونسخه إلى الحافظة",
+					"linkDescription": "مناسب لتصحيح الأخطاء أو ترحيل الهوية يدويًا؛ ليست هناك حاجة لملء هذه الحقول عند إضافة الأصدقاء بشكل يومي.",
+					"linkTip": "يتطلب التوقيع باستخدام مفتاح الهوية الأصلي. يتم إرسال المفتاح الخاص فقط إلى الخدمة المحلية في هذه الصفحة ولن يتم إرساله إلى العقد الأخرى.",
+					"linkTitle": "قم بإصدار رابط صديق يدويًا",
+					"needPubKey": "يتطلب 64 مفتاحًا عامًا سداسيًا",
+					"needSecretKey": "يتطلب 64 بذرة مفتاح خاص سداسي عشرية",
+					"nodeLabel": "عنوان URL للعقدة الاختيارية",
+					"pubKeyLabel": "مفتاح عام سداسي(64)",
+					"rotateConfirm": "ستصبح جميع روابط إضافة الأصدقاء التي تم إصدارها مسبقًا غير صالحة على الفور ولا يمكن استعادتها. هل أنت متأكد أنك تريد الاستمرار؟",
+					"rotateLabel": "إبطال الروابط القديمة",
+					"secretLabel": "عرافة البذور الرئيسية الخاصة(64)"
+				},
+				"groupRecoveryTip": "يُستخدم فقط في حالة تسريب الدعوة أو عدم قدرة الجهاز الجديد على مزامنة السجل.",
+				"groupRecoveryTitle": "إصلاح اتصال المجموعة",
+				"nonceRotated": "تم تدوير nonce (${nonce}…)",
+				"relayUrlsLabel": "عنوان ترحيل الشبكة",
+				"relayUrlsTip": "مساعدة الأجهزة على اكتشاف بعضها البعض على الإنترنت. املأ عنوان wss:// واحد في كل سطر؛ اتركه فارغًا لاستخدام المرحل الافتراضي.",
+				"repEmpty": "(باطل)",
+				"repTip": "إن درجات تفضيلات الاتصال المحسوبة أصلاً بناءً على سلوك العقدة الموحدة ليست تقييمات عامة لأعضاء المجموعة.",
+				"repTitle": "المصداقية الذاتية لهذه المجموعة",
+				"repairJoinSnapshot": "طلب الجيران للانضمام إلى إصلاح لقطة المجموعة",
+				"repairJoinSnapshotFailed": "فشل إصلاح لقطة المجموعة: ${error}",
+				"repairJoinSnapshotOk": "تم تطبيق لقطة المجموعة (سجل قناة {channels}) ${channels}",
+				"resetOk": "لقد تمت كتابة السمعة_reset",
+				"resetSubmitLabel": "إعادة تعيين سمعة الهدف",
+				"rotateRoomSecret": "تدوير كلمة مرور غرفة المجموعة",
+				"rotateRoomSecretConfirm": "بعد التناوب، لن تتمكن الدعوات التي تستخدم كلمة مرور الغرفة القديمة من الاتصال. هل أنت متأكد أنك تريد الاستمرار؟",
+				"rotateRoomSecretOk": "تم تدوير كلمة مرور الغرفة",
+				"saved": "تم الحفظ",
+				"slash": {
+					"claimLabel": "مطالبة قوة المطالبة (0-1)",
+					"needHash": "يتطلب إصدار 64 بت من نظام pubKeyHash",
+					"ok": "السمعة_slash مكتوبة إلى DAG",
+					"proof": {
+						"placeholder": "64 معرف الحدث السداسي"
+					},
+					"proofLabel": "إثبات.الحدث (اختياري)",
+					"submitLabel": "نشر السمعة_slash",
+					"target": {
+						"placeholder": "تجزئة المفتاح العام للعضو"
+					},
+					"targetLabel": "الهدف pubKeyHash (64 سداسي عشري)",
+					"tip": "يكتب بيان سمعة سلبي حول عقدة في الرسم البياني لحدث المجموعة. للاستخدام فقط من قبل المسؤولين الذين يفهمون بروتوكولات الاتحاد.",
+					"title": "عقوبة السمعة",
+					"verifiedLabel": "يمكن التحقق منه (مطلوب معرف حدث الإثبات)"
+				}
+			},
+			"pin": {
+				"previewInvite": "[دعوة] ${groupName}",
+				"previewSticker": "[ملصق]",
+				"previewVote": "[تصويت] ${question}",
+				"unpinSidebar": {
+					"title": "إزالة التثبيت"
+				}
+			},
+			"no": {
+				"activeChat": "يرجى فتح الجلسة أولاً قبل سحب الجزء",
+				"bookmarks": "لا توجد إشارات مرجعية حتى الآن",
+				"channels": "لا توجد محادثة بعد",
+				"chars": "لا توجد أدوار حتى الآن، يرجى تثبيت بعضها أولاً.",
+				"description": "لا وصف",
+				"friends": "لا توجد محادثات خاصة حتى الآن",
+				"groups": "لا توجد مجموعة بعد",
+				"members": "لا يوجد أعضاء حتى الآن",
+				"pins": "لا دبابيس بعد",
+				"username": "لم يتم الحصول على اسم المستخدم"
+			}
 		},
 		"sidebar": {
 			"settings": {
@@ -2593,144 +2815,8 @@
 				"alt": "أيقونة الصورة"
 			}
 		},
-		"messageList": {
-			"confirmDeleteMessage": "هل أنت متأكد من حذف هذه الرسالة؟"
-		},
 		"voiceRecording": {
 			"errorAccessingMicrophone": "لا يمكن الوصول إلى الميكروفون"
-		},
-		"messageView": {
-			"buttons": {
-				"edit": {
-					"title": "تعديل"
-				},
-				"editIcon": {
-					"alt": "أيقونة التعديل"
-				},
-				"more": {
-					"title": "المزيد"
-				},
-				"moreIcon": {
-					"alt": "أيقونة المزيد"
-				},
-				"delete": {
-					"alt": "حذف"
-				},
-				"deleteIcon": {
-					"alt": "أيقونة الحذف"
-				},
-				"downloadHtml": {
-					"alt": "تنزيل html"
-				},
-				"downloadHtmlIcon": {
-					"alt": "أيقونة تنزيل html"
-				}
-			},
-			"copyButton": {
-				"title": "نسخ"
-			},
-			"copyButtonIcon": {
-				"alt": "نسخ"
-			},
-			"copySuccess": "تم النسخ إلى الحافظة",
-			"dropdown": {
-				"delete": "حذف",
-				"deleteIcon": {
-					"alt": "أيقونة الحذف"
-				},
-				"copyMarkdown": "نسخ بصيغة markdown",
-				"copyMarkdownIcon": {
-					"alt": "أيقونة نسخ markdown"
-				},
-				"copyText": "نسخ كنص عادي",
-				"copyTextIcon": {
-					"alt": "أيقونة نسخ النص"
-				},
-				"copyHtml": "نسخ بصيغة html",
-				"copyHtmlIcon": {
-					"alt": "أيقونة نسخ html"
-				},
-				"downloadHtml": "تنزيل html",
-				"downloadHtmlIcon": {
-					"alt": "أيقونة تنزيل html"
-				},
-				"share": {
-					"textContent": "مشاركة",
-					"1h": "ساعة واحدة",
-					"12h": "12 ساعة",
-					"24h": "24 ساعة",
-					"72h": "72 ساعة"
-				},
-				"shareIcon": {
-					"alt": "رمز المشاركة"
-				}
-			},
-			"share": {
-				"uploading": "جارٍ إنشاء الرابط...",
-				"success": "تمت المشاركة بنجاح! تم نسخ الرابط إلى الحافظة. <br>هذه الميزة مدعومة من ${provider}. <br>[رعايتهم.](${sponsorLink})"
-			},
-			"commonToolCalling": "جارٍ استدعاء الأداة",
-			"toolRunningLang": "جارٍ تنفيذ ${lang}",
-			"toolSearchingContent": "جارٍ البحث عن ${content}",
-			"toolOverridingFilepath": "جارٍ إعادة كتابة ${filepath}",
-			"toolReplacingFilepath": "جارٍ استبدال جزء في ${filepath}",
-			"toolReadingFilepath": "جارٍ قراءة ${filepath}",
-			"reasoningDetailsTitle": "عملية التفكير",
-			"logprobsNotApplicable": "لا ينطبق",
-			"logprobsTopLogprobsMeta": "top_logprobs (محدد: ${token})",
-			"logprobsMetricsFooter": "تأخير أول رمز: ${ttft} | المدة: ${time} | الرموز: ${tokens} | السرعة: ${speed}",
-			"noReplyContent": "(لا يوجد محتوى الرد)",
-			"feedback": {
-				"thumbsUp": {
-					"title": "إعجاب"
-				},
-				"thumbsDown": {
-					"title": "عدم إعجاب"
-				},
-				"regenerate": {
-					"title": "إعادة التوليد"
-				},
-				"reason": {
-					"placeholder": "اختياري: اشرح السبب"
-				},
-				"submit": "إرسال",
-				"cancel": "إلغاء"
-			}
-		},
-		"messageEdit": {
-			"input": {
-				"placeholder": "أدخل المحتوى..."
-			},
-			"buttons": {
-				"confirm": {
-					"title": "تأكيد"
-				},
-				"confirmIcon": {
-					"alt": "أيقونة التأكيد"
-				},
-				"cancel": {
-					"title": "إلغاء"
-				},
-				"cancelIcon": {
-					"alt": "أيقونة الإلغاء"
-				},
-				"upload": {
-					"title": "رفع"
-				},
-				"uploadIcon": {
-					"alt": "أيقونة الرفع"
-				}
-			}
-		},
-		"messageGenerating": {
-			"tips": "يقوم الدور بإنشاء رد، يرجى الانتظار...",
-			"stop": {
-				"textContent": "قف",
-				"title": "توقف عن التوليد"
-			},
-			"stopIcon": {
-				"alt": "أيقونة التوقف"
-			}
 		},
 		"attachment": {
 			"buttons": {
@@ -2840,34 +2926,6 @@
 			"avatarLabel": "الصورة الرمزية",
 			"themeColorLabel": "لون السمة",
 			"uploadAvatar": "رفع صورة رمزية",
-			"ownerTitle": "مالكي",
-			"ownerSummary": "إعدادات التفويض",
-			"ownerDescription": "بعد التعيين، يمكن للمالك تعديل أو حذف رسائلك ومنشوراتك وملفك الشخصي نيابةً عنك؛ ويُعرَض محتواه محلياً بـ Markdown غير آمن (قد يتضمن نصوصاً برمجية). أدخل أي تجزئة كيان واحذفها في أي وقت.",
-			"ownerEntityHashLabel": "تجزئة كيان المالك (128 hex)",
-			"ownerSave": "حفظ المالك",
-			"ownerClear": "إزالة المالك",
-			"ownerSaved": "تم تحديث المالك",
-			"ownerCleared": "تمت إزالة المالك",
-			"ownerSaveFailed": "فشل الحفظ: ${error}",
-			"ownerConfirmTitle": "تأكيد تعيين المالك؟",
-			"ownerConfirmWarningTitle": "عملية عالية المخاطر — اقرأ بعناية",
-			"ownerConfirmEditBody": "بعد التعيين، يمكن للطرف الآخر تعديل أو حذف رسائلك ومنشوراتك وملفك الشخصي دون موافقتك. التعيين الخاطئ أو بالخداع = تسليم فوري لسيطرة المحتوى.",
-			"ownerConfirmRenderBody": "رسائل الدردشة والمنشورات من المالك تُعرَض في متصفحك بـ Markdown كامل (بما في ذلك HTML/نصوص برمجية). هذا يعادل السماح بتشغيل أي كود على جهازك دون موافقة إضافية. تابع فقط إذا كنت تثق تماماً.",
-			"ownerConfirmCooldown": "قرأت المخاطر (${seconds})",
-			"ownerConfirmFirst": "أفهم المخاطر، متابعة",
-			"ownerConfirmSecond": "انقر مرة أخرى للتأكيد النهائي",
-			"ownerConfirmCancel": "إلغاء",
-			"federationTitle": "الاتحاد والمزامنة",
-			"federationSummary": "خوادم relay ووضع توفير الطاقة",
-			"federationDescription": "اضبط عناوين Nostr relay ووضع توفير الطاقة. تُفعَّل مزامنة الاتحاد للمجموعة تلقائياً عند أول دعوة أو إنشاء رسالة خاصة اتحادية.",
-			"federationAdvanced": "خيارات متقدمة",
-			"federationRelayUrlsLabel": "خوادم relay (واحد في كل سطر، اتركه فارغاً للافتراضي)",
-			"federationBatterySaverLabel": "وضع توفير الطاقة",
-			"federationSave": "حفظ إعدادات الشبكة",
-			"federationResetDefault": "استعادة الإعدادات الافتراضية الموصى بها",
-			"federationSaved": "تم الحفظ",
-			"federationResetOk": "تمت استعادة الإعدادات الافتراضية",
-			"federationSaveFailed": "فشل الحفظ: ${error}",
 			"preferences": "التفضيلات",
 			"language": "اللغة",
 			"theme": "السمة",
@@ -2925,20 +2983,9 @@
 			"noGroups": "لم تنضم إلى أي مجموعة بعد",
 			"noChannels": "لا قنوات",
 			"overview": "نظرة عامة على المستخدم",
-			"summaryUserId": "معرّف المستخدم",
-			"summaryAccountStatus": "حالة الحساب",
-			"summaryEmailVisibility": "ظهور البريد",
-			"summaryThemePref": "تفضيل السمة",
-			"summaryLanguagePref": "تفضيل اللغة",
-			"summarySocialCount": "عدد روابط التواصل",
-			"summaryLinksCount": "عدد الروابط الخارجية",
 			"groupDescriptionEmpty": "لا وصف",
 			"groupMembers": "${members} عضو · ${channels} قناة",
 			"channelPrivate": " · خاص",
-			"channelTypeText": "قناة نصية",
-			"channelTypeList": "قناة قائمة",
-			"channelTypeVoice": "قناة صوتية",
-			"channelTypeStreaming": "قناة بث",
 			"errors": {
 				"loadFailed": "فشل تحميل الملف الشخصي",
 				"saveFailed": "فشل حفظ الملف الشخصي",
@@ -2952,8 +2999,57 @@
 				"saved": "تم حفظ الملف الشخصي",
 				"avatarUploaded": "تم رفع الصورة الرمزية"
 			},
-			"ownerEntityHash": {
-				"placeholder": "أدخل تجزئة كيان المالك"
+			"channelType": {
+				"list": "قناة قائمة",
+				"streaming": "قناة بث",
+				"text": "قناة نصية",
+				"voice": "قناة صوتية"
+			},
+			"federation": {
+				"advanced": "خيارات متقدمة",
+				"batterySaverLabel": "وضع توفير الطاقة",
+				"description": "اضبط عناوين Nostr relay ووضع توفير الطاقة. تُفعَّل مزامنة الاتحاد للمجموعة تلقائياً عند أول دعوة أو إنشاء رسالة خاصة اتحادية.",
+				"relayUrlsLabel": "خوادم relay (واحد في كل سطر، اتركه فارغاً للافتراضي)",
+				"resetDefault": "استعادة الإعدادات الافتراضية الموصى بها",
+				"resetOk": "تمت استعادة الإعدادات الافتراضية",
+				"save": "حفظ إعدادات الشبكة",
+				"saveFailed": "فشل الحفظ: ${error}",
+				"saved": "تم الحفظ",
+				"summary": "خوادم relay ووضع توفير الطاقة",
+				"title": "الاتحاد والمزامنة"
+			},
+			"summary": {
+				"accountStatus": "حالة الحساب",
+				"emailVisibility": "ظهور البريد",
+				"languagePref": "تفضيل اللغة",
+				"linksCount": "عدد الروابط الخارجية",
+				"socialCount": "عدد روابط التواصل",
+				"themePref": "تفضيل السمة",
+				"userId": "معرّف المستخدم"
+			},
+			"owner": {
+				"clear": "إزالة المالك",
+				"cleared": "تمت إزالة المالك",
+				"confirm": {
+					"cancel": "إلغاء",
+					"cooldown": "قرأت المخاطر (${seconds})",
+					"editBody": "بعد التعيين، يمكن للطرف الآخر تعديل أو حذف رسائلك ومنشوراتك وملفك الشخصي دون موافقتك. التعيين الخاطئ أو بالخداع = تسليم فوري لسيطرة المحتوى.",
+					"first": "أفهم المخاطر، متابعة",
+					"renderBody": "رسائل الدردشة والمنشورات من المالك تُعرَض في متصفحك بـ Markdown كامل (بما في ذلك HTML/نصوص برمجية). هذا يعادل السماح بتشغيل أي كود على جهازك دون موافقة إضافية. تابع فقط إذا كنت تثق تماماً.",
+					"second": "انقر مرة أخرى للتأكيد النهائي",
+					"title": "تأكيد تعيين المالك؟",
+					"warningTitle": "عملية عالية المخاطر — اقرأ بعناية"
+				},
+				"description": "بعد التعيين، يمكن للمالك تعديل أو حذف رسائلك ومنشوراتك وملفك الشخصي نيابةً عنك؛ ويُعرَض محتواه محلياً بـ Markdown غير آمن (قد يتضمن نصوصاً برمجية). أدخل أي تجزئة كيان واحذفها في أي وقت.",
+				"entityHash": {
+					"placeholder": "أدخل تجزئة كيان المالك"
+				},
+				"entityHashLabel": "تجزئة كيان المالك (128 hex)",
+				"save": "حفظ المالك",
+				"saveFailed": "فشل الحفظ: ${error}",
+				"saved": "تم تحديث المالك",
+				"summary": "إعدادات التفويض",
+				"title": "مالكي"
 			}
 		},
 		"entityProfile": {
@@ -2988,30 +3084,12 @@
 			},
 			"searchLabel": "البحث في حزم الملصقات",
 			"emptyPacks": "لا توجد حزم ملصقات",
-			"packNameLabel": "اسم حزمة الملصقات",
-			"packName": {
-				"placeholder": "أدخل اسم حزمة الملصقات"
-			},
-			"packDescriptionLabel": "الوصف",
-			"packDescription": {
-				"placeholder": "أدخل الوصف"
-			},
-			"stickerNameLabel": "اسم الملصق",
-			"stickerName": {
-				"placeholder": "أدخل اسم الملصق"
-			},
-			"selectPack": "اختر حزمة ملصقات",
-			"selectPackOption": {
-				"textContent": "يُرجى اختيار حزمة ملصقات"
-			},
-			"selectImage": "اختر صورة",
 			"tagsLabel": "الوسوم (مفصولة بفواصل)",
 			"tags": {
 				"placeholder": "مثال: لطيف، تعبير، حيوان"
 			},
 			"author": "المؤلف",
 			"authorLabel": "المؤلف: ${author}",
-			"stickerCount": "${count} ملصق",
 			"badgeMine": "خاصتي",
 			"noDescription": "لا وصف",
 			"noStickersInPack": "لا توجد ملصقات",
@@ -3027,8 +3105,6 @@
 			"importPackName": "مجموعتي",
 			"importPackDescription": "ملصقات محفوظة من الرسائل",
 			"nameRequired": "يُرجى إدخال اسم حزمة الملصقات",
-			"stickerNameRequired": "يُرجى إدخال اسم الملصق",
-			"selectPackRequired": "يُرجى اختيار حزمة ملصقات",
 			"fileRequired": "يُرجى اختيار ملف صورة",
 			"loadDetailFailed": "فشل تحميل تفاصيل حزمة الملصقات",
 			"deleteConfirm": "هل تريد حذف حزمة الملصقات هذه نهائياً؟ ستُحذف جميع الملصقات ولا يمكن التراجع عن هذا الإجراء.",
@@ -3046,6 +3122,174 @@
 				"uninstalled": "تم إلغاء التثبيت بنجاح",
 				"created": "تم إنشاء حزمة الملصقات بنجاح",
 				"deleted": "تم الحذف بنجاح"
+			},
+			"sticker": {
+				"count": "${count} ملصق",
+				"name": {
+					"placeholder": "أدخل اسم الملصق"
+				},
+				"nameLabel": "اسم الملصق",
+				"nameRequired": "يُرجى إدخال اسم الملصق"
+			},
+			"select": {
+				"image": "اختر صورة",
+				"pack": "اختر حزمة ملصقات",
+				"packOption": {
+					"textContent": "يُرجى اختيار حزمة ملصقات"
+				},
+				"packRequired": "يُرجى اختيار حزمة ملصقات"
+			},
+			"pack": {
+				"description": {
+					"placeholder": "أدخل الوصف"
+				},
+				"descriptionLabel": "الوصف",
+				"name": {
+					"placeholder": "أدخل اسم حزمة الملصقات"
+				},
+				"nameLabel": "اسم حزمة الملصقات"
+			}
+		},
+		"message": {
+			"edit": {
+				"input": {
+					"placeholder": "أدخل المحتوى..."
+				},
+				"buttons": {
+					"confirm": {
+						"title": "تأكيد"
+					},
+					"confirmIcon": {
+						"alt": "أيقونة التأكيد"
+					},
+					"cancel": {
+						"title": "إلغاء"
+					},
+					"cancelIcon": {
+						"alt": "أيقونة الإلغاء"
+					},
+					"upload": {
+						"title": "رفع"
+					},
+					"uploadIcon": {
+						"alt": "أيقونة الرفع"
+					}
+				}
+			},
+			"generating": {
+				"tips": "يقوم الدور بإنشاء رد، يرجى الانتظار...",
+				"stop": {
+					"textContent": "قف",
+					"title": "توقف عن التوليد"
+				},
+				"stopIcon": {
+					"alt": "أيقونة التوقف"
+				}
+			},
+			"list": {
+				"confirmDeleteMessage": "هل أنت متأكد من حذف هذه الرسالة؟"
+			},
+			"view": {
+				"buttons": {
+					"edit": {
+						"title": "تعديل"
+					},
+					"editIcon": {
+						"alt": "أيقونة التعديل"
+					},
+					"more": {
+						"title": "المزيد"
+					},
+					"moreIcon": {
+						"alt": "أيقونة المزيد"
+					},
+					"delete": {
+						"alt": "حذف"
+					},
+					"deleteIcon": {
+						"alt": "أيقونة الحذف"
+					},
+					"downloadHtml": {
+						"alt": "تنزيل html"
+					},
+					"downloadHtmlIcon": {
+						"alt": "أيقونة تنزيل html"
+					}
+				},
+				"copyButton": {
+					"title": "نسخ"
+				},
+				"copyButtonIcon": {
+					"alt": "نسخ"
+				},
+				"copySuccess": "تم النسخ إلى الحافظة",
+				"dropdown": {
+					"delete": "حذف",
+					"deleteIcon": {
+						"alt": "أيقونة الحذف"
+					},
+					"downloadHtml": "تنزيل html",
+					"downloadHtmlIcon": {
+						"alt": "أيقونة تنزيل html"
+					},
+					"share": {
+						"textContent": "مشاركة",
+						"1h": "ساعة واحدة",
+						"12h": "12 ساعة",
+						"24h": "24 ساعة",
+						"72h": "72 ساعة"
+					},
+					"shareIcon": {
+						"alt": "رمز المشاركة"
+					},
+					"copy": {
+						"html": "نسخ بصيغة html",
+						"htmlIcon": {
+							"alt": "أيقونة نسخ html"
+						},
+						"markdown": "نسخ بصيغة markdown",
+						"markdownIcon": {
+							"alt": "أيقونة نسخ markdown"
+						},
+						"text": "نسخ كنص عادي",
+						"textIcon": {
+							"alt": "أيقونة نسخ النص"
+						}
+					}
+				},
+				"share": {
+					"uploading": "جارٍ إنشاء الرابط...",
+					"success": "تمت المشاركة بنجاح! تم نسخ الرابط إلى الحافظة. <br>هذه الميزة مدعومة من ${provider}. <br>[رعايتهم.](${sponsorLink})"
+				},
+				"commonToolCalling": "جارٍ استدعاء الأداة",
+				"reasoningDetailsTitle": "عملية التفكير",
+				"logprobsNotApplicable": "لا ينطبق",
+				"logprobsTopLogprobsMeta": "top_logprobs (محدد: ${token})",
+				"logprobsMetricsFooter": "تأخير أول رمز: ${ttft} | المدة: ${time} | الرموز: ${tokens} | السرعة: ${speed}",
+				"noReplyContent": "(لا يوجد محتوى الرد)",
+				"feedback": {
+					"thumbsUp": {
+						"title": "إعجاب"
+					},
+					"thumbsDown": {
+						"title": "عدم إعجاب"
+					},
+					"regenerate": {
+						"title": "إعادة التوليد"
+					},
+					"reason": {
+						"placeholder": "اختياري: اشرح السبب"
+					},
+					"submit": "إرسال",
+					"cancel": "إلغاء"
+				},
+				"tool": {
+					"overridingFilepath": "جارٍ إعادة كتابة ${filepath}",
+					"readingFilepath": "جارٍ قراءة ${filepath}",
+					"replacingFilepath": "جارٍ استبدال جزء في ${filepath}",
+					"runningLang": "جارٍ تنفيذ ${lang}",
+					"searchingContent": "جارٍ البحث عن ${content}"
+				}
 			}
 		}
 	},
@@ -3098,21 +3342,6 @@
 				"label": "الرسالة الأولى",
 				"placeholder": "الشيء الأول الذي تقوله الشخصية."
 			},
-			"personaDef": {
-				"heading": "تعريف الهوية"
-			},
-			"personaUserName": {
-				"label": "اسمك في المحادثة",
-				"placeholder": "مثال: الكابتن، المستكشف"
-			},
-			"personaAppearance": {
-				"label": "المظهر",
-				"placeholder": "صف مظهرك."
-			},
-			"personaPersonality": {
-				"label": "الشخصية",
-				"placeholder": "صف سمات شخصيتك."
-			},
 			"worldDef": {
 				"heading": "تعريف العالم"
 			},
@@ -3144,7 +3373,24 @@
 				"label": "صفحة المشاكل",
 				"placeholder": "رابط صفحة مشاكل المكون"
 			},
-			"createButton": "إنشاء مكون"
+			"createButton": "إنشاء مكون",
+			"persona": {
+				"appearance": {
+					"label": "المظهر",
+					"placeholder": "صف مظهرك."
+				},
+				"def": {
+					"heading": "تعريف الهوية"
+				},
+				"personality": {
+					"label": "الشخصية",
+					"placeholder": "صف سمات شخصيتك."
+				},
+				"userName": {
+					"label": "اسمك في المحادثة",
+					"placeholder": "مثال: الكابتن، المستكشف"
+				}
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -3455,21 +3701,23 @@
 			"noModelsMatched": "لم يُعثر على نماذج مطابقة",
 			"currentModelTitle": "${name} (${model})",
 			"providerLabel": "المزوّد: ${provider}",
-			"metaContext": "السياق: ${context} رمز",
-			"metaOutputLimit": "الحد الأقصى للإخراج: ${output} رمز",
-			"metaInputPrice": "سعر الإدخال: ${price} / مليون رمز",
-			"metaOutputPrice": "سعر الإخراج: ${price} / مليون رمز",
-			"metaCachePrice": "قراءة/كتابة الذاكرة المؤقتة: ${read} / ${write}",
-			"metaModalities": "الأنماط: إدخال ${input}، إخراج ${output}",
-			"metaReasoning": "يدعم الاستدلال",
-			"metaToolCall": "يدعم استدعاء الأدوات",
-			"metaVision": "يدعم الإدخال البصري",
-			"metaOpenWeights": "أوزان مفتوحة",
-			"metaKnowledge": "حد المعرفة: ${knowledge}",
-			"metaReleaseDate": "تاريخ الإصدار: ${date}",
 			"providerDocLink": "[عرض وثائق المزوّد](${url})",
 			"modelSearch": {
 				"placeholder": "ابحث عن اسم الطراز والشركة المصنعة والإمكانيات..."
+			},
+			"meta": {
+				"cachePrice": "قراءة/كتابة الذاكرة المؤقتة: ${read} / ${write}",
+				"context": "السياق: ${context} رمز",
+				"inputPrice": "سعر الإدخال: ${price} / مليون رمز",
+				"knowledge": "حد المعرفة: ${knowledge}",
+				"modalities": "الأنماط: إدخال ${input}، إخراج ${output}",
+				"openWeights": "أوزان مفتوحة",
+				"outputLimit": "الحد الأقصى للإخراج: ${output} رمز",
+				"outputPrice": "سعر الإخراج: ${price} / مليون رمز",
+				"reasoning": "يدعم الاستدلال",
+				"releaseDate": "تاريخ الإصدار: ${date}",
+				"toolCall": "يدعم استدعاء الأدوات",
+				"vision": "يدعم الإدخال البصري"
 			}
 		},
 		"prompts": {
@@ -3495,21 +3743,23 @@
 			"unsavedChangesBeforeUnload": "لديك تغييرات غير محفوظة. هل أنت متأكد أنك تريد مغادرة هذه الصفحة؟"
 		},
 		"alerts": {
-			"fetchFileListFailed": "فشل الحصول على قائمة الملفات: ${error}",
-			"fetchGeneratorListFailed": "فشل الحصول على قائمة المولدات: ${error}",
-			"fetchDefaultsFailed": "فشل في الحصول على المكون الافتراضي: ${error}",
-			"fetchFileDataFailed": "فشل الحصول على بيانات الملف: ${error}",
-			"fetchConfigTemplateFailed": "فشل الحصول على قالب التكوين",
 			"saveFileFailed": "فشل حفظ الملف: ${error}",
 			"deleteFileFailed": "فشل حذف الملف: ${error}",
 			"addFileFailed": "فشلت إضافة الملف: ${error}",
 			"setDefaultFailed": "فشل في تعيين مصدر الخدمة الافتراضي: ${error}",
-			"fetchBranchesFailed": "فشل الحصول على شجرة المكونات: ${error}",
 			"noFileSelectedSave": "لم يتم تحديد ملف للحفظ.",
 			"noFileSelectedDelete": "لم يتم تحديد أي ملفات للحذف.",
 			"noGeneratorSelectedSave": "الرجاء تحديد المولد قبل الحفظ",
 			"savedAsNewFile": "تم الحفظ كمصدر خدمة جديد: ${name}",
-			"invalidFileName": "لا يمكن أن يحتوي اسم الملف على الأحرف التالية: / \\ : * ? \" < > |"
+			"invalidFileName": "لا يمكن أن يحتوي اسم الملف على الأحرف التالية: / \\ : * ? \" < > |",
+			"fetch": {
+				"branchesFailed": "فشل الحصول على شجرة المكونات: ${error}",
+				"configTemplateFailed": "فشل الحصول على قالب التكوين",
+				"defaultsFailed": "فشل في الحصول على المكون الافتراضي: ${error}",
+				"fileDataFailed": "فشل الحصول على بيانات الملف: ${error}",
+				"fileListFailed": "فشل الحصول على قائمة الملفات: ${error}",
+				"generatorListFailed": "فشل الحصول على قائمة المولدات: ${error}"
+			}
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -3832,14 +4082,6 @@
 			"privacyHint": "يتحكم في ما إذا كانت الحسابات ستظهر في الاكتشاف والتوصيات.",
 			"tasteTitle": "التوصيات والتفضيلات",
 			"tasteHint": "اضبط حدود الخصوصية وتسمية \"موصى به لك\".",
-			"mutedKeywordsTitle": "حظر الكلمات والعلامات",
-			"mutedKeywordsHint": "سيتم إخفاء المشاركات التي تحتوي على نص أساسي أو تحذيرات المحتوى أو التصنيفات من ساحة المشاركات والاستكشاف والبحث والإشعارات. المحفوظة محليا فقط.",
-			"mutedKeywordsMatchTags": "مطابقة العلامات في نفس الوقت",
-			"mutedKeywordsAdd": "اضف إليه",
-			"mutedKeywordsRemove": {
-				"title": "إزالة الكلمات المحظورة"
-			},
-			"mutedKeywordsEmpty": "لم تتم إضافة أي كلمات محظورة حتى الآن",
 			"autoTranslateTitle": "الترجمة الآلية",
 			"autoTranslateHint": "عند تشغيله، ستطلب المشاركات باللغة الأجنبية الترجمة تلقائيًا ويمكن تحويلها إلى النص الأصلي.",
 			"autoTranslateEnable": "ترجمة المنشورات بلغات أخرى غير لغتك تلقائيًا",
@@ -3847,19 +4089,29 @@
 			"safetyHint": "إدارة القوائم المحظورة والمخفية.",
 			"mutedKeywords": {
 				"placeholder": "أدخل الكلمات الرئيسية أو #tags",
-				"aria-label": "أدخل كلمة أو وسمًا للحظر"
+				"aria-label": "أدخل كلمة أو وسمًا للحظر",
+				"add": "اضف إليه",
+				"empty": "لم تتم إضافة أي كلمات محظورة حتى الآن",
+				"hint": "سيتم إخفاء المشاركات التي تحتوي على نص أساسي أو تحذيرات المحتوى أو التصنيفات من ساحة المشاركات والاستكشاف والبحث والإشعارات. المحفوظة محليا فقط.",
+				"matchTags": "مطابقة العلامات في نفس الوقت",
+				"remove": {
+					"title": "إزالة الكلمات المحظورة"
+				},
+				"title": "حظر الكلمات والعلامات"
 			},
 			"taste": {
 				"rebuild": "إعادة بناء التفضيلات",
-				"privacyPublishPreferences": "تسمية العلامات العامة واكتشاف الدمج",
-				"privacyPublishPreferencesHint": "بعد الإغلاق، لن يتمكن الأصدقاء من رؤية بيانات تسمية العلامات ودمجها، ولن يتمكنوا من المساهمة في الإجماع.",
-				"privacyPublishReactions": "الإعجابات العامة والكراهية",
-				"privacyPublishReactionsHint": "بعد الإغلاق، لن يتلقى الملصق إعجاباتك/عدم إعجابك، ولن يتم تضمين تفاعلاتك في توصيات الآخرين، ولن تقوم بعد الآن بالترويج للمنشور لينتشر مرة أخرى.",
 				"empty": "لا توجد علامة تفضيل حتى الآن، وسيتم تجميعها تلقائيًا بعد المزيد من الإعجابات/عدم الإعجاب",
 				"weight": "الوزن ${weight}",
 				"save": "حفظ",
 				"name": {
 					"placeholder": "اسم العرض المحلي"
+				},
+				"privacyPublish": {
+					"preferences": "تسمية العلامات العامة واكتشاف الدمج",
+					"preferencesHint": "بعد الإغلاق، لن يتمكن الأصدقاء من رؤية بيانات تسمية العلامات ودمجها، ولن يتمكنوا من المساهمة في الإجماع.",
+					"reactions": "الإعجابات العامة والكراهية",
+					"reactionsHint": "بعد الإغلاق، لن يتلقى الملصق إعجاباتك/عدم إعجابك، ولن يتم تضمين تفاعلاتك في توصيات الآخرين، ولن تقوم بعد الآن بالترويج للمنشور لينتشر مرة أخرى."
 				}
 			},
 			"blocklist": {
@@ -3886,27 +4138,6 @@
 				"placeholder": "تحذير المحتوى (اختياري)"
 			},
 			"sensitiveMedia": "قناع حساسية الوسائط",
-			"editImage": "تعديل",
-			"editCrop": "اقتصاص",
-			"editMosaic": "تمويه",
-			"editBrush": "فرشاة",
-			"editBrushColor": {
-				"title": "لون الفرشاة",
-				"aria-label": "لون الفرشاة"
-			},
-			"editBrushSize": {
-				"title": "سُمك الفرشاة",
-				"aria-label": "سُمك الفرشاة"
-			},
-			"editApply": "تطبيق",
-			"editCancel": "إلغاء",
-			"replyPolicyEveryone": "يمكن لأي شخص الرد",
-			"replyPolicyFollowers7d": "متابعون لأكثر من 7 أيام",
-			"replyPolicyAuthorFollows": "الناس الذين أتابعهم",
-			"replyPolicyLabel": "من يستطيع الرد",
-			"replyDisplayAll": "إظهار كافة الردود",
-			"replyDisplayFeaturedOnly": "الردود المختارة فقط",
-			"replyDisplayLabel": "الرد للإظهار",
 			"scheduleLabel": "الافراج بانتظام",
 			"scheduleSuccess": "تمت إضافة المنشور إلى قائمة الانتظار المجدولة",
 			"emojiButton": {
@@ -3988,6 +4219,33 @@
 					"placeholder": "من لا ينبغي أن يظهره (اختياري)"
 				},
 				"aria-label": "نطاق مرئي"
+			},
+			"reply": {
+				"displayAll": "إظهار كافة الردود",
+				"displayFeaturedOnly": "الردود المختارة فقط",
+				"displayLabel": "الرد للإظهار",
+				"policy": {
+					"authorFollows": "الناس الذين أتابعهم",
+					"everyone": "يمكن لأي شخص الرد",
+					"followers7d": "متابعون لأكثر من 7 أيام",
+					"label": "من يستطيع الرد"
+				}
+			},
+			"edit": {
+				"apply": "تطبيق",
+				"brush": "فرشاة",
+				"brushColor": {
+					"title": "لون الفرشاة",
+					"aria-label": "لون الفرشاة"
+				},
+				"brushSize": {
+					"title": "سُمك الفرشاة",
+					"aria-label": "سُمك الفرشاة"
+				},
+				"cancel": "إلغاء",
+				"crop": "اقتصاص",
+				"image": "تعديل",
+				"mosaic": "تمويه"
 			}
 		},
 		"feed": {
@@ -4094,21 +4352,11 @@
 			},
 			"mediaOnly": "[وسائط]",
 			"hideFromExplore": "إخفاء الحساب من صفحة الاستكشاف",
-			"tabPosts": "متحرك",
-			"tabAlbums": "ألبوم الصور",
-			"tabLikes": "إعجاب",
-			"tabCabinets": "خزانة الملفات",
 			"tabsLabel": {
 				"aria-label": "قسم البيانات"
 			},
 			"cabinetsEmpty": "لا يوجد حاليا أي خزائن الملفات العامة",
 			"cabinetsFailed": "فشل تحميل خزانة الملفات: ${error}",
-			"statsGroup": {
-				"aria-label": "إحصائيات"
-			},
-			"statsPosts": "متحرك",
-			"statsFollowing": "قم بالتركيز على",
-			"statsFollowers": "معجب",
 			"followingTitle": "قم بالتركيز على",
 			"followersTitle": "معجب",
 			"albums": {
@@ -4125,6 +4373,20 @@
 				"deleteWithPosts": "حذف الألبوم وحذف المشاركة",
 				"pickerLabel": "أضف إلى الألبوم",
 				"defaultName": "الألبوم الافتراضي"
+			},
+			"stats": {
+				"followers": "معجب",
+				"following": "قم بالتركيز على",
+				"group": {
+					"aria-label": "إحصائيات"
+				},
+				"posts": "متحرك"
+			},
+			"tabs": {
+				"albums": "ألبوم الصور",
+				"cabinets": "خزانة الملفات",
+				"likes": "إعجاب",
+				"posts": "متحرك"
 			}
 		},
 		"video": {
@@ -4174,10 +4436,6 @@
 			"broadcast": {
 				"title": "ابدأ البث",
 				"open": "اذهب إلى البث",
-				"mediaAv": "الصوت والفيديو",
-				"mediaAudio": "صوت نقي",
-				"mediaVideo": "صورة نقية",
-				"mediaWhip": "البث المباشر عبر WHIP (مثل OBS)",
 				"whipUrl": "عنوان السوط",
 				"whipToken": "رمز حامل",
 				"whipWaiting": "في انتظار اتصال دفق WHIP (يمكن استخدام برنامج دفق مثل OBS)...",
@@ -4187,6 +4445,12 @@
 				"stopped": "لقد توقف البث المباشر",
 				"titleInput": {
 					"placeholder": "العنوان المباشر (اختياري)"
+				},
+				"media": {
+					"audio": "صوت نقي",
+					"av": "الصوت والفيديو",
+					"video": "صورة نقية",
+					"whip": "البث المباشر عبر WHIP (مثل OBS)"
 				}
 			},
 			"danmaku": {
@@ -4210,30 +4474,32 @@
 			"trustScore": "ثق بـ ${score}",
 			"viewTitle": "بحث",
 			"loading": "البحث…",
-			"filterAuthor": {
-				"placeholder": "المؤلف",
-				"aria-label": "المؤلف"
-			},
-			"filterMedia": {
-				"aria-label": "نوع الوسائط"
-			},
-			"filterMediaAll": "جميع وسائل الإعلام",
-			"filterMediaImage": "صورة",
-			"filterMediaVideo": "فيديو",
-			"filterTag": {
-				"placeholder": "#ملصق",
-				"aria-label": "ملصق"
-			},
-			"filterSort": {
-				"aria-label": "ترتيب حسب"
-			},
 			"sortRecent": "حتى الآن",
 			"sortPopular": "شائع",
-			"filterScope": {
-				"aria-label": "نطاق البحث"
-			},
 			"scopeLocal": "آلة محلية",
-			"scopeNearby": "قريب"
+			"scopeNearby": "قريب",
+			"filter": {
+				"author": {
+					"placeholder": "المؤلف",
+					"aria-label": "المؤلف"
+				},
+				"media": {
+					"aria-label": "نوع الوسائط"
+				},
+				"mediaAll": "جميع وسائل الإعلام",
+				"mediaImage": "صورة",
+				"mediaVideo": "فيديو",
+				"scope": {
+					"aria-label": "نطاق البحث"
+				},
+				"sort": {
+					"aria-label": "ترتيب حسب"
+				},
+				"tag": {
+					"placeholder": "#ملصق",
+					"aria-label": "ملصق"
+				}
+			}
 		},
 		"dialog": {
 			"close": {
@@ -4428,7 +4694,6 @@
 		},
 		"upload": "رفع",
 		"uploadFolder": "رفع مجلد",
-		"newFolder": "مجلد جديد",
 		"open": "فتح",
 		"download": "تنزيل",
 		"downloadZip": "تنزيل مجلد",
@@ -4462,12 +4727,6 @@
 		"created": "إنشاء: ${stamp}",
 		"modified": "تعديل: ${stamp}",
 		"statusCount": "${count} من العناصر، تم تحديد ${selected}.",
-		"newCabinet": {
-			"title": "خزانة ملفات جديدة",
-			"aria-label": "خزانة ملفات جديدة"
-		},
-		"newCabinetPrompt": "اسم خزانة الملفات الجديد",
-		"newFolderPrompt": "اسم المجلد الجديد",
 		"renamePrompt": "اسم جديد",
 		"visibilityPrompt": "الرؤية (عام/غير مدرج/متابعين/خاص/محدد)",
 		"cabinetActionPrompt": "الإجراء: إعادة التسمية/الحذف/الرؤية",
@@ -4478,12 +4737,21 @@
 		"cutDone": "قص",
 		"undo": "إلغاء",
 		"redo": "إعادة",
-		"newWindow": "فتح نافذة جديدة الموقع الحالي",
 		"goUp": "العودة إلى المستوى السابق",
 		"brokenLink": "الرابط معطل: ${reason}",
 		"noDownload": "لا يوجد محتوى قابل للتنزيل",
 		"groupDownloadHint": "يرجى الحصول على ملفات المجموعة من خلال مرفقات الرسائل أو روابط التنزيل اللاحقة.",
-		"remoteEntity": "كيان بعيد"
+		"remoteEntity": "كيان بعيد",
+		"new": {
+			"cabinet": {
+				"title": "خزانة ملفات جديدة",
+				"aria-label": "خزانة ملفات جديدة"
+			},
+			"cabinetPrompt": "اسم خزانة الملفات الجديد",
+			"folder": "مجلد جديد",
+			"folderPrompt": "اسم المجلد الجديد",
+			"window": "فتح نافذة جديدة الموقع الحالي"
+		}
 	},
 	"browser_integration": {
 		"title": "تكامل المتصفح",
@@ -4613,27 +4881,10 @@
 		"title": "تكامل بيئة تطوير متكاملة",
 		"heading": "تكامل بيئة تطوير متكاملة",
 		"instruction": "استخدم الأدوار الأساسية لمساعدة البرمجة في برامج التحرير التي تدعم ACP (مثل Zed وJetBrains وNeovim وما إلى ذلك).",
-		"supportedEditorsTitle": "المحررين والعملاء المدعومة",
-		"supportedEditorsIntro": "العملاء التاليين يعملون مع fount:",
-		"supportedEditorsLoading": "تحميل…",
-		"supportedEditorsError": "فشل تحميل القائمة: ${message}",
-		"acpTitle": "تكوين البرنامج النصي fount ACP",
-		"acpDesc": "ارجع إلى المثال التالي لتكوين البرنامج النصي ACP الناشئ:",
-		"acpCharLabel": "دور",
 		"charListError": "فشل الحصول على قائمة الأدوار",
-		"acpScriptLabel": "عنوان URL للبرنامج النصي لـ ACP",
-		"acpConfigSample": "مثال التكوين:",
-		"acpConfigHint": "يظهر معرف الدور في القائمة المنسدلة للدور في هذه الصفحة، ويمكن إدارة مفتاح واجهة برمجة التطبيقات في إعدادات المستخدم.",
 		"copyButton": "ينسخ",
 		"copied": "تم النسخ إلى الحافظة",
-		"apiKeySectionTitle": "مفتاح واجهة برمجة التطبيقات",
-		"apiKeyHint": "يستخدم لمصدر اتصال البرنامج النصي ACP (يمكن إنشاء نفس مجموعة المفاتيح مثل وكيل API في إعدادات المستخدم).",
 		"generateApiKeyButton": "توليد مفتاح جديد",
-		"apiKeyCopied": "تم نسخ مفتاح API",
-		"apiKeyCreateError": "فشل إنشاء مفتاح واجهة برمجة التطبيقات: ${message}",
-		"apiKeyInput": {
-			"aria-label": "مفتاح واجهة برمجة التطبيقات"
-		},
 		"home_function_buttons": {
 			"integration_related": "المتعلقة بالتكامل",
 			"ide_integration_config": {
@@ -4647,8 +4898,31 @@
 				"locked_description": "اتصل بالدور الناشئ في IDE خارجي وأكمل الجلسة."
 			}
 		},
-		"acpChar": "حدد الدور",
-		"acpConfig": "الرجاء تحديد دور وإنشاء مفتاح API أولاً"
+		"supportedEditors": {
+			"error": "فشل تحميل القائمة: ${message}",
+			"intro": "العملاء التاليين يعملون مع fount:",
+			"loading": "تحميل…",
+			"title": "المحررين والعملاء المدعومة"
+		},
+		"apiKey": {
+			"copied": "تم نسخ مفتاح API",
+			"createError": "فشل إنشاء مفتاح واجهة برمجة التطبيقات: ${message}",
+			"hint": "يستخدم لمصدر اتصال البرنامج النصي ACP (يمكن إنشاء نفس مجموعة المفاتيح مثل وكيل API في إعدادات المستخدم).",
+			"input": {
+				"aria-label": "مفتاح واجهة برمجة التطبيقات"
+			},
+			"sectionTitle": "مفتاح واجهة برمجة التطبيقات"
+		},
+		"acp": {
+			"char": "حدد الدور",
+			"charLabel": "دور",
+			"config": "الرجاء تحديد دور وإنشاء مفتاح API أولاً",
+			"configHint": "يظهر معرف الدور في القائمة المنسدلة للدور في هذه الصفحة، ويمكن إدارة مفتاح واجهة برمجة التطبيقات في إعدادات المستخدم.",
+			"configSample": "مثال التكوين:",
+			"desc": "ارجع إلى المثال التالي لتكوين البرنامج النصي ACP الناشئ:",
+			"scriptLabel": "عنوان URL للبرنامج النصي لـ ACP",
+			"title": "تكوين البرنامج النصي fount ACP"
+		}
 	},
 	"deskpet": {
 		"title": "الحيوانات الأليفة سطح المكتب",
@@ -4939,11 +5213,6 @@
 			"deviceInfo": "معرف الجهاز: ${deviceId}",
 			"thisDevice": "هذا الجهاز",
 			"deviceDetails": "آخر ظهور: ${lastSeen} | IP: ‏${ipAddress} | UA: ‏${userAgent}",
-			"revokeButton": "إبطال",
-			"revokeConfirm": "هل أنت متأكد من أنك تريد تسجيل الخروج من هذا الجهاز/الجلسة؟",
-			"revokeSuccess": "تم إبطال الجهاز/الجلسة بنجاح.",
-			"revokeMissingParams": "يرجى تقديم كلمة مرور الجهاز والجلسة التي تريد إبطالها.",
-			"revokeWrongPassword": "كلمة المرور غير صحيحة.",
 			"listNotFound": "لم يتم العثور على قائمة الأجهزة.",
 			"deviceNotFound": "لم يتم العثور على الجهاز أو الجلسة.",
 			"refreshButton": {
@@ -4951,6 +5220,13 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "أيقونة التحديث"
+			},
+			"revoke": {
+				"button": "إبطال",
+				"confirm": "هل أنت متأكد من أنك تريد تسجيل الخروج من هذا الجهاز/الجلسة؟",
+				"missingParams": "يرجى تقديم كلمة مرور الجهاز والجلسة التي تريد إبطالها.",
+				"success": "تم إبطال الجهاز/الجلسة بنجاح.",
+				"wrongPassword": "كلمة المرور غير صحيحة."
 			}
 		},
 		"apiKeys": {
@@ -4964,14 +5240,8 @@
 			"keyDetails": "الوصف: ${description} | تم إنشاؤها في: ${createdAt} | آخر استخدام: ${lastUsed}",
 			"neverUsed": "لم تستخدم",
 			"noKeysForUser": "لم يتم العثور على بيانات مفتاح API.",
-			"revokeWrongPassword": "كلمة المرور غير صحيحة.",
 			"keyNotFound": "لم يتم العثور على مفتاح API.",
-			"revokeMissingJti": "الرجاء تحديد المفتاح المراد إبطاله.",
-			"revokeMissingPassword": "يتطلب إبطال المفتاح كلمة مرور.",
 			"verifyMissingApiKey": "يُرجى تقديم مفتاح API.",
-			"revokeButton": "إلغاء",
-			"revokeConfirm": "هل أنت متأكد من أنك تريد إلغاء مفتاح API هذا؟",
-			"revokeSuccess": "تم إلغاء مفتاح API بنجاح.",
 			"errorDescriptionRequired": "وصف مطلوب.",
 			"createSuccess": "تم إنشاء مفتاح API بنجاح.",
 			"refreshButton": {
@@ -4979,6 +5249,14 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "أيقونة التحديث"
+			},
+			"revoke": {
+				"button": "إلغاء",
+				"confirm": "هل أنت متأكد من أنك تريد إلغاء مفتاح API هذا؟",
+				"missingJti": "الرجاء تحديد المفتاح المراد إبطاله.",
+				"missingPassword": "يتطلب إبطال المفتاح كلمة مرور.",
+				"success": "تم إلغاء مفتاح API بنجاح.",
+				"wrongPassword": "كلمة المرور غير صحيحة."
 			}
 		},
 		"newApiKey": {
@@ -5000,14 +5278,16 @@
 			"argsTemplateHint": "عناصر نائبة: \\${file} \\${line} \\${column}",
 			"presetOptionPathAvailable": "${label} (موجود في PATH)",
 			"presetOptionPathUnavailable": "${label} (غير موجود في PATH)",
-			"testPathInput": {
-				"placeholder": "مسار ملف لتجربة الفتح، مثلًا C:/work/project/src/main.mjs"
-			},
-			"testButton": "تجربة الفتح",
 			"saveButton": "حفظ الإعدادات",
 			"saveSuccess": "تم حفظ أمر المحرر الخارجي.",
-			"testPathRequired": "يرجى إدخال مسار ملف الاختبار أولاً.",
-			"testSuccess": "تم تنفيذ أمر الفتح في المحرر الخارجي."
+			"test": {
+				"button": "تجربة الفتح",
+				"pathInput": {
+					"placeholder": "مسار ملف لتجربة الفتح، مثلًا C:/work/project/src/main.mjs"
+				},
+				"pathRequired": "يرجى إدخال مسار ملف الاختبار أولاً.",
+				"success": "تم تنفيذ أمر الفتح في المحرر الخارجي."
+			}
 		},
 		"logout": {
 			"title": "تسجيل الخروج",
@@ -5020,12 +5300,12 @@
 			"title": "حذف الحساب",
 			"warning": "تحذير: هذا الإجراء سيحذف حسابك وجميع البيانات ذات الصلة بشكل دائم ولا يمكن التراجع عنه.",
 			"submitButton": "حذف حسابي",
-			"confirmMessage1": "تحذير! هل أنت متأكد من أنك تريد حذف حسابك بشكل دائم؟ لا يمكن التراجع عن هذا الإجراء.",
-			"confirmMessage2": "لتأكيد الحذف، يرجى إدخال اسم المستخدم الخاص بك \"${username}\":",
 			"usernameMismatch": "اسم المستخدم الذي تم إدخاله لا يتطابق مع المستخدم الحالي. تم إلغاء عملية الحذف.",
 			"success": "تم حذف الحساب بنجاح. سيتم الآن تسجيل خروجك.",
 			"missingPassword": "الرجاء إدخال كلمة المرور الخاصة بك.",
-			"wrongPassword": "كلمة المرور غير صحيحة."
+			"wrongPassword": "كلمة المرور غير صحيحة.",
+			"confirmWarning": "تحذير! هل أنت متأكد من أنك تريد حذف حسابك بشكل دائم؟ لا يمكن التراجع عن هذا الإجراء.",
+			"confirmUsernamePrompt": "لتأكيد الحذف، يرجى إدخال اسم المستخدم الخاص بك \"${username}\":"
 		},
 		"passwordConfirm": {
 			"title": "تأكيد الإجراء",
@@ -5076,19 +5356,13 @@
 		"instruction": "قم بإنشاء وإدارة مفاتيح API الخاصة بك في هذه الصفحة لدمج fount مع التطبيقات الأخرى.",
 		"endpointSectionTitle": "نقطة نهاية API",
 		"endpointInstruction": "هذا هو عنوان URL الأساسي للتكامل مع الخدمات الأخرى.",
-		"apiUrlInput": {
-			"aria-label": "نقطة نهاية API"
-		},
 		"usageExampleTitle": "مثال على الاستخدام",
 		"usageExampleInstruction": "إليك مثال على كيفية الحصول على قائمة النماذج المتاحة باستخدام `curl`.",
 		"copyButton": "نسخ",
 		"copied": "تم النسخ إلى الحافظة",
-		"apiKeySectionTitle": "مفاتيح API الخاصة بك",
-		"apiKey": "مفتاح API الخاص بك:",
 		"noApiKey": "لم تقم بإنشاء مفتاح API لهذه الصفحة بعد.",
 		"generateApiKeyButton": "إنشاء مفتاح جديد",
 		"copyApiKeyButton": "نسخ",
-		"apiKeyCopied": "تم نسخ مفتاح API!",
 		"queryStringSectionTitle": "لا يمكن تعيين مفتاح API في رأس الطلب؟ (غير آمن)",
 		"queryStringWarning": "استخدم هذه الطريقة البديلة عندما لا يدعم تطبيقك إرسال مفتاح API في رأس الطلب (Authorization header). يرجى ملاحظة: وضع مفتاح API مباشرة في عنوان URL يشكل خطرًا أمنيًا حيث يمكن تسجيله في سجلات الخادم أو سجل المتصفح.",
 		"copyQueryStringUrlButton": "عنوان URL مع مفتاح API (سلسلة استعلام)",
@@ -5100,6 +5374,14 @@
 						"title": "كوكيل"
 					}
 				}
+			}
+		},
+		"api": {
+			"key": "مفتاح API الخاص بك:",
+			"keyCopied": "تم نسخ مفتاح API!",
+			"keySectionTitle": "مفاتيح API الخاصة بك",
+			"urlInput": {
+				"aria-label": "نقطة نهاية API"
 			}
 		}
 	},
@@ -5273,11 +5555,7 @@
 		"failed": "فشل",
 		"copySuccess": "تم نسخ تقرير التصحيح إلى الحافظة",
 		"copyFailed": "فشل نسخ التقرير",
-		"updateNow": "قم بالتحديث وإعادة التشغيل الآن",
 		"alreadyLatest": "بالفعل أحدث إصدار",
-		"updateRestarting": "جارٍ إعادة التشغيل...",
-		"updateSuccess": "يتم إعادة تشغيل الخادم",
-		"updateFailed": "فشل طلب التحديث",
 		"autoUpdateNotEnabled": "لم يتم تمكين التحديثات التلقائية",
 		"home_function_buttons": {
 			"debug": {
@@ -5285,6 +5563,12 @@
 					"title": "افتح لوحة التصحيح"
 				}
 			}
+		},
+		"update": {
+			"failed": "فشل طلب التحديث",
+			"now": "قم بالتحديث وإعادة التشغيل الآن",
+			"restarting": "جارٍ إعادة التشغيل...",
+			"success": "يتم إعادة تشغيل الخادم"
 		}
 	},
 	"badges_maker": {

@@ -471,7 +471,7 @@ export function GetCodeExecutionPreviewUpdater(next) {
 	function renderRunningCodeBlock(code, lang, args) {
 		return renderMarkdownCodeBlock(code, {
 			lang,
-			title: getChatI18n(args, 'chat.messageView.toolRunningLang', { lang })
+			title: getChatI18n(args, 'chat.message.view.tool.runningLang', { lang })
 		})
 	}
 

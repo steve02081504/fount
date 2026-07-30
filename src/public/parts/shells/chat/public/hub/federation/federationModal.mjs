@@ -69,7 +69,7 @@ async function refreshReputationDump(root, groupId) {
 		}
 		else {
 			dump.textContent = ''
-			dump.dataset.i18n = 'chat.hub.fedRepEmpty'
+			dump.dataset.i18n = 'chat.hub.fed.repEmpty'
 		}
 	}
 	catch (error) {
@@ -105,22 +105,22 @@ function wireFederationModalEvents(root, groupId) {
 			.filter(line => line.startsWith('wss://'))
 		try {
 			await putFederationSettings({ batterySaver, relayUrls })
-			showToastI18n('success', 'chat.hub.fedSaved')
+			showToastI18n('success', 'chat.hub.fed.saved')
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.profile.federationSaveFailed', { error: error.message })
+			showToastI18n('error', 'chat.profile.federation.saveFailed', { error: error.message })
 		}
 	})
 
 	root.querySelector('#federation-rotate-room-secret')?.addEventListener('click', async () => {
 		if (!groupId) return
-		if (!confirmI18n('chat.hub.fedRotateRoomSecretConfirm')) return
+		if (!confirmI18n('chat.hub.fed.rotateRoomSecretConfirm')) return
 		try {
 			await rotateFederationRoomSecret(groupId)
-			showToastI18n('success', 'chat.hub.fedRotateRoomSecretOk')
+			showToastI18n('success', 'chat.hub.fed.rotateRoomSecretOk')
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.profile.federationSaveFailed', { error: error.message })
+			showToastI18n('error', 'chat.profile.federation.saveFailed', { error: error.message })
 		}
 	})
 
@@ -129,12 +129,12 @@ function wireFederationModalEvents(root, groupId) {
 		try {
 			const result = await repairJoinSnapshot(groupId)
 			if (result.skipped)
-				showToastI18n('success', 'chat.hub.fedRepairJoinSnapshotOk', { channels: 0 })
+				showToastI18n('success', 'chat.hub.fed.repairJoinSnapshotOk', { channels: 0 })
 			else
-				showToastI18n('success', 'chat.hub.fedRepairJoinSnapshotOk', { channels: result.channels ?? 0 })
+				showToastI18n('success', 'chat.hub.fed.repairJoinSnapshotOk', { channels: result.channels ?? 0 })
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.fedRepairJoinSnapshotFailed', { error: error.message })
+			showToastI18n('error', 'chat.hub.fed.repairJoinSnapshotFailed', { error: error.message })
 		}
 	})
 
@@ -142,7 +142,7 @@ function wireFederationModalEvents(root, groupId) {
 		if (!groupId) return
 		const targetPubKeyHash = String(root.querySelector('#federation-slash-target')?.value || '').trim().toLowerCase()
 		if (!isHex64(targetPubKeyHash)) {
-			showToastI18n('error', 'chat.hub.fedSlashNeedHash')
+			showToastI18n('error', 'chat.hub.fed.slash.needHash')
 			return
 		}
 		const claim = Number(root.querySelector('#federation-slash-claim')?.value ?? 0.25)
@@ -155,11 +155,11 @@ function wireFederationModalEvents(root, groupId) {
 				verified,
 				proof: verified && proofEventId ? { eventId: proofEventId } : undefined,
 			})
-			showToastI18n('success', 'chat.hub.fedSlashOk')
+			showToastI18n('success', 'chat.hub.fed.slash.ok')
 			await refreshReputationDump(root, groupId)
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.profile.federationSaveFailed', { error: error.message })
+			showToastI18n('error', 'chat.profile.federation.saveFailed', { error: error.message })
 		}
 	})
 
@@ -167,27 +167,27 @@ function wireFederationModalEvents(root, groupId) {
 		if (!groupId) return
 		const targetPubKeyHash = String(root.querySelector('#federation-slash-target')?.value || '').trim().toLowerCase()
 		if (!isHex64(targetPubKeyHash)) {
-			showToastI18n('error', 'chat.hub.fedSlashNeedHash')
+			showToastI18n('error', 'chat.hub.fed.slash.needHash')
 			return
 		}
 		try {
 			await postReputationReset(groupId, targetPubKeyHash)
-			showToastI18n('success', 'chat.hub.fedResetOk')
+			showToastI18n('success', 'chat.hub.fed.resetOk')
 			await refreshReputationDump(root, groupId)
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.profile.federationSaveFailed', { error: error.message })
+			showToastI18n('error', 'chat.profile.federation.saveFailed', { error: error.message })
 		}
 	})
 
 	root.querySelector('#federation-dm-rotate')?.addEventListener('click', async () => {
-		if (!confirmI18n('chat.hub.fedDmRotateConfirm')) return
+		if (!confirmI18n('chat.hub.fed.dm.rotateConfirm')) return
 		try {
 			const nonce = await rotateDmLinkAndSync()
-			showToastI18n('success', 'chat.hub.fedNonceRotated', { nonce: nonce.slice(0, 12) })
+			showToastI18n('success', 'chat.hub.fed.nonceRotated', { nonce: nonce.slice(0, 12) })
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.profile.federationSaveFailed', { error: error.message })
+			showToastI18n('error', 'chat.profile.federation.saveFailed', { error: error.message })
 		}
 	})
 
@@ -196,11 +196,11 @@ function wireFederationModalEvents(root, groupId) {
 		const secretHex = normalizeHex64(root.querySelector('#federation-dm-secret')?.value || '')
 		const nodeUrl = String(root.querySelector('#federation-dm-node')?.value || '').trim()
 		if (!HEX_ID_64.test(pubKeyHex)) {
-			showToastI18n('error', 'chat.hub.fedDmNeedPubKey')
+			showToastI18n('error', 'chat.hub.fed.dm.needPubKey')
 			return
 		}
 		if (!HEX_ID_64.test(secretHex)) {
-			showToastI18n('error', 'chat.hub.fedDmNeedSecretKey')
+			showToastI18n('error', 'chat.hub.fed.dm.needSecretKey')
 			return
 		}
 		try {
@@ -216,10 +216,10 @@ function wireFederationModalEvents(root, groupId) {
 				await navigator.clipboard.writeText(url)
 			}
 			catch { /* clipboard optional */ }
-			showToastI18n('success', 'chat.hub.fedDmIssued')
+			showToastI18n('success', 'chat.hub.fed.dm.issued')
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.profile.federationSaveFailed', { error: error.message })
+			showToastI18n('error', 'chat.profile.federation.saveFailed', { error: error.message })
 		}
 	})
 }

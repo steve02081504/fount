@@ -34,7 +34,7 @@ export async function submitComposer() {
 		await sendCurrentMessage(content)
 	}
 	catch (err) {
-		showToastI18n('error', 'chat.hub.sendFailed', { error: err.message })
+		showToastI18n('error', 'chat.hub.send.failed', { error: err.message })
 		input.value = content
 		if (input instanceof HTMLTextAreaElement)
 			input.dispatchEvent(new Event('input', { bubbles: true }))

@@ -23,7 +23,7 @@ export async function renderArchiveStoragePanel(context) {
 			const files = Array.isArray(data.files) ? data.files : []
 			if (files.length)
 				archiveRowsHtml = `<div class="overflow-x-auto"><table class="table table-sm">
-<thead><tr><th data-i18n="chat.group.settingsArchiveColChannel"></th><th data-i18n="chat.group.settingsArchiveColMonth"></th><th data-i18n="chat.group.settingsArchiveColSize"></th></tr></thead>
+<thead><tr><th data-i18n="chat.group.settings.archive.colChannel"></th><th data-i18n="chat.group.settings.archive.colMonth"></th><th data-i18n="chat.group.settings.archive.colSize"></th></tr></thead>
 <tbody>${files.map(row => `<tr><td>${escapeHtml(row.channelId)}</td><td>${escapeHtml(row.month)}</td><td>${escapeHtml(formatArchiveBytes(row.bytes))}</td></tr>`).join('')}
 </tbody></table></div>`
 		}
@@ -47,23 +47,23 @@ export async function renderArchiveStoragePanel(context) {
 			if (!file || !context.groupId) return
 			try {
 				const result = await importChannelArchiveFile(context.groupId, file)
-				showToastI18n('success', 'chat.group.settingsPage.channelArchiveImportOk', {
+				showToastI18n('success', 'chat.group.settings.page.channelArchive.importOk', {
 					count: String(result.messageCount ?? 0),
 				})
 				window.location.href = `/parts/shells:chat/hub/#group:${encodeURIComponent(context.groupId)}:${encodeURIComponent(result.channelId)}`
 			}
 			catch (error) {
-				handleUIError(error, 'chat.group.settingsPage.channelArchiveImportFailed')
+				handleUIError(error, 'chat.group.settings.page.channelArchive.importFailed')
 			}
 		})
 	}
 	document.getElementById('archive-delete-button')?.addEventListener('click', async () => {
 		const raw = document.getElementById('archive-delete-before-month')?.value?.trim()
 		if (!raw || !/^\d{4}-\d{2}$/.test(raw)) {
-			showToastI18n('error', 'chat.group.settingsArchiveDeleteInvalidMonth')
+			showToastI18n('error', 'chat.group.settings.archive.delete.invalidMonth')
 			return
 		}
-		if (!confirmI18n('chat.group.settingsArchiveDeleteConfirm', { month: raw })) return
+		if (!confirmI18n('chat.group.settings.archive.delete.confirm', { month: raw })) return
 		const deleteArchiveButton = document.getElementById('archive-delete-button')
 		if (deleteArchiveButton instanceof HTMLButtonElement) deleteArchiveButton.disabled = true
 		try {
@@ -73,13 +73,13 @@ export async function renderArchiveStoragePanel(context) {
 			)
 			const data = await resp.json()
 			if (!resp.ok) throw new Error(data.error || resp.statusText)
-			showToastI18n('success', 'chat.group.settingsArchiveDeleteOk', {
+			showToastI18n('success', 'chat.group.settings.archive.delete.ok', {
 				files: String(data.deletedFiles ?? 0),
 			})
 			await renderArchiveStoragePanel(context)
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.group.settingsArchiveDeleteFailed', { error: error.message })
+			showToastI18n('error', 'chat.group.settings.archive.delete.failed', { error: error.message })
 		}
 		finally {
 			if (deleteArchiveButton instanceof HTMLButtonElement) deleteArchiveButton.disabled = false

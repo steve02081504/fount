@@ -1,11 +1,11 @@
 <div class="card bg-base-200 settings-card">
 	<div class="card-body">
-		<h2 class="card-title" data-i18n="chat.group.settingsPage.tabChannelPermissions"></h2>
-		<p class="text-sm opacity-70" data-i18n="chat.group.settingsPage.channelPermsHint"></p>
+		<h2 class="card-title" data-i18n="chat.group.settings.page.tabs.channelPermissions"></h2>
+		<p class="text-sm opacity-70" data-i18n="chat.group.settings.page.channelPerms.hint"></p>
 		${channels.length ? `
 		<div class="flex flex-col lg:flex-row gap-4">
 			<div class="lg:w-52 shrink-0">
-				<div class="text-xs font-semibold opacity-60 mb-2" data-i18n="chat.group.settingsPage.channelPermsSelectChannel"></div>
+				<div class="text-xs font-semibold opacity-60 mb-2" data-i18n="chat.group.settings.page.channelPerms.selectChannel"></div>
 				<ul class="menu menu-sm bg-base-300 rounded-box p-1 max-h-64 overflow-y-auto">
 					${channels.map(ch => `
 					<li>
@@ -24,7 +24,7 @@
 						<option value="${escapeHtml(r.id)}">${escapeHtml(r.name)}</option>
 						`).join('')}
 					</select>
-					<button type="button" class="btn btn-sm btn-outline" data-action="add-role-override" data-i18n="chat.group.settingsPage.channelPermsAddRole"></button>
+					<button type="button" class="btn btn-sm btn-outline" data-action="add-role-override" data-i18n="chat.group.settings.page.channelPerms.addRole"></button>
 				</div>
 				<div class="space-y-3">
 					${rolePanels.length ? rolePanels.map(panel => `
@@ -37,22 +37,22 @@
 							<div class="settings-role-perms">
 								${panel.permRows.map(row => `
 								<div class="flex items-center justify-between gap-2 py-1">
-									<span class="text-sm" data-i18n="chat.group.settingsPage.perm${row.perm}"></span>
+									<span class="text-sm" data-i18n="chat.group.settings.page.perm${row.perm}"></span>
 									<div class="join join-horizontal" role="group" data-role-id="${escapeHtml(panel.roleId)}" data-perm="${row.perm}">
-										<button type="button" class="btn btn-xs join-item ${row.state === 'neutral' ? 'btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="neutral" data-i18n="chat.group.settingsPage.channelPermsStateNeutral"></button>
-										<button type="button" class="btn btn-xs join-item ${row.state === 'allow' ? 'btn-success btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="allow" data-i18n="chat.group.settingsPage.channelPermsStateAllow"></button>
-										<button type="button" class="btn btn-xs join-item ${row.state === 'deny' ? 'btn-error btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="deny" data-i18n="chat.group.settingsPage.channelPermsStateDeny"></button>
+										<button type="button" class="btn btn-xs join-item ${row.state === 'neutral' ? 'btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="neutral" data-i18n="chat.group.settings.page.channelPerms.stateNeutral"></button>
+										<button type="button" class="btn btn-xs join-item ${row.state === 'allow' ? 'btn-success btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="allow" data-i18n="chat.group.settings.page.channelPerms.stateAllow"></button>
+										<button type="button" class="btn btn-xs join-item ${row.state === 'deny' ? 'btn-error btn-active' : 'btn-ghost'}" data-action="channel-perm-state" data-state="deny" data-i18n="chat.group.settings.page.channelPerms.stateDeny"></button>
 									</div>
 								</div>
 								`).join('')}
 							</div>
-							<button type="button" class="btn btn-ghost btn-xs text-error w-fit" data-action="remove-role-override" data-role-id="${escapeHtml(panel.roleId)}" data-i18n="chat.group.settingsPage.channelPermsRemoveRole"></button>
+							<button type="button" class="btn btn-ghost btn-xs text-error w-fit" data-action="remove-role-override" data-role-id="${escapeHtml(panel.roleId)}" data-i18n="chat.group.settings.page.channelPerms.removeRole"></button>
 						</div>
 					</details>
 					`).join('') : '<p class="text-sm opacity-60 py-4">—</p>'}
 				</div>
 			</div>
 		</div>
-		` : `<p class="text-sm opacity-60" data-i18n="chat.group.settingsPage.channelPermsNoChannels"></p>`}
+		` : `<p class="text-sm opacity-60" data-i18n="chat.group.settings.page.channelPerms.noChannels"></p>`}
 	</div>
 </div>

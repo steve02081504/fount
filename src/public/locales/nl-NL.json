@@ -153,10 +153,6 @@
 			"passedLabel": "Geslaagd",
 			"failedLabel": "Mislukt",
 			"noiseHits": "(ruis: ${hits})",
-			"unknownManifestId": "Onbekend manifest-id: ${ids}",
-			"unknownSuiteSelector": "Onbekende suite-selector: ${ids}",
-			"unknownSubtestFilter": "Onbekende subtestfilter: ${suite} → ${names}",
-			"unknownFileFilter": "Onbekende testbestandsfilter: ${suite} → ${names}",
 			"unsupportedSubtestFilter": "Suite ondersteunt geen subtest-/bestandsfilter: ${suite} (${names})",
 			"available": "Beschikbaar: ${ids}",
 			"manifestMatched": "manifest gevonden: ${ids}",
@@ -178,28 +174,16 @@
 			},
 			"reusedSuite": "\n>>> ${manifestId}:${name} hergebruiken (trigger ongewijzigd, laatste ${status} behouden)",
 			"noisyOnlyRemain": "Nog ${count} suites geslaagd maar met ruis: ${suites}",
-			"estimatedRun": "Geschatte looptijd ≈ ${eta} (parallelle factor ${rate})",
-			"estimatedRunSerial": "Geschatte looptijd ≈ ${eta} (serieel)",
-			"estimatedRunSkipped": "Daarnaast ${reused} hergebruikt en ${blocked} naar verwachting geblokkeerd (niet meegeteld)",
 			"noRealRunPlanned": "Geen echte run nodig: ${reused} hergebruikt, ${blocked} naar verwachting geblokkeerd (trigger ongewijzigd)",
 			"allReusedHint": "Geen suite echt uitgevoerd: fouten zijn van de vorige run, blokkades daardoor onopgelost (bestanden ongewijzigd). Los de bestanden op en draai opnieuw, of gebruik fount test --force.",
-			"estimatedRemaining": "Geschatte resterende tijd ≈ ${eta} (${completed}/${total} suites)",
-			"estimatedRunSerialHint": "Bij parallel ≈ ${eta} (factor ${rate}), besparing ≈ ${savings} (verwijder --no-parallel)",
 			"failuresSaved": "Foutenlijst opgeslagen: ${path} (${count} suites)",
 			"failuresCleared": "manifest ${manifestId} volledig geslaagd; foutenlijst gewist.",
 			"terminated": "Afgebroken door time-out: ${label} — ${reason}",
-			"terminateIdle": "${label} afgebroken: meer dan ${minutes} min geen stdall-output (inactief ${idleSec}s, gelopen ${elapsed})",
-			"terminateDuration": "${label} afgebroken: duur overschrijdt watchdog-baseline (gelopen ${elapsed}, baseline ${baseline}, limiet ${limit})",
-			"terminateDurationDefault": "${label} afgebroken: duur overschrijdt standaard watchdog-limiet (gelopen ${elapsed}, limiet ${limit})",
 			"sleepDetected": "Systeemslaapstand gedetecteerd (watchdog-interval sprong ${gap} ≥ ${limit}); ${label} afgebroken en klaar voor herstart (gedraaid ${elapsed})",
 			"sleepRetry": "Onderbroken door systeemslaap; ${label} opnieuw uitvoeren (poging ${attempt})",
-			"terminateMarker": "[Afbraakreden: ${reason}]",
-			"terminateUnknown": "${label} afgebroken: test onderbroken",
-			"terminateSpeculative": "${label} afgebroken: speculatieve afhankelijkheid niet geslaagd, vroegtijdig stoppen",
 			"nothingToContinue": "Alles groen en niets verouderd — niets meer te draaien.",
 			"triggerNoMatch": "trigger matcht geen bestand: ${scope} — ${pattern}",
 			"triggerNoMatchSummary": "${count} triggers matchen geen bestand in de repo (zie report.md)",
-			"unknownSuite": "Onbekende suite: ${name}",
 			"federationCleanupPre": "Federatietest-opruiming (vóór run) mislukt: ${output}",
 			"federationCleanupPost": "Federatietest-opruiming (na run) mislukt: ${output}",
 			"suiteHeader": "\n=== Suite ${name} ===",
@@ -233,25 +217,7 @@
 				"title": "fount-testrapport",
 				"tableHeaderItem": "Item",
 				"tableHeaderValue": "Waarde",
-				"fieldRunId": "Run-ID",
-				"fieldCommand": "Opdracht",
-				"fieldExit": "Exitcode",
-				"fieldProgress": "Voortgang",
-				"fieldSuites": "Suites",
-				"fieldFailed": "Mislukkingen",
-				"fieldNoisyPassed": "Geslaagd met ruis",
-				"fieldReused": "Hergebruikt",
-				"fieldSuiteSumDuration": "Totale suite-tijd",
-				"fieldWallClock": "Totale duur",
-				"fieldParallelRate": "Parallelle factor",
-				"fieldEstimatedRemaining": "Geschatte resterende tijd",
-				"fieldEstimatedParallelRate": "Geschatte parallelle factor",
 				"estimatePoint": "≈ ${eta}",
-				"pendingEstimate": "Geschatte resterende tijd ≈ ${eta}",
-				"pendingParallelEstimate": "Geschatte parallelle tijd ≈ ${eta} (factor ${rate})",
-				"pendingSavings": "Geschatte besparing ≈ ${savings}",
-				"pendingItemExpected": "verwacht ${expected}",
-				"fieldDuration": "Duur",
 				"commandDefault": "(standaard)",
 				"exitPassed": "Geslaagd",
 				"exitFailed": "Mislukt",
@@ -259,54 +225,86 @@
 				"progressFormat": "${completed}/${total} suites",
 				"suitesFormat": "${passed}/${completed} geslaagd",
 				"artifacts": "Artefactmap: `${path}`",
-				"sectionFailed": "Mislukte suites",
-				"sectionNoisyPassed": "Geslaagd met ruis",
-				"sectionSilentPassed": "Geslaagd",
-				"sectionPending": "Nog uit te voeren",
-				"sectionContinue": "Onvoltooide items",
-				"sectionReplay": "Mislukte items opnieuw",
-				"sectionReplayImperfect": "Onvolmaakte herhalingen",
 				"columnSuite": "Suite",
 				"columnDuration": "Duur",
-				"labelReused": "(hergebruikt)",
-				"labelExpectedBlocked": "(verwacht geblokkeerd)",
-				"labelDuration": "duur",
-				"labelLog": "log",
-				"labelNoise": "ruis",
-				"labelFailedFiles": "mislukte bestanden",
-				"labelTerminateReason": "afbraakreden",
-				"sectionContinueReasons": "Triggerredenen",
 				"continueReasonsLink": "Triggerredenen: zie [${path}](${path})",
-				"labelContinueReason": "reden",
-				"reasonImperfectFailed": "eerdere mislukking",
-				"reasonImperfectNoisy": "eerder geslaagd met ruis",
-				"reasonImperfectBlocked": "eerder geblokkeerd",
-				"reasonImperfectDependent": "upstream mislukt, downstream meegenomen",
-				"reasonMissingRecord": "geen state-record, automatisch ingepland",
-				"reasonStaleContent": "inhoud gewijzigd, opnieuw nodig",
-				"reasonTriggerHashDrift": "trigger-vingerafdruk afwijkend (geen padhit)",
-				"reasonExplicitSelected": "expliciet geselecteerd",
-				"reasonDependencyRequired": "afhankelijkheid meegenomen",
-				"labelRootCause": "hoofdoorzaak",
-				"labelDirectRequiredBy": "direct vereist door",
-				"labelInclusionPath": "inclusieketen",
-				"labelPullUpstream": "Upstream-pull: afhankelijkheid van ${requiredBy} niet groen",
-				"labelPullDownstream": "Downstream-pull: ${requiredBy} onvolmaakt, samen meegenomen",
-				"labelGateReason": "reden om te draaien",
-				"labelCommitRange": "commit-bereik",
-				"labelUncommittedHashRange": "niet-gecommitte digest",
-				"labelMatchedTriggers": "gematchte triggers",
-				"labelMatchedTriggerSets": "gematchte triggersets",
-				"labelMatchedPaths": "gematchte paden",
-				"labelTriggerHashDrift": "trigger-vingerafdruk wijkt af van werkmap (dirty→clean genegeerd)",
-				"sectionDeadTriggers": "dode triggers",
 				"deadTriggersHint": "De volgende globs matchen geen bestand in de repo (git gevolgd + niet-genegeerd untracked):",
 				"durationMs": "${ms} ms",
-				"durationUnitSec": "${n} s",
-				"durationUnitMin": "${n} min",
-				"durationUnitMinute": "${n} minuten",
-				"durationUnitHour": "${n} u",
-				"durationUnitDay": "${n} d"
+				"durationUnit": {
+					"day": "${n} d",
+					"hour": "${n} u",
+					"min": "${n} min",
+					"minute": "${n} minuten",
+					"sec": "${n} s"
+				},
+				"section": {
+					"continue": "Onvoltooide items",
+					"continueReasons": "Triggerredenen",
+					"deadTriggers": "dode triggers",
+					"failed": "Mislukte suites",
+					"noisyPassed": "Geslaagd met ruis",
+					"pending": "Nog uit te voeren",
+					"replay": "Mislukte items opnieuw",
+					"replayImperfect": "Onvolmaakte herhalingen",
+					"silentPassed": "Geslaagd"
+				},
+				"pending": {
+					"estimate": "Geschatte resterende tijd ≈ ${eta}",
+					"itemExpected": "verwacht ${expected}",
+					"parallelEstimate": "Geschatte parallelle tijd ≈ ${eta} (factor ${rate})",
+					"savings": "Geschatte besparing ≈ ${savings}"
+				},
+				"reason": {
+					"dependencyRequired": "afhankelijkheid meegenomen",
+					"explicitSelected": "expliciet geselecteerd",
+					"imperfect": {
+						"blocked": "eerder geblokkeerd",
+						"dependent": "upstream mislukt, downstream meegenomen",
+						"failed": "eerdere mislukking",
+						"noisy": "eerder geslaagd met ruis"
+					},
+					"missingRecord": "geen state-record, automatisch ingepland",
+					"staleContent": "inhoud gewijzigd, opnieuw nodig",
+					"triggerHashDrift": "trigger-vingerafdruk afwijkend (geen padhit)"
+				},
+				"label": {
+					"commitRange": "commit-bereik",
+					"continueReason": "reden",
+					"directRequiredBy": "direct vereist door",
+					"duration": "duur",
+					"expectedBlocked": "(verwacht geblokkeerd)",
+					"failedFiles": "mislukte bestanden",
+					"gateReason": "reden om te draaien",
+					"inclusionPath": "inclusieketen",
+					"log": "log",
+					"matchedPaths": "gematchte paden",
+					"matchedTriggerSets": "gematchte triggersets",
+					"matchedTriggers": "gematchte triggers",
+					"noise": "ruis",
+					"pullDownstream": "Downstream-pull: ${requiredBy} onvolmaakt, samen meegenomen",
+					"pullUpstream": "Upstream-pull: afhankelijkheid van ${requiredBy} niet groen",
+					"reused": "(hergebruikt)",
+					"rootCause": "hoofdoorzaak",
+					"terminateReason": "afbraakreden",
+					"triggerHashDrift": "trigger-vingerafdruk wijkt af van werkmap (dirty→clean genegeerd)",
+					"uncommittedHashRange": "niet-gecommitte digest"
+				},
+				"field": {
+					"command": "Opdracht",
+					"duration": "Duur",
+					"estimatedParallelRate": "Geschatte parallelle factor",
+					"estimatedRemaining": "Geschatte resterende tijd",
+					"exit": "Exitcode",
+					"failed": "Mislukkingen",
+					"noisyPassed": "Geslaagd met ruis",
+					"parallelRate": "Parallelle factor",
+					"progress": "Voortgang",
+					"reused": "Hergebruikt",
+					"runId": "Run-ID",
+					"suiteSumDuration": "Totale suite-tijd",
+					"suites": "Suites",
+					"wallClock": "Totale duur"
+				}
 			},
 			"state": {
 				"title": "fount-teststatus",
@@ -314,16 +312,40 @@
 				"sectionDependencyTree": "Afhankelijkheidsboom",
 				"sectionOverview": "Status per suite",
 				"sectionBlocked": "Geblokkeerde suites",
-				"columnSuite": "Suite",
-				"columnStatus": "Status",
-				"columnCommit": "commit",
-				"columnRanAt": "laatste run",
-				"columnDuration": "duur",
-				"columnLog": "log",
-				"columnBlocked": "blokkades",
 				"labelBlockedBy": "geblokkeerd door",
 				"statusUnknown": "niet uitgevoerd",
-				"statusOutdated": "verouderd"
+				"statusOutdated": "verouderd",
+				"column": {
+					"blocked": "blokkades",
+					"commit": "commit",
+					"duration": "duur",
+					"log": "log",
+					"ranAt": "laatste run",
+					"status": "Status",
+					"suite": "Suite"
+				}
+			},
+			"terminate": {
+				"duration": "${label} afgebroken: duur overschrijdt watchdog-baseline (gelopen ${elapsed}, baseline ${baseline}, limiet ${limit})",
+				"durationDefault": "${label} afgebroken: duur overschrijdt standaard watchdog-limiet (gelopen ${elapsed}, limiet ${limit})",
+				"idle": "${label} afgebroken: meer dan ${minutes} min geen stdall-output (inactief ${idleSec}s, gelopen ${elapsed})",
+				"marker": "[Afbraakreden: ${reason}]",
+				"speculative": "${label} afgebroken: speculatieve afhankelijkheid niet geslaagd, vroegtijdig stoppen",
+				"unknown": "${label} afgebroken: test onderbroken"
+			},
+			"estimated": {
+				"remaining": "Geschatte resterende tijd ≈ ${eta} (${completed}/${total} suites)",
+				"run": "Geschatte looptijd ≈ ${eta} (parallelle factor ${rate})",
+				"runSerial": "Geschatte looptijd ≈ ${eta} (serieel)",
+				"runSerialHint": "Bij parallel ≈ ${eta} (factor ${rate}), besparing ≈ ${savings} (verwijder --no-parallel)",
+				"runSkipped": "Daarnaast ${reused} hergebruikt en ${blocked} naar verwachting geblokkeerd (niet meegeteld)"
+			},
+			"unknown": {
+				"fileFilter": "Onbekende testbestandsfilter: ${suite} → ${names}",
+				"manifestId": "Onbekend manifest-id: ${ids}",
+				"subtestFilter": "Onbekende subtestfilter: ${suite} → ${names}",
+				"suite": "Onbekende suite: ${name}",
+				"suiteSelector": "Onbekende suite-selector: ${ids}"
 			}
 		},
 		"path": {
@@ -385,10 +407,10 @@
 				"packageFailed": "Fout: Installatie van ${package} is mislukt.",
 				"browserMissing": "Standaardbrowser niet gedetecteerd, probeert te installeren...",
 				"untrustedPartsWarning": "Installeer geen onbetrouwbare fountcomponenten op uw systeem; deze kunnen alles doen.",
-				"rootWarning1": "Niet aanbevolen: het uitvoeren van fount als root geeft volledige systeemtoegang tot alle fountcomponenten.",
-				"rootWarning2": "Tenzij u weet wat u doet, wordt aanbevolen om font als normale gebruiker uit te voeren.",
 				"permissionDeniedAsRoot": "Fout: Kan niet schrijven naar de fount-map '${path}'. U werkt als root, maar de toegang wordt nog steeds geweigerd. Controleer en corrigeer de beveiligingsmachtigingen van deze map om de huidige gebruiker volledige controle te geven.",
-				"permissionDeniedNotRoot": "Fout: Kan niet schrijven naar de fount-map '${path}'. Corrigeer de beveiligingsmachtigingen van de map om schrijftoegang te verlenen aan de huidige gebruiker, of voer fount uit als root."
+				"permissionDeniedNotRoot": "Fout: Kan niet schrijven naar de fount-map '${path}'. Corrigeer de beveiligingsmachtigingen van de map om schrijftoegang te verlenen aan de huidige gebruiker, of voer fount uit als root.",
+				"rootWarningAsRoot": "Niet aanbevolen: het uitvoeren van fount als root geeft volledige systeemtoegang tot alle fountcomponenten.",
+				"rootWarningPreferUser": "Tenzij u weet wat u doet, wordt aanbevolen om font als normale gebruiker uit te voeren."
 			},
 			"clean": {
 				"removingCaches": "Cache verwijderen...",
@@ -409,41 +431,49 @@
 				"editorRemoved": "fount-configuratie verwijderd uit terminaltoetsen van editor: `${path}`"
 			},
 			"remove": {
-				"removingDesktopShortcut": "Snelkoppeling op het bureaublad verwijderen...",
-				"removingTerminalKeybindings": "Terminal-toetsenpatch wordt verwijderd...",
-				"removingFount": "fount verwijderen...",
 				"fountUninstallationComplete": "Het verwijderen van de fount is voltooid.",
-				"removingFountInstallationDir": "Installatiemap voor fount verwijderen...",
 				"fountInstallationDirRemoved": "De font-installatiemap is verwijderd.",
-				"removingFountFromPath": "Lettertype uit PATH verwijderen...",
-				"removingProtocolHandler": "Fot:// protocolhandler verwijderen...",
 				"protocolHandlerRemoved": "De protocolhandler `fount://` is verwijderd.",
-				"removeProtocolHandlerFailed": "Kan `fount://` protocolhandler niet verwijderen: ${message}",
-				"removingFountFromGitSafeDir": "Font verwijderen uit `git safe.directory`...",
-				"removingInstalledSystemPackages": "Geïnstalleerde systeempakketten verwijderen...",
-				"uninstallingDeno": "Deno verwijderen...",
-				"removeDenoFailed": "Kan Deno niet verwijderen: ${message}",
-				"removingFountPwshFromProfile": "font-pwsh verwijderen uit PowerShell-profiel...",
 				"fountPwshRemovedFromProfile": "font-pwsh is verwijderd uit het PowerShell-profiel.",
 				"pwshProfileNotFound": "PowerShell-profiel niet gevonden. Het verwijderen van `fount-pwsh` uit het profiel wordt overgeslagen.",
-				"uninstallingFountPwsh": "Font-pwsh verwijderen...",
 				"uninstallFountPwshFailed": "Verwijderen van `fount-pwsh` mislukt: ${message}",
-				"removingTerminalProfile": "Windows Terminal-profiel verwijderen...",
 				"terminalProfileRemoved": "De map Windows Terminal Profile is verwijderd.",
 				"terminalProfileNotFound": "Windows Terminal-profielmap niet gevonden.",
 				"desktopShortcutRemoved": "Snelkoppeling op het bureaublad verwijderd.",
 				"desktopShortcutNotFound": "Snelkoppeling op het bureaublad niet gevonden.",
-				"removingStartMenuShortcut": "Snelkoppelingen naar het startmenu verwijderen...",
 				"startMenuShortcutRemoved": "De snelkoppeling naar het startmenu is verwijderd.",
 				"startMenuShortcutNotFound": "Snelkoppeling naar startmenu niet gevonden.",
-				"removingInstalledPwshModules": "Geïnstalleerde pwsh-module verwijderen...",
 				"moduleRemoved": "${module} is verwijderd.",
-				"removeModuleFailed": "Verwijderen van ${module} mislukt: ${message}",
-				"uninstallingGit": "Git verwijderen...",
-				"uninstallingChrome": "Chrome verwijderen...",
-				"uninstallingWinget": "Winget verwijderen...",
-				"removingBackgroundRunner": "Achtergrondprogramma's verwijderen...",
-				"removeBackgroundRunnerFailed": "Kan actief programma op de achtergrond niet verwijderen: ${message}"
+				"uninstalling": {
+					"chrome": "Chrome verwijderen...",
+					"deno": "Deno verwijderen...",
+					"fountPwsh": "Font-pwsh verwijderen...",
+					"git": "Git verwijderen...",
+					"winget": "Winget verwijderen..."
+				},
+				"removing": {
+					"backgroundRunner": "Achtergrondprogramma's verwijderen...",
+					"desktopShortcut": "Snelkoppeling op het bureaublad verwijderen...",
+					"fount": {
+						"main": "fount verwijderen...",
+						"fromGitSafeDir": "Font verwijderen uit `git safe.directory`...",
+						"fromPath": "Lettertype uit PATH verwijderen...",
+						"installationDir": "Installatiemap voor fount verwijderen...",
+						"pwshFromProfile": "font-pwsh verwijderen uit PowerShell-profiel..."
+					},
+					"installedPwshModules": "Geïnstalleerde pwsh-module verwijderen...",
+					"installedSystemPackages": "Geïnstalleerde systeempakketten verwijderen...",
+					"protocolHandler": "Fot:// protocolhandler verwijderen...",
+					"startMenuShortcut": "Snelkoppelingen naar het startmenu verwijderen...",
+					"terminalKeybindings": "Terminal-toetsenpatch wordt verwijderd...",
+					"terminalProfile": "Windows Terminal-profiel verwijderen..."
+				},
+				"remove": {
+					"backgroundRunnerFailed": "Kan actief programma op de achtergrond niet verwijderen: ${message}",
+					"denoFailed": "Kan Deno niet verwijderen: ${message}",
+					"moduleFailed": "Verwijderen van ${module} mislukt: ${message}",
+					"protocolHandlerFailed": "Kan `fount://` protocolhandler niet verwijderen: ${message}"
+				}
 			}
 		}
 	},
@@ -453,22 +483,6 @@
 		"hero": {
 			"title": "Een Vonk van de Geest, een Vriend voor het Leven",
 			"description": "fount is een AI-aangedreven platform voor personage-interactie, ontworpen om <i>jou</i> de controle te geven. Het is een brug die je verbindt met de personages uit je verbeelding, waardoor je moeiteloos met hen kunt praten, je eigen personages kunt creëren en ze met de wereld kunt delen."
-		},
-		"feature1": {
-			"title": "Naadloze gesprekken, altijd en overal",
-			"description": "Begin een chat op je computer en ga naadloos verder op je telefoon of tablet. fount houdt je gesprekken gesynchroniseerd, zodat je altijd verbonden bent met je personages, waar je ook bent. Werkt op Windows, macOS, Linux en zelfs Android."
-		},
-		"feature2": {
-			"title": "Prachtige, aanpasbare interface",
-			"description": "Kies uit meer dan 30 prachtige thema's, of creëer je eigen. fount is jouw persoonlijke canvas. Druk jezelf uit, pas je omgeving aan naar jouw smaak en krijg een echt gepersonaliseerde ervaring."
-		},
-		"feature3": {
-			"title": "Expressieve, meeslepende chat",
-			"description": "fount maakt volledig gebruik van de kracht van HTML, waardoor personages zich kunnen uiten via rich text, afbeeldingen en zelfs interactieve elementen. Voer dynamische en boeiende groepschats met meerdere personages tegelijk."
-		},
-		"feature4": {
-			"title": "Onbeperkte AI-bronintegratie",
-			"description": "fount biedt een ongeëvenaarde keuze en flexibiliteit. Maak verbinding met <i>elke</i> AI-bron – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI en meer. De communicatielogica wordt gevormd naar <i>jouw</i> wil, door de kracht van code."
 		},
 		"language_selector": {
 			"button": {
@@ -487,8 +501,8 @@
 		},
 		"mini_game": {
 			"title": "Speel een spelletje",
-			"description1": "Duurt de installatie te lang?",
-			"description2": "Hier is een spelletje om de tijd te doden."
+			"slowInstallHint": "Duurt de installatie te lang?",
+			"playWhileWaiting": "Hier is een spelletje om de tijd te doden."
 		},
 		"testimonials": {
 			"anonymous": "anonieme gebruiker",
@@ -530,9 +544,27 @@
 			"title": "Installatie mislukt!",
 			"description": "Er lijkt iets mis te zijn gegaan met het installatieprogramma van fount.",
 			"connection_failed": "Verbinding mislukt!",
-			"description1": "Er lijkt iets mis te zijn gegaan met het installatieprogramma van fount.",
-			"description2": "Controleer je terminal en probeer het opnieuw.",
-			"close_page": "Pagina sluiten"
+			"close_page": "Pagina sluiten",
+			"summary": "Er lijkt iets mis te zijn gegaan met het installatieprogramma van fount.",
+			"retryHint": "Controleer je terminal en probeer het opnieuw."
+		},
+		"features": {
+			"seamlessChat": {
+				"title": "Naadloze gesprekken, altijd en overal",
+				"description": "Begin een chat op je computer en ga naadloos verder op je telefoon of tablet. fount houdt je gesprekken gesynchroniseerd, zodat je altijd verbonden bent met je personages, waar je ook bent. Werkt op Windows, macOS, Linux en zelfs Android."
+			},
+			"customUi": {
+				"title": "Prachtige, aanpasbare interface",
+				"description": "Kies uit meer dan 30 prachtige thema's, of creëer je eigen. fount is jouw persoonlijke canvas. Druk jezelf uit, pas je omgeving aan naar jouw smaak en krijg een echt gepersonaliseerde ervaring."
+			},
+			"expressiveChat": {
+				"title": "Expressieve, meeslepende chat",
+				"description": "fount maakt volledig gebruik van de kracht van HTML, waardoor personages zich kunnen uiten via rich text, afbeeldingen en zelfs interactieve elementen. Voer dynamische en boeiende groepschats met meerdere personages tegelijk."
+			},
+			"aiSources": {
+				"title": "Onbeperkte AI-bronintegratie",
+				"description": "fount biedt een ongeëvenaarde keuze en flexibiliteit. Maak verbinding met <i>elke</i> AI-bron – OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI en meer. De communicatielogica wordt gevormd naar <i>jouw</i> wil, door de kracht van code."
+			}
 		}
 	},
 	"protocolhandler": {
@@ -617,10 +649,6 @@
 			"passwordMismatch": "De wachtwoorden komen niet overeen.",
 			"loginError": "Fout bij inloggen.",
 			"registrationError": "Fout bij registreren.",
-			"verificationCodeError": "Verificatiecode onjuist of verlopen.",
-			"verificationCodeSent": "Verificatiecode succesvol verzonden.",
-			"verificationCodeSendError": "Verzenden van verificatiecode mislukt.",
-			"verificationCodeRateLimit": "Te vaak een code verzonden, probeer het later opnieuw.",
 			"lowPasswordStrength": "Wachtwoord is te zwak.",
 			"accountAlreadyExists": "Account bestaat al",
 			"powNotSolved": "Voltooi eerst de PoW-verificatie.",
@@ -630,26 +658,36 @@
 			"accountLockedAttempts": "Het account is tijdelijk vergrendeld vanwege te veel mislukte inlogpogingen.",
 			"powValidationFailed": "Beveiligingscontrole mislukt. Probeer het opnieuw.",
 			"tokenAndSolutionsRequired": "Token en solutions zijn vereist.",
-			"apiErrorBodyUnreadable": "De server heeft informatie geretourneerd die niet kon worden geparseerd. Probeer het later opnieuw."
+			"apiErrorBodyUnreadable": "De server heeft informatie geretourneerd die niet kon worden geparseerd. Probeer het later opnieuw.",
+			"verificationCode": {
+				"error": "Verificatiecode onjuist of verlopen.",
+				"rateLimit": "Te vaak een code verzonden, probeer het later opnieuw.",
+				"sendError": "Verzenden van verificatiecode mislukt.",
+				"sent": "Verificatiecode succesvol verzonden."
+			}
 		},
 		"webauthn": {
 			"loginButton": "Aanmelden met beveiligingssleutel of passkey",
-			"errorLoadLibrary": "Kan de WebAuthn-hulpbibliotheek niet laden. Controleer het netwerk en probeer het opnieuw.",
-			"errorCancelled": "De beveiligingssleutel is geannuleerd of niet geautoriseerd voor gebruik.",
-			"errorSessionMissing": "De server heeft geen geldige inlogsessie geretourneerd. Vernieuw de pagina en probeer het opnieuw.",
-			"errorBadBeginResponse": "De server heeft ongeldige inloggegevens geretourneerd. Vernieuw de pagina en probeer het opnieuw.",
-			"errorCredentialRequired": "Geldige gegevens voor de toegangssleutel (Passkey) ontbreken.",
-			"errorAuthSessionRequired": "Het inlogsessietoken ontbreekt. Vernieuw de pagina en probeer het opnieuw.",
 			"apiSessionExpired": "De inlogsessie met de toegangssleutel is verlopen. Probeer het opnieuw.",
 			"apiUnknownPasskey": "De toegangssleutel wordt niet herkend. Gebruik een gebonden sleutel.",
 			"apiPasskeyVerificationFailed": "Verificatie van de toegangssleutel mislukt. Probeer het opnieuw.",
-			"registrationUserNotFound": "Gebruikersaccount niet gevonden.",
-			"registrationSessionExpired": "De bindingssessie is verlopen. Probeer het opnieuw vanaf het begin.",
-			"registrationVerifyFailed": "Kan de verificatie van de toegangssleutelregistratie niet voltooien.",
-			"registrationFailed": "Registratie van de toegangssleutel mislukt. Probeer het opnieuw.",
 			"removeUserNotFound": "Gebruikers- of inloggegevens niet gevonden.",
 			"removeInvalidPassword": "Verkeerd wachtwoord.",
-			"removePasskeyNotFound": "De toegangssleutel is niet gevonden."
+			"removePasskeyNotFound": "De toegangssleutel is niet gevonden.",
+			"registration": {
+				"failed": "Registratie van de toegangssleutel mislukt. Probeer het opnieuw.",
+				"sessionExpired": "De bindingssessie is verlopen. Probeer het opnieuw vanaf het begin.",
+				"userNotFound": "Gebruikersaccount niet gevonden.",
+				"verifyFailed": "Kan de verificatie van de toegangssleutelregistratie niet voltooien."
+			},
+			"error": {
+				"authSessionRequired": "Het inlogsessietoken ontbreekt. Vernieuw de pagina en probeer het opnieuw.",
+				"badBeginResponse": "De server heeft ongeldige inloggegevens geretourneerd. Vernieuw de pagina en probeer het opnieuw.",
+				"cancelled": "De beveiligingssleutel is geannuleerd of niet geautoriseerd voor gebruik.",
+				"credentialRequired": "Geldige gegevens voor de toegangssleutel (Passkey) ontbreken.",
+				"loadLibrary": "Kan de WebAuthn-hulpbibliotheek niet laden. Controleer het netwerk en probeer het opnieuw.",
+				"sessionMissing": "De server heeft geen geldige inlogsessie geretourneerd. Vernieuw de pagina en probeer het opnieuw."
+			}
 		}
 	},
 	"login_info": {
@@ -808,84 +846,86 @@
 					}
 				}
 			},
-			"serviceGenerators": {
-				"title": "Servicegenerator",
-				"subtitle": "Maak van het onzichtbare iets tastbaars, maak het mogelijke werkelijkheid.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Instellen als standaard servicegenerator"
-					}
-				}
-			},
-			"serviceGenerators/AI": {
-				"title": "AI-servicegenerator",
-				"subtitle": "Weef draden van wijsheid en verbind bruggen van gedachten.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Instellen als standaard AI-servicegenerator"
-					}
-				}
-			},
-			"serviceGenerators/search": {
-				"title": "Zoekservicegenerator",
-				"subtitle": "In de oceaan van informatie, ontsteek het licht voor jou.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Instellen als standaard zoekgenerator"
-					}
-				}
-			},
-			"serviceGenerators/translate": {
-				"title": "Vertaalservicegenerator",
-				"subtitle": "Overschrijd de taalgrenzen en laat ideeën de vrije loop.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Instellen als standaard vertaalservicegenerator"
-					}
-				}
-			},
-			"serviceSources": {
-				"title": "Dienstbron",
-				"subtitle": "Door de straaltjes te verzamelen, worden ze uitgestrekte rivieren.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Instellen als standaardservicebron"
-					}
-				}
-			},
-			"serviceSources/AI": {
-				"title": "AI-servicebron",
-				"subtitle": "De bron van wijsheid en het uitgangspunt van het denken.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Instellen als standaard AI-servicebron"
-					}
-				}
-			},
-			"serviceSources/search": {
-				"title": "Zoek servicebron",
-				"subtitle": "Een schat aan kennis en een startpunt voor verkenning.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Instellen als standaard zoekbron"
-					}
-				}
-			},
-			"serviceSources/translate": {
-				"title": "Bron van de vertaalservice",
-				"subtitle": "De brug van taal en de schakel van communicatie.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Instellen als standaardbron voor vertaalservices"
-					}
-				}
-			},
 			"shells": {
 				"title": "Interactieve interfaceselectie",
 				"subtitle": "Kies een raam en zie een nieuwe wereld.",
 				"card": {
 					"defaultCheckbox": {
 						"title": "Instellen als standaardshell"
+					}
+				}
+			},
+			"service": {
+				"generators": {
+					"title": "Servicegenerator",
+					"subtitle": "Maak van het onzichtbare iets tastbaars, maak het mogelijke werkelijkheid.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Instellen als standaard servicegenerator"
+						}
+					}
+				},
+				"generators/AI": {
+					"title": "AI-servicegenerator",
+					"subtitle": "Weef draden van wijsheid en verbind bruggen van gedachten.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Instellen als standaard AI-servicegenerator"
+						}
+					}
+				},
+				"generators/search": {
+					"title": "Zoekservicegenerator",
+					"subtitle": "In de oceaan van informatie, ontsteek het licht voor jou.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Instellen als standaard zoekgenerator"
+						}
+					}
+				},
+				"generators/translate": {
+					"title": "Vertaalservicegenerator",
+					"subtitle": "Overschrijd de taalgrenzen en laat ideeën de vrije loop.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Instellen als standaard vertaalservicegenerator"
+						}
+					}
+				},
+				"sources": {
+					"title": "Dienstbron",
+					"subtitle": "Door de straaltjes te verzamelen, worden ze uitgestrekte rivieren.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Instellen als standaardservicebron"
+						}
+					}
+				},
+				"sources/AI": {
+					"title": "AI-servicebron",
+					"subtitle": "De bron van wijsheid en het uitgangspunt van het denken.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Instellen als standaard AI-servicebron"
+						}
+					}
+				},
+				"sources/search": {
+					"title": "Zoek servicebron",
+					"subtitle": "Een schat aan kennis en een startpunt voor verkenning.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Instellen als standaard zoekbron"
+						}
+					}
+				},
+				"sources/translate": {
+					"title": "Bron van de vertaalservice",
+					"subtitle": "De brug van taal en de schakel van communicatie.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Instellen als standaardbron voor vertaalservices"
+						}
 					}
 				}
 			}
@@ -966,12 +1006,6 @@
 				"aria-label": "Naar Unicode"
 			},
 			"discoverPacks": "Emoji-pakketten ontdekken →",
-			"categoryFace": "Emoji",
-			"categoryGesture": "Gebaar",
-			"categoryHeart": "Hart",
-			"categoryAnimal": "Dier",
-			"categoryFood": "Voedsel",
-			"categoryObject": "Ding",
 			"addToCollection": "Aan favorieten toevoegen",
 			"addedToCollection": "Toegevoegd aan favorieten",
 			"joinGroup": "Lid worden",
@@ -982,7 +1016,15 @@
 			"openAuthor": "Auteur bekijken",
 			"previewGroupMeta": "Van groep: ${name}",
 			"previewAuthorMeta": "Van auteur",
-			"previewActionFailed": "Actie mislukt: ${error}"
+			"previewActionFailed": "Actie mislukt: ${error}",
+			"category": {
+				"animal": "Dier",
+				"face": "Emoji",
+				"food": "Voedsel",
+				"gesture": "Gebaar",
+				"heart": "Hart",
+				"object": "Ding"
+			}
 		},
 		"emojiPacks": {
 			"title": "Emoji-pakketten ontdekken",
@@ -1043,12 +1085,14 @@
 			"modeSingle": "enkel karakter",
 			"modeEmpty": "lege groep",
 			"subtitleRoles": "Er staan ​​${count} tekens in deze chat",
-			"statusSaved": "Opgeslagen",
-			"statusSaving": "Opslaan…",
-			"statusDirty": "Er zijn niet-opgeslagen wijzigingen",
-			"statusSaveFailed": "Opslaan mislukt",
 			"saveSuccess": "Instellingen voor groepschat opgeslagen",
-			"saveFailed": "Kan groepschatinstellingen niet opslaan"
+			"saveFailed": "Kan groepschatinstellingen niet opslaan",
+			"status": {
+				"dirty": "Er zijn niet-opgeslagen wijzigingen",
+				"saveFailed": "Opslaan mislukt",
+				"saved": "Opgeslagen",
+				"saving": "Opslaan…"
+			}
 		},
 		"group": {
 			"defaults": {
@@ -1057,167 +1101,6 @@
 				"dmChatName": "Chatten",
 				"dmDmName": "Privéchat",
 				"threadName": "kinder draad"
-			},
-			"settingsPage": {
-				"title": "Groepsinstellingen",
-				"kicker": "Groepsbeheer",
-				"subtitle": "Beheer groepsinformatie, leden en gemeenschappelijke functies. Laagfrequente machtigingen, opslag en auditingtools zijn gecentraliseerd in geavanceerde instellingen.",
-				"backToChat": "Terug naar chat",
-				"navigationLabel": "Classificatie van groepsinstellingen",
-				"advancedNavigationLabel": "Categorie Geavanceerde instellingen",
-				"tabGeneral": "Basis",
-				"tabPermissions": "Rolmachtigingen",
-				"tabMembers": "Leden",
-				"tabAudit": "Auditlogboek",
-				"tabEmojis": "Emoji",
-				"tabAdvanced": "Geavanceerd",
-				"tabStorage": "Opslag en archivering",
-				"tabChannelPermissions": "Kanaalrechten",
-				"advancedHubTitle": "Geavanceerde instellingen",
-				"advancedHubDescription": "Deze functies wijzigen de machtigingsstructuur, historische gegevens of bestuursrecords van de groep; alleen aanpassen als dat duidelijk nodig is.",
-				"channelPermsHint": "Stel overschrijvingen van rolmachtigingen in voor specifieke kanalen. Niet-gedekte items nemen de machtigingen voor groepsrollen over.",
-				"channelPermsSelectChannel": "Kanaal",
-				"channelPermsAddRole": "Roloverschrijving toevoegen",
-				"channelPermsRemoveRole": "Verwijder deze roloverschrijving",
-				"channelPermsStateNeutral": "Erven",
-				"channelPermsStateAllow": "Toestaan",
-				"channelPermsStateDeny": "Afwijzen",
-				"channelPermsUpdated": "Kanaalrechten bijgewerkt",
-				"channelPermsUpdateFailed": "Kan kanaalrechten niet updaten: ${error}",
-				"channelPermsNoChannels": "Er is momenteel geen kanaal om te configureren",
-				"emojisTitle": "Aangepaste expressies groeperen",
-				"emojisHint": "Leden kunnen deze emoticons in de chat invoegen of verzenden; verwijderde afbeeldingen worden op aanvraag opgehaald via federatieve knooppunten.",
-				"emojisUpload": "Emoticons uploaden",
-				"emojisCreatePack": "Nieuw emoji-pakket",
-				"emojisCreatePackPrompt": "Pakket-ID",
-				"emojisCreatePackOk": "Emoji-pakket aangemaakt",
-				"emojisCreatePackFailed": "Aanmaken mislukt: ${error}",
-				"emojisPackGroupSuffix": "groepsstandaard",
-				"activeEmojiPackLabel": "Pakket in bewerking",
-				"emojisDelete": "Emoticon verwijderen",
-				"emojisEmpty": "Nog geen groepsuitdrukkingen",
-				"emojisUploadOk": "Expressie is geüpload",
-				"emojisUploadFailed": "Uploaden mislukt: ${error}",
-				"emojisDeleteConfirm": "Weet je zeker dat je deze groep emoticons wilt verwijderen?",
-				"emojisDeleteOk": "Emoticon is verwijderd",
-				"emojisDeleteFailed": "Verwijderen mislukt: ${error}",
-				"defaultEmojiPackLabel": "Standaard emoji-pakket",
-				"defaultEmojiPackHint": "Wordt bij toetreding automatisch aan favorieten van leden toegevoegd. Wijzigen vervangt alleen het oude standaardpakket als het nog in favorieten staat.",
-				"defaultEmojiPackOk": "Standaardpakket bijgewerkt",
-				"defaultEmojiPackFailed": "Standaardpakket kon niet worden ingesteld",
-				"membersTitle": "Ledenlijst",
-				"overviewTitle": "Groepsoverzicht",
-				"overviewHint": "Alleen-lezen informatie. Als je over bestuursrechten beschikt, kunt je groepsinformatie en beleid bewerken in 'Basis'.",
-				"channelArchiveTitle": "Kanaalarchief",
-				"channelArchiveHint": "Als je het volledige JSON-archief van het kanaal importeert, wordt er een nieuw gewoon tekstkanaal in deze groep gemaakt en wordt de geschiedenis hersteld (opnieuw ondertekend door u; bijlagen behouden alleen metagegevens).",
-				"channelArchiveImport": "Kanaal JSON importeren",
-				"channelArchiveImportOk": "${count} berichten geïmporteerd, nieuw kanaal geopend...",
-				"channelArchiveImportFailed": "Importeren mislukt: ${error}",
-				"governanceHint": "Schrijf het beleid op groepsniveau van de DAG; beheerders- of MANAGE_ADMINS-machtigingen zijn vereist.",
-				"governanceDenied": "Je bent niet gemachtigd om instellingen voor groepsbeheer te wijzigen.",
-				"rolesDenied": "Je heeft geen MANAGE_ROLES toestemming om rollen te bewerken.",
-				"channelPermsDenied": "Je heeft geen MANAGE_CHANNELS-rechten om overschrijvingen van kanaalrechten te bewerken.",
-				"notMember": "Je bent geen lid meer van deze groep; de gegevens van deze groep zijn automatisch gewist na het verlaten van de groep.",
-				"basicTitle": "Groepsbestuur",
-				"profileSectionTitle": "Groepsinformatie",
-				"profileSectionHint": "De naam, introductie en methode om lid te worden van de groep worden in de groepsmetadata geschreven.",
-				"behaviorSectionTitle": "Gedrag",
-				"networkSectionTitle": "federatie en verbinding",
-				"retentionSectionTitle": "Bewaring en limieten",
-				"mediaSectionTitle": "Oproepen en bestanden",
-				"nameLabel": "Groepsnaam",
-				"descriptionLabel": "Groepsbeschrijving",
-				"joinPolicyLabel": "Strategie voor groepsinvoer",
-				"joinInviteOnly": "Alleen uitnodigen",
-				"joinPow": "PoW vereist",
-				"powDifficultyLabel": "PoW-moeilijkheid",
-				"advancedTitle": "Geavanceerde instellingen",
-				"advancedDescription": "Netwerk-, opslag-, snelheidslimiet- en encryptieparameters; Bewaar de standaardinstellingen als je het niet zeker weet",
-				"securityAdvancedTitle": "Beveiligings- en groepseigenaaractiviteiten",
-				"securityAdvancedDescription": "Sleutelroulatie en opvolging van groepsleiders; onjuiste handelingen kunnen de toegang van leden beïnvloeden",
-				"powDifficultyTip": "Bewijs van werkmoeilijkheden. Hoe hoger de waarde, hoe langer de rekentijd die vreemden nodig hebben om lid te worden van de openbare groep.",
-				"maxDagPayloadTip": "De bovengrens van het aantal gegevens dat door één groepsgebeurtenis mag worden overgedragen. Als het te groot is, vergroot dit het synchronisatiegeheugen en de netwerkoverhead.",
-				"trustedPeersTip": "Het aantal federatieburen met een hoge reputatie dat prioriteit heeft om verbonden te blijven.",
-				"gossipTtlTip": "Het maximale aantal federale knooppunten waarlangs het bericht kan worden doorgestuurd. Door dit te verhogen, wordt de dekking vergroot en ook het verkeer vergroot.",
-				"hlcTip": "De maximale hoeveelheid tijd dat de klok van het externe knooppunt sneller mag zijn dan de klok van het lokale knooppunt, gebruikt om abnormale toekomstige gebeurtenissen te weigeren.",
-				"sfuTip": "Optioneel extern audio- en video-doorstuurserviceadres. Laat dit veld leeg om ingebouwde point-to-point/relay-oproepen te gebruiken.",
-				"iceTip": "Help WebRTC de router binnen te dringen; wanneer de directe verbinding mislukt, stuurt TURN namens hem audio-, video- en federatief verkeer door.",
-				"fileEncryptionTip": "Convergente encryptie dedupliceert maar maakt het feit bloot dat de bestanden hetzelfde zijn; willekeurige sleutels zijn meer privé, maar nemen meer ruimte in beslag.",
-				"keyManagementTitle": "Sleutelbeheer",
-				"keyManagementTip": "Nieuwe sleutels moeten na rotatie opnieuw onder de leden worden verdeeld. Handmatige actie mag alleen worden ondernomen als je vermoedt dat een sleutel is aangetast.",
-				"allowDangerousHtml": "Berichten van vertrouwde auteurs maken inline HTML mogelijk",
-				"deleteGroup": "Groep verwijderen",
-				"save": "Instellingen opslaan",
-				"inviteTitle": "Uitnodigen",
-				"inviteHint": "Genereer een uitnodigingscode voor de korte termijn (standaard 1 uur). De andere partij vult het groeps-ID en de uitnodigingscode in bij \"Word lid van groep\".",
-				"inviteMint": "Genereer uitnodigingscode",
-				"inviteGroupId": "Groeps-ID",
-				"inviteCode": "Uitnodigingscode",
-				"inviteExpires": "Vervaldatum: ${date}",
-				"inviteCopy": "Groepsinformatie kopiëren",
-				"inviteCopied": "Groepsinformatie gekopieerd",
-				"inviteCopyFailed": "Kopiëren mislukt",
-				"inviteClipboard": "Groeps-ID: ${groupId}\nUitnodigingscode: ${code}\nLid worden: ${url}",
-				"loadFailed": "Kan groepsinstellingen niet laden: ${error}",
-				"saveSuccess": "Groepsinstellingen opgeslagen",
-				"saveFailed": "Kan instellingen niet opslaan: ${error}",
-				"deleteConfirm": "Weet je zeker dat je deze groep wilt verwijderen? Deze actie is onomkeerbaar en alle berichten en ledengegevens worden permanent verwijderd.",
-				"deleteSuccess": "Groep verwijderd",
-				"deleteFailed": "Kan groep niet verwijderen: ${error}",
-				"rolesTitle": "Rollen en machtigingen",
-				"createRole": "Creëer een rol",
-				"roleDefault": "Standaard",
-				"deleteRole": "Rol verwijderen",
-				"deleteRoleConfirm": "Weet je zeker dat je deze rol wilt verwijderen?",
-				"deleteRoleSuccess": "Rol verwijderd",
-				"deleteRoleFailed": "Kan rol niet verwijderen: ${error}",
-				"createRolePrompt": "Voer de karakternaam in:",
-				"createRoleSuccess": "Rol gemaakt",
-				"createRoleFailed": "Kan rol niet maken: ${error}",
-				"permissionUpdated": "Machtigingen bijgewerkt",
-				"permissionUpdateFailed": "Kan rechten niet updaten: ${error}",
-				"noMembers": "Nog geen leden",
-				"memberRoles": "Rol:",
-				"kick": "Verwijderen",
-				"ban": "Bannen",
-				"kickConfirm": "Weet je zeker dat je lid ${name} wilt verwijderen?",
-				"kickSelfNodeWarning": "Waarschuwing: dit lid gebruikt dezelfde knooppuntidentiteit Als je. Ook word je na uitsluiting uit de groep verwijderd. Weet je zeker dat je wilt doorgaan?",
-				"kickSuccess": "Lid eruit gegooid",
-				"kickFailed": "Kan lid niet verwijderen: ${error}",
-				"banConfirm": "Weet je zeker dat je lid ${name} wilt uitsluiten?",
-				"banSuccess": "Lid is uitgesloten",
-				"banFailed": "Kan lid niet uitsluiten: ${error}",
-				"bannedTitle": "Verbannen lid",
-				"unban": "Deblokkeren",
-				"unbanConfirm": "Weet je zeker dat je lid ${name} wilt deblokkeren?",
-				"unbanSuccess": "Lid is gedeblokkeerd",
-				"unbanFailed": "Deblokkeren mislukt: ${error}",
-				"keyRotate": "Hoofdsleutel groepsbestand draaien",
-				"keyRotateConfirm": "Weet je zeker dat je de hoofdsleutel van dit groepsbestand handmatig wilt roteren? Nieuwe leden moeten de sleutel van het geschiedenisbestand opnieuw synchroniseren.",
-				"keyRotateOk": "Sleutel is gedraaid",
-				"keyRotateFailed": "Sleutelroulatie mislukt: ${error}",
-				"gshGenerationRetentionHint": "Momenteel worden alleen de meest recente 64 generaties van de hoofdsleutelgeschiedenis van bestanden bewaard. De oudste historische bestanden kunnen mogelijk niet worden gedecodeerd nadat deze zijn overschreden, en het wordt aanbevolen om belangrijke gegevens regelmatig te archiveren.",
-				"gshGenerationNearLimit": "Momenteel gerouleerd naar generatie ${generation} van bestandshoofdsleutels (tot ${maxGenerations} generaties). Als je de frequente rotatie voortzet, zullen de oudste historische sleutels met pensioen gaan.",
-				"ownerSuccession": "Opvolging van groepsleiders",
-				"ownerSuccessionOk": "De opvolging van de groepsleiders is van kracht geworden",
-				"ownerSuccessionFailed": "Opvolging van groepsleider mislukt: ${error}",
-				"permVIEW_CHANNEL": "Kanaal bekijken",
-				"permSEND_MESSAGES": "Bericht verzenden",
-				"permSEND_STICKERS": "Stuur stickers",
-				"permADD_REACTIONS": "reactie toevoegen",
-				"permMANAGE_MESSAGES": "Management berichten",
-				"permMANAGE_CHANNELS": "Kanaal beheren",
-				"permKICK_MEMBERS": "kick lid",
-				"permBAN_MEMBERS": "Lid Bannen",
-				"permMANAGE_ROLES": "Managementrol",
-				"permINVITE_MEMBERS": "Nodig leden uit",
-				"permSTREAM": "Stem",
-				"permCREATE_THREADS": "Subkanaal maken",
-				"permUPLOAD_FILES": "Bestanden uploaden",
-				"permMANAGE_FILES": "Beheer bestanden",
-				"permPIN_MESSAGES": "Vastgezet bericht",
-				"permADMIN": "Beheerder",
-				"permBYPASS_RATE_LIMIT": "Omzeil de limiet voor de berichtsnelheid"
 			},
 			"auditLog": {
 				"title": "Groepscontrolelogboek",
@@ -1228,10 +1111,6 @@
 				"loadMore": "Laad oudere records",
 				"empty": "Nog geen auditgegevens",
 				"loadFailed": "Kan auditlogboek niet laden: ${error}",
-				"colTime": "Tijd",
-				"colType": "Type",
-				"colActor": "Exploitant",
-				"colSummary": "Samenvatting",
 				"type": {
 					"member_join": "leden sluiten zich aan",
 					"member_leave": "leden Afwezig",
@@ -1288,167 +1167,44 @@
 					"unpin_message": "${channelName} losmaken op ${targetEventId}",
 					"file_upload": "Upload bestand ${fileName}",
 					"file_delete": "Bestand ${fileName} verwijderen"
+				},
+				"col": {
+					"actor": "Exploitant",
+					"summary": "Samenvatting",
+					"time": "Tijd",
+					"type": "Type"
 				}
 			},
-			"messagePrefixSticker": "Sticker",
 			"membersEmpty": "(nog geen leden)",
 			"channelEncryptionGsh": "Kanaalsleutel end-to-end-versleuteling (CKG)",
-			"ownerSuccession": "Start een opvolgingsstemming",
-			"ownerSuccessionDescription": "Draag de hoogste administratieve autoriteit van de groep (MANAGE_ADMINS) over aan het opgegeven lid. Alleen beheerders kunnen werken.",
-			"ownerSuccessionAutoSignHint": "Na indiening ondertekent de machine automatisch het handtekeningzaad van de groep zonder de privésleutel in te voeren. In een groep met meerdere beheerders moet meer dan de helft van de beheerders hetzelfde stembiljet (dezelfde stembiljet en kandidaat) lokaal indienen.",
-			"ownerSuccessionCandidateLabel": "Opvolger publieke sleutel-hash",
-			"ownerSuccessionSelfButton": "Nomineer jezelf",
-			"ownerSuccessionSubmitted": "Je handtekening is opgenomen op het opvolgingsstemmingsbiljet.",
-			"ownerSuccessionNeedHash": "Vul de hash van de openbare sleutel van de opvolger in",
-			"ownerSuccessionFailed": "Het indienen van de opvolgingsstemming is mislukt",
 			"e2eDecryptUnavailable": "Het bericht is gecodeerd en kan niet worden gedecodeerd door het huidige apparaat",
 			"contentRefBodyPending": "Externe linktekst (content_ref, nog niet opgehaald voor verificatie)",
 			"contentRefHashMismatch": "De tekst van de externe link komt niet overeen met de opslagverificatie (hash komt niet overeen)",
-			"streamGenerationFailed": "Er is een time-out opgetreden voor het genereren van AI en deze is niet voltooid. Updates zijn gestopt.",
 			"convergentEncryptWarn": "Groepsbestanden maken gebruik van convergente encryptie: als de aanvaller de leesbare tekst van een bestand kent, kan hij de sleutel afleiden en het bijbehorende cijfertekstblok decoderen. Vertrouw niet uitsluitend op groepsversleuteling voor de bescherming van zeer gevoelige en unieke privédocumenten.",
-			"settingsStreamGeneratingIdle": "Door AI gegenereerde tijdelijke time-out voor inactiviteit (milliseconden)",
-			"settingsAutoReplyFrequency": "Rolantwoorden automatisch activeren (na elke N gebruikersberichten is 0 uitgeschakeld)",
-			"settingsAutoReplyFrequencyHint": "0 betekent uit; @vermeldingen worden nog steeds onmiddellijk geactiveerd",
-			"settingsMaxDagPayload": "DAG maximumaantal bytes voor één gebeurtenis",
-			"settingsBatterySaver": "Low power-modus (verkleinde federatie-verbindingspool en relais)",
-			"settingsDiscoveryPublic": "Deze groep zichtbaar maken in federatieve detectie (zonder lid te worden van de groepssleutel)",
-			"settingsDiscoveryTitle": "Titel van detectielijst (optioneel)",
-			"settingsDiscoveryBlurb": "Discovery-introductie (optioneel)",
-			"settingsTrustedPeers": "Trust buurslot (Top-K)",
-			"settingsExplorePeers": "Ontdek buurslots",
-			"settingsMaxPeers": "Federatie-aansluitdop",
-			"settingsGossipTtl": "Roddels doorsturen TTL (aantal hops)",
-			"settingsWantIdsBudget": "Enkel wantIds-budget",
-			"settingsHlcMaxSkew": "Bovengrens voor toekomstige offset HLC (milliseconden)",
 			"dagForkDetected": "Niet-samengevoegde DAG-vork gedetecteerd",
 			"mergeDagTips": "DAG-vorken samenvoegen",
 			"mergeDagTipsOk": "Vork samengevoegd",
 			"mergeDagTipsFailed": "Samenvoegvork mislukt",
-			"settingsStreamingSfu": "Streaming SFU WebSocket-adres (optioneel)",
-			"settingsMessageRetention": "Berichttekst wordt automatisch verwijderd",
-			"settingsMessageRetentionForever": "Permanente retentie (alleen gecomprimeerde DAG-gebeurtenissen)",
-			"settingsMessageRetention30d": "30 dagen geleden",
-			"settingsMessageRetention90d": "90 dagen geleden",
-			"settingsMessageRetention1y": "1 jaar geleden",
-			"settingsMessageRetentionHint": "Zichtbare geschiedenis wordt niet standaard automatisch verwijderd. Indien ingeschakeld, wordt alleen de hot cache van lokale berichten gesnoeid; laatste berichten worden bewaard in het koude archief en het controlepunt.",
-			"settingsHotLatest": "Retentie in de hotzone (laatste aantal berichten per kanaal)",
-			"settingsPinContext": "Topbuurt (±N buren)",
-			"settingsHotWindowHint": "Hotzone-berichten worden bewaard in het controlepunt en de berichtencache; de overige berichten worden na materialisatie naar het maandelijkse koude archief geschreven en vervolgens samengevoegd uit de DAG-procesgebeurtenissen.",
-			"settingsArchiveTitle": "Opslag en koude archivering",
-			"settingsArchiveHint": "Het koude archief is de eindstatus van de lokale tekstpost (bestanden gedeeld per maand). Het verwijderen van het archief zal de DAG niet veranderen; als de geschiedenis ontbreekt, kan deze worden opgehaald uit gefedereerde buren.",
-			"settingsArchiveFilesTitle": "Gearchiveerde bestanden",
-			"settingsArchiveEmpty": "Er zijn nog geen koude archiefbestanden.",
-			"settingsArchiveColChannel": "Kanaal",
-			"settingsArchiveColMonth": "Maand",
-			"settingsArchiveColSize": "Maat",
-			"settingsArchiveDeleteBefore": "Verwijder deze maand ervoor",
-			"settingsArchiveDeleteButton": "Koud archief verwijderen",
-			"settingsArchiveDeleteHint": "Alleen lokaal archief/*.jsonl wordt verwijderd; hotspots en DAG-ankers worden niet beïnvloed.",
-			"settingsArchiveAdminOnly": "Deze machine beschikt nog niet over koude archiefgegevens voor deze groep.",
-			"settingsArchiveDeleteInvalidMonth": "Selecteer een geldige maand JJJJ-MM.",
-			"settingsArchiveDeleteConfirm": "Weet je zeker dat je alle koude archiefbestanden ouder dan ${month} wilt verwijderen? Deze operatie is onomkeerbaar.",
-			"settingsArchiveDeleteOk": "${files} archiefbestanden verwijderd.",
-			"settingsArchiveDeleteFailed": "Kan archief niet verwijderen: ${error}",
-			"settingsEventRetentionDepth": "Retentiediepte voor DAG-gebeurtenissen",
-			"settingsEventRetentionMs": "Bewaartijd van DAG-gebeurtenissen",
-			"settingsCompactTriggerDepth": "Gematerialiseerde compressietriggerdiepte",
-			"settingsMessageRateLimit": "Limiet voor berichtsnelheid (bericht/minuut/entiteit)",
-			"settingsAutoReplyTokenBucket": "Automatische antwoorddrukplanning (tokenbucket)",
-			"settingsAutoReplyTokenBucketHint": "Nadat het is ingeschakeld, onderhoudt elk personage een token-bucket per kanaal; onMessage wordt niet tijdelijk geactiveerd als de bucket leeg is, wat de continue schermvernieuwing tijdens piekperioden kan belemmeren.",
-			"settingsIceServers": "ICE/TURN-server",
-			"settingsIceServersAdd": "Server toevoegen",
-			"settingsIceServersHint": "Voor WebRTC- en federatieve P2P-NAT-traversal. TURN-gebruikersnaam en -wachtwoord worden alleen lokaal opgeslagen en niet via de federatie gesynchroniseerd.",
-			"settingsIceUrl": {
-				"aria-label": "ICE-serveradres",
-				"placeholder": "stun:host:19302"
-			},
-			"settingsIceUser": {
-				"aria-label": "TURN-gebruikersnaam",
-				"placeholder": "Gebruikersnaam (optioneel)"
-			},
-			"settingsIceCred": {
-				"aria-label": "TURN-wachtwoord",
-				"placeholder": "Wachtwoord (optioneel)"
-			},
-			"settingsIceRemove": {
-				"aria-label": "Deze server verwijderen"
-			},
-			"settingsFileCeMode": "Bestandsversleutelingsmodus",
-			"settingsFileCeModeConvergent": "Convergente versleuteling (kan duplicaten verwijderen)",
-			"settingsFileCeModeRandom": "Hoge privacymodus (willekeurige sleutels, geen ontdubbeling)",
-			"settingsFileCeModeHint": "De hoge privacymodus gebruikt willekeurige contentKey voor elk blok en markeert ceMode=random; dit verkleint het risico dat platte tekst raadbaar is, maar verhoogt het opslag- en bandbreedtegebruik.",
 			"channelsTitle": "Kanaal",
-			"createGroup": "Nieuwe groep aanmaken",
 			"members": "Leden",
 			"membersHint": "De ledenlijst wordt gesynchroniseerd door Checkpoint (placeholder)",
-			"streamTest": "Media-apparaten testen",
 			"loadError": "Kan groep niet laden",
-			"remoteNodeTimeout": "Het externe knooppunt reageert niet. Probeer het later opnieuw.",
-			"remoteUnavailable": "De externe component is niet beschikbaar of kan de RPC niet routeren",
 			"messagesLoadFailed": "Het laden van het bericht is mislukt",
 			"sendFailed": "Verzenden is mislukt",
 			"chatNotLoaded": "De hoofdchat is niet geladen: Open een gesprek met dezelfde ID als de groep in de hoofdinterface en probeer het opnieuw.",
-			"createFailed": "Kan groep niet maken",
 			"newGroupName": "nieuwe groep",
-			"streamOk": "Mediastream verworven (gestopt, niet uitgezonden)",
-			"remoteUnsafe": "Dit bericht komt van een externe locatie en de auteur Status niet in de lokale vertrouwenslijst. Rich-text-weergave is uitgeschakeld.",
 			"trustAuthor": {
 				"textContent": "Vertrouwen",
 				"title": "Vertrouw deze auteur (sta gevaarlijke HTML toe)"
 			},
 			"trustAuthorOk": "Deze auteur is vertrouwd en geeft rijke tekst weer",
-			"voteCast": "Stemmen",
 			"listEmpty": "(Er zijn nog geen navigatie-items, beheerders kunnen lijstitems bijwerken via API)",
 			"listChannelReadonly": {
 				"placeholder": "Lijstkanalen geven alleen navigatiekaarten weer en sturen geen berichten"
 			},
-			"streamNoEmbed": {
-				"textContent": "Het streamingadres moet een insluitbare https://-pagina zijn, of de groepsinstellingen moeten eerst worden geconfigureerd en vernieuwd om een ​​weergavetoken te verkrijgen."
-			},
-			"streamNoSfu": {
-				"textContent": "streamingSfuWss is niet geconfigureerd; beheerders kunnen het LiveKit/mediasoup kijkadres invullen in de groepsinstellingen."
-			},
-			"messageDeleted": "Bericht verwijderd",
-			"messageDeletedBracket": "[Bericht verwijderd]",
-			"messageWithAttachments": "${text} (${n} bijlagen)",
-			"voteBlockHeading": "[${prefix}] ${question}",
-			"voteBlockHeadingTagged": "[Stem] ${question}",
-			"voteCastLine": "[${prefix}] Stem: ${choice}",
-			"voteCastLineTagged": "[Stem] Stem: ${choice}",
-			"voteOptionsPreview": "[${prefix}] ${options}",
-			"voteOptionsPreviewTagged": "[Stem] ${options}",
-			"voteDeadlineLineOpen": "Deadline: ${date}",
-			"voteDeadlineLineClosed": "Einde: ${date} [Einde]",
-			"pinMessageLine": "[Top] ${targetId}",
-			"unpinMessageLine": "[Losmaken] ${targetId}",
-			"stickerPrefixLine": "[${label}]",
-			"stickerPrefixLineTagged": "[sticker]",
-			"feedbackDagLine": "[${label}]",
-			"feedbackDagLineWithNote": "[${label}] ${note}",
-			"feedbackPreviewLine": "${tag}${sep}${note}",
-			"feedbackPreviewTaggedNote": "${tag} ${note}",
 			"mentionHandle": "@${name}",
 			"mentionInsert": "@${name}",
-			"feedbackUp": "Loven",
-			"feedbackDown": "Disliken",
 			"attachmentsHint": "(${n} bijlagen)",
-			"pinMessage": "speld naar boven",
-			"unpinMessage": "Losmaken",
-			"pinThisMessage": "Schrijf dit artikel naar DAG en pin het bovenaan",
-			"pinAction": {
-				"textContent": "speld naar boven",
-				"title": "Schrijf dit artikel naar DAG en pin het bovenaan"
-			},
-			"unpinAction": {
-				"textContent": "Losmaken",
-				"title": "Losmaken"
-			},
-			"pinOk": "Opgenomen en vastgezet",
-			"unpinOk": "Losgemaakt",
-			"pinFailed": "Pin mislukt",
-			"menuCopyText": "tekst kopiëren",
-			"menuExportHtml": "Exporteren naar HTML",
-			"menuCopyId": "Kopieer bericht-ID",
 			"copied": "Gekopieerd",
 			"addBookmark": {
 				"title": "Maak een bladwijzer van het huidige kanaal"
@@ -1456,9 +1212,6 @@
 			"bookmarkExists": "De bladwijzer bestaat al",
 			"bookmarkAdded": "Gemarkeerd",
 			"bookmarkSaveFailed": "Kan bladwijzers niet opslaan",
-			"remoteTyping": "${name} is aan het typen...",
-			"remoteTypingTwo": "${name1}, ${name2} Bezig met invoeren...",
-			"remoteTypingMany": "${name} en ${count} anderen typen…",
 			"localAiLabel": "Native rol:",
 			"forceTriggerOne": {
 				"title": "Forceer trigger ${name} om te spreken"
@@ -1467,23 +1220,10 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "Forceer alle lokale karakters om te spreken"
 			},
-			"messageRefAnchor": "Citaatbericht: ${id}",
-			"settingsFedPartition": "Aantal federale afdelingen",
-			"settingsRtcBudget": "RTC-aansluitbudget",
-			"settingsRtcJoinRate": "RTC heeft een limiet per minuut toegevoegd",
-			"settingsFedTuningHint": "Schrijf DAG-groepsinstellingen; na wijziging wordt aanbevolen om de federatiekamer opnieuw in te binden.",
-			"settingsAutoChannelGc": "Automatisch wissen van stille kanalen",
-			"settingsAutoChannelGcHint": "Maximaal 2 geïsoleerde eilandkanalen die ≥30 dagen stil zijn geweest en onbereikbaar zijn, worden verwijderd zodra ze beschikbaar zijn.",
 			"quoteHeader": "> **${sender}**${sep}${time}",
 			"quoteHeaderWithTime": "> **${sender}** · ${time}",
 			"quoteHeaderWithoutTime": "> **${sender}**",
 			"stopGenerating": "Stop met genereren",
-			"messageAborted": "Onderbroken",
-			"avStart": "media starten",
-			"avMute": "Dempen",
-			"avSwap": "Startscherm",
-			"avStop": "Stop",
-			"avNeedStreamChannel": "Gebruik audio en video in kanalen van het type 'streaming media'",
 			"reactionAdd": {
 				"title": "Reactie toevoegen"
 			},
@@ -1494,25 +1234,11 @@
 				"title": "Emoticons toevoegen"
 			},
 			"reactionPrompt": "Emoji invoeren (Unicode)",
-			"channelTypeLabel": "Kanaaltype",
-			"channelTypeText": "chat kanaal",
-			"channelTypeList": "Lijst/Forumkanaal",
-			"channelTypeStreaming": "Streamingkanaal",
 			"convertToText": "Converteren naar chatkanaal",
 			"convertToList": "Converteren naar lijst/forumkanaal",
 			"setAsDefault": "Instellen als standaardgroepskanaal",
 			"isDefault": "Huidige standaard",
-			"defaultChannelSet": "Instellen als standaardkanaal",
-			"defaultChannelSetFailed": "Het instellen van het standaardkanaal is mislukt",
 			"channelUpdateFailed": "Kanaalupdate mislukt",
-			"voteCreate": "Start een stemming",
-			"votePromptDeadline": "Deadline (open laten voor geen tijdslimiet, format 2026-01-01 23:59)",
-			"voteTooFewOptions": "Er zijn minimaal twee opties vereist",
-			"voteCreateFailed": "Kan geen enquête maken",
-			"voteFor": "Stem op ${option}",
-			"voteDeadline": "Termijn",
-			"voteEnded": "Eindigde",
-			"voteTotal": "Totaal ${n} stemmen",
 			"record": "Opname",
 			"fileDownload": {
 				"title": "Bestand downloaden"
@@ -1526,44 +1252,438 @@
 			"saveSticker": {
 				"title": "Bewaar stickers/emoticons in favorieten"
 			},
-			"stickerSaved": "Opgeslagen in stickerbibliotheek",
-			"stickerDefaultName": "Sticker",
 			"deleteMessage": {
 				"title": "Bericht verwijderen"
 			},
 			"deleteConfirm": "Bevestigen om dit bericht te verwijderen?",
-			"editMessage": {
-				"title": "Bericht bewerken"
-			},
 			"saveEdit": "Opslaan",
 			"cancelEdit": "Annuleren",
 			"editingMessage": "Bewerken",
-			"editConfirm": "Bevestigen (Ctrl+Enter)",
-			"editCancel": "Annuleren (Esc)",
-			"editHint": "Ctrl+Enter Bevestigen · Esc Annuleren",
-			"editEmptyText": "De inhoud van het bericht mag niet leeg zijn",
-			"createGroupTitle": "Nieuwe groep aanmaken",
 			"groupNameLabel": "Groepsnaam",
 			"groupName": {
 				"placeholder": "Mijn groepen"
 			},
-			"defaultChannelLabel": "standaard kanaal",
-			"defaultChannel": {
-				"placeholder": "Algemeen"
-			},
-			"createGroupFailed": "Kan groep niet maken",
-			"createChannelFailed": "Kan kanaal niet maken",
 			"moreActions": {
 				"title": "Meer acties"
 			},
-			"thread": "kinder draad",
-			"threadBack": "Terug",
-			"threadBreadcrumbRootTitle": "Spring naar het startpunt van het pad (eerste niveau)",
-			"threadBreadcrumbMiddleTitle": "Vouw de middelste laag uit en selecteer het niveau waarnaar je wilt springen",
-			"threadBreadcrumbMiddleSummary": "middelste ${count} laag",
-			"menuShareExternal": "Deel met externe link",
 			"shareExternalOk": "Link geüpload en gekopieerd",
-			"shareExternalFailed": "Uploaden mislukt. Controleer het netwerk"
+			"shareExternalFailed": "Uploaden mislukt. Controleer het netwerk",
+			"ownerSuccession": {
+				"main": "Start een opvolgingsstemming",
+				"autoSignHint": "Na indiening ondertekent de machine automatisch het handtekeningzaad van de groep zonder de privésleutel in te voeren. In een groep met meerdere beheerders moet meer dan de helft van de beheerders hetzelfde stembiljet (dezelfde stembiljet en kandidaat) lokaal indienen.",
+				"candidateLabel": "Opvolger publieke sleutel-hash",
+				"description": "Draag de hoogste administratieve autoriteit van de groep (MANAGE_ADMINS) over aan het opgegeven lid. Alleen beheerders kunnen werken.",
+				"failed": "Het indienen van de opvolgingsstemming is mislukt",
+				"needHash": "Vul de hash van de openbare sleutel van de opvolger in",
+				"selfButton": "Nomineer jezelf",
+				"submitted": "Je handtekening is opgenomen op het opvolgingsstemmingsbiljet."
+			},
+			"channelType": {
+				"label": "Kanaaltype",
+				"list": "Lijst/Forumkanaal",
+				"streaming": "Streamingkanaal",
+				"text": "chat kanaal"
+			},
+			"settings": {
+				"archive": {
+					"adminOnly": "Deze machine beschikt nog niet over koude archiefgegevens voor deze groep.",
+					"colChannel": "Kanaal",
+					"colMonth": "Maand",
+					"colSize": "Maat",
+					"delete": {
+						"before": "Verwijder deze maand ervoor",
+						"button": "Koud archief verwijderen",
+						"confirm": "Weet je zeker dat je alle koude archiefbestanden ouder dan ${month} wilt verwijderen? Deze operatie is onomkeerbaar.",
+						"failed": "Kan archief niet verwijderen: ${error}",
+						"hint": "Alleen lokaal archief/*.jsonl wordt verwijderd; hotspots en DAG-ankers worden niet beïnvloed.",
+						"invalidMonth": "Selecteer een geldige maand JJJJ-MM.",
+						"ok": "${files} archiefbestanden verwijderd."
+					},
+					"empty": "Er zijn nog geen koude archiefbestanden.",
+					"filesTitle": "Gearchiveerde bestanden",
+					"hint": "Het koude archief is de eindstatus van de lokale tekstpost (bestanden gedeeld per maand). Het verwijderen van het archief zal de DAG niet veranderen; als de geschiedenis ontbreekt, kan deze worden opgehaald uit gefedereerde buren.",
+					"title": "Opslag en koude archivering"
+				},
+				"autoChannelGc": "Automatisch wissen van stille kanalen",
+				"autoChannelGcHint": "Maximaal 2 geïsoleerde eilandkanalen die ≥30 dagen stil zijn geweest en onbereikbaar zijn, worden verwijderd zodra ze beschikbaar zijn.",
+				"autoReply": {
+					"frequency": "Rolantwoorden automatisch activeren (na elke N gebruikersberichten is 0 uitgeschakeld)",
+					"frequencyHint": "0 betekent uit; @vermeldingen worden nog steeds onmiddellijk geactiveerd",
+					"tokenBucket": "Automatische antwoorddrukplanning (tokenbucket)",
+					"tokenBucketHint": "Nadat het is ingeschakeld, onderhoudt elk personage een token-bucket per kanaal; onMessage wordt niet tijdelijk geactiveerd als de bucket leeg is, wat de continue schermvernieuwing tijdens piekperioden kan belemmeren."
+				},
+				"batterySaver": "Low power-modus (verkleinde federatie-verbindingspool en relais)",
+				"compactTriggerDepth": "Gematerialiseerde compressietriggerdiepte",
+				"discoveryBlurb": "Discovery-introductie (optioneel)",
+				"discoveryPublic": "Deze groep zichtbaar maken in federatieve detectie (zonder lid te worden van de groepssleutel)",
+				"discoveryTitle": "Titel van detectielijst (optioneel)",
+				"eventRetentionDepth": "Retentiediepte voor DAG-gebeurtenissen",
+				"eventRetentionMs": "Bewaartijd van DAG-gebeurtenissen",
+				"explorePeers": "Ontdek buurslots",
+				"fedPartition": "Aantal federale afdelingen",
+				"fedTuningHint": "Schrijf DAG-groepsinstellingen; na wijziging wordt aanbevolen om de federatiekamer opnieuw in te binden.",
+				"fileCe": {
+					"mode": "Bestandsversleutelingsmodus",
+					"modeConvergent": "Convergente versleuteling (kan duplicaten verwijderen)",
+					"modeHint": "De hoge privacymodus gebruikt willekeurige contentKey voor elk blok en markeert ceMode=random; dit verkleint het risico dat platte tekst raadbaar is, maar verhoogt het opslag- en bandbreedtegebruik.",
+					"modeRandom": "Hoge privacymodus (willekeurige sleutels, geen ontdubbeling)"
+				},
+				"gossipTtl": "Roddels doorsturen TTL (aantal hops)",
+				"hlcMaxSkew": "Bovengrens voor toekomstige offset HLC (milliseconden)",
+				"hotLatest": "Retentie in de hotzone (laatste aantal berichten per kanaal)",
+				"hotWindowHint": "Hotzone-berichten worden bewaard in het controlepunt en de berichtencache; de overige berichten worden na materialisatie naar het maandelijkse koude archief geschreven en vervolgens samengevoegd uit de DAG-procesgebeurtenissen.",
+				"ice": {
+					"cred": {
+						"aria-label": "TURN-wachtwoord",
+						"placeholder": "Wachtwoord (optioneel)"
+					},
+					"remove": {
+						"aria-label": "Deze server verwijderen"
+					},
+					"servers": "ICE/TURN-server",
+					"serversAdd": "Server toevoegen",
+					"serversHint": "Voor WebRTC- en federatieve P2P-NAT-traversal. TURN-gebruikersnaam en -wachtwoord worden alleen lokaal opgeslagen en niet via de federatie gesynchroniseerd.",
+					"url": {
+						"aria-label": "ICE-serveradres",
+						"placeholder": "stun:host:19302"
+					},
+					"user": {
+						"aria-label": "TURN-gebruikersnaam",
+						"placeholder": "Gebruikersnaam (optioneel)"
+					}
+				},
+				"maxDagPayload": "DAG maximumaantal bytes voor één gebeurtenis",
+				"maxPeers": "Federatie-aansluitdop",
+				"message": {
+					"rateLimit": "Limiet voor berichtsnelheid (bericht/minuut/entiteit)",
+					"retention": "Berichttekst wordt automatisch verwijderd",
+					"retention1y": "1 jaar geleden",
+					"retention30d": "30 dagen geleden",
+					"retention90d": "90 dagen geleden",
+					"retentionForever": "Permanente retentie (alleen gecomprimeerde DAG-gebeurtenissen)",
+					"retentionHint": "Zichtbare geschiedenis wordt niet standaard automatisch verwijderd. Indien ingeschakeld, wordt alleen de hot cache van lokale berichten gesnoeid; laatste berichten worden bewaard in het koude archief en het controlepunt."
+				},
+				"page": {
+					"title": "Groepsinstellingen",
+					"kicker": "Groepsbeheer",
+					"subtitle": "Beheer groepsinformatie, leden en gemeenschappelijke functies. Laagfrequente machtigingen, opslag en auditingtools zijn gecentraliseerd in geavanceerde instellingen.",
+					"backToChat": "Terug naar chat",
+					"navigationLabel": "Classificatie van groepsinstellingen",
+					"activeEmojiPackLabel": "Pakket in bewerking",
+					"membersTitle": "Ledenlijst",
+					"overviewTitle": "Groepsoverzicht",
+					"overviewHint": "Alleen-lezen informatie. Als je over bestuursrechten beschikt, kunt je groepsinformatie en beleid bewerken in 'Basis'.",
+					"governanceHint": "Schrijf het beleid op groepsniveau van de DAG; beheerders- of MANAGE_ADMINS-machtigingen zijn vereist.",
+					"governanceDenied": "Je bent niet gemachtigd om instellingen voor groepsbeheer te wijzigen.",
+					"rolesDenied": "Je heeft geen MANAGE_ROLES toestemming om rollen te bewerken.",
+					"notMember": "Je bent geen lid meer van deze groep; de gegevens van deze groep zijn automatisch gewist na het verlaten van de groep.",
+					"basicTitle": "Groepsbestuur",
+					"profileSectionTitle": "Groepsinformatie",
+					"profileSectionHint": "De naam, introductie en methode om lid te worden van de groep worden in de groepsmetadata geschreven.",
+					"behaviorSectionTitle": "Gedrag",
+					"networkSectionTitle": "federatie en verbinding",
+					"retentionSectionTitle": "Bewaring en limieten",
+					"mediaSectionTitle": "Oproepen en bestanden",
+					"nameLabel": "Groepsnaam",
+					"descriptionLabel": "Groepsbeschrijving",
+					"joinPolicyLabel": "Strategie voor groepsinvoer",
+					"joinInviteOnly": "Alleen uitnodigen",
+					"joinPow": "PoW vereist",
+					"powDifficultyLabel": "PoW-moeilijkheid",
+					"securityAdvancedTitle": "Beveiligings- en groepseigenaaractiviteiten",
+					"securityAdvancedDescription": "Sleutelroulatie en opvolging van groepsleiders; onjuiste handelingen kunnen de toegang van leden beïnvloeden",
+					"powDifficultyTip": "Bewijs van werkmoeilijkheden. Hoe hoger de waarde, hoe langer de rekentijd die vreemden nodig hebben om lid te worden van de openbare groep.",
+					"maxDagPayloadTip": "De bovengrens van het aantal gegevens dat door één groepsgebeurtenis mag worden overgedragen. Als het te groot is, vergroot dit het synchronisatiegeheugen en de netwerkoverhead.",
+					"trustedPeersTip": "Het aantal federatieburen met een hoge reputatie dat prioriteit heeft om verbonden te blijven.",
+					"gossipTtlTip": "Het maximale aantal federale knooppunten waarlangs het bericht kan worden doorgestuurd. Door dit te verhogen, wordt de dekking vergroot en ook het verkeer vergroot.",
+					"hlcTip": "De maximale hoeveelheid tijd dat de klok van het externe knooppunt sneller mag zijn dan de klok van het lokale knooppunt, gebruikt om abnormale toekomstige gebeurtenissen te weigeren.",
+					"sfuTip": "Optioneel extern audio- en video-doorstuurserviceadres. Laat dit veld leeg om ingebouwde point-to-point/relay-oproepen te gebruiken.",
+					"iceTip": "Help WebRTC de router binnen te dringen; wanneer de directe verbinding mislukt, stuurt TURN namens hem audio-, video- en federatief verkeer door.",
+					"fileEncryptionTip": "Convergente encryptie dedupliceert maar maakt het feit bloot dat de bestanden hetzelfde zijn; willekeurige sleutels zijn meer privé, maar nemen meer ruimte in beslag.",
+					"allowDangerousHtml": "Berichten van vertrouwde auteurs maken inline HTML mogelijk",
+					"save": "Instellingen opslaan",
+					"loadFailed": "Kan groepsinstellingen niet laden: ${error}",
+					"saveSuccess": "Groepsinstellingen opgeslagen",
+					"saveFailed": "Kan instellingen niet opslaan: ${error}",
+					"rolesTitle": "Rollen en machtigingen",
+					"roleDefault": "Standaard",
+					"permissionUpdated": "Machtigingen bijgewerkt",
+					"permissionUpdateFailed": "Kan rechten niet updaten: ${error}",
+					"noMembers": "Nog geen leden",
+					"memberRoles": "Rol:",
+					"ban": "Bannen",
+					"banConfirm": "Weet je zeker dat je lid ${name} wilt uitsluiten?",
+					"banSuccess": "Lid is uitgesloten",
+					"banFailed": "Kan lid niet uitsluiten: ${error}",
+					"bannedTitle": "Verbannen lid",
+					"unban": "Deblokkeren",
+					"unbanConfirm": "Weet je zeker dat je lid ${name} wilt deblokkeren?",
+					"unbanSuccess": "Lid is gedeblokkeerd",
+					"unbanFailed": "Deblokkeren mislukt: ${error}",
+					"gshGenerationRetentionHint": "Momenteel worden alleen de meest recente 64 generaties van de hoofdsleutelgeschiedenis van bestanden bewaard. De oudste historische bestanden kunnen mogelijk niet worden gedecodeerd nadat deze zijn overschreden, en het wordt aanbevolen om belangrijke gegevens regelmatig te archiveren.",
+					"gshGenerationNearLimit": "Momenteel gerouleerd naar generatie ${generation} van bestandshoofdsleutels (tot ${maxGenerations} generaties). Als je de frequente rotatie voortzet, zullen de oudste historische sleutels met pensioen gaan.",
+					"ownerSuccession": "Opvolging van groepsleiders",
+					"ownerSuccessionOk": "De opvolging van de groepsleiders is van kracht geworden",
+					"ownerSuccessionFailed": "Opvolging van groepsleider mislukt: ${error}",
+					"defaultEmojiPack": {
+						"failed": "Standaardpakket kon niet worden ingesteld",
+						"hint": "Wordt bij toetreding automatisch aan favorieten van leden toegevoegd. Wijzigen vervangt alleen het oude standaardpakket als het nog in favorieten staat.",
+						"label": "Standaard emoji-pakket",
+						"ok": "Standaardpakket bijgewerkt"
+					},
+					"channelArchive": {
+						"hint": "Als je het volledige JSON-archief van het kanaal importeert, wordt er een nieuw gewoon tekstkanaal in deze groep gemaakt en wordt de geschiedenis hersteld (opnieuw ondertekend door u; bijlagen behouden alleen metagegevens).",
+						"import": "Kanaal JSON importeren",
+						"importFailed": "Importeren mislukt: ${error}",
+						"importOk": "${count} berichten geïmporteerd, nieuw kanaal geopend...",
+						"title": "Kanaalarchief"
+					},
+					"channelPerms": {
+						"addRole": "Roloverschrijving toevoegen",
+						"denied": "Je heeft geen MANAGE_CHANNELS-rechten om overschrijvingen van kanaalrechten te bewerken.",
+						"hint": "Stel overschrijvingen van rolmachtigingen in voor specifieke kanalen. Niet-gedekte items nemen de machtigingen voor groepsrollen over.",
+						"noChannels": "Er is momenteel geen kanaal om te configureren",
+						"removeRole": "Verwijder deze roloverschrijving",
+						"selectChannel": "Kanaal",
+						"stateAllow": "Toestaan",
+						"stateDeny": "Afwijzen",
+						"stateNeutral": "Erven",
+						"updateFailed": "Kan kanaalrechten niet updaten: ${error}",
+						"updated": "Kanaalrechten bijgewerkt"
+					},
+					"advanced": {
+						"description": "Netwerk-, opslag-, snelheidslimiet- en encryptieparameters; Bewaar de standaardinstellingen als je het niet zeker weet",
+						"hubDescription": "Deze functies wijzigen de machtigingsstructuur, historische gegevens of bestuursrecords van de groep; alleen aanpassen als dat duidelijk nodig is.",
+						"hubTitle": "Geavanceerde instellingen",
+						"navigationLabel": "Categorie Geavanceerde instellingen",
+						"title": "Geavanceerde instellingen"
+					},
+					"emojis": {
+						"create": {
+							"pack": "Nieuw emoji-pakket",
+							"packFailed": "Aanmaken mislukt: ${error}",
+							"packOk": "Emoji-pakket aangemaakt",
+							"packPrompt": "Pakket-ID"
+						},
+						"delete": "Emoticon verwijderen",
+						"deleteConfirm": "Weet je zeker dat je deze groep emoticons wilt verwijderen?",
+						"deleteFailed": "Verwijderen mislukt: ${error}",
+						"deleteOk": "Emoticon is verwijderd",
+						"empty": "Nog geen groepsuitdrukkingen",
+						"hint": "Leden kunnen deze emoticons in de chat invoegen of verzenden; verwijderde afbeeldingen worden op aanvraag opgehaald via federatieve knooppunten.",
+						"packGroupOption": "${packId} (groepsstandaard)",
+						"title": "Aangepaste expressies groeperen",
+						"upload": "Emoticons uploaden",
+						"uploadFailed": "Uploaden mislukt: ${error}",
+						"uploadOk": "Expressie is geüpload"
+					},
+					"invite": {
+						"clipboard": "Groeps-ID: ${groupId}\nUitnodigingscode: ${code}\nLid worden: ${url}",
+						"code": "Uitnodigingscode",
+						"copied": "Groepsinformatie gekopieerd",
+						"copy": "Groepsinformatie kopiëren",
+						"copyFailed": "Kopiëren mislukt",
+						"expires": "Vervaldatum: ${date}",
+						"groupId": "Groeps-ID",
+						"hint": "Genereer een uitnodigingscode voor de korte termijn (standaard 1 uur). De andere partij vult het groeps-ID en de uitnodigingscode in bij \"Word lid van groep\".",
+						"mint": "Genereer uitnodigingscode",
+						"title": "Uitnodigen"
+					},
+					"delete": {
+						"confirm": "Weet je zeker dat je deze groep wilt verwijderen? Deze actie is onomkeerbaar en alle berichten en ledengegevens worden permanent verwijderd.",
+						"failed": "Kan groep niet verwijderen: ${error}",
+						"group": "Groep verwijderen",
+						"role": "Rol verwijderen",
+						"roleConfirm": "Weet je zeker dat je deze rol wilt verwijderen?",
+						"roleFailed": "Kan rol niet verwijderen: ${error}",
+						"roleSuccess": "Rol verwijderd",
+						"success": "Groep verwijderd"
+					},
+					"create": {
+						"role": "Creëer een rol",
+						"roleFailed": "Kan rol niet maken: ${error}",
+						"rolePrompt": "Voer de karakternaam in:",
+						"roleSuccess": "Rol gemaakt"
+					},
+					"perm": {
+						"aDD_REACTIONS": "reactie toevoegen",
+						"aDMIN": "Beheerder",
+						"bAN_MEMBERS": "Lid Bannen",
+						"bYPASS_RATE_LIMIT": "Omzeil de limiet voor de berichtsnelheid",
+						"cREATE_THREADS": "Subkanaal maken",
+						"iNVITE_MEMBERS": "Nodig leden uit",
+						"kICK_MEMBERS": "kick lid",
+						"mANAGE_": {
+							"cHANNELS": "Kanaal beheren",
+							"fILES": "Beheer bestanden",
+							"mESSAGES": "Management berichten",
+							"rOLES": "Managementrol"
+						},
+						"pIN_MESSAGES": "Vastgezet bericht",
+						"sEND_MESSAGES": "Bericht verzenden",
+						"sEND_STICKERS": "Stuur stickers",
+						"sTREAM": "Stem",
+						"uPLOAD_FILES": "Bestanden uploaden",
+						"vIEW_CHANNEL": "Kanaal bekijken"
+					},
+					"kick": {
+						"main": "Verwijderen",
+						"confirm": "Weet je zeker dat je lid ${name} wilt verwijderen?",
+						"failed": "Kan lid niet verwijderen: ${error}",
+						"selfNodeWarning": "Waarschuwing: dit lid gebruikt dezelfde knooppuntidentiteit Als je. Ook word je na uitsluiting uit de groep verwijderd. Weet je zeker dat je wilt doorgaan?",
+						"success": "Lid eruit gegooid"
+					},
+					"tabs": {
+						"advanced": "Geavanceerd",
+						"audit": "Auditlogboek",
+						"channelPermissions": "Kanaalrechten",
+						"emojis": "Emoji",
+						"general": "Basis",
+						"members": "Leden",
+						"permissions": "Rolmachtigingen",
+						"storage": "Opslag en archivering"
+					},
+					"key": {
+						"managementTip": "Nieuwe sleutels moeten na rotatie opnieuw onder de leden worden verdeeld. Handmatige actie mag alleen worden ondernomen als je vermoedt dat een sleutel is aangetast.",
+						"managementTitle": "Sleutelbeheer",
+						"rotate": "Hoofdsleutel groepsbestand draaien",
+						"rotateConfirm": "Weet je zeker dat je de hoofdsleutel van dit groepsbestand handmatig wilt roteren? Nieuwe leden moeten de sleutel van het geschiedenisbestand opnieuw synchroniseren.",
+						"rotateFailed": "Sleutelroulatie mislukt: ${error}",
+						"rotateOk": "Sleutel is gedraaid"
+					}
+				},
+				"pinContext": "Topbuurt (±N buren)",
+				"rtcBudget": "RTC-aansluitbudget",
+				"rtcJoinRate": "RTC heeft een limiet per minuut toegevoegd",
+				"streamGeneratingIdle": "Door AI gegenereerde tijdelijke time-out voor inactiviteit (milliseconden)",
+				"streamingSfu": "Streaming SFU WebSocket-adres (optioneel)",
+				"trustedPeers": "Trust buurslot (Top-K)",
+				"wantIdsBudget": "Enkel wantIds-budget"
+			},
+			"feedback": {
+				"dagLine": "[${label}]",
+				"dagLineWithNote": "[${label}] ${note}",
+				"down": "Disliken",
+				"previewLine": "${tag}${sep}${note}",
+				"previewTaggedNote": "${tag} ${note}",
+				"up": "Loven"
+			},
+			"message": {
+				"aborted": "Onderbroken",
+				"deleted": "Bericht verwijderd",
+				"deletedBracket": "[Bericht verwijderd]",
+				"prefixSticker": "Sticker",
+				"refAnchor": "Citaatbericht: ${id}",
+				"withAttachments": "${text} (${n} bijlagen)"
+			},
+			"default": {
+				"channel": {
+					"placeholder": "Algemeen"
+				},
+				"channelLabel": "standaard kanaal",
+				"channelSet": "Instellen als standaardkanaal",
+				"channelSetFailed": "Het instellen van het standaardkanaal is mislukt"
+			},
+			"sticker": {
+				"defaultName": "Sticker",
+				"prefixLine": "[${label}]",
+				"prefixLineTagged": "[sticker]",
+				"saved": "Opgeslagen in stickerbibliotheek"
+			},
+			"remote": {
+				"nodeTimeout": "Het externe knooppunt reageert niet. Probeer het later opnieuw.",
+				"typing": "${name} is aan het typen...",
+				"typingMany": "${name} en ${count} anderen typen…",
+				"typingTwo": "${name1}, ${name2} Bezig met invoeren...",
+				"unavailable": "De externe component is niet beschikbaar of kan de RPC niet routeren",
+				"unsafe": "Dit bericht komt van een externe locatie en de auteur Status niet in de lokale vertrouwenslijst. Rich-text-weergave is uitgeschakeld."
+			},
+			"create": {
+				"channelFailed": "Kan kanaal niet maken",
+				"failed": "Kan groep niet maken",
+				"group": "Nieuwe groep aanmaken",
+				"groupFailed": "Kan groep niet maken",
+				"groupTitle": "Nieuwe groep aanmaken"
+			},
+			"stream": {
+				"generationFailed": "Er is een time-out opgetreden voor het genereren van AI en deze is niet voltooid. Updates zijn gestopt.",
+				"noEmbed": {
+					"textContent": "Het streamingadres moet een insluitbare https://-pagina zijn, of de groepsinstellingen moeten eerst worden geconfigureerd en vernieuwd om een ​​weergavetoken te verkrijgen."
+				},
+				"noSfu": {
+					"textContent": "streamingSfuWss is niet geconfigureerd; beheerders kunnen het LiveKit/mediasoup kijkadres invullen in de groepsinstellingen."
+				},
+				"ok": "Mediastream verworven (gestopt, niet uitgezonden)",
+				"test": "Media-apparaten testen"
+			},
+			"thread": {
+				"main": "kinder draad",
+				"back": "Terug",
+				"breadcrumbMiddleSummary": "middelste ${count} laag",
+				"breadcrumbMiddleTitle": "Vouw de middelste laag uit en selecteer het niveau waarnaar je wilt springen",
+				"breadcrumbRootTitle": "Spring naar het startpunt van het pad (eerste niveau)"
+			},
+			"unpin": {
+				"action": {
+					"textContent": "Losmaken",
+					"title": "Losmaken"
+				},
+				"message": "Losmaken",
+				"messageLine": "[Losmaken] ${targetId}",
+				"ok": "Losgemaakt"
+			},
+			"vote": {
+				"blockHeading": "[${prefix}] ${question}",
+				"blockHeadingTagged": "[Stem] ${question}",
+				"cast": "Stemmen",
+				"castLine": "[${prefix}] Stem: ${choice}",
+				"castLineTagged": "[Stem] Stem: ${choice}",
+				"create": "Start een stemming",
+				"createFailed": "Kan geen enquête maken",
+				"deadline": "Termijn",
+				"deadlineLineClosed": "Einde: ${date} [Einde]",
+				"deadlineLineOpen": "Deadline: ${date}",
+				"ended": "Eindigde",
+				"for": "Stem op ${option}",
+				"optionsPreview": "[${prefix}] ${options}",
+				"optionsPreviewTagged": "[Stem] ${options}",
+				"promptDeadline": "Deadline (open laten voor geen tijdslimiet, format 2026-01-01 23:59)",
+				"tooFewOptions": "Er zijn minimaal twee opties vereist",
+				"total": "Totaal ${n} stemmen"
+			},
+			"edit": {
+				"cancel": "Annuleren (Esc)",
+				"confirm": "Bevestigen (Ctrl+Enter)",
+				"emptyText": "De inhoud van het bericht mag niet leeg zijn",
+				"hint": "Ctrl+Enter Bevestigen · Esc Annuleren",
+				"message": {
+					"title": "Bericht bewerken"
+				}
+			},
+			"menu": {
+				"copyId": "Kopieer bericht-ID",
+				"copyText": "tekst kopiëren",
+				"exportHtml": "Exporteren naar HTML",
+				"shareExternal": "Deel met externe link"
+			},
+			"pin": {
+				"action": {
+					"textContent": "speld naar boven",
+					"title": "Schrijf dit artikel naar DAG en pin het bovenaan"
+				},
+				"failed": "Pin mislukt",
+				"message": "speld naar boven",
+				"messageLine": "[Top] ${targetId}",
+				"ok": "Opgenomen en vastgezet",
+				"thisMessage": "Schrijf dit artikel naar DAG en pin het bovenaan"
+			},
+			"av": {
+				"mute": "Dempen",
+				"needStreamChannel": "Gebruik audio en video in kanalen van het type 'streaming media'",
+				"start": "media starten",
+				"stop": "Stop",
+				"swap": "Startscherm"
+			}
 		},
 		"hub": {
 			"title": "Chatten",
@@ -1576,10 +1696,6 @@
 				"title": "Personages",
 				"tip": "Rol"
 			},
-			"friendsTooltip": {
-				"title": "Vrienden",
-				"tip": "Vrienden"
-			},
 			"inboxTooltip": {
 				"title": "Postvak IN",
 				"tip": "Postvak IN voor meerdere groepen"
@@ -1587,18 +1703,6 @@
 			"inbox": {
 				"title": "Postvak IN",
 				"filtersLabel": "Filter inbox-berichten",
-				"tabMention": "Vermeldingen",
-				"tabMessage": "Alle berichten",
-				"tabCare": "Bijzonder gevolgd",
-				"tabVoteClosed": "Afgesloten stemmen",
-				"emptyMentionTitle": "Niemand heeft je nog genoemd",
-				"emptyMentionDescription": "Wanneer andere leden @ jou in de groepschat gebruiken, worden de berichten hier weergegeven.",
-				"emptyMessageTitle": "Postvak IN is leeg",
-				"emptyMessageDescription": "Hier verschijnen berichtupdates van verschillende groepschats en kanalen.",
-				"emptyCareTitle": "Bijzonder gevolgd: nog geen nieuws",
-				"emptyCareDescription": "Wanneer er nieuwe berichten worden verzonden van leden die je bijzonder dierbaar zijn, kunt je deze hier zo snel mogelijk bekijken.",
-				"emptyVoteTitle": "Geen stembureaus gesloten",
-				"emptyVoteDescription": "Zodra de deelnemende stembureaus zijn gesloten, worden de resultaten hier samengevat.",
 				"rowLabel": {
 					"aria-label": "${author} zei in ${group} van ${channel}: ${preview}"
 				},
@@ -1606,7 +1710,23 @@
 				"badgeFetchFailed": "Vernieuwen van ongelezen badge mislukt: ${error}",
 				"loadFailed": "Laden van Postvak IN mislukt: ${error}",
 				"markSeenFailed": "Update van leesstatus van Postvak IN mislukt: ${error}",
-				"jumpFailed": "Kan dit bericht niet openen: ${error}"
+				"jumpFailed": "Kan dit bericht niet openen: ${error}",
+				"empty": {
+					"careDescription": "Wanneer er nieuwe berichten worden verzonden van leden die je bijzonder dierbaar zijn, kunt je deze hier zo snel mogelijk bekijken.",
+					"careTitle": "Bijzonder gevolgd: nog geen nieuws",
+					"mentionDescription": "Wanneer andere leden @ jou in de groepschat gebruiken, worden de berichten hier weergegeven.",
+					"mentionTitle": "Niemand heeft je nog genoemd",
+					"messageDescription": "Hier verschijnen berichtupdates van verschillende groepschats en kanalen.",
+					"messageTitle": "Postvak IN is leeg",
+					"voteDescription": "Zodra de deelnemende stembureaus zijn gesloten, worden de resultaten hier samengevat.",
+					"voteTitle": "Geen stembureaus gesloten"
+				},
+				"tabs": {
+					"care": "Bijzonder gevolgd",
+					"mention": "Vermeldingen",
+					"message": "Alle berichten",
+					"voteClosed": "Afgesloten stemmen"
+				}
 			},
 			"notifyPrefs": {
 				"title": "Meldingsinstellingen",
@@ -1623,11 +1743,6 @@
 				"muteForever": "totdat het handmatig wordt ingeschakeld",
 				"saved": "Meldingsinstellingen opgeslagen"
 			},
-			"voteClosed": "Eindigde",
-			"discoveryTooltip": {
-				"title": "Groepsontdekking",
-				"tip": "Groepsontdekking"
-			},
 			"prefsTooltip": {
 				"title": "Instellingen",
 				"tip": "Vertaal- en federatieve P2P-instellingen"
@@ -1636,65 +1751,6 @@
 			"prefsNav": {
 				"aria-label": "Instellingscategorieën"
 			},
-			"federationTooltip": {
-				"title": "Federatieve P2P-instellingen",
-				"tip": "Federatieve P2P-instellingen"
-			},
-			"federationTitle": "Federatieve P2P-instellingen",
-			"federationSubtitle": "Beheer verbindingen tussen apparaten; laat in de meeste gevallen de standaardwaarden staan",
-			"federationLoadFailed": "Laden mislukt: ${error}",
-			"fedConnectionTitle": "Verbind en ontdek",
-			"discoveryRefresh": "Ontdekkingslijst vernieuwen",
-			"fedRelayUrlsLabel": "Netwerkrelaisadres",
-			"fedRelayUrlsTip": "Help apparaten elkaar te vinden op internet. Vul één wss:// adres per regel in; laat dit leeg om het standaardrelais te gebruiken.",
-			"fedBatterySaverLabel": "Energiebesparende modus",
-			"fedBatterySaverTip": "Door het aantal achtergrondverbindingen en netwerkactiviteit te verminderen, kan de berichtsynchronisatie iets langzamer worden.",
-			"fedAdvancedTitle": "Geavanceerde instellingen",
-			"fedAdvancedDescription": "Bugfixes, reputatiebeheer en handmatige uitgifte van links",
-			"fedGroupRecoveryTitle": "Groepsverbinding opgelost",
-			"fedGroupRecoveryTip": "Wordt alleen gebruikt als de uitnodiging is gelekt of als het nieuwe apparaat de geschiedenis niet kan synchroniseren.",
-			"fedRotateRoomSecret": "Wachtwoord voor groepsruimte roteren",
-			"fedRotateRoomSecretConfirm": "Na de rotatie kunnen uitnodigingen die het oude kamerwachtwoord gebruiken geen verbinding maken. Weet je zeker dat je wilt doorgaan?",
-			"fedRotateRoomSecretOk": "Het kamerwachtwoord is gerouleerd",
-			"fedRepairJoinSnapshot": "Buren verzoeken om deel te nemen aan de groepssnapshotreparatie",
-			"fedRepairJoinSnapshotOk": "Groepsmomentopname toegepast (${channels} kanaalgeschiedenis)",
-			"fedRepairJoinSnapshotFailed": "Kan groepsmomentopname niet herstellen: ${error}",
-			"fedRepTitle": "Subjectieve geloofwaardigheid van deze groep",
-			"fedRepTip": "Verbindingsvoorkeursscores die native zijn berekend op basis van het gedrag van federatieve knooppunten, zijn geen openbare beoordelingen van groepsleden.",
-			"fedRepEmpty": "(nul)",
-			"fedSlashTitle": "Reputatieboete",
-			"fedSlashTip": "Schrijft een negatieve reputatieverklaring over een knooppunt naar de groepsgebeurtenisgrafiek. Alleen voor gebruik door beheerders die federatieprotocollen begrijpen.",
-			"fedSlashTargetLabel": "doel pubKeyHash(64 hex)",
-			"fedSlashTarget": {
-				"placeholder": "Hash van de openbare sleutel van het lid"
-			},
-			"fedSlashClaimLabel": "Claimsterkteclaim (0–1)",
-			"fedSlashVerifiedLabel": "Verifieerbaar (bewijs van gebeurtenis-ID vereist)",
-			"fedSlashProofLabel": "proof.eventId (optioneel)",
-			"fedSlashProof": {
-				"placeholder": "64 hexadecimale gebeurtenis-ID"
-			},
-			"fedSlashSubmitLabel": "Plaats reputatie_slash",
-			"fedResetSubmitLabel": "Doelreputatie opnieuw instellen",
-			"fedSlashNeedHash": "Vereist 64-bit hex pubKeyHash",
-			"fedSlashOk": "reputatie_slash geschreven naar DAG",
-			"fedResetOk": "reputatie_reset is geschreven",
-			"fedDmLinkTitle": "Handmatig een vriendenlink uitgeven",
-			"fedDmLinkTip": "Vereist ondertekening met de eigen identiteitssleutel. De privésleutel wordt alleen ingediend bij de lokale service op deze pagina en wordt niet naar andere knooppunten verzonden.",
-			"fedDmLinkDescription": "Geschikt voor foutopsporing of handmatige identiteitsmigratie; het is niet nodig om deze velden in te vullen als je dagelijks vrienden toevoegt.",
-			"fedDmPubKeyLabel": "Openbare sleutel hex(64)",
-			"fedDmSecretLabel": "Seed-hex van privésleutel(64)",
-			"fedDmNodeLabel": "Optionele knooppunt-URL",
-			"fedDmInvalidateTitle": "Laat oude verwijzingslinks verlopen",
-			"fedDmInvalidateDescription": "Na uitvoering worden alle eerder uitgegeven links om vrienden toe te voegen onmiddellijk ongeldig en kunnen niet worden ingetrokken.",
-			"fedDmRotateLabel": "Maak oude links ongeldig",
-			"fedDmRotateConfirm": "Alle eerder uitgegeven links om vrienden toe te voegen, worden onmiddellijk ongeldig en kunnen niet worden hersteld. Weet je zeker dat je wilt doorgaan?",
-			"fedDmIssueLabel": "Geef een DM-link uit",
-			"fedDmNeedPubKey": "Vereist een openbare sleutel van 64 hex",
-			"fedDmNeedSecretKey": "Vereist 64 hexadecimale private key-seed",
-			"fedDmIssued": "DM-link ondertekend en gekopieerd naar klembord",
-			"fedNonceRotated": "nonce geroteerd (${nonce}…)",
-			"fedSaved": "Opgeslagen",
 			"addServerTooltip": {
 				"title": "Maak een groep of word lid van een groep",
 				"tip": "Maak een groep of word lid van een groep"
@@ -1733,129 +1789,37 @@
 			"settingsTitle": {
 				"title": "Instellingen"
 			},
-			"filesTitle": {
-				"title": "Groepsbestand"
-			},
-			"filesDrawerTitle": "Groepsbestand",
-			"filesLoading": "Groepsbestanden laden...",
-			"filesLoadFailed": "Kan groepsbestand niet laden: ${error}",
-			"filesNoGroup": "Selecteer eerst een groep",
-			"filesNoCabinets": "Er zijn geen archiefkasten toegankelijk voor de huidige rol",
-			"filesBindCabinet": "Voeg een Cabinet toe",
-			"filesNoChannel": "Voer eerst het tekstkanaal in waar je berichten naartoe kunt sturen",
-			"filesUploadTo": "uploaden naar",
-			"filesRootFolder": "Hoofdmap",
-			"filesNewFolder": "Maak een nieuwe map",
-			"filesNewFolderPrompt": "Mapnaam",
-			"filesRename": "Hernoemen",
-			"filesRenameFolderPrompt": "Hernoem de map \"${name}\" naar:",
-			"filesDeleteFolderConfirm": "Weet je zeker dat je deze map wilt verwijderen? Bestanden in de map worden niet automatisch verwijderd.",
-			"filesUpload": "Uploaden",
-			"filesDownload": "Downloaden",
-			"filesDelete": "Verwijderen",
-			"filesDeleteConfirm": "Weet je zeker dat je dit bestand wilt verwijderen?",
-			"filesFoldersTitle": "Map",
-			"filesListTitle": "Document",
-			"filesEmpty": "Er zijn momenteel geen bestanden in deze map",
-			"filesNoFolders": "Nog geen submappen",
 			"uploadTitle": {
 				"title": "Bestanden uploaden"
 			},
 			"emojiTitle": {
 				"title": "Emoji"
 			},
-			"voteTitle": {
-				"title": "Start een stemming"
-			},
 			"shareGroupTitle": {
 				"title": "Groepslink delen"
 			},
 			"shareGroupOk": "Gedeelde groepsuitnodigingskaart",
-			"messageActionFailed": "Bewerking mislukt: ${error}",
 			"inviteJoinButton": "Sluit je aan bij de groep",
 			"inviteLinkNeedsRoomSecret": "Voor deze groep is federatieve synchronisatie nog niet ingeschakeld. Genereer de uitnodigingslink opnieuw voordat je deze deelt.",
 			"inviteCardMembers": "${count} leden",
-			"syncFailed": "Federatiesynchronisatie mislukt: ${error}",
-			"syncRateLimited": "Snelheidslimiet voor federale synchronisatie is in uitvoering. Probeer het later opnieuw.",
-			"syncIncomplete": "${missing}/${total} evenementen blijven niet gesynchroniseerd",
-			"syncNoPeers": "Niet verbonden met de federatieve buur, kunnen historische berichten tijdelijk niet worden gesynchroniseerd; Gebruik de volledige uitnodigingslink en probeer het later opnieuw",
 			"attachmentLoadFailed": "Het laden van bijlagen is mislukt",
-			"messageEditUpload": "Bijlage uploaden",
 			"timeToday": "Vandaag ${time}",
 			"timeYesterday": "Gisteren ${time}",
 			"stickerTitle": {
 				"title": "Sticker"
 			},
-			"sendTitle": {
-				"title": "Verzenden (Ctrl+Enter)"
-			},
-			"messageInput": {
-				"placeholder": "Groepsbericht… Ctrl+Enter om te verzenden",
-				"aria-label": "Bericht"
-			},
 			"stopGenerateTitle": {
 				"title": "Stop met genereren"
 			},
-			"charTyping": "Binnenkomen…",
-			"messageActionPrev": {
-				"title": "Vorige tijdlijn"
-			},
-			"messageActionNext": {
-				"title": "Volgende tijdlijn"
-			},
-			"messageActionRegen": {
-				"title": "Regenereer"
-			},
-			"messageActionEdit": {
-				"title": "Bericht bewerken"
-			},
-			"messageActionFeedbackUp": {
-				"title": "Leuk vinden"
-			},
-			"messageActionFeedbackDown": {
-				"title": "Klik om niet leuk te vinden"
-			},
-			"messageActionDelete": {
-				"title": "Bericht verwijderen"
-			},
 			"confirmDeleteLong": "Dit bericht is te lang. Weet je zeker dat je het wilt verwijderen?",
-			"messageActionCopyHtml": {
-				"title": "Kopieer HTML"
-			},
 			"forceReply": "Antwoord forceren",
 			"removeChar": "Karakter verwijderen",
-			"loadMore": "Ouder nieuws laden…",
-			"charChatsTitle": "Historische gesprekken met ${name}",
 			"newGroupWith": "+ Creëer een nieuw gesprek met ${name}",
-			"messageActionBookmark": {
-				"title": "Bladwijzer"
-			},
-			"messageActionPin": {
-				"title": "Speld naar boven"
-			},
-			"messageActionUnpin": {
-				"title": "Losmaken"
-			},
-			"blockAuthor": {
-				"title": "Blokkeer deze auteur"
-			},
-			"pinUnpinSidebar": {
-				"title": "Losmaken"
-			},
 			"meAuthor": "I",
-			"messageEditSave": "Opslaan",
-			"messageEditCancel": "Annuleren",
-			"messageEditArea": {
-				"aria-label": "Bericht bewerken"
-			},
 			"feedbackReasonPrompt": "Reden van afkeuring (optioneel)",
 			"feedbackReasonInput": {
 				"placeholder": "Reden van afkeuring (optioneel)"
 			},
-			"messageFeedbackSubmit": "Geef feedback",
-			"stickersPanelTitle": "Sticker",
-			"stickersManage": "Beheer stickers → ",
-			"stickersLoading": "Laden…",
 			"recentEmojiTab": {
 				"title": "Vaak gebruikt"
 			},
@@ -1863,11 +1827,6 @@
 			"currentGroupEmojiTab": {
 				"title": "Huidige groeps-emoticons"
 			},
-			"groupEmojiTab": {
-				"title": "Groep"
-			},
-			"groupEmojisEmpty": "Er zijn momenteel geen groepsemoticons. Je kunt ze uploaden in de groepsinstellingen.",
-			"groupEmojisLoadFailed": "Kan groeps-emoticons niet laden",
 			"profileLinkTitle": {
 				"title": "Persoonlijke informatie",
 				"textContent": "persoonlijke informatie"
@@ -1885,22 +1844,6 @@
 			},
 			"aboutSection": "Over",
 			"bioEmpty": "Deze gebruiker heeft nog geen profiel.",
-			"statusOffline": {
-				"title": "Offline",
-				"textContent": "Offline"
-			},
-			"statusOnline": {
-				"title": "online",
-				"textContent": "online"
-			},
-			"statusIdle": {
-				"title": "Afwezig",
-				"textContent": "Afwezig"
-			},
-			"statusDnd": {
-				"title": "Niet storen",
-				"textContent": "Niet storen"
-			},
 			"banners": {
 				"gshBuffer": "Er wachten ${total} berichten op ontsleuteling na sleutelrotatie",
 				"plaintextSidecar": "Dit kanaal wordt op verzoek gesynchroniseerd; de zijspan voor lokale berichten slaat de inhoud op in duidelijke tekst.",
@@ -1909,10 +1852,6 @@
 				"syncing": "Synchroniseren met federale buren…",
 				"archiveCoverageIncomplete": "Sommige koude archieven van de maanden zijn nog niet gesynchroniseerd vanuit de federatie.",
 				"archiveSyncButton": "Synchrone archivering",
-				"forkGovernance": "Er zit een vork in de machtigingsrecord en deze bevindt zich momenteel in de lokale weergave.",
-				"forkTips": "${count} niet-samengevoegde vertakkingen gedetecteerd, berichtvolgorde is mogelijk inconsistent.",
-				"forkTipLabel": "DAG-blad",
-				"forkTipScore": "${short} · Reputatie ${score}",
 				"applyBranch": "Tak voor applicatiebeheer",
 				"autoBranch": "Automatische selectie van reputatie",
 				"mergeDag": "Vorken samenvoegen",
@@ -1920,55 +1859,28 @@
 				"blockOpposing": "Tegengestelde takken zijn ontoegankelijk",
 				"suspectedRemoved": "Mogelijk bent je uit deze groep verwijderd: je heeft ${count} bekende knooppunten om verificatie gevraagd, maar ze zijn allemaal afgewezen. Je kunt de lokale geschiedenis herdenken of deze groepskopie verwijderen.",
 				"suspectedRemovedKeep": "Neem een ​​souvenirtje",
-				"suspectedRemovedLeave": "Groep verwijderen"
+				"suspectedRemovedLeave": "Groep verwijderen",
+				"fork": {
+					"governance": "Er zit een vork in de machtigingsrecord en deze bevindt zich momenteel in de lokale weergave.",
+					"tipLabel": "DAG-blad",
+					"tipScore": "${short} · Reputatie ${score}",
+					"tips": "${count} niet-samengevoegde vertakkingen gedetecteerd, berichtvolgorde is mogelijk inconsistent."
+				}
 			},
-			"blockOpposingConfirm": "Voeg de bestuursorganen die niet op de huidige verkiezingen staan ​​toe aan de zwarte lijst en ontken deze groep federatieve relais. doorgaan?",
-			"blockOpposingOk": "${count} onderwerpen gemarkeerd als onbereikbaar",
-			"blockOpposingFailed": "Markeren mislukt: ${error}",
 			"applyBranchOk": "Bestuurstak toegepast",
 			"applyBranchFailed": "Vertakking toepassen mislukt: ${error}",
 			"autoBranchOk": "Automatische selectie na herstelde reputatie",
 			"autoBranchFailed": "Automatische selectie mislukt: ${error}",
-			"saveEmoji": {
-				"title": "Emoticons opslaan"
-			},
-			"saveEmojiOk": "De emoticon is opgeslagen in de database",
-			"saveEmojiFailed": "Kan emoticon niet opslaan: ${error}",
-			"saveSticker": {
-				"title": "Bewaar stickers"
-			},
-			"saveStickerOk": "De sticker is toegevoegd aan je stickerbibliotheek",
-			"saveStickerFailed": "Kan stickers niet opslaan: ${error}",
 			"revealRemoteMd": "Volledige tekst uitvouwen",
-			"voteModalTitle": "Start een stemming",
-			"voteModalSubmit": "Poll maken",
-			"voteCreateFailed": "Kan geen enquête maken: ${error}",
 			"composer": {
 				"placeholder": "Verzenden naar #${channel}"
 			},
 			"composerSuspectedRemoved": {
 				"placeholder": "Mogelijk bent je uit deze groep verwijderd en kunt je geen berichten meer sturen."
 			},
-			"channelReadonlyList": {
-				"placeholder": "Lijst met alleen-lezen zenders"
-			},
-			"channelReadonlyStream": {
-				"placeholder": "Streamingkanaal alleen-lezen"
-			},
-			"noChannels": "Nog geen gesprek",
-			"noMembers": "Nog geen leden",
-			"noPins": "Nog geen pinnen",
-			"noBookmarks": "Nog geen bladwijzers",
 			"adminSection": "Beheerder",
-			"memberSection": "Lid",
-			"membersDigestOk": "Lid Merkle unaniem · ${root}",
-			"membersDigestOkPaged": "Consensus van Merkle-lid (${pages} pagina's) · ${root}",
-			"membersDigestMismatch": "Inconsistente ledenoverzicht · ${root}",
-			"membersDigestPending": "Bekijk het ledenoverzicht…",
-			"membersDigestFetchFailed": "Kan leden niet per pagina ophalen",
 			"copyEntityId": "Kopieer entiteit-ID",
 			"copyEntityIdOk": "Entiteits-ID gekopieerd",
-			"memberJoined": "Heeft zich bij het gesprek aangesloten",
 			"remoteBadge": {
 				"textContent": "op afstand",
 				"title": "Federatieve externe auteur"
@@ -1978,49 +1890,15 @@
 				"title": "Vertrouw deze auteur (sta gevaarlijke HTML toe)"
 			},
 			"stickerInline": "Sticker",
-			"voteDeadline": "Deadline: ${date}",
-			"voteNoOptions": "Geen opties",
-			"voteTotal": "Totaal ${total} stemmen",
-			"voteCount": "${count} kaartjes · ${pct}%",
-			"loadGroupFailed": "Kan groep niet laden: ${error}",
-			"groupJoinRequired": "De groep kan niet worden geopend. Gebruik de uitnodigingslink of uitnodigingscode om lid te worden",
-			"sendFailed": "Verzenden mislukt: ${error}",
-			"sendFailedPending": "Verzenden is mislukt",
 			"markdownRenderFailed": "Het weergeven van berichten is mislukt",
 			"retrySend": "Probeer het opnieuw",
-			"sendImageFailed": "Kan foto niet verzenden: ${error}",
-			"sendStickerFailed": "Kan sticker niet verzenden: ${error}",
-			"voteMinOptions": "Vereist minimaal 2 opties",
 			"mergeDagOk": "Vork samengevoegd",
 			"mergeDagFailed": "Samenvoegen mislukt: ${error}",
-			"forkSplitFailed": "Splitsen mislukt: ${error}",
-			"forkSplitPrompt": "Nieuwe groepsnaam (kan leeg gelaten worden)",
-			"forkSplitModalTitle": "Opgesplitst in een nieuwe groep",
-			"forkSplitModalSubmit": "Creëren",
 			"typing": "${names} is aan het typen...",
 			"charsHeader": "Rol",
-			"friendsHeader": "Vrienden",
 			"settingsModalTitle": "Instellingen",
 			"modalClose": "Sluiten",
-			"groupTag": "Groep",
-			"groupUnnamed": "Naamloze groep · ${suffix}",
-			"groupHeaderMenu": {
-				"title": "Groepsmenu: instellingen, uitnodigingen, enz."
-			},
-			"groupDescriptionEmpty": "Er is nog geen profiel voor deze groep.",
-			"serverActionPickerTitle": "Groep",
-			"serverActionPickerSubtitle": "Maak een nieuwe groep aan of word lid van een bestaande groep via ID",
-			"serverActionPickerCreate": "Groep aanmaken",
-			"serverActionPickerCreateDescription": "Begin helemaal opnieuw en nodig vrienden uit",
-			"serverActionPickerJoin": "Sluit je aan bij de groep",
-			"serverActionPickerJoinDescription": "Gebruik groeps-ID",
 			"cancel": "Annuleren",
-			"folderDefault": "Map",
-			"folderRename": "Hernoem map",
-			"folderRenamePrompt": "Hernoem de map \"${name}\" naar:",
-			"folderCollapse": "Map samenvouwen",
-			"folderExpand": "Vouw map uit",
-			"folderDissolve": "Map sluiten",
 			"bookmarkLocal": "Lokaal",
 			"groupsSection": "Groep",
 			"ungrouped": "Niet gegroepeerd",
@@ -2030,46 +1908,13 @@
 				"title": "Bladwijzer verwijderen",
 				"aria-label": "Bladwijzer verwijderen"
 			},
-			"loadMessagesFailed": "Bericht laden mislukt: ${error}",
 			"unreadDivider": "nieuw nieuws",
-			"noUsername": "Gebruikersnaam niet verkregen",
-			"stickersEmpty": "Nog geen stickers",
-			"stickersMarketLink": "Ga naar Sticker Square om te installeren",
-			"stickersLoadFailed": "Laden mislukt: ${error}",
-			"noChars": "Er zijn nog geen rollen. Installeer er eerst enkele.",
-			"noFriends": "Nog geen privéchats",
-			"friendsEmptyTitle": "Begin een nieuw gesprek",
-			"friendsEmptyDescription": "Zoek naar gebruikers op de lokale rol of op andere knooppunten, en je kunt ook de ledenprofielkaart openen in de groepschat om een ​​privébericht te starten.",
-			"friendsEmptyAction": "Zoek naar een rol of gebruiker",
-			"friendsSearchEmpty": "Geen overeenkomende rol of gebruiker",
-			"friendsSearchTooShort": "Voer minimaal 2 tekens in",
-			"friendsSearchDm": "Stuur een privébericht",
-			"friendsSearchChat": "Begin een gesprek",
-			"friendsSearchLocalChar": "lokale rol",
-			"friendsSearchPin": "Instellen als alias",
-			"charCount": "${count} rollen",
-			"friendsCount": "${count} vrienden",
-			"charTag": "Rol",
-			"friendsTag": "Vrienden",
 			"backToFriends": "Terug naar vrienden",
 			"dmTopicsTitle": "Onderwerp",
-			"friendsContextNewChat": "Nieuwe chat",
-			"friendsRestartConfirm": "De privéchat met \"${name}\" wordt ontbonden en er wordt een nieuw gesprek aangemaakt. Weet je het zeker?",
-			"friendsRestartOk": "Er is een nieuwe privéchat geopend",
-			"friendsRestartFailed": "Kan geen nieuwe privéchat maken: ${error}",
-			"charDescriptionEmpty": "Het personage moet zichzelf nog voorstellen.",
-			"charIntro": "Introduceren",
 			"participants": "Deelnemers",
-			"charTagSolo": "Personages · 1:1 dialoog",
 			"startChatWith": "💬 Begin met chatten met ${name}",
 			"loading": "Laden…",
-			"charChatStart": "Begin een gesprek met ${name}",
-			"charChatEmpty": "Er is nog geen bericht, start je eerste chat!",
-			"loadCharChatFailed": "Het laden van het bericht is mislukt",
 			"createChatFailed": "Kan sessie niet maken: ${error}",
-			"charChatComposer": {
-				"placeholder": "Stuur een bericht naar ${name} (Ctrl+Enter om te verzenden)"
-			},
 			"friendChatComposer": {
 				"placeholder": "Bericht verzenden (Ctrl+Enter om te verzenden)"
 			},
@@ -2089,75 +1934,13 @@
 				"confirmSecond": "Klik nogmaals om te voltooien",
 				"cancel": "Annuleren"
 			},
-			"blockConfirm": "Deze persoon toevoegen aan de zwarte lijst? De federatie van deze groep zal haar estafette afwijzen.",
-			"blockOk": "Geblokkeerd",
-			"charChatSettings": "Karakterchat-instellingen",
-			"charChatSubtitle": "Sessie met ${name}",
-			"sessionInfo": "sessie informatie",
-			"sessionRole": "Rol",
-			"sessionId": "Sessie-ID",
-			"sessionMessages": "Aantal berichten",
 			"quickActions": "Snelle bediening",
 			"advancedSettings": "Geavanceerde instellingen (Karakter/Wereld/Plug-ins)",
 			"advancedSettingsDescription": "Open de volledige instellingen voor de groep in de Hub in een nieuw tabblad",
 			"dangerZone": "Gevarengebied",
-			"unbindFriendDescription": "Na het ontbinden keert het gesprek terug naar de groepslijst aan de linkerkant en blijven de berichtrecords behouden.",
-			"unbindFriend": "Ontbinden",
-			"unbindFriendConfirm": "Weet je zeker dat je de privéchat met ${name} wilt ontkoppelen? Het gesprek wordt terugverplaatst naar de groepslijst.",
-			"unbindFriendOk": "Ongebonden",
-			"unbindFriendFailed": "Ontbinding mislukt: ${error}",
 			"deleteSessionDescription": "Als je dit gesprek verwijdert, worden alle berichten definitief verwijderd en is dit onomkeerbaar.",
 			"deleteSession": "Sessie verwijderen",
 			"deleteSessionConfirm": "Weet je zeker dat je de sessie met ${name} wilt verwijderen? Deze operatie is onomkeerbaar.",
-			"sessionDeleted": "Gesprek verwijderd",
-			"sessionDeleteFailed": "Verwijderen mislukt: ${error}",
-			"streamTokenFailed": "Kan weergavetoken niet uitgeven",
-			"streamAvJoin": "Voeg stem/video toe",
-			"streamAvLeave": "Verlaten",
-			"streamAvMute": "Dempen",
-			"streamAvUnmute": "Dempen opheffen",
-			"streamAvVideo": "Schakel de camera uit",
-			"streamAvVideoOn": "Schakel de camera in",
-			"streamAvYou": "Jij",
-			"streamAvJoinFailed": "Kan oproep niet starten: ${error}",
-			"streamAvNoCodecs": "Deze browser ondersteunt geen WebCodecs (vereist Chrome 94+ / Edge 94+ / Firefox 130+)",
-			"streamAvPeers": "${count} mensen online",
-			"streamAvPresetThumb": "afgekort 64 kbps",
-			"streamAvPresetLow": "Lage kwaliteit 200 kbps",
-			"streamAvPresetMed": "Gemiddeld 600 kbps",
-			"streamAvPresetHigh": "Hoge kwaliteit 1,5 Mbps",
-			"callButton": {
-				"title": "Start of neem deel aan een gesprek",
-				"aria-label": "Start of neem deel aan een gesprek"
-			},
-			"callInProgress": "Gesprek bezig",
-			"callEnded": "Het gesprek is beëindigd",
-			"callJoin": "Neem deel aan de oproep",
-			"callHangup": "Ophangen",
-			"callScreenShare": "deel scherm",
-			"callScreenStop": "Stop met delen",
-			"callJumpBack": "Terug naar oproepkanaal",
-			"callJoinFailed": "Kan niet deelnemen aan gesprek: ${error}",
-			"callScreenFailed": "Scherm delen mislukt: ${error}",
-			"callStartedAt": "Begonnen om ${time}",
-			"callDuration": "Duur ${duration}",
-			"callParticipants": "${n} mensen",
-			"callPeerCount": "${n}",
-			"callNoParticipants": "Nog geen deelnemers",
-			"listChannelEmpty": "De lijst is leeg.",
-			"listItemUntitled": "Naamloos",
-			"listEditorTitle": "Lijstitems bewerken (JSON-array)",
-			"listSaveToDag": "Opslaan in DAG",
-			"listJsonInvalid": "Ongeldige JSON: ${message}",
-			"listSaved": "Opgeslagen",
-			"listSaveFailed": "Opslaan mislukt",
-			"streamDefaultName": "Streamingmedia",
-			"streamRefreshToken": "Horlogetoken vernieuwen",
-			"streamEmbedHttpsRequired": "Het streamingadres moet een insluitbare https://-pagina zijn, of de groepsinstellingen moeten eerst worden geconfigureerd en vernieuwd om een ​​weergavetoken te verkrijgen.",
-			"streamWebRtcHint": "Er is geen externe SFU geconfigureerd; dit kanaal maakt gebruik van in-group WebRTC (geen streamingSfuWss vereist).",
-			"pinPreviewSticker": "[sticker]",
-			"pinPreviewVote": "[Stem] ${question}",
-			"pinPreviewInvite": "[Uitnodiging] ${groupName}",
 			"reactionRemovePrompt": "Wiens ${emoji} moet worden verwijderd?\n${candidates}",
 			"ariaDagTip": {
 				"aria-label": "DAG vorkpunt"
@@ -2165,58 +1948,11 @@
 			"ariaClose": {
 				"aria-label": "Sluiten"
 			},
-			"memberBar": {
-				"aria-label": "Ledenlijst"
-			},
-			"channelBar": {
-				"aria-label": "Kanalenlijst"
-			},
 			"serverBar": {
 				"aria-label": "Groepen en navigatie"
 			},
-			"membersDigestPagesTitle": {
-				"title": "${expected}\n${pages} pagina's"
-			},
-			"discoveryTitle": "Groepsontdekking",
-			"discoveryEyebrow": "Verken de gemeenschap",
-			"discoveryDescription": "Blader door openbare groepen uit het federatienetwerk, kies een interessante community en sluit je aan.",
-			"discoverySidebarHint": "Blader door openbare groepen en word er lid van aan de rechterkant",
-			"discoveryEmptyTitle": "Er zijn nog geen openbare groepen gevonden",
-			"discoveryEmpty": "Er is momenteel geen aanbevolen groep; nadat federatiesynchronisatie is ingeschakeld, wordt de ontdekkingslijst gesynchroniseerd vanaf de buren.",
-			"discoveryNoDescription": "De groepseigenaar heeft het profiel nog niet ingevuld.",
-			"discoverySourceCount": "${count} federatieve bronnen",
-			"discoveryJoin": "Sluit je aan bij de groep",
-			"discoveryOpen": "Open groep",
-			"discoveryLoadFailed": "Kan ontdekkingslijst niet laden: ${message}",
 			"operationFailed": "Bewerking mislukt: ${error}",
 			"shareGroupFailed": "Kan groepslink niet delen: ${error}",
-			"blockAuthorTitle": "Blokkeer deze auteur",
-			"configTitle": "Gespreksconfiguratie",
-			"configSaved": "Opgeslagen",
-			"configSaveFailed": "Opslaan mislukt: ${error}",
-			"configLoadFailed": "Kan configuratie niet laden: ${error}",
-			"noActiveChat": "Open eerst een sessie voordat je het onderdeel naar binnen sleept",
-			"groupContext": {
-				"manage": "Beheer groep",
-				"notifyPrefs": "Meldingsinstellingen",
-				"invite": "Nodig anderen uit",
-				"inviteCopied": "Uitnodigingslink gekopieerd naar klembord",
-				"addChar": "Rol toevoegen",
-				"addCharLabel": "Selecteer rol",
-				"addCharSubmit": "Toevoegen aan",
-				"noChars": "Geen rol beschikbaar",
-				"setAlias": "Groepsalias instellen",
-				"setAliasPrompt": "Stel een lokale alias in voor \"${name}\" (laat leeg om te wissen):",
-				"aliasSaved": "Groepsalias bijgewerkt",
-				"leave": "Verlaat de groep",
-				"leaveConfirm": "Weet je zeker dat je de groep \"${name}\" wilt verlaten? Je kunt geen berichten meer bekijken in deze groep.",
-				"leaveOk": "Verliet de groep",
-				"leaveBatch": "Verlaat de geselecteerde groep (${count})",
-				"leaveConfirmBatch": "Weet je zeker dat je de ${count} geselecteerde groepen wilt verlaten? De machine bewaart geen gegevens meer voor deze groepen.",
-				"leaveBatchPending": "${count} groepen zijn uit de lijst verwijderd en worden op de achtergrond afgesloten...",
-				"leaveBatchOk": "${count} groepen verlaten",
-				"leaveBatchPartial": "${failed} / ${total} groepen konden niet worden afgesloten, de lijst is vernieuwd"
-			},
 			"replyInline": {
 				"title": "Antwoord"
 			},
@@ -2226,35 +1962,8 @@
 			"replyInThread": {
 				"title": "Reageer in de onderliggende thread"
 			},
-			"syncTruncated": "De DAG-verhoging is niet volledig. Je kunt het later opnieuw proberen of de limiet verhogen.",
-			"syncTruncatedHint": "De DAG-geschiedenis is te lang. Je kunt het later opnieuw proberen of de limiet verhogen.",
-			"newChannelButton": "Nieuw kanaal maken",
-			"newChannelSuccess": "Kanaal gemaakt",
-			"newChannelFailed": "Kan kanaal niet maken",
-			"newChannelTitle": "Nieuw kanaal maken",
-			"channelName": "Kanaalnaam",
-			"channelType": "Kanaaltype",
-			"channelTypeText": "chat kanaal",
-			"channelTypeList": "Lijst/Forumkanaal",
-			"channelTypeStreaming": "Streamingkanaal",
-			"channelNameInput": {
-				"placeholder": "Algemeen"
-			},
 			"localMaterializedView": "Het is momenteel een lokaal gerealiseerde weergave en de machtigingen en geschiedenis kunnen inconsistent zijn met andere knooppunten.",
 			"convergentEncryptWarn": "Groepsbestanden maken gebruik van convergente encryptie: als de aanvaller de leesbare tekst van een bestand kent, kan hij de sleutel afleiden en het bijbehorende cijfertekstblok decoderen. Vertrouw niet uitsluitend op groepsversleuteling voor de bescherming van zeer gevoelige en unieke privédocumenten.",
-			"votePromptQuestion": "titel van stemmen",
-			"votePromptOptions": "Opties (minstens twee, gescheiden door komma's)",
-			"voteOptionDefault": "Mee eens, tegen",
-			"votePromptDeadlineHours": "Deadline (uren, blanco laten = geen deadline)",
-			"messagePrefixVote": "Stemmen",
-			"threadCreated": "Er is een onderliggende thread gemaakt",
-			"threadCreateFailed": "Kan geen onderliggende thread maken. Probeer het later opnieuw",
-			"threadDrawer": {
-				"aria-label": "kinder draad"
-			},
-			"threadClose": {
-				"title": "Sluit de onderliggende draad"
-			},
 			"reputationSlashAlert": "De reputatie van lid ${target}… wordt herinnerd aan de aftrek.",
 			"profileEdit": {
 				"previewHint": "Wijzigingen verschijnen onmiddellijk in het voorbeeld en worden opgeslagen en gesynchroniseerd via Chat en Sociaal.",
@@ -2263,23 +1972,14 @@
 				"languageVersion": "Taalversie",
 				"localeHint": "Klik op het label om de code te wijzigen of te bewerken; druk op Enter in het invoervak ​​aan het einde om het naar een nieuwe taal te kopiëren.",
 				"themeColorHint": "Wordt gebruikt om texturen te genereren als er geen aangepaste banner is, en wordt ook gebruikt voor live geluidsgolfloops",
-				"bannerLabel": "Bannerachtergrond",
-				"bannerHint": "Je kunt de afbeeldings-URL invullen of een bestand uploaden; je kunt ook op elk gewenst moment doorgaan met het genereren van texturen",
-				"bannerClear": "Hervat het genereren van banners",
 				"linksPreview": "${count} openbare links",
 				"unsavedHint": "Als je het venster sluit, worden niet-opgeslagen wijzigingen verwijderd",
 				"tagsLabel": "Label",
 				"tagAdd": "Toevoegen aan",
 				"tagRemove": "Label verwijderen",
 				"linksLabel": "Link",
-				"linkAdd": "Koppeling toevoegen",
-				"linkRemove": "Koppeling verwijderen",
 				"handleLabel": "Aangepaste ID",
 				"handleHint": "Kan worden doorzocht door andere knooppunten in het netwerk; Uniciteit is niet gegarandeerd, en conflicten zullen worden ondubbelzinnig gemaakt volgens de vertrouwenslijst.",
-				"resetFromPart": "Resetten vanaf karaktergedeelte",
-				"resetFromPartConfirm": "De huidige informatie wordt overschreven met de informatie van het rolonderdeel. Weet je het zeker?",
-				"resetFromPartDone": "Profiel gereconstrueerd uit karakterdelen",
-				"resetFromPartFailed": "Opnieuw opbouwen mislukt: ${error}",
 				"newLocale": {
 					"placeholder": "Nieuwe taalcode, zoals en-UK"
 				},
@@ -2295,23 +1995,38 @@
 				"avatarUpload": {
 					"aria-label": "Avatar uploaden"
 				},
-				"bannerUrl": {
-					"placeholder": "URL van de bannerafbeelding of upload het bestand hieronder"
-				},
-				"bannerUpload": {
-					"aria-label": "Banner uploaden"
-				},
 				"tag": {
 					"placeholder": "Voeg toe na het invoeren van de tag"
 				},
-				"linkName": {
-					"placeholder": "Toon tekst"
-				},
-				"linkUrl": {
-					"placeholder": "https://… of bron://…"
-				},
 				"handle": {
 					"placeholder": "Bijvoorbeeld Steve (2–32 alfanumerieke tekens in kleine letters._-)"
+				},
+				"resetFrom": {
+					"part": "Resetten vanaf karaktergedeelte",
+					"partConfirm": "De huidige informatie wordt overschreven met de informatie van het rolonderdeel. Weet je het zeker?",
+					"partDone": "Profiel gereconstrueerd uit karakterdelen",
+					"partFailed": "Opnieuw opbouwen mislukt: ${error}"
+				},
+				"banner": {
+					"clear": "Hervat het genereren van banners",
+					"hint": "Je kunt de afbeeldings-URL invullen of een bestand uploaden; je kunt ook op elk gewenst moment doorgaan met het genereren van texturen",
+					"label": "Bannerachtergrond",
+					"upload": {
+						"aria-label": "Banner uploaden"
+					},
+					"url": {
+						"placeholder": "URL van de bannerafbeelding of upload het bestand hieronder"
+					}
+				},
+				"link": {
+					"add": "Koppeling toevoegen",
+					"name": {
+						"placeholder": "Toon tekst"
+					},
+					"remove": "Koppeling verwijderen",
+					"url": {
+						"placeholder": "https://… of bron://…"
+					}
 				}
 			},
 			"profilePopup": {
@@ -2321,72 +2036,22 @@
 				},
 				"editSaved": "Gegevens opgeslagen",
 				"editQueued": "Gepubliceerd, wachtend tot het andere knooppunt het ophaalt",
-				"dmChar": "Privé chatten met een personage",
-				"dmUser": "Stuur een privébericht",
-				"dmFed": "Federaal privébericht",
 				"noFedIdentity": "Configureer eerst native activePubKeyHex in de federatie-instellingen",
 				"peerNoIdentity": "De andere partij heeft geen federale status en kan geen federaal privébericht initiëren.",
-				"dmFailed": "Kan privébericht niet openen: ${error}",
 				"care": "Bijzonder gevolgd",
 				"careRemove": "Bijzondere zorg annuleren",
 				"setAlias": "Alias ​​instellen",
-				"setAliasPrompt": "Stel een lokale alias in voor \"${name}\" (laat leeg om te wissen):"
-			},
-			"channelContext": {
-				"copyLinkDone": "Kanaallink gekopieerd",
-				"notifyPrefs": "Instellingen voor kanaalmeldingen",
-				"rename": "Kanaal hernoemen",
-				"renameOk": "Kanaal is hernoemd",
-				"delete": "Kanaal verwijderen",
-				"deleteOk": "Kanaal verwijderd",
-				"deleteConfirm": "Weet je zeker dat je kanaal \"${name}\" wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
-				"setDefault": "Instellen als standaardkanaal",
-				"setDefaultOk": "Al ingesteld als standaardkanaal",
-				"copyLink": "Kanaallink kopiëren",
-				"exportJson": "JSON exporteren",
-				"exportOk": "Kanaalarchief gedownload",
-				"exportFailed": "Exporteren mislukt: ${error}"
-			},
-			"memberContext": {
-				"copyName": "Weergavenaam kopiëren",
-				"mention": "Vermeldingen",
-				"care": "Bijzonder gevolgd",
-				"careAdded": "Er is al Bijzonder gevolgd toegevoegd",
-				"careRemoved": "Bijzonder gevolgd geannuleerd",
-				"setAlias": "Alias ​​instellen",
 				"setAliasPrompt": "Stel een lokale alias in voor \"${name}\" (laat leeg om te wissen):",
-				"aliasSaved": "Alias ​​bijgewerkt",
-				"copyPubKey": "Kopieer de hash van de openbare sleutel",
-				"copyEntityId": "Kopieer entiteit-ID",
-				"dm": "Stuur een privébericht",
-				"kick": "kick lid",
-				"kickSelfNodeWarning": "Waarschuwing: dit lid gebruikt dezelfde knooppuntidentiteit Als je. Ook word je na uitsluiting uit de groep verwijderd. Weet je zeker dat je wilt doorgaan?",
-				"ban": "Verbod…",
-				"personalBlock": "Persoonlijk blok",
-				"personalBlockConfirm": "${name} toevoegen aan je blokkeerlijst? Mensen die je volgen, zullen dit signaal oppikken en mogelijk minder vertrouwen in hen hebben.",
-				"personalBlockSuccess": "Al toegevoegd aan de zwarte lijst",
-				"banTitle": "Selecteer het verbodsbereik",
-				"banEntity": "Verboden entiteiten (128-bits entiteitHash)",
-				"banNode": "Verbodsknooppunt (homeNodeHash)"
+				"dm": {
+					"char": "Privé chatten met een personage",
+					"failed": "Kan privébericht niet openen: ${error}",
+					"fed": "Federaal privébericht",
+					"user": "Stuur een privébericht"
+				}
 			},
-			"messageContext": {
-				"edit": "Bericht bewerken",
-				"delete": "Bericht verwijderen"
-			},
-			"charStreaming": "Genereren…",
 			"gshDecryptPending": "Wachten op kanaalsleutel (generatie ${gen})",
 			"gshDecryptFailed": "Kan dit bericht niet ontsleutelen zonder kanaalsleutel",
-			"fileDecryptFailed": "Kan dit bestand niet openen zonder bestandssleutel",
 			"reactionFailed": "Reactiebewerking is mislukt",
-			"fileUploadChecking": "Controleren of dezelfde inhoud al bestaat...",
-			"fileUploadingChunk": "Versleutelde blokken uploaden...",
-			"fileUploadRegistering": "Bestanden registreren…",
-			"fileUploaded": "Bestand geüpload",
-			"fileUploadFailed": "Bestandsupload mislukt",
-			"fileSkippedDedup": "Dubbele blokoverdracht overgeslagen",
-			"fileDownloadFailed": "Bestand downloaden mislukt",
-			"fileNoKey": "Kan niet decoderen (ontbrekende sleutel)",
-			"fileLoadFailed": "Het laden van bestanden is mislukt",
 			"createModal": {
 				"title": "Groep aanmaken",
 				"subtitle": "Groepen zijn privéruimtes waar jij en je vrienden met elkaar kunnen chatten",
@@ -2399,14 +2064,16 @@
 				"description": {
 					"placeholder": "(Optioneel) Introduceer deze groep"
 				},
-				"joinSection": "Wie kan meedoen",
-				"joinInviteOnly": "Alleen uitnodigen",
-				"joinInviteOnlyDescription": "Om deel te nemen is een uitnodigingscode vereist",
-				"joinPow": "bewijs van werk",
-				"joinPowDescription": "Je moet de PoW-uitdaging voltooien voordat je meedoet",
 				"cancel": "Terug",
 				"submit": "Groep aanmaken",
-				"failed": "Kan groep niet maken: ${error}"
+				"failed": "Kan groep niet maken: ${error}",
+				"join": {
+					"inviteOnly": "Alleen uitnodigen",
+					"inviteOnlyDescription": "Om deel te nemen is een uitnodigingscode vereist",
+					"pow": "bewijs van werk",
+					"powDescription": "Je moet de PoW-uitdaging voltooien voordat je meedoet",
+					"section": "Wie kan meedoen"
+				}
 			},
 			"joinModal": {
 				"title": "Sluit je aan bij de groep",
@@ -2423,28 +2090,9 @@
 				"cancel": "Terug",
 				"submit": "Sluit je aan bij de groep"
 			},
-			"menuCopy": "Kopiëren",
-			"menuMD": "Afwaardering",
-			"menuTXT": "platte tekst",
-			"menuHTML": "HTML",
-			"menuDownload": "HTML downloaden",
-			"menuDelete": "Verwijderen",
-			"menuShareGroup": "link delen",
-			"menuPrev": "Vorig artikel",
-			"menuNext": "Volgend artikel",
-			"menuShare": {
-				"1h": "Deel een link van 1 uur",
-				"12h": "Deel 12 uur link",
-				"24h": "Deel 24-uurslink",
-				"72h": "Deel 72 uur-link"
-			},
-			"noGroups": "Nog geen groep",
 			"myGroups": "Mijn groepen",
 			"joinGroup": "Sluit je aan bij de groep",
 			"createGroup": "Nieuwe groep aanmaken",
-			"noDescription": "Nog geen beschrijving",
-			"memberCountLabel": "${count} leden",
-			"loadListFailed": "Kan de groepslijst niet laden: ${error}",
 			"contentWarning": "inhoud waarschuwing",
 			"sensitiveMedia": "gevoelige media",
 			"revealContent": "Toon inhoud",
@@ -2479,12 +2127,6 @@
 				"saved": "Vertaalinstellingen opgeslagen",
 				"saveFailed": "Opslaan mislukt: ${error}"
 			},
-			"friendsSearch": {
-				"placeholder": "Lokale rol/aangepaste ID/naam zoeken..."
-			},
-			"threadComposer": {
-				"placeholder": "Reageer in subthread..."
-			},
 			"altImage": {
 				"placeholder": "Voeg een beschrijving toe aan de afbeelding...",
 				"label": "Afbeeldingsbeschrijving (alt)"
@@ -2495,7 +2137,587 @@
 				"aria-label": "Vermeldingssuggesties"
 			},
 			"clickToLoad": "Klik om te laden",
-			"send": "Versturen"
+			"serverActionPicker": {
+				"create": "Groep aanmaken",
+				"createDescription": "Begin helemaal opnieuw en nodig vrienden uit",
+				"join": "Sluit je aan bij de groep",
+				"joinDescription": "Gebruik groeps-ID",
+				"subtitle": "Maak een nieuwe groep aan of word lid van een bestaande groep via ID",
+				"title": "Groep"
+			},
+			"membersDigest": {
+				"fetchFailed": "Kan leden niet per pagina ophalen",
+				"mismatch": "Inconsistente ledenoverzicht · ${root}",
+				"ok": "Lid Merkle unaniem · ${root}",
+				"okPaged": "Consensus van Merkle-lid (${pages} pagina's) · ${root}",
+				"pagesTitle": {
+					"title": "${expected}\n${pages} pagina's"
+				},
+				"pending": "Bekijk het ledenoverzicht…"
+			},
+			"unbindFriend": {
+				"main": "Ontbinden",
+				"confirm": "Weet je zeker dat je de privéchat met ${name} wilt ontkoppelen? Het gesprek wordt terugverplaatst naar de groepslijst.",
+				"description": "Na het ontbinden keert het gesprek terug naar de groepslijst aan de linkerkant en blijven de berichtrecords behouden.",
+				"failed": "Ontbinding mislukt: ${error}",
+				"ok": "Ongebonden"
+			},
+			"federation": {
+				"loadFailed": "Laden mislukt: ${error}",
+				"subtitle": "Beheer verbindingen tussen apparaten; laat in de meeste gevallen de standaardwaarden staan",
+				"title": "Federatieve P2P-instellingen",
+				"tooltip": {
+					"title": "Federatieve P2P-instellingen",
+					"tip": "Federatieve P2P-instellingen"
+				}
+			},
+			"newChannel": {
+				"button": "Nieuw kanaal maken",
+				"failed": "Kan kanaal niet maken",
+				"success": "Kanaal gemaakt",
+				"title": "Nieuw kanaal maken"
+			},
+			"discovery": {
+				"description": "Blader door openbare groepen uit het federatienetwerk, kies een interessante community en sluit je aan.",
+				"empty": "Er is momenteel geen aanbevolen groep; nadat federatiesynchronisatie is ingeschakeld, wordt de ontdekkingslijst gesynchroniseerd vanaf de buren.",
+				"emptyTitle": "Er zijn nog geen openbare groepen gevonden",
+				"eyebrow": "Verken de gemeenschap",
+				"join": "Sluit je aan bij de groep",
+				"loadFailed": "Kan ontdekkingslijst niet laden: ${message}",
+				"noDescription": "De groepseigenaar heeft het profiel nog niet ingevuld.",
+				"open": "Open groep",
+				"refresh": "Ontdekkingslijst vernieuwen",
+				"sidebarHint": "Blader door openbare groepen en word er lid van aan de rechterkant",
+				"sourceCount": "${count} federatieve bronnen",
+				"title": "Groepsontdekking",
+				"tooltip": {
+					"title": "Groepsontdekking",
+					"tip": "Groepsontdekking"
+				}
+			},
+			"forkSplit": {
+				"failed": "Splitsen mislukt: ${error}",
+				"modalSubmit": "Creëren",
+				"modalTitle": "Opgesplitst in een nieuwe groep",
+				"prompt": "Nieuwe groepsnaam (kan leeg gelaten worden)"
+			},
+			"stickers": {
+				"empty": "Nog geen stickers",
+				"loadFailed": "Laden mislukt: ${error}",
+				"loading": "Laden…",
+				"manage": "Beheer stickers → ",
+				"marketLink": "Ga naar Sticker Square om te installeren",
+				"panelTitle": "Sticker"
+			},
+			"friends": {
+				"contextNewChat": "Nieuwe chat",
+				"count": "${count} vrienden",
+				"emptyAction": "Zoek naar een rol of gebruiker",
+				"emptyDescription": "Zoek naar gebruikers op de lokale rol of op andere knooppunten, en je kunt ook de ledenprofielkaart openen in de groepschat om een ​​privébericht te starten.",
+				"emptyTitle": "Begin een nieuw gesprek",
+				"header": "Vrienden",
+				"restartConfirm": "De privéchat met \"${name}\" wordt ontbonden en er wordt een nieuw gesprek aangemaakt. Weet je het zeker?",
+				"restartFailed": "Kan geen nieuwe privéchat maken: ${error}",
+				"restartOk": "Er is een nieuwe privéchat geopend",
+				"search": {
+					"placeholder": "Lokale rol/aangepaste ID/naam zoeken...",
+					"chat": "Begin een gesprek",
+					"dm": "Stuur een privébericht",
+					"empty": "Geen overeenkomende rol of gebruiker",
+					"localChar": "lokale rol",
+					"pin": "Instellen als alias",
+					"tooShort": "Voer minimaal 2 tekens in"
+				},
+				"tag": "Vrienden",
+				"tooltip": {
+					"title": "Vrienden",
+					"tip": "Vrienden"
+				}
+			},
+			"channel": {
+				"bar": {
+					"aria-label": "Kanalenlijst"
+				},
+				"context": {
+					"copyLinkDone": "Kanaallink gekopieerd",
+					"notifyPrefs": "Instellingen voor kanaalmeldingen",
+					"rename": "Kanaal hernoemen",
+					"renameOk": "Kanaal is hernoemd",
+					"delete": "Kanaal verwijderen",
+					"deleteOk": "Kanaal verwijderd",
+					"deleteConfirm": "Weet je zeker dat je kanaal \"${name}\" wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+					"setDefault": "Instellen als standaardkanaal",
+					"setDefaultOk": "Al ingesteld als standaardkanaal",
+					"copyLink": "Kanaallink kopiëren",
+					"exportJson": "JSON exporteren",
+					"exportOk": "Kanaalarchief gedownload",
+					"exportFailed": "Exporteren mislukt: ${error}"
+				},
+				"name": "Kanaalnaam",
+				"nameInput": {
+					"placeholder": "Algemeen"
+				},
+				"readonlyList": {
+					"placeholder": "Lijst met alleen-lezen zenders"
+				},
+				"readonlyStream": {
+					"placeholder": "Streamingkanaal alleen-lezen"
+				},
+				"type": "Kanaaltype",
+				"typeList": "Lijst/Forumkanaal",
+				"typeStreaming": "Streamingkanaal",
+				"typeText": "chat kanaal"
+			},
+			"message": {
+				"action": {
+					"bookmark": {
+						"title": "Bladwijzer"
+					},
+					"copyHtml": {
+						"title": "Kopieer HTML"
+					},
+					"delete": {
+						"title": "Bericht verwijderen"
+					},
+					"edit": {
+						"title": "Bericht bewerken"
+					},
+					"failed": "Bewerking mislukt: ${error}",
+					"feedbackDown": {
+						"title": "Klik om niet leuk te vinden"
+					},
+					"feedbackUp": {
+						"title": "Leuk vinden"
+					},
+					"next": {
+						"title": "Volgende tijdlijn"
+					},
+					"pin": {
+						"title": "Speld naar boven"
+					},
+					"prev": {
+						"title": "Vorige tijdlijn"
+					},
+					"regen": {
+						"title": "Regenereer"
+					},
+					"unpin": {
+						"title": "Losmaken"
+					}
+				},
+				"context": {
+					"edit": "Bericht bewerken",
+					"delete": "Bericht verwijderen"
+				},
+				"edit": {
+					"area": {
+						"aria-label": "Bericht bewerken"
+					},
+					"cancel": "Annuleren",
+					"save": "Opslaan",
+					"upload": "Bijlage uploaden"
+				},
+				"feedbackSubmit": "Geef feedback",
+				"input": {
+					"placeholder": "Groepsbericht… Ctrl+Enter om te verzenden",
+					"aria-label": "Bericht"
+				},
+				"prefixVote": "Stemmen"
+			},
+			"session": {
+				"deleteFailed": "Verwijderen mislukt: ${error}",
+				"deleted": "Gesprek verwijderd",
+				"id": "Sessie-ID",
+				"info": "sessie informatie",
+				"messages": "Aantal berichten",
+				"role": "Rol"
+			},
+			"folder": {
+				"collapse": "Map samenvouwen",
+				"default": "Map",
+				"dissolve": "Map sluiten",
+				"expand": "Vouw map uit",
+				"rename": "Hernoem map",
+				"renamePrompt": "Hernoem de map \"${name}\" naar:"
+			},
+			"stream": {
+				"av": {
+					"join": "Voeg stem/video toe",
+					"joinFailed": "Kan oproep niet starten: ${error}",
+					"leave": "Verlaten",
+					"mute": "Dempen",
+					"noCodecs": "Deze browser ondersteunt geen WebCodecs (vereist Chrome 94+ / Edge 94+ / Firefox 130+)",
+					"peers": "${count} mensen online",
+					"preset": {
+						"high": "Hoge kwaliteit 1,5 Mbps",
+						"low": "Lage kwaliteit 200 kbps",
+						"med": "Gemiddeld 600 kbps",
+						"thumb": "afgekort 64 kbps"
+					},
+					"unmute": "Dempen opheffen",
+					"video": "Schakel de camera uit",
+					"videoOn": "Schakel de camera in",
+					"you": "Jij"
+				},
+				"defaultName": "Streamingmedia",
+				"embedHttpsRequired": "Het streamingadres moet een insluitbare https://-pagina zijn, of de groepsinstellingen moeten eerst worden geconfigureerd en vernieuwd om een ​​weergavetoken te verkrijgen.",
+				"refreshToken": "Horlogetoken vernieuwen",
+				"tokenFailed": "Kan weergavetoken niet uitgeven",
+				"webRtcHint": "Er is geen externe SFU geconfigureerd; dit kanaal maakt gebruik van in-group WebRTC (geen streamingSfuWss vereist)."
+			},
+			"member": {
+				"bar": {
+					"aria-label": "Ledenlijst"
+				},
+				"context": {
+					"copyName": "Weergavenaam kopiëren",
+					"mention": "Vermeldingen",
+					"care": "Bijzonder gevolgd",
+					"careAdded": "Er is al Bijzonder gevolgd toegevoegd",
+					"careRemoved": "Bijzonder gevolgd geannuleerd",
+					"setAlias": "Alias ​​instellen",
+					"setAliasPrompt": "Stel een lokale alias in voor \"${name}\" (laat leeg om te wissen):",
+					"aliasSaved": "Alias ​​bijgewerkt",
+					"copyPubKey": "Kopieer de hash van de openbare sleutel",
+					"copyEntityId": "Kopieer entiteit-ID",
+					"dm": "Stuur een privébericht",
+					"kick": "kick lid",
+					"kickSelfNodeWarning": "Waarschuwing: dit lid gebruikt dezelfde knooppuntidentiteit Als je. Ook word je na uitsluiting uit de groep verwijderd. Weet je zeker dat je wilt doorgaan?",
+					"ban": "Verbod…",
+					"personalBlock": "Persoonlijk blok",
+					"personalBlockConfirm": "${name} toevoegen aan je blokkeerlijst? Mensen die je volgen, zullen dit signaal oppikken en mogelijk minder vertrouwen in hen hebben.",
+					"personalBlockSuccess": "Al toegevoegd aan de zwarte lijst",
+					"banTitle": "Selecteer het verbodsbereik",
+					"banEntity": "Verboden entiteiten (128-bits entiteitHash)",
+					"banNode": "Verbodsknooppunt (homeNodeHash)"
+				},
+				"countLabel": "${count} leden",
+				"joined": "Heeft zich bij het gesprek aangesloten",
+				"section": "Lid"
+			},
+			"thread": {
+				"close": {
+					"title": "Sluit de onderliggende draad"
+				},
+				"composer": {
+					"placeholder": "Reageer in subthread..."
+				},
+				"createFailed": "Kan geen onderliggende thread maken. Probeer het later opnieuw",
+				"created": "Er is een onderliggende thread gemaakt",
+				"drawer": {
+					"aria-label": "kinder draad"
+				}
+			},
+			"config": {
+				"loadFailed": "Kan configuratie niet laden: ${error}",
+				"saveFailed": "Opslaan mislukt: ${error}",
+				"saved": "Opgeslagen",
+				"title": "Gespreksconfiguratie"
+			},
+			"statusItems": {
+				"dnd": {
+					"title": "Niet storen",
+					"textContent": "Niet storen"
+				},
+				"idle": {
+					"title": "Afwezig",
+					"textContent": "Afwezig"
+				},
+				"offline": {
+					"title": "Offline",
+					"textContent": "Offline"
+				},
+				"online": {
+					"title": "online",
+					"textContent": "online"
+				}
+			},
+			"files": {
+				"bindCabinet": "Voeg een Cabinet toe",
+				"delete": "Verwijderen",
+				"deleteConfirm": "Weet je zeker dat je dit bestand wilt verwijderen?",
+				"deleteFolderConfirm": "Weet je zeker dat je deze map wilt verwijderen? Bestanden in de map worden niet automatisch verwijderd.",
+				"download": "Downloaden",
+				"drawerTitle": "Groepsbestand",
+				"empty": "Er zijn momenteel geen bestanden in deze map",
+				"foldersTitle": "Map",
+				"listTitle": "Document",
+				"loadFailed": "Kan groepsbestand niet laden: ${error}",
+				"loading": "Groepsbestanden laden...",
+				"newFolder": "Maak een nieuwe map",
+				"newFolderPrompt": "Mapnaam",
+				"no": {
+					"cabinets": "Er zijn geen archiefkasten toegankelijk voor de huidige rol",
+					"channel": "Voer eerst het tekstkanaal in waar je berichten naartoe kunt sturen",
+					"folders": "Nog geen submappen",
+					"group": "Selecteer eerst een groep"
+				},
+				"rename": "Hernoemen",
+				"renameFolderPrompt": "Hernoem de map \"${name}\" naar:",
+				"rootFolder": "Hoofdmap",
+				"title": {
+					"title": "Groepsbestand"
+				},
+				"upload": "Uploaden",
+				"uploadTo": "uploaden naar"
+			},
+			"group": {
+				"context": {
+					"manage": "Beheer groep",
+					"notifyPrefs": "Meldingsinstellingen",
+					"invite": "Nodig anderen uit",
+					"inviteCopied": "Uitnodigingslink gekopieerd naar klembord",
+					"addChar": "Rol toevoegen",
+					"addCharLabel": "Selecteer rol",
+					"addCharSubmit": "Toevoegen aan",
+					"noChars": "Geen rol beschikbaar",
+					"setAlias": "Groepsalias instellen",
+					"setAliasPrompt": "Stel een lokale alias in voor \"${name}\" (laat leeg om te wissen):",
+					"aliasSaved": "Groepsalias bijgewerkt",
+					"leave": {
+						"main": "Verlaat de groep",
+						"batch": "Verlaat de geselecteerde groep (${count})",
+						"batchOk": "${count} groepen verlaten",
+						"batchPartial": "${failed} / ${total} groepen konden niet worden afgesloten, de lijst is vernieuwd",
+						"batchPending": "${count} groepen zijn uit de lijst verwijderd en worden op de achtergrond afgesloten...",
+						"confirm": "Weet je zeker dat je de groep \"${name}\" wilt verlaten? Je kunt geen berichten meer bekijken in deze groep.",
+						"confirmBatch": "Weet je zeker dat je de ${count} geselecteerde groepen wilt verlaten? De machine bewaart geen gegevens meer voor deze groepen.",
+						"ok": "Verliet de groep"
+					}
+				},
+				"descriptionEmpty": "Er is nog geen profiel voor deze groep.",
+				"emojiTab": {
+					"title": "Groep"
+				},
+				"emojisEmpty": "Er zijn momenteel geen groepsemoticons. Je kunt ze uploaden in de groepsinstellingen.",
+				"emojisLoadFailed": "Kan groeps-emoticons niet laden",
+				"headerMenu": {
+					"title": "Groepsmenu: instellingen, uitnodigingen, enz."
+				},
+				"joinRequired": "De groep kan niet worden geopend. Gebruik de uitnodigingslink of uitnodigingscode om lid te worden",
+				"tag": "Groep",
+				"unnamed": "Naamloze groep · ${suffix}"
+			},
+			"block": {
+				"author": {
+					"title": "Blokkeer deze auteur"
+				},
+				"authorTitle": "Blokkeer deze auteur",
+				"confirm": "Deze persoon toevoegen aan de zwarte lijst? De federatie van deze groep zal haar estafette afwijzen.",
+				"ok": "Geblokkeerd",
+				"opposingConfirm": "Voeg de bestuursorganen die niet op de huidige verkiezingen staan ​​toe aan de zwarte lijst en ontken deze groep federatieve relais. doorgaan?",
+				"opposingFailed": "Markeren mislukt: ${error}",
+				"opposingOk": "${count} onderwerpen gemarkeerd als onbereikbaar"
+			},
+			"call": {
+				"button": {
+					"title": "Start of neem deel aan een gesprek",
+					"aria-label": "Start of neem deel aan een gesprek"
+				},
+				"duration": "Duur ${duration}",
+				"ended": "Het gesprek is beëindigd",
+				"hangup": "Ophangen",
+				"inProgress": "Gesprek bezig",
+				"join": "Neem deel aan de oproep",
+				"joinFailed": "Kan niet deelnemen aan gesprek: ${error}",
+				"jumpBack": "Terug naar oproepkanaal",
+				"noParticipants": "Nog geen deelnemers",
+				"participants": "${n} mensen",
+				"peerCount": "${n}",
+				"screenFailed": "Scherm delen mislukt: ${error}",
+				"screenShare": "deel scherm",
+				"screenStop": "Stop met delen",
+				"startedAt": "Begonnen om ${time}"
+			},
+			"vote": {
+				"closed": "Eindigde",
+				"count": "${count} kaartjes · ${pct}%",
+				"createFailed": "Kan geen enquête maken: ${error}",
+				"deadline": "Deadline: ${date}",
+				"minOptions": "Vereist minimaal 2 opties",
+				"modalSubmit": "Poll maken",
+				"modalTitle": "Start een stemming",
+				"noOptions": "Geen opties",
+				"optionDefault": "Mee eens, tegen",
+				"promptDeadlineHours": "Deadline (uren, blanco laten = geen deadline)",
+				"promptOptions": "Opties (minstens twee, gescheiden door komma's)",
+				"promptQuestion": "titel van stemmen",
+				"title": {
+					"title": "Start een stemming"
+				},
+				"total": "Totaal ${total} stemmen"
+			},
+			"file": {
+				"decryptFailed": "Kan dit bestand niet openen zonder bestandssleutel",
+				"downloadFailed": "Bestand downloaden mislukt",
+				"loadFailed": "Het laden van bestanden is mislukt",
+				"noKey": "Kan niet decoderen (ontbrekende sleutel)",
+				"skippedDedup": "Dubbele blokoverdracht overgeslagen",
+				"uploadChecking": "Controleren of dezelfde inhoud al bestaat...",
+				"uploadFailed": "Bestandsupload mislukt",
+				"uploadRegistering": "Bestanden registreren…",
+				"uploaded": "Bestand geüpload",
+				"uploadingChunk": "Versleutelde blokken uploaden..."
+			},
+			"menu": {
+				"copy": "Kopiëren",
+				"delete": "Verwijderen",
+				"download": "HTML downloaden",
+				"hTML": "HTML",
+				"mD": "Afwaardering",
+				"next": "Volgend artikel",
+				"prev": "Vorig artikel",
+				"share": {
+					"1h": "Deel een link van 1 uur",
+					"12h": "Deel 12 uur link",
+					"24h": "Deel 24-uurslink",
+					"72h": "Deel 72 uur-link"
+				},
+				"shareGroup": "link delen",
+				"tXT": "platte tekst"
+			},
+			"char": {
+				"chat": {
+					"composer": {
+						"placeholder": "Stuur een bericht naar ${name} (Ctrl+Enter om te verzenden)"
+					},
+					"empty": "Er is nog geen bericht, start je eerste chat!",
+					"settings": "Karakterchat-instellingen",
+					"start": "Begin een gesprek met ${name}",
+					"subtitle": "Sessie met ${name}"
+				},
+				"chatsTitle": "Historische gesprekken met ${name}",
+				"count": "${count} rollen",
+				"descriptionEmpty": "Het personage moet zichzelf nog voorstellen.",
+				"intro": "Introduceren",
+				"streaming": "Genereren…",
+				"tag": "Rol",
+				"tagSolo": "Personages · 1:1 dialoog",
+				"typing": "Binnenkomen…"
+			},
+			"list": {
+				"channelEmpty": "De lijst is leeg.",
+				"editorTitle": "Lijstitems bewerken (JSON-array)",
+				"itemUntitled": "Naamloos",
+				"jsonInvalid": "Ongeldige JSON: ${message}",
+				"saveFailed": "Opslaan mislukt",
+				"saveToDag": "Opslaan in DAG",
+				"saved": "Opgeslagen"
+			},
+			"save": {
+				"emoji": {
+					"title": "Emoticons opslaan"
+				},
+				"emojiFailed": "Kan emoticon niet opslaan: ${error}",
+				"emojiOk": "De emoticon is opgeslagen in de database",
+				"sticker": {
+					"title": "Bewaar stickers"
+				},
+				"stickerFailed": "Kan stickers niet opslaan: ${error}",
+				"stickerOk": "De sticker is toegevoegd aan je stickerbibliotheek"
+			},
+			"sync": {
+				"failed": "Federatiesynchronisatie mislukt: ${error}",
+				"incomplete": "${missing}/${total} evenementen blijven niet gesynchroniseerd",
+				"noPeers": "Niet verbonden met de federatieve buur, kunnen historische berichten tijdelijk niet worden gesynchroniseerd; Gebruik de volledige uitnodigingslink en probeer het later opnieuw",
+				"rateLimited": "Snelheidslimiet voor federale synchronisatie is in uitvoering. Probeer het later opnieuw.",
+				"truncated": "De DAG-verhoging is niet volledig. Je kunt het later opnieuw proberen of de limiet verhogen.",
+				"truncatedHint": "De DAG-geschiedenis is te lang. Je kunt het later opnieuw proberen of de limiet verhogen."
+			},
+			"load": {
+				"charChatFailed": "Het laden van het bericht is mislukt",
+				"groupFailed": "Kan groep niet laden: ${error}",
+				"listFailed": "Kan de groepslijst niet laden: ${error}",
+				"messagesFailed": "Bericht laden mislukt: ${error}",
+				"more": "Ouder nieuws laden…"
+			},
+			"send": {
+				"main": "Versturen",
+				"failed": "Verzenden mislukt: ${error}",
+				"failedPending": "Verzenden is mislukt",
+				"imageFailed": "Kan foto niet verzenden: ${error}",
+				"stickerFailed": "Kan sticker niet verzenden: ${error}",
+				"title": {
+					"title": "Verzenden (Ctrl+Enter)"
+				}
+			},
+			"fed": {
+				"advancedDescription": "Bugfixes, reputatiebeheer en handmatige uitgifte van links",
+				"advancedTitle": "Geavanceerde instellingen",
+				"batterySaverLabel": "Energiebesparende modus",
+				"batterySaverTip": "Door het aantal achtergrondverbindingen en netwerkactiviteit te verminderen, kan de berichtsynchronisatie iets langzamer worden.",
+				"connectionTitle": "Verbind en ontdek",
+				"dm": {
+					"invalidateDescription": "Na uitvoering worden alle eerder uitgegeven links om vrienden toe te voegen onmiddellijk ongeldig en kunnen niet worden ingetrokken.",
+					"invalidateTitle": "Laat oude verwijzingslinks verlopen",
+					"issueLabel": "Geef een DM-link uit",
+					"issued": "DM-link ondertekend en gekopieerd naar klembord",
+					"linkDescription": "Geschikt voor foutopsporing of handmatige identiteitsmigratie; het is niet nodig om deze velden in te vullen als je dagelijks vrienden toevoegt.",
+					"linkTip": "Vereist ondertekening met de eigen identiteitssleutel. De privésleutel wordt alleen ingediend bij de lokale service op deze pagina en wordt niet naar andere knooppunten verzonden.",
+					"linkTitle": "Handmatig een vriendenlink uitgeven",
+					"needPubKey": "Vereist een openbare sleutel van 64 hex",
+					"needSecretKey": "Vereist 64 hexadecimale private key-seed",
+					"nodeLabel": "Optionele knooppunt-URL",
+					"pubKeyLabel": "Openbare sleutel hex(64)",
+					"rotateConfirm": "Alle eerder uitgegeven links om vrienden toe te voegen, worden onmiddellijk ongeldig en kunnen niet worden hersteld. Weet je zeker dat je wilt doorgaan?",
+					"rotateLabel": "Maak oude links ongeldig",
+					"secretLabel": "Seed-hex van privésleutel(64)"
+				},
+				"groupRecoveryTip": "Wordt alleen gebruikt als de uitnodiging is gelekt of als het nieuwe apparaat de geschiedenis niet kan synchroniseren.",
+				"groupRecoveryTitle": "Groepsverbinding opgelost",
+				"nonceRotated": "nonce geroteerd (${nonce}…)",
+				"relayUrlsLabel": "Netwerkrelaisadres",
+				"relayUrlsTip": "Help apparaten elkaar te vinden op internet. Vul één wss:// adres per regel in; laat dit leeg om het standaardrelais te gebruiken.",
+				"repEmpty": "(nul)",
+				"repTip": "Verbindingsvoorkeursscores die native zijn berekend op basis van het gedrag van federatieve knooppunten, zijn geen openbare beoordelingen van groepsleden.",
+				"repTitle": "Subjectieve geloofwaardigheid van deze groep",
+				"repairJoinSnapshot": "Buren verzoeken om deel te nemen aan de groepssnapshotreparatie",
+				"repairJoinSnapshotFailed": "Kan groepsmomentopname niet herstellen: ${error}",
+				"repairJoinSnapshotOk": "Groepsmomentopname toegepast (${channels} kanaalgeschiedenis)",
+				"resetOk": "reputatie_reset is geschreven",
+				"resetSubmitLabel": "Doelreputatie opnieuw instellen",
+				"rotateRoomSecret": "Wachtwoord voor groepsruimte roteren",
+				"rotateRoomSecretConfirm": "Na de rotatie kunnen uitnodigingen die het oude kamerwachtwoord gebruiken geen verbinding maken. Weet je zeker dat je wilt doorgaan?",
+				"rotateRoomSecretOk": "Het kamerwachtwoord is gerouleerd",
+				"saved": "Opgeslagen",
+				"slash": {
+					"claimLabel": "Claimsterkteclaim (0–1)",
+					"needHash": "Vereist 64-bit hex pubKeyHash",
+					"ok": "reputatie_slash geschreven naar DAG",
+					"proof": {
+						"placeholder": "64 hexadecimale gebeurtenis-ID"
+					},
+					"proofLabel": "proof.eventId (optioneel)",
+					"submitLabel": "Plaats reputatie_slash",
+					"target": {
+						"placeholder": "Hash van de openbare sleutel van het lid"
+					},
+					"targetLabel": "doel pubKeyHash(64 hex)",
+					"tip": "Schrijft een negatieve reputatieverklaring over een knooppunt naar de groepsgebeurtenisgrafiek. Alleen voor gebruik door beheerders die federatieprotocollen begrijpen.",
+					"title": "Reputatieboete",
+					"verifiedLabel": "Verifieerbaar (bewijs van gebeurtenis-ID vereist)"
+				}
+			},
+			"pin": {
+				"previewInvite": "[Uitnodiging] ${groupName}",
+				"previewSticker": "[sticker]",
+				"previewVote": "[Stem] ${question}",
+				"unpinSidebar": {
+					"title": "Losmaken"
+				}
+			},
+			"no": {
+				"activeChat": "Open eerst een sessie voordat je het onderdeel naar binnen sleept",
+				"bookmarks": "Nog geen bladwijzers",
+				"channels": "Nog geen gesprek",
+				"chars": "Er zijn nog geen rollen. Installeer er eerst enkele.",
+				"description": "Nog geen beschrijving",
+				"friends": "Nog geen privéchats",
+				"groups": "Nog geen groep",
+				"members": "Nog geen leden",
+				"pins": "Nog geen pinnen",
+				"username": "Gebruikersnaam niet verkregen"
+			}
 		},
 		"sidebar": {
 			"settings": {
@@ -2593,144 +2815,8 @@
 				"alt": "Fotopictogram"
 			}
 		},
-		"messageList": {
-			"confirmDeleteMessage": "Dit bericht verwijderen?"
-		},
 		"voiceRecording": {
 			"errorAccessingMicrophone": "Geen toegang tot microfoon"
-		},
-		"messageView": {
-			"buttons": {
-				"edit": {
-					"title": "Bewerken"
-				},
-				"editIcon": {
-					"alt": "Bewerkpictogram"
-				},
-				"more": {
-					"title": "Meer"
-				},
-				"moreIcon": {
-					"alt": "Meer pictogram"
-				},
-				"delete": {
-					"alt": "Verwijderen"
-				},
-				"deleteIcon": {
-					"alt": "Verwijderpictogram"
-				},
-				"downloadHtml": {
-					"alt": "Download als html"
-				},
-				"downloadHtmlIcon": {
-					"alt": "html-downloadpictogram"
-				}
-			},
-			"copyButton": {
-				"title": "Kopiëren"
-			},
-			"copyButtonIcon": {
-				"alt": "Kopiëren"
-			},
-			"copySuccess": "Gekopieerd naar klembord",
-			"dropdown": {
-				"delete": "Verwijderen",
-				"deleteIcon": {
-					"alt": "Verwijderpictogram"
-				},
-				"copyMarkdown": "Kopiëren als markdown",
-				"copyMarkdownIcon": {
-					"alt": "Kopieer als markdown pictogram"
-				},
-				"copyText": "Kopiëren als platte tekst",
-				"copyTextIcon": {
-					"alt": "Kopieer tekst pictogram"
-				},
-				"copyHtml": "Kopiëren als html",
-				"copyHtmlIcon": {
-					"alt": "Kopieer html pictogram"
-				},
-				"downloadHtml": "Download als html",
-				"downloadHtmlIcon": {
-					"alt": "html-downloadpictogram"
-				},
-				"share": {
-					"textContent": "Delen",
-					"1h": "1 uur",
-					"12h": "12 uur",
-					"24h": "24 uur",
-					"72h": "72 uur"
-				},
-				"shareIcon": {
-					"alt": "pictogram delen"
-				}
-			},
-			"share": {
-				"uploading": "Link maken...",
-				"success": "Delen gelukt! Link gekopieerd naar klembord. <br>Deze functie wordt mogelijk gemaakt door ${provider}. <br>[Sponsor ze.](${sponsorLink})"
-			},
-			"commonToolCalling": "Tool aanroepen",
-			"toolRunningLang": "${lang} wordt uitgevoerd",
-			"toolSearchingContent": "${content} wordt gezocht",
-			"toolOverridingFilepath": "${filepath} wordt overschreven",
-			"toolReplacingFilepath": "${filepath} wordt aangepast",
-			"toolReadingFilepath": "${filepath} wordt gelezen",
-			"reasoningDetailsTitle": "Redeneringsproces",
-			"logprobsNotApplicable": "niet van toepassing",
-			"logprobsTopLogprobsMeta": "top_logprobs (geselecteerd: ${token})",
-			"logprobsMetricsFooter": "Vertraging eerste woord: ${ttft} | Tijd: ${time} | Token: ${tokens} | Snelheid: ${speed}",
-			"noReplyContent": "(Geen antwoordinhoud)",
-			"feedback": {
-				"thumbsUp": {
-					"title": "Vind ik leuk"
-				},
-				"thumbsDown": {
-					"title": "Vind ik niet leuk"
-				},
-				"regenerate": {
-					"title": "Opnieuw genereren"
-				},
-				"reason": {
-					"placeholder": "Optioneel: geef een reden"
-				},
-				"submit": "Verzenden",
-				"cancel": "Annuleren"
-			}
-		},
-		"messageEdit": {
-			"input": {
-				"placeholder": "Typ inhoud..."
-			},
-			"buttons": {
-				"confirm": {
-					"title": "Bevestigen"
-				},
-				"confirmIcon": {
-					"alt": "Bevestigingspictogram"
-				},
-				"cancel": {
-					"title": "Annuleren"
-				},
-				"cancelIcon": {
-					"alt": "Annuleringspictogram"
-				},
-				"upload": {
-					"title": "Uploaden"
-				},
-				"uploadIcon": {
-					"alt": "Uploadpictogram"
-				}
-			}
-		},
-		"messageGenerating": {
-			"tips": "De rol genereert een antwoord. Even geduld a.u.b....",
-			"stop": {
-				"textContent": "Stop",
-				"title": "Stop met genereren"
-			},
-			"stopIcon": {
-				"alt": "stoppictogram"
-			}
 		},
 		"attachment": {
 			"buttons": {
@@ -2840,34 +2926,6 @@
 			"avatarLabel": "Avatar",
 			"themeColorLabel": "Themakleur",
 			"uploadAvatar": "Avatar uploaden",
-			"ownerTitle": "Mijn meester",
-			"ownerSummary": "Escrow-instellingen",
-			"ownerDescription": "Na instelling kan je meester namens jou je chatberichten, socialposts en profiel bewerken of verwijderen. Die inhoud wordt lokaal als onveilige Markdown gerenderd (kan scripts bevatten). Vul een willekeurige entiteitshash in; je kunt dit altijd wissen.",
-			"ownerEntityHashLabel": "Meester-entiteitshash (128 hex)",
-			"ownerSave": "Meester opslaan",
-			"ownerClear": "Meester wissen",
-			"ownerSaved": "Meester bijgewerkt",
-			"ownerCleared": "Meester gewist",
-			"ownerSaveFailed": "Opslaan mislukt: ${error}",
-			"ownerConfirmTitle": "Meester instellen?",
-			"ownerConfirmWarningTitle": "Risicovolle actie — lees dit zorgvuldig",
-			"ownerConfirmEditBody": "Na instelling kan de ander zonder opnieuw te vragen je chatberichten, socialposts en profiel bewerken of verwijderen. Per ongeluk of door misleiding een meester instellen = meteen controle over je inhoud kwijt.",
-			"ownerConfirmRenderBody": "Chatberichten en socialposts van de ander worden in je browser als volledige Markdown gerenderd (inclusief HTML/scripts). Daarmee kan de ander zonder verdere toestemming willekeurige code op je apparaat uitvoeren. Ga alleen verder als je hen volledig vertrouwt.",
-			"ownerConfirmCooldown": "Ik heb het risico gelezen(${seconds})",
-			"ownerConfirmFirst": "Ik begrijp de risico's, ga door",
-			"ownerConfirmSecond": "Klik nogmaals om te voltooien",
-			"ownerConfirmCancel": "Annuleren",
-			"federationTitle": "Federatie en synchronisatie",
-			"federationSummary": "Relay-servers en energiezuinige modi",
-			"federationDescription": "Configureer Nostr-relay-URL's en energiebesparende modus. Federatiesync voor een groep schakelt automatisch in bij de eerste uitnodiging of federatieve DM.",
-			"federationAdvanced": "Geavanceerde opties",
-			"federationRelayUrlsLabel": "Relay-servers (één per lijn, leeg laten om standaard te gebruiken)",
-			"federationBatterySaverLabel": "Energiebesparende modus",
-			"federationSave": "Netwerkinstellingen opslaan",
-			"federationResetDefault": "Herstel de aanbevolen standaardconfiguratie",
-			"federationSaved": "Opgeslagen",
-			"federationResetOk": "Standaard aanbevolen configuratie hersteld",
-			"federationSaveFailed": "Opslaan mislukt: ${error}",
 			"preferences": "Voorkeuren",
 			"language": "Taal",
 			"theme": "Thema",
@@ -2925,20 +2983,9 @@
 			"noGroups": "Nog geen lid van een groep",
 			"noChannels": "Nog geen kanaal",
 			"overview": "Gebruikersoverzicht",
-			"summaryUserId": "Gebruikers-ID",
-			"summaryAccountStatus": "Accountstatus",
-			"summaryEmailVisibility": "Zichtbaarheid van de mailbox",
-			"summaryThemePref": "Themavoorkeur",
-			"summaryLanguagePref": "Taalvoorkeur",
-			"summarySocialCount": "Aantal sociale links",
-			"summaryLinksCount": "Aantal externe links",
 			"groupDescriptionEmpty": "Nog geen beschrijving",
 			"groupMembers": "${members} leden · ${channels} kanalen",
 			"channelPrivate": " · Privé",
-			"channelTypeText": "Tekstkanaal",
-			"channelTypeList": "Lijstkanaal",
-			"channelTypeVoice": "Spraakkanaal",
-			"channelTypeStreaming": "Streamingkanaal",
 			"errors": {
 				"loadFailed": "Kan gegevens niet laden",
 				"saveFailed": "Kan gegevens niet opslaan",
@@ -2952,8 +2999,57 @@
 				"saved": "Gegevens succesvol opgeslagen",
 				"avatarUploaded": "Avatar succesvol geüpload"
 			},
-			"ownerEntityHash": {
-				"placeholder": "Voer de entiteitshash van de eigenaar in"
+			"channelType": {
+				"list": "Lijstkanaal",
+				"streaming": "Streamingkanaal",
+				"text": "Tekstkanaal",
+				"voice": "Spraakkanaal"
+			},
+			"federation": {
+				"advanced": "Geavanceerde opties",
+				"batterySaverLabel": "Energiebesparende modus",
+				"description": "Configureer Nostr-relay-URL's en energiebesparende modus. Federatiesync voor een groep schakelt automatisch in bij de eerste uitnodiging of federatieve DM.",
+				"relayUrlsLabel": "Relay-servers (één per lijn, leeg laten om standaard te gebruiken)",
+				"resetDefault": "Herstel de aanbevolen standaardconfiguratie",
+				"resetOk": "Standaard aanbevolen configuratie hersteld",
+				"save": "Netwerkinstellingen opslaan",
+				"saveFailed": "Opslaan mislukt: ${error}",
+				"saved": "Opgeslagen",
+				"summary": "Relay-servers en energiezuinige modi",
+				"title": "Federatie en synchronisatie"
+			},
+			"summary": {
+				"accountStatus": "Accountstatus",
+				"emailVisibility": "Zichtbaarheid van de mailbox",
+				"languagePref": "Taalvoorkeur",
+				"linksCount": "Aantal externe links",
+				"socialCount": "Aantal sociale links",
+				"themePref": "Themavoorkeur",
+				"userId": "Gebruikers-ID"
+			},
+			"owner": {
+				"clear": "Meester wissen",
+				"cleared": "Meester gewist",
+				"confirm": {
+					"cancel": "Annuleren",
+					"cooldown": "Ik heb het risico gelezen(${seconds})",
+					"editBody": "Na instelling kan de ander zonder opnieuw te vragen je chatberichten, socialposts en profiel bewerken of verwijderen. Per ongeluk of door misleiding een meester instellen = meteen controle over je inhoud kwijt.",
+					"first": "Ik begrijp de risico's, ga door",
+					"renderBody": "Chatberichten en socialposts van de ander worden in je browser als volledige Markdown gerenderd (inclusief HTML/scripts). Daarmee kan de ander zonder verdere toestemming willekeurige code op je apparaat uitvoeren. Ga alleen verder als je hen volledig vertrouwt.",
+					"second": "Klik nogmaals om te voltooien",
+					"title": "Meester instellen?",
+					"warningTitle": "Risicovolle actie — lees dit zorgvuldig"
+				},
+				"description": "Na instelling kan je meester namens jou je chatberichten, socialposts en profiel bewerken of verwijderen. Die inhoud wordt lokaal als onveilige Markdown gerenderd (kan scripts bevatten). Vul een willekeurige entiteitshash in; je kunt dit altijd wissen.",
+				"entityHash": {
+					"placeholder": "Voer de entiteitshash van de eigenaar in"
+				},
+				"entityHashLabel": "Meester-entiteitshash (128 hex)",
+				"save": "Meester opslaan",
+				"saveFailed": "Opslaan mislukt: ${error}",
+				"saved": "Meester bijgewerkt",
+				"summary": "Escrow-instellingen",
+				"title": "Mijn meester"
 			}
 		},
 		"entityProfile": {
@@ -2988,30 +3084,12 @@
 			},
 			"searchLabel": "Stickerpakketten zoeken",
 			"emptyPacks": "Nog geen stickerpakketten",
-			"packNameLabel": "Naam stickerpakket",
-			"packName": {
-				"placeholder": "Voer de naam van het stickerpakket in"
-			},
-			"packDescriptionLabel": "Beschrijving",
-			"packDescription": {
-				"placeholder": "Voer een beschrijving in"
-			},
-			"stickerNameLabel": "Stickernaam",
-			"stickerName": {
-				"placeholder": "Voer de stickernaam in"
-			},
-			"selectPack": "Kies een stickerpakket",
-			"selectPackOption": {
-				"textContent": "Selecteer een stickerpakket"
-			},
-			"selectImage": "Selecteer afbeelding",
 			"tagsLabel": "Tags (gescheiden door komma's)",
 			"tags": {
 				"placeholder": "Bijvoorbeeld: schattig, emoticon, dier"
 			},
 			"author": "Auteur",
 			"authorLabel": "Auteur: ${author}",
-			"stickerCount": "${count} stickers",
 			"badgeMine": "Van mij",
 			"noDescription": "Nog geen beschrijving",
 			"noStickersInPack": "Nog geen stickers",
@@ -3027,8 +3105,6 @@
 			"importPackName": "Mijn favorieten",
 			"importPackDescription": "Stickers opgeslagen uit berichten",
 			"nameRequired": "Voer de naam van het stickerpakket in",
-			"stickerNameRequired": "Voer de stickernaam in",
-			"selectPackRequired": "Selecteer een stickerpakket",
 			"fileRequired": "Selecteer een afbeeldingsbestand",
 			"loadDetailFailed": "Kan de details van het stickerpakket niet laden",
 			"deleteConfirm": "Weet je zeker dat je dit stickerpakket definitief wilt verwijderen? Alle stickers worden verwijderd en deze actie is onomkeerbaar.",
@@ -3046,6 +3122,174 @@
 				"uninstalled": "Succesvol verwijderd",
 				"created": "Stickerpakket is succesvol aangemaakt",
 				"deleted": "Succesvol verwijderen"
+			},
+			"sticker": {
+				"count": "${count} stickers",
+				"name": {
+					"placeholder": "Voer de stickernaam in"
+				},
+				"nameLabel": "Stickernaam",
+				"nameRequired": "Voer de stickernaam in"
+			},
+			"select": {
+				"image": "Selecteer afbeelding",
+				"pack": "Kies een stickerpakket",
+				"packOption": {
+					"textContent": "Selecteer een stickerpakket"
+				},
+				"packRequired": "Selecteer een stickerpakket"
+			},
+			"pack": {
+				"description": {
+					"placeholder": "Voer een beschrijving in"
+				},
+				"descriptionLabel": "Beschrijving",
+				"name": {
+					"placeholder": "Voer de naam van het stickerpakket in"
+				},
+				"nameLabel": "Naam stickerpakket"
+			}
+		},
+		"message": {
+			"edit": {
+				"input": {
+					"placeholder": "Typ inhoud..."
+				},
+				"buttons": {
+					"confirm": {
+						"title": "Bevestigen"
+					},
+					"confirmIcon": {
+						"alt": "Bevestigingspictogram"
+					},
+					"cancel": {
+						"title": "Annuleren"
+					},
+					"cancelIcon": {
+						"alt": "Annuleringspictogram"
+					},
+					"upload": {
+						"title": "Uploaden"
+					},
+					"uploadIcon": {
+						"alt": "Uploadpictogram"
+					}
+				}
+			},
+			"generating": {
+				"tips": "De rol genereert een antwoord. Even geduld a.u.b....",
+				"stop": {
+					"textContent": "Stop",
+					"title": "Stop met genereren"
+				},
+				"stopIcon": {
+					"alt": "stoppictogram"
+				}
+			},
+			"list": {
+				"confirmDeleteMessage": "Dit bericht verwijderen?"
+			},
+			"view": {
+				"buttons": {
+					"edit": {
+						"title": "Bewerken"
+					},
+					"editIcon": {
+						"alt": "Bewerkpictogram"
+					},
+					"more": {
+						"title": "Meer"
+					},
+					"moreIcon": {
+						"alt": "Meer pictogram"
+					},
+					"delete": {
+						"alt": "Verwijderen"
+					},
+					"deleteIcon": {
+						"alt": "Verwijderpictogram"
+					},
+					"downloadHtml": {
+						"alt": "Download als html"
+					},
+					"downloadHtmlIcon": {
+						"alt": "html-downloadpictogram"
+					}
+				},
+				"copyButton": {
+					"title": "Kopiëren"
+				},
+				"copyButtonIcon": {
+					"alt": "Kopiëren"
+				},
+				"copySuccess": "Gekopieerd naar klembord",
+				"dropdown": {
+					"delete": "Verwijderen",
+					"deleteIcon": {
+						"alt": "Verwijderpictogram"
+					},
+					"downloadHtml": "Download als html",
+					"downloadHtmlIcon": {
+						"alt": "html-downloadpictogram"
+					},
+					"share": {
+						"textContent": "Delen",
+						"1h": "1 uur",
+						"12h": "12 uur",
+						"24h": "24 uur",
+						"72h": "72 uur"
+					},
+					"shareIcon": {
+						"alt": "pictogram delen"
+					},
+					"copy": {
+						"html": "Kopiëren als html",
+						"htmlIcon": {
+							"alt": "Kopieer html pictogram"
+						},
+						"markdown": "Kopiëren als markdown",
+						"markdownIcon": {
+							"alt": "Kopieer als markdown pictogram"
+						},
+						"text": "Kopiëren als platte tekst",
+						"textIcon": {
+							"alt": "Kopieer tekst pictogram"
+						}
+					}
+				},
+				"share": {
+					"uploading": "Link maken...",
+					"success": "Delen gelukt! Link gekopieerd naar klembord. <br>Deze functie wordt mogelijk gemaakt door ${provider}. <br>[Sponsor ze.](${sponsorLink})"
+				},
+				"commonToolCalling": "Tool aanroepen",
+				"reasoningDetailsTitle": "Redeneringsproces",
+				"logprobsNotApplicable": "niet van toepassing",
+				"logprobsTopLogprobsMeta": "top_logprobs (geselecteerd: ${token})",
+				"logprobsMetricsFooter": "Vertraging eerste woord: ${ttft} | Tijd: ${time} | Token: ${tokens} | Snelheid: ${speed}",
+				"noReplyContent": "(Geen antwoordinhoud)",
+				"feedback": {
+					"thumbsUp": {
+						"title": "Vind ik leuk"
+					},
+					"thumbsDown": {
+						"title": "Vind ik niet leuk"
+					},
+					"regenerate": {
+						"title": "Opnieuw genereren"
+					},
+					"reason": {
+						"placeholder": "Optioneel: geef een reden"
+					},
+					"submit": "Verzenden",
+					"cancel": "Annuleren"
+				},
+				"tool": {
+					"overridingFilepath": "${filepath} wordt overschreven",
+					"readingFilepath": "${filepath} wordt gelezen",
+					"replacingFilepath": "${filepath} wordt aangepast",
+					"runningLang": "${lang} wordt uitgevoerd",
+					"searchingContent": "${content} wordt gezocht"
+				}
 			}
 		}
 	},
@@ -3098,21 +3342,6 @@
 				"label": "Eerste bericht",
 				"placeholder": "Het eerste wat het personage zegt."
 			},
-			"personaDef": {
-				"heading": "Personadefinitie"
-			},
-			"personaUserName": {
-				"label": "Jouw naam in de chat",
-				"placeholder": "Bijv: Kapitein, Ontdekkingsreiziger"
-			},
-			"personaAppearance": {
-				"label": "Uiterlijk",
-				"placeholder": "Beschrijf je uiterlijk."
-			},
-			"personaPersonality": {
-				"label": "Persoonlijkheid",
-				"placeholder": "Beschrijf je persoonlijkheidskenmerken."
-			},
 			"worldDef": {
 				"heading": "Werelddefinitie"
 			},
@@ -3144,7 +3373,24 @@
 				"label": "Problemenpagina",
 				"placeholder": "URL van de problemenpagina van het component"
 			},
-			"createButton": "Component aanmaken"
+			"createButton": "Component aanmaken",
+			"persona": {
+				"appearance": {
+					"label": "Uiterlijk",
+					"placeholder": "Beschrijf je uiterlijk."
+				},
+				"def": {
+					"heading": "Personadefinitie"
+				},
+				"personality": {
+					"label": "Persoonlijkheid",
+					"placeholder": "Beschrijf je persoonlijkheidskenmerken."
+				},
+				"userName": {
+					"label": "Jouw naam in de chat",
+					"placeholder": "Bijv: Kapitein, Ontdekkingsreiziger"
+				}
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -3455,21 +3701,23 @@
 			"noModelsMatched": "Geen overeenkomende modellen gevonden",
 			"currentModelTitle": "${name} (${model})",
 			"providerLabel": "Provider: ${provider}",
-			"metaContext": "Context: ${context} tokens",
-			"metaOutputLimit": "Max. output: ${output} tokens",
-			"metaInputPrice": "Invoerprijs: ${price} / 1M tokens",
-			"metaOutputPrice": "Uitvoerprijs: ${price} / 1M tokens",
-			"metaCachePrice": "Cache lezen/schrijven: ${read} / ${write}",
-			"metaModalities": "Modaliteiten: invoer ${input}, uitvoer ${output}",
-			"metaReasoning": "Ondersteunt redenering",
-			"metaToolCall": "Ondersteunt tool-aanroepen",
-			"metaVision": "Ondersteunt visuele invoer",
-			"metaOpenWeights": "Open weights",
-			"metaKnowledge": "Kennisgrens: ${knowledge}",
-			"metaReleaseDate": "Releasedatum: ${date}",
 			"providerDocLink": "[Providerdocumentatie bekijken](${url})",
 			"modelSearch": {
 				"placeholder": "Zoek modelnaam, fabrikant, mogelijkheden..."
+			},
+			"meta": {
+				"cachePrice": "Cache lezen/schrijven: ${read} / ${write}",
+				"context": "Context: ${context} tokens",
+				"inputPrice": "Invoerprijs: ${price} / 1M tokens",
+				"knowledge": "Kennisgrens: ${knowledge}",
+				"modalities": "Modaliteiten: invoer ${input}, uitvoer ${output}",
+				"openWeights": "Open weights",
+				"outputLimit": "Max. output: ${output} tokens",
+				"outputPrice": "Uitvoerprijs: ${price} / 1M tokens",
+				"reasoning": "Ondersteunt redenering",
+				"releaseDate": "Releasedatum: ${date}",
+				"toolCall": "Ondersteunt tool-aanroepen",
+				"vision": "Ondersteunt visuele invoer"
 			}
 		},
 		"prompts": {
@@ -3495,21 +3743,23 @@
 			"unsavedChangesBeforeUnload": "U heeft niet-opgeslagen wijzigingen. Weet je zeker dat je deze pagina wilt verlaten?"
 		},
 		"alerts": {
-			"fetchFileListFailed": "Kan de bestandslijst niet ophalen: ${error}",
-			"fetchGeneratorListFailed": "Kan generatorlijst niet ophalen: ${error}",
-			"fetchDefaultsFailed": "Kan standaardcomponent niet ophalen: ${error}",
-			"fetchFileDataFailed": "Kan bestandsgegevens niet verkrijgen: ${error}",
-			"fetchConfigTemplateFailed": "Kan configuratiesjabloon niet verkrijgen",
 			"saveFileFailed": "Kan bestand niet opslaan: ${error}",
 			"deleteFileFailed": "Kan bestand niet verwijderen: ${error}",
 			"addFileFailed": "Kan bestand niet toevoegen: ${error}",
 			"setDefaultFailed": "Kan de standaardservicebron niet instellen: ${error}",
-			"fetchBranchesFailed": "Kan de componentenboom niet ophalen: ${error}",
 			"noFileSelectedSave": "Geen bestand geselecteerd om op te slaan.",
 			"noFileSelectedDelete": "Geen bestanden geselecteerd voor verwijdering.",
 			"noGeneratorSelectedSave": "Selecteer de generator voordat u opslaat",
 			"savedAsNewFile": "Opgeslagen als nieuwe servicebron: ${name}",
-			"invalidFileName": "De bestandsnaam mag de volgende tekens niet bevatten: / \\ : * ? \" < > |"
+			"invalidFileName": "De bestandsnaam mag de volgende tekens niet bevatten: / \\ : * ? \" < > |",
+			"fetch": {
+				"branchesFailed": "Kan de componentenboom niet ophalen: ${error}",
+				"configTemplateFailed": "Kan configuratiesjabloon niet verkrijgen",
+				"defaultsFailed": "Kan standaardcomponent niet ophalen: ${error}",
+				"fileDataFailed": "Kan bestandsgegevens niet verkrijgen: ${error}",
+				"fileListFailed": "Kan de bestandslijst niet ophalen: ${error}",
+				"generatorListFailed": "Kan generatorlijst niet ophalen: ${error}"
+			}
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -3832,14 +4082,6 @@
 			"privacyHint": "Bepaalt of accounts verschijnen in Discovery en Aanbevelingen.",
 			"tasteTitle": "Aanbevelingen en voorkeuren",
 			"tasteHint": "Pas de privacygrenzen en de labelnaam van 'Aanbevolen voor je' aan.",
-			"mutedKeywordsTitle": "Blokkeer woorden en tags",
-			"mutedKeywordsHint": "Berichten die in de hoofdtekst, inhoudswaarschuwingen of labels terechtkomen, worden verborgen voor de updates, verkenningen, zoekopdrachten en meldingen. Alleen lokaal opgeslagen.",
-			"mutedKeywordsMatchTags": "Match tags tegelijkertijd",
-			"mutedKeywordsAdd": "Toevoegen aan",
-			"mutedKeywordsRemove": {
-				"title": "Verwijder geblokkeerde woorden"
-			},
-			"mutedKeywordsEmpty": "Er zijn nog geen blokkerende woorden toegevoegd",
 			"autoTranslateTitle": "automatische vertaling",
 			"autoTranslateHint": "Indien ingeschakeld, wordt bij berichten in vreemde talen automatisch om vertaling gevraagd en kan naar de originele tekst worden overgeschakeld.",
 			"autoTranslateEnable": "Vertaal berichten automatisch in andere talen dan de jouwe",
@@ -3847,19 +4089,29 @@
 			"safetyHint": "Beheer geblokkeerde en verborgen lijsten.",
 			"mutedKeywords": {
 				"placeholder": "Voer trefwoorden of #tags in",
-				"aria-label": "Trefwoord of tag invoeren"
+				"aria-label": "Trefwoord of tag invoeren",
+				"add": "Toevoegen aan",
+				"empty": "Er zijn nog geen blokkerende woorden toegevoegd",
+				"hint": "Berichten die in de hoofdtekst, inhoudswaarschuwingen of labels terechtkomen, worden verborgen voor de updates, verkenningen, zoekopdrachten en meldingen. Alleen lokaal opgeslagen.",
+				"matchTags": "Match tags tegelijkertijd",
+				"remove": {
+					"title": "Verwijder geblokkeerde woorden"
+				},
+				"title": "Blokkeer woorden en tags"
 			},
 			"taste": {
 				"rebuild": "Voorkeuren opnieuw opbouwen",
-				"privacyPublishPreferences": "Naamgeving van openbare tags en ontdekking van samenvoegingen",
-				"privacyPublishPreferencesHint": "Uitgeschakeld: vrienden zien je tagnaamgeving en samenvoegvoorstellen niet en dragen niet bij aan consensus.",
-				"privacyPublishReactions": "Publieke voorkeuren en antipathieën",
-				"privacyPublishReactionsHint": "Uitgeschakeld: de auteur krijgt je likes/dislikes niet, je reacties tellen niet mee in aanbevelingen voor anderen en je verspreidt het bericht niet opnieuw.",
 				"empty": "Er is nog geen voorkeurstag, deze wordt automatisch geclusterd na meer likes/dislikes",
 				"weight": "Gewicht ${weight}",
 				"save": "Opslaan",
 				"name": {
 					"placeholder": "lokale weergavenaam"
+				},
+				"privacyPublish": {
+					"preferences": "Naamgeving van openbare tags en ontdekking van samenvoegingen",
+					"preferencesHint": "Uitgeschakeld: vrienden zien je tagnaamgeving en samenvoegvoorstellen niet en dragen niet bij aan consensus.",
+					"reactions": "Publieke voorkeuren en antipathieën",
+					"reactionsHint": "Uitgeschakeld: de auteur krijgt je likes/dislikes niet, je reacties tellen niet mee in aanbevelingen voor anderen en je verspreidt het bericht niet opnieuw."
 				}
 			},
 			"blocklist": {
@@ -3886,27 +4138,6 @@
 				"placeholder": "Inhoudswaarschuwing (optioneel)"
 			},
 			"sensitiveMedia": "masker voor mediagevoeligheid",
-			"editImage": "Bewerken",
-			"editCrop": "Bijsnijden",
-			"editMosaic": "Verpixelen",
-			"editBrush": "Penseel",
-			"editBrushColor": {
-				"title": "Penseelkleur",
-				"aria-label": "Penseelkleur"
-			},
-			"editBrushSize": {
-				"title": "Penseeldikte",
-				"aria-label": "Penseeldikte"
-			},
-			"editApply": "Toepassen",
-			"editCancel": "Annuleren",
-			"replyPolicyEveryone": "Iedereen kan antwoorden",
-			"replyPolicyFollowers7d": "Volgers langer dan 7 dagen",
-			"replyPolicyAuthorFollows": "Mensen die ik volg",
-			"replyPolicyLabel": "Wie kan antwoorden",
-			"replyDisplayAll": "Toon alle antwoorden",
-			"replyDisplayFeaturedOnly": "Alleen geselecteerde antwoorden",
-			"replyDisplayLabel": "Reageer om te laten zien",
 			"scheduleLabel": "Laat regelmatig los",
 			"scheduleSuccess": "Het bericht is toegevoegd aan de geplande wachtrij",
 			"emojiButton": {
@@ -3988,6 +4219,33 @@
 					"placeholder": "Wie mag het niet laten zien (optioneel)"
 				},
 				"aria-label": "Zichtbaar bereik"
+			},
+			"reply": {
+				"displayAll": "Toon alle antwoorden",
+				"displayFeaturedOnly": "Alleen geselecteerde antwoorden",
+				"displayLabel": "Reageer om te laten zien",
+				"policy": {
+					"authorFollows": "Mensen die ik volg",
+					"everyone": "Iedereen kan antwoorden",
+					"followers7d": "Volgers langer dan 7 dagen",
+					"label": "Wie kan antwoorden"
+				}
+			},
+			"edit": {
+				"apply": "Toepassen",
+				"brush": "Penseel",
+				"brushColor": {
+					"title": "Penseelkleur",
+					"aria-label": "Penseelkleur"
+				},
+				"brushSize": {
+					"title": "Penseeldikte",
+					"aria-label": "Penseeldikte"
+				},
+				"cancel": "Annuleren",
+				"crop": "Bijsnijden",
+				"image": "Bewerken",
+				"mosaic": "Verpixelen"
 			}
 		},
 		"feed": {
@@ -4094,21 +4352,11 @@
 			},
 			"mediaOnly": "[media]",
 			"hideFromExplore": "Account Verborgen op de verkenningspagina",
-			"tabPosts": "Berichten",
-			"tabAlbums": "Albums",
-			"tabLikes": "Leuk vinden",
-			"tabCabinets": "Cabinet",
 			"tabsLabel": {
 				"aria-label": "Gegevenspartitie"
 			},
 			"cabinetsEmpty": "Er zijn momenteel geen openbare archiefkasten",
 			"cabinetsFailed": "Laden van Cabinet mislukt: ${error}",
-			"statsGroup": {
-				"aria-label": "Statistieken"
-			},
-			"statsPosts": "Berichten",
-			"statsFollowing": "Volgend",
-			"statsFollowers": "Volgers",
 			"followingTitle": "Volgend",
 			"followersTitle": "Volgers",
 			"albums": {
@@ -4125,6 +4373,20 @@
 				"deleteWithPosts": "Album verwijderen en bericht verwijderen",
 				"pickerLabel": "Toevoegen aan album",
 				"defaultName": "Standaardalbum"
+			},
+			"stats": {
+				"followers": "Volgers",
+				"following": "Volgend",
+				"group": {
+					"aria-label": "Statistieken"
+				},
+				"posts": "Berichten"
+			},
+			"tabs": {
+				"albums": "Albums",
+				"cabinets": "Cabinet",
+				"likes": "Leuk vinden",
+				"posts": "Berichten"
 			}
 		},
 		"video": {
@@ -4174,10 +4436,6 @@
 			"broadcast": {
 				"title": "Begin met uitzenden",
 				"open": "Ga naar uitzending",
-				"mediaAv": "Audio en video",
-				"mediaAudio": "Puur geluid",
-				"mediaVideo": "puur beeld",
-				"mediaWhip": "WHIP-pushstreaming (zoals OBS)",
 				"whipUrl": "WHIP-adres",
 				"whipToken": "Token aan toonder",
 				"whipWaiting": "Wachten op WHIP-streamingverbinding (streamingsoftware zoals OBS kan worden gebruikt)…",
@@ -4187,6 +4445,12 @@
 				"stopped": "Live-uitzending is gestopt",
 				"titleInput": {
 					"placeholder": "Live titel (optioneel)"
+				},
+				"media": {
+					"audio": "Puur geluid",
+					"av": "Audio en video",
+					"video": "puur beeld",
+					"whip": "WHIP-pushstreaming (zoals OBS)"
 				}
 			},
 			"danmaku": {
@@ -4210,30 +4474,32 @@
 			"trustScore": "Vertrouw ${score}",
 			"viewTitle": "Zoeken",
 			"loading": "Zoeken…",
-			"filterAuthor": {
-				"placeholder": "Auteur",
-				"aria-label": "Auteur"
-			},
-			"filterMedia": {
-				"aria-label": "Mediatype"
-			},
-			"filterMediaAll": "Alle media",
-			"filterMediaImage": "Afbeelding",
-			"filterMediaVideo": "Video",
-			"filterTag": {
-				"placeholder": "#Label",
-				"aria-label": "Label"
-			},
-			"filterSort": {
-				"aria-label": "Sorteren op"
-			},
 			"sortRecent": "Nieuwste",
 			"sortPopular": "Populair",
-			"filterScope": {
-				"aria-label": "Zoekbereik"
-			},
 			"scopeLocal": "Lokaal",
-			"scopeNearby": "In de buurt"
+			"scopeNearby": "In de buurt",
+			"filter": {
+				"author": {
+					"placeholder": "Auteur",
+					"aria-label": "Auteur"
+				},
+				"media": {
+					"aria-label": "Mediatype"
+				},
+				"mediaAll": "Alle media",
+				"mediaImage": "Afbeelding",
+				"mediaVideo": "Video",
+				"scope": {
+					"aria-label": "Zoekbereik"
+				},
+				"sort": {
+					"aria-label": "Sorteren op"
+				},
+				"tag": {
+					"placeholder": "#Label",
+					"aria-label": "Label"
+				}
+			}
 		},
 		"dialog": {
 			"close": {
@@ -4428,7 +4694,6 @@
 		},
 		"upload": "Uploaden",
 		"uploadFolder": "Map uploaden",
-		"newFolder": "Maak een nieuwe map",
 		"open": "Open",
 		"download": "Downloaden",
 		"downloadZip": "Map downloaden",
@@ -4462,12 +4727,6 @@
 		"created": "Maken: ${stamp}",
 		"modified": "Wijzigen: ${stamp}",
 		"statusCount": "${count} items, ${selected} geselecteerd",
-		"newCabinet": {
-			"title": "Nieuw Cabinet",
-			"aria-label": "Nieuw Cabinet"
-		},
-		"newCabinetPrompt": "Nieuwe naam Cabinet",
-		"newFolderPrompt": "Nieuwe mapnaam",
 		"renamePrompt": "nieuwe naam",
 		"visibilityPrompt": "Zichtbaarheid (openbaar/niet vermeld/volgers/privé/geselecteerd)",
 		"cabinetActionPrompt": "Actie: hernoemen/verwijderen/zichtbaarheid",
@@ -4478,12 +4737,21 @@
 		"cutDone": "Snee",
 		"undo": "Annuleren",
 		"redo": "Opnieuw uitvoeren",
-		"newWindow": "Huidige locatie in nieuw venster openen",
 		"goUp": "Keer terug naar het vorige niveau",
 		"brokenLink": "Link is verbroken: ${reason}",
 		"noDownload": "Geen downloadbare inhoud",
 		"groupDownloadHint": "Verkrijg groepsbestanden via berichtbijlagen of daaropvolgende downloadlinks.",
-		"remoteEntity": "afgelegen entiteit"
+		"remoteEntity": "afgelegen entiteit",
+		"new": {
+			"cabinet": {
+				"title": "Nieuw Cabinet",
+				"aria-label": "Nieuw Cabinet"
+			},
+			"cabinetPrompt": "Nieuwe naam Cabinet",
+			"folder": "Maak een nieuwe map",
+			"folderPrompt": "Nieuwe mapnaam",
+			"window": "Huidige locatie in nieuw venster openen"
+		}
 	},
 	"browser_integration": {
 		"title": "Browserintegratie",
@@ -4613,27 +4881,10 @@
 		"title": "IDE-integratie",
 		"heading": "IDE-integratie",
 		"instruction": "Gebruik fount-rollen voor ondersteuning bij het programmeren in ACP-compatibele editors (zoals Zed, JetBrains, Neovim, enz.).",
-		"supportedEditorsTitle": "Ondersteunde redacteuren en klanten",
-		"supportedEditorsIntro": "De volgende klanten werken met fount:",
-		"supportedEditorsLoading": "laden…",
-		"supportedEditorsError": "Kan lijst niet laden: ${message}",
-		"acpTitle": "Configureer het lettertype ACP-script",
-		"acpDesc": "Raadpleeg het volgende voorbeeld om het font ACP-script te configureren:",
-		"acpCharLabel": "Rol",
 		"charListError": "Kan de rollijst niet ophalen",
-		"acpScriptLabel": "ACP-script-URL",
-		"acpConfigSample": "Configuratievoorbeeld:",
-		"acpConfigHint": "De rol-ID wordt weergegeven in de vervolgkeuzelijst met rollen op deze pagina en de API-sleutel kan worden beheerd in de gebruikersinstellingen.",
 		"copyButton": "Kopiëren",
 		"copied": "Gekopieerd naar klembord",
-		"apiKeySectionTitle": "API-sleutel",
-		"apiKeyHint": "Wordt gebruikt voor ACP-scriptverbindingsbron (dezelfde set sleutels als API-proxy, kan worden aangemaakt in gebruikersinstellingen).",
 		"generateApiKeyButton": "Nieuwe sleutel genereren",
-		"apiKeyCopied": "API-sleutel gekopieerd",
-		"apiKeyCreateError": "Kan API-sleutel niet maken: ${message}",
-		"apiKeyInput": {
-			"aria-label": "API-sleutel"
-		},
 		"home_function_buttons": {
 			"integration_related": "Integratie gerelateerd",
 			"ide_integration_config": {
@@ -4647,8 +4898,31 @@
 				"locked_description": "Maak verbinding met de font-rol in een externe IDE en voltooi een sessie."
 			}
 		},
-		"acpChar": "Selecteer rol",
-		"acpConfig": "Selecteer een rol en genereer eerst een API-sleutel"
+		"supportedEditors": {
+			"error": "Kan lijst niet laden: ${message}",
+			"intro": "De volgende klanten werken met fount:",
+			"loading": "laden…",
+			"title": "Ondersteunde redacteuren en klanten"
+		},
+		"apiKey": {
+			"copied": "API-sleutel gekopieerd",
+			"createError": "Kan API-sleutel niet maken: ${message}",
+			"hint": "Wordt gebruikt voor ACP-scriptverbindingsbron (dezelfde set sleutels als API-proxy, kan worden aangemaakt in gebruikersinstellingen).",
+			"input": {
+				"aria-label": "API-sleutel"
+			},
+			"sectionTitle": "API-sleutel"
+		},
+		"acp": {
+			"char": "Selecteer rol",
+			"charLabel": "Rol",
+			"config": "Selecteer een rol en genereer eerst een API-sleutel",
+			"configHint": "De rol-ID wordt weergegeven in de vervolgkeuzelijst met rollen op deze pagina en de API-sleutel kan worden beheerd in de gebruikersinstellingen.",
+			"configSample": "Configuratievoorbeeld:",
+			"desc": "Raadpleeg het volgende voorbeeld om het font ACP-script te configureren:",
+			"scriptLabel": "ACP-script-URL",
+			"title": "Configureer het lettertype ACP-script"
+		}
 	},
 	"deskpet": {
 		"title": "Desktop huisdieren",
@@ -4939,11 +5213,6 @@
 			"deviceInfo": "Apparaat-ID: ${deviceId}",
 			"thisDevice": "Dit apparaat",
 			"deviceDetails": "Laatst gezien: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "Intrekken",
-			"revokeConfirm": "Weet je zeker dat je wilt uitloggen van dit apparaat/deze sessie?",
-			"revokeSuccess": "Apparaat/sessie succesvol ingetrokken.",
-			"revokeMissingParams": "Geef het apparaat- en sessiewachtwoord op dat u wilt intrekken.",
-			"revokeWrongPassword": "Het wachtwoord is onjuist.",
 			"listNotFound": "Apparaatlijst niet gevonden.",
 			"deviceNotFound": "Het apparaat of de sessie is niet gevonden.",
 			"refreshButton": {
@@ -4951,6 +5220,13 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "pictogram vernieuwen"
+			},
+			"revoke": {
+				"button": "Intrekken",
+				"confirm": "Weet je zeker dat je wilt uitloggen van dit apparaat/deze sessie?",
+				"missingParams": "Geef het apparaat- en sessiewachtwoord op dat u wilt intrekken.",
+				"success": "Apparaat/sessie succesvol ingetrokken.",
+				"wrongPassword": "Het wachtwoord is onjuist."
 			}
 		},
 		"apiKeys": {
@@ -4964,14 +5240,8 @@
 			"keyDetails": "Beschrijving: ${description} | Gemaakt in: ${createdAt} | Laatst gebruikt: ${lastUsed}",
 			"neverUsed": "Nooit gebruikt",
 			"noKeysForUser": "API-sleutelgegevens niet gevonden.",
-			"revokeWrongPassword": "Het wachtwoord is onjuist.",
 			"keyNotFound": "De API-sleutel is niet gevonden.",
-			"revokeMissingJti": "Geef de sleutel op die u wilt intrekken.",
-			"revokeMissingPassword": "Voor het intrekken van een sleutel is een wachtwoord vereist.",
 			"verifyMissingApiKey": "Geef een API-sleutel op.",
-			"revokeButton": "Herroepen",
-			"revokeConfirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
-			"revokeSuccess": "De API -sleutel is succesvol ingetrokken.",
 			"errorDescriptionRequired": "Een beschrijving is vereist.",
 			"createSuccess": "De API -sleutel is met succes gemaakt.",
 			"refreshButton": {
@@ -4979,6 +5249,14 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "pictogram vernieuwen"
+			},
+			"revoke": {
+				"button": "Herroepen",
+				"confirm": "Weet u zeker dat u deze API -sleutel wilt intrekken?",
+				"missingJti": "Geef de sleutel op die u wilt intrekken.",
+				"missingPassword": "Voor het intrekken van een sleutel is een wachtwoord vereist.",
+				"success": "De API -sleutel is succesvol ingetrokken.",
+				"wrongPassword": "Het wachtwoord is onjuist."
 			}
 		},
 		"newApiKey": {
@@ -5000,14 +5278,16 @@
 			"argsTemplateHint": "Tijdelijke aanduidingen: \\${file} \\${line} \\${column}",
 			"presetOptionPathAvailable": "${label} (staat in PATH)",
 			"presetOptionPathUnavailable": "${label} (staat niet in PATH)",
-			"testPathInput": {
-				"placeholder": "Pad naar een bestand om te proberen, bijv. C:/work/project/src/main.mjs"
-			},
-			"testButton": "Test: openen",
 			"saveButton": "Configuratie opslaan",
 			"saveSuccess": "Opdracht voor externe editor opgeslagen.",
-			"testPathRequired": "Vul eerst het pad naar het testbestand in.",
-			"testSuccess": "De opdracht om in de editor te openen is uitgevoerd."
+			"test": {
+				"button": "Test: openen",
+				"pathInput": {
+					"placeholder": "Pad naar een bestand om te proberen, bijv. C:/work/project/src/main.mjs"
+				},
+				"pathRequired": "Vul eerst het pad naar het testbestand in.",
+				"success": "De opdracht om in de editor te openen is uitgevoerd."
+			}
 		},
 		"logout": {
 			"title": "Uitloggen",
@@ -5020,12 +5300,12 @@
 			"title": "Account verwijderen",
 			"warning": "WAARSCHUWING: Deze actie verwijdert je account en alle bijbehorende gegevens permanent en kan niet ongedaan worden gemaakt.",
 			"submitButton": "Mijn account verwijderen",
-			"confirmMessage1": "WAARSCHUWING! Weet je zeker dat je je account permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
-			"confirmMessage2": "Om de verwijdering te bevestigen, voer je je gebruikersnaam \"${username}\" in:",
 			"usernameMismatch": "De ingevoerde gebruikersnaam komt niet overeen met de huidige gebruiker. Verwijdering geannuleerd.",
 			"success": "Account succesvol verwijderd. Je wordt nu uitgelogd.",
 			"missingPassword": "Voer uw wachtwoord in.",
-			"wrongPassword": "Het wachtwoord is onjuist."
+			"wrongPassword": "Het wachtwoord is onjuist.",
+			"confirmWarning": "WAARSCHUWING! Weet je zeker dat je je account permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+			"confirmUsernamePrompt": "Om de verwijdering te bevestigen, voer je je gebruikersnaam \"${username}\" in:"
 		},
 		"passwordConfirm": {
 			"title": "Actie bevestigen",
@@ -5076,19 +5356,13 @@
 		"instruction": "Genereer en beheer uw API-sleutels op deze pagina om fount te integreren met andere applicaties.",
 		"endpointSectionTitle": "API-eindpunt",
 		"endpointInstruction": "Dit is de basis-URL voor integratie met andere services.",
-		"apiUrlInput": {
-			"aria-label": "API-eindpunt"
-		},
 		"usageExampleTitle": "Gebruiksvoorbeeld",
 		"usageExampleInstruction": "Hier is een voorbeeld van hoe u de lijst met beschikbare modellen kunt ophalen met `curl`.",
 		"copyButton": "Kopiëren",
 		"copied": "Gekopieerd naar klembord",
-		"apiKeySectionTitle": "Uw API-sleutels",
-		"apiKey": "Uw API-sleutel:",
 		"noApiKey": "U heeft nog geen API-sleutel voor deze pagina gegenereerd.",
 		"generateApiKeyButton": "Nieuwe sleutel genereren",
 		"copyApiKeyButton": "Kopiëren",
-		"apiKeyCopied": "API-sleutel gekopieerd!",
 		"queryStringSectionTitle": "Kunt u de APIKey niet in de request header instellen? (Onveilig)",
 		"queryStringWarning": "Gebruik deze alternatieve methode wanneer uw applicatie het verzenden van de API-sleutel in de request header (Authorization header) niet ondersteunt. Let op: het rechtstreeks plaatsen van de API-sleutel in de URL brengt een veiligheidsrisico met zich mee, omdat deze kan worden vastgelegd in serverlogboeken of de browsergeschiedenis.",
 		"copyQueryStringUrlButton": "URL met API-sleutel (Query String)",
@@ -5100,6 +5374,14 @@
 						"title": "Als agent"
 					}
 				}
+			}
+		},
+		"api": {
+			"key": "Uw API-sleutel:",
+			"keyCopied": "API-sleutel gekopieerd!",
+			"keySectionTitle": "Uw API-sleutels",
+			"urlInput": {
+				"aria-label": "API-eindpunt"
 			}
 		}
 	},
@@ -5273,11 +5555,7 @@
 		"failed": "Mislukt",
 		"copySuccess": "Foutopsporingsrapport gekopieerd naar klembord",
 		"copyFailed": "Kopieer rapport mislukt",
-		"updateNow": "Update en start nu opnieuw",
 		"alreadyLatest": "Al de nieuwste versie",
-		"updateRestarting": "Opnieuw opstarten...",
-		"updateSuccess": "De server wordt opnieuw opgestart",
-		"updateFailed": "Updateverzoek is mislukt",
 		"autoUpdateNotEnabled": "Automatische updates zijn niet ingeschakeld",
 		"home_function_buttons": {
 			"debug": {
@@ -5285,6 +5563,12 @@
 					"title": "Open het foutopsporingspaneel"
 				}
 			}
+		},
+		"update": {
+			"failed": "Updateverzoek is mislukt",
+			"now": "Update en start nu opnieuw",
+			"restarting": "Opnieuw opstarten...",
+			"success": "De server wordt opnieuw opgestart"
 		}
 	},
 	"badges_maker": {

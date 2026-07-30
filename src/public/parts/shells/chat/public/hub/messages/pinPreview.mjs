@@ -43,14 +43,14 @@ export function pinPreviewTemplateFields(descriptor) {
  */
 function previewFromMessage(message) {
 	const kind = channelMessageKind(message?.content)
-	if (kind === 'sticker') return { i18n: 'chat.hub.pinPreviewSticker' }
+	if (kind === 'sticker') return { i18n: 'chat.hub.pin.previewSticker' }
 	if (kind === 'vote') {
 		const question = message.content?.question || ''
-		return { i18n: 'chat.hub.pinPreviewVote', params: { question } }
+		return { i18n: 'chat.hub.pin.previewVote', params: { question } }
 	}
 	if (kind === 'group_invite') {
 		const groupName = message.content?.groupName || ''
-		return { i18n: 'chat.hub.pinPreviewInvite', params: { groupName } }
+		return { i18n: 'chat.hub.pin.previewInvite', params: { groupName } }
 	}
 	const text = getMessageText(message).trim().replace(/\s+/gu, ' ')
 	if (!text) return { text: '' }

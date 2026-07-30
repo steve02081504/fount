@@ -6,9 +6,9 @@
 		<h2>${title}</h2>
 		${blurb
 		? `<p>${blurb}</p>`
-		: '<p data-i18n="chat.hub.discoveryNoDescription"></p>'}
+		: '<p data-i18n="chat.hub.discovery.noDescription"></p>'}
 		<div class="discovery-card-meta">
-			<span data-i18n="chat.hub.discoverySourceCount" data-count="${sourceCount}"></span>
+			<span data-i18n="chat.hub.discovery.sourceCount" data-count="${sourceCount}"></span>
 			<code>${groupId}</code>
 		</div>
 		<button type="button" class="btn btn-primary btn-sm w-full" data-group-id="${groupId}" data-i18n="${actionKey}"></button>

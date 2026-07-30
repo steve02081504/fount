@@ -10,7 +10,7 @@ const { info } = (await import('./locales.json', { with: { type: 'json' } })).de
  * @param {object} args - 预览更新参数。
  * @param {string} filepath - 文件路径。
  * @param {string} content - 要展示的内容。
- * @param {'chat.messageView.toolReadingFilepath'|'chat.messageView.toolReplacingFilepath'|'chat.messageView.toolOverridingFilepath'} titleKey - 标题 i18n 键。
+ * @param {'chat.message.view.tool.readingFilepath'|'chat.message.view.tool.replacingFilepath'|'chat.message.view.tool.overridingFilepath'} titleKey - 标题 i18n 键。
  * @returns {string} 渲染后的 Markdown 代码块。
  */
 function renderFileOperationCodeBlock(args, filepath, content, titleKey) {
@@ -32,7 +32,7 @@ function renderViewFileBlock(content, args) {
 		.filter(Boolean)
 	if (!paths.length) return content
 	return paths.map(filepath =>
-		renderFileOperationCodeBlock(args, filepath, filepath, 'chat.messageView.toolReadingFilepath')
+		renderFileOperationCodeBlock(args, filepath, filepath, 'chat.message.view.tool.readingFilepath')
 	).join('\n\n')
 }
 
@@ -46,11 +46,11 @@ function renderReplaceFileBlock(content, args) {
 	const fileBlocks = [...content.matchAll(/<file\s+path="(?<filepath>[^"]+)">(?<filecontent>[\S\s]*?)<\/file>/g)]
 	if (!fileBlocks.length) {
 		const filepath = content.match(/<file\s+path="([^"]+)"/)?.[1] || 'unknown'
-		return renderFileOperationCodeBlock(args, filepath, content, 'chat.messageView.toolReplacingFilepath')
+		return renderFileOperationCodeBlock(args, filepath, content, 'chat.message.view.tool.replacingFilepath')
 	}
 	return fileBlocks.map(match => {
 		const { filepath, filecontent } = match.groups
-		return renderFileOperationCodeBlock(args, filepath, filecontent, 'chat.messageView.toolReplacingFilepath')
+		return renderFileOperationCodeBlock(args, filepath, filecontent, 'chat.message.view.tool.replacingFilepath')
 	}).join('\n\n')
 }
 
@@ -64,7 +64,7 @@ function renderReplaceFileBlock(content, args) {
 function renderOverrideFileBlock(content, args, meta) {
 	const startTag = meta?.groups?.fountToolStart ?? ''
 	const filepath = startTag.match(/path="([^"]+)"/)?.[1] || 'unknown'
-	return renderFileOperationCodeBlock(args, filepath, content, 'chat.messageView.toolOverridingFilepath')
+	return renderFileOperationCodeBlock(args, filepath, content, 'chat.message.view.tool.overridingFilepath')
 }
 
 /**

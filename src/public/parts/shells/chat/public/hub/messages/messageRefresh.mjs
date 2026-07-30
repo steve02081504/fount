@@ -287,7 +287,7 @@ export async function loadMessages() {
 	const channel = store.context.currentState?.channels?.[channelId]
 	if (!channelId || !channel) {
 		destroyChannelVirtualList()
-		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noChannels' })
+		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.no.channels' })
 		return
 	}
 	const pipelineKey = `${groupId}:${channelId}`
@@ -355,9 +355,9 @@ export async function loadMessages() {
 		})
 	}
 	catch (err) {
-		const error = handleUIError(err, 'chat.hub.loadMessagesFailed')
+		const error = handleUIError(err, 'chat.hub.load.messagesFailed')
 		await mountTemplate(container, 'hub/empty/error', {
-			i18nKey: 'chat.hub.loadMessagesFailed',
+			i18nKey: 'chat.hub.load.messagesFailed',
 			errorMessage: error.message,
 		})
 	}

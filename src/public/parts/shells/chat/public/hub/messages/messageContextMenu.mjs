@@ -104,12 +104,12 @@ export async function showMessageContextMenu(event, row) {
 	})
 	menu.querySelector('[data-action="shareExternal"]')?.addEventListener('click', () => {
 		void (async () => {
-			showToastI18n('info', 'chat.messageView.share.uploading')
+			showToastI18n('info', 'chat.message.view.share.uploading')
 			const html = await generateMessageStandaloneHtml(message, row)
 			const blob = new Blob([html], { type: 'text/html' })
 			const link = await createShareLink(blob, `message-${eventId || 'export'}.html`, '24h')
 			await navigator.clipboard.writeText(link)
-			showToastI18n('success', 'chat.messageView.share.success', {
+			showToastI18n('success', 'chat.message.view.share.success', {
 				provider: 'litterbox.moe',
 				sponsorLink: 'https://store.catbox.moe/',
 			})

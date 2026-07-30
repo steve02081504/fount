@@ -153,10 +153,6 @@
 			"passedLabel": "ПРОЙДЕНО",
 			"failedLabel": "НЕВДАЧА",
 			"noiseHits": "(Шум: ${hits})",
-			"unknownManifestId": "Невідомий ідентифікатор маніфесту: ${ids}",
-			"unknownSuiteSelector": "Невідоме позначення набору: ${ids}",
-			"unknownSubtestFilter": "Фільтрація невідомих субтестів: ${suite} → ${names}",
-			"unknownFileFilter": "Фільтрування невідомих тестових файлів: ${suite} → ${names}",
 			"unsupportedSubtestFilter": "Suite не підтримує фільтрацію subtest/файлів: ${suite}(${names})",
 			"available": "Доступні елементи: ${ids}",
 			"manifestMatched": "Збіг manifest: ${ids}",
@@ -178,28 +174,16 @@
 			},
 			"reusedSuite": ">>> Повторне використання ${manifestId}:${name} (тригер залишається без змін, використовується останній ${status})",
 			"noisyOnlyRemain": "Є ще ${count} комплектів, але з шумом: ${suites}",
-			"estimatedRun": "За оцінками, цей запуск займе ≈ ${eta} (орієнтовна паралельна швидкість ${rate})",
-			"estimatedRunSerial": "Очікується, що цей запуск триватиме ≈ ${eta} (серійний)",
-			"estimatedRunSkipped": "Є також ${reused} штук, які використовуються повторно, і ${blocked} частин, які очікується, що будуть заблоковані (не включено в оцінку)",
 			"noRealRunPlanned": "Цього разу запускати не потрібно: ${reused} використовуються повторно, а ${blocked} очікується блокування (тригер залишається незмінним)",
 			"allReusedHint": "Цього разу жоден suite не запускався: невдача — успадкований минулий результат, блокування не знято (файли не змінювались). Виправте файли й перезапустіть або fount test --force для примусового запуску.",
-			"estimatedRemaining": "Приблизний час, що залишився ≈ ${eta} (${completed}/${total} packages)",
-			"estimatedRunSerialHint": "Якщо очікуваний паралелізм ≈ ${eta} (паралельна ставка ${rate}), заощадження ≈ ${savings} (видалити --no-parallel)",
 			"failuresSaved": "Збережений список помилок: ${path} (${count} пакетів)",
 			"failuresCleared": "маніфест ${manifestId} пройдено, і список помилок очищено.",
 			"terminated": "Припинення тайм-ауту: ${label} — ${reason}",
-			"terminateIdle": "Зупинено ${label}: немає stdout/stderr понад ${minutes} хв (простій ${idleSec} с, працювало ${elapsed})",
-			"terminateDuration": "Припинено ${label}: знадобилося більше, ніж сторожовий базовий час (запуск ${elapsed}, базовий рівень ${baseline}, верхня межа ${limit})",
-			"terminateDurationDefault": "Припинено ${label}: витрачений час перевищує ліміт тривалості сторожового таймера за умовчанням (запущено ${elapsed}, верхня межа ${limit})",
 			"sleepDetected": "Виявлено сон системи (інтервал watchdog стрибнув на ${gap} ≥ ${limit}); ${label} перервано й готово до повторного запуску (вже тривало ${elapsed})",
 			"sleepRetry": "Перервано сном системи; повторний запуск ${label} (спроба ${attempt})",
-			"terminateMarker": "[Причина розірвання: ${reason}]",
-			"terminateUnknown": "ПРИПИНЕНО ${label}: тест перервано",
-			"terminateSpeculative": "Припинено ${label}: спекулятивну залежність не минуло, ранню зупинку скасовано",
 			"nothingToContinue": "Все зелене, немає прострочених елементів, не потрібно запускати знову.",
 			"triggerNoMatch": "trigger не збігся з жодним файлом: ${scope} — ${pattern}",
 			"triggerNoMatchSummary": "Загальна кількість тригерів ${count} не відповідає жодному файлу сховища (докладніше див. у report.md)",
-			"unknownSuite": "Невідомий пакет: ${name}",
 			"federationCleanupPre": "Помилка очищення федеративного тесту (перед запуском): ${output}",
 			"federationCleanupPost": "Помилка очищення федеративного тесту (після запуску): ${output}",
 			"suiteHeader": "=== Пакет ${name} ===",
@@ -233,25 +217,7 @@
 				"title": "Звіт fount test",
 				"tableHeaderItem": "Пункт",
 				"tableHeaderValue": "Значення",
-				"fieldRunId": "Ідентифікатор запуску",
-				"fieldCommand": "команда",
-				"fieldExit": "Статус виходу",
-				"fieldProgress": "прогрес",
-				"fieldSuites": "suite",
-				"fieldFailed": "Кількість відмов",
-				"fieldNoisyPassed": "Пройшли, але шумно",
-				"fieldReused": "Кількість повторних використань",
-				"fieldSuiteSumDuration": "Загальний час, витрачений на комплект",
-				"fieldWallClock": "Загальний витрачений час",
-				"fieldParallelRate": "Паралелізм",
-				"fieldEstimatedRemaining": "Приблизний час, що залишився",
-				"fieldEstimatedParallelRate": "Розрахункова швидкість паралелізму",
 				"estimatePoint": "≈ ${eta}",
-				"pendingEstimate": "Приблизний час, що залишився ≈ ${eta}",
-				"pendingParallelEstimate": "Приблизне паралельне споживання часу ≈ ${eta} (розрахункова паралельна швидкість ${rate})",
-				"pendingSavings": "Приблизна економія ≈ ${savings}",
-				"pendingItemExpected": "Очікуваний ${expected}",
-				"fieldDuration": "тривалість",
 				"commandDefault": "(за замовчуванням)",
 				"exitPassed": "ПРОЙДЕНО",
 				"exitFailed": "НЕВДАЛО",
@@ -259,54 +225,86 @@
 				"progressFormat": "${completed}/${total} пакетів",
 				"suitesFormat": "${passed}/${completed} пройдено",
 				"artifacts": "Каталог продуктів: `${path}`",
-				"sectionFailed": "Невдалий комплект",
-				"sectionNoisyPassed": "Пройшли, але шумно",
-				"sectionSilentPassed": "Пройдено (без виводу)",
-				"sectionPending": "Для запуску",
-				"sectionContinue": "Продовжити незавершені елементи",
-				"sectionReplay": "Повторно запустити невдалі елементи",
-				"sectionReplayImperfect": "Неідеальні повтори",
 				"columnSuite": "suite",
 				"columnDuration": "тривалість",
-				"labelReused": "(повторне використання)",
-				"labelExpectedBlocked": "(Очікуване блокування)",
-				"labelDuration": "тривалість",
-				"labelLog": "лог",
-				"labelNoise": "Шум",
-				"labelFailedFiles": "Файл помилок",
-				"labelTerminateReason": "Причина розірвання",
-				"sectionContinueReasons": "Причина запуску",
 				"continueReasonsLink": "Причина запуску: подробиці див. [${path}](${path}).",
-				"labelContinueReason": "Причина",
-				"reasonImperfectFailed": "попередня невдача",
-				"reasonImperfectNoisy": "Історія минає, але з шумом",
-				"reasonImperfectBlocked": "Історія заблокована",
-				"reasonImperfectDependent": "Вгору виходить з ладу і один шар нижче",
-				"reasonMissingRecord": "немає запису в state, автоматичний допуск",
-				"reasonStaleContent": "Вміст змінився, і його потрібно повторити.",
-				"reasonTriggerHashDrift": "Запуск дрейфу відбитків пальців (без попадання траєкторії)",
-				"reasonExplicitSelected": "явно вказано",
-				"reasonDependencyRequired": "Втягування залежності",
-				"labelRootCause": "коренева причина",
-				"labelDirectRequiredBy": "Безпосередній включувач",
-				"labelInclusionPath": "Ланцюг включення",
-				"labelPullUpstream": "Upstream: залежність ${requiredBy} не зелена",
-				"labelPullDownstream": "Downstream: ${requiredBy} не ідеально, включено разом",
-				"labelGateReason": "Причина запуску",
-				"labelCommitRange": "Діапазон commit",
-				"labelUncommittedHashRange": "Незакомічений digest",
-				"labelMatchedTriggers": "Збіг trigger",
-				"labelMatchedTriggerSets": "Збіг trigger set",
-				"labelMatchedPaths": "Збіг шляху",
-				"labelTriggerHashDrift": "Відбиток trigger не збігається з робочою копією (dirty→clean ігнорується)",
-				"sectionDeadTriggers": "Недійсні trigger",
 				"deadTriggersHint": "Наступні glob не збігаються з жодним файлом у репозиторії (git tracked + неігноровані untracked):",
 				"durationMs": "${ms} мілісекунд",
-				"durationUnitSec": "${n} секунд",
-				"durationUnitMin": "${n} хв",
-				"durationUnitMinute": "${n} хвилин",
-				"durationUnitHour": "${n} годин",
-				"durationUnitDay": "${n} днів"
+				"durationUnit": {
+					"day": "${n} днів",
+					"hour": "${n} годин",
+					"min": "${n} хв",
+					"minute": "${n} хвилин",
+					"sec": "${n} секунд"
+				},
+				"section": {
+					"continue": "Продовжити незавершені елементи",
+					"continueReasons": "Причина запуску",
+					"deadTriggers": "Недійсні trigger",
+					"failed": "Невдалий комплект",
+					"noisyPassed": "Пройшли, але шумно",
+					"pending": "Для запуску",
+					"replay": "Повторно запустити невдалі елементи",
+					"replayImperfect": "Неідеальні повтори",
+					"silentPassed": "Пройдено (без виводу)"
+				},
+				"pending": {
+					"estimate": "Приблизний час, що залишився ≈ ${eta}",
+					"itemExpected": "Очікуваний ${expected}",
+					"parallelEstimate": "Приблизне паралельне споживання часу ≈ ${eta} (розрахункова паралельна швидкість ${rate})",
+					"savings": "Приблизна економія ≈ ${savings}"
+				},
+				"reason": {
+					"dependencyRequired": "Втягування залежності",
+					"explicitSelected": "явно вказано",
+					"imperfect": {
+						"blocked": "Історія заблокована",
+						"dependent": "Вгору виходить з ладу і один шар нижче",
+						"failed": "попередня невдача",
+						"noisy": "Історія минає, але з шумом"
+					},
+					"missingRecord": "немає запису в state, автоматичний допуск",
+					"staleContent": "Вміст змінився, і його потрібно повторити.",
+					"triggerHashDrift": "Запуск дрейфу відбитків пальців (без попадання траєкторії)"
+				},
+				"label": {
+					"commitRange": "Діапазон commit",
+					"continueReason": "Причина",
+					"directRequiredBy": "Безпосередній включувач",
+					"duration": "тривалість",
+					"expectedBlocked": "(Очікуване блокування)",
+					"failedFiles": "Файл помилок",
+					"gateReason": "Причина запуску",
+					"inclusionPath": "Ланцюг включення",
+					"log": "лог",
+					"matchedPaths": "Збіг шляху",
+					"matchedTriggerSets": "Збіг trigger set",
+					"matchedTriggers": "Збіг trigger",
+					"noise": "Шум",
+					"pullDownstream": "Downstream: ${requiredBy} не ідеально, включено разом",
+					"pullUpstream": "Upstream: залежність ${requiredBy} не зелена",
+					"reused": "(повторне використання)",
+					"rootCause": "коренева причина",
+					"terminateReason": "Причина розірвання",
+					"triggerHashDrift": "Відбиток trigger не збігається з робочою копією (dirty→clean ігнорується)",
+					"uncommittedHashRange": "Незакомічений digest"
+				},
+				"field": {
+					"command": "команда",
+					"duration": "тривалість",
+					"estimatedParallelRate": "Розрахункова швидкість паралелізму",
+					"estimatedRemaining": "Приблизний час, що залишився",
+					"exit": "Статус виходу",
+					"failed": "Кількість відмов",
+					"noisyPassed": "Пройшли, але шумно",
+					"parallelRate": "Паралелізм",
+					"progress": "прогрес",
+					"reused": "Кількість повторних використань",
+					"runId": "Ідентифікатор запуску",
+					"suiteSumDuration": "Загальний час, витрачений на комплект",
+					"suites": "suite",
+					"wallClock": "Загальний витрачений час"
+				}
 			},
 			"state": {
 				"title": "Стан тестів fount",
@@ -314,16 +312,40 @@
 				"sectionDependencyTree": "Дерево залежностей",
 				"sectionOverview": "Поточний статус кожного пакета",
 				"sectionBlocked": "заблокований suite",
-				"columnSuite": "suite",
-				"columnStatus": "Стан",
-				"columnCommit": "commit",
-				"columnRanAt": "Останній запуск",
-				"columnDuration": "тривалість",
-				"columnLog": "лог",
-				"columnBlocked": "Кількість блокувань",
 				"labelBlockedBy": "Заблоковано",
 				"statusUnknown": "Не працює",
-				"statusOutdated": "Застарілий"
+				"statusOutdated": "Застарілий",
+				"column": {
+					"blocked": "Кількість блокувань",
+					"commit": "commit",
+					"duration": "тривалість",
+					"log": "лог",
+					"ranAt": "Останній запуск",
+					"status": "Стан",
+					"suite": "suite"
+				}
+			},
+			"terminate": {
+				"duration": "Припинено ${label}: знадобилося більше, ніж сторожовий базовий час (запуск ${elapsed}, базовий рівень ${baseline}, верхня межа ${limit})",
+				"durationDefault": "Припинено ${label}: витрачений час перевищує ліміт тривалості сторожового таймера за умовчанням (запущено ${elapsed}, верхня межа ${limit})",
+				"idle": "Зупинено ${label}: немає stdout/stderr понад ${minutes} хв (простій ${idleSec} с, працювало ${elapsed})",
+				"marker": "[Причина розірвання: ${reason}]",
+				"speculative": "Припинено ${label}: спекулятивну залежність не минуло, ранню зупинку скасовано",
+				"unknown": "ПРИПИНЕНО ${label}: тест перервано"
+			},
+			"estimated": {
+				"remaining": "Приблизний час, що залишився ≈ ${eta} (${completed}/${total} packages)",
+				"run": "За оцінками, цей запуск займе ≈ ${eta} (орієнтовна паралельна швидкість ${rate})",
+				"runSerial": "Очікується, що цей запуск триватиме ≈ ${eta} (серійний)",
+				"runSerialHint": "Якщо очікуваний паралелізм ≈ ${eta} (паралельна ставка ${rate}), заощадження ≈ ${savings} (видалити --no-parallel)",
+				"runSkipped": "Є також ${reused} штук, які використовуються повторно, і ${blocked} частин, які очікується, що будуть заблоковані (не включено в оцінку)"
+			},
+			"unknown": {
+				"fileFilter": "Фільтрування невідомих тестових файлів: ${suite} → ${names}",
+				"manifestId": "Невідомий ідентифікатор маніфесту: ${ids}",
+				"subtestFilter": "Фільтрація невідомих субтестів: ${suite} → ${names}",
+				"suite": "Невідомий пакет: ${name}",
+				"suiteSelector": "Невідоме позначення набору: ${ids}"
 			}
 		},
 		"path": {
@@ -385,10 +407,10 @@
 				"packageFailed": "Помилка: не вдалося встановити ${package}.",
 				"browserMissing": "Браузер за умовчанням не виявлено, намагаюся встановити...",
 				"untrustedPartsWarning": "Не встановлюйте ненадійні компоненти fount у вашу систему, вони можуть зробити все, що завгодно.",
-				"rootWarning1": "Не рекомендується: запуск fount від імені root надає повний системний доступ до всіх компонентів fount.",
-				"rootWarning2": "Якщо ви не знаєте, що робите, рекомендується запускати fount як звичайний користувач.",
 				"permissionDeniedAsRoot": "Помилка: неможливо записати в каталог fount \"${path}\". Ви працюєте від імені root, але доступ все одно заборонено — перевірте та виправте дозволи безпеки для цієї папки, щоб надати поточному користувачеві повний доступ.",
-				"permissionDeniedNotRoot": "Помилка: неможливо записати в каталог fount \"${path}\". Виправте дозволи безпеки для папки, щоб надати доступ для запису поточному користувачеві, або запустіть fount від імені root."
+				"permissionDeniedNotRoot": "Помилка: неможливо записати в каталог fount \"${path}\". Виправте дозволи безпеки для папки, щоб надати доступ для запису поточному користувачеві, або запустіть fount від імені root.",
+				"rootWarningAsRoot": "Не рекомендується: запуск fount від імені root надає повний системний доступ до всіх компонентів fount.",
+				"rootWarningPreferUser": "Якщо ви не знаєте, що робите, рекомендується запускати fount як звичайний користувач."
 			},
 			"clean": {
 				"removingCaches": "Видалення кешу...",
@@ -409,41 +431,49 @@
 				"editorRemoved": "Конфігурацію fount видалено з прив'язок клавіш термінала редактора: `${path}`"
 			},
 			"remove": {
-				"removingDesktopShortcut": "Видалення ярлика на робочому столі...",
-				"removingTerminalKeybindings": "Видалення патча прив'язок клавіш термінала…",
-				"removingFount": "Видалення fountу...",
 				"fountUninstallationComplete": "видалення fountу завершено.",
-				"removingFountInstallationDir": "Видалення каталогу встановлення fount...",
 				"fountInstallationDirRemoved": "Каталог встановлення fountу видалено.",
-				"removingFountFromPath": "Видалення шрифту зі ШЛЯХУ...",
-				"removingProtocolHandler": "Видалення обробника протоколу `fount://`...",
 				"protocolHandlerRemoved": "Обробник протоколу `fount://` видалено.",
-				"removeProtocolHandlerFailed": "Не вдалося видалити обробник протоколу `fount://`: ${message}",
-				"removingFountFromGitSafeDir": "Видалення fountу з `git safe.directory`...",
-				"removingInstalledSystemPackages": "Видалення встановлених системних пакетів...",
-				"uninstallingDeno": "Видалення Deno...",
-				"removeDenoFailed": "Не вдалося видалити Deno: ${message}",
-				"removingFountPwshFromProfile": "Видалення `fount-pwsh` із профілю PowerShell...",
 				"fountPwshRemovedFromProfile": "fount-pwsh видалено з профілю PowerShell.",
 				"pwshProfileNotFound": "Профіль PowerShell не знайдено, пропускаючи видалення `fount-pwsh` із профілю.",
-				"uninstallingFountPwsh": "Видалення `fount-pwsh`...",
 				"uninstallFountPwshFailed": "Не вдалося видалити `fount-pwsh`: ${message}",
-				"removingTerminalProfile": "Видалення профілю Windows Terminal...",
 				"terminalProfileRemoved": "Каталог Windows Terminal Profile видалено.",
 				"terminalProfileNotFound": "Каталог профілю Windows Terminal не знайдено.",
 				"desktopShortcutRemoved": "Ярлик на робочому столі видалено.",
 				"desktopShortcutNotFound": "Ярлик на робочому столі не знайдено.",
-				"removingStartMenuShortcut": "Видалення ярликів меню «Пуск»...",
 				"startMenuShortcutRemoved": "Ярлик меню «Пуск» видалено.",
 				"startMenuShortcutNotFound": "Ярлик меню «Пуск» не знайдено.",
-				"removingInstalledPwshModules": "Видалення встановленого модуля pwsh...",
 				"moduleRemoved": "${module} видалено.",
-				"removeModuleFailed": "Не вдалося видалити ${module}: ${message}",
-				"uninstallingGit": "Видалення Git...",
-				"uninstallingChrome": "Видалення Chrome...",
-				"uninstallingWinget": "Видалення Winget...",
-				"removingBackgroundRunner": "Видалення фонових програм...",
-				"removeBackgroundRunnerFailed": "Не вдалося видалити фонову програму: ${message}"
+				"uninstalling": {
+					"chrome": "Видалення Chrome...",
+					"deno": "Видалення Deno...",
+					"fountPwsh": "Видалення `fount-pwsh`...",
+					"git": "Видалення Git...",
+					"winget": "Видалення Winget..."
+				},
+				"removing": {
+					"backgroundRunner": "Видалення фонових програм...",
+					"desktopShortcut": "Видалення ярлика на робочому столі...",
+					"fount": {
+						"main": "Видалення fountу...",
+						"fromGitSafeDir": "Видалення fountу з `git safe.directory`...",
+						"fromPath": "Видалення шрифту зі ШЛЯХУ...",
+						"installationDir": "Видалення каталогу встановлення fount...",
+						"pwshFromProfile": "Видалення `fount-pwsh` із профілю PowerShell..."
+					},
+					"installedPwshModules": "Видалення встановленого модуля pwsh...",
+					"installedSystemPackages": "Видалення встановлених системних пакетів...",
+					"protocolHandler": "Видалення обробника протоколу `fount://`...",
+					"startMenuShortcut": "Видалення ярликів меню «Пуск»...",
+					"terminalKeybindings": "Видалення патча прив'язок клавіш термінала…",
+					"terminalProfile": "Видалення профілю Windows Terminal..."
+				},
+				"remove": {
+					"backgroundRunnerFailed": "Не вдалося видалити фонову програму: ${message}",
+					"denoFailed": "Не вдалося видалити Deno: ${message}",
+					"moduleFailed": "Не вдалося видалити ${module}: ${message}",
+					"protocolHandlerFailed": "Не вдалося видалити обробник протоколу `fount://`: ${message}"
+				}
 			}
 		}
 	},
@@ -453,22 +483,6 @@
 		"hero": {
 			"title": "Іскра думки, живий співрозмовник",
 			"description": "fount — це платформа для взаємодії з персонажами, керована AI, створена, щоб надати можливості саме <i>вам</i>. Це міст, що з'єднує вас із вигаданими персонажами, дозволяючи вам легко спілкуватися з ними, створювати власних персонажів та ділитися ними зі світом."
-		},
-		"feature1": {
-			"title": "Безшовні розмови, будь-де та будь-коли",
-			"description": "Почніть розмову на комп'ютері та безперешкодно продовжуйте на телефоні чи планшеті. fount синхронізує ваші діалоги, дозволяючи залишатися на зв'язку з персонажами, де б ви не були. Працює на Windows, macOS, Linux і навіть Android."
-		},
-		"feature2": {
-			"title": "Красивий, настроюваний інтерфейс",
-			"description": "Обирайте з-понад 30 чудових тем або створюйте власну. fount — це ваше особисте полотно. Виражайте себе, налаштовуйте оточення на свій смак та отримуйте справді персоналізований досвід."
-		},
-		"feature3": {
-			"title": "Виразний, імерсивний чат",
-			"description": "fount повною мірою використовує можливості HTML, дозволяючи персонажам виражати себе за допомогою форматованого тексту, зображень і навіть інтерактивних елементів. Ведіть динамічні та захоплюючі групові чати з кількома персонажами одночасно."
-		},
-		"feature4": {
-			"title": "Необмежена інтеграція з AI-fountми",
-			"description": "fount пропонує неперевершений вибір та гнучкість. Підключайтеся до <i>будь-якого</i> AI-fount — OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI та інших. Логіка комунікації буде формуватися за <i>вашим</i> бажанням, силою коду."
 		},
 		"language_selector": {
 			"button": {
@@ -487,8 +501,8 @@
 		},
 		"mini_game": {
 			"title": "Зіграйте в гру",
-			"description1": "Встановлення занадто повільне?",
-			"description2": "Ось невеличка гра, щоб згаяти час."
+			"slowInstallHint": "Встановлення занадто повільне?",
+			"playWhileWaiting": "Ось невеличка гра, щоб згаяти час."
 		},
 		"testimonials": {
 			"anonymous": "анонімний користувач",
@@ -530,9 +544,27 @@
 			"title": "Встановлення не вдалося!",
 			"description": "Здається, щось пішло не так із програмою встановлення fount.",
 			"connection_failed": "Не вдалося підключитися!",
-			"description1": "Здається, щось пішло не так із програмою встановлення fount.",
-			"description2": "Будь ласка, перевірте свій термінал і спробуйте ще раз.",
-			"close_page": "Закрити сторінку"
+			"close_page": "Закрити сторінку",
+			"summary": "Здається, щось пішло не так із програмою встановлення fount.",
+			"retryHint": "Будь ласка, перевірте свій термінал і спробуйте ще раз."
+		},
+		"features": {
+			"seamlessChat": {
+				"title": "Безшовні розмови, будь-де та будь-коли",
+				"description": "Почніть розмову на комп'ютері та безперешкодно продовжуйте на телефоні чи планшеті. fount синхронізує ваші діалоги, дозволяючи залишатися на зв'язку з персонажами, де б ви не були. Працює на Windows, macOS, Linux і навіть Android."
+			},
+			"customUi": {
+				"title": "Красивий, настроюваний інтерфейс",
+				"description": "Обирайте з-понад 30 чудових тем або створюйте власну. fount — це ваше особисте полотно. Виражайте себе, налаштовуйте оточення на свій смак та отримуйте справді персоналізований досвід."
+			},
+			"expressiveChat": {
+				"title": "Виразний, імерсивний чат",
+				"description": "fount повною мірою використовує можливості HTML, дозволяючи персонажам виражати себе за допомогою форматованого тексту, зображень і навіть інтерактивних елементів. Ведіть динамічні та захоплюючі групові чати з кількома персонажами одночасно."
+			},
+			"aiSources": {
+				"title": "Необмежена інтеграція з AI-fountми",
+				"description": "fount пропонує неперевершений вибір та гнучкість. Підключайтеся до <i>будь-якого</i> AI-fount — OpenAI, Claude, [Atlas Cloud](${atlasCloudLink}), [Evolink](${evolinkLink}), OpenRouter, NovelAI та інших. Логіка комунікації буде формуватися за <i>вашим</i> бажанням, силою коду."
+			}
 		}
 	},
 	"protocolhandler": {
@@ -617,10 +649,6 @@
 			"passwordMismatch": "Паролі не збігаються.",
 			"loginError": "Помилка входу.",
 			"registrationError": "Помилка реєстрації.",
-			"verificationCodeError": "Невірний або прострочений код підтвердження.",
-			"verificationCodeSent": "Код підтвердження надіслано успішно.",
-			"verificationCodeSendError": "Не вдалося надіслати код підтвердження.",
-			"verificationCodeRateLimit": "Занадто часті спроби надіслати код, спробуйте пізніше.",
 			"lowPasswordStrength": "Пароль занадто слабкий.",
 			"accountAlreadyExists": "Такий акаунт вже існує",
 			"powNotSolved": "Будь ласка, спочатку пройдіть перевірку PoW.",
@@ -630,26 +658,36 @@
 			"accountLockedAttempts": "Обліковий запис тимчасово заблоковано через забагато невдалих спроб входу.",
 			"powValidationFailed": "Перевірку безпеки не пройдено. Повторіть спробу.",
 			"tokenAndSolutionsRequired": "Потрібні token і solutions.",
-			"apiErrorBodyUnreadable": "Сервер повернув інформацію, яку не вдалося проаналізувати. Спробуйте пізніше."
+			"apiErrorBodyUnreadable": "Сервер повернув інформацію, яку не вдалося проаналізувати. Спробуйте пізніше.",
+			"verificationCode": {
+				"error": "Невірний або прострочений код підтвердження.",
+				"rateLimit": "Занадто часті спроби надіслати код, спробуйте пізніше.",
+				"sendError": "Не вдалося надіслати код підтвердження.",
+				"sent": "Код підтвердження надіслано успішно."
+			}
 		},
 		"webauthn": {
 			"loginButton": "Увійти з ключем безпеки або Passkey",
-			"errorLoadLibrary": "Не вдається завантажити допоміжну бібліотеку WebAuthn, перевірте мережу та повторіть спробу.",
-			"errorCancelled": "Ключ безпеки скасовано або не авторизовано для використання.",
-			"errorSessionMissing": "Сервер не повернув дійсний сеанс входу, будь ласка, оновіть сторінку та повторіть спробу.",
-			"errorBadBeginResponse": "Сервер повернув недійсні дані для входу, будь ласка, оновіть сторінку та повторіть спробу.",
-			"errorCredentialRequired": "Відсутні облікові дані дійсного пароля.",
-			"errorAuthSessionRequired": "Маркер сеансу входу відсутній, оновіть сторінку та повторіть спробу.",
 			"apiSessionExpired": "Термін дії сеансу входу з ключем доступу закінчився, спробуйте ще раз.",
 			"apiUnknownPasskey": "Ключ доступу не розпізнається, використовуйте прив’язаний ключ.",
 			"apiPasskeyVerificationFailed": "Не вдалося перевірити ключ доступу, спробуйте ще раз.",
-			"registrationUserNotFound": "Обліковий запис користувача не знайдено.",
-			"registrationSessionExpired": "Сеанс зв’язування закінчився, будь ласка, спробуйте знову з початку.",
-			"registrationVerifyFailed": "Неможливо завершити перевірку ключа доступу.",
-			"registrationFailed": "Помилка реєстрації ключа доступу, спробуйте ще раз.",
 			"removeUserNotFound": "Дані користувача або облікові дані не знайдено.",
 			"removeInvalidPassword": "Неправильний пароль.",
-			"removePasskeyNotFound": "Пароль не знайдено."
+			"removePasskeyNotFound": "Пароль не знайдено.",
+			"registration": {
+				"failed": "Помилка реєстрації ключа доступу, спробуйте ще раз.",
+				"sessionExpired": "Сеанс зв’язування закінчився, будь ласка, спробуйте знову з початку.",
+				"userNotFound": "Обліковий запис користувача не знайдено.",
+				"verifyFailed": "Неможливо завершити перевірку ключа доступу."
+			},
+			"error": {
+				"authSessionRequired": "Маркер сеансу входу відсутній, оновіть сторінку та повторіть спробу.",
+				"badBeginResponse": "Сервер повернув недійсні дані для входу, будь ласка, оновіть сторінку та повторіть спробу.",
+				"cancelled": "Ключ безпеки скасовано або не авторизовано для використання.",
+				"credentialRequired": "Відсутні облікові дані дійсного пароля.",
+				"loadLibrary": "Не вдається завантажити допоміжну бібліотеку WebAuthn, перевірте мережу та повторіть спробу.",
+				"sessionMissing": "Сервер не повернув дійсний сеанс входу, будь ласка, оновіть сторінку та повторіть спробу."
+			}
 		}
 	},
 	"login_info": {
@@ -808,84 +846,86 @@
 					}
 				}
 			},
-			"serviceGenerators": {
-				"title": "Конструктор сервісів",
-				"subtitle": "Перетворіть невидиме на щось відчутне, зробіть можливе реальністю.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Встановити як генератор послуг за замовчуванням"
-					}
-				}
-			},
-			"serviceGenerators/AI": {
-				"title": "Генератор послуг ШІ",
-				"subtitle": "Плести нитки мудрості і з’єднувати мости думки.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Встановити як генератор послуг ШІ за умовчанням"
-					}
-				}
-			},
-			"serviceGenerators/search": {
-				"title": "Генератор пошукового сервісу",
-				"subtitle": "В океані інформації запаліть світло для вас.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Встановити як генератор пошуку за умовчанням"
-					}
-				}
-			},
-			"serviceGenerators/translate": {
-				"title": "Генератор послуг перекладу",
-				"subtitle": "Перетинайте мовні кордони та дозволяйте ідеям вільно текти.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Встановити як генератор служби перекладу за умовчанням"
-					}
-				}
-			},
-			"serviceSources": {
-				"title": "Джерело служби",
-				"subtitle": "Збираючи цівки, вони перетворюються на великі ріки.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Встановити як джерело служби за умовчанням"
-					}
-				}
-			},
-			"serviceSources/AI": {
-				"title": "Джерело служби AI",
-				"subtitle": "Джерело мудрості і вихідна точка думки.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Встановити як джерело служби ШІ за умовчанням"
-					}
-				}
-			},
-			"serviceSources/search": {
-				"title": "Джерело служби пошуку",
-				"subtitle": "Скарбниця знань і відправна точка для досліджень.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Встановити як джерело пошуку за умовчанням"
-					}
-				}
-			},
-			"serviceSources/translate": {
-				"title": "Джерело служби перекладу",
-				"subtitle": "Міст мови і ланка спілкування.",
-				"card": {
-					"defaultCheckbox": {
-						"title": "Встановити як джерело служби перекладу за умовчанням"
-					}
-				}
-			},
 			"shells": {
 				"title": "Інтерактивний вибір інтерфейсу",
 				"subtitle": "Виберіть вікно і побачите новий світ.",
 				"card": {
 					"defaultCheckbox": {
 						"title": "Встановити як оболонку за замовчуванням"
+					}
+				}
+			},
+			"service": {
+				"generators": {
+					"title": "Конструктор сервісів",
+					"subtitle": "Перетворіть невидиме на щось відчутне, зробіть можливе реальністю.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Встановити як генератор послуг за замовчуванням"
+						}
+					}
+				},
+				"generators/AI": {
+					"title": "Генератор послуг ШІ",
+					"subtitle": "Плести нитки мудрості і з’єднувати мости думки.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Встановити як генератор послуг ШІ за умовчанням"
+						}
+					}
+				},
+				"generators/search": {
+					"title": "Генератор пошукового сервісу",
+					"subtitle": "В океані інформації запаліть світло для вас.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Встановити як генератор пошуку за умовчанням"
+						}
+					}
+				},
+				"generators/translate": {
+					"title": "Генератор послуг перекладу",
+					"subtitle": "Перетинайте мовні кордони та дозволяйте ідеям вільно текти.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Встановити як генератор служби перекладу за умовчанням"
+						}
+					}
+				},
+				"sources": {
+					"title": "Джерело служби",
+					"subtitle": "Збираючи цівки, вони перетворюються на великі ріки.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Встановити як джерело служби за умовчанням"
+						}
+					}
+				},
+				"sources/AI": {
+					"title": "Джерело служби AI",
+					"subtitle": "Джерело мудрості і вихідна точка думки.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Встановити як джерело служби ШІ за умовчанням"
+						}
+					}
+				},
+				"sources/search": {
+					"title": "Джерело служби пошуку",
+					"subtitle": "Скарбниця знань і відправна точка для досліджень.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Встановити як джерело пошуку за умовчанням"
+						}
+					}
+				},
+				"sources/translate": {
+					"title": "Джерело служби перекладу",
+					"subtitle": "Міст мови і ланка спілкування.",
+					"card": {
+						"defaultCheckbox": {
+							"title": "Встановити як джерело служби перекладу за умовчанням"
+						}
 					}
 				}
 			}
@@ -966,12 +1006,6 @@
 				"aria-label": "До Unicode"
 			},
 			"discoverPacks": "Набори емодзі →",
-			"categoryFace": "Емодзі",
-			"categoryGesture": "Жест",
-			"categoryHeart": "Серце",
-			"categoryAnimal": "Тварина",
-			"categoryFood": "Харчування",
-			"categoryObject": "Річ",
 			"addToCollection": "Додати в обране",
 			"addedToCollection": "Додано до обраного",
 			"joinGroup": "Приєднатися до групи",
@@ -982,7 +1016,15 @@
 			"openAuthor": "Переглянути автора",
 			"previewGroupMeta": "З групи: ${name}",
 			"previewAuthorMeta": "Від автора",
-			"previewActionFailed": "Не вдалося: ${error}"
+			"previewActionFailed": "Не вдалося: ${error}",
+			"category": {
+				"animal": "Тварина",
+				"face": "Емодзі",
+				"food": "Харчування",
+				"gesture": "Жест",
+				"heart": "Серце",
+				"object": "Річ"
+			}
 		},
 		"emojiPacks": {
 			"title": "Набори емодзі",
@@ -1043,12 +1085,14 @@
 			"modeSingle": "Один символ",
 			"modeEmpty": "Порожня група",
 			"subtitleRoles": "У цьому чаті ${count} символів",
-			"statusSaved": "Збережено",
-			"statusSaving": "Збереження…",
-			"statusDirty": "Є незбережені зміни",
-			"statusSaveFailed": "Не вдалося зберегти",
 			"saveSuccess": "Налаштування групового чату збережено",
-			"saveFailed": "Не вдалося зберегти налаштування групового чату"
+			"saveFailed": "Не вдалося зберегти налаштування групового чату",
+			"status": {
+				"dirty": "Є незбережені зміни",
+				"saveFailed": "Не вдалося зберегти",
+				"saved": "Збережено",
+				"saving": "Збереження…"
+			}
 		},
 		"group": {
 			"defaults": {
@@ -1057,167 +1101,6 @@
 				"dmChatName": "Чат",
 				"dmDmName": "Приватний чат",
 				"threadName": "гілка"
-			},
-			"settingsPage": {
-				"title": "Налаштування групи",
-				"kicker": "Налаштування групи",
-				"subtitle": "Керуйте інформацією про групу, учасниками та загальними функціями. Низькочастотні дозволи, сховище та інструменти аудиту централізовані в розширених налаштуваннях.",
-				"backToChat": "Повернутися до чату",
-				"navigationLabel": "Класифікація параметрів групи",
-				"advancedNavigationLabel": "Категорія розширених налаштувань",
-				"tabGeneral": "Основний",
-				"tabPermissions": "Дозволи ролі",
-				"tabMembers": "Учасники",
-				"tabAudit": "Ревізійний журнал",
-				"tabEmojis": "Емодзі",
-				"tabAdvanced": "Просунутий",
-				"tabStorage": "Зберігання та архівування",
-				"tabChannelPermissions": "Дозволи каналу",
-				"advancedHubTitle": "Розширені налаштування",
-				"advancedHubDescription": "Ці функції змінюють структуру дозволів групи, історичні дані або записи керування; регулюйте лише тоді, коли це явно необхідно.",
-				"channelPermsHint": "Установіть перевизначення дозволів ролі для певних каналів. Нерозкриті елементи успадковують дозволи групової ролі.",
-				"channelPermsSelectChannel": "Канал",
-				"channelPermsAddRole": "Додати заміну ролі",
-				"channelPermsRemoveRole": "Видаліть цю заміну ролі",
-				"channelPermsStateNeutral": "Успадкувати",
-				"channelPermsStateAllow": "Дозволяють",
-				"channelPermsStateDeny": "Відхилити",
-				"channelPermsUpdated": "Дозволи каналу оновлено",
-				"channelPermsUpdateFailed": "Не вдалося оновити дозволи каналу: ${error}",
-				"channelPermsNoChannels": "Наразі немає каналу для налаштування",
-				"emojisTitle": "Згрупуйте спеціальні вирази",
-				"emojisHint": "Учасники можуть вставляти або надсилати ці смайли в чаті; невстановлені образи завантажуються на вимогу через об’єднані вузли.",
-				"emojisUpload": "Завантажте смайли",
-				"emojisCreatePack": "Новий набір емодзі",
-				"emojisCreatePackPrompt": "ID набору",
-				"emojisCreatePackOk": "Набір емодзі створено",
-				"emojisCreatePackFailed": "Не вдалося створити: ${error}",
-				"emojisPackGroupSuffix": "група",
-				"activeEmojiPackLabel": "Набір у редагуванні",
-				"emojisDelete": "Видалити смайлик",
-				"emojisEmpty": "Групових виразів ще немає",
-				"emojisUploadOk": "Емодзі завантажено",
-				"emojisUploadFailed": "Помилка завантаження: ${error}",
-				"emojisDeleteConfirm": "Ви впевнені, що хочете видалити цю групу смайлів?",
-				"emojisDeleteOk": "Смайлик видалено",
-				"emojisDeleteFailed": "Не вдалося видалити: ${error}",
-				"defaultEmojiPackLabel": "Набір емодзі за замовчуванням",
-				"defaultEmojiPackHint": "Під час приєднання автоматично додається до обраного учасників. Після зміни замінюється лише старий набір за замовчуванням, якщо він ще в обраному.",
-				"defaultEmojiPackOk": "Набір за замовчуванням оновлено",
-				"defaultEmojiPackFailed": "Не вдалося задати набір за замовчуванням",
-				"membersTitle": "Список учасників",
-				"overviewTitle": "Огляд групи",
-				"overviewHint": "Інформація лише для читання. Якщо у вас є дозволи на керування, ви можете редагувати інформацію про групу та політику в «Основному».",
-				"channelArchiveTitle": "Архів каналу",
-				"channelArchiveHint": "Імпорт повного архіву JSON каналу створить новий звичайний текстовий канал у цій групі та відновить історію (повторно підписану вами; вкладення зберігають лише метадані).",
-				"channelArchiveImport": "Імпорт каналу JSON",
-				"channelArchiveImportOk": "Імпортовано ${count} повідомлень, відкривається новий канал...",
-				"channelArchiveImportFailed": "Помилка імпорту: ${error}",
-				"governanceHint": "Напишіть політику групового рівня DAG; потрібні дозволи адміністратора або MANAGE_ADMINS.",
-				"governanceDenied": "У вас немає дозволу змінювати параметри керування групою.",
-				"rolesDenied": "У вас немає дозволу MANAGE_ROLES для редагування ролей.",
-				"channelPermsDenied": "У вас немає дозволу MANAGE_CHANNELS для редагування перевизначень дозволів каналу.",
-				"notMember": "Ви більше не учасник цієї групи; локальні дані групи автоматично очищено після виходу.",
-				"basicTitle": "Керування групою",
-				"profileSectionTitle": "Інформація про групу",
-				"profileSectionHint": "Назва, вступ і спосіб приєднання до групи будуть записані в метадані групи.",
-				"behaviorSectionTitle": "Поведінка запуску",
-				"networkSectionTitle": "Федерація і з'єднання",
-				"retentionSectionTitle": "Резерв і ліміт тарифу",
-				"mediaSectionTitle": "Дзвінки та файли",
-				"nameLabel": "Назва групи",
-				"descriptionLabel": "Опис групи",
-				"joinPolicyLabel": "Стратегія входу в групу",
-				"joinInviteOnly": "Тільки запрошені",
-				"joinPow": "Потрібен PoW",
-				"powDifficultyLabel": "Складність PoW",
-				"advancedTitle": "Розширені налаштування",
-				"advancedDescription": "Параметри мережі, сховища, обмеження швидкості та шифрування; будь ласка, збережіть значення за замовчуванням, якщо ви не впевнені",
-				"securityAdvancedTitle": "Безпека та операції власника групи",
-				"securityAdvancedDescription": "Ключова ротація та наступність керівника групи; неправильні операції можуть вплинути на доступ учасників",
-				"powDifficultyTip": "Підтвердження складності роботи. Чим вище значення, тим довший час розрахунку необхідний незнайомцям для приєднання до публічної групи.",
-				"maxDagPayloadTip": "Верхня межа даних, дозволених для однієї групової події. Якщо він занадто великий, це призведе до збільшення пам’яті для синхронізації та витрат на мережу.",
-				"trustedPeersTip": "Кількість сусідів федерації з високою репутацією, які мають пріоритет для підтримки зв’язку.",
-				"gossipTtlTip": "Максимальна кількість федеративних вузлів, через які можна пересилати повідомлення. Збільшення розширює охоплення, але також збільшує трафік.",
-				"hlcTip": "Максимальний проміжок часу, протягом якого годинник віддаленого вузла може бути швидшим за годинник локального вузла, який використовується для відхилення аномальних майбутніх подій.",
-				"sfuTip": "Необов'язкова зовнішня адреса AV-ретранслятора. Залиште порожнім для вбудованих P2P/ретрансльованих дзвінків.",
-				"iceTip": "Допомогти WebRTC проникнути в маршрутизатор; якщо пряме з’єднання не вдається, TURN пересилає аудіо-, відео- та об’єднаний трафік від свого імені.",
-				"fileEncryptionTip": "Конвергентне шифрування дедуплікує, але виявляє той факт, що файли однакові; випадкові ключі більш закриті, але займають більше місця.",
-				"keyManagementTitle": "Управління ключами",
-				"keyManagementTip": "Нові ключі потрібно перерозподілити між учасниками після ротації. Заходи вручну слід вживати, лише якщо ви підозрюєте, що ключ було зламано.",
-				"allowDangerousHtml": "Повідомлення довіреного автора дозволяють вбудований HTML",
-				"deleteGroup": "Видалити групу",
-				"save": "Зберегти налаштування",
-				"inviteTitle": "Запросити",
-				"inviteHint": "Згенеруйте код короткострокового запрошення (за замовчуванням 1 година). Інша сторона заповнює ідентифікатор групи та код запрошення в «Приєднатися до групи».",
-				"inviteMint": "Згенерувати код запрошення",
-				"inviteGroupId": "ID групи",
-				"inviteCode": "Код запрошення",
-				"inviteExpires": "Термін дії: ${date}",
-				"inviteCopy": "Копіювати інформацію про групу",
-				"inviteCopied": "Інформацію про групу скопійовано",
-				"inviteCopyFailed": "Помилка копіювання",
-				"inviteClipboard": "Ідентифікатор групи: ${groupId}\nКод запрошення: ${code}\nПриєднуйтесь: ${url}",
-				"loadFailed": "Не вдалося завантажити налаштування групи: ${error}",
-				"saveSuccess": "Налаштування групи збережено",
-				"saveFailed": "Не вдалося зберегти налаштування: ${error}",
-				"deleteConfirm": "Ви впевнені, що хочете видалити цю групу? Цю дію неможливо скасувати, і всі повідомлення та дані учасників буде остаточно видалено.",
-				"deleteSuccess": "Групу видалено",
-				"deleteFailed": "Не вдалося видалити групу: ${error}",
-				"rolesTitle": "Ролі та дозволи",
-				"createRole": "Створіть роль",
-				"roleDefault": "За замовчуванням",
-				"deleteRole": "Видалити роль",
-				"deleteRoleConfirm": "Ви впевнені, що хочете видалити цю роль?",
-				"deleteRoleSuccess": "Роль видалено",
-				"deleteRoleFailed": "Не вдалося видалити роль: ${error}",
-				"createRolePrompt": "Введіть ім'я персонажа:",
-				"createRoleSuccess": "Роль створено",
-				"createRoleFailed": "Не вдалося створити роль: ${error}",
-				"permissionUpdated": "Дозволи оновлено",
-				"permissionUpdateFailed": "Не вдалося оновити дозволи: ${error}",
-				"noMembers": "Ще немає учасників",
-				"memberRoles": "Роль:",
-				"kick": "Вигнати",
-				"ban": "Заборона",
-				"kickConfirm": "Ви впевнені, що хочете вигнати учасника ${name}?",
-				"kickSelfNodeWarning": "Попередження: цей учасник використовує ту саму ідентифікацію вузла, що й ви. Вас також буде видалено з групи після виключення. Ви впевнені, що бажаєте продовжити?",
-				"kickSuccess": "Учасника вигнано",
-				"kickFailed": "Не вдалося вигнати учасника: ${error}",
-				"banConfirm": "Ви впевнені, що бажаєте забанити учасника ${name}?",
-				"banSuccess": "Учасника заблоковано",
-				"banFailed": "Не вдалося забанити учасника: ${error}",
-				"bannedTitle": "Забанений учасник",
-				"unban": "Розблокувати",
-				"unbanConfirm": "Ви впевнені, що бажаєте розблокувати учасника ${name}?",
-				"unbanSuccess": "Учасника було розблоковано",
-				"unbanFailed": "Не вдалося розблокувати: ${error}",
-				"keyRotate": "Повернути головний ключ файлу групи",
-				"keyRotateConfirm": "Ви впевнені, що бажаєте вручну змінити головний ключ цього файлу групи? Новим учасникам потрібно повторно синхронізувати ключ файлу історії.",
-				"keyRotateOk": "Ключ повернено",
-				"keyRotateFailed": "Помилка ротації ключа: ${error}",
-				"gshGenerationRetentionHint": "Наразі зберігаються лише останні 64 покоління історії головного ключа файлу. Найстаріші історичні файли можуть не вдатися розшифрувати після його перевищення, тому рекомендується регулярно архівувати важливі дані.",
-				"gshGenerationNearLimit": "Наразі повернуто до покоління ${generation} головних ключів файлів (до ${maxGenerations} поколінь). Продовження частої ротації призведе до вилучення найстаріших історичних ключів.",
-				"ownerSuccession": "Наступність керівника групи",
-				"ownerSuccessionOk": "Наступність лідера групи вступила в силу",
-				"ownerSuccessionFailed": "Помилка зміни лідера групи: ${error}",
-				"permVIEW_CHANNEL": "Переглянути канал",
-				"permSEND_MESSAGES": "Надіслати повідомлення",
-				"permSEND_STICKERS": "Надішліть стікери",
-				"permADD_REACTIONS": "Додати реакцію",
-				"permMANAGE_MESSAGES": "Керівні повідомлення",
-				"permMANAGE_CHANNELS": "Керувати каналом",
-				"permKICK_MEMBERS": "Вигнання учасників",
-				"permBAN_MEMBERS": "Забанити учасника",
-				"permMANAGE_ROLES": "Роль управління",
-				"permINVITE_MEMBERS": "Запросити учасників",
-				"permSTREAM": "Голос",
-				"permCREATE_THREADS": "Створити підканал",
-				"permUPLOAD_FILES": "Завантажувати файли",
-				"permMANAGE_FILES": "Керувати файлами",
-				"permPIN_MESSAGES": "Закріплене повідомлення",
-				"permADMIN": "Адміністратор",
-				"permBYPASS_RATE_LIMIT": "Обхід обмеження кількості повідомлень"
 			},
 			"auditLog": {
 				"title": "Журнал аудиту групи",
@@ -1228,10 +1111,6 @@
 				"loadMore": "Завантажити старіші записи",
 				"empty": "Аудиторських записів ще немає",
 				"loadFailed": "Не вдалося завантажити журнал аудиту: ${error}",
-				"colTime": "Час",
-				"colType": "Типу",
-				"colActor": "Оператор",
-				"colSummary": "Резюме",
 				"type": {
 					"member_join": "Учасники приєднуються",
 					"member_leave": "Учасники залишають",
@@ -1288,167 +1167,44 @@
 					"unpin_message": "Відкріпити ${channelName} на каналі ${targetEventId}",
 					"file_upload": "Завантажити файл ${fileName}",
 					"file_delete": "Видалити файл ${fileName}"
+				},
+				"col": {
+					"actor": "Оператор",
+					"summary": "Резюме",
+					"time": "Час",
+					"type": "Типу"
 				}
 			},
-			"messagePrefixSticker": "Стікер",
 			"membersEmpty": "(ще немає учасників)",
 			"channelEncryptionGsh": "Наскрізне шифрування ключа каналу (CKG)",
-			"ownerSuccession": "Ініціювати голосування за правонаступництво",
-			"ownerSuccessionDescription": "Передати найвищі адміністративні повноваження групи (MANAGE_ADMINS) обраному учаснику. Лише для адміністраторів.",
-			"ownerSuccessionAutoSignHint": "Після надсилання машина автоматично підпише початкове число підпису групи без введення закритого ключа. У групі з декількома адміністраторами більше половини адміністраторів повинні подати один і той самий бюлетень (однаковий ідентифікатор голосування та кандидат) локально.",
-			"ownerSuccessionCandidateLabel": "Хеш відкритого ключа наступника",
-			"ownerSuccessionSelfButton": "Висувайте себе",
-			"ownerSuccessionSubmitted": "Ваш підпис зафіксовано в бюлетені для голосування щодо престолонаслідування.",
-			"ownerSuccessionNeedHash": "Будь ласка, введіть хеш відкритого ключа наступника",
-			"ownerSuccessionFailed": "Не вдалося надіслати голосування щодо правонаступництва",
 			"e2eDecryptUnavailable": "Повідомлення зашифровано і не може бути розшифровано поточним пристроєм",
 			"contentRefBodyPending": "Текст зовнішнього посилання (content_ref, ще не отримано для перевірки)",
 			"contentRefHashMismatch": "Текст зовнішнього посилання не відповідає перевірці сховища (хеш не збігається)",
-			"streamGenerationFailed": "Генерація штучного інтелекту закінчилася та не була завершена, оновлення зупинено.",
 			"convergentEncryptWarn": "Групові файли використовують конвергентне шифрування: якщо зловмисник знає відкритий текст файлу, він може отримати ключ і розшифрувати відповідний блок зашифрованого тексту. Не покладайтеся виключно на групове шифрування для захисту дуже конфіденційних і унікальних приватних документів.",
-			"settingsStreamGeneratingIdle": "Тайм-аут простою, згенерований штучним інтелектом (мілісекунди)",
-			"settingsAutoReplyFrequency": "Автоматично ініціювати рольові відповіді (після кожних N повідомлень користувача, 0 вимкнено)",
-			"settingsAutoReplyFrequencyHint": "0 означає вимкнено; @згадки все одно активуються негайно",
-			"settingsMaxDagPayload": "DAG максимальна кількість байтів для однієї події",
-			"settingsBatterySaver": "Режим низького енергоспоживання (зменшений пул з’єднань федерації та реле)",
-			"settingsDiscoveryPublic": "Відкрийте цю групу для об’єднаного виявлення (без приєднання до ключа групи)",
-			"settingsDiscoveryTitle": "Назва списку виявлення (необов’язково)",
-			"settingsDiscoveryBlurb": "Введення в Discovery (необов'язково)",
-			"settingsTrustedPeers": "Слот довірчого сусіда (Top-K)",
-			"settingsExplorePeers": "Дослідіть сусідні слоти",
-			"settingsMaxPeers": "Кришка федеративного підключення",
-			"settingsGossipTtl": "Пересилання пліток TTL (кількість переходів)",
-			"settingsWantIdsBudget": "Бюджет єдиного WantIds",
-			"settingsHlcMaxSkew": "Верхня межа майбутнього зсуву HLC (мілісекунди)",
 			"dagForkDetected": "Виявлено необ’єднаний форк DAG",
 			"mergeDagTips": "Об’єднайте гілки DAG",
 			"mergeDagTipsOk": "Вилка злита",
 			"mergeDagTipsFailed": "Помилка злиття",
-			"settingsStreamingSfu": "Потокова адреса SFU WebSocket (необов'язково)",
-			"settingsMessageRetention": "Текст повідомлення автоматично видаляється",
-			"settingsMessageRetentionForever": "Постійне зберігання (лише стислі події DAG)",
-			"settingsMessageRetention30d": "30 днів тому",
-			"settingsMessageRetention90d": "90 днів тому",
-			"settingsMessageRetention1y": "1 рік тому",
-			"settingsMessageRetentionHint": "Видима історія не видаляється автоматично за замовчуванням. Якщо ввімкнено, буде видалено лише локальний гарячий кеш повідомлень; остаточні повідомлення зберігатимуться в холодному архіві та контрольній точці.",
-			"settingsHotLatest": "Збереження гарячої зони (остання кількість публікацій на канал)",
-			"settingsPinContext": "Верхнє сусідство (±N сусідів)",
-			"settingsHotWindowHint": "Пости гарячої зони зберігаються в КПП і кеші повідомлень; решта дописів записуються до щомісячного холодного архіву після матеріалізації, а потім згортаються з подій процесу DAG.",
-			"settingsArchiveTitle": "Зберігання та холодне архівування",
-			"settingsArchiveHint": "Холодний архів — це остаточний стан локальної публікації відкритого тексту (файли розділені за місяцями). Видалення архіву не змінить DAG; якщо історія відсутня, її можна отримати від федеративних сусідів.",
-			"settingsArchiveFilesTitle": "Архівні файли",
-			"settingsArchiveEmpty": "Холодних архівних файлів поки що немає.",
-			"settingsArchiveColChannel": "Канал",
-			"settingsArchiveColMonth": "Місяць",
-			"settingsArchiveColSize": "Розмір",
-			"settingsArchiveDeleteBefore": "Видалити цей місяць раніше",
-			"settingsArchiveDeleteButton": "Видалити холодний архів",
-			"settingsArchiveDeleteHint": "Видаляється лише локальний архів/*.jsonl; гарячі точки та прив’язки DAG не впливають.",
-			"settingsArchiveAdminOnly": "Ця машина ще не має даних холодного архіву для цієї групи.",
-			"settingsArchiveDeleteInvalidMonth": "Виберіть дійсний місяць РРРР-ММ.",
-			"settingsArchiveDeleteConfirm": "Ви впевнені, що хочете видалити всі холодні архівні файли, старші за ${month}? Ця операція необоротна.",
-			"settingsArchiveDeleteOk": "${files} архівних файлів видалено.",
-			"settingsArchiveDeleteFailed": "Не вдалося видалити архів: ${error}",
-			"settingsEventRetentionDepth": "Глибина збереження подій DAG",
-			"settingsEventRetentionMs": "Час збереження події DAG",
-			"settingsCompactTriggerDepth": "Матеріалізована глибина тригера стиснення",
-			"settingsMessageRateLimit": "Обмеження кількості повідомлень (повідомлення/хвилина/сутність)",
-			"settingsAutoReplyTokenBucket": "Автоматичне планування тиску відповіді (Token Bucket)",
-			"settingsAutoReplyTokenBucketHint": "Після ввімкнення кожен персонаж підтримує відро маркера за каналом; onMessage тимчасово не запускається, коли відро порожнє, що може перешкоджати безперервному оновленню екрана під час пікових періодів.",
-			"settingsIceServers": "Сервер ICE/TURN",
-			"settingsIceServersAdd": "Додати сервер",
-			"settingsIceServersHint": "Для NAT traversal у WebRTC і федеративному P2P. Імʼя користувача та пароль TURN зберігаються лише на цьому пристрої й не синхронізуються через федерацію.",
-			"settingsIceUrl": {
-				"aria-label": "Адреса ICE-сервера",
-				"placeholder": "stun:host:19302"
-			},
-			"settingsIceUser": {
-				"aria-label": "Імʼя користувача TURN",
-				"placeholder": "Імʼя користувача (необовʼязково)"
-			},
-			"settingsIceCred": {
-				"aria-label": "Пароль TURN",
-				"placeholder": "Пароль (необовʼязково)"
-			},
-			"settingsIceRemove": {
-				"aria-label": "Видалити цей сервер"
-			},
-			"settingsFileCeMode": "Режим шифрування файлів",
-			"settingsFileCeModeConvergent": "Конвергентне шифрування (може видалити дублікати)",
-			"settingsFileCeModeRandom": "Режим високої конфіденційності (випадкові ключі, без дедуплікації)",
-			"settingsFileCeModeHint": "Режим високої конфіденційності використовує випадковий contentKey для кожного блоку та позначає ceMode=random; це зменшує ризик того, що відкритий текст можна вгадати, але збільшує використання пам’яті та пропускної здатності.",
 			"channelsTitle": "Канал",
-			"createGroup": "Створити нову групу",
 			"members": "Учасники",
 			"membersHint": "Список учасників синхронізується контрольною точкою (заповнювач)",
-			"streamTest": "Перевірте медіапристрої",
 			"loadError": "Не вдалося завантажити групу",
-			"remoteNodeTimeout": "Віддалений вузол не відповідає, спробуйте пізніше.",
-			"remoteUnavailable": "Віддалений компонент недоступний або не може маршрутизувати RPC",
 			"messagesLoadFailed": "Помилка завантаження повідомлення",
 			"sendFailed": "Не вдалося відправити",
 			"chatNotLoaded": "Основний чат не завантажується: будь ласка, відкрийте розмову з тим же ідентифікатором, що й група, у головному інтерфейсі та повторіть спробу.",
-			"createFailed": "Не вдалося створити групу",
 			"newGroupName": "Нова група",
-			"streamOk": "Медіа-потік отримано (зупинено, не транслюється)",
-			"remoteUnsafe": "Це повідомлення надійшло з віддаленого місця, а автора немає в локальному списку надійних. Відтворення форматованого тексту вимкнено.",
 			"trustAuthor": {
 				"textContent": "Довіра",
 				"title": "Довіряйте цьому автору (дозволити небезпечний HTML)"
 			},
 			"trustAuthorOk": "Цьому автору довіряють, і він відображає форматований текст",
-			"voteCast": "Голосувати",
 			"listEmpty": "(Поки немає елементів навігації, адміністратори можуть оновлювати елементи списку через API)",
 			"listChannelReadonly": {
 				"placeholder": "Список каналів відображає лише навігаційні картки та не надсилає повідомлення"
 			},
-			"streamNoEmbed": {
-				"textContent": "Потокова адреса має бути вбудованою сторінкою https://, або спочатку потрібно налаштувати та оновити параметри групи, щоб отримати маркер перегляду."
-			},
-			"streamNoSfu": {
-				"textContent": "streamingSfuWss не налаштовано; адміністратори можуть заповнити адресу перегляду LiveKit/mediasoup у налаштуваннях групи."
-			},
-			"messageDeleted": "Повідомлення видалено",
-			"messageDeletedBracket": "[Повідомлення видалено]",
-			"messageWithAttachments": "${text} (${n} вкладених файлів)",
-			"voteBlockHeading": "[${prefix}] ${question}",
-			"voteBlockHeadingTagged": "[Голосувати] ${question}",
-			"voteCastLine": "[${prefix}] Голос: ${choice}",
-			"voteCastLineTagged": "[Голосувати] Голосувати: ${choice}",
-			"voteOptionsPreview": "[${prefix}] ${options}",
-			"voteOptionsPreviewTagged": "[Голосувати] ${options}",
-			"voteDeadlineLineOpen": "Кінцевий термін: ${date}",
-			"voteDeadlineLineClosed": "Закінчення: ${date} [Закінчено]",
-			"pinMessageLine": "[Наверх] ${targetId}",
-			"unpinMessageLine": "[Відкріпити] ${targetId}",
-			"stickerPrefixLine": "[${label}]",
-			"stickerPrefixLineTagged": "[стікер]",
-			"feedbackDagLine": "[${label}]",
-			"feedbackDagLineWithNote": "[${label}] ${note}",
-			"feedbackPreviewLine": "${tag}${sep}${note}",
-			"feedbackPreviewTaggedNote": "${tag} ${note}",
 			"mentionHandle": "@${name}",
 			"mentionInsert": "@${name}",
-			"feedbackUp": "Похвала",
-			"feedbackDown": "Не подобається",
 			"attachmentsHint": "(${n} вкладень)",
-			"pinMessage": "Закріпити",
-			"unpinMessage": "Відкріпити",
-			"pinThisMessage": "Напишіть цю статтю в DAG і закріпіть її вгорі",
-			"pinAction": {
-				"textContent": "Закріпити",
-				"title": "Напишіть цю статтю в DAG і закріпіть її вгорі"
-			},
-			"unpinAction": {
-				"textContent": "Відкріпити",
-				"title": "Відкріпити"
-			},
-			"pinOk": "Записав і закріпив",
-			"unpinOk": "Відкріплено",
-			"pinFailed": "Не вдалося закріпити",
-			"menuCopyText": "Копіювати текст",
-			"menuExportHtml": "Експортувати в HTML",
-			"menuCopyId": "Копіювати ідентифікатор повідомлення",
 			"copied": "Скопійовано",
 			"addBookmark": {
 				"title": "Додати в закладки поточний канал"
@@ -1456,9 +1212,6 @@
 			"bookmarkExists": "Закладка вже існує",
 			"bookmarkAdded": "Додано в закладки",
 			"bookmarkSaveFailed": "Не вдалося зберегти закладки",
-			"remoteTyping": "${name} друкує...",
-			"remoteTypingTwo": "${name1}, ${name2} Вхід...",
-			"remoteTypingMany": "${name} і ${count} інших пишуть…",
 			"localAiLabel": "Рідна роль:",
 			"forceTriggerOne": {
 				"title": "Змусити ${name} говорити"
@@ -1467,23 +1220,10 @@
 			"forceTriggerAllLocalTitle": {
 				"title": "Змусити всіх місцевих персонажів говорити"
 			},
-			"messageRefAnchor": "Повідомлення цитати: ${id}",
-			"settingsFedPartition": "Кількість федеративних партицій",
-			"settingsRtcBudget": "Бюджет підключення RTC",
-			"settingsRtcJoinRate": "RTC додав ліміт за хвилину",
-			"settingsFedTuningHint": "Запис параметрів групи DAG; після модифікації рекомендується повторно прив'язати кімнату федерації.",
-			"settingsAutoChannelGc": "Автоматично очищати тихі канали",
-			"settingsAutoChannelGcHint": "Щонайбільше 2 ізольовані острівні канали, які були мовчазні ≥30 днів і недоступні, будуть видалені, коли матеріалізуються.",
 			"quoteHeader": "> **${sender}**${sep}${time}",
 			"quoteHeaderWithTime": "> **${sender}** · ${time}",
 			"quoteHeaderWithoutTime": "> **${sender}**",
 			"stopGenerating": "Припинити генерацію",
-			"messageAborted": "Перерваний",
-			"avStart": "Запустити медіа",
-			"avMute": "Без звуку",
-			"avSwap": "Головний екран",
-			"avStop": "СТІЙ",
-			"avNeedStreamChannel": "Будь ласка, використовуйте аудіо та відео в каналах типу \"потокове медіа\".",
 			"reactionAdd": {
 				"title": "Додати відповідь"
 			},
@@ -1494,25 +1234,11 @@
 				"title": "Додайте смайлики"
 			},
 			"reactionPrompt": "Введіть emoji (Unicode)",
-			"channelTypeLabel": "Тип каналу",
-			"channelTypeText": "Канал чату",
-			"channelTypeList": "Канал списку/форуму",
-			"channelTypeStreaming": "Потоковий канал",
 			"convertToText": "Перетворити на канал чату",
 			"convertToList": "Перетворити на канал списку/форуму",
 			"setAsDefault": "Встановити як канал групи за умовчанням",
 			"isDefault": "Поточний замовчування",
-			"defaultChannelSet": "Встановити як канал за умовчанням",
-			"defaultChannelSetFailed": "Не вдалося встановити канал за умовчанням",
 			"channelUpdateFailed": "Не вдалося оновити канал",
-			"voteCreate": "Ініціюйте голосування",
-			"votePromptDeadline": "Кінцевий термін (залиште порожнім, щоб не було обмеження за часом, формат 2026-01-01 23:59)",
-			"voteTooFewOptions": "Потрібно принаймні два варіанти",
-			"voteCreateFailed": "Не вдалося створити опитування",
-			"voteFor": "Інвестуйте ${option}",
-			"voteDeadline": "Дедлайн",
-			"voteEnded": "Закінчився",
-			"voteTotal": "Усього ${n} голосів",
 			"record": "Запис",
 			"fileDownload": {
 				"title": "Завантажити файл"
@@ -1526,44 +1252,438 @@
 			"saveSticker": {
 				"title": "Зберігайте стікери/емоційки у вибране"
 			},
-			"stickerSaved": "Збережено в бібліотеці стікерів",
-			"stickerDefaultName": "Стікер",
 			"deleteMessage": {
 				"title": "Видалити повідомлення"
 			},
 			"deleteConfirm": "Підтвердити видалення цього повідомлення?",
-			"editMessage": {
-				"title": "Редагувати повідомлення"
-			},
 			"saveEdit": "Зберегти",
 			"cancelEdit": "Скасувати",
 			"editingMessage": "Редагування",
-			"editConfirm": "Підтвердити (Ctrl+Enter)",
-			"editCancel": "Скасувати (Esc)",
-			"editHint": "Ctrl+Enter Підтвердити · Esc Скасувати",
-			"editEmptyText": "Вміст повідомлення не може бути порожнім",
-			"createGroupTitle": "Створити нову групу",
 			"groupNameLabel": "Назва групи",
 			"groupName": {
 				"placeholder": "Моя група"
 			},
-			"defaultChannelLabel": "Канал за замовчуванням",
-			"defaultChannel": {
-				"placeholder": "Загальний"
-			},
-			"createGroupFailed": "Не вдалося створити групу",
-			"createChannelFailed": "Не вдалося створити канал",
 			"moreActions": {
 				"title": "Більше дій"
 			},
-			"thread": "Гілка",
-			"threadBack": "Назад",
-			"threadBreadcrumbRootTitle": "Перейти до початкової точки шляху (перший рівень)",
-			"threadBreadcrumbMiddleTitle": "Розгорніть середній шар і виберіть рівень, на який потрібно перейти",
-			"threadBreadcrumbMiddleSummary": "Середній шар ${count}",
-			"menuShareExternal": "Поділитися за зовнішнім посиланням",
 			"shareExternalOk": "Завантажив і скопіював посилання",
-			"shareExternalFailed": "Помилка завантаження, перевірте мережу"
+			"shareExternalFailed": "Помилка завантаження, перевірте мережу",
+			"ownerSuccession": {
+				"main": "Ініціювати голосування за правонаступництво",
+				"autoSignHint": "Після надсилання машина автоматично підпише початкове число підпису групи без введення закритого ключа. У групі з декількома адміністраторами більше половини адміністраторів повинні подати один і той самий бюлетень (однаковий ідентифікатор голосування та кандидат) локально.",
+				"candidateLabel": "Хеш відкритого ключа наступника",
+				"description": "Передати найвищі адміністративні повноваження групи (MANAGE_ADMINS) обраному учаснику. Лише для адміністраторів.",
+				"failed": "Не вдалося надіслати голосування щодо правонаступництва",
+				"needHash": "Будь ласка, введіть хеш відкритого ключа наступника",
+				"selfButton": "Висувайте себе",
+				"submitted": "Ваш підпис зафіксовано в бюлетені для голосування щодо престолонаслідування."
+			},
+			"channelType": {
+				"label": "Тип каналу",
+				"list": "Канал списку/форуму",
+				"streaming": "Потоковий канал",
+				"text": "Канал чату"
+			},
+			"settings": {
+				"archive": {
+					"adminOnly": "Ця машина ще не має даних холодного архіву для цієї групи.",
+					"colChannel": "Канал",
+					"colMonth": "Місяць",
+					"colSize": "Розмір",
+					"delete": {
+						"before": "Видалити цей місяць раніше",
+						"button": "Видалити холодний архів",
+						"confirm": "Ви впевнені, що хочете видалити всі холодні архівні файли, старші за ${month}? Ця операція необоротна.",
+						"failed": "Не вдалося видалити архів: ${error}",
+						"hint": "Видаляється лише локальний архів/*.jsonl; гарячі точки та прив’язки DAG не впливають.",
+						"invalidMonth": "Виберіть дійсний місяць РРРР-ММ.",
+						"ok": "${files} архівних файлів видалено."
+					},
+					"empty": "Холодних архівних файлів поки що немає.",
+					"filesTitle": "Архівні файли",
+					"hint": "Холодний архів — це остаточний стан локальної публікації відкритого тексту (файли розділені за місяцями). Видалення архіву не змінить DAG; якщо історія відсутня, її можна отримати від федеративних сусідів.",
+					"title": "Зберігання та холодне архівування"
+				},
+				"autoChannelGc": "Автоматично очищати тихі канали",
+				"autoChannelGcHint": "Щонайбільше 2 ізольовані острівні канали, які були мовчазні ≥30 днів і недоступні, будуть видалені, коли матеріалізуються.",
+				"autoReply": {
+					"frequency": "Автоматично ініціювати рольові відповіді (після кожних N повідомлень користувача, 0 вимкнено)",
+					"frequencyHint": "0 означає вимкнено; @згадки все одно активуються негайно",
+					"tokenBucket": "Автоматичне планування тиску відповіді (Token Bucket)",
+					"tokenBucketHint": "Після ввімкнення кожен персонаж підтримує відро маркера за каналом; onMessage тимчасово не запускається, коли відро порожнє, що може перешкоджати безперервному оновленню екрана під час пікових періодів."
+				},
+				"batterySaver": "Режим низького енергоспоживання (зменшений пул з’єднань федерації та реле)",
+				"compactTriggerDepth": "Матеріалізована глибина тригера стиснення",
+				"discoveryBlurb": "Введення в Discovery (необов'язково)",
+				"discoveryPublic": "Відкрийте цю групу для об’єднаного виявлення (без приєднання до ключа групи)",
+				"discoveryTitle": "Назва списку виявлення (необов’язково)",
+				"eventRetentionDepth": "Глибина збереження подій DAG",
+				"eventRetentionMs": "Час збереження події DAG",
+				"explorePeers": "Дослідіть сусідні слоти",
+				"fedPartition": "Кількість федеративних партицій",
+				"fedTuningHint": "Запис параметрів групи DAG; після модифікації рекомендується повторно прив'язати кімнату федерації.",
+				"fileCe": {
+					"mode": "Режим шифрування файлів",
+					"modeConvergent": "Конвергентне шифрування (може видалити дублікати)",
+					"modeHint": "Режим високої конфіденційності використовує випадковий contentKey для кожного блоку та позначає ceMode=random; це зменшує ризик того, що відкритий текст можна вгадати, але збільшує використання пам’яті та пропускної здатності.",
+					"modeRandom": "Режим високої конфіденційності (випадкові ключі, без дедуплікації)"
+				},
+				"gossipTtl": "Пересилання пліток TTL (кількість переходів)",
+				"hlcMaxSkew": "Верхня межа майбутнього зсуву HLC (мілісекунди)",
+				"hotLatest": "Збереження гарячої зони (остання кількість публікацій на канал)",
+				"hotWindowHint": "Пости гарячої зони зберігаються в КПП і кеші повідомлень; решта дописів записуються до щомісячного холодного архіву після матеріалізації, а потім згортаються з подій процесу DAG.",
+				"ice": {
+					"cred": {
+						"aria-label": "Пароль TURN",
+						"placeholder": "Пароль (необовʼязково)"
+					},
+					"remove": {
+						"aria-label": "Видалити цей сервер"
+					},
+					"servers": "Сервер ICE/TURN",
+					"serversAdd": "Додати сервер",
+					"serversHint": "Для NAT traversal у WebRTC і федеративному P2P. Імʼя користувача та пароль TURN зберігаються лише на цьому пристрої й не синхронізуються через федерацію.",
+					"url": {
+						"aria-label": "Адреса ICE-сервера",
+						"placeholder": "stun:host:19302"
+					},
+					"user": {
+						"aria-label": "Імʼя користувача TURN",
+						"placeholder": "Імʼя користувача (необовʼязково)"
+					}
+				},
+				"maxDagPayload": "DAG максимальна кількість байтів для однієї події",
+				"maxPeers": "Кришка федеративного підключення",
+				"message": {
+					"rateLimit": "Обмеження кількості повідомлень (повідомлення/хвилина/сутність)",
+					"retention": "Текст повідомлення автоматично видаляється",
+					"retention1y": "1 рік тому",
+					"retention30d": "30 днів тому",
+					"retention90d": "90 днів тому",
+					"retentionForever": "Постійне зберігання (лише стислі події DAG)",
+					"retentionHint": "Видима історія не видаляється автоматично за замовчуванням. Якщо ввімкнено, буде видалено лише локальний гарячий кеш повідомлень; остаточні повідомлення зберігатимуться в холодному архіві та контрольній точці."
+				},
+				"page": {
+					"title": "Налаштування групи",
+					"kicker": "Налаштування групи",
+					"subtitle": "Керуйте інформацією про групу, учасниками та загальними функціями. Низькочастотні дозволи, сховище та інструменти аудиту централізовані в розширених налаштуваннях.",
+					"backToChat": "Повернутися до чату",
+					"navigationLabel": "Класифікація параметрів групи",
+					"activeEmojiPackLabel": "Набір у редагуванні",
+					"membersTitle": "Список учасників",
+					"overviewTitle": "Огляд групи",
+					"overviewHint": "Інформація лише для читання. Якщо у вас є дозволи на керування, ви можете редагувати інформацію про групу та політику в «Основному».",
+					"governanceHint": "Напишіть політику групового рівня DAG; потрібні дозволи адміністратора або MANAGE_ADMINS.",
+					"governanceDenied": "У вас немає дозволу змінювати параметри керування групою.",
+					"rolesDenied": "У вас немає дозволу MANAGE_ROLES для редагування ролей.",
+					"notMember": "Ви більше не учасник цієї групи; локальні дані групи автоматично очищено після виходу.",
+					"basicTitle": "Керування групою",
+					"profileSectionTitle": "Інформація про групу",
+					"profileSectionHint": "Назва, вступ і спосіб приєднання до групи будуть записані в метадані групи.",
+					"behaviorSectionTitle": "Поведінка запуску",
+					"networkSectionTitle": "Федерація і з'єднання",
+					"retentionSectionTitle": "Резерв і ліміт тарифу",
+					"mediaSectionTitle": "Дзвінки та файли",
+					"nameLabel": "Назва групи",
+					"descriptionLabel": "Опис групи",
+					"joinPolicyLabel": "Стратегія входу в групу",
+					"joinInviteOnly": "Тільки запрошені",
+					"joinPow": "Потрібен PoW",
+					"powDifficultyLabel": "Складність PoW",
+					"securityAdvancedTitle": "Безпека та операції власника групи",
+					"securityAdvancedDescription": "Ключова ротація та наступність керівника групи; неправильні операції можуть вплинути на доступ учасників",
+					"powDifficultyTip": "Підтвердження складності роботи. Чим вище значення, тим довший час розрахунку необхідний незнайомцям для приєднання до публічної групи.",
+					"maxDagPayloadTip": "Верхня межа даних, дозволених для однієї групової події. Якщо він занадто великий, це призведе до збільшення пам’яті для синхронізації та витрат на мережу.",
+					"trustedPeersTip": "Кількість сусідів федерації з високою репутацією, які мають пріоритет для підтримки зв’язку.",
+					"gossipTtlTip": "Максимальна кількість федеративних вузлів, через які можна пересилати повідомлення. Збільшення розширює охоплення, але також збільшує трафік.",
+					"hlcTip": "Максимальний проміжок часу, протягом якого годинник віддаленого вузла може бути швидшим за годинник локального вузла, який використовується для відхилення аномальних майбутніх подій.",
+					"sfuTip": "Необов'язкова зовнішня адреса AV-ретранслятора. Залиште порожнім для вбудованих P2P/ретрансльованих дзвінків.",
+					"iceTip": "Допомогти WebRTC проникнути в маршрутизатор; якщо пряме з’єднання не вдається, TURN пересилає аудіо-, відео- та об’єднаний трафік від свого імені.",
+					"fileEncryptionTip": "Конвергентне шифрування дедуплікує, але виявляє той факт, що файли однакові; випадкові ключі більш закриті, але займають більше місця.",
+					"allowDangerousHtml": "Повідомлення довіреного автора дозволяють вбудований HTML",
+					"save": "Зберегти налаштування",
+					"loadFailed": "Не вдалося завантажити налаштування групи: ${error}",
+					"saveSuccess": "Налаштування групи збережено",
+					"saveFailed": "Не вдалося зберегти налаштування: ${error}",
+					"rolesTitle": "Ролі та дозволи",
+					"roleDefault": "За замовчуванням",
+					"permissionUpdated": "Дозволи оновлено",
+					"permissionUpdateFailed": "Не вдалося оновити дозволи: ${error}",
+					"noMembers": "Ще немає учасників",
+					"memberRoles": "Роль:",
+					"ban": "Заборона",
+					"banConfirm": "Ви впевнені, що бажаєте забанити учасника ${name}?",
+					"banSuccess": "Учасника заблоковано",
+					"banFailed": "Не вдалося забанити учасника: ${error}",
+					"bannedTitle": "Забанений учасник",
+					"unban": "Розблокувати",
+					"unbanConfirm": "Ви впевнені, що бажаєте розблокувати учасника ${name}?",
+					"unbanSuccess": "Учасника було розблоковано",
+					"unbanFailed": "Не вдалося розблокувати: ${error}",
+					"gshGenerationRetentionHint": "Наразі зберігаються лише останні 64 покоління історії головного ключа файлу. Найстаріші історичні файли можуть не вдатися розшифрувати після його перевищення, тому рекомендується регулярно архівувати важливі дані.",
+					"gshGenerationNearLimit": "Наразі повернуто до покоління ${generation} головних ключів файлів (до ${maxGenerations} поколінь). Продовження частої ротації призведе до вилучення найстаріших історичних ключів.",
+					"ownerSuccession": "Наступність керівника групи",
+					"ownerSuccessionOk": "Наступність лідера групи вступила в силу",
+					"ownerSuccessionFailed": "Помилка зміни лідера групи: ${error}",
+					"defaultEmojiPack": {
+						"failed": "Не вдалося задати набір за замовчуванням",
+						"hint": "Під час приєднання автоматично додається до обраного учасників. Після зміни замінюється лише старий набір за замовчуванням, якщо він ще в обраному.",
+						"label": "Набір емодзі за замовчуванням",
+						"ok": "Набір за замовчуванням оновлено"
+					},
+					"channelArchive": {
+						"hint": "Імпорт повного архіву JSON каналу створить новий звичайний текстовий канал у цій групі та відновить історію (повторно підписану вами; вкладення зберігають лише метадані).",
+						"import": "Імпорт каналу JSON",
+						"importFailed": "Помилка імпорту: ${error}",
+						"importOk": "Імпортовано ${count} повідомлень, відкривається новий канал...",
+						"title": "Архів каналу"
+					},
+					"channelPerms": {
+						"addRole": "Додати заміну ролі",
+						"denied": "У вас немає дозволу MANAGE_CHANNELS для редагування перевизначень дозволів каналу.",
+						"hint": "Установіть перевизначення дозволів ролі для певних каналів. Нерозкриті елементи успадковують дозволи групової ролі.",
+						"noChannels": "Наразі немає каналу для налаштування",
+						"removeRole": "Видаліть цю заміну ролі",
+						"selectChannel": "Канал",
+						"stateAllow": "Дозволяють",
+						"stateDeny": "Відхилити",
+						"stateNeutral": "Успадкувати",
+						"updateFailed": "Не вдалося оновити дозволи каналу: ${error}",
+						"updated": "Дозволи каналу оновлено"
+					},
+					"advanced": {
+						"description": "Параметри мережі, сховища, обмеження швидкості та шифрування; будь ласка, збережіть значення за замовчуванням, якщо ви не впевнені",
+						"hubDescription": "Ці функції змінюють структуру дозволів групи, історичні дані або записи керування; регулюйте лише тоді, коли це явно необхідно.",
+						"hubTitle": "Розширені налаштування",
+						"navigationLabel": "Категорія розширених налаштувань",
+						"title": "Розширені налаштування"
+					},
+					"emojis": {
+						"create": {
+							"pack": "Новий набір емодзі",
+							"packFailed": "Не вдалося створити: ${error}",
+							"packOk": "Набір емодзі створено",
+							"packPrompt": "ID набору"
+						},
+						"delete": "Видалити смайлик",
+						"deleteConfirm": "Ви впевнені, що хочете видалити цю групу смайлів?",
+						"deleteFailed": "Не вдалося видалити: ${error}",
+						"deleteOk": "Смайлик видалено",
+						"empty": "Групових виразів ще немає",
+						"hint": "Учасники можуть вставляти або надсилати ці смайли в чаті; невстановлені образи завантажуються на вимогу через об’єднані вузли.",
+						"packGroupOption": "${packId} (група)",
+						"title": "Згрупуйте спеціальні вирази",
+						"upload": "Завантажте смайли",
+						"uploadFailed": "Помилка завантаження: ${error}",
+						"uploadOk": "Емодзі завантажено"
+					},
+					"invite": {
+						"clipboard": "Ідентифікатор групи: ${groupId}\nКод запрошення: ${code}\nПриєднуйтесь: ${url}",
+						"code": "Код запрошення",
+						"copied": "Інформацію про групу скопійовано",
+						"copy": "Копіювати інформацію про групу",
+						"copyFailed": "Помилка копіювання",
+						"expires": "Термін дії: ${date}",
+						"groupId": "ID групи",
+						"hint": "Згенеруйте код короткострокового запрошення (за замовчуванням 1 година). Інша сторона заповнює ідентифікатор групи та код запрошення в «Приєднатися до групи».",
+						"mint": "Згенерувати код запрошення",
+						"title": "Запросити"
+					},
+					"delete": {
+						"confirm": "Ви впевнені, що хочете видалити цю групу? Цю дію неможливо скасувати, і всі повідомлення та дані учасників буде остаточно видалено.",
+						"failed": "Не вдалося видалити групу: ${error}",
+						"group": "Видалити групу",
+						"role": "Видалити роль",
+						"roleConfirm": "Ви впевнені, що хочете видалити цю роль?",
+						"roleFailed": "Не вдалося видалити роль: ${error}",
+						"roleSuccess": "Роль видалено",
+						"success": "Групу видалено"
+					},
+					"create": {
+						"role": "Створіть роль",
+						"roleFailed": "Не вдалося створити роль: ${error}",
+						"rolePrompt": "Введіть ім'я персонажа:",
+						"roleSuccess": "Роль створено"
+					},
+					"perm": {
+						"aDD_REACTIONS": "Додати реакцію",
+						"aDMIN": "Адміністратор",
+						"bAN_MEMBERS": "Забанити учасника",
+						"bYPASS_RATE_LIMIT": "Обхід обмеження кількості повідомлень",
+						"cREATE_THREADS": "Створити підканал",
+						"iNVITE_MEMBERS": "Запросити учасників",
+						"kICK_MEMBERS": "Вигнання учасників",
+						"mANAGE_": {
+							"cHANNELS": "Керувати каналом",
+							"fILES": "Керувати файлами",
+							"mESSAGES": "Керівні повідомлення",
+							"rOLES": "Роль управління"
+						},
+						"pIN_MESSAGES": "Закріплене повідомлення",
+						"sEND_MESSAGES": "Надіслати повідомлення",
+						"sEND_STICKERS": "Надішліть стікери",
+						"sTREAM": "Голос",
+						"uPLOAD_FILES": "Завантажувати файли",
+						"vIEW_CHANNEL": "Переглянути канал"
+					},
+					"kick": {
+						"main": "Вигнати",
+						"confirm": "Ви впевнені, що хочете вигнати учасника ${name}?",
+						"failed": "Не вдалося вигнати учасника: ${error}",
+						"selfNodeWarning": "Попередження: цей учасник використовує ту саму ідентифікацію вузла, що й ви. Вас також буде видалено з групи після виключення. Ви впевнені, що бажаєте продовжити?",
+						"success": "Учасника вигнано"
+					},
+					"tabs": {
+						"advanced": "Просунутий",
+						"audit": "Ревізійний журнал",
+						"channelPermissions": "Дозволи каналу",
+						"emojis": "Емодзі",
+						"general": "Основний",
+						"members": "Учасники",
+						"permissions": "Дозволи ролі",
+						"storage": "Зберігання та архівування"
+					},
+					"key": {
+						"managementTip": "Нові ключі потрібно перерозподілити між учасниками після ротації. Заходи вручну слід вживати, лише якщо ви підозрюєте, що ключ було зламано.",
+						"managementTitle": "Управління ключами",
+						"rotate": "Повернути головний ключ файлу групи",
+						"rotateConfirm": "Ви впевнені, що бажаєте вручну змінити головний ключ цього файлу групи? Новим учасникам потрібно повторно синхронізувати ключ файлу історії.",
+						"rotateFailed": "Помилка ротації ключа: ${error}",
+						"rotateOk": "Ключ повернено"
+					}
+				},
+				"pinContext": "Верхнє сусідство (±N сусідів)",
+				"rtcBudget": "Бюджет підключення RTC",
+				"rtcJoinRate": "RTC додав ліміт за хвилину",
+				"streamGeneratingIdle": "Тайм-аут простою, згенерований штучним інтелектом (мілісекунди)",
+				"streamingSfu": "Потокова адреса SFU WebSocket (необов'язково)",
+				"trustedPeers": "Слот довірчого сусіда (Top-K)",
+				"wantIdsBudget": "Бюджет єдиного WantIds"
+			},
+			"feedback": {
+				"dagLine": "[${label}]",
+				"dagLineWithNote": "[${label}] ${note}",
+				"down": "Не подобається",
+				"previewLine": "${tag}${sep}${note}",
+				"previewTaggedNote": "${tag} ${note}",
+				"up": "Похвала"
+			},
+			"message": {
+				"aborted": "Перерваний",
+				"deleted": "Повідомлення видалено",
+				"deletedBracket": "[Повідомлення видалено]",
+				"prefixSticker": "Стікер",
+				"refAnchor": "Повідомлення цитати: ${id}",
+				"withAttachments": "${text} (${n} вкладених файлів)"
+			},
+			"default": {
+				"channel": {
+					"placeholder": "Загальний"
+				},
+				"channelLabel": "Канал за замовчуванням",
+				"channelSet": "Встановити як канал за умовчанням",
+				"channelSetFailed": "Не вдалося встановити канал за умовчанням"
+			},
+			"sticker": {
+				"defaultName": "Стікер",
+				"prefixLine": "[${label}]",
+				"prefixLineTagged": "[стікер]",
+				"saved": "Збережено в бібліотеці стікерів"
+			},
+			"remote": {
+				"nodeTimeout": "Віддалений вузол не відповідає, спробуйте пізніше.",
+				"typing": "${name} друкує...",
+				"typingMany": "${name} і ${count} інших пишуть…",
+				"typingTwo": "${name1}, ${name2} Вхід...",
+				"unavailable": "Віддалений компонент недоступний або не може маршрутизувати RPC",
+				"unsafe": "Це повідомлення надійшло з віддаленого місця, а автора немає в локальному списку надійних. Відтворення форматованого тексту вимкнено."
+			},
+			"create": {
+				"channelFailed": "Не вдалося створити канал",
+				"failed": "Не вдалося створити групу",
+				"group": "Створити нову групу",
+				"groupFailed": "Не вдалося створити групу",
+				"groupTitle": "Створити нову групу"
+			},
+			"stream": {
+				"generationFailed": "Генерація штучного інтелекту закінчилася та не була завершена, оновлення зупинено.",
+				"noEmbed": {
+					"textContent": "Потокова адреса має бути вбудованою сторінкою https://, або спочатку потрібно налаштувати та оновити параметри групи, щоб отримати маркер перегляду."
+				},
+				"noSfu": {
+					"textContent": "streamingSfuWss не налаштовано; адміністратори можуть заповнити адресу перегляду LiveKit/mediasoup у налаштуваннях групи."
+				},
+				"ok": "Медіа-потік отримано (зупинено, не транслюється)",
+				"test": "Перевірте медіапристрої"
+			},
+			"thread": {
+				"main": "Гілка",
+				"back": "Назад",
+				"breadcrumbMiddleSummary": "Середній шар ${count}",
+				"breadcrumbMiddleTitle": "Розгорніть середній шар і виберіть рівень, на який потрібно перейти",
+				"breadcrumbRootTitle": "Перейти до початкової точки шляху (перший рівень)"
+			},
+			"unpin": {
+				"action": {
+					"textContent": "Відкріпити",
+					"title": "Відкріпити"
+				},
+				"message": "Відкріпити",
+				"messageLine": "[Відкріпити] ${targetId}",
+				"ok": "Відкріплено"
+			},
+			"vote": {
+				"blockHeading": "[${prefix}] ${question}",
+				"blockHeadingTagged": "[Голосувати] ${question}",
+				"cast": "Голосувати",
+				"castLine": "[${prefix}] Голос: ${choice}",
+				"castLineTagged": "[Голосувати] Голосувати: ${choice}",
+				"create": "Ініціюйте голосування",
+				"createFailed": "Не вдалося створити опитування",
+				"deadline": "Дедлайн",
+				"deadlineLineClosed": "Закінчення: ${date} [Закінчено]",
+				"deadlineLineOpen": "Кінцевий термін: ${date}",
+				"ended": "Закінчився",
+				"for": "Інвестуйте ${option}",
+				"optionsPreview": "[${prefix}] ${options}",
+				"optionsPreviewTagged": "[Голосувати] ${options}",
+				"promptDeadline": "Кінцевий термін (залиште порожнім, щоб не було обмеження за часом, формат 2026-01-01 23:59)",
+				"tooFewOptions": "Потрібно принаймні два варіанти",
+				"total": "Усього ${n} голосів"
+			},
+			"edit": {
+				"cancel": "Скасувати (Esc)",
+				"confirm": "Підтвердити (Ctrl+Enter)",
+				"emptyText": "Вміст повідомлення не може бути порожнім",
+				"hint": "Ctrl+Enter Підтвердити · Esc Скасувати",
+				"message": {
+					"title": "Редагувати повідомлення"
+				}
+			},
+			"menu": {
+				"copyId": "Копіювати ідентифікатор повідомлення",
+				"copyText": "Копіювати текст",
+				"exportHtml": "Експортувати в HTML",
+				"shareExternal": "Поділитися за зовнішнім посиланням"
+			},
+			"pin": {
+				"action": {
+					"textContent": "Закріпити",
+					"title": "Напишіть цю статтю в DAG і закріпіть її вгорі"
+				},
+				"failed": "Не вдалося закріпити",
+				"message": "Закріпити",
+				"messageLine": "[Наверх] ${targetId}",
+				"ok": "Записав і закріпив",
+				"thisMessage": "Напишіть цю статтю в DAG і закріпіть її вгорі"
+			},
+			"av": {
+				"mute": "Без звуку",
+				"needStreamChannel": "Будь ласка, використовуйте аудіо та відео в каналах типу \"потокове медіа\".",
+				"start": "Запустити медіа",
+				"stop": "СТІЙ",
+				"swap": "Головний екран"
+			}
 		},
 		"hub": {
 			"title": "Чат",
@@ -1576,10 +1696,6 @@
 				"title": "Роль",
 				"tip": "Роль"
 			},
-			"friendsTooltip": {
-				"title": "Друзі",
-				"tip": "Друзі"
-			},
 			"inboxTooltip": {
 				"title": "Вхідні",
 				"tip": "Міжгрупова скринька вхідних повідомлень"
@@ -1587,18 +1703,6 @@
 			"inbox": {
 				"title": "Вхідні",
 				"filtersLabel": "Фільтр вхідних повідомлень",
-				"tabMention": "Згадка",
-				"tabMessage": "Всі новини",
-				"tabCare": "Особлива турбота",
-				"tabVoteClosed": "Голосування закінчується",
-				"emptyMentionTitle": "Про вас ще ніхто не згадував",
-				"emptyMentionDescription": "Коли інші учасники @ вас у груповому чаті, повідомлення відображатимуться тут.",
-				"emptyMessageTitle": "Вхідні порожні",
-				"emptyMessageDescription": "Тут відображатимуться оновлення повідомлень із різних групових чатів і каналів.",
-				"emptyCareTitle": "Особливе занепокоєння: ще немає новин",
-				"emptyCareDescription": "Коли нові повідомлення надсилаються від учасників, які вам особливо не байдужі, ви можете побачити їх тут якомога швидше.",
-				"emptyVoteTitle": "Немає закритих дільниць",
-				"emptyVoteDescription": "Після завершення голосування результати будуть підсумовані тут.",
 				"rowLabel": {
 					"aria-label": "${author} сказав у ${group} ${channel}: ${preview}"
 				},
@@ -1606,7 +1710,23 @@
 				"badgeFetchFailed": "Не вдалося оновити значок непрочитаних: ${error}",
 				"loadFailed": "Помилка завантаження папки \"Вхідні\": ${error}",
 				"markSeenFailed": "Не вдалося оновити статус читання папки \"Вхідні\": ${error}",
-				"jumpFailed": "Неможливо відкрити це повідомлення: ${error}"
+				"jumpFailed": "Неможливо відкрити це повідомлення: ${error}",
+				"empty": {
+					"careDescription": "Коли нові повідомлення надсилаються від учасників, які вам особливо не байдужі, ви можете побачити їх тут якомога швидше.",
+					"careTitle": "Особливе занепокоєння: ще немає новин",
+					"mentionDescription": "Коли інші учасники @ вас у груповому чаті, повідомлення відображатимуться тут.",
+					"mentionTitle": "Про вас ще ніхто не згадував",
+					"messageDescription": "Тут відображатимуться оновлення повідомлень із різних групових чатів і каналів.",
+					"messageTitle": "Вхідні порожні",
+					"voteDescription": "Після завершення голосування результати будуть підсумовані тут.",
+					"voteTitle": "Немає закритих дільниць"
+				},
+				"tabs": {
+					"care": "Особлива турбота",
+					"mention": "Згадка",
+					"message": "Всі новини",
+					"voteClosed": "Голосування закінчується"
+				}
 			},
 			"notifyPrefs": {
 				"title": "Налаштування сповіщень",
@@ -1623,11 +1743,6 @@
 				"muteForever": "До ввімкнення вручну",
 				"saved": "Налаштування сповіщень збережено"
 			},
-			"voteClosed": "Закінчився",
-			"discoveryTooltip": {
-				"title": "Відкриття групи",
-				"tip": "Відкриття групи"
-			},
 			"prefsTooltip": {
 				"title": "Налаштування",
 				"tip": "Переклад і федеративні параметри P2P"
@@ -1636,65 +1751,6 @@
 			"prefsNav": {
 				"aria-label": "Розділи налаштувань"
 			},
-			"federationTooltip": {
-				"title": "Об'єднані налаштування P2P",
-				"tip": "Об'єднані налаштування P2P"
-			},
-			"federationTitle": "Об'єднані налаштування P2P",
-			"federationSubtitle": "Контроль з'єднань між пристроями; у більшості випадків залишайте значення за замовчуванням",
-			"federationLoadFailed": "Помилка завантаження: ${error}",
-			"fedConnectionTitle": "Підключайтеся та відкривайте",
-			"discoveryRefresh": "Оновити список виявлення",
-			"fedRelayUrlsLabel": "Адреса мережевого ретранслятора",
-			"fedRelayUrlsTip": "Допомагайте пристроям знаходити один одного в Інтернеті. Заповніть одну адресу wss:// на рядок; залиште порожнім, щоб використовувати реле за замовчуванням.",
-			"fedBatterySaverLabel": "Режим низької потужності",
-			"fedBatterySaverTip": "Зменшення кількості фонових підключень і мережевої активності може дещо сповільнити синхронізацію повідомлень.",
-			"fedAdvancedTitle": "Розширені налаштування",
-			"fedAdvancedDescription": "Виправлення помилок, керування репутацією та ручне надання посилань",
-			"fedGroupRecoveryTitle": "Виправлення підключення до групи",
-			"fedGroupRecoveryTip": "Використовується, лише якщо запрошення просочується або новий пристрій не може синхронізувати історію.",
-			"fedRotateRoomSecret": "Змінити пароль групової кімнати",
-			"fedRotateRoomSecretConfirm": "Після ротації запрошення зі старим паролем кімнати не зможуть підключитися. Ви впевнені, що бажаєте продовжити?",
-			"fedRotateRoomSecretOk": "Пароль кімнати змінено",
-			"fedRepairJoinSnapshot": "Прохання сусідів приєднатися до ремонту групового знімка",
-			"fedRepairJoinSnapshotOk": "Застосовано знімок групи (історія каналу ${channels})",
-			"fedRepairJoinSnapshotFailed": "Не вдалося відновити знімок групи: ${error}",
-			"fedRepTitle": "Суб'єктивна довіра до цієї групи",
-			"fedRepTip": "Оцінки переваг з'єднання, розраховані локально за поведінкою федеративного вузла — це не публічні рейтинги учасників групи.",
-			"fedRepEmpty": "(null)",
-			"fedSlashTitle": "Штраф за репутацію",
-			"fedSlashTip": "Записує заяву про негативну репутацію вузла до графіка подій групи. Для використання лише адміністраторами, які розуміються на протоколах федерації.",
-			"fedSlashTargetLabel": "цільовий pubKeyHash (64 hex)",
-			"fedSlashTarget": {
-				"placeholder": "Хеш публічного ключа учасника"
-			},
-			"fedSlashClaimLabel": "Претензія на силу претензії (0–1)",
-			"fedSlashVerifiedLabel": "Піддається перевірці (потрібен ідентифікатор події доказу)",
-			"fedSlashProofLabel": "proof.eventId (необов'язково)",
-			"fedSlashProof": {
-				"placeholder": "64 шістнадцятковий ідентифікатор події"
-			},
-			"fedSlashSubmitLabel": "Опублікувати reputation_slash",
-			"fedResetSubmitLabel": "Скинути цільову репутацію",
-			"fedSlashNeedHash": "Потрібен 64-розрядний шістнадцятковий pubKeyHash",
-			"fedSlashOk": "reputation_slash записано в DAG",
-			"fedResetOk": "reputation_reset записано",
-			"fedDmLinkTitle": "Вручну видати посилання для друга",
-			"fedDmLinkTip": "Потрібен підпис за допомогою власного ключа ідентифікації. Приватний ключ надсилається лише локальній службі на цій сторінці та не надсилається іншим вузлам.",
-			"fedDmLinkDescription": "Підходить для налагодження або ручної міграції ідентичності; немає необхідності заповнювати ці поля при щоденному додаванні друзів.",
-			"fedDmPubKeyLabel": "Шістнадцятковий відкритий ключ (64)",
-			"fedDmSecretLabel": "Начальний код закритого ключа (64)",
-			"fedDmNodeLabel": "Додаткова URL-адреса вузла",
-			"fedDmInvalidateTitle": "Нехай старі реферальні посилання закінчуються",
-			"fedDmInvalidateDescription": "Після виконання всі надані раніше посилання для додавання друзів одразу стануть недійсними та не можуть бути відкликані.",
-			"fedDmRotateLabel": "Визнати старі посилання недійсними",
-			"fedDmRotateConfirm": "Усі надані раніше посилання для додавання друзів одразу стануть недійсними та не можуть бути відновлені. Ви впевнені, що бажаєте продовжити?",
-			"fedDmIssueLabel": "Надішліть посилання в DM",
-			"fedDmNeedPubKey": "Потрібен відкритий ключ у 64 шістнадцятковій формі",
-			"fedDmNeedSecretKey": "Потрібне 64 шістнадцяткове початкове число закритого ключа",
-			"fedDmIssued": "Посилання DM підписано та скопійовано в буфер обміну",
-			"fedNonceRotated": "nonce оновлено (${nonce}…)",
-			"fedSaved": "Збережено",
 			"addServerTooltip": {
 				"title": "Створіть групу або приєднайтеся до неї",
 				"tip": "Створіть групу або приєднайтеся до неї"
@@ -1733,129 +1789,37 @@
 			"settingsTitle": {
 				"title": "Налаштування"
 			},
-			"filesTitle": {
-				"title": "Файли групи"
-			},
-			"filesDrawerTitle": "Файли групи",
-			"filesLoading": "Завантаження групових файлів...",
-			"filesLoadFailed": "Не вдалося завантажити файл групи: ${error}",
-			"filesNoGroup": "Спочатку виберіть групу",
-			"filesNoCabinets": "Немає картотечних шаф, доступних для поточної ролі",
-			"filesBindCabinet": "Додайте шафу для документів",
-			"filesNoChannel": "Будь ласка, спочатку введіть текстовий канал, куди ви можете надсилати повідомлення",
-			"filesUploadTo": "Завантажити в",
-			"filesRootFolder": "Кореневий каталог",
-			"filesNewFolder": "Створити нову папку",
-			"filesNewFolderPrompt": "Ім'я папки",
-			"filesRename": "Перейменувати",
-			"filesRenameFolderPrompt": "Перейменуйте папку \"${name}\" на:",
-			"filesDeleteFolderConfirm": "Ви впевнені, що хочете видалити цю папку? Файли в папці не будуть видалені автоматично.",
-			"filesUpload": "Завантажити",
-			"filesDownload": "Завантажити",
-			"filesDelete": "Видалити",
-			"filesDeleteConfirm": "Ви впевнені, що хочете видалити цей файл?",
-			"filesFoldersTitle": "Папки",
-			"filesListTitle": "Файли",
-			"filesEmpty": "Зараз у цьому каталозі немає файлів",
-			"filesNoFolders": "Підпапок ще немає",
 			"uploadTitle": {
 				"title": "Завантажувати файли"
 			},
 			"emojiTitle": {
 				"title": "Емодзі"
 			},
-			"voteTitle": {
-				"title": "Ініціюйте голосування"
-			},
 			"shareGroupTitle": {
 				"title": "Поділитися посиланням на групу"
 			},
 			"shareGroupOk": "Спільна картка запрошення групи",
-			"messageActionFailed": "Помилка операції: ${error}",
 			"inviteJoinButton": "Приєднатися до групи",
 			"inviteLinkNeedsRoomSecret": "Ця група ще не ввімкнула об’єднану синхронізацію. Створіть посилання для запрошення, перш ніж ділитися.",
 			"inviteCardMembers": "${count} учасників",
-			"syncFailed": "Помилка синхронізації федерації: ${error}",
-			"syncRateLimited": "Обмеження швидкості федеративної синхронізації, спробуйте пізніше",
-			"syncIncomplete": "${missing}/${total} події залишаються несинхронізованими",
-			"syncNoPeers": "Не підключено до федеративного сусіда, історичні повідомлення не можуть бути тимчасово синхронізовані; скористайтеся повним посиланням із запрошенням і повторіть спробу пізніше",
 			"attachmentLoadFailed": "Не вдалося завантажити вкладений файл",
-			"messageEditUpload": "Завантажити вкладення",
 			"timeToday": "Сьогодні ${time}",
 			"timeYesterday": "Учора ${time}",
 			"stickerTitle": {
 				"title": "Стікер"
 			},
-			"sendTitle": {
-				"title": "Надіслати (Ctrl+Enter)"
-			},
-			"messageInput": {
-				"placeholder": "Групове повідомлення… Ctrl+Enter — надіслати",
-				"aria-label": "Повідомлення"
-			},
 			"stopGenerateTitle": {
 				"title": "Припинити генерацію"
 			},
-			"charTyping": "Введення…",
-			"messageActionPrev": {
-				"title": "Попередня шкала часу"
-			},
-			"messageActionNext": {
-				"title": "Наступна часова шкала"
-			},
-			"messageActionRegen": {
-				"title": "Регенерувати"
-			},
-			"messageActionEdit": {
-				"title": "Редагувати повідомлення"
-			},
-			"messageActionFeedbackUp": {
-				"title": "Подобається"
-			},
-			"messageActionFeedbackDown": {
-				"title": "Натисніть, щоб не подобається"
-			},
-			"messageActionDelete": {
-				"title": "Видалити повідомлення"
-			},
 			"confirmDeleteLong": "Це повідомлення занадто довге. Ви впевнені, що бажаєте його видалити?",
-			"messageActionCopyHtml": {
-				"title": "Копіювати HTML"
-			},
 			"forceReply": "Примусова відповідь",
 			"removeChar": "Видалити символ",
-			"loadMore": "Завантаження попередніх новин…",
-			"charChatsTitle": "Історичні розмови з ${name}",
 			"newGroupWith": "+ Створіть нову розмову з ${name}",
-			"messageActionBookmark": {
-				"title": "Закладка"
-			},
-			"messageActionPin": {
-				"title": "Закріпити"
-			},
-			"messageActionUnpin": {
-				"title": "Відкріпити"
-			},
-			"blockAuthor": {
-				"title": "Заблокувати цього автора"
-			},
-			"pinUnpinSidebar": {
-				"title": "Відкріпити"
-			},
 			"meAuthor": "Я",
-			"messageEditSave": "Зберегти",
-			"messageEditCancel": "Скасувати",
-			"messageEditArea": {
-				"aria-label": "Редагувати повідомлення"
-			},
 			"feedbackReasonPrompt": "Причина відхилення (необов'язково)",
 			"feedbackReasonInput": {
 				"placeholder": "Причина відхилення (необов'язково)"
 			},
-			"messageFeedbackSubmit": "Надіслати відгук",
-			"stickersPanelTitle": "Стікери",
-			"stickersManage": "Керувати стікерами →",
-			"stickersLoading": "Завантаження...",
 			"recentEmojiTab": {
 				"title": "Зазвичай використовується"
 			},
@@ -1863,11 +1827,6 @@
 			"currentGroupEmojiTab": {
 				"title": "Смайли поточної групи"
 			},
-			"groupEmojiTab": {
-				"title": "Група"
-			},
-			"groupEmojisEmpty": "Наразі немає групових смайлів. Ви можете завантажити їх у налаштуваннях групи.",
-			"groupEmojisLoadFailed": "Не вдалося завантажити смайли групи",
 			"profileLinkTitle": {
 				"title": "Профіль",
 				"textContent": "Профіль"
@@ -1885,22 +1844,6 @@
 			},
 			"aboutSection": "Інформація",
 			"bioEmpty": "Цей користувач ще не має профілю.",
-			"statusOffline": {
-				"title": "Офлайн",
-				"textContent": "Офлайн"
-			},
-			"statusOnline": {
-				"title": "Онлайн",
-				"textContent": "Онлайн"
-			},
-			"statusIdle": {
-				"title": "Відійшов(-ла)",
-				"textContent": "Відійшов(-ла)"
-			},
-			"statusDnd": {
-				"title": "Не турбувати",
-				"textContent": "Не турбувати"
-			},
 			"banners": {
 				"gshBuffer": "Є ${total} повідомлень, які очікують на дешифрування після ротації ключів",
 				"plaintextSidecar": "Цей канал синхронізується за запитом; допоміжна допомога локальних повідомлень кешує вміст у відкритому тексті.",
@@ -1909,10 +1852,6 @@
 				"syncing": "Синхронізація з федеративними сусідами…",
 				"archiveCoverageIncomplete": "Частина холодних архівів місяців ще не синхронізована з федерації.",
 				"archiveSyncButton": "Синхронне архівування",
-				"forkGovernance": "У записі про дозволи є розгалуження, і зараз він у локальному поданні.",
-				"forkTips": "Виявлено ${count} необ’єднаних гілок, порядок повідомлень може бути непослідовним.",
-				"forkTipLabel": "ДАГ лист",
-				"forkTipScore": "${short} · Репутація ${score}",
 				"applyBranch": "Застосувати гілку управління",
 				"autoBranch": "Автоматичний вибір репутації",
 				"mergeDag": "Об’єднайте вилки",
@@ -1920,55 +1859,28 @@
 				"blockOpposing": "Протилежні гілки недоступні",
 				"suspectedRemoved": "Можливо, вас вилучили з цієї групи: ви попросили перевірити ${count} відомих вузлів, але всі вони були відхилені. Ви можете згадати місцеву історію або видалити цю групову копію.",
 				"suspectedRemovedKeep": "Візьміть сувенір",
-				"suspectedRemovedLeave": "Видалити групу"
+				"suspectedRemovedLeave": "Видалити групу",
+				"fork": {
+					"governance": "У записі про дозволи є розгалуження, і зараз він у локальному поданні.",
+					"tipLabel": "ДАГ лист",
+					"tipScore": "${short} · Репутація ${score}",
+					"tips": "Виявлено ${count} необ’єднаних гілок, порядок повідомлень може бути непослідовним."
+				}
 			},
-			"blockOpposingConfirm": "Додати емітентів управління з іншої гілки до чорного списку та відхилити федеративні ретранслятори для цієї групи. Продовжити?",
-			"blockOpposingOk": "${count} тем позначено як недоступні",
-			"blockOpposingFailed": "Помилка позначення: ${error}",
 			"applyBranchOk": "Гілку управління застосовано",
 			"applyBranchFailed": "Не вдалося застосувати гілку: ${error}",
 			"autoBranchOk": "Автоматичний вибір після відновлення репутації",
 			"autoBranchFailed": "Помилка автоматичного вибору: ${error}",
-			"saveEmoji": {
-				"title": "Збережіть смайлики"
-			},
-			"saveEmojiOk": "Смайлик збережено в базі даних",
-			"saveEmojiFailed": "Не вдалося зберегти смайлик: ${error}",
-			"saveSticker": {
-				"title": "Зберегти стікери"
-			},
-			"saveStickerOk": "Стікер додано до вашої бібліотеки",
-			"saveStickerFailed": "Не вдалося зберегти стікери: ${error}",
 			"revealRemoteMd": "Розгорнути повний текст",
-			"voteModalTitle": "Ініціюйте голосування",
-			"voteModalSubmit": "Створити опитування",
-			"voteCreateFailed": "Не вдалося створити опитування: ${error}",
 			"composer": {
 				"placeholder": "Надіслати на #${channel}"
 			},
 			"composerSuspectedRemoved": {
 				"placeholder": "Можливо, вас було видалено з цієї групи, і ви не можете продовжувати надсилати повідомлення."
 			},
-			"channelReadonlyList": {
-				"placeholder": "Список каналів лише для читання"
-			},
-			"channelReadonlyStream": {
-				"placeholder": "Потоковий канал лише для читання"
-			},
-			"noChannels": "Розмови ще немає",
-			"noMembers": "Ще немає учасників",
-			"noPins": "Ще немає шпильок",
-			"noBookmarks": "Закладок ще немає",
 			"adminSection": "Адміністратор",
-			"memberSection": "Учасники",
-			"membersDigestOk": "Merkle учасників одноголосно · ${root}",
-			"membersDigestOkPaged": "Консенсус учасника Merkle (${pages} сторінок) · ${root}",
-			"membersDigestMismatch": "Непослідовний дайджест учасників · ${root}",
-			"membersDigestPending": "Перевірити підсумок учасників…",
-			"membersDigestFetchFailed": "Не вдалося отримати учасників за сторінками",
 			"copyEntityId": "Копіювати ідентифікатор організації",
 			"copyEntityIdOk": "Ідентифікатор об’єкта скопійовано",
-			"memberJoined": "Приєднався до розмови",
 			"remoteBadge": {
 				"textContent": "Віддалено",
 				"title": "Федеративний віддалений автор"
@@ -1978,49 +1890,15 @@
 				"title": "Довіряйте цьому автору (дозволити небезпечний HTML)"
 			},
 			"stickerInline": "Стікер",
-			"voteDeadline": "Кінцевий термін: ${date}",
-			"voteNoOptions": "Без варіантів",
-			"voteTotal": "Усього ${total} голосів",
-			"voteCount": "${count} квитків · ${pct}%",
-			"loadGroupFailed": "Не вдалося завантажити групу: ${error}",
-			"groupJoinRequired": "Групу неможливо відкрити, будь ласка, скористайтеся посиланням або кодом запрошення, щоб приєднатися",
-			"sendFailed": "Помилка надсилання: ${error}",
-			"sendFailedPending": "Не вдалося відправити",
 			"markdownRenderFailed": "Помилка обробки повідомлення",
 			"retrySend": "Спробуйте знову",
-			"sendImageFailed": "Не вдалося надіслати зображення: ${error}",
-			"sendStickerFailed": "Не вдалося надіслати стікер: ${error}",
-			"voteMinOptions": "Потрібно мінімум 2 варіанти",
 			"mergeDagOk": "Вилка злита",
 			"mergeDagFailed": "Не вдалося об’єднати: ${error}",
-			"forkSplitFailed": "Не вдалося розділити: ${error}",
-			"forkSplitPrompt": "Нова назва групи (можна Відійшов(-ла) порожнім)",
-			"forkSplitModalTitle": "Розділіться на нову групу",
-			"forkSplitModalSubmit": "Створити",
 			"typing": "${names} друкує...",
 			"charsHeader": "Роль",
-			"friendsHeader": "Друзі",
 			"settingsModalTitle": "Налаштування",
 			"modalClose": "Закрити",
-			"groupTag": "Група",
-			"groupUnnamed": "Група без назви ·${suffix}",
-			"groupHeaderMenu": {
-				"title": "Меню групи: налаштування, запрошення та ін."
-			},
-			"groupDescriptionEmpty": "Для цієї групи ще немає профілю.",
-			"serverActionPickerTitle": "Група",
-			"serverActionPickerSubtitle": "Створіть нову групу або приєднайтеся до існуючої групи за ідентифікатором",
-			"serverActionPickerCreate": "Створити групу",
-			"serverActionPickerCreateDescription": "Почніть з нуля і запросіть друзів",
-			"serverActionPickerJoin": "Приєднатися до групи",
-			"serverActionPickerJoinDescription": "Використовуйте ідентифікатор групи",
 			"cancel": "Скасувати",
-			"folderDefault": "Папка",
-			"folderRename": "Перейменувати папку",
-			"folderRenamePrompt": "Перейменуйте папку \"${name}\" на:",
-			"folderCollapse": "Згорнути папку",
-			"folderExpand": "Розгорнути папку",
-			"folderDissolve": "Закрити папку",
 			"bookmarkLocal": "Локально",
 			"groupsSection": "Група",
 			"ungrouped": "Не згруповано",
@@ -2030,46 +1908,13 @@
 				"title": "Видалити закладку",
 				"aria-label": "Видалити закладку"
 			},
-			"loadMessagesFailed": "Помилка завантаження повідомлення: ${error}",
 			"unreadDivider": "Нові повідомлення",
-			"noUsername": "Ім'я користувача не отримано",
-			"stickersEmpty": "Стікерів ще немає",
-			"stickersMarketLink": "Щоб установити, перейдіть до Sticker Square",
-			"stickersLoadFailed": "Помилка завантаження: ${error}",
-			"noChars": "Ще немає ролей, спочатку встановіть деякі.",
-			"noFriends": "Приватних чатів ще немає",
-			"friendsEmptyTitle": "Почніть нову розмову",
-			"friendsEmptyDescription": "Шукайте користувачів у локальній ролі або інших вузлах, а також можете відкрити картку профілю учасника в груповому чаті, щоб ініціювати приватне повідомлення.",
-			"friendsEmptyAction": "Знайдіть роль або користувача",
-			"friendsSearchEmpty": "Немає відповідної ролі чи користувача",
-			"friendsSearchTooShort": "Введіть принаймні 2 символи",
-			"friendsSearchDm": "Надіслати приватне повідомлення",
-			"friendsSearchChat": "Почати розмову",
-			"friendsSearchLocalChar": "Місцева роль",
-			"friendsSearchPin": "Встановити як псевдонім",
-			"charCount": "${count} ролей",
-			"friendsCount": "${count} друзів",
-			"charTag": "Роль",
-			"friendsTag": "Друзі",
 			"backToFriends": "Повернення до друзів",
 			"dmTopicsTitle": "Тема",
-			"friendsContextNewChat": "Новий чат",
-			"friendsRestartConfirm": "Приватний чат із \"${name}\" буде розблоковано та створено нову бесіду. Ви впевнені?",
-			"friendsRestartOk": "Відкрито новий приватний чат",
-			"friendsRestartFailed": "Не вдалося створити новий приватний чат: ${error}",
-			"charDescriptionEmpty": "Персонаж ще не представився.",
-			"charIntro": "Представити",
 			"participants": "Учасники",
-			"charTagSolo": "Персонажі · Діалог 1:1",
 			"startChatWith": "💬 Почніть спілкуватися з ${name}",
 			"loading": "Завантаження...",
-			"charChatStart": "Почніть розмову з ${name}",
-			"charChatEmpty": "Ще немає повідомлень, почніть свій перший чат!",
-			"loadCharChatFailed": "Помилка завантаження повідомлення",
 			"createChatFailed": "Не вдалося створити сеанс: ${error}",
-			"charChatComposer": {
-				"placeholder": "Надіслати повідомлення до ${name} (Ctrl+Enter, щоб надіслати)"
-			},
 			"friendChatComposer": {
 				"placeholder": "Надіслати повідомлення (Ctrl+Enter, щоб надіслати)"
 			},
@@ -2089,75 +1934,13 @@
 				"confirmSecond": "Натисніть ще раз, щоб завершити",
 				"cancel": "Скасувати"
 			},
-			"blockConfirm": "Додати цю людину до чорного списку? Федерація цієї групи відмовиться від її естафети.",
-			"blockOk": "Заблоковано",
-			"charChatSettings": "Налаштування чату персонажів",
-			"charChatSubtitle": "Сеанс із ${name}",
-			"sessionInfo": "Інформація про сеанс",
-			"sessionRole": "Роль",
-			"sessionId": "Ідентифікатор сеансу",
-			"sessionMessages": "Кількість повідомлень",
 			"quickActions": "Швидка операція",
 			"advancedSettings": "Розширені налаштування (Персонаж/Світ/Плагіни)",
 			"advancedSettingsDescription": "Відкрийте повні параметри групи в Центрі в новій вкладці",
 			"dangerZone": "Небезпечна зона",
-			"unbindFriendDescription": "Після скасування прив’язки розмова повернеться до списку груп ліворуч, а записи повідомлень збережуться.",
-			"unbindFriend": "Розв'язати",
-			"unbindFriendConfirm": "Ви впевнені, що хочете від’єднати приватний чат із ${name}? Розмову буде переміщено назад до списку групи.",
-			"unbindFriendOk": "Без зв'язку",
-			"unbindFriendFailed": "Не вдалося скасувати прив’язку: ${error}",
 			"deleteSessionDescription": "Видалення цієї бесіди призведе до остаточного видалення всіх повідомлень і не можна відмінити.",
 			"deleteSession": "Видалити сеанс",
 			"deleteSessionConfirm": "Ви впевнені, що хочете видалити сеанс із ${name}? Ця операція необоротна.",
-			"sessionDeleted": "Бесіду видалено",
-			"sessionDeleteFailed": "Не вдалося видалити: ${error}",
-			"streamTokenFailed": "Не вдалося видати маркер перегляду",
-			"streamAvJoin": "Додати голос/відео",
-			"streamAvLeave": "Відійшов(-ла)",
-			"streamAvMute": "Без звуку",
-			"streamAvUnmute": "Увімкнути звук",
-			"streamAvVideo": "Вимкніть камеру",
-			"streamAvVideoOn": "Увімкніть камеру",
-			"streamAvYou": "Ви",
-			"streamAvJoinFailed": "Неможливо почати виклик: ${error}",
-			"streamAvNoCodecs": "Цей браузер не підтримує WebCodecs (потрібен Chrome 94+ / Edge 94+ / Firefox 130+)",
-			"streamAvPeers": "${count} людей онлайн",
-			"streamAvPresetThumb": "Мініатюра 64 кбіт/с",
-			"streamAvPresetLow": "Низька якість 200kbps",
-			"streamAvPresetMed": "Середня 600 кбіт/с",
-			"streamAvPresetHigh": "Висока якість 1,5 Мбіт/с",
-			"callButton": {
-				"title": "Почніть дзвінок або приєднайтеся до нього",
-				"aria-label": "Почніть дзвінок або приєднайтеся до нього"
-			},
-			"callInProgress": "Виконується дзвінок",
-			"callEnded": "Дзвінок завершено",
-			"callJoin": "Приєднуйтесь до дзвінка",
-			"callHangup": "Завершити дзвінок",
-			"callScreenShare": "Поділитися екраном",
-			"callScreenStop": "Припинити ділитися",
-			"callJumpBack": "Повернення до каналу виклику",
-			"callJoinFailed": "Неможливо приєднатися до виклику: ${error}",
-			"callScreenFailed": "Не вдалося показати екран: ${error}",
-			"callStartedAt": "Початок о ${time}",
-			"callDuration": "Тривалість ${duration}",
-			"callParticipants": "${n} осіб",
-			"callPeerCount": "${n}",
-			"callNoParticipants": "Учасників ще немає",
-			"listChannelEmpty": "Список порожній.",
-			"listItemUntitled": "Без назви",
-			"listEditorTitle": "Редагувати елементи списку (масив JSON)",
-			"listSaveToDag": "Зберегти в DAG",
-			"listJsonInvalid": "Недійсний JSON: ${message}",
-			"listSaved": "Збережено",
-			"listSaveFailed": "Не вдалося зберегти",
-			"streamDefaultName": "Потокове медіа",
-			"streamRefreshToken": "Оновити маркер годинника",
-			"streamEmbedHttpsRequired": "Потокова адреса має бути вбудованою сторінкою https://, або спочатку потрібно налаштувати та оновити параметри групи, щоб отримати маркер перегляду.",
-			"streamWebRtcHint": "Зовнішня SFU не налаштована; цей канал використовуватиме внутрішньогруповий WebRTC (не потрібно потокове передавання SfuWss).",
-			"pinPreviewSticker": "[стікер]",
-			"pinPreviewVote": "[Голосувати] ${question}",
-			"pinPreviewInvite": "[Запросити] ${groupName}",
 			"reactionRemovePrompt": "Чий ${emoji} видалити?\n${candidates}",
 			"ariaDagTip": {
 				"aria-label": "Наконечник вилки DAG"
@@ -2165,58 +1948,11 @@
 			"ariaClose": {
 				"aria-label": "Закрити"
 			},
-			"memberBar": {
-				"aria-label": "Список учасників"
-			},
-			"channelBar": {
-				"aria-label": "Список каналів"
-			},
 			"serverBar": {
 				"aria-label": "Групи та навігація"
 			},
-			"membersDigestPagesTitle": {
-				"title": "${expected}\n${pages} сторінок"
-			},
-			"discoveryTitle": "Відкриття групи",
-			"discoveryEyebrow": "Дослідіть спільноту",
-			"discoveryDescription": "Перегляньте загальнодоступні групи в мережі федерації, виберіть спільноту за інтересами та приєднайтеся.",
-			"discoverySidebarHint": "Переглядайте та приєднуйтеся до публічних груп праворуч",
-			"discoveryEmptyTitle": "Публічні групи ще не знайдені",
-			"discoveryEmpty": "Наразі немає рекомендованої групи; після ввімкнення федеративної синхронізації список виявлення буде синхронізовано з сусідів.",
-			"discoveryNoDescription": "Власник групи ще не заповнив профіль.",
-			"discoverySourceCount": "${count} об’єднаних джерел",
-			"discoveryJoin": "Приєднатися до групи",
-			"discoveryOpen": "Відкрита група",
-			"discoveryLoadFailed": "Не вдалося завантажити список виявлення: ${message}",
 			"operationFailed": "Помилка операції: ${error}",
 			"shareGroupFailed": "Не вдалося поділитися посиланням на групу: ${error}",
-			"blockAuthorTitle": "Заблокувати цього автора",
-			"configTitle": "Конфігурація розмови",
-			"configSaved": "Збережено",
-			"configSaveFailed": "Не вдалося зберегти: ${error}",
-			"configLoadFailed": "Не вдалося завантажити конфігурацію: ${error}",
-			"noActiveChat": "Перш ніж перетягувати частину, відкрийте сеанс",
-			"groupContext": {
-				"manage": "Керувати групою",
-				"notifyPrefs": "Налаштування сповіщень",
-				"invite": "Запросіть інших",
-				"inviteCopied": "Посилання на запрошення скопійовано в буфер обміну",
-				"addChar": "Додати роль",
-				"addCharLabel": "Виберіть роль",
-				"addCharSubmit": "Додати до",
-				"noChars": "Немає доступних ролей",
-				"setAlias": "Встановити псевдонім групи",
-				"setAliasPrompt": "Встановіть локальний псевдонім для \"${name}\" (залиште пустим, щоб очистити):",
-				"aliasSaved": "Псевдонім групи оновлено",
-				"leave": "Вийти з групи",
-				"leaveConfirm": "Ви впевнені, що бажаєте Відійшов(-ла) групу \"${name}\"? Ви більше не зможете переглядати повідомлення в цій групі.",
-				"leaveOk": "Вийшов із групи",
-				"leaveBatch": "Вийти з вибраної групи (${count})",
-				"leaveConfirmBatch": "Ви впевнені, що бажаєте Відійшов(-ла) ${count} вибраних груп? Машина більше не зберігатиме дані для цих груп.",
-				"leaveBatchPending": "${count} груп видалено зі списку, вихід у фоновому режимі...",
-				"leaveBatchOk": "Вийшли з групи ${count}",
-				"leaveBatchPartial": "${failed} / ${total} груп не вдалося вийти, список оновлено"
-			},
 			"replyInline": {
 				"title": "Відповісти"
 			},
@@ -2226,35 +1962,8 @@
 			"replyInThread": {
 				"title": "Відповідь у дочірньому ланцюжку"
 			},
-			"syncTruncated": "Приріст DAG не повний. Ви можете спробувати ще раз пізніше або збільшити ліміт.",
-			"syncTruncatedHint": "Історія DAG надто довга. Ви можете спробувати ще раз пізніше або збільшити ліміт.",
-			"newChannelButton": "Створити новий канал",
-			"newChannelSuccess": "Канал створено",
-			"newChannelFailed": "Не вдалося створити канал",
-			"newChannelTitle": "Створити новий канал",
-			"channelName": "Назва каналу",
-			"channelType": "Тип каналу",
-			"channelTypeText": "Канал чату",
-			"channelTypeList": "Канал списку/форуму",
-			"channelTypeStreaming": "Потоковий канал",
-			"channelNameInput": {
-				"placeholder": "Загальний"
-			},
 			"localMaterializedView": "Наразі це локальне матеріалізоване подання, і дозволи та історія можуть не узгоджуватися з іншими вузлами.",
 			"convergentEncryptWarn": "Групові файли використовують конвергентне шифрування: якщо зловмисник знає відкритий текст файлу, він може отримати ключ і розшифрувати відповідний блок зашифрованого тексту. Не покладайтеся виключно на групове шифрування для захисту дуже конфіденційних і унікальних приватних документів.",
-			"votePromptQuestion": "Титул для голосування",
-			"votePromptOptions": "Варіанти (не менше двох, розділених комами)",
-			"voteOptionDefault": "Згоден, проти",
-			"votePromptDeadlineHours": "Кінцевий термін (години, залиште порожнім = без крайнього терміну)",
-			"messagePrefixVote": "Голосувати",
-			"threadCreated": "Дочірній ланцюжок створено",
-			"threadCreateFailed": "Не вдалося створити дочірній ланцюжок, повторіть спробу пізніше",
-			"threadDrawer": {
-				"aria-label": "Гілка"
-			},
-			"threadClose": {
-				"title": "Закрити дочірній ланцюжок"
-			},
 			"reputationSlashAlert": "Репутація учасника ${target}… нагадує про відрахування.",
 			"profileEdit": {
 				"previewHint": "Зміни одразу з’являються у вікні попереднього перегляду, зберігаються та синхронізуються в чаті та соціальних мережах.",
@@ -2263,23 +1972,14 @@
 				"languageVersion": "Мовна версія",
 				"localeHint": "Клацніть мітку, щоб змінити або змінити код; натисніть Enter у полі введення в кінці, щоб скопіювати його новою мовою.",
 				"themeColorHint": "Використовується для генерації текстур, коли немає спеціального банера, а також використовується для циклів живої звукової хвилі",
-				"bannerLabel": "Фон банера",
-				"bannerHint": "Ви можете заповнити URL-адресу зображення або завантажити файл; ви також можете будь-коли відновити створення текстур",
-				"bannerClear": "Відновити створення банера",
 				"linksPreview": "${count} публічних посилань",
 				"unsavedHint": "Якщо закрити вікно, незбережені зміни буде скасовано",
 				"tagsLabel": "Мітка",
 				"tagAdd": "Додати до",
 				"tagRemove": "Видалити тег",
 				"linksLabel": "Посилання",
-				"linkAdd": "Додайте посилання",
-				"linkRemove": "Видалити посилання",
 				"handleLabel": "Користувацький ідентифікатор",
 				"handleHint": "Може здійснюватися пошук іншими вузлами в мережі; унікальність не гарантується, і конфлікти будуть усунені відповідно до довірчого списку.",
-				"resetFromPart": "Скидання з символьної частини",
-				"resetFromPartConfirm": "Поточну інформацію буде перезаписано інформацією про роль. Ви впевнені?",
-				"resetFromPartDone": "Профіль, реконструйований з частин персонажа",
-				"resetFromPartFailed": "Помилка відновлення: ${error}",
 				"newLocale": {
 					"placeholder": "Новий код мови, наприклад en-UK"
 				},
@@ -2295,23 +1995,38 @@
 				"avatarUpload": {
 					"aria-label": "Завантажити аватар"
 				},
-				"bannerUrl": {
-					"placeholder": "URL-адреса зображення банера або завантажте файл нижче"
-				},
-				"bannerUpload": {
-					"aria-label": "Завантажити банер"
-				},
 				"tag": {
 					"placeholder": "Додайте після введення тегу"
 				},
-				"linkName": {
-					"placeholder": "Показати текст"
-				},
-				"linkUrl": {
-					"placeholder": "https://… або fount://…"
-				},
 				"handle": {
 					"placeholder": "Наприклад, steve (2–32 малих буквено-цифрових символів._-)"
+				},
+				"resetFrom": {
+					"part": "Скидання з символьної частини",
+					"partConfirm": "Поточну інформацію буде перезаписано інформацією про роль. Ви впевнені?",
+					"partDone": "Профіль, реконструйований з частин персонажа",
+					"partFailed": "Помилка відновлення: ${error}"
+				},
+				"banner": {
+					"clear": "Відновити створення банера",
+					"hint": "Ви можете заповнити URL-адресу зображення або завантажити файл; ви також можете будь-коли відновити створення текстур",
+					"label": "Фон банера",
+					"upload": {
+						"aria-label": "Завантажити банер"
+					},
+					"url": {
+						"placeholder": "URL-адреса зображення банера або завантажте файл нижче"
+					}
+				},
+				"link": {
+					"add": "Додайте посилання",
+					"name": {
+						"placeholder": "Показати текст"
+					},
+					"remove": "Видалити посилання",
+					"url": {
+						"placeholder": "https://… або fount://…"
+					}
 				}
 			},
 			"profilePopup": {
@@ -2321,72 +2036,22 @@
 				},
 				"editSaved": "Дані збережено",
 				"editQueued": "Опубліковано, очікується, поки інший вузол витягне його",
-				"dmChar": "Спілкуйтеся з персонажем приватно",
-				"dmUser": "Надіслати приватне повідомлення",
-				"dmFed": "Федеральне особисте повідомлення",
 				"noFedIdentity": "Будь ласка, спочатку налаштуйте власний activePubKeyHex у налаштуваннях федерації",
 				"peerNoIdentity": "Інша сторона не має федеративної ідентичності — неможливо розпочати федеративне ПП",
-				"dmFailed": "Неможливо відкрити приватне повідомлення: ${error}",
 				"care": "Особлива турбота",
 				"careRemove": "Скасувати спеціальний догляд",
 				"setAlias": "Встановити псевдонім",
-				"setAliasPrompt": "Встановіть локальний псевдонім для \"${name}\" (залиште пустим, щоб очистити):"
-			},
-			"channelContext": {
-				"copyLinkDone": "Посилання на канал скопійовано",
-				"notifyPrefs": "Налаштування сповіщень каналу",
-				"rename": "Перейменувати канал",
-				"renameOk": "Канал перейменовано",
-				"delete": "Видалити канал",
-				"deleteOk": "Канал видалено",
-				"deleteConfirm": "Ви впевнені, що хочете видалити канал \"${name}\"? Цю дію не можна скасувати.",
-				"setDefault": "Встановити як канал за умовчанням",
-				"setDefaultOk": "Уже встановлено як канал за умовчанням",
-				"copyLink": "Копіювати посилання на канал",
-				"exportJson": "Експорт JSON",
-				"exportOk": "Архів каналу завантажено",
-				"exportFailed": "Помилка експорту: ${error}"
-			},
-			"memberContext": {
-				"copyName": "Копіювати відображуване ім'я",
-				"mention": "Згадка",
-				"care": "Особлива турбота",
-				"careAdded": "Вже додається особлива турбота",
-				"careRemoved": "Спеціальний догляд скасовано",
-				"setAlias": "Встановити псевдонім",
 				"setAliasPrompt": "Встановіть локальний псевдонім для \"${name}\" (залиште пустим, щоб очистити):",
-				"aliasSaved": "Псевдонім оновлено",
-				"copyPubKey": "Копіювати хеш відкритого ключа",
-				"copyEntityId": "Копіювати ідентифікатор організації",
-				"dm": "Надіслати приватне повідомлення",
-				"kick": "Вигнати",
-				"kickSelfNodeWarning": "Попередження: цей учасник використовує ту саму ідентифікацію вузла, що й ви. Вас також буде видалено з групи після виключення. Ви впевнені, що бажаєте продовжити?",
-				"ban": "Заборонити...",
-				"personalBlock": "Персональний блок",
-				"personalBlockConfirm": "Додати ${name} до вашого списку блокувань? Люди, які слідкують за вами, зрозуміють цей сигнал і можуть мати менше довіри до них.",
-				"personalBlockSuccess": "Вже додано в чорний список",
-				"banTitle": "Виберіть діапазон заборони",
-				"banEntity": "Заборонені сутності (128-бітний entityHash)",
-				"banNode": "Вузол заборони (homeNodeHash)"
+				"dm": {
+					"char": "Спілкуйтеся з персонажем приватно",
+					"failed": "Неможливо відкрити приватне повідомлення: ${error}",
+					"fed": "Федеральне особисте повідомлення",
+					"user": "Надіслати приватне повідомлення"
+				}
 			},
-			"messageContext": {
-				"edit": "Редагувати повідомлення",
-				"delete": "Видалити повідомлення"
-			},
-			"charStreaming": "Створення…",
 			"gshDecryptPending": "Очікування ключа каналу (генерація ${gen})",
 			"gshDecryptFailed": "Неможливо розшифрувати це повідомлення без ключа каналу",
-			"fileDecryptFailed": "Неможливо отримати доступ до цього файлу без ключа файлу",
 			"reactionFailed": "Не вдалося отримати відповідь",
-			"fileUploadChecking": "Перевірка того, чи такий самий вміст уже існує...",
-			"fileUploadingChunk": "Завантаження зашифрованих блоків...",
-			"fileUploadRegistering": "Реєстрація файлів…",
-			"fileUploaded": "Файл успішно завантажено",
-			"fileUploadFailed": "Не вдалося завантажити файл",
-			"fileSkippedDedup": "Повторне передавання блоку пропущено",
-			"fileDownloadFailed": "Не вдалося завантажити файл",
-			"fileNoKey": "Не вдалося розшифрувати (відсутній ключ)",
-			"fileLoadFailed": "Не вдалося завантажити файл",
 			"createModal": {
 				"title": "Створити групу",
 				"subtitle": "Групи – це приватні місця, де ви та ваші друзі можете спілкуватися разом",
@@ -2399,14 +2064,16 @@
 				"description": {
 					"placeholder": "(Необов’язково) Представте цю групу"
 				},
-				"joinSection": "Хто може приєднатися",
-				"joinInviteOnly": "Тільки запрошені",
-				"joinInviteOnlyDescription": "Для приєднання потрібен код запрошення",
-				"joinPow": "Підтвердження роботи",
-				"joinPowDescription": "Перш ніж приєднатися, вам потрібно виконати завдання PoW",
 				"cancel": "Назад",
 				"submit": "Створити групу",
-				"failed": "Не вдалося створити групу: ${error}"
+				"failed": "Не вдалося створити групу: ${error}",
+				"join": {
+					"inviteOnly": "Тільки запрошені",
+					"inviteOnlyDescription": "Для приєднання потрібен код запрошення",
+					"pow": "Підтвердження роботи",
+					"powDescription": "Перш ніж приєднатися, вам потрібно виконати завдання PoW",
+					"section": "Хто може приєднатися"
+				}
 			},
 			"joinModal": {
 				"title": "Приєднатися до групи",
@@ -2423,28 +2090,9 @@
 				"cancel": "Назад",
 				"submit": "Приєднатися до групи"
 			},
-			"menuCopy": "Копіювати",
-			"menuMD": "Markdown",
-			"menuTXT": "Простий текст",
-			"menuHTML": "HTML",
-			"menuDownload": "Завантажити HTML",
-			"menuDelete": "Видалити",
-			"menuShareGroup": "Поділитися посиланням",
-			"menuPrev": "Попереднє",
-			"menuNext": "Наступне",
-			"menuShare": {
-				"1h": "Поділіться посиланням на 1 годину",
-				"12h": "Поділіться 12-годинним посиланням",
-				"24h": "Поділіться посиланням на 24 години",
-				"72h": "Поділіться посиланням на 72 години"
-			},
-			"noGroups": "Групи ще немає",
 			"myGroups": "Моя група",
 			"joinGroup": "Приєднатися до групи",
 			"createGroup": "Створити нову групу",
-			"noDescription": "Опису ще немає",
-			"memberCountLabel": "${count} учасників",
-			"loadListFailed": "Не вдалося завантажити список груп: ${error}",
 			"contentWarning": "Попередження про вміст",
 			"sensitiveMedia": "Чутливі медіа",
 			"revealContent": "Показати вміст",
@@ -2479,12 +2127,6 @@
 				"saved": "Налаштування перекладу збережено",
 				"saveFailed": "Не вдалося зберегти: ${error}"
 			},
-			"friendsSearch": {
-				"placeholder": "Шукати локальну роль/власний ідентифікатор/ім’я…"
-			},
-			"threadComposer": {
-				"placeholder": "Відповідь у підтемі…"
-			},
 			"altImage": {
 				"placeholder": "Додайте опис до зображення…",
 				"label": "Опис зображення (альт)"
@@ -2495,7 +2137,587 @@
 				"aria-label": "Підказки згадок"
 			},
 			"clickToLoad": "Натисніть, щоб завантажити",
-			"send": "Відправити"
+			"serverActionPicker": {
+				"create": "Створити групу",
+				"createDescription": "Почніть з нуля і запросіть друзів",
+				"join": "Приєднатися до групи",
+				"joinDescription": "Використовуйте ідентифікатор групи",
+				"subtitle": "Створіть нову групу або приєднайтеся до існуючої групи за ідентифікатором",
+				"title": "Група"
+			},
+			"membersDigest": {
+				"fetchFailed": "Не вдалося отримати учасників за сторінками",
+				"mismatch": "Непослідовний дайджест учасників · ${root}",
+				"ok": "Merkle учасників одноголосно · ${root}",
+				"okPaged": "Консенсус учасника Merkle (${pages} сторінок) · ${root}",
+				"pagesTitle": {
+					"title": "${expected}\n${pages} сторінок"
+				},
+				"pending": "Перевірити підсумок учасників…"
+			},
+			"unbindFriend": {
+				"main": "Розв'язати",
+				"confirm": "Ви впевнені, що хочете від’єднати приватний чат із ${name}? Розмову буде переміщено назад до списку групи.",
+				"description": "Після скасування прив’язки розмова повернеться до списку груп ліворуч, а записи повідомлень збережуться.",
+				"failed": "Не вдалося скасувати прив’язку: ${error}",
+				"ok": "Без зв'язку"
+			},
+			"federation": {
+				"loadFailed": "Помилка завантаження: ${error}",
+				"subtitle": "Контроль з'єднань між пристроями; у більшості випадків залишайте значення за замовчуванням",
+				"title": "Об'єднані налаштування P2P",
+				"tooltip": {
+					"title": "Об'єднані налаштування P2P",
+					"tip": "Об'єднані налаштування P2P"
+				}
+			},
+			"newChannel": {
+				"button": "Створити новий канал",
+				"failed": "Не вдалося створити канал",
+				"success": "Канал створено",
+				"title": "Створити новий канал"
+			},
+			"discovery": {
+				"description": "Перегляньте загальнодоступні групи в мережі федерації, виберіть спільноту за інтересами та приєднайтеся.",
+				"empty": "Наразі немає рекомендованої групи; після ввімкнення федеративної синхронізації список виявлення буде синхронізовано з сусідів.",
+				"emptyTitle": "Публічні групи ще не знайдені",
+				"eyebrow": "Дослідіть спільноту",
+				"join": "Приєднатися до групи",
+				"loadFailed": "Не вдалося завантажити список виявлення: ${message}",
+				"noDescription": "Власник групи ще не заповнив профіль.",
+				"open": "Відкрита група",
+				"refresh": "Оновити список виявлення",
+				"sidebarHint": "Переглядайте та приєднуйтеся до публічних груп праворуч",
+				"sourceCount": "${count} об’єднаних джерел",
+				"title": "Відкриття групи",
+				"tooltip": {
+					"title": "Відкриття групи",
+					"tip": "Відкриття групи"
+				}
+			},
+			"forkSplit": {
+				"failed": "Не вдалося розділити: ${error}",
+				"modalSubmit": "Створити",
+				"modalTitle": "Розділіться на нову групу",
+				"prompt": "Нова назва групи (можна Відійшов(-ла) порожнім)"
+			},
+			"stickers": {
+				"empty": "Стікерів ще немає",
+				"loadFailed": "Помилка завантаження: ${error}",
+				"loading": "Завантаження...",
+				"manage": "Керувати стікерами →",
+				"marketLink": "Щоб установити, перейдіть до Sticker Square",
+				"panelTitle": "Стікери"
+			},
+			"friends": {
+				"contextNewChat": "Новий чат",
+				"count": "${count} друзів",
+				"emptyAction": "Знайдіть роль або користувача",
+				"emptyDescription": "Шукайте користувачів у локальній ролі або інших вузлах, а також можете відкрити картку профілю учасника в груповому чаті, щоб ініціювати приватне повідомлення.",
+				"emptyTitle": "Почніть нову розмову",
+				"header": "Друзі",
+				"restartConfirm": "Приватний чат із \"${name}\" буде розблоковано та створено нову бесіду. Ви впевнені?",
+				"restartFailed": "Не вдалося створити новий приватний чат: ${error}",
+				"restartOk": "Відкрито новий приватний чат",
+				"search": {
+					"placeholder": "Шукати локальну роль/власний ідентифікатор/ім’я…",
+					"chat": "Почати розмову",
+					"dm": "Надіслати приватне повідомлення",
+					"empty": "Немає відповідної ролі чи користувача",
+					"localChar": "Місцева роль",
+					"pin": "Встановити як псевдонім",
+					"tooShort": "Введіть принаймні 2 символи"
+				},
+				"tag": "Друзі",
+				"tooltip": {
+					"title": "Друзі",
+					"tip": "Друзі"
+				}
+			},
+			"channel": {
+				"bar": {
+					"aria-label": "Список каналів"
+				},
+				"context": {
+					"copyLinkDone": "Посилання на канал скопійовано",
+					"notifyPrefs": "Налаштування сповіщень каналу",
+					"rename": "Перейменувати канал",
+					"renameOk": "Канал перейменовано",
+					"delete": "Видалити канал",
+					"deleteOk": "Канал видалено",
+					"deleteConfirm": "Ви впевнені, що хочете видалити канал \"${name}\"? Цю дію не можна скасувати.",
+					"setDefault": "Встановити як канал за умовчанням",
+					"setDefaultOk": "Уже встановлено як канал за умовчанням",
+					"copyLink": "Копіювати посилання на канал",
+					"exportJson": "Експорт JSON",
+					"exportOk": "Архів каналу завантажено",
+					"exportFailed": "Помилка експорту: ${error}"
+				},
+				"name": "Назва каналу",
+				"nameInput": {
+					"placeholder": "Загальний"
+				},
+				"readonlyList": {
+					"placeholder": "Список каналів лише для читання"
+				},
+				"readonlyStream": {
+					"placeholder": "Потоковий канал лише для читання"
+				},
+				"type": "Тип каналу",
+				"typeList": "Канал списку/форуму",
+				"typeStreaming": "Потоковий канал",
+				"typeText": "Канал чату"
+			},
+			"message": {
+				"action": {
+					"bookmark": {
+						"title": "Закладка"
+					},
+					"copyHtml": {
+						"title": "Копіювати HTML"
+					},
+					"delete": {
+						"title": "Видалити повідомлення"
+					},
+					"edit": {
+						"title": "Редагувати повідомлення"
+					},
+					"failed": "Помилка операції: ${error}",
+					"feedbackDown": {
+						"title": "Натисніть, щоб не подобається"
+					},
+					"feedbackUp": {
+						"title": "Подобається"
+					},
+					"next": {
+						"title": "Наступна часова шкала"
+					},
+					"pin": {
+						"title": "Закріпити"
+					},
+					"prev": {
+						"title": "Попередня шкала часу"
+					},
+					"regen": {
+						"title": "Регенерувати"
+					},
+					"unpin": {
+						"title": "Відкріпити"
+					}
+				},
+				"context": {
+					"edit": "Редагувати повідомлення",
+					"delete": "Видалити повідомлення"
+				},
+				"edit": {
+					"area": {
+						"aria-label": "Редагувати повідомлення"
+					},
+					"cancel": "Скасувати",
+					"save": "Зберегти",
+					"upload": "Завантажити вкладення"
+				},
+				"feedbackSubmit": "Надіслати відгук",
+				"input": {
+					"placeholder": "Групове повідомлення… Ctrl+Enter — надіслати",
+					"aria-label": "Повідомлення"
+				},
+				"prefixVote": "Голосувати"
+			},
+			"session": {
+				"deleteFailed": "Не вдалося видалити: ${error}",
+				"deleted": "Бесіду видалено",
+				"id": "Ідентифікатор сеансу",
+				"info": "Інформація про сеанс",
+				"messages": "Кількість повідомлень",
+				"role": "Роль"
+			},
+			"folder": {
+				"collapse": "Згорнути папку",
+				"default": "Папка",
+				"dissolve": "Закрити папку",
+				"expand": "Розгорнути папку",
+				"rename": "Перейменувати папку",
+				"renamePrompt": "Перейменуйте папку \"${name}\" на:"
+			},
+			"stream": {
+				"av": {
+					"join": "Додати голос/відео",
+					"joinFailed": "Неможливо почати виклик: ${error}",
+					"leave": "Відійшов(-ла)",
+					"mute": "Без звуку",
+					"noCodecs": "Цей браузер не підтримує WebCodecs (потрібен Chrome 94+ / Edge 94+ / Firefox 130+)",
+					"peers": "${count} людей онлайн",
+					"preset": {
+						"high": "Висока якість 1,5 Мбіт/с",
+						"low": "Низька якість 200kbps",
+						"med": "Середня 600 кбіт/с",
+						"thumb": "Мініатюра 64 кбіт/с"
+					},
+					"unmute": "Увімкнути звук",
+					"video": "Вимкніть камеру",
+					"videoOn": "Увімкніть камеру",
+					"you": "Ви"
+				},
+				"defaultName": "Потокове медіа",
+				"embedHttpsRequired": "Потокова адреса має бути вбудованою сторінкою https://, або спочатку потрібно налаштувати та оновити параметри групи, щоб отримати маркер перегляду.",
+				"refreshToken": "Оновити маркер годинника",
+				"tokenFailed": "Не вдалося видати маркер перегляду",
+				"webRtcHint": "Зовнішня SFU не налаштована; цей канал використовуватиме внутрішньогруповий WebRTC (не потрібно потокове передавання SfuWss)."
+			},
+			"member": {
+				"bar": {
+					"aria-label": "Список учасників"
+				},
+				"context": {
+					"copyName": "Копіювати відображуване ім'я",
+					"mention": "Згадка",
+					"care": "Особлива турбота",
+					"careAdded": "Вже додається особлива турбота",
+					"careRemoved": "Спеціальний догляд скасовано",
+					"setAlias": "Встановити псевдонім",
+					"setAliasPrompt": "Встановіть локальний псевдонім для \"${name}\" (залиште пустим, щоб очистити):",
+					"aliasSaved": "Псевдонім оновлено",
+					"copyPubKey": "Копіювати хеш відкритого ключа",
+					"copyEntityId": "Копіювати ідентифікатор організації",
+					"dm": "Надіслати приватне повідомлення",
+					"kick": "Вигнати",
+					"kickSelfNodeWarning": "Попередження: цей учасник використовує ту саму ідентифікацію вузла, що й ви. Вас також буде видалено з групи після виключення. Ви впевнені, що бажаєте продовжити?",
+					"ban": "Заборонити...",
+					"personalBlock": "Персональний блок",
+					"personalBlockConfirm": "Додати ${name} до вашого списку блокувань? Люди, які слідкують за вами, зрозуміють цей сигнал і можуть мати менше довіри до них.",
+					"personalBlockSuccess": "Вже додано в чорний список",
+					"banTitle": "Виберіть діапазон заборони",
+					"banEntity": "Заборонені сутності (128-бітний entityHash)",
+					"banNode": "Вузол заборони (homeNodeHash)"
+				},
+				"countLabel": "${count} учасників",
+				"joined": "Приєднався до розмови",
+				"section": "Учасники"
+			},
+			"thread": {
+				"close": {
+					"title": "Закрити дочірній ланцюжок"
+				},
+				"composer": {
+					"placeholder": "Відповідь у підтемі…"
+				},
+				"createFailed": "Не вдалося створити дочірній ланцюжок, повторіть спробу пізніше",
+				"created": "Дочірній ланцюжок створено",
+				"drawer": {
+					"aria-label": "Гілка"
+				}
+			},
+			"config": {
+				"loadFailed": "Не вдалося завантажити конфігурацію: ${error}",
+				"saveFailed": "Не вдалося зберегти: ${error}",
+				"saved": "Збережено",
+				"title": "Конфігурація розмови"
+			},
+			"statusItems": {
+				"dnd": {
+					"title": "Не турбувати",
+					"textContent": "Не турбувати"
+				},
+				"idle": {
+					"title": "Відійшов(-ла)",
+					"textContent": "Відійшов(-ла)"
+				},
+				"offline": {
+					"title": "Офлайн",
+					"textContent": "Офлайн"
+				},
+				"online": {
+					"title": "Онлайн",
+					"textContent": "Онлайн"
+				}
+			},
+			"files": {
+				"bindCabinet": "Додайте шафу для документів",
+				"delete": "Видалити",
+				"deleteConfirm": "Ви впевнені, що хочете видалити цей файл?",
+				"deleteFolderConfirm": "Ви впевнені, що хочете видалити цю папку? Файли в папці не будуть видалені автоматично.",
+				"download": "Завантажити",
+				"drawerTitle": "Файли групи",
+				"empty": "Зараз у цьому каталозі немає файлів",
+				"foldersTitle": "Папки",
+				"listTitle": "Файли",
+				"loadFailed": "Не вдалося завантажити файл групи: ${error}",
+				"loading": "Завантаження групових файлів...",
+				"newFolder": "Створити нову папку",
+				"newFolderPrompt": "Ім'я папки",
+				"no": {
+					"cabinets": "Немає картотечних шаф, доступних для поточної ролі",
+					"channel": "Будь ласка, спочатку введіть текстовий канал, куди ви можете надсилати повідомлення",
+					"folders": "Підпапок ще немає",
+					"group": "Спочатку виберіть групу"
+				},
+				"rename": "Перейменувати",
+				"renameFolderPrompt": "Перейменуйте папку \"${name}\" на:",
+				"rootFolder": "Кореневий каталог",
+				"title": {
+					"title": "Файли групи"
+				},
+				"upload": "Завантажити",
+				"uploadTo": "Завантажити в"
+			},
+			"group": {
+				"context": {
+					"manage": "Керувати групою",
+					"notifyPrefs": "Налаштування сповіщень",
+					"invite": "Запросіть інших",
+					"inviteCopied": "Посилання на запрошення скопійовано в буфер обміну",
+					"addChar": "Додати роль",
+					"addCharLabel": "Виберіть роль",
+					"addCharSubmit": "Додати до",
+					"noChars": "Немає доступних ролей",
+					"setAlias": "Встановити псевдонім групи",
+					"setAliasPrompt": "Встановіть локальний псевдонім для \"${name}\" (залиште пустим, щоб очистити):",
+					"aliasSaved": "Псевдонім групи оновлено",
+					"leave": {
+						"main": "Вийти з групи",
+						"batch": "Вийти з вибраної групи (${count})",
+						"batchOk": "Вийшли з групи ${count}",
+						"batchPartial": "${failed} / ${total} груп не вдалося вийти, список оновлено",
+						"batchPending": "${count} груп видалено зі списку, вихід у фоновому режимі...",
+						"confirm": "Ви впевнені, що бажаєте Відійшов(-ла) групу \"${name}\"? Ви більше не зможете переглядати повідомлення в цій групі.",
+						"confirmBatch": "Ви впевнені, що бажаєте Відійшов(-ла) ${count} вибраних груп? Машина більше не зберігатиме дані для цих груп.",
+						"ok": "Вийшов із групи"
+					}
+				},
+				"descriptionEmpty": "Для цієї групи ще немає профілю.",
+				"emojiTab": {
+					"title": "Група"
+				},
+				"emojisEmpty": "Наразі немає групових смайлів. Ви можете завантажити їх у налаштуваннях групи.",
+				"emojisLoadFailed": "Не вдалося завантажити смайли групи",
+				"headerMenu": {
+					"title": "Меню групи: налаштування, запрошення та ін."
+				},
+				"joinRequired": "Групу неможливо відкрити, будь ласка, скористайтеся посиланням або кодом запрошення, щоб приєднатися",
+				"tag": "Група",
+				"unnamed": "Група без назви ·${suffix}"
+			},
+			"block": {
+				"author": {
+					"title": "Заблокувати цього автора"
+				},
+				"authorTitle": "Заблокувати цього автора",
+				"confirm": "Додати цю людину до чорного списку? Федерація цієї групи відмовиться від її естафети.",
+				"ok": "Заблоковано",
+				"opposingConfirm": "Додати емітентів управління з іншої гілки до чорного списку та відхилити федеративні ретранслятори для цієї групи. Продовжити?",
+				"opposingFailed": "Помилка позначення: ${error}",
+				"opposingOk": "${count} тем позначено як недоступні"
+			},
+			"call": {
+				"button": {
+					"title": "Почніть дзвінок або приєднайтеся до нього",
+					"aria-label": "Почніть дзвінок або приєднайтеся до нього"
+				},
+				"duration": "Тривалість ${duration}",
+				"ended": "Дзвінок завершено",
+				"hangup": "Завершити дзвінок",
+				"inProgress": "Виконується дзвінок",
+				"join": "Приєднуйтесь до дзвінка",
+				"joinFailed": "Неможливо приєднатися до виклику: ${error}",
+				"jumpBack": "Повернення до каналу виклику",
+				"noParticipants": "Учасників ще немає",
+				"participants": "${n} осіб",
+				"peerCount": "${n}",
+				"screenFailed": "Не вдалося показати екран: ${error}",
+				"screenShare": "Поділитися екраном",
+				"screenStop": "Припинити ділитися",
+				"startedAt": "Початок о ${time}"
+			},
+			"vote": {
+				"closed": "Закінчився",
+				"count": "${count} квитків · ${pct}%",
+				"createFailed": "Не вдалося створити опитування: ${error}",
+				"deadline": "Кінцевий термін: ${date}",
+				"minOptions": "Потрібно мінімум 2 варіанти",
+				"modalSubmit": "Створити опитування",
+				"modalTitle": "Ініціюйте голосування",
+				"noOptions": "Без варіантів",
+				"optionDefault": "Згоден, проти",
+				"promptDeadlineHours": "Кінцевий термін (години, залиште порожнім = без крайнього терміну)",
+				"promptOptions": "Варіанти (не менше двох, розділених комами)",
+				"promptQuestion": "Титул для голосування",
+				"title": {
+					"title": "Ініціюйте голосування"
+				},
+				"total": "Усього ${total} голосів"
+			},
+			"file": {
+				"decryptFailed": "Неможливо отримати доступ до цього файлу без ключа файлу",
+				"downloadFailed": "Не вдалося завантажити файл",
+				"loadFailed": "Не вдалося завантажити файл",
+				"noKey": "Не вдалося розшифрувати (відсутній ключ)",
+				"skippedDedup": "Повторне передавання блоку пропущено",
+				"uploadChecking": "Перевірка того, чи такий самий вміст уже існує...",
+				"uploadFailed": "Не вдалося завантажити файл",
+				"uploadRegistering": "Реєстрація файлів…",
+				"uploaded": "Файл успішно завантажено",
+				"uploadingChunk": "Завантаження зашифрованих блоків..."
+			},
+			"menu": {
+				"copy": "Копіювати",
+				"delete": "Видалити",
+				"download": "Завантажити HTML",
+				"hTML": "HTML",
+				"mD": "Markdown",
+				"next": "Наступне",
+				"prev": "Попереднє",
+				"share": {
+					"1h": "Поділіться посиланням на 1 годину",
+					"12h": "Поділіться 12-годинним посиланням",
+					"24h": "Поділіться посиланням на 24 години",
+					"72h": "Поділіться посиланням на 72 години"
+				},
+				"shareGroup": "Поділитися посиланням",
+				"tXT": "Простий текст"
+			},
+			"char": {
+				"chat": {
+					"composer": {
+						"placeholder": "Надіслати повідомлення до ${name} (Ctrl+Enter, щоб надіслати)"
+					},
+					"empty": "Ще немає повідомлень, почніть свій перший чат!",
+					"settings": "Налаштування чату персонажів",
+					"start": "Почніть розмову з ${name}",
+					"subtitle": "Сеанс із ${name}"
+				},
+				"chatsTitle": "Історичні розмови з ${name}",
+				"count": "${count} ролей",
+				"descriptionEmpty": "Персонаж ще не представився.",
+				"intro": "Представити",
+				"streaming": "Створення…",
+				"tag": "Роль",
+				"tagSolo": "Персонажі · Діалог 1:1",
+				"typing": "Введення…"
+			},
+			"list": {
+				"channelEmpty": "Список порожній.",
+				"editorTitle": "Редагувати елементи списку (масив JSON)",
+				"itemUntitled": "Без назви",
+				"jsonInvalid": "Недійсний JSON: ${message}",
+				"saveFailed": "Не вдалося зберегти",
+				"saveToDag": "Зберегти в DAG",
+				"saved": "Збережено"
+			},
+			"save": {
+				"emoji": {
+					"title": "Збережіть смайлики"
+				},
+				"emojiFailed": "Не вдалося зберегти смайлик: ${error}",
+				"emojiOk": "Смайлик збережено в базі даних",
+				"sticker": {
+					"title": "Зберегти стікери"
+				},
+				"stickerFailed": "Не вдалося зберегти стікери: ${error}",
+				"stickerOk": "Стікер додано до вашої бібліотеки"
+			},
+			"sync": {
+				"failed": "Помилка синхронізації федерації: ${error}",
+				"incomplete": "${missing}/${total} події залишаються несинхронізованими",
+				"noPeers": "Не підключено до федеративного сусіда, історичні повідомлення не можуть бути тимчасово синхронізовані; скористайтеся повним посиланням із запрошенням і повторіть спробу пізніше",
+				"rateLimited": "Обмеження швидкості федеративної синхронізації, спробуйте пізніше",
+				"truncated": "Приріст DAG не повний. Ви можете спробувати ще раз пізніше або збільшити ліміт.",
+				"truncatedHint": "Історія DAG надто довга. Ви можете спробувати ще раз пізніше або збільшити ліміт."
+			},
+			"load": {
+				"charChatFailed": "Помилка завантаження повідомлення",
+				"groupFailed": "Не вдалося завантажити групу: ${error}",
+				"listFailed": "Не вдалося завантажити список груп: ${error}",
+				"messagesFailed": "Помилка завантаження повідомлення: ${error}",
+				"more": "Завантаження попередніх новин…"
+			},
+			"send": {
+				"main": "Відправити",
+				"failed": "Помилка надсилання: ${error}",
+				"failedPending": "Не вдалося відправити",
+				"imageFailed": "Не вдалося надіслати зображення: ${error}",
+				"stickerFailed": "Не вдалося надіслати стікер: ${error}",
+				"title": {
+					"title": "Надіслати (Ctrl+Enter)"
+				}
+			},
+			"fed": {
+				"advancedDescription": "Виправлення помилок, керування репутацією та ручне надання посилань",
+				"advancedTitle": "Розширені налаштування",
+				"batterySaverLabel": "Режим низької потужності",
+				"batterySaverTip": "Зменшення кількості фонових підключень і мережевої активності може дещо сповільнити синхронізацію повідомлень.",
+				"connectionTitle": "Підключайтеся та відкривайте",
+				"dm": {
+					"invalidateDescription": "Після виконання всі надані раніше посилання для додавання друзів одразу стануть недійсними та не можуть бути відкликані.",
+					"invalidateTitle": "Нехай старі реферальні посилання закінчуються",
+					"issueLabel": "Надішліть посилання в DM",
+					"issued": "Посилання DM підписано та скопійовано в буфер обміну",
+					"linkDescription": "Підходить для налагодження або ручної міграції ідентичності; немає необхідності заповнювати ці поля при щоденному додаванні друзів.",
+					"linkTip": "Потрібен підпис за допомогою власного ключа ідентифікації. Приватний ключ надсилається лише локальній службі на цій сторінці та не надсилається іншим вузлам.",
+					"linkTitle": "Вручну видати посилання для друга",
+					"needPubKey": "Потрібен відкритий ключ у 64 шістнадцятковій формі",
+					"needSecretKey": "Потрібне 64 шістнадцяткове початкове число закритого ключа",
+					"nodeLabel": "Додаткова URL-адреса вузла",
+					"pubKeyLabel": "Шістнадцятковий відкритий ключ (64)",
+					"rotateConfirm": "Усі надані раніше посилання для додавання друзів одразу стануть недійсними та не можуть бути відновлені. Ви впевнені, що бажаєте продовжити?",
+					"rotateLabel": "Визнати старі посилання недійсними",
+					"secretLabel": "Начальний код закритого ключа (64)"
+				},
+				"groupRecoveryTip": "Використовується, лише якщо запрошення просочується або новий пристрій не може синхронізувати історію.",
+				"groupRecoveryTitle": "Виправлення підключення до групи",
+				"nonceRotated": "nonce оновлено (${nonce}…)",
+				"relayUrlsLabel": "Адреса мережевого ретранслятора",
+				"relayUrlsTip": "Допомагайте пристроям знаходити один одного в Інтернеті. Заповніть одну адресу wss:// на рядок; залиште порожнім, щоб використовувати реле за замовчуванням.",
+				"repEmpty": "(null)",
+				"repTip": "Оцінки переваг з'єднання, розраховані локально за поведінкою федеративного вузла — це не публічні рейтинги учасників групи.",
+				"repTitle": "Суб'єктивна довіра до цієї групи",
+				"repairJoinSnapshot": "Прохання сусідів приєднатися до ремонту групового знімка",
+				"repairJoinSnapshotFailed": "Не вдалося відновити знімок групи: ${error}",
+				"repairJoinSnapshotOk": "Застосовано знімок групи (історія каналу ${channels})",
+				"resetOk": "reputation_reset записано",
+				"resetSubmitLabel": "Скинути цільову репутацію",
+				"rotateRoomSecret": "Змінити пароль групової кімнати",
+				"rotateRoomSecretConfirm": "Після ротації запрошення зі старим паролем кімнати не зможуть підключитися. Ви впевнені, що бажаєте продовжити?",
+				"rotateRoomSecretOk": "Пароль кімнати змінено",
+				"saved": "Збережено",
+				"slash": {
+					"claimLabel": "Претензія на силу претензії (0–1)",
+					"needHash": "Потрібен 64-розрядний шістнадцятковий pubKeyHash",
+					"ok": "reputation_slash записано в DAG",
+					"proof": {
+						"placeholder": "64 шістнадцятковий ідентифікатор події"
+					},
+					"proofLabel": "proof.eventId (необов'язково)",
+					"submitLabel": "Опублікувати reputation_slash",
+					"target": {
+						"placeholder": "Хеш публічного ключа учасника"
+					},
+					"targetLabel": "цільовий pubKeyHash (64 hex)",
+					"tip": "Записує заяву про негативну репутацію вузла до графіка подій групи. Для використання лише адміністраторами, які розуміються на протоколах федерації.",
+					"title": "Штраф за репутацію",
+					"verifiedLabel": "Піддається перевірці (потрібен ідентифікатор події доказу)"
+				}
+			},
+			"pin": {
+				"previewInvite": "[Запросити] ${groupName}",
+				"previewSticker": "[стікер]",
+				"previewVote": "[Голосувати] ${question}",
+				"unpinSidebar": {
+					"title": "Відкріпити"
+				}
+			},
+			"no": {
+				"activeChat": "Перш ніж перетягувати частину, відкрийте сеанс",
+				"bookmarks": "Закладок ще немає",
+				"channels": "Розмови ще немає",
+				"chars": "Ще немає ролей, спочатку встановіть деякі.",
+				"description": "Опису ще немає",
+				"friends": "Приватних чатів ще немає",
+				"groups": "Групи ще немає",
+				"members": "Ще немає учасників",
+				"pins": "Ще немає шпильок",
+				"username": "Ім'я користувача не отримано"
+			}
 		},
 		"sidebar": {
 			"settings": {
@@ -2593,144 +2815,8 @@
 				"alt": "Іконка фото"
 			}
 		},
-		"messageList": {
-			"confirmDeleteMessage": "Ви впевнені, що хочете видалити це повідомлення?"
-		},
 		"voiceRecording": {
 			"errorAccessingMicrophone": "Не вдалося отримати доступ до мікрофона"
-		},
-		"messageView": {
-			"buttons": {
-				"edit": {
-					"title": "Редагувати"
-				},
-				"editIcon": {
-					"alt": "Іконка редагування"
-				},
-				"more": {
-					"title": "Більше"
-				},
-				"moreIcon": {
-					"alt": "Іконка 'Більше'"
-				},
-				"delete": {
-					"alt": "Видалити"
-				},
-				"deleteIcon": {
-					"alt": "Іконка видалення"
-				},
-				"downloadHtml": {
-					"alt": "Завантажити як html"
-				},
-				"downloadHtmlIcon": {
-					"alt": "Піктограма завантаження html"
-				}
-			},
-			"copyButton": {
-				"title": "Копіювати"
-			},
-			"copyButtonIcon": {
-				"alt": "Копіювати"
-			},
-			"copySuccess": "Скопійовано в буфер обміну",
-			"dropdown": {
-				"delete": "Видалити",
-				"deleteIcon": {
-					"alt": "Іконка видалення"
-				},
-				"copyMarkdown": "Копіювати як markdown",
-				"copyMarkdownIcon": {
-					"alt": "Іконка копіювання markdown"
-				},
-				"copyText": "Копіювати як звичайний текст",
-				"copyTextIcon": {
-					"alt": "Іконка копіювання тексту"
-				},
-				"copyHtml": "Копіювати як html",
-				"copyHtmlIcon": {
-					"alt": "Іконка копіювання html"
-				},
-				"downloadHtml": "Завантажити як html",
-				"downloadHtmlIcon": {
-					"alt": "Піктограма завантаження html"
-				},
-				"share": {
-					"textContent": "Поділитися",
-					"1h": "1 година",
-					"12h": "12 годин",
-					"24h": "24 години",
-					"72h": "72 години"
-				},
-				"shareIcon": {
-					"alt": "піктограма спільного доступу"
-				}
-			},
-			"share": {
-				"uploading": "Створення посилання...",
-				"success": "Посилання успішно створено! Скопійовано в буфер обміну. <br>Ця функція підтримується ${provider}. <br>[Спонсоруйте їх.](${sponsorLink})"
-			},
-			"commonToolCalling": "Виклик інструменту",
-			"toolRunningLang": "Виконую ${lang}",
-			"toolSearchingContent": "Шукаю ${content}",
-			"toolOverridingFilepath": "Перезаписую ${filepath}",
-			"toolReplacingFilepath": "Замінюю фрагмент у ${filepath}",
-			"toolReadingFilepath": "Читаю ${filepath}",
-			"reasoningDetailsTitle": "Процес міркування",
-			"logprobsNotApplicable": "н/д",
-			"logprobsTopLogprobsMeta": "top_logprobs (вибрано: ${token})",
-			"logprobsMetricsFooter": "Затримка першого токена: ${ttft} | Тривалість: ${time} | Токени: ${tokens} | Швидкість: ${speed}",
-			"noReplyContent": "(Немає вмісту відповіді)",
-			"feedback": {
-				"thumbsUp": {
-					"title": "Подобається"
-				},
-				"thumbsDown": {
-					"title": "Не подобається"
-				},
-				"regenerate": {
-					"title": "Перегенерувати"
-				},
-				"reason": {
-					"placeholder": "За бажанням: вкажіть причину"
-				},
-				"submit": "Надіслати",
-				"cancel": "Скасувати"
-			}
-		},
-		"messageEdit": {
-			"input": {
-				"placeholder": "Введіть вміст..."
-			},
-			"buttons": {
-				"confirm": {
-					"title": "Підтвердити"
-				},
-				"confirmIcon": {
-					"alt": "Іконка підтвердження"
-				},
-				"cancel": {
-					"title": "Скасувати"
-				},
-				"cancelIcon": {
-					"alt": "Іконка скасування"
-				},
-				"upload": {
-					"title": "Завантажити"
-				},
-				"uploadIcon": {
-					"alt": "Іконка завантаження"
-				}
-			}
-		},
-		"messageGenerating": {
-			"tips": "Роль генерує відповідь, зачекайте...",
-			"stop": {
-				"textContent": "Стоп",
-				"title": "Припинити генерацію"
-			},
-			"stopIcon": {
-				"alt": "зупинити значок"
-			}
 		},
 		"attachment": {
 			"buttons": {
@@ -2840,34 +2926,6 @@
 			"avatarLabel": "Аватар",
 			"themeColorLabel": "Колір теми",
 			"uploadAvatar": "Завантажити аватар",
-			"ownerTitle": "Мій господар",
-			"ownerSummary": "Налаштування делегування",
-			"ownerDescription": "Після налаштування господар може редагувати або видаляти ваші повідомлення в чаті, дописи в соцмережах і профіль від вашого імені; його вміст також відображатиметься локально як небезпечний Markdown (може містити скрипти). Можна вказати будь-який хеш сутності та очистити його будь-коли.",
-			"ownerEntityHashLabel": "Хеш сутності господаря (128 hex)",
-			"ownerSave": "Зберегти господаря",
-			"ownerClear": "Очистити господаря",
-			"ownerSaved": "Господаря оновлено",
-			"ownerCleared": "Господаря очищено",
-			"ownerSaveFailed": "Не вдалося зберегти: ${error}",
-			"ownerConfirmTitle": "Підтвердити встановлення господаря?",
-			"ownerConfirmWarningTitle": "Високоризикова дія — уважно прочитайте",
-			"ownerConfirmEditBody": "Після налаштування інша сторона зможе редагувати або видаляти ваші повідомлення в чаті, дописи в соцмережах і профіль без вашої згоди. Помилкове або оманливе встановлення господаря = негайна передача контролю над вмістом.",
-			"ownerConfirmRenderBody": "Повідомлення в чаті та дописи в соцмережах від іншої сторони відображатимуться у вашому браузері як повний Markdown (з HTML/скриптами). Це дозволяє запускати довільний код на вашому комп'ютері без повторної згоди. Продовжуйте лише якщо повністю довіряєте цій людині.",
-			"ownerConfirmCooldown": "Я ознайомив(-ла)ся з ризиками (${seconds})",
-			"ownerConfirmFirst": "Розумію ризики, продовжити",
-			"ownerConfirmSecond": "Натисніть ще раз для остаточного підтвердження",
-			"ownerConfirmCancel": "Скасувати",
-			"federationTitle": "Федерація та синхронізація",
-			"federationSummary": "Релейні сервери та режим енергозбереження",
-			"federationDescription": "Налаштуйте URL Nostr relay і режим енергозбереження. Федеративну синхронізацію групи вмикається автоматично при першому запрошенні або створенні федеративного приватного повідомлення.",
-			"federationAdvanced": "Розширені параметри",
-			"federationRelayUrlsLabel": "Релейні сервери (по одному на рядок; порожньо — за замовчуванням)",
-			"federationBatterySaverLabel": "Режим енергозбереження",
-			"federationSave": "Зберегти мережеві налаштування",
-			"federationResetDefault": "Відновити рекомендовані налаштування",
-			"federationSaved": "Збережено",
-			"federationResetOk": "Рекомендовані налаштування відновлено",
-			"federationSaveFailed": "Не вдалося зберегти: ${error}",
 			"preferences": "Налаштування",
 			"language": "Мова",
 			"theme": "Тема",
@@ -2925,20 +2983,9 @@
 			"noGroups": "Ви ще не в жодній групі",
 			"noChannels": "Каналів ще немає",
 			"overview": "Огляд профілю",
-			"summaryUserId": "ID користувача",
-			"summaryAccountStatus": "Статус облікового запису",
-			"summaryEmailVisibility": "Видимість електронної пошти",
-			"summaryThemePref": "Тема",
-			"summaryLanguagePref": "Мова",
-			"summarySocialCount": "Соціальних посилань",
-			"summaryLinksCount": "Зовнішніх посилань",
 			"groupDescriptionEmpty": "Опису ще немає",
 			"groupMembers": "${members} учасників · ${channels} каналів",
 			"channelPrivate": " · Приватний",
-			"channelTypeText": "Текстовий канал",
-			"channelTypeList": "Канал-список",
-			"channelTypeVoice": "Голосовий канал",
-			"channelTypeStreaming": "Стрімінговий канал",
 			"errors": {
 				"loadFailed": "Не вдалося завантажити профіль",
 				"saveFailed": "Не вдалося зберегти профіль",
@@ -2952,8 +2999,57 @@
 				"saved": "Профіль збережено",
 				"avatarUploaded": "Аватар завантажено"
 			},
-			"ownerEntityHash": {
-				"placeholder": "Введіть хеш сутності господаря"
+			"channelType": {
+				"list": "Канал-список",
+				"streaming": "Стрімінговий канал",
+				"text": "Текстовий канал",
+				"voice": "Голосовий канал"
+			},
+			"federation": {
+				"advanced": "Розширені параметри",
+				"batterySaverLabel": "Режим енергозбереження",
+				"description": "Налаштуйте URL Nostr relay і режим енергозбереження. Федеративну синхронізацію групи вмикається автоматично при першому запрошенні або створенні федеративного приватного повідомлення.",
+				"relayUrlsLabel": "Релейні сервери (по одному на рядок; порожньо — за замовчуванням)",
+				"resetDefault": "Відновити рекомендовані налаштування",
+				"resetOk": "Рекомендовані налаштування відновлено",
+				"save": "Зберегти мережеві налаштування",
+				"saveFailed": "Не вдалося зберегти: ${error}",
+				"saved": "Збережено",
+				"summary": "Релейні сервери та режим енергозбереження",
+				"title": "Федерація та синхронізація"
+			},
+			"summary": {
+				"accountStatus": "Статус облікового запису",
+				"emailVisibility": "Видимість електронної пошти",
+				"languagePref": "Мова",
+				"linksCount": "Зовнішніх посилань",
+				"socialCount": "Соціальних посилань",
+				"themePref": "Тема",
+				"userId": "ID користувача"
+			},
+			"owner": {
+				"clear": "Очистити господаря",
+				"cleared": "Господаря очищено",
+				"confirm": {
+					"cancel": "Скасувати",
+					"cooldown": "Я ознайомив(-ла)ся з ризиками (${seconds})",
+					"editBody": "Після налаштування інша сторона зможе редагувати або видаляти ваші повідомлення в чаті, дописи в соцмережах і профіль без вашої згоди. Помилкове або оманливе встановлення господаря = негайна передача контролю над вмістом.",
+					"first": "Розумію ризики, продовжити",
+					"renderBody": "Повідомлення в чаті та дописи в соцмережах від іншої сторони відображатимуться у вашому браузері як повний Markdown (з HTML/скриптами). Це дозволяє запускати довільний код на вашому комп'ютері без повторної згоди. Продовжуйте лише якщо повністю довіряєте цій людині.",
+					"second": "Натисніть ще раз для остаточного підтвердження",
+					"title": "Підтвердити встановлення господаря?",
+					"warningTitle": "Високоризикова дія — уважно прочитайте"
+				},
+				"description": "Після налаштування господар може редагувати або видаляти ваші повідомлення в чаті, дописи в соцмережах і профіль від вашого імені; його вміст також відображатиметься локально як небезпечний Markdown (може містити скрипти). Можна вказати будь-який хеш сутності та очистити його будь-коли.",
+				"entityHash": {
+					"placeholder": "Введіть хеш сутності господаря"
+				},
+				"entityHashLabel": "Хеш сутності господаря (128 hex)",
+				"save": "Зберегти господаря",
+				"saveFailed": "Не вдалося зберегти: ${error}",
+				"saved": "Господаря оновлено",
+				"summary": "Налаштування делегування",
+				"title": "Мій господар"
 			}
 		},
 		"entityProfile": {
@@ -2988,30 +3084,12 @@
 			},
 			"searchLabel": "Пошук стікерпаків",
 			"emptyPacks": "Наборів стікерів ще немає",
-			"packNameLabel": "Назва набору",
-			"packName": {
-				"placeholder": "Введіть назву набору"
-			},
-			"packDescriptionLabel": "Опис",
-			"packDescription": {
-				"placeholder": "Введіть опис"
-			},
-			"stickerNameLabel": "Назва стікера",
-			"stickerName": {
-				"placeholder": "Введіть назву стікера"
-			},
-			"selectPack": "Оберіть набір",
-			"selectPackOption": {
-				"textContent": "Оберіть набір стікерів"
-			},
-			"selectImage": "Оберіть зображення",
 			"tagsLabel": "Теги (через кому)",
 			"tags": {
 				"placeholder": "наприклад: милий, емоція, тварина"
 			},
 			"author": "Автор",
 			"authorLabel": "Автор: ${author}",
-			"stickerCount": "${count} стікерів",
 			"badgeMine": "Мій",
 			"noDescription": "Опису немає",
 			"noStickersInPack": "Стікерів ще немає",
@@ -3027,8 +3105,6 @@
 			"importPackName": "Моя колекція",
 			"importPackDescription": "Стікери, збережені з повідомлень",
 			"nameRequired": "Введіть назву набору",
-			"stickerNameRequired": "Введіть назву стікера",
-			"selectPackRequired": "Оберіть набір стікерів",
 			"fileRequired": "Оберіть файл зображення",
 			"loadDetailFailed": "Не вдалося завантажити деталі набору",
 			"deleteConfirm": "Назавжди видалити цей набір? Усі стікери буде втрачено — дію не скасувати.",
@@ -3046,6 +3122,174 @@
 				"uninstalled": "Успішно видалено",
 				"created": "Пакет стікерів успішно створено",
 				"deleted": "Успішно видалено"
+			},
+			"sticker": {
+				"count": "${count} стікерів",
+				"name": {
+					"placeholder": "Введіть назву стікера"
+				},
+				"nameLabel": "Назва стікера",
+				"nameRequired": "Введіть назву стікера"
+			},
+			"select": {
+				"image": "Оберіть зображення",
+				"pack": "Оберіть набір",
+				"packOption": {
+					"textContent": "Оберіть набір стікерів"
+				},
+				"packRequired": "Оберіть набір стікерів"
+			},
+			"pack": {
+				"description": {
+					"placeholder": "Введіть опис"
+				},
+				"descriptionLabel": "Опис",
+				"name": {
+					"placeholder": "Введіть назву набору"
+				},
+				"nameLabel": "Назва набору"
+			}
+		},
+		"message": {
+			"edit": {
+				"input": {
+					"placeholder": "Введіть вміст..."
+				},
+				"buttons": {
+					"confirm": {
+						"title": "Підтвердити"
+					},
+					"confirmIcon": {
+						"alt": "Іконка підтвердження"
+					},
+					"cancel": {
+						"title": "Скасувати"
+					},
+					"cancelIcon": {
+						"alt": "Іконка скасування"
+					},
+					"upload": {
+						"title": "Завантажити"
+					},
+					"uploadIcon": {
+						"alt": "Іконка завантаження"
+					}
+				}
+			},
+			"generating": {
+				"tips": "Роль генерує відповідь, зачекайте...",
+				"stop": {
+					"textContent": "Стоп",
+					"title": "Припинити генерацію"
+				},
+				"stopIcon": {
+					"alt": "зупинити значок"
+				}
+			},
+			"list": {
+				"confirmDeleteMessage": "Ви впевнені, що хочете видалити це повідомлення?"
+			},
+			"view": {
+				"buttons": {
+					"edit": {
+						"title": "Редагувати"
+					},
+					"editIcon": {
+						"alt": "Іконка редагування"
+					},
+					"more": {
+						"title": "Більше"
+					},
+					"moreIcon": {
+						"alt": "Іконка 'Більше'"
+					},
+					"delete": {
+						"alt": "Видалити"
+					},
+					"deleteIcon": {
+						"alt": "Іконка видалення"
+					},
+					"downloadHtml": {
+						"alt": "Завантажити як html"
+					},
+					"downloadHtmlIcon": {
+						"alt": "Піктограма завантаження html"
+					}
+				},
+				"copyButton": {
+					"title": "Копіювати"
+				},
+				"copyButtonIcon": {
+					"alt": "Копіювати"
+				},
+				"copySuccess": "Скопійовано в буфер обміну",
+				"dropdown": {
+					"delete": "Видалити",
+					"deleteIcon": {
+						"alt": "Іконка видалення"
+					},
+					"downloadHtml": "Завантажити як html",
+					"downloadHtmlIcon": {
+						"alt": "Піктограма завантаження html"
+					},
+					"share": {
+						"textContent": "Поділитися",
+						"1h": "1 година",
+						"12h": "12 годин",
+						"24h": "24 години",
+						"72h": "72 години"
+					},
+					"shareIcon": {
+						"alt": "піктограма спільного доступу"
+					},
+					"copy": {
+						"html": "Копіювати як html",
+						"htmlIcon": {
+							"alt": "Іконка копіювання html"
+						},
+						"markdown": "Копіювати як markdown",
+						"markdownIcon": {
+							"alt": "Іконка копіювання markdown"
+						},
+						"text": "Копіювати як звичайний текст",
+						"textIcon": {
+							"alt": "Іконка копіювання тексту"
+						}
+					}
+				},
+				"share": {
+					"uploading": "Створення посилання...",
+					"success": "Посилання успішно створено! Скопійовано в буфер обміну. <br>Ця функція підтримується ${provider}. <br>[Спонсоруйте їх.](${sponsorLink})"
+				},
+				"commonToolCalling": "Виклик інструменту",
+				"reasoningDetailsTitle": "Процес міркування",
+				"logprobsNotApplicable": "н/д",
+				"logprobsTopLogprobsMeta": "top_logprobs (вибрано: ${token})",
+				"logprobsMetricsFooter": "Затримка першого токена: ${ttft} | Тривалість: ${time} | Токени: ${tokens} | Швидкість: ${speed}",
+				"noReplyContent": "(Немає вмісту відповіді)",
+				"feedback": {
+					"thumbsUp": {
+						"title": "Подобається"
+					},
+					"thumbsDown": {
+						"title": "Не подобається"
+					},
+					"regenerate": {
+						"title": "Перегенерувати"
+					},
+					"reason": {
+						"placeholder": "За бажанням: вкажіть причину"
+					},
+					"submit": "Надіслати",
+					"cancel": "Скасувати"
+				},
+				"tool": {
+					"overridingFilepath": "Перезаписую ${filepath}",
+					"readingFilepath": "Читаю ${filepath}",
+					"replacingFilepath": "Замінюю фрагмент у ${filepath}",
+					"runningLang": "Виконую ${lang}",
+					"searchingContent": "Шукаю ${content}"
+				}
 			}
 		}
 	},
@@ -3098,21 +3342,6 @@
 				"label": "Перше повідомлення",
 				"placeholder": "Перша фраза, яку каже персонаж."
 			},
-			"personaDef": {
-				"heading": "Визначення персони"
-			},
-			"personaUserName": {
-				"label": "Ваше ім'я в чаті",
-				"placeholder": "Наприклад: Капітан, Дослідник"
-			},
-			"personaAppearance": {
-				"label": "Зовнішність",
-				"placeholder": "Опишіть свою зовнішність."
-			},
-			"personaPersonality": {
-				"label": "Характер",
-				"placeholder": "Опишіть риси свого характеру."
-			},
 			"worldDef": {
 				"heading": "Визначення світу"
 			},
@@ -3144,7 +3373,24 @@
 				"label": "Сторінка проблем",
 				"placeholder": "URL сторінки проблем компонента"
 			},
-			"createButton": "Створити компонент"
+			"createButton": "Створити компонент",
+			"persona": {
+				"appearance": {
+					"label": "Зовнішність",
+					"placeholder": "Опишіть свою зовнішність."
+				},
+				"def": {
+					"heading": "Визначення персони"
+				},
+				"personality": {
+					"label": "Характер",
+					"placeholder": "Опишіть риси свого характеру."
+				},
+				"userName": {
+					"label": "Ваше ім'я в чаті",
+					"placeholder": "Наприклад: Капітан, Дослідник"
+				}
+			}
 		},
 		"achievements": {
 			"create_part": {
@@ -3455,21 +3701,23 @@
 			"noModelsMatched": "Відповідних моделей не знайдено",
 			"currentModelTitle": "${name} (${model})",
 			"providerLabel": "Провайдер: ${provider}",
-			"metaContext": "Контекст: ${context} токенів",
-			"metaOutputLimit": "Макс. вихід: ${output} токенів",
-			"metaInputPrice": "Ціна входу: ${price} / 1M токенів",
-			"metaOutputPrice": "Ціна виходу: ${price} / 1M токенів",
-			"metaCachePrice": "Кеш читання/запис: ${read} / ${write}",
-			"metaModalities": "Модальності: вхід ${input}, вихід ${output}",
-			"metaReasoning": "Підтримує режим міркувань",
-			"metaToolCall": "Підтримує виклик інструментів",
-			"metaVision": "Підтримує візуальний ввід",
-			"metaOpenWeights": "Відкриті ваги",
-			"metaKnowledge": "Межа знань: ${knowledge}",
-			"metaReleaseDate": "Дата випуску: ${date}",
 			"providerDocLink": "[Переглянути документацію провайдера](${url})",
 			"modelSearch": {
 				"placeholder": "Пошук моделі, виробника, можливостей..."
+			},
+			"meta": {
+				"cachePrice": "Кеш читання/запис: ${read} / ${write}",
+				"context": "Контекст: ${context} токенів",
+				"inputPrice": "Ціна входу: ${price} / 1M токенів",
+				"knowledge": "Межа знань: ${knowledge}",
+				"modalities": "Модальності: вхід ${input}, вихід ${output}",
+				"openWeights": "Відкриті ваги",
+				"outputLimit": "Макс. вихід: ${output} токенів",
+				"outputPrice": "Ціна виходу: ${price} / 1M токенів",
+				"reasoning": "Підтримує режим міркувань",
+				"releaseDate": "Дата випуску: ${date}",
+				"toolCall": "Підтримує виклик інструментів",
+				"vision": "Підтримує візуальний ввід"
 			}
 		},
 		"prompts": {
@@ -3495,21 +3743,23 @@
 			"unsavedChangesBeforeUnload": "У вас є незбережені зміни. Ви впевнені, що бажаєте залишити цю сторінку?"
 		},
 		"alerts": {
-			"fetchFileListFailed": "Не вдалося отримати список файлів: ${error}",
-			"fetchGeneratorListFailed": "Не вдалося отримати список генераторів: ${error}",
-			"fetchDefaultsFailed": "Не вдалося отримати компонент за умовчанням: ${error}",
-			"fetchFileDataFailed": "Не вдалося отримати дані файлу: ${error}",
-			"fetchConfigTemplateFailed": "Не вдалося отримати шаблон конфігурації",
 			"saveFileFailed": "Не вдалося зберегти файл: ${error}",
 			"deleteFileFailed": "Не вдалося видалити файл: ${error}",
 			"addFileFailed": "Не вдалося додати файл: ${error}",
 			"setDefaultFailed": "Не вдалося встановити джерело служби за умовчанням: ${error}",
-			"fetchBranchesFailed": "Не вдалося отримати дерево компонентів: ${error}",
 			"noFileSelectedSave": "Не вибрано жодного файлу для збереження.",
 			"noFileSelectedDelete": "Файли для видалення не вибрано.",
 			"noGeneratorSelectedSave": "Будь ласка, виберіть генератор перед збереженням",
 			"savedAsNewFile": "Збережено як нове джерело служби: ${name}",
-			"invalidFileName": "Назва файлу не може містити такі символи: / \\ : * ? \" < > |"
+			"invalidFileName": "Назва файлу не може містити такі символи: / \\ : * ? \" < > |",
+			"fetch": {
+				"branchesFailed": "Не вдалося отримати дерево компонентів: ${error}",
+				"configTemplateFailed": "Не вдалося отримати шаблон конфігурації",
+				"defaultsFailed": "Не вдалося отримати компонент за умовчанням: ${error}",
+				"fileDataFailed": "Не вдалося отримати дані файлу: ${error}",
+				"fileListFailed": "Не вдалося отримати список файлів: ${error}",
+				"generatorListFailed": "Не вдалося отримати список генераторів: ${error}"
+			}
 		},
 		"achievements": {
 			"set_default_aisource": {
@@ -3832,14 +4082,6 @@
 			"privacyHint": "Контролює, чи відображаються облікові записи в розділі «Відкриття» та «Рекомендації».",
 			"tasteTitle": "Рекомендації та переваги",
 			"tasteHint": "Налаштуйте межі конфіденційності та назву мітки «Рекомендовано для вас».",
-			"mutedKeywordsTitle": "Блокування слів і тегів",
-			"mutedKeywordsHint": "Публікації, які потрапляють до основного тексту, попереджень щодо вмісту або міток, будуть приховані від потоку, огляду, пошуку та сповіщень. Зберігається лише локально.",
-			"mutedKeywordsMatchTags": "Одночасно збігайте теги",
-			"mutedKeywordsAdd": "Додати до",
-			"mutedKeywordsRemove": {
-				"title": "Видаліть заблоковані слова"
-			},
-			"mutedKeywordsEmpty": "Ще не додано блокуючих слів",
 			"autoTranslateTitle": "Автоматичний переклад",
 			"autoTranslateHint": "Якщо ввімкнути цю функцію, дописи іноземною мовою автоматично вимагатимуть перекладу, і їх можна буде переключити на оригінальний текст.",
 			"autoTranslateEnable": "Автоматично перекладайте публікації мовами, відмінними від вашої",
@@ -3847,19 +4089,29 @@
 			"safetyHint": "Керуйте заблокованими та прихованими списками.",
 			"mutedKeywords": {
 				"placeholder": "Введіть ключові слова або #теги",
-				"aria-label": "Введіть слово або тег"
+				"aria-label": "Введіть слово або тег",
+				"add": "Додати до",
+				"empty": "Ще не додано блокуючих слів",
+				"hint": "Публікації, які потрапляють до основного тексту, попереджень щодо вмісту або міток, будуть приховані від потоку, огляду, пошуку та сповіщень. Зберігається лише локально.",
+				"matchTags": "Одночасно збігайте теги",
+				"remove": {
+					"title": "Видаліть заблоковані слова"
+				},
+				"title": "Блокування слів і тегів"
 			},
 			"taste": {
 				"rebuild": "Перебудувати налаштування",
-				"privacyPublishPreferences": "Іменування публічних тегів і виявлення злиття",
-				"privacyPublishPreferencesHint": "Після Закрити друзі не зможуть бачити ваші імена тегів і оператори злиття, а також вони не зможуть зробити свій внесок у консенсус.",
-				"privacyPublishReactions": "Публічні лайки та дизлайки",
-				"privacyPublishReactionsHint": "Після Закрити плакат не отримуватиме ваших оцінок «подобається» або «не подобається», ваша реакція не буде включена в рекомендації інших, і ви більше не рекламуватимете публікацію для повторного поширення.",
 				"empty": "Ще немає тега налаштувань, він буде автоматично кластеризований після збільшення кількості оцінок \"подобається/не подобається\".",
 				"weight": "Вага ${weight}",
 				"save": "Зберегти",
 				"name": {
 					"placeholder": "Локальне відображуване ім'я"
+				},
+				"privacyPublish": {
+					"preferences": "Іменування публічних тегів і виявлення злиття",
+					"preferencesHint": "Після Закрити друзі не зможуть бачити ваші імена тегів і оператори злиття, а також вони не зможуть зробити свій внесок у консенсус.",
+					"reactions": "Публічні лайки та дизлайки",
+					"reactionsHint": "Після Закрити плакат не отримуватиме ваших оцінок «подобається» або «не подобається», ваша реакція не буде включена в рекомендації інших, і ви більше не рекламуватимете публікацію для повторного поширення."
 				}
 			},
 			"blocklist": {
@@ -3886,27 +4138,6 @@
 				"placeholder": "Попередження про вміст (необов’язково)"
 			},
 			"sensitiveMedia": "Затемнення чутливих медіа",
-			"editImage": "Редагувати",
-			"editCrop": "Обрізати",
-			"editMosaic": "Пікселізація",
-			"editBrush": "Пензлик",
-			"editBrushColor": {
-				"title": "Колір пензлика",
-				"aria-label": "Колір пензлика"
-			},
-			"editBrushSize": {
-				"title": "Розмір пензлика",
-				"aria-label": "Розмір пензлика"
-			},
-			"editApply": "Застосувати",
-			"editCancel": "Скасувати",
-			"replyPolicyEveryone": "Будь-хто може відповісти",
-			"replyPolicyFollowers7d": "Підписники більше 7 днів",
-			"replyPolicyAuthorFollows": "Люди, за якими я стежу",
-			"replyPolicyLabel": "Хто може відповісти",
-			"replyDisplayAll": "Показати всі відповіді",
-			"replyDisplayFeaturedOnly": "Лише вибрані відповіді",
-			"replyDisplayLabel": "Відповісти, щоб показати",
 			"scheduleLabel": "Відпускайте регулярно",
 			"scheduleSuccess": "Публікацію додано до запланованої черги",
 			"emojiButton": {
@@ -3988,6 +4219,33 @@
 					"placeholder": "Хто не повинен показувати (необов'язково)"
 				},
 				"aria-label": "Видимий діапазон"
+			},
+			"reply": {
+				"displayAll": "Показати всі відповіді",
+				"displayFeaturedOnly": "Лише вибрані відповіді",
+				"displayLabel": "Відповісти, щоб показати",
+				"policy": {
+					"authorFollows": "Люди, за якими я стежу",
+					"everyone": "Будь-хто може відповісти",
+					"followers7d": "Підписники більше 7 днів",
+					"label": "Хто може відповісти"
+				}
+			},
+			"edit": {
+				"apply": "Застосувати",
+				"brush": "Пензлик",
+				"brushColor": {
+					"title": "Колір пензлика",
+					"aria-label": "Колір пензлика"
+				},
+				"brushSize": {
+					"title": "Розмір пензлика",
+					"aria-label": "Розмір пензлика"
+				},
+				"cancel": "Скасувати",
+				"crop": "Обрізати",
+				"image": "Редагувати",
+				"mosaic": "Пікселізація"
 			}
 		},
 		"feed": {
@@ -4094,21 +4352,11 @@
 			},
 			"mediaOnly": "[медіа]",
 			"hideFromExplore": "Приховати обліковий запис на сторінці огляду",
-			"tabPosts": "Дописи",
-			"tabAlbums": "Фотоальбом",
-			"tabLikes": "Подобається",
-			"tabCabinets": "Сховище",
 			"tabsLabel": {
 				"aria-label": "Розділи профілю"
 			},
 			"cabinetsEmpty": "Громадських картотек наразі немає",
 			"cabinetsFailed": "Помилка завантаження картотеки: ${error}",
-			"statsGroup": {
-				"aria-label": "Статистика"
-			},
-			"statsPosts": "Дописи",
-			"statsFollowing": "Підписки",
-			"statsFollowers": "Підписники",
 			"followingTitle": "Підписки",
 			"followersTitle": "Підписники",
 			"albums": {
@@ -4125,6 +4373,20 @@
 				"deleteWithPosts": "Видалити альбом і видалити публікацію",
 				"pickerLabel": "Додати в альбом",
 				"defaultName": "Альбом за замовчуванням"
+			},
+			"stats": {
+				"followers": "Підписники",
+				"following": "Підписки",
+				"group": {
+					"aria-label": "Статистика"
+				},
+				"posts": "Дописи"
+			},
+			"tabs": {
+				"albums": "Фотоальбом",
+				"cabinets": "Сховище",
+				"likes": "Подобається",
+				"posts": "Дописи"
 			}
 		},
 		"video": {
@@ -4174,10 +4436,6 @@
 			"broadcast": {
 				"title": "Почати трансляцію",
 				"open": "Перейти до трансляції",
-				"mediaAv": "Аудіо та відео",
-				"mediaAudio": "Чистий звук",
-				"mediaVideo": "Чиста картинка",
-				"mediaWhip": "WHIP push streaming (наприклад, OBS)",
 				"whipUrl": "Адреса WHIP",
 				"whipToken": "Токен на пред'явника",
 				"whipWaiting": "Очікування потокового підключення WHIP (можна використовувати програмне забезпечення для потокового передавання, наприклад OBS)…",
@@ -4187,6 +4445,12 @@
 				"stopped": "Пряма трансляція припинена",
 				"titleInput": {
 					"placeholder": "Жива назва (необов'язково)"
+				},
+				"media": {
+					"audio": "Чистий звук",
+					"av": "Аудіо та відео",
+					"video": "Чиста картинка",
+					"whip": "WHIP push streaming (наприклад, OBS)"
 				}
 			},
 			"danmaku": {
@@ -4210,30 +4474,32 @@
 			"trustScore": "Довіряйте ${score}",
 			"viewTitle": "Пошук",
 			"loading": "Пошук…",
-			"filterAuthor": {
-				"placeholder": "Автор",
-				"aria-label": "Автор"
-			},
-			"filterMedia": {
-				"aria-label": "Тип медіа"
-			},
-			"filterMediaAll": "Усі медіа",
-			"filterMediaImage": "Малюнок",
-			"filterMediaVideo": "Відео",
-			"filterTag": {
-				"placeholder": "#Мітка",
-				"aria-label": "Мітка"
-			},
-			"filterSort": {
-				"aria-label": "Сортування"
-			},
 			"sortRecent": "Найновіше",
 			"sortPopular": "Популярний",
-			"filterScope": {
-				"aria-label": "Область пошуку"
-			},
 			"scopeLocal": "Цей пристрій",
-			"scopeNearby": "Неподалік"
+			"scopeNearby": "Неподалік",
+			"filter": {
+				"author": {
+					"placeholder": "Автор",
+					"aria-label": "Автор"
+				},
+				"media": {
+					"aria-label": "Тип медіа"
+				},
+				"mediaAll": "Усі медіа",
+				"mediaImage": "Малюнок",
+				"mediaVideo": "Відео",
+				"scope": {
+					"aria-label": "Область пошуку"
+				},
+				"sort": {
+					"aria-label": "Сортування"
+				},
+				"tag": {
+					"placeholder": "#Мітка",
+					"aria-label": "Мітка"
+				}
+			}
 		},
 		"dialog": {
 			"close": {
@@ -4428,7 +4694,6 @@
 		},
 		"upload": "Завантажити",
 		"uploadFolder": "Завантажити папку",
-		"newFolder": "Створити нову папку",
 		"open": "ВІДЧИНЕНО",
 		"download": "Завантажити",
 		"downloadZip": "Завантажити папку",
@@ -4462,12 +4727,6 @@
 		"created": "Створити: ${stamp}",
 		"modified": "Змінити: ${stamp}",
 		"statusCount": "${count} елементів, ${selected} вибрано",
-		"newCabinet": {
-			"title": "Нова картотека",
-			"aria-label": "Нова картотека"
-		},
-		"newCabinetPrompt": "Нова назва картотеки",
-		"newFolderPrompt": "Нова назва папки",
 		"renamePrompt": "Нова назва",
 		"visibilityPrompt": "Видимість (загальнодоступні/недоступні/підписники/приватні/вибрані)",
 		"cabinetActionPrompt": "Дія: перейменувати/видалити/видимість",
@@ -4478,12 +4737,21 @@
 		"cutDone": "Вирізано",
 		"undo": "Скасувати",
 		"redo": "Повторити",
-		"newWindow": "Відкрити нове вікно Поточне місцезнаходження",
 		"goUp": "Повернення до попереднього рівня",
 		"brokenLink": "Посилання не працює: ${reason}",
 		"noDownload": "Немає вмісту для завантаження",
 		"groupDownloadHint": "Будь ласка, отримайте файли групи за вкладеними повідомленнями або наступними посиланнями для завантаження.",
-		"remoteEntity": "Віддалена сутність"
+		"remoteEntity": "Віддалена сутність",
+		"new": {
+			"cabinet": {
+				"title": "Нова картотека",
+				"aria-label": "Нова картотека"
+			},
+			"cabinetPrompt": "Нова назва картотеки",
+			"folder": "Створити нову папку",
+			"folderPrompt": "Нова назва папки",
+			"window": "Відкрити нове вікно Поточне місцезнаходження"
+		}
 	},
 	"browser_integration": {
 		"title": "Інтеграція браузера",
@@ -4613,27 +4881,10 @@
 		"title": "Інтеграція IDE",
 		"heading": "Інтеграція IDE",
 		"instruction": "Використовуйте ролі фонту для допомоги в програмуванні в редакторах із підтримкою ACP (таких як Zed, JetBrains, Neovim тощо).",
-		"supportedEditorsTitle": "Підтримувані редактори та клієнти",
-		"supportedEditorsIntro": "З fount працюють такі клієнти:",
-		"supportedEditorsLoading": "завантаження...",
-		"supportedEditorsError": "Не вдалося завантажити список: ${message}",
-		"acpTitle": "Налаштуйте скрипт ACP",
-		"acpDesc": "Зверніться до наступного прикладу, щоб налаштувати сценарій fount ACP:",
-		"acpCharLabel": "роль",
 		"charListError": "Не вдалося отримати список ролей",
-		"acpScriptLabel": "URL-адреса сценарію ACP",
-		"acpConfigSample": "Приклад конфігурації:",
-		"acpConfigHint": "Ідентифікатор ролі відображається в спадному списку ролі на цій сторінці, а ключем API можна керувати в налаштуваннях користувача.",
 		"copyButton": "Копіювати",
 		"copied": "Скопійовано в буфер обміну",
-		"apiKeySectionTitle": "Ключ API",
-		"apiKeyHint": "Використовується для джерела підключення сценарію ACP (той самий набір ключів, що й проксі API, можна створити в налаштуваннях користувача).",
 		"generateApiKeyButton": "Згенерувати новий ключ",
-		"apiKeyCopied": "Ключ API скопійовано",
-		"apiKeyCreateError": "Не вдалося створити ключ API: ${message}",
-		"apiKeyInput": {
-			"aria-label": "Ключ API"
-		},
 		"home_function_buttons": {
 			"integration_related": "Пов'язані з інтеграцією",
 			"ide_integration_config": {
@@ -4647,8 +4898,31 @@
 				"locked_description": "Підключіться до ролі джерела в зовнішньому середовищі розробки та завершіть сеанс."
 			}
 		},
-		"acpChar": "Виберіть роль",
-		"acpConfig": "Виберіть роль і спочатку згенеруйте ключ API"
+		"supportedEditors": {
+			"error": "Не вдалося завантажити список: ${message}",
+			"intro": "З fount працюють такі клієнти:",
+			"loading": "завантаження...",
+			"title": "Підтримувані редактори та клієнти"
+		},
+		"apiKey": {
+			"copied": "Ключ API скопійовано",
+			"createError": "Не вдалося створити ключ API: ${message}",
+			"hint": "Використовується для джерела підключення сценарію ACP (той самий набір ключів, що й проксі API, можна створити в налаштуваннях користувача).",
+			"input": {
+				"aria-label": "Ключ API"
+			},
+			"sectionTitle": "Ключ API"
+		},
+		"acp": {
+			"char": "Виберіть роль",
+			"charLabel": "роль",
+			"config": "Виберіть роль і спочатку згенеруйте ключ API",
+			"configHint": "Ідентифікатор ролі відображається в спадному списку ролі на цій сторінці, а ключем API можна керувати в налаштуваннях користувача.",
+			"configSample": "Приклад конфігурації:",
+			"desc": "Зверніться до наступного прикладу, щоб налаштувати сценарій fount ACP:",
+			"scriptLabel": "URL-адреса сценарію ACP",
+			"title": "Налаштуйте скрипт ACP"
+		}
 	},
 	"deskpet": {
 		"title": "Настільні домашні тварини",
@@ -4939,11 +5213,6 @@
 			"deviceInfo": "ID пристрою: ${deviceId}",
 			"thisDevice": "Цей пристрій",
 			"deviceDetails": "Останній раз онлайн: ${lastSeen} | IP: ${ipAddress} | UA: ${userAgent}",
-			"revokeButton": "Відкликати",
-			"revokeConfirm": "Ви впевнені, що хочете вийти з цього пристрою/сесії?",
-			"revokeSuccess": "Пристрій/сесію успішно відкликано.",
-			"revokeMissingParams": "Будь ласка, надайте пристрій і пароль сеансу, які ви хочете скасувати.",
-			"revokeWrongPassword": "Пароль неправильний.",
 			"listNotFound": "Список пристроїв не знайдено.",
 			"deviceNotFound": "Пристрій або сеанс не знайдено.",
 			"refreshButton": {
@@ -4951,6 +5220,13 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "Іконка оновлення списку"
+			},
+			"revoke": {
+				"button": "Відкликати",
+				"confirm": "Ви впевнені, що хочете вийти з цього пристрою/сесії?",
+				"missingParams": "Будь ласка, надайте пристрій і пароль сеансу, які ви хочете скасувати.",
+				"success": "Пристрій/сесію успішно відкликано.",
+				"wrongPassword": "Пароль неправильний."
 			}
 		},
 		"apiKeys": {
@@ -4964,14 +5240,8 @@
 			"keyDetails": "Опис: ${description} | Створено в: ${createdAt} | Востаннє використаний: ${lastUsed}",
 			"neverUsed": "Ніколи не використовувався",
 			"noKeysForUser": "Ключові дані API не знайдено.",
-			"revokeWrongPassword": "Пароль неправильний.",
 			"keyNotFound": "Ключ API не знайдено.",
-			"revokeMissingJti": "Будь ласка, вкажіть ключ для відкликання.",
-			"revokeMissingPassword": "Для анулювання ключа потрібен пароль.",
 			"verifyMissingApiKey": "Вкажіть ключ API.",
-			"revokeButton": "Відкликати",
-			"revokeConfirm": "Ви впевнені, що хочете відкликати цей ключ API?",
-			"revokeSuccess": "Ключ API успішно відкликаний.",
 			"errorDescriptionRequired": "Необхідний опис.",
 			"createSuccess": "Ключ API був створений успішно.",
 			"refreshButton": {
@@ -4979,6 +5249,14 @@
 			},
 			"refreshButtonIcon": {
 				"alt": "Іконка оновлення списку"
+			},
+			"revoke": {
+				"button": "Відкликати",
+				"confirm": "Ви впевнені, що хочете відкликати цей ключ API?",
+				"missingJti": "Будь ласка, вкажіть ключ для відкликання.",
+				"missingPassword": "Для анулювання ключа потрібен пароль.",
+				"success": "Ключ API успішно відкликаний.",
+				"wrongPassword": "Пароль неправильний."
 			}
 		},
 		"newApiKey": {
@@ -5000,14 +5278,16 @@
 			"argsTemplateHint": "Підстановки: \\${file} \\${line} \\${column}",
 			"presetOptionPathAvailable": "${label} (є в PATH)",
 			"presetOptionPathUnavailable": "${label} (немає в PATH)",
-			"testPathInput": {
-				"placeholder": "Шлях до файлу для перевірки, наприклад C:/work/project/src/main.mjs"
-			},
-			"testButton": "Перевірити відкриття",
 			"saveButton": "Зберегти конфігурацію",
 			"saveSuccess": "Команду зовнішнього редактора збережено.",
-			"testPathRequired": "Спочатку введіть шлях до тестового файлу.",
-			"testSuccess": "Команду відкриття у зовнішньому редакторі виконано."
+			"test": {
+				"button": "Перевірити відкриття",
+				"pathInput": {
+					"placeholder": "Шлях до файлу для перевірки, наприклад C:/work/project/src/main.mjs"
+				},
+				"pathRequired": "Спочатку введіть шлях до тестового файлу.",
+				"success": "Команду відкриття у зовнішньому редакторі виконано."
+			}
 		},
 		"logout": {
 			"title": "Вихід",
@@ -5020,12 +5300,12 @@
 			"title": "Видалити акаунт",
 			"warning": "УВАГА: Ця дія назавжди видалить ваш акаунт та всі пов'язані з ним дані без можливості відновлення.",
 			"submitButton": "Видалити мій акаунт",
-			"confirmMessage1": "УВАГА! Ви впевнені, що хочете назавжди видалити свій акаунт? Цю дію неможливо скасувати.",
-			"confirmMessage2": "Для підтвердження видалення, будь ласка, введіть своє ім'я користувача \"${username}\":",
 			"usernameMismatch": "Введене ім'я користувача не збігається з поточним. Операцію видалення скасовано.",
 			"success": "Акаунт успішно видалено. Зараз ви будете вилогінені.",
 			"missingPassword": "Будь ласка, введіть свій пароль.",
-			"wrongPassword": "Пароль неправильний."
+			"wrongPassword": "Пароль неправильний.",
+			"confirmWarning": "УВАГА! Ви впевнені, що хочете назавжди видалити свій акаунт? Цю дію неможливо скасувати.",
+			"confirmUsernamePrompt": "Для підтвердження видалення, будь ласка, введіть своє ім'я користувача \"${username}\":"
 		},
 		"passwordConfirm": {
 			"title": "Підтвердження дії",
@@ -5076,19 +5356,13 @@
 		"instruction": "Створюйте та керуйте своїми API-ключами на цій сторінці для інтеграції fount з іншими додатками.",
 		"endpointSectionTitle": "Кінцева точка API",
 		"endpointInstruction": "Це базова URL-адреса для інтеграції з іншими сервісами.",
-		"apiUrlInput": {
-			"aria-label": "Кінцева точка API"
-		},
 		"usageExampleTitle": "Приклад використання",
 		"usageExampleInstruction": "Ось приклад того, як отримати список доступних моделей за допомогою `curl`.",
 		"copyButton": "Копіювати",
 		"copied": "Скопійовано в буфер обміну",
-		"apiKeySectionTitle": "Ваші API-ключі",
-		"apiKey": "Ваш API-ключ:",
 		"noApiKey": "Ви ще не згенерували API-ключ для цієї сторінки.",
 		"generateApiKeyButton": "Згенерувати новий ключ",
 		"copyApiKeyButton": "Копіювати",
-		"apiKeyCopied": "API-ключ скопійовано!",
 		"queryStringSectionTitle": "Неможливо встановити APIKey у заголовку запиту? (Небезпечно)",
 		"queryStringWarning": "Використовуйте цей альтернативний метод, якщо ваша програма не підтримує надсилання ключа API в заголовку запиту (заголовок Authorization). Увага: розміщення ключа API безпосередньо в URL-адресі становить загрозу безпеці, оскільки він може бути записаний у журналах сервера або історії браузера.",
 		"copyQueryStringUrlButton": "URL з ключем API (рядок запиту)",
@@ -5100,6 +5374,14 @@
 						"title": "Як агент"
 					}
 				}
+			}
+		},
+		"api": {
+			"key": "Ваш API-ключ:",
+			"keyCopied": "API-ключ скопійовано!",
+			"keySectionTitle": "Ваші API-ключі",
+			"urlInput": {
+				"aria-label": "Кінцева точка API"
 			}
 		}
 	},
@@ -5273,11 +5555,7 @@
 		"failed": "Помилка",
 		"copySuccess": "Звіт про налагодження скопійовано в буфер обміну",
 		"copyFailed": "Не вдалося скопіювати звіт",
-		"updateNow": "Оновіть і перезапустіть зараз",
 		"alreadyLatest": "Вже остання версія",
-		"updateRestarting": "Перезапуск...",
-		"updateSuccess": "Сервер перезавантажується",
-		"updateFailed": "Помилка запиту на оновлення",
 		"autoUpdateNotEnabled": "Автоматичне оновлення не ввімкнено",
 		"home_function_buttons": {
 			"debug": {
@@ -5285,6 +5563,12 @@
 					"title": "Відкрити панель налагодження"
 				}
 			}
+		},
+		"update": {
+			"failed": "Помилка запиту на оновлення",
+			"now": "Оновіть і перезапустіть зараз",
+			"restarting": "Перезапуск...",
+			"success": "Сервер перезавантажується"
 		}
 	},
 	"badges_maker": {

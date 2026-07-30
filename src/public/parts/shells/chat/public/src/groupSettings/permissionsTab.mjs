@@ -10,7 +10,7 @@ export async function renderPermissionSettings(context) {
 	if (!container) return
 	if (!context.settingsCaps?.canManageRoles) {
 		await mountTemplate(container, 'group/settings/settings_panel_denied', {
-			messageKey: 'chat.group.settingsPage.rolesDenied',
+			messageKey: 'chat.group.settings.page.rolesDenied',
 		})
 		return
 	}
@@ -70,11 +70,11 @@ async function updateRolePermission(context, roleId, permission, enabled) {
 		body: JSON.stringify({ permission, enabled })
 	})
 	if (!resp.ok) {
-		showToastI18n('error', 'chat.group.settingsPage.permissionUpdateFailed', { error: resp.statusText })
+		showToastI18n('error', 'chat.group.settings.page.permissionUpdateFailed', { error: resp.statusText })
 		await context.reload(context.groupId)
 		return
 	}
-	showToastI18n('success', 'chat.group.settingsPage.permissionUpdated')
+	showToastI18n('success', 'chat.group.settings.page.permissionUpdated')
 }
 
 /**
@@ -83,19 +83,19 @@ async function updateRolePermission(context, roleId, permission, enabled) {
  * @returns {Promise<void>}
  */
 async function deleteRole(context, roleId) {
-	if (!confirmI18n('chat.group.settingsPage.deleteRoleConfirm')) return
+	if (!confirmI18n('chat.group.settings.page.delete.roleConfirm')) return
 	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/roles/${encodeURIComponent(roleId)}`, {
 		method: 'DELETE',
 		credentials: 'include'
 	})
 	if (!resp.ok) throw new Error(resp.statusText)
-	showToastI18n('success', 'chat.group.settingsPage.deleteRoleSuccess')
+	showToastI18n('success', 'chat.group.settings.page.delete.roleSuccess')
 	await context.reload(context.groupId)
 }
 
 /** @param {import('./state.mjs').GroupSettingsContext} context @returns {void} */
 function showCreateRoleModal(context) {
-	const name = promptI18n('chat.group.settingsPage.createRolePrompt')
+	const name = promptI18n('chat.group.settings.page.create.rolePrompt')
 	if (!name?.trim()) return
 
 	fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/roles`, {
@@ -105,9 +105,9 @@ function showCreateRoleModal(context) {
 		body: JSON.stringify({ name: name.trim() })
 	}).then(r => r.json().then(async data => {
 		if (r.ok) {
-			showToastI18n('success', 'chat.group.settingsPage.createRoleSuccess')
+			showToastI18n('success', 'chat.group.settings.page.create.roleSuccess')
 			await context.reload(context.groupId)
 		} else
-			showToastI18n('error', 'chat.group.settingsPage.createRoleFailed', { error: data.error || '' })
-	})).catch(error => showToastI18n('error', 'chat.group.settingsPage.createRoleFailed', { error: error.message }))
+			showToastI18n('error', 'chat.group.settings.page.create.roleFailed', { error: data.error || '' })
+	})).catch(error => showToastI18n('error', 'chat.group.settings.page.create.roleFailed', { error: error.message }))
 }

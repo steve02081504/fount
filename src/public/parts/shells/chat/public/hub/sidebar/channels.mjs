@@ -28,7 +28,7 @@ export async function renderChannelList(state) {
 	const channels = state.channels || {}
 	const channelIds = Object.keys(channels)
 	if (!channelIds.length) {
-		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noChannels' })
+		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.no.channels' })
 		return
 	}
 	const { ordered } = buildChannelTree(channels)
@@ -100,7 +100,7 @@ export async function renderChannelList(state) {
 		const addChannelButton = document.createElement('button')
 		addChannelButton.type = 'button'
 		addChannelButton.className = 'btn btn-ghost btn-sm w-[calc(100%-8px)] mx-1 mt-1 channel-create-button'
-		addChannelButton.dataset.i18n = 'chat.hub.newChannelButton'
+		addChannelButton.dataset.i18n = 'chat.hub.newChannel.button'
 		addChannelButton.addEventListener('click', () => void showCreateChannelModal())
 		container.appendChild(addChannelButton)
 	}

@@ -136,11 +136,11 @@ function runLeaveGroupsInBackground(groupIds) {
 			await renderServerBar()
 			if (!failed.length) {
 				if (batch)
-					showToastI18n('success', 'chat.hub.groupContext.leaveBatchOk', { count: ids.length })
-				else showToastI18n('success', 'chat.hub.groupContext.leaveOk')
+					showToastI18n('success', 'chat.hub.group.context.leave.batchOk', { count: ids.length })
+				else showToastI18n('success', 'chat.hub.group.context.leave.ok')
 				return
 			}
-			showToastI18n('warning', 'chat.hub.groupContext.leaveBatchPartial', {
+			showToastI18n('warning', 'chat.hub.group.context.leave.batchPartial', {
 				failed: failed.length,
 				total: ids.length,
 			})
@@ -148,7 +148,7 @@ function runLeaveGroupsInBackground(groupIds) {
 		catch (error) {
 			clearGroupsLeaving(ids)
 			await renderServerBar()
-			handleUIError(error, 'chat.hub.loadGroupFailed')
+			handleUIError(error, 'chat.hub.load.groupFailed')
 			const { loadGroups } = await import('./serverBar.mjs')
 			await loadGroups()
 		}
@@ -163,7 +163,7 @@ function runLeaveGroupsInBackground(groupIds) {
 export async function leaveGroupsOptimistic(groupIds) {
 	await applyLeaveGroupsLocal(groupIds)
 	if (groupIds.length > 1)
-		showToastI18n('info', 'chat.hub.groupContext.leaveBatchPending', { count: groupIds.length })
+		showToastI18n('info', 'chat.hub.group.context.leave.batchPending', { count: groupIds.length })
 	runLeaveGroupsInBackground(groupIds)
 }
 
@@ -191,7 +191,7 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 		const button = document.createElement('button')
 		button.type = 'button'
 		button.className = 'group-menu-leave-batch text-error'
-		setElementI18n(button, 'chat.hub.groupContext.leaveBatch', { count: targets.length })
+		setElementI18n(button, 'chat.hub.group.context.leave.batch', { count: targets.length })
 		li.appendChild(button)
 		menu.appendChild(li)
 	}
@@ -224,7 +224,7 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 					ticket.introducerPubKeyHash,
 				)
 			await navigator.clipboard.writeText(url)
-			showToastI18n('success', 'chat.hub.groupContext.inviteCopied')
+			showToastI18n('success', 'chat.hub.group.context.inviteCopied')
 		}
 		catch (err) {
 			handleUIError(err, 'chat.hub.shareGroupFailed')
@@ -240,13 +240,13 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 		dismissGroupActionMenu()
 		void (async () => {
 			const next = await promptText(
-				'chat.hub.groupContext.setAliasPrompt',
+				'chat.hub.group.context.setAliasPrompt',
 				aliasForGroup(groupId),
 				{ name: groupName },
 			)
 			if (next == null) return
 			await setGroupAlias(groupId, next)
-			showToastI18n('success', 'chat.hub.groupContext.aliasSaved')
+			showToastI18n('success', 'chat.hub.group.context.aliasSaved')
 			await renderServerBar()
 			if (store.context.currentGroupId === groupId) {
 				const nameElement = document.getElementById('group-name-display')
@@ -262,14 +262,14 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 
 	menu.querySelector('.group-menu-leave-batch')?.addEventListener('click', async () => {
 		dismissGroupActionMenu()
-		if (!confirmI18n('chat.hub.groupContext.leaveConfirmBatch', { count: targets.length }))
+		if (!confirmI18n('chat.hub.group.context.leave.confirmBatch', { count: targets.length }))
 			return
 		await leaveGroupsOptimistic(targets)
 	})
 
 	menu.querySelector('.group-menu-leave')?.addEventListener('click', async () => {
 		dismissGroupActionMenu()
-		if (!confirmI18n('chat.hub.groupContext.leaveConfirm', { name: groupName }))
+		if (!confirmI18n('chat.hub.group.context.leave.confirm', { name: groupName }))
 			return
 		await leaveGroupsOptimistic([groupId])
 	})
@@ -313,7 +313,7 @@ async function showAddCharDialog(groupId) {
 		chars = []
 	}
 	if (!chars.length) {
-		showToastI18n('warning', 'chat.hub.groupContext.noChars')
+		showToastI18n('warning', 'chat.hub.group.context.noChars')
 		return
 	}
 	usingTemplates('/parts/shells:chat/src/templates')

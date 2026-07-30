@@ -247,7 +247,7 @@ async function handleWebAuthnLogin() {
 	clearLoginErrorDisplay()
 
 	if (!await loadWebAuthnBrowser()) {
-		showLoginMessage({ i18nKey: 'auth.webauthn.errorLoadLibrary' })
+		showLoginMessage({ i18nKey: 'auth.webauthn.error.loadLibrary' })
 		return
 	}
 
@@ -257,7 +257,7 @@ async function handleWebAuthnLogin() {
 		const { value: beginData, invalidJson } = await parseResponseBodyJson(beginRes)
 		if (invalidJson) {
 			showLoginMessage({
-				i18nKey: beginRes.ok ? 'auth.webauthn.errorBadBeginResponse' : 'auth.error.apiErrorBodyUnreadable',
+				i18nKey: beginRes.ok ? 'auth.webauthn.error.badBeginResponse' : 'auth.error.apiErrorBodyUnreadable',
 			})
 			return
 		}
@@ -266,11 +266,11 @@ async function handleWebAuthnLogin() {
 			return
 		}
 		if (!beginData) {
-			showLoginMessage({ i18nKey: 'auth.webauthn.errorBadBeginResponse' })
+			showLoginMessage({ i18nKey: 'auth.webauthn.error.badBeginResponse' })
 			return
 		}
 		if (!String(beginData.authSessionToken ?? '').trim()) {
-			showLoginMessage({ i18nKey: 'auth.webauthn.errorSessionMissing' })
+			showLoginMessage({ i18nKey: 'auth.webauthn.error.sessionMissing' })
 			return
 		}
 		const credential = await startAuthenticationFn({ optionsJSON: beginData.options })
@@ -285,7 +285,7 @@ async function handleWebAuthnLogin() {
 	}
 	catch (err) {
 		if (err?.name === 'NotAllowedError')
-			showLoginMessage({ i18nKey: 'auth.webauthn.errorCancelled' })
+			showLoginMessage({ i18nKey: 'auth.webauthn.error.cancelled' })
 		else {
 			console.error('WebAuthn login error:', err)
 			import('https://esm.sh/@sentry/browser').then(Sentry => Sentry.captureException(err))
@@ -321,7 +321,7 @@ async function handleSendVerificationCode() {
 		const response = await generateVerificationCode()
 
 		if (response.ok) {
-			showLoginMessage({ i18nKey: 'auth.error.verificationCodeSent' })
+			showLoginMessage({ i18nKey: 'auth.error.verificationCode.sent' })
 			verificationCodeSent = true
 			sendCodeCooldown = true
 			let timeLeft = 60
@@ -340,13 +340,13 @@ async function handleSendVerificationCode() {
 			}, 1000)
 		}
 		else if (response.status === 429)
-			showLoginMessage({ i18nKey: 'auth.error.verificationCodeRateLimit' })
+			showLoginMessage({ i18nKey: 'auth.error.verificationCode.rateLimit' })
 		else
-			showLoginMessage({ i18nKey: 'auth.error.verificationCodeSendError' })
+			showLoginMessage({ i18nKey: 'auth.error.verificationCode.sendError' })
 	}
 	catch (err) {
 		console.error('Error sending verification code:', err)
-		showLoginMessage({ i18nKey: 'auth.error.verificationCodeSendError' })
+		showLoginMessage({ i18nKey: 'auth.error.verificationCode.sendError' })
 	}
 }
 
@@ -382,12 +382,12 @@ async function handleFormSubmit(event) {
 		}
 		if (!isLocalOrigin) {
 			if (!verificationCodeSent) {
-				showLoginMessage({ i18nKey: 'auth.error.verificationCodeError' })
+				showLoginMessage({ i18nKey: 'auth.error.verificationCode.error' })
 				return
 			}
 			verificationcode = verificationCodeInput.value.trim()
 			if (!verificationcode) {
-				showLoginMessage({ i18nKey: 'auth.error.verificationCodeError' })
+				showLoginMessage({ i18nKey: 'auth.error.verificationCode.error' })
 				return
 			}
 		}

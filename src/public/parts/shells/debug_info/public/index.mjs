@@ -149,7 +149,7 @@ function refreshUpdateButton() {
 	const upToDate = isUpToDate === true
 	updateButton.disabled = !(isUpToDate === false && autoUpdateEnabled)
 	if (updateButtonIcon) updateButtonIcon.src = upToDate ? UPTODATE_ICON : UPDATE_ICON
-	if (updateButtonLabel) updateButtonLabel.dataset.i18n = upToDate ? 'debug_info.alreadyLatest' : 'debug_info.updateNow'
+	if (updateButtonLabel) updateButtonLabel.dataset.i18n = upToDate ? 'debug_info.alreadyLatest' : 'debug_info.update.now'
 }
 
 /**
@@ -158,7 +158,7 @@ function refreshUpdateButton() {
 function setUpdateButtonRestarting() {
 	updateButton.disabled = true
 	if (updateButtonIcon) updateButtonIcon.src = LOADING_ICON
-	if (updateButtonLabel) updateButtonLabel.dataset.i18n = 'debug_info.updateRestarting'
+	if (updateButtonLabel) updateButtonLabel.dataset.i18n = 'debug_info.update.restarting'
 }
 
 /**
@@ -214,16 +214,16 @@ updateButton.addEventListener('click', async () => {
 		const { ok, data } = await postRestart()
 		if (ok) {
 			setUpdateButtonRestarting()
-			showToastI18n('success', 'debug_info.updateSuccess')
+			showToastI18n('success', 'debug_info.update.success')
 		} else if (data.error === 'auto_update_disabled') {
 			showToastI18n('warning', 'debug_info.autoUpdateNotEnabled')
 			await fetchAutoUpdateStatus()
 		} else {
-			showToastI18n('error', 'debug_info.updateFailed')
+			showToastI18n('error', 'debug_info.update.failed')
 			refreshUpdateButton()
 		}
 	} catch {
-		showToastI18n('error', 'debug_info.updateFailed')
+		showToastI18n('error', 'debug_info.update.failed')
 		refreshUpdateButton()
 	}
 })

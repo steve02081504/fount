@@ -177,7 +177,7 @@ export async function createDefaultIDEInterface(charAPI, username, charname) {
 
 		if (bufferedStream) {
 			const displayContent = result.content_for_show || result.content || ''
-			await bufferedStream.finish(displayContent, result.files || [], geti18nForLocales(locales, 'chat.messageView.noReplyContent'))
+			await bufferedStream.finish(displayContent, result.files || [], geti18nForLocales(locales, 'chat.message.view.noReplyContent'))
 		}
 
 		return {

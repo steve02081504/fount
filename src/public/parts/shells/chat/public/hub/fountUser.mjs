@@ -41,7 +41,7 @@ export function registerFountUserApi() {
 			return await sendAsUser(input)
 		}
 		catch (err) {
-			showToastI18n('error', 'chat.hub.sendFailed', { error: err?.message || String(err) })
+			showToastI18n('error', 'chat.hub.send.failed', { error: err?.message || String(err) })
 			throw err
 		}
 	}

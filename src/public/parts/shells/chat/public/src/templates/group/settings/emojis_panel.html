@@ -1,23 +1,23 @@
 <div class="card bg-base-200 settings-card">
 	<div class="card-body">
 		<div class="flex flex-wrap items-center justify-between gap-3">
-			<h2 class="card-title" data-i18n="chat.group.settingsPage.emojisTitle"></h2>
+			<h2 class="card-title" data-i18n="chat.group.settings.page.emojis.title"></h2>
 			${canManage ? `<div class="flex flex-wrap gap-2">
-				<button type="button" id="group-emoji-pack-create" class="btn btn-ghost btn-sm" data-i18n="chat.group.settingsPage.emojisCreatePack"></button>
+				<button type="button" id="group-emoji-pack-create" class="btn btn-ghost btn-sm" data-i18n="chat.group.settings.page.emojis.create.pack"></button>
 				<label class="btn btn-primary btn-sm">
-					<span data-i18n="chat.group.settingsPage.emojisUpload"></span>
+					<span data-i18n="chat.group.settings.page.emojis.upload"></span>
 					<input type="file" id="group-emoji-upload" accept="image/png,image/jpeg,image/gif,image/webp" hidden />
 				</label>
 			</div>` : ''}
 		</div>
-		<p class="text-sm opacity-70" data-i18n="chat.group.settingsPage.emojisHint"></p>
+		<p class="text-sm opacity-70" data-i18n="chat.group.settings.page.emojis.hint"></p>
 		<p class="text-sm mt-1">
 			<a href="/parts/shells:chat/emoji-packs/" target="_blank" rel="noopener" class="link link-primary text-sm" data-i18n="chat.emoji.discoverPacks"></a>
 		</p>
 		${canManage ? `<div class="flex flex-wrap gap-4 mt-2">
 			<div class="form-control w-full max-w-xs">
 				<label class="label" for="group-active-emoji-pack">
-					<span class="label-text" data-i18n="chat.group.settingsPage.activeEmojiPackLabel"></span>
+					<span class="label-text" data-i18n="chat.group.settings.page.activeEmojiPackLabel"></span>
 				</label>
 				<select id="group-active-emoji-pack" class="select select-bordered select-sm w-full">
 					${activePackOptionsHtml}
@@ -25,18 +25,18 @@
 			</div>
 			<div class="form-control w-full max-w-xs">
 				<label class="label" for="group-default-emoji-pack">
-					<span class="label-text" data-i18n="chat.group.settingsPage.defaultEmojiPackLabel"></span>
+					<span class="label-text" data-i18n="chat.group.settings.page.defaultEmojiPack.label"></span>
 				</label>
 				<select id="group-default-emoji-pack" class="select select-bordered select-sm w-full">
 					${defaultPackOptionsHtml}
 				</select>
 				<label class="label">
-					<span class="label-text-alt opacity-70" data-i18n="chat.group.settingsPage.defaultEmojiPackHint"></span>
+					<span class="label-text-alt opacity-70" data-i18n="chat.group.settings.page.defaultEmojiPack.hint"></span>
 				</label>
 			</div>
 		</div>` : `<div class="form-control w-full max-w-md mt-2">
 			<label class="label" for="group-active-emoji-pack">
-				<span class="label-text" data-i18n="chat.group.settingsPage.activeEmojiPackLabel"></span>
+				<span class="label-text" data-i18n="chat.group.settings.page.activeEmojiPackLabel"></span>
 			</label>
 			<select id="group-active-emoji-pack" class="select select-bordered select-sm w-full">
 				${activePackOptionsHtml}
@@ -45,6 +45,6 @@
 		<div id="group-emojis-list" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 mt-3">
 			${entriesHtml}
 		</div>
-		<p id="group-emojis-empty" class="text-sm opacity-60 py-6 text-center ${entriesEmpty ? '' : 'hidden'}" data-i18n="chat.group.settingsPage.emojisEmpty"></p>
+		<p id="group-emojis-empty" class="text-sm opacity-60 py-6 text-center ${entriesEmpty ? '' : 'hidden'}" data-i18n="chat.group.settings.page.emojis.empty"></p>
 	</div>
 </div>
