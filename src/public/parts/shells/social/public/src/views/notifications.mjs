@@ -190,7 +190,7 @@ function renderNotificationCard(row, seenAt) {
 		.join('')
 	const href = notificationHref(row)
 	const snippet = row.snippet
-		? `<p class="notification-snippet">${escapeHtml(row.snippet)}</p>`
+		? `<p class="notification-snippet" user-content>${escapeHtml(row.snippet)}</p>`
 		: ''
 	card.innerHTML = `
 		<span class="notification-icon icon ${notificationIconClass(row.type)}" aria-hidden="true"></span>

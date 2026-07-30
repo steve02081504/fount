@@ -1,7 +1,6 @@
 /**
  * DOM 接线（工具栏、上传、快捷键、属性保存）。
  */
-import { geti18n } from '/scripts/i18n/index.mjs'
 import { promptText } from '/scripts/features/promptDialog.mjs'
 
 import { matchCabinetShortcut } from '../shared/keyboard.mjs'
@@ -22,9 +21,9 @@ export function wireBootstrap() {
 	 * @returns {Promise<void>} 创建个人柜并打开
 	 */
 	const createCabinet = async () => {
-		const name = await promptText(geti18n('cabinet.newCabinetPrompt') || 'cabinet.newCabinetPrompt')
+		const name = await promptText('cabinet.newCabinetPrompt')
 		if (!name) return
-		const visibility = await promptText(geti18n('cabinet.visibilityPrompt') || 'cabinet.visibilityPrompt', 'private') || 'private'
+		const visibility = await promptText('cabinet.visibilityPrompt', 'private') || 'private'
 		const { cabinet } = await api('POST', '/cabinets', { name, visibility: { visibility }, type: 'personal' })
 		await refreshCabinets()
 		if (cabinet?.cabinet_id) await openCabinet(cabinet.cabinet_id)

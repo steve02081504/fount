@@ -1,5 +1,7 @@
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
+import { listKnownFollowersOf } from '../federation/follower/index.mjs'
 import { getOperatorEntityHashProvider } from '../federation/follower/registry.mjs'
 import { filterTimelineEventsForFederation } from '../federation/visibility.mjs'
 import { canViewPost } from '../feedVisibility.mjs'
@@ -88,20 +90,32 @@ async function resolveFederationRequesterContext(username, requesterNodeHash, ow
 		return base(operator, followsOwner, operator?.toLowerCase() === owner, followSince)
 	}
 
+	/** @type {ReturnType<typeof base> | null} */
+	let fallback = null
 	for (const entityHash of await listLocalEntitiesForNode(username, requesterNode)) {
 		const view = await getTimelineMaterialized(username, entityHash)
+		const isOwner = entityHash === owner
 		const followsOwner = view.following.includes(owner)
 		/** @type {Map<string, number>} */
 		const followSince = new Map()
 		if (followsOwner) {
 			const wall = latestFollowWallForAuthor(view, owner)
 			if (wall != null) followSince.set(owner, wall)
-			else if (entityHash === owner) followSince.set(owner, 0)
+			else if (isOwner) followSince.set(owner, 0)
 		}
-		return base(entityHash, followsOwner, entityHash === owner, followSince)
+		else if (isOwner) followSince.set(owner, 0)
+		const ctx = base(entityHash, followsOwner || isOwner, isOwner, followSince)
+		if (followsOwner || isOwner) return ctx
+		fallback ??= ctx
 	}
 
-	return base(null, false, false)
+	for (const row of await listKnownFollowersOf(owner)) {
+		const parsed = parseEntityHash(row.entityHash)
+		if (parsed?.nodeHash === requesterNode)
+			return base(row.entityHash, true, false)
+	}
+
+	return fallback || base(null, false, false)
 }
 
 /**

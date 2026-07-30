@@ -1,6 +1,5 @@
 import { formatSocialShareHttpsUrl } from '../../shared/protocolUrl.mjs'
 import { state } from '../state.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 /**
  * 关闭所有帖子溢出菜单（可选排除某一容器）。
@@ -54,19 +53,30 @@ export async function shareOrCopyPostLink(entityHash, postId, title) {
 	return 'copied'
 }
 
+/** @type {WeakMap<HTMLElement, string>} */
+const flashCopiedOriginalKeys = new WeakMap()
+/** @type {WeakMap<HTMLElement, ReturnType<typeof setTimeout>>} */
+const flashCopiedTimers = new WeakMap()
+
 /**
- * 短暂把标签文案切成「已复制」再还原。
+ * 短暂把标签文案切成「已复制」再还原（依赖 data-i18n）。
  * @param {HTMLElement | null | undefined} label 文案节点
- * @param {string} [restoreKey] 还原用 i18n 键；缺省时还原 textContent
+ * @param {string} [restoreKey] 还原用 i18n 键；缺省取当前 data-i18n
  * @returns {void}
  */
 export function flashCopiedLabel(label, restoreKey) {
 	if (!(label instanceof HTMLElement)) return
-	const prev = restoreKey ? null : label.textContent
-	if (restoreKey) label.dataset.i18n = 'social.actions.copied'
-	else label.textContent = geti18n('social.actions.copied')
-	setTimeout(() => {
-		if (restoreKey) label.dataset.i18n = restoreKey
-		else if (prev != null) label.textContent = prev
-	}, 1500)
+	const candidate = restoreKey || label.dataset.i18n
+	if (candidate && candidate !== 'social.actions.copied')
+		flashCopiedOriginalKeys.set(label, candidate)
+	const restore = flashCopiedOriginalKeys.get(label)
+	if (!restore) return
+	const prev = flashCopiedTimers.get(label)
+	if (prev) clearTimeout(prev)
+	label.dataset.i18n = 'social.actions.copied'
+	flashCopiedTimers.set(label, setTimeout(() => {
+		label.dataset.i18n = restore
+		flashCopiedOriginalKeys.delete(label)
+		flashCopiedTimers.delete(label)
+	}, 1500))
 }

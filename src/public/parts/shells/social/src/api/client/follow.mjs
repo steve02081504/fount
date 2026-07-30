@@ -121,8 +121,13 @@ async function setFollowRelation(apiContext, target, follow) {
 				await autoApproveFollower(targetEntity.replicaUsername, hash, followerPubKeyHex)
 		}
 		await syncTimelineForEntity(apiContext.username, hash)
-		const { linkFollowedAuthorDefaultPack } = await import('../../emojiPacks.mjs')
-		await linkFollowedAuthorDefaultPack(apiContext.username, hash).catch(() => { })
+		try {
+			const { linkFollowedAuthorDefaultPack } = await import('../../emojiPacks.mjs')
+			await linkFollowedAuthorDefaultPack(apiContext.username, hash)
+		}
+		catch (error) {
+			console.warn('social: follow default emoji-pack link failed', hash, error)
+		}
 	}
 	return { entityHash: hash, isFollowing: follow }
 }

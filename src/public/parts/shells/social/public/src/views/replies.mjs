@@ -65,7 +65,7 @@ export async function buildReplyRow(reply) {
 	})}
 			</div>
 		</div>
-		<div class="markdown-body reply-body">${bodyHtml}</div>
+		<div class="markdown-body reply-body" user-content>${bodyHtml}</div>
 		${engagementBarHtml}
 		<div class="replies nested-replies hidden" data-replies-for="${escapeHtml(actionKey)}"></div>
 	`

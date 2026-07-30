@@ -1781,6 +1781,8 @@ function Restore-FountTestKeepAwakeArchive {
 }
 
 if ($args[0] -eq 'test') {
+	$script:originalTitle = Get-Title
+	Set-Title '𝒻ℴ𝓊𝓃𝓉 𝓽𝓮𝓼𝓉'
 	try { Enable-FountTestKeepAwake }
 	catch { Write-Verbose "Enable-FountTestKeepAwake: $($_.Exception.Message)" }
 	$testExit = 0
@@ -1790,6 +1792,9 @@ if ($args[0] -eq 'test') {
 	}
 	finally {
 		Disable-FountTestKeepAwake
+		Set-Title $script:originalTitle
+		if ($testExit -eq 0) { Write-TaskbarProgressClear }
+		Write-Host -NoNewline $script:TaskbarProgressBel
 	}
 	exit $testExit
 }
