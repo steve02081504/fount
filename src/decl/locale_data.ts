@@ -5716,8 +5716,8 @@ type Prev = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, ...0[]]
 
 type Paths<T, D extends number = 8> = [D] extends [never]
 	? never
-	: T extends readonly unknown[]
-		? ''
+	: T extends readonly (infer ArrayElement)[]
+		? `${number}` | Join<`${number}`, Paths<ArrayElement, Prev[D]>>
 		: T extends object
 		? { [K in keyof T]-?: K extends string | number
 			? `${K}` | Join<K, Paths<T[K], Prev[D]>>
