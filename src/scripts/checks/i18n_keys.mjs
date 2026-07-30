@@ -6,6 +6,7 @@
  * 3. 字母后纯数字结尾的 key（xxx1）禁用；用有意义名或数组
  *
  * 搬键请用 .esh/commands/update_locale_data.py（见 locale-edits.md）。
+ * 批量前缀嵌套写回 locale：.esh/commands/reshape_i18n_keys.py（勿用 JS 写 locale JSON，会打乱如 404 的键序）。
  */
 
 /**
