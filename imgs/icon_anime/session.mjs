@@ -16,10 +16,13 @@ export const fps = 24
 
 /**
  * @typedef {object} IconAnime
- * @property {boolean} userAborted - last play ended by Ctrl+C
- * @property {() => Promise<void>} start - CLI: enter→hold until abort
- * @property {() => Promise<void>} intro - play enter to completion, leave alt-screen, keep state for farewell
- * @property {() => Promise<void>} farewell - play exit from live or saved progress, restore terminal
+ * @property {boolean} userAborted - last play ended by Ctrl+C (not dismiss / farewell)
+ * @property {AbortSignal} userSignal - aborts when userAborted becomes true
+ * @property {() => Promise<void>} start - enter→hold until abort / dismiss (idempotent while live)
+ * @property {() => Promise<void>} intro - play enter to completion, park for farewell
+ * @property {(ms: number) => Promise<void>} sleep - wait; resolves early on user abort
+ * @property {() => Promise<void>} dismiss - stop hold, leave alt-screen; keep state for farewell
+ * @property {() => Promise<void>} farewell - play exit from live or parked progress
  */
 
 /**
@@ -37,6 +40,9 @@ export function createIconAnime() {
 	/** Host-initiated stop / farewell took over. */
 	let stopping = false
 	let userAborted = false
+	/** @type {(() => void) | null} */
+	let wakeSleep = null
+	let userAc = new AbortController()
 
 	/**
 	 * @param {ReturnType<typeof createAnimState>} animState state
@@ -90,19 +96,28 @@ export function createIconAnime() {
 			return userAborted
 		},
 
+		/** @returns {AbortSignal} aborts when userAborted becomes true */
+		get userSignal() {
+			return userAc.signal
+		},
+
 		/**
-		 * Enter → hold until Ctrl+C (standalone CLI).
+		 * Enter → hold until Ctrl+C / dismiss.
 		 * @returns {Promise<void>}
 		 */
 		start() {
 			if (player) return running
 			userAborted = false
 			stopping = false
+			userAc = new AbortController()
 			player = openPlayer(createAnimState())
 			savedState = state
 			player.start()
 			running = player.play(() => enter(state)).loop(() => hold(state)).then(() => {
-				if (!stopping) userAborted = true
+				if (stopping) return
+				userAborted = true
+				userAc.abort()
+				wakeSleep?.()
 			})
 			return running
 		},
@@ -121,6 +136,41 @@ export function createIconAnime() {
 			await running
 			if (stopping) return
 			if (player.signal?.aborted) userAborted = true
+			park()
+		},
+
+		/**
+		 * @param {number} ms milliseconds
+		 * @returns {Promise<void>}
+		 */
+		sleep(ms) {
+			return new Promise((resolve) => {
+				const timer = setTimeout(() => {
+					wakeSleep = null
+					resolve()
+				}, ms)
+				/**
+				 *
+				 */
+				wakeSleep = () => {
+					clearTimeout(timer)
+					wakeSleep = null
+					resolve()
+				}
+			})
+		},
+
+		/**
+		 * Stop hold, leave alt-screen; keep state for farewell.
+		 * @returns {Promise<void>}
+		 */
+		async dismiss() {
+			if (!player) return
+			stopping = true
+			player.abort()
+			await Promise.resolve()
+			await running?.catch(() => { /* abort */ })
+			running = null
 			park()
 		},
 

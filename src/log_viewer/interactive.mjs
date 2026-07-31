@@ -37,6 +37,8 @@ import {
  * @property {() => Promise<void>} clear - 清空日志区。
  * @property {(text: string) => Promise<void>} showInitialInfo - 显示 logo 与初始信息。
  * @property {() => void} focusInput - 重绘 REPL 输入区。
+ * @property {() => void} suspend - 释放 stdin（供 logo 等待动画接管）。
+ * @property {() => void} resume - 收回 stdin 并恢复 REPL 输入。
  * @property {() => void} tearDown - 退出前擦除 REPL 区并恢复全屏滚动。
  */
 
@@ -1305,7 +1307,26 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		scheduleInputRedraw()
 	}
 
+	/**
+	 * 暂时交出 stdin（不拆除 REPL 画面；alt-screen logo 会盖住主缓冲）。
+	 * @returns {void}
+	 */
+	function suspend() {
+		if (!activated || replTornDown) return
+		restoreStdin()
+	}
+
+	/**
+	 * logo 结束后收回 stdin。
+	 * @returns {void}
+	 */
+	function resume() {
+		if (!activated || replTornDown) return
+		stdinReadAbort = false
+		startInputLoop()
+	}
+
 	// #endregion
 
-	return { writeEntry, appendText, clear, showInitialInfo, focusInput, tearDown: tearDownRepl }
+	return { writeEntry, appendText, clear, showInitialInfo, focusInput, suspend, resume, tearDown: tearDownRepl }
 }

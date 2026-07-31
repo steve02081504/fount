@@ -3,7 +3,7 @@
  *
  * 设计目标：
  * - 作为后台服务器进程的“前台脸面”，始终能在交互终端中显示主进程输出。
- * - 交互 TTY 且支持 ANSI 时：启动先播完 icon_anime 进场，再进入日志/REPL；退出时播完离场再交还终端。非 TTY / 无 VT 则跳过 logo。
+ * - 交互 TTY 且支持 ANSI 时：启动先播完 icon_anime 进场，再进入日志/REPL；服务器重启或断线等待时再挂 logo 直到连上或 Ctrl+C；退出时播完离场。非 TTY / 无 VT 则跳过 logo。
  * - 交互 TTY 且支持 ANSI 时：日志写入终端滚动区（可用自带滚动条），底部固定 REPL（`/ws/eval`）。
  * - 服务器未就绪时持续轮询 `/api/ping`（指数退避，无超时），网络/进程恢复后自动接续。
  * - 服务器主动退出（`fount_exit`）时与服务器同步：`code === 131` 视为重启，自动重连；其它退出码本进程同码退出。
@@ -84,6 +84,8 @@ let connection = null
  * @property {() => Promise<void>} clear - 清空日志区。
  * @property {(text: string) => Promise<void>} showInitialInfo - 显示 logo 与初始信息。
  * @property {(() => void) | undefined} [focusInput] - 聚焦输入区（交互模式）。
+ * @property {(() => void) | undefined} [suspend] - 释放 stdin 给 logo 等待动画。
+ * @property {(() => void) | undefined} [resume] - logo 结束后收回 stdin。
  * @property {(() => void) | undefined} [tearDown] - 退出前清理（交互模式）。
  */
 
@@ -167,22 +169,44 @@ const logSink = INTERACTIVE
 	: createPlainSink()
 
 /**
- * 阻塞至 `/api/ping` 返回 200 为止；指数退避（200ms → 5000ms 上限）。
- * @returns {Promise<void>} 服务器就绪或停止时兑现。
+ * 阻塞至 `/api/ping` 返回 200；可选叠加 icon 等待动画（连上 dismiss，Ctrl+C 则 userAborted）。
+ * @param {ReturnType<typeof createIconAnime> | null} [icon] 等待期间展示的 logo；`null` 则静默轮询。
+ * @returns {Promise<void>} 服务器就绪或用户中止时兑现。
  */
-async function pollUntilServerReady() {
+async function pollUntilServerReady(icon = null) {
+	if (icon) {
+		logSink.suspend?.()
+		icon.start()
+	}
 	let delay = 200
-	while (!stopRequested) 
-		try {
-			const res = await fetch(PING_URL, { signal: AbortSignal.timeout(2000) })
-			if (res.ok) return
-			throw new Error(String(res.status))
-		} catch {
-			if (stopRequested) break
-			await sleep(delay)
-			delay = Math.min(delay * 2, 5000)
+	try {
+		while (!stopRequested) {
+			if (icon?.userAborted) {
+				stopRequested = true
+				break
+			}
+			try {
+				const signal = icon
+					? AbortSignal.any([AbortSignal.timeout(2000), icon.userSignal])
+					: AbortSignal.timeout(2000)
+				const res = await fetch(PING_URL, { signal })
+				if (res.ok) return
+				throw new Error(String(res.status))
+			} catch {
+				if (stopRequested || icon?.userAborted) {
+					stopRequested = true
+					break
+				}
+				await (icon ? icon.sleep(delay) : sleep(delay))
+				delay = Math.min(delay * 2, 5000)
+			}
 		}
-	
+	} finally {
+		if (icon && !icon.userAborted) {
+			await icon.dismiss()
+			logSink.resume?.()
+		}
+	}
 }
 
 /**
@@ -337,7 +361,6 @@ async function main() {
 		if (icon.userAborted) process.exit(130)
 	}
 
-	let backoff = 500
 	while (!stopRequested) {
 		await pollUntilServerReady()
 		if (stopRequested) break
@@ -347,17 +370,17 @@ async function main() {
 			const code = exitCodeSlot.value ?? 0
 			exitCodeSlot.value = null
 			if (code === 131) {
-				await sleep(2000)
-				backoff = 500
+				await pollUntilServerReady(icon)
+				if (icon?.userAborted) process.exit(130)
 				continue
 			}
 			process.exit(code)
 			return
 		}
 
-		// 异常断开（无 fount_exit）：可能是服务器崩溃或网络抖动，指数退避后重试
-		await sleep(backoff)
-		backoff = Math.min(backoff * 2, 10000)
+		// 异常断开：logo 等到服务器回来或 Ctrl+C
+		await pollUntilServerReady(icon)
+		if (icon?.userAborted) process.exit(130)
 	}
 
 	process.exit(130)

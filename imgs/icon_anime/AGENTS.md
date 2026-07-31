@@ -8,7 +8,7 @@ alwaysApply: false
 
 Standalone terminal animation for the fount fountain logo.
 
-Also embedded by the CLI log viewer via `createIconAnime`: `intro` (full enter, then park) at startup, `farewell` on `on_shutdown`. Skip when stdout is not a TTY / has no VT. Do not re-wire player / pointer / resize.
+Also embedded by the CLI log viewer via `createIconAnime`: `intro` at startup; `start`/`dismiss` while waiting for reconnect; `farewell` on `on_shutdown`. Skip when stdout is not a TTY / has no VT.
 
 ## Run
 
@@ -24,7 +24,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | Path | Role |
 | --- | --- |
 | `index.mjs` | CLI entry + public re-exports |
-| `session.mjs` | Controller (`createIconAnime`): `start` (CLI hold) / `intro` / `farewell` |
+| `session.mjs` | Controller (`createIconAnime`): `intro` / `start`+`dismiss` (wait) / `farewell` |
 | `icon.mjs` | Packed silhouette, pillars, body growth order (typed arrays) |
 | `scene.mjs` | Anim state, materials, rain, pool leak, enter/hold/exit |
 | `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid`; pointer torch + click ripples (truecolor lift) |
