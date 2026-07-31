@@ -39,7 +39,7 @@ const STROKE_CAP = 14
  * @typedef {{
  *   down: boolean,
  *   x: number, y: number,
- *   lx: number, ly: number,
+ *   lastX: number, lastY: number,
  *   still: number,
  *   vortexOn: boolean,
  *   strength: number,
@@ -72,7 +72,7 @@ const freeStroke = (seg) => {
 export const createWindGesture = () => ({
 	down: false,
 	x: 0, y: 0,
-	lx: 0, ly: 0,
+	lastX: 0, lastY: 0,
 	still: 0,
 	vortexOn: false,
 	strength: 0,
@@ -112,8 +112,8 @@ export const windPointer = (gesture, { x, y, right }) => {
 	applyPointer(gesture, x, y, right, {
 		/** Press: anchor stroke and clear prior drive. */
 		onDown() {
-			gesture.lx = x
-			gesture.ly = y
+			gesture.lastX = x
+			gesture.lastY = y
 			resetWindDrive(gesture)
 		},
 		/** Release: drop stroke / vortex state. */
@@ -141,8 +141,8 @@ export const tickWindGesture = (gesture) => {
 		}
 		else index++
 
-	const dx = gesture.x - gesture.lx
-	const dy = gesture.y - gesture.ly
+	const dx = gesture.x - gesture.lastX
+	const dy = gesture.y - gesture.lastY
 	const dist = Math.hypot(dx, dy)
 
 	if (dist > STILL_EPS) {
@@ -150,8 +150,8 @@ export const tickWindGesture = (gesture) => {
 		const inv = 1 / dist
 		const amp = dist * STROKE_SPEED_SCALE
 		const seg = takeStroke()
-		seg.x0 = gesture.lx
-		seg.y0 = gesture.ly
+		seg.x0 = gesture.lastX
+		seg.y0 = gesture.lastY
 		seg.x1 = gesture.x
 		seg.y1 = gesture.y
 		seg.ux = dx * inv * amp
@@ -177,8 +177,8 @@ export const tickWindGesture = (gesture) => {
 		}
 	}
 
-	gesture.lx = gesture.x
-	gesture.ly = gesture.y
+	gesture.lastX = gesture.x
+	gesture.lastY = gesture.y
 }
 
 /**

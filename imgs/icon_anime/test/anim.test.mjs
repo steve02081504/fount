@@ -344,7 +344,7 @@ Deno.test('wind gesture: stroke speed + clockwise vortex + release clear', async
 	// Long still → tornado: clockwise top + net updraft
 	const vortexGesture = createWindGesture()
 	windPointer(vortexGesture, { x: 20, y: 10, right: true })
-	for (let i = 0; i < VORTEX_DELAY + 20; i++) tickWindGesture(vortexGesture)
+	for (let index = 0; index < VORTEX_DELAY + 20; index++) tickWindGesture(vortexGesture)
 	assertEquals(vortexGesture.vortexOn, true)
 	assert(vortexGesture.strength > 1.5)
 	assert(vortexGesture.strength <= VORTEX_MAX)
