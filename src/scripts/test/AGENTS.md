@@ -65,6 +65,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 ## Operator tools
 
 - **Hung run**: `data/test/state/logs/`; rerun `deno run --allow-scripts --allow-all -c deno.json <probe.mjs>` with env from the log. Idle watchdog (10m no stdall) fails the suite. Host sleep (wall-clock jump) aborts and retries — details in [host-keep-awake.md](docs/host-keep-awake.md).
+- **`server:live` / `console_quiet`**: default-start quiet assert fails when `@homebridge/ciao` probe retries log `[fount._http._tcp.local.] failed probing…` ([homebridge/ciao#72](https://github.com/homebridge/ciao/issues/72)). Do not filter that in the test or silence it in fount — wait for ciao; post-fix: bump `npm:@homebridge/ciao`, re-run `server:live`, then blocked shell frontends.
 - **Keep-awake**: wrappers keep the machine awake during runs — [host-keep-awake.md](docs/host-keep-awake.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`.
 - **OOM / heap**: [heap-snapshots.md](docs/heap-snapshots.md).
 - **Deno panic auto-report**: `core/deno_panic.mjs` → GitHub issue on `denoland/deno` (if `gh` + auth); dedup `data/test/deno_panics.json`. Override via `FOUNT_DENO_PANIC_REPO`. `testkit` excluded.

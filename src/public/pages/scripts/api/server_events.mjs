@@ -43,8 +43,11 @@ function dispatchMessage(message) {
 		}
 }
 
-if (navigator.serviceWorker)
+try {
 	navigator.serviceWorker.addEventListener('message', event => {
 		if (event.data)
 			dispatchMessage(event.data)
 	})
+} catch (error) {
+	if (error.name != 'SecurityError') throw error
+}
