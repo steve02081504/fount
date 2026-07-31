@@ -26,6 +26,7 @@
  *   margin: number, ox: number, oy: number,
  *   mat: Uint8Array, liq: Float32Array, moisture: Float32Array, condense: Float32Array,
  *   gasUx: Float32Array, gasUy: Float32Array,
+ *   liqVx: Float32Array, liqVy: Float32Array,
  *   regionId: Int32Array,
  *   regions: Map<number, AirRegion>,
  *   particles: FluidParticle[], pendingSplash: FluidParticle[],
@@ -87,12 +88,33 @@ export const COND_DRIP = 0.85
 export const COND_MATTHEW_RATE = 0.22
 /** Noise amplitude (fraction of pair mass) to break condensation ties. */
 export const COND_MATTHEW_NOISE = 0.4
-/** Falling water (rain / drip streams) draws `|` at/above this amount. */
+/** Falling / stream amount at which vertical glyphs prefer dense bars. */
 export const FALL_HEAVY = 0.5
-/** |vx| above this (vs vertical) leans rain as `\` / `/`. */
-export const FALL_SLANT = 0.1
-/** |vx| above this with dominant horizontal → `-`. */
-export const FALL_FLAT = 0.32
+/** Speed below this → still-water glyphs (‥…~⁓–). */
+export const STILL_SPEED = 0.06
+/** |vx| above this (vs vertical) counts as horizontal/slant motion. */
+export const SLANT_SPEED = 0.08
+/** |vx| dominates |vy| → flat `-`. */
+export const FLAT_RATIO = 1.2
+/** Momentum (amount·speed) at/above this uses high-momentum slant glyphs. */
+export const HIGH_MOMENTUM = 0.28
+/** Absolute speed at/above this also counts as high momentum. */
+export const HIGH_SPEED = 0.55
+
+/** High-momentum left / right slant. */
+export const WATER_HIGH_L = Object.freeze(['/', '∕'])
+/**
+ *
+ */
+export const WATER_HIGH_R = Object.freeze(['\\', '∖'])
+/** Low-momentum toward lower-left. */
+export const WATER_LOW_DL = Object.freeze(['‚', '´', '′', '‘', '’', '″', '“', '„', '‴', '⁗'])
+/** Low-momentum toward lower-right. */
+export const WATER_LOW_DR = Object.freeze(['‵', '‛', '‶', '‟', '‷', '⁏'])
+/** Pure vertical fall (heavy → light). */
+export const WATER_FALL = Object.freeze(['|', '¦', '‖', '⁞', '⁚', '⁝', '.'])
+/** Near-still pool (light → heavy). */
+export const WATER_STILL = Object.freeze(['‥', '…', '~', '⁓', '–'])
 
 /** Mean global wind amplitude (cells / tick). */
 export const WIND_BASE = 0.38
@@ -184,6 +206,8 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 		condense: new Float32Array(size),
 		gasUx: new Float32Array(size),
 		gasUy: new Float32Array(size),
+		liqVx: new Float32Array(size),
+		liqVy: new Float32Array(size),
 		regionId: new Int32Array(size),
 		regions: new Map(),
 		particles: /** @type {FluidParticle[]} */ [],
@@ -192,6 +216,8 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 		gasTime: 0,
 		_gasNextUx: null,
 		_gasNextUy: null,
+		_liqFlowX: null,
+		_liqFlowY: null,
 	}
 }
 
@@ -222,6 +248,8 @@ export const clearDynamics = (w) => {
 	w.condense.fill(0)
 	w.gasUx.fill(0)
 	w.gasUy.fill(0)
+	w.liqVx.fill(0)
+	w.liqVy.fill(0)
 	w.particles.length = 0
 	w.pendingSplash.length = 0
 	w.regionId.fill(0)
@@ -1030,12 +1058,40 @@ export const stepSoil = (w) => {
 
 /**
  * Liquid step: gravity, side flow (pressure-gated), soil seepage, hydraulic equalization.
+ * Tracks per-cell liquid velocity (`liqVx`/`liqVy`) from mass transfers for glyphs.
  * @param {FluidWorld} w parameter
  * @returns {void} result
  */
 export const stepLiquid = (w) => {
-	const { worldW: W, worldH: H, mat, liq } = w
+	const { worldW: W, worldH: H, mat, liq, liqVx, liqVy } = w
 	labelAirRegions(w)
+
+	const n = W * H
+	if (!w._liqFlowX || w._liqFlowX.length !== n) {
+		w._liqFlowX = new Float32Array(n)
+		w._liqFlowY = new Float32Array(n)
+	}
+	const flowX = w._liqFlowX
+	const flowY = w._liqFlowY
+	flowX.fill(0)
+	flowY.fill(0)
+
+	/**
+	 * Record mass `move` traveling (dx, dy) from cell i into ni.
+	 * @param {number} i source index
+	 * @param {number} ni dest index
+	 * @param {number} dx horizontal step
+	 * @param {number} dy vertical step
+	 * @param {number} move mass
+	 * @returns {void}
+	 */
+	const noteFlow = (i, ni, dx, dy, move) => {
+		if (move <= 0) return
+		flowX[i] += dx * move
+		flowY[i] += dy * move
+		flowX[ni] += dx * move
+		flowY[ni] += dy * move
+	}
 
 	// Gravity
 	for (let y = H - 2; y >= 0; y--)
@@ -1063,6 +1119,7 @@ export const stepLiquid = (w) => {
 					const move = Math.min(liq[i], capacity)
 					liq[i] -= move
 					liq[below] += move
+					noteFlow(i, below, 0, 1, move)
 					continue
 				}
 			}
@@ -1080,6 +1137,7 @@ export const stepLiquid = (w) => {
 				if (move <= 0.01) continue
 				liq[i] -= move
 				liq[ni] += move
+				noteFlow(i, ni, dx, 1, move)
 				break
 			}
 		}
@@ -1096,6 +1154,7 @@ export const stepLiquid = (w) => {
 					// Intentional world-edge sink: outflow amount leaves the grid.
 					const move = Math.min(liq[i] * 0.25, liq[i])
 					liq[i] -= move
+					flowX[i] += dx * move
 					continue
 				}
 				const ni = y * W + nx
@@ -1112,6 +1171,7 @@ export const stepLiquid = (w) => {
 				const move = Math.min((liq[i] - liq[ni]) * 0.25, LIQ_FULL - liq[ni])
 				liq[i] -= move
 				liq[ni] += move
+				noteFlow(i, ni, dx, 0, move)
 			}
 		}
 
@@ -1123,6 +1183,20 @@ export const stepLiquid = (w) => {
 
 	for (let x = 0; x < W; x++)
 		liq[(H - 1) * W + x] = 0
+
+	// Mass-weighted flow → cell velocity (EMA for stable glyphs)
+	for (let i = 0; i < n; i++) {
+		const m = liq[i]
+		if (m < 1e-6) {
+			liqVx[i] = 0
+			liqVy[i] = 0
+			continue
+		}
+		const vx = flowX[i] / m
+		const vy = flowY[i] / m
+		liqVx[i] = liqVx[i] * 0.35 + vx * 0.65
+		liqVy[i] = liqVy[i] * 0.35 + vy * 0.65
+	}
 }
 
 /**
@@ -1179,30 +1253,76 @@ export const stepParticles = (w, onHit) => {
 }
 
 /**
- * Falling water glyph by amount + velocity lean.
- * Heavy vertical → `|`; light → `,` / `.`; wind lean → `\` / `/`; flat → `-`.
- * @param {number} amount parameter
- * @param {number} [phase=0] parameter
- * @param {number} [vx=0] horizontal velocity
- * @param {number} [vy=0] vertical velocity
- * @returns {string} result
+ * Pick a glyph from a set by amount (+ phase wobble).
+ * @param {readonly string[]} chars glyph set
+ * @param {number} amount water mass in [0, 1+]
+ * @param {number} phase flicker seed
+ * @param {boolean} [heavyFirst=false] if true, larger amount → earlier chars
+ * @returns {string} glyph
  */
-export const fallChar = (amount, phase = 0, vx = 0, vy = 0) => {
-	const ax = Math.abs(vx)
-	const ay = Math.abs(vy)
-	if (ax >= FALL_FLAT && ax > ay * 1.15) return '-'
-	if (vx >= FALL_SLANT) return '\\'
-	if (vx <= -FALL_SLANT) return '/'
-	if (amount >= FALL_HEAVY) return '|'
-	return (phase | 0) & 1 ? ',' : '.'
+export const pickWaterGlyph = (chars, amount, phase, heavyFirst = false) => {
+	const n = chars.length
+	const u = Math.min(0.999, Math.max(0, amount))
+	const t = heavyFirst ? 1 - u : u
+	let i = (t * n) | 0
+	if ((phase | 0) & 1) i = Math.min(n - 1, i + 1)
+	return chars[i]
 }
 
-/** Alias — rain uses the same amount/velocity falling glyphs. */
-export const rainChar = fallChar
+/**
+ * Water glyph from amount + liquid/particle velocity (not gas wind).
+ * High momentum slant: `/` `∕` · `\` `∖` · `-`
+ * Low momentum diagonal: low quotes / reversed primes · `-`
+ * Pure fall: `|¦‖⁞⁚⁝.`
+ * Still: `‥…~⁓–`
+ * @param {number} amount parameter
+ * @param {number} [phase=0] parameter
+ * @param {number} [vx=0] liquid / droplet horizontal velocity
+ * @param {number} [vy=0] liquid / droplet vertical velocity (down +)
+ * @returns {string} result
+ */
+export const waterChar = (amount, phase = 0, vx = 0, vy = 0) => {
+	const ax = Math.abs(vx)
+	const ay = Math.abs(vy)
+	const speed = Math.hypot(vx, vy)
+	const mom = amount * speed
+
+	if (speed < STILL_SPEED)
+		return pickWaterGlyph(WATER_STILL, amount, phase, false)
+
+	const flat = ax >= SLANT_SPEED && ax > ay * FLAT_RATIO
+	if (flat) return '-'
+
+	const slant = ax >= SLANT_SPEED
+	const high = mom >= HIGH_MOMENTUM || speed >= HIGH_SPEED
+
+	if (slant) {
+		if (high)
+			return pickWaterGlyph(vx > 0 ? WATER_HIGH_R : WATER_HIGH_L, amount, phase, true)
+		// Low momentum: prefer lower-left / lower-right marks
+		return pickWaterGlyph(vx > 0 ? WATER_LOW_DR : WATER_LOW_DL, amount, phase, true)
+	}
+
+	// Pure vertical: remap so amount ≥ FALL_HEAVY lands on dense bars
+	const fallAmt = amount >= FALL_HEAVY ? 1 : amount / FALL_HEAVY * 0.4
+	return pickWaterGlyph(WATER_FALL, fallAmt, phase, true)
+}
 
 /**
- * Standing / pooled liquid glyph by fill amount.
- * Pass `falling=true` for free streams (same lean rule as rain when vx/vy given).
+ * Falling / stream glyph — same as waterChar (amount + droplet velocity).
+ * @param {number} amount parameter
+ * @param {number} [phase=0] parameter
+ * @param {number} [vx=0] parameter
+ * @param {number} [vy=0] parameter
+ * @returns {string} result
+ */
+export const fallChar = waterChar
+
+/** Alias — rain uses the same amount/velocity glyphs. */
+export const rainChar = waterChar
+
+/**
+ * Free-liquid glyph: uses liquid velocity; optional `falling` biases a calm cell downward.
  * @param {number} amount parameter
  * @param {number} phase parameter
  * @param {boolean} [falling=false] parameter
@@ -1211,11 +1331,9 @@ export const rainChar = fallChar
  * @returns {string} result
  */
 export const liquidChar = (amount, phase, falling = false, vx = 0, vy = 0) => {
-	if (falling) return fallChar(amount, phase, vx, vy)
-	if (amount >= 0.85) return '~'
-	if (amount >= 0.55) return phase & 1 ? '≈' : '~'
-	if (amount >= LIQ_DRAW) return phase & 1 ? ',' : '.'
-	return ' '
+	if (falling && Math.hypot(vx, vy) < STILL_SPEED)
+		vy = 0.55
+	return waterChar(amount, phase, vx, vy)
 }
 
 /**

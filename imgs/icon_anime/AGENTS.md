@@ -27,7 +27,7 @@ Controls: Space pause, `[` / `]` speed, Ctrl+C exit (icon teardown, then quit).
 
 ## Material standard
 
-Static / growing icon + terrain write the material grid (particles do not rewrite the ICON string). Glyphs below are the *authored* look; free liquid may redraw cells as `~` / `≈` / `,` when pooled, or lean with gas velocity when falling. Hanging condensation under soil ceilings draws as `.` / `,` / `*` / `o`.
+Static / growing icon + terrain write the material grid (particles do not rewrite the ICON string). Glyphs below are the *authored* look; free liquid redraws via `waterChar` from amount + liquid velocity (still / fall / slant sets below). Hanging condensation under soil ceilings draws as `.` / `,` / `*` / `o`.
 
 | Glyph / mat | Region | Behavior |
 | --- | --- | --- |
@@ -42,9 +42,9 @@ Static / growing icon + terrain write the material grid (particles do not rewrit
 
 Open-stage rule: columns whose base slab has not grown yet do **not** splash — rain keeps falling through empty cells until it hits existing mat, horizon, or leaves the world.
 
-Falling water (rain particles **and** re-condensed free streams) shares one glyph rule by amount + velocity: heavy vertical → `|`; light vertical → `,` / `.`; wind lean → `\` (vx>0) / `/` (vx<0); strong horizontal → `-` (`fallChar` / `FALL_HEAVY` / `FALL_SLANT` / `FALL_FLAT`). Standing pools still use `~` / `≈`.
+Falling water (rain particles **and** free liquid) uses `waterChar` from **amount × liquid/droplet velocity** (never gas wind). High momentum: `/` `∕` · `\` `∖` · `-`. Low momentum diagonal: `‚´′…` / `‵‛…`. Pure fall: `|¦‖⁞⁚⁝.`. Still pools: `‥…~⁓–`. Grid liquid velocity is `liqVx`/`liqVy` from mass transfers; particles use `p.vx`/`p.vy`.
 
-Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `..`) → body-pool `@` / flooded liquid `~` or falling lean glyphs → hanging drip under soil → pillars `:` → terrain outline.
+Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `..`) → body-pool `@` / free-liquid water glyphs → hanging drip under soil → pillars `:` → terrain outline.
 
 ## Terrain invariants
 
@@ -57,7 +57,8 @@ Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `.
 
 - Open air regions: `pressure = P_ATM`.
 - Sealed regions: `pressure ≈ gasAmount / airCells` (isothermal Boyle / ideal gas at fixed T); gas mass transfers by cell overlap when topology splits/merges.
-- Gas velocity (`gasUx` / `gasUy`): open air tracks a time-varying global wind with power-law height shear (stronger aloft). Continuity (`A·v`) speeds flow through duct throats (wind-tunnel nozzle). Wall slip zeros inflow into solids. Bernoulli proxy: `staticPressureAt = P₀ − ½ρu²` (faster → lower static P). Rain particles drag toward local gas (`GAS_DRAG`).
+- Gas velocity (`gasUx` / `gasUy`): open air tracks a time-varying global wind with power-law height shear (stronger aloft). Continuity (`A·v`) speeds flow through duct throats (wind-tunnel nozzle). Wall slip zeros inflow into solids. Bernoulli proxy: `staticPressureAt = P₀ − ½ρu²` (faster → lower static P). Rain particles drag toward local gas (`GAS_DRAG`); glyphs use the particle's resulting velocity, not the gas field directly.
+- Grid liquid velocity (`liqVx` / `liqVy`): updated from mass transfers each `stepLiquid` (EMA); drives free-liquid glyphs so calm puddles stay on still marks.
 - Communicating vessels: free surfaces of the same liquid component relax toward equal `φ = P/(ρg) - y`.
 - `POOL` retains fill and spills / leaks into open air or the next slab when overfull; `BODY` is a liquid barrier (splash-only). Pillars are not materials.
 - Soil moisture (`moisture`): gains from impacts and free liquid above with diminishing absorb rate as the cell wets (`soilAbsorbFactor`); rain hits only sink a fraction (`SOIL_HIT_ABSORB_FRAC`) so the rest sheets as free liquid. Seepage is slow enough that sustained rain forms visible surface puddles. Each tick shares a fraction sideways among soil neighbors, prefers transfer into soil below, and when below is air feeds underside `condense`. Neighboring condensation cells apply a noisy Matthew transfer (richer steals from poorer). Past `COND_DRAW` the air cell shows a droplet glyph; past `COND_DRIP` condensation becomes free liquid below and clears.
@@ -74,4 +75,4 @@ fount test icon_anime --no-parallel
 fount test icon_anime:pure --no-parallel
 ```
 
-Coverage: deterministic terrain glyphs/features, pedestal land shoulders, icon crust + caves below, tall-land quota (≥30% view cols ≥¼ screen), sealed-cavity compression (Boyle), U-tube leveling, BODY splash (no flood), pillar pass-through, pool→slab/ground leak, `SEAL` impermeable fixtures, soil absorb (dry>wet) / seepage / Matthew condense / drip + mass conservation, sustained-rain surface puddles, gas wind time-variation + height shear, wind-tunnel continuity + Bernoulli static-P drop, wall stagnation, particle gas drag, fall glyphs by amount/velocity, exit frame bound, resize state preserve, ANSI frame size.
+Coverage: deterministic terrain glyphs/features, pedestal land shoulders, icon crust + caves below, tall-land quota (≥30% view cols ≥¼ screen), sealed-cavity compression (Boyle), U-tube leveling, BODY splash (no flood), pillar pass-through, pool→slab/ground leak, `SEAL` impermeable fixtures, soil absorb (dry>wet) / seepage / Matthew condense / drip + mass conservation, sustained-rain surface puddles, gas wind time-variation + height shear, wind-tunnel continuity + Bernoulli static-P drop, wall stagnation, particle gas drag, water glyphs by amount/liquid-velocity (still puddles vs high/low momentum slant), exit frame bound, resize state preserve, ANSI frame size.

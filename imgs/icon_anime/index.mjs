@@ -22,7 +22,7 @@ import { on_shutdown } from 'npm:on-shutdown'
 import {
 	MAT, createWorld, clearMaterials, clearDynamics, setMat, addLiquid, addMoisture,
 	spawnParticle, queueSplash, stepGas, stepLiquid, stepParticles, fallChar, liquidChar, dripChar,
-	gasVelocityAt, windProfileAt, hash01, idx, inWorld, isLiquidBarrier, isSoilMat, releaseNonSoilWater,
+	windProfileAt, hash01, idx, inWorld, isLiquidBarrier, isSoilMat, releaseNonSoilWater,
 	soilAbsorbFactor, LIQUID_DRAW_THRESHOLD, COND_DRAW_THRESHOLD, SOIL_CAP, SOIL_HIT_ABSORB_FRAC,
 } from './fluid_engine.mjs'
 import { AsciiAnimePlayer, terminalSize } from './player.mjs'
@@ -571,8 +571,10 @@ const composeFrame = (state) => {
 					&& mat[idx(world, wx, by)] !== MAT.POOL
 					&& liq[idx(world, wx, by)] < LIQUID_DRAW_THRESHOLD
 				)
-				const { ux, uy } = gasVelocityAt(world, wx, vy)
-				paint(vx, vy, liquidChar(liq[i], wx + vy + frame, falling, ux, uy), FG_SPLASH)
+				paint(vx, vy, liquidChar(
+					liq[i], wx + vy + frame, falling,
+					world.liqVx[i], world.liqVy[i],
+				), FG_SPLASH)
 			}
 			else if (
 				vy > 0

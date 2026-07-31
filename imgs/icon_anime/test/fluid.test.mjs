@@ -8,7 +8,9 @@ import {
 	MAT, createWorld, setMat, addLiquid, addMoisture, stepLiquid, stepSoil, stepGas, stepParticles,
 	labelAirRegions, pressureAt, totalSealedGas, totalGridWater, P_ATM, clearMaterials, idx,
 	COND_DRIP, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQUID_DRAW_THRESHOLD,
-	fallChar, liquidChar, FALL_HEAVY, globalWindAt, windProfileAt, gasVelocityAt, dynamicPressure,
+	fallChar, liquidChar, waterChar, pickWaterGlyph, FALL_HEAVY,
+	WATER_STILL, WATER_FALL, WATER_HIGH_L, WATER_HIGH_R, WATER_LOW_DL, WATER_LOW_DR,
+	globalWindAt, windProfileAt, gasVelocityAt, dynamicPressure,
 	staticPressureAt, spawnParticle,
 } from '../fluid_engine.mjs'
 
@@ -340,17 +342,54 @@ Deno.test('fluid: closed soil seepage conserves grid water', () => {
 		}
 })
 
-Deno.test('fluid: fallChar leans with velocity (| \\ / -)', () => {
+Deno.test('fluid: waterChar uses liquid velocity, not wind-scale slant on still pools', () => {
+	// Still / near-still → pool glyphs
+	assertEquals(waterChar(0.8, 0, 0, 0), pickWaterGlyph(WATER_STILL, 0.8, 0, false))
+	assert(WATER_STILL.includes(waterChar(0.9, 0, 0.02, 0)))
+	assert(WATER_STILL.includes(liquidChar(0.7, 0, false, 0, 0)))
+
+	// Pure fall by amount
 	assertEquals(fallChar(FALL_HEAVY, 0, 0, 1), '|')
 	assertEquals(fallChar(FALL_HEAVY + 0.2, 0, 0, 1), '|')
-	assertEquals(fallChar(FALL_HEAVY - 0.01, 0, 0, 1), '.')
-	assertEquals(fallChar(0.1, 1, 0, 1), ',')
-	assertEquals(fallChar(0.6, 0, 0.2, 1), '\\')
-	assertEquals(fallChar(0.6, 0, -0.2, 1), '/')
-	assertEquals(fallChar(0.6, 0, 0.5, 0.1), '-')
+	assert(WATER_FALL.includes(fallChar(0.1, 0, 0, 1)))
 	assertEquals(liquidChar(0.7, 0, true, 0, 1), '|')
-	assertEquals(liquidChar(0.2, 0, true, 0, 1), '.')
-	assertEquals(liquidChar(0.5, 0, true, 0.25, 0.8), '\\')
+
+	// High momentum slant
+	assert(WATER_HIGH_R.includes(waterChar(0.8, 0, 0.35, 0.8)))
+	assert(WATER_HIGH_L.includes(waterChar(0.8, 0, -0.35, 0.8)))
+	assertEquals(waterChar(0.8, 0, 0.7, 0.1), '-')
+
+	// Low momentum diagonal (slow crawl)
+	assert(WATER_LOW_DR.includes(waterChar(0.3, 0, 0.12, 0.2)))
+	assert(WATER_LOW_DL.includes(waterChar(0.3, 0, -0.12, 0.2)))
+})
+
+Deno.test('fluid: standing liquid velocity stays low so glyphs are still marks', () => {
+	const w = createWorld({ width: 20, height: 12, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	for (let x = 4; x <= 14; x++) {
+		setMat(w, x, 9, MAT.HORIZON)
+		w.moisture[idx(w, x, 9)] = SOIL_CAP
+		setMat(w, x, 10, MAT.SEAL)
+	}
+	addLiquid(w, 8, 8, 1)
+	addLiquid(w, 9, 8, 1)
+	for (let i = 0; i < 40; i++) stepLiquid(w)
+
+	let checked = 0
+	for (let x = 4; x <= 14; x++) {
+		const i = idx(w, x, 8)
+		if (w.liq[i] < 0.1) continue
+		checked++
+		const speed = Math.hypot(w.liqVx[i], w.liqVy[i])
+		assertLess(speed, 0.35)
+		const ch = liquidChar(w.liq[i], x, false, w.liqVx[i], w.liqVy[i])
+		assert(
+			!WATER_HIGH_R.includes(ch) && !WATER_HIGH_L.includes(ch),
+			`puddle should not use high-momentum slant, got ${ch}`,
+		)
+	}
+	assertGreater(checked, 0)
 })
 
 Deno.test('fluid: global wind varies with time', () => {
