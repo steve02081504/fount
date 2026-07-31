@@ -2,7 +2,7 @@
  * Air regions (Boyle), global wind, gas velocity field.
  * Caller must `labelAirRegions` before `stepGas` / pressure queries.
  *
- * Open air: P = P_ATM + ATM_HYDRO·y; sealed: isothermal Boyle.
+ * Open air: P = P_ATM + ATM_HYDRO·y; sealed: isothermal Boyle mean + ATM_HYDRO·(y−yMean).
  * Velocity: wind shear + nozzle continuity + neighbor static-ΔP (Bernoulli feedback).
  */
 
@@ -18,6 +18,8 @@ import { scratch, idx, inWorld } from './world.mjs'
  *   id: number,
  *   openToAtm: boolean,
  *   airCells: number,
+ *   sumY: number,
+ *   yMean: number,
  *   gasAmount: number,
  *   pressure: number,
  * }} AirRegion
@@ -60,7 +62,7 @@ export const fillBlocked = (world, blocked) => {
 
 /**
  * Label air regions with conserved gas mass transfer across topology changes.
- * Open-to-atmosphere regions get P = P_ATM; sealed use Boyle.
+ * Open-to-atmosphere regions get P = P_ATM; sealed use Boyle mean + yMean.
  * Double-buffers `regionId` via `scratch.prevRegionId`.
  * Regions are a dense id-indexed array (`regions[id]`; slot 0 unused).
  * @param {FluidWorld} world fluid world
@@ -94,6 +96,7 @@ export const labelAirRegions = (world) => {
 		if (regionId[cell] || !isAirCell(world, cell)) return
 		regionId[cell] = id
 		region.airCells++
+		region.sumY += y
 		queue.push(x, y)
 	}
 
@@ -114,8 +117,20 @@ export const labelAirRegions = (world) => {
 		}
 	}
 
+	/**
+	 * Finish region centroid + default open/sealed bookkeeping fields.
+	 * @param {AirRegion} region region
+	 * @returns {void}
+	 */
+	const finishCentroid = (region) => {
+		region.yMean = region.airCells > 0 ? region.sumY / region.airCells : 0
+	}
+
 	const openId = next++
-	const openRegion = { id: openId, openToAtm: true, airCells: 0, gasAmount: 0, pressure: P_ATM }
+	const openRegion = {
+		id: openId, openToAtm: true, airCells: 0, sumY: 0, yMean: 0,
+		gasAmount: 0, pressure: P_ATM,
+	}
 	for (let x = 0; x < W; x++) seed(x, 0, openId, openRegion)
 	for (let y = 1; y < H; y++) {
 		seed(0, y, openId, openRegion)
@@ -123,6 +138,7 @@ export const labelAirRegions = (world) => {
 	}
 	flood(openId, openRegion)
 	if (openRegion.airCells > 0) {
+		finishCentroid(openRegion)
 		openRegion.gasAmount = openRegion.airCells * AIR_CELL * P_ATM
 		openRegion.pressure = P_ATM
 		nextRegions[openId] = openRegion
@@ -133,10 +149,14 @@ export const labelAirRegions = (world) => {
 			const cell = y * W + x
 			if (regionId[cell] || !isAirCell(world, cell)) continue
 			const id = next++
-			const region = { id, openToAtm: false, airCells: 0, gasAmount: 0, pressure: P_ATM }
+			const region = {
+				id, openToAtm: false, airCells: 0, sumY: 0, yMean: 0,
+				gasAmount: 0, pressure: P_ATM,
+			}
 			queue.length = 0
 			seed(x, y, id, region)
 			flood(id, region)
+			finishCentroid(region)
 			nextRegions[id] = region
 		}
 
@@ -184,7 +204,8 @@ export const labelAirRegions = (world) => {
 
 /**
  * Thermodynamic / hydrostatic gas pressure at a cell (no dynamic Bernoulli term).
- * Open air: P_ATM + ATM_HYDRO·y. Sealed: uniform Boyle region pressure.
+ * Open air: P_ATM + ATM_HYDRO·y.
+ * Sealed: Boyle mean + ATM_HYDRO·(y − yMean) so the region average stays Boyle.
  * Liquid cells use overlying air (or atm).
  * @param {FluidWorld} world fluid world
  * @param {number} x column
@@ -198,7 +219,7 @@ export const pressureAt = (world, x, y) => {
 	if (rid) {
 		const region = world.regions[rid]
 		if (region.openToAtm) return region.pressure + ATM_HYDRO * y
-		return region.pressure
+		return Math.max(0.05, region.pressure + ATM_HYDRO * (y - region.yMean))
 	}
 	for (let yy = y - 1; yy >= 0; yy--) {
 		const above = idx(world, x, yy)
@@ -207,7 +228,7 @@ export const pressureAt = (world, x, y) => {
 		if (aboveRid) {
 			const region = world.regions[aboveRid]
 			if (region.openToAtm) return region.pressure + ATM_HYDRO * yy
-			return region.pressure
+			return Math.max(0.05, region.pressure + ATM_HYDRO * (yy - region.yMean))
 		}
 	}
 	return P_ATM + ATM_HYDRO * y

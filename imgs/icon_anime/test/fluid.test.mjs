@@ -45,6 +45,11 @@ Deno.test('fluid: open atmosphere region has P_ATM', () => {
 	assertGreater(open.airCells, 0)
 })
 
+Deno.test('fluid: RHO_AIR matches ATM_HYDRO scale and stays below RHO_G', () => {
+	assertLess(RHO_AIR, RHO_G * 0.1)
+	assertAlmostEquals(RHO_AIR, ATM_HYDRO, 0.01)
+})
+
 Deno.test('fluid: sealed cavity distinct from atmosphere', () => {
 	const w = sealedBox()
 	labelAirRegions(w)
@@ -53,6 +58,21 @@ Deno.test('fluid: sealed cavity distinct from atmosphere', () => {
 	const cell = idx(w, 7, 7)
 	assertGreater(w.regionId[cell], 0)
 	assert(!w.regions[w.regionId[cell]]?.openToAtm)
+})
+
+Deno.test('fluid: sealed cavity hydrostatic stratification around Boyle mean', () => {
+	const w = sealedBox()
+	labelAirRegions(w)
+	const sealed = w.regions.find(r => r && !r.openToAtm)
+	assert(sealed)
+	assertAlmostEquals(sealed.pressure, P_ATM, 1e-9)
+	const yTop = 5
+	const yBot = 9
+	const pTop = pressureAt(w, 7, yTop)
+	const pBot = pressureAt(w, 7, yBot)
+	assertAlmostEquals(pBot - pTop, ATM_HYDRO * (yBot - yTop), 1e-9)
+	assertAlmostEquals(pTop, sealed.pressure + ATM_HYDRO * (yTop - sealed.yMean), 1e-9)
+	assertAlmostEquals(pBot, sealed.pressure + ATM_HYDRO * (yBot - sealed.yMean), 1e-9)
 })
 
 Deno.test('fluid: compressing sealed cavity raises pressure', () => {

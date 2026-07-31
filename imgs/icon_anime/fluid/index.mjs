@@ -1,9 +1,10 @@
 /**
  * Particle / grid-liquid / gas-flow engine for ASCII scenes.
  *
- * Air regions carry conserved gas mass; sealed cavities follow isothermal Boyle.
- * Open air: hydrostatic P + velocity (wind shear, nozzle, Bernoulli ΔP drive).
- * Free liquid: hydrostatic depth pressure; communicating vessels equalize φ.
+ * Air regions carry conserved gas mass; sealed cavities follow isothermal Boyle
+ * mean pressure plus ATM_HYDRO·(y−yMean) stratification. Open air: hydrostatic P
+ * + velocity (wind shear, nozzle, Bernoulli ΔP drive). Free liquid: hydrostatic
+ * depth pressure; orifice mass ∝ √(ΔP/ρg); communicating vessels equalize φ.
  * Soil stores moisture; seepage feeds underside condensation that drips.
  *
  * Call `labelAirRegions` before `stepGas` / `pressureAt`. `stepLiquid` labels once at entry.

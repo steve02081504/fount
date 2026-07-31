@@ -32,14 +32,20 @@ export const P_ATM = 1
 /** Liquid density × gravity — hydrostatic head and hydraulic φ. */
 export const RHO_G = 1
 
-/** Gas density for dynamic / Bernoulli pressure ½ρu². */
-export const RHO_AIR = 1
+/**
+ * Gas density for dynamic / Bernoulli pressure ½ρu².
+ * Same order as ATM_HYDRO (ρ_air·g per cell with g≈1) so dynamic head stays ≪ liquid columns.
+ */
+export const RHO_AIR = 0.02
 
-/** Open-air hydrostatic rise per row downward (y↓ → P↑). */
+/** Open-air / sealed hydrostatic rise per row downward (y↓ → P↑); ≈ RHO_AIR · g. */
 export const ATM_HYDRO = 0.018
 
-/** Gas velocity drive from neighbor static-pressure ΔP (cells / tick per ΔP). */
-export const GAS_DP_DRIVE = 0.55
+/**
+ * Gas velocity drive from neighbor static-pressure ΔP (cells / tick per ΔP).
+ * Scaled for small RHO_AIR; kept moderate so wide ducts do not grow spurious uy.
+ */
+export const GAS_DP_DRIVE = 6
 
 /** Max moisture a soil cell can hold. */
 export const SOIL_CAP = 1

@@ -1,5 +1,5 @@
 /**
- * ASCII animation player — loop playback, keyboard, TUI, terminal resize.
+ * ASCII animation player — loop playback, Ctrl+C abort, TUI, terminal resize.
  * No process lifecycle / on-shutdown; callers own that.
  */
 
@@ -35,17 +35,12 @@ export class AsciiAnimePlayer {
 	 */
 	constructor({ fps = 24, onResize } = {}) {
 		this.fps = fps
-		this.speed = 1
-		this.paused = false
 		this.onResize = onResize ?? null
-		this.#onKey = null
 		this.#onData = null
 		this.#resizeListener = null
 		this.#ac = null
 	}
 
-	/** @type {((key: string, buf: Buffer) => void) | null} */
-	#onKey
 	/** @type {((buf: Buffer) => void) | null} */
 	#onData
 	/** @type {(() => void) | null} */
@@ -62,19 +57,16 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * @param {{ onKey?: (key: string, buf: Buffer) => void, onResize?: (size: { columns: number, rows: number }) => void, signal?: AbortSignal }} [opts] options
+	 * @param {{ onResize?: (size: { columns: number, rows: number }) => void, signal?: AbortSignal }} [opts] options
 	 * @returns {AsciiAnimePlayer} this
 	 */
-	start({ onKey, onResize, signal } = {}) {
+	start({ onResize, signal } = {}) {
 		this.#ac = new AbortController()
 		this.signal = this.#ac.signal
 		if (signal)
 			if (signal.aborted) this.#ac.abort()
 			else signal.addEventListener('abort', () => this.#ac.abort(), { once: true })
 
-		this.#onKey = onKey ?? (ch => {
-			if (ch === '\x03') this.abort()
-		})
 		if (onResize) this.onResize = onResize
 
 		// Alternate screen keeps the pre-start scrollback + cursor row; leave restores them.
@@ -92,17 +84,14 @@ export class AsciiAnimePlayer {
 		process.stdin.setRawMode(true)
 		process.stdin.resume()
 		/**
+		 * Raw mode: only Ctrl+C aborts. Ignore all other input (incl. alt-scroll CSI
+		 * from mouse wheel, which contains `[` bytes that used to hit speed keys).
 		 * @param {Buffer} buf stdin chunk
 		 * @returns {void}
 		 */
 		this.#onData = (buf) => {
-			for (let i = 0; i < buf.length; i++) {
-				const ch = String.fromCharCode(buf[i])
-				if (ch === ' ') this.paused = !this.paused
-				else if (ch === '[') this.speed = Math.max(0.25, +(this.speed / 1.25).toFixed(3))
-				else if (ch === ']') this.speed = Math.min(8, +(this.speed * 1.25).toFixed(3))
-				else this.#onKey?.(ch, buf.subarray(i))
-			}
+			for (let i = 0; i < buf.length; i++)
+				if (buf[i] === 0x03) this.abort()
 		}
 		process.stdin.on('data', this.#onData)
 		return this
@@ -125,19 +114,9 @@ export class AsciiAnimePlayer {
 		signal ??= this.signal
 		for await (const frame of iterateFrames(frames)) {
 			if (signal?.aborted) return
-			while (this.paused && !signal?.aborted)
-				try {
-					await sleep(50, undefined, signal ? { signal } : undefined)
-				}
-				catch (e) {
-					if (e?.name === 'AbortError') return
-					throw e
-				}
-
-			if (signal?.aborted) return
 			const t0 = performance.now()
 			this.paint(frame)
-			const wait = 1000 / (this.fps * this.speed) - (performance.now() - t0)
+			const wait = 1000 / this.fps - (performance.now() - t0)
 			if (wait <= 0) continue
 			try {
 				await sleep(wait, undefined, signal ? { signal } : undefined)
@@ -226,6 +205,5 @@ export class AsciiAnimePlayer {
 
 		try { process.stdin.pause() } catch { /* already paused */ }
 		write('\x1b[?25h\x1b[0m\x1b[?1049l')
-		this.#onKey = null
 	}
 }

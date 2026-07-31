@@ -1,8 +1,8 @@
 /**
  * Grid liquid: gravity, side flow, soil seepage, hydrostatic / hydraulic equalization.
  *
- * Free-liquid pressure: P_air(surface) + RHO_G · depth. Transfers follow ΔP
- * (Torricelli-ish orifices). High sealed gas pressure resists / pushes liquid.
+ * Free-liquid pressure: P_air(surface) + RHO_G · depth. Transfers follow √(ΔP/ρg)
+ * (Torricelli orifices). High sealed gas pressure resists / pushes liquid.
  */
 
 import { hash01, ORTHO } from '../hash.mjs'
@@ -20,7 +20,7 @@ import { scratch, growScratch, idx, inWorld, addLiquid } from './world.mjs'
 
 /** Max mass moved by a single pressure-driven transfer (per edge, per tick). */
 const P_FLOW_CAP = 0.45
-/** Scale: mass ∝ ΔP / RHO_G (cell-head units). */
+/** Scale: mass ∝ √(ΔP / RHO_G) — Torricelli orifice in cell-head units. */
 const P_FLOW_GAIN = 0.55
 
 /**
@@ -167,7 +167,7 @@ const equalizeHydraulic = (w) => {
 }
 
 /**
- * Mass transferable from src → dst under pressure head (clamped).
+ * Mass transferable from src → dst under pressure head (Torricelli √head).
  * @param {number} pSrc source pressure
  * @param {number} pDst destination pressure
  * @param {number} srcLiq available mass
@@ -177,7 +177,7 @@ const equalizeHydraulic = (w) => {
 const pressureMove = (pSrc, pDst, srcLiq, dstRoom) => {
 	const head = (pSrc - pDst) / RHO_G
 	if (head <= 0.02 || srcLiq <= 0 || dstRoom <= 0) return 0
-	return Math.min(P_FLOW_CAP, srcLiq, dstRoom, head * P_FLOW_GAIN)
+	return Math.min(P_FLOW_CAP, srcLiq, dstRoom, Math.sqrt(head) * P_FLOW_GAIN)
 }
 
 /**
@@ -458,10 +458,13 @@ export const stepLiquid = (w) => {
 			for (const dx of [-1, 1]) {
 				const nx = x + dx
 				if (nx < 0 || nx >= W) {
-					// Edge sink: surface films drip slowly; submerged heads vent by ΔP.
+					// Edge sink: surface films drip slowly; submerged heads vent by √(ΔP).
 					const move = freeSurface
 						? liq[i] * 0.25
-						: Math.min(liq[i], Math.max(liq[i] * 0.2, (pSrc - pressureAt(w, x, y)) * 0.25))
+						: Math.min(
+							liq[i],
+							Math.max(liq[i] * 0.2, Math.sqrt(Math.max(0, (pSrc - pressureAt(w, x, y)) / RHO_G)) * P_FLOW_GAIN),
+						)
 					liq[i] -= move
 					flowX[i] += dx * move
 					continue
