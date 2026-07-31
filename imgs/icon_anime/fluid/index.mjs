@@ -58,6 +58,8 @@ export { liquidPressureAt, stepSoil, stepLiquid } from './liquid.mjs'
  *
  */
 export {
-	GAS_DRAG, GAS_DRAG_Y, createParticlePool, clearParticlePool,
-	spawnParticle, queueSplash, stepParticles,
+	GAS_DRAG, GAS_DRAG_Y, GAS_DRAG_Y_BOOST_FROM, GAS_DRAG_Y_BOOST_SPAN,
+	WIND_LIFT_UY, WIND_LIFT_RATE, WIND_LIFT_MAX, WIND_HOLD_LIFE,
+	verticalGasDrag, createParticlePool, clearParticlePool,
+	spawnParticle, queueSplash, stepParticles, liftLiquidByWind,
 } from './particles.mjs'

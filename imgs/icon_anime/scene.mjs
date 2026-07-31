@@ -5,8 +5,8 @@
 import { composeFrame, renderBuffers } from './compose.mjs'
 import {
 	MAT, LIQ_DRAW, createWorld, clearMaterials, clearDynamics, setMat, addLiquid, addMoisture,
-	spawnParticle, queueSplash, stepGas, stepLiquid, stepParticles, labelAirRegions,
-	windProfileAt, idx, inWorld, isLiquidBarrier, releaseNonSoilWater,
+	spawnParticle, queueSplash, stepGas, stepLiquid, stepParticles, liftLiquidByWind,
+	labelAirRegions, windProfileAt, idx, inWorld, isLiquidBarrier, releaseNonSoilWater,
 	soilAbsorbFactor, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, scratch,
 } from './fluid/index.mjs'
 import { hash01 } from './hash.mjs'
@@ -502,6 +502,7 @@ const simFrame = (state) => {
 	const driveUy = scratch(world, 'windDriveUy', n, Float32Array)
 	fillWindDrive(state.wind, world, driveUx, driveUy)
 	stepGas(world, { time: state.frame, seed: state.seed, driveUx, driveUy })
+	liftLiquidByWind(world)
 	spawnRain(state)
 	stepParticles(world, onParticleHit, state)
 	stepLiquid(world)

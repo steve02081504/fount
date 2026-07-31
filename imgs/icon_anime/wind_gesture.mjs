@@ -2,8 +2,8 @@
  * Right-button wind gesture → local gas drive field.
  *
  * Drag: directed stroke impulses along the path (faster drag → stronger flow).
- * Long still hold: clockwise vortex at the cursor (longer → faster); follows
- * while dragged; reforms when motion stops; clears on release.
+ * Long still hold: tornado-like clockwise vortex (tangential + updraft + inflow);
+ * longer hold → faster; follows while moved; reforms when stopped; clears on release.
  */
 
 /** Movement below this (view cells / tick) counts as still. */
@@ -11,15 +11,19 @@ export const STILL_EPS = 0.55
 /** Frames of stillness before the vortex appears. */
 export const VORTEX_DELAY = 10
 /** Visual radius of the vortex (cell aspect ≈ 1×2 → hypot(dx, 2·dy)). */
-export const VORTEX_RADIUS = 8
+export const VORTEX_RADIUS = 9
 /** Brush radius around a stroke segment. */
 export const STROKE_RADIUS = 2.8
 /** Maps drag speed (cells/tick) → gas drive amplitude. */
-export const STROKE_SPEED_SCALE = 0.42
+export const STROKE_SPEED_SCALE = 0.55
 /** Per-tick vortex strength growth after delay. */
-export const VORTEX_GROWTH = 0.05
-/** Cap on vortex tangential speed drive. */
-export const VORTEX_MAX = 2.4
+export const VORTEX_GROWTH = 0.14
+/** Cap on vortex tangential / core drive. */
+export const VORTEX_MAX = 3.4
+/** Updraft as a fraction of vortex strength (y↓ negative = lift). */
+export const VORTEX_UPLIFT = 1.15
+/** Radial inflow as a fraction of vortex strength. */
+export const VORTEX_INFLOW = 0.28
 /** Stroke trail lifetime in ticks. */
 export const STROKE_LIFE = 7
 /** Max remembered stroke segments. */
@@ -123,10 +127,10 @@ export const tickWindGesture = (g) => {
 			g.strength = Math.min(VORTEX_MAX, g.strength + VORTEX_GROWTH * 0.35)
 	}
 	else {
-		if (g.vortexOn && g.still === 0) {
+		if (g.vortexOn && g.still === 0)
 			// Just stopped after a drag — reform a clean vortex at the new centre.
 			g.strength = Math.min(VORTEX_MAX, Math.max(g.strength, VORTEX_GROWTH * 4))
-		}
+
 		g.still++
 		if (g.still >= VORTEX_DELAY) {
 			g.vortexOn = true
@@ -161,6 +165,50 @@ const dist2ToSeg = (px, py, ax, ay, bx, by) => {
 	const qx = ax + abx * t - px
 	const qy = ay + aby * t - py
 	return qx * qx + qy * qy
+}
+
+/**
+ * Paint a tornado-like vortex into drive buffers (world cells).
+ * Clockwise tangential + core updraft + weak radial inflow.
+ * @param {number} cx world centre x
+ * @param {number} cy world centre y
+ * @param {number} amp strength
+ * @param {number} radius visual radius
+ * @param {{ worldW: number, worldH: number }} world size
+ * @param {Float32Array} outUx horizontal drive
+ * @param {Float32Array} outUy vertical drive
+ * @returns {void}
+ */
+export const paintVortexDrive = (cx, cy, amp, radius, world, outUx, outUy) => {
+	if (amp < 0.02) return
+	const { worldW: W, worldH: H } = world
+	const R = radius
+	const minX = Math.max(0, Math.floor(cx - R - 1))
+	const maxX = Math.min(W - 1, Math.ceil(cx + R + 1))
+	const minY = Math.max(0, Math.floor(cy - R * 0.5 - 1))
+	const maxY = Math.min(H - 1, Math.ceil(cy + R * 0.5 + 1))
+	const uplift = amp * VORTEX_UPLIFT
+	const inflow = amp * VORTEX_INFLOW
+
+	for (let y = minY; y <= maxY; y++)
+		for (let x = minX; x <= maxX; x++) {
+			const rx = (x + 0.5) - cx
+			const ry = (y + 0.5) - cy
+			// Tall terminal cells: visual circle via hypot(dx, 2·dy).
+			const rVis = Math.hypot(rx, 2 * ry)
+			if (rVis > R) continue
+			const fall = rVis < 0.35 ? 1 : (1 - rVis / R) ** 1.1
+			const rRaw = Math.hypot(rx, ry) || 1
+			// Clockwise with y-down: tangential (−ry, rx).
+			const tx = (-ry / rRaw) * amp * fall
+			const ty = (rx / rRaw) * amp * fall * 0.5
+			// Inward + always-on updraft so the ring can suspend rain.
+			const ix = (-rx / rRaw) * inflow * fall
+			const iy = (-ry / rRaw) * inflow * fall * 0.5 - uplift * fall
+			const cell = y * W + x
+			outUx[cell] += tx + ix
+			outUy[cell] += ty + iy
+		}
 }
 
 /**
@@ -202,30 +250,6 @@ export const fillWindDrive = (g, world, outUx, outUy) => {
 			}
 	}
 
-	if (!g.vortexOn || g.strength < 0.02) return
-
-	const cx = g.x + ox
-	const cy = g.y + oy
-	const R = VORTEX_RADIUS
-	const minX = Math.max(0, Math.floor(cx - R - 1))
-	const maxX = Math.min(W - 1, Math.ceil(cx + R + 1))
-	const minY = Math.max(0, Math.floor(cy - R * 0.5 - 1))
-	const maxY = Math.min(H - 1, Math.ceil(cy + R * 0.5 + 1))
-	const amp = g.strength
-
-	for (let y = minY; y <= maxY; y++)
-		for (let x = minX; x <= maxX; x++) {
-			const rx = (x + 0.5) - cx
-			const ry = (y + 0.5) - cy
-			// Tall terminal cells: visual circle via hypot(dx, 2·dy).
-			const rVis = Math.hypot(rx, 2 * ry)
-			if (rVis < 0.35 || rVis > R) continue
-			const fall = (1 - rVis / R) ** 1.35
-			// Clockwise with y-down: tangential (−ry, rx) in raw cells, then
-			// scale so visual angular speed is even under 1×2 aspect.
-			const rRaw = Math.hypot(rx, ry) || 1
-			const cell = y * W + x
-			outUx[cell] += (-ry / rRaw) * amp * fall
-			outUy[cell] += (rx / rRaw) * amp * fall * 0.5
-		}
+	if (!g.vortexOn) return
+	paintVortexDrive(g.x + ox, g.y + oy, g.strength, VORTEX_RADIUS, world, outUx, outUy)
 }

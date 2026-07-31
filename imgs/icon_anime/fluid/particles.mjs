@@ -1,5 +1,6 @@
 /**
  * Rain / splash particles with gas drag — SoA pool, no per-tick object alloc.
+ * Strong local wind can suspend / orbit droplets and lift free-liquid puddles.
  */
 
 import { MAT, LIQ_DRAW } from './mat.mjs'
@@ -15,8 +16,20 @@ import { MAT, LIQ_DRAW } from './mat.mjs'
 
 /** Particle velocity blend toward local gas (horizontal). */
 export const GAS_DRAG = 0.22
-/** Vertical gas coupling for rain (weaker — gravity dominates). */
+/** Vertical gas coupling for calm air (gravity still dominates). */
 export const GAS_DRAG_Y = 0.06
+/** |gas| above this starts boosting vertical drag toward GAS_DRAG. */
+export const GAS_DRAG_Y_BOOST_FROM = 0.35
+/** |gas| span over which vertical drag reaches full GAS_DRAG. */
+export const GAS_DRAG_Y_BOOST_SPAN = 1.2
+/** Gas uy (y↓) below this over a puddle scoops liquid airborne. */
+export const WIND_LIFT_UY = -0.65
+/** Scoop mass per tick ∝ |uy| · rate. */
+export const WIND_LIFT_RATE = 0.22
+/** Max free-liquid mass lifted from one cell per tick. */
+export const WIND_LIFT_MAX = 0.4
+/** Soft life refresh while a droplet is held in strong updraft. */
+export const WIND_HOLD_LIFE = 36
 
 const GRAVITY = 0.12
 const MAX_VY = 1.15
@@ -100,6 +113,19 @@ export const queueSplash = (world, x, y, vx, vy, life = 18, amt = 0.25) =>
 	pushParticle(world.pendingSplash, x, y, vx, vy, life, amt)
 
 /**
+ * Vertical drag toward gas: calm air stays weak; storm / vortex couples hard.
+ * @param {number} gux gas ux
+ * @param {number} guy gas uy
+ * @returns {number} drag blend in [GAS_DRAG_Y, GAS_DRAG]
+ */
+export const verticalGasDrag = (gux, guy) => {
+	const speed = Math.hypot(gux, guy)
+	if (speed <= GAS_DRAG_Y_BOOST_FROM) return GAS_DRAG_Y
+	const t = Math.min(1, (speed - GAS_DRAG_Y_BOOST_FROM) / GAS_DRAG_Y_BOOST_SPAN)
+	return GAS_DRAG_Y + (GAS_DRAG - GAS_DRAG_Y) * t
+}
+
+/**
  * Mutable particle view passed to impact handlers (fields live in the SoA).
  * @typedef {{ x: number, y: number, vx: number, vy: number, life: number, amt: number }} ParticleView
  */
@@ -137,15 +163,21 @@ export const stepParticles = (world, onHit, state) => {
 		const py = live.y[i]
 		let pvx = live.vx[i]
 		let pvy = live.vy[i]
-		const life = live.life[i] - 1
+		let life = live.life[i] - 1
 		const amt = live.amt[i]
 
 		const gx = px | 0
 		const gy = py | 0
 		if (gx >= 0 && gy >= 0 && gx < W && gy < H) {
 			const gi = gy * W + gx
-			pvx += (gasUx[gi] - pvx) * GAS_DRAG
-			pvy += (gasUy[gi] - pvy) * GAS_DRAG_Y
+			const gux = gasUx[gi]
+			const guy = gasUy[gi]
+			const dragY = verticalGasDrag(gux, guy)
+			pvx += (gux - pvx) * GAS_DRAG
+			pvy += (guy - pvy) * dragY
+			// Held in a strong updraft: keep the droplet alive for orbiting.
+			if (guy < WIND_LIFT_UY && Math.hypot(gux, guy) > 1)
+				life = Math.max(life, Math.min(WIND_HOLD_LIFE, life + 1))
 		}
 		pvy = Math.min(MAX_VY, pvy + GRAVITY)
 		if (life <= 0) continue
@@ -194,4 +226,54 @@ export const stepParticles = (world, onHit, state) => {
 	}
 
 	live.count = write
+}
+
+/**
+ * Strong upward gas over free-liquid AIR cells scoops mass into airborne particles.
+ * Wet cells block gas occupancy, so suction is sampled from the air cell above.
+ * @param {FluidWorld} world fluid world
+ * @returns {number} total mass lifted
+ */
+export const liftLiquidByWind = (world) => {
+	const { worldW: W, worldH: H, mat, liq, gasUx, gasUy, particles } = world
+	let lifted = 0
+
+	for (let y = 1; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const i = y * W + x
+			if (mat[i] !== MAT.AIR || liq[i] < LIQ_DRAW) continue
+
+			const above = i - W
+			// Prefer air above; fall back to this cell's gas if somehow present.
+			let gux = gasUx[above]
+			let guy = gasUy[above]
+			if (mat[above] !== MAT.AIR || liq[above] >= LIQ_DRAW) {
+				gux = gasUx[i]
+				guy = gasUy[i]
+			}
+			if (guy > WIND_LIFT_UY) continue
+
+			const scoop = Math.min(
+				WIND_LIFT_MAX,
+				liq[i],
+				(-guy - -WIND_LIFT_UY) * WIND_LIFT_RATE + -guy * 0.08,
+			)
+			if (scoop < 0.04) continue
+			if (particles.count >= particles.x.length) return lifted
+
+			liq[i] -= scoop
+			const spawnY = mat[above] === MAT.AIR && liq[above] < LIQ_DRAW ? y - 0.35 : y - 0.15
+			pushParticle(
+				particles,
+				x + 0.5,
+				spawnY,
+				gux * 0.85,
+				Math.min(-0.35, guy * 0.9),
+				WIND_HOLD_LIFE,
+				scoop,
+			)
+			lifted += scoop
+		}
+
+	return lifted
 }

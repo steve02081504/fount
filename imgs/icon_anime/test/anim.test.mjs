@@ -256,7 +256,7 @@ Deno.test('consumeStdin: SGR left/right press/drag/release + Ctrl+C', async () =
 Deno.test('wind gesture: stroke speed + clockwise vortex + release clear', async () => {
 	const {
 		createWindGesture, windPointer, tickWindGesture, fillWindDrive,
-		VORTEX_DELAY, STILL_EPS,
+		VORTEX_DELAY, STILL_EPS, VORTEX_MAX,
 	} = await import('../wind_gesture.mjs')
 	const { createWorld, scratch } = await import('../fluid/world.mjs')
 	const world = createWorld({ width: 40, height: 24, margin: 4, bottomExtra: 2 })
@@ -276,17 +276,18 @@ Deno.test('wind gesture: stroke speed + clockwise vortex + release clear', async
 	const mid = (8 + world.oy) * world.worldW + (12 + world.ox)
 	assert(driveUx[mid] > 0.2)
 
-	// Long still → clockwise vortex (top of ring blows right)
+	// Long still → tornado: clockwise top + net updraft
 	const g2 = createWindGesture()
 	windPointer(g2, { x: 20, y: 10, right: true })
-	for (let i = 0; i < VORTEX_DELAY + 8; i++) tickWindGesture(g2)
+	for (let i = 0; i < VORTEX_DELAY + 20; i++) tickWindGesture(g2)
 	assertEquals(g2.vortexOn, true)
-	assert(g2.strength > 0.2)
+	assert(g2.strength > 1.5)
+	assert(g2.strength <= VORTEX_MAX)
 	fillWindDrive(g2, world, driveUx, driveUy)
-	const top = (8 + world.oy) * world.worldW + (20 + world.ox) // above centre
-	const right = (10 + world.oy) * world.worldW + (23 + world.ox)
-	assert(driveUx[top] > 0.05, 'clockwise: above centre → +ux')
-	assert(driveUy[right] > 0.02, 'clockwise: right of centre → +uy')
+	const top = (8 + world.oy) * world.worldW + (20 + world.ox)
+	const core = (10 + world.oy) * world.worldW + (20 + world.ox)
+	assert(driveUx[top] > 0.2, 'clockwise: above centre → +ux')
+	assert(driveUy[core] < -1, 'updraft at core')
 
 	// Drag while vortex on → centre follows; stop reforms
 	windPointer(g2, { x: 28, y: 10, right: true })

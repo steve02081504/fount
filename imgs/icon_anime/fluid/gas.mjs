@@ -38,7 +38,7 @@ export const GAS_BLEND = 0.28
 /** Continuity boost when horizontal passage is constricted. */
 export const GAS_NOZZLE = 1.55
 /** Soft clamp on cell gas speed (cells / tick). */
-export const GAS_SPEED_MAX = 3.5
+export const GAS_SPEED_MAX = 5
 
 const AIR_CELL = 1
 

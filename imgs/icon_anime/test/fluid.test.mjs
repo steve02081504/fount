@@ -12,7 +12,7 @@ import {
 	waterChar, liquidChar, pickWaterGlyph, FALL_HEAVY,
 	WATER_STILL, WATER_FALL, WATER_HIGH_L, WATER_HIGH_R, WATER_LOW_DL, WATER_LOW_DR,
 	globalWindAt, windProfileAt, gasVelocityAt, dynamicPressure,
-	staticPressureAt, spawnParticle,
+	staticPressureAt, spawnParticle, liftLiquidByWind, verticalGasDrag, GAS_DRAG, GAS_DRAG_Y,
 } from '../fluid/index.mjs'
 
 /**
@@ -651,4 +651,101 @@ Deno.test('fluid: rain particles are dragged by local gas velocity', () => {
 		stepParticles(w, hit)
 	assert(w.particles.count > 0)
 	assertGreater(w.particles.vx[0], 0.15)
+})
+
+Deno.test('fluid: vertical gas drag stays weak in calm air, strong in storms', () => {
+	assertAlmostEquals(verticalGasDrag(0.1, 0.1), GAS_DRAG_Y)
+	assertAlmostEquals(verticalGasDrag(3, 3), GAS_DRAG, 1e-9)
+	assert(verticalGasDrag(1.2, 0) > GAS_DRAG_Y)
+	assert(verticalGasDrag(1.2, 0) < GAS_DRAG)
+})
+
+Deno.test('fluid: tornado gas keeps rain orbiting aloft', async () => {
+	const { paintVortexDrive, VORTEX_RADIUS } = await import('../wind_gesture.mjs')
+	const w = createWorld({ width: 28, height: 20, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	const cx = w.ox + 14
+	const cy = 8
+	paintVortexDrive(cx, cy, 3.2, VORTEX_RADIUS, w, w.gasUx, w.gasUy)
+
+	spawnParticle(w, cx + 4.2, cy, 0, 0.15, 90, 0.45)
+	/**
+	 *
+	 */
+	const hit = () => { /* no-op — must not land */ }
+	let angSpan = 0
+	let prev = Math.atan2(w.particles.y[0] - cy, w.particles.x[0] - cx)
+	let maxY = w.particles.y[0]
+	for (let i = 0; i < 55; i++) {
+		stepParticles(w, hit)
+		assertGreater(w.particles.count, 0)
+		const x = w.particles.x[0] - cx
+		const y = w.particles.y[0] - cy
+		maxY = Math.max(maxY, w.particles.y[0])
+		const ang = Math.atan2(y, x)
+		let d = ang - prev
+		if (d > Math.PI) d -= Math.PI * 2
+		if (d < -Math.PI) d += Math.PI * 2
+		angSpan += d
+		prev = ang
+	}
+	assertLess(maxY, cy + 5.5)
+	assertGreater(angSpan, 1.2)
+})
+
+Deno.test('fluid: upward wind lifts free liquid into particles', () => {
+	const w = createWorld({ width: 20, height: 14, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	for (let x = 0; x < w.worldW; x++)
+		setMat(w, x, 11, MAT.SEAL)
+	const px = w.ox + 10
+	const py = 10
+	addLiquid(w, px, py, 0.95)
+	const puddle = idx(w, px, py)
+	const before = w.liq[puddle]
+	assertGreater(before, LIQ_DRAW)
+	// Wet cells block gas; suction is sampled from the air cell above.
+	w.gasUy[idx(w, px, py - 1)] = -2.4
+	w.gasUx[idx(w, px, py - 1)] = 0.8
+
+	const lifted = liftLiquidByWind(w)
+	assertGreater(lifted, 0.1)
+	assertLess(w.liq[puddle], before)
+	assertAlmostEquals(w.liq[puddle] + lifted, before, 1e-6)
+	assertGreater(w.particles.count, 0)
+	assertLess(w.particles.vy[0], -0.3)
+	assertGreater(w.particles.amt[0], 0.1)
+})
+
+Deno.test('fluid: vortex drive through stepGas suspends rain', async () => {
+	const { paintVortexDrive, VORTEX_RADIUS } = await import('../wind_gesture.mjs')
+	const { scratch } = await import('../fluid/world.mjs')
+	const w = createWorld({ width: 28, height: 18, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	labelAirRegions(w)
+	const n = w.worldW * w.worldH
+	const driveUx = scratch(w, 'vUx', n, Float32Array)
+	const driveUy = scratch(w, 'vUy', n, Float32Array)
+	const cx = w.ox + 14
+	const cy = 7
+	paintVortexDrive(cx, cy, 3.3, VORTEX_RADIUS, w, driveUx, driveUy)
+	for (let i = 0; i < 20; i++)
+		stepGas(w, { time: i, seed: 0, forceWind: 0, driveUx, driveUy })
+
+	assertLess(w.gasUy[idx(w, cx, cy)], -1.2)
+
+	spawnParticle(w, cx + 3.5, cy + 1, 0, 0.3, 80, 0.4)
+	/**
+	 *
+	 */
+	const hit = () => { /* no-op */ }
+	let maxY = w.particles.y[0]
+	for (let i = 0; i < 40; i++) {
+		stepGas(w, { time: 20 + i, seed: 0, forceWind: 0, driveUx, driveUy })
+		stepParticles(w, hit)
+		if (!w.particles.count) break
+		maxY = Math.max(maxY, w.particles.y[0])
+	}
+	assertGreater(w.particles.count, 0)
+	assertLess(maxY, cy + 6)
 })
