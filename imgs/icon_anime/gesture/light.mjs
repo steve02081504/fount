@@ -1,14 +1,17 @@
 /**
  * Left-button light gesture → torch spotlight or click ripple.
  *
- * Hold past TORCH_DELAY → circular cool flashlight (follows while dragged).
+ * Hold past TORCH_DELAY → circular cool flashlight (follows while dragged),
+ * fading ambient dim + centre lift in/out over TORCH_FADE ticks.
  * Faster release (before torch arms) → high-brightness ring that expands outward.
  */
 
 import { applyPointer, trimCap } from './pointer.mjs'
 
-/** Frames of hold before the flashlight appears. */
+/** Frames of hold before the flashlight arms. */
 export const TORCH_DELAY = 5
+/** Frames for torchBlend to ramp 0↔1 (enter / exit). */
+export const TORCH_FADE = 10
 /** Ripple expansion speed (visual radius units / tick; aspect via hypot(dx, 2·dy)). */
 export const RIPPLE_SPEED = 1.85
 /** Soft half-width of the ripple ring. */
@@ -27,6 +30,7 @@ const RIPPLE_CAP = 6
  *   x: number, y: number,
  *   held: number,
  *   torch: boolean,
+ *   torchBlend: number,
  *   ripples: LightRipple[],
  * }} LightGesture
  */
@@ -40,6 +44,7 @@ export const createLightGesture = () => ({
 	x: 0, y: 0,
 	held: 0,
 	torch: false,
+	torchBlend: 0,
 	ripples: [],
 })
 
@@ -65,6 +70,13 @@ export const rippleFalloff = (dx, dy, radius, width = RIPPLE_WIDTH) => {
 }
 
 /**
+ * Ease torchBlend for lighting (smoothstep).
+ * @param {number} t linear 0..1
+ * @returns {number} eased 0..1
+ */
+export const torchEase = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t))
+
+/**
  * Apply a left-button pointer event (press / drag / release).
  * @param {LightGesture} gesture gesture
  * @param {{ x: number, y: number, left: boolean }} ev left-button event
@@ -76,8 +88,15 @@ export const lightPointer = (gesture, { x, y, left }) => {
 		 *
 		 */
 		onDown() {
-			gesture.held = 0
-			gesture.torch = false
+			// Resume mid fade-out without waiting TORCH_DELAY again.
+			if (gesture.torchBlend > 0) {
+				gesture.held = TORCH_DELAY
+				gesture.torch = true
+			}
+			else {
+				gesture.held = 0
+				gesture.torch = false
+			}
 		},
 		/**
 		 *
@@ -86,6 +105,7 @@ export const lightPointer = (gesture, { x, y, left }) => {
 			if (!gesture.torch) {
 				gesture.ripples.push({ x: gesture.x, y: gesture.y, age: 0, life: RIPPLE_LIFE })
 				trimCap(gesture.ripples, RIPPLE_CAP)
+				gesture.torchBlend = 0
 			}
 			gesture.held = 0
 			gesture.torch = false
@@ -94,7 +114,7 @@ export const lightPointer = (gesture, { x, y, left }) => {
 }
 
 /**
- * Advance gesture one sim tick: arm torch, age ripples.
+ * Advance gesture one sim tick: arm torch, fade blend, age ripples.
  * @param {LightGesture} gesture gesture
  * @returns {void}
  */
@@ -105,28 +125,43 @@ export const tickLightGesture = (gesture) => {
 		if (++ripple.age >= ripple.life) ripples.splice(index, 1)
 	}
 
-	if (!gesture.down) return
-	gesture.held++
-	if (gesture.held >= TORCH_DELAY) gesture.torch = true
+	if (gesture.down) {
+		gesture.held++
+		if (gesture.held >= TORCH_DELAY) gesture.torch = true
+	}
+
+	const target = gesture.down && gesture.torch ? 1 : 0
+	const blend = gesture.torchBlend
+	if (blend === target) return
+	const step = 1 / TORCH_FADE
+	if (blend < target) {
+		const next = blend + step
+		gesture.torchBlend = next >= target ? target : next
+	}
+	else {
+		const next = blend - step
+		gesture.torchBlend = next <= target ? target : next
+	}
 }
 
 /** Reused sampleLight destination. */
-const lightSampleScratch = { ambient: false, lift: 0 }
+const lightSampleScratch = { ambient: 0, lift: 0 }
 
 /**
  * Combined lift at a view cell (torch fill + ripple rings).
  * Writes into `out` (defaults to a reused module slot) to avoid per-cell alloc.
+ * `ambient` is torch dim strength 0..1 (eased); ripples never set ambient.
  * @param {LightGesture} gesture gesture
  * @param {number} x view column
  * @param {number} y view row
  * @param {(dx: number, dy: number, radius?: number) => number} torchFalloff radial fill
- * @param {{ ambient: boolean, lift: number }} [out] sample destination
- * @returns {{ ambient: boolean, lift: number }} lighting sample
+ * @param {{ ambient: number, lift: number }} [out] sample destination
+ * @returns {{ ambient: number, lift: number }} lighting sample
  */
 export const sampleLight = (gesture, x, y, torchFalloff, out = lightSampleScratch) => {
 	let lift = 0
-	const ambient = gesture.down && gesture.torch
-	if (ambient) lift = torchFalloff(x - gesture.x, y - gesture.y)
+	const ambient = torchEase(gesture.torchBlend)
+	if (ambient > 0) lift = torchFalloff(x - gesture.x, y - gesture.y) * ambient
 
 	for (const ripple of gesture.ripples) {
 		const fade = (1 - ripple.age / ripple.life) ** 1.2

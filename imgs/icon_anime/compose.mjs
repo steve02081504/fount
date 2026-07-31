@@ -1,11 +1,11 @@
 /**
  * Frame paint + ANSI render for the fountain animation.
- * Optional pointer light: hold torch (ambient dim + radial fill) and/or
- * click ripples (bright expanding rings, no ambient).
+ * Optional pointer light: hold torch (ambient dim + radial fill, eased by
+ * torchBlend) and/or click ripples (bright expanding rings, no ambient).
  */
 
 import { MAT, LIQ_DRAW, COND_DRAW, isLiquidBarrier, isSoilMat, waterChar, liquidChar, dripChar } from './fluid/index.mjs'
-import { sampleLight, RIPPLE_SPEED, RIPPLE_WIDTH } from './gesture/light.mjs'
+import { sampleLight, RIPPLE_SPEED, RIPPLE_WIDTH, torchEase } from './gesture/light.mjs'
 import { ICON_W, PILLARS, BODY_DIST, maxBodyD } from './icon.mjs'
 
 const RESET = '\x1b[0m'
@@ -30,16 +30,18 @@ const FG_ID = new Map([
 ])
 /** Quantized lift levels for truecolor SGR reuse. */
 const LIFT_Q = 32
-/** Cached truecolor SGR strings: key = packed (ambient<<12)|(fgId<<7)|(liftQ<<1)|bgBit */
+/** Quantized ambient-dim strength levels (torch fade). */
+const AMBIENT_Q = 16
+/** Cached truecolor SGR strings: key = packed (ambQ<<12)|(fgId<<7)|(liftQ<<1)|bgBit */
 const sgrCache = new Map()
 
 /** Visual radius of the pointer spotlight (cell aspect ≈ 1×2). */
 export const LIGHT_RADIUS = 14
-/** Ambient dim when a light is active (cells far from the cursor). */
+/** Ambient dim at full torch (cells far from the cursor). */
 const LIGHT_AMBIENT = 0.3
 
 /** Reused sampleLight destination (compose hot path). */
-const lightSample = { ambient: false, lift: 0 }
+const lightSample = { ambient: 0, lift: 0 }
 /** Reused ANSI fragment list — one join per frame instead of per-cell `+=`. */
 const frameParts = /** @type {string[]} */ []
 /** Glyphs sharing one SGR run — joined once per run. */
@@ -64,14 +66,17 @@ export const lightFalloff = (dx, dy, radius = LIGHT_RADIUS) => {
 /**
  * @param {number} c channel 0..255
  * @param {number} lift 0..1+
- * @param {boolean} ambient dim far cells (torch mode)
+ * @param {number} ambient torch dim strength 0..1 (0 = ripple-only lift)
  * @returns {number} lit channel
  */
 const liftChannel = (c, lift, ambient) => {
 	const t = lift > 1 ? 1 : lift
-	const hot = c + (255 - c) * (ambient ? 0.88 : 0.96)
-	if (!ambient) return (c + (hot - c) * t) | 0
-	const cold = c * LIGHT_AMBIENT
+	if (!(ambient > 0)) {
+		const hot = c + (255 - c) * 0.96
+		return (c + (hot - c) * t) | 0
+	}
+	const hot = c + (255 - c) * 0.88
+	const cold = c * (1 - (1 - LIGHT_AMBIENT) * ambient)
 	return (cold + (hot - cold) * t) | 0
 }
 
@@ -95,17 +100,19 @@ const bgRgb = (r, g, b) => `\x1b[48;2;${r};${g};${b}m`
  * Quantized truecolor SGR for a palette entry + lift (cached).
  * @param {string | null} f palette fg or null (bg-only glow)
  * @param {number} lift raw lift
- * @param {boolean} ambient torch ambient dim
+ * @param {number} ambient torch dim strength 0..1
  * @returns {string | null} SGR or null if cell stays blank
  */
 const litSgr = (f, lift, ambient) => {
 	const glow = lift > 1 ? 1 : lift
 	const liftQ = glow <= 0 ? 0 : Math.min(LIFT_Q - 1, (glow * (LIFT_Q - 1) + 0.5) | 0)
 	const qLift = liftQ / (LIFT_Q - 1)
+	const ambQ = ambient <= 0 ? 0 : Math.min(AMBIENT_Q - 1, (ambient * (AMBIENT_Q - 1) + 0.5) | 0)
+	const qAmb = ambQ / (AMBIENT_Q - 1)
 	const fgId = f == null ? 4 : FG_ID.get(f) ?? 4
 	const wantBg = f == null ? qLift >= 0.04 : qLift > 0.08
 	if (f == null && !wantBg) return null
-	const key = (ambient ? 1 << 12 : 0) | (fgId << 7) | (liftQ << 1) | (wantBg ? 1 : 0)
+	const key = (ambQ << 12) | (fgId << 7) | (liftQ << 1) | (wantBg ? 1 : 0)
 	let sgr = sgrCache.get(key)
 	if (sgr !== undefined) return sgr
 
@@ -116,12 +123,12 @@ const litSgr = (f, lift, ambient) => {
 	else {
 		const rgbBase = FG_RGB[f]
 		const rgb = fgRgb(
-			liftChannel(rgbBase[0], qLift, ambient),
-			liftChannel(rgbBase[1], qLift, ambient),
-			liftChannel(rgbBase[2], qLift, ambient),
+			liftChannel(rgbBase[0], qLift, qAmb),
+			liftChannel(rgbBase[1], qLift, qAmb),
+			liftChannel(rgbBase[2], qLift, qAmb),
 		)
 		if (wantBg) {
-			const g = ((ambient ? 42 : 58) * qLift) | 0
+			const g = ((58 - 16 * qAmb) * qLift) | 0
 			sgr = rgb + bgRgb((g * 0.5) | 0, (g * 0.7) | 0, g)
 		}
 		else sgr = rgb
@@ -223,7 +230,8 @@ const ripplePad = (age) => ((age * RIPPLE_SPEED + RIPPLE_WIDTH) / 2) + 1
  * @returns {string} ANSI frame
  */
 export const renderBuffers = (ch, fg, width, height, light = null) => {
-	const hasTorch = !!(light?.down && light.torch)
+	const torchBlend = light?.torchBlend ?? 0
+	const hasTorch = torchBlend > 0
 	const ripples = light?.ripples
 	const hasRipple = !!ripples?.length
 	if (!hasTorch && !hasRipple) return renderPlain(ch, fg, width, height)
@@ -232,6 +240,8 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 	parts.length = 0
 	runGlyphs.length = 0
 	const torchR2 = LIGHT_RADIUS * LIGHT_RADIUS
+	// Far-cell ambient uses the same eased strength as sampleLight.
+	const torchAmbient = hasTorch ? torchEase(torchBlend) : 0
 
 	for (let y = 0; y < height; y++) {
 		if (y) {
@@ -263,7 +273,7 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 				const dx = x - light.x
 				const dy = y - light.y
 				if (dx * dx + 4 * dy * dy >= torchR2 && !hasRipple) {
-					const sgr = litSgr(f, 0, true)
+					const sgr = litSgr(f, 0, torchAmbient)
 					if (sgr == null) {
 						cur = emitCell(parts, cur, null, ' ', true)
 						continue
@@ -277,7 +287,7 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 			const { ambient, lift } = lightSample
 
 			// Ripple-only cells far from the ring keep the plain palette.
-			if (!ambient && lift < 0.04) {
+			if (!(ambient > 0) && lift < 0.04) {
 				const glyph = f == null ? ' ' : ch[row + x]
 				cur = emitCell(parts, cur, f, glyph, true)
 				continue

@@ -202,10 +202,10 @@ Deno.test('lightFalloff: center bright, edge zero, soft circle', async () => {
 	assert(Math.abs(lightFalloff(4, 0) - lightFalloff(0, 2)) < 1e-9)
 })
 
-Deno.test('light gesture: quick release → ripple; hold → torch', async () => {
+Deno.test('light gesture: quick release → ripple; hold → torch fade', async () => {
 	const {
 		createLightGesture, lightPointer, tickLightGesture, sampleLight,
-		rippleFalloff, TORCH_DELAY, RIPPLE_SPEED, RIPPLE_LIFE,
+		rippleFalloff, TORCH_DELAY, TORCH_FADE, RIPPLE_SPEED, RIPPLE_LIFE,
 	} = await import('../gesture/light.mjs')
 	const { lightFalloff } = await import('../compose.mjs')
 
@@ -224,7 +224,7 @@ Deno.test('light gesture: quick release → ripple; hold → torch', async () =>
 	assertEquals(click.ripples[0].x, 12)
 	tickLightGesture(click) // age → 1 → ring at RIPPLE_SPEED
 	const ring = sampleLight(click, 12 + RIPPLE_SPEED, 7, lightFalloff)
-	assertEquals(ring.ambient, false)
+	assertEquals(ring.ambient, 0)
 	assert(ring.lift > 0.5)
 
 	for (let i = 0; i < RIPPLE_LIFE; i++) tickLightGesture(click)
@@ -235,15 +235,34 @@ Deno.test('light gesture: quick release → ripple; hold → torch', async () =>
 	for (let i = 0; i < TORCH_DELAY; i++) tickLightGesture(hold)
 	assertEquals(hold.torch, true)
 	assertEquals(hold.ripples.length, 0)
+	assert(hold.torchBlend > 0 && hold.torchBlend < 1)
+	const fadingIn = sampleLight(hold, 5, 4, lightFalloff)
+	assert(fadingIn.ambient > 0)
+	assert(fadingIn.lift > 0 && fadingIn.lift < 1)
+
+	for (let i = 0; i < TORCH_FADE; i++) tickLightGesture(hold)
+	assertEquals(hold.torchBlend, 1)
 	const torch = sampleLight(hold, 5, 4, lightFalloff)
-	assertEquals(torch.ambient, true)
+	assertEquals(torch.ambient, 1)
 	assertEquals(torch.lift, 1)
+	const dimFar = sampleLight(hold, 5 + 40, 4, lightFalloff)
+	assertEquals(dimFar.ambient, 1)
+	assertEquals(dimFar.lift, 0)
+
 	lightPointer(hold, { x: 8, y: 4, left: true })
 	assertEquals(hold.x, 8)
 	lightPointer(hold, { x: 8, y: 4, left: false })
 	assertEquals(hold.down, false)
 	assertEquals(hold.torch, false)
 	assertEquals(hold.ripples.length, 0)
+	assertEquals(hold.torchBlend, 1)
+	tickLightGesture(hold)
+	assert(hold.torchBlend < 1 && hold.torchBlend > 0)
+	const fadingOut = sampleLight(hold, 8, 4, lightFalloff)
+	assert(fadingOut.ambient > 0 && fadingOut.ambient < 1)
+	for (let i = 0; i < TORCH_FADE; i++) tickLightGesture(hold)
+	assertEquals(hold.torchBlend, 0)
+	assertEquals(sampleLight(hold, 8, 4, lightFalloff).ambient, 0)
 })
 
 Deno.test('consumeStdin: SGR left/right press/drag/release + Ctrl+C', async () => {
@@ -366,7 +385,7 @@ Deno.test('stepGas: pointer drive accelerates local gas', async () => {
 
 Deno.test('composeFrame: light yields truecolor near cursor', async () => {
 	const { composeFrame } = await import('../compose.mjs')
-	const { lightPointer, tickLightGesture, TORCH_DELAY } = await import('../gesture/light.mjs')
+	const { lightPointer, tickLightGesture, TORCH_DELAY, TORCH_FADE } = await import('../gesture/light.mjs')
 	const state = createAnimState({ width: 40, height: 20, seed: 9 })
 	for (const _ of enter(state));
 	lightPointer(state.light, { x: 20, y: 10, left: true })
@@ -374,6 +393,10 @@ Deno.test('composeFrame: light yields truecolor near cursor', async () => {
 	const lit = composeFrame(state)
 	assert(lit.includes('\x1b[38;2;'))
 	lightPointer(state.light, { x: 20, y: 10, left: false })
+	// Fade-out keeps truecolor until torchBlend reaches 0.
+	assert(composeFrame(state).includes('\x1b[38;2;'))
+	for (let i = 0; i < TORCH_FADE; i++) tickLightGesture(state.light)
+	assertEquals(state.light.torchBlend, 0)
 	const dark = composeFrame(state)
 	assertEquals(dark.includes('\x1b[38;2;'), false)
 

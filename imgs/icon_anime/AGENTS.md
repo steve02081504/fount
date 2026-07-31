@@ -17,7 +17,7 @@ fount logo
 fount logo watch   # deno run --watch — reload on source change
 ```
 
-Controls: Ctrl+C exit (icon teardown, then quit). Left quick-click → bright expanding ripple (no flashlight); left hold / drag → circular cool spotlight (release off). Right-drag paints stroke wind along the path (faster drag → stronger flow); right long-press while still grows a tornado vortex at the cursor (clockwise + updraft + inflow; longer → faster; follows while moved, reforms when stopped, clears on release) that can suspend rain in orbit and suck free-liquid puddles airborne. Other stdin discarded.
+Controls: Ctrl+C exit (icon teardown, then quit). Left quick-click → bright expanding ripple (no flashlight); left hold / drag → circular cool spotlight with fade-in/out (ambient dims + centre lifts; release fades off). Right-drag paints stroke wind along the path (faster drag → stronger flow); right long-press while still grows a tornado vortex at the cursor (clockwise + updraft + inflow; longer → faster; follows while moved, reforms when stopped, clears on release) that can suspend rain in orbit and suck free-liquid puddles airborne. Other stdin discarded.
 Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the pre-start scrollback and cursor row.
 
 ## Modules
@@ -40,7 +40,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | File | Role |
 | --- | --- |
 | `pointer.mjs` | Shared press / drag / release + cap trim |
-| `light.mjs` | Left-button quick-click ripple vs hold torch |
+| `light.mjs` | Left-button quick-click ripple vs hold torch (TORCH_FADE blend) |
 | `wind.mjs` | Right-button stroke wind + long-still clockwise vortex → local gas drive field |
 
 ### `fluid/`
@@ -77,7 +77,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 - Compose paints every view cell in one pass (no `ch.fill`/`fg.fill`); ANSI joins same-SGR glyph runs; torch path quantizes lift and caches truecolor SGR; ripple-only frames skip `sampleLight` outside ring pads; `renderGrid(Cell[][])` is a thin adapter.
 - Player `paint` homes the cursor only (`\x1b[H`) — frame is full-viewport, no Erase display.
 - Pointer wind drive buffers are filled only while the right button is down (`driveUx`/`driveUy` omitted otherwise); clears only the previous dirty rectangle (reused box object); stroke segments are pooled + swap-removed on expiry.
-- Pointer light (`state.light`): SGR mouse via `consumeStdin`; `gesture/light.mjs` arms a torch after `TORCH_DELAY` frames of hold (compose: ambient dim + quadratic radial falloff, cell aspect `hypot(dx, 2·dy)`). Faster release before the torch arms spawns a high-brightness expanding ring (`rippleFalloff`) that ages out — no ambient dim.
+- Pointer light (`state.light`): SGR mouse via `consumeStdin`; `gesture/light.mjs` arms a torch after `TORCH_DELAY` frames of hold, then `torchBlend` eases 0→1 over `TORCH_FADE` (compose: ambient dim + quadratic radial falloff scale with eased blend; cell aspect `hypot(dx, 2·dy)`). Release fades blend out (no ripple); re-press mid fade-out resumes without re-waiting `TORCH_DELAY`. Faster release before the torch arms spawns a high-brightness expanding ring (`rippleFalloff`) that ages out — no ambient dim.
 - Pointer wind (`state.wind`): right-button gesture in `gesture/wind.mjs`; each tick paints `driveUx`/`driveUy` scratch into `stepGas` (stroke trail + tornado vortex: clockwise tangential + updraft + inflow). Drag speed scales stroke amplitude; vortex strength grows with hold time and clears on release. Tangential `ty` uses the full `(rx/r)·amp` (not ×½) so right-side downwash cannot form a hover attractor under gravity — rain mean stays at the cursor. Strong upward gas scoops free-liquid puddles into particles (`liftLiquidByWind`); particle vertical drag rises with |gas| so rain can orbit inside the vortex.
 
 ## Material standard
