@@ -21,9 +21,9 @@ import { on_shutdown } from 'npm:on-shutdown'
 
 import {
 	MAT, createWorld, clearMaterials, clearDynamics, setMat, addLiquid, addMoisture,
-	spawnParticle, queueSplash, stepLiquid, stepParticles, fallChar, liquidChar, dripChar,
-	hash01, idx, inWorld, isLiquidBarrier, isSoilMat, releaseNonSoilWater, soilAbsorbFactor,
-	LIQUID_DRAW_THRESHOLD, COND_DRAW_THRESHOLD, SOIL_CAP, SOIL_HIT_ABSORB_FRAC,
+	spawnParticle, queueSplash, stepGas, stepLiquid, stepParticles, fallChar, liquidChar, dripChar,
+	gasVelocityAt, windProfileAt, hash01, idx, inWorld, isLiquidBarrier, isSoilMat, releaseNonSoilWater,
+	soilAbsorbFactor, LIQUID_DRAW_THRESHOLD, COND_DRAW_THRESHOLD, SOIL_CAP, SOIL_HIT_ABSORB_FRAC,
 } from './fluid_engine.mjs'
 import { AsciiAnimePlayer, terminalSize } from './player.mjs'
 import { generateTerrain, outlineChar } from './terrain.mjs'
@@ -480,13 +480,14 @@ const onParticleHit = (state) => (world, x, y, m, p, wet) => {
  * @returns {void} result
  */
 const spawnRain = (state) => {
-	const { world, frame, rainUntil, width, height } = state
+	const { world, frame, rainUntil, width, height, seed } = state
 	if (frame > rainUntil) return
 
 	const unlock = Math.min(1, frame / Math.max(18, height * 0.55))
 	const cols = Math.max(1, Math.floor(width * unlock))
 	const x0 = world.ox + Math.floor((width - cols) / 2)
 	const budget = Math.max(1, Math.floor(1 + unlock * 2.5))
+	const skyWind = windProfileAt(0, world.worldH, frame, seed)
 
 	for (let i = 0; i < budget; i++) {
 		if (hash01(frame, i + 17) > 0.4 + unlock * 0.4) continue
@@ -495,7 +496,8 @@ const spawnRain = (state) => {
 		const vy = 0.35 + hash01(x | 0, 1) * 0.4
 		const heavy = hash01(frame, i + 11) > 0.45
 		const amt = heavy ? 0.55 + hash01(frame, i + 13) * 0.45 : 0.12 + hash01(frame, i + 13) * 0.32
-		spawnParticle(world, x, -hash01(frame, i + 9) * 1.5, (hash01(frame, i) - 0.5) * 0.04, vy, 70, amt)
+		const vx = skyWind * 0.55 + (hash01(frame, i) - 0.5) * 0.04
+		spawnParticle(world, x, -hash01(frame, i + 9) * 1.5, vx, vy, 70, amt)
 	}
 }
 
@@ -569,7 +571,8 @@ const composeFrame = (state) => {
 					&& mat[idx(world, wx, by)] !== MAT.POOL
 					&& liq[idx(world, wx, by)] < LIQUID_DRAW_THRESHOLD
 				)
-				paint(vx, vy, liquidChar(liq[i], wx + vy + frame, falling), FG_SPLASH)
+				const { ux, uy } = gasVelocityAt(world, wx, vy)
+				paint(vx, vy, liquidChar(liq[i], wx + vy + frame, falling, ux, uy), FG_SPLASH)
 			}
 			else if (
 				vy > 0
@@ -598,7 +601,7 @@ const composeFrame = (state) => {
 		const vx = (p.x - ox) | 0
 		const vy = p.y | 0
 		if (vy < 0 || vy >= height || vx < 0 || vx >= width) continue
-		paint(vx, vy, fallChar(p.amt, frame + vx), FG_SPLASH)
+		paint(vx, vy, fallChar(p.amt, frame + vx, p.vx, p.vy), FG_SPLASH)
 	}
 
 	return renderGrid(grid, width, height)
@@ -644,6 +647,7 @@ export const renderGrid = (grid, width, height) => {
  */
 const simFrame = (state) => {
 	rebuildMaterials(state)
+	stepGas(state.world, { time: state.frame, seed: state.seed })
 	spawnRain(state)
 	stepParticles(state.world, onParticleHit(state))
 	stepLiquid(state.world)

@@ -1,10 +1,16 @@
 /**
- * Particle / grid-liquid / pressure engine for ASCII scenes.
+ * Particle / grid-liquid / gas-flow engine for ASCII scenes.
  *
  * Air regions carry conserved gas mass; sealed cavities follow isothermal Boyle:
- *   P / P_atm = gasAmount / airVolume
+ *   P / P_atm = gasAmount / airVolume  (ideal gas at fixed T)
+ * Open air carries a velocity field driven by a time-varying global wind with
+ * height shear and continuity speeding flow through constrictions (wind-tunnel).
+ * Bernoulli proxy: static P ≈ region P − ½ρu².
  * Communicating vessels equalize hydraulic potential:
  *   φ = P / (ρg) - surfaceY
+ *
+ * Rain particles feel local gas drag; fall glyphs lean with velocity
+ * (`\` / `/` / `-` / `|` / `,` / `.`).
  *
  * Soil (HORIZON / SOLID) stores moisture; seepage shares sideways, prefers down,
  * and feeds underside condensation that drips into air. All soil transfers conserve mass.
@@ -19,10 +25,11 @@
  *   viewW: number, viewH: number, worldW: number, worldH: number,
  *   margin: number, ox: number, oy: number,
  *   mat: Uint8Array, liq: Float32Array, moisture: Float32Array, condense: Float32Array,
+ *   gasUx: Float32Array, gasUy: Float32Array,
  *   regionId: Int32Array,
  *   regions: Map<number, AirRegion>,
  *   particles: FluidParticle[], pendingSplash: FluidParticle[],
- *   soilStep: number,
+ *   soilStep: number, gasTime: number,
  * }} FluidWorld
  *
  * @typedef {{
@@ -82,6 +89,25 @@ export const COND_MATTHEW_RATE = 0.22
 export const COND_MATTHEW_NOISE = 0.4
 /** Falling water (rain / drip streams) draws `|` at/above this amount. */
 export const FALL_HEAVY = 0.5
+/** |vx| above this (vs vertical) leans rain as `\` / `/`. */
+export const FALL_SLANT = 0.1
+/** |vx| above this with dominant horizontal → `-`. */
+export const FALL_FLAT = 0.32
+
+/** Mean global wind amplitude (cells / tick). */
+export const WIND_BASE = 0.38
+/** Gust amplitude layered on the mean wind. */
+export const WIND_GUST = 0.28
+/** Boundary-layer shear: u ∝ altitude^power (stronger aloft). */
+export const WIND_SHEAR_POWER = 0.55
+/** Particle velocity blend toward local gas (horizontal). */
+export const GAS_DRAG = 0.22
+/** Vertical gas coupling for rain (weaker — gravity dominates). */
+export const GAS_DRAG_Y = 0.06
+/** Blend of cell gas toward wind / pressure target each tick. */
+export const GAS_BLEND = 0.28
+/** Continuity boost when horizontal passage is constricted. */
+export const GAS_NOZZLE = 1.55
 
 /**
  * @param {number} m parameter
@@ -156,11 +182,16 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 		liq: new Float32Array(size),
 		moisture: new Float32Array(size),
 		condense: new Float32Array(size),
+		gasUx: new Float32Array(size),
+		gasUy: new Float32Array(size),
 		regionId: new Int32Array(size),
 		regions: new Map(),
 		particles: /** @type {FluidParticle[]} */ [],
 		pendingSplash: /** @type {FluidParticle[]} */ [],
 		soilStep: 0,
+		gasTime: 0,
+		_gasNextUx: null,
+		_gasNextUy: null,
 	}
 }
 
@@ -189,10 +220,13 @@ export const clearDynamics = (w) => {
 	w.liq.fill(0)
 	w.moisture.fill(0)
 	w.condense.fill(0)
+	w.gasUx.fill(0)
+	w.gasUy.fill(0)
 	w.particles.length = 0
 	w.pendingSplash.length = 0
 	w.regionId.fill(0)
 	w.regions.clear()
+	w.gasTime = 0
 }
 
 /**
@@ -479,6 +513,234 @@ export const pressureAt = (w, x, y) => {
 		}
 	}
 	return P_ATM
+}
+
+/**
+ * Time-varying global wind scalar (positive → rightward).
+ * @param {number} time tick
+ * @param {number} [seed=0] scene seed
+ * @returns {number} wind
+ */
+export const globalWindAt = (time, seed = 0) => {
+	const phase = hash01(seed, 91) * Math.PI * 2
+	return WIND_BASE * Math.sin(time * 0.031 + phase)
+		+ WIND_GUST * Math.sin(time * 0.067 + phase * 1.7)
+		+ WIND_BASE * 0.18 * Math.sin(time * 0.013 + 1.1)
+}
+
+/**
+ * Height-sheared wind: stronger aloft (y=0 sky), weaker near ground.
+ * Power-law boundary layer: u ∝ altitude^WIND_SHEAR_POWER.
+ * @param {number} y world row
+ * @param {number} worldH world height
+ * @param {number} time tick
+ * @param {number} [seed=0] scene seed
+ * @returns {number} horizontal wind at height
+ */
+export const windProfileAt = (y, worldH, time, seed = 0) => {
+	const wind = globalWindAt(time, seed)
+	const alt = 1 - Math.min(1, Math.max(0, y / Math.max(1, worldH - 1)))
+	return wind * (0.28 + 0.72 * alt ** WIND_SHEAR_POWER)
+}
+
+/**
+ * Sample gas velocity at a world point (nearest cell).
+ * @param {FluidWorld} w parameter
+ * @param {number} x parameter
+ * @param {number} y parameter
+ * @returns {{ ux: number, uy: number }} velocity
+ */
+export const gasVelocityAt = (w, x, y) => {
+	const cx = x | 0
+	const cy = y | 0
+	if (!inWorld(w, cx, cy)) return { ux: 0, uy: 0 }
+	const i = idx(w, cx, cy)
+	return { ux: w.gasUx[i], uy: w.gasUy[i] }
+}
+
+/**
+ * Dynamic pressure proxy ½ρu² (ρ=RHO_G) for Bernoulli checks.
+ * @param {number} ux parameter
+ * @param {number} [uy=0] parameter
+ * @returns {number} result
+ */
+export const dynamicPressure = (ux, uy = 0) => 0.5 * RHO_G * (ux * ux + uy * uy)
+
+/**
+ * Bernoulli static-pressure proxy: P₀ − ½ρu² (clamped).
+ * Along a streamline, faster flow → lower static pressure.
+ * @param {FluidWorld} w parameter
+ * @param {number} x parameter
+ * @param {number} y parameter
+ * @returns {number} result
+ */
+export const staticPressureAt = (w, x, y) => {
+	const { ux, uy } = gasVelocityAt(w, x, y)
+	return Math.max(0.05, pressureAt(w, x, y) - dynamicPressure(ux, uy))
+}
+
+/**
+ * Advance open-air / cavity gas velocity: wind shear, nozzle continuity, wall slip.
+ * @param {FluidWorld} w parameter
+ * @param {{ time?: number, seed?: number, forceWind?: number }} [opts]
+ *   `forceWind` overrides the global wind scalar (tests / scripted gusts).
+ * @returns {void} result
+ */
+export const stepGas = (w, opts = {}) => {
+	const time = opts.time ?? w.gasTime
+	const seed = opts.seed ?? 0
+	const forced = opts.forceWind
+	w.gasTime = time + 1
+	labelAirRegions(w)
+
+	const { worldW: W, worldH: H, mat, liq, gasUx, gasUy, regionId, regions } = w
+	const n = W * H
+	if (!w._gasNextUx || w._gasNextUx.length !== n) {
+		w._gasNextUx = new Float32Array(n)
+		w._gasNextUy = new Float32Array(n)
+	}
+	const nextUx = w._gasNextUx
+	const nextUy = w._gasNextUy
+	nextUx.fill(0)
+	nextUy.fill(0)
+
+	/**
+	 * @param {number} x parameter
+	 * @param {number} y parameter
+	 * @returns {boolean} blocked for gas
+	 */
+	const blocked = (x, y) => {
+		if (x < 0 || y < 0 || x >= W || y >= H) return true
+		const i = y * W + x
+		return isBlockMat(mat[i]) || liq[i] >= LIQ_DRAW
+	}
+
+	/**
+	 * Vertical free span through (x,y); large ⇒ open sky (skip nozzle).
+	 * @param {number} x parameter
+	 * @param {number} y parameter
+	 * @returns {number} span
+	 */
+	const vertSpan = (x, y) => {
+		let y0 = y
+		let y1 = y
+		while (y0 > 0 && !blocked(x, y0 - 1)) y0--
+		while (y1 + 1 < H && !blocked(x, y1 + 1)) y1++
+		return y1 - y0 + 1
+	}
+
+	/**
+	 * Horizontal free span through (x,y).
+	 * @param {number} x parameter
+	 * @param {number} y parameter
+	 * @returns {number} span
+	 */
+	const horizSpan = (x, y) => {
+		let x0 = x
+		let x1 = x
+		while (x0 > 0 && !blocked(x0 - 1, y)) x0--
+		while (x1 + 1 < W && !blocked(x1 + 1, y)) x1++
+		return x1 - x0 + 1
+	}
+
+	/**
+	 * Height-sheared drive wind at row y.
+	 * @param {number} y parameter
+	 * @returns {number} ux drive
+	 */
+	const driveWind = (y) => {
+		const alt = 1 - Math.min(1, Math.max(0, y / Math.max(1, H - 1)))
+		const shear = 0.28 + 0.72 * alt ** WIND_SHEAR_POWER
+		if (forced !== undefined) return forced * shear
+		return windProfileAt(y, H, time, seed)
+	}
+
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const i = y * W + x
+			if (blocked(x, y)) {
+				nextUx[i] = 0
+				nextUy[i] = 0
+				continue
+			}
+
+			const rid = regionId[i]
+			const region = rid ? regions.get(rid) : null
+			const open = !region || region.openToAtm
+
+			let tx = open ? driveWind(y) : 0
+			let ty = 0
+
+			const openL = !blocked(x - 1, y)
+			const openR = !blocked(x + 1, y)
+			const openU = !blocked(x, y - 1)
+			const openD = !blocked(x, y + 1)
+
+			// Continuity (A·v): throat narrower than neighbors → faster (wind-tunnel)
+			const span = vertSpan(x, y)
+			if (span <= 4) {
+				const spanL = openL ? vertSpan(x - 1, y) : span
+				const spanR = openR ? vertSpan(x + 1, y) : span
+				const wide = Math.max(span, spanL, spanR)
+				if (wide > span && Math.abs(tx) > 0.02)
+					tx *= Math.min(GAS_NOZZLE * 1.4, wide / span)
+			}
+			const hSpan = horizSpan(x, y)
+			if (hSpan <= 4) {
+				const spanU = openU ? horizSpan(x, y - 1) : hSpan
+				const spanD = openD ? horizSpan(x, y + 1) : hSpan
+				const wide = Math.max(hSpan, spanU, spanD)
+				if (wide > hSpan && Math.abs(ty) > 0.02)
+					ty *= Math.min(GAS_NOZZLE * 1.4, wide / hSpan)
+			}
+
+			let ux = gasUx[i] + (tx - gasUx[i]) * GAS_BLEND
+			let uy = gasUy[i] + (ty - gasUy[i]) * GAS_BLEND
+
+			// Wall slip: cancel inflow into solids
+			if (!openL && ux < 0) ux = 0
+			if (!openR && ux > 0) ux = 0
+			if (!openU && uy < 0) uy = 0
+			if (!openD && uy > 0) uy = 0
+
+			// Mild viscosity from neighbors (stable ASCII-scale field)
+			let sumUx = ux
+			let sumUy = uy
+			let count = 1
+			if (openL) {
+				sumUx += gasUx[i - 1]
+				sumUy += gasUy[i - 1]
+				count++
+			}
+			if (openR) {
+				sumUx += gasUx[i + 1]
+				sumUy += gasUy[i + 1]
+				count++
+			}
+			if (openU) {
+				sumUx += gasUx[i - W]
+				sumUy += gasUy[i - W]
+				count++
+			}
+			if (openD) {
+				sumUx += gasUx[i + W]
+				sumUy += gasUy[i + W]
+				count++
+			}
+			ux = ux * 0.65 + (sumUx / count) * 0.35
+			uy = uy * 0.65 + (sumUy / count) * 0.35
+
+			if (!open) {
+				ux *= 0.85
+				uy *= 0.85
+			}
+
+			nextUx[i] = Math.max(-2.5, Math.min(2.5, ux))
+			nextUy[i] = Math.max(-2.5, Math.min(2.5, uy))
+		}
+
+	gasUx.set(nextUx)
+	gasUy.set(nextUy)
 }
 
 /**
@@ -877,6 +1139,9 @@ export const stepParticles = (w, onHit) => {
 	w.pendingSplash.length = 0
 
 	for (const p of w.particles) {
+		const { ux, uy } = gasVelocityAt(w, p.x, p.y)
+		p.vx += (ux - p.vx) * GAS_DRAG
+		p.vy += (uy - p.vy) * GAS_DRAG_Y
 		p.vy = Math.min(MAX_VY, p.vy + GRAVITY)
 		p.life--
 		if (p.life <= 0) continue
@@ -914,30 +1179,39 @@ export const stepParticles = (w, onHit) => {
 }
 
 /**
- * Falling water glyph by amount — rain and re-condensed drips share this.
- * Heavy → `|`; light → `,` / `.`.
+ * Falling water glyph by amount + velocity lean.
+ * Heavy vertical → `|`; light → `,` / `.`; wind lean → `\` / `/`; flat → `-`.
  * @param {number} amount parameter
  * @param {number} [phase=0] parameter
+ * @param {number} [vx=0] horizontal velocity
+ * @param {number} [vy=0] vertical velocity
  * @returns {string} result
  */
-export const fallChar = (amount, phase = 0) => {
+export const fallChar = (amount, phase = 0, vx = 0, vy = 0) => {
+	const ax = Math.abs(vx)
+	const ay = Math.abs(vy)
+	if (ax >= FALL_FLAT && ax > ay * 1.15) return '-'
+	if (vx >= FALL_SLANT) return '\\'
+	if (vx <= -FALL_SLANT) return '/'
 	if (amount >= FALL_HEAVY) return '|'
 	return (phase | 0) & 1 ? ',' : '.'
 }
 
-/** Alias — rain uses the same amount-based falling glyphs. */
+/** Alias — rain uses the same amount/velocity falling glyphs. */
 export const rainChar = fallChar
 
 /**
  * Standing / pooled liquid glyph by fill amount.
- * Pass `falling=true` for free streams (same `|` / `,` / `.` rule as rain).
+ * Pass `falling=true` for free streams (same lean rule as rain when vx/vy given).
  * @param {number} amount parameter
  * @param {number} phase parameter
  * @param {boolean} [falling=false] parameter
+ * @param {number} [vx=0] parameter
+ * @param {number} [vy=0] parameter
  * @returns {string} result
  */
-export const liquidChar = (amount, phase, falling = false) => {
-	if (falling) return fallChar(amount, phase)
+export const liquidChar = (amount, phase, falling = false, vx = 0, vy = 0) => {
+	if (falling) return fallChar(amount, phase, vx, vy)
 	if (amount >= 0.85) return '~'
 	if (amount >= 0.55) return phase & 1 ? '≈' : '~'
 	if (amount >= LIQ_DRAW) return phase & 1 ? ',' : '.'

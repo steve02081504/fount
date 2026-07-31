@@ -5,10 +5,11 @@
 import { assert, assertAlmostEquals, assertEquals, assertGreater, assertLess } from 'jsr:@std/assert'
 
 import {
-	MAT, createWorld, setMat, addLiquid, addMoisture, stepLiquid, stepSoil, labelAirRegions,
-	pressureAt, totalSealedGas, totalGridWater, P_ATM, clearMaterials, idx,
+	MAT, createWorld, setMat, addLiquid, addMoisture, stepLiquid, stepSoil, stepGas, stepParticles,
+	labelAirRegions, pressureAt, totalSealedGas, totalGridWater, P_ATM, clearMaterials, idx,
 	COND_DRIP, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQUID_DRAW_THRESHOLD,
-	fallChar, liquidChar, FALL_HEAVY,
+	fallChar, liquidChar, FALL_HEAVY, globalWindAt, windProfileAt, gasVelocityAt, dynamicPressure,
+	staticPressureAt, spawnParticle,
 } from '../fluid_engine.mjs'
 
 /**
@@ -339,11 +340,122 @@ Deno.test('fluid: closed soil seepage conserves grid water', () => {
 		}
 })
 
-Deno.test('fluid: fallChar is amount-based (| vs ,/.)', () => {
-	assertEquals(fallChar(FALL_HEAVY), '|')
-	assertEquals(fallChar(FALL_HEAVY + 0.2), '|')
-	assertEquals(fallChar(FALL_HEAVY - 0.01, 0), '.')
-	assertEquals(fallChar(0.1, 1), ',')
-	assertEquals(liquidChar(0.7, 0, true), '|')
-	assertEquals(liquidChar(0.2, 0, true), '.')
+Deno.test('fluid: fallChar leans with velocity (| \\ / -)', () => {
+	assertEquals(fallChar(FALL_HEAVY, 0, 0, 1), '|')
+	assertEquals(fallChar(FALL_HEAVY + 0.2, 0, 0, 1), '|')
+	assertEquals(fallChar(FALL_HEAVY - 0.01, 0, 0, 1), '.')
+	assertEquals(fallChar(0.1, 1, 0, 1), ',')
+	assertEquals(fallChar(0.6, 0, 0.2, 1), '\\')
+	assertEquals(fallChar(0.6, 0, -0.2, 1), '/')
+	assertEquals(fallChar(0.6, 0, 0.5, 0.1), '-')
+	assertEquals(liquidChar(0.7, 0, true, 0, 1), '|')
+	assertEquals(liquidChar(0.2, 0, true, 0, 1), '.')
+	assertEquals(liquidChar(0.5, 0, true, 0.25, 0.8), '\\')
+})
+
+Deno.test('fluid: global wind varies with time', () => {
+	const samples = []
+	for (let t = 0; t < 200; t += 7)
+		samples.push(globalWindAt(t, 42))
+	const min = Math.min(...samples)
+	const max = Math.max(...samples)
+	assertGreater(max - min, 0.2)
+	assert(samples.some(v => v > 0))
+	assert(samples.some(v => v < 0))
+})
+
+Deno.test('fluid: wind shear is stronger aloft than near ground', () => {
+	const H = 40
+	const t = 20
+	const seed = 7
+	const aloft = Math.abs(windProfileAt(2, H, t, seed))
+	const nearGround = Math.abs(windProfileAt(H - 3, H, t, seed))
+	assertGreater(aloft, nearGround)
+	assertGreater(aloft / Math.max(1e-6, nearGround), 1.3)
+})
+
+Deno.test('fluid: open-air gas field follows forced wind with height shear', () => {
+	const w = createWorld({ width: 24, height: 20, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	for (let i = 0; i < 40; i++)
+		stepGas(w, { time: i, seed: 1, forceWind: 0.8 })
+	const top = Math.abs(gasVelocityAt(w, 12, 2).ux)
+	const bot = Math.abs(gasVelocityAt(w, 12, w.worldH - 3).ux)
+	assertGreater(top, 0.15)
+	assertGreater(top, bot)
+})
+
+Deno.test('fluid: wind-tunnel throat is faster than wide section (continuity)', () => {
+	const w = createWorld({ width: 36, height: 16, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	// Horizontal duct: floor+ceiling, span 3 in the wide section
+	for (let x = 4; x <= 30; x++) {
+		setMat(w, x, 4, MAT.SEAL)
+		setMat(w, x, 8, MAT.SEAL)
+	}
+	// Throat at x=16..18: only mid row open (span 1)
+	for (let x = 16; x <= 18; x++) {
+		setMat(w, x, 5, MAT.SEAL)
+		setMat(w, x, 7, MAT.SEAL)
+	}
+
+	for (let i = 0; i < 50; i++)
+		stepGas(w, { time: i, seed: 0, forceWind: 0.9 })
+
+	const wide = Math.abs(w.gasUx[idx(w, 10, 6)])
+	const throat = Math.abs(w.gasUx[idx(w, 17, 6)])
+	assertGreater(wide, 0.05)
+	assertGreater(throat, wide * 1.15)
+})
+
+Deno.test('fluid: Bernoulli — higher speed carries higher dynamic pressure', () => {
+	assertGreater(dynamicPressure(1.2), dynamicPressure(0.4))
+	assertAlmostEquals(dynamicPressure(2, 0), 0.5 * 1 * 4, 1e-9)
+})
+
+Deno.test('fluid: Bernoulli — tunnel throat has lower static pressure', () => {
+	const w = createWorld({ width: 36, height: 16, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	for (let x = 4; x <= 30; x++) {
+		setMat(w, x, 4, MAT.SEAL)
+		setMat(w, x, 8, MAT.SEAL)
+	}
+	for (let x = 16; x <= 18; x++) {
+		setMat(w, x, 5, MAT.SEAL)
+		setMat(w, x, 7, MAT.SEAL)
+	}
+	for (let i = 0; i < 50; i++)
+		stepGas(w, { time: i, seed: 0, forceWind: 0.9 })
+
+	const pWide = staticPressureAt(w, 10, 6)
+	const pThroat = staticPressureAt(w, 17, 6)
+	assertLess(pThroat, pWide)
+})
+
+Deno.test('fluid: flow stagnates against a solid face', () => {
+	const w = createWorld({ width: 24, height: 14, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	for (let y = 2; y <= 10; y++)
+		setMat(w, 14, y, MAT.SEAL)
+	for (let i = 0; i < 35; i++)
+		stepGas(w, { time: i, seed: 0, forceWind: 0.85 })
+	const ahead = Math.abs(w.gasUx[idx(w, 13, 6)])
+	const free = Math.abs(w.gasUx[idx(w, 8, 6)])
+	assertGreater(free, 0.1)
+	assertLess(ahead, free * 0.55)
+})
+
+Deno.test('fluid: rain particles are dragged by local gas velocity', () => {
+	const w = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	w.gasUx.fill(0.6)
+	spawnParticle(w, 8, 2, 0, 0.4, 40, 0.5)
+	/**
+	 *
+	 */
+	const hit = () => { /* no-op */ }
+	for (let i = 0; i < 8; i++)
+		stepParticles(w, hit)
+	assert(w.particles.length > 0)
+	assertGreater(w.particles[0].vx, 0.15)
 })
