@@ -350,10 +350,12 @@ async function main() {
 	const exitContext = { setExitCode }
 
 	const icon = INTERACTIVE ? createIconAnime() : null
+	// stopRequested：拦住主循环/轮询，避免和 farewell 抢 icon。不关 connection——
+	// 留着让主循环堵在 runOneConnection，进程退出时一起死。
 	on_shutdown(async () => {
-		try { logSink.tearDown?.() } catch { /* ignore */ }
-		try { connection?.close?.() } catch { /* ignore */ }
-		try { await icon?.farewell() } catch { /* ignore */ }
+		stopRequested = true
+		logSink.tearDown?.()
+		await icon?.farewell()
 	})
 
 	if (icon) {
@@ -365,6 +367,7 @@ async function main() {
 		await pollUntilServerReady()
 		if (stopRequested) break
 		const reason = await runOneConnection(exitContext)
+		if (stopRequested) break
 
 		if (reason === 'fount_exit') {
 			const code = exitCodeSlot.value ?? 0

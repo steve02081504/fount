@@ -1,6 +1,6 @@
 /**
  * Icon anime controller: anim state + TUI player.
- * Hosts own process hooks (`on_shutdown` → farewell).
+ * No process hooks — host awaits `farewell` (logo CLI) or registers it on shutdown (log viewer).
  */
 
 import { lightPointer } from './gesture/light.mjs'
