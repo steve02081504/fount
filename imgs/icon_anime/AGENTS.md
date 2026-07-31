@@ -37,8 +37,8 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | `index.mjs` | Barrel re-exports |
 | `mat.mjs` | `MAT` enum, flags LUT, soil/liquid constants |
 | `world.mjs` | Grid alloc, scratch buffers, mat/liq/moisture helpers |
-| `gas.mjs` | Air regions, wind, `stepGas` (caller must `labelAirRegions` first) |
-| `liquid.mjs` | Gravity / side flow / soil / hydraulic `stepLiquid` (labels once at entry) |
+| `gas.mjs` | Air regions, hydrostatic open P(y), wind, Bernoulli ΔP `stepGas` |
+| `liquid.mjs` | Hydrostatic liquid P, gravity / orifice / soil / hydraulic `stepLiquid` |
 | `particles.mjs` | SoA rain/splash pools + gas drag |
 | `glyphs.mjs` | `waterChar` / `liquidChar` / `dripChar` |
 
@@ -83,14 +83,16 @@ Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `.
 - Ungrown base columns keep `HORIZON` until `POOL`/`SLOPE_*` overwrite — terrain and icon join without a post-hoc hole.
 - Under the icon: the crust cell at surface/`baseY` is soil; below that the generator may leave caves (no packed solid fill).
 - ≥30% of view columns have land thickness ≥ ¼ screen height (`TALL_LAND_FRACTION` / `TALL_LAND_HEIGHT_FRAC`).
+- Resize is pedestal-relative: retained cells and dynamics shift intact with the icon; shrinking crops, while expansion generates only exposed cells from the persistent seed. New soil starts saturated and runs `RESIZE_WEATHER_TICKS` settling steps.
 
 ## Physics invariants
 
-- Open air regions: `pressure = P_ATM`.
-- Sealed regions: `pressure ≈ gasAmount / airCells` (isothermal Boyle / ideal gas at fixed T); gas mass transfers by cell overlap when topology splits/merges.
-- Gas velocity (`gasUx` / `gasUy`): open air tracks a time-varying global wind with power-law height shear (stronger aloft). Global wind is pink-ish fBm (synoptic / meso / micro) plus intermittent asymmetric gust pulses — autocorrelated and irregular, not layered sines. Continuity (`A·v`) speeds flow through duct throats (wind-tunnel nozzle). Wall slip zeros inflow into solids. Bernoulli proxy: `staticPressureAt = P₀ − ½ρu²` (faster → lower static P). Rain particles drag toward local gas (`GAS_DRAG`); glyphs use the particle's resulting velocity, not the gas field directly.
+- Open air regions: region mean `pressure = P_ATM`; cell `pressureAt = P_ATM + ATM_HYDRO·y` (y↓ → P↑).
+- Sealed regions: uniform `pressure ≈ gasAmount / airCells` (isothermal Boyle / ideal gas at fixed T); gas mass transfers by cell overlap when topology splits/merges.
+- Gas velocity (`gasUx` / `gasUy`): open air tracks a time-varying global wind with power-law height shear (stronger aloft). Global wind is pink-ish fBm (synoptic / meso / micro) plus intermittent asymmetric gust pulses — autocorrelated and irregular, not layered sines. Continuity (`A·v`) speeds flow through duct throats (wind-tunnel nozzle). Wall slip zeros inflow into solids. Bernoulli static field `P₀ − ½ρu²` (`RHO_AIR`) drives neighbor ΔP acceleration (`GAS_DP_DRIVE`) — faster throat → lower static P → suction feedback into the nozzle. Rain particles drag toward local gas (`GAS_DRAG`); glyphs use the particle's resulting velocity, not the gas field directly.
+- Free-liquid hydrostatic pressure: `liquidPressureAt = P_air(surface) + RHO_G·depth`. Submerged side holes / deep edge vents follow ΔP (Torricelli-ish); free-surface sheet flow equalizes by fill level only (no fake surface jet). Sealed gas with `P > liquid P` blocks invasion and can push adjacent liquid away.
 - Grid liquid velocity (`liqVx` / `liqVy`): updated from mass transfers each `stepLiquid` (EMA); drives free-liquid glyphs so calm puddles stay on still marks.
-- Communicating vessels: free surfaces of the same liquid component relax toward equal `φ = P/(ρg) - y`.
+- Communicating vessels: free surfaces of the same liquid component relax toward equal `φ = P/(ρg) - y` (P from height-aware air pressure on the free surface).
 - `POOL` retains fill and spills / leaks into open air or the next slab when overfull; `BODY` is a liquid barrier (splash-only). Pillars are not materials.
 - Soil moisture (`moisture`): gains from impacts and free liquid above with diminishing absorb rate as the cell wets (`soilAbsorbFactor`); rain hits only sink a fraction (`SOIL_HIT_ABSORB_FRAC`) so the rest sheets as free liquid. Seepage is slow enough that sustained rain forms visible surface puddles. Each tick shares a fraction sideways among soil neighbors, prefers transfer into soil below, and when below is air feeds underside `condense`. Neighboring condensation cells apply a noisy Matthew transfer (richer steals from poorer). Past `COND_DRAW` the air cell shows a droplet glyph; past `COND_DRIP` condensation becomes free liquid below and clears.
 - `SEAL` is impermeable (no moisture) — use it in tests/vessels so soil absorption cannot drain free-liquid setups.
@@ -106,4 +108,4 @@ fount test icon_anime --no-parallel
 fount test icon_anime:pure --no-parallel
 ```
 
-Coverage: deterministic terrain glyphs/features, pedestal land shoulders, icon crust + caves below, tall-land quota (≥30% view cols ≥¼ screen), sealed-cavity compression (Boyle), U-tube leveling, BODY splash (no flood), pillar pass-through, pool→slab/ground leak, `SEAL` impermeable fixtures, soil absorb (dry>wet) / seepage / Matthew condense / drip + mass conservation, sustained-rain surface puddles, gas wind time-variation + height shear, wind-tunnel continuity + Bernoulli static-P drop, wall stagnation, particle gas drag, water glyphs by amount/liquid-velocity (still puddles vs high/low momentum slant), exit frame bound, resize state preserve, ANSI frame size.
+Coverage: deterministic terrain glyphs/features, pedestal land shoulders, icon crust + caves below, tall-land quota (≥30% view cols ≥¼ screen), sealed-cavity compression (Boyle), U-tube leveling, BODY splash (no flood), pillar pass-through, pool→slab/ground leak, `SEAL` impermeable fixtures, soil absorb (dry>wet) / seepage / Matthew condense / drip + mass conservation, sustained-rain surface puddles, open-air hydrostatic P(y), liquid column depth pressure + orifice ΔP drain, sealed gas pushback on liquid, gas wind time-variation + height shear, wind-tunnel continuity + Bernoulli static-P drop + ΔP suction drive, wall stagnation, particle gas drag, water glyphs by amount/liquid-velocity (still puddles vs high/low momentum slant), exit frame bound, resize terrain/dynamics preservation + new-soil weathering, ANSI frame size.

@@ -33,6 +33,7 @@ export const TERRAIN_CH = {
  *   features: TerrainFeature[],
  *   viewW: number,
  *   ox: number,
+ *   baseY: number,
  * }} TerrainData
  *
  * @typedef {{
@@ -83,7 +84,7 @@ export function generateTerrain(world, {
 			solid[y * W + x] = 1
 	}
 
-	carveNoiseCaves(solid, surface, W, H, seed)
+	carveNoiseCaves(solid, surface, W, H, seed, footX0, baseY)
 	cellularCleanup(solid, surface, W, H, 2)
 
 	const features = []
@@ -94,7 +95,94 @@ export function generateTerrain(world, {
 	const surfaceChar = buildSurfaceChars(surface, W)
 	const outline = buildOutline(solid, surface, W, H)
 
-	return { surface, solid, worldW: W, worldH: H, surfaceChar, outline, footX0, footX1, features, viewW, ox }
+	return {
+		surface, solid, worldW: W, worldH: H, surfaceChar, outline,
+		footX0, footX1, features, viewW, ox, baseY,
+	}
+}
+
+/**
+ * Resize terrain without regenerating cells that remain in the world.
+ * The icon pedestal is the stable origin: the retained rectangle moves with it,
+ * while seeded surface/cave generation fills only cells exposed by expansion.
+ * @param {TerrainData} previous terrain before resize
+ * @param {{ worldW: number, worldH: number, viewW: number, viewH: number, ox: number }} world new fluid world
+ * @param {{ iconOx: number, iconOy: number, seed: number, iconBaseRows: number[], iconBaseX0: number, iconBaseX1: number }} opts icon placement and seed
+ * @returns {{ terrain: TerrainData, addedSolid: Uint8Array }} resized terrain and newly generated soil mask
+ */
+export function resizeTerrain(previous, world, opts) {
+	const { worldW: W, worldH: H, viewW, ox } = world
+	const { iconOx, iconOy, seed, iconBaseRows, iconBaseX0, iconBaseX1 } = opts
+	const baseY = Math.min(H - 4, iconOy + iconBaseRows[iconBaseRows.length - 1])
+	const footX0 = iconOx + iconBaseX0
+	const footX1 = iconOx + iconBaseX1
+	const dx = footX0 - previous.footX0
+	const dy = baseY - previous.baseY
+	const surface = new Int16Array(W)
+	const solid = new Uint8Array(W * H)
+	const addedSolid = new Uint8Array(W * H)
+	const minY = Math.max(2, iconOy + 12)
+	const maxY = H - 3
+
+	const retainedX0 = Math.max(0, dx)
+	const retainedX1 = Math.min(W, dx + previous.worldW)
+	for (let x = retainedX0; x < retainedX1; x++)
+		surface[x] = previous.surface[x - dx] + dy
+	if (retainedX0 > 0)
+		walkSurface(surface, retainedX0 - 1, -1, surface[retainedX0], {
+			minY, maxY, seed, hashOrigin: footX0,
+		})
+	if (retainedX1 < W)
+		walkSurface(surface, retainedX1, 1, surface[retainedX1 - 1], {
+			minY, maxY, seed, hashOrigin: footX0,
+		})
+
+	for (let y = 0; y < previous.worldH; y++) {
+		const ny = y + dy
+		if (ny < 0 || ny >= H) continue
+		for (let x = 0; x < previous.worldW; x++) {
+			const nx = x + dx
+			if (nx < 0 || nx >= W) continue
+			solid[ny * W + nx] = previous.solid[y * previous.worldW + x]
+		}
+	}
+
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const oldX = x - dx
+			const oldY = y - dy
+			if (oldX >= 0 && oldX < previous.worldW && oldY >= 0 && oldY < previous.worldH)
+				continue
+			if (y < surface[x]) continue
+			const i = y * W + x
+			const depth = y - surface[x]
+			const cave = depth > 1 &&
+				fbm2((x - footX0) * 0.11, (y - baseY) * 0.13, seed) >
+					0.58 - Math.min(0.22, depth * 0.018)
+			if (cave) continue
+			solid[i] = 1
+			addedSolid[i] = 1
+		}
+
+	const features = previous.features
+		.map(feature => ({
+			...feature,
+			x0: feature.x0 + dx,
+			x1: feature.x1 + dx,
+			y0: feature.y0 + dy,
+			y1: feature.y1 + dy,
+			...feature.wells
+				? { wells: /** @type {[number, number]} */ feature.wells.map(x => x + dx) }
+				: {},
+		}))
+		.filter(feature => feature.x1 > 0 && feature.x0 < W && feature.y1 > 0 && feature.y0 < H)
+	const terrain = {
+		surface, solid, worldW: W, worldH: H,
+		surfaceChar: buildSurfaceChars(surface, W),
+		outline: buildOutline(solid, surface, W, H),
+		footX0, footX1, features, viewW, ox, baseY,
+	}
+	return { terrain, addedSolid }
 }
 
 /**
@@ -120,8 +208,12 @@ function buildSurface(W, {
 		if (x1 + i - 1 < W) surface[x1 + i - 1] = baseY
 	}
 
-	walkSurface(surface, x0 - shoulder - 1, -1, baseY, { minY, maxY, seed })
-	walkSurface(surface, x1 + shoulder, 1, baseY, { minY, maxY, seed })
+	walkSurface(surface, x0 - shoulder - 1, -1, baseY, {
+		minY, maxY, seed, hashOrigin: footX0,
+	})
+	walkSurface(surface, x1 + shoulder, 1, baseY, {
+		minY, maxY, seed, hashOrigin: footX0,
+	})
 
 	softClampSpikes(surface, W)
 	ensureTallLand(surface, {
@@ -139,10 +231,10 @@ function buildSurface(W, {
  * @param {number} startX first column to write
  * @param {number} dir +1 rightward / -1 leftward
  * @param {number} startY height at the adjacent anchor
- * @param {{ minY: number, maxY: number, seed: number }} opts parameter
+ * @param {{ minY: number, maxY: number, seed: number, hashOrigin?: number }} opts parameter
  * @returns {*} result
  */
-function walkSurface(surface, startX, dir, startY, { minY, maxY, seed }) {
+function walkSurface(surface, startX, dir, startY, { minY, maxY, seed, hashOrigin = 0 }) {
 	const W = surface.length
 	if (startX < 0 || startX >= W) return
 
@@ -150,20 +242,21 @@ function walkSurface(surface, startX, dir, startY, { minY, maxY, seed }) {
 	let slope = 0
 	let plateau = 0
 	for (let x = startX; dir > 0 ? x < W : x >= 0; x += dir) {
-		const r = hash01(x + seed, 3)
-		const feature = hash01(x + seed * 2, 19)
+		const hx = x - hashOrigin
+		const r = hash01(hx + seed, 3)
+		const feature = hash01(hx + seed * 2, 19)
 
 		if (plateau > 0)
 			plateau--
 		else if (feature > 0.92) {
-			const drop = 2 + (hash01(x, seed + 7) * 3 | 0)
-			y += hash01(x, seed + 8) > 0.5 ? drop : -drop
+			const drop = 2 + (hash01(hx, seed + 7) * 3 | 0)
+			y += hash01(hx, seed + 8) > 0.5 ? drop : -drop
 			slope = 0
-			plateau = 1 + (hash01(x, seed + 9) * 3 | 0)
+			plateau = 1 + (hash01(hx, seed + 9) * 3 | 0)
 		}
 		else if (feature > 0.78) {
 			slope = 0
-			plateau = 3 + (hash01(x, seed + 11) * 6 | 0)
+			plateau = 3 + (hash01(hx, seed + 11) * 6 | 0)
 		}
 		else if (feature > 0.62)
 			slope = Math.max(-2, Math.min(2, slope + (r > 0.5 ? 1 : -1)))
@@ -291,15 +384,17 @@ export function tallLandCoverage(terrain, { viewH, viewW }) {
  * @param {number} W width
  * @param {number} H height
  * @param {number} seed seed
+ * @param {number} originX stable horizontal terrain origin
+ * @param {number} originY stable vertical terrain origin
  * @returns {*} result
  */
-function carveNoiseCaves(solid, surface, W, H, seed) {
+function carveNoiseCaves(solid, surface, W, H, seed, originX, originY) {
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (!solid[cell] || y <= surface[x] + 1) continue
 			const depth = y - surface[x]
-			const n = fbm2(x * 0.11, y * 0.13, seed)
+			const n = fbm2((x - originX) * 0.11, (y - originY) * 0.13, seed)
 			const threshold = 0.58 - Math.min(0.22, depth * 0.018)
 			if (n > threshold) solid[cell] = 0
 		}

@@ -15,7 +15,7 @@ import {
 	bodyX, bodyY, bodyD, bodyCount, maxBodyD, maxPillarH,
 } from './icon.mjs'
 import { terminalSize } from './player.mjs'
-import { generateTerrain } from './terrain.mjs'
+import { generateTerrain, resizeTerrain } from './terrain.mjs'
 
 /** @typedef {ReturnType<typeof createAnimState>} AnimState */
 /** @typedef {ReturnType<typeof createWorld>} FluidWorld */
@@ -26,6 +26,8 @@ import { generateTerrain } from './terrain.mjs'
 const VIEW_MARGIN = 28
 /** Extra world rows below the view. */
 const BOTTOM_EXTRA = 6
+/** Soil-settling ticks applied to newly exposed terrain after expansion. */
+export const RESIZE_WEATHER_TICKS = 12
 /** Ground-runoff search offsets (near → far). */
 const GROUND_DX = Object.freeze([0, -1, 1, -2, 2, -3, 3, -4, 4])
 
@@ -88,14 +90,15 @@ export const createAnimState = (opts = {}) => {
 		softBase: false,
 		softPillars: false,
 		softBody: false,
-		matKey: 0,
+		matKey: -1,
 		frameCh: null,
 		frameFg: null,
 	}
 }
 
 /**
- * Rebuild world/terrain for a new view size, reprojecting liquid/moisture/particles by centre shift.
+ * Resize around the icon, retaining existing terrain/dynamics and generating only
+ * newly exposed terrain. New soil starts rain-saturated and settles briefly.
  * @param {AnimState} state animation state
  * @param {{ width: number, height: number }} size new view size
  * @returns {AnimState} same state, resized in place
@@ -106,14 +109,19 @@ export const resizeAnimState = (state, { width, height }) => {
 	if (width === state.width && height === state.height) return state
 
 	const old = state.world
-	const oldCx = old.ox + state.width / 2
-	const oldCy = state.height / 2
 
 	const newWorld = createWorld({ width, height, margin: VIEW_MARGIN, bottomExtra: BOTTOM_EXTRA })
-	const { iconOx, iconOy, terrain } = placeIcon(newWorld, width, height, state.seed)
+	const iconOx = newWorld.ox + Math.floor((width - ICON_W) / 2)
+	const iconOy = Math.floor((height - ICON_H) / 2)
+	const { terrain, addedSolid } = resizeTerrain(state.terrain, newWorld, {
+		iconOx, iconOy, seed: state.seed,
+		iconBaseRows: ICON_BASE_ROWS,
+		iconBaseX0: ICON_BASE_X0,
+		iconBaseX1: ICON_BASE_X0 + BASE_WIDTH,
+	})
 
-	const shiftX = (newWorld.ox + width / 2) - oldCx
-	const shiftY = (height / 2) - oldCy
+	const shiftX = iconOx - state.iconOx
+	const shiftY = iconOy - state.iconOy
 
 	for (let y = 0; y < old.worldH; y++)
 		for (let x = 0; x < old.worldW; x++) {
@@ -148,9 +156,22 @@ export const resizeAnimState = (state, { width, height }) => {
 	state.iconOx = iconOx
 	state.iconOy = iconOy
 	state.terrain = terrain
-	state.matKey = 0
+	state.matKey = -1
 	state.frameCh = null
 	state.frameFg = null
+	rebuildMaterials(state)
+
+	let hasAddedSoil = false
+	for (let i = 0; i < addedSolid.length; i++) {
+		if (!addedSolid[i] || (newWorld.mat[i] !== MAT.HORIZON && newWorld.mat[i] !== MAT.SOLID)) continue
+		newWorld.moisture[i] = SOIL_CAP
+		hasAddedSoil = true
+	}
+	if (hasAddedSoil)
+		for (let tick = 0; tick < RESIZE_WEATHER_TICKS; tick++) {
+			labelAirRegions(newWorld)
+			stepLiquid(newWorld)
+		}
 	return state
 }
 

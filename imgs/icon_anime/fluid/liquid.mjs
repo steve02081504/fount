@@ -1,5 +1,8 @@
 /**
- * Grid liquid: gravity, side flow, soil seepage, hydraulic equalization.
+ * Grid liquid: gravity, side flow, soil seepage, hydrostatic / hydraulic equalization.
+ *
+ * Free-liquid pressure: P_air(surface) + RHO_G · depth. Transfers follow ΔP
+ * (Torricelli-ish orifices). High sealed gas pressure resists / pushes liquid.
  */
 
 import { hash01, ORTHO } from '../hash.mjs'
@@ -11,9 +14,14 @@ import {
 	COND_DRIP, COND_MATTHEW_RATE, COND_MATTHEW_NOISE,
 	isSoilMat, isLiquidBarrier, soilAbsorbFactor,
 } from './mat.mjs'
-import { scratch, growScratch, idx, addLiquid } from './world.mjs'
+import { scratch, growScratch, idx, inWorld, addLiquid } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+
+/** Max mass moved by a single pressure-driven transfer (per edge, per tick). */
+const P_FLOW_CAP = 0.45
+/** Scale: mass ∝ ΔP / RHO_G (cell-head units). */
+const P_FLOW_GAIN = 0.55
 
 /**
  * Whether free liquid can enter `(x, y)`.
@@ -29,6 +37,35 @@ const canOccupy = (w, x, y) => {
 	if (isLiquidBarrier(m)) return false
 	if (m === MAT.POOL) return w.liq[i] < LIQ_FULL
 	return true
+}
+
+/**
+ * Hydrostatic liquid pressure at `(x, y)`.
+ * Air / dry cells → gas `pressureAt`. Wet cells → P_air(free surface) + RHO_G·depth.
+ * @param {FluidWorld} w world
+ * @param {number} x column
+ * @param {number} y row
+ * @returns {number} pressure
+ */
+export const liquidPressureAt = (w, x, y) => {
+	if (!inWorld(w, x, y)) return pressureAt(w, x, Math.max(0, y))
+	const i = idx(w, x, y)
+	const L = w.liq[i]
+	if (L < LIQ_DRAW && !isLiquidBarrier(w.mat[i]))
+		return pressureAt(w, x, y)
+
+	let surf = y
+	while (surf > 0) {
+		const above = idx(w, x, surf - 1)
+		if (isLiquidBarrier(w.mat[above])) break
+		if (w.liq[above] < LIQ_DRAW) break
+		surf--
+	}
+
+	const airY = surf > 0 && !isLiquidBarrier(w.mat[idx(w, x, surf - 1)]) ? surf - 1 : surf
+	const airP = pressureAt(w, x, airY)
+	const depth = (y - surf) + Math.min(1, Math.max(L, LIQ_DRAW))
+	return airP + RHO_G * depth
 }
 
 /**
@@ -58,7 +95,7 @@ const labelLiquidSurfaces = (w) => {
 				const cy = q[qi + 1]
 				const aboveY = cy - 1
 				if (aboveY < 0)
-					surfaces.push({ x: cx, y: cy, component: id, pressure: P_ATM })
+					surfaces.push({ x: cx, y: cy, component: id, pressure: pressureAt(w, cx, 0) })
 				else {
 					const ai = aboveY * W + cx
 					if (!isLiquidBarrier(mat[ai]) && liq[ai] < LIQ_DRAW)
@@ -127,6 +164,20 @@ const equalizeHydraulic = (w) => {
 			w.liq[di] += m
 		}
 	}
+}
+
+/**
+ * Mass transferable from src → dst under pressure head (clamped).
+ * @param {number} pSrc source pressure
+ * @param {number} pDst destination pressure
+ * @param {number} srcLiq available mass
+ * @param {number} dstRoom free capacity at dest
+ * @returns {number} move amount
+ */
+const pressureMove = (pSrc, pDst, srcLiq, dstRoom) => {
+	const head = (pSrc - pDst) / RHO_G
+	if (head <= 0.02 || srcLiq <= 0 || dstRoom <= 0) return 0
+	return Math.min(P_FLOW_CAP, srcLiq, dstRoom, head * P_FLOW_GAIN)
 }
 
 /**
@@ -358,12 +409,20 @@ export const stepLiquid = (w) => {
 				const retain = mat[i] === MAT.POOL
 				const intoPool = mat[below] === MAT.POOL
 				if (!(retain && !intoPool && liq[i] < 0.92)) {
-					const resist = Math.max(0, (pressureAt(w, x, y + 1) - P_ATM) * 0.35)
-					const move = Math.min(liq[i], Math.max(0, LIQ_FULL - liq[below] - resist))
-					liq[i] -= move
-					liq[below] += move
-					noteFlow(i, below, 0, 1, move)
-					continue
+					const pSrc = liquidPressureAt(w, x, y)
+					const pDst = liquidPressureAt(w, x, y + 1)
+					const room = LIQ_FULL - liq[below]
+					let move = pressureMove(pSrc, pDst, liq[i], room)
+					// Gravity bias: a full cell always wants to fall into emptier space below
+					// when destination gas is not strongly over-pressured.
+					if (move < 0.01 && liq[below] < liq[i] && pDst < pSrc + RHO_G * 0.85)
+						move = Math.min(liq[i], room, Math.max(0.08, (liq[i] - liq[below]) * 0.85))
+					if (move > 0) {
+						liq[i] -= move
+						liq[below] += move
+						noteFlow(i, below, 0, 1, move)
+						continue
+					}
 				}
 			}
 			const dir = (x + y) & 1 ? 1 : -1
@@ -374,7 +433,11 @@ export const stepLiquid = (w) => {
 				const ni = ny * W + nx
 				if (liq[ni] >= liq[i]) continue
 				if (mat[i] === MAT.POOL && mat[ni] !== MAT.POOL && liq[i] < 0.92) continue
-				const move = Math.min(liq[i] * 0.5, (liq[i] - liq[ni]) * 0.5, LIQ_FULL - liq[ni])
+				const pSrc = liquidPressureAt(w, x, y)
+				const pDst = liquidPressureAt(w, nx, ny)
+				let move = pressureMove(pSrc, pDst, liq[i] * 0.5, LIQ_FULL - liq[ni])
+				if (move <= 0.01)
+					move = Math.min(liq[i] * 0.5, (liq[i] - liq[ni]) * 0.5, LIQ_FULL - liq[ni])
 				if (move <= 0.01) continue
 				liq[i] -= move
 				liq[ni] += move
@@ -387,10 +450,18 @@ export const stepLiquid = (w) => {
 		for (let x = 0; x < W; x++) {
 			const i = y * W + x
 			if (liq[i] <= 0.05 || isLiquidBarrier(mat[i])) continue
+			const pSrc = liquidPressureAt(w, x, y)
+			// Free-surface cell: air/barrier above — sheet creep by level, not Torricelli.
+			const freeSurface = y === 0
+				|| isLiquidBarrier(mat[i - W])
+				|| liq[i - W] < LIQ_DRAW
 			for (const dx of [-1, 1]) {
 				const nx = x + dx
 				if (nx < 0 || nx >= W) {
-					const move = liq[i] * 0.25
+					// Edge sink: surface films drip slowly; submerged heads vent by ΔP.
+					const move = freeSurface
+						? liq[i] * 0.25
+						: Math.min(liq[i], Math.max(liq[i] * 0.2, (pSrc - pressureAt(w, x, y)) * 0.25))
 					liq[i] -= move
 					flowX[i] += dx * move
 					continue
@@ -401,13 +472,66 @@ export const stepLiquid = (w) => {
 				const rid = w.regionId[ni]
 				if (liq[ni] <= 0.05 && rid) {
 					const region = w.regions[rid]
-					if (region && !region.openToAtm && region.pressure > P_ATM * 1.15) continue
+					// Sealed over-pressure blocks invasion when gas P exceeds liquid P.
+					if (region && !region.openToAtm && region.pressure > pSrc + 0.05) continue
 				}
-				if (liq[ni] >= liq[i] - 0.02) continue
-				const move = Math.min((liq[i] - liq[ni]) * 0.25, LIQ_FULL - liq[ni])
+				const pDst = liquidPressureAt(w, nx, y)
+				const room = LIQ_FULL - liq[ni]
+				let move = 0
+				if (freeSurface && liq[ni] < LIQ_DRAW) {
+					// Surface → open air at same row: equalize fill, no pressurized jet.
+					if (liq[ni] >= liq[i] - 0.02) continue
+					move = Math.min((liq[i] - liq[ni]) * 0.25, room)
+				}
+				else {
+					if (pDst >= pSrc - 0.02 && liq[ni] >= liq[i] - 0.02) continue
+					move = pressureMove(pSrc, pDst, liq[i], room)
+					if (move < 0.01 && liq[ni] < liq[i] - 0.02)
+						move = Math.min((liq[i] - liq[ni]) * 0.25, room)
+				}
+				if (move <= 0) continue
 				liq[i] -= move
 				liq[ni] += move
 				noteFlow(i, ni, dx, 0, move)
+			}
+		}
+
+	// High sealed gas pushes adjacent free liquid away (down preferred, else sideways).
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const i = y * W + x
+			const rid = w.regionId[i]
+			if (!rid || liq[i] >= LIQ_DRAW) continue
+			const region = w.regions[rid]
+			if (!region || region.openToAtm || region.pressure <= P_ATM * 1.2) continue
+			const gasP = region.pressure
+			for (const [dx, dy] of ORTHO) {
+				const nx = x + dx
+				const ny = y + dy
+				if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
+				const ni = ny * W + nx
+				if (liq[ni] < LIQ_DRAW || isLiquidBarrier(mat[ni])) continue
+				const lP = liquidPressureAt(w, nx, ny)
+				if (gasP <= lP + 0.08) continue
+				const push = Math.min(0.2, liq[ni] * 0.35, (gasP - lP) * 0.15)
+				if (push < 0.02) continue
+				// Prefer deeper / down-slope dest away from the gas cell.
+				const tx = nx + dx
+				const ty = ny + (dy === 0 ? 1 : dy)
+				if (canOccupy(w, tx, ty) && liq[idx(w, tx, ty)] < LIQ_FULL) {
+					const ti = idx(w, tx, ty)
+					const m = Math.min(push, LIQ_FULL - liq[ti], liq[ni])
+					liq[ni] -= m
+					liq[ti] += m
+					noteFlow(ni, ti, tx - nx, ty - ny, m)
+				}
+				else if (dy === 0 && ny + 1 < H && canOccupy(w, nx, ny + 1)) {
+					const ti = idx(w, nx, ny + 1)
+					const m = Math.min(push, LIQ_FULL - liq[ti], liq[ni])
+					liq[ni] -= m
+					liq[ti] += m
+					noteFlow(ni, ti, 0, 1, m)
+				}
 			}
 		}
 

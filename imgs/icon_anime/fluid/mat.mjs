@@ -26,11 +26,20 @@ const MAT_FLAGS = new Uint8Array([
 	MF_BLOCK | MF_LIQ_BARRIER, // SEAL
 ])
 
-/** Atmospheric reference pressure. */
+/** Atmospheric reference pressure (sky / region mean for open air). */
 export const P_ATM = 1
 
-/** Liquid density × gravity scale for hydraulic φ. */
+/** Liquid density × gravity — hydrostatic head and hydraulic φ. */
 export const RHO_G = 1
+
+/** Gas density for dynamic / Bernoulli pressure ½ρu². */
+export const RHO_AIR = 1
+
+/** Open-air hydrostatic rise per row downward (y↓ → P↑). */
+export const ATM_HYDRO = 0.018
+
+/** Gas velocity drive from neighbor static-pressure ΔP (cells / tick per ΔP). */
+export const GAS_DP_DRIVE = 0.55
 
 /** Max moisture a soil cell can hold. */
 export const SOIL_CAP = 1

@@ -1,11 +1,16 @@
 /**
  * Air regions (Boyle), global wind, gas velocity field.
  * Caller must `labelAirRegions` before `stepGas` / pressure queries.
+ *
+ * Open air: P = P_ATM + ATM_HYDRO·y; sealed: isothermal Boyle.
+ * Velocity: wind shear + nozzle continuity + neighbor static-ΔP (Bernoulli feedback).
  */
 
 import { hash01, fbm1d } from '../hash.mjs'
 
-import { P_ATM, RHO_G, LIQ_DRAW, isBlockMat } from './mat.mjs'
+import {
+	P_ATM, RHO_AIR, ATM_HYDRO, GAS_DP_DRIVE, LIQ_DRAW, isBlockMat,
+} from './mat.mjs'
 import { scratch, idx, inWorld } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
@@ -178,24 +183,34 @@ export const labelAirRegions = (world) => {
 }
 
 /**
- * Pressure at cell from its air region (liquid cells use overlying air or atm).
+ * Thermodynamic / hydrostatic gas pressure at a cell (no dynamic Bernoulli term).
+ * Open air: P_ATM + ATM_HYDRO·y. Sealed: uniform Boyle region pressure.
+ * Liquid cells use overlying air (or atm).
  * @param {FluidWorld} world fluid world
  * @param {number} x column
  * @param {number} y row
  * @returns {number} pressure
  */
 export const pressureAt = (world, x, y) => {
-	if (!inWorld(world, x, y)) return P_ATM
+	if (!inWorld(world, x, y)) return P_ATM + ATM_HYDRO * Math.max(0, y)
 	const cell = idx(world, x, y)
 	const rid = world.regionId[cell]
-	if (rid) return world.regions[rid].pressure
+	if (rid) {
+		const region = world.regions[rid]
+		if (region.openToAtm) return region.pressure + ATM_HYDRO * y
+		return region.pressure
+	}
 	for (let yy = y - 1; yy >= 0; yy--) {
 		const above = idx(world, x, yy)
 		if (isBlockMat(world.mat[above])) break
 		const aboveRid = world.regionId[above]
-		if (aboveRid) return world.regions[aboveRid].pressure
+		if (aboveRid) {
+			const region = world.regions[aboveRid]
+			if (region.openToAtm) return region.pressure + ATM_HYDRO * yy
+			return region.pressure
+		}
 	}
-	return P_ATM
+	return P_ATM + ATM_HYDRO * y
 }
 
 /**
@@ -264,10 +279,11 @@ export const gasVelocityAt = (world, x, y) => {
  * @param {number} [uy=0] vertical speed
  * @returns {number} dynamic pressure
  */
-export const dynamicPressure = (ux, uy = 0) => 0.5 * RHO_G * (ux * ux + uy * uy)
+export const dynamicPressure = (ux, uy = 0) => 0.5 * RHO_AIR * (ux * ux + uy * uy)
 
 /**
- * Bernoulli static-pressure proxy: P₀ − ½ρu² (clamped).
+ * Bernoulli static pressure: thermodynamic P − ½ρu² (clamped).
+ * Used both as a query and as the field that drives neighbor ΔP in `stepGas`.
  * @param {FluidWorld} world fluid world
  * @param {number} x column
  * @param {number} y row
@@ -318,7 +334,8 @@ const fillGasSpans = (blocked, W, H, outVert, outHoriz) => {
 }
 
 /**
- * Advance open-air / cavity gas velocity: wind shear, nozzle continuity, wall slip.
+ * Advance open-air / cavity gas velocity: wind shear, nozzle continuity,
+ * wall slip, and neighbor static-pressure ΔP (Bernoulli suction feedback).
  * Requires a prior `labelAirRegions` for the current mat/liq topology.
  * @param {FluidWorld} world fluid world
  * @param {{ time?: number, seed?: number, forceWind?: number }} [opts] drive options
@@ -337,6 +354,7 @@ export const stepGas = (world, opts = {}) => {
 	const blocked = scratch(world, 'gasBlocked', n, Uint8Array)
 	const vertSpan = scratch(world, 'gasVertSpan', n, Uint16Array)
 	const horizSpan = scratch(world, 'gasHorizSpan', n, Uint16Array)
+	const staticP = scratch(world, 'gasStaticP', n, Float32Array)
 	nextUx.fill(0)
 	nextUy.fill(0)
 
@@ -345,6 +363,20 @@ export const stepGas = (world, opts = {}) => {
 
 	// Cache synoptic wind once per tick — shear only varies by row.
 	const wind0 = forced !== undefined ? forced : globalWindAt(time, seed)
+
+	// Static pressure field from current velocity (Bernoulli) for ΔP drive.
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const cell = y * W + x
+			if (blocked[cell]) {
+				staticP[cell] = 0
+				continue
+			}
+			staticP[cell] = Math.max(
+				0.05,
+				pressureAt(world, x, y) - dynamicPressure(gasUx[cell], gasUy[cell]),
+			)
+		}
 
 	for (let y = 0; y < H; y++) {
 		const drive = wind0 * windShear(y, H)
@@ -362,6 +394,13 @@ export const stepGas = (world, opts = {}) => {
 			const openR = x + 1 < W && !blocked[cell + 1]
 			const openU = y > 0 && !blocked[cell - W]
 			const openD = y + 1 < H && !blocked[cell + W]
+
+			// Flow toward lower static P: accel along (dx,dy) ∝ (pSelf − pNeighbor).
+			const p0 = staticP[cell]
+			if (openL) tx += -1 * (p0 - staticP[cell - 1]) * GAS_DP_DRIVE
+			if (openR) tx += (p0 - staticP[cell + 1]) * GAS_DP_DRIVE
+			if (openU) ty += -1 * (p0 - staticP[cell - W]) * GAS_DP_DRIVE
+			if (openD) ty += (p0 - staticP[cell + W]) * GAS_DP_DRIVE
 
 			const span = vertSpan[cell]
 			if (span <= 4) {

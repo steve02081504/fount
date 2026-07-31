@@ -137,13 +137,16 @@ Deno.test('hold: pool liquid leaks to the next base slab', () => {
 	gen.return?.()
 })
 
-Deno.test('resizeAnimState: preserves seed and stage, changes size', () => {
+Deno.test('resizeAnimState: preserves terrain and weathers only newly exposed soil', () => {
 	const state = createAnimState({ width: 50, height: 28, seed: 11 })
 	state.baseBot = state.baseTop = layout.BASE_WIDTH
 	state.pillars = layout.maxPillarH
 	state.bodyReach = layout.maxBodyD
 	state.frame = 40
 	addLiquid(state.world, state.world.ox + 8, 12, 0.8)
+	const oldTerrain = state.terrain
+	const oldIconOx = state.iconOx
+	const oldIconOy = state.iconOy
 
 	resizeAnimState(state, { width: 70, height: 36 })
 	assertEquals(state.width, 70)
@@ -152,6 +155,28 @@ Deno.test('resizeAnimState: preserves seed and stage, changes size', () => {
 	assertEquals(state.pillars, layout.maxPillarH)
 	assertEquals(state.frame, 40)
 	assertEquals(state.terrain.surface.length, state.world.worldW)
+
+	const dx = state.iconOx - oldIconOx
+	const dy = state.iconOy - oldIconOy
+	for (let x = 0; x < oldTerrain.worldW; x++)
+		assertEquals(state.terrain.surface[x + dx], oldTerrain.surface[x] + dy)
+	for (let y = 0; y < oldTerrain.worldH; y++)
+		for (let x = 0; x < oldTerrain.worldW; x++)
+			assertEquals(
+				state.terrain.solid[(y + dy) * state.world.worldW + x + dx],
+				oldTerrain.solid[y * oldTerrain.worldW + x],
+			)
+
+	let wetAddedSoil = 0
+	for (let y = 0; y < state.world.worldH; y++)
+		for (let x = 0; x < state.world.worldW; x++) {
+			const fromOld = x >= dx && x < dx + oldTerrain.worldW &&
+				y >= dy && y < dy + oldTerrain.worldH
+			const i = idx(state.world, x, y)
+			if (!fromOld && state.terrain.solid[i] && state.world.moisture[i] > 0)
+				wetAddedSoil++
+		}
+	assertGreater(wetAddedSoil, 0)
 })
 
 Deno.test('renderGrid: fixed height/width', () => {

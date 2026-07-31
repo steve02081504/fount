@@ -6,7 +6,8 @@ import { assert, assertAlmostEquals, assertEquals, assertGreater, assertLess } f
 
 import {
 	MAT, createWorld, setMat, addLiquid, addMoisture, stepLiquid, stepSoil, stepGas, stepParticles,
-	labelAirRegions, pressureAt, totalSealedGas, totalGridWater, P_ATM, clearMaterials, idx,
+	labelAirRegions, pressureAt, liquidPressureAt, totalSealedGas, totalGridWater, P_ATM, ATM_HYDRO,
+	clearMaterials, idx, RHO_G, RHO_AIR,
 	COND_DRIP, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQ_DRAW,
 	waterChar, liquidChar, pickWaterGlyph, FALL_HEAVY,
 	WATER_STILL, WATER_FALL, WATER_HIGH_L, WATER_HIGH_R, WATER_LOW_DL, WATER_LOW_DR,
@@ -141,11 +142,92 @@ Deno.test('fluid: U-tube liquid levels approach equalization under open air', ()
 	assertLess(Math.abs(left1 - right1), 3)
 })
 
-Deno.test('fluid: pressureAt returns atm above open liquid', () => {
+Deno.test('fluid: open-air pressure rises with depth', () => {
+	const w = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
+	labelAirRegions(w)
+	const sky = pressureAt(w, 8, 1)
+	const ground = pressureAt(w, 8, w.worldH - 3)
+	assertAlmostEquals(sky, P_ATM + ATM_HYDRO * 1, 1e-9)
+	assertGreater(ground, sky)
+	assertAlmostEquals(ground - sky, ATM_HYDRO * ((w.worldH - 3) - 1), 1e-9)
+})
+
+Deno.test('fluid: pressureAt above open liquid follows air hydrostatic', () => {
 	const w = createWorld({ width: 12, height: 10, margin: 1, bottomExtra: 1 })
 	addLiquid(w, 5, 5, 1)
 	labelAirRegions(w)
-	assertEquals(pressureAt(w, 5, 4), P_ATM)
+	assertAlmostEquals(pressureAt(w, 5, 4), P_ATM + ATM_HYDRO * 4, 1e-9)
+})
+
+Deno.test('fluid: liquid column pressure grows with depth', () => {
+	const w = createWorld({ width: 14, height: 16, margin: 1, bottomExtra: 1 })
+	clearMaterials(w)
+	// Open tank: floor + walls
+	for (let x = 5; x <= 9; x++) setMat(w, x, 12, MAT.SEAL)
+	for (let y = 4; y <= 12; y++) {
+		setMat(w, 5, y, MAT.SEAL)
+		setMat(w, 9, y, MAT.SEAL)
+	}
+	for (let y = 7; y <= 11; y++)
+		for (let x = 6; x <= 8; x++)
+			addLiquid(w, x, y, 1)
+	labelAirRegions(w)
+	const pTop = liquidPressureAt(w, 7, 7)
+	const pBot = liquidPressureAt(w, 7, 11)
+	assertGreater(pBot - pTop, RHO_G * 3.5)
+})
+
+Deno.test('fluid: deeper orifice vents more mass than shallow', () => {
+	/**
+	 * @param {number} fillTop top liquid row
+	 * @returns {number} mass lost through side hole after steps
+	 */
+	const drain = (fillTop) => {
+		const w = createWorld({ width: 18, height: 16, margin: 1, bottomExtra: 1 })
+		clearMaterials(w)
+		for (let x = 4; x <= 10; x++) setMat(w, x, 12, MAT.SEAL)
+		for (let y = 3; y <= 12; y++) {
+			setMat(w, 4, y, MAT.SEAL)
+			setMat(w, 10, y, MAT.SEAL)
+		}
+		// Side hole at mid height on right wall
+		w.mat[idx(w, 10, 9)] = MAT.AIR
+		for (let y = fillTop; y <= 11; y++)
+			for (let x = 5; x <= 9; x++)
+				addLiquid(w, x, y, 1)
+		const before = totalGridWater(w)
+		for (let i = 0; i < 12; i++) stepLiquid(w)
+		// Mass that left through the hole into x>=10 or edge sink
+		let outside = 0
+		for (let y = 0; y < w.worldH; y++)
+			for (let x = 10; x < w.worldW; x++)
+				outside += w.liq[idx(w, x, y)]
+		const lost = before - totalGridWater(w)
+		return outside + lost
+	}
+	assertGreater(drain(5), drain(9) * 1.15)
+})
+
+Deno.test('fluid: sealed over-pressure blocks liquid invasion', () => {
+	const w = sealedBox({ fillBottom: 0 })
+	labelAirRegions(w)
+	// Shrink cavity air by filling most cells → high Boyle P
+	for (let x = 5; x <= 9; x++)
+		for (let y = 6; y <= 9; y++)
+			addLiquid(w, x, y, 1)
+	labelAirRegions(w)
+	const sealed = w.regions.find(r => r && !r.openToAtm)
+	assert(sealed)
+	assertGreater(sealed.pressure, P_ATM * 1.5)
+	// Leave a thin air pocket at top; try to shove more liquid in from a side breach setup —
+	// instead: open a one-cell gap and ensure liquid does not flood the remaining high-P air.
+	setMat(w, 4, 5, MAT.AIR)
+	const airCell = idx(w, 7, 5)
+	assert(w.liq[airCell] < LIQ_DRAW)
+	const airBefore = w.liq[airCell]
+	for (let i = 0; i < 20; i++) stepLiquid(w)
+	// Remaining top air should stay mostly empty under over-pressure (or cavity vents carefully)
+	assertLess(w.liq[airCell] - airBefore, 0.85)
 })
 
 Deno.test('fluid: BODY rejects free liquid (impact shell, not a pool)', () => {
@@ -479,7 +561,7 @@ Deno.test('fluid: wind-tunnel throat is faster than wide section (continuity)', 
 
 Deno.test('fluid: Bernoulli — higher speed carries higher dynamic pressure', () => {
 	assertGreater(dynamicPressure(1.2), dynamicPressure(0.4))
-	assertAlmostEquals(dynamicPressure(2, 0), 0.5 * 1 * 4, 1e-9)
+	assertAlmostEquals(dynamicPressure(2, 0), 0.5 * RHO_AIR * 4, 1e-9)
 })
 
 Deno.test('fluid: Bernoulli — tunnel throat has lower static pressure', () => {
@@ -500,6 +582,26 @@ Deno.test('fluid: Bernoulli — tunnel throat has lower static pressure', () => 
 	const pWide = staticPressureAt(w, 10, 6)
 	const pThroat = staticPressureAt(w, 17, 6)
 	assertLess(pThroat, pWide)
+})
+
+Deno.test('fluid: Bernoulli ΔP drive reinforces suction into the throat', () => {
+	const w = createWorld({ width: 36, height: 16, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	for (let x = 4; x <= 30; x++) {
+		setMat(w, x, 4, MAT.SEAL)
+		setMat(w, x, 8, MAT.SEAL)
+	}
+	for (let x = 16; x <= 18; x++) {
+		setMat(w, x, 5, MAT.SEAL)
+		setMat(w, x, 7, MAT.SEAL)
+	}
+	labelAirRegions(w)
+	for (let i = 0; i < 50; i++)
+		stepGas(w, { time: i, seed: 0, forceWind: 0.9 })
+
+	// Upstream of throat should feed into it (positive ux), and throat stays faster than wide.
+	assertGreater(w.gasUx[idx(w, 14, 6)], 0.05)
+	assertGreater(Math.abs(w.gasUx[idx(w, 17, 6)]), Math.abs(w.gasUx[idx(w, 10, 6)]) * 1.1)
 })
 
 Deno.test('fluid: flow stagnates against a solid face', () => {

@@ -2,8 +2,8 @@
  * Particle / grid-liquid / gas-flow engine for ASCII scenes.
  *
  * Air regions carry conserved gas mass; sealed cavities follow isothermal Boyle.
- * Open air carries a velocity field with height shear + nozzle continuity.
- * Communicating vessels equalize φ = P/(ρg) - surfaceY.
+ * Open air: hydrostatic P + velocity (wind shear, nozzle, Bernoulli ΔP drive).
+ * Free liquid: hydrostatic depth pressure; communicating vessels equalize φ.
  * Soil stores moisture; seepage feeds underside condensation that drips.
  *
  * Call `labelAirRegions` before `stepGas` / `pressureAt`. `stepLiquid` labels once at entry.
@@ -13,7 +13,7 @@
  *
  */
 export {
-	MAT, P_ATM, RHO_G,
+	MAT, P_ATM, RHO_G, RHO_AIR, ATM_HYDRO, GAS_DP_DRIVE,
 	SOIL_CAP, SOIL_ABSORB_RATE, SOIL_ABSORB_EXPO, SOIL_HIT_ABSORB_FRAC,
 	SOIL_SIDE_FRAC, SOIL_DOWN_FRAC, SOIL_CONDENSE_FRAC,
 	COND_DRAW, COND_DRIP, COND_MATTHEW_RATE, COND_MATTHEW_NOISE,
@@ -51,7 +51,7 @@ export {
 /**
  *
  */
-export { stepSoil, stepLiquid } from './liquid.mjs'
+export { liquidPressureAt, stepSoil, stepLiquid } from './liquid.mjs'
 
 /**
  *
