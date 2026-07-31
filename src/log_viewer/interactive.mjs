@@ -37,6 +37,8 @@ import {
  * @property {() => Promise<void>} clear - 清空日志区。
  * @property {(text: string) => Promise<void>} showInitialInfo - 显示 logo 与初始信息。
  * @property {() => void} focusInput - 重绘 REPL 输入区。
+ * @property {() => void} suspend - 释放 stdin（供 logo 等待动画接管）。
+ * @property {() => void} resume - 收回 stdin 并恢复 REPL 输入。
  * @property {() => void} tearDown - 退出前擦除 REPL 区并恢复全屏滚动。
  */
 
@@ -401,6 +403,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 * @returns {void}
 	 */
 	function startInputLoop() {
+		if (stdinListener || replTornDown) return
 		try { process.stdin.setRawMode?.(true) } catch { /* 非 TTY */ }
 		process.stdin.resume()
 		/**
@@ -415,17 +418,24 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	}
 
 	/**
-	 * 恢复 stdin 为 cooked 模式并停止监听。
+	 * 停止 stdin 监听并恢复 cooked 模式（不触碰 tearDown / abort 标志）。
+	 * @returns {void}
+	 */
+	function stopInputLoop() {
+		if (!stdinListener) return
+		process.stdin.off('data', stdinListener)
+		stdinListener = null
+		try { process.stdin.setRawMode?.(false) } catch { /* ignore */ }
+		try { process.stdin.pause() } catch { /* ignore */ }
+	}
+
+	/**
+	 * 恢复 stdin 为 cooked 模式并停止监听（tearDown 路径：永久中止输入循环）。
 	 * @returns {void}
 	 */
 	function restoreStdin() {
 		stdinReadAbort = true
-		if (stdinListener) {
-			process.stdin.off('data', stdinListener)
-			stdinListener = null
-		}
-		try { process.stdin.setRawMode?.(false) } catch { /* ignore */ }
-		try { process.stdin.pause() } catch { /* ignore */ }
+		stopInputLoop()
 	}
 
 	/**
@@ -1063,7 +1073,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		}
 		if (kitty === 'interrupt' || (event.ctrlKey && event.key === 'c')) {
 			tearDownRepl()
-			process.kill(process.pid, 'SIGINT')
+			process.exit(130)
 			return
 		}
 
@@ -1305,7 +1315,25 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 		scheduleInputRedraw()
 	}
 
+	/**
+	 * 暂时交出 stdin（不拆除 REPL 画面；alt-screen logo 会盖住主缓冲）。
+	 * @returns {void}
+	 */
+	function suspend() {
+		if (replTornDown) return
+		stopInputLoop()
+	}
+
+	/**
+	 * logo 结束后收回 stdin。
+	 * @returns {void}
+	 */
+	function resume() {
+		if (replTornDown) return
+		startInputLoop()
+	}
+
 	// #endregion
 
-	return { writeEntry, appendText, clear, showInitialInfo, focusInput, tearDown: tearDownRepl }
+	return { writeEntry, appendText, clear, showInitialInfo, focusInput, suspend, resume, tearDown: tearDownRepl }
 }
