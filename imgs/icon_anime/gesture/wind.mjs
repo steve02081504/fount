@@ -110,11 +110,17 @@ export const clearWindGesture = (gesture) => {
  */
 export const windPointer = (gesture, { x, y, right }) => {
 	applyPointer(gesture, x, y, right, {
+		/**
+		 *
+		 */
 		onDown() {
 			gesture.lx = x
 			gesture.ly = y
 			resetWindDrive(gesture)
 		},
+		/**
+		 *
+		 */
 		onUp() {
 			clearWindGesture(gesture)
 		},

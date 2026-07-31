@@ -23,12 +23,27 @@ import {
 } from './scene.mjs'
 import { createIconAnime, fps } from './session.mjs'
 
+/**
+ *
+ */
 export { layout, ICON_W, ICON_H } from './icon.mjs'
+/**
+ *
+ */
 export { renderBuffers, renderGrid } from './compose.mjs'
+/**
+ *
+ */
 export {
 	createAnimState, resizeAnimState, enter, hold, exit,
 } from './scene.mjs'
+/**
+ *
+ */
 export { createIconAnime, fps } from './session.mjs'
+/**
+ *
+ */
 export { AsciiAnimePlayer } from './player.mjs'
 
 /** Public frame producers. */

@@ -72,10 +72,16 @@ export const rippleFalloff = (dx, dy, radius, width = RIPPLE_WIDTH) => {
  */
 export const lightPointer = (gesture, { x, y, left }) => {
 	applyPointer(gesture, x, y, left, {
+		/**
+		 *
+		 */
 		onDown() {
 			gesture.held = 0
 			gesture.torch = false
 		},
+		/**
+		 *
+		 */
 		onUp() {
 			if (!gesture.torch) {
 				gesture.ripples.push({ x: gesture.x, y: gesture.y, age: 0, life: RIPPLE_LIFE })

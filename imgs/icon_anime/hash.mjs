@@ -4,6 +4,9 @@
 
 /** Cardinal neighbors as flat dx / dy arrays (same order). */
 export const ORTHO_DX = /** @type {const} */ [1, -1, 0, 0]
+/**
+ *
+ */
 export const ORTHO_DY = /** @type {const} */ [0, 0, 1, -1]
 
 /**

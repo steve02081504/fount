@@ -43,10 +43,17 @@ export const GAS_SPEED_MAX = 5
 
 const AIR_CELL = 1
 
-/** Open-air hydrostatic pressure at row `y` (y↓ → P↑). */
+/**
+ * Open-air hydrostatic pressure at row `y` (y↓ → P↑).
+ * @param y
+ */
 const openHydroPressure = (y) => P_ATM + ATM_HYDRO * y
 
-/** Sealed-cavity hydrostatic pressure at row `y` around Boyle mean. */
+/**
+ * Sealed-cavity hydrostatic pressure at row `y` around Boyle mean.
+ * @param region
+ * @param y
+ */
 const sealedHydroPressure = (region, y) =>
 	Math.max(0.05, region.pressure + ATM_HYDRO * (y - region.yMean))
 

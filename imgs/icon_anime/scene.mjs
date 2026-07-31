@@ -508,6 +508,9 @@ const simFrame = (state) => {
 		driveUy: undefined,
 		onHit: onParticleHit,
 		state,
+		/**
+		 *
+		 */
 		beforeParticles: () => { spawnRain(state) },
 	}
 	opts.time = state.frame
