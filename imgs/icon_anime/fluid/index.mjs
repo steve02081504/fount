@@ -9,7 +9,8 @@
  *
  * Water reservoirs: liq + moisture + condense + particles (expire deposits).
  * Call `stepFluid` for a full tick, or the individual steps. `labelAirRegions`
- * before `stepGas` / pressure queries; `stepLiquid` re-labels when `airDirty`.
+ * runs when `airDirty` (mat / LIQ_DRAW occupancy); `stepLiquid` re-labels mid-tick
+ * if particles / lift dirtied topology again.
  */
 
 /**
@@ -46,6 +47,7 @@ export {
  */
 export {
 	createWorld, scratch, growScratch, idx, inWorld,
+	floodClear, floodPush, markAirIfDrawCrossed,
 	clearDynamics, clearMaterials, releaseNonSoilWater,
 	setMat, addMoisture, addLiquid, totalGridWater, totalWorldWater,
 } from './world.mjs'

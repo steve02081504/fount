@@ -173,6 +173,34 @@ const dist2ToSeg = (px, py, ax, ay, bx, by) => {
 }
 
 /**
+ * Clear a previous wind-drive dirty rectangle (or the whole field).
+ * @param {Float32Array} outUx horizontal drive
+ * @param {Float32Array} outUy vertical drive
+ * @param {number} W world width
+ * @param {number} H world height
+ * @param {{ x0: number, y0: number, x1: number, y1: number } | null | undefined} prev prior dirty rect
+ * @returns {void}
+ */
+const clearDriveRect = (outUx, outUy, W, H, prev) => {
+	if (!prev || prev.x1 < prev.x0) {
+		outUx.fill(0)
+		outUy.fill(0)
+		return
+	}
+	const x0 = Math.max(0, prev.x0)
+	const y0 = Math.max(0, prev.y0)
+	const x1 = Math.min(W - 1, prev.x1)
+	const y1 = Math.min(H - 1, prev.y1)
+	for (let y = y0; y <= y1; y++) {
+		const row = y * W
+		for (let x = x0; x <= x1; x++) {
+			outUx[row + x] = 0
+			outUy[row + x] = 0
+		}
+	}
+}
+
+/**
  * Paint a tornado-like vortex into drive buffers (world cells).
  * Clockwise tangential + core updraft + weak radial inflow.
  * @param {number} cx world centre x
@@ -182,9 +210,10 @@ const dist2ToSeg = (px, py, ax, ay, bx, by) => {
  * @param {{ worldW: number, worldH: number }} world size
  * @param {Float32Array} outUx horizontal drive
  * @param {Float32Array} outUy vertical drive
+ * @param {{ x0: number, y0: number, x1: number, y1: number }} dirty dirty rect to expand
  * @returns {void}
  */
-export const paintVortexDrive = (cx, cy, amp, radius, world, outUx, outUy) => {
+export const paintVortexDrive = (cx, cy, amp, radius, world, outUx, outUy, dirty = null) => {
 	if (amp < 0.02) return
 	const { worldW: W, worldH: H } = world
 	const R = radius
@@ -194,6 +223,12 @@ export const paintVortexDrive = (cx, cy, amp, radius, world, outUx, outUy) => {
 	const maxY = Math.min(H - 1, Math.ceil(cy + R * 0.5 + 1))
 	const uplift = amp * VORTEX_UPLIFT
 	const inflow = amp * VORTEX_INFLOW
+	if (dirty) {
+		if (minX < dirty.x0) dirty.x0 = minX
+		if (maxX > dirty.x1) dirty.x1 = maxX
+		if (minY < dirty.y0) dirty.y0 = minY
+		if (maxY > dirty.y1) dirty.y1 = maxY
+	}
 
 	for (let y = minY; y <= maxY; y++)
 		for (let x = minX; x <= maxX; x++) {
@@ -219,18 +254,23 @@ export const paintVortexDrive = (cx, cy, amp, radius, world, outUx, outUy) => {
 
 /**
  * Paint gesture drives into scratch velocity targets (view → world via ox/oy).
+ * Clears only the previous dirty rectangle instead of the whole WH field.
  * @param {WindGesture} gesture gesture
- * @param {{ worldW: number, worldH: number, ox: number, oy: number }} world fluid world
+ * @param {{ worldW: number, worldH: number, ox: number, oy: number, scratch?: Record<string, unknown> }} world fluid world
  * @param {Float32Array} outUx horizontal drive
  * @param {Float32Array} outUy vertical drive
  * @returns {void}
  */
 export const fillWindDrive = (gesture, world, outUx, outUy) => {
-	outUx.fill(0)
-	outUy.fill(0)
-	if (!gesture.down) return
-
 	const { worldW: W, worldH: H, ox, oy } = world
+	const scratch = world.scratch ??= {}
+	clearDriveRect(outUx, outUy, W, H, /** @type {{ x0: number, y0: number, x1: number, y1: number } | null} */ (scratch.windDirty))
+	if (!gesture.down) {
+		scratch.windDirty = null
+		return
+	}
+
+	const dirty = { x0: W, y0: H, x1: -1, y1: -1 }
 	const strokeR2 = STROKE_RADIUS * STROKE_RADIUS
 
 	for (const stroke of gesture.strokes) {
@@ -241,6 +281,10 @@ export const fillWindDrive = (gesture, world, outUx, outUy) => {
 		const maxX = Math.min(W - 1, Math.ceil(Math.max(stroke.x0, stroke.x1) + ox + STROKE_RADIUS + 1))
 		const minY = Math.max(0, Math.floor(Math.min(stroke.y0, stroke.y1) + oy - STROKE_RADIUS - 1))
 		const maxY = Math.min(H - 1, Math.ceil(Math.max(stroke.y0, stroke.y1) + oy + STROKE_RADIUS + 1))
+		if (minX < dirty.x0) dirty.x0 = minX
+		if (maxX > dirty.x1) dirty.x1 = maxX
+		if (minY < dirty.y0) dirty.y0 = minY
+		if (maxY > dirty.y1) dirty.y1 = maxY
 		const ax = stroke.x0 + ox
 		const ay = stroke.y0 + oy
 		const bx = stroke.x1 + ox
@@ -256,7 +300,9 @@ export const fillWindDrive = (gesture, world, outUx, outUy) => {
 			}
 	}
 
-	if (!gesture.vortexOn) return
-	// Cell centre: SGR coords name the cell; swirl attractor must match that glyph.
-	paintVortexDrive(gesture.x + ox + 0.5, gesture.y + oy + 0.5, gesture.strength, VORTEX_RADIUS, world, outUx, outUy)
+	if (gesture.vortexOn)
+		// Cell centre: SGR coords name the cell; swirl attractor must match that glyph.
+		paintVortexDrive(gesture.x + ox + 0.5, gesture.y + oy + 0.5, gesture.strength, VORTEX_RADIUS, world, outUx, outUy, dirty)
+
+	scratch.windDirty = dirty.x1 >= dirty.x0 ? dirty : null
 }

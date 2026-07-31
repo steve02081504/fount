@@ -2,7 +2,7 @@
  * Fluid world grid: materials, liquid, soil water, gas velocity, particles.
  */
 
-import { MAT, SOIL_CAP, LIQ_FULL, isSoilMat, isLiquidBarrier } from './mat.mjs'
+import { MAT, SOIL_CAP, LIQ_FULL, LIQ_DRAW, isSoilMat, isLiquidBarrier } from './mat.mjs'
 import { createParticlePool, clearParticlePool, totalParticleWater } from './particles.mjs'
 
 /** @typedef {{
@@ -17,6 +17,7 @@ import { createParticlePool, clearParticlePool, totalParticleWater } from './par
  *   pendingSplash: import('./particles.mjs').ParticlePool,
  *   soilStep: number, gasTime: number,
  *   airDirty: boolean,
+ *   gasGeomDirty: boolean,
  *   maxUpdraft: number,
  *   scratch: Record<string, unknown>,
  *   floodQ: number[],
@@ -51,6 +52,8 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 		soilStep: 0,
 		gasTime: 0,
 		airDirty: true,
+		/** Rebuild gas blocked/span caches when air topology (or mat) changes. */
+		gasGeomDirty: true,
 		/** Most-negative gas uy after `stepGas`; `NaN` until gas has stepped. */
 		maxUpdraft: NaN,
 		scratch: {},
@@ -95,6 +98,26 @@ export const growScratch = (world, key, need, Ctor) => {
 }
 
 /**
+ * Clear the BFS flood queue.
+ * @param {FluidWorld} w world
+ * @returns {void}
+ */
+export const floodClear = (w) => {
+	w.floodQ.length = 0
+}
+
+/**
+ * Push `(x, y)` onto the flood queue.
+ * @param {FluidWorld} w world
+ * @param {number} x column
+ * @param {number} y row
+ * @returns {void}
+ */
+export const floodPush = (w, x, y) => {
+	w.floodQ.push(x, y)
+}
+
+/**
  * Flat index for world cell `(x, y)`.
  * @param {FluidWorld} w world
  * @param {number} x column
@@ -132,6 +155,7 @@ export const clearDynamics = (w) => {
 	w.regions.length = 0
 	w.gasTime = 0
 	w.airDirty = true
+	w.gasGeomDirty = true
 	w.maxUpdraft = NaN
 }
 
@@ -142,6 +166,21 @@ export const clearDynamics = (w) => {
  */
 export const clearMaterials = (w) => {
 	w.mat.fill(MAT.AIR)
+	w.airDirty = true
+	w.gasGeomDirty = true
+}
+
+/**
+ * Mark air / gas geometry dirty when free-liquid draw occupancy may have flipped.
+ * @param {FluidWorld} w world
+ * @param {number} before amount before mutation
+ * @param {number} after amount after mutation
+ * @returns {void}
+ */
+export const markAirIfDrawCrossed = (w, before, after) => {
+	if ((before >= LIQ_DRAW) === (after >= LIQ_DRAW)) return
+	w.airDirty = true
+	w.gasGeomDirty = true
 }
 
 /**
@@ -160,12 +199,16 @@ export const releaseNonSoilWater = (w) => {
 			condense[i] = 0
 			if (held <= 0) continue
 			if (mat[i] === MAT.POOL || mat[i] === MAT.AIR) {
-				liq[i] = Math.min(LIQ_FULL, liq[i] + held)
+				const before = liq[i]
+				liq[i] = Math.min(LIQ_FULL, before + held)
+				markAirIfDrawCrossed(w, before, liq[i])
 				continue
 			}
 			if (y > 0 && !isLiquidBarrier(mat[(y - 1) * W + x])) {
 				const ai = (y - 1) * W + x
-				liq[ai] = Math.min(LIQ_FULL, liq[ai] + held)
+				const before = liq[ai]
+				liq[ai] = Math.min(LIQ_FULL, before + held)
+				markAirIfDrawCrossed(w, before, liq[ai])
 			}
 		}
 }
@@ -179,7 +222,11 @@ export const releaseNonSoilWater = (w) => {
  * @returns {void}
  */
 export const setMat = (w, x, y, m) => {
-	w.mat[y * w.worldW + x] = m
+	const i = y * w.worldW + x
+	if (w.mat[i] === m) return
+	w.mat[i] = m
+	w.airDirty = true
+	w.gasGeomDirty = true
 }
 
 /**
@@ -235,6 +282,10 @@ export const addLiquid = (w, x, y, amt) => {
 	const before = w.liq[i]
 	w.liq[i] = Math.min(LIQ_FULL, before + amt)
 	const stored = w.liq[i] - before
-	if (stored > 0) w.airDirty = true
+	// Air occupancy flips only when a cell crosses the draw threshold.
+	if (stored > 0 && before < LIQ_DRAW && w.liq[i] >= LIQ_DRAW) {
+		w.airDirty = true
+		w.gasGeomDirty = true
+	}
 	return stored
 }

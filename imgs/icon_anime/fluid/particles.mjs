@@ -6,6 +6,7 @@
  */
 
 import { MAT, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
+import { markAirIfDrawCrossed } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
  * @typedef {{
@@ -156,7 +157,9 @@ const tryDepositCell = (world, px, py, left) => {
 	const room = LIQ_FULL - liq[i]
 	if (room <= 0) return 0
 	const take = Math.min(left, room)
+	const before = liq[i]
 	liq[i] += take
+	markAirIfDrawCrossed(world, before, liq[i])
 	return take
 }
 
@@ -181,7 +184,6 @@ export const depositParticleMass = (world, x, y, amt) => {
 	if (left > 1e-8 && cy > 0) left -= tryDepositCell(world, cx, cy - 1, left)
 	if (left > 1e-8) left -= tryDepositCell(world, cx - 1, cy, left)
 	if (left > 1e-8) left -= tryDepositCell(world, cx + 1, cy, left)
-	if (left < amt) world.airDirty = true
 	// Remainder leaves through world edge / impermeable bed — intentional sink.
 	return amt
 }
@@ -337,12 +339,11 @@ export const liftLiquidByWind = (world) => {
 				(-guy - -WIND_LIFT_UY) * WIND_LIFT_RATE + -guy * 0.08,
 			)
 			if (scoop < 0.04) continue
-			if (particles.count >= particles.x.length) {
-				if (lifted > 0) world.airDirty = true
-				return lifted
-			}
+			if (particles.count >= particles.x.length) return lifted
 
+			const before = liq[i]
 			liq[i] -= scoop
+			markAirIfDrawCrossed(world, before, liq[i])
 			const spawnY = mat[above] === MAT.AIR && liq[above] < LIQ_DRAW ? y - 0.35 : y - 0.15
 			pushParticle(
 				particles,
@@ -356,6 +357,5 @@ export const liftLiquidByWind = (world) => {
 			lifted += scoop
 		}
 
-	if (lifted > 0) world.airDirty = true
 	return lifted
 }

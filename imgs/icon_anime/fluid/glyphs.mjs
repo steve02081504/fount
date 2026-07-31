@@ -57,11 +57,13 @@ export const pickWaterGlyph = (chars, amount, phase, heavyFirst = false) => {
 export const waterChar = (amount, phase = 0, vx = 0, vy = 0) => {
 	const ax = Math.abs(vx)
 	const ay = Math.abs(vy)
-	const speed = Math.hypot(vx, vy)
+	const speed2 = vx * vx + vy * vy
+	const still2 = STILL_SPEED * STILL_SPEED
 
-	if (speed < STILL_SPEED)
+	if (speed2 < still2)
 		return pickWaterGlyph(WATER_STILL, amount, phase)
 
+	const speed = Math.sqrt(speed2)
 	if (ax >= SLANT_SPEED && ax > ay * FLAT_RATIO) return '-'
 
 	const slant = ax >= SLANT_SPEED

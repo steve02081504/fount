@@ -40,6 +40,8 @@ const LIGHT_AMBIENT = 0.3
 
 /** Reused sampleLight destination (compose hot path). */
 const lightSample = { ambient: false, lift: 0 }
+/** Reused ANSI fragment list — one join per frame instead of per-cell `+=`. */
+const frameParts = /** @type {string[]} */ ([])
 
 /**
  * Smooth radial falloff in view cells (compensates for tall terminal cells).
@@ -125,6 +127,7 @@ const litSgr = (f, lift, ambient) => {
 
 /**
  * Join flat char/fg buffers into an ANSI frame string without lighting.
+ * Reuses module-level part buffers to avoid per-cell string `+=` intermediates.
  * @param {string[]} ch characters
  * @param {(string | null)[]} fg ANSI fg codes (null = default)
  * @param {number} width columns
@@ -132,31 +135,31 @@ const litSgr = (f, lift, ambient) => {
  * @returns {string} ANSI frame
  */
 const renderPlain = (ch, fg, width, height) => {
-	const out = []
+	const parts = frameParts
+	parts.length = 0
 	for (let y = 0; y < height; y++) {
-		let line = ''
+		if (y) parts.push('\n')
 		let cur = null
 		const row = y * width
 		for (let x = 0; x < width; x++) {
 			const f = fg[row + x]
 			if (f == null) {
 				if (cur !== null) {
-					line += RESET
+					parts.push(RESET)
 					cur = null
 				}
-				line += ' '
+				parts.push(' ')
 				continue
 			}
 			if (f !== cur) {
-				line += f
+				parts.push(f)
 				cur = f
 			}
-			line += ch[row + x]
+			parts.push(ch[row + x])
 		}
-		if (cur !== null) line += RESET
-		out.push(line)
+		if (cur !== null) parts.push(RESET)
 	}
-	return out.join('\n')
+	return parts.join('')
 }
 
 /**
@@ -175,9 +178,10 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 	const hasRipple = !!light?.ripples?.length
 	if (!hasTorch && !hasRipple) return renderPlain(ch, fg, width, height)
 
-	const out = []
+	const parts = frameParts
+	parts.length = 0
 	for (let y = 0; y < height; y++) {
-		let line = ''
+		if (y) parts.push('\n')
 		let cur = null
 		const row = y * width
 		for (let x = 0; x < width; x++) {
@@ -189,39 +193,39 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 			if (!ambient && lift < 0.04) {
 				if (f == null) {
 					if (cur !== null) {
-						line += RESET
+						parts.push(RESET)
 						cur = null
 					}
-					line += ' '
+					parts.push(' ')
 					continue
 				}
 				if (f !== cur) {
-					line += (cur !== null ? RESET : '') + f
+					if (cur !== null) parts.push(RESET)
+					parts.push(f)
 					cur = f
 				}
-				line += ch[row + x]
+				parts.push(ch[row + x])
 				continue
 			}
 
 			const sgr = litSgr(f, lift, ambient)
 			if (sgr == null) {
 				if (cur !== null) {
-					line += RESET
+					parts.push(RESET)
 					cur = null
 				}
-				line += ' '
+				parts.push(' ')
 				continue
 			}
 			if (sgr !== cur) {
-				line += RESET + sgr
+				parts.push(RESET, sgr)
 				cur = sgr
 			}
-			line += f == null ? ' ' : ch[row + x]
+			parts.push(f == null ? ' ' : ch[row + x])
 		}
-		if (cur !== null) line += RESET
-		out.push(line)
+		if (cur !== null) parts.push(RESET)
 	}
-	return out.join('\n')
+	return parts.join('')
 }
 
 /**

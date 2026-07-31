@@ -12,7 +12,7 @@ import { hash01, fbm1d } from '../hash.mjs'
 import {
 	P_ATM, RHO_AIR, ATM_HYDRO, GAS_DP_DRIVE, LIQ_DRAW, isBlockMat,
 } from './mat.mjs'
-import { scratch, idx, inWorld } from './world.mjs'
+import { scratch, idx, inWorld, floodClear, floodPush } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
  * @typedef {{
@@ -116,8 +116,7 @@ export const labelAirRegions = (world) => {
 	/** @type {(AirRegion | undefined)[]} */
 	const nextRegions = []
 	let next = 1
-	const queue = world.floodQ
-	queue.length = 0
+	floodClear(world)
 
 	/**
 	 * Seed a flood cell into the region if still unlabeled air.
@@ -134,7 +133,7 @@ export const labelAirRegions = (world) => {
 		regionId[cell] = id
 		region.airCells++
 		region.sumY += y
-		queue.push(x, y)
+		floodPush(world, x, y)
 	}
 
 	/**
@@ -144,9 +143,9 @@ export const labelAirRegions = (world) => {
 	 * @returns {void}
 	 */
 	const flood = (id, region) => {
-		for (let qi = 0; qi < queue.length; qi += 2) {
-			const x = queue[qi]
-			const y = queue[qi + 1]
+		for (let qi = 0; qi < world.floodQ.length; qi += 2) {
+			const x = world.floodQ[qi]
+			const y = world.floodQ[qi + 1]
 			seed(x - 1, y, id, region)
 			seed(x + 1, y, id, region)
 			seed(x, y - 1, id, region)
@@ -176,27 +175,15 @@ export const labelAirRegions = (world) => {
 			if (regionId[cell] || !isAirCell(world, cell)) continue
 			const id = next++
 			const region = takeRegion(regionPool, id, false)
-			queue.length = 0
+			floodClear(world)
 			seed(x, y, id, region)
 			flood(id, region)
 			region.yMean = region.airCells > 0 ? region.sumY / region.airCells : 0
 			nextRegions[id] = region
 		}
 
-	// Packed overlap: key = (oldId << 16) | newId → cell count. One Map, no nesting.
-	/** @type {Map<number, number>} */
-	const overlap = new Map()
-	/** @type {Map<number, number>} */
-	const oldTotal = new Map()
-	for (let cell = 0; cell < n; cell++) {
-		const old = oldId[cell]
-		const nid = regionId[cell]
-		if (!old || !nid) continue
-		const key = (old << 16) | nid
-		overlap.set(key, (overlap.get(key) || 0) + 1)
-		oldTotal.set(old, (oldTotal.get(old) || 0) + 1)
-	}
-
+	// Open regions always reset to ATM; Boyle overlap only needed for sealed cavities.
+	let hasSealed = false
 	for (let id = 1; id < nextRegions.length; id++) {
 		const region = nextRegions[id]
 		if (!region) continue
@@ -205,24 +192,50 @@ export const labelAirRegions = (world) => {
 			region.pressure = P_ATM
 			continue
 		}
-		let gas = 0
-		let got = false
+		hasSealed = true
+	}
+
+	if (hasSealed) {
+		/** @type {Map<number, number>} */
+		const overlap = new Map()
+		const oldTotal = scratch(world, 'oldRegionTotal', Math.max(oldRegions.length, 1), Float32Array)
+		oldTotal.fill(0)
+		for (let cell = 0; cell < n; cell++) {
+			const old = oldId[cell]
+			const nid = regionId[cell]
+			if (!old || !nid) continue
+			const region = nextRegions[nid]
+			if (!region || region.openToAtm) continue
+			const key = (old << 16) | nid
+			overlap.set(key, (overlap.get(key) || 0) + 1)
+			oldTotal[old]++
+		}
+
+		const sealedGas = scratch(world, 'sealedGasAcc', nextRegions.length, Float32Array)
+		const sealedGot = scratch(world, 'sealedGasGot', nextRegions.length, Uint8Array)
+		sealedGas.fill(0)
+		sealedGot.fill(0)
 		for (const [key, cells] of overlap) {
-			if ((key & 0xffff) !== id) continue
+			const nid = key & 0xffff
 			const oldRid = key >>> 16
 			if (!oldRegions[oldRid]) continue
-			got = true
-			gas += oldGas[oldRid] * (cells / Math.max(1, oldTotal.get(oldRid) || 1))
+			sealedGot[nid] = 1
+			sealedGas[nid] += oldGas[oldRid] * (cells / Math.max(1, oldTotal[oldRid]))
 		}
-		if (!got) gas = region.airCells * AIR_CELL * P_ATM
-		region.gasAmount = gas
-		region.pressure = Math.max(0.05, Math.min(8, gas / Math.max(AIR_CELL * 0.25, region.airCells * AIR_CELL)))
+		for (let id = 1; id < nextRegions.length; id++) {
+			const region = nextRegions[id]
+			if (!region || region.openToAtm) continue
+			const gas = sealedGot[id] ? sealedGas[id] : region.airCells * AIR_CELL * P_ATM
+			region.gasAmount = gas
+			region.pressure = Math.max(0.05, Math.min(8, gas / Math.max(AIR_CELL * 0.25, region.airCells * AIR_CELL)))
+		}
 	}
 
 	world.scratch.prevRegionId = oldId
 	world.regionId = regionId
 	world.regions = nextRegions
 	world.airDirty = false
+	world.gasGeomDirty = true
 }
 
 /**
@@ -417,8 +430,10 @@ export const stepGas = (world, opts = {}) => {
 	const driveUy = opts.driveUy
 	world.gasTime = time + 1
 
-	const { worldW: W, worldH: H, gasUx, gasUy, regionId, regions } = world
+	const { worldW: W, worldH: H, regionId, regions } = world
 	const n = W * H
+	let gasUx = world.gasUx
+	let gasUy = world.gasUy
 	const nextUx = scratch(world, 'gasNextUx', n, Float32Array)
 	const nextUy = scratch(world, 'gasNextUy', n, Float32Array)
 	const blocked = scratch(world, 'gasBlocked', n, Uint8Array)
@@ -428,8 +443,11 @@ export const stepGas = (world, opts = {}) => {
 	nextUx.fill(0)
 	nextUy.fill(0)
 
-	fillBlocked(world, blocked)
-	fillGasSpans(blocked, W, H, vertSpan, horizSpan)
+	if (world.gasGeomDirty) {
+		fillBlocked(world, blocked)
+		fillGasSpans(blocked, W, H, vertSpan, horizSpan)
+		world.gasGeomDirty = false
+	}
 
 	// Cache synoptic wind once per tick — shear only varies by row.
 	const wind0 = forced !== undefined ? forced : globalWindAt(time, seed)
@@ -526,8 +544,11 @@ export const stepGas = (world, opts = {}) => {
 		}
 	}
 
-	gasUx.set(nextUx)
-	gasUy.set(nextUy)
+	// Swap velocity buffers — avoid O(WH) .set copy.
+	world.scratch.gasNextUx = gasUx
+	world.scratch.gasNextUy = gasUy
+	world.gasUx = nextUx
+	world.gasUy = nextUy
 	world.maxUpdraft = maxUpdraft
 }
 
