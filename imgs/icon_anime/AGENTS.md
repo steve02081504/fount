@@ -8,7 +8,7 @@ alwaysApply: false
 
 Standalone terminal animation for the fount fountain logo.
 
-Embedders (e.g. CLI log viewer) use `createIconAnime` from `session.mjs`: `start` while waiting, `dismiss` on connect, `farewell` exit anim on process quit. Do not re-wire player / pointer / resize.
+Also embedded by the CLI log viewer via `createIconAnime`: `start` while waiting, `dismiss` on connect; hosts register `on_shutdown` → `farewell` then `process.exit`. Do not re-wire player / pointer / resize.
 
 ## Run
 
@@ -24,7 +24,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | Path | Role |
 | --- | --- |
 | `index.mjs` | CLI entry + public re-exports |
-| `session.mjs` | Host lifecycle (`createIconAnime`): start / dismiss / farewell / sleep + bound player |
+| `session.mjs` | Controller (`createIconAnime`): start / dismiss / farewell / sleep |
 | `icon.mjs` | Packed silhouette, pillars, body growth order (typed arrays) |
 | `scene.mjs` | Anim state, materials, rain, pool leak, enter/hold/exit |
 | `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid`; pointer torch + click ripples (truecolor lift) |

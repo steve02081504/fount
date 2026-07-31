@@ -1,6 +1,6 @@
 /**
- * Icon anime host: anim state + TUI player + wait / dismiss / farewell lifecycle.
- * Used by the CLI entry and embedders (e.g. log_viewer) — no separate wait wrapper.
+ * Icon anime controller: anim state + TUI player.
+ * Lifecycle for embedders: start → (dismiss) → farewell. Process hooks stay in the host.
  */
 
 import { lightPointer } from './gesture/light.mjs'
@@ -15,66 +15,6 @@ import {
 export const fps = 24
 
 /**
- * Bind anim state to a TUI player (resize + pointer → light / wind).
- * @param {ReturnType<typeof createAnimState>} state anim state
- * @returns {{
- *   state: typeof state,
- *   player: AsciiAnimePlayer,
- *   start: () => void,
- *   stop: () => void,
- *   abort: () => void,
- *   run: () => Promise<void>,
- *   playExit: () => Promise<void>,
- * }} bound player
- */
-const bindPlayer = (state) => {
-	/**
-	 * @param {{ columns: number, rows: number }} size terminal size
-	 * @returns {void}
-	 */
-	const handleResize = (size) => {
-		if (!size.columns || !size.rows) return
-		resizeAnimState(state, {
-			width: Math.max(ICON_W, size.columns),
-			height: Math.max(ICON_H + 1, size.rows - 1),
-		})
-	}
-
-	const player = new AsciiAnimePlayer({
-		fps,
-		onResize: handleResize,
-		/**
-		 * Left → click ripple / hold torch; right → stroke wind / long-press vortex.
-		 * @param {{ x: number, y: number, left?: boolean, right?: boolean }} ev pointer event
-		 * @returns {void}
-		 */
-		onPointer(ev) {
-			const x = Math.max(0, Math.min(state.width - 1, ev.x))
-			const y = Math.max(0, Math.min(state.height - 1, ev.y))
-			if (ev.left !== undefined)
-				lightPointer(state.light, { x, y, left: ev.left })
-			if (ev.right !== undefined)
-				windPointer(state.wind, { x, y, right: ev.right })
-		},
-	})
-
-	return {
-		state,
-		player,
-		/** @returns {void} */
-		start: () => { player.start() },
-		/** @returns {void} */
-		stop: () => { player.stop() },
-		/** @returns {void} */
-		abort: () => { player.abort() },
-		/** @returns {Promise<void>} */
-		run: () => player.play(() => enter(state)).loop(() => hold(state)),
-		/** @returns {Promise<void>} */
-		playExit: () => player.play(() => exit(state), { signal: null }),
-	}
-}
-
-/**
  * @typedef {object} IconAnime
  * @property {boolean} userAborted - hold ended by Ctrl+C (not dismiss / farewell)
  * @property {AbortSignal} userSignal - aborts when userAborted becomes true
@@ -85,25 +25,71 @@ const bindPlayer = (state) => {
  */
 
 /**
- * Create an icon anime host.
- * @param {object} [opts] options
- * @param {() => void} [opts.onUserAbort] Ctrl+C during hold (not after dismiss/farewell)
- * @returns {IconAnime} host
+ * @returns {IconAnime} controller
  */
-export function createIconAnime({ onUserAbort } = {}) {
-	/** @type {ReturnType<typeof bindPlayer> | null} */
-	let bound = null
+export function createIconAnime() {
+	/** @type {AsciiAnimePlayer | null} */
+	let player = null
+	/** @type {ReturnType<typeof createAnimState> | null} */
+	let state = null
 	/** @type {Promise<void> | null} */
 	let running = null
-	/** dismiss / farewell set this so hold end is not userAborted. */
-	let intentionalStop = false
-	let userAborted = false
-	/** After dismiss: retained for process-quit farewell. */
+	/** Dismissed (or pre-farewell) anim progress. */
 	/** @type {ReturnType<typeof createAnimState> | null} */
-	let farewellState = null
+	let savedState = null
+	/** dismiss / farewell — do not treat hold end as userAborted. */
+	let stopping = false
+	let userAborted = false
 	/** @type {(() => void) | null} */
 	let wakeSleep = null
 	let userAc = new AbortController()
+
+	/**
+	 * Wire a player to an anim state (resize + pointer).
+	 * @param {ReturnType<typeof createAnimState>} animState state
+	 * @returns {AsciiAnimePlayer} player
+	 */
+	const openPlayer = (animState) => {
+		state = animState
+		return new AsciiAnimePlayer({
+			fps,
+			/**
+			 * @param {{ columns: number, rows: number }} size terminal size
+			 * @returns {void}
+			 */
+			onResize(size) {
+				if (!size.columns || !size.rows) return
+				resizeAnimState(animState, {
+					width: Math.max(ICON_W, size.columns),
+					height: Math.max(ICON_H + 1, size.rows - 1),
+				})
+			},
+			/**
+			 * @param {{ x: number, y: number, left?: boolean, right?: boolean }} ev pointer
+			 * @returns {void}
+			 */
+			onPointer(ev) {
+				const x = Math.max(0, Math.min(animState.width - 1, ev.x))
+				const y = Math.max(0, Math.min(animState.height - 1, ev.y))
+				if (ev.left !== undefined)
+					lightPointer(animState.light, { x, y, left: ev.left })
+				if (ev.right !== undefined)
+					windPointer(animState.wind, { x, y, right: ev.right })
+			},
+		})
+	}
+
+	/**
+	 * Abort hold and wait for the run promise to settle.
+	 * @returns {Promise<void>}
+	 */
+	const stopHold = async () => {
+		stopping = true
+		player?.abort()
+		await Promise.resolve()
+		await running?.catch(() => { /* abort */ })
+		running = null
+	}
 
 	return {
 		/** @returns {boolean} whether Ctrl+C ended hold */
@@ -117,22 +103,21 @@ export function createIconAnime({ onUserAbort } = {}) {
 		},
 
 		/**
-		 * @returns {Promise<void>} resolves when hold ends (abort / dismiss / farewell)
+		 * @returns {Promise<void>}
 		 */
 		start() {
-			if (bound) return running
+			if (player) return running
 			userAborted = false
-			intentionalStop = false
+			stopping = false
 			userAc = new AbortController()
-			bound = bindPlayer(createAnimState())
-			farewellState = bound.state
-			bound.start()
-			running = Promise.resolve(bound.run()).then(() => {
-				if (intentionalStop) return
+			player = openPlayer(createAnimState())
+			savedState = state
+			player.start()
+			running = player.play(() => enter(state)).loop(() => hold(state)).then(() => {
+				if (stopping) return
 				userAborted = true
 				userAc.abort()
 				wakeSleep?.()
-				onUserAbort?.()
 			})
 			return running
 		},
@@ -162,44 +147,38 @@ export function createIconAnime({ onUserAbort } = {}) {
 		 * @returns {Promise<void>}
 		 */
 		async dismiss() {
-			if (!bound) return
-			intentionalStop = true
-			const live = bound
-			const playPromise = running
-			bound = null
-			running = null
-			live.abort()
-			await playPromise?.catch(() => { /* abort */ })
-			live.stop()
+			if (!player) return
+			savedState = state
+			await stopHold()
+			player.stop()
+			player = null
+			state = null
 		},
 
 		/**
 		 * @returns {Promise<void>}
 		 */
 		async farewell() {
-			if (bound) {
-				intentionalStop = true
-				const live = bound
-				const playPromise = running
-				bound = null
-				running = null
-				farewellState = null
-				live.abort()
-				await playPromise?.catch(() => { /* abort */ })
-				await live.playExit()
-				live.stop()
+			if (player) {
+				savedState = null
+				await stopHold()
+				await player.play(() => exit(state), { signal: null })
+				player.stop()
+				player = null
+				state = null
 				return
 			}
-			if (!farewellState) return
-			const state = farewellState
-			farewellState = null
-			const live = bindPlayer(state)
-			live.start()
+			if (!savedState) return
+			player = openPlayer(savedState)
+			savedState = null
+			player.start()
 			try {
-				await live.playExit()
+				await player.play(() => exit(state), { signal: null })
 			}
 			finally {
-				live.stop()
+				player.stop()
+				player = null
+				state = null
 			}
 		},
 	}

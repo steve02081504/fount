@@ -16,6 +16,7 @@ import path from 'node:path'
 import process from 'node:process'
 
 import { connectLogWire } from 'npm:@steve02081504/virtual-console/wire/client'
+import { on_shutdown } from 'npm:on-shutdown'
 import supportsAnsi from 'npm:supports-ansi'
 
 import { createIconAnime } from '../../imgs/icon_anime/session.mjs'
@@ -56,7 +57,6 @@ const WS_URL = `ws://localhost:${PORT}/ws/logs`
  * @returns {void}
  */
 function onFatal(err) {
-	try { logSink.tearDown?.() } catch { /* ignore */ }
 	process.stderr.write(`log_viewer fatal: ${err?.stack ?? err}\n`)
 	process.exit(1)
 }
@@ -344,38 +344,12 @@ async function main() {
 	const setExitCode = (code) => { exitCodeSlot.value = code }
 	const exitContext = { setExitCode }
 
-	const icon = INTERACTIVE
-		? createIconAnime({ /**
-		 *
-		 */
-			onUserAbort: () => { stopRequested = true } })
-		: null
-	let exiting = false
-
-	/**
-	 * 拆除 REPL / 连接，播放 icon 结束动画后退出。
-	 * @param {number} code - 进程退出码。
-	 * @returns {Promise<void>}
-	 */
-	const gracefulExit = async (code) => {
-		if (exiting) return
-		exiting = true
-		stopRequested = true
+	const icon = INTERACTIVE ? createIconAnime() : null
+	on_shutdown(async () => {
 		try { logSink.tearDown?.() } catch { /* ignore */ }
 		try { connection?.close?.() } catch { /* ignore */ }
 		try { await icon?.farewell() } catch { /* ignore */ }
-		process.exit(code)
-	}
-
-	/**
-	 * SIGINT：异步走 gracefulExit（二次 SIGINT 仍立即退出）。
-	 * @returns {void}
-	 */
-	const onSigint = () => {
-		if (exiting) process.exit(130)
-		gracefulExit(130)
-	}
-	process.on('SIGINT', onSigint)
+	})
 
 	let backoff = 500
 	while (!stopRequested) {
@@ -393,7 +367,7 @@ async function main() {
 				backoff = 500
 				continue
 			}
-			await gracefulExit(code)
+			process.exit(code)
 			return
 		}
 
@@ -403,7 +377,7 @@ async function main() {
 		backoff = Math.min(backoff * 2, 10000)
 	}
 
-	await gracefulExit(130)
+	process.exit(130)
 }
 
 main().catch(onFatal)
