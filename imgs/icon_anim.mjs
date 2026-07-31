@@ -3,11 +3,11 @@
  * fount fountain logo ASCII animation API.
  * Silhouette packed like imgs/icon.js; colors match icon_ansi_ascii (@=30, ::=96).
  *
- * API: { enter, hold, exit, fps } + play()
- * Main: enter → loop hold → Ctrl+C / q → exit
+ * API: { enter, hold, exit, fps }
+ * Main: enter → loop hold → Ctrl+C → exit
  */
 
-import { on_shutdown, shutdown } from 'npm:on-shutdown'
+import { on_shutdown } from 'npm:on-shutdown'
 
 import { AsciiPlayer } from './ascii_player.mjs'
 

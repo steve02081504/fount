@@ -35,9 +35,9 @@ export class AsciiPlayer {
 
 	/** Open TUI: clear, hide cursor, raw stdin. */
 	start({ onKey, signal } = {}) {
-		this.signal = signal
+		this.signal = signal ?? new AbortSignal()
 		this.#onKey = onKey ?? (ch => {
-			if (ch === '\x03') signal?.abort()
+			if (ch === '\x03') this.signal?.abort()
 		})
 		write('\x1b[?25l\x1b[2J\x1b[H')
 		if (!process.stdin.isTTY) return this
@@ -89,7 +89,7 @@ export class AsciiPlayer {
 			const wait = budget() - (performance.now() - t0)
 			if (wait <= 0) continue
 			try {
-				await sleep(wait, undefined, { signal })
+				await sleep(wait, undefined, signal ? { signal } : undefined)
 			}
 			catch (e) {
 				if (e?.name === 'AbortError') return
@@ -105,17 +105,16 @@ export class AsciiPlayer {
 	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames
 	 * @param {{ signal?: AbortSignal }} [opts]
 	 */
-	play(frames, { signal } = {}) {
-		signal ??= this.signal
-		const result = this.#base_play(frames, { signal })
+	play(frames, opts = {}) {
+		const result = this.#base_play(frames, opts)
 		return Object.assign(result, {
-			play: async (action, options = {signal}) => {
+			play: async (action, options) => {
 				await result
-				this.play(action, options)
+				return this.play(action, options ?? opts)
 			},
-			loop: async (action, options = {signal}) => {
+			loop: async (action, options) => {
 				await result
-				this.loop(action, options)
+				return this.loop(action, options ?? opts)
 			},
 		})
 	}
@@ -147,6 +146,4 @@ export class AsciiPlayer {
 }
 
 if (import.meta.main) {
-	const { play } = await import('./icon_anim.mjs')
-	await play()
 }
