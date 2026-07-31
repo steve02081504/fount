@@ -1,4 +1,5 @@
 #!/usr/bin/env -S deno run -A
+/* global Deno */
 /**
  * 列出仓库中纯英文 JSDoc 摘要。
  *

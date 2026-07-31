@@ -59,7 +59,7 @@ export function jsdocSummaryLines(block) {
 /**
  * 摘要是否算「纯英文」：有拉丁字母、无 CJK，且非空。
  * @param {string[]} summaryLines 摘要行
- * @returns {boolean}
+ * @returns {boolean} 摘要是否为纯英文
  */
 export function isEnglishJsdocSummary(summaryLines) {
 	if (!summaryLines.length) return false
@@ -72,7 +72,7 @@ export function isEnglishJsdocSummary(summaryLines) {
 /**
  * 块是否仅有类型/标签、无人类可读摘要。
  * @param {string} block JSDoc 块
- * @returns {boolean}
+ * @returns {boolean} 是否仅有类型/标签且无人类可读摘要
  */
 export function isTagOnlyJsdoc(block) {
 	const summary = jsdocSummaryLines(block)
@@ -118,7 +118,7 @@ export function scanFileJsdocEnglish(relativePath, text) {
  * 扫描仓库中匹配后缀的文件。
  * @param {string} repoRoot 仓库根
  * @param {{ under?: string, suffixes?: string[] }} [options] 选项
- * @returns {Promise<{ files: string[], issues: JsdocEnglishIssue[] }>}
+ * @returns {Promise<{ files: string[], issues: JsdocEnglishIssue[] }>} 命中文件路径与问题列表
  */
 export async function scanJsdocEnglish(repoRoot, options = {}) {
 	const suffixes = options.suffixes ?? JSDOC_SCAN_SUFFIXES
