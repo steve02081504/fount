@@ -158,10 +158,7 @@ export const tickWindGesture = (gesture) => {
 		seg.uy = dy * inv * amp
 		seg.life = STROKE_LIFE
 		strokes.push(seg)
-		if (strokes.length > STROKE_CAP) {
-			freeStroke(strokes[0])
-			strokes.splice(0, 1)
-		}
+		if (strokes.length > STROKE_CAP) freeStroke(strokes.shift())
 		if (gesture.vortexOn)
 			gesture.strength = Math.min(VORTEX_MAX, gesture.strength + VORTEX_GROWTH * 0.35)
 	}

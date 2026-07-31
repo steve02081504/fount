@@ -31,30 +31,33 @@ import { restartPrivateGroup } from './privateGroup.mjs'
 import { loadGroups } from './serverBar.mjs'
 
 /**
+ * 好友侧栏行。
  * @typedef {object} FriendRow
- * @property {string} groupId
- * @property {string} key
- * @property {string} displayName
- * @property {string} [charname]
- * @property {import('../shared/friendBinding.mjs').FriendBinding} binding
- * @property {object} session
+ * @property {string} groupId 私聊群 ID
+ * @property {string} key 对端 entityHash 或去重键
+ * @property {string} displayName 侧栏展示名
+ * @property {string} [charname] 本地角色 part 名（用户 DM 时省略）
+ * @property {import('../shared/friendBinding.mjs').FriendBinding} binding 好友绑定
+ * @property {object} session 侧栏会话摘要（最后消息等）
  */
 
 /**
+ * 好友搜索命中项。
  * @typedef {object} FriendsSearchHit
- * @property {'char' | 'user'} kind
- * @property {string} label
- * @property {string} subtitle
- * @property {string} [charname]
- * @property {string} [entityHash]
- * @property {string} [handle]
- * @property {string} [alias]
- * @property {string} [name]
- * @property {string} [activePubKeyHex]
- * @property {string} [avatar]
+ * @property {'char' | 'user'} kind 命中类型：本地角色或网络用户
+ * @property {string} label 主展示文案
+ * @property {string} subtitle 副标题（handle / part 名等）
+ * @property {string} [charname] 角色 part 名
+ * @property {string} [entityHash] 128 位 entityHash
+ * @property {string} [handle] 联邦 handle
+ * @property {string} [alias] 本地别名
+ * @property {string} [name] 资料名
+ * @property {string} [activePubKeyHex] 活跃公钥 hex
+ * @property {string} [avatar] 头像 URL
  */
 
 /**
+ * 构建好友悬停卡 `paintOptions`。
  * @returns {object} 悬停卡 paintOptions
  */
 function friendHoverPaintOptions() {
@@ -66,6 +69,7 @@ function friendHoverPaintOptions() {
 }
 
 /**
+ * 为好友行绑定实体资料悬停卡。
  * @param {HTMLElement} el 锚点
  * @param {{ entityHash?: string, displayName: string, groupId?: string, charname?: string }} target 目标
  * @returns {void}
@@ -137,6 +141,7 @@ export async function loadFriendsList() {
 }
 
 /**
+ * 组装单条好友行的 `chars_column` 模板数据。
  * @param {FriendRow} friend 好友行
  * @param {object|null} details 角色详情
  * @returns {Promise<object>} `chars_column` 单项模板数据
@@ -222,6 +227,7 @@ async function deleteFriendSession(friend) {
 }
 
 /**
+ * 显示好友行右键菜单（新会话 / 删除）。
  * @param {MouseEvent} event 指针事件
  * @param {FriendRow} friend 好友行
  * @returns {void}
@@ -276,6 +282,7 @@ function showFriendContextMenu(event, friend) {
 }
 
 /**
+ * 渲染好友模式侧栏列表与搜索区。
  * @param {FriendRow[]} friends 好友行
  * @returns {Promise<void>}
  */
@@ -384,6 +391,7 @@ async function enrichFriendsSearchHit(hit) {
 }
 
 /**
+ * 将单条搜索命中渲染为可点击行并挂载操作。
  * @param {FriendsSearchHit} hit 搜索命中
  * @param {HTMLElement} resultsHost 结果容器
  * @returns {Promise<void>}
@@ -458,6 +466,7 @@ async function appendFriendsSearchHit(hit, resultsHost) {
 }
 
 /**
+ * 执行好友搜索（本地角色 + 网络实体）并刷新结果区。
  * @param {HTMLInputElement} input 搜索框
  * @param {HTMLElement} resultsHost 结果容器
  * @returns {Promise<void>}

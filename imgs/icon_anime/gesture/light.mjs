@@ -121,22 +121,15 @@ export const tickLightGesture = (gesture) => {
 		if (gesture.held >= TORCH_DELAY) gesture.torch = true
 	}
 
-	const target = gesture.down && gesture.torch ? 1 : 0
-	const blend = gesture.torchBlend
-	if (blend === target) return
-	const step = 1 / TORCH_FADE
-	if (blend < target) {
-		const next = blend + step
-		gesture.torchBlend = next >= target ? target : next
-	}
-	else {
-		const next = blend - step
-		gesture.torchBlend = next <= target ? target : next
-	}
+	const target = +(gesture.down && gesture.torch)
+	if (gesture.torchBlend === target) return
+	gesture.torchBlend = target > gesture.torchBlend
+		? Math.min(target, gesture.torchBlend + 1 / TORCH_FADE)
+		: Math.max(target, gesture.torchBlend - 1 / TORCH_FADE)
 }
 
-/** 复用的 sampleLight 输出槽。 */
-const lightSampleScratch = { ambient: 0, lift: 0 }
+/** sampleLight 未传入 out 时的默认输出槽。 */
+const defaultSampleOut = { ambient: 0, lift: 0 }
 
 /**
  * 视图格点的综合提亮（手电填充 + 涟漪环）。
@@ -149,7 +142,7 @@ const lightSampleScratch = { ambient: 0, lift: 0 }
  * @param {{ ambient: number, lift: number }} [out] 采样输出
  * @returns {{ ambient: number, lift: number }} 光照采样
  */
-export const sampleLight = (gesture, x, y, torchFalloff, out = lightSampleScratch) => {
+export const sampleLight = (gesture, x, y, torchFalloff, out = defaultSampleOut) => {
 	let lift = 0
 	const ambient = torchEase(gesture.torchBlend)
 	if (ambient > 0) lift = torchFalloff(x - gesture.x, y - gesture.y) * ambient

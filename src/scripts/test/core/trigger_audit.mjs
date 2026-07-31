@@ -10,6 +10,7 @@ import { matchGlob } from './glob.mjs'
  */
 
 /**
+ * 未命中任何文件的 trigger 警告。
  * @typedef {object} TriggerWarning
  * @property {string} manifestId manifest id
  * @property {string} suiteName suite 名
@@ -37,6 +38,7 @@ export async function listRepoFiles(repoRoot) {
 }
 
 /**
+ * 判定 trigger glob 是否命中仓库中至少一个文件。
  * @param {string} pattern trigger glob
  * @param {string[]} repoFiles 仓库文件列表
  * @returns {boolean} 是否至少命中一个文件
@@ -46,6 +48,7 @@ export function triggerPatternMatchesAny(pattern, repoFiles) {
 }
 
 /**
+ * 扫描全部 suite，找出未命中任何文件的 trigger。
  * @param {SuiteDef[]} suites 全部 suite
  * @param {string[]} repoFiles 仓库文件列表
  * @returns {TriggerWarning[]} 未命中任何文件的 trigger
@@ -54,6 +57,7 @@ export function findDeadTriggerWarnings(suites, repoFiles) {
 	/** @type {Map<string, boolean>} */
 	const matchCache = new Map()
 	/**
+	 * 带缓存的 pattern 匹配（同 pattern 只扫一次仓库）。
 	 * @param {string} pattern glob
 	 * @returns {boolean} pattern 是否匹配仓库中任一文件
 	 */
@@ -89,6 +93,7 @@ export function findDeadTriggerWarnings(suites, repoFiles) {
 }
 
 /**
+ * 审计仓库 trigger 覆盖率（列出死 trigger）。
  * @param {string} repoRoot 仓库根
  * @param {SuiteDef[]} suites 全部 suite
  * @returns {Promise<TriggerWarning[]>} 未命中任何文件的 trigger

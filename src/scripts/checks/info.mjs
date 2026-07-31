@@ -149,6 +149,7 @@ async function mapPool(items, concurrency, worker) {
 }
 
 /**
+ * info 扫描问题条目。
  * @typedef {object} InfoScanIssue
  * @property {string} path 相对路径
  * @property {string} message 问题描述
@@ -212,6 +213,7 @@ export function scanLocalesData(relPath, data) {
 }
 
 /**
+ * 扫描单个 achievements_registry.json。
  * @param {string} relPath 相对路径
  * @param {unknown} data JSON
  * @returns {{ issues: InfoScanIssue[], iconUrls: { achievementId: string, key: string, url: string }[] }} 静态问题与待检 icon
@@ -259,6 +261,7 @@ async function readJsonSafe(repoRoot, relativePath, issues) {
 }
 
 /**
+ * 将不可用 URL 写入 issues（按 avatar / 成就 icon 去重）。
  * @param {Map<string, UrlRef[]>} urlRefs URL → 引用
  * @param {Set<string>} badUrls 不可用 URL
  * @param {InfoScanIssue[]} issues 问题列表

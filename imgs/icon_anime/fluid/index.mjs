@@ -51,8 +51,11 @@ export {
 	gasVelocityAt, gasUxAt, dynamicPressure, staticPressureAt, stepGas, totalSealedGas,
 } from './gas.mjs'
 
-/** 土壤与自由液体步进。 */
-export { liquidPressureAt, stepSoil, stepLiquid } from './liquid.mjs'
+/** 土壤湿度 / 凝结 / 滴落。 */
+export { stepSoil } from './soil.mjs'
+
+/** 自由液体静压与步进。 */
+export { liquidPressureAt, stepLiquid } from './liquid.mjs'
 
 /** 粒子雨与风抬升。 */
 export {

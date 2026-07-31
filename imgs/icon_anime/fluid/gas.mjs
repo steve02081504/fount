@@ -41,7 +41,8 @@ export const GAS_NOZZLE = 1.55
 /** 格内气体速度的软上限（格/帧）。 */
 export const GAS_SPEED_MAX = 5
 
-const AIR_CELL = 1
+/** 每空气格在 P_ATM 下的气体质量单位（Boyle 参考）。 */
+const GAS_UNIT_PER_CELL = 1
 
 /**
  * 开放空气在行 `y` 的静水压（y↓ → P↑）。
@@ -178,7 +179,7 @@ export const labelAirRegions = (world) => {
 	flood(openId, openRegion)
 	if (openRegion.airCells > 0) {
 		openRegion.yMean = openRegion.sumY / openRegion.airCells
-		openRegion.gasAmount = openRegion.airCells * AIR_CELL * P_ATM
+		openRegion.gasAmount = openRegion.airCells * GAS_UNIT_PER_CELL * P_ATM
 		openRegion.pressure = P_ATM
 		nextRegions[openId] = openRegion
 	}
@@ -234,9 +235,9 @@ export const labelAirRegions = (world) => {
 		for (let id = 1; id < nextRegions.length; id++) {
 			const region = nextRegions[id]
 			if (!region || region.openToAtm) continue
-			const gas = sealedGot[id] ? sealedGas[id] : region.airCells * AIR_CELL * P_ATM
+			const gas = sealedGot[id] ? sealedGas[id] : region.airCells * GAS_UNIT_PER_CELL * P_ATM
 			region.gasAmount = gas
-			region.pressure = Math.max(0.05, Math.min(8, gas / Math.max(AIR_CELL * 0.25, region.airCells * AIR_CELL)))
+			region.pressure = Math.max(0.05, Math.min(8, gas / Math.max(GAS_UNIT_PER_CELL * 0.25, region.airCells * GAS_UNIT_PER_CELL)))
 		}
 	}
 

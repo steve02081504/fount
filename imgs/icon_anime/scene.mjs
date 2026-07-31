@@ -31,7 +31,7 @@ const BOTTOM_EXTRA = 6
 /** 扩张后新暴露地形应用的土壤沉降 tick 数。 */
 export const RESIZE_WEATHER_TICKS = 12
 /** 地表径流搜索偏移（近 → 远）。 */
-const GROUND_DX = Object.freeze([0, -1, 1, -2, 2, -3, 3, -4, 4])
+const GROUND_DX = [0, -1, 1, -2, 2, -3, 3, -4, 4]
 
 /**
  * 默认视口尺寸（取自终端，回退到图标边界）。
@@ -528,7 +528,6 @@ const simFrame = (state) => {
 	opts.seed = state.seed
 	opts.driveUx = driveUx
 	opts.driveUy = driveUy
-	opts.state = state
 	stepFluid(world, opts)
 	const { iconOx, iconOy } = state
 	for (const ly of ICON_BASE_ROWS) {
@@ -552,9 +551,9 @@ const simFrame = (state) => {
  * @returns {Generator<string, void, unknown>} 一帧 ANSI
  */
 function* show(state, soft = {}) {
-	state.softBase = soft.softBase === true
-	state.softPillars = soft.softPillars === true
-	state.softBody = soft.softBody === true
+	state.softBase = !!soft.softBase
+	state.softPillars = !!soft.softPillars
+	state.softBody = !!soft.softBody
 	yield simFrame(state)
 	state.frame++
 }

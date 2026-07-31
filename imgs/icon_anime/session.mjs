@@ -37,11 +37,17 @@ export function createIconAnime() {
 	/** @type {Promise<void> | null} */
 	let running = null
 	/** @type {ReturnType<typeof createAnimState> | null} */
-	let savedState = null
+	let parkedState = null
 	/** 宿主发起的停止 / farewell 已接管。 */
 	let stopping = false
 	let userAborted = false
-	let userAc = new AbortController()
+	let userAbortController = new AbortController()
+
+	/** 标记用户 Ctrl+C，并唤醒 await `userSignal` / `sleep` 的宿主。 */
+	const markUserAbort = () => {
+		userAborted = true
+		userAbortController.abort()
+	}
 
 	/**
 	 * @param {ReturnType<typeof createAnimState>} animState 状态
@@ -82,7 +88,7 @@ export function createIconAnime() {
 	 * @returns {void}
 	 */
 	const park = () => {
-		savedState = state
+		parkedState = state
 		player?.stop()
 		player = null
 		state = null
@@ -110,7 +116,7 @@ export function createIconAnime() {
 
 		/** @returns {AbortSignal} userAborted 为 true 时中止 */
 		get userSignal() {
-			return userAc.signal
+			return userAbortController.signal
 		},
 
 		/**
@@ -121,14 +127,11 @@ export function createIconAnime() {
 			if (player) return running
 			userAborted = false
 			stopping = false
-			userAc = new AbortController()
+			userAbortController = new AbortController()
 			player = openPlayer(createAnimState())
-			savedState = state
 			player.start()
 			running = player.play(() => enter(state)).loop(() => hold(state)).then(() => {
-				if (stopping) return
-				userAborted = true
-				userAc.abort()
+				if (!stopping) markUserAbort()
 			})
 			return running
 		},
@@ -141,12 +144,13 @@ export function createIconAnime() {
 			if (player) return
 			userAborted = false
 			stopping = false
+			userAbortController = new AbortController()
 			player = openPlayer(createAnimState())
 			player.start()
 			running = Promise.resolve(player.play(() => enter(state)))
 			await running
 			if (stopping) return
-			if (player.signal?.aborted) userAborted = true
+			if (player.signal?.aborted) markUserAbort()
 			park()
 		},
 
@@ -155,13 +159,10 @@ export function createIconAnime() {
 		 * @returns {Promise<void>}
 		 */
 		sleep(ms) {
+			const { signal } = userAbortController
+			if (signal.aborted) return Promise.resolve()
 			return new Promise((resolve) => {
-				const signal = userAc.signal
-				if (signal.aborted) {
-					resolve()
-					return
-				}
-				/** 定时器到期或用户中止时唤醒并 resolve。 */
+				/** 定时器到期或用户中止时唤醒。 */
 				const wake = () => {
 					clearTimeout(timer)
 					signal.removeEventListener('abort', wake)
@@ -188,7 +189,7 @@ export function createIconAnime() {
 		 */
 		async farewell() {
 			if (player) {
-				savedState = null
+				parkedState = null
 				await haltPlay()
 				await player.play(() => exit(state), { signal: null })
 				player.stop()
@@ -196,9 +197,9 @@ export function createIconAnime() {
 				state = null
 				return
 			}
-			if (!savedState) return
-			player = openPlayer(savedState)
-			savedState = null
+			if (!parkedState) return
+			player = openPlayer(parkedState)
+			parkedState = null
 			player.start()
 			try {
 				await player.play(() => exit(state), { signal: null })

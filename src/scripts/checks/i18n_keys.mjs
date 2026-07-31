@@ -10,13 +10,13 @@
  */
 
 /**
- *
+ * 搬键/改 locale 时的操作提示文案。
  */
 export const UPDATE_LOCALE_DATA_HINT =
 	'搬键请用 `.esh/commands/update_locale_data.py`（get → set(new) → set(old, None)），勿手改各语言 JSON。详见 src/public/locales/locale-edits.md。'
 
 /**
- *
+ * 禁止 Suffix/Prefix 碎片硬拼时的说明文案。
  */
 export const AFFIX_HINT =
 	'应用 `${param}` 格式化完整句子，不要用 Suffix/Prefix 碎片硬拼字符串。'
@@ -27,7 +27,7 @@ export const PLURAL_CONTAINER = Object.freeze({
 })
 
 /**
- *
+ * 同级键共享驼峰前缀时，触发须嵌套的最小成员数。
  */
 export const PREFIX_CLUSTER_MIN = 4
 
@@ -98,6 +98,7 @@ export function findPrefixClusters(keys, min = PREFIX_CLUSTER_MIN) {
 }
 
 /**
+ * i18n 键结构问题。
  * @typedef {object} I18nKeyIssue
  * @property {'affix' | 'prefix_cluster' | 'numbered'} kind
  * @property {string} path 点分路径（含违规键或簇所在父路径）

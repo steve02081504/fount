@@ -25,20 +25,23 @@ import {
 import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
 
 /**
+ * suite 运行状态。
  * @typedef {'passed' | 'failed' | 'noisy' | 'blocked'} SuiteStatus
  */
 
 /**
+ * 子测试现状条目。
  * @typedef {object} SubtestStateEntry
- * @property {SuiteStatus} status
- * @property {string | null} commitHash
- * @property {string | null} uncommittedHash
- * @property {string | null} ranAt
+ * @property {SuiteStatus} status 状态
+ * @property {string | null} commitHash 上次真跑 HEAD
+ * @property {string | null} uncommittedHash 未提交 digest
+ * @property {string | null} ranAt ISO 时间戳
  * @property {number | null} durationMs 子测试耗时基线（EMA，毫秒）
- * @property {string | null} [triggerHash]
+ * @property {string | null} [triggerHash] trigger 内容指纹
  */
 
 /**
+ * suite 现状库条目。
  * @typedef {object} SuiteStateEntry
  * @property {SuiteStatus} status
  * @property {string | null} commitHash
@@ -60,8 +63,9 @@ import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
  */
 
 /**
+ * 测试现状库根结构。
  * @typedef {object} TestState
- * @property {Record<string, SuiteStateEntry>} suites
+ * @property {Record<string, SuiteStateEntry>} suites suite 键 → 条目
  */
 
 /**
@@ -107,6 +111,7 @@ export function migrateLegacyStateSuites(suites) {
 }
 
 /**
+ * 读取现状库 JSON；遇旧版键格式时自动迁移并落盘。
  * @param {string} repoRoot 仓库根
  * @returns {Promise<TestState>} 现状库
  */
@@ -129,6 +134,7 @@ export async function readState(repoRoot) {
 }
 
 /**
+ * 写入现状库 JSON。
  * @param {string} repoRoot 仓库根
  * @param {TestState} state 现状库
  * @returns {Promise<void>}
@@ -139,6 +145,7 @@ export async function writeState(repoRoot, state) {
 }
 
 /**
+ * 收集 suite 级 trigger glob 命中证据。
  * @param {SuiteDef} suite suite
  * @param {string[]} changedFiles 变更文件
  * @returns {{ matchedTriggers: string[], matchedPaths: string[] }} trigger 命中证据
@@ -163,6 +170,7 @@ export function collectTriggerEvidence(suite, changedFiles) {
 }
 
 /**
+ * 收集过期判定用 trigger 证据（含子测试、triggerSet 与指纹漂移）。
  * @param {SuiteDef} suite suite
  * @param {string[]} changedFiles 变更文件
  * @param {{ entry?: SuiteStateEntry, currentTriggerHash?: string | null }} [opts] 可选指纹对照
@@ -223,6 +231,7 @@ export function collectStaleTriggerEvidence(suite, changedFiles, opts = {}) {
 }
 
 /**
+ * 判定 suite 级 trigger 是否命中变更文件。
  * @param {SuiteDef} suite suite
  * @param {string[]} changedFiles 变更文件
  * @returns {boolean} trigger 是否命中
@@ -269,6 +278,7 @@ export function refreshEntryFingerprint(state, key, commitHash, uncommittedHash,
 }
 
 /**
+ * 读取 suite 基线墙钟耗时。
  * @param {SuiteStateEntry | undefined} entry 现状条目
  * @returns {number | undefined} 基线耗时毫秒
  */
@@ -411,6 +421,7 @@ function aggregateSuiteStatus(suite, subtests, runStatus) {
 }
 
 /**
+ * 单次 suite 运行后 upsert 现状库条目。
  * @param {object} params 参数
  * @param {string} params.repoRoot 仓库根
  * @param {TestState} params.state 现状库
@@ -562,6 +573,7 @@ export async function upsertSuiteRun({
 }
 
 /**
+ * 将 suite 键转为 mermaid 安全节点 id。
  * @param {string} key suite 键
  * @returns {string} mermaid 节点 id
  */
@@ -570,6 +582,7 @@ function mermaidNodeId(key) {
 }
 
 /**
+ * 生成依赖树 mermaid 图源码。
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
  * @param {Set<string>} staleKeys 内容已变 suite 键
@@ -621,6 +634,7 @@ function buildDependencyMermaid(allSuites, state, staleKeys) {
 }
 
 /**
+ * 生成 state/main.md 正文（依赖树 + 概览表）。
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
  * @param {Set<string>} staleKeys 内容已变 suite 键

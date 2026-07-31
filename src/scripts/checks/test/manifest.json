@@ -102,7 +102,9 @@
 			"triggers": [
 				"src/scripts/checks/jsdoc_english.mjs",
 				"src/scripts/checks/test/jsdoc_english.test.mjs",
-				"imgs/icon_anime/**/*.mjs"
+				"**/*.mjs",
+				"**/*.js",
+				"**/*.ts"
 			]
 		}
 	]

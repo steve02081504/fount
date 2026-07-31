@@ -145,9 +145,8 @@ export class AsciiAnimePlayer {
 	start({ onResize, onPointer, signal } = {}) {
 		this.#ac = new AbortController()
 		this.signal = this.#ac.signal
-		if (signal)
-			if (signal.aborted) this.#ac.abort()
-			else signal.addEventListener('abort', () => this.#ac.abort(), { once: true })
+		if (signal?.aborted) this.#ac.abort()
+		else signal?.addEventListener('abort', () => this.#ac.abort(), { once: true })
 
 		if (onResize) this.onResize = onResize
 		if (onPointer) this.onPointer = onPointer
@@ -157,9 +156,7 @@ export class AsciiAnimePlayer {
 		write(`\x1b[?1049h\x1b[?25l\x1b[2J\x1b[H${MOUSE_ON}`)
 
 		if (process.stdout.isTTY) {
-			/**
-			 * @returns {void}
-			 */
+			/** @returns {void} */
 			this.#resizeListener = () => this.onResize?.(terminalSize())
 			process.stdout.on('resize', this.#resizeListener)
 		}
@@ -168,7 +165,7 @@ export class AsciiAnimePlayer {
 		process.stdin.setRawMode(true)
 		process.stdin.resume()
 		/**
-		 * 原始模式：Ctrl+C 中止；SGR 鼠标 → onPointer；其他 CSI 丢弃。
+		 * Ctrl+C 中止；SGR 鼠标 → onPointer。
 		 * @param {Buffer} buf stdin 块
 		 * @returns {void}
 		 */
@@ -251,6 +248,10 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
+	 * 选择本次 play 使用的信号。
+	 * - `undefined` → 沿用当前 play 信号
+	 * - `null` → 新建信号（中止后再播，如 farewell）
+	 * - `AbortSignal` → 交叉接线：该信号中止时一并 abort play
 	 * @param {AbortSignal | null | undefined} signal 覆盖
 	 * @returns {AbortSignal | undefined} 活动信号
 	 */
@@ -284,7 +285,7 @@ export class AsciiAnimePlayer {
 			this.#onData = null
 		}
 		if (process.stdin.isTTY)
-			try { process.stdin.setRawMode(false) } catch { /* non-TTY teardown */ }
+			try { process.stdin.setRawMode(false) } catch { /* Node/Deno teardown on odd TTYs */ }
 
 		try { process.stdin.pause() } catch { /* already paused */ }
 		write(`${MOUSE_OFF}\x1b[?25h\x1b[0m\x1b[?1049l`)

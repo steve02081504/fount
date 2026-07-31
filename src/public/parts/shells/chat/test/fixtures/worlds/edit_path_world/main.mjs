@@ -1,7 +1,7 @@
 import { editPathHookState } from 'fount/public/parts/shells/chat/test/fixtures/probes/editPathHookState.mjs'
 
 /**
- * world MessageEdit / MessageDelete / GetCharReply fixture。
+ * world `MessageEdit` / `MessageDelete` / `GetCharReply` 测试 fixture。
  */
 export default {
 	info: {

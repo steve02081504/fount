@@ -54,7 +54,7 @@ const WS_URL = `ws://localhost:${PORT}/ws/logs`
 /**
  * 顶层错误兜底（供异步日志写入复用）。
  * @param {Error} err - 未捕获的致命错误。
- * @returns {void}
+ * @returns {void} 无返回值。
  */
 function onFatal(err) {
 	process.stderr.write(`log_viewer fatal: ${err?.stack ?? err}\n`)
@@ -78,6 +78,7 @@ let stopRequested = false
 let connection = null
 
 /**
+ * 日志接收器接口（纯 stdout 或交互 REPL）。
  * @typedef {object} LogSink
  * @property {(entry: import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry) => Promise<void>} writeEntry - 写入 wire 日志条目。
  * @property {(text: string) => void | Promise<void>} appendText - 追加原始文本。
@@ -92,7 +93,7 @@ let connection = null
 /**
  * 向 stdout 写入一条 wire 日志（`await entry.renderString()`，与进程内 {@link LogEntry#toString} 同源 ANSI 管线；勿用 `toString()`，{@link WireLogEntry} 未覆写会落到 `[object Object]`）。
  * @param {import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry} entry - `connectLogWire` 下发的异步条目。
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 写入完成。
  */
 async function plainWriteEntry(entry) {
 	const body = await entry.renderString({ indent: '  ', maxDepth: 5 })
@@ -104,7 +105,7 @@ async function plainWriteEntry(entry) {
 /**
  * 向 stdout 追加原始文本。
  * @param {string} text - 文本内容。
- * @returns {void}
+ * @returns {void} 无返回值。
  */
 function plainAppendText(text) {
 	process.stdout.write(text)
@@ -112,7 +113,7 @@ function plainAppendText(text) {
 
 /**
  * 清屏并请求随机 tip。
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 清屏完成。
  */
 async function plainClear() {
 	if (supportsAnsi) process.stdout.write('\x1Bc')
@@ -124,7 +125,7 @@ async function plainClear() {
 /**
  * 显示 logo 与初始信息。
  * @param {string} text - 服务器下发的附加文本。
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 显示完成。
  */
 async function plainShowInitialInfo(text) {
 	console.log(await runSimpleWorker('logogener'))
@@ -151,7 +152,7 @@ function generateLogo() {
 
 /**
  * 向服务器请求一条随机 tip（clear 后由日志服务 `output` 帧回传）。
- * @returns {void}
+ * @returns {void} 无返回值。
  */
 function requestRandTip() {
 	connection?.sendJson?.({ type: 'rand_tip' })
@@ -219,7 +220,7 @@ function runOneConnection(exitContext) {
 	/**
 	 * Promise 执行器，作为本次连接的状态机。
 	 * @param {(reason: 'fount_exit' | 'close') => void} resolve - 兑现器。
-	 * @returns {void}
+	 * @returns {void} 无返回值。
 	 */
 	const executor = (resolve) => {
 		let settled = false
@@ -344,7 +345,7 @@ async function main() {
 	/**
 	 * 由 `runOneConnection` 用于回传 `fount_exit` 携带的退出码。
 	 * @param {number} code - 服务器报告的退出码。
-	 * @returns {void}
+	 * @returns {void} 无返回值。
 	 */
 	const setExitCode = (code) => { exitCodeSlot.value = code }
 	const exitContext = { setExitCode }

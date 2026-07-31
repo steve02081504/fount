@@ -20,6 +20,7 @@ export function isIgnoredBrowserNetworkError(errorText) {
 }
 
 /**
+ * 浏览器网络诊断条目。
  * @typedef {object} BrowserNetworkEntry
  * @property {'http' | 'requestfailed'} kind 诊断种类
  * @property {string} method HTTP 方法

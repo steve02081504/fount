@@ -192,18 +192,17 @@ export function resizeTerrain(previous, world, opts) {
 			addedSolid[i] = 1
 		}
 
-	const features = previous.features
-		.map(feature => ({
-			...feature,
-			x0: feature.x0 + dx,
-			x1: feature.x1 + dx,
-			y0: feature.y0 + dy,
-			y1: feature.y1 + dy,
-			...feature.wells
-				? { wells: /** @type {[number, number]} */ feature.wells.map(x => x + dx) }
-				: {},
-		}))
-		.filter(feature => feature.x1 > 0 && feature.x0 < W && feature.y1 > 0 && feature.y0 < H)
+	const features = previous.features.flatMap(feature => {
+		const x0 = feature.x0 + dx
+		const x1 = feature.x1 + dx
+		const y0 = feature.y0 + dy
+		const y1 = feature.y1 + dy
+		if (x1 <= 0 || x0 >= W || y1 <= 0 || y0 >= H) return []
+		const shifted = { ...feature, x0, x1, y0, y1 }
+		if (feature.wells)
+			shifted.wells = /** @type {[number, number]} */ feature.wells.map(well => well + dx)
+		return [shifted]
+	})
 	const terrain = {
 		surface, solid, worldW: W, worldH: H,
 		surfaceChar: buildSurfaceChars(surface, W),

@@ -30,13 +30,11 @@ import { createParticlePool, clearParticlePool, totalParticleWater } from './par
  * @returns {FluidWorld} 空世界
  */
 export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}) => {
-	const viewW = width
-	const viewH = height
-	const worldW = viewW + margin * 2
-	const worldH = viewH + bottomExtra
+	const worldW = width + margin * 2
+	const worldH = height + bottomExtra
 	const size = worldW * worldH
 	return {
-		viewW, viewH, worldW, worldH, margin, ox: margin, oy: 0,
+		viewW: width, viewH: height, worldW, worldH, margin, ox: margin, oy: 0,
 		mat: new Uint8Array(size),
 		liq: new Float32Array(size),
 		moisture: new Float32Array(size),

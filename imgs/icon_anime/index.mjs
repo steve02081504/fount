@@ -16,10 +16,7 @@
 
 import process from 'node:process'
 
-import {
-	createAnimState, resizeAnimState, enter, hold, exit,
-} from './scene.mjs'
-import { createIconAnime, fps } from './session.mjs'
+import { createIconAnime } from './session.mjs'
 
 /** 图标布局常量与打包轮廓辅助。 */
 export {
@@ -31,14 +28,11 @@ export { renderBuffers, renderGrid } from './compose.mjs'
 /** 动画状态机（入场 / 保持 / 退场）。 */
 export {
 	createAnimState, resizeAnimState, enter, hold, exit,
-}
+} from './scene.mjs'
 /** 交互式 TUI 控制器。 */
-export { createIconAnime, fps }
+export { createIconAnime, fps } from './session.mjs'
 /** 底层 ASCII 动画播放器。 */
 export { AsciiAnimePlayer } from './player.mjs'
-
-/** 公开帧生成器。 */
-export const iconAnim = { enter, hold, exit, fps, createAnimState, resizeAnimState }
 
 if (import.meta.main) {
 	const icon = createIconAnime()

@@ -18,17 +18,17 @@ export const HIGH_MOMENTUM = 0.28
 export const HIGH_SPEED = 0.55
 
 /** 高动量左斜。 */
-export const WATER_HIGH_L = Object.freeze(['/', '∕'])
+export const WATER_HIGH_L = ['/', '∕']
 /** 高动量右斜。 */
-export const WATER_HIGH_R = Object.freeze(['\\', '∖'])
+export const WATER_HIGH_R = ['\\', '∖']
 /** 低动量朝左下。 */
-export const WATER_LOW_DL = Object.freeze(['‚', '´', '′', '‘', '’', '″', '“', '„', '‴', '⁗'])
+export const WATER_LOW_DL = ['‚', '´', '′', '‘', '’', '″', '“', '„', '‴', '⁗']
 /** 低动量朝右下。 */
-export const WATER_LOW_DR = Object.freeze(['‵', '‛', '‶', '‟', '‷', '⁏'])
+export const WATER_LOW_DR = ['‵', '‛', '‶', '‟', '‷', '⁏']
 /** 纯垂直下落（重 → 轻）。 */
-export const WATER_FALL = Object.freeze(['|', '¦', '‖', '⁞', '⁚', '⁝', '.'])
+export const WATER_FALL = ['|', '¦', '‖', '⁞', '⁚', '⁝', '.']
 /** 近静水池（轻 → 重）。 */
-export const WATER_STILL = Object.freeze(['‥', '…', '~', '⁓', '–'])
+export const WATER_STILL = ['‥', '…', '~', '⁓', '–']
 
 /**
  * 按水量（+ 相位抖动）从字形集中选取。

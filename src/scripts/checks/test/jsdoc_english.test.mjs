@@ -15,12 +15,12 @@ import {
 
 Deno.test('jsdocSummaryLines: stops at first @tag', () => {
 	const block = `/**
- * English summary line.
- * Second line.
+ * 中文摘要行。
+ * 第二行。
  * @param {number} x column
  * @returns {void}
  */`
-	assertEquals(jsdocSummaryLines(block), ['English summary line.', 'Second line.'])
+	assertEquals(jsdocSummaryLines(block), ['中文摘要行。', '第二行。'])
 })
 
 Deno.test('isEnglishJsdocSummary: CJK is not English', () => {
@@ -30,7 +30,7 @@ Deno.test('isEnglishJsdocSummary: CJK is not English', () => {
 })
 
 Deno.test('extractJsdocBlocks: line numbers', () => {
-	const text = '/** a */\nconst x = 1\n/** b */'
+	const text = '/** 甲 */\nconst x = 1\n/** 乙 */'
 	const blocks = extractJsdocBlocks(text)
 	assertEquals(blocks.length, 2)
 	assertEquals(blocks[0].startLine, 1)
@@ -41,6 +41,14 @@ Deno.test('scanFileJsdocEnglish: flags English summary', () => {
 	const issues = scanFileJsdocEnglish('foo.mjs', '/** English doc */\nexport const x = 1')
 	assertEquals(issues.length, 1)
 	assertEquals(issues[0].summary, 'English doc')
+})
+
+Deno.test('repo: no English JSDoc summaries', async () => {
+	const { issues } = await scanJsdocEnglish(REPO_ROOT)
+	if (issues.length) {
+		const sample = issues.slice(0, 12).map(i => `${i.path}:${i.line} ${i.summary || '(missing)'}`).join('\n')
+		assert(false, `English JSDoc (${issues.length}):\n${sample}`)
+	}
 })
 
 Deno.test('icon_anime: no English JSDoc summaries', async () => {

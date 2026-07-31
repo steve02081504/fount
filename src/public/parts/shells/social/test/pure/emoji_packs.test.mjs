@@ -1,5 +1,5 @@
 /**
- * social emoji_pack_upsert / delete reducer。
+ * Social emoji_pack_upsert / delete reducer 测试。
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std/assert/mod.ts'

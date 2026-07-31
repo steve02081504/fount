@@ -16,24 +16,25 @@ const TAG_ONLY_PREFIX = /^@(typedef|type|template|augments|extends|implements|me
 const ASCII_LETTER_RE = /[a-zA-Z]/
 
 /**
- * 从源码文本中提取 `/** … *\/` 块（含起止行号）。
+ * 从源码文本中提取 JSDoc 块（含起止行号）。
+ * 仅匹配行首（或前置空白）的 `/**`，避免命中字符串/行内注释。
  * @param {string} text 源码
  * @returns {{ text: string, startLine: number, endLine: number }[]} 块列表
  */
 export function extractJsdocBlocks(text) {
 	/** @type {{ text: string, startLine: number, endLine: number }[]} */
 	const blocks = []
-	let index = 0
-	while (index < text.length) {
-		const start = text.indexOf('/**', index)
-		if (start < 0) break
+	const re = /(^|\n)([ \t]*)\/\*\*/g
+	let match
+	while ((match = re.exec(text)) !== null) {
+		const start = match.index + match[1].length + match[2].length
 		const end = text.indexOf('*/', start + 3)
 		if (end < 0) break
 		const blockText = text.slice(start, end + 2)
 		const startLine = text.slice(0, start).split(/\r?\n/).length
 		const endLine = text.slice(0, end + 2).split(/\r?\n/).length
 		blocks.push({ text: blockText, startLine, endLine })
-		index = end + 2
+		re.lastIndex = end + 2
 	}
 	return blocks
 }

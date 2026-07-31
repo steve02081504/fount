@@ -2,10 +2,9 @@
  * 地形与流体共用的确定性哈希与格点噪声。
  */
 
-/** 正交邻居的扁平 dx / dy 数组（顺序相同）。 */
-/** @type {const} */
+/** 正交邻居 dx：右、左、下、上。 */
 export const ORTHO_DX = [1, -1, 0, 0]
-/** @type {const} */
+/** 正交邻居 dy：与 ORTHO_DX 同序。 */
 export const ORTHO_DY = [0, 0, 1, -1]
 
 /**

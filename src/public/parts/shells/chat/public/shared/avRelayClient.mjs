@@ -11,9 +11,7 @@ import { createAudioGate } from './audioGate.mjs'
 import { CODECS_PRESETS } from './avRelayPresets.mjs'
 import { bytesToHex } from './digest.mjs'
 
-/**
- *
- */
+/** 重导出 {@link ./digest.mjs} 的 `bytesToHex`。 */
 export { bytesToHex }
 
 const PRESET = CODECS_PRESETS.med
@@ -26,32 +24,25 @@ export const FRAME_SCREEN = 2
 /** relay 帧头字节数（与服务端 avRelay 一致） */
 export const FRAME_HEADER_BYTES = 26
 const KEY_MS = 2000
-/**
- *
- */
+/** 音频编码器 codec 标识（Opus）。 */
 export const AUDIO_CODEC = 'opus'
-/**
- *
- */
+/** 音频采样率（Hz）。 */
 export const AUDIO_SAMPLE_RATE = 48_000
-/**
- *
- */
+/** 音频声道数。 */
 export const AUDIO_CHANNELS = 1
-/**
- *
- */
+/** 音频目标码率（bps）。 */
 export const AUDIO_BPS = 32_000
 
 /**
+ * av-relay 会话句柄。
  * @typedef {object} AvRelaySession
- * @property {() => void} close
- * @property {() => boolean} toggleMute
- * @property {() => boolean} toggleVideo
- * @property {(mode: 'full' | 'preview') => void} [setMode]
- * @property {() => 'full' | 'preview'} [getMode]
- * @property {(senderId?: string) => number[]} [getAudioLevels]
- * @property {() => object | null} [getLocalPublishMeta]
+ * @property {() => void} close 关闭会话并释放资源
+ * @property {() => boolean} toggleMute 切换静音，返回静音后为 true
+ * @property {() => boolean} toggleVideo 开关摄像头，返回关闭后为 true
+ * @property {(mode: 'full' | 'preview') => void} [setMode] 切换订阅模式
+ * @property {() => 'full' | 'preview'} [getMode] 当前订阅模式
+ * @property {(senderId?: string) => number[]} [getAudioLevels] 读取音频电平（16 频段）
+ * @property {() => object | null} [getLocalPublishMeta] 本端 publish_meta 快照
  */
 
 /**

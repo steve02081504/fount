@@ -30,6 +30,7 @@ export function applyTestHeapCapToDenoRun(command) {
 }
 
 /**
+ * suite 调用环境变量与命令。
  * @typedef {object} SuiteInvocationOptions
  * @property {string[]} [firstFiles] FOUNT_TEST_FIRST：失败优先路径
  * @property {string[]} [subtests] FOUNT_TEST_SUBTESTS：子测试名
@@ -37,6 +38,7 @@ export function applyTestHeapCapToDenoRun(command) {
  */
 
 /**
+ * 组装 suite 子进程命令与环境变量。
  * @param {import('../core/manifest.mjs').SuiteDef} suite suite
  * @param {SuiteInvocationOptions} options 调用选项
  * @param {string} failuresOut 失败输出临时文件
@@ -94,17 +96,18 @@ export function mapTimingsToSubtests(suite, timings, ranSubtests) {
 }
 
 /**
+ * suite 单次运行结果。
  * @typedef {object} SuiteRunResult
- * @property {boolean} passed
- * @property {number} exitCode
- * @property {string[]} failedFiles
- * @property {string} output
- * @property {number} durationMs
+ * @property {boolean} passed 是否通过
+ * @property {number} exitCode 子进程退出码
+ * @property {string[]} failedFiles 失败文件（仓库相对路径）
+ * @property {string} output 过滤后的输出尾部
+ * @property {number} durationMs 墙钟耗时
  * @property {Record<string, number>} [subtestDurations] 子测试名 → 毫秒
- * @property {number} [peakMemMb]
- * @property {number} [avgCpuPct]
- * @property {boolean} [terminated]
- * @property {string} [terminateReason]
+ * @property {number} [peakMemMb] 峰值内存（MB）
+ * @property {number} [avgCpuPct] 平均 CPU（%）
+ * @property {boolean} [terminated] 是否被 watchdog 终止
+ * @property {string} [terminateReason] 终止原因
  */
 
 /**

@@ -41,7 +41,7 @@ export const LIGHT_RADIUS = 14
 const LIGHT_AMBIENT = 0.3
 
 /** 复用的 sampleLight 输出（compose 热路径）。 */
-const lightSample = { ambient: 0, lift: 0 }
+const sampleOut = { ambient: 0, lift: 0 }
 /** 复用的 ANSI 片段列表——每帧一次 join，而非逐格 `+=`。 */
 const frameParts = /** @type {string[]} */ []
 /** 共用同一 SGR 段的字形——每段 join 一次。 */
@@ -255,6 +255,7 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 			let needSample = hasTorch
 			if (!needSample && hasRipple)
 				for (const ripple of ripples) {
+					// Cell aspect: columns ≈ half a row visually → pad*2 on X.
 					const pad = ripplePad(ripple.age)
 					if (Math.abs(x - ripple.x) <= pad * 2 && Math.abs(y - ripple.y) <= pad) {
 						needSample = true
@@ -283,8 +284,8 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 				}
 			}
 
-			sampleLight(light, x, y, lightFalloff, lightSample)
-			const { ambient, lift } = lightSample
+			sampleLight(light, x, y, lightFalloff, sampleOut)
+			const { ambient, lift } = sampleOut
 
 			// Ripple-only cells far from the ring keep the plain palette.
 			if (!(ambient > 0) && lift < 0.04) {
@@ -472,5 +473,5 @@ export const composeFrame = (state) => {
 		fg[i] = FG_SPLASH
 	}
 
-	return renderBuffers(ch, fg, width, height, light ?? null)
+	return renderBuffers(ch, fg, width, height, light)
 }

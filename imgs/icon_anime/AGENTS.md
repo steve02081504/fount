@@ -52,7 +52,8 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | `flow.mjs` | Shared Torricelli / sheet / hydraulic φ / mass-transfer primitives |
 | `world.mjs` | Grid alloc, scratch buffers, mat/liq/moisture helpers, `totalWorldWater` |
 | `gas.mjs` | Air regions, hydrostatic open P(y), wind, Bernoulli ΔP `stepGas` |
-| `liquid.mjs` | Hydrostatic liquid P, gravity / orifice / soil / graph-hydraulic `stepLiquid` |
+| `liquid.mjs` | Hydrostatic liquid P, gravity / orifice / graph-hydraulic `stepLiquid` |
+| `soil.mjs` | Moisture / condensation / Matthew / drip `stepSoil` |
 | `particles.mjs` | SoA rain/splash pools + gas drag; expire deposits mass |
 | `step.mjs` | `stepFluid` — label → gas → lift → particles → liquid |
 | `glyphs.mjs` | `waterChar` / `liquidChar` / `dripChar` |

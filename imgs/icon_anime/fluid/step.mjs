@@ -35,6 +35,6 @@ export const stepFluid = (world, opts = {}) => {
 	stepGas(world, opts)
 	liftLiquidByWind(world)
 	opts.beforeParticles?.()
-	stepParticles(world, opts.onHit || NOOP_HIT, opts.state)
+	stepParticles(world, opts.onHit ?? NOOP_HIT, opts.state)
 	stepLiquid(world)
 }
