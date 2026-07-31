@@ -6,6 +6,8 @@
  * longer hold → faster; follows while moved; reforms when stopped; clears on release.
  */
 
+import { applyPointer, trimCap } from './pointer.mjs'
+
 /** Movement below this (view cells / tick) counts as still. */
 export const STILL_EPS = 0.55
 /** Frames of stillness before the vortex appears. */
@@ -61,85 +63,88 @@ export const createWindGesture = () => ({
 
 /**
  * Clear all gesture drive (release / reset).
- * @param {WindGesture} g gesture
+ * @param {WindGesture} gesture gesture
  * @returns {void}
  */
-export const clearWindGesture = (g) => {
-	g.down = false
-	g.still = 0
-	g.vortexOn = false
-	g.strength = 0
-	g.strokes.length = 0
+export const clearWindGesture = (gesture) => {
+	gesture.down = false
+	gesture.still = 0
+	gesture.vortexOn = false
+	gesture.strength = 0
+	gesture.strokes.length = 0
 }
 
 /**
  * Apply a right-button pointer event (press / drag / release).
- * @param {WindGesture} g gesture
+ * @param {WindGesture} gesture gesture
  * @param {{ x: number, y: number, right: boolean }} ev right-button event
  * @returns {void}
  */
-export const windPointer = (g, { x, y, right }) => {
-	if (!right) {
-		clearWindGesture(g)
-		return
-	}
-	if (!g.down) {
-		g.down = true
-		g.x = g.lx = x
-		g.y = g.ly = y
-		g.still = 0
-		g.vortexOn = false
-		g.strength = 0
-		g.strokes.length = 0
-		return
-	}
-	g.x = x
-	g.y = y
+export const windPointer = (gesture, { x, y, right }) => {
+	applyPointer(gesture, x, y, right, {
+		/**
+		 *
+		 */
+		onDown() {
+			gesture.lx = x
+			gesture.ly = y
+			gesture.still = 0
+			gesture.vortexOn = false
+			gesture.strength = 0
+			gesture.strokes.length = 0
+		},
+		/**
+		 *
+		 */
+		onUp() {
+			clearWindGesture(gesture)
+		},
+	})
 }
 
 /**
  * Advance gesture one sim tick: stroke trail + vortex arming / growth.
  * Call once per frame before `fillWindDrive`.
- * @param {WindGesture} g gesture
+ * @param {WindGesture} gesture gesture
  * @returns {void}
  */
-export const tickWindGesture = (g) => {
-	if (!g.down) return
+export const tickWindGesture = (gesture) => {
+	if (!gesture.down) return
 
-	for (let i = g.strokes.length - 1; i >= 0; i--)
-		if (--g.strokes[i].life <= 0) g.strokes.splice(i, 1)
+	for (let index = gesture.strokes.length - 1; index >= 0; index--)
+		if (--gesture.strokes[index].life <= 0) gesture.strokes.splice(index, 1)
 
-	const dx = g.x - g.lx
-	const dy = g.y - g.ly
+	const dx = gesture.x - gesture.lx
+	const dy = gesture.y - gesture.ly
 	const dist = Math.hypot(dx, dy)
 
 	if (dist > STILL_EPS) {
-		g.still = 0
+		gesture.still = 0
 		const inv = 1 / dist
 		const amp = dist * STROKE_SPEED_SCALE
-		g.strokes.push({
-			x0: g.lx, y0: g.ly, x1: g.x, y1: g.y,
+		gesture.strokes.push({
+			x0: gesture.lx, y0: gesture.ly, x1: gesture.x, y1: gesture.y,
 			ux: dx * inv * amp, uy: dy * inv * amp,
 			life: STROKE_LIFE,
 		})
-		if (g.strokes.length > STROKE_CAP) g.strokes.splice(0, g.strokes.length - STROKE_CAP)
-		if (g.vortexOn)
-			g.strength = Math.min(VORTEX_MAX, g.strength + VORTEX_GROWTH * 0.35)
+		trimCap(gesture.strokes, STROKE_CAP)
+		if (gesture.vortexOn)
+			gesture.strength = Math.min(VORTEX_MAX, gesture.strength + VORTEX_GROWTH * 0.35)
 	}
 	else {
-		if (g.vortexOn && g.still === 0)
+		if (gesture.vortexOn && gesture.still === 0)
 			// Just stopped after a drag — reform a clean vortex at the new centre.
-			g.strength = Math.min(VORTEX_MAX, Math.max(g.strength, VORTEX_GROWTH * 4))
+			gesture.strength = Math.min(VORTEX_MAX, Math.max(gesture.strength, VORTEX_GROWTH * 4))
 
-		g.still++
-		if (g.still >= VORTEX_DELAY) {
-			g.vortexOn = true
-			g.strength = Math.min(VORTEX_MAX, g.strength + VORTEX_GROWTH)
+		gesture.still++
+		if (gesture.still >= VORTEX_DELAY) {
+			gesture.vortexOn = true
+			gesture.strength = Math.min(VORTEX_MAX, gesture.strength + VORTEX_GROWTH)
 		}
 	}
 
-	g.lx = g.x
-	g.ly = g.y
+	gesture.lx = gesture.x
+	gesture.ly = gesture.y
 }
 
 /**
@@ -214,44 +219,44 @@ export const paintVortexDrive = (cx, cy, amp, radius, world, outUx, outUy) => {
 
 /**
  * Paint gesture drives into scratch velocity targets (view → world via ox/oy).
- * @param {WindGesture} g gesture
+ * @param {WindGesture} gesture gesture
  * @param {{ worldW: number, worldH: number, ox: number, oy: number }} world fluid world
  * @param {Float32Array} outUx horizontal drive
  * @param {Float32Array} outUy vertical drive
  * @returns {void}
  */
-export const fillWindDrive = (g, world, outUx, outUy) => {
+export const fillWindDrive = (gesture, world, outUx, outUy) => {
 	outUx.fill(0)
 	outUy.fill(0)
-	if (!g.down) return
+	if (!gesture.down) return
 
 	const { worldW: W, worldH: H, ox, oy } = world
 	const strokeR2 = STROKE_RADIUS * STROKE_RADIUS
 
-	for (const s of g.strokes) {
-		const fade = s.life / STROKE_LIFE
-		const ux = s.ux * fade
-		const uy = s.uy * fade
-		const minX = Math.max(0, Math.floor(Math.min(s.x0, s.x1) + ox - STROKE_RADIUS - 1))
-		const maxX = Math.min(W - 1, Math.ceil(Math.max(s.x0, s.x1) + ox + STROKE_RADIUS + 1))
-		const minY = Math.max(0, Math.floor(Math.min(s.y0, s.y1) + oy - STROKE_RADIUS - 1))
-		const maxY = Math.min(H - 1, Math.ceil(Math.max(s.y0, s.y1) + oy + STROKE_RADIUS + 1))
-		const ax = s.x0 + ox
-		const ay = s.y0 + oy
-		const bx = s.x1 + ox
-		const by = s.y1 + oy
+	for (const stroke of gesture.strokes) {
+		const fade = stroke.life / STROKE_LIFE
+		const ux = stroke.ux * fade
+		const uy = stroke.uy * fade
+		const minX = Math.max(0, Math.floor(Math.min(stroke.x0, stroke.x1) + ox - STROKE_RADIUS - 1))
+		const maxX = Math.min(W - 1, Math.ceil(Math.max(stroke.x0, stroke.x1) + ox + STROKE_RADIUS + 1))
+		const minY = Math.max(0, Math.floor(Math.min(stroke.y0, stroke.y1) + oy - STROKE_RADIUS - 1))
+		const maxY = Math.min(H - 1, Math.ceil(Math.max(stroke.y0, stroke.y1) + oy + STROKE_RADIUS + 1))
+		const ax = stroke.x0 + ox
+		const ay = stroke.y0 + oy
+		const bx = stroke.x1 + ox
+		const by = stroke.y1 + oy
 		for (let y = minY; y <= maxY; y++)
 			for (let x = minX; x <= maxX; x++) {
 				const d2 = dist2ToSeg(x + 0.5, y + 0.5, ax, ay, bx, by)
 				if (d2 > strokeR2) continue
-				const w = (1 - d2 / strokeR2) ** 2
+				const weight = (1 - d2 / strokeR2) ** 2
 				const cell = y * W + x
-				outUx[cell] += ux * w
-				outUy[cell] += uy * w
+				outUx[cell] += ux * weight
+				outUy[cell] += uy * weight
 			}
 	}
 
-	if (!g.vortexOn) return
+	if (!gesture.vortexOn) return
 	// Cell centre: SGR coords name the cell; swirl attractor must match that glyph.
-	paintVortexDrive(g.x + ox + 0.5, g.y + oy + 0.5, g.strength, VORTEX_RADIUS, world, outUx, outUy)
+	paintVortexDrive(gesture.x + ox + 0.5, gesture.y + oy + 0.5, gesture.strength, VORTEX_RADIUS, world, outUx, outUy)
 }

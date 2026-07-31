@@ -206,7 +206,7 @@ Deno.test('light gesture: quick release → ripple; hold → torch', async () =>
 	const {
 		createLightGesture, lightPointer, tickLightGesture, sampleLight,
 		rippleFalloff, TORCH_DELAY, RIPPLE_SPEED, RIPPLE_LIFE,
-	} = await import('../light_gesture.mjs')
+	} = await import('../gesture/light.mjs')
 	const { lightFalloff } = await import('../compose.mjs')
 
 	// Soft ring: peak on wavefront, quiet at centre for a large radius
@@ -301,7 +301,7 @@ Deno.test('wind gesture: stroke speed + clockwise vortex + release clear', async
 	const {
 		createWindGesture, windPointer, tickWindGesture, fillWindDrive,
 		VORTEX_DELAY, STILL_EPS, VORTEX_MAX,
-	} = await import('../wind_gesture.mjs')
+	} = await import('../gesture/wind.mjs')
 	const { createWorld, scratch } = await import('../fluid/world.mjs')
 	const world = createWorld({ width: 40, height: 24, margin: 4, bottomExtra: 2 })
 	const n = world.worldW * world.worldH
@@ -366,7 +366,7 @@ Deno.test('stepGas: pointer drive accelerates local gas', async () => {
 
 Deno.test('composeFrame: light yields truecolor near cursor', async () => {
 	const { composeFrame } = await import('../compose.mjs')
-	const { lightPointer, tickLightGesture, TORCH_DELAY } = await import('../light_gesture.mjs')
+	const { lightPointer, tickLightGesture, TORCH_DELAY } = await import('../gesture/light.mjs')
 	const state = createAnimState({ width: 40, height: 20, seed: 9 })
 	for (const _ of enter(state));
 	lightPointer(state.light, { x: 20, y: 10, left: true })

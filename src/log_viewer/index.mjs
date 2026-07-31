@@ -18,6 +18,7 @@ import process from 'node:process'
 import { connectLogWire } from 'npm:@steve02081504/virtual-console/wire/client'
 import supportsAnsi from 'npm:supports-ansi'
 
+import { createIconAnime } from '../../imgs/icon_anime/session.mjs'
 import { printTerminalImage } from '../scripts/logo.mjs'
 import { SetTaskbarProgress, ClearTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 import { setWindowTitle } from '../scripts/title.mjs'
@@ -25,7 +26,6 @@ import { runSimpleWorker } from '../workers/index.mjs'
 
 import { createInteractiveViewer } from './interactive.mjs'
 import { ANSI_RESET, LEVEL_PREFIX_COLORS } from './render.mjs'
-import { createWaitIcon } from './wait_icon.mjs'
 
 setWindowTitle('𝓯𝓸𝓾')
 SetTaskbarProgress(50)
@@ -169,38 +169,38 @@ const logSink = INTERACTIVE
 /**
  * 阻塞至 `/api/ping` 返回 200 为止；指数退避（200ms → 5000ms 上限），用户 Ctrl+C 则结束。
  * 交互模式下等待期间播放 icon_anime；就绪后 dismiss（不播 exit）。
- * @param {ReturnType<typeof createWaitIcon> | null} waitIcon - 等待屏控制器。
+ * @param {ReturnType<typeof createIconAnime> | null} icon - icon anime 主机。
  * @returns {Promise<void>} 服务器就绪或停止时兑现。
  */
-async function pollUntilServerReady(waitIcon) {
-	waitIcon?.start()
+async function pollUntilServerReady(icon) {
+	icon?.start()
 	let delay = 200
 	try {
 		while (!stopRequested) {
-			if (waitIcon?.userAborted) {
+			if (icon?.userAborted) {
 				stopRequested = true
 				break
 			}
 			try {
-				const signal = waitIcon
-					? AbortSignal.any([AbortSignal.timeout(2000), waitIcon.userSignal])
+				const signal = icon
+					? AbortSignal.any([AbortSignal.timeout(2000), icon.userSignal])
 					: AbortSignal.timeout(2000)
 				const res = await fetch(PING_URL, { signal })
 				if (res.ok) return
 				else throw new Error(String(res.status))
 			} catch {
-				if (stopRequested || waitIcon?.userAborted) {
+				if (stopRequested || icon?.userAborted) {
 					stopRequested = true
 					break
 				}
-				await (waitIcon ? waitIcon.sleep(delay) : sleep(delay))
+				await (icon ? icon.sleep(delay) : sleep(delay))
 				delay = Math.min(delay * 2, 5000)
 			}
 		}
 	} finally {
 		// 用户中止时留给 farewell 就地播 exit；就绪/停止则只收起。
-		if (waitIcon && !waitIcon.userAborted)
-			await waitIcon.dismiss()
+		if (icon && !icon.userAborted)
+			await icon.dismiss()
 	}
 }
 
@@ -344,8 +344,8 @@ async function main() {
 	const setExitCode = (code) => { exitCodeSlot.value = code }
 	const exitContext = { setExitCode }
 
-	const waitIcon = INTERACTIVE
-		? createWaitIcon({ /**
+	const icon = INTERACTIVE
+		? createIconAnime({ /**
 		 *
 		 */
 			onUserAbort: () => { stopRequested = true } })
@@ -363,7 +363,7 @@ async function main() {
 		stopRequested = true
 		try { logSink.tearDown?.() } catch { /* ignore */ }
 		try { connection?.close?.() } catch { /* ignore */ }
-		try { await waitIcon?.farewell() } catch { /* ignore */ }
+		try { await icon?.farewell() } catch { /* ignore */ }
 		process.exit(code)
 	}
 
@@ -379,7 +379,7 @@ async function main() {
 
 	let backoff = 500
 	while (!stopRequested) {
-		await pollUntilServerReady(waitIcon)
+		await pollUntilServerReady(icon)
 		if (stopRequested) break
 		const reason = await runOneConnection(exitContext)
 
@@ -388,8 +388,8 @@ async function main() {
 			exitCodeSlot.value = null
 			if (code === 131) {
 				// 服务器自重启：立刻挂上等待动画，稍后再 ping
-				waitIcon?.start()
-				await (waitIcon ? waitIcon.sleep(2000) : sleep(2000))
+				icon?.start()
+				await (icon ? icon.sleep(2000) : sleep(2000))
 				backoff = 500
 				continue
 			}
@@ -398,8 +398,8 @@ async function main() {
 		}
 
 		// 异常断开（无 fount_exit）：可能是服务器崩溃或网络抖动，指数退避后重试
-		waitIcon?.start()
-		await (waitIcon ? waitIcon.sleep(backoff) : sleep(backoff))
+		icon?.start()
+		await (icon ? icon.sleep(backoff) : sleep(backoff))
 		backoff = Math.min(backoff * 2, 10000)
 	}
 

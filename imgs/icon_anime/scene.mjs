@@ -9,6 +9,8 @@ import {
 	labelAirRegions, windProfileAt, idx, inWorld, isLiquidBarrier, releaseNonSoilWater,
 	soilAbsorbFactor, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, scratch,
 } from './fluid/index.mjs'
+import { createLightGesture, tickLightGesture } from './gesture/light.mjs'
+import { createWindGesture, tickWindGesture, fillWindDrive } from './gesture/wind.mjs'
 import { hash01 } from './hash.mjs'
 import {
 	ICON_W, ICON_H, ICON_BASE_ROWS, ICON_BASE_X0, BASE_WIDTH,
@@ -16,8 +18,6 @@ import {
 } from './icon.mjs'
 import { terminalSize } from './player.mjs'
 import { generateTerrain, resizeTerrain } from './terrain.mjs'
-import { createWindGesture, tickWindGesture, fillWindDrive } from './wind_gesture.mjs'
-import { createLightGesture, tickLightGesture } from './light_gesture.mjs'
 
 /** @typedef {ReturnType<typeof createAnimState>} AnimState */
 /** @typedef {ReturnType<typeof createWorld>} FluidWorld */

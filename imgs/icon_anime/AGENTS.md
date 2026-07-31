@@ -8,7 +8,7 @@ alwaysApply: false
 
 Standalone terminal animation for the fount fountain logo.
 
-Also embedded by the CLI log viewer (`src/log_viewer/wait_icon.mjs`): play while waiting for the server, dismiss on connect, `farewell` exit anim on process quit. Hosts should use `createIconAnimeSession` from `session.mjs` rather than re-wiring player/pointer/resize.
+Embedders (e.g. CLI log viewer) use `createIconAnime` from `session.mjs`: `start` while waiting, `dismiss` on connect, `farewell` exit anim on process quit. Do not re-wire player / pointer / resize.
 
 ## Run
 
@@ -24,16 +24,23 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | Path | Role |
 | --- | --- |
 | `index.mjs` | CLI entry + public re-exports |
-| `session.mjs` | Bound state+player helper (`createIconAnimeSession`) for CLI / embedders |
+| `session.mjs` | Host lifecycle (`createIconAnime`): start / dismiss / farewell / sleep + bound player |
 | `icon.mjs` | Packed silhouette, pillars, body growth order (typed arrays) |
 | `scene.mjs` | Anim state, materials, rain, pool leak, enter/hold/exit |
 | `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid`; pointer torch + click ripples (truecolor lift) |
 | `player.mjs` | TUI playback, Ctrl+C abort, SGR mouse → pointer light / wind, `stdout` resize; alt-screen enter/leave |
-| `light_gesture.mjs` | Left-button quick-click ripple vs hold torch |
-| `wind_gesture.mjs` | Right-button stroke wind + long-still clockwise vortex → local gas drive field |
+| `gesture/` | Pointer gestures (`pointer` press helper, `light` torch/ripple, `wind` stroke/vortex) |
 | `terrain.mjs` | Pedestal-anchored surface + noise caves + U-tube/chamber templates |
 | `hash.mjs` | `hash01` + 1D/2D fBm noise + `ORTHO` (terrain + fluid) |
 | `fluid/` | Particles, grid liquid, soil, Boyle air regions, gas wind, glyphs |
+
+### `gesture/`
+
+| File | Role |
+| --- | --- |
+| `pointer.mjs` | Shared press / drag / release + cap trim |
+| `light.mjs` | Left-button quick-click ripple vs hold torch |
+| `wind.mjs` | Right-button stroke wind + long-still clockwise vortex → local gas drive field |
 
 ### `fluid/`
 
@@ -60,8 +67,8 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 - Body cells are parallel `Uint8Array`s (`bodyX` / `bodyY` / `bodyD`), not object lists.
 - Particles are SoA pools (`particles.x/y/vx/vy/life/amt` + `count`); no per-tick object alloc.
 - Compose paints into reused `frameCh`/`frameFg` buffers; `renderGrid(Cell[][])` is a thin adapter.
-- Pointer light (`state.light`): SGR mouse via `consumeStdin`; `light_gesture.mjs` arms a torch after `TORCH_DELAY` frames of hold (compose: ambient dim + quadratic radial falloff, cell aspect `hypot(dx, 2·dy)`). Faster release before the torch arms spawns a high-brightness expanding ring (`rippleFalloff`) that ages out — no ambient dim.
-- Pointer wind (`state.wind`): right-button gesture in `wind_gesture.mjs`; each tick paints `driveUx`/`driveUy` scratch into `stepGas` (stroke trail + tornado vortex: clockwise tangential + updraft + inflow). Drag speed scales stroke amplitude; vortex strength grows with hold time and clears on release. Tangential `ty` uses the full `(rx/r)·amp` (not ×½) so right-side downwash cannot form a hover attractor under gravity — rain mean stays at the cursor. Strong upward gas scoops free-liquid puddles into particles (`liftLiquidByWind`); particle vertical drag rises with |gas| so rain can orbit inside the vortex.
+- Pointer light (`state.light`): SGR mouse via `consumeStdin`; `gesture/light.mjs` arms a torch after `TORCH_DELAY` frames of hold (compose: ambient dim + quadratic radial falloff, cell aspect `hypot(dx, 2·dy)`). Faster release before the torch arms spawns a high-brightness expanding ring (`rippleFalloff`) that ages out — no ambient dim.
+- Pointer wind (`state.wind`): right-button gesture in `gesture/wind.mjs`; each tick paints `driveUx`/`driveUy` scratch into `stepGas` (stroke trail + tornado vortex: clockwise tangential + updraft + inflow). Drag speed scales stroke amplitude; vortex strength grows with hold time and clears on release. Tangential `ty` uses the full `(rx/r)·amp` (not ×½) so right-side downwash cannot form a hover attractor under gravity — rain mean stays at the cursor. Strong upward gas scoops free-liquid puddles into particles (`liftLiquidByWind`); particle vertical drag rises with |gas| so rain can orbit inside the vortex.
 
 ## Material standard
 

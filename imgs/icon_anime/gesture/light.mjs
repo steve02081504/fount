@@ -5,6 +5,8 @@
  * Faster release (before torch arms) → high-brightness ring that expands outward.
  */
 
+import { applyPointer, trimCap } from './pointer.mjs'
+
 /** Frames of hold before the flashlight appears. */
 export const TORCH_DELAY = 5
 /** Ripple expansion speed (visual radius units / tick; aspect via hypot(dx, 2·dy)). */
@@ -59,66 +61,64 @@ export const rippleFalloff = (dx, dy, radius, width = RIPPLE_WIDTH) => {
 
 /**
  * Apply a left-button pointer event (press / drag / release).
- * @param {LightGesture} g gesture
+ * @param {LightGesture} gesture gesture
  * @param {{ x: number, y: number, left: boolean }} ev left-button event
  * @returns {void}
  */
-export const lightPointer = (g, { x, y, left }) => {
-	if (!left) {
-		if (g.down && !g.torch) {
-			g.ripples.push({ x: g.x, y: g.y, age: 0, life: RIPPLE_LIFE })
-			if (g.ripples.length > RIPPLE_CAP)
-				g.ripples.splice(0, g.ripples.length - RIPPLE_CAP)
-		}
-		g.down = false
-		g.held = 0
-		g.torch = false
-		return
-	}
-	if (!g.down) {
-		g.down = true
-		g.x = x
-		g.y = y
-		g.held = 0
-		g.torch = false
-		return
-	}
-	g.x = x
-	g.y = y
+export const lightPointer = (gesture, { x, y, left }) => {
+	applyPointer(gesture, x, y, left, {
+		/**
+		 *
+		 */
+		onDown() {
+			gesture.held = 0
+			gesture.torch = false
+		},
+		/**
+		 *
+		 */
+		onUp() {
+			if (!gesture.torch) {
+				gesture.ripples.push({ x: gesture.x, y: gesture.y, age: 0, life: RIPPLE_LIFE })
+				trimCap(gesture.ripples, RIPPLE_CAP)
+			}
+			gesture.held = 0
+			gesture.torch = false
+		},
+	})
 }
 
 /**
  * Advance gesture one sim tick: arm torch, age ripples.
- * @param {LightGesture} g gesture
+ * @param {LightGesture} gesture gesture
  * @returns {void}
  */
-export const tickLightGesture = (g) => {
-	for (let i = g.ripples.length - 1; i >= 0; i--)
-		if (++g.ripples[i].age >= g.ripples[i].life) g.ripples.splice(i, 1)
+export const tickLightGesture = (gesture) => {
+	for (let index = gesture.ripples.length - 1; index >= 0; index--)
+		if (++gesture.ripples[index].age >= gesture.ripples[index].life)
+			gesture.ripples.splice(index, 1)
 
-	if (!g.down) return
-	g.held++
-	if (g.held >= TORCH_DELAY) g.torch = true
+	if (!gesture.down) return
+	gesture.held++
+	if (gesture.held >= TORCH_DELAY) gesture.torch = true
 }
 
 /**
  * Combined lift at a view cell (torch fill + ripple rings).
- * @param {LightGesture | null | undefined} g gesture
+ * @param {LightGesture} gesture gesture
  * @param {number} x view column
  * @param {number} y view row
  * @param {(dx: number, dy: number, radius?: number) => number} torchFalloff radial fill
  * @returns {{ ambient: boolean, lift: number }} lighting sample
  */
-export const sampleLight = (g, x, y, torchFalloff) => {
-	if (!g) return { ambient: false, lift: 0 }
-
+export const sampleLight = (gesture, x, y, torchFalloff) => {
 	let lift = 0
-	const ambient = g.down && g.torch
-	if (ambient) lift = torchFalloff(x - g.x, y - g.y)
+	const ambient = gesture.down && gesture.torch
+	if (ambient) lift = torchFalloff(x - gesture.x, y - gesture.y)
 
-	for (const r of g.ripples) {
-		const fade = (1 - r.age / r.life) ** 1.2
-		const ring = rippleFalloff(x - r.x, y - r.y, r.age * RIPPLE_SPEED) * fade * RIPPLE_GAIN
+	for (const ripple of gesture.ripples) {
+		const fade = (1 - ripple.age / ripple.life) ** 1.2
+		const ring = rippleFalloff(x - ripple.x, y - ripple.y, ripple.age * RIPPLE_SPEED) * fade * RIPPLE_GAIN
 		if (ring > lift) lift = ring
 	}
 	return { ambient, lift }

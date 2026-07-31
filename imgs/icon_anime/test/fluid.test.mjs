@@ -661,7 +661,7 @@ Deno.test('fluid: vertical gas drag stays weak in calm air, strong in storms', (
 })
 
 Deno.test('fluid: tornado gas keeps rain orbiting aloft', async () => {
-	const { paintVortexDrive, VORTEX_RADIUS } = await import('../wind_gesture.mjs')
+	const { paintVortexDrive, VORTEX_RADIUS } = await import('../gesture/wind.mjs')
 	const w = createWorld({ width: 28, height: 20, margin: 2, bottomExtra: 2 })
 	clearMaterials(w)
 	const cx = w.ox + 14
@@ -718,7 +718,7 @@ Deno.test('fluid: upward wind lifts free liquid into particles', () => {
 })
 
 Deno.test('fluid: vortex drive through stepGas suspends rain', async () => {
-	const { paintVortexDrive, VORTEX_RADIUS } = await import('../wind_gesture.mjs')
+	const { paintVortexDrive, VORTEX_RADIUS } = await import('../gesture/wind.mjs')
 	const { scratch } = await import('../fluid/world.mjs')
 	const w = createWorld({ width: 28, height: 18, margin: 2, bottomExtra: 2 })
 	clearMaterials(w)
@@ -753,7 +753,7 @@ Deno.test('fluid: vortex drive through stepGas suspends rain', async () => {
 Deno.test('fluid: vortex rain gathers at the cursor centre', async () => {
 	// Tangential+inflow nulls ux on a diagonal; blanket updraft used to make that
 	// corridor a hover attractor (upper-right of the cursor). Mean must stay near centre.
-	const { paintVortexDrive, VORTEX_RADIUS } = await import('../wind_gesture.mjs')
+	const { paintVortexDrive, VORTEX_RADIUS } = await import('../gesture/wind.mjs')
 	const { scratch } = await import('../fluid/world.mjs')
 	const w = createWorld({ width: 36, height: 22, margin: 2, bottomExtra: 2 })
 	clearMaterials(w)

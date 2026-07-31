@@ -5,8 +5,8 @@
  */
 
 import { MAT, LIQ_DRAW, COND_DRAW, isLiquidBarrier, isSoilMat, waterChar, liquidChar, dripChar } from './fluid/index.mjs'
+import { sampleLight } from './gesture/light.mjs'
 import { ICON_W, PILLARS, BODY_DIST, maxBodyD } from './icon.mjs'
-import { sampleLight } from './light_gesture.mjs'
 
 const RESET = '\x1b[0m'
 const FG_AT = '\x1b[30m'
@@ -113,12 +113,12 @@ const renderPlain = (ch, fg, width, height) => {
  * @param {(string | null)[]} fg ANSI fg codes (null = default)
  * @param {number} width columns
  * @param {number} height rows
- * @param {import('./light_gesture.mjs').LightGesture | null} [light] pointer light gesture
+ * @param {import('./gesture/light.mjs').LightGesture} [light] pointer light gesture
  * @returns {string} ANSI frame
  */
 export const renderBuffers = (ch, fg, width, height, light = null) => {
 	const hasTorch = !!(light?.down && light.torch)
-	const hasRipple = !!(light?.ripples?.length)
+	const hasRipple = !!light?.ripples?.length
 	if (!hasTorch && !hasRipple) return renderPlain(ch, fg, width, height)
 
 	const out = []
@@ -216,7 +216,7 @@ export const renderGrid = (grid, width, height) => {
  *   softPillars: boolean, softBody: boolean, bodyReach: number, bodyMinD: number,
  *   pillars: number, frame: number,
  *   terrain: { solid: Uint8Array, surface: Int16Array, surfaceChar: string[], outline: (string | null)[] },
- *   light?: import('./light_gesture.mjs').LightGesture | null,
+ *   light?: import('./gesture/light.mjs').LightGesture,
  *   frameCh?: string[], frameFg?: (string | null)[],
  * }} state animation state
  * @returns {string} ANSI frame

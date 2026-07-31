@@ -21,7 +21,7 @@ import { on_shutdown } from 'npm:on-shutdown'
 import {
 	createAnimState, resizeAnimState, enter, hold, exit,
 } from './scene.mjs'
-import { createIconAnimeSession, fps } from './session.mjs'
+import { createIconAnime, fps } from './session.mjs'
 
 /**
  *
@@ -40,7 +40,7 @@ export {
 /**
  *
  */
-export { createIconAnimeSession, fps } from './session.mjs'
+export { createIconAnime, fps } from './session.mjs'
 /**
  *
  */
@@ -50,15 +50,8 @@ export { AsciiAnimePlayer } from './player.mjs'
 export const iconAnim = { enter, hold, exit, fps, createAnimState, resizeAnimState }
 
 if (import.meta.main) {
-	const session = createIconAnimeSession()
-
-	on_shutdown(async () => {
-		session.abort()
-		await session.playExit()
-		session.stop()
-	})
-
-	session.start()
-	await session.run()
+	const icon = createIconAnime()
+	on_shutdown(() => icon.farewell())
+	await icon.start()
 	process.exit(0)
 }

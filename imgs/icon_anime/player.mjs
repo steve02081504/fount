@@ -8,10 +8,10 @@ import process from 'node:process'
 import { setTimeout as sleep } from 'node:timers/promises'
 
 /**
- * @param {string} s text to write
+ * @param {string} text text to write
  * @returns {boolean} whether the write succeeded
  */
-const write = (s) => process.stdout.write(s)
+const write = (text) => process.stdout.write(text)
 
 /**
  * @returns {{ columns: number, rows: number }} terminal size
@@ -45,57 +45,57 @@ const MOUSE_OFF = '\x1b[?1006l\x1b[?1002l\x1b[?1000l'
  * Incomplete CSI at the end is returned as the carry buffer.
  * @param {string} carry previous incomplete bytes (latin1)
  * @param {Buffer | Uint8Array} chunk stdin chunk
- * @param {{ abort?: () => void, onPointer?: (ev: PointerEvent) => void }} sink Ctrl+C + pointer sink (e.g. the player)
+ * @param {{ abort?: () => void, onPointer?: (ev: PointerEvent) => void }} sink Ctrl+C + pointer sink
  * @returns {string} new carry
  */
 export const consumeStdin = (carry, chunk, sink = {}) => {
-	for (let i = 0; i < chunk.length; i++)
-		if (chunk[i] === 0x03) sink.abort?.()
+	for (let offset = 0; offset < chunk.length; offset++)
+		if (chunk[offset] === 0x03) sink.abort?.()
 
-	let s = carry
-	for (let i = 0; i < chunk.length; i++)
-		s += String.fromCharCode(chunk[i])
+	let text = carry
+	for (let offset = 0; offset < chunk.length; offset++)
+		text += String.fromCharCode(chunk[offset])
 
-	let i = 0
-	while (i < s.length) {
-		if (s.charCodeAt(i) !== 0x1b) {
-			i++
+	let cursor = 0
+	while (cursor < text.length) {
+		if (text.charCodeAt(cursor) !== 0x1b) {
+			cursor++
 			continue
 		}
-		if (i + 1 >= s.length) break
-		if (s[i + 1] !== '[') {
-			i++
+		if (cursor + 1 >= text.length) break
+		if (text[cursor + 1] !== '[') {
+			cursor++
 			continue
 		}
-		// SGR mouse: ESC [ < btn ; x ; y M|m
-		if (i + 2 < s.length && s[i + 2] === '<') {
-			let j = i + 3
-			while (j < s.length && s[j] !== 'M' && s[j] !== 'm') j++
-			if (j >= s.length) break
-			const body = s.slice(i + 3, j)
-			const press = s[j] === 'M'
+		// SGR mouse: ESC [ < button ; x ; y M|m
+		if (cursor + 2 < text.length && text[cursor + 2] === '<') {
+			let end = cursor + 3
+			while (end < text.length && text[end] !== 'M' && text[end] !== 'm') end++
+			if (end >= text.length) break
+			const body = text.slice(cursor + 3, end)
+			const pressed = text[end] === 'M'
 			const parts = body.split(';')
 			if (parts.length >= 3 && sink.onPointer) {
-				const btn = +parts[0]
+				const button = +parts[0]
 				const x = +parts[1] - 1
 				const y = +parts[2] - 1
-				// Ignore wheel. btn&3 is the button; +32 = drag motion.
-				const which = btn & 3
-				if (!(btn & 64) && (which === 0 || which === 2))
+				// Ignore wheel. button&3 is the button; +32 = drag motion.
+				const which = button & 3
+				if (!(button & 64) && (which === 0 || which === 2))
 					sink.onPointer(which === 0
-						? { x, y, left: press }
-						: { x, y, right: press })
+						? { x, y, left: pressed }
+						: { x, y, right: pressed })
 			}
-			i = j + 1
+			cursor = end + 1
 			continue
 		}
 		// Other CSI: skip until final byte
-		let j = i + 2
-		while (j < s.length && (s.charCodeAt(j) < 0x40 || s.charCodeAt(j) > 0x7e)) j++
-		if (j >= s.length) break
-		i = j + 1
+		let end = cursor + 2
+		while (end < text.length && (text.charCodeAt(end) < 0x40 || text.charCodeAt(end) > 0x7e)) end++
+		if (end >= text.length) break
+		cursor = end + 1
 	}
-	return s.slice(i)
+	return text.slice(cursor)
 }
 
 /** ASCII animation player. */
@@ -196,16 +196,16 @@ export class AsciiAnimePlayer {
 		signal ??= this.signal
 		for await (const frame of iterateFrames(frames)) {
 			if (signal?.aborted) return
-			const t0 = performance.now()
+			const started = performance.now()
 			this.paint(frame)
-			const wait = 1000 / this.fps - (performance.now() - t0)
+			const wait = 1000 / this.fps - (performance.now() - started)
 			if (wait <= 0) continue
 			try {
 				await sleep(wait, undefined, signal ? { signal } : undefined)
 			}
-			catch (e) {
-				if (e?.name === 'AbortError') return
-				throw e
+			catch (error) {
+				if (error?.name === 'AbortError') return
+				throw error
 			}
 		}
 	}
