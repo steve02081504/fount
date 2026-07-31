@@ -3,6 +3,7 @@
  *
  * 设计目标：
  * - 作为后台服务器进程的“前台脸面”，始终能在交互终端中显示主进程输出。
+ * - 交互 TTY 且支持 ANSI 时：启动先播完 icon_anime 进场，再进入日志/REPL；服务器重启或断线等待时再挂 logo 直到连上或 Ctrl+C；退出时播完离场。非 TTY / 无 VT 则跳过 logo。
  * - 交互 TTY 且支持 ANSI 时：日志写入终端滚动区（可用自带滚动条），底部固定 REPL（`/ws/eval`）。
  * - 服务器未就绪时持续轮询 `/api/ping`（指数退避，无超时），网络/进程恢复后自动接续。
  * - 服务器主动退出（`fount_exit`）时与服务器同步：`code === 131` 视为重启，自动重连；其它退出码本进程同码退出。
@@ -15,8 +16,10 @@ import path from 'node:path'
 import process from 'node:process'
 
 import { connectLogWire } from 'npm:@steve02081504/virtual-console/wire/client'
+import { on_shutdown } from 'npm:on-shutdown'
 import supportsAnsi from 'npm:supports-ansi'
 
+import { createIconAnime } from '../../imgs/icon_anime/session.mjs'
 import { printTerminalImage } from '../scripts/logo.mjs'
 import { SetTaskbarProgress, ClearTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 import { setWindowTitle } from '../scripts/title.mjs'
@@ -54,7 +57,6 @@ const WS_URL = `ws://localhost:${PORT}/ws/logs`
  * @returns {void}
  */
 function onFatal(err) {
-	try { logSink.tearDown?.() } catch { /* ignore */ }
 	process.stderr.write(`log_viewer fatal: ${err?.stack ?? err}\n`)
 	process.exit(1)
 }
@@ -82,6 +84,8 @@ let connection = null
  * @property {() => Promise<void>} clear - 清空日志区。
  * @property {(text: string) => Promise<void>} showInitialInfo - 显示 logo 与初始信息。
  * @property {(() => void) | undefined} [focusInput] - 聚焦输入区（交互模式）。
+ * @property {(() => void) | undefined} [suspend] - 释放 stdin 给 logo 等待动画。
+ * @property {(() => void) | undefined} [resume] - logo 结束后收回 stdin。
  * @property {(() => void) | undefined} [tearDown] - 退出前清理（交互模式）。
  */
 
@@ -165,18 +169,43 @@ const logSink = INTERACTIVE
 	: createPlainSink()
 
 /**
- * 阻塞至 `/api/ping` 返回 200 为止；指数退避（200ms → 5000ms 上限），用户 Ctrl+C 则结束。
- * @returns {Promise<void>} 服务器就绪或停止时兑现。
+ * 阻塞至 `/api/ping` 返回 200；可选叠加 icon 等待动画（连上 dismiss，Ctrl+C 则 userAborted）。
+ * @param {ReturnType<typeof createIconAnime> | null} [icon] 等待期间展示的 logo；`null` 则静默轮询。
+ * @returns {Promise<void>} 服务器就绪或用户中止时兑现。
  */
-async function pollUntilServerReady() {
+async function pollUntilServerReady(icon = null) {
+	if (icon) {
+		logSink.suspend?.()
+		icon.start()
+	}
 	let delay = 200
-	while (!stopRequested) try {
-		const res = await fetch(PING_URL, { signal: AbortSignal.timeout(2000) })
-		if (res.ok) return
-		else throw new Error(String(res.status))
-	} catch {
-		await sleep(delay)
-		delay = Math.min(delay * 2, 5000)
+	try {
+		while (!stopRequested) {
+			if (icon?.userAborted) {
+				stopRequested = true
+				break
+			}
+			try {
+				const signal = icon
+					? AbortSignal.any([AbortSignal.timeout(2000), icon.userSignal])
+					: AbortSignal.timeout(2000)
+				const res = await fetch(PING_URL, { signal })
+				if (res.ok) return
+				throw new Error(String(res.status))
+			} catch {
+				if (stopRequested || icon?.userAborted) {
+					stopRequested = true
+					break
+				}
+				await (icon ? icon.sleep(delay) : sleep(delay))
+				delay = Math.min(delay * 2, 5000)
+			}
+		}
+	} finally {
+		if (icon) {
+			await icon.dismiss()
+			if (!icon.userAborted) logSink.resume?.()
+		}
 	}
 }
 
@@ -320,19 +349,18 @@ async function main() {
 	const setExitCode = (code) => { exitCodeSlot.value = code }
 	const exitContext = { setExitCode }
 
-	/**
-	 * SIGINT 处理：标记停止，拆除 REPL、关闭当前连接，立即以 130 退出。
-	 * @returns {void}
-	 */
-	const onSigint = () => {
-		stopRequested = true
+	const icon = INTERACTIVE ? createIconAnime() : null
+	on_shutdown(async () => {
 		try { logSink.tearDown?.() } catch { /* ignore */ }
 		try { connection?.close?.() } catch { /* ignore */ }
-		process.exit(130)
-	}
-	process.on('SIGINT', onSigint)
+		try { await icon?.farewell() } catch { /* ignore */ }
+	})
 
-	let backoff = 500
+	if (icon) {
+		await icon.intro()
+		if (icon.userAborted) process.exit(130)
+	}
+
 	while (!stopRequested) {
 		await pollUntilServerReady()
 		if (stopRequested) break
@@ -341,20 +369,19 @@ async function main() {
 		if (reason === 'fount_exit') {
 			const code = exitCodeSlot.value ?? 0
 			exitCodeSlot.value = null
-			if (code === 131) {
-				// 服务器自重启：等待新进程起来再重连
-				await sleep(2000)
-				backoff = 500
-				continue
+			if (code !== 131) {
+				process.exit(code)
+				return
 			}
-			try { logSink.tearDown?.() } catch { /* ignore */ }
-			process.exit(code)
+			// 131: fall through to reconnect wait (same as abnormal disconnect).
 		}
 
-		// 异常断开（无 fount_exit）：可能是服务器崩溃或网络抖动，指数退避后重试
-		await sleep(backoff)
-		backoff = Math.min(backoff * 2, 10000)
+		// 异常断开 / reboot(131)：logo 等到服务器回来或 Ctrl+C
+		await pollUntilServerReady(icon)
+		if (icon?.userAborted) process.exit(130)
 	}
+
+	process.exit(130)
 }
 
 main().catch(onFatal)

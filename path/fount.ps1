@@ -1781,7 +1781,7 @@ function Restore-FountTestKeepAwakeArchive {
 }
 
 if ($args[0] -eq 'test') {
-	$script:originalTitle = Get-Title
+	$originalTitle = Get-Title
 	Set-Title '𝒻ℴ𝓊𝓃𝓉 𝓽𝓮𝓼𝓉'
 	try { Enable-FountTestKeepAwake }
 	catch { Write-Verbose "Enable-FountTestKeepAwake: $($_.Exception.Message)" }
@@ -1792,7 +1792,7 @@ if ($args[0] -eq 'test') {
 	}
 	finally {
 		Disable-FountTestKeepAwake
-		Set-Title $script:originalTitle
+		Set-Title $originalTitle
 		if ($testExit -eq 0) { Write-TaskbarProgressClear }
 		Write-Host -NoNewline $script:TaskbarProgressBel
 	}
@@ -2083,6 +2083,23 @@ elseif ($args[0] -eq 'remove') {
 	Write-TaskbarProgressClear
 	Set-Title $originalTitle
 	exit 0
+}
+elseif ($args[0] -eq 'logo') {
+	$iconAnime = "$FOUNT_DIR/imgs/icon_anime/index.mjs"
+	$originalTitle = Get-Title
+	try {
+		Set-Title '𝒻ℴ𝓊𝓃𝓉 𝓵𝓸𝓰𝓸'
+		if ($args[1] -eq 'watch') {
+			deno run --watch --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" $iconAnime
+		}
+		else {
+			deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" $iconAnime
+		}
+	}
+	finally {
+		Set-Title $originalTitle
+	}
+	exit $LastExitCode
 }
 elseif ($args[0] -eq 'log') {
 	try {
