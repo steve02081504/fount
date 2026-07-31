@@ -1,18 +1,18 @@
 /**
- * Deterministic hash + lattice noise shared by terrain and fluid.
+ * 地形与流体共用的确定性哈希与格点噪声。
  */
 
-/** Cardinal neighbors as flat dx / dy arrays (same order). */
+/** 正交邻居的扁平 dx / dy 数组（顺序相同）。 */
 /** @type {const} */
 export const ORTHO_DX = [1, -1, 0, 0]
 /** @type {const} */
 export const ORTHO_DY = [0, 0, 1, -1]
 
 /**
- * Deterministic hash in [0, 1).
- * @param {number} a salt a
- * @param {number} [b=0] salt b
- * @returns {number} value in [0, 1)
+ * [0, 1) 区间确定性哈希。
+ * @param {number} a 盐值 a
+ * @param {number} [b=0] 盐值 b
+ * @returns {number} [0, 1) 内的值
  */
 export const hash01 = (a, b = 0) => {
 	let n = Math.imul(a ^ Math.imul(b, 1597334677), 3812015801)
@@ -22,10 +22,10 @@ export const hash01 = (a, b = 0) => {
 }
 
 /**
- * Smooth 1D value noise in [-1, 1].
- * @param {number} t continuous coordinate
- * @param {number} seed lattice salt
- * @returns {number} noise
+ * [-1, 1] 区间平滑一维值噪声。
+ * @param {number} t 连续坐标
+ * @param {number} seed 格点盐值
+ * @returns {number} 噪声
  */
 export const valueNoise1d = (t, seed) => {
 	const i = Math.floor(t)
@@ -37,11 +37,11 @@ export const valueNoise1d = (t, seed) => {
 }
 
 /**
- * Pink-ish 1D fBm in ~[-1, 1].
- * @param {number} t continuous coordinate
- * @param {number} seed lattice salt
- * @param {number} [octaves=4] octave count
- * @returns {number} noise
+ * 约 [-1, 1] 的偏粉一维 fBm。
+ * @param {number} t 连续坐标
+ * @param {number} seed 格点盐值
+ * @param {number} [octaves=4] 倍频层数
+ * @returns {number} 噪声
  */
 export const fbm1d = (t, seed, octaves = 4) => {
 	let v = 0, amp = 1, freq = 1, norm = 0
@@ -55,11 +55,11 @@ export const fbm1d = (t, seed, octaves = 4) => {
 }
 
 /**
- * Bilinear value noise in [0, 1).
- * @param {number} x column
- * @param {number} y row
- * @param {number} seed lattice salt
- * @returns {number} noise
+ * [0, 1) 区间双线性值噪声。
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} seed 格点盐值
+ * @returns {number} 噪声
  */
 export const valueNoise2 = (x, y, seed) => {
 	const x0 = Math.floor(x)
@@ -76,11 +76,11 @@ export const valueNoise2 = (x, y, seed) => {
 }
 
 /**
- * 2D fBm via hash lattice, ~[0, 1).
- * @param {number} x column
- * @param {number} y row
- * @param {number} seed lattice salt
- * @returns {number} noise
+ * 哈希格点二维 fBm，约 [0, 1)。
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} seed 格点盐值
+ * @returns {number} 噪声
  */
 export const fbm2 = (x, y, seed) => {
 	let amp = 0.5

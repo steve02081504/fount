@@ -1,12 +1,12 @@
 /**
- * Test-only terrain analysis helpers (compose over exported `labelCavities`).
+ * 仅测试用地形分析辅助（基于导出的 `labelCavities` 组合）。
  */
 import { labelCavities, TALL_LAND_HEIGHT_FRAC } from '../terrain.mjs'
 
 /**
- * Count underground air cavities.
- * @param {import('../terrain.mjs').TerrainData} terrain generated terrain bundle
- * @returns {{ count: number, sizes: number[], hasUTube: boolean, hasChamber: boolean }} cavity summary
+ * 统计地下空气腔体。
+ * @param {import('../terrain.mjs').TerrainData} terrain 已生成地形包
+ * @returns {{ count: number, sizes: number[], hasUTube: boolean, hasChamber: boolean }} 腔体摘要
  */
 export function analyzeTerrain(terrain) {
 	const { solid, surface, features, worldW: width, worldH: height } = terrain
@@ -20,9 +20,9 @@ export function analyzeTerrain(terrain) {
 }
 
 /**
- * Rough periodicity check: surface should not look like a sine.
- * @param {Int16Array} surface surface rows
- * @returns {number} max |autocorr| for lags 4..12 (lower = less periodic)
+ * 粗略周期性检测：地表不应像正弦波。
+ * @param {Int16Array} surface 地表行
+ * @returns {number} 滞后 4..12 的最大 |自相关|（越低越不周期）
  */
 export function surfacePeriodicityScore(surface) {
 	const width = surface.length
@@ -43,10 +43,10 @@ export function surfacePeriodicityScore(surface) {
 }
 
 /**
- * Tall-land coverage inside the viewport.
- * @param {import('../terrain.mjs').TerrainData} terrain generated terrain bundle
- * @param {{ viewH: number, viewW: number }} size view size
- * @returns {{ tall: number, total: number, fraction: number, minThick: number }} tall-column stats
+ * 视口内高陆覆盖率。
+ * @param {import('../terrain.mjs').TerrainData} terrain 已生成地形包
+ * @param {{ viewH: number, viewW: number }} size 视口尺寸
+ * @returns {{ tall: number, total: number, fraction: number, minThick: number }} 高列统计
  */
 export function tallLandCoverage(terrain, { viewH, viewW }) {
 	const { surface, ox } = terrain

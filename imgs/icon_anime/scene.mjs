@@ -1,5 +1,5 @@
 /**
- * Animation scene: state, materials, rain, pool leak, stages.
+ * 动画场景：状态、材质、降雨、水池渗漏、阶段。
  */
 
 import { composeFrame, renderBuffers } from './compose.mjs'
@@ -24,18 +24,18 @@ import { generateTerrain, resizeTerrain } from './terrain.mjs'
 /** @typedef {{ softBase?: boolean, softPillars?: boolean, softBody?: boolean }} SoftOpts */
 /** @typedef {import('./fluid/particles.mjs').ParticleView} ParticleView */
 
-/** World margin beyond the visible view. */
+/** 视口外的世界边距。 */
 const VIEW_MARGIN = 28
-/** Extra world rows below the view. */
+/** 视口下方的额外世界行数。 */
 const BOTTOM_EXTRA = 6
-/** Soil-settling ticks applied to newly exposed terrain after expansion. */
+/** 扩张后新暴露地形应用的土壤沉降 tick 数。 */
 export const RESIZE_WEATHER_TICKS = 12
-/** Ground-runoff search offsets (near → far). */
+/** 地表径流搜索偏移（近 → 远）。 */
 const GROUND_DX = Object.freeze([0, -1, 1, -2, 2, -3, 3, -4, 4])
 
 /**
- * Default view size from the terminal (falls back to icon bounds).
- * @returns {{ width: number, height: number }} view size
+ * 默认视口尺寸（取自终端，回退到图标边界）。
+ * @returns {{ width: number, height: number }} 视口尺寸
  */
 const defaultSize = () => {
 	const { columns, rows } = terminalSize()
@@ -45,15 +45,15 @@ const defaultSize = () => {
 	}
 }
 
-/** Base slab column span. */
+/** 底座板列跨度。 */
 const BASE_WIDTH = ICON_BASE_X1 - ICON_BASE_X0
 
 /**
- * Icon origin in world coordinates for a view size.
- * @param {FluidWorld} world fluid world
- * @param {number} width view width
- * @param {number} height view height
- * @returns {{ iconOx: number, iconOy: number }} icon origin
+ * 给定视口尺寸下图标在世界坐标中的原点。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} width 视口宽
+ * @param {number} height 视口高
+ * @returns {{ iconOx: number, iconOy: number }} 图标原点
  */
 const iconOrigin = (world, width, height) => ({
 	iconOx: world.ox + Math.floor((width - ICON_W) / 2),
@@ -61,12 +61,12 @@ const iconOrigin = (world, width, height) => ({
 })
 
 /**
- * Place icon origin + generate pedestal-anchored terrain for a world.
- * @param {FluidWorld} world fluid world
- * @param {number} width view width
- * @param {number} height view height
- * @param {number} seed terrain seed
- * @returns {{ iconOx: number, iconOy: number, terrain: import('./terrain.mjs').TerrainData }} placement
+ * 放置图标原点，并生成以基座锚定的地形。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} width 视口宽
+ * @param {number} height 视口高
+ * @param {number} seed 地形种子
+ * @returns {{ iconOx: number, iconOy: number, terrain: import('./terrain.mjs').TerrainData }} 放置结果
  */
 const placeIcon = (world, width, height, seed) => {
 	const { iconOx, iconOy } = iconOrigin(world, width, height)
@@ -82,9 +82,9 @@ const placeIcon = (world, width, height, seed) => {
 }
 
 /**
- * Create a fresh animation state with terrain and empty fluid world.
- * @param {{ width?: number, height?: number, seed?: number }} [opts] size and seed overrides
- * @returns {AnimState} new animation state
+ * 创建带地形与空流体世界的新动画状态。
+ * @param {{ width?: number, height?: number, seed?: number }} [opts] 尺寸与种子覆盖
+ * @returns {AnimState} 新动画状态
  */
 export const createAnimState = (opts = {}) => {
 	const { width: dw, height: dh } = defaultSize()
@@ -115,11 +115,11 @@ export const createAnimState = (opts = {}) => {
 }
 
 /**
- * Resize around the icon, retaining existing terrain/dynamics and generating only
- * newly exposed terrain. New soil starts rain-saturated and settles briefly.
- * @param {AnimState} state animation state
- * @param {{ width: number, height: number }} size new view size
- * @returns {AnimState} same state, resized in place
+ * 围绕图标调整尺寸，保留既有地形/动力学，仅为新暴露区域生成地形。
+ * 新土壤初始为雨饱和并短暂沉降。
+ * @param {AnimState} state 动画状态
+ * @param {{ width: number, height: number }} size 新视口尺寸
+ * @returns {AnimState} 同一状态，原地 resize
  */
 export const resizeAnimState = (state, { width, height }) => {
 	width = Math.max(ICON_W, width)
@@ -193,8 +193,8 @@ export const resizeAnimState = (state, { width, height }) => {
 }
 
 /**
- * Stamp HORIZON on surface cells and SOLID elsewhere in the terrain fill.
- * @param {AnimState} state animation state
+ * 在地表格打 HORIZON，地形填充其余为 SOLID。
+ * @param {AnimState} state 动画状态
  * @returns {void}
  */
 const applyTerrain = (state) => {
@@ -209,8 +209,8 @@ const applyTerrain = (state) => {
 }
 
 /**
- * Paint grown base slab columns as POOL (soft edges as SLOPE_*).
- * @param {AnimState} state animation state
+ * 将已生长的底座板列绘制为 POOL（软边为 SLOPE_*）。
+ * @param {AnimState} state 动画状态
  * @returns {void}
  */
 const paintBaseMats = (state) => {
@@ -233,8 +233,8 @@ const paintBaseMats = (state) => {
 }
 
 /**
- * Paint body cells within [bodyMinD, bodyReach] as BODY.
- * @param {AnimState} state animation state
+ * 在 [bodyMinD, bodyReach] 范围内将体素格绘制为 BODY。
+ * @param {AnimState} state 动画状态
  * @returns {void}
  */
 const paintBodyMats = (state) => {
@@ -248,16 +248,16 @@ const paintBodyMats = (state) => {
 }
 
 /**
- * Pack stage fields into a single int for material rebuild skip.
- * @param {AnimState} state animation state
- * @returns {number} packed stage key
+ * 将阶段字段打包为单个 int，用于跳过材质重建。
+ * @param {AnimState} state 动画状态
+ * @returns {number} 打包的阶段键
  */
 const matStageKey = (state) =>
 	state.baseBot | (state.baseTop << 6) | ((state.bodyReach + 1) << 12) | (state.bodyMinD << 20) | (+state.softBase << 28)
 
 /**
- * Rebuild the material grid when the packed stage key changes.
- * @param {AnimState} state animation state
+ * 打包阶段键变化时重建材质网格。
+ * @param {AnimState} state 动画状态
  * @returns {void}
  */
 const rebuildMaterials = (state) => {
@@ -272,10 +272,10 @@ const rebuildMaterials = (state) => {
 }
 
 /**
- * Next lower base-slab world Y below the given row, or -1 if none.
- * @param {AnimState} state animation state
- * @param {number} y world Y of the current pool cell
- * @returns {number} next pool row Y, or -1
+ * 给定行下方下一层底座板世界 Y，无则 -1。
+ * @param {AnimState} state 动画状态
+ * @param {number} y 当前水池格的世界 Y
+ * @returns {number} 下一水池行 Y，或 -1
  */
 const nextPoolRow = (state, y) => {
 	const local = y - state.iconOy
@@ -285,12 +285,12 @@ const nextPoolRow = (state, y) => {
 }
 
 /**
- * Queue 1–2 splash droplets from an overflowing pool cell.
- * @param {FluidWorld} world fluid world
- * @param {AnimState} state animation state
- * @param {number} x world X
- * @param {number} y world Y
- * @param {number} [targetY=-1] aim Y for downward splash bias
+ * 从溢出水池格排队 1–2 个飞溅液滴。
+ * @param {FluidWorld} world 流体世界
+ * @param {AnimState} state 动画状态
+ * @param {number} x 世界 X
+ * @param {number} y 世界 Y
+ * @param {number} [targetY=-1] 向下飞溅的目标 Y
  * @returns {void}
  */
 const overflowSplash = (world, state, x, y, targetY = -1) => {
@@ -315,13 +315,13 @@ const overflowSplash = (world, state, x, y, targetY = -1) => {
 }
 
 /**
- * Deposit free liquid onto nearby ground columns below fromY.
- * @param {FluidWorld} world fluid world
- * @param {AnimState} state animation state
- * @param {number} x source world X
- * @param {number} fromY source world Y (deposit only below)
- * @param {number} amt amount to place
- * @returns {number} amount successfully deposited
+ * 将游离液体沉积到 fromY 下方附近的地表列。
+ * @param {FluidWorld} world 流体世界
+ * @param {AnimState} state 动画状态
+ * @param {number} x 源世界 X
+ * @param {number} fromY 源世界 Y（仅在其下方沉积）
+ * @param {number} amt 待放置量
+ * @returns {number} 成功沉积量
  */
 const depositOnGround = (world, state, x, fromY, amt) => {
 	let left = amt
@@ -346,12 +346,12 @@ const depositOnGround = (world, state, x, fromY, amt) => {
 }
 
 /**
- * Drain a pool cell: splash, spill to next slab or ground runoff.
- * @param {FluidWorld} world fluid world
- * @param {AnimState} state animation state
- * @param {number} x world X
- * @param {number} y world Y
- * @param {number} [force=0] minimum drip amount
+ * 排空水池格：飞溅、溢至下一层板或地表径流。
+ * @param {FluidWorld} world 流体世界
+ * @param {AnimState} state 动画状态
+ * @param {number} x 世界 X
+ * @param {number} y 世界 Y
+ * @param {number} [force=0] 最小滴落量
  * @returns {void}
  */
 const leakPool = (world, state, x, y, force = 0) => {
@@ -383,14 +383,14 @@ const leakPool = (world, state, x, y, force = 0) => {
 }
 
 /**
- * Particle impact handler: pool leak, body splash, soil absorb, slopes.
- * @param {FluidWorld} world fluid world
- * @param {number} x hit cell X
- * @param {number} y hit cell Y
- * @param {number} m material at hit
- * @param {ParticleView} particle particle view
- * @param {boolean} wet whether the particle carries water mass
- * @param {AnimState} state animation state
+ * 粒子撞击处理：水池渗漏、体部飞溅、土壤吸收、斜坡。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} x 撞击格 X
+ * @param {number} y 撞击格 Y
+ * @param {number} m 撞击处材质
+ * @param {ParticleView} particle 粒子视图
+ * @param {boolean} wet 粒子是否带水质量
+ * @param {AnimState} state 动画状态
  * @returns {void}
  */
 const onParticleHit = (world, x, y, m, particle, wet, state) => {
@@ -466,8 +466,8 @@ const onParticleHit = (world, x, y, m, particle, wet, state) => {
 }
 
 /**
- * Spawn rain particles across a widening centre band while rain is active.
- * @param {AnimState} state animation state
+ * 降雨活跃时，在逐渐变宽的中心带生成雨粒子。
+ * @param {AnimState} state 动画状态
  * @returns {void}
  */
 const spawnRain = (state) => {
@@ -495,9 +495,9 @@ const spawnRain = (state) => {
 }
 
 /**
- * Advance one simulation tick and compose an ANSI frame.
- * @param {AnimState} state animation state
- * @returns {string} ANSI frame
+ * 推进一帧模拟并合成 ANSI 帧。
+ * @param {AnimState} state 动画状态
+ * @returns {string} ANSI 帧
  */
 const simFrame = (state) => {
 	rebuildMaterials(state)
@@ -521,7 +521,7 @@ const simFrame = (state) => {
 		driveUy: undefined,
 		onHit: onParticleHit,
 		state,
-		/** @returns {void} per-tick rain before particle integrate */
+		/** @returns {void} 粒子积分前每 tick 降雨 */
 		beforeParticles: () => spawnRain(state),
 	}
 	opts.time = state.frame
@@ -546,10 +546,10 @@ const simFrame = (state) => {
 }
 
 /**
- * Soft-edge flags for one shown frame, then advance frame counter.
- * @param {AnimState} state animation state
- * @param {SoftOpts} [soft] soft-edge options
- * @returns {Generator<string, void, unknown>} one ANSI frame
+ * 显示一帧的软边标志，然后推进帧计数。
+ * @param {AnimState} state 动画状态
+ * @param {SoftOpts} [soft] 软边选项
+ * @returns {Generator<string, void, unknown>} 一帧 ANSI
  */
 function* show(state, soft = {}) {
 	state.softBase = soft.softBase === true
@@ -560,9 +560,9 @@ function* show(state, soft = {}) {
 }
 
 /**
- * Grow base → pillars → body into a full icon.
- * @param {AnimState} [state] animation state
- * @returns {Generator<string, void, unknown>} enter frames
+ * 底座 → 柱 → 体，生长为完整图标。
+ * @param {AnimState} [state] 动画状态
+ * @returns {Generator<string, void, unknown>} 入场帧
  */
 export function* enter(state = createAnimState()) {
 	for (let n = 0; n <= BASE_WIDTH; n++) {
@@ -587,9 +587,9 @@ export function* enter(state = createAnimState()) {
 }
 
 /**
- * Hold the fully-grown icon under continuing rain.
- * @param {AnimState} [state] animation state
- * @returns {Generator<string, void, unknown>} hold frames
+ * 在持续降雨下保持已长成的图标。
+ * @param {AnimState} [state] 动画状态
+ * @returns {Generator<string, void, unknown>} 保持帧
  */
 export function* hold(state = createAnimState()) {
 	state.baseBot = state.baseTop = BASE_WIDTH
@@ -601,9 +601,9 @@ export function* hold(state = createAnimState()) {
 }
 
 /**
- * Tear down body → pillars → base, then clear dynamics.
- * @param {AnimState} [state] animation state
- * @returns {Generator<string, void, unknown>} exit frames
+ * 拆解体 → 柱 → 底座，然后清空动力学。
+ * @param {AnimState} [state] 动画状态
+ * @returns {Generator<string, void, unknown>} 退场帧
  */
 export function* exit(state = createAnimState()) {
 	if (state.rainUntil === Infinity)

@@ -1,13 +1,13 @@
 /**
- * Shared press / drag / release for pointer gestures (`.down`, `.x`, `.y`).
+ * 指针手势共用的按下 / 拖拽 / 释放（`.down`、`.x`、`.y`）。
  */
 
 /**
- * @param {{ down: boolean, x: number, y: number }} gesture gesture state
- * @param {number} x view column
- * @param {number} y view row
- * @param {boolean} pressed button down
- * @param {{ onDown?: () => void, onUp?: () => void }} [hooks] edge callbacks
+ * @param {{ down: boolean, x: number, y: number }} gesture 手势状态
+ * @param {number} x 视口列
+ * @param {number} y 视口行
+ * @param {boolean} pressed 按键按下
+ * @param {{ onDown?: () => void, onUp?: () => void }} [hooks] 边沿回调
  * @returns {void}
  */
 export const applyPointer = (gesture, x, y, pressed, { onDown, onUp } = {}) => {
@@ -28,9 +28,9 @@ export const applyPointer = (gesture, x, y, pressed, { onDown, onUp } = {}) => {
 }
 
 /**
- * Trim an array to the last `cap` entries (in place).
- * @param {unknown[]} items array
- * @param {number} cap max length
+ * 原地截断数组，仅保留末尾 `cap` 项。
+ * @param {unknown[]} items 数组
+ * @param {number} cap 最大长度
  * @returns {void}
  */
 export const trimCap = (items, cap) => {

@@ -86,6 +86,24 @@
 				"src/scripts/checks/test/agents_md_english.test.mjs",
 				"**/*.md"
 			]
+		},
+		{
+			"name": "jsdoc_english",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/jsdoc_english.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/jsdoc_english.mjs",
+				"src/scripts/checks/test/jsdoc_english.test.mjs",
+				"imgs/icon_anime/**/*.mjs"
+			]
 		}
 	]
 }

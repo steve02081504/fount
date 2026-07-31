@@ -1,10 +1,10 @@
 /**
- * Air regions (Boyle), global wind, gas velocity field.
- * Caller must `labelAirRegions` before `stepGas` / pressure queries.
+ * 气区（Boyle）、全局风、气体速度场。
+ * 调用方须在 `stepGas` / 压力查询前先执行 `labelAirRegions`。
  *
- * Open air: P = P_ATM + ATM_HYDRO·y; sealed: isothermal Boyle mean + ATM_HYDRO·(y−yMean).
- * Velocity: wind shear + nozzle continuity + neighbor static-ΔP (Bernoulli feedback).
- * No 2D ∇·u=0 projection — pointer vortices / updrafts are intentional sources.
+ * 开放空气：P = P_ATM + ATM_HYDRO·y；密闭：等温 Boyle 均值 + ATM_HYDRO·(y−yMean)。
+ * 速度：风切变 + 喷嘴连续性 + 邻格静压 ΔP（Bernoulli 反馈）。
+ * 不做 2D ∇·u=0 投影——指针涡旋/上升气流为有意源项。
  */
 
 import { hash01, fbm1d } from '../hash.mjs'
@@ -26,51 +26,51 @@ import { scratch, idx, inWorld, floodClear, floodPush } from './world.mjs'
  * }} AirRegion
  */
 
-/** Mean global wind amplitude (cells / tick). */
+/** 全局风平均振幅（格/帧）。 */
 export const WIND_BASE = 0.38
-/** Gust / turbulence amplitude on top of the drifting mean. */
+/** 漂移均值之上的阵风/湍流振幅。 */
 export const WIND_GUST = 0.28
-/** Boundary-layer shear: u ∝ altitude^power (stronger aloft). */
+/** 边界层切变：u ∝ 高度^power（高处更强）。 */
 export const WIND_SHEAR_POWER = 0.55
-/** Ticks per intermittent gust window. */
+/** 间歇阵风窗口的帧数。 */
 const WIND_GUST_PERIOD = 41
-/** Blend of cell gas toward wind / pressure target each tick. */
+/** 每帧格内气体向风/压力目标的混合系数。 */
 export const GAS_BLEND = 0.28
-/** Continuity boost when horizontal passage is constricted. */
+/** 水平通道收窄时的连续性增益。 */
 export const GAS_NOZZLE = 1.55
-/** Soft clamp on cell gas speed (cells / tick). */
+/** 格内气体速度的软上限（格/帧）。 */
 export const GAS_SPEED_MAX = 5
 
 const AIR_CELL = 1
 
 /**
- * Open-air hydrostatic pressure at row `y` (y↓ → P↑).
- * @param {number} y world row
- * @returns {number} pressure
+ * 开放空气在行 `y` 的静水压（y↓ → P↑）。
+ * @param {number} y 世界行
+ * @returns {number} 压力
  */
 const openHydroPressure = (y) => P_ATM + ATM_HYDRO * y
 
 /**
- * Sealed-cavity hydrostatic pressure at row `y` around Boyle mean.
- * @param {AirRegion} region sealed cavity region
- * @param {number} y world row
- * @returns {number} pressure
+ * 密闭腔在 Boyle 均值附近的行 `y` 静水压。
+ * @param {AirRegion} region 密闭腔区
+ * @param {number} y 世界行
+ * @returns {number} 压力
  */
 const sealedHydroPressure = (region, y) =>
 	Math.max(0.05, region.pressure + ATM_HYDRO * (y - region.yMean))
 
 /**
- * Cell is air-like for region flood-fill / gas occupancy.
- * @param {FluidWorld} world fluid world
- * @param {number} cell flat index
- * @returns {boolean} air cell
+ * 格是否为气区泛洪/气体占据意义上的空气格。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} cell 扁平索引
+ * @returns {boolean} 空气格
  */
 export const isAirCell = (world, cell) => !isBlockMat(world.mat[cell]) && world.liq[cell] < LIQ_DRAW
 
 /**
- * Fill blocked mask: 1 where gas cannot occupy.
- * @param {FluidWorld} world fluid world
- * @param {Uint8Array} blocked output mask
+ * 填充阻挡掩码：气体不可占据处为 1。
+ * @param {FluidWorld} world 流体世界
+ * @param {Uint8Array} blocked 输出掩码
  * @returns {void}
  */
 export const fillBlocked = (world, blocked) => {
@@ -80,11 +80,11 @@ export const fillBlocked = (world, blocked) => {
 }
 
 /**
- * Reset / allocate an air-region record (reuses pooled objects when possible).
- * @param {AirRegion[]} pool free list
- * @param {number} id region id
- * @param {boolean} openToAtm open to atmosphere?
- * @returns {AirRegion} region
+ * 重置/分配气区记录（尽量复用池内对象）。
+ * @param {AirRegion[]} pool 空闲列表
+ * @param {number} id 区 id
+ * @param {boolean} openToAtm 是否对大气开放
+ * @returns {AirRegion} 气区
  */
 const takeRegion = (pool, id, openToAtm) => {
 	const region = pool.pop() || {
@@ -102,11 +102,11 @@ const takeRegion = (pool, id, openToAtm) => {
 }
 
 /**
- * Label air regions with conserved gas mass transfer across topology changes.
- * Open-to-atmosphere regions get P = P_ATM; sealed use Boyle mean + yMean.
- * Double-buffers `regionId` via `scratch.prevRegionId`.
- * Regions are a dense id-indexed array (`regions[id]`; slot 0 unused).
- * @param {FluidWorld} world fluid world
+ * 标注气区，拓扑变化时守恒传递气体质量。
+ * 对大气开放区取 P = P_ATM；密闭区用 Boyle 均值 + yMean。
+ * 经 `scratch.prevRegionId` 双缓冲 `regionId`。
+ * 气区为稠密 id 索引数组（`regions[id]`；槽 0 未用）。
+ * @param {FluidWorld} world 流体世界
  * @returns {void}
  */
 export const labelAirRegions = (world) => {
@@ -134,11 +134,11 @@ export const labelAirRegions = (world) => {
 	floodClear(world)
 
 	/**
-	 * Seed a flood cell into the region if still unlabeled air.
-	 * @param {number} x column
-	 * @param {number} y row
-	 * @param {number} id region id
-	 * @param {AirRegion} region region
+	 * 若仍为未标注空气，将泛洪格播种入该区。
+	 * @param {number} x 列
+	 * @param {number} y 行
+	 * @param {number} id 区 id
+	 * @param {AirRegion} region 气区
 	 * @returns {void}
 	 */
 	const seed = (x, y, id, region) => {
@@ -152,9 +152,9 @@ export const labelAirRegions = (world) => {
 	}
 
 	/**
-	 * BFS expand from queue until drained.
-	 * @param {number} id region id
-	 * @param {AirRegion} region region
+	 * 从队列 BFS 扩展直至耗尽。
+	 * @param {number} id 区 id
+	 * @param {AirRegion} region 气区
 	 * @returns {void}
 	 */
 	const flood = (id, region) => {
@@ -248,14 +248,14 @@ export const labelAirRegions = (world) => {
 }
 
 /**
- * Thermodynamic / hydrostatic gas pressure at a cell (no dynamic Bernoulli term).
- * Open air: P_ATM + ATM_HYDRO·y.
- * Sealed: Boyle mean + ATM_HYDRO·(y − yMean) so the region average stays Boyle.
- * Liquid cells use overlying air (or atm).
- * @param {FluidWorld} world fluid world
- * @param {number} x column
- * @param {number} y row
- * @returns {number} pressure
+ * 格的热力学/静压气体压力（无动态 Bernoulli 项）。
+ * 开放空气：P_ATM + ATM_HYDRO·y。
+ * 密闭：Boyle 均值 + ATM_HYDRO·(y − yMean)，使区平均保持 Boyle。
+ * 液体格用上覆空气（或大气压）。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @returns {number} 压力
  */
 export const pressureAt = (world, x, y) => {
 	if (!inWorld(world, x, y)) return openHydroPressure(Math.max(0, y))
@@ -278,10 +278,10 @@ export const pressureAt = (world, x, y) => {
 }
 
 /**
- * Time-varying global wind scalar (positive → rightward).
- * @param {number} time tick
- * @param {number} [seed=0] scene seed
- * @returns {number} wind
+ * 时变全局风标量（正 → 向右）。
+ * @param {number} time 帧
+ * @param {number} [seed=0] 场景种子
+ * @returns {number} 风速
  */
 export const globalWindAt = (time, seed = 0) => {
 	const t0 = hash01(seed, 91) * 100
@@ -301,10 +301,10 @@ export const globalWindAt = (time, seed = 0) => {
 }
 
 /**
- * Height shear factor in (0, 1]: stronger aloft.
- * @param {number} y world row
- * @param {number} worldH world height
- * @returns {number} shear
+ * 高度切变因子，范围 (0, 1]：高处更强。
+ * @param {number} y 世界行
+ * @param {number} worldH 世界高度
+ * @returns {number} 切变
  */
 const windShear = (y, worldH) => {
 	const alt = 1 - Math.min(1, Math.max(0, y / Math.max(1, worldH - 1)))
@@ -312,22 +312,22 @@ const windShear = (y, worldH) => {
 }
 
 /**
- * Height-sheared wind: stronger aloft, weaker near ground.
- * @param {number} y world row
- * @param {number} worldH world height
- * @param {number} time tick
- * @param {number} [seed=0] scene seed
- * @returns {number} horizontal wind
+ * 高度切变风：高处强、近地弱。
+ * @param {number} y 世界行
+ * @param {number} worldH 世界高度
+ * @param {number} time 帧
+ * @param {number} [seed=0] 场景种子
+ * @returns {number} 水平风速
  */
 export const windProfileAt = (y, worldH, time, seed = 0) =>
 	globalWindAt(time, seed) * windShear(y, worldH)
 
 /**
- * Sample gas velocity at a world point (nearest cell).
- * @param {FluidWorld} world fluid world
- * @param {number} x column
- * @param {number} y row
- * @returns {{ ux: number, uy: number }} velocity
+ * 在世界点采样气体速度（最近格）。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @returns {{ ux: number, uy: number }} 速度
  */
 export const gasVelocityAt = (world, x, y) => {
 	const cx = x | 0
@@ -338,10 +338,10 @@ export const gasVelocityAt = (world, x, y) => {
 }
 
 /**
- * Horizontal gas velocity at a world point (no alloc).
- * @param {FluidWorld} world fluid world
- * @param {number} x column
- * @param {number} y row
+ * 世界点水平气体速度（无分配）。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} x 列
+ * @param {number} y 行
  * @returns {number} ux
  */
 export const gasUxAt = (world, x, y) => {
@@ -352,20 +352,20 @@ export const gasUxAt = (world, x, y) => {
 }
 
 /**
- * Dynamic pressure proxy ½ρu².
- * @param {number} ux horizontal speed
- * @param {number} [uy=0] vertical speed
- * @returns {number} dynamic pressure
+ * 动压代理 ½ρu²。
+ * @param {number} ux 水平速度
+ * @param {number} [uy=0] 垂直速度
+ * @returns {number} 动压
  */
 export const dynamicPressure = (ux, uy = 0) => 0.5 * RHO_AIR * (ux * ux + uy * uy)
 
 /**
- * Bernoulli static pressure: thermodynamic P − ½ρu² (clamped).
- * Used both as a query and as the field that drives neighbor ΔP in `stepGas`.
- * @param {FluidWorld} world fluid world
- * @param {number} x column
- * @param {number} y row
- * @returns {number} static pressure
+ * Bernoulli 静压：热力学 P − ½ρu²（钳位）。
+ * 既作查询，也作 `stepGas` 中驱动邻格 ΔP 的场。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @returns {number} 静压
  */
 export const staticPressureAt = (world, x, y) => {
 	const cx = x | 0
@@ -376,12 +376,12 @@ export const staticPressureAt = (world, x, y) => {
 }
 
 /**
- * Fill free-span lengths along columns (vert) or rows (horiz) in O(WH).
- * @param {Uint8Array} blocked 1 = blocked
- * @param {number} W width
- * @param {number} H height
- * @param {Uint16Array} outVert vertical free span
- * @param {Uint16Array} outHoriz horizontal free span
+ * 沿列（vert）或行（horiz）填充自由跨度，O(WH)。
+ * @param {Uint8Array} blocked 1 = 阻挡
+ * @param {number} W 宽
+ * @param {number} H 高
+ * @param {Uint16Array} outVert 垂直自由跨度
+ * @param {Uint16Array} outHoriz 水平自由跨度
  * @returns {void}
  */
 const fillGasSpans = (blocked, W, H, outVert, outHoriz) => {
@@ -415,18 +415,18 @@ const fillGasSpans = (blocked, W, H, outVert, outHoriz) => {
 }
 
 /**
- * Advance open-air / cavity gas velocity: wind shear, nozzle continuity,
- * wall slip, and neighbor static-pressure ΔP (Bernoulli suction feedback).
- * Optional `driveUx`/`driveUy` add local target velocity (pointer wind / vortex).
- * Requires a prior `labelAirRegions` for the current mat/liq topology.
- * @param {FluidWorld} world fluid world
+ * 推进开放空气/腔体气体速度：风切变、喷嘴连续性、
+ * 壁面滑移及邻格静压 ΔP（Bernoulli 抽吸反馈）。
+ * 可选 `driveUx`/`driveUy` 叠加局部目标速度（指针风/涡旋）。
+ * 需在当前 mat/liq 拓扑下已执行 `labelAirRegions`。
+ * @param {FluidWorld} world 流体世界
  * @param {{
  *   time?: number,
  *   seed?: number,
  *   forceWind?: number,
  *   driveUx?: Float32Array,
  *   driveUy?: Float32Array,
- * }} [opts] drive options
+ * }} [opts] 驱动选项
  * @returns {void}
  */
 export const stepGas = (world, opts = {}) => {
@@ -567,9 +567,9 @@ export const stepGas = (world, opts = {}) => {
 }
 
 /**
- * Total sealed gas amount (for tests).
- * @param {FluidWorld} world fluid world
- * @returns {number} sealed gas mass
+ * 密闭气体总量（供测试）。
+ * @param {FluidWorld} world 流体世界
+ * @returns {number} 密闭气体质量
  */
 export const totalSealedGas = (world) => {
 	let gas = 0

@@ -1,20 +1,20 @@
 /**
- * ASCII animation player — loop playback, Ctrl+C abort, TUI, terminal resize,
- * SGR mouse (left/right press / drag / release → onPointer).
- * No process lifecycle / on-shutdown; callers own that.
+ * ASCII 动画播放器 — 循环播放、Ctrl+C 中止、TUI、终端缩放、
+ * SGR 鼠标（左/右键按下 / 拖拽 / 释放 → onPointer）。
+ * 无进程生命周期 / on-shutdown；由调用方自行管理。
  */
 
 import process from 'node:process'
 import { setTimeout as sleep } from 'node:timers/promises'
 
 /**
- * @param {string} text text to write
- * @returns {boolean} whether the write succeeded
+ * @param {string} text 待写入文本
+ * @returns {boolean} 是否写入成功
  */
 const write = (text) => process.stdout.write(text)
 
 /**
- * @returns {{ columns: number, rows: number }} terminal size
+ * @returns {{ columns: number, rows: number }} 终端尺寸
  */
 export const terminalSize = () => ({
 	columns: process.stdout.columns || 0,
@@ -22,31 +22,31 @@ export const terminalSize = () => ({
 })
 
 /**
- * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames frames or factory
- * @returns {AsyncGenerator<string, void, unknown>} frame stream
+ * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧或工厂
+ * @returns {AsyncGenerator<string, void, unknown>} 帧流
  */
 async function* iterateFrames(frames) {
 	yield* typeof frames === 'function' ? frames() : frames
 }
 
-/** Enable SGR button + drag mouse reporting. */
+/** 启用 SGR 按键 + 拖拽鼠标上报。 */
 const MOUSE_ON = '\x1b[?1000h\x1b[?1002h\x1b[?1006h'
-/** Disable mouse reporting (reverse order). */
+/** 禁用鼠标上报（逆序）。 */
 const MOUSE_OFF = '\x1b[?1006l\x1b[?1002l\x1b[?1000l'
 
 /**
- * Pointer event from SGR mouse. Only the button that changed is set
- * (`left` and/or `right`); the other field is omitted.
+ * SGR 鼠标指针事件。仅设置发生变化的按键
+ *（`left` 和/或 `right`）；另一字段省略。
  * @typedef {{ x: number, y: number, left?: boolean, right?: boolean }} PointerEvent
  */
 
 /**
- * Feed one stdin chunk into an SGR mouse / Ctrl+C parser.
- * Incomplete CSI at the end is returned as the carry buffer.
- * @param {string} carry previous incomplete bytes (latin1)
- * @param {Buffer | Uint8Array} chunk stdin chunk
- * @param {{ abort?: () => void, onPointer?: (ev: PointerEvent) => void }} sink Ctrl+C + pointer sink
- * @returns {string} new carry
+ * 将一块 stdin 数据喂入 SGR 鼠标 / Ctrl+C 解析器。
+ * 末尾不完整的 CSI 作为 carry 缓冲返回。
+ * @param {string} carry 先前不完整字节（latin1）
+ * @param {Buffer | Uint8Array} chunk stdin 块
+ * @param {{ abort?: () => void, onPointer?: (ev: PointerEvent) => void }} sink Ctrl+C + 指针接收器
+ * @returns {string} 新 carry
  */
 export const consumeStdin = (carry, chunk, sink = {}) => {
 	let text = carry
@@ -98,14 +98,14 @@ export const consumeStdin = (carry, chunk, sink = {}) => {
 	return text.slice(cursor)
 }
 
-/** ASCII animation player. */
+/** ASCII 动画播放器。 */
 export class AsciiAnimePlayer {
 	/**
 	 * @param {{
 	 *   fps?: number,
 	 *   onResize?: (size: { columns: number, rows: number }) => void,
 	 *   onPointer?: (ev: PointerEvent) => void,
-	 * }} [opts] options
+	 * }} [opts] 选项
 	 */
 	constructor({ fps = 24, onResize, onPointer } = {}) {
 		this.fps = fps
@@ -127,7 +127,7 @@ export class AsciiAnimePlayer {
 	#stdinCarry
 
 	/**
-	 * Abort the active play/loop signal.
+	 * 中止当前 play/loop 信号。
 	 * @returns {void}
 	 */
 	abort() {
@@ -139,7 +139,7 @@ export class AsciiAnimePlayer {
 	 *   onResize?: (size: { columns: number, rows: number }) => void,
 	 *   onPointer?: (ev: PointerEvent) => void,
 	 *   signal?: AbortSignal,
-	 * }} [opts] options
+	 * }} [opts] 选项
 	 * @returns {AsciiAnimePlayer} this
 	 */
 	start({ onResize, onPointer, signal } = {}) {
@@ -168,8 +168,8 @@ export class AsciiAnimePlayer {
 		process.stdin.setRawMode(true)
 		process.stdin.resume()
 		/**
-		 * Raw mode: Ctrl+C aborts; SGR mouse → onPointer; other CSI discarded.
-		 * @param {Buffer} buf stdin chunk
+		 * 原始模式：Ctrl+C 中止；SGR 鼠标 → onPointer；其他 CSI 丢弃。
+		 * @param {Buffer} buf stdin 块
 		 * @returns {void}
 		 */
 		this.#onData = (buf) => {
@@ -180,7 +180,7 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * @param {string} frame ANSI frame
+	 * @param {string} frame ANSI 帧
 	 * @returns {void}
 	 */
 	paint(frame) {
@@ -189,8 +189,8 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames frames
-	 * @param {{ signal?: AbortSignal }} [opts] options
+	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧
+	 * @param {{ signal?: AbortSignal }} [opts] 选项
 	 * @returns {Promise<void>}
 	 */
 	async #playFrames(frames, { signal } = {}) {
@@ -212,26 +212,26 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames frames
-	 * @param {{ signal?: AbortSignal | null }} [opts] options
-	 * @returns {Promise<void> & { play: Function, loop: Function }} chainable play promise
+	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧
+	 * @param {{ signal?: AbortSignal | null }} [opts] 选项
+	 * @returns {Promise<void> & { play: Function, loop: Function }} 可链式 play promise
 	 */
 	play(frames, opts = {}) {
 		const signal = this.useSignal(opts.signal)
 		const result = this.#playFrames(frames, { ...opts, signal })
 		return Object.assign(result, {
 			/**
-			 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action frames
-			 * @param {{ signal?: AbortSignal | null }} [options] options
-			 * @returns {Promise<void> & { play: Function, loop: Function }} chainable play promise
+			 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action 帧
+			 * @param {{ signal?: AbortSignal | null }} [options] 选项
+			 * @returns {Promise<void> & { play: Function, loop: Function }} 可链式 play promise
 			 */
 			play: async (action, options) => {
 				await result
 				return this.play(action, { ...opts, ...options })
 			},
 			/**
-			 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action frames
-			 * @param {{ signal?: AbortSignal | null }} [options] options
+			 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action 帧
+			 * @param {{ signal?: AbortSignal | null }} [options] 选项
 			 * @returns {Promise<void>} loop promise
 			 */
 			loop: async (action, options) => {
@@ -242,7 +242,7 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * @returns {AbortSignal} fresh signal
+	 * @returns {AbortSignal} 新信号
 	 */
 	refreshSignal() {
 		this.#ac = new AbortController()
@@ -251,8 +251,8 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * @param {AbortSignal | null | undefined} signal override
-	 * @returns {AbortSignal | undefined} active signal
+	 * @param {AbortSignal | null | undefined} signal 覆盖
+	 * @returns {AbortSignal | undefined} 活动信号
 	 */
 	useSignal(signal) {
 		if (signal === undefined) return this.signal
@@ -263,8 +263,8 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames frames
-	 * @param {{ signal?: AbortSignal | null }} [opts] options
+	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧
+	 * @param {{ signal?: AbortSignal | null }} [opts] 选项
 	 * @returns {Promise<void>}
 	 */
 	async loop(frames, { signal } = {}) {
@@ -273,7 +273,7 @@ export class AsciiAnimePlayer {
 			await this.#playFrames(frames, { signal: this.signal })
 	}
 
-	/** Leave alt screen (restores pre-start scrollback + cursor) / raw mode / resize listener. */
+	/** 离开备用屏（恢复启动前滚动缓冲 + 光标）/ 原始模式 / 缩放监听。 */
 	stop() {
 		if (this.#resizeListener) {
 			process.stdout.off('resize', this.#resizeListener)

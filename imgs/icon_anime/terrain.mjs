@@ -1,20 +1,19 @@
 /**
- * Deterministic Terraria-style ASCII terrain + cave generation.
- * Surface is anchored at the icon pedestal (land on both ends) and walks
- * outward with constrained slopes / platforms / cliffs; underground uses
- * noise cavities, CA cleanup, and injected connector templates (U-tubes, necks).
+ * 确定性 Terraria 风格 ASCII 地形与洞穴生成。
+ * 地表锚定在图标基座（两端落地），向外行走并约束坡度/平台/悬崖；
+ * 地下用噪声空腔、元胞自动机清理及注入连通模板（U 形管、颈口）。
  *
- * `solid` is a flat Uint8Array indexed as `y * W + x` (same layout as fluid grids).
+ * `solid` 为扁平 Uint8Array，索引 `y * W + x`（与流体网格同布局）。
  */
 
 import { hash01, fbm2, ORTHO_DX, ORTHO_DY } from './hash.mjs'
 
-/** Surface / wall outline characters. */
+/** 地表/墙体轮廓字符。 */
 export const TERRAIN_CH = {
 	FLAT: '_',
 	FLAT_ALT: '-',
-	SLOPE_UP: '/',   // rising to the right
-	SLOPE_DOWN: '\\', // falling to the right
+	SLOPE_UP: '/',   // 向右上升
+	SLOPE_DOWN: '\\', // 向右下降
 	WALL: '|',
 	FLOOR: '-',
 	CEIL: '-',
@@ -45,25 +44,25 @@ export const TERRAIN_CH = {
  * @typedef {{ id: number, cx: number, cy: number, size: number }} CavityRegion
  */
 
-/** Visible land columns that must meet the tall-land floor (fraction of view width). */
+/** 须满足高地块厚度下限的可见陆地列（占视口宽度比例）。 */
 export const TALL_LAND_FRACTION = 0.3
-/** Tall land = column thickness ≥ this fraction of screen (view) height. */
+/** 高地块 = 列厚 ≥ 屏幕（视口）高度的该比例。 */
 export const TALL_LAND_HEIGHT_FRAC = 0.25
-/** Columns of land forced flush with the pedestal on each outer end. */
+/** 基座外侧两端强制与基座齐平的陆地列数。 */
 const PEDESTAL_SHOULDER = 3
 
-/** Reusable BFS queue for labelCavities — reset with .length = 0 each call. */
+/** `labelCavities` 复用 BFS 队列——每次调用 `.length = 0` 重置。 */
 const labelQ = []
 
 /**
- * True if the cell at (x, y) would be carved open by the noise cave formula.
- * @param {number} x column
- * @param {number} y row
- * @param {number} surfaceY surface row at this column
- * @param {number} originX stable horizontal terrain origin (footX0)
- * @param {number} originY stable vertical terrain origin (baseY)
- * @param {number} seed generation seed
- * @returns {boolean} true when noise would carve this cell open
+ * `(x, y)` 是否会被噪声洞穴公式凿开。
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} surfaceY 该列地表行
+ * @param {number} originX 稳定水平地形原点（footX0）
+ * @param {number} originY 稳定垂直地形原点（baseY）
+ * @param {number} seed 生成种子
+ * @returns {boolean} 噪声是否凿开此格
  */
 function caveNoiseOpens(x, y, surfaceY, originX, originY, seed) {
 	const depth = y - surfaceY
@@ -73,25 +72,25 @@ function caveNoiseOpens(x, y, surfaceY, originX, originY, seed) {
 }
 
 /**
- * Clear a solid cell if it is within bounds and below the surface.
- * @param {Uint8Array} solid flat solid mask
- * @param {Int16Array} surface surface rows
- * @param {number} W world width
- * @param {number} H world height
- * @param {number} x column
- * @param {number} y row
+ * 若格在界内且地表以下则清除固体。
+ * @param {Uint8Array} solid 扁平固体掩码
+ * @param {Int16Array} surface 地表行
+ * @param {number} W 世界宽
+ * @param {number} H 世界高
+ * @param {number} x 列
+ * @param {number} y 行
  */
 function carveAir(solid, surface, W, H, x, y) {
 	if (x >= 0 && x < W && y >= 0 && y < H && y > surface[x]) solid[y * W + x] = 0
 }
 
 /**
- * Generate full-width terrain for a fluid world.
- * Surface is anchored at the icon pedestal and walks outward so both base ends
- * sit on land; ≥30% of view columns keep land thickness ≥ ¼ screen height.
- * @param {{ worldW: number, worldH: number, viewW: number, viewH: number, ox: number }} world fluid world size fields
- * @param {{ iconOx: number, iconOy: number, seed: number, iconBaseRows: number[], iconBaseX0: number, iconBaseX1: number }} opts icon placement and seed
- * @returns {TerrainData} terrain data
+ * 为流体世界生成全宽地形。
+ * 地表锚定图标基座并向外行走，使基座两端落在陆地上；
+ * ≥30% 视口列保持陆地厚 ≥ ¼ 屏高。
+ * @param {{ worldW: number, worldH: number, viewW: number, viewH: number, ox: number }} world 流体世界尺寸字段
+ * @param {{ iconOx: number, iconOy: number, seed: number, iconBaseRows: number[], iconBaseX0: number, iconBaseX1: number }} opts 图标位置与种子
+ * @returns {TerrainData} 地形数据
  */
 export function generateTerrain(world, {
 	iconOx, iconOy, seed,
@@ -135,13 +134,13 @@ export function generateTerrain(world, {
 }
 
 /**
- * Resize terrain without regenerating cells that remain in the world.
- * The icon pedestal is the stable origin: the retained rectangle moves with it,
- * while seeded surface/cave generation fills only cells exposed by expansion.
- * @param {TerrainData} previous terrain before resize
- * @param {{ worldW: number, worldH: number, viewW: number, viewH: number, ox: number }} world new fluid world
- * @param {{ iconOx: number, iconOy: number, seed: number, iconBaseRows: number[], iconBaseX0: number, iconBaseX1: number }} opts icon placement and seed
- * @returns {{ terrain: TerrainData, addedSolid: Uint8Array }} resized terrain and newly generated soil mask
+ * 缩放地形而不重生成仍留在世界内的格。
+ * 图标基座为稳定原点：保留矩形随其移动，
+ * 仅对扩展暴露的格做带种子地表/洞穴填充。
+ * @param {TerrainData} previous 缩放前地形
+ * @param {{ worldW: number, worldH: number, viewW: number, viewH: number, ox: number }} world 新流体世界
+ * @param {{ iconOx: number, iconOy: number, seed: number, iconBaseRows: number[], iconBaseX0: number, iconBaseX1: number }} opts 图标位置与种子
+ * @returns {{ terrain: TerrainData, addedSolid: Uint8Array }} 缩放后地形与新生成土壤掩码
  */
 export function resizeTerrain(previous, world, opts) {
 	const { worldW: W, worldH: H, viewW, ox } = world
@@ -215,10 +214,10 @@ export function resizeTerrain(previous, world, opts) {
 }
 
 /**
- * Constrained random-walk surface anchored at the icon pedestal.
- * @param {number} W world width
- * @param {{ baseY: number, minY: number, maxY: number, seed: number, footX0: number, footX1: number, viewH: number, viewW: number, ox: number, H: number }} opts surface walk bounds and viewport anchors
- * @returns {Int16Array} surface row per column
+ * 锚定图标基座的约束随机游走地表。
+ * @param {number} W 世界宽
+ * @param {{ baseY: number, minY: number, maxY: number, seed: number, footX0: number, footX1: number, viewH: number, viewW: number, ox: number, H: number }} opts 地表行走边界与视口锚点
+ * @returns {Int16Array} 每列地表行
  */
 function buildSurface(W, {
 	baseY, minY, maxY, seed,
@@ -255,12 +254,12 @@ function buildSurface(W, {
 }
 
 /**
- * Random-walk surface from an anchor column in `dir` (±1).
- * @param {Int16Array} surface surface rows (mutated in place)
- * @param {number} startX first column to write
- * @param {number} dir +1 rightward / -1 leftward
- * @param {number} startY height at the adjacent anchor
- * @param {{ minY: number, maxY: number, seed: number, hashOrigin?: number }} opts walk bounds and hash origin
+ * 从锚点列沿 `dir`（±1）随机游走地表。
+ * @param {Int16Array} surface 地表行（原地修改）
+ * @param {number} startX 首写列
+ * @param {number} dir +1 向右 / -1 向左
+ * @param {number} startY 邻锚点高度
+ * @param {{ minY: number, maxY: number, seed: number, hashOrigin?: number }} opts 行走边界与哈希原点
  * @returns {void}
  */
 function walkSurface(surface, startX, dir, startY, { minY, maxY, seed, hashOrigin = 0 }) {
@@ -308,9 +307,9 @@ function walkSurface(surface, startX, dir, startY, { minY, maxY, seed, hashOrigi
 }
 
 /**
- * One-pass soft clamp of 3+ isolated spikes.
- * @param {Int16Array} surface surface rows (mutated in place)
- * @param {number} W world width
+ * 单遍软钳位 3+ 孤立尖峰。
+ * @param {Int16Array} surface 地表行（原地修改）
+ * @param {number} W 世界宽
  * @returns {void}
  */
 function softClampSpikes(surface, W) {
@@ -323,9 +322,9 @@ function softClampSpikes(surface, W) {
 }
 
 /**
- * Raise enough view columns so ≥ TALL_LAND_FRACTION have thickness ≥ ¼ screen.
- * @param {Int16Array} surface surface rows (mutated in place)
- * @param {{ W: number, H: number, viewH: number, viewW: number, ox: number, seed: number, footX0: number, footX1: number, baseY: number }} opts viewport and pedestal geometry
+ * 抬高足够视口列，使 ≥ TALL_LAND_FRACTION 列厚 ≥ ¼ 屏。
+ * @param {Int16Array} surface 地表行（原地修改）
+ * @param {{ W: number, H: number, viewH: number, viewW: number, ox: number, seed: number, footX0: number, footX1: number, baseY: number }} opts 视口与基座几何
  * @returns {void}
  */
 function ensureTallLand(surface, {
@@ -340,8 +339,8 @@ function ensureTallLand(surface, {
 	const shoulderR = footX1 + PEDESTAL_SHOULDER
 
 	/**
-	 * @param {number} x column
-	 * @returns {boolean} whether column meets tall-land floor
+	 * @param {number} x 列
+	 * @returns {boolean} 该列是否满足高地块厚度
 	 */
 	const isTall = (x) => x >= shoulderL && x < shoulderR
 		? footContributes
@@ -385,14 +384,14 @@ function ensureTallLand(surface, {
 }
 
 /**
- * 2D value-noise cave carving below surface.
- * @param {Uint8Array} solid flat solid mask (mutated in place)
- * @param {Int16Array} surface surface rows
- * @param {number} W world width
- * @param {number} H world height
- * @param {number} seed generation seed
- * @param {number} originX stable horizontal terrain origin
- * @param {number} originY stable vertical terrain origin
+ * 地表以下 2D 值噪声洞穴开凿。
+ * @param {Uint8Array} solid 扁平固体掩码（原地修改）
+ * @param {Int16Array} surface 地表行
+ * @param {number} W 世界宽
+ * @param {number} H 世界高
+ * @param {number} seed 生成种子
+ * @param {number} originX 稳定水平地形原点
+ * @param {number} originY 稳定垂直地形原点
  * @returns {void}
  */
 function carveNoiseCaves(solid, surface, W, H, seed, originX, originY) {
@@ -405,12 +404,12 @@ function carveNoiseCaves(solid, surface, W, H, seed, originX, originY) {
 }
 
 /**
- * Cellular automata cleanup — remove isolated solid flecks / fill 1-cell holes.
- * @param {Uint8Array} solid flat solid mask (mutated in place)
- * @param {Int16Array} surface surface rows
- * @param {number} W world width
- * @param {number} H world height
- * @param {number} passes CA iterations
+ * 元胞自动机清理——去除孤立固体碎屑/填单格孔洞。
+ * @param {Uint8Array} solid 扁平固体掩码（原地修改）
+ * @param {Int16Array} surface 地表行
+ * @param {number} W 世界宽
+ * @param {number} H 世界高
+ * @param {number} passes CA 迭代次数
  * @returns {void}
  */
 function cellularCleanup(solid, surface, W, H, passes) {
@@ -432,19 +431,19 @@ function cellularCleanup(solid, surface, W, H, passes) {
 }
 
 /**
- * Inject guaranteed connector demos: U-tubes, chambers with necks.
- * @param {Uint8Array} solid solid mask (mutated in place)
- * @param {Int16Array} surface surface rows
- * @param {TerrainFeature[]} features feature list to append
- * @param {{ W: number, H: number, seed: number, iconOx: number, iconBaseX0: number, iconBaseX1: number }} opts world size, seed, and icon keep-out bounds
+ * 注入保证连通演示：U 形管、带颈口的腔室。
+ * @param {Uint8Array} solid 固体掩码（原地修改）
+ * @param {Int16Array} surface 地表行
+ * @param {TerrainFeature[]} features 待追加特征列表
+ * @param {{ W: number, H: number, seed: number, iconOx: number, iconBaseX0: number, iconBaseX1: number }} opts 世界尺寸、种子与图标禁入区
  * @returns {void}
  */
 function injectConnectors(solid, surface, features, { W, H, seed, iconOx, iconBaseX0, iconBaseX1 }) {
 	const footX0 = iconOx + iconBaseX0
 	const footX1 = iconOx + iconBaseX1
 	/**
-	 * @param {number} x column
-	 * @returns {boolean} overlaps icon keep-out
+	 * @param {number} x 列
+	 * @returns {boolean} 是否与图标禁入区重叠
 	 */
 	const avoid = (x) => x >= footX0 - 2 && x < footX1 + 2
 
@@ -498,15 +497,15 @@ function injectConnectors(solid, surface, features, { W, H, seed, iconOx, iconBa
 }
 
 /**
- * Carve a U-tube: two shafts + bottom channel.
- * @param {Uint8Array} solid solid mask (mutated in place)
- * @param {Int16Array} surface surface rows
- * @param {number} W world width
- * @param {number} H world height
- * @param {number} wellL left shaft column
- * @param {number} wellR right shaft column
- * @param {number} top topmost row of the tube
- * @param {number} bottom bottom row of the connecting channel
+ * 开凿 U 形管：两竖井 + 底通道。
+ * @param {Uint8Array} solid 固体掩码（原地修改）
+ * @param {Int16Array} surface 地表行
+ * @param {number} W 世界宽
+ * @param {number} H 世界高
+ * @param {number} wellL 左竖井列
+ * @param {number} wellR 右竖井列
+ * @param {number} top 管顶行
+ * @param {number} bottom 连通通道底行
  * @returns {void}
  */
 function carveUTube(solid, surface, W, H, wellL, wellR, top, bottom) {
@@ -524,14 +523,14 @@ function carveUTube(solid, surface, W, H, wellL, wellR, top, bottom) {
 }
 
 /**
- * Carve axis-aligned open rectangle.
- * @param {Uint8Array} solid solid mask (mutated in place)
- * @param {number} W world width
- * @param {number} H world height
- * @param {number} x0 left column (clamped to ≥ 0)
- * @param {number} y0 top row (clamped to ≥ 0)
- * @param {number} w width in columns
- * @param {number} h height in rows
+ * 开凿轴对齐开放矩形。
+ * @param {Uint8Array} solid 固体掩码（原地修改）
+ * @param {number} W 世界宽
+ * @param {number} H 世界高
+ * @param {number} x0 左列（钳 ≥ 0）
+ * @param {number} y0 顶行（钳 ≥ 0）
+ * @param {number} w 列宽
+ * @param {number} h 行高
  * @returns {void}
  */
 function carveRect(solid, W, H, x0, y0, w, h) {
@@ -541,12 +540,12 @@ function carveRect(solid, W, H, x0, y0, w, h) {
 }
 
 /**
- * Connect nearby underground air pockets with 1-cell corridors.
- * @param {Uint8Array} solid solid mask (mutated in place)
- * @param {Int16Array} surface surface rows
- * @param {number} W world width
- * @param {number} H world height
- * @param {number} seed generation seed
+ * 用单格走廊连接邻近地下气袋。
+ * @param {Uint8Array} solid 固体掩码（原地修改）
+ * @param {Int16Array} surface 地表行
+ * @param {number} W 世界宽
+ * @param {number} H 世界高
+ * @param {number} seed 生成种子
  * @returns {void}
  */
 function connectNearbyCavities(solid, surface, W, H, seed) {
@@ -571,13 +570,13 @@ function connectNearbyCavities(solid, surface, W, H, seed) {
 }
 
 /**
- * Flood-fill label underground air cavities (id > 0).
- * Accumulates region centroids during the fill — no per-cell lists.
- * @param {Uint8Array} solid flat solid mask
- * @param {Int16Array} surface surface rows
- * @param {number} W world width
- * @param {number} H world height
- * @returns {{ labels: Int32Array, regions: CavityRegion[] }} per-cell cavity ids and region metadata
+ * 泛洪标注地下气腔（id > 0）。
+ * 填充时累积区质心——无每格列表。
+ * @param {Uint8Array} solid 扁平固体掩码
+ * @param {Int16Array} surface 地表行
+ * @param {number} W 世界宽
+ * @param {number} H 世界高
+ * @returns {{ labels: Int32Array, regions: CavityRegion[] }} 每格腔 id 与区元数据
  */
 export function labelCavities(solid, surface, W, H) {
 	const labels = new Int32Array(W * H)
@@ -618,15 +617,15 @@ export function labelCavities(solid, surface, W, H) {
 }
 
 /**
- * Manhattan corridor (L-shaped).
- * @param {Uint8Array} solid solid mask (mutated in place)
- * @param {Int16Array} surface surface rows
- * @param {number} W world width
- * @param {number} H world height
- * @param {number} x0 start column
- * @param {number} y0 start row
- * @param {number} x1 end column
- * @param {number} y1 end row
+ * 曼哈顿走廊（L 形）。
+ * @param {Uint8Array} solid 固体掩码（原地修改）
+ * @param {Int16Array} surface 地表行
+ * @param {number} W 世界宽
+ * @param {number} H 世界高
+ * @param {number} x0 起点列
+ * @param {number} y0 起点行
+ * @param {number} x1 终点列
+ * @param {number} y1 终点行
  * @returns {void}
  */
 function carveCorridor(solid, surface, W, H, x0, y0, x1, y1) {
@@ -644,14 +643,14 @@ function carveCorridor(solid, surface, W, H, x0, y0, x1, y1) {
 }
 
 /**
- * Keep icon pedestal span on land at `baseY` and ensure that crust cell is soil.
- * @param {Uint8Array} solid solid mask (mutated in place)
- * @param {Int16Array} surface surface rows (mutated in place)
- * @param {number} W world width
- * @param {number} H world height
- * @param {number} footX0 left foot column
- * @param {number} footX1 right foot column (exclusive)
- * @param {number} baseY surface row for the pedestal
+ * 保持图标基座跨度在 `baseY` 陆地，并确保该壳层格为土壤。
+ * @param {Uint8Array} solid 固体掩码（原地修改）
+ * @param {Int16Array} surface 地表行（原地修改）
+ * @param {number} W 世界宽
+ * @param {number} H 世界高
+ * @param {number} footX0 左足列
+ * @param {number} footX1 右足列（不含）
+ * @param {number} baseY 基座地表行
  * @returns {void}
  */
 function carveIconFootprint(solid, surface, W, H, footX0, footX1, baseY) {
@@ -665,10 +664,10 @@ function carveIconFootprint(solid, surface, W, H, footX0, footX1, baseY) {
 }
 
 /**
- * Pick outline chars for surface columns from neighbor deltas.
- * @param {Int16Array} surface surface rows
- * @param {number} W world width
- * @returns {string[]} surface character per column
+ * 由邻列差分选取地表列轮廓字符。
+ * @param {Int16Array} surface 地表行
+ * @param {number} W 世界宽
+ * @returns {string[]} 每列地表字符
  */
 function buildSurfaceChars(surface, W) {
 	const chars = Array(W)
@@ -692,12 +691,12 @@ function buildSurfaceChars(surface, W) {
 }
 
 /**
- * Precompute outline glyphs for solid cells (null = interior / surface).
- * @param {Uint8Array} solid flat solid mask
- * @param {Int16Array} surface surface rows
- * @param {number} W world width
- * @param {number} H world height
- * @returns {(string | null)[]} flat outline glyphs
+ * 预计算固体格轮廓字形（null = 内部/地表）。
+ * @param {Uint8Array} solid 扁平固体掩码
+ * @param {Int16Array} surface 地表行
+ * @param {number} W 世界宽
+ * @param {number} H 世界高
+ * @returns {(string | null)[]} 扁平轮廓字形
  */
 function buildOutline(solid, surface, W, H) {
 	const outline = Array(W * H)
@@ -708,24 +707,24 @@ function buildOutline(solid, surface, W, H) {
 }
 
 /**
- * Character for a solid cell's visible outline (air-adjacent).
- * Interior solid returns null (not drawn).
- * @param {Uint8Array} solid flat solid mask
- * @param {number} x column
- * @param {number} y row
- * @param {number} W world width
- * @param {number} H world height
- * @param {Int16Array} surface surface rows
- * @returns {string | null} outline glyph or null
+ * 固体格可见轮廓（邻空气）字符。
+ * 内部固体返回 null（不绘制）。
+ * @param {Uint8Array} solid 扁平固体掩码
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} W 世界宽
+ * @param {number} H 世界高
+ * @param {Int16Array} surface 地表行
+ * @returns {string | null} 轮廓字形或 null
  */
 export function outlineChar(solid, x, y, W, H, surface) {
 	const cell = y * W + x
 	if (!solid[cell] || y === surface[x]) return null
 
 	/**
-	 * @param {number} nx column
-	 * @param {number} ny row
-	 * @returns {boolean} air / OOB
+	 * @param {number} nx 列
+	 * @param {number} ny 行
+	 * @returns {boolean} 空气 / 越界
 	 */
 	const air = (nx, ny) =>
 		nx < 0 || ny < 0 || nx >= W || ny >= H || !solid[ny * W + nx]

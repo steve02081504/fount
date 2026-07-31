@@ -1,26 +1,26 @@
 /**
- * Left-button light gesture → torch spotlight or click ripple.
+ * 左键光照手势 → 手电筒聚光或点击涟漪。
  *
- * Hold past TORCH_DELAY → circular cool flashlight (follows while dragged),
- * fading ambient dim + centre lift in/out over TORCH_FADE ticks.
- * Faster release (before torch arms) → high-brightness ring that expands outward.
+ * 按住超过 TORCH_DELAY → 圆形冷色手电（拖拽时跟随），
+ * 环境变暗 + 中心提亮在 TORCH_FADE 帧内渐入/渐出。
+ * 更快释放（手电筒未激活前）→ 高亮环向外扩散。
  */
 
 import { applyPointer, trimCap } from './pointer.mjs'
 
-/** Frames of hold before the flashlight arms. */
+/** 手电筒激活前的按住帧数。 */
 export const TORCH_DELAY = 5
-/** Frames for torchBlend to ramp 0↔1 (enter / exit). */
+/** torchBlend 0↔1 渐变速率帧数（进入 / 退出）。 */
 export const TORCH_FADE = 10
-/** Ripple expansion speed (visual radius units / tick; aspect via hypot(dx, 2·dy)). */
+/** 涟漪扩散速度（视觉半径单位 / tick；纵横比 via hypot(dx, 2·dy)）。 */
 export const RIPPLE_SPEED = 1.85
-/** Soft half-width of the ripple ring. */
+/** 涟漪环的软半宽。 */
 export const RIPPLE_WIDTH = 2.4
-/** Ripple lifetime in ticks. */
+/** 涟漪存活 tick 数。 */
 export const RIPPLE_LIFE = 20
-/** Peak ring gain (>1 → brighter than torch centre). */
+/** 环峰值增益（>1 → 比手电中心更亮）。 */
 export const RIPPLE_GAIN = 1.35
-/** Max concurrent ripples. */
+/** 最大并发涟漪数。 */
 const RIPPLE_CAP = 6
 
 /**
@@ -36,8 +36,8 @@ const RIPPLE_CAP = 6
  */
 
 /**
- * Fresh light gesture state.
- * @returns {LightGesture} empty gesture
+ * 全新的光照手势状态。
+ * @returns {LightGesture} 空手势
  */
 export const createLightGesture = () => ({
 	down: false,
@@ -49,12 +49,12 @@ export const createLightGesture = () => ({
 })
 
 /**
- * Soft ring falloff: peak on the wavefront, zero at centre / outside.
- * @param {number} dx columns from origin
- * @param {number} dy rows from origin
- * @param {number} radius visual ring radius
- * @param {number} [width] soft half-width
- * @returns {number} 0..1 intensity
+ * 软环衰减：波前峰值，中心/外侧为零。
+ * @param {number} dx 距原点的列数
+ * @param {number} dy 距原点的行数
+ * @param {number} radius 视觉环半径
+ * @param {number} [width] 软半宽
+ * @returns {number} 0..1 强度
  */
 export const rippleFalloff = (dx, dy, radius, width = RIPPLE_WIDTH) => {
 	const r = Math.sqrt(dx * dx + 4 * dy * dy)
@@ -65,21 +65,21 @@ export const rippleFalloff = (dx, dy, radius, width = RIPPLE_WIDTH) => {
 }
 
 /**
- * Ease torchBlend for lighting (smoothstep).
- * @param {number} t linear 0..1
- * @returns {number} eased 0..1
+ * 光照用 torchBlend 缓动（smoothstep）。
+ * @param {number} t 线性 0..1
+ * @returns {number} 缓动后 0..1
  */
 export const torchEase = (t) => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t)
 
 /**
- * Apply a left-button pointer event (press / drag / release).
- * @param {LightGesture} gesture gesture
- * @param {{ x: number, y: number, left: boolean }} ev left-button event
+ * 处理左键指针事件（按下 / 拖拽 / 释放）。
+ * @param {LightGesture} gesture 手势
+ * @param {{ x: number, y: number, left: boolean }} ev 左键事件
  * @returns {void}
  */
 export const lightPointer = (gesture, { x, y, left }) => {
 	applyPointer(gesture, x, y, left, {
-		/** Press: resume torch fade or reset hold. */
+		/** 按下：恢复手电渐隐或重置按住计时。 */
 		onDown() {
 			// Resume mid fade-out without waiting TORCH_DELAY again.
 			if (gesture.torchBlend > 0) {
@@ -91,7 +91,7 @@ export const lightPointer = (gesture, { x, y, left }) => {
 				gesture.torch = false
 			}
 		},
-		/** Release: spawn ripple if torch never armed. */
+		/** 释放：若手电未激活则生成涟漪。 */
 		onUp() {
 			if (!gesture.torch) {
 				gesture.ripples.push({ x: gesture.x, y: gesture.y, age: 0, life: RIPPLE_LIFE })
@@ -105,8 +105,8 @@ export const lightPointer = (gesture, { x, y, left }) => {
 }
 
 /**
- * Advance gesture one sim tick: arm torch, fade blend, age ripples.
- * @param {LightGesture} gesture gesture
+ * 推进手势一帧模拟：激活手电、混合渐隐、涟漪老化。
+ * @param {LightGesture} gesture 手势
  * @returns {void}
  */
 export const tickLightGesture = (gesture) => {
@@ -135,19 +135,19 @@ export const tickLightGesture = (gesture) => {
 	}
 }
 
-/** Reused sampleLight destination. */
+/** 复用的 sampleLight 输出槽。 */
 const lightSampleScratch = { ambient: 0, lift: 0 }
 
 /**
- * Combined lift at a view cell (torch fill + ripple rings).
- * Writes into `out` (defaults to a reused module slot) to avoid per-cell alloc.
- * `ambient` is torch dim strength 0..1 (eased); ripples never set ambient.
- * @param {LightGesture} gesture gesture
- * @param {number} x view column
- * @param {number} y view row
- * @param {(dx: number, dy: number, radius?: number) => number} torchFalloff radial fill
- * @param {{ ambient: number, lift: number }} [out] sample destination
- * @returns {{ ambient: number, lift: number }} lighting sample
+ * 视图格点的综合提亮（手电填充 + 涟漪环）。
+ * 写入 `out`（默认复用模块槽）以避免每格分配。
+ * `ambient` 为手电变暗强度 0..1（缓动后）；涟漪不设置 ambient。
+ * @param {LightGesture} gesture 手势
+ * @param {number} x 视图列
+ * @param {number} y 视图行
+ * @param {(dx: number, dy: number, radius?: number) => number} torchFalloff 径向填充
+ * @param {{ ambient: number, lift: number }} [out] 采样输出
+ * @returns {{ ambient: number, lift: number }} 光照采样
  */
 export const sampleLight = (gesture, x, y, torchFalloff, out = lightSampleScratch) => {
 	let lift = 0

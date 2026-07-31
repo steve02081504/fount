@@ -1,6 +1,6 @@
 /**
- * Icon anime controller: anim state + TUI player.
- * No process hooks — host awaits `farewell` (logo CLI) or registers it on shutdown (log viewer).
+ * 图标动画控制器：动画状态 + TUI 播放器。
+ * 无进程钩子 — 宿主 await `farewell`（logo CLI）或在关闭时注册（log viewer）。
  */
 
 import { lightPointer } from './gesture/light.mjs'
@@ -11,22 +11,23 @@ import {
 	createAnimState, resizeAnimState, enter, hold, exit,
 } from './scene.mjs'
 
-/** Target frame rate. */
+/** 目标帧率。 */
 export const fps = 24
 
 /**
+ * 图标动画控制器接口。
  * @typedef {object} IconAnime
- * @property {boolean} userAborted - last play ended by Ctrl+C (not dismiss / farewell)
- * @property {AbortSignal} userSignal - aborts when userAborted becomes true
- * @property {() => Promise<void>} start - enter→hold until abort / dismiss (idempotent while live)
- * @property {() => Promise<void>} intro - play enter to completion, park for farewell
- * @property {(ms: number) => Promise<void>} sleep - wait; resolves early on user abort
- * @property {() => Promise<void>} dismiss - stop hold, leave alt-screen; keep state for farewell
- * @property {() => Promise<void>} farewell - play exit from live or parked progress
+ * @property {boolean} userAborted - 上次播放因 Ctrl+C 结束（非 dismiss / farewell）
+ * @property {AbortSignal} userSignal - userAborted 为 true 时中止
+ * @property {() => Promise<void>} start - 入场→保持直至中止 / dismiss（存活期间幂等）
+ * @property {() => Promise<void>} intro - 播放入场至完成，停放以待 farewell
+ * @property {(ms: number) => Promise<void>} sleep - 等待；用户中止时提前 resolve
+ * @property {() => Promise<void>} dismiss - 停止保持、离开备用屏；保留状态以待 farewell
+ * @property {() => Promise<void>} farewell - 从存活或停放进度播放退场
  */
 
 /**
- * @returns {IconAnime} controller
+ * @returns {IconAnime} 控制器
  */
 export function createIconAnime() {
 	/** @type {AsciiAnimePlayer | null} */
@@ -37,21 +38,21 @@ export function createIconAnime() {
 	let running = null
 	/** @type {ReturnType<typeof createAnimState> | null} */
 	let savedState = null
-	/** Host-initiated stop / farewell took over. */
+	/** 宿主发起的停止 / farewell 已接管。 */
 	let stopping = false
 	let userAborted = false
 	let userAc = new AbortController()
 
 	/**
-	 * @param {ReturnType<typeof createAnimState>} animState state
-	 * @returns {AsciiAnimePlayer} player
+	 * @param {ReturnType<typeof createAnimState>} animState 状态
+	 * @returns {AsciiAnimePlayer} 播放器
 	 */
 	const openPlayer = (animState) => {
 		state = animState
 		return new AsciiAnimePlayer({
 			fps,
 			/**
-			 * @param {{ columns: number, rows: number }} size terminal size
+			 * @param {{ columns: number, rows: number }} size 终端尺寸
 			 * @returns {void}
 			 */
 			onResize(size) {
@@ -62,7 +63,7 @@ export function createIconAnime() {
 				})
 			},
 			/**
-			 * @param {{ x: number, y: number, left?: boolean, right?: boolean }} ev pointer
+			 * @param {{ x: number, y: number, left?: boolean, right?: boolean }} ev 指针
 			 * @returns {void}
 			 */
 			onPointer(ev) {
@@ -77,7 +78,7 @@ export function createIconAnime() {
 	}
 
 	/**
-	 * Leave alt-screen; keep progress for a later farewell.
+	 * 离开备用屏；保留进度以待后续 farewell。
 	 * @returns {void}
 	 */
 	const park = () => {
@@ -89,8 +90,8 @@ export function createIconAnime() {
 	}
 
 	/**
-	 * Shared playback shutdown: abort → microtask → await running.
-	 * Microtask lets play()'s abort handler settle before we await `running`.
+	 * 共享播放关闭：中止 → 微任务 → await running。
+	 * 微任务让 play() 的中止处理在 await `running` 前落定。
 	 * @returns {Promise<void>}
 	 */
 	const haltPlay = async () => {
@@ -102,18 +103,18 @@ export function createIconAnime() {
 	}
 
 	return {
-		/** @returns {boolean} whether last play ended by Ctrl+C */
+		/** @returns {boolean} 上次播放是否因 Ctrl+C 结束 */
 		get userAborted() {
 			return userAborted
 		},
 
-		/** @returns {AbortSignal} aborts when userAborted becomes true */
+		/** @returns {AbortSignal} userAborted 为 true 时中止 */
 		get userSignal() {
 			return userAc.signal
 		},
 
 		/**
-		 * Enter → hold until Ctrl+C / dismiss.
+		 * 入场 → 保持直至 Ctrl+C / dismiss。
 		 * @returns {Promise<void>}
 		 */
 		start() {
@@ -133,7 +134,7 @@ export function createIconAnime() {
 		},
 
 		/**
-		 * Play enter to completion, then leave alt-screen (progress kept for farewell).
+		 * 播放入场至完成，然后离开备用屏（保留进度以待 farewell）。
 		 * @returns {Promise<void>}
 		 */
 		async intro() {
@@ -150,7 +151,7 @@ export function createIconAnime() {
 		},
 
 		/**
-		 * @param {number} ms milliseconds
+		 * @param {number} ms 毫秒
 		 * @returns {Promise<void>}
 		 */
 		sleep(ms) {
@@ -160,9 +161,7 @@ export function createIconAnime() {
 					resolve()
 					return
 				}
-				/**
-				 *
-				 */
+				/** 定时器到期或用户中止时唤醒并 resolve。 */
 				const wake = () => {
 					clearTimeout(timer)
 					signal.removeEventListener('abort', wake)
@@ -174,7 +173,7 @@ export function createIconAnime() {
 		},
 
 		/**
-		 * Stop hold, leave alt-screen; keep state for farewell.
+		 * 停止保持、离开备用屏；保留状态以待 farewell。
 		 * @returns {Promise<void>}
 		 */
 		async dismiss() {
@@ -184,7 +183,7 @@ export function createIconAnime() {
 		},
 
 		/**
-		 * Play exit from live hold/intro or parked progress.
+		 * 从存活保持/入场或停放进度播放退场。
 		 * @returns {Promise<void>}
 		 */
 		async farewell() {
