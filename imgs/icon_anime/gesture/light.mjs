@@ -72,16 +72,10 @@ export const rippleFalloff = (dx, dy, radius, width = RIPPLE_WIDTH) => {
  */
 export const lightPointer = (gesture, { x, y, left }) => {
 	applyPointer(gesture, x, y, left, {
-		/**
-		 *
-		 */
 		onDown() {
 			gesture.held = 0
 			gesture.torch = false
 		},
-		/**
-		 *
-		 */
 		onUp() {
 			if (!gesture.torch) {
 				gesture.ripples.push({ x: gesture.x, y: gesture.y, age: 0, life: RIPPLE_LIFE })
@@ -99,9 +93,11 @@ export const lightPointer = (gesture, { x, y, left }) => {
  * @returns {void}
  */
 export const tickLightGesture = (gesture) => {
-	for (let index = gesture.ripples.length - 1; index >= 0; index--)
-		if (++gesture.ripples[index].age >= gesture.ripples[index].life)
-			gesture.ripples.splice(index, 1)
+	const { ripples } = gesture
+	for (let index = ripples.length - 1; index >= 0; index--) {
+		const ripple = ripples[index]
+		if (++ripple.age >= ripple.life) ripples.splice(index, 1)
+	}
 
 	if (!gesture.down) return
 	gesture.held++
@@ -109,7 +105,7 @@ export const tickLightGesture = (gesture) => {
 }
 
 /** Reused sampleLight destination. */
-const _lightSample = { ambient: false, lift: 0 }
+const lightSampleScratch = { ambient: false, lift: 0 }
 
 /**
  * Combined lift at a view cell (torch fill + ripple rings).
@@ -121,7 +117,7 @@ const _lightSample = { ambient: false, lift: 0 }
  * @param {{ ambient: boolean, lift: number }} [out] sample destination
  * @returns {{ ambient: boolean, lift: number }} lighting sample
  */
-export const sampleLight = (gesture, x, y, torchFalloff, out = _lightSample) => {
+export const sampleLight = (gesture, x, y, torchFalloff, out = lightSampleScratch) => {
 	let lift = 0
 	const ambient = gesture.down && gesture.torch
 	if (ambient) lift = torchFalloff(x - gesture.x, y - gesture.y)

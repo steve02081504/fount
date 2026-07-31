@@ -5,17 +5,8 @@
 
 /** Icon-local layout (pre-center). Extra base rows 20/22 are animation-only. */
 export const ICON_BASE_ROWS = [16, 18, 20, 22]
-/**
- *
- */
 export const ICON_BASE_X0 = 5
-/**
- *
- */
 export const ICON_BASE_X1 = 37
-/**
- *
- */
 export const BASE_WIDTH = ICON_BASE_X1 - ICON_BASE_X0
 
 /** Same packing as icon.js → 20 content rows (body 0–15, base slabs 16–19). */
@@ -27,17 +18,8 @@ export const ICON = (() => {
 	return t.trimEnd().split('\n')
 })()
 
-/**
- *
- */
 export const ICON_PACK_H = ICON.length
-/**
- *
- */
 export const ICON_W = Math.max(...ICON.map(line => line.length))
-/**
- *
- */
 export const ICON_H = ICON_BASE_ROWS[ICON_BASE_ROWS.length - 1] + 1
 
 /** Three :: pillars: [x, yTop, yBot] in icon-local space */
@@ -47,9 +29,6 @@ export const PILLARS = [
 	[24, 2, 15],
 ]
 
-/**
- *
- */
 export const maxPillarH = Math.max(...PILLARS.map(([, yTop, yBot]) => yBot - yTop + 1))
 
 /**
@@ -90,25 +69,10 @@ const BODY = (() => {
 	return { x, y, d, count: n }
 })()
 
-/**
- *
- */
 export const bodyX = BODY.x
-/**
- *
- */
 export const bodyY = BODY.y
-/**
- *
- */
 export const bodyD = BODY.d
-/**
- *
- */
 export const bodyCount = BODY.count
-/**
- *
- */
 export const maxBodyD = BODY.d[BODY.count - 1]
 
 /** Icon-local body distance grid: `d = BODY_DIST[y * ICON_W + x]`, unset = 255. */

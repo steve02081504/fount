@@ -43,6 +43,13 @@ export const GAS_SPEED_MAX = 5
 
 const AIR_CELL = 1
 
+/** Open-air hydrostatic pressure at row `y` (y↓ → P↑). */
+const openHydroPressure = (y) => P_ATM + ATM_HYDRO * y
+
+/** Sealed-cavity hydrostatic pressure at row `y` around Boyle mean. */
+const sealedHydroPressure = (region, y) =>
+	Math.max(0.05, region.pressure + ATM_HYDRO * (y - region.yMean))
+
 /**
  * Cell is air-like for region flood-fill / gas occupancy.
  * @param {FluidWorld} world fluid world
@@ -182,17 +189,11 @@ export const labelAirRegions = (world) => {
 			nextRegions[id] = region
 		}
 
-	// Open regions always reset to ATM; Boyle overlap only needed for sealed cavities.
+	// Open region already reset to ATM above; Boyle overlap only for sealed cavities.
 	let hasSealed = false
 	for (let id = 1; id < nextRegions.length; id++) {
 		const region = nextRegions[id]
-		if (!region) continue
-		if (region.openToAtm) {
-			region.gasAmount = region.airCells * AIR_CELL * P_ATM
-			region.pressure = P_ATM
-			continue
-		}
-		hasSealed = true
+		if (region && !region.openToAtm) hasSealed = true
 	}
 
 	if (hasSealed) {
@@ -249,14 +250,12 @@ export const labelAirRegions = (world) => {
  * @returns {number} pressure
  */
 export const pressureAt = (world, x, y) => {
-	if (!inWorld(world, x, y)) return P_ATM + ATM_HYDRO * Math.max(0, y)
+	if (!inWorld(world, x, y)) return openHydroPressure(Math.max(0, y))
 	const cell = idx(world, x, y)
 	const rid = world.regionId[cell]
 	if (rid) {
 		const region = world.regions[rid]
-		// Open regions always sit at P_ATM.
-		if (region.openToAtm) return P_ATM + ATM_HYDRO * y
-		return Math.max(0.05, region.pressure + ATM_HYDRO * (y - region.yMean))
+		return region.openToAtm ? openHydroPressure(y) : sealedHydroPressure(region, y)
 	}
 	for (let yy = y - 1; yy >= 0; yy--) {
 		const above = idx(world, x, yy)
@@ -264,11 +263,10 @@ export const pressureAt = (world, x, y) => {
 		const aboveRid = world.regionId[above]
 		if (aboveRid) {
 			const region = world.regions[aboveRid]
-			if (region.openToAtm) return P_ATM + ATM_HYDRO * yy
-			return Math.max(0.05, region.pressure + ATM_HYDRO * (yy - region.yMean))
+			return region.openToAtm ? openHydroPressure(yy) : sealedHydroPressure(region, yy)
 		}
 	}
-	return P_ATM + ATM_HYDRO * y
+	return openHydroPressure(y)
 }
 
 /**
@@ -455,7 +453,7 @@ export const stepGas = (world, opts = {}) => {
 
 	// Static pressure field from current velocity (Bernoulli) for ΔP drive.
 	for (let y = 0; y < H; y++) {
-		const openHydro = P_ATM + ATM_HYDRO * y
+		const openHydro = openHydroPressure(y)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (blocked[cell]) {
@@ -466,7 +464,7 @@ export const stepGas = (world, opts = {}) => {
 			const region = rid ? regions[rid] : null
 			const thermo = !region || region.openToAtm
 				? openHydro
-				: Math.max(0.05, region.pressure + ATM_HYDRO * (y - region.yMean))
+				: sealedHydroPressure(region, y)
 			staticP[cell] = Math.max(0.05, thermo - dynamicPressure(gasUx[cell], gasUy[cell]))
 		}
 	}

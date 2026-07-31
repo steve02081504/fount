@@ -49,12 +49,12 @@ const MOUSE_OFF = '\x1b[?1006l\x1b[?1002l\x1b[?1000l'
  * @returns {string} new carry
  */
 export const consumeStdin = (carry, chunk, sink = {}) => {
-	for (let offset = 0; offset < chunk.length; offset++)
-		if (chunk[offset] === 0x03) sink.abort?.()
-
 	let text = carry
-	for (let offset = 0; offset < chunk.length; offset++)
-		text += String.fromCharCode(chunk[offset])
+	for (let offset = 0; offset < chunk.length; offset++) {
+		const byte = chunk[offset]
+		if (byte === 0x03) sink.abort?.()
+		text += String.fromCharCode(byte)
+	}
 
 	let cursor = 0
 	while (cursor < text.length) {

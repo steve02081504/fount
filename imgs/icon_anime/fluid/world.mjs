@@ -99,97 +99,97 @@ export const growScratch = (world, key, need, Ctor) => {
 
 /**
  * Clear the BFS flood queue.
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world world
  * @returns {void}
  */
-export const floodClear = (w) => {
-	w.floodQ.length = 0
+export const floodClear = (world) => {
+	world.floodQ.length = 0
 }
 
 /**
  * Push `(x, y)` onto the flood queue.
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world world
  * @param {number} x column
  * @param {number} y row
  * @returns {void}
  */
-export const floodPush = (w, x, y) => {
-	w.floodQ.push(x, y)
+export const floodPush = (world, x, y) => {
+	world.floodQ.push(x, y)
 }
 
 /**
  * Flat index for world cell `(x, y)`.
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world world
  * @param {number} x column
  * @param {number} y row
  * @returns {number} index
  */
-export const idx = (w, x, y) => y * w.worldW + x
+export const idx = (world, x, y) => y * world.worldW + x
 
 /**
  * Whether `(x, y)` lies inside the world grid.
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world world
  * @param {number} x column
  * @param {number} y row
  * @returns {boolean} in bounds
  */
-export const inWorld = (w, x, y) =>
-	x >= 0 && y >= 0 && x < w.worldW && y < w.worldH
+export const inWorld = (world, x, y) =>
+	x >= 0 && y >= 0 && x < world.worldW && y < world.worldH
 
 /**
  * Clear liquid, moisture, gas, particles, and region labels.
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world world
  * @returns {void}
  */
-export const clearDynamics = (w) => {
-	w.liq.fill(0)
-	w.moisture.fill(0)
-	w.condense.fill(0)
-	w.gasUx.fill(0)
-	w.gasUy.fill(0)
-	w.liqVx.fill(0)
-	w.liqVy.fill(0)
-	clearParticlePool(w.particles)
-	clearParticlePool(w.pendingSplash)
-	w.regionId.fill(0)
-	w.regions.length = 0
-	w.gasTime = 0
-	w.airDirty = true
-	w.gasGeomDirty = true
-	w.maxUpdraft = NaN
+export const clearDynamics = (world) => {
+	world.liq.fill(0)
+	world.moisture.fill(0)
+	world.condense.fill(0)
+	world.gasUx.fill(0)
+	world.gasUy.fill(0)
+	world.liqVx.fill(0)
+	world.liqVy.fill(0)
+	clearParticlePool(world.particles)
+	clearParticlePool(world.pendingSplash)
+	world.regionId.fill(0)
+	world.regions.length = 0
+	world.gasTime = 0
+	world.airDirty = true
+	world.gasGeomDirty = true
+	world.maxUpdraft = NaN
 }
 
 /**
  * Clear material labels only — moisture/condense persist across rebuilds.
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world world
  * @returns {void}
  */
-export const clearMaterials = (w) => {
-	w.mat.fill(MAT.AIR)
-	w.airDirty = true
-	w.gasGeomDirty = true
+export const clearMaterials = (world) => {
+	world.mat.fill(MAT.AIR)
+	world.airDirty = true
+	world.gasGeomDirty = true
 }
 
 /**
  * Mark air / gas geometry dirty when free-liquid draw occupancy may have flipped.
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world world
  * @param {number} before amount before mutation
  * @param {number} after amount after mutation
  * @returns {void}
  */
-export const markAirIfDrawCrossed = (w, before, after) => {
+export const markAirIfDrawCrossed = (world, before, after) => {
 	if ((before >= LIQ_DRAW) === (after >= LIQ_DRAW)) return
-	w.airDirty = true
-	w.gasGeomDirty = true
+	world.airDirty = true
+	world.gasGeomDirty = true
 }
 
 /**
  * Dump moisture/condense from non-soil cells into free liquid (or the cell above).
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world world
  * @returns {void}
  */
-export const releaseNonSoilWater = (w) => {
-	const { worldW: W, worldH: H, mat, liq, moisture, condense } = w
+export const releaseNonSoilWater = (world) => {
+	const { worldW: W, worldH: H, mat, liq, moisture, condense } = world
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const i = y * W + x
@@ -201,91 +201,91 @@ export const releaseNonSoilWater = (w) => {
 			if (mat[i] === MAT.POOL || mat[i] === MAT.AIR) {
 				const before = liq[i]
 				liq[i] = Math.min(LIQ_FULL, before + held)
-				markAirIfDrawCrossed(w, before, liq[i])
+				markAirIfDrawCrossed(world, before, liq[i])
 				continue
 			}
 			if (y > 0 && !isLiquidBarrier(mat[(y - 1) * W + x])) {
 				const ai = (y - 1) * W + x
 				const before = liq[ai]
 				liq[ai] = Math.min(LIQ_FULL, before + held)
-				markAirIfDrawCrossed(w, before, liq[ai])
+				markAirIfDrawCrossed(world, before, liq[ai])
 			}
 		}
 }
 
 /**
  * Set material at `(x, y)` (caller ensures in-bounds).
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world world
  * @param {number} x column
  * @param {number} y row
  * @param {number} m material id
  * @returns {void}
  */
-export const setMat = (w, x, y, m) => {
-	const i = y * w.worldW + x
-	if (w.mat[i] === m) return
-	w.mat[i] = m
-	w.airDirty = true
-	w.gasGeomDirty = true
+export const setMat = (world, x, y, m) => {
+	const i = y * world.worldW + x
+	if (world.mat[i] === m) return
+	world.mat[i] = m
+	world.airDirty = true
+	world.gasGeomDirty = true
 }
 
 /**
  * Add moisture into a soil cell (clamped). Returns amount actually stored.
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world world
  * @param {number} x column
  * @param {number} y row
  * @param {number} amt amount to add
  * @returns {number} stored delta
  */
-export const addMoisture = (w, x, y, amt) => {
+export const addMoisture = (world, x, y, amt) => {
 	if (amt <= 0) return 0
-	const i = y * w.worldW + x
-	if (!isSoilMat(w.mat[i])) return 0
-	const before = w.moisture[i]
-	w.moisture[i] = Math.min(SOIL_CAP, before + amt)
-	return w.moisture[i] - before
+	const i = y * world.worldW + x
+	if (!isSoilMat(world.mat[i])) return 0
+	const before = world.moisture[i]
+	world.moisture[i] = Math.min(SOIL_CAP, before + amt)
+	return world.moisture[i] - before
 }
 
 /**
  * Grid water total: free liquid + soil moisture + hanging condensation.
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world world
  * @returns {number} total mass
  */
-export const totalGridWater = (w) => {
+export const totalGridWater = (world) => {
 	let t = 0
-	for (let i = 0; i < w.liq.length; i++)
-		t += w.liq[i] + w.moisture[i] + w.condense[i]
+	for (let i = 0; i < world.liq.length; i++)
+		t += world.liq[i] + world.moisture[i] + world.condense[i]
 	return t
 }
 
 /**
  * World water total: grid reservoirs + live / pending particles.
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world world
  * @returns {number} total mass
  */
-export const totalWorldWater = (w) =>
-	totalGridWater(w)
-	+ totalParticleWater(w.particles)
-	+ totalParticleWater(w.pendingSplash)
+export const totalWorldWater = (world) =>
+	totalGridWater(world)
+	+ totalParticleWater(world.particles)
+	+ totalParticleWater(world.pendingSplash)
 
 /**
  * Add free liquid at `(x, y)` unless the cell is a liquid barrier.
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world world
  * @param {number} x column
  * @param {number} y row
  * @param {number} amt amount to add
  * @returns {number} stored delta
  */
-export const addLiquid = (w, x, y, amt) => {
-	const i = y * w.worldW + x
-	if (isLiquidBarrier(w.mat[i])) return 0
-	const before = w.liq[i]
-	w.liq[i] = Math.min(LIQ_FULL, before + amt)
-	const stored = w.liq[i] - before
+export const addLiquid = (world, x, y, amt) => {
+	const i = y * world.worldW + x
+	if (isLiquidBarrier(world.mat[i])) return 0
+	const before = world.liq[i]
+	world.liq[i] = Math.min(LIQ_FULL, before + amt)
+	const stored = world.liq[i] - before
 	// Air occupancy flips only when a cell crosses the draw threshold.
-	if (stored > 0 && before < LIQ_DRAW && w.liq[i] >= LIQ_DRAW) {
-		w.airDirty = true
-		w.gasGeomDirty = true
+	if (stored > 0 && before < LIQ_DRAW && world.liq[i] >= LIQ_DRAW) {
+		world.airDirty = true
+		world.gasGeomDirty = true
 	}
 	return stored
 }

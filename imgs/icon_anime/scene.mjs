@@ -435,19 +435,12 @@ const onParticleHit = (world, x, y, m, particle, wet, state) => {
 		return
 	}
 
-	if (m === MAT.SLOPE_R) {
+	if (m === MAT.SLOPE_R || m === MAT.SLOPE_L) {
+		const side = m === MAT.SLOPE_R ? 1 : -1
 		const speed = Math.hypot(particle.vx, particle.vy) || 0.6
-		queueSplash(world, x + 0.4, y + 0.2, speed * 0.7, speed * 0.7, 14)
+		queueSplash(world, x + side * 0.4, y + 0.2, side * speed * 0.7, speed * 0.7, 14)
 		if (hash01(x, frame) > 0.4)
-			queueSplash(world, x + 0.2, y - 0.1, speed * 0.4, -speed * 0.2, 8)
-		return
-	}
-
-	if (m === MAT.SLOPE_L) {
-		const speed = Math.hypot(particle.vx, particle.vy) || 0.6
-		queueSplash(world, x - 0.4, y + 0.2, -speed * 0.7, speed * 0.7, 14)
-		if (hash01(x, frame) > 0.4)
-			queueSplash(world, x - 0.2, y - 0.1, -speed * 0.4, -speed * 0.2, 8)
+			queueSplash(world, x + side * 0.2, y - 0.1, side * speed * 0.4, -speed * 0.2, 8)
 		return
 	}
 
@@ -508,7 +501,7 @@ const simFrame = (state) => {
 		driveUy = scratch(world, 'windDriveUy', n, Float32Array)
 		fillWindDrive(state.wind, world, driveUx, driveUy)
 	}
-	const opts = state._fluidOpts ??= {
+	const opts = state.fluidOpts ??= {
 		time: 0,
 		seed: 0,
 		driveUx: undefined,

@@ -2,11 +2,8 @@
  * Deterministic hash + lattice noise shared by terrain and fluid.
  */
 
-/** Cardinal neighbors as packed [dx, dy] pairs. */
-export const ORTHO = /** @type {const} */ [[1, 0], [-1, 0], [0, 1], [0, -1]]
-/** Flat cardinal dx (same order as `ORTHO`). */
+/** Cardinal neighbors as flat dx / dy arrays (same order). */
 export const ORTHO_DX = /** @type {const} */ [1, -1, 0, 0]
-/** Flat cardinal dy (same order as `ORTHO`). */
 export const ORTHO_DY = /** @type {const} */ [0, 0, 1, -1]
 
 /**

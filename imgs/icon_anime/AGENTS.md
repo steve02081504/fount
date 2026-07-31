@@ -32,7 +32,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | `player.mjs` | TUI playback, Ctrl+C abort, SGR mouse → pointer light / wind, `stdout` resize; alt-screen enter/leave |
 | `gesture/` | Pointer gestures (`pointer` press helper, `light` torch/ripple, `wind` stroke/vortex) |
 | `terrain.mjs` | Pedestal-anchored surface + noise caves + U-tube/chamber templates |
-| `hash.mjs` | `hash01` + 1D/2D fBm noise + `ORTHO` (terrain + fluid) |
+| `hash.mjs` | `hash01` + 1D/2D fBm noise + `ORTHO_DX`/`ORTHO_DY` (terrain + fluid) |
 | `fluid/` | Particles, grid liquid, soil, Boyle air regions, gas wind, glyphs |
 
 ### `gesture/`

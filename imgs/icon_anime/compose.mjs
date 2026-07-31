@@ -114,7 +114,7 @@ const litSgr = (f, lift, ambient) => {
 		sgr = bgRgb((g * 0.55) | 0, (g * 0.75) | 0, g)
 	}
 	else {
-		const rgbBase = FG_RGB[f] || [160, 160, 160]
+		const rgbBase = FG_RGB[f]
 		const rgb = fgRgb(
 			liftChannel(rgbBase[0], qLift, ambient),
 			liftChannel(rgbBase[1], qLift, ambient),
@@ -408,33 +408,20 @@ export const composeFrame = (state) => {
 				fg[i] = FG_SPLASH
 			}
 			else {
-				let painted = false
-				if (vy > 0) {
-					const above = (vy - 1) * W + wx
-					if (isSoilMat(mat[above]) && condense[above] >= COND_DRAW) {
-						ch[i] = dripChar(condense[above], wx + frame)
-						fg[i] = FG_SPLASH
-						painted = true
-					}
+				const above = vy > 0 ? (vy - 1) * W + wx : -1
+				if (above >= 0 && isSoilMat(mat[above]) && condense[above] >= COND_DRAW) {
+					ch[i] = dripChar(condense[above], wx + frame)
+					fg[i] = FG_SPLASH
 				}
-				if (!painted && solid[wi]) 
-					if (vy === surface[wx]) {
-						ch[i] = surfaceChar[wx] || '_'
-						fg[i] = FG_TERRAIN
-					}
-					else {
-						const oc = outline[wi]
-						if (oc) {
-							ch[i] = oc
-							fg[i] = FG_TERRAIN
-						}
-						else {
-							ch[i] = ' '
-							fg[i] = null
-						}
-					}
-				
-				else if (!painted) {
+				else if (solid[wi] && vy === surface[wx]) {
+					ch[i] = surfaceChar[wx] || '_'
+					fg[i] = FG_TERRAIN
+				}
+				else if (solid[wi] && outline[wi]) {
+					ch[i] = outline[wi]
+					fg[i] = FG_TERRAIN
+				}
+				else {
 					ch[i] = ' '
 					fg[i] = null
 				}

@@ -80,17 +80,26 @@ export const createWindGesture = () => ({
 })
 
 /**
+ * Drop stroke trail + vortex drive (keeps `.down` as-is).
+ * @param {WindGesture} gesture gesture
+ * @returns {void}
+ */
+const resetWindDrive = (gesture) => {
+	gesture.still = 0
+	gesture.vortexOn = false
+	gesture.strength = 0
+	for (const seg of gesture.strokes) freeStroke(seg)
+	gesture.strokes.length = 0
+}
+
+/**
  * Clear all gesture drive (release / reset).
  * @param {WindGesture} gesture gesture
  * @returns {void}
  */
 export const clearWindGesture = (gesture) => {
 	gesture.down = false
-	gesture.still = 0
-	gesture.vortexOn = false
-	gesture.strength = 0
-	for (const seg of gesture.strokes) freeStroke(seg)
-	gesture.strokes.length = 0
+	resetWindDrive(gesture)
 }
 
 /**
@@ -101,21 +110,11 @@ export const clearWindGesture = (gesture) => {
  */
 export const windPointer = (gesture, { x, y, right }) => {
 	applyPointer(gesture, x, y, right, {
-		/**
-		 *
-		 */
 		onDown() {
 			gesture.lx = x
 			gesture.ly = y
-			gesture.still = 0
-			gesture.vortexOn = false
-			gesture.strength = 0
-			for (const seg of gesture.strokes) freeStroke(seg)
-			gesture.strokes.length = 0
+			resetWindDrive(gesture)
 		},
-		/**
-		 *
-		 */
 		onUp() {
 			clearWindGesture(gesture)
 		},
@@ -243,10 +242,10 @@ const clearDriveRect = (outUx, outUy, W, H, prev) => {
  * @param {{ worldW: number, worldH: number }} world size
  * @param {Float32Array} outUx horizontal drive
  * @param {Float32Array} outUy vertical drive
- * @param {{ x0: number, y0: number, x1: number, y1: number }} dirty dirty rect to expand
+ * @param {{ x0: number, y0: number, x1: number, y1: number }} [dirty] dirty rect to expand
  * @returns {void}
  */
-export const paintVortexDrive = (cx, cy, amp, radius, world, outUx, outUy, dirty = null) => {
+export const paintVortexDrive = (cx, cy, amp, radius, world, outUx, outUy, dirty) => {
 	if (amp < 0.02) return
 	const { worldW: W, worldH: H } = world
 	const R = radius

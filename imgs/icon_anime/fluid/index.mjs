@@ -13,9 +13,6 @@
  * if particles / lift dirtied topology again.
  */
 
-/**
- *
- */
 export {
 	MAT, P_ATM, RHO_G, RHO_AIR, ATM_HYDRO, GAS_DP_DRIVE,
 	SOIL_CAP, SOIL_ABSORB_RATE, SOIL_ABSORB_EXPO, SOIL_HIT_ABSORB_FRAC,
@@ -25,26 +22,17 @@ export {
 	isSoilMat, isBlockMat, isLiquidBarrier, soilAbsorbFactor,
 } from './mat.mjs'
 
-/**
- *
- */
 export {
 	P_FLOW_CAP, P_FLOW_GAIN, SHEET_GAIN,
 	hydraulicPhi, pressureMove, sheetMove, applyTransfer,
 } from './flow.mjs'
 
-/**
- *
- */
 export {
 	FALL_HEAVY, STILL_SPEED, SLANT_SPEED, FLAT_RATIO, HIGH_MOMENTUM, HIGH_SPEED,
 	WATER_HIGH_L, WATER_HIGH_R, WATER_LOW_DL, WATER_LOW_DR, WATER_FALL, WATER_STILL,
 	pickWaterGlyph, waterChar, liquidChar, dripChar,
 } from './glyphs.mjs'
 
-/**
- *
- */
 export {
 	createWorld, scratch, growScratch, idx, inWorld,
 	floodClear, floodPush, markAirIfDrawCrossed,
@@ -52,23 +40,14 @@ export {
 	setMat, addMoisture, addLiquid, totalGridWater, totalWorldWater,
 } from './world.mjs'
 
-/**
- *
- */
 export {
 	WIND_BASE, WIND_GUST, WIND_SHEAR_POWER, GAS_BLEND, GAS_NOZZLE, GAS_SPEED_MAX,
 	isAirCell, fillBlocked, labelAirRegions, pressureAt, globalWindAt, windProfileAt,
 	gasVelocityAt, gasUxAt, dynamicPressure, staticPressureAt, stepGas, totalSealedGas,
 } from './gas.mjs'
 
-/**
- *
- */
 export { liquidPressureAt, stepSoil, stepLiquid } from './liquid.mjs'
 
-/**
- *
- */
 export {
 	GAS_DRAG, GAS_DRAG_Y, GAS_DRAG_Y_BOOST_FROM, GAS_DRAG_Y_BOOST_SPAN,
 	WIND_LIFT_UY, WIND_LIFT_RATE, WIND_LIFT_MAX, WIND_HOLD_LIFE,
@@ -76,7 +55,4 @@ export {
 	spawnParticle, queueSplash, depositParticleMass, stepParticles, liftLiquidByWind,
 } from './particles.mjs'
 
-/**
- *
- */
 export { stepFluid } from './step.mjs'
