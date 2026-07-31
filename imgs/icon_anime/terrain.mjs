@@ -681,10 +681,12 @@ function buildSurfaceChars(surface, W) {
 
 		if (dL === 0 && dR === 0)
 			chars[x] = (x + y) & 1 ? TERRAIN_CH.FLAT_ALT : TERRAIN_CH.FLAT
-		else if (dR > 0 || dL < 0)
-			chars[x] = Math.abs(dR || dL) >= 2 ? TERRAIN_CH.WALL : TERRAIN_CH.SLOPE_DOWN
-		else
-			chars[x] = Math.abs(dR || dL) >= 2 ? TERRAIN_CH.WALL : TERRAIN_CH.SLOPE_UP
+		else {
+			const slope = dR || dL
+			chars[x] = Math.abs(slope) >= 2
+				? TERRAIN_CH.WALL
+				: slope < 0 ? TERRAIN_CH.SLOPE_UP : TERRAIN_CH.SLOPE_DOWN
+		}
 	}
 	return chars
 }

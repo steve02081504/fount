@@ -521,10 +521,8 @@ const simFrame = (state) => {
 		driveUy: undefined,
 		onHit: onParticleHit,
 		state,
-		/**
-		 *
-		 */
-		beforeParticles: () => { spawnRain(state) },
+		/** @returns {void} per-tick rain before particle integrate */
+		beforeParticles: () => spawnRain(state),
 	}
 	opts.time = state.frame
 	opts.seed = state.seed

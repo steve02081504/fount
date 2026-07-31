@@ -21,30 +21,20 @@ import {
 } from './scene.mjs'
 import { createIconAnime, fps } from './session.mjs'
 
-/**
- *
- */
+/** Icon layout constants and packed silhouette helpers. */
 export {
 	ICON_W, ICON_H, ICON_PACK_H, ICON_BASE_ROWS, ICON_BASE_X0, ICON_BASE_X1,
 	ICON_BODY_H, maxBodyD, maxPillarH,
 } from './icon.mjs'
-/**
- *
- */
+/** Grid / buffer frame composers. */
 export { renderBuffers, renderGrid } from './compose.mjs'
-/**
- *
- */
+/** Animation state machine (enter / hold / exit). */
 export {
 	createAnimState, resizeAnimState, enter, hold, exit,
 }
-/**
- *
- */
+/** Interactive TUI controller. */
 export { createIconAnime, fps }
-/**
- *
- */
+/** Low-level ASCII anime player. */
 export { AsciiAnimePlayer } from './player.mjs'
 
 /** Public frame producers. */

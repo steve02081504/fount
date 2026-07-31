@@ -110,17 +110,13 @@ export const clearWindGesture = (gesture) => {
  */
 export const windPointer = (gesture, { x, y, right }) => {
 	applyPointer(gesture, x, y, right, {
-		/**
-		 *
-		 */
+		/** Press: anchor stroke and clear prior drive. */
 		onDown() {
 			gesture.lx = x
 			gesture.ly = y
 			resetWindDrive(gesture)
 		},
-		/**
-		 *
-		 */
+		/** Release: drop stroke / vortex state. */
 		onUp() {
 			clearWindGesture(gesture)
 		},

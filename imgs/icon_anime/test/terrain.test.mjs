@@ -58,19 +58,20 @@ Deno.test('terrain: surface uses slope/wall/flat glyphs, not only bar', () => {
 })
 
 Deno.test('terrain: descending surface columns get SLOPE_DOWN', () => {
-	const { terrain: t } = makeTerrain(7)
-	const { surface, surfaceChar, worldW: width } = t
+	const { terrain } = makeTerrain(7)
+	const { surface, surfaceChar, worldW: width } = terrain
 	let found = false
 	for (let x = 1; x < width - 1; x++) {
 		const y = surface[x]
 		const dL = y - surface[x - 1]
 		const dR = surface[x + 1] - y
 		if (dL === 0 && dR === 0) continue
-		if (dR > 0 || dL < 0) {
-			const expect = Math.abs(dR || dL) >= 2 ? TERRAIN_CH.WALL : TERRAIN_CH.SLOPE_DOWN
-			assertEquals(surfaceChar[x], expect)
-			if (expect === TERRAIN_CH.SLOPE_DOWN) found = true
-		}
+		const slope = dR || dL
+		const expect = Math.abs(slope) >= 2
+			? TERRAIN_CH.WALL
+			: slope < 0 ? TERRAIN_CH.SLOPE_UP : TERRAIN_CH.SLOPE_DOWN
+		assertEquals(surfaceChar[x], expect)
+		if (expect === TERRAIN_CH.SLOPE_DOWN) found = true
 	}
 	assert(found, 'expected at least one SLOPE_DOWN')
 })

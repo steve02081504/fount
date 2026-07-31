@@ -79,9 +79,7 @@ export const torchEase = (t) => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t)
  */
 export const lightPointer = (gesture, { x, y, left }) => {
 	applyPointer(gesture, x, y, left, {
-		/**
-		 *
-		 */
+		/** Press: resume torch fade or reset hold. */
 		onDown() {
 			// Resume mid fade-out without waiting TORCH_DELAY again.
 			if (gesture.torchBlend > 0) {
@@ -93,9 +91,7 @@ export const lightPointer = (gesture, { x, y, left }) => {
 				gesture.torch = false
 			}
 		},
-		/**
-		 *
-		 */
+		/** Release: spawn ripple if torch never armed. */
 		onUp() {
 			if (!gesture.torch) {
 				gesture.ripples.push({ x: gesture.x, y: gesture.y, age: 0, life: RIPPLE_LIFE })

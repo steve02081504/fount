@@ -13,7 +13,7 @@ export function analyzeTerrain(terrain) {
 	const { regions } = labelCavities(solid, surface, width, height)
 	return {
 		count: regions.length,
-		sizes: regions.map(region => region.size).sort((a, b) => b - a),
+		sizes: regions.map(region => region.size).sort((firstSize, secondSize) => secondSize - firstSize),
 		hasUTube: features.some(feature => feature.type === 'u_tube'),
 		hasChamber: features.some(feature => feature.type === 'chamber' || feature.type === 'neck'),
 	}
