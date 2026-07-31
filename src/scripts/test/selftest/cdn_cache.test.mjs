@@ -36,9 +36,10 @@ function fakeContext() {
 		handlers,
 		context: {
 			/**
-			 *
-			 * @param predicate
-			 * @param handler
+			 * Register a Playwright-style route handler.
+			 * @param {(url: string) => boolean} predicate URL matcher
+			 * @param {(route: object) => Promise<void>} handler route handler
+			 * @returns {Promise<void>}
 			 */
 			route: async (predicate, handler) => {
 				handlers.push({ predicate, handler })
@@ -57,37 +58,40 @@ function fakeRoute({ method = 'GET', url, headers = {}, fetchImpl } = {}) {
 	const state = { continued: 0, fetchCalls: 0 }
 	const route = {
 		/**
-		 *
+		 * @returns {{ method: () => string, url: () => string, headers: () => Record<string, string> }} stub request
 		 */
 		request: () => ({
 			/**
-			 *
+			 * @returns {string} HTTP method
 			 */
 			method: () => method,
 			/**
-			 *
+			 * @returns {string} request URL
 			 */
 			url: () => url,
 			/**
-			 *
+			 * @returns {Record<string, string>} request headers
 			 */
 			headers: () => headers,
 		}),
 		/**
-		 *
-		 * @param options
+		 * Fulfill the route with a cached or synthetic response.
+		 * @param {object} options Playwright fulfill payload
+		 * @returns {Promise<void>}
 		 */
 		fulfill: async options => {
 			fulfilled.push(options)
 		},
 		/**
-		 *
+		 * Pass through to the real network stack.
+		 * @returns {Promise<void>}
 		 */
 		continue: async () => {
 			state.continued++
 		},
 		/**
-		 *
+		 * Fetch upstream and return the response to the handler.
+		 * @returns {Promise<object>} stub APIResponse
 		 */
 		fetch: async () => {
 			state.fetchCalls++
@@ -106,15 +110,15 @@ function fakeResponse({ status = 200, headers = {}, body = '' } = {}) {
 	const bodyBuffer = Buffer.isBuffer(body) ? body : Buffer.from(body)
 	return {
 		/**
-		 *
+		 * @returns {number} HTTP status code
 		 */
 		status: () => status,
 		/**
-		 *
+		 * @returns {Record<string, string>} response headers
 		 */
 		headers: () => ({ ...headers }),
 		/**
-		 *
+		 * @returns {Promise<Buffer>} response body
 		 */
 		body: async () => bodyBuffer,
 	}
@@ -144,9 +148,7 @@ Deno.test('installCdnResponseCache: GET/HEAD isolation, cache headers, disk refi
 		{
 			const get = fakeRoute({
 				url: getUrl,
-				/**
-				 *
-				 */
+				/** @returns {object} upstream GET response */
 				fetchImpl: () => fakeResponse({
 					headers: {
 						'content-type': 'application/javascript',
@@ -178,9 +180,7 @@ Deno.test('installCdnResponseCache: GET/HEAD isolation, cache headers, disk refi
 			const head = fakeRoute({
 				method: 'HEAD',
 				url: headUrl,
-				/**
-				 *
-				 */
+				/** @returns {object} upstream HEAD response */
 				fetchImpl: () => fakeResponse({
 					headers: {
 						'content-type': 'application/javascript',
@@ -199,9 +199,7 @@ Deno.test('installCdnResponseCache: GET/HEAD isolation, cache headers, disk refi
 			const headOnGetUrl = fakeRoute({
 				method: 'HEAD',
 				url: getUrl,
-				/**
-				 *
-				 */
+				/** @returns {object} upstream HEAD response for GET URL */
 				fetchImpl: () => fakeResponse({
 					headers: { 'content-length': '7' },
 					body: '',
@@ -232,9 +230,7 @@ Deno.test('installCdnResponseCache: GET/HEAD isolation, cache headers, disk refi
 		{
 			const fail = fakeRoute({
 				url: failUrl,
-				/**
-				 *
-				 */
+				/** @returns {never} simulated upstream failure */
 				fetchImpl: () => {
 					throw new Error('upstream down')
 				},

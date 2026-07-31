@@ -63,7 +63,7 @@ const labelQ = []
  * @param {number} originX stable horizontal terrain origin (footX0)
  * @param {number} originY stable vertical terrain origin (baseY)
  * @param {number} seed generation seed
- * @returns {boolean}
+ * @returns {boolean} true when noise would carve this cell open
  */
 function caveNoiseOpens(x, y, surfaceY, originX, originY, seed) {
 	const depth = y - surfaceY
@@ -217,7 +217,7 @@ export function resizeTerrain(previous, world, opts) {
 /**
  * Constrained random-walk surface anchored at the icon pedestal.
  * @param {number} W world width
- * @param {{ baseY: number, minY: number, maxY: number, seed: number, footX0: number, footX1: number, viewH: number, viewW: number, ox: number, H: number }} opts
+ * @param {{ baseY: number, minY: number, maxY: number, seed: number, footX0: number, footX1: number, viewH: number, viewW: number, ox: number, H: number }} opts surface walk bounds and viewport anchors
  * @returns {Int16Array} surface row per column
  */
 function buildSurface(W, {
@@ -260,7 +260,7 @@ function buildSurface(W, {
  * @param {number} startX first column to write
  * @param {number} dir +1 rightward / -1 leftward
  * @param {number} startY height at the adjacent anchor
- * @param {{ minY: number, maxY: number, seed: number, hashOrigin?: number }} opts
+ * @param {{ minY: number, maxY: number, seed: number, hashOrigin?: number }} opts walk bounds and hash origin
  * @returns {void}
  */
 function walkSurface(surface, startX, dir, startY, { minY, maxY, seed, hashOrigin = 0 }) {
@@ -325,7 +325,7 @@ function softClampSpikes(surface, W) {
 /**
  * Raise enough view columns so ≥ TALL_LAND_FRACTION have thickness ≥ ¼ screen.
  * @param {Int16Array} surface surface rows (mutated in place)
- * @param {{ W: number, H: number, viewH: number, viewW: number, ox: number, seed: number, footX0: number, footX1: number, baseY: number }} opts
+ * @param {{ W: number, H: number, viewH: number, viewW: number, ox: number, seed: number, footX0: number, footX1: number, baseY: number }} opts viewport and pedestal geometry
  * @returns {void}
  */
 function ensureTallLand(surface, {
@@ -386,9 +386,9 @@ function ensureTallLand(surface, {
 
 /**
  * Tall-land coverage inside the viewport (for tests / diagnostics).
- * @param {TerrainData} terrain
+ * @param {TerrainData} terrain generated terrain bundle
  * @param {{ viewH: number, viewW: number }} size view size
- * @returns {{ tall: number, total: number, fraction: number, minThick: number }}
+ * @returns {{ tall: number, total: number, fraction: number, minThick: number }} tall-column stats
  */
 export function tallLandCoverage(terrain, { viewH, viewW }) {
 	const { surface, ox } = terrain
@@ -458,7 +458,7 @@ function cellularCleanup(solid, surface, W, H, passes) {
  * @param {Uint8Array} solid solid mask (mutated in place)
  * @param {Int16Array} surface surface rows
  * @param {TerrainFeature[]} features feature list to append
- * @param {{ W: number, H: number, seed: number, iconOx: number, iconBaseX0: number, iconBaseX1: number }} opts
+ * @param {{ W: number, H: number, seed: number, iconOx: number, iconBaseX0: number, iconBaseX1: number }} opts world size, seed, and icon keep-out bounds
  * @returns {void}
  */
 function injectConnectors(solid, surface, features, { W, H, seed, iconOx, iconBaseX0, iconBaseX1 }) {
@@ -600,7 +600,7 @@ function connectNearbyCavities(solid, surface, W, H, seed) {
  * @param {Int16Array} surface surface rows
  * @param {number} W world width
  * @param {number} H world height
- * @returns {{ labels: Int32Array, regions: CavityRegion[] }}
+ * @returns {{ labels: Int32Array, regions: CavityRegion[] }} per-cell cavity ids and region metadata
  */
 export function labelCavities(solid, surface, W, H) {
 	const labels = new Int32Array(W * H)
@@ -773,8 +773,8 @@ export function outlineChar(solid, x, y, W, H, surface) {
 
 /**
  * Count underground air cavities (for tests).
- * @param {TerrainData} terrain
- * @returns {{ count: number, sizes: number[], hasUTube: boolean, hasChamber: boolean }}
+ * @param {TerrainData} terrain generated terrain bundle
+ * @returns {{ count: number, sizes: number[], hasUTube: boolean, hasChamber: boolean }} cavity summary
  */
 export function analyzeTerrain(terrain) {
 	const { solid, surface, features, worldW: W, worldH: H } = terrain

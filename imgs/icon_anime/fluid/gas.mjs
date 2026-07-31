@@ -45,14 +45,16 @@ const AIR_CELL = 1
 
 /**
  * Open-air hydrostatic pressure at row `y` (y↓ → P↑).
- * @param y
+ * @param {number} y world row
+ * @returns {number} pressure
  */
 const openHydroPressure = (y) => P_ATM + ATM_HYDRO * y
 
 /**
  * Sealed-cavity hydrostatic pressure at row `y` around Boyle mean.
- * @param region
- * @param y
+ * @param {AirRegion} region sealed cavity region
+ * @param {number} y world row
+ * @returns {number} pressure
  */
 const sealedHydroPressure = (region, y) =>
 	Math.max(0.05, region.pressure + ATM_HYDRO * (y - region.yMean))

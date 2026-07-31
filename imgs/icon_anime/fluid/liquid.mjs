@@ -34,10 +34,10 @@ const WIND_SHEET_CAP = 0.18
 
 /**
  * Whether free liquid can enter `(x, y)`.
- * @param {FluidWorld} world
+ * @param {FluidWorld} world fluid world
  * @param {number} x column
  * @param {number} y row
- * @returns {boolean}
+ * @returns {boolean} true when the cell accepts liquid
  */
 const canOccupy = (world, x, y) => {
 	if (x < 0 || y < 0 || x >= world.worldW || y >= world.worldH) return false
@@ -55,7 +55,7 @@ const canOccupy = (world, x, y) => {
  * @param {number} y current row
  * @param {number} surf free-surface row
  * @param {number} amount liquid fill in the cell
- * @returns {number}
+ * @returns {number} hydrostatic pressure at the cell
  */
 const columnDepthPressure = (airP, y, surf, amount) =>
 	airP + RHO_G * ((y - surf) + Math.min(1, Math.max(amount, LIQ_DRAW)))
@@ -63,10 +63,10 @@ const columnDepthPressure = (airP, y, surf, amount) =>
 /**
  * Hydrostatic liquid pressure at `(x, y)`.
  * Air / dry cells → gas `pressureAt`. Wet cells → P_air(free surface) + RHO_G·depth.
- * @param {FluidWorld} world
+ * @param {FluidWorld} world fluid world
  * @param {number} x column
  * @param {number} y row
- * @returns {number}
+ * @returns {number} liquid pressure at `(x, y)`
  */
 export const liquidPressureAt = (world, x, y) => {
 	if (!inWorld(world, x, y)) return pressureAt(world, x, Math.max(0, y))
@@ -90,7 +90,7 @@ export const liquidPressureAt = (world, x, y) => {
 
 /**
  * Fill pressure cache for one column (matches `liquidPressureAt`).
- * @param {FluidWorld} world
+ * @param {FluidWorld} world fluid world
  * @param {number} x column
  * @param {Float32Array} cache pressure buffer
  */
@@ -120,30 +120,30 @@ const fillColumnPressure = (world, x, cache) => {
 
 /**
  * Free-surface cell? (air or barrier above, or top of world.)
- * @param {FluidWorld} world
+ * @param {FluidWorld} world fluid world
  * @param {number} cell flat index
  * @param {number} y row
- * @returns {boolean}
+ * @returns {boolean} true when liquid meets air above
  */
 const isFreeSurface = (world, cell, y) =>
 	y === 0 || isLiquidBarrier(world.mat[cell - world.worldW]) || world.liq[cell - world.worldW] < LIQ_DRAW
 
 /**
  * POOL retain: keep mass until near-full unless draining into another POOL.
- * @param {FluidWorld} world
+ * @param {FluidWorld} world fluid world
  * @param {number} src source index
  * @param {number} dst dest index
- * @returns {boolean}
+ * @returns {boolean} true when transfer should be blocked
  */
 const poolRetainBlocks = (world, src, dst) =>
 	world.mat[src] === MAT.POOL && world.mat[dst] !== MAT.POOL && world.liq[src] < 0.92
 
 /**
  * Sealed over-pressure at an air neighbor blocks invasion.
- * @param {FluidWorld} world
+ * @param {FluidWorld} world fluid world
  * @param {number} neighbor dest index
  * @param {number} pSrc liquid pressure at source
- * @returns {boolean}
+ * @returns {boolean} true when sealed gas blocks the move
  */
 const sealedGasBlocks = (world, neighbor, pSrc) => {
 	if (world.liq[neighbor] > 0.05) return false
@@ -155,7 +155,7 @@ const sealedGasBlocks = (world, neighbor, pSrc) => {
 
 /**
  * Transfer mass and dirty air when a cell crosses the free-liquid draw threshold.
- * @param {FluidWorld} world
+ * @param {FluidWorld} world fluid world
  * @param {Float32Array} liq liquid field
  * @param {Float32Array} flowX horizontal flow
  * @param {Float32Array} flowY vertical flow
@@ -179,7 +179,7 @@ const transfer = (world, liq, flowX, flowY, src, dst, dx, dy, move) => {
 
 /**
  * Push one free-surface sample into reused SoA scratch (components stay contiguous).
- * @param {FluidWorld} world
+ * @param {FluidWorld} world fluid world
  * @param {number} x column
  * @param {number} y row
  * @param {number} component component id
@@ -205,11 +205,11 @@ const pushSurface = (world, x, y, component, pressure, surf) => {
 
 /**
  * Label connected liquid components; free surfaces as SoA (grouped by component).
- * @param {FluidWorld} world
+ * @param {FluidWorld} world fluid world
  * @returns {{
  *   surf: { x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, n: number },
  *   componentOf: Int32Array,
- * }}
+ * }} surface samples and per-cell component ids
  */
 const labelLiquidComponents = (world) => {
 	const { worldW: W, worldH: H, mat, liq } = world
@@ -263,7 +263,7 @@ const labelLiquidComponents = (world) => {
  * Path-respecting hydraulic equalize: BFS from the lowest-φ surface through the
  * liquid graph; cells push a trickle toward neighbors closer to that sink.
  * Surfaces are SoA; BFS uses a generation stamp (no whole-grid `dist.fill`).
- * @param {FluidWorld} world
+ * @param {FluidWorld} world fluid world
  * @param {Float32Array} flowX flow accumulator
  * @param {Float32Array} flowY flow accumulator
  */
@@ -366,7 +366,7 @@ const equalizeHydraulicAlongGraph = (world, flowX, flowY) => {
 
 /**
  * Clamp `moisture[cell]` into `[0, SOIL_CAP]` after applying accumulated delta.
- * @param {Float32Array} moisture
+ * @param {Float32Array} moisture soil moisture field
  * @param {number} cell flat index
  */
 const clampMoisture = (moisture, cell) => {
@@ -376,7 +376,7 @@ const clampMoisture = (moisture, cell) => {
 
 /**
  * Soil seepage: absorb free liquid, share moisture, feed condensation, Matthew drip, drip.
- * @param {FluidWorld} world
+ * @param {FluidWorld} world fluid world
  */
 export const stepSoil = (world) => {
 	const { worldW: W, worldH: H, mat, liq, moisture, condense } = world
@@ -586,7 +586,7 @@ export const stepSoil = (world) => {
 /**
  * Liquid step: pressure-driven settle, wind sheet, soil, graph hydraulic equalize.
  * Re-labels air only when particles / lift dirtied free-liquid topology.
- * @param {FluidWorld} world
+ * @param {FluidWorld} world fluid world
  */
 export const stepLiquid = (world) => {
 	const { worldW: W, worldH: H, mat, liq, liqVx, liqVy } = world
@@ -607,7 +607,7 @@ export const stepLiquid = (world) => {
 	 * Cached pressure (O(1)); falls back off-grid to gas hydro.
 	 * @param {number} x column
 	 * @param {number} y row
-	 * @returns {number}
+	 * @returns {number} cached liquid/gas pressure
 	 */
 	const pAt = (x, y) => {
 		if (x < 0 || y < 0 || x >= W || y >= H) return pressureAt(world, x, Math.max(0, y))
