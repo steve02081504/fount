@@ -34,7 +34,7 @@ Host keep-awake / sleep interrupts: [docs/host-keep-awake.md](docs/host-keep-awa
 | `live/` | Real fount node + HTTP/WS |
 | `frontend/` | Playwright (`playwright/`) |
 | `sim/` | In-process simulation harness |
-| `checks/` | Repo static health (`checks` manifest under `src/scripts/checks/`): HTML meta/landmarks/`drawer-toggle`/aside ARIA; parts `locales.json` / `achievements_registry.json` info + remote icon URL; **i18n key structure** (`checks:i18n_keys` — no Suffix/Prefix affix keys, no ≥4 flat camelCase siblings sharing a prefix, no `xxx1`-style numbered keys); **Python reshape self-check** (`checks:reshape_i18n_keys` — `reshape_i18n_keys.py --self-test`); **AGENTS.md + agent-facing linked `.md` English-only** (`checks:agents_md_english` — no CJK except human-facing `docs/design/` and `docs/review/`; transitive markdown links must resolve); **纯英文 JSDoc** (`checks:jsdoc_english` — 摘要含拉丁字母且无 CJK；`deno run -A ./src/scripts/checks/tools/scan_jsdoc_english.mjs` 列出残留). Prefix-nest **writeback** of locale JSON: `.esh/commands/reshape_i18n_keys.py` (Python only — JS stringify reorders numeric keys like `404`). Formerly `.esh/commands/verify-meta.py` / `verify-info.py`. |
+| `checks/` | Repo static health — [checks/AGENTS.md](../checks/AGENTS.md) |
 
 **Frontend**: fixtures, browser binary, network noise, i18n-missing / a11y / locale-script hard-fail, GitHub Pages — [playwright.md](docs/playwright.md). Prefer `[data-i18n]` selectors over locale-specific copy. Drive locale via `setLanguage` / `loadLocaleData` — do not fetch `/api/getlocaledata` from tests. CDN GET/HEAD (`esm.sh` / Iconify / jsDelivr) is reused across cases via `cdn_cache.mjs` (`data/test/cdn_cache`); set `FOUNT_TEST_CDN_CACHE=0` to disable.
 
@@ -44,7 +44,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 ## Manifest fields
 
-- **`triggers`**: glob match on changed files via `npm:picomatch`（`*`、`**`、`?`、花括号 `{a,b}`，如 `**/*.{mjs,js,ts}` / `src/scripts/test/{deno/serial.mjs,node/boot.mjs}`；`dot: true`）。Default ignores docs/metadata; override via **`triggerFilter`**: [trigger-filter.md](docs/trigger-filter.md). Watch scope = code the suite runs — not shared runners (`serial.mjs`/`boot.mjs` only on `pure`/`integration`/`testkit`). Federation: only `fed_core` watches `federation/**`.
+- **`triggers`**: glob match on changed files via `npm:picomatch` (braces `{a,b}`, `dot: true`). Default ignores docs/metadata; override via **`triggerFilter`**: [trigger-filter.md](docs/trigger-filter.md). Watch scope = code the suite runs — not shared runners (`serial.mjs`/`boot.mjs` only on `pure`/`integration`/`testkit`). Federation: only `fed_core` watches `federation/**`.
 - **`dependsOn`**: plan pulls transitive deps. Imperfect wave = hard fails + one-level dependents (noisy re-runs but does not expand dependents); stale `unknown` → outdated wave.
 - **`subtests`**: `{ name, triggers|trigger, spec? }`. When splitting a frontend god-file, update that subtest's `triggers`. Runtime filter: `FOUNT_TEST_SUBTESTS`. Suite-level `noisy` only marks subtests when **no** file failed.
 - **Live layering**: use smoke → e2e gates; do not jump straight to full e2e. Details: [domain-harness.md](docs/domain-harness.md#live-layering).
