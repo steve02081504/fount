@@ -145,3 +145,42 @@ Deno.test('fluid: pressureAt returns atm above open liquid', () => {
 	labelAirRegions(w)
 	assertEquals(pressureAt(w, 5, 4), P_ATM)
 })
+
+Deno.test('fluid: BODY rejects free liquid (impact shell, not a pool)', () => {
+	const w = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	for (let x = 5; x <= 10; x++)
+		setMat(w, x, 8, MAT.BODY)
+	for (let x = 4; x <= 11; x++)
+		setMat(w, x, 10, MAT.SOLID)
+
+	assertEquals(addLiquid(w, 7, 8, 1), 0)
+	addLiquid(w, 7, 5, 1)
+	addLiquid(w, 8, 5, 1)
+	for (let i = 0; i < 30; i++) stepLiquid(w)
+
+	assertEquals(w.liq[idx(w, 7, 8)], 0)
+	assertEquals(w.liq[idx(w, 8, 8)], 0)
+})
+
+Deno.test('fluid: free liquid settles above HORIZON and spreads', () => {
+	const w = createWorld({ width: 20, height: 12, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	for (let x = 4; x <= 14; x++) {
+		setMat(w, x, 9, MAT.HORIZON, 2)
+		setMat(w, x, 10, MAT.SOLID)
+	}
+	addLiquid(w, 8, 8, 1)
+	addLiquid(w, 9, 8, 1)
+	for (let i = 0; i < 40; i++) stepLiquid(w)
+
+	let groundLiq = 0
+	for (let x = 4; x <= 14; x++)
+		groundLiq += w.liq[idx(w, x, 8)]
+	assertGreater(groundLiq, 0.5)
+	// should have spread beyond the two seed columns
+	let wetCols = 0
+	for (let x = 4; x <= 14; x++)
+		if (w.liq[idx(w, x, 8)] >= 0.1) wetCols++
+	assertGreater(wetCols, 2)
+})

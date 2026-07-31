@@ -5,6 +5,10 @@
  *   P / P_atm = gasAmount / airVolume
  * Communicating vessels equalize hydraulic potential:
  *   φ = P / (ρg) - surfaceY
+ *
+ * POOL retains fill and spills when overfull / leaked by the scene.
+ * BODY is an impact shell: particles splash and vanish; free liquid cannot enter.
+ * SOLID / slopes / horizon stay sealed. Pillar glyphs (`:`) are scene-visual only.
  */
 
 /** @typedef {{
@@ -59,6 +63,13 @@ export const isSolidMat = m =>
  * @returns {boolean} result
  */
 export const isBlockMat = m => isSolidMat(m) || m === MAT.POOL || m === MAT.BODY
+
+/**
+ * Materials that free liquid cannot occupy (solids + BODY impact shell).
+ * @param {number} m parameter
+ * @returns {boolean} result
+ */
+export const isLiquidBarrier = m => isSolidMat(m) || m === MAT.BODY
 
 /**
  * Deterministic hash in [0, 1).
@@ -165,7 +176,7 @@ export const setMat = (w, x, y, m, absorb = 0) => {
 export const addLiquid = (w, x, y, amt) => {
 	if (!inWorld(w, x, y)) return 0
 	const i = idx(w, x, y)
-	if (isSolidMat(w.mat[i])) return 0
+	if (isLiquidBarrier(w.mat[i])) return 0
 	const before = w.liq[i]
 	w.liq[i] = Math.min(LIQ_FULL, before + amt)
 	return w.liq[i] - before
@@ -352,7 +363,7 @@ export const pressureAt = (w, x, y) => {
 	// look upward for air region above liquid column
 	for (let yy = y - 1; yy >= 0; yy--) {
 		const ii = idx(w, x, yy)
-		if (isSolidMat(w.mat[ii])) break
+		if (isBlockMat(w.mat[ii])) break
 		const r2 = w.regionId[ii]
 		if (r2) {
 			const r = w.regions.get(r2)
@@ -372,8 +383,8 @@ const canOccupy = (w, x, y) => {
 	if (!inWorld(w, x, y)) return false
 	const i = idx(w, x, y)
 	const m = w.mat[i]
-	if (isSolidMat(m)) return false
-	if (m === MAT.POOL || m === MAT.BODY) return w.liq[i] < LIQ_FULL
+	if (isLiquidBarrier(m)) return false
+	if (m === MAT.POOL) return w.liq[i] < LIQ_FULL
 	return true
 }
 
@@ -391,7 +402,7 @@ export const labelLiquidSurfaces = (w) => {
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const i = y * W + x
-			if (componentOf[i] || liq[i] < LIQ_DRAW || isSolidMat(mat[i])) continue
+			if (componentOf[i] || liq[i] < LIQ_DRAW || isLiquidBarrier(mat[i])) continue
 			const id = next++
 			const q = [x, y]
 			componentOf[i] = id
@@ -406,7 +417,7 @@ export const labelLiquidSurfaces = (w) => {
 					const ny = cy + dy
 					if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
 					const ni = ny * W + nx
-					if (componentOf[ni] || liq[ni] < LIQ_DRAW || isSolidMat(mat[ni])) continue
+					if (componentOf[ni] || liq[ni] < LIQ_DRAW || isLiquidBarrier(mat[ni])) continue
 					componentOf[ni] = id
 					q.push(nx, ny)
 				}
@@ -419,7 +430,7 @@ export const labelLiquidSurfaces = (w) => {
 					continue
 				}
 				const ai = aboveY * W + c.x
-				if (isSolidMat(mat[ai])) continue
+				if (isLiquidBarrier(mat[ai])) continue
 				if (liq[ai] >= LIQ_DRAW) continue
 				surfaces.push({
 					x: c.x, y: c.y, component: id,
@@ -513,20 +524,29 @@ export const stepLiquid = (w) => {
 		for (let x = 0; x < W; x++) {
 			const i = y * W + x
 			if (liq[i] <= 0) continue
-			if (isSolidMat(mat[i])) {
+			if (isLiquidBarrier(mat[i])) {
 				liq[i] = 0
 				continue
 			}
 			const below = (y + 1) * W + x
-			if (!isSolidMat(mat[below]) && mat[below] !== MAT.BODY && liq[below] < LIQ_FULL) {
-				// sealed cavity below with high pressure resists inflow
-				const pBelow = pressureAt(w, x, y + 1)
-				const resist = Math.max(0, (pBelow - P_ATM) * 0.35)
-				const capacity = Math.max(0, LIQ_FULL - liq[below] - resist)
-				const move = Math.min(liq[i], capacity)
-				liq[i] -= move
-				liq[below] += move
-				continue
+			if (!isLiquidBarrier(mat[below]) && liq[below] < LIQ_FULL) {
+				// POOL retains fill; only spill into open air when overfull.
+				// Drain freely into another POOL cell.
+				const retain = mat[i] === MAT.POOL
+				const intoPool = mat[below] === MAT.POOL
+				if (retain && !intoPool && liq[i] < 0.92) {
+					/* keep */
+				}
+				else {
+					// sealed cavity below with high pressure resists inflow
+					const pBelow = pressureAt(w, x, y + 1)
+					const resist = Math.max(0, (pBelow - P_ATM) * 0.35)
+					const capacity = Math.max(0, LIQ_FULL - liq[below] - resist)
+					const move = Math.min(liq[i], capacity)
+					liq[i] -= move
+					liq[below] += move
+					continue
+				}
 			}
 			const dir = (x + y) & 1 ? 1 : -1
 			for (const dx of [dir, -dir]) {
@@ -535,6 +555,9 @@ export const stepLiquid = (w) => {
 				if (!canOccupy(w, nx, ny)) continue
 				const ni = ny * W + nx
 				if (liq[ni] >= liq[i]) continue
+				const retain = mat[i] === MAT.POOL
+				const intoPool = mat[ni] === MAT.POOL
+				if (retain && !intoPool && liq[i] < 0.92) continue
 				const move = Math.min(liq[i] * 0.5, (liq[i] - liq[ni]) * 0.5, LIQ_FULL - liq[ni])
 				if (move <= 0.01) continue
 				liq[i] -= move
@@ -548,7 +571,7 @@ export const stepLiquid = (w) => {
 		for (let x = 0; x < W; x++) {
 			const i = y * W + x
 			if (liq[i] <= 0.05) continue
-			if (isSolidMat(mat[i])) continue
+			if (isLiquidBarrier(mat[i])) continue
 			for (const dx of [-1, 1]) {
 				const nx = x + dx
 				if (nx < 0 || nx >= W) {
@@ -556,7 +579,10 @@ export const stepLiquid = (w) => {
 					continue
 				}
 				const ni = y * W + nx
-				if (isSolidMat(mat[ni]) || mat[ni] === MAT.BODY) continue
+				if (isLiquidBarrier(mat[ni])) continue
+				// Retain POOL fill — only spill into open air when overfull
+				if (mat[i] === MAT.POOL && mat[ni] === MAT.AIR && liq[i] < 0.92)
+					continue
 				const targetDrySealed = liq[ni] <= 0.05 && w.regionId[ni] && !w.regions.get(w.regionId[ni])?.openToAtm
 				if (targetDrySealed) {
 					const r = w.regions.get(w.regionId[ni])

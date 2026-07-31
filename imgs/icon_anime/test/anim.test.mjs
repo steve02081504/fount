@@ -4,7 +4,7 @@
 /* global Deno */
 import { assert, assertEquals, assertGreater } from 'jsr:@std/assert'
 
-import { addLiquid, spawnParticle } from '../fluid_engine.mjs'
+import { MAT, addLiquid, spawnParticle, idx } from '../fluid_engine.mjs'
 import {
 	createAnimState, resizeAnimState, enter, hold, exit, renderGrid, layout,
 } from '../index.mjs'
@@ -67,6 +67,73 @@ Deno.test('hold: yields at least one frame', () => {
 	const first = gen.next()
 	assertEquals(first.done, false)
 	assert(typeof first.value === 'string')
+	gen.return?.()
+})
+
+Deno.test('hold: pillars leave AIR so liquid passes the jet columns', () => {
+	const state = createAnimState({ width: 48, height: 26, seed: 8 })
+	const gen = hold(state)
+	assertEquals(gen.next().done, false)
+
+	const { world, iconOx, iconOy } = state
+	// Three :: pillars at local x 16/20/24, mid-height of the jet
+	for (const lx of [16, 20, 24]) {
+		const x = iconOx + lx
+		const y = iconOy + 8
+		assertEquals(world.mat[idx(world, x, y)], MAT.AIR)
+		assertEquals(world.mat[idx(world, x + 1, y)], MAT.AIR)
+		assertGreater(addLiquid(world, x, y, 0.8), 0.7)
+	}
+	gen.return?.()
+})
+
+Deno.test('hold: BODY impact leaves no pooled liquid in the silhouette', () => {
+	const state = createAnimState({ width: 48, height: 26, seed: 8 })
+	const gen = hold(state)
+	assertEquals(gen.next().done, false)
+
+	const { world } = state
+	let bodyCells = 0
+	for (let y = 0; y < world.worldH; y++)
+		for (let x = 0; x < world.worldW; x++)
+			if (world.mat[idx(world, x, y)] === MAT.BODY) {
+				assertEquals(addLiquid(world, x, y, 1), 0)
+				bodyCells++
+			}
+	assertGreater(bodyCells, 0)
+
+	// Drop a particle onto a body cell — after a frame it must not leave fill in BODY
+	let bx = -1, by = -1
+	for (let y = 0; y < world.worldH && bx < 0; y++)
+		for (let x = 0; x < world.worldW; x++)
+			if (world.mat[idx(world, x, y)] === MAT.BODY) {
+				bx = x
+				by = y
+				break
+			}
+	spawnParticle(world, bx + 0.2, by - 1.2, 0, 0.8, 40)
+	const { value: frame } = gen.next()
+	assertEquals(world.liq[idx(world, bx, by)], 0)
+	assert(typeof frame === 'string')
+	gen.return?.()
+})
+
+Deno.test('hold: pool liquid leaks to the next base slab', () => {
+	const state = createAnimState({ width: 48, height: 26, seed: 8 })
+	const gen = hold(state)
+	assertEquals(gen.next().done, false)
+
+	const { world, iconOx, iconOy } = state
+	const upper = iconOy + layout.ICON_BASE_ROWS[0]
+	const lower = iconOy + layout.ICON_BASE_ROWS[1]
+	const x = iconOx + layout.ICON_BASE_ROWS.length + 12
+	assertEquals(world.mat[idx(world, x, upper)], MAT.POOL)
+	assertEquals(world.mat[idx(world, x, lower)], MAT.POOL)
+
+	addLiquid(world, x, upper, 1)
+	for (let i = 0; i < 12; i++) gen.next()
+
+	assertGreater(world.liq[idx(world, x, lower)], 0.05)
 	gen.return?.()
 })
 

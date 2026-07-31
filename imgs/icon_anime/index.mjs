@@ -3,9 +3,10 @@
  * fount fountain logo ASCII animation API.
  * Silhouette packed like imgs/icon.js; colors match icon_ansi_ascii (@=30, ::=96).
  *
- * Materials:
- *   body `@`  — liquid   |  `:` — solid jet
- *   base `@`  — pool     |  `>`/`<` — 45° splash faces
+ * Materials (see AGENTS.md for full table):
+ *   body `@`  — impact shell (splash then vanish)
+ *   `:`       — visual jet only (does not block fluid)
+ *   base `@`  — pool that leaks downward | `>`/`<` — 45° splash
  *   terrain   — `/ \ | - _` outline (Terraria-style)
  *
  * createAnimState({ width?, height?, seed? }) — defaults to terminal size when available.
@@ -20,7 +21,7 @@ import { on_shutdown } from 'npm:on-shutdown'
 import {
 	MAT, createWorld, clearMaterials, clearDynamics, setMat, addLiquid,
 	spawnParticle, queueSplash, stepLiquid, stepParticles, rainChar, liquidChar,
-	hash01, idx, inWorld, LIQUID_DRAW_THRESHOLD,
+	hash01, idx, inWorld, isLiquidBarrier, LIQUID_DRAW_THRESHOLD,
 } from './fluid_engine.mjs'
 import { AsciiAnimePlayer, terminalSize } from './player.mjs'
 import { generateTerrain, outlineChar } from './terrain.mjs'
@@ -245,24 +246,6 @@ const paintBaseMats = (state) => {
  * @param {AnimState} state parameter
  * @returns {void} result
  */
-const paintPillarMats = (state) => {
-	const { world, iconOx, iconOy, pillars } = state
-	for (const [lx, yTop, yBot] of PILLARS) {
-		const h = pillarHeight(yTop, yBot)
-		const g = Math.min(pillars, h)
-		for (let k = 0; k < g; k++) {
-			const y = iconOy + yBot - k
-			const x = iconOx + lx
-			setMat(world, x, y, MAT.SOLID)
-			setMat(world, x + 1, y, MAT.SOLID)
-		}
-	}
-}
-
-/**
- * @param {AnimState} state parameter
- * @returns {void} result
- */
 const paintBodyMats = (state) => {
 	const { world, iconOx, iconOy, bodyReach, bodyMinD } = state
 	if (bodyReach < 0) return
@@ -273,6 +256,7 @@ const paintBodyMats = (state) => {
 }
 
 /**
+ * Pillars (`:`) are compose-only — no material, so liquid and particles pass through.
  * @param {AnimState} state parameter
  * @returns {void} result
  */
@@ -280,7 +264,6 @@ const rebuildMaterials = (state) => {
 	clearMaterials(state.world)
 	applyTerrain(state)
 	if (state.baseBot > 0 || state.baseTop > 0) paintBaseMats(state)
-	if (state.pillars > 0) paintPillarMats(state)
 	paintBodyMats(state)
 }
 
@@ -297,16 +280,18 @@ const nextPoolRow = (state, y) => {
 }
 
 /**
+ * Splash droplets aimed at the layer below a pool slab.
  * @param {FluidWorld} world parameter
  * @param {AnimState} state parameter
  * @param {number} x parameter
  * @param {number} y parameter
+ * @param {number} [targetY] parameter
  * @returns {void} result
  */
-const overflowSplash = (world, state, x, y) => {
+const overflowSplash = (world, state, x, y, targetY = -1) => {
 	if (world.particles.length > 900) return
-	const ny = nextPoolRow(state, y)
-	const targetY = ny >= 0 ? ny : y + 2
+	const ny = targetY >= 0 ? targetY : nextPoolRow(state, y)
+	const aimY = ny >= 0 ? ny : y + 2
 	const n = hash01(x, state.frame) > 0.65 ? 2 : 1
 	for (let i = 0; i < n; i++) {
 		queueSplash(world,
@@ -317,9 +302,83 @@ const overflowSplash = (world, state, x, y) => {
 			14 + (hash01(x, 9) * 8 | 0),
 		)
 		const last = world.pendingSplash[world.pendingSplash.length - 1]
-		if (last && targetY > y)
-			last.vy = Math.max(last.vy, Math.min(1.1, (targetY - y) * 0.2))
+		if (last && aimY > y)
+			last.vy = Math.max(last.vy, Math.min(1.1, (aimY - y) * 0.2))
 	}
+}
+
+/**
+ * Deposit free liquid onto terrain surface near a column (ground runoff).
+ * Prefers air cells just above HORIZON outside / beside pool slabs.
+ * @param {FluidWorld} world parameter
+ * @param {AnimState} state parameter
+ * @param {number} x parameter
+ * @param {number} fromY parameter
+ * @param {number} amt parameter
+ * @returns {number} amount deposited
+ */
+const depositOnGround = (world, state, x, fromY, amt) => {
+	const { terrain } = state
+	let left = amt
+	const order = [0, -1, 1, -2, 2, -3, 3, -4, 4]
+	for (const dx of order) {
+		if (left < 0.02) break
+		const gx = x + dx
+		if (!inWorld(world, gx, 0)) continue
+		const sy = terrain.surface[gx]
+		if (sy == null) continue
+		const gy = sy - 1
+		if (gy <= fromY || !inWorld(world, gx, gy)) continue
+		const m = world.mat[idx(world, gx, gy)]
+		if (isLiquidBarrier(m) || m === MAT.POOL) continue
+		const got = addLiquid(world, gx, gy, left)
+		if (got <= 0) continue
+		left -= got
+		if (hash01(gx, state.frame) > 0.4)
+			queueSplash(world, gx + 0.2, gy - 0.1,
+				(hash01(gx, 3) - 0.5) * 0.4,
+				-0.12 - hash01(gx, 4) * 0.2,
+				8)
+	}
+	return amt - left
+}
+
+/**
+ * Leak pool liquid to the next base slab (with splash) or onto the ground.
+ * @param {FluidWorld} world parameter
+ * @param {AnimState} state parameter
+ * @param {number} x parameter
+ * @param {number} y parameter
+ * @param {number} [force=0] extra drip amount
+ * @returns {void} result
+ */
+const leakPool = (world, state, x, y, force = 0) => {
+	const id = idx(world, x, y)
+	const amt = world.liq[id]
+	if (amt < 0.12 && force <= 0) return
+
+	const ny = nextPoolRow(state, y)
+	const drip = Math.min(amt, Math.max(force, amt * 0.35, 0.12))
+	world.liq[id] -= drip
+
+	overflowSplash(world, state, x, y, ny)
+
+	if (ny >= 0) {
+		addLiquid(world, x, ny, drip * 0.75)
+		return
+	}
+
+	const deposited = depositOnGround(world, state, x, y, drip)
+	const rest = drip - deposited
+	if (rest < 0.05) return
+	// leftover becomes outward falling droplets that can land on nearby horizon
+	const side = hash01(x, state.frame) > 0.5 ? 1 : -1
+	spawnParticle(world,
+		x + side * (0.6 + hash01(x, 6) * 1.2),
+		y + 0.4,
+		side * (0.15 + hash01(x, 7) * 0.25),
+		0.35 + hash01(x, 8) * 0.35,
+		28)
 }
 
 /**
@@ -331,20 +390,36 @@ const onParticleHit = (state) => (world, x, y, m, p, wet) => {
 
 	if (m === MAT.POOL) {
 		addLiquid(world, x, y, 0.15)
-		if (hash01(x, frame) > 0.35)
-			overflowSplash(world, state, x, y)
+		if (hash01(x, frame) > 0.3)
+			leakPool(world, state, x, y, 0.08)
 		return
 	}
 
 	if (m === MAT.BODY) {
-		addLiquid(world, x, y, 0.12)
-		if (hash01(x, frame) > 0.7)
-			queueSplash(world, x, y - 0.2, (hash01(x, 1) - 0.5) * 0.4, -0.25, 10)
+		// Impact shell: splash, then the droplet vanishes (no merge / no flood).
+		const speed = Math.hypot(p.vx, p.vy) || 0.5
+		queueSplash(world,
+			x + (hash01(x, 1) - 0.5) * 0.5,
+			y - 0.15,
+			(hash01(x, frame) - 0.5) * speed * 0.85,
+			-0.18 - hash01(x, 3) * 0.35,
+			8 + (hash01(x, 4) * 6 | 0),
+		)
+		if (hash01(x, frame) > 0.45)
+			queueSplash(world,
+				x + (hash01(x, 5) - 0.5) * 0.4,
+				y - 0.05,
+				(hash01(x, 6) - 0.5) * speed * 0.5,
+				-0.1 - hash01(x, 7) * 0.2,
+				6,
+			)
 		return
 	}
 
 	if (m === MAT.HORIZON) {
 		const i = idx(world, x, y)
+		// Leave free liquid on the ground so it can sheet / flow.
+		if (y > 0) addLiquid(world, x, y - 1, 0.18)
 		if (world.absorb[i] > 0) {
 			world.absorb[i] -= 0.35
 			queueSplash(world, x, y - 0.3,
@@ -386,7 +461,7 @@ const onParticleHit = (state) => (world, x, y, m, p, wet) => {
 		addLiquid(world, x, y, 0.2)
 		const local = y - state.iconOy
 		if (ICON_BASE_ROWS.some(br => Math.abs(br - local) <= 1))
-			overflowSplash(world, state, x, y)
+			leakPool(world, state, x, y, 0.1)
 	}
 }
 
@@ -476,14 +551,8 @@ const composeFrame = (state) => {
 				const ly = vy - iconOy
 				paint(vx, vy, bodyEdge.has(`${lx},${ly}`) ? '.' : '@', FG_AT)
 			}
-			else if (liq[i] >= LIQUID_DRAW_THRESHOLD) {
-				const y = vy
-				const x = ox + vx
-				const inFoot = x >= footX0 && x < footX1
-				const aboveBase = y < iconOy + ICON_BASE_ROWS[0]
-				if (inFoot && aboveBase) continue
-				paint(vx, vy, liquidChar(liq[i], x + y + frame), FG_SPLASH)
-			}
+			else if (liq[i] >= LIQUID_DRAW_THRESHOLD)
+				paint(vx, vy, liquidChar(liq[i], ox + vx + vy + frame), FG_SPLASH)
 		}
 
 	if (pillars > 0)
@@ -561,10 +630,8 @@ const simFrame = (state) => {
 			if (!inWorld(world, x, y)) continue
 			const id = idx(world, x, y)
 			if (world.mat[id] !== MAT.POOL) continue
-			if (world.liq[id] >= 0.7 && hash01(x, state.frame) > 0.5) {
-				overflowSplash(world, state, x, y)
-				world.liq[id] *= 0.55
-			}
+			if (world.liq[id] >= 0.35 && hash01(x, state.frame) > 0.35)
+				leakPool(world, state, x, y)
 		}
 	}
 	return composeFrame(state)
