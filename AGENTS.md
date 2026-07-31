@@ -23,7 +23,7 @@
 - **Emoji packs**: UI and ordering live in core `features/emoji/` + `components/emojiPicker.mjs`; chat/social only supply providers. Spec: [emoji-pack-spec](docs/design/emoji-pack-spec.md).
 - **Lint**: `eslint --fix --quiet` (no `npx`). No logging unless error/warning.
 - **Testing**: `fount test` — self-contained, no running server. Default: imperfect (incl. fresh noisy) → outdated until green or a wave fails (exit 1); never full-repo unless `--all`. Selectors: `manifest` / `manifest:suite` / `manifest:suite:subtest`. **Windows / local: prefer `fount test --no-parallel`** ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)). See [src/scripts/test/AGENTS.md](src/scripts/test/AGENTS.md).
-- **Logs**: `fount log` — main-process console via `localhost` (not `127.0.0.1`). Check before guessing from browser 404s.
+- **Logs**: `fount log` — main-process console via `localhost` (not `127.0.0.1`). Check before guessing from browser 404s. Interactive wait uses `imgs/icon_anime` (`src/log_viewer/wait_icon.mjs`); dismiss on connect, exit anim on quit.
 - **Listen bind**: `config.listen: null` — OS-specific dual/`::` bind in `src/scripts/net_listen.mjs` ([denoland/deno#36168](https://github.com/denoland/deno/issues/36168)).
 - **Server**: `fount server` (fg) / `fount background` (detached). Bare `fount` = `fount background; fount log`. `Test-FountRunning` before start/reboot, **not** before `fount test`.
 - **Restart**: `fount reboot` for backend/code/config. Frontend edits → browser refresh.

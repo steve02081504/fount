@@ -21,9 +21,9 @@ export const VORTEX_GROWTH = 0.14
 /** Cap on vortex tangential / core drive. */
 export const VORTEX_MAX = 3.4
 /** Updraft as a fraction of vortex strength (y↓ negative = lift). */
-export const VORTEX_UPLIFT = 1.15
+export const VORTEX_UPLIFT = 1.05
 /** Radial inflow as a fraction of vortex strength. */
-export const VORTEX_INFLOW = 0.28
+export const VORTEX_INFLOW = 0.4
 /** Stroke trail lifetime in ticks. */
 export const STROKE_LIFE = 7
 /** Max remembered stroke segments. */
@@ -199,12 +199,13 @@ export const paintVortexDrive = (cx, cy, amp, radius, world, outUx, outUy) => {
 			if (rVis > R) continue
 			const fall = rVis < 0.35 ? 1 : (1 - rVis / R) ** 1.1
 			const rRaw = Math.hypot(rx, ry) || 1
-			// Clockwise with y-down: tangential (−ry, rx).
+			// Clockwise with y-down: tangential (−ry, rx). Do not halve ty —
+			// that downwash on +rx made a right-side hover attractor under gravity.
 			const tx = (-ry / rRaw) * amp * fall
-			const ty = (rx / rRaw) * amp * fall * 0.5
-			// Inward + always-on updraft so the ring can suspend rain.
+			const ty = (rx / rRaw) * amp * fall
+			// Inward + updraft so the ring can suspend rain at the centre.
 			const ix = (-rx / rRaw) * inflow * fall
-			const iy = (-ry / rRaw) * inflow * fall * 0.5 - uplift * fall
+			const iy = (-ry / rRaw) * inflow * fall - uplift * fall
 			const cell = y * W + x
 			outUx[cell] += tx + ix
 			outUy[cell] += ty + iy
@@ -251,5 +252,6 @@ export const fillWindDrive = (g, world, outUx, outUy) => {
 	}
 
 	if (!g.vortexOn) return
-	paintVortexDrive(g.x + ox, g.y + oy, g.strength, VORTEX_RADIUS, world, outUx, outUy)
+	// Cell centre: SGR coords name the cell; swirl attractor must match that glyph.
+	paintVortexDrive(g.x + ox + 0.5, g.y + oy + 0.5, g.strength, VORTEX_RADIUS, world, outUx, outUy)
 }

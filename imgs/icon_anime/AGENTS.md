@@ -8,6 +8,8 @@ alwaysApply: false
 
 Standalone terminal animation for the fount fountain logo.
 
+Also embedded by the CLI log viewer (`src/log_viewer/wait_icon.mjs`): play while waiting for the server, dismiss on connect, `farewell` exit anim on process quit. Hosts should use `createIconAnimeSession` from `session.mjs` rather than re-wiring player/pointer/resize.
+
 ## Run
 
 ```bash
@@ -22,6 +24,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | Path | Role |
 | --- | --- |
 | `index.mjs` | CLI entry + public re-exports |
+| `session.mjs` | Bound state+player helper (`createIconAnimeSession`) for CLI / embedders |
 | `icon.mjs` | Packed silhouette, pillars, body growth order (typed arrays) |
 | `scene.mjs` | Anim state, materials, rain, pool leak, enter/hold/exit |
 | `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid`; pointer torch + click ripples (truecolor lift) |
@@ -58,7 +61,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 - Particles are SoA pools (`particles.x/y/vx/vy/life/amt` + `count`); no per-tick object alloc.
 - Compose paints into reused `frameCh`/`frameFg` buffers; `renderGrid(Cell[][])` is a thin adapter.
 - Pointer light (`state.light`): SGR mouse via `consumeStdin`; `light_gesture.mjs` arms a torch after `TORCH_DELAY` frames of hold (compose: ambient dim + quadratic radial falloff, cell aspect `hypot(dx, 2·dy)`). Faster release before the torch arms spawns a high-brightness expanding ring (`rippleFalloff`) that ages out — no ambient dim.
-- Pointer wind (`state.wind`): right-button gesture in `wind_gesture.mjs`; each tick paints `driveUx`/`driveUy` scratch into `stepGas` (stroke trail + tornado vortex: clockwise tangential + updraft + inflow). Drag speed scales stroke amplitude; vortex strength grows with hold time and clears on release. Strong upward gas scoops free-liquid puddles into particles (`liftLiquidByWind`); particle vertical drag rises with |gas| so rain can orbit inside the vortex.
+- Pointer wind (`state.wind`): right-button gesture in `wind_gesture.mjs`; each tick paints `driveUx`/`driveUy` scratch into `stepGas` (stroke trail + tornado vortex: clockwise tangential + updraft + inflow). Drag speed scales stroke amplitude; vortex strength grows with hold time and clears on release. Tangential `ty` uses the full `(rx/r)·amp` (not ×½) so right-side downwash cannot form a hover attractor under gravity — rain mean stays at the cursor. Strong upward gas scoops free-liquid puddles into particles (`liftLiquidByWind`); particle vertical drag rises with |gas| so rain can orbit inside the vortex.
 
 ## Material standard
 

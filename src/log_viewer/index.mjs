@@ -4,6 +4,7 @@
  * 设计目标：
  * - 作为后台服务器进程的“前台脸面”，始终能在交互终端中显示主进程输出。
  * - 交互 TTY 且支持 ANSI 时：日志写入终端滚动区（可用自带滚动条），底部固定 REPL（`/ws/eval`）。
+ * - 服务器未就绪时播放 icon_anime 等待动画；就绪进入连接循环后收起并正常显示；进程退出时再播结束动画。
  * - 服务器未就绪时持续轮询 `/api/ping`（指数退避，无超时），网络/进程恢复后自动接续。
  * - 服务器主动退出（`fount_exit`）时与服务器同步：`code === 131` 视为重启，自动重连；其它退出码本进程同码退出。
  * - WebSocket 异常断开（无 `fount_exit`）按指数退避重连，等服务器再次起来。
@@ -24,6 +25,7 @@ import { runSimpleWorker } from '../workers/index.mjs'
 
 import { createInteractiveViewer } from './interactive.mjs'
 import { ANSI_RESET, LEVEL_PREFIX_COLORS } from './render.mjs'
+import { createWaitIcon } from './wait_icon.mjs'
 
 setWindowTitle('𝓯𝓸𝓾')
 SetTaskbarProgress(50)
@@ -166,17 +168,39 @@ const logSink = INTERACTIVE
 
 /**
  * 阻塞至 `/api/ping` 返回 200 为止；指数退避（200ms → 5000ms 上限），用户 Ctrl+C 则结束。
+ * 交互模式下等待期间播放 icon_anime；就绪后 dismiss（不播 exit）。
+ * @param {ReturnType<typeof createWaitIcon> | null} waitIcon - 等待屏控制器。
  * @returns {Promise<void>} 服务器就绪或停止时兑现。
  */
-async function pollUntilServerReady() {
+async function pollUntilServerReady(waitIcon) {
+	waitIcon?.start()
 	let delay = 200
-	while (!stopRequested) try {
-		const res = await fetch(PING_URL, { signal: AbortSignal.timeout(2000) })
-		if (res.ok) return
-		else throw new Error(String(res.status))
-	} catch {
-		await sleep(delay)
-		delay = Math.min(delay * 2, 5000)
+	try {
+		while (!stopRequested) {
+			if (waitIcon?.userAborted) {
+				stopRequested = true
+				break
+			}
+			try {
+				const signal = waitIcon
+					? AbortSignal.any([AbortSignal.timeout(2000), waitIcon.userSignal])
+					: AbortSignal.timeout(2000)
+				const res = await fetch(PING_URL, { signal })
+				if (res.ok) return
+				else throw new Error(String(res.status))
+			} catch {
+				if (stopRequested || waitIcon?.userAborted) {
+					stopRequested = true
+					break
+				}
+				await (waitIcon ? waitIcon.sleep(delay) : sleep(delay))
+				delay = Math.min(delay * 2, 5000)
+			}
+		}
+	} finally {
+		// 用户中止时留给 farewell 就地播 exit；就绪/停止则只收起。
+		if (waitIcon && !waitIcon.userAborted)
+			await waitIcon.dismiss()
 	}
 }
 
@@ -320,21 +344,42 @@ async function main() {
 	const setExitCode = (code) => { exitCodeSlot.value = code }
 	const exitContext = { setExitCode }
 
+	const waitIcon = INTERACTIVE
+		? createWaitIcon({ /**
+		 *
+		 */
+			onUserAbort: () => { stopRequested = true } })
+		: null
+	let exiting = false
+
 	/**
-	 * SIGINT 处理：标记停止，拆除 REPL、关闭当前连接，立即以 130 退出。
-	 * @returns {void}
+	 * 拆除 REPL / 连接，播放 icon 结束动画后退出。
+	 * @param {number} code - 进程退出码。
+	 * @returns {Promise<void>}
 	 */
-	const onSigint = () => {
+	const gracefulExit = async (code) => {
+		if (exiting) return
+		exiting = true
 		stopRequested = true
 		try { logSink.tearDown?.() } catch { /* ignore */ }
 		try { connection?.close?.() } catch { /* ignore */ }
-		process.exit(130)
+		try { await waitIcon?.farewell() } catch { /* ignore */ }
+		process.exit(code)
+	}
+
+	/**
+	 * SIGINT：异步走 gracefulExit（二次 SIGINT 仍立即退出）。
+	 * @returns {void}
+	 */
+	const onSigint = () => {
+		if (exiting) process.exit(130)
+		gracefulExit(130)
 	}
 	process.on('SIGINT', onSigint)
 
 	let backoff = 500
 	while (!stopRequested) {
-		await pollUntilServerReady()
+		await pollUntilServerReady(waitIcon)
 		if (stopRequested) break
 		const reason = await runOneConnection(exitContext)
 
@@ -342,19 +387,23 @@ async function main() {
 			const code = exitCodeSlot.value ?? 0
 			exitCodeSlot.value = null
 			if (code === 131) {
-				// 服务器自重启：等待新进程起来再重连
-				await sleep(2000)
+				// 服务器自重启：立刻挂上等待动画，稍后再 ping
+				waitIcon?.start()
+				await (waitIcon ? waitIcon.sleep(2000) : sleep(2000))
 				backoff = 500
 				continue
 			}
-			try { logSink.tearDown?.() } catch { /* ignore */ }
-			process.exit(code)
+			await gracefulExit(code)
+			return
 		}
 
 		// 异常断开（无 fount_exit）：可能是服务器崩溃或网络抖动，指数退避后重试
-		await sleep(backoff)
+		waitIcon?.start()
+		await (waitIcon ? waitIcon.sleep(backoff) : sleep(backoff))
 		backoff = Math.min(backoff * 2, 10000)
 	}
+
+	await gracefulExit(130)
 }
 
 main().catch(onFatal)
