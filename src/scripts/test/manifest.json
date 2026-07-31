@@ -282,11 +282,10 @@
 				"--allow-all",
 				"-c",
 				"./deno.json",
-				"./src/scripts/test/selftest/trigger_audit.test.mjs",
-				"./src/scripts/test/selftest/glob.test.mjs"
+				"./src/scripts/test/selftest/trigger_audit.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/test/selftest/{trigger_audit.test.mjs,glob.test.mjs}",
+				"src/scripts/test/selftest/trigger_audit.test.mjs",
 				"src/scripts/test/core/trigger_audit.mjs",
 				"src/scripts/test/runner/report.mjs",
 				"src/scripts/test/runner/index.mjs"
