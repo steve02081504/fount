@@ -749,3 +749,49 @@ Deno.test('fluid: vortex drive through stepGas suspends rain', async () => {
 	assertGreater(w.particles.count, 0)
 	assertLess(maxY, cy + 6)
 })
+
+Deno.test('fluid: vortex rain gathers at the cursor centre', async () => {
+	// Tangential+inflow nulls ux on a diagonal; blanket updraft used to make that
+	// corridor a hover attractor (upper-right of the cursor). Mean must stay near centre.
+	const { paintVortexDrive, VORTEX_RADIUS } = await import('../wind_gesture.mjs')
+	const { scratch } = await import('../fluid/world.mjs')
+	const w = createWorld({ width: 36, height: 22, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	labelAirRegions(w)
+	const n = w.worldW * w.worldH
+	const driveUx = scratch(w, 'vUx', n, Float32Array)
+	const driveUy = scratch(w, 'vUy', n, Float32Array)
+	const cx = w.ox + 16.5
+	const cy = 10.5
+	/**
+	 *
+	 */
+	const hit = () => { /* no-op */ }
+
+	for (let i = 0; i < 36; i++) {
+		const a = i / 36 * Math.PI * 2
+		spawnParticle(w, cx + Math.cos(a) * 5, cy + Math.sin(a) * 3, 0, 0.15, 220, 0.35)
+	}
+
+	for (let t = 0; t < 90; t++) {
+		driveUx.fill(0)
+		driveUy.fill(0)
+		paintVortexDrive(cx, cy, 3.3, VORTEX_RADIUS, w, driveUx, driveUy)
+		stepGas(w, { time: t, seed: 0, forceWind: 0, driveUx, driveUy })
+		stepParticles(w, hit)
+	}
+
+	assertGreater(w.particles.count, 12)
+	let sx = 0
+	let sy = 0
+	for (let i = 0; i < w.particles.count; i++) {
+		sx += w.particles.x[i]
+		sy += w.particles.y[i]
+	}
+	const mx = sx / w.particles.count
+	const my = sy / w.particles.count
+	const dist = Math.hypot(mx - cx, my - cy)
+	assertLess(dist, 2.2, `rain mean (${mx.toFixed(2)}, ${my.toFixed(2)}) drifted from cursor (${cx}, ${cy}) by ${dist.toFixed(2)}`)
+	assertLess(Math.abs(mx - cx), 1.6)
+	assertLess(Math.abs(my - cy), 1.6)
+})
