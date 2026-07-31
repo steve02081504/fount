@@ -3,8 +3,8 @@
  * fount fountain logo ASCII animation API.
  * Silhouette packed like imgs/icon.js; colors match icon_ansi_ascii (@=30, ::=96).
  *
- * API: { enter, hold, exit, fps }
- * Main: enter → loop hold → Ctrl+C → exit
+ * API: { enter, hold, exit, fps, createAnimState }
+ * Main: enter → loop hold → Ctrl+C → exit from current progress
  */
 
 import { on_shutdown } from 'npm:on-shutdown'
@@ -22,6 +22,7 @@ const W = 40
 const BASE_ROWS = [16, 18, 20, 22]
 const BASE_X0 = 5
 const BASE_X1 = 37
+const BASE_WIDTH = BASE_X1 - BASE_X0
 
 /** Three :: pillars: [x, yTop, yBot] */
 const PILLARS = [
@@ -96,21 +97,35 @@ const render = (grid) => {
 	return out.join('\n')
 }
 
+/** Shared progress for enter → hold → exit-from-here. */
+export const createAnimState = () => ({
+	baseBot: 0,
+	baseTop: 0,
+	pillars: 0,
+	/** -1 = body not started; else max d painted. */
+	bodyReach: -1,
+	/** Exit dissolve: hide cells with d < bodyMinD. */
+	bodyMinD: 0,
+	frame: 0,
+	/** Infinity = keep spawning; else only cycles that started by this frame. */
+	rainUntil: Infinity,
+})
+
 const paintBase = (grid, {
-	bot = BASE_X1 - BASE_X0,
-	top = BASE_X1 - BASE_X0,
+	bot = BASE_WIDTH,
+	top = BASE_WIDTH,
 	soft = true,
 } = {}) => {
-	const width = BASE_X1 - BASE_X0
 	for (const y of BASE_ROWS) {
 		const fromLeft = y === 20 || y === 22
 		const n = fromLeft ? bot : top
-		for (let i = 0; i < width; i++) {
+		const tip = fromLeft ? '>' : '<'
+		for (let i = 0; i < BASE_WIDTH; i++) {
 			const x = BASE_X0 + i
-			const on = fromLeft ? i < n : i >= width - n
+			const on = fromLeft ? i < n : i >= BASE_WIDTH - n
 			if (!on) continue
-			const edge = soft && (fromLeft ? i === n - 1 : i === width - n)
-			paint(grid, x, y, edge && n < width ? '.' : '@', FG_AT)
+			const edge = soft && (fromLeft ? i === n - 1 : i === BASE_WIDTH - n)
+			paint(grid, x, y, edge && n < BASE_WIDTH ? tip : '@', FG_AT)
 		}
 	}
 }
@@ -141,9 +156,9 @@ const paintBody = (grid, {
 	}
 }
 
-const paintBodyFrom = (grid, minD, soft = true) => {
+const paintBodyFrom = (grid, minD, soft = true, maxD = maxBodyD) => {
 	for (const { x, y, d } of BODY_ATS) {
-		if (d < minD) continue
+		if (d < minD || d > maxD) continue
 		const edge = soft && d === minD
 		paint(grid, x, y, edge ? '.' : '@', FG_AT)
 	}
@@ -186,7 +201,7 @@ const RAIN_STREAMS = (() => {
 	return streams
 })()
 
-const wrapPeriod = (v, period) => ((v % period) + period) % period
+const maxRainLife = Math.ceil(Math.max(...RAIN_STREAMS.map(s => s.period / s.vy))) + 2
 
 const rainChar = (yf, fast) => {
 	if (fast) return '|'
@@ -196,13 +211,18 @@ const rainChar = (yf, fast) => {
 	return ','
 }
 
-/** Hold-loop FX: rain falls top→bottom; basin splash is per-column, not L↔R. */
-const splashAt = (grid, frame) => {
+/** Rain + basin splash. After `rainUntil`, no new cycles spawn; in-flight drops finish. */
+const splashAt = (grid, frame, { rainUntil = Infinity } = {}) => {
 	for (const s of RAIN_STREAMS) {
 		const drops = s.body ? 1 : 2
 		for (let i = 0; i < drops; i++) {
 			const phase = s.phase + i * (s.period / drops)
-			const yf = wrapPeriod(frame * s.vy + phase, s.period)
+			const raw = frame * s.vy + phase
+			const cycle = Math.floor(raw / s.period)
+			const yf = raw - cycle * s.period
+			const cycleStart = (cycle * s.period - phase) / s.vy
+			if (cycleStart > rainUntil) continue
+
 			const y = s.y0 + (yf | 0)
 			if (y < 0 || y > 15) continue
 
@@ -224,8 +244,12 @@ const splashAt = (grid, frame) => {
 		}
 
 		// lead drop hits basin → splash on a stable row for that column
-		const yf0 = wrapPeriod(frame * s.vy + s.phase, s.period)
-		if (yf0 < 1.2 || yf0 > s.period - 0.8) {
+		const phase0 = s.phase
+		const raw0 = frame * s.vy + phase0
+		const cycle0 = Math.floor(raw0 / s.period)
+		const yf0 = raw0 - cycle0 * s.period
+		const cycleStart0 = (cycle0 * s.period - phase0) / s.vy
+		if (cycleStart0 <= rainUntil && (yf0 < 1.2 || yf0 > s.period - 0.8)) {
 			const by = 17 + (Math.floor(hash01(s.x, 2) * 3) % 3) * 2
 			paint(grid, s.x, by, splashChars[(frame + s.x) & 1], FG_SPLASH)
 			if (s.x + 1 < BASE_X1 && hash01(s.x, 9) > 0.45)
@@ -233,120 +257,137 @@ const splashAt = (grid, frame) => {
 		}
 	}
 
-	// ambient basin ripple — phase locked per cell (no horizontal travel)
-	for (const y of [17, 19, 21])
-		for (let x = BASE_X0; x < BASE_X1; x++) {
-			const n = Math.sin(frame * 1.15 + hash01(x, y) * Math.PI * 2) * 0.5 + 0.5
-			const n2 = Math.sin(frame * 0.7 + hash01(x + 3, y) * Math.PI * 2) * 0.5 + 0.5
-			if (n > 0.9 && n2 > 0.4)
-				paint(grid, x, y, splashChars[(x + y + (frame >> 1)) & 1], FG_SPLASH)
-		}
+	// ambient basin ripple — only while rain is still spawning
+	if (frame <= rainUntil)
+		for (const y of [17, 19, 21])
+			for (let x = BASE_X0; x < BASE_X1; x++) {
+				const n = Math.sin(frame * 1.15 + hash01(x, y) * Math.PI * 2) * 0.5 + 0.5
+				const n2 = Math.sin(frame * 0.7 + hash01(x + 3, y) * Math.PI * 2) * 0.5 + 0.5
+				if (n > 0.9 && n2 > 0.4)
+					paint(grid, x, y, splashChars[(x + y + (frame >> 1)) & 1], FG_SPLASH)
+			}
 }
 
-/** Stage 1 — base wipe → pillars grow → body expands from tips. */
-export function* enter() {
-	const width = BASE_X1 - BASE_X0
-	for (let n = 0; n <= width; n++) {
-		const g = emptyGrid()
-		paintBase(g, { bot: n, top: n })
-		yield render(g)
+const paintScene = (state, {
+	softBase = false,
+	softPillars = false,
+	softBody = false,
+} = {}) => {
+	const grid = emptyGrid()
+	if (state.baseBot > 0 || state.baseTop > 0)
+		paintBase(grid, { bot: state.baseBot, top: state.baseTop, soft: softBase })
+	if (state.pillars > 0)
+		paintPillars(grid, { grown: state.pillars, soft: softPillars })
+	if (state.bodyReach >= 0 && state.bodyMinD <= state.bodyReach)
+		if (state.bodyMinD > 0)
+			paintBodyFrom(grid, state.bodyMinD, softBody, state.bodyReach)
+		else
+			paintBody(grid, { reach: state.bodyReach, soft: softBody })
+	splashAt(grid, state.frame, { rainUntil: state.rainUntil })
+	return grid
+}
+
+function* show(state, soft) {
+	yield render(paintScene(state, soft))
+	state.frame++
+}
+
+/** Stage 1 — base wipe → pillars grow → body expands from tips. Rain from frame 0. */
+export function* enter(state = createAnimState()) {
+	for (let n = 0; n <= BASE_WIDTH; n++) {
+		state.baseBot = state.baseTop = n
+		yield* show(state, { softBase: n < BASE_WIDTH })
 	}
 	for (let g = 1; g <= maxPillarH; g++) {
-		const grid = emptyGrid()
-		paintBase(grid)
-		paintPillars(grid, { grown: g })
-		yield render(grid)
-		if (g < maxPillarH) {
-			const settled = emptyGrid()
-			paintBase(settled)
-			paintPillars(settled, { grown: g, soft: false })
-			yield render(settled)
-		}
+		state.pillars = g
+		yield* show(state, { softPillars: g < maxPillarH })
+		if (g < maxPillarH)
+			yield* show(state, { softPillars: false })
 	}
-	{
-		const grid = emptyGrid()
-		paintBase(grid)
-		paintPillars(grid, { soft: false })
-		yield render(grid)
-	}
+	state.pillars = maxPillarH
+	yield* show(state)
 	for (let reach = 0; reach <= maxBodyD; reach++) {
-		const grid = emptyGrid()
-		paintBase(grid)
-		paintPillars(grid, { soft: false })
-		paintBody(grid, { reach })
-		yield render(grid)
+		state.bodyReach = reach
+		state.bodyMinD = 0
+		yield* show(state, { softBody: reach < maxBodyD })
 	}
-	{
-		const grid = emptyGrid()
-		paintBase(grid)
-		paintPillars(grid, { soft: false })
-		paintBody(grid, { soft: false })
-		yield render(grid)
-	}
+	state.bodyReach = maxBodyD
+	yield* show(state)
 }
 
 /** Stage 2 — full icon with falling rain + basin splash (infinite). */
-export function* hold() {
-	for (let frame = 0; ; frame++) {
-		const grid = emptyGrid()
-		paintBase(grid, { soft: false })
-		paintPillars(grid, { soft: false })
-		paintBody(grid, { soft: false })
-		splashAt(grid, frame)
-		yield render(grid)
-	}
+export function* hold(state = createAnimState()) {
+	state.baseBot = state.baseTop = BASE_WIDTH
+	state.pillars = maxPillarH
+	state.bodyReach = maxBodyD
+	state.bodyMinD = 0
+	for (; ;)
+		yield* show(state)
 }
 
-/** Stage 3 — body dissolves from tips → pillars shrink → base wipe out. */
-export function* exit() {
-	const width = BASE_X1 - BASE_X0
-	for (let gone = 0; gone <= maxBodyD + 1; gone++) {
-		const grid = emptyGrid()
-		paintBase(grid, { soft: false })
-		paintPillars(grid, { soft: false })
-		if (gone <= maxBodyD) paintBodyFrom(grid, gone, true)
-		yield render(grid)
+/** Stage 3 — reverse from current progress; stop spawning rain, let in-flight drops finish. */
+export function* exit(state = createAnimState()) {
+	if (state.rainUntil === Infinity)
+		state.rainUntil = Math.max(0, state.frame - 1)
+
+	if (state.bodyReach >= 0) {
+		const reach = state.bodyReach
+		for (let gone = 0; gone <= reach + 1; gone++) {
+			state.bodyMinD = gone
+			yield* show(state, { softBody: gone <= reach })
+		}
+		state.bodyReach = -1
+		state.bodyMinD = 0
 	}
-	for (let g = maxPillarH; g >= 0; g--) {
-		const grid = emptyGrid()
-		paintBase(grid, { soft: false })
-		if (g > 0) paintPillars(grid, { grown: g, soft: true })
-		yield render(grid)
-		if (g > 0) {
-			const settled = emptyGrid()
-			paintBase(settled, { soft: false })
-			paintPillars(settled, { grown: g, soft: false })
-			yield render(settled)
+
+	if (state.pillars > 0) {
+		const from = state.pillars
+		for (let g = from; g >= 0; g--) {
+			state.pillars = g
+			if (g > 0) {
+				yield* show(state, { softPillars: true })
+				yield* show(state, { softPillars: false })
+			}
+			else
+				yield* show(state)
 		}
 	}
-	for (let n = width; n >= 0; n--) {
-		const g = emptyGrid()
-		if (n > 0) paintBase(g, { bot: n, top: n })
-		yield render(g)
+
+	if (state.baseBot > 0 || state.baseTop > 0) {
+		const from = Math.max(state.baseBot, state.baseTop)
+		for (let n = from; n >= 0; n--) {
+			state.baseBot = state.baseTop = n
+			yield* show(state, { softBase: n > 0 && n < BASE_WIDTH })
+		}
 	}
+
+	while (state.frame <= state.rainUntil + maxRainLife)
+		yield* show(state)
+
 	yield render(emptyGrid())
 }
 
 export const fps = 24
 
 /** Frame producers for external use. */
-export const iconAnim = { enter, hold, exit, fps }
+export const iconAnim = { enter, hold, exit, fps, createAnimState }
 
 /**
- * Run logo: enter → loop hold; register shutdown to play exit.
+ * Run logo: enter → loop hold; register shutdown to play exit from current state.
  * on-shutdown is owned here, not by the player.
  */
 if (import.meta.main) {
+	const state = createAnimState()
 	const player = new AsciiAnimePlayer({ fps })
 
 	on_shutdown(async () => {
 		player.abort()
-		await player.play(exit, { signal: null })
+		await player.play(() => exit(state), { signal: null })
 		player.stop()
 	})
 
 	player.start()
 
-	await player.play(enter).loop(hold)
+	await player.play(() => enter(state)).loop(() => hold(state))
 	process.exit(0)
 }
