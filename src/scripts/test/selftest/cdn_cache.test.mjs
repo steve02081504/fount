@@ -2,7 +2,6 @@
  * CDN 响应缓存：谓词 + 假 context/route 驱动安装入口。
  */
 /* global Deno */
-/* eslint-disable jsdoc/require-returns, jsdoc/require-param-type, jsdoc/require-param-description -- route/response fakes */
 import { Buffer } from 'node:buffer'
 import { mkdir, unlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
