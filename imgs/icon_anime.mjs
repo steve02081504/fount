@@ -9,7 +9,7 @@
 
 import { on_shutdown } from 'npm:on-shutdown'
 
-import { AsciiPlayer } from './ascii_anime_player.mjs'
+import { AsciiAnimePlayer } from './ascii_anime_player.mjs'
 
 const RESET = '\x1b[0m'
 const FG_AT = '\x1b[30m'
@@ -150,28 +150,97 @@ const paintBodyFrom = (grid, minD, soft = true) => {
 }
 
 const splashChars = [',', '.']
+
+/** Static 0..1 from ints — column-local phase, no horizontal traveling wave. */
+const hash01 = (a, b = 0) => {
+	let n = Math.imul(a ^ Math.imul(b, 1597334677), 3812015801)
+	n ^= n >>> 13
+	n = Math.imul(n, 1274126177)
+	return ((n ^ n >>> 16) >>> 0) / 4294967296
+}
+
+/** Rain streams: each column falls top→bottom. */
+const RAIN_STREAMS = (() => {
+	const streams = []
+	const add = (x, { y0 = 0, period, body = false }) => {
+		streams.push({
+			x, y0, body,
+			vy: 0.48 + hash01(x, 1) * 0.35,
+			phase: hash01(x, 3) * 40,
+			period: period ?? (16 - y0),
+		})
+	}
+	// free-fall: outer mist + wing gaps
+	for (const x of [6, 7, 8, 12, 13, 28, 29, 33, 34, 35])
+		add(x, { y0: 0, period: 16 })
+	// wing @@@ — glints run down the silhouette
+	for (const x of [9, 10, 11])
+		add(x, { y0: 7, period: 9, body: true })
+	for (const x of [30, 31, 32])
+		add(x, { y0: 7, period: 9, body: true })
+	// spray from each pillar tip into the open columns beside it
+	for (const [px, yTop] of PILLARS) {
+		add(px - 1, { y0: yTop, period: 16 - yTop })
+		add(px + 2, { y0: yTop, period: 16 - yTop })
+	}
+	return streams
+})()
+
+const wrapPeriod = (v, period) => ((v % period) + period) % period
+
+const rainChar = (yf, fast) => {
+	if (fast) return '|'
+	const u = yf % 1
+	if (u < 0.35) return '\''
+	if (u < 0.7) return '.'
+	return ','
+}
+
+/** Hold-loop FX: rain falls top→bottom; basin splash is per-column, not L↔R. */
 const splashAt = (grid, frame) => {
-	for (const y of [17, 19, 21]) {
+	for (const s of RAIN_STREAMS) {
+		const drops = s.body ? 1 : 2
+		for (let i = 0; i < drops; i++) {
+			const phase = s.phase + i * (s.period / drops)
+			const yf = wrapPeriod(frame * s.vy + phase, s.period)
+			const y = s.y0 + (yf | 0)
+			if (y < 0 || y > 15) continue
+
+			if (s.body) {
+				if (grid[y][s.x]?.ch === '@')
+					paint(grid, s.x, y, '.', FG_SPLASH)
+				continue
+			}
+
+			const cell = grid[y][s.x]
+			if (cell && cell.fg !== FG_SPLASH) continue
+			paint(grid, s.x, y, rainChar(yf, s.vy > 0.65), FG_SPLASH)
+
+			if (yf % 1 > 0.55) {
+				const ty = y - 1
+				if (ty >= s.y0 && !grid[ty][s.x])
+					paint(grid, s.x, ty, '\'', FG_SPLASH)
+			}
+		}
+
+		// lead drop hits basin → splash on a stable row for that column
+		const yf0 = wrapPeriod(frame * s.vy + s.phase, s.period)
+		if (yf0 < 1.2 || yf0 > s.period - 0.8) {
+			const by = 17 + (Math.floor(hash01(s.x, 2) * 3) % 3) * 2
+			paint(grid, s.x, by, splashChars[(frame + s.x) & 1], FG_SPLASH)
+			if (s.x + 1 < BASE_X1 && hash01(s.x, 9) > 0.45)
+				paint(grid, s.x + 1, by, splashChars[(frame + s.x + 1) & 1], FG_SPLASH)
+		}
+	}
+
+	// ambient basin ripple — phase locked per cell (no horizontal travel)
+	for (const y of [17, 19, 21])
 		for (let x = BASE_X0; x < BASE_X1; x++) {
-			const n = Math.sin(frame * 0.55 + x * 0.7 + y * 1.3) * 0.5 + 0.5
-			const n2 = Math.sin(frame * 1.1 + x * 1.9 + y) * 0.5 + 0.5
-			if (n > 0.86 && n2 > 0.4)
-				paint(grid, x, y, splashChars[(x + frame + y) & 1], FG_SPLASH)
+			const n = Math.sin(frame * 1.15 + hash01(x, y) * Math.PI * 2) * 0.5 + 0.5
+			const n2 = Math.sin(frame * 0.7 + hash01(x + 3, y) * Math.PI * 2) * 0.5 + 0.5
+			if (n > 0.9 && n2 > 0.4)
+				paint(grid, x, y, splashChars[(x + y + (frame >> 1)) & 1], FG_SPLASH)
 		}
-	}
-	for (let y = 7; y <= 14; y++) {
-		for (const x of [12, 13, 28, 29]) {
-			const n = Math.sin(frame * 0.8 + x + y * 2.1) * 0.5 + 0.5
-			if (n > 0.84) paint(grid, x, y, splashChars[(frame + x + y) & 1], FG_SPLASH)
-		}
-	}
-	for (const { x, y, d } of BODY_ATS) {
-		if (d < 2) continue
-		const n = Math.sin(frame * 0.9 + x * 2.3 + y * 1.7) * 0.5 + 0.5
-		const n2 = Math.cos(frame * 1.3 + x * 0.5 - y) * 0.5 + 0.5
-		if (n > 0.95 && n2 > 0.6)
-			paint(grid, x, y, splashChars[(x + y + frame) & 1], FG_SPLASH)
-	}
 }
 
 /** Stage 1 — base wipe → pillars grow → body expands from tips. */
@@ -216,7 +285,7 @@ export function* enter() {
 	}
 }
 
-/** Stage 2 — full icon with splash (infinite). */
+/** Stage 2 — full icon with falling rain + basin splash (infinite). */
 export function* hold() {
 	for (let frame = 0; ; frame++) {
 		const grid = emptyGrid()
@@ -268,7 +337,7 @@ export const iconAnim = { enter, hold, exit, fps }
  * on-shutdown is owned here, not by the player.
  */
 if (import.meta.main) {
-	const player = new AsciiPlayer({ fps })
+	const player = new AsciiAnimePlayer({ fps })
 
 	on_shutdown(async () => {
 		player.abort()

@@ -2,7 +2,7 @@
  * ASCII animation player — loop playback, keyboard, TUI.
  * No process lifecycle / on-shutdown; callers own that.
  *
- * CLI: deno run -A imgs/ascii_player.mjs  →  plays fount icon anim
+ * CLI: deno run -A imgs/ascii_anime_player.mjs  →  plays fount icon anim
  */
 
 import process from 'node:process'
@@ -17,7 +17,7 @@ async function* iterateFrames(frames) {
 	yield* frames?.() ?? frames
 }
 
-export class AsciiPlayer {
+export class AsciiAnimePlayer {
 	/** @param {{ fps?: number }} [opts] */
 	constructor({ fps = 24 } = {}) {
 		this.fps = fps
