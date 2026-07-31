@@ -2084,6 +2084,16 @@ elseif ($args[0] -eq 'remove') {
 	Set-Title $originalTitle
 	exit 0
 }
+elseif ($args[0] -eq 'logo') {
+	$iconAnime = "$FOUNT_DIR/imgs/icon_anime/index.mjs"
+	if ($args[1] -eq 'watch') {
+		deno run --watch --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" $iconAnime
+	}
+	else {
+		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" $iconAnime
+	}
+	exit $LastExitCode
+}
 elseif ($args[0] -eq 'log') {
 	try {
 		Register-FountApplicationRestart

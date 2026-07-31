@@ -13,7 +13,8 @@ Also embedded by the CLI log viewer via `createIconAnime`: `intro` at startup; `
 ## Run
 
 ```bash
-deno run --allow-scripts --allow-all -c deno.json imgs/icon_anime/index.mjs
+fount logo
+fount logo watch   # deno run --watch — reload on source change
 ```
 
 Controls: Ctrl+C exit (icon teardown, then quit). Left quick-click → bright expanding ripple (no flashlight); left hold / drag → circular cool spotlight (release off). Right-drag paints stroke wind along the path (faster drag → stronger flow); right long-press while still grows a tornado vortex at the cursor (clockwise + updraft + inflow; longer → faster; follows while moved, reforms when stopped, clears on release) that can suspend rain in orbit and suck free-liquid puddles airborne. Other stdin discarded.
