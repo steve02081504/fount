@@ -54,5 +54,5 @@ if (import.meta.main) {
 	const icon = createIconAnime()
 	await icon.start()
 	await icon.farewell()
-	process.exit(0)
+	process.exit(icon.userAborted ? 130 : 0)
 }

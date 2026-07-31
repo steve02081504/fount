@@ -40,8 +40,6 @@ export function createIconAnime() {
 	/** Host-initiated stop / farewell took over. */
 	let stopping = false
 	let userAborted = false
-	/** @type {Set<() => void>} */
-	const wakeSleeps = new Set()
 	let userAc = new AbortController()
 
 	/**
@@ -168,11 +166,9 @@ export function createIconAnime() {
 				const wake = () => {
 					clearTimeout(timer)
 					signal.removeEventListener('abort', wake)
-					wakeSleeps.delete(wake)
 					resolve()
 				}
 				const timer = setTimeout(wake, ms)
-				wakeSleeps.add(wake)
 				signal.addEventListener('abort', wake, { once: true })
 			})
 		},

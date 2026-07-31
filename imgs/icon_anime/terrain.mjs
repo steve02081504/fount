@@ -670,7 +670,7 @@ function carveIconFootprint(solid, surface, W, H, footX0, footX1, baseY) {
  * @param {number} W world width
  * @returns {string[]} surface character per column
  */
-export function buildSurfaceChars(surface, W) {
+function buildSurfaceChars(surface, W) {
 	const chars = Array(W)
 	for (let x = 0; x < W; x++) {
 		const y = surface[x]

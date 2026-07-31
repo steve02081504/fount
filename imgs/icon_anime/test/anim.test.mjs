@@ -229,12 +229,12 @@ Deno.test('light gesture: quick release → ripple; hold → torch fade', async 
 	assertEquals(ring.ambient, 0)
 	assert(ring.lift > 0.5)
 
-	for (let i = 0; i < RIPPLE_LIFE; i++) tickLightGesture(click)
+	for (let index = 0; index < RIPPLE_LIFE; index++) tickLightGesture(click)
 	assertEquals(click.ripples.length, 0)
 
 	const torchGesture = createLightGesture()
 	lightPointer(torchGesture, { x: 5, y: 4, left: true })
-	for (let i = 0; i < TORCH_DELAY; i++) tickLightGesture(torchGesture)
+	for (let index = 0; index < TORCH_DELAY; index++) tickLightGesture(torchGesture)
 	assertEquals(torchGesture.torch, true)
 	assertEquals(torchGesture.ripples.length, 0)
 	assert(torchGesture.torchBlend > 0 && torchGesture.torchBlend < 1)
@@ -242,7 +242,7 @@ Deno.test('light gesture: quick release → ripple; hold → torch fade', async 
 	assert(fadingIn.ambient > 0)
 	assert(fadingIn.lift > 0 && fadingIn.lift < 1)
 
-	for (let i = 0; i < TORCH_FADE; i++) tickLightGesture(torchGesture)
+	for (let index = 0; index < TORCH_FADE; index++) tickLightGesture(torchGesture)
 	assertEquals(torchGesture.torchBlend, 1)
 	const torch = sampleLight(torchGesture, 5, 4, lightFalloff)
 	assertEquals(torch.ambient, 1)
@@ -262,7 +262,7 @@ Deno.test('light gesture: quick release → ripple; hold → torch fade', async 
 	assert(torchGesture.torchBlend < 1 && torchGesture.torchBlend > 0)
 	const fadingOut = sampleLight(torchGesture, 8, 4, lightFalloff)
 	assert(fadingOut.ambient > 0 && fadingOut.ambient < 1)
-	for (let i = 0; i < TORCH_FADE; i++) tickLightGesture(torchGesture)
+	for (let index = 0; index < TORCH_FADE; index++) tickLightGesture(torchGesture)
 	assertEquals(torchGesture.torchBlend, 0)
 	assertEquals(sampleLight(torchGesture, 8, 4, lightFalloff).ambient, 0)
 })

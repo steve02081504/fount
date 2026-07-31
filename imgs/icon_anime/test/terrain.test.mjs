@@ -9,7 +9,7 @@ import {
 	ICON_BASE_ROWS, ICON_BASE_X0, ICON_BASE_X1, ICON_W, ICON_H,
 } from '../icon.mjs'
 import {
-	generateTerrain, outlineChar, TERRAIN_CH, buildSurfaceChars,
+	generateTerrain, outlineChar, TERRAIN_CH,
 	TALL_LAND_FRACTION, TALL_LAND_HEIGHT_FRAC,
 } from '../terrain.mjs'
 
@@ -28,14 +28,16 @@ const makeTerrain = (seed = 42, width = 80, height = 40) => {
 	const world = createWorld({ width, height, margin: 12, bottomExtra: 4 })
 	const iconOx = world.ox + Math.floor((width - ICON_W) / 2)
 	const iconOy = Math.floor((height - ICON_H) / 2)
-	const terrain = generateTerrain(world, {
-		iconOx, iconOy, seed,
-		iconBaseRows: ICON_BASE_ROWS,
-		iconBaseX0: ICON_BASE_X0,
-		iconBaseX1: ICON_BASE_X1,
-	})
-	const baseY = Math.min(world.worldH - 4, iconOy + ICON_BASE_ROWS[ICON_BASE_ROWS.length - 1])
-	return { terrain, world, baseY }
+	return {
+		terrain: generateTerrain(world, {
+			iconOx, iconOy, seed,
+			iconBaseRows: ICON_BASE_ROWS,
+			iconBaseX0: ICON_BASE_X0,
+			iconBaseX1: ICON_BASE_X1,
+		}),
+		world,
+		baseY: Math.min(world.worldH - 4, iconOy + ICON_BASE_ROWS[ICON_BASE_ROWS.length - 1]),
+	}
 }
 
 Deno.test('terrain: fixed seed is deterministic', () => {
@@ -55,11 +57,22 @@ Deno.test('terrain: surface uses slope/wall/flat glyphs, not only bar', () => {
 	assertGreater(set.size, 1)
 })
 
-Deno.test('terrain: monotonic descending surface uses SLOPE_DOWN', () => {
-	const surface = new Int16Array([5, 6, 7, 8, 9])
-	const chars = buildSurfaceChars(surface, surface.length)
-	assertEquals(chars[1], TERRAIN_CH.SLOPE_DOWN)
-	assertEquals(chars[2], TERRAIN_CH.SLOPE_DOWN)
+Deno.test('terrain: descending surface columns get SLOPE_DOWN', () => {
+	const { terrain: t } = makeTerrain(7)
+	const { surface, surfaceChar, worldW: width } = t
+	let found = false
+	for (let x = 1; x < width - 1; x++) {
+		const y = surface[x]
+		const dL = y - surface[x - 1]
+		const dR = surface[x + 1] - y
+		if (dL === 0 && dR === 0) continue
+		if (dR > 0 || dL < 0) {
+			const expect = Math.abs(dR || dL) >= 2 ? TERRAIN_CH.WALL : TERRAIN_CH.SLOPE_DOWN
+			assertEquals(surfaceChar[x], expect)
+			if (expect === TERRAIN_CH.SLOPE_DOWN) found = true
+		}
+	}
+	assert(found, 'expected at least one SLOPE_DOWN')
 })
 
 Deno.test('terrain: surface is not highly periodic (not a sine)', () => {
@@ -102,7 +115,7 @@ Deno.test('terrain: ≥30% of view land is at least ¼ screen tall', () => {
 })
 
 Deno.test('terrain: outlineChar marks cave walls; interior solid is null', () => {
-	const W = 5
+	const width = 5
 	const solid = new Uint8Array([
 		1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1,
@@ -112,9 +125,9 @@ Deno.test('terrain: outlineChar marks cave walls; interior solid is null', () =>
 	])
 	const surface = new Int16Array([0, 0, 0, 0, 0])
 	// Fully enclosed solid at (1,1)
-	assertEquals(outlineChar(solid, 1, 1, W, 5, surface), null)
+	assertEquals(outlineChar(solid, 1, 1, width, 5, surface), null)
 	// Cave wall adjacent to air at (2,3) left of the air pocket
-	assertEquals(outlineChar(solid, 1, 3, W, 5, surface), TERRAIN_CH.WALL)
+	assertEquals(outlineChar(solid, 1, 3, width, 5, surface), TERRAIN_CH.WALL)
 })
 
 Deno.test('terrain: under icon crust is soil; caves may open below', () => {

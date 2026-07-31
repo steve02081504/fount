@@ -9,13 +9,13 @@ import { labelCavities, TALL_LAND_HEIGHT_FRAC } from '../terrain.mjs'
  * @returns {{ count: number, sizes: number[], hasUTube: boolean, hasChamber: boolean }} cavity summary
  */
 export function analyzeTerrain(terrain) {
-	const { solid, surface, features, worldW: W, worldH: H } = terrain
-	const { regions } = labelCavities(solid, surface, W, H)
+	const { solid, surface, features, worldW: width, worldH: height } = terrain
+	const { regions } = labelCavities(solid, surface, width, height)
 	return {
 		count: regions.length,
-		sizes: regions.map(r => r.size).sort((a, b) => b - a),
-		hasUTube: features.some(f => f.type === 'u_tube'),
-		hasChamber: features.some(f => f.type === 'chamber' || f.type === 'neck'),
+		sizes: regions.map(region => region.size).sort((a, b) => b - a),
+		hasUTube: features.some(feature => feature.type === 'u_tube'),
+		hasChamber: features.some(feature => feature.type === 'chamber' || feature.type === 'neck'),
 	}
 }
 
@@ -25,19 +25,19 @@ export function analyzeTerrain(terrain) {
  * @returns {number} max |autocorr| for lags 4..12 (lower = less periodic)
  */
 export function surfacePeriodicityScore(surface) {
-	const W = surface.length
+	const width = surface.length
 	let mean = 0
-	for (let i = 0; i < W; i++) mean += surface[i]
-	mean /= W
+	for (let index = 0; index < width; index++) mean += surface[index]
+	mean /= width
 	let varSum = 0
-	for (let i = 0; i < W; i++) varSum += (surface[i] - mean) ** 2
+	for (let index = 0; index < width; index++) varSum += (surface[index] - mean) ** 2
 	if (varSum < 1e-6) return 1
 	let maxCorr = 0
 	for (let lag = 4; lag <= 12; lag++) {
-		let c = 0
-		for (let i = 0; i < W - lag; i++)
-			c += (surface[i] - mean) * (surface[i + lag] - mean)
-		maxCorr = Math.max(maxCorr, Math.abs(c / varSum))
+		let correlation = 0
+		for (let index = 0; index < width - lag; index++)
+			correlation += (surface[index] - mean) * (surface[index + lag] - mean)
+		maxCorr = Math.max(maxCorr, Math.abs(correlation / varSum))
 	}
 	return maxCorr
 }
@@ -51,15 +51,15 @@ export function surfacePeriodicityScore(surface) {
 export function tallLandCoverage(terrain, { viewH, viewW }) {
 	const { surface, ox } = terrain
 	const minThick = Math.max(1, Math.ceil(viewH * TALL_LAND_HEIGHT_FRAC))
-	const vx0 = Math.max(0, ox)
-	const vx1 = Math.min(surface.length, ox + viewW)
+	const viewportStart = Math.max(0, ox)
+	const viewportEnd = Math.min(surface.length, ox + viewW)
 	let tall = 0
-	for (let x = vx0; x < vx1; x++)
+	for (let x = viewportStart; x < viewportEnd; x++)
 		if (viewH - surface[x] >= minThick) tall++
 	return {
 		tall,
-		total: vx1 - vx0,
-		fraction: vx1 - vx0 ? tall / (vx1 - vx0) : 0,
+		total: viewportEnd - viewportStart,
+		fraction: viewportEnd - viewportStart ? tall / (viewportEnd - viewportStart) : 0,
 		minThick,
 	}
 }
