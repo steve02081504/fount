@@ -113,40 +113,41 @@ export class AsciiAnimePlayer {
 	/**
 	 * Play frames once (restarts generator if given a function).
 	 * Stops early when signal aborts.
+	 * `signal: null` refreshes the internal AbortController (e.g. after abort for exit).
 	 *
 	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames
-	 * @param {{ signal?: AbortSignal }} [opts]
+	 * @param {{ signal?: AbortSignal | null }} [opts]
 	 */
 	play(frames, opts = {}) {
-		const result = this.#base_play(frames, opts)
+		const signal = this.useSignal(opts.signal)
+		const result = this.#base_play(frames, { ...opts, signal })
 		return Object.assign(result, {
 			play: async (action, options) => {
 				await result
-				options ??= opts
-				this.useSignal(options?.signal)
-				return this.play(action, options)
+				return this.play(action, { ...opts, ...options })
 			},
 			loop: async (action, options) => {
 				await result
-				options ??= opts
-				this.useSignal(options?.signal)
-				return this.loop(action, options)
+				return this.loop(action, { ...opts, ...options })
 			},
 		})
 	}
 
-	/** @return {AbortSignal} */
-	refereshSignal() {
+	/** @returns {AbortSignal} */
+	refreshSignal() {
 		this.#ac = new AbortController()
 		this.signal = this.#ac.signal
 		return this.signal
 	}
 
+	/**
+	 * @param {AbortSignal | null | undefined} signal
+	 * @returns {AbortSignal | undefined}
+	 */
 	useSignal(signal) {
-		if (singal === undefined) return
-		if (signal === null) return this.refereshSignal()
-		if (signal.aborted) return
-		else if (!this.signal.aborted)
+		if (signal === undefined) return this.signal
+		if (signal === null) return this.refreshSignal()
+		if (!signal.aborted && this.signal && !this.signal.aborted)
 			signal.addEventListener('abort', () => this.abort(), { once: true })
 		return this.signal
 	}
@@ -155,12 +156,12 @@ export class AsciiAnimePlayer {
 	 * Replay frames until signal aborts (infinite generators: one play until abort).
 	 *
 	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames
-	 * @param {{ signal?: AbortSignal }} [opts]
+	 * @param {{ signal?: AbortSignal | null }} [opts]
 	 */
 	async loop(frames, { signal } = {}) {
-		signal ??= this.signal
+		signal = this.useSignal(signal)
 		while (!signal?.aborted)
-			await this.play(frames, { signal })
+			await this.#base_play(frames, { signal: this.signal })
 	}
 
 	/** Restore cursor / raw mode. */
@@ -172,6 +173,7 @@ export class AsciiAnimePlayer {
 		if (process.stdin.isTTY) {
 			try { process.stdin.setRawMode(false) } catch { /* */ }
 		}
+		try { process.stdin.pause() } catch { /* */ }
 		write('\x1b[?25h\x1b[0m\n')
 		this.#onKey = null
 	}

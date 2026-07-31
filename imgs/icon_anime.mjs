@@ -348,4 +348,5 @@ if (import.meta.main) {
 	player.start()
 
 	await player.play(enter).loop(hold)
+	process.exit(0)
 }
