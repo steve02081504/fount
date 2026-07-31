@@ -15,6 +15,7 @@ deno run --allow-scripts --allow-all -c deno.json imgs/icon_anime/index.mjs
 ```
 
 Controls: Space pause, `[` / `]` speed, Ctrl+C exit (icon teardown, then quit).
+Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the pre-start scrollback and cursor row.
 
 ## Modules
 
@@ -23,7 +24,7 @@ Controls: Space pause, `[` / `]` speed, Ctrl+C exit (icon teardown, then quit).
 | `index.mjs` | Icon stages (`enter` / `hold` / `exit`), rain, compose, resize migration |
 | `terrain.mjs` | Pedestal-anchored surface (land shoulders) + noise caves + U-tube/chamber templates |
 | `fluid_engine.mjs` | Particles, grid liquid, soil moisture/condensation, air-region pressure (Boyle), gas velocity (wind shear / continuity / Bernoulli), hydraulic equalization |
-| `player.mjs` | TUI playback, keyboard, `stdout` resize |
+| `player.mjs` | TUI playback, keyboard, `stdout` resize; alt-screen enter/leave restores pre-start cursor row |
 
 ## Material standard
 
@@ -57,7 +58,7 @@ Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `.
 
 - Open air regions: `pressure = P_ATM`.
 - Sealed regions: `pressure ≈ gasAmount / airCells` (isothermal Boyle / ideal gas at fixed T); gas mass transfers by cell overlap when topology splits/merges.
-- Gas velocity (`gasUx` / `gasUy`): open air tracks a time-varying global wind with power-law height shear (stronger aloft). Continuity (`A·v`) speeds flow through duct throats (wind-tunnel nozzle). Wall slip zeros inflow into solids. Bernoulli proxy: `staticPressureAt = P₀ − ½ρu²` (faster → lower static P). Rain particles drag toward local gas (`GAS_DRAG`); glyphs use the particle's resulting velocity, not the gas field directly.
+- Gas velocity (`gasUx` / `gasUy`): open air tracks a time-varying global wind with power-law height shear (stronger aloft). Global wind is pink-ish fBm (synoptic / meso / micro) plus intermittent asymmetric gust pulses — autocorrelated and irregular, not layered sines. Continuity (`A·v`) speeds flow through duct throats (wind-tunnel nozzle). Wall slip zeros inflow into solids. Bernoulli proxy: `staticPressureAt = P₀ − ½ρu²` (faster → lower static P). Rain particles drag toward local gas (`GAS_DRAG`); glyphs use the particle's resulting velocity, not the gas field directly.
 - Grid liquid velocity (`liqVx` / `liqVy`): updated from mass transfers each `stepLiquid` (EMA); drives free-liquid glyphs so calm puddles stay on still marks.
 - Communicating vessels: free surfaces of the same liquid component relax toward equal `φ = P/(ρg) - y`.
 - `POOL` retains fill and spills / leaks into open air or the next slab when overfull; `BODY` is a liquid barrier (splash-only). Pillars are not materials.

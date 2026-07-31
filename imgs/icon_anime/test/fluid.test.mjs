@@ -394,13 +394,40 @@ Deno.test('fluid: standing liquid velocity stays low so glyphs are still marks',
 
 Deno.test('fluid: global wind varies with time', () => {
 	const samples = []
-	for (let t = 0; t < 200; t += 7)
+	for (let t = 0; t < 400; t += 5)
 		samples.push(globalWindAt(t, 42))
 	const min = Math.min(...samples)
 	const max = Math.max(...samples)
 	assertGreater(max - min, 0.2)
 	assert(samples.some(v => v > 0))
 	assert(samples.some(v => v < 0))
+})
+
+Deno.test('fluid: global wind is autocorrelated, not a sine stack', () => {
+	const seed = 42
+	const n = 120
+	const xs = Array.from({ length: n }, (_, i) => globalWindAt(i, seed))
+	// Nearby ticks stay correlated (real wind has persistence)
+	let nearDot = 0, nearNormA = 0, nearNormB = 0
+	for (let i = 0; i < n - 1; i++) {
+		nearDot += xs[i] * xs[i + 1]
+		nearNormA += xs[i] * xs[i]
+		nearNormB += xs[i + 1] * xs[i + 1]
+	}
+	const nearCorr = nearDot / Math.sqrt(nearNormA * nearNormB)
+	assertGreater(nearCorr, 0.85)
+
+	// Lag-1 second differences are irregular — pure multi-sine is much smoother/periodic
+	const d2 = []
+	for (let i = 1; i < n - 1; i++)
+		d2.push(xs[i + 1] - 2 * xs[i] + xs[i - 1])
+	const mean = d2.reduce((a, b) => a + b, 0) / d2.length
+	const varD2 = d2.reduce((a, b) => a + (b - mean) ** 2, 0) / d2.length
+	assertGreater(varD2, 1e-6)
+
+	// Same seed is deterministic; different seed diverges
+	assertEquals(globalWindAt(50, seed), globalWindAt(50, seed))
+	assert(Math.abs(globalWindAt(50, seed) - globalWindAt(50, seed + 1)) > 1e-4)
 })
 
 Deno.test('fluid: wind shear is stronger aloft than near ground', () => {

@@ -118,10 +118,12 @@ export const WATER_STILL = Object.freeze(['‥', '…', '~', '⁓', '–'])
 
 /** Mean global wind amplitude (cells / tick). */
 export const WIND_BASE = 0.38
-/** Gust amplitude layered on the mean wind. */
+/** Gust / turbulence amplitude on top of the drifting mean. */
 export const WIND_GUST = 0.28
 /** Boundary-layer shear: u ∝ altitude^power (stronger aloft). */
 export const WIND_SHEAR_POWER = 0.55
+/** Ticks per intermittent gust window. */
+const WIND_GUST_PERIOD = 41
 /** Particle velocity blend toward local gas (horizontal). */
 export const GAS_DRAG = 0.22
 /** Vertical gas coupling for rain (weaker — gravity dominates). */
@@ -544,16 +546,70 @@ export const pressureAt = (w, x, y) => {
 }
 
 /**
+ * Smooth 1D value noise in [-1, 1] (quintic Hermite; deterministic from seed).
+ * @param {number} t continuous coordinate
+ * @param {number} seed lattice salt
+ * @returns {number} noise
+ */
+const valueNoise1d = (t, seed) => {
+	const i = Math.floor(t)
+	const f = t - i
+	const u = f * f * f * (f * (f * 6 - 15) + 10)
+	const a = hash01(seed, i) * 2 - 1
+	const b = hash01(seed, i + 1) * 2 - 1
+	return a + (b - a) * u
+}
+
+/**
+ * Pink-ish 1D fBm in ~[-1, 1] — more energy at low frequencies, like real wind spectra.
+ * @param {number} t continuous coordinate
+ * @param {number} seed lattice salt
+ * @param {number} [octaves=4] octave count
+ * @returns {number} noise
+ */
+const fbm1d = (t, seed, octaves = 4) => {
+	let v = 0, amp = 1, freq = 1, norm = 0
+	for (let o = 0; o < octaves; o++) {
+		v += amp * valueNoise1d(t * freq, seed + o * 97)
+		norm += amp
+		amp *= 0.5
+		freq *= 2.03
+	}
+	return v / norm
+}
+
+/**
  * Time-varying global wind scalar (positive → rightward).
+ * Synoptic drift + mesoscale + micro turbulence (fBm), plus intermittent asymmetric gusts —
+ * autocorrelated and irregular, not a sine stack.
  * @param {number} time tick
  * @param {number} [seed=0] scene seed
  * @returns {number} wind
  */
 export const globalWindAt = (time, seed = 0) => {
-	const phase = hash01(seed, 91) * Math.PI * 2
-	return WIND_BASE * Math.sin(time * 0.031 + phase)
-		+ WIND_GUST * Math.sin(time * 0.067 + phase * 1.7)
-		+ WIND_BASE * 0.18 * Math.sin(time * 0.013 + 1.1)
+	const t0 = hash01(seed, 91) * 100
+	// Synoptic: slow signed mean (minutes-scale drift in real winds)
+	const synoptic = fbm1d(time * 0.006 + t0, seed + 11, 3)
+	// Mesoscale variability
+	const meso = fbm1d(time * 0.022 + t0 * 1.3, seed + 29, 4)
+	// High-frequency turbulence (weaker)
+	const micro = fbm1d(time * 0.07 + t0 * 0.7, seed + 47, 5)
+	const base = WIND_BASE * (0.55 * synoptic + 0.3 * meso + 0.15 * micro) * 1.65
+
+	// Intermittent gusts: quick rise, slower decay, usually aligned with the mean
+	const gw = Math.floor(time / WIND_GUST_PERIOD)
+	const gHash = hash01(seed + 71, gw)
+	let gust = 0
+	if (gHash > 0.68) {
+		const phase = ((time % WIND_GUST_PERIOD) + WIND_GUST_PERIOD) % WIND_GUST_PERIOD / WIND_GUST_PERIOD
+		const rise = 0.22
+		const env = phase < rise
+			? phase / rise
+			: Math.max(0, 1 - (phase - rise) / (1 - rise))
+		const gDir = base >= 0 ? 1 : -1
+		gust = gDir * (gHash - 0.68) / 0.32 * WIND_GUST * 1.55 * env * env
+	}
+	return base + gust
 }
 
 /**

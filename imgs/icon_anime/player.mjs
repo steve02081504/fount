@@ -78,7 +78,8 @@ export class AsciiAnimePlayer {
 		})
 		if (onResize) this.onResize = onResize
 
-		write('\x1b[?25l\x1b[2J\x1b[H')
+		// Alternate screen keeps the pre-start scrollback + cursor row; leave restores them.
+		write('\x1b[?1049h\x1b[?25l\x1b[2J\x1b[H')
 
 		if (process.stdout.isTTY) {
 			/**
@@ -219,7 +220,7 @@ export class AsciiAnimePlayer {
 			await this.#base_play(frames, { signal: this.signal })
 	}
 
-	/** Restore cursor / raw mode / resize listener. */
+	/** Leave alt screen (restores pre-start scrollback + cursor) / raw mode / resize listener. */
 	stop() {
 		if (this.#onResize) {
 			process.stdout.off('resize', this.#onResize)
@@ -233,7 +234,7 @@ export class AsciiAnimePlayer {
 			try { process.stdin.setRawMode(false) } catch { /* */ }
 
 		try { process.stdin.pause() } catch { /* */ }
-		write('\x1b[?25h\x1b[0m\n')
+		write('\x1b[?25h\x1b[0m\x1b[?1049l')
 		this.#onKey = null
 	}
 }
