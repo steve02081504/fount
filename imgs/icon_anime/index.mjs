@@ -6,23 +6,24 @@
  * Materials:
  *   body `@`  — liquid   |  `:` — solid jet
  *   base `@`  — pool     |  `>`/`<` — 45° splash faces
- *   `¯`       — absorbing horizon (terrain top)
+ *   terrain   — `/ \ | - _` outline (Terraria-style)
  *
  * createAnimState({ width?, height?, seed? }) — defaults to terminal size when available.
- * API: { enter, hold, exit, fps, createAnimState }
- * Main: enter → loop hold → Ctrl+C → exit from current progress
+ * API: { enter, hold, exit, fps, createAnimState, resizeAnimState }
+ * Main: enter → loop hold → Ctrl+C → exit from current progress (ends when icon gone)
  */
 
 import process from 'node:process'
 
 import { on_shutdown } from 'npm:on-shutdown'
 
-import { AsciiAnimePlayer, terminalSize } from './ascii_anime_player.mjs'
 import {
 	MAT, createWorld, clearMaterials, clearDynamics, setMat, addLiquid,
-	spawnParticle, queueSplash, stepLiquid, stepParticles, rainChar,
+	spawnParticle, queueSplash, stepLiquid, stepParticles, rainChar, liquidChar,
 	hash01, idx, inWorld, LIQUID_DRAW_THRESHOLD,
-} from './ascii_fluid_engine.mjs'
+} from './fluid_engine.mjs'
+import { AsciiAnimePlayer, terminalSize } from './player.mjs'
+import { generateTerrain, outlineChar } from './terrain.mjs'
 
 /** @typedef {ReturnType<typeof createAnimState>} AnimState */
 /** @typedef {ReturnType<typeof createWorld>} FluidWorld */
@@ -33,22 +34,13 @@ const RESET = '\x1b[0m'
 const FG_AT = '\x1b[30m'
 const FG_COL = '\x1b[96m'
 const FG_SPLASH = '\x1b[36m'
-const FG_HORIZON = '\x1b[90m'
+const FG_TERRAIN = '\x1b[90m'
 
-/** Icon-local layout (pre-center). */
+/** Icon-local layout (pre-center). Extra base rows 20/22 are animation-only. */
 const ICON_BASE_ROWS = [16, 18, 20, 22]
 const ICON_BASE_X0 = 5
 const ICON_BASE_X1 = 37
 const BASE_WIDTH = ICON_BASE_X1 - ICON_BASE_X0
-const ICON_H = 23 // rows 0..22
-const ICON_W = 40
-
-/** Three :: pillars: [x, yTop, yBot] in icon-local space */
-const PILLARS = [
-	[16, 2, 15],
-	[20, 0, 15],
-	[24, 2, 15],
-]
 
 /** Same packing as icon.js → 20 content rows (body 0–15, base slabs 16–19). */
 const ICON = (() => {
@@ -59,13 +51,23 @@ const ICON = (() => {
 	return t.trimEnd().split('\n')
 })()
 
+const ICON_PACK_H = ICON.length
+const ICON_W = Math.max(...ICON.map(line => line.length))
+const ICON_H = ICON_BASE_ROWS[ICON_BASE_ROWS.length - 1] + 1 // rows 0..22
+
+/** Three :: pillars: [x, yTop, yBot] in icon-local space */
+const PILLARS = [
+	[16, 2, 15],
+	[20, 0, 15],
+	[24, 2, 15],
+]
+
 const BODY_ATS = (() => {
 	const tips = PILLARS.flatMap(([x, yTop]) => [[x, yTop], [x + 1, yTop]])
 	/**
-	 * Manhattan 距离到最近柱尖。
-	 * @param {number} x 列
-	 * @param {number} y 行
-	 * @returns {number} 距离
+	 * @param {number} x parameter
+	 * @param {number} y parameter
+	 * @returns {number} result
 	 */
 	const dist = (x, y) => Math.min(...tips.map(([tx, ty]) => Math.abs(x - tx) + Math.abs(y - ty)))
 	const cells = []
@@ -80,32 +82,28 @@ const BODY_ATS = (() => {
 const maxBodyD = BODY_ATS[BODY_ATS.length - 1].d
 
 /**
- * 柱高（含两端）。
- * @param {number} yTop 顶行
- * @param {number} yBot 底行
- * @returns {number} 高度
+ * @param {number} yTop parameter
+ * @param {number} yBot parameter
+ * @returns {number} result
  */
 const pillarHeight = (yTop, yBot) => yBot - yTop + 1
 const maxPillarH = Math.max(...PILLARS.map(([, yTop, yBot]) => pillarHeight(yTop, yBot)))
 
-const splashChars = [',', '.']
-
 /**
- * 默认画布尺寸（优先终端，否则回退）。
- * @returns {{ width: number, height: number }} 宽高
+ * @returns {{ width: number, height: number }} result
  */
 const defaultSize = () => {
 	const { columns, rows } = terminalSize()
 	return {
-		width: Math.max(ICON_W, columns || 40),
+		width: Math.max(ICON_W, columns || ICON_W),
 		height: Math.max(ICON_H + 1, (rows || 25) - 1),
 	}
 }
 
 /**
- * 创建共享动画状态（enter → hold → exit）。
- * @param {{ width?: number, height?: number, seed?: number }} [opts] 画布与地形种子
- * @returns {object} 动画状态
+ * Create shared animation state (enter → hold → exit).
+ * @param {{ width?: number, height?: number, seed?: number }} [opts] parameter
+ * @returns {object} result
  */
 export const createAnimState = (opts = {}) => {
 	const { width: dw, height: dh } = defaultSize()
@@ -115,7 +113,12 @@ export const createAnimState = (opts = {}) => {
 	const world = createWorld({ width, height, margin: 28, bottomExtra: 6 })
 	const iconOx = world.ox + Math.floor((width - ICON_W) / 2)
 	const iconOy = Math.floor((height - ICON_H) / 2)
-	const terrain = generateTerrain(world, { iconOx, iconOy, seed })
+	const terrain = generateTerrain(world, {
+		iconOx, iconOy, seed,
+		iconBaseRows: ICON_BASE_ROWS,
+		iconBaseX0: ICON_BASE_X0,
+		iconBaseX1: ICON_BASE_X1,
+	})
 	return {
 		width, height, seed,
 		world, iconOx, iconOy, terrain,
@@ -133,85 +136,69 @@ export const createAnimState = (opts = {}) => {
 }
 
 /**
- * 全宽地形：起伏地表 + 可越出视口的洞穴；图标基座带留空。
- * @param {FluidWorld} world 流体世界
- * @param {{ iconOx: number, iconOy: number, seed: number }} opts 图标原点与种子
- * @returns {{ surface: Int16Array, solid: Uint8Array[], footX0: number, footX1: number, viewW: number, ox: number }} 地形数据
+ * Rebuild world/terrain for a new terminal size while preserving stage progress.
+ * @param {AnimState} state parameter
+ * @param {{ width: number, height: number }} size parameter
+ * @returns {AnimState} result
  */
-function generateTerrain(world, { iconOx, iconOy, seed }) {
-	const { worldW: W, worldH: H, viewW, ox } = world
-	const surface = new Int16Array(W)
-	const baseY = Math.min(H - 3, iconOy + ICON_BASE_ROWS[ICON_BASE_ROWS.length - 1])
+export const resizeAnimState = (state, { width, height }) => {
+	width = Math.max(ICON_W, width)
+	height = Math.max(ICON_H + 1, height)
+	if (width === state.width && height === state.height) return state
 
-	for (let x = 0; x < W; x++) {
-		const n1 = hash01(x + seed, 1)
-		const n2 = hash01(x + seed * 3, 7)
-		const n3 = hash01((x >> 2) + seed, 11)
-		const undulation = Math.floor((n1 - 0.5) * 5 + (n2 - 0.5) * 2)
-		let y = baseY + undulation
-		if (n3 > 0.82) y += 2 + (hash01(x, seed) * 3 | 0)
-		if (n3 < 0.12) y -= 1 + (hash01(x, seed + 4) * 2 | 0)
-		surface[x] = Math.max(iconOy + 14, Math.min(H - 2, y))
-	}
+	const old = state.world
+	const oldCx = old.ox + state.width / 2
+	const oldCy = state.height / 2
 
-	for (let pass = 0; pass < 2; pass++)
-		for (let x = 1; x < W - 1; x++)
-			surface[x] = Math.round((surface[x - 1] + surface[x] + surface[x + 1]) / 3)
+	const world = createWorld({ width, height, margin: 28, bottomExtra: 6 })
+	const iconOx = world.ox + Math.floor((width - ICON_W) / 2)
+	const iconOy = Math.floor((height - ICON_H) / 2)
+	const terrain = generateTerrain(world, {
+		iconOx, iconOy, seed: state.seed,
+		iconBaseRows: ICON_BASE_ROWS,
+		iconBaseX0: ICON_BASE_X0,
+		iconBaseX1: ICON_BASE_X1,
+	})
 
-	const solid = Array.from({ length: H }, () => new Uint8Array(W))
-	for (let x = 0; x < W; x++)
-		for (let y = surface[x]; y < H; y++)
-			solid[y][x] = 1
+	const newCx = world.ox + width / 2
+	const newCy = height / 2
+	const dx = newCx - oldCx
+	const dy = newCy - oldCy
 
-	const worms = 6 + (hash01(seed, 99) * 5 | 0)
-	for (let w = 0; w < worms; w++) {
-		let cx = hash01(seed, w * 3) * W
-		let cy = surface[Math.min(W - 1, cx | 0)] + 1 + hash01(seed, w * 5) * (H - surface[Math.min(W - 1, cx | 0)] - 2)
-		const len = 20 + (hash01(seed, w * 7) * 50 | 0)
-		for (let s = 0; s < len; s++) {
-			const r = 1 + (hash01(seed + s, w) > 0.7 ? 1 : 0)
-			for (let dy = -r; dy <= r; dy++)
-				for (let dx = -r; dx <= r; dx++) {
-					const x = (cx + dx) | 0
-					const y = (cy + dy) | 0
-					if (x >= 0 && x < W && y >= 0 && y < H && y > surface[x])
-						solid[y][x] = 0
-				}
-			cx += (hash01(seed + s, w + 1) - 0.5) * 2.4
-			cy += (hash01(seed + s, w + 2) - 0.45) * 1.6
-			cx = Math.max(-8, Math.min(W + 7, cx))
-			cy = Math.max(0, Math.min(H - 1, cy))
+	// reproject liquid relative to viewport centre
+	for (let y = 0; y < old.worldH; y++)
+		for (let x = 0; x < old.worldW; x++) {
+			const amt = old.liq[y * old.worldW + x]
+			if (amt < 0.05) continue
+			const nx = (x + dx) | 0
+			const ny = (y + dy) | 0
+			if (inWorld(world, nx, ny) && !terrain.solid[ny]?.[nx])
+				addLiquid(world, nx, ny, amt)
 		}
+
+	for (const p of old.particles) {
+		const nx = p.x + dx
+		const ny = p.y + dy
+		if (nx < -2 || nx >= world.worldW + 2) continue
+		spawnParticle(world, nx, ny, p.vx, p.vy, p.life)
 	}
 
-	const footX0 = iconOx + ICON_BASE_X0
-	const footX1 = iconOx + ICON_BASE_X1
-	const baseYs = new Set(ICON_BASE_ROWS.map(y => iconOy + y))
-	for (let x = footX0; x < footX1; x++) {
-		if (x < 0 || x >= W) continue
-		for (let y = iconOy + ICON_BASE_ROWS[0]; y < H; y++) {
-			if (baseYs.has(y)) continue
-			const gap = ICON_BASE_ROWS.some(br => y === iconOy + br + 1)
-			if (gap && y < iconOy + ICON_BASE_ROWS[ICON_BASE_ROWS.length - 1]) {
-				solid[y][x] = 0
-				continue
-			}
-			if (y >= iconOy + ICON_BASE_ROWS[ICON_BASE_ROWS.length - 1])
-				solid[y][x] = 1
-		}
-		surface[x] = Math.min(surface[x], iconOy + ICON_BASE_ROWS[ICON_BASE_ROWS.length - 1])
-	}
-
-	return { surface, solid, footX0, footX1, viewW, ox }
+	state.width = width
+	state.height = height
+	state.world = world
+	state.iconOx = iconOx
+	state.iconOy = iconOy
+	state.terrain = terrain
+	return state
 }
 
 /**
- * 将地形写入材质格。
- * @param {AnimState} state 动画状态
- * @returns {void}
+ * Write terrain materials into the world grid.
+ * @param {AnimState} state parameter
+ * @returns {void} result
  */
 const applyTerrain = (state) => {
-	const { world, terrain, iconOx, iconOy } = state
+	const { world, terrain, iconOy } = state
 	const { worldW: W, worldH: H } = world
 	const { surface, solid, footX0, footX1 } = terrain
 	for (let y = 0; y < H; y++)
@@ -229,14 +216,11 @@ const applyTerrain = (state) => {
 			else if (y > surface[x])
 				setMat(world, x, y, MAT.SOLID)
 		}
-
-	void iconOx
 }
 
 /**
- * 按 wipe 进度绘制基座材质（池 / 斜面）。
- * @param {AnimState} state 动画状态
- * @returns {void}
+ * @param {AnimState} state parameter
+ * @returns {void} result
  */
 const paintBaseMats = (state) => {
 	const { world, iconOx, iconOy, baseBot, baseTop, softBase } = state
@@ -258,30 +242,26 @@ const paintBaseMats = (state) => {
 }
 
 /**
- * 按生长高度绘制柱材质（固体喷柱）。
- * @param {AnimState} state 动画状态
- * @returns {void}
+ * @param {AnimState} state parameter
+ * @returns {void} result
  */
 const paintPillarMats = (state) => {
-	const { world, iconOx, iconOy, pillars, softPillars } = state
+	const { world, iconOx, iconOy, pillars } = state
 	for (const [lx, yTop, yBot] of PILLARS) {
 		const h = pillarHeight(yTop, yBot)
 		const g = Math.min(pillars, h)
 		for (let k = 0; k < g; k++) {
 			const y = iconOy + yBot - k
-			const tip = softPillars && k === g - 1 && g < h
 			const x = iconOx + lx
 			setMat(world, x, y, MAT.SOLID)
 			setMat(world, x + 1, y, MAT.SOLID)
-			void tip
 		}
 	}
 }
 
 /**
- * 按距离扩张绘制 body 液体材质。
- * @param {AnimState} state 动画状态
- * @returns {void}
+ * @param {AnimState} state parameter
+ * @returns {void} result
  */
 const paintBodyMats = (state) => {
 	const { world, iconOx, iconOy, bodyReach, bodyMinD } = state
@@ -293,9 +273,8 @@ const paintBodyMats = (state) => {
 }
 
 /**
- * 重建本帧全部静态材质。
- * @param {AnimState} state 动画状态
- * @returns {void}
+ * @param {AnimState} state parameter
+ * @returns {void} result
  */
 const rebuildMaterials = (state) => {
 	clearMaterials(state.world)
@@ -306,26 +285,23 @@ const rebuildMaterials = (state) => {
 }
 
 /**
- * 下一层水池行（世界 y），没有则 -1。
- * @param {AnimState} state 动画状态
- * @param {number} y 当前世界行
- * @returns {number} 下一水池行或 -1
+ * @param {AnimState} state parameter
+ * @param {number} y parameter
+ * @returns {number} result
  */
 const nextPoolRow = (state, y) => {
 	const local = y - state.iconOy
 	for (const br of ICON_BASE_ROWS)
 		if (br > local) return state.iconOy + br
-
 	return -1
 }
 
 /**
- * 水池溢流：向下层生成溅落粒子。
- * @param {FluidWorld} world 流体世界
- * @param {AnimState} state 动画状态
- * @param {number} x 列
- * @param {number} y 行
- * @returns {void}
+ * @param {FluidWorld} world parameter
+ * @param {AnimState} state parameter
+ * @param {number} x parameter
+ * @param {number} y parameter
+ * @returns {void} result
  */
 const overflowSplash = (world, state, x, y) => {
 	if (world.particles.length > 900) return
@@ -347,9 +323,8 @@ const overflowSplash = (world, state, x, y) => {
 }
 
 /**
- * 粒子碰撞回调工厂（按材质溅射 / 吸收 / 溢流）。
- * @param {AnimState} state 动画状态
- * @returns {(world: FluidWorld, x: number, y: number, m: number, p: { vx: number, vy: number }, wet: boolean) => void} onHit
+ * @param {AnimState} state parameter
+ * @returns {(world: FluidWorld, x: number, y: number, m: number, p: { vx: number, vy: number }, wet: boolean) => void} result
  */
 const onParticleHit = (state) => (world, x, y, m, p, wet) => {
 	const { frame } = state
@@ -416,9 +391,8 @@ const onParticleHit = (state) => (world, x, y, m, p, wet) => {
 }
 
 /**
- * 渐进降雨：列随时间解锁，从画布顶生成。
- * @param {AnimState} state 动画状态
- * @returns {void}
+ * @param {AnimState} state parameter
+ * @returns {void} result
  */
 const spawnRain = (state) => {
 	const { world, frame, rainUntil, width, height } = state
@@ -439,22 +413,25 @@ const spawnRain = (state) => {
 }
 
 /**
- * 合成一帧 ANSI 字符串。
- * @param {AnimState} state 动画状态
- * @returns {string} 帧文本
+ * @param {AnimState} state parameter
+ * @returns {string} result
  */
 const composeFrame = (state) => {
-	const { world, width, height, iconOx, iconOy, softPillars, softBody, bodyReach, bodyMinD, pillars, frame } = state
+	const {
+		world, width, height, iconOx, iconOy, softPillars, softBody,
+		bodyReach, bodyMinD, pillars, frame, terrain,
+	} = state
 	const { ox, mat, liq, particles } = world
+	const { solid, surface, surfaceChar, footX0, footX1 } = terrain
+	const { worldW: W, worldH: H } = world
 	const grid = Array.from({ length: height }, () => Array.from({ length: width }, () => /** @type {Cell} */ null))
 
 	/**
-	 * 写入视口格。
-	 * @param {number} vx 视口列
-	 * @param {number} vy 视口行
-	 * @param {string} ch 字符
-	 * @param {string} fg ANSI 前景
-	 * @returns {void}
+	 * @param {number} vx parameter
+	 * @param {number} vy parameter
+	 * @param {string} ch parameter
+	 * @param {string} fg parameter
+	 * @returns {void} result
 	 */
 	const paint = (vx, vy, ch, fg) => {
 		if (vy < 0 || vy >= height || vx < 0 || vx >= width) return
@@ -469,12 +446,29 @@ const composeFrame = (state) => {
 				bodyEdge.add(`${lx},${ly}`)
 		}
 
+	// Terrain outlines (surface + cave walls) — under icon materials
+	for (let vy = 0; vy < height; vy++)
+		for (let vx = 0; vx < width; vx++) {
+			const x = ox + vx
+			const y = vy
+			if (x < 0 || x >= W || y < 0 || y >= H) continue
+			if (!solid[y][x]) continue
+			const underIcon = x >= footX0 && x < footX1 && y >= iconOy + ICON_BASE_ROWS[0]
+			if (underIcon) continue
+
+			if (y === surface[x]) {
+				paint(vx, vy, surfaceChar[x] || '_', FG_TERRAIN)
+				continue
+			}
+			const ch = outlineChar(solid, x, y, W, H, surface)
+			if (ch) paint(vx, vy, ch, FG_TERRAIN)
+		}
+
 	for (let vy = 0; vy < height; vy++)
 		for (let vx = 0; vx < width; vx++) {
 			const i = idx(world, ox + vx, vy)
 			const m = mat[i]
-			if (m === MAT.HORIZON) paint(vx, vy, '¯', FG_HORIZON)
-			else if (m === MAT.POOL) paint(vx, vy, '@', FG_AT)
+			if (m === MAT.POOL) paint(vx, vy, '@', FG_AT)
 			else if (m === MAT.SLOPE_R) paint(vx, vy, '>', FG_AT)
 			else if (m === MAT.SLOPE_L) paint(vx, vy, '<', FG_AT)
 			else if (m === MAT.BODY) {
@@ -485,10 +479,10 @@ const composeFrame = (state) => {
 			else if (liq[i] >= LIQUID_DRAW_THRESHOLD) {
 				const y = vy
 				const x = ox + vx
-				const inFoot = x >= state.terrain.footX0 && x < state.terrain.footX1
+				const inFoot = x >= footX0 && x < footX1
 				const aboveBase = y < iconOy + ICON_BASE_ROWS[0]
 				if (inFoot && aboveBase) continue
-				paint(vx, vy, splashChars[(x + y + frame) & 1], FG_SPLASH)
+				paint(vx, vy, liquidChar(liq[i], x + y + frame), FG_SPLASH)
 			}
 		}
 
@@ -509,7 +503,7 @@ const composeFrame = (state) => {
 		const vx = (p.x - ox) | 0
 		const vy = p.y | 0
 		if (vy < 0 || vy >= height || vx < 0 || vx >= width) continue
-		const ch = p.vy < 0 ? splashChars[(frame + vx) & 1] : rainChar(p.y, p.vy > 0.85)
+		const ch = p.vy < 0 ? liquidChar(0.4, frame + vx) : rainChar(p.y, p.vy > 0.85)
 		paint(vx, vy, ch, FG_SPLASH)
 	}
 
@@ -517,13 +511,13 @@ const composeFrame = (state) => {
 }
 
 /**
- * 将格子渲染为 ANSI 文本。
- * @param {Cell[][]} grid 视口格子
- * @param {number} width 宽
- * @param {number} height 高
- * @returns {string} 帧文本
+ * Fixed-size ANSI frame (no trailing trim — keeps resize stable).
+ * @param {Cell[][]} grid parameter
+ * @param {number} width parameter
+ * @param {number} height parameter
+ * @returns {string} result
  */
-const renderGrid = (grid, width, height) => {
+export const renderGrid = (grid, width, height) => {
 	const out = []
 	for (let y = 0; y < height; y++) {
 		let line = ''
@@ -545,16 +539,14 @@ const renderGrid = (grid, width, height) => {
 			line += cell.ch
 		}
 		if (cur !== null) line += RESET
-		out.push(line.replace(/\s+$/, ''))
+		out.push(line)
 	}
-	while (out.length && out[out.length - 1] === '') out.pop()
 	return out.join('\n')
 }
 
 /**
- * 模拟并渲染一帧。
- * @param {AnimState} state 动画状态
- * @returns {string} 帧文本
+ * @param {AnimState} state parameter
+ * @returns {string} result
  */
 const simFrame = (state) => {
 	rebuildMaterials(state)
@@ -579,11 +571,10 @@ const simFrame = (state) => {
 }
 
 /**
- * 产出一帧并推进 frame 计数。
- * @param {AnimState} state 动画状态
- * @param {SoftOpts} [soft] 软边绘制开关
- * @yields {string} 帧文本
- * @returns {Generator<string, void, unknown>} 帧生成器
+ * @param {AnimState} state parameter
+ * @param {SoftOpts} [soft] parameter
+ * @yields {string}
+ * @returns {Generator<string, void, unknown>} result
  */
 function* show(state, soft = {}) {
 	Object.assign(state, {
@@ -596,10 +587,10 @@ function* show(state, soft = {}) {
 }
 
 /**
- * Stage 1 — 基座 wipe → 柱生长 → body 从柱尖扩张；雨从上方渐进出现。
- * @param {AnimState} [state] 共享状态
- * @yields {string} 帧文本
- * @returns {Generator<string, void, unknown>} 帧生成器
+ * Stage 1 — base wipe → pillars → body expand; rain fades in.
+ * @param {AnimState} [state] parameter
+ * @yields {string}
+ * @returns {Generator<string, void, unknown>} result
  */
 export function* enter(state = createAnimState()) {
 	for (let n = 0; n <= BASE_WIDTH; n++) {
@@ -624,10 +615,10 @@ export function* enter(state = createAnimState()) {
 }
 
 /**
- * Stage 2 — 完整图标 + 持续雨与流体（无限）。
- * @param {AnimState} [state] 共享状态
- * @yields {string} 帧文本
- * @returns {Generator<string, void, unknown>} 帧生成器
+ * Stage 2 — full icon + continuous rain/fluid.
+ * @param {AnimState} [state] parameter
+ * @yields {string}
+ * @returns {Generator<string, void, unknown>} result
  */
 export function* hold(state = createAnimState()) {
 	state.baseBot = state.baseTop = BASE_WIDTH
@@ -639,10 +630,11 @@ export function* hold(state = createAnimState()) {
 }
 
 /**
- * Stage 3 — 自当前进度倒放；停雨后抽干粒子/液体。
- * @param {AnimState} [state] 共享状态
- * @yields {string} 帧文本
- * @returns {Generator<string, void, unknown>} 帧生成器
+ * Stage 3 — reverse icon teardown; ends as soon as the icon is gone
+ * (does not wait for rain/liquid drain).
+ * @param {AnimState} [state] parameter
+ * @yields {string}
+ * @returns {Generator<string, void, unknown>} result
  */
 export function* exit(state = createAnimState()) {
 	if (state.rainUntil === Infinity)
@@ -673,16 +665,11 @@ export function* exit(state = createAnimState()) {
 
 	if (state.baseBot > 0 || state.baseTop > 0) {
 		const from = Math.max(state.baseBot, state.baseTop)
-		for (let n = from; n >= 0; n--) {
+		for (let n = from; n >= 1; n--) {
 			state.baseBot = state.baseTop = n
-			yield* show(state, { softBase: n > 0 && n < BASE_WIDTH })
+			yield* show(state, { softBase: n < BASE_WIDTH })
 		}
-	}
-
-	for (let i = 0; i < 90; i++) {
-		if (!state.world.particles.length && state.world.liq.every(v => v < 0.05)) break
-		for (let j = 0; j < state.world.liq.length; j++) state.world.liq[j] *= 0.92
-		yield* show(state)
+		state.baseBot = state.baseTop = 0
 	}
 
 	clearDynamics(state.world)
@@ -693,15 +680,30 @@ export function* exit(state = createAnimState()) {
 	)
 }
 
-/** 目标帧率。 */
+/** Target frame rate. */
 export const fps = 24
 
-/** 对外帧生产者集合。 */
-export const iconAnim = { enter, hold, exit, fps, createAnimState }
+/** Public frame producers. */
+export const iconAnim = { enter, hold, exit, fps, createAnimState, resizeAnimState }
+
+/** Layout constants exported for tests. */
+export const layout = { ICON_W, ICON_H, ICON_PACK_H, ICON_BASE_ROWS, BASE_WIDTH, maxBodyD, maxPillarH }
 
 if (import.meta.main) {
 	const state = createAnimState()
-	const player = new AsciiAnimePlayer({ fps })
+	/**
+	 * Rebuild scene when the terminal is resized.
+	 * @param {{ columns: number, rows: number }} size terminal size
+	 * @returns {void}
+	 */
+	const handleResize = (size) => {
+		if (!size.columns || !size.rows) return
+		resizeAnimState(state, {
+			width: Math.max(ICON_W, size.columns),
+			height: Math.max(ICON_H + 1, size.rows - 1),
+		})
+	}
+	const player = new AsciiAnimePlayer({ fps, onResize: handleResize })
 
 	on_shutdown(async () => {
 		player.abort()

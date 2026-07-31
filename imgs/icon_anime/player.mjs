@@ -1,5 +1,5 @@
 /**
- * ASCII animation player — loop playback, keyboard, TUI.
+ * ASCII animation player — loop playback, keyboard, TUI, terminal resize.
  * No process lifecycle / on-shutdown; callers own that.
  *
  * CLI: deno run -A imgs/icon_anime/index.mjs
@@ -9,15 +9,13 @@ import process from 'node:process'
 import { setTimeout as sleep } from 'node:timers/promises'
 
 /**
- * 写入 stdout。
- * @param {string} s 文本
- * @returns {boolean} write 返回值
+ * @param {string} s parameter
+ * @returns {boolean} result
  */
 const write = (s) => process.stdout.write(s)
 
 /**
- * 读取终端列数/行数（TTY 可用时）；否则为 0。
- * @returns {{ columns: number, rows: number }} 终端尺寸
+ * @returns {{ columns: number, rows: number }} result
  */
 export const terminalSize = () => ({
 	columns: process.stdout.columns || 0,
@@ -25,25 +23,26 @@ export const terminalSize = () => ({
 })
 
 /**
- * 将帧源展开为异步迭代。
- * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧序列或工厂
- * @returns {AsyncGenerator<string, void, unknown>} 帧流
+ * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames parameter
+ * @returns {AsyncGenerator<string, void, unknown>} result
  */
 async function* iterateFrames(frames) {
 	yield* frames?.() ?? frames
 }
 
-/** ASCII 动画播放器。 */
+/** ASCII animation player. */
 export class AsciiAnimePlayer {
 	/**
-	 * @param {{ fps?: number }} [opts] 播放选项
+	 * @param {{ fps?: number, onResize?: (size: { columns: number, rows: number }) => void }} [opts] parameter
 	 */
-	constructor({ fps = 24 } = {}) {
+	constructor({ fps = 24, onResize } = {}) {
 		this.fps = fps
 		this.speed = 1
 		this.paused = false
+		this.onResize = onResize ?? null
 		this.#onKey = null
 		this.#onData = null
+		this.#onResize = null
 		this.#ac = null
 	}
 
@@ -51,37 +50,53 @@ export class AsciiAnimePlayer {
 	#onKey
 	/** @type {((buf: Buffer) => void) | null} */
 	#onData
+	/** @type {(() => void) | null} */
+	#onResize
 	/** @type {AbortController | null} */
 	#ac
 
-	/** 中止当前播放（原始 Ctrl+C / 调用方 shutdown）。 */
+	/**
+	 *
+	 */
 	abort() {
 		this.#ac?.abort()
 	}
 
 	/**
-	 * 打开 TUI：清屏、隐藏光标、raw stdin。
-	 * @param {{ onKey?: (key: string, buf: Buffer) => void, signal?: AbortSignal }} [opts] 按键与外部 abort
-	 * @returns {AsciiAnimePlayer} this
+	 * @param {{ onKey?: (key: string, buf: Buffer) => void, onResize?: (size: { columns: number, rows: number }) => void, signal?: AbortSignal }} [opts] parameter
+	 * @returns {AsciiAnimePlayer} result
 	 */
-	start({ onKey, signal } = {}) {
+	start({ onKey, onResize, signal } = {}) {
 		this.#ac = new AbortController()
 		this.signal = this.#ac.signal
-		if (signal) 
+		if (signal)
 			if (signal.aborted) this.#ac.abort()
 			else signal.addEventListener('abort', () => this.#ac.abort(), { once: true })
-		
+
 		this.#onKey = onKey ?? (ch => {
 			if (ch === '\x03') this.abort()
 		})
+		if (onResize) this.onResize = onResize
+
 		write('\x1b[?25l\x1b[2J\x1b[H')
+
+		if (process.stdout.isTTY) {
+			/**
+			 *
+			 */
+			this.#onResize = () => {
+				const size = terminalSize()
+				this.onResize?.(size)
+			}
+			process.stdout.on('resize', this.#onResize)
+		}
+
 		if (!process.stdin.isTTY) return this
 		process.stdin.setRawMode(true)
 		process.stdin.resume()
 		/**
-		 * raw stdin 数据处理：空格暂停、[/] 调速、其余交给 onKey。
-		 * @param {Buffer} buf 输入缓冲
-		 * @returns {void}
+		 * @param {Buffer} buf parameter
+		 * @returns {void} result
 		 */
 		this.#onData = (buf) => {
 			for (let i = 0; i < buf.length; i++) {
@@ -98,26 +113,22 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * 绘制一帧 ANSI。
-	 * @param {string} frame 帧文本
-	 * @returns {void}
+	 * @param {string} frame parameter
+	 * @returns {void} result
 	 */
 	paint(frame) {
 		write(`\x1b[H\x1b[J${frame}`)
 	}
 
 	/**
-	 * 播放帧序列一次（传入函数则每次重启 generator）。
-	 * signal abort 时提前结束。
-	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧源
-	 * @param {{ signal?: AbortSignal }} [opts] 可选 abort
-	 * @returns {Promise<void>}
+	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames parameter
+	 * @param {{ signal?: AbortSignal }} [opts] parameter
+	 * @returns {Promise<void>} result
 	 */
 	async #base_play(frames, { signal } = {}) {
 		signal ??= this.signal
 		/**
-		 * 单帧时间预算（毫秒）。
-		 * @returns {number} 帧间隔
+		 * @returns {number} result
 		 */
 		const budget = () => 1000 / (this.fps * this.speed)
 		for await (const frame of iterateFrames(frames)) {
@@ -147,31 +158,27 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * 播放帧序列一次；返回的 Promise 可链式 `.play` / `.loop`。
-	 * `signal: null` 会刷新内部 AbortController（例如 abort 后播 exit）。
-	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧源
-	 * @param {{ signal?: AbortSignal | null }} [opts] 可选 abort；null 刷新内部 signal
-	 * @returns {Promise<void> & { play: Function, loop: Function }} 可链式播放的 Promise
+	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames parameter
+	 * @param {{ signal?: AbortSignal | null }} [opts] parameter
+	 * @returns {Promise<void> & { play: Function, loop: Function }} result
 	 */
 	play(frames, opts = {}) {
 		const signal = this.useSignal(opts.signal)
 		const result = this.#base_play(frames, { ...opts, signal })
 		return Object.assign(result, {
 			/**
-			 * 等当前段结束后再播下一段。
-			 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action 帧源
-			 * @param {{ signal?: AbortSignal | null }} [options] 覆盖选项
-			 * @returns {Promise<void> & { play: Function, loop: Function }} 链式 Promise
+			 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action parameter
+			 * @param {{ signal?: AbortSignal | null }} [options] parameter
+			 * @returns {Promise<void> & { play: Function, loop: Function }} result
 			 */
 			play: async (action, options) => {
 				await result
 				return this.play(action, { ...opts, ...options })
 			},
 			/**
-			 * 等当前段结束后进入循环播放。
-			 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action 帧源
-			 * @param {{ signal?: AbortSignal | null }} [options] 覆盖选项
-			 * @returns {Promise<void>}
+			 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action parameter
+			 * @param {{ signal?: AbortSignal | null }} [options] parameter
+			 * @returns {Promise<void>} result
 			 */
 			loop: async (action, options) => {
 				await result
@@ -181,8 +188,7 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * 刷新内部 AbortController。
-	 * @returns {AbortSignal} 新 signal
+	 * @returns {AbortSignal} result
 	 */
 	refreshSignal() {
 		this.#ac = new AbortController()
@@ -191,9 +197,8 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * 解析本次播放使用的 signal。
-	 * @param {AbortSignal | null | undefined} signal undefined=沿用；null=刷新；否则挂到内部 abort
-	 * @returns {AbortSignal | undefined} 实际使用的 signal
+	 * @param {AbortSignal | null | undefined} signal parameter
+	 * @returns {AbortSignal | undefined} result
 	 */
 	useSignal(signal) {
 		if (signal === undefined) return this.signal
@@ -204,10 +209,9 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * 循环重放直到 signal abort（无限 generator：一次 play 播到 abort）。
-	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧源
-	 * @param {{ signal?: AbortSignal | null }} [opts] 可选 abort
-	 * @returns {Promise<void>}
+	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames parameter
+	 * @param {{ signal?: AbortSignal | null }} [opts] parameter
+	 * @returns {Promise<void>} result
 	 */
 	async loop(frames, { signal } = {}) {
 		signal = this.useSignal(signal)
@@ -215,8 +219,12 @@ export class AsciiAnimePlayer {
 			await this.#base_play(frames, { signal: this.signal })
 	}
 
-	/** 恢复光标 / raw mode。 */
+	/** Restore cursor / raw mode / resize listener. */
 	stop() {
+		if (this.#onResize) {
+			process.stdout.off('resize', this.#onResize)
+			this.#onResize = null
+		}
 		if (this.#onData) {
 			process.stdin.off('data', this.#onData)
 			this.#onData = null

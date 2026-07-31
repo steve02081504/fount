@@ -1,0 +1,23 @@
+{
+	"id": "icon_anime",
+	"suites": [
+		{
+			"name": "pure",
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./imgs/icon_anime/test/"
+			],
+			"triggers": [
+				"imgs/icon_anime/**",
+				"imgs/icon_anime/test/**",
+				"src/scripts/test/deno/serial.mjs"
+			]
+		}
+	]
+}
