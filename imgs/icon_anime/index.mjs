@@ -9,7 +9,8 @@
  *   terrain   — soil stores moisture; ceilings condense & drip
  *
  * createAnimState({ width?, height?, seed? }) — defaults to terminal size when available.
- * Main: enter → loop hold → Ctrl+C → exit from current progress
+ * Main: enter → loop hold → Ctrl+C → exit from current progress.
+ * Pointer: left press/drag circular spotlight; release clears it.
  */
 
 import process from 'node:process'
@@ -57,7 +58,23 @@ if (import.meta.main) {
 			height: Math.max(ICON_H + 1, size.rows - 1),
 		})
 	}
-	const player = new AsciiAnimePlayer({ fps, onResize: handleResize })
+	const player = new AsciiAnimePlayer({
+		fps,
+		onResize: handleResize,
+		/**
+		 * Left-button spotlight follows the pointer while held.
+		 * @param {{ x: number, y: number, left: boolean }} ev pointer event
+		 * @returns {void}
+		 */
+		onPointer(ev) {
+			state.light = ev.left
+				? {
+					x: Math.max(0, Math.min(state.width - 1, ev.x)),
+					y: Math.max(0, Math.min(state.height - 1, ev.y)),
+				}
+				: null
+		},
+	})
 
 	on_shutdown(async () => {
 		player.abort()

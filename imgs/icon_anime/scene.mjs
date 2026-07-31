@@ -91,6 +91,7 @@ export const createAnimState = (opts = {}) => {
 		softPillars: false,
 		softBody: false,
 		matKey: -1,
+		light: null,
 		frameCh: null,
 		frameFg: null,
 	}

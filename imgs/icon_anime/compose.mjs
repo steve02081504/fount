@@ -1,5 +1,6 @@
 /**
  * Frame paint + ANSI render for the fountain animation.
+ * Optional circular pointer light: truecolor fg lift + soft bg glow.
  */
 
 import { MAT, LIQ_DRAW, COND_DRAW, isLiquidBarrier, isSoilMat, waterChar, liquidChar, dripChar } from './fluid/index.mjs'
@@ -11,35 +12,135 @@ const FG_COL = '\x1b[96m'
 const FG_SPLASH = '\x1b[36m'
 const FG_TERRAIN = '\x1b[90m'
 
+/** Base RGB for each paint palette entry (truecolor lift target). */
+const FG_RGB = {
+	[FG_AT]: [28, 28, 34],
+	[FG_COL]: [70, 235, 255],
+	[FG_SPLASH]: [0, 195, 210],
+	[FG_TERRAIN]: [105, 105, 115],
+}
+/** Visual radius of the pointer spotlight (cell aspect ≈ 1×2). */
+export const LIGHT_RADIUS = 14
+/** Ambient dim when a light is active (cells far from the cursor). */
+const LIGHT_AMBIENT = 0.3
+
+/**
+ * Smooth radial falloff in view cells (compensates for tall terminal cells).
+ * @param {number} dx columns from light
+ * @param {number} dy rows from light
+ * @param {number} radius visual radius
+ * @returns {number} 0..1 intensity
+ */
+export const lightFalloff = (dx, dy, radius = LIGHT_RADIUS) => {
+	const t = 1 - Math.hypot(dx, dy * 2) / radius
+	if (t <= 0) return 0
+	return t * t
+}
+
+/**
+ * @param {number} c channel 0..255
+ * @param {number} lift 0..1
+ * @returns {number} lit channel
+ */
+const liftChannel = (c, lift) => {
+	const cold = c * LIGHT_AMBIENT
+	const hot = c + (255 - c) * 0.88
+	return (cold + (hot - cold) * lift) | 0
+}
+
+/**
+ * @param {number} r red
+ * @param {number} g green
+ * @param {number} b blue
+ * @returns {string} truecolor fg SGR
+ */
+const fgRgb = (r, g, b) => `\x1b[38;2;${r};${g};${b}m`
+
+/**
+ * @param {number} r red
+ * @param {number} g green
+ * @param {number} b blue
+ * @returns {string} truecolor bg SGR
+ */
+const bgRgb = (r, g, b) => `\x1b[48;2;${r};${g};${b}m`
+
 /**
  * Join flat char/fg buffers into an ANSI frame string.
+ * When `light` is set, dims the scene and lifts a circular cool spotlight.
  * @param {string[]} ch characters
  * @param {(string | null)[]} fg ANSI fg codes (null = default)
  * @param {number} width columns
  * @param {number} height rows
+ * @param {{ x: number, y: number } | null} [light] pointer light in view cells
  * @returns {string} ANSI frame
  */
-export const renderBuffers = (ch, fg, width, height) => {
+export const renderBuffers = (ch, fg, width, height, light = null) => {
+	if (!light) {
+		const out = []
+		for (let y = 0; y < height; y++) {
+			let line = ''
+			let cur = null
+			const row = y * width
+			for (let x = 0; x < width; x++) {
+				const f = fg[row + x]
+				if (f == null) {
+					if (cur !== null) {
+						line += RESET
+						cur = null
+					}
+					line += ' '
+					continue
+				}
+				if (f !== cur) {
+					line += f
+					cur = f
+				}
+				line += ch[row + x]
+			}
+			if (cur !== null) line += RESET
+			out.push(line)
+		}
+		return out.join('\n')
+	}
+
+	const lx = light.x
+	const ly = light.y
 	const out = []
 	for (let y = 0; y < height; y++) {
 		let line = ''
 		let cur = null
 		const row = y * width
+		const dy = y - ly
 		for (let x = 0; x < width; x++) {
+			const lift = lightFalloff(x - lx, dy)
 			const f = fg[row + x]
+			let sgr
 			if (f == null) {
-				if (cur !== null) {
-					line += RESET
-					cur = null
+				if (lift < 0.04) {
+					if (cur !== null) {
+						line += RESET
+						cur = null
+					}
+					line += ' '
+					continue
 				}
-				line += ' '
-				continue
+				const g = (55 * lift) | 0
+				sgr = bgRgb((g * 0.55) | 0, (g * 0.75) | 0, g)
 			}
-			if (f !== cur) {
-				line += f
-				cur = f
+			else {
+				const [br, bg, bb] = FG_RGB[f] || [160, 160, 160]
+				const rgb = fgRgb(liftChannel(br, lift), liftChannel(bg, lift), liftChannel(bb, lift))
+				if (lift > 0.08) {
+					const g = (42 * lift) | 0
+					sgr = rgb + bgRgb((g * 0.5) | 0, (g * 0.7) | 0, g)
+				}
+				else sgr = rgb
 			}
-			line += ch[row + x]
+			if (sgr !== cur) {
+				line += RESET + sgr
+				cur = sgr
+			}
+			line += f == null ? ' ' : ch[row + x]
 		}
 		if (cur !== null) line += RESET
 		out.push(line)
@@ -76,6 +177,7 @@ export const renderGrid = (grid, width, height) => {
  *   softPillars: boolean, softBody: boolean, bodyReach: number, bodyMinD: number,
  *   pillars: number, frame: number,
  *   terrain: { solid: Uint8Array, surface: Int16Array, surfaceChar: string[], outline: (string | null)[] },
+ *   light?: { x: number, y: number } | null,
  *   frameCh?: string[], frameFg?: (string | null)[],
  * }} state animation state
  * @returns {string} ANSI frame
@@ -83,7 +185,7 @@ export const renderGrid = (grid, width, height) => {
 export const composeFrame = (state) => {
 	const {
 		world, width, height, iconOx, iconOy, softPillars, softBody,
-		bodyReach, bodyMinD, pillars, frame, terrain,
+		bodyReach, bodyMinD, pillars, frame, terrain, light,
 	} = state
 	const { ox, mat, liq, particles, condense, liqVx, liqVy } = world
 	const { solid, surface, surfaceChar, outline } = terrain
@@ -191,5 +293,5 @@ export const composeFrame = (state) => {
 		paint(vx, vy, waterChar(particles.amt[i], frame + vx, particles.vx[i], particles.vy[i]), FG_SPLASH)
 	}
 
-	return renderBuffers(ch, fg, width, height)
+	return renderBuffers(ch, fg, width, height, light ?? null)
 }

@@ -14,7 +14,7 @@ Standalone terminal animation for the fount fountain logo.
 deno run --allow-scripts --allow-all -c deno.json imgs/icon_anime/index.mjs
 ```
 
-Controls: Ctrl+C exit (icon teardown, then quit). All other stdin (incl. alt-scroll CSI from mouse wheel) is ignored.
+Controls: Ctrl+C exit (icon teardown, then quit). Left-click / drag a circular cool spotlight (press hold, release off); other stdin discarded.
 Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the pre-start scrollback and cursor row.
 
 ## Modules
@@ -24,8 +24,8 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | `index.mjs` | CLI entry + public re-exports |
 | `icon.mjs` | Packed silhouette, pillars, body growth order (typed arrays) |
 | `scene.mjs` | Anim state, materials, rain, pool leak, enter/hold/exit |
-| `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid` |
-| `player.mjs` | TUI playback, Ctrl+C abort, `stdout` resize; alt-screen enter/leave |
+| `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid`; optional pointer spotlight (truecolor lift) |
+| `player.mjs` | TUI playback, Ctrl+C abort, SGR mouse → pointer light, `stdout` resize; alt-screen enter/leave |
 | `terrain.mjs` | Pedestal-anchored surface + noise caves + U-tube/chamber templates |
 | `hash.mjs` | `hash01` + 1D/2D fBm noise + `ORTHO` (terrain + fluid) |
 | `fluid/` | Particles, grid liquid, soil, Boyle air regions, gas wind, glyphs |
@@ -55,6 +55,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 - Body cells are parallel `Uint8Array`s (`bodyX` / `bodyY` / `bodyD`), not object lists.
 - Particles are SoA pools (`particles.x/y/vx/vy/life/amt` + `count`); no per-tick object alloc.
 - Compose paints into reused `frameCh`/`frameFg` buffers; `renderGrid(Cell[][])` is a thin adapter.
+- Pointer light (`state.light`): SGR mouse via `consumeStdin`; compose applies quadratic radial falloff (cell aspect `hypot(dx, 2·dy)`) as truecolor lift + cool bg glow only while the left button is held.
 
 ## Material standard
 

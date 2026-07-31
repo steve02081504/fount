@@ -191,6 +191,70 @@ Deno.test('renderGrid: fixed height/width', () => {
 	for (const line of plain) assertEquals(line.length, width)
 })
 
+Deno.test('lightFalloff: center bright, edge zero, soft circle', async () => {
+	const { lightFalloff, LIGHT_RADIUS } = await import('../compose.mjs')
+	assertEquals(lightFalloff(0, 0), 1)
+	assertEquals(lightFalloff(LIGHT_RADIUS, 0), 0)
+	assertEquals(lightFalloff(0, LIGHT_RADIUS), 0)
+	assert(lightFalloff(3, 0) > lightFalloff(8, 0))
+	// Aspect: one cell in y ≈ two cells in x visually
+	assertEquals(lightFalloff(4, 0) > 0, true)
+	assert(Math.abs(lightFalloff(4, 0) - lightFalloff(0, 2)) < 1e-9)
+})
+
+Deno.test('consumeStdin: SGR left press/drag/release + Ctrl+C', async () => {
+	const { consumeStdin } = await import('../player.mjs')
+	const events = []
+	let aborted = false
+	/**
+	 * @returns {void}
+	 */
+	const abort = () => { aborted = true }
+	/**
+	 * @param {{ x: number, y: number, left: boolean }} ev pointer
+	 * @returns {void}
+	 */
+	const onPointer = (ev) => { events.push(ev) }
+	/**
+	 * @param {string} s ascii bytes
+	 * @returns {Uint8Array} encoded
+	 */
+	const enc = (s) => Uint8Array.from(s, c => c.charCodeAt(0))
+	const handlers = { abort, onPointer }
+	let carry = ''
+	carry = consumeStdin(carry, enc('\x1b[<0;5;8M'), handlers)
+	assertEquals(carry, '')
+	assertEquals(events.at(-1), { x: 4, y: 7, left: true })
+	carry = consumeStdin(carry, enc('\x1b[<32;12;9M'), handlers)
+	assertEquals(events.at(-1), { x: 11, y: 8, left: true })
+	carry = consumeStdin(carry, enc('\x1b[<0;12;9m'), handlers)
+	assertEquals(events.at(-1), { x: 11, y: 8, left: false })
+	// Wheel ignored
+	const n = events.length
+	consumeStdin('', enc('\x1b[<64;1;1M'), handlers)
+	assertEquals(events.length, n)
+	// Split CSI across chunks
+	carry = consumeStdin('', enc('\x1b[<0;3;5'), handlers)
+	assert(carry.length > 0)
+	carry = consumeStdin(carry, enc('M'), handlers)
+	assertEquals(carry, '')
+	assertEquals(events.at(-1), { x: 2, y: 4, left: true })
+	consumeStdin('', Uint8Array.of(0x03), handlers)
+	assertEquals(aborted, true)
+})
+
+Deno.test('composeFrame: light yields truecolor near cursor', async () => {
+	const { composeFrame } = await import('../compose.mjs')
+	const state = createAnimState({ width: 40, height: 20, seed: 9 })
+	for (const _ of enter(state));
+	state.light = { x: 20, y: 10 }
+	const lit = composeFrame(state)
+	assert(lit.includes('\x1b[38;2;'))
+	state.light = null
+	const dark = composeFrame(state)
+	assertEquals(dark.includes('\x1b[38;2;'), false)
+})
+
 Deno.test('sim frame from enter has correct dimensions', () => {
 	const state = createAnimState({ width: 55, height: 30, seed: 2 })
 	const gen = enter(state)
