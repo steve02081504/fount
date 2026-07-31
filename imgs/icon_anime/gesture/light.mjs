@@ -57,12 +57,7 @@ export const createLightGesture = () => ({
  * @returns {number} 0..1 intensity
  */
 export const rippleFalloff = (dx, dy, radius, width = RIPPLE_WIDTH) => {
-	const r2 = dx * dx + 4 * dy * dy
-	const lo = radius - width
-	const hi = radius + width
-	if (lo > 0 && r2 < lo * lo) return 0
-	if (r2 > hi * hi) return 0
-	const r = Math.sqrt(r2)
+	const r = Math.sqrt(dx * dx + 4 * dy * dy)
 	const d = Math.abs(r - radius)
 	if (d >= width) return 0
 	const t = 1 - d / width
@@ -74,7 +69,7 @@ export const rippleFalloff = (dx, dy, radius, width = RIPPLE_WIDTH) => {
  * @param {number} t linear 0..1
  * @returns {number} eased 0..1
  */
-export const torchEase = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t))
+export const torchEase = (t) => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t)
 
 /**
  * Apply a left-button pointer event (press / drag / release).

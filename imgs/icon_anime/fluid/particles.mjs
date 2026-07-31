@@ -274,7 +274,6 @@ export const stepParticles = (world, onHit, state) => {
 
 		const cx = nx | 0
 		const cy = ny | 0
-		if (cx < 0 || cy < 0 || cx >= W || cy >= H) continue
 
 		const cell = cy * W + cx
 		const m = mat[cell]
@@ -336,7 +335,7 @@ export const liftLiquidByWind = (world) => {
 			const scoop = Math.min(
 				WIND_LIFT_MAX,
 				liq[i],
-				(-guy - -WIND_LIFT_UY) * WIND_LIFT_RATE + -guy * 0.08,
+				(WIND_LIFT_UY - guy) * WIND_LIFT_RATE - guy * 0.08,
 			)
 			if (scoop < 0.04) continue
 			if (particles.count >= particles.x.length) return lifted

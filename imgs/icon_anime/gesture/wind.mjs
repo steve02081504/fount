@@ -220,11 +220,13 @@ const dist2ToSeg = (px, py, ax, ay, bx, by) => {
  * @returns {void}
  */
 const clearDriveRect = (outUx, outUy, W, H, prev) => {
-	if (!prev || prev.x1 < prev.x0) {
+	// null = no history → wipe the whole field; empty rect (x1 < x0) → nothing to clear.
+	if (prev == null) {
 		outUx.fill(0)
 		outUy.fill(0)
 		return
 	}
+	if (prev.x1 < prev.x0) return
 	const x0 = Math.max(0, prev.x0)
 	const y0 = Math.max(0, prev.y0)
 	const x1 = Math.min(W - 1, prev.x1)
@@ -348,5 +350,6 @@ export const fillWindDrive = (gesture, world, outUx, outUy) => {
 		// Cell centre: SGR coords name the cell; swirl attractor must match that glyph.
 		paintVortexDrive(gesture.x + ox + 0.5, gesture.y + oy + 0.5, gesture.strength, VORTEX_RADIUS, world, outUx, outUy, dirty)
 
-	scratch.windDirty = dirty.x1 >= dirty.x0 ? dirty : null
+	// Empty paint still stores an explicit empty rect (not null) so the next clear skips.
+	scratch.windDirty = dirty
 }

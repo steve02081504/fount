@@ -458,10 +458,6 @@ export const stepSoil = (world) => {
 					if (take > 1e-8) pushFeed(cell, take)
 				}
 			}
-			else {
-				const take = m * SOIL_CONDENSE_FRAC
-				if (take > 1e-8) pushFeed(cell, take)
-			}
 
 			const left = x > 0 && isSoilMat(mat[cell - 1]) ? cell - 1 : -1
 			const right = x + 1 < W && isSoilMat(mat[cell + 1]) ? cell + 1 : -1
@@ -521,8 +517,6 @@ export const stepSoil = (world) => {
 		const from = feedFrom[k]
 		const amt = feedAmt[k]
 		delta[from] -= amt
-		const y = from / W | 0
-		if (y + 1 >= H) continue
 		const below = from + W
 		if (mat[below] === MAT.AIR) condense[from] += amt
 		else delta[from] += amt

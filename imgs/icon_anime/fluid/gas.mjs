@@ -117,7 +117,6 @@ export const labelAirRegions = (world) => {
 	regionId.fill(0)
 
 	const oldRegions = world.regions
-	/** @type {AirRegion[]} */
 	const regionPool = /** @type {AirRegion[]} */ world.scratch.regionPool ??= []
 	// Snapshot Boyle mass before pooling — objects may be reused for nextRegions.
 	const oldGas = scratch(world, 'oldRegionGas', Math.max(oldRegions.length, 1), Float32Array)

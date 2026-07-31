@@ -160,7 +160,7 @@ export function resizeTerrain(previous, world, opts) {
 	const retainedX0 = Math.max(0, dx)
 	const retainedX1 = Math.min(W, dx + previous.worldW)
 	for (let x = retainedX0; x < retainedX1; x++)
-		surface[x] = previous.surface[x - dx] + dy
+		surface[x] = Math.min(maxY, Math.max(minY, previous.surface[x - dx] + dy))
 	if (retainedX0 > 0)
 		walkSurface(surface, retainedX0 - 1, -1, surface[retainedX0], {
 			minY, maxY, seed, hashOrigin: footX0,
@@ -385,28 +385,6 @@ function ensureTallLand(surface, {
 }
 
 /**
- * Tall-land coverage inside the viewport (for tests / diagnostics).
- * @param {TerrainData} terrain generated terrain bundle
- * @param {{ viewH: number, viewW: number }} size view size
- * @returns {{ tall: number, total: number, fraction: number, minThick: number }} tall-column stats
- */
-export function tallLandCoverage(terrain, { viewH, viewW }) {
-	const { surface, ox } = terrain
-	const minThick = Math.max(1, Math.ceil(viewH * TALL_LAND_HEIGHT_FRAC))
-	const vx0 = Math.max(0, ox)
-	const vx1 = Math.min(surface.length, ox + viewW)
-	let tall = 0
-	for (let x = vx0; x < vx1; x++)
-		if (viewH - surface[x] >= minThick) tall++
-	return {
-		tall,
-		total: vx1 - vx0,
-		fraction: vx1 - vx0 ? tall / (vx1 - vx0) : 0,
-		minThick,
-	}
-}
-
-/**
  * 2D value-noise cave carving below surface.
  * @param {Uint8Array} solid flat solid mask (mutated in place)
  * @param {Int16Array} surface surface rows
@@ -501,7 +479,7 @@ function injectConnectors(solid, surface, features, { W, H, seed, iconOx, iconBa
 			cx = cx < footX0 ? Math.max(3, footX0 - w - 5) : Math.min(W - w - 3, footX1 + 5)
 		const mid = Math.min(W - 1, cx + (w >> 1))
 		const cy = Math.min(H - h - 2, surface[mid] + 4 + (hash01(seed, 130 + i) * 5 | 0))
-		carveRect(solid, W, H, cx, cy, w, h, 0)
+		carveRect(solid, W, H, cx, cy, w, h)
 		const neckX = hash01(seed, 140 + i) > 0.5 ? cx - 1 : cx + w
 		if (neckX >= 1 && neckX < W - 1) {
 			const ny = cy + (h >> 1)
@@ -554,13 +532,12 @@ function carveUTube(solid, surface, W, H, wellL, wellR, top, bottom) {
  * @param {number} y0 top row (clamped to ≥ 0)
  * @param {number} w width in columns
  * @param {number} h height in rows
- * @param {0|1} value cell value to write
  * @returns {void}
  */
-function carveRect(solid, W, H, x0, y0, w, h, value) {
+function carveRect(solid, W, H, x0, y0, w, h) {
 	for (let y = Math.max(0, y0); y < y0 + h && y < H; y++)
 		for (let x = Math.max(0, x0); x < x0 + w && x < W; x++)
-			solid[y * W + x] = value
+			solid[y * W + x] = 0
 }
 
 /**
@@ -693,7 +670,7 @@ function carveIconFootprint(solid, surface, W, H, footX0, footX1, baseY) {
  * @param {number} W world width
  * @returns {string[]} surface character per column
  */
-function buildSurfaceChars(surface, W) {
+export function buildSurfaceChars(surface, W) {
 	const chars = Array(W)
 	for (let x = 0; x < W; x++) {
 		const y = surface[x]
@@ -705,11 +682,9 @@ function buildSurfaceChars(surface, W) {
 		if (dL === 0 && dR === 0)
 			chars[x] = (x + y) & 1 ? TERRAIN_CH.FLAT_ALT : TERRAIN_CH.FLAT
 		else if (dR > 0 || dL < 0)
-			chars[x] = Math.abs(dR || dL) >= 2 ? TERRAIN_CH.WALL : TERRAIN_CH.SLOPE_UP
-		else if (dR < 0 || dL > 0)
 			chars[x] = Math.abs(dR || dL) >= 2 ? TERRAIN_CH.WALL : TERRAIN_CH.SLOPE_DOWN
 		else
-			chars[x] = TERRAIN_CH.FLAT
+			chars[x] = Math.abs(dR || dL) >= 2 ? TERRAIN_CH.WALL : TERRAIN_CH.SLOPE_UP
 	}
 	return chars
 }
@@ -769,43 +744,4 @@ export function outlineChar(solid, x, y, W, H, surface) {
 	if (up) return TERRAIN_CH.CEIL
 	if (down) return TERRAIN_CH.FLOOR
 	return TERRAIN_CH.WALL
-}
-
-/**
- * Count underground air cavities (for tests).
- * @param {TerrainData} terrain generated terrain bundle
- * @returns {{ count: number, sizes: number[], hasUTube: boolean, hasChamber: boolean }} cavity summary
- */
-export function analyzeTerrain(terrain) {
-	const { solid, surface, features, worldW: W, worldH: H } = terrain
-	const { regions } = labelCavities(solid, surface, W, H)
-	return {
-		count: regions.length,
-		sizes: regions.map(r => r.size).sort((a, b) => b - a),
-		hasUTube: features.some(f => f.type === 'u_tube'),
-		hasChamber: features.some(f => f.type === 'chamber' || f.type === 'neck'),
-	}
-}
-
-/**
- * Rough periodicity check: surface should not look like a sine.
- * @param {Int16Array} surface surface rows
- * @returns {number} max |autocorr| for lags 4..12 (lower = less periodic)
- */
-export function surfacePeriodicityScore(surface) {
-	const W = surface.length
-	let mean = 0
-	for (let i = 0; i < W; i++) mean += surface[i]
-	mean /= W
-	let varSum = 0
-	for (let i = 0; i < W; i++) varSum += (surface[i] - mean) ** 2
-	if (varSum < 1e-6) return 1
-	let maxCorr = 0
-	for (let lag = 4; lag <= 12; lag++) {
-		let c = 0
-		for (let i = 0; i < W - lag; i++)
-			c += (surface[i] - mean) * (surface[i + lag] - mean)
-		maxCorr = Math.max(maxCorr, Math.abs(c / varSum))
-	}
-	return maxCorr
 }

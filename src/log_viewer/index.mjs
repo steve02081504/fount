@@ -70,7 +70,7 @@ function sleep(milliseconds) {
 	return new Promise((resolve) => setTimeout(resolve, milliseconds))
 }
 
-const stopRequested = false
+let stopRequested = false
 /**
  * 当前日志 WebSocket 连接实例。
  * @type {ReturnType<typeof connectLogWire> | null}
@@ -202,9 +202,9 @@ async function pollUntilServerReady(icon = null) {
 			}
 		}
 	} finally {
-		if (icon && !icon.userAborted) {
+		if (icon) {
 			await icon.dismiss()
-			logSink.resume?.()
+			if (!icon.userAborted) logSink.resume?.()
 		}
 	}
 }
@@ -369,16 +369,14 @@ async function main() {
 		if (reason === 'fount_exit') {
 			const code = exitCodeSlot.value ?? 0
 			exitCodeSlot.value = null
-			if (code === 131) {
-				await pollUntilServerReady(icon)
-				if (icon?.userAborted) process.exit(130)
-				continue
+			if (code !== 131) {
+				process.exit(code)
+				return
 			}
-			process.exit(code)
-			return
+			// 131: fall through to reconnect wait (same as abnormal disconnect).
 		}
 
-		// 异常断开：logo 等到服务器回来或 Ctrl+C
+		// 异常断开 / reboot(131)：logo 等到服务器回来或 Ctrl+C
 		await pollUntilServerReady(icon)
 		if (icon?.userAborted) process.exit(130)
 	}

@@ -403,6 +403,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 * @returns {void}
 	 */
 	function startInputLoop() {
+		if (stdinListener || replTornDown) return
 		try { process.stdin.setRawMode?.(true) } catch { /* 非 TTY */ }
 		process.stdin.resume()
 		/**
@@ -417,17 +418,24 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	}
 
 	/**
-	 * 恢复 stdin 为 cooked 模式并停止监听。
+	 * 停止 stdin 监听并恢复 cooked 模式（不触碰 tearDown / abort 标志）。
+	 * @returns {void}
+	 */
+	function stopInputLoop() {
+		if (!stdinListener) return
+		process.stdin.off('data', stdinListener)
+		stdinListener = null
+		try { process.stdin.setRawMode?.(false) } catch { /* ignore */ }
+		try { process.stdin.pause() } catch { /* ignore */ }
+	}
+
+	/**
+	 * 恢复 stdin 为 cooked 模式并停止监听（tearDown 路径：永久中止输入循环）。
 	 * @returns {void}
 	 */
 	function restoreStdin() {
 		stdinReadAbort = true
-		if (stdinListener) {
-			process.stdin.off('data', stdinListener)
-			stdinListener = null
-		}
-		try { process.stdin.setRawMode?.(false) } catch { /* ignore */ }
-		try { process.stdin.pause() } catch { /* ignore */ }
+		stopInputLoop()
 	}
 
 	/**
@@ -1312,8 +1320,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 * @returns {void}
 	 */
 	function suspend() {
-		if (!activated || replTornDown) return
-		restoreStdin()
+		if (replTornDown) return
+		stopInputLoop()
 	}
 
 	/**
@@ -1321,8 +1329,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	 * @returns {void}
 	 */
 	function resume() {
-		if (!activated || replTornDown) return
-		stdinReadAbort = false
+		if (replTornDown) return
 		startInputLoop()
 	}
 

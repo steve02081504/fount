@@ -2279,8 +2279,9 @@ logo)
 	else
 		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$icon_anime"
 	fi
+	logo_status=$?
 	set_title "$original_title"
-	exit $?
+	exit "$logo_status"
 	;;
 log)
 	run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/log_viewer/index.mjs"

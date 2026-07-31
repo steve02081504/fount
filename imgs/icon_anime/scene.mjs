@@ -13,8 +13,8 @@ import { createLightGesture, tickLightGesture } from './gesture/light.mjs'
 import { createWindGesture, tickWindGesture, fillWindDrive } from './gesture/wind.mjs'
 import { hash01 } from './hash.mjs'
 import {
-	ICON_W, ICON_H, ICON_BASE_ROWS, ICON_BASE_X0, BASE_WIDTH,
-	bodyX, bodyY, bodyD, bodyCount, maxBodyD, maxPillarH,
+	ICON_W, ICON_H, ICON_BASE_ROWS, ICON_BASE_X0, ICON_BASE_X1,
+	BODY, maxBodyD, maxPillarH,
 } from './icon.mjs'
 import { terminalSize } from './player.mjs'
 import { generateTerrain, resizeTerrain } from './terrain.mjs'
@@ -45,6 +45,21 @@ const defaultSize = () => {
 	}
 }
 
+/** Base slab column span. */
+const BASE_WIDTH = ICON_BASE_X1 - ICON_BASE_X0
+
+/**
+ * Icon origin in world coordinates for a view size.
+ * @param {FluidWorld} world fluid world
+ * @param {number} width view width
+ * @param {number} height view height
+ * @returns {{ iconOx: number, iconOy: number }} icon origin
+ */
+const iconOrigin = (world, width, height) => ({
+	iconOx: world.ox + Math.floor((width - ICON_W) / 2),
+	iconOy: Math.floor((height - ICON_H) / 2),
+})
+
 /**
  * Place icon origin + generate pedestal-anchored terrain for a world.
  * @param {FluidWorld} world fluid world
@@ -54,15 +69,14 @@ const defaultSize = () => {
  * @returns {{ iconOx: number, iconOy: number, terrain: import('./terrain.mjs').TerrainData }} placement
  */
 const placeIcon = (world, width, height, seed) => {
-	const iconOx = world.ox + Math.floor((width - ICON_W) / 2)
-	const iconOy = Math.floor((height - ICON_H) / 2)
+	const { iconOx, iconOy } = iconOrigin(world, width, height)
 	return {
 		iconOx, iconOy,
 		terrain: generateTerrain(world, {
 			iconOx, iconOy, seed,
 			iconBaseRows: ICON_BASE_ROWS,
 			iconBaseX0: ICON_BASE_X0,
-			iconBaseX1: ICON_BASE_X0 + BASE_WIDTH,
+			iconBaseX1: ICON_BASE_X1,
 		}),
 	}
 }
@@ -115,13 +129,12 @@ export const resizeAnimState = (state, { width, height }) => {
 	const old = state.world
 
 	const newWorld = createWorld({ width, height, margin: VIEW_MARGIN, bottomExtra: BOTTOM_EXTRA })
-	const iconOx = newWorld.ox + Math.floor((width - ICON_W) / 2)
-	const iconOy = Math.floor((height - ICON_H) / 2)
+	const { iconOx, iconOy } = iconOrigin(newWorld, width, height)
 	const { terrain, addedSolid } = resizeTerrain(state.terrain, newWorld, {
 		iconOx, iconOy, seed: state.seed,
 		iconBaseRows: ICON_BASE_ROWS,
 		iconBaseX0: ICON_BASE_X0,
-		iconBaseX1: ICON_BASE_X0 + BASE_WIDTH,
+		iconBaseX1: ICON_BASE_X1,
 	})
 
 	const shiftX = iconOx - state.iconOx
@@ -227,10 +240,10 @@ const paintBaseMats = (state) => {
 const paintBodyMats = (state) => {
 	const { world, iconOx, iconOy, bodyReach, bodyMinD } = state
 	if (bodyReach < 0) return
-	for (let i = 0; i < bodyCount; i++) {
-		const d = bodyD[i]
+	for (let i = 0; i < BODY.count; i++) {
+		const d = BODY.d[i]
 		if (d > bodyReach || d < bodyMinD) continue
-		setMat(world, iconOx + bodyX[i], iconOy + bodyY[i], MAT.BODY)
+		setMat(world, iconOx + BODY.x[i], iconOy + BODY.y[i], MAT.BODY)
 	}
 }
 

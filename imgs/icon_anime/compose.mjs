@@ -6,7 +6,7 @@
 
 import { MAT, LIQ_DRAW, COND_DRAW, isLiquidBarrier, isSoilMat, waterChar, liquidChar, dripChar } from './fluid/index.mjs'
 import { sampleLight, RIPPLE_SPEED, RIPPLE_WIDTH, torchEase } from './gesture/light.mjs'
-import { ICON_W, PILLARS, BODY_DIST, maxBodyD } from './icon.mjs'
+import { ICON_W, ICON_BODY_H, PILLARS, BODY_DIST, maxBodyD } from './icon.mjs'
 
 const RESET = '\x1b[0m'
 const FG_AT = '\x1b[30m'
@@ -400,7 +400,7 @@ export const composeFrame = (state) => {
 			else if (m === MAT.BODY) {
 				const lx = wx - iconOx
 				const ly = vy - iconOy
-				const d = ly >= 0 && ly < 16 && lx >= 0 && lx < ICON_W
+				const d = ly >= 0 && ly < ICON_BODY_H && lx >= 0 && lx < ICON_W
 					? BODY_DIST[ly * ICON_W + lx]
 					: 255
 				ch[i] = isBodyEdge(softBody, d, bodyReach, bodyMinD) ? '.' : '@'

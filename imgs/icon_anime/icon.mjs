@@ -1,6 +1,9 @@
 /**
  * Packed fount fountain silhouette + body growth order.
  * Packing matches imgs/icon.js; colors match icon_ansi_ascii (@=30, ::=96).
+ *
+ * Note: imgs/icon.js stays a standalone fetch+eval console snippet and cannot
+ * share an ESM decoder without breaking CDN/console usage.
  */
 
 /** Icon-local layout (pre-center). Extra base rows 20/22 are animation-only. */
@@ -13,18 +16,16 @@ export const ICON_BASE_X0 = 5
  *
  */
 export const ICON_BASE_X1 = 37
-/**
- *
- */
-export const BASE_WIDTH = ICON_BASE_X1 - ICON_BASE_X0
+/** Body silhouette height (= first base row index). */
+export const ICON_BODY_H = ICON_BASE_ROWS[0]
 
 /** Same packing as icon.js → 20 content rows (body 0–15, base slabs 16–19). */
 export const ICON = (() => {
-	let f, o, u, n, t = ''
-	for (f of [9 ** 8 - 1, 109, 513835, 2077, 133, 25])
-		for (o = '', n = 21; u = ' :'[0 | f % 3] || '@', n; f /= 3)
-			t = `${o = u + o + u}\n`.repeat(!--n * 6939 / f % 9.4) + t
-	return t.trimEnd().split('\n')
+	let packed, leftHalf, glyph, repeat, ascii = ''
+	for (packed of [9 ** 8 - 1, 109, 513835, 2077, 133, 25])
+		for (leftHalf = '', repeat = 21; glyph = ' :'[0 | packed % 3] || '@', repeat; packed /= 3)
+			ascii = `${leftHalf = glyph + leftHalf + glyph}\n`.repeat(!--repeat * 6939 / packed % 9.4) + ascii
+	return ascii.trimEnd().split('\n')
 })()
 
 /**
@@ -56,10 +57,10 @@ export const maxPillarH = Math.max(...PILLARS.map(([, yTop, yBot]) => yBot - yTo
  * Body `@` cells sorted by manhattan distance to nearest pillar tip.
  * Packed as parallel typed arrays: x[i], y[i], d[i].
  */
-const BODY = (() => {
+export const BODY = (() => {
 	const tips = PILLARS.flatMap(([x, yTop]) => [[x, yTop], [x + 1, yTop]])
 	const cells = []
-	for (let y = 0; y < 16; y++) {
+	for (let y = 0; y < ICON_BODY_H; y++) {
 		const line = ICON[y]
 		for (let x = 0; x < line.length; x++) {
 			if (line[x] !== '@') continue
@@ -93,33 +94,12 @@ const BODY = (() => {
 /**
  *
  */
-export const bodyX = BODY.x
-/**
- *
- */
-export const bodyY = BODY.y
-/**
- *
- */
-export const bodyD = BODY.d
-/**
- *
- */
-export const bodyCount = BODY.count
-/**
- *
- */
 export const maxBodyD = BODY.d[BODY.count - 1]
 
 /** Icon-local body distance grid: `d = BODY_DIST[y * ICON_W + x]`, unset = 255. */
 export const BODY_DIST = (() => {
-	const dist = new Uint8Array(ICON_W * 16).fill(255)
+	const dist = new Uint8Array(ICON_W * ICON_BODY_H).fill(255)
 	for (let i = 0; i < BODY.count; i++)
 		dist[BODY.y[i] * ICON_W + BODY.x[i]] = BODY.d[i]
 	return dist
 })()
-
-/** Layout constants for tests. */
-export const layout = {
-	ICON_W, ICON_H, ICON_PACK_H, ICON_BASE_ROWS, BASE_WIDTH, maxBodyD, maxPillarH,
-}

@@ -282,10 +282,6 @@ export const addLiquid = (world, x, y, amt) => {
 	const before = world.liq[i]
 	world.liq[i] = Math.min(LIQ_FULL, before + amt)
 	const stored = world.liq[i] - before
-	// Air occupancy flips only when a cell crosses the draw threshold.
-	if (stored > 0 && before < LIQ_DRAW && world.liq[i] >= LIQ_DRAW) {
-		world.airDirty = true
-		world.gasGeomDirty = true
-	}
+	if (stored > 0) markAirIfDrawCrossed(world, before, world.liq[i])
 	return stored
 }

@@ -16,8 +16,6 @@
 
 import process from 'node:process'
 
-import { on_shutdown } from 'npm:on-shutdown'
-
 import {
 	createAnimState, resizeAnimState, enter, hold, exit,
 } from './scene.mjs'
@@ -26,7 +24,10 @@ import { createIconAnime, fps } from './session.mjs'
 /**
  *
  */
-export { layout, ICON_W, ICON_H } from './icon.mjs'
+export {
+	ICON_W, ICON_H, ICON_PACK_H, ICON_BASE_ROWS, ICON_BASE_X0, ICON_BASE_X1,
+	ICON_BODY_H, maxBodyD, maxPillarH,
+} from './icon.mjs'
 /**
  *
  */
@@ -36,11 +37,11 @@ export { renderBuffers, renderGrid } from './compose.mjs'
  */
 export {
 	createAnimState, resizeAnimState, enter, hold, exit,
-} from './scene.mjs'
+}
 /**
  *
  */
-export { createIconAnime, fps } from './session.mjs'
+export { createIconAnime, fps }
 /**
  *
  */
@@ -51,7 +52,7 @@ export const iconAnim = { enter, hold, exit, fps, createAnimState, resizeAnimSta
 
 if (import.meta.main) {
 	const icon = createIconAnime()
-	on_shutdown(() => icon.farewell())
 	await icon.start()
+	await icon.farewell()
 	process.exit(0)
 }

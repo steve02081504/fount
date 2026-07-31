@@ -3,11 +3,10 @@
  */
 
 /** Cardinal neighbors as flat dx / dy arrays (same order). */
-export const ORTHO_DX = /** @type {const} */ [1, -1, 0, 0]
-/**
- *
- */
-export const ORTHO_DY = /** @type {const} */ [0, 0, 1, -1]
+/** @type {const} */
+export const ORTHO_DX = [1, -1, 0, 0]
+/** @type {const} */
+export const ORTHO_DY = [0, 0, 1, -1]
 
 /**
  * Deterministic hash in [0, 1).

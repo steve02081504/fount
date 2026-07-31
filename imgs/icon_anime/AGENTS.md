@@ -72,7 +72,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 - `stepLiquid` keeps a per-column liquid-pressure cache (refreshed after each vertical transfer — no second full-WH refill before horizontal). Diagonal settle still uses live `liquidPressureAt` because the neighbor column may not have been refreshed yet this tick.
 - Hydraulic equalize surfaces are SoA scratch; BFS uses a generation stamp on `liqHydroVisit` (no whole-grid `dist.fill`); surfaces stay contiguous by component (no `Map`).
 - Material rebuild is keyed by a packed int (`matKey`); hold frames skip it.
-- Body cells are parallel `Uint8Array`s (`bodyX` / `bodyY` / `bodyD`), not object lists.
+- Body cells are parallel `Uint8Array`s on `BODY` (`x` / `y` / `d`), not object lists.
 - Particles are SoA pools (`particles.x/y/vx/vy/life/amt` + `count`); no per-tick object alloc.
 - Compose paints every view cell in one pass (no `ch.fill`/`fg.fill`); ANSI joins same-SGR glyph runs; torch path quantizes lift and caches truecolor SGR; ripple-only frames skip `sampleLight` outside ring pads; `renderGrid(Cell[][])` is a thin adapter.
 - Player `paint` homes the cursor only (`\x1b[H`) — frame is full-viewport, no Erase display.

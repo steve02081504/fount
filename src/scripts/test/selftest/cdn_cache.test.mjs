@@ -37,7 +37,7 @@ function fakeContext() {
 		context: {
 			/**
 			 * Register a Playwright-style route handler.
-			 * @param {(url: string) => boolean} predicate URL matcher
+			 * @param {(url: URL) => boolean} predicate URL matcher
 			 * @param {(route: object) => Promise<void>} handler route handler
 			 * @returns {Promise<void>}
 			 */

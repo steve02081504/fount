@@ -40,8 +40,8 @@ export function createIconAnime() {
 	/** Host-initiated stop / farewell took over. */
 	let stopping = false
 	let userAborted = false
-	/** @type {(() => void) | null} */
-	let wakeSleep = null
+	/** @type {Set<() => void>} */
+	const wakeSleeps = new Set()
 	let userAc = new AbortController()
 
 	/**
@@ -90,6 +90,19 @@ export function createIconAnime() {
 		running = null
 	}
 
+	/**
+	 * Shared playback shutdown: abort → microtask → await running.
+	 * Microtask lets play()'s abort handler settle before we await `running`.
+	 * @returns {Promise<void>}
+	 */
+	const haltPlay = async () => {
+		stopping = true
+		player.abort()
+		await Promise.resolve()
+		await running?.catch(() => { /* abort */ })
+		running = null
+	}
+
 	return {
 		/** @returns {boolean} whether last play ended by Ctrl+C */
 		get userAborted() {
@@ -117,7 +130,6 @@ export function createIconAnime() {
 				if (stopping) return
 				userAborted = true
 				userAc.abort()
-				wakeSleep?.()
 			})
 			return running
 		},
@@ -145,18 +157,23 @@ export function createIconAnime() {
 		 */
 		sleep(ms) {
 			return new Promise((resolve) => {
-				const timer = setTimeout(() => {
-					wakeSleep = null
+				const signal = userAc.signal
+				if (signal.aborted) {
 					resolve()
-				}, ms)
+					return
+				}
 				/**
 				 *
 				 */
-				wakeSleep = () => {
+				const wake = () => {
 					clearTimeout(timer)
-					wakeSleep = null
+					signal.removeEventListener('abort', wake)
+					wakeSleeps.delete(wake)
 					resolve()
 				}
+				const timer = setTimeout(wake, ms)
+				wakeSleeps.add(wake)
+				signal.addEventListener('abort', wake, { once: true })
 			})
 		},
 
@@ -166,11 +183,7 @@ export function createIconAnime() {
 		 */
 		async dismiss() {
 			if (!player) return
-			stopping = true
-			player.abort()
-			await Promise.resolve()
-			await running?.catch(() => { /* abort */ })
-			running = null
+			await haltPlay()
 			park()
 		},
 
@@ -180,12 +193,8 @@ export function createIconAnime() {
 		 */
 		async farewell() {
 			if (player) {
-				stopping = true
 				savedState = null
-				player.abort()
-				await Promise.resolve()
-				await running?.catch(() => { /* abort */ })
-				running = null
+				await haltPlay()
 				await player.play(() => exit(state), { signal: null })
 				player.stop()
 				player = null

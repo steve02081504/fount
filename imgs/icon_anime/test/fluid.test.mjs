@@ -22,25 +22,25 @@ import {
  * @returns {ReturnType<typeof createWorld>} world
  */
 const sealedBox = (opts = {}) => {
-	const w = createWorld({ width: 20, height: 16, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
+	const world = createWorld({ width: 20, height: 16, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
 	for (let y = 4; y <= 10; y++)
 		for (let x = 4; x <= 10; x++) {
 			const edge = y === 4 || y === 10 || x === 4 || x === 10
-			if (edge) setMat(w, x, y, MAT.SEAL)
+			if (edge) setMat(world, x, y, MAT.SEAL)
 		}
 	if (opts.fillBottom)
 		for (let x = 5; x <= 9; x++)
 			for (let y = 10 - opts.fillBottom; y < 10; y++)
-				addLiquid(w, x, y, 1)
+				addLiquid(world, x, y, 1)
 
-	return w
+	return world
 }
 
 Deno.test('fluid: open atmosphere region has P_ATM', () => {
-	const w = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
-	labelAirRegions(w)
-	const open = w.regions.find(r => r?.openToAtm)
+	const world = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
+	labelAirRegions(world)
+	const open = world.regions.find(r => r?.openToAtm)
 	assert(open)
 	assertEquals(open.pressure, P_ATM)
 	assertGreater(open.airCells, 0)
@@ -52,34 +52,34 @@ Deno.test('fluid: RHO_AIR matches ATM_HYDRO scale and stays below RHO_G', () => 
 })
 
 Deno.test('fluid: sealed cavity distinct from atmosphere', () => {
-	const w = sealedBox()
-	labelAirRegions(w)
-	const sealed = w.regions.filter(r => r && !r.openToAtm)
+	const world = sealedBox()
+	labelAirRegions(world)
+	const sealed = world.regions.filter(r => r && !r.openToAtm)
 	assertGreater(sealed.length, 0)
-	const cell = idx(w, 7, 7)
-	assertGreater(w.regionId[cell], 0)
-	assert(!w.regions[w.regionId[cell]]?.openToAtm)
+	const cell = idx(world, 7, 7)
+	assertGreater(world.regionId[cell], 0)
+	assert(!world.regions[world.regionId[cell]]?.openToAtm)
 })
 
 Deno.test('fluid: sealed cavity hydrostatic stratification around Boyle mean', () => {
-	const w = sealedBox()
-	labelAirRegions(w)
-	const sealed = w.regions.find(r => r && !r.openToAtm)
+	const world = sealedBox()
+	labelAirRegions(world)
+	const sealed = world.regions.find(r => r && !r.openToAtm)
 	assert(sealed)
 	assertAlmostEquals(sealed.pressure, P_ATM, 1e-9)
 	const yTop = 5
 	const yBot = 9
-	const pTop = pressureAt(w, 7, yTop)
-	const pBot = pressureAt(w, 7, yBot)
+	const pTop = pressureAt(world, 7, yTop)
+	const pBot = pressureAt(world, 7, yBot)
 	assertAlmostEquals(pBot - pTop, ATM_HYDRO * (yBot - yTop), 1e-9)
 	assertAlmostEquals(pTop, sealed.pressure + ATM_HYDRO * (yTop - sealed.yMean), 1e-9)
 	assertAlmostEquals(pBot, sealed.pressure + ATM_HYDRO * (yBot - sealed.yMean), 1e-9)
 })
 
 Deno.test('fluid: compressing sealed cavity raises pressure', () => {
-	const w = sealedBox()
-	labelAirRegions(w)
-	const before = w.regions.find(r => r && !r.openToAtm)
+	const world = sealedBox()
+	labelAirRegions(world)
+	const before = world.regions.find(r => r && !r.openToAtm)
 	assert(before)
 	const gas0 = before.gasAmount
 	const cells0 = before.airCells
@@ -87,10 +87,10 @@ Deno.test('fluid: compressing sealed cavity raises pressure', () => {
 	// fill most of the cavity with liquid → shrink air volume
 	for (let x = 5; x <= 9; x++)
 		for (let y = 6; y <= 9; y++)
-			addLiquid(w, x, y, 1)
+			addLiquid(world, x, y, 1)
 
-	labelAirRegions(w)
-	const after = w.regions.find(r => r && !r.openToAtm)
+	labelAirRegions(world)
+	const after = world.regions.find(r => r && !r.openToAtm)
 	assert(after)
 	assertLess(after.airCells, cells0)
 	assertGreater(after.pressure, P_ATM)
@@ -99,45 +99,45 @@ Deno.test('fluid: compressing sealed cavity raises pressure', () => {
 })
 
 Deno.test('fluid: total sealed gas conserved across a liquid step', () => {
-	const w = sealedBox({ fillBottom: 2 })
-	labelAirRegions(w)
-	const g0 = totalSealedGas(w)
-	stepLiquid(w)
-	labelAirRegions(w)
-	const g1 = totalSealedGas(w)
+	const world = sealedBox({ fillBottom: 2 })
+	labelAirRegions(world)
+	const g0 = totalSealedGas(world)
+	stepLiquid(world)
+	labelAirRegions(world)
+	const g1 = totalSealedGas(world)
 	assertAlmostEquals(g1, g0, Math.max(1, g0 * 0.25))
 })
 
 Deno.test('fluid: U-tube liquid levels approach equalization under open air', () => {
-	const w = createWorld({ width: 30, height: 20, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
+	const world = createWorld({ width: 30, height: 20, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
 	// Impermeable U vessel — SEAL so soil absorption cannot drain the wells.
 	for (let x = 6; x <= 20; x++) {
-		setMat(w, x, 15, MAT.SEAL)
-		setMat(w, x, 16, MAT.SEAL)
+		setMat(world, x, 15, MAT.SEAL)
+		setMat(world, x, 16, MAT.SEAL)
 	}
 	for (let y = 6; y <= 15; y++)
 		for (const x of [6, 10, 16, 20])
-			setMat(w, x, y, MAT.SEAL)
+			setMat(world, x, y, MAT.SEAL)
 
 	for (let x = 7; x <= 19; x++)
-		setMat(w, x, 14, MAT.SEAL)
+		setMat(world, x, 14, MAT.SEAL)
 
 	for (let y = 6; y <= 14; y++)
 		for (const x of [8, 9, 17, 18])
-			w.mat[idx(w, x, y)] = MAT.AIR
+			world.mat[idx(world, x, y)] = MAT.AIR
 
 	for (let x = 8; x <= 18; x++)
-		w.mat[idx(w, x, 14)] = MAT.AIR
+		world.mat[idx(world, x, 14)] = MAT.AIR
 
 	// unequal fill: left high, right low
 	for (let y = 10; y <= 14; y++) {
-		addLiquid(w, 8, y, 1)
-		addLiquid(w, 9, y, 1)
+		addLiquid(world, 8, y, 1)
+		addLiquid(world, 9, y, 1)
 	}
 	for (let y = 13; y <= 14; y++) {
-		addLiquid(w, 17, y, 1)
-		addLiquid(w, 18, y, 1)
+		addLiquid(world, 17, y, 1)
+		addLiquid(world, 18, y, 1)
 	}
 
 	/**
@@ -146,8 +146,8 @@ Deno.test('fluid: U-tube liquid levels approach equalization under open air', ()
 	 * @returns {number} row
 	 */
 	const topY = (x) => {
-		for (let y = 0; y < w.worldH; y++)
-			if (w.liq[idx(w, x, y)] >= 0.35) return y
+		for (let y = 0; y < world.worldH; y++)
+			if (world.liq[idx(world, x, y)] >= 0.35) return y
 		return -1
 	}
 
@@ -155,7 +155,7 @@ Deno.test('fluid: U-tube liquid levels approach equalization under open air', ()
 	const right0 = topY(17)
 	assertGreater(right0 - left0, 1)
 
-	for (let i = 0; i < 80; i++) stepLiquid(w)
+	for (let i = 0; i < 80; i++) stepLiquid(world)
 
 	const left1 = topY(8)
 	const right1 = topY(17)
@@ -164,37 +164,37 @@ Deno.test('fluid: U-tube liquid levels approach equalization under open air', ()
 })
 
 Deno.test('fluid: open-air pressure rises with depth', () => {
-	const w = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
-	labelAirRegions(w)
-	const sky = pressureAt(w, 8, 1)
-	const ground = pressureAt(w, 8, w.worldH - 3)
+	const world = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
+	labelAirRegions(world)
+	const sky = pressureAt(world, 8, 1)
+	const ground = pressureAt(world, 8, world.worldH - 3)
 	assertAlmostEquals(sky, P_ATM + ATM_HYDRO * 1, 1e-9)
 	assertGreater(ground, sky)
-	assertAlmostEquals(ground - sky, ATM_HYDRO * ((w.worldH - 3) - 1), 1e-9)
+	assertAlmostEquals(ground - sky, ATM_HYDRO * ((world.worldH - 3) - 1), 1e-9)
 })
 
 Deno.test('fluid: pressureAt above open liquid follows air hydrostatic', () => {
-	const w = createWorld({ width: 12, height: 10, margin: 1, bottomExtra: 1 })
-	addLiquid(w, 5, 5, 1)
-	labelAirRegions(w)
-	assertAlmostEquals(pressureAt(w, 5, 4), P_ATM + ATM_HYDRO * 4, 1e-9)
+	const world = createWorld({ width: 12, height: 10, margin: 1, bottomExtra: 1 })
+	addLiquid(world, 5, 5, 1)
+	labelAirRegions(world)
+	assertAlmostEquals(pressureAt(world, 5, 4), P_ATM + ATM_HYDRO * 4, 1e-9)
 })
 
 Deno.test('fluid: liquid column pressure grows with depth', () => {
-	const w = createWorld({ width: 14, height: 16, margin: 1, bottomExtra: 1 })
-	clearMaterials(w)
+	const world = createWorld({ width: 14, height: 16, margin: 1, bottomExtra: 1 })
+	clearMaterials(world)
 	// Open tank: floor + walls
-	for (let x = 5; x <= 9; x++) setMat(w, x, 12, MAT.SEAL)
+	for (let x = 5; x <= 9; x++) setMat(world, x, 12, MAT.SEAL)
 	for (let y = 4; y <= 12; y++) {
-		setMat(w, 5, y, MAT.SEAL)
-		setMat(w, 9, y, MAT.SEAL)
+		setMat(world, 5, y, MAT.SEAL)
+		setMat(world, 9, y, MAT.SEAL)
 	}
 	for (let y = 7; y <= 11; y++)
 		for (let x = 6; x <= 8; x++)
-			addLiquid(w, x, y, 1)
-	labelAirRegions(w)
-	const pTop = liquidPressureAt(w, 7, 7)
-	const pBot = liquidPressureAt(w, 7, 11)
+			addLiquid(world, x, y, 1)
+	labelAirRegions(world)
+	const pTop = liquidPressureAt(world, 7, 7)
+	const pBot = liquidPressureAt(world, 7, 11)
 	assertGreater(pBot - pTop, RHO_G * 3.5)
 })
 
@@ -204,244 +204,244 @@ Deno.test('fluid: deeper orifice vents more mass than shallow', () => {
 	 * @returns {number} mass lost through side hole after steps
 	 */
 	const drain = (fillTop) => {
-		const w = createWorld({ width: 18, height: 16, margin: 1, bottomExtra: 1 })
-		clearMaterials(w)
-		for (let x = 4; x <= 10; x++) setMat(w, x, 12, MAT.SEAL)
+		const world = createWorld({ width: 18, height: 16, margin: 1, bottomExtra: 1 })
+		clearMaterials(world)
+		for (let x = 4; x <= 10; x++) setMat(world, x, 12, MAT.SEAL)
 		for (let y = 3; y <= 12; y++) {
-			setMat(w, 4, y, MAT.SEAL)
-			setMat(w, 10, y, MAT.SEAL)
+			setMat(world, 4, y, MAT.SEAL)
+			setMat(world, 10, y, MAT.SEAL)
 		}
 		// Side hole at mid height on right wall
-		w.mat[idx(w, 10, 9)] = MAT.AIR
+		world.mat[idx(world, 10, 9)] = MAT.AIR
 		for (let y = fillTop; y <= 11; y++)
 			for (let x = 5; x <= 9; x++)
-				addLiquid(w, x, y, 1)
-		const before = totalGridWater(w)
-		for (let i = 0; i < 12; i++) stepLiquid(w)
+				addLiquid(world, x, y, 1)
+		const before = totalGridWater(world)
+		for (let i = 0; i < 12; i++) stepLiquid(world)
 		// Mass that left through the hole into x>=10 or edge sink
 		let outside = 0
-		for (let y = 0; y < w.worldH; y++)
-			for (let x = 10; x < w.worldW; x++)
-				outside += w.liq[idx(w, x, y)]
-		const lost = before - totalGridWater(w)
+		for (let y = 0; y < world.worldH; y++)
+			for (let x = 10; x < world.worldW; x++)
+				outside += world.liq[idx(world, x, y)]
+		const lost = before - totalGridWater(world)
 		return outside + lost
 	}
 	assertGreater(drain(5), drain(9) * 1.15)
 })
 
 Deno.test('fluid: sealed over-pressure blocks liquid invasion', () => {
-	const w = sealedBox({ fillBottom: 0 })
-	labelAirRegions(w)
+	const world = sealedBox({ fillBottom: 0 })
+	labelAirRegions(world)
 	// Shrink cavity air by filling most cells → high Boyle P
 	for (let x = 5; x <= 9; x++)
 		for (let y = 6; y <= 9; y++)
-			addLiquid(w, x, y, 1)
-	labelAirRegions(w)
-	const sealed = w.regions.find(r => r && !r.openToAtm)
+			addLiquid(world, x, y, 1)
+	labelAirRegions(world)
+	const sealed = world.regions.find(r => r && !r.openToAtm)
 	assert(sealed)
 	assertGreater(sealed.pressure, P_ATM * 1.5)
 	// Leave a thin air pocket at top; try to shove more liquid in from a side breach setup —
 	// instead: open a one-cell gap and ensure liquid does not flood the remaining high-P air.
-	setMat(w, 4, 5, MAT.AIR)
-	const airCell = idx(w, 7, 5)
-	assert(w.liq[airCell] < LIQ_DRAW)
-	const airBefore = w.liq[airCell]
-	for (let i = 0; i < 20; i++) stepLiquid(w)
+	setMat(world, 4, 5, MAT.AIR)
+	const airCell = idx(world, 7, 5)
+	assert(world.liq[airCell] < LIQ_DRAW)
+	const airBefore = world.liq[airCell]
+	for (let i = 0; i < 20; i++) stepLiquid(world)
 	// Remaining top air should stay mostly empty under over-pressure (or cavity vents carefully)
-	assertLess(w.liq[airCell] - airBefore, 0.85)
+	assertLess(world.liq[airCell] - airBefore, 0.85)
 })
 
 Deno.test('fluid: BODY rejects free liquid (impact shell, not a pool)', () => {
-	const w = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
+	const world = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
 	for (let x = 5; x <= 10; x++)
-		setMat(w, x, 8, MAT.BODY)
+		setMat(world, x, 8, MAT.BODY)
 	for (let x = 4; x <= 11; x++)
-		setMat(w, x, 10, MAT.SEAL)
+		setMat(world, x, 10, MAT.SEAL)
 
-	assertEquals(addLiquid(w, 7, 8, 1), 0)
-	addLiquid(w, 7, 5, 1)
-	addLiquid(w, 8, 5, 1)
-	for (let i = 0; i < 30; i++) stepLiquid(w)
+	assertEquals(addLiquid(world, 7, 8, 1), 0)
+	addLiquid(world, 7, 5, 1)
+	addLiquid(world, 8, 5, 1)
+	for (let i = 0; i < 30; i++) stepLiquid(world)
 
-	assertEquals(w.liq[idx(w, 7, 8)], 0)
-	assertEquals(w.liq[idx(w, 8, 8)], 0)
+	assertEquals(world.liq[idx(world, 7, 8)], 0)
+	assertEquals(world.liq[idx(world, 8, 8)], 0)
 })
 
 Deno.test('fluid: free liquid settles above HORIZON and spreads', () => {
-	const w = createWorld({ width: 20, height: 12, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
+	const world = createWorld({ width: 20, height: 12, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
 	for (let x = 4; x <= 14; x++) {
 		// Saturated topsoil over impermeable bed — sheet flow without seepage loss.
-		setMat(w, x, 9, MAT.HORIZON)
-		w.moisture[idx(w, x, 9)] = SOIL_CAP
-		setMat(w, x, 10, MAT.SEAL)
+		setMat(world, x, 9, MAT.HORIZON)
+		world.moisture[idx(world, x, 9)] = SOIL_CAP
+		setMat(world, x, 10, MAT.SEAL)
 	}
-	addLiquid(w, 8, 8, 1)
-	addLiquid(w, 9, 8, 1)
-	for (let i = 0; i < 40; i++) stepLiquid(w)
+	addLiquid(world, 8, 8, 1)
+	addLiquid(world, 9, 8, 1)
+	for (let i = 0; i < 40; i++) stepLiquid(world)
 
 	let groundLiq = 0
 	for (let x = 4; x <= 14; x++)
-		groundLiq += w.liq[idx(w, x, 8)]
+		groundLiq += world.liq[idx(world, x, 8)]
 	assertGreater(groundLiq, 0.5)
 	let wetCols = 0
 	for (let x = 4; x <= 14; x++)
-		if (w.liq[idx(w, x, 8)] >= 0.1) wetCols++
+		if (world.liq[idx(world, x, 8)] >= 0.1) wetCols++
 	assertGreater(wetCols, 2)
 })
 
 Deno.test('fluid: SEAL neither stores moisture nor absorbs free liquid', () => {
-	const w = createWorld({ width: 10, height: 8, margin: 1, bottomExtra: 1 })
-	clearMaterials(w)
-	setMat(w, 4, 5, MAT.SEAL)
-	addLiquid(w, 4, 4, 0.9)
-	const before = totalGridWater(w)
-	for (let i = 0; i < 20; i++) stepSoil(w)
-	assertEquals(w.moisture[idx(w, 4, 5)], 0)
-	assertEquals(addMoisture(w, 4, 5, 0.5), 0)
-	assertAlmostEquals(w.liq[idx(w, 4, 4)], 0.9, 1e-4)
-	assertAlmostEquals(totalGridWater(w), before, 1e-4)
+	const world = createWorld({ width: 10, height: 8, margin: 1, bottomExtra: 1 })
+	clearMaterials(world)
+	setMat(world, 4, 5, MAT.SEAL)
+	addLiquid(world, 4, 4, 0.9)
+	const before = totalGridWater(world)
+	for (let i = 0; i < 20; i++) stepSoil(world)
+	assertEquals(world.moisture[idx(world, 4, 5)], 0)
+	assertEquals(addMoisture(world, 4, 5, 0.5), 0)
+	assertAlmostEquals(world.liq[idx(world, 4, 4)], 0.9, 1e-4)
+	assertAlmostEquals(totalGridWater(world), before, 1e-4)
 })
 
 Deno.test('fluid: soil absorbs free liquid into moisture', () => {
-	const w = createWorld({ width: 12, height: 10, margin: 1, bottomExtra: 1 })
-	clearMaterials(w)
-	setMat(w, 5, 6, MAT.HORIZON)
-	setMat(w, 5, 7, MAT.SEAL)
-	addLiquid(w, 5, 5, 0.8)
-	const before = totalGridWater(w)
-	for (let i = 0; i < 25; i++) stepSoil(w)
-	assertGreater(w.moisture[idx(w, 5, 6)], 0.2)
-	assertLess(w.liq[idx(w, 5, 5)], 0.8)
-	assertAlmostEquals(totalGridWater(w), before, 1e-4)
+	const world = createWorld({ width: 12, height: 10, margin: 1, bottomExtra: 1 })
+	clearMaterials(world)
+	setMat(world, 5, 6, MAT.HORIZON)
+	setMat(world, 5, 7, MAT.SEAL)
+	addLiquid(world, 5, 5, 0.8)
+	const before = totalGridWater(world)
+	for (let i = 0; i < 25; i++) stepSoil(world)
+	assertGreater(world.moisture[idx(world, 5, 6)], 0.2)
+	assertLess(world.liq[idx(world, 5, 5)], 0.8)
+	assertAlmostEquals(totalGridWater(world), before, 1e-4)
 })
 
 Deno.test('fluid: dry soil absorbs faster than wet soil', () => {
-	const w = createWorld({ width: 12, height: 10, margin: 1, bottomExtra: 1 })
-	clearMaterials(w)
-	setMat(w, 4, 6, MAT.HORIZON)
-	setMat(w, 6, 6, MAT.HORIZON)
-	setMat(w, 4, 7, MAT.SEAL)
-	setMat(w, 6, 7, MAT.SEAL)
-	w.moisture[idx(w, 6, 6)] = 0.75
+	const world = createWorld({ width: 12, height: 10, margin: 1, bottomExtra: 1 })
+	clearMaterials(world)
+	setMat(world, 4, 6, MAT.HORIZON)
+	setMat(world, 6, 6, MAT.HORIZON)
+	setMat(world, 4, 7, MAT.SEAL)
+	setMat(world, 6, 7, MAT.SEAL)
+	world.moisture[idx(world, 6, 6)] = 0.75
 	assertGreater(soilAbsorbFactor(0), soilAbsorbFactor(0.75))
-	addLiquid(w, 4, 5, 1)
-	addLiquid(w, 6, 5, 1)
-	stepSoil(w)
-	const dryTook = 1 - w.liq[idx(w, 4, 5)]
-	const wetTook = 1 - w.liq[idx(w, 6, 5)]
+	addLiquid(world, 4, 5, 1)
+	addLiquid(world, 6, 5, 1)
+	stepSoil(world)
+	const dryTook = 1 - world.liq[idx(world, 4, 5)]
+	const wetTook = 1 - world.liq[idx(world, 6, 5)]
 	assertGreater(dryTook, wetTook)
 })
 
 Deno.test('fluid: sustained rain forms surface puddles instead of all soaking away', () => {
-	const w = createWorld({ width: 24, height: 14, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
+	const world = createWorld({ width: 24, height: 14, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
 	for (let x = 4; x <= 18; x++) {
-		setMat(w, x, 10, MAT.HORIZON)
-		setMat(w, x, 11, MAT.SOLID)
-		setMat(w, x, 12, MAT.SOLID)
+		setMat(world, x, 10, MAT.HORIZON)
+		setMat(world, x, 11, MAT.SOLID)
+		setMat(world, x, 12, MAT.SOLID)
 	}
 
 	// Rain-like input: ~2 ground hits/tick at 0.18 each (matches particle deposit size).
 	for (let t = 0; t < 55; t++) {
 		for (let k = 0; k < 2; k++) {
 			const x = 5 + (t * 3 + k * 5) % 13
-			const i = idx(w, x, 10)
+			const i = idx(world, x, 10)
 			const hit = 0.18
-			const want = hit * SOIL_HIT_ABSORB_FRAC * soilAbsorbFactor(w.moisture[i])
-			const stored = addMoisture(w, x, 10, want)
-			addLiquid(w, x, 9, hit - stored)
+			const want = hit * SOIL_HIT_ABSORB_FRAC * soilAbsorbFactor(world.moisture[i])
+			const stored = addMoisture(world, x, 10, want)
+			addLiquid(world, x, 9, hit - stored)
 		}
-		stepLiquid(w)
+		stepLiquid(world)
 	}
 
 	let puddleCells = 0
 	let surfaceLiq = 0
 	for (let x = 4; x <= 18; x++) {
-		const L = w.liq[idx(w, x, 9)]
-		surfaceLiq += L
-		if (L >= LIQ_DRAW) puddleCells++
+		const surfaceAmt = world.liq[idx(world, x, 9)]
+		surfaceLiq += surfaceAmt
+		if (surfaceAmt >= LIQ_DRAW) puddleCells++
 	}
 	assertGreater(puddleCells, 2)
 	assertGreater(surfaceLiq, 1)
-	const total = totalGridWater(w)
+	const total = totalGridWater(world)
 	assertGreater(total, 0)
 	// A meaningful share must remain as free surface water, not only soil moisture.
 	assertGreater(surfaceLiq / total, 0.2)
 })
 
 Deno.test('fluid: soil moisture prefers downward seepage over sides', () => {
-	const w = createWorld({ width: 14, height: 12, margin: 1, bottomExtra: 1 })
-	clearMaterials(w)
+	const world = createWorld({ width: 14, height: 12, margin: 1, bottomExtra: 1 })
+	clearMaterials(world)
 	for (const x of [5, 6, 7])
 		for (const y of [5, 6, 7])
-			setMat(w, x, y, MAT.SOLID)
+			setMat(world, x, y, MAT.SOLID)
 	// Impermeable bed under the soil block so mass stays in-grid.
 	for (const x of [5, 6, 7])
-		setMat(w, x, 8, MAT.SEAL)
-	addMoisture(w, 6, 5, 1)
-	for (let i = 0; i < 12; i++) stepSoil(w)
-	assertGreater(w.moisture[idx(w, 6, 7)], w.moisture[idx(w, 5, 5)])
-	assertGreater(w.moisture[idx(w, 6, 7)], w.moisture[idx(w, 7, 5)])
+		setMat(world, x, 8, MAT.SEAL)
+	addMoisture(world, 6, 5, 1)
+	for (let i = 0; i < 12; i++) stepSoil(world)
+	assertGreater(world.moisture[idx(world, 6, 7)], world.moisture[idx(world, 5, 5)])
+	assertGreater(world.moisture[idx(world, 6, 7)], world.moisture[idx(world, 7, 5)])
 })
 
 Deno.test('fluid: soil ceiling condenses then drips into air below', () => {
-	const w = createWorld({ width: 12, height: 12, margin: 1, bottomExtra: 1 })
-	clearMaterials(w)
+	const world = createWorld({ width: 12, height: 12, margin: 1, bottomExtra: 1 })
+	clearMaterials(world)
 	for (let x = 3; x <= 7; x++) {
-		setMat(w, x, 4, MAT.SOLID)
-		setMat(w, x, 8, MAT.SEAL)
+		setMat(world, x, 4, MAT.SOLID)
+		setMat(world, x, 8, MAT.SEAL)
 	}
-	addMoisture(w, 5, 4, 1)
-	const before = totalGridWater(w)
+	addMoisture(world, 5, 4, 1)
+	const before = totalGridWater(world)
 	let sawCondense = false
 	for (let i = 0; i < 40; i++) {
-		stepSoil(w)
-		if (w.condense[idx(w, 5, 4)] >= COND_DRIP * 0.5) sawCondense = true
+		stepSoil(world)
+		if (world.condense[idx(world, 5, 4)] >= COND_DRIP * 0.5) sawCondense = true
 	}
-	assert(sawCondense || w.liq[idx(w, 5, 5)] > 0.05 || w.liq[idx(w, 5, 6)] > 0.05 || w.liq[idx(w, 5, 7)] > 0.05)
-	assertAlmostEquals(totalGridWater(w), before, 1e-3)
+	assert(sawCondense || world.liq[idx(world, 5, 5)] > 0.05 || world.liq[idx(world, 5, 6)] > 0.05 || world.liq[idx(world, 5, 7)] > 0.05)
+	assertAlmostEquals(totalGridWater(world), before, 1e-3)
 })
 
 Deno.test('fluid: condensation Matthew effect amplifies the lead with noise', () => {
-	const w = createWorld({ width: 14, height: 10, margin: 1, bottomExtra: 1 })
-	clearMaterials(w)
+	const world = createWorld({ width: 14, height: 10, margin: 1, bottomExtra: 1 })
+	clearMaterials(world)
 	for (const x of [5, 6, 7]) {
-		setMat(w, x, 4, MAT.SOLID)
-		setMat(w, x, 7, MAT.SEAL)
+		setMat(world, x, 4, MAT.SOLID)
+		setMat(world, x, 7, MAT.SEAL)
 	}
-	w.condense[idx(w, 5, 4)] = 0.4
-	w.condense[idx(w, 6, 4)] = 0.55
-	w.condense[idx(w, 7, 4)] = 0.4
-	const before = totalGridWater(w)
-	const lead0 = w.condense[idx(w, 6, 4)]
-	for (let i = 0; i < 25; i++) stepSoil(w)
-	const lead1 = w.condense[idx(w, 6, 4)]
-	const side = Math.max(w.condense[idx(w, 5, 4)], w.condense[idx(w, 7, 4)])
+	world.condense[idx(world, 5, 4)] = 0.4
+	world.condense[idx(world, 6, 4)] = 0.55
+	world.condense[idx(world, 7, 4)] = 0.4
+	const before = totalGridWater(world)
+	const lead0 = world.condense[idx(world, 6, 4)]
+	for (let i = 0; i < 25; i++) stepSoil(world)
+	const lead1 = world.condense[idx(world, 6, 4)]
+	const side = Math.max(world.condense[idx(world, 5, 4)], world.condense[idx(world, 7, 4)])
 	// Leader should still dominate after noisy Matthew transfers (or have dripped).
-	assert(lead1 + w.liq[idx(w, 6, 5)] + w.liq[idx(w, 6, 6)] >= lead0 - 0.05 || lead1 >= side)
-	assertAlmostEquals(totalGridWater(w), before, 1e-3)
+	assert(lead1 + world.liq[idx(world, 6, 5)] + world.liq[idx(world, 6, 6)] >= lead0 - 0.05 || lead1 >= side)
+	assertAlmostEquals(totalGridWater(world), before, 1e-3)
 })
 
 Deno.test('fluid: closed soil seepage conserves grid water', () => {
-	const w = createWorld({ width: 16, height: 12, margin: 1, bottomExtra: 1 })
-	clearMaterials(w)
+	const world = createWorld({ width: 16, height: 12, margin: 1, bottomExtra: 1 })
+	clearMaterials(world)
 	for (let y = 3; y <= 8; y++)
 		for (let x = 4; x <= 10; x++)
-			setMat(w, x, y, MAT.SOLID)
+			setMat(world, x, y, MAT.SOLID)
 	// Seal under and around so no condense / edge sink.
 	for (let x = 4; x <= 10; x++)
-		setMat(w, x, 9, MAT.SEAL)
-	addMoisture(w, 5, 3, 0.9)
-	addMoisture(w, 8, 4, 0.7)
-	addMoisture(w, 6, 6, 0.5)
-	const before = totalGridWater(w)
-	for (let i = 0; i < 50; i++) stepSoil(w)
-	assertAlmostEquals(totalGridWater(w), before, 1e-4)
+		setMat(world, x, 9, MAT.SEAL)
+	addMoisture(world, 5, 3, 0.9)
+	addMoisture(world, 8, 4, 0.7)
+	addMoisture(world, 6, 6, 0.5)
+	const before = totalGridWater(world)
+	for (let i = 0; i < 50; i++) stepSoil(world)
+	assertAlmostEquals(totalGridWater(world), before, 1e-4)
 	for (let y = 3; y <= 8; y++)
 		for (let x = 4; x <= 10; x++) {
-			const m = w.moisture[idx(w, x, y)]
+			const m = world.moisture[idx(world, x, y)]
 			assert(m >= -1e-6 && m <= SOIL_CAP + 1e-6)
 		}
 })
@@ -469,25 +469,25 @@ Deno.test('fluid: waterChar uses liquid velocity, not wind-scale slant on still 
 })
 
 Deno.test('fluid: standing liquid velocity stays low so glyphs are still marks', () => {
-	const w = createWorld({ width: 20, height: 12, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
+	const world = createWorld({ width: 20, height: 12, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
 	for (let x = 4; x <= 14; x++) {
-		setMat(w, x, 9, MAT.HORIZON)
-		w.moisture[idx(w, x, 9)] = SOIL_CAP
-		setMat(w, x, 10, MAT.SEAL)
+		setMat(world, x, 9, MAT.HORIZON)
+		world.moisture[idx(world, x, 9)] = SOIL_CAP
+		setMat(world, x, 10, MAT.SEAL)
 	}
-	addLiquid(w, 8, 8, 1)
-	addLiquid(w, 9, 8, 1)
-	for (let i = 0; i < 40; i++) stepLiquid(w)
+	addLiquid(world, 8, 8, 1)
+	addLiquid(world, 9, 8, 1)
+	for (let i = 0; i < 40; i++) stepLiquid(world)
 
 	let checked = 0
 	for (let x = 4; x <= 14; x++) {
-		const i = idx(w, x, 8)
-		if (w.liq[i] < 0.1) continue
+		const i = idx(world, x, 8)
+		if (world.liq[i] < 0.1) continue
 		checked++
-		const speed = Math.hypot(w.liqVx[i], w.liqVy[i])
+		const speed = Math.hypot(world.liqVx[i], world.liqVy[i])
 		assertLess(speed, 0.35)
-		const ch = liquidChar(w.liq[i], x, false, w.liqVx[i], w.liqVy[i])
+		const ch = liquidChar(world.liq[i], x, false, world.liqVx[i], world.liqVy[i])
 		assert(
 			!WATER_HIGH_R.includes(ch) && !WATER_HIGH_L.includes(ch),
 			`puddle should not use high-momentum slant, got ${ch}`,
@@ -522,11 +522,11 @@ Deno.test('fluid: global wind is autocorrelated, not a sine stack', () => {
 	assertGreater(nearCorr, 0.85)
 
 	// Lag-1 second differences are irregular — pure multi-sine is much smoother/periodic
-	const d2 = []
+	const secondDiffs = []
 	for (let i = 1; i < n - 1; i++)
-		d2.push(xs[i + 1] - 2 * xs[i] + xs[i - 1])
-	const mean = d2.reduce((a, b) => a + b, 0) / d2.length
-	const varD2 = d2.reduce((a, b) => a + (b - mean) ** 2, 0) / d2.length
+		secondDiffs.push(xs[i + 1] - 2 * xs[i] + xs[i - 1])
+	const mean = secondDiffs.reduce((a, b) => a + b, 0) / secondDiffs.length
+	const varD2 = secondDiffs.reduce((a, b) => a + (b - mean) ** 2, 0) / secondDiffs.length
 	assertGreater(varD2, 1e-6)
 
 	// Same seed is deterministic; different seed diverges
@@ -545,37 +545,37 @@ Deno.test('fluid: wind shear is stronger aloft than near ground', () => {
 })
 
 Deno.test('fluid: open-air gas field follows forced wind with height shear', () => {
-	const w = createWorld({ width: 24, height: 20, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
-	labelAirRegions(w)
+	const world = createWorld({ width: 24, height: 20, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
+	labelAirRegions(world)
 	for (let i = 0; i < 40; i++)
-		stepGas(w, { time: i, seed: 1, forceWind: 0.8 })
-	const top = Math.abs(gasVelocityAt(w, 12, 2).ux)
-	const bot = Math.abs(gasVelocityAt(w, 12, w.worldH - 3).ux)
+		stepGas(world, { time: i, seed: 1, forceWind: 0.8 })
+	const top = Math.abs(gasVelocityAt(world, 12, 2).ux)
+	const bot = Math.abs(gasVelocityAt(world, 12, world.worldH - 3).ux)
 	assertGreater(top, 0.15)
 	assertGreater(top, bot)
 })
 
 Deno.test('fluid: wind-tunnel throat is faster than wide section (continuity)', () => {
-	const w = createWorld({ width: 36, height: 16, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
+	const world = createWorld({ width: 36, height: 16, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
 	// Horizontal duct: floor+ceiling, span 3 in the wide section
 	for (let x = 4; x <= 30; x++) {
-		setMat(w, x, 4, MAT.SEAL)
-		setMat(w, x, 8, MAT.SEAL)
+		setMat(world, x, 4, MAT.SEAL)
+		setMat(world, x, 8, MAT.SEAL)
 	}
 	// Throat at x=16..18: only mid row open (span 1)
 	for (let x = 16; x <= 18; x++) {
-		setMat(w, x, 5, MAT.SEAL)
-		setMat(w, x, 7, MAT.SEAL)
+		setMat(world, x, 5, MAT.SEAL)
+		setMat(world, x, 7, MAT.SEAL)
 	}
 
-	labelAirRegions(w)
+	labelAirRegions(world)
 	for (let i = 0; i < 50; i++)
-		stepGas(w, { time: i, seed: 0, forceWind: 0.9 })
+		stepGas(world, { time: i, seed: 0, forceWind: 0.9 })
 
-	const wide = Math.abs(w.gasUx[idx(w, 10, 6)])
-	const throat = Math.abs(w.gasUx[idx(w, 17, 6)])
+	const wide = Math.abs(world.gasUx[idx(world, 10, 6)])
+	const throat = Math.abs(world.gasUx[idx(world, 17, 6)])
 	assertGreater(wide, 0.05)
 	assertGreater(throat, wide * 1.15)
 })
@@ -586,72 +586,72 @@ Deno.test('fluid: Bernoulli — higher speed carries higher dynamic pressure', (
 })
 
 Deno.test('fluid: Bernoulli — tunnel throat has lower static pressure', () => {
-	const w = createWorld({ width: 36, height: 16, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
+	const world = createWorld({ width: 36, height: 16, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
 	for (let x = 4; x <= 30; x++) {
-		setMat(w, x, 4, MAT.SEAL)
-		setMat(w, x, 8, MAT.SEAL)
+		setMat(world, x, 4, MAT.SEAL)
+		setMat(world, x, 8, MAT.SEAL)
 	}
 	for (let x = 16; x <= 18; x++) {
-		setMat(w, x, 5, MAT.SEAL)
-		setMat(w, x, 7, MAT.SEAL)
+		setMat(world, x, 5, MAT.SEAL)
+		setMat(world, x, 7, MAT.SEAL)
 	}
-	labelAirRegions(w)
+	labelAirRegions(world)
 	for (let i = 0; i < 50; i++)
-		stepGas(w, { time: i, seed: 0, forceWind: 0.9 })
+		stepGas(world, { time: i, seed: 0, forceWind: 0.9 })
 
-	const pWide = staticPressureAt(w, 10, 6)
-	const pThroat = staticPressureAt(w, 17, 6)
+	const pWide = staticPressureAt(world, 10, 6)
+	const pThroat = staticPressureAt(world, 17, 6)
 	assertLess(pThroat, pWide)
 })
 
 Deno.test('fluid: Bernoulli ΔP drive reinforces suction into the throat', () => {
-	const w = createWorld({ width: 36, height: 16, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
+	const world = createWorld({ width: 36, height: 16, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
 	for (let x = 4; x <= 30; x++) {
-		setMat(w, x, 4, MAT.SEAL)
-		setMat(w, x, 8, MAT.SEAL)
+		setMat(world, x, 4, MAT.SEAL)
+		setMat(world, x, 8, MAT.SEAL)
 	}
 	for (let x = 16; x <= 18; x++) {
-		setMat(w, x, 5, MAT.SEAL)
-		setMat(w, x, 7, MAT.SEAL)
+		setMat(world, x, 5, MAT.SEAL)
+		setMat(world, x, 7, MAT.SEAL)
 	}
-	labelAirRegions(w)
+	labelAirRegions(world)
 	for (let i = 0; i < 50; i++)
-		stepGas(w, { time: i, seed: 0, forceWind: 0.9 })
+		stepGas(world, { time: i, seed: 0, forceWind: 0.9 })
 
 	// Upstream of throat should feed into it (positive ux), and throat stays faster than wide.
-	assertGreater(w.gasUx[idx(w, 14, 6)], 0.05)
-	assertGreater(Math.abs(w.gasUx[idx(w, 17, 6)]), Math.abs(w.gasUx[idx(w, 10, 6)]) * 1.1)
+	assertGreater(world.gasUx[idx(world, 14, 6)], 0.05)
+	assertGreater(Math.abs(world.gasUx[idx(world, 17, 6)]), Math.abs(world.gasUx[idx(world, 10, 6)]) * 1.1)
 })
 
 Deno.test('fluid: flow stagnates against a solid face', () => {
-	const w = createWorld({ width: 24, height: 14, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
+	const world = createWorld({ width: 24, height: 14, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
 	for (let y = 2; y <= 10; y++)
-		setMat(w, 14, y, MAT.SEAL)
-	labelAirRegions(w)
+		setMat(world, 14, y, MAT.SEAL)
+	labelAirRegions(world)
 	for (let i = 0; i < 35; i++)
-		stepGas(w, { time: i, seed: 0, forceWind: 0.85 })
-	const ahead = Math.abs(w.gasUx[idx(w, 13, 6)])
-	const free = Math.abs(w.gasUx[idx(w, 8, 6)])
+		stepGas(world, { time: i, seed: 0, forceWind: 0.85 })
+	const ahead = Math.abs(world.gasUx[idx(world, 13, 6)])
+	const free = Math.abs(world.gasUx[idx(world, 8, 6)])
 	assertGreater(free, 0.1)
 	assertLess(ahead, free * 0.55)
 })
 
 Deno.test('fluid: rain particles are dragged by local gas velocity', () => {
-	const w = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
-	w.gasUx.fill(0.6)
-	spawnParticle(w, 8, 2, 0, 0.4, 40, 0.5)
+	const world = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
+	world.gasUx.fill(0.6)
+	spawnParticle(world, 8, 2, 0, 0.4, 40, 0.5)
 	/**
 	 *
 	 */
 	const hit = () => { /* no-op */ }
 	for (let i = 0; i < 8; i++)
-		stepParticles(w, hit)
-	assert(w.particles.count > 0)
-	assertGreater(w.particles.vx[0], 0.15)
+		stepParticles(world, hit)
+	assert(world.particles.count > 0)
+	assertGreater(world.particles.vx[0], 0.15)
 })
 
 Deno.test('fluid: vertical gas drag stays weak in calm air, strong in storms', () => {
@@ -663,26 +663,26 @@ Deno.test('fluid: vertical gas drag stays weak in calm air, strong in storms', (
 
 Deno.test('fluid: tornado gas keeps rain orbiting aloft', async () => {
 	const { paintVortexDrive, VORTEX_RADIUS } = await import('../gesture/wind.mjs')
-	const w = createWorld({ width: 28, height: 20, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
-	const cx = w.ox + 14
+	const world = createWorld({ width: 28, height: 20, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
+	const cx = world.ox + 14
 	const cy = 8
-	paintVortexDrive(cx, cy, 3.2, VORTEX_RADIUS, w, w.gasUx, w.gasUy)
+	paintVortexDrive(cx, cy, 3.2, VORTEX_RADIUS, world, world.gasUx, world.gasUy)
 
-	spawnParticle(w, cx + 4.2, cy, 0, 0.15, 90, 0.45)
+	spawnParticle(world, cx + 4.2, cy, 0, 0.15, 90, 0.45)
 	/**
 	 *
 	 */
 	const hit = () => { /* no-op — must not land */ }
 	let angSpan = 0
-	let prev = Math.atan2(w.particles.y[0] - cy, w.particles.x[0] - cx)
-	let maxY = w.particles.y[0]
+	let prev = Math.atan2(world.particles.y[0] - cy, world.particles.x[0] - cx)
+	let maxY = world.particles.y[0]
 	for (let i = 0; i < 55; i++) {
-		stepParticles(w, hit)
-		assertGreater(w.particles.count, 0)
-		const x = w.particles.x[0] - cx
-		const y = w.particles.y[0] - cy
-		maxY = Math.max(maxY, w.particles.y[0])
+		stepParticles(world, hit)
+		assertGreater(world.particles.count, 0)
+		const x = world.particles.x[0] - cx
+		const y = world.particles.y[0] - cy
+		maxY = Math.max(maxY, world.particles.y[0])
 		const ang = Math.atan2(y, x)
 		let d = ang - prev
 		if (d > Math.PI) d -= Math.PI * 2
@@ -695,59 +695,59 @@ Deno.test('fluid: tornado gas keeps rain orbiting aloft', async () => {
 })
 
 Deno.test('fluid: upward wind lifts free liquid into particles', () => {
-	const w = createWorld({ width: 20, height: 14, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
-	for (let x = 0; x < w.worldW; x++)
-		setMat(w, x, 11, MAT.SEAL)
-	const px = w.ox + 10
+	const world = createWorld({ width: 20, height: 14, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
+	for (let x = 0; x < world.worldW; x++)
+		setMat(world, x, 11, MAT.SEAL)
+	const px = world.ox + 10
 	const py = 10
-	addLiquid(w, px, py, 0.95)
-	const puddle = idx(w, px, py)
-	const before = w.liq[puddle]
+	addLiquid(world, px, py, 0.95)
+	const puddle = idx(world, px, py)
+	const before = world.liq[puddle]
 	assertGreater(before, LIQ_DRAW)
 	// Wet cells block gas; suction is sampled from the air cell above.
-	w.gasUy[idx(w, px, py - 1)] = -2.4
-	w.gasUx[idx(w, px, py - 1)] = 0.8
+	world.gasUy[idx(world, px, py - 1)] = -2.4
+	world.gasUx[idx(world, px, py - 1)] = 0.8
 
-	const lifted = liftLiquidByWind(w)
+	const lifted = liftLiquidByWind(world)
 	assertGreater(lifted, 0.1)
-	assertLess(w.liq[puddle], before)
-	assertAlmostEquals(w.liq[puddle] + lifted, before, 1e-6)
-	assertGreater(w.particles.count, 0)
-	assertLess(w.particles.vy[0], -0.3)
-	assertGreater(w.particles.amt[0], 0.1)
+	assertLess(world.liq[puddle], before)
+	assertAlmostEquals(world.liq[puddle] + lifted, before, 1e-6)
+	assertGreater(world.particles.count, 0)
+	assertLess(world.particles.vy[0], -0.3)
+	assertGreater(world.particles.amt[0], 0.1)
 })
 
 Deno.test('fluid: vortex drive through stepGas suspends rain', async () => {
 	const { paintVortexDrive, VORTEX_RADIUS } = await import('../gesture/wind.mjs')
 	const { scratch } = await import('../fluid/world.mjs')
-	const w = createWorld({ width: 28, height: 18, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
-	labelAirRegions(w)
-	const n = w.worldW * w.worldH
-	const driveUx = scratch(w, 'vUx', n, Float32Array)
-	const driveUy = scratch(w, 'vUy', n, Float32Array)
-	const cx = w.ox + 14
+	const world = createWorld({ width: 28, height: 18, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
+	labelAirRegions(world)
+	const n = world.worldW * world.worldH
+	const driveUx = scratch(world, 'vUx', n, Float32Array)
+	const driveUy = scratch(world, 'vUy', n, Float32Array)
+	const cx = world.ox + 14
 	const cy = 7
-	paintVortexDrive(cx, cy, 3.3, VORTEX_RADIUS, w, driveUx, driveUy)
+	paintVortexDrive(cx, cy, 3.3, VORTEX_RADIUS, world, driveUx, driveUy)
 	for (let i = 0; i < 20; i++)
-		stepGas(w, { time: i, seed: 0, forceWind: 0, driveUx, driveUy })
+		stepGas(world, { time: i, seed: 0, forceWind: 0, driveUx, driveUy })
 
-	assertLess(w.gasUy[idx(w, cx, cy)], -1.2)
+	assertLess(world.gasUy[idx(world, cx, cy)], -1.2)
 
-	spawnParticle(w, cx + 3.5, cy + 1, 0, 0.3, 80, 0.4)
+	spawnParticle(world, cx + 3.5, cy + 1, 0, 0.3, 80, 0.4)
 	/**
 	 *
 	 */
 	const hit = () => { /* no-op */ }
-	let maxY = w.particles.y[0]
+	let maxY = world.particles.y[0]
 	for (let i = 0; i < 40; i++) {
-		stepGas(w, { time: 20 + i, seed: 0, forceWind: 0, driveUx, driveUy })
-		stepParticles(w, hit)
-		if (!w.particles.count) break
-		maxY = Math.max(maxY, w.particles.y[0])
+		stepGas(world, { time: 20 + i, seed: 0, forceWind: 0, driveUx, driveUy })
+		stepParticles(world, hit)
+		if (!world.particles.count) break
+		maxY = Math.max(maxY, world.particles.y[0])
 	}
-	assertGreater(w.particles.count, 0)
+	assertGreater(world.particles.count, 0)
 	assertLess(maxY, cy + 6)
 })
 
@@ -756,13 +756,13 @@ Deno.test('fluid: vortex rain gathers at the cursor centre', async () => {
 	// corridor a hover attractor (upper-right of the cursor). Mean must stay near centre.
 	const { paintVortexDrive, VORTEX_RADIUS } = await import('../gesture/wind.mjs')
 	const { scratch } = await import('../fluid/world.mjs')
-	const w = createWorld({ width: 36, height: 22, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
-	labelAirRegions(w)
-	const n = w.worldW * w.worldH
-	const driveUx = scratch(w, 'vUx', n, Float32Array)
-	const driveUy = scratch(w, 'vUy', n, Float32Array)
-	const cx = w.ox + 16.5
+	const world = createWorld({ width: 36, height: 22, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
+	labelAirRegions(world)
+	const n = world.worldW * world.worldH
+	const driveUx = scratch(world, 'vUx', n, Float32Array)
+	const driveUy = scratch(world, 'vUy', n, Float32Array)
+	const cx = world.ox + 16.5
 	const cy = 10.5
 	/**
 	 *
@@ -771,26 +771,26 @@ Deno.test('fluid: vortex rain gathers at the cursor centre', async () => {
 
 	for (let i = 0; i < 36; i++) {
 		const a = i / 36 * Math.PI * 2
-		spawnParticle(w, cx + Math.cos(a) * 5, cy + Math.sin(a) * 3, 0, 0.15, 220, 0.35)
+		spawnParticle(world, cx + Math.cos(a) * 5, cy + Math.sin(a) * 3, 0, 0.15, 220, 0.35)
 	}
 
 	for (let t = 0; t < 90; t++) {
 		driveUx.fill(0)
 		driveUy.fill(0)
-		paintVortexDrive(cx, cy, 3.3, VORTEX_RADIUS, w, driveUx, driveUy)
-		stepGas(w, { time: t, seed: 0, forceWind: 0, driveUx, driveUy })
-		stepParticles(w, hit)
+		paintVortexDrive(cx, cy, 3.3, VORTEX_RADIUS, world, driveUx, driveUy)
+		stepGas(world, { time: t, seed: 0, forceWind: 0, driveUx, driveUy })
+		stepParticles(world, hit)
 	}
 
-	assertGreater(w.particles.count, 12)
+	assertGreater(world.particles.count, 12)
 	let sx = 0
 	let sy = 0
-	for (let i = 0; i < w.particles.count; i++) {
-		sx += w.particles.x[i]
-		sy += w.particles.y[i]
+	for (let i = 0; i < world.particles.count; i++) {
+		sx += world.particles.x[i]
+		sy += world.particles.y[i]
 	}
-	const mx = sx / w.particles.count
-	const my = sy / w.particles.count
+	const mx = sx / world.particles.count
+	const my = sy / world.particles.count
 	const dist = Math.hypot(mx - cx, my - cy)
 	assertLess(dist, 2.2, `rain mean (${mx.toFixed(2)}, ${my.toFixed(2)}) drifted from cursor (${cx}, ${cy}) by ${dist.toFixed(2)}`)
 	assertLess(Math.abs(mx - cx), 1.6)
@@ -798,33 +798,33 @@ Deno.test('fluid: vortex rain gathers at the cursor centre', async () => {
 })
 
 Deno.test('fluid: particle life expiry deposits mass into the grid', () => {
-	const w = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
-	for (let x = 0; x < w.worldW; x++)
-		setMat(w, x, 10, MAT.SEAL)
-	spawnParticle(w, 8, 5, 0, 0, 1, 0.55)
-	const before = totalWorldWater(w)
+	const world = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
+	for (let x = 0; x < world.worldW; x++)
+		setMat(world, x, 10, MAT.SEAL)
+	spawnParticle(world, 8, 5, 0, 0, 1, 0.55)
+	const before = totalWorldWater(world)
 	assertAlmostEquals(before, 0.55, 1e-6)
 	/**
 	 *
 	 */
 	const hit = () => { /* no-op */ }
-	stepParticles(w, hit)
-	assertEquals(w.particles.count, 0)
-	assertAlmostEquals(totalWorldWater(w), before, 1e-5)
-	assertGreater(totalGridWater(w), 0.5)
+	stepParticles(world, hit)
+	assertEquals(world.particles.count, 0)
+	assertAlmostEquals(totalWorldWater(world), before, 1e-5)
+	assertGreater(totalGridWater(world), 0.5)
 })
 
 Deno.test('fluid: stepFluid runs gas then liquid in one tick', () => {
-	const w = createWorld({ width: 20, height: 14, margin: 2, bottomExtra: 2 })
-	clearMaterials(w)
+	const world = createWorld({ width: 20, height: 14, margin: 2, bottomExtra: 2 })
+	clearMaterials(world)
 	for (let x = 4; x <= 14; x++) {
-		setMat(w, x, 10, MAT.HORIZON)
-		w.moisture[idx(w, x, 10)] = SOIL_CAP
-		setMat(w, x, 11, MAT.SEAL)
+		setMat(world, x, 10, MAT.HORIZON)
+		world.moisture[idx(world, x, 10)] = SOIL_CAP
+		setMat(world, x, 11, MAT.SEAL)
 	}
-	addLiquid(w, 9, 9, 1)
-	stepFluid(w, { time: 0, seed: 1, forceWind: 0.5 })
-	assertGreater(Math.abs(gasVelocityAt(w, 10, 3).ux), 0.05)
-	assertGreater(w.liq[idx(w, 9, 9)] + w.liq[idx(w, 8, 9)] + w.liq[idx(w, 10, 9)], 0.3)
+	addLiquid(world, 9, 9, 1)
+	stepFluid(world, { time: 0, seed: 1, forceWind: 0.5 })
+	assertGreater(Math.abs(gasVelocityAt(world, 10, 3).ux), 0.05)
+	assertGreater(world.liq[idx(world, 9, 9)] + world.liq[idx(world, 8, 9)] + world.liq[idx(world, 10, 9)], 0.3)
 })

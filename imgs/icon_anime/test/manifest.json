@@ -15,7 +15,6 @@
 			],
 			"triggers": [
 				"imgs/icon_anime/**",
-				"imgs/icon_anime/test/**",
 				"src/scripts/test/deno/serial.mjs"
 			]
 		}

@@ -6,21 +6,23 @@ import { assert, assertEquals, assertGreater } from 'jsr:@std/assert'
 
 import { MAT, addLiquid, spawnParticle, idx } from '../fluid/index.mjs'
 import {
-	createAnimState, resizeAnimState, enter, hold, exit, renderGrid, layout,
+	createAnimState, resizeAnimState, enter, hold, exit, renderGrid,
+	ICON_W, ICON_H, ICON_PACK_H, ICON_BASE_ROWS, ICON_BASE_X0, ICON_BASE_X1,
+	maxBodyD, maxPillarH,
 } from '../index.mjs'
 
 Deno.test('layout: ICON_W matches packed bitmap', () => {
-	assertEquals(layout.ICON_W, 42)
-	assertEquals(layout.ICON_PACK_H, 20)
-	assertEquals(layout.ICON_H, 23)
+	assertEquals(ICON_W, 42)
+	assertEquals(ICON_PACK_H, 20)
+	assertEquals(ICON_H, 23)
 })
 
 Deno.test('createAnimState: fixed seed + size', () => {
-	const a = createAnimState({ width: 60, height: 30, seed: 1 })
-	const b = createAnimState({ width: 60, height: 30, seed: 1 })
-	assertEquals([...a.terrain.surface], [...b.terrain.surface])
-	assertEquals(a.width, 60)
-	assertEquals(a.height, 30)
+	const first = createAnimState({ width: 60, height: 30, seed: 1 })
+	const second = createAnimState({ width: 60, height: 30, seed: 1 })
+	assertEquals([...first.terrain.surface], [...second.terrain.surface])
+	assertEquals(first.width, 60)
+	assertEquals(first.height, 30)
 })
 
 Deno.test('enter: reaches full icon', () => {
@@ -28,9 +30,9 @@ Deno.test('enter: reaches full icon', () => {
 	let frames = 0
 	for (const _ of enter(state)) frames++
 	assertGreater(frames, 10)
-	assertEquals(state.baseBot, layout.BASE_WIDTH)
-	assertEquals(state.pillars, layout.maxPillarH)
-	assertEquals(state.bodyReach, layout.maxBodyD)
+	assertEquals(state.baseBot, ICON_BASE_X1 - ICON_BASE_X0)
+	assertEquals(state.pillars, maxPillarH)
+	assertEquals(state.bodyReach, maxBodyD)
 })
 
 Deno.test('exit: ends when icon gone without draining rain wait', () => {
@@ -58,7 +60,7 @@ Deno.test('exit: ends when icon gone without draining rain wait', () => {
 	assertEquals(lines.length, state.height)
 	assertEquals(lines[0].replace(/\x1b\[[\d;]*m/g, '').length, state.width)
 	// exit must be shorter than old 90-frame drain budget
-	assert(frames < 90 + layout.maxBodyD + layout.maxPillarH * 2 + layout.BASE_WIDTH)
+	assert(frames < 90 + maxBodyD + maxPillarH * 2 + (ICON_BASE_X1 - ICON_BASE_X0))
 })
 
 Deno.test('hold: yields at least one frame', () => {
@@ -103,17 +105,17 @@ Deno.test('hold: BODY impact leaves no pooled liquid in the silhouette', () => {
 	assertGreater(bodyCells, 0)
 
 	// Drop a particle onto a body cell — after a frame it must not leave fill in BODY
-	let bx = -1, by = -1
-	for (let y = 0; y < world.worldH && bx < 0; y++)
+	let bodyX = -1, bodyY = -1
+	for (let y = 0; y < world.worldH && bodyX < 0; y++)
 		for (let x = 0; x < world.worldW; x++)
 			if (world.mat[idx(world, x, y)] === MAT.BODY) {
-				bx = x
-				by = y
+				bodyX = x
+				bodyY = y
 				break
 			}
-	spawnParticle(world, bx + 0.2, by - 1.2, 0, 0.8, 40)
+	spawnParticle(world, bodyX + 0.2, bodyY - 1.2, 0, 0.8, 40)
 	const { value: frame } = gen.next()
-	assertEquals(world.liq[idx(world, bx, by)], 0)
+	assertEquals(world.liq[idx(world, bodyX, bodyY)], 0)
 	assert(typeof frame === 'string')
 	gen.return?.()
 })
@@ -124,9 +126,9 @@ Deno.test('hold: pool liquid leaks to the next base slab', () => {
 	assertEquals(gen.next().done, false)
 
 	const { world, iconOx, iconOy } = state
-	const upper = iconOy + layout.ICON_BASE_ROWS[0]
-	const lower = iconOy + layout.ICON_BASE_ROWS[1]
-	const x = iconOx + layout.ICON_BASE_ROWS.length + 12
+	const upper = iconOy + ICON_BASE_ROWS[0]
+	const lower = iconOy + ICON_BASE_ROWS[1]
+	const x = iconOx + ICON_BASE_X0 + 12
 	assertEquals(world.mat[idx(world, x, upper)], MAT.POOL)
 	assertEquals(world.mat[idx(world, x, lower)], MAT.POOL)
 
@@ -139,9 +141,9 @@ Deno.test('hold: pool liquid leaks to the next base slab', () => {
 
 Deno.test('resizeAnimState: preserves terrain and weathers only newly exposed soil', () => {
 	const state = createAnimState({ width: 50, height: 28, seed: 11 })
-	state.baseBot = state.baseTop = layout.BASE_WIDTH
-	state.pillars = layout.maxPillarH
-	state.bodyReach = layout.maxBodyD
+	state.baseBot = state.baseTop = ICON_BASE_X1 - ICON_BASE_X0
+	state.pillars = maxPillarH
+	state.bodyReach = maxBodyD
 	state.frame = 40
 	addLiquid(state.world, state.world.ox + 8, 12, 0.8)
 	const oldTerrain = state.terrain
@@ -152,7 +154,7 @@ Deno.test('resizeAnimState: preserves terrain and weathers only newly exposed so
 	assertEquals(state.width, 70)
 	assertEquals(state.height, 36)
 	assertEquals(state.seed, 11)
-	assertEquals(state.pillars, layout.maxPillarH)
+	assertEquals(state.pillars, maxPillarH)
 	assertEquals(state.frame, 40)
 	assertEquals(state.terrain.surface.length, state.world.worldW)
 
@@ -230,39 +232,39 @@ Deno.test('light gesture: quick release → ripple; hold → torch fade', async 
 	for (let i = 0; i < RIPPLE_LIFE; i++) tickLightGesture(click)
 	assertEquals(click.ripples.length, 0)
 
-	const hold = createLightGesture()
-	lightPointer(hold, { x: 5, y: 4, left: true })
-	for (let i = 0; i < TORCH_DELAY; i++) tickLightGesture(hold)
-	assertEquals(hold.torch, true)
-	assertEquals(hold.ripples.length, 0)
-	assert(hold.torchBlend > 0 && hold.torchBlend < 1)
-	const fadingIn = sampleLight(hold, 5, 4, lightFalloff)
+	const torchGesture = createLightGesture()
+	lightPointer(torchGesture, { x: 5, y: 4, left: true })
+	for (let i = 0; i < TORCH_DELAY; i++) tickLightGesture(torchGesture)
+	assertEquals(torchGesture.torch, true)
+	assertEquals(torchGesture.ripples.length, 0)
+	assert(torchGesture.torchBlend > 0 && torchGesture.torchBlend < 1)
+	const fadingIn = sampleLight(torchGesture, 5, 4, lightFalloff)
 	assert(fadingIn.ambient > 0)
 	assert(fadingIn.lift > 0 && fadingIn.lift < 1)
 
-	for (let i = 0; i < TORCH_FADE; i++) tickLightGesture(hold)
-	assertEquals(hold.torchBlend, 1)
-	const torch = sampleLight(hold, 5, 4, lightFalloff)
+	for (let i = 0; i < TORCH_FADE; i++) tickLightGesture(torchGesture)
+	assertEquals(torchGesture.torchBlend, 1)
+	const torch = sampleLight(torchGesture, 5, 4, lightFalloff)
 	assertEquals(torch.ambient, 1)
 	assertEquals(torch.lift, 1)
-	const dimFar = sampleLight(hold, 5 + 40, 4, lightFalloff)
+	const dimFar = sampleLight(torchGesture, 5 + 40, 4, lightFalloff)
 	assertEquals(dimFar.ambient, 1)
 	assertEquals(dimFar.lift, 0)
 
-	lightPointer(hold, { x: 8, y: 4, left: true })
-	assertEquals(hold.x, 8)
-	lightPointer(hold, { x: 8, y: 4, left: false })
-	assertEquals(hold.down, false)
-	assertEquals(hold.torch, false)
-	assertEquals(hold.ripples.length, 0)
-	assertEquals(hold.torchBlend, 1)
-	tickLightGesture(hold)
-	assert(hold.torchBlend < 1 && hold.torchBlend > 0)
-	const fadingOut = sampleLight(hold, 8, 4, lightFalloff)
+	lightPointer(torchGesture, { x: 8, y: 4, left: true })
+	assertEquals(torchGesture.x, 8)
+	lightPointer(torchGesture, { x: 8, y: 4, left: false })
+	assertEquals(torchGesture.down, false)
+	assertEquals(torchGesture.torch, false)
+	assertEquals(torchGesture.ripples.length, 0)
+	assertEquals(torchGesture.torchBlend, 1)
+	tickLightGesture(torchGesture)
+	assert(torchGesture.torchBlend < 1 && torchGesture.torchBlend > 0)
+	const fadingOut = sampleLight(torchGesture, 8, 4, lightFalloff)
 	assert(fadingOut.ambient > 0 && fadingOut.ambient < 1)
-	for (let i = 0; i < TORCH_FADE; i++) tickLightGesture(hold)
-	assertEquals(hold.torchBlend, 0)
-	assertEquals(sampleLight(hold, 8, 4, lightFalloff).ambient, 0)
+	for (let i = 0; i < TORCH_FADE; i++) tickLightGesture(torchGesture)
+	assertEquals(torchGesture.torchBlend, 0)
+	assertEquals(sampleLight(torchGesture, 8, 4, lightFalloff).ambient, 0)
 })
 
 Deno.test('consumeStdin: SGR left/right press/drag/release + Ctrl+C', async () => {
@@ -279,37 +281,37 @@ Deno.test('consumeStdin: SGR left/right press/drag/release + Ctrl+C', async () =
 	 */
 	const onPointer = (ev) => { events.push(ev) }
 	/**
-	 * @param {string} s ascii bytes
+	 * @param {string} ascii ascii bytes
 	 * @returns {Uint8Array} encoded
 	 */
-	const enc = (s) => Uint8Array.from(s, c => c.charCodeAt(0))
+	const encode = (ascii) => Uint8Array.from(ascii, c => c.charCodeAt(0))
 	const handlers = { abort, onPointer }
 	let carry = ''
-	carry = consumeStdin(carry, enc('\x1b[<0;5;8M'), handlers)
+	carry = consumeStdin(carry, encode('\x1b[<0;5;8M'), handlers)
 	assertEquals(carry, '')
 	assertEquals(events.at(-1), { x: 4, y: 7, left: true })
-	carry = consumeStdin(carry, enc('\x1b[<32;12;9M'), handlers)
+	carry = consumeStdin(carry, encode('\x1b[<32;12;9M'), handlers)
 	assertEquals(events.at(-1), { x: 11, y: 8, left: true })
-	carry = consumeStdin(carry, enc('\x1b[<0;12;9m'), handlers)
+	carry = consumeStdin(carry, encode('\x1b[<0;12;9m'), handlers)
 	assertEquals(events.at(-1), { x: 11, y: 8, left: false })
 	// Right press / drag / release
-	carry = consumeStdin(carry, enc('\x1b[<2;6;4M'), handlers)
+	carry = consumeStdin(carry, encode('\x1b[<2;6;4M'), handlers)
 	assertEquals(events.at(-1), { x: 5, y: 3, right: true })
-	carry = consumeStdin(carry, enc('\x1b[<34;10;5M'), handlers)
+	carry = consumeStdin(carry, encode('\x1b[<34;10;5M'), handlers)
 	assertEquals(events.at(-1), { x: 9, y: 4, right: true })
-	carry = consumeStdin(carry, enc('\x1b[<2;10;5m'), handlers)
+	carry = consumeStdin(carry, encode('\x1b[<2;10;5m'), handlers)
 	assertEquals(events.at(-1), { x: 9, y: 4, right: false })
 	// Wheel ignored
 	const n = events.length
-	consumeStdin('', enc('\x1b[<64;1;1M'), handlers)
+	consumeStdin('', encode('\x1b[<64;1;1M'), handlers)
 	assertEquals(events.length, n)
 	// Middle ignored
-	consumeStdin('', enc('\x1b[<1;2;2M'), handlers)
+	consumeStdin('', encode('\x1b[<1;2;2M'), handlers)
 	assertEquals(events.length, n)
 	// Split CSI across chunks
-	carry = consumeStdin('', enc('\x1b[<0;3;5'), handlers)
+	carry = consumeStdin('', encode('\x1b[<0;3;5'), handlers)
 	assert(carry.length > 0)
-	carry = consumeStdin(carry, enc('M'), handlers)
+	carry = consumeStdin(carry, encode('M'), handlers)
 	assertEquals(carry, '')
 	assertEquals(events.at(-1), { x: 2, y: 4, left: true })
 	consumeStdin('', Uint8Array.of(0x03), handlers)
@@ -326,61 +328,61 @@ Deno.test('wind gesture: stroke speed + clockwise vortex + release clear', async
 	const n = world.worldW * world.worldH
 	const driveUx = scratch(world, 'tUx', n, Float32Array)
 	const driveUy = scratch(world, 'tUy', n, Float32Array)
-	const g = createWindGesture()
+	const gesture = createWindGesture()
 
 	// Fast rightward drag → positive ux along the stroke
-	windPointer(g, { x: 10, y: 8, right: true })
-	tickWindGesture(g) // arm at rest
-	windPointer(g, { x: 10 + STILL_EPS + 4, y: 8, right: true })
-	tickWindGesture(g)
-	assert(g.strokes.length >= 1)
-	assert(g.strokes.at(-1).ux > 0.5)
-	fillWindDrive(g, world, driveUx, driveUy)
+	windPointer(gesture, { x: 10, y: 8, right: true })
+	tickWindGesture(gesture) // arm at rest
+	windPointer(gesture, { x: 10 + STILL_EPS + 4, y: 8, right: true })
+	tickWindGesture(gesture)
+	assert(gesture.strokes.length >= 1)
+	assert(gesture.strokes.at(-1).ux > 0.5)
+	fillWindDrive(gesture, world, driveUx, driveUy)
 	const mid = (8 + world.oy) * world.worldW + (12 + world.ox)
 	assert(driveUx[mid] > 0.2)
 
 	// Long still → tornado: clockwise top + net updraft
-	const g2 = createWindGesture()
-	windPointer(g2, { x: 20, y: 10, right: true })
-	for (let i = 0; i < VORTEX_DELAY + 20; i++) tickWindGesture(g2)
-	assertEquals(g2.vortexOn, true)
-	assert(g2.strength > 1.5)
-	assert(g2.strength <= VORTEX_MAX)
-	fillWindDrive(g2, world, driveUx, driveUy)
+	const vortexGesture = createWindGesture()
+	windPointer(vortexGesture, { x: 20, y: 10, right: true })
+	for (let i = 0; i < VORTEX_DELAY + 20; i++) tickWindGesture(vortexGesture)
+	assertEquals(vortexGesture.vortexOn, true)
+	assert(vortexGesture.strength > 1.5)
+	assert(vortexGesture.strength <= VORTEX_MAX)
+	fillWindDrive(vortexGesture, world, driveUx, driveUy)
 	const top = (8 + world.oy) * world.worldW + (20 + world.ox)
 	const core = (10 + world.oy) * world.worldW + (20 + world.ox)
 	assert(driveUx[top] > 0.2, 'clockwise: above centre → +ux')
 	assert(driveUy[core] < -1, 'updraft at core')
 
 	// Drag while vortex on → centre follows; stop reforms
-	windPointer(g2, { x: 28, y: 10, right: true })
-	tickWindGesture(g2)
-	assertEquals(g2.vortexOn, true)
-	assertEquals(g2.x, 28)
-	tickWindGesture(g2) // still at new spot → regenerate path
-	assertEquals(g2.vortexOn, true)
+	windPointer(vortexGesture, { x: 28, y: 10, right: true })
+	tickWindGesture(vortexGesture)
+	assertEquals(vortexGesture.vortexOn, true)
+	assertEquals(vortexGesture.x, 28)
+	tickWindGesture(vortexGesture) // still at new spot → regenerate path
+	assertEquals(vortexGesture.vortexOn, true)
 
-	windPointer(g2, { x: 28, y: 10, right: false })
-	assertEquals(g2.down, false)
-	assertEquals(g2.vortexOn, false)
-	fillWindDrive(g2, world, driveUx, driveUy)
+	windPointer(vortexGesture, { x: 28, y: 10, right: false })
+	assertEquals(vortexGesture.down, false)
+	assertEquals(vortexGesture.vortexOn, false)
+	fillWindDrive(vortexGesture, world, driveUx, driveUy)
 	assertEquals(driveUx[top], 0)
 })
 
 Deno.test('stepGas: pointer drive accelerates local gas', async () => {
 	const { createWorld, labelAirRegions, stepGas, scratch } = await import('../fluid/index.mjs')
-	const w = createWorld({ width: 30, height: 16, margin: 2, bottomExtra: 1 })
-	labelAirRegions(w)
-	const n = w.worldW * w.worldH
-	const driveUx = scratch(w, 'dUx', n, Float32Array)
-	const driveUy = scratch(w, 'dUy', n, Float32Array)
-	const cx = w.ox + 15
+	const world = createWorld({ width: 30, height: 16, margin: 2, bottomExtra: 1 })
+	labelAirRegions(world)
+	const n = world.worldW * world.worldH
+	const driveUx = scratch(world, 'dUx', n, Float32Array)
+	const driveUy = scratch(world, 'dUy', n, Float32Array)
+	const cx = world.ox + 15
 	const cy = 6
-	const cell = cy * w.worldW + cx
+	const cell = cy * world.worldW + cx
 	driveUx[cell] = 2.0
 	for (let i = 0; i < 12; i++)
-		stepGas(w, { time: i, seed: 0, forceWind: 0, driveUx, driveUy })
-	assert(w.gasUx[cell] > 0.6)
+		stepGas(world, { time: i, seed: 0, forceWind: 0, driveUx, driveUy })
+	assert(world.gasUx[cell] > 0.6)
 })
 
 Deno.test('composeFrame: light yields truecolor near cursor', async () => {
