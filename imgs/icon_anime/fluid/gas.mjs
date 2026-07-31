@@ -64,6 +64,28 @@ export const fillBlocked = (world, blocked) => {
 }
 
 /**
+ * Reset / allocate an air-region record (reuses pooled objects when possible).
+ * @param {AirRegion[]} pool free list
+ * @param {number} id region id
+ * @param {boolean} openToAtm open to atmosphere?
+ * @returns {AirRegion} region
+ */
+const takeRegion = (pool, id, openToAtm) => {
+	const region = pool.pop() || {
+		id: 0, openToAtm: false, airCells: 0, sumY: 0, yMean: 0,
+		gasAmount: 0, pressure: P_ATM,
+	}
+	region.id = id
+	region.openToAtm = openToAtm
+	region.airCells = 0
+	region.sumY = 0
+	region.yMean = 0
+	region.gasAmount = 0
+	region.pressure = P_ATM
+	return region
+}
+
+/**
  * Label air regions with conserved gas mass transfer across topology changes.
  * Open-to-atmosphere regions get P = P_ATM; sealed use Boyle mean + yMean.
  * Double-buffers `regionId` via `scratch.prevRegionId`.
@@ -79,6 +101,18 @@ export const labelAirRegions = (world) => {
 	regionId.fill(0)
 
 	const oldRegions = world.regions
+	/** @type {AirRegion[]} */
+	const regionPool = /** @type {AirRegion[]} */ (world.scratch.regionPool ??= [])
+	// Snapshot Boyle mass before pooling — objects may be reused for nextRegions.
+	const oldGas = scratch(world, 'oldRegionGas', Math.max(oldRegions.length, 1), Float32Array)
+	oldGas.fill(0)
+	for (let id = 1; id < oldRegions.length; id++) {
+		const r = oldRegions[id]
+		if (!r) continue
+		oldGas[id] = r.gasAmount
+		regionPool.push(r)
+	}
+
 	/** @type {(AirRegion | undefined)[]} */
 	const nextRegions = []
 	let next = 1
@@ -120,20 +154,8 @@ export const labelAirRegions = (world) => {
 		}
 	}
 
-	/**
-	 * Finish region centroid + default open/sealed bookkeeping fields.
-	 * @param {AirRegion} region region
-	 * @returns {void}
-	 */
-	const finishCentroid = (region) => {
-		region.yMean = region.airCells > 0 ? region.sumY / region.airCells : 0
-	}
-
 	const openId = next++
-	const openRegion = {
-		id: openId, openToAtm: true, airCells: 0, sumY: 0, yMean: 0,
-		gasAmount: 0, pressure: P_ATM,
-	}
+	const openRegion = takeRegion(regionPool, openId, true)
 	for (let x = 0; x < W; x++) seed(x, 0, openId, openRegion)
 	for (let y = 1; y < H; y++) {
 		seed(0, y, openId, openRegion)
@@ -141,38 +163,38 @@ export const labelAirRegions = (world) => {
 	}
 	flood(openId, openRegion)
 	if (openRegion.airCells > 0) {
-		finishCentroid(openRegion)
+		openRegion.yMean = openRegion.sumY / openRegion.airCells
 		openRegion.gasAmount = openRegion.airCells * AIR_CELL * P_ATM
 		openRegion.pressure = P_ATM
 		nextRegions[openId] = openRegion
 	}
+	else regionPool.push(openRegion)
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (regionId[cell] || !isAirCell(world, cell)) continue
 			const id = next++
-			const region = {
-				id, openToAtm: false, airCells: 0, sumY: 0, yMean: 0,
-				gasAmount: 0, pressure: P_ATM,
-			}
+			const region = takeRegion(regionPool, id, false)
 			queue.length = 0
 			seed(x, y, id, region)
 			flood(id, region)
-			finishCentroid(region)
+			region.yMean = region.airCells > 0 ? region.sumY / region.airCells : 0
 			nextRegions[id] = region
 		}
 
-	// Overlap counts: oldId → (newId → cells) for gas mass transfer.
-	/** @type {Map<number, Map<number, number>>} */
+	// Packed overlap: key = (oldId << 16) | newId → cell count. One Map, no nesting.
+	/** @type {Map<number, number>} */
 	const overlap = new Map()
+	/** @type {Map<number, number>} */
+	const oldTotal = new Map()
 	for (let cell = 0; cell < n; cell++) {
 		const old = oldId[cell]
 		const nid = regionId[cell]
 		if (!old || !nid) continue
-		let row = overlap.get(old)
-		if (!row) overlap.set(old, row = new Map())
-		row.set(nid, (row.get(nid) || 0) + 1)
+		const key = (old << 16) | nid
+		overlap.set(key, (overlap.get(key) || 0) + 1)
+		oldTotal.set(old, (oldTotal.get(old) || 0) + 1)
 	}
 
 	for (let id = 1; id < nextRegions.length; id++) {
@@ -185,15 +207,12 @@ export const labelAirRegions = (world) => {
 		}
 		let gas = 0
 		let got = false
-		for (const [oldRid, row] of overlap) {
-			const cells = row.get(region.id)
-			if (!cells) continue
-			const old = oldRegions[oldRid]
-			if (!old) continue
+		for (const [key, cells] of overlap) {
+			if ((key & 0xffff) !== id) continue
+			const oldRid = key >>> 16
+			if (!oldRegions[oldRid]) continue
 			got = true
-			let oldTotal = 0
-			for (const c of row.values()) oldTotal += c
-			gas += old.gasAmount * (cells / Math.max(1, oldTotal))
+			gas += oldGas[oldRid] * (cells / Math.max(1, oldTotal.get(oldRid) || 1))
 		}
 		if (!got) gas = region.airCells * AIR_CELL * P_ATM
 		region.gasAmount = gas
@@ -203,6 +222,7 @@ export const labelAirRegions = (world) => {
 	world.scratch.prevRegionId = oldId
 	world.regionId = regionId
 	world.regions = nextRegions
+	world.airDirty = false
 }
 
 /**
@@ -298,6 +318,20 @@ export const gasVelocityAt = (world, x, y) => {
 }
 
 /**
+ * Horizontal gas velocity at a world point (no alloc).
+ * @param {FluidWorld} world fluid world
+ * @param {number} x column
+ * @param {number} y row
+ * @returns {number} ux
+ */
+export const gasUxAt = (world, x, y) => {
+	const cx = x | 0
+	const cy = y | 0
+	if (!inWorld(world, cx, cy)) return 0
+	return world.gasUx[idx(world, cx, cy)]
+}
+
+/**
  * Dynamic pressure proxy ½ρu².
  * @param {number} ux horizontal speed
  * @param {number} [uy=0] vertical speed
@@ -314,8 +348,11 @@ export const dynamicPressure = (ux, uy = 0) => 0.5 * RHO_AIR * (ux * ux + uy * u
  * @returns {number} static pressure
  */
 export const staticPressureAt = (world, x, y) => {
-	const { ux, uy } = gasVelocityAt(world, x, y)
-	return Math.max(0.05, pressureAt(world, x, y) - dynamicPressure(ux, uy))
+	const cx = x | 0
+	const cy = y | 0
+	if (!inWorld(world, cx, cy)) return Math.max(0.05, pressureAt(world, x, y))
+	const cell = idx(world, cx, cy)
+	return Math.max(0.05, pressureAt(world, x, y) - dynamicPressure(world.gasUx[cell], world.gasUy[cell]))
 }
 
 /**
@@ -396,6 +433,7 @@ export const stepGas = (world, opts = {}) => {
 
 	// Cache synoptic wind once per tick — shear only varies by row.
 	const wind0 = forced !== undefined ? forced : globalWindAt(time, seed)
+	let maxUpdraft = 0
 
 	// Static pressure field from current velocity (Bernoulli) for ΔP drive.
 	for (let y = 0; y < H; y++)
@@ -480,13 +518,17 @@ export const stepGas = (world, opts = {}) => {
 				uy *= 0.85
 			}
 
-			nextUx[cell] = Math.max(-GAS_SPEED_MAX, Math.min(GAS_SPEED_MAX, ux))
-			nextUy[cell] = Math.max(-GAS_SPEED_MAX, Math.min(GAS_SPEED_MAX, uy))
+			const outUx = Math.max(-GAS_SPEED_MAX, Math.min(GAS_SPEED_MAX, ux))
+			const outUy = Math.max(-GAS_SPEED_MAX, Math.min(GAS_SPEED_MAX, uy))
+			nextUx[cell] = outUx
+			nextUy[cell] = outUy
+			if (outUy < maxUpdraft) maxUpdraft = outUy
 		}
 	}
 
 	gasUx.set(nextUx)
 	gasUy.set(nextUy)
+	world.maxUpdraft = maxUpdraft
 }
 
 /**

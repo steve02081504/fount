@@ -1,8 +1,8 @@
 /**
  * One-tick fluid orchestration: air labels → gas → wind lift → particles → liquid.
  *
- * Scene / tests call this (or the individual steps). `stepLiquid` re-labels after
- * particles may have changed `liq` topology — do not add a third trailing label.
+ * Scene / tests call this (or the individual steps). `stepLiquid` re-labels only
+ * when particles / lift dirtied free-liquid topology (`world.airDirty`).
  */
 
 import { labelAirRegions, stepGas } from './gas.mjs'
@@ -10,6 +10,9 @@ import { stepLiquid } from './liquid.mjs'
 import { liftLiquidByWind, stepParticles } from './particles.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
+
+/** No-op impact handler (module-level — avoid per-tick closure alloc). */
+const NOOP_HIT = () => { /* airborne until land / expire-deposit */ }
 
 /**
  * Advance the full fluid stack one tick.
@@ -31,6 +34,6 @@ export const stepFluid = (world, opts = {}) => {
 	stepGas(world, opts)
 	liftLiquidByWind(world)
 	opts.beforeParticles?.()
-	stepParticles(world, opts.onHit || (() => { /* airborne until land / expire-deposit */ }), opts.state)
+	stepParticles(world, opts.onHit || NOOP_HIT, opts.state)
 	stepLiquid(world)
 }

@@ -498,23 +498,31 @@ const simFrame = (state) => {
 	tickWindGesture(state.wind)
 	tickLightGesture(state.light)
 	const { world } = state
-	const n = world.worldW * world.worldH
-	const driveUx = scratch(world, 'windDriveUx', n, Float32Array)
-	const driveUy = scratch(world, 'windDriveUy', n, Float32Array)
-	fillWindDrive(state.wind, world, driveUx, driveUy)
-	stepFluid(world, {
-		time: state.frame,
-		seed: state.seed,
-		driveUx,
-		driveUy,
+	/** @type {Float32Array | undefined} */
+	let driveUx
+	/** @type {Float32Array | undefined} */
+	let driveUy
+	if (state.wind.down) {
+		const n = world.worldW * world.worldH
+		driveUx = scratch(world, 'windDriveUx', n, Float32Array)
+		driveUy = scratch(world, 'windDriveUy', n, Float32Array)
+		fillWindDrive(state.wind, world, driveUx, driveUy)
+	}
+	const opts = state._fluidOpts ??= {
+		time: 0,
+		seed: 0,
+		driveUx: undefined,
+		driveUy: undefined,
 		onHit: onParticleHit,
 		state,
-		/**
-		 * Spawn rain after gas so new drops feel this tick's wind.
-		 * @returns {void}
-		 */
 		beforeParticles: () => { spawnRain(state) },
-	})
+	}
+	opts.time = state.frame
+	opts.seed = state.seed
+	opts.driveUx = driveUx
+	opts.driveUy = driveUy
+	opts.state = state
+	stepFluid(world, opts)
 	const { iconOx, iconOy } = state
 	for (const ly of ICON_BASE_ROWS) {
 		const y = iconOy + ly

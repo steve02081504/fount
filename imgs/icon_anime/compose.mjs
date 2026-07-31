@@ -21,10 +21,25 @@ const FG_RGB = {
 	[FG_SPLASH]: [0, 195, 210],
 	[FG_TERRAIN]: [105, 105, 115],
 }
+/** Palette id for SGR cache keys (null / unknown → 4). */
+const FG_ID = new Map([
+	[FG_AT, 0],
+	[FG_COL, 1],
+	[FG_SPLASH, 2],
+	[FG_TERRAIN, 3],
+])
+/** Quantized lift levels for truecolor SGR reuse. */
+const LIFT_Q = 32
+/** Cached truecolor SGR strings: key = packed (ambient<<12)|(fgId<<7)|(liftQ<<1)|bgBit */
+const sgrCache = new Map()
+
 /** Visual radius of the pointer spotlight (cell aspect ≈ 1×2). */
 export const LIGHT_RADIUS = 14
 /** Ambient dim when a light is active (cells far from the cursor). */
 const LIGHT_AMBIENT = 0.3
+
+/** Reused sampleLight destination (compose hot path). */
+const lightSample = { ambient: false, lift: 0 }
 
 /**
  * Smooth radial falloff in view cells (compensates for tall terminal cells).
@@ -34,7 +49,7 @@ const LIGHT_AMBIENT = 0.3
  * @returns {number} 0..1 intensity
  */
 export const lightFalloff = (dx, dy, radius = LIGHT_RADIUS) => {
-	const t = 1 - Math.hypot(dx, dy * 2) / radius
+	const t = 1 - Math.sqrt(dx * dx + 4 * dy * dy) / radius
 	if (t <= 0) return 0
 	return t * t
 }
@@ -68,6 +83,45 @@ const fgRgb = (r, g, b) => `\x1b[38;2;${r};${g};${b}m`
  * @returns {string} truecolor bg SGR
  */
 const bgRgb = (r, g, b) => `\x1b[48;2;${r};${g};${b}m`
+
+/**
+ * Quantized truecolor SGR for a palette entry + lift (cached).
+ * @param {string | null} f palette fg or null (bg-only glow)
+ * @param {number} lift raw lift
+ * @param {boolean} ambient torch ambient dim
+ * @returns {string | null} SGR or null if cell stays blank
+ */
+const litSgr = (f, lift, ambient) => {
+	const glow = lift > 1 ? 1 : lift
+	const liftQ = glow <= 0 ? 0 : Math.min(LIFT_Q - 1, (glow * (LIFT_Q - 1) + 0.5) | 0)
+	const qLift = liftQ / (LIFT_Q - 1)
+	const fgId = f == null ? 4 : (FG_ID.get(f) ?? 4)
+	const wantBg = f == null ? qLift >= 0.04 : qLift > 0.08
+	if (f == null && !wantBg) return null
+	const key = (ambient ? 1 << 12 : 0) | (fgId << 7) | (liftQ << 1) | (wantBg ? 1 : 0)
+	let sgr = sgrCache.get(key)
+	if (sgr !== undefined) return sgr
+
+	if (f == null) {
+		const g = (55 * qLift) | 0
+		sgr = bgRgb((g * 0.55) | 0, (g * 0.75) | 0, g)
+	}
+	else {
+		const rgbBase = FG_RGB[f] || [160, 160, 160]
+		const rgb = fgRgb(
+			liftChannel(rgbBase[0], qLift, ambient),
+			liftChannel(rgbBase[1], qLift, ambient),
+			liftChannel(rgbBase[2], qLift, ambient),
+		)
+		if (wantBg) {
+			const g = ((ambient ? 42 : 58) * qLift) | 0
+			sgr = rgb + bgRgb((g * 0.5) | 0, (g * 0.7) | 0, g)
+		}
+		else sgr = rgb
+	}
+	sgrCache.set(key, sgr)
+	return sgr
+}
 
 /**
  * Join flat char/fg buffers into an ANSI frame string without lighting.
@@ -127,7 +181,8 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 		let cur = null
 		const row = y * width
 		for (let x = 0; x < width; x++) {
-			const { ambient, lift } = sampleLight(light, x, y, lightFalloff)
+			sampleLight(light, x, y, lightFalloff, lightSample)
+			const { ambient, lift } = lightSample
 			const f = fg[row + x]
 
 			// Ripple-only cells far from the ring keep the plain palette.
@@ -148,32 +203,14 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 				continue
 			}
 
-			let sgr
-			const glow = lift > 1 ? 1 : lift
-			if (f == null) {
-				if (glow < 0.04) {
-					if (cur !== null) {
-						line += RESET
-						cur = null
-					}
-					line += ' '
-					continue
+			const sgr = litSgr(f, lift, ambient)
+			if (sgr == null) {
+				if (cur !== null) {
+					line += RESET
+					cur = null
 				}
-				const g = (55 * glow) | 0
-				sgr = bgRgb((g * 0.55) | 0, (g * 0.75) | 0, g)
-			}
-			else {
-				const [br, bg, bb] = FG_RGB[f] || [160, 160, 160]
-				const rgb = fgRgb(
-					liftChannel(br, lift, ambient),
-					liftChannel(bg, lift, ambient),
-					liftChannel(bb, lift, ambient),
-				)
-				if (glow > 0.08) {
-					const g = ((ambient ? 42 : 58) * glow) | 0
-					sgr = rgb + bgRgb((g * 0.5) | 0, (g * 0.7) | 0, g)
-				}
-				else sgr = rgb
+				line += ' '
+				continue
 			}
 			if (sgr !== cur) {
 				line += RESET + sgr

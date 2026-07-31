@@ -16,6 +16,8 @@ import { createParticlePool, clearParticlePool, totalParticleWater } from './par
  *   particles: import('./particles.mjs').ParticlePool,
  *   pendingSplash: import('./particles.mjs').ParticlePool,
  *   soilStep: number, gasTime: number,
+ *   airDirty: boolean,
+ *   maxUpdraft: number,
  *   scratch: Record<string, unknown>,
  *   floodQ: number[],
  * }} FluidWorld
@@ -48,6 +50,9 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 		pendingSplash: createParticlePool(),
 		soilStep: 0,
 		gasTime: 0,
+		airDirty: true,
+		/** Most-negative gas uy after `stepGas`; `NaN` until gas has stepped. */
+		maxUpdraft: NaN,
 		scratch: {},
 		floodQ: [],
 	}
@@ -126,6 +131,8 @@ export const clearDynamics = (w) => {
 	w.regionId.fill(0)
 	w.regions.length = 0
 	w.gasTime = 0
+	w.airDirty = true
+	w.maxUpdraft = NaN
 }
 
 /**
@@ -227,5 +234,7 @@ export const addLiquid = (w, x, y, amt) => {
 	if (isLiquidBarrier(w.mat[i])) return 0
 	const before = w.liq[i]
 	w.liq[i] = Math.min(LIQ_FULL, before + amt)
-	return w.liq[i] - before
+	const stored = w.liq[i] - before
+	if (stored > 0) w.airDirty = true
+	return stored
 }

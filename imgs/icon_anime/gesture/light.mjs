@@ -105,13 +105,17 @@ export const tickLightGesture = (gesture) => {
 
 /**
  * Combined lift at a view cell (torch fill + ripple rings).
+ * Writes into `out` (defaults to a reused module slot) to avoid per-cell alloc.
  * @param {LightGesture} gesture gesture
  * @param {number} x view column
  * @param {number} y view row
  * @param {(dx: number, dy: number, radius?: number) => number} torchFalloff radial fill
+ * @param {{ ambient: boolean, lift: number }} [out] sample destination
  * @returns {{ ambient: boolean, lift: number }} lighting sample
  */
-export const sampleLight = (gesture, x, y, torchFalloff) => {
+const _lightSample = { ambient: false, lift: 0 }
+
+export const sampleLight = (gesture, x, y, torchFalloff, out = _lightSample) => {
 	let lift = 0
 	const ambient = gesture.down && gesture.torch
 	if (ambient) lift = torchFalloff(x - gesture.x, y - gesture.y)
@@ -121,5 +125,7 @@ export const sampleLight = (gesture, x, y, torchFalloff) => {
 		const ring = rippleFalloff(x - ripple.x, y - ripple.y, ripple.age * RIPPLE_SPEED) * fade * RIPPLE_GAIN
 		if (ring > lift) lift = ring
 	}
-	return { ambient, lift }
+	out.ambient = ambient
+	out.lift = lift
+	return out
 }

@@ -13,7 +13,7 @@ import { hash01, ORTHO } from '../hash.mjs'
 import {
 	pressureMove, sheetMove, applyTransfer, hydraulicPhi, P_FLOW_GAIN,
 } from './flow.mjs'
-import { labelAirRegions, pressureAt, gasVelocityAt } from './gas.mjs'
+import { labelAirRegions, pressureAt, gasUxAt } from './gas.mjs'
 import {
 	MAT, P_ATM, RHO_G, LIQ_DRAW, LIQ_FULL, SOIL_CAP,
 	SOIL_ABSORB_RATE, SOIL_SIDE_FRAC, SOIL_DOWN_FRAC, SOIL_CONDENSE_FRAC,
@@ -72,6 +72,49 @@ export const liquidPressureAt = (w, x, y) => {
 	const airP = pressureAt(w, x, airY)
 	const depth = (y - surf) + Math.min(1, Math.max(L, LIQ_DRAW))
 	return airP + RHO_G * depth
+}
+
+/**
+ * Fill pressure cache for one column (matches `liquidPressureAt`).
+ * @param {FluidWorld} w world
+ * @param {number} x column
+ * @param {Float32Array} cache pressure buffer
+ * @returns {void}
+ */
+const fillColumnPressure = (w, x, cache) => {
+	const { worldW: W, worldH: H, mat, liq } = w
+	let y = 0
+	while (y < H) {
+		const i = y * W + x
+		const L = liq[i]
+		if (L < LIQ_DRAW && !isLiquidBarrier(mat[i])) {
+			cache[i] = pressureAt(w, x, y)
+			y++
+			continue
+		}
+		const surf = y
+		const airY = surf > 0 && !isLiquidBarrier(mat[(surf - 1) * W + x]) ? surf - 1 : surf
+		const airP = pressureAt(w, x, airY)
+		while (y < H) {
+			const ii = y * W + x
+			const Li = liq[ii]
+			if (Li < LIQ_DRAW && !isLiquidBarrier(mat[ii])) break
+			cache[ii] = airP + RHO_G * ((y - surf) + Math.min(1, Math.max(Li, LIQ_DRAW)))
+			y++
+		}
+	}
+}
+
+/**
+ * Fill per-cell pressure cache in one O(WH) column sweep (matches `liquidPressureAt`).
+ * @param {FluidWorld} w world
+ * @returns {Float32Array} pressure cache
+ */
+const fillLiquidPressureCache = (w) => {
+	const { worldW: W } = w
+	const cache = scratch(w, 'liqP', W * w.worldH, Float32Array)
+	for (let x = 0; x < W; x++) fillColumnPressure(w, x, cache)
+	return cache
 }
 
 /**
@@ -369,9 +412,18 @@ export const stepSoil = (w) => {
 	const outSum = scratch(w, 'soilOut', n, Float32Array)
 	const inSum = scratch(w, 'soilIn', n, Float32Array)
 	const delta = scratch(w, 'soilDelta', n, Float32Array)
-	outSum.fill(0)
-	inSum.fill(0)
-	delta.fill(0)
+	// Clear only touched indices — not the whole WH grid.
+	for (let k = 0; k < mvN; k++) {
+		outSum[mvFrom[k]] = 0
+		outSum[mvTo[k]] = 0
+		inSum[mvTo[k]] = 0
+		delta[mvFrom[k]] = 0
+		delta[mvTo[k]] = 0
+	}
+	for (let k = 0; k < feedN; k++) {
+		outSum[feedFrom[k]] = 0
+		delta[feedFrom[k]] = 0
+	}
 
 	for (let k = 0; k < mvN; k++) outSum[mvFrom[k]] += mvAmt[k]
 	for (let k = 0; k < feedN; k++) outSum[feedFrom[k]] += feedAmt[k]
@@ -405,11 +457,29 @@ export const stepSoil = (w) => {
 		if (mat[bi] === MAT.AIR) condense[from] += amt
 		else delta[from] += amt
 	}
-	for (let i = 0; i < n; i++) {
+	for (let k = 0; k < mvN; k++) {
+		const i = mvFrom[k]
 		if (!delta[i]) continue
 		moisture[i] += delta[i]
 		if (moisture[i] < 0) moisture[i] = 0
 		else if (moisture[i] > SOIL_CAP) moisture[i] = SOIL_CAP
+		delta[i] = 0
+	}
+	for (let k = 0; k < mvN; k++) {
+		const i = mvTo[k]
+		if (!delta[i]) continue
+		moisture[i] += delta[i]
+		if (moisture[i] < 0) moisture[i] = 0
+		else if (moisture[i] > SOIL_CAP) moisture[i] = SOIL_CAP
+		delta[i] = 0
+	}
+	for (let k = 0; k < feedN; k++) {
+		const i = feedFrom[k]
+		if (!delta[i]) continue
+		moisture[i] += delta[i]
+		if (moisture[i] < 0) moisture[i] = 0
+		else if (moisture[i] > SOIL_CAP) moisture[i] = SOIL_CAP
+		delta[i] = 0
 	}
 
 	for (let y = 0; y < H; y++)
@@ -446,12 +516,13 @@ export const stepSoil = (w) => {
 
 /**
  * Liquid step: pressure-driven settle, wind sheet, soil, graph hydraulic equalize.
+ * Re-labels air only when particles / lift dirtied free-liquid topology.
  * @param {FluidWorld} w world
  * @returns {void}
  */
 export const stepLiquid = (w) => {
 	const { worldW: W, worldH: H, mat, liq, liqVx, liqVy } = w
-	labelAirRegions(w)
+	if (w.airDirty) labelAirRegions(w)
 
 	const n = W * H
 	const flowX = scratch(w, 'liqFlowX', n, Float32Array)
@@ -459,9 +530,22 @@ export const stepLiquid = (w) => {
 	flowX.fill(0)
 	flowY.fill(0)
 
-	// --- Vertical settle (top → bottom source scan): hydrostatic → Torricelli ---
-	for (let y = H - 2; y >= 0; y--)
-		for (let x = 0; x < W; x++) {
+	let pCache = fillLiquidPressureCache(w)
+	/**
+	 * Cached pressure (O(1)); falls back off-grid to gas hydro.
+	 * @param {number} x column
+	 * @param {number} y row
+	 * @returns {number} pressure
+	 */
+	const pAt = (x, y) => {
+		if (x < 0 || y < 0 || x >= W || y >= H) return pressureAt(w, x, Math.max(0, y))
+		return pCache[y * W + x]
+	}
+
+	// --- Vertical settle: column-major so each column's cache stays fresh ---
+	for (let x = 0; x < W; x++) {
+		fillColumnPressure(w, x, pCache)
+		for (let y = H - 2; y >= 0; y--) {
 			const i = y * W + x
 			if (liq[i] <= 0) continue
 			if (isLiquidBarrier(mat[i])) {
@@ -472,8 +556,8 @@ export const stepLiquid = (w) => {
 			if (isLiquidBarrier(mat[below]) || liq[below] >= LIQ_FULL) continue
 			if (poolRetainBlocks(w, i, below)) continue
 
-			const pSrc = liquidPressureAt(w, x, y)
-			const pDst = liquidPressureAt(w, x, y + 1)
+			const pSrc = pAt(x, y)
+			const pDst = pAt(x, y + 1)
 			const room = LIQ_FULL - liq[below]
 			let move = pressureMove(pSrc, pDst, liq[i], room)
 			// Near-equal stacked fills: still drain residual head into emptier below
@@ -482,36 +566,49 @@ export const stepLiquid = (w) => {
 				move = Math.min(liq[i], room, Math.max(0.08, (liq[i] - liq[below]) * 0.85))
 			if (move > 0) {
 				applyTransfer(liq, flowX, flowY, i, below, 0, 1, move)
+				fillColumnPressure(w, x, pCache)
 				continue
 			}
 
 			// Diagonal settle into emptier down-slope when blocked straight down.
 			const dir = (x + y) & 1 ? 1 : -1
-			for (const dx of [dir, -dir]) {
+			let didDiag = false
+			for (let pass = 0; pass < 2; pass++) {
+				const dx = pass === 0 ? dir : -dir
 				const nx = x + dx
 				const ny = y + 1
 				if (!canOccupy(w, nx, ny)) continue
 				const ni = ny * W + nx
 				if (liq[ni] >= liq[i] || poolRetainBlocks(w, i, ni)) continue
+				// Neighbor column may be stale — read live pressure.
 				const pN = liquidPressureAt(w, nx, ny)
 				let m = pressureMove(pSrc, pN, liq[i] * 0.5, LIQ_FULL - liq[ni])
 				if (m <= 0.01)
 					m = Math.min(liq[i] * 0.5, (liq[i] - liq[ni]) * 0.5, LIQ_FULL - liq[ni])
 				if (m <= 0.01) continue
 				applyTransfer(liq, flowX, flowY, i, ni, dx, 1, m)
+				fillColumnPressure(w, x, pCache)
+				fillColumnPressure(w, nx, pCache)
+				didDiag = true
 				break
 			}
+			if (didDiag) continue
 		}
+	}
+
+	// Refresh after vertical mass moves so orifice / sheet see updated columns.
+	pCache = fillLiquidPressureCache(w)
 
 	// --- Horizontal: free-surface sheet / submerged orifice / edge vent / wind ---
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const i = y * W + x
 			if (liq[i] <= 0.05 || isLiquidBarrier(mat[i])) continue
-			const pSrc = liquidPressureAt(w, x, y)
+			const pSrc = pAt(x, y)
 			const freeSurface = isFreeSurface(w, i, y)
 
-			for (const dx of [-1, 1]) {
+			for (let pass = 0; pass < 2; pass++) {
+				const dx = pass === 0 ? -1 : 1
 				const nx = x + dx
 				if (nx < 0 || nx >= W) {
 					const move = freeSurface
@@ -529,7 +626,7 @@ export const stepLiquid = (w) => {
 				if (poolRetainBlocks(w, i, ni) && mat[ni] === MAT.AIR) continue
 				if (sealedGasBlocks(w, ni, pSrc)) continue
 
-				const pDst = liquidPressureAt(w, nx, y)
+				const pDst = pAt(nx, y)
 				const room = LIQ_FULL - liq[ni]
 				let move = 0
 				if (freeSurface && liq[ni] < LIQ_DRAW)
@@ -543,7 +640,7 @@ export const stepLiquid = (w) => {
 
 				// Wind shear on free-surface sheets — gas ux pushes mass downwind.
 				if (freeSurface && liq[i] >= LIQ_DRAW) {
-					const { ux } = gasVelocityAt(w, x, y > 0 ? y - 1 : y)
+					const ux = gasUxAt(w, x, y > 0 ? y - 1 : y)
 					if (ux * dx > 0.15) {
 						const wind = Math.min(WIND_SHEET_CAP, Math.abs(ux) * WIND_SHEET, liq[i] * 0.2, room)
 						move = Math.max(move, wind)
@@ -554,6 +651,8 @@ export const stepLiquid = (w) => {
 			}
 		}
 
+	pCache = fillLiquidPressureCache(w)
+
 	// --- Sealed gas pushes adjacent free liquid away (down preferred, else sideways) ---
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
@@ -563,13 +662,15 @@ export const stepLiquid = (w) => {
 			const region = w.regions[rid]
 			if (!region || region.openToAtm || region.pressure <= P_ATM * 1.2) continue
 			const gasP = region.pressure
-			for (const [dx, dy] of ORTHO) {
+			for (let o = 0; o < 4; o++) {
+				const dx = ORTHO[o][0]
+				const dy = ORTHO[o][1]
 				const nx = x + dx
 				const ny = y + dy
 				if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
 				const ni = ny * W + nx
 				if (liq[ni] < LIQ_DRAW || isLiquidBarrier(mat[ni])) continue
-				const lP = liquidPressureAt(w, nx, ny)
+				const lP = pAt(nx, ny)
 				if (gasP <= lP + 0.08) continue
 				const push = Math.min(0.2, liq[ni] * 0.35, (gasP - lP) * 0.15)
 				if (push < 0.02) continue
@@ -602,4 +703,6 @@ export const stepLiquid = (w) => {
 		liqVx[i] = liqVx[i] * 0.35 + (flowX[i] / m) * 0.65
 		liqVy[i] = liqVy[i] * 0.35 + (flowY[i] / m) * 0.65
 	}
+	// Free-liquid moves change air topology for the next liquid / gas tick.
+	w.airDirty = true
 }

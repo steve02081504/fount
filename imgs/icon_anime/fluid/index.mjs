@@ -9,7 +9,7 @@
  *
  * Water reservoirs: liq + moisture + condense + particles (expire deposits).
  * Call `stepFluid` for a full tick, or the individual steps. `labelAirRegions`
- * before `stepGas` / pressure queries; `stepLiquid` re-labels after particles.
+ * before `stepGas` / pressure queries; `stepLiquid` re-labels when `airDirty`.
  */
 
 /**
@@ -56,7 +56,7 @@ export {
 export {
 	WIND_BASE, WIND_GUST, WIND_SHEAR_POWER, GAS_BLEND, GAS_NOZZLE, GAS_SPEED_MAX,
 	isAirCell, fillBlocked, labelAirRegions, pressureAt, globalWindAt, windProfileAt,
-	gasVelocityAt, dynamicPressure, staticPressureAt, stepGas, totalSealedGas,
+	gasVelocityAt, gasUxAt, dynamicPressure, staticPressureAt, stepGas, totalSealedGas,
 } from './gas.mjs'
 
 /**

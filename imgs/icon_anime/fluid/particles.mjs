@@ -132,10 +132,32 @@ export const queueSplash = (world, x, y, vx, vy, life = 18, amt = 0.25) =>
  * @returns {number} drag blend in [GAS_DRAG_Y, GAS_DRAG]
  */
 export const verticalGasDrag = (gux, guy) => {
-	const speed = Math.hypot(gux, guy)
-	if (speed <= GAS_DRAG_Y_BOOST_FROM) return GAS_DRAG_Y
+	const speed2 = gux * gux + guy * guy
+	if (speed2 <= GAS_DRAG_Y_BOOST_FROM * GAS_DRAG_Y_BOOST_FROM) return GAS_DRAG_Y
+	const speed = Math.sqrt(speed2)
 	const t = Math.min(1, (speed - GAS_DRAG_Y_BOOST_FROM) / GAS_DRAG_Y_BOOST_SPAN)
 	return GAS_DRAG_Y + (GAS_DRAG - GAS_DRAG_Y) * t
+}
+
+/**
+ * Try depositing into one cell; return stored delta.
+ * @param {FluidWorld} world fluid world
+ * @param {number} px column
+ * @param {number} py row
+ * @param {number} left remaining mass
+ * @returns {number} stored
+ */
+const tryDepositCell = (world, px, py, left) => {
+	const { worldW: W, worldH: H, mat, liq } = world
+	if (px < 0 || py < 0 || px >= W || py >= H) return 0
+	const i = py * W + px
+	if (isLiquidBarrier(mat[i])) return 0
+	if (mat[i] !== MAT.AIR && mat[i] !== MAT.POOL) return 0
+	const room = LIQ_FULL - liq[i]
+	if (room <= 0) return 0
+	const take = Math.min(left, room)
+	liq[i] += take
+	return take
 }
 
 /**
@@ -149,35 +171,17 @@ export const verticalGasDrag = (gux, guy) => {
  */
 export const depositParticleMass = (world, x, y, amt) => {
 	if (amt <= 0) return 0
-	const { worldW: W, worldH: H, mat, liq } = world
+	const { worldW: W, worldH: H } = world
 	const cx = Math.max(0, Math.min(W - 1, x | 0))
 	const cy = Math.max(0, Math.min(H - 1, y | 0))
 
-	/**
-	 * Try one cell; return stored delta.
-	 * @param {number} px column
-	 * @param {number} py row
-	 * @param {number} left remaining mass
-	 * @returns {number} stored
-	 */
-	const tryCell = (px, py, left) => {
-		if (px < 0 || py < 0 || px >= W || py >= H) return 0
-		const i = py * W + px
-		if (isLiquidBarrier(mat[i])) return 0
-		if (mat[i] !== MAT.AIR && mat[i] !== MAT.POOL) return 0
-		const room = LIQ_FULL - liq[i]
-		if (room <= 0) return 0
-		const take = Math.min(left, room)
-		liq[i] += take
-		return take
-	}
-
 	let left = amt
-	left -= tryCell(cx, cy, left)
-	if (left > 1e-8 && cy + 1 < H) left -= tryCell(cx, cy + 1, left)
-	if (left > 1e-8 && cy > 0) left -= tryCell(cx, cy - 1, left)
-	if (left > 1e-8) left -= tryCell(cx - 1, cy, left)
-	if (left > 1e-8) left -= tryCell(cx + 1, cy, left)
+	left -= tryDepositCell(world, cx, cy, left)
+	if (left > 1e-8 && cy + 1 < H) left -= tryDepositCell(world, cx, cy + 1, left)
+	if (left > 1e-8 && cy > 0) left -= tryDepositCell(world, cx, cy - 1, left)
+	if (left > 1e-8) left -= tryDepositCell(world, cx - 1, cy, left)
+	if (left > 1e-8) left -= tryDepositCell(world, cx + 1, cy, left)
+	if (left < amt) world.airDirty = true
 	// Remainder leaves through world edge / impermeable bed — intentional sink.
 	return amt
 }
@@ -233,11 +237,12 @@ export const stepParticles = (world, onHit, state) => {
 			const gi = gy * W + gx
 			const gux = gasUx[gi]
 			const guy = gasUy[gi]
+			const speed2 = gux * gux + guy * guy
 			const dragY = verticalGasDrag(gux, guy)
 			pvx += (gux - pvx) * GAS_DRAG
 			pvy += (guy - pvy) * dragY
 			// Held in a strong updraft: keep the droplet alive for orbiting.
-			if (guy < WIND_LIFT_UY && Math.hypot(gux, guy) > 1)
+			if (guy < WIND_LIFT_UY && speed2 > 1)
 				life = Math.max(life, Math.min(WIND_HOLD_LIFE, life + 1))
 		}
 		pvy = Math.min(MAX_VY, pvy + GRAVITY)
@@ -303,6 +308,11 @@ export const stepParticles = (world, onHit, state) => {
  * @returns {number} total mass lifted
  */
 export const liftLiquidByWind = (world) => {
+	// After stepGas: skip full-grid scoop when no cell has strong updraft.
+	// NaN (gas not stepped) → always scan so direct gasUy fixtures still work.
+	const up = world.maxUpdraft
+	if (up === up && up > WIND_LIFT_UY) return 0
+
 	const { worldW: W, worldH: H, mat, liq, gasUx, gasUy, particles } = world
 	let lifted = 0
 
@@ -327,7 +337,10 @@ export const liftLiquidByWind = (world) => {
 				(-guy - -WIND_LIFT_UY) * WIND_LIFT_RATE + -guy * 0.08,
 			)
 			if (scoop < 0.04) continue
-			if (particles.count >= particles.x.length) return lifted
+			if (particles.count >= particles.x.length) {
+				if (lifted > 0) world.airDirty = true
+				return lifted
+			}
 
 			liq[i] -= scoop
 			const spawnY = mat[above] === MAT.AIR && liq[above] < LIQ_DRAW ? y - 0.35 : y - 0.15
@@ -343,5 +356,6 @@ export const liftLiquidByWind = (world) => {
 			lifted += scoop
 		}
 
+	if (lifted > 0) world.airDirty = true
 	return lifted
 }
