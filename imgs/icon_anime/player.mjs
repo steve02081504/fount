@@ -1,6 +1,6 @@
 /**
  * ASCII animation player — loop playback, Ctrl+C abort, TUI, terminal resize,
- * SGR mouse (left press / drag / release → onPointer).
+ * SGR mouse (left/right press / drag / release → onPointer).
  * No process lifecycle / on-shutdown; callers own that.
  */
 
@@ -35,7 +35,9 @@ const MOUSE_ON = '\x1b[?1000h\x1b[?1002h\x1b[?1006h'
 const MOUSE_OFF = '\x1b[?1006l\x1b[?1002l\x1b[?1000l'
 
 /**
- * @typedef {{ x: number, y: number, left: boolean }} PointerEvent
+ * Pointer event from SGR mouse. Only the button that changed is set
+ * (`left` and/or `right`); the other field is omitted.
+ * @typedef {{ x: number, y: number, left?: boolean, right?: boolean }} PointerEvent
  */
 
 /**
@@ -77,9 +79,12 @@ export const consumeStdin = (carry, chunk, sink = {}) => {
 				const btn = +parts[0]
 				const x = +parts[1] - 1
 				const y = +parts[2] - 1
-				// Ignore wheel / non-left. btn&3 is the button; +32 = drag motion.
-				if (!(btn & 64) && (btn & 3) === 0)
-					sink.onPointer({ x, y, left: press })
+				// Ignore wheel. btn&3 is the button; +32 = drag motion.
+				const which = btn & 3
+				if (!(btn & 64) && (which === 0 || which === 2))
+					sink.onPointer(which === 0
+						? { x, y, left: press }
+						: { x, y, right: press })
 			}
 			i = j + 1
 			continue

@@ -37,6 +37,8 @@ const WIND_GUST_PERIOD = 41
 export const GAS_BLEND = 0.28
 /** Continuity boost when horizontal passage is constricted. */
 export const GAS_NOZZLE = 1.55
+/** Soft clamp on cell gas speed (cells / tick). */
+export const GAS_SPEED_MAX = 3.5
 
 const AIR_CELL = 1
 
@@ -357,15 +359,24 @@ const fillGasSpans = (blocked, W, H, outVert, outHoriz) => {
 /**
  * Advance open-air / cavity gas velocity: wind shear, nozzle continuity,
  * wall slip, and neighbor static-pressure ΔP (Bernoulli suction feedback).
+ * Optional `driveUx`/`driveUy` add local target velocity (pointer wind / vortex).
  * Requires a prior `labelAirRegions` for the current mat/liq topology.
  * @param {FluidWorld} world fluid world
- * @param {{ time?: number, seed?: number, forceWind?: number }} [opts] drive options
+ * @param {{
+ *   time?: number,
+ *   seed?: number,
+ *   forceWind?: number,
+ *   driveUx?: Float32Array,
+ *   driveUy?: Float32Array,
+ * }} [opts] drive options
  * @returns {void}
  */
 export const stepGas = (world, opts = {}) => {
 	const time = opts.time ?? world.gasTime
 	const seed = opts.seed ?? 0
 	const forced = opts.forceWind
+	const driveUx = opts.driveUx
+	const driveUy = opts.driveUy
 	world.gasTime = time + 1
 
 	const { worldW: W, worldH: H, gasUx, gasUy, regionId, regions } = world
@@ -410,6 +421,10 @@ export const stepGas = (world, opts = {}) => {
 
 			let tx = open ? drive : 0
 			let ty = 0
+			if (driveUx) {
+				tx += driveUx[cell]
+				ty += driveUy[cell]
+			}
 
 			const openL = x > 0 && !blocked[cell - 1]
 			const openR = x + 1 < W && !blocked[cell + 1]
@@ -459,8 +474,8 @@ export const stepGas = (world, opts = {}) => {
 				uy *= 0.85
 			}
 
-			nextUx[cell] = Math.max(-2.5, Math.min(2.5, ux))
-			nextUy[cell] = Math.max(-2.5, Math.min(2.5, uy))
+			nextUx[cell] = Math.max(-GAS_SPEED_MAX, Math.min(GAS_SPEED_MAX, ux))
+			nextUy[cell] = Math.max(-GAS_SPEED_MAX, Math.min(GAS_SPEED_MAX, uy))
 		}
 	}
 

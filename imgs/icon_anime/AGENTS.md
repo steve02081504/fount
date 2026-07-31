@@ -14,7 +14,7 @@ Standalone terminal animation for the fount fountain logo.
 deno run --allow-scripts --allow-all -c deno.json imgs/icon_anime/index.mjs
 ```
 
-Controls: Ctrl+C exit (icon teardown, then quit). Left-click / drag a circular cool spotlight (press hold, release off); other stdin discarded.
+Controls: Ctrl+C exit (icon teardown, then quit). Left-click / drag a circular cool spotlight (press hold, release off). Right-drag paints stroke wind along the path (faster drag → stronger flow); right long-press while still grows a clockwise vortex at the cursor (longer → faster; follows while moved, reforms when stopped, clears on release). Other stdin discarded.
 Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the pre-start scrollback and cursor row.
 
 ## Modules
@@ -25,7 +25,8 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | `icon.mjs` | Packed silhouette, pillars, body growth order (typed arrays) |
 | `scene.mjs` | Anim state, materials, rain, pool leak, enter/hold/exit |
 | `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid`; optional pointer spotlight (truecolor lift) |
-| `player.mjs` | TUI playback, Ctrl+C abort, SGR mouse → pointer light, `stdout` resize; alt-screen enter/leave |
+| `player.mjs` | TUI playback, Ctrl+C abort, SGR mouse → pointer light / wind, `stdout` resize; alt-screen enter/leave |
+| `wind_gesture.mjs` | Right-button stroke wind + long-still clockwise vortex → local gas drive field |
 | `terrain.mjs` | Pedestal-anchored surface + noise caves + U-tube/chamber templates |
 | `hash.mjs` | `hash01` + 1D/2D fBm noise + `ORTHO` (terrain + fluid) |
 | `fluid/` | Particles, grid liquid, soil, Boyle air regions, gas wind, glyphs |
@@ -56,6 +57,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 - Particles are SoA pools (`particles.x/y/vx/vy/life/amt` + `count`); no per-tick object alloc.
 - Compose paints into reused `frameCh`/`frameFg` buffers; `renderGrid(Cell[][])` is a thin adapter.
 - Pointer light (`state.light`): SGR mouse via `consumeStdin`; compose applies quadratic radial falloff (cell aspect `hypot(dx, 2·dy)`) as truecolor lift + cool bg glow only while the left button is held.
+- Pointer wind (`state.wind`): right-button gesture in `wind_gesture.mjs`; each tick paints `driveUx`/`driveUy` scratch into `stepGas` (stroke trail + optional clockwise vortex). Drag speed scales stroke amplitude; vortex strength grows with hold time and clears on release.
 
 ## Material standard
 
@@ -91,7 +93,7 @@ Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `.
 - Open air regions: region mean `pressure = P_ATM`; cell `pressureAt = P_ATM + ATM_HYDRO·y` (y↓ → P↑).
 - Sealed regions: Boyle mean `pressure ≈ gasAmount / airCells` (isothermal ideal gas at fixed T) plus hydrostatic `ATM_HYDRO·(y − yMean)` so the spatial average stays Boyle; gas mass transfers by cell overlap when topology splits/merges.
 - `RHO_AIR` (~`ATM_HYDRO`) is the dynamic density for `½ρu²`; `RHO_G` is liquid column head — keep `RHO_AIR ≪ RHO_G` so Bernoulli dynamic head does not rival liquid depth.
-- Gas velocity (`gasUx` / `gasUy`): open air tracks a time-varying global wind with power-law height shear (stronger aloft). Global wind is pink-ish fBm (synoptic / meso / micro) plus intermittent asymmetric gust pulses — autocorrelated and irregular, not layered sines. Continuity (`A·v`) speeds flow through duct throats (wind-tunnel nozzle). Wall slip zeros inflow into solids. Bernoulli static field `P₀ − ½ρu²` (`RHO_AIR`) drives neighbor ΔP acceleration (`GAS_DP_DRIVE`, scaled for the small `RHO_AIR`) — faster throat → lower static P → suction feedback into the nozzle. Rain particles drag toward local gas (`GAS_DRAG`); glyphs use the particle's resulting velocity, not the gas field directly.
+- Gas velocity (`gasUx` / `gasUy`): open air tracks a time-varying global wind with power-law height shear (stronger aloft). Global wind is pink-ish fBm (synoptic / meso / micro) plus intermittent asymmetric gust pulses — autocorrelated and irregular, not layered sines. Continuity (`A·v`) speeds flow through duct throats (wind-tunnel nozzle). Wall slip zeros inflow into solids. Bernoulli static field `P₀ − ½ρu²` (`RHO_AIR`) drives neighbor ΔP acceleration (`GAS_DP_DRIVE`, scaled for the small `RHO_AIR`) — faster throat → lower static P → suction feedback into the nozzle. Optional local `driveUx`/`driveUy` (pointer stroke / vortex) add into the per-cell target before blend. Rain particles drag toward local gas (`GAS_DRAG`); glyphs use the particle's resulting velocity, not the gas field directly.
 - Free-liquid hydrostatic pressure: `liquidPressureAt = P_air(surface) + RHO_G·depth`. Submerged side holes / deep edge vents move mass `∝ √(ΔP/ρg)` (Torricelli); free-surface sheet flow equalizes by fill level only (no fake surface jet). Sealed gas with `P > liquid P` blocks invasion and can push adjacent liquid away.
 - Grid liquid velocity (`liqVx` / `liqVy`): updated from mass transfers each `stepLiquid` (EMA); drives free-liquid glyphs so calm puddles stay on still marks.
 - Communicating vessels: free surfaces of the same liquid component relax toward equal `φ = P/(ρg) - y` (P from height-aware air pressure on the free surface).

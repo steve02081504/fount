@@ -7,7 +7,7 @@ import {
 	MAT, LIQ_DRAW, createWorld, clearMaterials, clearDynamics, setMat, addLiquid, addMoisture,
 	spawnParticle, queueSplash, stepGas, stepLiquid, stepParticles, labelAirRegions,
 	windProfileAt, idx, inWorld, isLiquidBarrier, releaseNonSoilWater,
-	soilAbsorbFactor, SOIL_CAP, SOIL_HIT_ABSORB_FRAC,
+	soilAbsorbFactor, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, scratch,
 } from './fluid/index.mjs'
 import { hash01 } from './hash.mjs'
 import {
@@ -16,6 +16,7 @@ import {
 } from './icon.mjs'
 import { terminalSize } from './player.mjs'
 import { generateTerrain, resizeTerrain } from './terrain.mjs'
+import { createWindGesture, tickWindGesture, fillWindDrive } from './wind_gesture.mjs'
 
 /** @typedef {ReturnType<typeof createAnimState>} AnimState */
 /** @typedef {ReturnType<typeof createWorld>} FluidWorld */
@@ -92,6 +93,7 @@ export const createAnimState = (opts = {}) => {
 		softBody: false,
 		matKey: -1,
 		light: null,
+		wind: createWindGesture(),
 		frameCh: null,
 		frameFg: null,
 	}
@@ -493,11 +495,17 @@ const spawnRain = (state) => {
 const simFrame = (state) => {
 	rebuildMaterials(state)
 	labelAirRegions(state.world)
-	stepGas(state.world, { time: state.frame, seed: state.seed })
+	tickWindGesture(state.wind)
+	const { world } = state
+	const n = world.worldW * world.worldH
+	const driveUx = scratch(world, 'windDriveUx', n, Float32Array)
+	const driveUy = scratch(world, 'windDriveUy', n, Float32Array)
+	fillWindDrive(state.wind, world, driveUx, driveUy)
+	stepGas(world, { time: state.frame, seed: state.seed, driveUx, driveUy })
 	spawnRain(state)
-	stepParticles(state.world, onParticleHit, state)
-	stepLiquid(state.world)
-	const { world, iconOx, iconOy } = state
+	stepParticles(world, onParticleHit, state)
+	stepLiquid(world)
+	const { iconOx, iconOy } = state
 	for (const ly of ICON_BASE_ROWS) {
 		const y = iconOy + ly
 		for (let i = 0; i < BASE_WIDTH; i++) {

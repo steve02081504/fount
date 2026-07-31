@@ -202,7 +202,7 @@ Deno.test('lightFalloff: center bright, edge zero, soft circle', async () => {
 	assert(Math.abs(lightFalloff(4, 0) - lightFalloff(0, 2)) < 1e-9)
 })
 
-Deno.test('consumeStdin: SGR left press/drag/release + Ctrl+C', async () => {
+Deno.test('consumeStdin: SGR left/right press/drag/release + Ctrl+C', async () => {
 	const { consumeStdin } = await import('../player.mjs')
 	const events = []
 	let aborted = false
@@ -211,7 +211,7 @@ Deno.test('consumeStdin: SGR left press/drag/release + Ctrl+C', async () => {
 	 */
 	const abort = () => { aborted = true }
 	/**
-	 * @param {{ x: number, y: number, left: boolean }} ev pointer
+	 * @param {{ x: number, y: number, left?: boolean, right?: boolean }} ev pointer
 	 * @returns {void}
 	 */
 	const onPointer = (ev) => { events.push(ev) }
@@ -229,9 +229,19 @@ Deno.test('consumeStdin: SGR left press/drag/release + Ctrl+C', async () => {
 	assertEquals(events.at(-1), { x: 11, y: 8, left: true })
 	carry = consumeStdin(carry, enc('\x1b[<0;12;9m'), handlers)
 	assertEquals(events.at(-1), { x: 11, y: 8, left: false })
+	// Right press / drag / release
+	carry = consumeStdin(carry, enc('\x1b[<2;6;4M'), handlers)
+	assertEquals(events.at(-1), { x: 5, y: 3, right: true })
+	carry = consumeStdin(carry, enc('\x1b[<34;10;5M'), handlers)
+	assertEquals(events.at(-1), { x: 9, y: 4, right: true })
+	carry = consumeStdin(carry, enc('\x1b[<2;10;5m'), handlers)
+	assertEquals(events.at(-1), { x: 9, y: 4, right: false })
 	// Wheel ignored
 	const n = events.length
 	consumeStdin('', enc('\x1b[<64;1;1M'), handlers)
+	assertEquals(events.length, n)
+	// Middle ignored
+	consumeStdin('', enc('\x1b[<1;2;2M'), handlers)
 	assertEquals(events.length, n)
 	// Split CSI across chunks
 	carry = consumeStdin('', enc('\x1b[<0;3;5'), handlers)
@@ -241,6 +251,72 @@ Deno.test('consumeStdin: SGR left press/drag/release + Ctrl+C', async () => {
 	assertEquals(events.at(-1), { x: 2, y: 4, left: true })
 	consumeStdin('', Uint8Array.of(0x03), handlers)
 	assertEquals(aborted, true)
+})
+
+Deno.test('wind gesture: stroke speed + clockwise vortex + release clear', async () => {
+	const {
+		createWindGesture, windPointer, tickWindGesture, fillWindDrive,
+		VORTEX_DELAY, STILL_EPS,
+	} = await import('../wind_gesture.mjs')
+	const { createWorld, scratch } = await import('../fluid/world.mjs')
+	const world = createWorld({ width: 40, height: 24, margin: 4, bottomExtra: 2 })
+	const n = world.worldW * world.worldH
+	const driveUx = scratch(world, 'tUx', n, Float32Array)
+	const driveUy = scratch(world, 'tUy', n, Float32Array)
+	const g = createWindGesture()
+
+	// Fast rightward drag → positive ux along the stroke
+	windPointer(g, { x: 10, y: 8, right: true })
+	tickWindGesture(g) // arm at rest
+	windPointer(g, { x: 10 + STILL_EPS + 4, y: 8, right: true })
+	tickWindGesture(g)
+	assert(g.strokes.length >= 1)
+	assert(g.strokes.at(-1).ux > 0.5)
+	fillWindDrive(g, world, driveUx, driveUy)
+	const mid = (8 + world.oy) * world.worldW + (12 + world.ox)
+	assert(driveUx[mid] > 0.2)
+
+	// Long still → clockwise vortex (top of ring blows right)
+	const g2 = createWindGesture()
+	windPointer(g2, { x: 20, y: 10, right: true })
+	for (let i = 0; i < VORTEX_DELAY + 8; i++) tickWindGesture(g2)
+	assertEquals(g2.vortexOn, true)
+	assert(g2.strength > 0.2)
+	fillWindDrive(g2, world, driveUx, driveUy)
+	const top = (8 + world.oy) * world.worldW + (20 + world.ox) // above centre
+	const right = (10 + world.oy) * world.worldW + (23 + world.ox)
+	assert(driveUx[top] > 0.05, 'clockwise: above centre → +ux')
+	assert(driveUy[right] > 0.02, 'clockwise: right of centre → +uy')
+
+	// Drag while vortex on → centre follows; stop reforms
+	windPointer(g2, { x: 28, y: 10, right: true })
+	tickWindGesture(g2)
+	assertEquals(g2.vortexOn, true)
+	assertEquals(g2.x, 28)
+	tickWindGesture(g2) // still at new spot → regenerate path
+	assertEquals(g2.vortexOn, true)
+
+	windPointer(g2, { x: 28, y: 10, right: false })
+	assertEquals(g2.down, false)
+	assertEquals(g2.vortexOn, false)
+	fillWindDrive(g2, world, driveUx, driveUy)
+	assertEquals(driveUx[top], 0)
+})
+
+Deno.test('stepGas: pointer drive accelerates local gas', async () => {
+	const { createWorld, labelAirRegions, stepGas, scratch } = await import('../fluid/index.mjs')
+	const w = createWorld({ width: 30, height: 16, margin: 2, bottomExtra: 1 })
+	labelAirRegions(w)
+	const n = w.worldW * w.worldH
+	const driveUx = scratch(w, 'dUx', n, Float32Array)
+	const driveUy = scratch(w, 'dUy', n, Float32Array)
+	const cx = w.ox + 15
+	const cy = 6
+	const cell = cy * w.worldW + cx
+	driveUx[cell] = 2.0
+	for (let i = 0; i < 12; i++)
+		stepGas(w, { time: i, seed: 0, forceWind: 0, driveUx, driveUy })
+	assert(w.gasUx[cell] > 0.6)
 })
 
 Deno.test('composeFrame: light yields truecolor near cursor', async () => {

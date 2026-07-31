@@ -44,7 +44,7 @@ export {
  *
  */
 export {
-	WIND_BASE, WIND_GUST, WIND_SHEAR_POWER, GAS_BLEND, GAS_NOZZLE,
+	WIND_BASE, WIND_GUST, WIND_SHEAR_POWER, GAS_BLEND, GAS_NOZZLE, GAS_SPEED_MAX,
 	isAirCell, fillBlocked, labelAirRegions, pressureAt, globalWindAt, windProfileAt,
 	gasVelocityAt, dynamicPressure, staticPressureAt, stepGas, totalSealedGas,
 } from './gas.mjs'
