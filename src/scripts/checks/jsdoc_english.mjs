@@ -106,12 +106,10 @@ export function scanFileJsdocEnglish(relativePath, text) {
 		const summary = jsdocSummaryLines(block)
 		const missingSummary = summary.length === 0 && !isTagOnlyJsdoc(block)
 			&& /\n\s*\*\s*@(param|returns?|property)\b/.test(block)
-		if (isEnglishJsdocSummary(summary)) {
+		if (isEnglishJsdocSummary(summary))
 			issues.push({ path: relativePath, line: startLine, summary: summary.join(' '), missingSummary: false })
-		}
-		else if (missingSummary) {
+		else if (missingSummary)
 			issues.push({ path: relativePath, line: startLine, summary: '', missingSummary: true })
-		}
 	}
 	return issues
 }
