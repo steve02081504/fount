@@ -4,7 +4,7 @@
 /* global Deno */
 import { assert, assertEquals, assertGreater } from 'jsr:@std/assert'
 
-import { MAT, addLiquid, spawnParticle, idx } from '../fluid_engine.mjs'
+import { MAT, addLiquid, spawnParticle, idx } from '../fluid/index.mjs'
 import {
 	createAnimState, resizeAnimState, enter, hold, exit, renderGrid, layout,
 } from '../index.mjs'
@@ -56,7 +56,7 @@ Deno.test('exit: ends when icon gone without draining rain wait', () => {
 	// final frame is empty grid of exact size
 	const lines = last.split('\n')
 	assertEquals(lines.length, state.height)
-	assertEquals(lines[0].replace(/\x1b\[[0-9;]*m/g, '').length, state.width)
+	assertEquals(lines[0].replace(/\x1b\[[\d;]*m/g, '').length, state.width)
 	// exit must be shorter than old 90-frame drain budget
 	assert(frames < 90 + layout.maxBodyD + layout.maxPillarH * 2 + layout.BASE_WIDTH)
 })
@@ -162,7 +162,7 @@ Deno.test('renderGrid: fixed height/width', () => {
 	const text = renderGrid(grid, width, height)
 	const lines = text.split('\n')
 	assertEquals(lines.length, height)
-	const plain = lines.map(l => l.replace(/\x1b\[[0-9;]*m/g, ''))
+	const plain = lines.map(l => l.replace(/\x1b\[[\d;]*m/g, ''))
 	for (const line of plain) assertEquals(line.length, width)
 })
 
@@ -172,7 +172,7 @@ Deno.test('sim frame from enter has correct dimensions', () => {
 	const { value } = gen.next()
 	const lines = value.split('\n')
 	assertEquals(lines.length, 30)
-	const plain0 = lines[0].replace(/\x1b\[[0-9;]*m/g, '')
+	const plain0 = lines[0].replace(/\x1b\[[\d;]*m/g, '')
 	assertEquals(plain0.length, 55)
 	gen.return?.()
 })

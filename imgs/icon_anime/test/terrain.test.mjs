@@ -4,7 +4,7 @@
 /* global Deno */
 import { assert, assertEquals, assertGreater, assertLess } from 'jsr:@std/assert'
 
-import { createWorld } from '../fluid_engine.mjs'
+import { createWorld } from '../fluid/index.mjs'
 import {
 	analyzeTerrain, generateTerrain, surfacePeriodicityScore, outlineChar, TERRAIN_CH,
 	tallLandCoverage, TALL_LAND_FRACTION, TALL_LAND_HEIGHT_FRAC,

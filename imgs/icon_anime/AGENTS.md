@@ -19,20 +19,38 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 
 ## Modules
 
+| Path | Role |
+| --- | --- |
+| `index.mjs` | CLI entry + public re-exports |
+| `icon.mjs` | Packed silhouette, pillars, body growth order (typed arrays) |
+| `scene.mjs` | Anim state, materials, rain, pool leak, enter/hold/exit |
+| `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid` |
+| `player.mjs` | TUI playback, keyboard, `stdout` resize; alt-screen enter/leave |
+| `terrain.mjs` | Pedestal-anchored surface + noise caves + U-tube/chamber templates |
+| `hash.mjs` | Shared `hash01` (terrain + fluid) |
+| `fluid/` | Particles, grid liquid, soil, Boyle air regions, gas wind, glyphs |
+
+### `fluid/`
+
 | File | Role |
 | --- | --- |
-| `index.mjs` | Icon stages (`enter` / `hold` / `exit`), rain, compose, resize migration |
-| `terrain.mjs` | Pedestal-anchored surface + noise caves + U-tube/chamber templates; flat `solid` (`y*W+x`) |
-| `fluid_engine.mjs` | Particles, grid liquid, soil, air-region pressure (Boyle), gas velocity, hydraulic equalization |
-| `player.mjs` | TUI playback, keyboard, `stdout` resize; alt-screen enter/leave restores pre-start cursor row |
+| `index.mjs` | Barrel re-exports |
+| `mat.mjs` | `MAT` enum, flags LUT, soil/liquid constants |
+| `world.mjs` | Grid alloc, scratch buffers, mat/liq/moisture helpers |
+| `gas.mjs` | Air regions, wind, `stepGas` |
+| `liquid.mjs` | Gravity / side flow / soil / hydraulic `stepLiquid` |
+| `particles.mjs` | Rain/splash particles + gas drag |
+| `glyphs.mjs` | `waterChar` / `liquidChar` / `dripChar` |
 
 ## Layout & hot-path notes
 
 - Terrain `solid` and fluid grids share flat `y * W + x` indexing (no row arrays).
+- World scratch lives on `world.scratch` (typed arrays reused across ticks).
 - Gas nozzle spans are precomputed in O(WH) column/row runs — do not re-walk per cell.
-- Air-region labels double-buffer `regionId`; soil / gas / liquid scratch buffers live on the world.
-- Material rebuild is keyed by icon stage (`base*` / `body*` / `softBase`); hold frames skip it.
-- Compose paints into reused `ch`/`fg` buffers (`renderBuffers`); `renderGrid(Cell[][])` is a thin adapter.
+- Air-region labels double-buffer `regionId` via `scratch.prevRegionId`.
+- Material rebuild is keyed by a packed int (`matKey`); hold frames skip it.
+- Body cells are parallel `Uint8Array`s (`bodyX` / `bodyY` / `bodyD`), not object lists.
+- Compose paints into reused `frameCh`/`frameFg` buffers; `renderGrid(Cell[][])` is a thin adapter.
 
 ## Material standard
 

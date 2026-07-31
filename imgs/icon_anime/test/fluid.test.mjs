@@ -7,12 +7,12 @@ import { assert, assertAlmostEquals, assertEquals, assertGreater, assertLess } f
 import {
 	MAT, createWorld, setMat, addLiquid, addMoisture, stepLiquid, stepSoil, stepGas, stepParticles,
 	labelAirRegions, pressureAt, totalSealedGas, totalGridWater, P_ATM, clearMaterials, idx,
-	COND_DRIP, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQUID_DRAW_THRESHOLD,
-	fallChar, liquidChar, waterChar, pickWaterGlyph, FALL_HEAVY,
+	COND_DRIP, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQ_DRAW,
+	waterChar, liquidChar, pickWaterGlyph, FALL_HEAVY,
 	WATER_STILL, WATER_FALL, WATER_HIGH_L, WATER_HIGH_R, WATER_LOW_DL, WATER_LOW_DR,
 	globalWindAt, windProfileAt, gasVelocityAt, dynamicPressure,
 	staticPressureAt, spawnParticle,
-} from '../fluid_engine.mjs'
+} from '../fluid/index.mjs'
 
 /**
  * Build a sealed box cavity with optional liquid. Walls use impermeable SEAL.
@@ -257,7 +257,7 @@ Deno.test('fluid: sustained rain forms surface puddles instead of all soaking aw
 	for (let x = 4; x <= 18; x++) {
 		const L = w.liq[idx(w, x, 9)]
 		surfaceLiq += L
-		if (L >= LIQUID_DRAW_THRESHOLD) puddleCells++
+		if (L >= LIQ_DRAW) puddleCells++
 	}
 	assertGreater(puddleCells, 2)
 	assertGreater(surfaceLiq, 1)
@@ -349,9 +349,9 @@ Deno.test('fluid: waterChar uses liquid velocity, not wind-scale slant on still 
 	assert(WATER_STILL.includes(liquidChar(0.7, 0, false, 0, 0)))
 
 	// Pure fall by amount
-	assertEquals(fallChar(FALL_HEAVY, 0, 0, 1), '|')
-	assertEquals(fallChar(FALL_HEAVY + 0.2, 0, 0, 1), '|')
-	assert(WATER_FALL.includes(fallChar(0.1, 0, 0, 1)))
+	assertEquals(waterChar(FALL_HEAVY, 0, 0, 1), '|')
+	assertEquals(waterChar(FALL_HEAVY + 0.2, 0, 0, 1), '|')
+	assert(WATER_FALL.includes(waterChar(0.1, 0, 0, 1)))
 	assertEquals(liquidChar(0.7, 0, true, 0, 1), '|')
 
 	// High momentum slant

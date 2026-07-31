@@ -34,7 +34,8 @@ async function* iterateFrames(frames) {
 export class AsciiAnimePlayer {
 	/**
 	 * @param {{ fps?: number, onResize?: (size: { columns: number, rows: number }) => void }} [opts] parameter
-	 */
+	 * @returns {*} result
+ */
 	constructor({ fps = 24, onResize } = {}) {
 		this.fps = fps
 		this.speed = 1
@@ -126,12 +127,8 @@ export class AsciiAnimePlayer {
 	 * @param {{ signal?: AbortSignal }} [opts] parameter
 	 * @returns {Promise<void>} result
 	 */
-	async #base_play(frames, { signal } = {}) {
+	async #playFrames(frames, { signal } = {}) {
 		signal ??= this.signal
-		/**
-		 * @returns {number} result
-		 */
-		const budget = () => 1000 / (this.fps * this.speed)
 		for await (const frame of iterateFrames(frames)) {
 			if (signal?.aborted) return
 			while (this.paused && !signal?.aborted)
@@ -146,7 +143,7 @@ export class AsciiAnimePlayer {
 			if (signal?.aborted) return
 			const t0 = performance.now()
 			this.paint(frame)
-			const wait = budget() - (performance.now() - t0)
+			const wait = 1000 / (this.fps * this.speed) - (performance.now() - t0)
 			if (wait <= 0) continue
 			try {
 				await sleep(wait, undefined, signal ? { signal } : undefined)
@@ -159,27 +156,27 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames parameter
-	 * @param {{ signal?: AbortSignal | null }} [opts] parameter
-	 * @returns {Promise<void> & { play: Function, loop: Function }} result
+	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames frames
+	 * @param {{ signal?: AbortSignal | null }} [opts] options
+	 * @returns {Promise<void> & { play: Function, loop: Function }} chainable play promise
 	 */
 	play(frames, opts = {}) {
 		const signal = this.useSignal(opts.signal)
-		const result = this.#base_play(frames, { ...opts, signal })
+		const result = this.#playFrames(frames, { ...opts, signal })
 		return Object.assign(result, {
 			/**
-			 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action parameter
-			 * @param {{ signal?: AbortSignal | null }} [options] parameter
-			 * @returns {Promise<void> & { play: Function, loop: Function }} result
+			 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action frames
+			 * @param {{ signal?: AbortSignal | null }} [options] options
+			 * @returns {Promise<void> & { play: Function, loop: Function }} chainable play promise
 			 */
 			play: async (action, options) => {
 				await result
 				return this.play(action, { ...opts, ...options })
 			},
 			/**
-			 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action parameter
-			 * @param {{ signal?: AbortSignal | null }} [options] parameter
-			 * @returns {Promise<void>} result
+			 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action frames
+			 * @param {{ signal?: AbortSignal | null }} [options] options
+			 * @returns {Promise<void>} loop promise
 			 */
 			loop: async (action, options) => {
 				await result
@@ -217,7 +214,7 @@ export class AsciiAnimePlayer {
 	async loop(frames, { signal } = {}) {
 		signal = this.useSignal(signal)
 		while (!signal?.aborted)
-			await this.#base_play(frames, { signal: this.signal })
+			await this.#playFrames(frames, { signal: this.signal })
 	}
 
 	/** Leave alt screen (restores pre-start scrollback + cursor) / raw mode / resize listener. */

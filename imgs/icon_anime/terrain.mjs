@@ -7,7 +7,7 @@
  * `solid` is a flat Uint8Array indexed as `y * W + x` (same layout as fluid grids).
  */
 
-import { hash01 } from './fluid_engine.mjs'
+import { hash01 } from './hash.mjs'
 
 /** Surface / wall outline characters. */
 export const TERRAIN_CH = {
@@ -49,15 +49,6 @@ export const TALL_LAND_FRACTION = 0.3
 export const TALL_LAND_HEIGHT_FRAC = 0.25
 /** Columns of land forced flush with the pedestal on each outer end. */
 const PEDESTAL_SHOULDER = 3
-
-/**
- * Flat solid / label index.
- * @param {number} W world width
- * @param {number} x column
- * @param {number} y row
- * @returns {number} flat index
- */
-export const si = (W, x, y) => y * W + x
 
 /**
  * Generate full-width terrain for a fluid world.
@@ -147,6 +138,7 @@ function buildSurface(W, {
  * @param {number} dir +1 rightward / -1 leftward
  * @param {number} startY height at the adjacent anchor
  * @param {{ minY: number, maxY: number, seed: number }} opts parameter
+ * @returns {*} result
  */
 function walkSurface(surface, startX, dir, startY, { minY, maxY, seed }) {
 	const W = surface.length
@@ -195,6 +187,7 @@ function walkSurface(surface, startX, dir, startY, { minY, maxY, seed }) {
  * One-pass soft clamp of 3+ isolated spikes.
  * @param {Int16Array} surface parameter
  * @param {number} W parameter
+ * @returns {*} result
  */
 function softClampSpikes(surface, W) {
 	for (let x = 1; x < W - 1; x++) {
@@ -209,6 +202,7 @@ function softClampSpikes(surface, W) {
  * Raise enough view columns so ≥ TALL_LAND_FRACTION have thickness ≥ ¼ screen.
  * @param {Int16Array} surface parameter
  * @param {{ W: number, H: number, viewH: number, viewW: number, ox: number, seed: number, footX0: number, footX1: number, baseY: number }} opts parameter
+ * @returns {*} result
  */
 export function ensureTallLand(surface, {
 	W, H, viewH, viewW, ox, seed, footX0, footX1, baseY,
@@ -301,6 +295,7 @@ export function tallLandCoverage(terrain, { viewH, viewW }) {
  * @param {number} W width
  * @param {number} H height
  * @param {number} seed seed
+ * @returns {*} result
  */
 function carveNoiseCaves(solid, surface, W, H, seed) {
 	for (let y = 0; y < H; y++)
@@ -363,6 +358,7 @@ function valueNoise2(x, y, seed) {
  * @param {number} W width
  * @param {number} H height
  * @param {number} passes CA iterations
+ * @returns {*} result
  */
 function cellularCleanup(solid, surface, W, H, passes) {
 	const next = new Uint8Array(solid.length)
@@ -388,6 +384,7 @@ function cellularCleanup(solid, surface, W, H, passes) {
  * @param {Int16Array} surface surface rows
  * @param {TerrainFeature[]} features feature list to append
  * @param {{ W: number, H: number, seed: number, iconOx: number, iconBaseX0: number, iconBaseX1: number }} opts options
+ * @returns {*} result
  */
 function injectConnectors(solid, surface, features, { W, H, seed, iconOx, iconBaseX0, iconBaseX1 }) {
 	const footX0 = iconOx + iconBaseX0
@@ -457,6 +454,7 @@ function injectConnectors(solid, surface, features, { W, H, seed, iconOx, iconBa
  * @param {number} wellR parameter
  * @param {number} top parameter
  * @param {number} bottom parameter
+ * @returns {*} result
  */
 function carveUTube(solid, surface, W, H, wellL, wellR, top, bottom) {
 	for (const wx of [wellL, wellR]) {
@@ -482,6 +480,7 @@ function carveUTube(solid, surface, W, H, wellL, wellR, top, bottom) {
  * @param {number} w parameter
  * @param {number} h parameter
  * @param {0|1} value parameter
+ * @returns {*} result
  */
 function carveRect(solid, W, H, x0, y0, w, h, value) {
 	for (let y = y0; y < y0 + h && y < H; y++)
@@ -496,6 +495,7 @@ function carveRect(solid, W, H, x0, y0, w, h, value) {
  * @param {number} W width
  * @param {number} H height
  * @param {number} seed seed
+ * @returns {*} result
  */
 function connectNearbyCavities(solid, surface, W, H, seed) {
 	const { regions } = labelCavities(solid, surface, W, H)
@@ -517,6 +517,8 @@ function connectNearbyCavities(solid, surface, W, H, seed) {
 		carveCorridor(solid, surface, W, H, a.cx, a.cy, best.cx, best.cy)
 	}
 }
+
+const ORTHO = /** @type {const} */ [[1, 0], [-1, 0], [0, 1], [0, -1]]
 
 /**
  * Flood-fill label underground air cavities (id > 0).
@@ -548,7 +550,7 @@ export function labelCavities(solid, surface, W, H) {
 			for (let qi = 0; qi < queue.length; qi += 2) {
 				const cx = queue[qi]
 				const cy = queue[qi + 1]
-				for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+				for (const [dx, dy] of ORTHO) {
 					const nx = cx + dx
 					const ny = cy + dy
 					if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
@@ -576,6 +578,7 @@ export function labelCavities(solid, surface, W, H) {
  * @param {number} y0 parameter
  * @param {number} x1 parameter
  * @param {number} y1 parameter
+ * @returns {*} result
  */
 function carveCorridor(solid, surface, W, H, x0, y0, x1, y1) {
 	let x = x0
@@ -600,6 +603,7 @@ function carveCorridor(solid, surface, W, H, x0, y0, x1, y1) {
  * @param {number} footX0 parameter
  * @param {number} footX1 parameter
  * @param {number} baseY parameter
+ * @returns {*} result
  */
 function carveIconFootprint(solid, surface, W, H, footX0, footX1, baseY) {
 	for (let x = footX0; x < footX1; x++) {
