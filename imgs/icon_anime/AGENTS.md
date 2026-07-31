@@ -21,7 +21,7 @@ Controls: Space pause, `[` / `]` speed, Ctrl+C exit (icon teardown, then quit).
 | File | Role |
 | --- | --- |
 | `index.mjs` | Icon stages (`enter` / `hold` / `exit`), rain, compose, resize migration |
-| `terrain.mjs` | Terraria-style surface + noise caves + U-tube/chamber templates |
+| `terrain.mjs` | Pedestal-anchored surface (land shoulders) + noise caves + U-tube/chamber templates |
 | `fluid_engine.mjs` | Particles, grid liquid, air-region pressure (Boyle), hydraulic equalization |
 | `player.mjs` | TUI playback, keyboard, `stdout` resize |
 
@@ -35,13 +35,19 @@ Static / growing icon + terrain write the material grid (particles do not rewrit
 | `:` (visual) | Pillars | Compose-only jet. **Does not write material** — liquid & particles pass through freely. |
 | `@` (`POOL`) | Base slabs | Pool: absorb, then leak with splash to the next lower slab; bottom slab runoff deposits free liquid on nearby ground. |
 | `>` / `<` (`SLOPE_*`) | Base soft edges | 45° splash faces (`>` one side, `<` opposite). |
-| surface (`HORIZON`) | Ground top | Solid top: splash + leave free liquid in the air cell above so it sheets/flows; absorb quota still shortens the hit. |
+| surface (`HORIZON`) | Ground top | Solid top: splash + leave free liquid in the air cell above so it sheets/flows; absorb quota still shortens the hit. Pedestal span stays land until POOL overwrites — ungrown base columns still join the shoulders. |
 | terrain fill (`SOLID`) | Foundation | Impenetrable solid. |
 | empty (`AIR`) | Atmosphere / caves | Air; liquid & particles that hit world edges are discarded. |
 
 Open-stage rule: columns whose base slab has not grown yet do **not** splash — rain keeps falling through empty cells until it hits existing mat, horizon, or leaves the world.
 
 Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `..`) → body-pool `@` / flooded liquid `~` → pillars `:` → terrain outline.
+
+## Terrain invariants
+
+- Surface is **pedestal-anchored**: flat land under the icon base, land shoulders on both outer ends, free Terraria-style walk outward.
+- Ungrown base columns keep `HORIZON` until `POOL`/`SLOPE_*` overwrite — terrain and icon join without a post-hoc hole.
+- ≥30% of view columns have land thickness ≥ ¼ screen height (`TALL_LAND_FRACTION` / `TALL_LAND_HEIGHT_FRAC`).
 
 ## Physics invariants
 
@@ -59,4 +65,4 @@ fount test icon_anime --no-parallel
 fount test icon_anime:pure --no-parallel
 ```
 
-Coverage: deterministic terrain glyphs/features, sealed-cavity compression, U-tube leveling, BODY splash (no flood), pillar pass-through, pool→slab/ground leak, exit frame bound, resize state preserve, ANSI frame size.
+Coverage: deterministic terrain glyphs/features, pedestal land shoulders, tall-land quota (≥30% view cols ≥¼ screen), sealed-cavity compression, U-tube leveling, BODY splash (no flood), pillar pass-through, pool→slab/ground leak, exit frame bound, resize state preserve, ANSI frame size.

@@ -7,6 +7,7 @@ import { assert, assertEquals, assertGreater, assertLess } from 'jsr:@std/assert
 import { createWorld } from '../fluid_engine.mjs'
 import {
 	analyzeTerrain, generateTerrain, surfacePeriodicityScore, outlineChar, TERRAIN_CH,
+	tallLandCoverage, TALL_LAND_FRACTION, TALL_LAND_HEIGHT_FRAC,
 } from '../terrain.mjs'
 
 const ICON_BASE_ROWS = [16, 18, 20, 22]
@@ -18,29 +19,31 @@ const ICON_BASE_X1 = 37
  * @param {number} [seed] RNG seed
  * @param {number} [width] view width
  * @param {number} [height] view height
- * @returns {ReturnType<typeof generateTerrain>} terrain
+ * @returns {{ terrain: ReturnType<typeof generateTerrain>, world: ReturnType<typeof createWorld>, iconOy: number, baseY: number }} bundle
  */
 const makeTerrain = (seed = 42, width = 80, height = 40) => {
 	const world = createWorld({ width, height, margin: 12, bottomExtra: 4 })
 	const iconOx = world.ox + Math.floor((width - 42) / 2)
 	const iconOy = Math.floor((height - 23) / 2)
-	return generateTerrain(world, {
+	const terrain = generateTerrain(world, {
 		iconOx, iconOy, seed,
 		iconBaseRows: ICON_BASE_ROWS,
 		iconBaseX0: ICON_BASE_X0,
 		iconBaseX1: ICON_BASE_X1,
 	})
+	const baseY = Math.min(world.worldH - 4, iconOy + ICON_BASE_ROWS[ICON_BASE_ROWS.length - 1])
+	return { terrain, world, iconOy, baseY }
 }
 
 Deno.test('terrain: fixed seed is deterministic', () => {
-	const a = makeTerrain(12345)
-	const b = makeTerrain(12345)
+	const a = makeTerrain(12345).terrain
+	const b = makeTerrain(12345).terrain
 	assertEquals([...a.surface], [...b.surface])
 	assertEquals(a.features.length, b.features.length)
 })
 
 Deno.test('terrain: surface uses slope/wall/flat glyphs, not only bar', () => {
-	const t = makeTerrain(7)
+	const { terrain: t } = makeTerrain(7)
 	const set = new Set(t.surfaceChar)
 	const allowed = new Set(Object.values(TERRAIN_CH))
 	for (const ch of set) assert(allowed.has(ch), `unexpected surface char ${ch}`)
@@ -50,18 +53,41 @@ Deno.test('terrain: surface uses slope/wall/flat glyphs, not only bar', () => {
 })
 
 Deno.test('terrain: surface is not highly periodic (not a sine)', () => {
-	const t = makeTerrain(99, 120, 40)
+	const { terrain: t } = makeTerrain(99, 120, 40)
 	const score = surfacePeriodicityScore(t.surface)
 	assertLess(score, 0.85)
 })
 
 Deno.test('terrain: injects U-tube and chamber features with cavities', () => {
-	const t = makeTerrain(2024, 100, 45)
+	const { terrain: t } = makeTerrain(2024, 100, 45)
 	const info = analyzeTerrain(t)
 	assert(info.hasUTube, 'expected U-tube feature')
 	assert(info.hasChamber, 'expected chamber/neck feature')
 	assertGreater(info.count, 0)
 	assertGreater(info.sizes[0] ?? 0, 4)
+})
+
+Deno.test('terrain: pedestal ends sit on land flush with the base', () => {
+	for (const seed of [1, 7, 42, 99, 2024]) {
+		const { terrain: t, baseY } = makeTerrain(seed, 80, 40)
+		const { footX0, footX1, surface, solid } = t
+		assertEquals(surface[footX0], baseY)
+		assertEquals(surface[footX1 - 1], baseY)
+		// outer shoulders are land at the same grade
+		assertEquals(surface[footX0 - 1], baseY)
+		assertEquals(surface[footX1], baseY)
+		assertEquals(solid[baseY][footX0 - 1], 1)
+		assertEquals(solid[baseY][footX1], 1)
+	}
+})
+
+Deno.test('terrain: ≥30% of view land is at least ¼ screen tall', () => {
+	for (const [seed, w, h] of [[1, 80, 40], [7, 100, 48], [42, 80, 40], [99, 120, 40], [2024, 90, 36]]) {
+		const { terrain: t } = makeTerrain(seed, w, h)
+		const cov = tallLandCoverage(t, { viewH: h, viewW: w })
+		assert(cov.fraction >= TALL_LAND_FRACTION - 1e-9, `seed=${seed} fraction=${cov.fraction}`)
+		assertEquals(cov.minThick, Math.ceil(h * TALL_LAND_HEIGHT_FRAC))
+	}
 })
 
 Deno.test('terrain: outlineChar marks cave walls', () => {

@@ -1,6 +1,7 @@
 /**
  * Deterministic Terraria-style ASCII terrain + cave generation.
- * Surface uses constrained slopes / platforms / cliffs; underground uses
+ * Surface is anchored at the icon pedestal (land on both ends) and walks
+ * outward with constrained slopes / platforms / cliffs; underground uses
  * noise cavities, CA cleanup, and injected connector templates (U-tubes, necks).
  */
 
@@ -36,9 +37,18 @@ export const TERRAIN_CH = {
  * }} TerrainFeature
  */
 
+/** Visible land columns that must meet the tall-land floor (fraction of view width). */
+export const TALL_LAND_FRACTION = 0.3
+/** Tall land = column thickness ≥ this fraction of screen (view) height. */
+export const TALL_LAND_HEIGHT_FRAC = 0.25
+/** Columns of land forced flush with the pedestal on each outer end. */
+const PEDESTAL_SHOULDER = 3
+
 /**
  * Generate full-width terrain for a fluid world.
- * @param {{ worldW: number, worldH: number, viewW: number, ox: number }} world fluid world size fields
+ * Surface is anchored at the icon pedestal and walks outward so both base ends
+ * sit on land; ≥30% of view columns keep land thickness ≥ ¼ screen height.
+ * @param {{ worldW: number, worldH: number, viewW: number, viewH: number, ox: number }} world fluid world size fields
  * @param {{ iconOx: number, iconOy: number, seed: number, iconBaseRows: number[], iconBaseX0: number, iconBaseX1: number }} opts icon placement and seed
  * @returns {TerrainData} terrain data
  */
@@ -46,13 +56,18 @@ export function generateTerrain(world, {
 	iconOx, iconOy, seed,
 	iconBaseRows, iconBaseX0, iconBaseX1,
 }) {
-	const { worldW: W, worldH: H, viewW, ox } = world
+	const { worldW: W, worldH: H, viewW, viewH, ox } = world
 	const lastBase = iconBaseRows[iconBaseRows.length - 1]
 	const baseY = Math.min(H - 4, iconOy + lastBase)
 	const minY = Math.max(2, iconOy + 12)
 	const maxY = H - 3
+	const footX0 = iconOx + iconBaseX0
+	const footX1 = iconOx + iconBaseX1
 
-	const surface = buildSurface(W, { baseY, minY, maxY, seed })
+	const surface = buildSurface(W, {
+		baseY, minY, maxY, seed,
+		footX0, footX1, viewH, viewW, ox, H,
+	})
 	const solid = Array.from({ length: H }, () => new Uint8Array(W))
 	for (let x = 0; x < W; x++)
 		for (let y = surface[x]; y < H; y++)
@@ -64,10 +79,8 @@ export function generateTerrain(world, {
 	const features = []
 	injectConnectors(solid, surface, features, { W, H, seed, iconOx, iconBaseX0, iconBaseX1 })
 
-	const footX0 = iconOx + iconBaseX0
-	const footX1 = iconOx + iconBaseX1
 	carveIconFootprint(solid, surface, {
-		W, H, footX0, footX1, iconOy, iconBaseRows,
+		W, H, footX0, footX1, iconOy, iconBaseRows, baseY,
 	})
 
 	const surfaceChar = buildSurfaceChars(surface, solid, W, H)
@@ -76,39 +89,78 @@ export function generateTerrain(world, {
 }
 
 /**
- * Constrained random-walk surface — platforms, slopes, cliffs (not sine waves).
+ * Constrained random-walk surface anchored at the icon pedestal.
+ * Pedestal span is flat land at `baseY`; terrain walks left/right from the ends
+ * so both base shoulders are land and blend into free terrain.
  * @param {number} W parameter
- * @param {{ baseY: number, minY: number, maxY: number, seed: number }} opts parameter
+ * @param {{ baseY: number, minY: number, maxY: number, seed: number, footX0: number, footX1: number, viewH: number, viewW: number, ox: number, H: number }} opts parameter
  * @returns {Int16Array} result
  */
-function buildSurface(W, { baseY, minY, maxY, seed }) {
+function buildSurface(W, {
+	baseY, minY, maxY, seed,
+	footX0, footX1, viewH, viewW, ox, H,
+}) {
 	const surface = new Int16Array(W)
-	let y = baseY
-	let slope = 0 // -2..2 preferred step
-	let plateau = 0
+	const x0 = Math.max(0, Math.min(W, footX0))
+	const x1 = Math.max(x0, Math.min(W, footX1))
 
-	for (let x = 0; x < W; x++) {
+	for (let x = x0; x < x1; x++)
+		surface[x] = baseY
+
+	// Land shoulders flush with both pedestal ends, then free walk outward.
+	const shoulder = Math.min(PEDESTAL_SHOULDER, Math.max(1, (x1 - x0) >> 2))
+	for (let i = 1; i <= shoulder; i++) {
+		if (x0 - i >= 0) surface[x0 - i] = baseY
+		if (x1 + i - 1 < W) surface[x1 + i - 1] = baseY
+	}
+
+	walkSurface(surface, x0 - shoulder - 1, -1, baseY, { minY, maxY, seed })
+	walkSurface(surface, x1 + shoulder, 1, baseY, { minY, maxY, seed })
+
+	softClampSpikes(surface, W)
+	ensureTallLand(surface, {
+		W, H, viewH, viewW, ox, seed, footX0: x0, footX1: x1, baseY,
+	})
+	// Pedestal + shoulders stay land at baseY (final — after clamps / tall-land).
+	for (let x = Math.max(0, x0 - shoulder); x < Math.min(W, x1 + shoulder); x++)
+		surface[x] = baseY
+
+	return surface
+}
+
+/**
+ * Random-walk surface from an anchor column in `dir` (±1) across the rest of the row.
+ * @param {Int16Array} surface parameter
+ * @param {number} startX first column to write
+ * @param {number} dir +1 rightward / -1 leftward
+ * @param {number} startY height at the adjacent anchor
+ * @param {{ minY: number, maxY: number, seed: number }} opts parameter
+ */
+function walkSurface(surface, startX, dir, startY, { minY, maxY, seed }) {
+	const W = surface.length
+	if (startX < 0 || startX >= W) return
+
+	let y = startY
+	let slope = 0
+	let plateau = 0
+	for (let x = startX; dir > 0 ? x < W : x >= 0; x += dir) {
 		const r = hash01(x + seed, 3)
 		const feature = hash01(x + seed * 2, 19)
 
 		if (plateau > 0)
 			plateau--
 		else if (feature > 0.92) {
-			// cliff drop / rise
 			const drop = 2 + (hash01(x, seed + 7) * 3 | 0)
 			y += hash01(x, seed + 8) > 0.5 ? drop : -drop
 			slope = 0
 			plateau = 1 + (hash01(x, seed + 9) * 3 | 0)
 		}
 		else if (feature > 0.78) {
-			// flat platform
 			slope = 0
 			plateau = 3 + (hash01(x, seed + 11) * 6 | 0)
 		}
-		else if (feature > 0.62) 
-			// gentle slope change
+		else if (feature > 0.62)
 			slope = Math.max(-2, Math.min(2, slope + (r > 0.5 ? 1 : -1)))
-		
 		else if (r < 0.25)
 			slope = Math.max(-2, slope - 1)
 		else if (r > 0.75)
@@ -125,16 +177,112 @@ function buildSurface(W, { baseY, minY, maxY, seed }) {
 		}
 		surface[x] = y
 	}
+}
 
-	// one-pass soft clamp of 3+ spikes only (keeps terraced look)
+/**
+ * One-pass soft clamp of 3+ isolated spikes (keeps terraced look).
+ * @param {Int16Array} surface parameter
+ * @param {number} W parameter
+ */
+function softClampSpikes(surface, W) {
 	for (let x = 1; x < W - 1; x++) {
 		const dL = surface[x] - surface[x - 1]
 		const dR = surface[x] - surface[x + 1]
 		if (dL * dR > 0 && Math.abs(dL) >= 3 && Math.abs(dR) >= 3)
 			surface[x] = Math.round((surface[x - 1] + surface[x + 1]) / 2)
 	}
+}
 
-	return surface
+/**
+ * Raise enough view columns so ≥ TALL_LAND_FRACTION have thickness ≥ ¼ screen.
+ * Pedestal span stays at `baseY` afterward; quota counts projected foot height and
+ * clamps to what non-pedestal columns can supply when the base sits too low.
+ * Prefers contiguous plateaus outside the pedestal.
+ * @param {Int16Array} surface parameter
+ * @param {{ W: number, H: number, viewH: number, viewW: number, ox: number, seed: number, footX0: number, footX1: number, baseY: number }} opts parameter
+ */
+export function ensureTallLand(surface, {
+	W, H, viewH, viewW, ox, seed, footX0, footX1, baseY,
+}) {
+	const minThick = Math.max(1, Math.ceil(viewH * TALL_LAND_HEIGHT_FRAC))
+	const maxSurface = Math.max(2, Math.min(H - 2, viewH - minThick))
+	const vx0 = Math.max(0, ox)
+	const vx1 = Math.min(W, ox + viewW)
+	const footContributes = viewH - baseY >= minThick
+
+	/**
+	 * @param {number} x column
+	 * @returns {boolean} whether column will meet tall-land floor after pedestal stamp
+	 */
+	const isTall = (x) => {
+		if (x >= footX0 - PEDESTAL_SHOULDER && x < footX1 + PEDESTAL_SHOULDER)
+			return footContributes
+		return viewH - surface[x] >= minThick
+	}
+
+	let raisable = 0
+	for (let x = vx0; x < vx1; x++)
+		if (x < footX0 - PEDESTAL_SHOULDER || x >= footX1 + PEDESTAL_SHOULDER) raisable++
+	const footSpan = Math.max(0, footX1 - footX0)
+	const capacity = raisable + (footContributes ? footSpan + 2 * PEDESTAL_SHOULDER : 0)
+	const need = Math.min(Math.ceil((vx1 - vx0) * TALL_LAND_FRACTION), capacity)
+
+	/**
+	 * @returns {number} tall column count in view
+	 */
+	const recount = () => {
+		let n = 0
+		for (let x = vx0; x < vx1; x++)
+			if (isTall(x)) n++
+		return n
+	}
+
+	let have = recount()
+	if (have >= need) return
+
+	const cands = []
+	for (let x = vx0; x < vx1; x++) {
+		// Leave pedestal + land shoulders alone — buildSurface re-stamps them to baseY.
+		if (x >= footX0 - PEDESTAL_SHOULDER && x < footX1 + PEDESTAL_SHOULDER) continue
+		if (viewH - surface[x] >= minThick) continue
+		cands.push(x)
+	}
+	cands.sort((a, b) => (viewH - surface[a]) - (viewH - surface[b]) ||
+		hash01(a, seed + 3) - hash01(b, seed + 3))
+
+	for (const x of cands) {
+		if (have >= need) break
+		surface[x] = Math.min(surface[x], maxSurface)
+		for (const dx of [-1, 1, -2, 2]) {
+			const nx = x + dx
+			if (nx < vx0 || nx >= vx1) continue
+			if (nx >= footX0 - PEDESTAL_SHOULDER && nx < footX1 + PEDESTAL_SHOULDER) continue
+			surface[nx] = Math.min(surface[nx], maxSurface + (Math.abs(dx) > 1 ? 1 : 0))
+		}
+		have = recount()
+	}
+}
+
+/**
+ * Tall-land coverage inside the viewport (for tests / diagnostics).
+ * @param {TerrainData} terrain parameter
+ * @param {{ viewH: number, viewW: number }} size view size
+ * @returns {{ tall: number, total: number, fraction: number, minThick: number }} result
+ */
+export function tallLandCoverage(terrain, { viewH, viewW }) {
+	const { surface, ox } = terrain
+	const minThick = Math.max(1, Math.ceil(viewH * TALL_LAND_HEIGHT_FRAC))
+	const vx0 = Math.max(0, ox)
+	const vx1 = Math.min(surface.length, ox + viewW)
+	let tall = 0
+	for (let x = vx0; x < vx1; x++)
+		if (viewH - surface[x] >= minThick) tall++
+	return {
+		tall,
+		total: vx1 - vx0,
+		fraction: (vx1 - vx0) ? tall / (vx1 - vx0) : 0,
+		minThick,
+	}
 }
 
 /**
@@ -444,26 +592,26 @@ function carveCorridor(solid, surface, x0, y0, x1, y1) {
 }
 
 /**
- * Keep icon base footprint clear / supported.
+ * Keep icon pedestal span on land at `baseY`, clear inter-slab leak gaps,
+ * and pack solid foundation under the bottom slab.
+ * Bottom slab row stays solid (horizon) until the scene paints POOL over it —
+ * so ungrown base columns still read as land.
  * @param {Uint8Array[]} solid parameter
  * @param {Int16Array} surface parameter
- * @param {{ W: number, H: number, footX0: number, footX1: number, iconOy: number, iconBaseRows: number[] }} opts parameter
+ * @param {{ W: number, H: number, footX0: number, footX1: number, iconOy: number, iconBaseRows: number[], baseY: number }} opts parameter
  */
-function carveIconFootprint(solid, surface, { W, H, footX0, footX1, iconOy, iconBaseRows }) {
-	const baseYs = new Set(iconBaseRows.map(y => iconOy + y))
+function carveIconFootprint(solid, surface, { W, H, footX0, footX1, iconOy, iconBaseRows, baseY }) {
 	const last = iconBaseRows[iconBaseRows.length - 1]
 	for (let x = footX0; x < footX1; x++) {
 		if (x < 0 || x >= W) continue
-		for (let y = iconOy + iconBaseRows[0]; y < H; y++) {
-			if (baseYs.has(y)) continue
-			const gap = iconBaseRows.some(br => y === iconOy + br + 1)
-			if (gap && y < iconOy + last) {
+		surface[x] = baseY
+		for (let y = 0; y < H; y++) {
+			if (iconBaseRows.some(br => y === iconOy + br + 1) && y < iconOy + last) {
 				solid[y][x] = 0
 				continue
 			}
-			if (y >= iconOy + last) solid[y][x] = 1
+			solid[y][x] = y >= baseY ? 1 : 0
 		}
-		surface[x] = Math.min(surface[x], iconOy + last)
 	}
 }
 

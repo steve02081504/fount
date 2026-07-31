@@ -195,23 +195,18 @@ export const resizeAnimState = (state, { width, height }) => {
 
 /**
  * Write terrain materials into the world grid.
+ * Pedestal columns keep horizon/solid until POOL/SLOPE overwrite them —
+ * ungrown base cells still read as land joining the shoulders.
  * @param {AnimState} state parameter
  * @returns {void} result
  */
 const applyTerrain = (state) => {
-	const { world, terrain, iconOy } = state
+	const { world, terrain } = state
 	const { worldW: W, worldH: H } = world
-	const { surface, solid, footX0, footX1 } = terrain
+	const { surface, solid } = terrain
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			if (!solid[y][x]) continue
-			const underIcon = x >= footX0 && x < footX1 && y >= iconOy + ICON_BASE_ROWS[0]
-			if (underIcon) {
-				if (ICON_BASE_ROWS.includes(y - iconOy)) continue
-				if (y > iconOy + ICON_BASE_ROWS[ICON_BASE_ROWS.length - 1])
-					setMat(world, x, y, MAT.SOLID)
-				continue
-			}
 			if (y === surface[x])
 				setMat(world, x, y, MAT.HORIZON, 3 + hash01(x, 2) * 4)
 			else if (y > surface[x])
@@ -521,20 +516,20 @@ const composeFrame = (state) => {
 				bodyEdge.add(`${lx},${ly}`)
 		}
 
-	// Terrain outlines (surface + cave walls) — under icon materials
+	// Terrain: surface everywhere (pools overwrite later); cave outlines stay off the pedestal span.
 	for (let vy = 0; vy < height; vy++)
 		for (let vx = 0; vx < width; vx++) {
 			const x = ox + vx
 			const y = vy
 			if (x < 0 || x >= W || y < 0 || y >= H) continue
 			if (!solid[y][x]) continue
-			const underIcon = x >= footX0 && x < footX1 && y >= iconOy + ICON_BASE_ROWS[0]
-			if (underIcon) continue
 
 			if (y === surface[x]) {
 				paint(vx, vy, surfaceChar[x] || '_', FG_TERRAIN)
 				continue
 			}
+			const underPedestal = x >= footX0 && x < footX1 && y >= iconOy + ICON_BASE_ROWS[0]
+			if (underPedestal) continue
 			const ch = outlineChar(solid, x, y, W, H, surface)
 			if (ch) paint(vx, vy, ch, FG_TERRAIN)
 		}
