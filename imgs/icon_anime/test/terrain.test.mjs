@@ -76,8 +76,9 @@ Deno.test('terrain: pedestal ends sit on land flush with the base', () => {
 		// outer shoulders are land at the same grade
 		assertEquals(surface[footX0 - 1], baseY)
 		assertEquals(surface[footX1], baseY)
-		assertEquals(solid[baseY][footX0 - 1], 1)
-		assertEquals(solid[baseY][footX1], 1)
+		const W = t.worldW
+		assertEquals(solid[baseY * W + footX0 - 1], 1)
+		assertEquals(solid[baseY * W + footX1], 1)
 	}
 })
 
@@ -91,16 +92,17 @@ Deno.test('terrain: ≥30% of view land is at least ¼ screen tall', () => {
 })
 
 Deno.test('terrain: outlineChar marks cave walls', () => {
-	const solid = [
-		new Uint8Array([1, 1, 1, 1]),
-		new Uint8Array([1, 0, 0, 1]),
-		new Uint8Array([1, 0, 0, 1]),
-		new Uint8Array([1, 1, 1, 1]),
-	]
+	const W = 4
+	const solid = new Uint8Array([
+		1, 1, 1, 1,
+		1, 0, 0, 1,
+		1, 0, 0, 1,
+		1, 1, 1, 1,
+	])
 	const surface = new Int16Array([0, 0, 0, 0])
-	const ch = outlineChar(solid, 0, 1, 4, 4, surface)
+	const ch = outlineChar(solid, 0, 1, W, 4, surface)
 	assertEquals(ch, TERRAIN_CH.WALL)
-	assertEquals(outlineChar(solid, 1, 1, 4, 4, surface), null)
+	assertEquals(outlineChar(solid, 1, 1, W, 4, surface), null)
 })
 
 Deno.test('terrain: under icon crust is soil; caves may open below', () => {
@@ -108,11 +110,12 @@ Deno.test('terrain: under icon crust is soil; caves may open below', () => {
 	for (const seed of [1, 7, 42, 99, 2024, 555, 888, 1234, 9999]) {
 		const { terrain: t, baseY, world } = makeTerrain(seed, 80, 40)
 		const { footX0, footX1, surface, solid } = t
+		const W = t.worldW
 		for (let x = footX0; x < footX1; x++) {
 			assertEquals(surface[x], baseY)
-			assertEquals(solid[baseY][x], 1, `crust missing seed=${seed} x=${x}`)
+			assertEquals(solid[baseY * W + x], 1, `crust missing seed=${seed} x=${x}`)
 			for (let y = baseY + 2; y < world.worldH; y++)
-				if (!solid[y][x]) foundCave = true
+				if (!solid[y * W + x]) foundCave = true
 		}
 	}
 	assert(foundCave, 'expected air below pedestal crust across seeds')

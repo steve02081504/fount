@@ -22,9 +22,17 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | File | Role |
 | --- | --- |
 | `index.mjs` | Icon stages (`enter` / `hold` / `exit`), rain, compose, resize migration |
-| `terrain.mjs` | Pedestal-anchored surface (land shoulders) + noise caves + U-tube/chamber templates |
-| `fluid_engine.mjs` | Particles, grid liquid, soil moisture/condensation, air-region pressure (Boyle), gas velocity (wind shear / continuity / Bernoulli), hydraulic equalization |
+| `terrain.mjs` | Pedestal-anchored surface + noise caves + U-tube/chamber templates; flat `solid` (`y*W+x`) |
+| `fluid_engine.mjs` | Particles, grid liquid, soil, air-region pressure (Boyle), gas velocity, hydraulic equalization |
 | `player.mjs` | TUI playback, keyboard, `stdout` resize; alt-screen enter/leave restores pre-start cursor row |
+
+## Layout & hot-path notes
+
+- Terrain `solid` and fluid grids share flat `y * W + x` indexing (no row arrays).
+- Gas nozzle spans are precomputed in O(WH) column/row runs — do not re-walk per cell.
+- Air-region labels double-buffer `regionId`; soil / gas / liquid scratch buffers live on the world.
+- Material rebuild is keyed by icon stage (`base*` / `body*` / `softBase`); hold frames skip it.
+- Compose paints into reused `ch`/`fg` buffers (`renderBuffers`); `renderGrid(Cell[][])` is a thin adapter.
 
 ## Material standard
 

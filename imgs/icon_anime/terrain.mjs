@@ -3,6 +3,8 @@
  * Surface is anchored at the icon pedestal (land on both ends) and walks
  * outward with constrained slopes / platforms / cliffs; underground uses
  * noise cavities, CA cleanup, and injected connector templates (U-tubes, necks).
+ *
+ * `solid` is a flat Uint8Array indexed as `y * W + x` (same layout as fluid grids).
  */
 
 import { hash01 } from './fluid_engine.mjs'
@@ -21,7 +23,9 @@ export const TERRAIN_CH = {
 /**
  * @typedef {{
  *   surface: Int16Array,
- *   solid: Uint8Array[],
+ *   solid: Uint8Array,
+ *   worldW: number,
+ *   worldH: number,
  *   surfaceChar: string[],
  *   footX0: number,
  *   footX1: number,
@@ -35,6 +39,8 @@ export const TERRAIN_CH = {
  *   x0: number, x1: number, y0: number, y1: number,
  *   wells?: [number, number],
  * }} TerrainFeature
+ *
+ * @typedef {{ id: number, cx: number, cy: number, size: number }} CavityRegion
  */
 
 /** Visible land columns that must meet the tall-land floor (fraction of view width). */
@@ -43,6 +49,15 @@ export const TALL_LAND_FRACTION = 0.3
 export const TALL_LAND_HEIGHT_FRAC = 0.25
 /** Columns of land forced flush with the pedestal on each outer end. */
 const PEDESTAL_SHOULDER = 3
+
+/**
+ * Flat solid / label index.
+ * @param {number} W world width
+ * @param {number} x column
+ * @param {number} y row
+ * @returns {number} flat index
+ */
+export const si = (W, x, y) => y * W + x
 
 /**
  * Generate full-width terrain for a fluid world.
@@ -68,30 +83,29 @@ export function generateTerrain(world, {
 		baseY, minY, maxY, seed,
 		footX0, footX1, viewH, viewW, ox, H,
 	})
-	const solid = Array.from({ length: H }, () => new Uint8Array(W))
-	for (let x = 0; x < W; x++)
-		for (let y = surface[x]; y < H; y++)
-			solid[y][x] = 1
 
-	carveNoiseCaves(solid, surface, { W, H, seed })
-	cellularCleanup(solid, surface, { W, H, passes: 2 })
+	const solid = new Uint8Array(W * H)
+	for (let x = 0; x < W; x++) {
+		const top = surface[x]
+		for (let y = top; y < H; y++)
+			solid[y * W + x] = 1
+	}
+
+	carveNoiseCaves(solid, surface, W, H, seed)
+	cellularCleanup(solid, surface, W, H, 2)
 
 	const features = []
 	injectConnectors(solid, surface, features, { W, H, seed, iconOx, iconBaseX0, iconBaseX1 })
 
-	carveIconFootprint(solid, surface, {
-		W, H, footX0, footX1, baseY,
-	})
+	carveIconFootprint(solid, surface, W, H, footX0, footX1, baseY)
 
-	const surfaceChar = buildSurfaceChars(surface, solid, W, H)
+	const surfaceChar = buildSurfaceChars(surface, W)
 
-	return { surface, solid, surfaceChar, footX0, footX1, features, viewW, ox }
+	return { surface, solid, worldW: W, worldH: H, surfaceChar, footX0, footX1, features, viewW, ox }
 }
 
 /**
  * Constrained random-walk surface anchored at the icon pedestal.
- * Pedestal span is flat land at `baseY`; terrain walks left/right from the ends
- * so both base shoulders are land and blend into free terrain.
  * @param {number} W parameter
  * @param {{ baseY: number, minY: number, maxY: number, seed: number, footX0: number, footX1: number, viewH: number, viewW: number, ox: number, H: number }} opts parameter
  * @returns {Int16Array} result
@@ -107,7 +121,6 @@ function buildSurface(W, {
 	for (let x = x0; x < x1; x++)
 		surface[x] = baseY
 
-	// Land shoulders flush with both pedestal ends, then free walk outward.
 	const shoulder = Math.min(PEDESTAL_SHOULDER, Math.max(1, (x1 - x0) >> 2))
 	for (let i = 1; i <= shoulder; i++) {
 		if (x0 - i >= 0) surface[x0 - i] = baseY
@@ -121,7 +134,6 @@ function buildSurface(W, {
 	ensureTallLand(surface, {
 		W, H, viewH, viewW, ox, seed, footX0: x0, footX1: x1, baseY,
 	})
-	// Pedestal + shoulders stay land at baseY (final — after clamps / tall-land).
 	for (let x = Math.max(0, x0 - shoulder); x < Math.min(W, x1 + shoulder); x++)
 		surface[x] = baseY
 
@@ -129,7 +141,7 @@ function buildSurface(W, {
 }
 
 /**
- * Random-walk surface from an anchor column in `dir` (±1) across the rest of the row.
+ * Random-walk surface from an anchor column in `dir` (±1).
  * @param {Int16Array} surface parameter
  * @param {number} startX first column to write
  * @param {number} dir +1 rightward / -1 leftward
@@ -180,7 +192,7 @@ function walkSurface(surface, startX, dir, startY, { minY, maxY, seed }) {
 }
 
 /**
- * One-pass soft clamp of 3+ isolated spikes (keeps terraced look).
+ * One-pass soft clamp of 3+ isolated spikes.
  * @param {Int16Array} surface parameter
  * @param {number} W parameter
  */
@@ -195,9 +207,6 @@ function softClampSpikes(surface, W) {
 
 /**
  * Raise enough view columns so ≥ TALL_LAND_FRACTION have thickness ≥ ¼ screen.
- * Pedestal span stays at `baseY` afterward; quota counts projected foot height and
- * clamps to what non-pedestal columns can supply when the base sits too low.
- * Prefers contiguous plateaus outside the pedestal.
  * @param {Int16Array} surface parameter
  * @param {{ W: number, H: number, viewH: number, viewW: number, ox: number, seed: number, footX0: number, footX1: number, baseY: number }} opts parameter
  */
@@ -209,20 +218,21 @@ export function ensureTallLand(surface, {
 	const vx0 = Math.max(0, ox)
 	const vx1 = Math.min(W, ox + viewW)
 	const footContributes = viewH - baseY >= minThick
+	const shoulderL = footX0 - PEDESTAL_SHOULDER
+	const shoulderR = footX1 + PEDESTAL_SHOULDER
 
 	/**
 	 * @param {number} x column
-	 * @returns {boolean} whether column will meet tall-land floor after pedestal stamp
+	 * @returns {boolean} whether column meets tall-land floor
 	 */
 	const isTall = (x) => {
-		if (x >= footX0 - PEDESTAL_SHOULDER && x < footX1 + PEDESTAL_SHOULDER)
-			return footContributes
+		if (x >= shoulderL && x < shoulderR) return footContributes
 		return viewH - surface[x] >= minThick
 	}
 
 	let raisable = 0
 	for (let x = vx0; x < vx1; x++)
-		if (x < footX0 - PEDESTAL_SHOULDER || x >= footX1 + PEDESTAL_SHOULDER) raisable++
+		if (x < shoulderL || x >= shoulderR) raisable++
 	const footSpan = Math.max(0, footX1 - footX0)
 	const capacity = raisable + (footContributes ? footSpan + 2 * PEDESTAL_SHOULDER : 0)
 	const need = Math.min(Math.ceil((vx1 - vx0) * TALL_LAND_FRACTION), capacity)
@@ -242,8 +252,7 @@ export function ensureTallLand(surface, {
 
 	const cands = []
 	for (let x = vx0; x < vx1; x++) {
-		// Leave pedestal + land shoulders alone — buildSurface re-stamps them to baseY.
-		if (x >= footX0 - PEDESTAL_SHOULDER && x < footX1 + PEDESTAL_SHOULDER) continue
+		if (x >= shoulderL && x < shoulderR) continue
 		if (viewH - surface[x] >= minThick) continue
 		cands.push(x)
 	}
@@ -256,7 +265,7 @@ export function ensureTallLand(surface, {
 		for (const dx of [-1, 1, -2, 2]) {
 			const nx = x + dx
 			if (nx < vx0 || nx >= vx1) continue
-			if (nx >= footX0 - PEDESTAL_SHOULDER && nx < footX1 + PEDESTAL_SHOULDER) continue
+			if (nx >= shoulderL && nx < shoulderR) continue
 			surface[nx] = Math.min(surface[nx], maxSurface + (Math.abs(dx) > 1 ? 1 : 0))
 		}
 		have = recount()
@@ -287,20 +296,21 @@ export function tallLandCoverage(terrain, { viewH, viewW }) {
 
 /**
  * 2D value-noise cave carving below surface.
- * @param {Uint8Array[]} solid parameter
- * @param {Int16Array} surface parameter
- * @param {{ W: number, H: number, seed: number }} opts parameter
+ * @param {Uint8Array} solid flat solid mask
+ * @param {Int16Array} surface surface rows
+ * @param {number} W width
+ * @param {number} H height
+ * @param {number} seed seed
  */
-function carveNoiseCaves(solid, surface, { W, H, seed }) {
+function carveNoiseCaves(solid, surface, W, H, seed) {
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
-			if (!solid[y][x]) continue
-			if (y <= surface[x] + 1) continue // keep crust
+			const i = y * W + x
+			if (!solid[i] || y <= surface[x] + 1) continue
 			const depth = y - surface[x]
 			const n = fbm2(x * 0.11, y * 0.13, seed)
-			// deeper → more empty; threshold rises with depth
 			const threshold = 0.58 - Math.min(0.22, depth * 0.018)
-			if (n > threshold) solid[y][x] = 0
+			if (n > threshold) solid[i] = 0
 		}
 }
 
@@ -348,48 +358,43 @@ function valueNoise2(x, y, seed) {
 
 /**
  * Cellular automata cleanup — remove isolated solid flecks / fill 1-cell holes.
- * @param {Uint8Array[]} solid parameter
- * @param {Int16Array} surface parameter
- * @param {{ W: number, H: number, passes: number }} opts parameter
+ * @param {Uint8Array} solid flat solid mask
+ * @param {Int16Array} surface surface rows
+ * @param {number} W width
+ * @param {number} H height
+ * @param {number} passes CA iterations
  */
-function cellularCleanup(solid, surface, { W, H, passes }) {
+function cellularCleanup(solid, surface, W, H, passes) {
+	const next = new Uint8Array(solid.length)
 	for (let pass = 0; pass < passes; pass++) {
-		const next = solid.map(row => Uint8Array.from(row))
+		next.set(solid)
 		for (let y = 1; y < H - 1; y++)
 			for (let x = 1; x < W - 1; x++) {
-				if (y <= surface[x]) {
-					next[y][x] = solid[y][x]
-					continue
-				}
+				const i = y * W + x
+				if (y <= surface[x]) continue
 				let n = 0
 				for (let dy = -1; dy <= 1; dy++)
 					for (let dx = -1; dx <= 1; dx++)
-						if (dx || dy) n += solid[y + dy][x + dx]
-				if (solid[y][x])
-					next[y][x] = n >= 3 ? 1 : 0
-				else
-					next[y][x] = n >= 6 ? 1 : 0
+						if (dx || dy) n += solid[(y + dy) * W + (x + dx)]
+				next[i] = solid[i] ? n >= 3 ? 1 : 0 : n >= 6 ? 1 : 0
 			}
-		for (let y = 0; y < H; y++)
-			solid[y].set(next[y])
+		solid.set(next)
 	}
 }
 
 /**
  * Inject guaranteed connector demos: U-tubes, chambers with necks.
- * @param {Uint8Array[]} solid solid mask
+ * @param {Uint8Array} solid solid mask
  * @param {Int16Array} surface surface rows
  * @param {TerrainFeature[]} features feature list to append
  * @param {{ W: number, H: number, seed: number, iconOx: number, iconBaseX0: number, iconBaseX1: number }} opts options
- * @returns {void} result
  */
 function injectConnectors(solid, surface, features, { W, H, seed, iconOx, iconBaseX0, iconBaseX1 }) {
 	const footX0 = iconOx + iconBaseX0
 	const footX1 = iconOx + iconBaseX1
 	/**
-	 * Whether x overlaps the icon footprint keep-out zone.
 	 * @param {number} x column
-	 * @returns {boolean} result
+	 * @returns {boolean} overlaps icon keep-out
 	 */
 	const avoid = (x) => x >= footX0 - 2 && x < footX1 + 2
 
@@ -407,7 +412,7 @@ function injectConnectors(solid, surface, features, { W, H, seed, iconOx, iconBa
 		const y1 = Math.min(H - 2, top + depth)
 		const wellL = x0 + 1
 		const wellR = x0 + span - 2
-		carveUTube(solid, surface, wellL, wellR, top, y1)
+		carveUTube(solid, surface, W, H, wellL, wellR, top, y1)
 		features.push({
 			type: 'u_tube',
 			x0, x1: x0 + span, y0: top, y1,
@@ -424,13 +429,12 @@ function injectConnectors(solid, surface, features, { W, H, seed, iconOx, iconBa
 			cx = cx < footX0 ? Math.max(3, footX0 - w - 5) : Math.min(W - w - 3, footX1 + 5)
 		const mid = Math.min(W - 1, cx + (w >> 1))
 		const cy = Math.min(H - h - 2, surface[mid] + 4 + (hash01(seed, 130 + i) * 5 | 0))
-		carveRect(solid, cx, cy, w, h, 0)
-		// neck to a neighboring cell column
+		carveRect(solid, W, H, cx, cy, w, h, 0)
 		const neckX = hash01(seed, 140 + i) > 0.5 ? cx - 1 : cx + w
 		if (neckX >= 1 && neckX < W - 1) {
 			const ny = cy + (h >> 1)
-			solid[ny][neckX] = 0
-			if (ny + 1 < H) solid[ny + 1][neckX] = 0
+			solid[ny * W + neckX] = 0
+			if (ny + 1 < H) solid[(ny + 1) * W + neckX] = 0
 			features.push({
 				type: 'neck',
 				x0: Math.min(cx, neckX), x1: Math.max(cx + w, neckX + 1),
@@ -440,81 +444,62 @@ function injectConnectors(solid, surface, features, { W, H, seed, iconOx, iconBa
 		features.push({ type: 'chamber', x0: cx, x1: cx + w, y0: cy, y1: cy + h })
 	}
 
-	connectNearbyCavities(solid, surface, { W, H, seed })
+	connectNearbyCavities(solid, surface, W, H, seed)
 }
 
 /**
  * Carve a U-tube: two shafts + bottom channel.
- * @param {Uint8Array[]} solid parameter
+ * @param {Uint8Array} solid parameter
  * @param {Int16Array} surface parameter
+ * @param {number} W width
+ * @param {number} H height
  * @param {number} wellL parameter
  * @param {number} wellR parameter
  * @param {number} top parameter
  * @param {number} bottom parameter
  */
-function carveUTube(solid, surface, wellL, wellR, top, bottom) {
-	const H = solid.length
-	const W = solid[0].length
+function carveUTube(solid, surface, W, H, wellL, wellR, top, bottom) {
 	for (const wx of [wellL, wellR]) {
 		if (wx < 0 || wx >= W) continue
 		const start = Math.max(top, surface[wx] + 1)
 		for (let y = start; y <= bottom && y < H; y++) {
-			solid[y][wx] = 0
-			if (wx + 1 < W) solid[y][wx + 1] = 0
+			solid[y * W + wx] = 0
+			if (wx + 1 < W) solid[y * W + wx + 1] = 0
 		}
 	}
-	for (let x = wellL; x <= wellR + 1 && x < W; x++) 
+	for (let x = wellL; x <= wellR + 1 && x < W; x++)
 		for (let y = bottom - 1; y <= bottom && y < H; y++)
-			if (y > surface[x]) solid[y][x] = 0
-	
+			if (y > surface[x]) solid[y * W + x] = 0
 }
 
 /**
  * Carve axis-aligned open rectangle.
- * @param {Uint8Array[]} solid parameter
+ * @param {Uint8Array} solid parameter
+ * @param {number} W width
+ * @param {number} H height
  * @param {number} x0 parameter
  * @param {number} y0 parameter
  * @param {number} w parameter
  * @param {number} h parameter
  * @param {0|1} value parameter
  */
-function carveRect(solid, x0, y0, w, h, value) {
-	const H = solid.length
-	const W = solid[0].length
+function carveRect(solid, W, H, x0, y0, w, h, value) {
 	for (let y = y0; y < y0 + h && y < H; y++)
 		for (let x = x0; x < x0 + w && x < W; x++)
-			if (x >= 0 && y >= 0) solid[y][x] = value
+			if (x >= 0 && y >= 0) solid[y * W + x] = value
 }
 
 /**
  * Connect nearby underground air pockets with 1-cell corridors.
- * @param {Uint8Array[]} solid parameter
+ * @param {Uint8Array} solid parameter
  * @param {Int16Array} surface parameter
- * @param {{ W: number, H: number, seed: number }} opts parameter
+ * @param {number} W width
+ * @param {number} H height
+ * @param {number} seed seed
  */
-function connectNearbyCavities(solid, surface, { W, H, seed }) {
-	const labels = labelCavities(solid, surface, W, H)
-	const regions = new Map()
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) {
-			const id = labels[y][x]
-			if (id <= 0) continue
-			let r = regions.get(id)
-			if (!r) {
-				r = { id, cells: [], cx: 0, cy: 0 }
-				regions.set(id, r)
-			}
-			r.cells.push([x, y])
-			r.cx += x
-			r.cy += y
-		}
-
-	const list = [...regions.values()].filter(r => r.cells.length >= 8)
-	for (const r of list) {
-		r.cx = (r.cx / r.cells.length) | 0
-		r.cy = (r.cy / r.cells.length) | 0
-	}
-
+function connectNearbyCavities(solid, surface, W, H, seed) {
+	const { regions } = labelCavities(solid, surface, W, H)
+	const list = regions.filter(r => r.size >= 8)
 	const links = Math.min(4, list.length)
 	for (let i = 0; i < links; i++) {
 		const a = list[(hash01(seed, 200 + i) * list.length) | 0]
@@ -529,27 +514,37 @@ function connectNearbyCavities(solid, surface, { W, H, seed }) {
 			}
 		}
 		if (!best) continue
-		carveCorridor(solid, surface, a.cx, a.cy, best.cx, best.cy)
+		carveCorridor(solid, surface, W, H, a.cx, a.cy, best.cx, best.cy)
 	}
 }
 
 /**
  * Flood-fill label underground air cavities (id > 0).
- * @param {Uint8Array[]} solid parameter
- * @param {Int16Array} surface parameter
- * @param {number} W parameter
- * @param {number} H parameter
- * @returns {Int32Array[]} result
+ * Accumulates region centroids during the fill — no per-cell lists.
+ * @param {Uint8Array} solid flat solid mask
+ * @param {Int16Array} surface surface rows
+ * @param {number} W width
+ * @param {number} H height
+ * @returns {{ labels: Int32Array, regions: CavityRegion[] }} result
  */
 export function labelCavities(solid, surface, W, H) {
-	const labels = Array.from({ length: H }, () => new Int32Array(W))
+	const labels = new Int32Array(W * H)
+	/** @type {CavityRegion[]} */
+	const regions = []
+	const queue = []
 	let next = 1
+
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
-			if (solid[y][x] || labels[y][x] || y <= surface[x]) continue
+			const i = y * W + x
+			if (solid[i] || labels[i] || y <= surface[x]) continue
 			const id = next++
-			const queue = [x, y]
-			labels[y][x] = id
+			queue.length = 0
+			queue.push(x, y)
+			labels[i] = id
+			let sx = x
+			let sy = y
+			let size = 1
 			for (let qi = 0; qi < queue.length; qi += 2) {
 				const cx = queue[qi]
 				const cy = queue[qi + 1]
@@ -557,68 +552,73 @@ export function labelCavities(solid, surface, W, H) {
 					const nx = cx + dx
 					const ny = cy + dy
 					if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
-					if (solid[ny][nx] || labels[ny][nx] || ny <= surface[nx]) continue
-					labels[ny][nx] = id
+					const ni = ny * W + nx
+					if (solid[ni] || labels[ni] || ny <= surface[nx]) continue
+					labels[ni] = id
 					queue.push(nx, ny)
+					sx += nx
+					sy += ny
+					size++
 				}
 			}
+			regions.push({ id, cx: (sx / size) | 0, cy: (sy / size) | 0, size })
 		}
-	return labels
+	return { labels, regions }
 }
 
 /**
  * Manhattan corridor (L-shaped).
- * @param {Uint8Array[]} solid parameter
+ * @param {Uint8Array} solid parameter
  * @param {Int16Array} surface parameter
+ * @param {number} W width
+ * @param {number} H height
  * @param {number} x0 parameter
  * @param {number} y0 parameter
  * @param {number} x1 parameter
  * @param {number} y1 parameter
  */
-function carveCorridor(solid, surface, x0, y0, x1, y1) {
-	const H = solid.length
-	const W = solid[0].length
+function carveCorridor(solid, surface, W, H, x0, y0, x1, y1) {
 	let x = x0
 	let y = y0
 	while (x !== x1) {
-		if (x >= 0 && x < W && y >= 0 && y < H && y > surface[x]) solid[y][x] = 0
+		if (x >= 0 && x < W && y >= 0 && y < H && y > surface[x]) solid[y * W + x] = 0
 		x += x1 > x ? 1 : -1
 	}
 	while (y !== y1) {
-		if (x >= 0 && x < W && y >= 0 && y < H && y > surface[x]) solid[y][x] = 0
+		if (x >= 0 && x < W && y >= 0 && y < H && y > surface[x]) solid[y * W + x] = 0
 		y += y1 > y ? 1 : -1
 	}
-	if (x >= 0 && x < W && y >= 0 && y < H && y > surface[x]) solid[y][x] = 0
+	if (x >= 0 && x < W && y >= 0 && y < H && y > surface[x]) solid[y * W + x] = 0
 }
 
 /**
  * Keep icon pedestal span on land at `baseY` and ensure that crust cell is soil.
- * Clear air above the crust (inter-slab gaps included). Deeper cells keep whatever
- * caves / connectors already carved — no packed fill under the icon.
- * @param {Uint8Array[]} solid parameter
+ * @param {Uint8Array} solid parameter
  * @param {Int16Array} surface parameter
- * @param {{ W: number, H: number, footX0: number, footX1: number, baseY: number }} opts parameter
+ * @param {number} W width
+ * @param {number} H height
+ * @param {number} footX0 parameter
+ * @param {number} footX1 parameter
+ * @param {number} baseY parameter
  */
-function carveIconFootprint(solid, surface, { W, H, footX0, footX1, baseY }) {
+function carveIconFootprint(solid, surface, W, H, footX0, footX1, baseY) {
 	for (let x = footX0; x < footX1; x++) {
 		if (x < 0 || x >= W) continue
 		surface[x] = baseY
 		for (let y = 0; y < baseY; y++)
-			solid[y][x] = 0
-		if (baseY < H) solid[baseY][x] = 1
+			solid[y * W + x] = 0
+		if (baseY < H) solid[baseY * W + x] = 1
 	}
 }
 
 /**
  * Pick outline chars for surface columns from neighbor deltas.
  * @param {Int16Array} surface parameter
- * @param {Uint8Array[]} solid parameter
  * @param {number} W parameter
- * @param {number} H parameter
  * @returns {string[]} result
  */
-function buildSurfaceChars(surface, solid, W, H) {
-	const chars = Array(W).fill(TERRAIN_CH.FLAT)
+function buildSurfaceChars(surface, W) {
+	const chars = Array(W)
 	for (let x = 0; x < W; x++) {
 		const y = surface[x]
 		const left = x > 0 ? surface[x - 1] : y
@@ -634,19 +634,14 @@ function buildSurfaceChars(surface, solid, W, H) {
 			chars[x] = Math.abs(dR || dL) >= 2 ? TERRAIN_CH.WALL : TERRAIN_CH.SLOPE_DOWN
 		else
 			chars[x] = TERRAIN_CH.FLAT
-
-		// vertical face when neighbor column is much lower — expose wall cells
-		if (x > 0 && surface[x - 1] > y + 1)
-			for (let wy = y + 1; wy < surface[x - 1] && wy < H; wy++)
-				if (solid[wy]?.[x]) { /* wall drawn at render via outline */ }
 	}
 	return chars
 }
 
 /**
  * Character for a solid cell's visible outline (air-adjacent).
- * Interior solid returns null (not drawn / filled dark).
- * @param {Uint8Array[]} solid solid mask
+ * Interior solid returns null (not drawn).
+ * @param {Uint8Array} solid flat solid mask
  * @param {number} x column
  * @param {number} y row
  * @param {number} W world width
@@ -655,23 +650,22 @@ function buildSurfaceChars(surface, solid, W, H) {
  * @returns {string | null} outline glyph or null
  */
 export function outlineChar(solid, x, y, W, H, surface) {
-	if (!solid[y][x]) return null
-	if (y === surface[x]) return null // surface uses surfaceChar
+	const i = y * W + x
+	if (!solid[i] || y === surface[x]) return null
 
 	/**
-	 * Whether neighbor cell is air / out of bounds.
 	 * @param {number} nx column
 	 * @param {number} ny row
-	 * @returns {boolean} result
+	 * @returns {boolean} air / OOB
 	 */
 	const air = (nx, ny) =>
-		nx < 0 || ny < 0 || nx >= W || ny >= H || !solid[ny][nx]
+		nx < 0 || ny < 0 || nx >= W || ny >= H || !solid[ny * W + nx]
 
 	const up = air(x, y - 1)
 	const down = air(x, y + 1)
 	const left = air(x - 1, y)
 	const right = air(x + 1, y)
-	if (!(up || down || left || right)) return null // buried
+	if (!(up || down || left || right)) return null
 
 	if (left && right && !up && !down) return TERRAIN_CH.WALL
 	if (up && down && !left && !right) return TERRAIN_CH.FLOOR
@@ -691,32 +685,26 @@ export function outlineChar(solid, x, y, W, H, surface) {
  * @returns {{ count: number, sizes: number[], hasUTube: boolean, hasChamber: boolean }} result
  */
 export function analyzeTerrain(terrain) {
-	const { solid, surface, features } = terrain
-	const H = solid.length
-	const W = solid[0].length
-	const labels = labelCavities(solid, surface, W, H)
-	const sizes = new Map()
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) {
-			const id = labels[y][x]
-			if (id > 0) sizes.set(id, (sizes.get(id) || 0) + 1)
-		}
+	const { solid, surface, features, worldW: W, worldH: H } = terrain
+	const { regions } = labelCavities(solid, surface, W, H)
 	return {
-		count: sizes.size,
-		sizes: [...sizes.values()].sort((a, b) => b - a),
+		count: regions.length,
+		sizes: regions.map(r => r.size).sort((a, b) => b - a),
 		hasUTube: features.some(f => f.type === 'u_tube'),
 		hasChamber: features.some(f => f.type === 'chamber' || f.type === 'neck'),
 	}
 }
 
 /**
- * Rough periodicity check: surface should not look like a sine (high autocorr at small lag).
+ * Rough periodicity check: surface should not look like a sine.
  * @param {Int16Array} surface parameter
  * @returns {number} max |autocorr| for lags 4..12 (lower = less periodic)
  */
 export function surfacePeriodicityScore(surface) {
 	const W = surface.length
-	const mean = surface.reduce((a, b) => a + b, 0) / W
+	let mean = 0
+	for (let i = 0; i < W; i++) mean += surface[i]
+	mean /= W
 	let varSum = 0
 	for (let i = 0; i < W; i++) varSum += (surface[i] - mean) ** 2
 	if (varSum < 1e-6) return 1

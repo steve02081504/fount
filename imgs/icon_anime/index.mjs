@@ -70,9 +70,16 @@ const BODY_ATS = (() => {
 	/**
 	 * @param {number} x parameter
 	 * @param {number} y parameter
-	 * @returns {number} result
+	 * @returns {number} manhattan dist to nearest tip
 	 */
-	const dist = (x, y) => Math.min(...tips.map(([tx, ty]) => Math.abs(x - tx) + Math.abs(y - ty)))
+	const dist = (x, y) => {
+		let best = Infinity
+		for (const [tx, ty] of tips) {
+			const d = Math.abs(x - tx) + Math.abs(y - ty)
+			if (d < best) best = d
+		}
+		return best
+	}
 	const cells = []
 	for (let y = 0; y < 16; y++) {
 		const line = ICON[y]
@@ -82,7 +89,18 @@ const BODY_ATS = (() => {
 	return cells.sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x)
 })()
 
+/** Icon-local body distance grid: `d = BODY_DIST[y * ICON_W + x]`, unset = 255. */
+const BODY_DIST = (() => {
+	const dist = new Uint8Array(ICON_W * 16).fill(255)
+	for (const { x, y, d } of BODY_ATS)
+		dist[y * ICON_W + x] = d
+	return dist
+})()
+
 const maxBodyD = BODY_ATS[BODY_ATS.length - 1].d
+
+/** Ground-runoff search offsets (near → far). */
+const GROUND_DX = Object.freeze([0, -1, 1, -2, 2, -3, 3, -4, 4])
 
 /**
  * @param {number} yTop parameter
@@ -135,6 +153,9 @@ export const createAnimState = (opts = {}) => {
 		softBase: false,
 		softPillars: false,
 		softBody: false,
+		_matKey: '',
+		_frameCh: null,
+		_frameFg: null,
 	}
 }
 
@@ -176,11 +197,11 @@ export const resizeAnimState = (state, { width, height }) => {
 			const ny = (y + dy) | 0
 			if (!inWorld(world, nx, ny)) continue
 			const amt = old.liq[oi]
-			if (amt >= 0.05 && !terrain.solid[ny]?.[nx])
+			if (amt >= 0.05 && !terrain.solid[ny * world.worldW + nx])
 				addLiquid(world, nx, ny, amt)
 			const moist = old.moisture[oi]
 			const cond = old.condense[oi]
-			if ((moist > 0.02 || cond > 0.02) && terrain.solid[ny]?.[nx]) {
+			if ((moist > 0.02 || cond > 0.02) && terrain.solid[ny * world.worldW + nx]) {
 				const ni = idx(world, nx, ny)
 				world.moisture[ni] = Math.min(SOIL_CAP, world.moisture[ni] + moist)
 				world.condense[ni] += cond
@@ -200,6 +221,9 @@ export const resizeAnimState = (state, { width, height }) => {
 	state.iconOx = iconOx
 	state.iconOy = iconOy
 	state.terrain = terrain
+	state._matKey = ''
+	state._frameCh = null
+	state._frameFg = null
 	return state
 }
 
@@ -216,7 +240,7 @@ const applyTerrain = (state) => {
 	const { surface, solid } = terrain
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
-			if (!solid[y][x]) continue
+			if (!solid[y * W + x]) continue
 			if (y === surface[x])
 				setMat(world, x, y, MAT.HORIZON)
 			else if (y > surface[x])
@@ -262,10 +286,14 @@ const paintBodyMats = (state) => {
 
 /**
  * Pillars (`:`) are compose-only — no material, so liquid and particles pass through.
+ * Materials only change with icon stage / softBase; hold frames skip the rebuild.
  * @param {AnimState} state parameter
  * @returns {void} result
  */
 const rebuildMaterials = (state) => {
+	const key = `${state.baseBot}|${state.baseTop}|${state.bodyReach}|${state.bodyMinD}|${+state.softBase}`
+	if (state._matKey === key) return
+	state._matKey = key
 	clearMaterials(state.world)
 	applyTerrain(state)
 	if (state.baseBot > 0 || state.baseTop > 0) paintBaseMats(state)
@@ -326,8 +354,7 @@ const overflowSplash = (world, state, x, y, targetY = -1) => {
 const depositOnGround = (world, state, x, fromY, amt) => {
 	const { terrain } = state
 	let left = amt
-	const order = [0, -1, 1, -2, 2, -3, 3, -4, 4]
-	for (const dx of order) {
+	for (const dx of GROUND_DX) {
 		if (left < 0.02) break
 		const gx = x + dx
 		if (!inWorld(world, gx, 0)) continue
@@ -510,79 +537,87 @@ const composeFrame = (state) => {
 		world, width, height, iconOx, iconOy, softPillars, softBody,
 		bodyReach, bodyMinD, pillars, frame, terrain,
 	} = state
-	const { ox, mat, liq, particles } = world
+	const { ox, mat, liq, particles, condense, liqVx, liqVy } = world
 	const { solid, surface, surfaceChar } = terrain
 	const { worldW: W, worldH: H } = world
-	const grid = Array.from({ length: height }, () => Array.from({ length: width }, () => /** @type {Cell} */ null))
+	const cells = width * height
+
+	let ch = state._frameCh
+	let fg = state._frameFg
+	if (!ch || ch.length !== cells) {
+		ch = state._frameCh = Array(cells)
+		fg = state._frameFg = Array(cells)
+	}
+	ch.fill(' ')
+	fg.fill(null)
 
 	/**
-	 * @param {number} vx parameter
-	 * @param {number} vy parameter
-	 * @param {string} ch parameter
-	 * @param {string} fg parameter
-	 * @returns {void} result
+	 * @param {number} vx view x
+	 * @param {number} vy view y
+	 * @param {string} c glyph
+	 * @param {string} f ansi fg
 	 */
-	const paint = (vx, vy, ch, fg) => {
+	const paint = (vx, vy, c, f) => {
 		if (vy < 0 || vy >= height || vx < 0 || vx >= width) return
-		grid[vy][vx] = { ch, fg }
+		const i = vy * width + vx
+		ch[i] = c
+		fg[i] = f
 	}
 
-	const bodyEdge = new Set()
-	if (bodyReach >= 0 && softBody)
-		for (const { x: lx, y: ly, d } of BODY_ATS) {
-			if (d > bodyReach || d < bodyMinD) continue
-			if ((d === bodyReach && bodyReach < maxBodyD) || (bodyMinD > 0 && d === bodyMinD))
-				bodyEdge.add(`${lx},${ly}`)
-		}
+	/**
+	 * Soft body edge: growth frontier or exit peel ring.
+	 * @param {number} d body distance
+	 * @returns {boolean} is soft edge
+	 */
+	const isBodyEdge = (d) => softBody && (
+		(d === bodyReach && bodyReach < maxBodyD) ||
+		(bodyMinD > 0 && d === bodyMinD)
+	)
 
-	// Terrain: surface everywhere (pools overwrite later); caves under the pedestal may show.
 	for (let vy = 0; vy < height; vy++)
 		for (let vx = 0; vx < width; vx++) {
 			const x = ox + vx
 			const y = vy
 			if (x < 0 || x >= W || y < 0 || y >= H) continue
-			if (!solid[y][x]) continue
-
+			if (!solid[y * W + x]) continue
 			if (y === surface[x]) {
 				paint(vx, vy, surfaceChar[x] || '_', FG_TERRAIN)
 				continue
 			}
-			const ch = outlineChar(solid, x, y, W, H, surface)
-			if (ch) paint(vx, vy, ch, FG_TERRAIN)
+			const oc = outlineChar(solid, x, y, W, H, surface)
+			if (oc) paint(vx, vy, oc, FG_TERRAIN)
 		}
 
 	for (let vy = 0; vy < height; vy++)
 		for (let vx = 0; vx < width; vx++) {
-			const i = idx(world, ox + vx, vy)
+			const wx = ox + vx
+			const i = vy * W + wx
 			const m = mat[i]
 			if (m === MAT.POOL) paint(vx, vy, '@', FG_AT)
 			else if (m === MAT.SLOPE_R) paint(vx, vy, '>', FG_AT)
 			else if (m === MAT.SLOPE_L) paint(vx, vy, '<', FG_AT)
 			else if (m === MAT.BODY) {
-				const lx = ox + vx - iconOx
+				const lx = wx - iconOx
 				const ly = vy - iconOy
-				paint(vx, vy, bodyEdge.has(`${lx},${ly}`) ? '.' : '@', FG_AT)
+				const d = ly >= 0 && ly < 16 && lx >= 0 && lx < ICON_W
+					? BODY_DIST[ly * ICON_W + lx]
+					: 255
+				paint(vx, vy, isBodyEdge(d) ? '.' : '@', FG_AT)
 			}
 			else if (liq[i] >= LIQUID_DRAW_THRESHOLD) {
-				const wx = ox + vx
 				const by = vy + 1
+				const bi = by * W + wx
 				const falling = by >= H || (
-					!isLiquidBarrier(mat[idx(world, wx, by)])
-					&& mat[idx(world, wx, by)] !== MAT.POOL
-					&& liq[idx(world, wx, by)] < LIQUID_DRAW_THRESHOLD
+					!isLiquidBarrier(mat[bi])
+					&& mat[bi] !== MAT.POOL
+					&& liq[bi] < LIQUID_DRAW_THRESHOLD
 				)
-				paint(vx, vy, liquidChar(
-					liq[i], wx + vy + frame, falling,
-					world.liqVx[i], world.liqVy[i],
-				), FG_SPLASH)
+				paint(vx, vy, liquidChar(liq[i], wx + vy + frame, falling, liqVx[i], liqVy[i]), FG_SPLASH)
 			}
-			else if (
-				vy > 0
-				&& isSoilMat(mat[idx(world, ox + vx, vy - 1)])
-				&& world.condense[idx(world, ox + vx, vy - 1)] >= COND_DRAW_THRESHOLD
-			) {
-				const drip = world.condense[idx(world, ox + vx, vy - 1)]
-				paint(vx, vy, dripChar(drip, ox + vx + frame), FG_SPLASH)
+			else if (vy > 0) {
+				const above = (vy - 1) * W + wx
+				if (isSoilMat(mat[above]) && condense[above] >= COND_DRAW_THRESHOLD)
+					paint(vx, vy, dripChar(condense[above], wx + frame), FG_SPLASH)
 			}
 		}
 
@@ -594,8 +629,10 @@ const composeFrame = (state) => {
 				const y = iconOy + yBot - k
 				const tip = softPillars && k === g - 1 && g < h
 				const vx = iconOx - ox + lx
-				paint(vx, y, tip ? '.' : ':', tip ? FG_SPLASH : FG_COL)
-				paint(vx + 1, y, tip ? '.' : ':', tip ? FG_SPLASH : FG_COL)
+				const glyph = tip ? '.' : ':'
+				const color = tip ? FG_SPLASH : FG_COL
+				paint(vx, y, glyph, color)
+				paint(vx + 1, y, glyph, color)
 			}
 		}
 
@@ -606,24 +643,26 @@ const composeFrame = (state) => {
 		paint(vx, vy, fallChar(p.amt, frame + vx, p.vx, p.vy), FG_SPLASH)
 	}
 
-	return renderGrid(grid, width, height)
+	return renderBuffers(ch, fg, width, height)
 }
 
 /**
- * Fixed-size ANSI frame (no trailing trim — keeps resize stable).
- * @param {Cell[][]} grid parameter
+ * Fixed-size ANSI frame from parallel char/fg buffers (no trailing trim).
+ * @param {string[]} ch glyphs
+ * @param {(string|null)[]} fg ansi fg or null for space
  * @param {number} width parameter
  * @param {number} height parameter
  * @returns {string} result
  */
-export const renderGrid = (grid, width, height) => {
+export const renderBuffers = (ch, fg, width, height) => {
 	const out = []
 	for (let y = 0; y < height; y++) {
 		let line = ''
 		let cur = null
+		const row = y * width
 		for (let x = 0; x < width; x++) {
-			const cell = grid[y][x]
-			if (!cell) {
+			const f = fg[row + x]
+			if (f == null) {
 				if (cur !== null) {
 					line += RESET
 					cur = null
@@ -631,11 +670,11 @@ export const renderGrid = (grid, width, height) => {
 				line += ' '
 				continue
 			}
-			if (cell.fg !== cur) {
-				line += cell.fg
-				cur = cell.fg
+			if (f !== cur) {
+				line += f
+				cur = f
 			}
-			line += cell.ch
+			line += ch[row + x]
 		}
 		if (cur !== null) line += RESET
 		out.push(line)
@@ -644,8 +683,36 @@ export const renderGrid = (grid, width, height) => {
 }
 
 /**
- * @param {AnimState} state parameter
+ * Fixed-size ANSI frame from a Cell[][] grid (tests / callers).
+ * @param {Cell[][]} grid parameter
+ * @param {number} width parameter
+ * @param {number} height parameter
  * @returns {string} result
+ */
+export const renderGrid = (grid, width, height) => {
+	const cells = width * height
+	const ch = Array(cells)
+	const fg = Array(cells)
+	for (let y = 0; y < height; y++)
+		for (let x = 0; x < width; x++) {
+			const cell = grid[y][x]
+			const i = y * width + x
+			if (cell) {
+				ch[i] = cell.ch
+				fg[i] = cell.fg
+			}
+			else {
+				ch[i] = ' '
+				fg[i] = null
+			}
+		}
+	return renderBuffers(ch, fg, width, height)
+}
+
+/**
+ * One simulation + compose tick.
+ * @param {AnimState} state animation state
+ * @returns {string} ANSI frame
  */
 const simFrame = (state) => {
 	rebuildMaterials(state)
@@ -771,11 +838,10 @@ export function* exit(state = createAnimState()) {
 	}
 
 	clearDynamics(state.world)
-	yield renderGrid(
-		Array.from({ length: state.height }, () => Array.from({ length: state.width }, () => /** @type {Cell} */ null)),
-		state.width,
-		state.height,
-	)
+	const cells = state.width * state.height
+	const ch = Array(cells).fill(' ')
+	const fg = Array(cells).fill(null)
+	yield renderBuffers(ch, fg, state.width, state.height)
 }
 
 /** Target frame rate. */
