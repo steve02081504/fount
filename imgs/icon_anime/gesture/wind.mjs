@@ -6,7 +6,7 @@
  * longer hold → faster; follows while moved; reforms when stopped; clears on release.
  */
 
-import { applyPointer, trimCap } from './pointer.mjs'
+import { applyPointer } from './pointer.mjs'
 
 /** Movement below this (view cells / tick) counts as still. */
 export const STILL_EPS = 0.55
@@ -47,6 +47,24 @@ const STROKE_CAP = 14
  * }} WindGesture
  */
 
+/** Recycled stroke segment objects. */
+const strokePool = /** @type {StrokeSeg[]} */ []
+
+/**
+ * @returns {StrokeSeg} pooled or fresh segment
+ */
+const takeStroke = () => strokePool.pop() || {
+	x0: 0, y0: 0, x1: 0, y1: 0, ux: 0, uy: 0, life: 0,
+}
+
+/**
+ * @param {StrokeSeg} seg segment to recycle
+ * @returns {void}
+ */
+const freeStroke = (seg) => {
+	strokePool.push(seg)
+}
+
 /**
  * Fresh gesture state (also used to clear on release).
  * @returns {WindGesture} empty gesture
@@ -71,6 +89,7 @@ export const clearWindGesture = (gesture) => {
 	gesture.still = 0
 	gesture.vortexOn = false
 	gesture.strength = 0
+	for (const seg of gesture.strokes) freeStroke(seg)
 	gesture.strokes.length = 0
 }
 
@@ -91,6 +110,7 @@ export const windPointer = (gesture, { x, y, right }) => {
 			gesture.still = 0
 			gesture.vortexOn = false
 			gesture.strength = 0
+			for (const seg of gesture.strokes) freeStroke(seg)
 			gesture.strokes.length = 0
 		},
 		/**
@@ -111,8 +131,14 @@ export const windPointer = (gesture, { x, y, right }) => {
 export const tickWindGesture = (gesture) => {
 	if (!gesture.down) return
 
-	for (let index = gesture.strokes.length - 1; index >= 0; index--)
-		if (--gesture.strokes[index].life <= 0) gesture.strokes.splice(index, 1)
+	const strokes = gesture.strokes
+	for (let index = 0; index < strokes.length;)
+		if (--strokes[index].life <= 0) {
+			freeStroke(strokes[index])
+			strokes[index] = strokes[strokes.length - 1]
+			strokes.pop()
+		}
+		else index++
 
 	const dx = gesture.x - gesture.lx
 	const dy = gesture.y - gesture.ly
@@ -122,12 +148,19 @@ export const tickWindGesture = (gesture) => {
 		gesture.still = 0
 		const inv = 1 / dist
 		const amp = dist * STROKE_SPEED_SCALE
-		gesture.strokes.push({
-			x0: gesture.lx, y0: gesture.ly, x1: gesture.x, y1: gesture.y,
-			ux: dx * inv * amp, uy: dy * inv * amp,
-			life: STROKE_LIFE,
-		})
-		trimCap(gesture.strokes, STROKE_CAP)
+		const seg = takeStroke()
+		seg.x0 = gesture.lx
+		seg.y0 = gesture.ly
+		seg.x1 = gesture.x
+		seg.y1 = gesture.y
+		seg.ux = dx * inv * amp
+		seg.uy = dy * inv * amp
+		seg.life = STROKE_LIFE
+		strokes.push(seg)
+		if (strokes.length > STROKE_CAP) {
+			freeStroke(strokes[0])
+			strokes.splice(0, 1)
+		}
 		if (gesture.vortexOn)
 			gesture.strength = Math.min(VORTEX_MAX, gesture.strength + VORTEX_GROWTH * 0.35)
 	}
@@ -264,13 +297,19 @@ export const paintVortexDrive = (cx, cy, amp, radius, world, outUx, outUy, dirty
 export const fillWindDrive = (gesture, world, outUx, outUy) => {
 	const { worldW: W, worldH: H, ox, oy } = world
 	const scratch = world.scratch ??= {}
-	clearDriveRect(outUx, outUy, W, H, /** @type {{ x0: number, y0: number, x1: number, y1: number } | null} */ (scratch.windDirty))
+	clearDriveRect(outUx, outUy, W, H, /** @type {{ x0: number, y0: number, x1: number, y1: number } | null} */ scratch.windDirty)
 	if (!gesture.down) {
 		scratch.windDirty = null
 		return
 	}
 
-	const dirty = { x0: W, y0: H, x1: -1, y1: -1 }
+	const dirty = /** @type {{ x0: number, y0: number, x1: number, y1: number }} */ 
+		scratch.windDirtyBox ??= { x0: 0, y0: 0, x1: 0, y1: 0 }
+	
+	dirty.x0 = W
+	dirty.y0 = H
+	dirty.x1 = -1
+	dirty.y1 = -1
 	const strokeR2 = STROKE_RADIUS * STROKE_RADIUS
 
 	for (const stroke of gesture.strokes) {

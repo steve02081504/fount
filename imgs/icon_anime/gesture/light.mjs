@@ -52,7 +52,12 @@ export const createLightGesture = () => ({
  * @returns {number} 0..1 intensity
  */
 export const rippleFalloff = (dx, dy, radius, width = RIPPLE_WIDTH) => {
-	const r = Math.hypot(dx, dy * 2)
+	const r2 = dx * dx + 4 * dy * dy
+	const lo = radius - width
+	const hi = radius + width
+	if (lo > 0 && r2 < lo * lo) return 0
+	if (r2 > hi * hi) return 0
+	const r = Math.sqrt(r2)
 	const d = Math.abs(r - radius)
 	if (d >= width) return 0
 	const t = 1 - d / width
@@ -103,6 +108,9 @@ export const tickLightGesture = (gesture) => {
 	if (gesture.held >= TORCH_DELAY) gesture.torch = true
 }
 
+/** Reused sampleLight destination. */
+const _lightSample = { ambient: false, lift: 0 }
+
 /**
  * Combined lift at a view cell (torch fill + ripple rings).
  * Writes into `out` (defaults to a reused module slot) to avoid per-cell alloc.
@@ -113,8 +121,6 @@ export const tickLightGesture = (gesture) => {
  * @param {{ ambient: boolean, lift: number }} [out] sample destination
  * @returns {{ ambient: boolean, lift: number }} lighting sample
  */
-const _lightSample = { ambient: false, lift: 0 }
-
 export const sampleLight = (gesture, x, y, torchFalloff, out = _lightSample) => {
 	let lift = 0
 	const ambient = gesture.down && gesture.torch

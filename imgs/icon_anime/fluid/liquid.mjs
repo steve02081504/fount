@@ -8,7 +8,7 @@
  * free surfaces shears sheet flow. Soil seepage is a separate moisture field.
  */
 
-import { hash01, ORTHO_DX, ORTHO_DY } from '../hash.mjs'
+import { ORTHO_DX, ORTHO_DY } from '../hash.mjs'
 
 import {
 	pressureMove, sheetMove, applyTransfer, hydraulicPhi, P_FLOW_GAIN,
@@ -180,10 +180,37 @@ const transfer = (w, liq, flowX, flowY, i, ni, dx, dy, move) => {
 }
 
 /**
- * Label connected liquid components; return free-surface samples + component map.
+ * Push one free-surface sample into reused SoA scratch (components stay contiguous).
+ * @param {FluidWorld} w world
+ * @param {number} x column
+ * @param {number} y row
+ * @param {number} component component id
+ * @param {number} pressure air pressure above surface
+ * @param {{
+ *   x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, n: number,
+ * }} surf surface SoA
+ * @returns {void}
+ */
+const pushSurface = (w, x, y, component, pressure, surf) => {
+	const i = surf.n
+	if (i >= surf.x.length) {
+		surf.x = growScratch(w, 'liqSurfX', i + 1, Int32Array)
+		surf.y = growScratch(w, 'liqSurfY', i + 1, Int32Array)
+		surf.c = growScratch(w, 'liqSurfC', i + 1, Int32Array)
+		surf.p = growScratch(w, 'liqSurfP', i + 1, Float32Array)
+	}
+	surf.x[i] = x
+	surf.y[i] = y
+	surf.c[i] = component
+	surf.p[i] = pressure
+	surf.n = i + 1
+}
+
+/**
+ * Label connected liquid components; free surfaces as SoA (grouped by component).
  * @param {FluidWorld} w world
  * @returns {{
- *   surfaces: { x: number, y: number, component: number, pressure: number }[],
+ *   surf: { x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, n: number },
  *   componentOf: Int32Array,
  * }} labels
  */
@@ -192,9 +219,14 @@ const labelLiquidComponents = (w) => {
 	const n = W * H
 	const componentOf = scratch(w, 'liqComp', n, Int32Array)
 	componentOf.fill(0)
+	const surf = {
+		x: growScratch(w, 'liqSurfX', 64, Int32Array),
+		y: growScratch(w, 'liqSurfY', 64, Int32Array),
+		c: growScratch(w, 'liqSurfC', 64, Int32Array),
+		p: growScratch(w, 'liqSurfP', 64, Float32Array),
+		n: 0,
+	}
 	let next = 1
-	/** @type {{ x: number, y: number, component: number, pressure: number }[]} */
-	const surfaces = []
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
@@ -209,14 +241,11 @@ const labelLiquidComponents = (w) => {
 				const cy = w.floodQ[qi + 1]
 				const aboveY = cy - 1
 				if (aboveY < 0)
-					surfaces.push({ x: cx, y: cy, component: id, pressure: pressureAt(w, cx, 0) })
+					pushSurface(w, cx, cy, id, pressureAt(w, cx, 0), surf)
 				else {
 					const ai = aboveY * W + cx
 					if (!isLiquidBarrier(mat[ai]) && liq[ai] < LIQ_DRAW)
-						surfaces.push({
-							x: cx, y: cy, component: id,
-							pressure: pressureAt(w, cx, aboveY),
-						})
+						pushSurface(w, cx, cy, id, pressureAt(w, cx, aboveY), surf)
 				}
 				for (let o = 0; o < 4; o++) {
 					const nx = cx + ORTHO_DX[o]
@@ -230,93 +259,102 @@ const labelLiquidComponents = (w) => {
 			}
 		}
 
-	return { surfaces, componentOf }
+	return { surf, componentOf }
 }
 
 /**
  * Path-respecting hydraulic equalize: BFS from the lowest-φ surface through the
  * liquid graph; cells push a trickle toward neighbors closer to that sink.
+ * Surfaces are SoA; BFS uses a generation stamp (no whole-grid `dist.fill`).
  * @param {FluidWorld} w world
  * @param {Float32Array} flowX flow accumulator
  * @param {Float32Array} flowY flow accumulator
  * @returns {void}
  */
 const equalizeHydraulicAlongGraph = (w, flowX, flowY) => {
-	const { surfaces, componentOf } = labelLiquidComponents(w)
+	const { surf, componentOf } = labelLiquidComponents(w)
 	const { worldW: W, worldH: H, liq } = w
-	const byComp = new Map()
-	for (const s of surfaces) {
-		let list = byComp.get(s.component)
-		if (!list) byComp.set(s.component, list = [])
-		list.push(s)
+	const n = W * H
+	const dist = scratch(w, 'liqHydroDist', n, Int32Array)
+	const visit = scratch(w, 'liqHydroVisit', n, Int32Array)
+	let gen = (/** @type {number} */ w.scratch.liqHydroGen | 0) + 1
+	if (gen >= 0x7fffffff) {
+		visit.fill(0)
+		gen = 1
 	}
+	w.scratch.liqHydroGen = gen
 
-	const dist = scratch(w, 'liqHydroDist', W * H, Int32Array)
+	const { x: sx, y: sy, c: sc, p: sp, n: surfN } = surf
+	let i = 0
+	while (i < surfN) {
+		const comp = sc[i]
+		const start = i
+		while (i < surfN && sc[i] === comp) i++
+		const end = i
+		if (end - start < 2) continue
 
-	for (const list of byComp.values()) {
-		if (list.length < 2) continue
-
-		let sink = list[0]
-		let sinkPhi = hydraulicPhi(sink.pressure, sink.y)
-		for (let i = 1; i < list.length; i++) {
-			const phi = hydraulicPhi(list[i].pressure, list[i].y)
+		let sink = start
+		let sinkPhi = hydraulicPhi(sp[start], sy[start])
+		for (let k = start + 1; k < end; k++) {
+			const phi = hydraulicPhi(sp[k], sy[k])
 			if (phi < sinkPhi) {
 				sinkPhi = phi
-				sink = list[i]
+				sink = k
 			}
 		}
 
 		let need = false
-		for (const s of list) {
-			if (s === sink) continue
-			if (hydraulicPhi(s.pressure, s.y) - sinkPhi > 0.35) {
+		for (let k = start; k < end; k++) {
+			if (k === sink) continue
+			if (hydraulicPhi(sp[k], sy[k]) - sinkPhi > 0.35) {
 				need = true
 				break
 			}
 		}
 		if (!need) continue
 
-		const comp = sink.component
-		dist.fill(-1)
 		floodClear(w)
-		const sinkI = idx(w, sink.x, sink.y)
+		const sinkI = sy[sink] * W + sx[sink]
+		visit[sinkI] = gen
 		dist[sinkI] = 0
-		floodPush(w, sink.x, sink.y)
+		floodPush(w, sx[sink], sy[sink])
 		for (let qi = 0; qi < w.floodQ.length; qi += 2) {
 			const cx = w.floodQ[qi]
 			const cy = w.floodQ[qi + 1]
-			const ci = cy * W + cx
-			const d0 = dist[ci]
+			const d0 = dist[cy * W + cx]
 			for (let o = 0; o < 4; o++) {
 				const nx = cx + ORTHO_DX[o]
 				const ny = cy + ORTHO_DY[o]
 				if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
 				const ni = ny * W + nx
-				if (componentOf[ni] !== comp || dist[ni] >= 0) continue
+				if (componentOf[ni] !== comp || visit[ni] === gen) continue
+				visit[ni] = gen
 				dist[ni] = d0 + 1
 				floodPush(w, nx, ny)
 			}
 		}
 
-		for (const s of list) {
-			if (s === sink) continue
-			const phi = hydraulicPhi(s.pressure, s.y)
+		for (let k = start; k < end; k++) {
+			if (k === sink) continue
+			const phi = hydraulicPhi(sp[k], sy[k])
 			const delta = phi - sinkPhi
 			if (delta <= 0.35) continue
-			const i = idx(w, s.x, s.y)
-			if (dist[i] < 0 || liq[i] < 0.05) continue
+			const cell = sy[k] * W + sx[k]
+			if (visit[cell] !== gen || liq[cell] < 0.05) continue
 			let bestNi = -1
-			let bestD = dist[i]
+			let bestD = dist[cell]
 			let bestDx = 0
 			let bestDy = 0
+			const x0 = sx[k]
+			const y0 = sy[k]
 			for (let o = 0; o < 4; o++) {
 				const dx = ORTHO_DX[o]
 				const dy = ORTHO_DY[o]
-				const nx = s.x + dx
-				const ny = s.y + dy
+				const nx = x0 + dx
+				const ny = y0 + dy
 				if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
 				const ni = ny * W + nx
-				if (componentOf[ni] !== comp || dist[ni] < 0 || dist[ni] >= bestD) continue
+				if (componentOf[ni] !== comp || visit[ni] !== gen || dist[ni] >= bestD) continue
 				if (liq[ni] >= LIQ_FULL - 1e-6) continue
 				bestD = dist[ni]
 				bestNi = ni
@@ -324,8 +362,8 @@ const equalizeHydraulicAlongGraph = (w, flowX, flowY) => {
 				bestDy = dy
 			}
 			if (bestNi < 0) continue
-			const move = Math.min(0.12, liq[i] * 0.35, delta * 0.08)
-			transfer(w, liq, flowX, flowY, i, bestNi, bestDx, bestDy, move)
+			const move = Math.min(0.12, liq[cell] * 0.35, delta * 0.08)
+			transfer(w, liq, flowX, flowY, cell, bestNi, bestDx, bestDy, move)
 		}
 	}
 }
@@ -520,7 +558,9 @@ export const stepSoil = (w) => {
 			const cb = condense[j]
 			if (ca < 1e-8 || cb < 1e-8) continue
 			const mass = ca + cb
-			const noise = (hash01(i + step * 17, j + step * 31) - 0.5) * COND_MATTHEW_NOISE * mass
+			// Cheap LCG — Matthew only needs jitter, not cryptographic hash01.
+			const noise = ((((i * 374761393) ^ (j * 668265263) ^ (step * 1274126177)) >>> 0) / 4294967296 - 0.5)
+				* COND_MATTHEW_NOISE * mass
 			const bias = (ca - cb) + noise
 			if (Math.abs(bias) < 1e-8) continue
 			const rich = bias > 0 ? i : j
@@ -574,7 +614,7 @@ export const stepLiquid = (w) => {
 	}
 
 	// --- Vertical settle: column-major; refresh a column only after it transfers ---
-	for (let x = 0; x < W; x++) {
+	for (let x = 0; x < W; x++) 
 		for (let y = H - 2; y >= 0; y--) {
 			const i = y * W + x
 			if (liq[i] <= 0) continue
@@ -625,10 +665,9 @@ export const stepLiquid = (w) => {
 			}
 			if (didDiag) continue
 		}
-	}
+	
 
-	// Refresh after vertical so orifice / sheet see updated columns.
-	fillLiquidPressureCache(w)
+	// Vertical transfers already refreshed dirty columns — no second full WH fill.
 
 	// --- Horizontal: free-surface sheet / submerged orifice / edge vent / wind ---
 	for (let y = 0; y < H; y++)

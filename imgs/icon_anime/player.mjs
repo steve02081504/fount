@@ -184,7 +184,8 @@ export class AsciiAnimePlayer {
 	 * @returns {void}
 	 */
 	paint(frame) {
-		write(`\x1b[H\x1b[J${frame}`)
+		// Frame is full-viewport — home only; skip Erase display.
+		write(`\x1b[H${frame}`)
 	}
 
 	/**

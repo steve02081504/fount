@@ -102,7 +102,7 @@ export const labelAirRegions = (world) => {
 
 	const oldRegions = world.regions
 	/** @type {AirRegion[]} */
-	const regionPool = /** @type {AirRegion[]} */ (world.scratch.regionPool ??= [])
+	const regionPool = /** @type {AirRegion[]} */ world.scratch.regionPool ??= []
 	// Snapshot Boyle mass before pooling — objects may be reused for nextRegions.
 	const oldGas = scratch(world, 'oldRegionGas', Math.max(oldRegions.length, 1), Float32Array)
 	oldGas.fill(0)
@@ -254,7 +254,8 @@ export const pressureAt = (world, x, y) => {
 	const rid = world.regionId[cell]
 	if (rid) {
 		const region = world.regions[rid]
-		if (region.openToAtm) return region.pressure + ATM_HYDRO * y
+		// Open regions always sit at P_ATM.
+		if (region.openToAtm) return P_ATM + ATM_HYDRO * y
 		return Math.max(0.05, region.pressure + ATM_HYDRO * (y - region.yMean))
 	}
 	for (let yy = y - 1; yy >= 0; yy--) {
@@ -263,7 +264,7 @@ export const pressureAt = (world, x, y) => {
 		const aboveRid = world.regionId[above]
 		if (aboveRid) {
 			const region = world.regions[aboveRid]
-			if (region.openToAtm) return region.pressure + ATM_HYDRO * yy
+			if (region.openToAtm) return P_ATM + ATM_HYDRO * yy
 			return Math.max(0.05, region.pressure + ATM_HYDRO * (yy - region.yMean))
 		}
 	}
@@ -432,16 +433,15 @@ export const stepGas = (world, opts = {}) => {
 
 	const { worldW: W, worldH: H, regionId, regions } = world
 	const n = W * H
-	let gasUx = world.gasUx
-	let gasUy = world.gasUy
+	const gasUx = world.gasUx
+	const gasUy = world.gasUy
 	const nextUx = scratch(world, 'gasNextUx', n, Float32Array)
 	const nextUy = scratch(world, 'gasNextUy', n, Float32Array)
 	const blocked = scratch(world, 'gasBlocked', n, Uint8Array)
 	const vertSpan = scratch(world, 'gasVertSpan', n, Uint16Array)
 	const horizSpan = scratch(world, 'gasHorizSpan', n, Uint16Array)
 	const staticP = scratch(world, 'gasStaticP', n, Float32Array)
-	nextUx.fill(0)
-	nextUy.fill(0)
+	// No nextU*.fill(0) — blocked cells are zeroed in the velocity pass below.
 
 	if (world.gasGeomDirty) {
 		fillBlocked(world, blocked)
@@ -454,24 +454,32 @@ export const stepGas = (world, opts = {}) => {
 	let maxUpdraft = 0
 
 	// Static pressure field from current velocity (Bernoulli) for ΔP drive.
-	for (let y = 0; y < H; y++)
+	for (let y = 0; y < H; y++) {
+		const openHydro = P_ATM + ATM_HYDRO * y
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (blocked[cell]) {
 				staticP[cell] = 0
 				continue
 			}
-			staticP[cell] = Math.max(
-				0.05,
-				pressureAt(world, x, y) - dynamicPressure(gasUx[cell], gasUy[cell]),
-			)
+			const rid = regionId[cell]
+			const region = rid ? regions[rid] : null
+			const thermo = !region || region.openToAtm
+				? openHydro
+				: Math.max(0.05, region.pressure + ATM_HYDRO * (y - region.yMean))
+			staticP[cell] = Math.max(0.05, thermo - dynamicPressure(gasUx[cell], gasUy[cell]))
 		}
+	}
 
 	for (let y = 0; y < H; y++) {
 		const drive = wind0 * windShear(y, H)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
-			if (blocked[cell]) continue
+			if (blocked[cell]) {
+				nextUx[cell] = 0
+				nextUy[cell] = 0
+				continue
+			}
 
 			const region = regionId[cell] ? regions[regionId[cell]] : null
 			const open = !region || region.openToAtm

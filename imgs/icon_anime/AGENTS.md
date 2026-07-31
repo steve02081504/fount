@@ -64,16 +64,19 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 - Terrain `solid` / `outline` and fluid grids share flat `y * W + x` indexing (no row arrays).
 - Terrain outline glyphs are precomputed at generate time; compose only blits.
 - World scratch lives on `world.scratch` (typed arrays reused across ticks). BFS uses a reused `floodQ` number array (`floodClear` / `floodPush`).
-- Gas nozzle spans / blocked mask rebuild only when `gasGeomDirty`; velocity buffers swap with scratch (no per-tick `.set` copy).
+- Gas nozzle spans / blocked mask rebuild only when `gasGeomDirty`; velocity buffers swap with scratch (no per-tick `.set` copy). Blocked cells are zeroed in the velocity pass — no `nextU*.fill(0)`.
 - Gas nozzle spans are precomputed in O(WH) column/row runs — do not re-walk per cell.
 - Air-region labels double-buffer `regionId` via `scratch.prevRegionId`; regions are pooled + id-indexed; Boyle overlap uses a packed-key Map (sealed only).
+- Open-air thermo in `stepGas` / `pressureAt` is closed-form `P_ATM+ATM_HYDRO·y` (no region object read).
 - Global wind is evaluated once per gas tick; height shear is applied per row; `maxUpdraft` gates `liftLiquidByWind`.
-- `stepLiquid` keeps a per-column liquid-pressure cache (refreshed after vertical transfers; full refill before horizontal / sealed-push) — no per-query upward surface walks.
+- `stepLiquid` keeps a per-column liquid-pressure cache (refreshed after each vertical transfer — no second full-WH refill before horizontal). Diagonal settle still uses live `liquidPressureAt` because the neighbor column may not have been refreshed yet this tick.
+- Hydraulic equalize surfaces are SoA scratch; BFS uses a generation stamp on `liqHydroVisit` (no whole-grid `dist.fill`); surfaces stay contiguous by component (no `Map`).
 - Material rebuild is keyed by a packed int (`matKey`); hold frames skip it.
 - Body cells are parallel `Uint8Array`s (`bodyX` / `bodyY` / `bodyD`), not object lists.
 - Particles are SoA pools (`particles.x/y/vx/vy/life/amt` + `count`); no per-tick object alloc.
-- Compose paints into reused `frameCh`/`frameFg` buffers; ANSI join uses a reused fragment list (no per-cell `+=`); torch path quantizes lift and caches truecolor SGR; `renderGrid(Cell[][])` is a thin adapter.
-- Pointer wind drive buffers are filled only while the right button is down (`driveUx`/`driveUy` omitted otherwise); clears only the previous dirty rectangle.
+- Compose paints every view cell in one pass (no `ch.fill`/`fg.fill`); ANSI joins same-SGR glyph runs; torch path quantizes lift and caches truecolor SGR; ripple-only frames skip `sampleLight` outside ring pads; `renderGrid(Cell[][])` is a thin adapter.
+- Player `paint` homes the cursor only (`\x1b[H`) — frame is full-viewport, no Erase display.
+- Pointer wind drive buffers are filled only while the right button is down (`driveUx`/`driveUy` omitted otherwise); clears only the previous dirty rectangle (reused box object); stroke segments are pooled + swap-removed on expiry.
 - Pointer light (`state.light`): SGR mouse via `consumeStdin`; `gesture/light.mjs` arms a torch after `TORCH_DELAY` frames of hold (compose: ambient dim + quadratic radial falloff, cell aspect `hypot(dx, 2·dy)`). Faster release before the torch arms spawns a high-brightness expanding ring (`rippleFalloff`) that ages out — no ambient dim.
 - Pointer wind (`state.wind`): right-button gesture in `gesture/wind.mjs`; each tick paints `driveUx`/`driveUy` scratch into `stepGas` (stroke trail + tornado vortex: clockwise tangential + updraft + inflow). Drag speed scales stroke amplitude; vortex strength grows with hold time and clears on release. Tangential `ty` uses the full `(rx/r)·amp` (not ×½) so right-side downwash cannot form a hover attractor under gravity — rain mean stays at the cursor. Strong upward gas scoops free-liquid puddles into particles (`liftLiquidByWind`); particle vertical drag rises with |gas| so rain can orbit inside the vortex.
 

@@ -89,7 +89,7 @@ export const waterChar = (amount, phase = 0, vx = 0, vy = 0) => {
  * @returns {string} glyph
  */
 export const liquidChar = (amount, phase, falling = false, vx = 0, vy = 0) => {
-	if (falling && Math.hypot(vx, vy) < STILL_SPEED) vy = 0.55
+	if (falling && vx * vx + vy * vy < STILL_SPEED * STILL_SPEED) vy = 0.55
 	return waterChar(amount, phase, vx, vy)
 }
 

@@ -5,7 +5,7 @@
  */
 
 import { MAT, LIQ_DRAW, COND_DRAW, isLiquidBarrier, isSoilMat, waterChar, liquidChar, dripChar } from './fluid/index.mjs'
-import { sampleLight } from './gesture/light.mjs'
+import { sampleLight, RIPPLE_SPEED, RIPPLE_WIDTH } from './gesture/light.mjs'
 import { ICON_W, PILLARS, BODY_DIST, maxBodyD } from './icon.mjs'
 
 const RESET = '\x1b[0m'
@@ -41,18 +41,23 @@ const LIGHT_AMBIENT = 0.3
 /** Reused sampleLight destination (compose hot path). */
 const lightSample = { ambient: false, lift: 0 }
 /** Reused ANSI fragment list — one join per frame instead of per-cell `+=`. */
-const frameParts = /** @type {string[]} */ ([])
+const frameParts = /** @type {string[]} */ []
+/** Glyphs sharing one SGR run — joined once per run. */
+const runGlyphs = /** @type {string[]} */ []
 
 /**
  * Smooth radial falloff in view cells (compensates for tall terminal cells).
+ * Squared reject before `sqrt`.
  * @param {number} dx columns from light
  * @param {number} dy rows from light
  * @param {number} radius visual radius
  * @returns {number} 0..1 intensity
  */
 export const lightFalloff = (dx, dy, radius = LIGHT_RADIUS) => {
-	const t = 1 - Math.sqrt(dx * dx + 4 * dy * dy) / radius
-	if (t <= 0) return 0
+	const d2 = dx * dx + 4 * dy * dy
+	const r2 = radius * radius
+	if (d2 >= r2) return 0
+	const t = 1 - Math.sqrt(d2) / radius
 	return t * t
 }
 
@@ -97,7 +102,7 @@ const litSgr = (f, lift, ambient) => {
 	const glow = lift > 1 ? 1 : lift
 	const liftQ = glow <= 0 ? 0 : Math.min(LIFT_Q - 1, (glow * (LIFT_Q - 1) + 0.5) | 0)
 	const qLift = liftQ / (LIFT_Q - 1)
-	const fgId = f == null ? 4 : (FG_ID.get(f) ?? 4)
+	const fgId = f == null ? 4 : FG_ID.get(f) ?? 4
 	const wantBg = f == null ? qLift >= 0.04 : qLift > 0.08
 	if (f == null && !wantBg) return null
 	const key = (ambient ? 1 << 12 : 0) | (fgId << 7) | (liftQ << 1) | (wantBg ? 1 : 0)
@@ -126,8 +131,48 @@ const litSgr = (f, lift, ambient) => {
 }
 
 /**
+ * Flush a same-SGR glyph run into `parts`.
+ * @param {string[]} parts ANSI fragments
+ * @returns {void}
+ */
+const flushRun = (parts) => {
+	const n = runGlyphs.length
+	if (!n) return
+	if (n === 1) parts.push(runGlyphs[0])
+	else parts.push(runGlyphs.join(''))
+	runGlyphs.length = 0
+}
+
+/**
+ * Emit one cell under a palette / truecolor SGR (`sgr === null` → default / blank).
+ * @param {string[]} parts ANSI fragments
+ * @param {string | null} cur current open SGR
+ * @param {string | null} sgr next SGR (null = default)
+ * @param {string} glyph character
+ * @param {boolean} [resetOnChange=false] emit RESET before a new non-null SGR
+ * @returns {string | null} updated current SGR
+ */
+const emitCell = (parts, cur, sgr, glyph, resetOnChange = false) => {
+	if (sgr == null) {
+		if (cur !== null) {
+			flushRun(parts)
+			parts.push(RESET)
+		}
+		runGlyphs.push(glyph)
+		return null
+	}
+	if (sgr !== cur) {
+		flushRun(parts)
+		if (resetOnChange && cur !== null) parts.push(RESET)
+		parts.push(sgr)
+	}
+	runGlyphs.push(glyph)
+	return sgr
+}
+
+/**
  * Join flat char/fg buffers into an ANSI frame string without lighting.
- * Reuses module-level part buffers to avoid per-cell string `+=` intermediates.
+ * Same-SGR glyphs are joined per run to cut fragment count.
  * @param {string[]} ch characters
  * @param {(string | null)[]} fg ANSI fg codes (null = default)
  * @param {number} width columns
@@ -137,35 +182,39 @@ const litSgr = (f, lift, ambient) => {
 const renderPlain = (ch, fg, width, height) => {
 	const parts = frameParts
 	parts.length = 0
+	runGlyphs.length = 0
 	for (let y = 0; y < height; y++) {
-		if (y) parts.push('\n')
+		if (y) {
+			flushRun(parts)
+			parts.push('\n')
+		}
 		let cur = null
 		const row = y * width
 		for (let x = 0; x < width; x++) {
 			const f = fg[row + x]
-			if (f == null) {
-				if (cur !== null) {
-					parts.push(RESET)
-					cur = null
-				}
-				parts.push(' ')
-				continue
-			}
-			if (f !== cur) {
-				parts.push(f)
-				cur = f
-			}
-			parts.push(ch[row + x])
+			const glyph = f == null ? ' ' : ch[row + x]
+			cur = emitCell(parts, cur, f, glyph)
 		}
-		if (cur !== null) parts.push(RESET)
+		if (cur !== null) {
+			flushRun(parts)
+			parts.push(RESET)
+		}
 	}
+	flushRun(parts)
 	return parts.join('')
 }
 
 /**
+ * Axis-aligned pad around a ripple ring for this age (view cells).
+ * @param {number} age ripple age
+ * @returns {number} half-extent
+ */
+const ripplePad = (age) => ((age * RIPPLE_SPEED + RIPPLE_WIDTH) / 2) + 1
+
+/**
  * Join flat char/fg buffers into an ANSI frame string.
  * Torch: dims the scene and lifts a circular cool spotlight.
- * Ripples: bright expanding rings without ambient dim.
+ * Ripples: bright expanding rings without ambient dim — sampled only near rings.
  * @param {string[]} ch characters
  * @param {(string | null)[]} fg ANSI fg codes (null = default)
  * @param {number} width columns
@@ -175,56 +224,78 @@ const renderPlain = (ch, fg, width, height) => {
  */
 export const renderBuffers = (ch, fg, width, height, light = null) => {
 	const hasTorch = !!(light?.down && light.torch)
-	const hasRipple = !!light?.ripples?.length
+	const ripples = light?.ripples
+	const hasRipple = !!ripples?.length
 	if (!hasTorch && !hasRipple) return renderPlain(ch, fg, width, height)
 
 	const parts = frameParts
 	parts.length = 0
+	runGlyphs.length = 0
+	const torchR2 = LIGHT_RADIUS * LIGHT_RADIUS
+
 	for (let y = 0; y < height; y++) {
-		if (y) parts.push('\n')
+		if (y) {
+			flushRun(parts)
+			parts.push('\n')
+		}
 		let cur = null
 		const row = y * width
 		for (let x = 0; x < width; x++) {
+			const f = fg[row + x]
+			let needSample = hasTorch
+			if (!needSample && hasRipple)
+				for (const ripple of ripples) {
+					const pad = ripplePad(ripple.age)
+					if (Math.abs(x - ripple.x) <= pad * 2 && Math.abs(y - ripple.y) <= pad) {
+						needSample = true
+						break
+					}
+				}
+
+			if (!needSample) {
+				const glyph = f == null ? ' ' : ch[row + x]
+				cur = emitCell(parts, cur, f, glyph, true)
+				continue
+			}
+
+			// Torch: skip hypot when far outside the disc (ambient still applies).
+			if (hasTorch) {
+				const dx = x - light.x
+				const dy = y - light.y
+				if (dx * dx + 4 * dy * dy >= torchR2 && !hasRipple) {
+					const sgr = litSgr(f, 0, true)
+					if (sgr == null) {
+						cur = emitCell(parts, cur, null, ' ', true)
+						continue
+					}
+					cur = emitCell(parts, cur, sgr, f == null ? ' ' : ch[row + x], true)
+					continue
+				}
+			}
+
 			sampleLight(light, x, y, lightFalloff, lightSample)
 			const { ambient, lift } = lightSample
-			const f = fg[row + x]
 
 			// Ripple-only cells far from the ring keep the plain palette.
 			if (!ambient && lift < 0.04) {
-				if (f == null) {
-					if (cur !== null) {
-						parts.push(RESET)
-						cur = null
-					}
-					parts.push(' ')
-					continue
-				}
-				if (f !== cur) {
-					if (cur !== null) parts.push(RESET)
-					parts.push(f)
-					cur = f
-				}
-				parts.push(ch[row + x])
+				const glyph = f == null ? ' ' : ch[row + x]
+				cur = emitCell(parts, cur, f, glyph, true)
 				continue
 			}
 
 			const sgr = litSgr(f, lift, ambient)
 			if (sgr == null) {
-				if (cur !== null) {
-					parts.push(RESET)
-					cur = null
-				}
-				parts.push(' ')
+				cur = emitCell(parts, cur, null, ' ', true)
 				continue
 			}
-			if (sgr !== cur) {
-				parts.push(RESET, sgr)
-				cur = sgr
-			}
-			parts.push(f == null ? ' ' : ch[row + x])
+			cur = emitCell(parts, cur, sgr, f == null ? ' ' : ch[row + x], true)
 		}
-		if (cur !== null) parts.push(RESET)
+		if (cur !== null) {
+			flushRun(parts)
+			parts.push(RESET)
+		}
 	}
+	flushRun(parts)
 	return parts.join('')
 }
 
@@ -250,7 +321,21 @@ export const renderGrid = (grid, width, height) => {
 }
 
 /**
+ * Soft body edge: growing frontier or shrinking min distance.
+ * @param {boolean} softBody soft edges enabled
+ * @param {number} d body distance
+ * @param {number} bodyReach growth frontier
+ * @param {number} bodyMinD shrink floor
+ * @returns {boolean} edge cell
+ */
+const isBodyEdge = (softBody, d, bodyReach, bodyMinD) => softBody && (
+	(d === bodyReach && bodyReach < maxBodyD) ||
+	(bodyMinD > 0 && d === bodyMinD)
+)
+
+/**
  * Paint one animation frame from scene state into reused buffers.
+ * Single viewport pass writes every cell (no pre-fill); pillars / particles overlay.
  * @param {{
  *   world: import('./fluid/world.mjs').FluidWorld,
  *   width: number, height: number, iconOx: number, iconOy: number,
@@ -278,64 +363,40 @@ export const composeFrame = (state) => {
 	}
 	const ch = state.frameCh
 	const fg = state.frameFg
-	ch.fill(' ')
-	fg.fill(null)
-
-	/**
-	 * Write a glyph into the view buffer if in bounds.
-	 * @param {number} vx view column
-	 * @param {number} vy view row
-	 * @param {string} c character
-	 * @param {string} f ANSI fg
-	 * @returns {void}
-	 */
-	const paint = (vx, vy, c, f) => {
-		if (vy < 0 || vy >= height || vx < 0 || vx >= width) return
-		const i = vy * width + vx
-		ch[i] = c
-		fg[i] = f
-	}
-
-	/**
-	 * Soft body edge: growing frontier or shrinking min distance.
-	 * @param {number} d body distance
-	 * @returns {boolean} edge cell
-	 */
-	const isBodyEdge = (d) => softBody && (
-		(d === bodyReach && bodyReach < maxBodyD) ||
-		(bodyMinD > 0 && d === bodyMinD)
-	)
 
 	for (let vy = 0; vy < height; vy++)
 		for (let vx = 0; vx < width; vx++) {
-			const x = ox + vx
-			const y = vy
-			if (x < 0 || x >= W || y < 0 || y >= H || !solid[y * W + x]) continue
-			if (y === surface[x]) {
-				paint(vx, vy, surfaceChar[x] || '_', FG_TERRAIN)
+			const i = vy * width + vx
+			const wx = ox + vx
+			if (wx < 0 || wx >= W || vy >= H) {
+				ch[i] = ' '
+				fg[i] = null
 				continue
 			}
-			const oc = outline[y * W + x]
-			if (oc) paint(vx, vy, oc, FG_TERRAIN)
-		}
-
-	for (let vy = 0; vy < height; vy++)
-		for (let vx = 0; vx < width; vx++) {
-			const wx = ox + vx
-			const i = vy * W + wx
-			const m = mat[i]
-			if (m === MAT.POOL) paint(vx, vy, '@', FG_AT)
-			else if (m === MAT.SLOPE_R) paint(vx, vy, '>', FG_AT)
-			else if (m === MAT.SLOPE_L) paint(vx, vy, '<', FG_AT)
+			const wi = vy * W + wx
+			const m = mat[wi]
+			if (m === MAT.POOL) {
+				ch[i] = '@'
+				fg[i] = FG_AT
+			}
+			else if (m === MAT.SLOPE_R) {
+				ch[i] = '>'
+				fg[i] = FG_AT
+			}
+			else if (m === MAT.SLOPE_L) {
+				ch[i] = '<'
+				fg[i] = FG_AT
+			}
 			else if (m === MAT.BODY) {
 				const lx = wx - iconOx
 				const ly = vy - iconOy
 				const d = ly >= 0 && ly < 16 && lx >= 0 && lx < ICON_W
 					? BODY_DIST[ly * ICON_W + lx]
 					: 255
-				paint(vx, vy, isBodyEdge(d) ? '.' : '@', FG_AT)
+				ch[i] = isBodyEdge(softBody, d, bodyReach, bodyMinD) ? '.' : '@'
+				fg[i] = FG_AT
 			}
-			else if (liq[i] >= LIQ_DRAW) {
+			else if (liq[wi] >= LIQ_DRAW) {
 				const by = vy + 1
 				const bi = by * W + wx
 				const falling = by >= H || (
@@ -343,12 +404,40 @@ export const composeFrame = (state) => {
 					&& mat[bi] !== MAT.POOL
 					&& liq[bi] < LIQ_DRAW
 				)
-				paint(vx, vy, liquidChar(liq[i], wx + vy + frame, falling, liqVx[i], liqVy[i]), FG_SPLASH)
+				ch[i] = liquidChar(liq[wi], wx + vy + frame, falling, liqVx[wi], liqVy[wi])
+				fg[i] = FG_SPLASH
 			}
-			else if (vy > 0) {
-				const above = (vy - 1) * W + wx
-				if (isSoilMat(mat[above]) && condense[above] >= COND_DRAW)
-					paint(vx, vy, dripChar(condense[above], wx + frame), FG_SPLASH)
+			else {
+				let painted = false
+				if (vy > 0) {
+					const above = (vy - 1) * W + wx
+					if (isSoilMat(mat[above]) && condense[above] >= COND_DRAW) {
+						ch[i] = dripChar(condense[above], wx + frame)
+						fg[i] = FG_SPLASH
+						painted = true
+					}
+				}
+				if (!painted && solid[wi]) 
+					if (vy === surface[wx]) {
+						ch[i] = surfaceChar[wx] || '_'
+						fg[i] = FG_TERRAIN
+					}
+					else {
+						const oc = outline[wi]
+						if (oc) {
+							ch[i] = oc
+							fg[i] = FG_TERRAIN
+						}
+						else {
+							ch[i] = ' '
+							fg[i] = null
+						}
+					}
+				
+				else if (!painted) {
+					ch[i] = ' '
+					fg[i] = null
+				}
 			}
 		}
 
@@ -359,18 +448,31 @@ export const composeFrame = (state) => {
 			for (let k = 0; k < g; k++) {
 				const tip = softPillars && k === g - 1 && g < h
 				const vx = iconOx - ox + lx
+				const vy = iconOy + yBot - k
+				if (vy < 0 || vy >= height) continue
 				const glyph = tip ? '.' : ':'
 				const color = tip ? FG_SPLASH : FG_COL
-				paint(vx, iconOy + yBot - k, glyph, color)
-				paint(vx + 1, iconOy + yBot - k, glyph, color)
+				if (vx >= 0 && vx < width) {
+					const i = vy * width + vx
+					ch[i] = glyph
+					fg[i] = color
+				}
+				const vx2 = vx + 1
+				if (vx2 >= 0 && vx2 < width) {
+					const i = vy * width + vx2
+					ch[i] = glyph
+					fg[i] = color
+				}
 			}
 		}
 
-	for (let i = 0; i < particles.count; i++) {
-		const vx = (particles.x[i] - ox) | 0
-		const vy = particles.y[i] | 0
+	for (let pi = 0; pi < particles.count; pi++) {
+		const vx = (particles.x[pi] - ox) | 0
+		const vy = particles.y[pi] | 0
 		if (vy < 0 || vy >= height || vx < 0 || vx >= width) continue
-		paint(vx, vy, waterChar(particles.amt[i], frame + vx, particles.vx[i], particles.vy[i]), FG_SPLASH)
+		const i = vy * width + vx
+		ch[i] = waterChar(particles.amt[pi], frame + vx, particles.vx[pi], particles.vy[pi])
+		fg[i] = FG_SPLASH
 	}
 
 	return renderBuffers(ch, fg, width, height, light ?? null)
