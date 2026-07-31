@@ -6,18 +6,23 @@
  * Communicating vessels equalize hydraulic potential:
  *   φ = P / (ρg) - surfaceY
  *
+ * Soil (HORIZON / SOLID) stores moisture; seepage shares sideways, prefers down,
+ * and feeds underside condensation that drips into air. All soil transfers conserve mass.
+ * SEAL is an impermeable barrier (tests / vessels) — blocks liquid, holds no moisture.
+ *
  * POOL retains fill and spills when overfull / leaked by the scene.
  * BODY is an impact shell: particles splash and vanish; free liquid cannot enter.
- * SOLID / slopes / horizon stay sealed. Pillar glyphs (`:`) are scene-visual only.
+ * Slopes stay sealed splash faces. Pillar glyphs (`:`) are scene-visual only.
  */
 
 /** @typedef {{
  *   viewW: number, viewH: number, worldW: number, worldH: number,
  *   margin: number, ox: number, oy: number,
- *   mat: Uint8Array, liq: Float32Array, absorb: Float32Array,
+ *   mat: Uint8Array, liq: Float32Array, moisture: Float32Array, condense: Float32Array,
  *   regionId: Int32Array,
  *   regions: Map<number, AirRegion>,
  *   particles: FluidParticle[], pendingSplash: FluidParticle[],
+ *   soilStep: number,
  * }} FluidWorld
  *
  * @typedef {{
@@ -40,6 +45,8 @@ export const MAT = {
 	HORIZON: 4,
 	POOL: 5,
 	BODY: 6,
+	/** Impermeable barrier — no moisture / seepage (tests & sealed vessels). */
+	SEAL: 7,
 }
 
 /**
@@ -51,12 +58,42 @@ export const P_ATM = 1
  */
 export const RHO_G = 1
 
+/** Max moisture a soil cell can hold. */
+export const SOIL_CAP = 1
+/** Peak free-liquid absorb rate into dry soil, per tick (slow — rain must be able to puddle). */
+export const SOIL_ABSORB_RATE = 0.015
+/** Absorb rate falls as `(1 - wetness) ** expo` (dry soil drinks fastest). */
+export const SOIL_ABSORB_EXPO = 1.8
+/** Max fraction of a rain/impact hit absorbed into dry soil; rest sheets as free liquid. */
+export const SOIL_HIT_ABSORB_FRAC = 0.3
+/** Fraction of moisture shared laterally (split evenly among soil sides). */
+export const SOIL_SIDE_FRAC = 0.04
+/** Fraction of moisture transferred into soil below (highest). */
+export const SOIL_DOWN_FRAC = 0.06
+/** Fraction of moisture fed into underside condensation when below is air. */
+export const SOIL_CONDENSE_FRAC = 0.06
+/** Condensation amount that draws as a hanging droplet. */
+export const COND_DRAW = 0.35
+/** Condensation amount that drips (clears into free liquid below). */
+export const COND_DRIP = 0.85
+/** Lateral Matthew transfer rate between neighboring condensation cells. */
+export const COND_MATTHEW_RATE = 0.22
+/** Noise amplitude (fraction of pair mass) to break condensation ties. */
+export const COND_MATTHEW_NOISE = 0.4
+
 /**
  * @param {number} m parameter
  * @returns {boolean} result
  */
 export const isSolidMat = m =>
-	m === MAT.SOLID || m === MAT.SLOPE_L || m === MAT.SLOPE_R || m === MAT.HORIZON
+	m === MAT.SOLID || m === MAT.SLOPE_L || m === MAT.SLOPE_R || m === MAT.HORIZON || m === MAT.SEAL
+
+/**
+ * Terrain soil that stores moisture (surface + fill). Slopes / SEAL are non-porous.
+ * @param {number} m parameter
+ * @returns {boolean} result
+ */
+export const isSoilMat = m => m === MAT.HORIZON || m === MAT.SOLID
 
 /**
  * @param {number} m parameter
@@ -70,6 +107,16 @@ export const isBlockMat = m => isSolidMat(m) || m === MAT.POOL || m === MAT.BODY
  * @returns {boolean} result
  */
 export const isLiquidBarrier = m => isSolidMat(m) || m === MAT.BODY
+
+/**
+ * Dry-soil absorb factor in [0, 1] — full when empty, →0 as moisture fills.
+ * @param {number} moisture parameter
+ * @returns {number} result
+ */
+export const soilAbsorbFactor = (moisture) => {
+	const wet = Math.min(1, Math.max(0, moisture / SOIL_CAP))
+	return (1 - wet) ** SOIL_ABSORB_EXPO
+}
 
 /**
  * Deterministic hash in [0, 1).
@@ -105,11 +152,13 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 		viewW, viewH, worldW, worldH, margin, ox, oy: 0,
 		mat: new Uint8Array(size),
 		liq: new Float32Array(size),
-		absorb: new Float32Array(size),
+		moisture: new Float32Array(size),
+		condense: new Float32Array(size),
 		regionId: new Int32Array(size),
 		regions: new Map(),
 		particles: /** @type {FluidParticle[]} */ [],
 		pendingSplash: /** @type {FluidParticle[]} */ [],
+		soilStep: 0,
 	}
 }
 
@@ -136,6 +185,8 @@ export const inWorld = (w, x, y) =>
  */
 export const clearDynamics = (w) => {
 	w.liq.fill(0)
+	w.moisture.fill(0)
+	w.condense.fill(0)
 	w.particles.length = 0
 	w.pendingSplash.length = 0
 	w.regionId.fill(0)
@@ -143,12 +194,39 @@ export const clearDynamics = (w) => {
 }
 
 /**
+ * Clear material labels only — moisture/condense persist across rebuilds.
  * @param {FluidWorld} w parameter
  * @returns {void} result
  */
 export const clearMaterials = (w) => {
 	w.mat.fill(MAT.AIR)
-	w.absorb.fill(0)
+}
+
+/**
+ * After materials are rebuilt: dump water from non-soil cells into free liquid (or discard on barriers).
+ * @param {FluidWorld} w parameter
+ * @returns {void} result
+ */
+export const releaseNonSoilWater = (w) => {
+	const { worldW: W, worldH: H, mat, liq, moisture, condense } = w
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const i = y * W + x
+			if (isSoilMat(mat[i])) continue
+			const held = moisture[i] + condense[i]
+			moisture[i] = 0
+			condense[i] = 0
+			if (held <= 0) continue
+			if (mat[i] === MAT.POOL || mat[i] === MAT.AIR) {
+				liq[i] = Math.min(LIQ_FULL, liq[i] + held)
+				continue
+			}
+			if (y > 0 && !isLiquidBarrier(mat[(y - 1) * W + x])) {
+				const ai = (y - 1) * W + x
+				liq[ai] = Math.min(LIQ_FULL, liq[ai] + held)
+			}
+			// else: barrier with nowhere to put it — leave the world
+		}
 }
 
 /**
@@ -156,14 +234,40 @@ export const clearMaterials = (w) => {
  * @param {number} x parameter
  * @param {number} y parameter
  * @param {number} m parameter
- * @param {number} [absorb=0] parameter
  * @returns {void} result
  */
-export const setMat = (w, x, y, m, absorb = 0) => {
+export const setMat = (w, x, y, m) => {
 	if (!inWorld(w, x, y)) return
+	w.mat[idx(w, x, y)] = m
+}
+
+/**
+ * Add moisture into a soil cell (clamped). Returns amount actually stored.
+ * @param {FluidWorld} w parameter
+ * @param {number} x parameter
+ * @param {number} y parameter
+ * @param {number} amt parameter
+ * @returns {number} result
+ */
+export const addMoisture = (w, x, y, amt) => {
+	if (!inWorld(w, x, y) || amt <= 0) return 0
 	const i = idx(w, x, y)
-	w.mat[i] = m
-	if (m === MAT.HORIZON) w.absorb[i] = absorb
+	if (!isSoilMat(w.mat[i])) return 0
+	const before = w.moisture[i]
+	w.moisture[i] = Math.min(SOIL_CAP, before + amt)
+	return w.moisture[i] - before
+}
+
+/**
+ * Grid water total: free liquid + soil moisture + hanging condensation.
+ * @param {FluidWorld} w parameter
+ * @returns {number} result
+ */
+export const totalGridWater = (w) => {
+	let t = 0
+	for (let i = 0; i < w.liq.length; i++)
+		t += w.liq[i] + w.moisture[i] + w.condense[i]
+	return t
 }
 
 /**
@@ -511,7 +615,155 @@ const equalizeHydraulic = (w) => {
 }
 
 /**
- * Liquid step: gravity, side flow (pressure-gated), hydraulic equalization.
+ * Soil seepage: absorb free liquid, share moisture, feed condensation, Matthew drip bias, drip.
+ * Transfers are closed (source -= amt; sink += amt). World edges may sink mass.
+ * @param {FluidWorld} w parameter
+ * @returns {void} result
+ */
+export const stepSoil = (w) => {
+	const { worldW: W, worldH: H, mat, liq, moisture, condense } = w
+	const n = W * H
+	w.soilStep = (w.soilStep + 1) | 0
+	const step = w.soilStep
+
+	// Absorb free liquid from the air cell above — dry soil drinks fastest.
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const i = y * W + x
+			if (!isSoilMat(mat[i]) || y === 0) continue
+			const ai = (y - 1) * W + x
+			if (isLiquidBarrier(mat[ai]) || liq[ai] <= 0) continue
+			const room = SOIL_CAP - moisture[i]
+			if (room <= 0) continue
+			const rate = SOIL_ABSORB_RATE * soilAbsorbFactor(moisture[i])
+			if (rate <= 1e-8) continue
+			const take = Math.min(liq[ai], room, rate)
+			liq[ai] -= take
+			moisture[i] += take
+		}
+
+	/** @type {{ from: number, to: number, amt: number }[]} */
+	const moves = []
+	/** @type {{ from: number, amt: number }[]} */
+	const feeds = []
+
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const i = y * W + x
+			if (!isSoilMat(mat[i])) continue
+			const m = moisture[i]
+			if (m <= 1e-8) continue
+
+			if (y + 1 < H) {
+				const bi = (y + 1) * W + x
+				if (isSoilMat(mat[bi])) {
+					const room = Math.max(0, SOIL_CAP - moisture[bi])
+					const take = Math.min(m * SOIL_DOWN_FRAC, room)
+					if (take > 1e-8) moves.push({ from: i, to: bi, amt: take })
+				}
+				else if (mat[bi] === MAT.AIR) {
+					const take = m * SOIL_CONDENSE_FRAC
+					if (take > 1e-8) feeds.push({ from: i, amt: take })
+				}
+			}
+			else {
+				const take = m * SOIL_CONDENSE_FRAC
+				if (take > 1e-8) feeds.push({ from: i, amt: take })
+			}
+
+			const sides = []
+			if (x > 0 && isSoilMat(mat[y * W + (x - 1)])) sides.push(y * W + (x - 1))
+			if (x + 1 < W && isSoilMat(mat[y * W + (x + 1)])) sides.push(y * W + (x + 1))
+			if (sides.length) {
+				const each = (m * SOIL_SIDE_FRAC) / sides.length
+				for (const si of sides) {
+					const room = Math.max(0, SOIL_CAP - moisture[si])
+					const take = Math.min(each, room)
+					if (take > 1e-8) moves.push({ from: i, to: si, amt: take })
+				}
+			}
+		}
+
+	const outSum = new Float32Array(n)
+	for (const mv of moves) outSum[mv.from] += mv.amt
+	for (const f of feeds) outSum[f.from] += f.amt
+	for (const mv of moves) {
+		const cap = moisture[mv.from]
+		if (outSum[mv.from] > cap) mv.amt *= cap / outSum[mv.from]
+	}
+	for (const f of feeds) {
+		const cap = moisture[f.from]
+		if (outSum[f.from] > cap) f.amt *= cap / outSum[f.from]
+	}
+
+	// Capacity at targets: scale all incoming if a cell would overfill.
+	const inSum = new Float32Array(n)
+	for (const mv of moves) inSum[mv.to] += mv.amt
+	for (const mv of moves) {
+		const room = Math.max(0, SOIL_CAP - moisture[mv.to])
+		if (inSum[mv.to] > room && inSum[mv.to] > 1e-12)
+			mv.amt *= room / inSum[mv.to]
+	}
+
+	const delta = new Float32Array(n)
+	for (const mv of moves) {
+		delta[mv.from] -= mv.amt
+		delta[mv.to] += mv.amt
+	}
+	for (const f of feeds) {
+		delta[f.from] -= f.amt
+		const y = f.from / W | 0
+		if (y + 1 >= H) continue // intentional floor sink
+		const bi = f.from + W
+		if (mat[bi] === MAT.AIR) condense[f.from] += f.amt
+		else delta[f.from] += f.amt // topology changed — keep mass in soil
+	}
+	for (let i = 0; i < n; i++) {
+		if (!delta[i]) continue
+		moisture[i] += delta[i]
+		if (moisture[i] < 0) moisture[i] = 0
+		else if (moisture[i] > SOIL_CAP) moisture[i] = SOIL_CAP
+	}
+
+	// Matthew condensation: richer neighbors steal from poorer, with noise to break ties.
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W - 1; x++) {
+			const i = y * W + x
+			const j = i + 1
+			if (!isSoilMat(mat[i]) || !isSoilMat(mat[j])) continue
+			const ca = condense[i]
+			const cb = condense[j]
+			if (ca < 1e-8 || cb < 1e-8) continue
+			const mass = ca + cb
+			const noise = (hash01(i + step * 17, j + step * 31) - 0.5) * COND_MATTHEW_NOISE * mass
+			const bias = (ca - cb) + noise
+			if (Math.abs(bias) < 1e-8) continue
+			const rich = bias > 0 ? i : j
+			const poor = bias > 0 ? j : i
+			const take = Math.min(
+				condense[poor] * COND_MATTHEW_RATE,
+				Math.abs(bias) * COND_MATTHEW_RATE,
+			)
+			if (take <= 1e-8) continue
+			condense[poor] -= take
+			condense[rich] += take
+		}
+
+	// Drip: condensation past threshold becomes free liquid in the air cell below.
+	for (let y = 0; y < H - 1; y++)
+		for (let x = 0; x < W; x++) {
+			const i = y * W + x
+			if (!isSoilMat(mat[i]) || condense[i] < COND_DRIP) continue
+			const bi = (y + 1) * W + x
+			if (mat[bi] !== MAT.AIR) continue
+			const amt = condense[i]
+			const added = addLiquid(w, x, y + 1, amt)
+			condense[i] = amt - added
+		}
+}
+
+/**
+ * Liquid step: gravity, side flow (pressure-gated), soil seepage, hydraulic equalization.
  * @param {FluidWorld} w parameter
  * @returns {void} result
  */
@@ -575,7 +827,9 @@ export const stepLiquid = (w) => {
 			for (const dx of [-1, 1]) {
 				const nx = x + dx
 				if (nx < 0 || nx >= W) {
-					liq[i] *= 0.5
+					// Intentional world-edge sink: outflow amount leaves the grid.
+					const move = Math.min(liq[i] * 0.25, liq[i])
+					liq[i] -= move
 					continue
 				}
 				const ni = y * W + nx
@@ -595,6 +849,7 @@ export const stepLiquid = (w) => {
 			}
 		}
 
+	stepSoil(w)
 	equalizeHydraulic(w)
 
 	// Recompute pressures after liquid moved (volumes changed)
@@ -680,8 +935,24 @@ export const liquidChar = (amount, phase) => {
 	return ' '
 }
 
+/**
+ * Hanging droplet under a soil ceiling, by condensation amount.
+ * @param {number} amount parameter
+ * @param {number} phase parameter
+ * @returns {string} result
+ */
+export const dripChar = (amount, phase) => {
+	if (amount >= COND_DRIP) return 'o'
+	if (amount >= 0.6) return phase & 1 ? 'o' : '*'
+	if (amount >= COND_DRAW) return phase & 1 ? ',' : '.'
+	return ' '
+}
+
 /** Draw threshold for free liquid. */
 export const LIQUID_DRAW_THRESHOLD = LIQ_DRAW
+
+/** Condensation draw threshold (re-export for composers). */
+export const COND_DRAW_THRESHOLD = COND_DRAW
 
 /** Backward-compatible alias. */
 export const markAtmosphere = labelAirRegions

@@ -7,7 +7,8 @@
  *   body `@`  — impact shell (splash then vanish)
  *   `:`       — visual jet only (does not block fluid)
  *   base `@`  — pool that leaks downward | `>`/`<` — 45° splash
- *   terrain   — `/ \ | - _` outline (Terraria-style)
+ *   terrain   — soil (`HORIZON` / `SOLID`) stores moisture; ceilings condense & drip
+ *   `/ \ | - _` outline (Terraria-style)
  *
  * createAnimState({ width?, height?, seed? }) — defaults to terminal size when available.
  * API: { enter, hold, exit, fps, createAnimState, resizeAnimState }
@@ -19,9 +20,10 @@ import process from 'node:process'
 import { on_shutdown } from 'npm:on-shutdown'
 
 import {
-	MAT, createWorld, clearMaterials, clearDynamics, setMat, addLiquid,
-	spawnParticle, queueSplash, stepLiquid, stepParticles, rainChar, liquidChar,
-	hash01, idx, inWorld, isLiquidBarrier, LIQUID_DRAW_THRESHOLD,
+	MAT, createWorld, clearMaterials, clearDynamics, setMat, addLiquid, addMoisture,
+	spawnParticle, queueSplash, stepLiquid, stepParticles, rainChar, liquidChar, dripChar,
+	hash01, idx, inWorld, isLiquidBarrier, isSoilMat, releaseNonSoilWater, soilAbsorbFactor,
+	LIQUID_DRAW_THRESHOLD, COND_DRAW_THRESHOLD, SOIL_CAP, SOIL_HIT_ABSORB_FRAC,
 } from './fluid_engine.mjs'
 import { AsciiAnimePlayer, terminalSize } from './player.mjs'
 import { generateTerrain, outlineChar } from './terrain.mjs'
@@ -166,15 +168,23 @@ export const resizeAnimState = (state, { width, height }) => {
 	const dx = newCx - oldCx
 	const dy = newCy - oldCy
 
-	// reproject liquid relative to viewport centre
+	// reproject free liquid + soil water relative to viewport centre
 	for (let y = 0; y < old.worldH; y++)
 		for (let x = 0; x < old.worldW; x++) {
-			const amt = old.liq[y * old.worldW + x]
-			if (amt < 0.05) continue
+			const oi = y * old.worldW + x
 			const nx = (x + dx) | 0
 			const ny = (y + dy) | 0
-			if (inWorld(world, nx, ny) && !terrain.solid[ny]?.[nx])
+			if (!inWorld(world, nx, ny)) continue
+			const amt = old.liq[oi]
+			if (amt >= 0.05 && !terrain.solid[ny]?.[nx])
 				addLiquid(world, nx, ny, amt)
+			const moist = old.moisture[oi]
+			const cond = old.condense[oi]
+			if ((moist > 0.02 || cond > 0.02) && terrain.solid[ny]?.[nx]) {
+				const ni = idx(world, nx, ny)
+				world.moisture[ni] = Math.min(SOIL_CAP, world.moisture[ni] + moist)
+				world.condense[ni] += cond
+			}
 		}
 
 	for (const p of old.particles) {
@@ -208,7 +218,7 @@ const applyTerrain = (state) => {
 		for (let x = 0; x < W; x++) {
 			if (!solid[y][x]) continue
 			if (y === surface[x])
-				setMat(world, x, y, MAT.HORIZON, 3 + hash01(x, 2) * 4)
+				setMat(world, x, y, MAT.HORIZON)
 			else if (y > surface[x])
 				setMat(world, x, y, MAT.SOLID)
 		}
@@ -260,6 +270,7 @@ const rebuildMaterials = (state) => {
 	applyTerrain(state)
 	if (state.baseBot > 0 || state.baseTop > 0) paintBaseMats(state)
 	paintBodyMats(state)
+	releaseNonSoilWater(state.world)
 }
 
 /**
@@ -411,19 +422,30 @@ const onParticleHit = (state) => (world, x, y, m, p, wet) => {
 		return
 	}
 
-	if (m === MAT.HORIZON) {
+	if (m === MAT.HORIZON || m === MAT.SOLID) {
 		const i = idx(world, x, y)
-		// Leave free liquid on the ground so it can sheet / flow.
-		if (y > 0) addLiquid(world, x, y - 1, 0.18)
-		if (world.absorb[i] > 0) {
-			world.absorb[i] -= 0.35
-			queueSplash(world, x, y - 0.3,
-				(hash01(x, frame) - 0.5) * 0.5,
-				-0.2 - hash01(x, 2) * 0.25,
-				8)
-		}
-		else
-			queueSplash(world, x, y - 0.2, (hash01(x, 4) - 0.5) * 0.3, -0.15, 6)
+		const hit = 0.18
+		// Dry soil drinks a fraction of the droplet; most of a wet hit sheets as puddle.
+		const want = hit * SOIL_HIT_ABSORB_FRAC * soilAbsorbFactor(world.moisture[i])
+		const stored = addMoisture(world, x, y, want)
+		const rest = hit - stored
+		if (rest > 0 && y > 0 && !isLiquidBarrier(world.mat[idx(world, x, y - 1)]))
+			addLiquid(world, x, y - 1, rest)
+		const wetSoil = world.moisture[i] > 0.15
+		queueSplash(world, x, y - 0.25,
+			(hash01(x, frame) - 0.5) * (wetSoil ? 0.45 : 0.3),
+			-0.15 - hash01(x, 2) * (wetSoil ? 0.25 : 0.15),
+			wetSoil ? 8 : 6,
+		)
+		return
+	}
+
+	if (m === MAT.SEAL) {
+		const speed = Math.hypot(p.vx, p.vy) || 0.5
+		queueSplash(world, x + (hash01(x, 1) - 0.5), y - 0.15,
+			(hash01(x, frame) - 0.5) * speed,
+			-0.2 - hash01(x, 3) * 0.3,
+			10)
 		return
 	}
 
@@ -440,15 +462,6 @@ const onParticleHit = (state) => (world, x, y, m, p, wet) => {
 		queueSplash(world, x - 0.4, y + 0.2, -speed * 0.7, speed * 0.7, 14)
 		if (hash01(x, frame) > 0.4)
 			queueSplash(world, x - 0.2, y - 0.1, -speed * 0.4, -speed * 0.2, 8)
-		return
-	}
-
-	if (m === MAT.SOLID) {
-		const speed = Math.hypot(p.vx, p.vy) || 0.5
-		queueSplash(world, x + (hash01(x, 1) - 0.5), y - 0.15,
-			(hash01(x, frame) - 0.5) * speed,
-			-0.2 - hash01(x, 3) * 0.3,
-			10)
 		return
 	}
 
@@ -548,6 +561,14 @@ const composeFrame = (state) => {
 			}
 			else if (liq[i] >= LIQUID_DRAW_THRESHOLD)
 				paint(vx, vy, liquidChar(liq[i], ox + vx + vy + frame), FG_SPLASH)
+			else if (
+				vy > 0
+				&& isSoilMat(mat[idx(world, ox + vx, vy - 1)])
+				&& world.condense[idx(world, ox + vx, vy - 1)] >= COND_DRAW_THRESHOLD
+			) {
+				const drip = world.condense[idx(world, ox + vx, vy - 1)]
+				paint(vx, vy, dripChar(drip, ox + vx + frame), FG_SPLASH)
+			}
 		}
 
 	if (pillars > 0)

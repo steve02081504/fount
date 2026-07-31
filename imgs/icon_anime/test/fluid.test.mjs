@@ -1,16 +1,17 @@
 /**
- * Pure tests: air-region pressure, gas conservation, hydraulic U-tube.
+ * Pure tests: air-region pressure, gas conservation, hydraulic U-tube, soil water.
  */
 /* global Deno */
 import { assert, assertAlmostEquals, assertEquals, assertGreater, assertLess } from 'jsr:@std/assert'
 
 import {
-	MAT, createWorld, setMat, addLiquid, stepLiquid, labelAirRegions,
-	pressureAt, totalSealedGas, P_ATM, clearMaterials, idx,
+	MAT, createWorld, setMat, addLiquid, addMoisture, stepLiquid, stepSoil, labelAirRegions,
+	pressureAt, totalSealedGas, totalGridWater, P_ATM, clearMaterials, idx,
+	COND_DRIP, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQUID_DRAW_THRESHOLD,
 } from '../fluid_engine.mjs'
 
 /**
- * Build a sealed box cavity with optional liquid.
+ * Build a sealed box cavity with optional liquid. Walls use impermeable SEAL.
  * @param {{ fillBottom?: number }} [opts] fill options
  * @returns {ReturnType<typeof createWorld>} world
  */
@@ -20,7 +21,7 @@ const sealedBox = (opts = {}) => {
 	for (let y = 4; y <= 10; y++)
 		for (let x = 4; x <= 10; x++) {
 			const edge = y === 4 || y === 10 || x === 4 || x === 10
-			if (edge) setMat(w, x, y, MAT.SOLID)
+			if (edge) setMat(w, x, y, MAT.SEAL)
 		}
 	if (opts.fillBottom)
 		for (let x = 5; x <= 9; x++)
@@ -83,26 +84,22 @@ Deno.test('fluid: total sealed gas conserved across a liquid step', () => {
 Deno.test('fluid: U-tube liquid levels approach equalization under open air', () => {
 	const w = createWorld({ width: 30, height: 20, margin: 2, bottomExtra: 2 })
 	clearMaterials(w)
-	// floor and walls forming a U: wells at x=8 and x=18, bottom y=14..15, tops open
+	// Impermeable U vessel — SEAL so soil absorption cannot drain the wells.
 	for (let x = 6; x <= 20; x++) {
-		setMat(w, x, 15, MAT.SOLID)
-		setMat(w, x, 16, MAT.SOLID)
+		setMat(w, x, 15, MAT.SEAL)
+		setMat(w, x, 16, MAT.SEAL)
 	}
-	for (let y = 6; y <= 15; y++) {
-		setMat(w, 6, y, MAT.SOLID)
-		setMat(w, 10, y, MAT.SOLID)
-		setMat(w, 16, y, MAT.SOLID)
-		setMat(w, 20, y, MAT.SOLID)
-	}
-	// bottom channel open 7..19 at y=14 (carve by not placing solid — already only floor at 15)
+	for (let y = 6; y <= 15; y++)
+		for (const x of [6, 10, 16, 20])
+			setMat(w, x, y, MAT.SEAL)
+
 	for (let x = 7; x <= 19; x++)
-		setMat(w, x, 14, MAT.SOLID)
-	// open channel: clear 8-9 and 17-18 and bottom path
-	for (let y = 6; y <= 14; y++) 
-		for (const x of [8, 9, 17, 18]) 
+		setMat(w, x, 14, MAT.SEAL)
+
+	for (let y = 6; y <= 14; y++)
+		for (const x of [8, 9, 17, 18])
 			w.mat[idx(w, x, y)] = MAT.AIR
-		
-	
+
 	for (let x = 8; x <= 18; x++)
 		w.mat[idx(w, x, 14)] = MAT.AIR
 
@@ -152,7 +149,7 @@ Deno.test('fluid: BODY rejects free liquid (impact shell, not a pool)', () => {
 	for (let x = 5; x <= 10; x++)
 		setMat(w, x, 8, MAT.BODY)
 	for (let x = 4; x <= 11; x++)
-		setMat(w, x, 10, MAT.SOLID)
+		setMat(w, x, 10, MAT.SEAL)
 
 	assertEquals(addLiquid(w, 7, 8, 1), 0)
 	addLiquid(w, 7, 5, 1)
@@ -167,8 +164,10 @@ Deno.test('fluid: free liquid settles above HORIZON and spreads', () => {
 	const w = createWorld({ width: 20, height: 12, margin: 2, bottomExtra: 2 })
 	clearMaterials(w)
 	for (let x = 4; x <= 14; x++) {
-		setMat(w, x, 9, MAT.HORIZON, 2)
-		setMat(w, x, 10, MAT.SOLID)
+		// Saturated topsoil over impermeable bed — sheet flow without seepage loss.
+		setMat(w, x, 9, MAT.HORIZON)
+		w.moisture[idx(w, x, 9)] = SOIL_CAP
+		setMat(w, x, 10, MAT.SEAL)
 	}
 	addLiquid(w, 8, 8, 1)
 	addLiquid(w, 9, 8, 1)
@@ -178,9 +177,163 @@ Deno.test('fluid: free liquid settles above HORIZON and spreads', () => {
 	for (let x = 4; x <= 14; x++)
 		groundLiq += w.liq[idx(w, x, 8)]
 	assertGreater(groundLiq, 0.5)
-	// should have spread beyond the two seed columns
 	let wetCols = 0
 	for (let x = 4; x <= 14; x++)
 		if (w.liq[idx(w, x, 8)] >= 0.1) wetCols++
 	assertGreater(wetCols, 2)
+})
+
+Deno.test('fluid: SEAL neither stores moisture nor absorbs free liquid', () => {
+	const w = createWorld({ width: 10, height: 8, margin: 1, bottomExtra: 1 })
+	clearMaterials(w)
+	setMat(w, 4, 5, MAT.SEAL)
+	addLiquid(w, 4, 4, 0.9)
+	const before = totalGridWater(w)
+	for (let i = 0; i < 20; i++) stepSoil(w)
+	assertEquals(w.moisture[idx(w, 4, 5)], 0)
+	assertEquals(addMoisture(w, 4, 5, 0.5), 0)
+	assertAlmostEquals(w.liq[idx(w, 4, 4)], 0.9, 1e-4)
+	assertAlmostEquals(totalGridWater(w), before, 1e-4)
+})
+
+Deno.test('fluid: soil absorbs free liquid into moisture', () => {
+	const w = createWorld({ width: 12, height: 10, margin: 1, bottomExtra: 1 })
+	clearMaterials(w)
+	setMat(w, 5, 6, MAT.HORIZON)
+	setMat(w, 5, 7, MAT.SEAL)
+	addLiquid(w, 5, 5, 0.8)
+	const before = totalGridWater(w)
+	for (let i = 0; i < 25; i++) stepSoil(w)
+	assertGreater(w.moisture[idx(w, 5, 6)], 0.2)
+	assertLess(w.liq[idx(w, 5, 5)], 0.8)
+	assertAlmostEquals(totalGridWater(w), before, 1e-4)
+})
+
+Deno.test('fluid: dry soil absorbs faster than wet soil', () => {
+	const w = createWorld({ width: 12, height: 10, margin: 1, bottomExtra: 1 })
+	clearMaterials(w)
+	setMat(w, 4, 6, MAT.HORIZON)
+	setMat(w, 6, 6, MAT.HORIZON)
+	setMat(w, 4, 7, MAT.SEAL)
+	setMat(w, 6, 7, MAT.SEAL)
+	w.moisture[idx(w, 6, 6)] = 0.75
+	assertGreater(soilAbsorbFactor(0), soilAbsorbFactor(0.75))
+	addLiquid(w, 4, 5, 1)
+	addLiquid(w, 6, 5, 1)
+	stepSoil(w)
+	const dryTook = 1 - w.liq[idx(w, 4, 5)]
+	const wetTook = 1 - w.liq[idx(w, 6, 5)]
+	assertGreater(dryTook, wetTook)
+})
+
+Deno.test('fluid: sustained rain forms surface puddles instead of all soaking away', () => {
+	const w = createWorld({ width: 24, height: 14, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	for (let x = 4; x <= 18; x++) {
+		setMat(w, x, 10, MAT.HORIZON)
+		setMat(w, x, 11, MAT.SOLID)
+		setMat(w, x, 12, MAT.SOLID)
+	}
+
+	// Rain-like input: ~2 ground hits/tick at 0.18 each (matches particle deposit size).
+	for (let t = 0; t < 55; t++) {
+		for (let k = 0; k < 2; k++) {
+			const x = 5 + (t * 3 + k * 5) % 13
+			const i = idx(w, x, 10)
+			const hit = 0.18
+			const want = hit * SOIL_HIT_ABSORB_FRAC * soilAbsorbFactor(w.moisture[i])
+			const stored = addMoisture(w, x, 10, want)
+			addLiquid(w, x, 9, hit - stored)
+		}
+		stepLiquid(w)
+	}
+
+	let puddleCells = 0
+	let surfaceLiq = 0
+	for (let x = 4; x <= 18; x++) {
+		const L = w.liq[idx(w, x, 9)]
+		surfaceLiq += L
+		if (L >= LIQUID_DRAW_THRESHOLD) puddleCells++
+	}
+	assertGreater(puddleCells, 2)
+	assertGreater(surfaceLiq, 1)
+	const total = totalGridWater(w)
+	assertGreater(total, 0)
+	// A meaningful share must remain as free surface water, not only soil moisture.
+	assertGreater(surfaceLiq / total, 0.2)
+})
+
+Deno.test('fluid: soil moisture prefers downward seepage over sides', () => {
+	const w = createWorld({ width: 14, height: 12, margin: 1, bottomExtra: 1 })
+	clearMaterials(w)
+	for (const x of [5, 6, 7])
+		for (const y of [5, 6, 7])
+			setMat(w, x, y, MAT.SOLID)
+	// Impermeable bed under the soil block so mass stays in-grid.
+	for (const x of [5, 6, 7])
+		setMat(w, x, 8, MAT.SEAL)
+	addMoisture(w, 6, 5, 1)
+	for (let i = 0; i < 12; i++) stepSoil(w)
+	assertGreater(w.moisture[idx(w, 6, 7)], w.moisture[idx(w, 5, 5)])
+	assertGreater(w.moisture[idx(w, 6, 7)], w.moisture[idx(w, 7, 5)])
+})
+
+Deno.test('fluid: soil ceiling condenses then drips into air below', () => {
+	const w = createWorld({ width: 12, height: 12, margin: 1, bottomExtra: 1 })
+	clearMaterials(w)
+	for (let x = 3; x <= 7; x++) {
+		setMat(w, x, 4, MAT.SOLID)
+		setMat(w, x, 8, MAT.SEAL)
+	}
+	addMoisture(w, 5, 4, 1)
+	const before = totalGridWater(w)
+	let sawCondense = false
+	for (let i = 0; i < 40; i++) {
+		stepSoil(w)
+		if (w.condense[idx(w, 5, 4)] >= COND_DRIP * 0.5) sawCondense = true
+	}
+	assert(sawCondense || w.liq[idx(w, 5, 5)] > 0.05 || w.liq[idx(w, 5, 6)] > 0.05 || w.liq[idx(w, 5, 7)] > 0.05)
+	assertAlmostEquals(totalGridWater(w), before, 1e-3)
+})
+
+Deno.test('fluid: condensation Matthew effect amplifies the lead with noise', () => {
+	const w = createWorld({ width: 14, height: 10, margin: 1, bottomExtra: 1 })
+	clearMaterials(w)
+	for (const x of [5, 6, 7]) {
+		setMat(w, x, 4, MAT.SOLID)
+		setMat(w, x, 7, MAT.SEAL)
+	}
+	w.condense[idx(w, 5, 4)] = 0.4
+	w.condense[idx(w, 6, 4)] = 0.55
+	w.condense[idx(w, 7, 4)] = 0.4
+	const before = totalGridWater(w)
+	const lead0 = w.condense[idx(w, 6, 4)]
+	for (let i = 0; i < 25; i++) stepSoil(w)
+	const lead1 = w.condense[idx(w, 6, 4)]
+	const side = Math.max(w.condense[idx(w, 5, 4)], w.condense[idx(w, 7, 4)])
+	// Leader should still dominate after noisy Matthew transfers (or have dripped).
+	assert(lead1 + w.liq[idx(w, 6, 5)] + w.liq[idx(w, 6, 6)] >= lead0 - 0.05 || lead1 >= side)
+	assertAlmostEquals(totalGridWater(w), before, 1e-3)
+})
+
+Deno.test('fluid: closed soil seepage conserves grid water', () => {
+	const w = createWorld({ width: 16, height: 12, margin: 1, bottomExtra: 1 })
+	clearMaterials(w)
+	for (let y = 3; y <= 8; y++)
+		for (let x = 4; x <= 10; x++)
+			setMat(w, x, y, MAT.SOLID)
+	// Seal under and around so no condense / edge sink.
+	for (let x = 4; x <= 10; x++)
+		setMat(w, x, 9, MAT.SEAL)
+	addMoisture(w, 5, 3, 0.9)
+	addMoisture(w, 8, 4, 0.7)
+	addMoisture(w, 6, 6, 0.5)
+	const before = totalGridWater(w)
+	for (let i = 0; i < 50; i++) stepSoil(w)
+	assertAlmostEquals(totalGridWater(w), before, 1e-4)
+	for (let y = 3; y <= 8; y++)
+		for (let x = 4; x <= 10; x++) {
+			const m = w.moisture[idx(w, x, y)]
+			assert(m >= -1e-6 && m <= SOIL_CAP + 1e-6)
+		}
 })

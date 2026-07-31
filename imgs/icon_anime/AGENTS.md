@@ -22,12 +22,12 @@ Controls: Space pause, `[` / `]` speed, Ctrl+C exit (icon teardown, then quit).
 | --- | --- |
 | `index.mjs` | Icon stages (`enter` / `hold` / `exit`), rain, compose, resize migration |
 | `terrain.mjs` | Pedestal-anchored surface (land shoulders) + noise caves + U-tube/chamber templates |
-| `fluid_engine.mjs` | Particles, grid liquid, air-region pressure (Boyle), hydraulic equalization |
+| `fluid_engine.mjs` | Particles, grid liquid, soil moisture/condensation, air-region pressure (Boyle), hydraulic equalization |
 | `player.mjs` | TUI playback, keyboard, `stdout` resize |
 
 ## Material standard
 
-Static / growing icon + terrain write the material grid (particles do not rewrite the ICON string). Glyphs below are the *authored* look; free liquid may redraw cells as `~` / `≈` / `,` when flooded.
+Static / growing icon + terrain write the material grid (particles do not rewrite the ICON string). Glyphs below are the *authored* look; free liquid may redraw cells as `~` / `≈` / `,` when flooded. Hanging condensation under soil ceilings draws as `.` / `,` / `*` / `o`.
 
 | Glyph / mat | Region | Behavior |
 | --- | --- | --- |
@@ -35,13 +35,14 @@ Static / growing icon + terrain write the material grid (particles do not rewrit
 | `:` (visual) | Pillars | Compose-only jet. **Does not write material** — liquid & particles pass through freely. |
 | `@` (`POOL`) | Base slabs | Pool: absorb, then leak with splash to the next lower slab; bottom slab runoff deposits free liquid on nearby ground. |
 | `>` / `<` (`SLOPE_*`) | Base soft edges | 45° splash faces (`>` one side, `<` opposite). |
-| surface (`HORIZON`) | Ground top | Solid top: splash + leave free liquid in the air cell above so it sheets/flows; absorb quota still shortens the hit. Pedestal span stays land until POOL overwrites — ungrown base columns still join the shoulders. |
-| terrain fill (`SOLID`) | Foundation | Impenetrable solid. |
+| surface (`HORIZON`) | Ground top | Soil: impact / standing free liquid raise moisture (dry soil drinks fastest); saturated cells shed free liquid into the air cell above. Pedestal span stays land until POOL overwrites — ungrown base columns still join the shoulders. |
+| terrain fill (`SOLID`) | Foundation | Soil (same moisture field as HORIZON). Impenetrable to free liquid / particles except via seepage + ceiling drip. |
+| `SEAL` | Tests / vessels | Impermeable barrier: blocks liquid like rock, stores no moisture, no seepage. |
 | empty (`AIR`) | Atmosphere / caves | Air; liquid & particles that hit world edges are discarded. |
 
 Open-stage rule: columns whose base slab has not grown yet do **not** splash — rain keeps falling through empty cells until it hits existing mat, horizon, or leaves the world.
 
-Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `..`) → body-pool `@` / flooded liquid `~` → pillars `:` → terrain outline.
+Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `..`) → body-pool `@` / flooded liquid `~` → hanging drip under soil → pillars `:` → terrain outline.
 
 ## Terrain invariants
 
@@ -55,6 +56,10 @@ Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `.
 - Sealed regions: `pressure ≈ gasAmount / airCells` (isothermal Boyle); gas mass transfers by cell overlap when topology splits/merges.
 - Communicating vessels: free surfaces of the same liquid component relax toward equal `φ = P/(ρg) - y`.
 - `POOL` retains fill and spills / leaks into open air or the next slab when overfull; `BODY` is a liquid barrier (splash-only). Pillars are not materials.
+- Soil moisture (`moisture`): gains from impacts and free liquid above with diminishing absorb rate as the cell wets (`soilAbsorbFactor`); rain hits only sink a fraction (`SOIL_HIT_ABSORB_FRAC`) so the rest sheets as free liquid. Seepage is slow enough that sustained rain forms visible surface puddles. Each tick shares a fraction sideways among soil neighbors, prefers transfer into soil below, and when below is air feeds underside `condense`. Neighboring condensation cells apply a noisy Matthew transfer (richer steals from poorer). Past `COND_DRAW` the air cell shows a droplet glyph; past `COND_DRIP` condensation becomes free liquid below and clears.
+- `SEAL` is impermeable (no moisture) — use it in tests/vessels so soil absorption cannot drain free-liquid setups.
+- Grid water mass (`liq + moisture + condense`) is conserved under closed transfers — no creating/destroying mass except intentional world-edge / bottom sinks.
+- Material rebuild clears labels only; `releaseNonSoilWater` dumps moisture/condense from non-soil cells into free liquid (or the cell above) so POOL overwrite does not erase water.
 - `exit` stops as soon as the icon is gone — no rain/liquid drain wait.
 
 ## Tests
@@ -65,4 +70,4 @@ fount test icon_anime --no-parallel
 fount test icon_anime:pure --no-parallel
 ```
 
-Coverage: deterministic terrain glyphs/features, pedestal land shoulders, tall-land quota (≥30% view cols ≥¼ screen), sealed-cavity compression, U-tube leveling, BODY splash (no flood), pillar pass-through, pool→slab/ground leak, exit frame bound, resize state preserve, ANSI frame size.
+Coverage: deterministic terrain glyphs/features, pedestal land shoulders, tall-land quota (≥30% view cols ≥¼ screen), sealed-cavity compression, U-tube leveling, BODY splash (no flood), pillar pass-through, pool→slab/ground leak, `SEAL` impermeable fixtures, soil absorb (dry>wet) / seepage / Matthew condense / drip + mass conservation, sustained-rain surface puddles, exit frame bound, resize state preserve, ANSI frame size.
