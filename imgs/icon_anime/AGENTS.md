@@ -27,7 +27,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid` |
 | `player.mjs` | TUI playback, keyboard, `stdout` resize; alt-screen enter/leave |
 | `terrain.mjs` | Pedestal-anchored surface + noise caves + U-tube/chamber templates |
-| `hash.mjs` | Shared `hash01` (terrain + fluid) |
+| `hash.mjs` | `hash01` + 1D/2D fBm noise + `ORTHO` (terrain + fluid) |
 | `fluid/` | Particles, grid liquid, soil, Boyle air regions, gas wind, glyphs |
 
 ### `fluid/`
@@ -37,19 +37,23 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | `index.mjs` | Barrel re-exports |
 | `mat.mjs` | `MAT` enum, flags LUT, soil/liquid constants |
 | `world.mjs` | Grid alloc, scratch buffers, mat/liq/moisture helpers |
-| `gas.mjs` | Air regions, wind, `stepGas` |
-| `liquid.mjs` | Gravity / side flow / soil / hydraulic `stepLiquid` |
-| `particles.mjs` | Rain/splash particles + gas drag |
+| `gas.mjs` | Air regions, wind, `stepGas` (caller must `labelAirRegions` first) |
+| `liquid.mjs` | Gravity / side flow / soil / hydraulic `stepLiquid` (labels once at entry) |
+| `particles.mjs` | SoA rain/splash pools + gas drag |
 | `glyphs.mjs` | `waterChar` / `liquidChar` / `dripChar` |
 
 ## Layout & hot-path notes
 
-- Terrain `solid` and fluid grids share flat `y * W + x` indexing (no row arrays).
+- Terrain `solid` / `outline` and fluid grids share flat `y * W + x` indexing (no row arrays).
+- Terrain outline glyphs are precomputed at generate time; compose only blits.
 - World scratch lives on `world.scratch` (typed arrays reused across ticks).
 - Gas nozzle spans are precomputed in O(WH) column/row runs — do not re-walk per cell.
-- Air-region labels double-buffer `regionId` via `scratch.prevRegionId`.
+- Air-region labels double-buffer `regionId` via `scratch.prevRegionId`; regions are id-indexed arrays.
+- Per frame: `labelAirRegions` once before `stepGas`, then again inside `stepLiquid` after particles may have changed `liq` (not a third trailing label).
+- Global wind is evaluated once per gas tick; height shear is applied per row.
 - Material rebuild is keyed by a packed int (`matKey`); hold frames skip it.
 - Body cells are parallel `Uint8Array`s (`bodyX` / `bodyY` / `bodyD`), not object lists.
+- Particles are SoA pools (`particles.x/y/vx/vy/life/amt` + `count`); no per-tick object alloc.
 - Compose paints into reused `frameCh`/`frameFg` buffers; `renderGrid(Cell[][])` is a thin adapter.
 
 ## Material standard
@@ -69,7 +73,7 @@ Static / growing icon + terrain write the material grid (particles do not rewrit
 
 Open-stage rule: columns whose base slab has not grown yet do **not** splash — rain keeps falling through empty cells until it hits existing mat, horizon, or leaves the world.
 
-Falling water (rain particles **and** free liquid) uses `waterChar` from **amount × liquid/droplet velocity** (never gas wind). High momentum: `/` `∕` · `\` `∖` · `-`. Low momentum diagonal: `‚´′…` / `‵‛…`. Pure fall: `|¦‖⁞⁚⁝.`. Still pools: `‥…~⁓–`. Grid liquid velocity is `liqVx`/`liqVy` from mass transfers; particles use `p.vx`/`p.vy`.
+Falling water (rain particles **and** free liquid) uses `waterChar` from **amount × liquid/droplet velocity** (never gas wind). High momentum: `/` `∕` · `\` `∖` · `-`. Low momentum diagonal: `‚´′…` / `‵‛…`. Pure fall: `|¦‖⁞⁚⁝.`. Still pools: `‥…~⁓–`. Grid liquid velocity is `liqVx`/`liqVy` from mass transfers; particles use `particles.vx[i]`/`particles.vy[i]`.
 
 Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `..`) → body-pool `@` / free-liquid water glyphs → hanging drip under soil → pillars `:` → terrain outline.
 

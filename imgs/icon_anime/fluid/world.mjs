@@ -3,6 +3,7 @@
  */
 
 import { MAT, SOIL_CAP, LIQ_FULL, isSoilMat, isLiquidBarrier } from './mat.mjs'
+import { createParticlePool, clearParticlePool } from './particles.mjs'
 
 /** @typedef {{
  *   viewW: number, viewH: number, worldW: number, worldH: number,
@@ -11,14 +12,13 @@ import { MAT, SOIL_CAP, LIQ_FULL, isSoilMat, isLiquidBarrier } from './mat.mjs'
  *   gasUx: Float32Array, gasUy: Float32Array,
  *   liqVx: Float32Array, liqVy: Float32Array,
  *   regionId: Int32Array,
- *   regions: Map<number, import('./gas.mjs').AirRegion>,
- *   particles: FluidParticle[], pendingSplash: FluidParticle[],
+ *   regions: (import('./gas.mjs').AirRegion | undefined)[],
+ *   particles: import('./particles.mjs').ParticlePool,
+ *   pendingSplash: import('./particles.mjs').ParticlePool,
  *   soilStep: number, gasTime: number,
  *   scratch: Record<string, unknown>,
  *   floodQ: number[],
  * }} FluidWorld
- *
- * @typedef {{ x: number, y: number, vx: number, vy: number, life: number, amt: number }} FluidParticle
  */
 
 /**
@@ -43,9 +43,9 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 		liqVx: new Float32Array(size),
 		liqVy: new Float32Array(size),
 		regionId: new Int32Array(size),
-		regions: new Map(),
-		particles: [],
-		pendingSplash: [],
+		regions: [],
+		particles: createParticlePool(),
+		pendingSplash: createParticlePool(),
 		soilStep: 0,
 		gasTime: 0,
 		scratch: {},
@@ -121,10 +121,10 @@ export const clearDynamics = (w) => {
 	w.gasUy.fill(0)
 	w.liqVx.fill(0)
 	w.liqVy.fill(0)
-	w.particles.length = 0
-	w.pendingSplash.length = 0
+	clearParticlePool(w.particles)
+	clearParticlePool(w.pendingSplash)
 	w.regionId.fill(0)
-	w.regions.clear()
+	w.regions.length = 0
 	w.gasTime = 0
 }
 

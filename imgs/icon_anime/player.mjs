@@ -1,21 +1,19 @@
 /**
  * ASCII animation player — loop playback, keyboard, TUI, terminal resize.
  * No process lifecycle / on-shutdown; callers own that.
- *
- * CLI: deno run -A imgs/icon_anime/index.mjs
  */
 
 import process from 'node:process'
 import { setTimeout as sleep } from 'node:timers/promises'
 
 /**
- * @param {string} s parameter
- * @returns {boolean} result
+ * @param {string} s text to write
+ * @returns {boolean} whether the write succeeded
  */
 const write = (s) => process.stdout.write(s)
 
 /**
- * @returns {{ columns: number, rows: number }} result
+ * @returns {{ columns: number, rows: number }} terminal size
  */
 export const terminalSize = () => ({
 	columns: process.stdout.columns || 0,
@@ -23,19 +21,18 @@ export const terminalSize = () => ({
 })
 
 /**
- * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames parameter
- * @returns {AsyncGenerator<string, void, unknown>} result
+ * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames frames or factory
+ * @returns {AsyncGenerator<string, void, unknown>} frame stream
  */
 async function* iterateFrames(frames) {
-	yield* frames?.() ?? frames
+	yield* typeof frames === 'function' ? frames() : frames
 }
 
 /** ASCII animation player. */
 export class AsciiAnimePlayer {
 	/**
-	 * @param {{ fps?: number, onResize?: (size: { columns: number, rows: number }) => void }} [opts] parameter
-	 * @returns {*} result
- */
+	 * @param {{ fps?: number, onResize?: (size: { columns: number, rows: number }) => void }} [opts] options
+	 */
 	constructor({ fps = 24, onResize } = {}) {
 		this.fps = fps
 		this.speed = 1
@@ -43,7 +40,7 @@ export class AsciiAnimePlayer {
 		this.onResize = onResize ?? null
 		this.#onKey = null
 		this.#onData = null
-		this.#onResize = null
+		this.#resizeListener = null
 		this.#ac = null
 	}
 
@@ -52,20 +49,21 @@ export class AsciiAnimePlayer {
 	/** @type {((buf: Buffer) => void) | null} */
 	#onData
 	/** @type {(() => void) | null} */
-	#onResize
+	#resizeListener
 	/** @type {AbortController | null} */
 	#ac
 
 	/**
-	 *
+	 * Abort the active play/loop signal.
+	 * @returns {void}
 	 */
 	abort() {
 		this.#ac?.abort()
 	}
 
 	/**
-	 * @param {{ onKey?: (key: string, buf: Buffer) => void, onResize?: (size: { columns: number, rows: number }) => void, signal?: AbortSignal }} [opts] parameter
-	 * @returns {AsciiAnimePlayer} result
+	 * @param {{ onKey?: (key: string, buf: Buffer) => void, onResize?: (size: { columns: number, rows: number }) => void, signal?: AbortSignal }} [opts] options
+	 * @returns {AsciiAnimePlayer} this
 	 */
 	start({ onKey, onResize, signal } = {}) {
 		this.#ac = new AbortController()
@@ -84,26 +82,22 @@ export class AsciiAnimePlayer {
 
 		if (process.stdout.isTTY) {
 			/**
-			 *
+			 * @returns {void}
 			 */
-			this.#onResize = () => {
-				const size = terminalSize()
-				this.onResize?.(size)
-			}
-			process.stdout.on('resize', this.#onResize)
+			this.#resizeListener = () => this.onResize?.(terminalSize())
+			process.stdout.on('resize', this.#resizeListener)
 		}
 
 		if (!process.stdin.isTTY) return this
 		process.stdin.setRawMode(true)
 		process.stdin.resume()
 		/**
-		 * @param {Buffer} buf parameter
-		 * @returns {void} result
+		 * @param {Buffer} buf stdin chunk
+		 * @returns {void}
 		 */
 		this.#onData = (buf) => {
 			for (let i = 0; i < buf.length; i++) {
-				const c = buf[i]
-				const ch = String.fromCharCode(c)
+				const ch = String.fromCharCode(buf[i])
 				if (ch === ' ') this.paused = !this.paused
 				else if (ch === '[') this.speed = Math.max(0.25, +(this.speed / 1.25).toFixed(3))
 				else if (ch === ']') this.speed = Math.min(8, +(this.speed * 1.25).toFixed(3))
@@ -115,17 +109,17 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * @param {string} frame parameter
-	 * @returns {void} result
+	 * @param {string} frame ANSI frame
+	 * @returns {void}
 	 */
 	paint(frame) {
 		write(`\x1b[H\x1b[J${frame}`)
 	}
 
 	/**
-	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames parameter
-	 * @param {{ signal?: AbortSignal }} [opts] parameter
-	 * @returns {Promise<void>} result
+	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames frames
+	 * @param {{ signal?: AbortSignal }} [opts] options
+	 * @returns {Promise<void>}
 	 */
 	async #playFrames(frames, { signal } = {}) {
 		signal ??= this.signal
@@ -186,7 +180,7 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * @returns {AbortSignal} result
+	 * @returns {AbortSignal} fresh signal
 	 */
 	refreshSignal() {
 		this.#ac = new AbortController()
@@ -195,8 +189,8 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * @param {AbortSignal | null | undefined} signal parameter
-	 * @returns {AbortSignal | undefined} result
+	 * @param {AbortSignal | null | undefined} signal override
+	 * @returns {AbortSignal | undefined} active signal
 	 */
 	useSignal(signal) {
 		if (signal === undefined) return this.signal
@@ -207,9 +201,9 @@ export class AsciiAnimePlayer {
 	}
 
 	/**
-	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames parameter
-	 * @param {{ signal?: AbortSignal | null }} [opts] parameter
-	 * @returns {Promise<void>} result
+	 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames frames
+	 * @param {{ signal?: AbortSignal | null }} [opts] options
+	 * @returns {Promise<void>}
 	 */
 	async loop(frames, { signal } = {}) {
 		signal = this.useSignal(signal)
@@ -219,18 +213,18 @@ export class AsciiAnimePlayer {
 
 	/** Leave alt screen (restores pre-start scrollback + cursor) / raw mode / resize listener. */
 	stop() {
-		if (this.#onResize) {
-			process.stdout.off('resize', this.#onResize)
-			this.#onResize = null
+		if (this.#resizeListener) {
+			process.stdout.off('resize', this.#resizeListener)
+			this.#resizeListener = null
 		}
 		if (this.#onData) {
 			process.stdin.off('data', this.#onData)
 			this.#onData = null
 		}
 		if (process.stdin.isTTY)
-			try { process.stdin.setRawMode(false) } catch { /* */ }
+			try { process.stdin.setRawMode(false) } catch { /* non-TTY teardown */ }
 
-		try { process.stdin.pause() } catch { /* */ }
+		try { process.stdin.pause() } catch { /* already paused */ }
 		write('\x1b[?25h\x1b[0m\x1b[?1049l')
 		this.#onKey = null
 	}

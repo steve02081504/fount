@@ -12,19 +12,18 @@ export const MAT = {
 }
 
 /** Material classification bits — one LUT lookup instead of multi-branch compares. */
-const MF_SOLID = 1
-const MF_SOIL = 2
-const MF_BLOCK = 4
-const MF_LIQ_BARRIER = 8
+const MF_SOIL = 1
+const MF_BLOCK = 2
+const MF_LIQ_BARRIER = 4
 const MAT_FLAGS = new Uint8Array([
 	0, // AIR
-	MF_SOLID | MF_SOIL | MF_BLOCK | MF_LIQ_BARRIER, // SOLID
-	MF_SOLID | MF_BLOCK | MF_LIQ_BARRIER, // SLOPE_L
-	MF_SOLID | MF_BLOCK | MF_LIQ_BARRIER, // SLOPE_R
-	MF_SOLID | MF_SOIL | MF_BLOCK | MF_LIQ_BARRIER, // HORIZON
+	MF_SOIL | MF_BLOCK | MF_LIQ_BARRIER, // SOLID
+	MF_BLOCK | MF_LIQ_BARRIER, // SLOPE_L
+	MF_BLOCK | MF_LIQ_BARRIER, // SLOPE_R
+	MF_SOIL | MF_BLOCK | MF_LIQ_BARRIER, // HORIZON
 	MF_BLOCK, // POOL
 	MF_BLOCK | MF_LIQ_BARRIER, // BODY
-	MF_SOLID | MF_BLOCK | MF_LIQ_BARRIER, // SEAL
+	MF_BLOCK | MF_LIQ_BARRIER, // SEAL
 ])
 
 /** Atmospheric reference pressure. */
@@ -63,32 +62,25 @@ export const LIQ_DRAW = 0.35
 export const LIQ_FULL = 1
 
 /**
- * Whether the material is solid-like (terrain / slope / seal).
- * @param {number} m material id
- * @returns {boolean} solid-like
- */
-export const isSolidMat = m => !!(MAT_FLAGS[m] & MF_SOLID)
-
-/**
  * Whether the material stores soil moisture (HORIZON / SOLID).
- * @param {number} m material id
+ * @param {number} mat material id
  * @returns {boolean} soil
  */
-export const isSoilMat = m => !!(MAT_FLAGS[m] & MF_SOIL)
+export const isSoilMat = mat => !!(MAT_FLAGS[mat] & MF_SOIL)
 
 /**
  * Whether the material blocks gas flood-fill / region labeling.
- * @param {number} m material id
+ * @param {number} mat material id
  * @returns {boolean} gas/flood block
  */
-export const isBlockMat = m => !!(MAT_FLAGS[m] & MF_BLOCK)
+export const isBlockMat = mat => !!(MAT_FLAGS[mat] & MF_BLOCK)
 
 /**
  * Whether free liquid cannot occupy the cell (solids + BODY).
- * @param {number} m material id
+ * @param {number} mat material id
  * @returns {boolean} liquid barrier
  */
-export const isLiquidBarrier = m => !!(MAT_FLAGS[m] & MF_LIQ_BARRIER)
+export const isLiquidBarrier = mat => !!(MAT_FLAGS[mat] & MF_LIQ_BARRIER)
 
 /**
  * Dry-soil absorb factor in [0, 1] — full when empty, →0 as moisture fills.
@@ -96,4 +88,4 @@ export const isLiquidBarrier = m => !!(MAT_FLAGS[m] & MF_LIQ_BARRIER)
  * @returns {number} factor
  */
 export const soilAbsorbFactor = moisture =>
-	(1 - Math.min(1, Math.max(0, moisture / SOIL_CAP))) ** SOIL_ABSORB_EXPO
+	(1 - Math.min(1, moisture / SOIL_CAP)) ** SOIL_ABSORB_EXPO

@@ -38,7 +38,7 @@ const sealedBox = (opts = {}) => {
 Deno.test('fluid: open atmosphere region has P_ATM', () => {
 	const w = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
 	labelAirRegions(w)
-	const open = [...w.regions.values()].find(r => r.openToAtm)
+	const open = w.regions.find(r => r?.openToAtm)
 	assert(open)
 	assertEquals(open.pressure, P_ATM)
 	assertGreater(open.airCells, 0)
@@ -47,17 +47,17 @@ Deno.test('fluid: open atmosphere region has P_ATM', () => {
 Deno.test('fluid: sealed cavity distinct from atmosphere', () => {
 	const w = sealedBox()
 	labelAirRegions(w)
-	const sealed = [...w.regions.values()].filter(r => !r.openToAtm)
+	const sealed = w.regions.filter(r => r && !r.openToAtm)
 	assertGreater(sealed.length, 0)
 	const cell = idx(w, 7, 7)
 	assertGreater(w.regionId[cell], 0)
-	assert(!w.regions.get(w.regionId[cell])?.openToAtm)
+	assert(!w.regions[w.regionId[cell]]?.openToAtm)
 })
 
 Deno.test('fluid: compressing sealed cavity raises pressure', () => {
 	const w = sealedBox()
 	labelAirRegions(w)
-	const before = [...w.regions.values()].find(r => !r.openToAtm)
+	const before = w.regions.find(r => r && !r.openToAtm)
 	assert(before)
 	const gas0 = before.gasAmount
 	const cells0 = before.airCells
@@ -68,7 +68,7 @@ Deno.test('fluid: compressing sealed cavity raises pressure', () => {
 			addLiquid(w, x, y, 1)
 
 	labelAirRegions(w)
-	const after = [...w.regions.values()].find(r => !r.openToAtm)
+	const after = w.regions.find(r => r && !r.openToAtm)
 	assert(after)
 	assertLess(after.airCells, cells0)
 	assertGreater(after.pressure, P_ATM)
@@ -81,6 +81,7 @@ Deno.test('fluid: total sealed gas conserved across a liquid step', () => {
 	labelAirRegions(w)
 	const g0 = totalSealedGas(w)
 	stepLiquid(w)
+	labelAirRegions(w)
 	const g1 = totalSealedGas(w)
 	assertAlmostEquals(g1, g0, Math.max(1, g0 * 0.25))
 })
@@ -443,6 +444,7 @@ Deno.test('fluid: wind shear is stronger aloft than near ground', () => {
 Deno.test('fluid: open-air gas field follows forced wind with height shear', () => {
 	const w = createWorld({ width: 24, height: 20, margin: 2, bottomExtra: 2 })
 	clearMaterials(w)
+	labelAirRegions(w)
 	for (let i = 0; i < 40; i++)
 		stepGas(w, { time: i, seed: 1, forceWind: 0.8 })
 	const top = Math.abs(gasVelocityAt(w, 12, 2).ux)
@@ -465,6 +467,7 @@ Deno.test('fluid: wind-tunnel throat is faster than wide section (continuity)', 
 		setMat(w, x, 7, MAT.SEAL)
 	}
 
+	labelAirRegions(w)
 	for (let i = 0; i < 50; i++)
 		stepGas(w, { time: i, seed: 0, forceWind: 0.9 })
 
@@ -490,6 +493,7 @@ Deno.test('fluid: Bernoulli — tunnel throat has lower static pressure', () => 
 		setMat(w, x, 5, MAT.SEAL)
 		setMat(w, x, 7, MAT.SEAL)
 	}
+	labelAirRegions(w)
 	for (let i = 0; i < 50; i++)
 		stepGas(w, { time: i, seed: 0, forceWind: 0.9 })
 
@@ -503,6 +507,7 @@ Deno.test('fluid: flow stagnates against a solid face', () => {
 	clearMaterials(w)
 	for (let y = 2; y <= 10; y++)
 		setMat(w, 14, y, MAT.SEAL)
+	labelAirRegions(w)
 	for (let i = 0; i < 35; i++)
 		stepGas(w, { time: i, seed: 0, forceWind: 0.85 })
 	const ahead = Math.abs(w.gasUx[idx(w, 13, 6)])
@@ -522,6 +527,6 @@ Deno.test('fluid: rain particles are dragged by local gas velocity', () => {
 	const hit = () => { /* no-op */ }
 	for (let i = 0; i < 8; i++)
 		stepParticles(w, hit)
-	assert(w.particles.length > 0)
-	assertGreater(w.particles[0].vx, 0.15)
+	assert(w.particles.count > 0)
+	assertGreater(w.particles.vx[0], 0.15)
 })

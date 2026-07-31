@@ -39,7 +39,7 @@ Deno.test('exit: ends when icon gone without draining rain wait', () => {
 	// inject leftover liquid + particles
 	addLiquid(state.world, state.world.ox + 10, 10, 1)
 	spawnParticle(state.world, state.world.ox + 5, 2, 0, 0.5, 40)
-	const beforeParticles = state.world.particles.length
+	const beforeParticles = state.world.particles.count
 	assertGreater(beforeParticles, 0)
 
 	let frames = 0

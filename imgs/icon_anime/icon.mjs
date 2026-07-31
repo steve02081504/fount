@@ -48,16 +48,9 @@ export const PILLARS = [
 ]
 
 /**
- * @param {number} yTop top row
- * @param {number} yBot bottom row
- * @returns {number} inclusive height
- */
-export const pillarHeight = (yTop, yBot) => yBot - yTop + 1
-
-/**
  *
  */
-export const maxPillarH = Math.max(...PILLARS.map(([, yTop, yBot]) => pillarHeight(yTop, yBot)))
+export const maxPillarH = Math.max(...PILLARS.map(([, yTop, yBot]) => yBot - yTop + 1))
 
 /**
  * Body `@` cells sorted by manhattan distance to nearest pillar tip.

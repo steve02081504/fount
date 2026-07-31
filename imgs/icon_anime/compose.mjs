@@ -3,8 +3,7 @@
  */
 
 import { MAT, LIQ_DRAW, COND_DRAW, isLiquidBarrier, isSoilMat, waterChar, liquidChar, dripChar } from './fluid/index.mjs'
-import { ICON_W, PILLARS, BODY_DIST, maxBodyD, pillarHeight } from './icon.mjs'
-import { outlineChar } from './terrain.mjs'
+import { ICON_W, PILLARS, BODY_DIST, maxBodyD } from './icon.mjs'
 
 const RESET = '\x1b[0m'
 const FG_AT = '\x1b[30m'
@@ -76,7 +75,7 @@ export const renderGrid = (grid, width, height) => {
  *   width: number, height: number, iconOx: number, iconOy: number,
  *   softPillars: boolean, softBody: boolean, bodyReach: number, bodyMinD: number,
  *   pillars: number, frame: number,
- *   terrain: { solid: Uint8Array, surface: Int32Array, surfaceChar: string[] },
+ *   terrain: { solid: Uint8Array, surface: Int16Array, surfaceChar: string[], outline: (string | null)[] },
  *   frameCh?: string[], frameFg?: (string | null)[],
  * }} state animation state
  * @returns {string} ANSI frame
@@ -87,7 +86,7 @@ export const composeFrame = (state) => {
 		bodyReach, bodyMinD, pillars, frame, terrain,
 	} = state
 	const { ox, mat, liq, particles, condense, liqVx, liqVy } = world
-	const { solid, surface, surfaceChar } = terrain
+	const { solid, surface, surfaceChar, outline } = terrain
 	const { worldW: W, worldH: H } = world
 	const cells = width * height
 
@@ -134,7 +133,7 @@ export const composeFrame = (state) => {
 				paint(vx, vy, surfaceChar[x] || '_', FG_TERRAIN)
 				continue
 			}
-			const oc = outlineChar(solid, x, y, W, H, surface)
+			const oc = outline[y * W + x]
 			if (oc) paint(vx, vy, oc, FG_TERRAIN)
 		}
 
@@ -173,7 +172,7 @@ export const composeFrame = (state) => {
 
 	if (pillars > 0)
 		for (const [lx, yTop, yBot] of PILLARS) {
-			const h = pillarHeight(yTop, yBot)
+			const h = yBot - yTop + 1
 			const g = Math.min(pillars, h)
 			for (let k = 0; k < g; k++) {
 				const tip = softPillars && k === g - 1 && g < h
@@ -185,11 +184,11 @@ export const composeFrame = (state) => {
 			}
 		}
 
-	for (const p of particles) {
-		const vx = (p.x - ox) | 0
-		const vy = p.y | 0
+	for (let i = 0; i < particles.count; i++) {
+		const vx = (particles.x[i] - ox) | 0
+		const vy = particles.y[i] | 0
 		if (vy < 0 || vy >= height || vx < 0 || vx >= width) continue
-		paint(vx, vy, waterChar(p.amt, frame + vx, p.vx, p.vy), FG_SPLASH)
+		paint(vx, vy, waterChar(particles.amt[i], frame + vx, particles.vx[i], particles.vy[i]), FG_SPLASH)
 	}
 
 	return renderBuffers(ch, fg, width, height)

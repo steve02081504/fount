@@ -1,11 +1,16 @@
 /**
- * Rain / splash particles with gas drag.
+ * Rain / splash particles with gas drag — SoA pool, no per-tick object alloc.
  */
 
 import { MAT, LIQ_DRAW } from './mat.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
- * @typedef {import('./world.mjs').FluidParticle} FluidParticle
+ * @typedef {{
+ *   x: Float32Array, y: Float32Array,
+ *   vx: Float32Array, vy: Float32Array,
+ *   life: Float32Array, amt: Float32Array,
+ *   count: number,
+ * }} ParticlePool
  */
 
 /** Particle velocity blend toward local gas (horizontal). */
@@ -18,8 +23,56 @@ const MAX_VY = 1.15
 const PARTICLE_CAP = 1200
 
 /**
+ * Allocate an empty particle SoA pool.
+ * @param {number} [cap=PARTICLE_CAP] capacity
+ * @returns {ParticlePool} pool
+ */
+export const createParticlePool = (cap = PARTICLE_CAP) => ({
+	x: new Float32Array(cap),
+	y: new Float32Array(cap),
+	vx: new Float32Array(cap),
+	vy: new Float32Array(cap),
+	life: new Float32Array(cap),
+	amt: new Float32Array(cap),
+	count: 0,
+})
+
+/**
+ * Clear a particle pool.
+ * @param {ParticlePool} pool particle pool
+ * @returns {void}
+ */
+export const clearParticlePool = (pool) => {
+	pool.count = 0
+}
+
+/**
+ * Push one particle into a pool (no-op if full).
+ * @param {ParticlePool} pool particle pool
+ * @param {number} x column
+ * @param {number} y row
+ * @param {number} vx horizontal velocity
+ * @param {number} vy vertical velocity
+ * @param {number} life remaining ticks
+ * @param {number} amt water mass
+ * @returns {number} index written, or -1 if full
+ */
+const pushParticle = (pool, x, y, vx, vy, life, amt) => {
+	const i = pool.count
+	if (i >= pool.x.length) return -1
+	pool.x[i] = x
+	pool.y[i] = y
+	pool.vx[i] = vx
+	pool.vy[i] = vy
+	pool.life[i] = life
+	pool.amt[i] = amt
+	pool.count = i + 1
+	return i
+}
+
+/**
  * Spawn a rain/splash particle if under the cap.
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world fluid world
  * @param {number} x column
  * @param {number} y row
  * @param {number} vx horizontal velocity
@@ -28,61 +81,87 @@ const PARTICLE_CAP = 1200
  * @param {number} [amt=0.4] water mass
  * @returns {void}
  */
-export const spawnParticle = (w, x, y, vx, vy, life = 40, amt = 0.4) => {
-	if (w.particles.length > PARTICLE_CAP) return
-	w.particles.push({ x, y, vx, vy, life, amt })
+export const spawnParticle = (world, x, y, vx, vy, life = 40, amt = 0.4) => {
+	pushParticle(world.particles, x, y, vx, vy, life, amt)
 }
 
 /**
  * Queue a splash particle for the next step.
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world fluid world
  * @param {number} x column
  * @param {number} y row
  * @param {number} vx horizontal velocity
  * @param {number} vy vertical velocity
  * @param {number} [life=18] remaining ticks
  * @param {number} [amt=0.25] water mass
- * @returns {void}
+ * @returns {number} pending index, or -1 if full
  */
-export const queueSplash = (w, x, y, vx, vy, life = 18, amt = 0.25) => {
-	w.pendingSplash.push({ x, y, vx, vy, life, amt })
-}
+export const queueSplash = (world, x, y, vx, vy, life = 18, amt = 0.25) =>
+	pushParticle(world.pendingSplash, x, y, vx, vy, life, amt)
+
+/**
+ * Mutable particle view passed to impact handlers (fields live in the SoA).
+ * @typedef {{ x: number, y: number, vx: number, vy: number, life: number, amt: number }} ParticleView
+ */
 
 /**
  * Advance particles with gas drag; call `onHit` on solid / wet cells.
- * @param {FluidWorld} w world
- * @param {(w: FluidWorld, x: number, y: number, m: number, p: FluidParticle, wet: boolean, hitCtx: unknown) => void} onHit impact callback
- * @param {unknown} [hitCtx] opaque context forwarded to onHit
+ * @param {FluidWorld} world fluid world
+ * @param {(world: FluidWorld, x: number, y: number, mat: number, particle: ParticleView, wet: boolean, state: unknown) => void} onHit impact callback
+ * @param {unknown} [state] animation / caller state forwarded to onHit
  * @returns {void}
  */
-export const stepParticles = (w, onHit, hitCtx) => {
-	const next = []
-	const { worldW: W, worldH: H, gasUx, gasUy, mat, liq } = w
+export const stepParticles = (world, onHit, state) => {
+	const live = world.particles
+	const pending = world.pendingSplash
+	const { worldW: W, worldH: H, gasUx, gasUy, mat, liq } = world
+	const cap = live.x.length
 
-	for (const p of w.pendingSplash)
-		if (w.particles.length + next.length < PARTICLE_CAP)
-			next.push(p)
-	w.pendingSplash.length = 0
+	// Drain splash queue into the live pool (may overwrite slots after count).
+	for (let i = 0; i < pending.count && live.count < cap; i++) {
+		const dst = live.count++
+		live.x[dst] = pending.x[i]
+		live.y[dst] = pending.y[i]
+		live.vx[dst] = pending.vx[i]
+		live.vy[dst] = pending.vy[i]
+		live.life[dst] = pending.life[i]
+		live.amt[dst] = pending.amt[i]
+	}
+	pending.count = 0
 
-	for (const p of w.particles) {
-		const gx = p.x | 0
-		const gy = p.y | 0
+	let write = 0
+	const view = { x: 0, y: 0, vx: 0, vy: 0, life: 0, amt: 0 }
+
+	for (let i = 0; i < live.count; i++) {
+		const px = live.x[i]
+		const py = live.y[i]
+		let pvx = live.vx[i]
+		let pvy = live.vy[i]
+		const life = live.life[i] - 1
+		const amt = live.amt[i]
+
+		const gx = px | 0
+		const gy = py | 0
 		if (gx >= 0 && gy >= 0 && gx < W && gy < H) {
 			const gi = gy * W + gx
-			p.vx += (gasUx[gi] - p.vx) * GAS_DRAG
-			p.vy += (gasUy[gi] - p.vy) * GAS_DRAG_Y
+			pvx += (gasUx[gi] - pvx) * GAS_DRAG
+			pvy += (gasUy[gi] - pvy) * GAS_DRAG_Y
 		}
-		p.vy = Math.min(MAX_VY, p.vy + GRAVITY)
-		if (--p.life <= 0) continue
+		pvy = Math.min(MAX_VY, pvy + GRAVITY)
+		if (life <= 0) continue
 
-		const nx = p.x + p.vx
-		const ny = p.y + p.vy
+		const nx = px + pvx
+		const ny = py + pvy
 
 		if (nx < 0 || nx >= W || ny >= H) continue
 		if (ny < 0) {
-			p.x = nx
-			p.y = ny
-			next.push(p)
+			live.x[write] = nx
+			live.y[write] = ny
+			live.vx[write] = pvx
+			live.vy[write] = pvy
+			live.life[write] = life
+			live.amt[write] = amt
+			write++
 			continue
 		}
 
@@ -90,19 +169,29 @@ export const stepParticles = (w, onHit, hitCtx) => {
 		const cy = ny | 0
 		if (cx < 0 || cy < 0 || cx >= W || cy >= H) continue
 
-		const i = cy * W + cx
-		const m = mat[i]
-		const wet = liq[i] >= LIQ_DRAW
+		const cell = cy * W + cx
+		const m = mat[cell]
+		const wet = liq[cell] >= LIQ_DRAW
 
 		if (m === MAT.AIR && !wet) {
-			p.x = nx
-			p.y = ny
-			next.push(p)
+			live.x[write] = nx
+			live.y[write] = ny
+			live.vx[write] = pvx
+			live.vy[write] = pvy
+			live.life[write] = life
+			live.amt[write] = amt
+			write++
 			continue
 		}
 
-		onHit(w, cx, cy, m, p, wet, hitCtx)
+		view.x = nx
+		view.y = ny
+		view.vx = pvx
+		view.vy = pvy
+		view.life = life
+		view.amt = amt
+		onHit(world, cx, cy, m, view, wet, state)
 	}
 
-	w.particles = next
+	live.count = write
 }

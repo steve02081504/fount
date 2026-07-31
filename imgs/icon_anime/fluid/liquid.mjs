@@ -2,7 +2,7 @@
  * Grid liquid: gravity, side flow, soil seepage, hydraulic equalization.
  */
 
-import { hash01 } from '../hash.mjs'
+import { hash01, ORTHO } from '../hash.mjs'
 
 import { labelAirRegions, pressureAt } from './gas.mjs'
 import {
@@ -14,8 +14,6 @@ import {
 import { scratch, growScratch, idx, addLiquid } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
-
-const ORTHO = Object.freeze([[1, 0], [-1, 0], [0, 1], [0, -1]])
 
 /**
  * Whether free liquid can enter `(x, y)`.
@@ -36,9 +34,9 @@ const canOccupy = (w, x, y) => {
 /**
  * Label connected liquid components; return free-surface samples.
  * @param {FluidWorld} w world
- * @returns {{ surfaces: { x: number, y: number, component: number, pressure: number }[], componentOf: Int32Array }} surfaces
+ * @returns {{ x: number, y: number, component: number, pressure: number }[]} surfaces
  */
-export const labelLiquidSurfaces = (w) => {
+const labelLiquidSurfaces = (w) => {
 	const { worldW: W, worldH: H, mat, liq } = w
 	const n = W * H
 	const componentOf = scratch(w, 'liqComp', n, Int32Array)
@@ -81,7 +79,7 @@ export const labelLiquidSurfaces = (w) => {
 			}
 		}
 
-	return { surfaces, componentOf }
+	return surfaces
 }
 
 /**
@@ -90,7 +88,7 @@ export const labelLiquidSurfaces = (w) => {
  * @returns {void}
  */
 const equalizeHydraulic = (w) => {
-	const { surfaces } = labelLiquidSurfaces(w)
+	const surfaces = labelLiquidSurfaces(w)
 	const byComp = new Map()
 	for (const s of surfaces) {
 		let list = byComp.get(s.component)
@@ -402,8 +400,8 @@ export const stepLiquid = (w) => {
 				if (mat[i] === MAT.POOL && mat[ni] === MAT.AIR && liq[i] < 0.92) continue
 				const rid = w.regionId[ni]
 				if (liq[ni] <= 0.05 && rid) {
-					const r = w.regions.get(rid)
-					if (r && !r.openToAtm && r.pressure > P_ATM * 1.15) continue
+					const region = w.regions[rid]
+					if (region && !region.openToAtm && region.pressure > P_ATM * 1.15) continue
 				}
 				if (liq[ni] >= liq[i] - 0.02) continue
 				const move = Math.min((liq[i] - liq[ni]) * 0.25, LIQ_FULL - liq[ni])
@@ -415,7 +413,6 @@ export const stepLiquid = (w) => {
 
 	stepSoil(w)
 	equalizeHydraulic(w)
-	labelAirRegions(w)
 
 	for (let x = 0; x < W; x++)
 		liq[(H - 1) * W + x] = 0

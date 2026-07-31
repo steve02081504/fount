@@ -1,8 +1,9 @@
 /**
  * Air regions (Boyle), global wind, gas velocity field.
+ * Caller must `labelAirRegions` before `stepGas` / pressure queries.
  */
 
-import { hash01 } from '../hash.mjs'
+import { hash01, fbm1d } from '../hash.mjs'
 
 import { P_ATM, RHO_G, LIQ_DRAW, isBlockMat } from './mat.mjs'
 import { scratch, idx, inWorld } from './world.mjs'
@@ -33,32 +34,46 @@ export const GAS_NOZZLE = 1.55
 const AIR_CELL = 1
 
 /**
- * Cell is air-like for region flood-fill (not block, liquid below draw).
- * @param {FluidWorld} w world
- * @param {number} i flat index
+ * Cell is air-like for region flood-fill / gas occupancy.
+ * @param {FluidWorld} world fluid world
+ * @param {number} cell flat index
  * @returns {boolean} air cell
  */
-const isAirCell = (w, i) => !isBlockMat(w.mat[i]) && w.liq[i] < LIQ_DRAW
+export const isAirCell = (world, cell) => !isBlockMat(world.mat[cell]) && world.liq[cell] < LIQ_DRAW
+
+/**
+ * Fill blocked mask: 1 where gas cannot occupy.
+ * @param {FluidWorld} world fluid world
+ * @param {Uint8Array} blocked output mask
+ * @returns {void}
+ */
+export const fillBlocked = (world, blocked) => {
+	const { mat, liq } = world
+	for (let cell = 0; cell < blocked.length; cell++)
+		blocked[cell] = isBlockMat(mat[cell]) || liq[cell] >= LIQ_DRAW ? 1 : 0
+}
 
 /**
  * Label air regions with conserved gas mass transfer across topology changes.
  * Open-to-atmosphere regions get P = P_ATM; sealed use Boyle.
  * Double-buffers `regionId` via `scratch.prevRegionId`.
- * @param {FluidWorld} w world
+ * Regions are a dense id-indexed array (`regions[id]`; slot 0 unused).
+ * @param {FluidWorld} world fluid world
  * @returns {void}
  */
-export const labelAirRegions = (w) => {
-	const { worldW: W, worldH: H } = w
+export const labelAirRegions = (world) => {
+	const { worldW: W, worldH: H } = world
 	const n = W * H
-	const oldId = w.regionId
-	const regionId = scratch(w, 'prevRegionId', n, Int32Array)
+	const oldId = world.regionId
+	const regionId = scratch(world, 'prevRegionId', n, Int32Array)
 	regionId.fill(0)
 
-	const oldRegions = w.regions
-	const nextRegions = new Map()
+	const oldRegions = world.regions
+	/** @type {(AirRegion | undefined)[]} */
+	const nextRegions = []
 	let next = 1
-	const q = w.floodQ
-	q.length = 0
+	const queue = world.floodQ
+	queue.length = 0
 
 	/**
 	 * Seed a flood cell into the region if still unlabeled air.
@@ -70,11 +85,11 @@ export const labelAirRegions = (w) => {
 	 */
 	const seed = (x, y, id, region) => {
 		if (x < 0 || y < 0 || x >= W || y >= H) return
-		const i = y * W + x
-		if (regionId[i] || !isAirCell(w, i)) return
-		regionId[i] = id
+		const cell = y * W + x
+		if (regionId[cell] || !isAirCell(world, cell)) return
+		regionId[cell] = id
 		region.airCells++
-		q.push(x, y)
+		queue.push(x, y)
 	}
 
 	/**
@@ -84,9 +99,9 @@ export const labelAirRegions = (w) => {
 	 * @returns {void}
 	 */
 	const flood = (id, region) => {
-		for (let qi = 0; qi < q.length; qi += 2) {
-			const x = q[qi]
-			const y = q[qi + 1]
+		for (let qi = 0; qi < queue.length; qi += 2) {
+			const x = queue[qi]
+			const y = queue[qi + 1]
 			seed(x - 1, y, id, region)
 			seed(x + 1, y, id, region)
 			seed(x, y - 1, id, region)
@@ -105,32 +120,36 @@ export const labelAirRegions = (w) => {
 	if (openRegion.airCells > 0) {
 		openRegion.gasAmount = openRegion.airCells * AIR_CELL * P_ATM
 		openRegion.pressure = P_ATM
-		nextRegions.set(openId, openRegion)
+		nextRegions[openId] = openRegion
 	}
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
-			const i = y * W + x
-			if (regionId[i] || !isAirCell(w, i)) continue
+			const cell = y * W + x
+			if (regionId[cell] || !isAirCell(world, cell)) continue
 			const id = next++
 			const region = { id, openToAtm: false, airCells: 0, gasAmount: 0, pressure: P_ATM }
-			q.length = 0
+			queue.length = 0
 			seed(x, y, id, region)
 			flood(id, region)
-			nextRegions.set(id, region)
+			nextRegions[id] = region
 		}
 
+	// Overlap counts: oldId → (newId → cells) for gas mass transfer.
+	/** @type {Map<number, Map<number, number>>} */
 	const overlap = new Map()
-	for (let i = 0; i < n; i++) {
-		const o = oldId[i]
-		const nid = regionId[i]
-		if (!o || !nid) continue
-		let row = overlap.get(o)
-		if (!row) overlap.set(o, row = new Map())
+	for (let cell = 0; cell < n; cell++) {
+		const old = oldId[cell]
+		const nid = regionId[cell]
+		if (!old || !nid) continue
+		let row = overlap.get(old)
+		if (!row) overlap.set(old, row = new Map())
 		row.set(nid, (row.get(nid) || 0) + 1)
 	}
 
-	for (const region of nextRegions.values()) {
+	for (let id = 1; id < nextRegions.length; id++) {
+		const region = nextRegions[id]
+		if (!region) continue
 		if (region.openToAtm) {
 			region.gasAmount = region.airCells * AIR_CELL * P_ATM
 			region.pressure = P_ATM
@@ -141,7 +160,7 @@ export const labelAirRegions = (w) => {
 		for (const [oldRid, row] of overlap) {
 			const cells = row.get(region.id)
 			if (!cells) continue
-			const old = oldRegions.get(oldRid)
+			const old = oldRegions[oldRid]
 			if (!old) continue
 			got = true
 			let oldTotal = 0
@@ -153,63 +172,30 @@ export const labelAirRegions = (w) => {
 		region.pressure = Math.max(0.05, Math.min(8, gas / Math.max(AIR_CELL * 0.25, region.airCells * AIR_CELL)))
 	}
 
-	w.scratch.prevRegionId = oldId
-	w.regionId = regionId
-	w.regions = nextRegions
+	world.scratch.prevRegionId = oldId
+	world.regionId = regionId
+	world.regions = nextRegions
 }
 
 /**
  * Pressure at cell from its air region (liquid cells use overlying air or atm).
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world fluid world
  * @param {number} x column
  * @param {number} y row
  * @returns {number} pressure
  */
-export const pressureAt = (w, x, y) => {
-	if (!inWorld(w, x, y)) return P_ATM
-	const i = idx(w, x, y)
-	const rid = w.regionId[i]
-	if (rid) return w.regions.get(rid)?.pressure ?? P_ATM
+export const pressureAt = (world, x, y) => {
+	if (!inWorld(world, x, y)) return P_ATM
+	const cell = idx(world, x, y)
+	const rid = world.regionId[cell]
+	if (rid) return world.regions[rid].pressure
 	for (let yy = y - 1; yy >= 0; yy--) {
-		const ii = idx(w, x, yy)
-		if (isBlockMat(w.mat[ii])) break
-		const r2 = w.regionId[ii]
-		if (r2) return w.regions.get(r2)?.pressure ?? P_ATM
+		const above = idx(world, x, yy)
+		if (isBlockMat(world.mat[above])) break
+		const aboveRid = world.regionId[above]
+		if (aboveRid) return world.regions[aboveRid].pressure
 	}
 	return P_ATM
-}
-
-/**
- * Smooth 1D value noise in [-1, 1].
- * @param {number} t continuous coordinate
- * @param {number} seed lattice salt
- * @returns {number} noise
- */
-const valueNoise1d = (t, seed) => {
-	const i = Math.floor(t)
-	const f = t - i
-	const u = f * f * f * (f * (f * 6 - 15) + 10)
-	const a = hash01(seed, i) * 2 - 1
-	const b = hash01(seed, i + 1) * 2 - 1
-	return a + (b - a) * u
-}
-
-/**
- * Pink-ish 1D fBm in ~[-1, 1].
- * @param {number} t continuous coordinate
- * @param {number} seed lattice salt
- * @param {number} [octaves=4] octave count
- * @returns {number} noise
- */
-const fbm1d = (t, seed, octaves = 4) => {
-	let v = 0, amp = 1, freq = 1, norm = 0
-	for (let o = 0; o < octaves; o++) {
-		v += amp * valueNoise1d(t * freq, seed + o * 97)
-		norm += amp
-		amp *= 0.5
-		freq *= 2.03
-	}
-	return v / norm
 }
 
 /**
@@ -236,6 +222,17 @@ export const globalWindAt = (time, seed = 0) => {
 }
 
 /**
+ * Height shear factor in (0, 1]: stronger aloft.
+ * @param {number} y world row
+ * @param {number} worldH world height
+ * @returns {number} shear
+ */
+const windShear = (y, worldH) => {
+	const alt = 1 - Math.min(1, Math.max(0, y / Math.max(1, worldH - 1)))
+	return 0.28 + 0.72 * alt ** WIND_SHEAR_POWER
+}
+
+/**
  * Height-sheared wind: stronger aloft, weaker near ground.
  * @param {number} y world row
  * @param {number} worldH world height
@@ -243,24 +240,22 @@ export const globalWindAt = (time, seed = 0) => {
  * @param {number} [seed=0] scene seed
  * @returns {number} horizontal wind
  */
-export const windProfileAt = (y, worldH, time, seed = 0) => {
-	const alt = 1 - Math.min(1, Math.max(0, y / Math.max(1, worldH - 1)))
-	return globalWindAt(time, seed) * (0.28 + 0.72 * alt ** WIND_SHEAR_POWER)
-}
+export const windProfileAt = (y, worldH, time, seed = 0) =>
+	globalWindAt(time, seed) * windShear(y, worldH)
 
 /**
  * Sample gas velocity at a world point (nearest cell).
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world fluid world
  * @param {number} x column
  * @param {number} y row
  * @returns {{ ux: number, uy: number }} velocity
  */
-export const gasVelocityAt = (w, x, y) => {
+export const gasVelocityAt = (world, x, y) => {
 	const cx = x | 0
 	const cy = y | 0
-	if (!inWorld(w, cx, cy)) return { ux: 0, uy: 0 }
-	const i = idx(w, cx, cy)
-	return { ux: w.gasUx[i], uy: w.gasUy[i] }
+	if (!inWorld(world, cx, cy)) return { ux: 0, uy: 0 }
+	const cell = idx(world, cx, cy)
+	return { ux: world.gasUx[cell], uy: world.gasUy[cell] }
 }
 
 /**
@@ -273,14 +268,14 @@ export const dynamicPressure = (ux, uy = 0) => 0.5 * RHO_G * (ux * ux + uy * uy)
 
 /**
  * Bernoulli static-pressure proxy: P₀ − ½ρu² (clamped).
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world fluid world
  * @param {number} x column
  * @param {number} y row
  * @returns {number} static pressure
  */
-export const staticPressureAt = (w, x, y) => {
-	const { ux, uy } = gasVelocityAt(w, x, y)
-	return Math.max(0.05, pressureAt(w, x, y) - dynamicPressure(ux, uy))
+export const staticPressureAt = (world, x, y) => {
+	const { ux, uy } = gasVelocityAt(world, x, y)
+	return Math.max(0.05, pressureAt(world, x, y) - dynamicPressure(ux, uy))
 }
 
 /**
@@ -324,73 +319,65 @@ const fillGasSpans = (blocked, W, H, outVert, outHoriz) => {
 
 /**
  * Advance open-air / cavity gas velocity: wind shear, nozzle continuity, wall slip.
- * @param {FluidWorld} w world
+ * Requires a prior `labelAirRegions` for the current mat/liq topology.
+ * @param {FluidWorld} world fluid world
  * @param {{ time?: number, seed?: number, forceWind?: number }} [opts] drive options
  * @returns {void}
  */
-export const stepGas = (w, opts = {}) => {
-	const time = opts.time ?? w.gasTime
+export const stepGas = (world, opts = {}) => {
+	const time = opts.time ?? world.gasTime
 	const seed = opts.seed ?? 0
 	const forced = opts.forceWind
-	w.gasTime = time + 1
-	labelAirRegions(w)
+	world.gasTime = time + 1
 
-	const { worldW: W, worldH: H, mat, liq, gasUx, gasUy, regionId, regions } = w
+	const { worldW: W, worldH: H, gasUx, gasUy, regionId, regions } = world
 	const n = W * H
-	const nextUx = scratch(w, 'gasNextUx', n, Float32Array)
-	const nextUy = scratch(w, 'gasNextUy', n, Float32Array)
-	const blocked = scratch(w, 'gasBlocked', n, Uint8Array)
-	const vertSpan = scratch(w, 'gasVertSpan', n, Uint16Array)
-	const horizSpan = scratch(w, 'gasHorizSpan', n, Uint16Array)
+	const nextUx = scratch(world, 'gasNextUx', n, Float32Array)
+	const nextUy = scratch(world, 'gasNextUy', n, Float32Array)
+	const blocked = scratch(world, 'gasBlocked', n, Uint8Array)
+	const vertSpan = scratch(world, 'gasVertSpan', n, Uint16Array)
+	const horizSpan = scratch(world, 'gasHorizSpan', n, Uint16Array)
 	nextUx.fill(0)
 	nextUy.fill(0)
 
-	for (let i = 0; i < n; i++)
-		blocked[i] = isBlockMat(mat[i]) || liq[i] >= LIQ_DRAW ? 1 : 0
+	fillBlocked(world, blocked)
 	fillGasSpans(blocked, W, H, vertSpan, horizSpan)
 
-	/**
-	 * Height-sheared drive wind at row y.
-	 * @param {number} y row
-	 * @returns {number} ux drive
-	 */
-	const driveWind = (y) => {
-		const alt = 1 - Math.min(1, Math.max(0, y / Math.max(1, H - 1)))
-		const shear = 0.28 + 0.72 * alt ** WIND_SHEAR_POWER
-		return forced !== undefined ? forced * shear : windProfileAt(y, H, time, seed)
-	}
+	// Cache synoptic wind once per tick — shear only varies by row.
+	const wind0 = forced !== undefined ? forced : globalWindAt(time, seed)
 
-	for (let y = 0; y < H; y++)
+	for (let y = 0; y < H; y++) {
+		const drive = wind0 * windShear(y, H)
 		for (let x = 0; x < W; x++) {
-			const i = y * W + x
-			if (blocked[i]) continue
+			const cell = y * W + x
+			if (blocked[cell]) continue
 
-			const region = regionId[i] ? regions.get(regionId[i]) : null
+			const region = regionId[cell] ? regions[regionId[cell]] : null
 			const open = !region || region.openToAtm
 
-			let tx = open ? driveWind(y) : 0
+			let tx = open ? drive : 0
 			let ty = 0
 
-			const openL = x > 0 && !blocked[i - 1]
-			const openR = x + 1 < W && !blocked[i + 1]
-			const openU = y > 0 && !blocked[i - W]
-			const openD = y + 1 < H && !blocked[i + W]
+			const openL = x > 0 && !blocked[cell - 1]
+			const openR = x + 1 < W && !blocked[cell + 1]
+			const openU = y > 0 && !blocked[cell - W]
+			const openD = y + 1 < H && !blocked[cell + W]
 
-			const span = vertSpan[i]
+			const span = vertSpan[cell]
 			if (span <= 4) {
-				const wide = Math.max(span, openL ? vertSpan[i - 1] : span, openR ? vertSpan[i + 1] : span)
+				const wide = Math.max(span, openL ? vertSpan[cell - 1] : span, openR ? vertSpan[cell + 1] : span)
 				if (wide > span && Math.abs(tx) > 0.02)
 					tx *= Math.min(GAS_NOZZLE * 1.4, wide / span)
 			}
-			const hSpan = horizSpan[i]
+			const hSpan = horizSpan[cell]
 			if (hSpan <= 4) {
-				const wide = Math.max(hSpan, openU ? horizSpan[i - W] : hSpan, openD ? horizSpan[i + W] : hSpan)
+				const wide = Math.max(hSpan, openU ? horizSpan[cell - W] : hSpan, openD ? horizSpan[cell + W] : hSpan)
 				if (wide > hSpan && Math.abs(ty) > 0.02)
 					ty *= Math.min(GAS_NOZZLE * 1.4, wide / hSpan)
 			}
 
-			let ux = gasUx[i] + (tx - gasUx[i]) * GAS_BLEND
-			let uy = gasUy[i] + (ty - gasUy[i]) * GAS_BLEND
+			let ux = gasUx[cell] + (tx - gasUx[cell]) * GAS_BLEND
+			let uy = gasUy[cell] + (ty - gasUy[cell]) * GAS_BLEND
 
 			if (!openL && ux < 0) ux = 0
 			if (!openR && ux > 0) ux = 0
@@ -400,10 +387,10 @@ export const stepGas = (w, opts = {}) => {
 			let sumUx = ux
 			let sumUy = uy
 			let count = 1
-			if (openL) { sumUx += gasUx[i - 1]; sumUy += gasUy[i - 1]; count++ }
-			if (openR) { sumUx += gasUx[i + 1]; sumUy += gasUy[i + 1]; count++ }
-			if (openU) { sumUx += gasUx[i - W]; sumUy += gasUy[i - W]; count++ }
-			if (openD) { sumUx += gasUx[i + W]; sumUy += gasUy[i + W]; count++ }
+			if (openL) { sumUx += gasUx[cell - 1]; sumUy += gasUy[cell - 1]; count++ }
+			if (openR) { sumUx += gasUx[cell + 1]; sumUy += gasUy[cell + 1]; count++ }
+			if (openU) { sumUx += gasUx[cell - W]; sumUy += gasUy[cell - W]; count++ }
+			if (openD) { sumUx += gasUx[cell + W]; sumUy += gasUy[cell + W]; count++ }
 			ux = ux * 0.65 + (sumUx / count) * 0.35
 			uy = uy * 0.65 + (sumUy / count) * 0.35
 
@@ -412,9 +399,10 @@ export const stepGas = (w, opts = {}) => {
 				uy *= 0.85
 			}
 
-			nextUx[i] = Math.max(-2.5, Math.min(2.5, ux))
-			nextUy[i] = Math.max(-2.5, Math.min(2.5, uy))
+			nextUx[cell] = Math.max(-2.5, Math.min(2.5, ux))
+			nextUy[cell] = Math.max(-2.5, Math.min(2.5, uy))
 		}
+	}
 
 	gasUx.set(nextUx)
 	gasUy.set(nextUy)
@@ -422,12 +410,14 @@ export const stepGas = (w, opts = {}) => {
 
 /**
  * Total sealed gas amount (for tests).
- * @param {FluidWorld} w world
+ * @param {FluidWorld} world fluid world
  * @returns {number} sealed gas mass
  */
-export const totalSealedGas = (w) => {
-	let g = 0
-	for (const r of w.regions.values())
-		if (!r.openToAtm) g += r.gasAmount
-	return g
+export const totalSealedGas = (world) => {
+	let gas = 0
+	for (let id = 1; id < world.regions.length; id++) {
+		const region = world.regions[id]
+		if (region && !region.openToAtm) gas += region.gasAmount
+	}
+	return gas
 }

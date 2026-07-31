@@ -7,7 +7,7 @@
  * `solid` is a flat Uint8Array indexed as `y * W + x` (same layout as fluid grids).
  */
 
-import { hash01 } from './hash.mjs'
+import { hash01, fbm2, ORTHO } from './hash.mjs'
 
 /** Surface / wall outline characters. */
 export const TERRAIN_CH = {
@@ -27,6 +27,7 @@ export const TERRAIN_CH = {
  *   worldW: number,
  *   worldH: number,
  *   surfaceChar: string[],
+ *   outline: (string | null)[],
  *   footX0: number,
  *   footX1: number,
  *   features: TerrainFeature[],
@@ -91,8 +92,9 @@ export function generateTerrain(world, {
 	carveIconFootprint(solid, surface, W, H, footX0, footX1, baseY)
 
 	const surfaceChar = buildSurfaceChars(surface, W)
+	const outline = buildOutline(solid, surface, W, H)
 
-	return { surface, solid, worldW: W, worldH: H, surfaceChar, footX0, footX1, features, viewW, ox }
+	return { surface, solid, worldW: W, worldH: H, surfaceChar, outline, footX0, footX1, features, viewW, ox }
 }
 
 /**
@@ -204,7 +206,7 @@ function softClampSpikes(surface, W) {
  * @param {{ W: number, H: number, viewH: number, viewW: number, ox: number, seed: number, footX0: number, footX1: number, baseY: number }} opts parameter
  * @returns {*} result
  */
-export function ensureTallLand(surface, {
+function ensureTallLand(surface, {
 	W, H, viewH, viewW, ox, seed, footX0, footX1, baseY,
 }) {
 	const minThick = Math.max(1, Math.ceil(viewH * TALL_LAND_HEIGHT_FRAC))
@@ -219,10 +221,9 @@ export function ensureTallLand(surface, {
 	 * @param {number} x column
 	 * @returns {boolean} whether column meets tall-land floor
 	 */
-	const isTall = (x) => {
-		if (x >= shoulderL && x < shoulderR) return footContributes
-		return viewH - surface[x] >= minThick
-	}
+	const isTall = (x) => x >= shoulderL && x < shoulderR
+		? footContributes
+		: viewH - surface[x] >= minThick
 
 	let raisable = 0
 	for (let x = vx0; x < vx1; x++)
@@ -231,17 +232,9 @@ export function ensureTallLand(surface, {
 	const capacity = raisable + (footContributes ? footSpan + 2 * PEDESTAL_SHOULDER : 0)
 	const need = Math.min(Math.ceil((vx1 - vx0) * TALL_LAND_FRACTION), capacity)
 
-	/**
-	 * @returns {number} tall column count in view
-	 */
-	const recount = () => {
-		let n = 0
-		for (let x = vx0; x < vx1; x++)
-			if (isTall(x)) n++
-		return n
-	}
-
-	let have = recount()
+	let have = 0
+	for (let x = vx0; x < vx1; x++)
+		if (isTall(x)) have++
 	if (have >= need) return
 
 	const cands = []
@@ -255,14 +248,17 @@ export function ensureTallLand(surface, {
 
 	for (const x of cands) {
 		if (have >= need) break
+		const wasTall = isTall(x)
 		surface[x] = Math.min(surface[x], maxSurface)
+		if (!wasTall && isTall(x)) have++
 		for (const dx of [-1, 1, -2, 2]) {
 			const nx = x + dx
 			if (nx < vx0 || nx >= vx1) continue
 			if (nx >= shoulderL && nx < shoulderR) continue
+			const neighborWas = isTall(nx)
 			surface[nx] = Math.min(surface[nx], maxSurface + (Math.abs(dx) > 1 ? 1 : 0))
+			if (!neighborWas && isTall(nx)) have++
 		}
-		have = recount()
 	}
 }
 
@@ -300,55 +296,13 @@ export function tallLandCoverage(terrain, { viewH, viewW }) {
 function carveNoiseCaves(solid, surface, W, H, seed) {
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
-			const i = y * W + x
-			if (!solid[i] || y <= surface[x] + 1) continue
+			const cell = y * W + x
+			if (!solid[cell] || y <= surface[x] + 1) continue
 			const depth = y - surface[x]
 			const n = fbm2(x * 0.11, y * 0.13, seed)
 			const threshold = 0.58 - Math.min(0.22, depth * 0.018)
-			if (n > threshold) solid[i] = 0
+			if (n > threshold) solid[cell] = 0
 		}
-}
-
-/**
- * Fractional Brownian motion via hash lattice.
- * @param {number} x parameter
- * @param {number} y parameter
- * @param {number} seed parameter
- * @returns {number} ~[0,1)
- */
-function fbm2(x, y, seed) {
-	let amp = 0.5
-	let freq = 1
-	let sum = 0
-	let norm = 0
-	for (let o = 0; o < 4; o++) {
-		sum += amp * valueNoise2(x * freq, y * freq, seed + o * 97)
-		norm += amp
-		amp *= 0.5
-		freq *= 2
-	}
-	return sum / norm
-}
-
-/**
- * Bilinear value noise.
- * @param {number} x parameter
- * @param {number} y parameter
- * @param {number} seed parameter
- * @returns {number} result
- */
-function valueNoise2(x, y, seed) {
-	const x0 = Math.floor(x)
-	const y0 = Math.floor(y)
-	const fx = x - x0
-	const fy = y - y0
-	const v00 = hash01(x0 + seed, y0)
-	const v10 = hash01(x0 + 1 + seed, y0)
-	const v01 = hash01(x0 + seed, y0 + 1)
-	const v11 = hash01(x0 + 1 + seed, y0 + 1)
-	const a = v00 + (v10 - v00) * fx
-	const b = v01 + (v11 - v01) * fx
-	return a + (b - a) * fy
 }
 
 /**
@@ -366,13 +320,13 @@ function cellularCleanup(solid, surface, W, H, passes) {
 		next.set(solid)
 		for (let y = 1; y < H - 1; y++)
 			for (let x = 1; x < W - 1; x++) {
-				const i = y * W + x
+				const cell = y * W + x
 				if (y <= surface[x]) continue
 				let n = 0
 				for (let dy = -1; dy <= 1; dy++)
 					for (let dx = -1; dx <= 1; dx++)
 						if (dx || dy) n += solid[(y + dy) * W + (x + dx)]
-				next[i] = solid[i] ? n >= 3 ? 1 : 0 : n >= 6 ? 1 : 0
+				next[cell] = solid[cell] ? n >= 3 ? 1 : 0 : n >= 6 ? 1 : 0
 			}
 		solid.set(next)
 	}
@@ -518,8 +472,6 @@ function connectNearbyCavities(solid, surface, W, H, seed) {
 	}
 }
 
-const ORTHO = /** @type {const} */ [[1, 0], [-1, 0], [0, 1], [0, -1]]
-
 /**
  * Flood-fill label underground air cavities (id > 0).
  * Accumulates region centroids during the fill — no per-cell lists.
@@ -538,12 +490,12 @@ export function labelCavities(solid, surface, W, H) {
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
-			const i = y * W + x
-			if (solid[i] || labels[i] || y <= surface[x]) continue
+			const cell = y * W + x
+			if (solid[cell] || labels[cell] || y <= surface[x]) continue
 			const id = next++
 			queue.length = 0
 			queue.push(x, y)
-			labels[i] = id
+			labels[cell] = id
 			let sx = x
 			let sy = y
 			let size = 1
@@ -643,6 +595,22 @@ function buildSurfaceChars(surface, W) {
 }
 
 /**
+ * Precompute outline glyphs for solid cells (null = interior / surface).
+ * @param {Uint8Array} solid flat solid mask
+ * @param {Int16Array} surface surface rows
+ * @param {number} W world width
+ * @param {number} H world height
+ * @returns {(string | null)[]} flat outline glyphs
+ */
+function buildOutline(solid, surface, W, H) {
+	const outline = Array(W * H).fill(null)
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++)
+			outline[y * W + x] = outlineChar(solid, x, y, W, H, surface)
+	return outline
+}
+
+/**
  * Character for a solid cell's visible outline (air-adjacent).
  * Interior solid returns null (not drawn).
  * @param {Uint8Array} solid flat solid mask
@@ -654,8 +622,8 @@ function buildSurfaceChars(surface, W) {
  * @returns {string | null} outline glyph or null
  */
 export function outlineChar(solid, x, y, W, H, surface) {
-	const i = y * W + x
-	if (!solid[i] || y === surface[x]) return null
+	const cell = y * W + x
+	if (!solid[cell] || y === surface[x]) return null
 
 	/**
 	 * @param {number} nx column

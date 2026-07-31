@@ -4,8 +4,8 @@
 
 import { composeFrame, renderBuffers } from './compose.mjs'
 import {
-	MAT, createWorld, clearMaterials, clearDynamics, setMat, addLiquid, addMoisture,
-	spawnParticle, queueSplash, stepGas, stepLiquid, stepParticles,
+	MAT, LIQ_DRAW, createWorld, clearMaterials, clearDynamics, setMat, addLiquid, addMoisture,
+	spawnParticle, queueSplash, stepGas, stepLiquid, stepParticles, labelAirRegions,
 	windProfileAt, idx, inWorld, isLiquidBarrier, releaseNonSoilWater,
 	soilAbsorbFactor, SOIL_CAP, SOIL_HIT_ABSORB_FRAC,
 } from './fluid/index.mjs'
@@ -20,8 +20,12 @@ import { generateTerrain } from './terrain.mjs'
 /** @typedef {ReturnType<typeof createAnimState>} AnimState */
 /** @typedef {ReturnType<typeof createWorld>} FluidWorld */
 /** @typedef {{ softBase?: boolean, softPillars?: boolean, softBody?: boolean }} SoftOpts */
-/** @typedef {import('./fluid/world.mjs').FluidParticle} FluidParticle */
+/** @typedef {import('./fluid/particles.mjs').ParticleView} ParticleView */
 
+/** World margin beyond the visible view. */
+const VIEW_MARGIN = 28
+/** Extra world rows below the view. */
+const BOTTOM_EXTRA = 6
 /** Ground-runoff search offsets (near → far). */
 const GROUND_DX = Object.freeze([0, -1, 1, -2, 2, -3, 3, -4, 4])
 
@@ -38,6 +42,28 @@ const defaultSize = () => {
 }
 
 /**
+ * Place icon origin + generate pedestal-anchored terrain for a world.
+ * @param {FluidWorld} world fluid world
+ * @param {number} width view width
+ * @param {number} height view height
+ * @param {number} seed terrain seed
+ * @returns {{ iconOx: number, iconOy: number, terrain: import('./terrain.mjs').TerrainData }} placement
+ */
+const placeIcon = (world, width, height, seed) => {
+	const iconOx = world.ox + Math.floor((width - ICON_W) / 2)
+	const iconOy = Math.floor((height - ICON_H) / 2)
+	return {
+		iconOx, iconOy,
+		terrain: generateTerrain(world, {
+			iconOx, iconOy, seed,
+			iconBaseRows: ICON_BASE_ROWS,
+			iconBaseX0: ICON_BASE_X0,
+			iconBaseX1: ICON_BASE_X0 + BASE_WIDTH,
+		}),
+	}
+}
+
+/**
  * Create a fresh animation state with terrain and empty fluid world.
  * @param {{ width?: number, height?: number, seed?: number }} [opts] size and seed overrides
  * @returns {AnimState} new animation state
@@ -47,15 +73,8 @@ export const createAnimState = (opts = {}) => {
 	const width = opts.width ?? dw
 	const height = opts.height ?? dh
 	const seed = opts.seed ?? (Math.random() * 1e9 | 0)
-	const world = createWorld({ width, height, margin: 28, bottomExtra: 6 })
-	const iconOx = world.ox + Math.floor((width - ICON_W) / 2)
-	const iconOy = Math.floor((height - ICON_H) / 2)
-	const terrain = generateTerrain(world, {
-		iconOx, iconOy, seed,
-		iconBaseRows: ICON_BASE_ROWS,
-		iconBaseX0: ICON_BASE_X0,
-		iconBaseX1: ICON_BASE_X0 + BASE_WIDTH,
-	})
+	const world = createWorld({ width, height, margin: VIEW_MARGIN, bottomExtra: BOTTOM_EXTRA })
+	const { iconOx, iconOy, terrain } = placeIcon(world, width, height, seed)
 	return {
 		width, height, seed,
 		world, iconOx, iconOy, terrain,
@@ -90,15 +109,8 @@ export const resizeAnimState = (state, { width, height }) => {
 	const oldCx = old.ox + state.width / 2
 	const oldCy = state.height / 2
 
-	const newWorld = createWorld({ width, height, margin: 28, bottomExtra: 6 })
-	const iconOx = newWorld.ox + Math.floor((width - ICON_W) / 2)
-	const iconOy = Math.floor((height - ICON_H) / 2)
-	const terrain = generateTerrain(newWorld, {
-		iconOx, iconOy, seed: state.seed,
-		iconBaseRows: ICON_BASE_ROWS,
-		iconBaseX0: ICON_BASE_X0,
-		iconBaseX1: ICON_BASE_X0 + BASE_WIDTH,
-	})
+	const newWorld = createWorld({ width, height, margin: VIEW_MARGIN, bottomExtra: BOTTOM_EXTRA })
+	const { iconOx, iconOy, terrain } = placeIcon(newWorld, width, height, state.seed)
 
 	const shiftX = (newWorld.ox + width / 2) - oldCx
 	const shiftY = (height / 2) - oldCy
@@ -106,14 +118,15 @@ export const resizeAnimState = (state, { width, height }) => {
 	for (let y = 0; y < old.worldH; y++)
 		for (let x = 0; x < old.worldW; x++) {
 			const oi = y * old.worldW + x
+			const amt = old.liq[oi]
+			const moist = old.moisture[oi]
+			const cond = old.condense[oi]
+			if (amt < 0.05 && moist < 0.02 && cond < 0.02) continue
 			const nx = (x + shiftX) | 0
 			const ny = (y + shiftY) | 0
 			if (!inWorld(newWorld, nx, ny)) continue
-			const amt = old.liq[oi]
 			if (amt >= 0.05 && !terrain.solid[ny * newWorld.worldW + nx])
 				addLiquid(newWorld, nx, ny, amt)
-			const moist = old.moisture[oi]
-			const cond = old.condense[oi]
 			if ((moist > 0.02 || cond > 0.02) && terrain.solid[ny * newWorld.worldW + nx]) {
 				const ni = idx(newWorld, nx, ny)
 				newWorld.moisture[ni] = Math.min(SOIL_CAP, newWorld.moisture[ni] + moist)
@@ -121,11 +134,12 @@ export const resizeAnimState = (state, { width, height }) => {
 			}
 		}
 
-	for (const p of old.particles) {
-		const nx = p.x + shiftX
-		const ny = p.y + shiftY
+	const src = old.particles
+	for (let i = 0; i < src.count; i++) {
+		const nx = src.x[i] + shiftX
+		const ny = src.y[i] + shiftY
 		if (nx < -2 || nx >= newWorld.worldW + 2) continue
-		spawnParticle(newWorld, nx, ny, p.vx, p.vy, p.life, p.amt)
+		spawnParticle(newWorld, nx, ny, src.vx[i], src.vy[i], src.life[i], src.amt[i])
 	}
 
 	state.width = width
@@ -197,11 +211,11 @@ const paintBodyMats = (state) => {
 
 /**
  * Pack stage fields into a single int for material rebuild skip.
- * @param {AnimState} s animation state
+ * @param {AnimState} state animation state
  * @returns {number} packed stage key
  */
-const matStageKey = (s) =>
-	s.baseBot | (s.baseTop << 6) | ((s.bodyReach + 1) << 12) | (s.bodyMinD << 20) | (+s.softBase << 28)
+const matStageKey = (state) =>
+	state.baseBot | (state.baseTop << 6) | ((state.bodyReach + 1) << 12) | (state.bodyMinD << 20) | (+state.softBase << 28)
 
 /**
  * Rebuild the material grid when the packed stage key changes.
@@ -242,21 +256,23 @@ const nextPoolRow = (state, y) => {
  * @returns {void}
  */
 const overflowSplash = (world, state, x, y, targetY = -1) => {
-	if (world.particles.length > 900) return
+	if (world.particles.count > 900) return
 	const ny = targetY >= 0 ? targetY : nextPoolRow(state, y)
 	const aimY = ny >= 0 ? ny : y + 2
 	const n = hash01(x, state.frame) > 0.65 ? 2 : 1
 	for (let i = 0; i < n; i++) {
-		queueSplash(world,
+		const splash = queueSplash(world,
 			x + (hash01(x, i + 3) - 0.5) * 0.6,
 			y + 0.6,
 			(hash01(x + i, 5) - 0.5) * 0.35,
 			0.45 + hash01(x, 8) * 0.35,
 			14 + (hash01(x, 9) * 8 | 0),
 		)
-		const last = world.pendingSplash[world.pendingSplash.length - 1]
-		if (last && aimY > y)
-			last.vy = Math.max(last.vy, Math.min(1.1, (aimY - y) * 0.2))
+		if (splash >= 0 && aimY > y)
+			world.pendingSplash.vy[splash] = Math.max(
+				world.pendingSplash.vy[splash],
+				Math.min(1.1, (aimY - y) * 0.2),
+			)
 	}
 }
 
@@ -275,8 +291,7 @@ const depositOnGround = (world, state, x, fromY, amt) => {
 		if (left < 0.02) break
 		const gx = x + dx
 		if (!inWorld(world, gx, 0)) continue
-		const sy = state.terrain.surface[gx]
-		const gy = sy - 1
+		const gy = state.terrain.surface[gx] - 1
 		if (gy <= fromY || !inWorld(world, gx, gy)) continue
 		const m = world.mat[idx(world, gx, gy)]
 		if (isLiquidBarrier(m) || m === MAT.POOL) continue
@@ -335,12 +350,12 @@ const leakPool = (world, state, x, y, force = 0) => {
  * @param {number} x hit cell X
  * @param {number} y hit cell Y
  * @param {number} m material at hit
- * @param {FluidParticle} p particle
+ * @param {ParticleView} particle particle view
  * @param {boolean} wet whether the particle carries water mass
  * @param {AnimState} state animation state
  * @returns {void}
  */
-const onParticleHit = (world, x, y, m, p, wet, state) => {
+const onParticleHit = (world, x, y, m, particle, wet, state) => {
 	const { frame } = state
 
 	if (m === MAT.POOL) {
@@ -351,7 +366,7 @@ const onParticleHit = (world, x, y, m, p, wet, state) => {
 	}
 
 	if (m === MAT.BODY) {
-		const speed = Math.hypot(p.vx, p.vy) || 0.5
+		const speed = Math.hypot(particle.vx, particle.vy) || 0.5
 		queueSplash(world,
 			x + (hash01(x, 1) - 0.5) * 0.5,
 			y - 0.15,
@@ -387,7 +402,7 @@ const onParticleHit = (world, x, y, m, p, wet, state) => {
 	}
 
 	if (m === MAT.SEAL) {
-		const speed = Math.hypot(p.vx, p.vy) || 0.5
+		const speed = Math.hypot(particle.vx, particle.vy) || 0.5
 		queueSplash(world, x + (hash01(x, 1) - 0.5), y - 0.15,
 			(hash01(x, frame) - 0.5) * speed,
 			-0.2 - hash01(x, 3) * 0.3,
@@ -396,7 +411,7 @@ const onParticleHit = (world, x, y, m, p, wet, state) => {
 	}
 
 	if (m === MAT.SLOPE_R) {
-		const speed = Math.hypot(p.vx, p.vy) || 0.6
+		const speed = Math.hypot(particle.vx, particle.vy) || 0.6
 		queueSplash(world, x + 0.4, y + 0.2, speed * 0.7, speed * 0.7, 14)
 		if (hash01(x, frame) > 0.4)
 			queueSplash(world, x + 0.2, y - 0.1, speed * 0.4, -speed * 0.2, 8)
@@ -404,7 +419,7 @@ const onParticleHit = (world, x, y, m, p, wet, state) => {
 	}
 
 	if (m === MAT.SLOPE_L) {
-		const speed = Math.hypot(p.vx, p.vy) || 0.6
+		const speed = Math.hypot(particle.vx, particle.vy) || 0.6
 		queueSplash(world, x - 0.4, y + 0.2, -speed * 0.7, speed * 0.7, 14)
 		if (hash01(x, frame) > 0.4)
 			queueSplash(world, x - 0.2, y - 0.1, -speed * 0.4, -speed * 0.2, 8)
@@ -455,6 +470,7 @@ const spawnRain = (state) => {
  */
 const simFrame = (state) => {
 	rebuildMaterials(state)
+	labelAirRegions(state.world)
 	stepGas(state.world, { time: state.frame, seed: state.seed })
 	spawnRain(state)
 	stepParticles(state.world, onParticleHit, state)
@@ -467,7 +483,7 @@ const simFrame = (state) => {
 			if (!inWorld(world, x, y)) continue
 			const id = idx(world, x, y)
 			if (world.mat[id] !== MAT.POOL) continue
-			if (world.liq[id] >= 0.35 && hash01(x, state.frame) > 0.35)
+			if (world.liq[id] >= LIQ_DRAW && hash01(x, state.frame) > 0.35)
 				leakPool(world, state, x, y)
 		}
 	}
@@ -481,9 +497,9 @@ const simFrame = (state) => {
  * @returns {Generator<string, void, unknown>} one ANSI frame
  */
 function* show(state, soft = {}) {
-	state.softBase = !!soft.softBase
-	state.softPillars = !!soft.softPillars
-	state.softBody = !!soft.softBody
+	state.softBase = soft.softBase === true
+	state.softPillars = soft.softPillars === true
+	state.softBody = soft.softBody === true
 	yield simFrame(state)
 	state.frame++
 }

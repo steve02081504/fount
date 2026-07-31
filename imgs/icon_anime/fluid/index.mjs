@@ -5,6 +5,8 @@
  * Open air carries a velocity field with height shear + nozzle continuity.
  * Communicating vessels equalize φ = P/(ρg) - surfaceY.
  * Soil stores moisture; seepage feeds underside condensation that drips.
+ *
+ * Call `labelAirRegions` before `stepGas` / `pressureAt`. `stepLiquid` labels once at entry.
  */
 
 /**
@@ -16,7 +18,7 @@ export {
 	SOIL_SIDE_FRAC, SOIL_DOWN_FRAC, SOIL_CONDENSE_FRAC,
 	COND_DRAW, COND_DRIP, COND_MATTHEW_RATE, COND_MATTHEW_NOISE,
 	LIQ_DRAW, LIQ_FULL,
-	isSolidMat, isSoilMat, isBlockMat, isLiquidBarrier, soilAbsorbFactor,
+	isSoilMat, isBlockMat, isLiquidBarrier, soilAbsorbFactor,
 } from './mat.mjs'
 
 /**
@@ -42,23 +44,19 @@ export {
  */
 export {
 	WIND_BASE, WIND_GUST, WIND_SHEAR_POWER, GAS_BLEND, GAS_NOZZLE,
-	labelAirRegions, pressureAt, globalWindAt, windProfileAt,
+	isAirCell, fillBlocked, labelAirRegions, pressureAt, globalWindAt, windProfileAt,
 	gasVelocityAt, dynamicPressure, staticPressureAt, stepGas, totalSealedGas,
 } from './gas.mjs'
 
 /**
  *
  */
-export { labelLiquidSurfaces, stepSoil, stepLiquid } from './liquid.mjs'
+export { stepSoil, stepLiquid } from './liquid.mjs'
 
 /**
  *
  */
 export {
-	GAS_DRAG, GAS_DRAG_Y, spawnParticle, queueSplash, stepParticles,
+	GAS_DRAG, GAS_DRAG_Y, createParticlePool, clearParticlePool,
+	spawnParticle, queueSplash, stepParticles,
 } from './particles.mjs'
-
-/**
- *
- */
-export { hash01 } from '../hash.mjs'
