@@ -14,8 +14,7 @@
 				"./src/scripts/checks/test/html_meta.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/checks/html_meta.mjs",
-				"src/scripts/checks/walk.mjs",
+				"src/scripts/checks/{html_meta.mjs,walk.mjs}",
 				"src/scripts/checks/test/html_meta.test.mjs",
 				"**/*.html"
 			]
@@ -33,11 +32,9 @@
 				"./src/scripts/checks/test/info.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/checks/info.mjs",
-				"src/scripts/checks/walk.mjs",
+				"src/scripts/checks/{info.mjs,walk.mjs}",
 				"src/scripts/checks/test/info.test.mjs",
-				"src/public/parts/**/locales.json",
-				"src/public/parts/**/achievements_registry.json"
+				"src/public/parts/**/{locales.json,achievements_registry.json}"
 			]
 		},
 		{
@@ -102,9 +99,7 @@
 			"triggers": [
 				"src/scripts/checks/jsdoc_english.mjs",
 				"src/scripts/checks/test/jsdoc_english.test.mjs",
-				"**/*.mjs",
-				"**/*.js",
-				"**/*.ts"
+				"**/*.{mjs,js,ts}"
 			]
 		}
 	]

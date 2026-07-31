@@ -3,7 +3,7 @@
  */
 import { exec } from 'npm:@steve02081504/exec'
 
-import { matchGlob } from './glob.mjs'
+import { matchGlob } from './trigger_filter.mjs'
 
 /**
  * @typedef {import('./manifest.mjs').SuiteDef} SuiteDef

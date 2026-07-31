@@ -3,9 +3,8 @@
  * 有子测试时逐子测试裁决后聚合。
  */
 import { digestFileHashes } from './changed.mjs'
-import { matchGlob } from './glob.mjs'
 import { collectTriggerEvidence, suiteKey, suiteTriggersHit } from './state.mjs'
-import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
+import { filterTriggerRelevantFiles, matchGlob } from './trigger_filter.mjs'
 
 /**
  * @typedef {'green' | 'noisy' | 'red' | 'unknown'} VerdictKind

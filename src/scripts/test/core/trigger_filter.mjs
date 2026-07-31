@@ -2,7 +2,15 @@
  * trigger 匹配排除路径（文档、test manifest 元数据等）。
  * manifest / suite 的 `triggerFilter` 可覆盖默认表 — 见 docs/trigger-filter.md。
  */
-import { matchGlob } from './glob.mjs'
+import picomatch from 'npm:picomatch'
+
+/**
+ * 路径是否匹配 glob（`*` / `**` / `?` / `{a,b}`；含点路径段）。
+ * @param {string} pattern glob
+ * @param {string} path 待匹配路径（正斜杠）
+ * @returns {boolean} 是否匹配
+ */
+export const matchGlob = (pattern, path) => picomatch.isMatch(path, pattern, { dot: true })
 
 /**
  * manifest / suite 级 trigger 过滤选项。
@@ -18,7 +26,6 @@ const DEFAULT_IGNORE_PATTERNS = [
 	'**/test/manifest.json',
 	'**/docs/**',
 	'**/*.md',
-	'*.md',
 	'**/llms.txt',
 ]
 

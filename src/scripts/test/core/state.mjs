@@ -13,7 +13,6 @@ import {
 } from './baseline.mjs'
 import { digestFileHashes } from './changed.mjs'
 import { formatDuration } from './format_duration.mjs'
-import { matchGlob } from './glob.mjs'
 import { detectNoiseHits, stripNoiseMarkers } from './output_filter.mjs'
 import {
 	stateDir,
@@ -22,7 +21,7 @@ import {
 	stateMarkdownPath,
 	TEST_DATA_REL,
 } from './paths.mjs'
-import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
+import { filterTriggerRelevantFiles, matchGlob } from './trigger_filter.mjs'
 
 /**
  * suite 运行状态。

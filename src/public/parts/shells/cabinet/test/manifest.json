@@ -2,14 +2,11 @@
 	"id": "shells/cabinet",
 	"triggerSets": {
 		"testFramework": [
-			"src/scripts/test/deno/serial.mjs",
-			"src/scripts/test/node/boot.mjs"
+			"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
 		],
 		"shellBackend": [
 			"src/public/parts/shells/cabinet/src/**",
-			"src/public/parts/shells/cabinet/main.mjs",
-			"src/public/parts/shells/cabinet/fount.json",
-			"src/public/parts/shells/cabinet/locales.json"
+			"src/public/parts/shells/cabinet/{main.mjs,fount.json,locales.json}"
 		],
 		"shellPureTests": [
 			"src/public/parts/shells/cabinet/test/pure/**"
@@ -93,8 +90,7 @@
 					"triggers": [
 						"src/public/parts/shells/cabinet/test/frontend/daisyui.spec.mjs",
 						"src/public/parts/shells/cabinet/test/frontend/fixtures.mjs",
-						"src/public/parts/shells/cabinet/public/index.html",
-						"src/public/parts/shells/cabinet/public/index.css",
+						"src/public/parts/shells/cabinet/public/index.{html,css}",
 						"src/public/parts/shells/cabinet/public/src/contextMenu.mjs",
 						"src/public/parts/shells/cabinet/public/src/entryGrid.mjs",
 						"src/public/parts/shells/cabinet/public/src/navigation.mjs",
