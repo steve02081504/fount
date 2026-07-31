@@ -17,6 +17,7 @@ import {
 import { terminalSize } from './player.mjs'
 import { generateTerrain, resizeTerrain } from './terrain.mjs'
 import { createWindGesture, tickWindGesture, fillWindDrive } from './wind_gesture.mjs'
+import { createLightGesture, tickLightGesture } from './light_gesture.mjs'
 
 /** @typedef {ReturnType<typeof createAnimState>} AnimState */
 /** @typedef {ReturnType<typeof createWorld>} FluidWorld */
@@ -92,7 +93,7 @@ export const createAnimState = (opts = {}) => {
 		softPillars: false,
 		softBody: false,
 		matKey: -1,
-		light: null,
+		light: createLightGesture(),
 		wind: createWindGesture(),
 		frameCh: null,
 		frameFg: null,
@@ -496,6 +497,7 @@ const simFrame = (state) => {
 	rebuildMaterials(state)
 	labelAirRegions(state.world)
 	tickWindGesture(state.wind)
+	tickLightGesture(state.light)
 	const { world } = state
 	const n = world.worldW * world.worldH
 	const driveUx = scratch(world, 'windDriveUx', n, Float32Array)

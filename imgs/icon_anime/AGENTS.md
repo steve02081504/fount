@@ -14,7 +14,7 @@ Standalone terminal animation for the fount fountain logo.
 deno run --allow-scripts --allow-all -c deno.json imgs/icon_anime/index.mjs
 ```
 
-Controls: Ctrl+C exit (icon teardown, then quit). Left-click / drag a circular cool spotlight (press hold, release off). Right-drag paints stroke wind along the path (faster drag → stronger flow); right long-press while still grows a tornado vortex at the cursor (clockwise + updraft + inflow; longer → faster; follows while moved, reforms when stopped, clears on release) that can suspend rain in orbit and suck free-liquid puddles airborne. Other stdin discarded.
+Controls: Ctrl+C exit (icon teardown, then quit). Left quick-click → bright expanding ripple (no flashlight); left hold / drag → circular cool spotlight (release off). Right-drag paints stroke wind along the path (faster drag → stronger flow); right long-press while still grows a tornado vortex at the cursor (clockwise + updraft + inflow; longer → faster; follows while moved, reforms when stopped, clears on release) that can suspend rain in orbit and suck free-liquid puddles airborne. Other stdin discarded.
 Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the pre-start scrollback and cursor row.
 
 ## Modules
@@ -24,8 +24,9 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | `index.mjs` | CLI entry + public re-exports |
 | `icon.mjs` | Packed silhouette, pillars, body growth order (typed arrays) |
 | `scene.mjs` | Anim state, materials, rain, pool leak, enter/hold/exit |
-| `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid`; optional pointer spotlight (truecolor lift) |
+| `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid`; pointer torch + click ripples (truecolor lift) |
 | `player.mjs` | TUI playback, Ctrl+C abort, SGR mouse → pointer light / wind, `stdout` resize; alt-screen enter/leave |
+| `light_gesture.mjs` | Left-button quick-click ripple vs hold torch |
 | `wind_gesture.mjs` | Right-button stroke wind + long-still clockwise vortex → local gas drive field |
 | `terrain.mjs` | Pedestal-anchored surface + noise caves + U-tube/chamber templates |
 | `hash.mjs` | `hash01` + 1D/2D fBm noise + `ORTHO` (terrain + fluid) |
@@ -56,7 +57,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 - Body cells are parallel `Uint8Array`s (`bodyX` / `bodyY` / `bodyD`), not object lists.
 - Particles are SoA pools (`particles.x/y/vx/vy/life/amt` + `count`); no per-tick object alloc.
 - Compose paints into reused `frameCh`/`frameFg` buffers; `renderGrid(Cell[][])` is a thin adapter.
-- Pointer light (`state.light`): SGR mouse via `consumeStdin`; compose applies quadratic radial falloff (cell aspect `hypot(dx, 2·dy)`) as truecolor lift + cool bg glow only while the left button is held.
+- Pointer light (`state.light`): SGR mouse via `consumeStdin`; `light_gesture.mjs` arms a torch after `TORCH_DELAY` frames of hold (compose: ambient dim + quadratic radial falloff, cell aspect `hypot(dx, 2·dy)`). Faster release before the torch arms spawns a high-brightness expanding ring (`rippleFalloff`) that ages out — no ambient dim.
 - Pointer wind (`state.wind`): right-button gesture in `wind_gesture.mjs`; each tick paints `driveUx`/`driveUy` scratch into `stepGas` (stroke trail + tornado vortex: clockwise tangential + updraft + inflow). Drag speed scales stroke amplitude; vortex strength grows with hold time and clears on release. Strong upward gas scoops free-liquid puddles into particles (`liftLiquidByWind`); particle vertical drag rises with |gas| so rain can orbit inside the vortex.
 
 ## Material standard

@@ -10,8 +10,8 @@
  *
  * createAnimState({ width?, height?, seed? }) — defaults to terminal size when available.
  * Main: enter → loop hold → Ctrl+C → exit from current progress.
- * Pointer: left press/drag circular spotlight; right drag stroke wind;
- *   right long-still clockwise vortex (follows / reforms / clears on release).
+ * Pointer: left quick-click → bright expanding ripple; left hold → spotlight;
+ *   right drag stroke wind; right long-still clockwise vortex (follows / reforms / clears on release).
  */
 
 import process from 'node:process'
@@ -24,6 +24,7 @@ import {
 	createAnimState, resizeAnimState, enter, hold, exit,
 } from './scene.mjs'
 import { windPointer } from './wind_gesture.mjs'
+import { lightPointer } from './light_gesture.mjs'
 
 /**
  *
@@ -64,7 +65,7 @@ if (import.meta.main) {
 		fps,
 		onResize: handleResize,
 		/**
-		 * Left → spotlight; right → stroke wind / long-press vortex.
+		 * Left → click ripple / hold torch; right → stroke wind / long-press vortex.
 		 * @param {{ x: number, y: number, left?: boolean, right?: boolean }} ev pointer event
 		 * @returns {void}
 		 */
@@ -72,7 +73,7 @@ if (import.meta.main) {
 			const x = Math.max(0, Math.min(state.width - 1, ev.x))
 			const y = Math.max(0, Math.min(state.height - 1, ev.y))
 			if (ev.left !== undefined)
-				state.light = ev.left ? { x, y } : null
+				lightPointer(state.light, { x, y, left: ev.left })
 			if (ev.right !== undefined)
 				windPointer(state.wind, { x, y, right: ev.right })
 		},

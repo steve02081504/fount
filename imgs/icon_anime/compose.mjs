@@ -1,10 +1,12 @@
 /**
  * Frame paint + ANSI render for the fountain animation.
- * Optional circular pointer light: truecolor fg lift + soft bg glow.
+ * Optional pointer light: hold torch (ambient dim + radial fill) and/or
+ * click ripples (bright expanding rings, no ambient).
  */
 
 import { MAT, LIQ_DRAW, COND_DRAW, isLiquidBarrier, isSoilMat, waterChar, liquidChar, dripChar } from './fluid/index.mjs'
 import { ICON_W, PILLARS, BODY_DIST, maxBodyD } from './icon.mjs'
+import { sampleLight } from './light_gesture.mjs'
 
 const RESET = '\x1b[0m'
 const FG_AT = '\x1b[30m'
@@ -39,13 +41,16 @@ export const lightFalloff = (dx, dy, radius = LIGHT_RADIUS) => {
 
 /**
  * @param {number} c channel 0..255
- * @param {number} lift 0..1
+ * @param {number} lift 0..1+
+ * @param {boolean} ambient dim far cells (torch mode)
  * @returns {number} lit channel
  */
-const liftChannel = (c, lift) => {
+const liftChannel = (c, lift, ambient) => {
+	const t = lift > 1 ? 1 : lift
+	const hot = c + (255 - c) * (ambient ? 0.88 : 0.96)
+	if (!ambient) return (c + (hot - c) * t) | 0
 	const cold = c * LIGHT_AMBIENT
-	const hot = c + (255 - c) * 0.88
-	return (cold + (hot - cold) * lift) | 0
+	return (cold + (hot - cold) * t) | 0
 }
 
 /**
@@ -65,24 +70,68 @@ const fgRgb = (r, g, b) => `\x1b[38;2;${r};${g};${b}m`
 const bgRgb = (r, g, b) => `\x1b[48;2;${r};${g};${b}m`
 
 /**
- * Join flat char/fg buffers into an ANSI frame string.
- * When `light` is set, dims the scene and lifts a circular cool spotlight.
+ * Join flat char/fg buffers into an ANSI frame string without lighting.
  * @param {string[]} ch characters
  * @param {(string | null)[]} fg ANSI fg codes (null = default)
  * @param {number} width columns
  * @param {number} height rows
- * @param {{ x: number, y: number } | null} [light] pointer light in view cells
+ * @returns {string} ANSI frame
+ */
+const renderPlain = (ch, fg, width, height) => {
+	const out = []
+	for (let y = 0; y < height; y++) {
+		let line = ''
+		let cur = null
+		const row = y * width
+		for (let x = 0; x < width; x++) {
+			const f = fg[row + x]
+			if (f == null) {
+				if (cur !== null) {
+					line += RESET
+					cur = null
+				}
+				line += ' '
+				continue
+			}
+			if (f !== cur) {
+				line += f
+				cur = f
+			}
+			line += ch[row + x]
+		}
+		if (cur !== null) line += RESET
+		out.push(line)
+	}
+	return out.join('\n')
+}
+
+/**
+ * Join flat char/fg buffers into an ANSI frame string.
+ * Torch: dims the scene and lifts a circular cool spotlight.
+ * Ripples: bright expanding rings without ambient dim.
+ * @param {string[]} ch characters
+ * @param {(string | null)[]} fg ANSI fg codes (null = default)
+ * @param {number} width columns
+ * @param {number} height rows
+ * @param {import('./light_gesture.mjs').LightGesture | null} [light] pointer light gesture
  * @returns {string} ANSI frame
  */
 export const renderBuffers = (ch, fg, width, height, light = null) => {
-	if (!light) {
-		const out = []
-		for (let y = 0; y < height; y++) {
-			let line = ''
-			let cur = null
-			const row = y * width
-			for (let x = 0; x < width; x++) {
-				const f = fg[row + x]
+	const hasTorch = !!(light?.down && light.torch)
+	const hasRipple = !!(light?.ripples?.length)
+	if (!hasTorch && !hasRipple) return renderPlain(ch, fg, width, height)
+
+	const out = []
+	for (let y = 0; y < height; y++) {
+		let line = ''
+		let cur = null
+		const row = y * width
+		for (let x = 0; x < width; x++) {
+			const { ambient, lift } = sampleLight(light, x, y, lightFalloff)
+			const f = fg[row + x]
+
+			// Ripple-only cells far from the ring keep the plain palette.
+			if (!ambient && lift < 0.04) {
 				if (f == null) {
 					if (cur !== null) {
 						line += RESET
@@ -92,31 +141,17 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 					continue
 				}
 				if (f !== cur) {
-					line += f
+					line += (cur !== null ? RESET : '') + f
 					cur = f
 				}
 				line += ch[row + x]
+				continue
 			}
-			if (cur !== null) line += RESET
-			out.push(line)
-		}
-		return out.join('\n')
-	}
 
-	const lx = light.x
-	const ly = light.y
-	const out = []
-	for (let y = 0; y < height; y++) {
-		let line = ''
-		let cur = null
-		const row = y * width
-		const dy = y - ly
-		for (let x = 0; x < width; x++) {
-			const lift = lightFalloff(x - lx, dy)
-			const f = fg[row + x]
 			let sgr
+			const glow = lift > 1 ? 1 : lift
 			if (f == null) {
-				if (lift < 0.04) {
+				if (glow < 0.04) {
 					if (cur !== null) {
 						line += RESET
 						cur = null
@@ -124,14 +159,18 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 					line += ' '
 					continue
 				}
-				const g = (55 * lift) | 0
+				const g = (55 * glow) | 0
 				sgr = bgRgb((g * 0.55) | 0, (g * 0.75) | 0, g)
 			}
 			else {
 				const [br, bg, bb] = FG_RGB[f] || [160, 160, 160]
-				const rgb = fgRgb(liftChannel(br, lift), liftChannel(bg, lift), liftChannel(bb, lift))
-				if (lift > 0.08) {
-					const g = (42 * lift) | 0
+				const rgb = fgRgb(
+					liftChannel(br, lift, ambient),
+					liftChannel(bg, lift, ambient),
+					liftChannel(bb, lift, ambient),
+				)
+				if (glow > 0.08) {
+					const g = ((ambient ? 42 : 58) * glow) | 0
 					sgr = rgb + bgRgb((g * 0.5) | 0, (g * 0.7) | 0, g)
 				}
 				else sgr = rgb
@@ -177,7 +216,7 @@ export const renderGrid = (grid, width, height) => {
  *   softPillars: boolean, softBody: boolean, bodyReach: number, bodyMinD: number,
  *   pillars: number, frame: number,
  *   terrain: { solid: Uint8Array, surface: Int16Array, surfaceChar: string[], outline: (string | null)[] },
- *   light?: { x: number, y: number } | null,
+ *   light?: import('./light_gesture.mjs').LightGesture | null,
  *   frameCh?: string[], frameFg?: (string | null)[],
  * }} state animation state
  * @returns {string} ANSI frame

@@ -202,6 +202,50 @@ Deno.test('lightFalloff: center bright, edge zero, soft circle', async () => {
 	assert(Math.abs(lightFalloff(4, 0) - lightFalloff(0, 2)) < 1e-9)
 })
 
+Deno.test('light gesture: quick release → ripple; hold → torch', async () => {
+	const {
+		createLightGesture, lightPointer, tickLightGesture, sampleLight,
+		rippleFalloff, TORCH_DELAY, RIPPLE_SPEED, RIPPLE_LIFE,
+	} = await import('../light_gesture.mjs')
+	const { lightFalloff } = await import('../compose.mjs')
+
+	// Soft ring: peak on wavefront, quiet at centre for a large radius
+	assert(rippleFalloff(0, 0, 8) < 0.05)
+	assert(rippleFalloff(8, 0, 8) > 0.9)
+	assertEquals(rippleFalloff(20, 0, 8), 0)
+
+	const click = createLightGesture()
+	lightPointer(click, { x: 12, y: 7, left: true })
+	tickLightGesture(click)
+	assertEquals(click.torch, false)
+	lightPointer(click, { x: 12, y: 7, left: false })
+	assertEquals(click.down, false)
+	assertEquals(click.ripples.length, 1)
+	assertEquals(click.ripples[0].x, 12)
+	tickLightGesture(click) // age → 1 → ring at RIPPLE_SPEED
+	const ring = sampleLight(click, 12 + RIPPLE_SPEED, 7, lightFalloff)
+	assertEquals(ring.ambient, false)
+	assert(ring.lift > 0.5)
+
+	for (let i = 0; i < RIPPLE_LIFE; i++) tickLightGesture(click)
+	assertEquals(click.ripples.length, 0)
+
+	const hold = createLightGesture()
+	lightPointer(hold, { x: 5, y: 4, left: true })
+	for (let i = 0; i < TORCH_DELAY; i++) tickLightGesture(hold)
+	assertEquals(hold.torch, true)
+	assertEquals(hold.ripples.length, 0)
+	const torch = sampleLight(hold, 5, 4, lightFalloff)
+	assertEquals(torch.ambient, true)
+	assertEquals(torch.lift, 1)
+	lightPointer(hold, { x: 8, y: 4, left: true })
+	assertEquals(hold.x, 8)
+	lightPointer(hold, { x: 8, y: 4, left: false })
+	assertEquals(hold.down, false)
+	assertEquals(hold.torch, false)
+	assertEquals(hold.ripples.length, 0)
+})
+
 Deno.test('consumeStdin: SGR left/right press/drag/release + Ctrl+C', async () => {
 	const { consumeStdin } = await import('../player.mjs')
 	const events = []
@@ -322,14 +366,25 @@ Deno.test('stepGas: pointer drive accelerates local gas', async () => {
 
 Deno.test('composeFrame: light yields truecolor near cursor', async () => {
 	const { composeFrame } = await import('../compose.mjs')
+	const { lightPointer, tickLightGesture, TORCH_DELAY } = await import('../light_gesture.mjs')
 	const state = createAnimState({ width: 40, height: 20, seed: 9 })
 	for (const _ of enter(state));
-	state.light = { x: 20, y: 10 }
+	lightPointer(state.light, { x: 20, y: 10, left: true })
+	for (let i = 0; i < TORCH_DELAY; i++) tickLightGesture(state.light)
 	const lit = composeFrame(state)
 	assert(lit.includes('\x1b[38;2;'))
-	state.light = null
+	lightPointer(state.light, { x: 20, y: 10, left: false })
 	const dark = composeFrame(state)
 	assertEquals(dark.includes('\x1b[38;2;'), false)
+
+	// Quick click → ripple truecolor without staying as a torch
+	lightPointer(state.light, { x: 15, y: 8, left: true })
+	lightPointer(state.light, { x: 15, y: 8, left: false })
+	assertEquals(state.light.torch, false)
+	assert(state.light.ripples.length >= 1)
+	tickLightGesture(state.light)
+	const rippled = composeFrame(state)
+	assert(rippled.includes('\x1b[38;2;'))
 })
 
 Deno.test('sim frame from enter has correct dimensions', () => {
