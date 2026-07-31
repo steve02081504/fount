@@ -47,21 +47,23 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | File | Role |
 | --- | --- |
 | `index.mjs` | Barrel re-exports |
-| `mat.mjs` | `MAT` enum, flags LUT, soil/liquid constants |
-| `world.mjs` | Grid alloc, scratch buffers, mat/liq/moisture helpers |
+| `mat.mjs` | `MAT` enum, flags LUT, soil/liquid / gas density constants |
+| `flow.mjs` | Shared Torricelli / sheet / hydraulic φ / mass-transfer primitives |
+| `world.mjs` | Grid alloc, scratch buffers, mat/liq/moisture helpers, `totalWorldWater` |
 | `gas.mjs` | Air regions, hydrostatic open P(y), wind, Bernoulli ΔP `stepGas` |
-| `liquid.mjs` | Hydrostatic liquid P, gravity / orifice / soil / hydraulic `stepLiquid` |
-| `particles.mjs` | SoA rain/splash pools + gas drag |
+| `liquid.mjs` | Hydrostatic liquid P, gravity / orifice / soil / graph-hydraulic `stepLiquid` |
+| `particles.mjs` | SoA rain/splash pools + gas drag; expire deposits mass |
+| `step.mjs` | `stepFluid` — label → gas → lift → particles → liquid |
 | `glyphs.mjs` | `waterChar` / `liquidChar` / `dripChar` |
 
 ## Layout & hot-path notes
 
+- Per frame: `stepFluid` (label → gas → lift → rain inject → particles → liquid). `stepLiquid` re-labels after particles may have changed `liq` (not a third trailing label).
 - Terrain `solid` / `outline` and fluid grids share flat `y * W + x` indexing (no row arrays).
 - Terrain outline glyphs are precomputed at generate time; compose only blits.
 - World scratch lives on `world.scratch` (typed arrays reused across ticks).
 - Gas nozzle spans are precomputed in O(WH) column/row runs — do not re-walk per cell.
 - Air-region labels double-buffer `regionId` via `scratch.prevRegionId`; regions are id-indexed arrays.
-- Per frame: `labelAirRegions` once before `stepGas`, then again inside `stepLiquid` after particles may have changed `liq` (not a third trailing label).
 - Global wind is evaluated once per gas tick; height shear is applied per row.
 - Material rebuild is keyed by a packed int (`matKey`); hold frames skip it.
 - Body cells are parallel `Uint8Array`s (`bodyX` / `bodyY` / `bodyD`), not object lists.
@@ -101,17 +103,18 @@ Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `.
 
 ## Physics invariants
 
+- **One pressure language**: gas thermo `pressureAt`, liquid hydro `liquidPressureAt`, gas dynamic `staticPressureAt = P − ½ρu²`. Free-liquid mass moves via Torricelli `pressureMove` / free-surface `sheetMove` (`flow.mjs`).
 - Open air regions: region mean `pressure = P_ATM`; cell `pressureAt = P_ATM + ATM_HYDRO·y` (y↓ → P↑).
 - Sealed regions: Boyle mean `pressure ≈ gasAmount / airCells` (isothermal ideal gas at fixed T) plus hydrostatic `ATM_HYDRO·(y − yMean)` so the spatial average stays Boyle; gas mass transfers by cell overlap when topology splits/merges.
 - `RHO_AIR` (~`ATM_HYDRO`) is the dynamic density for `½ρu²`; `RHO_G` is liquid column head — keep `RHO_AIR ≪ RHO_G` so Bernoulli dynamic head does not rival liquid depth.
-- Gas velocity (`gasUx` / `gasUy`): open air tracks a time-varying global wind with power-law height shear (stronger aloft). Global wind is pink-ish fBm (synoptic / meso / micro) plus intermittent asymmetric gust pulses — autocorrelated and irregular, not layered sines. Continuity (`A·v`) speeds flow through duct throats (wind-tunnel nozzle). Wall slip zeros inflow into solids. Bernoulli static field `P₀ − ½ρu²` (`RHO_AIR`) drives neighbor ΔP acceleration (`GAS_DP_DRIVE`, scaled for the small `RHO_AIR`) — faster throat → lower static P → suction feedback into the nozzle. Optional local `driveUx`/`driveUy` (pointer stroke / tornado vortex) add into the per-cell target before blend. Rain particles drag toward local gas (`GAS_DRAG`; vertical drag scales up with |gas| so vortices can suspend droplets). Strong upward gas over free liquid lifts puddles into particles (`liftLiquidByWind`). Glyphs use the particle's resulting velocity, not the gas field directly.
+- Gas velocity (`gasUx` / `gasUy`): open air tracks a time-varying global wind with power-law height shear (stronger aloft). Global wind is pink-ish fBm (synoptic / meso / micro) plus intermittent asymmetric gust pulses — autocorrelated and irregular, not layered sines. Continuity (`A·v`) speeds flow through duct throats (wind-tunnel nozzle). Wall slip zeros inflow into solids. Bernoulli static field `P₀ − ½ρu²` (`RHO_AIR`) drives neighbor ΔP acceleration (`GAS_DP_DRIVE`). No 2D ∇·u=0 projection (pointer vortices / updrafts are intentional sources). Optional local `driveUx`/`driveUy` (pointer stroke / tornado vortex) add into the per-cell target before blend. Rain particles drag toward local gas (`GAS_DRAG`; vertical drag scales up with |gas| so vortices can suspend droplets). Strong upward gas over free liquid lifts puddles into particles (`liftLiquidByWind`). Free-surface sheets also take a light downwind push from `gasUx`. Glyphs use the particle's resulting velocity, not the gas field directly.
 - Free-liquid hydrostatic pressure: `liquidPressureAt = P_air(surface) + RHO_G·depth`. Submerged side holes / deep edge vents move mass `∝ √(ΔP/ρg)` (Torricelli); free-surface sheet flow equalizes by fill level only (no fake surface jet). Sealed gas with `P > liquid P` blocks invasion and can push adjacent liquid away.
 - Grid liquid velocity (`liqVx` / `liqVy`): updated from mass transfers each `stepLiquid` (EMA); drives free-liquid glyphs so calm puddles stay on still marks.
-- Communicating vessels: free surfaces of the same liquid component relax toward equal `φ = P/(ρg) - y` (P from height-aware air pressure on the free surface).
+- Communicating vessels: free surfaces of the same liquid component relax toward equal `φ = P/(ρg) - y` **along the liquid graph** (BFS from the lowest-φ surface — no teleport across disconnected air).
 - `POOL` retains fill and spills / leaks into open air or the next slab when overfull; `BODY` is a liquid barrier (splash-only). Pillars are not materials.
 - Soil moisture (`moisture`): gains from impacts and free liquid above with diminishing absorb rate as the cell wets (`soilAbsorbFactor`); rain hits only sink a fraction (`SOIL_HIT_ABSORB_FRAC`) so the rest sheets as free liquid. Seepage is slow enough that sustained rain forms visible surface puddles. Each tick shares a fraction sideways among soil neighbors, prefers transfer into soil below, and when below is air feeds underside `condense`. Neighboring condensation cells apply a noisy Matthew transfer (richer steals from poorer). Past `COND_DRAW` the air cell shows a droplet glyph; past `COND_DRIP` condensation becomes free liquid below and clears.
 - `SEAL` is impermeable (no moisture) — use it in tests/vessels so soil absorption cannot drain free-liquid setups.
-- Grid water mass (`liq + moisture + condense`) is conserved under closed transfers — no creating/destroying mass except intentional world-edge / bottom sinks.
+- Water mass lives in `liq + moisture + condense + particles` (`totalWorldWater`). Closed transfers conserve; intentional sinks are world-edge / bottom wipe / BODY impact vanish. Particle life expiry **deposits** back into the grid (pending overflow too).
 - Material rebuild clears labels only; `releaseNonSoilWater` dumps moisture/condense from non-soil cells into free liquid (or the cell above) so POOL overwrite does not erase water.
 - `exit` stops as soon as the icon is gone — no rain/liquid drain wait.
 
@@ -123,4 +126,4 @@ fount test icon_anime --no-parallel
 fount test icon_anime:pure --no-parallel
 ```
 
-Coverage: deterministic terrain glyphs/features, pedestal land shoulders, icon crust + caves below, tall-land quota (≥30% view cols ≥¼ screen), sealed-cavity compression (Boyle) + sealed hydrostatic stratification, U-tube leveling, BODY splash (no flood), pillar pass-through, pool→slab/ground leak, `SEAL` impermeable fixtures, soil absorb (dry>wet) / seepage / Matthew condense / drip + mass conservation, sustained-rain surface puddles, open-air hydrostatic P(y), liquid column depth pressure + Torricelli √(ΔP) orifice drain, sealed gas pushback on liquid, gas wind time-variation + height shear, wind-tunnel continuity + Bernoulli static-P drop + ΔP suction drive, wall stagnation, particle gas drag, water glyphs by amount/liquid-velocity (still puddles vs high/low momentum slant), exit frame bound, resize terrain/dynamics preservation + new-soil weathering, ANSI frame size.
+Coverage: deterministic terrain glyphs/features, pedestal land shoulders, icon crust + caves below, tall-land quota (≥30% view cols ≥¼ screen), sealed-cavity compression (Boyle) + sealed hydrostatic stratification, U-tube leveling (graph φ), BODY splash (no flood), pillar pass-through, pool→slab/ground leak, `SEAL` impermeable fixtures, soil absorb (dry>wet) / seepage / Matthew condense / drip + mass conservation, sustained-rain surface puddles, open-air hydrostatic P(y), liquid column depth pressure + Torricelli √(ΔP) orifice drain, sealed gas pushback on liquid, gas wind time-variation + height shear, wind-tunnel continuity + Bernoulli static-P drop + ΔP suction drive, wall stagnation, particle gas drag + life-expire deposit, water glyphs by amount/liquid-velocity (still puddles vs high/low momentum slant), exit frame bound, resize terrain/dynamics preservation + new-soil weathering, ANSI frame size.

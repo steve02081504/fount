@@ -1,9 +1,11 @@
 /**
  * Rain / splash particles with gas drag — SoA pool, no per-tick object alloc.
  * Strong local wind can suspend / orbit droplets and lift free-liquid puddles.
+ * Expired airborne mass deposits back into the grid (or world-edge sinks) —
+ * particles are a water reservoir, not a mass leak.
  */
 
-import { MAT, LIQ_DRAW } from './mat.mjs'
+import { MAT, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
  * @typedef {{
@@ -57,6 +59,17 @@ export const createParticlePool = (cap = PARTICLE_CAP) => ({
  */
 export const clearParticlePool = (pool) => {
 	pool.count = 0
+}
+
+/**
+ * Sum particle water mass in a pool.
+ * @param {ParticlePool} pool particle pool
+ * @returns {number} total amt
+ */
+export const totalParticleWater = (pool) => {
+	let t = 0
+	for (let i = 0; i < pool.count; i++) t += pool.amt[i]
+	return t
 }
 
 /**
@@ -126,12 +139,57 @@ export const verticalGasDrag = (gux, guy) => {
 }
 
 /**
+ * Deposit particle mass into the grid near `(x, y)`. Prefers AIR / POOL cells;
+ * sinks at world edges when nowhere to land. Returns deposited (or sunk) mass.
+ * @param {FluidWorld} world fluid world
+ * @param {number} x column
+ * @param {number} y row
+ * @param {number} amt water mass
+ * @returns {number} mass accounted for
+ */
+export const depositParticleMass = (world, x, y, amt) => {
+	if (amt <= 0) return 0
+	const { worldW: W, worldH: H, mat, liq } = world
+	const cx = Math.max(0, Math.min(W - 1, x | 0))
+	const cy = Math.max(0, Math.min(H - 1, y | 0))
+
+	/**
+	 * Try one cell; return stored delta.
+	 * @param {number} px column
+	 * @param {number} py row
+	 * @param {number} left remaining mass
+	 * @returns {number} stored
+	 */
+	const tryCell = (px, py, left) => {
+		if (px < 0 || py < 0 || px >= W || py >= H) return 0
+		const i = py * W + px
+		if (isLiquidBarrier(mat[i])) return 0
+		if (mat[i] !== MAT.AIR && mat[i] !== MAT.POOL) return 0
+		const room = LIQ_FULL - liq[i]
+		if (room <= 0) return 0
+		const take = Math.min(left, room)
+		liq[i] += take
+		return take
+	}
+
+	let left = amt
+	left -= tryCell(cx, cy, left)
+	if (left > 1e-8 && cy + 1 < H) left -= tryCell(cx, cy + 1, left)
+	if (left > 1e-8 && cy > 0) left -= tryCell(cx, cy - 1, left)
+	if (left > 1e-8) left -= tryCell(cx - 1, cy, left)
+	if (left > 1e-8) left -= tryCell(cx + 1, cy, left)
+	// Remainder leaves through world edge / impermeable bed — intentional sink.
+	return amt
+}
+
+/**
  * Mutable particle view passed to impact handlers (fields live in the SoA).
  * @typedef {{ x: number, y: number, vx: number, vy: number, life: number, amt: number }} ParticleView
  */
 
 /**
  * Advance particles with gas drag; call `onHit` on solid / wet cells.
+ * Life expiry deposits mass back into the grid instead of deleting it.
  * @param {FluidWorld} world fluid world
  * @param {(world: FluidWorld, x: number, y: number, mat: number, particle: ParticleView, wet: boolean, state: unknown) => void} onHit impact callback
  * @param {unknown} [state] animation / caller state forwarded to onHit
@@ -143,16 +201,19 @@ export const stepParticles = (world, onHit, state) => {
 	const { worldW: W, worldH: H, gasUx, gasUy, mat, liq } = world
 	const cap = live.x.length
 
-	// Drain splash queue into the live pool (may overwrite slots after count).
-	for (let i = 0; i < pending.count && live.count < cap; i++) {
+	// Drain splash queue into the live pool; overflow deposits so mass is not lost.
+	let pi = 0
+	for (; pi < pending.count && live.count < cap; pi++) {
 		const dst = live.count++
-		live.x[dst] = pending.x[i]
-		live.y[dst] = pending.y[i]
-		live.vx[dst] = pending.vx[i]
-		live.vy[dst] = pending.vy[i]
-		live.life[dst] = pending.life[i]
-		live.amt[dst] = pending.amt[i]
+		live.x[dst] = pending.x[pi]
+		live.y[dst] = pending.y[pi]
+		live.vx[dst] = pending.vx[pi]
+		live.vy[dst] = pending.vy[pi]
+		live.life[dst] = pending.life[pi]
+		live.amt[dst] = pending.amt[pi]
 	}
+	for (; pi < pending.count; pi++)
+		depositParticleMass(world, pending.x[pi], pending.y[pi], pending.amt[pi])
 	pending.count = 0
 
 	let write = 0
@@ -180,12 +241,19 @@ export const stepParticles = (world, onHit, state) => {
 				life = Math.max(life, Math.min(WIND_HOLD_LIFE, life + 1))
 		}
 		pvy = Math.min(MAX_VY, pvy + GRAVITY)
-		if (life <= 0) continue
+
+		if (life <= 0) {
+			depositParticleMass(world, px, py, amt)
+			continue
+		}
 
 		const nx = px + pvx
 		const ny = py + pvy
 
-		if (nx < 0 || nx >= W || ny >= H) continue
+		if (nx < 0 || nx >= W || ny >= H) 
+			// World-edge sink — mass leaves the domain intentionally.
+			continue
+		
 		if (ny < 0) {
 			live.x[write] = nx
 			live.y[write] = ny

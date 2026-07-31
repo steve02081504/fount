@@ -4,6 +4,7 @@
  *
  * Open air: P = P_ATM + ATM_HYDRO·y; sealed: isothermal Boyle mean + ATM_HYDRO·(y−yMean).
  * Velocity: wind shear + nozzle continuity + neighbor static-ΔP (Bernoulli feedback).
+ * No 2D ∇·u=0 projection — pointer vortices / updrafts are intentional sources.
  */
 
 import { hash01, fbm1d } from '../hash.mjs'
@@ -418,6 +419,9 @@ export const stepGas = (world, opts = {}) => {
 
 			const region = regionId[cell] ? regions[regionId[cell]] : null
 			const open = !region || region.openToAtm
+			const localDrive = driveUx
+				? Math.abs(driveUx[cell]) + Math.abs(driveUy[cell])
+				: 0
 
 			let tx = open ? drive : 0
 			let ty = 0
@@ -438,6 +442,7 @@ export const stepGas = (world, opts = {}) => {
 			if (openU) ty += -1 * (p0 - staticP[cell - W]) * GAS_DP_DRIVE
 			if (openD) ty += (p0 - staticP[cell + W]) * GAS_DP_DRIVE
 
+			// Continuity (A·v) through duct throats.
 			const span = vertSpan[cell]
 			if (span <= 4) {
 				const wide = Math.max(span, openL ? vertSpan[cell - 1] : span, openR ? vertSpan[cell + 1] : span)
@@ -469,7 +474,8 @@ export const stepGas = (world, opts = {}) => {
 			ux = ux * 0.65 + (sumUx / count) * 0.35
 			uy = uy * 0.65 + (sumUy / count) * 0.35
 
-			if (!open) {
+			// Sealed cavities damp bulk motion unless local drive keeps them alive.
+			if (!open && localDrive <= 0.05) {
 				ux *= 0.85
 				uy *= 0.85
 			}

@@ -5,8 +5,8 @@
 import { composeFrame, renderBuffers } from './compose.mjs'
 import {
 	MAT, LIQ_DRAW, createWorld, clearMaterials, clearDynamics, setMat, addLiquid, addMoisture,
-	spawnParticle, queueSplash, stepGas, stepLiquid, stepParticles, liftLiquidByWind,
-	labelAirRegions, windProfileAt, idx, inWorld, isLiquidBarrier, releaseNonSoilWater,
+	spawnParticle, queueSplash, stepFluid, labelAirRegions, stepLiquid,
+	windProfileAt, idx, inWorld, isLiquidBarrier, releaseNonSoilWater,
 	soilAbsorbFactor, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, scratch,
 } from './fluid/index.mjs'
 import { createLightGesture, tickLightGesture } from './gesture/light.mjs'
@@ -495,7 +495,6 @@ const spawnRain = (state) => {
  */
 const simFrame = (state) => {
 	rebuildMaterials(state)
-	labelAirRegions(state.world)
 	tickWindGesture(state.wind)
 	tickLightGesture(state.light)
 	const { world } = state
@@ -503,11 +502,19 @@ const simFrame = (state) => {
 	const driveUx = scratch(world, 'windDriveUx', n, Float32Array)
 	const driveUy = scratch(world, 'windDriveUy', n, Float32Array)
 	fillWindDrive(state.wind, world, driveUx, driveUy)
-	stepGas(world, { time: state.frame, seed: state.seed, driveUx, driveUy })
-	liftLiquidByWind(world)
-	spawnRain(state)
-	stepParticles(world, onParticleHit, state)
-	stepLiquid(world)
+	stepFluid(world, {
+		time: state.frame,
+		seed: state.seed,
+		driveUx,
+		driveUy,
+		onHit: onParticleHit,
+		state,
+		/**
+		 * Spawn rain after gas so new drops feel this tick's wind.
+		 * @returns {void}
+		 */
+		beforeParticles: () => { spawnRain(state) },
+	})
 	const { iconOx, iconOy } = state
 	for (const ly of ICON_BASE_ROWS) {
 		const y = iconOy + ly

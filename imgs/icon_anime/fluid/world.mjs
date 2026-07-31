@@ -3,7 +3,7 @@
  */
 
 import { MAT, SOIL_CAP, LIQ_FULL, isSoilMat, isLiquidBarrier } from './mat.mjs'
-import { createParticlePool, clearParticlePool } from './particles.mjs'
+import { createParticlePool, clearParticlePool, totalParticleWater } from './particles.mjs'
 
 /** @typedef {{
  *   viewW: number, viewH: number, worldW: number, worldH: number,
@@ -203,6 +203,16 @@ export const totalGridWater = (w) => {
 		t += w.liq[i] + w.moisture[i] + w.condense[i]
 	return t
 }
+
+/**
+ * World water total: grid reservoirs + live / pending particles.
+ * @param {FluidWorld} w world
+ * @returns {number} total mass
+ */
+export const totalWorldWater = (w) =>
+	totalGridWater(w)
+	+ totalParticleWater(w.particles)
+	+ totalParticleWater(w.pendingSplash)
 
 /**
  * Add free liquid at `(x, y)` unless the cell is a liquid barrier.

@@ -6,7 +6,8 @@ import { assert, assertAlmostEquals, assertEquals, assertGreater, assertLess } f
 
 import {
 	MAT, createWorld, setMat, addLiquid, addMoisture, stepLiquid, stepSoil, stepGas, stepParticles,
-	labelAirRegions, pressureAt, liquidPressureAt, totalSealedGas, totalGridWater, P_ATM, ATM_HYDRO,
+	stepFluid, labelAirRegions, pressureAt, liquidPressureAt, totalSealedGas, totalGridWater,
+	totalWorldWater, P_ATM, ATM_HYDRO,
 	clearMaterials, idx, RHO_G, RHO_AIR,
 	COND_DRIP, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQ_DRAW,
 	waterChar, liquidChar, pickWaterGlyph, FALL_HEAVY,
@@ -794,4 +795,36 @@ Deno.test('fluid: vortex rain gathers at the cursor centre', async () => {
 	assertLess(dist, 2.2, `rain mean (${mx.toFixed(2)}, ${my.toFixed(2)}) drifted from cursor (${cx}, ${cy}) by ${dist.toFixed(2)}`)
 	assertLess(Math.abs(mx - cx), 1.6)
 	assertLess(Math.abs(my - cy), 1.6)
+})
+
+Deno.test('fluid: particle life expiry deposits mass into the grid', () => {
+	const w = createWorld({ width: 16, height: 12, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	for (let x = 0; x < w.worldW; x++)
+		setMat(w, x, 10, MAT.SEAL)
+	spawnParticle(w, 8, 5, 0, 0, 1, 0.55)
+	const before = totalWorldWater(w)
+	assertAlmostEquals(before, 0.55, 1e-6)
+	/**
+	 *
+	 */
+	const hit = () => { /* no-op */ }
+	stepParticles(w, hit)
+	assertEquals(w.particles.count, 0)
+	assertAlmostEquals(totalWorldWater(w), before, 1e-5)
+	assertGreater(totalGridWater(w), 0.5)
+})
+
+Deno.test('fluid: stepFluid runs gas then liquid in one tick', () => {
+	const w = createWorld({ width: 20, height: 14, margin: 2, bottomExtra: 2 })
+	clearMaterials(w)
+	for (let x = 4; x <= 14; x++) {
+		setMat(w, x, 10, MAT.HORIZON)
+		w.moisture[idx(w, x, 10)] = SOIL_CAP
+		setMat(w, x, 11, MAT.SEAL)
+	}
+	addLiquid(w, 9, 9, 1)
+	stepFluid(w, { time: 0, seed: 1, forceWind: 0.5 })
+	assertGreater(Math.abs(gasVelocityAt(w, 10, 3).ux), 0.05)
+	assertGreater(w.liq[idx(w, 9, 9)] + w.liq[idx(w, 8, 9)] + w.liq[idx(w, 10, 9)], 0.3)
 })
