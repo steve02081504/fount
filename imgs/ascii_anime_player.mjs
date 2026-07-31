@@ -14,8 +14,7 @@ const write = (s) => process.stdout.write(s)
  * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames
  */
 async function* iterateFrames(frames) {
-	const src = typeof frames === 'function' ? frames() : frames
-	yield* src
+	yield* frames?.() ?? frames
 }
 
 export class AsciiPlayer {
@@ -26,18 +25,31 @@ export class AsciiPlayer {
 		this.paused = false
 		this.#onKey = null
 		this.#onData = null
+		this.#ac = null
 	}
 
 	/** @type {((key: string, buf: Buffer) => void) | null} */
 	#onKey
 	/** @type {((buf: Buffer) => void) | null} */
 	#onData
+	/** @type {AbortController | null} */
+	#ac
+
+	/** Abort current playback (raw Ctrl+C / caller shutdown). */
+	abort() {
+		this.#ac?.abort()
+	}
 
 	/** Open TUI: clear, hide cursor, raw stdin. */
 	start({ onKey, signal } = {}) {
-		this.signal = signal ?? new AbortSignal()
+		this.#ac = new AbortController()
+		this.signal = this.#ac.signal
+		if (signal) {
+			if (signal.aborted) this.#ac.abort()
+			else signal.addEventListener('abort', () => this.#ac.abort(), { once: true })
+		}
 		this.#onKey = onKey ?? (ch => {
-			if (ch === '\x03') this.signal?.abort()
+			if (ch === '\x03') this.abort()
 		})
 		write('\x1b[?25l\x1b[2J\x1b[H')
 		if (!process.stdin.isTTY) return this
@@ -110,13 +122,33 @@ export class AsciiPlayer {
 		return Object.assign(result, {
 			play: async (action, options) => {
 				await result
-				return this.play(action, options ?? opts)
+				options ??= opts
+				this.useSignal(options?.signal)
+				return this.play(action, options)
 			},
 			loop: async (action, options) => {
 				await result
-				return this.loop(action, options ?? opts)
+				options ??= opts
+				this.useSignal(options?.signal)
+				return this.loop(action, options)
 			},
 		})
+	}
+
+	/** @return {AbortSignal} */
+	refereshSignal() {
+		this.#ac = new AbortController()
+		this.signal = this.#ac.signal
+		return this.signal
+	}
+
+	useSignal(signal) {
+		if (singal === undefined) return
+		if (signal === null) return this.refereshSignal()
+		if (signal.aborted) return
+		else if (!this.signal.aborted)
+			signal.addEventListener('abort', () => this.abort(), { once: true })
+		return this.signal
 	}
 
 	/**

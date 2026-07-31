@@ -9,7 +9,7 @@
 
 import { on_shutdown } from 'npm:on-shutdown'
 
-import { AsciiPlayer } from './ascii_player.mjs'
+import { AsciiPlayer } from './ascii_anime_player.mjs'
 
 const RESET = '\x1b[0m'
 const FG_AT = '\x1b[30m'
@@ -269,15 +269,14 @@ export const iconAnim = { enter, hold, exit, fps }
  */
 if (import.meta.main) {
 	const player = new AsciiPlayer({ fps })
-	const ac = new AbortController()
 
 	on_shutdown(async () => {
-		ac.abort()
-		await player.play(exit)
+		player.abort()
+		await player.play(exit, { signal: null })
 		player.stop()
 	})
 
 	player.start()
 
-	await player.play(enter, { signal: ac.signal }).loop(hold)
+	await player.play(enter).loop(hold)
 }
