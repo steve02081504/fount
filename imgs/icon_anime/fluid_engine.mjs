@@ -33,7 +33,7 @@
  *   pressure: number,
  * }} AirRegion
  *
- * @typedef {{ x: number, y: number, vx: number, vy: number, life: number }} FluidParticle
+ * @typedef {{ x: number, y: number, vx: number, vy: number, life: number, amt: number }} FluidParticle
  */
 
 /** Material enum. */
@@ -80,6 +80,8 @@ export const COND_DRIP = 0.85
 export const COND_MATTHEW_RATE = 0.22
 /** Noise amplitude (fraction of pair mass) to break condensation ties. */
 export const COND_MATTHEW_NOISE = 0.4
+/** Falling water (rain / drip streams) draws `|` at/above this amount. */
+export const FALL_HEAVY = 0.5
 
 /**
  * @param {number} m parameter
@@ -293,11 +295,12 @@ export const addLiquid = (w, x, y, amt) => {
  * @param {number} vx parameter
  * @param {number} vy parameter
  * @param {number} [life=40] parameter
+ * @param {number} [amt=0.4] water mass carried by the droplet
  * @returns {void} result
  */
-export const spawnParticle = (w, x, y, vx, vy, life = 40) => {
+export const spawnParticle = (w, x, y, vx, vy, life = 40, amt = 0.4) => {
 	if (w.particles.length > 1200) return
-	w.particles.push({ x, y, vx, vy, life })
+	w.particles.push({ x, y, vx, vy, life, amt })
 }
 
 /**
@@ -307,10 +310,11 @@ export const spawnParticle = (w, x, y, vx, vy, life = 40) => {
  * @param {number} vx parameter
  * @param {number} vy parameter
  * @param {number} [life=18] parameter
+ * @param {number} [amt=0.25] water mass carried by the splash
  * @returns {void} result
  */
-export const queueSplash = (w, x, y, vx, vy, life = 18) => {
-	w.pendingSplash.push({ x, y, vx, vy, life })
+export const queueSplash = (w, x, y, vx, vy, life = 18, amt = 0.25) => {
+	w.pendingSplash.push({ x, y, vx, vy, life, amt })
 }
 
 /**
@@ -910,25 +914,30 @@ export const stepParticles = (w, onHit) => {
 }
 
 /**
- * @param {number} yf parameter
- * @param {boolean} fast parameter
+ * Falling water glyph by amount — rain and re-condensed drips share this.
+ * Heavy → `|`; light → `,` / `.`.
+ * @param {number} amount parameter
+ * @param {number} [phase=0] parameter
  * @returns {string} result
  */
-export const rainChar = (yf, fast) => {
-	if (fast) return '|'
-	const u = ((yf % 1) + 1) % 1
-	if (u < 0.35) return '\''
-	if (u < 0.7) return '.'
-	return ','
+export const fallChar = (amount, phase = 0) => {
+	if (amount >= FALL_HEAVY) return '|'
+	return (phase | 0) & 1 ? ',' : '.'
 }
 
+/** Alias — rain uses the same amount-based falling glyphs. */
+export const rainChar = fallChar
+
 /**
- * Liquid glyph by fill amount.
+ * Standing / pooled liquid glyph by fill amount.
+ * Pass `falling=true` for free streams (same `|` / `,` / `.` rule as rain).
  * @param {number} amount parameter
  * @param {number} phase parameter
+ * @param {boolean} [falling=false] parameter
  * @returns {string} result
  */
-export const liquidChar = (amount, phase) => {
+export const liquidChar = (amount, phase, falling = false) => {
+	if (falling) return fallChar(amount, phase)
 	if (amount >= 0.85) return '~'
 	if (amount >= 0.55) return phase & 1 ? '≈' : '~'
 	if (amount >= LIQ_DRAW) return phase & 1 ? ',' : '.'

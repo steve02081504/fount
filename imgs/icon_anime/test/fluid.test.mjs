@@ -8,6 +8,7 @@ import {
 	MAT, createWorld, setMat, addLiquid, addMoisture, stepLiquid, stepSoil, labelAirRegions,
 	pressureAt, totalSealedGas, totalGridWater, P_ATM, clearMaterials, idx,
 	COND_DRIP, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQUID_DRAW_THRESHOLD,
+	fallChar, liquidChar, FALL_HEAVY,
 } from '../fluid_engine.mjs'
 
 /**
@@ -336,4 +337,13 @@ Deno.test('fluid: closed soil seepage conserves grid water', () => {
 			const m = w.moisture[idx(w, x, y)]
 			assert(m >= -1e-6 && m <= SOIL_CAP + 1e-6)
 		}
+})
+
+Deno.test('fluid: fallChar is amount-based (| vs ,/.)', () => {
+	assertEquals(fallChar(FALL_HEAVY), '|')
+	assertEquals(fallChar(FALL_HEAVY + 0.2), '|')
+	assertEquals(fallChar(FALL_HEAVY - 0.01, 0), '.')
+	assertEquals(fallChar(0.1, 1), ',')
+	assertEquals(liquidChar(0.7, 0, true), '|')
+	assertEquals(liquidChar(0.2, 0, true), '.')
 })

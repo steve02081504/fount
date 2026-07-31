@@ -80,7 +80,7 @@ export function generateTerrain(world, {
 	injectConnectors(solid, surface, features, { W, H, seed, iconOx, iconBaseX0, iconBaseX1 })
 
 	carveIconFootprint(solid, surface, {
-		W, H, footX0, footX1, iconOy, iconBaseRows, baseY,
+		W, H, footX0, footX1, baseY,
 	})
 
 	const surfaceChar = buildSurfaceChars(surface, solid, W, H)
@@ -280,7 +280,7 @@ export function tallLandCoverage(terrain, { viewH, viewW }) {
 	return {
 		tall,
 		total: vx1 - vx0,
-		fraction: (vx1 - vx0) ? tall / (vx1 - vx0) : 0,
+		fraction: vx1 - vx0 ? tall / (vx1 - vx0) : 0,
 		minThick,
 	}
 }
@@ -592,26 +592,20 @@ function carveCorridor(solid, surface, x0, y0, x1, y1) {
 }
 
 /**
- * Keep icon pedestal span on land at `baseY`, clear inter-slab leak gaps,
- * and pack solid foundation under the bottom slab.
- * Bottom slab row stays solid (horizon) until the scene paints POOL over it —
- * so ungrown base columns still read as land.
+ * Keep icon pedestal span on land at `baseY` and ensure that crust cell is soil.
+ * Clear air above the crust (inter-slab gaps included). Deeper cells keep whatever
+ * caves / connectors already carved — no packed fill under the icon.
  * @param {Uint8Array[]} solid parameter
  * @param {Int16Array} surface parameter
- * @param {{ W: number, H: number, footX0: number, footX1: number, iconOy: number, iconBaseRows: number[], baseY: number }} opts parameter
+ * @param {{ W: number, H: number, footX0: number, footX1: number, baseY: number }} opts parameter
  */
-function carveIconFootprint(solid, surface, { W, H, footX0, footX1, iconOy, iconBaseRows, baseY }) {
-	const last = iconBaseRows[iconBaseRows.length - 1]
+function carveIconFootprint(solid, surface, { W, H, footX0, footX1, baseY }) {
 	for (let x = footX0; x < footX1; x++) {
 		if (x < 0 || x >= W) continue
 		surface[x] = baseY
-		for (let y = 0; y < H; y++) {
-			if (iconBaseRows.some(br => y === iconOy + br + 1) && y < iconOy + last) {
-				solid[y][x] = 0
-				continue
-			}
-			solid[y][x] = y >= baseY ? 1 : 0
-		}
+		for (let y = 0; y < baseY; y++)
+			solid[y][x] = 0
+		if (baseY < H) solid[baseY][x] = 1
 	}
 }
 

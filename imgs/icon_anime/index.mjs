@@ -21,7 +21,7 @@ import { on_shutdown } from 'npm:on-shutdown'
 
 import {
 	MAT, createWorld, clearMaterials, clearDynamics, setMat, addLiquid, addMoisture,
-	spawnParticle, queueSplash, stepLiquid, stepParticles, rainChar, liquidChar, dripChar,
+	spawnParticle, queueSplash, stepLiquid, stepParticles, fallChar, liquidChar, dripChar,
 	hash01, idx, inWorld, isLiquidBarrier, isSoilMat, releaseNonSoilWater, soilAbsorbFactor,
 	LIQUID_DRAW_THRESHOLD, COND_DRAW_THRESHOLD, SOIL_CAP, SOIL_HIT_ABSORB_FRAC,
 } from './fluid_engine.mjs'
@@ -191,7 +191,7 @@ export const resizeAnimState = (state, { width, height }) => {
 		const nx = p.x + dx
 		const ny = p.y + dy
 		if (nx < -2 || nx >= world.worldW + 2) continue
-		spawnParticle(world, nx, ny, p.vx, p.vy, p.life)
+		spawnParticle(world, nx, ny, p.vx, p.vy, p.life, p.amt)
 	}
 
 	state.width = width
@@ -384,7 +384,9 @@ const leakPool = (world, state, x, y, force = 0) => {
 		y + 0.4,
 		side * (0.15 + hash01(x, 7) * 0.25),
 		0.35 + hash01(x, 8) * 0.35,
-		28)
+		28,
+		rest,
+	)
 }
 
 /**
@@ -491,7 +493,9 @@ const spawnRain = (state) => {
 		const lx = (hash01(frame * 3, i) * cols) | 0
 		const x = x0 + lx + hash01(frame, i + 2) * 0.8
 		const vy = 0.35 + hash01(x | 0, 1) * 0.4
-		spawnParticle(world, x, -hash01(frame, i + 9) * 1.5, (hash01(frame, i) - 0.5) * 0.04, vy, 70)
+		const heavy = hash01(frame, i + 11) > 0.45
+		const amt = heavy ? 0.55 + hash01(frame, i + 13) * 0.45 : 0.12 + hash01(frame, i + 13) * 0.32
+		spawnParticle(world, x, -hash01(frame, i + 9) * 1.5, (hash01(frame, i) - 0.5) * 0.04, vy, 70, amt)
 	}
 }
 
@@ -505,7 +509,7 @@ const composeFrame = (state) => {
 		bodyReach, bodyMinD, pillars, frame, terrain,
 	} = state
 	const { ox, mat, liq, particles } = world
-	const { solid, surface, surfaceChar, footX0, footX1 } = terrain
+	const { solid, surface, surfaceChar } = terrain
 	const { worldW: W, worldH: H } = world
 	const grid = Array.from({ length: height }, () => Array.from({ length: width }, () => /** @type {Cell} */ null))
 
@@ -529,7 +533,7 @@ const composeFrame = (state) => {
 				bodyEdge.add(`${lx},${ly}`)
 		}
 
-	// Terrain: surface everywhere (pools overwrite later); cave outlines stay off the pedestal span.
+	// Terrain: surface everywhere (pools overwrite later); caves under the pedestal may show.
 	for (let vy = 0; vy < height; vy++)
 		for (let vx = 0; vx < width; vx++) {
 			const x = ox + vx
@@ -541,8 +545,6 @@ const composeFrame = (state) => {
 				paint(vx, vy, surfaceChar[x] || '_', FG_TERRAIN)
 				continue
 			}
-			const underPedestal = x >= footX0 && x < footX1 && y >= iconOy + ICON_BASE_ROWS[0]
-			if (underPedestal) continue
 			const ch = outlineChar(solid, x, y, W, H, surface)
 			if (ch) paint(vx, vy, ch, FG_TERRAIN)
 		}
@@ -559,8 +561,16 @@ const composeFrame = (state) => {
 				const ly = vy - iconOy
 				paint(vx, vy, bodyEdge.has(`${lx},${ly}`) ? '.' : '@', FG_AT)
 			}
-			else if (liq[i] >= LIQUID_DRAW_THRESHOLD)
-				paint(vx, vy, liquidChar(liq[i], ox + vx + vy + frame), FG_SPLASH)
+			else if (liq[i] >= LIQUID_DRAW_THRESHOLD) {
+				const wx = ox + vx
+				const by = vy + 1
+				const falling = by >= H || (
+					!isLiquidBarrier(mat[idx(world, wx, by)])
+					&& mat[idx(world, wx, by)] !== MAT.POOL
+					&& liq[idx(world, wx, by)] < LIQUID_DRAW_THRESHOLD
+				)
+				paint(vx, vy, liquidChar(liq[i], wx + vy + frame, falling), FG_SPLASH)
+			}
 			else if (
 				vy > 0
 				&& isSoilMat(mat[idx(world, ox + vx, vy - 1)])
@@ -588,8 +598,7 @@ const composeFrame = (state) => {
 		const vx = (p.x - ox) | 0
 		const vy = p.y | 0
 		if (vy < 0 || vy >= height || vx < 0 || vx >= width) continue
-		const ch = p.vy < 0 ? liquidChar(0.4, frame + vx) : rainChar(p.y, p.vy > 0.85)
-		paint(vx, vy, ch, FG_SPLASH)
+		paint(vx, vy, fallChar(p.amt, frame + vx), FG_SPLASH)
 	}
 
 	return renderGrid(grid, width, height)

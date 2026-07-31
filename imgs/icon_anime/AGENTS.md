@@ -27,7 +27,7 @@ Controls: Space pause, `[` / `]` speed, Ctrl+C exit (icon teardown, then quit).
 
 ## Material standard
 
-Static / growing icon + terrain write the material grid (particles do not rewrite the ICON string). Glyphs below are the *authored* look; free liquid may redraw cells as `~` / `≈` / `,` when flooded. Hanging condensation under soil ceilings draws as `.` / `,` / `*` / `o`.
+Static / growing icon + terrain write the material grid (particles do not rewrite the ICON string). Glyphs below are the *authored* look; free liquid may redraw cells as `~` / `≈` / `,` when pooled, or `|` / `,` / `.` when falling. Hanging condensation under soil ceilings draws as `.` / `,` / `*` / `o`.
 
 | Glyph / mat | Region | Behavior |
 | --- | --- | --- |
@@ -36,18 +36,21 @@ Static / growing icon + terrain write the material grid (particles do not rewrit
 | `@` (`POOL`) | Base slabs | Pool: absorb, then leak with splash to the next lower slab; bottom slab runoff deposits free liquid on nearby ground. |
 | `>` / `<` (`SLOPE_*`) | Base soft edges | 45° splash faces (`>` one side, `<` opposite). |
 | surface (`HORIZON`) | Ground top | Soil: impact / standing free liquid raise moisture (dry soil drinks fastest); saturated cells shed free liquid into the air cell above. Pedestal span stays land until POOL overwrites — ungrown base columns still join the shoulders. |
-| terrain fill (`SOLID`) | Foundation | Soil (same moisture field as HORIZON). Impenetrable to free liquid / particles except via seepage + ceiling drip. |
+| terrain fill (`SOLID`) | Foundation | Soil (same moisture field as HORIZON). Impenetrable to free liquid / particles except via seepage + ceiling drip. Under the icon only the crust layer is required; deeper cells may be caves. |
 | `SEAL` | Tests / vessels | Impermeable barrier: blocks liquid like rock, stores no moisture, no seepage. |
 | empty (`AIR`) | Atmosphere / caves | Air; liquid & particles that hit world edges are discarded. |
 
 Open-stage rule: columns whose base slab has not grown yet do **not** splash — rain keeps falling through empty cells until it hits existing mat, horizon, or leaves the world.
 
-Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `..`) → body-pool `@` / flooded liquid `~` → hanging drip under soil → pillars `:` → terrain outline.
+Falling water (rain particles **and** re-condensed free streams) shares one glyph rule by amount: heavy → `|`, light → `,` / `.` (`fallChar` / `FALL_HEAVY`). Standing pools still use `~` / `≈`.
+
+Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `..`) → body-pool `@` / flooded liquid `~` or falling `|` → hanging drip under soil → pillars `:` → terrain outline.
 
 ## Terrain invariants
 
 - Surface is **pedestal-anchored**: flat land under the icon base, land shoulders on both outer ends, free Terraria-style walk outward.
 - Ungrown base columns keep `HORIZON` until `POOL`/`SLOPE_*` overwrite — terrain and icon join without a post-hoc hole.
+- Under the icon: the crust cell at surface/`baseY` is soil; below that the generator may leave caves (no packed solid fill).
 - ≥30% of view columns have land thickness ≥ ¼ screen height (`TALL_LAND_FRACTION` / `TALL_LAND_HEIGHT_FRAC`).
 
 ## Physics invariants
@@ -70,4 +73,4 @@ fount test icon_anime --no-parallel
 fount test icon_anime:pure --no-parallel
 ```
 
-Coverage: deterministic terrain glyphs/features, pedestal land shoulders, tall-land quota (≥30% view cols ≥¼ screen), sealed-cavity compression, U-tube leveling, BODY splash (no flood), pillar pass-through, pool→slab/ground leak, `SEAL` impermeable fixtures, soil absorb (dry>wet) / seepage / Matthew condense / drip + mass conservation, sustained-rain surface puddles, exit frame bound, resize state preserve, ANSI frame size.
+Coverage: deterministic terrain glyphs/features, pedestal land shoulders, icon crust + caves below, tall-land quota (≥30% view cols ≥¼ screen), sealed-cavity compression, U-tube leveling, BODY splash (no flood), pillar pass-through, pool→slab/ground leak, `SEAL` impermeable fixtures, soil absorb (dry>wet) / seepage / Matthew condense / drip + mass conservation, sustained-rain surface puddles, fall glyphs by amount, exit frame bound, resize state preserve, ANSI frame size.

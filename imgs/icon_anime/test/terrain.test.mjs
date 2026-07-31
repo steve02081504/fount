@@ -102,3 +102,18 @@ Deno.test('terrain: outlineChar marks cave walls', () => {
 	assertEquals(ch, TERRAIN_CH.WALL)
 	assertEquals(outlineChar(solid, 1, 1, 4, 4, surface), null)
 })
+
+Deno.test('terrain: under icon crust is soil; caves may open below', () => {
+	let foundCave = false
+	for (const seed of [1, 7, 42, 99, 2024, 555, 888, 1234, 9999]) {
+		const { terrain: t, baseY, world } = makeTerrain(seed, 80, 40)
+		const { footX0, footX1, surface, solid } = t
+		for (let x = footX0; x < footX1; x++) {
+			assertEquals(surface[x], baseY)
+			assertEquals(solid[baseY][x], 1, `crust missing seed=${seed} x=${x}`)
+			for (let y = baseY + 2; y < world.worldH; y++)
+				if (!solid[y][x]) foundCave = true
+		}
+	}
+	assert(foundCave, 'expected air below pedestal crust across seeds')
+})
