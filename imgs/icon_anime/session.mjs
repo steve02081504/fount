@@ -1,6 +1,6 @@
 /**
  * Icon anime controller: anim state + TUI player.
- * Lifecycle for embedders: start → (dismiss) → farewell. Process hooks stay in the host.
+ * Hosts own process hooks (`on_shutdown` → farewell).
  */
 
 import { lightPointer } from './gesture/light.mjs'
@@ -16,12 +16,10 @@ export const fps = 24
 
 /**
  * @typedef {object} IconAnime
- * @property {boolean} userAborted - hold ended by Ctrl+C (not dismiss / farewell)
- * @property {AbortSignal} userSignal - aborts when userAborted becomes true
- * @property {() => Promise<void>} start - enter alt-screen, enter→hold (idempotent while live)
- * @property {(ms: number) => Promise<void>} sleep - wait; resolves early on user abort
- * @property {() => Promise<void>} dismiss - stop hold, leave alt-screen; keep state for farewell
- * @property {() => Promise<void>} farewell - play exit from live or dismissed progress, restore terminal
+ * @property {boolean} userAborted - last play ended by Ctrl+C
+ * @property {() => Promise<void>} start - CLI: enter→hold until abort
+ * @property {() => Promise<void>} intro - play enter to completion, leave alt-screen, keep state for farewell
+ * @property {() => Promise<void>} farewell - play exit from live or saved progress, restore terminal
  */
 
 /**
@@ -34,18 +32,13 @@ export function createIconAnime() {
 	let state = null
 	/** @type {Promise<void> | null} */
 	let running = null
-	/** Dismissed (or pre-farewell) anim progress. */
 	/** @type {ReturnType<typeof createAnimState> | null} */
 	let savedState = null
-	/** dismiss / farewell — do not treat hold end as userAborted. */
+	/** Host-initiated stop / farewell took over. */
 	let stopping = false
 	let userAborted = false
-	/** @type {(() => void) | null} */
-	let wakeSleep = null
-	let userAc = new AbortController()
 
 	/**
-	 * Wire a player to an anim state (resize + pointer).
 	 * @param {ReturnType<typeof createAnimState>} animState state
 	 * @returns {AsciiAnimePlayer} player
 	 */
@@ -80,88 +73,69 @@ export function createIconAnime() {
 	}
 
 	/**
-	 * Abort hold and wait for the run promise to settle.
-	 * @returns {Promise<void>}
+	 * Leave alt-screen; keep progress for a later farewell.
+	 * @returns {void}
 	 */
-	const stopHold = async () => {
-		stopping = true
-		player?.abort()
-		await Promise.resolve()
-		await running?.catch(() => { /* abort */ })
+	const park = () => {
+		savedState = state
+		player?.stop()
+		player = null
+		state = null
 		running = null
 	}
 
 	return {
-		/** @returns {boolean} whether Ctrl+C ended hold */
+		/** @returns {boolean} whether last play ended by Ctrl+C */
 		get userAborted() {
 			return userAborted
 		},
 
-		/** @returns {AbortSignal} aborts when userAborted becomes true */
-		get userSignal() {
-			return userAc.signal
-		},
-
 		/**
+		 * Enter → hold until Ctrl+C (standalone CLI).
 		 * @returns {Promise<void>}
 		 */
 		start() {
 			if (player) return running
 			userAborted = false
 			stopping = false
-			userAc = new AbortController()
 			player = openPlayer(createAnimState())
 			savedState = state
 			player.start()
 			running = player.play(() => enter(state)).loop(() => hold(state)).then(() => {
-				if (stopping) return
-				userAborted = true
-				userAc.abort()
-				wakeSleep?.()
+				if (!stopping) userAborted = true
 			})
 			return running
 		},
 
 		/**
-		 * @param {number} ms milliseconds
+		 * Play enter to completion, then leave alt-screen (progress kept for farewell).
 		 * @returns {Promise<void>}
 		 */
-		sleep(ms) {
-			return new Promise((resolve) => {
-				const timer = setTimeout(() => {
-					wakeSleep = null
-					resolve()
-				}, ms)
-				/**
-				 *
-				 */
-				wakeSleep = () => {
-					clearTimeout(timer)
-					wakeSleep = null
-					resolve()
-				}
-			})
+		async intro() {
+			if (player) return
+			userAborted = false
+			stopping = false
+			player = openPlayer(createAnimState())
+			player.start()
+			running = Promise.resolve(player.play(() => enter(state)))
+			await running
+			if (stopping) return
+			if (player.signal?.aborted) userAborted = true
+			park()
 		},
 
 		/**
-		 * @returns {Promise<void>}
-		 */
-		async dismiss() {
-			if (!player) return
-			savedState = state
-			await stopHold()
-			player.stop()
-			player = null
-			state = null
-		},
-
-		/**
+		 * Play exit from live hold/intro or parked progress.
 		 * @returns {Promise<void>}
 		 */
 		async farewell() {
 			if (player) {
+				stopping = true
 				savedState = null
-				await stopHold()
+				player.abort()
+				await Promise.resolve()
+				await running?.catch(() => { /* abort */ })
+				running = null
 				await player.play(() => exit(state), { signal: null })
 				player.stop()
 				player = null

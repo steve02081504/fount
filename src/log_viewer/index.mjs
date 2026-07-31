@@ -3,8 +3,8 @@
  *
  * 设计目标：
  * - 作为后台服务器进程的“前台脸面”，始终能在交互终端中显示主进程输出。
+ * - 交互 TTY 且支持 ANSI 时：启动先播完 icon_anime 进场，再进入日志/REPL；退出时播完离场再交还终端。非 TTY / 无 VT 则跳过 logo。
  * - 交互 TTY 且支持 ANSI 时：日志写入终端滚动区（可用自带滚动条），底部固定 REPL（`/ws/eval`）。
- * - 服务器未就绪时播放 icon_anime 等待动画；就绪进入连接循环后收起并正常显示；进程退出时再播结束动画。
  * - 服务器未就绪时持续轮询 `/api/ping`（指数退避，无超时），网络/进程恢复后自动接续。
  * - 服务器主动退出（`fount_exit`）时与服务器同步：`code === 131` 视为重启，自动重连；其它退出码本进程同码退出。
  * - WebSocket 异常断开（无 `fount_exit`）按指数退避重连，等服务器再次起来。
@@ -70,7 +70,7 @@ function sleep(milliseconds) {
 	return new Promise((resolve) => setTimeout(resolve, milliseconds))
 }
 
-let stopRequested = false
+const stopRequested = false
 /**
  * 当前日志 WebSocket 连接实例。
  * @type {ReturnType<typeof connectLogWire> | null}
@@ -167,41 +167,22 @@ const logSink = INTERACTIVE
 	: createPlainSink()
 
 /**
- * 阻塞至 `/api/ping` 返回 200 为止；指数退避（200ms → 5000ms 上限），用户 Ctrl+C 则结束。
- * 交互模式下等待期间播放 icon_anime；就绪后 dismiss（不播 exit）。
- * @param {ReturnType<typeof createIconAnime> | null} icon - icon anime 主机。
+ * 阻塞至 `/api/ping` 返回 200 为止；指数退避（200ms → 5000ms 上限）。
  * @returns {Promise<void>} 服务器就绪或停止时兑现。
  */
-async function pollUntilServerReady(icon) {
-	icon?.start()
+async function pollUntilServerReady() {
 	let delay = 200
-	try {
-		while (!stopRequested) {
-			if (icon?.userAborted) {
-				stopRequested = true
-				break
-			}
-			try {
-				const signal = icon
-					? AbortSignal.any([AbortSignal.timeout(2000), icon.userSignal])
-					: AbortSignal.timeout(2000)
-				const res = await fetch(PING_URL, { signal })
-				if (res.ok) return
-				else throw new Error(String(res.status))
-			} catch {
-				if (stopRequested || icon?.userAborted) {
-					stopRequested = true
-					break
-				}
-				await (icon ? icon.sleep(delay) : sleep(delay))
-				delay = Math.min(delay * 2, 5000)
-			}
+	while (!stopRequested) 
+		try {
+			const res = await fetch(PING_URL, { signal: AbortSignal.timeout(2000) })
+			if (res.ok) return
+			throw new Error(String(res.status))
+		} catch {
+			if (stopRequested) break
+			await sleep(delay)
+			delay = Math.min(delay * 2, 5000)
 		}
-	} finally {
-		// 用户中止时留给 farewell 就地播 exit；就绪/停止则只收起。
-		if (icon && !icon.userAborted)
-			await icon.dismiss()
-	}
+	
 }
 
 /**
@@ -351,9 +332,14 @@ async function main() {
 		try { await icon?.farewell() } catch { /* ignore */ }
 	})
 
+	if (icon) {
+		await icon.intro()
+		if (icon.userAborted) process.exit(130)
+	}
+
 	let backoff = 500
 	while (!stopRequested) {
-		await pollUntilServerReady(icon)
+		await pollUntilServerReady()
 		if (stopRequested) break
 		const reason = await runOneConnection(exitContext)
 
@@ -361,9 +347,7 @@ async function main() {
 			const code = exitCodeSlot.value ?? 0
 			exitCodeSlot.value = null
 			if (code === 131) {
-				// 服务器自重启：立刻挂上等待动画，稍后再 ping
-				icon?.start()
-				await (icon ? icon.sleep(2000) : sleep(2000))
+				await sleep(2000)
 				backoff = 500
 				continue
 			}
@@ -372,8 +356,7 @@ async function main() {
 		}
 
 		// 异常断开（无 fount_exit）：可能是服务器崩溃或网络抖动，指数退避后重试
-		icon?.start()
-		await (icon ? icon.sleep(backoff) : sleep(backoff))
+		await sleep(backoff)
 		backoff = Math.min(backoff * 2, 10000)
 	}
 
