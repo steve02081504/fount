@@ -97,7 +97,7 @@ get_best_locale() {
 	echo "en-UK" # 默认
 }
 
-# 加载本地化数据
+# 加载本地化数据（调用方勿 export，否则某些 Linux 会撞 ARG_MAX）
 # shellcheck disable=SC2120
 load_locale_data() {
 	if [ -z "$FOUNT_LOCALE" ]; then
@@ -122,7 +122,7 @@ load_locale_data() {
 		fi
 	fi
 	if command -v jq &>/dev/null; then
-		cat "$locale_file"
+		jq -c '.fountConsole.path // {}' "$locale_file"
 	else
 		echo "{}" # 如果 jq 不可用，则返回空 json
 	fi
@@ -222,12 +222,12 @@ apply_i18n_backticks() {
 
 get_i18n() {
 	local key="$1"
+	# 普通 shell 变量缓存即可；子 shell 会继承，勿 export（ARG_MAX）
 	if [ -z "$FOUNT_LOCALE_DATA" ]; then
 		FOUNT_LOCALE_DATA=$(load_locale_data)
-		export FOUNT_LOCALE_DATA
 	fi
 	local translation
-	translation=$(echo "$FOUNT_LOCALE_DATA" | jq -r ".fountConsole.path.$key // .\"$key\" // \"$key\"")
+	translation=$(printf '%s' "$FOUNT_LOCALE_DATA" | jq -r --arg key "$key" 'getpath($key | split(".")) // $key')
 
 	shift
 	while [ $# -gt 0 ]; do
