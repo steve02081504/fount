@@ -18,9 +18,14 @@ process.env.RUST_BACKTRACE = 'full'
 // TODO(pidusage): remove when https://github.com/soyuka/pidusage/issues/191 is fixed — orchestrator ProcessUsageTracker → pidusage gwmi on Windows.
 if (process.platform === 'win32') {
 	const emitWarning = process.emitWarning
+	/**
+	 *
+	 * @param warning
+	 * @param {...any} args
+	 */
 	process.emitWarning = (warning, ...args) => {
 		if ([args[1], args[0]?.code, warning?.code].includes('DEP0190')) return
-		return emitWarning.call(process, warning, ...args)
+		return emitWarning(warning, ...args)
 	}
 }
 

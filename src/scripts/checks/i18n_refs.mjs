@@ -6,7 +6,7 @@
  */
 
 /** data-i18n 对象模式可写入元素的字段（与前端 translateSingularElement 对齐）。 */
-export const I18N_ELEMENT_APPLICATOR_KEYS = Object.freeze([
+export const I18N_ELEMENT_APPLICATOR_KEYS = [
 	'placeholder',
 	'title',
 	'label',
@@ -16,7 +16,7 @@ export const I18N_ELEMENT_APPLICATOR_KEYS = Object.freeze([
 	'textContent',
 	'innerHTML',
 	'dataset',
-])
+]
 
 /**
  * @param {unknown} value locale 节点
@@ -137,6 +137,10 @@ export function splitDataI18nKeys(raw) {
 export function extractI18nRefsFromSource(text) {
 	/** @type {{ key: string, line: number, binding: 'element' | 'string' | 'geti18n' }[]} */
 	const refs = []
+	/**
+	 *
+	 * @param index
+	 */
 	const lineAt = (index) => text.slice(0, index).split('\n').length
 
 	for (const match of text.matchAll(/\bdata-i18n\s*=\s*"([^"]*)"/g)) {
@@ -192,6 +196,10 @@ export function extractI18nRefsFromSource(text) {
 export function extractFountConsolePathKeys(text) {
 	/** @type {{ key: string, line: number }[]} */
 	const refs = []
+	/**
+	 *
+	 * @param index
+	 */
 	const lineAt = (index) => text.slice(0, index).split('\n').length
 	for (const match of text.matchAll(/\b(?:Get-I18n\s+-key|get_i18n)\s+'(?:([^']+))'/g))
 		refs.push({ key: match[1], line: lineAt(match.index ?? 0) })

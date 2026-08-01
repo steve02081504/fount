@@ -38,7 +38,7 @@ _MISSING = object()
 PLURAL_CONTAINER = {"tab": "tabs"}
 PREFIX_CLUSTER_MIN = 4
 
-I18N_REWRITE_SUFFIXES = (".mjs", ".js", ".ts", ".tsx", ".html", ".ps1", ".sh", ".py")
+I18N_REWRITE_SUFFIXES = (".mjs", ".js", ".ts", ".html", ".ps1", ".sh", ".py")
 AFFIX_RE = re.compile(r"^(?:Suffix|Prefix)|(?:Suffix|Prefix)$")
 NUMBERED_RE = re.compile(r"^[A-Za-z][A-Za-z]*\d+$")
 SCREAMING_SNAKE_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")

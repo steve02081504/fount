@@ -5,14 +5,14 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const EMOJI_LANG_PATTERNS = Object.freeze([
+const EMOJI_LANG_PATTERNS = [
 	['中文', /[\u4e00-\u9fff]/u],
 	['日文', /[\u3040-\u309f\u30a0-\u30ff]/u],
 	['俄文', /[\u0400-\u04ff]/u],
 	['英文', /[a-zA-Z]/u],
-])
+]
 
-const EMOJI_SKIP_KEYS = Object.freeze(new Set(['author', 'avatar', 'version', 'home_page']))
+const EMOJI_SKIP_KEYS = new Set(['author', 'avatar', 'version', 'home_page'])
 const EMOJI_STRIP_MD_LINK_URL_RE = /(\[[^\]]*\]\()[^)]*(\))/g
 
 const URL_CHECK_TIMEOUT_MS = 10_000

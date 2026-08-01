@@ -22,9 +22,9 @@ export const AFFIX_HINT =
 	'应用 `${param}` 格式化完整句子，不要用 Suffix/Prefix 碎片硬拼字符串。'
 
 /** 集合类单段前缀 → 复数容器名 */
-export const PLURAL_CONTAINER = Object.freeze({
+export const PLURAL_CONTAINER = {
 	tab: 'tabs',
-})
+}
 
 /**
  * 同级键共享驼峰前缀时，触发须嵌套的最小成员数。

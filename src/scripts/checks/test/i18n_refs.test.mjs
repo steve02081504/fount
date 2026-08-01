@@ -78,12 +78,12 @@ Deno.test('extract + scan catches data-i18n leave parent and CLI stale keys', ()
 	assert(htmlIssues.some(i => i.kind === 'object_not_element' && i.key === 'chat.hub.group.context.leave'))
 	assert(!htmlIssues.some(i => i.key === 'chat.hub.group.context.leave.main'))
 
-	const js = "setElementI18n(btn, 'chat.hub.group.context.leave')\nshowToastI18n('success', 'chat.hub.group.context.leave.ok')\n"
+	const js = 'setElementI18n(btn, \'chat.hub.group.context.leave\')\nshowToastI18n(\'success\', \'chat.hub.group.context.leave.ok\')\n'
 	const jsIssues = scanSourceI18nRefs(LEAVE_LIKE, js, 'leave.mjs')
 	assert(jsIssues.some(i => i.kind === 'object_not_element' && i.key === 'chat.hub.group.context.leave'))
 	assertEquals(jsIssues.filter(i => i.key === 'chat.hub.group.context.leave.ok').length, 0)
 
-	const staleCli = "Write-Host (Get-I18n -key 'remove.removingFount')\nget_i18n 'remove.removing.fount.main'\n"
+	const staleCli = 'Write-Host (Get-I18n -key \'remove.removingFount\')\nget_i18n \'remove.removing.fount.main\'\n'
 	assertEquals(extractFountConsolePathKeys(staleCli).map(r => r.key), [
 		'remove.removingFount',
 		'remove.removing.fount.main',
@@ -116,7 +116,7 @@ function skipRepoI18nScanPath(relativePath) {
 
 Deno.test('repo: element/string i18n refs and fountConsole.path CLI keys resolve', async () => {
 	const locale = JSON.parse(await readFile(join(REPO_ROOT, 'src/public/locales/zh-CN.json'), 'utf8'))
-	const sourceFiles = await listRepoFiles(REPO_ROOT, ['.html', '.mjs', '.js', '.ts', '.tsx'], {
+	const sourceFiles = await listRepoFiles(REPO_ROOT, ['.html', '.mjs', '.js', '.ts'], {
 		under: 'src',
 	})
 	/** @type {import('../i18n_refs.mjs').I18nRefIssue[]} */
