@@ -8,7 +8,7 @@ alwaysApply: false
 
 Standalone terminal animation for the fount fountain logo.
 
-Also embedded by the CLI log viewer via `createIconAnime`: `intro` at startup; `start`/`dismiss` while waiting for reconnect; `farewell` on `on_shutdown`. Non-TTY / no VT: `intro` / `start` / `dismiss` / `farewell` are no-ops (callers need not branch).
+Also embedded by the CLI log viewer (process-wide singleton): `intro` at startup; `start`/`dismiss` while waiting for reconnect; `farewell` on `on_shutdown`. Exit is one sticky `signal` (Ctrl+C / `abort()`); dismiss does not touch it. Non-TTY / no VT is decided only in `player.mjs` — session APIs stay callable (play paths no-op).
 
 ## Run
 
@@ -25,11 +25,12 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | Path | Role |
 | --- | --- |
 | `index.mjs` | CLI entry + public re-exports |
-| `session.mjs` | Controller (`createIconAnime`): `intro` / `start`+`dismiss` (wait) / `farewell` |
+| `session.mjs` | Process singleton: `signal`/`abort`, `intro` / `start`+`dismiss` / `farewell` / `sleep` |
 | `icon.mjs` | Packed silhouette, pillars, body growth order (typed arrays) |
 | `scene.mjs` | Anim state, materials, rain, pool leak, enter/hold/exit |
 | `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid`; pointer torch + click ripples (truecolor lift) |
-| `player.mjs` | TUI playback, Ctrl+C abort, SGR mouse → pointer light / wind, `stdout` resize; alt-screen enter/leave |
+| `player.mjs` | Process singleton TUI: `canUseTui` gate, play/loop, Ctrl+C → play abort + `onUserAbort`, SGR mouse, alt-screen |
+| `terminal.mjs` | `canUseTui` (stdin+stdout TTY + ANSI); consumed only by `player.mjs` |
 | `gesture/` | Pointer gestures (`pointer` press helper, `light` torch/ripple, `wind` stroke/vortex) |
 | `terrain.mjs` | Pedestal-anchored surface + noise caves + U-tube/chamber templates |
 | `hash.mjs` | `hash01` + 1D/2D fBm noise + `ORTHO_DX`/`ORTHO_DY` (terrain + fluid) |

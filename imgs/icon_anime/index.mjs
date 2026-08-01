@@ -16,7 +16,7 @@
 
 import process from 'node:process'
 
-import { createIconAnime } from './session.mjs'
+import * as icon from './session.mjs'
 
 /** 图标布局常量与打包轮廓辅助。 */
 export {
@@ -29,14 +29,15 @@ export { renderBuffers, renderGrid } from './compose.mjs'
 export {
 	createAnimState, resizeAnimState, enter, hold, exit,
 } from './scene.mjs'
-/** 交互式 TUI 控制器。 */
-export { createIconAnime, fps } from './session.mjs'
-/** 底层 ASCII 动画播放器。 */
-export { AsciiAnimePlayer } from './player.mjs'
+/** 交互式 TUI 会话（进程内单例）。 */
+export {
+	fps, signal, abort, start, intro, dismiss, farewell, sleep,
+} from './session.mjs'
+/** 底层播放器工具。 */
+export { terminalSize, consumeStdin } from './player.mjs'
 
 if (import.meta.main) {
-	const icon = createIconAnime()
 	await icon.start()
 	await icon.farewell()
-	process.exit(icon.userAborted ? 130 : 0)
+	process.exit(icon.signal.aborted ? 130 : 0)
 }
