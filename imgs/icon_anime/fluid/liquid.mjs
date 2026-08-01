@@ -1,11 +1,10 @@
 /**
- * Grid liquid: hydrostatic pressure drives all free-liquid mass transfer.
+ * 网格液体：静压驱动全部自由液体质量转移。
  *
- * P = P_air(surface) + RHO_G·depth. Orifices / gravity / submerged vents use
- * Torricelli √(ΔP/ρg). Free-surface sheets equalize fill only. Communicating
- * vessels relax φ = P/(ρg)−y along the liquid graph (no teleport). Sealed gas
- * with P > liquid P blocks invasion and pushes adjacent liquid away. Wind on
- * free surfaces shears sheet flow. Soil seepage is a separate moisture field.
+ * P = P_air(表面) + RHO_G·深度。孔口/重力/浸没排气口用
+ * Torricelli √(ΔP/ρg)。自由面液膜仅均衡填充。连通容器沿液体图松弛
+ * φ = P/(ρg)−y（不瞬移）。P 高于液体的密闭气体阻挡侵入并推开邻液。
+ * 自由面受风切变液膜。土壤渗流见 `soil.mjs`（本文件末尾调用）。
  */
 
 import { ORTHO_DX, ORTHO_DY } from '../hash.mjs'
@@ -15,29 +14,27 @@ import {
 } from './flow.mjs'
 import { labelAirRegions, pressureAt, gasUxAt } from './gas.mjs'
 import {
-	MAT, P_ATM, RHO_G, LIQ_DRAW, LIQ_FULL, SOIL_CAP,
-	SOIL_ABSORB_RATE, SOIL_SIDE_FRAC, SOIL_DOWN_FRAC, SOIL_CONDENSE_FRAC,
-	COND_DRIP, COND_MATTHEW_RATE, COND_MATTHEW_NOISE,
-	isSoilMat, isLiquidBarrier, soilAbsorbFactor,
+	MAT, P_ATM, RHO_G, LIQ_DRAW, LIQ_FULL, isLiquidBarrier,
 } from './mat.mjs'
+import { stepSoil } from './soil.mjs'
 import {
-	scratch, growScratch, idx, inWorld, addLiquid,
+	scratch, growScratch, idx, inWorld,
 	floodClear, floodPush, markAirIfDrawCrossed,
 } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
 
-/** Horizontal wind → free-surface sheet coupling (cells / tick per gas ux). */
+/** 水平风 → 自由面液膜耦合（每单位 gas ux 的格/帧）。 */
 const WIND_SHEET = 0.12
-/** Max wind-driven sheet mass per edge per tick. */
+/** 每边每帧风驱液膜质量上限。 */
 const WIND_SHEET_CAP = 0.18
 
 /**
- * Whether free liquid can enter `(x, y)`.
- * @param {FluidWorld} world fluid world
- * @param {number} x column
- * @param {number} y row
- * @returns {boolean} true when the cell accepts liquid
+ * 自由液体能否进入 `(x, y)`。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @returns {boolean} 该格是否可接纳液体
  */
 const canOccupy = (world, x, y) => {
 	if (x < 0 || y < 0 || x >= world.worldW || y >= world.worldH) return false
@@ -49,24 +46,24 @@ const canOccupy = (world, x, y) => {
 }
 
 /**
- * Hydrostatic depth pressure: P_air(surface) + RHO_G·(depth + partial fill).
- * Shared by `liquidPressureAt` and the column-pressure cache.
- * @param {number} airP air pressure at the free-surface row
- * @param {number} y current row
- * @param {number} surf free-surface row
- * @param {number} amount liquid fill in the cell
- * @returns {number} hydrostatic pressure at the cell
+ * 静压深度：P_air(表面) + RHO_G·(深度 + 部分填充)。
+ * `liquidPressureAt` 与列压缓存共用。
+ * @param {number} airP 自由面行的空气压
+ * @param {number} y 当前行
+ * @param {number} surf 自由面行
+ * @param {number} amount 格内液体填充
+ * @returns {number} 该格静压
  */
 const columnDepthPressure = (airP, y, surf, amount) =>
 	airP + RHO_G * ((y - surf) + Math.min(1, Math.max(amount, LIQ_DRAW)))
 
 /**
- * Hydrostatic liquid pressure at `(x, y)`.
- * Air / dry cells → gas `pressureAt`. Wet cells → P_air(free surface) + RHO_G·depth.
- * @param {FluidWorld} world fluid world
- * @param {number} x column
- * @param {number} y row
- * @returns {number} liquid pressure at `(x, y)`
+ * `(x, y)` 处液体静压。
+ * 空气/干格 → 气体 `pressureAt`。湿格 → P_air(自由面) + RHO_G·深度。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @returns {number} `(x, y)` 液体压力
  */
 export const liquidPressureAt = (world, x, y) => {
 	if (!inWorld(world, x, y)) return pressureAt(world, x, Math.max(0, y))
@@ -89,10 +86,10 @@ export const liquidPressureAt = (world, x, y) => {
 }
 
 /**
- * Fill pressure cache for one column (matches `liquidPressureAt`).
- * @param {FluidWorld} world fluid world
- * @param {number} x column
- * @param {Float32Array} cache pressure buffer
+ * 填充单列压力缓存（与 `liquidPressureAt` 一致）。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} x 列
+ * @param {Float32Array} cache 压力缓冲
  */
 const fillColumnPressure = (world, x, cache) => {
 	const { worldW: W, worldH: H, mat, liq } = world
@@ -119,31 +116,31 @@ const fillColumnPressure = (world, x, cache) => {
 }
 
 /**
- * Free-surface cell? (air or barrier above, or top of world.)
- * @param {FluidWorld} world fluid world
- * @param {number} cell flat index
- * @param {number} y row
- * @returns {boolean} true when liquid meets air above
+ * 自由面格？（上方为空气/阻挡，或世界顶）。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} cell 扁平索引
+ * @param {number} y 行
+ * @returns {boolean} 液体上方是否为空气
  */
 const isFreeSurface = (world, cell, y) =>
 	y === 0 || isLiquidBarrier(world.mat[cell - world.worldW]) || world.liq[cell - world.worldW] < LIQ_DRAW
 
 /**
- * POOL retain: keep mass until near-full unless draining into another POOL.
- * @param {FluidWorld} world fluid world
- * @param {number} src source index
- * @param {number} dst dest index
- * @returns {boolean} true when transfer should be blocked
+ * POOL 保留：近满前不泄，除非流入另一 POOL。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} src 源索引
+ * @param {number} dst 目标索引
+ * @returns {boolean} 是否应阻止转移
  */
 const poolRetainBlocks = (world, src, dst) =>
 	world.mat[src] === MAT.POOL && world.mat[dst] !== MAT.POOL && world.liq[src] < 0.92
 
 /**
- * Sealed over-pressure at an air neighbor blocks invasion.
- * @param {FluidWorld} world fluid world
- * @param {number} neighbor dest index
- * @param {number} pSrc liquid pressure at source
- * @returns {boolean} true when sealed gas blocks the move
+ * 空气邻格的密闭超压阻挡侵入。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} neighbor 目标索引
+ * @param {number} pSrc 源处液体压力
+ * @returns {boolean} 密闭气体是否阻挡移动
  */
 const sealedGasBlocks = (world, neighbor, pSrc) => {
 	if (world.liq[neighbor] > 0.05) return false
@@ -154,17 +151,17 @@ const sealedGasBlocks = (world, neighbor, pSrc) => {
 }
 
 /**
- * Transfer mass and dirty air when a cell crosses the free-liquid draw threshold.
- * @param {FluidWorld} world fluid world
- * @param {Float32Array} liq liquid field
- * @param {Float32Array} flowX horizontal flow
- * @param {Float32Array} flowY vertical flow
- * @param {number} src source index
- * @param {number} dst dest index
- * @param {number} dx horizontal step
- * @param {number} dy vertical step
- * @param {number} move mass
- * @returns {number} mass moved
+ * 转移质量；格越过自由液体绘制阈值时标脏空气。
+ * @param {FluidWorld} world 流体世界
+ * @param {Float32Array} liq 液体场
+ * @param {Float32Array} flowX 水平流
+ * @param {Float32Array} flowY 垂直流
+ * @param {number} src 源索引
+ * @param {number} dst 目标索引
+ * @param {number} dx 水平步
+ * @param {number} dy 垂直步
+ * @param {number} move 质量
+ * @returns {number} 已移质量
  */
 const transfer = (world, liq, flowX, flowY, src, dst, dx, dy, move) => {
 	const a0 = liq[src]
@@ -178,15 +175,15 @@ const transfer = (world, liq, flowX, flowY, src, dst, dx, dy, move) => {
 }
 
 /**
- * Push one free-surface sample into reused SoA scratch (components stay contiguous).
- * @param {FluidWorld} world fluid world
- * @param {number} x column
- * @param {number} y row
- * @param {number} component component id
- * @param {number} pressure air pressure above surface
+ * 将一自由面样本压入复用 SoA 暂存（分量保持连续）。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} component 连通分量 id
+ * @param {number} pressure 面上方空气压
  * @param {{
  *   x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, n: number,
- * }} surf surface SoA
+ * }} surf 自由面 SoA
  */
 const pushSurface = (world, x, y, component, pressure, surf) => {
 	const n = surf.n
@@ -204,12 +201,12 @@ const pushSurface = (world, x, y, component, pressure, surf) => {
 }
 
 /**
- * Label connected liquid components; free surfaces as SoA (grouped by component).
- * @param {FluidWorld} world fluid world
+ * 标注连通液体分量；自由面存为 SoA（按分量分组）。
+ * @param {FluidWorld} world 流体世界
  * @returns {{
  *   surf: { x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, n: number },
  *   componentOf: Int32Array,
- * }} surface samples and per-cell component ids
+ * }} 自由面样本与每格分量 id
  */
 const labelLiquidComponents = (world) => {
 	const { worldW: W, worldH: H, mat, liq } = world
@@ -260,12 +257,12 @@ const labelLiquidComponents = (world) => {
 }
 
 /**
- * Path-respecting hydraulic equalize: BFS from the lowest-φ surface through the
- * liquid graph; cells push a trickle toward neighbors closer to that sink.
- * Surfaces are SoA; BFS uses a generation stamp (no whole-grid `dist.fill`).
- * @param {FluidWorld} world fluid world
- * @param {Float32Array} flowX flow accumulator
- * @param {Float32Array} flowY flow accumulator
+ * 沿液体图的路径尊重水力均衡：从最低 φ 自由面 BFS，
+ * 格向更接近汇点的邻格推细流。
+ * 自由面为 SoA；BFS 用代次戳（无需整网 `dist.fill`）。
+ * @param {FluidWorld} world 流体世界
+ * @param {Float32Array} flowX 流累加器
+ * @param {Float32Array} flowY 流累加器
  */
 const equalizeHydraulicAlongGraph = (world, flowX, flowY) => {
 	const { surf, componentOf } = labelLiquidComponents(world)
@@ -365,222 +362,9 @@ const equalizeHydraulicAlongGraph = (world, flowX, flowY) => {
 }
 
 /**
- * Clamp `moisture[cell]` into `[0, SOIL_CAP]` after applying accumulated delta.
- * @param {Float32Array} moisture soil moisture field
- * @param {number} cell flat index
- */
-const clampMoisture = (moisture, cell) => {
-	if (moisture[cell] < 0) moisture[cell] = 0
-	else if (moisture[cell] > SOIL_CAP) moisture[cell] = SOIL_CAP
-}
-
-/**
- * Soil seepage: absorb free liquid, share moisture, feed condensation, Matthew drip, drip.
- * @param {FluidWorld} world fluid world
- */
-export const stepSoil = (world) => {
-	const { worldW: W, worldH: H, mat, liq, moisture, condense } = world
-	const n = W * H
-	world.soilStep = (world.soilStep + 1) | 0
-	const step = world.soilStep
-
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) {
-			const cell = y * W + x
-			if (!isSoilMat(mat[cell]) || y === 0) continue
-			const above = (y - 1) * W + x
-			if (isLiquidBarrier(mat[above]) || liq[above] <= 0) continue
-			const room = SOIL_CAP - moisture[cell]
-			if (room <= 0) continue
-			const rate = SOIL_ABSORB_RATE * soilAbsorbFactor(moisture[cell])
-			if (rate <= 1e-8) continue
-			const before = liq[above]
-			const take = Math.min(before, room, rate)
-			liq[above] -= take
-			moisture[cell] += take
-			markAirIfDrawCrossed(world, before, liq[above])
-		}
-
-	let mvFrom = growScratch(world, 'mvFrom', 256, Int32Array)
-	let mvTo = growScratch(world, 'mvTo', 256, Int32Array)
-	let mvAmt = growScratch(world, 'mvAmt', 256, Float32Array)
-	let feedFrom = growScratch(world, 'feedFrom', 64, Int32Array)
-	let feedAmt = growScratch(world, 'feedAmt', 64, Float32Array)
-	let mvN = 0
-	let feedN = 0
-
-	/**
-	 * Queue a soil→soil moisture transfer.
-	 * @param {number} from source index
-	 * @param {number} to dest index
-	 * @param {number} amt mass
-	 */
-	const pushMv = (from, to, amt) => {
-		if (mvN >= mvFrom.length) {
-			mvFrom = growScratch(world, 'mvFrom', mvN + 1, Int32Array)
-			mvTo = growScratch(world, 'mvTo', mvN + 1, Int32Array)
-			mvAmt = growScratch(world, 'mvAmt', mvN + 1, Float32Array)
-		}
-		mvFrom[mvN] = from
-		mvTo[mvN] = to
-		mvAmt[mvN++] = amt
-	}
-
-	/**
-	 * Queue a soil→condensation feed.
-	 * @param {number} from source index
-	 * @param {number} amt mass
-	 */
-	const pushFeed = (from, amt) => {
-		if (feedN >= feedFrom.length) {
-			feedFrom = growScratch(world, 'feedFrom', feedN + 1, Int32Array)
-			feedAmt = growScratch(world, 'feedAmt', feedN + 1, Float32Array)
-		}
-		feedFrom[feedN] = from
-		feedAmt[feedN++] = amt
-	}
-
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) {
-			const cell = y * W + x
-			if (!isSoilMat(mat[cell])) continue
-			const m = moisture[cell]
-			if (m <= 1e-8) continue
-
-			if (y + 1 < H) {
-				const below = (y + 1) * W + x
-				if (isSoilMat(mat[below])) {
-					const take = Math.min(m * SOIL_DOWN_FRAC, Math.max(0, SOIL_CAP - moisture[below]))
-					if (take > 1e-8) pushMv(cell, below, take)
-				}
-				else if (mat[below] === MAT.AIR) {
-					const take = m * SOIL_CONDENSE_FRAC
-					if (take > 1e-8) pushFeed(cell, take)
-				}
-			}
-
-			const left = x > 0 && isSoilMat(mat[cell - 1]) ? cell - 1 : -1
-			const right = x + 1 < W && isSoilMat(mat[cell + 1]) ? cell + 1 : -1
-			const sideN = (left >= 0 ? 1 : 0) + (right >= 0 ? 1 : 0)
-			if (sideN) {
-				const each = (m * SOIL_SIDE_FRAC) / sideN
-				if (left >= 0) {
-					const take = Math.min(each, Math.max(0, SOIL_CAP - moisture[left]))
-					if (take > 1e-8) pushMv(cell, left, take)
-				}
-				if (right >= 0) {
-					const take = Math.min(each, Math.max(0, SOIL_CAP - moisture[right]))
-					if (take > 1e-8) pushMv(cell, right, take)
-				}
-			}
-		}
-
-	const outSum = scratch(world, 'soilOut', n, Float32Array)
-	const inSum = scratch(world, 'soilIn', n, Float32Array)
-	const delta = scratch(world, 'soilDelta', n, Float32Array)
-	// Clear only touched indices — not the whole WH grid.
-	for (let k = 0; k < mvN; k++) {
-		outSum[mvFrom[k]] = 0
-		outSum[mvTo[k]] = 0
-		inSum[mvTo[k]] = 0
-		delta[mvFrom[k]] = 0
-		delta[mvTo[k]] = 0
-	}
-	for (let k = 0; k < feedN; k++) {
-		outSum[feedFrom[k]] = 0
-		delta[feedFrom[k]] = 0
-	}
-
-	for (let k = 0; k < mvN; k++) outSum[mvFrom[k]] += mvAmt[k]
-	for (let k = 0; k < feedN; k++) outSum[feedFrom[k]] += feedAmt[k]
-	for (let k = 0; k < mvN; k++) {
-		const cap = moisture[mvFrom[k]]
-		if (outSum[mvFrom[k]] > cap) mvAmt[k] *= cap / outSum[mvFrom[k]]
-	}
-	for (let k = 0; k < feedN; k++) {
-		const cap = moisture[feedFrom[k]]
-		if (outSum[feedFrom[k]] > cap) feedAmt[k] *= cap / outSum[feedFrom[k]]
-	}
-
-	for (let k = 0; k < mvN; k++) inSum[mvTo[k]] += mvAmt[k]
-	for (let k = 0; k < mvN; k++) {
-		const room = Math.max(0, SOIL_CAP - moisture[mvTo[k]])
-		if (inSum[mvTo[k]] > room && inSum[mvTo[k]] > 1e-12)
-			mvAmt[k] *= room / inSum[mvTo[k]]
-	}
-
-	for (let k = 0; k < mvN; k++) {
-		delta[mvFrom[k]] -= mvAmt[k]
-		delta[mvTo[k]] += mvAmt[k]
-	}
-	for (let k = 0; k < feedN; k++) {
-		const from = feedFrom[k]
-		const amt = feedAmt[k]
-		delta[from] -= amt
-		const below = from + W
-		if (mat[below] === MAT.AIR) condense[from] += amt
-		else delta[from] += amt
-	}
-	for (let k = 0; k < mvN; k++) {
-		const cell = mvFrom[k]
-		if (!delta[cell]) continue
-		moisture[cell] += delta[cell]
-		clampMoisture(moisture, cell)
-		delta[cell] = 0
-	}
-	for (let k = 0; k < mvN; k++) {
-		const cell = mvTo[k]
-		if (!delta[cell]) continue
-		moisture[cell] += delta[cell]
-		clampMoisture(moisture, cell)
-		delta[cell] = 0
-	}
-	for (let k = 0; k < feedN; k++) {
-		const cell = feedFrom[k]
-		if (!delta[cell]) continue
-		moisture[cell] += delta[cell]
-		clampMoisture(moisture, cell)
-		delta[cell] = 0
-	}
-
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W - 1; x++) {
-			const cell = y * W + x
-			const right = cell + 1
-			if (!isSoilMat(mat[cell]) || !isSoilMat(mat[right])) continue
-			const ca = condense[cell]
-			const cb = condense[right]
-			if (ca < 1e-8 || cb < 1e-8) continue
-			const mass = ca + cb
-			// Cheap LCG — Matthew only needs jitter, not cryptographic randomness.
-			const noise = ((((cell * 374761393) ^ (right * 668265263) ^ (step * 1274126177)) >>> 0) / 4294967296 - 0.5)
-				* COND_MATTHEW_NOISE * mass
-			const bias = (ca - cb) + noise
-			if (Math.abs(bias) < 1e-8) continue
-			const rich = bias > 0 ? cell : right
-			const poor = bias > 0 ? right : cell
-			const take = Math.min(condense[poor] * COND_MATTHEW_RATE, Math.abs(bias) * COND_MATTHEW_RATE)
-			if (take <= 1e-8) continue
-			condense[poor] -= take
-			condense[rich] += take
-		}
-
-	for (let y = 0; y < H - 1; y++)
-		for (let x = 0; x < W; x++) {
-			const cell = y * W + x
-			if (!isSoilMat(mat[cell]) || condense[cell] < COND_DRIP) continue
-			const below = (y + 1) * W + x
-			if (mat[below] !== MAT.AIR) continue
-			const amt = condense[cell]
-			const added = addLiquid(world, x, y + 1, amt)
-			condense[cell] = amt - added
-		}
-}
-
-/**
- * Liquid step: pressure-driven settle, wind sheet, soil, graph hydraulic equalize.
- * Re-labels air only when particles / lift dirtied free-liquid topology.
- * @param {FluidWorld} world fluid world
+ * 液体步进：压驱沉降、风驱液膜、土壤、图水力均衡。
+ * 仅当粒子/抬升弄脏自由液体拓扑时重标空气。
+ * @param {FluidWorld} world 流体世界
  */
 export const stepLiquid = (world) => {
 	const { worldW: W, worldH: H, mat, liq, liqVx, liqVy } = world
@@ -598,10 +382,10 @@ export const stepLiquid = (world) => {
 	for (let x = 0; x < W; x++) fillColumnPressure(world, x, pCache)
 
 	/**
-	 * Cached pressure (O(1)); falls back off-grid to gas hydro.
-	 * @param {number} x column
-	 * @param {number} y row
-	 * @returns {number} cached liquid/gas pressure
+	 * 缓存压力（O(1)）；网格外回退气体静压。
+	 * @param {number} x 列
+	 * @param {number} y 行
+	 * @returns {number} 缓存的液/气压力
 	 */
 	const pAt = (x, y) => {
 		if (x < 0 || y < 0 || x >= W || y >= H) return pressureAt(world, x, Math.max(0, y))
@@ -609,7 +393,7 @@ export const stepLiquid = (world) => {
 	}
 
 	// --- Vertical settle: column-major; refresh a column only after it transfers ---
-	for (let x = 0; x < W; x++) 
+	for (let x = 0; x < W; x++)
 		for (let y = H - 2; y >= 0; y--) {
 			const cell = y * W + x
 			if (liq[cell] <= 0) continue
@@ -660,7 +444,6 @@ export const stepLiquid = (world) => {
 			}
 			if (didDiag) continue
 		}
-	
 
 	// Vertical transfers already refreshed dirty columns — no second full WH fill.
 

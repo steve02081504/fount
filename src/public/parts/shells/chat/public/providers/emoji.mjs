@@ -1,5 +1,5 @@
 /**
- * Chat emoji pack 提供商（registries.emoji）。
+ * Chat shell 表情包容器（`registries.emoji`）。
  */
 import { primaryLocale, loadPreferredLangs } from '/scripts/i18n/index.mjs'
 import { resolveEmojiItemLabels, resolvePackPresentation } from '/scripts/features/emoji/packPresentation.mjs'
@@ -68,7 +68,7 @@ export function resolveActivePackId(context, packIds, groupId) {
 }
 
 /**
- * Chat shell emoji registry provider。
+ * Chat shell 表情注册表 provider 默认导出。
  */
 export default {
 	kind: 'emoji',
@@ -132,6 +132,7 @@ export default {
 	},
 
 	/**
+	 * 发现可加入的公开群表情包。
 	 * @param {{ limit?: number }} [options] 发现选项
 	 * @returns {Promise<object[]>} 公开群包 offers
 	 */
@@ -163,6 +164,7 @@ export default {
 
 	usage: {
 		/**
+		 * 加载 emoji 使用记录。
 		 * @returns {Promise<{ log: object[], lastUsedAtByPack: object }>} 最近使用日志与包级时间戳
 		 */
 		async load() {
@@ -186,6 +188,7 @@ export default {
 
 	collection: {
 		/**
+		 * 列出用户收藏的包与表情。
 		 * @returns {Promise<{ packIds: string[], emojiIds: string[] }>} 用户收藏的包与表情
 		 */
 		async list() {

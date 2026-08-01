@@ -1,5 +1,5 @@
 /**
- * AGENTS.md + agent-facing linked `.md` English-only; `docs/design/` and `docs/review/` may be Chinese.
+ * AGENTS.md 与 agent 面向链接 `.md` 须英文；`docs/design/`、`docs/review/` 可为中文。
  */
 /* global Deno */
 import { mkdir, writeFile, rm } from 'node:fs/promises'

@@ -6,7 +6,9 @@ import {
 	entityHashFromSubjectHash,
 	hashFromPubKeyHex,
 } from './entityId.mjs'
+
 /**
+ * 好友私聊绑定：对端 entityHash 与可选展示字段。
  * @typedef {object} FriendBinding
  * @property {string} entityHash 128 位对端 entityHash
  * @property {string} [displayName] 展示名
@@ -14,6 +16,7 @@ import {
  */
 
 /**
+ * 规范化并校验好友绑定对象。
  * @param {unknown} raw 原始绑定
  * @returns {FriendBinding | null} 校验后的绑定；无效输入为 null
  */

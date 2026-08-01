@@ -1,34 +1,34 @@
 /**
- * Right-button wind gesture → local gas drive field.
+ * 右键风力手势 → 局部气体驱动场。
  *
- * Drag: directed stroke impulses along the path (faster drag → stronger flow).
- * Long still hold: tornado-like clockwise vortex (tangential + updraft + inflow);
- * longer hold → faster; follows while moved; reforms when stopped; clears on release.
+ * 拖拽：沿路径的定向笔画冲量（拖得越快 → 流场越强）。
+ * 长按静止：类龙卷风顺时针涡旋（切向 + 上升气流 + 径向入流）；
+ * 按住越久 → 越快；移动时跟随；停止后重组；释放时清除。
  */
 
 import { applyPointer } from './pointer.mjs'
 
-/** Movement below this (view cells / tick) counts as still. */
+/** 低于此移动量（视图格 / tick）视为静止。 */
 export const STILL_EPS = 0.55
-/** Frames of stillness before the vortex appears. */
+/** 涡旋出现前的静止帧数。 */
 export const VORTEX_DELAY = 10
-/** Visual radius of the vortex (cell aspect ≈ 1×2 → hypot(dx, 2·dy)). */
+/** 涡旋视觉半径（格纵横比 ≈ 1×2 → hypot(dx, 2·dy)）。 */
 export const VORTEX_RADIUS = 9
-/** Brush radius around a stroke segment. */
+/** 笔画段周围的笔刷半径。 */
 export const STROKE_RADIUS = 2.8
-/** Maps drag speed (cells/tick) → gas drive amplitude. */
+/** 拖拽速度（格/tick）→ 气体驱动幅度。 */
 export const STROKE_SPEED_SCALE = 0.55
-/** Per-tick vortex strength growth after delay. */
+/** 延迟后每 tick 涡旋强度增长。 */
 export const VORTEX_GROWTH = 0.14
-/** Cap on vortex tangential / core drive. */
+/** 涡旋切向 / 核心驱动上限。 */
 export const VORTEX_MAX = 3.4
-/** Updraft as a fraction of vortex strength (y↓ negative = lift). */
+/** 上升气流占涡旋强度的比例（y↓ 负值 = 抬升）。 */
 export const VORTEX_UPLIFT = 1.05
-/** Radial inflow as a fraction of vortex strength. */
+/** 径向入流占涡旋强度的比例。 */
 export const VORTEX_INFLOW = 0.4
-/** Stroke trail lifetime in ticks. */
+/** 笔画轨迹存活 tick 数。 */
 export const STROKE_LIFE = 7
-/** Max remembered stroke segments. */
+/** 最大记忆笔画段数。 */
 const STROKE_CAP = 14
 
 /**
@@ -47,18 +47,18 @@ const STROKE_CAP = 14
  * }} WindGesture
  */
 
-/** Recycled stroke segment objects. */
+/** 回收的笔画段对象。 */
 const strokePool = /** @type {StrokeSeg[]} */ []
 
 /**
- * @returns {StrokeSeg} pooled or fresh segment
+ * @returns {StrokeSeg} 池化或新建的段
  */
 const takeStroke = () => strokePool.pop() || {
 	x0: 0, y0: 0, x1: 0, y1: 0, ux: 0, uy: 0, life: 0,
 }
 
 /**
- * @param {StrokeSeg} seg segment to recycle
+ * @param {StrokeSeg} seg 待回收的段
  * @returns {void}
  */
 const freeStroke = (seg) => {
@@ -66,8 +66,8 @@ const freeStroke = (seg) => {
 }
 
 /**
- * Fresh gesture state (also used to clear on release).
- * @returns {WindGesture} empty gesture
+ * 全新手势状态（释放时亦用于清除）。
+ * @returns {WindGesture} 空手势
  */
 export const createWindGesture = () => ({
 	down: false,
@@ -80,8 +80,8 @@ export const createWindGesture = () => ({
 })
 
 /**
- * Drop stroke trail + vortex drive (keeps `.down` as-is).
- * @param {WindGesture} gesture gesture
+ * 丢弃笔画轨迹与涡旋驱动（保留 `.down`）。
+ * @param {WindGesture} gesture 手势
  * @returns {void}
  */
 const resetWindDrive = (gesture) => {
@@ -93,8 +93,8 @@ const resetWindDrive = (gesture) => {
 }
 
 /**
- * Clear all gesture drive (release / reset).
- * @param {WindGesture} gesture gesture
+ * 清除全部手势驱动（释放 / 重置）。
+ * @param {WindGesture} gesture 手势
  * @returns {void}
  */
 export const clearWindGesture = (gesture) => {
@@ -103,20 +103,20 @@ export const clearWindGesture = (gesture) => {
 }
 
 /**
- * Apply a right-button pointer event (press / drag / release).
- * @param {WindGesture} gesture gesture
- * @param {{ x: number, y: number, right: boolean }} ev right-button event
+ * 处理右键指针事件（按下 / 拖拽 / 释放）。
+ * @param {WindGesture} gesture 手势
+ * @param {{ x: number, y: number, right: boolean }} ev 右键事件
  * @returns {void}
  */
 export const windPointer = (gesture, { x, y, right }) => {
 	applyPointer(gesture, x, y, right, {
-		/** Press: anchor stroke and clear prior drive. */
+		/** 按下：锚定笔画并清除先前驱动。 */
 		onDown() {
 			gesture.lastX = x
 			gesture.lastY = y
 			resetWindDrive(gesture)
 		},
-		/** Release: drop stroke / vortex state. */
+		/** 释放：丢弃笔画 / 涡旋状态。 */
 		onUp() {
 			clearWindGesture(gesture)
 		},
@@ -124,9 +124,9 @@ export const windPointer = (gesture, { x, y, right }) => {
 }
 
 /**
- * Advance gesture one sim tick: stroke trail + vortex arming / growth.
- * Call once per frame before `fillWindDrive`.
- * @param {WindGesture} gesture gesture
+ * 推进手势一帧模拟：笔画轨迹 + 涡旋激活 / 增长。
+ * 在 `fillWindDrive` 之前每帧调用一次。
+ * @param {WindGesture} gesture 手势
  * @returns {void}
  */
 export const tickWindGesture = (gesture) => {
@@ -158,10 +158,7 @@ export const tickWindGesture = (gesture) => {
 		seg.uy = dy * inv * amp
 		seg.life = STROKE_LIFE
 		strokes.push(seg)
-		if (strokes.length > STROKE_CAP) {
-			freeStroke(strokes[0])
-			strokes.splice(0, 1)
-		}
+		if (strokes.length > STROKE_CAP) freeStroke(strokes.shift())
 		if (gesture.vortexOn)
 			gesture.strength = Math.min(VORTEX_MAX, gesture.strength + VORTEX_GROWTH * 0.35)
 	}
@@ -182,14 +179,14 @@ export const tickWindGesture = (gesture) => {
 }
 
 /**
- * Squared distance from point P to segment AB (view cells).
- * @param {number} px point x
- * @param {number} py point y
- * @param {number} ax segment a x
- * @param {number} ay segment a y
- * @param {number} bx segment b x
- * @param {number} by segment b y
- * @returns {number} squared distance
+ * 点 P 到线段 AB 的平方距离（视图格）。
+ * @param {number} px 点 x
+ * @param {number} py 点 y
+ * @param {number} ax 段端点 a x
+ * @param {number} ay 段端点 a y
+ * @param {number} bx 段端点 b x
+ * @param {number} by 段端点 b y
+ * @returns {number} 平方距离
  */
 const dist2ToSeg = (px, py, ax, ay, bx, by) => {
 	const abx = bx - ax
@@ -207,12 +204,12 @@ const dist2ToSeg = (px, py, ax, ay, bx, by) => {
 }
 
 /**
- * Clear a previous wind-drive dirty rectangle (or the whole field).
- * @param {Float32Array} outUx horizontal drive
- * @param {Float32Array} outUy vertical drive
- * @param {number} W world width
- * @param {number} H world height
- * @param {{ x0: number, y0: number, x1: number, y1: number } | null | undefined} prev prior dirty rect
+ * 清除先前的风力驱动脏矩形（或整个场）。
+ * @param {Float32Array} outUx 水平驱动
+ * @param {Float32Array} outUy 垂直驱动
+ * @param {number} W 世界宽度
+ * @param {number} H 世界高度
+ * @param {{ x0: number, y0: number, x1: number, y1: number } | null | undefined} prev 先前脏矩形
  * @returns {void}
  */
 const clearDriveRect = (outUx, outUy, W, H, prev) => {
@@ -237,16 +234,16 @@ const clearDriveRect = (outUx, outUy, W, H, prev) => {
 }
 
 /**
- * Paint a tornado-like vortex into drive buffers (world cells).
- * Clockwise tangential + core updraft + weak radial inflow.
- * @param {number} cx world centre x
- * @param {number} cy world centre y
- * @param {number} amp strength
- * @param {number} radius visual radius
- * @param {{ worldW: number, worldH: number }} world size
- * @param {Float32Array} outUx horizontal drive
- * @param {Float32Array} outUy vertical drive
- * @param {{ x0: number, y0: number, x1: number, y1: number }} [dirty] dirty rect to expand
+ * 将类龙卷风涡旋绘制到驱动缓冲（世界格）。
+ * 顺时针切向 + 核心上升气流 + 弱径向入流。
+ * @param {number} cx 世界中心 x
+ * @param {number} cy 世界中心 y
+ * @param {number} amp 强度
+ * @param {number} radius 视觉半径
+ * @param {{ worldW: number, worldH: number }} world 尺寸
+ * @param {Float32Array} outUx 水平驱动
+ * @param {Float32Array} outUy 垂直驱动
+ * @param {{ x0: number, y0: number, x1: number, y1: number }} [dirty] 待扩展的脏矩形
  * @returns {void}
  */
 export const paintVortexDrive = (cx, cy, amp, radius, world, outUx, outUy, dirty) => {
@@ -289,12 +286,12 @@ export const paintVortexDrive = (cx, cy, amp, radius, world, outUx, outUy, dirty
 }
 
 /**
- * Paint gesture drives into scratch velocity targets (view → world via ox/oy).
- * Clears only the previous dirty rectangle instead of the whole WH field.
- * @param {WindGesture} gesture gesture
- * @param {{ worldW: number, worldH: number, ox: number, oy: number, scratch?: Record<string, unknown> }} world fluid world
- * @param {Float32Array} outUx horizontal drive
- * @param {Float32Array} outUy vertical drive
+ * 将手势驱动绘制到暂存速度目标（视图 → 世界经 ox/oy）。
+ * 仅清除先前脏矩形，而非整个 WH 场。
+ * @param {WindGesture} gesture 手势
+ * @param {{ worldW: number, worldH: number, ox: number, oy: number, scratch?: Record<string, unknown> }} world 流体世界
+ * @param {Float32Array} outUx 水平驱动
+ * @param {Float32Array} outUy 垂直驱动
  * @returns {void}
  */
 export const fillWindDrive = (gesture, world, outUx, outUy) => {

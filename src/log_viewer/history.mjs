@@ -8,6 +8,7 @@ const MAX_ENTRIES = 500
 const HISTORY_REL = 'data/log_viewer/history.json'
 
 /**
+ * REPL 命令历史存储。
  * @typedef {object} HistoryStore
  * @property {() => string[]} getEntries - 历史条目（由旧到新）。
  * @property {(entry: string) => void} push - 追加一条（去重相邻、忽略空白）。
@@ -68,6 +69,7 @@ export function createHistoryStore(fountDir) {
 	}
 
 	/**
+	 * 追加一条历史命令（相邻去重、忽略空白）。
 	 * @param {string} entry - 待追加的命令。
 	 * @returns {void}
 	 */

@@ -1,8 +1,8 @@
 /**
- * Rain / splash particles with gas drag — SoA pool, no per-tick object alloc.
- * Strong local wind can suspend / orbit droplets and lift free-liquid puddles.
- * Expired airborne mass deposits back into the grid (or world-edge sinks) —
- * particles are a water reservoir, not a mass leak.
+ * 雨/溅射粒子与气体阻力——SoA 池，每帧无对象分配。
+ * 强局地风可悬浮/轨道液滴并抬升自由液体水洼。
+ * 过期空中质量回存网格（或世界边缘 sink）——
+ * 粒子是储水器，非质量泄漏。
  */
 
 import { MAT, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
@@ -17,21 +17,21 @@ import { markAirIfDrawCrossed } from './world.mjs'
  * }} ParticlePool
  */
 
-/** Particle velocity blend toward local gas (horizontal). */
+/** 粒子速度向局地气体混合（水平）。 */
 export const GAS_DRAG = 0.22
-/** Vertical gas coupling for calm air (gravity still dominates). */
+/** 静风时垂直气体耦合（重力仍主导）。 */
 export const GAS_DRAG_Y = 0.06
-/** |gas| above this starts boosting vertical drag toward GAS_DRAG. */
+/** |gas| 超过此值开始将垂直阻力提升至 GAS_DRAG。 */
 export const GAS_DRAG_Y_BOOST_FROM = 0.35
-/** |gas| span over which vertical drag reaches full GAS_DRAG. */
+/** |gas| 跨度，垂直阻力在此内升至满 GAS_DRAG。 */
 export const GAS_DRAG_Y_BOOST_SPAN = 1.2
-/** Gas uy (y↓) below this over a puddle scoops liquid airborne. */
+/** 水洼上 gas uy（y↓）低于此值则舀起液体升空。 */
 export const WIND_LIFT_UY = -0.65
-/** Scoop mass per tick ∝ |uy| · rate. */
+/** 每帧舀取质量 ∝ |uy| · rate。 */
 export const WIND_LIFT_RATE = 0.22
-/** Max free-liquid mass lifted from one cell per tick. */
+/** 单格每帧抬升自由液体质量上限。 */
 export const WIND_LIFT_MAX = 0.4
-/** Soft life refresh while a droplet is held in strong updraft. */
+/** 强上升气流中液滴寿命的软刷新。 */
 export const WIND_HOLD_LIFE = 36
 
 const GRAVITY = 0.12
@@ -39,9 +39,9 @@ const MAX_VY = 1.15
 const PARTICLE_CAP = 1200
 
 /**
- * Allocate an empty particle SoA pool.
- * @param {number} [cap=PARTICLE_CAP] capacity
- * @returns {ParticlePool} pool
+ * 分配空粒子 SoA 池。
+ * @param {number} [cap=PARTICLE_CAP] 容量
+ * @returns {ParticlePool} 池
  */
 export const createParticlePool = (cap = PARTICLE_CAP) => ({
 	x: new Float32Array(cap),
@@ -54,8 +54,8 @@ export const createParticlePool = (cap = PARTICLE_CAP) => ({
 })
 
 /**
- * Clear a particle pool.
- * @param {ParticlePool} pool particle pool
+ * 清空粒子池。
+ * @param {ParticlePool} pool 粒子池
  * @returns {void}
  */
 export const clearParticlePool = (pool) => {
@@ -63,9 +63,9 @@ export const clearParticlePool = (pool) => {
 }
 
 /**
- * Sum particle water mass in a pool.
- * @param {ParticlePool} pool particle pool
- * @returns {number} total amt
+ * 池内粒子水质量总和。
+ * @param {ParticlePool} pool 粒子池
+ * @returns {number} amt 总量
  */
 export const totalParticleWater = (pool) => {
 	let t = 0
@@ -74,15 +74,15 @@ export const totalParticleWater = (pool) => {
 }
 
 /**
- * Push one particle into a pool (no-op if full).
- * @param {ParticlePool} pool particle pool
- * @param {number} x column
- * @param {number} y row
- * @param {number} vx horizontal velocity
- * @param {number} vy vertical velocity
- * @param {number} life remaining ticks
- * @param {number} amt water mass
- * @returns {number} index written, or -1 if full
+ * 向池压入一粒子（满则跳过）。
+ * @param {ParticlePool} pool 粒子池
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} vx 水平速度
+ * @param {number} vy 垂直速度
+ * @param {number} life 剩余帧
+ * @param {number} amt 水质量
+ * @returns {number} 写入索引，满则 -1
  */
 const pushParticle = (pool, x, y, vx, vy, life, amt) => {
 	const i = pool.count
@@ -98,14 +98,14 @@ const pushParticle = (pool, x, y, vx, vy, life, amt) => {
 }
 
 /**
- * Spawn a rain/splash particle if under the cap.
- * @param {FluidWorld} world fluid world
- * @param {number} x column
- * @param {number} y row
- * @param {number} vx horizontal velocity
- * @param {number} vy vertical velocity
- * @param {number} [life=40] remaining ticks
- * @param {number} [amt=0.4] water mass
+ * 未超上限时生成雨/溅射粒子。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} vx 水平速度
+ * @param {number} vy 垂直速度
+ * @param {number} [life=40] 剩余帧
+ * @param {number} [amt=0.4] 水质量
  * @returns {void}
  */
 export const spawnParticle = (world, x, y, vx, vy, life = 40, amt = 0.4) => {
@@ -113,24 +113,24 @@ export const spawnParticle = (world, x, y, vx, vy, life = 40, amt = 0.4) => {
 }
 
 /**
- * Queue a splash particle for the next step.
- * @param {FluidWorld} world fluid world
- * @param {number} x column
- * @param {number} y row
- * @param {number} vx horizontal velocity
- * @param {number} vy vertical velocity
- * @param {number} [life=18] remaining ticks
- * @param {number} [amt=0.25] water mass
- * @returns {number} pending index, or -1 if full
+ * 为下一步排队溅射粒子。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} vx 水平速度
+ * @param {number} vy 垂直速度
+ * @param {number} [life=18] 剩余帧
+ * @param {number} [amt=0.25] 水质量
+ * @returns {number} 待处理索引，满则 -1
  */
 export const queueSplash = (world, x, y, vx, vy, life = 18, amt = 0.25) =>
 	pushParticle(world.pendingSplash, x, y, vx, vy, life, amt)
 
 /**
- * Vertical drag toward gas: calm air stays weak; storm / vortex couples hard.
+ * 垂直阻力向气体：静风弱耦合；风暴/涡旋强耦合。
  * @param {number} gux gas ux
  * @param {number} guy gas uy
- * @returns {number} drag blend in [GAS_DRAG_Y, GAS_DRAG]
+ * @returns {number} [GAS_DRAG_Y, GAS_DRAG] 内混合系数
  */
 export const verticalGasDrag = (gux, guy) => {
 	const speed2 = gux * gux + guy * guy
@@ -141,12 +141,12 @@ export const verticalGasDrag = (gux, guy) => {
 }
 
 /**
- * Try depositing into one cell; return stored delta.
- * @param {FluidWorld} world fluid world
- * @param {number} px column
- * @param {number} py row
- * @param {number} left remaining mass
- * @returns {number} stored
+ * 尝试存入一格；返回已存增量。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} px 列
+ * @param {number} py 行
+ * @param {number} left 剩余质量
+ * @returns {number} 已存
  */
 const tryDepositCell = (world, px, py, left) => {
 	const { worldW: W, worldH: H, mat, liq } = world
@@ -164,13 +164,13 @@ const tryDepositCell = (world, px, py, left) => {
 }
 
 /**
- * Deposit particle mass into the grid near `(x, y)`. Prefers AIR / POOL cells;
- * sinks at world edges when nowhere to land. Returns deposited (or sunk) mass.
- * @param {FluidWorld} world fluid world
- * @param {number} x column
- * @param {number} y row
- * @param {number} amt water mass
- * @returns {number} mass accounted for
+ * 将粒子质量存入 `(x, y)` 附近网格。优先 AIR / POOL；
+ * 无处落地时在世界边缘_sink。返回已沉积（或_sink）质量。
+ * @param {FluidWorld} world 流体世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} amt 水质量
+ * @returns {number} 已计入质量
  */
 export const depositParticleMass = (world, x, y, amt) => {
 	if (amt <= 0) return 0
@@ -189,16 +189,16 @@ export const depositParticleMass = (world, x, y, amt) => {
 }
 
 /**
- * Mutable particle view passed to impact handlers (fields live in the SoA).
+ * 可变粒子视图，供碰撞处理（字段在 SoA 中）。
  * @typedef {{ x: number, y: number, vx: number, vy: number, life: number, amt: number }} ParticleView
  */
 
 /**
- * Advance particles with gas drag; call `onHit` on solid / wet cells.
- * Life expiry deposits mass back into the grid instead of deleting it.
- * @param {FluidWorld} world fluid world
- * @param {(world: FluidWorld, x: number, y: number, mat: number, particle: ParticleView, wet: boolean, state: unknown) => void} onHit impact callback
- * @param {unknown} [state] animation / caller state forwarded to onHit
+ * 带气体阻力推进粒子；固体/湿格调用 `onHit`。
+ * 寿命耗尽将质量回存网格而非删除。
+ * @param {FluidWorld} world 流体世界
+ * @param {(world: FluidWorld, x: number, y: number, mat: number, particle: ParticleView, wet: boolean, state: unknown) => void} onHit 碰撞回调
+ * @param {unknown} [state] 动画/调用方状态，转发给 onHit
  * @returns {void}
  */
 export const stepParticles = (world, onHit, state) => {
@@ -303,10 +303,10 @@ export const stepParticles = (world, onHit, state) => {
 }
 
 /**
- * Strong upward gas over free-liquid AIR cells scoops mass into airborne particles.
- * Wet cells block gas occupancy, so suction is sampled from the air cell above.
- * @param {FluidWorld} world fluid world
- * @returns {number} total mass lifted
+ * 自由液体 AIR 格上强上升气体将质量舀入空中粒子。
+ * 湿格阻挡气体占据，抽吸从上方空气格采样。
+ * @param {FluidWorld} world 流体世界
+ * @returns {number} 抬升总质量
  */
 export const liftLiquidByWind = (world) => {
 	// After stepGas: skip full-grid scoop when no cell has strong updraft.

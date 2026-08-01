@@ -1273,10 +1273,8 @@
 				"autoSignHint": "Eftir sendingu mun vélin sjálfkrafa undirrita undirskriftarfræ hópsins án þess að slá inn einkalykilinn. Í fjölstjórnendahópi þarf meira en helmingur stjórnenda að leggja fram sama atkvæðaseðil (sama atkvæðanúmer og framBjóðandi) á staðnum.",
 				"candidateLabel": "Eftirmaður Opinbertlykils hash",
 				"description": "Flytja æðsta stjórnunarvald hópsins (MANAGE_ADMINS) til tilgreinds meðlims. Aðeins stjórnendur geta starfað.",
-				"failed": "Ekki tókst að leggja fram atkvæði um arf",
 				"needHash": "Vinsamlega fylltu út hash arftakans opinbera lykla",
-				"selfButton": "Tilnefna sjálfan þig",
-				"submitted": "Undirskrift þín hefur verið skráð á atkvæðagreiðsluna."
+				"selfButton": "Tilnefna sjálfan þig"
 			},
 			"channelType": {
 				"label": "Gerð rásar",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "Fjölmiðlunarstraumur sóttur (stöðvaður, ekki útvarpað)",
 				"test": "Prófaðu fjölmiðlatæki"
-			},
-			"thread": {
-				"main": "Undirþráður",
-				"back": "Skila",
-				"breadcrumbMiddleSummary": "Mitt ${count} lag",
-				"breadcrumbMiddleTitle": "Stækkaðu miðjulagið og veldu stigið sem þú vilt hoppa á",
-				"breadcrumbRootTitle": "Hoppa á upphafsstað slóðar (fyrsta stig)"
 			},
 			"unpin": {
 				"action": {
@@ -2659,7 +2650,8 @@
 					"pubKeyLabel": "Opinber lykill hex(64)",
 					"rotateConfirm": "Allir vinabætir tenglar sem áður voru gefnir út verða ógildir strax og ekki er hægt að endurheimta þá. Ertu viss um að þú viljir halda áfram?",
 					"rotateLabel": "Ógilda gamla tengla",
-					"secretLabel": "Einkalykill seed hex (64)"
+					"secretLabel": "Einkalykill seed hex (64)",
+					"urlLabel": "Útgefinn vinabætur tengill"
 				},
 				"groupRecoveryTip": "Aðeins notað ef boðið er lekið eða nýja tækið getur ekki samstillt feril.",
 				"groupRecoveryTitle": "Lagfæring á hóptengingu",
@@ -3824,6 +3816,8 @@
 			"configSaved": "Stillingar vistaðar!",
 			"botExists": "Bot með nafnið \"${botname}\" er þegar til, vinsamlegast notaðu annað nafn.",
 			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
+			"confirmDeleteBot": "Ertu viss um að þú viljir eyða bottinum \"${botname}\"? Ekki er hægt að afturkalla þessa aðgerð.",
+			"invalidJsonConfig": "Ógild JSON-stilling: ${error}",
 			"httpError": "HTTP villa",
 			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir yfirgefa þessa síðu?"
 		},

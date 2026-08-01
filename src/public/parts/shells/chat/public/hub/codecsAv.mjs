@@ -42,16 +42,18 @@ let activeSession = null
 let joinInFlight = null
 
 /**
+ * WebCodecs 会话句柄。
  * @typedef {object} CodecsAvSession
  * @property {() => Promise<void>} close 离开房间并释放资源
  * @property {() => boolean} toggleMute 切换静音，返回静音后为 true
  * @property {() => boolean} toggleVideo 开关摄像头，返回关闭后为 true
  * @property {() => Promise<boolean>} [toggleScreen] 开关屏幕共享，返回共享中为 true
- * @property {() => number[]} [getAudioLevels]
- * @property {() => 'av' | 'audio' | 'video'} [getMediaMode]
+ * @property {() => number[]} [getAudioLevels] 读取远端或本地音频电平（16 频段）
+ * @property {() => 'av' | 'audio' | 'video'} [getMediaMode] 当前媒体模式
  */
 
 /**
+ * 由群 ID 与频道 ID 构建 av-relay roomId。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @returns {string} av-relay roomId
@@ -61,6 +63,7 @@ export function buildAvRelayRoomId(groupId, channelId) {
 }
 
 /**
+ * 由群 ID 与频道 ID 构建 av-relay WebSocket URL。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @returns {string} WebSocket URL
@@ -658,9 +661,7 @@ async function doJoinCodecsAvRoom(options) {
 		getMediaMode: () => mediaMode,
 	}
 
-	/**
-	 *
-	 */
+	/** WebSocket 断开时自动收尾会话。 */
 	ws.onclose = () => { void session.close() }
 	activeSession = session
 	return session

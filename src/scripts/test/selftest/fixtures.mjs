@@ -3,6 +3,7 @@
  */
 
 /**
+ * 构造 selftest 用 SuiteDef 夹具。
  * @param {string} [manifestId] manifest id
  * @param {string} [name] suite 名（同时作为 id）
  * @param {object} [options] 其余字段
@@ -31,6 +32,7 @@ export function makeSuite(manifestId = 'shells/chat', name = 'fed_core', { depen
 }
 
 /**
+ * 构造 selftest 用现状库条目夹具。
  * @param {object} [overrides] 覆盖字段（status/baselineDurationMs/triggerHash/...）
  * @returns {import('../core/state.mjs').SuiteStateEntry} 现状库条目
  */

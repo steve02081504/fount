@@ -308,11 +308,11 @@ export class CharAPI_t {
 		 * Discord 机器人接口（壳层 bridge 模式：OnceClientReady 注册 ops 与 outbound）。
 		 */
 		discord?: {
-			/** Discord Gateway Intents。 */
+			/** Discord Gateway 意图。 */
 			Intents?: DiscordGatewayIntentBits[]
-			/** Discord Partials。 */
+			/** Discord Partials（部分对象）。 */
 			Partials?: DiscordPartials[]
-			/** Client ready 后注册 bridge ops 与事件监听。 */
+			/** Discord Client 就绪后注册 bridge ops 与事件监听。 */
 			OnceClientReady?: (client: DiscordClient, config: any) => Promise<void>
 			/** 返回默认 bot JSON 配置模板。 */
 			GetBotConfigTemplate?: () => Promise<any>

@@ -203,11 +203,14 @@ export function setPreRender(hostUrl = urlParams.get('hostUrl') ?? localStorage.
  */
 export const base_dir = '../'.repeat(window.location.pathname.split('/').length - 3).slice(0, -1)
 
-if (navigator.serviceWorker)
-	navigator.serviceWorker.register('/sw.js')
-		.catch(error => {
+; (async () => {
+	try {
+		await navigator.serviceWorker.register('/sw.js')
+	} catch (error) {
+		if (error.name != 'SecurityError')
 			console.error('Service Worker registration failed: ', error)
-		})
+	}
+})()
 
 /**
  * 处理键盘事件。

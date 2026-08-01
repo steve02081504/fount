@@ -26,8 +26,11 @@
 		const hostUrl = 'http://localhost:8931'
 		const jumpTo = hostUrl + '?cold_bootting=true'
 
-		navigator.serviceWorker?.controller?.postMessage({ type: 'ENTER_COLD_BOOT' })
-
+		try {
+			navigator.serviceWorker?.controller?.postMessage({ type: 'ENTER_COLD_BOOT' })
+		} catch (error) {
+			if (error.name != 'SecurityError') throw error
+		}
 		if (localStorage.getItem('fount_localhost_ping_passed') === 'true')
 			window.location.href = jumpTo
 

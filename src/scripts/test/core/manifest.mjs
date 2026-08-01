@@ -5,9 +5,8 @@ import { readdir, readFile, stat } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 
 import { attachDependencies, sortManifestIds } from './dependencies.mjs'
-import { matchGlob } from './glob.mjs'
 import { parseManifestResources } from './resources.mjs'
-import { mergeTriggerFilter } from './trigger_filter.mjs'
+import { matchGlob, mergeTriggerFilter } from './trigger_filter.mjs'
 /**
  * suite 内注册的子测试。
  * @typedef {object} SubtestDef

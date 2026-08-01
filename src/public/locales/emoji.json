@@ -1273,10 +1273,8 @@
 				"autoSignHint": "📤💻👥✍️🌱➡️🗳️，🚫🔐⌨️🛡️➕💻➡️🗳️（🗳️🆔➕👤）",
 				"candidateLabel": "👑➡️🔑🧬#️⃣",
 				"description": "➡️👑🔐（🛡️👑⚙️）➡️📌👤🔒🛡️👀",
-				"failed": "👑➡️🗳️📤❌",
 				"needHash": "🙏✍️👑➡️🔑🧬#️⃣",
-				"selfButton": "📝🫵",
-				"submitted": "👑➡️🗳️✅🫵"
+				"selfButton": "📝🫵"
 			},
 			"channelType": {
 				"label": "📺🏷️",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "✅🌊（⏹️，🚫📡）",
 				"test": "🧪📹🎙️"
-			},
-			"thread": {
-				"main": "🧵",
-				"back": "🔙",
-				"breadcrumbMiddleSummary": "📂${count}",
-				"breadcrumbMiddleTitle": "📂➡️⏩",
-				"breadcrumbRootTitle": "⏩🛤️🔝（1️⃣）"
 			},
 			"unpin": {
 				"action": {
@@ -2659,7 +2650,8 @@
 					"pubKeyLabel": "🔑🔣（64）",
 					"rotateConfirm": "📨🤝🔗 🚫♻️ · ❓▶️❓",
 					"rotateLabel": "🗑️🔗",
-					"secretLabel": "🔐🌱🔣（64）"
+					"secretLabel": "🔐🌱🔣（64）",
+					"urlLabel": "✅🤝🔗"
 				},
 				"groupRecoveryTip": "⚠️📨💨／🆕🖥️🚫📜 ⏰🔧",
 				"groupRecoveryTitle": "👥🔗🔧",
@@ -3824,6 +3816,8 @@
 			"configSaved": "⚙️💾✅",
 			"botExists": "🤖 \"${botname}\" ✅",
 			"unsavedChanges": "🤔💾❓",
+			"confirmDeleteBot": "🗑️🤖 \"${botname}\" ❓🚫↩️",
+			"invalidJsonConfig": "⚙️📄❌ ${error}",
 			"httpError": "🌐❌",
 			"beforeUnload": "🤔💾➡️🚪❓"
 		},

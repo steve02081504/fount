@@ -15,12 +15,14 @@ import { ResourceRunGate } from './scheduler.mjs'
  */
 
 /**
+ * 投机提交闸门：依赖全部通过后才可写入真跑结果。
  * @typedef {object} CommitGate
  * @property {boolean} ok 是否可提交真跑结果
  * @property {string[]} failedDeps 导致丢弃的失败依赖键
  */
 
 /**
+ * 单槽运行上下文（硬跑 / 投机 / 预阻塞）。
  * @typedef {object} SlotRunContext
  * @property {boolean} speculative 是否在依赖仍在跑时乐观启动
  * @property {boolean} [discardWithoutRun] 依赖已失败，不要真跑、直接记 blocked
@@ -37,7 +39,7 @@ export const SPECULATIVE_ABORT_REASON = 'speculative-dep-failed'
  */
 export class PlanRunCoordinator {
 	/**
-	 * @param {object} options 选项
+	 * @param {object} options 协调器选项
 	 * @param {PlanSlot[]} options.slots 拓扑有序计划槽位
 	 * @param {import('../core/state.mjs').TestState} options.state 现状库
 	 * @param {ResourceRunGate} options.gate 并发闸门
