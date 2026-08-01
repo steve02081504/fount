@@ -195,6 +195,7 @@ export class AsciiAnimePlayer {
 	 * @returns {void}
 	 */
 	paint(frame) {
+		if (!this.#tuiActive) return
 		// Frame is full-viewport — home only; skip Erase display.
 		write(`\x1b[H${frame}`)
 	}
@@ -205,6 +206,7 @@ export class AsciiAnimePlayer {
 	 * @returns {Promise<void>}
 	 */
 	async #playFrames(frames, { signal } = {}) {
+		if (!this.#tuiActive) return
 		signal ??= this.signal
 		for await (const frame of iterateFrames(frames)) {
 			if (signal?.aborted) return
@@ -287,6 +289,7 @@ export class AsciiAnimePlayer {
 	 * @returns {Promise<void>}
 	 */
 	async loop(frames, { signal } = {}) {
+		if (!this.#tuiActive) return
 		signal = this.useSignal(signal)
 		while (!signal?.aborted)
 			await this.#playFrames(frames, { signal: this.signal })

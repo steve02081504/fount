@@ -52,7 +52,7 @@ export function browserNetworkAggregateKey(entry) {
 
 /**
  * 将一次网络异常记入聚合表。
- * URL 原样记录——测试数据本就不该带生产密钥；勿在此做脱敏遮掩。
+ * URL 原样记录——测试数据本就不该含持久化密钥；勿在此做脱敏遮掩。
  * @param {Map<string, BrowserNetworkEntry>} aggregates 聚合表
  * @param {Omit<BrowserNetworkEntry, 'count'>} entry 单条诊断
  * @returns {void}

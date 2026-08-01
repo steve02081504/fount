@@ -189,12 +189,13 @@ async function pollUntilServerReady(icon, { waitLogo = false } = {}) {
 				break
 			}
 			try {
-				const signal = waitLogo
-					? AbortSignal.any([AbortSignal.timeout(2000), icon.userSignal])
-					: AbortSignal.timeout(2000)
-				const res = await fetch(PING_URL, { signal })
-				if (res.ok) return
-				throw new Error(String(res.status))
+				const response = await fetch(PING_URL, {
+					signal: waitLogo
+						? AbortSignal.any([AbortSignal.timeout(2000), icon.userSignal])
+						: AbortSignal.timeout(2000),
+				})
+				if (response.ok) return
+				throw new Error(String(response.status))
 			} catch {
 				if (stopRequested || icon.userAborted) {
 					stopRequested = true
