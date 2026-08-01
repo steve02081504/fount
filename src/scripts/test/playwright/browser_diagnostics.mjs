@@ -137,8 +137,8 @@ export async function waitForLocaleCycle(page, timeoutMs = 30_000) {
 
 /**
  * 将 CDP StackTrace 格式化为可读栈（字段均来自协议结构，不解析 summary text）。
- * @param {{ callFrames?: Array<{ functionName?: string, url?: string, lineNumber?: number, columnNumber?: number }> } | null | undefined} stackTrace
- * @returns {string}
+ * @param {{ callFrames?: Array<{ functionName?: string, url?: string, lineNumber?: number, columnNumber?: number }> } | null | undefined} stackTrace CDP Runtime.StackTrace（或 null）
+ * @returns {string} 多行栈文本，无帧则为空串
  */
 export function formatCdpStackTrace(stackTrace) {
 	const frames = stackTrace?.callFrames
@@ -152,7 +152,7 @@ export function formatCdpStackTrace(stackTrace) {
 /**
  * 从 CDP ExceptionDetails 取出展示用字段（name / stack 只取 RemoteObject 与 StackTrace）。
  * @param {object} exceptionDetails CDP Runtime.ExceptionDetails
- * @returns {{ name: string, stack: string }}
+ * @returns {{ name: string, stack: string }} 异常类名与展示栈
  */
 export function pageErrorFromCdpException(exceptionDetails) {
 	const exception = exceptionDetails?.exception
