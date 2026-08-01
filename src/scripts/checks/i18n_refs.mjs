@@ -138,8 +138,8 @@ export function extractI18nRefsFromSource(text) {
 	/** @type {{ key: string, line: number, binding: 'element' | 'string' | 'geti18n' }[]} */
 	const refs = []
 	/**
-	 *
-	 * @param index
+	 * @param {number} index 字符索引
+	 * @returns {number} 1-based 行号
 	 */
 	const lineAt = (index) => text.slice(0, index).split('\n').length
 
@@ -197,8 +197,8 @@ export function extractFountConsolePathKeys(text) {
 	/** @type {{ key: string, line: number }[]} */
 	const refs = []
 	/**
-	 *
-	 * @param index
+	 * @param {number} index 字符索引
+	 * @returns {number} 1-based 行号
 	 */
 	const lineAt = (index) => text.slice(0, index).split('\n').length
 	for (const match of text.matchAll(/\b(?:Get-I18n\s+-key|get_i18n)\s+'(?:([^']+))'/g))

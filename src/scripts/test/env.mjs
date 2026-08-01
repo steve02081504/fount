@@ -19,9 +19,10 @@ process.env.RUST_BACKTRACE = 'full'
 if (process.platform === 'win32') {
 	const emitWarning = process.emitWarning
 	/**
-	 *
-	 * @param warning
-	 * @param {...any} args
+	 * 过滤 Windows 上 pidusage 触发的 DEP0190 弃用警告。
+	 * @param {string | Error} warning 警告
+	 * @param {...*} args `emitWarning` 余参
+	 * @returns {void}
 	 */
 	process.emitWarning = (warning, ...args) => {
 		if ([args[1], args[0]?.code, warning?.code].includes('DEP0190')) return

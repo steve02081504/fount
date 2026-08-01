@@ -155,7 +155,6 @@ export function createBrowserDiagnostics(options = {}) {
 		page.on('pageerror', err => {
 			const message = String(err?.message || err)
 			const stack = err?.stack ? String(err.stack) : ''
-			if (err?.name === 'SecurityError') return
 			if (stack)
 				console.error('[pageerror-stack]', stack)
 			pageErrors.push(stack || message)

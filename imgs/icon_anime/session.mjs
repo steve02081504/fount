@@ -156,8 +156,7 @@ export function createIconAnime() {
 		},
 
 		/**
-		 * @param {number} ms 毫秒
-		 * @param milliseconds
+		 * @param {number} milliseconds 毫秒
 		 * @returns {Promise<void>}
 		 */
 		sleep(milliseconds) {
