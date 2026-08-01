@@ -81,7 +81,8 @@
 						"src/public/parts/shells/wechatbot/test/frontend/fixtures.mjs",
 						"src/public/parts/shells/wechatbot/public/index.{html,mjs}",
 						"src/public/pages/scripts/components/jsonEditor.mjs",
-						"src/scripts/test/playwright/json_editor.mjs"
+						"src/scripts/test/playwright/json_editor.mjs",
+						"src/public/locales/**"
 					]
 				}
 			],

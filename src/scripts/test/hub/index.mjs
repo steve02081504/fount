@@ -11,8 +11,16 @@ import { createSharedStoreRouter } from './apis/shared_store.mjs'
 /** 测试 hub 固定端口（避开生产 8931 / live 测试口）。 */
 export const TEST_HUB_PORT = 8903
 
+/**
+ * @param {number} [port=TEST_HUB_PORT] 端口
+ * @returns {string} hub base URL（无尾斜杠）
+ */
+export function testHubUrl(port = TEST_HUB_PORT) {
+	return `http://127.0.0.1:${port}`
+}
+
 /** 默认 base URL（无尾斜杠）。 */
-export const TEST_HUB_DEFAULT_URL = `http://127.0.0.1:${TEST_HUB_PORT}`
+export const TEST_HUB_DEFAULT_URL = testHubUrl()
 
 /**
  * 启动测试 hub（仅 `127.0.0.1`）。
@@ -22,18 +30,18 @@ export const TEST_HUB_DEFAULT_URL = `http://127.0.0.1:${TEST_HUB_PORT}`
  */
 export async function startTestHub({ port = TEST_HUB_PORT } = {}) {
 	const app = express()
-	app.use((_req, res, next) => {
+	app.use((req, res, next) => {
 		res.setHeader('Access-Control-Allow-Origin', '*')
 		res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS')
 		res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
-		if (_req.method === 'OPTIONS') return res.sendStatus(204)
+		if (req.method === 'OPTIONS') return res.sendStatus(204)
 		next()
 	})
 	app.use(express.json({ limit: '4mb' }))
 	app.use(createHealthRouter())
 	app.use(createGithubIssueRouter())
 	app.use(createSharedStoreRouter())
-	app.use((_req, res) => {
+	app.use((req, res) => {
 		res.status(404).json({ error: 'not found' })
 	})
 
@@ -43,7 +51,7 @@ export async function startTestHub({ port = TEST_HUB_PORT } = {}) {
 	})
 
 	return {
-		url: `http://127.0.0.1:${port}`,
+		url: testHubUrl(port),
 		/**
 		 * @returns {Promise<void>}
 		 */

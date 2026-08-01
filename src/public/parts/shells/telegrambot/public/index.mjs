@@ -227,9 +227,9 @@ function handleToggleToken() {
 async function handleSaveConfig() {
 	if (!selectedBot) return
 
-	let editorContent
+	let configJson
 	try {
-		editorContent = configEditor.get()
+		configJson = configEditor.getJson()
 	}
 	catch (err) {
 		showToastI18n('error', 'telegram_bots.alerts.invalidJsonConfig', { error: err.message })
@@ -239,7 +239,7 @@ async function handleSaveConfig() {
 	const config = {
 		token: tokenInput.value,
 		char: charSelectDropdown.dataset.value,
-		config: editorContent.json || JSON.parse(editorContent.text || '{}'),
+		config: configJson,
 	}
 
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'

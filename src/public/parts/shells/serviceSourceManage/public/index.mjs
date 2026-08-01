@@ -370,15 +370,6 @@ function syncEditorState() {
 }
 
 /**
- * 读取 JSON 编辑器中的配置数据。
- * @returns {object} 当前 JSON 配置。
- */
-function getEditorData() {
-	const content = jsonEditor.get()
-	return content.json ?? JSON.parse(content.text)
-}
-
-/**
  * 更新 JSON 编辑器的内容并触发更新回调。
  * @param {object} data - 要设置到编辑器中的 JSON 数据。
  * @returns {Promise<void>}
@@ -531,7 +522,7 @@ async function saveFile() {
 	saveButton.disabled = true
 
 	try {
-		const config = getEditorData()
+		const config = jsonEditor.getJson()
 		const generator = generatorSelect.value
 
 		await setServiceSourceFile(activeFile, {
@@ -628,7 +619,7 @@ jsonEditor = createJsonEditor(jsonEditorContainer, {
 		if (contentErrors) return
 		isDirty = true
 		let data
-		try { data = getEditorData() } catch (e) { return }
+		try { data = jsonEditor.getJson() } catch (e) { return }
 		onJsonUpdate({
 			data,
 			containers: {

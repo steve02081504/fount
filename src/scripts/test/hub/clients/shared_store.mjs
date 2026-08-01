@@ -4,17 +4,27 @@
 import { getTestHubBaseUrl } from '../base_url.mjs'
 
 /**
+ * @param {string} namespace 分区
+ * @param {string} key 键
+ * @returns {string | null} 请求 URL；无 hub 为 null
+ */
+function sharedStoreUrl(namespace, key) {
+	const base = getTestHubBaseUrl()
+	if (!base) return null
+	return `${base}/shared-store/${encodeURIComponent(namespace)}/${encodeURIComponent(key)}`
+}
+
+/**
  * 读本次测试运行共享 KV。
  * @param {string} namespace 分区（如 `cdn`、`fixture`）
  * @param {string} key 键
  * @returns {Promise<unknown | undefined>} 值；缺失 / 无 hub 为 undefined
  */
 export async function hubSharedStoreGet(namespace, key) {
-	const base = getTestHubBaseUrl()
-	if (!base) return undefined
+	const url = sharedStoreUrl(namespace, key)
+	if (!url) return undefined
 	try {
-		const res = await fetch(`${base}/shared-store/${encodeURIComponent(namespace)}/${encodeURIComponent(key)}`)
-		if (res.status === 404) return undefined
+		const res = await fetch(url)
 		if (!res.ok) return undefined
 		return await res.json()
 	}
@@ -31,15 +41,15 @@ export async function hubSharedStoreGet(namespace, key) {
  * @returns {Promise<boolean>} 是否写入成功
  */
 export async function hubSharedStoreSet(namespace, key, value) {
-	const base = getTestHubBaseUrl()
-	if (!base) return false
+	const url = sharedStoreUrl(namespace, key)
+	if (!url) return false
 	try {
-		const res = await fetch(`${base}/shared-store/${encodeURIComponent(namespace)}/${encodeURIComponent(key)}`, {
+		const res = await fetch(url, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(value),
 		})
-		return res.ok || res.status === 204
+		return res.ok
 	}
 	catch {
 		return false
@@ -53,13 +63,11 @@ export async function hubSharedStoreSet(namespace, key, value) {
  * @returns {Promise<boolean>} 是否删除成功（无 hub 为 false）
  */
 export async function hubSharedStoreDelete(namespace, key) {
-	const base = getTestHubBaseUrl()
-	if (!base) return false
+	const url = sharedStoreUrl(namespace, key)
+	if (!url) return false
 	try {
-		const res = await fetch(`${base}/shared-store/${encodeURIComponent(namespace)}/${encodeURIComponent(key)}`, {
-			method: 'DELETE',
-		})
-		return res.ok || res.status === 204
+		const res = await fetch(url, { method: 'DELETE' })
+		return res.ok
 	}
 	catch {
 		return false

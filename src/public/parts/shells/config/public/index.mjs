@@ -36,15 +36,6 @@ let isDirty = false
 let onJsonUpdate = () => 0
 
 /**
- * 读取 JSON 编辑器中的配置数据。
- * @returns {object} 当前 JSON 配置。
- */
-function getEditorData() {
-	const content = jsonEditor.get()
-	return content.json ?? JSON.parse(content.text)
-}
-
-/**
  * 禁用编辑器和保存按钮。
  */
 function disableEditorAndSaveButton() {
@@ -118,7 +109,7 @@ async function loadEditor(partpath) {
 					if (contentErrors) return
 					isDirty = true
 					let data
-					try { data = getEditorData() } catch (e) { return }
+					try { data = jsonEditor.getJson() } catch (e) { return }
 					onJsonUpdate({
 						info: {
 							partpath: activePartPath
@@ -188,7 +179,7 @@ async function saveConfig() {
 	saveButton.disabled = true
 
 	try {
-		const data = getEditorData()
+		const data = jsonEditor.getJson()
 		await saveConfigData(activePartPath, data)
 		isDirty = false
 

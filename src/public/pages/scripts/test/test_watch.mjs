@@ -243,7 +243,9 @@ async function checkAriaIgnores() {
 		}
 		if (!hub) continue
 		try {
-			const res = await fetch(`${hub}/github-issue?url=${encodeURIComponent(url)}`)
+			const res = await fetch(`${hub}/github-issue?url=${encodeURIComponent(url)}`, {
+				signal: AbortSignal.timeout(10_000),
+			})
 			if (!res.ok) continue
 			const data = await res.json()
 			if (data?.closed !== true) continue
@@ -252,7 +254,7 @@ async function checkAriaIgnores() {
 			printedKeys.add(key)
 			console.error(A11Y_PREFIX, 'aria-ignore-closed', where, url)
 		}
-		catch { /* hub 不可达：留给 Playwright 收尾再判 */ }
+		catch { /* hub 不可达 / 超时：留给 Playwright 收尾再判 */ }
 	}
 }
 

@@ -300,12 +300,11 @@ async function withButtonFeedback(button, statusIcon, action) {
 async function handleSaveConfig() {
 	if (!selectedBot) return
 
-	const editorContent = configEditor.get()
 	const config = {
 		token: tokenInput.value,
 		apiBaseUrl: apiBaseUrlInput.value.trim(),
 		char: charSelectDropdown.dataset.value,
-		config: editorContent.json || JSON.parse(editorContent.text),
+		config: configEditor.getJson(),
 	}
 
 	await withButtonFeedback(saveConfigButton, saveStatusIcon, async () => {

@@ -227,7 +227,7 @@
 			]
 		},
 		{
-			"name": "github_issue",
+			"name": "test_hub",
 			"run": [
 				"deno",
 				"test",

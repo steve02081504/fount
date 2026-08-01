@@ -38,9 +38,9 @@ import {
 	writeState,
 	writeStateMarkdown,
 } from '../core/state.mjs'
-import { startTestHub } from '../hub/index.mjs'
 import { auditTriggerCoverage } from '../core/trigger_audit.mjs'
 import { buildVerdicts } from '../core/verdict.mjs'
+import { startTestHub } from '../hub/index.mjs'
 
 import { buildReasonsFromPlan } from './continue_reason.mjs'
 import { PlanRunCoordinator } from './dependency_scheduler.mjs'
@@ -783,7 +783,6 @@ export async function runTests(options = {}) {
 	}
 	finally {
 		await hub.close().catch(() => { /* 关口失败不盖过测试退出码 */ })
-		if (process.env.FOUNT_TEST_HUB_URL === hub.url)
-			delete process.env.FOUNT_TEST_HUB_URL
+		delete process.env.FOUNT_TEST_HUB_URL
 	}
 }

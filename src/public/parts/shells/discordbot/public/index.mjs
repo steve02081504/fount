@@ -242,7 +242,7 @@ async function handleSaveConfig() {
 	const config = {
 		token: tokenInput.value,
 		char: charSelectDropdown.dataset.value,
-		config: configEditor.get().json || JSON.parse(configEditor.get().text),
+		config: configEditor.getJson(),
 	}
 
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'

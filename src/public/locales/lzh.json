@@ -3660,7 +3660,7 @@
 		},
 		"configTitle": "源流樞機",
 		"jsonEditor": {
-			"aria-label": "源流樞機 JSON 樞機"
+			"aria-label": "源流樞機 JSON 編輯器"
 		},
 		"needsConfigReminder": "源流既設，常需於用此源流之部件樞機中，填其名於相應之處。",
 		"needsConfigLink": "往設部件",
@@ -3791,7 +3791,7 @@
 				"config": "樞機"
 			},
 			"jsonEditor": {
-				"aria-label": "靈偶樞機 JSON 樞機"
+				"aria-label": "靈偶樞機 JSON 編輯器"
 			},
 			"botTokenInput": {
 				"placeholder": "請入 Telegram 靈偶信物"
@@ -3874,7 +3874,7 @@
 				"config": "樞機"
 			},
 			"jsonEditor": {
-				"aria-label": "靈偶樞機 JSON 樞機"
+				"aria-label": "靈偶樞機 JSON 編輯器"
 			},
 			"apiKeyInput": {
 				"placeholder": "請入符鑰"
@@ -3956,7 +3956,7 @@
 				"config": "樞機"
 			},
 			"jsonEditor": {
-				"aria-label": "靈偶樞機 JSON 樞機"
+				"aria-label": "靈偶樞機 JSON 編輯器"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "留空則用預設 https://ilinkai.weixin.qq.com"

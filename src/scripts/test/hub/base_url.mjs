@@ -1,17 +1,16 @@
 /**
- * 测试 hub 根 URL（Deno / Node / 浏览器共用）。
+ * 测试 hub 根 URL（Deno / Node 共用；浏览器侧用 `fount.test.hubUrl`）。
  * `process.env.FOUNT_TEST_HUB_URL` 或 `globalThis.fount.test.hubUrl`；皆无则空串。
  */
+import process from 'node:process'
 
 /**
  * @returns {string} hub base（无尾斜杠）；不可用时为空串
  */
 export function getTestHubBaseUrl() {
-	const fromEnv = typeof process !== 'undefined' && process.env?.FOUNT_TEST_HUB_URL
-		? String(process.env.FOUNT_TEST_HUB_URL).trim()
-		: ''
-	const fromPage = globalThis.fount?.test?.hubUrl
-		? String(globalThis.fount.test.hubUrl).trim()
-		: ''
-	return (fromEnv || fromPage).replace(/\/$/, '')
+	return String(
+		process.env.FOUNT_TEST_HUB_URL
+		|| globalThis.fount?.test?.hubUrl
+		|| '',
+	).trim().replace(/\/$/, '')
 }
