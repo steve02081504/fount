@@ -20,6 +20,17 @@ export function isIgnoredBrowserNetworkError(errorText) {
 }
 
 /**
+ * 子 frame 的 SecurityError（含沙箱无 allow-same-origin 时读 serviceWorker；WPT 要求抛）。
+ * 只认 CDP 结构化字段：`exception.className` + frame 归属；缺 className 则不忽略。
+ * @param {{ exception?: { className?: string } } | null | undefined} exceptionDetails CDP Runtime.ExceptionDetails
+ * @param {boolean} isMainFrame 是否主 frame
+ * @returns {boolean} 是否应忽略
+ */
+export function isIgnoredChildFrameSecurityError(exceptionDetails, isMainFrame) {
+	return !isMainFrame && exceptionDetails?.exception?.className === 'SecurityError'
+}
+
+/**
  * 浏览器网络诊断条目。
  * @typedef {object} BrowserNetworkEntry
  * @property {'http' | 'requestfailed'} kind 诊断种类
@@ -125,9 +136,37 @@ export async function waitForLocaleCycle(page, timeoutMs = 30_000) {
 }
 
 /**
+ * 将 CDP StackTrace 格式化为可读栈（字段均来自协议结构，不解析 summary text）。
+ * @param {{ callFrames?: Array<{ functionName?: string, url?: string, lineNumber?: number, columnNumber?: number }> } | null | undefined} stackTrace
+ * @returns {string}
+ */
+export function formatCdpStackTrace(stackTrace) {
+	const frames = stackTrace?.callFrames
+	if (!frames?.length) return ''
+	return frames.map(frame => {
+		const where = `${frame.url ?? ''}:${(frame.lineNumber ?? 0) + 1}:${(frame.columnNumber ?? 0) + 1}`
+		return `    at ${frame.functionName || '<anonymous>'} (${where})`
+	}).join('\n')
+}
+
+/**
+ * 从 CDP ExceptionDetails 取出展示用字段（name / stack 只取 RemoteObject 与 StackTrace）。
+ * @param {object} exceptionDetails CDP Runtime.ExceptionDetails
+ * @returns {{ name: string, stack: string }}
+ */
+export function pageErrorFromCdpException(exceptionDetails) {
+	const exception = exceptionDetails?.exception
+	const name = exception?.className ?? 'Error'
+	const description = typeof exception?.description === 'string' ? exception.description : ''
+	const framed = formatCdpStackTrace(exceptionDetails?.stackTrace)
+	const stack = description || (framed ? `${name}\n${framed}` : name)
+	return { name, stack }
+}
+
+/**
  * 创建绑定到单个 Playwright page 的诊断收集器。
  * @returns {{
- *   attach: (page: import('npm:@playwright/test').Page) => void,
+ *   attach: (page: import('npm:@playwright/test').Page) => Promise<void>,
  *   pageErrors: string[],
  *   testWatchErrors: string[],
  *   i18nMissingErrors: string[],
@@ -145,17 +184,40 @@ export function createBrowserDiagnostics() {
 	const aggregates = new Map()
 
 	/**
+	 * 经 CDP 挂 pageerror（可区分主/子 frame），并挂网络 / console 诊断。
 	 * @param {import('npm:@playwright/test').Page} page Playwright 页面
-	 * @returns {void}
+	 * @returns {Promise<void>}
 	 */
-	function attach(page) {
-		page.on('pageerror', err => {
-			const message = String(err?.message || err)
-			const stack = err?.stack ? String(err.stack) : ''
-			if (stack)
-				console.error('[pageerror-stack]', stack)
-			pageErrors.push(stack || message)
+	async function attach(page) {
+		const session = await page.context().newCDPSession(page)
+		await session.send('Page.enable')
+		await session.send('Runtime.enable')
+
+		/** @type {Map<number, string>} executionContextId → frameId */
+		const contextFrameIds = new Map()
+		const tree = await session.send('Page.getFrameTree')
+		let mainFrameId = tree.frameTree.frame.id
+
+		session.on('Page.frameNavigated', ({ frame }) => {
+			if (!frame.parentId) mainFrameId = frame.id
 		})
+		session.on('Runtime.executionContextCreated', ({ context }) => {
+			const frameId = context.auxData?.frameId
+			if (frameId) contextFrameIds.set(context.id, frameId)
+		})
+		session.on('Runtime.executionContextDestroyed', ({ executionContextId }) => {
+			contextFrameIds.delete(executionContextId)
+		})
+		session.on('Runtime.exceptionThrown', ({ exceptionDetails }) => {
+			const frameId = contextFrameIds.get(exceptionDetails.executionContextId)
+			// 未知 context 保守当主 frame，避免误吞
+			const isMainFrame = !frameId || frameId === mainFrameId
+			if (isIgnoredChildFrameSecurityError(exceptionDetails, isMainFrame)) return
+			const { stack } = pageErrorFromCdpException(exceptionDetails)
+			console.error('[pageerror-stack]', stack)
+			pageErrors.push(stack)
+		})
+
 		page.on('console', msg => {
 			const text = msg.text()
 			if (isTestWatchConsoleText(text)) testWatchErrors.push(text)
@@ -164,7 +226,8 @@ export function createBrowserDiagnostics() {
 		page.on('requestfailed', req => {
 			const error = req.failure()?.errorText || null
 			if (isIgnoredBrowserNetworkError(error)) return
-			if (/\/api\/ping(?:\?|$)/.test(req.url())) return // 失败的 ping 请求不计入
+			if (/\/api\/ping(?:\?|$)/.test(req.url())) return // Pages 无节点时的探针失败不计入
+			if (/:8930(?:\/|$)/.test(req.url())) return // 安装器存活探针
 			recordBrowserNetworkEntry(aggregates, {
 				kind: 'requestfailed',
 				method: req.method(),

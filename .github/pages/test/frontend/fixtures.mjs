@@ -57,7 +57,7 @@ export function createPagesFixtures(options = {}) {
 		page: async ({ context }, use) => {
 			const diagnostics = createBrowserDiagnostics()
 			const page = await context.newPage()
-			diagnostics.attach(page)
+			await diagnostics.attach(page)
 			await use(page)
 			// 收尾：中日英脚本检查 + 每语种一轮 a11y；未挂载 test_watch 则跳过
 			await waitForLocaleCycle(page).catch(() => { /* 未挂载 test_watch 则跳过 */ })
