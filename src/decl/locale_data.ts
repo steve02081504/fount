@@ -2623,6 +2623,7 @@ export type LocaleData = {
 					rotateConfirm: string
 					rotateLabel: string
 					secretLabel: string
+					urlLabel: string
 				}
 				groupRecoveryTip: string
 				groupRecoveryTitle: string
