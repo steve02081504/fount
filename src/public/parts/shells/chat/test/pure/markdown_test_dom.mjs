@@ -15,6 +15,12 @@ export function installMarkdownTestDom() {
 	installed = true
 
 	const window = new Window({ url: 'http://localhost/' })
+	// KaTeX：happy-dom 的 document.compatMode 为 undefined，会被当成 quirks 刷 Warning
+	// https://github.com/capricorn86/happy-dom/issues/2267 — 上游补齐后可删此 shim
+	Object.defineProperty(window.document, 'compatMode', {
+		configurable: true,
+		get: () => 'CSS1Compat',
+	})
 	Object.defineProperty(window, 'innerWidth', { value: 0, configurable: true })
 	Object.defineProperty(window, 'innerHeight', { value: 0, configurable: true })
 
@@ -25,6 +31,7 @@ export function installMarkdownTestDom() {
 	globalThis.Element = window.Element
 	globalThis.Node = window.Node
 	globalThis.DocumentFragment = window.DocumentFragment
+	globalThis.ShadowRoot = window.ShadowRoot
 	globalThis.DOMParser = window.DOMParser
 	globalThis.XMLSerializer = window.XMLSerializer
 	globalThis.MutationObserver = window.MutationObserver
