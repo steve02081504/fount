@@ -58,7 +58,11 @@ export function createFountFixtures(options = {}) {
 			const context = await browser.newContext({ storageState, locale, serviceWorkers: 'block' })
 			await installCdnResponseCache(context)
 			await context.addInitScript(language => {
-				localStorage.setItem('userPreferredLanguages', JSON.stringify([language]))
+				// about:blank / 沙箱 frame 读 localStorage 会抛 SecurityError；只在可写源落首选语言
+				try {
+					localStorage.setItem('userPreferredLanguages', JSON.stringify([language]))
+				}
+				catch (error) { if (error.name !== 'SecurityError') throw error /* opaque / sandboxed frame */ }
 			}, locale)
 			await context.addInitScript(() => {
 				globalThis.fount ??= {}
