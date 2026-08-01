@@ -212,7 +212,7 @@ export function renderMediaPreview(container, refs, onChange, options = {}) {
 				const edit = document.createElement('button')
 				edit.type = 'button'
 				edit.className = 'media-chip-edit'
-				edit.dataset.i18n = options.editI18n || 'social.composer.edit.image'
+				edit.dataset.i18n = options.editI18n || 'util.imageEditor.image'
 				edit.addEventListener('click', () => {
 					void options.onEditImage?.(index, ref)
 				})

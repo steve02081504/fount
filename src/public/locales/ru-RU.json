@@ -4234,22 +4234,6 @@
 					"followers7d": "Подписчики от 7 дней",
 					"label": "Кто может ответить"
 				}
-			},
-			"edit": {
-				"apply": "Применить",
-				"brush": "Кисть",
-				"brushColor": {
-					"title": "Цвет кисти",
-					"aria-label": "Цвет кисти"
-				},
-				"brushSize": {
-					"title": "Размер кисти",
-					"aria-label": "Размер кисти"
-				},
-				"cancel": "Отмена",
-				"crop": "Обрезать",
-				"image": "Редактировать",
-				"mosaic": "Пикселизация"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "Уведомления"
 			}
+		},
+		"imageEditor": {
+			"apply": "Применить",
+			"brush": "Кисть",
+			"brushColor": {
+				"title": "Цвет кисти",
+				"aria-label": "Цвет кисти"
+			},
+			"brushSize": {
+				"title": "Размер кисти",
+				"aria-label": "Размер кисти"
+			},
+			"crop": "Обрезать",
+			"image": "Редактировать",
+			"mosaic": "Пикселизация"
 		},
 		"common": {
 			"cancel": "Отмена",

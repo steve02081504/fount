@@ -2,9 +2,9 @@
  * 浏览器端图片编辑器：裁剪 / 马赛克 / 画笔。纯 canvas，无第三方依赖。
  */
 
-import { escapeHtml } from '../lib/escapeHtml.mjs'
+import { escapeHtml } from '../../lib/escapeHtml.mjs'
 
-const IMAGE_EDITOR_CSS = '/scripts/imageEditor/imageEditor.css'
+const IMAGE_EDITOR_CSS = '/scripts/components/imageEditor/imageEditor.css'
 
 /**
  * @returns {void}
@@ -19,7 +19,7 @@ function ensureImageEditorStyles() {
 
 /**
  * @param {File | Blob} file 源图片
- * @param {{ titleI18n?: string, cropI18n?: string, mosaicI18n?: string, brushI18n?: string, brushColorI18n?: string, brushSizeI18n?: string, applyI18n?: string, cancelI18n?: string }} [labels] 文案键
+ * @param {{ titleI18n?: string, cropI18n?: string, mosaicI18n?: string, brushI18n?: string, brushColorI18n?: string, brushSizeI18n?: string, applyI18n?: string, cancelI18n?: string }} [labels] 文案键（默认 `util.imageEditor.*` / `util.common.cancel`）
  * @returns {Promise<File | null>} 编辑后的文件；取消为 null
  */
 export function openImageEditor(file, labels = {}) {
@@ -28,17 +28,17 @@ export function openImageEditor(file, labels = {}) {
 		const objectUrl = URL.createObjectURL(file)
 		const dialog = document.createElement('dialog')
 		dialog.className = 'modal image-editor-modal'
-		const titleI18n = escapeHtml(labels.titleI18n || 'social.composer.edit.image')
-		const cropI18n = escapeHtml(labels.cropI18n || 'social.composer.edit.crop')
-		const mosaicI18n = escapeHtml(labels.mosaicI18n || 'social.composer.edit.mosaic')
-		const brushI18n = escapeHtml(labels.brushI18n || 'social.composer.edit.brush')
-		const brushColorI18n = escapeHtml(labels.brushColorI18n || 'social.composer.edit.brushColor')
-		const brushSizeI18n = escapeHtml(labels.brushSizeI18n || 'social.composer.edit.brushSize')
-		const cancelI18n = escapeHtml(labels.cancelI18n || 'social.composer.edit.cancel')
-		const applyI18n = escapeHtml(labels.applyI18n || 'social.composer.edit.apply')
+		const titleI18n = escapeHtml(labels.titleI18n || 'util.imageEditor.image')
+		const cropI18n = escapeHtml(labels.cropI18n || 'util.imageEditor.crop')
+		const mosaicI18n = escapeHtml(labels.mosaicI18n || 'util.imageEditor.mosaic')
+		const brushI18n = escapeHtml(labels.brushI18n || 'util.imageEditor.brush')
+		const brushColorI18n = escapeHtml(labels.brushColorI18n || 'util.imageEditor.brushColor')
+		const brushSizeI18n = escapeHtml(labels.brushSizeI18n || 'util.imageEditor.brushSize')
+		const cancelI18n = escapeHtml(labels.cancelI18n || 'util.common.cancel')
+		const applyI18n = escapeHtml(labels.applyI18n || 'util.imageEditor.apply')
 		dialog.innerHTML = `\
 <div class="modal-box image-editor-box">
-	<h3 class="font-bold text-lg" data-i18n="${titleI18n}"></h3>
+	<h2 class="font-bold text-lg" data-i18n="${titleI18n}"></h2>
 	<div class="image-editor-toolbar">
 		<button type="button" class="btn btn-sm" data-tool="crop" data-i18n="${cropI18n}"></button>
 		<button type="button" class="btn btn-sm" data-tool="mosaic" data-i18n="${mosaicI18n}"></button>

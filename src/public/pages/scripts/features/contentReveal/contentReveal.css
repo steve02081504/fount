@@ -18,31 +18,31 @@
 	align-items: center;
 	justify-content: center;
 	gap: 0.5rem;
-	background: color-mix(in srgb, black 25%, transparent);
+	background: color-mix(in srgb, var(--color-neutral) 45%, transparent);
 	border-radius: 16px;
 }
 
 .sensitive-media-label {
 	font-weight: 600;
-	color: white;
-	text-shadow: 0 1px 2px black;
+	color: var(--color-neutral-content);
+	text-shadow: 0 1px 2px color-mix(in srgb, var(--color-neutral) 70%, transparent);
 }
 
 .sensitive-media-reveal {
-	border: 1px solid white;
-	background: color-mix(in srgb, black 40%, transparent);
-	color: white;
+	border: 1px solid color-mix(in srgb, var(--color-neutral-content) 55%, transparent);
+	background: color-mix(in srgb, var(--color-neutral) 55%, transparent);
+	color: var(--color-neutral-content);
 	border-radius: 6px;
 	padding: 4px 12px;
 	cursor: pointer;
 }
 
 .content-warning-wrap {
-	border: 1px solid color-mix(in srgb, var(--s-accent, var(--social-accent, #6366f1)) 35%, transparent);
+	border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
 	border-radius: 8px;
 	padding: 10px 12px;
 	margin-bottom: 8px;
-	background: color-mix(in srgb, var(--s-accent, var(--social-accent, #6366f1)) 8%, transparent);
+	background: color-mix(in srgb, var(--color-primary) 8%, transparent);
 }
 
 .content-warning-label {
@@ -52,9 +52,9 @@
 }
 
 .content-warning-reveal {
-	border: 1px solid var(--s-border, var(--social-border, #e5e7eb));
-	background: var(--s-bg-secondary, var(--social-bg-soft, #f9fafb));
-	color: var(--s-text, inherit);
+	border: 1px solid color-mix(in srgb, var(--color-base-content) 15%, transparent);
+	background: var(--color-base-200);
+	color: inherit;
 	border-radius: 6px;
 	padding: 4px 10px;
 	cursor: pointer;
