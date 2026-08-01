@@ -56,6 +56,27 @@
 			]
 		},
 		{
+			"name": "i18n_refs",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/i18n_refs.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/{i18n_refs.mjs,walk.mjs}",
+				"src/scripts/checks/test/i18n_refs.test.mjs",
+				"src/public/locales/*.json",
+				"src/**/*.{html,mjs,js,ts}",
+				"path/fount.ps1",
+				"path/fount.sh"
+			]
+		},
+		{
 			"name": "reshape_i18n_keys",
 			"run": [
 				"python",
@@ -63,7 +84,8 @@
 				"--self-test"
 			],
 			"triggers": [
-				".esh/commands/reshape_i18n_keys.py"
+				".esh/commands/reshape_i18n_keys.py",
+				"src/scripts/checks/walk.mjs"
 			]
 		},
 		{

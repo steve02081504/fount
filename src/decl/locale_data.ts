@@ -6201,6 +6201,8 @@ export type LocaleKeyParams = {
 	'subfounts.errors.regenerateConnectionCodeFailed': { message: string | number }
 	'subfounts.errors.saveSettingsFailed': { message: string | number }
 	'telegram_bots.alerts.botExists': { botname: string | number }
+	'telegram_bots.alerts.confirmDeleteBot': { botname: string | number }
+	'telegram_bots.alerts.invalidJsonConfig': { error: string | number }
 	'themeManage.editor.deleteConfirm': { id: string | number }
 	'themeManage.editor.failedToClone': { message: string | number }
 	'themeManage.editor.failedToDelete': { message: string | number }

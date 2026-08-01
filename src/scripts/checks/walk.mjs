@@ -8,9 +8,9 @@ import createIgnore from 'npm:ignore'
 
 import I18N_REWRITE_EXCLUDE_PREFIXES from './i18n_rewrite_exclude_prefixes.json' with { type: 'json' }
 
-/** 两遍 i18n 键改写共享的源码后缀。 */
+/** 两遍 i18n 键改写共享的源码后缀（含 path/fount.sh — reshape 须改写相对 get_i18n 键）。 */
 export const I18N_REWRITE_SUFFIXES = Object.freeze([
-	'.mjs', '.js', '.ts', '.html', '.ps1', '.py',
+	'.mjs', '.js', '.ts', '.html', '.ps1', '.sh', '.py',
 ])
 
 /**

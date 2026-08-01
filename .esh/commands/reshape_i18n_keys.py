@@ -38,7 +38,7 @@ _MISSING = object()
 PLURAL_CONTAINER = {"tab": "tabs"}
 PREFIX_CLUSTER_MIN = 4
 
-I18N_REWRITE_SUFFIXES = (".mjs", ".js", ".ts", ".html", ".ps1", ".py")
+I18N_REWRITE_SUFFIXES = (".mjs", ".js", ".ts", ".html", ".ps1", ".sh", ".py")
 AFFIX_RE = re.compile(r"^(?:Suffix|Prefix)|(?:Suffix|Prefix)$")
 NUMBERED_RE = re.compile(r"^[A-Za-z][A-Za-z]*\d+$")
 SCREAMING_SNAKE_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
@@ -335,6 +335,28 @@ def rewrite_quoted_keys(text: str, path_map: dict[str, str]) -> tuple[str, int]:
 	return out, hits
 
 
+FOUNT_CONSOLE_PATH_PREFIX = "fountConsole.path."
+
+
+def fount_console_path_relative_map(path_map: dict[str, str]) -> dict[str, str]:
+	"""CLI Get-I18n / get_i18n keys are relative to fountConsole.path — strip that prefix for rewrite."""
+	relative: dict[str, str] = {}
+	for from_path, to_path in path_map.items():
+		if from_path.startswith(FOUNT_CONSOLE_PATH_PREFIX) and to_path.startswith(FOUNT_CONSOLE_PATH_PREFIX):
+			relative[from_path[len(FOUNT_CONSOLE_PATH_PREFIX):]] = to_path[len(FOUNT_CONSOLE_PATH_PREFIX):]
+	return relative
+
+
+def rewrite_source_file(rel: str, text: str, path_map: dict[str, str]) -> tuple[str, int]:
+	out, hits = rewrite_quoted_keys(text, path_map)
+	if rel.replace("\\", "/") in ("path/fount.ps1", "path/fount.sh"):
+		rel_map = fount_console_path_relative_map(path_map)
+		if rel_map:
+			out2, hits2 = rewrite_quoted_keys(out, rel_map)
+			return out2, hits + hits2
+	return out, hits
+
+
 def load_extra_manual(arg: str | None) -> dict[str, str]:
 	if not arg:
 		return {}
@@ -390,7 +412,7 @@ def iter_source_files(gitignore_spec, exclude_prefixes: list[str]):
 
 
 def self_test() -> int:
-	"""CLI smoke: SCREAMING_SNAKE remainders stay intact through nest + dumps/loads."""
+	"""CLI smoke: SCREAMING_SNAKE remainders + fountConsole.path relative rewrite."""
 	obj = loads_locale(json.dumps({
 		"permSEND_MESSAGES": "send",
 		"permVIEW_CHANNEL": "view",
@@ -399,19 +421,30 @@ def self_test() -> int:
 		"permMANAGE_CHANNELS": "channels",
 	}, ensure_ascii=False))
 	nest_all_prefix_clusters_with_map(obj)
-	if "perm" not in obj:
-		print("missing perm after nest", file=sys.stderr)
+	if set(obj.get("perm", {})) != {
+		"SEND_MESSAGES", "VIEW_CHANNEL", "ADD_REACTIONS", "UPLOAD_FILES", "MANAGE_CHANNELS",
+	}:
+		print(f"perm keys unexpected: {list(obj.get('perm', {}))!r}", file=sys.stderr)
 		return 1
-	keys = list(obj["perm"].keys())
-	expected = {"SEND_MESSAGES", "VIEW_CHANNEL", "ADD_REACTIONS", "UPLOAD_FILES", "MANAGE_CHANNELS"}
-	if set(keys) != expected:
-		print(f"perm keys {keys!r} != {sorted(expected)!r}", file=sys.stderr)
-		return 1
-	rewritten = loads_locale(dumps_locale(obj))
-	if rewritten["perm"]["SEND_MESSAGES"] != "send":
+	if loads_locale(dumps_locale(obj))["perm"]["SEND_MESSAGES"] != "send":
 		print("dumps/loads corrupted SEND_MESSAGES", file=sys.stderr)
 		return 1
-	print(json.dumps({"ok": True, "perm": sorted(rewritten["perm"].keys())}))
+
+	# Relative Get-I18n keys (strip fountConsole.path.) — nest coverage lives in Deno i18n_keys tests
+	cli_map = {
+		"fountConsole.path.remove.removingFount": "fountConsole.path.remove.removing.fount.main",
+		"fountConsole.path.remove.removingFountFromPath": "fountConsole.path.remove.removing.fount.fromPath",
+	}
+	out, hits = rewrite_source_file(
+		"path/fount.ps1",
+		"Get-I18n -key 'remove.removingFount'\nget_i18n 'remove.removingFountFromPath'\n",
+		cli_map,
+	)
+	if hits < 2 or "'remove.removing.fount.main'" not in out or "'remove.removing.fount.fromPath'" not in out:
+		print(f"CLI relative rewrite failed: hits={hits} out={out!r}", file=sys.stderr)
+		return 1
+
+	print(json.dumps({"ok": True, "perm": sorted(obj["perm"])}))
 	return 0
 
 
@@ -454,7 +487,7 @@ def main() -> int:
 		abs_path = os.path.join(FOUNT_DIR, rel)
 		with open(abs_path, "r", encoding="utf-8") as handle:
 			raw = handle.read()
-		text, hits = rewrite_quoted_keys(raw, path_map)
+		text, hits = rewrite_source_file(rel, raw, path_map)
 		if not hits:
 			continue
 		with open(abs_path, "w", encoding="utf-8", newline="\n") as handle:
