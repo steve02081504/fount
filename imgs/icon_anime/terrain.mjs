@@ -68,7 +68,7 @@ function caveNoiseOpens(x, y, surfaceY, originX, originY, seed) {
 	const depth = y - surfaceY
 	return depth > 1 &&
 		fbm2((x - originX) * 0.11, (y - originY) * 0.13, seed) >
-			0.58 - Math.min(0.22, depth * 0.018)
+		0.58 - Math.min(0.22, depth * 0.018)
 }
 
 /**

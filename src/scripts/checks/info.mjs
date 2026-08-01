@@ -235,7 +235,7 @@ export function scanAchievementsData(relPath, data) {
 
 	for (const [achId, ach] of Object.entries(achievements)) {
 		if (!ach || typeof ach !== 'object' || Array.isArray(ach)) continue
-		for (const key of /** @type {const} */ ['icon', 'locked_icon']) {
+		for (const key of /** @type {const} */['icon', 'locked_icon']) {
 			const url = /** @type {Record<string, unknown>} */ ach[key]
 			if (typeof url === 'string' && url.trim())
 				iconUrls.push({ achievementId: achId, key, url: url.trim() })

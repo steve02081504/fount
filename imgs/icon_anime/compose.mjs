@@ -43,9 +43,9 @@ const LIGHT_AMBIENT = 0.3
 /** 复用的 sampleLight 输出（compose 热路径）。 */
 const sampleOut = { ambient: 0, lift: 0 }
 /** 复用的 ANSI 片段列表——每帧一次 join，而非逐格 `+=`。 */
-const frameParts = /** @type {string[]} */ []
+const frameParts = /** @type {string[]} */[]
 /** 共用同一 SGR 段的字形——每段 join 一次。 */
-const runGlyphs = /** @type {string[]} */ []
+const runGlyphs = /** @type {string[]} */[]
 
 /**
  * 视口格内的平滑径向衰减（补偿终端格偏高）。
