@@ -1272,10 +1272,8 @@
 				"autoSignHint": "提交後由本機在此群的簽名種子自動聯署，無需輸入私鑰。多管理員群需過半管理員各自在本機提交同一選票（相同 ballotId 與候選人）。",
 				"candidateLabel": "繼任者公鑰雜湊",
 				"description": "將群最高管理許可權（MANAGE_ADMINS）轉移給指定成員。僅管理員可操作。",
-				"failed": "繼任投票提交失敗",
 				"needHash": "請填寫繼任者的公鑰雜湊",
-				"selfButton": "提名自己",
-				"submitted": "繼任選票已記錄你的聯署。"
+				"selfButton": "提名自己"
 			},
 			"channelType": {
 				"label": "頻道型別",
@@ -1612,13 +1610,6 @@
 				},
 				"ok": "已獲取媒體流（已停止，未廣播）",
 				"test": "測試媒體裝置"
-			},
-			"thread": {
-				"main": "子執行緒",
-				"back": "返回",
-				"breadcrumbMiddleSummary": "中間 ${count} 層",
-				"breadcrumbMiddleTitle": "展開中間層，選擇要跳轉的層級",
-				"breadcrumbRootTitle": "跳轉到路徑起點（第一層）"
 			},
 			"unpin": {
 				"action": {

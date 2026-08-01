@@ -1273,10 +1273,8 @@
 				"autoSignHint": "提交后由本机在该群的签名种子自动联署，无需输入私钥。多管理员群需过半管理员各自在本机提交同一选票（相同 ballotId 与候选人）。",
 				"candidateLabel": "继任者公钥哈希",
 				"description": "将群最高管理权限（MANAGE_ADMINS）转移给指定成员。仅管理员可操作。",
-				"failed": "继任投票提交失败",
 				"needHash": "请填写继任者的公钥哈希",
-				"selfButton": "提名自己",
-				"submitted": "继任选票已记录你的联署。"
+				"selfButton": "提名自己"
 			},
 			"channelType": {
 				"label": "频道类型",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "已获取媒体流（已停止，未广播）",
 				"test": "测试媒体设备"
-			},
-			"thread": {
-				"main": "子线程",
-				"back": "返回",
-				"breadcrumbMiddleSummary": "中间 ${count} 层",
-				"breadcrumbMiddleTitle": "展开中间层，选择要跳转的层级",
-				"breadcrumbRootTitle": "跳转到路径起点（第一层）"
 			},
 			"unpin": {
 				"action": {

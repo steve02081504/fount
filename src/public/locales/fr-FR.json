@@ -1273,10 +1273,8 @@
 				"autoSignHint": "Après la soumission, la machine signera automatiquement la graine de signature du groupe sans saisir la clé privée. Dans un groupe multi-administrateurs, plus de la moitié des administrateurs doivent soumettre le même bulletin de vote (même identifiant et candidat) localement.",
 				"candidateLabel": "Hachage de clé publique successeur",
 				"description": "Transférez l'autorité administrative la plus élevée du groupe (MANAGE_ADMINS) au membre spécifié. Seuls les administrateurs peuvent opérer.",
-				"failed": "Échec de la soumission du vote de succession",
 				"needHash": "Veuillez remplir le hachage de la clé publique du successeur",
-				"selfButton": "Nommez-vous",
-				"submitted": "Votre signature a été enregistrée sur le bulletin de vote pour la succession."
+				"selfButton": "Nommez-vous"
 			},
 			"channelType": {
 				"label": "Type de canal",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "Flux multimédia acquis (arrêté, non diffusé)",
 				"test": "Tester les appareils multimédias"
-			},
-			"thread": {
-				"main": "fil enfant",
-				"back": "Retour",
-				"breadcrumbMiddleSummary": "couche intermédiaire de ${count}",
-				"breadcrumbMiddleTitle": "Développez le calque intermédiaire et sélectionnez le niveau auquel vous souhaitez accéder",
-				"breadcrumbRootTitle": "Aller au point de départ du chemin (premier niveau)"
 			},
 			"unpin": {
 				"action": {

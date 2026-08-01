@@ -1273,10 +1273,8 @@
 				"autoSignHint": "Na indiening ondertekent de machine automatisch het handtekeningzaad van de groep zonder de privésleutel in te voeren. In een groep met meerdere beheerders moet meer dan de helft van de beheerders hetzelfde stembiljet (dezelfde stembiljet en kandidaat) lokaal indienen.",
 				"candidateLabel": "Opvolger publieke sleutel-hash",
 				"description": "Draag de hoogste administratieve autoriteit van de groep (MANAGE_ADMINS) over aan het opgegeven lid. Alleen beheerders kunnen werken.",
-				"failed": "Het indienen van de opvolgingsstemming is mislukt",
 				"needHash": "Vul de hash van de openbare sleutel van de opvolger in",
-				"selfButton": "Nomineer jezelf",
-				"submitted": "Je handtekening is opgenomen op het opvolgingsstemmingsbiljet."
+				"selfButton": "Nomineer jezelf"
 			},
 			"channelType": {
 				"label": "Kanaaltype",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "Mediastream verworven (gestopt, niet uitgezonden)",
 				"test": "Media-apparaten testen"
-			},
-			"thread": {
-				"main": "kinder draad",
-				"back": "Terug",
-				"breadcrumbMiddleSummary": "middelste ${count} laag",
-				"breadcrumbMiddleTitle": "Vouw de middelste laag uit en selecteer het niveau waarnaar je wilt springen",
-				"breadcrumbRootTitle": "Spring naar het startpunt van het pad (eerste niveau)"
 			},
 			"unpin": {
 				"action": {

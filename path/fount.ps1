@@ -1915,10 +1915,10 @@ elseif ($args[0] -eq 'remove') {
 	Write-TaskbarProgress -Percent 5
 	deno clean
 	Write-TaskbarProgress -Percent 15
-	Write-Host (Get-I18n -key 'remove.removingFount')
+	Write-Host (Get-I18n -key 'remove.removing.fount.main')
 
 	# Remove fount from PATH
-	Write-Host (Get-I18n -key 'remove.removingFountFromPath')
+	Write-Host (Get-I18n -key 'remove.removing.fount.fromPath')
 	$path = $env:PATH -split ';'
 	$path = $path | Where-Object { !$_.StartsWith("$FOUNT_DIR") }
 	$env:Path = $path -join ';'
@@ -1929,7 +1929,7 @@ elseif ($args[0] -eq 'remove') {
 	[System.Environment]::SetEnvironmentVariable('PATH', $UserPath, [System.EnvironmentVariableTarget]::User)
 
 	# Remove fount from git safe.directory
-	Write-Host (Get-I18n -key 'remove.removingFountFromGitSafeDir')
+	Write-Host (Get-I18n -key 'remove.removing.fount.fromGitSafeDir')
 	if ((Get-Command git -ErrorAction Ignore) -and ($FOUNT_DIR -in $(git config --global --get-all safe.directory))) {
 		git config --global --unset safe.directory "$FOUNT_DIR"
 	}
@@ -1937,7 +1937,7 @@ elseif ($args[0] -eq 'remove') {
 	Write-TaskbarProgress -Percent 25
 
 	# Remove fount-pwsh from PowerShell Profile
-	Write-Host (Get-I18n -key 'remove.removingFountPwshFromProfile')
+	Write-Host (Get-I18n -key 'remove.removing.fount.pwshFromProfile')
 	if (Test-Path -LiteralPath $Profile) {
 		$existing = [IO.File]::ReadAllText($Profile)
 		$nl = if ($existing.Contains("`r`n")) { "`r`n" } else { "`n" }
@@ -1954,7 +1954,7 @@ elseif ($args[0] -eq 'remove') {
 	}
 
 	# Uninstall fount-pwsh
-	Write-Host (Get-I18n -key 'remove.uninstallingFountPwsh')
+	Write-Host (Get-I18n -key 'remove.uninstalling.fountPwsh')
 	try {
 		Uninstall-Module -Name fount-pwsh -AllVersions -Force -ErrorAction Stop
 	}
@@ -1966,25 +1966,25 @@ elseif ($args[0] -eq 'remove') {
 
 	# Remove fount protocol handler
 	if (-not $IN_DOCKER) {
-		Write-Host (Get-I18n -key 'remove.removingProtocolHandler')
+		Write-Host (Get-I18n -key 'remove.removing.protocolHandler')
 		try {
 			# 静默删除注册表键及其所有子键
 			Remove-Item -Path "HKCU:\Software\Classes\fount" -Recurse -Force -ErrorAction SilentlyContinue
 			Write-Host (Get-I18n -key 'remove.protocolHandlerRemoved')
 		}
 		catch {
-			Write-Warning (Get-I18n -key 'remove.removeProtocolHandlerFailed' -params @{message = $_.Exception.Message })
+			Write-Warning (Get-I18n -key 'remove.remove.protocolHandlerFailed' -params @{message = $_.Exception.Message })
 		}
 	}
 
 	Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name 'fount' -ErrorAction SilentlyContinue
 
 	# Remove terminal keybindings (Shift+Enter / Ctrl+Backspace CSI-u patches)
-	Write-Host (Get-I18n -key 'remove.removingTerminalKeybindings')
+	Write-Host (Get-I18n -key 'remove.removing.terminalKeybindings')
 	Unregister-FountTerminalKeybindings
 
 	# Remove Windows Terminal Profile
-	Write-Host (Get-I18n -key 'remove.removingTerminalProfile')
+	Write-Host (Get-I18n -key 'remove.removing.terminalProfile')
 	$WTjsonDirPath = "$env:LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/fount"
 	if (Test-Path $WTjsonDirPath -PathType Container) {
 		Remove-Item -Path $WTjsonDirPath -Force -Recurse
@@ -1995,7 +1995,7 @@ elseif ($args[0] -eq 'remove') {
 	}
 
 	# Remove Desktop Shortcut
-	Write-Host (Get-I18n -key 'remove.removingDesktopShortcut')
+	Write-Host (Get-I18n -key 'remove.removing.desktopShortcut')
 	$desktopShortcutPath = [Environment]::GetFolderPath("Desktop") + "\fount.lnk"
 	if (Test-Path $desktopShortcutPath) {
 		Remove-Item -Path $desktopShortcutPath -Force
@@ -2006,7 +2006,7 @@ elseif ($args[0] -eq 'remove') {
 	}
 
 	# Remove Start Menu Shortcut
-	Write-Host (Get-I18n -key 'remove.removingStartMenuShortcut')
+	Write-Host (Get-I18n -key 'remove.removing.startMenuShortcut')
 	$startMenuShortcutPath = [Environment]::GetFolderPath("StartMenu") + "\fount.lnk"
 	if (Test-Path $startMenuShortcutPath) {
 		Remove-Item -Path $startMenuShortcutPath -Force
@@ -2019,7 +2019,7 @@ elseif ($args[0] -eq 'remove') {
 	Write-TaskbarProgress -Percent 60
 
 	# Remove Installed pwsh modules
-	Write-Host (Get-I18n -key 'remove.removingInstalledPwshModules')
+	Write-Host (Get-I18n -key 'remove.removing.installedPwshModules')
 	$auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" -Raw -ErrorAction Ignore
 	if (!$auto_installed_pwsh_modules) { $auto_installed_pwsh_modules = '' }
 	$auto_installed_pwsh_modules = $auto_installed_pwsh_modules.Split(';') | Where-Object { $_ }
@@ -2031,32 +2031,32 @@ elseif ($args[0] -eq 'remove') {
 			}
 		}
 		catch {
-			Write-Warning (Get-I18n -key 'remove.removeModuleFailed' -params @{module = $_; message = $_.Exception.Message })
+			Write-Warning (Get-I18n -key 'remove.remove.moduleFailed' -params @{module = $_; message = $_.Exception.Message })
 		}
 	}
 	Set-Title "𝓯"
 	Write-TaskbarProgress -Percent 75
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_git") {
-		Write-Host (Get-I18n -key 'remove.uninstallingGit')
+		Write-Host (Get-I18n -key 'remove.uninstalling.git')
 		winget uninstall --id Git.Git -e --source winget
 	}
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_chrome") {
-		Write-Host (Get-I18n -key 'remove.uninstallingChrome')
+		Write-Host (Get-I18n -key 'remove.uninstalling.chrome')
 		winget uninstall --id Google.Chrome -e --source winget
 	}
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_winget") {
-		Write-Host (Get-I18n -key 'remove.uninstallingWinget')
+		Write-Host (Get-I18n -key 'remove.uninstalling.winget')
 		Import-Module Appx
 		Remove-AppxPackage -Package Microsoft.DesktopAppInstaller_8wekyb3d8bbwe
 	}
 
 	if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_deno") {
-		Write-Host (Get-I18n -key 'remove.uninstallingDeno')
+		Write-Host (Get-I18n -key 'remove.uninstalling.deno')
 		try { Remove-Item $(Get-Command deno).Source -Force } catch {
-			Write-Warning (Get-I18n -key 'remove.removeDenoFailed' -params @{message = $_.Exception.Message })
+			Write-Warning (Get-I18n -key 'remove.remove.denoFailed' -params @{message = $_.Exception.Message })
 		}
 		Remove-Item "~/.deno" -Force -Recurse -ErrorAction Ignore
 
@@ -2070,7 +2070,7 @@ elseif ($args[0] -eq 'remove') {
 	Set-Title ""
 	Write-TaskbarProgress -Percent 90
 	# Remove fount installation directory
-	Write-Host (Get-I18n -key 'remove.removingFountInstallationDir')
+	Write-Host (Get-I18n -key 'remove.removing.fount.installationDir')
 	Remove-Item -Path $FOUNT_DIR -Recurse -Force -ErrorAction SilentlyContinue
 	# 只要父目录为空，继续删他妈的
 	$parent = Split-Path -Parent $FOUNT_DIR

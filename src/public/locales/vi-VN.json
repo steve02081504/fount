@@ -1273,10 +1273,8 @@
 				"autoSignHint": "Sau khi submit, máy sẽ tự động ký tên hạt giống của nhóm mà không cần nhập Private key. Trong một nhóm có nhiều quản trị viên, hơn một nửa số quản trị viên phải gửi cùng một lá phiếu (cùng mã phiếu bầu và ứng cử viên) tại địa phương.",
 				"candidateLabel": "Băm khóa công khai kế tiếp",
 				"description": "Chuyển quyền quản trị cao nhất của nhóm (MANAGE_ADMINS) cho thành viên được chỉ định. Chỉ quản trị viên mới có thể hoạt động.",
-				"failed": "Gửi phiếu bầu kế nhiệm không thành công",
 				"needHash": "Vui lòng điền vào hàm băm khóa công khai của người kế nhiệm",
-				"selfButton": "Tự đề cử",
-				"submitted": "Chữ ký của bạn đã được ghi trên Lá phiếu kế nhiệm."
+				"selfButton": "Tự đề cử"
 			},
 			"channelType": {
 				"label": "Loại kênh",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "Đã thu được luồng phương tiện (đã dừng, không phát)",
 				"test": "Kiểm tra thiết bị truyền thông"
-			},
-			"thread": {
-				"main": "chủ đề con",
-				"back": "Quay lại",
-				"breadcrumbMiddleSummary": "lớp ${count} ở giữa",
-				"breadcrumbMiddleTitle": "Mở rộng lớp giữa và chọn cấp độ bạn muốn chuyển tới",
-				"breadcrumbRootTitle": "Nhảy đến điểm bắt đầu của đường dẫn (cấp độ đầu tiên)"
 			},
 			"unpin": {
 				"action": {

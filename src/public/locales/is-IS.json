@@ -1273,10 +1273,8 @@
 				"autoSignHint": "Eftir sendingu mun vélin sjálfkrafa undirrita undirskriftarfræ hópsins án þess að slá inn einkalykilinn. Í fjölstjórnendahópi þarf meira en helmingur stjórnenda að leggja fram sama atkvæðaseðil (sama atkvæðanúmer og framBjóðandi) á staðnum.",
 				"candidateLabel": "Eftirmaður Opinbertlykils hash",
 				"description": "Flytja æðsta stjórnunarvald hópsins (MANAGE_ADMINS) til tilgreinds meðlims. Aðeins stjórnendur geta starfað.",
-				"failed": "Ekki tókst að leggja fram atkvæði um arf",
 				"needHash": "Vinsamlega fylltu út hash arftakans opinbera lykla",
-				"selfButton": "Tilnefna sjálfan þig",
-				"submitted": "Undirskrift þín hefur verið skráð á atkvæðagreiðsluna."
+				"selfButton": "Tilnefna sjálfan þig"
 			},
 			"channelType": {
 				"label": "Gerð rásar",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "Fjölmiðlunarstraumur sóttur (stöðvaður, ekki útvarpað)",
 				"test": "Prófaðu fjölmiðlatæki"
-			},
-			"thread": {
-				"main": "Undirþráður",
-				"back": "Skila",
-				"breadcrumbMiddleSummary": "Mitt ${count} lag",
-				"breadcrumbMiddleTitle": "Stækkaðu miðjulagið og veldu stigið sem þú vilt hoppa á",
-				"breadcrumbRootTitle": "Hoppa á upphafsstað slóðar (fyrsta stig)"
 			},
 			"unpin": {
 				"action": {

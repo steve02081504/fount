@@ -1273,10 +1273,8 @@
 				"autoSignHint": "Após o envio, a máquina assinará automaticamente a semente de assinatura do grupo sem inserir a chave privada. Em um grupo com vários administradores, mais da metade dos administradores devem enviar a mesma cédula (mesmo BallotId e candidato) localmente.",
 				"candidateLabel": "Hash de chave pública sucessor",
 				"description": "Transfira a autoridade administrativa mais alta do grupo (MANAGE_ADMINS) para o membro especificado. Somente administradores podem operar.",
-				"failed": "Falha em Succession vote submission",
 				"needHash": "Preencha o hash da chave pública do sucessor",
-				"selfButton": "Indique-se",
-				"submitted": "Sua assinatura foi registrada na Cédula de Sucessão."
+				"selfButton": "Indique-se"
 			},
 			"channelType": {
 				"label": "Tipo de canal",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "Fluxo de mídia adquirido (parado, não transmitido)",
 				"test": "Testar dispositivos de mídia"
-			},
-			"thread": {
-				"main": "Tópico filho",
-				"back": "Voltar",
-				"breadcrumbMiddleSummary": "Camada intermediária ${count}",
-				"breadcrumbMiddleTitle": "Mostrar more the middle layer and select the level you want to jump to",
-				"breadcrumbRootTitle": "Salte para o ponto inicial do caminho (primeiro nível)"
 			},
 			"unpin": {
 				"action": {

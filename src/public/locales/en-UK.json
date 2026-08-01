@@ -1268,10 +1268,8 @@
 				"autoSignHint": "After submission, the device will automatically sign the signature seed of the group without entering the private key. In a multi-administrator group, more than half of the administrators must submit the same ballot (same ballotId and candidate) locally.",
 				"candidateLabel": "Successor public key hash",
 				"description": "Transfer the group's top admin permission (MANAGE_ADMINS) to a member. Admins only.",
-				"failed": "Succession vote submission failed",
 				"needHash": "Please fill in the successor's public key hash",
-				"selfButton": "Nominate yourself",
-				"submitted": "Your signature has been recorded on the Succession Ballot."
+				"selfButton": "Nominate yourself"
 			},
 			"channelType": {
 				"label": "Channel type",
@@ -1608,13 +1606,6 @@
 				},
 				"ok": "Media stream acquired (stopped, not broadcast)",
 				"test": "Test media devices"
-			},
-			"thread": {
-				"main": "thread",
-				"back": "Back",
-				"breadcrumbMiddleSummary": "middle ${count} layer",
-				"breadcrumbMiddleTitle": "Show more the middle layer and select the level you want to jump to",
-				"breadcrumbRootTitle": "Jump to path starting point (first level)"
 			},
 			"unpin": {
 				"action": {

@@ -1273,10 +1273,8 @@
 				"autoSignHint": "📤💻👥✍️🌱➡️🗳️，🚫🔐⌨️🛡️➕💻➡️🗳️（🗳️🆔➕👤）",
 				"candidateLabel": "👑➡️🔑🧬#️⃣",
 				"description": "➡️👑🔐（🛡️👑⚙️）➡️📌👤🔒🛡️👀",
-				"failed": "👑➡️🗳️📤❌",
 				"needHash": "🙏✍️👑➡️🔑🧬#️⃣",
-				"selfButton": "📝🫵",
-				"submitted": "👑➡️🗳️✅🫵"
+				"selfButton": "📝🫵"
 			},
 			"channelType": {
 				"label": "📺🏷️",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "✅🌊（⏹️，🚫📡）",
 				"test": "🧪📹🎙️"
-			},
-			"thread": {
-				"main": "🧵",
-				"back": "🔙",
-				"breadcrumbMiddleSummary": "📂${count}",
-				"breadcrumbMiddleTitle": "📂➡️⏩",
-				"breadcrumbRootTitle": "⏩🛤️🔝（1️⃣）"
 			},
 			"unpin": {
 				"action": {
