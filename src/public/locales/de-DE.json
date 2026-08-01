@@ -3659,6 +3659,9 @@
 			}
 		},
 		"configTitle": "Konfiguration der Dienstquelle",
+		"jsonEditor": {
+			"aria-label": "JSON-Editor für die Dienstquellenkonfiguration"
+		},
 		"needsConfigReminder": "Nachdem die Dienstquelle konfiguriert wurde, müssen Sie im Allgemeinen den Namen der Dienstquelle in das entsprechende Feld in der Konfiguration der Komponente eingeben, die diese Dienstquelle verwendet.",
 		"needsConfigLink": "Gehen Sie zur Widget-Konfiguration",
 		"subtypeSelect": {
@@ -3787,6 +3790,9 @@
 				"botToken": "Telegram Bot-Token",
 				"config": "Konfiguration"
 			},
+			"jsonEditor": {
+				"aria-label": "JSON-Editor für die Bot-Konfiguration"
+			},
 			"botTokenInput": {
 				"placeholder": "Telegram Bot-Token eingeben"
 			},
@@ -3867,6 +3873,9 @@
 				"apiKey": "Discord API-Schlüssel",
 				"config": "Konfiguration"
 			},
+			"jsonEditor": {
+				"aria-label": "JSON-Editor für die Bot-Konfiguration"
+			},
 			"apiKeyInput": {
 				"placeholder": "API-Schlüssel eingeben"
 			},
@@ -3945,6 +3954,9 @@
 				"apiBaseUrl": "Basis-URL der WeChat-Kanal-API",
 				"botToken": "iLink-Bot-Token",
 				"config": "Konfiguration"
+			},
+			"jsonEditor": {
+				"aria-label": "JSON-Editor für die Bot-Konfiguration"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "Leer lassen für Standard https://ilinkai.weixin.qq.com"

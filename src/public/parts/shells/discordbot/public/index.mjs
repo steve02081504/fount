@@ -129,17 +129,17 @@ async function loadBotConfig(botname) {
 
 		if (!configEditor)
 			configEditor = createJsonEditor(configEditorContainer, {
-				label: geti18n('discord_bots.configCard.labels.config'),
+				ariaLabel: 'discord_bots.configCard.jsonEditor.aria-label',
 				/**
 				 * JSON 更新时的回调函数。
 				 * @param {any} updatedContent - 更新后的内容。
 				 * @param {any} previousContent - 之前的内容。
 				 * @param {object} root0 - 根对象。
-				 * @param {any} root0.error - 错误。
+				 * @param {any} root0.contentErrors - 内容错误。
 				 * @param {any} root0.patchResult - 补丁结果。
 				 */
-				onChange: (updatedContent, previousContent, { error, patchResult }) => {
-					if (!error) isDirty = true
+				onChange: (updatedContent, previousContent, { contentErrors, patchResult }) => {
+					if (!contentErrors) isDirty = true
 				},
 				onSave: handleSaveConfig
 			})
@@ -242,7 +242,7 @@ async function handleSaveConfig() {
 	const config = {
 		token: tokenInput.value,
 		char: charSelectDropdown.dataset.value,
-		config: configEditor.get().json || JSON.parse(configEditor.get().text),
+		config: configEditor.getJson(),
 	}
 
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'

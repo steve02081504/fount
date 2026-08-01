@@ -1,0 +1,43 @@
+{
+	"id": "shells/serviceSourceManage",
+	"triggerSets": {
+		"frontendShared": [
+			"src/public/parts/shells/serviceSourceManage/public/**",
+			"src/public/parts/shells/serviceSourceManage/test/frontend/**",
+			"src/scripts/test/playwright/**",
+			"src/public/pages/scripts/test/**",
+			"src/public/pages/scripts/components/jsonEditor.mjs"
+		]
+	},
+	"suites": [
+		{
+			"name": "frontend",
+			"dependsOn": [
+				"server:live"
+			],
+			"trigger": "frontendShared",
+			"subtests": [
+				{
+					"name": "jsonEditor",
+					"triggers": [
+						"src/public/parts/shells/serviceSourceManage/test/frontend/jsonEditor.spec.mjs",
+						"src/public/parts/shells/serviceSourceManage/test/frontend/fixtures.mjs",
+						"src/public/parts/shells/serviceSourceManage/public/index.{html,mjs}",
+						"src/public/pages/scripts/components/jsonEditor.mjs",
+						"src/scripts/test/playwright/json_editor.mjs",
+						"src/public/locales/**"
+					]
+				}
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/public/parts/shells/serviceSourceManage/test/frontend/run.mjs"
+			]
+		}
+	]
+}

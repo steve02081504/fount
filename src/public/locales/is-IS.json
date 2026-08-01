@@ -3659,6 +3659,9 @@
 			}
 		},
 		"configTitle": "Uppsetning þjónustugjafa",
+		"jsonEditor": {
+			"aria-label": "JSON-stillingaritill þjónustugjafa"
+		},
 		"needsConfigReminder": "Eftir að þjónustugjafinn hefur verið stilltur þarftu almennt að fylla út heiti þjónustugjafans í samsvarandi reit í uppsetningu íhlutans sem notar þennan þjónustugjafa.",
 		"needsConfigLink": "Farðu í stillingar græju",
 		"subtypeSelect": {
@@ -3787,6 +3790,9 @@
 				"botToken": "Telegram Bot Token",
 				"config": "Stillingar"
 			},
+			"jsonEditor": {
+				"aria-label": "JSON-stillingaritill bots"
+			},
 			"botTokenInput": {
 				"placeholder": "Sláðu inn Telegram Bot Token"
 			},
@@ -3867,6 +3873,9 @@
 				"apiKey": "Discord API lykill",
 				"config": "Stillingar"
 			},
+			"jsonEditor": {
+				"aria-label": "JSON-stillingaritill bots"
+			},
 			"apiKeyInput": {
 				"placeholder": "Sláðu inn API lykil"
 			},
@@ -3945,6 +3954,9 @@
 				"apiBaseUrl": "Grunnslóð WeChat-rása-API",
 				"botToken": "iLink Bot-teikn",
 				"config": "Stillingar"
+			},
+			"jsonEditor": {
+				"aria-label": "JSON-stillingaritill bots"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "Skildu autt fyrir sjálfgefna https://ilinkai.weixin.qq.com"

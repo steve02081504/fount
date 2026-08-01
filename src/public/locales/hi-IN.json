@@ -3659,6 +3659,9 @@
 			}
 		},
 		"configTitle": "सेवा स्रोत विन्यास",
+		"jsonEditor": {
+			"aria-label": "सेवा स्रोत कॉन्फ़िगरेशन JSON संपादक"
+		},
 		"needsConfigReminder": "सेवा स्रोत कॉन्फ़िगर होने के बाद, आपको आम तौर पर इस सेवा स्रोत का उपयोग करने वाले घटक के कॉन्फ़िगरेशन में संबंधित फ़ील्ड में सेवा स्रोत का नाम भरना होगा।",
 		"needsConfigLink": "विजेट कॉन्फ़िगरेशन पर जाएं",
 		"subtypeSelect": {
@@ -3787,6 +3790,9 @@
 				"botToken": "टेलीग्राम बॉट टोकन",
 				"config": "कॉन्फ़िगरेशन"
 			},
+			"jsonEditor": {
+				"aria-label": "बॉट कॉन्फ़िगरेशन JSON संपादक"
+			},
 			"botTokenInput": {
 				"placeholder": "टेलीग्राम बॉट टोकन दर्ज करें"
 			},
@@ -3867,6 +3873,9 @@
 				"apiKey": "डिस्कॉर्ड API कुंजी",
 				"config": "कॉन्फ़िगरेशन"
 			},
+			"jsonEditor": {
+				"aria-label": "बॉट कॉन्फ़िगरेशन JSON संपादक"
+			},
 			"apiKeyInput": {
 				"placeholder": "API कुंजी दर्ज करें"
 			},
@@ -3945,6 +3954,9 @@
 				"apiBaseUrl": "WeChat चैनल API का मूल URL",
 				"botToken": "iLink बॉट टोकन",
 				"config": "कॉन्फ़िगरेशन"
+			},
+			"jsonEditor": {
+				"aria-label": "बॉट कॉन्फ़िगरेशन JSON संपादक"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "डिफ़ॉल्ट https://ilinkai.weixin.qq.com के लिए खाली छोड़ें"

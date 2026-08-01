@@ -3659,6 +3659,9 @@
 			}
 		},
 		"configTitle": "Конфігурація джерела служби",
+		"jsonEditor": {
+			"aria-label": "JSON-редактор конфігурації джерела служби"
+		},
 		"needsConfigReminder": "Після налаштування джерела служби зазвичай потрібно заповнити назву джерела служби у відповідному полі конфігурації компонента, який використовує це джерело служби.",
 		"needsConfigLink": "Перейдіть до конфігурації віджета",
 		"subtypeSelect": {
@@ -3787,6 +3790,9 @@
 				"botToken": "Telegram Bot Token",
 				"config": "Конфігурація"
 			},
+			"jsonEditor": {
+				"aria-label": "JSON-редактор конфігурації бота"
+			},
 			"botTokenInput": {
 				"placeholder": "Введіть Telegram Bot Token"
 			},
@@ -3867,6 +3873,9 @@
 				"apiKey": "Discord API ключ",
 				"config": "Конфігурація"
 			},
+			"jsonEditor": {
+				"aria-label": "JSON-редактор конфігурації бота"
+			},
 			"apiKeyInput": {
 				"placeholder": "Введіть API ключ"
 			},
@@ -3945,6 +3954,9 @@
 				"apiBaseUrl": "Базова URL API каналу WeChat",
 				"botToken": "Токен iLink Bot",
 				"config": "Конфігурація"
+			},
+			"jsonEditor": {
+				"aria-label": "JSON-редактор конфігурації бота"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "Порожньо — типово https://ilinkai.weixin.qq.com"

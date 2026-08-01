@@ -3659,6 +3659,9 @@
 			}
 		},
 		"configTitle": "🚰⚙️",
+		"jsonEditor": {
+			"aria-label": "📝🚰⚙️"
+		},
 		"needsConfigReminder": "🚰✅ ➡️ 📝🚰📛 ➡️ 🧩⚙️",
 		"needsConfigLink": "➡️🧩⚙️",
 		"subtypeSelect": {
@@ -3787,6 +3790,9 @@
 				"botToken": "🔑",
 				"config": "⚙️"
 			},
+			"jsonEditor": {
+				"aria-label": "📝🤖⚙️"
+			},
 			"botTokenInput": {
 				"placeholder": "✍️🔑"
 			},
@@ -3867,6 +3873,9 @@
 				"apiKey": "🔑",
 				"config": "⚙️"
 			},
+			"jsonEditor": {
+				"aria-label": "📝🤖⚙️"
+			},
 			"apiKeyInput": {
 				"placeholder": "✍️🔑"
 			},
@@ -3945,6 +3954,9 @@
 				"apiBaseUrl": "🌐🔗💚",
 				"botToken": "🔑",
 				"config": "⚙️"
+			},
+			"jsonEditor": {
+				"aria-label": "📝🤖⚙️"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "⬜️↩️ 🌐🔗"

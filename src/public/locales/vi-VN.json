@@ -3659,6 +3659,9 @@
 			}
 		},
 		"configTitle": "Cấu hình nguồn dịch vụ",
+		"jsonEditor": {
+			"aria-label": "Trình soạn thảo JSON cấu hình nguồn dịch vụ"
+		},
 		"needsConfigReminder": "Sau khi định cấu hình nguồn dịch vụ, thông thường bạn cần điền tên nguồn dịch vụ vào trường tương ứng trong cấu hình của thành phần sử dụng nguồn dịch vụ này.",
 		"needsConfigLink": "Đi tới cấu hình tiện ích",
 		"subtypeSelect": {
@@ -3787,6 +3790,9 @@
 				"botToken": "Token Bot Telegram",
 				"config": "Cấu hình"
 			},
+			"jsonEditor": {
+				"aria-label": "Trình soạn thảo JSON cấu hình bot"
+			},
 			"botTokenInput": {
 				"placeholder": "Nhập Token Bot Telegram"
 			},
@@ -3867,6 +3873,9 @@
 				"apiKey": "Khóa API Discord",
 				"config": "Cấu hình"
 			},
+			"jsonEditor": {
+				"aria-label": "Trình soạn thảo JSON cấu hình bot"
+			},
 			"apiKeyInput": {
 				"placeholder": "Nhập Khóa API"
 			},
@@ -3945,6 +3954,9 @@
 				"apiBaseUrl": "URL gốc API kênh WeChat",
 				"botToken": "Token iLink Bot",
 				"config": "Cấu hình"
+			},
+			"jsonEditor": {
+				"aria-label": "Trình soạn thảo JSON cấu hình bot"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "Để trống để dùng mặc định https://ilinkai.weixin.qq.com"

@@ -3659,6 +3659,9 @@
 			}
 		},
 		"configTitle": "Configuratie van de servicebron",
+		"jsonEditor": {
+			"aria-label": "JSON-configuratie-editor voor servicebron"
+		},
 		"needsConfigReminder": "Nadat de servicebron is geconfigureerd, moet u doorgaans de naam van de servicebron invullen in het overeenkomstige veld in de configuratie van het onderdeel dat deze servicebron gebruikt.",
 		"needsConfigLink": "Ga naar widgetconfiguratie",
 		"subtypeSelect": {
@@ -3787,6 +3790,9 @@
 				"botToken": "Telegram Bot Token",
 				"config": "Configuratie"
 			},
+			"jsonEditor": {
+				"aria-label": "JSON-configuratie-editor voor bot"
+			},
 			"botTokenInput": {
 				"placeholder": "Voer Telegram Bot Token in"
 			},
@@ -3867,6 +3873,9 @@
 				"apiKey": "Discord API-sleutel",
 				"config": "Configuratie"
 			},
+			"jsonEditor": {
+				"aria-label": "JSON-configuratie-editor voor bot"
+			},
 			"apiKeyInput": {
 				"placeholder": "Voer API-sleutel in"
 			},
@@ -3945,6 +3954,9 @@
 				"apiBaseUrl": "Basis-URL WeChat-kanaal-API",
 				"botToken": "iLink Bot-token",
 				"config": "Configuratie"
+			},
+			"jsonEditor": {
+				"aria-label": "JSON-configuratie-editor voor bot"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "Leeg laten voor standaard https://ilinkai.weixin.qq.com"

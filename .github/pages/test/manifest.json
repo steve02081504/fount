@@ -15,7 +15,6 @@
 			"triggers": [
 				".github/pages/**",
 				"src/public/pages/scripts/**",
-				"src/public/locales/**",
 				"imgs/**",
 				"src/scripts/test/playwright/**",
 				".esh/commands/pages-server.mjs"

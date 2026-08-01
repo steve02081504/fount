@@ -3659,6 +3659,9 @@
 			}
 		},
 		"configTitle": "Configuración de la fuente de servicio",
+		"jsonEditor": {
+			"aria-label": "Editor JSON de configuración de la fuente de servicio"
+		},
 		"needsConfigReminder": "Una vez configurada la fuente de servicio, generalmente debe completar el nombre de la fuente de servicio en el campo correspondiente en la configuración del componente que utiliza esta fuente de servicio.",
 		"needsConfigLink": "Ir a configuración de widgets",
 		"subtypeSelect": {
@@ -3787,6 +3790,9 @@
 				"botToken": "Token de Bot de Telegram",
 				"config": "Configuración"
 			},
+			"jsonEditor": {
+				"aria-label": "Editor JSON de configuración del bot"
+			},
 			"botTokenInput": {
 				"placeholder": "Introduce el Token de Bot de Telegram"
 			},
@@ -3867,6 +3873,9 @@
 				"apiKey": "Clave de API de Discord",
 				"config": "Configuración"
 			},
+			"jsonEditor": {
+				"aria-label": "Editor JSON de configuración del bot"
+			},
 			"apiKeyInput": {
 				"placeholder": "Introduce la clave de API de Discord"
 			},
@@ -3945,6 +3954,9 @@
 				"apiBaseUrl": "URL base de la API del canal WeChat",
 				"botToken": "Token iLink Bot",
 				"config": "Configuración"
+			},
+			"jsonEditor": {
+				"aria-label": "Editor JSON de configuración del bot"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "En blanco para usar https://ilinkai.weixin.qq.com por defecto"

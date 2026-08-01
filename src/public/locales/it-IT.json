@@ -3659,6 +3659,9 @@
 			}
 		},
 		"configTitle": "Configurazione dell'origine del servizio",
+		"jsonEditor": {
+			"aria-label": "Editor JSON di configurazione dell'origine del servizio"
+		},
 		"needsConfigReminder": "Dopo aver configurato l'origine del servizio, in genere è necessario inserire il nome dell'origine del servizio nel campo corrispondente nella configurazione del componente che utilizza questa origine del servizio.",
 		"needsConfigLink": "Vai alla configurazione del componente",
 		"subtypeSelect": {
@@ -3787,6 +3790,9 @@
 				"botToken": "Token Bot Telegram",
 				"config": "Configurazione"
 			},
+			"jsonEditor": {
+				"aria-label": "Editor JSON di configurazione del bot"
+			},
 			"botTokenInput": {
 				"placeholder": "Inserisci token Bot Telegram"
 			},
@@ -3867,6 +3873,9 @@
 				"apiKey": "Chiave API Discord",
 				"config": "Configurazione"
 			},
+			"jsonEditor": {
+				"aria-label": "Editor JSON di configurazione del bot"
+			},
 			"apiKeyInput": {
 				"placeholder": "Inserisci chiave API"
 			},
@@ -3945,6 +3954,9 @@
 				"apiBaseUrl": "URL base API canale WeChat",
 				"botToken": "Token iLink Bot",
 				"config": "Configurazione"
+			},
+			"jsonEditor": {
+				"aria-label": "Editor JSON di configurazione del bot"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "Lascia vuoto per https://ilinkai.weixin.qq.com predefinito"

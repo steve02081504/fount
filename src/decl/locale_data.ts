@@ -3631,6 +3631,9 @@ export type LocaleData = {
 			}
 		}
 		configTitle: string
+		jsonEditor: {
+			'aria-label': string
+		}
 		needsConfigReminder: string
 		needsConfigLink: string
 		subtypeSelect: {
@@ -3759,6 +3762,9 @@ export type LocaleData = {
 				botToken: string
 				config: string
 			}
+			jsonEditor: {
+				'aria-label': string
+			}
 			botTokenInput: {
 				placeholder: string
 			}
@@ -3839,6 +3845,9 @@ export type LocaleData = {
 				apiKey: string
 				config: string
 			}
+			jsonEditor: {
+				'aria-label': string
+			}
 			apiKeyInput: {
 				placeholder: string
 			}
@@ -3917,6 +3926,9 @@ export type LocaleData = {
 				apiBaseUrl: string
 				botToken: string
 				config: string
+			}
+			jsonEditor: {
+				'aria-label': string
 			}
 			apiBaseUrlInput: {
 				placeholder: string

@@ -227,6 +227,28 @@
 			]
 		},
 		{
+			"name": "test_hub",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/github_issue.test.mjs",
+				"./src/scripts/test/selftest/test_hub.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/github_issue.test.mjs",
+				"src/scripts/test/selftest/test_hub.test.mjs",
+				"src/scripts/test/core/github_issue.mjs",
+				"src/public/pages/scripts/test/github_issue.mjs",
+				"src/scripts/test/hub/**",
+				"src/scripts/test/playwright/github_issue.mjs"
+			]
+		},
+		{
 			"name": "run_timing",
 			"run": [
 				"deno",
