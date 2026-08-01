@@ -189,7 +189,7 @@ export function openMediaLightbox(mediaRoot, startIndex = 0) {
  * @param {HTMLElement} container 预览区
  * @param {object[]} refs 待发布媒体
  * @param {() => void} onChange 变更回调
- * @param {{ onEditImage?: (index: number, ref: object) => void | Promise<void>, editLabel?: string }} [options] 选项
+ * @param {{ onEditImage?: (index: number, ref: object) => void | Promise<void> }} [options] 选项
  * @returns {void}
  */
 export function renderMediaPreview(container, refs, onChange, options = {}) {
@@ -212,7 +212,7 @@ export function renderMediaPreview(container, refs, onChange, options = {}) {
 				const edit = document.createElement('button')
 				edit.type = 'button'
 				edit.className = 'media-chip-edit'
-				edit.dataset.i18n = options.editI18n || 'util.imageEditor.image'
+				edit.dataset.i18n = 'util.imageEditor.image'
 				edit.addEventListener('click', () => {
 					void options.onEditImage?.(index, ref)
 				})

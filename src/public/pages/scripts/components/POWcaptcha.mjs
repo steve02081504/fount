@@ -36,9 +36,8 @@ export async function createPOWCaptcha(container) {
 
 // --- 全局样式注入 ---
 
-{
-	const style = document.createElement('style')
-	style.textContent = /* css */ `\
+document.head.prepend(Object.assign(document.createElement('style'), {
+	textContent: /* css */ `\
 cap-widget {
 	--cap-background: var(--color-base-100);
 	--cap-border-color: var(--color-base-300);
@@ -51,6 +50,5 @@ cap-widget {
 	--cap-spinner-color: var(--color-primary);
 	--cap-spinner-background-color: var(--color-secondary);
 }
-`
-	document.head.prepend(style)
-}
+`,
+}))

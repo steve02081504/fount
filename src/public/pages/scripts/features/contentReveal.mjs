@@ -77,9 +77,8 @@ export function bindContentReveal(root) {
 
 // --- 全局样式注入 ---
 
-{
-	const style = document.createElement('style')
-	style.textContent = /* css */ `\
+document.head.prepend(Object.assign(document.createElement('style'), {
+	textContent: /* css */ `\
 .sensitive-media-wrap {
 	position: relative;
 	isolation: isolate;
@@ -134,6 +133,5 @@ export function bindContentReveal(root) {
 	padding: 4px 10px;
 	cursor: pointer;
 }
-`
-	document.head.prepend(style)
-}
+`,
+}))

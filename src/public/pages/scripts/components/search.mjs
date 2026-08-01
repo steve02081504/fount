@@ -299,12 +299,10 @@ export async function createSearchableDropdown({
 
 // fix overlay issue
 // --- 全局样式注入 ---
-{
-	const style = document.createElement('style')
-	style.textContent = /* css */ `\
+document.head.prepend(Object.assign(document.createElement('style'), {
+	textContent: /* css */ `\
 .searchable-dropdown:not(:focus-within) .dropdown-content {
 	display: none;
 }
-`
-	document.head.prepend(style)
-}
+`,
+}))

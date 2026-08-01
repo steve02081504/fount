@@ -2,9 +2,7 @@
  * 浏览器端图片编辑器：裁剪 / 马赛克 / 画笔。纯 canvas，无第三方依赖。
  */
 
-import { escapeHtml } from '../../lib/escapeHtml.mjs'
-
-const IMAGE_EDITOR_CSS = '/scripts/components/imageEditor/imageEditor.css'
+import { escapeHtml } from '../lib/escapeHtml.mjs'
 
 /**
  * @param {File | Blob} file 源图片
@@ -16,30 +14,22 @@ export function openImageEditor(file, labels = {}) {
 		const objectUrl = URL.createObjectURL(file)
 		const dialog = document.createElement('dialog')
 		dialog.className = 'modal image-editor-modal'
-		const titleI18n = escapeHtml(labels.titleI18n || 'util.imageEditor.image')
-		const cropI18n = escapeHtml(labels.cropI18n || 'util.imageEditor.crop')
-		const mosaicI18n = escapeHtml(labels.mosaicI18n || 'util.imageEditor.mosaic')
-		const brushI18n = escapeHtml(labels.brushI18n || 'util.imageEditor.brush')
-		const brushColorI18n = escapeHtml(labels.brushColorI18n || 'util.imageEditor.brushColor')
-		const brushSizeI18n = escapeHtml(labels.brushSizeI18n || 'util.imageEditor.brushSize')
-		const cancelI18n = escapeHtml(labels.cancelI18n || 'util.common.cancel')
-		const applyI18n = escapeHtml(labels.applyI18n || 'util.imageEditor.apply')
 		dialog.innerHTML = `\
-<div class="modal-box image-editor-box">
-	<h2 class="font-bold text-lg" data-i18n="${titleI18n}"></h2>
-	<div class="image-editor-toolbar">
-		<button type="button" class="btn btn-sm" data-tool="crop" data-i18n="${cropI18n}"></button>
-		<button type="button" class="btn btn-sm" data-tool="mosaic" data-i18n="${mosaicI18n}"></button>
-		<button type="button" class="btn btn-sm" data-tool="brush" data-i18n="${brushI18n}"></button>
-		<input type="color" data-brush-color value="#ff0000" data-i18n="${brushColorI18n}" />
-		<input type="range" min="2" max="48" value="12" data-brush-size data-i18n="${brushSizeI18n}" />
+<div class="modal-box w-full max-w-[min(96vw,980px)]">
+	<h2 class="font-bold text-lg" data-i18n="${escapeHtml(labels.titleI18n || 'util.imageEditor.image')}"></h2>
+	<div class="flex flex-wrap gap-2 items-center my-3">
+		<button type="button" class="btn btn-sm" data-tool="crop" data-i18n="${escapeHtml(labels.cropI18n || 'util.imageEditor.crop')}"></button>
+		<button type="button" class="btn btn-sm" data-tool="mosaic" data-i18n="${escapeHtml(labels.mosaicI18n || 'util.imageEditor.mosaic')}"></button>
+		<button type="button" class="btn btn-sm" data-tool="brush" data-i18n="${escapeHtml(labels.brushI18n || 'util.imageEditor.brush')}"></button>
+		<input type="color" data-brush-color value="#ff0000" data-i18n="${escapeHtml(labels.brushColorI18n || 'util.imageEditor.brushColor')}" />
+		<input type="range" min="2" max="48" value="12" data-brush-size data-i18n="${escapeHtml(labels.brushSizeI18n || 'util.imageEditor.brushSize')}" />
 	</div>
-	<div class="image-editor-canvas-wrap">
+	<div class="overflow-auto max-h-[70vh] border border-base-300 rounded-lg">
 		<canvas></canvas>
 	</div>
 	<div class="modal-action">
-		<button type="button" class="btn" data-cancel data-i18n="${cancelI18n}"></button>
-		<button type="button" class="btn btn-primary" data-apply data-i18n="${applyI18n}"></button>
+		<button type="button" class="btn" data-cancel data-i18n="${escapeHtml(labels.cancelI18n || 'util.common.cancel')}"></button>
+		<button type="button" class="btn btn-primary" data-apply data-i18n="${escapeHtml(labels.applyI18n || 'util.imageEditor.apply')}"></button>
 	</div>
 </div>
 <form method="dialog" class="modal-backdrop"><button>close</button></form>
@@ -216,7 +206,12 @@ export function openImageEditor(file, labels = {}) {
 
 // --- 全局样式注入 ---
 
-document.head.prepend(Object.assign(document.createElement('link'), {
-	rel: 'stylesheet',
-	href: IMAGE_EDITOR_CSS,
+document.head.prepend(Object.assign(document.createElement('style'), {
+	textContent: /* css */ `\
+.image-editor-modal canvas {
+	display: block;
+	max-width: 100%;
+	cursor: crosshair;
+}
+`,
 }))
