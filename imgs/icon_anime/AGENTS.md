@@ -8,7 +8,7 @@ alwaysApply: false
 
 Standalone terminal animation for the fount fountain logo.
 
-Also embedded by the CLI log viewer (process-wide singleton): `intro` at startup; `start`/`dismiss` while waiting for reconnect; `farewell` on `on_shutdown`. `signal` means user abort of this icon session (Ctrl+C / `abort()`); dismiss does not touch it. Hosts own their process-exit signal and should wire `icon.signal` into it (log_viewer does). Non-TTY / no VT is decided only in `player.mjs` — session APIs stay callable (play paths no-op).
+Also embedded by the CLI log viewer (process-wide singleton): `intro` plays enter then background `hold` (no park); while waiting for the server `start` is a no-op if already running, `dismiss` when connected; `farewell` on `on_shutdown`. `signal` means user abort of this icon session (Ctrl+C / `abort()`); dismiss does not touch it. Hosts own their process-exit signal and should wire `icon.signal` into it (log_viewer does). Non-TTY / no VT is decided only in `player.mjs` — session APIs stay callable (play paths no-op).
 
 ## Run
 

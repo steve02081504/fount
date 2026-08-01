@@ -1,5 +1,5 @@
 /**
- * 图标动画会话：动画状态 + TUI 播放。
+ * 图标动画会话（进程内单例）：动画状态 + TUI 播放。
  * `signal`：用户 Ctrl+C 中止本会话（sticky）；dismiss 不碰它。
  * 嵌入宿主时应自行拥有进程退出信号，并把本 `signal` 接到那边（见 log_viewer）。
  */
@@ -30,8 +30,13 @@ export function abort() {
 let state = null
 /** @type {Promise<void> | null} */
 let running = null
-/** TUI 备用屏是否已打开。 */
-let open = false
+
+/** @returns {Generator<string, void, unknown>} 入场帧 */
+const enterFrames = () => enter(state)
+/** @returns {Generator<string, void, unknown>} 保持帧 */
+const holdFrames = () => hold(state)
+/** @returns {Generator<string, void, unknown>} 退场帧 */
+const exitFrames = () => exit(state)
 
 /**
  * 接线 player 回调并进入备用屏。
@@ -65,7 +70,6 @@ const openTui = () => {
 				windPointer(state.wind, { x, y, right: pointerEvent.right })
 		},
 	})
-	open = true
 }
 
 /**
@@ -74,12 +78,11 @@ const openTui = () => {
  */
 const park = () => {
 	player.stop()
-	open = false
 	running = null
 }
 
 /**
- * 中止当前播放并等其落定（dismiss / farewell 共用）。
+ * 中止当前播放并等其落定。
  * @returns {Promise<void>}
  */
 const haltPlay = async () => {
@@ -90,28 +93,27 @@ const haltPlay = async () => {
 }
 
 /**
- * 入场 → 保持直至 Ctrl+C / dismiss。
+ * 入场 → 保持直至 Ctrl+C / dismiss。已在播则直接返回。
  * @returns {Promise<void>}
  */
 export async function start() {
-	if (open) return running
-	state = createAnimState()
+	if (running) return running
+	state ??= createAnimState()
 	openTui()
-	await (running = player.play(() => enter(state)).loop(() => hold(state)))
+	return running = player.play(enterFrames).loop(holdFrames)
 }
 
 /**
- * 播放入场至完成，然后离开备用屏（保留进度以待 farewell）。
+ * 播放入场至完成，随后后台 hold（不退屏）。已在播则直接返回。
  * @returns {Promise<void>}
  */
 export async function intro() {
-	if (open) return
-	state = createAnimState()
+	if (running) return
+	state ??= createAnimState()
 	openTui()
-	running = player.play(() => enter(state))
-	await running
+	await (running = player.play(enterFrames))
 	if (signal.aborted) return
-	park()
+	running = player.loop(holdFrames)
 }
 
 /**
@@ -137,26 +139,25 @@ export function sleep(milliseconds) {
  * @returns {Promise<void>}
  */
 export async function dismiss() {
-	if (!open) return
+	if (!state) return
 	await haltPlay()
 	park()
 }
 
 /**
- * 从存活保持/入场或停放进度播放退场。
+ * 从存活或停放进度播放退场。
  * @returns {Promise<void>}
  */
 export async function farewell() {
 	if (!state) return
-	if (open) await haltPlay()
+	if (running) await haltPlay()
 	else openTui()
 	player.refreshSignal()
 	try {
-		await player.play(() => exit(state))
+		await player.play(exitFrames)
 	}
 	finally {
 		player.stop()
-		open = false
 		running = null
 		state = null
 	}

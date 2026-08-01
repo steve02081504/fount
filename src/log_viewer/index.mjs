@@ -3,7 +3,7 @@
  *
  * 设计目标：
  * - 作为后台服务器进程的“前台脸面”，始终能在交互终端中显示主进程输出。
- * - 交互 TTY 且支持 ANSI 时：启动先播完 icon_anime 进场，再进入日志/REPL；服务器重启或断线等待时再挂 logo 直到连上或 Ctrl+C；退出时播完离场。非 TTY / 无 VT 时 icon 各入口为 nop，调用方无需分支。
+ * - 交互 TTY 且支持 ANSI 时：启动 `intro`（入场后后台 hold）；等 server 时 `start`（已在播则 noop）/`dismiss`；退出时 `farewell`。非 TTY / 无 VT 时 icon 各入口为 nop，调用方无需分支。
  * - 交互 TTY 且支持 ANSI 时：日志写入终端滚动区（可用自带滚动条），底部固定 REPL（`/ws/eval`）。
  * - 服务器未就绪时持续轮询 `/api/ping`（指数退避，无超时），网络/进程恢复后自动接续。
  * - 服务器主动退出（`fount_exit`）时与服务器同步：`code === 131` 视为重启，自动重连；其它退出码本进程同码退出。
@@ -194,7 +194,7 @@ const logSink = INTERACTIVE
 	: createPlainSink()
 
 /**
- * 阻塞至 `/api/ping` 返回 200；`waitLogo` 时叠加 icon 等待动画（连上 dismiss；Ctrl+C / 退出则 `exitSignal` abort）。
+ * 阻塞至 `/api/ping` 返回 200；`waitLogo` 时 `start`（已在播则 noop）叠加等待动画，连上 `dismiss`。
  * 非 TUI 下 icon 各入口为 nop。
  * @param {{ waitLogo?: boolean }} [opts] `waitLogo`：断线重连等待时播保持动画
  * @returns {Promise<void>} 服务器就绪或退出信号时兑现。
@@ -379,7 +379,8 @@ async function main() {
 	if (exitSignal.aborted) process.exit(130)
 
 	while (!exitSignal.aborted) {
-		await pollUntilServerReady()
+		// 等 server：intro 已在 hold 时 start 直接返回；断线后重新 start
+		await pollUntilServerReady({ waitLogo: true })
 		if (exitSignal.aborted) break
 		const reason = await runOneConnection(exitContext)
 		if (exitSignal.aborted) break
@@ -393,10 +394,7 @@ async function main() {
 			}
 			// 131: fall through to reconnect wait (same as abnormal disconnect).
 		}
-
-		// 异常断开 / reboot(131)：logo 等到服务器回来或 Ctrl+C（非 TUI 时 icon 为 nop）
-		await pollUntilServerReady({ waitLogo: true })
-		if (exitSignal.aborted) process.exit(130)
+		// 异常断开 / reboot(131)：回到 while 顶再 waitLogo
 	}
 
 	process.exit(130)
