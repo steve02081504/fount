@@ -2645,7 +2645,8 @@
 					"pubKeyLabel": "Public key hex(64)",
 					"rotateConfirm": "All friend-adding links previously issued will become invalid immediately and cannot be restored. Are you sure you want to continue?",
 					"rotateLabel": "Invalidate old links",
-					"secretLabel": "Private key seed hex(64)"
+					"secretLabel": "Private key seed hex(64)",
+					"urlLabel": "Issued friend link"
 				},
 				"groupRecoveryTip": "Only used if the invitation is leaked or the new device cannot sync history.",
 				"groupRecoveryTitle": "Group connection fix",

@@ -2650,7 +2650,8 @@
 					"pubKeyLabel": "🔑🔣（64）",
 					"rotateConfirm": "📨🤝🔗 🚫♻️ · ❓▶️❓",
 					"rotateLabel": "🗑️🔗",
-					"secretLabel": "🔐🌱🔣（64）"
+					"secretLabel": "🔐🌱🔣（64）",
+					"urlLabel": "✅🤝🔗"
 				},
 				"groupRecoveryTip": "⚠️📨💨／🆕🖥️🚫📜 ⏰🔧",
 				"groupRecoveryTitle": "👥🔗🔧",

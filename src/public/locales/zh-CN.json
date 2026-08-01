@@ -2654,7 +2654,8 @@
 					"pubKeyLabel": "公钥 hex（64）",
 					"rotateConfirm": "此前签发的所有加好友链接都会立即失效，且无法恢复。确定继续吗？",
 					"rotateLabel": "使旧链接失效",
-					"secretLabel": "私钥种子 hex（64）"
+					"secretLabel": "私钥种子 hex（64）",
+					"urlLabel": "已签发的加好友链接"
 				},
 				"groupRecoveryTip": "仅在邀请泄露或新设备无法同步历史时使用。",
 				"groupRecoveryTitle": "群连接修复",

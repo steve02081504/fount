@@ -2650,7 +2650,8 @@
 					"pubKeyLabel": "Chiave pubblica esadecimale(64)",
 					"rotateConfirm": "Tutti i link per l'aggiunta di amici rilasciati in precedenza diventeranno immediatamente non validi e non potranno essere ripristinati. Sei sicuro di voler continuare?",
 					"rotateLabel": "Invalida i vecchi link",
-					"secretLabel": "Esadecimale seme chiave privata(64)"
+					"secretLabel": "Esadecimale seme chiave privata(64)",
+					"urlLabel": "Link di aggiunta amici emesso"
 				},
 				"groupRecoveryTip": "Utilizzato solo se l'invito è trapelato o se il nuovo dispositivo non può sincronizzare la cronologia.",
 				"groupRecoveryTitle": "Correzione della connessione di gruppo",

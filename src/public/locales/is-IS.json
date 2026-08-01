@@ -2650,7 +2650,8 @@
 					"pubKeyLabel": "Opinber lykill hex(64)",
 					"rotateConfirm": "Allir vinabætir tenglar sem áður voru gefnir út verða ógildir strax og ekki er hægt að endurheimta þá. Ertu viss um að þú viljir halda áfram?",
 					"rotateLabel": "Ógilda gamla tengla",
-					"secretLabel": "Einkalykill seed hex (64)"
+					"secretLabel": "Einkalykill seed hex (64)",
+					"urlLabel": "Útgefinn vinabætur tengill"
 				},
 				"groupRecoveryTip": "Aðeins notað ef boðið er lekið eða nýja tækið getur ekki samstillt feril.",
 				"groupRecoveryTitle": "Lagfæring á hóptengingu",

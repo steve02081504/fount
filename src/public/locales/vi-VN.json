@@ -2650,7 +2650,8 @@
 					"pubKeyLabel": "Hex khóa công khai(64)",
 					"rotateConfirm": "Tất cả các liên kết thêm bạn bè được phát hành trước đó sẽ vô hiệu ngay lập tức và không thể khôi phục được. Bạn có chắc chắn muốn tiếp tục không?",
 					"rotateLabel": "Vô hiệu hóa các liên kết cũ",
-					"secretLabel": "Hex hạt giống khóa riêng(64)"
+					"secretLabel": "Hex hạt giống khóa riêng(64)",
+					"urlLabel": "Liên kết thêm bạn bè đã phát hành"
 				},
 				"groupRecoveryTip": "Chỉ được sử dụng nếu lời mời bị rò rỉ hoặc thiết bị mới không thể đồng bộ hóa lịch sử.",
 				"groupRecoveryTitle": "Sửa lỗi kết nối nhóm",

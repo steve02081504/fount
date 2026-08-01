@@ -2650,7 +2650,8 @@
 					"pubKeyLabel": "公符節 hex（64）",
 					"rotateConfirm": "此前簽發之一切加友鏈接將即刻失效，且不可復。定欲續？",
 					"rotateLabel": "使舊鏈接失效",
-					"secretLabel": "樞機種子 hex（64）"
+					"secretLabel": "樞機種子 hex（64）",
+					"urlLabel": "已籤發之加友鏈接"
 				},
 				"groupRecoveryTip": "僅在邀請泄露或新設備難以同步歷史時以。",
 				"groupRecoveryTitle": "群聯修繕",

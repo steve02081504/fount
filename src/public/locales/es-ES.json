@@ -2650,7 +2650,8 @@
 					"pubKeyLabel": "Clave pública hexadecimal(64)",
 					"rotateConfirm": "Todos los enlaces de añadir amigo emitidos antes dejarán de ser válidos de inmediato y no se pueden recuperar. ¿Continuar?",
 					"rotateLabel": "Invalidar enlaces antiguos",
-					"secretLabel": "Hexadecimal de semilla de clave privada (64)"
+					"secretLabel": "Hexadecimal de semilla de clave privada (64)",
+					"urlLabel": "Enlace de añadir amigo emitido"
 				},
 				"groupRecoveryTip": "Solo se usa si la invitación se filtra o el nuevo dispositivo no puede sincronizar el historial.",
 				"groupRecoveryTitle": "Corrección de conexión de grupo",

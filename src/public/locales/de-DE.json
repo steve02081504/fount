@@ -2650,7 +2650,8 @@
 					"pubKeyLabel": "Öffentlicher Schlüssel hex(64)",
 					"rotateConfirm": "Alle zuvor ausgegebenen Freundeslinks werden sofort ungültig und können nicht wiederhergestellt werden. Fortfahren?",
 					"rotateLabel": "Alte Links ungültig machen",
-					"secretLabel": "Private-Key-Seed-Hex (64)"
+					"secretLabel": "Private-Key-Seed-Hex (64)",
+					"urlLabel": "Ausgestellter Freundeslink"
 				},
 				"groupRecoveryTip": "Wird nur verwendet, wenn die Einladung durchgesickert ist oder das neue Gerät den Verlauf nicht synchronisieren kann.",
 				"groupRecoveryTitle": "Fehlerbehebung bei der Gruppenverbindung",

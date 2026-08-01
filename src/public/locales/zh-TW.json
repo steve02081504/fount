@@ -2649,7 +2649,8 @@
 					"pubKeyLabel": "公鑰 hex（64）",
 					"rotateConfirm": "此前簽發的所有加好友連結都會立即失效，且無法恢復。確定繼續嗎？",
 					"rotateLabel": "使舊連結失效",
-					"secretLabel": "私鑰種子 hex（64）"
+					"secretLabel": "私鑰種子 hex（64）",
+					"urlLabel": "已簽發的加好友連結"
 				},
 				"groupRecoveryTip": "僅在邀請洩露或新裝置無法同步歷史時使用。",
 				"groupRecoveryTitle": "群連線修復",

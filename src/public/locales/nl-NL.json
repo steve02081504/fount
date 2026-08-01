@@ -2650,7 +2650,8 @@
 					"pubKeyLabel": "Openbare sleutel hex(64)",
 					"rotateConfirm": "Alle eerder uitgegeven links om vrienden toe te voegen, worden onmiddellijk ongeldig en kunnen niet worden hersteld. Weet je zeker dat je wilt doorgaan?",
 					"rotateLabel": "Maak oude links ongeldig",
-					"secretLabel": "Seed-hex van privésleutel(64)"
+					"secretLabel": "Seed-hex van privésleutel(64)",
+					"urlLabel": "Uitgegeven link om vriend toe te voegen"
 				},
 				"groupRecoveryTip": "Wordt alleen gebruikt als de uitnodiging is gelekt of als het nieuwe apparaat de geschiedenis niet kan synchroniseren.",
 				"groupRecoveryTitle": "Groepsverbinding opgelost",

@@ -2650,7 +2650,8 @@
 					"pubKeyLabel": "공개 키 16진수(64)",
 					"rotateConfirm": "이전에 발행된 모든 친구 추가 링크는 즉시 무효화되며 복원할 수 없습니다. 계속하시겠습니까?",
 					"rotateLabel": "이전 링크 무효화",
-					"secretLabel": "개인 키 시드 16진수(64)"
+					"secretLabel": "개인 키 시드 16진수(64)",
+					"urlLabel": "발급된 친구 추가 링크"
 				},
 				"groupRecoveryTip": "초대가 유출되었거나 새 기기에서 기록을 동기화할 수 없는 경우에만 사용됩니다.",
 				"groupRecoveryTitle": "그룹 연결 수정",

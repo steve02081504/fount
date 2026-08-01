@@ -2650,7 +2650,8 @@
 					"pubKeyLabel": "Clé publique hexadécimale(64)",
 					"rotateConfirm": "Tous les liens d'ajout d'amis précédemment émis deviendront immédiatement invalides et ne pourront pas être restaurés. Êtes-vous sûr de vouloir continuer ?",
 					"rotateLabel": "Invalider les anciens liens",
-					"secretLabel": "Hex de graine de clé privée (64)"
+					"secretLabel": "Hex de graine de clé privée (64)",
+					"urlLabel": "Lien d'ajout d'ami émis"
 				},
 				"groupRecoveryTip": "Utilisé uniquement si l'invitation a été divulguée ou si le nouvel appareil ne peut pas synchroniser l'historique.",
 				"groupRecoveryTitle": "Correction de la connexion de groupe",
