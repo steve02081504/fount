@@ -203,7 +203,7 @@ async function pollUntilServerReady({ waitLogo = false } = {}) {
 	}
 	let delay = 200
 	try {
-		while (!exitSignal.aborted) 
+		while (!exitSignal.aborted)
 			try {
 				const response = await fetch(PING_URL, {
 					signal: AbortSignal.any([AbortSignal.timeout(2000), exitSignal]),
@@ -215,7 +215,7 @@ async function pollUntilServerReady({ waitLogo = false } = {}) {
 				await sleep(delay)
 				delay = Math.min(delay * 2, 5000)
 			}
-		
+
 	} finally {
 		if (waitLogo) {
 			await icon.dismiss()

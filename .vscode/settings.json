@@ -10,5 +10,15 @@
 	"eslint.validate": [
 		"javascript",
 		"html",
-	]
+	],
+	"ruff.configuration": {
+		"format": {
+			"indent-style": "tab"
+		}
+	},
+	"[python]": {
+		"editor.insertSpaces": false, // 设置为 false 强制按 Tab 键和格式化时插入真实 Tab
+		"editor.tabSize": 4, // 设定 1 个 Tab 显示为 4 个空格的宽度
+		"editor.detectIndentation": false // 关闭自动检测，防止 VS Code 根据原代码自动切回空格
+	}
 }

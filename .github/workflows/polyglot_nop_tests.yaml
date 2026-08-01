@@ -187,7 +187,7 @@ jobs:
                 ;;
             esac
           done <<< "$CHANGED_FILES"
-          
+
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "Manual workflow_dispatch detected. Forcing all tests."
             core_changed=1

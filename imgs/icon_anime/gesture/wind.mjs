@@ -48,7 +48,7 @@ const STROKE_CAP = 14
  */
 
 /** 回收的笔画段对象。 */
-const strokePool = /** @type {StrokeSeg[]} */ []
+const strokePool = /** @type {StrokeSeg[]} */[]
 
 /**
  * @returns {StrokeSeg} 池化或新建的段
@@ -303,9 +303,9 @@ export const fillWindDrive = (gesture, world, outUx, outUy) => {
 		return
 	}
 
-	const dirty = /** @type {{ x0: number, y0: number, x1: number, y1: number }} */ 
+	const dirty = /** @type {{ x0: number, y0: number, x1: number, y1: number }} */
 		scratch.windDirtyBox ??= { x0: 0, y0: 0, x1: 0, y1: 0 }
-	
+
 	dirty.x0 = W
 	dirty.y0 = H
 	dirty.x1 = -1

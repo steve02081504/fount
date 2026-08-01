@@ -12,6 +12,7 @@ extra_renames.json 为一次性语义改名表 { "old.path": "new.path", ... }�
 
 locale JSON 必须用 Python 读写：JS JSON.stringify 会把纯数字键（如 "404"）排到对象最前。
 """
+
 from __future__ import annotations
 
 import json
@@ -29,9 +30,7 @@ MY_DIR = os.path.dirname(os.path.abspath(__file__))
 FOUNT_DIR = os.path.abspath(os.path.join(MY_DIR, "../.."))
 LOCALES_DIR = os.path.join(FOUNT_DIR, "src", "public", "locales")
 MAP_PATH = os.path.join(FOUNT_DIR, "data", "test", "i18n_key_rename_map.json")
-EXCLUDE_PREFIXES_PATH = os.path.join(
-	FOUNT_DIR, "src", "scripts", "checks", "i18n_rewrite_exclude_prefixes.json"
-)
+EXCLUDE_PREFIXES_PATH = os.path.join(FOUNT_DIR, "src", "scripts", "checks", "i18n_rewrite_exclude_prefixes.json")
 
 _MISSING = object()
 
@@ -42,10 +41,7 @@ I18N_REWRITE_SUFFIXES = (".mjs", ".js", ".ts", ".html", ".ps1", ".sh", ".py")
 AFFIX_RE = re.compile(r"^(?:Suffix|Prefix)|(?:Suffix|Prefix)$")
 NUMBERED_RE = re.compile(r"^[A-Za-z][A-Za-z]*\d+$")
 SCREAMING_SNAKE_RE = re.compile(r"^[A-Z][A-Z0-9_]*$")
-UPDATE_LOCALE_DATA_HINT = (
-	"搬键请用 `.esh/commands/update_locale_data.py`（get → set(new) → set(old, None)），"
-	"勿手改各语言 JSON。详见 src/public/locales/locale-edits.md。"
-)
+UPDATE_LOCALE_DATA_HINT = "搬键请用 `.esh/commands/update_locale_data.py`（get → set(new) → set(old, None)），勿手改各语言 JSON。详见 src/public/locales/locale-edits.md。"
 AFFIX_HINT = "应用 `${param}` 格式化完整句子，不要用 Suffix/Prefix 碎片硬拼字符串。"
 
 
@@ -89,15 +85,11 @@ def find_prefix_clusters(keys: list[str], minimum: int = PREFIX_CLUSTER_MIN) -> 
 	by_prefix: dict[str, list[str]] = {}
 	for key in keys:
 		for prefix in camel_prefixes(key):
-			rest = key[len(prefix):]
+			rest = key[len(prefix) :]
 			if not rest or not rest[0].isupper():
 				continue
 			by_prefix.setdefault(prefix, []).append(key)
-	clusters = [
-		{"prefix": prefix, "members": sorted(members)}
-		for prefix, members in by_prefix.items()
-		if len(members) >= minimum
-	]
+	clusters = [{"prefix": prefix, "members": sorted(members)} for prefix, members in by_prefix.items() if len(members) >= minimum]
 	clusters.sort(key=lambda c: (-len(c["prefix"]), -len(c["members"]), c["prefix"]))
 	return clusters
 
@@ -110,7 +102,7 @@ def can_use_container(obj: OrderedDict, prefix: str, members: list[str], contain
 	elif existing is not _MISSING and container_name not in members:
 		bucket["main"] = existing
 	for key in members:
-		child = decapitalize(key[len(prefix):])
+		child = decapitalize(key[len(prefix) :])
 		if child in bucket and bucket[child] is not obj[key]:
 			return False
 	return True
@@ -141,7 +133,7 @@ def apply_prefix_nest(obj: OrderedDict, prefix: str, members: list[str], preferr
 		del obj[container_name]
 
 	for key in members:
-		child = decapitalize(key[len(prefix):])
+		child = decapitalize(key[len(prefix) :])
 		bucket[child] = obj[key]
 		if on_move:
 			on_move(key, f"{container_name}.{child}")
@@ -156,7 +148,7 @@ def map_put(path_map: dict[str, str], from_path: str, to_path: str) -> None:
 		if key == from_path:
 			continue
 		if value == from_path or value.startswith(f"{from_path}."):
-			path_map[key] = to_path + value[len(from_path):]
+			path_map[key] = to_path + value[len(from_path) :]
 
 
 def nest_all_prefix_clusters_with_map(obj: OrderedDict, path: str = "", path_map: dict | None = None) -> int:
@@ -195,31 +187,32 @@ def scan_i18n_key_structure(data, path: str = "") -> list[dict]:
 	for key in keys:
 		full = f"{path}.{key}" if path else key
 		if AFFIX_RE.search(key):
-			issues.append({
-				"kind": "affix",
-				"path": full,
-				"message": f"键名「{key}」以 Suffix/Prefix 开头或结尾。{AFFIX_HINT} {UPDATE_LOCALE_DATA_HINT}",
-			})
+			issues.append(
+				{
+					"kind": "affix",
+					"path": full,
+					"message": f"键名「{key}」以 Suffix/Prefix 开头或结尾。{AFFIX_HINT} {UPDATE_LOCALE_DATA_HINT}",
+				}
+			)
 		if NUMBERED_RE.match(key):
-			issues.append({
-				"kind": "numbered",
-				"path": full,
-				"message": f"键名「{key}」以编号结尾；请用有意义的名字，如需枚举请用数组。{UPDATE_LOCALE_DATA_HINT}",
-			})
+			issues.append(
+				{
+					"kind": "numbered",
+					"path": full,
+					"message": f"键名「{key}」以编号结尾；请用有意义的名字，如需枚举请用数组。{UPDATE_LOCALE_DATA_HINT}",
+				}
+			)
 	for cluster in find_prefix_clusters(keys):
 		prefix = cluster["prefix"]
 		members = cluster["members"]
-		container = container_key_for_prefix(prefix)
 		parent_label = path or "(root)"
-		nested = ", ".join(decapitalize(m[len(prefix):]) for m in members)
-		issues.append({
-			"kind": "prefix_cluster",
-			"path": parent_label,
-			"message": (
-				f"{parent_label} 下有 {len(members)} 个键共享前缀「{prefix}」（{', '.join(members)}）。"
-				f"请嵌套为 {container}: {{ {nested} }}。{UPDATE_LOCALE_DATA_HINT}"
-			),
-		})
+		issues.append(
+			{
+				"kind": "prefix_cluster",
+				"path": parent_label,
+				"message": (f"{parent_label} 下有 {len(members)} 个键共享前缀「{prefix}」（{', '.join(members)}）。请嵌套为 {container_key_for_prefix(prefix)}: {{ {', '.join(decapitalize(m[len(prefix) :]) for m in members)} }}。{UPDATE_LOCALE_DATA_HINT}"),
+			}
+		)
 	for key, value in data.items():
 		if isinstance(value, dict):
 			full = f"{path}.{key}" if path else key
@@ -279,7 +272,7 @@ def set_at(obj, path: str, value) -> None:
 			nxt = OrderedDict()
 			cur[part] = nxt
 		elif not isinstance(nxt, dict):
-			raise TypeError(f"Cannot set {path!r}: {'.'.join(parts[:i + 1])!r} is not a dict")
+			raise TypeError(f"Cannot set {path!r}: {'.'.join(parts[: i + 1])!r} is not a dict")
 		cur = nxt
 	if not isinstance(cur, dict):
 		raise TypeError(f"Cannot set {path!r}: parent is not a dict")
@@ -288,7 +281,7 @@ def set_at(obj, path: str, value) -> None:
 
 def _validate_path_map_targets(targets: list[str]) -> None:
 	for i, a in enumerate(targets):
-		for b in targets[i + 1:]:
+		for b in targets[i + 1 :]:
 			if a == b or a.startswith(f"{b}.") or b.startswith(f"{a}."):
 				raise ValueError(f"Conflicting path map targets: {a!r} and {b!r}")
 
@@ -343,7 +336,7 @@ def fount_console_path_relative_map(path_map: dict[str, str]) -> dict[str, str]:
 	relative: dict[str, str] = {}
 	for from_path, to_path in path_map.items():
 		if from_path.startswith(FOUNT_CONSOLE_PATH_PREFIX) and to_path.startswith(FOUNT_CONSOLE_PATH_PREFIX):
-			relative[from_path[len(FOUNT_CONSOLE_PATH_PREFIX):]] = to_path[len(FOUNT_CONSOLE_PATH_PREFIX):]
+			relative[from_path[len(FOUNT_CONSOLE_PATH_PREFIX) :]] = to_path[len(FOUNT_CONSOLE_PATH_PREFIX) :]
 	return relative
 
 
@@ -413,16 +406,25 @@ def iter_source_files(gitignore_spec, exclude_prefixes: list[str]):
 
 def self_test() -> int:
 	"""CLI smoke: SCREAMING_SNAKE remainders + fountConsole.path relative rewrite."""
-	obj = loads_locale(json.dumps({
-		"permSEND_MESSAGES": "send",
-		"permVIEW_CHANNEL": "view",
-		"permADD_REACTIONS": "react",
-		"permUPLOAD_FILES": "upload",
-		"permMANAGE_CHANNELS": "channels",
-	}, ensure_ascii=False))
+	obj = loads_locale(
+		json.dumps(
+			{
+				"permSEND_MESSAGES": "send",
+				"permVIEW_CHANNEL": "view",
+				"permADD_REACTIONS": "react",
+				"permUPLOAD_FILES": "upload",
+				"permMANAGE_CHANNELS": "channels",
+			},
+			ensure_ascii=False,
+		)
+	)
 	nest_all_prefix_clusters_with_map(obj)
 	if set(obj.get("perm", {})) != {
-		"SEND_MESSAGES", "VIEW_CHANNEL", "ADD_REACTIONS", "UPLOAD_FILES", "MANAGE_CHANNELS",
+		"SEND_MESSAGES",
+		"VIEW_CHANNEL",
+		"ADD_REACTIONS",
+		"UPLOAD_FILES",
+		"MANAGE_CHANNELS",
 	}:
 		print(f"perm keys unexpected: {list(obj.get('perm', {}))!r}", file=sys.stderr)
 		return 1

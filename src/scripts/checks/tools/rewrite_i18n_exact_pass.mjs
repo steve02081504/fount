@@ -49,7 +49,7 @@ const entries = flattenRenameEntries(renameMap)
 function rewriteExact(text) {
 	let hits = 0
 	let out = text
-	for (const [from, to] of entries) 
+	for (const [from, to] of entries)
 		for (const quote of ['\'', '"', '`']) {
 			const exact = `${quote}${from}${quote}`
 			if (!out.includes(exact)) continue
@@ -57,7 +57,7 @@ function rewriteExact(text) {
 			hits += parts.length - 1
 			out = parts.join(`${quote}${to}${quote}`)
 		}
-	
+
 	return { text: out, hits }
 }
 
