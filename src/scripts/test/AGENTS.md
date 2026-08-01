@@ -64,6 +64,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 ## Operator tools
 
+- **CI `data/test` cache**: per-branch `fount-test-data-<branch>` (`run_tests.yaml` + `pick_test_data_cache.sh`). On PR merge, if head was fully ahead of pre-merge base and merge tip shares head’s tree, `promote_test_data_cache.yaml` copies head→base. Branch-delete cleanup waits for that promote before dropping the head key; default-branch Run Tests waits too so restore sees the promoted cache.
 - **Hung run**: `data/test/state/logs/`; rerun `deno run --allow-scripts --allow-all -c deno.json <probe.mjs>` with env from the log. Idle watchdog (10m no stdall) fails the suite. Host sleep (wall-clock jump) aborts and retries — details in [host-keep-awake.md](docs/host-keep-awake.md).
 - **`server:live` / `console_quiet`**: default-start quiet assert fails when `@homebridge/ciao` probe retries log `[fount._http._tcp.local.] failed probing…` ([homebridge/ciao#72](https://github.com/homebridge/ciao/issues/72)). Do not filter that in the test or silence it in fount — wait for ciao; post-fix: bump `npm:@homebridge/ciao`, re-run `server:live`, then blocked shell frontends.
 - **Keep-awake**: wrappers keep the machine awake during runs — [host-keep-awake.md](docs/host-keep-awake.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`.
