@@ -22,8 +22,8 @@ import axe from 'https://esm.sh/axe-core'
  */
 export const ARIA_IGNORE = 'aria-ignore'
 
-/** GitHub issue URL（路径以 /issues/{n} 结尾） */
-const GITHUB_ISSUE_URL_RE = /^https:\/\/github\.com\/[^/]+\/[^/]+\/issues\/\d+\/?(?:[?#].*)?$/i
+/** GitHub issue URL（与 `parseGithubIssueUrl` 一致：路径以 /issues/{n} 结尾） */
+const GITHUB_ISSUE_URL_RE = /^https:\/\/github\.com\/[^/]+\/[^/]+\/issues\/\d+$/
 
 const A11Y_PREFIX = '[test:a11y]'
 const LOCALE_PREFIX = '[test:locale]'

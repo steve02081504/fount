@@ -6,7 +6,7 @@ import { parseGithubIssueUrl } from '../core/github_issue.mjs'
 import { isGithubIssueClosed } from '../hub/clients/github_issue.mjs'
 
 /**
- *
+ * 判断 GitHub issue 是否已关闭。
  */
 export { isGithubIssueClosed }
 
