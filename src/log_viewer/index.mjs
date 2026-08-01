@@ -3,7 +3,7 @@
  *
  * 设计目标：
  * - 作为后台服务器进程的“前台脸面”，始终能在交互终端中显示主进程输出。
- * - 交互 TTY 且支持 ANSI 时：启动先播完 icon_anime 进场，再进入日志/REPL；服务器重启或断线等待时再挂 logo 直到连上或 Ctrl+C；退出时播完离场。非 TTY / 无 VT 则跳过 logo。
+ * - 交互 TTY 且支持 ANSI 时：启动先播完 icon_anime 进场，再进入日志/REPL；服务器重启或断线等待时再挂 logo 直到连上或 Ctrl+C；退出时播完离场。非 TTY / 无 VT 时 `createIconAnime` 各入口为 nop，调用方无需分支。
  * - 交互 TTY 且支持 ANSI 时：日志写入终端滚动区（可用自带滚动条），底部固定 REPL（`/ws/eval`）。
  * - 服务器未就绪时持续轮询 `/api/ping`（指数退避，无超时），网络/进程恢复后自动接续。
  * - 服务器主动退出（`fount_exit`）时与服务器同步：`code === 131` 视为重启，自动重连；其它退出码本进程同码退出。
@@ -170,40 +170,42 @@ const logSink = INTERACTIVE
 	: createPlainSink()
 
 /**
- * 阻塞至 `/api/ping` 返回 200；可选叠加 icon 等待动画（连上 dismiss，Ctrl+C 则 userAborted）。
- * @param {ReturnType<typeof createIconAnime> | null} [icon] 等待期间展示的 logo；`null` 则静默轮询。
+ * 阻塞至 `/api/ping` 返回 200；`waitLogo` 时叠加 icon 等待动画（连上 dismiss，Ctrl+C 则 userAborted）。
+ * 非 TUI 下 icon 各入口为 nop，可始终传入同一控制器。
+ * @param {ReturnType<typeof createIconAnime>} icon logo 控制器
+ * @param {{ waitLogo?: boolean }} [opts] `waitLogo`：断线重连等待时播保持动画
  * @returns {Promise<void>} 服务器就绪或用户中止时兑现。
  */
-async function pollUntilServerReady(icon = null) {
-	if (icon) {
+async function pollUntilServerReady(icon, { waitLogo = false } = {}) {
+	if (waitLogo) {
 		logSink.suspend?.()
 		icon.start()
 	}
 	let delay = 200
 	try {
 		while (!stopRequested) {
-			if (icon?.userAborted) {
+			if (icon.userAborted) {
 				stopRequested = true
 				break
 			}
 			try {
-				const signal = icon
+				const signal = waitLogo
 					? AbortSignal.any([AbortSignal.timeout(2000), icon.userSignal])
 					: AbortSignal.timeout(2000)
 				const res = await fetch(PING_URL, { signal })
 				if (res.ok) return
 				throw new Error(String(res.status))
 			} catch {
-				if (stopRequested || icon?.userAborted) {
+				if (stopRequested || icon.userAborted) {
 					stopRequested = true
 					break
 				}
-				await (icon ? icon.sleep(delay) : sleep(delay))
+				await (waitLogo ? icon.sleep(delay) : sleep(delay))
 				delay = Math.min(delay * 2, 5000)
 			}
 		}
 	} finally {
-		if (icon) {
+		if (waitLogo) {
 			await icon.dismiss()
 			if (!icon.userAborted) logSink.resume?.()
 		}
@@ -350,22 +352,20 @@ async function main() {
 	const setExitCode = (code) => { exitCodeSlot.value = code }
 	const exitContext = { setExitCode }
 
-	const icon = INTERACTIVE ? createIconAnime() : null
+	const icon = createIconAnime()
 	// stopRequested：拦住主循环/轮询，避免和 farewell 抢 icon。不关 connection——
 	// 留着让主循环堵在 runOneConnection，进程退出时一起死。
 	on_shutdown(async () => {
 		stopRequested = true
 		logSink.tearDown?.()
-		await icon?.farewell()
+		await icon.farewell()
 	})
 
-	if (icon) {
-		await icon.intro()
-		if (icon.userAborted) process.exit(130)
-	}
+	await icon.intro()
+	if (icon.userAborted) process.exit(130)
 
 	while (!stopRequested) {
-		await pollUntilServerReady()
+		await pollUntilServerReady(icon)
 		if (stopRequested) break
 		const reason = await runOneConnection(exitContext)
 		if (stopRequested) break
@@ -380,9 +380,9 @@ async function main() {
 			// 131: fall through to reconnect wait (same as abnormal disconnect).
 		}
 
-		// 异常断开 / reboot(131)：logo 等到服务器回来或 Ctrl+C
-		await pollUntilServerReady(icon)
-		if (icon?.userAborted) process.exit(130)
+		// 异常断开 / reboot(131)：logo 等到服务器回来或 Ctrl+C（非 TUI 时 icon 为 nop）
+		await pollUntilServerReady(icon, { waitLogo: true })
+		if (icon.userAborted) process.exit(130)
 	}
 
 	process.exit(130)

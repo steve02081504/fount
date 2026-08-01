@@ -8,7 +8,7 @@ alwaysApply: false
 
 Standalone terminal animation for the fount fountain logo.
 
-Also embedded by the CLI log viewer via `createIconAnime`: `intro` at startup; `start`/`dismiss` while waiting for reconnect; `farewell` on `on_shutdown`. Skip when stdout is not a TTY / has no VT.
+Also embedded by the CLI log viewer via `createIconAnime`: `intro` at startup; `start`/`dismiss` while waiting for reconnect; `farewell` on `on_shutdown`. Non-TTY / no VT: `intro` / `start` / `dismiss` / `farewell` are no-ops (callers need not branch).
 
 ## Run
 

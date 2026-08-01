@@ -7,11 +7,21 @@
 import process from 'node:process'
 import { setTimeout as sleep } from 'node:timers/promises'
 
+import supportsAnsi from 'npm:supports-ansi'
+
 /**
  * @param {string} text 待写入文本
  * @returns {boolean} 是否写入成功
  */
 const write = (text) => process.stdout.write(text)
+
+/**
+ * 备用屏 / raw stdin 是否可用。
+ * @returns {boolean}
+ */
+const canUseTui = () => Boolean(
+	process.stdin.isTTY && process.stdout.isTTY && process.stdout.writable && supportsAnsi,
+)
 
 /**
  * @returns {{ columns: number, rows: number }} 终端尺寸
@@ -115,6 +125,7 @@ export class AsciiAnimePlayer {
 		this.#resizeListener = null
 		this.#ac = null
 		this.#stdinCarry = ''
+		this.#tuiActive = false
 	}
 
 	/** @type {((buf: Buffer) => void) | null} */
@@ -125,6 +136,8 @@ export class AsciiAnimePlayer {
 	#ac
 	/** @type {string} */
 	#stdinCarry
+	/** @type {boolean} 是否已进入备用屏 / raw stdin */
+	#tuiActive
 
 	/**
 	 * 中止当前 play/loop 信号。
@@ -152,16 +165,17 @@ export class AsciiAnimePlayer {
 		if (onPointer) this.onPointer = onPointer
 		this.#stdinCarry = ''
 
+		// 非 TTY / 无 VT：不进备用屏、不抢 stdin（避免污染管道输出）
+		if (!canUseTui()) return this
+
+		this.#tuiActive = true
 		// Alternate screen keeps the pre-start scrollback + cursor row; leave restores them.
 		write(`\x1b[?1049h\x1b[?25l\x1b[2J\x1b[H${MOUSE_ON}`)
 
-		if (process.stdout.isTTY) {
-			/** @returns {void} */
-			this.#resizeListener = () => this.onResize?.(terminalSize())
-			process.stdout.on('resize', this.#resizeListener)
-		}
+		/** @returns {void} */
+		this.#resizeListener = () => this.onResize?.(terminalSize())
+		process.stdout.on('resize', this.#resizeListener)
 
-		if (!process.stdin.isTTY) return this
 		process.stdin.setRawMode(true)
 		process.stdin.resume()
 		/**
@@ -280,6 +294,11 @@ export class AsciiAnimePlayer {
 
 	/** 离开备用屏（恢复启动前滚动缓冲 + 光标）/ 原始模式 / 缩放监听。 */
 	stop() {
+		if (!this.#tuiActive) {
+			this.#stdinCarry = ''
+			return
+		}
+		this.#tuiActive = false
 		if (this.#resizeListener) {
 			process.stdout.off('resize', this.#resizeListener)
 			this.#resizeListener = null
@@ -288,9 +307,7 @@ export class AsciiAnimePlayer {
 			process.stdin.off('data', this.#onData)
 			this.#onData = null
 		}
-		if (process.stdin.isTTY)
-			try { process.stdin.setRawMode(false) } catch { /* Node/Deno teardown on odd TTYs */ }
-
+		try { process.stdin.setRawMode(false) } catch { /* Node/Deno teardown on odd TTYs */ }
 		try { process.stdin.pause() } catch { /* already paused */ }
 		write(`${MOUSE_OFF}\x1b[?25h\x1b[0m\x1b[?1049l`)
 		this.#stdinCarry = ''

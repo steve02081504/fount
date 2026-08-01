@@ -24,7 +24,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 - **`theme.mjs`**: DaisyUI theme management. Call `applyTheme()` first.
 - **`template.mjs`**: `renderTemplate` / `mountTemplate` / `renderTemplateAsHtmlString` / `withTemplates(path, fn)`. Cross-shell shared modules must **not** call bare `usingTemplates` — use `withTemplates` or direct DOM.
 - **`dialog.mjs`**: `openDialogFromTemplate` / `pickFromDialog`. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do not nest another `<dialog>`.
-- **`promptDialog.mjs`**: shared DaisyUI `promptText` / `promptTextArea` / `confirmAction`. Prefer over `window.prompt` / `confirm` / shell-local copies. **First argument is always an i18n key**; optional third arg is interpolation params. Do not pass `geti18n(...)` strings.
+- **`promptDialog.mjs`**: shared DaisyUI `promptText` / `promptTextArea` / `confirmAction`. Prefer over `window.prompt` / `confirm` / shell-local copies. **First argument is always an i18n key**; optional third arg is interpolation params. Do not pass `geti18n(...)` strings. Modal title is **`h2`** (page already has `h1`; DaisyUI docs’ `h3` skips a level and trips axe `heading-order`).
 - **`components/positionContextMenu.mjs`** + **`components/contextMenuDismiss.mjs`**: shared floating-menu placement / dismiss.
 - **`contentReveal/`**: `wrapSensitiveMediaHtml`, `wrapContentWarningHtml`, `bindContentReveal`.
 - **`translate.mjs`**: `mountTranslationBlock`, `requestTranslation`, `resolveTargetLang` (-> `primaryLocale()`).
