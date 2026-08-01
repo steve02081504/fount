@@ -2,11 +2,6 @@
  * 图标动画控制器：动画状态 + TUI 播放器。
  * 无进程钩子 — 宿主 await `farewell`（logo CLI）或在关闭时注册（log viewer）。
  */
-
-import process from 'node:process'
-
-import supportsAnsi from 'npm:supports-ansi'
-
 import { lightPointer } from './gesture/light.mjs'
 import { windPointer } from './gesture/wind.mjs'
 import { ICON_W, ICON_H } from './icon.mjs'
@@ -17,14 +12,6 @@ import {
 
 /** 目标帧率。 */
 export const fps = 24
-
-/**
- * 是否可进备用屏 TUI（stdin 交互 + stdout VT）。
- * @returns {boolean} stdin/stdout 均为 TTY 且支持 ANSI 时为 true
- */
-const canUseIconAnimeTui = () => Boolean(
-	process.stdin.isTTY && process.stdout.isTTY && process.stdout.writable && supportsAnsi,
-)
 
 /**
  * 图标动画控制器接口。
@@ -139,7 +126,6 @@ export function createIconAnime() {
 		 */
 		async start() {
 			if (player) return running
-			if (!canUseIconAnimeTui()) return
 			userAborted = false
 			stopping = false
 			userAbortController = new AbortController()
@@ -155,7 +141,6 @@ export function createIconAnime() {
 		 */
 		async intro() {
 			if (player) return
-			if (!canUseIconAnimeTui()) return
 			userAborted = false
 			stopping = false
 			userAbortController = new AbortController()
@@ -216,10 +201,6 @@ export function createIconAnime() {
 				return
 			}
 			if (!parkedState) return
-			if (!canUseIconAnimeTui()) {
-				parkedState = null
-				return
-			}
 			player = openPlayer(parkedState)
 			parkedState = null
 			player.start()

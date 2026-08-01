@@ -7,21 +7,13 @@
 import process from 'node:process'
 import { setTimeout as sleep } from 'node:timers/promises'
 
-import supportsAnsi from 'npm:supports-ansi'
+import { canUseTui } from './terminal.mjs'
 
 /**
  * @param {string} text 待写入文本
  * @returns {boolean} 是否写入成功
  */
 const write = (text) => process.stdout.write(text)
-
-/**
- * 备用屏 / raw stdin 是否可用。
- * @returns {boolean} stdin/stdout 均为 TTY 且支持 ANSI 时为 true
- */
-const canUseTui = () => Boolean(
-	process.stdin.isTTY && process.stdout.isTTY && process.stdout.writable && supportsAnsi,
-)
 
 /**
  * @returns {{ columns: number, rows: number }} 终端尺寸
@@ -125,7 +117,6 @@ export class AsciiAnimePlayer {
 		this.#resizeListener = null
 		this.#ac = null
 		this.#stdinCarry = ''
-		this.#tuiActive = false
 	}
 
 	/** @type {((buf: Buffer) => void) | null} */
@@ -136,8 +127,6 @@ export class AsciiAnimePlayer {
 	#ac
 	/** @type {string} */
 	#stdinCarry
-	/** @type {boolean} 是否已进入备用屏 / raw stdin */
-	#tuiActive
 
 	/**
 	 * 中止当前 play/loop 信号。
@@ -166,9 +155,8 @@ export class AsciiAnimePlayer {
 		this.#stdinCarry = ''
 
 		// 非 TTY / 无 VT：不进备用屏、不抢 stdin（避免污染管道输出）
-		if (!canUseTui()) return this
+		if (!canUseTui) return this
 
-		this.#tuiActive = true
 		// Alternate screen keeps the pre-start scrollback + cursor row; leave restores them.
 		write(`\x1b[?1049h\x1b[?25l\x1b[2J\x1b[H${MOUSE_ON}`)
 
@@ -195,7 +183,7 @@ export class AsciiAnimePlayer {
 	 * @returns {void}
 	 */
 	paint(frame) {
-		if (!this.#tuiActive) return
+		if (!canUseTui) return
 		// Frame is full-viewport — home only; skip Erase display.
 		write(`\x1b[H${frame}`)
 	}
@@ -206,7 +194,7 @@ export class AsciiAnimePlayer {
 	 * @returns {Promise<void>}
 	 */
 	async #playFrames(frames, { signal } = {}) {
-		if (!this.#tuiActive) return
+		if (!canUseTui) return
 		signal ??= this.signal
 		for await (const frame of iterateFrames(frames)) {
 			if (signal?.aborted) return
@@ -289,7 +277,7 @@ export class AsciiAnimePlayer {
 	 * @returns {Promise<void>}
 	 */
 	async loop(frames, { signal } = {}) {
-		if (!this.#tuiActive) return
+		if (!canUseTui) return
 		signal = this.useSignal(signal)
 		while (!signal?.aborted)
 			await this.#playFrames(frames, { signal: this.signal })
@@ -297,11 +285,10 @@ export class AsciiAnimePlayer {
 
 	/** 离开备用屏（恢复启动前滚动缓冲 + 光标）/ 原始模式 / 缩放监听。 */
 	stop() {
-		if (!this.#tuiActive) {
+		if (!canUseTui) {
 			this.#stdinCarry = ''
 			return
 		}
-		this.#tuiActive = false
 		if (this.#resizeListener) {
 			process.stdout.off('resize', this.#resizeListener)
 			this.#resizeListener = null
