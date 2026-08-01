@@ -132,7 +132,7 @@ async function fulfillFromCache(route, method, hit) {
 async function fetchWithRetries(route) {
 	let response = null
 	let lastError
-	for (let attempt = 0; attempt < 3; attempt++) 
+	for (let attempt = 0; attempt < 3; attempt++)
 		try {
 			response = await route.fetch()
 			lastError = null
@@ -143,7 +143,7 @@ async function fetchWithRetries(route) {
 			if (attempt < 2)
 				await new Promise(resolve => setTimeout(resolve, 250 * (attempt + 1)))
 		}
-	
+
 	return { response, lastError }
 }
 

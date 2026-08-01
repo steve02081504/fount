@@ -257,10 +257,10 @@ export const stepParticles = (world, onHit, state) => {
 		const nx = px + pvx
 		const ny = py + pvy
 
-		if (nx < 0 || nx >= W || ny >= H) 
+		if (nx < 0 || nx >= W || ny >= H)
 			// World-edge sink — mass leaves the domain intentionally.
 			continue
-		
+
 		if (ny < 0) {
 			live.x[write] = nx
 			live.y[write] = ny

@@ -1,12 +1,11 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 # fount — CodeRabbit：审美指南 + 重点审查（不含开发工具用法）
 
-language: "zh-CN"
+language: 'zh-CN'
 tone_instructions: >-
   直接、简洁、犀利。优先指出违背审美与架构的问题；不客套、不复述 diff、
   不给向后兼容或防御性补丁建议。成品以简洁高效为准，大胆改结构消掉阻挡。
 early_access: true
-
 reviews:
   profile: assertive
   request_changes_workflow: true
@@ -22,11 +21,11 @@ reviews:
   in_progress_fortune: false
 
   path_filters:
-    - "!**/*.svg"
+    - '!**/*.svg'
 
   path_instructions:
     # ── 全局审美与架构 ──────────────────────────────────────────────────
-    - path: "**"
+    - path: '**'
       instructions: |
         违反下列任一条都要指出，并给出更简洁的改法。
         不要建议「先兼容旧行为再慢慢删」或加防御性校验「以防万一」。
@@ -55,7 +54,7 @@ reviews:
         自问：这足够优雅吗？有没有往公共层塞局部特例？
 
     # ── 逻辑代码（非 html/xml/svg/css）──────────────────────────────────
-    - path: "!**/*.{html,htm,xml,svg,css}"
+    - path: '!**/*.{html,htm,xml,svg,css}'
       instructions: |
         ## 命名与作用域
         - 不用 `_` 当私有前缀；类私有用语言自带机制（JS 用 `#`），否则别导出。
@@ -76,12 +75,12 @@ reviews:
         - 揪重复逻辑、无意义分支、底层对顶层的特判。
 
     # ── CI / GitHub Actions（诊断日志合法）─────────────────────────────
-    - path: ".github/workflows/**,.github/workflows/scripts/**"
+    - path: '.github/workflows/**,.github/workflows/scripts/**'
       instructions: |
         - 机器可读结果行、错误、警告、超时诊断都应保留；多余噪声与真正有用的诊断不要混为一谈。
 
     # ── 前端 JS（pages + part public/）─────────────────────────────────
-    - path: "src/public/pages/**/*.mjs,src/public/pages/**/*.js,src/public/parts/**/public/**/*.mjs,src/public/parts/**/public/**/*.js"
+    - path: 'src/public/pages/**/*.mjs,src/public/pages/**/*.js,src/public/parts/**/public/**/*.mjs,src/public/parts/**/public/**/*.js'
       instructions: |
         - 禁止大段拼接 HTML；用 `renderTemplate` / `mountTemplate` / `withTemplates`。跨 shell 共享模块禁止裸调 `usingTemplates`。
         - 非必要不用 `geti18n`；静态 UI 用 `data-i18n` / `setElementI18n`。`promptDialog` 等传 i18n key，不要先 `geti18n` 再传入。
@@ -91,7 +90,7 @@ reviews:
         - 未展示完整的 UI 用 `aria-hidden` / `inert` / `hidden`，不要只用 `opacity: 0`。
 
     # ── Markup ─────────────────────────────────────────────────────────
-    - path: "**/*.html,**/*.htm,**/*.xml,**/*.svg"
+    - path: '**/*.html,**/*.htm,**/*.xml,**/*.svg'
       instructions: |
         - 能少一层就少一层：无语义、无样式、无行为的包装节点删掉。
         - HTML 优先 DaisyUI 类名，不要再套自定义壳。
@@ -101,7 +100,7 @@ reviews:
         - 结构归模板、行为归 JS；禁止在 JS 里拼本该进模板的大段 HTML。
 
     # ── CSS ────────────────────────────────────────────────────────────
-    - path: "**/*.css"
+    - path: '**/*.css'
       instructions: |
         - 越少越好；能删则删。优先 DaisyUI / 现有主题变量，能用组件类就不要手写平行样式。
         - 自定义规则只补 DaisyUI / 主题覆盖不了的点。
@@ -110,31 +109,31 @@ reviews:
         - 同一视觉意图合并规则；不发明与 DaisyUI 冲突的工具类语义。
 
     # ── 前端静态交叉 ───────────────────────────────────────────────────
-    - path: "src/public/**/*.html,src/public/**/*.css"
+    - path: 'src/public/**/*.html,src/public/**/*.css'
       instructions: |
         - 能靠 DaisyUI / 现有类解决的不要新增 CSS；能靠更扁 DOM 解决的不要堆选择器。
         - 主题只走既有 DaisyUI 通道，不要平行维护颜色表。
 
     # ── i18n ────────────────────────────────────────────────────────────
-    - path: "src/public/locales/**"
+    - path: 'src/public/locales/**'
       instructions: |
         - 键树：shell 文案挂 shell id 下（如 `chat.profile`）；共享挂 `util.*`；顶层仅 `tips` / `404` / `directoryListing` / `fountConsole`。
         - emoji 除非不得已否则不应出现文字，而是使用emoji进行意译。
 
     # ── 后端 ────────────────────────────────────────────────────────────
-    - path: "src/server/**/*.mjs,src/server/**/*.js,src/server/**/*.ts,src/scripts/**/*.mjs,src/scripts/**/*.js,src/public/parts/**/src/**/*.mjs,src/public/parts/**/src/**/*.js,src/public/parts/**/main.mjs"
+    - path: 'src/server/**/*.mjs,src/server/**/*.js,src/server/**/*.ts,src/scripts/**/*.mjs,src/scripts/**/*.js,src/public/parts/**/src/**/*.mjs,src/public/parts/**/src/**/*.js,src/public/parts/**/main.mjs'
       instructions: |
         - 新能力优先做成 part，对照 `@src/decl/`；生命周期走 `parts_loader`。
         - 注册表走 `fount.json` registries 与 `/api/registries/:name`。
         - 信任本机文件与前后端约定；校验集中在网络边界。
         - 文案用既有 locale helper（如 `localesForUser`），不要引入浏览器 i18n API。
 
-    - path: "src/server/p2p_server/**"
+    - path: 'src/server/p2p_server/**'
       instructions: |
         - 入站（discovery / link / WS federation / remoteIngest / part_query 等）必须在边界校验。
         - 落盘后的本地数据不要重复过度清洗；边界校验别渗进纯本地路径。
 
-    - path: "src/public/parts/**"
+    - path: 'src/public/parts/**'
       instructions: |
         - Part 自包含，有 `main.mjs`；仿现有结构。
         - 领域逻辑留在 part 内；不要把 part 特例塞进公共 `pages/scripts`。
@@ -142,19 +141,19 @@ reviews:
         - 别把 DOM 代码塞进 part 的 `src/`。
 
     # ── 测试 ────────────────────────────────────────────────────────────
-    - path: "**/test/**,**/tests/**,**/*.test.mjs,**/*.spec.mjs,**/*.test.js,**/*.spec.js"
+    - path: '**/test/**,**/tests/**,**/*.test.mjs,**/*.spec.mjs,**/*.test.js,**/*.spec.js'
       instructions: |
         - 禁止为让测试通过而削弱产品逻辑或 watcher。
         - 断言不放宽；夹具按领域语义命名，禁止里程碑号。
 
     # ── Shell 入口 ──────────────────────────────────────────────────────
-    - path: "path/**/*.ps1,path/**/*.sh"
+    - path: 'path/**/*.ps1,path/**/*.sh'
       instructions: |
         - `fount.ps1` / `fount.sh` 行为对齐。
         - 避免无意义防御分支与一次性临时变量。
 
     # ── 文档 ────────────────────────────────────────────────────────────
-    - path: "**/AGENTS.md,docs/**/*.md"
+    - path: '**/AGENTS.md,docs/**/*.md'
       instructions: |
         - AGENTS.md 保持短、可执行、与代码一致。
         - 设计/评审文档可含里程碑号；不要建议写进源码。
@@ -163,12 +162,12 @@ reviews:
     enabled: true
     auto_incremental_review: true
     ignore_title_keywords:
-      - "draft"
-      - "WIP"
-      - "DO NOT MERGE"
+      - 'draft'
+      - 'WIP'
+      - 'DO NOT MERGE'
     drafts: false
     base_branches:
-      - "master"
+      - 'master'
 
   finishing_touches:
     docstrings:
@@ -182,18 +181,18 @@ reviews:
 
   pre_merge_checks:
     docstrings:
-      mode: "off"
+      mode: 'off'
     title:
-      mode: "warning"
+      mode: 'warning'
       requirements: >-
         简洁说明变更目的（why），避免纯文件列表或空话标题。
     description:
-      mode: "warning"
+      mode: 'warning'
     issue_assessment:
-      mode: "off"
+      mode: 'off'
     custom_checks:
-      - name: "审美与简洁"
-        mode: "warning"
+      - name: '审美与简洁'
+        mode: 'warning'
         instructions: >-
           一次性临时绑定、烂缩写、多余类型盘问/防御、@deprecated/重导出、兼容旧数据分支、
           markup 无意义包装或缺 data-i18n、CSS 能删未删或平行造已有样式——未通过；点明位置与更简改法。
@@ -237,8 +236,8 @@ knowledge_base:
   code_guidelines:
     enabled: true
     filePatterns:
-      - "**/AGENTS.md"
-      - "**/llms.txt"
+      - '**/AGENTS.md'
+      - '**/llms.txt'
   learnings:
     scope: local
   issues:
@@ -252,10 +251,10 @@ knowledge_base:
 
 code_generation:
   docstrings:
-    language: "zh-CN"
+    language: 'zh-CN'
   unit_tests:
     path_instructions:
-      - path: "**/*"
+      - path: '**/*'
         instructions: |
           用项目 `fount test` 与现有 `test/` 布局；不要生成 Jest/Vitest/Mocha 脚手架。
           断言不放宽；测试代码同样遵守命名与简洁审美。
