@@ -1,7 +1,7 @@
 /**
  * Social 媒体渲染（与上传解耦）：轮播、alt、敏感遮罩、lightbox。
  */
-import { wrapSensitiveMediaHtml } from '/scripts/features/contentReveal/index.mjs'
+import { wrapSensitiveMediaHtml } from '/scripts/features/contentReveal.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 

@@ -1,6 +1,8 @@
 /** @type {IntersectionObserver | null} */
 let activeObserver = null
 
+// --- 全局样式注入 ---
+
 {
 	const style = document.createElement('style')
 	style.textContent = /* css */ `\
@@ -11,7 +13,7 @@ let activeObserver = null
 	overflow-anchor: none;
 }
 `
-	document.head.appendChild(style)
+	document.head.prepend(style)
 }
 
 /**

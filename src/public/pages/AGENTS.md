@@ -21,6 +21,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 ## UI & Theming
 
 - **`base.css`**: shared page chrome. `.hidden { display: none !important }` — do not re-declare in shells; page-local `display: flex|grid` must not un-hide toggled UI.
+- **Component CSS**: inject at module import (`// --- 全局样式注入 ---`, `document.head.prepend`), same as `jsonEditor` / `markdown/convertor` — do not lazy-`ensure*` stylesheet links on first use. Registry-driven CSS (e.g. markdown extensions) stays async-load.
 - **`theme.mjs`**: DaisyUI theme management. Call `applyTheme()` first.
 - **`template.mjs`**: `renderTemplate` / `mountTemplate` / `renderTemplateAsHtmlString` / `withTemplates(path, fn)`. Cross-shell shared modules must **not** call bare `usingTemplates` — use `withTemplates` or direct DOM.
 - **`dialog.mjs`**: `openDialogFromTemplate` / `pickFromDialog`. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do not nest another `<dialog>`.
@@ -28,7 +29,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 - **`components/jsonEditor.mjs`**: `createJsonEditor(container, options)` wraps `vanilla-jsoneditor` (≥3.13). **`options.ariaLabel` is required and must be an i18n key** (resolved + refreshed via `setLocalizeLogic`); do not pass `geti18n(...)` strings. Optional `onSave` is Ctrl+S only — not a library prop. Keep native `get()`/`set()` (`Content`); use **`getJson()`** for parsed values (`{ json }` as-is; `{ text }` → `jsonrepair` then `JSON.parse`).
 - **`components/imageEditor/`**: `openImageEditor(file, labels?)` — crop / mosaic / brush modal; returns `File | null`. Defaults under `util.imageEditor.*` (+ `util.common.cancel`).
 - **`components/positionContextMenu.mjs`** + **`components/contextMenuDismiss.mjs`**: shared floating-menu placement / dismiss.
-- **`contentReveal/`**: `wrapSensitiveMediaHtml`, `wrapContentWarningHtml`, `bindContentReveal`.
+- **`contentReveal.mjs`**: `wrapSensitiveMediaHtml`, `wrapContentWarningHtml`, `bindContentReveal`.
 - **`translate.mjs`**: `mountTranslationBlock`, `requestTranslation`, `resolveTargetLang` (-> `primaryLocale()`).
 - **`toast.mjs`**: `showToast`, `showToastI18n`.
 

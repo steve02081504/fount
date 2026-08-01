@@ -7,23 +7,11 @@ import { escapeHtml } from '../../lib/escapeHtml.mjs'
 const IMAGE_EDITOR_CSS = '/scripts/components/imageEditor/imageEditor.css'
 
 /**
- * @returns {void}
- */
-function ensureImageEditorStyles() {
-	if (document.querySelector(`link[href="${IMAGE_EDITOR_CSS}"]`)) return
-	const link = document.createElement('link')
-	link.rel = 'stylesheet'
-	link.href = IMAGE_EDITOR_CSS
-	document.head.appendChild(link)
-}
-
-/**
  * @param {File | Blob} file 源图片
  * @param {{ titleI18n?: string, cropI18n?: string, mosaicI18n?: string, brushI18n?: string, brushColorI18n?: string, brushSizeI18n?: string, applyI18n?: string, cancelI18n?: string }} [labels] 文案键（默认 `util.imageEditor.*` / `util.common.cancel`）
  * @returns {Promise<File | null>} 编辑后的文件；取消为 null
  */
 export function openImageEditor(file, labels = {}) {
-	ensureImageEditorStyles()
 	return new Promise((resolve, reject) => {
 		const objectUrl = URL.createObjectURL(file)
 		const dialog = document.createElement('dialog')
@@ -225,3 +213,10 @@ export function openImageEditor(file, labels = {}) {
 		})
 	})
 }
+
+// --- 全局样式注入 ---
+
+document.head.prepend(Object.assign(document.createElement('link'), {
+	rel: 'stylesheet',
+	href: IMAGE_EDITOR_CSS,
+}))

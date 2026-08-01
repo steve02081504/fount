@@ -298,12 +298,13 @@ export async function createSearchableDropdown({
 }
 
 // fix overlay issue
+// --- 全局样式注入 ---
 {
 	const style = document.createElement('style')
-	style.textContent = /* html */ `\
+	style.textContent = /* css */ `\
 .searchable-dropdown:not(:focus-within) .dropdown-content {
 	display: none;
 }
 `
-	document.head.appendChild(style)
+	document.head.prepend(style)
 }
