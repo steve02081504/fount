@@ -10,17 +10,19 @@ import { collectStaleTriggerEvidence, suiteKey } from '../core/state.mjs'
  */
 
 /**
+ * 波次目标选择结果。
  * @typedef {object} GoalSelection
- * @property {'run' | 'exit'} action
- * @property {number} [code]
- * @property {Set<string>} [goalKeys]
- * @property {Map<string, GoalEvidence>} [goalEvidenceByKey]
+ * @property {'run' | 'exit'} action 执行或退出
+ * @property {number} [code] exit 时的退出码
+ * @property {Set<string>} [goalKeys] 目标 suite 键
+ * @property {Map<string, GoalEvidence>} [goalEvidenceByKey] 目标证据
  * @property {Map<string, Map<string, string[] | undefined>>} [failedFirstByManifest] manifest → suite → 失败文件（FOUNT_TEST_FIRST）
  * @property {Map<string, string[]>} [subtestFilterByKey] suite 键 → 显式子测试过滤
- * @property {'imperfect' | 'outdated' | 'explicit' | 'all'} [mode]
+ * @property {'imperfect' | 'outdated' | 'explicit' | 'all'} [mode] 波次模式
  */
 
 /**
+ * 从现状库收集各 manifest 的失败优先文件表（FOUNT_TEST_FIRST）。
  * @param {TestState} state 现状库
  * @param {string[] | undefined} manifestIds manifest 范围
  * @returns {Map<string, Map<string, string[] | undefined>>} manifest -> suite -> 失败文件
@@ -43,6 +45,7 @@ export function buildFailedFirstByManifest(state, manifestIds) {
 }
 
 /**
+ * 构建各 suite（及子测试）自记录 commit 以来的变更文件表。
  * @param {string} repoRoot 仓库根
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
@@ -78,6 +81,7 @@ function isHardImperfectRoot(verdict, entry) {
 }
 
 /**
+ * 收集 imperfect 波次根目标键（不含下游扩展）。
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {TestState} state 现状库
  * @returns {Set<string>} imperfect 目标键（含 fresh noisy；不含 stale passed / outdated unknown）
@@ -137,6 +141,7 @@ export function listFreshNoisyKeys(verdicts, scope) {
 }
 
 /**
+ * 计算 imperfect 波次目标（含 hard-fail 一层下游扩展）。
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {TestState} state 现状库
  * @param {SuiteDef[]} allSuites 全部 suite
@@ -147,6 +152,7 @@ export function goalContinue(verdicts, state, allSuites) {
 }
 
 /**
+ * 计算 outdated（内容过期）波次目标键。
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {SuiteDef[]} scope 过滤范围
  * @returns {Set<string>} outdated 目标键
@@ -159,6 +165,7 @@ export function goalOutdated(verdicts, scope) {
 }
 
 /**
+ * 由显式选中的 suite 列表构造目标键与证据。
  * @param {SuiteDef[]} suites 显式选中 suite
  * @returns {{ goalKeys: Set<string>, goalEvidenceByKey: Map<string, GoalEvidence> }} 目标键与显式证据
  */

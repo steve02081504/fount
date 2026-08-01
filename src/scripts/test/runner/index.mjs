@@ -55,13 +55,14 @@ import {
 import { runSuite } from './suite_run.mjs'
 
 /**
+ * CLI 分组输入（manifest / suite / subtest 选择器）。
  * @typedef {{ manifestSelectors: string[], suiteSelectors: string[], subtestSelectors?: Record<string, string[]> }} GroupInput
  * @typedef {{ manifestIds: string[], suiteSelectors: string[], subtestSelectors: Record<string, string[]> }} ResolvedGroup
  * @typedef {object} RunTestsOptions
- * @property {boolean} [runAll]
- * @property {GroupInput[]} [groups]
- * @property {boolean} [noParallel]
- * @property {boolean} [force]
+ * @property {boolean} [runAll] 是否 --all 全库
+ * @property {GroupInput[]} [groups] CLI 分组
+ * @property {boolean} [noParallel] 是否串行调度
+ * @property {boolean} [force] 是否强制真跑目标
  */
 
 /**
@@ -248,7 +249,8 @@ function logTriggerWarnings(warnings) {
 }
 
 /**
- * @param {import('./report.mjs').ReportWriter} reportWriter 报告写入器
+ * 打印待运行套件的剩余 ETA（若有预估）。
+ * @param {import('./report.mjs').RunReportWriter} reportWriter 报告写入器
  * @returns {void}
  */
 function logPendingEstimate(reportWriter) {
@@ -381,6 +383,7 @@ async function executeWave(context) {
 	}
 
 	/**
+	 * 记录单槽结果到 report/state，并可选刷新 ETA。
 	 * @param {number | null} index report slot 下标
 	 * @param {object} entry 写入 state/report 的条目
 	 * @param {object} [root0] 选项

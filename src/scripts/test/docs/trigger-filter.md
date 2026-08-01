@@ -8,7 +8,7 @@ Verdict freshness, outdated-wave evidence, and continue-report trigger evidence 
 | --- | --- |
 | `**/AGENTS.md` | part guides |
 | `**/test/manifest.json` | suite metadata (editing manifest alone no longer runs all suites) |
-| `**/docs/**`, `**/*.md`, `*.md` | docs and root-level markdown |
+| `**/docs/**`, `**/*.md` | docs and markdown (incl. repo root) |
 | `**/llms.txt` | llms context files |
 
 Test-infra changes under `src/scripts/test/` auto-select **`testkit`** suites plus any suite whose manifest trigger explicitly watches the changed path — not the whole repo.

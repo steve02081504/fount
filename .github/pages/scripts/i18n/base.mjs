@@ -13,7 +13,7 @@ export const preferredLangsStorageKey = 'fountUserPreferredLanguages'
 let availableLocales = []
 const localeNames = new Map()
 
-/** locale → bundle */
+/** locale → 翻译包 */
 const localeBundleCache = new Map()
 /** locale → 进行中的拉取 Promise；并发同语种去重 */
 const localeBundleInflight = new Map()
@@ -36,7 +36,7 @@ export function getLocaleNames() {
 
 /**
  * 确保 list.csv 已加载（供 getBestLocale / 语言选择器用）。
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 加载完成。
  */
 async function ensureLocaleList() {
 	if (availableLocales.length) return
@@ -59,7 +59,7 @@ async function ensureLocaleList() {
 /**
  * 按首选链拉取一份静态 locale JSON（不写 DOM / 不改偏好）。
  * @param {string[]} preferredLangs 首选语言列表
- * @returns {Promise<object>} locale JSON
+ * @returns {Promise<object>} locale JSON 对象。
  */
 export async function loadLocaleData(preferredLangs) {
 	await ensureLocaleList()
@@ -95,7 +95,7 @@ export async function loadLocaleData(preferredLangs) {
  * 初始化翻译资源。
  * @param {string} [pageid] 页面 ID。
  * @param {string[]} [preferredLangs] 首选语言列表。
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 初始化完成。
  */
 export async function initTranslations(pageid = saved_pageid, preferredLangs = loadPreferredLangs()) {
 	await runInitTranslations(pageid, preferredLangs, async () => {

@@ -4,7 +4,7 @@
 import { parseHTML } from 'npm:linkedom'
 
 /** @type {readonly { tag: string, attrs: Record<string, string | null> }[]} */
-export const REQUIRED_TAGS = Object.freeze([
+export const REQUIRED_TAGS = [
 	{ tag: 'meta', attrs: { charset: null } },
 	{ tag: 'meta', attrs: { name: 'viewport' } },
 	{ tag: 'meta', attrs: { property: 'og:title' } },
@@ -14,10 +14,10 @@ export const REQUIRED_TAGS = Object.freeze([
 	{ tag: 'link', attrs: { rel: 'icon', type: 'image/svg+xml' } },
 	{ tag: 'title', attrs: {} },
 	{ tag: 'meta', attrs: { name: 'description' } },
-])
+]
 
 /** ARIA in HTML：aside 允许的显式 role。 */
-export const ASIDE_ALLOWED_ROLES = Object.freeze(new Set([
+export const ASIDE_ALLOWED_ROLES = new Set([
 	'complementary',
 	'feed',
 	'none',
@@ -26,7 +26,7 @@ export const ASIDE_ALLOWED_ROLES = Object.freeze(new Set([
 	'region',
 	'search',
 	'status',
-]))
+])
 
 /**
  * 是否为完整 HTML 文档（含 doctype 或 html 根）。
@@ -112,7 +112,7 @@ export function checkHtmlMeta(document) {
 	const missing = []
 	for (const { tag, attrs } of REQUIRED_TAGS) {
 		let found = false
-		if (tag === 'link' && attrs.rel === 'icon' && attrs.type === 'image/svg+xml') 
+		if (tag === 'link' && attrs.rel === 'icon' && attrs.type === 'image/svg+xml')
 			for (const link of head.querySelectorAll('link[rel=icon]')) {
 				const href = link.getAttribute('href') || ''
 				const type = link.getAttribute('type') || ''
@@ -121,17 +121,17 @@ export function checkHtmlMeta(document) {
 					break
 				}
 			}
-		
+
 		else if (tag === 'title')
 			found = !!head.querySelector('title')
-		else 
-			for (const el of head.querySelectorAll(tag)) 
+		else
+			for (const el of head.querySelectorAll(tag))
 				if (tagMatchesAttrs(el, attrs)) {
 					found = true
 					break
 				}
-			
-		
+
+
 		if (!found) {
 			const attrStr = Object.entries(attrs)
 				.map(([k, v]) => v == null ? k : `${k}="${v}"`)

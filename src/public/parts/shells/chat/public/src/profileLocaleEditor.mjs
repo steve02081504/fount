@@ -7,23 +7,26 @@
  */
 
 /**
+ * 资料外链条目。
  * @typedef {object} ProfileLink
- * @property {string} [icon]
- * @property {string} [name]
- * @property {string} url
+ * @property {string} [icon] 图标 id 或 URL
+ * @property {string} [name] 展示名
+ * @property {string} url 链接地址
  */
 
 /**
+ * 单 locale 资料字段切片。
  * @typedef {object} ProfileLocaleSlice
- * @property {string} [name]
- * @property {string} [avatar]
- * @property {string} [description]
- * @property {string} [description_markdown]
- * @property {string[]} [tags]
- * @property {ProfileLink[]} [links]
+ * @property {string} [name] 显示名
+ * @property {string} [avatar] 头像 URL
+ * @property {string} [description] 纯文本简介
+ * @property {string} [description_markdown] Markdown 简介
+ * @property {string[]} [tags] 标签列表
+ * @property {ProfileLink[]} [links] 外链列表
  */
 
 /**
+ * 渲染资料多语言 locale 标签页与新增输入框。
  * @param {HTMLElement} tabsHost 书签容器
  * @param {Record<string, ProfileLocaleSlice>} localized 多语言表
  * @param {string} activeKey 当前选中 locale
@@ -141,6 +144,7 @@ export function normalizeProfileTag(value) {
 }
 
 /**
+ * 规范化标签列表：去重并过滤空项。
  * @param {unknown} tags 原始标签列表
  * @returns {string[]} 去重后的标签
  */
@@ -159,6 +163,7 @@ export function normalizeProfileTags(tags) {
 }
 
 /**
+ * 规范化外链列表：裁剪字段并丢弃无 URL 项。
  * @param {unknown} links 原始链接列表
  * @returns {ProfileLink[]} 规范化链接
  */
@@ -237,7 +242,8 @@ export function renderLinksEditor(host, links, onChange) {
 		remove.dataset.i18n = 'chat.hub.profileEdit.link.remove'
 
 		/**
-		 *
+		 * 将当前表单值写回 onChange。
+		 * @returns {void}
 		 */
 		const commit = () => {
 			onChange(readLinksEditor(host, { keepEmpty: true }))

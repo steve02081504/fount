@@ -100,7 +100,10 @@ ${mode === 'error' ? `
 					<button type="button" class="btn btn-warning btn-sm" id="federation-dm-rotate" data-i18n="chat.hub.fed.dm.rotateLabel"></button>
 				</div>
 				<button type="button" class="btn btn-primary w-full" id="federation-dm-issue" data-i18n="chat.hub.fed.dm.issueLabel"></button>
-				<textarea id="federation-dm-url" class="textarea textarea-bordered w-full mt-2 text-xs" rows="3" readonly></textarea>
+				<div class="overlay-field space-y-1 mt-2">
+					<label for="federation-dm-url" data-i18n="chat.hub.fed.dm.urlLabel"></label>
+					<textarea id="federation-dm-url" class="textarea textarea-bordered w-full text-xs" rows="3" readonly></textarea>
+				</div>
 			</div>
 		</div>
 	</details>

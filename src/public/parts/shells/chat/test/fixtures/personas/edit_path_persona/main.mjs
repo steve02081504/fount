@@ -1,7 +1,7 @@
 import { editPathHookState } from 'fount/public/parts/shells/chat/test/fixtures/probes/editPathHookState.mjs'
 
 /**
- * persona BeforeUserEdit / BeforeUserDelete fixture。
+ * persona `BeforeUserEdit` / `BeforeUserDelete` 测试 fixture。
  */
 export default {
 	info: {

@@ -1273,10 +1273,8 @@
 				"autoSignHint": "제출하면 이 기기가 개인 키 입력 없이 해당 그룹의 서명 시드에 자동으로 서명합니다. 관리자가 여러 명인 그룹에서는 과반수의 관리자가 각자 이 기기에서 동일한 표(동일한 ballotId와 후보)를 제출해야 합니다.",
 				"candidateLabel": "후속 공개 키 해시",
 				"description": "그룹의 최고 관리 권한(MANAGE_ADMINS)을 지정된 구성원에게 이전합니다. 관리자만 작업할 수 있습니다.",
-				"failed": "후임 투표 제출 실패",
 				"needHash": "후임자의 공개 키 해시를 입력하세요.",
-				"selfButton": "자신을 추천하세요",
-				"submitted": "내 서명이 후임 투표용지에 기록되었습니다."
+				"selfButton": "자신을 추천하세요"
 			},
 			"channelType": {
 				"label": "채널 유형",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "미디어 스트림 획득(중지됨, 방송되지 않음)",
 				"test": "미디어 장치 테스트"
-			},
-			"thread": {
-				"main": "하위 스레드",
-				"back": "돌아가기",
-				"breadcrumbMiddleSummary": "중간 ${count} 레이어",
-				"breadcrumbMiddleTitle": "중간 레이어를 확장하고 점프하려는 레벨을 선택하세요.",
-				"breadcrumbRootTitle": "경로 시작점으로 이동(첫 번째 수준)"
 			},
 			"unpin": {
 				"action": {
@@ -2659,7 +2650,8 @@
 					"pubKeyLabel": "공개 키 16진수(64)",
 					"rotateConfirm": "이전에 발행된 모든 친구 추가 링크는 즉시 무효화되며 복원할 수 없습니다. 계속하시겠습니까?",
 					"rotateLabel": "이전 링크 무효화",
-					"secretLabel": "개인 키 시드 16진수(64)"
+					"secretLabel": "개인 키 시드 16진수(64)",
+					"urlLabel": "발급된 친구 추가 링크"
 				},
 				"groupRecoveryTip": "초대가 유출되었거나 새 기기에서 기록을 동기화할 수 없는 경우에만 사용됩니다.",
 				"groupRecoveryTitle": "그룹 연결 수정",
@@ -3824,6 +3816,8 @@
 			"configSaved": "설정이 성공적으로 저장되었습니다!",
 			"botExists": "\"${botname}\" 이름의 봇이 이미 존재합니다. 다른 이름을 사용해주세요.",
 			"unsavedChanges": "저장되지 않은 변경 사항이 있습니다. 변경 사항을 취소하시겠습니까?",
+			"confirmDeleteBot": "\"${botname}\" 봇을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
+			"invalidJsonConfig": "유효하지 않은 JSON 설정: ${error}",
 			"httpError": "HTTP 오류가 발생했습니다.",
 			"beforeUnload": "저장되지 않은 변경 사항이 있습니다. 이 페이지를 나가시겠습니까?"
 		},

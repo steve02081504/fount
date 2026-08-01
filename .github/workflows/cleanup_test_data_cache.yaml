@@ -8,11 +8,27 @@ jobs:
     # delete 事件的 ref 是短名（与 push 的 github.ref_name 一致），不是 refs/heads/…
     if: github.event.ref_type == 'branch' && github.event.ref != github.event.repository.default_branch
     runs-on: ubuntu-latest
-    # gh cache delete 需要 actions: write
+    # gh cache delete / run list 需要 actions: read|write；wait 脚本要拉 PR
     permissions:
       actions: write
+      contents: read
+      pull-requests: read
     steps:
+      - name: Checkout wait script
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - name: Wait for promote on merged head
+        id: wait-promote
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.ref }}
+        run: bash .github/workflows/scripts/wait_test_data_cache_promote.sh
       - name: Delete test data cache for deleted branch
+        # 仅在晋升成功或确认无需晋升时删源缓存；失败/超时保留
+        if: steps.wait-promote.outputs.result == 'promoted' || steps.wait-promote.outputs.result == 'skipped'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}

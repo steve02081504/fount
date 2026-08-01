@@ -4,7 +4,7 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { showToastI18n } from '../scripts/features/toast.mjs'
 import { getFountHostUrl, pingFount } from '../scripts/fountHostGetter.mjs'
-import { initTranslations, geti18n } from '../scripts/i18n/index.mjs'
+import { initTranslations, setElementI18n } from '../scripts/i18n/index.mjs'
 
 const fountProtocolUrl = urlParams.get('url') || 'fount://page/'
 
@@ -36,7 +36,7 @@ async function attemptConnection() {
 		const isOnline = await pingFount(hostUrl)
 		if (isOnline) return useUrlProtocol(hostUrl)
 
-		offlineMessageElement.textContent = geti18n('protocolhandler.offline_dialog.message', { hostUrl })
+		setElementI18n(offlineMessageElement, 'protocolhandler.offline_dialog.message', { hostUrl })
 		offlineDialog.showModal()
 
 		const checkInterval = setInterval(() => {

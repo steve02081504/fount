@@ -1,5 +1,5 @@
 /**
- * Compare pidusage vs node-os-utils on a live subprocess tree.
+ * 在真实子进程树上对比 pidusage 与 node-os-utils 采样结果。
  * deno run --allow-scripts --allow-all -c ./deno.json ./src/scripts/test/tools/probe_pid_sampling.mjs
  */
 import process from 'node:process'
@@ -135,11 +135,13 @@ let running = true
 const runPromise = execFile(process.execPath, ['eval', worker], {
 	no_output_record: true,
 	/**
+	 * 记录根进程 PID 供采样。
 	 * @param {import('node:child_process').ChildProcess} child spawn 子进程
 	 * @returns {void}
 	 */
 	on_spawn: child => { rootPid = child.pid ?? undefined },
 	/**
+	 * 转发 worker stdout。
 	 * @param {string | Uint8Array} d stdout 片段
 	 * @returns {void}
 	 */
@@ -164,6 +166,7 @@ child.on('exit', c => process.exit(c ?? 0));
 const nestedPromise = execFile(process.execPath, ['eval', spawnScript], {
 	no_output_record: true,
 	/**
+	 * 记录嵌套 spawn 根 PID。
 	 * @param {import('node:child_process').ChildProcess} child spawn 子进程
 	 * @returns {void}
 	 */

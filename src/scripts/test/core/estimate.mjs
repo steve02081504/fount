@@ -18,26 +18,29 @@ export const GAP_OVERHEAD_MS = 130
  */
 
 /**
+ * 耗时预估任务（单 suite 槽位）。
  * @typedef {object} EstimateTask
- * @property {string} key
- * @property {string} manifestId
- * @property {string} name
- * @property {number | null} durationMs
- * @property {boolean} reused
+ * @property {string} key suite 键
+ * @property {string} manifestId manifest id
+ * @property {string} name suite 名
+ * @property {number | null} durationMs 预估耗时（毫秒）
+ * @property {boolean} reused 是否复用（计 0 耗时）
  * @property {boolean} blocked 预计因依赖未满足瞬间 blocked（计 0 耗时）
- * @property {number} memMb
- * @property {number} cpuPct
- * @property {boolean} heavy
- * @property {string[]} deps
+ * @property {number} memMb 内存预算（MB）
+ * @property {number} cpuPct CPU 预算（%）
+ * @property {boolean} heavy 是否 heavy 独占
+ * @property {string[]} deps 依赖 suite 键列表
  */
 
 /**
+ * 并行模拟墙钟结果。
  * @typedef {object} ParallelMakespan
  * @property {number} makespanMs 墙钟耗时
  * @property {number} criticalPathCount 最长背靠背串行链上的套件数
  */
 
 /**
+ * 计算任务有效耗时（复用/blocked 计 0）。
  * @param {EstimateTask} task 任务
  * @returns {number} 有效耗时（毫秒）
  */
@@ -95,6 +98,7 @@ export function expectedRunDurationMs(suite, entry, subtestsToRun) {
 }
 
 /**
+ * 构造单 suite 预估任务。
  * @param {SuiteDef} suite suite
  * @param {SuiteStateEntry | undefined} entry 现状条目
  * @param {{ reused?: boolean, subtestsToRun?: string[] }} [options] 选项
@@ -118,6 +122,7 @@ export function buildEstimateTask(suite, entry, { reused = false, subtestsToRun 
 }
 
 /**
+ * 由计划槽位构造预估任务列表。
  * @param {import('./plan.mjs').PlanSlot[]} slots 计划槽位（拓扑序）
  * @param {import('./state.mjs').TestState} state 现状库
  * @returns {EstimateTask[]} 预估任务
@@ -144,6 +149,7 @@ export function buildEstimateTasksFromPlan(slots, state) {
 }
 
 /**
+ * 串行累加全部任务有效耗时。
  * @param {EstimateTask[]} tasks 任务列表
  * @returns {number} 串行累加耗时（毫秒）
  */
@@ -152,6 +158,7 @@ export function serialSumMs(tasks) {
 }
 
 /**
+ * 由墙钟与关键路径套件数估算单点 ETA。
  * @param {number} makespanMs 墙钟耗时
  * @param {number} gapCount 关键路径套件数
  * @returns {number} 单点 ETA（毫秒）
@@ -161,6 +168,7 @@ export function estimateEtaMs(makespanMs, gapCount) {
 }
 
 /**
+ * 虚拟并行调度模拟墙钟耗时（与 PlanRunCoordinator 同策略）。
  * @param {EstimateTask[]} tasks 任务列表
  * @param {object} options 选项
  * @param {number} options.memBudgetBytes 内存预算（字节）
@@ -393,6 +401,7 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 }
 
 /**
+ * 汇总预估：串行累加 vs 并行模拟墙钟与 ETA。
  * @param {EstimateTask[]} tasks 任务列表
  * @param {object} options 选项
  * @param {boolean} options.serial 是否串行模式

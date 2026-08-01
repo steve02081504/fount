@@ -15,10 +15,11 @@ import { getKnownOperationIds, ingestSharedOperation, loadSharedOperations } fro
 const FANOUT_LIMIT = 16
 
 /**
+ * 向信任图扇出广播共享柜操作。
  * @param {string} username 用户
  * @param {string} cabinetId 柜
  * @param {object} operation 操作
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 扇出完成。
  */
 export async function broadcastSharedOperation(username, cabinetId, operation) {
 	await ensureUserRoom({ replicaUsername: username }).catch(() => { })
@@ -37,9 +38,10 @@ export async function broadcastSharedOperation(username, cabinetId, operation) {
 }
 
 /**
+ * 处理入站共享柜操作（校验签名并写入操作日志）。
  * @param {string} username 用户
  * @param {{ cabinetId: string, operation: object, peerNodeHash?: string }} payload 载荷
- * @returns {Promise<'accepted' | 'duplicate' | 'rejected' | 'unknown'>} 结果
+ * @returns {Promise<'accepted' | 'duplicate' | 'rejected' | 'unknown'>} 摄入结果。
  */
 export async function handleIncomingSharedOperation(username, payload) {
 	const cabinetId = String(payload.cabinetId || '')
@@ -57,10 +59,11 @@ export async function handleIncomingSharedOperation(username, payload) {
 }
 
 /**
+ * 导出对端尚未持有的共享操作。
  * @param {string} username 用户
  * @param {string} cabinetId 柜
- * @param {string[]} [haveOperationIds] 对端已有
- * @returns {Promise<object[]>} 缺失操作
+ * @param {string[]} [haveOperationIds] 对端已有 operation_id 列表。
+ * @returns {Promise<object[]>} 缺失操作列表。
  */
 export async function exportMissingSharedOperations(username, cabinetId, haveOperationIds = []) {
 	const have = new Set(haveOperationIds)
@@ -70,7 +73,7 @@ export async function exportMissingSharedOperations(username, cabinetId, haveOpe
 
 /**
  * 注册 part_cabinet_operation_put 投递入站。
- * @returns {void}
+ * @returns {void} 无返回值。
  */
 export function registerCabinetOperationInbound() {
 	registerDeliveryInboundHandler('part_cabinet_operation_put', async (context, message) => {
@@ -86,11 +89,11 @@ export function registerCabinetOperationInbound() {
 }
 
 /**
- * P2PInvoke：put / pull。
+ * 处理 Cabinet P2PInvoke（`cabinet_operation_put` / `cabinet_operation_pull`）。
  * @param {string} username 用户
  * @param {object} data 载荷
- * @param {{ requesterNodeHash?: string | null }} [ingress] 入站
- * @returns {Promise<object>} 响应
+ * @param {{ requesterNodeHash?: string | null }} [ingress] 入站上下文。
+ * @returns {Promise<object>} 响应体。
  */
 export async function handleCabinetP2PInvoke(username, data, ingress = {}) {
 	const kind = String(data?.kind || '')
@@ -118,10 +121,10 @@ export async function handleCabinetP2PInvoke(username, data, ingress = {}) {
 }
 
 /**
- * best-effort：经 part_invoke 向邻居拉缺失操作。
+ * 尽力从邻居经 `part_invoke` 拉取缺失共享操作。
  * @param {string} username 用户
  * @param {string} cabinetId 柜
- * @returns {Promise<number>} 新接受数
+ * @returns {Promise<number>} 新接受的操作数。
  */
 export async function pullSharedOperationsFromNetwork(username, cabinetId) {
 	const knownOperationIds = await getKnownOperationIds(username, cabinetId)

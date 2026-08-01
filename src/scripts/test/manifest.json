@@ -240,8 +240,7 @@
 				"./src/scripts/test/selftest/format_duration.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/test/selftest/run_timing.test.mjs",
-				"src/scripts/test/selftest/format_duration.test.mjs",
+				"src/scripts/test/selftest/{run_timing.test.mjs,format_duration.test.mjs}",
 				"src/scripts/test/core/run_timing.mjs",
 				"src/scripts/test/core/format_duration.mjs",
 				"src/scripts/test/core/estimate.mjs",
@@ -288,7 +287,6 @@
 			"triggers": [
 				"src/scripts/test/selftest/trigger_audit.test.mjs",
 				"src/scripts/test/core/trigger_audit.mjs",
-				"src/scripts/test/core/glob.mjs",
 				"src/scripts/test/runner/report.mjs",
 				"src/scripts/test/runner/index.mjs"
 			]
@@ -310,8 +308,7 @@
 				"src/scripts/test/core/disposable_path.mjs",
 				"src/scripts/test/core/paths.mjs",
 				"src/scripts/test/core/repo_root.mjs",
-				"src/scripts/test/node/boot.mjs",
-				"src/scripts/test/node/launch.mjs"
+				"src/scripts/test/node/{boot.mjs,launch.mjs}"
 			]
 		},
 		{

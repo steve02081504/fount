@@ -1,23 +1,27 @@
 import { disposeAuditLogPanel } from '../auditLogPanel.mjs'
 
 /**
+ * 群设置页可变上下文（入口模块持有单例）。
  * @typedef {object} GroupSettingsContext
- * @property {string | null} groupId
- * @property {object | null} state
- * @property {object | null} stateJson
- * @property {import('../groupViewerPermissions.mjs').ViewerSettingsCapabilities | null} settingsCaps
- * @property {AbortController | null} permissionsController
- * @property {AbortController | null} membersController
- * @property {string} lastInviteClipboardText
- * @property {boolean} auditPanelReady
- * @property {boolean} channelPermsReady
- * @property {boolean} emojisPanelReady
- * @property {AbortController | null} channelPermsController
- * @property {string | null} selectedChannelPermsId
- * @property {(groupId: string) => Promise<void>} reload
+ * @property {string | null} groupId 当前群 ID
+ * @property {object | null} state 群 state 对象
+ * @property {object | null} stateJson 原始 state JSON
+ * @property {import('../groupViewerPermissions.mjs').ViewerSettingsCapabilities | null} settingsCaps 设置能力
+ * @property {AbortController | null} permissionsController 权限面板请求控制器
+ * @property {AbortController | null} membersController 成员面板请求控制器
+ * @property {string} lastInviteClipboardText 上次复制的邀请文案
+ * @property {boolean} auditPanelReady 审计日志面板是否已挂载
+ * @property {boolean} channelPermsReady 频道权限面板是否已挂载
+ * @property {boolean} emojisPanelReady 表情面板是否已挂载
+ * @property {AbortController | null} channelPermsController 频道权限请求控制器
+ * @property {string | null} selectedChannelPermsId 当前编辑的频道 ID
+ * @property {(groupId: string) => Promise<void>} reload 重载群 state 回调
  */
 
-/** @returns {GroupSettingsContext} 群设置页可变上下文（由入口模块持有单例）。 */
+/**
+ * 创建群设置页可变上下文单例结构。
+ * @returns {GroupSettingsContext} 群设置页可变上下文（由入口模块持有单例）。
+ */
 export function createGroupSettingsContext() {
 	return {
 		groupId: null,

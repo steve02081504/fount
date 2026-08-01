@@ -14,6 +14,7 @@ import {
  */
 
 /**
+ * 资源闸门等待中的 suite。
  * @typedef {object} GateWaiter
  * @property {SuiteDef} suite 等待中的 suite
  * @property {(release: () => void) => void} resolve acquire 回调
@@ -184,6 +185,7 @@ export class ResourceRunGate {
 	}
 
 	/**
+	 * 释放 light 槽位占用的 mem/cpu 预算并尝试唤醒 waiter。
 	 * @param {SuiteResources} need 已占用的资源
 	 */
 	#releaseSlot(need) {

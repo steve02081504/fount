@@ -9,7 +9,6 @@
 	"rust-analyzer.check.workspace": false, // holy CPU destroyer itfucking map every files even it's mjs/ts/js/json/html or in node_modules >:(
 	"eslint.validate": [
 		"javascript",
-		"javascriptreact",
 		"html",
 	]
 }

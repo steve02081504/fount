@@ -4,8 +4,9 @@
  */
 
 /**
+ * 选择器解析结果。
  * @typedef {object} ResolvedSelector
- * @property {string} manifestId
+ * @property {string} manifestId manifest id
  * @property {string[]} suiteSelectors suite 名（无第三级时）
  * @property {Record<string, string[]>} subtestSelectors suite 名 → 子测试名列表（空数组表示该 suite 全部子测试未限定）
  */
@@ -54,6 +55,7 @@ function parseSuiteSubtestParts(parts) {
 }
 
 /**
+ * 解析 CLI / dependsOn 选择器 token。
  * @param {string} token 原始 token
  * @param {string[]} knownManifestIds 已知 manifest id（越长越优先匹配前缀）
  * @returns {ResolvedSelector | null} 解析结果；无法识别为 null

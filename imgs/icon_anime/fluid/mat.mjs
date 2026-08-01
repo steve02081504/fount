@@ -1,4 +1,4 @@
-/** Material enum. */
+/** 材质枚举。 */
 export const MAT = {
 	AIR: 0,
 	SOLID: 1,
@@ -7,11 +7,11 @@ export const MAT = {
 	HORIZON: 4,
 	POOL: 5,
 	BODY: 6,
-	/** Impermeable barrier — no moisture / seepage (tests & sealed vessels). */
+	/** 不透水屏障 — 无水分 / 渗漏（测试与密封容器）。 */
 	SEAL: 7,
 }
 
-/** Material classification bits — one LUT lookup instead of multi-branch compares. */
+/** 材质分类位 — 一次 LUT 查表，替代多分支比较。 */
 const MF_SOIL = 1
 const MF_BLOCK = 2
 const MF_LIQ_BARRIER = 4
@@ -26,81 +26,81 @@ const MAT_FLAGS = new Uint8Array([
 	MF_BLOCK | MF_LIQ_BARRIER, // SEAL
 ])
 
-/** Atmospheric reference pressure (sky / region mean for open air). */
+/** 大气参考压强（天空 / 开放区域均值）。 */
 export const P_ATM = 1
 
-/** Liquid density × gravity — hydrostatic head and hydraulic φ. */
+/** 液体密度 × 重力 — 静水压头与液压势 φ。 */
 export const RHO_G = 1
 
 /**
- * Gas density for dynamic / Bernoulli pressure ½ρu².
- * Same order as ATM_HYDRO (ρ_air·g per cell with g≈1) so dynamic head stays ≪ liquid columns.
+ * 气体密度，用于动态 / 伯努利压强 ½ρu²。
+ * 与 ATM_HYDRO 同量级（g≈1 时每格 ρ_air·g），使动压头远小于液柱。
  */
 export const RHO_AIR = 0.02
 
-/** Open-air / sealed hydrostatic rise per row downward (y↓ → P↑); ≈ RHO_AIR · g. */
+/** 开放空气 / 密封腔体每向下一行的静水压升（y↓ → P↑）；≈ RHO_AIR · g。 */
 export const ATM_HYDRO = 0.018
 
 /**
- * Gas velocity drive from neighbor static-pressure ΔP (cells / tick per ΔP).
- * Scaled for small RHO_AIR; kept moderate so wide ducts do not grow spurious uy.
+ * 邻格静压差 ΔP 驱动气体速度（格/ tick 每 ΔP）。
+ * 按小 RHO_AIR 缩放；适度限制，避免宽通道产生虚假 uy。
  */
 export const GAS_DP_DRIVE = 6
 
-/** Max moisture a soil cell can hold. */
+/** 土壤格可蓄水分上限。 */
 export const SOIL_CAP = 1
-/** Peak free-liquid absorb rate into dry soil, per tick. */
+/** 干土吸收自由液体的峰值速率（每 tick）。 */
 export const SOIL_ABSORB_RATE = 0.015
-/** Absorb rate falls as `(1 - wetness) ** expo`. */
+/** 吸收速率随 `(1 - wetness) ** expo` 衰减。 */
 export const SOIL_ABSORB_EXPO = 1.8
-/** Max fraction of a rain/impact hit absorbed into dry soil. */
+/** 雨/冲击命中时干土可吸收的最大比例。 */
 export const SOIL_HIT_ABSORB_FRAC = 0.3
-/** Fraction of moisture shared laterally. */
+/** 侧向共享水分的比例。 */
 export const SOIL_SIDE_FRAC = 0.04
-/** Fraction of moisture transferred into soil below. */
+/** 向下渗入下层土壤的水分比例。 */
 export const SOIL_DOWN_FRAC = 0.06
-/** Fraction of moisture fed into underside condensation when below is air. */
+/** 下方为空气时，底面凝结向土壤输送水分的比例。 */
 export const SOIL_CONDENSE_FRAC = 0.06
-/** Condensation amount that draws as a hanging droplet. */
+/** 凝结量中绘制成悬挂水滴的部分。 */
 export const COND_DRAW = 0.35
-/** Condensation amount that drips into free liquid below. */
+/** 凝结量中滴入下方自由液体的部分。 */
 export const COND_DRIP = 0.85
-/** Lateral Matthew transfer rate between neighboring condensation cells. */
+/** 相邻凝结格之间的 Matthew 侧向传递速率。 */
 export const COND_MATTHEW_RATE = 0.22
-/** Noise amplitude (fraction of pair mass) to break condensation ties. */
+/** 打破凝结平局的噪声幅度（配对质量的比例）。 */
 export const COND_MATTHEW_NOISE = 0.4
 
-/** Free-liquid draw / air-region occupancy threshold. */
+/** 自由液体绘制 / 空气区域占用的阈值。 */
 export const LIQ_DRAW = 0.35
 
-/** Max free-liquid amount per cell. */
+/** 每格自由液体质量上限。 */
 export const LIQ_FULL = 1
 
 /**
- * Whether the material stores soil moisture (HORIZON / SOLID).
- * @param {number} mat material id
- * @returns {boolean} soil
+ * 材质是否储存土壤水分（HORIZON / SOLID）。
+ * @param {number} mat 材质 id
+ * @returns {boolean} 是否为土壤
  */
 export const isSoilMat = mat => !!(MAT_FLAGS[mat] & MF_SOIL)
 
 /**
- * Whether the material blocks gas flood-fill / region labeling.
- * @param {number} mat material id
- * @returns {boolean} gas/flood block
+ * 材质是否阻挡气体泛洪填充 / 区域标记。
+ * @param {number} mat 材质 id
+ * @returns {boolean} 是否阻挡气体/泛洪
  */
 export const isBlockMat = mat => !!(MAT_FLAGS[mat] & MF_BLOCK)
 
 /**
- * Whether free liquid cannot occupy the cell (solids + BODY).
- * @param {number} mat material id
- * @returns {boolean} liquid barrier
+ * 自由液体是否无法占据该格（固体 + BODY）。
+ * @param {number} mat 材质 id
+ * @returns {boolean} 是否为液体屏障
  */
 export const isLiquidBarrier = mat => !!(MAT_FLAGS[mat] & MF_LIQ_BARRIER)
 
 /**
- * Dry-soil absorb factor in [0, 1] — full when empty, →0 as moisture fills.
- * @param {number} moisture current moisture
- * @returns {number} factor
+ * [0, 1] 干土吸收因子 — 空土为 1，随水分趋满 → 0。
+ * @param {number} moisture 当前水分
+ * @returns {number} 因子
  */
 export const soilAbsorbFactor = moisture =>
 	(1 - Math.min(1, moisture / SOIL_CAP)) ** SOIL_ABSORB_EXPO

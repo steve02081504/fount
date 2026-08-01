@@ -14,7 +14,6 @@
 			],
 			"triggers": [
 				".github/pages/**",
-				".github/pages/test/frontend/**",
 				"src/public/pages/scripts/**",
 				"src/public/locales/**",
 				"imgs/**",

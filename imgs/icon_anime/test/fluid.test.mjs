@@ -1,5 +1,5 @@
 /**
- * Pure tests: air-region pressure, gas conservation, hydraulic U-tube, soil water.
+ * 纯测试：气相区域压强、气体守恒、液压 U 形管、土壤水分。
  */
 /* global Deno */
 import { assert, assertAlmostEquals, assertEquals, assertGreater, assertLess } from 'jsr:@std/assert'
@@ -17,8 +17,8 @@ import {
 } from '../fluid/index.mjs'
 
 /**
- * Build a sealed box cavity with optional liquid. Walls use impermeable SEAL.
- * @param {{ fillBottom?: number }} [opts] fill options
+ * 构建带可选液体的密封箱腔体。墙体使用不透水 SEAL。
+ * @param {{ fillBottom?: number }} [opts] 填充选项
  * @returns {ReturnType<typeof createWorld>} world
  */
 const sealedBox = (opts = {}) => {
@@ -141,9 +141,9 @@ Deno.test('fluid: U-tube liquid levels approach equalization under open air', ()
 	}
 
 	/**
-	 * Top liquid row in a column, or -1.
-	 * @param {number} x column
-	 * @returns {number} row
+	 * 列中最高液体行，无则 -1。
+	 * @param {number} x 列
+	 * @returns {number} 行
 	 */
 	const topY = (x) => {
 		for (let y = 0; y < world.worldH; y++)
@@ -200,8 +200,8 @@ Deno.test('fluid: liquid column pressure grows with depth', () => {
 
 Deno.test('fluid: deeper orifice vents more mass than shallow', () => {
 	/**
-	 * @param {number} fillTop top liquid row
-	 * @returns {number} mass lost through side hole after steps
+	 * @param {number} fillTop 顶部液体行
+	 * @returns {number} 多步后侧孔流失的质量
 	 */
 	const drain = (fillTop) => {
 		const world = createWorld({ width: 18, height: 16, margin: 1, bottomExtra: 1 })
@@ -644,9 +644,7 @@ Deno.test('fluid: rain particles are dragged by local gas velocity', () => {
 	clearMaterials(world)
 	world.gasUx.fill(0.6)
 	spawnParticle(world, 8, 2, 0, 0.4, 40, 0.5)
-	/**
-	 *
-	 */
+	/** 空操作冲击回调。 */
 	const hit = () => { /* no-op */ }
 	for (let i = 0; i < 8; i++)
 		stepParticles(world, hit)
@@ -670,9 +668,7 @@ Deno.test('fluid: tornado gas keeps rain orbiting aloft', async () => {
 	paintVortexDrive(cx, cy, 3.2, VORTEX_RADIUS, world, world.gasUx, world.gasUy)
 
 	spawnParticle(world, cx + 4.2, cy, 0, 0.15, 90, 0.45)
-	/**
-	 *
-	 */
+	/** 空操作冲击回调（禁止落地）。 */
 	const hit = () => { /* no-op — must not land */ }
 	let angSpan = 0
 	let prev = Math.atan2(world.particles.y[0] - cy, world.particles.x[0] - cx)
@@ -736,9 +732,7 @@ Deno.test('fluid: vortex drive through stepGas suspends rain', async () => {
 	assertLess(world.gasUy[idx(world, cx, cy)], -1.2)
 
 	spawnParticle(world, cx + 3.5, cy + 1, 0, 0.3, 80, 0.4)
-	/**
-	 *
-	 */
+	/** 空操作冲击回调。 */
 	const hit = () => { /* no-op */ }
 	let maxY = world.particles.y[0]
 	for (let i = 0; i < 40; i++) {
@@ -764,9 +758,7 @@ Deno.test('fluid: vortex rain gathers at the cursor centre', async () => {
 	const driveUy = scratch(world, 'vUy', n, Float32Array)
 	const cx = world.ox + 16.5
 	const cy = 10.5
-	/**
-	 *
-	 */
+	/** 空操作冲击回调。 */
 	const hit = () => { /* no-op */ }
 
 	for (let i = 0; i < 36; i++) {
@@ -805,9 +797,7 @@ Deno.test('fluid: particle life expiry deposits mass into the grid', () => {
 	spawnParticle(world, 8, 5, 0, 0, 1, 0.55)
 	const before = totalWorldWater(world)
 	assertAlmostEquals(before, 0.55, 1e-6)
-	/**
-	 *
-	 */
+	/** 空操作冲击回调。 */
 	const hit = () => { /* no-op */ }
 	stepParticles(world, hit)
 	assertEquals(world.particles.count, 0)

@@ -6,14 +6,16 @@ import nodeDataChannel from 'npm:node-datachannel'
 const { PeerConnection, Video, Audio, RtcpReceivingSession } = nodeDataChannel
 
 /**
+ * WHIP offer 媒体信息摘要。
  * @typedef {object} WhipMediaInfo
  * @property {number | null} h264Pt H264 payload type
  * @property {number | null} opusPt Opus payload type
- * @property {string | null} videoMid
- * @property {string | null} audioMid
+ * @property {string | null} videoMid 视频 m-line mid
+ * @property {string | null} audioMid 音频 m-line mid
  */
 
 /**
+ * 解析 WHIP offer SDP，提取 H264/Opus payload type 与 mid。
  * @param {string} sdp SDP 文本
  * @returns {WhipMediaInfo} H264/Opus payload type 与 mid
  */
@@ -47,6 +49,7 @@ export function parseOfferMedia(sdp) {
 }
 
 /**
+ * 接受 WHIP offer，创建仅接收方向的 PeerConnection 并生成 answer SDP。
  * @param {string} offerSdp WHIP offer SDP（如 OBS 推流）
  * @param {object} handlers 轨道回调
  * @param {(track: import('npm:node-datachannel').Track, kind: 'video' | 'audio', info: WhipMediaInfo, rtp: Buffer) => void} handlers.onTrack 每收到 RTP 包时调用
@@ -103,7 +106,7 @@ export async function acceptWhipOffer(offerSdp, handlers) {
 		answerSdp,
 		pc,
 		info,
-		/** @returns {void} */
+		/** 关闭 WHIP PeerConnection 与轨道。 */
 		close: () => {
 			for (const t of tracks) try { t.close() } catch { /* ignore */ }
 			try { pc.close() } catch { /* ignore */ }

@@ -69,6 +69,10 @@ const codeToMessage = {
  * @returns {void}
  */
 const errorHandler = (err, req, res, next) => {
+	if (err?.code === 'ECONNABORTED' && err?.type === 'request.aborted') {
+		if (!res.writableEnded) res.status(400).end()
+		return
+	}
 	if (!err.skip_report) {
 		Sentry.captureException(err)
 		console.error(err, {

@@ -21,7 +21,8 @@ export { pollUntil }
 /** @typedef {import('../http.mjs').LiveNodeHandle} LiveNodeHandle */
 
 /**
- * @param {number} index 下标
+ * 从环境变量构造联邦 live 节点句柄。
+ * @param {number} index 下标（0-based）
  * @returns {LiveNodeHandle} 联邦 live 节点句柄
  */
 function newFedNodeHandle(index) {
@@ -45,8 +46,9 @@ function newFedNodeHandle(index) {
 }
 
 /**
+ * 清空节点 P2P denylist（测试前 best-effort 重置）。
  * @param {LiveNodeHandle} node 联邦节点
- * @returns {void} 无
+ * @returns {void}
  */
 function resetFedNodeBlocklist(node) {
 	try {
@@ -62,6 +64,7 @@ function resetFedNodeBlocklist(node) {
 }
 
 /**
+ * 按 FOUNT_TEST_NODE_COUNT 加载全部联邦节点。
  * @returns {LiveNodeHandle[]} 已加载节点列表
  */
 function loadFedNodes() {
@@ -84,6 +87,7 @@ export const FedC = FedNodes[2] ?? null
 export const FedPngBytes = TEST_PNG_BYTES
 
 /**
+ * 调用节点 P2P HTTP API。
  * @param {LiveNodeHandle} node 节点
  * @param {string} method HTTP 方法
  * @param {string} p2pPath P2P API 路径
@@ -95,6 +99,7 @@ export async function P2pApi(node, method, p2pPath, body) {
 }
 
 /**
+ * 调用节点 shell HTTP API。
  * @param {LiveNodeHandle} node 节点
  * @param {string} shell shell 名
  * @param {string} method HTTP 方法
@@ -107,7 +112,7 @@ export async function ShellApi(node, shell, method, shellPath, body) {
 }
 
 /**
- * Chat shell API（`ShellApi(..., 'chat', ...)`）。
+ * 聊天 shell API（`ShellApi(..., 'chat', ...)`）。
  * @param {LiveNodeHandle} node 节点
  * @param {string} method HTTP 方法
  * @param {string} chatPath chat API 路径
@@ -119,6 +124,7 @@ export function Api(node, method, chatPath, body) {
 }
 
 /**
+ * 调用节点根路径 HTTP API（较长超时）。
  * @param {LiveNodeHandle} node 节点
  * @param {string} method HTTP 方法
  * @param {string} rootPath 根路径
@@ -130,6 +136,7 @@ export async function RootApi(node, method, rootPath, body) {
 }
 
 /**
+ * shell multipart 上传。
  * @param {LiveNodeHandle} node 节点
  * @param {string} shell shell 名
  * @param {string} method HTTP 方法
@@ -145,7 +152,7 @@ export const ShellApiMultipart = (node, shell, method, shellPath, fields, fileFi
 	invokeMultipart(node, shell, method, shellPath, fields, fileField, fileName, fileBytes, contentType)
 
 /**
- * Chat multipart（`ShellApiMultipart(..., 'chat', ...)`）。
+ * 聊天 shell 多部分上传（`ShellApiMultipart(..., 'chat', ...)`）。
  * @param {LiveNodeHandle} node 节点
  * @param {string} method HTTP 方法
  * @param {string} chatPath chat API 路径
@@ -162,6 +169,7 @@ export function ApiMultipart(node, method, chatPath, fields, fileField, fileName
 
 
 /**
+ * 触发联邦 catchup 与 DAG merge-tips。
  * @param {LiveNodeHandle} node 节点
  * @param {string} groupId 群 ID
  * @param {number} [waitMs] 等待毫秒
@@ -173,6 +181,7 @@ export async function InvokeFedCatchupSync(node, groupId, waitMs = ms('6s')) {
 }
 
 /**
+ * 轮询直到群成员数达到门槛。
  * @param {LiveNodeHandle} node 节点
  * @param {string} groupId 群 ID
  * @param {number} [minMembers] 最少成员数
@@ -190,6 +199,7 @@ export async function WaitFedMembers(node, groupId, minMembers = 2, timeoutSec =
 }
 
 /**
+ * 轮询直到自定义 probe 在超时前成功。
  * @param {LiveNodeHandle} node 节点
  * @param {string} groupId 群 ID
  * @param {() => Promise<boolean>} probe 探测回调
@@ -210,6 +220,7 @@ export async function WaitFedConverged(node, groupId, probe, timeoutSec = 120, i
 
 
 /**
+ * 拉取频道消息 API JSON。
  * @param {LiveNodeHandle} node 节点
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID

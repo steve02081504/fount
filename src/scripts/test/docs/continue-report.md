@@ -2,7 +2,7 @@
 
 Per-slot `continueReason` in `data/test/report.json` and `data/test/triggered-reasons.md` (linked from `report.md`) explain why each suite was included. Implementation: `runner/continue_reason.mjs` from the plan built by `core/plan.mjs`.
 
-**CI** caches `data/test` as `fount-test-data-<branch>`; restore prefers exact key, else nearest tip-by-`git diff --name-only` among listed caches (tie → default branch → newer `createdAt`). Strips logs/tmp/playwright/heapsnapshots/report before save. Branch delete → `cleanup_test_data_cache` drops that key (skips default branch).
+**CI** caches `data/test` as `fount-test-data-<branch>`; restore prefers exact key, else nearest tip-by-`git diff --name-only` among listed caches (tie → default branch → newer `createdAt`). Strips logs/tmp/playwright/heapsnapshots/report before save. Merged PR that was fully ahead of base (same tree as head) → `promote_test_data_cache` copies head→base before branch-delete cleanup and before default-branch Run Tests restore.
 
 ## Verdict + plan
 

@@ -1,14 +1,23 @@
 /**
- * Paths excluded from trigger matching (docs, test manifest metadata, etc.).
- * Manifest / suite `triggerFilter` overrides defaults — see docs/trigger-filter.md.
+ * trigger 匹配排除路径（文档、test manifest 元数据等）。
+ * manifest / suite 的 `triggerFilter` 可覆盖默认表 — 见 docs/trigger-filter.md。
  */
-import { matchGlob } from './glob.mjs'
+import picomatch from 'npm:picomatch'
 
 /**
+ * 路径是否匹配 glob（`*` / `**` / `?` / `{a,b}`；含点路径段）。
+ * @param {string} pattern glob
+ * @param {string} path 待匹配路径（正斜杠）
+ * @returns {boolean} 是否匹配
+ */
+export const matchGlob = (pattern, path) => picomatch.isMatch(path, pattern, { dot: true })
+
+/**
+ * manifest / suite 级 trigger 过滤选项。
  * @typedef {object} TriggerFilter
- * @property {boolean} [ignoreDefaults] apply default ignore table; default true
- * @property {string[]} [ignore] extra ignore globs
- * @property {string[]} [unignore] force inclusion (wins over ignore)
+ * @property {boolean} [ignoreDefaults] 是否应用默认忽略表；默认 true
+ * @property {string[]} [ignore] 额外忽略 glob
+ * @property {string[]} [unignore] 强制纳入（优先于 ignore）
  */
 
 /** @type {readonly string[]} */
@@ -17,15 +26,14 @@ const DEFAULT_IGNORE_PATTERNS = [
 	'**/test/manifest.json',
 	'**/docs/**',
 	'**/*.md',
-	'*.md',
 	'**/llms.txt',
 ]
 
 /**
- * Merge manifest- and suite-level triggerFilter.
- * @param {TriggerFilter | undefined} manifestFilter manifest-level filter
- * @param {TriggerFilter | undefined} suiteFilter suite-level filter (overrides manifest)
- * @returns {TriggerFilter | undefined} merged filter, or undefined when defaults apply unchanged
+ * 合并 manifest 级与 suite 级 triggerFilter。
+ * @param {TriggerFilter | undefined} manifestFilter manifest 级过滤
+ * @param {TriggerFilter | undefined} suiteFilter suite 级过滤（覆盖 manifest）
+ * @returns {TriggerFilter | undefined} 合并结果；默认表未变时为 undefined
  */
 export function mergeTriggerFilter(manifestFilter, suiteFilter) {
 	if (!manifestFilter && !suiteFilter) return undefined
@@ -44,9 +52,10 @@ export function mergeTriggerFilter(manifestFilter, suiteFilter) {
 }
 
 /**
- * @param {string} path repo-relative path
- * @param {TriggerFilter | undefined} [filter] merged trigger filter
- * @returns {boolean} true when the path counts as a trigger-relevant change
+ * 判定仓库相对路径是否计入 trigger 相关变更。
+ * @param {string} path 仓库相对路径
+ * @param {TriggerFilter | undefined} [filter] 合并后的 trigger 过滤
+ * @returns {boolean} 路径是否 trigger 相关
  */
 function isTriggerRelevantPath(path, filter) {
 	if (filter?.unignore?.some(pat => matchGlob(pat, path)))
@@ -61,9 +70,10 @@ function isTriggerRelevantPath(path, filter) {
 }
 
 /**
- * @param {string[]} files changed paths
- * @param {TriggerFilter | undefined} [filter] merged trigger filter
- * @returns {string[]} paths that survive filtering (trigger-relevant)
+ * 过滤变更路径，仅保留 trigger 相关项。
+ * @param {string[]} files 变更路径
+ * @param {TriggerFilter | undefined} [filter] 合并后的 trigger 过滤
+ * @returns {string[]} 过滤后仍 trigger 相关的路径
  */
 export function filterTriggerRelevantFiles(files, filter) {
 	return files.filter(file => isTriggerRelevantPath(file, filter))

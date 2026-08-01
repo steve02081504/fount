@@ -13,7 +13,7 @@ import { wireAction } from '../wireAction.mjs'
 
 
 /**
- * char RPC、part_invoke、TrustGraph chunk handler。
+ * 角色 RPC、part_invoke、TrustGraph 分块处理器。
  * @param {import('./roomContext.mjs').FederationRpcContext} roomContext 房间上下文
  * @returns {void}
  */
@@ -30,6 +30,7 @@ export function registerRpcHandlers(roomContext) {
 	} = roomContext
 
 	/**
+	 * 向 group part wire 发送 action。
 	 * @param {string} name action
 	 * @param {unknown} payload 载荷
 	 * @param {string | null} peerId 目标 peer
@@ -39,6 +40,7 @@ export function registerRpcHandlers(roomContext) {
 		getActionSender(name)(payload, peerId)
 	}
 	/**
+	 * 注册 group part wire action 入站处理器。
 	 * @param {string} name action
 	 * @param {(payload: unknown, peerId: string) => void} handler 处理器
 	 * @returns {void}

@@ -1,25 +1,21 @@
 /**
- * Packed fount fountain silhouette + body growth order.
- * Packing matches imgs/icon.js; colors match icon_ansi_ascii (@=30, ::=96).
+ * 打包的 fount 喷泉轮廓与 body 生长顺序。
+ * 打包方式与 imgs/icon.js 一致；颜色与 icon_ansi_ascii 一致（@=30, ::=96）。
  *
- * Note: imgs/icon.js stays a standalone fetch+eval console snippet and cannot
- * share an ESM decoder without breaking CDN/console usage.
+ * 注：imgs/icon.js 保持为独立 fetch+eval 控制台片段，
+ * 无法在不破坏 CDN/控制台用法的前提下共享 ESM 解码器。
  */
 
-/** Icon-local layout (pre-center). Extra base rows 20/22 are animation-only. */
+/** 图标局部布局（居中前）。额外底座行 20/22 仅用于动画。 */
 export const ICON_BASE_ROWS = [16, 18, 20, 22]
-/**
- *
- */
+/** 底座左端 X（图标局部坐标）。 */
 export const ICON_BASE_X0 = 5
-/**
- *
- */
+/** 底座右端 X（不含，图标局部坐标）。 */
 export const ICON_BASE_X1 = 37
-/** Body silhouette height (= first base row index). */
+/** 轮廓高度（= 首个底座行索引）。 */
 export const ICON_BODY_H = ICON_BASE_ROWS[0]
 
-/** Same packing as icon.js → 20 content rows (body 0–15, base slabs 16–19). */
+/** 与 icon.js 相同打包 → 20 行内容（body 0–15，底座板 16–19）。 */
 export const ICON = (() => {
 	let packed, leftHalf, glyph, repeat, ascii = ''
 	for (packed of [9 ** 8 - 1, 109, 513835, 2077, 133, 25])
@@ -28,34 +24,26 @@ export const ICON = (() => {
 	return ascii.trimEnd().split('\n')
 })()
 
-/**
- *
- */
+/** 打包位图行数。 */
 export const ICON_PACK_H = ICON.length
-/**
- *
- */
+/** 图标宽度（字符列）。 */
 export const ICON_W = Math.max(...ICON.map(line => line.length))
-/**
- *
- */
+/** 图标总高度（含动画用底座行）。 */
 export const ICON_H = ICON_BASE_ROWS[ICON_BASE_ROWS.length - 1] + 1
 
-/** Three :: pillars: [x, yTop, yBot] in icon-local space */
+/** 三根 :: 水柱：[x, yTop, yBot]，图标局部坐标。 */
 export const PILLARS = [
 	[16, 2, 15],
 	[20, 0, 15],
 	[24, 2, 15],
 ]
 
-/**
- *
- */
+/** 三根水柱的最大高度。 */
 export const maxPillarH = Math.max(...PILLARS.map(([, yTop, yBot]) => yBot - yTop + 1))
 
 /**
- * Body `@` cells sorted by manhattan distance to nearest pillar tip.
- * Packed as parallel typed arrays: x[i], y[i], d[i].
+ * body `@` 格点，按到最近柱尖的曼哈顿距离排序。
+ * 打包为并行类型化数组：x[i], y[i], d[i]。
  */
 export const BODY = (() => {
 	const tips = PILLARS.flatMap(([x, yTop]) => [[x, yTop], [x + 1, yTop]])
@@ -91,12 +79,10 @@ export const BODY = (() => {
 	return { x, y, d, count: n }
 })()
 
-/**
- *
- */
+/** 轮廓 `@` 距最近柱尖的最大曼哈顿距离。 */
 export const maxBodyD = BODY.d[BODY.count - 1]
 
-/** Icon-local body distance grid: `d = BODY_DIST[y * ICON_W + x]`, unset = 255. */
+/** 图标局部 body 距离格：`d = BODY_DIST[y * ICON_W + x]`，未设置 = 255。 */
 export const BODY_DIST = (() => {
 	const dist = new Uint8Array(ICON_W * ICON_BODY_H).fill(255)
 	for (let i = 0; i < BODY.count; i++)

@@ -1,9 +1,9 @@
 /**
- * One-tick fluid orchestration: air labels → gas → wind lift → particles → liquid.
+ * 单 tick 流体编排：空气标记 → 气体 → 风抬升 → 粒子 → 液体。
  *
- * Scene / tests call this (or the individual steps). `labelAirRegions` runs only
- * when `world.airDirty` (mat / LIQ_DRAW occupancy changed). `stepLiquid` re-labels
- * mid-tick when particles / lift dirtied free-liquid topology.
+ * 场景 / 测试调用此函数（或各子步）。
+ * `labelAirRegions` 仅在 `world.airDirty`（材质 / LIQ_DRAW 占用变化）时运行。
+ * `stepLiquid` 在粒子 / 抬升再次弄脏自由液体拓扑时于 tick 中途重新标记。
  */
 
 import { labelAirRegions, stepGas } from './gas.mjs'
@@ -12,12 +12,12 @@ import { liftLiquidByWind, stepParticles } from './particles.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
 
-/** No-op impact handler (module-level — avoid per-tick closure alloc). */
+/** 空操作冲击处理器（模块级 — 避免每 tick 闭包分配）。 */
 const NOOP_HIT = () => { /* airborne until land / expire-deposit */ }
 
 /**
- * Advance the full fluid stack one tick.
- * @param {FluidWorld} world fluid world
+ * 推进完整流体栈一个 tick。
+ * @param {FluidWorld} world 流体世界
  * @param {{
  *   time?: number,
  *   seed?: number,
@@ -27,7 +27,7 @@ const NOOP_HIT = () => { /* airborne until land / expire-deposit */ }
  *   onHit?: (world: FluidWorld, x: number, y: number, mat: number, particle: import('./particles.mjs').ParticleView, wet: boolean, state: unknown) => void,
  *   state?: unknown,
  *   beforeParticles?: () => void,
- * }} [opts] gas drive + particle impact + optional rain inject
+ * }} [opts] 气体驱动 + 粒子冲击 + 可选降雨注入
  * @returns {void}
  */
 export const stepFluid = (world, opts = {}) => {
@@ -35,6 +35,6 @@ export const stepFluid = (world, opts = {}) => {
 	stepGas(world, opts)
 	liftLiquidByWind(world)
 	opts.beforeParticles?.()
-	stepParticles(world, opts.onHit || NOOP_HIT, opts.state)
+	stepParticles(world, opts.onHit ?? NOOP_HIT, opts.state)
 	stepLiquid(world)
 }

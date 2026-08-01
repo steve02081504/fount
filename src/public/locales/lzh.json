@@ -1273,10 +1273,8 @@
 				"autoSignHint": "提交後由本機在該群籤名種子自聯署，無需輸入私鑰。多掌事群需過半掌事各自在本機提交同一選票（同 ballotId 與候選人）。",
 				"candidateLabel": "繼任者公鑰符",
 				"description": "將群最高管理權限（MANAGE_ADMINS）轉移給所定之客。僅掌事可操作。",
-				"failed": "繼任投票提交未遂",
 				"needHash": "請入繼位者之公鑰符 (PubKey Hash)",
-				"selfButton": "提名自己",
-				"submitted": "繼任選票已記錄君之聯署。"
+				"selfButton": "提名自己"
 			},
 			"channelType": {
 				"label": "分苑類型",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "已獲取媒體流（已止，未廣播）",
 				"test": "測試媒體設備"
-			},
-			"thread": {
-				"main": "子苑",
-				"back": "返",
-				"breadcrumbMiddleSummary": "中間 ${count} 層",
-				"breadcrumbMiddleTitle": "展開中間層，擇要跳轉之層級",
-				"breadcrumbRootTitle": "跳轉到路徑起點（第一層）"
 			},
 			"unpin": {
 				"action": {
@@ -2659,7 +2650,8 @@
 					"pubKeyLabel": "公符節 hex（64）",
 					"rotateConfirm": "此前簽發之一切加友鏈接將即刻失效，且不可復。定欲續？",
 					"rotateLabel": "使舊鏈接失效",
-					"secretLabel": "樞機種子 hex（64）"
+					"secretLabel": "樞機種子 hex（64）",
+					"urlLabel": "已籤發之加友鏈接"
 				},
 				"groupRecoveryTip": "僅在邀請泄露或新設備難以同步歷史時以。",
 				"groupRecoveryTitle": "群聯修繕",
@@ -3824,6 +3816,8 @@
 			"configSaved": "樞機已存。",
 			"botExists": "靈偶 “${botname}” 已存，請更名。",
 			"unsavedChanges": "尚有未存之變，定欲棄之？",
+			"confirmDeleteBot": "定欲刪靈偶「${botname}」？此舉不可逆。",
+			"invalidJsonConfig": "JSON 枢機無效：${error}",
 			"httpError": "HTTP 錯誤",
 			"beforeUnload": "尚有未存之變，定欲離？"
 		},

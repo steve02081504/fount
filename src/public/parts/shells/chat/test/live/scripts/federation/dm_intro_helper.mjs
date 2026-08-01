@@ -1,8 +1,8 @@
 /**
- * Emit signed DM intro link fields for fed_dm.mjs (no HTTP signing endpoint).
- * Usage: deno run dm_intro_helper.mjs --data-path <root> --user <username>
+ * 为 fed_dm.mjs 生成已签名的 DM intro 链接字段（无 HTTP 签名端点）。
+ * 用法：`deno run dm_intro_helper.mjs --data-path <root> --user <username>`
  *
- * Lightweight: reads federation identity + dmIntro directly from disk (no server init).
+ * 轻量实现：直接从磁盘读取联邦身份与 dmIntro（不启动 server）。
  */
 import { Buffer } from 'node:buffer'
 import { randomBytes } from 'node:crypto'

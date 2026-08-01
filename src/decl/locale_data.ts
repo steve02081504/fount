@@ -1241,10 +1241,8 @@ export type LocaleData = {
 				autoSignHint: string
 				candidateLabel: string
 				description: string
-				failed: string
 				needHash: string
 				selfButton: string
-				submitted: string
 			}
 			channelType: {
 				label: string
@@ -1581,13 +1579,6 @@ export type LocaleData = {
 				}
 				ok: string
 				test: string
-			}
-			thread: {
-				main: string
-				back: string
-				breadcrumbMiddleSummary: string
-				breadcrumbMiddleTitle: string
-				breadcrumbRootTitle: string
 			}
 			unpin: {
 				action: {
@@ -2632,6 +2623,7 @@ export type LocaleData = {
 					rotateConfirm: string
 					rotateLabel: string
 					secretLabel: string
+					urlLabel: string
 				}
 				groupRecoveryTip: string
 				groupRecoveryTitle: string
@@ -3796,6 +3788,8 @@ export type LocaleData = {
 			configSaved: string
 			botExists: string
 			unsavedChanges: string
+			confirmDeleteBot: string
+			invalidJsonConfig: string
 			httpError: string
 			beforeUnload: string
 		}
@@ -5843,7 +5837,6 @@ export type LocaleKeyParams = {
 	'chat.group.settings.page.unbanConfirm': { name: string | number }
 	'chat.group.settings.page.unbanFailed': { error: string | number }
 	'chat.group.sticker.prefixLine': { label: string | number }
-	'chat.group.thread.breadcrumbMiddleSummary': { count: string | number }
 	'chat.group.unpin.messageLine': { targetId: string | number }
 	'chat.group.vote.blockHeading': { prefix: string | number; question: string | number }
 	'chat.group.vote.blockHeadingTagged': { question: string | number }
@@ -6211,6 +6204,8 @@ export type LocaleKeyParams = {
 	'subfounts.errors.regenerateConnectionCodeFailed': { message: string | number }
 	'subfounts.errors.saveSettingsFailed': { message: string | number }
 	'telegram_bots.alerts.botExists': { botname: string | number }
+	'telegram_bots.alerts.confirmDeleteBot': { botname: string | number }
+	'telegram_bots.alerts.invalidJsonConfig': { error: string | number }
 	'themeManage.editor.deleteConfirm': { id: string | number }
 	'themeManage.editor.failedToClone': { message: string | number }
 	'themeManage.editor.failedToDelete': { message: string | number }

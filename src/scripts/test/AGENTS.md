@@ -34,9 +34,9 @@ Host keep-awake / sleep interrupts: [docs/host-keep-awake.md](docs/host-keep-awa
 | `live/` | Real fount node + HTTP/WS |
 | `frontend/` | Playwright (`playwright/`) |
 | `sim/` | In-process simulation harness |
-| `checks/` | Repo static health (`checks` manifest under `src/scripts/checks/`): HTML meta/landmarks/`drawer-toggle`/aside ARIA; parts `locales.json` / `achievements_registry.json` info + remote icon URL; **i18n key structure** (`checks:i18n_keys` — no Suffix/Prefix affix keys, no ≥4 flat camelCase siblings sharing a prefix, no `xxx1`-style numbered keys); **Python reshape self-check** (`checks:reshape_i18n_keys` — `reshape_i18n_keys.py --self-test`); **AGENTS.md + agent-facing linked `.md` English-only** (`checks:agents_md_english` — no CJK except human-facing `docs/design/` and `docs/review/`; transitive markdown links must resolve). Prefix-nest **writeback** of locale JSON: `.esh/commands/reshape_i18n_keys.py` (Python only — JS stringify reorders numeric keys like `404`). Formerly `.esh/commands/verify-meta.py` / `verify-info.py`. |
+| `checks/` | Repo static health — [checks/AGENTS.md](../checks/AGENTS.md) |
 
-**Frontend**: fixtures, browser binary, network noise, i18n-missing / a11y / locale-script hard-fail, GitHub Pages — [playwright.md](docs/playwright.md). Prefer `[data-i18n]` selectors over locale-specific copy. Drive locale via `setLanguage` / `loadLocaleData` — do not fetch `/api/getlocaledata` from tests. CDN GET/HEAD (`esm.sh` / Iconify / jsDelivr) is reused across cases via `cdn_cache.mjs` (`data/test/cdn_cache`); set `FOUNT_TEST_CDN_CACHE=0` to disable.
+**Frontend**: fixtures, browser binary, network noise, i18n-missing / a11y / locale-script hard-fail, GitHub Pages — [playwright.md](docs/playwright.md). Prefer `[data-i18n]` selectors over locale-specific copy. Drive locale via `setLanguage` / `loadLocaleData` — do not fetch `/api/getlocaledata` from tests. CDN GET/HEAD (`esm.sh` / Iconify / jsDelivr) is reused across cases via `cdn_cache.mjs` (`data/test/cdn_cache`); set `FOUNT_TEST_CDN_CACHE=0` to disable. Product code under test must match production — do not skip probes/embeds via `fount.test.enabled`. Fix our throws; diagnostics ignore child-frame `SecurityError` only (CDP `exception.className` + frame id; no text parsing) and Pages probe noise (`/api/ping`, `:8930`). Network diagnostic URLs are logged raw — never redact; test data must not carry durable secrets.
 
 **pure/ boundary**: tested modules must not statically `import` `src/server/**` (P2P/native graph; Windows Deno child exit can hang). Use dynamic import or promote to `integration/`.
 
@@ -44,7 +44,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 ## Manifest fields
 
-- **`triggers`**: glob match on changed files. Default ignores docs/metadata; override via **`triggerFilter`**: [trigger-filter.md](docs/trigger-filter.md). Watch scope = code the suite runs — not shared runners (`serial.mjs`/`boot.mjs` only on `pure`/`integration`/`testkit`). Federation: only `fed_core` watches `federation/**`.
+- **`triggers`**: glob match on changed files via `npm:picomatch` (braces `{a,b}`, `dot: true`). Default ignores docs/metadata; override via **`triggerFilter`**: [trigger-filter.md](docs/trigger-filter.md). Watch scope = code the suite runs — not shared runners (`serial.mjs`/`boot.mjs` only on `pure`/`integration`/`testkit`). Federation: only `fed_core` watches `federation/**`.
 - **`dependsOn`**: plan pulls transitive deps. Imperfect wave = hard fails + one-level dependents (noisy re-runs but does not expand dependents); stale `unknown` → outdated wave.
 - **`subtests`**: `{ name, triggers|trigger, spec? }`. When splitting a frontend god-file, update that subtest's `triggers`. Runtime filter: `FOUNT_TEST_SUBTESTS`. Suite-level `noisy` only marks subtests when **no** file failed.
 - **Live layering**: use smoke → e2e gates; do not jump straight to full e2e. Details: [domain-harness.md](docs/domain-harness.md#live-layering).
@@ -64,7 +64,9 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 ## Operator tools
 
+- **CI `data/test` cache**: per-branch `fount-test-data-<branch>` (`run_tests.yaml` + `pick_test_data_cache.sh`). On PR merge, if head was fully ahead of pre-merge base and merge tip shares head’s tree, `promote_test_data_cache.yaml` copies head→base — eligibility is git-only (`eligible`); actual copy is `cache/restore` hit + `cache/save` (do not treat `gh cache list` as promote success). Branch-delete cleanup waits for that promote before dropping the head key; default-branch Run Tests waits too so restore sees the promoted cache.
 - **Hung run**: `data/test/state/logs/`; rerun `deno run --allow-scripts --allow-all -c deno.json <probe.mjs>` with env from the log. Idle watchdog (10m no stdall) fails the suite. Host sleep (wall-clock jump) aborts and retries — details in [host-keep-awake.md](docs/host-keep-awake.md).
+- **`server:live` / `console_quiet`**: default-start quiet assert fails when `@homebridge/ciao` probe retries log `[fount._http._tcp.local.] failed probing…` ([homebridge/ciao#72](https://github.com/homebridge/ciao/issues/72)). Do not filter that in the test or silence it in fount — wait for ciao; post-fix: bump `npm:@homebridge/ciao`, re-run `server:live`, then blocked shell frontends.
 - **Keep-awake**: wrappers keep the machine awake during runs — [host-keep-awake.md](docs/host-keep-awake.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`.
 - **OOM / heap**: [heap-snapshots.md](docs/heap-snapshots.md).
 - **Deno panic auto-report**: `core/deno_panic.mjs` → GitHub issue on `denoland/deno` (if `gh` + auth); dedup `data/test/deno_panics.json`. Override via `FOUNT_DENO_PANIC_REPO`. `testkit` excluded.

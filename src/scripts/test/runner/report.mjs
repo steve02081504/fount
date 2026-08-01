@@ -20,19 +20,20 @@ import { suiteKey } from '../core/state.mjs'
  */
 
 /**
+ * 报告单槽快照。
  * @typedef {object} ReportSlot
- * @property {string} manifestId
- * @property {string} name
- * @property {'pending' | 'done'} state
- * @property {SuiteStateEntry['status']} [status]
- * @property {number | null} [durationMs]
- * @property {string[]} [failedFiles]
- * @property {string[]} [noiseHits]
- * @property {string | null} [logPath]
- * @property {string[]} [blockedBy]
- * @property {boolean} [terminated]
- * @property {string | null} [terminateReason]
- * @property {ContinueReason} [continueReason]
+ * @property {string} manifestId manifest id
+ * @property {string} name suite 名
+ * @property {'pending' | 'done'} state 槽位状态
+ * @property {SuiteStateEntry['status']} [status] suite 运行状态
+ * @property {number | null} [durationMs] 耗时（毫秒）
+ * @property {string[]} [failedFiles] 失败文件
+ * @property {string[]} [noiseHits] 噪声命中
+ * @property {string | null} [logPath] 失败日志相对路径
+ * @property {string[]} [blockedBy] 阻塞来源
+ * @property {boolean} [terminated] 是否被 watchdog 终止
+ * @property {string | null} [terminateReason] 终止原因
+ * @property {ContinueReason} [continueReason] 纳入本波的原因
  * @property {boolean} [reused] 本次未真跑、沿用上次结果
  */
 
@@ -223,6 +224,7 @@ export class RunReportWriter {
 }
 
 /**
+ * 构建 report.md 正文。
  * @param {object} summary 汇总
  * @param {ReportSlot[]} completed 已完成槽位
  * @returns {string} markdown 正文
@@ -531,6 +533,7 @@ function appendSilentPassed(lines, entries) {
 }
 
 /**
+ * 由已完成槽位推导进程退出码。
  * @param {ReportSlot[]} slots 槽位
  * @returns {number} 进程退出码（noisy / failed / blocked / pending 均非 0，避免 imperfect 含 noisy 时死循环）
  */

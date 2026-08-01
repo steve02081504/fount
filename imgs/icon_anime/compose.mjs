@@ -1,7 +1,7 @@
 /**
- * Frame paint + ANSI render for the fountain animation.
- * Optional pointer light: hold torch (ambient dim + radial fill, eased by
- * torchBlend) and/or click ripples (bright expanding rings, no ambient).
+ * 喷泉动画的逐帧绘制与 ANSI 渲染。
+ * 可选指针光效：按住火炬（环境变暗 + 径向提亮，由 torchBlend 缓动）
+ * 和/或点击涟漪（明亮扩散环，无环境变暗）。
  */
 
 import { MAT, LIQ_DRAW, COND_DRAW, isLiquidBarrier, isSoilMat, waterChar, liquidChar, dripChar } from './fluid/index.mjs'
@@ -14,46 +14,46 @@ const FG_COL = '\x1b[96m'
 const FG_SPLASH = '\x1b[36m'
 const FG_TERRAIN = '\x1b[90m'
 
-/** Base RGB for each paint palette entry (truecolor lift target). */
+/** 各调色板条目的基准 RGB（真彩提亮目标）。 */
 const FG_RGB = {
 	[FG_AT]: [28, 28, 34],
 	[FG_COL]: [70, 235, 255],
 	[FG_SPLASH]: [0, 195, 210],
 	[FG_TERRAIN]: [105, 105, 115],
 }
-/** Palette id for SGR cache keys (null / unknown → 4). */
+/** SGR 缓存键的调色板 id（null / 未知 → 4）。 */
 const FG_ID = new Map([
 	[FG_AT, 0],
 	[FG_COL, 1],
 	[FG_SPLASH, 2],
 	[FG_TERRAIN, 3],
 ])
-/** Quantized lift levels for truecolor SGR reuse. */
+/** 真彩 SGR 复用的量化提亮档位。 */
 const LIFT_Q = 32
-/** Quantized ambient-dim strength levels (torch fade). */
+/** 量化环境变暗强度档位（火炬渐隐）。 */
 const AMBIENT_Q = 16
-/** Cached truecolor SGR strings: key = packed (ambQ<<12)|(fgId<<7)|(liftQ<<1)|bgBit */
+/** 缓存的真彩 SGR 字符串：键 = 打包 (ambQ<<12)|(fgId<<7)|(liftQ<<1)|bgBit */
 const sgrCache = new Map()
 
-/** Visual radius of the pointer spotlight (cell aspect ≈ 1×2). */
+/** 指针聚光灯的视觉半径（单元格宽高比 ≈ 1×2）。 */
 export const LIGHT_RADIUS = 14
-/** Ambient dim at full torch (cells far from the cursor). */
+/** 火炬全亮时远离光标的单元格环境变暗量。 */
 const LIGHT_AMBIENT = 0.3
 
-/** Reused sampleLight destination (compose hot path). */
-const lightSample = { ambient: 0, lift: 0 }
-/** Reused ANSI fragment list — one join per frame instead of per-cell `+=`. */
+/** 复用的 sampleLight 输出（compose 热路径）。 */
+const sampleOut = { ambient: 0, lift: 0 }
+/** 复用的 ANSI 片段列表——每帧一次 join，而非逐格 `+=`。 */
 const frameParts = /** @type {string[]} */ []
-/** Glyphs sharing one SGR run — joined once per run. */
+/** 共用同一 SGR 段的字形——每段 join 一次。 */
 const runGlyphs = /** @type {string[]} */ []
 
 /**
- * Smooth radial falloff in view cells (compensates for tall terminal cells).
- * Squared reject before `sqrt`.
- * @param {number} dx columns from light
- * @param {number} dy rows from light
- * @param {number} radius visual radius
- * @returns {number} 0..1 intensity
+ * 视口格内的平滑径向衰减（补偿终端格偏高）。
+ * `sqrt` 前用平方距离剔除。
+ * @param {number} dx 距光源列偏移
+ * @param {number} dy 距光源行偏移
+ * @param {number} radius 视觉半径
+ * @returns {number} 0..1 强度
  */
 export const lightFalloff = (dx, dy, radius = LIGHT_RADIUS) => {
 	const d2 = dx * dx + 4 * dy * dy
@@ -64,10 +64,10 @@ export const lightFalloff = (dx, dy, radius = LIGHT_RADIUS) => {
 }
 
 /**
- * @param {number} c channel 0..255
+ * @param {number} c 通道 0..255
  * @param {number} lift 0..1+
- * @param {number} ambient torch dim strength 0..1 (0 = ripple-only lift)
- * @returns {number} lit channel
+ * @param {number} ambient 火炬变暗强度 0..1（0 = 仅涟漪提亮）
+ * @returns {number} 提亮后通道
  */
 const liftChannel = (c, lift, ambient) => {
 	const t = lift > 1 ? 1 : lift
@@ -81,27 +81,27 @@ const liftChannel = (c, lift, ambient) => {
 }
 
 /**
- * @param {number} r red
- * @param {number} g green
- * @param {number} b blue
- * @returns {string} truecolor fg SGR
+ * @param {number} r 红
+ * @param {number} g 绿
+ * @param {number} b 蓝
+ * @returns {string} 真彩前景 SGR
  */
 const fgRgb = (r, g, b) => `\x1b[38;2;${r};${g};${b}m`
 
 /**
- * @param {number} r red
- * @param {number} g green
- * @param {number} b blue
- * @returns {string} truecolor bg SGR
+ * @param {number} r 红
+ * @param {number} g 绿
+ * @param {number} b 蓝
+ * @returns {string} 真彩背景 SGR
  */
 const bgRgb = (r, g, b) => `\x1b[48;2;${r};${g};${b}m`
 
 /**
- * Quantized truecolor SGR for a palette entry + lift (cached).
- * @param {string | null} f palette fg or null (bg-only glow)
- * @param {number} lift raw lift
- * @param {number} ambient torch dim strength 0..1
- * @returns {string | null} SGR or null if cell stays blank
+ * 调色板条目 + 提亮的量化真彩 SGR（带缓存）。
+ * @param {string | null} f 调色板前景，或 null（仅背景辉光）
+ * @param {number} lift 原始提亮
+ * @param {number} ambient 火炬变暗强度 0..1
+ * @returns {string | null} SGR，单元格保持空白时返回 null
  */
 const litSgr = (f, lift, ambient) => {
 	const glow = lift > 1 ? 1 : lift
@@ -138,8 +138,8 @@ const litSgr = (f, lift, ambient) => {
 }
 
 /**
- * Flush a same-SGR glyph run into `parts`.
- * @param {string[]} parts ANSI fragments
+ * 将同一 SGR 的字形段刷入 `parts`。
+ * @param {string[]} parts ANSI 片段
  * @returns {void}
  */
 const flushRun = (parts) => {
@@ -151,13 +151,13 @@ const flushRun = (parts) => {
 }
 
 /**
- * Emit one cell under a palette / truecolor SGR (`sgr === null` → default / blank).
- * @param {string[]} parts ANSI fragments
- * @param {string | null} cur current open SGR
- * @param {string | null} sgr next SGR (null = default)
- * @param {string} glyph character
- * @param {boolean} [resetOnChange=false] emit RESET before a new non-null SGR
- * @returns {string | null} updated current SGR
+ * 在调色板/真彩 SGR 下输出一格（`sgr === null` → 默认/空白）。
+ * @param {string[]} parts ANSI 片段
+ * @param {string | null} cur 当前打开的 SGR
+ * @param {string | null} sgr 下一 SGR（null = 默认）
+ * @param {string} glyph 字符
+ * @param {boolean} [resetOnChange=false] 切换到非 null SGR 前先输出 RESET
+ * @returns {string | null} 更新后的当前 SGR
  */
 const emitCell = (parts, cur, sgr, glyph, resetOnChange = false) => {
 	if (sgr == null) {
@@ -178,13 +178,13 @@ const emitCell = (parts, cur, sgr, glyph, resetOnChange = false) => {
 }
 
 /**
- * Join flat char/fg buffers into an ANSI frame string without lighting.
- * Same-SGR glyphs are joined per run to cut fragment count.
- * @param {string[]} ch characters
- * @param {(string | null)[]} fg ANSI fg codes (null = default)
- * @param {number} width columns
- * @param {number} height rows
- * @returns {string} ANSI frame
+ * 将扁平 ch/fg 缓冲拼成无光照的 ANSI 帧字符串。
+ * 同 SGR 字形按段 join，减少片段数。
+ * @param {string[]} ch 字符
+ * @param {(string | null)[]} fg ANSI 前景码（null = 默认）
+ * @param {number} width 列数
+ * @param {number} height 行数
+ * @returns {string} ANSI 帧
  */
 const renderPlain = (ch, fg, width, height) => {
 	const parts = frameParts
@@ -212,22 +212,22 @@ const renderPlain = (ch, fg, width, height) => {
 }
 
 /**
- * Axis-aligned pad around a ripple ring for this age (view cells).
- * @param {number} age ripple age
- * @returns {number} half-extent
+ * 涟漪环在当前龄期的轴对齐包围垫（视口格）。
+ * @param {number} age 涟漪龄
+ * @returns {number} 半宽
  */
 const ripplePad = (age) => ((age * RIPPLE_SPEED + RIPPLE_WIDTH) / 2) + 1
 
 /**
- * Join flat char/fg buffers into an ANSI frame string.
- * Torch: dims the scene and lifts a circular cool spotlight.
- * Ripples: bright expanding rings without ambient dim — sampled only near rings.
- * @param {string[]} ch characters
- * @param {(string | null)[]} fg ANSI fg codes (null = default)
- * @param {number} width columns
- * @param {number} height rows
- * @param {import('./gesture/light.mjs').LightGesture} [light] pointer light gesture
- * @returns {string} ANSI frame
+ * 将扁平 ch/fg 缓冲拼成 ANSI 帧字符串。
+ * 火炬：场景变暗并在圆形冷色聚光区提亮。
+ * 涟漪：明亮扩散环、无环境变暗——仅在环附近采样。
+ * @param {string[]} ch 字符
+ * @param {(string | null)[]} fg ANSI 前景码（null = 默认）
+ * @param {number} width 列数
+ * @param {number} height 行数
+ * @param {import('./gesture/light.mjs').LightGesture} [light] 指针光效手势
+ * @returns {string} ANSI 帧
  */
 export const renderBuffers = (ch, fg, width, height, light = null) => {
 	const torchBlend = light?.torchBlend ?? 0
@@ -255,6 +255,7 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 			let needSample = hasTorch
 			if (!needSample && hasRipple)
 				for (const ripple of ripples) {
+					// Cell aspect: columns ≈ half a row visually → pad*2 on X.
 					const pad = ripplePad(ripple.age)
 					if (Math.abs(x - ripple.x) <= pad * 2 && Math.abs(y - ripple.y) <= pad) {
 						needSample = true
@@ -283,8 +284,8 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 				}
 			}
 
-			sampleLight(light, x, y, lightFalloff, lightSample)
-			const { ambient, lift } = lightSample
+			sampleLight(light, x, y, lightFalloff, sampleOut)
+			const { ambient, lift } = sampleOut
 
 			// Ripple-only cells far from the ring keep the plain palette.
 			if (!(ambient > 0) && lift < 0.04) {
@@ -310,11 +311,11 @@ export const renderBuffers = (ch, fg, width, height, light = null) => {
 }
 
 /**
- * Thin adapter: Cell[][] → ANSI frame via renderBuffers.
- * @param {({ ch?: string, fg?: string | null } | null)[][]} grid rows of cells
- * @param {number} width columns
- * @param {number} height rows
- * @returns {string} ANSI frame
+ * 薄适配：Cell[][] → 经 renderBuffers 的 ANSI 帧。
+ * @param {({ ch?: string, fg?: string | null } | null)[][]} grid 行优先单元格
+ * @param {number} width 列数
+ * @param {number} height 行数
+ * @returns {string} ANSI 帧
  */
 export const renderGrid = (grid, width, height) => {
 	const cells = width * height
@@ -331,12 +332,12 @@ export const renderGrid = (grid, width, height) => {
 }
 
 /**
- * Soft body edge: growing frontier or shrinking min distance.
- * @param {boolean} softBody soft edges enabled
- * @param {number} d body distance
- * @param {number} bodyReach growth frontier
- * @param {number} bodyMinD shrink floor
- * @returns {boolean} edge cell
+ * 软体边缘：生长前沿或收缩最小距离。
+ * @param {boolean} softBody 启用软边
+ * @param {number} d 体素距离
+ * @param {number} bodyReach 生长前沿
+ * @param {number} bodyMinD 收缩下限
+ * @returns {boolean} 边缘格
  */
 const isBodyEdge = (softBody, d, bodyReach, bodyMinD) => softBody && (
 	(d === bodyReach && bodyReach < maxBodyD) ||
@@ -344,8 +345,8 @@ const isBodyEdge = (softBody, d, bodyReach, bodyMinD) => softBody && (
 )
 
 /**
- * Paint one animation frame from scene state into reused buffers.
- * Single viewport pass writes every cell (no pre-fill); pillars / particles overlay.
+ * 从场景状态绘制一帧动画到复用缓冲。
+ * 单次视口遍历写满每格（无预填）；柱体/粒子叠加。
  * @param {{
  *   world: import('./fluid/world.mjs').FluidWorld,
  *   width: number, height: number, iconOx: number, iconOy: number,
@@ -354,8 +355,8 @@ const isBodyEdge = (softBody, d, bodyReach, bodyMinD) => softBody && (
  *   terrain: { solid: Uint8Array, surface: Int16Array, surfaceChar: string[], outline: (string | null)[] },
  *   light?: import('./gesture/light.mjs').LightGesture,
  *   frameCh?: string[], frameFg?: (string | null)[],
- * }} state animation state
- * @returns {string} ANSI frame
+ * }} state 动画状态
+ * @returns {string} ANSI 帧
  */
 export const composeFrame = (state) => {
 	const {
@@ -472,5 +473,5 @@ export const composeFrame = (state) => {
 		fg[i] = FG_SPLASH
 	}
 
-	return renderBuffers(ch, fg, width, height, light ?? null)
+	return renderBuffers(ch, fg, width, height, light)
 }

@@ -2,8 +2,7 @@
 	"id": "shells/telegrambot",
 	"triggerSets": {
 		"testFramework": [
-			"src/scripts/test/deno/serial.mjs",
-			"src/scripts/test/node/boot.mjs"
+			"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
 		],
 		"shellPureTests": [
 			"src/public/parts/shells/telegrambot/test/pure/**",
@@ -14,8 +13,7 @@
 			"src/public/parts/shells/chat/src/chat/bridge/**",
 			"src/public/parts/shells/chat/public/shared/**",
 			"src/public/parts/shells/telegrambot/src/**",
-			"src/public/parts/shells/chat/test/fixtures/**",
-			"src/public/parts/shells/chat/test/harness.mjs",
+			"src/public/parts/shells/chat/test/{fixtures/**,harness.mjs}",
 			"src/scripts/test/shellLoadProbe.mjs"
 		],
 		"frontendShared": [
@@ -72,8 +70,7 @@
 					"triggers": [
 						"src/public/parts/shells/telegrambot/test/frontend/smoke.spec.mjs",
 						"src/public/parts/shells/telegrambot/test/frontend/fixtures.mjs",
-						"src/public/parts/shells/telegrambot/public/index.html",
-						"src/public/parts/shells/telegrambot/public/index.mjs"
+						"src/public/parts/shells/telegrambot/public/index.{html,mjs}"
 					]
 				}
 			],

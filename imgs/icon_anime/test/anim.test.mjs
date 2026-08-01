@@ -1,5 +1,5 @@
 /**
- * Pure tests: animation lifecycle, exit boundary, resize migration, frame size.
+ * 纯测试：动画生命周期、退场边界、缩放迁移、帧尺寸。
  */
 /* global Deno */
 import { assert, assertEquals, assertGreater } from 'jsr:@std/assert'
@@ -276,13 +276,13 @@ Deno.test('consumeStdin: SGR left/right press/drag/release + Ctrl+C', async () =
 	 */
 	const abort = () => { aborted = true }
 	/**
-	 * @param {{ x: number, y: number, left?: boolean, right?: boolean }} ev pointer
+	 * @param {{ x: number, y: number, left?: boolean, right?: boolean }} ev 指针事件
 	 * @returns {void}
 	 */
 	const onPointer = (ev) => { events.push(ev) }
 	/**
-	 * @param {string} ascii ascii bytes
-	 * @returns {Uint8Array} encoded
+	 * @param {string} ascii ASCII 字符串
+	 * @returns {Uint8Array} 编码结果
 	 */
 	const encode = (ascii) => Uint8Array.from(ascii, c => c.charCodeAt(0))
 	const handlers = { abort, onPointer }

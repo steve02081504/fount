@@ -1273,10 +1273,8 @@
 				"autoSignHint": "Nach der Übermittlung signiert die Maschine automatisch den Signatur-Seed der Gruppe, ohne den privaten Schlüssel einzugeben. In einer Gruppe mit mehreren Administratoren muss mehr als die Hälfte der Administratoren lokal denselben Stimmzettel (gleiche Stimmzettel-ID und gleicher Kandidat) einreichen.",
 				"candidateLabel": "Nachfolge-Hash des Öffentlichen Schlüssels",
 				"description": "Übertragen Sie die höchste Verwaltungsberechtigung der Gruppe (MANAGE_ADMINS) auf das angegebene Mitglied. Nur Administratoren können arbeiten.",
-				"failed": "Die Einreichung der Nachfolgeabstimmung ist fehlgeschlagen",
 				"needHash": "Bitte geben Sie den Hash des Öffentlichen Schlüssels des Nachfolgers ein",
-				"selfButton": "Nominieren Sie sich",
-				"submitted": "Ihre Unterschrift wurde auf dem Nachfolgewahlzettel vermerkt."
+				"selfButton": "Nominieren Sie sich"
 			},
 			"channelType": {
 				"label": "Kanaltyp",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "Medienstream erfasst (gestoppt, nicht gesendet)",
 				"test": "Testen Sie Mediengeräte"
-			},
-			"thread": {
-				"main": "Untergeordneter Thread",
-				"back": "Zurück",
-				"breadcrumbMiddleSummary": "mittlere ${count}-Ebene",
-				"breadcrumbMiddleTitle": "Erweitern Sie die mittlere Ebene und wählen Sie die Ebene aus, zu der Sie springen möchten",
-				"breadcrumbRootTitle": "Zum Pfadstartpunkt springen (erste Ebene)"
 			},
 			"unpin": {
 				"action": {
@@ -2659,7 +2650,8 @@
 					"pubKeyLabel": "Öffentlicher Schlüssel hex(64)",
 					"rotateConfirm": "Alle zuvor ausgegebenen Freundeslinks werden sofort ungültig und können nicht wiederhergestellt werden. Fortfahren?",
 					"rotateLabel": "Alte Links ungültig machen",
-					"secretLabel": "Private-Key-Seed-Hex (64)"
+					"secretLabel": "Private-Key-Seed-Hex (64)",
+					"urlLabel": "Ausgestellter Freundeslink"
 				},
 				"groupRecoveryTip": "Wird nur verwendet, wenn die Einladung durchgesickert ist oder das neue Gerät den Verlauf nicht synchronisieren kann.",
 				"groupRecoveryTitle": "Fehlerbehebung bei der Gruppenverbindung",
@@ -3824,6 +3816,8 @@
 			"configSaved": "Die Konfiguration wurde erfolgreich gespeichert!",
 			"botExists": "Ein Bot namens \"${botname}\" existiert bereits. Bitte verwenden Sie einen anderen Namen.",
 			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie diese Änderungen verwerfen?",
+			"confirmDeleteBot": "Möchten Sie den Bot \"${botname}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+			"invalidJsonConfig": "Ungültige JSON-Konfiguration: ${error}",
 			"httpError": "HTTP-Fehler",
 			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die aktuelle Seite verlassen möchten?"
 		},

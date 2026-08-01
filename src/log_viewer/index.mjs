@@ -3,23 +3,25 @@
  *
  * 设计目标：
  * - 作为后台服务器进程的“前台脸面”，始终能在交互终端中显示主进程输出。
- * - 交互 TTY 且支持 ANSI 时：启动先播完 icon_anime 进场，再进入日志/REPL；服务器重启或断线等待时再挂 logo 直到连上或 Ctrl+C；退出时播完离场。非 TTY / 无 VT 则跳过 logo。
+ * - 交互 TTY 且支持 ANSI 时：启动 `intro`（入场后后台 hold）；等 server 时 `start`（已在播则 noop）/`dismiss`；退出时 `farewell`。非 TTY / 无 VT 时 icon 各入口为 nop，调用方无需分支。
  * - 交互 TTY 且支持 ANSI 时：日志写入终端滚动区（可用自带滚动条），底部固定 REPL（`/ws/eval`）。
  * - 服务器未就绪时持续轮询 `/api/ping`（指数退避，无超时），网络/进程恢复后自动接续。
  * - 服务器主动退出（`fount_exit`）时与服务器同步：`code === 131` 视为重启，自动重连；其它退出码本进程同码退出。
  * - WebSocket 异常断开（无 `fount_exit`）按指数退避重连，等服务器再次起来。
+ * - 进程退出只认本模块 `exitSignal`（on_shutdown / 主动 abort）；`icon.signal`（logo 内 Ctrl+C）接到此信号。
  *
  * 直接执行：`deno run -c deno.json --allow-net=localhost src/log_viewer/index.mjs`
  */
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { setTimeout as delay } from 'node:timers/promises'
 
 import { connectLogWire } from 'npm:@steve02081504/virtual-console/wire/client'
 import { on_shutdown } from 'npm:on-shutdown'
 import supportsAnsi from 'npm:supports-ansi'
 
-import { createIconAnime } from '../../imgs/icon_anime/session.mjs'
+import * as icon from '../../imgs/icon_anime/session.mjs'
 import { printTerminalImage } from '../scripts/logo.mjs'
 import { SetTaskbarProgress, ClearTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 import { setWindowTitle } from '../scripts/title.mjs'
@@ -33,6 +35,11 @@ SetTaskbarProgress(50)
 
 const FOUNT_DIR = path.resolve(import.meta.dirname + '/../../')
 const INTERACTIVE = process.stdout.isTTY && process.stdout.writable && supportsAnsi
+
+/** 本进程退出意图（唯一权威）。 */
+const exitAbortController = new AbortController()
+/** @type {AbortSignal} */
+const exitSignal = exitAbortController.signal
 
 /**
  * 从 `data/config.json` 读取服务器端口；读取/解析失败时回落到默认 8931。
@@ -54,7 +61,7 @@ const WS_URL = `ws://localhost:${PORT}/ws/logs`
 /**
  * 顶层错误兜底（供异步日志写入复用）。
  * @param {Error} err - 未捕获的致命错误。
- * @returns {void}
+ * @returns {void} 无返回值。
  */
 function onFatal(err) {
 	process.stderr.write(`log_viewer fatal: ${err?.stack ?? err}\n`)
@@ -62,15 +69,21 @@ function onFatal(err) {
 }
 
 /**
- * 异步阻塞指定毫秒数。
+ * 异步阻塞；`exitSignal` 中止时提前兑现。
  * @param {number} milliseconds - 阻塞时长。
- * @returns {Promise<void>} 时间到后兑现。
+ * @returns {Promise<void>}
  */
-function sleep(milliseconds) {
-	return new Promise((resolve) => setTimeout(resolve, milliseconds))
+async function sleep(milliseconds) {
+	if (exitSignal.aborted) return
+	try {
+		await delay(milliseconds, undefined, { signal: exitSignal })
+	}
+	catch (error) {
+		if (error?.name === 'AbortError') return
+		throw error
+	}
 }
 
-let stopRequested = false
 /**
  * 当前日志 WebSocket 连接实例。
  * @type {ReturnType<typeof connectLogWire> | null}
@@ -78,6 +91,7 @@ let stopRequested = false
 let connection = null
 
 /**
+ * 日志接收器接口（纯 stdout 或交互 REPL）。
  * @typedef {object} LogSink
  * @property {(entry: import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry) => Promise<void>} writeEntry - 写入 wire 日志条目。
  * @property {(text: string) => void | Promise<void>} appendText - 追加原始文本。
@@ -92,7 +106,7 @@ let connection = null
 /**
  * 向 stdout 写入一条 wire 日志（`await entry.renderString()`，与进程内 {@link LogEntry#toString} 同源 ANSI 管线；勿用 `toString()`，{@link WireLogEntry} 未覆写会落到 `[object Object]`）。
  * @param {import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry} entry - `connectLogWire` 下发的异步条目。
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 写入完成。
  */
 async function plainWriteEntry(entry) {
 	const body = await entry.renderString({ indent: '  ', maxDepth: 5 })
@@ -104,7 +118,7 @@ async function plainWriteEntry(entry) {
 /**
  * 向 stdout 追加原始文本。
  * @param {string} text - 文本内容。
- * @returns {void}
+ * @returns {void} 无返回值。
  */
 function plainAppendText(text) {
 	process.stdout.write(text)
@@ -112,7 +126,7 @@ function plainAppendText(text) {
 
 /**
  * 清屏并请求随机 tip。
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 清屏完成。
  */
 async function plainClear() {
 	if (supportsAnsi) process.stdout.write('\x1Bc')
@@ -124,7 +138,7 @@ async function plainClear() {
 /**
  * 显示 logo 与初始信息。
  * @param {string} text - 服务器下发的附加文本。
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 显示完成。
  */
 async function plainShowInitialInfo(text) {
 	console.log(await runSimpleWorker('logogener'))
@@ -151,7 +165,7 @@ function generateLogo() {
 
 /**
  * 向服务器请求一条随机 tip（clear 后由日志服务 `output` 帧回传）。
- * @returns {void}
+ * @returns {void} 无返回值。
  */
 function requestRandTip() {
 	connection?.sendJson?.({ type: 'rand_tip' })
@@ -168,43 +182,44 @@ const logSink = INTERACTIVE
 	})
 	: createPlainSink()
 
+on_shutdown(async () => {
+	if (!exitAbortController.signal.aborted) exitAbortController.abort()
+	logSink.tearDown?.()
+	await icon.farewell()
+})
+// logo 内 Ctrl+C → process.exit 会先跑上面的 on_shutdown
+icon.signal.addEventListener('abort', () => process.exit(130), { once: true })
+
 /**
- * 阻塞至 `/api/ping` 返回 200；可选叠加 icon 等待动画（连上 dismiss，Ctrl+C 则 userAborted）。
- * @param {ReturnType<typeof createIconAnime> | null} [icon] 等待期间展示的 logo；`null` 则静默轮询。
- * @returns {Promise<void>} 服务器就绪或用户中止时兑现。
+ * 阻塞至 `/api/ping` 返回 200；`waitLogo` 时 `start`（已在播则 noop）叠加等待动画，连上 `dismiss`。
+ * 非 TUI 下 icon 各入口为 nop。
+ * @param {{ waitLogo?: boolean }} [opts] `waitLogo`：断线重连等待时播保持动画
+ * @returns {Promise<void>} 服务器就绪或退出信号时兑现。
  */
-async function pollUntilServerReady(icon = null) {
-	if (icon) {
+async function pollUntilServerReady({ waitLogo = false } = {}) {
+	if (waitLogo) {
 		logSink.suspend?.()
 		icon.start()
 	}
 	let delay = 200
 	try {
-		while (!stopRequested) {
-			if (icon?.userAborted) {
-				stopRequested = true
-				break
-			}
+		while (!exitSignal.aborted) 
 			try {
-				const signal = icon
-					? AbortSignal.any([AbortSignal.timeout(2000), icon.userSignal])
-					: AbortSignal.timeout(2000)
-				const res = await fetch(PING_URL, { signal })
-				if (res.ok) return
-				throw new Error(String(res.status))
+				const response = await fetch(PING_URL, {
+					signal: AbortSignal.any([AbortSignal.timeout(2000), exitSignal]),
+				})
+				if (response.ok) return
+				throw new Error(String(response.status))
 			} catch {
-				if (stopRequested || icon?.userAborted) {
-					stopRequested = true
-					break
-				}
-				await (icon ? icon.sleep(delay) : sleep(delay))
+				if (exitSignal.aborted) break
+				await sleep(delay)
 				delay = Math.min(delay * 2, 5000)
 			}
-		}
+		
 	} finally {
-		if (icon) {
+		if (waitLogo) {
 			await icon.dismiss()
-			if (!icon.userAborted) logSink.resume?.()
+			if (!exitSignal.aborted) logSink.resume?.()
 		}
 	}
 }
@@ -219,7 +234,7 @@ function runOneConnection(exitContext) {
 	/**
 	 * Promise 执行器，作为本次连接的状态机。
 	 * @param {(reason: 'fount_exit' | 'close') => void} resolve - 兑现器。
-	 * @returns {void}
+	 * @returns {void} 无返回值。
 	 */
 	const executor = (resolve) => {
 		let settled = false
@@ -344,27 +359,23 @@ async function main() {
 	/**
 	 * 由 `runOneConnection` 用于回传 `fount_exit` 携带的退出码。
 	 * @param {number} code - 服务器报告的退出码。
-	 * @returns {void}
+	 * @returns {void} 无返回值。
 	 */
 	const setExitCode = (code) => { exitCodeSlot.value = code }
 	const exitContext = { setExitCode }
 
-	const icon = INTERACTIVE ? createIconAnime() : null
-	on_shutdown(async () => {
-		try { logSink.tearDown?.() } catch { /* ignore */ }
-		try { connection?.close?.() } catch { /* ignore */ }
-		try { await icon?.farewell() } catch { /* ignore */ }
-	})
+	// exitSignal：拦住主循环/轮询。不关 connection——留着让主循环堵在
+	// runOneConnection，进程退出时一起死。cleanup 在模块级 on_shutdown。
 
-	if (icon) {
-		await icon.intro()
-		if (icon.userAborted) process.exit(130)
-	}
+	await icon.intro()
+	if (exitSignal.aborted) process.exit(130)
 
-	while (!stopRequested) {
-		await pollUntilServerReady()
-		if (stopRequested) break
+	while (!exitSignal.aborted) {
+		// 等 server：intro 已在 hold 时 start 直接返回；断线后重新 start
+		await pollUntilServerReady({ waitLogo: true })
+		if (exitSignal.aborted) break
 		const reason = await runOneConnection(exitContext)
+		if (exitSignal.aborted) break
 
 		if (reason === 'fount_exit') {
 			const code = exitCodeSlot.value ?? 0
@@ -375,10 +386,7 @@ async function main() {
 			}
 			// 131: fall through to reconnect wait (same as abnormal disconnect).
 		}
-
-		// 异常断开 / reboot(131)：logo 等到服务器回来或 Ctrl+C
-		await pollUntilServerReady(icon)
-		if (icon?.userAborted) process.exit(130)
+		// 异常断开 / reboot(131)：回到 while 顶再 waitLogo
 	}
 
 	process.exit(130)

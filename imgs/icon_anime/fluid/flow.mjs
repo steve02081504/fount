@@ -1,36 +1,36 @@
 /**
- * Shared pressure → mass transfer primitives.
+ * 共用的压强 → 质量传递原语。
  *
- * All free-liquid motion (gravity, orifice, sheet, gas push) goes through
- * Torricelli √(ΔP/ρg) or free-surface fill equalize. Hydraulic potential
- * φ = P/(ρg) − y is the communicating-vessel coordinate.
+ * 所有自由液体运动（重力、孔口、薄层、气体推动）均经
+ * Torricelli √(ΔP/ρg) 或自由液面填平均衡。
+ * 液压势 φ = P/(ρg) − y 为连通器坐标。
  */
 
 import { RHO_G, LIQ_FULL } from './mat.mjs'
 
-/** Max mass moved by a single pressure-driven edge transfer per tick. */
+/** 单 tick 压强驱动边传递的最大质量。 */
 export const P_FLOW_CAP = 0.45
-/** Scale: mass ∝ √(ΔP / RHO_G) — Torricelli orifice in cell-head units. */
+/** 比例系数：质量 ∝ √(ΔP / RHO_G) — 格点压头单位的 Torricelli 孔口。 */
 export const P_FLOW_GAIN = 0.55
-/** Free-surface sheet creep fraction of fill difference. */
+/** 自由液面薄层蠕动的填充分差比例。 */
 export const SHEET_GAIN = 0.25
 
 /**
- * Hydraulic potential φ = P/(ρg) − y (y↓ positive depth).
- * Equal φ ↔ equal free-surface height under the same air pressure.
- * @param {number} pressure absolute pressure
- * @param {number} y world row
- * @returns {number} potential
+ * 液压势 φ = P/(ρg) − y（y↓ 为正向深度）。
+ * 相同 φ ↔ 相同空气压下的自由液面高度。
+ * @param {number} pressure 绝对压强
+ * @param {number} y 世界行
+ * @returns {number} 势
  */
 export const hydraulicPhi = (pressure, y) => pressure / RHO_G - y
 
 /**
- * Torricelli orifice mass for a pressure head (cell-head units).
- * @param {number} pSrc source pressure
- * @param {number} pDst destination pressure
- * @param {number} srcLiq available mass
- * @param {number} dstRoom free capacity at dest
- * @returns {number} move amount
+ * 压头（格点压头单位）下的 Torricelli 孔口质量。
+ * @param {number} pSrc 源压强
+ * @param {number} pDst 目标压强
+ * @param {number} srcLiq 可用质量
+ * @param {number} dstRoom 目标剩余容量
+ * @returns {number} 转移量
  */
 export const pressureMove = (pSrc, pDst, srcLiq, dstRoom) => {
 	const head = (pSrc - pDst) / RHO_G
@@ -39,11 +39,11 @@ export const pressureMove = (pSrc, pDst, srcLiq, dstRoom) => {
 }
 
 /**
- * Free-surface sheet equalize — fill-level only, no pressurized jet.
- * @param {number} srcLiq source fill
- * @param {number} dstLiq dest fill
- * @param {number} dstRoom free capacity
- * @returns {number} move amount
+ * 自由液面薄层均衡 — 仅填充分差，无加压射流。
+ * @param {number} srcLiq 源填充
+ * @param {number} dstLiq 目标填充
+ * @param {number} dstRoom 剩余容量
+ * @returns {number} 转移量
  */
 export const sheetMove = (srcLiq, dstLiq, dstRoom) => {
 	if (srcLiq <= dstLiq + 0.02 || dstRoom <= 0) return 0
@@ -51,16 +51,16 @@ export const sheetMove = (srcLiq, dstLiq, dstRoom) => {
 }
 
 /**
- * Apply a mass transfer src → dst and accumulate flow EMA contributions.
- * @param {Float32Array} liq liquid field
- * @param {Float32Array} flowX horizontal flow accumulator
- * @param {Float32Array} flowY vertical flow accumulator
- * @param {number} i source index
- * @param {number} ni dest index
- * @param {number} dx horizontal step
- * @param {number} dy vertical step
- * @param {number} move mass
- * @returns {number} mass actually moved
+ * 执行 src → dst 质量转移，并累加流向 EMA。
+ * @param {Float32Array} liq 液体场
+ * @param {Float32Array} flowX 水平流累加器
+ * @param {Float32Array} flowY 垂直流累加器
+ * @param {number} i 源索引
+ * @param {number} ni 目标索引
+ * @param {number} dx 水平步长
+ * @param {number} dy 垂直步长
+ * @param {number} move 质量
+ * @returns {number} 实际转移质量
  */
 export const applyTransfer = (liq, flowX, flowY, i, ni, dx, dy, move) => {
 	if (move <= 0) return 0

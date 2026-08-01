@@ -1273,10 +1273,8 @@
 				"autoSignHint": "提交后由本机在该群的签名种子自动联署，无需输入私钥。多管理员群需过半管理员各自在本机提交同一选票（相同 ballotId 与候选人）。",
 				"candidateLabel": "继任者公钥哈希",
 				"description": "将群最高管理权限（MANAGE_ADMINS）转移给指定成员。仅管理员可操作。",
-				"failed": "继任投票提交失败",
 				"needHash": "请填写继任者的公钥哈希",
-				"selfButton": "提名自己",
-				"submitted": "继任选票已记录你的联署。"
+				"selfButton": "提名自己"
 			},
 			"channelType": {
 				"label": "频道类型",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "已获取媒体流（已停止，未广播）",
 				"test": "测试媒体设备"
-			},
-			"thread": {
-				"main": "子线程",
-				"back": "返回",
-				"breadcrumbMiddleSummary": "中间 ${count} 层",
-				"breadcrumbMiddleTitle": "展开中间层，选择要跳转的层级",
-				"breadcrumbRootTitle": "跳转到路径起点（第一层）"
 			},
 			"unpin": {
 				"action": {
@@ -2663,7 +2654,8 @@
 					"pubKeyLabel": "公钥 hex（64）",
 					"rotateConfirm": "此前签发的所有加好友链接都会立即失效，且无法恢复。确定继续吗？",
 					"rotateLabel": "使旧链接失效",
-					"secretLabel": "私钥种子 hex（64）"
+					"secretLabel": "私钥种子 hex（64）",
+					"urlLabel": "已签发的加好友链接"
 				},
 				"groupRecoveryTip": "仅在邀请泄露或新设备无法同步历史时使用。",
 				"groupRecoveryTitle": "群连接修复",
@@ -3828,6 +3820,8 @@
 			"configSaved": "配置已成功保存！",
 			"botExists": "名为 “${botname}” 的bot已存在，请使用其他名称。",
 			"unsavedChanges": "您有未保存的更改。确定要放弃这些更改吗？",
+			"confirmDeleteBot": "确定删除名为 “${botname}” 的 bot 吗？此操作不可撤销。",
+			"invalidJsonConfig": "JSON 配置无效：${error}",
 			"httpError": "HTTP 错误",
 			"beforeUnload": "您有未保存的更改。确定要离开当前页面吗？"
 		},

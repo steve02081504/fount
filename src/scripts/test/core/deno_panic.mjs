@@ -33,6 +33,7 @@ export const GH_ISSUE_TITLE_MAX = 256
 export const GH_ISSUE_TITLE_PREFIX = '[fount auto-report] Deno panic: '
 
 /**
+ * 解析后的 Deno 崩溃信息。
  * @typedef {object} ParsedPanic
  * @property {string} file 崩溃源码文件
  * @property {number} line 行号
@@ -180,6 +181,7 @@ export async function readPanicRecord(repoRoot, currentVersion) {
 }
 
 /**
+ * 写入去重记录文件。
  * @param {string} repoRoot 仓库根
  * @param {object} record 去重记录
  * @returns {Promise<void>}
@@ -311,6 +313,7 @@ export function reportDenoPanic(params) {
 }
 
 /**
+ * reportDenoPanic 的无锁实现（由链式 Promise 串行调用）。
  * @param {object} params 参数
  * @param {string} params.repoRoot 仓库根
  * @param {string} params.output 子进程 stdall

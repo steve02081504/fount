@@ -1535,7 +1535,7 @@ unregister_terminal_keybindings() {
 
 # 函数: 移除桌面快捷方式
 remove_desktop_shortcut() {
-	get_i18n 'remove.removingDesktopShortcut'
+	get_i18n 'remove.removing.desktopShortcut'
 	if [ "$OS_TYPE" = "Linux" ]; then
 		rm -f "$HOME/.local/share/applications/fount.desktop" "$HOME/.local/share/applications/fount-protocol.desktop"
 		if command -v update-desktop-database &>/dev/null; then
@@ -2202,9 +2202,9 @@ remove)
 	write_taskbar_progress 5
 	run_deno clean
 	write_taskbar_progress 15
-	get_i18n 'remove.removingFount'
+	get_i18n 'remove.removing.fount.main'
 
-	get_i18n 'remove.removingFountFromPath'
+	get_i18n 'remove.removing.fount.fromPath'
 	while IFS= read -r profile_file; do
 		if [ -f "$profile_file" ]; then
 			# shellcheck disable=SC2016
@@ -2219,20 +2219,20 @@ remove)
 
 	set_title "𝓯𝓸𝓾𝓷"
 	write_taskbar_progress 25
-	get_i18n 'remove.removingProtocolHandler'
+	get_i18n 'remove.removing.protocolHandler'
 	remove_desktop_shortcut
 	remove_boot_background
-	get_i18n 'remove.removingTerminalKeybindings'
+	get_i18n 'remove.removing.terminalKeybindings'
 	unregister_terminal_keybindings
 
-	get_i18n 'remove.removingFountFromGitSafeDir'
+	get_i18n 'remove.removing.fount.fromGitSafeDir'
 	if command -v git &>/dev/null && git config --global --get-all safe.directory | grep -q -xF "$FOUNT_DIR"; then
 		git config --global --unset safe.directory "$FOUNT_DIR"
 	fi
 
 	set_title "𝓯𝓸𝓾"
 	write_taskbar_progress 45
-	get_i18n 'remove.removingInstalledSystemPackages'
+	get_i18n 'remove.removing.installedSystemPackages'
 	if [[ $IN_TERMUX -eq 1 ]]; then
 		for package in "${INSTALLED_PACMAN_PACKAGES_ARRAY[@]}"; do pacman -R --noconfirm "$package"; done
 	fi
@@ -2240,7 +2240,7 @@ remove)
 	for package in "${INSTALLED_SYSTEM_PACKAGES_ARRAY[@]}"; do uninstall_package "$package"; done
 
 	if [ -f "$AUTO_INSTALLED_DENO_FLAG" ]; then
-		get_i18n 'remove.uninstallingDeno'
+		get_i18n 'remove.uninstalling.deno'
 		rm -rf "$HOME/.deno"
 		for profile_file in $(get_profile_files); do
 			if [ -f "$profile_file" ]; then run_sed_inplace '/\.deno/d' "$profile_file"; fi
@@ -2252,7 +2252,7 @@ remove)
 	set_title "𝓯𝓸"
 	write_taskbar_progress 60
 
-	get_i18n 'remove.removingFountInstallationDir'
+	get_i18n 'remove.removing.fount.installationDir'
 	set_title "𝓯"
 	write_taskbar_progress 75
 	set_title ""

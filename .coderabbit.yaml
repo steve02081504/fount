@@ -72,8 +72,13 @@ reviews:
           - `typeof channelId === 'string' && /^[\w.-]+$/.test(channelId) && channelId.length <= 128` → `/^[\w.-]{1,127}$/.test(String(channelId))`
           - `if (xxx) { console.log(xxx); return }` → `if (xxx) return console.log(xxx)`
         - 类型盘问与防御性编程是坏味道。
-        - 无意义的调试输出不要；仅 error/warning。
+        - 无意义的调试输出不要；仅 error/warning（CI/workflow 进度与诊断输出除外）。
         - 揪重复逻辑、无意义分支、底层对顶层的特判。
+
+    # ── CI / GitHub Actions（诊断日志合法）─────────────────────────────
+    - path: ".github/workflows/**,.github/workflows/scripts/**"
+      instructions: |
+        - 机器可读结果行、错误、警告、超时诊断都应保留；多余噪声与真正有用的诊断不要混为一谈。
 
     # ── 前端 JS（pages + part public/）─────────────────────────────────
     - path: "src/public/pages/**/*.mjs,src/public/pages/**/*.js,src/public/parts/**/public/**/*.mjs,src/public/parts/**/public/**/*.js"

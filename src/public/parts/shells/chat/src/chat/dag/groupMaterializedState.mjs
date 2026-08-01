@@ -68,6 +68,7 @@ export const DEFAULT_GROUP_SETTINGS = {
 }
 
 /**
+ * 从 checkpoint overlay 还原 votes Map 条目。
  * @param {unknown} rawMo checkpoint `messageOverlay`
  * @returns {[string, Map<string, string>][]} ballotId → 选民 Map 条目
  */
@@ -78,6 +79,7 @@ function votesEntriesFromOverlay(rawMo) {
 }
 
 /**
+ * 将物化 votes Map 序列化为 JSON 形状。
  * @param {Map<string, Map<string, string>>} votesMap 物化 overlay.votes
  * @returns {Record<string, Record<string, string>>} JSON 可序列化形状
  */
@@ -89,6 +91,7 @@ export function serializeVotesOverlay(votesMap) {
 }
 
 /**
+ * 将物化 reactions Map 序列化为 JSON 形状。
  * @param {Map<string, Set<string>>} reactionsMap 物化 overlay.reactions
  * @returns {Record<string, string[]>} JSON 可序列化形状
  */
@@ -100,6 +103,7 @@ export function serializeReactionsOverlay(reactionsMap) {
 }
 
 /**
+ * 从 checkpoint overlay 还原 reactions Map 条目。
  * @param {unknown} rawMo checkpoint `messageOverlay`
  * @returns {[string, Set<string>][]} `"targetId:emoji" → 选民 Set` 条目
  */
@@ -120,7 +124,7 @@ function emptyMessageOverlay() {
 		reactions: new Map(),
 		pins: new Map(),
 		fileIndex: new Map(),
-		/** ballotEventId -> Map<voterKey, choice> */
+		/** 选票事件 ID → Map<投票者键, 选择> */
 		votes: new Map(),
 	}
 }

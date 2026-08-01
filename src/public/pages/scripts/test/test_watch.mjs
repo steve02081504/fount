@@ -22,17 +22,17 @@ const SCAN_MS = 500
 const LOCALE_MS = 1000
 
 /** 轮换顺序 */
-const LOCALE_CYCLE = Object.freeze(['zh-CN', 'ja-JP', 'en-UK'])
+const LOCALE_CYCLE = ['zh-CN', 'ja-JP', 'en-UK']
 
 /**
  * 英语：不得出现汉字 / 假名
  * 中文：不得出现平假名 / 片假名
  * （简体相对日语：Unicode 无 `\p{Hans}`，见 `jaForbiddenRe` 运行时差分）
  */
-const SCRIPT_FORBIDDEN = Object.freeze({
+const SCRIPT_FORBIDDEN = {
 	'en-UK': /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}/u,
 	'zh-CN': /\p{Script=Hiragana}|\p{Script=Katakana}/u,
-})
+}
 
 globalThis.fount ??= {}
 globalThis.fount.test ??= {}
@@ -359,7 +359,7 @@ async function cycleLocales() {
 	}
 	dirty = false
 	const i18n = await import('../i18n/index.mjs')
-	for (const locale of LOCALE_CYCLE) 
+	for (const locale of LOCALE_CYCLE)
 		// 与 watchChain 串行：避免 axe / advanceLocale 与切语种重叠
 		await enqueueWatch(async () => {
 			await withIgnoredMutations(async () => {
@@ -369,7 +369,7 @@ async function cycleLocales() {
 			})
 			await runA11y()
 		}).catch(() => { })
-	
+
 	ensureLocaleTimer()
 }
 

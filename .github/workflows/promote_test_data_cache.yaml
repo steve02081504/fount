@@ -1,0 +1,53 @@
+name: Promote test data cache
+
+# PR 合并后：head 相对合并前 base 完全领先且同 tree 时，把 head 分支的 data/test 缓存抄到 base。
+# 晋升以 restore cache-hit 且 save 成功为准；资格检查不预判源缓存、不报晋升成功。
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  promote:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout merge commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+      - name: Check whether eligible to promote
+        id: check
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          TEST_DATA_CACHE_PREFIX: fount-test-data-
+        run: bash .github/workflows/scripts/check_test_data_cache_promote.sh
+      - name: Restore source branch cache
+        id: restore
+        if: steps.check.outputs.eligible == 'true'
+        uses: actions/cache/restore@v5
+        with:
+          path: ./data/test
+          key: fount-test-data-${{ github.event.pull_request.head.ref }}
+      - name: Replace base branch cache
+        if: steps.restore.outputs.cache-hit == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEST_KEY: fount-test-data-${{ github.event.pull_request.base.ref }}
+        run: |
+          gh extension install actions/gh-actions-cache || true
+          gh actions-cache delete "$DEST_KEY" --confirm || true
+      - name: Save base branch cache
+        if: steps.restore.outputs.cache-hit == 'true'
+        uses: actions/cache/save@v5
+        with:
+          path: ./data/test
+          key: fount-test-data-${{ github.event.pull_request.base.ref }}

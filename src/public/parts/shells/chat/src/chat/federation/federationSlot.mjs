@@ -26,6 +26,7 @@ const FED_ACTION_SPECS = {
 }
 
 /**
+ * 从 sender 注册表取 group scope action 对应 send 函数。
  * @param {Map<string, Function>} senderRegistry wireAction 注册的 send 表
  * @param {string} actionName group scope action
  * @returns {Function} send
@@ -37,22 +38,24 @@ function requireRegistrySender(senderRegistry, actionName) {
 }
 
 /**
+ * 联邦房间 join 期上下文（由 room.mjs 组装）。
  * @typedef {object} FederationRoomContext
- * @property {string} partitionId
- * @property {string} roomId
- * @property {object} room
- * @property {string} roomSecret
- * @property {string} groupId
- * @property {string} roomKey
- * @property {object} rtcLimits
- * @property {object} fedOut
- * @property {Map<string, string>} peerToNode
- * @property {Map<string, string>} nodeToPeer
- * @property {(name: string) => Function} getActionSender
- * @property {Map<string, Function>} senderRegistry
+ * @property {string} partitionId 联邦分区 ID
+ * @property {string} roomId 底层房间 ID
+ * @property {object} room group scope 房间实例
+ * @property {string} roomSecret 房间密钥
+ * @property {string} groupId 群 ID
+ * @property {string} roomKey 房间负载预算键
+ * @property {object} rtcLimits RTC 连接预算
+ * @property {object} fedOut 出站队列
+ * @property {Map<string, string>} peerToNode peerId → nodeHash
+ * @property {Map<string, string>} nodeToPeer nodeHash → peerId
+ * @property {(name: string) => Function} getActionSender 按 action 取 send
+ * @property {Map<string, Function>} senderRegistry action send 注册表
  */
 
 /**
+ * 联邦房间槽：在 roomContext 上附加 roster、统一 send 与 leave 生命周期。
  * @typedef {FederationRoomContext & {
  *   getRoster: () => Array<{ peerId: string, remoteNodeHash: string | undefined }>
  *   getPeerIdByNodeHash: (nodeHash: string) => string | null

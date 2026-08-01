@@ -12,21 +12,27 @@ import {
 import { getOperatorEntityHashProvider, getReplicaUsernamesProvider } from './follower/registry.mjs'
 
 /**
- *
+ * 扫描本机 replica 上由 chars 托管的 agent 实体（重导出）。
  */
 export { listLocalAgentEntities }
 
 /**
+ * Social 实体种类。
  * @typedef {'user' | 'agent' | 'unknown'} SocialEntityKind
+ */
+
+/**
+ * 解析后的 Social 实体信息。
  * @typedef {object} ResolvedSocialEntity
- * @property {string} entityHash 128 hex
- * @property {SocialEntityKind} kind
+ * @property {string} entityHash 128 位十六进制 entityHash
+ * @property {SocialEntityKind} kind 实体种类
  * @property {boolean} local 是否托管在本 replica 节点
  * @property {string | null} replicaUsername 本机托管该实体时的 replica 登录名
  * @property {string | null} charPartName 本地 agent 时 chars/ 下目录名
  */
 
 /**
+ * 查找托管指定 entityHash 的本机 replica 登录名。
  * @param {string} entityHash 128 位 entityHash
  * @returns {Promise<string | null>} replica 登录名
  */
@@ -49,6 +55,7 @@ export async function findHostingReplicaUsername(entityHash) {
 }
 
 /**
+ * 解析 Social 实体：种类、是否本机托管及 chars 目录名等。
  * @param {string} entityHash 128 位 entityHash
  * @param {string | null} [hintReplicaUsername] 已知 replica 时可省略全量扫描
  * @returns {Promise<ResolvedSocialEntity | null>} 解析结果

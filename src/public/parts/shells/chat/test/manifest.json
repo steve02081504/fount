@@ -2,20 +2,16 @@
 	"id": "shells/chat",
 	"triggerSets": {
 		"testFramework": [
-			"src/scripts/test/deno/serial.mjs",
-			"src/scripts/test/node/boot.mjs"
+			"src/scripts/test/{deno/serial.mjs,node/boot.mjs}"
 		],
 		"shellBackend": [
 			"src/public/parts/shells/chat/src/**",
 			"src/public/parts/shells/chat/public/shared/**",
-			"src/public/parts/shells/chat/main.mjs",
-			"src/public/parts/shells/chat/fount.json",
-			"src/public/parts/shells/chat/locales.json",
+			"src/public/parts/shells/chat/{main.mjs,fount.json,locales.json}",
 			"src/scripts/test/shellLoadProbe.mjs"
 		],
 		"shellLiveCommon": [
-			"src/server/registries.mjs",
-			"src/server/parts_loader.mjs",
+			"src/server/{registries.mjs,parts_loader.mjs}",
 			"src/public/pages/scripts/api/registries.mjs",
 			"src/public/pages/scripts/features/markdown/extensions.mjs",
 			"src/public/pages/scripts/components/emojiPicker.mjs"
@@ -24,8 +20,7 @@
 			"src/public/parts/shells/social/src/lib/emojiPostEmbed.mjs",
 			"deno.json",
 			"src/server/p2p_server/**",
-			"src/server/registries.mjs",
-			"src/server/parts_loader.mjs",
+			"src/server/{registries.mjs,parts_loader.mjs}",
 			"src/public/pages/scripts/api/registries.mjs",
 			"src/public/pages/scripts/features/markdown/**",
 			"src/public/pages/scripts/lib/sanitizeHtml.mjs",
@@ -36,8 +31,7 @@
 			"deno.json",
 			"src/scripts/search/**",
 			"src/server/p2p_server/**",
-			"src/server/registries.mjs",
-			"src/server/parts_loader.mjs",
+			"src/server/{registries.mjs,parts_loader.mjs}",
 			"src/public/pages/scripts/api/registries.mjs",
 			"src/public/pages/scripts/features/markdown/extensions.mjs",
 			"src/public/pages/scripts/components/emojiPicker.mjs"
@@ -96,15 +90,13 @@
 			"src/public/parts/shells/chat/test/live/scripts/federation/mailbox.mjs"
 		],
 		"fedEmoji": [
-			"src/public/parts/shells/chat/src/group/emojiContentResolve.mjs",
-			"src/public/parts/shells/chat/src/group/groupPreview.mjs",
+			"src/public/parts/shells/chat/src/group/{groupPreview,emojiContentResolve}.mjs",
 			"src/public/parts/shells/chat/test/live/scripts/federation/emoji.mjs"
 		],
 		"fedEmojiGroup": [
 			"src/public/parts/shells/chat/src/group/**",
 			"src/server/registries.mjs",
-			"src/public/parts/shells/chat/test/live/scripts/federation/emoji_nonmember.mjs",
-			"src/public/parts/shells/chat/test/live/scripts/federation/emoji_nonmember_bootstrap.mjs"
+			"src/public/parts/shells/chat/test/live/scripts/federation/emoji_nonmember{,_bootstrap}.mjs"
 		],
 		"fedEmojiNearcache": [
 			"src/public/parts/shells/chat/src/group/**",
@@ -139,10 +131,7 @@
 			"src/public/parts/shells/chat/test/live/scripts/federation/entity_search.mjs"
 		],
 		"frontendShared": [
-			"src/public/parts/shells/chat/test/frontend/fixtures.mjs",
-			"src/public/parts/shells/chat/test/frontend/run.mjs",
-			"src/public/parts/shells/chat/test/frontend/phases.mjs",
-			"src/public/parts/shells/chat/test/frontend/playwright.config.mjs",
+			"src/public/parts/shells/chat/test/frontend/{fixtures.mjs,run.mjs,phases.mjs,playwright.config.mjs}",
 			"src/public/parts/shells/chat/public/index.html",
 			"src/public/parts/shells/chat/public/hub/index.css",
 			"src/scripts/test/playwright/**",
@@ -774,13 +763,8 @@
 						"src/public/parts/shells/chat/public/src/profileLocaleEditor.mjs",
 						"src/public/parts/shells/chat/public/shared/profileLocaleState.mjs",
 						"src/public/parts/shells/chat/public/src/templates/profile/**",
-						"src/public/parts/shells/chat/public/src/templates/hub/profile_edit_modal.html",
-						"src/public/parts/shells/chat/public/src/templates/hub/profile_popup.html",
-						"src/public/parts/shells/chat/src/entity/profile.mjs",
-						"src/public/parts/shells/chat/src/entity/ownerProfileUpdate.mjs",
-						"src/public/parts/shells/chat/src/entity/localized.mjs",
-						"src/public/parts/shells/chat/src/entity/filesUrl.mjs",
-						"src/public/parts/shells/chat/src/entity/filesEndpoints.mjs",
+						"src/public/parts/shells/chat/public/src/templates/hub/profile_{edit_modal,popup}.html",
+						"src/public/parts/shells/chat/src/entity/{profile,ownerProfileUpdate,localized,filesUrl,filesEndpoints}.mjs",
 						"src/public/parts/shells/chat/test/integration/owner_profile_update.test.mjs"
 					]
 				}

@@ -27,6 +27,7 @@ Deno.test('isExternalCdnUrl matches known CDN hosts only', () => {
 })
 
 /**
+ * 构造带 route 注册表的假 Playwright context。
  * @returns {{ context: { route: Function }, handlers: Array<{ predicate: Function, handler: Function }> }} 假 context 与已注册 handler
  */
 function fakeContext() {
@@ -36,9 +37,9 @@ function fakeContext() {
 		handlers,
 		context: {
 			/**
-			 * Register a Playwright-style route handler.
-			 * @param {(url: URL) => boolean} predicate URL matcher
-			 * @param {(route: object) => Promise<void>} handler route handler
+			 * 注册 Playwright 风格 route 处理器。
+			 * @param {(url: URL) => boolean} predicate URL 匹配谓词
+			 * @param {(route: object) => Promise<void>} handler route 处理器
 			 * @returns {Promise<void>}
 			 */
 			route: async (predicate, handler) => {
@@ -49,6 +50,7 @@ function fakeContext() {
 }
 
 /**
+ * 构造假 Playwright route（可观测 fulfill/continue/fetch）。
  * @param {{ method?: string, url: string, headers?: Record<string, string>, fetchImpl?: () => object }} opts 假请求选项
  * @returns {{ route: object, fulfilled: object[], state: { continued: number, fetchCalls: number } }} 假 route 与观测状态
  */
@@ -58,40 +60,40 @@ function fakeRoute({ method = 'GET', url, headers = {}, fetchImpl } = {}) {
 	const state = { continued: 0, fetchCalls: 0 }
 	const route = {
 		/**
-		 * @returns {{ method: () => string, url: () => string, headers: () => Record<string, string> }} stub request
+		 * @returns {{ method: () => string, url: () => string, headers: () => Record<string, string> }} 桩 request
 		 */
 		request: () => ({
 			/**
-			 * @returns {string} HTTP method
+			 * @returns {string} HTTP 方法
 			 */
 			method: () => method,
 			/**
-			 * @returns {string} request URL
+			 * @returns {string} 请求 URL
 			 */
 			url: () => url,
 			/**
-			 * @returns {Record<string, string>} request headers
+			 * @returns {Record<string, string>} 请求头
 			 */
 			headers: () => headers,
 		}),
 		/**
-		 * Fulfill the route with a cached or synthetic response.
-		 * @param {object} options Playwright fulfill payload
+		 * 以缓存或合成响应 fulfill route。
+		 * @param {object} options Playwright fulfill 载荷
 		 * @returns {Promise<void>}
 		 */
 		fulfill: async options => {
 			fulfilled.push(options)
 		},
 		/**
-		 * Pass through to the real network stack.
+		 * 透传到真实网络栈。
 		 * @returns {Promise<void>}
 		 */
 		continue: async () => {
 			state.continued++
 		},
 		/**
-		 * Fetch upstream and return the response to the handler.
-		 * @returns {Promise<object>} stub APIResponse
+		 * 拉取上游并返回响应给处理器。
+		 * @returns {Promise<object>} 桩 APIResponse
 		 */
 		fetch: async () => {
 			state.fetchCalls++
@@ -103,6 +105,7 @@ function fakeRoute({ method = 'GET', url, headers = {}, fetchImpl } = {}) {
 }
 
 /**
+ * 构造假 Playwright APIResponse。
  * @param {{ status?: number, headers?: Record<string, string>, body?: Buffer | string }} opts 假响应选项
  * @returns {{ status: () => number, headers: () => Record<string, string>, body: () => Promise<Buffer> }} 假 APIResponse
  */
@@ -110,15 +113,15 @@ function fakeResponse({ status = 200, headers = {}, body = '' } = {}) {
 	const bodyBuffer = Buffer.isBuffer(body) ? body : Buffer.from(body)
 	return {
 		/**
-		 * @returns {number} HTTP status code
+		 * @returns {number} HTTP 状态码
 		 */
 		status: () => status,
 		/**
-		 * @returns {Record<string, string>} response headers
+		 * @returns {Record<string, string>} 响应头
 		 */
 		headers: () => ({ ...headers }),
 		/**
-		 * @returns {Promise<Buffer>} response body
+		 * @returns {Promise<Buffer>} 响应体
 		 */
 		body: async () => bodyBuffer,
 	}

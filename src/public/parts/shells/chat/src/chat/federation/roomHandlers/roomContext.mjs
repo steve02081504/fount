@@ -3,12 +3,14 @@
  */
 
 /**
+ * P2P wire action 与 sender 注册表绑定。
  * @typedef {object} FederationWireBinding
- * @property {ReturnType<import('npm:@steve02081504/fount-p2p/registries/action').createActionRegistry>} wireActions
- * @property {Map<string, Function>} senderRegistry
+ * @property {ReturnType<import('npm:@steve02081504/fount-p2p/registries/action').createActionRegistry>} wireActions wire action 注册表
+ * @property {Map<string, Function>} senderRegistry action → send 映射
  */
 
 /**
+ * 房间 join 期 wire 最小上下文。
  * @typedef {FederationWireBinding & {
  *   username: string,
  *   groupId: string,
@@ -19,6 +21,7 @@
  */
 
 /**
+ * DAG/控制面中继 handler 依赖。
  * @typedef {FederationRoomWireContext & {
  *   nodeHash: string,
  *   fedOut: object,
@@ -28,6 +31,7 @@
  */
 
 /**
+ * 身份与分区房间 handler 依赖。
  * @typedef {FederationRoomWireContext & {
  *   key: string,
  *   nodeHash: string,
@@ -42,6 +46,7 @@
  */
 
 /**
+ * 同步/bootstrap handler 依赖。
  * @typedef {FederationRoomWireContext & {
  *   nodeHash: string,
  *   groupSettings: object,
@@ -52,6 +57,7 @@
  */
 
 /**
+ * char RPC / part_invoke handler 依赖。
  * @typedef {FederationRoomWireContext & {
  *   key: string,
  *   fedOut: object,
@@ -60,11 +66,12 @@
  */
 
 /**
+ * 各子域 handler 的最小依赖包。
  * @typedef {object} FederationRoomHandlerBundle
- * @property {FederationIdentityContext} identity
- * @property {FederationRelayContext} relay
- * @property {FederationSyncContext} sync
- * @property {FederationRpcContext} rpc
+ * @property {FederationIdentityContext} identity identity handler 依赖
+ * @property {FederationRelayContext} relay relay handler 依赖
+ * @property {FederationSyncContext} sync sync handler 依赖
+ * @property {FederationRpcContext} rpc rpc handler 依赖
  */
 
 /**

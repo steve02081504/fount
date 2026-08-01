@@ -22,7 +22,11 @@
 	<script type="module">
 		/* global urlParams */
 		import '../base.mjs'
-		navigator.serviceWorker?.controller?.postMessage({ type: 'EXIT_COLD_BOOT' })
+		try {
+			navigator.serviceWorker?.controller?.postMessage({ type: 'EXIT_COLD_BOOT' })
+		} catch (error) {
+			if (error.name != 'SecurityError') throw error
+		}
 		const redirectUrl = urlParams.get('redirect')
 		urlParams.delete('redirect')
 		for (const [key, value] of urlParams) if (value !== 'undefined')

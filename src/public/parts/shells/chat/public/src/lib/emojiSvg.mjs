@@ -8,9 +8,9 @@
 const ICONIFY_CDN = 'https://api.iconify.design'
 
 /**
- * Iconify SVG CDN URL.
- * @param {string} icon Set/icon id (e.g. `line-md/chat-round` or `mdi/pound`)
- * @returns {string} Absolute Iconify SVG URL.
+ * 构建 Iconify SVG CDN URL。
+ * @param {string} icon 图标集/图标 id（如 `line-md/chat-round` 或 `mdi/pound`）
+ * @returns {string} 绝对 Iconify SVG URL
  */
 export function iconifyUrl(icon) {
 	const path = icon.includes('/') ? icon : `mdi/${icon}`
@@ -18,10 +18,10 @@ export function iconifyUrl(icon) {
 }
 
 /**
- * Inline `<img>` pointing at Iconify CDN (decorative UI icons, not Unicode emoji glyphs).
- * @param {string} icon Set/icon id
- * @param {{ class?: string, width?: number, height?: number, alt?: string }} [options] img attributes
- * @returns {string} Inline `<img>` HTML.
+ * 生成指向 Iconify CDN 的内联 `<img>`（装饰性 UI 图标，非 Unicode 字形）。
+ * @param {string} icon 图标集/图标 id
+ * @param {{ class?: string, width?: number, height?: number, alt?: string }} [options] img 属性
+ * @returns {string} 内联 `<img>` HTML
  */
 export function iconifyImg(icon, options = {}) {
 	const {
@@ -34,7 +34,7 @@ export function iconifyImg(icon, options = {}) {
 	return `<img src="${iconifyUrl(icon)}"${cls} width="${width}" height="${height}" alt="${alt}" aria-hidden="true" />`
 }
 
-/** Hub empty-state icons */
+/** Hub 空状态图标 */
 export const hubEmptyChatIcon = iconifyImg('line-md/chat-round', { class: 'empty-icon-img', width: 48, height: 48 })
 /** Hub 空状态：挥手图标 HTML */
 export const hubEmptyWaveIcon = iconifyImg('mdi/hand-wave-outline', { class: 'empty-icon-img', width: 48, height: 48 })
@@ -43,7 +43,7 @@ export const hubEmptyCharsIcon = iconifyImg('mdi/robot-outline', { class: 'empty
 /** Hub 空状态：频道/列表图标 HTML */
 export const hubEmptyListIcon = iconifyImg('line-md/list-indented', { class: 'empty-icon-img', width: 48, height: 48 })
 
-/** Message action bar icons */
+/** 消息操作栏图标 */
 export const hubActionBookmarkIcon = iconifyImg('mdi/bookmark-outline', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：置顶图标 */
 export const hubActionPinIcon = iconifyImg('mdi/pin', { width: 16, height: 16, class: 'action-icon' })
