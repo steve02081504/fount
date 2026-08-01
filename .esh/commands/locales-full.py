@@ -95,10 +95,8 @@ def write_if_changed(path: Path, content: str) -> bool:
 	path.parent.mkdir(parents=True, exist_ok=True)
 	if path.exists():
 		raw = path.read_bytes()
-		if b"\r\n" in raw or raw.endswith(b"\r"):
-			# 存在 CRLF 或尾随 \r，需要写回以统一为 LF
-			pass
-		elif raw.decode("utf-8") == content:
+		# CRLF / 尾随 \r 时仍写回以统一为 LF
+		if b"\r\n" not in raw and not raw.endswith(b"\r") and raw.decode("utf-8") == content:
 			return False
 	with path.open("w", encoding="utf-8", newline="\n") as f:
 		f.write(content)
@@ -147,9 +145,7 @@ def merge_cmd(lang: str, out_path: Path) -> None:
 		if extracted:
 			full[rel] = extracted
 
-	ordered = dict(sorted(full.items(), key=lambda x: (x[0] != "_docs_readme", x[0] != main_rel, x[0])))
-
-	if write_if_changed(out_path, _yaml_str(ordered)):
+	if write_if_changed(out_path, _yaml_str(dict(sorted(full.items(), key=lambda item: (item[0] != "_docs_readme", item[0] != main_rel, item[0]))))):
 		part_count = sum(1 for k in full if k not in (main_rel, "_docs_readme"))
 		print(f"Merged: {lang} -> {out_path}  (main: {'+' if main_rel in full else '-'}, readme: {'+' if '_docs_readme' in full else '-'}, parts: {part_count})")
 	else:
@@ -167,10 +163,9 @@ def back_cmd(lang: str, in_path: Path) -> None:
 			print(f"Wrote readme: {readme_path.name}")
 			wrote += 1
 
-	if main_rel in full:
-		if write_if_changed(FOUNT_DIR / main_rel, _json_str(full[main_rel])):
-			print(f"Wrote main: {main_rel}")
-			wrote += 1
+	if main_rel in full and write_if_changed(FOUNT_DIR / main_rel, _json_str(full[main_rel])):
+		print(f"Wrote main: {main_rel}")
+		wrote += 1
 
 	for key, value in full.items():
 		if key in SKIP_KEYS or key == main_rel:
@@ -198,7 +193,7 @@ def main():
 	if cmd == "back":
 		langs_arg = argv[1:]  # back 之后的均为语言
 	else:
-		langs_arg = argv if argv else []  # 无 back 则全部为语言（空=全部）
+		langs_arg = argv  # 无 back 则全部为语言（空=全部）
 
 	FULL_LOCALES_DIR.mkdir(parents=True, exist_ok=True)
 	all_langs = discover_langs()

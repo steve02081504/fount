@@ -205,14 +205,12 @@ def scan_i18n_key_structure(data, path: str = "") -> list[dict]:
 	for cluster in find_prefix_clusters(keys):
 		prefix = cluster["prefix"]
 		members = cluster["members"]
-		container = container_key_for_prefix(prefix)
 		parent_label = path or "(root)"
-		nested = ", ".join(decapitalize(m[len(prefix) :]) for m in members)
 		issues.append(
 			{
 				"kind": "prefix_cluster",
 				"path": parent_label,
-				"message": (f"{parent_label} 下有 {len(members)} 个键共享前缀「{prefix}」（{', '.join(members)}）。请嵌套为 {container}: {{ {nested} }}。{UPDATE_LOCALE_DATA_HINT}"),
+				"message": (f"{parent_label} 下有 {len(members)} 个键共享前缀「{prefix}」（{', '.join(members)}）。请嵌套为 {container_key_for_prefix(prefix)}: {{ {', '.join(decapitalize(m[len(prefix) :]) for m in members)} }}。{UPDATE_LOCALE_DATA_HINT}"),
 			}
 		)
 	for key, value in data.items():
