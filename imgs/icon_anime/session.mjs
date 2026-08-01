@@ -190,10 +190,14 @@ export function createIconAnime() {
 			if (player) {
 				parkedState = null
 				await haltPlay()
-				await player.play(() => exit(state), { signal: null })
-				player.stop()
-				player = null
-				state = null
+				try {
+					await player.play(() => exit(state), { signal: null })
+				}
+				finally {
+					player.stop()
+					player = null
+					state = null
+				}
 				return
 			}
 			if (!parkedState) return

@@ -191,7 +191,6 @@ export function createBrowserDiagnostics() {
 	async function attach(page) {
 		const session = await page.context().newCDPSession(page)
 		await session.send('Page.enable')
-		await session.send('Runtime.enable')
 
 		/** @type {Map<number, string>} executionContextId → frameId */
 		const contextFrameIds = new Map()
@@ -201,6 +200,7 @@ export function createBrowserDiagnostics() {
 		session.on('Page.frameNavigated', ({ frame }) => {
 			if (!frame.parentId) mainFrameId = frame.id
 		})
+		// 须在 Runtime.enable 之前注册，才能收到 enable 补发的已有上下文事件
 		session.on('Runtime.executionContextCreated', ({ context }) => {
 			const frameId = context.auxData?.frameId
 			if (frameId) contextFrameIds.set(context.id, frameId)
@@ -217,6 +217,7 @@ export function createBrowserDiagnostics() {
 			console.error('[pageerror-stack]', stack)
 			pageErrors.push(stack)
 		})
+		await session.send('Runtime.enable')
 
 		page.on('console', msg => {
 			const text = msg.text()
