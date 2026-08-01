@@ -1,7 +1,8 @@
 /**
  * 测试环境页面监视：import 即启动（无导出）。
  * - axe-core 无障碍：真实 DOM 变脏时每 0.5s 扫，静止则停；命中即报
- * - `[aria-ignore]`：axe `exclude`（第三方 / 暂不可修；`ARIA_IGNORE`，同 `svg-inliner-ignore` 风格）
+ * - `[aria-ignore="https://github.com/…/issues/n"]`：axe `exclude`；须带 issue URL
+ *   （缺省 / 非法格式在此报；issue 已关闭经 `fount.test.hubUrl` → 测试 hub，或 Playwright 收尾硬失败）
  * - 语种轮换：每秒在 zh-CN / ja-JP / en-UK 间切换，并用 `\p{Script=…}` 查错语字符
  *   （轮换自身的 DOM 写入不计入 a11y dirty，否则扫描定时器永远停不下来）
  *
@@ -16,9 +17,13 @@
 import axe from 'https://esm.sh/axe-core'
 
 /**
- * 第三方 / 暂不可修子树：axe `exclude`（布尔属性，用法同 `svg-inliner-ignore` / `user-content`）。
+ * 第三方 / 暂不可修子树：axe `exclude`。
+ * 属性值必须是跟踪上游修复的 GitHub issue URL（`aria-ignore="https://github.com/…/issues/n"`）。
  */
 export const ARIA_IGNORE = 'aria-ignore'
+
+/** GitHub issue URL（路径以 /issues/{n} 结尾） */
+const GITHUB_ISSUE_URL_RE = /^https:\/\/github\.com\/[^/]+\/[^/]+\/issues\/\d+\/?(?:[?#].*)?$/i
 
 const A11Y_PREFIX = '[test:a11y]'
 const LOCALE_PREFIX = '[test:locale]'
@@ -213,10 +218,50 @@ async function runLocaleScriptCheck(locale) {
 }
 
 /**
+ * 校验 `[aria-ignore]`：缺 URL / 非法格式立刻报；有 hub 时额外查关闭态。
+ * @returns {Promise<void>}
+ */
+async function checkAriaIgnores() {
+	const nodes = document.querySelectorAll(`[${ARIA_IGNORE}]`)
+	const hub = String(globalThis.fount?.test?.hubUrl || '').replace(/\/$/, '')
+	for (const el of nodes) {
+		const url = (el.getAttribute(ARIA_IGNORE) || '').trim()
+		const where = el.id ? `#${el.id}` : el.className || el.tagName
+		if (!url) {
+			const key = `aria-ignore-missing\t${where}`
+			if (printedKeys.has(key)) continue
+			printedKeys.add(key)
+			console.error(A11Y_PREFIX, 'aria-ignore-missing-url', where, 'aria-ignore requires a GitHub issue URL')
+			continue
+		}
+		if (!GITHUB_ISSUE_URL_RE.test(url)) {
+			const key = `aria-ignore-bad-url\t${url}`
+			if (printedKeys.has(key)) continue
+			printedKeys.add(key)
+			console.error(A11Y_PREFIX, 'aria-ignore-bad-url', where, url)
+			continue
+		}
+		if (!hub) continue
+		try {
+			const res = await fetch(`${hub}/github-issue?url=${encodeURIComponent(url)}`)
+			if (!res.ok) continue
+			const data = await res.json()
+			if (data?.closed !== true) continue
+			const key = `aria-ignore-closed\t${url}`
+			if (printedKeys.has(key)) continue
+			printedKeys.add(key)
+			console.error(A11Y_PREFIX, 'aria-ignore-closed', where, url)
+		}
+		catch { /* hub 不可达：留给 Playwright 收尾再判 */ }
+	}
+}
+
+/**
  * @returns {Promise<void>}
  */
 async function runA11y() {
 	if (!localeReady) return
+	await checkAriaIgnores()
 	const results = await axe.run({
 		exclude: `[${ARIA_IGNORE}]`,
 	}, {

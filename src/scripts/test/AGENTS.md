@@ -22,7 +22,8 @@ Host keep-awake / sleep interrupts: [docs/host-keep-awake.md](docs/host-keep-awa
 - **`--no-parallel`**: serial dispatch **and** inner concurrency = 1. **Default for agents on Windows** / local verification ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)). See [resource-scheduling.md](docs/resource-scheduling.md).
 - **`dependsOn`**: downstream `blocked(by)` when a dependency is not green-capable. Optimistic overlap while hard deps run: [resource-scheduling.md](docs/resource-scheduling.md).
 - **Live driver**: `live/runner.mjs` — ephemeral nodes, `FOUNT_TEST_NODE_*` env, teardown after. Launch/ping failures return exit 1. Non-worker `env.mjs` sets `process.exitCode = 1` on `unhandledRejection`/`uncaughtException` — otherwise a logged rejection exits 0 (**passed with noise**).
-- **Libs**: import from `core/`, `live/`, `runner/`, `playwright/` — do not reimplement HTTP/WS/state helpers.
+- **Test hub**: parent `runTests` binds Express on `http://127.0.0.1:8903` (`hub/index.mjs`), sets `FOUNT_TEST_HUB_URL`. Suites inherit via env; Playwright injects `fount.test.hubUrl`. Route modules in `hub/apis/` (`health`, `github_issue`, `shared_store`); fetch clients in `hub/clients/`. No hub / hub down → issue still open / store miss.
+- **Libs**: import from `core/`, `hub/`, `live/`, `runner/`, `playwright/` — do not reimplement HTTP/WS/state helpers.
 - **Shell module graph**: `shellLoadProbe.mjs` — path resolve + **named export** check (`missingNamed`). Bot/chat/social integration probes assert `missingNamed === []`. When a shell imports another part's `public/shared`, put that shared glob on the consumer suite's triggers.
 
 ## Taxonomy
@@ -70,5 +71,6 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **Keep-awake**: wrappers keep the machine awake during runs — [host-keep-awake.md](docs/host-keep-awake.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`.
 - **OOM / heap**: [heap-snapshots.md](docs/heap-snapshots.md).
 - **Deno panic auto-report**: `core/deno_panic.mjs` → GitHub issue on `denoland/deno` (if `gh` + auth); dedup `data/test/deno_panics.json`. Override via `FOUNT_DENO_PANIC_REPO`. `testkit` excluded.
+- **GitHub issue probe**: `core/github_issue.mjs` → `parseGithubIssueUrl` (pure). Closed-state via `hub/apis/github_issue.mjs` (`gh` only there) + `hub/clients/github_issue.mjs`. Playwright `assertAriaIgnoreIssues` + browser `test_watch` (when `fount.test.hubUrl` set) hard-fail closed `[aria-ignore]` URLs. No hub / `gh` down → still open.
 - **Selftests**: `fount test testkit`. Fixtures: `selftest/fixtures.mjs` (`makeSuite` / `makeStateEntry`). Keep manifest id `testkit`.
 - **Naming**: readable identifiers (`context` not `ctx`). Suite/file/`Deno.test` names use domain semantics — never planning milestone codes.

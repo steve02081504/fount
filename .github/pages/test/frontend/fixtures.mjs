@@ -5,6 +5,7 @@ import { test as base, expect } from '@playwright/test'
 import { createBrowserDiagnostics, waitForLocaleCycle } from 'fount/scripts/test/playwright/browser_diagnostics.mjs'
 import { installCdnResponseCache } from 'fount/scripts/test/playwright/cdn_cache.mjs'
 import { requireTestBaseUrl } from 'fount/scripts/test/playwright/env.mjs'
+import { assertAriaIgnoreIssues } from 'fount/scripts/test/playwright/github_issue.mjs'
 
 /**
  * Pages 前端 E2E fixture：`baseUrl` + 已注入 `fount.test.enabled` 的 `context` / `page`。
@@ -46,6 +47,14 @@ export function createPagesFixtures(options = {}) {
 				globalThis.fount.test ??= {}
 				globalThis.fount.test.enabled = true
 			})
+			const hubUrl = (process.env.FOUNT_TEST_HUB_URL || '').trim()
+			if (hubUrl) {
+				await context.addInitScript(url => {
+					globalThis.fount ??= {}
+					globalThis.fount.test ??= {}
+					globalThis.fount.test.hubUrl = url
+				}, hubUrl)
+			}
 			await use(context)
 			await context.close()
 		},
@@ -61,6 +70,7 @@ export function createPagesFixtures(options = {}) {
 			await use(page)
 			// 收尾：中日英脚本检查 + 每语种一轮 a11y；未挂载 test_watch 则跳过
 			await waitForLocaleCycle(page).catch(() => { /* 未挂载 test_watch 则跳过 */ })
+			await assertAriaIgnoreIssues(page)
 			diagnostics.flushNetworkDiagnostics()
 			expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
 			expect(diagnostics.testWatchErrors, 'unexpected test_watch console output').toEqual([])

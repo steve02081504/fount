@@ -14,8 +14,8 @@ import { onThemeChange } from '../theme/index.mjs'
 export function createJsonEditor(jsonEditorContainer, options) {
 	const { ariaLabel: ariaLabelKey, onSave, ...editorProps } = options
 
-	// TODO: drop aria-ignore when https://github.com/josdejong/svelte-jsoneditor/issues/584 lands
-	jsonEditorContainer.toggleAttribute('aria-ignore', true)
+	// Temporary: toolbar .fa-icon presentation-role-conflict until upstream fix
+	jsonEditorContainer.setAttribute('aria-ignore', 'https://github.com/josdejong/svelte-jsoneditor/issues/584')
 
 	const result = base({
 		target: jsonEditorContainer,

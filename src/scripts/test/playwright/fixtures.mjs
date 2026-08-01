@@ -6,6 +6,7 @@ import { loginWithApiKey } from './auth.mjs'
 import { createBrowserDiagnostics, waitForLocaleCycle } from './browser_diagnostics.mjs'
 import { installCdnResponseCache } from './cdn_cache.mjs'
 import { requireTestBaseUrl } from './env.mjs'
+import { assertAriaIgnoreIssues } from './github_issue.mjs'
 import { assertIsolatedFrontendTest } from './guards.mjs'
 
 /**
@@ -69,6 +70,14 @@ export function createFountFixtures(options = {}) {
 				globalThis.fount.test ??= {}
 				globalThis.fount.test.enabled = true
 			})
+			const hubUrl = (process.env.FOUNT_TEST_HUB_URL || '').trim()
+			if (hubUrl) {
+				await context.addInitScript(url => {
+					globalThis.fount ??= {}
+					globalThis.fount.test ??= {}
+					globalThis.fount.test.hubUrl = url
+				}, hubUrl)
+			}
 			await use(context)
 			await context.close()
 		},
@@ -85,6 +94,7 @@ export function createFountFixtures(options = {}) {
 			await use(page)
 			// 收尾：中日英脚本检查 + 每语种一轮 a11y；未挂载 test_watch 则跳过
 			await waitForLocaleCycle(page).catch(() => { /* 未挂载 test_watch 则跳过 */ })
+			await assertAriaIgnoreIssues(page)
 			diagnostics.flushNetworkDiagnostics()
 			expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
 			expect(diagnostics.testWatchErrors, 'unexpected test_watch console output').toEqual([])
