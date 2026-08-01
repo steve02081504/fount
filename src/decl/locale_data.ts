@@ -3787,6 +3787,8 @@ export type LocaleData = {
 			configSaved: string
 			botExists: string
 			unsavedChanges: string
+			confirmDeleteBot: string
+			invalidJsonConfig: string
 			httpError: string
 			beforeUnload: string
 		}
