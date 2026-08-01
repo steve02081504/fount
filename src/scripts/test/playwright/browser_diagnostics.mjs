@@ -208,6 +208,9 @@ export function createBrowserDiagnostics() {
 		session.on('Runtime.executionContextDestroyed', ({ executionContextId }) => {
 			contextFrameIds.delete(executionContextId)
 		})
+		session.on('Runtime.executionContextsCleared', () => {
+			contextFrameIds.clear()
+		})
 		session.on('Runtime.exceptionThrown', ({ exceptionDetails }) => {
 			const frameId = contextFrameIds.get(exceptionDetails.executionContextId)
 			// 未知 context 保守当主 frame，避免误吞
