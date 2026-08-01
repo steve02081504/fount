@@ -15,6 +15,15 @@ process.env.LANG = 'zh-CN'
 /** deno panic 时输出完整 Rust 栈帧；子进程 spawn 须经 childEnv() 显式传递。 */
 process.env.RUST_BACKTRACE = 'full'
 
+// TODO(pidusage): remove when https://github.com/soyuka/pidusage/issues/191 is fixed — orchestrator ProcessUsageTracker → pidusage gwmi on Windows.
+if (process.platform === 'win32') {
+	const emitWarning = process.emitWarning
+	process.emitWarning = (warning, ...args) => {
+		if (warning?.code === 'DEP0190' || args[1] === 'DEP0190') return
+		return emitWarning.call(process, warning, ...args)
+	}
+}
+
 /**
  * 测试子进程环境：继承当前 process.env 并强制 RUST_BACKTRACE=full。
  * @param {Record<string, string>} [extra] 额外变量
