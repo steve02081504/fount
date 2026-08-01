@@ -4234,22 +4234,6 @@
 					"followers7d": "7 दिन से ज्यादा समय से फॉलोअर्स",
 					"label": "कौन जवाब दे सकता है"
 				}
-			},
-			"edit": {
-				"apply": "लागू करें",
-				"brush": "ब्रश",
-				"brushColor": {
-					"title": "ब्रश का रंग",
-					"aria-label": "ब्रश का रंग"
-				},
-				"brushSize": {
-					"title": "ब्रश का आकार",
-					"aria-label": "ब्रश का आकार"
-				},
-				"cancel": "रद्द करें",
-				"crop": "क्रॉप",
-				"image": "संपादित करें",
-				"mosaic": "पिक्सेलेट"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "सूचनाएँ"
 			}
+		},
+		"imageEditor": {
+			"apply": "लागू करें",
+			"brush": "ब्रश",
+			"brushColor": {
+				"title": "ब्रश का रंग",
+				"aria-label": "ब्रश का रंग"
+			},
+			"brushSize": {
+				"title": "ब्रश का आकार",
+				"aria-label": "ब्रश का आकार"
+			},
+			"crop": "क्रॉप",
+			"image": "संपादित करें",
+			"mosaic": "पिक्सेलेट"
 		},
 		"common": {
 			"cancel": "रद्द करें",

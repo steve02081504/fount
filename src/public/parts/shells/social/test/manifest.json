@@ -276,7 +276,7 @@
 						"src/public/parts/shells/social/test/frontend/feed.spec.mjs",
 						"src/public/parts/shells/social/public/src/views/feed.mjs",
 						"src/public/parts/shells/social/public/src/postCard.mjs",
-						"src/public/pages/scripts/infiniteScroll.mjs"
+						"src/public/pages/scripts/lib/infiniteScroll.mjs"
 					]
 				},
 				{

@@ -30,9 +30,6 @@ export { showEmojiPackPreview } from './emojiPackPreview.mjs'
 
 const JUMP_START_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16v2H4V4zm8 3l6 6h-4v7h-4v-7H6l6-6z"/></svg>'
 const JUMP_UNICODE_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-4.5-7.5c.83 0 1.5-.67 1.5-1.5S8.33 9.5 7.5 9.5 6 10.17 6 11s.67 1.5 1.5 1.5zm9 0c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5-1.5.67-1.5 1.5.67 1.5 1.5 1.5zm-4.5 5.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>'
-const CSS_ID = 'fount-emoji-picker-css'
-const CSS_HREF = '/scripts/components/emojiPicker.css'
-
 
 /**
  * 来源侧默认包：由 provider/API 回显的 defaultEmojiPackId（已在后端 resolve）判定。
@@ -56,18 +53,6 @@ function enrichPackItem(packId, item) {
 		packId,
 		emojiRef: item.emojiRef || (item.emojiId ? `:[emoji:${packId}/${item.emojiId}]:` : ''),
 	}
-}
-
-/**
- * @returns {void}
- */
-function ensureEmojiPickerCss() {
-	if (document.getElementById(CSS_ID)) return
-	const link = document.createElement('link')
-	link.id = CSS_ID
-	link.rel = 'stylesheet'
-	link.href = CSS_HREF
-	document.head.appendChild(link)
 }
 
 /**
@@ -330,7 +315,6 @@ function openSectionPackPreview(anchor, section) {
  * @returns {{ disconnect: () => void, scrollElement: HTMLElement, railElement: HTMLElement }} DOM 引用与清理句柄
  */
 function renderContinuousPicker(host, sections, handlers) {
-	ensureEmojiPickerCss()
 	host.replaceChildren()
 
 	const sectionById = new Map(sections.map(section => [section.id, section]))
@@ -522,7 +506,6 @@ export async function mountDockedEmojiPicker(options) {
 		pickerContext = {}, getPickerContext, onInsert, closeWhenOpening,
 	} = options
 
-	ensureEmojiPickerCss()
 	/** @returns {object} 当前 picker 上下文 */
 	const resolvePickerContext = () => getPickerContext?.() ?? pickerContext
 
@@ -589,7 +572,6 @@ export async function mountDockedEmojiPicker(options) {
  */
 export async function mountEmojiPicker(anchor, onInsert, pickerContext = {}) {
 	document.getElementById('fount-shared-emoji-picker')?.remove()
-	ensureEmojiPickerCss()
 
 	const panel = document.createElement('div')
 	panel.id = 'fount-shared-emoji-picker'
@@ -636,3 +618,10 @@ export function wireEmojiPickerButton(button, onInsert, pickerContext = {}) {
 		void mountEmojiPicker(button, onInsert, pickerContext)
 	})
 }
+
+// --- 全局样式注入 ---
+
+document.head.prepend(Object.assign(document.createElement('link'), {
+	rel: 'stylesheet',
+	href: '/scripts/components/emojiPicker.css',
+}))

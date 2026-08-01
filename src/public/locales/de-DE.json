@@ -4234,22 +4234,6 @@
 					"followers7d": "Follower seit mehr als 7 Tagen",
 					"label": "Wer kann antworten?"
 				}
-			},
-			"edit": {
-				"apply": "Übernehmen",
-				"brush": "Pinsel",
-				"brushColor": {
-					"title": "Pinselfarbe",
-					"aria-label": "Pinselfarbe"
-				},
-				"brushSize": {
-					"title": "Pinselgröße",
-					"aria-label": "Pinselgröße"
-				},
-				"cancel": "Abbrechen",
-				"crop": "Zuschneiden",
-				"image": "Bearbeiten",
-				"mosaic": "Verpixeln"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "Benachrichtigungen"
 			}
+		},
+		"imageEditor": {
+			"apply": "Übernehmen",
+			"brush": "Pinsel",
+			"brushColor": {
+				"title": "Pinselfarbe",
+				"aria-label": "Pinselfarbe"
+			},
+			"brushSize": {
+				"title": "Pinselgröße",
+				"aria-label": "Pinselgröße"
+			},
+			"crop": "Zuschneiden",
+			"image": "Bearbeiten",
+			"mosaic": "Verpixeln"
 		},
 		"common": {
 			"cancel": "Abbrechen",

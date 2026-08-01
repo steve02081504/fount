@@ -4234,22 +4234,6 @@
 					"followers7d": "متابعون لأكثر من 7 أيام",
 					"label": "من يستطيع الرد"
 				}
-			},
-			"edit": {
-				"apply": "تطبيق",
-				"brush": "فرشاة",
-				"brushColor": {
-					"title": "لون الفرشاة",
-					"aria-label": "لون الفرشاة"
-				},
-				"brushSize": {
-					"title": "سُمك الفرشاة",
-					"aria-label": "سُمك الفرشاة"
-				},
-				"cancel": "إلغاء",
-				"crop": "اقتصاص",
-				"image": "تعديل",
-				"mosaic": "تمويه"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "الإشعارات"
 			}
+		},
+		"imageEditor": {
+			"apply": "تطبيق",
+			"brush": "فرشاة",
+			"brushColor": {
+				"title": "لون الفرشاة",
+				"aria-label": "لون الفرشاة"
+			},
+			"brushSize": {
+				"title": "سُمك الفرشاة",
+				"aria-label": "سُمك الفرشاة"
+			},
+			"crop": "اقتصاص",
+			"image": "تعديل",
+			"mosaic": "تمويه"
 		},
 		"common": {
 			"cancel": "إلغاء",

@@ -4209,22 +4209,6 @@ export type LocaleData = {
 					label: string
 				}
 			}
-			edit: {
-				apply: string
-				brush: string
-				brushColor: {
-					title: string
-					'aria-label': string
-				}
-				brushSize: {
-					title: string
-					'aria-label': string
-				}
-				cancel: string
-				crop: string
-				image: string
-				mosaic: string
-			}
 		}
 		feed: {
 			refresh: {
@@ -5596,6 +5580,21 @@ export type LocaleData = {
 			container: {
 				'aria-label': string
 			}
+		}
+		imageEditor: {
+			apply: string
+			brush: string
+			brushColor: {
+				title: string
+				'aria-label': string
+			}
+			brushSize: {
+				title: string
+				'aria-label': string
+			}
+			crop: string
+			image: string
+			mosaic: string
 		}
 		common: {
 			cancel: string

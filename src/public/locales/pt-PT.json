@@ -4234,22 +4234,6 @@
 					"followers7d": "Seguidores há mais de 7 dias",
 					"label": "Quem pode responder"
 				}
-			},
-			"edit": {
-				"apply": "Aplicar",
-				"brush": "Pincel",
-				"brushColor": {
-					"title": "Cor do pincel",
-					"aria-label": "Cor do pincel"
-				},
-				"brushSize": {
-					"title": "Tamanho do pincel",
-					"aria-label": "Tamanho do pincel"
-				},
-				"cancel": "Cancelar",
-				"crop": "Recortar",
-				"image": "Editar",
-				"mosaic": "Pixelizar"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "Notificações"
 			}
+		},
+		"imageEditor": {
+			"apply": "Aplicar",
+			"brush": "Pincel",
+			"brushColor": {
+				"title": "Cor do pincel",
+				"aria-label": "Cor do pincel"
+			},
+			"brushSize": {
+				"title": "Tamanho do pincel",
+				"aria-label": "Tamanho do pincel"
+			},
+			"crop": "Recortar",
+			"image": "Editar",
+			"mosaic": "Pixelizar"
 		},
 		"common": {
 			"cancel": "Cancelar",

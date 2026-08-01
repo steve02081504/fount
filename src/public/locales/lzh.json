@@ -4234,22 +4234,6 @@
 					"followers7d": "結交逾七日者",
 					"label": "誰可回覆"
 				}
-			},
-			"edit": {
-				"apply": "應用",
-				"brush": "畫筆",
-				"brushColor": {
-					"title": "畫筆之色",
-					"aria-label": "畫筆之色"
-				},
-				"brushSize": {
-					"title": "畫筆粗細",
-					"aria-label": "畫筆粗細"
-				},
-				"cancel": "罷",
-				"crop": "裁剪",
-				"image": "修",
-				"mosaic": "打碼"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "告示"
 			}
+		},
+		"imageEditor": {
+			"apply": "應用",
+			"brush": "畫筆",
+			"brushColor": {
+				"title": "畫筆之色",
+				"aria-label": "畫筆之色"
+			},
+			"brushSize": {
+				"title": "畫筆粗細",
+				"aria-label": "畫筆粗細"
+			},
+			"crop": "裁剪",
+			"image": "修",
+			"mosaic": "打碼"
 		},
 		"common": {
 			"cancel": "止",

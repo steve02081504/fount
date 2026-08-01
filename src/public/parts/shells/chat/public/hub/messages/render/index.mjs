@@ -3,7 +3,7 @@
  * 【职责】单条频道消息块协调：聚合正文类型渲染、外壳、反应条与列表插入后绑定。
  */
 import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
-import { bindContentReveal, wrapContentWarningHtml, wrapSensitiveMediaHtml } from '/scripts/features/contentReveal/index.mjs'
+import { bindContentReveal, wrapContentWarningHtml, wrapSensitiveMediaHtml } from '/scripts/features/contentReveal.mjs'
 import { geti18n } from '../../../../../../scripts/i18n/index.mjs'
 import { channelMessageKind, chatExtensionOf } from '../../../shared/channelContent.mjs'
 import { firstEmojiTokenInText } from '../../../shared/inlineTokenSyntax.mjs'

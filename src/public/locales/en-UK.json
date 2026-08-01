@@ -4231,22 +4231,6 @@
 					"followers7d": "Followers for more than 7 days",
 					"label": "Who can reply"
 				}
-			},
-			"edit": {
-				"apply": "Apply",
-				"brush": "Brush",
-				"brushColor": {
-					"title": "Brush colour",
-					"aria-label": "Brush colour"
-				},
-				"brushSize": {
-					"title": "Brush size",
-					"aria-label": "Brush size"
-				},
-				"cancel": "Cancel",
-				"crop": "Crop",
-				"image": "edit",
-				"mosaic": "Pixelate"
 			}
 		},
 		"feed": {
@@ -5613,6 +5597,21 @@
 			"container": {
 				"aria-label": "Notifications"
 			}
+		},
+		"imageEditor": {
+			"apply": "Apply",
+			"brush": "Brush",
+			"brushColor": {
+				"title": "Brush colour",
+				"aria-label": "Brush colour"
+			},
+			"brushSize": {
+				"title": "Brush size",
+				"aria-label": "Brush size"
+			},
+			"crop": "Crop",
+			"image": "edit",
+			"mosaic": "Pixelate"
 		},
 		"common": {
 			"cancel": "Cancel",

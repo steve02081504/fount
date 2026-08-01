@@ -1,20 +1,5 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
-const CSS_HREF = '/scripts/features/contentReveal/contentReveal.css'
-
-/**
- * 确保 content reveal 样式表已注入。
- * @returns {void}
- */
-function ensureContentRevealStyles() {
-	if (document.querySelector('link[data-content-reveal-css]')) return
-	const link = document.createElement('link')
-	link.rel = 'stylesheet'
-	link.href = CSS_HREF
-	link.dataset.contentRevealCss = ''
-	document.head.appendChild(link)
-}
-
 /**
  * 为敏感媒体内容包裹遮罩层 HTML。
  * @param {string} innerHtml 内层媒体 HTML
@@ -22,7 +7,6 @@ function ensureContentRevealStyles() {
  * @returns {string} 包裹后的 HTML
  */
 export function wrapSensitiveMediaHtml(innerHtml, { warningLabel = '', revealLabel = 'Reveal', warningI18n, revealI18n } = {}) {
-	ensureContentRevealStyles()
 	const label = warningI18n
 		? `<div class="sensitive-media-label" data-i18n="${escapeHtml(warningI18n)}"></div>`
 		: `<div class="sensitive-media-label">${escapeHtml(warningLabel)}</div>`
@@ -45,7 +29,6 @@ export function wrapSensitiveMediaHtml(innerHtml, { warningLabel = '', revealLab
  * @returns {string} 包裹后的 HTML
  */
 export function wrapContentWarningHtml(innerHtml, { warningLabel = '', revealLabel = 'Reveal', revealI18n } = {}) {
-	ensureContentRevealStyles()
 	const label = escapeHtml(warningLabel)
 	const reveal = revealI18n
 		? `<button type="button" class="content-warning-reveal" data-i18n="${escapeHtml(revealI18n)}"></button>`
@@ -65,7 +48,6 @@ export function wrapContentWarningHtml(innerHtml, { warningLabel = '', revealLab
 export function bindContentReveal(root) {
 	if (!(root instanceof HTMLElement) || root.dataset.contentRevealBound === '1') return
 	root.dataset.contentRevealBound = '1'
-	ensureContentRevealStyles()
 	root.addEventListener('click', event => {
 		const { target } = event
 		if (!(target instanceof HTMLElement)) return
@@ -92,3 +74,64 @@ export function bindContentReveal(root) {
 		}
 	})
 }
+
+// --- 全局样式注入 ---
+
+document.head.prepend(Object.assign(document.createElement('style'), {
+	textContent: /* css */ `\
+.sensitive-media-wrap {
+	position: relative;
+	isolation: isolate;
+}
+.sensitive-media-wrap[data-sensitive-collapsed="1"] .sensitive-media-body {
+	filter: blur(28px);
+	pointer-events: none;
+	user-select: none;
+}
+.sensitive-media-overlay {
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	background: color-mix(in srgb, var(--color-neutral) 45%, transparent);
+	border-radius: 16px;
+}
+.sensitive-media-label {
+	font-weight: 600;
+	color: var(--color-neutral-content);
+	text-shadow: 0 1px 2px color-mix(in srgb, var(--color-neutral) 70%, transparent);
+}
+.sensitive-media-reveal {
+	border: 1px solid color-mix(in srgb, var(--color-neutral-content) 55%, transparent);
+	background: color-mix(in srgb, var(--color-neutral) 55%, transparent);
+	color: var(--color-neutral-content);
+	border-radius: 6px;
+	padding: 4px 12px;
+	cursor: pointer;
+}
+.content-warning-wrap {
+	border: 1px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+	border-radius: 8px;
+	padding: 10px 12px;
+	margin-bottom: 8px;
+	background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+}
+.content-warning-label {
+	font-size: 13px;
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+.content-warning-reveal {
+	border: 1px solid color-mix(in srgb, var(--color-base-content) 15%, transparent);
+	background: var(--color-base-200);
+	color: inherit;
+	border-radius: 6px;
+	padding: 4px 10px;
+	cursor: pointer;
+}
+`,
+}))

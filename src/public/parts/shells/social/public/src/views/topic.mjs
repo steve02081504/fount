@@ -1,4 +1,4 @@
-import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/infiniteScroll.mjs'
+import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { buildPostCard } from '../postCard.mjs'

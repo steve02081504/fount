@@ -4234,22 +4234,6 @@
 					"followers7d": "Người theo dõi trong hơn 7 ngày",
 					"label": "Ai có thể trả lời"
 				}
-			},
-			"edit": {
-				"apply": "Áp dụng",
-				"brush": "Cọ",
-				"brushColor": {
-					"title": "Màu cọ",
-					"aria-label": "Màu cọ"
-				},
-				"brushSize": {
-					"title": "Độ dày cọ",
-					"aria-label": "Độ dày cọ"
-				},
-				"cancel": "Hủy bỏ",
-				"crop": "Cắt",
-				"image": "biên tập",
-				"mosaic": "Che pixel"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "Thông báo"
 			}
+		},
+		"imageEditor": {
+			"apply": "Áp dụng",
+			"brush": "Cọ",
+			"brushColor": {
+				"title": "Màu cọ",
+				"aria-label": "Màu cọ"
+			},
+			"brushSize": {
+				"title": "Độ dày cọ",
+				"aria-label": "Độ dày cọ"
+			},
+			"crop": "Cắt",
+			"image": "Chỉnh sửa",
+			"mosaic": "Che pixel"
 		},
 		"common": {
 			"cancel": "Hủy bỏ",

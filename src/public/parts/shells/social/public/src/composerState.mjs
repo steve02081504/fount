@@ -8,7 +8,7 @@ import { renderMediaPreview } from './mediaRender.mjs'
 import { state } from './state.mjs'
 import { bindVisibilityPicker, applyVisibilityPicker } from './visibilityPicker.mjs'
 import { formatChannelToken, stripChannelTokens } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
-import { openImageEditor } from '/scripts/imageEditor/index.mjs'
+import { openImageEditor } from '/scripts/components/imageEditor.mjs'
 
 const SOCIAL_CW_IDS = { cwId: 'postContentWarning', sensitiveId: 'postSensitiveMedia' }
 
@@ -202,7 +202,6 @@ export function refreshMediaPreview() {
 		state.pendingMediaRefs,
 		() => refreshMediaPreview(),
 		{
-			editI18n: 'social.composer.edit.image',
 			/**
 			 * @param {number} index 媒体下标
 			 * @param {object} ref 媒体引用

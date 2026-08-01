@@ -13,7 +13,7 @@ const BROWSER_SCRIPTS = [
 	'/parts/shells:chat/shared/mentions.mjs',
 	'/parts/shells:chat/shared/inlineTokens.mjs',
 	'/parts/shells:chat/shared/hashAvatar.mjs',
-	'/scripts/infiniteScroll.mjs',
+	'/scripts/lib/infiniteScroll.mjs',
 	'/scripts/lib/base64.mjs',
 	'/scripts/test/ready_gate.mjs',
 ]

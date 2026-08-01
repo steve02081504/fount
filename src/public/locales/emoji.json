@@ -4234,22 +4234,6 @@
 					"followers7d": "7️⃣📅➕👀",
 					"label": "💬🔐"
 				}
-			},
-			"edit": {
-				"apply": "✅",
-				"brush": "🖌️",
-				"brushColor": {
-					"title": "🎨",
-					"aria-label": "🎨"
-				},
-				"brushSize": {
-					"title": "📏",
-					"aria-label": "📏"
-				},
-				"cancel": "↩️",
-				"crop": "✂️",
-				"image": "✏️",
-				"mosaic": "🔲"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "🔔"
 			}
+		},
+		"imageEditor": {
+			"apply": "✅",
+			"brush": "🖌️",
+			"brushColor": {
+				"title": "🎨",
+				"aria-label": "🎨"
+			},
+			"brushSize": {
+				"title": "📏",
+				"aria-label": "📏"
+			},
+			"crop": "✂️",
+			"image": "✏️",
+			"mosaic": "🔲"
 		},
 		"common": {
 			"cancel": "↩️",

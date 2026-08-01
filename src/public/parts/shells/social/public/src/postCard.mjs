@@ -1,4 +1,4 @@
-import { wrapContentWarningHtml } from '/scripts/features/contentReveal/index.mjs'
+import { wrapContentWarningHtml } from '/scripts/features/contentReveal.mjs'
 import { renderTemplate, renderTemplateAsHtmlString } from '../../../../scripts/features/template.mjs'
 import { renderGroupRefBlockHtml } from '../shared/groupRef.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../shared/runUri.mjs'

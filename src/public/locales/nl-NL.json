@@ -4234,22 +4234,6 @@
 					"followers7d": "Volgers langer dan 7 dagen",
 					"label": "Wie kan antwoorden"
 				}
-			},
-			"edit": {
-				"apply": "Toepassen",
-				"brush": "Penseel",
-				"brushColor": {
-					"title": "Penseelkleur",
-					"aria-label": "Penseelkleur"
-				},
-				"brushSize": {
-					"title": "Penseeldikte",
-					"aria-label": "Penseeldikte"
-				},
-				"cancel": "Annuleren",
-				"crop": "Bijsnijden",
-				"image": "Bewerken",
-				"mosaic": "Verpixelen"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "Meldingen"
 			}
+		},
+		"imageEditor": {
+			"apply": "Toepassen",
+			"brush": "Penseel",
+			"brushColor": {
+				"title": "Penseelkleur",
+				"aria-label": "Penseelkleur"
+			},
+			"brushSize": {
+				"title": "Penseeldikte",
+				"aria-label": "Penseeldikte"
+			},
+			"crop": "Bijsnijden",
+			"image": "Bewerken",
+			"mosaic": "Verpixelen"
 		},
 		"common": {
 			"cancel": "Annuleren",

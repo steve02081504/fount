@@ -1,24 +1,9 @@
 import { escapeHtml } from '../lib/escapeHtml.mjs'
 import { memoizePromise } from '../lib/memo.mjs'
 
-const CSS_ID = 'fount-embed-card-css'
-const CSS_HREF = '/scripts/features/embedCard.css'
 const TITLE_DISPLAY_MAX = 120
 const DESC_DISPLAY_MAX = 200
 const ATTR = 'data-fount-embed'
-
-/**
- * 确保 embed 卡片样式已注入。
- * @returns {void}
- */
-function ensureEmbedCardCss() {
-	if (document.getElementById(CSS_ID)) return
-	const link = document.createElement('link')
-	link.id = CSS_ID
-	link.rel = 'stylesheet'
-	link.href = CSS_HREF
-	document.head.appendChild(link)
-}
 
 /**
  * @param {string} text 原始文本
@@ -120,7 +105,6 @@ export const unfurl = memoizePromise(url => url, fetchUnfurl, { max: 128, ttlMs:
  */
 export function renderEmbedCardHtml(embed) {
 	if (!embed?.url) return ''
-	ensureEmbedCardCss()
 	const url = String(embed.url)
 	const title = truncateText(embed.title || url, TITLE_DISPLAY_MAX)
 	const description = truncateText(embed.description || '', DESC_DISPLAY_MAX)
@@ -155,7 +139,6 @@ export function renderEmbedCardHtml(embed) {
  */
 export function renderEmbedChipHtml(embed) {
 	if (!embed?.url) return ''
-	ensureEmbedCardCss()
 	const url = String(embed.url)
 	let hostname = ''
 	try { hostname = new URL(url).hostname } catch { /* ignore */ }
@@ -242,7 +225,6 @@ let observerStarted = false
 export function ensureEmbedHydrator() {
 	if (observerStarted || typeof document === 'undefined') return
 	observerStarted = true
-	ensureEmbedCardCss()
 	hydrateIn(document.body)
 	new MutationObserver(records => {
 		for (const record of records)
@@ -253,3 +235,10 @@ export function ensureEmbedHydrator() {
 
 	}).observe(document.body, { childList: true, subtree: true })
 }
+
+// --- 全局样式注入 ---
+
+document.head.prepend(Object.assign(document.createElement('link'), {
+	rel: 'stylesheet',
+	href: '/scripts/features/embedCard.css',
+}))

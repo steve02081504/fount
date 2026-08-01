@@ -4234,22 +4234,6 @@
 					"followers7d": "Seguidores por más de 7 días.",
 					"label": "¿Quién puede responder?"
 				}
-			},
-			"edit": {
-				"apply": "Aplicar",
-				"brush": "Pincel",
-				"brushColor": {
-					"title": "Color del pincel",
-					"aria-label": "Color del pincel"
-				},
-				"brushSize": {
-					"title": "Tamaño del pincel",
-					"aria-label": "Tamaño del pincel"
-				},
-				"cancel": "Cancelar",
-				"crop": "Recortar",
-				"image": "editar",
-				"mosaic": "Pixelar"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "Notificaciones"
 			}
+		},
+		"imageEditor": {
+			"apply": "Aplicar",
+			"brush": "Pincel",
+			"brushColor": {
+				"title": "Color del pincel",
+				"aria-label": "Color del pincel"
+			},
+			"brushSize": {
+				"title": "Tamaño del pincel",
+				"aria-label": "Tamaño del pincel"
+			},
+			"crop": "Recortar",
+			"image": "editar",
+			"mosaic": "Pixelar"
 		},
 		"common": {
 			"cancel": "Cancelar",

@@ -22,6 +22,7 @@ reviews:
 
   path_filters:
     - '!**/*.svg'
+    - '!**/desktop.ini'
 
   path_instructions:
     # ── 全局审美与架构 ──────────────────────────────────────────────────
