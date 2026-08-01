@@ -1,5 +1,5 @@
 import { groupSelfReplyThreads } from '../../shared/feedThreads.mjs'
-import { insertBeforeScrollSentinel } from '/scripts/infiniteScroll.mjs'
+import { insertBeforeScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
 
 /**
  * 将分组渲染并追加到容器（插在 `[data-scroll-sentinel]` 之前）。

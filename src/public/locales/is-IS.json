@@ -4234,22 +4234,6 @@
 					"followers7d": "Fylgjendur í meira en 7 daga",
 					"label": "Hver getur svarað"
 				}
-			},
-			"edit": {
-				"apply": "Nota",
-				"brush": "Pensill",
-				"brushColor": {
-					"title": "Litur pensils",
-					"aria-label": "Litur pensils"
-				},
-				"brushSize": {
-					"title": "Stærð pensils",
-					"aria-label": "Stærð pensils"
-				},
-				"cancel": "Hætta við",
-				"crop": "Klippa",
-				"image": "Breyta",
-				"mosaic": "Pixla"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "Tilkynningar"
 			}
+		},
+		"imageEditor": {
+			"apply": "Nota",
+			"brush": "Pensill",
+			"brushColor": {
+				"title": "Litur pensils",
+				"aria-label": "Litur pensils"
+			},
+			"brushSize": {
+				"title": "Stærð pensils",
+				"aria-label": "Stærð pensils"
+			},
+			"crop": "Klippa",
+			"image": "Breyta",
+			"mosaic": "Pixla"
 		},
 		"common": {
 			"cancel": "Hætta við",

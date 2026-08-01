@@ -141,7 +141,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		editButton.textContent = '✎'
 		editButton.addEventListener('click', async () => {
 			try {
-				const { openImageEditor } = await import('/scripts/imageEditor/index.mjs')
+				const { openImageEditor } = await import('/scripts/components/imageEditor.mjs')
 				const blob = base64ToBlob(file.buffer, file.mime_type)
 				const edited = await openImageEditor(new File([blob], file.name, { type: file.mime_type }), {
 					titleI18n: 'chat.hub.editImage',

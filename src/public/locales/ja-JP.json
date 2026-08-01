@@ -4234,22 +4234,6 @@
 					"followers7d": "7日以上のフォロワー",
 					"label": "返信できる人"
 				}
-			},
-			"edit": {
-				"apply": "適用",
-				"brush": "ブラシ",
-				"brushColor": {
-					"title": "ブラシの色",
-					"aria-label": "ブラシの色"
-				},
-				"brushSize": {
-					"title": "ブラシの太さ",
-					"aria-label": "ブラシの太さ"
-				},
-				"cancel": "キャンセル",
-				"crop": "トリミング",
-				"image": "編集",
-				"mosaic": "モザイク"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "通知"
 			}
+		},
+		"imageEditor": {
+			"apply": "適用",
+			"brush": "ブラシ",
+			"brushColor": {
+				"title": "ブラシの色",
+				"aria-label": "ブラシの色"
+			},
+			"brushSize": {
+				"title": "ブラシの太さ",
+				"aria-label": "ブラシの太さ"
+			},
+			"crop": "トリミング",
+			"image": "編集",
+			"mosaic": "モザイク"
 		},
 		"common": {
 			"cancel": "キャンセル",

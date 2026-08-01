@@ -4233,22 +4233,6 @@
 					"followers7d": "7天以上關注者",
 					"label": "誰可以回覆"
 				}
-			},
-			"edit": {
-				"apply": "應用",
-				"brush": "畫筆",
-				"brushColor": {
-					"title": "畫筆顏色",
-					"aria-label": "畫筆顏色"
-				},
-				"brushSize": {
-					"title": "畫筆粗細",
-					"aria-label": "畫筆粗細"
-				},
-				"cancel": "取消",
-				"crop": "裁剪",
-				"image": "編輯",
-				"mosaic": "打碼"
 			}
 		},
 		"feed": {
@@ -5615,6 +5599,21 @@
 			"container": {
 				"aria-label": "通知"
 			}
+		},
+		"imageEditor": {
+			"apply": "應用",
+			"brush": "畫筆",
+			"brushColor": {
+				"title": "畫筆顏色",
+				"aria-label": "畫筆顏色"
+			},
+			"brushSize": {
+				"title": "畫筆粗細",
+				"aria-label": "畫筆粗細"
+			},
+			"crop": "裁剪",
+			"image": "編輯",
+			"mosaic": "打碼"
 		},
 		"common": {
 			"cancel": "取消",

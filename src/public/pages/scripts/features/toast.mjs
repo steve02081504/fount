@@ -168,8 +168,10 @@ export function showToastI18n(type = 'info', key, params = {}, duration) {
 	else div.querySelector('div').dataset.i18n = key
 }
 
-const style = document.createElement('style')
-style.textContent = `\
+// --- 全局样式注入 ---
+
+document.head.prepend(Object.assign(document.createElement('style'), {
+	textContent: /* css */ `\
 @keyframes animate-fade-in-up {
 	from { opacity: 0; transform: translateY(20px); }
 	to { opacity: 1; transform: translateY(0); }
@@ -184,5 +186,5 @@ style.textContent = `\
 .animate-fade-out-down {
 	animation: animate-fade-out-down 0.3s ease-in forwards;
 }
-`
-document.head.appendChild(style)
+`,
+}))

@@ -1,18 +1,18 @@
 /** @type {IntersectionObserver | null} */
 let activeObserver = null
 
-{
-	const style = document.createElement('style')
-	style.textContent = /* css */ `\
+// --- 全局样式注入 ---
+
+document.head.prepend(Object.assign(document.createElement('style'), {
+	textContent: /* css */ `\
 [data-scroll-sentinel] {
 	height: 1px;
 	width: 100%;
 	pointer-events: none;
 	overflow-anchor: none;
 }
-`
-	document.head.appendChild(style)
-}
+`,
+}))
 
 /**
  * 绑定 IntersectionObserver 无限滚动。

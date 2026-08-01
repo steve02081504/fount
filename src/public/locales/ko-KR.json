@@ -4234,22 +4234,6 @@
 					"followers7d": "7일 이상 팔로워 수",
 					"label": "답글을 달 수 있는 사람"
 				}
-			},
-			"edit": {
-				"apply": "적용",
-				"brush": "브러시",
-				"brushColor": {
-					"title": "브러시 색상",
-					"aria-label": "브러시 색상"
-				},
-				"brushSize": {
-					"title": "브러시 크기",
-					"aria-label": "브러시 크기"
-				},
-				"cancel": "취소",
-				"crop": "자르기",
-				"image": "편집",
-				"mosaic": "모자이크"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "알림"
 			}
+		},
+		"imageEditor": {
+			"apply": "적용",
+			"brush": "브러시",
+			"brushColor": {
+				"title": "브러시 색상",
+				"aria-label": "브러시 색상"
+			},
+			"brushSize": {
+				"title": "브러시 크기",
+				"aria-label": "브러시 크기"
+			},
+			"crop": "자르기",
+			"image": "편집",
+			"mosaic": "모자이크"
 		},
 		"common": {
 			"cancel": "취소",

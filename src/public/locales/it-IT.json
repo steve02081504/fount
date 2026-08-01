@@ -4234,22 +4234,6 @@
 					"followers7d": "Follower da più di 7 giorni",
 					"label": "Chi può rispondere"
 				}
-			},
-			"edit": {
-				"apply": "Applica",
-				"brush": "Pennello",
-				"brushColor": {
-					"title": "Colore del pennello",
-					"aria-label": "Colore del pennello"
-				},
-				"brushSize": {
-					"title": "Dimensione del pennello",
-					"aria-label": "Dimensione del pennello"
-				},
-				"cancel": "Annulla",
-				"crop": "Ritaglia",
-				"image": "modificare",
-				"mosaic": "Pixelizza"
 			}
 		},
 		"feed": {
@@ -5616,6 +5600,21 @@
 			"container": {
 				"aria-label": "Notifiche"
 			}
+		},
+		"imageEditor": {
+			"apply": "Applica",
+			"brush": "Pennello",
+			"brushColor": {
+				"title": "Colore del pennello",
+				"aria-label": "Colore del pennello"
+			},
+			"brushSize": {
+				"title": "Dimensione del pennello",
+				"aria-label": "Dimensione del pennello"
+			},
+			"crop": "Ritaglia",
+			"image": "modificare",
+			"mosaic": "Pixelizza"
 		},
 		"common": {
 			"cancel": "Annulla",

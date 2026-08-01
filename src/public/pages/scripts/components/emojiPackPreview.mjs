@@ -8,8 +8,6 @@ import { geti18n, loadPreferredLangs, primaryLocale } from '../i18n/index.mjs'
 import { escapeHtml } from '../lib/escapeHtml.mjs'
 import { isSafeHtmlUrl } from '../lib/sanitizeHtml.mjs'
 
-const CSS_ID = 'fount-emoji-pack-preview-css'
-const CSS_HREF = '/scripts/components/emojiPackPreview.css'
 const CARD_ID = 'fount-emoji-pack-preview'
 
 const CHAT_API = '/api/parts/shells:chat'
@@ -17,18 +15,6 @@ const SOCIAL_API = '/api/parts/shells:social'
 
 /** @type {(() => void) | null} */
 let disposeOutsideClose = null
-
-/**
- * @returns {void}
- */
-function ensureCss() {
-	if (document.getElementById(CSS_ID)) return
-	const link = document.createElement('link')
-	link.id = CSS_ID
-	link.rel = 'stylesheet'
-	link.href = CSS_HREF
-	document.head.appendChild(link)
-}
 
 /**
  * @param {HTMLElement} card 卡
@@ -167,7 +153,6 @@ async function resolveCollection(pack, provider) {
  */
 export async function showEmojiPackPreview(anchor, options) {
 	if (!(anchor instanceof HTMLElement) || !options?.pack) return
-	ensureCss()
 	const card = ensureCard()
 	const pack = options.pack
 	const provider = options.provider || pack._provider || null
@@ -281,3 +266,10 @@ export async function showEmojiPackPreview(anchor, options) {
 
 	positionNearAnchor(card, anchor)
 }
+
+// --- 全局样式注入 ---
+
+document.head.prepend(Object.assign(document.createElement('link'), {
+	rel: 'stylesheet',
+	href: '/scripts/components/emojiPackPreview.css',
+}))
