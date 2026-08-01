@@ -131,7 +131,7 @@ export function createIconAnime() {
 			userAbortController = new AbortController()
 			player = openPlayer(createAnimState())
 			player.start()
-			await player.play(() => enter(state)).loop(() => hold(state))
+			await (running = player.play(() => enter(state)).loop(() => hold(state)))
 			if (!stopping) markUserAbort()
 		},
 
@@ -146,7 +146,7 @@ export function createIconAnime() {
 			userAbortController = new AbortController()
 			player = openPlayer(createAnimState())
 			player.start()
-			running = Promise.resolve(player.play(() => enter(state)))
+			running = player.play(() => enter(state))
 			await running
 			if (stopping) return
 			if (player.signal?.aborted) markUserAbort()

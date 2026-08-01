@@ -205,27 +205,23 @@ export const stepSoil = (world) => {
 		delta[from] -= amount
 		condense[from] += amount
 	}
-	for (let index = 0; index < moveCount; index++) {
-		const cell = moveSources[index]
-		if (!delta[cell]) continue
-		moisture[cell] += delta[cell]
-		clampMoisture(moisture, cell)
-		delta[cell] = 0
+	/**
+	 * 将 indices 上的 delta 合入 moisture 并钳制，清零已用格。
+	 * @param {Int32Array} indices 单元索引
+	 * @param {number} count 条数
+	 */
+	const applyDelta = (indices, count) => {
+		for (let index = 0; index < count; index++) {
+			const cell = indices[index]
+			if (!delta[cell]) continue
+			moisture[cell] += delta[cell]
+			clampMoisture(moisture, cell)
+			delta[cell] = 0
+		}
 	}
-	for (let index = 0; index < moveCount; index++) {
-		const cell = moveTargets[index]
-		if (!delta[cell]) continue
-		moisture[cell] += delta[cell]
-		clampMoisture(moisture, cell)
-		delta[cell] = 0
-	}
-	for (let index = 0; index < feedN; index++) {
-		const cell = feedFrom[index]
-		if (!delta[cell]) continue
-		moisture[cell] += delta[cell]
-		clampMoisture(moisture, cell)
-		delta[cell] = 0
-	}
+	applyDelta(moveSources, moveCount)
+	applyDelta(moveTargets, moveCount)
+	applyDelta(feedFrom, feedN)
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W - 1; x++) {
