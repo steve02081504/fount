@@ -1478,7 +1478,10 @@
 }
 
 .thread-drawer-wrap [data-thread-msgbox] {
+	display: flex;
+	flex-direction: column;
 	overflow-y: auto;
 	flex: 1;
+	min-height: 0;
 	padding: 0.75rem;
 }

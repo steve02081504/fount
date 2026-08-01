@@ -34,13 +34,11 @@ export function iconifyImg(icon, options = {}) {
 	return `<img src="${iconifyUrl(icon)}"${cls} width="${width}" height="${height}" alt="${alt}" aria-hidden="true" />`
 }
 
-/** Hub 空状态图标 */
-export const hubEmptyChatIcon = iconifyImg('line-md/chat-round', { class: 'empty-icon-img', width: 48, height: 48 })
-/** Hub 空状态：挥手图标 HTML */
+/** Hub 空状态：频道无消息 */
 export const hubEmptyWaveIcon = iconifyImg('mdi/hand-wave-outline', { class: 'empty-icon-img', width: 48, height: 48 })
-/** Hub 空状态：角色列表图标 HTML */
-export const hubEmptyCharsIcon = iconifyImg('mdi/robot-outline', { class: 'empty-icon-img', width: 48, height: 48 })
-/** Hub 空状态：频道/列表图标 HTML */
+/** Hub 空状态：好友列表主区（从私聊返回） */
+export const hubEmptyFriendsIcon = iconifyImg('mdi/account-group-outline', { class: 'empty-icon-img', width: 48, height: 48 })
+/** Hub 空状态：列表频道无条目 */
 export const hubEmptyListIcon = iconifyImg('line-md/list-indented', { class: 'empty-icon-img', width: 48, height: 48 })
 
 /** 消息操作栏图标 */

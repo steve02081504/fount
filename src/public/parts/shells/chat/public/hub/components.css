@@ -629,24 +629,21 @@ body[data-surface="discovery"] .main-header {
 	line-height: 1.45;
 }
 
-/* —— 空状态 —— */
+/* —— 空状态（#messages、线程抽屉、列表频道等共用） —— */
 .empty {
-	gap: 8px;
-}
-
-.empty-icon-img {
-	opacity: 0.35;
-	filter: saturate(0.6);
-}
-
-.empty--friends {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	gap: 8px;
 	padding: 32px;
 	text-align: center;
+}
+
+.empty-icon-img {
+	opacity: 0.35;
+	filter: saturate(0.6);
 }
 
 .empty-illustration {
