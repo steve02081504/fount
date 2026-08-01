@@ -21,7 +21,7 @@
 	<script type="module">
 		import '../base.mjs'
 		import { transferEncryptedCredentials, receiveAndValidateEncryptedCredentials } from '../scripts/host/credentialManager.mjs'
-		import { initTranslations, geti18n } from '../scripts/i18n/index.mjs'
+		import { initTranslations, setElementI18n } from '../scripts/i18n/index.mjs'
 		/* global urlParams */
 		await initTranslations('login_info')
 		const hashParams = new URLSearchParams(window.location.hash.substring(1))
@@ -49,13 +49,14 @@
 		const retryBtn = document.getElementById('retry_btn')
 
 		/**
-		 * 显示错误弹窗。
-		 * @param {string} message - 错误信息。
+		 * 显示错误弹窗（data-i18n，切语种时正文与按钮同步）。
+		 * @param {string} i18nKey - 翻译键。
+		 * @param {Record<string, string>} [params] - 插值参数。
 		 * @param {Object} [options] - 选项。
 		 * @param {() => void} [options.onIgnore] - 点击忽略时的回调。
 		 * @param {() => void} [options.onRetry] - 点击重试时的回调。
 		 */
-		function showErrorModal(message, {
+		function showErrorModal(i18nKey, params = {}, {
 			onIgnore,
 			/**
 			 * 默认重试回调函数。
@@ -66,7 +67,7 @@
 				window.location.reload()
 			}
 		} = {}) {
-			errorMessageElement.textContent = message
+			setElementI18n(errorMessageElement, i18nKey, params)
 			ignoreBtn.onclick = onIgnore
 			retryBtn.onclick = onRetry
 			errorModal.showModal()
@@ -85,10 +86,10 @@
 		}
 
 		try {
-			if (!redirectUrl || !uuid) {
-				errorMessageElement.textContent = geti18n('login_info.modal.missing_params')
-				throw new Error('Missing redirect or uuid')
-			}
+			if (!redirectUrl || !uuid)
+				throw Object.assign(new Error('Missing redirect or uuid'), {
+					i18nKey: 'login_info.modal.missing_params'
+				})
 			const instanceId = uuid.split('-')[0]
 			if (fileId || from) try { // save
 				const encryptedData = await receiveAndValidateEncryptedCredentials(fileId, from, hashParams, uuid)
@@ -103,30 +104,36 @@
 				window.location.href = targetUrl.href
 			} catch (error) {
 				console.error('Failed to receive credentials:', error)
-				errorMessageElement.textContent = geti18n('login_info.modal.retrieve_error', { error: error.message })
-				throw error
+				throw Object.assign(error, {
+					i18nKey: 'login_info.modal.retrieve_error'
+				})
 			}
 			else if (localStorage.getItem(`fount-login-${instanceId}`)) try {// load
 				await transferEncryptedCredentials(uuid, processUrl(redirectUrl))
 			} catch (error) {
 				console.error('Failed to transfer credentials:', error)
-				errorMessageElement.textContent = geti18n('login_info.modal.transfer_error', { error: error.message })
-				throw error
+				throw Object.assign(error, {
+					i18nKey: 'login_info.modal.transfer_error'
+				})
 			}
 			else failedRedirect('No credentials found.')
 		}
 		catch (error) {
-			showErrorModal(errorMessageElement.textContent || error.message, {
-				/**
-				 * 默认忽略回调函数。
-				 * @returns {void}
-				 */
-				onIgnore: () => {
-					errorModal.close()
-					if (!redirectUrl) return window.location.reload()
-					failedRedirect(error.message)
-				}
-			})
+			showErrorModal(
+				error.i18nKey || 'login_info.modal.retrieve_error',
+				error.i18nParams || { error: error.message },
+				{
+					/**
+					 * 默认忽略回调函数。
+					 * @returns {void}
+					 */
+					onIgnore: () => {
+						errorModal.close()
+						if (!redirectUrl) return window.location.reload()
+						failedRedirect(error.message)
+					}
+				},
+			)
 		}
 	</script>
 </head>
