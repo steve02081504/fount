@@ -615,17 +615,17 @@ await initTranslations('serviceSource_manager')
 usingTemplates('/parts/shells:serviceSourceManage/src/templates')
 
 jsonEditor = createJsonEditor(jsonEditorContainer, {
-	label: geti18n('serviceSource_manager.configTitle'),
+	ariaLabel: 'serviceSource_manager.jsonEditor.aria-label',
 	/**
 	 * 处理 JSON 更新。
 	 * @param {any} updatedContent - 更新后的内容。
 	 * @param {any} previousContent - 之前的内容。
 	 * @param {object} root0 - 根对象。
-	 * @param {any} root0.error - 错误。
+	 * @param {any} root0.contentErrors - 内容错误。
 	 * @param {any} root0.patchResult - 补丁结果。
 	 */
-	onChange: (updatedContent, previousContent, { error, patchResult }) => {
-		if (error) return
+	onChange: (updatedContent, previousContent, { contentErrors, patchResult }) => {
+		if (contentErrors) return
 		isDirty = true
 		let data
 		try { data = getEditorData() } catch (e) { return }

@@ -1,29 +1,43 @@
-import { createJSONEditor as base } from 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/standalone.js'
+import { createJSONEditor as base } from 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@3/standalone.js'
 
+import { geti18n, setLocalizeLogic } from '../i18n/index.mjs'
 import { onThemeChange } from '../theme/index.mjs'
 
 /**
  * 创建一个 JSON 编辑器。
  * @param {HTMLElement} jsonEditorContainer - JSON 编辑器的容器元素。
- * @param {object} options - 选项。
- * @returns {import('vanilla-jsoneditor').JSONEditor} JSON 编辑器实例。
+ * @param {object} options - 选项（其余字段透传给 vanilla-jsoneditor）。
+ * @param {string} options.ariaLabel - 编辑器 `aria-label` 的 i18n key。
+ * @param {(json: unknown) => void} [options.onSave] - Ctrl+S 保存回调。
+ * @returns {import('npm:vanilla-jsoneditor').JSONEditor} JSON 编辑器实例。
  */
 export function createJsonEditor(jsonEditorContainer, options) {
+	const { ariaLabel: ariaLabelKey, onSave, ...editorProps } = options
+
+	// TODO: drop aria-ignore when https://github.com/josdejong/svelte-jsoneditor/issues/584 lands
+	jsonEditorContainer.toggleAttribute('aria-ignore', true)
+
 	const result = base({
 		target: jsonEditorContainer,
 		props: {
-			mode: 'code',
+			mode: 'text',
 			indentation: '\t',
-			...options
+			...editorProps,
+			ariaLabel: geti18n(ariaLabelKey),
 		}
 	})
-	// ctrl+s 保存
-	document.addEventListener('keydown', e => {
+
+	setLocalizeLogic(jsonEditorContainer, () => {
+		result.updateProps({ ariaLabel: geti18n(ariaLabelKey) })
+	})
+
+	if (onSave) document.addEventListener('keydown', e => {
 		if (e.ctrlKey && e.key === 's') {
-			options.onSave(result.get().json || JSON.parse(result.get().text))
+			onSave(result.get().json || JSON.parse(result.get().text))
 			e.preventDefault()
 		}
 	})
+
 	onThemeChange(
 		(theme, isDark) => {
 			if (isDark) jsonEditorContainer.classList.add('jse-theme-dark')
@@ -52,7 +66,7 @@ export function createJsonEditor(jsonEditorContainer, options) {
 {
 	const jse_style = document.createElement('link')
 	jse_style.rel = 'stylesheet'
-	jse_style.href = 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/themes/jse-theme-dark.min.css'
+	jse_style.href = 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@3/themes/jse-theme-dark.css'
 	jse_style.crossorigin = 'anonymous'
 	document.head.prepend(jse_style)
 }

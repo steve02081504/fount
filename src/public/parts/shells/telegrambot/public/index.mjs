@@ -127,19 +127,19 @@ async function loadBotConfig(botname) {
 
 	if (!configEditor)
 		configEditor = createJsonEditor(configEditorContainer, {
+			ariaLabel: 'telegram_bots.configCard.jsonEditor.aria-label',
 			/**
 			 * 处理配置更改。
 			 * @param {any} updatedContent - 更新后的内容。
 			 * @param {any} previousContent - 之前的内容。
 			 * @param {object} root0 - 根对象。
-			 * @param {any} root0.error - 错误。
+			 * @param {any} root0.contentErrors - 内容错误。
 			 * @param {any} root0.patchResult - 补丁结果。
 			 */
-			onChange: (updatedContent, previousContent, { error, patchResult }) => {
-				if (!error) isDirty = true
+			onChange: (updatedContent, previousContent, { contentErrors, patchResult }) => {
+				if (!contentErrors) isDirty = true
 			},
 			onSave: handleSaveConfig,
-			label: geti18n('telegram_bots.configCard.labels.config')
 		})
 
 	configEditor.set({ json: config.config || {} })

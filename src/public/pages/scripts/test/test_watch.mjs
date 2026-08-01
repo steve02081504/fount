@@ -1,6 +1,7 @@
 /**
  * 测试环境页面监视：import 即启动（无导出）。
  * - axe-core 无障碍：真实 DOM 变脏时每 0.5s 扫，静止则停；命中即报
+ * - `[aria-ignore]`：axe `exclude`（第三方 / 暂不可修；`ARIA_IGNORE`，同 `svg-inliner-ignore` 风格）
  * - 语种轮换：每秒在 zh-CN / ja-JP / en-UK 间切换，并用 `\p{Script=…}` 查错语字符
  *   （轮换自身的 DOM 写入不计入 a11y dirty，否则扫描定时器永远停不下来）
  *
@@ -13,6 +14,11 @@
  * 过渡态也须合规：未就绪区域用 `aria-hidden`/`inert`/`hidden`，文案原子写入；勿靠扫描侧吞报。
  */
 import axe from 'https://esm.sh/axe-core'
+
+/**
+ * 第三方 / 暂不可修子树：axe `exclude`（布尔属性，用法同 `svg-inliner-ignore` / `user-content`）。
+ */
+export const ARIA_IGNORE = 'aria-ignore'
 
 const A11Y_PREFIX = '[test:a11y]'
 const LOCALE_PREFIX = '[test:locale]'
@@ -211,7 +217,9 @@ async function runLocaleScriptCheck(locale) {
  */
 async function runA11y() {
 	if (!localeReady) return
-	const results = await axe.run(document, {
+	const results = await axe.run({
+		exclude: `[${ARIA_IGNORE}]`,
+	}, {
 		resultTypes: ['violations'],
 		iframes: false,
 		// 对比度 / 仅靠颜色区分链接会逼改视觉层级，不纳入硬失败

@@ -25,6 +25,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 - **`template.mjs`**: `renderTemplate` / `mountTemplate` / `renderTemplateAsHtmlString` / `withTemplates(path, fn)`. Cross-shell shared modules must **not** call bare `usingTemplates` — use `withTemplates` or direct DOM.
 - **`dialog.mjs`**: `openDialogFromTemplate` / `pickFromDialog`. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do not nest another `<dialog>`.
 - **`promptDialog.mjs`**: shared DaisyUI `promptText` / `promptTextArea` / `confirmAction`. Prefer over `window.prompt` / `confirm` / shell-local copies. **First argument is always an i18n key**; optional third arg is interpolation params. Do not pass `geti18n(...)` strings. Modal title is **`h2`** (page already has `h1`; DaisyUI docs’ `h3` skips a level and trips axe `heading-order`).
+- **`components/jsonEditor.mjs`**: `createJsonEditor(container, options)` wraps `vanilla-jsoneditor` (≥3.13). **`options.ariaLabel` is required and must be an i18n key** (resolved + refreshed via `setLocalizeLogic`); do not pass `geti18n(...)` strings. Optional `onSave` is Ctrl+S only — not a library prop.
 - **`components/positionContextMenu.mjs`** + **`components/contextMenuDismiss.mjs`**: shared floating-menu placement / dismiss.
 - **`contentReveal/`**: `wrapSensitiveMediaHtml`, `wrapContentWarningHtml`, `bindContentReveal`.
 - **`translate.mjs`**: `mountTranslationBlock`, `requestTranslation`, `resolveTargetLang` (-> `primaryLocale()`).
@@ -50,6 +51,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 - **`lib/base64.mjs`**: `arrayBufferToBase64` / `blobToBase64` — reuse for upload bodies; do not copy per shell.
 - **`lib/svgInliner.mjs`**: Inline `.svg` `<img>` for `currentColor`. Put `svg-inliner-ignore` on user/media avatars so they stay `<img>` (inlining untrusted SVG activates scripts).
 - **`user-content`**: boolean attr on user/dynamic text & inputs (post/reply bodies, message bubbles, composer fields, …). `test_watch` locale-script scan hides `[user-content]` — same opt-out style as `svg-inliner-ignore`.
+- **`aria-ignore`**: boolean attr; `test_watch` axe `exclude` (`ARIA_IGNORE`). Third-party / temporarily unfixable subtrees only — not a license to leave our own chrome broken. JSON editor sets it pending [svelte-jsoneditor#584](https://github.com/josdejong/svelte-jsoneditor/issues/584).
 - **Transitional a11y**: `test_watch` reports axe hits immediately (no confirm buffer). Incomplete / not-yet-shown UI must use `aria-hidden` / `inert` / `hidden` (not bare `opacity: 0`); text updates should be atomic. Fix the product — do not soften the watcher.
 - **`credentialManager.mjs`** / **`host/urlDataTransfer.mjs`**: Secure credential encryption/transfer; Catbox upload/download via `host/catbox.mjs`.
 

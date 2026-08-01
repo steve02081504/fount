@@ -160,17 +160,16 @@ async function loadBotConfig(botname) {
 
 		if (!configEditor)
 			configEditor = createJsonEditor(configEditorContainer, {
-				label: geti18n('wechat_bots.configCard.labels.config'),
+				ariaLabel: 'wechat_bots.configCard.jsonEditor.aria-label',
 				/**
 				 * JSON 编辑器内容变更：无语法错误时标记为脏。
 				 * @param {any} updatedContent 编辑器更新后的内容
 				 * @param {any} previousContent 编辑器更新前的内容
 				 * @param {object} root0 解构参数对象
-				 * @param {any} root0.error 错误对象
-				 * @returns {any} 返回值
+				 * @param {any} root0.contentErrors 内容错误
 				 */
-				onChange: (updatedContent, previousContent, { error }) => {
-					if (!error) isDirty = true
+				onChange: (updatedContent, previousContent, { contentErrors }) => {
+					if (!contentErrors) isDirty = true
 				},
 				onSave: handleSaveConfig
 			})
