@@ -8,7 +8,7 @@ import { CJK_RE } from './agents_md_english.mjs'
 import { listRepoFiles } from './walk.mjs'
 
 /** 源码后缀。 */
-export const JSDOC_SCAN_SUFFIXES = Object.freeze(['.mjs', '.js', '.ts'])
+export const JSDOC_SCAN_SUFFIXES = Object.freeze(['.mjs', '.js', '.ts', '.tsx'])
 
 /** 摘要行视为「无描述」的 @ 标签前缀。 */
 const TAG_ONLY_PREFIX = /^@(typedef|type|template|augments|extends|implements|memberof|see|link|example|default|deprecated|ignore|internal|private|protected|public|readonly|override|inheritdoc|satisfies|import)\b/
@@ -16,8 +16,124 @@ const TAG_ONLY_PREFIX = /^@(typedef|type|template|augments|extends|implements|me
 const ASCII_LETTER_RE = /[a-zA-Z]/
 
 /**
+ * 判断 `pos` 是否落在字符串或模板字面量内（跳过注释）。
+ * @param {string} text 源码
+ * @param {number} pos 字节偏移
+ * @returns {boolean} 在引号/模板内则为 true
+ */
+function isInsideStringOrTemplate(text, pos) {
+	let i = 0
+	while (i < pos) {
+		const c = text[i]
+		if (c === '"' || c === '\'') {
+			const quote = c
+			i++
+			while (i < pos) {
+				if (text[i] === '\\') { i += 2; continue }
+				if (text[i] === quote) { i++; break }
+				i++
+			}
+			if (i >= pos) return true
+			continue
+		}
+		if (c === '`') {
+			i++
+			while (i < pos) {
+				if (text[i] === '\\') { i += 2; continue }
+				if (text[i] === '`') { i++; break }
+				if (text[i] === '$' && text[i + 1] === '{') {
+					i += 2
+					let depth = 1
+					while (i < pos && depth) {
+						const ch = text[i]
+						if (ch === '"' || ch === '\'') {
+							const quote = ch
+							i++
+							while (i < pos) {
+								if (text[i] === '\\') { i += 2; continue }
+								if (text[i] === quote) { i++; break }
+								i++
+							}
+							continue
+						}
+						if (ch === '`') {
+							i = skipTemplateLiteral(text, i + 1, pos)
+							continue
+						}
+						if (ch === '{') { depth++; i++; continue }
+						if (ch === '}') { depth--; i++; continue }
+						i++
+					}
+					continue
+				}
+				i++
+			}
+			if (i >= pos) return true
+			continue
+		}
+		if (c === '/' && text[i + 1] === '/') {
+			i += 2
+			while (i < pos && text[i] !== '\n') i++
+			continue
+		}
+		if (c === '/' && text[i + 1] === '*') {
+			i += 2
+			while (i < pos) {
+				if (text[i] === '*' && text[i + 1] === '/') { i += 2; break }
+				i++
+			}
+			continue
+		}
+		i++
+	}
+	return false
+}
+
+/**
+ * 从模板字面量内容起点扫到闭合 `` ` `` 或 `pos`。
+ * @param {string} text 源码
+ * @param {number} start 内容起点（开 `` ` `` 之后）
+ * @param {number} pos 扫描上限
+ * @returns {number} 闭合后的下一位置，或 `pos`
+ */
+function skipTemplateLiteral(text, start, pos) {
+	let i = start
+	while (i < pos) {
+		if (text[i] === '\\') { i += 2; continue }
+		if (text[i] === '`') return i + 1
+		if (text[i] === '$' && text[i + 1] === '{') {
+			i += 2
+			let depth = 1
+			while (i < pos && depth) {
+				const ch = text[i]
+				if (ch === '"' || ch === '\'') {
+					const quote = ch
+					i++
+					while (i < pos) {
+						if (text[i] === '\\') { i += 2; continue }
+						if (text[i] === quote) { i++; break }
+						i++
+					}
+					continue
+				}
+				if (ch === '`') {
+					i = skipTemplateLiteral(text, i + 1, pos)
+					continue
+				}
+				if (ch === '{') { depth++; i++; continue }
+				if (ch === '}') { depth--; i++; continue }
+				i++
+			}
+			continue
+		}
+		i++
+	}
+	return pos
+}
+
+/**
  * 从源码文本中提取 JSDoc 块（含起止行号）。
- * 仅匹配行首（或前置空白）的 `/**`，避免命中字符串/行内注释。
+ * 仅匹配行首（或前置空白）的 `/**`，并跳过字符串/模板字面量内的伪注释。
  * @param {string} text 源码
  * @returns {{ text: string, startLine: number, endLine: number }[]} 块列表
  */
@@ -28,6 +144,10 @@ export function extractJsdocBlocks(text) {
 	let match
 	while ((match = re.exec(text)) !== null) {
 		const start = match.index + match[1].length + match[2].length
+		if (isInsideStringOrTemplate(text, start)) {
+			re.lastIndex = start + 3
+			continue
+		}
 		const end = text.indexOf('*/', start + 3)
 		if (end < 0) break
 		const blockText = text.slice(start, end + 2)
@@ -71,21 +191,25 @@ export function isEnglishJsdocSummary(summaryLines) {
 
 /**
  * 块是否仅有类型/标签、无人类可读摘要。
+ * 空块或无任何允许标签的块不算 tag-only。
  * @param {string} block JSDoc 块
  * @returns {boolean} 是否仅有类型/标签且无人类可读摘要
  */
 export function isTagOnlyJsdoc(block) {
 	const summary = jsdocSummaryLines(block)
 	if (summary.length) return false
+	let sawPermittedTag = false
 	const inner = block.slice(3, -2)
 	for (const raw of inner.split(/\r?\n/)) {
 		const trimmed = raw.replace(/^\s*\*\s?/, '').trim()
 		if (!trimmed || !trimmed.startsWith('@')) continue
-		if (TAG_ONLY_PREFIX.test(trimmed)) continue
-		if (/^@(param|returns?|throws?|yields?)\b/.test(trimmed)) continue
+		if (TAG_ONLY_PREFIX.test(trimmed) || /^@(param|returns?|throws?|yields?)\b/.test(trimmed)) {
+			sawPermittedTag = true
+			continue
+		}
 		return false
 	}
-	return true
+	return sawPermittedTag
 }
 
 /**

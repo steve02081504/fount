@@ -104,31 +104,31 @@ Deno.test('I18N_REWRITE_SUFFIXES includes shell scripts', () => {
 })
 
 /**
- * @param {string} rel 相对仓库路径
+ * @param {string} relativePath 相对仓库路径
  * @returns {boolean} 扫描时应跳过
  */
-function skipRepoI18nScanPath(rel) {
-	if (rel.includes('/locales/')) return true
-	if (rel.startsWith('src/scripts/checks/')) return true
-	if (rel.startsWith('src/decl/')) return true
+function skipRepoI18nScanPath(relativePath) {
+	if (relativePath.includes('/locales/')) return true
+	if (relativePath.startsWith('src/scripts/checks/')) return true
+	if (relativePath.startsWith('src/decl/')) return true
 	return false
 }
 
 Deno.test('repo: element/string i18n refs and fountConsole.path CLI keys resolve', async () => {
 	const locale = JSON.parse(await readFile(join(REPO_ROOT, 'src/public/locales/zh-CN.json'), 'utf8'))
-	const sourceFiles = await listRepoFiles(REPO_ROOT, ['.html', '.mjs', '.js', '.ts'], {
+	const sourceFiles = await listRepoFiles(REPO_ROOT, ['.html', '.mjs', '.js', '.ts', '.tsx'], {
 		under: 'src',
 	})
 	/** @type {import('../i18n_refs.mjs').I18nRefIssue[]} */
 	const issues = []
-	for (const rel of sourceFiles) {
-		if (skipRepoI18nScanPath(rel)) continue
-		const text = await readFile(join(REPO_ROOT, rel), 'utf8')
-		issues.push(...scanSourceI18nRefs(locale, text, rel))
+	for (const relativePath of sourceFiles) {
+		if (skipRepoI18nScanPath(relativePath)) continue
+		const text = await readFile(join(REPO_ROOT, relativePath), 'utf8')
+		issues.push(...scanSourceI18nRefs(locale, text, relativePath))
 	}
-	for (const rel of ['path/fount.ps1', 'path/fount.sh']) {
-		const text = await readFile(join(REPO_ROOT, rel), 'utf8')
-		issues.push(...scanFountConsolePathScript(locale, text, rel))
+	for (const relativePath of ['path/fount.ps1', 'path/fount.sh']) {
+		const text = await readFile(join(REPO_ROOT, relativePath), 'utf8')
+		issues.push(...scanFountConsolePathScript(locale, text, relativePath))
 	}
 	assertEquals(
 		issues.map(i => `${i.path}:${i.line} [${i.kind}] ${i.message}`),

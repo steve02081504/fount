@@ -50,9 +50,10 @@ if (globalThis.fount?.test?.enabled) import('/scripts/test/test_watch.mjs')
 
 // register service worker
 ; (async () => {
+	if (!navigator.serviceWorker) return
 	try {
 		await navigator.serviceWorker.register('/service_worker.mjs', { scope: '/', module: true })
-		ensureWebPushSubscription()
+		await ensureWebPushSubscription()
 	} catch (error) {
 		if (error.name != 'SecurityError') console.error('Service Worker registration failed: ', error)
 	}

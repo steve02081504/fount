@@ -19,7 +19,7 @@ process.env.RUST_BACKTRACE = 'full'
 if (process.platform === 'win32') {
 	const emitWarning = process.emitWarning
 	process.emitWarning = (warning, ...args) => {
-		if (args[1] === 'DEP0190') return
+		if ([args[1], args[0]?.code, warning?.code].includes('DEP0190')) return
 		return emitWarning.call(process, warning, ...args)
 	}
 }

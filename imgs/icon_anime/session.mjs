@@ -21,12 +21,13 @@ export const fps = 24
  * @property {AbortSignal} userSignal - userAborted 为 true 时中止
  * @property {() => Promise<void>} start - 入场→保持直至中止 / dismiss（存活期间幂等）
  * @property {() => Promise<void>} intro - 播放入场至完成，停放以待 farewell
- * @property {(ms: number) => Promise<void>} sleep - 等待；用户中止时提前 resolve
+ * @property {(milliseconds: number) => Promise<void>} sleep - 等待；用户中止时提前 resolve
  * @property {() => Promise<void>} dismiss - 停止保持、离开备用屏；保留状态以待 farewell
  * @property {() => Promise<void>} farewell - 从存活或停放进度播放退场
  */
 
 /**
+ * 创建图标动画控制器（intro / start+dismiss / farewell）。
  * @returns {IconAnime} 控制器
  */
 export function createIconAnime() {
@@ -69,16 +70,16 @@ export function createIconAnime() {
 				})
 			},
 			/**
-			 * @param {{ x: number, y: number, left?: boolean, right?: boolean }} ev 指针
+			 * @param {{ x: number, y: number, left?: boolean, right?: boolean }} pointerEvent 指针
 			 * @returns {void}
 			 */
-			onPointer(ev) {
-				const x = Math.max(0, Math.min(animState.width - 1, ev.x))
-				const y = Math.max(0, Math.min(animState.height - 1, ev.y))
-				if (ev.left !== undefined)
-					lightPointer(animState.light, { x, y, left: ev.left })
-				if (ev.right !== undefined)
-					windPointer(animState.wind, { x, y, right: ev.right })
+			onPointer(pointerEvent) {
+				const x = Math.max(0, Math.min(animState.width - 1, pointerEvent.x))
+				const y = Math.max(0, Math.min(animState.height - 1, pointerEvent.y))
+				if (pointerEvent.left !== undefined)
+					lightPointer(animState.light, { x, y, left: pointerEvent.left })
+				if (pointerEvent.right !== undefined)
+					windPointer(animState.wind, { x, y, right: pointerEvent.right })
 			},
 		})
 	}
@@ -158,7 +159,7 @@ export function createIconAnime() {
 		 * @param {number} ms 毫秒
 		 * @returns {Promise<void>}
 		 */
-		sleep(ms) {
+		sleep(milliseconds) {
 			const { signal } = userAbortController
 			if (signal.aborted) return Promise.resolve()
 			return new Promise((resolve) => {
@@ -168,7 +169,7 @@ export function createIconAnime() {
 					signal.removeEventListener('abort', wake)
 					resolve()
 				}
-				const timer = setTimeout(wake, ms)
+				const timer = setTimeout(wake, milliseconds)
 				signal.addEventListener('abort', wake, { once: true })
 			})
 		},

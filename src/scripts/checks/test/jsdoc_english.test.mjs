@@ -8,6 +8,7 @@ import { REPO_ROOT } from '../../test/core/repo_root.mjs'
 import {
 	extractJsdocBlocks,
 	isEnglishJsdocSummary,
+	isTagOnlyJsdoc,
 	jsdocSummaryLines,
 	scanFileJsdocEnglish,
 	scanJsdocEnglish,
@@ -29,6 +30,13 @@ Deno.test('isEnglishJsdocSummary: CJK is not English', () => {
 	assertEquals(isEnglishJsdocSummary([]), false)
 })
 
+Deno.test('isTagOnlyJsdoc: empty stub is not tag-only', () => {
+	assertEquals(isTagOnlyJsdoc('/** */'), false)
+	assertEquals(isTagOnlyJsdoc('/**\n *\n */'), false)
+	assertEquals(isTagOnlyJsdoc('/**\n * @typedef {{ x: number }}\n */'), true)
+	assertEquals(isTagOnlyJsdoc('/**\n * @param {number} x\n * @returns {void}\n */'), true)
+})
+
 Deno.test('extractJsdocBlocks: line numbers', () => {
 	const text = '/** 甲 */\nconst x = 1\n/** 乙 */'
 	const blocks = extractJsdocBlocks(text)
@@ -37,10 +45,22 @@ Deno.test('extractJsdocBlocks: line numbers', () => {
 	assertEquals(blocks[1].startLine, 3)
 })
 
+Deno.test('extractJsdocBlocks: ignores JSDoc text inside template literals', () => {
+	const text = 'const s = `\n/** English doc */\n`\n/** 中文摘要 */\n'
+	const blocks = extractJsdocBlocks(text)
+	assertEquals(blocks.length, 1)
+	assertEquals(jsdocSummaryLines(blocks[0].text), ['中文摘要'])
+})
+
 Deno.test('scanFileJsdocEnglish: flags English summary', () => {
 	const issues = scanFileJsdocEnglish('foo.mjs', '/** English doc */\nexport const x = 1')
 	assertEquals(issues.length, 1)
 	assertEquals(issues[0].summary, 'English doc')
+})
+
+Deno.test('scanFileJsdocEnglish: template literal English is not flagged', () => {
+	const issues = scanFileJsdocEnglish('foo.mjs', 'const s = `/** English doc */`\n')
+	assertEquals(issues.length, 0)
 })
 
 Deno.test('repo: no English JSDoc summaries', async () => {

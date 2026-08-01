@@ -71,7 +71,7 @@
 				"src/scripts/checks/{i18n_refs.mjs,walk.mjs}",
 				"src/scripts/checks/test/i18n_refs.test.mjs",
 				"src/public/locales/*.json",
-				"src/**/*.{html,mjs,js,ts}",
+				"src/**/*.{html,mjs,js,ts,tsx}",
 				"path/fount.ps1",
 				"path/fount.sh"
 			]
@@ -121,7 +121,7 @@
 			"triggers": [
 				"src/scripts/checks/jsdoc_english.mjs",
 				"src/scripts/checks/test/jsdoc_english.test.mjs",
-				"**/*.{mjs,js,ts}"
+				"**/*.{mjs,js,ts,tsx}"
 			]
 		}
 	]

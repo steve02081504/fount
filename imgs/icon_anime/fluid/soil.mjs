@@ -169,9 +169,7 @@ export const stepSoil = (world) => {
 		const from = feedFrom[k]
 		const amt = feedAmt[k]
 		delta[from] -= amt
-		const below = from + W
-		if (mat[below] === MAT.AIR) condense[from] += amt
-		else delta[from] += amt
+		condense[from] += amt
 	}
 	for (let k = 0; k < mvN; k++) {
 		const cell = mvFrom[k]

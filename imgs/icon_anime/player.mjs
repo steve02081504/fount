@@ -45,7 +45,7 @@ const MOUSE_OFF = '\x1b[?1006l\x1b[?1002l\x1b[?1000l'
  * 末尾不完整的 CSI 作为 carry 缓冲返回。
  * @param {string} carry 先前不完整字节（latin1）
  * @param {Buffer | Uint8Array} chunk stdin 块
- * @param {{ abort?: () => void, onPointer?: (ev: PointerEvent) => void }} sink Ctrl+C + 指针接收器
+ * @param {{ abort?: () => void, onPointer?: (pointerEvent: PointerEvent) => void }} sink Ctrl+C + 指针接收器
  * @returns {string} 新 carry
  */
 export const consumeStdin = (carry, chunk, sink = {}) => {
@@ -104,7 +104,7 @@ export class AsciiAnimePlayer {
 	 * @param {{
 	 *   fps?: number,
 	 *   onResize?: (size: { columns: number, rows: number }) => void,
-	 *   onPointer?: (ev: PointerEvent) => void,
+	 *   onPointer?: (pointerEvent: PointerEvent) => void,
 	 * }} [opts] 选项
 	 */
 	constructor({ fps = 24, onResize, onPointer } = {}) {
@@ -137,7 +137,7 @@ export class AsciiAnimePlayer {
 	/**
 	 * @param {{
 	 *   onResize?: (size: { columns: number, rows: number }) => void,
-	 *   onPointer?: (ev: PointerEvent) => void,
+	 *   onPointer?: (pointerEvent: PointerEvent) => void,
 	 *   signal?: AbortSignal,
 	 * }} [opts] 选项
 	 * @returns {AsciiAnimePlayer} this
@@ -258,7 +258,11 @@ export class AsciiAnimePlayer {
 	useSignal(signal) {
 		if (signal === undefined) return this.signal
 		if (signal === null) return this.refreshSignal()
-		if (!signal.aborted && this.signal && !this.signal.aborted)
+		if (signal.aborted) {
+			this.abort()
+			return signal
+		}
+		if (this.signal && !this.signal.aborted)
 			signal.addEventListener('abort', () => this.abort(), { once: true })
 		return this.signal
 	}
