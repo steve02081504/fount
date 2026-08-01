@@ -224,26 +224,26 @@ async function runLocaleScriptCheck(locale) {
 async function checkAriaIgnores() {
 	const nodes = document.querySelectorAll(`[${ARIA_IGNORE}]`)
 	const hub = String(globalThis.fount?.test?.hubUrl || '').replace(/\/$/, '')
-	/** @type {{ url: string, where: string }[]} */
+	/** @type {{ url: string, location: string }[]} */
 	const toProbe = []
-	for (const el of nodes) {
-		const url = (el.getAttribute(ARIA_IGNORE) || '').trim()
-		const where = el.id ? `#${el.id}` : el.className || el.tagName
+	for (const element of nodes) {
+		const url = (element.getAttribute(ARIA_IGNORE) || '').trim()
+		const location = element.id ? `#${element.id}` : element.className || element.tagName
 		if (!url) {
-			const key = `aria-ignore-missing\t${where}`
+			const key = `aria-ignore-missing\t${location}`
 			if (printedKeys.has(key)) continue
 			printedKeys.add(key)
-			console.error(A11Y_PREFIX, 'aria-ignore-missing-url', where, 'aria-ignore requires a GitHub issue URL')
+			console.error(A11Y_PREFIX, 'aria-ignore-missing-url', location, 'aria-ignore requires a GitHub issue URL')
 			continue
 		}
 		if (!GITHUB_ISSUE_URL_RE.test(url)) {
 			const key = `aria-ignore-bad-url\t${url}`
 			if (printedKeys.has(key)) continue
 			printedKeys.add(key)
-			console.error(A11Y_PREFIX, 'aria-ignore-bad-url', where, url)
+			console.error(A11Y_PREFIX, 'aria-ignore-bad-url', location, url)
 			continue
 		}
-		if (hub) toProbe.push({ url, where })
+		if (hub) toProbe.push({ url, location })
 	}
 	if (!toProbe.length) return
 
@@ -251,27 +251,26 @@ async function checkAriaIgnores() {
 	const closedByUrl = new Map()
 	await Promise.all([...new Set(toProbe.map(item => item.url))].map(async url => {
 		try {
-			const res = await fetch(`${hub}/github-issue?url=${encodeURIComponent(url)}`, {
+			const response = await fetch(`${hub}/github-issue?url=${encodeURIComponent(url)}`, {
 				signal: AbortSignal.timeout(10_000),
 			})
-			if (!res.ok) {
+			if (!response.ok) {
 				closedByUrl.set(url, false)
 				return
 			}
-			const data = await res.json()
-			closedByUrl.set(url, data?.closed === true)
+			closedByUrl.set(url, (await response.json())?.closed === true)
 		}
 		catch {
 			closedByUrl.set(url, false)
 		}
 	}))
 
-	for (const { url, where } of toProbe) {
+	for (const { url, location } of toProbe) {
 		if (closedByUrl.get(url) !== true) continue
 		const key = `aria-ignore-closed\t${url}`
 		if (printedKeys.has(key)) continue
 		printedKeys.add(key)
-		console.error(A11Y_PREFIX, 'aria-ignore-closed', where, url)
+		console.error(A11Y_PREFIX, 'aria-ignore-closed', location, url)
 	}
 }
 
