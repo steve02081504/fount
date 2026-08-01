@@ -124,17 +124,15 @@ export function createIconAnime() {
 		 * 入场 → 保持直至 Ctrl+C / dismiss。
 		 * @returns {Promise<void>}
 		 */
-		start() {
+		async start() {
 			if (player) return running
 			userAborted = false
 			stopping = false
 			userAbortController = new AbortController()
 			player = openPlayer(createAnimState())
 			player.start()
-			running = player.play(() => enter(state)).loop(() => hold(state)).then(() => {
-				if (!stopping) markUserAbort()
-			})
-			return running
+			await player.play(() => enter(state)).loop(() => hold(state))
+			if (!stopping) markUserAbort()
 		},
 
 		/**

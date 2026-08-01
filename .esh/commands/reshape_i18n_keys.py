@@ -435,23 +435,14 @@ def self_test() -> int:
 		"fountConsole.path.remove.removingFount": "fountConsole.path.remove.removing.fount.main",
 		"fountConsole.path.remove.removingFountFromPath": "fountConsole.path.remove.removing.fount.fromPath",
 	}
-	out, hits = rewrite_source_file(
-		"path/fount.ps1",
-		"Get-I18n -key 'remove.removingFount'\nget_i18n 'remove.removingFountFromPath'\n",
-		cli_map,
-	)
-	if hits < 2 or "'remove.removing.fount.main'" not in out or "'remove.removing.fount.fromPath'" not in out:
-		print(f"CLI relative rewrite failed: hits={hits} out={out!r}", file=sys.stderr)
-		return 1
-
-	sh_out, sh_hits = rewrite_source_file(
-		"path/fount.sh",
-		"get_i18n 'remove.removingFount'\nget_i18n 'remove.removingFountFromPath'\n",
-		cli_map,
-	)
-	if sh_hits < 2 or "'remove.removing.fount.main'" not in sh_out or "'remove.removing.fount.fromPath'" not in sh_out:
-		print(f"Shell relative rewrite failed: hits={sh_hits} out={sh_out!r}", file=sys.stderr)
-		return 1
+	for label, path, source in (
+		("CLI", "path/fount.ps1", "Get-I18n -key 'remove.removingFount'\nget_i18n 'remove.removingFountFromPath'\n"),
+		("Shell", "path/fount.sh", "get_i18n 'remove.removingFount'\nget_i18n 'remove.removingFountFromPath'\n"),
+	):
+		out, hits = rewrite_source_file(path, source, cli_map)
+		if hits < 2 or "'remove.removing.fount.main'" not in out or "'remove.removing.fount.fromPath'" not in out:
+			print(f"{label} relative rewrite failed: hits={hits} out={out!r}", file=sys.stderr)
+			return 1
 
 	print(json.dumps({"ok": True, "perm": sorted(obj["perm"])}))
 	return 0

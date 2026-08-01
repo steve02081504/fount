@@ -16,6 +16,39 @@ const TAG_ONLY_PREFIX = /^@(typedef|type|template|augments|extends|implements|me
 const ASCII_LETTER_RE = /[a-zA-Z]/
 
 /**
+ * 扫描 `${...}` 插值：括号深度 + 嵌套字符串 / 嵌套模板。
+ * @param {string} text 源码
+ * @param {number} start `{` 之后的起点
+ * @param {number} pos 扫描上限
+ * @returns {number} 闭合 `}` 之后的位置，或 `pos`
+ */
+function scanTemplateInterpolation(text, start, pos) {
+	let i = start
+	let depth = 1
+	while (i < pos && depth) {
+		const ch = text[i]
+		if (ch === '"' || ch === '\'') {
+			const quote = ch
+			i++
+			while (i < pos) {
+				if (text[i] === '\\') { i += 2; continue }
+				if (text[i] === quote) { i++; break }
+				i++
+			}
+			continue
+		}
+		if (ch === '`') {
+			i = skipTemplateLiteral(text, i + 1, pos)
+			continue
+		}
+		if (ch === '{') { depth++; i++; continue }
+		if (ch === '}') { depth--; i++; continue }
+		i++
+	}
+	return i
+}
+
+/**
  * 判断 `pos` 是否落在字符串或模板字面量内（跳过注释）。
  * @param {string} text 源码
  * @param {number} pos 字节偏移
@@ -42,28 +75,7 @@ function isInsideStringOrTemplate(text, pos) {
 				if (text[i] === '\\') { i += 2; continue }
 				if (text[i] === '`') { i++; break }
 				if (text[i] === '$' && text[i + 1] === '{') {
-					i += 2
-					let depth = 1
-					while (i < pos && depth) {
-						const ch = text[i]
-						if (ch === '"' || ch === '\'') {
-							const quote = ch
-							i++
-							while (i < pos) {
-								if (text[i] === '\\') { i += 2; continue }
-								if (text[i] === quote) { i++; break }
-								i++
-							}
-							continue
-						}
-						if (ch === '`') {
-							i = skipTemplateLiteral(text, i + 1, pos)
-							continue
-						}
-						if (ch === '{') { depth++; i++; continue }
-						if (ch === '}') { depth--; i++; continue }
-						i++
-					}
+					i = scanTemplateInterpolation(text, i + 2, pos)
 					continue
 				}
 				i++
@@ -102,28 +114,7 @@ function skipTemplateLiteral(text, start, pos) {
 		if (text[i] === '\\') { i += 2; continue }
 		if (text[i] === '`') return i + 1
 		if (text[i] === '$' && text[i + 1] === '{') {
-			i += 2
-			let depth = 1
-			while (i < pos && depth) {
-				const ch = text[i]
-				if (ch === '"' || ch === '\'') {
-					const quote = ch
-					i++
-					while (i < pos) {
-						if (text[i] === '\\') { i += 2; continue }
-						if (text[i] === quote) { i++; break }
-						i++
-					}
-					continue
-				}
-				if (ch === '`') {
-					i = skipTemplateLiteral(text, i + 1, pos)
-					continue
-				}
-				if (ch === '{') { depth++; i++; continue }
-				if (ch === '}') { depth--; i++; continue }
-				i++
-			}
+			i = scanTemplateInterpolation(text, i + 2, pos)
 			continue
 		}
 		i++

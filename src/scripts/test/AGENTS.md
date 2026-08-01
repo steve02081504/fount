@@ -36,7 +36,7 @@ Host keep-awake / sleep interrupts: [docs/host-keep-awake.md](docs/host-keep-awa
 | `sim/` | In-process simulation harness |
 | `checks/` | Repo static health — [checks/AGENTS.md](../checks/AGENTS.md) |
 
-**Frontend**: fixtures, browser binary, network noise, i18n-missing / a11y / locale-script hard-fail, GitHub Pages — [playwright.md](docs/playwright.md). Prefer `[data-i18n]` selectors over locale-specific copy. Drive locale via `setLanguage` / `loadLocaleData` — do not fetch `/api/getlocaledata` from tests. CDN GET/HEAD (`esm.sh` / Iconify / jsDelivr) is reused across cases via `cdn_cache.mjs` (`data/test/cdn_cache`); set `FOUNT_TEST_CDN_CACHE=0` to disable.
+**Frontend**: fixtures, browser binary, network noise, i18n-missing / a11y / locale-script hard-fail, GitHub Pages — [playwright.md](docs/playwright.md). Prefer `[data-i18n]` selectors over locale-specific copy. Drive locale via `setLanguage` / `loadLocaleData` — do not fetch `/api/getlocaledata` from tests. CDN GET/HEAD (`esm.sh` / Iconify / jsDelivr) is reused across cases via `cdn_cache.mjs` (`data/test/cdn_cache`); set `FOUNT_TEST_CDN_CACHE=0` to disable. Do not allowlist URLs/`pageerror` in `browser_diagnostics` — stub with `page.route` or gate probes on `fount.test.enabled` so the page itself does not emit the failure.
 
 **pure/ boundary**: tested modules must not statically `import` `src/server/**` (P2P/native graph; Windows Deno child exit can hang). Use dynamic import or promote to `integration/`.
 

@@ -55,17 +55,7 @@ export function createPagesFixtures(options = {}) {
 		 * @param {(page: import('npm:@playwright/test').Page) => Promise<void>} use fixture use
 		 */
 		page: async ({ context }, use) => {
-			const diagnostics = createBrowserDiagnostics({
-				/**
-				 * 安装页会轮询 localhost:8930（安装器）与 :8931/api/ping；无节点时属预期失败。
-				 * （ORB 由 browser_diagnostics 统一忽略，不必按域名滤。）
-				 * @param {string} url 请求 URL
-				 * @returns {boolean} 是否记入网络诊断
-				 */
-				shouldRecordNetwork: url =>
-					!/\/api\/ping(?:\?|$)/.test(url)
-					&& !/^https?:\/\/(localhost|127\.0\.0\.1):8930(?:\/|$)/.test(url),
-			})
+			const diagnostics = createBrowserDiagnostics()
 			const page = await context.newPage()
 			diagnostics.attach(page)
 			await use(page)

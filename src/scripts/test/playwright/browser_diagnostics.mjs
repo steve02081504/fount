@@ -126,8 +126,6 @@ export async function waitForLocaleCycle(page, timeoutMs = 30_000) {
 
 /**
  * 创建绑定到单个 Playwright page 的诊断收集器。
- * @param {object} [options] 选项
- * @param {(url: string) => boolean} [options.shouldRecordNetwork] 返回 false 则忽略该 URL 的网络异常
  * @returns {{
  *   attach: (page: import('npm:@playwright/test').Page) => void,
  *   pageErrors: string[],
@@ -136,8 +134,7 @@ export async function waitForLocaleCycle(page, timeoutMs = 30_000) {
  *   flushNetworkDiagnostics: () => BrowserNetworkEntry[],
  * }} 诊断 API
  */
-export function createBrowserDiagnostics(options = {}) {
-	const shouldRecordNetwork = options.shouldRecordNetwork ?? (() => true)
+export function createBrowserDiagnostics() {
 	/** @type {string[]} */
 	const pageErrors = []
 	/** @type {string[]} */
@@ -167,7 +164,7 @@ export function createBrowserDiagnostics(options = {}) {
 		page.on('requestfailed', req => {
 			const error = req.failure()?.errorText || null
 			if (isIgnoredBrowserNetworkError(error)) return
-			if (!shouldRecordNetwork(req.url())) return
+			if (/\/api\/ping(?:\?|$)/.test(req.url())) return // 失败的 ping 请求不计入
 			recordBrowserNetworkEntry(aggregates, {
 				kind: 'requestfailed',
 				method: req.method(),
@@ -179,7 +176,6 @@ export function createBrowserDiagnostics(options = {}) {
 		page.on('response', res => {
 			const status = res.status()
 			if (status < 400) return
-			if (!shouldRecordNetwork(res.url())) return
 			recordBrowserNetworkEntry(aggregates, {
 				kind: 'http',
 				method: res.request().method(),

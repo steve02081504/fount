@@ -52,6 +52,13 @@ Deno.test('extractJsdocBlocks: ignores JSDoc text inside template literals', () 
 	assertEquals(jsdocSummaryLines(blocks[0].text), ['中文摘要'])
 })
 
+Deno.test('extractJsdocBlocks: ignores JSDoc inside nested template interpolations', () => {
+	const text = 'const s = `${`\n/** English nested */\n`}`\n/** 中文摘要 */\n'
+	const blocks = extractJsdocBlocks(text)
+	assertEquals(blocks.length, 1)
+	assertEquals(jsdocSummaryLines(blocks[0].text), ['中文摘要'])
+})
+
 Deno.test('scanFileJsdocEnglish: flags English summary', () => {
 	const issues = scanFileJsdocEnglish('foo.mjs', '/** English doc */\nexport const x = 1')
 	assertEquals(issues.length, 1)

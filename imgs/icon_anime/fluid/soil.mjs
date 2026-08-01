@@ -18,12 +18,74 @@ import {
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
 
 /**
+ * 渗流队列 scratch（预分配 typed array，按 tick 复用）。
+ * @typedef {object} SoilQueues
+ * @property {Int32Array} moveSources 湿度转移源
+ * @property {Int32Array} moveTargets 湿度转移目标
+ * @property {Float32Array} moveAmounts 湿度转移量
+ * @property {number} moveCount 湿度转移条数
+ * @property {Int32Array} feedFrom 凝结供给源
+ * @property {Float32Array} feedAmt 凝结供给量
+ * @property {number} feedN 凝结供给条数
+ */
+
+/** @type {SoilQueues} */
+const soilQueues = {
+	moveSources: new Int32Array(0),
+	moveTargets: new Int32Array(0),
+	moveAmounts: new Float32Array(0),
+	moveCount: 0,
+	feedFrom: new Int32Array(0),
+	feedAmt: new Float32Array(0),
+	feedN: 0,
+}
+
+/**
  * 将 `moisture[cell]` 钳在 `[0, SOIL_CAP]`。
  * @param {Float32Array} moisture 土壤湿度场
  * @param {number} cell 扁平索引
  */
 const clampMoisture = (moisture, cell) => {
 	moisture[cell] = Math.min(SOIL_CAP, Math.max(0, moisture[cell]))
+}
+
+/**
+ * 排队土壤→土壤湿度转移。
+ * @param {FluidWorld} world 流体世界
+ * @param {SoilQueues} queues 渗流队列
+ * @param {number} from 源索引
+ * @param {number} to 目标索引
+ * @param {number} amount 质量
+ */
+const pushMove = (world, queues, from, to, amount) => {
+	const { moveCount } = queues
+	if (moveCount >= queues.moveSources.length) {
+		queues.moveSources = growScratch(world, 'mvFrom', moveCount + 1, Int32Array)
+		queues.moveTargets = growScratch(world, 'mvTo', moveCount + 1, Int32Array)
+		queues.moveAmounts = growScratch(world, 'mvAmt', moveCount + 1, Float32Array)
+	}
+	queues.moveSources[moveCount] = from
+	queues.moveTargets[moveCount] = to
+	queues.moveAmounts[moveCount] = amount
+	queues.moveCount = moveCount + 1
+}
+
+/**
+ * 排队土壤→凝结供给。
+ * @param {FluidWorld} world 流体世界
+ * @param {SoilQueues} queues 渗流队列
+ * @param {number} from 源索引
+ * @param {number} amount 质量
+ */
+const pushFeed = (world, queues, from, amount) => {
+	const { feedN } = queues
+	if (feedN >= queues.feedFrom.length) {
+		queues.feedFrom = growScratch(world, 'feedFrom', feedN + 1, Int32Array)
+		queues.feedAmt = growScratch(world, 'feedAmt', feedN + 1, Float32Array)
+	}
+	queues.feedFrom[feedN] = from
+	queues.feedAmt[feedN] = amount
+	queues.feedN = feedN + 1
 }
 
 /**
@@ -53,140 +115,112 @@ export const stepSoil = (world) => {
 			markAirIfDrawCrossed(world, before, liq[above])
 		}
 
-	let mvFrom = growScratch(world, 'mvFrom', 256, Int32Array)
-	let mvTo = growScratch(world, 'mvTo', 256, Int32Array)
-	let mvAmt = growScratch(world, 'mvAmt', 256, Float32Array)
-	let feedFrom = growScratch(world, 'feedFrom', 64, Int32Array)
-	let feedAmt = growScratch(world, 'feedAmt', 64, Float32Array)
-	let mvN = 0
-	let feedN = 0
-
-	/**
-	 * 排队土壤→土壤湿度转移。
-	 * @param {number} from 源索引
-	 * @param {number} to 目标索引
-	 * @param {number} amt 质量
-	 */
-	const pushMv = (from, to, amt) => {
-		if (mvN >= mvFrom.length) {
-			mvFrom = growScratch(world, 'mvFrom', mvN + 1, Int32Array)
-			mvTo = growScratch(world, 'mvTo', mvN + 1, Int32Array)
-			mvAmt = growScratch(world, 'mvAmt', mvN + 1, Float32Array)
-		}
-		mvFrom[mvN] = from
-		mvTo[mvN] = to
-		mvAmt[mvN++] = amt
-	}
-
-	/**
-	 * 排队土壤→凝结供给。
-	 * @param {number} from 源索引
-	 * @param {number} amt 质量
-	 */
-	const pushFeed = (from, amt) => {
-		if (feedN >= feedFrom.length) {
-			feedFrom = growScratch(world, 'feedFrom', feedN + 1, Int32Array)
-			feedAmt = growScratch(world, 'feedAmt', feedN + 1, Float32Array)
-		}
-		feedFrom[feedN] = from
-		feedAmt[feedN++] = amt
-	}
+	/** @type {SoilQueues} */
+	const queues = soilQueues
+	queues.moveSources = growScratch(world, 'mvFrom', 256, Int32Array)
+	queues.moveTargets = growScratch(world, 'mvTo', 256, Int32Array)
+	queues.moveAmounts = growScratch(world, 'mvAmt', 256, Float32Array)
+	queues.moveCount = 0
+	queues.feedFrom = growScratch(world, 'feedFrom', 64, Int32Array)
+	queues.feedAmt = growScratch(world, 'feedAmt', 64, Float32Array)
+	queues.feedN = 0
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (!isSoilMat(mat[cell])) continue
-			const m = moisture[cell]
-			if (m <= 1e-8) continue
+			const moistureAmount = moisture[cell]
+			if (moistureAmount <= 1e-8) continue
 
 			if (y + 1 < H) {
 				const below = (y + 1) * W + x
 				if (isSoilMat(mat[below])) {
-					const take = Math.min(m * SOIL_DOWN_FRAC, Math.max(0, SOIL_CAP - moisture[below]))
-					if (take > 1e-8) pushMv(cell, below, take)
+					const take = Math.min(moistureAmount * SOIL_DOWN_FRAC, Math.max(0, SOIL_CAP - moisture[below]))
+					if (take > 1e-8) pushMove(world, queues, cell, below, take)
 				}
 				else if (mat[below] === MAT.AIR) {
-					const take = m * SOIL_CONDENSE_FRAC
-					if (take > 1e-8) pushFeed(cell, take)
+					const take = moistureAmount * SOIL_CONDENSE_FRAC
+					if (take > 1e-8) pushFeed(world, queues, cell, take)
 				}
 			}
 
 			const left = x > 0 && isSoilMat(mat[cell - 1]) ? cell - 1 : -1
 			const right = x + 1 < W && isSoilMat(mat[cell + 1]) ? cell + 1 : -1
-			const sideN = (left >= 0 ? 1 : 0) + (right >= 0 ? 1 : 0)
-			if (sideN) {
-				const each = (m * SOIL_SIDE_FRAC) / sideN
+			const sideCount = (left >= 0 ? 1 : 0) + (right >= 0 ? 1 : 0)
+			if (sideCount) {
+				const each = (moistureAmount * SOIL_SIDE_FRAC) / sideCount
 				if (left >= 0) {
 					const take = Math.min(each, Math.max(0, SOIL_CAP - moisture[left]))
-					if (take > 1e-8) pushMv(cell, left, take)
+					if (take > 1e-8) pushMove(world, queues, cell, left, take)
 				}
 				if (right >= 0) {
 					const take = Math.min(each, Math.max(0, SOIL_CAP - moisture[right]))
-					if (take > 1e-8) pushMv(cell, right, take)
+					if (take > 1e-8) pushMove(world, queues, cell, right, take)
 				}
 			}
 		}
 
+	const { moveSources, moveTargets, moveAmounts, moveCount, feedFrom, feedAmt, feedN } = queues
 	const outSum = scratch(world, 'soilOut', n, Float32Array)
 	const inSum = scratch(world, 'soilIn', n, Float32Array)
 	const delta = scratch(world, 'soilDelta', n, Float32Array)
 	// Clear only touched indices — not the whole WH grid.
-	for (let k = 0; k < mvN; k++) {
-		outSum[mvFrom[k]] = 0
-		outSum[mvTo[k]] = 0
-		inSum[mvTo[k]] = 0
-		delta[mvFrom[k]] = 0
-		delta[mvTo[k]] = 0
+	for (let index = 0; index < moveCount; index++) {
+		outSum[moveSources[index]] = 0
+		outSum[moveTargets[index]] = 0
+		inSum[moveTargets[index]] = 0
+		delta[moveSources[index]] = 0
+		delta[moveTargets[index]] = 0
 	}
-	for (let k = 0; k < feedN; k++) {
-		outSum[feedFrom[k]] = 0
-		delta[feedFrom[k]] = 0
-	}
-
-	for (let k = 0; k < mvN; k++) outSum[mvFrom[k]] += mvAmt[k]
-	for (let k = 0; k < feedN; k++) outSum[feedFrom[k]] += feedAmt[k]
-	for (let k = 0; k < mvN; k++) {
-		const cap = moisture[mvFrom[k]]
-		if (outSum[mvFrom[k]] > cap) mvAmt[k] *= cap / outSum[mvFrom[k]]
-	}
-	for (let k = 0; k < feedN; k++) {
-		const cap = moisture[feedFrom[k]]
-		if (outSum[feedFrom[k]] > cap) feedAmt[k] *= cap / outSum[feedFrom[k]]
+	for (let index = 0; index < feedN; index++) {
+		outSum[feedFrom[index]] = 0
+		delta[feedFrom[index]] = 0
 	}
 
-	for (let k = 0; k < mvN; k++) inSum[mvTo[k]] += mvAmt[k]
-	for (let k = 0; k < mvN; k++) {
-		const room = Math.max(0, SOIL_CAP - moisture[mvTo[k]])
-		if (inSum[mvTo[k]] > room && inSum[mvTo[k]] > 1e-12)
-			mvAmt[k] *= room / inSum[mvTo[k]]
+	for (let index = 0; index < moveCount; index++) outSum[moveSources[index]] += moveAmounts[index]
+	for (let index = 0; index < feedN; index++) outSum[feedFrom[index]] += feedAmt[index]
+	for (let index = 0; index < moveCount; index++) {
+		const cap = moisture[moveSources[index]]
+		if (outSum[moveSources[index]] > cap) moveAmounts[index] *= cap / outSum[moveSources[index]]
+	}
+	for (let index = 0; index < feedN; index++) {
+		const cap = moisture[feedFrom[index]]
+		if (outSum[feedFrom[index]] > cap) feedAmt[index] *= cap / outSum[feedFrom[index]]
 	}
 
-	for (let k = 0; k < mvN; k++) {
-		delta[mvFrom[k]] -= mvAmt[k]
-		delta[mvTo[k]] += mvAmt[k]
+	for (let index = 0; index < moveCount; index++) inSum[moveTargets[index]] += moveAmounts[index]
+	for (let index = 0; index < moveCount; index++) {
+		const room = Math.max(0, SOIL_CAP - moisture[moveTargets[index]])
+		if (inSum[moveTargets[index]] > room && inSum[moveTargets[index]] > 1e-12)
+			moveAmounts[index] *= room / inSum[moveTargets[index]]
 	}
-	for (let k = 0; k < feedN; k++) {
-		const from = feedFrom[k]
-		const amt = feedAmt[k]
-		delta[from] -= amt
-		condense[from] += amt
+
+	for (let index = 0; index < moveCount; index++) {
+		delta[moveSources[index]] -= moveAmounts[index]
+		delta[moveTargets[index]] += moveAmounts[index]
 	}
-	for (let k = 0; k < mvN; k++) {
-		const cell = mvFrom[k]
+	for (let index = 0; index < feedN; index++) {
+		const from = feedFrom[index]
+		const amount = feedAmt[index]
+		delta[from] -= amount
+		condense[from] += amount
+	}
+	for (let index = 0; index < moveCount; index++) {
+		const cell = moveSources[index]
 		if (!delta[cell]) continue
 		moisture[cell] += delta[cell]
 		clampMoisture(moisture, cell)
 		delta[cell] = 0
 	}
-	for (let k = 0; k < mvN; k++) {
-		const cell = mvTo[k]
+	for (let index = 0; index < moveCount; index++) {
+		const cell = moveTargets[index]
 		if (!delta[cell]) continue
 		moisture[cell] += delta[cell]
 		clampMoisture(moisture, cell)
 		delta[cell] = 0
 	}
-	for (let k = 0; k < feedN; k++) {
-		const cell = feedFrom[k]
+	for (let index = 0; index < feedN; index++) {
+		const cell = feedFrom[index]
 		if (!delta[cell]) continue
 		moisture[cell] += delta[cell]
 		clampMoisture(moisture, cell)
@@ -198,14 +232,14 @@ export const stepSoil = (world) => {
 			const cell = y * W + x
 			const right = cell + 1
 			if (!isSoilMat(mat[cell]) || !isSoilMat(mat[right])) continue
-			const ca = condense[cell]
-			const cb = condense[right]
-			if (ca < 1e-8 || cb < 1e-8) continue
-			const mass = ca + cb
+			const leftCondense = condense[cell]
+			const rightCondense = condense[right]
+			if (leftCondense < 1e-8 || rightCondense < 1e-8) continue
+			const mass = leftCondense + rightCondense
 			// Cheap LCG — Matthew only needs jitter, not cryptographic randomness.
 			const noise = ((((cell * 374761393) ^ (right * 668265263) ^ (step * 1274126177)) >>> 0) / 4294967296 - 0.5)
 				* COND_MATTHEW_NOISE * mass
-			const bias = (ca - cb) + noise
+			const bias = (leftCondense - rightCondense) + noise
 			if (Math.abs(bias) < 1e-8) continue
 			const rich = bias > 0 ? cell : right
 			const poor = bias > 0 ? right : cell
@@ -221,8 +255,8 @@ export const stepSoil = (world) => {
 			if (!isSoilMat(mat[cell]) || condense[cell] < COND_DRIP) continue
 			const below = (y + 1) * W + x
 			if (mat[below] !== MAT.AIR) continue
-			const amt = condense[cell]
-			const added = addLiquid(world, x, y + 1, amt)
-			condense[cell] = amt - added
+			const amount = condense[cell]
+			const added = addLiquid(world, x, y + 1, amount)
+			condense[cell] = amount - added
 		}
 }
