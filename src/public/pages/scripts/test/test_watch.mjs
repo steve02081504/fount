@@ -224,6 +224,8 @@ async function runLocaleScriptCheck(locale) {
 async function checkAriaIgnores() {
 	const nodes = document.querySelectorAll(`[${ARIA_IGNORE}]`)
 	const hub = String(globalThis.fount?.test?.hubUrl || '').replace(/\/$/, '')
+	/** @type {{ url: string, where: string }[]} */
+	const toProbe = []
 	for (const el of nodes) {
 		const url = (el.getAttribute(ARIA_IGNORE) || '').trim()
 		const where = el.id ? `#${el.id}` : el.className || el.tagName
@@ -241,20 +243,35 @@ async function checkAriaIgnores() {
 			console.error(A11Y_PREFIX, 'aria-ignore-bad-url', where, url)
 			continue
 		}
-		if (!hub) continue
+		if (hub) toProbe.push({ url, where })
+	}
+	if (!toProbe.length) return
+
+	/** @type {Map<string, boolean>} */
+	const closedByUrl = new Map()
+	await Promise.all([...new Set(toProbe.map(item => item.url))].map(async url => {
 		try {
 			const res = await fetch(`${hub}/github-issue?url=${encodeURIComponent(url)}`, {
 				signal: AbortSignal.timeout(10_000),
 			})
-			if (!res.ok) continue
+			if (!res.ok) {
+				closedByUrl.set(url, false)
+				return
+			}
 			const data = await res.json()
-			if (data?.closed !== true) continue
-			const key = `aria-ignore-closed\t${url}`
-			if (printedKeys.has(key)) continue
-			printedKeys.add(key)
-			console.error(A11Y_PREFIX, 'aria-ignore-closed', where, url)
+			closedByUrl.set(url, data?.closed === true)
 		}
-		catch { /* hub 不可达 / 超时：留给 Playwright 收尾再判 */ }
+		catch {
+			closedByUrl.set(url, false)
+		}
+	}))
+
+	for (const { url, where } of toProbe) {
+		if (closedByUrl.get(url) !== true) continue
+		const key = `aria-ignore-closed\t${url}`
+		if (printedKeys.has(key)) continue
+		printedKeys.add(key)
+		console.error(A11Y_PREFIX, 'aria-ignore-closed', where, url)
 	}
 }
 

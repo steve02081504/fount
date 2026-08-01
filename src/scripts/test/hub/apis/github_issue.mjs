@@ -23,8 +23,7 @@ async function probeGithubIssueClosed(parsed) {
 		if (result.code !== 0) return false
 		const raw = String(result.stdout || '').trim()
 		if (!raw) return false
-		const data = JSON.parse(raw)
-		return data.state === 'CLOSED'
+		return JSON.parse(raw).state === 'CLOSED'
 	}
 	catch {
 		return false

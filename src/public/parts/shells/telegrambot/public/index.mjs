@@ -227,19 +227,17 @@ function handleToggleToken() {
 async function handleSaveConfig() {
 	if (!selectedBot) return
 
-	let configJson
+	let config
 	try {
-		configJson = configEditor.getJson()
+		config = {
+			token: tokenInput.value,
+			char: charSelectDropdown.dataset.value,
+			config: configEditor.getJson(),
+		}
 	}
 	catch (err) {
 		showToastI18n('error', 'telegram_bots.alerts.invalidJsonConfig', { error: err.message })
 		return
-	}
-
-	const config = {
-		token: tokenInput.value,
-		char: charSelectDropdown.dataset.value,
-		config: configJson,
 	}
 
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'

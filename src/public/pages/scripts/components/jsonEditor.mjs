@@ -42,7 +42,7 @@ export function createJsonEditor(jsonEditorContainer, options) {
 		result.updateProps({ ariaLabel: geti18n(ariaLabelKey) })
 	})
 
-	if (onSave) document.addEventListener('keydown', e => {
+	if (onSave) jsonEditorContainer.addEventListener('keydown', e => {
 		if (e.ctrlKey && e.key === 's') {
 			e.preventDefault()
 			onSave(result.getJson())

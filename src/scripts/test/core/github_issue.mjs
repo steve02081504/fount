@@ -8,7 +8,7 @@
  * @returns {{ owner: string, repo: string, number: string } | null} 解析结果
  */
 export function parseGithubIssueUrl(url) {
-	const match = String(url).match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/issues\/(\d+)/)
+	const match = String(url).match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/issues\/(\d+)$/)
 	if (!match) return null
 	return { owner: match[1], repo: match[2], number: match[3] }
 }
