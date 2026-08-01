@@ -9,15 +9,15 @@ HEAD_SHA="${HEAD_SHA:?HEAD_SHA required}"
 MERGE_SHA="${MERGE_SHA:?MERGE_SHA required}"
 HEAD_REF="${HEAD_REF:?HEAD_REF required}"
 BASE_REF="${BASE_REF:?BASE_REF required}"
-PREFIX="${TEST_DATA_CACHE_PREFIX:-fount-test-data-}"
-SOURCE_KEY="${PREFIX}${HEAD_REF}"
+CACHE_PREFIX="${TEST_DATA_CACHE_PREFIX:-fount-test-data-}"
+SOURCE_KEY="${CACHE_PREFIX}${HEAD_REF}"
 
 emit_promoted() {
-	local v="$1"
+	local promoted="$1"
 	if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
-		echo "promoted=${v}" >> "${GITHUB_OUTPUT}"
+		echo "promoted=${promoted}" >> "${GITHUB_OUTPUT}"
 	fi
-	echo "promoted=${v}"
+	echo "promoted=${promoted}"
 }
 
 git fetch --no-tags origin "${MERGE_SHA}" "${HEAD_SHA}" 2>/dev/null || true
@@ -48,10 +48,10 @@ if [[ "${merge_tree}" != "${head_tree}" ]]; then
 	exit 0
 fi
 
-echo "ahead + same tree: eligible ${SOURCE_KEY} → ${PREFIX}${BASE_REF}"
+echo "ahead + same tree: eligible ${SOURCE_KEY} → ${CACHE_PREFIX}${BASE_REF}"
 
 if ! gh cache list --key "${SOURCE_KEY}" --limit 5 --json key \
-	| jq -e --arg k "${SOURCE_KEY}" 'map(select(.key == $k)) | length > 0' >/dev/null; then
+	| jq -e --arg source_key "${SOURCE_KEY}" 'map(select(.key == $source_key)) | length > 0' >/dev/null; then
 	echo "source cache missing: ${SOURCE_KEY}; skip"
 	emit_promoted false
 	exit 0

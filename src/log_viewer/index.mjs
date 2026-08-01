@@ -37,9 +37,9 @@ const FOUNT_DIR = path.resolve(import.meta.dirname + '/../../')
 const INTERACTIVE = process.stdout.isTTY && process.stdout.writable && supportsAnsi
 
 /** 本进程退出意图（唯一权威）。 */
-const exitAc = new AbortController()
+const exitAbortController = new AbortController()
 /** @type {AbortSignal} */
-const exitSignal = exitAc.signal
+const exitSignal = exitAbortController.signal
 
 /**
  * 从 `data/config.json` 读取服务器端口；读取/解析失败时回落到默认 8931。
@@ -183,7 +183,7 @@ const logSink = INTERACTIVE
 	: createPlainSink()
 
 on_shutdown(async () => {
-	if (!exitAc.signal.aborted) exitAc.abort()
+	if (!exitAbortController.signal.aborted) exitAbortController.abort()
 	logSink.tearDown?.()
 	await icon.farewell()
 })

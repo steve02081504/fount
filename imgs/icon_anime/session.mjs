@@ -112,7 +112,6 @@ export async function intro() {
  * @returns {Promise<void>}
  */
 export async function sleep(milliseconds) {
-	if (signal.aborted) return
 	try {
 		await delay(milliseconds, undefined, { signal })
 	}

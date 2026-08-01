@@ -19,6 +19,7 @@ jobs:
         with:
           fetch-depth: 1
       - name: Wait for promote on merged head
+        id: wait-promote
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -26,6 +27,8 @@ jobs:
           BRANCH: ${{ github.event.ref }}
         run: bash .github/workflows/scripts/wait_test_data_cache_promote.sh
       - name: Delete test data cache for deleted branch
+        # 仅在晋升成功或确认无需晋升时删源缓存；失败/超时保留
+        if: steps.wait-promote.outputs.result == 'promoted' || steps.wait-promote.outputs.result == 'skipped'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
