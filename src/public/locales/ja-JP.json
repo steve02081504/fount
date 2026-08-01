@@ -3659,6 +3659,9 @@
 			}
 		},
 		"configTitle": "サービスソースの設定",
+		"jsonEditor": {
+			"aria-label": "サービスソース設定のJSONエディター"
+		},
 		"needsConfigReminder": "サービスソースを設定した後、通常は、このサービスソースを使用するコンポーネントの設定内の対応するフィールドにサービスソース名を入力する必要があります。",
 		"needsConfigLink": "ウィジェット設定に移動します",
 		"subtypeSelect": {
@@ -3787,6 +3790,9 @@
 				"botToken": "Telegramボットトークン",
 				"config": "設定"
 			},
+			"jsonEditor": {
+				"aria-label": "ボット設定のJSONエディター"
+			},
 			"botTokenInput": {
 				"placeholder": "Telegramボットトークンを入力"
 			},
@@ -3867,6 +3873,9 @@
 				"apiKey": "Discord APIキー",
 				"config": "設定"
 			},
+			"jsonEditor": {
+				"aria-label": "ボット設定のJSONエディター"
+			},
 			"apiKeyInput": {
 				"placeholder": "APIキーを入力"
 			},
@@ -3945,6 +3954,9 @@
 				"apiBaseUrl": "WeChat チャネル API のベース URL",
 				"botToken": "iLink Bot トークン",
 				"config": "設定"
+			},
+			"jsonEditor": {
+				"aria-label": "ボット設定のJSONエディター"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "空欄で既定の https://ilinkai.weixin.qq.com を使用"

@@ -3659,6 +3659,9 @@
 			}
 		},
 		"configTitle": "تكوين مصدر الخدمة",
+		"jsonEditor": {
+			"aria-label": "محرر JSON لتكوين مصدر الخدمة"
+		},
 		"needsConfigReminder": "بعد تكوين مصدر الخدمة، تحتاج عمومًا إلى ملء اسم مصدر الخدمة في الحقل المقابل في تكوين المكون الذي يستخدم مصدر الخدمة هذا.",
 		"needsConfigLink": "انتقل إلى تكوين القطعة",
 		"subtypeSelect": {
@@ -3787,6 +3790,9 @@
 				"botToken": "رمز بوت Telegram",
 				"config": "تهيئة"
 			},
+			"jsonEditor": {
+				"aria-label": "محرر JSON لتكوين البوت"
+			},
 			"botTokenInput": {
 				"placeholder": "الرجاء إدخال رمز بوت Telegram"
 			},
@@ -3867,6 +3873,9 @@
 				"apiKey": "مفتاح API لـ Discord",
 				"config": "تهيئة"
 			},
+			"jsonEditor": {
+				"aria-label": "محرر JSON لتكوين البوت"
+			},
 			"apiKeyInput": {
 				"placeholder": "الرجاء إدخال مفتاح API"
 			},
@@ -3945,6 +3954,9 @@
 				"apiBaseUrl": "عنوان URL الأساسي لواجهة قناة WeChat",
 				"botToken": "رمز iLink Bot",
 				"config": "الإعدادات"
+			},
+			"jsonEditor": {
+				"aria-label": "محرر JSON لتكوين البوت"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "اتركه فارغًا للقيمة الافتراضية https://ilinkai.weixin.qq.com"
