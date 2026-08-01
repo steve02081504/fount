@@ -127,19 +127,19 @@ async function loadBotConfig(botname) {
 
 	if (!configEditor)
 		configEditor = createJsonEditor(configEditorContainer, {
+			ariaLabel: 'telegram_bots.configCard.jsonEditor.aria-label',
 			/**
 			 * 处理配置更改。
 			 * @param {any} updatedContent - 更新后的内容。
 			 * @param {any} previousContent - 之前的内容。
 			 * @param {object} root0 - 根对象。
-			 * @param {any} root0.error - 错误。
+			 * @param {any} root0.contentErrors - 内容错误。
 			 * @param {any} root0.patchResult - 补丁结果。
 			 */
-			onChange: (updatedContent, previousContent, { error, patchResult }) => {
-				if (!error) isDirty = true
+			onChange: (updatedContent, previousContent, { contentErrors, patchResult }) => {
+				if (!contentErrors) isDirty = true
 			},
 			onSave: handleSaveConfig,
-			label: geti18n('telegram_bots.configCard.labels.config')
 		})
 
 	configEditor.set({ json: config.config || {} })
@@ -227,19 +227,17 @@ function handleToggleToken() {
 async function handleSaveConfig() {
 	if (!selectedBot) return
 
-	let editorContent
+	let config
 	try {
-		editorContent = configEditor.get()
+		config = {
+			token: tokenInput.value,
+			char: charSelectDropdown.dataset.value,
+			config: configEditor.getJson(),
+		}
 	}
 	catch (err) {
 		showToastI18n('error', 'telegram_bots.alerts.invalidJsonConfig', { error: err.message })
 		return
-	}
-
-	const config = {
-		token: tokenInput.value,
-		char: charSelectDropdown.dataset.value,
-		config: editorContent.json || JSON.parse(editorContent.text || '{}'),
 	}
 
 	saveStatusIcon.src = 'https://api.iconify.design/line-md/loading-loop.svg'

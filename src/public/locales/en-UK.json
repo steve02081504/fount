@@ -3654,6 +3654,9 @@
 			}
 		},
 		"configTitle": "Service source configuration",
+		"jsonEditor": {
+			"aria-label": "Service source configuration JSON editor"
+		},
 		"needsConfigReminder": "After the service source is configured, you generally need to fill in the service source name in the corresponding field in the configuration of the component that uses this service source.",
 		"needsConfigLink": "Go to widget configuration",
 		"subtypeSelect": {
@@ -3782,6 +3785,9 @@
 				"botToken": "Telegram Bot Token",
 				"config": "Configuration"
 			},
+			"jsonEditor": {
+				"aria-label": "Bot configuration JSON editor"
+			},
 			"botTokenInput": {
 				"placeholder": "Enter Telegram Bot Token"
 			},
@@ -3862,6 +3868,9 @@
 				"apiKey": "Discord API Key",
 				"config": "Configuration"
 			},
+			"jsonEditor": {
+				"aria-label": "Bot configuration JSON editor"
+			},
 			"apiKeyInput": {
 				"placeholder": "Enter API Key"
 			},
@@ -3940,6 +3949,9 @@
 				"apiBaseUrl": "WeChat channel API base URL",
 				"botToken": "iLink Bot token",
 				"config": "Configuration"
+			},
+			"jsonEditor": {
+				"aria-label": "Bot configuration JSON editor"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "Leave blank for default https://ilinkai.weixin.qq.com"

@@ -158,7 +158,7 @@ function applyConfigFromEntry(editors, entry) {
 	if (!editors?.json) return
 	let config
 	try {
-		config = editors.json.get().json || JSON.parse(editors.json.get().text)
+		config = editors.json.getJson()
 	}
 	catch {
 		return

@@ -3658,6 +3658,9 @@
 			}
 		},
 		"configTitle": "服務來源設定",
+		"jsonEditor": {
+			"aria-label": "服務來源設定 JSON 編輯器"
+		},
 		"needsConfigReminder": "服務來源設定好後，一般需要在使用此服務來源的元件的設定中的對應欄位填入服務來源名稱。",
 		"needsConfigLink": "前往組件設定",
 		"subtypeSelect": {
@@ -3786,6 +3789,9 @@
 				"botToken": "Telegram Bot Token",
 				"config": "設定"
 			},
+			"jsonEditor": {
+				"aria-label": "Bot 設定 JSON 編輯器"
+			},
 			"botTokenInput": {
 				"placeholder": "請輸入 Telegram Bot Token"
 			},
@@ -3866,6 +3872,9 @@
 				"apiKey": "Discord API 金鑰",
 				"config": "設定"
 			},
+			"jsonEditor": {
+				"aria-label": "Bot 設定 JSON 編輯器"
+			},
 			"apiKeyInput": {
 				"placeholder": "請輸入 API 金鑰"
 			},
@@ -3944,6 +3953,9 @@
 				"apiBaseUrl": "微信通路服務根 URL",
 				"botToken": "iLink Bot Token",
 				"config": "設定"
+			},
+			"jsonEditor": {
+				"aria-label": "Bot 設定 JSON 編輯器"
 			},
 			"apiBaseUrlInput": {
 				"placeholder": "留空則使用預設 https://ilinkai.weixin.qq.com"

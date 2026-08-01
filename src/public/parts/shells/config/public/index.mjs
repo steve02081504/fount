@@ -36,15 +36,6 @@ let isDirty = false
 let onJsonUpdate = () => 0
 
 /**
- * 读取 JSON 编辑器中的配置数据。
- * @returns {object} 当前 JSON 配置。
- */
-function getEditorData() {
-	const content = jsonEditor.get()
-	return content.json ?? JSON.parse(content.text)
-}
-
-/**
  * 禁用编辑器和保存按钮。
  */
 function disableEditorAndSaveButton() {
@@ -104,21 +95,21 @@ async function loadEditor(partpath) {
 
 		if (!jsonEditor)
 			jsonEditor = createJsonEditor(jsonEditorContainer, {
-				label: geti18n('part_config.editor.jsonEditor'),
+				ariaLabel: 'part_config.editor.jsonEditor.aria-label',
 				readOnly: true,
 				/**
 				 * JSON 更新时的回调函数。
 				 * @param {any} updatedContent - 更新后的内容。
 				 * @param {any} previousContent - 之前的内容。
 				 * @param {object} root0 - 根对象。
-				 * @param {any} root0.error - 错误。
+				 * @param {any} root0.contentErrors - 内容错误。
 				 * @param {any} root0.patchResult - 补丁结果。
 				 */
-				onChange: (updatedContent, previousContent, { error, patchResult }) => {
-					if (error) return
+				onChange: (updatedContent, previousContent, { contentErrors, patchResult }) => {
+					if (contentErrors) return
 					isDirty = true
 					let data
-					try { data = getEditorData() } catch (e) { return }
+					try { data = jsonEditor.getJson() } catch (e) { return }
 					onJsonUpdate({
 						info: {
 							partpath: activePartPath
@@ -188,7 +179,7 @@ async function saveConfig() {
 	saveButton.disabled = true
 
 	try {
-		const data = getEditorData()
+		const data = jsonEditor.getJson()
 		await saveConfigData(activePartPath, data)
 		isDirty = false
 
