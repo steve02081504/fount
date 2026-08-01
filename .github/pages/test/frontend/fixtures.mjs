@@ -48,13 +48,13 @@ export function createPagesFixtures(options = {}) {
 				globalThis.fount.test.enabled = true
 			})
 			const hubUrl = (process.env.FOUNT_TEST_HUB_URL || '').trim()
-			if (hubUrl) {
+			if (hubUrl)
 				await context.addInitScript(url => {
 					globalThis.fount ??= {}
 					globalThis.fount.test ??= {}
 					globalThis.fount.test.hubUrl = url
 				}, hubUrl)
-			}
+
 			await use(context)
 			await context.close()
 		},

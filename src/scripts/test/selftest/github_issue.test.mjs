@@ -1,6 +1,7 @@
 /**
  * `parseGithubIssueUrl`（纯解析，不打 gh）。
  */
+/* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
 import { parseGithubIssueUrl } from '../core/github_issue.mjs'

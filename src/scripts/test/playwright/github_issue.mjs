@@ -5,6 +5,9 @@
 import { parseGithubIssueUrl } from '../core/github_issue.mjs'
 import { isGithubIssueClosed } from '../hub/clients/github_issue.mjs'
 
+/**
+ *
+ */
 export { isGithubIssueClosed }
 
 /**

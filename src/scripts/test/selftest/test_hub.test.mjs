@@ -1,8 +1,10 @@
 /**
  * 测试 hub（固定生产口 8903；本自测用 18903 避开父进程 hub）。
  */
-import { assertEquals } from 'jsr:@std/assert'
+/* global Deno */
 import process from 'node:process'
+
+import { assertEquals } from 'jsr:@std/assert'
 
 import { getTestHubBaseUrl } from '../hub/base_url.mjs'
 import { isGithubIssueClosed } from '../hub/clients/github_issue.mjs'
