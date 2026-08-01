@@ -19,6 +19,7 @@ export function installMarkdownTestDom() {
 	// https://github.com/capricorn86/happy-dom/issues/2267 — 上游补齐后可删此 shim
 	Object.defineProperty(window.document, 'compatMode', {
 		configurable: true,
+		/** @returns {string} 标准模式，避免 KaTeX 将 happy-dom 误判为 quirks */
 		get: () => 'CSS1Compat',
 	})
 	Object.defineProperty(window, 'innerWidth', { value: 0, configurable: true })

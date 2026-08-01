@@ -20,7 +20,7 @@ export const fps = 24
 
 /**
  * 是否可进备用屏 TUI（stdin 交互 + stdout VT）。
- * @returns {boolean}
+ * @returns {boolean} stdin/stdout 均为 TTY 且支持 ANSI 时为 true
  */
 const canUseIconAnimeTui = () => Boolean(
 	process.stdin.isTTY && process.stdout.isTTY && process.stdout.writable && supportsAnsi,

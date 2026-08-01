@@ -613,6 +613,9 @@ const checkFountInstallerAlive = async () => {
  */
 const whenFountInstallerFails = () => {
 	return new Promise(resolve => {
+		/**
+		 *
+		 */
 		const check = async () => {
 			if (await checkFountInstallerAlive()) setTimeout(check, 1000)
 			else resolve()

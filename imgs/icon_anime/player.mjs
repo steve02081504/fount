@@ -17,7 +17,7 @@ const write = (text) => process.stdout.write(text)
 
 /**
  * 备用屏 / raw stdin 是否可用。
- * @returns {boolean}
+ * @returns {boolean} stdin/stdout 均为 TTY 且支持 ANSI 时为 true
  */
 const canUseTui = () => Boolean(
 	process.stdin.isTTY && process.stdout.isTTY && process.stdout.writable && supportsAnsi,
