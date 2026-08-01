@@ -243,6 +243,7 @@
 				"src/scripts/test/selftest/github_issue.test.mjs",
 				"src/scripts/test/selftest/test_hub.test.mjs",
 				"src/scripts/test/core/github_issue.mjs",
+				"src/public/pages/scripts/test/github_issue.mjs",
 				"src/scripts/test/hub/**",
 				"src/scripts/test/playwright/github_issue.mjs"
 			]

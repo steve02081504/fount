@@ -1,8 +1,9 @@
 /**
- * 测试环境页面监视：import 即启动（无导出）。
+ * 测试环境页面监视：import 即启动；导出 `ARIA_IGNORE` 供产品侧标记子树。
  * - axe-core 无障碍：真实 DOM 变脏时每 0.5s 扫，静止则停；命中即报
- * - `[aria-ignore="https://github.com/…/issues/n"]`：axe `exclude`；须带 issue URL
- *   （缺省 / 非法格式在此报；issue 已关闭经 `fount.test.hubUrl` → 测试 hub，或 Playwright 收尾硬失败）
+ * - `[aria-ignore="https://github.com/…/issues/n"]`：仅合法 issue URL 参与 axe `exclude`；
+ *   缺省 / 非法格式在此报；关闭态经 `fount.test.hubUrl` → 测试 hub（成功结果与进行中请求按 URL 缓存，
+ *   失败退避；`kickWatch` / `cycleLocales` 显式刷新），或 Playwright 收尾硬失败
  * - 语种轮换：每秒在 zh-CN / ja-JP / en-UK 间切换，并用 `\p{Script=…}` 查错语字符
  *   （轮换自身的 DOM 写入不计入 a11y dirty，否则扫描定时器永远停不下来）
  *
@@ -16,14 +17,18 @@
  */
 import axe from 'https://esm.sh/axe-core'
 
+import { parseGithubIssueUrl } from './github_issue.mjs'
+
 /**
  * 第三方 / 暂不可修子树：axe `exclude`。
  * 属性值必须是跟踪上游修复的 GitHub issue URL（`aria-ignore="https://github.com/…/issues/n"`）。
  */
 export const ARIA_IGNORE = 'aria-ignore'
 
-/** GitHub issue URL（与 `parseGithubIssueUrl` 一致：路径以 /issues/{n} 结尾） */
-const GITHUB_ISSUE_URL_RE = /^https:\/\/github\.com\/[^/]+\/[^/]+\/issues\/\d+$/
+/** hub 查询有界超时（毫秒）。 */
+const GITHUB_ISSUE_FETCH_TIMEOUT_MS = 10_000
+/** hub 失败后的退避（毫秒）。 */
+const GITHUB_ISSUE_PROBE_BACKOFF_MS = 30_000
 
 const A11Y_PREFIX = '[test:a11y]'
 const LOCALE_PREFIX = '[test:locale]'
@@ -70,6 +75,96 @@ let watchChain = Promise.resolve()
 let jaForbiddenRe
 /** @type {Promise<RegExp | null> | null} */
 let jaForbiddenLoading = null
+
+/** @type {Map<string, boolean>} */
+const githubIssueClosedCache = new Map()
+/** @type {Map<string, Promise<boolean>>} */
+const githubIssueInflight = new Map()
+/** @type {Map<string, number>} */
+const githubIssueBackoffUntil = new Map()
+
+/**
+ * @typedef {{ url: string, location: string, element: Element, parsed: ReturnType<typeof parseGithubIssueUrl> }} AriaIgnoreEntry
+ */
+
+/**
+ * 收集页面 `[aria-ignore]` 节点。
+ * @returns {AriaIgnoreEntry[]} 各节点的 URL、位置与解析结果
+ */
+function collectAriaIgnoreEntries() {
+	/** @type {AriaIgnoreEntry[]} */
+	const entries = []
+	for (const element of document.querySelectorAll(`[${ARIA_IGNORE}]`)) {
+		const url = (element.getAttribute(ARIA_IGNORE) || '').trim()
+		const location = element.id ? `#${element.id}` : element.className || element.tagName
+		entries.push({
+			url,
+			location,
+			element,
+			parsed: url ? parseGithubIssueUrl(url) : null,
+		})
+	}
+	return entries
+}
+
+/**
+ * 清除 GitHub issue 关闭态探测缓存（供收尾显式刷新）。
+ * @returns {void}
+ */
+function refreshGithubIssueProbes() {
+	githubIssueClosedCache.clear()
+	githubIssueBackoffUntil.clear()
+	githubIssueInflight.clear()
+}
+
+/**
+ * issue 是否已关闭（成功结果缓存；进行中请求复用；失败退避；无 hub / 超时 → false）。
+ * @param {string} url 已解析的 issue URL
+ * @param {{ refresh?: boolean }} [options] `refresh` 为 true 时跳过缓存并重新探测
+ * @returns {Promise<boolean>} 已关闭为 true
+ */
+async function probeGithubIssueClosed(url, { refresh = false } = {}) {
+	const hub = String(globalThis.fount?.test?.hubUrl || '').replace(/\/$/, '')
+	if (!hub) return false
+
+	if (refresh) {
+		githubIssueClosedCache.delete(url)
+		githubIssueBackoffUntil.delete(url)
+		const inflight = githubIssueInflight.get(url)
+		if (inflight) await inflight.catch(() => { })
+		githubIssueInflight.delete(url)
+	}
+	else {
+		if (githubIssueClosedCache.has(url)) return githubIssueClosedCache.get(url)
+		if ((githubIssueBackoffUntil.get(url) ?? 0) > Date.now()) return false
+		const inflight = githubIssueInflight.get(url)
+		if (inflight) return inflight
+	}
+
+	const probe = (async () => {
+		try {
+			const response = await fetch(`${hub}/github-issue?url=${encodeURIComponent(url)}`, {
+				signal: AbortSignal.timeout(GITHUB_ISSUE_FETCH_TIMEOUT_MS),
+			})
+			if (!response.ok) {
+				githubIssueBackoffUntil.set(url, Date.now() + GITHUB_ISSUE_PROBE_BACKOFF_MS)
+				return false
+			}
+			const closed = (await response.json())?.closed === true
+			githubIssueClosedCache.set(url, closed)
+			return closed
+		}
+		catch {
+			githubIssueBackoffUntil.set(url, Date.now() + GITHUB_ISSUE_PROBE_BACKOFF_MS)
+			return false
+		}
+		finally {
+			githubIssueInflight.delete(url)
+		}
+	})()
+	githubIssueInflight.set(url, probe)
+	return probe
+}
 
 /**
  * Playwright 测体可设 `fount.test.localeHold > 0` 暂停轮换。
@@ -219,16 +314,14 @@ async function runLocaleScriptCheck(locale) {
 
 /**
  * 校验 `[aria-ignore]`：缺 URL / 非法格式立刻报；有 hub 时额外查关闭态。
- * @returns {Promise<void>}
+ * @param {{ refresh?: boolean, entries?: AriaIgnoreEntry[] }} [options] `refresh` 强制重查关闭态；`entries` 可复用已收集节点
+ * @returns {Promise<void>} 完成校验
  */
-async function checkAriaIgnores() {
-	const nodes = document.querySelectorAll(`[${ARIA_IGNORE}]`)
+async function checkAriaIgnores({ refresh = false, entries = collectAriaIgnoreEntries() } = {}) {
 	const hub = String(globalThis.fount?.test?.hubUrl || '').replace(/\/$/, '')
 	/** @type {{ url: string, location: string }[]} */
 	const toProbe = []
-	for (const element of nodes) {
-		const url = (element.getAttribute(ARIA_IGNORE) || '').trim()
-		const location = element.id ? `#${element.id}` : element.className || element.tagName
+	for (const { url, location, parsed } of entries) {
 		if (!url) {
 			const key = `aria-ignore-missing\t${location}`
 			if (printedKeys.has(key)) continue
@@ -236,7 +329,7 @@ async function checkAriaIgnores() {
 			console.error(A11Y_PREFIX, 'aria-ignore-missing-url', location, 'aria-ignore requires a GitHub issue URL')
 			continue
 		}
-		if (!GITHUB_ISSUE_URL_RE.test(url)) {
+		if (!parsed) {
 			const key = `aria-ignore-bad-url\t${url}`
 			if (printedKeys.has(key)) continue
 			printedKeys.add(key)
@@ -247,26 +340,12 @@ async function checkAriaIgnores() {
 	}
 	if (!toProbe.length) return
 
-	/** @type {Map<string, boolean>} */
-	const closedByUrl = new Map()
-	await Promise.all([...new Set(toProbe.map(item => item.url))].map(async url => {
-		try {
-			const response = await fetch(`${hub}/github-issue?url=${encodeURIComponent(url)}`, {
-				signal: AbortSignal.timeout(10_000),
-			})
-			if (!response.ok) {
-				closedByUrl.set(url, false)
-				return
-			}
-			closedByUrl.set(url, (await response.json())?.closed === true)
-		}
-		catch {
-			closedByUrl.set(url, false)
-		}
-	}))
+	await Promise.all([...new Set(toProbe.map(item => item.url))].map(url =>
+		probeGithubIssueClosed(url, { refresh }),
+	))
 
 	for (const { url, location } of toProbe) {
-		if (closedByUrl.get(url) !== true) continue
+		if (githubIssueClosedCache.get(url) !== true) continue
 		const key = `aria-ignore-closed\t${url}`
 		if (printedKeys.has(key)) continue
 		printedKeys.add(key)
@@ -275,13 +354,19 @@ async function checkAriaIgnores() {
 }
 
 /**
- * @returns {Promise<void>}
+ * 跑一轮 axe 无障碍扫描。
+ * @param {{ refreshGithubIssues?: boolean }} [options] `refreshGithubIssues` 为 true 时重查 issue 关闭态
+ * @returns {Promise<void>} 完成扫描
  */
-async function runA11y() {
+async function runA11y({ refreshGithubIssues = false } = {}) {
 	if (!localeReady) return
-	await checkAriaIgnores()
+	const ariaIgnoreEntries = collectAriaIgnoreEntries()
+	await checkAriaIgnores({ refresh: refreshGithubIssues, entries: ariaIgnoreEntries })
+	const axeExclude = ariaIgnoreEntries
+		.filter(entry => entry.parsed)
+		.map(entry => entry.element)
 	const results = await axe.run({
-		exclude: `[${ARIA_IGNORE}]`,
+		exclude: axeExclude,
 	}, {
 		resultTypes: ['violations'],
 		iframes: false,
@@ -324,10 +409,12 @@ function enqueueWatch(fn) {
 }
 
 /**
+ * 入队一轮 a11y 扫描。
+ * @param {{ refreshGithubIssues?: boolean }} [options] 传给 `runA11y`
  * @returns {void}
  */
-function tickA11y() {
-	void enqueueWatch(() => runA11y())
+function tickA11y(options = {}) {
+	void enqueueWatch(() => runA11y(options))
 }
 
 /**
@@ -400,7 +487,8 @@ function markDirty() {
 function kickWatch() {
 	if (!localeReady) return
 	dirty = true
-	tickA11y()
+	refreshGithubIssueProbes()
+	tickA11y({ refreshGithubIssues: true })
 	watchChain = watchChain.then(async () => {
 		const i18n = await import('../i18n/index.mjs')
 		const locale = i18n.main_locale || i18n.loadPreferredLangs()[0] || 'zh-CN'
@@ -438,7 +526,7 @@ async function cycleLocales() {
 				localeIndex = LOCALE_CYCLE.indexOf(locale)
 				await runLocaleScriptCheck(i18n.main_locale || locale)
 			})
-			await runA11y()
+			await runA11y({ refreshGithubIssues: true })
 		}).catch(() => { })
 
 	ensureLocaleTimer()
@@ -446,6 +534,7 @@ async function cycleLocales() {
 
 globalThis.fount.test.kickWatch = kickWatch
 globalThis.fount.test.cycleLocales = cycleLocales
+globalThis.fount.test.refreshGithubIssueProbes = refreshGithubIssueProbes
 
 /**
  * @returns {void}
