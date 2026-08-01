@@ -3815,6 +3815,8 @@
 			"configSaved": "¡La configuración se ha guardado correctamente!",
 			"botExists": "Ya existe un bot con el nombre \"${botname}\". Por favor, usa un nombre diferente.",
 			"unsavedChanges": "Tienes cambios sin guardar. ¿Seguro que quieres descartar estos cambios?",
+			"confirmDeleteBot": "¿Seguro que quieres eliminar el bot \"${botname}\"? Esta acción no se puede deshacer.",
+			"invalidJsonConfig": "Configuración JSON no válida: ${error}",
 			"httpError": "Error HTTP",
 			"beforeUnload": "Tienes cambios sin guardar. ¿Seguro que quieres salir de la página actual?"
 		},

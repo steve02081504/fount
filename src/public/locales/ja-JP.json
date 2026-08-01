@@ -3815,6 +3815,8 @@
 			"configSaved": "設定を正常に保存しました！",
 			"botExists": "ボット名「${botname}」は既に存在します。別の名前を使用してください。",
 			"unsavedChanges": "保存されていない変更があります。変更を破棄しますか？",
+			"confirmDeleteBot": "ボット「${botname}」を削除しますか？この操作は取り消せません。",
+			"invalidJsonConfig": "JSON 設定が無効です：${error}",
 			"httpError": "HTTPエラーが発生しました。",
 			"beforeUnload": "保存されていない変更があります。このページから移動しますか？"
 		},

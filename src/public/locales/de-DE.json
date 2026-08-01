@@ -3815,6 +3815,8 @@
 			"configSaved": "Die Konfiguration wurde erfolgreich gespeichert!",
 			"botExists": "Ein Bot namens \"${botname}\" existiert bereits. Bitte verwenden Sie einen anderen Namen.",
 			"unsavedChanges": "Sie haben ungespeicherte Änderungen. Möchten Sie diese Änderungen verwerfen?",
+			"confirmDeleteBot": "Möchten Sie den Bot \"${botname}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+			"invalidJsonConfig": "Ungültige JSON-Konfiguration: ${error}",
 			"httpError": "HTTP-Fehler",
 			"beforeUnload": "Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die aktuelle Seite verlassen möchten?"
 		},

@@ -3815,6 +3815,8 @@
 			"configSaved": "Configuratie succesvol opgeslagen!",
 			"botExists": "Een Bot met de naam \"${botname}\" bestaat al, gebruik een andere naam.",
 			"unsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Wil je deze negeren?",
+			"confirmDeleteBot": "Weet je zeker dat je bot \"${botname}\" wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
+			"invalidJsonConfig": "Ongeldige JSON-configuratie: ${error}",
 			"httpError": "HTTP-fout",
 			"beforeUnload": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je deze pagina wilt verlaten?"
 		},

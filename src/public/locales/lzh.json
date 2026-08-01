@@ -3815,6 +3815,8 @@
 			"configSaved": "樞機已存。",
 			"botExists": "靈偶 “${botname}” 已存，請更名。",
 			"unsavedChanges": "尚有未存之變，定欲棄之？",
+			"confirmDeleteBot": "定欲刪靈偶「${botname}」？此舉不可逆。",
+			"invalidJsonConfig": "JSON 枢機無效：${error}",
 			"httpError": "HTTP 錯誤",
 			"beforeUnload": "尚有未存之變，定欲離？"
 		},

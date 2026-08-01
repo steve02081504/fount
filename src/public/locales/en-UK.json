@@ -3810,6 +3810,8 @@
 			"configSaved": "Configuration has been saved successfully!",
 			"botExists": "A bot named \"${botname}\" already exists. Please use a different name.",
 			"unsavedChanges": "You have unsaved changes. Are you sure you want to discard these changes?",
+			"confirmDeleteBot": "Are you sure you want to delete bot \"${botname}\"? This action cannot be undone.",
+			"invalidJsonConfig": "Invalid JSON configuration: ${error}",
 			"httpError": "HTTP Error",
 			"beforeUnload": "You have unsaved changes. Are you sure you want to leave the current page?"
 		},

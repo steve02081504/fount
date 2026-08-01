@@ -3815,6 +3815,8 @@
 			"configSaved": "Cấu hình đã được lưu thành công!",
 			"botExists": "Bot với tên \"${botname}\" đã tồn tại, vui lòng sử dụng tên khác.",
 			"unsavedChanges": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn hủy bỏ những thay đổi này không?",
+			"confirmDeleteBot": "Bạn có chắc chắn muốn xóa bot \"${botname}\"? Hành động này không thể hoàn tác.",
+			"invalidJsonConfig": "Cấu hình JSON không hợp lệ: ${error}",
 			"httpError": "Lỗi HTTP.",
 			"beforeUnload": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời khỏi trang này không?"
 		},

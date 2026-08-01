@@ -3815,6 +3815,8 @@
 			"configSaved": "⚙️💾✅",
 			"botExists": "🤖 \"${botname}\" ✅",
 			"unsavedChanges": "🤔💾❓",
+			"confirmDeleteBot": "🗑️🤖 \"${botname}\" ❓🚫↩️",
+			"invalidJsonConfig": "⚙️📄❌ ${error}",
 			"httpError": "🌐❌",
 			"beforeUnload": "🤔💾➡️🚪❓"
 		},

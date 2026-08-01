@@ -3815,6 +3815,8 @@
 			"configSaved": "Stillingar vistaðar!",
 			"botExists": "Bot með nafnið \"${botname}\" er þegar til, vinsamlegast notaðu annað nafn.",
 			"unsavedChanges": "Þú hefur óvistaðar breytingar. Viltu henda þeim?",
+			"confirmDeleteBot": "Ertu viss um að þú viljir eyða bottinum \"${botname}\"? Ekki er hægt að afturkalla þessa aðgerð.",
+			"invalidJsonConfig": "Ógild JSON-stilling: ${error}",
 			"httpError": "HTTP villa",
 			"beforeUnload": "Þú hefur óvistaðar breytingar. Ertu viss um að þú viljir yfirgefa þessa síðu?"
 		},

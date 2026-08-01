@@ -3815,6 +3815,8 @@
 			"configSaved": "La configuration a été enregistrée avec succès !",
 			"botExists": "Un bot nommé \"${botname}\" existe déjà. Veuillez utiliser un autre nom.",
 			"unsavedChanges": "Vous avez des modifications non enregistrées. Voulez-vous vraiment abandonner ces modifications ?",
+			"confirmDeleteBot": "Voulez-vous vraiment supprimer le bot « ${botname} » ? Cette action est irréversible.",
+			"invalidJsonConfig": "Configuration JSON invalide : ${error}",
 			"httpError": "Erreur HTTP",
 			"beforeUnload": "Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter cette page ?"
 		},
