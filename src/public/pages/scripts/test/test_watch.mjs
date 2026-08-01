@@ -118,13 +118,21 @@ function refreshGithubIssueProbes() {
 }
 
 /**
+ * 规范化 `fount.test.hubUrl`（去尾斜杠；未设则为空串）。
+ * @returns {string} hub 基址
+ */
+function getHubUrl() {
+	return String(globalThis.fount?.test?.hubUrl || '').replace(/\/$/, '')
+}
+
+/**
  * issue 是否已关闭（成功结果缓存；进行中请求复用；失败退避；无 hub / 超时 → false）。
  * @param {string} url 已解析的 issue URL
  * @param {{ refresh?: boolean }} [options] `refresh` 为 true 时跳过缓存并重新探测
  * @returns {Promise<boolean>} 已关闭为 true
  */
 async function probeGithubIssueClosed(url, { refresh = false } = {}) {
-	const hub = String(globalThis.fount?.test?.hubUrl || '').replace(/\/$/, '')
+	const hub = getHubUrl()
 	if (!hub) return false
 
 	if (refresh) {
@@ -318,7 +326,7 @@ async function runLocaleScriptCheck(locale) {
  * @returns {Promise<void>} 完成校验
  */
 async function checkAriaIgnores({ refresh = false, entries = collectAriaIgnoreEntries() } = {}) {
-	const hub = String(globalThis.fount?.test?.hubUrl || '').replace(/\/$/, '')
+	const hub = getHubUrl()
 	/** @type {{ url: string, location: string }[]} */
 	const toProbe = []
 	for (const { url, location, parsed } of entries) {
