@@ -12,15 +12,17 @@ import { verdictAllowsDownstream, verdictReusable } from './verdict.mjs'
  */
 
 /**
+ * 计划动作：复用上次结果 / 真跑 / 因依赖阻塞。
  * @typedef {'reuse' | 'run' | 'blocked'} PlanAction
  */
 
 /**
+ * 单槽运行计划。
  * @typedef {object} PlanSlot
- * @property {string} key
- * @property {SuiteDef} suite
- * @property {PlanAction} action
- * @property {string[]} [blockedBy]
+ * @property {string} key suite 键
+ * @property {SuiteDef} suite suite 定义
+ * @property {PlanAction} action 计划动作
+ * @property {string[]} [blockedBy] 阻塞来源 suite 键
  * @property {string | null} [requiredBy] 直接纳入方（依赖拉入）
  * @property {boolean} goal 是否为用户目标
  * @property {GoalEvidence} [goalEvidence] 目标证据
@@ -29,6 +31,7 @@ import { verdictAllowsDownstream, verdictReusable } from './verdict.mjs'
  */
 
 /**
+ * 拓扑有序运行计划。
  * @typedef {object} RunPlan
  * @property {PlanSlot[]} slots 拓扑有序槽位
  * @property {Set<string>} goalKeys 用户目标键
@@ -49,6 +52,7 @@ function dependencyGreen(slot, verdict) {
 }
 
 /**
+ * 列举阻塞当前 suite 的依赖键。
  * @param {string} key suite 键
  * @param {Map<string, PlanSlot>} planned 已标注槽位
  * @param {Map<string, Verdict>} verdicts 裁决表
@@ -85,6 +89,7 @@ function goalMustRun(isGoal, verdict, force, hasExplicitSubtestFilter = false) {
 }
 
 /**
+ * 由目标键与裁决表构建拓扑运行计划。
  * @param {Set<string>} goalKeys 用户目标键
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {Map<string, SuiteDef>} byKey 全部 suite

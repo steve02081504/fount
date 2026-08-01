@@ -1,5 +1,5 @@
 /**
- * Fluid world grid: materials, liquid, soil water, gas velocity, particles.
+ * 流体世界网格：材质、液体、土壤水、气体速度、粒子。
  */
 
 import { MAT, SOIL_CAP, LIQ_FULL, LIQ_DRAW, isSoilMat, isLiquidBarrier } from './mat.mjs'
@@ -25,18 +25,16 @@ import { createParticlePool, clearParticlePool, totalParticleWater } from './par
  */
 
 /**
- * Allocate a fluid world sized for a view rectangle plus margins.
- * @param {{ width: number, height: number, margin?: number, bottomExtra?: number }} [opts] view size
- * @returns {FluidWorld} empty world
+ * 为视口矩形加边距分配流体世界。
+ * @param {{ width: number, height: number, margin?: number, bottomExtra?: number }} [opts] 视口尺寸
+ * @returns {FluidWorld} 空世界
  */
 export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}) => {
-	const viewW = width
-	const viewH = height
-	const worldW = viewW + margin * 2
-	const worldH = viewH + bottomExtra
+	const worldW = width + margin * 2
+	const worldH = height + bottomExtra
 	const size = worldW * worldH
 	return {
-		viewW, viewH, worldW, worldH, margin, ox: margin, oy: 0,
+		viewW: width, viewH: height, worldW, worldH, margin, ox: margin, oy: 0,
 		mat: new Uint8Array(size),
 		liq: new Float32Array(size),
 		moisture: new Float32Array(size),
@@ -52,9 +50,9 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 		soilStep: 0,
 		gasTime: 0,
 		airDirty: true,
-		/** Rebuild gas blocked/span caches when air topology (or mat) changes. */
+		/** 空气拓扑（或材质）变化时重建气体 blocked/span 缓存。 */
 		gasGeomDirty: true,
-		/** Most-negative gas uy after `stepGas`; `NaN` until gas has stepped. */
+		/** `stepGas` 后最负的 gas uy；气体未步进前为 `NaN`。 */
 		maxUpdraft: NaN,
 		scratch: {},
 		floodQ: [],
@@ -62,12 +60,12 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 }
 
 /**
- * Ensure a typed scratch buffer of exact length `n`.
- * @param {FluidWorld} world fluid world
- * @param {string} key scratch slot
- * @param {number} n length
- * @param {typeof Float32Array | typeof Uint8Array | typeof Uint16Array | typeof Int32Array} Ctor typed-array ctor
- * @returns {Float32Array | Uint8Array | Uint16Array | Int32Array} buffer
+ * 确保长度为 `n` 的类型化 scratch 缓冲。
+ * @param {FluidWorld} world 流体世界
+ * @param {string} key scratch 槽位
+ * @param {number} n 长度
+ * @param {typeof Float32Array | typeof Uint8Array | typeof Uint16Array | typeof Int32Array} Ctor 类型化数组构造器
+ * @returns {Float32Array | Uint8Array | Uint16Array | Int32Array} 缓冲
  */
 export const scratch = (world, key, n, Ctor) => {
 	let buf = world.scratch[key]
@@ -79,12 +77,12 @@ export const scratch = (world, key, n, Ctor) => {
 }
 
 /**
- * Grow a typed scratch buffer to at least `need` elements (doubling).
- * @param {FluidWorld} world fluid world
- * @param {string} key scratch slot
- * @param {number} need minimum length
- * @param {typeof Float32Array | typeof Int32Array} Ctor typed-array ctor
- * @returns {Float32Array | Int32Array} buffer
+ * 将类型化 scratch 缓冲扩容至至少 `need` 个元素（翻倍）。
+ * @param {FluidWorld} world 流体世界
+ * @param {string} key scratch 槽位
+ * @param {number} need 最小长度
+ * @param {typeof Float32Array | typeof Int32Array} Ctor 类型化数组构造器
+ * @returns {Float32Array | Int32Array} 缓冲
  */
 export const growScratch = (world, key, need, Ctor) => {
 	const buf = world.scratch[key]
@@ -98,8 +96,8 @@ export const growScratch = (world, key, need, Ctor) => {
 }
 
 /**
- * Clear the BFS flood queue.
- * @param {FluidWorld} world world
+ * 清空 BFS 泛洪队列。
+ * @param {FluidWorld} world 世界
  * @returns {void}
  */
 export const floodClear = (world) => {
@@ -107,10 +105,10 @@ export const floodClear = (world) => {
 }
 
 /**
- * Push `(x, y)` onto the flood queue.
- * @param {FluidWorld} world world
- * @param {number} x column
- * @param {number} y row
+ * 将 `(x, y)` 压入泛洪队列。
+ * @param {FluidWorld} world 世界
+ * @param {number} x 列
+ * @param {number} y 行
  * @returns {void}
  */
 export const floodPush = (world, x, y) => {
@@ -118,27 +116,27 @@ export const floodPush = (world, x, y) => {
 }
 
 /**
- * Flat index for world cell `(x, y)`.
- * @param {FluidWorld} world world
- * @param {number} x column
- * @param {number} y row
- * @returns {number} index
+ * 世界格 `(x, y)` 的扁平索引。
+ * @param {FluidWorld} world 世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @returns {number} 索引
  */
 export const idx = (world, x, y) => y * world.worldW + x
 
 /**
- * Whether `(x, y)` lies inside the world grid.
- * @param {FluidWorld} world world
- * @param {number} x column
- * @param {number} y row
- * @returns {boolean} in bounds
+ * `(x, y)` 是否在世界网格内。
+ * @param {FluidWorld} world 世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @returns {boolean} 在界内
  */
 export const inWorld = (world, x, y) =>
 	x >= 0 && y >= 0 && x < world.worldW && y < world.worldH
 
 /**
- * Clear liquid, moisture, gas, particles, and region labels.
- * @param {FluidWorld} world world
+ * 清空液体、湿度、气体、粒子与区域标签。
+ * @param {FluidWorld} world 世界
  * @returns {void}
  */
 export const clearDynamics = (world) => {
@@ -160,8 +158,8 @@ export const clearDynamics = (world) => {
 }
 
 /**
- * Clear material labels only — moisture/condense persist across rebuilds.
- * @param {FluidWorld} world world
+ * 仅清空材质标签——湿度/凝结在重建间保留。
+ * @param {FluidWorld} world 世界
  * @returns {void}
  */
 export const clearMaterials = (world) => {
@@ -171,10 +169,10 @@ export const clearMaterials = (world) => {
 }
 
 /**
- * Mark air / gas geometry dirty when free-liquid draw occupancy may have flipped.
- * @param {FluidWorld} world world
- * @param {number} before amount before mutation
- * @param {number} after amount after mutation
+ * 游离液体绘制占用可能翻转时标记空气/气体几何脏。
+ * @param {FluidWorld} world 世界
+ * @param {number} before 变更前量
+ * @param {number} after 变更后量
  * @returns {void}
  */
 export const markAirIfDrawCrossed = (world, before, after) => {
@@ -184,8 +182,8 @@ export const markAirIfDrawCrossed = (world, before, after) => {
 }
 
 /**
- * Dump moisture/condense from non-soil cells into free liquid (or the cell above).
- * @param {FluidWorld} world world
+ * 将非土壤格的湿度/凝结泄入游离液体（或上方格）。
+ * @param {FluidWorld} world 世界
  * @returns {void}
  */
 export const releaseNonSoilWater = (world) => {
@@ -214,11 +212,11 @@ export const releaseNonSoilWater = (world) => {
 }
 
 /**
- * Set material at `(x, y)` (caller ensures in-bounds).
- * @param {FluidWorld} world world
- * @param {number} x column
- * @param {number} y row
- * @param {number} m material id
+ * 设置 `(x, y)` 处材质（调用方保证在界内）。
+ * @param {FluidWorld} world 世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} m 材质 id
  * @returns {void}
  */
 export const setMat = (world, x, y, m) => {
@@ -230,12 +228,12 @@ export const setMat = (world, x, y, m) => {
 }
 
 /**
- * Add moisture into a soil cell (clamped). Returns amount actually stored.
- * @param {FluidWorld} world world
- * @param {number} x column
- * @param {number} y row
- * @param {number} amt amount to add
- * @returns {number} stored delta
+ * 向土壤格添加湿度（钳制）。返回实际存入量。
+ * @param {FluidWorld} world 世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} amt 待添加量
+ * @returns {number} 存入增量
  */
 export const addMoisture = (world, x, y, amt) => {
 	if (amt <= 0) return 0
@@ -247,9 +245,9 @@ export const addMoisture = (world, x, y, amt) => {
 }
 
 /**
- * Grid water total: free liquid + soil moisture + hanging condensation.
- * @param {FluidWorld} world world
- * @returns {number} total mass
+ * 网格水总量：游离液体 + 土壤湿度 + 悬挂凝结。
+ * @param {FluidWorld} world 世界
+ * @returns {number} 总质量
  */
 export const totalGridWater = (world) => {
 	let t = 0
@@ -259,9 +257,9 @@ export const totalGridWater = (world) => {
 }
 
 /**
- * World water total: grid reservoirs + live / pending particles.
- * @param {FluidWorld} world world
- * @returns {number} total mass
+ * 世界水总量：网格蓄水池 + 活跃/待处理粒子。
+ * @param {FluidWorld} world 世界
+ * @returns {number} 总质量
  */
 export const totalWorldWater = (world) =>
 	totalGridWater(world)
@@ -269,12 +267,12 @@ export const totalWorldWater = (world) =>
 	+ totalParticleWater(world.pendingSplash)
 
 /**
- * Add free liquid at `(x, y)` unless the cell is a liquid barrier.
- * @param {FluidWorld} world world
- * @param {number} x column
- * @param {number} y row
- * @param {number} amt amount to add
- * @returns {number} stored delta
+ * 在 `(x, y)` 添加游离液体，除非该格为液体屏障。
+ * @param {FluidWorld} world 世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} amt 待添加量
+ * @returns {number} 存入增量
  */
 export const addLiquid = (world, x, y, amt) => {
 	const i = y * world.worldW + x

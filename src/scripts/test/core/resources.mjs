@@ -4,6 +4,7 @@
 import { MiB } from './concurrency.mjs'
 
 /**
+ * suite 资源画像（内存 × CPU%）。
  * @typedef {object} SuiteResources
  * @property {number} memMb  suite 子进程树峰值内存（MB，含 live 多 fount 进程总量）
  * @property {number} cpuPct 调度预算：预期占全机 CPU 的份额（0–100）
@@ -72,6 +73,7 @@ export function resolveSuiteResources(suite, entry) {
 }
 
 /**
+ * 将资源画像内存字段转为字节。
  * @param {SuiteResources} resources 资源
  * @returns {number} 字节
  */

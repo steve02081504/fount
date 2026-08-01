@@ -1,23 +1,23 @@
 /**
- * AGENTS.md and agent-facing linked `.md` must stay English — no CJK.
- * Human-facing `docs/design/` and `docs/review/` may be Chinese; still walk them for link resolution.
+ * AGENTS.md 及 agent 面向的链接 `.md` 须保持英文（禁止 CJK）。
+ * 人类面向的 `docs/design/`、`docs/review/` 可为中文；仍会遍历以解析链接。
  */
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 
-/** Han / Hiragana / Katakana / Hangul — same `\p{Script=…}` style as `test_watch.mjs` */
+/** 汉字 / 平假名 / 片假名 / 谚文 — 与 `test_watch.mjs` 相同的 `\p{Script=…}` 风格 */
 export const CJK_RE = /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}|\p{Script=Hangul}/u
 
 /**
- * Local `.md` destinations with optional angle brackets, fragments, and titles:
- * `](path.md)`, `](<path.md#frag>)`, `](path.md "title")`.
+ * 本地 `.md` 链接目标（可选尖括号、片段与标题）：
+ * `](path.md)`、`](<path.md#frag>)`、`](path.md "title")`。
  */
 const MD_LINK_RE = /\]\(\s*(?:<([^>\n#]+?\.md)(?:#[^>\s]*)?>|([^)\s#]+?\.md)(?:#[^)\s]*)?)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/gi
 
 /**
- * Collect local `.md` link destinations from Markdown text (fragments stripped).
- * @param {string} text Markdown source
- * @returns {string[]} link targets without fragments
+ * 从 Markdown 文本收集本地 `.md` 链接目标（去掉片段）。
+ * @param {string} text Markdown 源码
+ * @returns {string[]} 无片段的链接目标
  */
 export function localMdLinkTargets(text) {
 	/** @type {string[]} */
@@ -33,18 +33,19 @@ export function localMdLinkTargets(text) {
 }
 
 /**
- * Human-readable design/review baselines — Chinese allowed.
- * @param {string} relativePath repo-relative posix path
- * @returns {boolean} whether the path is human-facing design/review docs
+ * 人类可读的设计/评审基线文档 — 允许中文。
+ * @param {string} relativePath 仓库相对 posix 路径
+ * @returns {boolean} 是否为人类面向的设计/评审文档
  */
 export function isHumanFacingDocsPath(relativePath) {
 	return relativePath.startsWith('docs/design/') || relativePath.startsWith('docs/review/')
 }
 
 /**
- * @param {string} fromRelativePath repo-relative path of the linking file
- * @param {string} target link target (may be relative)
- * @returns {string|null} repo-relative posix path, or null for external URLs
+ * 将 Markdown 相对链接解析为仓库相对 posix 路径。
+ * @param {string} fromRelativePath 链接所在文件的仓库相对路径
+ * @param {string} target 链接目标（可为相对路径）
+ * @returns {string|null} 仓库相对 posix 路径；外部 URL 为 null
  */
 export function resolveMdLink(fromRelativePath, target) {
 	if (/^[a-z][a-z0-9+.-]*:/i.test(target) || target.startsWith('//')) return null
@@ -62,9 +63,10 @@ export function resolveMdLink(fromRelativePath, target) {
 }
 
 /**
- * @param {string} repoRoot absolute repo root
- * @param {string} directoryPath absolute directory
- * @param {string[]} paths collector
+ * 递归收集目录树中的 AGENTS.md 路径。
+ * @param {string} repoRoot 仓库根绝对路径
+ * @param {string} directoryPath 当前目录绝对路径
+ * @param {string[]} paths 收集器
  */
 async function collectAgentsMd(repoRoot, directoryPath, paths) {
 	for (const directoryEntry of await readdir(directoryPath, { withFileTypes: true })) {
@@ -80,10 +82,10 @@ async function collectAgentsMd(repoRoot, directoryPath, paths) {
 }
 
 /**
- * Walk every AGENTS.md under repoRoot and every repo .md linked from them (transitive).
- * CJK is forbidden outside `docs/design/` and `docs/review/`.
- * @param {string} repoRoot absolute repo root
- * @returns {Promise<{ files: string[], issues: { path: string, lines: number[], missing?: boolean, from?: string }[] }>} scanned files and CJK/missing-link issues
+ * 遍历 repoRoot 下所有 AGENTS.md 及其链接的仓库内 `.md`（传递闭包）。
+ * `docs/design/`、`docs/review/` 之外禁止 CJK。
+ * @param {string} repoRoot 仓库根绝对路径
+ * @returns {Promise<{ files: string[], issues: { path: string, lines: number[], missing?: boolean, from?: string }[] }>} 已扫描文件与 CJK/缺失链接问题
  */
 export async function scanAgentsMdEnglish(repoRoot) {
 	/** @type {string[]} */

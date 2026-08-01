@@ -127,6 +127,7 @@ export function truncateByWidth(text, maxCols) {
 }
 
 /**
+ * 终端布局几何（日志滚动区 + 输入框分区）。
  * @typedef {object} TerminalLayout
  * @property {number} cols - 列宽。
  * @property {number} rows - 行高。

@@ -3,9 +3,8 @@
  * 有子测试时逐子测试裁决后聚合。
  */
 import { digestFileHashes } from './changed.mjs'
-import { matchGlob } from './glob.mjs'
 import { collectTriggerEvidence, suiteKey, suiteTriggersHit } from './state.mjs'
-import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
+import { filterTriggerRelevantFiles, matchGlob } from './trigger_filter.mjs'
 
 /**
  * @typedef {'green' | 'noisy' | 'red' | 'unknown'} VerdictKind
@@ -17,8 +16,9 @@ import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
  */
 
 /**
+ * 单 suite 裁决结果。
  * @typedef {object} Verdict
- * @property {VerdictKind} kind
+ * @property {VerdictKind} kind 裁决种类
  * @property {boolean} fresh 内容是否仍与上次真实运行一致
  * @property {string | null} triggerHash 当前 suite 共享 trigger 相关未提交内容 digest
  * @property {Record<string, Verdict>} [subtests] 子测试裁决
@@ -66,6 +66,7 @@ export function isTriggerHashStale(entryHash, currentHash) {
 }
 
 /**
+ * 判定 suite 内容是否仍新鲜（commit + trigger 未命中）。
  * @param {SuiteDef} suite suite
  * @param {SuiteStateEntry | undefined} entry 现状条目
  * @param {string[]} committedChanged 自 entry.commitHash 的 commit 变更
@@ -139,6 +140,7 @@ export function aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash) {
 }
 
 /**
+ * 对单 suite 裁决（含子测试聚合）。
  * @param {SuiteDef} suite suite
  * @param {SuiteStateEntry | undefined} entry 现状条目
  * @param {string[]} committedChanged 自 entry.commitHash 的 commit 变更
@@ -189,6 +191,7 @@ export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, co
 }
 
 /**
+ * 为全部 suite 构建裁决表（内容新鲜度只算一次）。
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
  * @param {Map<string, string[]>} committedChangedByKey 各 suite（及 key#subtest）自记录 commit 以来的变更

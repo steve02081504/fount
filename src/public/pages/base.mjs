@@ -49,12 +49,15 @@ await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').
 if (globalThis.fount?.test?.enabled) import('/scripts/test/test_watch.mjs')
 
 // register service worker
-if (navigator.serviceWorker)
-	navigator.serviceWorker.register('/service_worker.mjs', { scope: '/', module: true })
-		.then(() => ensureWebPushSubscription())
-		.catch(error => {
-			console.error('Service Worker registration failed: ', error)
-		})
+; (async () => {
+	if (!navigator.serviceWorker) return
+	try {
+		await navigator.serviceWorker.register('/service_worker.mjs', { scope: '/', module: true })
+		await ensureWebPushSubscription()
+	} catch (error) {
+		if (error.name != 'SecurityError') console.error('Service Worker registration failed: ', error)
+	}
+})()
 
 /**
  * @param {string} base64String URL-safe base64

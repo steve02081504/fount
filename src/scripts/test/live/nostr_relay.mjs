@@ -1,6 +1,6 @@
 /**
- * Ephemeral minimal NIP-01 Nostr relay for federation live tests.
- * Replaces public relay dependency with a local ws:// relay.
+ * 联邦 live 测试用临时最小 NIP-01 Nostr relay。
+ * 以本地 ws:// relay 替代公网 relay 依赖。
  */
 import { createServer } from 'node:http'
 
@@ -17,6 +17,7 @@ let relayRefCount = 0
 let storedEvents = []
 
 /**
+ * 判定 Nostr event 是否匹配 REQ filter。
  * @param {object} event Nostr event
  * @param {object} filter REQ filter
  * @returns {boolean} 是否匹配
@@ -41,6 +42,7 @@ function eventMatchesFilter(event, filter) {
 }
 
 /**
+ * 向订阅客户端推送 EVENT 帧。
  * @param {import('npm:ws').WebSocket} ws 客户端
  * @param {string} subId 订阅 id（NIP-01 EVENT 第二字段）
  * @param {object} event Nostr event
@@ -52,6 +54,7 @@ function broadcastEvent(ws, subId, event) {
 }
 
 /**
+ * 存储 event 并向匹配订阅广播。
  * @param {object} event Nostr event
  * @returns {void}
  */
@@ -65,6 +68,7 @@ function relayEvent(event) {
 }
 
 /**
+ * 处理客户端 NIP-01 消息（EVENT / REQ / CLOSE）。
  * @param {import('npm:ws').WebSocket & { subscriptions?: Array<{ id: string, filters: object[] }> }} ws 客户端
  * @param {string | Buffer | ArrayBuffer} raw 入站帧
  * @returns {void}

@@ -14,8 +14,7 @@
 				"./src/scripts/checks/test/html_meta.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/checks/html_meta.mjs",
-				"src/scripts/checks/walk.mjs",
+				"src/scripts/checks/{html_meta.mjs,walk.mjs}",
 				"src/scripts/checks/test/html_meta.test.mjs",
 				"**/*.html"
 			]
@@ -33,11 +32,9 @@
 				"./src/scripts/checks/test/info.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/checks/info.mjs",
-				"src/scripts/checks/walk.mjs",
+				"src/scripts/checks/{info.mjs,walk.mjs}",
 				"src/scripts/checks/test/info.test.mjs",
-				"src/public/parts/**/locales.json",
-				"src/public/parts/**/achievements_registry.json"
+				"src/public/parts/**/{locales.json,achievements_registry.json}"
 			]
 		},
 		{
@@ -59,6 +56,27 @@
 			]
 		},
 		{
+			"name": "i18n_refs",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/i18n_refs.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/{i18n_refs.mjs,walk.mjs}",
+				"src/scripts/checks/test/i18n_refs.test.mjs",
+				"src/public/locales/*.json",
+				"src/**/*.{html,mjs,js,ts}",
+				"path/fount.ps1",
+				"path/fount.sh"
+			]
+		},
+		{
 			"name": "reshape_i18n_keys",
 			"run": [
 				"python",
@@ -66,7 +84,8 @@
 				"--self-test"
 			],
 			"triggers": [
-				".esh/commands/reshape_i18n_keys.py"
+				".esh/commands/reshape_i18n_keys.py",
+				"src/scripts/checks/walk.mjs"
 			]
 		},
 		{
@@ -85,6 +104,24 @@
 				"src/scripts/checks/agents_md_english.mjs",
 				"src/scripts/checks/test/agents_md_english.test.mjs",
 				"**/*.md"
+			]
+		},
+		{
+			"name": "jsdoc_english",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/checks/test/jsdoc_english.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/checks/jsdoc_english.mjs",
+				"src/scripts/checks/test/jsdoc_english.test.mjs",
+				"**/*.{mjs,js,ts}"
 			]
 		}
 	]

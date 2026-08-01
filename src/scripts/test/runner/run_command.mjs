@@ -36,10 +36,12 @@ export const DURATION_WATCHDOG_MULTIPLIER = 2
 export const OUTPUT_TAIL_BYTES = 2 * 1024 * 1024
 
 /**
+ * watchdog 触发类型。
  * @typedef {'sleep' | 'idle' | 'duration' | null} WatchdogTrigger
  */
 
 /**
+ * runCommand 执行选项。
  * @typedef {object} RunCommandOptions
  * @property {string} cwd 工作目录
  * @property {boolean} [stream=false] 是否实时转发 stdout/stderr
@@ -49,6 +51,7 @@ export const OUTPUT_TAIL_BYTES = 2 * 1024 * 1024
  */
 
 /**
+ * runCommand 执行结果。
  * @typedef {object} RunCommandResult
  * @property {number} code 退出码
  * @property {string} output 有界内存尾部（noise 检测与失败落盘）
@@ -76,6 +79,7 @@ export function appendBoundedTail(tail, chunk, maxBytes = OUTPUT_TAIL_BYTES) {
 }
 
 /**
+ * 将输出片段解码为 UTF-8 文本。
  * @param {string | Uint8Array} data 输出片段
  * @returns {string} 文本
  */

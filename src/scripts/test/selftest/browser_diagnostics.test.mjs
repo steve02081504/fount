@@ -13,7 +13,9 @@ import {
 	formatBrowserNetworkLine,
 	isI18nMissingConsoleText,
 	isIgnoredBrowserNetworkError,
+	isIgnoredChildFrameSecurityError,
 	isTestWatchConsoleText,
+	pageErrorFromCdpException,
 	recordBrowserNetworkEntry,
 } from '../playwright/browser_diagnostics.mjs'
 
@@ -105,4 +107,42 @@ Deno.test('isIgnoredBrowserNetworkError drops ORB only', () => {
 	assertEquals(isIgnoredBrowserNetworkError('net::ERR_BLOCKED_BY_ORB'), true)
 	assertEquals(isIgnoredBrowserNetworkError('net::ERR_CONNECTION_REFUSED'), false)
 	assertEquals(isIgnoredBrowserNetworkError(null), false)
+})
+
+Deno.test('isIgnoredChildFrameSecurityError uses exception.className + frame', () => {
+	assertEquals(isIgnoredChildFrameSecurityError({
+		exception: { className: 'SecurityError' },
+	}, false), true)
+	assertEquals(isIgnoredChildFrameSecurityError({
+		exception: { className: 'SecurityError' },
+	}, true), false)
+	assertEquals(isIgnoredChildFrameSecurityError({
+		exception: { className: 'TypeError' },
+	}, false), false)
+	assertEquals(isIgnoredChildFrameSecurityError({
+		text: 'Uncaught SecurityError: boom',
+	}, false), false)
+	assertEquals(isIgnoredChildFrameSecurityError(null, false), false)
+})
+
+Deno.test('pageErrorFromCdpException uses RemoteObject + StackTrace only', () => {
+	assertEquals(pageErrorFromCdpException({
+		text: 'Uncaught SecurityError: boom',
+		exception: {
+			className: 'SecurityError',
+			description: 'SecurityError: boom\n    at foo',
+		},
+	}), {
+		name: 'SecurityError',
+		stack: 'SecurityError: boom\n    at foo',
+	})
+	assertEquals(pageErrorFromCdpException({
+		text: 'Uncaught SecurityError: should-not-parse',
+		stackTrace: {
+			callFrames: [{ functionName: 'go', url: 'https://x/', lineNumber: 2, columnNumber: 4 }],
+		},
+	}), {
+		name: 'Error',
+		stack: 'Error\n    at go (https://x/:3:5)',
+	})
 })

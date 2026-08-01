@@ -1,5 +1,5 @@
 /**
- * Pure tests: terrain generation (Terraria-style surface + caves).
+ * 纯测试：地形生成（泰拉瑞亚式地表 + 洞穴）。
  */
 /* global Deno */
 import { assert, assertEquals, assertGreater, assertLess } from 'jsr:@std/assert'
@@ -18,11 +18,11 @@ import {
 } from './terrain_helpers.mjs'
 
 /**
- * Build sample terrain for tests.
- * @param {number} [seed] RNG seed
- * @param {number} [width] view width
- * @param {number} [height] view height
- * @returns {{ terrain: ReturnType<typeof generateTerrain>, world: ReturnType<typeof createWorld>, baseY: number }} bundle
+ * 为测试构建样本地形。
+ * @param {number} [seed] RNG 种子
+ * @param {number} [width] 视口宽度
+ * @param {number} [height] 视口高度
+ * @returns {{ terrain: ReturnType<typeof generateTerrain>, world: ReturnType<typeof createWorld>, baseY: number }} 地形包
  */
 const makeTerrain = (seed = 42, width = 80, height = 40) => {
 	const world = createWorld({ width, height, margin: 12, bottomExtra: 4 })

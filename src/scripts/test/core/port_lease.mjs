@@ -11,6 +11,7 @@ import { testDataRoot } from './paths.mjs'
 import { REPO_ROOT } from './repo_root.mjs'
 
 /**
+ * 跨进程端口租约句柄。
  * @typedef {object} PortLease
  * @property {number} port 租约端口
  * @property {() => Promise<void>} release 释放租约（可重复调用）
@@ -28,6 +29,7 @@ function leaseDir() {
 }
 
 /**
+ * 租约文件路径。
  * @param {number} port 端口
  * @returns {string} 租约文件路径
  */
@@ -36,6 +38,7 @@ function leasePath(port) {
 }
 
 /**
+ * 检测进程是否仍存活（`kill(pid, 0)`）。
  * @param {number} pid 进程号
  * @returns {boolean} 进程是否仍存活
  */

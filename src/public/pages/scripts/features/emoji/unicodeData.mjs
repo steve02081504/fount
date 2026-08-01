@@ -16,7 +16,7 @@ let loadPromise = null
  * unicode-emoji-json 官方分组名 → data-i18n 键（静态维护；CDN 增删分组时改这里）。
  * @type {Readonly<Record<string, string>>}
  */
-export const UNICODE_EMOJI_GROUP_I18N_KEYS = Object.freeze({
+export const UNICODE_EMOJI_GROUP_I18N_KEYS = {
 	'Smileys & Emotion': 'chat.unicodeEmojiGroups.Smileys_and_Emotion',
 	'People & Body': 'chat.unicodeEmojiGroups.People_and_Body',
 	'Animals & Nature': 'chat.unicodeEmojiGroups.Animals_and_Nature',
@@ -26,7 +26,7 @@ export const UNICODE_EMOJI_GROUP_I18N_KEYS = Object.freeze({
 	Objects: 'chat.unicodeEmojiGroups.Objects',
 	Symbols: 'chat.unicodeEmojiGroups.Symbols',
 	Flags: 'chat.unicodeEmojiGroups.Flags',
-})
+}
 
 /**
  * 分区标志 glyph：加载后由各组第一个 emoji 填充。

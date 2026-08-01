@@ -1,48 +1,43 @@
 #!/usr/bin/env -S deno run -A
 /**
- * fount fountain logo ASCII animation.
+ * fount 喷泉 logo ASCII 动画。
  *
- * Materials (see AGENTS.md):
- *   body `@`  — impact shell (splash then vanish)
- *   `:`       — visual jet only (does not block fluid)
- *   base `@`  — pool that leaks downward | `>`/`<` — 45° splash
- *   terrain   — soil stores moisture; ceilings condense & drip
+ * 材质（见 AGENTS.md）：
+ *   body `@`  — 冲击外壳（溅起后消失）
+ *   `:`       — 纯视觉水柱（不阻挡流体）
+ *   base `@`  — 向下渗漏的水池 | `>`/`<` — 45° 飞溅
+ *   terrain   — 土壤蓄水；天花板凝结并滴落
  *
- * createAnimState({ width?, height?, seed? }) — defaults to terminal size when available.
- * Main: enter → loop hold → Ctrl+C → exit from current progress.
- * Pointer: left quick-click → bright expanding ripple; left hold → spotlight;
- *   right drag stroke wind; right long-still clockwise vortex (follows / reforms / clears on release).
+ * createAnimState({ width?, height?, seed? }) — 可用时默认终端尺寸。
+ * 主流程：入场 → 循环保持 → Ctrl+C → 从当前进度退场。
+ * 指针：左键快击 → 明亮扩散涟漪；左键按住 → 聚光灯；
+ *   右键拖拽笔画风；右键长按静止 → 顺时针涡旋（跟随 / 重组 / 释放清除）。
  */
 
 import process from 'node:process'
 
-import {
-	createAnimState, resizeAnimState, enter, hold, exit,
-} from './scene.mjs'
-import { createIconAnime, fps } from './session.mjs'
+import * as icon from './session.mjs'
 
-/** Icon layout constants and packed silhouette helpers. */
+/** 图标布局常量与打包轮廓辅助。 */
 export {
 	ICON_W, ICON_H, ICON_PACK_H, ICON_BASE_ROWS, ICON_BASE_X0, ICON_BASE_X1,
 	ICON_BODY_H, maxBodyD, maxPillarH,
 } from './icon.mjs'
-/** Grid / buffer frame composers. */
+/** 网格 / 缓冲帧合成器。 */
 export { renderBuffers, renderGrid } from './compose.mjs'
-/** Animation state machine (enter / hold / exit). */
+/** 动画状态机（入场 / 保持 / 退场）。 */
 export {
 	createAnimState, resizeAnimState, enter, hold, exit,
-}
-/** Interactive TUI controller. */
-export { createIconAnime, fps }
-/** Low-level ASCII anime player. */
-export { AsciiAnimePlayer } from './player.mjs'
-
-/** Public frame producers. */
-export const iconAnim = { enter, hold, exit, fps, createAnimState, resizeAnimState }
+} from './scene.mjs'
+/** 交互式 TUI 会话。 */
+export {
+	signal, abort, start, intro, dismiss, farewell, sleep,
+} from './session.mjs'
+/** 底层播放器工具。 */
+export { fps, terminalSize, consumeStdin } from './player.mjs'
 
 if (import.meta.main) {
-	const icon = createIconAnime()
 	await icon.start()
 	await icon.farewell()
-	process.exit(icon.userAborted ? 130 : 0)
+	process.exit(icon.signal.aborted ? 130 : 0)
 }

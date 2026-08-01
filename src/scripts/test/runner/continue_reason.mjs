@@ -7,17 +7,18 @@
  */
 
 /**
+ * 目标纳入证据（续跑 / 报告用）。
  * @typedef {object} GoalEvidence
- * @property {GoalEvidenceKind} kind
- * @property {string | null} [fromCommit]
- * @property {string} [toCommit]
- * @property {string | null} [fromUncommittedHash]
- * @property {string | null} [toUncommittedHash]
- * @property {string[]} [matchedTriggers]
- * @property {string[]} [matchedTriggerSets]
- * @property {string[]} [matchedPaths]
- * @property {boolean} [triggerHashDrift]
- * @property {string[]} [blockedBy]
+ * @property {GoalEvidenceKind} kind 证据类型
+ * @property {string | null} [fromCommit] 记录侧 HEAD
+ * @property {string} [toCommit] 当前 HEAD
+ * @property {string | null} [fromUncommittedHash] 记录侧未提交 digest
+ * @property {string | null} [toUncommittedHash] 当前未提交 digest
+ * @property {string[]} [matchedTriggers] 命中的 trigger glob
+ * @property {string[]} [matchedTriggerSets] 命中的 triggerSet 名
+ * @property {string[]} [matchedPaths] 命中的变更路径
+ * @property {boolean} [triggerHashDrift] trigger 内容指纹是否漂移
+ * @property {string[]} [blockedBy] 阻塞来源 suite 键
  * @property {string | null} [parentKey] imperfect 一层下游的父键
  * @property {string} [requiredBy] 依赖拉入的直接纳入方
  */
@@ -25,6 +26,7 @@
 /** @typedef {GoalEvidence} ContinueReason */
 
 /**
+ * 从计划槽位提取触发原因。
  * @param {import('../core/plan.mjs').PlanSlot} slot 计划槽位
  * @returns {ContinueReason | undefined} 触发原因
  */
@@ -36,6 +38,7 @@ export function reasonFromPlanSlot(slot) {
 }
 
 /**
+ * 由运行计划构建 suite 键 → 触发原因表。
  * @param {import('../core/plan.mjs').RunPlan} plan 运行计划
  * @returns {Map<string, ContinueReason>} suite 键 -> 原因
  */

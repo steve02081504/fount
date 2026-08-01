@@ -1273,10 +1273,8 @@
 				"autoSignHint": "Dopo l'invio, il dispositivo firmerà automaticamente il seed della firma del gruppo senza inserire la chiave privata. In un gruppo con più amministratori, più della metà degli amministratori deve inviare la stessa scheda elettorale (stesso ID votazione e stesso candidato) a livello locale.",
 				"candidateLabel": "Hash della chiave pubblica successiva",
 				"description": "Trasferisci l'autorizzazione di amministratore principale del gruppo (MANAGE_ADMINS) a un membro. Solo amministratori.",
-				"failed": "Invio del voto di successione non riuscito",
 				"needHash": "Inserisci l'hash della chiave pubblica del successore",
-				"selfButton": "Candidati",
-				"submitted": "La tua firma è stata registrata sulla votazione di successione."
+				"selfButton": "Candidati"
 			},
 			"channelType": {
 				"label": "Tipo di canale",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "Flusso multimediale acquisito (interrotto, non trasmesso)",
 				"test": "Testare i dispositivi multimediali"
-			},
-			"thread": {
-				"main": "filo",
-				"back": "Indietro",
-				"breadcrumbMiddleSummary": "strato intermedio ${count}",
-				"breadcrumbMiddleTitle": "Mostra di più il livello intermedio e seleziona il livello a cui vuoi saltare",
-				"breadcrumbRootTitle": "Vai al punto di partenza del percorso (primo livello)"
 			},
 			"unpin": {
 				"action": {
@@ -2659,7 +2650,8 @@
 					"pubKeyLabel": "Chiave pubblica esadecimale(64)",
 					"rotateConfirm": "Tutti i link per l'aggiunta di amici rilasciati in precedenza diventeranno immediatamente non validi e non potranno essere ripristinati. Sei sicuro di voler continuare?",
 					"rotateLabel": "Invalida i vecchi link",
-					"secretLabel": "Esadecimale seme chiave privata(64)"
+					"secretLabel": "Seme esadecimale della chiave privata (64)",
+					"urlLabel": "Link emesso per aggiungere amici"
 				},
 				"groupRecoveryTip": "Utilizzato solo se l'invito è trapelato o se il nuovo dispositivo non può sincronizzare la cronologia.",
 				"groupRecoveryTitle": "Correzione della connessione di gruppo",
@@ -3824,6 +3816,8 @@
 			"configSaved": "Configurazione salvata con successo!",
 			"botExists": "Un bot con nome \"${botname}\" esiste già, usa un nome diverso.",
 			"unsavedChanges": "Hai modifiche non salvate. Sei sicuro di volerle scartare?",
+			"confirmDeleteBot": "Vuoi davvero eliminare il bot \"${botname}\"? Questa azione è irreversibile.",
+			"invalidJsonConfig": "Configurazione JSON non valida: ${error}",
 			"httpError": "Errore HTTP.",
 			"beforeUnload": "Hai modifiche non salvate. Sei sicuro di voler lasciare la pagina corrente?"
 		},

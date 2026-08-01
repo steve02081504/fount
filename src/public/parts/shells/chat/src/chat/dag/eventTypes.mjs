@@ -9,6 +9,7 @@ import {
 const OWNER_ID = 'chat'
 
 /**
+ * 事件类型标志位。
  * @typedef {object} EventTypeFlags
  * @property {boolean} [aclGated] 联邦入站/中继前须物化 ACL 门控
  * @property {boolean} [gcExclude] §6.2 频道 GC 不刷新活跃时间
@@ -67,6 +68,7 @@ export const CHAT_EVENT_TYPE_DEFS = {
 }
 
 /**
+ * 收集带指定标志位的 DAG 事件 type。
  * @param {keyof EventTypeFlags} flag 标志位名
  * @returns {Set<string>} 含该标志的事件 type 集合
  */
@@ -165,12 +167,18 @@ export function computeFederatableDagTipIds(events) {
 	return computeDagTipIdsFromEvents(events.filter(isFederatableDagEvent))
 }
 
-/** @returns {void} */
+/**
+ * 向 fount-p2p 注册 chat DAG 事件类型定义。
+ * @returns {void}
+ */
 export function registerChatEventTypeDefs() {
 	registerEventTypeDefs(OWNER_ID, CHAT_EVENT_TYPE_DEFS)
 }
 
-/** @returns {void} */
+/**
+ * 注销 chat DAG 事件类型定义。
+ * @returns {void}
+ */
 export function unregisterChatEventTypeDefs() {
 	unregisterEventTypeDefs(OWNER_ID)
 }

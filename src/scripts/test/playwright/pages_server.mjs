@@ -66,6 +66,7 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
 }
 
 /**
+ * Pages 本地服务器句柄。
  * @typedef {object} PagesServerHandle
  * @property {import('npm:express').Express} app Express 应用
  * @property {import('node:http').Server} server HTTP server
@@ -92,6 +93,7 @@ export function startPagesServer({ port = 8080, projectRoot = REPO_ROOT, host = 
 				port,
 				baseUrl: `http://${host}:${port}/fount`,
 				/**
+				 * 关闭 HTTP server（掐断 keep-alive 后 close）。
 				 * @returns {Promise<void>}
 				 */
 				close: () => new Promise((closeResolve, closeReject) => {

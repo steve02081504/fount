@@ -31,6 +31,7 @@ import {
 } from './render.mjs'
 
 /**
+ * 交互式日志查看器控件。
  * @typedef {object} InteractiveViewer
  * @property {(entry: import('npm:@steve02081504/virtual-console/wire/client').WireLogEntry) => Promise<void>} writeEntry - 写入 wire 日志条目。
  * @property {(text: string) => void} appendText - 追加原始文本。
@@ -123,6 +124,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	/** @type {(code: string) => string} */
 	let highlightJs = code => code
 	/**
+	 * 包装 cli-highlight 为 JS 语法高亮函数。
 	 * @param {import('npm:cli-highlight').HighlightFunction} hl - cli-highlight 函数。
 	 * @returns {(code: string) => string} 高亮包装器。
 	 */
@@ -180,6 +182,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			return new Promise((resolve, reject) => {
 				const { ws } = evalConn
 				/**
+				 * eval WebSocket 连接成功回调。
 				 * @returns {void}
 				 */
 				const onOpen = () => {
@@ -188,6 +191,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 					resolve(evalConn)
 				}
 				/**
+				 * eval WebSocket 错误回调。
 				 * @returns {void}
 				 */
 				const onError = () => {
@@ -196,6 +200,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 					reject(new Error('eval_ws_error'))
 				}
 				/**
+				 * eval WebSocket 关闭回调（连接阶段）。
 				 * @returns {void}
 				 */
 				const onClose = () => {
@@ -218,6 +223,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 					completion_result: resolveEvalWireReply,
 				},
 				/**
+				 * eval WebSocket 断开时拒绝挂起请求。
 				 * @returns {void}
 				 */
 				onClose: () => {
@@ -374,7 +380,8 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 	// #region 终端模式与生命周期
 
 	/**
-	 * @returns {string} 仅设置 DECSTBM 滚动区（不移动光标，避免激活前/重绘时撑出空白行）。
+	 * 生成仅设置 DECSTBM 滚动区的 ANSI 序列（不移动光标）。
+	 * @returns {string} DECSTBM 滚动区序列。
 	 */
 	function setScrollRegionSeq() {
 		const { scrollBottom } = layoutOf(resolveInputRows(input))
@@ -1072,7 +1079,6 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			return
 		}
 		if (kitty === 'interrupt' || (event.ctrlKey && event.key === 'c')) {
-			tearDownRepl()
 			process.exit(130)
 			return
 		}

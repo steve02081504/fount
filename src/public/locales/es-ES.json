@@ -1273,10 +1273,8 @@
 				"autoSignHint": "Después del envío, la máquina firmará automáticamente la semilla de firma del grupo sin ingresar la clave privada. En un grupo de varios administradores, más de la mitad de los administradores deben presentar la misma boleta (mismo ID de boleta y candidato) localmente.",
 				"candidateLabel": "Hash de clave pública sucesora",
 				"description": "Transfiera la máxima autoridad administrativa del grupo (MANAGE_ADMINS) al miembro especificado. Sólo los administradores pueden operar.",
-				"failed": "Error en el envío del voto de sucesión",
 				"needHash": "Complete el hash de la clave pública del sucesor.",
-				"selfButton": "Nomínate a ti mismo",
-				"submitted": "Su firma ha sido registrada en la Boleta de Sucesión."
+				"selfButton": "Nomínate a ti mismo"
 			},
 			"channelType": {
 				"label": "tipo de canal",
@@ -1613,13 +1611,6 @@
 				},
 				"ok": "Transmisión multimedia adquirida (detenida, no transmitida)",
 				"test": "Dispositivos de medios de prueba"
-			},
-			"thread": {
-				"main": "hilo infantil",
-				"back": "Volver",
-				"breadcrumbMiddleSummary": "capa media ${count}",
-				"breadcrumbMiddleTitle": "Expande la capa intermedia y selecciona el nivel al que deseas saltar",
-				"breadcrumbRootTitle": "Saltar al punto de inicio del camino (primer nivel)"
 			},
 			"unpin": {
 				"action": {
@@ -2659,7 +2650,8 @@
 					"pubKeyLabel": "Clave pública hexadecimal(64)",
 					"rotateConfirm": "Todos los enlaces de añadir amigo emitidos antes dejarán de ser válidos de inmediato y no se pueden recuperar. ¿Continuar?",
 					"rotateLabel": "Invalidar enlaces antiguos",
-					"secretLabel": "Hexadecimal de semilla de clave privada (64)"
+					"secretLabel": "Hexadecimal de semilla de clave privada (64)",
+					"urlLabel": "Enlace de añadir amigo emitido"
 				},
 				"groupRecoveryTip": "Solo se usa si la invitación se filtra o el nuevo dispositivo no puede sincronizar el historial.",
 				"groupRecoveryTitle": "Corrección de conexión de grupo",
@@ -3824,6 +3816,8 @@
 			"configSaved": "¡La configuración se ha guardado correctamente!",
 			"botExists": "Ya existe un bot con el nombre \"${botname}\". Por favor, usa un nombre diferente.",
 			"unsavedChanges": "Tienes cambios sin guardar. ¿Seguro que quieres descartar estos cambios?",
+			"confirmDeleteBot": "¿Seguro que quieres eliminar el bot \"${botname}\"? Esta acción no se puede deshacer.",
+			"invalidJsonConfig": "Configuración JSON no válida: ${error}",
 			"httpError": "Error HTTP",
 			"beforeUnload": "Tienes cambios sin guardar. ¿Seguro que quieres salir de la página actual?"
 		},
