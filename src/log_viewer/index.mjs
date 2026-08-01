@@ -8,7 +8,7 @@
  * - 服务器未就绪时持续轮询 `/api/ping`（指数退避，无超时），网络/进程恢复后自动接续。
  * - 服务器主动退出（`fount_exit`）时与服务器同步：`code === 131` 视为重启，自动重连；其它退出码本进程同码退出。
  * - WebSocket 异常断开（无 `fount_exit`）按指数退避重连，等服务器再次起来。
- * - 进程退出只认 `icon.signal`（Ctrl+C / `icon.abort` / on_shutdown）。
+ * - 进程退出只认本模块 `exitSignal`（on_shutdown / 主动 abort）；`icon.signal`（logo 内 Ctrl+C）接到此信号。
  *
  * 直接执行：`deno run -c deno.json --allow-net=localhost src/log_viewer/index.mjs`
  */
@@ -35,6 +35,20 @@ SetTaskbarProgress(50)
 const FOUNT_DIR = path.resolve(import.meta.dirname + '/../../')
 const INTERACTIVE = process.stdout.isTTY && process.stdout.writable && supportsAnsi
 
+/** 本进程退出意图（唯一权威）。 */
+const exitAc = new AbortController()
+/** @type {AbortSignal} */
+const exitSignal = exitAc.signal
+/**
+ * 请求进程退出（幂等）。
+ * @returns {void}
+ */
+const requestExit = () => {
+	if (!exitAc.signal.aborted) exitAc.abort()
+}
+// logo 内 Ctrl+C → 一并退出本进程
+icon.signal.addEventListener('abort', requestExit, { once: true })
+
 /**
  * 从 `data/config.json` 读取服务器端口；读取/解析失败时回落到默认 8931。
  * @returns {number} 监听端口。
@@ -60,6 +74,25 @@ const WS_URL = `ws://localhost:${PORT}/ws/logs`
 function onFatal(err) {
 	process.stderr.write(`log_viewer fatal: ${err?.stack ?? err}\n`)
 	process.exit(1)
+}
+
+/**
+ * 异步阻塞；`exitSignal` 中止时提前兑现。
+ * @param {number} milliseconds - 阻塞时长。
+ * @returns {Promise<void>}
+ */
+function sleep(milliseconds) {
+	if (exitSignal.aborted) return Promise.resolve()
+	return new Promise((resolve) => {
+		/** 定时器到期或退出信号时唤醒。 */
+		const wake = () => {
+			clearTimeout(timer)
+			exitSignal.removeEventListener('abort', wake)
+			resolve()
+		}
+		const timer = setTimeout(wake, milliseconds)
+		exitSignal.addEventListener('abort', wake, { once: true })
+	})
 }
 
 /**
@@ -161,7 +194,7 @@ const logSink = INTERACTIVE
 	: createPlainSink()
 
 /**
- * 阻塞至 `/api/ping` 返回 200；`waitLogo` 时叠加 icon 等待动画（连上 dismiss，Ctrl+C 则 `icon.signal` abort）。
+ * 阻塞至 `/api/ping` 返回 200；`waitLogo` 时叠加 icon 等待动画（连上 dismiss；Ctrl+C / 退出则 `exitSignal` abort）。
  * 非 TUI 下 icon 各入口为 nop。
  * @param {{ waitLogo?: boolean }} [opts] `waitLogo`：断线重连等待时播保持动画
  * @returns {Promise<void>} 服务器就绪或退出信号时兑现。
@@ -173,23 +206,23 @@ async function pollUntilServerReady({ waitLogo = false } = {}) {
 	}
 	let delay = 200
 	try {
-		while (!icon.signal.aborted) 
+		while (!exitSignal.aborted) 
 			try {
 				const response = await fetch(PING_URL, {
-					signal: AbortSignal.any([AbortSignal.timeout(2000), icon.signal]),
+					signal: AbortSignal.any([AbortSignal.timeout(2000), exitSignal]),
 				})
 				if (response.ok) return
 				throw new Error(String(response.status))
 			} catch {
-				if (icon.signal.aborted) break
-				await icon.sleep(delay)
+				if (exitSignal.aborted) break
+				await sleep(delay)
 				delay = Math.min(delay * 2, 5000)
 			}
 		
 	} finally {
 		if (waitLogo) {
 			await icon.dismiss()
-			if (!icon.signal.aborted) logSink.resume?.()
+			if (!exitSignal.aborted) logSink.resume?.()
 		}
 	}
 }
@@ -334,22 +367,22 @@ async function main() {
 	const setExitCode = (code) => { exitCodeSlot.value = code }
 	const exitContext = { setExitCode }
 
-	// icon.signal：拦住主循环/轮询。不关 connection——留着让主循环堵在
+	// exitSignal：拦住主循环/轮询。不关 connection——留着让主循环堵在
 	// runOneConnection，进程退出时一起死。
 	on_shutdown(async () => {
-		icon.abort()
+		requestExit()
 		logSink.tearDown?.()
 		await icon.farewell()
 	})
 
 	await icon.intro()
-	if (icon.signal.aborted) process.exit(130)
+	if (exitSignal.aborted) process.exit(130)
 
-	while (!icon.signal.aborted) {
+	while (!exitSignal.aborted) {
 		await pollUntilServerReady()
-		if (icon.signal.aborted) break
+		if (exitSignal.aborted) break
 		const reason = await runOneConnection(exitContext)
-		if (icon.signal.aborted) break
+		if (exitSignal.aborted) break
 
 		if (reason === 'fount_exit') {
 			const code = exitCodeSlot.value ?? 0
@@ -363,7 +396,7 @@ async function main() {
 
 		// 异常断开 / reboot(131)：logo 等到服务器回来或 Ctrl+C（非 TUI 时 icon 为 nop）
 		await pollUntilServerReady({ waitLogo: true })
-		if (icon.signal.aborted) process.exit(130)
+		if (exitSignal.aborted) process.exit(130)
 	}
 
 	process.exit(130)

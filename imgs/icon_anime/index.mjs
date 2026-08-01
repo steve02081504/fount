@@ -29,7 +29,7 @@ export { renderBuffers, renderGrid } from './compose.mjs'
 export {
 	createAnimState, resizeAnimState, enter, hold, exit,
 } from './scene.mjs'
-/** 交互式 TUI 会话（进程内单例）。 */
+/** 交互式 TUI 会话。 */
 export {
 	fps, signal, abort, start, intro, dismiss, farewell, sleep,
 } from './session.mjs'

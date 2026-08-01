@@ -8,7 +8,7 @@ alwaysApply: false
 
 Standalone terminal animation for the fount fountain logo.
 
-Also embedded by the CLI log viewer (process-wide singleton): `intro` at startup; `start`/`dismiss` while waiting for reconnect; `farewell` on `on_shutdown`. Exit is one sticky `signal` (Ctrl+C / `abort()`); dismiss does not touch it. Non-TTY / no VT is decided only in `player.mjs` — session APIs stay callable (play paths no-op).
+Also embedded by the CLI log viewer (process-wide singleton): `intro` at startup; `start`/`dismiss` while waiting for reconnect; `farewell` on `on_shutdown`. `signal` means user abort of this icon session (Ctrl+C / `abort()`); dismiss does not touch it. Hosts own their process-exit signal and should wire `icon.signal` into it (log_viewer does). Non-TTY / no VT is decided only in `player.mjs` — session APIs stay callable (play paths no-op).
 
 ## Run
 
@@ -25,7 +25,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | Path | Role |
 | --- | --- |
 | `index.mjs` | CLI entry + public re-exports |
-| `session.mjs` | Process singleton: `signal`/`abort`, `intro` / `start`+`dismiss` / `farewell` / `sleep` |
+| `session.mjs` | Process singleton: user-abort `signal`/`abort`, `intro` / `start`+`dismiss` / `farewell` / `sleep` |
 | `icon.mjs` | Packed silhouette, pillars, body growth order (typed arrays) |
 | `scene.mjs` | Anim state, materials, rain, pool leak, enter/hold/exit |
 | `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid`; pointer torch + click ripples (truecolor lift) |

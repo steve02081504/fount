@@ -1,5 +1,5 @@
 /**
- * 图标动画会话（进程内单例）：动画状态 + TUI 播放。
+ * 图标动画会话：动画状态 + TUI 播放。
  * `signal`：用户 Ctrl+C 中止本会话（sticky）；dismiss 不碰它。
  * 嵌入宿主时应自行拥有进程退出信号，并把本 `signal` 接到那边（见 log_viewer）。
  */
@@ -116,12 +116,12 @@ export async function intro() {
 
 /**
  * @param {number} milliseconds 毫秒
- * @returns {Promise<void>} 到期或 `signal` 中止时兑现
+ * @returns {Promise<void>} 到期或用户中止时兑现
  */
 export function sleep(milliseconds) {
 	if (signal.aborted) return Promise.resolve()
 	return new Promise((resolve) => {
-		/** 定时器到期或退出信号时唤醒。 */
+		/** 定时器到期或用户中止时唤醒。 */
 		const wake = () => {
 			clearTimeout(timer)
 			signal.removeEventListener('abort', wake)
