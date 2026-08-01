@@ -100,7 +100,7 @@ export const consumeStdin = (carry, chunk, sink = {}) => {
 	return text.slice(cursor)
 }
 
-/** @type {number} */
+/** 目标帧率。 */
 export const fps = 24
 
 /** @type {AbortController} */
@@ -164,9 +164,7 @@ export function start({ onResize, onPointer, onUserAbort } = {}) {
 	 */
 	onData = (buf) => {
 		stdinCarry = consumeStdin(stdinCarry, buf, {
-			/**
-			 *
-			 */
+			/** Ctrl+C：中止播放并通知会话。 */
 			abort: () => {
 				abort()
 				onUserAbort?.()
@@ -178,6 +176,7 @@ export function start({ onResize, onPointer, onUserAbort } = {}) {
 }
 
 /**
+ * 将完整 ANSI 帧写到备用屏原点。
  * @param {string} frame ANSI 帧
  * @returns {void}
  */
@@ -188,6 +187,7 @@ export function paint(frame) {
 }
 
 /**
+ * 按目标帧率播放一轮帧序列（可中止）。
  * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧
  * @returns {Promise<void>}
  */
@@ -210,39 +210,54 @@ async function playFrames(frames) {
 }
 
 /**
+ * 循环播放直至中止。
  * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧
- * @returns {Promise<void> & { play: Function, loop: Function }} 可链式 play promise
+ * @returns {Promise<void>}
  */
-export function play(frames) {
-	const result = playFrames(frames)
-	return Object.assign(result, {
+async function loopFrames(frames) {
+	if (!canUseTui) return
+	while (!signal.aborted)
+		await playFrames(frames)
+}
+
+/**
+ * 为前序播放挂上可继续链式调用的 play / loop。
+ * @param {Promise<void>} promise 前序播放
+ * @returns {Promise<void> & { play: Function, loop: Function }} 可链式 promise
+ */
+function withChain(promise) {
+	return Object.assign(promise, {
 		/**
+		 * 前序完成后播放一轮。
 		 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action 帧
 		 * @returns {Promise<void> & { play: Function, loop: Function }} 可链式 play
 		 */
-		play: async (action) => {
-			await result
-			return play(action)
-		},
+		play: (action) => withChain(promise.then(() => playFrames(action))),
 		/**
+		 * 前序完成后循环播放。
 		 * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} action 帧
-		 * @returns {Promise<void>} loop promise
+		 * @returns {Promise<void> & { play: Function, loop: Function }} 可链式 play
 		 */
-		loop: async (action) => {
-			await result
-			return loop(action)
-		},
+		loop: (action) => withChain(promise.then(() => loopFrames(action))),
 	})
 }
 
 /**
+ * 播放一轮帧序列；返回值可继续 `.play` / `.loop`。
  * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧
- * @returns {Promise<void>}
+ * @returns {Promise<void> & { play: Function, loop: Function }} 可链式 play promise
  */
-export async function loop(frames) {
-	if (!canUseTui) return
-	while (!signal.aborted)
-		await playFrames(frames)
+export function play(frames) {
+	return withChain(playFrames(frames))
+}
+
+/**
+ * 循环播放直至中止；返回值可继续 `.play` / `.loop`。
+ * @param {Iterable<string> | AsyncIterable<string> | (() => Iterable<string> | AsyncIterable<string>)} frames 帧
+ * @returns {Promise<void> & { play: Function, loop: Function }} 可链式 play promise
+ */
+export function loop(frames) {
+	return withChain(loopFrames(frames))
 }
 
 /** 离开备用屏 / 原始模式 / 缩放监听。 */

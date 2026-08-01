@@ -3,6 +3,8 @@
  * `signal`：用户 Ctrl+C 中止本会话（sticky）；dismiss 不碰它。
  * 嵌入宿主时应自行拥有进程退出信号，并把本 `signal` 接到那边（见 log_viewer）。
  */
+import { setTimeout as delay } from 'node:timers/promises'
+
 import { lightPointer } from './gesture/light.mjs'
 import { windPointer } from './gesture/wind.mjs'
 import { ICON_W, ICON_H } from './icon.mjs'
@@ -11,8 +13,6 @@ import {
 	createAnimState, resizeAnimState, enter, hold, exit,
 } from './scene.mjs'
 
-/** 目标帧率。 */
-export { fps } from './player.mjs'
 /** 用户中止本会话：一旦 abort 保持到进程结束。 */
 const userAc = new AbortController()
 /** @type {AbortSignal} */
@@ -23,7 +23,7 @@ export const signal = userAc.signal
  * @returns {void}
  */
 export function abort() {
-	if (!userAc.signal.aborted) userAc.abort()
+	userAc.abort()
 }
 
 /** @type {ReturnType<typeof createAnimState> | null} */
@@ -73,21 +73,11 @@ const openTui = () => {
 }
 
 /**
- * 离开备用屏；保留 `state` 以待 farewell。
- * @returns {void}
- */
-const park = () => {
-	player.stop()
-	running = null
-}
-
-/**
  * 中止当前播放并等其落定。
  * @returns {Promise<void>}
  */
 const haltPlay = async () => {
 	player.abort()
-	await Promise.resolve()
 	await running?.catch(() => { /* abort */ })
 	running = null
 }
@@ -117,21 +107,19 @@ export async function intro() {
 }
 
 /**
+ * 阻塞至到期或用户中止（均正常兑现）。
  * @param {number} milliseconds 毫秒
- * @returns {Promise<void>} 到期或用户中止时兑现
+ * @returns {Promise<void>}
  */
-export function sleep(milliseconds) {
-	if (signal.aborted) return Promise.resolve()
-	return new Promise((resolve) => {
-		/** 定时器到期或用户中止时唤醒。 */
-		const wake = () => {
-			clearTimeout(timer)
-			signal.removeEventListener('abort', wake)
-			resolve()
-		}
-		const timer = setTimeout(wake, milliseconds)
-		signal.addEventListener('abort', wake, { once: true })
-	})
+export async function sleep(milliseconds) {
+	if (signal.aborted) return
+	try {
+		await delay(milliseconds, undefined, { signal })
+	}
+	catch (error) {
+		if (error?.name === 'AbortError') return
+		throw error
+	}
 }
 
 /**
@@ -141,7 +129,7 @@ export function sleep(milliseconds) {
 export async function dismiss() {
 	if (!state) return
 	await haltPlay()
-	park()
+	player.stop()
 }
 
 /**

@@ -31,10 +31,10 @@ export {
 } from './scene.mjs'
 /** 交互式 TUI 会话。 */
 export {
-	fps, signal, abort, start, intro, dismiss, farewell, sleep,
+	signal, abort, start, intro, dismiss, farewell, sleep,
 } from './session.mjs'
 /** 底层播放器工具。 */
-export { terminalSize, consumeStdin } from './player.mjs'
+export { fps, terminalSize, consumeStdin } from './player.mjs'
 
 if (import.meta.main) {
 	await icon.start()

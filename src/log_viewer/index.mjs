@@ -15,6 +15,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { setTimeout as delay } from 'node:timers/promises'
 
 import { connectLogWire } from 'npm:@steve02081504/virtual-console/wire/client'
 import { on_shutdown } from 'npm:on-shutdown'
@@ -39,15 +40,6 @@ const INTERACTIVE = process.stdout.isTTY && process.stdout.writable && supportsA
 const exitAc = new AbortController()
 /** @type {AbortSignal} */
 const exitSignal = exitAc.signal
-/**
- * 请求进程退出（幂等）。
- * @returns {void}
- */
-const requestExit = () => {
-	if (!exitAc.signal.aborted) exitAc.abort()
-}
-// logo 内 Ctrl+C → 一并退出本进程
-icon.signal.addEventListener('abort', requestExit, { once: true })
 
 /**
  * 从 `data/config.json` 读取服务器端口；读取/解析失败时回落到默认 8931。
@@ -81,18 +73,15 @@ function onFatal(err) {
  * @param {number} milliseconds - 阻塞时长。
  * @returns {Promise<void>}
  */
-function sleep(milliseconds) {
-	if (exitSignal.aborted) return Promise.resolve()
-	return new Promise((resolve) => {
-		/** 定时器到期或退出信号时唤醒。 */
-		const wake = () => {
-			clearTimeout(timer)
-			exitSignal.removeEventListener('abort', wake)
-			resolve()
-		}
-		const timer = setTimeout(wake, milliseconds)
-		exitSignal.addEventListener('abort', wake, { once: true })
-	})
+async function sleep(milliseconds) {
+	if (exitSignal.aborted) return
+	try {
+		await delay(milliseconds, undefined, { signal: exitSignal })
+	}
+	catch (error) {
+		if (error?.name === 'AbortError') return
+		throw error
+	}
 }
 
 /**
@@ -192,6 +181,14 @@ const logSink = INTERACTIVE
 		onClearComplete: requestRandTip,
 	})
 	: createPlainSink()
+
+on_shutdown(async () => {
+	if (!exitAc.signal.aborted) exitAc.abort()
+	logSink.tearDown?.()
+	await icon.farewell()
+})
+// logo 内 Ctrl+C → process.exit 会先跑上面的 on_shutdown
+icon.signal.addEventListener('abort', () => process.exit(130), { once: true })
 
 /**
  * 阻塞至 `/api/ping` 返回 200；`waitLogo` 时 `start`（已在播则 noop）叠加等待动画，连上 `dismiss`。
@@ -368,12 +365,7 @@ async function main() {
 	const exitContext = { setExitCode }
 
 	// exitSignal：拦住主循环/轮询。不关 connection——留着让主循环堵在
-	// runOneConnection，进程退出时一起死。
-	on_shutdown(async () => {
-		requestExit()
-		logSink.tearDown?.()
-		await icon.farewell()
-	})
+	// runOneConnection，进程退出时一起死。cleanup 在模块级 on_shutdown。
 
 	await icon.intro()
 	if (exitSignal.aborted) process.exit(130)
