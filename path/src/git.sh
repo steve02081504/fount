@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# Git helpers for fount self-update
+
+invoke_git_for_fount() {
+	GIT_TERMINAL_PROMPT=0 GIT_OPTIONAL_LOCKS=0 git -C "$FOUNT_DIR" "$@"
+}
+
+fount_git_ref_exists() {
+	invoke_git_for_fount rev-parse --verify "$1" &>/dev/null
+}
+
+fount_git_backup_uncommitted() {
+	command -v git &>/dev/null || return 0
+	[ -d "$FOUNT_DIR/.git" ] || return 0
+	if [ -z "$(invoke_git_for_fount status --porcelain)" ]; then
+		return 0
+	fi
+
+	local timestamp
+	timestamp=$(date +'%Y%m%d_%H%M%S')
+	local tmp_base="${TMPDIR:-/tmp}"
+	local diff_file_path="$tmp_base/fount-local-changes-diff_$timestamp.diff"
+
+	invoke_git_for_fount add -A || return 1
+	if ! invoke_git_for_fount diff --cached >"$diff_file_path"; then
+		return 1
+	fi
+	if fount_git_ref_exists HEAD; then
+		invoke_git_for_fount reset HEAD || return 1
+	else
+		invoke_git_for_fount reset || return 1
+	fi
+
+	print_i18n_yellow 'git.localChangesDetected'
+	print_i18n_green 'git.backupSavedTo' 'path' "$diff_file_path"
+}
+
+fount_git_sync_to_ref() {
+	local ref="$1"
+	if ! fount_git_ref_exists "$ref"; then
+		print_i18n_yellow 'git.remoteRefUnavailable' 'ref' "$ref" >&2
+		return 1
+	fi
+	fount_git_backup_uncommitted || return 1
+	invoke_git_for_fount clean -fd || return 1
+	invoke_git_for_fount reset --hard "$ref"
+}
+
+git_reset_and_clean() {
+	command -v git &>/dev/null || return 0
+	invoke_git_for_fount config core.autocrlf false
+	local has_head=0 fetch_ok=0
+	if fount_git_ref_exists HEAD; then has_head=1; fi
+	if invoke_git_for_fount fetch origin; then fetch_ok=1; fi
+	if ! fount_git_ref_exists origin/master; then
+		if [ "$fetch_ok" -eq 0 ]; then
+			print_i18n_yellow 'git.fetchFailed' >&2
+			print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
+		fi
+		return 1
+	fi
+	if [ "$has_head" -eq 0 ] && [ "$fetch_ok" -eq 0 ]; then
+		print_i18n_yellow 'git.fetchFailed' >&2
+		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
+		return 1
+	fi
+	if [ "$fetch_ok" -eq 0 ]; then
+		print_i18n_yellow 'git.fetchFailed' >&2
+		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
+		return 1
+	fi
+	if fount_git_sync_to_ref origin/master; then
+		invoke_git_for_fount gc --aggressive --prune=now --force
+	fi
+}
+

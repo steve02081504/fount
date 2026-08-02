@@ -1,0 +1,19 @@
+function Invoke-FountCmdTest {
+	param([string[]]$CommandArgs)
+	$originalTitle = Get-Title
+	Set-Title '𝒻ℴ𝓊𝓃𝓉 𝓽𝓮𝓼𝓽'
+	try { Enable-FountTestKeepAwake }
+	catch { Write-Verbose "Enable-FountTestKeepAwake: $($_.Exception.Message)" }
+	$testExit = 0
+	try {
+		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/scripts/test/cli.mjs" @(if ($CommandArgs.Count -gt 1) { $CommandArgs[1..($CommandArgs.Count - 1)] })
+		$testExit = $LASTEXITCODE
+	}
+	finally {
+		Disable-FountTestKeepAwake
+		Set-Title $originalTitle
+		if ($testExit -eq 0) { Write-TaskbarProgressClear }
+		Write-Host -NoNewline $script:TaskbarProgressBel
+	}
+	exit $testExit
+}
