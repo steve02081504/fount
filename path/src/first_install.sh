@@ -8,6 +8,7 @@ fount_first_install_if_needed() {
 			git_reset_and_clean
 		fi
 		if [[ -d "$FOUNT_DIR/node_modules" ]]; then run shutdown; fi
+		mkdir -p "$FOUNT_DIR/node_modules"
 		write_taskbar_progress 70
 		get_i18n 'install.installingDependencies'
 		run_deno install --prod --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
