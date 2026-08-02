@@ -63,6 +63,8 @@ function run {
 function Invoke-FountRunServerWithUpdates {
 	param([string[]]$RunArgs)
 	run @RunArgs
+	# Self-update restart runs bare server — not @RunArgs. e.g. `fount run shell/install x`
+	# must not re-run install after crash recovery.
 	while ($LastExitCode -eq 131) {
 		Update-FountAndDeno
 		run

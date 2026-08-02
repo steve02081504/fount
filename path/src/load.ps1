@@ -19,3 +19,29 @@ $FountRequireMany = {
 		. $FountRequire $m
 	}
 }
+
+function Invoke-FountCmdRoute {
+	param([string[]]$CommandArgs)
+
+	if ($CommandArgs.Count -eq 0) { return $false }
+	$cmd = $CommandArgs[0]
+	if ($cmd -notmatch '^[a-z]+$') { return $false }
+
+	$cmdFile = Join-Path $script:FOUNT_SRC "cmd\$cmd.ps1"
+	if (-not (Test-Path -LiteralPath $cmdFile)) { return $false }
+
+	. $FountRequire "cmd/$cmd"
+	$handler = 'Invoke-FountCmd' + ($cmd.Substring(0, 1).ToUpper() + $cmd.Substring(1))
+	if (-not (Get-Command $handler -ErrorAction SilentlyContinue)) {
+		Write-Error "fount: missing handler $handler (cmd/$cmd.ps1)"
+		exit 1
+	}
+	$handlerCmd = Get-Command $handler
+	if ($handlerCmd.Parameters.ContainsKey('CommandArgs')) {
+		& $handler -CommandArgs $CommandArgs
+	}
+	else {
+		& $handler
+	}
+	return $true
+}

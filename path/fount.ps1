@@ -49,14 +49,17 @@ if ($args[0] -eq 'nop') {
 elseif ($args[0] -eq 'open') {
 	. $FountRequireMany passthrough win/refresh_path win/winget browser cmd/open
 	Invoke-FountCmdOpen -CommandArgs $args
+	exit $LastExitCode
 }
 elseif ($args[0] -eq 'background') {
 	. $FountRequireMany passthrough cmd/background
 	Invoke-FountCmdBackground -CommandArgs $args
+	exit $LastExitCode
 }
 elseif ($args[0] -eq 'protocolhandle') {
 	. $FountRequireMany passthrough win/refresh_path win/winget browser win/wt packages cmd/protocolhandle
 	Invoke-FountCmdProtocolhandle -CommandArgs $args
+	exit $LastExitCode
 }
 
 . $FountRequire passthrough
@@ -77,54 +80,13 @@ if ($is_running) {
 
 Invoke-FountFirstInstall -CommandArgs $args
 
-if ($args[0] -eq 'test') {
-	. $FountRequire cmd/test
-	Invoke-FountCmdTest -CommandArgs $args
+if (Invoke-FountCmdRoute -CommandArgs $args) {
+	if ($ErrorCount -ne $Error.Count) { exit 1 }
+	exit $LastExitCode
 }
-elseif ($args[0] -eq 'clean') {
-	. $FountRequire cmd/clean
-	Invoke-FountCmdClean -CommandArgs $args
-}
-elseif ($args[0] -eq 'geneexe') {
-	. $FountRequire cmd/geneexe
-	Invoke-FountCmdGeneexe -CommandArgs $args
-}
-elseif ($args[0] -eq 'init') {
-	. $FountRequire cmd/init
-	Invoke-FountCmdInit
-}
-elseif ($args[0] -eq 'keepalive') {
-	. $FountRequire cmd/keepalive
-	Invoke-FountCmdKeepalive -CommandArgs $args
-}
-elseif ($args[0] -eq 'remove') {
-	. $FountRequire cmd/remove
-	Invoke-FountCmdRemove
-}
-elseif ($args[0] -eq 'logo') {
-	. $FountRequire cmd/logo
-	Invoke-FountCmdLogo -CommandArgs $args
-}
-elseif ($args[0] -eq 'log') {
-	. $FountRequire cmd/log
-	Invoke-FountCmdLog
-}
-elseif ($args[0] -eq 'debug') {
-	. $FountRequire cmd/debug
-	Invoke-FountCmdDebug -CommandArgs $args
-}
-elseif ($args[0] -eq 'server') {
-	. $FountRequire cmd/server
-	Invoke-FountCmdServer -CommandArgs $args
-}
-elseif ($args[0] -eq 'shutdown' -or $args[0] -eq 'reboot') {
-	. $FountRequire cmd/shutdown
-	Invoke-FountCmdShutdown -CommandArgs $args
-}
-else {
-	. $FountRequire cmd/default
-	Invoke-FountCmdDefault -CommandArgs $args
-}
+
+. $FountRequire cmd/default
+Invoke-FountCmdDefault -CommandArgs $args
 
 if ($ErrorCount -ne $Error.Count) { exit 1 }
 exit $LastExitCode

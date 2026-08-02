@@ -68,7 +68,7 @@ fi
 
 fount_first_install_if_needed "$@"
 
-if [ -n "$cmd" ] && [ -f "$FOUNT_SRC/cmd/${cmd}.sh" ]; then
+if [ -n "$cmd" ] && [[ "$cmd" =~ ^[a-z]+$ ]] && [ -f "$FOUNT_SRC/cmd/${cmd}.sh" ]; then
 	# shellcheck disable=SC1090
 	. "$FOUNT_SRC/cmd/${cmd}.sh"
 	"fount_cmd_${cmd}" "$@"

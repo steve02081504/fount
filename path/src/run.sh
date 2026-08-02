@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # Deno server runner + keepalive helpers
 
-exit_code=0
-
 handle_auto_reinitialization() {
 	if [ -f "$FOUNT_DIR/.noautoinit" ]; then
 		print_i18n_yellow 'keepalive.autoInitDisabled' >&2
@@ -18,7 +16,7 @@ handle_auto_reinitialization() {
 }
 
 run() {
-	local original_title
+	local original_title exit_code
 	if [[ $(id -u) -eq 0 ]]; then
 		print_i18n_yellow 'install.rootWarning1' >&2
 		print_i18n_yellow 'install.rootWarning2' >&2
@@ -98,11 +96,16 @@ run_shutdown() {
 
 # Run server; repeat after self-update when deno exits 131
 run_server_with_updates() {
+	local server_status
 	run "$@"
-	while [ "$exit_code" -eq 131 ]; do
+	server_status=$?
+	# Self-update restart runs bare server — not "$@". e.g. `fount run shell/install x`
+	# must not re-run install after crash recovery.
+	while [ "$server_status" -eq 131 ]; do
 		update_fount_and_deno
 		run
+		server_status=$?
 	done
-	return $exit_code
+	return "$server_status"
 }
 
