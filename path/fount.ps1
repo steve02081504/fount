@@ -29,56 +29,15 @@ if (($args.Count -eq 0 -or $args[0] -ne 'remove') -and (Test-FountInTempDirector
 
 $ErrorCount = $Error.Count
 
-$FountRequireMid = {
-	. $FountRequireMany env win/refresh_path win/winget win/installer_dir
-	. $FountRequireMany packages browser passthrough profile
-	. $FountRequireMany git deno fs init_force update run debug boot
-	. $FountRequireMany win/file_attrs win/wt win/protocol_reg keybindings desktop
-	. $FountRequireMany win/app_restart win/explorer_refresh win/keep_awake first_install
-}
-
 if ($env:FOUNT_CLICK) {
 	Remove-Item Env:\FOUNT_CLICK -Force -ErrorAction Ignore
 	. $FountRequire win/wt
 	Start-WTfountCmd $args
 	exit $LastExitCode
 }
-if ($args[0] -eq 'nop') {
-	exit 0
-}
-elseif ($args[0] -eq 'open') {
-	. $FountRequireMany passthrough win/refresh_path win/winget browser cmd/open
-	Invoke-FountCmdOpen -CommandArgs $args
-	exit $LastExitCode
-}
-elseif ($args[0] -eq 'background') {
-	. $FountRequireMany passthrough cmd/background
-	Invoke-FountCmdBackground -CommandArgs $args
-	exit $LastExitCode
-}
-elseif ($args[0] -eq 'protocolhandle') {
-	. $FountRequireMany passthrough win/refresh_path win/winget browser win/wt packages cmd/protocolhandle
-	Invoke-FountCmdProtocolhandle -CommandArgs $args
-	exit $LastExitCode
-}
 
 . $FountRequire passthrough
 Invoke-FountUnixPassthrough -CommandArgs $args
-
-. $FountRequireMid
-
-if ($args[0] -eq 'init' -and $args[1] -eq 'force') {
-	exit (Invoke-FountInitForce -FountDir $FOUNT_DIR)
-}
-
-$is_running = $args.Count -ne 0 -and ($args[0] -eq 'server' -or $args[0] -eq 'keepalive')
-if ($is_running) {
-	Assert-FountDirWritable $FOUNT_DIR
-	Update-FountAndDeno
-	deno -V
-}
-
-Invoke-FountFirstInstall -CommandArgs $args
 
 if (Invoke-FountCmdRoute -CommandArgs $args) {
 	if ($ErrorCount -ne $Error.Count) { exit 1 }

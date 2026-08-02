@@ -1,5 +1,6 @@
 function Invoke-FountCmdProtocolhandle {
 	param([string[]]$CommandArgs)
+	. $FountRequireMany passthrough win/refresh_path win/winget browser win/wt packages
 	Invoke-DockerPassthrough -CurrentArgs $CommandArgs
 	$protocolUrl = $CommandArgs[1]
 	if ($protocolUrl -eq 'fount://nop/') {

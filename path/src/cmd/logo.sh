@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 fount_cmd_logo() {
+	fount_require deno
+	install_deno
 	local icon_anime="$FOUNT_DIR/imgs/icon_anime/index.mjs"
 	local original_title logo_status
 	original_title=$(get_title)
@@ -13,4 +15,3 @@ fount_cmd_logo() {
 	set_title "$original_title"
 	exit "$logo_status"
 }
-

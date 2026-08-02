@@ -1,4 +1,5 @@
 function Invoke-FountCmdRemove {
+	Invoke-FountRequireRuntime
 	Register-FountTerminalTeardown
 	$hooks = Get-ChildItem -Path $script:FOUNT_SRC -Recurse -Filter '*.uninstall.*.ps1' -File
 	$sorted = $hooks | ForEach-Object {

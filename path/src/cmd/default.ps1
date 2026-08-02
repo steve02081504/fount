@@ -1,5 +1,6 @@
 function Invoke-FountCmdDefault {
 	param([string[]]$CommandArgs)
+	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
 	$originalTitle = Get-Title
 	try {
 		if ($CommandArgs[0]) {

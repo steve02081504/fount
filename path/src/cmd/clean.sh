@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 fount_cmd_clean() {
+	fount_bootstrap_full "$@"
 	if [ -d "$FOUNT_DIR/node_modules" ]; then
 		run shutdown
 		if [ "$2" = 'force' ]; then

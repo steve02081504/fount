@@ -1,5 +1,6 @@
 function Invoke-FountCmdClean {
 	param([string[]]$CommandArgs)
+	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
 		run shutdown
 		if ($CommandArgs[1] -eq 'force') {

@@ -41,33 +41,6 @@ fi
 
 cmd="${1:-}"
 
-# Early passthrough commands (before deno install)
-case "$cmd" in
-nop|open|background|protocolhandle)
-	fount_require passthrough browser unix/ipc unix/url
-	# shellcheck disable=SC1090
-	. "$FOUNT_SRC/cmd/${cmd}.sh"
-	"fount_cmd_${cmd}" "$@"
-	exit $?
-	;;
-esac
-
-# init force (privilege elevation + permission repair)
-if [ "$cmd" = "init" ] && [ "${2:-}" = "force" ]; then
-	fount_require fs init_force
-	fount_handle_init_force "$@"
-fi
-
-fount_require_mid
-
-if [ "$#" -gt 0 ] && { [ "$1" = "server" ] || [ "$1" = "keepalive" ]; }; then
-	assert_fount_dir_writable "$FOUNT_DIR"
-	update_fount_and_deno
-	run_deno -V
-fi
-
-fount_first_install_if_needed "$@"
-
 if [ -n "$cmd" ] && [[ "$cmd" =~ ^[a-z]+$ ]] && [ -f "$FOUNT_SRC/cmd/${cmd}.sh" ]; then
 	# shellcheck disable=SC1090
 	. "$FOUNT_SRC/cmd/${cmd}.sh"

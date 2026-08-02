@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 fount_cmd_default() {
+	fount_bootstrap_full "$@"
 	fount_trap_terminal_teardown
 	if [ "$1" ]; then
 		run "$@"

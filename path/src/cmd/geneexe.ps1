@@ -1,5 +1,6 @@
 function Invoke-FountCmdGeneexe {
 	param([string[]]$CommandArgs)
+	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
 	$exepath = $CommandArgs[1]
 	if (!$exepath) { $exepath = "fount.exe" }
 	if (!(Get-Command ps12exe -ErrorAction Ignore)) {

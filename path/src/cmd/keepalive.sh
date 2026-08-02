@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 fount_cmd_keepalive() {
+	fount_bootstrap_server "$@"
 	export FOUNT_KEEPALIVE=1
 	trap 'write_taskbar_progress_clear; unset FOUNT_KEEPALIVE' EXIT INT TERM
 	shift

@@ -1,5 +1,6 @@
 function Invoke-FountCmdBackground {
 	param([string[]]$CommandArgs)
+	. $FountRequireMany passthrough
 	Invoke-DockerPassthrough -CurrentArgs $CommandArgs
 	$env:FOUNT_BACKGROUND = 1
 	$runargs = $CommandArgs[1..$CommandArgs.Count]

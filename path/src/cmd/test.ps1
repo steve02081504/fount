@@ -1,5 +1,6 @@
 function Invoke-FountCmdTest {
 	param([string[]]$CommandArgs)
+	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
 	$originalTitle = Get-Title
 	Set-Title '𝒻ℴ𝓊𝓃𝓉 𝓽𝓮𝓼𝓽'
 	try { Enable-FountTestKeepAwake }

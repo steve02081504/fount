@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 fount_cmd_test() {
+	fount_bootstrap_full "$@"
 	shift
 	local original_title test_exit
 	original_title=$(get_title)

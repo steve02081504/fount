@@ -1,5 +1,6 @@
 function Invoke-FountCmdLogo {
 	param([string[]]$CommandArgs)
+	. $FountRequireMany terminal env win/refresh_path deno
 	$iconAnime = "$FOUNT_DIR/imgs/icon_anime/index.mjs"
 	$originalTitle = Get-Title
 	try {

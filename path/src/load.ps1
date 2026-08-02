@@ -45,3 +45,25 @@ function Invoke-FountCmdRoute {
 	}
 	return $true
 }
+
+function Invoke-FountRequireRuntime {
+	. $FountRequireMany env win/refresh_path win/winget win/installer_dir
+	. $FountRequireMany packages browser passthrough profile
+	. $FountRequireMany git deno fs init_force update run debug boot
+	. $FountRequireMany win/file_attrs win/wt win/protocol_reg keybindings desktop
+	. $FountRequireMany win/app_restart win/explorer_refresh win/keep_awake first_install
+}
+
+function Invoke-FountBootstrapFull {
+	param([string[]]$CommandArgs)
+	Invoke-FountRequireRuntime
+	Invoke-FountFirstInstall -CommandArgs $CommandArgs
+}
+
+function Invoke-FountBootstrapServer {
+	param([string[]]$CommandArgs)
+	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
+	Assert-FountDirWritable $FOUNT_DIR
+	Update-FountAndDeno
+	deno -V
+}

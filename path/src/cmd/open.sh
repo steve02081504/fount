@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 fount_cmd_open() {
+	fount_require passthrough browser unix/ipc unix/url
 	handle_docker_passthrough "$@"
 	shift
 	if [ -f "$FOUNT_DIR/data/config.json" ]; then

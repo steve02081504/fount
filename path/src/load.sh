@@ -17,10 +17,22 @@ fount_require() {
 	done
 }
 
-# Shared bootstrap after early passthrough commands
+# Runtime modules: deno, run, git, desktop hooks, … (no first-install pass)
 fount_require_mid() {
 	fount_require unix/sed git update fs run debug desktop boot keybindings deno first_install
 	install_deno
+}
+
+fount_bootstrap_full() {
+	fount_require_mid
+	fount_first_install_if_needed "$@"
+}
+
+fount_bootstrap_server() {
+	fount_bootstrap_full "$@"
+	assert_fount_dir_writable "$FOUNT_DIR"
+	update_fount_and_deno
+	run_deno -V
 }
 
 # Source uninstall hooks under FOUNT_SRC, highest level first

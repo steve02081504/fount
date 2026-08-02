@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 fount_cmd_background() {
+	fount_require passthrough
 	export FOUNT_BACKGROUND=1
 	handle_docker_termux_passthrough "$@"
 	shift

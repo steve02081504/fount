@@ -1,5 +1,6 @@
 function Invoke-FountCmdServer {
 	param([string[]]$CommandArgs)
+	Invoke-FountBootstrapServer -CommandArgs $CommandArgs
 	$runargs = $CommandArgs[1..$CommandArgs.Count]
 	try {
 		Register-FountApplicationRestart

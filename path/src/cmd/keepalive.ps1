@@ -1,5 +1,6 @@
 function Invoke-FountCmdKeepalive {
 	param([string[]]$CommandArgs)
+	Invoke-FountBootstrapServer -CommandArgs $CommandArgs
 	Start-Job -ScriptBlock {
 		param($FOUNT_DIR)
 		if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
