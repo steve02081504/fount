@@ -1,5 +1,5 @@
 # 智能自启动：向 Windows 注册“系统重启/更新后恢复”
-function Register-FountApplicationRestart {
+function script:Register-FountApplicationRestart {
 	if (!$IsWindows) { return }
 	if ($env:FOUNT_RESTART_REGISTERED) { return }
 	$env:FOUNT_RESTART_REGISTERED = $true
@@ -26,7 +26,7 @@ public class FountRestart {
 }
 
 # 程序正常或 Ctrl+C 退出时取消“系统重启后恢复”注册，避免被系统再次拉起
-function Unregister-FountApplicationRestart {
+function script:Unregister-FountApplicationRestart {
 	if (!$IsWindows) { return }
 	Remove-Item Env:\FOUNT_RESTART_REGISTERED -Force -ErrorAction Ignore
 	[FountRestart]::UnregisterApplicationRestart() | Out-Null

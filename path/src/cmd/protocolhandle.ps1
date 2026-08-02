@@ -1,4 +1,4 @@
-function Invoke-FountCmdProtocolhandle {
+function script:Invoke-FountCmdProtocolhandle {
 	param([string[]]$CommandArgs)
 	. $FountRequireMany passthrough win/refresh_path win/winget browser win/wt packages
 	Invoke-DockerPassthrough -CurrentArgs $CommandArgs

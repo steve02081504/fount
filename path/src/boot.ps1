@@ -1,4 +1,4 @@
-function Register-FountBootBackground {
+function script:Register-FountBootBackground {
 	if (!$IsWindows -or (Test-FountInContainer)) { return }
 	if (Test-Path "$FOUNT_DIR/.noautoboot") { return }
 	try {

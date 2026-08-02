@@ -1,4 +1,4 @@
-function Test-FountInTempDirectory {
+function script:Test-FountInTempDirectory {
 	param([string]$Directory)
 	try { $resolved = (Resolve-Path -LiteralPath $Directory).Path }
 	catch { $resolved = $Directory }

@@ -1,4 +1,4 @@
-function Test-Browser {
+function script:Test-Browser {
 	$browser = try {
 		$progId = (Get-ItemProperty -Path "Registry::HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice" -Name "ProgId" -ErrorAction Stop).'ProgId'
 

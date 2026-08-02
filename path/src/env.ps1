@@ -1,4 +1,4 @@
-function Set-MissingVariablesForWindowsPowershell {
+function script:Set-MissingVariablesForWindowsPowershell {
 	[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidAssignmentToAutomaticVariable', '', Justification = 'all assignments to "automatic" variables are safe in this function')]
 	param()
 	if ($PSEdition -eq "Desktop") {
@@ -18,9 +18,9 @@ Start-Job -ScriptBlock {
 	}
 } -ArgumentList $FOUNT_DIR | Out-Null
 
-function Test-FountInDocker { $false }
-function Test-FountInTermux { $false }
-function Test-FountInContainer { (Test-FountInDocker) -or (Test-FountInTermux) }
+function script:Test-FountInDocker { $false }
+function script:Test-FountInTermux { $false }
+function script:Test-FountInContainer { (Test-FountInDocker) -or (Test-FountInTermux) }
 
 # fount 路径设置
 if (!(Get-Command fount.ps1 -ErrorAction SilentlyContinue)) {

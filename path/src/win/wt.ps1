@@ -1,4 +1,4 @@
-function Get-WTfountCmd($ArgumentList = @()) {
+function script:Get-WTfountCmd($ArgumentList = @()) {
 	$FilePath = "powershell.exe"
 	$ArgumentList = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" $ArgumentList"
 	if (Get-AppxPackage -Name "Microsoft.WindowsTerminal") {
@@ -14,12 +14,12 @@ function Get-WTfountCmd($ArgumentList = @()) {
 	}
 }
 
-function Start-WTfountCmd($ArgumentList = @()) {
+function script:Start-WTfountCmd($ArgumentList = @()) {
 	$cmd = Get-WTfountCmd @args
 	Start-Process @cmd
 }
 
-function Register-FountTerminalProfile {
+function script:Register-FountTerminalProfile {
 	$WTjsonDirPath = "$env:LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/fount"
 	if (!(Test-Path $WTjsonDirPath)) {
 		New-Item -ItemType Directory -Force -Path $WTjsonDirPath | Out-Null

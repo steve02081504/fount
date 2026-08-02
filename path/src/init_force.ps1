@@ -1,4 +1,4 @@
-function Invoke-FountInitForce([string]$FountDir) {
+function script:Invoke-FountInitForce([string]$FountDir) {
 	Test-PWSHModule PowerRunAsSystem
 	Test-PWSHModule LockingProcessKiller
 	Import-Module PowerRunAsSystem -ErrorAction Stop

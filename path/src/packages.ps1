@@ -2,7 +2,7 @@ $script:auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/aut
 if (!$script:auto_installed_pwsh_modules) { $script:auto_installed_pwsh_modules = '' }
 $script:auto_installed_pwsh_modules = @($script:auto_installed_pwsh_modules.Split(';') | Where-Object { $_ })
 
-function Test-PWSHModule([string]$ModuleName) {
+function script:Test-PWSHModule([string]$ModuleName) {
 	if (!(Get-Module $ModuleName -ListAvailable)) {
 		if ($script:auto_installed_pwsh_modules -notcontains $ModuleName) {
 			$script:auto_installed_pwsh_modules += $ModuleName

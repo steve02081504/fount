@@ -1,4 +1,4 @@
-function Invoke-FountCmdClean {
+function script:Invoke-FountCmdClean {
 	param([string[]]$CommandArgs)
 	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {

@@ -1,4 +1,4 @@
-function Invoke-FountCmdLog {
+function script:Invoke-FountCmdLog {
 	Invoke-FountBootstrapFull -CommandArgs @('log')
 	try {
 		Register-FountApplicationRestart

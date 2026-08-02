@@ -1,4 +1,4 @@
-function Register-FountProtocol {
+function script:Register-FountProtocol {
 	$protocolName = "fount"
 	$protocolDescription = (Get-I18n -key 'protocol.description')
 	$command = "`"$FOUNT_DIR\path\fount.bat`" protocolhandle `"%1`""

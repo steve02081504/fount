@@ -1,4 +1,4 @@
-function Invoke-FountCmdTest {
+function script:Invoke-FountCmdTest {
 	param([string[]]$CommandArgs)
 	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
 	$originalTitle = Get-Title

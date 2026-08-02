@@ -20,7 +20,7 @@ if (-not $env:NPM_CONFIG_REGISTRY) {
 }
 
 . (Join-Path $script:FOUNT_SRC 'load.ps1')
-. $FountRequireMany i18n terminal temp_guard
+. $FountRequireMany i18n terminal temp_guard env
 
 if (($args.Count -eq 0 -or $args[0] -ne 'remove') -and (Test-FountInTempDirectory -Directory $FOUNT_DIR)) {
 	Write-Host (Get-I18n -key 'tempDir.blocked')
@@ -39,7 +39,8 @@ if ($env:FOUNT_CLICK) {
 . $FountRequire passthrough
 Invoke-FountUnixPassthrough -CommandArgs $args
 
-if (Invoke-FountCmdRoute -CommandArgs $args) {
+. $FountCmdRoute $args
+if ($script:FountCmdRouted) {
 	if ($ErrorCount -ne $Error.Count) { exit 1 }
 	exit $LastExitCode
 }

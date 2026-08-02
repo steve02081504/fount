@@ -1,6 +1,6 @@
 # --- 国际化函数 ---
 # 获取系统区域设置
-function Get-SystemLocales {
+function script:Get-SystemLocales {
 	$locales = New-Object System.Collections.Generic.List[string]
 	$locales.Add((Get-Culture).Name)
 	if ($env:LANG) { $locales.Add($env:LANG.Split('.')[0].Replace('_', '-')) }
@@ -11,7 +11,7 @@ function Get-SystemLocales {
 }
 
 # 从 src/public/locales/list.csv 获取可用区域设置
-function Get-AvailableLocales {
+function script:Get-AvailableLocales {
 	$localeListFile = Join-Path $FOUNT_DIR 'src/public/locales/list.csv'
 	if (Test-Path $localeListFile) {
 		try {
@@ -27,7 +27,7 @@ function Get-AvailableLocales {
 }
 
 # 寻找最合适的区域设置
-function Get-BestLocale {
+function script:Get-BestLocale {
 	param(
 		[string[]]$preferredLocales,
 		[string[]]$availableLocales
@@ -52,7 +52,7 @@ function Get-BestLocale {
 }
 
 # 加载本地化数据
-function Import-LocaleData {
+function script:Import-LocaleData {
 	if (-not $env:FOUNT_LOCALE) {
 		$systemLocales = Get-SystemLocales
 		$availableLocales = Get-AvailableLocales
@@ -78,7 +78,7 @@ $Script:I18nParamAnsiColors = @{
 	branch = 33
 }
 
-function Format-I18nParamValue {
+function script:Format-I18nParamValue {
 	param(
 		[string]$Name,
 		[string]$Value
@@ -90,7 +90,7 @@ function Format-I18nParamValue {
 	return "${esc}[${c}m$Value${esc}[0m"
 }
 
-function Format-I18nBacktickInner {
+function script:Format-I18nBacktickInner {
 	param([string]$Inner)
 	if (-not $Script:I18nSupportsAnsi) { return $Inner }
 	$esc = [char]27
@@ -107,7 +107,7 @@ function Format-I18nBacktickInner {
 	}
 }
 
-function Format-I18nText {
+function script:Format-I18nText {
 	param([string]$Text)
 	if ($Script:I18nSupportsAnsi) {
 		return [regex]::Replace($Text, '`([^`]*)`', {
@@ -118,7 +118,7 @@ function Format-I18nText {
 	return [regex]::Replace($Text, '`([^`]*)`', '$1')
 }
 
-function Get-I18n {
+function script:Get-I18n {
 	param(
 		[string]$key,
 		[hashtable]$params = @{}

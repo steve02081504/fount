@@ -1,4 +1,4 @@
-function Set-FountFileAttributes {
+function script:Set-FountFileAttributes {
 	Get-ChildItem $FOUNT_DIR -Recurse -Filter desktop.ini -Force | ForEach-Object {
 		$Dir = Get-Item $(Split-Path $_.FullName) -Force
 		$Dir.Attributes = $Dir.Attributes -bor [System.IO.FileAttributes]::ReadOnly -bor [System.IO.FileAttributes]::Directory

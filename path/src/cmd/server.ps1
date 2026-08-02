@@ -1,4 +1,4 @@
-function Invoke-FountCmdServer {
+function script:Invoke-FountCmdServer {
 	param([string[]]$CommandArgs)
 	Invoke-FountBootstrapServer -CommandArgs $CommandArgs
 	$runargs = $CommandArgs[1..$CommandArgs.Count]

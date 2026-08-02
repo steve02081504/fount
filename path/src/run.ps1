@@ -1,4 +1,4 @@
-function run {
+function script:run {
 	if ($IsWindows) {
 		Get-Process tray_windows_release -ErrorAction Ignore | Where-Object { $_.CPU -gt 0.5 } | Stop-Process
 	}
@@ -60,7 +60,7 @@ function run {
 	}
 }
 
-function Invoke-FountRunServerWithUpdates {
+function script:Invoke-FountRunServerWithUpdates {
 	param([string[]]$RunArgs)
 	run @RunArgs
 	# Self-update restart runs bare server — not @RunArgs. e.g. `fount run shell/install x`

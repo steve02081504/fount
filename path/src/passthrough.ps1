@@ -1,5 +1,5 @@
 # Windows: passthrough entry is fount.ps1; container detection lives in env.ps1
-function Invoke-DockerPassthrough {
+function script:Invoke-DockerPassthrough {
 	param (
 		[Parameter(Mandatory = $true)]
 		[string[]]$CurrentArgs
@@ -11,7 +11,7 @@ function Invoke-DockerPassthrough {
 	}
 }
 
-function Invoke-FountUnixPassthrough {
+function script:Invoke-FountUnixPassthrough {
 	param([string[]]$CommandArgs)
 	if (!$IsWindows) {
 		function install_package {

@@ -14,16 +14,16 @@ $script:FountEditorTerminalKeyPatches = @(
 	}
 )
 
-function Get-FountTerminalKeybindingsManifestPath {
+function script:Get-FountTerminalKeybindingsManifestPath {
 	Join-Path $FOUNT_DIR 'data/installer/terminal_keybindings.json'
 }
 
-function Write-FountUtf8NoBom([string]$Path, [string]$Content) {
+function script:Write-FountUtf8NoBom([string]$Path, [string]$Content) {
 	$utf8 = New-Object System.Text.UTF8Encoding $false
 	[System.IO.File]::WriteAllText($Path, $Content, $utf8)
 }
 
-function Get-FountWindowsTerminalSettingsPaths {
+function script:Get-FountWindowsTerminalSettingsPaths {
 	$paths = [System.Collections.Generic.List[string]]::new()
 	$localAppData = $env:LOCALAPPDATA
 	if (-not $localAppData) { return @() }
@@ -40,7 +40,7 @@ function Get-FountWindowsTerminalSettingsPaths {
 	return $paths | Select-Object -Unique
 }
 
-function Get-FountEditorKeybindingsPaths {
+function script:Get-FountEditorKeybindingsPaths {
 	$paths = [System.Collections.Generic.List[string]]::new()
 	if ($env:APPDATA) {
 		foreach ($editor in @('Cursor', 'Code', 'VSCodium')) {
@@ -53,11 +53,11 @@ function Get-FountEditorKeybindingsPaths {
 	return $paths | Select-Object -Unique
 }
 
-function Test-FountIsFountPatchEntry($Entry) {
+function script:Test-FountIsFountPatchEntry($Entry) {
 	$Entry.PSObject.Properties['isfountPatch'] -and $Entry.isfountPatch -eq $true
 }
 
-function Remove-FountWtJsonBlocks([string]$Raw, [string]$Id) {
+function script:Remove-FountWtJsonBlocks([string]$Raw, [string]$Id) {
 	$escaped = [regex]::Escape($Id)
 	$actionPat = '(?ms)\s*\{\s*"command"\s*:\s*\{(?:[^{}]|\{[^{}]*\})*\}\s*,\s*"id"\s*:\s*"' + $escaped + '"\s*\},?\s*'
 	$kbPatIdFirst = '(?ms)\s*\{\s*"id"\s*:\s*"' + $escaped + '"\s*,\s*"keys"\s*:\s*"[^"]*"\s*\},?\s*'
@@ -65,7 +65,7 @@ function Remove-FountWtJsonBlocks([string]$Raw, [string]$Id) {
 	$Raw -replace $actionPat, "`n" -replace $kbPatIdFirst, "`n" -replace $kbPatKeysFirst, "`n"
 }
 
-function Merge-FountWindowsTerminalSettings([string]$SettingsPath) {
+function script:Merge-FountWindowsTerminalSettings([string]$SettingsPath) {
 	if (-not (Test-Path $SettingsPath)) { return $false }
 	try {
 		$raw = Get-Content $SettingsPath -Raw -Encoding UTF8
@@ -117,7 +117,7 @@ function Merge-FountWindowsTerminalSettings([string]$SettingsPath) {
 	return $true
 }
 
-function Split-FountWindowsTerminalSettings([string]$SettingsPath) {
+function script:Split-FountWindowsTerminalSettings([string]$SettingsPath) {
 	if (-not (Test-Path $SettingsPath)) { return $false }
 	try { $raw = Get-Content $SettingsPath -Raw -Encoding UTF8 }
 	catch { return $false }
@@ -131,7 +131,7 @@ function Split-FountWindowsTerminalSettings([string]$SettingsPath) {
 	return $true
 }
 
-function Read-FountEditorKeybindings([string]$Path) {
+function script:Read-FountEditorKeybindings([string]$Path) {
 	if (-not (Test-Path $Path)) { return @() }
 	try {
 		$parsed = Get-Content $Path -Raw -Encoding UTF8 | ConvertFrom-Json -Depth 20
@@ -142,7 +142,7 @@ function Read-FountEditorKeybindings([string]$Path) {
 	return @()
 }
 
-function Merge-FountEditorKeybindings([string]$KeybindingsPath) {
+function script:Merge-FountEditorKeybindings([string]$KeybindingsPath) {
 	$entries = [System.Collections.Generic.List[object]]::new()
 	Read-FountEditorKeybindings $KeybindingsPath | ForEach-Object { $entries.Add($_) }
 
@@ -171,7 +171,7 @@ function Merge-FountEditorKeybindings([string]$KeybindingsPath) {
 	return $true
 }
 
-function Split-FountEditorKeybindings([string]$KeybindingsPath) {
+function script:Split-FountEditorKeybindings([string]$KeybindingsPath) {
 	if (-not (Test-Path $KeybindingsPath)) { return $false }
 	$entries = [System.Collections.Generic.List[object]]::new()
 	Read-FountEditorKeybindings $KeybindingsPath | ForEach-Object { $entries.Add($_) }
@@ -190,7 +190,7 @@ function Split-FountEditorKeybindings([string]$KeybindingsPath) {
 	return $true
 }
 
-function Register-FountTerminalKeybindings {
+function script:Register-FountTerminalKeybindings {
 	if (-not $IsWindows) { return }
 	New-InstallerDir
 	$manifest = [ordered]@{
@@ -218,7 +218,7 @@ function Register-FountTerminalKeybindings {
 	}
 }
 
-function Unregister-FountTerminalKeybindings {
+function script:Unregister-FountTerminalKeybindings {
 	if (-not $IsWindows) { return }
 	$manifestPath = Get-FountTerminalKeybindingsManifestPath
 	$wtPaths = [System.Collections.Generic.List[string]]::new()

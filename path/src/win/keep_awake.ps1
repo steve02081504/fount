@@ -4,8 +4,8 @@ $script:FountTestLidSubButtonsGuid = '4f971e89-eebd-4455-a8de-9e59040e7347'
 $script:FountTestLidActionGuid = '5ca83367-6e45-459f-a27b-476b1d01c936'
 $script:FountTestKeepAwakeActive = $false
 $script:FountTestLidHolder = $false
-function Get-FountTestKeepAwakeStatePath { "$FOUNT_DIR/data/test/state/keep_awake.json" }
-function Get-FountTestLidAc {
+function script:Get-FountTestKeepAwakeStatePath { "$FOUNT_DIR/data/test/state/keep_awake.json" }
+function script:Get-FountTestLidAc {
 	# 读活动方案注册表，避免 powercfg 标签随系统语言变化
 	$active = (Get-ItemProperty -LiteralPath 'HKLM:\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes' -Name ActivePowerScheme -ErrorAction SilentlyContinue).ActivePowerScheme
 	if (-not $active) { return $null }
@@ -14,13 +14,13 @@ function Get-FountTestLidAc {
 	if ($null -eq $ac) { return $null }
 	return [int]$ac
 }
-function Set-FountTestLidAc([int]$Index) {
+function script:Set-FountTestLidAc([int]$Index) {
 	& powercfg /setacvalueindex SCHEME_CURRENT SUB_BUTTONS $script:FountTestLidActionGuid $Index | Out-Null
 	if ($LASTEXITCODE) { throw "powercfg /setacvalueindex failed (exit $LASTEXITCODE)" }
 	& powercfg /setactive SCHEME_CURRENT | Out-Null
 	if ($LASTEXITCODE) { throw "powercfg /setactive failed (exit $LASTEXITCODE)" }
 }
-function Invoke-FountTestKeepAwakeLocked([scriptblock]$Body) {
+function script:Invoke-FountTestKeepAwakeLocked([scriptblock]$Body) {
 	$mutex = [System.Threading.Mutex]::new($false, 'Local\FountTestKeepAwake')
 	try { [void]$mutex.WaitOne() }
 	catch [System.Threading.AbandonedMutexException] { } # 前持有者崩溃：已获所有权，继续
@@ -30,7 +30,7 @@ function Invoke-FountTestKeepAwakeLocked([scriptblock]$Body) {
 		$mutex.Dispose()
 	}
 }
-function Read-FountTestKeepAwakeState {
+function script:Read-FountTestKeepAwakeState {
 	$path = Get-FountTestKeepAwakeStatePath
 	if (-not (Test-Path -LiteralPath $path)) {
 		return @{ lidAc = $null; holders = @() }
@@ -46,7 +46,7 @@ function Read-FountTestKeepAwakeState {
 	if ($null -ne $raw.lidAc -and "$($raw.lidAc)" -ne '') { $lidAc = [int]$raw.lidAc }
 	return @{ lidAc = $lidAc; holders = $holders }
 }
-function Write-FountTestKeepAwakeState($State) {
+function script:Write-FountTestKeepAwakeState($State) {
 	$path = Get-FountTestKeepAwakeStatePath
 	$dir = Split-Path -Parent $path
 	$holders = @($State.holders)
@@ -63,7 +63,7 @@ function Write-FountTestKeepAwakeState($State) {
 	($payload | ConvertTo-Json -Compress) + "`n" | Set-Content -LiteralPath $tmp -Encoding utf8 -NoNewline
 	Move-Item -LiteralPath $tmp -Destination $path -Force
 }
-function Update-FountTestKeepAwakeState([scriptblock]$Mutator) {
+function script:Update-FountTestKeepAwakeState([scriptblock]$Mutator) {
 	Invoke-FountTestKeepAwakeLocked {
 		$state = Read-FountTestKeepAwakeState
 		$state.holders = @(
@@ -80,7 +80,7 @@ function Update-FountTestKeepAwakeState([scriptblock]$Mutator) {
 		Write-FountTestKeepAwakeState $state
 	}
 }
-function Enable-FountTestKeepAwake {
+function script:Enable-FountTestKeepAwake {
 	if (-not $IsWindows) { return }
 	if (-not $env:FOUNT_TEST_ALLOW_SLEEP) {
 		if (-not ('FountKeepAwake' -as [type])) {
@@ -116,7 +116,7 @@ public static class FountKeepAwake {
 		}
 	}
 }
-function Disable-FountTestKeepAwake {
+function script:Disable-FountTestKeepAwake {
 	if ($script:FountTestKeepAwakeActive) {
 		try { [void][FountKeepAwake]::SetThreadExecutionState([Convert]::ToUInt32('80000000', 16)) }
 		catch { Write-Verbose "Disable-FountTestKeepAwake SetThreadExecutionState: $($_.Exception.Message)" }
@@ -143,7 +143,7 @@ function Disable-FountTestKeepAwake {
 	}
 	catch { Write-Verbose "Disable-FountTestKeepAwake Update-FountTestKeepAwakeState: $($_.Exception.Message)" }
 }
-function Restore-FountTestKeepAwakeArchive {
+function script:Restore-FountTestKeepAwakeArchive {
 	# clean 等：无视仍登记的死/活 holder，强制按存档还原后清文件
 	if (-not $IsWindows) { return }
 	try {

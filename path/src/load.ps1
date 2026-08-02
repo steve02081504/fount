@@ -1,4 +1,5 @@
 # fount_require: idempotent dot-source loader (maps 'cmd/foo' → path/src/cmd/foo.ps1).
+# path/src/*.ps1 exports use `function script:` (cf. esh `function global:`) so lazy loads from handlers stay visible.
 # Dot-source at script scope: . $FountRequireMany i18n terminal temp_guard
 $script:FountLoaded = @{}
 $FountRequire = {
@@ -20,15 +21,17 @@ $FountRequireMany = {
 	}
 }
 
-function Invoke-FountCmdRoute {
+$script:FountCmdRouted = $false
+$FountCmdRoute = {
 	param([string[]]$CommandArgs)
 
-	if ($CommandArgs.Count -eq 0) { return $false }
+	$script:FountCmdRouted = $false
+	if ($CommandArgs.Count -eq 0) { return }
 	$cmd = $CommandArgs[0]
-	if ($cmd -notmatch '^[a-z]+$') { return $false }
+	if ($cmd -notmatch '^[a-z]+$') { return }
 
 	$cmdFile = Join-Path $script:FOUNT_SRC "cmd\$cmd.ps1"
-	if (-not (Test-Path -LiteralPath $cmdFile)) { return $false }
+	if (-not (Test-Path -LiteralPath $cmdFile)) { return }
 
 	. $FountRequire "cmd/$cmd"
 	$handler = 'Invoke-FountCmd' + ($cmd.Substring(0, 1).ToUpper() + $cmd.Substring(1))
@@ -37,16 +40,16 @@ function Invoke-FountCmdRoute {
 		exit 1
 	}
 	$handlerCmd = Get-Command $handler
+	$script:FountCmdRouted = $true
 	if ($handlerCmd.Parameters.ContainsKey('CommandArgs')) {
 		& $handler -CommandArgs $CommandArgs
 	}
 	else {
 		& $handler
 	}
-	return $true
 }
 
-function Invoke-FountRequireRuntime {
+function script:Invoke-FountRequireRuntime {
 	. $FountRequireMany env win/refresh_path win/winget win/installer_dir
 	. $FountRequireMany packages browser passthrough profile
 	. $FountRequireMany git deno fs init_force update run debug boot
@@ -54,13 +57,13 @@ function Invoke-FountRequireRuntime {
 	. $FountRequireMany win/app_restart win/explorer_refresh win/keep_awake first_install
 }
 
-function Invoke-FountBootstrapFull {
+function script:Invoke-FountBootstrapFull {
 	param([string[]]$CommandArgs)
 	Invoke-FountRequireRuntime
 	Invoke-FountFirstInstall -CommandArgs $CommandArgs
 }
 
-function Invoke-FountBootstrapServer {
+function script:Invoke-FountBootstrapServer {
 	param([string[]]$CommandArgs)
 	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
 	Assert-FountDirWritable $FOUNT_DIR

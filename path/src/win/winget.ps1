@@ -1,4 +1,4 @@
-function Test-Winget {
+function script:Test-Winget {
 	try {
 		if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
 			Import-Module Appx

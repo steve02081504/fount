@@ -16,7 +16,7 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	}
 }
 
-function Invoke-GitForFount([string[]]$GitArgs) {
+function script:Invoke-GitForFount([string[]]$GitArgs) {
 	$prevPrompt = $env:GIT_TERMINAL_PROMPT
 	$prevLocks = $env:GIT_OPTIONAL_LOCKS
 	$env:GIT_TERMINAL_PROMPT = '0'
@@ -32,12 +32,12 @@ function Invoke-GitForFount([string[]]$GitArgs) {
 	}
 }
 
-function Test-FountGitRef($Ref = 'HEAD') {
+function script:Test-FountGitRef($Ref = 'HEAD') {
 	Invoke-GitForFount rev-parse --verify $Ref *> $null
 	return ($LastExitCode -eq 0)
 }
 
-function Save-FountGitUncommittedBackup {
+function script:Save-FountGitUncommittedBackup {
 	if (-not (Get-Command git -ErrorAction SilentlyContinue)) { return }
 	if (-not (Test-Path -LiteralPath "$FOUNT_DIR/.git")) { return }
 	$status = Invoke-GitForFount status --porcelain
@@ -61,7 +61,7 @@ function Save-FountGitUncommittedBackup {
 	Write-Host (Get-I18n -key 'git.backupSavedTo' -params @{ path = $diffFilePath }) -ForegroundColor Green
 }
 
-function Sync-FountGitToRef($Ref) {
+function script:Sync-FountGitToRef($Ref) {
 	if (-not (Test-FountGitRef $Ref)) {
 		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $Ref })
 		return $false
@@ -73,7 +73,7 @@ function Sync-FountGitToRef($Ref) {
 	return ($LastExitCode -eq 0)
 }
 
-function fount_upgrade {
+function script:fount_upgrade {
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 		Write-Host (Get-I18n -key 'git.notInstalledSkippingPull')
 		return

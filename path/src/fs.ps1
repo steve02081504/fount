@@ -1,4 +1,4 @@
-function isRoot {
+function script:isRoot {
 	if ($IsWindows) {
 		([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 	}
@@ -7,7 +7,7 @@ function isRoot {
 	}
 }
 
-function Test-FountDirWritable {
+function script:Test-FountDirWritable {
 	param([string]$dir)
 	if (-not (Test-Path $dir)) {
 		try { New-Item -Path $dir -ItemType Directory -Force -ErrorAction Stop | Out-Null } catch { return $false }
@@ -45,7 +45,7 @@ public static class FountDirAccessCheck {
 	} catch { return $false }
 }
 
-function Assert-FountDirWritable {
+function script:Assert-FountDirWritable {
 	param([string]$dir)
 	if (-not (Test-FountDirWritable $dir)) {
 		if (isRoot) {
@@ -57,7 +57,7 @@ function Assert-FountDirWritable {
 	}
 }
 
-function Invoke-SystemScript([string]$Script) {
+function script:Invoke-SystemScript([string]$Script) {
 	$b64 = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($Script))
 	Invoke-SystemCommand -Application 'powershell.exe' -Argument "-NoProfile -ExecutionPolicy Bypass -EncodedCommand $b64"
 }
