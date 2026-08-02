@@ -90,4 +90,4 @@ BASH_EXEC=$(command -v bash)
 export FOUNT_AUTO_INSTALLED_PACKAGES
 
 # 4. 使用找到的 bash 执行主脚本
-exec "$BASH_EXEC" "$SCRIPT_DIR/fount.sh" "$@"
+exec "$BASH_EXEC" "$SCRIPT_DIR/src/index.sh" "$@"
