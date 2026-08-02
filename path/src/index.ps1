@@ -18,33 +18,40 @@ if (-not $env:NPM_CONFIG_REGISTRY) {
 }
 
 . (Join-Path $script:FOUNT_SRC 'load.ps1')
-. $FountRequireMany i18n terminal temp_guard env
+# NativeCommandError：？
+$script:FountCallerErrorActionPreference = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
+try {
+	. $FountRequireMany i18n terminal temp_guard env
 
-if (($args.Count -eq 0 -or $args[0] -ne 'remove') -and (Test-FountInTempDirectory -Directory $FOUNT_DIR)) {
-	Write-Host (Get-I18n -key 'tempDir.blocked')
-	exit 1
-}
+	if (($args.Count -eq 0 -or $args[0] -ne 'remove') -and (Test-FountInTempDirectory -Directory $FOUNT_DIR)) {
+		Write-Host (Get-I18n -key 'tempDir.blocked')
+		exit 1
+	}
 
-$ErrorCount = $Error.Count
+	$ErrorCount = $Error.Count
 
-if ($env:FOUNT_CLICK) {
-	Remove-Item Env:\FOUNT_CLICK -Force -ErrorAction Ignore
-	. $FountRequire win/wt
-	Start-WTfountCmd $args
-	exit $LastExitCode
-}
+	if ($env:FOUNT_CLICK) {
+		Remove-Item Env:\FOUNT_CLICK -Force -ErrorAction Ignore
+		. $FountRequire win/wt
+		Start-WTfountCmd $args
+		exit $LastExitCode
+	}
 
-. $FountRequire passthrough
-Invoke-FountUnixPassthrough -CommandArgs $args
+	. $FountRequire passthrough
+	Invoke-FountUnixPassthrough -CommandArgs $args
 
-. $FountCmdRoute $args
-if ($script:FountCmdRouted) {
+	. $FountCmdRoute $args
+	if ($script:FountCmdRouted) {
+		if ($ErrorCount -ne $Error.Count) { exit 1 }
+		exit $LastExitCode
+	}
+
+	. $FountRequire cmd/default
+	Invoke-FountCmdDefault -CommandArgs $args
+
 	if ($ErrorCount -ne $Error.Count) { exit 1 }
 	exit $LastExitCode
+} finally {
+	$ErrorActionPreference = $script:FountCallerErrorActionPreference
 }
-
-. $FountRequire cmd/default
-Invoke-FountCmdDefault -CommandArgs $args
-
-if ($ErrorCount -ne $Error.Count) { exit 1 }
-exit $LastExitCode
