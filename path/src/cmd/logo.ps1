@@ -1,4 +1,4 @@
-function script:Invoke-FountCmdLogo {
+﻿function script:Invoke-FountCmdLogo {
 	param([string[]]$CommandArgs)
 	$iconAnime = "$FOUNT_DIR/imgs/icon_anime/index.mjs"
 	$originalTitle = Get-Title

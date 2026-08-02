@@ -217,9 +217,9 @@ async function pollUntilServerReady({ waitLogo = false } = {}) {
 			}
 
 	} finally {
-		if (waitLogo) {
+		if (waitLogo && !exitSignal.aborted) {
 			await icon.dismiss()
-			if (!exitSignal.aborted) logSink.resume?.()
+			logSink.resume?.()
 		}
 	}
 }

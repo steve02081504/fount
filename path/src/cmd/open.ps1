@@ -1,4 +1,4 @@
-function script:Invoke-FountCmdOpen {
+﻿function script:Invoke-FountCmdOpen {
 	param([string[]]$CommandArgs)
 	. $FountRequireMany passthrough win/refresh_path win/winget browser
 	if (Test-Path -Path "$FOUNT_DIR/data/config.json") {

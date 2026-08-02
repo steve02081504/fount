@@ -1,4 +1,4 @@
-function script:Invoke-FountCmdInit {
+﻿function script:Invoke-FountCmdInit {
 	param([string[]]$CommandArgs)
 	if ($CommandArgs[1] -eq 'force') {
 		. $FountRequireMany fs init_force

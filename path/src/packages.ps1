@@ -1,4 +1,4 @@
-$script:auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" -Raw -ErrorAction Ignore
+﻿$script:auto_installed_pwsh_modules = Get-Content "$FOUNT_DIR/data/installer/auto_installed_pwsh_modules" -Raw -ErrorAction Ignore
 if (!$script:auto_installed_pwsh_modules) { $script:auto_installed_pwsh_modules = '' }
 $script:auto_installed_pwsh_modules = @($script:auto_installed_pwsh_modules.Split(';') | Where-Object { $_ })
 

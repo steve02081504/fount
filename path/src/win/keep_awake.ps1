@@ -1,4 +1,4 @@
-# fount test 防休眠：ES_SYSTEM_REQUIRED 挂 pwsh；AC 合盖经 keep_awake.json 引用计数，
+﻿# fount test 防休眠：ES_SYSTEM_REQUIRED 挂 pwsh；AC 合盖经 keep_awake.json 引用计数，
 # 末个活 holder 还原。硬杀后存档仍在，之后任意 fount test finally / clean 顺手恢复。
 $script:FountTestLidSubButtonsGuid = '4f971e89-eebd-4455-a8de-9e59040e7347'
 $script:FountTestLidActionGuid = '5ca83367-6e45-459f-a27b-476b1d01c936'

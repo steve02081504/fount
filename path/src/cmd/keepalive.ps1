@@ -1,4 +1,4 @@
-function script:Invoke-FountCmdKeepalive {
+﻿function script:Invoke-FountCmdKeepalive {
 	param([string[]]$CommandArgs)
 	Invoke-FountBootstrapServer -CommandArgs $CommandArgs
 	Start-Job -ScriptBlock {

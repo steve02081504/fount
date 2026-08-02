@@ -1,4 +1,4 @@
-# Remove fount from PATH
+﻿# Remove fount from PATH
 Write-Host (Get-I18n -key 'remove.removing.fount.fromPath')
 $path = $env:PATH -split ';'
 $path = $path | Where-Object { !$_.StartsWith("$FOUNT_DIR") }

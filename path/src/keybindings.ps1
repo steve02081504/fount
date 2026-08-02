@@ -1,4 +1,4 @@
-# REPL 所需终端按键。Shift+Enter 在终端层与裸 Enter 同码（都发 CR），必须重映射为 CSI+u 才能区分。
+﻿# REPL 所需终端按键。Shift+Enter 在终端层与裸 Enter 同码（都发 CR），必须重映射为 CSI+u 才能区分。
 $script:FountTerminalKeyPatches = @(
 	@{
 		Id        = 'fount.sendInput.shiftEnter'

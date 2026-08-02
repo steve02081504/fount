@@ -1,4 +1,4 @@
-function script:Invoke-FountCmdBackground {
+﻿function script:Invoke-FountCmdBackground {
 	param([string[]]$CommandArgs)
 	. $FountRequireMany passthrough
 	Invoke-DockerPassthrough -CurrentArgs $CommandArgs

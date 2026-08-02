@@ -1,4 +1,4 @@
-function script:Get-WTfountCmd($ArgumentList = @()) {
+﻿function script:Get-WTfountCmd($ArgumentList = @()) {
 	$FilePath = "powershell.exe"
 	$ArgumentList = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" $ArgumentList"
 	if (Get-AppxPackage -Name "Microsoft.WindowsTerminal") {

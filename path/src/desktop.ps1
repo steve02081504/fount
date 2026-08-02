@@ -1,4 +1,4 @@
-function script:New-FountShortcut {
+﻿function script:New-FountShortcut {
 	$shell = New-Object -ComObject WScript.Shell
 
 	$shortcutCmd = Get-WTfountCmd -ArgumentList @('open')

@@ -1,4 +1,4 @@
-# 向用户的$Profile中注册导入fount-pwsh
+﻿# 向用户的$Profile中注册导入fount-pwsh
 # 用 File IO 读写，避免 Get-Content/Set-Content 同文件流竞争导致 "Stream was not readable"
 if ($Profile -and (Get-Module fount-pwsh -ListAvailable)) {
 	$profileDir = Split-Path -Parent $Profile

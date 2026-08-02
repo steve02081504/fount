@@ -1,4 +1,4 @@
-function script:Invoke-FountFirstInstall {
+﻿function script:Invoke-FountFirstInstall {
 	param([string[]]$CommandArgs)
 	if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $CommandArgs[0] -eq 'init') {
 		if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {

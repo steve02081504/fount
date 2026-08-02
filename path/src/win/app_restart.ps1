@@ -1,4 +1,4 @@
-# 智能自启动：向 Windows 注册“系统重启/更新后恢复”
+﻿# 智能自启动：向 Windows 注册“系统重启/更新后恢复”
 function script:Register-FountApplicationRestart {
 	if (!$IsWindows) { return }
 	if ($env:FOUNT_RESTART_REGISTERED) { return }

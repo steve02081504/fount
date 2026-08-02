@@ -1,1 +1,1 @@
-# PowerShell module install helpers live in packages.ps1
+﻿# PowerShell module install helpers live in packages.ps1

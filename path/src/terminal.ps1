@@ -1,4 +1,4 @@
-$script:TaskbarProgressEnabled = $Host.UI.SupportsVirtualTerminal -and -not [System.Console]::IsOutputRedirected
+﻿$script:TaskbarProgressEnabled = $Host.UI.SupportsVirtualTerminal -and -not [System.Console]::IsOutputRedirected
 $script:TaskbarProgressEsc = [char]27
 $script:TaskbarProgressBel = [char]7
 function script:Write-TaskbarProgress([int]$Percent) {

@@ -1,4 +1,4 @@
-function script:isRoot {
+﻿function script:isRoot {
 	if ($IsWindows) {
 		([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 	}

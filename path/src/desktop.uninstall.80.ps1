@@ -1,4 +1,4 @@
-# Remove Desktop Shortcut
+﻿# Remove Desktop Shortcut
 Write-Host (Get-I18n -key 'remove.removing.desktopShortcut')
 $desktopShortcutPath = [Environment]::GetFolderPath("Desktop") + "\fount.lnk"
 if (Test-Path $desktopShortcutPath) {

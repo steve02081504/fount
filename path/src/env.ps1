@@ -1,4 +1,4 @@
-function script:Set-MissingVariablesForWindowsPowershell {
+﻿function script:Set-MissingVariablesForWindowsPowershell {
 	[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidAssignmentToAutomaticVariable', '', Justification = 'all assignments to "automatic" variables are safe in this function')]
 	param()
 	if ($PSEdition -eq "Desktop") {

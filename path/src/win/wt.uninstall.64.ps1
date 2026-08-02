@@ -1,4 +1,4 @@
-# Remove Windows Terminal Profile
+﻿# Remove Windows Terminal Profile
 Write-Host (Get-I18n -key 'remove.removing.terminalProfile')
 $WTjsonDirPath = "$env:LOCALAPPDATA/Microsoft/Windows Terminal/Fragments/fount"
 if (Test-Path $WTjsonDirPath -PathType Container) {

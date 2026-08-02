@@ -1,4 +1,4 @@
-function script:Invoke-FountCmdGeneexe {
+﻿function script:Invoke-FountCmdGeneexe {
 	param([string[]]$CommandArgs)
 	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
 	$exepath = $CommandArgs[1]

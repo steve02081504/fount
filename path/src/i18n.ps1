@@ -1,4 +1,4 @@
-# --- 国际化函数 ---
+﻿# --- 国际化函数 ---
 # 获取系统区域设置
 function script:Get-SystemLocales {
 	$locales = New-Object System.Collections.Generic.List[string]

@@ -1,4 +1,4 @@
-Set-Title "𝓯𝓸𝓾𝓷𝓽"
+﻿Set-Title "𝓯𝓸𝓾𝓷𝓽"
 Write-TaskbarProgress -Percent 0
 run shutdown
 Write-TaskbarProgress -Percent 5

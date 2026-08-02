@@ -1,4 +1,4 @@
-# Remove fount installation directory
+﻿# Remove fount installation directory
 Write-Host (Get-I18n -key 'remove.removing.fount.installationDir')
 Remove-Item -Path $FOUNT_DIR -Recurse -Force -ErrorAction SilentlyContinue
 # 只要父目录为空，继续删他妈的

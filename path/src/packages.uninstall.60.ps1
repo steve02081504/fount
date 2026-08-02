@@ -1,4 +1,4 @@
-if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_git") {
+﻿if (Test-Path "$FOUNT_DIR/data/installer/auto_installed_git") {
 	Write-Host (Get-I18n -key 'remove.uninstalling.git')
 	winget uninstall --id Git.Git -e --source winget
 }

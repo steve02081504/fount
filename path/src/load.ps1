@@ -1,4 +1,4 @@
-# fount_require: idempotent dot-source loader (maps 'cmd/foo' → path/src/cmd/foo.ps1).
+﻿# fount_require: idempotent dot-source loader (maps 'cmd/foo' → path/src/cmd/foo.ps1).
 # path/src/*.ps1 exports use `function script:` (cf. esh `function global:`) so lazy loads from handlers stay visible.
 # Dot-source at script scope: . $FountRequireMany i18n terminal temp_guard
 $script:FountLoaded = @{}

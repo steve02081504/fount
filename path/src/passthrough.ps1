@@ -1,4 +1,4 @@
-# Windows: passthrough entry is fount.ps1; container detection lives in env.ps1
+﻿# Windows: passthrough entry is fount.ps1; container detection lives in env.ps1
 function script:Invoke-DockerPassthrough {
 	param (
 		[Parameter(Mandatory = $true)]

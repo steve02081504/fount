@@ -1,4 +1,4 @@
-function script:debug_on {
+﻿function script:debug_on {
 	$env:FOUNT_DEBUG = $true
 	if (Get-Command chrome -ErrorAction Ignore) {
 		$hasNodeDevtoolsWindow = Get-Process chrome -ErrorAction Ignore | Where-Object {

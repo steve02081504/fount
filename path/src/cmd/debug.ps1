@@ -1,4 +1,4 @@
-function script:Invoke-FountCmdDebug {
+﻿function script:Invoke-FountCmdDebug {
 	param([string[]]$CommandArgs)
 	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
 	$runargs = $CommandArgs[1..$CommandArgs.Count]

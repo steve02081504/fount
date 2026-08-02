@@ -1,4 +1,4 @@
-function script:deno_upgrade() {
+﻿function script:deno_upgrade() {
 	$deno_ver = deno -V
 	if (!$deno_ver) {
 		deno upgrade -q

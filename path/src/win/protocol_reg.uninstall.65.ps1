@@ -1,4 +1,4 @@
-# Remove fount protocol handler
+﻿# Remove fount protocol handler
 if (-not (Test-FountInDocker)) {
 	Write-Host (Get-I18n -key 'remove.removing.protocolHandler')
 	try {

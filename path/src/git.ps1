@@ -1,4 +1,4 @@
-# Git 安装和更新
+﻿# Git 安装和更新
 if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	Write-Host (Get-I18n -key 'git.notInstalled')
 	Test-Winget

@@ -1,4 +1,4 @@
-function script:Invoke-FountCmdShutdown {
+﻿function script:Invoke-FountCmdShutdown {
 	param([string[]]$CommandArgs)
 	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
 	try {

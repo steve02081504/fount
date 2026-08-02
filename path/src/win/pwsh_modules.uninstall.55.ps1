@@ -1,4 +1,4 @@
-# Uninstall fount-pwsh
+﻿# Uninstall fount-pwsh
 Write-Host (Get-I18n -key 'remove.uninstalling.fountPwsh')
 try {
 	Uninstall-Module -Name fount-pwsh -AllVersions -Force -ErrorAction Stop
