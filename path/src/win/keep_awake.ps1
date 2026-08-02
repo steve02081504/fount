@@ -56,7 +56,7 @@ function Write-FountTestKeepAwakeState($State) {
 	}
 	New-Item -ItemType Directory -Force -Path $dir | Out-Null
 	$payload = [ordered]@{
-		lidAc = $State.lidAc
+		lidAc   = $State.lidAc
 		holders = $holders
 	}
 	$tmp = Join-Path $dir "keep_awake.$PID.tmp"
