@@ -41,20 +41,6 @@ merge_fount_editor_keybindings() {
 	return 0
 }
 
-split_fount_editor_keybindings() {
-	local keybindings_path="$1"
-	[ -f "$keybindings_path" ] || return 0
-	command -v jq &>/dev/null || return 1
-	local filtered
-	filtered=$(jq -c 'map(select(.isfountPatch != true))' "$keybindings_path" 2>/dev/null) || return 1
-	if [ "$filtered" = "[]" ]; then
-		rm -f "$keybindings_path"
-	else
-		echo "$filtered" | jq '.' >"$keybindings_path"
-	fi
-	return 0
-}
-
 register_terminal_keybindings() {
 	if [ "$OS_TYPE" != "Linux" ] && [ "$OS_TYPE" != "Darwin" ]; then return 0; fi
 	command -v jq &>/dev/null || return 0
@@ -72,32 +58,5 @@ register_terminal_keybindings() {
 	if ! $patched; then return 0; fi
 	printf '%s\n' "${editor_paths[@]}" | jq -R . | jq -s '{editorKeybindings: ., windowsTerminalSettings: []}' >"$manifest"
 	get_i18n 'terminalKeybindings.registered'
-}
-
-unregister_terminal_keybindings() {
-	if [ "$OS_TYPE" != "Linux" ] && [ "$OS_TYPE" != "Darwin" ]; then return 0; fi
-	command -v jq &>/dev/null || return 0
-	local manifest kb_path
-	manifest=$(get_fount_terminal_keybindings_manifest_path)
-	local kb_paths=()
-	if [ -f "$manifest" ]; then
-		while IFS= read -r kb_path; do
-			[ -n "$kb_path" ] && kb_paths+=("$kb_path")
-		done < <(jq -r '.editorKeybindings[]? // empty' "$manifest" 2>/dev/null)
-	fi
-	while IFS= read -r kb_path; do
-		[ -n "$kb_path" ] || continue
-		local found=false
-		for existing in "${kb_paths[@]}"; do
-			[ "$existing" = "$kb_path" ] && found=true && break
-		done
-		$found || kb_paths+=("$kb_path")
-	done < <(get_fount_editor_keybindings_paths)
-	for kb_path in "${kb_paths[@]}"; do
-		if split_fount_editor_keybindings "$kb_path"; then
-			get_i18n 'terminalKeybindings.editorRemoved' 'path' "$kb_path"
-		fi
-	done
-	rm -f "$manifest"
 }
 

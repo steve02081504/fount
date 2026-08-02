@@ -23,18 +23,6 @@ fount_require_mid() {
 	install_deno
 }
 
-# Re-exec fount dropping the first N arguments (bash 3.2 safe)
-fount_reexec_drop() {
-	local n=$1
-	shift
-	while [ "$n" -gt 0 ]; do
-		shift
-		n=$((n - 1))
-	done
-	"$0" "$@"
-	exit $?
-}
-
 # Source uninstall hooks under FOUNT_SRC, highest level first
 fount_source_uninstall_hooks() {
 	local hook lv
