@@ -2,11 +2,11 @@
 # require: idempotent module loader
 # Assumes FOUNT_SRC is set to "$FOUNT_DIR/path/src" by the entry script.
 require() {
-	local m path marker
-	for m in "$@"; do
-		marker=$(printf '%s' "$m" | tr '/.-' '___')
+	local moduleName path marker
+	for moduleName in "$@"; do
+		marker=$(printf '%s' "$moduleName" | tr '/.-' '___')
 		eval "[ \"\${FOUNT_LOADED_${marker}:-}\" = 1 ]" && continue
-		path="$FOUNT_SRC/${m}.sh"
+		path="$FOUNT_SRC/${moduleName}.sh"
 		if [ ! -f "$path" ]; then
 			echo "require: missing $path" >&2
 			return 1
@@ -37,17 +37,17 @@ bootstrap_server() {
 
 # Source uninstall hooks under FOUNT_SRC, highest level first
 source_uninstall_hooks() {
-	local hook lv
+	local hook level
 	while IFS= read -r hook; do
 		# shellcheck disable=SC1090
 		. "$hook"
 	done < <(
 		find "$FOUNT_SRC" -name '*.uninstall.*.sh' -print0 2>/dev/null |
-			while IFS= read -r -d '' f; do
-				lv=$(basename "$f")
-				lv=${lv##*.uninstall.}
-				lv=${lv%.sh}
-				printf '%s\t%s\n' "$lv" "$f"
+			while IFS= read -r -d '' hookPath; do
+				level=$(basename "$hookPath")
+				level=${level##*.uninstall.}
+				level=${level%.sh}
+				printf '%s\t%s\n' "$level" "$hookPath"
 			done | sort -t "$(printf '\t')" -k1 -nr | cut -f2-
 	)
 }

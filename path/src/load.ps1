@@ -5,8 +5,8 @@ function script:require {
 	foreach ($Module in $args) {
 		if (-not $Module) { continue }
 		if ($script:FountLoaded[$Module]) { continue }
-		$rel = $Module -replace '/', [IO.Path]::DirectorySeparatorChar
-		$path = Join-Path $script:FOUNT_SRC "$rel.ps1"
+		$relativePath = $Module -replace '/', [IO.Path]::DirectorySeparatorChar
+		$path = Join-Path $script:FOUNT_SRC "$relativePath.ps1"
 		if (-not (Test-Path -LiteralPath $path)) {
 			Write-Error "require: missing $path"
 			exit 1
@@ -18,16 +18,16 @@ function script:require {
 
 function script:cmd_route {
 	if ($args.Count -eq 0) { return $false }
-	$cmd = $args[0]
-	if ($cmd -notmatch '^[a-z]+$') { return $false }
+	$command = $args[0]
+	if ($command -notmatch '^[a-z]+$') { return $false }
 
-	$cmdFile = Join-Path $script:FOUNT_SRC "cmd\$cmd.ps1"
-	if (-not (Test-Path -LiteralPath $cmdFile)) { return $false }
+	$commandFile = Join-Path $script:FOUNT_SRC "cmd\$command.ps1"
+	if (-not (Test-Path -LiteralPath $commandFile)) { return $false }
 
-	require "cmd/$cmd"
-	$handler = "cmd_$cmd"
+	require "cmd/$command"
+	$handler = "cmd_$command"
 	if (-not (Get-Command $handler -ErrorAction SilentlyContinue)) {
-		Write-Error "fount: missing handler $handler (cmd/$cmd.ps1)"
+		Write-Error "fount: missing handler $handler (cmd/$command.ps1)"
 		exit 1
 	}
 	& $handler @args
