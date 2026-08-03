@@ -38,9 +38,15 @@ try {
 	require passthrough
 	handle_unix_passthrough @args
 
-	if (cmd_route @args) {
-		if ($ErrorCount -ne $Error.Count) { exit 1 }
-		exit $LastExitCode
+	$cmd = $args[0]
+	if ($cmd -and $cmd -match '^[a-z]+$') {
+		$commandFile = Join-Path $script:FOUNT_SRC "cmd\$cmd.ps1"
+		if (Test-Path -LiteralPath $commandFile) {
+			. $commandFile
+			& "cmd_$cmd" @args
+			if ($ErrorCount -ne $Error.Count) { exit 1 }
+			exit $LastExitCode
+		}
 	}
 
 	require cmd/default

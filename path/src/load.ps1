@@ -16,24 +16,6 @@ function script:require {
 	}
 }
 
-function script:cmd_route {
-	if ($args.Count -eq 0) { return $false }
-	$command = $args[0]
-	if ($command -notmatch '^[a-z]+$') { return $false }
-
-	$commandFile = Join-Path $script:FOUNT_SRC "cmd\$command.ps1"
-	if (-not (Test-Path -LiteralPath $commandFile)) { return $false }
-
-	require "cmd/$command"
-	$handler = "cmd_$command"
-	if (-not (Get-Command $handler -ErrorAction SilentlyContinue)) {
-		Write-Error "fount: missing handler $handler (cmd/$command.ps1)"
-		exit 1
-	}
-	& $handler @args
-	return $true
-}
-
 function script:require_mid {
 	require env win/refresh_path win/winget win/installer_dir
 	require packages browser passthrough profile
