@@ -1,8 +1,7 @@
 ﻿# Windows: passthrough entry is fount.ps1; container detection lives in env.ps1
 function script:handle_docker_passthrough {
 	if (-not (in_docker)) { return }
-	$args = @($args | Select-Object -Skip 1)
-	fount.ps1 @args
+	fount.ps1 @($args | Select-Object -Skip 1)
 	exit $LastExitCode
 }
 

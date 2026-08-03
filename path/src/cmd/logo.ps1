@@ -4,8 +4,7 @@
 	$originalTitle = Get-Title
 	try {
 		Set-Title '𝒻ℴ𝓊𝓃𝓉 𝓵𝓸𝓰𝓸'
-		$args = @($args | Select-Object -Skip 1)
-		if ($args[0] -eq 'watch') {
+		if (@($args | Select-Object -Skip 1)[0] -eq 'watch') {
 			deno run --watch --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" $iconAnime
 		}
 		else {

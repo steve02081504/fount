@@ -14,20 +14,20 @@
 		}
 	} -ArgumentList $FOUNT_DIR | Out-Null
 
-	$args = @($args | Select-Object -Skip 1)
+	$cmdArgs = @($args | Select-Object -Skip 1)
 
 	$env:FOUNT_KEEPALIVE = 1
 	try {
 		Register-FountApplicationRestart
-		if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
-			$args = @($args | Select-Object -Skip 1)
+		if ($cmdArgs.Count -gt 0 -and $cmdArgs[0] -eq 'debug') {
+			$cmdArgs = @($cmdArgs | Select-Object -Skip 1)
 			debug_on
 		}
 		$startTime = Get-Date
 		$initAttempted = $false
 		$restart_timestamps = New-Object System.Collections.Generic.List[datetime]
 
-		& (Join-Path $FOUNT_DIR 'path/fount.ps1') server @args
+		& (Join-Path $FOUNT_DIR 'path/fount.ps1') server @cmdArgs
 		while ($LastExitCode) {
 			if ($LastExitCode -eq 130) { exit 130 } # ctrl+c
 			if ($LastExitCode -ne 131) {

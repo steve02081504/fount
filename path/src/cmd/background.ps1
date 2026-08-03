@@ -2,9 +2,9 @@
 	require passthrough win/wt
 	$env:FOUNT_BACKGROUND = 1
 	handle_docker_passthrough @args
-	$args = @($args | Select-Object -Skip 1)
+	$cmdArgs = @($args | Select-Object -Skip 1)
 	if (Test-Path -Path "$FOUNT_DIR/.nobackground") {
-		$windowsTerminalCommand = Get-WTfountCmd @args
+		$windowsTerminalCommand = Get-WTfountCmd @cmdArgs
 		Start-Process -FilePath $windowsTerminalCommand.FilePath -ArgumentList $windowsTerminalCommand.ArgumentList
 	}
 	else {
@@ -15,7 +15,7 @@
 			'-NoLogo',
 			'-ExecutionPolicy', 'Bypass',
 			'-File', $fountScript
-		) + @($args)
+		) + @($cmdArgs)
 		Start-Process -FilePath $pwshExe -ArgumentList $argList -WindowStyle Hidden
 	}
 	exit 0
