@@ -86,8 +86,7 @@ function script:Format-I18nParamValue {
 	if (-not $Script:I18nSupportsAnsi) { return $Value }
 	if (-not $Script:I18nParamAnsiColors.ContainsKey($Name)) { return $Value }
 	$escape = [char]27
-	$color = $Script:I18nParamAnsiColors[$Name]
-	return "${escape}[${color}m$Value${escape}[0m"
+	return "${escape}[$($Script:I18nParamAnsiColors[$Name])m$Value${escape}[0m"
 }
 
 function script:Format-I18nBacktickInner {
@@ -111,8 +110,7 @@ function script:Format-I18nText {
 	param([string]$Text)
 	if ($Script:I18nSupportsAnsi) {
 		return [regex]::Replace($Text, '`([^`]*)`', {
-				param($match)
-				Format-I18nBacktickInner $match.Groups[1].Value
+				Format-I18nBacktickInner $_.Groups[1].Value
 			})
 	}
 	return [regex]::Replace($Text, '`([^`]*)`', '$1')

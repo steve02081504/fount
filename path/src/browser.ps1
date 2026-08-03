@@ -19,10 +19,10 @@
 		if (-not (Get-Command chrome -ErrorAction SilentlyContinue)) {
 			$ChromeSetup = "ChromeSetup.exe"
 			Invoke-WebRequest -Uri 'https://dl.google.com/chrome/install/chrome_installer.exe' -OutFile "$env:TEMP\$ChromeSetup"
-			& "$env:TEMP\$ChromeSetup" /install
+			$installer = Start-Process -FilePath "$env:TEMP\$ChromeSetup" -ArgumentList '/install' -PassThru
 			do {
 				Start-Sleep -Seconds 2
-			} while (Get-Process -Name 'ChromeSetup' -ErrorAction SilentlyContinue)
+			} while (-not $installer.HasExited)
 			Remove-Item "$env:TEMP\$ChromeSetup" -ErrorAction SilentlyContinue
 
 			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null

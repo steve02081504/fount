@@ -11,9 +11,9 @@ fi
 
 # BSD date（macOS）不支持 %3N（毫秒），会原样输出；降级到秒精度
 fount_timestamp() {
-	local t
-	t=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ" 2>/dev/null)
-	case "$t" in *%3N*) date -u +"%Y-%m-%dT%H:%M:%SZ" ;; *) printf '%s' "$t" ;; esac
+	local timestamp
+	timestamp=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ" 2>/dev/null)
+	case "$timestamp" in *%3N*) date -u +"%Y-%m-%dT%H:%M:%SZ" ;; *) printf '%s' "$timestamp" ;; esac
 }
 FOUNT_SESSION_START_TIME=$(fount_timestamp)
 export FOUNT_SESSION_START_TIME

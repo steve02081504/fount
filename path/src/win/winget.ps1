@@ -8,12 +8,19 @@
 		try {
 			Invoke-WebRequest -Uri https://aka.ms/getwinget -OutFile "$env:TEMP/winget.msixbundle"
 			Add-AppxPackage -Path "$env:TEMP/winget.msixbundle"
-			Remove-Item "$env:TEMP/winget.msixbundle" -Force -ErrorAction SilentlyContinue
 		}
 		catch {
-			Invoke-WebRequest -Uri https://cdn.winget.microsoft.com/cache/source.msix -OutFile "$env:TEMP/winget-source.msix"
-			Add-AppxPackage -Path "$env:TEMP/winget-source.msix"
-			Remove-Item "$env:TEMP/winget-source.msix" -Force -ErrorAction SilentlyContinue
+			$wingetSource = "$env:TEMP/winget-source.msix"
+			try {
+				Invoke-WebRequest -Uri https://cdn.winget.microsoft.com/cache/source.msix -OutFile $wingetSource
+				Add-AppxPackage -Path $wingetSource
+			}
+			finally {
+				Remove-Item $wingetSource -Force -ErrorAction SilentlyContinue
+			}
+		}
+		finally {
+			Remove-Item "$env:TEMP/winget.msixbundle" -Force -ErrorAction SilentlyContinue
 		}
 	}
 	New-InstallerDir
