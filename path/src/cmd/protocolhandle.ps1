@@ -1,8 +1,7 @@
 ﻿function script:cmd_protocolhandle {
 	require passthrough win/refresh_path win/winget browser win/wt packages run
 	handle_docker_passthrough @args
-	$args = @($args | Select-Object -Skip 1)
-	$protocolUrl = $args[0]
+	$protocolUrl = @($args | Select-Object -Skip 1)[0]
 	if (-not $protocolUrl) {
 		Write-Error (Get-I18n -key 'protocol.noUrl')
 		exit 1

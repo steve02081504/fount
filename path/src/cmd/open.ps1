@@ -4,8 +4,7 @@
 		handle_docker_passthrough @args
 		Test-Browser
 		Start-Process 'https://steve02081504.github.io/fount/wait?cold_bootting=true'
-		$args = @($args | Select-Object -Skip 1)
-		fount.ps1 @args
+		fount.ps1 @($args | Select-Object -Skip 1)
 		exit $LastExitCode
 	}
 
@@ -32,10 +31,9 @@
 	}
 	$statusServerJob = Start-Job -ScriptBlock $statusServerScriptBlock
 	try {
-		$args = @($args | Select-Object -Skip 1)
 		Test-Browser
 		Start-Process 'https://steve02081504.github.io/fount/wait/install'
-		fount.ps1 @args
+		fount.ps1 @($args | Select-Object -Skip 1)
 	}
 	finally {
 		Stop-Job $statusServerJob
