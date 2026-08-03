@@ -1,4 +1,5 @@
 ﻿function script:cmd_keepalive {
+	require debug win/app_restart terminal i18n run
 	bootstrap_server @args
 	Start-Job -ScriptBlock {
 		$FOUNT_DIR = $args[0]
@@ -14,20 +15,20 @@
 		}
 	} -ArgumentList $FOUNT_DIR | Out-Null
 
-	$cmdArgs = @($args | Select-Object -Skip 1)
+	$commandArguments = @($args | Select-Object -Skip 1)
 
 	$env:FOUNT_KEEPALIVE = 1
 	try {
 		Register-FountApplicationRestart
-		if ($cmdArgs.Count -gt 0 -and $cmdArgs[0] -eq 'debug') {
-			$cmdArgs = @($cmdArgs | Select-Object -Skip 1)
+		if ($commandArguments.Count -gt 0 -and $commandArguments[0] -eq 'debug') {
+			$commandArguments = @($commandArguments | Select-Object -Skip 1)
 			debug_on
 		}
 		$startTime = Get-Date
 		$initAttempted = $false
 		$restart_timestamps = New-Object System.Collections.Generic.List[datetime]
 
-		& (Join-Path $FOUNT_DIR 'path/fount.ps1') server @cmdArgs
+		& (Join-Path $FOUNT_DIR 'path/fount.ps1') server @commandArguments
 		while ($LastExitCode) {
 			if ($LastExitCode -eq 130) { exit 130 } # ctrl+c
 			if ($LastExitCode -ne 131) {
@@ -61,6 +62,7 @@
 						exit 1
 					}
 					$initAttempted = $true
+					$startTime = Get-Date
 					Write-Host (Get-I18n -key 'keepalive.initComplete')
 				}
 			}

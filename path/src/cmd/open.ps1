@@ -36,8 +36,8 @@
 		fount.ps1 @($args | Select-Object -Skip 1)
 	}
 	finally {
-		Stop-Job $statusServerJob
-		Remove-Job $statusServerJob
+		Stop-Job $statusServerJob -ErrorAction SilentlyContinue
+		Remove-Job $statusServerJob -Force -ErrorAction SilentlyContinue
 	}
 	exit $LastExitCode
 }

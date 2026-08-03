@@ -48,7 +48,7 @@ source_uninstall_hooks() {
 				level=${level##*.uninstall.}
 				level=${level%.sh}
 				printf '%s\t%s\n' "$level" "$hookPath"
-			done | sort -t "$(printf '\t')" -k1 -nr | cut -f2-
+			done | sort -t "$(printf '\t')" -k1,1nr -k2,2 | cut -f2-
 	)
 }
 
