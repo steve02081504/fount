@@ -1,5 +1,5 @@
 ﻿function script:Register-FountBootBackground {
-	if (!$IsWindows -or (Test-FountInContainer)) { return }
+	if (!$IsWindows -or (Test-InContainer)) { return }
 	if (Test-Path "$FOUNT_DIR/.noautoboot") { return }
 	try {
 		$shellExe = if (Get-Command pwsh -ErrorAction SilentlyContinue) {

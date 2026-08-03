@@ -60,19 +60,19 @@ get_title() {
 	) 2>/dev/null
 }
 
-fount_trap_taskbar_clear() {
+trap_taskbar_clear() {
 	trap 'write_taskbar_progress_clear' EXIT INT TERM
 }
 
 # Restore title + clear taskbar progress on EXIT/INT/TERM
-fount_trap_terminal_teardown() {
-	local _fount_saved_title
-	_fount_saved_title=$(get_title)
+trap_terminal_teardown() {
+	local _saved_title
+	_saved_title=$(get_title)
 	# shellcheck disable=SC2329
-	_fount_terminal_teardown() {
+	_terminal_teardown() {
 		write_taskbar_progress_clear
-		set_title "$_fount_saved_title"
+		set_title "$_saved_title"
 	}
-	trap '_fount_terminal_teardown' EXIT INT TERM
+	trap '_terminal_teardown' EXIT INT TERM
 }
 

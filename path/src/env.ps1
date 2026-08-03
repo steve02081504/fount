@@ -8,7 +8,7 @@
 Set-MissingVariablesForWindowsPowershell
 
 Start-Job -ScriptBlock {
-	param($FOUNT_DIR)
+	$FOUNT_DIR = $args[0]
 	if ((Get-Culture).Name -match '-(CN|KP|RU)$') {
 		# 随手之劳之经验医学之clash的tun没开
 		if ((Test-Connection "github.com", "cdn.jsdelivr.net" -Count 1 -Quiet -ErrorAction SilentlyContinue) -contains $false) {
@@ -18,9 +18,9 @@ Start-Job -ScriptBlock {
 	}
 } -ArgumentList $FOUNT_DIR | Out-Null
 
-function script:Test-FountInDocker { $false }
-function script:Test-FountInTermux { $false }
-function script:Test-FountInContainer { (Test-FountInDocker) -or (Test-FountInTermux) }
+function script:Test-InDocker { $false }
+function script:Test-InTermux { $false }
+function script:Test-InContainer { (Test-InDocker) -or (Test-InTermux) }
 
 # fount 路径设置
 if (!(Get-Command fount.ps1 -ErrorAction SilentlyContinue)) {

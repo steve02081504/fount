@@ -1,8 +1,7 @@
 ﻿function script:Invoke-FountCmdKeepalive {
-	param([string[]]$CommandArgs)
-	Invoke-FountBootstrapServer -CommandArgs $CommandArgs
+	Invoke-FountBootstrapServer @args
 	Start-Job -ScriptBlock {
-		param($FOUNT_DIR)
+		$FOUNT_DIR = $args[0]
 		if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
 			$qualifier = Split-Path -Qualifier $FOUNT_DIR
 			if ($qualifier) {
@@ -15,7 +14,7 @@
 		}
 	} -ArgumentList $FOUNT_DIR | Out-Null
 
-	$runargs = $CommandArgs[1..$CommandArgs.Count]
+	$runargs = $args[1..$args.Count]
 
 	$env:FOUNT_KEEPALIVE = 1
 	try {

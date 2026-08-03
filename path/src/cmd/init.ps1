@@ -1,10 +1,9 @@
 ﻿function script:Invoke-FountCmdInit {
-	param([string[]]$CommandArgs)
-	if ($CommandArgs[1] -eq 'force') {
-		. $FountRequireMany fs init_force
-		exit (Invoke-FountInitForce -FountDir $FOUNT_DIR)
+	if ($args[1] -eq 'force') {
+		RequireMany fs init_force
+		exit (Invoke-FountInitForce $FOUNT_DIR)
 	}
-	Invoke-FountBootstrapFull -CommandArgs @('init')
+	Invoke-FountBootstrapFull init
 	Write-TaskbarProgressClear
 	exit 0
 }

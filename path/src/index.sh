@@ -10,15 +10,15 @@ if [ -z "${FOUNT_DIR:-}" ]; then
 fi
 
 # BSD date（macOS）不支持 %3N（毫秒），会原样输出；降级到秒精度
-fount_timestamp() {
+timestamp() {
 	local timestamp
 	timestamp=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ" 2>/dev/null)
 	case "$timestamp" in *%3N*) date -u +"%Y-%m-%dT%H:%M:%SZ" ;; *) printf '%s' "$timestamp" ;; esac
 }
-FOUNT_SESSION_START_TIME=$(fount_timestamp)
+FOUNT_SESSION_START_TIME=$(timestamp)
 export FOUNT_SESSION_START_TIME
 if [ -z "$FOUNT_START_TIME" ]; then
-	FOUNT_START_TIME=$(fount_timestamp)
+	FOUNT_START_TIME=$(timestamp)
 fi
 export FOUNT_START_TIME
 
@@ -31,7 +31,7 @@ fi
 # shellcheck disable=SC1091
 . "$FOUNT_SRC/load.sh"
 
-fount_require i18n terminal temp_guard env packages profile
+require i18n terminal temp_guard env packages profile
 load_installed_packages
 ensure_fount_path
 
@@ -47,11 +47,11 @@ cmd="${1:-}"
 if [ -n "$cmd" ] && [[ "$cmd" =~ ^[a-z]+$ ]] && [ -f "$FOUNT_SRC/cmd/${cmd}.sh" ]; then
 	# shellcheck disable=SC1090
 	. "$FOUNT_SRC/cmd/${cmd}.sh"
-	"fount_cmd_${cmd}" "$@"
+	"cmd_${cmd}" "$@"
 	exit $?
 fi
 
 # shellcheck disable=SC1091
 . "$FOUNT_SRC/cmd/default.sh"
-fount_cmd_default "$@"
+cmd_default "$@"
 exit $?

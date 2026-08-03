@@ -24,8 +24,8 @@ run() {
 	write_taskbar_progress 5
 	original_title=$(get_title)
 	set_title ""
-	fount_require unix/termux
-	fount_termux_run_setup
+	require unix/termux
+	termux_run_setup
 	local v8_flags=""
 	if [[ -n "$FOUNT_V8_FLAGS" ]]; then
 		v8_flags="$FOUNT_V8_FLAGS"
@@ -46,10 +46,10 @@ run() {
 	fi
 	write_taskbar_progress 10
 	if [ -z "$FOUNT_START_TIME" ]; then
-		FOUNT_START_TIME=$(fount_timestamp)
+		FOUNT_START_TIME=$(timestamp)
 	fi
 	export FOUNT_START_TIME
-	FOUNT_DENO_START_TIME=$(fount_timestamp)
+	FOUNT_DENO_START_TIME=$(timestamp)
 	export FOUNT_DENO_START_TIME
 	write_taskbar_progress 25
 	set_title "𝓯"
@@ -77,7 +77,7 @@ run() {
 	if [ "$exit_code" -ne 0 ] && [ "$exit_code" -ne 130 ] && [ "$exit_code" -ne 131 ]; then
 		write_taskbar_progress_error
 	fi
-	fount_termux_run_teardown
+	termux_run_teardown
 	return $exit_code
 }
 

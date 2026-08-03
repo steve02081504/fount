@@ -1,6 +1,7 @@
-﻿function script:Get-WTfountCmd($ArgumentList = @()) {
+﻿function script:Get-WTfountCmd {
+	$extra = $args -join ' '
 	$FilePath = "powershell.exe"
-	$ArgumentList = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" $ArgumentList"
+	$ArgumentList = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" $extra"
 	if (Get-AppxPackage -Name "Microsoft.WindowsTerminal") {
 		if (!(Test-Path -Path "$FOUNT_DIR/node_modules")) {
 			Register-FountTerminalProfile
@@ -14,9 +15,8 @@
 	}
 }
 
-function script:Start-WTfountCmd($ArgumentList = @()) {
-	$cmd = Get-WTfountCmd @args
-	Start-Process @cmd
+function script:Start-WTfountCmd {
+	Start-Process @(Get-WTfountCmd @args)
 }
 
 function script:Register-FountTerminalProfile {

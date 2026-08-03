@@ -1,7 +1,6 @@
 ﻿function script:Invoke-FountCmdDebug {
-	param([string[]]$CommandArgs)
-	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
-	$runargs = $CommandArgs[1..$CommandArgs.Count]
+	Invoke-FountBootstrapFull @args
+	$runargs = $args[1..$args.Count]
 	try {
 		& (Join-Path $FOUNT_DIR 'path/fount.ps1') keepalive debug @runargs
 	}

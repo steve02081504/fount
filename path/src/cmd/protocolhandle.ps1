@@ -1,8 +1,7 @@
 ﻿function script:Invoke-FountCmdProtocolhandle {
-	param([string[]]$CommandArgs)
-	. $FountRequireMany passthrough win/refresh_path win/winget browser win/wt packages run
-	Invoke-DockerPassthrough -CurrentArgs $CommandArgs
-	$protocolUrl = $CommandArgs[1]
+	RequireMany passthrough win/refresh_path win/winget browser win/wt packages run
+	Invoke-DockerPassthrough -CurrentArgs $args
+	$protocolUrl = $args[1]
 	if (-not $protocolUrl) {
 		Write-Error (Get-I18n -key 'protocol.noUrl')
 		exit 1
@@ -16,7 +15,7 @@
 
 	Test-PWSHModule fount-pwsh
 	Start-Job -ScriptBlock {
-		param ($targetUrl)
+		$targetUrl = $args[0]
 		Test-Browser
 		while (-not (Test-FountRunning)) {
 			Start-Sleep -Seconds 1

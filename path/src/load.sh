@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# fount_require: idempotent module loader
+# require: idempotent module loader
 # Assumes FOUNT_SRC is set to "$FOUNT_DIR/path/src" by the entry script.
-fount_require() {
+require() {
 	local m path marker
 	for m in "$@"; do
 		marker=$(printf '%s' "$m" | tr '/.-' '___')
 		eval "[ \"\${FOUNT_LOADED_${marker}:-}\" = 1 ]" && continue
 		path="$FOUNT_SRC/${m}.sh"
 		if [ ! -f "$path" ]; then
-			echo "fount_require: missing $path" >&2
+			echo "require: missing $path" >&2
 			return 1
 		fi
 		# shellcheck disable=SC1090
@@ -18,25 +18,25 @@ fount_require() {
 }
 
 # Runtime modules: deno, run, git, desktop hooks, … (no first-install pass)
-fount_require_mid() {
-	fount_require unix/sed git update fs run debug desktop boot keybindings deno first_install
+require_mid() {
+	require unix/sed git update fs run debug desktop boot keybindings deno first_install
 	install_deno
 }
 
-fount_bootstrap_full() {
-	fount_require_mid
+bootstrap_full() {
+	require_mid
 	fount_first_install_if_needed "$@"
 }
 
-fount_bootstrap_server() {
-	fount_bootstrap_full "$@"
+bootstrap_server() {
+	bootstrap_full "$@"
 	assert_fount_dir_writable "$FOUNT_DIR"
 	update_fount_and_deno
 	run_deno -V
 }
 
 # Source uninstall hooks under FOUNT_SRC, highest level first
-fount_source_uninstall_hooks() {
+source_uninstall_hooks() {
 	local hook lv
 	while IFS= read -r hook; do
 		# shellcheck disable=SC1090

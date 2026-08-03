@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-fount_cmd_default() {
-	fount_bootstrap_full "$@"
-	fount_trap_terminal_teardown
+cmd_default() {
+	bootstrap_full "$@"
+	trap_terminal_teardown
 	if [ "$1" ]; then
 		run "$@"
 		exit $?
-	elif fount_in_container; then
+	elif in_container; then
 		"$0" keepalive "$@"
 		exit $?
 	fi

@@ -7,8 +7,7 @@
 	}
 }
 
-function script:Test-FountDirWritable {
-	param([string]$dir)
+function script:Test-DirWritable($dir) {
 	if (-not (Test-Path $dir)) {
 		try { New-Item -Path $dir -ItemType Directory -Force -ErrorAction Stop | Out-Null } catch { return $false }
 	}
@@ -53,9 +52,8 @@ public static class FountDirAccessCheck {
 	} catch { return $false }
 }
 
-function script:Assert-FountDirWritable {
-	param([string]$dir)
-	if (-not (Test-FountDirWritable $dir)) {
+function script:Assert-DirWritable($dir) {
+	if (-not (Test-DirWritable $dir)) {
 		if (isRoot) {
 			Write-Error (Get-I18n -key 'install.permissionDeniedAsRoot' -params @{path = $dir })
 		} else {

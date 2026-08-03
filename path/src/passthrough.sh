@@ -3,7 +3,7 @@
 # These functions shift their own $1 (command name) before re-invoking $0.
 
 handle_docker_passthrough() {
-	if fount_in_docker; then
+	if in_docker; then
 		shift
 		"$0" "$@"
 		exit $?
@@ -11,7 +11,7 @@ handle_docker_passthrough() {
 }
 
 handle_docker_termux_passthrough() {
-	if fount_in_container; then
+	if in_container; then
 		shift
 		"$0" "$@"
 		exit $?

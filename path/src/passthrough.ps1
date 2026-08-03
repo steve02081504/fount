@@ -4,7 +4,7 @@ function script:Invoke-DockerPassthrough {
 		[Parameter(Mandatory = $true)]
 		[string[]]$CurrentArgs
 	)
-	if (Test-FountInDocker) {
+	if (Test-InDocker) {
 		$nestedArgs = $CurrentArgs[1..$CurrentArgs.Count]
 		fount.ps1 @nestedArgs
 		exit $LastExitCode
@@ -12,13 +12,8 @@ function script:Invoke-DockerPassthrough {
 }
 
 function script:Invoke-FountUnixPassthrough {
-	param([string[]]$CommandArgs)
 	if (!$IsWindows) {
-		function install_package {
-			param(
-				[string]$CommandName,
-				[string[]]$PackageNames
-			)
+		function install_package($CommandName, [string[]]$PackageNames) {
 			if ((Get-Command -Name $CommandName -ErrorAction Ignore)) { return $true }
 
 			$hasSudo = (Get-Command -Name "sudo" -ErrorAction Ignore)
@@ -80,7 +75,7 @@ function script:Invoke-FountUnixPassthrough {
 			}
 		}
 		install_package "bash" @("bash", "gnu-bash")
-		bash $FOUNT_DIR/path/fount.sh @CommandArgs
+		bash $FOUNT_DIR/path/fount.sh @args
 		exit $LastExitCode
 	}
 }

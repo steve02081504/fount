@@ -1,11 +1,10 @@
 ﻿function script:Invoke-FountCmdBackground {
-	param([string[]]$CommandArgs)
-	. $FountRequireMany passthrough win/wt
+	RequireMany passthrough win/wt
 	$env:FOUNT_BACKGROUND = 1
-	Invoke-DockerPassthrough -CurrentArgs $CommandArgs
-	$runargs = $CommandArgs[1..$CommandArgs.Count]
+	Invoke-DockerPassthrough -CurrentArgs $args
+	$runargs = $args[1..$args.Count]
 	if (Test-Path -Path "$FOUNT_DIR/.nobackground") {
-		$windowsTerminalCommand = Get-WTfountCmd -ArgumentList $runargs
+		$windowsTerminalCommand = Get-WTfountCmd @runargs
 		Start-Process -FilePath $windowsTerminalCommand.FilePath -ArgumentList $windowsTerminalCommand.ArgumentList
 	}
 	else {

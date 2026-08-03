@@ -1,8 +1,7 @@
 ﻿function script:Invoke-FountCmdReboot {
-	param([string[]]$CommandArgs)
-	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
+	Invoke-FountBootstrapFull @args
 	try {
-		run @CommandArgs
+		run @args
 	}
 	finally {
 		Write-TaskbarProgressClear

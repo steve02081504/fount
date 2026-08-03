@@ -19,8 +19,8 @@
 
 	$upgradedFlag = Join-Path $FOUNT_DIR 'data/installer/deno_upgraded'
 	if (Test-Path $upgradedFlag) {
-		Start-Job -ScriptBlock { # 因为需要兼容 windows powershell，所以不能像是sh中一样定义和复用base_deno_update
-			param($deno_update_channel)
+		Start-Job -ScriptBlock {
+			$deno_update_channel = $args[0]
 			. { deno upgrade -q $deno_update_channel } -ErrorVariable errorOut
 			if ($LastExitCode) {
 				if ($errorOut.tostring().Contains("USAGE")) { # wtf deno 1.0?

@@ -16,7 +16,7 @@ function script:Test-PWSHModule([string]$ModuleName) {
 
 # 新建一个背景job用于后台更新所需的pwsh模块
 Start-Job -ScriptBlock {
-	param($FOUNT_DIR)
+	$FOUNT_DIR = $args[0]
 	@('ps12exe', 'fount-pwsh') | ForEach-Object {
 		# 先获取本地模块的版本号，若是0.0.0则跳过更新（开发版本）
 		$localVersion = [System.Version]::new(0, 0, 0)

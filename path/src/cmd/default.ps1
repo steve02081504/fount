@@ -1,19 +1,18 @@
 ﻿function script:Invoke-FountCmdDefault {
-	param([string[]]$CommandArgs)
-	. $FountRequireMany terminal env run
-	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
+	RequireMany terminal env run
+	Invoke-FountBootstrapFull @args
 	$originalTitle = Get-Title
 	try {
-		if ($CommandArgs[0]) {
-			run @CommandArgs
+		if ($args[0]) {
+			run @args
 		}
-		elseif (Test-FountInContainer) {
-			& (Join-Path $FOUNT_DIR 'path/fount.ps1') keepalive @CommandArgs
+		elseif (Test-InContainer) {
+			& (Join-Path $FOUNT_DIR 'path/fount.ps1') keepalive @args
 		}
 		else {
 			Write-TaskbarProgress -Percent 25
 			Set-Title "𝓯"
-			& (Join-Path $FOUNT_DIR 'path/fount.ps1') background keepalive @CommandArgs
+			& (Join-Path $FOUNT_DIR 'path/fount.ps1') background keepalive @args
 			Set-Title "𝓯𝓸"
 			Write-TaskbarProgress
 			& (Join-Path $FOUNT_DIR 'path/fount.ps1') log

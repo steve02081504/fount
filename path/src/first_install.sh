@@ -14,7 +14,7 @@ fount_first_install_if_needed() {
 		get_i18n 'install.installingDependencies'
 		run_deno install --prod --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs" || return 1
 		write_taskbar_progress 85
-		if ! fount_in_container; then
+		if ! in_container; then
 			create_desktop_shortcut || return 1
 			register_boot_background || return 1
 			register_terminal_keybindings || return 1

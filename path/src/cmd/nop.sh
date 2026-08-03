@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-fount_cmd_nop() {
+cmd_nop() {
 	exit 0
 }

@@ -22,9 +22,9 @@ fi
 OS_TYPE="$(uname -s)"
 export OS_TYPE
 
-fount_in_docker() { [ "$IN_DOCKER" -eq 1 ]; }
-fount_in_termux() { [ "$IN_TERMUX" -eq 1 ]; }
-fount_in_container() { fount_in_docker || fount_in_termux; }
+in_docker() { [ "$IN_DOCKER" -eq 1 ]; }
+in_termux() { [ "$IN_TERMUX" -eq 1 ]; }
+in_container() { in_docker || in_termux; }
 
 # Installer data paths (exported for packages.sh / deno.sh / uninstall hooks)
 export INSTALLER_DATA_DIR="$FOUNT_DIR/data/installer"

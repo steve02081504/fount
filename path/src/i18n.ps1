@@ -27,12 +27,7 @@ function script:Get-AvailableLocales {
 }
 
 # 寻找最合适的区域设置
-function script:Get-BestLocale {
-	param(
-		[string[]]$preferredLocales,
-		[string[]]$availableLocales
-	)
-
+function script:Get-BestLocale($preferredLocales, $availableLocales) {
 	foreach ($preferred in $preferredLocales) {
 		if ($availableLocales -contains $preferred) {
 			return $preferred
@@ -78,19 +73,14 @@ $Script:I18nParamAnsiColors = @{
 	branch = 33
 }
 
-function script:Format-I18nParamValue {
-	param(
-		[string]$Name,
-		[string]$Value
-	)
+function script:Format-I18nParamValue($Name, $Value) {
 	if (-not $Script:I18nSupportsAnsi) { return $Value }
 	if (-not $Script:I18nParamAnsiColors.ContainsKey($Name)) { return $Value }
 	$escape = [char]27
 	return "${escape}[$($Script:I18nParamAnsiColors[$Name])m$Value${escape}[0m"
 }
 
-function script:Format-I18nBacktickInner {
-	param([string]$Inner)
+function script:Format-I18nBacktickInner([string]$Inner) {
 	if (-not $Script:I18nSupportsAnsi) { return $Inner }
 	$escape = [char]27
 	$magenta = "${escape}[35m"; $blue = "${escape}[34m"; $yellow = "${escape}[33m"; $cyan = "${escape}[36m"; $reset = "${escape}[0m"
@@ -106,8 +96,7 @@ function script:Format-I18nBacktickInner {
 	}
 }
 
-function script:Format-I18nText {
-	param([string]$Text)
+function script:Format-I18nText([string]$Text) {
 	if ($Script:I18nSupportsAnsi) {
 		return [regex]::Replace($Text, '`([^`]*)`', {
 				param($Match)
@@ -117,12 +106,7 @@ function script:Format-I18nText {
 	return [regex]::Replace($Text, '`([^`]*)`', '$1')
 }
 
-function script:Get-I18n {
-	param(
-		[string]$key,
-		[hashtable]$params = @{}
-	)
-
+function script:Get-I18n($key, [hashtable]$params = @{}) {
 	if ($null -eq $Script:FountLocaleData) {
 		$Script:FountLocaleData = Import-LocaleData
 	}

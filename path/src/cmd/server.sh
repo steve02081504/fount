@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-fount_cmd_server() {
-	fount_bootstrap_server "$@"
-	fount_trap_taskbar_clear
+cmd_server() {
+	bootstrap_server "$@"
+	trap_taskbar_clear
 	shift
 	if [ "$1" = "debug" ]; then
 		debug_on

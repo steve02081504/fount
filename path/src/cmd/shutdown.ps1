@@ -1,8 +1,7 @@
 ﻿function script:Invoke-FountCmdShutdown {
-	param([string[]]$CommandArgs)
-	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
+	Invoke-FountBootstrapFull @args
 	try {
-		run @CommandArgs
+		run @args
 	}
 	finally {
 		Write-TaskbarProgressClear

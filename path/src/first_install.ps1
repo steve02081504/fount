@@ -1,15 +1,14 @@
 ﻿function script:Invoke-FountFirstInstall {
-	param([string[]]$CommandArgs)
-	if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $CommandArgs[0] -eq 'init') {
+	if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $args[0] -eq 'init') {
 		if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {
 			if (Get-Command git -ErrorAction Ignore) {
-				Invoke-GitForFount config core.autocrlf false
-				$hasHead = Test-FountGitRef
-				Invoke-GitForFount fetch origin 2>$null
+				Invoke-RepoGit config core.autocrlf false
+				$hasHead = Test-GitRef
+				Invoke-RepoGit fetch origin 2>$null
 				$fetchOk = ($LastExitCode -eq 0)
-				if ((Test-FountGitRef 'origin/master') -and ($hasHead -or $fetchOk)) {
-					if (Sync-FountGitToRef 'origin/master') {
-						Invoke-GitForFount gc --aggressive --prune=now --force
+				if ((Test-GitRef 'origin/master') -and ($hasHead -or $fetchOk)) {
+					if (Sync-GitToRef 'origin/master') {
+						Invoke-RepoGit gc --aggressive --prune=now --force
 					}
 				}
 				elseif (-not $fetchOk) {
@@ -55,6 +54,6 @@
 		Register-FountTerminalKeybindings
 		Register-FountBootBackground
 
-		Invoke-FountExplorerRefresh
+		Invoke-ExplorerRefresh
 	}
 }

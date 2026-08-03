@@ -1,10 +1,10 @@
 ﻿$script:TaskbarProgressEnabled = $Host.UI.SupportsVirtualTerminal -and -not [System.Console]::IsOutputRedirected
 $script:TaskbarProgressEsc = [char]27
 $script:TaskbarProgressBel = [char]7
-function script:Write-TaskbarProgress([int]$Percent) {
+function script:Write-TaskbarProgress {
 	if (-not $script:TaskbarProgressEnabled) { return }
-	if ($PSBoundParameters.ContainsKey('Percent')) {
-		$p = [Math]::Max(0, [Math]::Min(100, $Percent))
+	if ($args.Count -gt 0) {
+		$p = [Math]::Max(0, [Math]::Min(100, $args[0]))
 		Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;1;$p" + $script:TaskbarProgressBel)
 	}
 	else {

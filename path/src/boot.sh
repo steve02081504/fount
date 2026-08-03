@@ -2,7 +2,7 @@
 # Login autostart for background keepalive
 
 register_boot_background() {
-	if fount_in_container; then
+	if in_container; then
 		return 0
 	fi
 	if [ -f "$FOUNT_DIR/.noautoboot" ]; then

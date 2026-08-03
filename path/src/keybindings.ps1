@@ -14,16 +14,16 @@ $script:FountEditorTerminalKeyPatches = @(
 	}
 )
 
-function script:Get-FountTerminalKeybindingsManifestPath {
+function script:Get-TerminalKeybindingsManifestPath {
 	Join-Path $FOUNT_DIR 'data/installer/terminal_keybindings.json'
 }
 
-function script:Write-FountUtf8NoBom([string]$Path, [string]$Content) {
+function script:Write-Utf8NoBom([string]$Path, [string]$Content) {
 	$utf8 = New-Object System.Text.UTF8Encoding $false
 	[System.IO.File]::WriteAllText($Path, $Content, $utf8)
 }
 
-function script:Get-FountWindowsTerminalSettingsPaths {
+function script:Get-WindowsTerminalSettingsPaths {
 	$paths = [System.Collections.Generic.List[string]]::new()
 	$localAppData = $env:LOCALAPPDATA
 	if (-not $localAppData) { return @() }
@@ -40,7 +40,7 @@ function script:Get-FountWindowsTerminalSettingsPaths {
 	return $paths | Select-Object -Unique
 }
 
-function script:Get-FountEditorKeybindingsPaths {
+function script:Get-EditorKeybindingsPaths {
 	$paths = [System.Collections.Generic.List[string]]::new()
 	if ($env:APPDATA) {
 		foreach ($editor in @('Cursor', 'Code', 'VSCodium')) {
@@ -53,11 +53,11 @@ function script:Get-FountEditorKeybindingsPaths {
 	return $paths | Select-Object -Unique
 }
 
-function script:Test-FountIsFountPatchEntry($Entry) {
+function script:Test-IsFountPatchEntry($Entry) {
 	$Entry.PSObject.Properties['isfountPatch'] -and $Entry.isfountPatch -eq $true
 }
 
-function script:Remove-FountWtJsonBlocks([string]$Raw, [string]$Id) {
+function script:Remove-WtJsonBlocks([string]$Raw, [string]$Id) {
 	$escaped = [regex]::Escape($Id)
 	$actionPat = '(?ms)\s*\{\s*"command"\s*:\s*\{(?:[^{}]|\{[^{}]*\})*\}\s*,\s*"id"\s*:\s*"' + $escaped + '"\s*\},?\s*'
 	$kbPatIdFirst = '(?ms)\s*\{\s*"id"\s*:\s*"' + $escaped + '"\s*,\s*"keys"\s*:\s*"[^"]*"\s*\},?\s*'
@@ -65,7 +65,7 @@ function script:Remove-FountWtJsonBlocks([string]$Raw, [string]$Id) {
 	$Raw -replace $actionPat, "`n" -replace $kbPatIdFirst, "`n" -replace $kbPatKeysFirst, "`n"
 }
 
-function script:Merge-FountWindowsTerminalSettings([string]$SettingsPath) {
+function script:Merge-WindowsTerminalSettings([string]$SettingsPath) {
 	if (-not (Test-Path $SettingsPath)) { return $false }
 	try {
 		$raw = Get-Content $SettingsPath -Raw -Encoding UTF8
@@ -83,7 +83,7 @@ function script:Merge-FountWindowsTerminalSettings([string]$SettingsPath) {
 	$changed = $false
 	foreach ($patch in $script:FountTerminalKeyPatches) {
 		$before = $raw
-		$raw = Remove-FountWtJsonBlocks $raw $patch.Id
+		$raw = Remove-WtJsonBlocks $raw $patch.Id
 		# InputJson 为 WT 字面量 \u001b…；用 %% 占位符注入，避免 -f/双引号把 [13;2u] 吃掉。
 		$actionTpl = @'
         {
@@ -113,25 +113,25 @@ function script:Merge-FountWindowsTerminalSettings([string]$SettingsPath) {
 	}
 
 	if (-not $changed) { return $true }
-	Write-FountUtf8NoBom $SettingsPath $raw
+	Write-Utf8NoBom $SettingsPath $raw
 	return $true
 }
 
-function script:Split-FountWindowsTerminalSettings([string]$SettingsPath) {
+function script:Split-WindowsTerminalSettings([string]$SettingsPath) {
 	if (-not (Test-Path $SettingsPath)) { return $false }
 	try { $raw = Get-Content $SettingsPath -Raw -Encoding UTF8 }
 	catch { return $false }
 
 	$before = $raw
 	foreach ($patch in $script:FountTerminalKeyPatches) {
-		$raw = Remove-FountWtJsonBlocks $raw $patch.Id
+		$raw = Remove-WtJsonBlocks $raw $patch.Id
 	}
 	if ($before -eq $raw) { return $true }
-	Write-FountUtf8NoBom $SettingsPath $raw
+	Write-Utf8NoBom $SettingsPath $raw
 	return $true
 }
 
-function script:Read-FountEditorKeybindings([string]$Path) {
+function script:Read-EditorKeybindings([string]$Path) {
 	if (-not (Test-Path $Path)) { return @() }
 	try {
 		$parsed = Get-Content $Path -Raw -Encoding UTF8 | ConvertFrom-Json -Depth 20
@@ -142,13 +142,13 @@ function script:Read-FountEditorKeybindings([string]$Path) {
 	return @()
 }
 
-function script:Merge-FountEditorKeybindings([string]$KeybindingsPath) {
+function script:Merge-EditorKeybindings([string]$KeybindingsPath) {
 	$entries = [System.Collections.Generic.List[object]]::new()
-	Read-FountEditorKeybindings $KeybindingsPath | ForEach-Object { $entries.Add($_) }
+	Read-EditorKeybindings $KeybindingsPath | ForEach-Object { $entries.Add($_) }
 
 	$changed = $false
 	for ($i = $entries.Count - 1; $i -ge 0; $i--) {
-		if (Test-FountIsFountPatchEntry $entries[$i]) {
+		if (Test-IsFountPatchEntry $entries[$i]) {
 			$entries.RemoveAt($i); $changed = $true
 		}
 	}
@@ -167,17 +167,17 @@ function script:Merge-FountEditorKeybindings([string]$KeybindingsPath) {
 	if (-not $changed) { return $true }
 	$parent = Split-Path $KeybindingsPath -Parent
 	if (-not (Test-Path $parent)) { New-Item -ItemType Directory -Force -Path $parent | Out-Null }
-	Write-FountUtf8NoBom $KeybindingsPath ("[$([string]::Join(',' + [Environment]::NewLine, ($entries | ForEach-Object { $_ | ConvertTo-Json -Depth 10 -Compress })))$(if ($entries.Count) { [Environment]::NewLine })]")
+	Write-Utf8NoBom $KeybindingsPath ("[$([string]::Join(',' + [Environment]::NewLine, ($entries | ForEach-Object { $_ | ConvertTo-Json -Depth 10 -Compress })))$(if ($entries.Count) { [Environment]::NewLine })]")
 	return $true
 }
 
-function script:Split-FountEditorKeybindings([string]$KeybindingsPath) {
+function script:Split-EditorKeybindings([string]$KeybindingsPath) {
 	if (-not (Test-Path $KeybindingsPath)) { return $false }
 	$entries = [System.Collections.Generic.List[object]]::new()
-	Read-FountEditorKeybindings $KeybindingsPath | ForEach-Object { $entries.Add($_) }
+	Read-EditorKeybindings $KeybindingsPath | ForEach-Object { $entries.Add($_) }
 	$changed = $false
 	for ($i = $entries.Count - 1; $i -ge 0; $i--) {
-		if (Test-FountIsFountPatchEntry $entries[$i]) {
+		if (Test-IsFountPatchEntry $entries[$i]) {
 			$entries.RemoveAt($i); $changed = $true
 		}
 	}
@@ -186,7 +186,7 @@ function script:Split-FountEditorKeybindings([string]$KeybindingsPath) {
 		Remove-Item $KeybindingsPath -Force -ErrorAction SilentlyContinue
 		return $true
 	}
-	Write-FountUtf8NoBom $KeybindingsPath ("[$([string]::Join(',' + [Environment]::NewLine, ($entries | ForEach-Object { $_ | ConvertTo-Json -Depth 10 -Compress })))$(if ($entries.Count) { [Environment]::NewLine })]")
+	Write-Utf8NoBom $KeybindingsPath ("[$([string]::Join(',' + [Environment]::NewLine, ($entries | ForEach-Object { $_ | ConvertTo-Json -Depth 10 -Compress })))$(if ($entries.Count) { [Environment]::NewLine })]")
 	return $true
 }
 
@@ -199,28 +199,28 @@ function script:Register-FountTerminalKeybindings {
 	}
 	$patched = $false
 
-	foreach ($wtPath in Get-FountWindowsTerminalSettingsPaths) {
-		if (Merge-FountWindowsTerminalSettings $wtPath) {
+	foreach ($wtPath in Get-WindowsTerminalSettingsPaths) {
+		if (Merge-WindowsTerminalSettings $wtPath) {
 			$manifest.windowsTerminalSettings += $wtPath
 			$patched = $true
 		}
 	}
-	foreach ($kbPath in Get-FountEditorKeybindingsPaths) {
-		if (Merge-FountEditorKeybindings $kbPath) {
+	foreach ($kbPath in Get-EditorKeybindingsPaths) {
+		if (Merge-EditorKeybindings $kbPath) {
 			$manifest.editorKeybindings += $kbPath
 			$patched = $true
 		}
 	}
 
 	if ($patched) {
-		Write-FountUtf8NoBom (Get-FountTerminalKeybindingsManifestPath) ($manifest | ConvertTo-Json -Depth 10)
+		Write-Utf8NoBom (Get-TerminalKeybindingsManifestPath) ($manifest | ConvertTo-Json -Depth 10)
 		Write-Host (Get-I18n -key 'terminalKeybindings.registered')
 	}
 }
 
 function script:Unregister-FountTerminalKeybindings {
 	if (-not $IsWindows) { return }
-	$manifestPath = Get-FountTerminalKeybindingsManifestPath
+	$manifestPath = Get-TerminalKeybindingsManifestPath
 	$wtPaths = [System.Collections.Generic.List[string]]::new()
 	$kbPaths = [System.Collections.Generic.List[string]]::new()
 
@@ -233,16 +233,16 @@ function script:Unregister-FountTerminalKeybindings {
 		catch { <# ignore #> }
 	}
 
-	Get-FountWindowsTerminalSettingsPaths | ForEach-Object { if ($wtPaths -notcontains $_) { $wtPaths.Add($_) } }
-	Get-FountEditorKeybindingsPaths | ForEach-Object { if ($kbPaths -notcontains $_) { $kbPaths.Add($_) } }
+	Get-WindowsTerminalSettingsPaths | ForEach-Object { if ($wtPaths -notcontains $_) { $wtPaths.Add($_) } }
+	Get-EditorKeybindingsPaths | ForEach-Object { if ($kbPaths -notcontains $_) { $kbPaths.Add($_) } }
 
 	foreach ($wtPath in $wtPaths) {
-		if (Split-FountWindowsTerminalSettings $wtPath) {
+		if (Split-WindowsTerminalSettings $wtPath) {
 			Write-Host (Get-I18n -key 'terminalKeybindings.wtRemoved' -params @{ path = $wtPath })
 		}
 	}
 	foreach ($kbPath in $kbPaths) {
-		if (Split-FountEditorKeybindings $kbPath) {
+		if (Split-EditorKeybindings $kbPath) {
 			Write-Host (Get-I18n -key 'terminalKeybindings.editorRemoved' -params @{ path = $kbPath })
 		}
 	}

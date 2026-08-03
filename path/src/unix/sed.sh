@@ -8,6 +8,6 @@ run_sed_inplace() {
 	fi
 }
 
-fount_sed_escape() {
+sed_escape() {
 	printf '%s' "${1//\//\\/}"
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-fount_cmd_protocolhandle() {
-	fount_require passthrough browser unix/ipc unix/url
+cmd_protocolhandle() {
+	require passthrough browser unix/ipc unix/url
 	handle_docker_termux_passthrough "$@"
 	shift
 	local protocolUrl="$1"

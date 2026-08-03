@@ -6,7 +6,7 @@ install_ipc_tools() {
 
 # Expects TARGET_URL to be exported by the caller.
 read -r -d '' BACKGROUND_IPC_JOB <<'BGJOB'
-fount_ipc_internal() {
+ipc_call() {
 	local type="$1" data="$2" hostname="${3:-localhost}" port="${4:-16698}"
 	local cmd_json="{\"type\":\"$type\",\"data\":$data}" response=""
 	if command -v nc &>/dev/null; then
@@ -19,7 +19,7 @@ fount_ipc_internal() {
 	status=$(echo "$response" | jq -r '.status // empty')
 	if [ "$status" = "ok" ]; then return 0; else return 1; fi
 }
-test_fount_running_internal() { fount_ipc_internal "ping" "{}"; }
+test_fount_running_internal() { ipc_call "ping" "{}"; }
 
 timeout=60 elapsed=0
 while ! test_fount_running_internal; do

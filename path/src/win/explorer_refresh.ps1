@@ -20,7 +20,7 @@ public class ExplorerRefresher {
 }
 '@ -ErrorAction Ignore
 
-function script:Invoke-FountExplorerRefresh {
+function script:Invoke-ExplorerRefresh {
 	try {
 		[ExplorerRefresher]::RefreshSettings()
 		[ExplorerRefresher]::RefreshDesktop()
