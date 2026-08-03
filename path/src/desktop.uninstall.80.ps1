@@ -1,8 +1,6 @@
 ﻿# Remove Desktop Shortcut
 Write-Host (Get-I18n -key 'remove.removing.desktopShortcut')
-$desktopShortcutPath = [Environment]::GetFolderPath("Desktop") + "\fount.lnk"
-if (Test-Path $desktopShortcutPath) {
-	Remove-Item -Path $desktopShortcutPath -Force
+if (Remove-FountDesktopShortcuts) {
 	Write-Host (Get-I18n -key 'remove.desktopShortcutRemoved')
 }
 else {
@@ -11,7 +9,7 @@ else {
 
 # Remove Start Menu Shortcut
 Write-Host (Get-I18n -key 'remove.removing.startMenuShortcut')
-$startMenuShortcutPath = [Environment]::GetFolderPath("StartMenu") + "\fount.lnk"
+$startMenuShortcutPath = [Environment]::GetFolderPath('StartMenu') + '\fount.lnk'
 if (Test-Path $startMenuShortcutPath) {
 	Remove-Item -Path $startMenuShortcutPath -Force
 	Write-Host (Get-I18n -key 'remove.startMenuShortcutRemoved')
