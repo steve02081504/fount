@@ -12,7 +12,7 @@ cmd_test() {
 		if [ "$test_exit" -eq 0 ]; then
 			write_taskbar_progress_clear
 		fi
-		if taskbar_progress_enabled; then printf '\007'; fi
+		taskbar_progress_enabled && printf '\007'
 	}
 	trap 'test_cleanup' EXIT
 	if [ -z "${FOUNT_TEST_ALLOW_SLEEP:-}" ]; then

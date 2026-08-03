@@ -22,14 +22,8 @@ write_taskbar_progress() {
 		printf "\033]9;4;3\007"
 	fi
 }
-write_taskbar_progress_clear() {
-	taskbar_progress_enabled || return 0
-	printf "\033]9;4;0\007"
-}
-write_taskbar_progress_error() {
-	taskbar_progress_enabled || return 0
-	printf "\033]9;4;2;100\007"
-}
+write_taskbar_progress_clear() { taskbar_progress_enabled && printf "\033]9;4;0\007"; }
+write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;100\007"; }
 
 write_taskbar_progress 0
 

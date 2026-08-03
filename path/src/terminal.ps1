@@ -12,12 +12,14 @@ function script:Write-TaskbarProgress {
 	}
 }
 function script:Write-TaskbarProgressClear {
-	if (-not $script:TaskbarProgressEnabled) { return }
-	Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;0" + $script:TaskbarProgressBel)
+	if ($script:TaskbarProgressEnabled) {
+		Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;0" + $script:TaskbarProgressBel)
+	}
 }
 function script:Write-TaskbarProgressError {
-	if (-not $script:TaskbarProgressEnabled) { return }
-	Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;2;100" + $script:TaskbarProgressBel)
+	if ($script:TaskbarProgressEnabled) {
+		Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;2;100" + $script:TaskbarProgressBel)
+	}
 }
 function script:Set-Title($Title) {
 	$Host.UI.RawUI.WindowTitle = $Title
