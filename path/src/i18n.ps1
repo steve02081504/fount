@@ -110,7 +110,8 @@ function script:Format-I18nText {
 	param([string]$Text)
 	if ($Script:I18nSupportsAnsi) {
 		return [regex]::Replace($Text, '`([^`]*)`', {
-				Format-I18nBacktickInner $_.Groups[1].Value
+				param($Match)
+				Format-I18nBacktickInner $Match.Groups[1].Value
 			})
 	}
 	return [regex]::Replace($Text, '`([^`]*)`', '$1')
