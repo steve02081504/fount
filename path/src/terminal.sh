@@ -2,19 +2,25 @@
 # Taskbar progress (Windows Terminal / ConEmu OSC sequences)
 taskbar_progress_enabled() { [ -t 1 ]; }
 write_taskbar_progress() {
-	if ! taskbar_progress_enabled; then return; fi
+	taskbar_progress_enabled || return 0
 	if [ -n "${1:-}" ]; then
 		printf "\033]9;4;1;%s\007" "$1"
 	else
 		printf "\033]9;4;3\007"
 	fi
 }
-write_taskbar_progress_clear() { taskbar_progress_enabled && printf "\033]9;4;0\007"; }
-write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;100\007"; }
+write_taskbar_progress_clear() {
+	taskbar_progress_enabled || return 0
+	printf "\033]9;4;0\007"
+}
+write_taskbar_progress_error() {
+	taskbar_progress_enabled || return 0
+	printf "\033]9;4;2;100\007"
+}
 
 # Terminal window title via OSC 0
 set_title() {
-	[ -c /dev/tty ] || return
+	[ -c /dev/tty ] || return 0
 	printf '\033]0;%s\007' "$1" >/dev/tty 2>/dev/null || true
 }
 get_title() {

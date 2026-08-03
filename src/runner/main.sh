@@ -15,15 +15,21 @@ FOUNT_BRANCH="${FOUNT_BRANCH:-"master"}"
 # 任务栏进度
 taskbar_progress_enabled() { [ -t 1 ]; }
 write_taskbar_progress() {
-	if ! taskbar_progress_enabled; then return; fi
+	taskbar_progress_enabled || return 0
 	if [ -n "${1:-}" ]; then
 		printf "\033]9;4;1;%s\007" "$1"
 	else
 		printf "\033]9;4;3\007"
 	fi
 }
-write_taskbar_progress_clear() { taskbar_progress_enabled && printf "\033]9;4;0\007"; }
-write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;100\007"; }
+write_taskbar_progress_clear() {
+	taskbar_progress_enabled || return 0
+	printf "\033]9;4;0\007"
+}
+write_taskbar_progress_error() {
+	taskbar_progress_enabled || return 0
+	printf "\033]9;4;2;100\007"
+}
 
 write_taskbar_progress 0
 

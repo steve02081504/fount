@@ -21,14 +21,12 @@ function Write-TaskbarProgress([int]$Percent) {
 	}
 }
 function Write-TaskbarProgressClear {
-	if ($script:TaskbarProgressEnabled) {
-		Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;0" + $script:TaskbarProgressBel)
-	}
+	if (-not $script:TaskbarProgressEnabled) { return }
+	Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;0" + $script:TaskbarProgressBel)
 }
 function Write-TaskbarProgressError {
-	if ($script:TaskbarProgressEnabled) {
-		Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;2;100" + $script:TaskbarProgressBel)
-	}
+	if (-not $script:TaskbarProgressEnabled) { return }
+	Write-Host -NoNewline ($script:TaskbarProgressEsc + "]9;4;2;100" + $script:TaskbarProgressBel)
 }
 
 Write-TaskbarProgress -Percent 0
