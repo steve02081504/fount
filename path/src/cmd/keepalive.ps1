@@ -42,9 +42,9 @@
 				$restart_timestamps.Add($current_time)
 
 				$three_minutes_ago = $current_time.AddMinutes(-3)
-				for ($i = $restart_timestamps.Count - 1; $i -ge 0; $i--) {
-					if ($restart_timestamps[$i] -lt $three_minutes_ago) {
-						$restart_timestamps.RemoveAt($i)
+				for ($index = $restart_timestamps.Count - 1; $index -ge 0; $index--) {
+					if ($restart_timestamps[$index] -lt $three_minutes_ago) {
+						$restart_timestamps.RemoveAt($index)
 					}
 				}
 

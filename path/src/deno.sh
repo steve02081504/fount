@@ -127,7 +127,7 @@ install_deno() {
 	deno_on_path && return 0
 
 	if [[ $IN_TERMUX -eq 1 ]]; then
-		install_deno_termux
+		install_deno_termux || true
 	else
 		get_i18n 'deno.missing'
 		install_deno_from_official_script || true

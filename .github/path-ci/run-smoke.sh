@@ -60,7 +60,8 @@ if [[ "${OSTYPE:-}" == msys* || "${OSTYPE:-}" == cygwin* ]]; then
 	marker_file="${ROOT}/.path-ci-hook-marker-$$"
 	: >"$marker_file"
 	if command -v cygpath >/dev/null 2>&1; then
-		export FOUNT_CI_HOOK_MARKER_FILE="$(cygpath -m "$marker_file")"
+		marker_file_win="$(cygpath -m "$marker_file")"
+		export FOUNT_CI_HOOK_MARKER_FILE="$marker_file_win"
 	else
 		export FOUNT_CI_HOOK_MARKER_FILE="$marker_file"
 	fi

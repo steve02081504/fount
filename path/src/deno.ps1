@@ -21,20 +21,20 @@
 	if (Test-Path $upgradedFlag) {
 		Start-Job -ScriptBlock {
 			$deno_update_channel = $args[0]
-			. { deno upgrade -q $deno_update_channel } -ErrorVariable errorOut
+			$errorOut = deno upgrade -q $deno_update_channel 2>&1
 			if ($LastExitCode) {
-				if ($errorOut.tostring().Contains("USAGE")) { # wtf deno 1.0?
-					deno upgrade -q
+				if ($errorOut.ToString().Contains('USAGE')) { # wtf deno 1.0?
+					deno upgrade -q 2>&1 | Out-Null
 				}
 			}
 		} -ArgumentList $deno_update_channel | Out-Null
 		return
 	}
 
-	. { deno upgrade -q $deno_update_channel } -ErrorVariable errorOut
+	$errorOut = deno upgrade -q $deno_update_channel 2>&1
 	if ($LastExitCode) {
-		if ($errorOut.tostring().Contains("USAGE")) { # wtf deno 1.0?
-			deno upgrade -q
+		if ($errorOut.ToString().Contains('USAGE')) { # wtf deno 1.0?
+			$errorOut = deno upgrade -q 2>&1
 		}
 	}
 	if ($LastExitCode) {

@@ -2,7 +2,8 @@
  * CI-only stub swapped in place of src/server/index.mjs by .github/path-ci/install-hooks.sh.
  * Not used locally.
  */
-import 'npm:on-shutdown'
+// Side-effect import: ensure node_modules layout for deno install in CI.
+import 'npm:nop'
 
 const line = [
 	'FOUNT_CI_HOOK:server',

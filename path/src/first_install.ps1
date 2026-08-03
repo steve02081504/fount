@@ -1,5 +1,8 @@
 ﻿function script:fount_first_install_if_needed {
 	if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $args[0] -eq 'init') {
+		if (Test-Path -Path "$FOUNT_DIR/node_modules") {
+			run shutdown
+		}
 		if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {
 			if (Get-Command git -ErrorAction Ignore) {
 				invoke_repo_git config core.autocrlf false
@@ -16,9 +19,6 @@
 					Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
 				}
 			}
-		}
-		if (Test-Path -Path "$FOUNT_DIR/node_modules") {
-			run shutdown
 		}
 		Write-TaskbarProgress -Percent 70
 		Write-Host (Get-I18n -key 'install.installingDependencies')
