@@ -64,83 +64,87 @@ EOF
 	return 0
 }
 
+install_deno_from_official_script() {
+	install_package "curl" "curl" || return 1
+	curl -fsSL https://deno.land/install.sh | sh -s -- -y
+}
+
+install_deno_from_github_zip() {
+	local arch base zip_name
+	base="https://github.com/denoland/deno/releases/latest/download/deno-"
+	arch=$(uname -m)
+	case "$OS_TYPE" in
+	Linux*)
+		if [[ "$arch" = aarch64 ]]; then zip_name="aarch64-unknown-linux-gnu.zip"
+		else zip_name="x86_64-unknown-linux-gnu.zip"; fi
+		;;
+	Darwin*)
+		if [[ "$arch" = arm64 ]]; then zip_name="aarch64-apple-darwin.zip"
+		else zip_name="x86_64-apple-darwin.zip"; fi
+		;;
+	*) zip_name="x86_64-unknown-linux-gnu.zip" ;;
+	esac
+	get_i18n 'deno.installFailedFallback'
+	install_package "unzip" "unzip" || return 1
+	install_package "curl" "curl" || return 1
+	mkdir -p "$FOUNT_DIR/path"
+	curl -fL -o /tmp/deno.zip "${base}${zip_name}" || return 1
+	unzip -o /tmp/deno.zip -d "$FOUNT_DIR/path" || return 1
+	chmod +x "$FOUNT_DIR/path/deno"
+	rm -f /tmp/deno.zip
+}
+
+install_deno_termux() {
+	local pkg
+	get_i18n 'deno.installingTermux'
+	set -e
+	for pkg in patchelf which time ldd tree pacman; do
+		command -v "$pkg" &>/dev/null || add_package_to_tracker "$pkg" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
+	done
+	yes y | pkg upgrade -y
+	pkg install -y pacman patchelf which time ldd tree
+	pacman-key --init && pacman-key --populate && pacman -Syu --noconfirm
+	pacman -Sy glibc-runner --assume-installed bash,patchelf,resolv-conf --noconfirm
+	add_package_to_tracker "glibc-runner" "INSTALLED_PACMAN_PACKAGES_ARRAY"
+	install_deno_from_official_script
+	set +e
+	export PATH="$HOME/.deno/bin:$PATH"
+	hash -r
+	patch_deno
+}
+
+deno_on_path() {
+	[[ $IN_TERMUX -eq 1 && -f ~/.deno/bin/deno.glibc.sh ]] && return 0
+	command -v deno &>/dev/null
+}
+
 install_deno() {
-	if command -v deno &>/dev/null || [[ $IN_TERMUX -eq 1 && -f ~/.deno/bin/deno.glibc.sh ]]; then return 0; fi
-	if [[ -z "$(command -v deno)" && -f "$HOME/.deno/env" ]]; then
-		# shellcheck disable=SC1091
-		. "$HOME/.deno/env"
-	fi
-	if command -v deno &>/dev/null || [[ $IN_TERMUX -eq 1 && -f ~/.deno/bin/deno.glibc.sh ]]; then return 0; fi
+	export PATH="$HOME/.deno/bin:$FOUNT_DIR/path:$PATH"
+	hash -r 2>/dev/null || true
+	deno_on_path && return 0
 
-	if install_package "deno" "deno"; then
-		return 0
-	fi
+	install_package "deno" "deno" || true
+	deno_on_path && return 0
 
-	install_package "curl" "curl" || exit 1
 	if [[ $IN_TERMUX -eq 1 ]]; then
-		get_i18n 'deno.installingTermux'
-		set -e
-		if ! command -v patchelf &>/dev/null; then
-			add_package_to_tracker "patchelf" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
-		fi
-		if ! command -v which &>/dev/null; then
-			add_package_to_tracker "which" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
-		fi
-		if ! command -v time &>/dev/null; then
-			add_package_to_tracker "time" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
-		fi
-		if ! command -v ldd &>/dev/null; then
-			add_package_to_tracker "ldd" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
-		fi
-		if ! command -v tree &>/dev/null; then
-			add_package_to_tracker "tree" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
-		fi
-		if ! command -v pacman &>/dev/null; then
-			add_package_to_tracker "pacman" "INSTALLED_SYSTEM_PACKAGES_ARRAY"
-		fi
-		yes y | pkg upgrade -y
-		pkg install -y pacman patchelf which time ldd tree
-		pacman-key --init && pacman-key --populate && pacman -Syu --noconfirm
-		pacman -Sy glibc-runner --assume-installed bash,patchelf,resolv-conf --noconfirm
-		add_package_to_tracker "glibc-runner" "INSTALLED_PACMAN_PACKAGES_ARRAY"
-		set +e
-		curl -fsSL https://deno.land/install.sh | sh -s -- -y
-		export PATH="$HOME/.deno/bin:$PATH"
-		hash -r
-		patch_deno
-		touch "$AUTO_INSTALLED_DENO_FLAG"
+		install_deno_termux
 	else
 		get_i18n 'deno.missing'
-		if ! curl -fsSL https://deno.land/install.sh | sh -s -- -y; then
-			get_i18n 'deno.installFailedFallback'
-			install_package "unzip" "unzip" || exit 1
-			local deno_dl_url="https://github.com/denoland/deno/releases/latest/download/deno-"
-			local arch_target current_arch
-			current_arch=$(uname -m)
-			case "$OS_TYPE" in
-			Linux*)  [[ "$current_arch" = "aarch64" ]] && arch_target="aarch64-unknown-linux-gnu.zip" || arch_target="x86_64-unknown-linux-gnu.zip" ;;
-			Darwin*) [[ "$current_arch" = "arm64" ]]   && arch_target="aarch64-apple-darwin.zip"      || arch_target="x86_64-apple-darwin.zip" ;;
-			*)       arch_target="x86_64-unknown-linux-gnu.zip" ;;
-			esac
-			mkdir -p "$FOUNT_DIR/path"
-			if curl -fL -o "/tmp/deno.zip" "${deno_dl_url}${arch_target}" && unzip -o "/tmp/deno.zip" -d "$FOUNT_DIR/path"; then
-				rm "/tmp/deno.zip"
-				chmod +x "$FOUNT_DIR/path/deno"
-				export PATH="$PATH:$FOUNT_DIR/path"
-			else
-				print_i18n_red 'deno.isRequired' >&2
-				exit 1
-			fi
-		fi
-		# shellcheck disable=SC1091
-		[ -f "$HOME/.deno/env" ] && . "$HOME/.deno/env"
-		export PATH="$PATH:$HOME/.deno/bin"
-		touch "$AUTO_INSTALLED_DENO_FLAG"
+		install_deno_from_official_script || true
+		export PATH="$HOME/.deno/bin:$FOUNT_DIR/path:$PATH"
+		hash -r 2>/dev/null || true
+		deno_on_path && return 0
+		install_deno_from_github_zip || true
+		export PATH="$HOME/.deno/bin:$FOUNT_DIR/path:$PATH"
+		hash -r 2>/dev/null || true
 	fi
-	if ! command -v deno &>/dev/null; then
+
+	if ! deno_on_path; then
 		print_i18n_red 'deno.isRequired' >&2
 		exit 1
 	fi
+	mkdir -p "$(dirname "$AUTO_INSTALLED_DENO_FLAG")"
+	touch "$AUTO_INSTALLED_DENO_FLAG"
 }
 
 base_deno_upgrade() {
