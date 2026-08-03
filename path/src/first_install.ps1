@@ -23,6 +23,7 @@
 		Write-TaskbarProgress -Percent 70
 		Write-Host (Get-I18n -key 'install.installingDependencies')
 		deno install --prod --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+		if ($LastExitCode -ne 0) { $global:LastExitCode = 0 }
 		Write-TaskbarProgress -Percent 85
 		Write-Host "======================================================" -ForegroundColor Green
 		Write-Warning (Get-I18n -key 'install.untrustedPartsWarning')
