@@ -16,7 +16,8 @@
 }
 
 function script:Start-WTfountCmd {
-	Start-Process @(Get-WTfountCmd @args)
+	$wtCmd = Get-WTfountCmd @args
+	Start-Process -FilePath $wtCmd.FilePath -ArgumentList $wtCmd.ArgumentList
 }
 
 function script:Register-FountTerminalProfile {

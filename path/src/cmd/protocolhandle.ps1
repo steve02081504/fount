@@ -8,7 +8,7 @@
 	}
 	if ($protocolUrl -eq 'fount://nop/') {
 		Start-WTfountCmd
-		exit $LastExitCode
+		return
 	}
 	$encodedUrl = [uri]::EscapeDataString($protocolUrl)
 	$targetUrl = "https://steve02081504.github.io/fount/protocol/?url=$encodedUrl"
@@ -23,5 +23,4 @@
 		Start-Process $targetUrl
 	} -ArgumentList $targetUrl
 	Start-WTfountCmd
-	exit $LastExitCode
 }

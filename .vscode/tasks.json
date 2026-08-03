@@ -28,6 +28,9 @@
 					"regexp": "^\\s*✘\\s+(.*)$",
 					"message": 1
 				}
+			},
+			"presentation": {
+				"close": true
 			}
 		},
 		{

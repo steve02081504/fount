@@ -81,6 +81,44 @@ if (-not $found) {
 }
 Write-Host '[background] ok'
 
+Write-Host '== wt start =='
+$script:WtStartCaptured = $null
+function Start-Process {
+	param(
+		[Parameter(Mandatory)][AllowNull()][string]$FilePath,
+		$ArgumentList
+	)
+	if ($FilePath -isnot [string]) {
+		Write-Error "[wt start] FilePath must be string, got $($FilePath.GetType().FullName)"
+	}
+	$script:WtStartCaptured = @{
+		FilePath     = $FilePath
+		ArgumentList = $ArgumentList
+	}
+}
+$prevEap = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
+$env:FOUNT_DIR = $Root
+$env:FOUNT_CLICK = '1'
+try {
+	. $Fount open
+	if ($LastExitCode -ne 0) {
+		throw "FOUNT_CLICK open exited with $LastExitCode"
+	}
+	if (-not $script:WtStartCaptured) {
+		Write-Error '[wt start] Start-Process was not called'
+	}
+	if ($script:WtStartCaptured.ArgumentList -notlike "*fount.ps1*open*") {
+		Write-Error "[wt start] unexpected ArgumentList: $($script:WtStartCaptured.ArgumentList)"
+	}
+}
+finally {
+	Remove-Item function:Start-Process -ErrorAction SilentlyContinue
+	Remove-Item Env:FOUNT_CLICK -ErrorAction SilentlyContinue
+	$ErrorActionPreference = $prevEap
+}
+Write-Host '[wt start] ok'
+
 Write-Host '== install (init) =='
 Remove-Item -LiteralPath node_modules -Recurse -Force -ErrorAction SilentlyContinue
 & $Fount init
