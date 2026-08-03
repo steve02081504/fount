@@ -5,6 +5,7 @@ cmd_init() {
 		fount_handle_init_force "$@"
 	fi
 	bootstrap_full "$@"
+	local exit_code=$?
 	write_taskbar_progress_clear
-	exit 0
+	exit $exit_code
 }

@@ -83,7 +83,8 @@ Write-Host '[background] ok'
 
 Write-Host '== install (init) =='
 Remove-Item -LiteralPath node_modules -Recurse -Force -ErrorAction SilentlyContinue
-$null = Invoke-FountCapture init
+& $Fount init
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 if (-not (Test-Path -LiteralPath node_modules)) {
 	Write-Error '[install] node_modules missing after init'
 }

@@ -76,7 +76,7 @@ echo "[background] ok"
 
 echo "== install (init) =="
 rm -rf node_modules
-run_capture "$FOUNT" init >/dev/null
+run_capture "$FOUNT" init
 if [ ! -d node_modules ]; then
 	echo "[install] node_modules missing after init" >&2
 	exit 1
