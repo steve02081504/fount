@@ -1,6 +1,6 @@
 ﻿function script:Invoke-FountCmdTest {
 	param([string[]]$CommandArgs)
-	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
+	. $FountRequireMany win/keep_awake terminal deno
 	$originalTitle = Get-Title
 	Set-Title '𝒻ℴ𝓊𝓃𝓉 𝓽𝓮𝓼𝓽'
 	Enable-FountTestKeepAwake

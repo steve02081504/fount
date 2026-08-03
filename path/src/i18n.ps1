@@ -42,7 +42,7 @@ function script:Get-BestLocale {
 	foreach ($preferred in $preferredLocales) {
 		$prefix = $preferred.Split('-')[0]
 		foreach ($available in $availableLocales) {
-			if ($available -eq $preferred -or $available.StartsWith("$prefix-")) {
+			if ($available.StartsWith("$prefix-")) {
 				return $available
 			}
 		}
@@ -85,25 +85,25 @@ function script:Format-I18nParamValue {
 	)
 	if (-not $Script:I18nSupportsAnsi) { return $Value }
 	if (-not $Script:I18nParamAnsiColors.ContainsKey($Name)) { return $Value }
-	$esc = [char]27
-	$c = $Script:I18nParamAnsiColors[$Name]
-	return "${esc}[${c}m$Value${esc}[0m"
+	$escape = [char]27
+	$color = $Script:I18nParamAnsiColors[$Name]
+	return "${escape}[${color}m$Value${escape}[0m"
 }
 
 function script:Format-I18nBacktickInner {
 	param([string]$Inner)
 	if (-not $Script:I18nSupportsAnsi) { return $Inner }
-	$esc = [char]27
-	$M = "${esc}[35m"; $B = "${esc}[34m"; $Y = "${esc}[33m"; $C = "${esc}[36m"; $R = "${esc}[0m"
+	$escape = [char]27
+	$magenta = "${escape}[35m"; $blue = "${escape}[34m"; $yellow = "${escape}[33m"; $cyan = "${escape}[36m"; $reset = "${escape}[0m"
 	switch -Regex ($Inner) {
-		'://' { return "$B$Inner$R" }
-		'^(origin|upstream)(/.*)?$' { return "$B$Inner$R" }
-		'^(master|main|HEAD|develop)$' { return "$Y$Inner$R" }
-		'^\.' { return "$C$Inner$R" }
-		'^[A-Z][A-Z0-9_]+$' { return "$C$Inner$R" }
-		'^[a-z][a-z0-9_-]*(\.[a-z][a-z0-9_-]*)+$' { return "$C$Inner$R" }
-		'^(git|fount|deno|winget|pwsh|patchelf|osacompile|lsregister|chmod) (.+)$' { return "$M$($Matches[1])$R $Y$($Matches[2])$R" }
-		default { return "$M$Inner$R" }
+		'://' { return "$blue$Inner$reset" }
+		'^(origin|upstream)(/.*)?$' { return "$blue$Inner$reset" }
+		'^(master|main|HEAD|develop)$' { return "$yellow$Inner$reset" }
+		'^\.' { return "$cyan$Inner$reset" }
+		'^[A-Z][A-Z0-9_]+$' { return "$cyan$Inner$reset" }
+		'^[a-z][a-z0-9_-]*(\.[a-z][a-z0-9_-]*)+$' { return "$cyan$Inner$reset" }
+		'^(git|fount|deno|winget|pwsh|patchelf|osacompile|lsregister|chmod) (.+)$' { return "$magenta$($Matches[1])$reset $yellow$($Matches[2])$reset" }
+		default { return "$magenta$Inner$reset" }
 	}
 }
 
@@ -111,8 +111,8 @@ function script:Format-I18nText {
 	param([string]$Text)
 	if ($Script:I18nSupportsAnsi) {
 		return [regex]::Replace($Text, '`([^`]*)`', {
-				param($m)
-				Format-I18nBacktickInner $m.Groups[1].Value
+				param($match)
+				Format-I18nBacktickInner $match.Groups[1].Value
 			})
 	}
 	return [regex]::Replace($Text, '`([^`]*)`', '$1')

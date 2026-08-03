@@ -10,15 +10,15 @@ if [ -z "${FOUNT_DIR:-}" ]; then
 fi
 
 # BSD date（macOS）不支持 %3N（毫秒），会原样输出；降级到秒精度
-_fount_timestamp() {
+fount_timestamp() {
 	local t
 	t=$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ" 2>/dev/null)
 	case "$t" in *%3N*) date -u +"%Y-%m-%dT%H:%M:%SZ" ;; *) printf '%s' "$t" ;; esac
 }
-FOUNT_SESSION_START_TIME=$(_fount_timestamp)
+FOUNT_SESSION_START_TIME=$(fount_timestamp)
 export FOUNT_SESSION_START_TIME
 if [ -z "$FOUNT_START_TIME" ]; then
-	FOUNT_START_TIME=$(_fount_timestamp)
+	FOUNT_START_TIME=$(fount_timestamp)
 fi
 export FOUNT_START_TIME
 

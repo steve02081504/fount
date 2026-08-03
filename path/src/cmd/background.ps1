@@ -5,8 +5,8 @@
 	Invoke-DockerPassthrough -CurrentArgs $CommandArgs
 	$runargs = $CommandArgs[1..$CommandArgs.Count]
 	if (Test-Path -Path "$FOUNT_DIR/.nobackground") {
-		$cmd = Get-WTfountCmd -ArgumentList $runargs
-		Start-Process -FilePath $cmd.FilePath -ArgumentList $cmd.ArgumentList
+		$windowsTerminalCommand = Get-WTfountCmd -ArgumentList $runargs
+		Start-Process -FilePath $windowsTerminalCommand.FilePath -ArgumentList $windowsTerminalCommand.ArgumentList
 	}
 	else {
 		$pwshExe = (Get-Process -Id $PID).Path

@@ -20,10 +20,9 @@
 			$ChromeSetup = "ChromeSetup.exe"
 			Invoke-WebRequest -Uri 'https://dl.google.com/chrome/install/chrome_installer.exe' -OutFile "$env:TEMP\$ChromeSetup"
 			& "$env:TEMP\$ChromeSetup" /install
-			$Process2Monitor = "ChromeSetup"
 			do {
 				Start-Sleep -Seconds 2
-			} while (Get-Process | Where-Object { $Process2Monitor -contains $_.Name } | Select-Object -ExpandProperty Name)
+			} while (Get-Process -Name 'ChromeSetup' -ErrorAction SilentlyContinue)
 			Remove-Item "$env:TEMP\$ChromeSetup" -ErrorAction SilentlyContinue
 
 			New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null

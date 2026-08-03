@@ -6,13 +6,13 @@
 		ForEach-Object {
 			if ($_.Name -match '\.uninstall\.(\d+)\.ps1$') {
 				[PSCustomObject]@{
-					Path = $_.FullName
-					Lv   = [int]$Matches[1]
-					Rel  = $_.FullName.Substring($script:FOUNT_SRC.Length).TrimStart('\', '/')
+					Path         = $_.FullName
+					Level        = [int]$Matches[1]
+					RelativePath = $_.FullName.Substring($script:FOUNT_SRC.Length).TrimStart('\', '/')
 				}
 			}
 		} |
-		Sort-Object -Property @{ Expression = 'Lv'; Descending = $true }, @{ Expression = 'Rel'; Descending = $false } |
+		Sort-Object -Property @{ Expression = 'Level'; Descending = $true }, @{ Expression = 'RelativePath'; Descending = $false } |
 		ForEach-Object { . $_.Path }
 
 	Write-Host $completeMessage

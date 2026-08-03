@@ -1,15 +1,13 @@
 #!/usr/bin/env bash
 # Cross-platform in-place sed (macOS requires an empty backup suffix argument)
 run_sed_inplace() {
-	local expression="$1"
-	local file="$2"
 	if [ "$OS_TYPE" = "Darwin" ]; then
-		sed -i '' "$expression" "$file"
+		sed -i '' "$1" "$2"
 	else
-		sed -i "$expression" "$file"
+		sed -i "$1" "$2"
 	fi
 }
 
 fount_sed_escape() {
-	printf '%s' "$1" | sed 's/\//\\\//g'
+	printf '%s' "${1//\//\\/}"
 }

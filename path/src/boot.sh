@@ -52,7 +52,10 @@ EOF
 </dict>
 </plist>
 EOF
-		launchctl bootstrap "gui/$(id -u)" "$plist" 2>/dev/null || true
+		if ! launchctl bootstrap "gui/$(id -u)" "$plist"; then
+			echo -e "${C_YELLOW}Warning: launchctl bootstrap failed for ${plist}${C_RESET}" >&2
+			return 1
+		fi
 		;;
 	esac
 }

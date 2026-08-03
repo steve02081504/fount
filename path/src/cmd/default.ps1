@@ -1,5 +1,6 @@
 ﻿function script:Invoke-FountCmdDefault {
 	param([string[]]$CommandArgs)
+	. $FountRequireMany terminal env run
 	Invoke-FountBootstrapFull -CommandArgs $CommandArgs
 	$originalTitle = Get-Title
 	try {

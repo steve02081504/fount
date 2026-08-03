@@ -1,5 +1,6 @@
 ﻿function script:Invoke-FountCmdServer {
 	param([string[]]$CommandArgs)
+	. $FountRequireMany debug win/app_restart terminal run
 	Invoke-FountBootstrapServer -CommandArgs $CommandArgs
 	$runargs = @($CommandArgs | Select-Object -Skip 1)
 	try {

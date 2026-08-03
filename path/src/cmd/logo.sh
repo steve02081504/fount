@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 fount_cmd_logo() {
-	fount_require deno
+	fount_require deno terminal
 	install_deno
 	local icon_anime="$FOUNT_DIR/imgs/icon_anime/index.mjs"
 	local original_title logo_status subcommand

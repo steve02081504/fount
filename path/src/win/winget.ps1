@@ -11,7 +11,9 @@
 			Remove-Item "$env:TEMP/winget.msixbundle" -Force -ErrorAction SilentlyContinue
 		}
 		catch {
-			Add-AppxPackage -Path https://cdn.winget.microsoft.com/cache/source.msix
+			Invoke-WebRequest -Uri https://cdn.winget.microsoft.com/cache/source.msix -OutFile "$env:TEMP/winget-source.msix"
+			Add-AppxPackage -Path "$env:TEMP/winget-source.msix"
+			Remove-Item "$env:TEMP/winget-source.msix" -Force -ErrorAction SilentlyContinue
 		}
 	}
 	New-InstallerDir

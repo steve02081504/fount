@@ -24,17 +24,8 @@ run() {
 	write_taskbar_progress 5
 	original_title=$(get_title)
 	set_title ""
-	if [[ $IN_TERMUX -eq 1 ]]; then
-		local LANG_BACKUP
-		LANG_BACKUP="$LANG"
-		LANG="$(getprop persist.sys.locale)"
-		export LANG
-		local SQsacPath="/data/data/com.termux/files/usr/var/lib/proot-distro/installed-rootfs/ubuntu/root/.bashrc"
-		if [[ -f "$SQsacPath" ]] && grep -q "bash /root/sac.sh" "$SQsacPath"; then
-			run_sed_inplace '/bash \/root\/sac.sh/d' "$SQsacPath"
-			run_sed_inplace '/proot-distro login ubuntu/d' "/data/data/com.termux/files/home/.bashrc"
-		fi
-	fi
+	fount_require unix/termux
+	fount_termux_run_setup
 	local v8_flags=""
 	if [[ -n "$FOUNT_V8_FLAGS" ]]; then
 		v8_flags="$FOUNT_V8_FLAGS"
@@ -55,10 +46,10 @@ run() {
 	fi
 	write_taskbar_progress 10
 	if [ -z "$FOUNT_START_TIME" ]; then
-		FOUNT_START_TIME=$(_fount_timestamp)
+		FOUNT_START_TIME=$(fount_timestamp)
 	fi
 	export FOUNT_START_TIME
-	FOUNT_DENO_START_TIME=$(_fount_timestamp)
+	FOUNT_DENO_START_TIME=$(fount_timestamp)
 	export FOUNT_DENO_START_TIME
 	write_taskbar_progress 25
 	set_title "𝓯"
@@ -86,7 +77,7 @@ run() {
 	if [ "$exit_code" -ne 0 ] && [ "$exit_code" -ne 130 ] && [ "$exit_code" -ne 131 ]; then
 		write_taskbar_progress_error
 	fi
-	if [[ $IN_TERMUX -eq 1 ]]; then export LANG="$LANG_BACKUP"; fi
+	fount_termux_run_teardown
 	return $exit_code
 }
 
@@ -104,4 +95,3 @@ run_server_with_updates() {
 	done
 	return "$server_status"
 }
-
