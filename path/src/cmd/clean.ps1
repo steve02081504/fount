@@ -1,6 +1,6 @@
-﻿function script:Invoke-FountCmdClean {
-	RequireMany i18n run win/keep_awake win/file_attrs terminal deno
-	Invoke-FountBootstrapFull clean
+﻿function script:cmd_clean {
+	require i18n run win/keep_awake win/file_attrs terminal deno
+	bootstrap_full clean
 	if (Test-Path -Path "$FOUNT_DIR/node_modules") {
 		run shutdown
 		if ($args[1] -eq 'force') {

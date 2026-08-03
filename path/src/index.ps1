@@ -22,33 +22,29 @@ if (-not $env:NPM_CONFIG_REGISTRY) {
 $script:FountCallerErrorActionPreference = $ErrorActionPreference
 $ErrorActionPreference = 'Continue'
 try {
-	RequireMany i18n terminal temp_guard env
+	require i18n terminal temp_guard env
 
-	if ($args[0] -ne 'remove' -and (Test-InTempDirectory $FOUNT_DIR)) {
-		Write-Host (Get-I18n -key 'tempDir.blocked')
-		exit 1
-	}
+	check_temp_guard $args[0]
 
 	$ErrorCount = $Error.Count
 
 	if ($env:FOUNT_CLICK) {
 		Remove-Item Env:\FOUNT_CLICK -Force -ErrorAction Ignore
-		Require win/wt
+		require win/wt
 		Start-WTfountCmd @args
 		exit $LastExitCode
 	}
 
-	Require passthrough
-	Invoke-FountUnixPassthrough @args
+	require passthrough
+	handle_unix_passthrough @args
 
-	. $FountCmdRoute @args
-	if ($script:FountCmdRouted) {
+	if (cmd_route @args) {
 		if ($ErrorCount -ne $Error.Count) { exit 1 }
 		exit $LastExitCode
 	}
 
-	Require cmd/default
-	Invoke-FountCmdDefault @args
+	require cmd/default
+	cmd_default @args
 
 	if ($ErrorCount -ne $Error.Count) { exit 1 }
 	exit $LastExitCode

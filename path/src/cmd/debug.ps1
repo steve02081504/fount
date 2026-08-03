@@ -1,8 +1,8 @@
-﻿function script:Invoke-FountCmdDebug {
-	Invoke-FountBootstrapFull @args
-	$runargs = $args[1..$args.Count]
+﻿function script:cmd_debug {
+	bootstrap_full @args
+	$args = @($args | Select-Object -Skip 1)
 	try {
-		& (Join-Path $FOUNT_DIR 'path/fount.ps1') keepalive debug @runargs
+		& (Join-Path $FOUNT_DIR 'path/fount.ps1') keepalive debug @args
 	}
 	finally {
 		Write-TaskbarProgressClear

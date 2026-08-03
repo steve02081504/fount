@@ -2,19 +2,19 @@
 	return 'fount.lnk'
 }
 
-function script:Get-DesktopPath {
+function script:get_desktop_dir {
 	return [Environment]::GetFolderPath('Desktop')
 }
 
-function script:Find-DesktopShortcutPaths($DesktopPath = (Get-DesktopPath)) {
+function script:find_desktop_shortcut_paths($DesktopPath = (get_desktop_dir)) {
 	$name = Get-FountDesktopShortcutFileName
 	Get-ChildItem -LiteralPath $DesktopPath -Filter $name -Recurse -Depth 2 -Force -ErrorAction SilentlyContinue |
 		ForEach-Object { $_.FullName }
 }
 
-function script:Remove-DesktopShortcuts {
+function script:remove_desktop_shortcut_copies {
 	$removed = $false
-	foreach ($path in Find-DesktopShortcutPaths) {
+	foreach ($path in find_desktop_shortcut_paths) {
 		Remove-Item -LiteralPath $path -Force -ErrorAction SilentlyContinue
 		$removed = $true
 	}
@@ -37,8 +37,8 @@ function script:New-FountShortcut {
 	$shortcutCmd = Get-WTfountCmd open
 	$shortcutIconLocation = "$FOUNT_DIR\src\public\pages\favicon.ico"
 
-	$desktopPath = Get-DesktopPath
-	$existing = @(Find-DesktopShortcutPaths -DesktopPath $desktopPath)
+	$desktopPath = get_desktop_dir
+	$existing = @(find_desktop_shortcut_paths -DesktopPath $desktopPath)
 	if ($existing.Count -gt 0) {
 		$desktopTargets = $existing
 	}

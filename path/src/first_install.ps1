@@ -1,14 +1,14 @@
-﻿function script:Invoke-FountFirstInstall {
+﻿function script:fount_first_install_if_needed {
 	if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $args[0] -eq 'init') {
 		if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {
 			if (Get-Command git -ErrorAction Ignore) {
-				Invoke-RepoGit config core.autocrlf false
-				$hasHead = Test-GitRef
-				Invoke-RepoGit fetch origin 2>$null
+				invoke_repo_git config core.autocrlf false
+				$hasHead = git_ref_exists
+				invoke_repo_git fetch origin 2>$null
 				$fetchOk = ($LastExitCode -eq 0)
-				if ((Test-GitRef 'origin/master') -and ($hasHead -or $fetchOk)) {
-					if (Sync-GitToRef 'origin/master') {
-						Invoke-RepoGit gc --aggressive --prune=now --force
+				if ((git_ref_exists 'origin/master') -and ($hasHead -or $fetchOk)) {
+					if (git_sync_to_ref 'origin/master') {
+						invoke_repo_git gc --aggressive --prune=now --force
 					}
 				}
 				elseif (-not $fetchOk) {
@@ -51,9 +51,9 @@
 
 		# fount Terminal注册
 		Register-FountTerminalProfile
-		Register-FountTerminalKeybindings
+		register_fount_terminal_keybindings
 		Register-FountBootBackground
 
-		Invoke-ExplorerRefresh
+		invoke_explorer_refresh
 	}
 }

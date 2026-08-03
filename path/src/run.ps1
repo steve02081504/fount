@@ -60,12 +60,12 @@
 	}
 }
 
-function script:Invoke-FountRunServerWithUpdates {
+function script:run_server_with_updates {
 	run @args
 	# Self-update restart runs bare server — not @args. e.g. `fount run shell/install x`
 	# must not re-run install after crash recovery.
 	while ($LastExitCode -eq 131) {
-		Update-FountAndDeno
+		update_fount_and_deno
 		run
 	}
 }

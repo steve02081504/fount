@@ -1,5 +1,5 @@
-﻿function script:Invoke-FountCmdKeepalive {
-	Invoke-FountBootstrapServer @args
+﻿function script:cmd_keepalive {
+	bootstrap_server @args
 	Start-Job -ScriptBlock {
 		$FOUNT_DIR = $args[0]
 		if (Get-Command compact.exe -ErrorAction SilentlyContinue) {
@@ -14,20 +14,20 @@
 		}
 	} -ArgumentList $FOUNT_DIR | Out-Null
 
-	$runargs = $args[1..$args.Count]
+	$args = @($args | Select-Object -Skip 1)
 
 	$env:FOUNT_KEEPALIVE = 1
 	try {
 		Register-FountApplicationRestart
-		if ($runargs.Count -gt 0 -and $runargs[0] -eq 'debug') {
-			$runargs = $runargs[1..$runargs.Count]
+		if ($args.Count -gt 0 -and $args[0] -eq 'debug') {
+			$args = @($args | Select-Object -Skip 1)
 			debug_on
 		}
 		$startTime = Get-Date
 		$initAttempted = $false
 		$restart_timestamps = New-Object System.Collections.Generic.List[datetime]
 
-		& (Join-Path $FOUNT_DIR 'path/fount.ps1') server @runargs
+		& (Join-Path $FOUNT_DIR 'path/fount.ps1') server @args
 		while ($LastExitCode) {
 			if ($LastExitCode -eq 130) { exit 130 } # ctrl+c
 			if ($LastExitCode -ne 131) {

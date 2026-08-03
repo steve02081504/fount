@@ -11,7 +11,7 @@ if [ "$OS_TYPE" = "Linux" ]; then
 		get_i18n 'remove.desktopShortcutNotFound'
 	fi
 elif [ "$OS_TYPE" = "Darwin" ]; then
-	if remove_fount_desktop_shortcut_copies "fount.app"; then
+	if remove_desktop_shortcut_copies "fount.app"; then
 		get_i18n 'remove.desktopShortcutRemoved'
 	else
 		get_i18n 'remove.desktopShortcutNotFound'

@@ -1,17 +1,12 @@
 ﻿# Windows: passthrough entry is fount.ps1; container detection lives in env.ps1
-function script:Invoke-DockerPassthrough {
-	param (
-		[Parameter(Mandatory = $true)]
-		[string[]]$CurrentArgs
-	)
-	if (Test-InDocker) {
-		$nestedArgs = $CurrentArgs[1..$CurrentArgs.Count]
-		fount.ps1 @nestedArgs
-		exit $LastExitCode
-	}
+function script:handle_docker_passthrough {
+	if (-not (in_docker)) { return }
+	$args = @($args | Select-Object -Skip 1)
+	fount.ps1 @args
+	exit $LastExitCode
 }
 
-function script:Invoke-FountUnixPassthrough {
+function script:handle_unix_passthrough {
 	if (!$IsWindows) {
 		function install_package($CommandName, [string[]]$PackageNames) {
 			if ((Get-Command -Name $CommandName -ErrorAction Ignore)) { return $true }

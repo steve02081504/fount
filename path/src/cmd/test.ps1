@@ -1,11 +1,12 @@
-﻿function script:Invoke-FountCmdTest {
-	RequireMany win/keep_awake terminal deno
+﻿function script:cmd_test {
+	require win/keep_awake terminal deno
 	$originalTitle = Get-Title
 	Set-Title '𝒻ℴ𝓊𝓃𝓉 𝓽𝓮𝓼𝓉'
 	Enable-FountTestKeepAwake
 	$testExit = 0
 	try {
-		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/scripts/test/cli.mjs" @(if ($args.Count -gt 1) { $args[1..($args.Count - 1)] })
+		$args = @($args | Select-Object -Skip 1)
+		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/scripts/test/cli.mjs" @args
 		$testExit = $LASTEXITCODE
 	}
 	finally {

@@ -1,3 +1,2 @@
-﻿function script:Invoke-FountCmdNop {
-	exit 0
+﻿function script:cmd_nop {
 }

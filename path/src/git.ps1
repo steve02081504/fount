@@ -16,7 +16,7 @@ if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 	}
 }
 
-function script:Invoke-RepoGit {
+function script:invoke_repo_git {
 	$prevPrompt = $env:GIT_TERMINAL_PROMPT
 	$prevLocks = $env:GIT_OPTIONAL_LOCKS
 	$env:GIT_TERMINAL_PROMPT = '0'
@@ -32,39 +32,39 @@ function script:Invoke-RepoGit {
 	}
 }
 
-function script:Test-GitRef($Ref = 'HEAD') {
-	Invoke-RepoGit rev-parse --verify $Ref *> $null
+function script:git_ref_exists($Ref = 'HEAD') {
+	invoke_repo_git rev-parse --verify $Ref *> $null
 	return ($LastExitCode -eq 0)
 }
 
-function script:Save-GitUncommittedBackup {
+function script:git_backup_uncommitted {
 	if (-not (Get-Command git -ErrorAction SilentlyContinue)) { return }
 	if (-not (Test-Path -LiteralPath "$FOUNT_DIR/.git")) { return }
-	$status = Invoke-RepoGit status --porcelain
+	$status = invoke_repo_git status --porcelain
 	if (-not $status) { return }
 
 	$timestamp = (Get-Date -Format 'yyyyMMdd_HHmmss')
 	$diffFilePath = Join-Path -Path $env:TEMP -ChildPath "fount-local-changes-diff_$timestamp.diff"
 
-	$headExists = Test-GitRef
+	$headExists = git_ref_exists
 
-	Invoke-RepoGit add -A
-	Invoke-RepoGit diff --cached | Out-File -FilePath $diffFilePath -Encoding utf8
-	Invoke-RepoGit reset $(if ($headExists) { 'HEAD' } else { })
+	invoke_repo_git add -A
+	invoke_repo_git diff --cached | Out-File -FilePath $diffFilePath -Encoding utf8
+	invoke_repo_git reset $(if ($headExists) { 'HEAD' } else { })
 
 	Write-Host (Get-I18n -key 'git.localChangesDetected') -ForegroundColor Yellow
 	Write-Host (Get-I18n -key 'git.backupSavedTo' -params @{ path = $diffFilePath }) -ForegroundColor Green
 }
 
-function script:Sync-GitToRef($Ref) {
-	if (-not (Test-GitRef $Ref)) {
+function script:git_sync_to_ref($Ref) {
+	if (-not (git_ref_exists $Ref)) {
 		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $Ref })
 		return $false
 	}
-	Save-GitUncommittedBackup
-	Invoke-RepoGit clean -fd | Out-Host
+	git_backup_uncommitted
+	invoke_repo_git clean -fd | Out-Host
 	if ($LastExitCode -ne 0) { return $false }
-	Invoke-RepoGit reset --hard $Ref | Out-Host
+	invoke_repo_git reset --hard $Ref | Out-Host
 	return ($LastExitCode -eq 0)
 }
 
@@ -78,91 +78,91 @@ function script:fount_upgrade {
 	}
 	if (!(Test-Path -Path "$FOUNT_DIR/.git")) {
 		Write-Host (Get-I18n -key 'git.repoNotFound')
-		Invoke-RepoGit init -b master
-		Invoke-RepoGit config core.autocrlf false
-		Invoke-RepoGit remote add origin https://github.com/steve02081504/fount.git
+		invoke_repo_git init -b master
+		invoke_repo_git config core.autocrlf false
+		invoke_repo_git remote add origin https://github.com/steve02081504/fount.git
 		Write-Host (Get-I18n -key 'git.fetchingAndResetting')
-		Invoke-RepoGit fetch origin master --depth 1
+		invoke_repo_git fetch origin master --depth 1
 		if ($LastExitCode -ne 0) {
 			Write-Warning (Get-I18n -key 'git.fetchFailed')
 			Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
 			return
 		}
-		Sync-GitToRef 'origin/master' | Out-Null
+		git_sync_to_ref 'origin/master' | Out-Null
 		return
 	}
 
-	Invoke-RepoGit config core.autocrlf false
-	$hasHead = Test-GitRef
-	Invoke-RepoGit fetch origin
+	invoke_repo_git config core.autocrlf false
+	$hasHead = git_ref_exists
+	invoke_repo_git fetch origin
 	if ($LastExitCode -ne 0) {
 		Write-Warning (Get-I18n -key 'git.fetchFailed')
 		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
 		return
 	}
 
-	if (-not $hasHead -and -not (Test-GitRef)) {
+	if (-not $hasHead -and -not (git_ref_exists)) {
 		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
 		return
 	}
 
-	$currentBranch = Invoke-RepoGit rev-parse --abbrev-ref HEAD 2>$null
+	$currentBranch = invoke_repo_git rev-parse --abbrev-ref HEAD 2>$null
 	if ($LastExitCode -ne 0) { $currentBranch = 'HEAD' }
 	if ($currentBranch -eq 'HEAD') {
-		if (-not (Test-GitRef 'origin/master')) {
+		if (-not (git_ref_exists 'origin/master')) {
 			Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = 'origin/master' })
 			return
 		}
 		Write-Host (Get-I18n -key 'git.notOnBranch')
-		if (-not (Sync-GitToRef 'origin/master')) { return }
-		Invoke-RepoGit checkout master
-		$currentBranch = Invoke-RepoGit rev-parse --abbrev-ref HEAD 2>$null
+		if (-not (git_sync_to_ref 'origin/master')) { return }
+		invoke_repo_git checkout master
+		$currentBranch = invoke_repo_git rev-parse --abbrev-ref HEAD 2>$null
 	}
 
-	if (-not (Test-GitRef)) {
+	if (-not (git_ref_exists)) {
 		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
 		return
 	}
 
-	$remoteBranch = Invoke-RepoGit rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
+	$remoteBranch = invoke_repo_git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
 	if (-not $remoteBranch) {
 		$candidateRemote = "origin/$currentBranch"
-		if (-not (Test-GitRef $candidateRemote)) {
+		if (-not (git_ref_exists $candidateRemote)) {
 			Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $candidateRemote })
 			return
 		}
 		Write-Warning (Get-I18n -key 'git.noUpstreamBranch' -params @{ branch = $currentBranch; remote = $candidateRemote })
-		Invoke-RepoGit branch --set-upstream-to $candidateRemote
+		invoke_repo_git branch --set-upstream-to $candidateRemote
 		$remoteBranch = $candidateRemote
 	}
 
-	if (-not (Test-GitRef $remoteBranch)) {
+	if (-not (git_ref_exists $remoteBranch)) {
 		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $remoteBranch })
 		return
 	}
 
-	$mergeBase = Invoke-RepoGit merge-base $currentBranch $remoteBranch 2>$null
+	$mergeBase = invoke_repo_git merge-base $currentBranch $remoteBranch 2>$null
 	if ($LastExitCode -ne 0) {
 		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
 		return
 	}
-	$localCommit = Invoke-RepoGit rev-parse $currentBranch 2>$null
+	$localCommit = invoke_repo_git rev-parse $currentBranch 2>$null
 	if ($LastExitCode -ne 0) {
 		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
 		return
 	}
-	$remoteCommit = Invoke-RepoGit rev-parse $remoteBranch 2>$null
+	$remoteCommit = invoke_repo_git rev-parse $remoteBranch 2>$null
 	if ($LastExitCode -ne 0) {
 		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
 		return
 	}
-	$status = Invoke-RepoGit status --porcelain
+	$status = invoke_repo_git status --porcelain
 
 	if ($localCommit -ne $remoteCommit) {
 		if ($mergeBase -eq $localCommit) {
 			Write-Host (Get-I18n -key 'git.updatingFromRemote')
-			if ($status) { Save-GitUncommittedBackup }
-			Invoke-RepoGit reset --hard $remoteBranch
+			if ($status) { git_backup_uncommitted }
+			invoke_repo_git reset --hard $remoteBranch
 		}
 		elseif ($mergeBase -eq $remoteCommit) {
 			Write-Host (Get-I18n -key 'git.localBranchAhead')
@@ -170,8 +170,8 @@ function script:fount_upgrade {
 		}
 		else {
 			Write-Host (Get-I18n -key 'git.branchesDiverged')
-			if ($status) { Save-GitUncommittedBackup }
-			Invoke-RepoGit reset --hard $remoteBranch
+			if ($status) { git_backup_uncommitted }
+			invoke_repo_git reset --hard $remoteBranch
 		}
 	}
 	else {

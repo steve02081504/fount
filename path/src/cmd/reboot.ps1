@@ -1,5 +1,5 @@
-﻿function script:Invoke-FountCmdReboot {
-	Invoke-FountBootstrapFull @args
+﻿function script:cmd_reboot {
+	bootstrap_full @args
 	try {
 		run @args
 	}

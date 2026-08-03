@@ -30,7 +30,7 @@ bootstrap_full() {
 
 bootstrap_server() {
 	bootstrap_full "$@"
-	assert_fount_dir_writable "$FOUNT_DIR"
+	assert_dir_writable "$FOUNT_DIR"
 	update_fount_and_deno
 	run_deno -V
 }

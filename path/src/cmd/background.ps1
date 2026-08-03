@@ -1,10 +1,10 @@
-﻿function script:Invoke-FountCmdBackground {
-	RequireMany passthrough win/wt
+﻿function script:cmd_background {
+	require passthrough win/wt
 	$env:FOUNT_BACKGROUND = 1
-	Invoke-DockerPassthrough -CurrentArgs $args
-	$runargs = $args[1..$args.Count]
+	handle_docker_passthrough @args
+	$args = @($args | Select-Object -Skip 1)
 	if (Test-Path -Path "$FOUNT_DIR/.nobackground") {
-		$windowsTerminalCommand = Get-WTfountCmd @runargs
+		$windowsTerminalCommand = Get-WTfountCmd @args
 		Start-Process -FilePath $windowsTerminalCommand.FilePath -ArgumentList $windowsTerminalCommand.ArgumentList
 	}
 	else {
@@ -15,7 +15,7 @@
 			'-NoLogo',
 			'-ExecutionPolicy', 'Bypass',
 			'-File', $fountScript
-		) + @($runargs)
+		) + @($args)
 		Start-Process -FilePath $pwshExe -ArgumentList $argList -WindowStyle Hidden
 	}
 	exit 0

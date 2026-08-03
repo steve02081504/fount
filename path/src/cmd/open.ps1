@@ -1,11 +1,11 @@
-﻿function script:Invoke-FountCmdOpen {
-	RequireMany passthrough win/refresh_path win/winget browser
+﻿function script:cmd_open {
+	require passthrough win/refresh_path win/winget browser
 	if (Test-Path -Path "$FOUNT_DIR/data/config.json") {
-		Invoke-DockerPassthrough -CurrentArgs $args
+		handle_docker_passthrough @args
 		Test-Browser
 		Start-Process 'https://steve02081504.github.io/fount/wait?cold_bootting=true'
-		$runargs = @($args | Select-Object -Skip 1)
-		fount.ps1 @runargs
+		$args = @($args | Select-Object -Skip 1)
+		fount.ps1 @args
 		exit $LastExitCode
 	}
 
@@ -32,10 +32,10 @@
 	}
 	$statusServerJob = Start-Job -ScriptBlock $statusServerScriptBlock
 	try {
-		$runargs = @($args | Select-Object -Skip 1)
+		$args = @($args | Select-Object -Skip 1)
 		Test-Browser
 		Start-Process 'https://steve02081504.github.io/fount/wait/install'
-		fount.ps1 @runargs
+		fount.ps1 @args
 	}
 	finally {
 		Stop-Job $statusServerJob

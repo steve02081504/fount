@@ -1,6 +1,6 @@
-﻿function script:Test-InTempDirectory($Directory) {
-	try { $resolved = (Resolve-Path -LiteralPath $Directory).Path }
-	catch { $resolved = $Directory }
+﻿function script:is_in_temp_dir($dir) {
+	try { $resolved = (Resolve-Path -LiteralPath $dir).Path }
+	catch { $resolved = $dir }
 
 	$candidates = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 	[void]$candidates.Add([System.IO.Path]::GetTempPath().TrimEnd('\', '/'))
@@ -17,4 +17,11 @@
 		}
 	}
 	return $false
+}
+
+function script:check_temp_guard($cmd) {
+	if ($cmd -ne 'remove' -and (is_in_temp_dir $FOUNT_DIR)) {
+		Write-Host (Get-I18n -key 'tempDir.blocked')
+		exit 1
+	}
 }

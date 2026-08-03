@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Desktop shortcuts and protocol handler registration
 
-get_fount_desktop_dir() {
+get_desktop_dir() {
 	if [ -n "${XDG_DESKTOP_DIR:-}" ]; then
 		printf '%s\n' "$XDG_DESKTOP_DIR"
 		return
@@ -21,20 +21,20 @@ get_fount_desktop_dir() {
 }
 
 # $1 = desktop dir, $2 = shortcut base name (desktop + 2 subfolder levels → find -maxdepth 3)
-find_fount_desktop_shortcut_paths() {
+find_desktop_shortcut_paths() {
 	local desktop_dir="$1" name="$2"
 	[ -d "$desktop_dir" ] || return 0
 	find "$desktop_dir" -maxdepth 3 -name "$name" 2>/dev/null
 }
 
-remove_fount_desktop_shortcut_copies() {
+remove_desktop_shortcut_copies() {
 	local name="$1" desktop_dir path removed=0
-	desktop_dir=$(get_fount_desktop_dir)
+	desktop_dir=$(get_desktop_dir)
 	while IFS= read -r path; do
 		[ -n "$path" ] || continue
 		rm -rf "$path"
 		removed=1
-	done < <(find_fount_desktop_shortcut_paths "$desktop_dir" "$name")
+	done < <(find_desktop_shortcut_paths "$desktop_dir" "$name")
 	[ "$removed" -eq 1 ]
 }
 
@@ -177,11 +177,11 @@ EOF
 install_fount_desktop_shortcut_targets() {
 	local name="$1" writer="$2"
 	local desktop_dir default_path path paths=()
-	desktop_dir=$(get_fount_desktop_dir)
+	desktop_dir=$(get_desktop_dir)
 	default_path="$desktop_dir/$name"
 	while IFS= read -r path; do
 		[ -n "$path" ] && paths+=("$path")
-	done < <(find_fount_desktop_shortcut_paths "$desktop_dir" "$name")
+	done < <(find_desktop_shortcut_paths "$desktop_dir" "$name")
 	if [ "${#paths[@]}" -eq 0 ]; then
 		paths=("$default_path")
 	fi

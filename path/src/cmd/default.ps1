@@ -1,12 +1,12 @@
-﻿function script:Invoke-FountCmdDefault {
-	RequireMany terminal env run
-	Invoke-FountBootstrapFull @args
+﻿function script:cmd_default {
+	require terminal env run
+	bootstrap_full @args
 	$originalTitle = Get-Title
 	try {
 		if ($args[0]) {
 			run @args
 		}
-		elseif (Test-InContainer) {
+		elseif (in_container) {
 			& (Join-Path $FOUNT_DIR 'path/fount.ps1') keepalive @args
 		}
 		else {

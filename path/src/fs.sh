@@ -9,7 +9,7 @@ check_dir_writable() {
 	[ -w "$dir" ]
 }
 
-assert_fount_dir_writable() {
+assert_dir_writable() {
 	local dir="$1"
 	if ! check_dir_writable "$dir"; then
 		if [ "$(id -u)" -eq 0 ]; then

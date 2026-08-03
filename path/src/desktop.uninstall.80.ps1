@@ -1,6 +1,6 @@
 ﻿# Remove Desktop Shortcut
 Write-Host (Get-I18n -key 'remove.removing.desktopShortcut')
-if (Remove-DesktopShortcuts) {
+if (remove_desktop_shortcut_copies) {
 	Write-Host (Get-I18n -key 'remove.desktopShortcutRemoved')
 }
 else {

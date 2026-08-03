@@ -28,13 +28,13 @@ function script:Get-Title {
 	$Host.UI.RawUI.WindowTitle
 }
 
-function script:Register-FountTerminalTeardown {
+function script:trap_terminal_teardown {
 	if ($script:FountTerminalTeardownRegistered) { return }
 	$script:FountTerminalTeardownTitle = Get-Title
 	$script:FountTerminalTeardownRegistered = $true
 }
 
-function script:Complete-FountTerminalTeardown {
+function script:terminal_teardown {
 	Write-TaskbarProgressClear
 	if ($script:FountTerminalTeardownTitle) {
 		Set-Title $script:FountTerminalTeardownTitle

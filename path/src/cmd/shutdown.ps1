@@ -1,5 +1,5 @@
-﻿function script:Invoke-FountCmdShutdown {
-	Invoke-FountBootstrapFull @args
+﻿function script:cmd_shutdown {
+	bootstrap_full @args
 	try {
 		run @args
 	}

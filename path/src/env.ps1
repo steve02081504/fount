@@ -18,9 +18,9 @@ Start-Job -ScriptBlock {
 	}
 } -ArgumentList $FOUNT_DIR | Out-Null
 
-function script:Test-InDocker { $false }
-function script:Test-InTermux { $false }
-function script:Test-InContainer { (Test-InDocker) -or (Test-InTermux) }
+function script:in_docker { $false }
+function script:in_termux { $false }
+function script:in_container { (in_docker) -or (in_termux) }
 
 # fount 路径设置
 if (!(Get-Command fount.ps1 -ErrorAction SilentlyContinue)) {

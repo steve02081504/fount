@@ -1,9 +1,11 @@
-﻿function script:Invoke-FountCmdLogo {
+﻿function script:cmd_logo {
+	require deno
 	$iconAnime = "$FOUNT_DIR/imgs/icon_anime/index.mjs"
 	$originalTitle = Get-Title
 	try {
 		Set-Title '𝒻ℴ𝓊𝓃𝓉 𝓵𝓸𝓰𝓸'
-		if ($args[1] -eq 'watch') {
+		$args = @($args | Select-Object -Skip 1)
+		if ($args[0] -eq 'watch') {
 			deno run --watch --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" $iconAnime
 		}
 		else {

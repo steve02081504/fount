@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # IDE terminal Shift+Enter keybinding patch
 
-get_fount_terminal_keybindings_manifest_path() {
+get_terminal_keybindings_manifest_path() {
 	echo "$FOUNT_DIR/data/installer/terminal_keybindings.json"
 }
 
-get_fount_editor_keybindings_paths() {
+get_editor_keybindings_paths() {
 	local editor user_dir
 	for editor in Cursor Code VSCodium; do
 		case "$OS_TYPE" in
@@ -17,7 +17,7 @@ get_fount_editor_keybindings_paths() {
 	done
 }
 
-merge_fount_editor_keybindings() {
+merge_editor_keybindings() {
 	local keybindings_path="$1"
 	command -v jq &>/dev/null || return 1
 	local parent patch merged entries before
@@ -46,15 +46,15 @@ register_terminal_keybindings() {
 	command -v jq &>/dev/null || return 0
 	mkdir -p "$INSTALLER_DATA_DIR"
 	local manifest kb_path patched=false
-	manifest=$(get_fount_terminal_keybindings_manifest_path)
+	manifest=$(get_terminal_keybindings_manifest_path)
 	local editor_paths=()
 	while IFS= read -r kb_path; do
 		[ -n "$kb_path" ] || continue
-		if merge_fount_editor_keybindings "$kb_path"; then
+		if merge_editor_keybindings "$kb_path"; then
 			editor_paths+=("$kb_path")
 			patched=true
 		fi
-	done < <(get_fount_editor_keybindings_paths)
+	done < <(get_editor_keybindings_paths)
 	if ! $patched; then return 0; fi
 	printf '%s\n' "${editor_paths[@]}" | jq -R . | jq -s '{editorKeybindings: ., windowsTerminalSettings: []}' >"$manifest"
 	get_i18n 'terminalKeybindings.registered'

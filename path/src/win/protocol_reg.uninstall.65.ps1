@@ -1,5 +1,5 @@
 ﻿# Remove fount protocol handler
-if (-not (Test-InDocker)) {
+if (-not (in_docker)) {
 	Write-Host (Get-I18n -key 'remove.removing.protocolHandler')
 	try {
 		# 静默删除注册表键及其所有子键
