@@ -65,7 +65,7 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 				"x86_64-pc-windows-msvc.zip"
 			}
 			elseif ($IsMacOS) {
-				if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
+				if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -eq [System.Runtime.InteropServices.Architecture]::Arm64) {
 					"aarch64-apple-darwin.zip"
 				}
 				else {

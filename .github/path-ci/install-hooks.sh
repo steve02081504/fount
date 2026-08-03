@@ -6,10 +6,8 @@ ROOT="${1:?repo root}"
 DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)"
 
 install_one() {
-	local mod="$1"
-	local file="$2"
-	local hook="$3"
-	local src="$ROOT/src/$mod/$file"
+	local src="$1"
+	local hook="$2"
 	local bak="$src.path-ci.bak"
 	if [ ! -f "$src" ]; then
 		echo "install-hooks: missing $src" >&2
@@ -23,5 +21,5 @@ install_one() {
 	cp "$hook" "$src"
 }
 
-install_one server index.mjs "$DIR/hooks/server.mjs"
-install_one log_viewer index.mjs "$DIR/hooks/log_viewer.mjs"
+install_one "$ROOT/src/server/index.mjs" "$DIR/hooks/server.mjs"
+install_one "$ROOT/src/log_viewer/index.mjs" "$DIR/hooks/log_viewer.mjs"

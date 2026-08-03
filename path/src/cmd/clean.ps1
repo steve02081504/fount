@@ -13,8 +13,7 @@
 	Write-Host (Get-I18n -key 'clean.cleaningDenoCaches')
 	deno clean -e "$FOUNT_DIR/src/server/index.mjs"
 	Write-Host (Get-I18n -key 'clean.cleaningOldPwshModules')
-	$Latest = Get-InstalledModule -Name @('ps12exe', 'fount-pwsh') -ErrorAction Ignore
-	foreach ($module in $Latest) {
+	foreach ($module in Get-InstalledModule -Name @('ps12exe', 'fount-pwsh') -ErrorAction Ignore) {
 		Get-InstalledModule -Name $module.Name -AllVersions | Where-Object { $_.Version -ne $module.Version } | Uninstall-Module
 	}
 	if (-not (Test-Path "$FOUNT_DIR/node_modules/desktop.ini")) {

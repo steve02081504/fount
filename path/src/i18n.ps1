@@ -42,7 +42,7 @@ function script:Get-BestLocale {
 	foreach ($preferred in $preferredLocales) {
 		$prefix = $preferred.Split('-')[0]
 		foreach ($available in $availableLocales) {
-			if ($available.StartsWith($prefix)) {
+			if ($available -eq $preferred -or $available.StartsWith("$prefix-")) {
 				return $available
 			}
 		}

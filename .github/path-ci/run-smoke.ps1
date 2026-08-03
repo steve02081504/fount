@@ -8,7 +8,6 @@ Set-Location $Root
 
 $Fount = Join-Path $Root 'path/fount.ps1'
 $Marker = 'FOUNT_CI_HOOK:server'
-$LogMarker = 'FOUNT_CI_HOOK:log'
 
 function Assert-OutputContains {
 	param(
@@ -24,7 +23,11 @@ function Assert-OutputContains {
 
 function Invoke-FountCapture {
 	param([Parameter(ValueFromRemainingArguments = $true)][string[]]$FountArgs)
-	& $Fount @FountArgs 2>&1 | Out-String
+	$output = & $Fount @FountArgs 2>&1 | Out-String
+	if ($LASTEXITCODE -ne 0) {
+		throw "fount @FountArgs exited with $LASTEXITCODE"
+	}
+	return $output
 }
 
 Write-Host "path smoke pwsh: repo=$Root"
@@ -53,7 +56,7 @@ Assert-OutputContains reboot reboot $out
 
 Write-Host '== log =='
 $out = Invoke-FountCapture log
-Assert-OutputContains log $LogMarker $out
+Assert-OutputContains log 'FOUNT_CI_HOOK:log' $out
 
 Write-Host '== background =='
 $markerFile = [System.IO.Path]::GetTempFileName()
@@ -61,7 +64,7 @@ $env:FOUNT_CI_HOOK_MARKER_FILE = $markerFile
 & $Fount background server
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 $found = $false
-foreach ($_ in 1..60) {
+foreach ($attempt in 1..60) {
 	if ((Test-Path -LiteralPath $markerFile) -and (Get-Item -LiteralPath $markerFile).Length -gt 0) {
 		$text = Get-Content -LiteralPath $markerFile -Raw
 		if ($text -like "*$Marker*") {

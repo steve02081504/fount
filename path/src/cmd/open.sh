@@ -15,7 +15,7 @@ fount_cmd_open() {
 		while true; do {
 			while IFS= read -r -t 2 line && [[ "$line" != $'\r' ]]; do :; done
 			echo -e "HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"pong\"}"
-		} | nc -l 8930 -q 0; done >/dev/null 2>&1 &
+		} | nc -l 8930 -q 0 || break; done >/dev/null 2>&1 &
 		STATUS_SERVER_PID=$!
 	elif command -v socat &>/dev/null; then
 		(socat -T 5 TCP-LISTEN:8930,reuseaddr,fork SYSTEM:"read; echo -e 'HTTP/1.1 200 OK\r\nAccess-Control-Allow-Origin: *\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n{\"message\":\"pong\"}'") >/dev/null 2>&1 &

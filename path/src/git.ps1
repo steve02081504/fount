@@ -50,12 +50,7 @@ function script:Save-FountGitUncommittedBackup {
 
 	Invoke-GitForFount add -A
 	Invoke-GitForFount diff --cached | Out-File -FilePath $diffFilePath -Encoding utf8
-	if ($headExists) {
-		Invoke-GitForFount reset HEAD
-	}
-	else {
-		Invoke-GitForFount reset
-	}
+	Invoke-GitForFount reset $(if ($headExists) { 'HEAD' } else { })
 
 	Write-Host (Get-I18n -key 'git.localChangesDetected') -ForegroundColor Yellow
 	Write-Host (Get-I18n -key 'git.backupSavedTo' -params @{ path = $diffFilePath }) -ForegroundColor Green

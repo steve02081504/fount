@@ -10,11 +10,11 @@ fount_cmd_protocolhandle() {
 		exit $?
 	fi
 	if [ -z "$protocolUrl" ]; then
-		echo -e "${C_RED}Error: No URL provided for protocolhandle.${C_RESET}" >&2
+		print_i18n_red 'protocol.noUrl' >&2
 		exit 1
 	fi
 	test_browser
-	install_package "nc" "netcat gnu-netcat openbsd-netcat netcat-openbsd nmap-ncat" || install_package "socat" "socat" || exit 1
+	install_ipc_tools || exit 1
 	install_package "jq" "jq" || exit 1
 	if [[ "$OS_TYPE" == "Linux" && $IN_TERMUX -eq 0 ]]; then install_package "xdg-open" "xdg-utils"; fi
 	TARGET_URL="https://steve02081504.github.io/fount/protocol/?url=$(urlencode "$protocolUrl")"

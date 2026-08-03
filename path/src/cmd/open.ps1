@@ -5,44 +5,42 @@
 		Invoke-DockerPassthrough -CurrentArgs $CommandArgs
 		Test-Browser
 		Start-Process 'https://steve02081504.github.io/fount/wait?cold_bootting=true'
-		$runargs = $CommandArgs[1..$CommandArgs.Count]
+		$runargs = @($CommandArgs | Select-Object -Skip 1)
 		fount.ps1 @runargs
 		exit $LastExitCode
 	}
-	else {
-		$statusServerScriptBlock = {
-			$listener = [System.Net.HttpListener]::new()
-			$listener.Prefixes.Add("http://localhost:8930/")
-			$listener.Start()
 
-			try {
-				while ($true) {
-					$response = $listener.GetContext().Response
-					$response.AddHeader("Access-Control-Allow-Origin", "*")
-					$buffer = [System.Text.Encoding]::UTF8.GetBytes('{"message":"pong"}')
-					$response.ContentType = "application/json"
-					$response.ContentLength64 = $buffer.Length
-					$response.OutputStream.Write($buffer, 0, $buffer.Length)
-					$response.Close()
-				}
-			}
-			finally {
-				$listener.Stop()
-				$listener.Close()
-			}
-		}
-		$statusServerJob = Start-Job -ScriptBlock $statusServerScriptBlock
+	$statusServerScriptBlock = {
+		$listener = [System.Net.HttpListener]::new()
+		$listener.Prefixes.Add("http://localhost:8930/")
+		$listener.Start()
+
 		try {
-			$runargs = $CommandArgs[1..$CommandArgs.Count]
-			Test-Browser
-			Start-Process 'https://steve02081504.github.io/fount/wait/install'
-			fount.ps1 @runargs
-			exit $LastExitCode
+			while ($true) {
+				$response = $listener.GetContext().Response
+				$response.AddHeader("Access-Control-Allow-Origin", "*")
+				$buffer = [System.Text.Encoding]::UTF8.GetBytes('{"message":"pong"}')
+				$response.ContentType = "application/json"
+				$response.ContentLength64 = $buffer.Length
+				$response.OutputStream.Write($buffer, 0, $buffer.Length)
+				$response.Close()
+			}
 		}
 		finally {
-			Stop-Job $statusServerJob
-			Remove-Job $statusServerJob
+			$listener.Stop()
+			$listener.Close()
 		}
-		exit 1
 	}
+	$statusServerJob = Start-Job -ScriptBlock $statusServerScriptBlock
+	try {
+		$runargs = @($CommandArgs | Select-Object -Skip 1)
+		Test-Browser
+		Start-Process 'https://steve02081504.github.io/fount/wait/install'
+		fount.ps1 @runargs
+	}
+	finally {
+		Stop-Job $statusServerJob
+		Remove-Job $statusServerJob
+	}
+	exit $LastExitCode
 }

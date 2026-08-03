@@ -3,10 +3,11 @@ fount_cmd_logo() {
 	fount_require deno
 	install_deno
 	local icon_anime="$FOUNT_DIR/imgs/icon_anime/index.mjs"
-	local original_title logo_status
+	local original_title logo_status subcommand
+	subcommand="${2:-}"
 	original_title=$(get_title)
 	set_title "𝒻ℴ𝓊𝓃𝓉 𝓵𝓸𝓰𝓸"
-	if [ "${2:-}" = watch ]; then
+	if [ "$subcommand" = watch ]; then
 		run_deno run --watch --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$icon_anime"
 	else
 		run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$icon_anime"

@@ -14,11 +14,11 @@
 			Set-Content "$FOUNT_DIR/data/installer/auto_installed_chrome" '1'
 			RefreshPath
 		}
-	} catch { $Failed = 1 }
+	} catch { <# ignore #> }
 	try {
-		if ($Failed) {
+		if (-not (Get-Command chrome -ErrorAction SilentlyContinue)) {
 			$ChromeSetup = "ChromeSetup.exe"
-			Invoke-WebRequest -Uri 'http://dl.google.com/chrome/install/chrome_installer.exe' -OutFile "$env:TEMP\$ChromeSetup"
+			Invoke-WebRequest -Uri 'https://dl.google.com/chrome/install/chrome_installer.exe' -OutFile "$env:TEMP\$ChromeSetup"
 			& "$env:TEMP\$ChromeSetup" /install
 			$Process2Monitor = "ChromeSetup"
 			do {

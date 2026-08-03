@@ -13,17 +13,17 @@ register_boot_background() {
 	Linux)
 		mkdir -p "$HOME/.config/autostart"
 		local desk="$HOME/.config/autostart/fount-background.desktop"
-		{
-			echo '[Desktop Entry]'
-			echo 'Version=1.0'
-			echo 'Type=Application'
-			echo 'Name=fount background'
-			echo 'Comment=fount background keepalive at login'
-			printf 'Exec=/bin/bash -l -c "exec '\''%s'\'' background keepalive"\n' "$launcher"
-			echo 'Terminal=false'
-			echo 'Categories=Utility;'
-			echo 'X-GNOME-Autostart-enabled=true'
-		} >"$desk"
+		cat >"$desk" <<EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=fount background
+Comment=fount background keepalive at login
+Exec=/bin/bash -l -c "exec '$launcher' background keepalive"
+Terminal=false
+Categories=Utility;
+X-GNOME-Autostart-enabled=true
+EOF
 		chmod +x "$desk"
 		;;
 	Darwin)

@@ -5,10 +5,10 @@
 
 	$candidates = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
 	[void]$candidates.Add([System.IO.Path]::GetTempPath().TrimEnd('\', '/'))
-	foreach ($v in @($env:TEMP, $env:TMP)) {
-		if ($v) { [void]$candidates.Add($v.TrimEnd('\', '/')) }
+	foreach ($candidate in @($env:TEMP, $env:TMP)) {
+		if ($candidate) { [void]$candidates.Add($candidate.TrimEnd('\', '/')) }
 	}
-	if ($env:WINDIR) { [void]$candidates.Add((Join-Path $env:WINDIR 'Temp')) }
+	if ($env:WINDIR) { [void]$candidates.Add((Join-Path $env:WINDIR 'Temp').TrimEnd('\', '/')) }
 
 	foreach ($temp in $candidates) {
 		try { $resolvedTemp = (Resolve-Path -LiteralPath $temp).Path }

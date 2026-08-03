@@ -11,6 +11,5 @@ run_sed_inplace() {
 }
 
 fount_sed_escape() {
-	echo "$1" | sed 's/\//\\\//g'
+	printf '%s' "$1" | sed 's/\//\\\//g'
 }
-

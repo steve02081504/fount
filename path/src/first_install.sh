@@ -2,7 +2,7 @@
 # First-time dependency install (node_modules via deno install)
 
 fount_first_install_if_needed() {
-	if [[ ! -d "$FOUNT_DIR/node_modules" || ($# -gt 0 && $1 = 'init') ]]; then
+	if [[ ! -d "$FOUNT_DIR/node_modules" || "${1:-}" = 'init' ]]; then
 		if [ ! -f "$FOUNT_DIR/.noupdate" ]; then
 			install_package "git" "git git-core" || true
 			git_reset_and_clean

@@ -51,7 +51,8 @@ function script:Invoke-FountUnixPassthrough {
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }
 				}
 				if (Get-Command -Name "brew" -ErrorAction Ignore) {
-					if (-not (brew list --formula $package -ErrorAction Ignore)) {
+					brew list --formula $package 2>$null
+					if ($LASTEXITCODE -ne 0) {
 						brew install $package
 					}
 					if (Get-Command -Name $CommandName -ErrorAction Ignore) { break }

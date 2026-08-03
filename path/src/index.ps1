@@ -1,4 +1,4 @@
-# Main CLI dispatcher (dot-sourced from path/fount.ps1).
+﻿# Main CLI dispatcher (dot-sourced from path/fount.ps1).
 
 if (-not $script:FOUNT_SRC) {
 	$script:FOUNT_SRC = $PSScriptRoot
@@ -24,7 +24,7 @@ $ErrorActionPreference = 'Continue'
 try {
 	. $FountRequireMany i18n terminal temp_guard env
 
-	if (($args.Count -eq 0 -or $args[0] -ne 'remove') -and (Test-FountInTempDirectory -Directory $FOUNT_DIR)) {
+	if ($args[0] -ne 'remove' -and (Test-FountInTempDirectory -Directory $FOUNT_DIR)) {
 		Write-Host (Get-I18n -key 'tempDir.blocked')
 		exit 1
 	}

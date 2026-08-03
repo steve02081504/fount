@@ -5,7 +5,11 @@
 	try {
 		if ($CommandArgs[0]) {
 			run @CommandArgs
-		} else {
+		}
+		elseif (Test-FountInContainer) {
+			& (Join-Path $FOUNT_DIR 'path/fount.ps1') keepalive @CommandArgs
+		}
+		else {
 			Write-TaskbarProgress -Percent 25
 			Set-Title "𝓯"
 			& (Join-Path $FOUNT_DIR 'path/fount.ps1') background keepalive @CommandArgs
@@ -13,6 +17,7 @@
 			Write-TaskbarProgress
 			& (Join-Path $FOUNT_DIR 'path/fount.ps1') log
 		}
+		exit $LastExitCode
 	}
 	finally {
 		Set-Title $originalTitle

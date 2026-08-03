@@ -1,17 +1,16 @@
 ﻿function script:Invoke-FountCmdProtocolhandle {
 	param([string[]]$CommandArgs)
-	. $FountRequireMany passthrough win/refresh_path win/winget browser win/wt packages
+	. $FountRequireMany passthrough win/refresh_path win/winget browser win/wt packages run
 	Invoke-DockerPassthrough -CurrentArgs $CommandArgs
 	$protocolUrl = $CommandArgs[1]
-	if ($protocolUrl -eq 'fount://nop/') {
-		Start-WTfountCmd
-		exit $LastExitCode
-	}
 	if (-not $protocolUrl) {
 		Write-Error (Get-I18n -key 'protocol.noUrl')
 		exit 1
 	}
-	# 编码 URL 参数，防止特殊字符问题，确保传入的 URL 能正确作为查询参数
+	if ($protocolUrl -eq 'fount://nop/') {
+		Start-WTfountCmd
+		exit $LastExitCode
+	}
 	$encodedUrl = [uri]::EscapeDataString($protocolUrl)
 	$targetUrl = "https://steve02081504.github.io/fount/protocol/?url=$encodedUrl"
 

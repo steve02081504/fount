@@ -12,7 +12,15 @@ function script:Test-FountDirWritable {
 	if (-not (Test-Path $dir)) {
 		try { New-Item -Path $dir -ItemType Directory -Force -ErrorAction Stop | Out-Null } catch { return $false }
 	}
-	if (-not $IsWindows) { return $true }
+	if (-not $IsWindows) {
+		try {
+			$probe = Join-Path $dir ".fount-write-probe-$PID"
+			[System.IO.File]::WriteAllText($probe, '')
+			Remove-Item -LiteralPath $probe -Force
+			return $true
+		}
+		catch { return $false }
+	}
 	try {
 		if (-not ([System.Management.Automation.PSTypeName]'FountDirAccessCheck').Type) {
 			Add-Type -Language CSharp @"

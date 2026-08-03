@@ -41,6 +41,7 @@ fount_cmd_keepalive() {
 
 			if [ "${#restart_timestamps[@]}" -ge 7 ]; then
 				handle_auto_reinitialization
+				start_time=$(date +%s)
 				restart_timestamps=()
 				init_attempted=1
 			fi

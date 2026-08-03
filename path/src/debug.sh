@@ -37,11 +37,7 @@ debug_on() {
 			echo -n "$original_clip" | xclip -selection clipboard || true
 			xdotool key Return
 			sleep 0.3
-			local _i=0
-			while [ "$_i" -lt 5 ]; do
-				xdotool key Tab
-				_i=$((_i + 1))
-			done
+			xdotool key --repeat 5 Tab
 			xdotool key Return
 		fi
 	fi

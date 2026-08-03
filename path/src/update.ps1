@@ -3,7 +3,7 @@
 		Write-Host (Get-I18n -key 'update.skippingFountUpdate')
 	}
 	else {
-		deno_upgrade
 		fount_upgrade
+		deno_upgrade
 	}
 }
