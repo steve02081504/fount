@@ -199,15 +199,15 @@ function script:register_fount_terminal_keybindings {
 	}
 	$patched = $false
 
-	foreach ($wtPath in get_windows_terminal_settings_paths) {
-		if (merge_windows_terminal_settings $wtPath) {
-			$manifest.windowsTerminalSettings += $wtPath
+	foreach ($windowsTerminalSettingsPath in get_windows_terminal_settings_paths) {
+		if (merge_windows_terminal_settings $windowsTerminalSettingsPath) {
+			$manifest.windowsTerminalSettings += $windowsTerminalSettingsPath
 			$patched = $true
 		}
 	}
-	foreach ($kbPath in get_editor_keybindings_paths) {
-		if (merge_editor_keybindings $kbPath) {
-			$manifest.editorKeybindings += $kbPath
+	foreach ($editorKeybindingsPath in get_editor_keybindings_paths) {
+		if (merge_editor_keybindings $editorKeybindingsPath) {
+			$manifest.editorKeybindings += $editorKeybindingsPath
 			$patched = $true
 		}
 	}
@@ -221,29 +221,29 @@ function script:register_fount_terminal_keybindings {
 function script:unregister_fount_terminal_keybindings {
 	if (-not $IsWindows) { return }
 	$manifestPath = get_terminal_keybindings_manifest_path
-	$wtPaths = [System.Collections.Generic.List[string]]::new()
-	$kbPaths = [System.Collections.Generic.List[string]]::new()
+	$windowsTerminalSettingsPaths = [System.Collections.Generic.List[string]]::new()
+	$editorKeybindingsPaths = [System.Collections.Generic.List[string]]::new()
 
 	if (Test-Path $manifestPath) {
 		try {
 			$manifest = Get-Content $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
-			if ($manifest.windowsTerminalSettings) { $manifest.windowsTerminalSettings | ForEach-Object { $wtPaths.Add($_) } }
-			if ($manifest.editorKeybindings) { $manifest.editorKeybindings | ForEach-Object { $kbPaths.Add($_) } }
+			if ($manifest.windowsTerminalSettings) { $manifest.windowsTerminalSettings | ForEach-Object { $windowsTerminalSettingsPaths.Add($_) } }
+			if ($manifest.editorKeybindings) { $manifest.editorKeybindings | ForEach-Object { $editorKeybindingsPaths.Add($_) } }
 		}
 		catch { <# ignore #> }
 	}
 
-	get_windows_terminal_settings_paths | ForEach-Object { if ($wtPaths -notcontains $_) { $wtPaths.Add($_) } }
-	get_editor_keybindings_paths | ForEach-Object { if ($kbPaths -notcontains $_) { $kbPaths.Add($_) } }
+	get_windows_terminal_settings_paths | ForEach-Object { if ($windowsTerminalSettingsPaths -notcontains $_) { $windowsTerminalSettingsPaths.Add($_) } }
+	get_editor_keybindings_paths | ForEach-Object { if ($editorKeybindingsPaths -notcontains $_) { $editorKeybindingsPaths.Add($_) } }
 
-	foreach ($wtPath in $wtPaths) {
-		if (split_windows_terminal_settings $wtPath) {
-			Write-Host (Get-I18n -key 'terminalKeybindings.wtRemoved' -params @{ path = $wtPath })
+	foreach ($windowsTerminalSettingsPath in $windowsTerminalSettingsPaths) {
+		if (split_windows_terminal_settings $windowsTerminalSettingsPath) {
+			Write-Host (Get-I18n -key 'terminalKeybindings.wtRemoved' -params @{ path = $windowsTerminalSettingsPath })
 		}
 	}
-	foreach ($kbPath in $kbPaths) {
-		if (split_editor_keybindings $kbPath) {
-			Write-Host (Get-I18n -key 'terminalKeybindings.editorRemoved' -params @{ path = $kbPath })
+	foreach ($editorKeybindingsPath in $editorKeybindingsPaths) {
+		if (split_editor_keybindings $editorKeybindingsPath) {
+			Write-Host (Get-I18n -key 'terminalKeybindings.editorRemoved' -params @{ path = $editorKeybindingsPath })
 		}
 	}
 
