@@ -1,5 +1,6 @@
 ﻿function script:cmd_logo {
 	require terminal deno
+	install_deno
 	$iconAnime = "$FOUNT_DIR/imgs/icon_anime/index.mjs"
 	$originalTitle = Get-Title
 	try {

@@ -6,7 +6,7 @@
 	}
 	if (!$deno_ver) {
 		Write-Error (Get-I18n -key 'deno.notWorking') -ErrorAction Ignore
-		exit 1
+		return
 	}
 
 	$deno_update_channel = "stable"
@@ -46,14 +46,14 @@
 	}
 }
 
-# Deno 安装
-if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
+function script:install_deno {
+	if (Get-Command deno -ErrorAction SilentlyContinue) { return }
 	if (Test-Path "$HOME/.deno/bin/deno.exe") {
-		$env:PATH = $env:PATH + ";$HOME/.deno/bin"
-		[System.Environment]::SetEnvironmentVariable("PATH", [System.Environment]::GetEnvironmentVariable("PATH", "User") + ";$HOME/.deno/bin", [System.EnvironmentVariableTarget]::User)
+		$env:PATH = "$env:PATH;$HOME/.deno/bin"
+		[System.Environment]::SetEnvironmentVariable('PATH', [System.Environment]::GetEnvironmentVariable('PATH', 'User') + ";$HOME/.deno/bin", [System.EnvironmentVariableTarget]::User)
 	}
-}
-if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
+	if (Get-Command deno -ErrorAction SilentlyContinue) { return }
+
 	Write-Host (Get-I18n -key 'deno.missing')
 	Invoke-RestMethod https://deno.land/install.ps1 | Invoke-Expression
 	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
@@ -78,11 +78,13 @@ if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
 		Invoke-WebRequest -Uri $url -OutFile "$env:TEMP/deno.zip"
 		Expand-Archive -Path "$env:TEMP/deno.zip" -DestinationPath "$FOUNT_DIR/path"
 		Remove-Item -Path "$env:TEMP/deno.zip" -Force
+		$env:PATH = "$env:PATH;$FOUNT_DIR/path"
 	}
-	New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
-	Set-Content "$FOUNT_DIR/data/installer/auto_installed_deno" '1'
-	if (!(Get-Command deno -ErrorAction SilentlyContinue)) {
-		Write-Host (Get-I18n -key 'deno.isRequired')
-		exit 1
+	if (Get-Command deno -ErrorAction SilentlyContinue) {
+		New-Item -Path "$FOUNT_DIR/data/installer" -ItemType Directory -Force | Out-Null
+		Set-Content "$FOUNT_DIR/data/installer/auto_installed_deno" '1'
+		return
 	}
+	Write-Host (Get-I18n -key 'deno.isRequired')
+	exit 1
 }
