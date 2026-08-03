@@ -134,7 +134,7 @@ function script:split_windows_terminal_settings([string]$SettingsPath) {
 function script:read_editor_keybindings([string]$Path) {
 	if (-not (Test-Path $Path)) { return @() }
 	try {
-		$parsed = Get-Content $Path -Raw -Encoding UTF8 | ConvertFrom-Json -Depth 20
+		$parsed = Get-Content $Path -Raw -Encoding UTF8 | ConvertFrom-Json
 	}
 	catch { return @() }
 	if ($parsed -is [System.Array]) { return $parsed }

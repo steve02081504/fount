@@ -20,7 +20,6 @@
 		if (Test-Path -Path "$FOUNT_DIR/node_modules") {
 			run shutdown
 		}
-		New-Item -Path "$FOUNT_DIR/node_modules" -ItemType Directory -ErrorAction Ignore -Force | Out-Null
 		Write-TaskbarProgress -Percent 70
 		Write-Host (Get-I18n -key 'install.installingDependencies')
 		deno install --prod --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"

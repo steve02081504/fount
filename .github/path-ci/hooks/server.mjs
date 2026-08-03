@@ -2,6 +2,8 @@
  * CI-only stub swapped in place of src/server/index.mjs by .github/path-ci/install-hooks.sh.
  * Not used locally.
  */
+import 'npm:on-shutdown'
+
 const line = [
 	'FOUNT_CI_HOOK:server',
 	...Deno.args,
