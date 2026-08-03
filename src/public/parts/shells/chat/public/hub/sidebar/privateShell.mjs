@@ -8,6 +8,7 @@ import { store, setState } from '../core/state.mjs'
 import { updateFriendsHash } from '../core/urlHash.mjs'
 import { cancelScheduledChannelRefresh } from '../messages/channelRefreshScheduler.mjs'
 import { clearPrivateGroupState } from '../privateGroup.mjs'
+import { hubEmptyFriendsIcon } from '../../src/lib/emojiSvg.mjs'
 import { closeGroupWebSocket } from '../stream/index.mjs'
 
 /**
@@ -44,7 +45,7 @@ export async function backToFriendsList() {
 	updateFriendsHash()
 	disableComposer()
 	await mountTemplate(document.getElementById('messages'), 'hub/empty/idle', {
-		iconHtml: '<img src="https://api.iconify.design/mdi/account-group-outline.svg" class="empty-icon-img" width="48" height="48" alt="" aria-hidden="true" />',
+		iconHtml: hubEmptyFriendsIcon,
 	})
 	document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.friends.header'
 	document.getElementById('info-card-host').innerHTML = ''

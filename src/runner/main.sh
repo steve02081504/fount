@@ -15,15 +15,15 @@ FOUNT_BRANCH="${FOUNT_BRANCH:-"master"}"
 # 任务栏进度
 taskbar_progress_enabled() { [ -t 1 ]; }
 write_taskbar_progress() {
-	if ! taskbar_progress_enabled; then return; fi
+	taskbar_progress_enabled || return 0
 	if [ -n "${1:-}" ]; then
 		printf "\033]9;4;1;%s\007" "$1"
 	else
 		printf "\033]9;4;3\007"
 	fi
 }
-write_taskbar_progress_clear() { taskbar_progress_enabled && printf "\033]9;4;0\007"; }
-write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;100\007"; }
+write_taskbar_progress_clear() { taskbar_progress_enabled && printf "\033]9;4;0\007" || true; }
+write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;100\007" || true; }
 
 write_taskbar_progress 0
 
@@ -339,9 +339,12 @@ else
 	if [[ "$OSTYPE" == "darwin"* ]]; then
 		xattr -dr com.apple.quarantine "$FOUNT_DIR" 2>/dev/null || true
 	fi
-	find "$FOUNT_DIR" -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -print0 | xargs -0 chmod +x
-	find "$FOUNT_DIR/path" -maxdepth 1 -type f -print0 | xargs -0 chmod +x
+	find "$FOUNT_DIR" -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -exec chmod +x {} +
+	find "$FOUNT_DIR/path" -type f ! -name 'desktop.ini' ! -iname 'agents.md' -exec chmod +x {} +
 	chmod -x "$FOUNT_DIR/path/desktop.ini" 2>/dev/null || true
+	for agentsManifestPath in "$FOUNT_DIR/path/AGENTS.md" "$FOUNT_DIR/path/agents.md"; do
+		[ -f "$agentsManifestPath" ] && chmod -x "$agentsManifestPath"
+	done
 	write_taskbar_progress 70
 
 	echo -e "${C_GREEN}fount installation complete.${C_RESET}"

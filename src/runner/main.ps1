@@ -151,10 +151,12 @@ function Test-Winget {
 				try {
 					Invoke-WebRequest -Uri https://aka.ms/getwinget -OutFile "$env:TEMP/winget.msixbundle"
 					Add-AppxPackage -Path "$env:TEMP/winget.msixbundle"
-					Remove-Item winget.msixbundle
 				}
 				catch {
 					Add-AppxPackage -Path https://cdn.winget.microsoft.com/cache/source.msix
+				}
+				finally {
+					Remove-Item "$env:TEMP/winget.msixbundle" -Force -ErrorAction SilentlyContinue
 				}
 			}
 			$Script:Installed_winget = 1
