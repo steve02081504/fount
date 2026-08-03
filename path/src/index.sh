@@ -38,6 +38,7 @@ ensure_fount_path
 check_temp_guard "${1:-}"
 
 if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+	export OSTYPE
 	powershell.exe -noprofile -executionpolicy bypass -file "$FOUNT_DIR/path/fount.ps1" "$@"
 	exit $?
 fi

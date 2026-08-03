@@ -55,8 +55,19 @@ out="$(run_capture "$FOUNT" log)"
 assert_output_contains log "$LOG_MARKER" "$out"
 
 echo "== background =="
-marker_file="$(mktemp)"
-export FOUNT_CI_HOOK_MARKER_FILE="$marker_file"
+# Git Bash mktemp → /tmp/…; native Deno writes a different path than bash polls.
+if [[ "${OSTYPE:-}" == msys* || "${OSTYPE:-}" == cygwin* ]]; then
+	marker_file="${ROOT}/.path-ci-hook-marker-$$"
+	: >"$marker_file"
+	if command -v cygpath >/dev/null 2>&1; then
+		export FOUNT_CI_HOOK_MARKER_FILE="$(cygpath -m "$marker_file")"
+	else
+		export FOUNT_CI_HOOK_MARKER_FILE="$marker_file"
+	fi
+else
+	marker_file="$(mktemp)"
+	export FOUNT_CI_HOOK_MARKER_FILE="$marker_file"
+fi
 "$FOUNT" background server
 found=0
 for _ in $(seq 1 60); do

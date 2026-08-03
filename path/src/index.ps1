@@ -17,6 +17,12 @@ if (-not $env:NPM_CONFIG_REGISTRY) {
 	$env:NPM_CONFIG_REGISTRY = "https://registry.npmjs.org"
 }
 
+# MSYS/Cygwin bash 继承的 PATH 常缺 Windows User/Machine 项；先刷新再 require git 等。
+if ($env:OSTYPE -match '^(msys|cygwin)') {
+	. (Join-Path $script:FOUNT_SRC 'win\refresh_path.ps1')
+	MergePath
+}
+
 . (Join-Path $script:FOUNT_SRC 'load.ps1')
 # NativeCommandError：？
 $script:FountCallerErrorActionPreference = $ErrorActionPreference
