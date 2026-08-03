@@ -1,0 +1,59 @@
+﻿function script:fount_first_install_if_needed {
+	if (!(Test-Path -Path "$FOUNT_DIR/node_modules") -or $args[0] -eq 'init') {
+		if (Test-Path -Path "$FOUNT_DIR/node_modules") {
+			run shutdown
+		}
+		if (!(Test-Path -Path "$FOUNT_DIR/.noupdate")) {
+			if (Get-Command git -ErrorAction Ignore) {
+				invoke_repo_git config core.autocrlf false
+				$hasHead = git_ref_exists
+				invoke_repo_git fetch origin 2>$null
+				$fetchOk = ($LastExitCode -eq 0)
+				if ((git_ref_exists 'origin/master') -and ($hasHead -or $fetchOk)) {
+					if (git_sync_to_ref 'origin/master') {
+						invoke_repo_git gc --aggressive --prune=now --force
+					}
+				}
+				elseif (-not $fetchOk) {
+					Write-Warning (Get-I18n -key 'git.fetchFailed')
+					Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+				}
+			}
+		}
+		Write-TaskbarProgress -Percent 70
+		Write-Host (Get-I18n -key 'install.installingDependencies')
+		deno install --prod --reload --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" --entrypoint "$FOUNT_DIR/src/server/index.mjs"
+		$global:LastExitCode = 0
+		Write-TaskbarProgress -Percent 85
+		Write-Host "======================================================" -ForegroundColor Green
+		Write-Warning (Get-I18n -key 'install.untrustedPartsWarning')
+		Write-Host "======================================================" -ForegroundColor Green
+		Write-TaskbarProgressClear
+
+		# 隐藏文件设置和desktop.ini生效
+		if ((Test-Path "$FOUNT_DIR/.git") -and (-not (Test-Path "$FOUNT_DIR/.git/desktop.ini"))) {
+			Copy-Item "$FOUNT_DIR/default/git_desktop.ini" "$FOUNT_DIR/.git/desktop.ini" -Force
+		}
+		New-InstallerDir # For data/desktop.ini
+		if (-not (Test-Path "$FOUNT_DIR/data/desktop.ini")) {
+			Copy-Item "$FOUNT_DIR/default/default_desktop.ini" "$FOUNT_DIR/data/desktop.ini" -Force
+		}
+		if (-not (Test-Path "$FOUNT_DIR/node_modules/desktop.ini")) {
+			Copy-Item "$FOUNT_DIR/default/node_modules_desktop.ini" "$FOUNT_DIR/node_modules/desktop.ini" -Force
+		}
+		Set-FountFileAttributes
+
+		# 生成 桌面快捷方式 和 Start Menu 快捷方式
+		New-FountShortcut
+
+		# fount 协议注册
+		Register-FountProtocol
+
+		# fount Terminal注册
+		Register-FountTerminalProfile
+		register_fount_terminal_keybindings
+		Register-FountBootBackground
+
+		invoke_explorer_refresh
+	}
+}

@@ -12,6 +12,7 @@ import {
 } from '../../../../scripts/features/template.mjs'
 import { setElementI18n } from '../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { hubEmptyListIcon } from '../src/lib/emojiSvg.mjs'
 
 import {
 	getHubAvSession,
@@ -94,6 +95,7 @@ export function buildChannelTree(channels) {
 async function renderListItems(container, channelId, channel, onOpenChannel, items) {
 	if (!items.length) {
 		await mountTemplate(container, 'hub/channels/list_empty', {
+			iconHtml: hubEmptyListIcon,
 			channelName: escapeHtml(channel?.name || channelId),
 		})
 		return

@@ -185,6 +185,7 @@ const logSink = INTERACTIVE
 on_shutdown(async () => {
 	if (!exitAbortController.signal.aborted) exitAbortController.abort()
 	logSink.tearDown?.()
+	ClearTaskbarProgress()
 	await icon.farewell()
 })
 // logo 内 Ctrl+C → process.exit 会先跑上面的 on_shutdown
@@ -217,9 +218,9 @@ async function pollUntilServerReady({ waitLogo = false } = {}) {
 			}
 
 	} finally {
-		if (waitLogo) {
+		if (waitLogo && !exitSignal.aborted) {
 			await icon.dismiss()
-			if (!exitSignal.aborted) logSink.resume?.()
+			logSink.resume?.()
 		}
 	}
 }

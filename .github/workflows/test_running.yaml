@@ -6,10 +6,15 @@ on:
     paths:
       - 'src/runner/**'
       - 'path/**'
+      - '.github/path-ci/**'
+      - '.github/workflows/test_running.yaml'
     tags-ignore:
       - '*'
     branches:
       - '*'
+
+permissions:
+  contents: read
 
 jobs:
   test-fount:
@@ -56,3 +61,43 @@ jobs:
           Invoke-Expression "function fountInstaller { $scriptContent }"
           fountInstaller init
           ./fount/path/fount.ps1 remove
+
+  path-cmd-smoke:
+    name: path CLI smoke
+    timeout-minutes: 10
+    env:
+      FOUNT_REPO_ROOT: ${{ github.workspace }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: canary
+
+      - name: Install CI entry hooks
+        shell: bash
+        run: bash .github/path-ci/install-hooks.sh "$GITHUB_WORKSPACE"
+
+      - name: path smoke (bash)
+        shell: bash
+        run: bash .github/path-ci/run-smoke.sh
+
+      - name: path smoke (pwsh)
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\.github\path-ci\run-smoke.ps1"
+
+      - name: path smoke (pwsh)
+        if: runner.os != 'Windows'
+        shell: pwsh
+        run: pwsh -NoProfile -File .github/path-ci/run-smoke.ps1
+
+      - name: Restore entry hooks
+        if: always()
+        shell: bash
+        run: bash .github/path-ci/restore-hooks.sh "$GITHUB_WORKSPACE"

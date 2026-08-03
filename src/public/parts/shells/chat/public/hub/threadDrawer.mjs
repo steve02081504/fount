@@ -10,6 +10,7 @@ import {
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { createChannelThread, getChannelViewLog, sendGroupMessage } from '../src/api/groupChannel.mjs'
 import { getGroupState } from '../src/api/groupCore.mjs'
+import { hubEmptyWaveIcon } from '../src/lib/emojiSvg.mjs'
 import { applyChannelDisplayChain } from '../src/ui/channelDisplay.mjs'
 
 import { store } from './core/state.mjs'
@@ -145,7 +146,7 @@ async function renderThreadMessages(messageContainer) {
 	if (!rows.length) {
 		destroyThreadPipeline()
 		messageContainer.replaceChildren()
-		await mountTemplate(messageContainer, 'hub/empty/idle', {})
+		await mountTemplate(messageContainer, 'hub/empty/idle', { iconHtml: hubEmptyWaveIcon })
 		if (generation !== threadRenderGeneration) return
 		bindMessageSurface(messageContainer, {
 			groupId,
