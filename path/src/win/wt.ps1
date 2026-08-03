@@ -48,7 +48,7 @@ function script:Register-FountTerminalProfile {
 			}
 		)
 	} | ConvertTo-Json -Depth 100 -Compress
-	$existing = Get-Content -LiteralPath $WTjsonPath -Raw -ErrorAction SilentlyContinue
+	$existing = Get-Content -LiteralPath $WTjsonPath -Raw -ErrorAction Ignore
 	if ($jsonContent -ne $existing) {
 		Set-Content -Path $WTjsonPath -Value $jsonContent -Encoding UTF8
 	}

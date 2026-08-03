@@ -39,7 +39,7 @@ try {
 		require win/wt
 		Start-WTfountCmd @args
 		if ($ErrorCount -ne $Error.Count) { exit 1 }
-		exit $LastExitCode
+		exit 0
 	}
 
 	require passthrough

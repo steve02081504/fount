@@ -88,8 +88,9 @@ function Start-Process {
 		[Parameter(Mandatory)][AllowNull()][string]$FilePath,
 		$ArgumentList
 	)
-	if ($FilePath -isnot [string]) {
-		Write-Error "[wt start] FilePath must be string, got $($FilePath.GetType().FullName)"
+	$leaf = Split-Path -Leaf $FilePath
+	if ($leaf -notin @('powershell.exe', 'wt.exe')) {
+		throw "[wt start] unsupported FilePath: $FilePath"
 	}
 	$script:WtStartCaptured = @{
 		FilePath     = $FilePath
@@ -98,6 +99,10 @@ function Start-Process {
 }
 $prevEap = $ErrorActionPreference
 $ErrorActionPreference = 'Continue'
+$hadFountDir = Test-Path Env:FOUNT_DIR
+$prevFountDir = $env:FOUNT_DIR
+$hadFountClick = Test-Path Env:FOUNT_CLICK
+$prevFountClick = $env:FOUNT_CLICK
 $env:FOUNT_DIR = $Root
 $env:FOUNT_CLICK = '1'
 try {
@@ -106,15 +111,16 @@ try {
 		throw "FOUNT_CLICK open exited with $LastExitCode"
 	}
 	if (-not $script:WtStartCaptured) {
-		Write-Error '[wt start] Start-Process was not called'
+		throw '[wt start] Start-Process was not called'
 	}
 	if ($script:WtStartCaptured.ArgumentList -notlike "*fount.ps1*open*") {
-		Write-Error "[wt start] unexpected ArgumentList: $($script:WtStartCaptured.ArgumentList)"
+		throw "[wt start] unexpected ArgumentList: $($script:WtStartCaptured.ArgumentList)"
 	}
 }
 finally {
 	Remove-Item function:Start-Process -ErrorAction SilentlyContinue
-	Remove-Item Env:FOUNT_CLICK -ErrorAction SilentlyContinue
+	if ($hadFountClick) { $env:FOUNT_CLICK = $prevFountClick } else { Remove-Item Env:FOUNT_CLICK -ErrorAction SilentlyContinue }
+	if ($hadFountDir) { $env:FOUNT_DIR = $prevFountDir } else { Remove-Item Env:FOUNT_DIR -ErrorAction SilentlyContinue }
 	$ErrorActionPreference = $prevEap
 }
 Write-Host '[wt start] ok'
