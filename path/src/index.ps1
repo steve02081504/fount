@@ -38,7 +38,8 @@ try {
 		Remove-Item Env:\FOUNT_CLICK -Force -ErrorAction Ignore
 		require win/wt
 		Start-WTfountCmd @args
-		exit $LastExitCode
+		if ($ErrorCount -ne $Error.Count) { exit 1 }
+		exit 0
 	}
 
 	require passthrough

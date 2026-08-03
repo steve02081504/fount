@@ -81,6 +81,50 @@ if (-not $found) {
 }
 Write-Host '[background] ok'
 
+Write-Host '== wt start =='
+$script:WtStartCaptured = $null
+function Start-Process {
+	param(
+		[Parameter(Mandatory)][AllowNull()][string]$FilePath,
+		$ArgumentList
+	)
+	$leaf = Split-Path -Leaf $FilePath
+	if ($leaf -notin @('powershell.exe', 'wt.exe')) {
+		throw "[wt start] unsupported FilePath: $FilePath"
+	}
+	$script:WtStartCaptured = @{
+		FilePath     = $FilePath
+		ArgumentList = $ArgumentList
+	}
+}
+$prevEap = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
+$hadFountDir = Test-Path Env:FOUNT_DIR
+$prevFountDir = $env:FOUNT_DIR
+$hadFountClick = Test-Path Env:FOUNT_CLICK
+$prevFountClick = $env:FOUNT_CLICK
+$env:FOUNT_DIR = $Root
+$env:FOUNT_CLICK = '1'
+try {
+	. $Fount open
+	if ($LastExitCode -ne 0) {
+		throw "FOUNT_CLICK open exited with $LastExitCode"
+	}
+	if (-not $script:WtStartCaptured) {
+		throw '[wt start] Start-Process was not called'
+	}
+	if ($script:WtStartCaptured.ArgumentList -notlike "*fount.ps1*open*") {
+		throw "[wt start] unexpected ArgumentList: $($script:WtStartCaptured.ArgumentList)"
+	}
+}
+finally {
+	Remove-Item function:Start-Process -ErrorAction SilentlyContinue
+	if ($hadFountClick) { $env:FOUNT_CLICK = $prevFountClick } else { Remove-Item Env:FOUNT_CLICK -ErrorAction SilentlyContinue }
+	if ($hadFountDir) { $env:FOUNT_DIR = $prevFountDir } else { Remove-Item Env:FOUNT_DIR -ErrorAction SilentlyContinue }
+	$ErrorActionPreference = $prevEap
+}
+Write-Host '[wt start] ok'
+
 Write-Host '== install (init) =='
 Remove-Item -LiteralPath node_modules -Recurse -Force -ErrorAction SilentlyContinue
 & $Fount init

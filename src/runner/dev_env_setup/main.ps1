@@ -1,5 +1,5 @@
 ﻿#!pwsh
-# fount 开发环境检查（Windows）
+# fount 开发环境检查
 
 $RepoRoot = (Resolve-Path "$PSScriptRoot/../../..").Path
 Set-Location $RepoRoot
@@ -65,7 +65,9 @@ else {
 if (-not (Test-Path './data/test/report.md')) {
 	Write-Host '🔥 Creating test cache...'
 	& fount test --no-parallel
-	if ($LASTEXITCODE -eq 0) {
-		Write-Host '🥳 Test cache created successfully'
-	}
+	Write-Host '🥳 Test cache created successfully'
+}
+
+if (-not $allSet) {
+	exit 1
 }
