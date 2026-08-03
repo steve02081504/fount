@@ -43,7 +43,7 @@ if check_cmd gh 'install from https://github.com/cli/cli/releases'; then
 		printf '  ✔ gh logged in\n'
 	else
 		printf '  ✘ gh not logged in\n'
-		printf '   run `gh auth login` to login\n' >&2
+		printf "   run \`gh auth login\` to login\n" >&2
 		all_set=0
 	fi
 fi
