@@ -21,231 +21,178 @@ import { createReporter } from './reporter.mjs'
  * }} WatchTask
  */
 
-/**
- * 任务轮转调度器。
- */
-export class WatchLoop {
-	/** @type {WatchTask[]} */
-	#tasks = []
-	#cursor = 0
-	#timer = 0
-	#running = false
-	#started = false
-	#draining = false
-	#pendingWake = false
-	#idleStreak = 0
-	/** @type {((error?: Error) => void)[]} */
-	#drainWaiters = []
-	/** @type {import('./reporter.mjs').WatchReporter} */
-	#reporter
+const reporter = createReporter('[test:watch]')
 
-	/**
-	 * @param {{ reporter: import('./reporter.mjs').WatchReporter }} options 选项
-	 */
-	constructor({ reporter }) {
-		this.#reporter = reporter
-	}
-
-	/**
-	 * 是否处于收尾 drain。
-	 * @returns {boolean} draining
-	 */
-	get draining() {
-		return this.#draining
-	}
-
-	/**
-	 * 是否已开闸。
-	 * @returns {boolean} started
-	 */
-	get started() {
-		return this.#started
-	}
-
-	/**
-	 * @param {WatchTask} task 任务
-	 * @returns {void}
-	 */
-	register(task) {
-		this.#tasks.push(task)
-	}
-
-	/**
-	 * 开闸并启动调度。
-	 * @returns {void}
-	 */
-	start() {
-		if (this.#started) return
-		this.#started = true
-		this.#schedule(0)
-	}
-
-	/**
-	 * 唤醒停住的 loop（或缩短已约的等待）。
-	 * 任务执行中则记 pending，tick 收尾再排。
-	 * @returns {void}
-	 */
-	wake() {
-		if (!this.#started) return
-		if (this.#running) {
-			this.#pendingWake = true
-			return
-		}
-		this.#idleStreak = 0
-		this.#schedule(0)
-	}
-
-	/**
-	 * 测试收尾：通知各任务 beginDrain，再跑到全部 covered。
-	 * @returns {Promise<void>}
-	 */
-	drain() {
-		if (!this.#started || !this.#tasks.length) return Promise.resolve()
-		if (this.#draining)
-			return new Promise(resolve => this.#drainWaiters.push(resolve))
-
-		this.#draining = true
-		for (const task of this.#tasks) task.beginDrain?.()
-
-		return new Promise(resolve => {
-			this.#drainWaiters.push(resolve)
-			if (!this.#running) this.#schedule(0)
-		})
-	}
-
-	/**
-	 * 各任务覆盖目标是否均已达成。
-	 * @returns {boolean} 全部 covered 则为 true
-	 */
-	#allCovered() {
-		return this.#tasks.length > 0 && this.#tasks.every(task => task.covered())
-	}
-
-	/**
-	 * 若 drain 条件满足则结束并唤醒 waiters。
-	 * @returns {void}
-	 */
-	#resolveDrain() {
-		if (!this.#draining || !this.#allCovered() || this.#running || this.#timer) return
-		this.#draining = false
-		for (const resolve of this.#drainWaiters.splice(0)) resolve()
-	}
-
-	/**
-	 * @param {number} delayMs 延迟
-	 * @returns {void}
-	 */
-	#schedule(delayMs) {
-		if (this.#timer) clearTimeout(this.#timer)
-		this.#timer = setTimeout(() => {
-			this.#timer = 0
-			void this.#tick()
-		}, delayMs)
-	}
-
-	/**
-	 * @returns {Promise<void>}
-	 */
-	async #tick() {
-		if (!this.#tasks.length || this.#running) return
-		if (this.#draining && this.#allCovered()) {
-			this.#resolveDrain()
-			return
-		}
-
-		const task = this.#tasks[this.#cursor % this.#tasks.length]
-		this.#cursor++
-		this.#running = true
-		this.#pendingWake = false
-		let idle = false
-		try {
-			idle = await task.run({ draining: this.#draining }) === true
-		}
-		catch (error) {
-			this.#reporter.report(
-				`tick-failed\t${task.name}\t${String(error?.message || error)}`,
-				'tick-failed',
-				task.name,
-				String(error?.message || error),
-			)
-			idle = false
-		}
-		finally {
-			this.#running = false
-		}
-
-		if (this.#pendingWake) {
-			this.#pendingWake = false
-			this.#idleStreak = 0
-			this.#schedule(0)
-			return
-		}
-
-		if (this.#draining && this.#allCovered()) {
-			this.#resolveDrain()
-			return
-		}
-
-		if (idle) {
-			this.#idleStreak++
-			if (this.#idleStreak >= this.#tasks.length) {
-				this.#idleStreak = 0
-				if (this.#draining) {
-					if (this.#allCovered()) this.#resolveDrain()
-					else this.#schedule(Math.min(...this.#tasks.map(item => item.delayMs)))
-					return
-				}
-				return
-			}
-			this.#schedule(0)
-			return
-		}
-
-		this.#idleStreak = 0
-		this.#schedule(task.delayMs)
-	}
-}
-
-/** 页面级单例（selftest 仍用 `new WatchLoop` 隔离实例）。 */
-const pageLoop = new WatchLoop({ reporter: createReporter('[test:watch]') })
+/** @type {WatchTask[]} */
+const tasks = []
+let cursor = 0
+let timer = 0
+let running = false
+/** 是否已开闸（ES live binding，供门面读取）。 */
+export let started = false
+let draining = false
+let pendingWake = false
+let idleStreak = 0
+/** @type {(() => void)[]} */
+const drainWaiters = []
 
 /**
- * 注册页面 watch 任务。
+ * 注册任务。
  * @param {WatchTask} task 任务
  * @returns {void}
  */
-export function registerTask(task) {
-	pageLoop.register(task)
+export function register(task) {
+	tasks.push(task)
 }
 
 /**
- * 开闸并启动页面级调度。
+ * 开闸并启动调度。
  * @returns {void}
  */
 export function start() {
-	pageLoop.start()
+	if (started) return
+	started = true
+	schedule(0)
 }
 
 /**
- * 唤醒停住的页面级 loop。
+ * 唤醒停住的 loop（或缩短已约的等待）。
+ * 任务执行中则记 pending，tick 收尾再排。
  * @returns {void}
  */
 export function wake() {
-	pageLoop.wake()
+	if (!started) return
+	if (running) {
+		pendingWake = true
+		return
+	}
+	idleStreak = 0
+	schedule(0)
 }
 
 /**
- * 页面级 drain。
+ * 测试收尾：通知各任务 beginDrain，再跑到全部 covered。
  * @returns {Promise<void>}
  */
 export function drain() {
-	return pageLoop.drain()
+	if (!started || !tasks.length) return Promise.resolve()
+	if (draining)
+		return new Promise(resolve => drainWaiters.push(resolve))
+
+	draining = true
+	for (const task of tasks) task.beginDrain?.()
+
+	return new Promise(resolve => {
+		drainWaiters.push(resolve)
+		if (!running) schedule(0)
+	})
 }
 
 /**
- * 页面级 loop 是否已开闸。
- * @returns {boolean} started
+ * 清空调度状态（selftest 用例隔离）。
+ * @returns {void}
  */
-export function isStarted() {
-	return pageLoop.started
+export function reset() {
+	if (timer) clearTimeout(timer)
+	timer = 0
+	tasks.length = 0
+	cursor = 0
+	running = false
+	started = false
+	draining = false
+	pendingWake = false
+	idleStreak = 0
+	for (const resolve of drainWaiters.splice(0)) resolve()
+}
+
+/**
+ * 各任务覆盖目标是否均已达成。
+ * @returns {boolean} 全部 covered 则为 true
+ */
+function allCovered() {
+	return tasks.length > 0 && tasks.every(task => task.covered())
+}
+
+/**
+ * 若 drain 条件满足则结束并唤醒 waiters。
+ * @returns {void}
+ */
+function resolveDrain() {
+	if (!draining || !allCovered() || running || timer) return
+	draining = false
+	for (const resolve of drainWaiters.splice(0)) resolve()
+}
+
+/**
+ * @param {number} delayMs 延迟
+ * @returns {void}
+ */
+function schedule(delayMs) {
+	if (timer) clearTimeout(timer)
+	timer = setTimeout(() => {
+		timer = 0
+		void tick()
+	}, delayMs)
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+async function tick() {
+	if (!tasks.length || running) return
+	if (draining && allCovered()) {
+		resolveDrain()
+		return
+	}
+
+	const task = tasks[cursor % tasks.length]
+	cursor++
+	running = true
+	pendingWake = false
+	let idle = false
+	try {
+		idle = await task.run({ draining }) === true
+	}
+	catch (error) {
+		reporter.report(
+			`tick-failed\t${task.name}\t${String(error?.message || error)}`,
+			'tick-failed',
+			task.name,
+			String(error?.message || error),
+		)
+		idle = false
+	}
+	finally {
+		running = false
+	}
+
+	if (pendingWake) {
+		pendingWake = false
+		idleStreak = 0
+		schedule(0)
+		return
+	}
+
+	if (draining && allCovered()) {
+		resolveDrain()
+		return
+	}
+
+	if (idle) {
+		idleStreak++
+		if (idleStreak >= tasks.length) {
+			idleStreak = 0
+			if (draining) {
+				if (allCovered()) resolveDrain()
+				else schedule(Math.min(...tasks.map(item => item.delayMs)))
+				return
+			}
+			return
+		}
+		schedule(0)
+		return
+	}
+
+	idleStreak = 0
+	schedule(task.delayMs)
 }
