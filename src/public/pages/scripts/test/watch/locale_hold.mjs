@@ -19,7 +19,7 @@ export function holdLocale() {
  * @returns {void}
  */
 export function releaseLocale() {
-	localeHold = Math.max(0, localeHold - 1)
+	localeHold--
 	if (localeHold === 0) wake()
 }
 

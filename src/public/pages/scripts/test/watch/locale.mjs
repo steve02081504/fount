@@ -1,15 +1,10 @@
 /**
  * 中日英语种轮换 + 错语脚本检查。
  */
-import { holdLocale, isLocaleHeld, releaseLocale } from './locale_hold.mjs'
+import { isLocaleHeld } from './locale_hold.mjs'
 import { ignore, ignoreAsync } from './mutations.mjs'
 import { collectVisiblePageText } from './page_text.mjs'
 import { createReporter } from './reporter.mjs'
-
-/**
- *
- */
-export { holdLocale, releaseLocale }
 
 /** 中日英轮换间隔 */
 const LOCALE_MS = 1000
@@ -65,7 +60,6 @@ export async function bootstrap() {
 	if (document.documentElement.lang) return
 
 	await new Promise((resolve, reject) => {
-		const BOOTSTRAP_LANG_TIMEOUT_MS = 10_000
 		/**
 		 * 首轮语言落定后继续。
 		 * @returns {void}
@@ -86,7 +80,7 @@ export async function bootstrap() {
 		const timer = setTimeout(() => {
 			cleanup()
 			reject(new Error('locale bootstrap timed out waiting for document.documentElement.lang'))
-		}, BOOTSTRAP_LANG_TIMEOUT_MS)
+		}, 10_000)
 		i18n.onLanguageChange(onLocale)
 	})
 }

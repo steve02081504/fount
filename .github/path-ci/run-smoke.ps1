@@ -83,8 +83,8 @@ Write-Host '[background] ok'
 
 if ($env:OS -eq 'Windows_NT') {
 	Write-Host '== wt start =='
-	$script:WindowsTerminalStartCaptured = $null
-	function Start-Process {
+	$global:WindowsTerminalStartCaptured = $null
+	function global:Start-Process {
 		param(
 			[Parameter(Mandatory)][AllowNull()][string]$FilePath,
 			$ArgumentList
@@ -92,7 +92,7 @@ if ($env:OS -eq 'Windows_NT') {
 		if ((Split-Path -Leaf $FilePath) -notin @('powershell.exe', 'wt.exe')) {
 			throw "[wt start] unsupported FilePath: $FilePath"
 		}
-		$script:WindowsTerminalStartCaptured = @{
+		$global:WindowsTerminalStartCaptured = @{
 			FilePath     = $FilePath
 			ArgumentList = $ArgumentList
 		}
@@ -106,24 +106,69 @@ if ($env:OS -eq 'Windows_NT') {
 	$env:FOUNT_DIR = $Root
 	$env:FOUNT_CLICK = '1'
 	try {
-		. $Fount open
+		& $Fount open
 		if ($LastExitCode -ne 0) {
 			throw "FOUNT_CLICK open exited with $LastExitCode"
 		}
-		if (-not $script:WindowsTerminalStartCaptured) {
+		if (-not $global:WindowsTerminalStartCaptured) {
 			throw '[wt start] Start-Process was not called'
 		}
-		if ($script:WindowsTerminalStartCaptured.ArgumentList -notlike "*fount.ps1*open*") {
-			throw "[wt start] unexpected ArgumentList: $($script:WindowsTerminalStartCaptured.ArgumentList)"
+		if ($global:WindowsTerminalStartCaptured.ArgumentList -notlike "*fount.ps1*open*") {
+			throw "[wt start] unexpected ArgumentList: $($global:WindowsTerminalStartCaptured.ArgumentList)"
 		}
 	}
 	finally {
-		Remove-Item function:Start-Process -ErrorAction SilentlyContinue
+		Remove-Item function:global:Start-Process -ErrorAction SilentlyContinue
+		Remove-Variable -Name WindowsTerminalStartCaptured -Scope Global -ErrorAction SilentlyContinue
 		if ($hadFountClick) { $env:FOUNT_CLICK = $previousFountClick } else { Remove-Item Env:FOUNT_CLICK -ErrorAction SilentlyContinue }
 		if ($hadFountDirectory) { $env:FOUNT_DIR = $previousFountDirectory } else { Remove-Item Env:FOUNT_DIR -ErrorAction SilentlyContinue }
 		$ErrorActionPreference = $previousErrorActionPreference
 	}
 	Write-Host '[wt start] ok'
+}
+else {
+	Write-Host '== FOUNT_CLICK unix passthrough =='
+	$global:UnixPassthroughBashArgs = $null
+	function global:bash {
+		param([Parameter(ValueFromRemainingArguments = $true)]$BashArgs)
+		if (Test-Path Env:FOUNT_CLICK) {
+			throw '[FOUNT_CLICK unix] FOUNT_CLICK still set when bash invoked'
+		}
+		$global:UnixPassthroughBashArgs = @($BashArgs)
+		$global:LASTEXITCODE = 0
+	}
+	$hadFountDirectory = Test-Path Env:FOUNT_DIR
+	$previousFountDirectory = $env:FOUNT_DIR
+	$hadFountClick = Test-Path Env:FOUNT_CLICK
+	$previousFountClick = $env:FOUNT_CLICK
+	$env:FOUNT_DIR = $Root
+	$env:FOUNT_CLICK = '1'
+	try {
+		& $Fount open
+		if ($LastExitCode -ne 0) {
+			throw "FOUNT_CLICK open exited with $LastExitCode"
+		}
+		if (Test-Path Env:FOUNT_CLICK) {
+			throw '[FOUNT_CLICK unix] FOUNT_CLICK was not cleared'
+		}
+		if (-not $global:UnixPassthroughBashArgs) {
+			throw '[FOUNT_CLICK unix] bash was not invoked'
+		}
+		$bashScript = [string]$global:UnixPassthroughBashArgs[0]
+		if ($bashScript -notlike '*path/fount.sh' -and $bashScript -notlike '*path\fount.sh') {
+			throw "[FOUNT_CLICK unix] unexpected bash script: $bashScript"
+		}
+		if ($global:UnixPassthroughBashArgs -notcontains 'open') {
+			throw "[FOUNT_CLICK unix] unexpected bash args: $($global:UnixPassthroughBashArgs -join ' ')"
+		}
+	}
+	finally {
+		Remove-Item function:global:bash -ErrorAction SilentlyContinue
+		Remove-Variable -Name UnixPassthroughBashArgs -Scope Global -ErrorAction SilentlyContinue
+		if ($hadFountClick) { $env:FOUNT_CLICK = $previousFountClick } else { Remove-Item Env:FOUNT_CLICK -ErrorAction SilentlyContinue }
+		if ($hadFountDirectory) { $env:FOUNT_DIR = $previousFountDirectory } else { Remove-Item Env:FOUNT_DIR -ErrorAction SilentlyContinue }
+	}
+	Write-Host '[FOUNT_CLICK unix] ok'
 }
 
 Write-Host '== install (init) =='

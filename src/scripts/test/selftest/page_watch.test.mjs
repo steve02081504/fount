@@ -273,15 +273,7 @@ Deno.test('releaseLocale wakes parked loop when hold reaches 0', async () => {
 	reset()
 	resetLocaleHold()
 	let runs = 0
-	/**
-	 * @returns {boolean} 空转
-	 */
-	function run() { runs++; return true }
-	/**
-	 * @returns {boolean} covered
-	 */
-	function covered() { return true }
-	register(task('noop', 1, run, covered))
+	register(task('noop', 1, () => { runs++; return true }, () => true))
 	start()
 	await waitUntil(() => runs >= 1, 2000, 5)
 	const parkedAt = runs
