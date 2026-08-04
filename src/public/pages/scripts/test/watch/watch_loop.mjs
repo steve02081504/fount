@@ -34,12 +34,15 @@ export class WatchLoop {
 	#drainWaiters = []
 	/** 失败日志前缀（缺省通用） */
 	#failPrefix
+	/** 非空转 / 失败后回调（更新 lastRun 等） */
+	#onActivity
 
 	/**
-	 * @param {{ failPrefix?: string }} [options] 选项
+	 * @param {{ failPrefix?: string, onActivity?: () => void }} [options] 选项
 	 */
 	constructor(options = {}) {
 		this.#failPrefix = options.failPrefix || '[watch]'
+		this.#onActivity = options.onActivity
 	}
 
 	/**
@@ -137,11 +140,11 @@ export class WatchLoop {
 		let idle = false
 		try {
 			idle = await task.run({ draining: this.#draining }) === true
-			if (!idle) globalThis.fount.test.watchLastRun = Date.now()
+			if (!idle) this.#onActivity?.()
 		}
 		catch (error) {
 			console.error(this.#failPrefix, 'tick-failed', task.name, String(error?.message || error))
-			globalThis.fount.test.watchLastRun = Date.now()
+			this.#onActivity?.()
 			idle = false
 		}
 		finally {

@@ -50,14 +50,6 @@ export class LocaleWatch {
 	}
 
 	/**
-	 * 已检查过的语种（暴露给 fount.test.localeSeen）。
-	 * @returns {Set<string>} seen
-	 */
-	get localeSeen() {
-		return this.#seen
-	}
-
-	/**
 	 * 注册到 WatchLoop 的任务描述。
 	 * @returns {import('./watch_loop.mjs').WatchTask} 任务
 	 */

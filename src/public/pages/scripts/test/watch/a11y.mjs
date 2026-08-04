@@ -108,7 +108,7 @@ export class A11yWatch {
 	}
 
 	/**
-	 * 要求下一轮带 issue 刷新的扫描（kickWatch）。
+	 * 要求下一轮带 issue 刷新的扫描（`PageWatch.kick`）。
 	 * @returns {void}
 	 */
 	requestRefresh() {
