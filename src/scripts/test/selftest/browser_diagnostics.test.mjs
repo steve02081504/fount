@@ -93,7 +93,7 @@ Deno.test('detectNoiseHits marks browser:network as browser_network', () => {
 	assertEquals(detectNoiseHits('all green'), [])
 })
 
-Deno.test('isTestWatchConsoleText matches test_watch prefix', () => {
+Deno.test('isTestWatchConsoleText matches page watch prefix', () => {
 	assertEquals(isTestWatchConsoleText(`${TEST_WATCH_CONSOLE_PREFIX}a11y] color-contrast ...`), true)
 	assertEquals(isTestWatchConsoleText('plain log'), false)
 })
