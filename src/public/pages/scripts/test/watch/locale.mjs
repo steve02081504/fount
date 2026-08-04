@@ -235,10 +235,7 @@ export class LocaleWatch {
 	async #scriptCheck(locale) {
 		const re = await this.#forbiddenReFor(locale)
 		this.#seen.add(locale)
-		if (!re) {
-			globalThis.fount.test.watchLastRun = Date.now()
-			return
-		}
+		if (!re) return
 		const text = this.#pageText()
 		const match = text.match(re)
 		if (match) {
@@ -250,6 +247,5 @@ export class LocaleWatch {
 				console.error(LOCALE_PREFIX, locale, 'forbidden-script', match[0], snippet)
 			}
 		}
-		globalThis.fount.test.watchLastRun = Date.now()
 	}
 }

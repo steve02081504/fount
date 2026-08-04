@@ -48,7 +48,7 @@ await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').
 globalThis.fount ??= {}
 globalThis.fount.version ??= 'unknown' // pages版本不代表用户运行的fount版本
 globalThis.fount.pages_version ??= '__FOUNT_COMMIT_HASH__'
-if (globalThis.fount?.test?.enabled) import('/fount/scripts/test/watch.mjs').catch(console.error)
+if (globalThis.fount?.test?.enabled) import('/fount/scripts/test/watch/index.mjs').catch(console.error)
 
 /* global urlParams */
 /**

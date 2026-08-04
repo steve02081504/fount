@@ -5,7 +5,7 @@
 /** 写入 suite 输出、供 `detectNoiseHits` 识别的前缀。 */
 export const BROWSER_NETWORK_PREFIX = '[browser:network]'
 
-/** `scripts/test/watch.mjs` 控制台命名空间；任意 `[test:…]` 命中则硬失败。 */
+/** `scripts/test/watch/` 控制台命名空间；任意 `[test:…]` 命中则硬失败。 */
 export const TEST_WATCH_CONSOLE_PREFIX = '[test:'
 
 /** `scripts/i18n` 缺键警告前缀；命中则硬失败（不去重）。 */

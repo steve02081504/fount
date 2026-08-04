@@ -49,7 +49,7 @@ await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').
 
 globalThis.fount ??= {}
 globalThis.fount.version ??= 'unknown'
-if (globalThis.fount?.test?.enabled) import('/scripts/test/watch.mjs')
+if (globalThis.fount?.test?.enabled) import('/scripts/test/watch/index.mjs')
 
 /**
  * 向 Service Worker 查询 fount 版本（commit hash）。

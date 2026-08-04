@@ -137,6 +137,7 @@ export class WatchLoop {
 		let idle = false
 		try {
 			idle = await task.run({ draining: this.#draining }) === true
+			if (!idle) globalThis.fount.test.watchLastRun = Date.now()
 		}
 		catch (error) {
 			console.error(this.#failPrefix, 'tick-failed', task.name, String(error?.message || error))

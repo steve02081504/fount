@@ -309,7 +309,5 @@ export class A11yWatch {
 					node.failureSummary || '',
 				)
 			}
-
-		globalThis.fount.test.watchLastRun = Date.now()
 	}
 }
