@@ -42,7 +42,7 @@ function silentReporter() {
  * @param {number} delayMs 延迟
  * @param {(ctx: { draining: boolean }) => boolean | Promise<boolean>} run tick
  * @param {() => boolean} covered 覆盖判定
- * @param {(() => void)=} beginDrain drain 钩子
+ * @param {(() => void)} [beginDrain] drain 钩子
  * @returns {import('../../../public/pages/scripts/test/watch/loop.mjs').WatchTask} 任务
  */
 function task(name, delayMs, run, covered, beginDrain) {

@@ -1,6 +1,6 @@
 /**
  * 测试环境页面监视入口：组装 loop + a11y + locale，bootstrap 后开闸。
- * Playwright 只认 `fount.test.watch`（`kick` / `drain` / `holdLocale` / `releaseLocale`）。
+ * Playwright 只认 `fount.test.watch`（`kick` / `drain` / `holdLocale` / `releaseLocale` / `started`）。
  */
 import { A11yWatch } from './a11y.mjs'
 import { LocaleWatch } from './locale.mjs'
@@ -47,6 +47,14 @@ class PageWatch {
 			attributes: true,
 			characterData: true,
 		})
+	}
+
+	/**
+	 * 是否已开闸（locale bootstrap 完成且 loop 已 start）。
+	 * @returns {boolean} started
+	 */
+	get started() {
+		return this.#loop.started
 	}
 
 	/**

@@ -70,6 +70,9 @@ async function installSocialTestHooks({ page }) {
 		if (!navigator.clipboard)
 			Object.defineProperty(navigator, 'clipboard', {
 				value: {
+					/**
+					 *
+					 */
 					writeText: async () => { },
 				},
 				configurable: true,

@@ -12,7 +12,7 @@ test.describe('GitHub Pages smoke', () => {
 	test('install wait screen loads base + test watch', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/wait/install/`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#launchButton')).toBeVisible({ timeout: 30_000 })
-		await expect.poll(async () => page.evaluate(() => Boolean(globalThis.fount?.test?.watch?.ready)), {
+		await expect.poll(async () => page.evaluate(() => Boolean(globalThis.fount?.test?.watch?.started)), {
 			timeout: 15_000,
 		}).toBe(true)
 		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
@@ -25,7 +25,7 @@ test.describe('GitHub Pages smoke', () => {
 
 		await page.goto(`${baseUrl}/badges/`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('h1').first()).toBeVisible({ timeout: 30_000 })
-		await expect.poll(async () => page.evaluate(() => Boolean(globalThis.fount?.test?.watch?.ready)), {
+		await expect.poll(async () => page.evaluate(() => Boolean(globalThis.fount?.test?.watch?.started)), {
 			timeout: 15_000,
 		}).toBe(true)
 	})
