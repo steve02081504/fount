@@ -1,5 +1,6 @@
-﻿# Path CLI smoke (pwsh): server / background / log / reboot / install (init).
+﻿# Path CLI smoke (PowerShell): server / background / log / reboot / install (init).
 # Requires install-hooks.sh to have swapped JS entrypoints first.
+# Windows hosts use Windows PowerShell 5.1 (`powershell`); non-Windows keeps `pwsh`.
 
 $ErrorActionPreference = 'Stop'
 
@@ -24,13 +25,13 @@ function Assert-OutputContains {
 function Invoke-FountCapture {
 	param([Parameter(ValueFromRemainingArguments = $true)][string[]]$FountArgs)
 	$output = & $Fount @FountArgs 2>&1 | Out-String
-	if ($LASTEXITCODE -ne 0) {
-		throw "fount @FountArgs exited with $LASTEXITCODE"
+	if ($LastExitCode -ne 0) {
+		throw "fount @FountArgs exited with $LastExitCode"
 	}
 	return $output
 }
 
-Write-Host "path smoke pwsh: repo=$Root"
+Write-Host "path smoke: repo=$Root"
 
 foreach ($flag in '.noupdate', '.noautoboot') {
 	$path = Join-Path $Root $flag
@@ -42,7 +43,7 @@ foreach ($flag in '.noupdate', '.noautoboot') {
 if (-not (Test-Path -LiteralPath node_modules)) {
 	Write-Host 'path smoke: seeding node_modules via deno install (hooked entrypoint)'
 	deno install --prod --allow-scripts --allow-all -c (Join-Path $Root 'deno.json') --entrypoint (Join-Path $Root 'src/server/index.mjs')
-	if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+	if ($LastExitCode -ne 0) { exit $LastExitCode }
 }
 
 Write-Host '== server =='
@@ -62,7 +63,7 @@ Write-Host '== background =='
 $markerFile = [System.IO.Path]::GetTempFileName()
 $env:FOUNT_CI_HOOK_MARKER_FILE = $markerFile
 & $Fount background server
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+if ($LastExitCode -ne 0) { exit $LastExitCode }
 $found = $false
 foreach ($attempt in 1..60) {
 	if ((Test-Path -LiteralPath $markerFile) -and (Get-Item -LiteralPath $markerFile).Length -gt 0) {
@@ -83,90 +84,50 @@ Write-Host '[background] ok'
 
 if ($env:OS -eq 'Windows_NT') {
 	Write-Host '== wt start =='
-	$global:WindowsTerminalStartCaptured = $null
-	function global:Start-Process {
-		param(
-			[Parameter(Mandatory)][AllowNull()][string]$FilePath,
-			$ArgumentList
-		)
-		if ((Split-Path -Leaf $FilePath) -notin @('powershell.exe', 'wt.exe')) {
-			throw "[wt start] unsupported FilePath: $FilePath"
-		}
-		$global:WindowsTerminalStartCaptured = @{
-			FilePath     = $FilePath
-			ArgumentList = $ArgumentList
-		}
-	}
-	$previousErrorActionPreference = $ErrorActionPreference
-	$ErrorActionPreference = 'Continue'
-	$hadFountDirectory = Test-Path Env:FOUNT_DIR
-	$previousFountDirectory = $env:FOUNT_DIR
-	$hadFountClick = Test-Path Env:FOUNT_CLICK
-	$previousFountClick = $env:FOUNT_CLICK
-	$env:FOUNT_DIR = $Root
-	$env:FOUNT_CLICK = '1'
+	$capturePath = [System.IO.Path]::GetTempFileName()
+	$clickHelper = Join-Path $PSScriptRoot 'smoke-fount-click.ps1'
 	try {
-		& $Fount open
+		& powershell -NoProfile -File $clickHelper -Mode Windows -FountPath $Fount -RepoRoot $Root -CapturePath $capturePath
 		if ($LastExitCode -ne 0) {
 			throw "FOUNT_CLICK open exited with $LastExitCode"
 		}
-		if (-not $global:WindowsTerminalStartCaptured) {
+		if (-not (Test-Path -LiteralPath $capturePath) -or (Get-Item -LiteralPath $capturePath).Length -eq 0) {
 			throw '[wt start] Start-Process was not called'
 		}
-		if ($global:WindowsTerminalStartCaptured.ArgumentList -notlike "*fount.ps1*open*") {
-			throw "[wt start] unexpected ArgumentList: $($global:WindowsTerminalStartCaptured.ArgumentList)"
+		$windowsTerminalStartCaptured = Get-Content -LiteralPath $capturePath -Raw | ConvertFrom-Json
+		if ($windowsTerminalStartCaptured.ArgumentList -notlike "*fount.ps1*open*") {
+			throw "[wt start] unexpected ArgumentList: $($windowsTerminalStartCaptured.ArgumentList)"
 		}
 	}
 	finally {
-		Remove-Item function:global:Start-Process -ErrorAction SilentlyContinue
-		Remove-Variable -Name WindowsTerminalStartCaptured -Scope Global -ErrorAction SilentlyContinue
-		if ($hadFountClick) { $env:FOUNT_CLICK = $previousFountClick } else { Remove-Item Env:FOUNT_CLICK -ErrorAction SilentlyContinue }
-		if ($hadFountDirectory) { $env:FOUNT_DIR = $previousFountDirectory } else { Remove-Item Env:FOUNT_DIR -ErrorAction SilentlyContinue }
-		$ErrorActionPreference = $previousErrorActionPreference
+		Remove-Item -LiteralPath $capturePath -Force -ErrorAction SilentlyContinue
 	}
 	Write-Host '[wt start] ok'
 }
 else {
 	Write-Host '== FOUNT_CLICK unix passthrough =='
-	$global:UnixPassthroughBashArgs = $null
-	function global:bash {
-		param([Parameter(ValueFromRemainingArguments = $true)]$BashArgs)
-		if (Test-Path Env:FOUNT_CLICK) {
-			throw '[FOUNT_CLICK unix] FOUNT_CLICK still set when bash invoked'
-		}
-		$global:UnixPassthroughBashArgs = @($BashArgs)
-		$global:LASTEXITCODE = 0
-	}
-	$hadFountDirectory = Test-Path Env:FOUNT_DIR
-	$previousFountDirectory = $env:FOUNT_DIR
-	$hadFountClick = Test-Path Env:FOUNT_CLICK
-	$previousFountClick = $env:FOUNT_CLICK
-	$env:FOUNT_DIR = $Root
-	$env:FOUNT_CLICK = '1'
+	$capturePath = [System.IO.Path]::GetTempFileName()
+	$clickHelper = Join-Path $PSScriptRoot 'smoke-fount-click.ps1'
 	try {
-		& $Fount open
+		& pwsh -NoProfile -File $clickHelper -Mode Unix -FountPath $Fount -RepoRoot $Root -CapturePath $capturePath
 		if ($LastExitCode -ne 0) {
 			throw "FOUNT_CLICK open exited with $LastExitCode"
 		}
-		if (Test-Path Env:FOUNT_CLICK) {
-			throw '[FOUNT_CLICK unix] FOUNT_CLICK was not cleared'
-		}
-		if (-not $global:UnixPassthroughBashArgs) {
+		if (-not (Test-Path -LiteralPath $capturePath) -or (Get-Item -LiteralPath $capturePath).Length -eq 0) {
 			throw '[FOUNT_CLICK unix] bash was not invoked'
 		}
-		$bashScript = [string]$global:UnixPassthroughBashArgs[0]
+		$unixPassthrough = Get-Content -LiteralPath $capturePath -Raw | ConvertFrom-Json
+		$unixPassthroughBashArgs = @($unixPassthrough.Args)
+		$bashScript = [string]$unixPassthroughBashArgs[0]
 		if ($bashScript -notlike '*path/fount.sh' -and $bashScript -notlike '*path\fount.sh') {
 			throw "[FOUNT_CLICK unix] unexpected bash script: $bashScript"
 		}
-		if ($global:UnixPassthroughBashArgs -notcontains 'open') {
-			throw "[FOUNT_CLICK unix] unexpected bash args: $($global:UnixPassthroughBashArgs -join ' ')"
+		if ($unixPassthroughBashArgs -notcontains 'open') {
+			throw "[FOUNT_CLICK unix] unexpected bash args: $($unixPassthroughBashArgs -join ' ')"
 		}
 	}
 	finally {
-		Remove-Item function:global:bash -ErrorAction SilentlyContinue
-		Remove-Variable -Name UnixPassthroughBashArgs -Scope Global -ErrorAction SilentlyContinue
-		if ($hadFountClick) { $env:FOUNT_CLICK = $previousFountClick } else { Remove-Item Env:FOUNT_CLICK -ErrorAction SilentlyContinue }
-		if ($hadFountDirectory) { $env:FOUNT_DIR = $previousFountDirectory } else { Remove-Item Env:FOUNT_DIR -ErrorAction SilentlyContinue }
+		Remove-Item -LiteralPath $capturePath -Force -ErrorAction SilentlyContinue
 	}
 	Write-Host '[FOUNT_CLICK unix] ok'
 }
@@ -174,11 +135,11 @@ else {
 Write-Host '== install (init) =='
 Remove-Item -LiteralPath node_modules -Recurse -Force -ErrorAction SilentlyContinue
 & $Fount init
-if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+if ($LastExitCode -ne 0) { exit $LastExitCode }
 if (-not (Test-Path -LiteralPath node_modules)) {
 	Write-Error '[install] node_modules missing after init'
 }
 $out = Invoke-FountCapture server
 Assert-OutputContains install $Marker $out
 
-Write-Host 'path smoke pwsh: all passed'
+Write-Host 'path smoke: all passed'
