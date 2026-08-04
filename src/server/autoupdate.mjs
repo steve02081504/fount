@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 
+import * as Sentry from 'npm:@sentry/deno'
 import { exec } from 'npm:@steve02081504/exec'
 
 import { git } from '../scripts/git.mjs'
@@ -9,7 +10,6 @@ import { __dirname } from './base.mjs'
 import { onIdle, offIdle } from './idle.mjs'
 import { restartor } from './server.mjs'
 import { sendEventToAll } from './web_server/event_dispatcher.mjs'
-import * as Sentry from 'npm:@sentry/deno'
 
 /**
  * 当前的 Git 提交哈希。

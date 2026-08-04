@@ -28,7 +28,7 @@ const hooked_version_files = [
 const hooked_version_file_cache = {}
 /**
  * 读取 Pages base.mjs 并替换 commit hash 占位符。
- * @param {string} projectRoot 仓库根
+ * @param {string} filePath `.github/pages/` 下的相对路径
  * @returns {Promise<string>} 替换后的模块源码
  */
 async function getHookedVersionFileContent(filePath) {

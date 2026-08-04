@@ -476,9 +476,8 @@ self.addEventListener('message', event => {
 		coldBootMode = true
 		console.log('[SW] Entered cold boot mode.')
 	}
-	else if (event.data?.type === 'GET_FOUNT_VERSION') {
+	else if (event.data?.type === 'GET_FOUNT_VERSION')
 		event.ports[0]?.postMessage?.({ fountVersion: fountVersion || 'unknown' })
-	}
 })
 
 /**

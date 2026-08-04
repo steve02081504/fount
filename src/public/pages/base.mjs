@@ -53,11 +53,16 @@ if (globalThis.fount?.test?.enabled) import('/scripts/test/test_watch.mjs')
 
 /**
  * 向 Service Worker 查询 fount 版本（commit hash）。
- * @returns {Promise<string>}
+ * @returns {Promise<string>} fount 版本字符串
  */
 async function queryFountVersion() {
 	const version = navigator.serviceWorker.controller ? await new Promise(resolve => {
 		const channel = new MessageChannel()
+		/**
+		 * 处理 Service Worker 返回的版本消息。
+		 * @param {MessageEvent} event - 消息事件。
+		 * @returns {void}
+		 */
 		channel.port1.onmessage = event => resolve(event.data?.fountVersion)
 		navigator.serviceWorker.controller.postMessage({ type: 'GET_FOUNT_VERSION' }, [channel.port2])
 	}) : 'unknown'
@@ -81,7 +86,7 @@ function urlBase64ToUint8Array(base64String) {
 
 /**
  * 注册 Web Push 订阅并上报服务端。
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无返回值
  */
 async function ensureWebPushSubscription() {
 	const registration = await navigator.serviceWorker?.ready
