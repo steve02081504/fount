@@ -12,6 +12,7 @@ let skipBreadcrumb = false
 if (!globalThis.fount?.test?.enabled) try {
 	Sentry.init({
 		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
+		release: 'not-set-yet',
 		/**
 		 * 在 Sentry 捕获面包屑事件之前进行处理。
 		 * @param {object} breadcrumb - Sentry捕获到的面包屑事件对象。
@@ -46,18 +47,23 @@ console.noBreadcrumb = {
 
 await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').catch(console.error)
 
+globalThis.fount ??= {}
+globalThis.fount.version ??= 'unknown'
 if (globalThis.fount?.test?.enabled) import('/scripts/test/test_watch.mjs')
 
-// register service worker
-; (async () => {
-	if (!navigator.serviceWorker) return
-	try {
-		await navigator.serviceWorker.register('/service_worker.mjs', { scope: '/', module: true })
-		await ensureWebPushSubscription()
-	} catch (error) {
-		if (error.name != 'SecurityError') console.error('Service Worker registration failed: ', error)
-	}
-})()
+/**
+ * 向 Service Worker 查询 fount 版本（commit hash）。
+ * @returns {Promise<string>}
+ */
+async function queryFountVersion() {
+	const version = navigator.serviceWorker.controller ? await new Promise(resolve => {
+		const channel = new MessageChannel()
+		channel.port1.onmessage = event => resolve(event.data?.fountVersion)
+		navigator.serviceWorker.controller.postMessage({ type: 'GET_FOUNT_VERSION' }, [channel.port2])
+	}) : 'unknown'
+	Sentry.setTag('release', globalThis.fount.version = version)
+	return version
+}
 
 /**
  * @param {string} base64String URL-safe base64
@@ -78,16 +84,15 @@ function urlBase64ToUint8Array(base64String) {
  * @returns {Promise<void>}
  */
 async function ensureWebPushSubscription() {
-	if (!('PushManager' in window) || !navigator.serviceWorker) return
-	const registration = await navigator.serviceWorker.ready
+	const registration = await navigator.serviceWorker?.ready
+	if (!registration?.pushManager) return
 	const keyResponse = await fetch('/api/notify/vapid-public-key', { credentials: 'include' })
 	if (!keyResponse.ok) return
 	const { publicKey } = await keyResponse.json()
 	if (!publicKey) return
 	const applicationServerKey = urlBase64ToUint8Array(publicKey)
 	let subscription = await registration.pushManager.getSubscription()
-	if (!subscription)
-		subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey })
+	subscription ||= await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey })
 	await fetch('/api/notify/push-subscribe', {
 		method: 'POST',
 		credentials: 'include',
@@ -95,6 +100,18 @@ async function ensureWebPushSubscription() {
 		body: JSON.stringify(subscription.toJSON()),
 	})
 }
+
+// register service worker
+; (async () => {
+	if (!navigator.serviceWorker) return
+	try {
+		await navigator.serviceWorker.register('/service_worker.mjs', { scope: '/', module: true })
+		await navigator.serviceWorker.ready
+		await Promise.all([ensureWebPushSubscription(), queryFountVersion()])
+	} catch (error) {
+		if (error.name != 'SecurityError') console.error('Service Worker registration failed: ', error)
+	}
+})()
 
 const is_hidden_page = !window.innerHeight || !window.innerWidth
 
