@@ -367,9 +367,8 @@ async function main() {
 	// exitSignal：拦住主循环/轮询。不关 connection——留着让主循环堵在
 	// runOneConnection，进程退出时一起死。cleanup 在模块级 on_shutdown。
 
-	const interactiveReady = ensureInteractiveLogSink()
 	// 立刻挂上 rejection 观察，避免与 intro 并行时未处理拒绝
-	const interactiveFailure = interactiveReady.then(() => null, error => error)
+	const interactiveFailure = ensureInteractiveLogSink().then(() => null, error => error)
 	await icon.intro()
 	if (exitSignal.aborted) process.exit(130)
 	const interactiveError = await interactiveFailure

@@ -56,7 +56,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 - Deno `.mjs` via `denoLiveRun(path)` or part-local `run.mjs` — no PowerShell probes.
 - **Live WS probes**: `createLiveShellHttp({ shell? })` from `wsHarness.mjs` — do not re-declare local HTTP helpers. End with `finishLiveWs` / `failLiveWsPrecondition`; frames via `waitForWsFrame`.
-- **Polling**: `pollUntil` (live/fed, seconds, soft) / `waitUntil` (integration & selftest, ms, throws) — definitions in `core/wait.mjs`; `live/http.mjs` re-exports.
+- **Polling**: `pollUntil` (live/fed, seconds, soft) / `waitUntil` (integration & selftest, ms, throws) — definitions in `core/wait.mjs`.
 - **Chat / Social fixtures**: `createCharBoot` / `seedCharFixture` / `waitUntil` from `shells/chat/test/harness.mjs`; Social agents: `seedAgentChar` in `shells/social/test/harness.mjs`.
 - **Platform bot / OnMessage contract**: [domain-harness.md](docs/domain-harness.md#platform-bot--onmessage-contract).
 - Every `deno run`/`test`/`install` carries `--allow-scripts --allow-all` (in that order). Sole exception: `deno cache` takes `--allow-scripts` alone.

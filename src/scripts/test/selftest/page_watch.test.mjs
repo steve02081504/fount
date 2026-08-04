@@ -5,6 +5,11 @@
 import { assertEquals } from 'jsr:@std/assert'
 
 import {
+	holdLocale,
+	releaseLocale,
+	resetLocaleHold,
+} from '../../../public/pages/scripts/test/watch/locale_hold.mjs'
+import {
 	drain,
 	register,
 	reset,
@@ -262,4 +267,33 @@ Deno.test('watch loop concurrent drain shares one waiter list', async () => {
 	await Promise.all([drain(), drain()])
 	assertEquals(pass >= 1, true)
 	reset()
+})
+
+Deno.test('releaseLocale wakes parked loop when hold reaches 0', async () => {
+	reset()
+	resetLocaleHold()
+	let runs = 0
+	/**
+	 * @returns {boolean} 空转
+	 */
+	function run() { runs++; return true }
+	/**
+	 * @returns {boolean} covered
+	 */
+	function covered() { return true }
+	register(task('noop', 1, run, covered))
+	start()
+	await waitUntil(() => runs >= 1, 2000, 5)
+	const parkedAt = runs
+	await new Promise(resolve => setTimeout(resolve, 40))
+	assertEquals(runs, parkedAt, 'loop must park after idle round')
+	holdLocale()
+	holdLocale()
+	releaseLocale()
+	await new Promise(resolve => setTimeout(resolve, 40))
+	assertEquals(runs, parkedAt, 'partial release must not wake')
+	releaseLocale()
+	await waitUntil(() => runs > parkedAt, 2000, 5)
+	reset()
+	resetLocaleHold()
 })

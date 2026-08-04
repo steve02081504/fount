@@ -3,12 +3,7 @@
  */
 
 import { ms } from '../../ms.mjs'
-import { sleep, waitUntil } from '../core/wait.mjs'
-
-/**
- *
- */
-export { sleep, waitUntil }
+import { sleep } from '../core/wait.mjs'
 
 /**
  * @typedef {{ base: string, key: string, name?: string, dataPath?: string, index?: number }} LiveNodeHandle

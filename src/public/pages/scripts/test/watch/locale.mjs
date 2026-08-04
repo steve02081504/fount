@@ -1,9 +1,15 @@
 /**
  * 中日英语种轮换 + 错语脚本检查。
  */
+import { holdLocale, isLocaleHeld, releaseLocale } from './locale_hold.mjs'
 import { ignore, ignoreAsync } from './mutations.mjs'
 import { collectVisiblePageText } from './page_text.mjs'
 import { createReporter } from './reporter.mjs'
+
+/**
+ *
+ */
+export { holdLocale, releaseLocale }
 
 /** 中日英轮换间隔 */
 const LOCALE_MS = 1000
@@ -26,29 +32,12 @@ const reporter = createReporter('[test:locale]')
 /** @type {Set<string>} */
 const seen = new Set()
 let index = 0
-let localeHold = 0
 /** @type {RegExp | null | undefined} */
 let jaForbiddenRe
 /** @type {Promise<RegExp | null> | null} */
 let jaForbiddenLoading = null
 /** @type {Promise<typeof import('../../i18n/index.mjs')> | null} */
 let i18nModule = null
-
-/**
- * 暂停语种轮换（引用计数）。
- * @returns {void}
- */
-export function holdLocale() {
-	localeHold++
-}
-
-/**
- * 恢复语种轮换（引用计数）。
- * @returns {void}
- */
-export function releaseLocale() {
-	localeHold = Math.max(0, localeHold - 1)
-}
 
 /**
  * 三语脚本检查是否都跑过。
@@ -108,7 +97,7 @@ export async function bootstrap() {
  * @returns {Promise<boolean>} true = 空转
  */
 async function run({ draining }) {
-	if (localeHold > 0 && !draining) return true
+	if (isLocaleHeld() && !draining) return true
 	const i18n = await getI18n()
 	if (draining) {
 		const next = LOCALE_CYCLE.find(locale => !seen.has(locale))

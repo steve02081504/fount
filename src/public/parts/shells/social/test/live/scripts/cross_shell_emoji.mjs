@@ -16,7 +16,7 @@ import {
 	WarmupFedNodeLinks,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
-import { sleep } from 'fount/scripts/test/live/http.mjs'
+import { sleep } from 'fount/scripts/test/core/wait.mjs'
 
 const groupTitle = 'FedCrossShell'
 let gid = null

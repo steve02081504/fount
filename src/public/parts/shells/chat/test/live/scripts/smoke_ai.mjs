@@ -1,6 +1,6 @@
 import process from 'node:process'
 
-import { sleep } from 'fount/scripts/test/live/http.mjs'
+import { sleep } from 'fount/scripts/test/core/wait.mjs'
 import { createSingleNodeProbe } from 'fount/scripts/test/live/singleNode/helpers.mjs'
 
 const { chatApiJson } = await createSingleNodeProbe()

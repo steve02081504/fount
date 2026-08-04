@@ -9,7 +9,7 @@ import { createLazySession } from 'fount/scripts/test/fixtures.mjs'
 import { createTestServerBoot, ensureSharedTestDataDir } from 'fount/scripts/test/node/boot.mjs'
 
 /** 集成测试轮询：毫秒超时，失败抛错（与 live `pollUntil` 秒超时/软失败相对）。 */
-export { waitUntil } from 'fount/scripts/test/live/http.mjs'
+export { waitUntil } from 'fount/scripts/test/core/wait.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), 'fixtures')
 
