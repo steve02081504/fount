@@ -90,7 +90,7 @@ export async function bootstrap() {
 }
 
 /**
- * WatchLoop 回调：切语种或空转。
+ * loop 回调：切语种或空转。
  * @param {import('./loop.mjs').WatchTickContext} ctx tick 上下文
  * @returns {Promise<boolean>} true = 空转
  */

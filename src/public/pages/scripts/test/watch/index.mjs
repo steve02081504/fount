@@ -4,14 +4,14 @@
  */
 import { requestRefresh, task as a11yTask } from './a11y.mjs'
 import { bootstrap, holdLocale, releaseLocale, task as localeTask } from './locale.mjs'
-import { drain, isStarted, registerTask, start } from './loop.mjs'
+import { drain, register, start, started } from './loop.mjs'
 import { observe } from './mutations.mjs'
 
 globalThis.fount ??= {}
 globalThis.fount.test ??= {}
 
-registerTask(a11yTask)
-registerTask(localeTask)
+register(a11yTask)
+register(localeTask)
 observe(document.documentElement, {
 	subtree: true,
 	childList: true,
@@ -24,7 +24,7 @@ observe(document.documentElement, {
  * @returns {Promise<void>}
  */
 function kick() {
-	return isStarted() ? requestRefresh() : Promise.resolve()
+	return started ? requestRefresh() : Promise.resolve()
 }
 
 /**
@@ -45,7 +45,7 @@ globalThis.fount.test.watch = {
 	 * 是否已开闸（locale bootstrap 完成且 loop 已 start）。
 	 * @returns {boolean} started
 	 */
-	get started() { return isStarted() },
+	get started() { return started },
 	kick,
 	drain,
 	holdLocale,

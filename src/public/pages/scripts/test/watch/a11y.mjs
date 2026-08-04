@@ -61,7 +61,7 @@ function beginDrain() {
 }
 
 /**
- * WatchLoop 回调：跑一轮或空转。
+ * loop 回调：跑一轮或空转。
  * @param {import('./loop.mjs').WatchTickContext} ctx tick 上下文
  * @returns {Promise<boolean>} true = 空转
  */

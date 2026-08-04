@@ -1,10 +1,17 @@
 /**
- * page watch 纯逻辑：WatchLoop / reporter / ariaIgnoreProblem。
+ * page watch 纯逻辑：watch loop / reporter / ariaIgnoreProblem。
  */
 /* global Deno */
 import { assertEquals } from 'jsr:@std/assert'
 
-import { WatchLoop } from '../../../public/pages/scripts/test/watch/loop.mjs'
+import {
+	drain,
+	register,
+	reset,
+	start,
+	started,
+	wake,
+} from '../../../public/pages/scripts/test/watch/loop.mjs'
 import { createReporter } from '../../../public/pages/scripts/test/watch/reporter.mjs'
 import { ariaIgnoreProblem } from '../core/aria_ignore.mjs'
 
@@ -15,25 +22,11 @@ import { ariaIgnoreProblem } from '../core/aria_ignore.mjs'
  * @returns {Promise<void>} 谓词成立时 resolve
  */
 async function waitUntil(pred, timeoutMs = 2000) {
-	const start = Date.now()
+	const begin = Date.now()
 	while (!pred()) {
-		if (Date.now() - start > timeoutMs) throw new Error('waitUntil timed out')
+		if (Date.now() - begin > timeoutMs) throw new Error('waitUntil timed out')
 		await new Promise(resolve => setTimeout(resolve, 5))
 	}
-}
-
-/**
- * 静默 reporter（不写 console）。
- * @returns {import('../../../public/pages/scripts/test/watch/reporter.mjs').WatchReporter} 空操作 reporter
- */
-function silentReporter() {
-	/**
-	 * @param {string} _key 去重键
-	 * @param {...unknown} _parts 日志参数
-	 * @returns {void}
-	 */
-	function report(_key, ..._parts) { }
-	return { report }
 }
 
 /**
@@ -109,8 +102,8 @@ Deno.test('ariaIgnoreProblem covers missing / bad / closed', () => {
 	)
 })
 
-Deno.test('WatchLoop wake/drain are no-ops before start', async () => {
-	const loop = new WatchLoop({ reporter: silentReporter() })
+Deno.test('watch loop wake/drain are no-ops before start', async () => {
+	reset()
 	let runs = 0
 	/**
 	 * @returns {boolean} 空转
@@ -120,16 +113,17 @@ Deno.test('WatchLoop wake/drain are no-ops before start', async () => {
 	 * @returns {boolean} covered
 	 */
 	function covered() { return true }
-	loop.register(task('noop', 1, run, covered))
-	loop.wake()
-	await loop.drain()
+	register(task('noop', 1, run, covered))
+	wake()
+	await drain()
 	await new Promise(resolve => setTimeout(resolve, 30))
 	assertEquals(runs, 0)
-	assertEquals(loop.started, false)
+	assertEquals(started, false)
+	reset()
 })
 
-Deno.test('WatchLoop rotates tasks and parks after full idle round', async () => {
-	const loop = new WatchLoop({ reporter: silentReporter() })
+Deno.test('watch loop rotates tasks and parks after full idle round', async () => {
+	reset()
 	/** @type {string[]} */
 	const order = []
 	let aIdle = false
@@ -156,19 +150,20 @@ Deno.test('WatchLoop rotates tasks and parks after full idle round', async () =>
 	 * @returns {boolean} covered
 	 */
 	function covered() { return true }
-	loop.register(task('a', 1, runA, covered))
-	loop.register(task('b', 1, runB, covered))
-	loop.start()
+	register(task('a', 1, runA, covered))
+	register(task('b', 1, runB, covered))
+	start()
 	await waitUntil(() => order.filter(name => name === 'a').length >= 2 && order.filter(name => name === 'b').length >= 2)
 	const afterPark = order.length
 	await new Promise(resolve => setTimeout(resolve, 40))
 	assertEquals(order.length, afterPark, 'parked loop must not keep ticking')
-	loop.wake()
+	wake()
 	await waitUntil(() => order.length > afterPark)
+	reset()
 })
 
-Deno.test('WatchLoop wake during running is not dropped', async () => {
-	const loop = new WatchLoop({ reporter: silentReporter() })
+Deno.test('watch loop wake during running is not dropped', async () => {
+	reset()
 	/** @type {(() => void) | null} */
 	let release = null
 	let runs = 0
@@ -185,16 +180,17 @@ Deno.test('WatchLoop wake during running is not dropped', async () => {
 	 * @returns {boolean} covered
 	 */
 	function covered() { return true }
-	loop.register(task('blocker', 1, run, covered))
-	loop.start()
+	register(task('blocker', 1, run, covered))
+	start()
 	await waitUntil(() => release !== null)
-	loop.wake()
+	wake()
 	release?.()
 	await waitUntil(() => runs >= 2)
+	reset()
 })
 
-Deno.test('WatchLoop drain waits until all covered', async () => {
-	const loop = new WatchLoop({ reporter: silentReporter() })
+Deno.test('watch loop drain waits until all covered', async () => {
+	reset()
 	/** @type {Set<string>} */
 	const seen = new Set()
 	/**
@@ -215,13 +211,15 @@ Deno.test('WatchLoop drain waits until all covered', async () => {
 	 * @returns {boolean} covered
 	 */
 	function covered() { return seen.has('x') && seen.has('y') }
-	loop.register(task('cover', 1, run, covered, beginDrain))
-	loop.start()
-	await loop.drain()
+	register(task('cover', 1, run, covered, beginDrain))
+	start()
+	await drain()
 	assertEquals([...seen].sort(), ['x', 'y'])
+	reset()
 })
 
-Deno.test('WatchLoop reports task failures via reporter', async () => {
+Deno.test('watch loop reports task failures via reporter', async () => {
+	reset()
 	/** @type {unknown[][]} */
 	const logged = []
 	const orig = console.error
@@ -231,8 +229,6 @@ Deno.test('WatchLoop reports task failures via reporter', async () => {
 	 */
 	console.error = (...args) => { logged.push(args) }
 	try {
-		const reporter = createReporter('[test:watch]')
-		const loop = new WatchLoop({ reporter })
 		/**
 		 * @returns {boolean} never
 		 */
@@ -241,8 +237,8 @@ Deno.test('WatchLoop reports task failures via reporter', async () => {
 		 * @returns {boolean} covered
 		 */
 		function covered() { return true }
-		loop.register(task('boom', 1, run, covered))
-		loop.start()
+		register(task('boom', 1, run, covered))
+		start()
 		await waitUntil(() => logged.some(line => line.includes('tick-failed')))
 		assertEquals(logged[0][0], '[test:watch]')
 		assertEquals(logged[0][1], 'tick-failed')
@@ -250,11 +246,12 @@ Deno.test('WatchLoop reports task failures via reporter', async () => {
 	}
 	finally {
 		console.error = orig
+		reset()
 	}
 })
 
-Deno.test('WatchLoop concurrent drain shares one waiter list', async () => {
-	const loop = new WatchLoop({ reporter: silentReporter() })
+Deno.test('watch loop concurrent drain shares one waiter list', async () => {
+	reset()
 	let pass = 0
 	/**
 	 * @returns {void}
@@ -273,8 +270,9 @@ Deno.test('WatchLoop concurrent drain shares one waiter list', async () => {
 	 * @returns {boolean} covered
 	 */
 	function covered() { return pass >= 1 }
-	loop.register(task('once', 1, run, covered, beginDrain))
-	loop.start()
-	await Promise.all([loop.drain(), loop.drain()])
+	register(task('once', 1, run, covered, beginDrain))
+	start()
+	await Promise.all([drain(), drain()])
 	assertEquals(pass >= 1, true)
+	reset()
 })
