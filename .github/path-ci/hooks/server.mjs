@@ -1,6 +1,5 @@
 /**
- * CI-only stub swapped in place of src/server/index.mjs by .github/path-ci/install-hooks.sh.
- * Not used locally.
+ * CI 专用桩：由 `.github/path-ci/install-hooks.sh` 临时替换 `src/server/index.mjs`；本地不用。
  */
 import fs from 'node:fs'
 import process from 'node:process'

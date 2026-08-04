@@ -1,6 +1,5 @@
 /**
- * CI-only stub swapped in place of src/log_viewer/index.mjs by .github/path-ci/install-hooks.sh.
- * Not used locally.
+ * CI 专用桩：由 `.github/path-ci/install-hooks.sh` 临时替换 `src/log_viewer/index.mjs`；本地不用。
  */
 import process from 'node:process'
 console.log('FOUNT_CI_HOOK:log')

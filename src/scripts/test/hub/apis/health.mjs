@@ -1,5 +1,5 @@
 /**
- * `GET /health`
+ * 测试 hub 健康检查：`GET /health`。
  */
 import { Router } from 'npm:express'
 
