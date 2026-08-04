@@ -1,11 +1,11 @@
 /**
- * 前端 Playwright 浏览器诊断：网络异常噪声行 + pageerror / test_watch / i18n missing 硬失败。
+ * 前端 Playwright 浏览器诊断：网络异常噪声行 + pageerror / page watch / i18n missing 硬失败。
  */
 
 /** 写入 suite 输出、供 `detectNoiseHits` 识别的前缀。 */
 export const BROWSER_NETWORK_PREFIX = '[browser:network]'
 
-/** `scripts/test/test_watch.mjs` 控制台命名空间；任意 `[test:…]` 命中则硬失败。 */
+/** `scripts/test/watch.mjs` 控制台命名空间；任意 `[test:…]` 命中则硬失败。 */
 export const TEST_WATCH_CONSOLE_PREFIX = '[test:'
 
 /** `scripts/i18n` 缺键警告前缀；命中则硬失败（不去重）。 */
@@ -77,9 +77,9 @@ export function formatBrowserNetworkLine(entry) {
 }
 
 /**
- * 文本是否为 test_watch 输出。
+ * 文本是否为 page watch 输出。
  * @param {string} text console 文本
- * @returns {boolean} 是否 test_watch
+ * @returns {boolean} 是否 page watch
  */
 export function isTestWatchConsoleText(text) {
 	return text.includes(TEST_WATCH_CONSOLE_PREFIX)
@@ -95,7 +95,7 @@ export function isI18nMissingConsoleText(text) {
 }
 
 /**
- * 等待页面至少完成一次 test_watch 扫描（`fount.test.watchLastRun`）。
+ * 等待页面至少完成一次 page watch 扫描（`fount.test.watchLastRun`）。
  * 先 `kickWatch()`（DOM 静止时不会自动扫），再等 lastRun 推进。
  * @param {import('npm:@playwright/test').Page} page Playwright 页面
  * @param {number} [sinceMs=0] 要求 lastRun 严格晚于此时刻（0 表示任意一次）
