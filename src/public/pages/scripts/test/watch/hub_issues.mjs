@@ -38,9 +38,6 @@ export async function isClosed(url, { refresh = false } = {}) {
 	if (refresh) {
 		closedCache.delete(url)
 		backoffUntil.delete(url)
-		const pending = inflight.get(url)
-		if (pending) await pending.catch(() => { })
-		inflight.delete(url)
 	}
 	else {
 		if (closedCache.has(url)) return closedCache.get(url)
@@ -55,19 +52,21 @@ export async function isClosed(url, { refresh = false } = {}) {
 				signal: AbortSignal.timeout(GITHUB_ISSUE_FETCH_TIMEOUT_MS),
 			})
 			if (!response.ok) {
-				backoffUntil.set(url, Date.now() + GITHUB_ISSUE_PROBE_BACKOFF_MS)
+				if (inflight.get(url) === probe)
+					backoffUntil.set(url, Date.now() + GITHUB_ISSUE_PROBE_BACKOFF_MS)
 				return false
 			}
 			const closed = (await response.json())?.closed === true
-			closedCache.set(url, closed)
+			if (inflight.get(url) === probe) closedCache.set(url, closed)
 			return closed
 		}
 		catch {
-			backoffUntil.set(url, Date.now() + GITHUB_ISSUE_PROBE_BACKOFF_MS)
+			if (inflight.get(url) === probe)
+				backoffUntil.set(url, Date.now() + GITHUB_ISSUE_PROBE_BACKOFF_MS)
 			return false
 		}
 		finally {
-			inflight.delete(url)
+			if (inflight.get(url) === probe) inflight.delete(url)
 		}
 	})()
 	inflight.set(url, probe)

@@ -14,20 +14,7 @@ import {
 } from '../../../public/pages/scripts/test/watch/loop.mjs'
 import { createReporter } from '../../../public/pages/scripts/test/watch/reporter.mjs'
 import { ariaIgnoreProblem } from '../core/aria_ignore.mjs'
-
-/**
- * 等到谓词为真或超时。
- * @param {() => boolean} pred 谓词
- * @param {number} [timeoutMs=2000] 超时
- * @returns {Promise<void>} 谓词成立时 resolve
- */
-async function waitUntil(pred, timeoutMs = 2000) {
-	const begin = Date.now()
-	while (!pred()) {
-		if (Date.now() - begin > timeoutMs) throw new Error('waitUntil timed out')
-		await new Promise(resolve => setTimeout(resolve, 5))
-	}
-}
+import { waitUntil } from '../core/wait.mjs'
 
 /**
  * 组装 WatchTask（标识符引用，避免对象字面量方法触发 require-jsdoc）。
@@ -39,7 +26,7 @@ async function waitUntil(pred, timeoutMs = 2000) {
  * @returns {import('../../../public/pages/scripts/test/watch/loop.mjs').WatchTask} 任务
  */
 function task(name, delayMs, run, covered, beginDrain) {
-	return beginDrain ? { name, delayMs, run, covered, beginDrain } : { name, delayMs, run, covered }
+	return { name, delayMs, run, covered, beginDrain }
 }
 
 Deno.test('createReporter dedups by key', () => {
@@ -153,12 +140,12 @@ Deno.test('watch loop rotates tasks and parks after full idle round', async () =
 	register(task('a', 1, runA, covered))
 	register(task('b', 1, runB, covered))
 	start()
-	await waitUntil(() => order.filter(name => name === 'a').length >= 2 && order.filter(name => name === 'b').length >= 2)
+	await waitUntil(() => order.filter(name => name === 'a').length >= 2 && order.filter(name => name === 'b').length >= 2, 2000, 5)
 	const afterPark = order.length
 	await new Promise(resolve => setTimeout(resolve, 40))
 	assertEquals(order.length, afterPark, 'parked loop must not keep ticking')
 	wake()
-	await waitUntil(() => order.length > afterPark)
+	await waitUntil(() => order.length > afterPark, 2000, 5)
 	reset()
 })
 
@@ -182,10 +169,10 @@ Deno.test('watch loop wake during running is not dropped', async () => {
 	function covered() { return true }
 	register(task('blocker', 1, run, covered))
 	start()
-	await waitUntil(() => release !== null)
+	await waitUntil(() => release !== null, 2000, 5)
 	wake()
 	release?.()
-	await waitUntil(() => runs >= 2)
+	await waitUntil(() => runs >= 2, 2000, 5)
 	reset()
 })
 
@@ -239,7 +226,7 @@ Deno.test('watch loop reports task failures via reporter', async () => {
 		function covered() { return true }
 		register(task('boom', 1, run, covered))
 		start()
-		await waitUntil(() => logged.some(line => line.includes('tick-failed')))
+		await waitUntil(() => logged.some(line => line.includes('tick-failed')), 2000, 5)
 		assertEquals(logged[0][0], '[test:watch]')
 		assertEquals(logged[0][1], 'tick-failed')
 		assertEquals(logged[0][2], 'boom')

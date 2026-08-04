@@ -89,13 +89,13 @@ async function checkAriaIgnores({ refresh = false, entries = collectAriaIgnoreEn
 	const hub = testHubBaseUrl()
 	/** @type {{ url: string, where: string }[]} */
 	const toProbe = []
-	for (const { url, where, parsed } of entries) {
+	for (const { url, where } of entries) {
 		const staticProblem = ariaIgnoreProblem({ url, where, closed: false })
 		if (staticProblem?.code === 'missing-url') {
 			reporter.report(`aria-ignore-missing\t${where}`, 'aria-ignore-missing-url', where, staticProblem.message)
 			continue
 		}
-		if (staticProblem?.code === 'bad-url' || !parsed) {
+		if (staticProblem?.code === 'bad-url') {
 			reporter.report(`aria-ignore-bad-url\t${url}`, 'aria-ignore-bad-url', where, url)
 			continue
 		}
@@ -103,12 +103,14 @@ async function checkAriaIgnores({ refresh = false, entries = collectAriaIgnoreEn
 	}
 	if (!toProbe.length) return
 
-	await Promise.all([...new Set(toProbe.map(item => item.url))].map(url =>
-		isClosed(url, { refresh }),
+	const closedByUrl = new Map(await Promise.all(
+		[...new Set(toProbe.map(item => item.url))].map(async url =>
+			/** @type {[string, boolean]} */[url, await isClosed(url, { refresh })],
+		),
 	))
 
 	for (const { url, where } of toProbe) {
-		const closed = await isClosed(url)
+		const closed = closedByUrl.get(url)
 		const problem = ariaIgnoreProblem({ url, where, closed })
 		if (problem?.code !== 'closed') continue
 		reporter.report(`aria-ignore-closed\t${url}`, 'aria-ignore-closed', where, url)

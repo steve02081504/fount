@@ -264,9 +264,11 @@
 			],
 			"triggers": [
 				"src/scripts/test/selftest/page_watch.test.mjs",
-				"src/public/pages/scripts/test/watch/{loop,reporter}.mjs",
+				"src/public/pages/scripts/test/watch/**",
+				"src/public/pages/scripts/test/hub_url.mjs",
 				"src/public/pages/scripts/test/aria_ignore.mjs",
-				"src/scripts/test/core/aria_ignore.mjs"
+				"src/scripts/test/core/aria_ignore.mjs",
+				"src/scripts/test/core/wait.mjs"
 			]
 		},
 		{

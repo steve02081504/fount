@@ -14,4 +14,4 @@ console.log(line)
 const markerFile = process.env.FOUNT_CI_HOOK_MARKER_FILE
 if (markerFile) fs.appendFileSync(markerFile, `${line}\n`)
 
-process.exit(0)
+process.exitCode = 0

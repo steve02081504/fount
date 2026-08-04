@@ -35,7 +35,9 @@ async function boot() {
 	try {
 		await bootstrap()
 	}
-	catch { /* i18n 不可用仍开闸 */ }
+	catch (error) {
+		console.warn('[test:watch] bootstrap failed', error)
+	}
 	start()
 	await kick()
 }

@@ -75,16 +75,29 @@ export async function bootstrap() {
 
 	if (document.documentElement.lang) return
 
-	await new Promise(resolve => {
+	await new Promise((resolve, reject) => {
+		const BOOTSTRAP_LANG_TIMEOUT_MS = 10_000
 		/**
 		 * 首轮语言落定后继续。
 		 * @returns {void}
 		 */
 		function onLocale() {
 			if (!document.documentElement.lang) return
-			i18n.offLanguageChange(onLocale)
+			cleanup()
 			resolve()
 		}
+		/**
+		 * 移除监听与超时。
+		 * @returns {void}
+		 */
+		function cleanup() {
+			clearTimeout(timer)
+			i18n.offLanguageChange(onLocale)
+		}
+		const timer = setTimeout(() => {
+			cleanup()
+			reject(new Error('locale bootstrap timed out waiting for document.documentElement.lang'))
+		}, BOOTSTRAP_LANG_TIMEOUT_MS)
 		i18n.onLanguageChange(onLocale)
 	})
 }

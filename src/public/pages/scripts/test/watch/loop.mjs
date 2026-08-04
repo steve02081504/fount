@@ -124,6 +124,16 @@ function resolveDrain() {
 }
 
 /**
+ * 若正在 drain 且全部 covered，则收尾并返回 true。
+ * @returns {boolean} 已结束 drain 则为 true
+ */
+function finishDrainIfComplete() {
+	if (!draining || !allCovered()) return false
+	resolveDrain()
+	return true
+}
+
+/**
  * @param {number} delayMs 延迟
  * @returns {void}
  */
@@ -140,10 +150,7 @@ function schedule(delayMs) {
  */
 async function tick() {
 	if (!tasks.length || running) return
-	if (draining && allCovered()) {
-		resolveDrain()
-		return
-	}
+	if (finishDrainIfComplete()) return
 
 	const task = tasks[cursor % tasks.length]
 	cursor++
@@ -173,18 +180,15 @@ async function tick() {
 		return
 	}
 
-	if (draining && allCovered()) {
-		resolveDrain()
-		return
-	}
+	if (finishDrainIfComplete()) return
 
 	if (idle) {
 		idleStreak++
 		if (idleStreak >= tasks.length) {
 			idleStreak = 0
 			if (draining) {
-				if (allCovered()) resolveDrain()
-				else schedule(Math.min(...tasks.map(item => item.delayMs)))
+				if (finishDrainIfComplete()) return
+				schedule(Math.min(...tasks.map(item => item.delayMs)))
 				return
 			}
 			return

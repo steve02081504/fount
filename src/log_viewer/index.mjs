@@ -368,9 +368,12 @@ async function main() {
 	// runOneConnection，进程退出时一起死。cleanup 在模块级 on_shutdown。
 
 	const interactiveReady = ensureInteractiveLogSink()
+	// 立刻挂上 rejection 观察，避免与 intro 并行时未处理拒绝
+	const interactiveFailure = interactiveReady.then(() => null, error => error)
 	await icon.intro()
 	if (exitSignal.aborted) process.exit(130)
-	await interactiveReady
+	const interactiveError = await interactiveFailure
+	if (interactiveError) throw interactiveError
 
 	while (!exitSignal.aborted) {
 		// 等 server：intro 已在 hold 时 start 直接返回；断线后重新 start

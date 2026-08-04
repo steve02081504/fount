@@ -3,7 +3,7 @@ import { test as base, expect, request } from '@playwright/test'
 import { ms } from '../../ms.mjs'
 
 import { loginWithApiKey } from './auth.mjs'
-import { createBrowserDiagnostics, waitForLocaleCycle } from './browser_diagnostics.mjs'
+import { createBrowserDiagnostics, waitForWatchDrain } from './browser_diagnostics.mjs'
 import { installCdnResponseCache } from './cdn_cache.mjs'
 import { requireTestBaseUrl } from './env.mjs'
 import { assertAriaIgnoreIssues } from './github_issue.mjs'
@@ -93,11 +93,11 @@ export function createFountFixtures(options = {}) {
 			await diagnostics.attach(page)
 			await use(page)
 			// 收尾：watch.drain()；未挂载时 evaluate 立即返回
-			await waitForLocaleCycle(page)
+			await waitForWatchDrain(page)
 			await assertAriaIgnoreIssues(page)
 			diagnostics.flushNetworkDiagnostics()
 			expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
-			expect(diagnostics.testWatchErrors, 'unexpected page watch console output').toEqual([])
+			expect(diagnostics.pageWatchErrors, 'unexpected page watch console output').toEqual([])
 			expect(diagnostics.i18nMissingErrors, 'unexpected missing i18n keys').toEqual([])
 		},
 	})

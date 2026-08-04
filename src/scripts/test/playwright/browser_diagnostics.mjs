@@ -6,7 +6,7 @@
 export const BROWSER_NETWORK_PREFIX = '[browser:network]'
 
 /** `scripts/test/watch/` 控制台命名空间；任意 `[test:…]` 命中则硬失败。 */
-export const TEST_WATCH_CONSOLE_PREFIX = '[test:'
+export const PAGE_WATCH_CONSOLE_PREFIX = '[test:'
 
 /** `scripts/i18n` 缺键警告前缀；命中则硬失败（不去重）。 */
 export const I18N_MISSING_PREFIX = '[i18n:missing]'
@@ -81,8 +81,8 @@ export function formatBrowserNetworkLine(entry) {
  * @param {string} text console 文本
  * @returns {boolean} 是否 page watch
  */
-export function isTestWatchConsoleText(text) {
-	return text.includes(TEST_WATCH_CONSOLE_PREFIX)
+export function isPageWatchConsoleText(text) {
+	return text.includes(PAGE_WATCH_CONSOLE_PREFIX)
 }
 
 /**
@@ -95,13 +95,13 @@ export function isI18nMissingConsoleText(text) {
 }
 
 /**
- * 强制跑完中日英覆盖 + 一轮 a11y（`watch.drain()`）。
+ * 强制跑完 page watch drain（中日英覆盖 + 一轮 a11y）。
  * 未挂载时 `?.()` 立即返回。
  * @param {import('npm:@playwright/test').Page} page Playwright 页面
  * @param {number} [timeoutMs=30000] 超时
  * @returns {Promise<void>}
  */
-export async function waitForLocaleCycle(page, timeoutMs = 30_000) {
+export async function waitForWatchDrain(page, timeoutMs = 30_000) {
 	let timer
 	try {
 		await Promise.race([
@@ -110,7 +110,7 @@ export async function waitForLocaleCycle(page, timeoutMs = 30_000) {
 			}),
 			new Promise((_, reject) => {
 				timer = setTimeout(() => {
-					reject(new Error(`waitForLocaleCycle timed out after ${timeoutMs}ms`))
+					reject(new Error(`waitForWatchDrain timed out after ${timeoutMs}ms`))
 				}, timeoutMs)
 			}),
 		])
@@ -153,7 +153,7 @@ export function pageErrorFromCdpException(exceptionDetails) {
  * @returns {{
  *   attach: (page: import('npm:@playwright/test').Page) => Promise<void>,
  *   pageErrors: string[],
- *   testWatchErrors: string[],
+ *   pageWatchErrors: string[],
  *   i18nMissingErrors: string[],
  *   flushNetworkDiagnostics: () => BrowserNetworkEntry[],
  * }} 诊断 API
@@ -162,7 +162,7 @@ export function createBrowserDiagnostics() {
 	/** @type {string[]} */
 	const pageErrors = []
 	/** @type {string[]} */
-	const testWatchErrors = []
+	const pageWatchErrors = []
 	/** @type {string[]} */
 	const i18nMissingErrors = []
 	/** @type {Map<string, BrowserNetworkEntry>} */
@@ -209,7 +209,7 @@ export function createBrowserDiagnostics() {
 
 		page.on('console', msg => {
 			const text = msg.text()
-			if (isTestWatchConsoleText(text)) testWatchErrors.push(text)
+			if (isPageWatchConsoleText(text)) pageWatchErrors.push(text)
 			if (isI18nMissingConsoleText(text)) i18nMissingErrors.push(text)
 		})
 		page.on('requestfailed', req => {
@@ -250,5 +250,5 @@ export function createBrowserDiagnostics() {
 		return entries
 	}
 
-	return { attach, pageErrors, testWatchErrors, i18nMissingErrors, flushNetworkDiagnostics }
+	return { attach, pageErrors, pageWatchErrors, i18nMissingErrors, flushNetworkDiagnostics }
 }

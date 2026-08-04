@@ -3,4 +3,4 @@
  */
 import process from 'node:process'
 console.log('FOUNT_CI_HOOK:log')
-process.exit(0)
+process.exitCode = 0

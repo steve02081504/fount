@@ -7,5 +7,5 @@
  * @returns {string} hub 根 URL
  */
 export function testHubBaseUrl() {
-	return String(globalThis.fount?.test?.hubUrl || '').replace(/\/$/, '')
+	return (globalThis.fount?.test?.hubUrl || '').replace(/\/$/, '')
 }

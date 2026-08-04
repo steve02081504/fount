@@ -70,17 +70,13 @@ async function installSocialTestHooks({ page }) {
 		if (!navigator.clipboard)
 			Object.defineProperty(navigator, 'clipboard', {
 				value: {
-					/**
-					 *
-					 */
+					/** 模拟异步剪贴板写入。 */
 					writeText: async () => { },
 				},
 				configurable: true,
 			})
 		else
-			/**
-			 *
-			 */
+			/** 模拟异步剪贴板写入。 */
 			navigator.clipboard.writeText = async () => { }
 	})
 	// 谓词匹配 pathname（比 glob/regex 全 URL 更稳）；挂 context 覆盖 popup / 多 page。
