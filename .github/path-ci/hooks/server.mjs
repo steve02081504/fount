@@ -2,8 +2,8 @@
  * CI-only stub swapped in place of src/server/index.mjs by .github/path-ci/install-hooks.sh.
  * Not used locally.
  */
-import process from "node:process"
-import fs from "node:fs"
+import fs from 'node:fs'
+import process from 'node:process'
 // Side-effect import: ensure node_modules layout for deno install in CI.
 import 'npm:nop'
 
