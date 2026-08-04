@@ -70,7 +70,6 @@ async function installSocialTestHooks({ page }) {
 		if (!navigator.clipboard)
 			Object.defineProperty(navigator, 'clipboard', {
 				value: {
-					/* eslint-disable-next-line jsdoc/require-jsdoc -- stub */
 					writeText: async () => { },
 				},
 				configurable: true,
