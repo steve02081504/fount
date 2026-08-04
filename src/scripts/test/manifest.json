@@ -243,9 +243,30 @@
 				"src/scripts/test/selftest/github_issue.test.mjs",
 				"src/scripts/test/selftest/test_hub.test.mjs",
 				"src/scripts/test/core/github_issue.mjs",
+				"src/scripts/test/core/aria_ignore.mjs",
 				"src/public/pages/scripts/test/github_issue.mjs",
+				"src/public/pages/scripts/test/aria_ignore.mjs",
 				"src/scripts/test/hub/**",
 				"src/scripts/test/playwright/github_issue.mjs"
+			]
+		},
+		{
+			"name": "page_watch",
+			"run": [
+				"deno",
+				"test",
+				"--no-check",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/selftest/page_watch.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/page_watch.test.mjs",
+				"src/public/pages/scripts/test/watch/{loop,reporter}.mjs",
+				"src/public/pages/scripts/test/aria_ignore.mjs",
+				"src/scripts/test/core/aria_ignore.mjs"
 			]
 		},
 		{
