@@ -1,6 +1,6 @@
 /**
  * 可见 UI 文案提取：临时隐藏 `[user-content]` 后读 title + body.innerText。
- * 调用方负责套 MutationGate，避免隐藏操作喂脏 a11y。
+ * 调用方负责套 mutations.ignore，避免隐藏操作喂脏 a11y。
  */
 
 /**

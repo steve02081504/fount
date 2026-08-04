@@ -5,6 +5,7 @@
  * 整轮皆空则停住等 `wake`。`drain()` 先调各任务 `beginDrain`，再跑到全部 `covered`。
  * 未 `start()` 前 `wake` / `drain` 均为 no-op。
  */
+import { createReporter } from './reporter.mjs'
 
 /**
  * @typedef {{ draining: boolean }} WatchTickContext
@@ -203,4 +204,48 @@ export class WatchLoop {
 		this.#idleStreak = 0
 		this.#schedule(task.delayMs)
 	}
+}
+
+/** 页面级单例（selftest 仍用 `new WatchLoop` 隔离实例）。 */
+const pageLoop = new WatchLoop({ reporter: createReporter('[test:watch]') })
+
+/**
+ * 注册页面 watch 任务。
+ * @param {WatchTask} task 任务
+ * @returns {void}
+ */
+export function registerTask(task) {
+	pageLoop.register(task)
+}
+
+/**
+ * 开闸并启动页面级调度。
+ * @returns {void}
+ */
+export function start() {
+	pageLoop.start()
+}
+
+/**
+ * 唤醒停住的页面级 loop。
+ * @returns {void}
+ */
+export function wake() {
+	pageLoop.wake()
+}
+
+/**
+ * 页面级 drain。
+ * @returns {Promise<void>}
+ */
+export function drain() {
+	return pageLoop.drain()
+}
+
+/**
+ * 页面级 loop 是否已开闸。
+ * @returns {boolean} started
+ */
+export function isStarted() {
+	return pageLoop.started
 }
