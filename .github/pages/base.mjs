@@ -45,6 +45,9 @@ console.noBreadcrumb = {
 
 await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').catch(console.error)
 
+globalThis.fount ??= {}
+globalThis.fount.version ??= 'unknown' // pages版本不代表用户运行的fount版本
+globalThis.fount.pages_version ??= '__FOUNT_COMMIT_HASH__'
 if (globalThis.fount?.test?.enabled) import('/fount/scripts/test/test_watch.mjs').catch(console.error)
 
 /* global urlParams */
@@ -208,8 +211,7 @@ export const base_dir = '../'.repeat(window.location.pathname.split('/').length 
 	try {
 		await navigator.serviceWorker.register('/sw.js')
 	} catch (error) {
-		if (error.name != 'SecurityError')
-			console.error('Service Worker registration failed: ', error)
+		if (error.name != 'SecurityError') console.error('Service Worker registration failed: ', error)
 	}
 })()
 
