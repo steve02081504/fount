@@ -9,6 +9,7 @@ import { __dirname } from './base.mjs'
 import { onIdle, offIdle } from './idle.mjs'
 import { restartor } from './server.mjs'
 import { sendEventToAll } from './web_server/event_dispatcher.mjs'
+import * as Sentry from 'npm:@sentry/deno'
 
 /**
  * 当前的 Git 提交哈希。
@@ -27,6 +28,7 @@ export let currentGitBranch = null
  */
 async function refreshGitRef() {
 	currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
+	Sentry.setTag('release', currentGitCommit)
 	const branch = await git('rev-parse', '--abbrev-ref', 'HEAD').catch(() => null)
 	currentGitBranch = branch && branch !== 'HEAD' ? branch : null
 }
