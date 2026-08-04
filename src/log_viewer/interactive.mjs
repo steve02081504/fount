@@ -56,7 +56,6 @@ import {
 export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir, onClearComplete }) {
 	const EVAL_WS_URL = `ws://localhost:${port}/ws/eval`
 	const historyStore = createHistoryStore(fountDir ?? path.resolve(import.meta.dirname + '/../../'))
-	const replHint = geti18nForTerminal('fountConsole.logViewer.replHint')
 
 	let input = ''
 	let cursor = 0
@@ -639,7 +638,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			out += renderCompletionBand(cols, boxTop, completionItems, completionIndex, completionActive)
 		renderedCompletionRows = completionRows
 
-		out += cursorTo(1, boxBottom) + ERASE_LINE + renderBottomBorder(cols, replHint)
+		out += cursorTo(1, boxBottom) + ERASE_LINE + renderBottomBorder(cols, geti18nForTerminal('fountConsole.logViewer.replHint'))
 
 		const cursorLineText = input.split('\n')[cursorLine] ?? ''
 		const screenCol = Math.min(
