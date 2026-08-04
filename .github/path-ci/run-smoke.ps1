@@ -82,10 +82,10 @@ if (-not $found) {
 }
 Write-Host '[background] ok'
 
+$clickHelper = Join-Path $PSScriptRoot 'smoke-fount-click.ps1'
 if ($env:OS -eq 'Windows_NT') {
 	Write-Host '== wt start =='
 	$capturePath = [System.IO.Path]::GetTempFileName()
-	$clickHelper = Join-Path $PSScriptRoot 'smoke-fount-click.ps1'
 	try {
 		& powershell -NoProfile -File $clickHelper -Mode Windows -FountPath $Fount -RepoRoot $Root -CapturePath $capturePath
 		if ($LastExitCode -ne 0) {
@@ -107,7 +107,6 @@ if ($env:OS -eq 'Windows_NT') {
 else {
 	Write-Host '== FOUNT_CLICK unix passthrough =='
 	$capturePath = [System.IO.Path]::GetTempFileName()
-	$clickHelper = Join-Path $PSScriptRoot 'smoke-fount-click.ps1'
 	try {
 		& pwsh -NoProfile -File $clickHelper -Mode Unix -FountPath $Fount -RepoRoot $Root -CapturePath $capturePath
 		if ($LastExitCode -ne 0) {
@@ -116,8 +115,7 @@ else {
 		if (-not (Test-Path -LiteralPath $capturePath) -or (Get-Item -LiteralPath $capturePath).Length -eq 0) {
 			throw '[FOUNT_CLICK unix] bash was not invoked'
 		}
-		$unixPassthrough = Get-Content -LiteralPath $capturePath -Raw | ConvertFrom-Json
-		$unixPassthroughBashArgs = @($unixPassthrough.Args)
+		$unixPassthroughBashArgs = @((Get-Content -LiteralPath $capturePath -Raw | ConvertFrom-Json).Args)
 		$bashScript = [string]$unixPassthroughBashArgs[0]
 		if ($bashScript -notlike '*path/fount.sh' -and $bashScript -notlike '*path\fount.sh') {
 			throw "[FOUNT_CLICK unix] unexpected bash script: $bashScript"
