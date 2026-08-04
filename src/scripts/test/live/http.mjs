@@ -3,6 +3,7 @@
  */
 
 import { ms } from '../../ms.mjs'
+import { sleep } from '../core/wait.mjs'
 
 /**
  * @typedef {{ base: string, key: string, name?: string, dataPath?: string, index?: number }} LiveNodeHandle
@@ -105,14 +106,6 @@ export async function invokeMultipart(node, shell, method, path, fields, fileFie
 }
 
 /**
- * @param {number} ms 毫秒
- * @returns {Promise<void>} 无
- */
-export function sleep(ms) {
-	return new Promise(resolve => { setTimeout(resolve, ms) })
-}
-
-/**
  * 判断 HTTP 状态是否成功（默认 200/201）。
  * @param {number} status HTTP 状态码
  * @param {number[]} [allowed=[200, 201]] 允许的状态码
@@ -139,23 +132,6 @@ export async function pollUntil(predicate, timeoutSec = 30, intervalSec = 0.4) {
 		await sleep(intervalSec * 1000)
 	}
 	return last
-}
-
-/**
- * 集成测试硬轮询：单位为毫秒；超时抛 `waitUntil timeout`。
- * live/fed 软等待请用 `pollUntil`（秒、超时返回 false）。
- * @param {() => unknown | Promise<unknown>} predicate 条件
- * @param {number} [timeoutMs=10000] 超时毫秒
- * @param {number} [intervalMs=100] 间隔毫秒
- * @returns {Promise<void>}
- */
-export async function waitUntil(predicate, timeoutMs = 10000, intervalMs = 100) {
-	const deadline = Date.now() + timeoutMs
-	while (Date.now() < deadline) {
-		if (await predicate()) return
-		await sleep(intervalMs)
-	}
-	throw new Error('waitUntil timeout')
 }
 
 /** 1×1 PNG（与 federation/common.mjs 一致）。 */

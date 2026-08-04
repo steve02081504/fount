@@ -27,7 +27,6 @@ import { SetTaskbarProgress, ClearTaskbarProgress } from '../scripts/taskbar_pro
 import { setWindowTitle } from '../scripts/title.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
 
-import { createInteractiveViewer } from './interactive.mjs'
 import { ANSI_RESET, LEVEL_PREFIX_COLORS } from './render.mjs'
 
 setWindowTitle('𝓯𝓸𝓾')
@@ -145,19 +144,6 @@ async function plainShowInitialInfo(text) {
 	process.stdout.write(text)
 }
 
-/**
- * 构建纯 stdout 日志写入器。
- * @returns {LogSink} 写入 `process.stdout` 的日志接收器。
- */
-function createPlainSink() {
-	return {
-		writeEntry: plainWriteEntry,
-		appendText: plainAppendText,
-		clear: plainClear,
-		showInitialInfo: plainShowInitialInfo,
-	}
-}
-
 /** @returns {Promise<string>} ASCII logo 文本。 */
 function generateLogo() {
 	return runSimpleWorker('logogener')
@@ -172,15 +158,28 @@ function requestRandTip() {
 }
 
 /** @type {LogSink} */
-const logSink = INTERACTIVE
-	? createInteractiveViewer({
+let logSink = {
+	writeEntry: plainWriteEntry,
+	appendText: plainAppendText,
+	clear: plainClear,
+	showInitialInfo: plainShowInitialInfo,
+}
+
+/**
+ * 交互模式下懒加载 {@link ./interactive.mjs}（与 `icon.intro` 并行）。
+ * @returns {Promise<void>}
+ */
+async function ensureInteractiveLogSink() {
+	if (!INTERACTIVE) return
+	const { createInteractiveViewer } = await import('./interactive.mjs')
+	logSink = createInteractiveViewer({
 		port: PORT,
 		generateLogo,
 		onFatal,
 		fountDir: FOUNT_DIR,
 		onClearComplete: requestRandTip,
 	})
-	: createPlainSink()
+}
 
 on_shutdown(async () => {
 	if (!exitAbortController.signal.aborted) exitAbortController.abort()
@@ -368,8 +367,12 @@ async function main() {
 	// exitSignal：拦住主循环/轮询。不关 connection——留着让主循环堵在
 	// runOneConnection，进程退出时一起死。cleanup 在模块级 on_shutdown。
 
+	// 立刻挂上 rejection 观察，避免与 intro 并行时未处理拒绝
+	const interactiveFailure = ensureInteractiveLogSink().then(() => null, error => error)
 	await icon.intro()
 	if (exitSignal.aborted) process.exit(130)
+	const interactiveError = await interactiveFailure
+	if (interactiveError) throw interactiveError
 
 	while (!exitSignal.aborted) {
 		// 等 server：intro 已在 hold 时 start 直接返回；断线后重新 start

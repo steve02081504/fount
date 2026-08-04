@@ -1,12 +1,12 @@
 /**
- * 前端 Playwright 浏览器诊断：网络异常噪声行 + pageerror / test_watch / i18n missing 硬失败。
+ * 前端 Playwright 浏览器诊断：网络异常噪声行 + pageerror / page watch / i18n missing 硬失败。
  */
 
 /** 写入 suite 输出、供 `detectNoiseHits` 识别的前缀。 */
 export const BROWSER_NETWORK_PREFIX = '[browser:network]'
 
-/** `scripts/test/test_watch.mjs` 控制台命名空间；任意 `[test:…]` 命中则硬失败。 */
-export const TEST_WATCH_CONSOLE_PREFIX = '[test:'
+/** `scripts/test/watch/` 控制台命名空间；任意 `[test:…]` 命中则硬失败。 */
+export const PAGE_WATCH_CONSOLE_PREFIX = '[test:'
 
 /** `scripts/i18n` 缺键警告前缀；命中则硬失败（不去重）。 */
 export const I18N_MISSING_PREFIX = '[i18n:missing]'
@@ -77,12 +77,12 @@ export function formatBrowserNetworkLine(entry) {
 }
 
 /**
- * 文本是否为 test_watch 输出。
+ * 文本是否为 page watch 输出。
  * @param {string} text console 文本
- * @returns {boolean} 是否 test_watch
+ * @returns {boolean} 是否 page watch
  */
-export function isTestWatchConsoleText(text) {
-	return text.includes(TEST_WATCH_CONSOLE_PREFIX)
+export function isPageWatchConsoleText(text) {
+	return text.includes(PAGE_WATCH_CONSOLE_PREFIX)
 }
 
 /**
@@ -95,38 +95,22 @@ export function isI18nMissingConsoleText(text) {
 }
 
 /**
- * 等待页面至少完成一次 test_watch 扫描（`fount.test.watchLastRun`）。
- * 先 `kickWatch()`（DOM 静止时不会自动扫），再等 lastRun 推进。
- * @param {import('npm:@playwright/test').Page} page Playwright 页面
- * @param {number} [sinceMs=0] 要求 lastRun 严格晚于此时刻（0 表示任意一次）
- * @param {number} [timeoutMs=8000] 超时（含 locale 闸 / 确认轮）
- * @returns {Promise<void>}
- */
-export async function waitForTestWatchCycle(page, sinceMs = 0, timeoutMs = 8000) {
-	await page.evaluate(() => globalThis.fount?.test?.kickWatch?.())
-	await page.waitForFunction(min => {
-		const last = globalThis.fount?.test?.watchLastRun
-		return typeof last === 'number' && last > min
-	}, sinceMs, { timeout: timeoutMs })
-}
-
-/**
- * 强制中日英三语各检查一轮（短测不靠每秒轮换也能覆盖脚本断言）；
- * `cycleLocales` 内每语种附带一轮 a11y。
+ * 强制跑完 page watch drain（中日英覆盖 + 一轮 a11y）。
+ * 未挂载时 `?.()` 立即返回。
  * @param {import('npm:@playwright/test').Page} page Playwright 页面
  * @param {number} [timeoutMs=30000] 超时
  * @returns {Promise<void>}
  */
-export async function waitForLocaleCycle(page, timeoutMs = 30_000) {
+export async function waitForWatchDrain(page, timeoutMs = 30_000) {
 	let timer
 	try {
 		await Promise.race([
 			page.evaluate(async () => {
-				await globalThis.fount?.test?.cycleLocales?.()
+				await globalThis.fount?.test?.watch?.drain?.()
 			}),
 			new Promise((_, reject) => {
 				timer = setTimeout(() => {
-					reject(new Error(`waitForLocaleCycle timed out after ${timeoutMs}ms`))
+					reject(new Error(`waitForWatchDrain timed out after ${timeoutMs}ms`))
 				}, timeoutMs)
 			}),
 		])
@@ -169,7 +153,7 @@ export function pageErrorFromCdpException(exceptionDetails) {
  * @returns {{
  *   attach: (page: import('npm:@playwright/test').Page) => Promise<void>,
  *   pageErrors: string[],
- *   testWatchErrors: string[],
+ *   pageWatchErrors: string[],
  *   i18nMissingErrors: string[],
  *   flushNetworkDiagnostics: () => BrowserNetworkEntry[],
  * }} 诊断 API
@@ -178,7 +162,7 @@ export function createBrowserDiagnostics() {
 	/** @type {string[]} */
 	const pageErrors = []
 	/** @type {string[]} */
-	const testWatchErrors = []
+	const pageWatchErrors = []
 	/** @type {string[]} */
 	const i18nMissingErrors = []
 	/** @type {Map<string, BrowserNetworkEntry>} */
@@ -225,7 +209,7 @@ export function createBrowserDiagnostics() {
 
 		page.on('console', msg => {
 			const text = msg.text()
-			if (isTestWatchConsoleText(text)) testWatchErrors.push(text)
+			if (isPageWatchConsoleText(text)) pageWatchErrors.push(text)
 			if (isI18nMissingConsoleText(text)) i18nMissingErrors.push(text)
 		})
 		page.on('requestfailed', req => {
@@ -266,5 +250,5 @@ export function createBrowserDiagnostics() {
 		return entries
 	}
 
-	return { attach, pageErrors, testWatchErrors, i18nMissingErrors, flushNetworkDiagnostics }
+	return { attach, pageErrors, pageWatchErrors, i18nMissingErrors, flushNetworkDiagnostics }
 }

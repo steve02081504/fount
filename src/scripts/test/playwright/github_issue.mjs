@@ -2,7 +2,7 @@
  * Playwright 收尾：断言页面 `[aria-ignore]` 仍指向未关闭的 GitHub issue。
  * 关闭态经测试 hub（`FOUNT_TEST_HUB_URL`）查询；无 hub / 探测失败 → 视为仍打开。
  */
-import { parseGithubIssueUrl } from '../core/github_issue.mjs'
+import { ariaIgnoreProblem } from '../core/aria_ignore.mjs'
 import { isGithubIssueClosed } from '../hub/clients/github_issue.mjs'
 
 /**
@@ -25,16 +25,9 @@ export async function assertAriaIgnoreIssues(page) {
 	/** @type {string[]} */
 	const problems = []
 	for (const { url, where } of entries) {
-		if (!url) {
-			problems.push(`${where}: aria-ignore requires a GitHub issue URL`)
-			continue
-		}
-		if (!parseGithubIssueUrl(url)) {
-			problems.push(`${where}: bad aria-ignore URL ${url}`)
-			continue
-		}
-		if (await isGithubIssueClosed(url))
-			problems.push(`${where}: issue closed — remove aria-ignore (${url})`)
+		const closed = Boolean(url) && await isGithubIssueClosed(url)
+		const problem = ariaIgnoreProblem({ url, where, closed })
+		if (problem) problems.push(problem.message)
 	}
 	if (problems.length)
 		throw new Error(`aria-ignore:\n${problems.join('\n')}`)

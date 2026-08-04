@@ -470,12 +470,14 @@ self.addEventListener('message', event => {
 		const wasColdBoot = coldBootMode
 		coldBootMode = false
 		console.log('[SW] Exited cold boot mode.')
-		if (event.ports[0]) event.ports[0].postMessage({ wasColdBoot })
+		event.ports[0]?.postMessage?.({ wasColdBoot })
 	}
 	else if (event.data?.type === 'ENTER_COLD_BOOT') {
 		coldBootMode = true
 		console.log('[SW] Entered cold boot mode.')
 	}
+	else if (event.data?.type === 'GET_FOUNT_VERSION')
+		event.ports[0]?.postMessage?.({ fountVersion: fountVersion || 'unknown' })
 })
 
 /**
@@ -618,6 +620,9 @@ const routes = [
 
 let ws = null
 let reconnectTimeout = null
+/** @type {string | null} */
+let fountVersion = await getConfig('fountVersion')
+
 const RECONNECT_DELAY = 5000 // 5 seconds
 
 const wsMessageHandlers = {
@@ -691,6 +696,9 @@ function connectWebSocket() {
 		try {
 			const message = JSON.parse(event.data)
 			if (!message.type) return console.warn('[SW WS] Received message without a type:', message)
+
+			if (message.data?.commitId)
+				setConfig('fountVersion', fountVersion = message.data.commitId)
 
 			const handler = wsMessageHandlers[message.type]
 			if (handler) handler(message.data)
