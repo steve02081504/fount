@@ -1,11 +1,12 @@
 /**
- * 测试环境页面监视入口：组装 loop + a11y + locale，开闸后自动跑。
- * Playwright 只认 `fount.test.watch`（`kick` / `drain` / `lastRun` / `ready`）。
+ * 测试环境页面监视入口：组装 loop + a11y + locale，bootstrap 后开闸。
+ * Playwright 只认 `fount.test.watch`（`kick` / `drain` / `holdLocale` / `releaseLocale`）。
  */
 import { A11yWatch } from './a11y.mjs'
 import { LocaleWatch } from './locale.mjs'
+import { WatchLoop } from './loop.mjs'
 import { MutationGate } from './mutations.mjs'
-import { WatchLoop } from './watch_loop.mjs'
+import { createReporter } from './reporter.mjs'
 
 globalThis.fount ??= {}
 globalThis.fount.test ??= {}
@@ -14,12 +15,7 @@ globalThis.fount.test ??= {}
  * 页面监视门面：供 Playwright `page.evaluate` 调用。
  */
 class PageWatch {
-	/** 最近一次非空转 tick 的时间戳（毫秒） */
-	lastRun = 0
-
-	#ready = false
-	/** @type {MutationGate} */
-	#mutations
+	#localeHold = 0
 	/** @type {WatchLoop} */
 	#loop
 	/** @type {A11yWatch} */
@@ -29,33 +25,23 @@ class PageWatch {
 
 	/** 组装 loop / a11y / locale 与 MutationObserver。 */
 	constructor() {
-		/** @type {Set<string>} */
-		const printedKeys = new Set()
-		this.#mutations = new MutationGate()
-		this.#loop = new WatchLoop({
-			failPrefix: '[test:a11y]',
-			/** @returns {void} */
-			onActivity: () => { this.lastRun = Date.now() },
-		})
+		this.#loop = new WatchLoop({ reporter: createReporter('[test:watch]') })
 		this.#a11y = new A11yWatch({
-			printedKeys,
-			/** @returns {boolean} 是否已开闸 */
-			isReady: () => this.#ready,
+			reporter: createReporter('[test:a11y]'),
 			/** @returns {void} */
 			wake: () => this.#loop.wake(),
 		})
+		const mutations = new MutationGate(() => this.#a11y.markDirty())
 		this.#locale = new LocaleWatch({
-			printedKeys,
-			mutations: this.#mutations,
-			/** @returns {boolean} 是否已开闸 */
-			isReady: () => this.#ready,
+			reporter: createReporter('[test:locale]'),
+			mutations,
+			/** @returns {boolean} 是否已 hold */
+			isHeld: () => this.#localeHold > 0,
 		})
-		this.#loop.register(this.#a11y.createTask())
-		this.#loop.register(this.#locale.createTask())
+		this.#loop.register(this.#a11y)
+		this.#loop.register(this.#locale)
 
-		const observer = new MutationObserver(() => this.#onDomMutate())
-		this.#mutations.attach(observer)
-		observer.observe(document.documentElement, {
+		mutations.observe(document.documentElement, {
 			subtree: true,
 			childList: true,
 			attributes: true,
@@ -64,78 +50,52 @@ class PageWatch {
 	}
 
 	/**
-	 * 是否已开闸。
-	 * @returns {boolean} 开闸则为 true
-	 */
-	get ready() {
-		return this.#ready
-	}
-
-	/**
-	 * 立刻要求一轮带 issue 刷新的 a11y。
-	 * @returns {void}
+	 * 立刻要求一轮带 issue 刷新的 a11y，并等到扫完。
+	 * @returns {Promise<void>}
 	 */
 	kick() {
-		if (!this.#ready) return
-		this.#a11y.requestRefresh()
+		if (!this.#loop.started) return Promise.resolve()
+		return this.#a11y.requestRefresh()
 	}
 
 	/**
 	 * Drain 到各任务 covered（三语 + 一轮带刷新 a11y）。
 	 * @returns {Promise<void>}
 	 */
-	async drain() {
-		if (!this.#ready) return
-		await this.#loop.drain()
+	drain() {
+		return this.#loop.drain()
 	}
 
 	/**
-	 * 开闸并启动监视。
+	 * 暂停语种轮换（引用计数）。
 	 * @returns {void}
 	 */
-	open() {
-		if (this.#ready) return
-		this.#ready = true
-		this.#locale.preloadJaForbidden()
-		this.kick()
+	holdLocale() {
+		this.#localeHold++
 	}
 
 	/**
-	 * 按首选语言对齐轮换下标。
-	 * @param {string} preferred 首选 BCP 47
-	 * @param {(preferred: string[], available: string[]) => string | undefined} matchLocale i18n.matchLocale
+	 * 恢复语种轮换（引用计数）。
 	 * @returns {void}
 	 */
-	alignLocale(preferred, matchLocale) {
-		this.#locale.alignIndex(preferred, matchLocale)
+	releaseLocale() {
+		this.#localeHold = Math.max(0, this.#localeHold - 1)
 	}
 
 	/**
-	 * DOM 变更时标脏并唤醒。
-	 * @returns {void}
+	 * bootstrap locale 后开闸。
+	 * @returns {Promise<void>}
 	 */
-	#onDomMutate() {
-		if (this.#mutations.ignoring) return
-		this.#a11y.markDirty({ wake: this.#ready })
+	async start() {
+		try {
+			await this.#locale.bootstrap()
+		}
+		catch { /* i18n 不可用仍开闸 */ }
+		this.#loop.start()
+		await this.kick()
 	}
 }
 
 const watch = new PageWatch()
 globalThis.fount.test.watch = watch
-
-if (!document.querySelector('[data-i18n]')) watch.open()
-else import('../../i18n/index.mjs').then(({ onLanguageChange, offLanguageChange, loadPreferredLangs, matchLocale }) => {
-	const preferred = loadPreferredLangs()[0]
-	if (preferred) watch.alignLocale(preferred, matchLocale)
-	/**
-	 * 首轮语言落定后开闸。
-	 * @returns {void}
-	 */
-	function onLocale() {
-		// register 时会同步先跑一次；尚未 applyTranslations 则留下回调等真正变更
-		if (!document.documentElement.lang) return
-		offLanguageChange(onLocale)
-		watch.open()
-	}
-	onLanguageChange(onLocale)
-}).catch(() => watch.open())
+void watch.start()

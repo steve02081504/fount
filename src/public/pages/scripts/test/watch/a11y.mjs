@@ -1,89 +1,54 @@
 /**
- * axe-core 无障碍扫描 + `[aria-ignore]` 校验（含 hub issue 关闭态）。
+ * axe-core 无障碍扫描；`[aria-ignore]` 校验委托共享策略 + hub 探测。
  */
 import axe from 'https://esm.sh/axe-core'
 
-import { parseGithubIssueUrl } from '../github_issue.mjs'
+import { ariaIgnoreProblem, collectAriaIgnoreEntries } from '../aria_ignore.mjs'
+import { testHubBaseUrl } from '../hub_url.mjs'
 
-/**
- * 第三方 / 暂不可修子树：axe `exclude`。
- * 属性值必须是跟踪上游修复的 GitHub issue URL（`aria-ignore="https://github.com/…/issues/n"`）。
- */
-export const ARIA_IGNORE = 'aria-ignore'
+import { createIssueClosedProbe } from './hub_issues.mjs'
 
-/** hub 查询有界超时（毫秒）。 */
-const GITHUB_ISSUE_FETCH_TIMEOUT_MS = 10_000
-/** hub 失败后的退避（毫秒）。 */
-const GITHUB_ISSUE_PROBE_BACKOFF_MS = 30_000
-
-const A11Y_PREFIX = '[test:a11y]'
 /** DOM 仍在变时的扫描间隔 */
-export const A11Y_SCAN_MS = 500
-
-/**
- * @typedef {{ url: string, location: string, element: Element, parsed: ReturnType<typeof parseGithubIssueUrl> }} AriaIgnoreEntry
- */
+const A11Y_SCAN_MS = 500
 
 /**
  * a11y watch 任务：脏扫描 + drain 时强制带 issue 刷新的一轮。
+ * 直接实现 WatchTask 接口。
  */
 export class A11yWatch {
+	name = 'a11y'
+	delayMs = A11Y_SCAN_MS
+
 	#dirty = false
 	#needRefresh = false
 	#drainPassDone = false
-	/** @type {Set<string>} */
-	#printedKeys
-	/** @type {() => boolean} */
-	#isReady
+	/** @type {import('./reporter.mjs').WatchReporter} */
+	#reporter
 	/** @type {() => void} */
 	#wake
-	/** @type {Map<string, boolean>} */
-	#issueClosedCache = new Map()
-	/** @type {Map<string, Promise<boolean>>} */
-	#issueInflight = new Map()
-	/** @type {Map<string, number>} */
-	#issueBackoffUntil = new Map()
+	/** @type {import('./hub_issues.mjs').IssueClosedProbe} */
+	#issues
+	/** @type {(() => void)[]} */
+	#refreshWaiters = []
+	/** 最近一次扫描完成时间戳（毫秒）；供调试 */
+	lastScanAt = 0
 
 	/**
 	 * @param {object} options 依赖
-	 * @param {Set<string>} options.printedKeys 违规指纹去重
-	 * @param {() => boolean} options.isReady locale 闸是否已开
+	 * @param {import('./reporter.mjs').WatchReporter} options.reporter 去重上报
 	 * @param {() => void} options.wake 唤醒 loop
 	 */
-	constructor({ printedKeys, isReady, wake }) {
-		this.#printedKeys = printedKeys
-		this.#isReady = isReady
+	constructor({ reporter, wake }) {
+		this.#reporter = reporter
 		this.#wake = wake
-	}
-
-	/**
-	 * 注册到 {@link import('./watch_loop.mjs').WatchLoop} 的任务描述。
-	 * @returns {import('./watch_loop.mjs').WatchTask} 任务
-	 */
-	createTask() {
-		return {
-			name: 'a11y',
-			delayMs: A11Y_SCAN_MS,
-			run: this.runTask.bind(this),
-			covered: this.isCovered.bind(this),
-			beginDrain: this.beginDrain.bind(this),
-		}
-	}
-
-	/**
-	 * WatchLoop 回调：跑一轮或空转。
-	 * @param {import('./watch_loop.mjs').WatchTickContext} ctx tick 上下文
-	 * @returns {Promise<boolean>} true = 空转
-	 */
-	runTask(ctx) {
-		return this.#run(ctx)
+		this.#issues = createIssueClosedProbe()
 	}
 
 	/**
 	 * drain 覆盖是否完成。
 	 * @returns {boolean} 本轮 drain a11y 已跑完则为 true
 	 */
-	isCovered() {
+	covered() {
 		return this.#drainPassDone
 	}
 
@@ -98,170 +63,79 @@ export class A11yWatch {
 	}
 
 	/**
-	 * DOM 变脏。
-	 * @param {{ wake?: boolean }} [options] `wake: false` 仅记脏位（开闸前）
+	 * DOM 变脏并唤醒。
 	 * @returns {void}
 	 */
-	markDirty({ wake = true } = {}) {
+	markDirty() {
 		this.#dirty = true
-		if (wake) this.#wake()
-	}
-
-	/**
-	 * 要求下一轮带 issue 刷新的扫描（`PageWatch.kick`）。
-	 * @returns {void}
-	 */
-	requestRefresh() {
-		this.#needRefresh = true
-		this.#dirty = true
-		this.refreshGithubIssueProbes()
 		this.#wake()
 	}
 
 	/**
-	 * 清除 GitHub issue 关闭态探测缓存。
-	 * @returns {void}
+	 * 要求下一轮带 issue 刷新的扫描；扫完后 resolve。
+	 * @returns {Promise<void>}
 	 */
-	refreshGithubIssueProbes() {
-		this.#issueClosedCache.clear()
-		this.#issueBackoffUntil.clear()
-		this.#issueInflight.clear()
+	requestRefresh() {
+		this.#needRefresh = true
+		this.#dirty = true
+		this.#issues.reset()
+		this.#wake()
+		return new Promise(resolve => this.#refreshWaiters.push(resolve))
 	}
 
 	/**
-	 * @param {import('./watch_loop.mjs').WatchTickContext} ctx tick 上下文
+	 * WatchLoop 回调：跑一轮或空转。
+	 * @param {import('./loop.mjs').WatchTickContext} ctx tick 上下文
 	 * @returns {Promise<boolean>} true = 空转
 	 */
-	async #run({ draining }) {
+	async run({ draining }) {
 		const refresh = this.#needRefresh || (draining && !this.#drainPassDone)
 		if (!refresh && !this.#dirty) return true
-		if (!this.#isReady()) return true
 		this.#needRefresh = false
 		this.#dirty = false
 		try {
 			await this.#scan({ refreshGithubIssues: refresh })
 		}
 		finally {
+			this.lastScanAt = Date.now()
+			for (const resolve of this.#refreshWaiters.splice(0)) resolve()
 			if (draining) this.#drainPassDone = true
 		}
 		return false
 	}
 
 	/**
-	 * 收集页面 `[aria-ignore]` 节点。
-	 * @returns {AriaIgnoreEntry[]} 节点列表
-	 */
-	#collectAriaIgnoreEntries() {
-		/** @type {AriaIgnoreEntry[]} */
-		const entries = []
-		for (const element of document.querySelectorAll(`[${ARIA_IGNORE}]`)) {
-			const url = (element.getAttribute(ARIA_IGNORE) || '').trim()
-			const location = element.id ? `#${element.id}` : element.className || element.tagName
-			entries.push({
-				url,
-				location,
-				element,
-				parsed: url ? parseGithubIssueUrl(url) : null,
-			})
-		}
-		return entries
-	}
-
-	/**
-	 * 规范化 hub 基址。
-	 * @returns {string} hub URL；未设则为空串
-	 */
-	#getHubUrl() {
-		return String(globalThis.fount?.test?.hubUrl || '').replace(/\/$/, '')
-	}
-
-	/**
-	 * issue 是否已关闭（成功结果缓存；失败退避；无 hub / 超时 → false）。
-	 * @param {string} url 已解析的 issue URL
-	 * @param {{ refresh?: boolean }} [options] `refresh` 时跳过缓存
-	 * @returns {Promise<boolean>} 已关闭为 true
-	 */
-	async #probeGithubIssueClosed(url, { refresh = false } = {}) {
-		const hub = this.#getHubUrl()
-		if (!hub) return false
-
-		if (refresh) {
-			this.#issueClosedCache.delete(url)
-			this.#issueBackoffUntil.delete(url)
-			const inflight = this.#issueInflight.get(url)
-			if (inflight) await inflight.catch(() => { })
-			this.#issueInflight.delete(url)
-		}
-		else {
-			if (this.#issueClosedCache.has(url)) return this.#issueClosedCache.get(url)
-			if ((this.#issueBackoffUntil.get(url) ?? 0) > Date.now()) return false
-			const inflight = this.#issueInflight.get(url)
-			if (inflight) return inflight
-		}
-
-		const probe = (async () => {
-			try {
-				const response = await fetch(`${hub}/github-issue?url=${encodeURIComponent(url)}`, {
-					signal: AbortSignal.timeout(GITHUB_ISSUE_FETCH_TIMEOUT_MS),
-				})
-				if (!response.ok) {
-					this.#issueBackoffUntil.set(url, Date.now() + GITHUB_ISSUE_PROBE_BACKOFF_MS)
-					return false
-				}
-				const closed = (await response.json())?.closed === true
-				this.#issueClosedCache.set(url, closed)
-				return closed
-			}
-			catch {
-				this.#issueBackoffUntil.set(url, Date.now() + GITHUB_ISSUE_PROBE_BACKOFF_MS)
-				return false
-			}
-			finally {
-				this.#issueInflight.delete(url)
-			}
-		})()
-		this.#issueInflight.set(url, probe)
-		return probe
-	}
-
-	/**
 	 * 校验 `[aria-ignore]` 格式与关闭态。
-	 * @param {{ refresh?: boolean, entries?: AriaIgnoreEntry[] }} [options] 选项
+	 * @param {{ refresh?: boolean, entries?: import('../aria_ignore.mjs').AriaIgnoreEntry[] }} [options] 选项
 	 * @returns {Promise<void>} 校验完成
 	 */
-	async #checkAriaIgnores({ refresh = false, entries = this.#collectAriaIgnoreEntries() } = {}) {
-		const hub = this.#getHubUrl()
-		/** @type {{ url: string, location: string }[]} */
+	async #checkAriaIgnores({ refresh = false, entries = collectAriaIgnoreEntries() } = {}) {
+		const hub = testHubBaseUrl()
+		/** @type {{ url: string, where: string }[]} */
 		const toProbe = []
-		for (const { url, location, parsed } of entries) {
-			if (!url) {
-				const key = `aria-ignore-missing\t${location}`
-				if (this.#printedKeys.has(key)) continue
-				this.#printedKeys.add(key)
-				console.error(A11Y_PREFIX, 'aria-ignore-missing-url', location, 'aria-ignore requires a GitHub issue URL')
+		for (const { url, where, parsed } of entries) {
+			const staticProblem = ariaIgnoreProblem({ url, where, closed: false })
+			if (staticProblem?.code === 'missing-url') {
+				this.#reporter.report(`aria-ignore-missing\t${where}`, 'aria-ignore-missing-url', where, staticProblem.message)
 				continue
 			}
-			if (!parsed) {
-				const key = `aria-ignore-bad-url\t${url}`
-				if (this.#printedKeys.has(key)) continue
-				this.#printedKeys.add(key)
-				console.error(A11Y_PREFIX, 'aria-ignore-bad-url', location, url)
+			if (staticProblem?.code === 'bad-url' || !parsed) {
+				this.#reporter.report(`aria-ignore-bad-url\t${url}`, 'aria-ignore-bad-url', where, url)
 				continue
 			}
-			if (hub) toProbe.push({ url, location })
+			if (hub) toProbe.push({ url, where })
 		}
 		if (!toProbe.length) return
 
 		await Promise.all([...new Set(toProbe.map(item => item.url))].map(url =>
-			this.#probeGithubIssueClosed(url, { refresh }),
+			this.#issues.isClosed(url, { refresh }),
 		))
 
-		for (const { url, location } of toProbe) {
-			if (this.#issueClosedCache.get(url) !== true) continue
-			const key = `aria-ignore-closed\t${url}`
-			if (this.#printedKeys.has(key)) continue
-			this.#printedKeys.add(key)
-			console.error(A11Y_PREFIX, 'aria-ignore-closed', location, url)
+		for (const { url, where } of toProbe) {
+			const closed = await this.#issues.isClosed(url)
+			const problem = ariaIgnoreProblem({ url, where, closed })
+			if (problem?.code !== 'closed') continue
+			this.#reporter.report(`aria-ignore-closed\t${url}`, 'aria-ignore-closed', where, url)
 		}
 	}
 
@@ -281,7 +155,7 @@ export class A11yWatch {
 	 * @returns {Promise<void>} 扫描完成
 	 */
 	async #scan({ refreshGithubIssues = false } = {}) {
-		const ariaIgnoreEntries = this.#collectAriaIgnoreEntries()
+		const ariaIgnoreEntries = collectAriaIgnoreEntries()
 		await this.#checkAriaIgnores({ refresh: refreshGithubIssues, entries: ariaIgnoreEntries })
 		const axeExclude = ariaIgnoreEntries
 			.filter(entry => entry.parsed)
@@ -299,10 +173,8 @@ export class A11yWatch {
 		for (const violation of results.violations)
 			for (const node of violation.nodes) {
 				const key = this.#violationKey(violation, node)
-				if (this.#printedKeys.has(key)) continue
-				this.#printedKeys.add(key)
-				console.error(
-					A11Y_PREFIX,
+				this.#reporter.report(
+					key,
 					violation.id,
 					violation.help,
 					node.target,

@@ -3,6 +3,7 @@
  *
  * `run(ctx)` 返回 true = 空转（立刻下一条）；false = 干了事（按 delayMs 再约）。
  * 整轮皆空则停住等 `wake`。`drain()` 先调各任务 `beginDrain`，再跑到全部 `covered`。
+ * 未 `start()` 前 `wake` / `drain` 均为 no-op。
  */
 
 /**
@@ -28,21 +29,20 @@ export class WatchLoop {
 	#cursor = 0
 	#timer = 0
 	#running = false
+	#started = false
 	#draining = false
+	#pendingWake = false
 	#idleStreak = 0
 	/** @type {((error?: Error) => void)[]} */
 	#drainWaiters = []
-	/** 失败日志前缀（缺省通用） */
-	#failPrefix
-	/** 非空转 / 失败后回调（更新 lastRun 等） */
-	#onActivity
+	/** @type {import('./reporter.mjs').WatchReporter} */
+	#reporter
 
 	/**
-	 * @param {{ failPrefix?: string, onActivity?: () => void }} [options] 选项
+	 * @param {{ reporter: import('./reporter.mjs').WatchReporter }} options 选项
 	 */
-	constructor(options = {}) {
-		this.#failPrefix = options.failPrefix || '[watch]'
-		this.#onActivity = options.onActivity
+	constructor({ reporter }) {
+		this.#reporter = reporter
 	}
 
 	/**
@@ -54,6 +54,14 @@ export class WatchLoop {
 	}
 
 	/**
+	 * 是否已开闸。
+	 * @returns {boolean} started
+	 */
+	get started() {
+		return this.#started
+	}
+
+	/**
 	 * @param {WatchTask} task 任务
 	 * @returns {void}
 	 */
@@ -62,11 +70,26 @@ export class WatchLoop {
 	}
 
 	/**
+	 * 开闸并启动调度。
+	 * @returns {void}
+	 */
+	start() {
+		if (this.#started) return
+		this.#started = true
+		this.#schedule(0)
+	}
+
+	/**
 	 * 唤醒停住的 loop（或缩短已约的等待）。
+	 * 任务执行中则记 pending，tick 收尾再排。
 	 * @returns {void}
 	 */
 	wake() {
-		if (this.#running) return
+		if (!this.#started) return
+		if (this.#running) {
+			this.#pendingWake = true
+			return
+		}
 		this.#idleStreak = 0
 		this.#schedule(0)
 	}
@@ -76,17 +99,12 @@ export class WatchLoop {
 	 * @returns {Promise<void>}
 	 */
 	drain() {
-		if (!this.#tasks.length) return Promise.resolve()
+		if (!this.#started || !this.#tasks.length) return Promise.resolve()
 		if (this.#draining)
 			return new Promise(resolve => this.#drainWaiters.push(resolve))
 
 		this.#draining = true
 		for (const task of this.#tasks) task.beginDrain?.()
-
-		if (this.#allCovered() && !this.#running && !this.#timer) {
-			this.#draining = false
-			return Promise.resolve()
-		}
 
 		return new Promise(resolve => {
 			this.#drainWaiters.push(resolve)
@@ -137,18 +155,29 @@ export class WatchLoop {
 		const task = this.#tasks[this.#cursor % this.#tasks.length]
 		this.#cursor++
 		this.#running = true
+		this.#pendingWake = false
 		let idle = false
 		try {
 			idle = await task.run({ draining: this.#draining }) === true
-			if (!idle) this.#onActivity?.()
 		}
 		catch (error) {
-			console.error(this.#failPrefix, 'tick-failed', task.name, String(error?.message || error))
-			this.#onActivity?.()
+			this.#reporter.report(
+				`tick-failed\t${task.name}\t${String(error?.message || error)}`,
+				'tick-failed',
+				task.name,
+				String(error?.message || error),
+			)
 			idle = false
 		}
 		finally {
 			this.#running = false
+		}
+
+		if (this.#pendingWake) {
+			this.#pendingWake = false
+			this.#idleStreak = 0
+			this.#schedule(0)
+			return
 		}
 
 		if (this.#draining && this.#allCovered()) {
