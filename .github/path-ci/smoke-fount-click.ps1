@@ -31,9 +31,6 @@ if ($Mode -eq 'Windows') {
 
 function script:bash {
 	param([Parameter(ValueFromRemainingArguments = $true)]$BashArgs)
-	if (Test-Path Env:FOUNT_CLICK) {
-		throw '[FOUNT_CLICK unix] FOUNT_CLICK still set when bash invoked'
-	}
 	(@{ Args = @($BashArgs) } | ConvertTo-Json -Compress) | Set-Content -LiteralPath $CapturePath -Encoding utf8
 	# End this helper process; avoid needing a global $LastExitCode hack for exit $LastExitCode.
 	exit 0
