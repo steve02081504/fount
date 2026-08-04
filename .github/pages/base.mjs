@@ -11,6 +11,7 @@ let skipBreadcrumb = false
 if (!globalThis.fount?.test?.enabled) try {
 	Sentry.init({
 		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
+		release: '__FOUNT_COMMIT_HASH__',
 		/**
 		 * 在 Sentry 捕获面包屑事件之前进行处理。
 		 * @param {object} breadcrumb - 面包屑对象。

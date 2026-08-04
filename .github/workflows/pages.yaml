@@ -321,6 +321,10 @@ jobs:
         if: steps.pages_skip.outputs.skip != 'true'
         uses: actions/configure-pages@v5
 
+      - name: Embed commit hash
+        if: steps.pages_skip.outputs.skip != 'true'
+        run: sed -i "s|__FOUNT_COMMIT_HASH__|${GITHUB_SHA}|g" .github/pages/base.mjs
+
       - name: Upload artifact
         if: steps.pages_skip.outputs.skip != 'true'
         uses: actions/upload-pages-artifact@v5
