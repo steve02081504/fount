@@ -2,13 +2,55 @@
  * GitHub Pages 本地静态服务器（与 `.esh/commands/pages-server.mjs` 同规则）。
  * 从原始路径挂载，无需复制/构建；部署流程见 `.github/workflows/pages.yaml`。
  */
+import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import express from 'npm:express'
 
+import { git } from '../../../scripts/git.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 
 const GITHUB_PAGES_COMMENTS_URL = 'https://steve02081504.github.io/fount/data/comments.json'
+const FOUNT_COMMIT_HASH_PLACEHOLDER = '__FOUNT_COMMIT_HASH__'
+
+let fountVersion = 'unknown'
+/**
+ * 解析 Pages Sentry release 占位符（与 CI sed 对齐）。
+ * @returns {Promise<string>} commit hash 或 unknown
+ */
+async function refreshFountVersion() {
+	fountVersion = await git.withPath(REPO_ROOT)('rev-parse', 'HEAD') || 'unknown'
+}
+
+const hooked_version_files = [
+	'base.mjs',
+]
+const hooked_version_file_cache = {}
+/**
+ * 读取 Pages base.mjs 并替换 commit hash 占位符。
+ * @param {string} filePath `.github/pages/` 下的相对路径
+ * @returns {Promise<string>} 替换后的模块源码
+ */
+async function getHookedVersionFileContent(filePath) {
+	if (hooked_version_file_cache[filePath]) return hooked_version_file_cache[filePath]
+	const fullPath = path.join(REPO_ROOT, '.github', 'pages', filePath)
+	const source = await fs.readFile(fullPath, 'utf8')
+	return hooked_version_file_cache[filePath] = source.replaceAll(FOUNT_COMMIT_HASH_PLACEHOLDER, fountVersion)
+}
+
+fs.watch(REPO_ROOT, (event, filename) => {
+	if (event === 'change' && filename.startsWith('.github/pages/')) {
+		const filePath = filename.slice('.github/pages/'.length)
+		if (hooked_version_files.includes(filePath))
+			delete hooked_version_file_cache[filePath]
+	}
+	// git commit
+	if (event === 'change' && filename === '.git/HEAD') {
+		refreshFountVersion()
+		for (const filePath of hooked_version_files)
+			delete hooked_version_file_cache[filePath]
+	}
+})
 
 /**
  * 创建模拟 GitHub Pages 部署结构的 Express 应用（不 listen）。
@@ -60,6 +102,12 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
 			},
 		])
 	})
+
+	for (const filePath of hooked_version_files)
+		app.get(`/fount/${filePath}`, async (_req, res) => {
+			const body = await getHookedVersionFileContent(filePath)
+			res.type('application/javascript').send(body)
+		})
 
 	app.use('/fount', express.static(path.join(projectRoot, '.github', 'pages')))
 	return app

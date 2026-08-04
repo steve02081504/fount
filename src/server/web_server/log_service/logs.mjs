@@ -1,7 +1,7 @@
 import { createLogWireWebSocketHandler } from 'npm:@steve02081504/virtual-console/wire/server'
 import { on_shutdown } from 'npm:on-shutdown'
 
-import { console, geti18n } from '../../../scripts/i18n/index.mjs'
+import { console, geti18nForTerminal } from '../../../scripts/i18n/index.mjs'
 import { ms } from '../../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip } from '../../../scripts/ratelimit.mjs'
 import { baseScriptLoadedTime } from '../../base.mjs'
@@ -23,18 +23,18 @@ export const logServiceWebSocketHandler = createLogWireWebSocketHandler(console,
 		const ansi_hosturl = `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\`
 		let text = ''
 		if (config.https?.enabled)
-			text += geti18n('fountConsole.server.showUrl.https', { url: ansi_hosturl }) + '\n'
+			text += geti18nForTerminal('fountConsole.server.showUrl.https', { url: ansi_hosturl }) + '\n'
 		else
-			text += geti18n('fountConsole.server.showUrl.http', { url: ansi_hosturl }) + '\n'
+			text += geti18nForTerminal('fountConsole.server.showUrl.http', { url: ansi_hosturl }) + '\n'
 		try {
 			const local_url = get_hosturl_in_local_ip()
-			text += geti18n('fountConsole.server.localUrl', { url: local_url }) + '\n'
+			text += geti18nForTerminal('fountConsole.server.localUrl', { url: local_url }) + '\n'
 			const qrcode = await import('npm:qrcode-terminal')
 			text += await new Promise((resolve) => qrcode.generate(local_url, { small: true }, resolve))
 			text += '\n'
 		} catch (e) { /* ignore */ }
-		text += geti18n('tips.title') + '\n'
-		text += geti18n('tips.data') + '\n'
+		text += geti18nForTerminal('tips.title') + '\n'
+		text += geti18nForTerminal('tips.data') + '\n'
 		try { ws.send(JSON.stringify({ type: 'show_initial_info', text })) } catch (e) { /* ignore */ }
 	},
 	clientMessageHandlers: {
@@ -44,8 +44,8 @@ export const logServiceWebSocketHandler = createLogWireWebSocketHandler(console,
 		 */
 		rand_tip: () => {
 			let text = ''
-			text += geti18n('tips.title') + '\n'
-			text += geti18n('tips.data') + '\n'
+			text += geti18nForTerminal('tips.title') + '\n'
+			text += geti18nForTerminal('tips.data') + '\n'
 			return {
 				type: 'output',
 				text

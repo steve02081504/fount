@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 
+import * as Sentry from 'npm:@sentry/deno'
 import { exec } from 'npm:@steve02081504/exec'
 
 import { git } from '../scripts/git.mjs'
@@ -27,6 +28,7 @@ export let currentGitBranch = null
  */
 async function refreshGitRef() {
 	currentGitCommit = await git('rev-parse', 'HEAD').catch(() => null)
+	Sentry.setTag('release', currentGitCommit)
 	const branch = await git('rev-parse', '--abbrev-ref', 'HEAD').catch(() => null)
 	currentGitBranch = branch && branch !== 'HEAD' ? branch : null
 }

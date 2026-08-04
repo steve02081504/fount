@@ -56,7 +56,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 - Deno `.mjs` via `denoLiveRun(path)` or part-local `run.mjs` — no PowerShell probes.
 - **Live WS probes**: `createLiveShellHttp({ shell? })` from `wsHarness.mjs` — do not re-declare local HTTP helpers. End with `finishLiveWs` / `failLiveWsPrecondition`; frames via `waitForWsFrame`.
-- **Polling**: `pollUntil` (live/fed, seconds, soft) / `waitUntil` (integration, ms, throws) — definitions only in `live/http.mjs`.
+- **Polling**: `pollUntil` (live/fed, seconds, soft) / `waitUntil` (integration & selftest, ms, throws) — definitions in `core/wait.mjs`.
 - **Chat / Social fixtures**: `createCharBoot` / `seedCharFixture` / `waitUntil` from `shells/chat/test/harness.mjs`; Social agents: `seedAgentChar` in `shells/social/test/harness.mjs`.
 - **Platform bot / OnMessage contract**: [domain-harness.md](docs/domain-harness.md#platform-bot--onmessage-contract).
 - Every `deno run`/`test`/`install` carries `--allow-scripts --allow-all` (in that order). Sole exception: `deno cache` takes `--allow-scripts` alone.
@@ -71,7 +71,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **Keep-awake**: wrappers keep the machine awake during runs — [host-keep-awake.md](docs/host-keep-awake.md). Opt out: `FOUNT_TEST_ALLOW_SLEEP=1`.
 - **OOM / heap**: [heap-snapshots.md](docs/heap-snapshots.md).
 - **Deno panic auto-report**: `core/deno_panic.mjs` → GitHub issue on `denoland/deno` (if `gh` + auth); dedup `data/test/deno_panics.json`. Override via `FOUNT_DENO_PANIC_REPO`. `testkit` excluded.
-- **GitHub issue probe**: `core/github_issue.mjs` → `parseGithubIssueUrl` (pure). Closed-state via `hub/apis/github_issue.mjs` (`gh` + `AbortSignal.timeout`) + `hub/clients/github_issue.mjs` / browser `test_watch` (bounded fetch timeout → treat as open). Playwright `assertAriaIgnoreIssues` hard-fail closed `[aria-ignore]` URLs. No hub / `gh` down → still open. Selftest suite: `testkit:test_hub`.
+- **GitHub issue probe**: `core/github_issue.mjs` → `parseGithubIssueUrl` (pure). `[aria-ignore]` policy lives in `pages/scripts/test/aria_ignore.mjs` (`ariaIgnoreProblem`); Deno re-exports via `core/aria_ignore.mjs`. Closed-state via `hub/apis/github_issue.mjs` (`gh` + `AbortSignal.timeout`) + `hub/clients/github_issue.mjs` / browser `watch/hub_issues.mjs` (bounded fetch timeout → treat as open). Playwright `assertAriaIgnoreIssues` hard-fail closed `[aria-ignore]` URLs. No hub / `gh` down → still open. Selftest suite: `page_watch` (`src/scripts/test/selftest/page_watch.test.mjs`, manifest `page_watch` subtest).
 - **Locale triggers**: put `src/public/locales/**` on **jsonEditor subtests** (aria-label asserts), not suite-level `frontendShared` — otherwise every frontend subtest goes stale. Locale-only waves also hit `checks:i18n_*`; do not hang locales on Pages / chat / social / cabinet frontends unless a subtest asserts copy.
-- **Selftests**: `fount test testkit`. Fixtures: `selftest/fixtures.mjs` (`makeSuite` / `makeStateEntry`). Keep manifest id `testkit`.
+- **Selftests**: `fount test testkit`. Fixtures: `selftest/fixtures.mjs` (`makeSuite` / `makeStateEntry`). Keep manifest id `testkit`. Object-literal methods (`run: () => …`) trip `jsdoc/require-jsdoc`; pass named functions into a small factory that returns `{ name, run, … }` (see `selftest/page_watch.test.mjs`) instead of empty `/** */` stubs.
 - **Naming**: readable identifiers (`context` not `ctx`). Suite/file/`Deno.test` names use domain semantics — never planning milestone codes.

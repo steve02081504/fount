@@ -8,13 +8,13 @@ import { detectNoiseHits } from '../core/output_filter.mjs'
 import {
 	BROWSER_NETWORK_PREFIX,
 	I18N_MISSING_PREFIX,
-	TEST_WATCH_CONSOLE_PREFIX,
+	PAGE_WATCH_CONSOLE_PREFIX,
 	browserNetworkAggregateKey,
 	formatBrowserNetworkLine,
 	isI18nMissingConsoleText,
 	isIgnoredBrowserNetworkError,
 	isIgnoredChildFrameSecurityError,
-	isTestWatchConsoleText,
+	isPageWatchConsoleText,
 	pageErrorFromCdpException,
 	recordBrowserNetworkEntry,
 } from '../playwright/browser_diagnostics.mjs'
@@ -93,9 +93,10 @@ Deno.test('detectNoiseHits marks browser:network as browser_network', () => {
 	assertEquals(detectNoiseHits('all green'), [])
 })
 
-Deno.test('isTestWatchConsoleText matches test_watch prefix', () => {
-	assertEquals(isTestWatchConsoleText(`${TEST_WATCH_CONSOLE_PREFIX}a11y] color-contrast ...`), true)
-	assertEquals(isTestWatchConsoleText('plain log'), false)
+Deno.test('isPageWatchConsoleText matches page watch prefix', () => {
+	assertEquals(PAGE_WATCH_CONSOLE_PREFIX, '[test:')
+	assertEquals(isPageWatchConsoleText('[test:a11y] color-contrast ...'), true)
+	assertEquals(isPageWatchConsoleText('plain log'), false)
 })
 
 Deno.test('isI18nMissingConsoleText matches i18n missing prefix', () => {

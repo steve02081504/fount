@@ -11,6 +11,7 @@ let skipBreadcrumb = false
 if (!globalThis.fount?.test?.enabled) try {
 	Sentry.init({
 		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
+		release: '__FOUNT_COMMIT_HASH__',
 		/**
 		 * 在 Sentry 捕获面包屑事件之前进行处理。
 		 * @param {object} breadcrumb - 面包屑对象。
@@ -44,7 +45,10 @@ console.noBreadcrumb = {
 
 await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').catch(console.error)
 
-if (globalThis.fount?.test?.enabled) import('/fount/scripts/test/test_watch.mjs').catch(console.error)
+globalThis.fount ??= {}
+globalThis.fount.version ??= 'unknown' // pages版本不代表用户运行的fount版本
+globalThis.fount.pages_version ??= '__FOUNT_COMMIT_HASH__'
+if (globalThis.fount?.test?.enabled) import('/fount/scripts/test/watch/index.mjs').catch(console.error)
 
 /* global urlParams */
 /**
@@ -207,8 +211,7 @@ export const base_dir = '../'.repeat(window.location.pathname.split('/').length 
 	try {
 		await navigator.serviceWorker.register('/sw.js')
 	} catch (error) {
-		if (error.name != 'SecurityError')
-			console.error('Service Worker registration failed: ', error)
+		if (error.name != 'SecurityError') console.error('Service Worker registration failed: ', error)
 	}
 })()
 

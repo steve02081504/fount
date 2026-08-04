@@ -4,7 +4,7 @@
  */
 import process from 'node:process'
 
-import { execFile } from 'npm:@steve02081504/exec@0.0.6'
+import { execFile } from 'npm:@steve02081504/exec'
 
 import { collectProcessTreePids, samplePidsUsage } from '../core/proc_sample.mjs'
 

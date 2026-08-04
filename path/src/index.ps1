@@ -34,6 +34,9 @@ try {
 
 	$ErrorCount = $Error.Count
 
+	require passthrough
+	handle_unix_passthrough @args
+
 	if ($env:FOUNT_CLICK) {
 		Remove-Item Env:\FOUNT_CLICK -Force -ErrorAction Ignore
 		require win/wt
@@ -41,9 +44,6 @@ try {
 		if ($ErrorCount -ne $Error.Count) { exit 1 }
 		exit 0
 	}
-
-	require passthrough
-	handle_unix_passthrough @args
 
 	$cmd = $args[0]
 	if ($cmd -and $cmd -match '^[a-z]+$') {

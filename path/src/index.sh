@@ -43,6 +43,8 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
 	exit $?
 fi
 
+unset FOUNT_CLICK
+
 cmd="${1:-}"
 
 if [ -n "$cmd" ] && [[ "$cmd" =~ ^[a-z]+$ ]] && [ -f "$FOUNT_SRC/cmd/${cmd}.sh" ]; then

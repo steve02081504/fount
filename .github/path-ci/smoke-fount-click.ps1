@@ -1,0 +1,39 @@
+# FOUNT_CLICK smoke helper: script-scoped stubs + dot-source fount (exit stays in this process).
+# Writes capture JSON then lets fount exit; parent run-smoke.ps1 reads CapturePath.
+param(
+	[Parameter(Mandatory)][ValidateSet('Windows', 'Unix')][string]$Mode,
+	[Parameter(Mandatory)][string]$FountPath,
+	[Parameter(Mandatory)][string]$RepoRoot,
+	[Parameter(Mandatory)][string]$CapturePath
+)
+
+$ErrorActionPreference = 'Stop'
+$env:FOUNT_DIR = $RepoRoot
+$env:FOUNT_CLICK = '1'
+
+if ($Mode -eq 'Windows') {
+	function script:Start-Process {
+		param(
+			[Parameter(Mandatory)][AllowNull()][string]$FilePath,
+			$ArgumentList
+		)
+		if ((Split-Path -Leaf $FilePath) -notin @('powershell.exe', 'wt.exe')) {
+			throw "[wt start] unsupported FilePath: $FilePath"
+		}
+		(@{
+			FilePath     = $FilePath
+			ArgumentList = "$ArgumentList"
+		} | ConvertTo-Json -Compress) | Set-Content -LiteralPath $CapturePath -Encoding utf8
+	}
+	. $FountPath open
+	exit $LastExitCode
+}
+
+function script:bash {
+	param([Parameter(ValueFromRemainingArguments = $true)]$BashArgs)
+	(@{ Args = @($BashArgs) } | ConvertTo-Json -Compress) | Set-Content -LiteralPath $CapturePath -Encoding utf8
+	# End this helper process; avoid needing a global $LastExitCode hack for exit $LastExitCode.
+	exit 0
+}
+. $FountPath open
+exit $LastExitCode

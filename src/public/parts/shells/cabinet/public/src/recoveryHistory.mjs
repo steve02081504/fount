@@ -82,7 +82,6 @@ function makeRecoveryHistory({ label, cabinetId, ids, token, create, unlock }) {
 			recoveryToken = undefined
 		},
 	}
-	/* eslint-enable jsdoc/require-jsdoc */
 }
 
 /**
@@ -130,7 +129,6 @@ export function makePatchHistory({ entryId, before, after, label = 'patch', cabi
 			await refreshEntries()
 		},
 	}
-	/* eslint-enable jsdoc/require-jsdoc */
 }
 
 /**

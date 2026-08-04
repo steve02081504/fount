@@ -3,12 +3,12 @@
  * 【职责】私聊侧栏壳：判定活跃私聊、返回好友列表、频道列表挂载容器。
  */
 import { mountTemplate } from '../../../../../scripts/features/template.mjs'
+import { hubEmptyFriendsIcon } from '../../src/lib/emojiSvg.mjs'
 import { updateStatusBanners } from '../banners.mjs'
 import { store, setState } from '../core/state.mjs'
 import { updateFriendsHash } from '../core/urlHash.mjs'
 import { cancelScheduledChannelRefresh } from '../messages/channelRefreshScheduler.mjs'
 import { clearPrivateGroupState } from '../privateGroup.mjs'
-import { hubEmptyFriendsIcon } from '../../src/lib/emojiSvg.mjs'
 import { closeGroupWebSocket } from '../stream/index.mjs'
 
 /**

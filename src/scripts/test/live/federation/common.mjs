@@ -10,9 +10,9 @@ import {
 	invokeMultipart,
 	invokeRequest,
 	pollUntil,
-	sleep,
 	TEST_PNG_BYTES,
 } from '../http.mjs'
+import { sleep } from '../../core/wait.mjs'
 import { completeLiveScript, skipCase, testCase, writeLiveSummary } from '../singleNode/helpers.mjs'
 
 /** live/fed 软轮询（秒）；超时返回末次结果。定义见 `http.mjs`。 */

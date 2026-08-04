@@ -18,6 +18,7 @@ export function set_sentry_enabled(new_sentry_enabled) {
 	try {
 		// deno-lint-ignore no-cond-assign
 		if (sentry_enabled = new_sentry_enabled) Sentry.init({
+			release: 'not-set-yet',
 			dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
 		})
 		else Sentry.close().catch(console.error)

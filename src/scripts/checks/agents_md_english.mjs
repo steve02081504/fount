@@ -5,7 +5,7 @@
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 
-/** 汉字 / 平假名 / 片假名 / 谚文 — 与 `test_watch.mjs` 相同的 `\p{Script=…}` 风格 */
+/** 汉字 / 平假名 / 片假名 / 谚文 — 与 `scripts/test/watch` 相同的 `\p{Script=…}` 风格 */
 export const CJK_RE = /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}|\p{Script=Hangul}/u
 
 /**
