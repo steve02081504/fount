@@ -2,7 +2,6 @@ import fs from 'node:fs'
 import process from 'node:process'
 import { setInterval } from 'node:timers'
 
-import { exec } from 'npm:@steve02081504/exec'
 import { console as baseConsole } from 'npm:@steve02081504/virtual-console'
 import supportsAnsi from 'npm:supports-ansi'
 
@@ -89,7 +88,6 @@ export const localhostLocales = [...new Set([
 		process.env.LANG,
 		process.env.LANGUAGE,
 		process.env.LC_ALL,
-		await exec('locale -uU').then(r => r.stdout?.trim?.()),
 	].filter(Boolean).map(locale => locale.split('.')[0].replace('_', '-')),
 	...navigator.languages || [navigator.language],
 	FALLBACK_LOCALE,
