@@ -42,7 +42,7 @@ Rules:
 ## Agent docs language
 
 - `AGENTS.md` and agent-facing linked `.md`: English only (no CJK).
-- Exempt: human-facing `docs/design/`, `docs/review/` (still walked for link resolution).
+- Exempt: human-facing `docs/design/`, `docs/review/`, `docs/issues/` (still walked for link resolution).
 - Transitive local `.md` links must resolve.
 
 ## JSDoc English
