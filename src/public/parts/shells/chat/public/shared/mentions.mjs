@@ -1,4 +1,4 @@
-/** @ 提及解析（chat/social 共用；浏览器 / Deno / Node 均可加载）。 */
+/** 提及解析（chat/social 共用；浏览器 / Deno / Node 均可加载）。 */
 import { isEntityHash128 } from 'https://esm.sh/@steve02081504/fount-p2p/core/entity_id_parse'
 
 import { parseInlineTokens } from './inlineTokens.mjs'

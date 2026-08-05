@@ -1,8 +1,6 @@
 import { logicalEntityHash } from 'https://esm.sh/@steve02081504/fount-p2p/core/logical_entity'
 
-/**
- *
- */
+/** 群 subject 前缀（logical entity 命名空间）。 */
 export const GROUP_SUBJECT_PREFIX = 'fount:chat:group:'
 
 /**

@@ -505,9 +505,7 @@ function buildVideoSlide(item) {
 		video.currentTime = Math.max(0, Math.min(video.duration || 0, seekBaseTime + dx / 8))
 	})
 
-	/**
-	 *
-	 */
+	/** 结束按压：取消计时并恢复播放速度。 */
 	const endPress = () => {
 		if (pressTimer) { clearTimeout(pressTimer); pressTimer = null }
 		if (speedMode) {

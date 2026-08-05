@@ -29,9 +29,7 @@ export function resolveOperatorEntityHash(replicaUsername) {
 	return resolveOperatorEntityHashForUser(replicaUsername)
 }
 
-/**
- *
- */
+/** replica 操作者与可写实体判定重导出。 */
 export {
 	getOperatorEntityHash,
 	getReplicaFromReq,

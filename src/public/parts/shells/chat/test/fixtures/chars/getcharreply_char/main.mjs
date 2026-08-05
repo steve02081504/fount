@@ -8,9 +8,7 @@ export default {
 	},
 	interfaces: {
 		chat: {
-			/**
-			 *
-			 */
+			/** 故意抛错，断言 world GetCharReply 已接管。 */
 			GetReply: async () => {
 				throw new Error('char GetReply must not run when world GetCharReply returns')
 			},

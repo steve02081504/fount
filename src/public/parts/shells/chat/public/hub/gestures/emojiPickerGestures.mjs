@@ -12,9 +12,7 @@ export function wireHubGroupEmojiStickerGestures(gridElement, pickerElement, onS
 	let longPressTimer = null
 	let longPressFired = false
 
-	/**
-	 *
-	 */
+	/** 清除长按计时器。 */
 	function clearLongPress() {
 		if (longPressTimer) {
 			clearTimeout(longPressTimer)

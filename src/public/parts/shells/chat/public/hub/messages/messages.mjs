@@ -51,9 +51,7 @@ export function focusMessageEventId(eventId) {
 	setState('messages.focusedMessageEventId', eventId ? String(eventId).trim() : null)
 }
 
-/**
- *
- */
+/** Hub 消息子模块重导出（刷新 / 滚动 / 发送等）。 */
 export {
 	applyChannelMessageDelete,
 	applyChannelMessageEdit,

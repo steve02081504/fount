@@ -7,9 +7,7 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { primaryLocale } from '../../../../scripts/i18n/index.mjs'
 import { normalizeUserSendPayload } from '../shared/fountUserSend.mjs'
 
-/**
- *
- */
+/** 重导出 normalizeUserSendPayload。 */
 export { normalizeUserSendPayload } from '../shared/fountUserSend.mjs'
 
 /**

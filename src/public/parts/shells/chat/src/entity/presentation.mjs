@@ -7,9 +7,7 @@ import { getAnyDefaultPart, getPartDetails } from '../../../../../../server/part
 
 import { resolveAgentCharPartName } from './member.mjs'
 
-/**
- *
- */
+/** 本地化 displayName / 头像工具重导出。 */
 export {
 	isPlaceholderDisplayName,
 	normalizeLocalizedMap,

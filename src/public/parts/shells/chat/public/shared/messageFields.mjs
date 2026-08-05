@@ -3,25 +3,15 @@
  * 入站联邦与本机写入共用。
  */
 
-/**
- *
- */
+/** 内容警告字段最大长度。 */
 export const CONTENT_WARNING_MAX = 200
-/**
- *
- */
+/** locale 字段最大长度。 */
 export const LOCALE_MAX = 32
-/**
- *
- */
+/** alt 文本最大长度。 */
 export const ALT_MAX = 1500
-/**
- *
- */
+/** 回复预览最大长度。 */
 export const REPLY_PREVIEW_MAX = 120
-/**
- *
- */
+/** 回复发送者名称最大长度。 */
 export const REPLY_SENDER_NAME_MAX = 100
 
 /**

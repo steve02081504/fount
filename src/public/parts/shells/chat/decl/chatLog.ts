@@ -15,9 +15,7 @@ export {
 	type GenerationOptions_t,
 } from '../../../../../decl/chatLog.ts'
 
-/**
- *
- */
+/** 频道 wire 消息类型 re-export。 */
 export {
 	type channelWireMessage_t,
 	type channelWireFile_t,

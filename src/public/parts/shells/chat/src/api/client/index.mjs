@@ -37,7 +37,5 @@ export async function getChatClient(username, entityHash) {
 	return createChatClient({ username, ...entity })
 }
 
-/**
- *
- */
+/** 重导出 shell JSON namespace 工厂。 */
 export { createShellJsonNamespace, createChatShellJsonNamespace } from './helpers.mjs'

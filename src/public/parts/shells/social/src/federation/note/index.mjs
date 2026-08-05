@@ -6,9 +6,7 @@ import { createPostScopedJsonStore, normalizePostTarget } from '../postScopedJso
 
 const NOTE_TEXT_MAX = 2000
 
-/**
- *
- */
+/** 联邦便签拉取单批上限。 */
 export const NOTE_PULL_BATCH = 200
 
 const store = createPostScopedJsonStore({

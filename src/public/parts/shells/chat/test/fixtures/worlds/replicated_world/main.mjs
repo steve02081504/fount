@@ -32,9 +32,7 @@ export async function foldAuthorizedValue(host, key) {
 	return value
 }
 
-/**
- *
- */
+/** 测试 world 默认导出。 */
 export default {
 	distribution: 'replicated',
 	info: {

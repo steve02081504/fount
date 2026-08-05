@@ -20,9 +20,7 @@ import { resolveDisplayName } from '../../shared/nameResolve.mjs'
 
 import { store } from './state.mjs'
 
-/**
- *
- */
+/** 重导出头像配色辅助函数。 */
 export { avatarColor, avatarInitial, avatarTextColor, hashAvatarStyle }
 
 /** @type {Map<string, string>} 角色 part 名 → agent entityHash */
