@@ -46,6 +46,31 @@ git_sync_to_ref() {
 	invoke_repo_git reset --hard "$ref"
 }
 
+# Switch/create local branch at start_point (default origin/<branch>). Does not move other branches.
+git_checkout_branch() {
+	local branch="$1"
+	local start_point="${2:-origin/$branch}"
+	if ! git_ref_exists "$start_point"; then
+		print_i18n_yellow 'git.remoteRefUnavailable' 'ref' "$start_point" >&2
+		return 1
+	fi
+	git_backup_uncommitted || return 1
+	invoke_repo_git clean -fd || return 1
+	invoke_repo_git checkout -B "$branch" "$start_point"
+}
+
+# Detach HEAD at ref without moving the previous branch tip.
+git_detach_to_ref() {
+	local ref="$1" resolved
+	resolved=$(invoke_repo_git rev-parse --verify "${ref}^{commit}" 2>/dev/null) || {
+		print_i18n_yellow 'git.remoteRefUnavailable' 'ref' "$ref" >&2
+		return 1
+	}
+	git_backup_uncommitted || return 1
+	invoke_repo_git clean -fd || return 1
+	invoke_repo_git checkout --detach "$resolved"
+}
+
 git_reset_and_clean() {
 	command -v git &>/dev/null || return 0
 	invoke_repo_git config core.autocrlf false

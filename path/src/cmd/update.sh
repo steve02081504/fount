@@ -2,5 +2,9 @@
 cmd_update() {
 	require_mid
 	shift
-	update_fount_and_deno
+	if [ -n "${1:-}" ]; then
+		fount_update_to_ref "$1"
+	else
+		update_fount_and_deno
+	fi
 }

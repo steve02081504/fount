@@ -68,6 +68,34 @@ function script:git_sync_to_ref($Ref) {
 	return ($LastExitCode -eq 0)
 }
 
+# Switch/create local branch at StartPoint (default origin/<Branch>). Does not move other branches.
+function script:git_checkout_branch($Branch, $StartPoint = $null) {
+	if (-not $StartPoint) { $StartPoint = "origin/$Branch" }
+	if (-not (git_ref_exists $StartPoint)) {
+		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $StartPoint })
+		return $false
+	}
+	git_backup_uncommitted
+	invoke_repo_git clean -fd | Out-Host
+	if ($LastExitCode -ne 0) { return $false }
+	invoke_repo_git checkout -B $Branch $StartPoint | Out-Host
+	return ($LastExitCode -eq 0)
+}
+
+# Detach HEAD at Ref without moving the previous branch tip.
+function script:git_detach_to_ref($Ref) {
+	$resolved = invoke_repo_git rev-parse --verify "${Ref}^{commit}" 2>$null
+	if ($LastExitCode -ne 0 -or -not $resolved) {
+		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $Ref })
+		return $false
+	}
+	git_backup_uncommitted
+	invoke_repo_git clean -fd | Out-Host
+	if ($LastExitCode -ne 0) { return $false }
+	invoke_repo_git checkout --detach $resolved | Out-Host
+	return ($LastExitCode -eq 0)
+}
+
 function script:fount_upgrade {
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 		Write-Host (Get-I18n -key 'git.notInstalledSkippingPull')

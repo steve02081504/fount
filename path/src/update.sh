@@ -112,6 +112,59 @@ update_fount_and_deno() {
 	deno_upgrade
 }
 
+# Explicit target: branch → track tip & clear .noupdate; commit → detach & create .noupdate.
+fount_update_to_ref() {
+	local target="$1" remote_ref commit
+	install_package "git" "git" || return 0
+	if git config --global --get-all safe.directory | grep -q -xF "$FOUNT_DIR"; then : else
+		git config --global --add safe.directory "$FOUNT_DIR"
+	fi
+	if [ ! -d "$FOUNT_DIR/.git" ]; then
+		get_i18n 'git.repoNotFound'
+		invoke_repo_git init -b master
+		invoke_repo_git config core.autocrlf false
+		invoke_repo_git remote add origin https://github.com/steve02081504/fount.git || true
+	fi
+
+	invoke_repo_git config core.autocrlf false
+	if ! invoke_repo_git fetch origin; then
+		print_i18n_yellow 'git.fetchFailed' >&2
+		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
+		return 1
+	fi
+	# Shallow / odd tips: also ask origin for the named ref or object.
+	invoke_repo_git fetch origin "$target" 2>/dev/null || true
+
+	remote_ref="origin/$target"
+	if git_ref_exists "$remote_ref" || git_ref_exists "refs/heads/$target"; then
+		get_i18n 'update.switchingToBranch' 'branch' "$target"
+		if git_ref_exists "$remote_ref"; then
+			git_checkout_branch "$target" "$remote_ref" || return 1
+		else
+			git_backup_uncommitted || return 1
+			invoke_repo_git checkout "$target" || return 1
+		fi
+		if [ -f "$FOUNT_DIR/.noupdate" ]; then
+			rm -f "$FOUNT_DIR/.noupdate"
+			get_i18n 'update.removedNoUpdate'
+		fi
+		fount_upgrade
+		deno_upgrade
+		return 0
+	fi
+
+	commit=$(invoke_repo_git rev-parse --verify "${target}^{commit}" 2>/dev/null) || {
+		print_i18n_yellow 'update.unknownTarget' 'target' "$target" >&2
+		return 1
+	}
+
+	get_i18n 'update.pinningToCommit' 'ref' "$commit"
+	git_detach_to_ref "$commit" || return 1
+	: >"$FOUNT_DIR/.noupdate"
+	get_i18n 'update.createdNoUpdate'
+	deno_upgrade
+}
+
 # After the first successful deno upgrade, routine starts refresh in the background.
 update_fount_and_deno_background() {
 	if [ -f "$FOUNT_DIR/.noupdate" ]; then
