@@ -7,6 +7,7 @@ import process from 'node:process'
 import { on_shutdown, unset_shutdown_listener } from 'npm:on-shutdown'
 import supportsAnsi from 'npm:supports-ansi'
 
+import { in_container } from '../scripts/env.mjs'
 import { getMemoryUsage } from '../scripts/gc.mjs'
 import { console } from '../scripts/i18n/index.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
@@ -147,7 +148,7 @@ export async function init(start_config) {
 	data_path = start_config.data_path
 	const starts = start_config.starts ??= {}
 	for (const start of ['Base', 'IPC', 'Web', 'Tray', 'DiscordRPC', 'P2P']) starts[start] ??= true
-	if (starts.Web) starts.Web = Object.assign({ mDNS: true }, starts.Web)
+	if (starts.Web) starts.Web = Object.assign({ mDNS: !in_container }, starts.Web)
 	let logoPromise
 	if (starts.Base) {
 		if (!process.env.FOUNT_TEST) for (const event of ['error', 'unhandledRejection', 'uncaughtException']) {

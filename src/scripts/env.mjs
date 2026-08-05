@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 /**
- * 一个布尔值，指示应用程序是否在 Docker 容器内运行。
+ * 是否在 Docker 容器内运行。
  * @type {boolean}
  */
 export const in_docker = (() => {
@@ -14,7 +14,7 @@ export const in_docker = (() => {
 })()
 
 /**
- * 一个布尔值，指示应用程序是否在 Termux 内运行。
+ * 是否在 Termux 内运行。
  * @type {boolean}
  */
 export const in_termux = (() => {
@@ -22,3 +22,9 @@ export const in_termux = (() => {
 	if (fs.existsSync('/data/data/com.termux')) return true
 	return false
 })()
+
+/**
+ * 是否在 Docker 或 Termux 等容器化环境内运行。
+ * @type {boolean}
+ */
+export const in_container = in_docker || in_termux
