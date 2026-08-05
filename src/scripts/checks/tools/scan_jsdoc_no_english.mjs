@@ -4,8 +4,8 @@
  * 列出仓库中纯英文 / 缺摘要的 JSDoc（违反 jsdoc_no_english）。
  *
  * 用法：
- *   deno run -A ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs
- *   deno run -A ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs imgs/icon_anime
+ *   deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs
+ *   deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs imgs/icon_anime
  */
 import { REPO_ROOT } from '../../test/core/repo_root.mjs'
 import { scanJsdocNoEnglish } from '../jsdoc_no_english.mjs'

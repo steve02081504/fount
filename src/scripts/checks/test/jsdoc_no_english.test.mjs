@@ -1,5 +1,5 @@
 /**
- * JSDoc 禁用纯英文摘要的扫描器自测；`imgs/icon_anime` 应无英文摘要残留。
+ * JSDoc 禁用纯英文摘要 / 缺摘要的扫描器自测；`imgs/icon_anime` 应无英文摘要或空摘要残留。
  */
 /* global Deno */
 import { assert, assertEquals } from 'jsr:@std/assert'
@@ -59,10 +59,16 @@ Deno.test('extractJsdocBlocks: ignores JSDoc inside nested template interpolatio
 	assertEquals(jsdocSummaryLines(blocks[0].text), ['中文摘要'])
 })
 
-Deno.test('scanFileJsdocNoEnglish: flags English summary', () => {
-	const issues = scanFileJsdocNoEnglish('foo.mjs', '/** English doc */\nexport const x = 1')
-	assertEquals(issues.length, 1)
-	assertEquals(issues[0].summary, 'English doc')
+Deno.test('scanFileJsdocNoEnglish: flags English summary and empty /** */', () => {
+	const english = scanFileJsdocNoEnglish('foo.mjs', '/** English doc */\nexport const x = 1')
+	assertEquals(english.length, 1)
+	assertEquals(english[0].summary, 'English doc')
+	assertEquals(english[0].missingSummary, false)
+
+	const empty = scanFileJsdocNoEnglish('foo.mjs', '/** */\nexport const x = 1')
+	assertEquals(empty.length, 1)
+	assertEquals(empty[0].missingSummary, true)
+	assertEquals(empty[0].summary, '')
 })
 
 Deno.test('scanFileJsdocNoEnglish: template literal English is not flagged', () => {
@@ -70,18 +76,18 @@ Deno.test('scanFileJsdocNoEnglish: template literal English is not flagged', () 
 	assertEquals(issues.length, 0)
 })
 
-Deno.test('repo: no English JSDoc summaries', async () => {
+Deno.test('repo: no English or missing JSDoc summaries', async () => {
 	const { issues } = await scanJsdocNoEnglish(REPO_ROOT)
 	if (issues.length) {
 		const sample = issues.slice(0, 12).map(i => `${i.path}:${i.line} ${i.summary || '(missing)'}`).join('\n')
-		assert(false, `English JSDoc (${issues.length}):\n${sample}`)
+		assert(false, `English/missing JSDoc (${issues.length}):\n${sample}`)
 	}
 })
 
-Deno.test('icon_anime: no English JSDoc summaries', async () => {
+Deno.test('icon_anime: no English or missing JSDoc summaries', async () => {
 	const { issues } = await scanJsdocNoEnglish(REPO_ROOT, { under: 'imgs/icon_anime' })
 	if (issues.length) {
 		const sample = issues.slice(0, 8).map(i => `${i.path}:${i.line} ${i.summary || '(missing)'}`).join('\n')
-		assert(false, `English JSDoc in icon_anime (${issues.length}):\n${sample}`)
+		assert(false, `English/missing JSDoc in icon_anime (${issues.length}):\n${sample}`)
 	}
 })

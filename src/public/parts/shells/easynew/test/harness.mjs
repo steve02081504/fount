@@ -87,7 +87,7 @@ export async function runEasyChar(options) {
 		chat_log: [],
 		chat_scoped_char_memory: {},
 	}, 0)
-	const greetingText = String(greeting?.content || '')
+	const greetingText = String(greeting.content)
 	if (!greetingText.includes(greetingMatch))
 		throw new Error(`greeting mismatch: ${greetingText}`)
 
@@ -120,7 +120,7 @@ export async function runEasyChar(options) {
 		throw new Error(`GetPrompt missing ${PROMPT_MARKER}`)
 
 	const reply = await char.interfaces.chat.GetReply(requestBase)
-	const replyText = String(reply?.content || '')
+	const replyText = String(reply.content)
 	if (!replyText.startsWith('MOCK_OK|desc=1|'))
 		throw new Error(`GetReply did not use mock AI / prompt marker: ${replyText}`)
 	if (!replyText.includes(`user=${userMessage}`))

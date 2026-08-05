@@ -43,7 +43,7 @@ Deno.test('easynew easyworld create runs greeting and GetPrompt', async () => {
 	}
 
 	const greeting = await world.interfaces.chat.GetGreeting(args, 0)
-	assertEquals(String(greeting?.content || '').includes('Welcome Tester to EasyWorldTest\'s world.'), true)
+	assertEquals(String(greeting.content).includes('Welcome Tester to EasyWorldTest\'s world.'), true)
 
 	const prompt = await world.interfaces.chat.GetPrompt(args)
 	const blob = JSON.stringify(prompt)

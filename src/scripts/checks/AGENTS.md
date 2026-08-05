@@ -49,4 +49,4 @@ Rules:
 
 - Summaries must be Chinese (contain CJK). Pure-English summaries (Latin letters, no CJK) fail.
 - Tag-only blocks (`@param` / `@typedef` / … without a prose summary) are fine; empty `/** */` stubs are not a substitute for a real one-liner on re-exports.
-- List leftovers: `deno run -A ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs` (optional path arg to narrow).
+- List leftovers: `deno run --allow-scripts --allow-all ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs` (optional path arg to narrow).

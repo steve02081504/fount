@@ -67,16 +67,13 @@ export default {
 	},
 	/**
 	 * 角色 GetReply 路径使用的结构化调用。
-	 * @param {import('fount/decl/prompt_struct.ts').prompt_struct_t} prompt_struct prompt
+	 * @param {import('fount/decl/prompt_struct.ts').prompt_struct_t} promptStruct prompt
 	 * @param {import('fount/decl/AIsource.ts').GenerationOptions} [options] generation options
 	 * @returns {Promise<{content: string, files: unknown[]}>} mock reply
 	 */
-	async StructCall(prompt_struct, options = {}) {
+	async StructCall(promptStruct, options = {}) {
 		const { base_result = {}, replyPreviewUpdater } = options
-		const texts = prompt_struct?.char_prompt?.text || []
-		const markerHit = texts.some(row => String(row.content || '').includes(PROMPT_MARKER))
-		const lastUser = [...prompt_struct?.chat_log || []].reverse().find(entry => entry.role === 'user')
-		const content = `MOCK_OK|desc=${markerHit ? 1 : 0}|user=${lastUser?.content ?? ''}`
+		const content = `MOCK_OK|desc=${(promptStruct?.char_prompt?.text || []).some(row => String(row.content || '').includes(PROMPT_MARKER)) ? 1 : 0}|user=${[...promptStruct?.chat_log || []].reverse().find(entry => entry.role === 'user')?.content ?? ''}`
 		const result = {
 			content,
 			files: [...base_result?.files || []],

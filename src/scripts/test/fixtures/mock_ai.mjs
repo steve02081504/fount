@@ -24,7 +24,6 @@ const fixtureRoot = join(
  * @returns {Promise<void>}
  */
 export async function seedMockAiSource(dataDir, username) {
-	const to = join(dataDir, 'users', username, 'serviceSources', 'AI', MOCK_AI_NAME)
-	await mkdir(dirname(to), { recursive: true })
-	await cp(fixtureRoot, to, { recursive: true })
+	await mkdir(dirname(join(dataDir, 'users', username, 'serviceSources', 'AI', MOCK_AI_NAME)), { recursive: true })
+	await cp(fixtureRoot, join(dataDir, 'users', username, 'serviceSources', 'AI', MOCK_AI_NAME), { recursive: true })
 }
