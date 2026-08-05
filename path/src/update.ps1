@@ -38,12 +38,13 @@ function script:fount_update_to_ref($Target) {
 	if ((git_ref_exists $remoteRef) -or (git_ref_exists "refs/heads/$Target")) {
 		Write-Host (Get-I18n -key 'update.switchingToBranch' -params @{ branch = $Target })
 		if (git_ref_exists $remoteRef) {
-			if (-not (git_checkout_branch $Target $remoteRef)) { return }
+			git_checkout_branch $Target $remoteRef
+			if ($LastExitCode -ne 0) { return }
 		}
 		else {
 			git_backup_uncommitted
 			if ($LastExitCode -ne 0) { return }
-			invoke_repo_git checkout $Target | Out-Host
+			invoke_repo_git checkout $Target
 			if ($LastExitCode -ne 0) { return }
 		}
 		if (Test-Path -LiteralPath "$FOUNT_DIR/.noupdate") {
@@ -63,7 +64,8 @@ function script:fount_update_to_ref($Target) {
 	}
 
 	Write-Host (Get-I18n -key 'update.pinningToCommit' -params @{ ref = $commit })
-	if (-not (git_detach_to_ref $commit)) { return }
+	git_detach_to_ref $commit
+	if ($LastExitCode -ne 0) { return }
 	New-Item -Path "$FOUNT_DIR/.noupdate" -ItemType File -Force | Out-Null
 	Write-Host (Get-I18n -key 'update.createdNoUpdate')
 	deno_upgrade

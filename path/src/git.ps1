@@ -77,18 +77,17 @@ function script:git_checkout_branch($Branch, $StartPoint = $null) {
 	if (-not $StartPoint) { $StartPoint = "origin/$Branch" }
 	if (-not (git_ref_exists $StartPoint)) {
 		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $StartPoint })
-		return $false
+		return
 	}
 	git_backup_uncommitted
-	if ($LastExitCode -ne 0) { return $false }
-	invoke_repo_git clean -fd | Out-Host
-	if ($LastExitCode -ne 0) { return $false }
-	invoke_repo_git checkout -B $Branch $StartPoint | Out-Host
-	if ($LastExitCode -ne 0) { return $false }
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git clean -fd
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git checkout -B $Branch $StartPoint
+	if ($LastExitCode -ne 0) { return }
 	if ($StartPoint -like 'origin/*') {
-		invoke_repo_git branch --set-upstream-to $StartPoint $Branch | Out-Null
+		invoke_repo_git branch --set-upstream-to $StartPoint $Branch
 	}
-	return $true
 }
 
 # Detach HEAD at Ref without moving the previous branch tip.
@@ -96,14 +95,13 @@ function script:git_detach_to_ref($Ref) {
 	$resolved = invoke_repo_git rev-parse --verify "${Ref}^{commit}" 2>$null
 	if ($LastExitCode -ne 0 -or -not $resolved) {
 		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $Ref })
-		return $false
+		return
 	}
 	git_backup_uncommitted
-	if ($LastExitCode -ne 0) { return $false }
-	invoke_repo_git clean -fd | Out-Host
-	if ($LastExitCode -ne 0) { return $false }
-	invoke_repo_git checkout --detach $resolved | Out-Host
-	return ($LastExitCode -eq 0)
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git clean -fd
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git checkout --detach $resolved
 }
 
 function script:fount_upgrade {
