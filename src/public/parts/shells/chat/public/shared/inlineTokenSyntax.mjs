@@ -3,7 +3,7 @@
 /** emojiId 位允许 unicode 别名（name/alt）；不含 `/`，以免吞掉额外 path 段。 */
 const EMOJI_ID_IN_TOKEN = '[^\\]/\\r\\n]+?'
 
-/** 行内 emoji token 正则（`: [emoji:pack/id]:`）。 */
+/** 行内 emoji token 正则（`:[emoji:pack/id]:`）。 */
 export const EMOJI_TOKEN_RE = new RegExp(`:\\[emoji:([\\w.-]+)\\/(${EMOJI_ID_IN_TOKEN})\\]:`, 'giu')
 
 /** 行内消息链接 token 正则。 */
