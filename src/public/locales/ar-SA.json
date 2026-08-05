@@ -355,7 +355,12 @@
 				"noUrl": "خطأ: لم يتم توفير عنوان URL لمعالج البروتوكول."
 			},
 			"update": {
-				"skippingFountUpdate": "نظرًا لوجود الملف ‎`.noupdate`، يتم تخطي تحديث fount"
+				"skippingFountUpdate": "نظرًا لوجود الملف ‎`.noupdate`، يتم تخطي تحديث fount",
+				"switchingToBranch": "جارٍ التبديل إلى الفرع «${branch}»…",
+				"removedNoUpdate": "تمت إزالة `.noupdate`؛ استُعيدت التحديثات التلقائية.",
+				"pinningToCommit": "جارٍ التثبيت على الالتزام `${ref}` وإنشاء `.noupdate`…",
+				"createdNoUpdate": "تم إنشاء `.noupdate`؛ عُلِّقت التحديثات التلقائية.",
+				"unknownTarget": "تعذّر التعرف على «${target}»: ليس فرعًا معروفًا ولا التزامًا."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "تم إنشاء اختصار سطح المكتب في `${path}`",

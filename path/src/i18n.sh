@@ -99,6 +99,7 @@ i18n_format_param_value() {
 		path)   printf '\033[36m%s\033[0m' "$param_value" ; return ;;
 		ref)    printf '\033[34m%s\033[0m' "$param_value" ; return ;;
 		branch) printf '\033[33m%s\033[0m' "$param_value" ; return ;;
+		target) printf '\033[34m%s\033[0m' "$param_value" ; return ;;
 		esac
 	fi
 	printf '%s' "$param_value"

@@ -355,7 +355,12 @@
 				"noUrl": "错误：未提供协议处理程序的 URL。"
 			},
 			"update": {
-				"skippingFountUpdate": "因 `.noupdate` 文件存在，跳过 fount 更新"
+				"skippingFountUpdate": "因 `.noupdate` 文件存在，跳过 fount 更新",
+				"switchingToBranch": "正在切换到分支「${branch}」…",
+				"removedNoUpdate": "已删除 `.noupdate`，自动更新已恢复。",
+				"pinningToCommit": "正在固定到提交 `${ref}`，并创建 `.noupdate`…",
+				"createdNoUpdate": "已创建 `.noupdate`，自动更新已暂停。",
+				"unknownTarget": "无法识别「${target}」：不是已知分支，也不是提交。"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "已在 `${path}` 创建桌面快捷方式",

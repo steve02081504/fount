@@ -1,14 +1,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { regex_placement } from '../../../../../src/public/parts/ImportHandlers/SillyTavern/engine/charData.mjs'
-import { getCharacterSource } from '../../../../../src/public/parts/ImportHandlers/SillyTavern/engine/data.mjs'
-import { evaluateMacros } from '../../../../../src/public/parts/ImportHandlers/SillyTavern/engine/marco.mjs'
-import { promptBuilder } from '../../../../../src/public/parts/ImportHandlers/SillyTavern/engine/prompt_builder.mjs'
-import { runRegex } from '../../../../../src/public/parts/ImportHandlers/SillyTavern/engine/regex.mjs'
-import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
-import { saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
-import { loadAnyPreferredDefaultPart, loadPart } from '../../../../../src/server/parts_loader.mjs'
+import { regex_placement } from 'fount/public/parts/ImportHandlers/SillyTavern/engine/charData.mjs'
+import { getCharacterSource } from 'fount/public/parts/ImportHandlers/SillyTavern/engine/data.mjs'
+import { evaluateMacros } from 'fount/public/parts/ImportHandlers/SillyTavern/engine/marco.mjs'
+import { promptBuilder } from 'fount/public/parts/ImportHandlers/SillyTavern/engine/prompt_builder.mjs'
+import { runRegex } from 'fount/public/parts/ImportHandlers/SillyTavern/engine/regex.mjs'
+import { buildPromptStruct } from 'fount/public/parts/shells/chat/src/prompt_struct/index.mjs'
+import { saveJsonFile } from 'fount/scripts/json_loader.mjs'
+import { loadAnyPreferredDefaultPart, loadPart } from 'fount/server/parts_loader.mjs'
 
 import locales from './locales.json' with { type: 'json' }
 

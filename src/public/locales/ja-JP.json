@@ -355,7 +355,12 @@
 				"noUrl": "エラー: プロトコルハンドラーの URL が指定されていません。"
 			},
 			"update": {
-				"skippingFountUpdate": "`.noupdate` ファイルが存在するため、fountの更新はスキップされます"
+				"skippingFountUpdate": "`.noupdate` ファイルが存在するため、fountの更新はスキップされます",
+				"switchingToBranch": "ブランチ「${branch}」に切り替えています…",
+				"removedNoUpdate": "`.noupdate` を削除しました。自動更新を再開します。",
+				"pinningToCommit": "コミット `${ref}` に固定し、`.noupdate` を作成しています…",
+				"createdNoUpdate": "`.noupdate` を作成しました。自動更新を一時停止しました。",
+				"unknownTarget": "「${target}」を識別できません：既知のブランチでもコミットでもありません。"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "`${path}` にデスクトップ ショートカットが作成されました",

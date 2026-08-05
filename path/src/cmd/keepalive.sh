@@ -47,6 +47,8 @@ cmd_keepalive() {
 			fi
 		fi
 
+		# Failed once: foreground-upgrade fount+deno before the next start.
+		update_fount_and_deno
 		"$0" server
 		server_status=$?
 	done

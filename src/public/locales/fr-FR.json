@@ -355,7 +355,12 @@
 				"noUrl": "Erreur : L'URL du gestionnaire de protocole n'est pas fournie."
 			},
 			"update": {
-				"skippingFountUpdate": "Étant donné que le fichier `.noupdate` existe, la mise à jour des founts est ignorée"
+				"skippingFountUpdate": "Étant donné que le fichier `.noupdate` existe, la mise à jour des founts est ignorée",
+				"switchingToBranch": "Basculement vers la branche « ${branch} »…",
+				"removedNoUpdate": "`.noupdate` supprimé ; mises à jour automatiques réactivées.",
+				"pinningToCommit": "Fixation au commit `${ref}` et création de `.noupdate`…",
+				"createdNoUpdate": "`.noupdate` créé ; mises à jour automatiques suspendues.",
+				"unknownTarget": "Impossible d'identifier « ${target} » : ni branche connue ni commit."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Raccourci sur le bureau créé à `${path}`",

@@ -15,6 +15,7 @@ cmd_test() {
 		taskbar_progress_enabled && printf '\007'
 	}
 	trap 'test_cleanup' EXIT
+	deno_upgrade canary
 	if [ -z "${FOUNT_TEST_ALLOW_SLEEP:-}" ]; then
 		if command -v caffeinate >/dev/null 2>&1; then
 			caffeinate -dims -w $$ &

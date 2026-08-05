@@ -62,6 +62,7 @@ export async function New(context) {
 	const sanitizedName = sanitizeFilename(partData.name)
 	const targetPath = await getAvailablePath(username, partType, sanitizedName)
 	await fs.ensureDir(targetPath)
+	saveJsonFile(path.join(targetPath, 'fount.json'), { type: partType, dirname: sanitizedName })
 
 	// Copy template files
 	const templateSubDir = path.join(templateDir, 'template')

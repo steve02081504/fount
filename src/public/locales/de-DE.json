@@ -355,7 +355,12 @@
 				"noUrl": "Fehler: URL für Protokoll-Handler nicht angegeben."
 			},
 			"update": {
-				"skippingFountUpdate": "Da die Datei `.noupdate` vorhanden ist, wird die Aktualisierung der fount übersprungen"
+				"skippingFountUpdate": "Da die Datei `.noupdate` vorhanden ist, wird die Aktualisierung der fount übersprungen",
+				"switchingToBranch": "Wechsle zu Branch '${branch}' …",
+				"removedNoUpdate": "`.noupdate` entfernt; automatische Updates wieder aktiv.",
+				"pinningToCommit": "Commit `${ref}` wird festgesetzt und `.noupdate` erstellt …",
+				"createdNoUpdate": "`.noupdate` erstellt; automatische Updates pausiert.",
+				"unknownTarget": "'${target}' kann nicht erkannt werden: kein bekannter Branch oder Commit."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Desktop-Verknüpfung erstellt unter `${path}`",

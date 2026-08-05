@@ -350,7 +350,12 @@
 				"noUrl": "Error: URL for protocol handler not provided."
 			},
 			"update": {
-				"skippingFountUpdate": "Because the `.noupdate` file exists, the fount update is skipped"
+				"skippingFountUpdate": "Because the `.noupdate` file exists, the fount update is skipped",
+				"switchingToBranch": "Switching to branch '${branch}'…",
+				"removedNoUpdate": "Removed `.noupdate`; automatic updates resumed.",
+				"pinningToCommit": "Pinning to commit `${ref}` and creating `.noupdate`…",
+				"createdNoUpdate": "Created `.noupdate`; automatic updates paused.",
+				"unknownTarget": "Unrecognised target '${target}': not a known branch or commit."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Desktop shortcut created at `${path}`",

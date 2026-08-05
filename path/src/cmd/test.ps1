@@ -5,6 +5,8 @@
 	try {
 		Set-Title '𝒻ℴ𝓊𝓃𝓉 𝓽𝓮𝓼𝓉'
 		Enable-FountTestKeepAwake
+		install_deno
+		deno_upgrade canary
 		deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/scripts/test/cli.mjs" @($args | Select-Object -Skip 1)
 		$testExit = $LASTEXITCODE
 	}

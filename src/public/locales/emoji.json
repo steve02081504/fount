@@ -355,7 +355,12 @@
 				"noUrl": "❌: 🚫🔗 ➡️ 🔗👮"
 			},
 			"update": {
-				"skippingFountUpdate": "⏭️ ⛲ ⏫"
+				"skippingFountUpdate": "⏭️ ⛲ ⏫",
+				"switchingToBranch": "🔀🌿 '${branch}'…",
+				"removedNoUpdate": "🗑️ `.noupdate` ➡️ ▶️⏫",
+				"pinningToCommit": "📌 `${ref}` ➕ `.noupdate`…",
+				"createdNoUpdate": "✨ `.noupdate` ⏸️⏫",
+				"unknownTarget": "❓ '${target}' 🚫🌿🚫📌"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "🖥️✨ `${path}`",

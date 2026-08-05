@@ -339,6 +339,11 @@ export type LocaleData = {
 			}
 			update: {
 				skippingFountUpdate: string
+				switchingToBranch: string
+				removedNoUpdate: string
+				pinningToCommit: string
+				createdNoUpdate: string
+				unknownTarget: string
 			}
 			shortcut: {
 				desktopShortcutCreated: string
@@ -6031,6 +6036,9 @@ export type LocaleKeyParams = {
 	'fountConsole.path.terminalKeybindings.editorRemoved': { path: string | number }
 	'fountConsole.path.terminalKeybindings.wtPatchFailed': { message: string | number; path: string | number }
 	'fountConsole.path.terminalKeybindings.wtRemoved': { path: string | number }
+	'fountConsole.path.update.pinningToCommit': { ref: string | number }
+	'fountConsole.path.update.switchingToBranch': { branch: string | number }
+	'fountConsole.path.update.unknownTarget': { target: string | number }
 	'fountConsole.route.setLanguagePreference': { preferredLanguages: string | number; username: string | number }
 	'fountConsole.server.localUrl': { url: string | number }
 	'fountConsole.server.mdns.bonjourFailed': { error: string | number }

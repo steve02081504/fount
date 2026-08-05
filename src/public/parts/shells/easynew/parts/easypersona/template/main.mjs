@@ -5,8 +5,8 @@
 
 import path from 'node:path'
 
-import { formatStr } from '../../../../../src/scripts/format.mjs'
-import { loadJsonFile, saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
+import { formatStr } from 'fount/scripts/format.mjs'
+import { loadJsonFile, saveJsonFile } from 'fount/scripts/json_loader.mjs'
 
 const partRoot = import.meta.dirname
 const partJsonPath = path.join(partRoot, 'partdata.json')

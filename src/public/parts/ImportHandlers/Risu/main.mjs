@@ -116,23 +116,15 @@ async function ImportAsData(username, dataBuffer) {
 						const b64data = parts[1]
 						assetBuffer = Buffer.from(b64data, 'base64')
 					}
-					else if (assetDef.uri.startsWith('http')) {
-						console.log(`Downloading asset: ${assetDef.uri}`)
+					else if (assetDef.uri.startsWith('http'))
 						assetBuffer = await downloadAsset(assetDef.uri)
-					}
 					else if (assetDef.uri === 'ccdefault:')
 						if (mainImageBuffer) {
 							assetBuffer = mainImageBuffer
 							assetFilename = `image_default.${assetDef.ext || 'png'}`
 						}
-						else {
-							console.warn(`ccdefault: URI encountered for non-PNG or missing main image, asset "${assetDef.name}" skipped.`)
-							continue
-						}
-					else {
-						console.warn(`Unsupported URI scheme for asset "${assetDef.name}": ${assetDef.uri}`)
-						continue
-					}
+						else continue
+					else continue
 
 					const savedRelPath = await saveAndNormalizeAsset(assetBuffer, assetFilename, targetPath, 'risu_assets', assetDef.type)
 					processedAssetsForST.push({
@@ -149,25 +141,15 @@ async function ImportAsData(username, dataBuffer) {
 						await writeFile(imagePath, assetBuffer)
 					}
 				}
-				catch (err) {
-					console.error(`Failed to process asset ${assetDef.name} (uri: ${originalUri}): ${err.message}`)
-				}
+				catch { /* skip bad asset */ }
 			}
 
 
 		const avatarPath = path.join(targetPath, 'public', 'image.png')
-		if (!fs.existsSync(avatarPath) && mainImageBuffer)
-			try {
-				await mkdir(path.dirname(avatarPath), { recursive: true })
-				await writeFile(avatarPath, mainImageBuffer)
-				console.log('Saved main image buffer as image.png')
-			}
-			catch (imgErr) {
-				console.error('Failed to save main image buffer:', imgErr)
-			}
-		else if (!fs.existsSync(avatarPath))
-			console.warn('Main avatar image.png could not be created.')
-
+		if (!fs.existsSync(avatarPath) && mainImageBuffer) {
+			await mkdir(path.dirname(avatarPath), { recursive: true })
+			await writeFile(avatarPath, mainImageBuffer)
+		}
 
 		for (const [internalPath, buffer] of charxAssets.entries()) {
 			const alreadyProcessed = processedAssetsForST.some(pa =>
@@ -185,9 +167,7 @@ async function ImportAsData(username, dataBuffer) {
 					original_uri: `embedded://${internalPath}`,
 					fount_uri: relativeSavePath
 				})
-			} catch (err) {
-				console.error(`Failed to save unreferenced CHARX asset ${internalPath}: ${err.message}`)
-			}
+			} catch { /* skip */ }
 		}
 
 		const stV2Data = convertCCv3ToSTv2(ccv3Card, risuModuleDef)
@@ -209,11 +189,9 @@ async function ImportAsData(username, dataBuffer) {
 		else
 			import(url.pathToFileURL(targetMainMjsPath)).catch(_ => 0)
 
-		console.log(`Risu character "${charName}" imported successfully to ${targetPath}`)
 		return [`chars/${charName}`]
 	}
 	catch (error) {
-		console.error('Error during Risu import:', error)
 		await rm(tempExtractDir, { recursive: true, force: true }).catch(() => { })
 		throw error
 	}
@@ -239,13 +217,11 @@ async function ImportByText(username, text) {
 			if (risuMatch && risuMatch[1]) {
 				const uuid = risuMatch[1]
 				try {
-					console.log(`Downloading Risu card with UUID: ${uuid}`)
 					const { buffer } = await downloadRisuCard(uuid)
 					installedParts.push(...await ImportAsData(username, buffer))
 					continue
 				}
 				catch (err) {
-					console.error(`Failed to import Risu card from URL ${line}:`, err)
 					errors.push(`Failed for ${line}: ${err.message}`)
 				}
 			}

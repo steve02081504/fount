@@ -33,7 +33,7 @@ function script:bootstrap_full {
 function script:bootstrap_server {
 	bootstrap_full @args
 	assert_dir_writable $FOUNT_DIR
-	update_fount_and_deno
+	update_fount_and_deno_background
 	deno -V
 }
 

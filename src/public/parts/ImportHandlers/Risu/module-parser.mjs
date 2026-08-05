@@ -1,108 +1,68 @@
 import { Buffer } from 'node:buffer'
-// 尝试导入 rpack 解码器。如果失败，则提供一个回退或抛出错误。
-let decodeRPack
-try {
-	const rpack = await import('./rpack.mjs')
-	decodeRPack = rpack.decodeRPack
-	if (!(decodeRPack instanceof Function)) {
-		console.warn('@risuai/rpack-rust loaded, but decodeRPack is not a function. Module parsing might fail.')
-		decodeRPack = null
-	}
-}
-catch (err) {
-	console.warn('Failed to load @risuai/rpack-rust. Risu module (.risum) parsing will be limited or disabled.', err)
-	decodeRPack = null
-}
+
+import { decodeRPack } from './rpack.mjs'
 
 /**
- * 解析 .risum 文件 Buffer
- * @param {Buffer} moduleBuffer 模块缓冲区
- * @returns {Promise<{moduleDef: object, assetsData: Buffer[]}|null>}
- *          moduleDef: 解析后的模块定义JSON对象 (RisuModule 结构)
- *          assetsData: 模块内嵌的资源Buffer数组
- *          返回 null 如果无法解析
+ * 解析 .risum 模块缓冲区。
+ * @param {Buffer} moduleBuffer module bytes
+ * @returns {{moduleDef: object, assetsData: Buffer[]}|null} parsed module or null
  */
-export async function parseRisuModule(moduleBuffer) {
-	if (!decodeRPack) {
-		console.error('RPack decoder is not available. Cannot parse .risum module.')
-		return null // 或者只尝试解析非 rpack 部分，如果规范允许
-	}
-
+export function parseRisuModule(moduleBuffer) {
 	try {
-		let pos = 0
+		let offset = 0
 		/**
-		 * 读取字节
-		 * @returns {number} 读取的字节
+		 * 读取一个字节。
+		 * @returns {number} byte
 		 */
-		const readByte = () => moduleBuffer.readUInt8(pos++)
+		const readByte = () => moduleBuffer.readUInt8(offset++)
 		/**
-		 * 读取长度
-		 * @returns {number} 读取的长度
+		 * 读取小端 u32 长度。
+		 * @returns {number} length
 		 */
 		const readLength = () => {
-			const len = moduleBuffer.readUInt32LE(pos)
-			pos += 4
-			return len
+			const length = moduleBuffer.readUInt32LE(offset)
+			offset += 4
+			return length
 		}
 		/**
-		 * 读取数据
-		 * @param {any} len 长度
-		 * @returns {Buffer} 读取的数据
+		 * 读取定长切片。
+		 * @param {number} length length
+		 * @returns {Buffer} slice
 		 */
-		const readData = len => {
-			const data = moduleBuffer.subarray(pos, pos + len)
-			pos += len
+		const readData = length => {
+			if (offset + length > moduleBuffer.length)
+				throw new Error(`Insufficient module data: need ${length} bytes at ${offset}`)
+			const data = moduleBuffer.subarray(offset, offset + length)
+			offset += length
 			return data
 		}
 
 		if (readByte() !== 111) throw new Error('Invalid module magic number')
-		const version = readByte() // Risu 源码中版本为0
-		if (version !== 0) console.warn(`Unexpected module version: ${version}. Parsing might be incorrect.`)
+		readByte() // version; Risu uses 0
 
-		const mainLen = readLength()
-		const mainDataPacked = readData(mainLen)
-
-		// decodeRPack 的输入和输出类型需要根据实际库确定
-		// Risu 源码是用 Buffer.from(await decodeRPack(mainDataPacked)).toString()
-		const mainDataUnpacked = await decodeRPack(mainDataPacked)
-		const mainJsonString = Buffer.isBuffer(mainDataUnpacked) ? mainDataUnpacked.toString('utf-8') : new TextDecoder().decode(mainDataUnpacked)
-		const mainJson = JSON.parse(mainJsonString)
+		const mainLength = readLength()
+		const mainDataPacked = readData(mainLength)
+		const mainJson = JSON.parse(new TextDecoder().decode(decodeRPack(mainDataPacked)))
 
 		if (mainJson.type !== 'risuModule') throw new Error(`Invalid module type in metadata: ${mainJson.type}`)
 
-		const moduleDef = mainJson.module // 这是 RisuModule 结构
+		const moduleDef = mainJson.module
+		/** @type {Buffer[]} */
 		const assetsData = []
-
-		// moduleDef.assets 此时是元数据列表 [{name, uri(空), ext}, ...]
-		// 我们需要根据这个列表的长度来读取后续的资源数据块
 		const expectedAssetCount = moduleDef.assets?.length || 0
 
-		for (let i = 0; i < expectedAssetCount; i++) {
-			if (pos >= moduleBuffer.length) {
-				console.warn(`Module parsing ended prematurely: expected ${expectedAssetCount} assets, found ${i} before EOF.`)
-				break
-			}
+		for (let assetIndex = 0; assetIndex < expectedAssetCount; assetIndex++) {
 			const mark = readByte()
-			if (!mark) { // 提前遇到文件结束标记
-				console.warn(`Module parsing: found EOF mark after ${i} assets, expected ${expectedAssetCount}.`)
-				break
-			}
-			if (mark !== 1) throw new Error(`Invalid asset mark: ${mark} for asset ${i}`)
+			if (mark !== 1) throw new Error(`Invalid asset mark: ${mark} for asset ${assetIndex}`)
 
-			const assetLen = readLength()
-			const assetDataPacked = readData(assetLen)
-			const assetDataUnpacked = await decodeRPack(assetDataPacked)
-			assetsData.push(Buffer.isBuffer(assetDataUnpacked) ? assetDataUnpacked : Buffer.from(assetDataUnpacked))
+			const assetLength = readLength()
+			const assetDataPacked = readData(assetLength)
+			assetsData.push(Buffer.from(decodeRPack(assetDataPacked)))
 		}
-
-		// 检查文件末尾是否有多余数据或正确的结束标记
-		if (pos < moduleBuffer.length && readByte() !== 0)
-			console.warn('Module file has trailing data after expected assets and EOF mark.')
 
 		return { moduleDef, assetsData }
 	}
-	catch (error) {
-		console.error('Error parsing Risu module:', error)
+	catch {
 		return null
 	}
 }

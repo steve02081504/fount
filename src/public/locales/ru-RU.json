@@ -355,7 +355,12 @@
 				"noUrl": "Ошибка: не указан URL для обработчика протокола."
 			},
 			"update": {
-				"skippingFountUpdate": "Поскольку файл `.noupdate` существует, обновление fount пропускается."
+				"skippingFountUpdate": "Поскольку файл `.noupdate` существует, обновление fount пропускается.",
+				"switchingToBranch": "Переключение на ветку «${branch}»…",
+				"removedNoUpdate": "`.noupdate` удалён; автоматические обновления возобновлены.",
+				"pinningToCommit": "Закрепление на коммите `${ref}` и создание `.noupdate`…",
+				"createdNoUpdate": "Создан `.noupdate`; автоматические обновления приостановлены.",
+				"unknownTarget": "Не удалось распознать «${target}»: это не известная ветка и не коммит."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Ярлык на рабочем столе создан по адресу `${path}`.",

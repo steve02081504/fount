@@ -355,7 +355,12 @@
 				"noUrl": "Errore: URL per il protocollo handle non fornito."
 			},
 			"update": {
-				"skippingFountUpdate": "Poiché il file `.noupdate` esiste, l'aggiornamento del fount viene ignorato"
+				"skippingFountUpdate": "Poiché il file `.noupdate` esiste, l'aggiornamento del fount viene ignorato",
+				"switchingToBranch": "Passaggio al ramo «${branch}»…",
+				"removedNoUpdate": "Rimosso `.noupdate`; aggiornamenti automatici ripristinati.",
+				"pinningToCommit": "Fissaggio al commit `${ref}` e creazione di `.noupdate`…",
+				"createdNoUpdate": "Creato `.noupdate`; aggiornamenti automatici sospesi.",
+				"unknownTarget": "Impossibile identificare «${target}»: non è un ramo noto né un commit."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Collegamento sul desktop creato in `${path}`",

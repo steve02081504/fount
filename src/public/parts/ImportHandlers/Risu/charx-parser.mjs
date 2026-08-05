@@ -31,7 +31,7 @@ export async function unzipCharx(zipBuffer) {
 	const moduleFile = zip.file('module.risum')
 	if (moduleFile) {
 		const moduleBuffer = await moduleFile.async('nodebuffer')
-		const parsedModule = await parseRisuModule(moduleBuffer)
+		const parsedModule = parseRisuModule(moduleBuffer)
 		if (parsedModule) {
 			moduleData = parsedModule.moduleDef
 			moduleAssetsData = parsedModule.assetsData // 这些是 moduleDef.assets 引用的实际数据

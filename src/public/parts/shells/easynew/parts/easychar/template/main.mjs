@@ -14,10 +14,9 @@
 import path from 'node:path'
 
 import { buildPromptStruct } from 'fount/public/parts/shells/chat/src/prompt_struct/index.mjs'
-
-import { formatStr } from '../../../../../src/scripts/format.mjs'
-import { loadJsonFile, saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
-import { loadAnyPreferredDefaultPart, loadPart } from '../../../../../src/server/parts_loader.mjs'
+import { formatStr } from 'fount/scripts/format.mjs'
+import { loadJsonFile, saveJsonFile } from 'fount/scripts/json_loader.mjs'
+import { loadAnyPreferredDefaultPart, loadPart } from 'fount/server/parts_loader.mjs'
 
 import locales from './locales.json' with { type: 'json' }
 
