@@ -1,10 +1,10 @@
+import { sleep } from 'fount/scripts/test/core/wait.mjs'
 import {
 	Api,
 	ClearFedGroup,
 	FedA,
 	FedB,
 } from 'fount/scripts/test/live/federation/common.mjs'
-import { sleep } from 'fount/scripts/test/core/wait.mjs'
 
 const g = (await Api(FedA, 'POST', '/groups/', { name: 'CatchupProbe' })).json
 const gid = g.groupId

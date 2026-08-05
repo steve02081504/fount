@@ -1,0 +1,30 @@
+{
+	"id": "shells/easynew",
+	"suites": [
+		{
+			"name": "integration",
+			"dependsOn": [
+				"server:live"
+			],
+			"triggers": [
+				"src/public/parts/shells/easynew/**",
+				"src/public/parts/shells/chat/test/harness.mjs",
+				"src/scripts/test/fixtures/mock_ai.mjs",
+				"src/scripts/test/fixtures/serviceSources/AI/mock_echo/**",
+				"src/scripts/test/{deno/serial.mjs,node/boot.mjs}",
+				"src/server/parts_loader.mjs",
+				"deno.json"
+			],
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/easynew/test/integration/"
+			]
+		}
+	]
+}

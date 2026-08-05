@@ -1,5 +1,5 @@
 /**
- * 扫描源码中的纯英文 JSDoc 摘要（含字母、无 CJK）。
+ * 扫描源码中违反「JSDoc 摘要禁用纯英文」的块（含拉丁字母、无 CJK，或缺摘要）。
  */
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -204,23 +204,22 @@ export function isTagOnlyJsdoc(block) {
 }
 
 /**
- * @typedef {{ path: string, line: number, summary: string, missingSummary: boolean }} JsdocEnglishIssue
+ * @typedef {{ path: string, line: number, summary: string, missingSummary: boolean }} JsdocNoEnglishIssue
  */
 
 /**
- * 扫描单文件中的英文 JSDoc。
+ * 扫描单文件中的纯英文 / 缺摘要 JSDoc。
  * @param {string} relativePath 相对仓库根
  * @param {string} text 文件内容
- * @returns {JsdocEnglishIssue[]} 命中列表
+ * @returns {JsdocNoEnglishIssue[]} 命中列表
  */
-export function scanFileJsdocEnglish(relativePath, text) {
+export function scanFileJsdocNoEnglish(relativePath, text) {
 	void relativePath
-	/** @type {JsdocEnglishIssue[]} */
+	/** @type {JsdocNoEnglishIssue[]} */
 	const issues = []
 	for (const { text: block, startLine } of extractJsdocBlocks(text)) {
 		const summary = jsdocSummaryLines(block)
 		const missingSummary = summary.length === 0 && !isTagOnlyJsdoc(block)
-			&& /\n\s*\*\s*@(param|returns?|property)\b/.test(block)
 		if (isEnglishJsdocSummary(summary))
 			issues.push({ path: relativePath, line: startLine, summary: summary.join(' '), missingSummary: false })
 		else if (missingSummary)
@@ -233,16 +232,16 @@ export function scanFileJsdocEnglish(relativePath, text) {
  * 扫描仓库中匹配后缀的文件。
  * @param {string} repoRoot 仓库根
  * @param {{ under?: string, suffixes?: string[] }} [options] 选项
- * @returns {Promise<{ files: string[], issues: JsdocEnglishIssue[] }>} 命中文件路径与问题列表
+ * @returns {Promise<{ files: string[], issues: JsdocNoEnglishIssue[] }>} 命中文件路径与问题列表
  */
-export async function scanJsdocEnglish(repoRoot, options = {}) {
+export async function scanJsdocNoEnglish(repoRoot, options = {}) {
 	const suffixes = options.suffixes ?? JSDOC_SCAN_SUFFIXES
 	const files = await listRepoFiles(repoRoot, suffixes, { under: options.under })
-	/** @type {JsdocEnglishIssue[]} */
+	/** @type {JsdocNoEnglishIssue[]} */
 	const issues = []
 	for (const relativePath of files) {
 		const text = await readFile(join(repoRoot, relativePath), 'utf8')
-		issues.push(...scanFileJsdocEnglish(relativePath, text))
+		issues.push(...scanFileJsdocNoEnglish(relativePath, text))
 	}
 	const hitFiles = [...new Set(issues.map(issue => issue.path))].sort()
 	return { files: hitFiles, issues }

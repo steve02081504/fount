@@ -11,12 +11,15 @@ export const PAGE_WATCH_CONSOLE_PREFIX = '[test:'
 /** `scripts/i18n` 缺键警告前缀；命中则硬失败（不去重）。 */
 export const I18N_MISSING_PREFIX = '[i18n:missing]'
 /**
- * Chromium Opaque Response Blocking：跨源无 CORS 时掐掉响应；`<img>` 等展示往往仍正常，不当噪声。
+ * 不当噪声的 Chromium 网络错误：
+ * - `ERR_BLOCKED_BY_ORB`：跨源无 CORS 时掐掉响应；`<img>` 等展示往往仍正常。
+ * - `ERR_ABORTED`：导航取消、`AbortSignal.timeout` / 显式 abort、用例 teardown 掐断进行中请求。
  * @param {string | null | undefined} errorText Playwright `request.failure().errorText`
  * @returns {boolean} 是否应忽略
  */
 export function isIgnoredBrowserNetworkError(errorText) {
-	return Boolean(errorText?.includes('ERR_BLOCKED_BY_ORB'))
+	if (!errorText) return false
+	return errorText.includes('ERR_BLOCKED_BY_ORB') || errorText.includes('ERR_ABORTED')
 }
 
 /**

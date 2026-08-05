@@ -10,7 +10,8 @@
 				invoke_repo_git fetch origin 2>$null
 				$fetchOk = ($LastExitCode -eq 0)
 				if ((git_ref_exists 'origin/master') -and ($hasHead -or $fetchOk)) {
-					if (git_sync_to_ref 'origin/master') {
+					git_sync_to_ref 'origin/master'
+					if ($LastExitCode -eq 0) {
 						invoke_repo_git gc --aggressive --prune=now --force
 					}
 				}

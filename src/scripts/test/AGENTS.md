@@ -13,7 +13,7 @@ Host keep-awake / sleep interrupts: [docs/host-keep-awake.md](docs/host-keep-awa
 
 ## Architecture
 
-- **Entry**: `fount test` → `cli.mjs` → `runner/index.mjs`.
+- **Entry**: `fount test` → path CLI `deno upgrade canary` → `cli.mjs` → `runner/index.mjs`.
 - **i18n**: `fount/scripts/i18n/bare.mjs` only — never pull in the server module graph.
 - **State DB**: `data/test/state/main.json` — per-suite status, fingerprint, baselines, log paths. `state/main.md` renders a dependency-tree mermaid. Fingerprints update only after that suite's plan slot finishes — never batch-align at wave start (Ctrl+C must not mark unrun suites current). Details: [continue-report.md](docs/continue-report.md).
 - **Run report**: `data/test/report.md` + `report.json` — last run only. Trigger reasons: `data/test/triggered-reasons.md`.
@@ -37,7 +37,7 @@ Host keep-awake / sleep interrupts: [docs/host-keep-awake.md](docs/host-keep-awa
 | `sim/` | In-process simulation harness |
 | `checks/` | Repo static health — [checks/AGENTS.md](../checks/AGENTS.md) |
 
-**Frontend**: fixtures, browser binary, network noise, i18n-missing / a11y / locale-script hard-fail, GitHub Pages — [playwright.md](docs/playwright.md). Prefer `[data-i18n]` selectors over locale-specific copy. Drive locale via `setLanguage` / `loadLocaleData` — do not fetch `/api/getlocaledata` from tests. CDN GET/HEAD (`esm.sh` / Iconify / jsDelivr) is reused across cases via `cdn_cache.mjs` (`data/test/cdn_cache`); set `FOUNT_TEST_CDN_CACHE=0` to disable. Product code under test must match production — do not skip probes/embeds via `fount.test.enabled`. Fix our throws; diagnostics ignore child-frame `SecurityError` only (CDP `exception.className` + frame id; no text parsing) and Pages probe noise (`/api/ping`, `:8930`). Network diagnostic URLs are logged raw — never redact; test data must not carry durable secrets.
+**Frontend**: fixtures, browser binary, network noise, i18n-missing / a11y / locale-script hard-fail, GitHub Pages — [playwright.md](docs/playwright.md). Prefer `[data-i18n]` selectors over locale-specific copy. Drive locale via `setLanguage` / `loadLocaleData` — do not fetch `/api/getlocaledata` from tests. CDN GET/HEAD (`esm.sh` / Iconify / jsDelivr) is reused across cases via `cdn_cache.mjs` (`data/test/cdn_cache`); set `FOUNT_TEST_CDN_CACHE=0` to disable. Product code under test must match production — do not skip probes/embeds via `fount.test.enabled`. Fix our throws; diagnostics ignore child-frame `SecurityError` (CDP `exception.className` + frame id; no text parsing), `ERR_BLOCKED_BY_ORB` / `ERR_ABORTED`, and Pages probe noise (`/api/ping`, `:8930`). Network diagnostic URLs are logged raw — never redact; test data must not carry durable secrets.
 
 **pure/ boundary**: tested modules must not statically `import` `src/server/**` (P2P/native graph; Windows Deno child exit can hang). Use dynamic import or promote to `integration/`.
 
@@ -58,6 +58,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **Live WS probes**: `createLiveShellHttp({ shell? })` from `wsHarness.mjs` — do not re-declare local HTTP helpers. End with `finishLiveWs` / `failLiveWsPrecondition`; frames via `waitForWsFrame`.
 - **Polling**: `pollUntil` (live/fed, seconds, soft) / `waitUntil` (integration & selftest, ms, throws) — definitions in `core/wait.mjs`.
 - **Chat / Social fixtures**: `createCharBoot` / `seedCharFixture` / `waitUntil` from `shells/chat/test/harness.mjs`; Social agents: `seedAgentChar` in `shells/social/test/harness.mjs`.
+- **ImportHandlers (ST/Risu) / easynew**: shared mock AI via `scripts/test/fixtures/mock_ai.mjs` (`seedMockAiSource`, `PROMPT_MARKER`). ImportHandlers: `createImportBoot` / `importAndRunChar`. easynew: `createEasynewBoot` / `createFromTemplate` / `runEasyChar`. Installed part Templates must use `fount/` imports (not `../../../../../src/…`) so they load from disposable test data dirs.
 - **Platform bot / OnMessage contract**: [domain-harness.md](docs/domain-harness.md#platform-bot--onmessage-contract).
 - Every `deno run`/`test`/`install` carries `--allow-scripts --allow-all` (in that order). Sole exception: `deno cache` takes `--allow-scripts` alone.
 - Single-node: `{ p2p: false, minP2pNode: true }`. Domain traps (ports, native addons, federation): [domain-harness.md](docs/domain-harness.md).

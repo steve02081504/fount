@@ -148,6 +148,7 @@ install_deno() {
 }
 
 base_deno_upgrade() {
+	local force_channel="${1:-}"
 	local deno_version_before
 	deno_version_before=$(run_deno -V 2>&1)
 	if [[ -z "$deno_version_before" ]]; then
@@ -155,12 +156,14 @@ base_deno_upgrade() {
 		return 1
 	fi
 
-	if upgrade_package "deno" "deno"; then
+	if [[ -z "$force_channel" ]] && upgrade_package "deno" "deno"; then
 		return 0
 	fi
 
 	local deno_upgrade_channel="stable"
-	if [[ "$deno_version_before" == *"+"* ]]; then
+	if [[ -n "$force_channel" ]]; then
+		deno_upgrade_channel="$force_channel"
+	elif [[ "$deno_version_before" == *"+"* ]]; then
 		deno_upgrade_channel="canary"
 	elif [[ "$deno_version_before" == *"-rc"* ]]; then
 		deno_upgrade_channel="rc"
@@ -188,15 +191,10 @@ base_deno_upgrade() {
 
 deno_upgrade() {
 	local upgraded_flag="$FOUNT_DIR/data/installer/deno_upgraded"
-	if [ -f "$upgraded_flag" ]; then
-		( base_deno_upgrade ) &
+	if ! base_deno_upgrade "$@"; then
 		return
 	fi
-	if ! base_deno_upgrade; then
-		return
-	else
-		mkdir -p "$(dirname "$upgraded_flag")"
-		touch "$upgraded_flag"
-	fi
+	mkdir -p "$(dirname "$upgraded_flag")"
+	touch "$upgraded_flag"
 }
 

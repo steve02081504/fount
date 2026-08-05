@@ -1,3 +1,4 @@
+import { sleep } from 'fount/scripts/test/core/wait.mjs'
 import {
 	Api,
 	ClearFedGroup,
@@ -6,7 +7,6 @@ import {
 	pollUntil,
 	TestFedHasReaction,
 } from 'fount/scripts/test/live/federation/common.mjs'
-import { sleep } from 'fount/scripts/test/core/wait.mjs'
 
 const THUMBS_UP = '\u{1F44D}'
 

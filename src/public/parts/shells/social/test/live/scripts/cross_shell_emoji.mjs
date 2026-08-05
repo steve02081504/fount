@@ -1,5 +1,6 @@
 import { formatEmojiToken } from 'fount/public/parts/shells/chat/public/shared/inlineTokenSyntax.mjs'
 import { ms } from 'fount/scripts/ms.mjs'
+import { sleep } from 'fount/scripts/test/core/wait.mjs'
 import {
 	Api,
 	ApiMultipart,
@@ -16,7 +17,6 @@ import {
 	WarmupFedNodeLinks,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
-import { sleep } from 'fount/scripts/test/core/wait.mjs'
 
 const groupTitle = 'FedCrossShell'
 let gid = null

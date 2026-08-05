@@ -107,7 +107,7 @@
 			]
 		},
 		{
-			"name": "jsdoc_english",
+			"name": "jsdoc_no_english",
 			"run": [
 				"deno",
 				"test",
@@ -116,11 +116,11 @@
 				"--allow-all",
 				"-c",
 				"./deno.json",
-				"./src/scripts/checks/test/jsdoc_english.test.mjs"
+				"./src/scripts/checks/test/jsdoc_no_english.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/checks/jsdoc_english.mjs",
-				"src/scripts/checks/test/jsdoc_english.test.mjs",
+				"src/scripts/checks/jsdoc_no_english.mjs",
+				"src/scripts/checks/test/jsdoc_no_english.test.mjs",
 				"**/*.{mjs,js,ts}"
 			]
 		}

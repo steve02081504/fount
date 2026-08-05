@@ -38,6 +38,7 @@ function script:git_ref_exists($Ref = 'HEAD') {
 }
 
 function script:git_backup_uncommitted {
+	$global:LastExitCode = 0
 	if (-not (Get-Command git -ErrorAction SilentlyContinue)) { return }
 	if (-not (Test-Path -LiteralPath "$FOUNT_DIR/.git")) { return }
 	$status = invoke_repo_git status --porcelain
@@ -49,8 +50,11 @@ function script:git_backup_uncommitted {
 	$headExists = git_ref_exists
 
 	invoke_repo_git add -A
+	if ($LastExitCode -ne 0) { return }
 	invoke_repo_git diff --cached | Out-File -FilePath $diffFilePath -Encoding utf8
-	invoke_repo_git reset $(if ($headExists) { 'HEAD' } else { })
+	if ($LastExitCode -ne 0) { return }
+	if ($headExists) { invoke_repo_git reset HEAD } else { invoke_repo_git reset }
+	if ($LastExitCode -ne 0) { return }
 
 	Write-Host (Get-I18n -key 'git.localChangesDetected') -ForegroundColor Yellow
 	Write-Host (Get-I18n -key 'git.backupSavedTo' -params @{ path = $diffFilePath }) -ForegroundColor Green
@@ -59,16 +63,49 @@ function script:git_backup_uncommitted {
 function script:git_sync_to_ref($Ref) {
 	if (-not (git_ref_exists $Ref)) {
 		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $Ref })
-		return $false
+		return
 	}
 	git_backup_uncommitted
-	invoke_repo_git clean -fd | Out-Host
-	if ($LastExitCode -ne 0) { return $false }
-	invoke_repo_git reset --hard $Ref | Out-Host
-	return ($LastExitCode -eq 0)
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git clean -fd
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git reset --hard $Ref
+}
+
+# Switch/create local branch at StartPoint (default origin/<Branch>). Does not move other branches.
+function script:git_checkout_branch($Branch, $StartPoint = $null) {
+	if (-not $StartPoint) { $StartPoint = "origin/$Branch" }
+	if (-not (git_ref_exists $StartPoint)) {
+		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $StartPoint })
+		return
+	}
+	git_backup_uncommitted
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git clean -fd
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git checkout -B $Branch $StartPoint
+	if ($LastExitCode -ne 0) { return }
+	if ($StartPoint -like 'origin/*') {
+		invoke_repo_git branch --set-upstream-to $StartPoint $Branch
+	}
+}
+
+# Detach HEAD at Ref without moving the previous branch tip.
+function script:git_detach_to_ref($Ref) {
+	$resolved = invoke_repo_git rev-parse --verify "${Ref}^{commit}" 2>$null
+	if ($LastExitCode -ne 0 -or -not $resolved) {
+		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $Ref })
+		return
+	}
+	git_backup_uncommitted
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git clean -fd
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git checkout --detach $resolved
 }
 
 function script:fount_upgrade {
+	$global:LastExitCode = 0
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 		Write-Host (Get-I18n -key 'git.notInstalledSkippingPull')
 		return
@@ -88,7 +125,7 @@ function script:fount_upgrade {
 			Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
 			return
 		}
-		git_sync_to_ref 'origin/master' | Out-Null
+		git_sync_to_ref 'origin/master'
 		return
 	}
 
@@ -114,7 +151,8 @@ function script:fount_upgrade {
 			return
 		}
 		Write-Host (Get-I18n -key 'git.notOnBranch')
-		if (-not (git_sync_to_ref 'origin/master')) { return }
+		git_sync_to_ref 'origin/master'
+		if ($LastExitCode -ne 0) { return }
 		invoke_repo_git checkout master
 		$currentBranch = invoke_repo_git rev-parse --abbrev-ref HEAD 2>$null
 	}
@@ -161,7 +199,10 @@ function script:fount_upgrade {
 	if ($localCommit -ne $remoteCommit) {
 		if ($mergeBase -eq $localCommit) {
 			Write-Host (Get-I18n -key 'git.updatingFromRemote')
-			if ($status) { git_backup_uncommitted }
+			if ($status) {
+				git_backup_uncommitted
+				if ($LastExitCode -ne 0) { return }
+			}
 			invoke_repo_git reset --hard $remoteBranch
 		}
 		elseif ($mergeBase -eq $remoteCommit) {
@@ -170,7 +211,10 @@ function script:fount_upgrade {
 		}
 		else {
 			Write-Host (Get-I18n -key 'git.branchesDiverged')
-			if ($status) { git_backup_uncommitted }
+			if ($status) {
+				git_backup_uncommitted
+				if ($LastExitCode -ne 0) { return }
+			}
 			invoke_repo_git reset --hard $remoteBranch
 		}
 	}

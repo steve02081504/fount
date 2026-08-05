@@ -71,6 +71,7 @@ $Script:I18nParamAnsiColors = @{
 	path   = 36
 	ref    = 34
 	branch = 33
+	target = 34
 }
 
 function script:Format-I18nParamValue($Name, $Value) {

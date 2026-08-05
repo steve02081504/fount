@@ -355,7 +355,12 @@
 				"noUrl": "Fout: URL voor protocolhandler niet opgegeven."
 			},
 			"update": {
-				"skippingFountUpdate": "Omdat het `.noupdate`-bestand bestaat, wordt de fount-update overgeslagen"
+				"skippingFountUpdate": "Omdat het `.noupdate`-bestand bestaat, wordt de fount-update overgeslagen",
+				"switchingToBranch": "Schakelen naar branch '${branch}'…",
+				"removedNoUpdate": "`.noupdate` verwijderd; automatische updates hervat.",
+				"pinningToCommit": "Vastzetten op commit `${ref}` en `.noupdate` aanmaken…",
+				"createdNoUpdate": "`.noupdate` aangemaakt; automatische updates gepauzeerd.",
+				"unknownTarget": "Kan '${target}' niet herkennen: geen bekende branch of commit."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Snelkoppeling op het bureaublad gemaakt op `${path}`",
