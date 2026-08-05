@@ -79,7 +79,11 @@ function script:git_checkout_branch($Branch, $StartPoint = $null) {
 	invoke_repo_git clean -fd | Out-Host
 	if ($LastExitCode -ne 0) { return $false }
 	invoke_repo_git checkout -B $Branch $StartPoint | Out-Host
-	return ($LastExitCode -eq 0)
+	if ($LastExitCode -ne 0) { return $false }
+	if ($StartPoint -like 'origin/*') {
+		invoke_repo_git branch --set-upstream-to $StartPoint $Branch | Out-Null
+	}
+	return $true
 }
 
 # Detach HEAD at Ref without moving the previous branch tip.

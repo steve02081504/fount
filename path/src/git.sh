@@ -56,7 +56,10 @@ git_checkout_branch() {
 	fi
 	git_backup_uncommitted || return 1
 	invoke_repo_git clean -fd || return 1
-	invoke_repo_git checkout -B "$branch" "$start_point"
+	invoke_repo_git checkout -B "$branch" "$start_point" || return 1
+	case "$start_point" in
+	origin/*) invoke_repo_git branch --set-upstream-to "$start_point" "$branch" >/dev/null ;;
+	esac
 }
 
 # Detach HEAD at ref without moving the previous branch tip.
