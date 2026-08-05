@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 cmd_update() {
 	require_mid
-	shift
-	if [ -n "${1:-}" ]; then
-		fount_update_to_ref "$1"
+	if [ -n "${2:-}" ]; then
+		fount_update_to_ref "$2"
 	else
 		update_fount_and_deno
 	fi

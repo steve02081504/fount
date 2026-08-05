@@ -108,7 +108,7 @@ update_fount_and_deno() {
 		get_i18n 'update.skippingFountUpdate'
 		return
 	fi
-	fount_upgrade
+	fount_upgrade || return
 	deno_upgrade
 }
 

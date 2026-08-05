@@ -11,8 +11,6 @@ import { ensureSharedTestDataDir } from 'fount/scripts/test/node/boot.mjs'
 /** 再导出 mock AI 名称与提示标记。 */
 export { MOCK_AI_NAME, PROMPT_MARKER }
 
-const partsRoot = join(dirname(fileURLToPath(import.meta.url)), '..', 'parts')
-
 /**
  * 启动已播种 mock AI 的进程内服务器。
  * @param {object} [options] createIntegrationBoot options
@@ -22,9 +20,10 @@ export function createEasynewBoot(options = {}) {
 	const { afterInit: userAfter, ...rest } = options
 	const dataDir = ensureSharedTestDataDir()
 	return createIntegrationBoot({
-		minP2pNode: false,
 		loadParts: [],
 		...rest,
+		p2p: false,
+		minP2pNode: true,
 		/**
 		 * @param {string} user username
 		 * @returns {Promise<void>}
@@ -60,9 +59,10 @@ export function makePromptStub() {
  * @returns {Promise<string>} created part name
  */
 export async function createFromTemplate(templateName, context) {
-	const templateDir = join(partsRoot, templateName)
-	const templateModule = await import(`fount/public/parts/shells/easynew/parts/${templateName}/main.mjs`)
-	return templateModule.New({ ...context, templateDir })
+	return (await import(`fount/public/parts/shells/easynew/parts/${templateName}/main.mjs`)).New({
+		...context,
+		templateDir: join(dirname(fileURLToPath(import.meta.url)), '..', 'parts', templateName),
+	})
 }
 
 /**

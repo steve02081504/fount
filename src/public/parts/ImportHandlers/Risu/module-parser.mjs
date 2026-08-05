@@ -9,37 +9,39 @@ import { decodeRPack } from './rpack.mjs'
  */
 export function parseRisuModule(moduleBuffer) {
 	try {
-		let pos = 0
+		let offset = 0
 		/**
 		 * 读取一个字节。
 		 * @returns {number} byte
 		 */
-		const readByte = () => moduleBuffer.readUInt8(pos++)
+		const readByte = () => moduleBuffer.readUInt8(offset++)
 		/**
 		 * 读取小端 u32 长度。
 		 * @returns {number} length
 		 */
 		const readLength = () => {
-			const len = moduleBuffer.readUInt32LE(pos)
-			pos += 4
-			return len
+			const length = moduleBuffer.readUInt32LE(offset)
+			offset += 4
+			return length
 		}
 		/**
 		 * 读取定长切片。
-		 * @param {number} len length
+		 * @param {number} length length
 		 * @returns {Buffer} slice
 		 */
-		const readData = len => {
-			const data = moduleBuffer.subarray(pos, pos + len)
-			pos += len
+		const readData = length => {
+			if (offset + length > moduleBuffer.length)
+				throw new Error(`Insufficient module data: need ${length} bytes at ${offset}`)
+			const data = moduleBuffer.subarray(offset, offset + length)
+			offset += length
 			return data
 		}
 
 		if (readByte() !== 111) throw new Error('Invalid module magic number')
 		readByte() // version; Risu uses 0
 
-		const mainLen = readLength()
-		const mainDataPacked = readData(mainLen)
+		const mainLength = readLength()
+		const mainDataPacked = readData(mainLength)
 		const mainJson = JSON.parse(new TextDecoder().decode(decodeRPack(mainDataPacked)))
 
 		if (mainJson.type !== 'risuModule') throw new Error(`Invalid module type in metadata: ${mainJson.type}`)
@@ -49,14 +51,12 @@ export function parseRisuModule(moduleBuffer) {
 		const assetsData = []
 		const expectedAssetCount = moduleDef.assets?.length || 0
 
-		for (let i = 0; i < expectedAssetCount; i++) {
-			if (pos >= moduleBuffer.length) break
+		for (let assetIndex = 0; assetIndex < expectedAssetCount; assetIndex++) {
 			const mark = readByte()
-			if (!mark) break
-			if (mark !== 1) throw new Error(`Invalid asset mark: ${mark} for asset ${i}`)
+			if (mark !== 1) throw new Error(`Invalid asset mark: ${mark} for asset ${assetIndex}`)
 
-			const assetLen = readLength()
-			const assetDataPacked = readData(assetLen)
+			const assetLength = readLength()
+			const assetDataPacked = readData(assetLength)
 			assetsData.push(Buffer.from(decodeRPack(assetDataPacked)))
 		}
 

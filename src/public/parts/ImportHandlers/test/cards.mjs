@@ -3,7 +3,7 @@
  */
 import { Buffer } from 'node:buffer'
 
-import data_reader from 'fount/public/parts/ImportHandlers/SillyTavern/data_reader.mjs'
+import dataReader from 'fount/public/parts/ImportHandlers/SillyTavern/data_reader.mjs'
 import { PROMPT_MARKER } from 'fount/scripts/test/fixtures/mock_ai.mjs'
 import { encode as encodeText } from 'npm:png-chunk-text'
 import encodePng from 'npm:png-chunks-encode'
@@ -48,13 +48,11 @@ export function buildStV2Data(overrides = {}) {
  * @returns {Buffer} PNG with embedded card
  */
 export function buildStPngCard(overrides = {}) {
-	const data = buildStV2Data(overrides)
-	const payload = JSON.stringify({
+	return dataReader.write(MINIMAL_PNG, JSON.stringify({
 		spec: 'chara_card_v2',
 		spec_version: '2.0',
-		data,
-	})
-	return data_reader.write(MINIMAL_PNG, payload)
+		data: buildStV2Data(overrides),
+	}))
 }
 
 /**
@@ -102,8 +100,10 @@ export function buildCCv3JsonBuffer(overrides = {}) {
  */
 export function buildCCv3PngCard(overrides = {}) {
 	const chunks = extractPng(MINIMAL_PNG)
-	const iend = chunks.findIndex(chunk => chunk.name === 'IEND')
-	const payload = Buffer.from(JSON.stringify(buildCCv3Card(overrides)), 'utf8').toString('base64')
-	chunks.splice(iend, 0, encodeText('ccv3', payload))
+	chunks.splice(
+		chunks.findIndex(chunk => chunk.name === 'IEND'),
+		0,
+		encodeText('ccv3', Buffer.from(JSON.stringify(buildCCv3Card(overrides)), 'utf8').toString('base64')),
+	)
 	return Buffer.from(encodePng(chunks))
 }

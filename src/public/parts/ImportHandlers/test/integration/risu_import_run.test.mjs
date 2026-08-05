@@ -9,8 +9,7 @@ import { createImportBoot, importAndRunChar } from '../harness.mjs'
 
 Deno.test('Risu CCv3 JSON import runs greeting, prompt, and mock AI reply', async () => {
 	const username = `risu-json-${crypto.randomUUID().slice(0, 8)}`
-	const boot = createImportBoot({ username })
-	await boot.ensureServer()
+	await createImportBoot({ username }).ensureServer()
 
 	const result = await importAndRunChar({
 		username,
@@ -27,8 +26,7 @@ Deno.test('Risu CCv3 JSON import runs greeting, prompt, and mock AI reply', asyn
 
 Deno.test('Risu CCv3 PNG import runs greeting, prompt, and mock AI reply', async () => {
 	const username = `risu-png-${crypto.randomUUID().slice(0, 8)}`
-	const boot = createImportBoot({ username })
-	await boot.ensureServer()
+	await createImportBoot({ username }).ensureServer()
 
 	const result = await importAndRunChar({
 		username,

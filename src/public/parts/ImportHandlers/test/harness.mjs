@@ -16,19 +16,18 @@ export { MOCK_AI_NAME, PROMPT_MARKER }
  * @returns {ReturnType<typeof createIntegrationBoot>} boot handle
  */
 export function createImportBoot(options = {}) {
-	const { afterInit: userAfter, ...rest } = options
 	const dataDir = ensureSharedTestDataDir()
 	return createIntegrationBoot({
 		minP2pNode: false,
 		loadParts: [],
-		...rest,
+		...options,
 		/**
-		 * @param {string} user username
+		 * @param {string} username username
 		 * @returns {Promise<void>}
 		 */
-		afterInit: async user => {
-			await seedMockAiSource(dataDir, user)
-			if (userAfter) await userAfter(user)
+		afterInit: async username => {
+			await seedMockAiSource(dataDir, username)
+			if (options.afterInit) await options.afterInit(username)
 		},
 	})
 }
@@ -71,8 +70,8 @@ export async function importAndRunChar(options) {
 		greetingMatch,
 	} = options
 
-	const handlerMod = await import(`fount/public/parts/ImportHandlers/${handler}/main.mjs`)
-	const [partpath] = await handlerMod.default.interfaces.import.ImportAsData(username, cardBuffer)
+	const handlerModule = await import(`fount/public/parts/ImportHandlers/${handler}/main.mjs`)
+	const [partpath] = await handlerModule.default.interfaces.import.ImportAsData(username, cardBuffer)
 	if (!partpath?.startsWith('chars/'))
 		throw new Error(`unexpected partpath: ${partpath}`)
 	const charName = partpath.slice('chars/'.length)
@@ -94,7 +93,7 @@ export async function importAndRunChar(options) {
 	if (typeof greetingMatch === 'string' ? !greetingText.includes(greetingMatch) : !greetingMatch.test(greetingText))
 		throw new Error(`greeting mismatch: ${greetingText}`)
 
-	const stub = makePromptStub()
+	const promptStub = makePromptStub()
 	const requestBase = {
 		char_id: charName,
 		Charname: charName,
@@ -102,8 +101,8 @@ export async function importAndRunChar(options) {
 		UserUid: 'user',
 		CharUid: 'char',
 		char,
-		user: stub,
-		world: stub,
+		user: promptStub,
+		world: promptStub,
 		other_chars: {},
 		other_personas: {},
 		plugins: {},

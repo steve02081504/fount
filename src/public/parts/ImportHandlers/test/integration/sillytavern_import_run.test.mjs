@@ -9,8 +9,7 @@ import { createImportBoot, importAndRunChar } from '../harness.mjs'
 
 Deno.test('SillyTavern PNG import runs greeting, prompt, and mock AI reply', async () => {
 	const username = `st-import-${crypto.randomUUID().slice(0, 8)}`
-	const boot = createImportBoot({ username })
-	await boot.ensureServer()
+	await createImportBoot({ username }).ensureServer()
 
 	const result = await importAndRunChar({
 		username,
