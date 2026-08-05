@@ -15,7 +15,7 @@ cmd_keepalive() {
 	init_attempted=0
 	restart_timestamps=()
 
-	"$0" server "$@"
+	run_server "$@"
 	server_status=$?
 	while [ "$server_status" -ne 0 ]; do
 		if [ "$server_status" -eq 130 ]; then exit 130; fi
@@ -49,7 +49,7 @@ cmd_keepalive() {
 
 		# Failed once: foreground-upgrade fount+deno before the next start.
 		update_fount_and_deno
-		"$0" server
+		run_server
 		server_status=$?
 	done
 	exit "$server_status"

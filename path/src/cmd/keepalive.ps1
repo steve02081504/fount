@@ -28,7 +28,7 @@
 		$initAttempted = $false
 		$restart_timestamps = New-Object System.Collections.Generic.List[datetime]
 
-		& (Join-Path $FOUNT_DIR 'path/fount.ps1') server @commandArguments
+		run_server @commandArguments
 		while ($LastExitCode) {
 			if ($LastExitCode -eq 130) { exit 130 } # ctrl+c
 			if ($LastExitCode -ne 131) {
@@ -68,7 +68,7 @@
 			}
 			# Failed once: foreground-upgrade fount+deno before the next start.
 			update_fount_and_deno
-			& (Join-Path $FOUNT_DIR 'path/fount.ps1') server
+			run_server
 		}
 	}
 	finally {
