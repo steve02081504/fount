@@ -6,7 +6,7 @@ import { Client } from 'npm:@xhayper/discord-rpc'
 import { startTime } from '../server/base.mjs'
 import { info } from '../server/info.mjs'
 
-import { in_docker, in_termux } from './env.mjs'
+import { in_container } from './env.mjs'
 import { ms } from './ms.mjs'
 
 let activity = {
@@ -58,7 +58,7 @@ function defaultActivity() {
  * @returns {void}
  */
 export function StartRPC(clientId = '1344722070323335259', activity) {
-	if (in_docker || in_termux) return
+	if (in_container) return
 
 	if (loginInterval) clearInterval(loginInterval)
 	if (interval) clearInterval(interval)

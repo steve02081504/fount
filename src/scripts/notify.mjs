@@ -5,7 +5,7 @@ import notifier from 'npm:node-notifier'
 
 import { __dirname } from '../server/base.mjs'
 
-import { in_docker, in_termux } from './env.mjs'
+import { in_container } from './env.mjs'
 
 /**
  * 发送桌面通知。
@@ -15,7 +15,7 @@ import { in_docker, in_termux } from './env.mjs'
  * @returns {Promise<any>} 一个解析为通知程序响应的承诺。
  */
 export async function notify(title, message, options = {}) {
-	if (in_docker || in_termux) return console.log(`[Notify] ${title}\n${message}`)
+	if (in_container) return console.log(`[Notify] ${title}\n${message}`)
 	// if linux, check notify-send for notifier workability
 	if (process.platform === 'linux' && !await where_command('notify-send'))
 		return console.log(`[Notify] ${title}\n${message}`)

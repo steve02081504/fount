@@ -6,7 +6,7 @@ import { on_shutdown } from 'npm:on-shutdown'
 import open from 'npm:open'
 import supportsAnsi from 'npm:supports-ansi'
 
-import { in_docker, in_termux } from '../scripts/env.mjs'
+import { in_container } from '../scripts/env.mjs'
 import { console, geti18n } from '../scripts/i18n/bare.mjs'
 import { __dirname } from '../server/base.mjs'
 import { hosturl, restartor, setDefaultStuff } from '../server/server.mjs'
@@ -42,7 +42,7 @@ on_shutdown(() => {
  * @returns {Promise<object|undefined>} 创建的托盘对象或在出错时返回undefined。
  */
 export async function createTray() {
-	if (in_docker || in_termux) return
+	if (in_container) return
 	try {
 		const terminalWorks = process.stdout.writable
 		if (systray) systray.kill()
