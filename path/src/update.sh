@@ -102,12 +102,26 @@ fount_upgrade() {
 	fi
 }
 
+# Foreground fount + deno upgrade.
 update_fount_and_deno() {
 	if [ -f "$FOUNT_DIR/.noupdate" ]; then
 		get_i18n 'update.skippingFountUpdate'
-	else
-		fount_upgrade
-		deno_upgrade
+		return
 	fi
+	fount_upgrade
+	deno_upgrade
 }
 
+# After the first successful deno upgrade, routine starts refresh in the background.
+update_fount_and_deno_background() {
+	if [ -f "$FOUNT_DIR/.noupdate" ]; then
+		get_i18n 'update.skippingFountUpdate'
+		return
+	fi
+	local upgraded_flag="$FOUNT_DIR/data/installer/deno_upgraded"
+	if [ -f "$upgraded_flag" ]; then
+		( update_fount_and_deno ) &
+		return
+	fi
+	update_fount_and_deno
+}

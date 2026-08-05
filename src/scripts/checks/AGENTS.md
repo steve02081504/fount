@@ -16,7 +16,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | `i18n_refs` | `data-i18n` / `setElementI18n` objects need a DOM applicator; string APIs + `path/fount.{ps1,sh}` keys must resolve to strings |
 | `reshape_i18n_keys` | `.esh/commands/reshape_i18n_keys.py --self-test` |
 | `agents_md_english` | `AGENTS.md` + agent-facing linked `.md` English-only |
-| `jsdoc_english` | JSDoc summaries: Latin letters, no CJK |
+| `jsdoc_no_english` | JSDoc summaries: Chinese (CJK required; pure English flagged) |
 
 ## i18n keys
 
@@ -45,7 +45,8 @@ Rules:
 - Exempt: human-facing `docs/design/`, `docs/review/`, `docs/issues/` (still walked for link resolution).
 - Transitive local `.md` links must resolve.
 
-## JSDoc English
+## JSDoc language (`jsdoc_no_english`)
 
-- Summaries must include Latin letters and contain no CJK.
-- List leftovers: `deno run -A ./src/scripts/checks/tools/scan_jsdoc_english.mjs` (optional path arg to narrow).
+- Summaries must be Chinese (contain CJK). Pure-English summaries (Latin letters, no CJK) fail.
+- Tag-only blocks (`@param` / `@typedef` / … without a prose summary) are fine; empty `/** */` stubs are not a substitute for a real one-liner on re-exports.
+- List leftovers: `deno run -A ./src/scripts/checks/tools/scan_jsdoc_no_english.mjs` (optional path arg to narrow).

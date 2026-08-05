@@ -66,6 +66,8 @@
 					Write-Host (Get-I18n -key 'keepalive.initComplete')
 				}
 			}
+			# Failed once: foreground-upgrade fount+deno before the next start.
+			update_fount_and_deno
 			& (Join-Path $FOUNT_DIR 'path/fount.ps1') server
 		}
 	}

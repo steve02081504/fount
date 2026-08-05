@@ -104,8 +104,9 @@ Deno.test('isI18nMissingConsoleText matches i18n missing prefix', () => {
 	assertEquals(isI18nMissingConsoleText('plain log'), false)
 })
 
-Deno.test('isIgnoredBrowserNetworkError drops ORB only', () => {
+Deno.test('isIgnoredBrowserNetworkError drops ORB and abort', () => {
 	assertEquals(isIgnoredBrowserNetworkError('net::ERR_BLOCKED_BY_ORB'), true)
+	assertEquals(isIgnoredBrowserNetworkError('net::ERR_ABORTED'), true)
 	assertEquals(isIgnoredBrowserNetworkError('net::ERR_CONNECTION_REFUSED'), false)
 	assertEquals(isIgnoredBrowserNetworkError(null), false)
 })

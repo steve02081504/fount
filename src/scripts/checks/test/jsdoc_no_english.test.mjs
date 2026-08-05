@@ -1,5 +1,5 @@
 /**
- * 纯英文 JSDoc 扫描器自测；`imgs/icon_anime` 应无英文摘要残留。
+ * JSDoc 禁用纯英文摘要的扫描器自测；`imgs/icon_anime` 应无英文摘要残留。
  */
 /* global Deno */
 import { assert, assertEquals } from 'jsr:@std/assert'
@@ -10,9 +10,9 @@ import {
 	isEnglishJsdocSummary,
 	isTagOnlyJsdoc,
 	jsdocSummaryLines,
-	scanFileJsdocEnglish,
-	scanJsdocEnglish,
-} from '../jsdoc_english.mjs'
+	scanFileJsdocNoEnglish,
+	scanJsdocNoEnglish,
+} from '../jsdoc_no_english.mjs'
 
 Deno.test('jsdocSummaryLines: stops at first @tag', () => {
 	const block = `/**
@@ -59,19 +59,19 @@ Deno.test('extractJsdocBlocks: ignores JSDoc inside nested template interpolatio
 	assertEquals(jsdocSummaryLines(blocks[0].text), ['中文摘要'])
 })
 
-Deno.test('scanFileJsdocEnglish: flags English summary', () => {
-	const issues = scanFileJsdocEnglish('foo.mjs', '/** English doc */\nexport const x = 1')
+Deno.test('scanFileJsdocNoEnglish: flags English summary', () => {
+	const issues = scanFileJsdocNoEnglish('foo.mjs', '/** English doc */\nexport const x = 1')
 	assertEquals(issues.length, 1)
 	assertEquals(issues[0].summary, 'English doc')
 })
 
-Deno.test('scanFileJsdocEnglish: template literal English is not flagged', () => {
-	const issues = scanFileJsdocEnglish('foo.mjs', 'const s = `/** English doc */`\n')
+Deno.test('scanFileJsdocNoEnglish: template literal English is not flagged', () => {
+	const issues = scanFileJsdocNoEnglish('foo.mjs', 'const s = `/** English doc */`\n')
 	assertEquals(issues.length, 0)
 })
 
 Deno.test('repo: no English JSDoc summaries', async () => {
-	const { issues } = await scanJsdocEnglish(REPO_ROOT)
+	const { issues } = await scanJsdocNoEnglish(REPO_ROOT)
 	if (issues.length) {
 		const sample = issues.slice(0, 12).map(i => `${i.path}:${i.line} ${i.summary || '(missing)'}`).join('\n')
 		assert(false, `English JSDoc (${issues.length}):\n${sample}`)
@@ -79,7 +79,7 @@ Deno.test('repo: no English JSDoc summaries', async () => {
 })
 
 Deno.test('icon_anime: no English JSDoc summaries', async () => {
-	const { issues } = await scanJsdocEnglish(REPO_ROOT, { under: 'imgs/icon_anime' })
+	const { issues } = await scanJsdocNoEnglish(REPO_ROOT, { under: 'imgs/icon_anime' })
 	if (issues.length) {
 		const sample = issues.slice(0, 8).map(i => `${i.path}:${i.line} ${i.summary || '(missing)'}`).join('\n')
 		assert(false, `English JSDoc in icon_anime (${issues.length}):\n${sample}`)

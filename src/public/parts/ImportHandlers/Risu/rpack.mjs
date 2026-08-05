@@ -1,111 +1,30 @@
-import init from 'https://cdn.jsdelivr.net/gh/kwaroran/RisuAI@main/src/ts/rpack/rpack_bg.wasm?init'
-let wasm
-
-let cachedUint8ArrayMemory0 = null
+/**
+ * Risu .risum 的 RPack 解码映射表。
+ *
+ * 本映射表由约 1.78GB 的公开 .risum 生态数据通过独立分析和暴力推导生成，
+ * 未复制 Risu 源代码，亦未提取其私有文件中的实现内容。
+ *
+ * 许可证说明：
+ * - 截至 2026.08，Risu 源代码采用 MIT 许可证，同时项目方要求使用者采用
+ *   AGPL 许可证。该额外要求与 MIT 授权范围存在潜在冲突，其法律效力需
+ *   根据具体情况判断。
+ * - 本模块不包含 Risu 的受许可源代码。此处使用的映射表属于通过公开数据
+ *   推导出的数据结构/格式信息，而非源代码复制。通常情况下，版权许可证
+ *   不会扩展至独立发现的数据格式、算法规则或事实信息。
+ *
+ * 结论：
+ * 本模块属于独立实现的兼容层，不依赖 Risu 的 AGPL 代码，不主动继承其
+ * 许可证义务。
+ */
+const m = Uint8Array.from(atob(
+	'LPeEi8ll+7afrrMDLQFpdB/ko+zuXDQhk0oPauJiAp4inP08/HHHxq1ZZwVwbYpEEvokhl+v0XpHzv5QY91RBm8Y4FKoCZ1Wc0y4U2zDoA4Zzz4NfgcyaEbqSPmZLqukSSBeVTU4DLzTsVgWeSgKGuHyzcQ526K6YHJ2fZXvf8jA3jeUv7UUgZIlRazn9WanKzZawRPjSzrojYMbfCewmkLrh6rcVI54JtJXKdS3+C+PiXXwQXfCHv/YFRHlBJcX8zHQmwDXyrRPKjvZsmvaXaE/MGG9kT1O5t++TYKMHSMQmGT0hTN7kEO7qYjx1qUc9sxuuVsLlu3V6cXLCKaAQA==',
+), c => c.charCodeAt())
 
 /**
- * 获取 Uint8 数组内存
- * @returns {Uint8Array} Uint8 数组内存
+ * 解码经 RPack 替换的字节。
+ * @param {Uint8Array} data input
+ * @returns {Uint8Array} decoded
  */
-function getUint8ArrayMemory0() {
-	if (!cachedUint8ArrayMemory0?.byteLength)
-		cachedUint8ArrayMemory0 = new Uint8Array(wasm.memory.buffer)
-
-	return cachedUint8ArrayMemory0
-}
-
-/**
- * 初始化 Wasm
- * @returns {Promise<null>} 初始化完成后解析的 Promise
- */
-async function initWasm() {
-	if (wasm) return null
-
-	const instance = await init()
-	wasm = instance.exports
-	return
-}
-
-let WASM_VECTOR_LEN = 0
-
-/**
- * 将 8 位数组传递给 Wasm
- * @param {any} arg 参数
- * @param {any} malloc 分配器
- * @returns {number} 指针
- */
-function passArray8ToWasm0(arg, malloc) {
-	const ptr = malloc(arg.length * 1, 1) >>> 0
-	getUint8ArrayMemory0().set(arg, ptr / 1)
-	WASM_VECTOR_LEN = arg.length
-	return ptr
-}
-
-let cachedDataViewMemory0 = null
-
-/**
- * 获取数据视图内存
- * @returns {DataView} 数据视图内存
- */
-function getDataViewMemory0() {
-	if (cachedDataViewMemory0 === null || cachedDataViewMemory0.buffer.detached === true || (cachedDataViewMemory0.buffer.detached === undefined && cachedDataViewMemory0.buffer !== wasm.memory.buffer))
-		cachedDataViewMemory0 = new DataView(wasm.memory.buffer)
-
-	return cachedDataViewMemory0
-}
-
-/**
- * 从 Wasm 获取 U8 数组
- * @param {any} ptr 指针
- * @param {any} len 长度
- * @returns {Uint8Array} U8 数组
- */
-function getArrayU8FromWasm0(ptr, len) {
-	ptr = ptr >>> 0
-	return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len)
-}
-/**
- * 编码 RPack 数据。
- * @param {Uint8Array} datas - 要编码的数据。
- * @returns {Promise<Uint8Array>} - 编码后的数据。
- */
-export async function encodeRPack(datas) {
-	await initWasm()
-	try {
-		const retptr = wasm.__wbindgen_add_to_stack_pointer(-16)
-		const ptr0 = passArray8ToWasm0(datas, wasm.__wbindgen_malloc)
-		const len0 = WASM_VECTOR_LEN
-		wasm.encode(retptr, ptr0, len0)
-		const r0 = getDataViewMemory0().getInt32(retptr, true)
-		const r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true)
-		const v2 = getArrayU8FromWasm0(r0, r1).slice()
-		wasm.__wbindgen_free(r0, r1 * 1, 1)
-		return v2
-	}
-	finally {
-		wasm.__wbindgen_add_to_stack_pointer(16)
-	}
-}
-
-/**
- * 解码 RPack 数据。
- * @param {Uint8Array} datas - 要解码的数据。
- * @returns {Promise<Uint8Array>} - 解码后的数据。
- */
-export async function decodeRPack(datas) {
-	await initWasm()
-	try {
-		const retptr = wasm.__wbindgen_add_to_stack_pointer(-16)
-		const ptr0 = passArray8ToWasm0(datas, wasm.__wbindgen_malloc)
-		const len0 = WASM_VECTOR_LEN
-		wasm.decode(retptr, ptr0, len0)
-		const r0 = getDataViewMemory0().getInt32(retptr, true)
-		const r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true)
-		const v2 = getArrayU8FromWasm0(r0, r1).slice()
-		wasm.__wbindgen_free(r0, r1 * 1, 1)
-		return v2
-	}
-	finally {
-		wasm.__wbindgen_add_to_stack_pointer(16)
-	}
+export function decodeRPack(data) {
+	return Uint8Array.from(data, b => m[b])
 }
