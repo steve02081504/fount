@@ -1,5 +1,5 @@
 /**
- * AGENTS.md 与 agent 面向链接 `.md` 须英文；`docs/design/`、`docs/review/` 可为中文。
+ * AGENTS.md 与 agent 面向链接 `.md` 须英文；`docs/design/`、`docs/review/`、`docs/issues/` 可为中文。
  */
 /* global Deno */
 import { mkdir, writeFile, rm } from 'node:fs/promises'
@@ -90,6 +90,7 @@ Deno.test('angle-bracket and titled .md links are discovered and scanned recursi
 Deno.test('isHumanFacingDocsPath', () => {
 	assertEquals(isHumanFacingDocsPath('docs/design/emoji-pack-spec.md'), true)
 	assertEquals(isHumanFacingDocsPath('docs/review/foo.md'), true)
+	assertEquals(isHumanFacingDocsPath('docs/issues/part-hot-reload.md'), true)
 	assertEquals(isHumanFacingDocsPath('docs/AGENTS.md'), false)
 	assertEquals(isHumanFacingDocsPath('src/scripts/test/AGENTS.md'), false)
 })
@@ -102,7 +103,7 @@ Deno.test('CJK_RE matches CJK scripts', () => {
 	assertEquals(CJK_RE.test('English … — ok'), false)
 })
 
-Deno.test('AGENTS.md closure has no CJK (except design/review) and no missing links', async () => {
+Deno.test('AGENTS.md closure has no CJK (except human-facing docs) and no missing links', async () => {
 	const { issues } = await scanAgentsMdEnglish(REPO_ROOT)
 	assertEquals(
 		issues.map(issue => issue.missing

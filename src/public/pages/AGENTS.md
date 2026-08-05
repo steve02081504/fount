@@ -21,7 +21,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 ## UI & Theming
 
 - **`base.css`**: shared page chrome. `.hidden { display: none !important }` — do not re-declare in shells; page-local `display: flex|grid` must not un-hide toggled UI.
-- **Component CSS**: inject at module import (`// --- 全局样式注入 ---`, `document.head.prepend`), same as `jsonEditor` / `markdown/convertor` — do not lazy-`ensure*` stylesheet links on first use. Registry-driven CSS (e.g. markdown extensions) stays async-load.
+- **Component CSS**: inject at module import (`document.head.prepend`), same as `jsonEditor` / `markdown/convertor` — do not lazy-`ensure*` stylesheet links on first use. Registry-driven CSS (e.g. markdown extensions) stays async-load.
 - **`theme.mjs`**: DaisyUI theme management. Call `applyTheme()` first.
 - **`template.mjs`**: `renderTemplate` / `mountTemplate` / `renderTemplateAsHtmlString` / `withTemplates(path, fn)`. Cross-shell shared modules must **not** call bare `usingTemplates` — use `withTemplates` or direct DOM.
 - **`dialog.mjs`**: `openDialogFromTemplate` / `pickFromDialog`. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do not nest another `<dialog>`.

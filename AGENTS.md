@@ -26,7 +26,7 @@
 - **Logs**: `fount log` — main-process console via `localhost` (not `127.0.0.1`). Check before guessing from browser 404s. Interactive VT: icon_anime `intro` on start, `farewell` on `on_shutdown`; viewer owns `exitSignal`, wires `icon.signal` into it; non-TTY skips logo (player-gated). Standalone TUI: `fount logo` / `fount logo watch`.
 - **Listen bind**: `config.listen: null` — OS-specific dual/`::` bind in `src/scripts/net_listen.mjs` ([denoland/deno#36168](https://github.com/denoland/deno/issues/36168)).
 - **Server**: `fount server` (fg) / `fount background` (detached). Bare `fount` = `fount background; fount log`. `Test-FountRunning` before start/reboot, **not** before `fount test`.
-- **Restart**: `fount reboot` for backend/code/config. Frontend edits → browser refresh.
+- **Restart**: `fount reboot` for backend/code/config. Frontend edits → browser refresh. No per-module reload — `reloadPart` restarts the process; don't try `?v=` busting. Why / upstream status: [part-hot-reload](docs/issues/part-hot-reload.md).
 - **Debug dumps**: `debugLog(name, data)` → `debug_logs/`.
 - **API test**: `curl "http://localhost:8931/api/whoami?fount-apikey=$env:FOUNT_API_KEY"` (PS: `$env:FOUNT_API_KEY`, bash: `$FOUNT_API_KEY`).
 - **Subagent handoff**: subagents do not inherit parent reasoning — pass task, paths, constraints, findings, expected output.
@@ -54,4 +54,4 @@
 | Local search index | [src/scripts/search/AGENTS.md](src/scripts/search/AGENTS.md) |
 | Docs writing (design / review) | [docs/AGENTS.md](docs/AGENTS.md) |
 
-Baselines / reviews (read when needed, not day-to-day): [chat-social-dev-plan](docs/design/chat-social-dev-plan.md) · [world-distribution-spec](docs/design/world-distribution-spec.md) · [human-agent-operational-parity](docs/review/human-agent-operational-parity-review.md) · [chat-social-cabinet-tech-stack](docs/review/chat-social-cabinet-tech-stack.md).
+Baselines / reviews (read when needed, not day-to-day): [chat-social-dev-plan](docs/design/chat-social-dev-plan.md) · [world-distribution-spec](docs/design/world-distribution-spec.md) · [human-agent-operational-parity](docs/review/human-agent-operational-parity-review.md) · [chat-social-cabinet-tech-stack](docs/review/chat-social-cabinet-tech-stack.md). Issue trackers: [part-hot-reload](docs/issues/part-hot-reload.md).

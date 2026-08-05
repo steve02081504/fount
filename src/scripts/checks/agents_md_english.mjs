@@ -1,6 +1,6 @@
 /**
  * AGENTS.md 及 agent 面向的链接 `.md` 须保持英文（禁止 CJK）。
- * 人类面向的 `docs/design/`、`docs/review/` 可为中文；仍会遍历以解析链接。
+ * 人类面向的 `docs/design/`、`docs/review/`、`docs/issues/` 可为中文；仍会遍历以解析链接。
  */
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { join, relative } from 'node:path'
@@ -13,6 +13,9 @@ export const CJK_RE = /\p{Script=Han}|\p{Script=Hiragana}|\p{Script=Katakana}|\p
  * `](path.md)`、`](<path.md#frag>)`、`](path.md "title")`。
  */
 const MD_LINK_RE = /\]\(\s*(?:<([^>\n#]+?\.md)(?:#[^>\s]*)?>|([^)\s#]+?\.md)(?:#[^)\s]*)?)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/gi
+
+/** 人类面向、允许中文的 docs 子目录前缀 */
+const HUMAN_FACING_DOCS_PREFIXES = ['docs/design/', 'docs/review/', 'docs/issues/']
 
 /**
  * 从 Markdown 文本收集本地 `.md` 链接目标（去掉片段）。
@@ -33,12 +36,12 @@ export function localMdLinkTargets(text) {
 }
 
 /**
- * 人类可读的设计/评审基线文档 — 允许中文。
+ * 人类可读的设计 / 评审 / issue 跟踪文档 — 允许中文。
  * @param {string} relativePath 仓库相对 posix 路径
- * @returns {boolean} 是否为人类面向的设计/评审文档
+ * @returns {boolean} 是否为人类面向文档
  */
 export function isHumanFacingDocsPath(relativePath) {
-	return relativePath.startsWith('docs/design/') || relativePath.startsWith('docs/review/')
+	return HUMAN_FACING_DOCS_PREFIXES.some(prefix => relativePath.startsWith(prefix))
 }
 
 /**
@@ -83,7 +86,7 @@ async function collectAgentsMd(repoRoot, directoryPath, paths) {
 
 /**
  * 遍历 repoRoot 下所有 AGENTS.md 及其链接的仓库内 `.md`（传递闭包）。
- * `docs/design/`、`docs/review/` 之外禁止 CJK。
+ * `docs/design/`、`docs/review/`、`docs/issues/` 之外禁止 CJK。
  * @param {string} repoRoot 仓库根绝对路径
  * @returns {Promise<{ files: string[], issues: { path: string, lines: number[], missing?: boolean, from?: string }[] }>} 已扫描文件与 CJK/缺失链接问题
  */
