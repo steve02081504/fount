@@ -354,7 +354,12 @@
 				"noUrl": "錯誤：未提供協定處理程式的 URL。"
 			},
 			"update": {
-				"skippingFountUpdate": "因 `.noupdate` 檔案存在，跳過 fount 更新"
+				"skippingFountUpdate": "因 `.noupdate` 檔案存在，跳過 fount 更新",
+				"switchingToBranch": "正在切換至分支「${branch}」…",
+				"removedNoUpdate": "已移除 `.noupdate`，自動更新已恢復。",
+				"pinningToCommit": "正在固定至提交 `${ref}`，並建立 `.noupdate`…",
+				"createdNoUpdate": "已建立 `.noupdate`，自動更新已暫停。",
+				"unknownTarget": "無法識別「${target}」：既不是已知分支，也不是提交。"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "已在 `${path}` 建立桌面捷徑",

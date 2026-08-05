@@ -355,7 +355,12 @@
 				"noUrl": "오류: 프로토콜 핸들의 URL이 제공되지 않았습니다."
 			},
 			"update": {
-				"skippingFountUpdate": "`.noupdate` 파일이 존재하므로 fount 업데이트를 건너뜁니다."
+				"skippingFountUpdate": "`.noupdate` 파일이 존재하므로 fount 업데이트를 건너뜁니다.",
+				"switchingToBranch": "'${branch}' 브랜치로 전환 중…",
+				"removedNoUpdate": "`.noupdate`를 제거했습니다. 자동 업데이트가 재개됩니다.",
+				"pinningToCommit": "커밋 `${ref}`에 고정하고 `.noupdate`를 생성하는 중…",
+				"createdNoUpdate": "`.noupdate`를 생성했습니다. 자동 업데이트가 일시 중지되었습니다.",
+				"unknownTarget": "'${target}'을(를) 식별할 수 없습니다: 알려진 브랜치나 커밋이 아닙니다."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "`${path}`에 바탕화면 바로가기가 생성되었습니다.",
