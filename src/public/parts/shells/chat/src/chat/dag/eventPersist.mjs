@@ -90,9 +90,7 @@ function slashTargetPubKeyHash(signPayload) {
 async function applyReputationHooks(username, groupId, signPayload, materializedState) {
 	if (!signPayload.type) return
 
-	/**
-	 *
-	 */
+	/** slash 事件后对目标信誉分衰减。 */
 	const decayAfterSlash = async () => {
 		const target = slashTargetPubKeyHash(signPayload)
 		if (!target) return

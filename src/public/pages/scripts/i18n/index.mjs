@@ -135,9 +135,7 @@ export async function setLocales(langs) {
 	await setLanguage(langs)
 }
 
-/**
- *
- */
+/** 重导出 locale 匹配与切片工具（与后端一致）。 */
 export {
 	FALLBACK_LOCALE,
 	getBestLocale,

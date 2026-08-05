@@ -1,6 +1,4 @@
-/**
- *
- */
+/** 重导出 entityAvatar 展示辅助。 */
 export {
 	entityAvatarUrl,
 	renderAvatarHtml,
@@ -22,9 +20,7 @@ import { state } from '../state.mjs'
 
 import { viewerEntityHash } from './apiClient.mjs'
 
-/**
- *
- */
+/** 重导出实体 at-id 格式化函数。 */
 export { formatEntityAtId }
 
 /** @type {Map<string, string>} entityHash → 具名 handle（会话内缓存） */

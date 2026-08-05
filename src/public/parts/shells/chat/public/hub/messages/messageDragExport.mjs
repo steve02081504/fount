@@ -74,30 +74,22 @@ async function prepareDragPayload(row) {
  * @returns {void}
  */
 function armRowDragCleanup(row) {
-	/**
-	 *
-	 */
+	/** 关闭 draggable 并清理拖拽态。 */
 	const cleanupDraggable = () => { row.draggable = false }
-	/**
-	 *
-	 */
+	/** dragend：回收 Blob 并移除监听。 */
 	const onDragEnd = () => {
 		cleanupDraggable()
 		dragInFlightRows.delete(row)
 		clearDragPayload(row)
 		teardown()
 	}
-	/**
-	 *
-	 */
+	/** mouseup：未进入拖拽时回收预生成载荷。 */
 	const onMouseUp = () => {
 		cleanupDraggable()
 		if (!dragInFlightRows.has(row)) clearDragPayload(row)
 		teardown()
 	}
-	/**
-	 *
-	 */
+	/** 一次性移除 mouseup / mouseleave / dragend 监听。 */
 	const teardown = () => {
 		row.removeEventListener('mouseup', onMouseUp)
 		row.removeEventListener('mouseleave', cleanupDraggable)

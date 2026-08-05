@@ -8,9 +8,7 @@ import {
 	isAvatarImageUrl,
 } from '/parts/shells:chat/shared/hashAvatar.mjs'
 
-/**
- *
- */
+/** 重导出 isAvatarImageUrl。 */
 export { isAvatarImageUrl }
 
 /**

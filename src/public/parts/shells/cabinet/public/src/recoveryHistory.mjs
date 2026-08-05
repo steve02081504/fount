@@ -51,9 +51,7 @@ function makeRecoveryHistory({ label, cabinetId, ids, token, create, unlock }) {
 	const unlockToken = unlock
 	return {
 		label,
-		/**
-		 *
-		 */
+		/** 撤销：切换删除/还原并刷新列表。 */
 		async undo() {
 			if (create) recoveryToken = (await recoverableDelete(cabinetId, ids, unlockToken)).recovery_token
 			else if (recoveryToken) {
@@ -62,9 +60,7 @@ function makeRecoveryHistory({ label, cabinetId, ids, token, create, unlock }) {
 			}
 			await refreshEntries()
 		},
-		/**
-		 *
-		 */
+		/** 重做：切换删除/还原并刷新列表。 */
 		async redo() {
 			if (create) {
 				if (!recoveryToken) return
@@ -74,9 +70,7 @@ function makeRecoveryHistory({ label, cabinetId, ids, token, create, unlock }) {
 			else recoveryToken = (await recoverableDelete(cabinetId, ids, unlockToken)).recovery_token
 			await refreshEntries()
 		},
-		/**
-		 *
-		 */
+		/** 放弃撤销链时永久删除恢复令牌。 */
 		async discard() {
 			if (recoveryToken) await finalizeRecovery(cabinetId, recoveryToken)
 			recoveryToken = undefined
@@ -114,16 +108,12 @@ export function makePatchHistory({ entryId, before, after, label = 'patch', cabi
 	const path = `/entries/${encodeURIComponent(entryId)}`
 	return {
 		label,
-		/**
-		 *
-		 */
+		/** 撤销 PATCH：写回修改前快照。 */
 		async undo() {
 			await cabinetApi('PATCH', path, before, { cabinetId })
 			await refreshEntries()
 		},
-		/**
-		 *
-		 */
+		/** 重做 PATCH：应用修改后快照。 */
 		async redo() {
 			await cabinetApi('PATCH', path, after, { cabinetId })
 			await refreshEntries()

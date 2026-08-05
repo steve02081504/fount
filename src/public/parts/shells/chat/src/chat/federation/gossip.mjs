@@ -202,9 +202,7 @@ export async function requestMissingEventsGossip(username, groupId, query = {}) 
 	const nodeHash = localNodeHash()
 	const wantIds = [...new Set((query.wantIds || []).filter(isHex64))]
 
-	/**
-	 *
-	 */
+	/** 从本地 JSONL 读取已命中与仍缺的事件 id。 */
 	/** @returns {Promise<{ filled: object[], stillMissing: string[] }>} 本地已命中与仍缺 id */
 	const readFilled = async () => {
 		const eventsById = new Map((await readJsonl(eventsPath(username, groupId))).map(event => [event.id, event]))

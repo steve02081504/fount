@@ -214,9 +214,7 @@ async function paintHoverCard(generation, anchor, options) {
 		await wireEntityProfileCardActions(card, entity, {
 			profile: profile || null,
 			onBeforeDm: hideEntityProfileHoverCard,
-			/**
-			 *
-			 */
+			/** 悬停资料卡重绘后刷新内容。 */
 			onRepaint: async () => {
 				if (!isCurrentShow(generation) || card.dataset.cacheKey !== options.cacheKey) return
 				delete card.dataset.cacheKey

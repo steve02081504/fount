@@ -12,9 +12,7 @@ export async function hashFromPubKeyHex(pubKeyHex) {
 	return sha256Hex(hexToBytes(hex).buffer)
 }
 
-/**
- *
- */
+/** 重导出 encodeEntityHash。 */
 export { encodeEntityHash }
 
 /**

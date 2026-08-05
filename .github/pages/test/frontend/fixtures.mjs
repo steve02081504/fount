@@ -82,11 +82,7 @@ export function createPagesFixtures(options = {}) {
 }
 
 const fixtures = createPagesFixtures()
-/**
- *
- */
+/** 默认 Pages E2E 用例（`createPagesFixtures()` 产物）。 */
 export const test = fixtures.test
-/**
- *
- */
+/** 重导出 Playwright `expect` 断言。 */
 export { expect }

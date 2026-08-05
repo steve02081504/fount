@@ -23,9 +23,7 @@ import { archiveMonthKey } from './settings.mjs'
 /** canonical JSONL 行内 eventId 提取（digest 排序用，避免 sort 中重复 JSON.parse） */
 const ARCHIVE_LINE_EVENT_ID_RE = /"eventId"\s*:\s*"([\da-f]{64})"/u
 
-/**
- *
- */
+/** 重导出归档 quorum 阈值解析函数。 */
 export { resolveArchiveQuorumPeerMin, resolveArchiveQuorumPeerStrictMin, resolveArchiveQuorumThresholds }
 
 /**

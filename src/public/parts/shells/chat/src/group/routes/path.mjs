@@ -1,9 +1,7 @@
 /** Chat shell REST API 前缀（Express 字面量路由：`shells\:chat`）。 */
 export const CHAT_API_PREFIX = '/api/parts/shells\\:chat'
 
-/**
- *
- */
+/** 前端 API 路径常量重导出。 */
 export {
 	CHAT_API_CLIENT_PREFIX,
 	GROUPS_CLIENT_PREFIX,

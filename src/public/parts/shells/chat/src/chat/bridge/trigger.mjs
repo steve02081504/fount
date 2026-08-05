@@ -141,9 +141,7 @@ async function executeVirtualBridgeReply(username, session, channelId, triggerEn
  * @returns {ReturnType<typeof setInterval>} timer
  */
 function startTypingHeartbeat(username, session, channelId, charUid) {
-	/**
-	 *
-	 */
+	/** 定时向虚拟桥接会话上报 typing。 */
 	const pulse = () => {
 		recordVirtualBridgeTyping(username, session.groupId, channelId, charUid)
 		if (!session.botname) return

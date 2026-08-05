@@ -3,9 +3,7 @@ import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '.
 
 import { readInboxNotifications, notificationCursor } from './inbox.mjs'
 
-/**
- *
- */
+/** 重导出 notificationCursor。 */
 export { notificationCursor }
 
 /**

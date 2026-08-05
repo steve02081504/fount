@@ -407,17 +407,11 @@ export function buildWechatMediaMessageItem(args) {
 	}
 }
 
-/**
- *
- */
+/** 微信消息内容项类型（复用 MessageItemType）。 */
 export const WechatMessageItemType = MessageItemType
-/**
- *
- */
+/** 微信消息方向（用户 / 机器人）。 */
 export const WechatMessageType = { USER: 1, BOT: 2 }
-/**
- *
- */
+/** 微信消息生成状态枚举。 */
 export const WechatMessageState = { NEW: 0, GENERATING: 1, FINISH: 2 }
 
 /**

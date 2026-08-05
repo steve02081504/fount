@@ -27,12 +27,8 @@ export function getCachedTranslation(username, cacheKey) {
 	return getCachedTranslationBase(username, CACHE_DATANAME, cacheKey)
 }
 
-/**
- *
- */
+/** 帖子正文翻译（服务端 translateText 别名）。 */
 export const translatePostText = translateText
 
-/**
- *
- */
+/** 重导出服务端 translateText。 */
 export { translateText }

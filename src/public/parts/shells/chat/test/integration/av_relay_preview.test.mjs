@@ -12,9 +12,7 @@ import {
 	registerAvRelaySocket,
 } from '../../src/chat/ws/avRelay.mjs'
 
-/**
- *
- */
+/** 模拟 WebSocket，记录 send 载荷供断言。 */
 class FakeWs extends EventEmitter {
 	readyState = 1
 	/** @type {{ data: Buffer | string, binary?: boolean }[]} */

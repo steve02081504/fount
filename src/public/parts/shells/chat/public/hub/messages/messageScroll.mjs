@@ -48,9 +48,7 @@ export function highlightMessageRow(row) {
 	setTimeout(() => row.classList.remove('ring-2', 'ring-primary', 'ring-offset-2'), 2000)
 }
 
-/**
- *
- */
+/** 重导出 messageIdSelector。 */
 export { messageIdSelector }
 
 /**

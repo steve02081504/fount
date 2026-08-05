@@ -11,9 +11,7 @@ import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
 import { discoverPosts } from './local.mjs'
 
-/**
- *
- */
+/** 联邦帖子发现查询种类标识。 */
 export const POST_DISCOVER_KIND = 'post_discover'
 
 /**

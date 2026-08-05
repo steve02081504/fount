@@ -68,7 +68,5 @@ export async function ensureAuditLogPanel(context) {
 	await initAuditLogPanel(context.groupId)
 }
 
-/**
- *
- */
+/** 重导出群设置面板 ensure 函数。 */
 export { ensureChannelPermissionsPanel, ensureGroupEmojisPanel }

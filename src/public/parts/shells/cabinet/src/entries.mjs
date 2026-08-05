@@ -587,7 +587,5 @@ export async function uploadPreview(username, entityHash, cabinetId, options) {
 	return { url, path: logicalPath }
 }
 
-/**
- *
- */
+/** 重导出 tryDeletePreviewByUrl。 */
 export { tryDeletePreviewByUrl }

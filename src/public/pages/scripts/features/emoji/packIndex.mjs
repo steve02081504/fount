@@ -38,13 +38,9 @@ function openEmojiDb() {
 		 */
 		request.onsuccess = () => {
 			const database = request.result
-			/**
-			 *
-			 */
+			/** 连接关闭时清空复用中的数据库 Promise。 */
 			database.onclose = () => { dbPromise = null }
-			/**
-			 *
-			 */
+			/** 其他标签页升级 schema 时关闭并作废本地连接。 */
 			database.onversionchange = () => {
 				database.close()
 				dbPromise = null

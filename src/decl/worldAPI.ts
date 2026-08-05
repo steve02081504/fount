@@ -18,9 +18,7 @@ export type worldStateEvent_t = {
 	}
 }
 
-/**
- *
- */
+/** 群成员摘要（memberKey、类型与角色等）。 */
 export type memberSummary_t = {
 	memberKey: string
 	memberKind?: string
@@ -30,9 +28,7 @@ export type memberSummary_t = {
 	roles?: string[]
 }
 
-/**
- *
- */
+/** 频道摘要（id、名称与类型）。 */
 export type channelSummary_t = {
 	channelId: string
 	name?: string

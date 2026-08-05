@@ -6,9 +6,7 @@ import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/s
 
 import { messagesPath } from '../lib/paths.mjs'
 
-/**
- *
- */
+/** 热帖索引读写 API 重导出。 */
 export {
 	allProtectedHotEventIds,
 	listChannelMessageEvents,

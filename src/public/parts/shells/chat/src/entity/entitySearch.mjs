@@ -17,9 +17,7 @@ import {
 } from './profile.mjs'
 import { listEntityIdentities } from './store.mjs'
 
-/**
- *
- */
+/** part_query 类型：实体搜索。 */
 export const ENTITY_SEARCH_KIND = 'entity_search'
 
 /**

@@ -4,9 +4,7 @@ import { assertEquals } from 'jsr:@std/assert'
 import { buildPromptStruct } from '../../src/prompt_struct/index.mjs'
 
 Deno.test('buildPromptStruct injects attribution mismatch warnings', async () => {
-	/**
-	 *
-	 */
+	/** 测试用 stub part。 */
 	const stubPart = {
 		interfaces: {
 			chat: {

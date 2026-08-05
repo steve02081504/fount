@@ -71,9 +71,7 @@ export function installNearOomHeapSnapshot({
 		catch { /* 并发搬迁或进程退出竞态 */ }
 	}
 
-	/**
-	 *
-	 */
+	/** 扫描工作目录中的堆快照文件。 */
 	const scan = () => {
 		try {
 			for (const name of readdirSync(cwd))

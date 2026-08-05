@@ -1,18 +1,10 @@
-/**
- *
- */
+/** 计入停留的最短时长（毫秒）。 */
 export const DWELL_MIN_MS = 3000
-/**
- *
- */
+/** 单次停留计分上限（毫秒）。 */
 export const DWELL_MAX_MS = 120_000
-/**
- *
- */
+/** 每次有效停留给作者的加权增量。 */
 export const AUTHOR_BOOST_PER_DWELL = 0.25
-/**
- *
- */
+/** 每次有效停留给标签的加权增量。 */
 export const TAG_WEIGHT_PER_DWELL = 0.15
 
 /**

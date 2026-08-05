@@ -4,9 +4,7 @@ import { createEvalWs } from '../endpoints.mjs'
 
 import { editBackspace, editInsertChar, isPairInputEvent } from './pairs.mjs'
 
-/**
- *
- */
+/** 重导出 mountReplPanel。 */
 export { mountReplPanel } from './ui.mjs'
 
 const HISTORY_KEY = 'log_viewer.repl.history'
@@ -133,9 +131,7 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 		const id = String(nextId++)
 		return new Promise((resolve, reject) => {
 			pending.set(id, { resolve, reject })
-			/**
-			 *
-			 */
+			/** WebSocket 就绪后发送 eval 请求。 */
 			const send = () => {
 				if (!wire.sendJson({ ...payload, id }))
 					reject(new Error('eval_wire_send_failed'))

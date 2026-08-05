@@ -23,9 +23,7 @@ import { escapeHtml } from '../lib/escapeHtml.mjs'
 import { showEmojiPackPreview } from './emojiPackPreview.mjs'
 import { positionFloatingPanel, wireOutsideClickClose } from './floatingPanel.mjs'
 
-/**
- *
- */
+/** 重导出 showEmojiPackPreview。 */
 export { showEmojiPackPreview } from './emojiPackPreview.mjs'
 
 const JUMP_START_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16v2H4V4zm8 3l6 6h-4v7h-4v-7H6l6-6z"/></svg>'

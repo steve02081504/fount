@@ -129,9 +129,7 @@ export async function postBridgeMessage(username, dto) {
 	return { id: entry.extension?.chat?.virtualEventId, groupId: session.groupId, entry }
 }
 
-/**
- *
- */
+/** 虚拟桥接 backfill 标记重导出。 */
 export {
 	isVirtualBridgeBackfilled as isBridgeGroupBackfilled,
 	markVirtualBridgeBackfilled as markBridgeGroupBackfilled,

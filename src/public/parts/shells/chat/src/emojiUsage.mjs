@@ -23,9 +23,7 @@ import {
 	resolveGroupDefaultPackId,
 } from './emojiCollectionLogic.mjs'
 
-/**
- *
- */
+/** 默认表情包收敛与 usage id 重导出。 */
 export {
 	applyDefaultPackConverge,
 	entityDefaultLinkKey,

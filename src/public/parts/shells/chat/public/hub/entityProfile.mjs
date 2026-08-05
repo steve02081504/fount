@@ -151,9 +151,7 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 	if (entityHash)
 		wireProfileEditButton(root, entityHash, {
 			profile,
-			/**
-			 *
-			 */
+			/** 资料保存后刷新资料卡。 */
 			onSaved: async () => {
 				await options.onSaved?.()
 				await options.onRepaint?.()
@@ -168,9 +166,7 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 		dmButton.dataset.i18n = entity.charname
 			? 'chat.hub.profilePopup.dm.char'
 			: 'chat.hub.profilePopup.dm.fed'
-		/**
-		 *
-		 */
+		/** 点击发起私聊。 */
 		dmButton.onclick = () => {
 			options.onBeforeDm?.()
 			const dmEntity = entity.charname
@@ -185,9 +181,7 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 	const socialButton = root.querySelector('[data-profile-popup-social]')
 	if (socialButton instanceof HTMLButtonElement) {
 		socialButton.hidden = !isEntityHash128(entityHash)
-		/**
-		 *
-		 */
+		/** 跳转社交主页。 */
 		socialButton.onclick = () => {
 			if (!isEntityHash128(entityHash)) return
 			window.location.href = formatSocialProfileHref(entityHash)
@@ -197,9 +191,7 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 	const aliasButton = root.querySelector('[data-profile-popup-alias]')
 	if (aliasButton instanceof HTMLButtonElement) {
 		aliasButton.hidden = !isEntityHash128(entityHash)
-		/**
-		 *
-		 */
+		/** 设置实体别名。 */
 		aliasButton.onclick = () => {
 			void (async () => {
 				const current = root.querySelector('[data-entity-profile-name]')?.textContent?.trim() || ''
@@ -229,9 +221,7 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 			careButton.dataset.i18n = cared
 				? 'chat.hub.profilePopup.careRemove'
 				: 'chat.hub.profilePopup.care'
-			/**
-			 *
-			 */
+			/** 切换关心状态。 */
 			careButton.onclick = () => {
 				void (async () => {
 					const next = !cared

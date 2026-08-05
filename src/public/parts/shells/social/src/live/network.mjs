@@ -7,9 +7,7 @@ import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part_query'
 
 import { buildLiveFeed } from './feed.mjs'
 
-/**
- *
- */
+/** 联邦直播 Feed 查询种类。 */
 export const LIVE_FEED_KIND = 'live_feed'
 
 /**

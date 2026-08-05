@@ -11,17 +11,11 @@ import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 import { weightedJaccard } from './jaccard.mjs'
 import { loadTaste, resolveTasteAlias } from './store.mjs'
 
-/**
- *
- */
+/** 标签合并验证的最小样本用量。 */
 export const MIN_USAGE = 2
-/**
- *
- */
+/** 标签合并验证的最小拟合度。 */
 export const MIN_FIT = 0.35
-/**
- *
- */
+/** 互斥标签允许的最大重叠比例。 */
 export const MAX_EXCLUSIVE_OVERLAP = 0.15
 
 /**

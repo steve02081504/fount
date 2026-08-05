@@ -10,18 +10,14 @@ export {
 	isGroupWebSocketOpen,
 	waitForGroupWebSocketOpen,
 } from './connection.mjs'
-/**
- *
- */
+/** WebSocket 出站：发消息 / typing / 报错处理。 */
 export {
 	attachGroupWebSocketErrorHandlers,
 	reportTyping,
 	sendWebsocketMessage,
 	stopGeneration,
 } from './outbound.mjs'
-/**
- *
- */
+/** 流式预览槽：volatile chunk DOM 与 stop 按钮。 */
 export {
 	dismissVolatileStreamPreview,
 	getActiveVolatileStreamIds,

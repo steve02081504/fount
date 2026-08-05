@@ -57,9 +57,7 @@ function remarkSocialDialect() {
 	}
 }
 
-/**
- *
- */
+/** Social markdown 扩展默认导出。 */
 export default {
 	remarkPlugins: [remarkSocialDialect],
 	rehypePlugins: [],

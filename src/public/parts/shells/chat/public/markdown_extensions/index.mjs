@@ -76,9 +76,7 @@ function initEmojiHydration() {
 /** @type {import('npm:unified').Plugin[]} */
 const remarkPlugins = [remarkChatDialect]
 
-/**
- *
- */
+/** Chat markdown 扩展默认导出。 */
 export default {
 	remarkPlugins,
 	rehypePlugins: [],

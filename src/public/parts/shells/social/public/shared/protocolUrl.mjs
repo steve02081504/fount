@@ -8,9 +8,7 @@ import {
 	formatSocialProfilePageUri,
 } from './runUri.mjs'
 
-/**
- *
- */
+/** 重导出 wrapProtocolHttpsUrl。 */
 export { wrapProtocolHttpsUrl }
 
 /**

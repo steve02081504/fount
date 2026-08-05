@@ -31,13 +31,9 @@ async function wechatCodePrompt(args) {
  */
 export default {
 	info,
-	/**
-	 *
-	 */
+	/** 加载插件（当前无状态）。 */
 	Load: async () => { },
-	/**
-	 *
-	 */
+	/** 卸载插件（当前无状态）。 */
 	Unload: async () => { },
 	interfaces: {
 		code_execution: {

@@ -2,9 +2,7 @@ import { getUserByUsername } from '../server/auth/index.mjs'
 
 import { FALLBACK_LOCALE, pickLocalizedSlice } from './i18n/locale_match.mjs'
 
-/**
- *
- */
+/** 重导出回退 locale 与本地化切片选择器。 */
 export { FALLBACK_LOCALE, pickLocalizedSlice }
 
 /**

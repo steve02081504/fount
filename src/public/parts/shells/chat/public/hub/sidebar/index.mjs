@@ -27,25 +27,15 @@ import { renderMemberList } from './members.mjs'
 import { backToFriendsList, isPrivateChatActive } from './privateShell.mjs'
 import { selectChannel } from './selectChannel.mjs'
 
-/**
- *
- */
+/** 渲染频道列表。 */
 export { renderChannelList } from './channels.mjs'
-/**
- *
- */
+/** 渲染群信息卡。 */
 export { renderGroupInfoCard } from './infoCard.mjs'
-/**
- *
- */
+/** 渲染成员列表。 */
 export { renderMemberList } from './members.mjs'
-/**
- *
- */
+/** 私聊壳：返回好友列表 / 判定私聊是否激活。 */
 export { backToFriendsList, isPrivateChatActive } from './privateShell.mjs'
-/**
- *
- */
+/** 保存列表频道项并选择频道。 */
 export { saveListChannelItems, selectChannel } from './selectChannel.mjs'
 
 /**

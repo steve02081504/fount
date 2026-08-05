@@ -3,9 +3,7 @@
  * 供 displayName 等「允许富文本但不允许有毒」场景；与 Markdown 未信任档规则对齐。
  */
 
-/**
- *
- */
+/** 宽松消毒时一律剥离的危险 HTML 标签集合。 */
 export const BLOCKED_HTML_TAGS = new Set([
 	'script',
 	'style',
@@ -35,9 +33,7 @@ export const URL_HTML_ATTRIBUTES = new Set([
 	'data',
 ])
 
-/**
- *
- */
+/** 允许写入 DOM 的 URL scheme 白名单正则。 */
 export const SAFE_HTML_URL_SCHEMES = /^(https?:|mailto:|tel:|#|\/|about:blank#|fount:)/i
 
 /**

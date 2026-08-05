@@ -15,17 +15,11 @@ import { pushFeedUpdate } from './ws/feedHub.mjs'
 /** @type {Set<string>} */
 export const VALID_NOTIFICATION_TYPES = new Set(['reply', 'mention', 'like', 'repost', 'follow', 'care_post', 'poll_closed', 'post_note', 'live_started'])
 
-/**
- *
- */
+/** 关注通知聚合时间窗（毫秒）。 */
 export const FOLLOW_AGGREGATE_WINDOW_MS = 86_400_000
-/**
- *
- */
+/** 通知摘要最大字符数。 */
 export const SNIPPET_MAX_LEN = 120
-/**
- *
- */
+/** 聚合通知最多展示的主体数。 */
 export const MAX_DISPLAY_ACTORS = 3
 
 /**

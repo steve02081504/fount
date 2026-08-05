@@ -216,7 +216,5 @@ export class chatLogEntry_t {
 	}
 }
 
-/**
- *
- */
+/** 聊天日志条目数组。 */
 export type chatLog_t = chatLogEntry_t[]

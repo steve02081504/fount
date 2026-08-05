@@ -121,7 +121,5 @@ export function canGovSlash(state, member) {
 		|| canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, channelId)
 }
 
-/**
- *
- */
+/** 重导出 isEntityHash128 与 PERMISSIONS。 */
 export { isEntityHash128, PERMISSIONS }

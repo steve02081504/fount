@@ -13,9 +13,7 @@ const busy = new Set()
 
 /** 绑定同步由显式 API / 测试触发；占位供 Load/Unload 对称调用。 */
 export function startFolderSyncScheduler() { }
-/**
- *
- */
+/** 停止文件夹同步 scheduler（占位）。 */
 export function stopFolderSyncScheduler() { }
 
 /**

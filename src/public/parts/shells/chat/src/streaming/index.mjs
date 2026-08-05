@@ -11,7 +11,5 @@ export {
 	renderMarkdownCodeBlock,
 	renderMarkdownInlineCode,
 } from './markdown.mjs'
-/**
- *
- */
+/** 重导出 createBufferedLineBasedStream。 */
 export { createBufferedLineBasedStream } from './lineBasedStream.mjs'

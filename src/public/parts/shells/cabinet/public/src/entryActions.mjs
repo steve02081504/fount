@@ -31,9 +31,7 @@ export async function promptUnlock(folderId) {
 	dialog.showModal()
 	await new Promise(resolve => {
 		let settled = false
-		/**
-		 *
-		 */
+		/** 解锁对话框关闭时 resolve Promise。 */
 		const settle = () => {
 			if (settled) return
 			settled = true
@@ -42,9 +40,7 @@ export async function promptUnlock(folderId) {
 			resolve()
 		}
 		dialog.addEventListener('close', settle)
-		/**
-		 *
-		 */
+		/** 提交解锁密码并关闭对话框。 */
 		submit.onclick = async () => {
 			try {
 				const password = document.getElementById('unlockPassword').value
@@ -250,9 +246,7 @@ export async function pasteClipboard(asLinks = false) {
 	const targetCabinetId = cabinetStore.currentCabinetId
 	await cabinetStore.history.push({
 		label: asLinks ? 'pasteLink' : clip.mode === 'cut' ? 'cut' : 'paste',
-		/**
-		 *
-		 */
+		/** 撤销粘贴：删除新建条目并恢复剪贴板源。 */
 		async undo() {
 			if (createdIds.length) {
 				const result = await recoverableDelete(targetCabinetId, createdIds)
@@ -264,9 +258,7 @@ export async function pasteClipboard(asLinks = false) {
 			}
 			await refreshEntries()
 		},
-		/**
-		 *
-		 */
+		/** 重做粘贴：恢复新建并重新执行剪切删除。 */
 		async redo() {
 			if (createdRecovery) {
 				await restoreRecovery(targetCabinetId, createdRecovery)
@@ -278,9 +270,7 @@ export async function pasteClipboard(asLinks = false) {
 			}
 			await refreshEntries()
 		},
-		/**
-		 *
-		 */
+		/** 放弃撤销链时永久删除暂存恢复令牌。 */
 		async discard() {
 			if (createdRecovery) await finalizeRecovery(targetCabinetId, createdRecovery)
 			if (sourceRecovery) await finalizeRecovery(clip.cabinet_id, sourceRecovery)

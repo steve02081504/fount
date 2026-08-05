@@ -9,9 +9,7 @@ import {
 } from '../lib/dwellSignal.mjs'
 import { extractHashtagsFromText } from '../lib/hashtags.mjs'
 
-/**
- *
- */
+/** 重导出停留信号常量与规范化函数。 */
 export {
 	AUTHOR_BOOST_PER_DWELL,
 	DWELL_MIN_MS,

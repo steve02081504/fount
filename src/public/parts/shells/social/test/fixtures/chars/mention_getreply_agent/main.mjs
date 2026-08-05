@@ -3,9 +3,7 @@
  */
 import { getReplyIdentityProbe } from 'fount/public/parts/shells/social/test/fixtures/probes/getReplyIdentityProbe.mjs'
 
-/**
- *
- */
+/** 测试 fixture char 默认导出。 */
 export default {
 	info: {
 		'zh-CN': { name: 'Mention fallback agent', avatar: '🤖', description: '', version: '1', author: 'fount', tags: ['test'] },

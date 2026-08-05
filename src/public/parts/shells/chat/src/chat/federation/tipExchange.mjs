@@ -30,9 +30,7 @@ export async function collectRemoteTipsFromPeers(username, groupId, options) {
 
 	return new Promise(resolve => {
 		let graceTimer = null
-		/**
-		 *
-		 */
+		/** 收窗并 resolve 收集到的 tip 与远端摘要。 */
 		const finish = () => {
 			clearTimeout(timer)
 			clearTimeout(graceTimer)
@@ -41,9 +39,7 @@ export async function collectRemoteTipsFromPeers(username, groupId, options) {
 		}
 		// 已定向到的目标全部回 pong 即可提前收窗（再留一小段宽限收尾迟到分片），无需死等满 waitMs。
 		// onResponse 由 pong handler 每次收到 pong 后调用（无论是否携带 archiveSummary）。
-		/**
-		 *
-		 */
+		/** 定向 peer 全部 pong 后提前收窗（留宽限期收尾迟到分片）。 */
 		const onResponse = () => {
 			pending.responded++
 			const expected = pending.expectedPeers
