@@ -148,9 +148,9 @@ fount_update_to_ref() {
 			rm -f "$FOUNT_DIR/.noupdate"
 			get_i18n 'update.removedNoUpdate'
 		fi
-		fount_upgrade
+		fount_upgrade || return
 		deno_upgrade
-		return 0
+		return
 	fi
 
 	commit=$(invoke_repo_git rev-parse --verify "${target}^{commit}" 2>/dev/null) || {
