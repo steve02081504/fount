@@ -4,6 +4,7 @@
 		return
 	}
 	fount_upgrade
+	if ($LastExitCode -ne 0) { return }
 	deno_upgrade
 }
 
@@ -41,6 +42,7 @@ function script:fount_update_to_ref($Target) {
 		}
 		else {
 			git_backup_uncommitted
+			if ($LastExitCode -ne 0) { return }
 			invoke_repo_git checkout $Target | Out-Host
 			if ($LastExitCode -ne 0) { return }
 		}
@@ -49,6 +51,7 @@ function script:fount_update_to_ref($Target) {
 			Write-Host (Get-I18n -key 'update.removedNoUpdate')
 		}
 		fount_upgrade
+		if ($LastExitCode -ne 0) { return }
 		deno_upgrade
 		return
 	}
