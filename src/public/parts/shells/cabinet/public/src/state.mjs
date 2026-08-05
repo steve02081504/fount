@@ -1,14 +1,12 @@
 /**
- * Cabinet 页面共享可变状态（各子模块读写此对象字段）。
+ * Cabinet 前端状态模块（store、快捷键与剪贴板订阅）。
  */
 import { createCommandHistory } from '../shared/commandHistory.mjs'
 import { shortcutLabels } from '../shared/keyboard.mjs'
 
 import { readClipboard, subscribeClipboard } from './clipboard.mjs'
 
-/**
- *
- */
+/** Cabinet 页面共享可变状态（各子模块读写此对象字段）。 */
 export const cabinetStore = {
 	/** @type {object[]} */
 	cabinets: [],
@@ -39,9 +37,7 @@ export const cabinetStore = {
 }
 
 const isMac = /Mac|iPhone|iPad/.test(navigator.platform || '')
-/**
- *
- */
+/** 当前平台的快捷键显示标签。 */
 export const hotkeys = shortcutLabels(isMac)
 
 subscribeClipboard(value => {

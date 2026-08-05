@@ -81,9 +81,7 @@ export async function connectOutboundLiveBridge(options) {
 	}, 3000)
 
 	let closed = false
-	/**
-	 *
-	 */
+	/** 关闭 live bridge 并清理定时器/订阅。 */
 	const close = () => {
 		if (closed) return
 		closed = true

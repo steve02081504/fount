@@ -10,9 +10,7 @@ import {
 	updateStatus as setEntityStatus,
 } from '../entity/profile.mjs'
 
-/**
- *
- */
+/** 资料页动作注册表。 */
 export const actions = {
 	/**
 	 * @param {object} params 参数

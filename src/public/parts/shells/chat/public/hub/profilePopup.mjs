@@ -163,9 +163,7 @@ async function paintProfilePopup(popup, entity) {
 	await wireEntityProfileCardActions(popup, entity, {
 		profile,
 		onBeforeDm: dismissProfilePopup,
-		/**
-		 *
-		 */
+		/** 资料卡重绘后刷新 popup。 */
 		onRepaint: async () => {
 			await paintProfilePopup(popup, entity)
 		},

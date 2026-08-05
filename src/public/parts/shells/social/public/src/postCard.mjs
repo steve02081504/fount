@@ -294,9 +294,7 @@ function bindBodyFold(card) {
  * @returns {void}
  */
 function scheduleBodyFold(body) {
-	/**
-	 *
-	 */
+	/** 测量正文高度并应用折叠样式。 */
 	const apply = () => {
 		if (body.classList.contains('body-foldable')) return
 		const cwBody = body.closest('.content-warning-body')
@@ -338,12 +336,10 @@ function bindPostDetailMediaLike(card, entityHash, postId) {
 	if (!(media instanceof HTMLElement) || media.dataset.dblLikeBound === '1') return
 	media.dataset.dblLikeBound = '1'
 	let lastTap = 0
-	/**
-	 * @returns {Promise<void>}
-	 */
 	let likeInFlight = false
 	/**
-	 *
+	 * 双击多媒体时乐观点赞。
+	 * @returns {Promise<void>}
 	 */
 	async function likeFromMedia() {
 		if (likeInFlight) return
@@ -426,9 +422,7 @@ function bindPostCardOpen(card, hash) {
 	let timer = 0
 	let startX = 0
 	let startY = 0
-	/**
-	 *
-	 */
+	/** 清除长按计时器。 */
 	const clearPressTimer = () => {
 		if (timer) {
 			clearTimeout(timer)

@@ -470,16 +470,12 @@ async function launchNodeOnce(options = {}) {
 		port = selfHeld.base
 		const outerRelease = releasePort
 		const outerCommit = commitPort
-		/**
-		 *
-		 */
+		/** 释放自持有端口并调用外层释放。 */
 		releasePort = async () => {
 			await selfHeld.releasePort(port)
 			await outerRelease?.()
 		}
-		/**
-		 *
-		 */
+		/** 提交自持有端口并调用外层提交。 */
 		commitPort = async () => {
 			await selfHeld.commitPort(port)
 			await outerCommit?.()

@@ -7,9 +7,7 @@ import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part_query'
 
 import { buildTrendingHashtags } from './hashtags.mjs'
 
-/**
- *
- */
+/** part_query 话题热度 kind 常量。 */
 export const TRENDING_HASHTAGS_KIND = 'trending_hashtags'
 
 const TAG_MAX_LEN = 32

@@ -613,9 +613,7 @@ const checkFountInstallerAlive = async () => {
  */
 const whenFountInstallerFails = () => {
 	return new Promise(resolve => {
-		/**
-		 *
-		 */
+		/** 轮询直至安装程序进程退出。 */
 		const check = async () => {
 			if (await checkFountInstallerAlive()) setTimeout(check, 1000)
 			else resolve()

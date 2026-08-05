@@ -99,9 +99,7 @@ export async function ensureFederatedLiveProxy(username, entityHash, liveId, hin
 		ingestBridgedLiveSignal(username, entityHash, liveId, wireMessage)
 	})
 
-	/**
-	 *
-	 */
+	/** 关闭桥接并注销代理条目。 */
 	const closer = () => {
 		try { remote.close() } catch { /* ignore */ }
 		proxies.delete(key)

@@ -97,7 +97,5 @@ export async function initTriggerIdentity(replicaUsername) {
 	if (operatorHash) await setCared(replicaUsername, selfHash, operatorHash, true)
 }
 
-/**
- *
- */
+/** 重导出 fixture 身份常量。 */
 export { selfEntityHash, operatorEntityHash, CHARNAME }

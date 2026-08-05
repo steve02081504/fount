@@ -1,14 +1,10 @@
 /** Social shell HTTP 客户端。 */
 import { state } from '../state.mjs'
 
-/**
- *
- */
+/** Social 壳 HTTP API 根路径。 */
 export const SOCIAL_API = '/api/parts/shells:social'
 
-/**
- *
- */
+/** Chat 壳 HTTP API 根路径。 */
 export const CHAT_API = '/api/parts/shells:chat'
 
 /**

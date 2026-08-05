@@ -7,7 +7,5 @@
  */
 export { arrayBufferToBase64 } from '/scripts/lib/base64.mjs'
 
-/**
- *
- */
+/** 联邦分块上传单块上限（字节）。 */
 export const FEDERATION_CHUNK_MAX_BYTES = 512 * 1024

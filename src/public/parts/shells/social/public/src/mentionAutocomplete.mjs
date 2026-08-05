@@ -1,5 +1,5 @@
 /**
- * @ 提及 autocomplete（输入 @ 后弹出候选）。
+ * 提及自动补全：输入 @ 后弹出候选。
  */
 
 import { formatEntityMentionToken } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'

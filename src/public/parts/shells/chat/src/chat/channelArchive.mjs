@@ -37,9 +37,7 @@ import { getState } from './dag/materialize.mjs'
 import { messagesPath } from './lib/paths.mjs'
 import { getOperatorEntityHash } from './lib/replica.mjs'
 
-/**
- *
- */
+/** 频道归档格式常量与校验工具重导出。 */
 export {
 	CHANNEL_ARCHIVE_FORMAT,
 	portableMessageFromSnapshot,

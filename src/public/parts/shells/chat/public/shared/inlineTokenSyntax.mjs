@@ -3,24 +3,16 @@
 /** emojiId 位允许 unicode 别名（name/alt）；不含 `/`，以免吞掉额外 path 段。 */
 const EMOJI_ID_IN_TOKEN = '[^\\]/\\r\\n]+?'
 
-/**
- *
- */
+/** 行内 emoji token 正则（`: [emoji:pack/id]:`）。 */
 export const EMOJI_TOKEN_RE = new RegExp(`:\\[emoji:([\\w.-]+)\\/(${EMOJI_ID_IN_TOKEN})\\]:`, 'giu')
 
-/**
- *
- */
+/** 行内消息链接 token 正则。 */
 export const MESSAGE_TOKEN_RE = /#\[message:([\w.-]+)\/([\w.-]+)\/([\w.-]+)\]/g
 
-/**
- *
- */
+/** 行内频道链接 token 正则。 */
 export const CHANNEL_TOKEN_RE = /#\[channel:([\w.-]+)\/([\w.-]+)\]/g
 
-/**
- *
- */
+/** 行内群链接 token 正则。 */
 export const GROUP_TOKEN_RE = /#\[group:([\w.-]+)\]/g
 
 /** 匹配顺序：@mention → #message → #channel → #group → :emoji: */

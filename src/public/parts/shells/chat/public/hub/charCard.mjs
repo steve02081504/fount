@@ -130,9 +130,7 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	if (generation !== charInfoCardRenderGeneration) return
 
 	if (entityHash) {
-		/**
-		 *
-		 */
+		/** 角色信息卡内容变更后重绘。 */
 		const repaint = async () => {
 			if (generation !== charInfoCardRenderGeneration) return
 			const details = await getCharDetails(name)

@@ -56,9 +56,7 @@ export interface SocialPostRef {
 	postId: string
 }
 
-/**
- *
- */
+/** 群 ref（群 id 与可选频道 id）。 */
 export interface SocialGroupRef {
 	groupId: string
 	channelId?: string
@@ -165,35 +163,25 @@ export interface SocialPollVoteContent extends SocialEngagementTarget {
 	choices: number[]
 }
 
-/**
- *
- */
+/** 点赞事件 content（复用互动 target 字段）。 */
 export type SocialLikeContent = SocialEngagementTarget
 
-/**
- *
- */
+/** 转发事件 content，可选附言。 */
 export interface SocialRepostContent extends SocialEngagementTarget {
 	comment?: string
 }
 
-/**
- *
- */
+/** 关注事件 content。 */
 export interface SocialFollowContent {
 	targetEntityHash: string
 }
 
-/**
- *
- */
+/** 拉黑事件 content。 */
 export interface SocialBlockContent {
 	targetEntityHash: string
 }
 
-/**
- *
- */
+/** 删帖事件 content。 */
 export interface SocialPostDeleteContent {
 	targetPostId: string
 }
@@ -329,9 +317,7 @@ export interface SocialRepostFeedItem extends SocialFeedItemBase {
 	repostComment: string
 }
 
-/**
- *
- */
+/** 时间线 feed 条目：原创帖或转发。 */
 export type SocialFeedItem = SocialPostFeedItem | SocialRepostFeedItem
 
 /** `GET /feed` 等分页响应。 */
@@ -364,9 +350,7 @@ export interface SocialNotificationItem {
 	aggregateKey?: string | null
 }
 
-/**
- *
- */
+/** 通知分页响应（含未读数与游标）。 */
 export interface SocialNotificationsPage {
 	notifications: SocialNotificationItem[]
 	nextCursor: string | null
@@ -383,17 +367,13 @@ export interface SocialFollowResponse {
 	isFollowing: boolean
 }
 
-/**
- *
- */
+/** 拉黑写操作响应。 */
 export interface SocialBlockResponse {
 	entityHash: string
 	blocked: boolean
 }
 
-/**
- *
- */
+/** 隐藏写操作响应。 */
 export interface SocialHideResponse {
 	entityHash: string
 	hidden: boolean
@@ -464,18 +444,14 @@ export interface SocialRpcDiscoverRequest {
 	cursor?: string
 }
 
-/**
- *
- */
+/** 联邦 RPC：账号发现响应。 */
 export interface SocialRpcDiscoverResponse {
 	type: 'social_discover_response'
 	accounts: SocialDiscoverAccount[]
 	nextCursor?: string | null
 }
 
-/**
- *
- */
+/** 联邦 RPC：帖子发现请求。 */
 export interface SocialRpcPostDiscoverRequest {
 	type: 'social_post_discover_request'
 	n?: number
@@ -483,9 +459,7 @@ export interface SocialRpcPostDiscoverRequest {
 	cursor?: string
 }
 
-/**
- *
- */
+/** 联邦 RPC：帖子发现响应。 */
 export interface SocialRpcPostDiscoverResponse {
 	type: 'social_post_discover_response'
 	posts: SocialDiscoverPost[]
@@ -506,9 +480,7 @@ export interface SocialMessageEvent {
 	lang: string
 }
 
-/**
- *
- */
+/** char 社交接口入站关注事件。 */
 export interface SocialFollowEvent {
 	username: string
 	charPartName: string
@@ -517,9 +489,7 @@ export interface SocialFollowEvent {
 	targetEntityHash: string
 }
 
-/**
- *
- */
+/** char.interfaces.social 可选回调面。 */
 export interface SocialCharInterface {
 	OnMessage?: (event: SocialMessageEvent) => Promise<boolean>
 	OnFollow?: (event: SocialFollowEvent) => Promise<void>

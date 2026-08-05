@@ -4,13 +4,9 @@
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 import { maybeDecryptPostContent } from '../vault_crypto/vault.mjs'
 
-/**
- *
- */
+/** 允许的回复策略枚举。 */
 export const REPLY_POLICIES = new Set(['everyone', 'followers_7d', 'author_follows'])
-/**
- *
- */
+/** 「关注满 7 天」策略的毫秒阈值。 */
 export const FOLLOWERS_7D_MS = 7 * 24 * 60 * 60 * 1000
 
 /**

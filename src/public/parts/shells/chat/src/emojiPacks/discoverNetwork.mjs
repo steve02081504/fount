@@ -5,9 +5,7 @@ import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import { queryNetwork, registerQueryInboundHandler } from 'npm:@steve02081504/fount-p2p/wire/part_query'
 
-/**
- *
- */
+/** part_query 类型：emoji 包发现。 */
 export const EMOJI_PACK_OFFERS_KIND = 'emoji_pack_offers'
 
 /**

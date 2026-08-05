@@ -18,7 +18,7 @@ export {
 } from './composerState.mjs'
 
 /**
- *
+ * 发帖与草稿相关 API（composerPublish 重导出）。
  */
 export {
 	buildPostBody,

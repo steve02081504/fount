@@ -116,9 +116,7 @@ export function bindDwellTracker(root) {
 		void flushBuffer()
 	}, FLUSH_INTERVAL_MS)
 
-	/**
-	 *
-	 */
+	/** 页面隐藏时刷写停留缓冲。 */
 	const onVisibility = () => {
 		if (document.visibilityState === 'hidden')
 			void flushBuffer()

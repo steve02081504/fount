@@ -12,9 +12,7 @@ import { escapeRegExp } from '../regex.mjs'
 
 import { FALLBACK_LOCALE, getBestLocale } from './locale_match.mjs'
 
-/**
- *
- */
+/** 重导出 locale 匹配与回退常量。 */
 export {
 	FALLBACK_LOCALE,
 	getBestLocale,

@@ -105,9 +105,7 @@ export type PermissionBitmap = bigint
 
 // ---- Denylist（节点连接拒绝 deny，`denylist.mjs`；非 Social block / 群 ban）----
 
-/**
- *
- */
+/** denylist 拒绝粒度：主体、实体或节点。 */
 export type DenyScope = 'subject' | 'entity' | 'node'
 
 /** 磁盘/API 单条 denylist 条目。 */
@@ -125,13 +123,9 @@ export interface SerializedDenylist {
 
 // ---- Personal lists（`personal_block.mjs`：block=联邦公开拉黑，hide=纯本地）----
 
-/**
- *
- */
+/** 个人列表作用域：实体或主体。 */
 export type PersonalListScope = 'entity' | 'subject'
-/**
- *
- */
+/** 个人列表类型：联邦公开拉黑或纯本地隐藏。 */
 export type PersonalListKind = 'block' | 'hide'
 
 /** `GET /api/parts/shells:chat/personal-lists` 与 Social profile 共用条目形状。 */
@@ -141,9 +135,7 @@ export interface PersonalListEntry {
 	value: string
 }
 
-/**
- *
- */
+/** `GET …/personal-lists` 响应体。 */
 export interface PersonalListsResponse {
 	entries: PersonalListEntry[]
 }
@@ -155,9 +147,7 @@ export interface MailboxSummaryResponse {
 
 // ---- 群成员 / 频道 ----
 
-/**
- *
- */
+/** 群成员物化记录。 */
 export interface Member {
 	pubKeyHash: string
 	homeNodeHash?: string | null
@@ -172,9 +162,7 @@ export interface Member {
 	pubKeyHex?: string | null
 }
 
-/**
- *
- */
+/** 群角色定义（权限、排序与展示）。 */
 export interface Role {
 	name: string
 	color: string
@@ -184,17 +172,13 @@ export interface Role {
 	isHoisted: boolean
 }
 
-/**
- *
- */
+/** 频道级权限允许/拒绝覆写。 */
 export interface ChannelPermissionOverride {
 	allow: Partial<PermissionFlags>
 	deny: Partial<PermissionFlags>
 }
 
-/**
- *
- */
+/** 群频道元数据（文本、列表或流媒体）。 */
 export interface Channel {
 	id: string
 	type: 'text' | 'list' | 'streaming'
@@ -208,9 +192,7 @@ export interface Channel {
 	manualItems?: ListItem[]
 }
 
-/**
- *
- */
+/** 列表频道中的手动条目。 */
 export interface ListItem {
 	title: string
 	desc?: string
@@ -218,17 +200,13 @@ export interface ListItem {
 	url?: string
 }
 
-/**
- *
- */
+/** 群文件区文件夹节点。 */
 export interface FileFolder {
 	name: string
 	parentFolderId: string | null
 }
 
-/**
- *
- */
+/** 群展示元数据（名称、头像与分叉信息）。 */
 export interface GroupMeta {
 	name: string
 	description: string
@@ -284,9 +262,7 @@ export interface GroupSettings {
 
 // ---- 信誉账本 / 邀请边 / 文件主密钥轮换 ----
 
-/**
- *
- */
+/** 信誉账本条目（slash 或 reset）。 */
 export interface ReputationLedgerEntry {
 	targetPubKeyHash: string
 	sender: string
@@ -296,9 +272,7 @@ export interface ReputationLedgerEntry {
 	payloadRef?: string
 }
 
-/**
- *
- */
+/** 邀请图边（入群关系与可选信誉边）。 */
 export interface InviteEdge {
 	from: string
 	to: string
@@ -308,9 +282,7 @@ export interface InviteEdge {
 	fileKeyWraps?: boolean
 }
 
-/**
- *
- */
+/** 文件主密钥轮换事件摘要。 */
 export interface FileMasterKeyRotationEntry {
 	eventId: string
 	generation: number
@@ -318,9 +290,7 @@ export interface FileMasterKeyRotationEntry {
 	type: 'kick' | 'rotate'
 }
 
-/**
- *
- */
+/** 群共享文件元数据与分块清单。 */
 export interface FileInfo {
 	name: string
 	size: number
@@ -332,9 +302,7 @@ export interface FileInfo {
 	key_generation?: number
 }
 
-/**
- *
- */
+/** 加密文件单个分块的存储定位与哈希。 */
 export interface ChunkInfo {
 	chunkIndex: number
 	chunkHash: string
@@ -415,14 +383,10 @@ export interface SerializedGroupState extends GroupStateCore {
 	bannedNodes: string[]
 }
 
-/**
- *
- */
+/** checkpoint `members_record` 字段形态（序列化群状态）。 */
 export type CheckpointMembersRecord = SerializedGroupState
 
-/**
- *
- */
+/** DAG checkpoint 快照（epoch、overlay 与文件树等）。 */
 export interface Checkpoint {
 	local_node_id: string | null
 	members_record: CheckpointMembersRecord
@@ -441,18 +405,14 @@ export interface Checkpoint {
 	checkpoint_signature?: string
 }
 
-/**
- *
- */
+/** 入群 PoW 挑战（难度与时间戳）。 */
 export interface PowChallenge {
 	challenge: string
 	difficulty: number
 	timestamp: number
 }
 
-/**
- *
- */
+/** PoW 解答（nonce 与哈希）。 */
 export interface PowSolution {
 	nonce: number
 	hash: string
