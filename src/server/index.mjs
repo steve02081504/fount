@@ -7,6 +7,9 @@ import fs from 'node:fs'
 import os from 'node:os'
 import process from 'node:process'
 
+import { on_shutdown } from 'npm:on-shutdown'
+
+import * as icon from '../../imgs/icon_anime/session.mjs'
 import { console } from '../scripts/i18n/index.mjs'
 import { set_sentry_enabled } from '../scripts/sentry_state.mjs'
 import { SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
@@ -134,8 +137,23 @@ if (args.length) {
 		process.exit(1)
 	}
 }
+
+const showIcon = Boolean(fount_config.needs_output && fount_config.starts.Base)
+let icon_intro
+if (showIcon) {
+	on_shutdown(async () => { await icon.farewell() })
+	icon.signal.addEventListener('abort', () => process.exit(0), { once: true })
+	icon_intro = icon.intro()
+}
+
 // 初始化应用程序。
 const result = await init(fount_config)
+
+if (showIcon) {
+	if (result === 'started') await icon_intro
+	await icon.dismiss()
+	if (icon.signal.aborted) process.exit(0)
+}
 
 if (process.env.FOUNT_STARTUP_PRIORITY_BOOST) {
 	try { os.setPriority(0, 0) } catch { /* ignore */ }
