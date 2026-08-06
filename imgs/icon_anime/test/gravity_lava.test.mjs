@@ -9,7 +9,7 @@ import {
 	stepParticles, spawnParticle, MAT, LIQ_DRAW, T_MAX, T_LIQUIDUS, T_SOLIDUS,
 	LAVA_ONSET_EXPOSURE, rhoOf, viscOf, SUBSTANCE, totalMelt, applyGravityToWorld,
 	neighborCoord, regurgitateTemp, clearMaterials, EDGE_BOTTOM, EDGE_LEFT,
-	pressureAt, liquidPressureAt, ATM_HYDRO, P_ATM, RHO_G, hydraulicPhi, gravityDepth,
+	pressureAt, liquidPressureAt, hydraulicPhi, gravityDepth,
 	totalWorldWater, addLiquid, labelAirRegions, totalSealedGas,
 } from '../fluid/index.mjs'
 import {
@@ -19,8 +19,8 @@ import {
 import { rainEdgeWeights, pickRainEdge } from '../scene.mjs'
 
 // Re-export edge indices if not on index — local fallbacks.
-const BOTTOM = typeof EDGE_BOTTOM === 'number' ? EDGE_BOTTOM : 1
-const LEFT = typeof EDGE_LEFT === 'number' ? EDGE_LEFT : 2
+const BOTTOM = EDGE_BOTTOM
+const LEFT = EDGE_LEFT
 
 Deno.test('gravity: mapSensorToScreen upright phone → screen down', () => {
 	const m = mapSensorToScreen(0, -9.81, 0)
@@ -231,7 +231,6 @@ Deno.test('gravity: tilted depth increases along ĝ', () => {
 Deno.test('gravity: 45° communicating vessels converge φ', () => {
 	const world = createWorld({ width: 12, height: 10, margin: 0, bottomExtra: 0 })
 	clearMaterials(world)
-	const s = Math.SQRT1_2
 	applyGravityToWorld(world, { gx: 0, gy: 1, mag: BASE_PARTICLE_G })
 	// U-shape: walls
 	for (let y = 3; y < 10; y++) {
@@ -251,10 +250,6 @@ Deno.test('gravity: 45° communicating vessels converge φ', () => {
 	const phiR = hydraulicPhi(liquidPressureAt(world, 8, 8), gravityDepth(world, 8, 8))
 	// Surfaces should be closer in φ after equalize (allow loose tolerance).
 	assertLess(Math.abs(phiL - phiR), 3)
-	void s
-	void P_ATM
-	void ATM_HYDRO
-	void RHO_G
 })
 
 Deno.test('gravity: sealed gas conserved under tilt', () => {

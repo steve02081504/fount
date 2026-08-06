@@ -10,7 +10,7 @@ import { hydraulicPhi, applyTransfer } from './flow.mjs'
 import { pressureAt } from './gas.mjs'
 import { P_ATM, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
 import {
-	scratch, growScratch, floodClear, floodPush, gravityDepth,
+	scratch, growScratch, floodClear, floodPush, gravityDepth, gravityUpWeights, inWorld,
 	markAirIfDrawCrossed,
 } from './world.mjs'
 
@@ -82,6 +82,8 @@ export const labelLiquidComponents = (world) => {
 	}
 	let next = 1
 
+	const up = gravityUpWeights(world)
+
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
@@ -93,13 +95,32 @@ export const labelLiquidComponents = (world) => {
 			for (let qi = 0; qi < world.floodQ.length; qi += 2) {
 				const cx = world.floodQ[qi]
 				const cy = world.floodQ[qi + 1]
-				const aboveY = cy - 1
-				if (aboveY < 0)
-					pushSurface(world, cx, cy, id, pressureAt(world, cx, 0), surf)
-				else {
-					const above = aboveY * W + cx
-					if (!isLiquidBarrier(mat[above]) && liq[above] < LIQ_DRAW)
-						pushSurface(world, cx, cy, id, pressureAt(world, cx, aboveY), surf)
+				let isSurf = up.n <= 0
+				if (!isSurf) {
+					isSurf = true
+					for (let o = 0; o < up.n; o++) {
+						const ax = cx + up.dx[o]
+						const ay = cy + up.dy[o]
+						if (!inWorld(world, ax, ay)) continue
+						const above = ay * W + ax
+						if (!isLiquidBarrier(mat[above]) && liq[above] >= LIQ_DRAW) {
+							isSurf = false
+							break
+						}
+					}
+				}
+				if (isSurf) {
+					let airP = pressureAt(world, cx, cy)
+					if (up.n > 0) {
+						let best = 0
+						for (let o = 1; o < up.n; o++)
+							if (up.w[o] > up.w[best]) best = o
+						const ax = cx + up.dx[best]
+						const ay = cy + up.dy[best]
+						if (inWorld(world, ax, ay) && !isLiquidBarrier(mat[ay * W + ax]))
+							airP = pressureAt(world, ax, ay)
+					}
+					pushSurface(world, cx, cy, id, airP, surf)
 				}
 				for (let o = 0; o < 4; o++) {
 					const nx = cx + ORTHO_DX[o]

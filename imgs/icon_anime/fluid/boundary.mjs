@@ -8,7 +8,7 @@ import {
 } from './mat.mjs'
 import { markAirIfDrawCrossed, markAirIfMeltDrawCrossed, addMelt } from './world.mjs'
 import {
-	edgeRoles, EDGE_TOP, EDGE_BOTTOM, EDGE_LEFT, EDGE_RIGHT, edgeUpness,
+	edgeRoles, EDGE_TOP, EDGE_BOTTOM, EDGE_LEFT, EDGE_RIGHT,
 } from './edges.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
@@ -199,6 +199,4 @@ export const stepBoundary = (world) => {
 			}
 		}
 	}
-
-	void edgeUpness
 }

@@ -39,7 +39,7 @@ Controls: Ctrl+C exits (icon teardown, then quit). Left quick-click → ripple; 
 | --- | --- |
 | `index.mjs` | CLI entry + public re-exports |
 | `session.mjs` | Singleton session API; starts/stops device gravity |
-| `gravity.mjs` | Termux `termux-sensor` via `node:child_process`; default screen-down elsewhere; continuous vector + 4-axis quantize |
+| `gravity.mjs` | Termux `termux-sensor` via `node:child_process`; continuous unit vector `{gx,gy,mag}` |
 | `icon.mjs` | Packed silhouette, pillars, body growth order |
 | `scene.mjs` | Anim state, materials, rain edges, pool leak, enter/hold/exit, resize |
 | `compose.mjs` | Frame paint + ANSI; lava palette; pointer torch/ripples |
@@ -50,7 +50,7 @@ Controls: Ctrl+C exits (icon teardown, then quit). Left quick-click → ripple; 
 | `hash.mjs` | `hash01` + fBm + ortho deltas |
 | `fluid/` | Particles, liquid/melt, soil, thermal, boundary, bubbles, gas, glyphs |
 
-`fluid/` files: `mat` (density/`rhoOf`/`viscOf`), `flow`, `world`, `edges`, `boundary`, `thermal`, `bubbles`, `gas`, `liquid`, `soil`, `particles`, `step` (`stepFluid`), `glyphs`.
+`fluid/` files: `mat` (density/`rhoOf`/`viscOf` + visc ladder), `flow`, `components` (shared BFS label), `equilibrate` (Boyle / φ), `transport` (condensed-phase kernel), `world`, `edges` (fractional edge roles), `boundary`, `thermal`, `bubbles`, `gas`, `liquid`, `soil`, `particles`, `step` (`stepFluid`), `glyphs`.
 
 ## Material standard
 
@@ -72,8 +72,10 @@ Open-stage: ungrown base columns do not splash — rain falls through until it h
 ## Invariants (do not break)
 
 - **One pressure language** / **one density language** — see [physics-notes.md](physics-notes.md). Do not invent parallel hydro models.
+- **Viscosity ladder** is the sole branch knob: `≤ VISC_INERTIAL` → inertial gas velocity; `< VISC_SOLID` → Stokes mass flux; `≥ VISC_SOLID` → frozen.
 - Water mass = `liq + moisture + condense + particles` (`totalWorldWater`); melt is separate. Closed transfers conserve; intentional sinks are world-edge / down-edge wipe / BODY impact. Particle expiry deposits back.
 - Terrain is **pedestal-anchored**; ungrown base keeps `HORIZON` until `POOL`/`SLOPE_*` overwrite. Resize shifts retained dynamics with the icon.
-- Particles: continuous `world.gravity`. Grid: quantized 4-axis. Rain edges weighted by `−outward·ĝ` (gravity-down edge weight 0).
+- Gravity is a continuous unit vector everywhere (particles + grid). Depth = projection on ĝ; neighbor transfer uses weights `max(0, d̂·ĝ)`.
+- Four edges hold fractional roles `sink/source/wrap` from `n̂·ĝ` (sum to 1). Lava onset is **exposure work** `∫ max(0, n̂·ĝ) dt` (≥ `LAVA_ONSET_EXPOSURE`); 45° → two edges each need ~13·√2 s.
 - Termux: `gravity.mjs` → `termux-sensor`; path CLI installs `termux-api` on `fount logo` / `log` / `server` when missing.
-- Down edge (screen-down long enough): lava source. Up edge: rain + melt absorb/regurgitate. Side: wrap perpendicular to gravity.
+- Rain edges weighted by `source`; side wrap by `wrap`. Meltdown absorb records absorb-time ĝ; regurgitate when `ĝ·absorbDir` drops.

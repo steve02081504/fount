@@ -188,9 +188,4 @@ export const meltTempOnTransfer = (world, src, dst, moved, beforeSrc, _beforeDst
 		? (world.temp[dst] * prevMass + heat) / destMass
 		: tSrc
 	if (world.melt[src] <= 1e-8) world.temp[src] = 0
-	else {
-		// remaining keeps temp
-		void beforeSrc
-	}
-	markAirIfMeltDrawCrossed(world, beforeSrc, world.melt[src])
 }
