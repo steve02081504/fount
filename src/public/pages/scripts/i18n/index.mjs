@@ -623,19 +623,11 @@ function translateSingularElement(element) {
 					if (translation) updateAttribute(attr, translation)
 				}
 				const values = ['textContent', 'innerHTML']
-				let bodyUpdated = false
 				for (const attr of values) {
 					const specificKey = `${key}.${attr}`
 					const translation = geti18n_nowarn(specificKey, element.dataset)
-					if (translation) {
-						updateValue(attr, translation)
-						bodyUpdated = true
-					}
+					if (translation) updateValue(attr, translation)
 				}
-				// 仅属性对象（icon-only 等）：清掉上一语种字符串 locale 写入的正文，保留子元素图标
-				if (!bodyUpdated && nested.textContent === undefined && nested.innerHTML === undefined
-					&& !element.children.length && element.textContent)
-					updateValue('textContent', '')
 				const dataset = geti18n_nowarn(`${key}.dataset`)
 				if (dataset) Object.assign(element.dataset, dataset)
 				updated = true
