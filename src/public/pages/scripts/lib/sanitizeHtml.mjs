@@ -61,7 +61,7 @@ function parseHtmlInTemplate(html) {
 }
 
 /**
- * 收集 root 下全部节点（含后代）。
+ * 收集待消杀节点：Element 根含自身；DocumentFragment 等从子节点起。
  * @param {Element | DocumentFragment | ChildNode} root 根
  * @returns {ChildNode[]} 深度优先节点列表
  */
@@ -76,7 +76,8 @@ function collectDescendants(root) {
 		if (node.nodeType === 1)
 			for (const child of [...node.childNodes]) walk(child)
 	}
-	for (const child of [...root.childNodes]) walk(child)
+	if (root.nodeType === 1) walk(/** @type {ChildNode} */ (root))
+	else for (const child of [...root.childNodes]) walk(child)
 	return nodes
 }
 

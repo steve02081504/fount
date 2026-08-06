@@ -62,8 +62,12 @@ Deno.test('scrubHtmlActivePayload keeps structure, strips on* and javascript:', 
 
 Deno.test('scrubHtmlActivePayload mutates DOM root in place', () => {
 	const host = document.createElement('div')
+	host.setAttribute('onclick', 'host()')
+	host.setAttribute('href', 'javascript:alert(1)')
 	host.innerHTML = '<p onclick="x()">ok</p>'
 	const returned = scrubHtmlActivePayload(host)
 	assertEquals(returned, host)
+	assertFalse(host.hasAttribute('onclick'))
+	assertFalse(host.hasAttribute('href'))
 	assertFalse(/onclick/i.test(host.innerHTML))
 })
