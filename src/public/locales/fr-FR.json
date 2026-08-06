@@ -381,6 +381,7 @@
 				"localBranchAhead": "La branche locale est en avance sur la branche distante. Aucune mise à jour requise.",
 				"branchesDiverged": "Les succursales locales et distantes ont été bifurquées. Mise à jour forcée en cours...",
 				"notOnBranch": "Pas sur la branche, passez en 'master'...",
+				"upstreamGoneFallbackMaster": "La branche distante « ${branch} » a été supprimée ; suivi de master à la place…",
 				"noUpstreamBranch": "Attention : aucune branche amont pour « ${branch} », utilisez « ${remote} ».",
 				"dirtyWorkingDirectory": "Attention : le répertoire de travail n'est pas propre. Veuillez stager ou commiter vos modifications avant la mise à jour.",
 				"notInstalled": "Git n'est pas installé, j'essaye de l'installer...",

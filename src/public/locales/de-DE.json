@@ -381,6 +381,7 @@
 				"localBranchAhead": "Der lokale Zweig ist dem entfernten Zweig voraus. Keine Updates erforderlich.",
 				"branchesDiverged": "Die lokalen und Remote-Zweige wurden gegabelt. Erzwungenes Update läuft...",
 				"notOnBranch": "Nicht auf dem Zweig, wechseln Sie zu „Master“ ...",
+				"upstreamGoneFallbackMaster": "Remote-Zweig „${branch}“ wurde gelöscht; verfolge stattdessen master …",
 				"noUpstreamBranch": "Warnung: Für Branch '${branch}' kein Upstream konfiguriert, verwende '${remote}'.",
 				"dirtyWorkingDirectory": "Warnung: Das Arbeitsverzeichnis enthält ungesicherte Änderungen. Bitte sichern (stash/commit) Sie Ihre Änderungen vor dem Update.",
 				"notInstalled": "Git ist nicht installiert, versucht zu installieren ...",
