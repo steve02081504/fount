@@ -7,6 +7,7 @@
 
 import { MAT, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
 import { markAirIfDrawCrossed } from './world.mjs'
+import { neighborCoord } from './edges.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
  * @typedef {{
@@ -34,9 +35,10 @@ export const WIND_LIFT_MAX = 0.4
 /** 强上升气流中液滴寿命的软刷新。 */
 export const WIND_HOLD_LIFE = 36
 
-const GRAVITY = 0.12
-const MAX_VY = 1.15
+const MAX_SPEED = 1.15
 const PARTICLE_CAP = 1200
+/** 兼容旧名：默认粒子重力模长。 */
+export const GRAVITY = 0.12
 
 /**
  * 分配空粒子 SoA 池。
@@ -247,18 +249,37 @@ export const stepParticles = (world, onHit, state) => {
 			if (guy < WIND_LIFT_UY && speed2 > 1)
 				life = Math.max(life, Math.min(WIND_HOLD_LIFE, life + 1))
 		}
-		pvy = Math.min(MAX_VY, pvy + GRAVITY)
+		const g = world.gravity
+		pvx += g.gx * g.mag
+		pvy += g.gy * g.mag
+		// Cap only the gravity-aligned component (old MAX_VY) — preserve tangential orbit speed.
+		const along = pvx * g.gx + pvy * g.gy
+		if (along > MAX_SPEED) {
+			const excess = along - MAX_SPEED
+			pvx -= g.gx * excess
+			pvy -= g.gy * excess
+		}
 
 		if (life <= 0) {
 			depositParticleMass(world, px, py, amt)
 			continue
 		}
 
-		const nx = px + pvx
-		const ny = py + pvy
+		let nx = px + pvx
+		let ny = py + pvy
+
+		// Side wrap when leaving the perpendicular-to-gravity edges.
+		if (nx < 0 || nx >= W) {
+			const nb = neighborCoord(world, px | 0, py | 0, nx < 0 ? -1 : 1, 0)
+			if (nb.wrapped) nx = nb.x + (nx - Math.floor(nx))
+		}
+		if (ny < 0 || ny >= H) {
+			const nb = neighborCoord(world, px | 0, py | 0, 0, ny < 0 ? -1 : 1)
+			if (nb.wrapped) ny = nb.y + (ny - Math.floor(ny))
+		}
 
 		if (nx < 0 || nx >= W || ny >= H)
-			// World-edge sink — mass leaves the domain intentionally.
+			// World-edge sink — mass leaves the domain (side wrap already applied).
 			continue
 
 		if (ny < 0) {
@@ -277,7 +298,7 @@ export const stepParticles = (world, onHit, state) => {
 
 		const cell = cy * W + cx
 		const m = mat[cell]
-		const wet = liq[cell] >= LIQ_DRAW
+		const wet = liq[cell] >= LIQ_DRAW || world.melt[cell] >= LIQ_DRAW
 
 		if (m === MAT.AIR && !wet) {
 			live.x[write] = nx

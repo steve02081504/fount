@@ -7,6 +7,7 @@ import { setTimeout as delay } from 'node:timers/promises'
 
 import { lightPointer } from './gesture/light.mjs'
 import { windPointer } from './gesture/wind.mjs'
+import { startGravity, stopGravity } from './gravity.mjs'
 import { ICON_W, ICON_H } from './icon.mjs'
 import * as player from './player.mjs'
 import {
@@ -43,6 +44,7 @@ const exitFrames = () => exit(state)
  * @returns {void}
  */
 const openTui = () => {
+	startGravity()
 	player.start({
 		onUserAbort: abort,
 		/**
@@ -129,6 +131,7 @@ export async function dismiss() {
 	if (!state) return
 	await haltPlay()
 	player.stop()
+	stopGravity()
 }
 
 /**
@@ -145,6 +148,7 @@ export async function farewell() {
 	}
 	finally {
 		player.stop()
+		stopGravity()
 		running = null
 		state = null
 	}

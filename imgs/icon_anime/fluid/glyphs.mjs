@@ -29,6 +29,25 @@ export const WATER_LOW_DR = ['‵', '‛', '‶', '‟', '‷', '⁏']
 export const WATER_FALL = ['|', '¦', '‖', '⁞', '⁚', '⁝', '.']
 /** 近静水池（轻 → 重）。 */
 export const WATER_STILL = ['‥', '…', '~', '⁓', '–']
+/** 高粘滞熔岩块状。 */
+export const LAVA_THICK = ['█', '▓', '▒', '░', '#', '%', '*']
+/** 低粘滞熔岩沿用水的流动集。 */
+
+/**
+ * 熔岩字形：高粘滞块状，低粘滞复用流动水字形。
+ * @param {number} amount 质量
+ * @param {number} temp 温度
+ * @param {number} [phase=0] 相位
+ * @param {number} [vx=0] 水平速度
+ * @param {number} [vy=0] 垂直速度
+ * @returns {string} 字形
+ */
+export const lavaChar = (amount, temp, phase = 0, vx = 0, vy = 0) => {
+	const thick = 1 - Math.min(1, Math.max(0, temp))
+	if (thick > 0.55)
+		return pickWaterGlyph(LAVA_THICK, amount * (0.4 + thick * 0.6), phase, true)
+	return waterChar(amount, phase, vx, vy)
+}
 
 /**
  * 按水量（+ 相位抖动）从字形集中选取。

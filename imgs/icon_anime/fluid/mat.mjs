@@ -76,6 +76,71 @@ export const LIQ_DRAW = 0.35
 /** 每格自由液体质量上限。 */
 export const LIQ_FULL = 1
 
+/** 环境冷温（土地默认）。 */
+export const T_AMB = 0
+/** 固化线：低于此温度熔岩可凝固。 */
+export const T_SOLIDUS = 0.35
+/** 熔化线：高于此温度土壤熔化为熔岩。 */
+export const T_LIQUIDUS = 0.55
+/** 熔岩热源上限（下边贴边恒温）。 */
+export const T_MAX = 1
+/** 水闪蒸 / 土壤蒸发起点。 */
+export const T_BOIL = 0.25
+
+/** 冷岩密度（粘滞端）。 */
+export const RHO_ROCK = 2.4
+/** 最热熔岩密度。 */
+export const RHO_LAVA_HOT = 1.15
+/** 粘滞截断：≥ 此值视为固体、不流动。 */
+export const VISC_SOLID = 0.92
+/** 蒸汽泡最小可见气区格数。 */
+export const BUBBLE_MIN_CELLS = 2
+/** 正常重力持续帧数后下边涌岩浆（13s × 24fps）。 */
+export const LAVA_ONSET_FRAMES = 312
+
+/**
+ * 物质种类（密度曲线索引）。
+ * @enum {number}
+ */
+export const SUBSTANCE = {
+	AIR: 0,
+	WATER: 1,
+	ROCK: 2,
+}
+
+/**
+ * 温度 → 密度（同一标尺）。
+ * @param {number} substance SUBSTANCE.*
+ * @param {number} temp [0, 1]
+ * @returns {number} rho
+ */
+export const rhoOf = (substance, temp) => {
+	const t = Math.min(1, Math.max(0, temp))
+	if (substance === SUBSTANCE.AIR) return RHO_AIR
+	if (substance === SUBSTANCE.WATER) return RHO_G
+	// Rock / lava continuum: hot → light.
+	return RHO_LAVA_HOT + (RHO_ROCK - RHO_LAVA_HOT) * (1 - t)
+}
+
+/**
+ * 密度 → 粘滞 [0, 1+]；越高越稠。
+ * @param {number} rho 密度
+ * @returns {number} 粘滞
+ */
+export const viscOf = (rho) => {
+	if (rho <= RHO_AIR * 2) return 0
+	if (rho <= RHO_G) return 0.05
+	const t = (rho - RHO_LAVA_HOT) / (RHO_ROCK - RHO_LAVA_HOT)
+	return Math.min(1.2, Math.max(0.05, t * t))
+}
+
+/**
+ * 粘滞是否达到固化截断。
+ * @param {number} visc 粘滞
+ * @returns {boolean} 固体
+ */
+export const isViscSolid = visc => visc >= VISC_SOLID
+
 /**
  * 材质是否储存土壤水分（HORIZON / SOLID）。
  * @param {number} mat 材质 id

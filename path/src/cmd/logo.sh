@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 cmd_logo() {
-	require deno terminal
+	require deno terminal unix/termux
 	install_deno
+	termux_ensure_sensor_api
 	local icon_anime="$FOUNT_DIR/imgs/icon_anime/index.mjs"
 	local original_title logo_status subcommand
 	subcommand="${2:-}"

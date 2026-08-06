@@ -12,7 +12,7 @@ import { hash01, fbm1d } from '../hash.mjs'
 import {
 	P_ATM, RHO_AIR, ATM_HYDRO, GAS_DP_DRIVE, LIQ_DRAW, isBlockMat,
 } from './mat.mjs'
-import { scratch, idx, inWorld, floodClear, floodPush } from './world.mjs'
+import { scratch, idx, inWorld, floodClear, floodPush, gravityDepth } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
  * @typedef {{
@@ -45,20 +45,21 @@ export const GAS_SPEED_MAX = 5
 const GAS_UNIT_PER_CELL = 1
 
 /**
- * 开放空气在行 `y` 的静水压（y↓ → P↑）。
- * @param {number} y 世界行
+ * 开放空气在重力深度 `depth` 的静水压（向下 → P↑）。
+ * @param {number} depth 重力深度
  * @returns {number} 压力
  */
-const openHydroPressure = (y) => P_ATM + ATM_HYDRO * y
+const openHydroPressure = (depth) => P_ATM + ATM_HYDRO * depth
 
 /**
- * 密闭腔在 Boyle 均值附近的行 `y` 静水压。
+ * 密闭腔在 Boyle 均值附近的静水压。
  * @param {AirRegion} region 密闭腔区
- * @param {number} y 世界行
+ * @param {number} depth 当前深度
+ * @param {number} depthMean 区平均深度
  * @returns {number} 压力
  */
-const sealedHydroPressure = (region, y) =>
-	Math.max(0.05, region.pressure + ATM_HYDRO * (y - region.yMean))
+const sealedHydroPressure = (region, depth, depthMean) =>
+	Math.max(0.05, region.pressure + ATM_HYDRO * (depth - depthMean))
 
 /**
  * 格是否为气区泛洪/气体占据意义上的空气格。
@@ -66,7 +67,8 @@ const sealedHydroPressure = (region, y) =>
  * @param {number} cell 扁平索引
  * @returns {boolean} 空气格
  */
-export const isAirCell = (world, cell) => !isBlockMat(world.mat[cell]) && world.liq[cell] < LIQ_DRAW
+export const isAirCell = (world, cell) =>
+	!isBlockMat(world.mat[cell]) && world.liq[cell] < LIQ_DRAW && world.melt[cell] < LIQ_DRAW
 
 /**
  * 填充阻挡掩码：气体不可占据处为 1。
@@ -75,9 +77,9 @@ export const isAirCell = (world, cell) => !isBlockMat(world.mat[cell]) && world.
  * @returns {void}
  */
 export const fillBlocked = (world, blocked) => {
-	const { mat, liq } = world
+	const { mat, liq, melt } = world
 	for (let cell = 0; cell < blocked.length; cell++)
-		blocked[cell] = isBlockMat(mat[cell]) || liq[cell] >= LIQ_DRAW ? 1 : 0
+		blocked[cell] = isBlockMat(mat[cell]) || liq[cell] >= LIQ_DRAW || melt[cell] >= LIQ_DRAW ? 1 : 0
 }
 
 /**
@@ -148,7 +150,7 @@ export const labelAirRegions = (world) => {
 		if (regionId[cell] || !isAirCell(world, cell)) return
 		regionId[cell] = id
 		region.airCells++
-		region.sumY += y
+		region.sumY += gravityDepth(world, x, y)
 		floodPush(world, x, y)
 	}
 
@@ -259,23 +261,38 @@ export const labelAirRegions = (world) => {
  * @returns {number} 压力
  */
 export const pressureAt = (world, x, y) => {
-	if (!inWorld(world, x, y)) return openHydroPressure(Math.max(0, y))
+	const depth = inWorld(world, x, y) ? gravityDepth(world, x, y) : gravityDepth(world, Math.max(0, x), Math.max(0, y))
+	if (!inWorld(world, x, y)) return openHydroPressure(Math.max(0, depth))
 	const cell = idx(world, x, y)
 	const rid = world.regionId[cell]
 	if (rid) {
 		const region = world.regions[rid]
-		return region.openToAtm ? openHydroPressure(y) : sealedHydroPressure(region, y)
+		return region.openToAtm
+			? openHydroPressure(depth)
+			: sealedHydroPressure(region, depth, region.yMean)
 	}
-	for (let yy = y - 1; yy >= 0; yy--) {
-		const above = idx(world, x, yy)
+	const { dx, dy } = (() => {
+		const { axis, sign } = world.gravity
+		return axis === 1 ? { dx: 0, dy: -sign } : { dx: -sign, dy: 0 }
+	})()
+	let cx = x + dx
+	let cy = y + dy
+	for (let step = 0; step < Math.max(world.worldW, world.worldH); step++) {
+		if (!inWorld(world, cx, cy)) break
+		const above = idx(world, cx, cy)
 		if (isBlockMat(world.mat[above])) break
 		const aboveRid = world.regionId[above]
 		if (aboveRid) {
 			const region = world.regions[aboveRid]
-			return region.openToAtm ? openHydroPressure(yy) : sealedHydroPressure(region, yy)
+			const d = gravityDepth(world, cx, cy)
+			return region.openToAtm
+				? openHydroPressure(d)
+				: sealedHydroPressure(region, d, region.yMean)
 		}
+		cx += dx
+		cy += dy
 	}
-	return openHydroPressure(y)
+	return openHydroPressure(depth)
 }
 
 /**
@@ -461,8 +478,7 @@ export const stepGas = (world, opts = {}) => {
 	let maxUpdraft = 0
 
 	// Static pressure field from current velocity (Bernoulli) for ΔP drive.
-	for (let y = 0; y < H; y++) {
-		const openHydro = openHydroPressure(y)
+	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (blocked[cell]) {
@@ -471,12 +487,12 @@ export const stepGas = (world, opts = {}) => {
 			}
 			const rid = regionId[cell]
 			const region = rid ? regions[rid] : null
+			const depth = gravityDepth(world, x, y)
 			const thermo = !region || region.openToAtm
-				? openHydro
-				: sealedHydroPressure(region, y)
+				? openHydroPressure(depth)
+				: sealedHydroPressure(region, depth, region.yMean)
 			staticP[cell] = Math.max(0.05, thermo - dynamicPressure(gasUx[cell], gasUy[cell]))
 		}
-	}
 
 	for (let y = 0; y < H; y++) {
 		const drive = wind0 * windShear(y, H)

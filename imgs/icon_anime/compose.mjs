@@ -4,7 +4,7 @@
  * 和/或点击涟漪（明亮扩散环，无环境变暗）。
  */
 
-import { MAT, LIQ_DRAW, COND_DRAW, isLiquidBarrier, isSoilMat, waterChar, liquidChar, dripChar } from './fluid/index.mjs'
+import { MAT, LIQ_DRAW, COND_DRAW, isLiquidBarrier, isSoilMat, waterChar, liquidChar, dripChar, lavaChar } from './fluid/index.mjs'
 import { sampleLight, RIPPLE_SPEED, RIPPLE_WIDTH, torchEase } from './gesture/light.mjs'
 import { ICON_W, ICON_BODY_H, PILLARS, BODY_DIST, maxBodyD } from './icon.mjs'
 
@@ -14,20 +14,55 @@ const FG_COL = '\x1b[96m'
 const FG_SPLASH = '\x1b[36m'
 const FG_TERRAIN = '\x1b[90m'
 
+/** 熔岩温度色阶（暗红 → 橙 → 亮黄），12 档。 */
+const LAVA_RGB = [
+	[120, 20, 10],
+	[150, 30, 12],
+	[180, 40, 10],
+	[200, 55, 12],
+	[220, 70, 15],
+	[230, 90, 20],
+	[240, 110, 25],
+	[245, 140, 30],
+	[250, 170, 40],
+	[255, 190, 50],
+	[255, 210, 70],
+	[255, 230, 100],
+]
+const FG_LAVA = LAVA_RGB.map(([r, g, b]) => `\x1b[38;2;${r};${g};${b}m`)
+const FG_BUBBLE = '\x1b[38;2;40;20;15m'
+
 /** 各调色板条目的基准 RGB（真彩提亮目标）。 */
 const FG_RGB = {
 	[FG_AT]: [28, 28, 34],
 	[FG_COL]: [70, 235, 255],
 	[FG_SPLASH]: [0, 195, 210],
 	[FG_TERRAIN]: [105, 105, 115],
+	[FG_BUBBLE]: [40, 20, 15],
 }
+for (let i = 0; i < FG_LAVA.length; i++)
+	FG_RGB[FG_LAVA[i]] = LAVA_RGB[i]
+
 /** SGR 缓存键的调色板 id（null / 未知 → 4）。 */
 const FG_ID = new Map([
 	[FG_AT, 0],
 	[FG_COL, 1],
 	[FG_SPLASH, 2],
 	[FG_TERRAIN, 3],
+	[FG_BUBBLE, 5],
 ])
+for (let i = 0; i < FG_LAVA.length; i++)
+	FG_ID.set(FG_LAVA[i], 6 + i)
+
+/**
+ * 温度 → 熔岩前景 SGR。
+ * @param {number} temp 温度
+ * @returns {string} SGR
+ */
+const lavaFg = (temp) => {
+	const t = Math.min(0.999, Math.max(0, temp))
+	return FG_LAVA[(t * FG_LAVA.length) | 0]
+}
 /** 真彩 SGR 复用的量化提亮档位。 */
 const LIFT_Q = 32
 /** 量化环境变暗强度档位（火炬渐隐）。 */
@@ -363,7 +398,7 @@ export const composeFrame = (state) => {
 		world, width, height, iconOx, iconOy, softPillars, softBody,
 		bodyReach, bodyMinD, pillars, frame, terrain, light,
 	} = state
-	const { ox, mat, liq, particles, condense, liqVx, liqVy } = world
+	const { ox, mat, liq, melt, temp, particles, condense, liqVx, liqVy, meltVx, meltVy, regionId, regions } = world
 	const { solid, surface, surfaceChar, outline } = terrain
 	const { worldW: W, worldH: H } = world
 	const cells = width * height
@@ -407,6 +442,10 @@ export const composeFrame = (state) => {
 				ch[i] = isBodyEdge(softBody, d, bodyReach, bodyMinD) ? '.' : '@'
 				fg[i] = FG_AT
 			}
+			else if (melt[wi] >= LIQ_DRAW) {
+				ch[i] = lavaChar(melt[wi], temp[wi], wx + vy + frame, meltVx[wi], meltVy[wi])
+				fg[i] = lavaFg(temp[wi])
+			}
 			else if (liq[wi] >= LIQ_DRAW) {
 				const by = vy + 1
 				const bi = by * W + wx
@@ -414,27 +453,43 @@ export const composeFrame = (state) => {
 					!isLiquidBarrier(mat[bi])
 					&& mat[bi] !== MAT.POOL
 					&& liq[bi] < LIQ_DRAW
+					&& melt[bi] < LIQ_DRAW
 				)
 				ch[i] = liquidChar(liq[wi], wx + vy + frame, falling, liqVx[wi], liqVy[wi])
 				fg[i] = FG_SPLASH
 			}
 			else {
-				const above = vy > 0 ? (vy - 1) * W + wx : -1
-				if (above >= 0 && isSoilMat(mat[above]) && condense[above] >= COND_DRAW) {
-					ch[i] = dripChar(condense[above], wx + frame)
-					fg[i] = FG_SPLASH
-				}
-				else if (solid[wi] && vy === surface[wx]) {
-					ch[i] = surfaceChar[wx] || '_'
-					fg[i] = FG_TERRAIN
-				}
-				else if (solid[wi] && outline[wi]) {
-					ch[i] = outline[wi]
-					fg[i] = FG_TERRAIN
+				const rid = regionId[wi]
+				const region = rid ? regions[rid] : null
+				const bubble = region && !region.openToAtm && region.airCells >= 2
+					&& (
+						(wx > 0 && melt[vy * W + wx - 1] >= LIQ_DRAW)
+						|| (wx + 1 < W && melt[vy * W + wx + 1] >= LIQ_DRAW)
+						|| (vy > 0 && melt[(vy - 1) * W + wx] >= LIQ_DRAW)
+						|| (vy + 1 < H && melt[(vy + 1) * W + wx] >= LIQ_DRAW)
+					)
+				if (bubble) {
+					ch[i] = 'o'
+					fg[i] = FG_BUBBLE
 				}
 				else {
-					ch[i] = ' '
-					fg[i] = null
+					const above = vy > 0 ? (vy - 1) * W + wx : -1
+					if (above >= 0 && isSoilMat(mat[above]) && condense[above] >= COND_DRAW) {
+						ch[i] = dripChar(condense[above], wx + frame)
+						fg[i] = FG_SPLASH
+					}
+					else if (solid[wi] && vy === surface[wx]) {
+						ch[i] = surfaceChar[wx] || '_'
+						fg[i] = FG_TERRAIN
+					}
+					else if (solid[wi] && outline[wi]) {
+						ch[i] = outline[wi]
+						fg[i] = FG_TERRAIN
+					}
+					else {
+						ch[i] = ' '
+						fg[i] = null
+					}
 				}
 			}
 		}

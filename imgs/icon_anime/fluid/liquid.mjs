@@ -14,12 +14,15 @@ import {
 } from './flow.mjs'
 import { labelAirRegions, pressureAt, gasUxAt } from './gas.mjs'
 import {
-	MAT, P_ATM, RHO_G, LIQ_DRAW, LIQ_FULL, isLiquidBarrier,
+	MAT, P_ATM, RHO_G, LIQ_DRAW, LIQ_FULL, isLiquidBarrier, T_AMB,
 } from './mat.mjs'
 import { stepSoil } from './soil.mjs'
+import { meltVisc, cellRho } from './thermal.mjs'
+import { neighborCoord } from './edges.mjs'
 import {
 	scratch, growScratch, idx, inWorld,
-	floodClear, floodPush, markAirIfDrawCrossed,
+	floodClear, floodPush, markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
+	gravityDepth, gravityDownStep,
 } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
@@ -72,17 +75,28 @@ export const liquidPressureAt = (world, x, y) => {
 	if (L < LIQ_DRAW && !isLiquidBarrier(world.mat[cell]))
 		return pressureAt(world, x, y)
 
-	let surf = y
-	while (surf > 0) {
-		const above = idx(world, x, surf - 1)
+	const { dx: ddx, dy: ddy } = gravityDownStep(world)
+	const upDx = -ddx
+	const upDy = -ddy
+	let sx = x
+	let sy = y
+	for (;;) {
+		const nx = sx + upDx
+		const ny = sy + upDy
+		if (!inWorld(world, nx, ny)) break
+		const above = idx(world, nx, ny)
 		if (isLiquidBarrier(world.mat[above])) break
 		if (world.liq[above] < LIQ_DRAW) break
-		surf--
+		sx = nx
+		sy = ny
 	}
 
-	const airY = surf > 0 && !isLiquidBarrier(world.mat[idx(world, x, surf - 1)]) ? surf - 1 : surf
-	const airP = pressureAt(world, x, airY)
-	return columnDepthPressure(airP, y, surf, L)
+	const airX = sx + upDx
+	const airY = sy + upDy
+	const airP = inWorld(world, airX, airY) && !isLiquidBarrier(world.mat[idx(world, airX, airY)])
+		? pressureAt(world, airX, airY)
+		: pressureAt(world, sx, sy)
+	return columnDepthPressure(airP, gravityDepth(world, x, y), gravityDepth(world, sx, sy), L)
 }
 
 /**
@@ -93,26 +107,38 @@ export const liquidPressureAt = (world, x, y) => {
  */
 const fillColumnPressure = (world, x, cache) => {
 	const { worldW: W, worldH: H, mat, liq } = world
-	let y = 0
-	while (y < H) {
-		const cell = y * W + x
-		const L = liq[cell]
-		if (L < LIQ_DRAW && !isLiquidBarrier(mat[cell])) {
-			cache[cell] = pressureAt(world, x, y)
-			y++
-			continue
-		}
-		const surf = y
-		const airY = surf > 0 && !isLiquidBarrier(mat[(surf - 1) * W + x]) ? surf - 1 : surf
-		const airP = pressureAt(world, x, airY)
+	const { axis, sign } = world.gravity
+	if (axis === 1 && sign === 1) {
+		let y = 0
 		while (y < H) {
-			const ci = y * W + x
-			const Li = liq[ci]
-			if (Li < LIQ_DRAW && !isLiquidBarrier(mat[ci])) break
-			cache[ci] = columnDepthPressure(airP, y, surf, Li)
-			y++
+			const cell = y * W + x
+			const L = liq[cell]
+			if (L < LIQ_DRAW && !isLiquidBarrier(mat[cell])) {
+				cache[cell] = pressureAt(world, x, y)
+				y++
+				continue
+			}
+			const surf = y
+			const airY = surf > 0 && !isLiquidBarrier(mat[(surf - 1) * W + x]) ? surf - 1 : surf
+			const airP = pressureAt(world, x, airY)
+			while (y < H) {
+				const ci = y * W + x
+				const Li = liq[ci]
+				if (Li < LIQ_DRAW && !isLiquidBarrier(mat[ci])) break
+				cache[ci] = columnDepthPressure(airP, y, surf, Li)
+				y++
+			}
 		}
+		return
 	}
+	// Non-default gravity: fill whole grid lazily via liquidPressureAt for this column/row.
+	if (axis === 1) {
+		for (let y = 0; y < H; y++)
+			cache[y * W + x] = liquidPressureAt(world, x, y)
+		return
+	}
+	for (let y = 0; y < H; y++)
+		cache[y * W + x] = liquidPressureAt(world, x, y)
 }
 
 /**
@@ -122,8 +148,14 @@ const fillColumnPressure = (world, x, cache) => {
  * @param {number} y 行
  * @returns {boolean} 液体上方是否为空气
  */
-const isFreeSurface = (world, cell, y) =>
-	y === 0 || isLiquidBarrier(world.mat[cell - world.worldW]) || world.liq[cell - world.worldW] < LIQ_DRAW
+const isFreeSurface = (world, cell, x, y) => {
+	const { dx, dy } = gravityDownStep(world)
+	const ux = x - dx
+	const uy = y - dy
+	if (!inWorld(world, ux, uy)) return true
+	const above = uy * world.worldW + ux
+	return isLiquidBarrier(world.mat[above]) || world.liq[above] < LIQ_DRAW
+}
 
 /**
  * POOL 保留：近满前不泄，除非流入另一 POOL。
@@ -287,9 +319,9 @@ const equalizeHydraulicAlongGraph = (world, flowX, flowY) => {
 		if (end - start < 2) continue
 
 		let sink = start
-		let sinkPhi = hydraulicPhi(sp[start], sy[start])
+		let sinkPhi = hydraulicPhi(sp[start], gravityDepth(world, sx[start], sy[start]))
 		for (let k = start + 1; k < end; k++) {
-			const phi = hydraulicPhi(sp[k], sy[k])
+			const phi = hydraulicPhi(sp[k], gravityDepth(world, sx[k], sy[k]))
 			if (phi < sinkPhi) {
 				sinkPhi = phi
 				sink = k
@@ -299,7 +331,7 @@ const equalizeHydraulicAlongGraph = (world, flowX, flowY) => {
 		let need = false
 		for (let k = start; k < end; k++) {
 			if (k === sink) continue
-			if (hydraulicPhi(sp[k], sy[k]) - sinkPhi > 0.35) {
+			if (hydraulicPhi(sp[k], gravityDepth(world, sx[k], sy[k])) - sinkPhi > 0.35) {
 				need = true
 				break
 			}
@@ -329,7 +361,7 @@ const equalizeHydraulicAlongGraph = (world, flowX, flowY) => {
 
 		for (let k = start; k < end; k++) {
 			if (k === sink) continue
-			const phi = hydraulicPhi(sp[k], sy[k])
+			const phi = hydraulicPhi(sp[k], gravityDepth(world, sx[k], sy[k]))
 			const delta = phi - sinkPhi
 			if (delta <= 0.35) continue
 			const cell = sy[k] * W + sx[k]
@@ -453,23 +485,41 @@ export const stepLiquid = (world) => {
 			const cell = y * W + x
 			if (liq[cell] <= 0.05 || isLiquidBarrier(mat[cell])) continue
 			const pSrc = pAt(x, y)
-			const freeSurface = isFreeSurface(world, cell, y)
+			const freeSurface = isFreeSurface(world, cell, x, y)
 
 			for (let pass = 0; pass < 2; pass++) {
 				const dx = pass === 0 ? -1 : 1
 				const nx = x + dx
 				if (nx < 0 || nx >= W) {
-					const before = liq[cell]
-					const move = freeSurface
-						? before * 0.25
-						: Math.min(
-							before,
-							Math.max(before * 0.2, Math.sqrt(Math.max(0, (pSrc - pressureAt(world, x, y)) / RHO_G)) * P_FLOW_GAIN),
-						)
-					liq[cell] -= move
-					flowX[cell] += dx * move
-					markAirIfDrawCrossed(world, before, liq[cell])
-					colDirty[x] = 1
+					const nb = neighborCoord(world, x, y, dx, 0)
+					if (nb.wrapped) {
+						const neighbor = nb.y * W + nb.x
+						if (!isLiquidBarrier(mat[neighbor])) {
+							const pDst = pAt(nb.x, nb.y)
+							const room = LIQ_FULL - liq[neighbor]
+							let move = freeSurface && liq[neighbor] < LIQ_DRAW
+								? sheetMove(liq[cell], liq[neighbor], room)
+								: pressureMove(pSrc, pDst, liq[cell], room)
+							if (move > 0) {
+								transfer(world, liq, flowX, flowY, cell, neighbor, dx, 0, move)
+								colDirty[x] = 1
+								colDirty[nb.x] = 1
+							}
+						}
+					}
+					else {
+						const before = liq[cell]
+						const move = freeSurface
+							? before * 0.25
+							: Math.min(
+								before,
+								Math.max(before * 0.2, Math.sqrt(Math.max(0, (pSrc - pressureAt(world, x, y)) / RHO_G)) * P_FLOW_GAIN),
+							)
+						liq[cell] -= move
+						flowX[cell] += dx * move
+						markAirIfDrawCrossed(world, before, liq[cell])
+						colDirty[x] = 1
+					}
 					continue
 				}
 				const neighbor = cell + dx
@@ -545,22 +595,163 @@ export const stepLiquid = (world) => {
 
 	stepSoil(world)
 	equalizeHydraulicAlongGraph(world, flowX, flowY)
-
-	for (let x = 0; x < W; x++) {
-		const cell = (H - 1) * W + x
-		const before = liq[cell]
-		liq[cell] = 0
-		markAirIfDrawCrossed(world, before, 0)
-	}
+	stepMeltTransport(world)
+	stepBuoyancy(world)
 
 	for (let i = 0; i < n; i++) {
 		const m = liq[i]
 		if (m < 1e-6) {
 			liqVx[i] = 0
 			liqVy[i] = 0
+		}
+		else {
+			liqVx[i] = liqVx[i] * 0.35 + (flowX[i] / m) * 0.65
+			liqVy[i] = liqVy[i] * 0.35 + (flowY[i] / m) * 0.65
+		}
+	}
+}
+
+/**
+ * 熔岩沿重力沉降 + 侧向粘滞流。
+ * @param {FluidWorld} world 世界
+ * @returns {void}
+ */
+const stepMeltTransport = (world) => {
+	const { worldW: W, worldH: H, mat, melt, temp, meltVx, meltVy } = world
+	const n = W * H
+	const flowX = scratch(world, 'meltFlowX', n, Float32Array)
+	const flowY = scratch(world, 'meltFlowY', n, Float32Array)
+	flowX.fill(0)
+	flowY.fill(0)
+	const { dx: ddx, dy: ddy } = gravityDownStep(world)
+
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const cell = y * W + x
+			if (melt[cell] <= 0.02) continue
+			if (isLiquidBarrier(mat[cell]) && mat[cell] !== MAT.AIR) continue
+			const visc = meltVisc(world, cell)
+			const nx = x + ddx
+			const ny = y + ddy
+			const nb = neighborCoord(world, x, y, ddx, ddy)
+			if (nb.out) continue
+			const tx = nb.x
+			const ty = nb.y
+			if (tx < 0 || ty < 0 || tx >= W || ty >= H) continue
+			const target = ty * W + tx
+			if (isLiquidBarrier(mat[target]) && mat[target] !== MAT.AIR && mat[target] !== MAT.SOLID && mat[target] !== MAT.HORIZON)
+				continue
+			if (mat[target] === MAT.SOLID || mat[target] === MAT.HORIZON) continue
+			const room = LIQ_FULL - melt[target]
+			if (room <= 0) continue
+			const pSrc = pressureAt(world, x, y) + RHO_G * melt[cell]
+			const pDst = pressureAt(world, tx, ty) + RHO_G * melt[target]
+			let move = pressureMove(pSrc, pDst, melt[cell], room, visc)
+			if (move < 0.01 && melt[target] < melt[cell])
+				move = Math.min(melt[cell] * 0.5, room, (melt[cell] - melt[target]) * 0.5) * (1 - Math.min(1, visc))
+			if (move <= 0.01) continue
+			const tSrc = temp[cell]
+			const before = melt[cell]
+			const beforeT = melt[target]
+			const moved = applyTransfer(melt, flowX, flowY, cell, target, tx - x, ty - y, move)
+			if (moved > 0) {
+				const heat = tSrc * moved
+				if (melt[cell] > 1e-8)
+					temp[cell] = (temp[cell] * (before - moved) + /* remaining keeps temp */ temp[cell] * 0) / Math.max(melt[cell], 1e-8)
+				// Mass-weighted temp at destination.
+				const destMass = melt[target]
+				const prevMass = destMass - moved
+				temp[target] = prevMass > 0
+					? (temp[target] * prevMass + heat) / destMass
+					: tSrc
+				if (melt[cell] <= 1e-8) temp[cell] = T_AMB
+				markAirIfMeltDrawCrossed(world, before, melt[cell])
+				markAirIfMeltDrawCrossed(world, beforeT, melt[target])
+			}
+		}
+
+	// Side sheet for melt (perpendicular to gravity).
+	const sideA = ddx === 0 ? { dx: -1, dy: 0 } : { dx: 0, dy: -1 }
+	const sideB = { dx: -sideA.dx, dy: -sideA.dy }
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const cell = y * W + x
+			if (melt[cell] < LIQ_DRAW) continue
+			const visc = meltVisc(world, cell)
+			for (const side of [sideA, sideB]) {
+				const nb = neighborCoord(world, x, y, side.dx, side.dy)
+				if (nb.out) continue
+				const target = nb.y * W + nb.x
+				if (isLiquidBarrier(mat[target]) && mat[target] !== MAT.AIR) continue
+				if (mat[target] === MAT.SOLID || mat[target] === MAT.HORIZON) continue
+				const room = LIQ_FULL - melt[target]
+				const move = sheetMove(melt[cell], melt[target], room, visc)
+				if (move <= 0) continue
+				const tSrc = temp[cell]
+				const before = melt[cell]
+				const beforeT = melt[target]
+				const moved = applyTransfer(melt, flowX, flowY, cell, target, nb.x - x, nb.y - y, move)
+				if (moved > 0) {
+					const destMass = melt[target]
+					const prevMass = destMass - moved
+					temp[target] = prevMass > 0
+						? (temp[target] * prevMass + tSrc * moved) / destMass
+						: tSrc
+					if (melt[cell] <= 1e-8) temp[cell] = T_AMB
+					markAirIfMeltDrawCrossed(world, before, melt[cell])
+					markAirIfMeltDrawCrossed(world, beforeT, melt[target])
+				}
+			}
+		}
+
+	for (let i = 0; i < n; i++) {
+		const m = melt[i]
+		if (m < 1e-6) {
+			meltVx[i] = 0
+			meltVy[i] = 0
 			continue
 		}
-		liqVx[i] = liqVx[i] * 0.35 + (flowX[i] / m) * 0.65
-		liqVy[i] = liqVy[i] * 0.35 + (flowY[i] / m) * 0.65
+		meltVx[i] = meltVx[i] * 0.35 + (flowX[i] / m) * 0.65
+		meltVy[i] = meltVy[i] * 0.35 + (flowY[i] / m) * 0.65
 	}
+}
+
+/**
+ * 沿重力轴：下方更轻则与上方交换（对流 / 气泡）。
+ * @param {FluidWorld} world 世界
+ * @returns {void}
+ */
+const stepBuoyancy = (world) => {
+	const { worldW: W, worldH: H, melt, liq, temp, mat } = world
+	const { dx, dy } = gravityDownStep(world)
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const belowX = x + dx
+			const belowY = y + dy
+			if (!inWorld(world, belowX, belowY)) continue
+			const a = y * W + x
+			const b = belowY * W + belowX
+			if (isLiquidBarrier(mat[a]) || isLiquidBarrier(mat[b])) continue
+			const rhoA = cellRho(world, a)
+			const rhoB = cellRho(world, b)
+			// Below should be denser; if below is lighter, swap fluid contents.
+			if (rhoB + 0.04 >= rhoA) continue
+			if (melt[a] < 0.05 && melt[b] < 0.05 && liq[a] < 0.05 && liq[b] < 0.05) continue
+			const ma = melt[a]
+			const mb = melt[b]
+			const ta = temp[a]
+			const tb = temp[b]
+			const la = liq[a]
+			const lb = liq[b]
+			melt[a] = mb
+			melt[b] = ma
+			temp[a] = tb
+			temp[b] = ta
+			liq[a] = lb
+			liq[b] = la
+			markAirIfMeltDrawCrossed(world, ma, melt[a])
+			markAirIfMeltDrawCrossed(world, mb, melt[b])
+			markAirIfDrawCrossed(world, la, liq[a])
+			markAirIfDrawCrossed(world, lb, liq[b])
+		}
 }
