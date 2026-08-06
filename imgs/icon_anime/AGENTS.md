@@ -8,150 +8,72 @@ alwaysApply: false
 
 Standalone terminal animation for the fount fountain logo.
 
-Also embedded by the CLI log viewer and the foreground server entry (`src/server/index.mjs`) when stdout is a real TTY (process-wide singleton): `intro` plays enter then background `hold` (no park); log_viewer while waiting for the server uses `start` (no-op if already running) / `dismiss` when connected; server `dismiss`es when `init` returns `started`. `farewell` on `on_shutdown` (works from mid-intro too — e.g. `already_running`). `signal` means user abort of this icon session (Ctrl+C / `abort()`); dismiss does not touch it. Hosts own their process-exit signal and should wire `icon.signal` into it (log_viewer and server `index.mjs` do). Non-TTY / no VT is decided only in `player.mjs` — session APIs stay callable (play paths no-op). While the TUI is on the alternate screen, `player` calls global virtual-console `block`/`unblock` so console / virtual-stream output is deferred until leave; frame paint writes the native `targetStream` so the animation itself is not deferred. Non-TUI paths do not touch block.
+Physics / hot-path detail (not day-to-day): [physics-notes.md](physics-notes.md).
+
+## Hosting
+
+Process-wide singleton used by `fount logo`, the CLI log viewer, and the foreground server (`src/server/index.mjs`) when stdout is a real TTY.
+
+| API | Role |
+| --- | --- |
+| `intro` | Enter animation, then background `hold` (no park) |
+| `start` / `dismiss` | log_viewer while waiting for the server (`start` no-op if already running; `dismiss` when connected); server `dismiss`es when `init` returns `started` |
+| `farewell` | On `on_shutdown` (safe mid-intro, e.g. `already_running`) |
+| `signal` / `abort` | User abort of this icon session (Ctrl+C). `dismiss` does not touch it |
+
+Hosts own process-exit signaling and must wire `icon.signal` into it (log_viewer and server do). Non-TTY / no VT is gated only in `player.mjs` — session APIs stay callable (play paths no-op). On the alternate screen, `player` `block`/`unblock`s the global virtual console so console output is deferred; frame paint writes the native `targetStream` so the animation itself is not deferred.
 
 ## Run
 
 ```bash
 fount logo
-fount logo watch   # deno run --watch — reload on source change
+fount logo watch   # deno run --watch
+fount test icon_anime --no-parallel
 ```
 
-Controls: Ctrl+C exit (icon teardown, then quit). Left quick-click → bright expanding ripple (no flashlight); left hold / drag → circular cool spotlight with fade-in/out (ambient dims + centre lifts; release fades off). Right-drag paints stroke wind along the path (faster drag → stronger flow); right long-press while still grows a tornado vortex at the cursor (clockwise + updraft + inflow; longer → faster; follows while moved, reforms when stopped, clears on release) that can suspend rain in orbit and suck free-liquid puddles airborne. Other stdin discarded.
-Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the pre-start scrollback and cursor row.
+Controls: Ctrl+C exits (icon teardown, then quit). Left quick-click → ripple; left hold/drag → cool spotlight (ambient dims). Right-drag → stroke wind; right long-still → tornado vortex (can suspend rain and lift free-liquid puddles). Alt-screen (`1049h`/`1049l`) restores prior scrollback on exit.
 
 ## Modules
 
 | Path | Role |
 | --- | --- |
 | `index.mjs` | CLI entry + public re-exports |
-| `session.mjs` | Process singleton: user-abort `signal`/`abort`, `intro` / `start`+`dismiss` / `farewell` / `sleep`; starts/stops device gravity |
-| `gravity.mjs` | Device gravity via `node:child_process` → `termux-sensor` (Termux); default screen-down elsewhere; continuous vector + 4-axis quantize |
-| `icon.mjs` | Packed silhouette, pillars, body growth order (typed arrays) |
-| `scene.mjs` | Anim state, materials, gravity-aware rain edges, pool leak, enter/hold/exit, resize + melt/temp carry |
-| `compose.mjs` | Frame paint + ANSI; lava temperature palette + bubble glyphs; pointer torch/ripples |
-| `player.mjs` | Process singleton TUI: `canUseTui` gate, play/loop, Ctrl+C → play abort + `onUserAbort`, SGR mouse, alt-screen, console `block`/`unblock` while on alt-screen |
-| `terminal.mjs` | `canUseTui` (stdin+stdout TTY + ANSI); consumed only by `player.mjs` |
-| `gesture/` | Pointer gestures (`pointer` press helper, `light` torch/ripple, `wind` stroke/vortex) |
-| `terrain.mjs` | Pedestal-anchored surface + noise caves + U-tube/chamber templates |
-| `hash.mjs` | `hash01` + 1D/2D fBm noise + `ORTHO_DX`/`ORTHO_DY` (terrain + fluid) |
-| `fluid/` | Particles, grid liquid/melt, soil, thermal, boundary, bubbles, Boyle air, gas wind, glyphs |
+| `session.mjs` | Singleton session API; starts/stops device gravity |
+| `gravity.mjs` | Termux `termux-sensor` via `node:child_process`; default screen-down elsewhere; continuous vector + 4-axis quantize |
+| `icon.mjs` | Packed silhouette, pillars, body growth order |
+| `scene.mjs` | Anim state, materials, rain edges, pool leak, enter/hold/exit, resize |
+| `compose.mjs` | Frame paint + ANSI; lava palette; pointer torch/ripples |
+| `player.mjs` | TUI singleton: `canUseTui`, play/loop, mouse, alt-screen, console block |
+| `terminal.mjs` | `canUseTui` (TTY + ANSI); consumed only by `player.mjs` |
+| `gesture/` | `pointer` / `light` (torch+ripple) / `wind` (stroke+vortex) |
+| `terrain.mjs` | Pedestal-anchored surface + caves + test vessel templates |
+| `hash.mjs` | `hash01` + fBm + ortho deltas |
+| `fluid/` | Particles, liquid/melt, soil, thermal, boundary, bubbles, gas, glyphs |
 
-### `gesture/`
-
-| File | Role |
-| --- | --- |
-| `pointer.mjs` | Shared press / drag / release + cap trim |
-| `light.mjs` | Left-button quick-click ripple vs hold torch (TORCH_FADE blend) |
-| `wind.mjs` | Right-button stroke wind + long-still clockwise vortex → local gas drive field |
-
-### `fluid/`
-
-| File | Role |
-| --- | --- |
-| `index.mjs` | Barrel re-exports |
-| `mat.mjs` | `MAT` enum, density language (`rhoOf` / `viscOf`), thermal thresholds, soil/liquid constants |
-| `flow.mjs` | Torricelli / sheet / hydraulic φ / mass-transfer; `viscGain` scales flow |
-| `world.mjs` | Grid alloc (`liq`/`melt`/`temp`), gravity helpers, scratch, `totalWorldWater` |
-| `edges.mjs` | Gravity-relative wrap / up-down edge geometry (no side effects) |
-| `boundary.mjs` | Down-edge lava source (13s onset), up-edge absorb/regurgitate, side wrap re-exports |
-| `thermal.mjs` | Conduction, evaporate/steam, melt/solidify phase change |
-| `bubbles.mjs` | Sealed air in melt rises along −ĝ and ruptures at free surface |
-| `gas.mjs` | Air regions, hydrostatic open `P_ATM+ATM_HYDRO·depth`, wind, Bernoulli ΔP `stepGas` |
-| `liquid.mjs` | Water + melt transport, buoyancy swap, graph-hydraulic equalize |
-| `soil.mjs` | Moisture / condensation / Matthew / drip `stepSoil` |
-| `particles.mjs` | SoA rain/splash + vector gravity + side wrap; expire deposits mass |
-| `step.mjs` | `stepFluid` — label → gas → lift → thermal → particles → liquid → bubbles → boundary |
-| `glyphs.mjs` | `waterChar` / `liquidChar` / `dripChar` / `lavaChar` |
-
-## Layout & hot-path notes
-
-- Per frame: `stepFluid` (label-if-dirty → gas → lift → thermal → rain inject → particles → liquid → bubbles → boundary). `labelAirRegions` runs only when `world.airDirty` (mat change or free-liquid/melt crossing `LIQ_DRAW`); `stepLiquid` re-labels mid-tick if particles / lift dirtied topology again.
-- `airDirty` / `gasGeomDirty` are set together on occupancy flips — not every liquid mass move. Boyle overlap scan is skipped when there are no sealed regions.
-- Terrain `solid` / `outline` and fluid grids share flat `y * W + x` indexing (no row arrays).
-- Terrain outline glyphs are precomputed at generate time; compose only blits.
-- World scratch lives on `world.scratch` (typed arrays reused across ticks). BFS uses a reused `floodQ` number array (`floodClear` / `floodPush`).
-- Gas nozzle spans / blocked mask rebuild only when `gasGeomDirty`; velocity buffers swap with scratch (no per-tick `.set` copy). Blocked cells are zeroed in the velocity pass — no `nextU*.fill(0)`.
-- Gas nozzle spans are precomputed in O(WH) column/row runs — do not re-walk per cell.
-- Air-region labels double-buffer `regionId` via `scratch.prevRegionId`; regions are pooled + id-indexed; Boyle overlap uses a packed-key Map (sealed only).
-- Open-air thermo in `stepGas` / `pressureAt` is closed-form `P_ATM+ATM_HYDRO·depth` where `depth = gravityDepth` (default = `y`).
-- Global wind is evaluated once per gas tick; height shear is applied per row; `maxUpdraft` gates `liftLiquidByWind`.
-- `stepLiquid` keeps a per-column liquid-pressure cache (refreshed after each vertical transfer — no second full-WH refill before horizontal). Diagonal settle still uses live `liquidPressureAt` because the neighbor column may not have been refreshed yet this tick.
-- Hydraulic equalize surfaces are SoA scratch; BFS uses a generation stamp on `liqHydroVisit` (no whole-grid `dist.fill`); surfaces stay contiguous by component (no `Map`).
-- Material rebuild is keyed by a packed int (`matKey`); hold frames skip it.
-- Body cells are parallel `Uint8Array`s on `BODY` (`x` / `y` / `d`), not object lists.
-- Particles are SoA pools (`particles.x/y/vx/vy/life/amt` + `count`); no per-tick object alloc.
-- Compose paints every view cell in one pass (no `ch.fill`/`fg.fill`); ANSI joins same-SGR glyph runs; torch path quantizes lift and caches truecolor SGR; ripple-only frames skip `sampleLight` outside ring pads; `renderGrid(Cell[][])` is a thin adapter.
-- Player `paint` homes the cursor only (`\x1b[H`) — frame is full-viewport, no Erase display.
-- Pointer wind drive buffers are filled only while the right button is down (`driveUx`/`driveUy` omitted otherwise); clears only the previous dirty rectangle (reused box object); stroke segments are pooled + swap-removed on expiry.
-- Pointer light (`state.light`): SGR mouse via `consumeStdin`; `gesture/light.mjs` arms a torch after `TORCH_DELAY` frames of hold, then `torchBlend` eases 0→1 over `TORCH_FADE` (compose: ambient dim + quadratic radial falloff scale with eased blend; cell aspect `hypot(dx, 2·dy)`). Release fades blend out (no ripple); re-press mid fade-out resumes without re-waiting `TORCH_DELAY`. Faster release before the torch arms spawns a high-brightness expanding ring (`rippleFalloff`) that ages out — no ambient dim.
-- Pointer wind (`state.wind`): right-button gesture in `gesture/wind.mjs`; each tick paints `driveUx`/`driveUy` scratch into `stepGas` (stroke trail + tornado vortex: clockwise tangential + updraft + inflow). Drag speed scales stroke amplitude; vortex strength grows with hold time and clears on release. Tangential `ty` uses the full `(rx/r)·amp` (not ×½) so right-side downwash cannot form a hover attractor under gravity — rain mean stays at the cursor. Strong upward gas scoops free-liquid puddles into particles (`liftLiquidByWind`); particle vertical drag rises with |gas| so rain can orbit inside the vortex.
+`fluid/` files: `mat` (density/`rhoOf`/`viscOf`), `flow`, `world`, `edges`, `boundary`, `thermal`, `bubbles`, `gas`, `liquid`, `soil`, `particles`, `step` (`stepFluid`), `glyphs`.
 
 ## Material standard
 
-Static / growing icon + terrain write the material grid (particles do not rewrite the ICON string). Glyphs below are the *authored* look; free liquid redraws via `waterChar` from amount + liquid velocity (still / fall / slant sets below). Hanging condensation under soil ceilings draws as `.` / `,` / `*` / `o`.
+Icon + terrain write the material grid. Free liquid / lava glyphs come from amount × liquid velocity (`waterChar` / `lavaChar`), never from gas wind.
 
-| Glyph / mat | Region | Behavior |
-| --- | --- | --- |
-| `@` (`BODY`) | Upper body | Impact shell: rain/particles splash then vanish — no merge, no flood. |
-| `:` (visual) | Pillars | Compose-only jet. **Does not write material** — liquid & particles pass through freely. |
-| `@` (`POOL`) | Base slabs | Pool: absorb, then leak with splash to the next lower slab; bottom slab runoff deposits free liquid on nearby ground. |
-| `>` / `<` (`SLOPE_*`) | Base soft edges | 45° splash faces (`>` one side, `<` opposite). |
-| surface (`HORIZON`) | Ground top | Soil: impact / standing free liquid raise moisture (dry soil drinks fastest); saturated cells shed free liquid into the air cell above. Pedestal span stays land until POOL overwrites — ungrown base columns still join the shoulders. |
-| terrain fill (`SOLID`) | Foundation | Soil (same moisture field as HORIZON). Impenetrable to free liquid / particles except via seepage + ceiling drip. Under the icon only the crust layer is required; deeper cells may be caves. |
-| `SEAL` | Tests / vessels | Impermeable barrier: blocks liquid like rock, stores no moisture, no seepage. |
-| empty (`AIR`) | Atmosphere / caves / melt cells | Air when empty; melt mass lives in `melt`/`temp` on AIR cells. Gas velocity lives here. |
-| melt (field) | Lava | Same rock continuum as soil; rendered red/orange by `temp`; viscosity from `viscOf(rhoOf(ROCK,temp))`. Bubbles = sealed air regions inside melt. |
+| Glyph / mat | Behavior |
+| --- | --- |
+| `@` (`BODY`) | Impact shell: splash then vanish — no merge, no flood |
+| `:` | Compose-only pillars — **not** material; liquid/particles pass through |
+| `@` (`POOL`) | Absorb then leak to lower slab / ground |
+| `>` / `<` (`SLOPE_*`) | 45° splash faces |
+| `HORIZON` / `SOLID` | Soil moisture field; crust under icon may sit on caves |
+| `SEAL` | Impermeable test/vessel barrier (no moisture) |
+| `AIR` | Empty air; melt mass lives in `melt`/`temp` on AIR cells |
+| melt | Rock continuum; viscosity from `viscOf(rhoOf(ROCK,temp))`; bubbles = sealed air in melt |
 
-Open-stage rule: columns whose base slab has not grown yet do **not** splash — rain keeps falling through empty cells until it hits existing mat, horizon, or leaves the world.
+Open-stage: ungrown base columns do not splash — rain falls through until it hits mat/horizon or leaves. Compose priority (top wins): particles → soft edges → body/pool/`lava`/water → drip → pillars → terrain outline.
 
-Falling water (rain particles **and** free liquid) uses `waterChar` from **amount × liquid/droplet velocity** (never gas wind). Lava uses `lavaChar` (thick glyphs when cool). High momentum: `/` `∕` · `\` `∖` · `-`. Low momentum diagonal: `‚´′…` / `‵‛…`. Pure fall: `|¦‖⁞⁚⁝.`. Still pools: `‥…~⁓–`. Grid liquid velocity is `liqVx`/`liqVy` from mass transfers; particles use `particles.vx[i]`/`particles.vy[i]`.
+## Invariants (do not break)
 
-Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `..`) → body-pool `@` / **lava** / free-liquid water glyphs → hanging drip under soil → pillars `:` → terrain outline.
-
-## Gravity & boundaries
-
-- **Particles**: continuous `world.gravity` unit vector × `mag` each tick; gravity-aligned speed capped (preserves tangential vortex speed).
-- **Grid**: quantized to four axes (`axis`/`sign`); hydrostatic depth and settle use that axis. Terrain/icon stay screen-anchored.
-- **Rain spawn**: edges weighted by `−outward·ĝ`; gravity-down edge weight is always 0; left/right get a small base under default down so they can randomly rain. Exported `rainEdgeWeights` / `pickRainEdge` for tests.
-- **Termux**: `gravity.mjs` spawns `termux-sensor` via `node:child_process`; path CLI `termux_ensure_sensor_api` installs `termux-api` (tracked for uninstall) on `fount logo` / `log` / `server` (via `termux_ensure_sensor_api`). Missing app/permission → default gravity.
-- **Down edge** (gravity pointing): after `LAVA_ONSET_FRAMES` (312 ≈ 13s at 24fps) of screen-down gravity, infinite lava source; rim cells clamped to `T_MAX`. Water wiped, not counted.
-- **Up edge**: infinite rain (not counted); melt absorbed into `{units,heat,lastTemp}` and regurgitated when gravity returns to screen-down (temp profile rises then falls from `lastTemp` until totals match).
-- **Side edges**: index wrap on the axis perpendicular to gravity (world margin, not viewport).
-
-## Terrain invariants
-
-- Surface is **pedestal-anchored**: flat land under the icon base, land shoulders on both outer ends, free Terraria-style walk outward.
-- Ungrown base columns keep `HORIZON` until `POOL`/`SLOPE_*` overwrite — terrain and icon join without a post-hoc hole.
-- Under the icon: the crust cell at surface/`baseY` is soil; below that the generator may leave caves (no packed solid fill).
-- ≥30% of view columns have land thickness ≥ ¼ screen height (`TALL_LAND_FRACTION` / `TALL_LAND_HEIGHT_FRAC`).
-- Resize is pedestal-relative: retained cells and dynamics (including `melt`/`temp`) shift intact with the icon; shrinking crops, while expansion generates only exposed cells from the persistent seed. New soil starts saturated; temps BFS-decay from retained melt so lava lakes extend without cold cliffs. `RESIZE_WEATHER_TICKS` includes thermal + liquid settle.
-
-## Physics invariants
-
-- **One pressure language**: gas thermo `pressureAt`, liquid hydro `liquidPressureAt`, gas dynamic `staticPressureAt = P − ½ρu²`. Free-liquid mass moves via Torricelli `pressureMove` / free-surface `sheetMove` (`flow.mjs`), scaled by `viscGain(visc)`.
-- **One density language**: `rhoOf(substance, temp)` → `viscOf(rho)`. Gas is the low-rho end; water mid; rock/lava continuum — hotter → lighter → thinner. Cold rock = soil (`MAT.SOLID`/`HORIZON` are cache tags flipped at `T_LIQUIDUS`/`T_SOLIDUS`).
-- Open air regions: region mean `pressure = P_ATM`; cell `pressureAt = P_ATM + ATM_HYDRO·depth` (down along quantized gravity → P↑).
-- Sealed regions: Boyle mean `pressure ≈ gasAmount / airCells` (isothermal ideal gas at fixed T) plus hydrostatic `ATM_HYDRO·(depth − depthMean)` so the spatial average stays Boyle; gas mass transfers by cell overlap when topology splits/merges. Evaporation injects steam mass into the local region.
-- `RHO_AIR` (~`ATM_HYDRO`) is the dynamic density for `½ρu²`; `RHO_G` is liquid column head — keep `RHO_AIR ≪ RHO_G` so Bernoulli dynamic head does not rival liquid depth.
-- Gas velocity (`gasUx` / `gasUy`): open air tracks a time-varying global wind with power-law height shear (stronger aloft). Global wind is pink-ish fBm (synoptic / meso / micro) plus intermittent asymmetric gust pulses — autocorrelated and irregular, not layered sines. Continuity (`A·v`) speeds flow through duct throats (wind-tunnel nozzle). Wall slip zeros inflow into solids. Bernoulli static field `P₀ − ½ρu²` (`RHO_AIR`) drives neighbor ΔP acceleration (`GAS_DP_DRIVE`). No 2D ∇·u=0 projection (pointer vortices / updrafts are intentional sources). Optional local `driveUx`/`driveUy` (pointer stroke / tornado vortex) add into the per-cell target before blend. Rain particles drag toward local gas (`GAS_DRAG`; vertical drag scales up with |gas| so vortices can suspend droplets). Strong upward gas over free liquid lifts puddles into particles (`liftLiquidByWind`). Free-surface sheets also take a light downwind push from `gasUx`. Glyphs use the particle's resulting velocity, not the gas field directly.
-- Free-liquid hydrostatic pressure: `liquidPressureAt = P_air(surface) + RHO_G·depth`. Submerged side holes / deep edge vents move mass `∝ √(ΔP/ρg)` (Torricelli); free-surface sheet flow equalizes by fill level only (no fake surface jet). Sealed gas with `P > liquid P` blocks invasion and can push adjacent liquid away.
-- Melt shares the same transport primitives with per-cell viscosity; buoyancy swaps along gravity when the downslope neighbor is lighter (drives convection + bubble rise).
-- Grid liquid velocity (`liqVx` / `liqVy`): updated from mass transfers each `stepLiquid` (EMA); drives free-liquid glyphs so calm puddles stay on still marks.
-- Communicating vessels: free surfaces of the same liquid component relax toward equal `φ = P/(ρg) - depth` **along the liquid graph** (BFS from the lowest-φ surface — no teleport across disconnected air).
-- `POOL` retains fill and spills / leaks into open air or the next slab when overfull; `BODY` is a liquid barrier (splash-only). Pillars are not materials.
-- Soil moisture (`moisture`): gains from impacts and free liquid above with diminishing absorb rate as the cell wets (`soilAbsorbFactor`); rain hits only sink a fraction (`SOIL_HIT_ABSORB_FRAC`) so the rest sheets as free liquid. Seepage is slow enough that sustained rain forms visible surface puddles. Each tick shares a fraction sideways among soil neighbors, prefers transfer into soil below, and when below is air feeds underside `condense`. Neighboring condensation cells apply a noisy Matthew transfer (richer steals from poorer). Past `COND_DRAW` the air cell shows a droplet glyph; past `COND_DRIP` condensation becomes free liquid below and clears. Heating evaporates moisture (latent heat + steam) before the cell can melt.
-- `SEAL` is impermeable (no moisture) — use it in tests/vessels so soil absorption cannot drain free-liquid setups.
-- Water mass lives in `liq + moisture + condense + particles` (`totalWorldWater`). Melt is separate (`totalMelt`). Closed transfers conserve; intentional sinks are world-edge / down-edge wipe / BODY impact vanish. Particle life expiry **deposits** back into the grid (pending overflow too).
-- Material rebuild clears labels only; `releaseNonSoilWater` dumps moisture/condense from non-soil cells into free liquid (or the cell above) so POOL overwrite does not erase water.
-- `exit` stops as soon as the icon is gone — no rain/liquid drain wait.
-
-## Tests
-
-```bash
-fount test icon_anime --no-parallel
-# or
-fount test icon_anime:pure --no-parallel
-```
-
-Coverage: deterministic terrain glyphs/features, pedestal land shoulders, icon crust + caves below, tall-land quota (≥30% view cols ≥¼ screen), sealed-cavity compression (Boyle) + sealed hydrostatic stratification, U-tube leveling (graph φ), BODY splash (no flood), pillar pass-through, pool→slab/ground leak, `SEAL` impermeable fixtures, soil absorb (dry>wet) / seepage / Matthew condense / drip + mass conservation, sustained-rain surface puddles, open-air hydrostatic P(depth), liquid column depth pressure + Torricelli √(ΔP) orifice drain, sealed gas pushback on liquid, gas wind time-variation + height shear, wind-tunnel continuity + Bernoulli static-P drop + ΔP suction drive, wall stagnation, particle gas drag + life-expire deposit, water glyphs by amount/liquid-velocity (still puddles vs high/low momentum slant), exit frame bound, resize terrain/dynamics preservation + new-soil weathering, ANSI frame size, gravity sensor mapping + rain edge weights, lava onset/T_MAX rim, thermal melt/solidify/evaporate, up-edge absorb/regurgitate, side wrap, rho/visc monotonicity, buoyancy.
+- **One pressure language** / **one density language** — see [physics-notes.md](physics-notes.md). Do not invent parallel hydro models.
+- Water mass = `liq + moisture + condense + particles` (`totalWorldWater`); melt is separate. Closed transfers conserve; intentional sinks are world-edge / down-edge wipe / BODY impact. Particle expiry deposits back.
+- Terrain is **pedestal-anchored**; ungrown base keeps `HORIZON` until `POOL`/`SLOPE_*` overwrite. Resize shifts retained dynamics with the icon.
+- Particles: continuous `world.gravity`. Grid: quantized 4-axis. Rain edges weighted by `−outward·ĝ` (gravity-down edge weight 0).
+- Termux: `gravity.mjs` → `termux-sensor`; path CLI installs `termux-api` on `fount logo` / `log` / `server` when missing.
+- Down edge (screen-down long enough): lava source. Up edge: rain + melt absorb/regurgitate. Side: wrap perpendicular to gravity.
