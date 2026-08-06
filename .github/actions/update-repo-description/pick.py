@@ -25,7 +25,7 @@ def solar_day(today: date):
 	return sxtwl.fromSolar(today.year, today.month, today.day)
 
 
-def lunar_md(today: date) -> str | None:
+def lunar_month_day(today: date) -> str | None:
 	"""Lunar MM-DD for non-leap months; leap months do not match festivals."""
 	day = solar_day(today)
 	if day.isLunarLeap():
@@ -33,7 +33,7 @@ def lunar_md(today: date) -> str | None:
 	return f'{day.getLunarMonth():02d}-{day.getLunarDay():02d}'
 
 
-def jieqi_name(today: date) -> str | None:
+def solar_term_name(today: date) -> str | None:
 	day = solar_day(today)
 	if not day.hasJieQi():
 		return None
@@ -41,24 +41,20 @@ def jieqi_name(today: date) -> str | None:
 
 
 def holiday_matches(holiday: dict, today: date) -> bool:
-	md = today.strftime('%m-%d')
-	iso = today.isoformat()
-	if any(d in (md, iso) for d in holiday.get('dates') or ()):
+	if any(date_value in (today.strftime('%m-%d'), today.isoformat()) for date_value in holiday.get('dates') or ()):
 		return True
 	lunar_dates = holiday.get('lunar') or ()
 	if lunar_dates:
-		lmd = lunar_md(today)
-		if lmd and lmd in lunar_dates:
+		lunar_date = lunar_month_day(today)
+		if lunar_date and lunar_date in lunar_dates:
 			return True
 	terms = holiday.get('jieqi') or ()
 	if terms:
-		jq = jieqi_name(today)
-		if jq and jq in terms:
+		solar_term = solar_term_name(today)
+		if solar_term and solar_term in terms:
 			return True
 	yearday = holiday.get('yearday')
-	if yearday is not None and today.timetuple().tm_yday == yearday:
-		return True
-	return False
+	return yearday is not None and today.timetuple().tm_yday == yearday
 
 
 def match_holiday(config: dict, today: date) -> dict | None:
@@ -74,10 +70,7 @@ def pick_pool(config: dict, today: date) -> tuple[list[str], str | None]:
 		return list(holiday.get('descriptions') or ()), holiday.get('name') or 'holiday'
 	core = list(config.get('core') or ())
 	extras = config.get('extras')
-	if not isinstance(extras, list):
-		extras = list(config.get('descriptions') or ())
-	else:
-		extras = list(extras)
+	extras = list(extras) if isinstance(extras, list) else []
 	if core and extras:
 		pool = core if random.random() < 0.7 else extras
 	elif core:
@@ -97,25 +90,25 @@ def write_github_output(description: str, holiday_name: str | None, today: date)
 	path = os.environ.get('GITHUB_OUTPUT')
 	if not path:
 		return
-	with open(path, 'a', encoding='utf-8') as f:
-		f.write('description<<EOF\n')
-		f.write(f'{description}\n')
-		f.write('EOF\n')
-		f.write(f'holiday={holiday_name or ""}\n')
-		f.write(f'date={today.isoformat()}\n')
+	with open(path, 'a', encoding='utf-8') as output_file:
+		output_file.write('description<<EOF\n')
+		output_file.write(f'{description}\n')
+		output_file.write('EOF\n')
+		output_file.write(f'holiday={holiday_name or ""}\n')
+		output_file.write(f'date={today.isoformat()}\n')
 
 
-def main(argv: list[str] | None = None) -> int:
-	argv = list(sys.argv[1:] if argv is None else argv)
-	if len(argv) < 1:
+def main(arguments: list[str] | None = None) -> int:
+	arguments = list(sys.argv[1:] if arguments is None else arguments)
+	if len(arguments) < 1:
 		print('usage: pick.py <config.json> [timezone] [YYYY-MM-DD]', file=sys.stderr)
 		return 2
-	config_path = argv[0]
-	timezone = argv[1] if len(argv) > 1 and argv[1] else 'Asia/Shanghai'
-	date_override = argv[2] if len(argv) > 2 else ''
+	config_path = arguments[0]
+	timezone = arguments[1] if len(arguments) > 1 and arguments[1] else 'Asia/Shanghai'
+	date_override = arguments[2] if len(arguments) > 2 else ''
 
-	with open(config_path, encoding='utf-8') as f:
-		config = json5.load(f)
+	with open(config_path, encoding='utf-8') as config_file:
+		config = json5.load(config_file)
 
 	today = resolve_today(timezone, date_override)
 	pool, holiday_name = pick_pool(config, today)

@@ -1,6 +1,5 @@
 {
-	// Brand hierarchy (non-holiday days):
-	//   slogan — canonical line (also in core; not picked alone)
+	// Non-holiday pool:
 	//   core   — ~70% weight: presence / imagination→voice / modular runtime
 	//   extras — ~30% weight: citations, multilingual variants, jokes
 	// Ratio target: presence ~40 · worldview ~30 · tech ~25 · meme ~5
@@ -10,7 +9,6 @@
 	//   lunar   — lunar MM-DD (non-leap month only)
 	//   jieqi   — solar-term name, e.g. 冬至
 	//   yearday — day-of-year int (e.g. 256 for Programmers' Day)
-	"slogan": "⛲ Imagination, Given Voice. ✨",
 	"core": [
 		"⛲ Imagination, Given Voice. ✨",
 		"✨ 灵犀一点，应念而生 💫",

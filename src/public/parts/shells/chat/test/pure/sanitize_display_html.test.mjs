@@ -34,8 +34,14 @@ Deno.test('sanitizePermissiveHtml strips protocol-relative // urls', () => {
 	assertFalse(/\/\/evil\.example/i.test(html))
 })
 
-Deno.test('isSafeHtmlUrl rejects // and javascript:', () => {
+Deno.test('sanitizePermissiveHtml strips protocol-relative /\\ urls', () => {
+	const html = sanitizePermissiveHtml('<a href="/\\evil.example/x">x</a><img src="/\\evil.example/t.gif">')
+	assertFalse(/evil\.example/i.test(html))
+})
+
+Deno.test('isSafeHtmlUrl rejects // and /\\ and javascript:', () => {
 	assertEquals(isSafeHtmlUrl('//evil.example/x'), false)
+	assertEquals(isSafeHtmlUrl('/\\evil.example/x'), false)
 	assertEquals(isSafeHtmlUrl('javascript:alert(1)'), false)
 	assertEquals(isSafeHtmlUrl('https://example.com'), true)
 	assertEquals(isSafeHtmlUrl('/api/x'), true)
@@ -54,9 +60,9 @@ Deno.test('sanitizePermissiveHtml strips style attributes', () => {
 })
 
 Deno.test('scrubHtmlActivePayload keeps structure, strips on* and javascript:', () => {
-	const fragment = /** @type {DocumentFragment} */ (scrubHtmlActivePayload(
+	const fragment = /** @type {DocumentFragment} */ scrubHtmlActivePayload(
 		'<details open><summary onclick="x()">s</summary><a href="javascript:alert(1)">t</a><svg onload="y()" style="color:red"></svg></details>',
-	))
+	)
 	const host = document.createElement('div')
 	host.appendChild(fragment)
 	assertStringIncludes(host.innerHTML, '<details')
@@ -72,8 +78,7 @@ Deno.test('scrubHtmlActivePayload mutates DOM root in place', () => {
 	host.setAttribute('onclick', 'host()')
 	host.setAttribute('href', 'javascript:alert(1)')
 	host.innerHTML = '<p onclick="x()">ok</p>'
-	const returned = scrubHtmlActivePayload(host)
-	assertEquals(returned, host)
+	assertEquals(scrubHtmlActivePayload(host), host)
 	assertFalse(host.hasAttribute('onclick'))
 	assertFalse(host.hasAttribute('href'))
 	assertFalse(/onclick/i.test(host.innerHTML))

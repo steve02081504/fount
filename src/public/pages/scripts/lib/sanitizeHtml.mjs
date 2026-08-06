@@ -1,5 +1,5 @@
 /**
- * 宽松 HTML 消毒：保留排版标签，剥 script/style 属性/事件/危险 URL。
+ * 宽松 HTML 消毒：保留排版标签，剥 script/`on*`/危险 URL；`sanitizePermissiveHtml` 另移除 style。
  * 供 displayName 等「允许富文本但不允许有毒」场景；与 Markdown 未信任档规则对齐。
  * 字符串入口一律经惰性 `<template>` 解析后再消杀，避免先挂活树再 scrub 的竞态。
  */
@@ -39,13 +39,13 @@ export const SAFE_HTML_URL_SCHEMES = /^(https?:|mailto:|tel:|#|\/|about:blank#|f
 
 /**
  * href/src 是否允许写入 DOM（与 Markdown 未信任档、mediaRefs 共用）。
- * 拒绝协议相对 `//…`（否则会被 `\/` 分支误放行）。
+ * 拒绝协议相对 `//…` / `/\…`（否则会被 `\/` 分支误放行）。
  * @param {string | null | undefined} url 原始 URL
  * @returns {boolean} 是否安全
  */
 export function isSafeHtmlUrl(url) {
 	const raw = String(url ?? '').trim()
-	if (!raw || raw.startsWith('//')) return false
+	if (!raw || raw.startsWith('//') || raw.startsWith('/\\')) return false
 	return SAFE_HTML_URL_SCHEMES.test(raw)
 }
 
@@ -76,7 +76,7 @@ function collectDescendants(root) {
 		if (node.nodeType === 1)
 			for (const child of [...node.childNodes]) walk(child)
 	}
-	if (root.nodeType === 1) walk(/** @type {ChildNode} */ (root))
+	if (root.nodeType === 1) walk(/** @type {ChildNode} */ root)
 	else for (const child of root.childNodes) walk(child)
 	return nodes
 }
@@ -89,7 +89,7 @@ function collectDescendants(root) {
 function scrubActiveAttrsInPlace(root) {
 	for (const node of collectDescendants(root)) {
 		if (node.nodeType !== 1) continue
-		const element = /** @type {Element} */ (node)
+		const element = /** @type {Element} */ node
 		for (const attribute of [...element.attributes]) {
 			const lowerName = attribute.name.toLowerCase()
 			if (lowerName.startsWith('on')) {
@@ -108,7 +108,7 @@ function scrubActiveAttrsInPlace(root) {
 }
 
 /**
- * 保留标签结构，仅剥 `on*`（含 SVG 事件）与危险 URL。
+ * 保留标签结构；移除 `on*`、全部 `srcset` 与不安全 URL，保留 `style`。
  * - `string`：经 `<template>` 解析 → 消杀 → 返回 `DocumentFragment`（可直接 `replaceChildren`）
  * - DOM 根：原地消杀并返回同一引用
  * @param {string | Element | DocumentFragment | ChildNode} htmlOrRoot HTML 或待清洗子树
@@ -127,7 +127,7 @@ export function scrubHtmlActivePayload(htmlOrRoot) {
 export function sanitizeHtmlTree(root) {
 	for (const node of collectDescendants(root)) {
 		if (node.nodeType !== 1) continue
-		const element = /** @type {Element} */ (node)
+		const element = /** @type {Element} */ node
 		const tagName = element.tagName.toLowerCase()
 		if (BLOCKED_HTML_TAGS.has(tagName)) {
 			element.remove()
