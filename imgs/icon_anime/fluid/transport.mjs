@@ -3,12 +3,12 @@
  * 相描述符携带质量场、速度场、粘滞查询与转移后钩子。
  */
 
+import { neighborCoord } from './edges.mjs'
 import { pressureMove, sheetMove, applyTransfer } from './flow.mjs'
 import { pressureAt } from './gas.mjs'
 import { MAT, RHO_G, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
-import { neighborCoord } from './edges.mjs'
 import {
-	scratch, idx, inWorld, markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
+	scratch, inWorld, markAirIfDrawCrossed,
 	gravityDownWeights,
 } from './world.mjs'
 

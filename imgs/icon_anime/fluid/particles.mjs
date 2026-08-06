@@ -5,9 +5,9 @@
  * 粒子是储水器，非质量泄漏。
  */
 
+import { neighborCoord } from './edges.mjs'
 import { MAT, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
 import { markAirIfDrawCrossed, gravityUpWeights, inWorld } from './world.mjs'
-import { neighborCoord } from './edges.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
  * @typedef {{
@@ -273,16 +273,16 @@ export const stepParticles = (world, onHit, state) => {
 		if (nx < 0 || nx >= W) {
 			const nb = neighborCoord(world, px | 0, py | 0, nx < 0 ? -1 : 1, 0, (life | 0) + i)
 			if (nb.wrapped) nx = nb.x + (nx - Math.floor(nx))
-			else if (nb.out) {
+			else if (nb.out) 
 				continue
-			}
+			
 		}
 		if (ny < 0 || ny >= H) {
 			const nb = neighborCoord(world, px | 0, py | 0, 0, ny < 0 ? -1 : 1, (life | 0) + i + 17)
 			if (nb.wrapped) ny = nb.y + (ny - Math.floor(ny))
-			else if (nb.out && ny >= H) {
+			else if (nb.out && ny >= H) 
 				continue
-			}
+			
 		}
 
 		if (nx < 0 || nx >= W || ny >= H)

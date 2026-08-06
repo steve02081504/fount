@@ -13,8 +13,17 @@ import { hash01 } from '../hash.mjs'
 
 /** 边：0 上、1 下、2 左、3 右。 */
 export const EDGE_TOP = 0
+/**
+ *
+ */
 export const EDGE_BOTTOM = 1
+/**
+ *
+ */
 export const EDGE_LEFT = 2
+/**
+ *
+ */
 export const EDGE_RIGHT = 3
 
 /** 四边外向法线。 */
@@ -185,8 +194,8 @@ export const wrapSide = (world, x, y) => {
  */
 export const neighborCoord = (world, x, y, dx, dy, discretePickSalt) => {
 	const roles = edgeRoles(world)
-	let nx = x + dx
-	let ny = y + dy
+	const nx = x + dx
+	const ny = y + dy
 	const W = world.worldW
 	const H = world.worldH
 

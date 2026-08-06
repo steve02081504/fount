@@ -152,7 +152,7 @@ export const equilibrateHydraulic = (world, flowX, flowY, mobility = 1) => {
 	const n = W * H
 	const dist = scratch(world, 'liqHydroDist', n, Int32Array)
 	const visit = scratch(world, 'liqHydroVisit', n, Int32Array)
-	let gen = (/** @type {number} */ (world.scratch.liqHydroGen) | 0) + 1
+	let gen = (/** @type {number} */ world.scratch.liqHydroGen | 0) + 1
 	if (gen >= 0x7fffffff) {
 		visit.fill(0)
 		gen = 1

@@ -4,12 +4,12 @@
  */
 
 import {
+	edgeRoles, EDGE_TOP, EDGE_BOTTOM, EDGE_LEFT,
+} from './edges.mjs'
+import {
 	MAT, LIQ_FULL, T_MAX, T_AMB, LAVA_ONSET_EXPOSURE, isLiquidBarrier,
 } from './mat.mjs'
 import { markAirIfDrawCrossed, markAirIfMeltDrawCrossed, addMelt } from './world.mjs'
-import {
-	edgeRoles, EDGE_TOP, EDGE_BOTTOM, EDGE_LEFT, EDGE_RIGHT,
-} from './edges.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
 
@@ -20,6 +20,9 @@ const REGURG_RATE = 0.4
 /** 回吐触发：ĝ·absorbDir 低于此值。 */
 const REGURG_DOT = 0.35
 
+/**
+ *
+ */
 export {
 	boundaryAxes, wrapSide, neighborCoord, onDownEdge, onUpEdge,
 	edgeRoles, edgeDownness, edgeUpness,
@@ -113,7 +116,7 @@ export const stepBoundary = (world) => {
 				markAirIfMeltDrawCrossed(world, before, melt[cell])
 			}
 		}
-		else if (sink > 0.15) {
+		else if (sink > 0.15) 
 			for (const cell of cells) {
 				const before = liq[cell]
 				if (before > 0) {
@@ -121,7 +124,7 @@ export const stepBoundary = (world) => {
 					markAirIfDrawCrossed(world, before, 0)
 				}
 			}
-		}
+		
 
 		if (lavaOn)
 			for (const cell of cells)
@@ -129,7 +132,7 @@ export const stepBoundary = (world) => {
 
 		// Up-edge absorb when source-weighted.
 		if (source > 0.15 && !boundary.regurgitating)
-			for (const cell of cells) {
+			for (const cell of cells) 
 				if (melt[cell] > 0.02) {
 					const take = melt[cell] * source
 					boundary.absorbedUnits += take
@@ -146,7 +149,7 @@ export const stepBoundary = (world) => {
 					}
 					markAirIfMeltDrawCrossed(world, before, melt[cell])
 				}
-			}
+			
 	}
 
 	// Regurgitate when gravity leaves the absorb direction.

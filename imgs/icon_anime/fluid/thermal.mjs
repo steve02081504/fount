@@ -4,10 +4,10 @@
  */
 
 import {
-	MAT, LIQ_DRAW, LIQ_FULL, SOIL_CAP,
+	MAT, LIQ_DRAW, LIQ_FULL,
 	T_AMB, T_SOLIDUS, T_LIQUIDUS, T_BOIL, T_MAX,
 	SUBSTANCE, rhoOf, viscOf,
-	isSoilMat, isLiquidBarrier,
+	isSoilMat,
 } from './mat.mjs'
 import { scratch, markAirIfDrawCrossed, markAirIfMeltDrawCrossed, gravityUpWeights, inWorld } from './world.mjs'
 

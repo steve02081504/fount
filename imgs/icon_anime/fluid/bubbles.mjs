@@ -16,7 +16,7 @@ const BUBBLE_PERIOD = 3
  * @returns {void}
  */
 export const stepBubbles = (world) => {
-	const step = (world.soilStep | 0)
+	const step = world.soilStep | 0
 	if (step % BUBBLE_PERIOD !== 0) return
 
 	const { worldW: W, worldH: H, melt, regions, regionId } = world

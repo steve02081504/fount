@@ -56,7 +56,7 @@ export const labelComponents = (world, opts) => {
 	const labels = opts.labels
 	const onCell = opts.onCell
 	const poolKey = opts.poolKey ?? 'componentPool'
-	const pool = /** @type {ComponentStats[]} */ (world.scratch[poolKey] ??= [])
+	const pool = /** @type {ComponentStats[]} */ world.scratch[poolKey] ??= []
 	/** @type {(ComponentStats | undefined)[]} */
 	const components = []
 	let next = opts.startId ?? 1
@@ -140,7 +140,7 @@ export const labelComponents = (world, opts) => {
  * @returns {void}
  */
 export const recycleComponents = (world, components, poolKey = 'componentPool') => {
-	const pool = /** @type {ComponentStats[]} */ (world.scratch[poolKey] ??= [])
+	const pool = /** @type {ComponentStats[]} */ world.scratch[poolKey] ??= []
 	for (let id = 1; id < components.length; id++) {
 		const c = components[id]
 		if (c) pool.push(c)

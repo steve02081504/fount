@@ -429,10 +429,10 @@ export const addLiquid = (world, x, y, amt) => {
 export const addMelt = (world, x, y, amt, temp) => {
 	if (amt <= 0) return 0
 	const i = y * world.worldW + x
-	if (isLiquidBarrier(world.mat[i]) && world.mat[i] !== MAT.AIR) {
+	if (isLiquidBarrier(world.mat[i]) && world.mat[i] !== MAT.AIR) 
 		// Soil barriers melt via thermal — do not overwrite POOL/BODY/SEAL.
 		if (world.mat[i] !== MAT.SOLID && world.mat[i] !== MAT.HORIZON) return 0
-	}
+	
 	const before = world.melt[i]
 	const room = LIQ_FULL - before
 	const take = Math.min(amt, room)

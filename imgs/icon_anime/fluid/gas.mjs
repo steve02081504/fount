@@ -122,7 +122,7 @@ export const labelAirRegions = (world) => {
 	const regionId = clearLabels(world, 'prevRegionId', n)
 
 	const oldRegions = world.regions
-	const regionPool = /** @type {AirRegion[]} */ (world.scratch.regionPool ??= [])
+	const regionPool = /** @type {AirRegion[]} */ world.scratch.regionPool ??= []
 	const oldGas = scratch(world, 'oldRegionGas', Math.max(oldRegions.length, 1), Float32Array)
 	oldGas.fill(0)
 	for (let id = 1; id < oldRegions.length; id++) {
@@ -144,10 +144,25 @@ export const labelAirRegions = (world) => {
 	}
 
 	const { components } = labelComponents(world, {
+		/**
+		 * 泛洪时是否接受该格为空气分量成员。
+		 * @param {FluidWorld} w 流体世界
+		 * @param {number} cell 扁平索引
+		 * @returns {boolean} 空气格
+		 */
 		accept: (w, cell) => isAirCell(w, cell),
 		labels: regionId,
 		poolKey: 'airCompPool',
 		seedCells: borderSeeds,
+		/**
+		 * 每格累加重力深度供分量均值。
+		 * @param {FluidWorld} w 流体世界
+		 * @param {number} _cell 扁平索引
+		 * @param {number} x 列
+		 * @param {number} y 行
+		 * @param {number} _id 分量 id
+		 * @param {{ sumDepth: number }} stats 分量统计
+		 */
 		onCell: (w, _cell, x, y, _id, stats) => {
 			stats.sumDepth += gravityDepth(w, x, y)
 		},

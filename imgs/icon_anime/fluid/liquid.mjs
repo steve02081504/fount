@@ -9,17 +9,17 @@
 
 import { ORTHO_DX, ORTHO_DY } from '../hash.mjs'
 
+import { neighborCoord } from './edges.mjs'
+import { equilibrateHydraulic } from './equilibrate.mjs'
 import {
 	pressureMove, sheetMove, applyTransfer, P_FLOW_GAIN,
 } from './flow.mjs'
-import { equilibrateHydraulic } from './equilibrate.mjs'
 import { labelAirRegions, pressureAt, gasUxAt } from './gas.mjs'
 import {
 	MAT, P_ATM, RHO_G, LIQ_DRAW, LIQ_FULL, isLiquidBarrier,
 } from './mat.mjs'
 import { stepSoil } from './soil.mjs'
 import { meltVisc, cellRho } from './thermal.mjs'
-import { neighborCoord } from './edges.mjs'
 import {
 	stepPhaseTransport, meltCanEnter, meltTempOnTransfer,
 } from './transport.mjs'
@@ -418,9 +418,9 @@ export const stepLiquid = (world) => {
 							uy = world.gasUy[ay * W + ax]
 						}
 					}
-					else {
+					else 
 						ux = gasUxAt(world, x, y)
-					}
+					
 					const windAlong = ux * dx + uy * dy
 					if (windAlong > 0.15) {
 						const wind = Math.min(WIND_SHEET_CAP, windAlong * WIND_SHEET, liq[cell] * 0.2, room)
@@ -523,7 +523,7 @@ const stepBuoyancy = (world) => {
 	const { worldW: W, worldH: H, melt, liq, temp, mat } = world
 	const down = gravityDownWeights(world)
 	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) {
+		for (let x = 0; x < W; x++) 
 			for (let i = 0; i < down.n; i++) {
 				if (down.w[i] < 0.5) continue
 				const belowX = x + down.dx[i]
@@ -553,7 +553,7 @@ const stepBuoyancy = (world) => {
 				markAirIfDrawCrossed(world, la, liq[a])
 				markAirIfDrawCrossed(world, lb, liq[b])
 			}
-		}
+		
 }
 
 
