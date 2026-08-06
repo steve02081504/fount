@@ -1,7 +1,16 @@
-﻿function script:Get-WTfountCmd {
-	$extra = $args -join ' '
+﻿# Single string for Start-Process -ArgumentList (array form nests/empties and blows up on bind).
+function script:Get-FountPs1ArgumentList {
+	# Per-arg Windows CommandLineToArgvW escaping, then join into one -ArgumentList string.
+	"-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" $(($args | ForEach-Object {
+		$a = "$_"
+		if ($a -notmatch '[\s"]' -and $a.Length) { $a }
+		else { '"' + ($a -replace '(\\*)"', '$1$1\"' -replace '(\\+)$', '$1$1') + '"' }
+	}) -join ' ')"
+}
+
+function script:Get-WTfountCmd {
+	$ArgumentList = Get-FountPs1ArgumentList @args
 	$FilePath = "powershell.exe"
-	$ArgumentList = "-noprofile -nologo -ExecutionPolicy Bypass -File `"$FOUNT_DIR\path\fount.ps1`" $extra"
 	if (Get-AppxPackage -Name "Microsoft.WindowsTerminal") {
 		if (!(Test-Path -Path "$FOUNT_DIR/node_modules")) {
 			Register-FountTerminalProfile
