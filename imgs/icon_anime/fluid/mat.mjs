@@ -93,10 +93,14 @@ export const RHO_ROCK = 2.4
 export const RHO_LAVA_HOT = 1.15
 /** 粘滞截断：≥ 此值视为固体、不流动。 */
 export const VISC_SOLID = 0.92
+/** 粘滞 ≤ 此值走惯性分支（气）。 */
+export const VISC_INERTIAL = 0.02
 /** 蒸汽泡最小可见气区格数。 */
 export const BUBBLE_MIN_CELLS = 2
-/** 正常重力持续帧数后下边涌岩浆（13s × 24fps）。 */
-export const LAVA_ONSET_FRAMES = 312
+/** 下边曝露积分达到此值后涌岩浆（默认向下 13s × 24fps = 312）。 */
+export const LAVA_ONSET_EXPOSURE = 312
+/** @deprecated 使用 LAVA_ONSET_EXPOSURE */
+export const LAVA_ONSET_FRAMES = LAVA_ONSET_EXPOSURE
 
 /**
  * 物质种类（密度曲线索引）。

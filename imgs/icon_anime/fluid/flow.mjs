@@ -1,13 +1,16 @@
 /**
  * 共用的压强 → 质量传递原语。
  *
- * 所有自由液体运动（重力、孔口、薄层、气体推动）均经
- * Torricelli √(ΔP/ρg) 或自由液面填平均衡。
+ * 粘滞阶梯（唯一旋钮）：
+ *   visc ≤ VISC_INERTIAL          → 惯性分支（气：速度场）
+ *   VISC_INERTIAL < visc < VISC_SOLID → Stokes 通量（水 / 熔岩）
+ *   visc ≥ VISC_SOLID             → 冻结
+ *
+ * 所有自由液体运动经 Torricelli √(ΔP/ρg) 或自由液面填平均衡。
  * 液压势 φ = P/(ρg) − depth 为连通器坐标。
- * 粘滞增益：viscGain(visc) 缩放流量；visc ≥ VISC_SOLID → 0。
  */
 
-import { RHO_G, LIQ_FULL, VISC_SOLID } from './mat.mjs'
+import { RHO_G, LIQ_FULL, VISC_SOLID, VISC_INERTIAL } from './mat.mjs'
 
 /** 单 tick 压强驱动边传递的最大质量。 */
 export const P_FLOW_CAP = 0.45
@@ -17,14 +20,22 @@ export const P_FLOW_GAIN = 0.55
 export const SHEET_GAIN = 0.25
 
 /**
- * 粘滞 → 流量增益 [0, 1]。
+ * 粘滞 → 流量增益 [0, 1]（Stokes 分支 mobility）。
  * @param {number} visc 粘滞
  * @returns {number} 增益
  */
 export const viscGain = (visc) => {
 	if (visc >= VISC_SOLID) return 0
+	if (visc <= VISC_INERTIAL) return 1
 	return Math.max(0, 1 - visc)
 }
+
+/**
+ * 粘滞是否走惯性分支（气体速度场）。
+ * @param {number} visc 粘滞
+ * @returns {boolean} 惯性
+ */
+export const isInertialVisc = visc => visc <= VISC_INERTIAL
 
 /**
  * 液压势 φ = P/(ρg) − depth（向下为正向深度）。
@@ -68,7 +79,7 @@ export const sheetMove = (srcLiq, dstLiq, dstRoom, visc = 0.05) => {
 
 /**
  * 执行 src → dst 质量转移，并累加流向 EMA。
- * @param {Float32Array} liq 液体场
+ * @param {Float32Array} mass 质量场
  * @param {Float32Array} flowX 水平流累加器
  * @param {Float32Array} flowY 垂直流累加器
  * @param {number} i 源索引
@@ -78,12 +89,12 @@ export const sheetMove = (srcLiq, dstLiq, dstRoom, visc = 0.05) => {
  * @param {number} move 质量
  * @returns {number} 实际转移质量
  */
-export const applyTransfer = (liq, flowX, flowY, i, ni, dx, dy, move) => {
+export const applyTransfer = (mass, flowX, flowY, i, ni, dx, dy, move) => {
 	if (move <= 0) return 0
-	const m = Math.min(move, liq[i], LIQ_FULL - liq[ni])
+	const m = Math.min(move, mass[i], LIQ_FULL - mass[ni])
 	if (m <= 0) return 0
-	liq[i] -= m
-	liq[ni] += m
+	mass[i] -= m
+	mass[ni] += m
 	flowX[i] += dx * m
 	flowY[i] += dy * m
 	flowX[ni] += dx * m

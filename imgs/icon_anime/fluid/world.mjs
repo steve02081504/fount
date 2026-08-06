@@ -26,15 +26,77 @@ import { createParticlePool, clearParticlePool, totalParticleWater } from './par
  *   gasGeomDirty: boolean,
  *   maxUpdraft: number,
  *   gravity: GravityState,
+ *   gravityDepth0: number,
+ *   gravityDepthSpan: number,
  *   boundary: {
  *     absorbedUnits: number, absorbedHeat: number, lastTemp: number,
  *     regurgitating: boolean, regurgitatedUnits: number, regurgitatedHeat: number,
  *     regurgitatePhase: number,
+ *     exposure: Float32Array,
+ *     absorbGx: number, absorbGy: number,
  *   },
  *   scratch: Record<string, unknown>,
  *   floodQ: number[],
  * }} FluidWorld
  */
+
+/** 重力方向点积变化超过此值时标脏空气几何。 */
+const GRAVITY_DIRTY_DOT = 0.92
+
+/** 复用的加权邻格缓冲（向下）。 */
+const DOWN_W = { dx: [0, 0, 0, 0], dy: [0, 0, 0, 0], w: [0, 0, 0, 0], n: 0 }
+/** 复用的加权邻格缓冲（向上）。 */
+const UP_W = { dx: [0, 0, 0, 0], dy: [0, 0, 0, 0], w: [0, 0, 0, 0], n: 0 }
+
+/**
+ * 用当前重力填充下/上向加权邻格缓冲。
+ * @param {FluidWorld} world 世界
+ * @param {{ dx: number[], dy: number[], w: number[], n: number }} out 输出
+ * @param {number} sense +1 向下，-1 向上
+ * @returns {{ dx: number[], dy: number[], w: number[], n: number }} out
+ */
+const fillGravityWeights = (world, out, sense) => {
+	const gx = world.gravity.gx * sense
+	const gy = world.gravity.gy * sense
+	out.n = 0
+	const candidates = [
+		[1, 0], [-1, 0], [0, 1], [0, -1],
+	]
+	for (const [dx, dy] of candidates) {
+		const dot = dx * gx + dy * gy
+		if (dot <= 1e-6) continue
+		const i = out.n++
+		out.dx[i] = dx
+		out.dy[i] = dy
+		out.w[i] = dot
+	}
+	return out
+}
+
+/**
+ * 预算投影深度原点与跨度（四角最小值 → depth0，使深度非负）。
+ * @param {FluidWorld} world 世界
+ * @returns {void}
+ */
+const recomputeGravityDepthBasis = (world) => {
+	const { gx, gy } = world.gravity
+	const W = world.worldW
+	const H = world.worldH
+	const corners = [
+		0 * gx + 0 * gy,
+		(W - 1) * gx + 0 * gy,
+		0 * gx + (H - 1) * gy,
+		(W - 1) * gx + (H - 1) * gy,
+	]
+	let min = corners[0]
+	let max = corners[0]
+	for (let i = 1; i < 4; i++) {
+		if (corners[i] < min) min = corners[i]
+		if (corners[i] > max) max = corners[i]
+	}
+	world.gravityDepth0 = min
+	world.gravityDepthSpan = Math.max(1e-6, max - min)
+}
 
 /**
  * 为视口矩形加边距分配流体世界。
@@ -45,7 +107,8 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 	const worldW = width + margin * 2
 	const worldH = height + bottomExtra
 	const size = worldW * worldH
-	return {
+	/** @type {FluidWorld} */
+	const world = {
 		viewW: width, viewH: height, worldW, worldH, margin, ox: margin, oy: 0,
 		mat: new Uint8Array(size),
 		liq: new Float32Array(size),
@@ -69,6 +132,8 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 		gasGeomDirty: true,
 		maxUpdraft: NaN,
 		gravity: defaultGravity(),
+		gravityDepth0: 0,
+		gravityDepthSpan: Math.max(worldW, worldH),
 		boundary: {
 			absorbedUnits: 0,
 			absorbedHeat: 0,
@@ -77,10 +142,15 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 			regurgitatedUnits: 0,
 			regurgitatedHeat: 0,
 			regurgitatePhase: 0,
+			exposure: new Float32Array(4),
+			absorbGx: 0,
+			absorbGy: 1,
 		},
 		scratch: {},
 		floodQ: [],
 	}
+	recomputeGravityDepthBasis(world)
+	return world
 }
 
 /**
@@ -190,6 +260,9 @@ export const clearDynamics = (world) => {
 	world.boundary.regurgitatedUnits = 0
 	world.boundary.regurgitatedHeat = 0
 	world.boundary.regurgitatePhase = 0
+	world.boundary.exposure.fill(0)
+	world.boundary.absorbGx = 0
+	world.boundary.absorbGy = 1
 }
 
 /**
@@ -380,38 +453,56 @@ export const addMelt = (world, x, y, amt, temp) => {
 }
 
 /**
- * 重力主轴上的「深度」坐标（向下增大）。
+ * 重力投影深度（沿 ĝ 增大；默认 ĝ=(0,1) 时等于 y）。
  * @param {FluidWorld} world 世界
  * @param {number} x 列
  * @param {number} y 行
  * @returns {number} 深度标量
  */
-export const gravityDepth = (world, x, y) => {
-	const { axis, sign } = world.gravity
-	const s = axis === 1 ? y : x
-	return sign > 0 ? s : ((axis === 1 ? world.worldH : world.worldW) - 1 - s)
-}
+export const gravityDepth = (world, x, y) =>
+	x * world.gravity.gx + y * world.gravity.gy - world.gravityDepth0
 
 /**
- * 沿重力向下走一步的邻格偏移。
+ * 沿重力向下的加权正交邻格（w = max(0, d̂·ĝ)）。
+ * 返回复用缓冲，勿长期持有。
+ * @param {FluidWorld} world 世界
+ * @returns {{ dx: number[], dy: number[], w: number[], n: number }} 加权邻格
+ */
+export const gravityDownWeights = (world) => fillGravityWeights(world, DOWN_W, 1)
+
+/**
+ * 沿重力向上的加权正交邻格（w = max(0, d̂·(−ĝ))）。
+ * @param {FluidWorld} world 世界
+ * @returns {{ dx: number[], dy: number[], w: number[], n: number }} 加权邻格
+ */
+export const gravityUpWeights = (world) => fillGravityWeights(world, UP_W, -1)
+
+/**
+ * 兼容旧调用：取最强下向邻格偏移（默认重力 → {0,1}）。
  * @param {FluidWorld} world 世界
  * @returns {{ dx: number, dy: number }} 偏移
  */
 export const gravityDownStep = (world) => {
-	const { axis, sign } = world.gravity
-	return axis === 1 ? { dx: 0, dy: sign } : { dx: sign, dy: 0 }
+	const down = gravityDownWeights(world)
+	if (down.n <= 0) return { dx: 0, dy: 1 }
+	let best = 0
+	for (let i = 1; i < down.n; i++)
+		if (down.w[i] > down.w[best]) best = i
+	return { dx: down.dx[best], dy: down.dy[best] }
 }
 
 /**
- * 将重力状态写入世界（检测量化切换）。
+ * 将重力状态写入世界；方向转过阈值角时标脏。
  * @param {FluidWorld} world 世界
  * @param {GravityState} g 重力
- * @returns {boolean} 量化方向是否刚切换
+ * @returns {boolean} 方向是否显著变化
  */
 export const applyGravityToWorld = (world, g) => {
 	const prev = world.gravity
-	const flipped = prev.axis !== g.axis || prev.sign !== g.sign
-	world.gravity = { ...g }
+	const dot = prev.gx * g.gx + prev.gy * g.gy
+	const flipped = dot < GRAVITY_DIRTY_DOT
+	world.gravity = { gx: g.gx, gy: g.gy, mag: g.mag }
+	recomputeGravityDepthBasis(world)
 	if (flipped) {
 		world.airDirty = true
 		world.gasGeomDirty = true

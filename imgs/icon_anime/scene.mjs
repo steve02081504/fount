@@ -519,7 +519,7 @@ const onParticleHit = (world, x, y, m, particle, wet, state) => {
 }
 
 /**
- * 四边出雨权重（重力下方边为 0）。导出供测试。
+ * 四边出雨权重（source 角色）。导出供测试。
  * @param {number} gx 单位重力 x
  * @param {number} gy 单位重力 y
  * @returns {{ nx: number, ny: number, w: number }[]} 边权重
@@ -532,15 +532,12 @@ export const rainEdgeWeights = (gx, gy) => {
 		{ nx: 1, ny: 0, w: 0 }, // right
 	]
 	for (const e of edges) {
-		const towardDown = e.nx * gx + e.ny * gy
-		if (towardDown > 0.15) {
-			e.w = 0 // gravity-down edge never rains
-			continue
-		}
-		e.w = Math.max(0, -towardDown)
+		const dot = e.nx * gx + e.ny * gy
+		// source = max(0, −n̂·ĝ); sink edge never rains
+		e.w = Math.max(0, -dot)
 	}
 	// Side edges get a small base so left/right can randomly rain under default g.
-	if (edges[0].w > 0) {
+	if (edges[0].w > 0.5) {
 		edges[2].w = Math.max(edges[2].w, 0.12)
 		edges[3].w = Math.max(edges[3].w, 0.12)
 	}

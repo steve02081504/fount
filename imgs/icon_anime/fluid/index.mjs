@@ -4,10 +4,10 @@
  * 统一压强模型：
  *   气体热力学 — 开放：P_ATM + ATM_HYDRO·depth；密封：等温 Boyle + 静水
  *   液体       — P_air(表面) + RHO_G·深度；质量 ∝ √(ΔP/ρg)（Torricelli）
- *   气体动态   — 伯努利 P−½ρu² 驱动 ΔP 加速；软 ∇·u 投影
+ *   气体动态   — 伯努利 P−½ρu² 驱动 ΔP 加速
  *   容器       — φ = P/(ρg)−depth 沿液体图均衡（无瞬移）
  *
- * 统一密度语言：rhoOf(substance, temp) → viscOf(rho)；土壤 = 高粘滞岩。
+ * 统一密度语言：rhoOf(substance, temp) → viscOf(rho)；粘滞阶梯选惯性/Stokes/冻结。
  *
  * 水库：liq + moisture + condense + particles（过期沉积）+ melt。
  * 完整 tick 调用 `stepFluid`。
@@ -21,14 +21,15 @@ export {
 	COND_DRAW, COND_DRIP, COND_MATTHEW_RATE, COND_MATTHEW_NOISE,
 	LIQ_DRAW, LIQ_FULL,
 	T_AMB, T_SOLIDUS, T_LIQUIDUS, T_BOIL, T_MAX,
-	RHO_ROCK, RHO_LAVA_HOT, VISC_SOLID, BUBBLE_MIN_CELLS, LAVA_ONSET_FRAMES,
+	RHO_ROCK, RHO_LAVA_HOT, VISC_SOLID, VISC_INERTIAL, BUBBLE_MIN_CELLS,
+	LAVA_ONSET_EXPOSURE, LAVA_ONSET_FRAMES,
 	SUBSTANCE, rhoOf, viscOf, isViscSolid,
 	isSoilMat, isBlockMat, isLiquidBarrier, soilAbsorbFactor,
 } from './mat.mjs'
 
 /** 压强驱动质量传递原语。 */
 export {
-	P_FLOW_CAP, P_FLOW_GAIN, SHEET_GAIN, viscGain,
+	P_FLOW_CAP, P_FLOW_GAIN, SHEET_GAIN, viscGain, isInertialVisc,
 	hydraulicPhi, pressureMove, sheetMove, applyTransfer,
 } from './flow.mjs'
 
@@ -45,7 +46,7 @@ export {
 	floodClear, floodPush, markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
 	clearDynamics, clearMaterials, releaseNonSoilWater,
 	setMat, addMoisture, addLiquid, addMelt, totalGridWater, totalWorldWater, totalMelt,
-	gravityDepth, gravityDownStep, applyGravityToWorld,
+	gravityDepth, gravityDownStep, gravityDownWeights, gravityUpWeights, applyGravityToWorld,
 } from './world.mjs'
 
 /** 气相区域、压力与风速。 */
@@ -64,6 +65,8 @@ export { stepThermal, cellRho, meltVisc } from './thermal.mjs'
 /** 边界角色。 */
 export {
 	boundaryAxes, wrapSide, neighborCoord, onDownEdge, onUpEdge,
+	edgeRoles, edgeDownness, edgeUpness,
+	EDGE_TOP, EDGE_BOTTOM, EDGE_LEFT, EDGE_RIGHT,
 	regurgitateTemp, stepBoundary,
 } from './boundary.mjs'
 

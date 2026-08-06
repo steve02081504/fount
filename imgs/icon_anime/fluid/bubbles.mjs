@@ -3,7 +3,7 @@
  */
 
 import { LIQ_DRAW, BUBBLE_MIN_CELLS } from './mat.mjs'
-import { gravityDownStep, markAirIfMeltDrawCrossed } from './world.mjs'
+import { gravityUpWeights, gravityDownWeights, markAirIfMeltDrawCrossed } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
 
@@ -20,9 +20,14 @@ export const stepBubbles = (world) => {
 	if (step % BUBBLE_PERIOD !== 0) return
 
 	const { worldW: W, worldH: H, melt, regions, regionId } = world
-	const { dx, dy } = gravityDownStep(world)
-	const upDx = -dx
-	const upDy = -dy
+	const up = gravityUpWeights(world)
+	const down = gravityDownWeights(world)
+	if (up.n <= 0) return
+	let bestUp = 0
+	for (let i = 1; i < up.n; i++)
+		if (up.w[i] > up.w[bestUp]) bestUp = i
+	const upDx = up.dx[bestUp]
+	const upDy = up.dy[bestUp]
 
 	for (let id = 1; id < regions.length; id++) {
 		const region = regions[id]
@@ -34,7 +39,6 @@ export const stepBubbles = (world) => {
 			if (regionId[i] === id) cells.push(i)
 		if (!cells.length) continue
 
-		// Only rise if surrounded / capped by melt in the down direction somewhere.
 		let meltNeighbors = 0
 		for (const cell of cells) {
 			const x = cell % W
@@ -48,7 +52,6 @@ export const stepBubbles = (world) => {
 		}
 		if (meltNeighbors < BUBBLE_MIN_CELLS) continue
 
-		// Try shift whole bubble one step up: swap with melt above centroid.
 		let sumX = 0
 		let sumY = 0
 		for (const cell of cells) {
@@ -59,20 +62,18 @@ export const stepBubbles = (world) => {
 		const cy = (sumY / cells.length) | 0
 		const tx = cx + upDx
 		const ty = cy + upDy
-		if (tx < 0 || ty < 0 || tx >= W || ty >= H) {
-			// Reached up edge / free surface — rupture: clear is automatic via open air.
-			continue
-		}
+		if (tx < 0 || ty < 0 || tx >= W || ty >= H) continue
 		const target = ty * W + tx
 		if (melt[target] < LIQ_DRAW) continue
 
-		// Swap one melt cell into the deepest bubble cell.
 		let deepest = cells[0]
 		let deepScore = -Infinity
 		for (const cell of cells) {
 			const x = cell % W
 			const y = (cell / W) | 0
-			const score = dx * x + dy * y
+			let score = 0
+			for (let i = 0; i < down.n; i++)
+				score += down.w[i] * (down.dx[i] * x + down.dy[i] * y)
 			if (score > deepScore) {
 				deepScore = score
 				deepest = cell

@@ -1,21 +1,30 @@
 /**
- * 重力相对边界：下边岩浆源、上边雨/岩浆汇与回吐、垂直轴等高环绕。
+ * 重力相对边界：分数边角色 + 做功积分曝露。
+ * 下向边累积 exposure → 岩浆源；上向边出雨/吸收与回吐。
  */
 
 import {
-	MAT, LIQ_FULL, T_MAX, T_AMB, LAVA_ONSET_FRAMES, isLiquidBarrier,
+	MAT, LIQ_FULL, T_MAX, T_AMB, LAVA_ONSET_EXPOSURE, isLiquidBarrier,
 } from './mat.mjs'
 import { markAirIfDrawCrossed, markAirIfMeltDrawCrossed, addMelt } from './world.mjs'
-import { onUpEdge } from './edges.mjs'
+import {
+	edgeRoles, EDGE_TOP, EDGE_BOTTOM, EDGE_LEFT, EDGE_RIGHT, edgeUpness,
+} from './edges.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
 
-/** 下边每 tick 注入熔岩质量。 */
+/** 下边每 tick 注入熔岩质量（满 sink 权重时）。 */
 const LAVA_INJECT = 0.35
 /** 上边回吐每 tick 质量上限。 */
 const REGURG_RATE = 0.4
+/** 回吐触发：ĝ·absorbDir 低于此值。 */
+const REGURG_DOT = 0.35
 
-export { boundaryAxes, wrapSide, neighborCoord, onDownEdge, onUpEdge } from './edges.mjs'
+export {
+	boundaryAxes, wrapSide, neighborCoord, onDownEdge, onUpEdge,
+	edgeRoles, edgeDownness, edgeUpness,
+	EDGE_TOP, EDGE_BOTTOM, EDGE_LEFT, EDGE_RIGHT,
+} from './edges.mjs'
 
 /**
  * 回吐温度剖面：先增后减，以 lastTemp 为起点。
@@ -35,96 +44,118 @@ export const regurgitateTemp = (lastTemp, phase) => {
 }
 
 /**
- * 边界步进：下边岩浆、上边累计/回吐、贴边恒温。
+ * 收集一边上的全部格索引。
+ * @param {FluidWorld} world 世界
+ * @param {number} edge 边
+ * @param {number[]} out 输出
+ * @returns {void}
+ */
+const collectEdgeCells = (world, edge, out) => {
+	const { worldW: W, worldH: H } = world
+	out.length = 0
+	if (edge === EDGE_TOP)
+		for (let x = 0; x < W; x++) out.push(x)
+	else if (edge === EDGE_BOTTOM)
+		for (let x = 0; x < W; x++) out.push((H - 1) * W + x)
+	else if (edge === EDGE_LEFT)
+		for (let y = 0; y < H; y++) out.push(y * W)
+	else
+		for (let y = 0; y < H; y++) out.push(y * W + (W - 1))
+}
+
+/**
+ * 边界步进：曝露积分、岩浆、吸收/回吐。
  * @param {FluidWorld} world 世界
  * @returns {void}
  */
 export const stepBoundary = (world) => {
-	const { worldW: W, worldH: H, mat, liq, melt, temp, gravity, boundary } = world
-	const wasNormal = gravity.normalFrames > 0
-	const lavaOn = gravity.normalFrames >= LAVA_ONSET_FRAMES
+	const { worldW: W, mat, liq, melt, temp, gravity, boundary } = world
+	const roles = edgeRoles(world)
+	const exposure = boundary.exposure
 
-	// Start regurgitation when gravity returns to screen-down with backlog.
-	if (wasNormal && gravity.normalFrames === 1 && boundary.absorbedUnits > 0.05) {
+	// Accumulate work on each edge; decay when flipped.
+	for (let e = 0; e < 4; e++) {
+		const delta = roles[e].nx * gravity.gx + roles[e].ny * gravity.gy
+		exposure[e] = Math.max(0, exposure[e] + delta)
+	}
+
+	/** @type {number[]} */
+	const cells = []
+
+	for (let e = 0; e < 4; e++) {
+		const sink = roles[e].sink
+		const source = roles[e].source
+		if (sink < 0.05 && source < 0.05) continue
+		collectEdgeCells(world, e, cells)
+
+		const lavaOn = exposure[e] >= LAVA_ONSET_EXPOSURE && sink > 0.05
+		if (lavaOn) {
+			const inject = LAVA_INJECT * sink
+			for (const cell of cells) {
+				if (
+					mat[cell] === MAT.POOL || mat[cell] === MAT.BODY || mat[cell] === MAT.SEAL
+					|| mat[cell] === MAT.SLOPE_L || mat[cell] === MAT.SLOPE_R
+				)
+					continue
+				const beforeL = liq[cell]
+				if (beforeL > 0) {
+					liq[cell] = 0
+					markAirIfDrawCrossed(world, beforeL, 0)
+				}
+				if (mat[cell] === MAT.SOLID || mat[cell] === MAT.HORIZON) {
+					mat[cell] = MAT.AIR
+					world.airDirty = true
+					world.gasGeomDirty = true
+				}
+				const before = melt[cell]
+				melt[cell] = Math.min(LIQ_FULL, Math.max(melt[cell], inject))
+				temp[cell] = T_MAX
+				markAirIfMeltDrawCrossed(world, before, melt[cell])
+			}
+		}
+		else if (sink > 0.15) {
+			for (const cell of cells) {
+				const before = liq[cell]
+				if (before > 0) {
+					liq[cell] = 0
+					markAirIfDrawCrossed(world, before, 0)
+				}
+			}
+		}
+
+		if (lavaOn)
+			for (const cell of cells)
+				if (melt[cell] > 0.02) temp[cell] = T_MAX
+
+		// Up-edge absorb when source-weighted.
+		if (source > 0.15 && !boundary.regurgitating)
+			for (const cell of cells) {
+				if (melt[cell] > 0.02) {
+					const take = melt[cell] * source
+					boundary.absorbedUnits += take
+					boundary.absorbedHeat += take * temp[cell]
+					boundary.lastTemp = temp[cell]
+					// Remember gravity orientation at absorb time; regurgitate when it leaves.
+					boundary.absorbGx = gravity.gx
+					boundary.absorbGy = gravity.gy
+					const before = melt[cell]
+					melt[cell] -= take
+					if (melt[cell] < 1e-6) {
+						melt[cell] = 0
+						temp[cell] = T_AMB
+					}
+					markAirIfMeltDrawCrossed(world, before, melt[cell])
+				}
+			}
+	}
+
+	// Regurgitate when gravity leaves the absorb direction.
+	const absorbDot = gravity.gx * boundary.absorbGx + gravity.gy * boundary.absorbGy
+	if (!boundary.regurgitating && boundary.absorbedUnits > 0.05 && absorbDot < REGURG_DOT) {
 		boundary.regurgitating = true
 		boundary.regurgitatedUnits = 0
 		boundary.regurgitatedHeat = 0
 		boundary.regurgitatePhase = 0
-	}
-
-	const { axis, sign } = gravity
-
-	/** @type {number[]} */
-	const downCells = []
-	/** @type {number[]} */
-	const upCells = []
-
-	if (axis === 1) {
-		const y = sign > 0 ? H - 1 : 0
-		for (let x = 0; x < W; x++) downCells.push(y * W + x)
-		const uy = sign > 0 ? 0 : H - 1
-		for (let x = 0; x < W; x++) upCells.push(uy * W + x)
-	}
-	else {
-		const x = sign > 0 ? W - 1 : 0
-		for (let y = 0; y < H; y++) downCells.push(y * W + x)
-		const ux = sign > 0 ? 0 : W - 1
-		for (let y = 0; y < H; y++) upCells.push(y * W + ux)
-	}
-
-	// Down edge: infinite lava source + clamp temp; wipe water (no count).
-	if (lavaOn)
-		for (const cell of downCells) {
-			if (
-				mat[cell] === MAT.POOL || mat[cell] === MAT.BODY || mat[cell] === MAT.SEAL
-				|| mat[cell] === MAT.SLOPE_L || mat[cell] === MAT.SLOPE_R
-			)
-				continue
-			const beforeL = liq[cell]
-			if (beforeL > 0) {
-				liq[cell] = 0
-				markAirIfDrawCrossed(world, beforeL, 0)
-			}
-			if (mat[cell] === MAT.SOLID || mat[cell] === MAT.HORIZON) {
-				mat[cell] = MAT.AIR
-				world.airDirty = true
-				world.gasGeomDirty = true
-			}
-			const before = melt[cell]
-			melt[cell] = Math.min(LIQ_FULL, Math.max(melt[cell], LAVA_INJECT))
-			temp[cell] = T_MAX
-			markAirIfMeltDrawCrossed(world, before, melt[cell])
-		}
-	else
-		for (const cell of downCells) {
-			// Still wipe free liquid on down edge (old bottom-row sink).
-			const before = liq[cell]
-			if (before > 0) {
-				liq[cell] = 0
-				markAirIfDrawCrossed(world, before, 0)
-			}
-		}
-
-	// Always clamp existing melt on down edge to T_MAX once lava era started.
-	if (lavaOn)
-		for (const cell of downCells)
-			if (melt[cell] > 0.02) temp[cell] = T_MAX
-
-	// Up edge: absorb melt into counter; regurgitate when active.
-	for (const cell of upCells) {
-		if (melt[cell] > 0.02 && !boundary.regurgitating) {
-			const take = melt[cell]
-			boundary.absorbedUnits += take
-			boundary.absorbedHeat += take * temp[cell]
-			boundary.lastTemp = temp[cell]
-			melt[cell] = 0
-			markAirIfMeltDrawCrossed(world, take, 0)
-			temp[cell] = T_AMB
-		}
-		const beforeL = liq[cell]
-		if (beforeL > 0 && onUpEdge(world, cell % W, (cell / W) | 0)) {
-			// Rain is infinite from sky — free liquid at up edge is not counted; leave particles to spawn.
-		}
 	}
 
 	if (boundary.regurgitating && boundary.absorbedUnits > 0) {
@@ -145,19 +176,29 @@ export const stepBoundary = (world) => {
 			const avgRemain = remainH / remainU
 			const targetT = (tOut + avgRemain) * 0.5
 			let budget = Math.min(REGURG_RATE, remainU)
-			for (const cell of upCells) {
+
+			// Prefer current sky edges (source-weighted).
+			for (let e = 0; e < 4; e++) {
 				if (budget <= 1e-6) break
-				if (isLiquidBarrier(mat[cell]) && mat[cell] !== MAT.AIR) continue
-				const room = LIQ_FULL - melt[cell]
-				if (room <= 0) continue
-				const take = Math.min(budget, room, LAVA_INJECT)
-				const x = cell % W
-				const y = (cell / W) | 0
-				addMelt(world, x, y, take, targetT)
-				boundary.regurgitatedUnits += take
-				boundary.regurgitatedHeat += take * targetT
-				budget -= take
+				if (roles[e].source < 0.15) continue
+				collectEdgeCells(world, e, cells)
+				for (const cell of cells) {
+					if (budget <= 1e-6) break
+					if (isLiquidBarrier(mat[cell]) && mat[cell] !== MAT.AIR) continue
+					const room = LIQ_FULL - melt[cell]
+					if (room <= 0) continue
+					const take = Math.min(budget, room, LAVA_INJECT) * roles[e].source
+					if (take <= 1e-6) continue
+					const x = cell % W
+					const y = (cell / W) | 0
+					addMelt(world, x, y, take, targetT)
+					boundary.regurgitatedUnits += take
+					boundary.regurgitatedHeat += take * targetT
+					budget -= take
+				}
 			}
 		}
 	}
+
+	void edgeUpness
 }

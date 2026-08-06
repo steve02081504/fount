@@ -1,6 +1,6 @@
 /**
  * 设备重力：Termux 经 node:child_process 读 termux-sensor；否则默认屏幕向下。
- * 连续向量供粒子；量化四轴供网格静压 / 边界角色。
+ * 连续单位向量供粒子与网格（投影深度 / 加权邻格 / 边角色）。
  */
 
 import { spawn } from 'node:child_process'
@@ -20,8 +20,6 @@ const G0 = 9.81
 
 /** @typedef {{
  *   gx: number, gy: number, mag: number,
- *   axis: 0 | 1, sign: 1 | -1,
- *   steadyFrames: number, normalFrames: number,
  * }} GravityState
  */
 
@@ -33,23 +31,7 @@ export const defaultGravity = () => ({
 	gx: 0,
 	gy: 1,
 	mag: BASE_PARTICLE_G,
-	axis: 1,
-	sign: 1,
-	steadyFrames: 0,
-	normalFrames: 0,
 })
-
-/**
- * 将连续向量量化为四轴之一。
- * @param {number} gx 单位水平分量
- * @param {number} gy 单位垂直分量（y↓）
- * @returns {{ axis: 0 | 1, sign: 1 | -1 }} 量化轴
- */
-export const quantizeGravity = (gx, gy) => {
-	if (Math.abs(gx) >= Math.abs(gy))
-		return { axis: 0, sign: gx >= 0 ? 1 : -1 }
-	return { axis: 1, sign: gy >= 0 ? 1 : -1 }
-}
 
 /**
  * Android 传感器 → 终端屏幕分量（y↓）。
@@ -112,7 +94,7 @@ let sensorIndex = 0
 export const currentGravity = () => live
 
 /**
- * 应用原始目标并平滑；推进量化帧计数。
+ * 应用原始目标并平滑。
  * @param {{ gx: number, gy: number, mag: number }} target 目标
  * @returns {GravityState} 更新后状态
  */
@@ -129,13 +111,6 @@ export const tickGravity = (target = rawTarget) => {
 		live.gx = 0
 		live.gy = 1
 	}
-	const q = quantizeGravity(live.gx, live.gy)
-	const same = q.axis === live.axis && q.sign === live.sign
-	live.axis = q.axis
-	live.sign = q.sign
-	live.steadyFrames = same ? live.steadyFrames + 1 : 0
-	const isNormal = live.axis === 1 && live.sign === 1
-	live.normalFrames = isNormal ? (same ? live.normalFrames + 1 : 1) : 0
 	return live
 }
 
@@ -271,7 +246,4 @@ export const setGravityTarget = (vec) => {
 	live.gx = rawTarget.gx
 	live.gy = rawTarget.gy
 	live.mag = rawTarget.mag
-	const q = quantizeGravity(live.gx, live.gy)
-	live.axis = q.axis
-	live.sign = q.sign
 }

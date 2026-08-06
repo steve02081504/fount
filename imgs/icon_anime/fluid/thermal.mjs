@@ -9,7 +9,7 @@ import {
 	SUBSTANCE, rhoOf, viscOf,
 	isSoilMat, isLiquidBarrier,
 } from './mat.mjs'
-import { scratch, markAirIfDrawCrossed, markAirIfMeltDrawCrossed, gravityDownStep } from './world.mjs'
+import { scratch, markAirIfDrawCrossed, markAirIfMeltDrawCrossed, gravityUpWeights, inWorld } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
 
@@ -99,7 +99,16 @@ export const stepThermal = (world) => {
 				if (take > 1e-8) {
 					moisture[cell] -= take
 					temp[cell] = Math.max(T_AMB, temp[cell] - take * LATENT_EVAP)
-					const above = y > 0 ? cell - W : cell
+					const up = gravityUpWeights(world)
+					let above = cell
+					if (up.n > 0) {
+						let best = 0
+						for (let k = 1; k < up.n; k++)
+							if (up.w[k] > up.w[best]) best = k
+						const ax = x + up.dx[best]
+						const ay = y + up.dy[best]
+						if (inWorld(world, ax, ay)) above = ay * W + ax
+					}
 					injectSteam(world, above, take)
 				}
 			}
@@ -141,18 +150,26 @@ export const stepThermal = (world) => {
 			}
 		}
 
-	// Horizon refresh: soil surface cells keep HORIZON when they are the shallowest solid in their gravity column.
-	const { dx, dy } = gravityDownStep(world)
-	const upDx = -dx
-	const upDy = -dy
+	// Horizon refresh: soil surface cells keep HORIZON when open above along −ĝ.
+	const up = gravityUpWeights(world)
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (mat[cell] !== MAT.SOLID && mat[cell] !== MAT.HORIZON) continue
-			const ux = x + upDx
-			const uy = y + upDy
-			const openAbove = ux < 0 || uy < 0 || ux >= W || uy >= H
-				|| (!isSoilMat(world.mat[uy * W + ux]) && world.melt[uy * W + ux] < LIQ_DRAW)
+			let openAbove = up.n <= 0
+			if (!openAbove) {
+				openAbove = true
+				for (let i = 0; i < up.n; i++) {
+					const ux = x + up.dx[i]
+					const uy = y + up.dy[i]
+					if (ux < 0 || uy < 0 || ux >= W || uy >= H) continue
+					const above = uy * W + ux
+					if (isSoilMat(world.mat[above]) || world.melt[above] >= LIQ_DRAW) {
+						openAbove = false
+						break
+					}
+				}
+			}
 			mat[cell] = openAbove ? MAT.HORIZON : MAT.SOLID
 		}
 }
