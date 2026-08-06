@@ -21,7 +21,7 @@ function renderToolCallingPlaceholder(args) {
 	const toolCallingText = () => getChatI18n(args, 'chat.message.view.commonToolCalling')
 	if (args.supported_functions.html)
 		return `\
-<div class="tool-call-placeholder card bg-base-100 shadow-xl">
+<div class="tool-call-placeholder card my-2 bg-base-100 text-sm shadow-xl">
 	<div class="card-body">
 	${args.supported_functions.fount_i18nkeys
 				? '<span class="tool-call-placeholder-text" data-i18n="chat.message.view.commonToolCalling"></span>'

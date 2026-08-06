@@ -21,7 +21,7 @@ const escapeHtml = (str) => String(str).replace(/["&'<>]/g, char => ({
 function reasoningSummaryHtml(renderOptions = {}) {
 	const text = geti18nForLocales([...renderOptions.locales ?? [], ...localhostLocales], 'chat.message.view.reasoningDetailsTitle') ?? 'Reasoning'
 	const i18nAttr = renderOptions.supported_functions?.fount_i18nkeys ? ' data-i18n="chat.message.view.reasoningDetailsTitle"' : ''
-	return `<summary><span${i18nAttr}>${escapeHtml(text)}</span></summary>`
+	return `<summary class="fount-reasoning-summary collapse-title min-h-0 py-2 text-sm font-semibold opacity-80 select-none"><span${i18nAttr}>${escapeHtml(text)}</span></summary>`
 }
 
 /**
@@ -45,11 +45,15 @@ export function buildReasoningDetailsMarkdown(sourceResult, renderOptions = {}) 
 	].filter(Boolean).join('\n\n')
 
 	return `\
-<details class="fount-reasoning-details"${open ? ' open' : ''}>
+<details class="fount-reasoning-details collapse collapse-arrow my-2 mb-3 rounded-lg border border-base-content/20 bg-base-200/30" ${open ? ' open' : ''}>
 
 	${reasoningSummaryHtml(renderOptions)}
 
-	${body}
+	<div class="collapse-content">
+
+		${body}
+
+	</div>
 
 </details>
 `
