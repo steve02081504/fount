@@ -1,5 +1,5 @@
 /**
- * 宽松 HTML 消毒：保留排版标签，剥 script/事件/危险 URL。
+ * 宽松 HTML 消毒：保留排版标签，剥 script/style 属性/事件/危险 URL。
  * 供 displayName 等「允许富文本但不允许有毒」场景；与 Markdown 未信任档规则对齐。
  * 字符串入口一律经惰性 `<template>` 解析后再消杀，避免先挂活树再 scrub 的竞态。
  */
@@ -89,20 +89,20 @@ function collectDescendants(root) {
 function scrubActiveAttrsInPlace(root) {
 	for (const node of collectDescendants(root)) {
 		if (node.nodeType !== 1) continue
-		const el = /** @type {Element} */ (node)
-		for (const attr of [...el.attributes]) {
-			const lowerName = attr.name.toLowerCase()
+		const element = /** @type {Element} */ (node)
+		for (const attribute of [...element.attributes]) {
+			const lowerName = attribute.name.toLowerCase()
 			if (lowerName.startsWith('on')) {
-				el.removeAttribute(attr.name)
+				element.removeAttribute(attribute.name)
 				continue
 			}
 			if (!URL_HTML_ATTRIBUTES.has(lowerName)) continue
 			if (lowerName === 'srcset') {
-				el.removeAttribute(attr.name)
+				element.removeAttribute(attribute.name)
 				continue
 			}
-			if (!isSafeHtmlUrl(attr.value))
-				el.removeAttribute(attr.name)
+			if (!isSafeHtmlUrl(attribute.value))
+				element.removeAttribute(attribute.name)
 		}
 	}
 }
@@ -127,10 +127,14 @@ export function scrubHtmlActivePayload(htmlOrRoot) {
 export function sanitizeHtmlTree(root) {
 	for (const node of collectDescendants(root)) {
 		if (node.nodeType !== 1) continue
-		const el = /** @type {Element} */ (node)
-		const tagName = el.tagName.toLowerCase()
-		if (BLOCKED_HTML_TAGS.has(tagName))
-			el.remove()
+		const element = /** @type {Element} */ (node)
+		const tagName = element.tagName.toLowerCase()
+		if (BLOCKED_HTML_TAGS.has(tagName)) {
+			element.remove()
+			continue
+		}
+		// 未信任档：剥 style（url() 外联、定位叠层等）；信任档 scrubHtmlActivePayload 不走此路径
+		element.removeAttribute('style')
 	}
 	scrubActiveAttrsInPlace(root)
 }

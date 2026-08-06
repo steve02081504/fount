@@ -47,14 +47,21 @@ Deno.test('sanitizePermissiveHtml strips svg and srcset', () => {
 	assertFalse(/srcset/i.test(html))
 })
 
+Deno.test('sanitizePermissiveHtml strips style attributes', () => {
+	const html = sanitizePermissiveHtml('<span style="background:url(https://evil.example/x);position:fixed;top:0">x</span>')
+	assertFalse(/\bstyle\b/i.test(html))
+	assertStringIncludes(html, '<span')
+})
+
 Deno.test('scrubHtmlActivePayload keeps structure, strips on* and javascript:', () => {
 	const fragment = /** @type {DocumentFragment} */ (scrubHtmlActivePayload(
-		'<details open><summary onclick="x()">s</summary><a href="javascript:alert(1)">t</a><svg onload="y()"></svg></details>',
+		'<details open><summary onclick="x()">s</summary><a href="javascript:alert(1)">t</a><svg onload="y()" style="color:red"></svg></details>',
 	))
 	const host = document.createElement('div')
 	host.appendChild(fragment)
 	assertStringIncludes(host.innerHTML, '<details')
 	assertStringIncludes(host.innerHTML, '<svg')
+	assertStringIncludes(host.innerHTML, 'style=')
 	assertFalse(/onclick/i.test(host.innerHTML))
 	assertFalse(/onload/i.test(host.innerHTML))
 	assertFalse(/javascript:/i.test(host.innerHTML))
