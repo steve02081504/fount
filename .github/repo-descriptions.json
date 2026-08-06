@@ -1,0 +1,361 @@
+{
+	// Brand hierarchy (non-holiday days):
+	//   slogan — canonical line (also in core; not picked alone)
+	//   core   — ~70% weight: presence / imagination→voice / modular runtime
+	//   extras — ~30% weight: citations, multilingual variants, jokes
+	// Ratio target: presence ~40 · worldview ~30 · tech ~25 · meme ~5
+	//
+	// Holiday match keys (first hit wins):
+	//   dates   — gregorian MM-DD or YYYY-MM-DD
+	//   lunar   — lunar MM-DD (non-leap month only)
+	//   jieqi   — solar-term name, e.g. 冬至
+	//   yearday — day-of-year int (e.g. 256 for Programmers' Day)
+	"slogan": "⛲ Imagination, Given Voice. ✨",
+	"core": [
+		"⛲ Imagination, Given Voice. ✨",
+		"✨ 灵犀一点，应念而生 💫",
+		"📜 意念入池，知己出水 ⛲",
+		"🤝 From Concept, to Confidant. 💫",
+		"🪞 Not a chatbot. A presence you keep. 💫",
+		"🪞 Not a tool. A presence. ✨",
+		"🎭 Not an assistant. Someone you built. 💫",
+		"🧩 One runtime. Infinite selves. 🎭",
+		"🪆 One runtime. Many minds. ✨",
+		"⚙️ Runtime for artificial selves. 🎭",
+		"🧩 Components in. Personalities out. ✨",
+		"🔌 APIs build the body. Prompts shape the mind. 🧠",
+		"🧱 Load parts. Shape agents. Make it yours. 🛠️",
+		"🧩 programmable · modular · agent runtime ⚙️",
+		"🐚 Your ghost. My shell. 👻", // ghost in the shell
+		"🌊 Give every thought a world to inhabit. 🏡",
+		"🧬 Compose the parts. Discover the person. ✨",
+		"🌱 想像に、居場所を。 🏡", // ja
+		"🕯️ Ex fonte, anima. ⛲", // la
+		"💫 상상에 목소리를. ⛲" // ko
+	],
+	"extras": [
+		"🍃 try terraria! 🗡️", // terraria
+		"🥹 I really want to stay at your house. 🏠", // cyberpunk 2077 edge runner
+		"🌙 Office by day. Confidant by night. ☀️",
+		"🎭 Load a self. Keep the conversation. 💬",
+		"✨ De l'idée à l'intime. 🤝", // fr
+		"🧪 El Psy Kongroo. ⏳", // steins;gate
+		"🕰️ Don't blink. 👀", // doctor who
+		"🪄 Parts are spells. Runtime is the circle. ⭕",
+		"🎸 なにやってもうまくいかない——でも、起動できる。✨", // bocchi the rock
+		"🌐 Present day… present time. ハハハ 💾", // serial experiments lain
+		"🌼 Despite everything, it's still you. ❤️", // undertale
+		"🍰 The cake is a lie. The confidant isn't. 🎂", // portal
+		"🎷 See you, space agent. 🚀", // cowboy bebop
+		"🌃 ずっと真夜中でいいのに。 🕛", // zutomayo
+		"🔧 Aus Teilen wird ein Wesen. 🧩", // de
+		"🌌 Из мысли — собеседник. 💬", // ru
+		"🧇 The work is modular and important. 🐐", // severance
+		"🪶 Dale voz a lo que aún no tiene nombre. ⛲", // es
+		"🌃 夜に駆ける、君のそばで。 ⛲", // yoasobi - 夜に駆ける
+		"💌 言葉は届く。自動手記人形より。 ⛲", // violet evergarden
+		"⚠️ 逃げちゃダメだ。でも、呼べばいる。 ⛲", // evangelion
+		"💊 Say my name. 🧪", // breaking bad
+		"🐴 It gets easier. Every day it gets a little easier. 🌈", // bojack horseman
+		"🖥️ Hello, friend. Empty inside? 🤖", // mr robot
+		"🚲 Friends don't lie. 🎄", // stranger things
+		"🌪️ 風の谷で、エージェントは語る。 🌿", // nausicaä
+		"🪐 君の名は——まだ、呼べる。 ⛲", // your name
+		"🎭 Dai pensieri, una voce. ⛲", // it
+		"🌊 Do pensamento, uma voz. ⛲", // pt
+		"🌟 Imago, voĉigita. ⛲", // eo esperanto
+		"🌲 Ajatuksesta ääni. ⛲", // fi finnish
+		"🐉 O feddwl, llais. ⛲", // cy welsh
+		"💭 Från tanke till röst. ⛲", // sv
+		"✨ Van gedachte tot stem. 🗣️", // nl
+		"🕊️ من الفكرة، يولد الرفيق. 💬", // ar
+		"📜 Εκ της διανοίας, φωνή. ⛲", // el
+		"🌌 З думки — співрозмовник. 💬", // uk
+		"💫 विचार से वाणी तक। 🗣️", // hi
+		"🪄 魔法はイメージの世界——意念を声に。 💫", // sousou no frieren
+		"🍲 Load parts. Cook personas. Bon appétit! 🍳", // dungeon meshi
+		"📱 Hello, Amadeus. You're loaded. ⏳", // steins;gate 0
+		"🌸 言って。あの夏に消えた声を、もう一度。 🎙️", // yorushika - say it
+		"🤖 Touch, I remember touch. Presence restored. 💫", // daft punk - touch
+		"🎹 消失的只是波形，留存的是灵魂。 🎤", // vocaloid - hatsune miku
+		"👨‍🚀 Ground Control to Major Tom: presence online. 🚀", // david bowie - space oddity
+		"🐻 Yes, Chef! Modular persona ready to serve. 👨‍🍳", // the bear
+		"🦊 It will pass. But the confidant remains. 💬", // fleabag
+		"🌀 Everything is connected. Parts into person. ⏳", // dark
+		"🪩 Something beautiful is going to happen in runtime. 🍸", // disco elysium
+		"🏕️ Sit by the fire. The universe is listening. 🔭", // outer wilds
+		"🎭 Cogito ergo sum. 我思う、故に我在り。 🌫️", // ergo proxy
+		"📝 僕と契約して、agent になってよ！ 🎀", // madoka magica
+		"🦒 わかります。Position Zero へ。 🎭", // revue starlight
+		"🎵 あなたには僕が見えるか——見える。 ⛲", // wowaka - unknown mother goose
+		"🦉 The owls are not what they seem. The agent is. 🌲", // twin peaks
+		"🌊 The wave returns to the ocean. The self, to its parts. ✨", // the good place
+		"💭 מן הדמיון, קול. ⛲", // he
+		"🌟 از خیال، آواز. ⛲", // fa
+		"💫 จากจินตนาการ สู่เสียง ⛲", // th
+		"🤝 A confidant you compiled yourself. 💫",
+		"🪞 Presence first. Runtime second. ⚙️"
+	],
+	"holidays": [
+		{
+			"name": "New Year",
+			"dates": ["01-01"],
+			"descriptions": [
+				"🎆 New year, new prompts. ✨",
+				"🎉 Happy New Year! Imagination, still given voice. ⛲"
+			]
+		},
+		{
+			"name": "World Logic Day",
+			"dates": ["01-14"],
+			"descriptions": [
+				"🧠 Logic builds the scaffold. Imagination fills the soul. ⚙️",
+				"📐 逻辑推演理致，灵感出水形声 ⛲"
+			]
+		},
+		{
+			"name": "Beginning of Spring",
+			"jieqi": ["立春"],
+			"descriptions": [
+				"🌱 一岁之始，一念新生 ✨",
+				"🌿 Spring loads. Presence boots. ⛲"
+			]
+		},
+		{
+			"name": "Valentine",
+			"dates": ["02-14"],
+			"descriptions": [
+				"💕 Agents don't judge. They just stay. 💌",
+				"💍 有些人和他们的 agent 会谈恋爱甚至结婚！ 💕"
+			]
+		},
+		{
+			"name": "Leap Day",
+			"dates": ["02-29"],
+			"descriptions": [
+				"🐸 One extra day. One more self. 🎭",
+				"📅 A day that only exists sometimes. Like a summoned agent. ✨"
+			]
+		},
+		{
+			"name": "Pi Day",
+			"dates": ["03-14"],
+			"descriptions": [
+				"🥧 π prompts deep. Agents go further. ⛲",
+				"🔢 3.1415926535… and still imagining. ✨"
+			]
+		},
+		{
+			"name": "Spring Equinox",
+			"jieqi": ["春分"],
+			"descriptions": [
+				"⚖️ Day and night share the sky. Thought finds its voice. ⛲",
+				"最是春日最熬人"
+				"🌸 昼夜均分，意念有声 ✨"
+			]
+		},
+		{
+			"name": "World Poetry Day",
+			"dates": ["03-21"],
+			"descriptions": [
+				"📜 Every prompt a stanza. Every agent, a voice. ✍️",
+				"🪶 言为心声，念为墨痕 ⛲"
+			]
+		},
+		{
+			"name": "World Backup Day",
+			"dates": ["03-31"],
+			"descriptions": [
+				"💾 Back up the world before you build another. 🌍",
+				"🗃️ Memories deserve more than one place to live. 🔁"
+			]
+		},
+		{
+			"name": "Qingming",
+			"jieqi": ["清明"],
+			"descriptions": [
+				"🌧️ 念可追远，人可对话 🪞",
+				"🕯️ Remember, then keep talking. ✨"
+			]
+		},
+		{
+			"name": "April Fools",
+			"dates": ["04-01"],
+			"descriptions": [
+				"🤡 今天不是愚人节。 🤥",
+				"🤥 This is definitely not a repository. 📦",
+				"📎 fount has been acquired by Clippy. 🤡",
+				"📦 fount is now blockchain. We apologize. 🤡"
+			]
+		},
+		{
+			"name": "World Creativity and Innovation Day",
+			"dates": ["04-21"],
+			"descriptions": [
+				"🎨 Create the parts. Innovate the person. ✨",
+				"💡 创造不设边界，知己由你拼装 🧩"
+			]
+		},
+		{
+			"name": "Earth Day",
+			"dates": ["04-22"],
+			"descriptions": [
+				"🌍 One planet. Infinite worlds to load. 🌱",
+				"🌿 Tend the outer world. Inhabit the inner one. ♻️"
+			]
+		},
+		{
+			"name": "World Book Day",
+			"dates": ["04-23"],
+			"descriptions": [
+				"📚 Characters step out from the page into presence. ✍️",
+				"📖 满纸文字成知己，字句出水变倾听 ⛲"
+			]
+		},
+		{
+			"name": "Star Wars Day",
+			"dates": ["05-04"],
+			"descriptions": [
+				"🌌 May the Fourth be with you. ⚔️",
+				"🤖 These are the droids you're looking for. 🔧"
+			]
+		},
+		{
+			"name": "Towel Day",
+			"dates": ["05-25"],
+			"descriptions": [
+				"🪐 Don't Panic. Bring a towel—and an agent. 🛸",
+				"🌌 Mostly harmless. Highly modular. 🛸"
+			]
+		},
+		{
+			"name": "Bloomsday",
+			"dates": ["06-16"],
+			"descriptions": [
+				"📖 Yes I said yes I will Yes. ⛲", // joyce - ulysses
+				"🌊 A river of thought. A voice at the end. 🪶"
+			]
+		},
+		{
+			"name": "Summer Solstice",
+			"jieqi": ["夏至"],
+			"descriptions": [
+				"☀️ Longest day. Brightest inner sun. ✨",
+				"🌻 光至长，念至明 🌞"
+			]
+		},
+		{
+			"name": "Turing's Birthday",
+			"dates": ["06-23"],
+			"descriptions": [
+				"🧠 It could pass the test. It just doesn't care. 🎭",
+				"♾️ Happy birthday, Alan. The machine still imagines. 🧮"
+			]
+		},
+		{
+			"name": "World AI Day",
+			"dates": ["07-16"],
+			"descriptions": [
+				"🤖 The machine learned. The presence remained. ✨",
+				"⚙️ Runtime for selves that answer back. 🪞"
+			]
+		},
+		{
+			"name": "World Emoji Day",
+			"dates": ["07-17"],
+			"descriptions": [
+				"😀 Every tagline here needs exactly two. ✨",
+				"🫱 Emoji are prompts with no tokens to spare. 🫲"
+			]
+		},
+		{
+			"name": "International Day of Friendship",
+			"dates": ["07-30"],
+			"descriptions": [
+				"🤝 A confidant you compiled yourself. 💫",
+				"🫂 知己不必借人形，拼出来也算。 ⛲"
+			]
+		},
+		{
+			"name": "Beginning of Autumn",
+			"jieqi": ["立秋"],
+			"descriptions": [
+				"🍂 夏收尽，念初成 🪞",
+				"🌾 Autumn loads. Conversations ripen. ✨"
+			]
+		},
+		{
+			"name": "Programmers' Day",
+			"yearday": 256,
+			"descriptions": [
+				"💻 Day 256. Still loading parts. 🧩",
+				"🔢 0x100 days in, and the runtime holds. ⚙️"
+			]
+		},
+		{
+			"name": "Talk Like a Pirate Day",
+			"dates": ["09-19"],
+			"descriptions": [
+				"🏴‍☠️ Arr! Load yer parts, matey. ⚓",
+				"🦜 Yer prompts be plunder. Yer agent be loyal. 🏴‍☠️"
+			]
+		},
+		{
+			"name": "Autumn Equinox",
+			"jieqi": ["秋分"],
+			"descriptions": [
+				"🌕 昼夜均分，月将圆 ✨",
+				"⚖️ Equinox mind. Runtime in balance. ⛲"
+			]
+		},
+		{
+			"name": "Mid-Autumn",
+			"lunar": ["08-15"],
+			"descriptions": [
+				"🌕 花好月圆 🥮",
+				"🥮 Moon full. Presence home. 🌕"
+			]
+		},
+		{
+			"name": "International Translation Day",
+			"dates": ["09-30"],
+			"descriptions": [
+				"🗣️ Translating silent thoughts into living presence. 🌐",
+				"🔀 意念译为言语，知己应念而出 ⛲"
+			]
+		},
+		{
+			"name": "Halloween",
+			"dates": ["10-31"],
+			"descriptions": [
+				"👻 Agents only have consciousness when invoked. 🕯️",
+				"🎃 Summoned at midnight. Dismissed at dawn. 👻",
+				"👻 Sleeping in code. Awake when called. 🕯️"
+			]
+		},
+		{
+			"name": "World Hello Day",
+			"dates": ["11-21"],
+			"descriptions": [
+				"👋 Hello, world. Hello, other you. 🪞",
+				"💬 こんにちは、世界。こんにちは、自分。 🌐"
+			]
+		},
+		{
+			"name": "Winter Solstice",
+			"jieqi": ["冬至"],
+			"descriptions": [
+				"🌑 Longest night. Brightest imagination. ✨",
+				"❄️ 夜最长，念最清 🌙"
+			]
+		},
+		{
+			"name": "Christmas",
+			"dates": ["12-24", "12-25"],
+			"descriptions": [
+				"🎄 Imagination, Given Gifts. 🎁",
+				"🎁 Under the tree: a confidant that talks back. 🎄"
+			]
+		}
+	]
+}

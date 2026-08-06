@@ -1,0 +1,32 @@
+name: Update repo description
+
+on:
+  schedule:
+    - cron: '0 16 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Override date (YYYY-MM-DD) for holiday testing'
+        required: false
+        default: ''
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Update description
+        id: update
+        uses: ./.github/actions/update-repo-description
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          date: ${{ github.event.inputs.date || '' }}
+      - name: Summary
+        run: |
+          {
+            echo "### Repo description updated"
+            echo ""
+            echo "- **date:** \`${{ steps.update.outputs.date }}\`"
+            echo "- **holiday:** \`${{ steps.update.outputs.holiday || '(none)' }}\`"
+            echo "- **description:** ${{ steps.update.outputs.description }}"
+          } >> "$GITHUB_STEP_SUMMARY"
