@@ -4,10 +4,6 @@ cmd_keepalive() {
 	export FOUNT_KEEPALIVE=1
 	trap 'write_taskbar_progress_clear; unset FOUNT_KEEPALIVE' EXIT INT TERM
 	shift
-	if [ "$1" = "debug" ]; then
-		debug_on
-		shift
-	fi
 
 	local start_time init_attempted restart_timestamps server_status
 	local current_time elapsed_time three_minutes_ago temp_timestamps ts
@@ -15,7 +11,7 @@ cmd_keepalive() {
 	init_attempted=0
 	restart_timestamps=()
 
-	"$0" server "$@"
+	run_server "$@"
 	server_status=$?
 	while [ "$server_status" -ne 0 ]; do
 		if [ "$server_status" -eq 130 ]; then exit 130; fi
@@ -49,7 +45,7 @@ cmd_keepalive() {
 
 		# Failed once: foreground-upgrade fount+deno before the next start.
 		update_fount_and_deno
-		"$0" server
+		run_server
 		server_status=$?
 	done
 	exit "$server_status"

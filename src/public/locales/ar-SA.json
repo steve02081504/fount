@@ -2309,7 +2309,12 @@
 					},
 					"cancel": "إلغاء",
 					"save": "حفظ",
-					"upload": "تحميل المرفق"
+					"upload": {
+						"title": "رفع",
+						"aria-label": "رفع"
+					},
+					"hint": "Ctrl+Enter تأكيد · إلغاء Esc",
+					"emptyText": "لا يمكن أن يكون محتوى الرسالة فارغًا"
 				},
 				"feedbackSubmit": "إرسال ردود الفعل",
 				"input": {

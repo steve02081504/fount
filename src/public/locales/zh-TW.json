@@ -2308,7 +2308,12 @@
 					},
 					"cancel": "取消",
 					"save": "儲存",
-					"upload": "上傳附件"
+					"upload": {
+						"title": "上傳附件",
+						"aria-label": "上傳附件"
+					},
+					"hint": "Ctrl+Enter 確認 · Esc 取消",
+					"emptyText": "訊息內容不能為空"
 				},
 				"feedbackSubmit": "提交反饋",
 				"input": {

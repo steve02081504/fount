@@ -1,5 +1,5 @@
 ﻿function script:cmd_keepalive {
-	require debug win/app_restart terminal i18n run
+	require win/app_restart terminal i18n run
 	bootstrap_server @args
 	Start-Job -ScriptBlock {
 		$FOUNT_DIR = $args[0]
@@ -20,15 +20,11 @@
 	$env:FOUNT_KEEPALIVE = 1
 	try {
 		Register-FountApplicationRestart
-		if ($commandArguments.Count -gt 0 -and $commandArguments[0] -eq 'debug') {
-			$commandArguments = @($commandArguments | Select-Object -Skip 1)
-			debug_on
-		}
 		$startTime = Get-Date
 		$initAttempted = $false
 		$restart_timestamps = New-Object System.Collections.Generic.List[datetime]
 
-		& (Join-Path $FOUNT_DIR 'path/fount.ps1') server @commandArguments
+		run_server @commandArguments
 		while ($LastExitCode) {
 			if ($LastExitCode -eq 130) { exit 130 } # ctrl+c
 			if ($LastExitCode -ne 131) {
@@ -68,7 +64,7 @@
 			}
 			# Failed once: foreground-upgrade fount+deno before the next start.
 			update_fount_and_deno
-			& (Join-Path $FOUNT_DIR 'path/fount.ps1') server
+			run_server
 		}
 	}
 	finally {

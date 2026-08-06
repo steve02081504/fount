@@ -188,7 +188,7 @@ on_shutdown(async () => {
 	await icon.farewell()
 })
 // logo 内 Ctrl+C → process.exit 会先跑上面的 on_shutdown
-icon.signal.addEventListener('abort', () => process.exit(130), { once: true })
+icon.signal.addEventListener('abort', () => process.exit(0), { once: true })
 
 /**
  * 阻塞至 `/api/ping` 返回 200；`waitLogo` 时 `start`（已在播则 noop）叠加等待动画，连上 `dismiss`。
@@ -370,7 +370,7 @@ async function main() {
 	// 立刻挂上 rejection 观察，避免与 intro 并行时未处理拒绝
 	const interactiveFailure = ensureInteractiveLogSink().then(() => null, error => error)
 	await icon.intro()
-	if (exitSignal.aborted) process.exit(130)
+	if (exitSignal.aborted) process.exit(0)
 	const interactiveError = await interactiveFailure
 	if (interactiveError) throw interactiveError
 
@@ -393,7 +393,7 @@ async function main() {
 		// 异常断开 / reboot(131)：回到 while 顶再 waitLogo
 	}
 
-	process.exit(130)
+	process.exit(0)
 }
 
 main().catch(onFatal)

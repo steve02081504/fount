@@ -65,14 +65,18 @@ function wireHashNavigation() {
 /** @type {ReturnType<typeof setTimeout> | null} */
 let externalJoinRefreshTimer = null
 
-/** 协议页 / 其他标签入群后刷新侧栏，并在 hash 指向该群时补导航。 @returns {Promise<void>} */
+/** 协议页 / 其他标签入群后刷新侧栏，并在 hash 指向不同群/频道时补导航。 @returns {Promise<void>} */
 async function refreshHubAfterExternalJoin() {
 	const { loadGroups } = await import('../serverBar.mjs')
 	const { parseHash } = await import('../core/urlHash.mjs')
 	const { navigateFromHash } = await import('../hashNav.mjs')
 	await loadGroups()
-	const { groupId } = parseHash()
-	if (groupId) await navigateFromHash()
+	const { groupId, channelId } = parseHash()
+	if (!groupId) return
+	const sameGroup = store.context.currentGroupId === groupId
+	const sameChannel = channelId === store.context.currentChannelId
+	if (sameGroup && sameChannel) return
+	await navigateFromHash()
 }
 
 /**
