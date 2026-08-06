@@ -1356,14 +1356,20 @@
 	margin-top: 8px;
 }
 
-/* 编辑区：进入编辑时隐藏已渲染正文（含 mermaid/katex 等复杂 DOM） */
+/* 编辑区：隐藏气泡壳、反应栏与悬浮操作，只留 header + 编辑框 */
 .message-edit-area {
 	margin-top: 8px;
 	transition: opacity 0.15s ease-in-out;
+	width: 100%;
+	min-width: min(100%, 28rem);
 }
 
-.message-row:has(.message-edit-area) .message-content,
-.message:has(.message-edit-area) .message-content {
+.message-row:has(.message-edit-area) .chat-bubble,
+.message-row:has(.message-edit-area) .chat-footer,
+.message-row:has(.message-edit-area) .message-hover-bar,
+.message:has(.message-edit-area) .chat-bubble,
+.message:has(.message-edit-area) .chat-footer,
+.message:has(.message-edit-area) .message-hover-bar {
 	display: none;
 }
 
