@@ -2309,7 +2309,12 @@
 					},
 					"cancel": "Annulla",
 					"save": "Salva",
-					"upload": "Carica allegato"
+					"upload": {
+						"title": "Carica allegato",
+						"aria-label": "Carica allegato"
+					},
+					"hint": "Ctrl+Invio conferma · Esc annulla",
+					"emptyText": "Il contenuto del messaggio non può essere vuoto"
 				},
 				"feedbackSubmit": "Invia feedback",
 				"input": {

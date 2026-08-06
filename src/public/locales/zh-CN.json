@@ -2313,7 +2313,12 @@
 					},
 					"cancel": "取消",
 					"save": "保存",
-					"upload": "上传附件"
+					"upload": {
+						"title": "上传附件",
+						"aria-label": "上传附件"
+					},
+					"hint": "Ctrl+Enter 确认 · Esc 取消",
+					"emptyText": "消息内容不能为空"
 				},
 				"feedbackSubmit": "提交反馈",
 				"input": {

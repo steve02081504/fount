@@ -1,0 +1,52 @@
+name: Update repo description
+description: Randomly pick a repository description from a JSON5 pool (holiday / lunar / jieqi) and apply it via gh.
+inputs:
+  token:
+    description: GitHub token with administration write (GITHUB_TOKEN is not enough; use a PAT)
+    required: true
+  config:
+    description: Path to descriptions JSON5 (relative to workspace)
+    required: false
+    default: .github/repo-descriptions.json
+  repository:
+    description: Target repository (owner/name)
+    required: false
+    default: ${{ github.repository }}
+  timezone:
+    description: IANA timezone used to resolve "today" for holiday matching
+    required: false
+    default: Asia/Shanghai
+  date:
+    description: Override today's date as YYYY-MM-DD (testing)
+    required: false
+    default: ''
+outputs:
+  description:
+    description: The description that was applied
+    value: ${{ steps.pick.outputs.description }}
+  holiday:
+    description: Matched holiday name, empty if none
+    value: ${{ steps.pick.outputs.holiday }}
+  date:
+    description: Calendar date used for selection (YYYY-MM-DD)
+    value: ${{ steps.pick.outputs.date }}
+runs:
+  using: composite
+  steps:
+    - name: Install picker deps
+      shell: bash
+      run: python3 -m pip install --quiet json5 sxtwl
+    - name: Pick description
+      id: pick
+      shell: bash
+      run: python3 "${{ github.action_path }}/pick.py" "${{ inputs.config }}" "${{ inputs.timezone }}" "${{ inputs.date }}"
+    - name: Apply description
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        DESCRIPTION: ${{ steps.pick.outputs.description }}
+        REPOSITORY: ${{ inputs.repository }}
+      run: |
+        set -euo pipefail
+        echo "Updating $REPOSITORY description → $DESCRIPTION"
+        gh repo edit "$REPOSITORY" --description "$DESCRIPTION"

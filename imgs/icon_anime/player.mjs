@@ -7,13 +7,17 @@
 import process from 'node:process'
 import { setTimeout as sleep } from 'node:timers/promises'
 
+import { console } from 'npm:@steve02081504/virtual-console'
+
 import { canUseTui } from './terminal.mjs'
+
+const nativeStdout = process.stdout.targetStream
 
 /**
  * @param {string} text 待写入文本
  * @returns {boolean} 是否写入成功
  */
-const write = (text) => process.stdout.write(text)
+const write = (text) => nativeStdout.write(text)
 
 /**
  * @returns {{ columns: number, rows: number }} 终端尺寸
@@ -148,6 +152,8 @@ export function start({ onResize, onPointer, onUserAbort } = {}) {
 
 	if (!canUseTui) return
 
+	// Defer global console output until stop leaves the alternate screen.
+	console.block()
 	// Alternate screen keeps the pre-start scrollback + cursor row; leave restores them.
 	write(`\x1b[?1049h\x1b[?25l\x1b[2J\x1b[H${MOUSE_ON}`)
 
@@ -277,4 +283,5 @@ export function stop() {
 	try { process.stdin.setRawMode(false) } catch { /* Node/Deno teardown on odd TTYs */ }
 	try { process.stdin.pause() } catch { /* already paused */ }
 	write(`${MOUSE_OFF}\x1b[?25h\x1b[0m\x1b[?1049l`)
+	console.unblock()
 }

@@ -2309,7 +2309,12 @@
 					},
 					"cancel": "Hủy bỏ",
 					"save": "Cứu",
-					"upload": "Tải lên tệp đính kèm"
+					"upload": {
+						"title": "Tải lên tệp đính kèm",
+						"aria-label": "Tải lên tệp đính kèm"
+					},
+					"hint": "Ctrl+Enter Xác nhận · Esc Hủy",
+					"emptyText": "Nội dung tin nhắn không được để trống"
 				},
 				"feedbackSubmit": "Gửi phản hồi",
 				"input": {

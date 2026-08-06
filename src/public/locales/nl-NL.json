@@ -2309,7 +2309,12 @@
 					},
 					"cancel": "Annuleren",
 					"save": "Opslaan",
-					"upload": "Bijlage uploaden"
+					"upload": {
+						"title": "Bijlage uploaden",
+						"aria-label": "Bijlage uploaden"
+					},
+					"hint": "Ctrl+Enter Bevestigen · Esc Annuleren",
+					"emptyText": "De inhoud van het bericht mag niet leeg zijn"
 				},
 				"feedbackSubmit": "Geef feedback",
 				"input": {

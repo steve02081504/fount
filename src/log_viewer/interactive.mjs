@@ -1078,7 +1078,7 @@ export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir,
 			return
 		}
 		if (kitty === 'interrupt' || (event.ctrlKey && event.key === 'c')) {
-			process.exit(130)
+			process.exit(0)
 			return
 		}
 

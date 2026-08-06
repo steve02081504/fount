@@ -1,7 +1,7 @@
 /**
  * 图标动画会话：动画状态 + TUI 播放。
  * `signal`：用户 Ctrl+C 中止本会话（sticky）；dismiss 不碰它。
- * 嵌入宿主时应自行拥有进程退出信号，并把本 `signal` 接到那边（见 log_viewer）。
+ * 嵌入宿主时应自行拥有进程退出信号，并把本 `signal` 接到那边（见 log_viewer / server index）。
  */
 import { setTimeout as delay } from 'node:timers/promises'
 

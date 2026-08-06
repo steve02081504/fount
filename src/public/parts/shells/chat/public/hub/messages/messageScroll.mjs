@@ -33,9 +33,31 @@ export function setPendingHighlightEventId(eventId) {
 
 /** @returns {void} */
 export function scrollToBottom() {
+	const pipeline = store.messages.channelMessagePipeline
+	if (pipeline?.scrollToBottom) {
+		pipeline.scrollToBottom()
+		return
+	}
 	const container = getMessagesContainer()
 	if (!container) return
 	container.scrollTop = container.scrollHeight
+}
+
+/**
+ * 仅在用户已贴底时滚到底。
+ * @returns {boolean} 是否执行了滚底
+ */
+export function scrollToBottomIfPinned() {
+	const pipeline = store.messages.channelMessagePipeline
+	if (pipeline?.scrollToBottomIfPinned)
+		return pipeline.scrollToBottomIfPinned()
+	const container = getMessagesContainer()
+	if (!container) return false
+	const pinned = container.scrollTop >=
+		container.scrollHeight - container.clientHeight - 100
+	if (!pinned) return false
+	container.scrollTop = container.scrollHeight
+	return true
 }
 
 /**

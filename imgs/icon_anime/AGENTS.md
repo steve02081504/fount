@@ -8,7 +8,7 @@ alwaysApply: false
 
 Standalone terminal animation for the fount fountain logo.
 
-Also embedded by the CLI log viewer (process-wide singleton): `intro` plays enter then background `hold` (no park); while waiting for the server `start` is a no-op if already running, `dismiss` when connected; `farewell` on `on_shutdown`. `signal` means user abort of this icon session (Ctrl+C / `abort()`); dismiss does not touch it. Hosts own their process-exit signal and should wire `icon.signal` into it (log_viewer does). Non-TTY / no VT is decided only in `player.mjs` — session APIs stay callable (play paths no-op).
+Also embedded by the CLI log viewer and the foreground server entry (`src/server/index.mjs`) when stdout is a real TTY (process-wide singleton): `intro` plays enter then background `hold` (no park); log_viewer while waiting for the server uses `start` (no-op if already running) / `dismiss` when connected; server `dismiss`es when `init` returns `started`. `farewell` on `on_shutdown` (works from mid-intro too — e.g. `already_running`). `signal` means user abort of this icon session (Ctrl+C / `abort()`); dismiss does not touch it. Hosts own their process-exit signal and should wire `icon.signal` into it (log_viewer and server `index.mjs` do). Non-TTY / no VT is decided only in `player.mjs` — session APIs stay callable (play paths no-op). While the TUI is on the alternate screen, `player` calls global virtual-console `block`/`unblock` so console / virtual-stream output is deferred until leave; frame paint writes the native `targetStream` so the animation itself is not deferred. Non-TUI paths do not touch block.
 
 ## Run
 
@@ -29,7 +29,7 @@ Player uses the alternate screen buffer (`1049h`/`1049l`) so exit restores the p
 | `icon.mjs` | Packed silhouette, pillars, body growth order (typed arrays) |
 | `scene.mjs` | Anim state, materials, rain, pool leak, enter/hold/exit |
 | `compose.mjs` | Frame paint + ANSI `renderBuffers` / `renderGrid`; pointer torch + click ripples (truecolor lift) |
-| `player.mjs` | Process singleton TUI: `canUseTui` gate, play/loop, Ctrl+C → play abort + `onUserAbort`, SGR mouse, alt-screen |
+| `player.mjs` | Process singleton TUI: `canUseTui` gate, play/loop, Ctrl+C → play abort + `onUserAbort`, SGR mouse, alt-screen, console `block`/`unblock` while on alt-screen |
 | `terminal.mjs` | `canUseTui` (stdin+stdout TTY + ANSI); consumed only by `player.mjs` |
 | `gesture/` | Pointer gestures (`pointer` press helper, `light` torch/ripple, `wind` stroke/vortex) |
 | `terrain.mjs` | Pedestal-anchored surface + noise caves + U-tube/chamber templates |

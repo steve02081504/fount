@@ -4,11 +4,7 @@
 	$commandArguments = @($args | Select-Object -Skip 1)
 	try {
 		Register-FountApplicationRestart
-		if ($commandArguments.Count -gt 0 -and $commandArguments[0] -eq 'debug') {
-			$commandArguments = @($commandArguments | Select-Object -Skip 1)
-			debug_on
-		}
-		run_server_with_updates @commandArguments
+		run_server @commandArguments
 	}
 	finally {
 		Unregister-FountApplicationRestart

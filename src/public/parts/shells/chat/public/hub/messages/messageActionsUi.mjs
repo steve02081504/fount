@@ -151,11 +151,16 @@ export async function renderActionsBar(inlineHtml, menuItemsHtml, shiftHtml = ''
 }
 
 /**
- * @param {string} inner 编辑区内部 HTML
- * @returns {Promise<string>} 完整编辑区 HTML
+ * @param {string} originalText 原始正文
+ * @param {{ saveClass?: string, saveAttrs?: string }} [options] 保存按钮 class / 额外属性
+ * @returns {Promise<string>} 消息编辑区 HTML
  */
-export async function editAreaInnerHtml(inner) {
-	return renderTemplateAsHtmlString('hub/messages/edit_area', { innerHtml: inner })
+export async function editBodyHtml(originalText, { saveClass = 'message-edit-save', saveAttrs = '' } = {}) {
+	return renderTemplateAsHtmlString('hub/messages/edit_body', {
+		originalText,
+		saveClass,
+		saveAttrs,
+	})
 }
 
 /**
@@ -164,7 +169,10 @@ export async function editAreaInnerHtml(inner) {
  * @returns {Promise<string>} 频道消息编辑区 HTML
  */
 export async function editChannelBodyHtml(originalText, eventId) {
-	return renderTemplateAsHtmlString('hub/messages/edit_channel_body', { originalText, eventId })
+	return editBodyHtml(originalText, {
+		saveClass: 'message-edit-save',
+		saveAttrs: `data-event-id="${escapeHtml(eventId)}"`,
+	})
 }
 
 /**

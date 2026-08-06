@@ -2304,7 +2304,12 @@
 					},
 					"cancel": "Cancel",
 					"save": "Save",
-					"upload": "Upload attachment"
+					"upload": {
+						"title": "Upload attachment",
+						"aria-label": "Upload attachment"
+					},
+					"hint": "Ctrl+Enter confirm · Esc cancel",
+					"emptyText": "Message content cannot be empty"
 				},
 				"feedbackSubmit": "Submit feedback",
 				"input": {

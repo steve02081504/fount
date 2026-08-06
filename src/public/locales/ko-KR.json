@@ -2309,7 +2309,12 @@
 					},
 					"cancel": "취소",
 					"save": "저장",
-					"upload": "첨부파일 업로드"
+					"upload": {
+						"title": "첨부파일 업로드",
+						"aria-label": "첨부파일 업로드"
+					},
+					"hint": "Ctrl+Enter 확인 · Esc 취소",
+					"emptyText": "메시지 내용은 비워둘 수 없습니다."
 				},
 				"feedbackSubmit": "피드백 제출",
 				"input": {

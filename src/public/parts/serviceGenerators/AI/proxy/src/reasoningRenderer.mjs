@@ -21,32 +21,40 @@ const escapeHtml = (str) => String(str).replace(/["&'<>]/g, char => ({
 function reasoningSummaryHtml(renderOptions = {}) {
 	const text = geti18nForLocales([...renderOptions.locales ?? [], ...localhostLocales], 'chat.message.view.reasoningDetailsTitle') ?? 'Reasoning'
 	const i18nAttr = renderOptions.supported_functions?.fount_i18nkeys ? ' data-i18n="chat.message.view.reasoningDetailsTitle"' : ''
-	return `<summary><span${i18nAttr}>${escapeHtml(text)}</span></summary>`
+	return `<summary class="fount-reasoning-summary collapse-title min-h-0 py-2 text-sm font-semibold opacity-80 select-none"><span${i18nAttr}>${escapeHtml(text)}</span></summary>`
 }
 
 /**
- * 从 reasoning_content / reasoning_summary 构建 <details> 折叠块 HTML，置于 content_for_show 开头。
- * - reasoning_content（DeepSeek 完整 CoT）渲染为折叠块内的预格式文本。
- * - reasoning_summary（OpenAI Responses API 摘要）每条摘要独立一行。
+ * 从 reasoning_content / reasoning_summary 构建 Markdown（含 CommonMark HTML 块），置于 content_for_show 开头。
+ * - `<summary>` 标题（i18n 文案）做 HTML 转义；`reasoning_summary` 与正文均原样输出（含 `<gamma>` 等标记），由下游 Markdown 管线处理。
+ * - `<details>` 开/闭与正文之间必须有空行，否则 CommonMark 会把整段当单一 HTML 块，正文中的 Markdown 不生效。
  * @param {{content: string, extension?: any}} sourceResult - 原始响应结果。
  * @param {{ open?: boolean, locales?: string[], supported_functions?: { fount_i18nkeys?: boolean } }} [renderOptions] - 渲染选项。open 为 true 时默认展开（适用于流式预览）。
- * @returns {string} details HTML 字符串，若无推理内容则返回空字符串。
+ * @returns {string} Markdown 字符串，若无推理内容则返回空字符串。
  */
-export function buildReasoningDetailsHtml(sourceResult, renderOptions = {}) {
+export function buildReasoningDetailsMarkdown(sourceResult, renderOptions = {}) {
 	const reasoningContent = sourceResult.extension?.reasoning_content ?? ''
 	const reasoningSummary = sourceResult.extension?.reasoning_summary ?? []
 
 	if (!reasoningContent && !reasoningSummary.length) return ''
 
 	const open = renderOptions.open ?? false
+	const body = [
+		reasoningContent,
+		...reasoningSummary,
+	].filter(Boolean).join('\n\n')
 
-	let bodyHtml = ''
+	return `\
+<details class="fount-reasoning-details collapse collapse-arrow my-2 mb-3 rounded-lg border border-base-content/20 bg-base-200/30"${open ? ' open' : ''}>
 
-	if (reasoningContent)
-		bodyHtml += `<div class="fount-reasoning-content">${escapeHtml(reasoningContent)}</div>`
+	${reasoningSummaryHtml(renderOptions)}
 
-	for (const text of reasoningSummary)
-		bodyHtml += `<div class="fount-reasoning-summary-item">${escapeHtml(text)}</div>`
+	<div class="collapse-content">
 
-	return `<details class="fount-reasoning-details"${open ? ' open' : ''}>${reasoningSummaryHtml(renderOptions)}${bodyHtml}</details>`
+		${body}
+
+	</div>
+
+</details>
+`
 }

@@ -60,7 +60,16 @@
 	}
 }
 
-function script:run_server_with_updates {
+function script:run_server {
+	$commandArguments = @($args)
+	if ($commandArguments.Count -gt 0 -and $commandArguments[0] -eq 'debug') {
+		$commandArguments = @($commandArguments | Select-Object -Skip 1)
+		debug_on
+	}
+	run_with_updates @commandArguments
+}
+
+function script:run_with_updates {
 	run @args
 	# Self-update restart runs bare server — not @args. e.g. `fount run shell/install x`
 	# must not re-run install after crash recovery.

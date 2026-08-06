@@ -4,9 +4,11 @@
  */
 import { streamDisplayText } from '../../src/streamDisplay.mjs'
 import { applySlices } from '../../src/streamSlices.mjs'
+import { isTrustedMarkdownAuthor } from '../../src/trustedAuthors.mjs'
 import { StreamRenderer } from '../../src/ui/StreamRenderer.mjs'
+import { resolveEntityHashForAuthorKey } from '../core/domUtils.mjs'
 import { store } from '../core/state.mjs'
-import { scrollToBottom } from '../messages/messageScroll.mjs'
+import { scrollToBottomIfPinned } from '../messages/messageScroll.mjs'
 import { messageIdSelector } from '../messages/messageShared.mjs'
 
 import { dispatchChannelIncrementalRefresh } from './channelRefresh.mjs'
@@ -112,8 +114,27 @@ function bindStreamRenderer(streamId) {
 	slot.streamRenderer = new StreamRenderer(body)
 	if (!slot.charname)
 		slot.charname = row.getAttribute('data-char-id') || ''
+	const authorPubKeyHash = row.getAttribute('data-author-pubkey-hash') || ''
+	void resolveStreamTrust(slot.streamRenderer, authorPubKeyHash)
 	flushReorderToRenderer(slot)
 	return slot.streamRenderer
+}
+
+/**
+ * 按严格信任表异步升档流式预览（默认未信任；勿用 !isRemote）。
+ * @param {StreamRenderer} renderer 渲染器
+ * @param {string} authorPubKeyHash 作者公钥哈希
+ * @returns {Promise<void>}
+ */
+async function resolveStreamTrust(renderer, authorPubKeyHash) {
+	const trusted = await isTrustedMarkdownAuthor(authorPubKeyHash, {
+		selfEntityHash: store.viewer?.viewerEntityHash,
+		nodeHash: store.viewer?.nodeHash,
+		authorEntityHash: resolveEntityHashForAuthorKey(authorPubKeyHash),
+		viewerOwnerEntityHash: store.viewer?.ownerEntityHash,
+	})
+	if (renderer.attachedTo?.isConnected)
+		renderer.setTrusted(trusted)
 }
 
 /** @param {string} streamId pendingStreamId @returns {void} */
@@ -151,7 +172,7 @@ async function afterStreamEnd() {
 		const { scheduleChannelIncrementalRefresh } = await import('../messages/messages.mjs')
 		await scheduleChannelIncrementalRefresh({ immediate: true })
 	}
-	scrollToBottom()
+	scrollToBottomIfPinned()
 }
 
 /**
@@ -199,8 +220,7 @@ export async function appendStreamSlices(streamId, sequence, slices, eventChanne
 	document.querySelector(streamingMessageRowSelector(streamId))
 		?.querySelector('.streaming-typing')?.remove()
 
-	const container = document.getElementById('messages')
-	if (container) container.scrollTop = container.scrollHeight
+	scrollToBottomIfPinned()
 }
 
 /**

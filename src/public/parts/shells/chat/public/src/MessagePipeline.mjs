@@ -1,18 +1,11 @@
 /**
  * 【文件】public/src/MessagePipeline.mjs
  * 【职责】Hub 消息列表的前端管道：封装虚拟列表分页、向上加载、追加/替换/删除行，以及「是否在底部」的自动滚底策略。
- * 【原理】createVirtualList 只负责 DOM 窗口化渲染；本模块在 container 上监听 scroll，距底部 <100px 时 shouldAutoScroll=true。程序化滚底时设置 programmaticScrollUntil（500ms 内忽略 scroll），避免用户上滑阅读时被强制拉回底部。appendItem(scroll) 在应自动滚底时先 markProgrammaticScroll 再委托 virtualList。
- * 【数据结构】options: { container, fetchData, renderItem, initialIndex?, onRenderComplete?, loadMoreTop? }；返回 API：virtualList、refresh、appendItem、replaceItem、deleteItem、scrollToBottom、destroy。
- * 【关联】hub/messages 初始化时创建；依赖 @pages/scripts/lib/virtualList.mjs。
- */
-/**
- * 【文件】public/src/MessagePipeline.mjs
- * 【职责】Hub 消息列表的前端管道：封装虚拟列表分页、向上加载、追加/替换/删除行，以及「是否在底部」的自动滚底策略。
  * 【原理】createVirtualList 只负责 DOM 窗口化渲染；本模块在 container 上监听 scroll，距底部 <100px 时 shouldAutoScroll=true。
  *   程序化滚底时设置 programmaticScrollUntil（500ms 内忽略 scroll 事件），避免用户上滑阅读时被强制拉回底部。
  *   appendItem(scroll) 在应自动滚底时先 markProgrammaticScroll 再委托 virtualList。
  * 【数据结构】options: { container, fetchData, renderItem, initialIndex?, onRenderComplete?, loadMoreTop? }；
- *   返回 API：virtualList、refresh、appendItem、replaceItem、deleteItem、scrollToBottom、getShouldAutoScroll。
+ *   返回 API：virtualList、refresh、appendItem、replaceItem、deleteItem、scrollToBottom、getShouldAutoScroll、scrollToBottomIfPinned、destroy。
  * 【关联】hub/messages 初始化时创建；依赖 @pages/scripts/lib/virtualList.mjs。
  */
 import { createVirtualList } from '../../../scripts/lib/virtualList.mjs'
@@ -139,6 +132,28 @@ export function createMessagePipeline({
 		/** @param {number} index 索引 */
 		async deleteItem(index) {
 			await virtualList.deleteItem(index)
+		},
+
+		/** @returns {boolean} 用户是否贴在底部附近 */
+		getShouldAutoScroll() {
+			return shouldAutoScroll
+		},
+
+		/** @returns {void} */
+		scrollToBottom() {
+			markProgrammaticScroll()
+			container.scrollTop = container.scrollHeight
+		},
+
+		/**
+		 * 仅在用户已贴底时滚到底。
+		 * @returns {boolean} 是否执行了滚底
+		 */
+		scrollToBottomIfPinned() {
+			if (!shouldAutoScroll) return false
+			markProgrammaticScroll()
+			container.scrollTop = container.scrollHeight
+			return true
 		},
 
 		/** @returns {void} */

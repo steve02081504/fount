@@ -26,9 +26,7 @@ export async function handleEdit(button, actions) {
 	if (messageRow?.querySelector('.message-edit-area')) return true
 	const contextMessage = findContextMessage(messageRow, actions)
 	if (!contextMessage) throw new Error('message not found for edit')
-	const originalText = contextMessage.content_for_edit
-		?? getMessageEditText(contextMessage)
-		?? ''
+	const originalText = getMessageEditText(contextMessage) ?? ''
 	const initialFiles = Array.isArray(contextMessage.files)
 		? contextMessage.files
 		: Array.isArray(contextMessage.content?.files)
@@ -39,10 +37,15 @@ export async function handleEdit(button, actions) {
 	/** @returns {Promise<void>} */
 	const saveCharEdit = async () => {
 		if (!charEditor) return
+		const text = charEditor.getText()
+		if (!text.trim()) {
+			showToastI18n('warning', 'chat.hub.message.edit.emptyText')
+			return
+		}
 		const saveButton = editWrap?.querySelector('.message-edit-save')
 		if (saveButton instanceof HTMLButtonElement) saveButton.disabled = true
 		try {
-			await editChannelMessage(groupId, channelId, eventId, charEditor.getText())
+			await editChannelMessage(groupId, channelId, eventId, text)
 			await removeWithFade(editWrap)
 			await reload?.()
 		}

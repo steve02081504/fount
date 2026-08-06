@@ -81,8 +81,17 @@ run() {
 	return $exit_code
 }
 
+# Foreground server entry (debug flag + keepalive/update restart loop)
+run_server() {
+	if [ "$1" = "debug" ]; then
+		debug_on
+		shift
+	fi
+	run_with_updates "$@"
+}
+
 # Run server; repeat after self-update when deno exits 131
-run_server_with_updates() {
+run_with_updates() {
 	local server_status
 	run "$@"
 	server_status=$?

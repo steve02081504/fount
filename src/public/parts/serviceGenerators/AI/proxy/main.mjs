@@ -4,7 +4,7 @@ import path from 'node:path'
 import { createFetchChatCompletionWithRetry } from './src/chatCompletion.mjs'
 import { buildContentForShowFromLogprobs } from './src/logprobsRenderer.mjs'
 import { buildMessagesFromPromptStruct } from './src/messageBuilder.mjs'
-import { buildReasoningDetailsHtml } from './src/reasoningRenderer.mjs'
+import { buildReasoningDetailsMarkdown } from './src/reasoningRenderer.mjs'
 import { clearFormat } from './src/responseFormat.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default
@@ -139,7 +139,7 @@ async function GetSource(config, { SaveConfig }) {
 			const buildShow = (partialResult, streaming = false) => {
 				let show = enableLogprobsShow ? buildContentForShowFromLogprobs(partialResult, { useThemeStyles, ...i18nRender }) : null
 				if (enableHtmlShow) {
-					const reasoningHtml = buildReasoningDetailsHtml(partialResult, { open: streaming, ...i18nRender })
+					const reasoningHtml = buildReasoningDetailsMarkdown(partialResult, { open: streaming, ...i18nRender })
 					if (reasoningHtml) show = reasoningHtml + (show ?? partialResult.content)
 				}
 				if (show != null) partialResult.content_for_show = show

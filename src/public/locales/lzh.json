@@ -2309,7 +2309,12 @@
 					},
 					"cancel": "罷",
 					"save": "存",
-					"upload": "傳附件"
+					"upload": {
+						"title": "傳附件",
+						"aria-label": "傳附件"
+					},
+					"hint": "Ctrl+Enter 允 · Esc 否",
+					"emptyText": "札文不能為空"
 				},
 				"feedbackSubmit": "提交反饋",
 				"input": {

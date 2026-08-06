@@ -2309,7 +2309,12 @@
 					},
 					"cancel": "キャンセル",
 					"save": "保存",
-					"upload": "添付ファイルをアップロードする"
+					"upload": {
+						"title": "添付ファイルをアップロードする",
+						"aria-label": "添付ファイルをアップロードする"
+					},
+					"hint": "Ctrl+Enter 確認 · Esc キャンセル",
+					"emptyText": "メッセージの内容を空にすることはできません"
 				},
 				"feedbackSubmit": "フィードバックを送信する",
 				"input": {

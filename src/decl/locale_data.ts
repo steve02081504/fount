@@ -2281,7 +2281,12 @@ export type LocaleData = {
 					}
 					cancel: string
 					save: string
-					upload: string
+					upload: {
+						title: string
+						'aria-label': string
+					}
+					hint: string
+					emptyText: string
 				}
 				feedbackSubmit: string
 				input: {

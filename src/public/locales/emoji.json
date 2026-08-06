@@ -2309,7 +2309,12 @@
 					},
 					"cancel": "↩️",
 					"save": "💾",
-					"upload": "⬆️📎"
+					"upload": {
+						"title": "⬆️📎",
+						"aria-label": "⬆️📎"
+					},
+					"hint": "⌃⏎✅ · ⎋↩️",
+					"emptyText": "📨🈳🚫"
 				},
 				"feedbackSubmit": "📤💬",
 				"input": {
