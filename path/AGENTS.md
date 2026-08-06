@@ -30,7 +30,7 @@ Same logic is isomorphic across `foo.{ps1,sh}`; platform-only code under `path/s
 ## Termux
 
 - `env.sh` sets `LANG` from `getprop persist.sys.locale` at CLI start (before i18n).
-- `termux_ensure_sensor_api` (`unix/termux.sh`) installs `termux-api` for `termux-sensor` when missing on `fount logo` / `log` / `server` (`termux_run_setup`); tracked in `auto_installed_system_packages` for uninstall. Logo gravity details: [imgs/icon_anime/AGENTS.md](../imgs/icon_anime/AGENTS.md).
+- `termux_ensure_sensor_api` (`unix/termux.sh`) installs `termux-api` for `termux-sensor` when missing on `fount logo` / `log` / `server`; tracked in `auto_installed_system_packages` for uninstall. Logo gravity details: [imgs/icon_anime/AGENTS.md](../imgs/icon_anime/AGENTS.md).
 
 ## CI smoke
 
