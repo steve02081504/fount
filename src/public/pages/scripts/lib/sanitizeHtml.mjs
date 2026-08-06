@@ -77,7 +77,7 @@ function collectDescendants(root) {
 			for (const child of [...node.childNodes]) walk(child)
 	}
 	if (root.nodeType === 1) walk(/** @type {ChildNode} */ (root))
-	else for (const child of [...root.childNodes]) walk(child)
+	else for (const child of root.childNodes) walk(child)
 	return nodes
 }
 
