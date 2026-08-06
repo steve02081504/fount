@@ -9,6 +9,27 @@ git_ref_exists() {
 	invoke_repo_git rev-parse --verify "$1" &>/dev/null
 }
 
+# Fetch origin and drop stale remote-tracking refs under the configured refspec.
+# Does not widen fetch to other branches — named targets use git_fetch_remote_branch.
+git_fetch_origin() {
+	invoke_repo_git fetch origin --prune
+}
+
+# 0 = branch exists on origin, 1 = confirmed absent, 2 = network/other error.
+# Only call when a named ref is unknown locally — avoid on the plain-update happy path.
+git_remote_branch_status() {
+	local branch="$1" out
+	out=$(invoke_repo_git ls-remote --heads origin "refs/heads/$branch" 2>/dev/null) || return 2
+	[ -n "$out" ] && return 0
+	return 1
+}
+
+# One-shot map of a single head into origin/<branch> (does not change remote.origin.fetch).
+git_fetch_remote_branch() {
+	local branch="$1"
+	invoke_repo_git fetch origin --prune "+refs/heads/${branch}:refs/remotes/origin/${branch}"
+}
+
 git_backup_uncommitted() {
 	command -v git &>/dev/null || return 0
 	[ -d "$FOUNT_DIR/.git" ] || return 0
@@ -79,7 +100,7 @@ git_reset_and_clean() {
 	invoke_repo_git config core.autocrlf false
 	local has_head=0 fetch_ok=0
 	if git_ref_exists HEAD; then has_head=1; fi
-	if invoke_repo_git fetch origin; then fetch_ok=1; fi
+	if git_fetch_origin; then fetch_ok=1; fi
 	if ! git_ref_exists origin/master; then
 		if [ "$fetch_ok" -eq 0 ]; then
 			print_i18n_yellow 'git.fetchFailed' >&2

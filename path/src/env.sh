@@ -26,6 +26,17 @@ in_docker() { [ "$IN_DOCKER" -eq 1 ]; }
 in_termux() { [ "$IN_TERMUX" -eq 1 ]; }
 in_container() { in_docker || in_termux; }
 
+# Termux ships a weak default LANG; use the Android system locale for the whole CLI
+# (i18n + git/bash messages), not only inside run().
+if [ "$IN_TERMUX" -eq 1 ]; then
+	_termux_lang=$(getprop persist.sys.locale 2>/dev/null || true)
+	if [ -n "$_termux_lang" ]; then
+		LANG="$_termux_lang.UTF-8"
+		export LANG
+	fi
+	unset _termux_lang
+fi
+
 # Installer data paths (exported for packages.sh / deno.sh / uninstall hooks)
 export INSTALLER_DATA_DIR="$FOUNT_DIR/data/installer"
 export INSTALLED_SYSTEM_PACKAGES_FILE="$INSTALLER_DATA_DIR/auto_installed_system_packages"
@@ -33,7 +44,7 @@ export INSTALLED_PACMAN_PACKAGES_FILE="$INSTALLER_DATA_DIR/auto_installed_pacman
 export AUTO_INSTALLED_DENO_FLAG="$INSTALLER_DATA_DIR/auto_installed_deno"
 
 # Best-effort Clash TUN enablement for users in restricted regions
-if echo "${LANG:-}" | grep -iqE "_(CN|KP|RU)"; then
+if echo "${LANG:-}" | grep -iqE "_(CN|KP|RU)|(^|-)(zh|ko|ru)(-|$)"; then
 	(
 		TARGETS="github.com cdn.jsdelivr.net"
 		for host in $TARGETS; do

@@ -114,7 +114,7 @@ Compose priority (top wins): splash/rain particles → soft icon edges (`.` / `.
 - **Particles**: continuous `world.gravity` unit vector × `mag` each tick; gravity-aligned speed capped (preserves tangential vortex speed).
 - **Grid**: quantized to four axes (`axis`/`sign`); hydrostatic depth and settle use that axis. Terrain/icon stay screen-anchored.
 - **Rain spawn**: edges weighted by `−outward·ĝ`; gravity-down edge weight is always 0; left/right get a small base under default down so they can randomly rain. Exported `rainEdgeWeights` / `pickRainEdge` for tests.
-- **Termux**: `gravity.mjs` spawns `termux-sensor` via `node:child_process`; path CLI `termux_ensure_sensor_api` installs `termux-api` (tracked for uninstall) on `fount logo` / `log` / `server` (via `termux_run_setup`). Missing app/permission → default gravity.
+- **Termux**: `gravity.mjs` spawns `termux-sensor` via `node:child_process`; path CLI `termux_ensure_sensor_api` installs `termux-api` (tracked for uninstall) on `fount logo` / `log` / `server` (via `termux_ensure_sensor_api`). Missing app/permission → default gravity.
 - **Down edge** (gravity pointing): after `LAVA_ONSET_FRAMES` (312 ≈ 13s at 24fps) of screen-down gravity, infinite lava source; rim cells clamped to `T_MAX`. Water wiped, not counted.
 - **Up edge**: infinite rain (not counted); melt absorbed into `{units,heat,lastTemp}` and regurgitated when gravity returns to screen-down (temp profile rises then falls from `lastTemp` until totals match).
 - **Side edges**: index wrap on the axis perpendicular to gravity (world margin, not viewport).

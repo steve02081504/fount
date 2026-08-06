@@ -25,7 +25,7 @@ run() {
 	original_title=$(get_title)
 	set_title ""
 	require unix/termux
-	termux_run_setup
+	termux_ensure_sensor_api
 	local v8_flags=""
 	if [[ -n "$FOUNT_V8_FLAGS" ]]; then
 		v8_flags="$FOUNT_V8_FLAGS"
@@ -77,7 +77,6 @@ run() {
 	if [ "$exit_code" -ne 0 ] && [ "$exit_code" -ne 130 ] && [ "$exit_code" -ne 131 ]; then
 		write_taskbar_progress_error
 	fi
-	termux_run_teardown
 	return $exit_code
 }
 

@@ -8,6 +8,19 @@
 	deno_upgrade
 }
 
+# Switch to a remote branch tip (one-shot fetch; does not widen remote.origin.fetch).
+function script:fount_switch_to_branch($Target) {
+	Write-Host (Get-I18n -key 'update.switchingToBranch' -params @{ branch = $Target })
+	git_fetch_remote_branch $Target
+	if ($LastExitCode -ne 0) { return }
+	git_checkout_branch $Target "origin/$Target"
+	if ($LastExitCode -ne 0) { return }
+	if (Test-Path -LiteralPath "$FOUNT_DIR/.noupdate") {
+		Remove-Item -LiteralPath "$FOUNT_DIR/.noupdate" -Force
+		Write-Host (Get-I18n -key 'update.removedNoUpdate')
+	}
+}
+
 # Explicit target: branch → track tip & clear .noupdate; commit → detach & create .noupdate.
 function script:fount_update_to_ref($Target) {
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
@@ -25,28 +38,20 @@ function script:fount_update_to_ref($Target) {
 	}
 
 	invoke_repo_git config core.autocrlf false
-	invoke_repo_git fetch origin
-	if ($LastExitCode -ne 0) {
-		Write-Warning (Get-I18n -key 'git.fetchFailed')
-		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
-		return
-	}
-	# Shallow / odd tips: also ask origin for the named ref or object.
-	invoke_repo_git fetch origin $Target 2>$null | Out-Null
 
-	$remoteRef = "origin/$Target"
-	if ((git_ref_exists $remoteRef) -or (git_ref_exists "refs/heads/$Target")) {
+	# Known locally / already tracked — refresh that one tip, no ls-remote.
+	if ((git_ref_exists "origin/$Target") -or (git_ref_exists "refs/heads/$Target")) {
+		if (git_ref_exists "origin/$Target") {
+			fount_switch_to_branch $Target
+			if ($LastExitCode -ne 0) { return }
+			deno_upgrade
+			return
+		}
 		Write-Host (Get-I18n -key 'update.switchingToBranch' -params @{ branch = $Target })
-		if (git_ref_exists $remoteRef) {
-			git_checkout_branch $Target $remoteRef
-			if ($LastExitCode -ne 0) { return }
-		}
-		else {
-			git_backup_uncommitted
-			if ($LastExitCode -ne 0) { return }
-			invoke_repo_git checkout $Target
-			if ($LastExitCode -ne 0) { return }
-		}
+		git_backup_uncommitted
+		if ($LastExitCode -ne 0) { return }
+		invoke_repo_git checkout $Target
+		if ($LastExitCode -ne 0) { return }
 		if (Test-Path -LiteralPath "$FOUNT_DIR/.noupdate") {
 			Remove-Item -LiteralPath "$FOUNT_DIR/.noupdate" -Force
 			Write-Host (Get-I18n -key 'update.removedNoUpdate')
@@ -57,6 +62,22 @@ function script:fount_update_to_ref($Target) {
 		return
 	}
 
+	# Unknown named target — ask origin once, then one-shot fetch if it is a branch.
+	$remoteStatus = git_remote_branch_status $Target
+	if ($remoteStatus -eq 2) {
+		Write-Warning (Get-I18n -key 'git.fetchFailed')
+		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+		return
+	}
+	if ($remoteStatus -eq 0) {
+		fount_switch_to_branch $Target
+		if ($LastExitCode -ne 0) { return }
+		deno_upgrade
+		return
+	}
+
+	# Bare ref → FETCH_HEAD; enough to resolve a commit/tag object.
+	invoke_repo_git fetch origin $Target 2>$null | Out-Null
 	$commit = invoke_repo_git rev-parse --verify "${Target}^{commit}" 2>$null
 	if ($LastExitCode -ne 0 -or -not $commit) {
 		Write-Warning (Get-I18n -key 'update.unknownTarget' -params @{ target = $Target })

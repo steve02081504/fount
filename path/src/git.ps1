@@ -37,6 +37,26 @@ function script:git_ref_exists($Ref = 'HEAD') {
 	return ($LastExitCode -eq 0)
 }
 
+# Fetch origin and drop stale remote-tracking refs under the configured refspec.
+# Does not widen fetch to other branches — named targets use git_fetch_remote_branch.
+function script:git_fetch_origin {
+	invoke_repo_git fetch origin --prune
+}
+
+# 0 = branch exists on origin, 1 = confirmed absent, 2 = network/other error.
+# Only call when a named ref is unknown locally — avoid on the plain-update happy path.
+function script:git_remote_branch_status($Branch) {
+	$out = invoke_repo_git ls-remote --heads origin "refs/heads/$Branch" 2>$null
+	if ($LastExitCode -ne 0) { return 2 }
+	if ($out) { return 0 }
+	return 1
+}
+
+# One-shot map of a single head into origin/<branch> (does not change remote.origin.fetch).
+function script:git_fetch_remote_branch($Branch) {
+	invoke_repo_git fetch origin --prune "+refs/heads/${Branch}:refs/remotes/origin/${Branch}"
+}
+
 function script:git_backup_uncommitted {
 	$global:LastExitCode = 0
 	if (-not (Get-Command git -ErrorAction SilentlyContinue)) { return }
@@ -104,6 +124,48 @@ function script:git_detach_to_ref($Ref) {
 	invoke_repo_git checkout --detach $resolved
 }
 
+function script:fount_resolve_upstream($Branch) {
+	$hadUpstream = invoke_repo_git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
+	if ($LastExitCode -ne 0) { $hadUpstream = $null }
+	git_fetch_remote_branch $Branch
+	if ($LastExitCode -eq 0) {
+		$script:remoteBranch = "origin/$Branch"
+		if (-not $hadUpstream) {
+			Write-Warning (Get-I18n -key 'git.noUpstreamBranch' -params @{ branch = $Branch; remote = $script:remoteBranch })
+		}
+		invoke_repo_git branch --set-upstream-to $script:remoteBranch $Branch | Out-Null
+		$script:currentBranch = $Branch
+		$global:LastExitCode = 0
+		return
+	}
+
+	$remoteStatus = git_remote_branch_status $Branch
+	if ($remoteStatus -eq 2 -or $remoteStatus -eq 0) {
+		Write-Warning (Get-I18n -key 'git.fetchFailed')
+		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+		$global:LastExitCode = 1
+		return
+	}
+
+	if ($Branch -eq 'master') {
+		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = 'origin/master' })
+		$global:LastExitCode = 1
+		return
+	}
+	Write-Host (Get-I18n -key 'git.upstreamGoneFallbackMaster' -params @{ branch = $Branch })
+	git_fetch_remote_branch 'master'
+	if ($LastExitCode -ne 0) {
+		Write-Warning (Get-I18n -key 'git.fetchFailed')
+		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+		$global:LastExitCode = 1
+		return
+	}
+	git_checkout_branch 'master' 'origin/master'
+	if ($LastExitCode -ne 0) { return }
+	$script:currentBranch = 'master'
+	$script:remoteBranch = 'origin/master'
+}
+
 function script:fount_upgrade {
 	$global:LastExitCode = 0
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
@@ -131,65 +193,48 @@ function script:fount_upgrade {
 
 	invoke_repo_git config core.autocrlf false
 	$hasHead = git_ref_exists
-	invoke_repo_git fetch origin
-	if ($LastExitCode -ne 0) {
-		Write-Warning (Get-I18n -key 'git.fetchFailed')
-		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
-		return
+
+	$script:currentBranch = invoke_repo_git rev-parse --abbrev-ref HEAD 2>$null
+	if ($LastExitCode -ne 0) { $script:currentBranch = 'HEAD' }
+	if ($script:currentBranch -eq 'HEAD') {
+		Write-Host (Get-I18n -key 'git.notOnBranch')
+		git_fetch_remote_branch 'master'
+		if ($LastExitCode -ne 0) {
+			Write-Warning (Get-I18n -key 'git.fetchFailed')
+			Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+			return
+		}
+		git_sync_to_ref 'origin/master'
+		if ($LastExitCode -ne 0) { return }
+		invoke_repo_git checkout master
+		$script:currentBranch = 'master'
+		$script:remoteBranch = 'origin/master'
+	}
+	else {
+		fount_resolve_upstream $script:currentBranch
+		if ($LastExitCode -ne 0) { return }
 	}
 
 	if (-not $hasHead -and -not (git_ref_exists)) {
 		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
 		return
 	}
-
-	$currentBranch = invoke_repo_git rev-parse --abbrev-ref HEAD 2>$null
-	if ($LastExitCode -ne 0) { $currentBranch = 'HEAD' }
-	if ($currentBranch -eq 'HEAD') {
-		if (-not (git_ref_exists 'origin/master')) {
-			Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = 'origin/master' })
-			return
-		}
-		Write-Host (Get-I18n -key 'git.notOnBranch')
-		git_sync_to_ref 'origin/master'
-		if ($LastExitCode -ne 0) { return }
-		invoke_repo_git checkout master
-		$currentBranch = invoke_repo_git rev-parse --abbrev-ref HEAD 2>$null
-	}
-
-	if (-not (git_ref_exists)) {
-		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+	if (-not (git_ref_exists $script:remoteBranch)) {
+		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $script:remoteBranch })
 		return
 	}
 
-	$remoteBranch = invoke_repo_git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
-	if (-not $remoteBranch) {
-		$candidateRemote = "origin/$currentBranch"
-		if (-not (git_ref_exists $candidateRemote)) {
-			Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $candidateRemote })
-			return
-		}
-		Write-Warning (Get-I18n -key 'git.noUpstreamBranch' -params @{ branch = $currentBranch; remote = $candidateRemote })
-		invoke_repo_git branch --set-upstream-to $candidateRemote
-		$remoteBranch = $candidateRemote
-	}
-
-	if (-not (git_ref_exists $remoteBranch)) {
-		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $remoteBranch })
-		return
-	}
-
-	$mergeBase = invoke_repo_git merge-base $currentBranch $remoteBranch 2>$null
+	$mergeBase = invoke_repo_git merge-base $script:currentBranch $script:remoteBranch 2>$null
 	if ($LastExitCode -ne 0) {
 		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
 		return
 	}
-	$localCommit = invoke_repo_git rev-parse $currentBranch 2>$null
+	$localCommit = invoke_repo_git rev-parse $script:currentBranch 2>$null
 	if ($LastExitCode -ne 0) {
 		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
 		return
 	}
-	$remoteCommit = invoke_repo_git rev-parse $remoteBranch 2>$null
+	$remoteCommit = invoke_repo_git rev-parse $script:remoteBranch 2>$null
 	if ($LastExitCode -ne 0) {
 		Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
 		return
@@ -203,7 +248,7 @@ function script:fount_upgrade {
 				git_backup_uncommitted
 				if ($LastExitCode -ne 0) { return }
 			}
-			invoke_repo_git reset --hard $remoteBranch
+			invoke_repo_git reset --hard $script:remoteBranch
 		}
 		elseif ($mergeBase -eq $remoteCommit) {
 			Write-Host (Get-I18n -key 'git.localBranchAhead')
@@ -215,7 +260,7 @@ function script:fount_upgrade {
 				git_backup_uncommitted
 				if ($LastExitCode -ne 0) { return }
 			}
-			invoke_repo_git reset --hard $remoteBranch
+			invoke_repo_git reset --hard $script:remoteBranch
 		}
 	}
 	else {
