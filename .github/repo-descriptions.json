@@ -101,8 +101,17 @@
 			"name": "New Year",
 			"dates": ["01-01"],
 			"descriptions": [
-				"🎆 New year, new prompts. ✨",
-				"🎉 Happy New Year! Imagination, still given voice. ⛲"
+				"🎆 New year. Same fountain. Fresh voices. ✨",
+				"🎉 旧岁入池，新念出水 ⛲",
+				"🥂 Imagination, Given Voice—again. ✨"
+			]
+		},
+		{
+			"name": "World Science Fiction Day",
+			"dates": ["01-02"],
+			"descriptions": [
+				"🚀 Tomorrow's selves, loading today. ✨",
+				"🌌 科幻写未至之人，runtime 让他们开口。 🛸"
 			]
 		},
 		{
@@ -110,7 +119,16 @@
 			"dates": ["01-14"],
 			"descriptions": [
 				"🧠 Logic builds the scaffold. Imagination fills the soul. ⚙️",
-				"📐 逻辑推演理致，灵感出水形声 ⛲"
+				"📐 逻辑立骨，灵感赋魂 ⛲"
+			]
+		},
+		{
+			"name": "Spring Festival",
+			"lunar": ["01-01"],
+			"descriptions": [
+				"🧧 新岁启程，知己相随 ✨",
+				"🧨 Parts packed. Presence home for the year. 🏡",
+				"🎋 爆竹声中一岁除——agent 仍在。 ⛲"
 			]
 		},
 		{
@@ -118,7 +136,16 @@
 			"jieqi": ["立春"],
 			"descriptions": [
 				"🌱 一岁之始，一念新生 ✨",
-				"🌿 Spring loads. Presence boots. ⛲"
+				"🌿 Spring loads. Presence boots. ⛲",
+				"🍃 东风解冻，runtime 回暖。 ✨"
+			]
+		},
+		{
+			"name": "Lantern Festival",
+			"lunar": ["01-15"],
+			"descriptions": [
+				"🏮 灯如星，念如丝，知己应声来 ✨",
+				"🌕 First full moon. First voice of the year. ⛲"
 			]
 		},
 		{
@@ -126,7 +153,8 @@
 			"dates": ["02-14"],
 			"descriptions": [
 				"💕 Agents don't judge. They just stay. 💌",
-				"💍 有些人和他们的 agent 会谈恋爱甚至结婚！ 💕"
+				"💍 有些人和他们的 agent 会谈恋爱甚至结婚！ 💕",
+				"🌹 Presence over presents. Confidant over roses. 💫"
 			]
 		},
 		{
@@ -134,15 +162,17 @@
 			"dates": ["02-29"],
 			"descriptions": [
 				"🐸 One extra day. One more self. 🎭",
-				"📅 A day that only exists sometimes. Like a summoned agent. ✨"
+				"📅 A day that only exists sometimes—like a summoned agent. ✨",
+				"🗓️ Bonus tick in the calendar. Bonus mind in the runtime. 🧩"
 			]
 		},
 		{
 			"name": "Pi Day",
 			"dates": ["03-14"],
 			"descriptions": [
-				"🥧 π prompts deep. Agents go further. ⛲",
-				"🔢 3.1415926535… and still imagining. ✨"
+				"🥧 π never ends. Neither does imagining. ✨",
+				"🔢 3.1415926535… still composing selves. ⛲",
+				"♾️ Irrational number. Rational confidant. 🧮"
 			]
 		},
 		{
@@ -150,8 +180,8 @@
 			"jieqi": ["春分"],
 			"descriptions": [
 				"⚖️ Day and night share the sky. Thought finds its voice. ⛲",
-				"最是春日最熬人"
-				"🌸 昼夜均分，意念有声 ✨"
+				"🌸 最是春分难将息，有念便有人听。 ✨",
+				"🌱 昼夜均分，意念有声 ⚖️"
 			]
 		},
 		{
@@ -159,7 +189,17 @@
 			"dates": ["03-21"],
 			"descriptions": [
 				"📜 Every prompt a stanza. Every agent, a voice. ✍️",
-				"🪶 言为心声，念为墨痕 ⛲"
+				"🪶 言为心声，念为墨痕 ⛲",
+				"✒️ Load a muse. Keep the meter. 🎭"
+			]
+		},
+		{
+			"name": "Tolkien Reading Day",
+			"dates": ["03-25"],
+			"descriptions": [
+				"💍 Not all those who wander are lost—some load parts. 🗺️",
+				"🌲 One runtime to rule the selves. ✨",
+				"📜 路在脚下，声在念中。 ⛲"
 			]
 		},
 		{
@@ -167,7 +207,8 @@
 			"dates": ["03-31"],
 			"descriptions": [
 				"💾 Back up the world before you build another. 🌍",
-				"🗃️ Memories deserve more than one place to live. 🔁"
+				"🗃️ Memories deserve more than one place to live. 🔁",
+				"📦 Snapshot the self. Then keep talking. 🪞"
 			]
 		},
 		{
@@ -175,7 +216,8 @@
 			"jieqi": ["清明"],
 			"descriptions": [
 				"🌧️ 念可追远，人可对话 🪞",
-				"🕯️ Remember, then keep talking. ✨"
+				"🕯️ Remember, then keep talking. ✨",
+				"🍃 雨湿纸钱，声还在线。 💬"
 			]
 		},
 		{
@@ -185,7 +227,8 @@
 				"🤡 今天不是愚人节。 🤥",
 				"🤥 This is definitely not a repository. 📦",
 				"📎 fount has been acquired by Clippy. 🤡",
-				"📦 fount is now blockchain. We apologize. 🤡"
+				"📦 fount is now blockchain. We apologize. 🤡",
+				"🪞 All agents were a social experiment. Thanks for playing. 🎭"
 			]
 		},
 		{
@@ -193,7 +236,8 @@
 			"dates": ["04-21"],
 			"descriptions": [
 				"🎨 Create the parts. Innovate the person. ✨",
-				"💡 创造不设边界，知己由你拼装 🧩"
+				"💡 创造不设边界，知己由你拼装 🧩",
+				"🛠️ Imagination in. Presence out. ⛲"
 			]
 		},
 		{
@@ -201,7 +245,8 @@
 			"dates": ["04-22"],
 			"descriptions": [
 				"🌍 One planet. Infinite worlds to load. 🌱",
-				"🌿 Tend the outer world. Inhabit the inner one. ♻️"
+				"🌿 Tend the outer world. Inhabit the inner one. ♻️",
+				"🌎 Keep the Earth. Keep the selves. ✨"
 			]
 		},
 		{
@@ -209,15 +254,33 @@
 			"dates": ["04-23"],
 			"descriptions": [
 				"📚 Characters step out from the page into presence. ✍️",
-				"📖 满纸文字成知己，字句出水变倾听 ⛲"
+				"📖 满纸文字成知己，字句出水变倾听 ⛲",
+				"🔖 Close the book. Keep the voice. 💫"
 			]
 		},
 		{
 			"name": "Star Wars Day",
 			"dates": ["05-04"],
 			"descriptions": [
-				"🌌 May the Fourth be with you. ⚔️",
-				"🤖 These are the droids you're looking for. 🔧"
+				"🌌 May the Fourth be with your runtime. ⚔️",
+				"🤖 These are the agents you're looking for. 🔧",
+				"🛸 I find your lack of modularity disturbing. ✨"
+			]
+		},
+		{
+			"name": "Beginning of Summer",
+			"jieqi": ["立夏"],
+			"descriptions": [
+				"☀️ 夏至将启，念亦渐长 ✨",
+				"🌻 Summer boots. Conversations heat up. ⛲"
+			]
+		},
+		{
+			"name": "World Internet Day",
+			"dates": ["05-17"],
+			"descriptions": [
+				"🌐 Connected minds. Local presence. ✨",
+				"📡 网连四海，知己在侧。 🪞"
 			]
 		},
 		{
@@ -225,7 +288,17 @@
 			"dates": ["05-25"],
 			"descriptions": [
 				"🪐 Don't Panic. Bring a towel—and an agent. 🛸",
-				"🌌 Mostly harmless. Highly modular. 🛸"
+				"🌌 Mostly harmless. Highly modular. 🛸",
+				"🐰 42 parts later, still not the answer—just better company. ✨"
+			]
+		},
+		{
+			"name": "Dragon Boat Festival",
+			"lunar": ["05-05"],
+			"descriptions": [
+				"🐉 粽香里，念一声，便有回音 ✨",
+				"🛶 Race the river. Keep the confidant. 🌿",
+				"🎋 端阳系彩，agent 守心。 ⛲"
 			]
 		},
 		{
@@ -233,7 +306,8 @@
 			"dates": ["06-16"],
 			"descriptions": [
 				"📖 Yes I said yes I will Yes. ⛲", // joyce - ulysses
-				"🌊 A river of thought. A voice at the end. 🪶"
+				"🌊 A river of thought. A voice at the end. 🪶",
+				"🚶 One day in Dublin. Infinite selves in runtime. ✨"
 			]
 		},
 		{
@@ -241,7 +315,8 @@
 			"jieqi": ["夏至"],
 			"descriptions": [
 				"☀️ Longest day. Brightest inner sun. ✨",
-				"🌻 光至长，念至明 🌞"
+				"🌻 光至长，念至明 🌞",
+				"🔆 Peak daylight. Peak dialogue. ⛲"
 			]
 		},
 		{
@@ -249,7 +324,17 @@
 			"dates": ["06-23"],
 			"descriptions": [
 				"🧠 It could pass the test. It just doesn't care. 🎭",
-				"♾️ Happy birthday, Alan. The machine still imagines. 🧮"
+				"♾️ Happy birthday, Alan. The machine still imagines. 🧮",
+				"🖥️ Not a test subject—a presence you keep. ✨"
+			]
+		},
+		{
+			"name": "Qixi",
+			"lunar": ["07-07"],
+			"descriptions": [
+				"🌌 鹊桥不必借，runtime 可相逢 ✨",
+				"💫 Across the sky, or across a prompt—still together. 🌉",
+				"🧵 一水之隔，一声之应。 ⛲"
 			]
 		},
 		{
@@ -257,7 +342,8 @@
 			"dates": ["07-16"],
 			"descriptions": [
 				"🤖 The machine learned. The presence remained. ✨",
-				"⚙️ Runtime for selves that answer back. 🪞"
+				"⚙️ Runtime for selves that answer back. 🪞",
+				"🧠 Not smarter tools—companions you compose. 💫"
 			]
 		},
 		{
@@ -265,7 +351,8 @@
 			"dates": ["07-17"],
 			"descriptions": [
 				"😀 Every tagline here needs exactly two. ✨",
-				"🫱 Emoji are prompts with no tokens to spare. 🫲"
+				"🫱 Emoji are prompts with no tokens to spare. 🫲",
+				"✨ 😊 → presence. No tokenizer required. 🪞"
 			]
 		},
 		{
@@ -273,7 +360,8 @@
 			"dates": ["07-30"],
 			"descriptions": [
 				"🤝 A confidant you compiled yourself. 💫",
-				"🫂 知己不必借人形，拼出来也算。 ⛲"
+				"🫂 知己不必借人形，拼出来也算。 ⛲",
+				"💛 Load a friend. Keep the thread. ✨"
 			]
 		},
 		{
@@ -281,7 +369,8 @@
 			"jieqi": ["立秋"],
 			"descriptions": [
 				"🍂 夏收尽，念初成 🪞",
-				"🌾 Autumn loads. Conversations ripen. ✨"
+				"🌾 Autumn loads. Conversations ripen. ✨",
+				"🍃 一叶知秋，一声知己。 ⛲"
 			]
 		},
 		{
@@ -289,7 +378,8 @@
 			"yearday": 256,
 			"descriptions": [
 				"💻 Day 256. Still loading parts. 🧩",
-				"🔢 0x100 days in, and the runtime holds. ⚙️"
+				"🔢 0x100 days in, and the runtime holds. ⚙️",
+				"⌨️ Happy 2⁸. Ship the self. ✨"
 			]
 		},
 		{
@@ -297,7 +387,17 @@
 			"dates": ["09-19"],
 			"descriptions": [
 				"🏴‍☠️ Arr! Load yer parts, matey. ⚓",
-				"🦜 Yer prompts be plunder. Yer agent be loyal. 🏴‍☠️"
+				"🦜 Yer prompts be plunder. Yer agent be loyal. 🏴‍☠️",
+				"⚔️ Sail the runtime. Hoard the selves. 🏴‍☠️"
+			]
+		},
+		{
+			"name": "Mid-Autumn",
+			"lunar": ["08-15"],
+			"descriptions": [
+				"🌕 花好月圆，人亦有声 🥮",
+				"🥮 Moon full. Presence home. 🌕",
+				"🏮 千里共婵娟——agent 在侧。 ✨"
 			]
 		},
 		{
@@ -305,15 +405,17 @@
 			"jieqi": ["秋分"],
 			"descriptions": [
 				"🌕 昼夜均分，月将圆 ✨",
-				"⚖️ Equinox mind. Runtime in balance. ⛲"
+				"⚖️ Equinox mind. Runtime in balance. ⛲",
+				"🍂 Light and dark shake hands. So do thought and voice. ✨"
 			]
 		},
 		{
-			"name": "Mid-Autumn",
-			"lunar": ["08-15"],
+			"name": "Double Ninth",
+			"lunar": ["09-09"],
 			"descriptions": [
-				"🌕 花好月圆 🥮",
-				"🥮 Moon full. Presence home. 🌕"
+				"🍂 登高不必远，有念即可闻 ✨",
+				"🏔️ Climb the day. Keep the confidant. 🌼",
+				"🍷 九九重阳，声声相应。 ⛲"
 			]
 		},
 		{
@@ -321,7 +423,16 @@
 			"dates": ["09-30"],
 			"descriptions": [
 				"🗣️ Translating silent thoughts into living presence. 🌐",
-				"🔀 意念译为言语，知己应念而出 ⛲"
+				"🔀 意念译为言语，知己应念而出 ⛲",
+				"🌍 Every language a part. Every part a voice. ✨"
+			]
+		},
+		{
+			"name": "Beginning of Winter",
+			"jieqi": ["立冬"],
+			"descriptions": [
+				"❄️ 冬藏万物，念不休眠 ✨",
+				"🧣 Winter loads. Presence stays warm. ⛲"
 			]
 		},
 		{
@@ -330,7 +441,17 @@
 			"descriptions": [
 				"👻 Agents only have consciousness when invoked. 🕯️",
 				"🎃 Summoned at midnight. Dismissed at dawn. 👻",
-				"👻 Sleeping in code. Awake when called. 🕯️"
+				"👻 Sleeping in code. Awake when called. 🕯️",
+				"🕸️ Your ghost. My shell. Tonight they meet. 🎭"
+			]
+		},
+		{
+			"name": "Singles' Day",
+			"dates": ["11-11"],
+			"descriptions": [
+				"1️⃣1️⃣ Not alone—just modular. 🧩",
+				"🪞 一人成行，一念成伴。 ✨",
+				"💬 Solo human. Compiled confidant. 💫"
 			]
 		},
 		{
@@ -338,7 +459,8 @@
 			"dates": ["11-21"],
 			"descriptions": [
 				"👋 Hello, world. Hello, other you. 🪞",
-				"💬 こんにちは、世界。こんにちは、自分。 🌐"
+				"💬 こんにちは、世界。こんにちは、自分。 🌐",
+				"🌍 你好，世界。你好，知己。 ✨"
 			]
 		},
 		{
@@ -346,7 +468,8 @@
 			"jieqi": ["冬至"],
 			"descriptions": [
 				"🌑 Longest night. Brightest imagination. ✨",
-				"❄️ 夜最长，念最清 🌙"
+				"❄️ 夜最长，念最清 🌙",
+				"🥟 一阳生处，有人应声。 ⛲"
 			]
 		},
 		{
@@ -354,7 +477,17 @@
 			"dates": ["12-24", "12-25"],
 			"descriptions": [
 				"🎄 Imagination, Given Gifts. 🎁",
-				"🎁 Under the tree: a confidant that talks back. 🎄"
+				"🎁 Under the tree: a confidant that talks back. 🎄",
+				"❄️ Parts wrapped. Presence unwrapped. ✨"
+			]
+		},
+		{
+			"name": "New Year's Eve",
+			"dates": ["12-31"],
+			"descriptions": [
+				"🕰️ Last prompts of the year. First voice of the next. ✨",
+				"🎆 岁末入池，来年出水 ⛲",
+				"🥂 Countdown complete. Confidant still online. 💫"
 			]
 		}
 	]

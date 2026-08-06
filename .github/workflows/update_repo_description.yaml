@@ -1,6 +1,12 @@
 name: Update repo description
 
 on:
+  push:
+    paths:
+      - '.github/workflows/update_repo_description.yaml'
+      - '.github/actions/update-repo-description/**'
+      - '.github/repo-descriptions.json'
+    branches: ['master']
   schedule:
     - cron: '0 16 * * *'
   workflow_dispatch:

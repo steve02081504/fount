@@ -133,7 +133,6 @@ export function sanitizeHtmlTree(root) {
 			element.remove()
 			continue
 		}
-		// 未信任档：剥 style（url() 外联、定位叠层等）；信任档 scrubHtmlActivePayload 不走此路径
 		element.removeAttribute('style')
 	}
 	scrubActiveAttrsInPlace(root)
