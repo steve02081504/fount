@@ -74,7 +74,7 @@ async function refreshHubAfterExternalJoin() {
 	const { groupId, channelId } = parseHash()
 	if (!groupId) return
 	const sameGroup = store.context.currentGroupId === groupId
-	const sameChannel = !channelId || channelId === store.context.currentChannelId
+	const sameChannel = channelId === store.context.currentChannelId
 	if (sameGroup && sameChannel) return
 	await navigateFromHash()
 }

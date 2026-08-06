@@ -3,13 +3,12 @@
  * 默认未信任档；绑定后可由外层按 `isTrustedMarkdownAuthor` 升档。
  * 联邦 `stream_chunk` 验签不绑定消息作者，故不得按「本机消息」一刀切放开。
  *
- * `allowDangerousHtml` 只决定 Markdown 是否保留内联 HTML 结构（如 reasoning 的
- * `<details>`），与「会不会跑脚本」无关：本类用 `innerHTML = …` 写入，HTML5 规定
- * 经 innerHTML 插入的 `<script>` **不会执行**（要执行须 createElement('script')
- * 再 append，见 template.mjs 的激活路径）。因此「流式危险档会让吓人的 script
- * 触发很多次」不成立——帧再多也只是换 DOM 文本节点，不会跑 JS。
+ * `allowDangerousHtml` 决定 Markdown 是否保留内联 HTML 结构（如 reasoning 的
+ * `<details>`）。写入一律 `replaceChildren(scrubHtmlActivePayload(html))`
+ *（template 内剥 `on*` / 危险 URL），与信任档无关。
  */
 import { renderMarkdownAsString } from '../../../../scripts/features/markdown/index.mjs'
+import { scrubHtmlActivePayload } from '../../../../scripts/lib/sanitizeHtml.mjs'
 
 /** Hub 流式消息 Markdown 渲染器。 */
 export class StreamRenderer {
@@ -24,7 +23,7 @@ export class StreamRenderer {
 
 	/**
 	 * @param {HTMLElement} bodyElement 流式正文容器
-	 * @param {{ allowDangerousHtml?: boolean }} [options] 信任档（内联 HTML 结构，非脚本执行）
+	 * @param {{ allowDangerousHtml?: boolean }} [options] 是否保留 Markdown 内联 HTML 结构
 	 */
 	constructor(bodyElement, { allowDangerousHtml = false } = {}) {
 		if (!(bodyElement instanceof HTMLElement))
@@ -108,10 +107,10 @@ export class StreamRenderer {
 		if (this.#displayedText === this.#lastRendered) return
 		const text = this.#displayedText
 		this.#lastRendered = text
-		// innerHTML 赋值：解析 DOM 但不执行 <script>（见文件头）
-		this.#bodyElement.innerHTML = await renderMarkdownAsString(text, this.#markdownCache, {
+		const html = await renderMarkdownAsString(text, this.#markdownCache, {
 			allowDangerousHtml: this.#allowDangerousHtml,
 		})
+		this.#bodyElement.replaceChildren(/** @type {DocumentFragment} */ (scrubHtmlActivePayload(html)))
 		if (text.trim())
 			this.#bodyElement.parentElement
 				?.querySelector('.streaming-skeleton')

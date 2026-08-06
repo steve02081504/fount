@@ -1649,7 +1649,7 @@
 				"cancel": "Abbrechen (Esc)",
 				"confirm": "Bestätigen (Strg+Eingabe)",
 				"emptyText": "Der Nachrichteninhalt darf nicht leer sein",
-				"hint": "Strg+Enter Bestätigen · Esc Abbrechen",
+				"hint": "Strg+Eingabe Bestätigen · Esc Abbrechen",
 				"message": {
 					"title": "Nachricht bearbeiten"
 				}
@@ -2313,7 +2313,7 @@
 						"title": "Anhang hochladen",
 						"aria-label": "Anhang hochladen"
 					},
-					"hint": "Strg+Enter Bestätigen · Esc Abbrechen",
+					"hint": "Strg+Eingabe Bestätigen · Esc Abbrechen",
 					"emptyText": "Der Nachrichteninhalt darf nicht leer sein"
 				},
 				"feedbackSubmit": "Feedback abgeben",

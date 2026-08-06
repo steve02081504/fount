@@ -149,8 +149,8 @@ if (showIcon) {
 // 初始化应用程序。
 const result = await init(fount_config)
 
-if (showIcon) {
-	if (result === 'started') await icon_intro
+if (showIcon && result === 'started') {
+	await icon_intro
 	await icon.dismiss()
 	if (icon.signal.aborted) process.exit(0)
 }

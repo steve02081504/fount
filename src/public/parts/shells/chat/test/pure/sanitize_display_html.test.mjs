@@ -8,7 +8,7 @@ import { installMarkdownTestDom } from './markdown_test_dom.mjs'
 
 installMarkdownTestDom()
 
-const { isSafeHtmlUrl, sanitizePermissiveHtml } = await import('../../../../../pages/scripts/lib/sanitizeHtml.mjs')
+const { isSafeHtmlUrl, sanitizePermissiveHtml, scrubHtmlActivePayload } = await import('../../../../../pages/scripts/lib/sanitizeHtml.mjs')
 
 Deno.test('sanitizePermissiveHtml keeps bold, strips script and onclick', () => {
 	const html = sanitizePermissiveHtml('<b>hi</b><script>alert(1)</script><img src=x onerror=alert(1)>')
@@ -45,4 +45,25 @@ Deno.test('sanitizePermissiveHtml strips svg and srcset', () => {
 	const html = sanitizePermissiveHtml('<svg onload=alert(1)></svg><img srcset="javascript:alert(1)">')
 	assertFalse(/<svg/i.test(html))
 	assertFalse(/srcset/i.test(html))
+})
+
+Deno.test('scrubHtmlActivePayload keeps structure, strips on* and javascript:', () => {
+	const fragment = /** @type {DocumentFragment} */ (scrubHtmlActivePayload(
+		'<details open><summary onclick="x()">s</summary><a href="javascript:alert(1)">t</a><svg onload="y()"></svg></details>',
+	))
+	const host = document.createElement('div')
+	host.appendChild(fragment)
+	assertStringIncludes(host.innerHTML, '<details')
+	assertStringIncludes(host.innerHTML, '<svg')
+	assertFalse(/onclick/i.test(host.innerHTML))
+	assertFalse(/onload/i.test(host.innerHTML))
+	assertFalse(/javascript:/i.test(host.innerHTML))
+})
+
+Deno.test('scrubHtmlActivePayload mutates DOM root in place', () => {
+	const host = document.createElement('div')
+	host.innerHTML = '<p onclick="x()">ok</p>'
+	const returned = scrubHtmlActivePayload(host)
+	assertEquals(returned, host)
+	assertFalse(/onclick/i.test(host.innerHTML))
 })

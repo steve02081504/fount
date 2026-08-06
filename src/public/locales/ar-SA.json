@@ -2310,8 +2310,8 @@
 					"cancel": "إلغاء",
 					"save": "حفظ",
 					"upload": {
-						"title": "تحميل المرفق",
-						"aria-label": "تحميل المرفق"
+						"title": "رفع",
+						"aria-label": "رفع"
 					},
 					"hint": "Ctrl+Enter تأكيد · إلغاء Esc",
 					"emptyText": "لا يمكن أن يكون محتوى الرسالة فارغًا"

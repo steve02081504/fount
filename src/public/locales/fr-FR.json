@@ -1649,7 +1649,7 @@
 				"cancel": "Annuler (Échap)",
 				"confirm": "Confirmer (Ctrl+Entrée)",
 				"emptyText": "Le contenu du message ne peut pas être vide",
-				"hint": "Ctrl+Entrée Confirmer · Echap Annuler",
+				"hint": "Ctrl+Entrée pour Confirmer · Échap pour Annuler",
 				"message": {
 					"title": "Modifier le message"
 				}
@@ -2313,7 +2313,7 @@
 						"title": "Téléverser une pièce jointe",
 						"aria-label": "Téléverser une pièce jointe"
 					},
-					"hint": "Ctrl+Entrée Confirmer · Echap Annuler",
+					"hint": "Ctrl+Entrée pour Confirmer · Échap pour Annuler",
 					"emptyText": "Le contenu du message ne peut pas être vide"
 				},
 				"feedbackSubmit": "Envoyer un retour",

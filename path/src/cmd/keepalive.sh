@@ -4,10 +4,6 @@ cmd_keepalive() {
 	export FOUNT_KEEPALIVE=1
 	trap 'write_taskbar_progress_clear; unset FOUNT_KEEPALIVE' EXIT INT TERM
 	shift
-	if [ "$1" = "debug" ]; then
-		debug_on
-		shift
-	fi
 
 	local start_time init_attempted restart_timestamps server_status
 	local current_time elapsed_time three_minutes_ago temp_timestamps ts
