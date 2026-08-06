@@ -42,8 +42,15 @@ async function navigateFromHashInner() {
 			return
 		}
 
+		const sameGroup = store.context.currentGroupId === groupId
+		const sameChannel = !channelId || channelId === store.context.currentChannelId
+		if (sameGroup && sameChannel && store.context.currentState?.channels) {
+			if (eventId) await scrollToAndHighlightEventId(eventId)
+			return
+		}
+
 		if (
-			store.context.currentGroupId === groupId
+			sameGroup
 			&& channelId
 			&& channelId !== store.context.currentChannelId
 			&& store.context.currentState?.channels?.[channelId]
