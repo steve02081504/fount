@@ -2309,7 +2309,12 @@
 					},
 					"cancel": "Hætta við",
 					"save": "Vista",
-					"upload": "Hladdu upp viðhengi"
+					"upload": {
+						"title": "Hladdu upp viðhengi",
+						"aria-label": "Hladdu upp viðhengi"
+					},
+					"hint": "Ctrl+Enter Staðfesta · Esc Hætta við",
+					"emptyText": "Innihald skilaboða má ekki vera tómt"
 				},
 				"feedbackSubmit": "Sendu álit",
 				"input": {

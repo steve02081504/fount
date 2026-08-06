@@ -2309,7 +2309,12 @@
 					},
 					"cancel": "Annuler",
 					"save": "Enregistrer",
-					"upload": "Téléverser une pièce jointe"
+					"upload": {
+						"title": "Téléverser une pièce jointe",
+						"aria-label": "Téléverser une pièce jointe"
+					},
+					"hint": "Ctrl+Entrée Confirmer · Echap Annuler",
+					"emptyText": "Le contenu du message ne peut pas être vide"
 				},
 				"feedbackSubmit": "Envoyer un retour",
 				"input": {

@@ -2309,7 +2309,12 @@
 					},
 					"cancel": "Abbrechen",
 					"save": "Speichern",
-					"upload": "Anhang hochladen"
+					"upload": {
+						"title": "Anhang hochladen",
+						"aria-label": "Anhang hochladen"
+					},
+					"hint": "Strg+Enter Bestätigen · Esc Abbrechen",
+					"emptyText": "Der Nachrichteninhalt darf nicht leer sein"
 				},
 				"feedbackSubmit": "Feedback abgeben",
 				"input": {
