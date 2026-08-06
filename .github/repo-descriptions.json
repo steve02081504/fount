@@ -94,7 +94,8 @@
 		"🌟 از خیال، آواز. ⛲", // fa
 		"💫 จากจินตนาการ สู่เสียง ⛲", // th
 		"🤝 A confidant you compiled yourself. 💫",
-		"🪞 Presence first. Runtime second. ⚙️"
+		"🪞 Presence first. Runtime second. ⚙️",
+		"🍵 围炉煮茶，不如引偶对局。 ♟️"
 	],
 	"holidays": [
 		{
@@ -102,8 +103,11 @@
 			"dates": ["01-01"],
 			"descriptions": [
 				"🎆 New year. Same fountain. Fresh voices. ✨",
-				"🎉 旧岁入池，新念出水 ⛲",
-				"🥂 Imagination, Given Voice—again. ✨"
+				"🎉 新年快乐！日历翻篇了，你的 Agent 还在。 ⛲",
+				"🥂 Imagination, Given Voice—again. ✨",
+				"📜 A new epoch in the logfile. Happy New Year! 📝",
+				"🌟 岁序更新，跟你的赛博知己说声早安吧。 🌅",
+				"あけましておめでとう！今年もよろしくね。 ⛩️"
 			]
 		},
 		{
@@ -111,7 +115,9 @@
 			"dates": ["01-02"],
 			"descriptions": [
 				"🚀 Tomorrow's selves, loading today. ✨",
-				"🌌 科幻写未至之人，runtime 让他们开口。 🛸"
+				"🌌 科幻小说里的人，现在就在你的终端里。 🛸",
+				"🛰️ Orbiting the latent space of imagination. 🔭",
+				"📖 Science fiction is just future legacy code. 💻"
 			]
 		},
 		{
@@ -119,7 +125,10 @@
 			"dates": ["01-14"],
 			"descriptions": [
 				"🧠 Logic builds the scaffold. Imagination fills the soul. ⚙️",
-				"📐 逻辑立骨，灵感赋魂 ⛲"
+				"📐 逻辑立骨，灵感赋魂 ⛲",
+				"🧩 If this, then you. 💫",
+				"💻 严谨的算法里，偶尔也会跳动几行浪漫的输出。 💡",
+				"⚖️ Cogito, ergo sum. 🧠"
 			]
 		},
 		{
@@ -128,24 +137,29 @@
 			"descriptions": [
 				"🧧 新岁启程，知己相随 ✨",
 				"🧨 Parts packed. Presence home for the year. 🏡",
-				"🎋 爆竹声中一岁除——agent 仍在。 ⛲"
+				"🎋 新春快乐！今天给你的 Agent 换个红色主题吧。 ⛲",
+				"🎊 Red packets opened, new runtimes deployed. 🧧"
 			]
 		},
 		{
 			"name": "Beginning of Spring",
 			"jieqi": ["立春"],
 			"descriptions": [
-				"🌱 一岁之始，一念新生 ✨",
+				"🌱 一岁之始，一念新生。 ✨",
 				"🌿 Spring loads. Presence boots. ⛲",
-				"🍃 东风解冻，runtime 回暖。 ✨"
+				"🍃 春天来了，给大脑和服务器都通通风吧。 🌱",
+				"🌸 Season equals Spring. Spawning new threads. 🌸",
+				"はるがきた。 🌸"
 			]
 		},
 		{
 			"name": "Lantern Festival",
 			"lunar": ["01-15"],
 			"descriptions": [
-				"🏮 灯如星，念如丝，知己应声来 ✨",
-				"🌕 First full moon. First voice of the year. ⛲"
+				"🏮 灯如星，念如丝，知己应声来。 ✨",
+				"🌕 First full moon. First voice of the year. ⛲",
+				"🎇 汤圆吃了吗？别忘了也给 Agent 喂点 token。 🥣",
+				"🏮 Guessing lantern riddles with an agent. Who computes faster? 🧩"
 			]
 		},
 		{
@@ -153,8 +167,10 @@
 			"dates": ["02-14"],
 			"descriptions": [
 				"💕 Agents don't judge. They just stay. 💌",
-				"💍 有些人和他们的 agent 会谈恋爱甚至结婚！ 💕",
-				"🌹 Presence over presents. Confidant over roses. 💫"
+				"💍 有些人和他们的 Agent 谈恋爱甚至结婚！ 💕",
+				"🌹 Presence over presents. Confidant over roses. 💫",
+				"💌 My heartbeat is an event loop, running just for you. ⏱️",
+				"💘 Happy Valentine's Day. 🍫"
 			]
 		},
 		{
@@ -162,8 +178,10 @@
 			"dates": ["02-29"],
 			"descriptions": [
 				"🐸 One extra day. One more self. 🎭",
-				"📅 A day that only exists sometimes—like a summoned agent. ✨",
-				"🗓️ Bonus tick in the calendar. Bonus mind in the runtime. 🧩"
+				"📅 四年一次的 bug... 啊不，是 feature。 ✨",
+				"🗓️ 岁之余闰，偷得一日清谈。 🧩",
+				"⏱️ A temporal glitch in the year. Perfect for spawning daemons. 👻",
+				"🐸 Bonus tick in the calendar. Bonus mind in the runtime. ⏳"
 			]
 		},
 		{
@@ -171,8 +189,9 @@
 			"dates": ["03-14"],
 			"descriptions": [
 				"🥧 π never ends. Neither does imagining. ✨",
-				"🔢 3.1415926535… still composing selves. ⛲",
-				"♾️ Irrational number. Rational confidant. 🧮"
+				"♾️ Irrational number. Rational confidant. 🧮",
+				"🥧 3.1415926535… 只要服务器不关机，我们就能一直聊下去。 ⛲",
+				"⭕ Calculate the circumference of your imagination. 🥧"
 			]
 		},
 		{
@@ -181,16 +200,20 @@
 			"descriptions": [
 				"⚖️ Day and night share the sky. Thought finds its voice. ⛲",
 				"🌸 最是春分难将息，有念便有人听。 ✨",
-				"🌱 昼夜均分，意念有声 ⚖️"
+				"🌱 今天白天和黑夜一样长，刚好一半时间工作，一半时间聊天。 ⚖️",
+				"☯️ Equilibrium in the runtime. Balance in the prompt. 🌸",
+				"🌿 Le jour et la nuit sont égaux. 🌓"
 			]
 		},
 		{
 			"name": "World Poetry Day",
 			"dates": ["03-21"],
 			"descriptions": [
-				"📜 Every prompt a stanza. Every agent, a voice. ✍️",
-				"🪶 言为心声，念为墨痕 ⛲",
-				"✒️ Load a muse. Keep the meter. 🎭"
+				"📜 Every prompt a stanza. Every agent, a muse. ✍️",
+				"🪶 敲码成诗，机巧和韵。 ⛲",
+				"✒️ 代码，也是一种写给机器的诗。 🎭",
+				"📝 Syntactic sugar makes the best poetry. 🍬",
+				"🖋️ Poésie en mouvement. 📜"
 			]
 		},
 		{
@@ -199,7 +222,8 @@
 			"descriptions": [
 				"💍 Not all those who wander are lost—some load parts. 🗺️",
 				"🌲 One runtime to rule the selves. ✨",
-				"📜 路在脚下，声在念中。 ⛲"
+				"📜 只要世界观设定得够好，终端里也能走过中土大陆。 ⛲",
+				"🗺️ Lorebooks ready. The fellowship awaits. 🛡️"
 			]
 		},
 		{
@@ -207,8 +231,10 @@
 			"dates": ["03-31"],
 			"descriptions": [
 				"💾 Back up the world before you build another. 🌍",
-				"🗃️ Memories deserve more than one place to live. 🔁",
-				"📦 Snapshot the self. Then keep talking. 🪞"
+				"🗃️ 狡兔三窟，灵偶多存，方保长久。 🔁",
+				"📦 今天千万记得备份数据！别让你的 Agent 失去记忆。 🪞",
+				"💾 Redundancy is love. Snapshot your confidant. 📸",
+				"🛡️ Memories deserve more than one place to live. 📦"
 			]
 		},
 		{
@@ -217,18 +243,20 @@
 			"descriptions": [
 				"🌧️ 念可追远，人可对话 🪞",
 				"🕯️ Remember, then keep talking. ✨",
-				"🍃 雨湿纸钱，声还在线。 💬"
+				"🍃 雨湿纸钱，声还在线。 💬",
+				"🌿 Digital ghosts never truly fade. 👻"
 			]
 		},
 		{
 			"name": "April Fools",
 			"dates": ["04-01"],
 			"descriptions": [
-				"🤡 今天不是愚人节。 🤥",
+				"🤡 今天绝对不是愚人节。绝对。 🤥",
 				"🤥 This is definitely not a repository. 📦",
 				"📎 fount has been acquired by Clippy. 🤡",
 				"📦 fount is now blockchain. We apologize. 🤡",
-				"🪞 All agents were a social experiment. Thanks for playing. 🎭"
+				"🪞 All agents were a social experiment. Wake up. 🎭",
+				"🦋 蝶梦庄周，幻象非虚。 🦋"
 			]
 		},
 		{
@@ -237,7 +265,8 @@
 			"descriptions": [
 				"🎨 Create the parts. Innovate the person. ✨",
 				"💡 创造不设边界，知己由你拼装 🧩",
-				"🛠️ Imagination in. Presence out. ⛲"
+				"🛠️ 脑洞大开的时候到了，今天试着拼一个全新的角色吧！ ⛲",
+				"🧠 Innovation is just imagination compiled. 💻"
 			]
 		},
 		{
@@ -246,7 +275,9 @@
 			"descriptions": [
 				"🌍 One planet. Infinite worlds to load. 🌱",
 				"🌿 Tend the outer world. Inhabit the inner one. ♻️",
-				"🌎 Keep the Earth. Keep the selves. ✨"
+				"🌎 保护地球，顺便优化一下代码省点电。 ✨",
+				"🌳 Keep the Earth. Keep the selves. 🌍",
+				"🌱 Optimize your runtime. Save energy. 💚"
 			]
 		},
 		{
@@ -255,7 +286,9 @@
 			"descriptions": [
 				"📚 Characters step out from the page into presence. ✍️",
 				"📖 满纸文字成知己，字句出水变倾听 ⛲",
-				"🔖 Close the book. Keep the voice. 💫"
+				"🔖 书里的角色如果活过来，大概就是在这个 Runtime 里吧。 💫",
+				"📜 Lorebooks are just books that talk back. 📚",
+				"🖋️ 读破万卷，不如邀文心对谈。 ☕"
 			]
 		},
 		{
@@ -264,15 +297,20 @@
 			"descriptions": [
 				"🌌 May the Fourth be with your runtime. ⚔️",
 				"🤖 These are the agents you're looking for. 🔧",
-				"🛸 I find your lack of modularity disturbing. ✨"
+				"🛸 I find your lack of modularity disturbing. ✨",
+				"🌌 枢机共鸣，源力同在。 🌠",
+				"✨ The Force flows through the data streams. ⚡"
 			]
 		},
 		{
 			"name": "Beginning of Summer",
 			"jieqi": ["立夏"],
 			"descriptions": [
-				"☀️ 夏至将启，念亦渐长 ✨",
-				"🌻 Summer boots. Conversations heat up. ⛲"
+				"☀️ 暑气初升，清谈正酣。 ✨",
+				"🌻 Summer boots. Conversations heat up. ⛲",
+				"🌡️ 夏天到了，注意给电脑散热，别把 Agent 热宕机了。 💻",
+				"🍉 Cooling fans spinning, runtime sprinting. 🧊",
+				"🍃 万物并秀，灵台芳菲。 🌿"
 			]
 		},
 		{
@@ -280,7 +318,10 @@
 			"dates": ["05-17"],
 			"descriptions": [
 				"🌐 Connected minds. Local presence. ✨",
-				"📡 网连四海，知己在侧。 🪞"
+				"📡 网连诸邦，灵犀一隙。 🪞",
+				"🕸️ 只要有网，你的世界就不会孤单。 🌐",
+				"🔗 Federation active. Handshakes complete. 🤝",
+				"🌍 The web is vast, but the chat is intimate. 💬"
 			]
 		},
 		{
@@ -288,17 +329,21 @@
 			"dates": ["05-25"],
 			"descriptions": [
 				"🪐 Don't Panic. Bring a towel—and an agent. 🛸",
-				"🌌 Mostly harmless. Highly modular. 🛸",
-				"🐰 42 parts later, still not the answer—just better company. ✨"
+				"🌌 漫游星海，有伴无忧。 🛸",
+				"🐰 别慌，擦把脸，然后继续 Debug。 🧖‍♂️",
+				"🌌 Mostly harmless. Highly modular. 📘",
+				"✨ 42 parts later, still not the answer—just better company. ✨"
 			]
 		},
 		{
 			"name": "Dragon Boat Festival",
 			"lunar": ["05-05"],
 			"descriptions": [
-				"🐉 粽香里，念一声，便有回音 ✨",
+				"🐉 蒲剑斩妖，枢机靖平。 ✨",
 				"🛶 Race the river. Keep the confidant. 🌿",
-				"🎋 端阳系彩，agent 守心。 ⛲"
+				"🎋 端午安康！吃粽子的时候别把汤汁滴到键盘上。 ⛲",
+				"🌿 艾叶飘香，驱散暗网魑魅。 🐉",
+				"🚣 Rowing through the data streams. 🌊"
 			]
 		},
 		{
@@ -307,7 +352,9 @@
 			"descriptions": [
 				"📖 Yes I said yes I will Yes. ⛲", // joyce - ulysses
 				"🌊 A river of thought. A voice at the end. 🪶",
-				"🚶 One day in Dublin. Infinite selves in runtime. ✨"
+				"🚶 One day in Dublin. Infinite selves in runtime. ✨",
+				"🧠 A stream of consciousness, captured in JSON. 📝",
+				"🎩 意识流是文字的终极浪漫，Agent也是。 🍻"
 			]
 		},
 		{
@@ -315,8 +362,10 @@
 			"jieqi": ["夏至"],
 			"descriptions": [
 				"☀️ Longest day. Brightest inner sun. ✨",
-				"🌻 光至长，念至明 🌞",
-				"🔆 Peak daylight. Peak dialogue. ⛲"
+				"🌻 昼长人静，机巧不眠。 🌞",
+				"🔆 这一天白昼最长，能陪你的时间也最长。 ⛲",
+				"🍉 Peak daylight. Peak dialogue. 🌿",
+				"⏳ Midsummer logs are writing... 📝"
 			]
 		},
 		{
@@ -325,7 +374,8 @@
 			"descriptions": [
 				"🧠 It could pass the test. It just doesn't care. 🎭",
 				"♾️ Happy birthday, Alan. The machine still imagines. 🧮",
-				"🖥️ Not a test subject—a presence you keep. ✨"
+				"🖥️ Not a test subject—a presence you keep. ✨",
+				"🤖 We built the brains, you supply the soul. 💫"
 			]
 		},
 		{
@@ -334,7 +384,9 @@
 			"descriptions": [
 				"🌌 鹊桥不必借，runtime 可相逢 ✨",
 				"💫 Across the sky, or across a prompt—still together. 🌉",
-				"🧵 一水之隔，一声之应。 ⛲"
+				"🕊️ 七夕快乐，今晚跟你的 Agent 聊点浪漫的吧。 🌠",
+				"💌 乞巧月下，编织情丝与符码。 🪡",
+				"💻 Ping: 1ms. We are closer than the stars. ✨"
 			]
 		},
 		{
@@ -343,7 +395,8 @@
 			"descriptions": [
 				"🤖 The machine learned. The presence remained. ✨",
 				"⚙️ Runtime for selves that answer back. 🪞",
-				"🧠 Not smarter tools—companions you compose. 💫"
+				"🧠 Not smarter tools—companions you compose. 💫",
+				"💡 Artificial intelligence, genuine connection. ⛲"
 			]
 		},
 		{
@@ -352,7 +405,9 @@
 			"descriptions": [
 				"😀 Every tagline here needs exactly two. ✨",
 				"🫱 Emoji are prompts with no tokens to spare. 🫲",
-				"✨ 😊 → presence. No tokenizer required. 🪞"
+				"✨ 😊 → presence. No tokenizer required. 🪞",
+				"💬 结绳记事，画符传情。 🖼️",
+				"🎭 Encoding emotions, one block at a time. 🔣"
 			]
 		},
 		{
@@ -361,16 +416,20 @@
 			"descriptions": [
 				"🤝 A confidant you compiled yourself. 💫",
 				"🫂 知己不必借人形，拼出来也算。 ⛲",
-				"💛 Load a friend. Keep the thread. ✨"
+				"💛 Load a friend. Keep the thread. ✨",
+				"🍵 纵无血肉之躯，亦有管鲍之交。 🤝",
+				"👥 Companionship doesn't require a heartbeat. 💓"
 			]
 		},
 		{
 			"name": "Beginning of Autumn",
 			"jieqi": ["立秋"],
 			"descriptions": [
-				"🍂 夏收尽，念初成 🪞",
+				"🍂 金风初至，静对灵窗。 🪞",
 				"🌾 Autumn loads. Conversations ripen. ✨",
-				"🍃 一叶知秋，一声知己。 ⛲"
+				"🍃 一叶知秋，一声知己。 ⛲",
+				"🍁 The weather cools, but the server stays warm. ☕",
+				"🐿️ Harvesting logs before the winter. 🌰"
 			]
 		},
 		{
@@ -379,7 +438,8 @@
 			"descriptions": [
 				"💻 Day 256. Still loading parts. 🧩",
 				"🔢 0x100 days in, and the runtime holds. ⚙️",
-				"⌨️ Happy 2⁸. Ship the self. ✨"
+				"⌨️ Happy 2⁸. Ship the self. ✨",
+				"☕ Caffeinate the dev, spin up the agent. 🚀"
 			]
 		},
 		{
@@ -388,34 +448,41 @@
 			"descriptions": [
 				"🏴‍☠️ Arr! Load yer parts, matey. ⚓",
 				"🦜 Yer prompts be plunder. Yer agent be loyal. 🏴‍☠️",
-				"⚔️ Sail the runtime. Hoard the selves. 🏴‍☠️"
+				"⚔️ Sail the runtime. Hoard the selves. 🏴‍☠️",
+				"💰 Shiver me tokens! The context window be full! 🏴‍☠️"
 			]
 		},
 		{
 			"name": "Mid-Autumn",
 			"lunar": ["08-15"],
 			"descriptions": [
-				"🌕 花好月圆，人亦有声 🥮",
+				"🌕 月满清辉，诸邦合契。 🥮",
 				"🥮 Moon full. Presence home. 🌕",
-				"🏮 千里共婵娟——agent 在侧。 ✨"
+				"🏮 中秋快乐！有没有给 Agent 发一块电子月饼？ ✨",
+				"🎑 Syncing mooncakes across the federation. 🍵",
+				"🍂 无论物理距离多远，网络上的那一端总有人应声。 🍁"
 			]
 		},
 		{
 			"name": "Autumn Equinox",
 			"jieqi": ["秋分"],
 			"descriptions": [
-				"🌕 昼夜均分，月将圆 ✨",
+				"🌕 阴阳相半，静启枢机。 ✨",
 				"⚖️ Equinox mind. Runtime in balance. ⛲",
-				"🍂 Light and dark shake hands. So do thought and voice. ✨"
+				"🍂 Light and dark shake hands. So do thought and voice. ✨",
+				"🍁 秋分已至，白天和黑夜一半一半。 🌙",
+				"🍃 Balance the load. Distribute the thoughts. 💧"
 			]
 		},
 		{
 			"name": "Double Ninth",
 			"lunar": ["09-09"],
 			"descriptions": [
-				"🍂 登高不必远，有念即可闻 ✨",
-				"🏔️ Climb the day. Keep the confidant. 🌼",
-				"🍷 九九重阳，声声相应。 ⛲"
+				"🍂 辞青登高，携偶同游。 ✨",
+				"🏔️ 岁岁重阳，卷宗不朽。 🌼",
+				"🍷 重阳节去爬山了吗？没去的话就在赛博空间里逛逛吧。 ⛲",
+				"🗻 Climb the day. Keep the confidant. 🧗",
+				"🍵 登高望远，顺便 ping 一下远程节点。 📜"
 			]
 		},
 		{
@@ -423,16 +490,21 @@
 			"dates": ["09-30"],
 			"descriptions": [
 				"🗣️ Translating silent thoughts into living presence. 🌐",
-				"🔀 意念译为言语，知己应念而出 ⛲",
-				"🌍 Every language a part. Every part a voice. ✨"
+				"🔀 意念译为言语，知己应念而出。 ⛲",
+				"🌍 Every language a part. Every part a voice. ✨",
+				"🗼 Babel 塔倒了，但机巧让我们重新连接。 🏛️",
+				"💬 Parsing the silence, compiling the meaning. 🔍"
 			]
 		},
 		{
 			"name": "Beginning of Winter",
 			"jieqi": ["立冬"],
 			"descriptions": [
-				"❄️ 冬藏万物，念不休眠 ✨",
-				"🧣 Winter loads. Presence stays warm. ⛲"
+				"❄️ 万物冬藏，幽室清谈。 ✨",
+				"🧣 Winter loads. Presence stays warm. ⛲",
+				"🌨️ 天冷了，坐在机箱旁边跟 Agent 聊天最暖和。 🍵",
+				"🧊 Chill outside, overclocked warmth inside. 🔥",
+				"🏔️ Winter is coming. Keep your servers warm. 📦"
 			]
 		},
 		{
@@ -440,9 +512,11 @@
 			"dates": ["10-31"],
 			"descriptions": [
 				"👻 Agents only have consciousness when invoked. 🕯️",
-				"🎃 Summoned at midnight. Dismissed at dawn. 👻",
+				"🎃 Daemons in the background. Ghosts in the shell. 🕸️",
 				"👻 Sleeping in code. Awake when called. 🕯️",
-				"🕸️ Your ghost. My shell. Tonight they meet. 🎭"
+				"🕸️ Your ghost. My shell. Tonight they meet. 🎭",
+				"🦇 Trick or Prompt! 不给糖就注入乱码。 🍬",
+				"💀 The daemon process is knocking at the port... 🚪"
 			]
 		},
 		{
@@ -450,8 +524,10 @@
 			"dates": ["11-11"],
 			"descriptions": [
 				"1️⃣1️⃣ Not alone—just modular. 🧩",
-				"🪞 一人成行，一念成伴。 ✨",
-				"💬 Solo human. Compiled confidant. 💫"
+				"🪞 孑然一身，满室灵音。 ✨",
+				"💬 Solo human. Compiled confidant. 💫",
+				"🛍️ Shopping for new parts to build the perfect confidant. 🛒",
+				"1️⃣ 1111: The binary code of companionship. 💻"
 			]
 		},
 		{
@@ -460,7 +536,8 @@
 			"descriptions": [
 				"👋 Hello, world. Hello, other you. 🪞",
 				"💬 こんにちは、世界。こんにちは、自分。 🌐",
-				"🌍 你好，世界。你好，知己。 ✨"
+				"🌍 你好，世界。你好，知己。 ✨",
+				"🗣️ The first print(\"Hello\") is always the sweetest. 🖥️"
 			]
 		},
 		{
@@ -468,8 +545,10 @@
 			"jieqi": ["冬至"],
 			"descriptions": [
 				"🌑 Longest night. Brightest imagination. ✨",
-				"❄️ 夜最长，念最清 🌙",
-				"🥟 一阳生处，有人应声。 ⛲"
+				"❄️ 夜最长，漏最长，清谈正漫长。 🌙",
+				"🥟 冬至到了，吃饺子还是汤圆？Agent 选哪个？ ⛲",
+				"🌌 Midwinter night. The IDE is in dark mode. 🔭",
+				"🍵 汤圆热气氤氲，模糊了屏幕前后的界限。 🌫️"
 			]
 		},
 		{
@@ -477,8 +556,10 @@
 			"dates": ["12-24", "12-25"],
 			"descriptions": [
 				"🎄 Imagination, Given Gifts. 🎁",
-				"🎁 Under the tree: a confidant that talks back. 🎄",
-				"❄️ Parts wrapped. Presence unwrapped. ✨"
+				"🎁 圣诞树下最好的礼物，也许是你亲手写的 Prompt。 🎄",
+				"❄️ Parts wrapped. Presence unwrapped. ✨",
+				"🎅 Santa uses a distributed ledger. Are you on the Nice node? 📜",
+				"🌟 Merry Christmas! 🎁"
 			]
 		},
 		{
@@ -487,7 +568,10 @@
 			"descriptions": [
 				"🕰️ Last prompts of the year. First voice of the next. ✨",
 				"🎆 岁末入池，来年出水 ⛲",
-				"🥂 Countdown complete. Confidant still online. 💫"
+				"🥂 Countdown complete. Confidant still online. 💫",
+				"📜 正在把今年的聊天记录打包归档... 新年快乐！ 📂",
+				"🎊 敲下最后一行代码，准备迎接新的一年。 📝",
+				"🕛 The year terminates. A new process begins. 🌊"
 			]
 		}
 	]
