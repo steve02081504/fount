@@ -318,7 +318,7 @@ Deno.test('consumeStdin: SGR left/right press/drag/release + Ctrl+C', async () =
 	assertEquals(aborted, true)
 })
 
-Deno.test('consumeStdin: bare ESC fires onEsc; CSI does not', async () => {
+Deno.test('consumeStdin: ESC-ESC fires onEsc; Alt-char and CSI do not', async () => {
 	const { consumeStdin } = await import('../player.mjs')
 	let esc = 0
 	/**
@@ -339,11 +339,15 @@ Deno.test('consumeStdin: bare ESC fires onEsc; CSI does not', async () => {
 	carry = consumeStdin(carry, encode('\x1b'), handlers)
 	assertEquals(carry, '\x1b')
 	assertEquals(esc, 1)
+	// Another ESC-ESC while one ESC is carried → second onEsc
+	carry = consumeStdin(carry, encode('\x1b'), handlers)
+	assertEquals(carry, '\x1b')
+	assertEquals(esc, 2)
 	// Mouse CSI must not count as ESC
 	carry = consumeStdin(carry, encode('[<0;1;1M'), handlers)
 	assertEquals(carry, '')
-	assertEquals(esc, 1)
-	// ESC then non-`[` → ESC key + leftover byte consumed as non-CSI
+	assertEquals(esc, 2)
+	// ESC + plain char (Alt+x): consume ESC as Alt prefix, do not count as ESC key
 	carry = consumeStdin('', encode('\x1bx'), handlers)
 	assertEquals(carry, '')
 	assertEquals(esc, 2)

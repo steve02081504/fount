@@ -44,10 +44,15 @@ function script:git_fetch_origin {
 }
 
 # Reject glob metacharacters and other ref-unsafe fragments for single-branch fetch.
+# Aligns with git check-ref-format rules for refs/heads/<name> (plus apostrophe).
 function script:git_valid_branch_name($Branch) {
 	if ([string]::IsNullOrEmpty($Branch) -or $Branch -eq '@') { return $false }
-	if ($Branch -match '[\?\*\[\\:~^\s'']|\.\.') { return $false }
+	if ($Branch -match '[\?\*\[\\:~^\s'']|\.\.|@{|//') { return $false }
 	if ($Branch.StartsWith('/') -or $Branch.EndsWith('/')) { return $false }
+	foreach ($part in $Branch.Split('/')) {
+		if ([string]::IsNullOrEmpty($part)) { return $false }
+		if ($part.StartsWith('.') -or $part.EndsWith('.') -or $part.EndsWith('.lock')) { return $false }
+	}
 	return $true
 }
 

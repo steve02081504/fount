@@ -111,9 +111,8 @@ const applySample = (ax, ay, az) => {
  */
 export const startGravity = () => {
 	live = defaultGravity()
-	rawTarget = { gx: 0, gy: 1, mag: BASE_PARTICLE_G }
-	stopAcquire?.()
-	stopAcquire = null
+	rawTarget = defaultGravity()
+	stopGravity()
 	const gen = ++acquireGen
 	void loadAcquire().then((mod) => {
 		if (gen !== acquireGen) return

@@ -8,8 +8,37 @@ import { assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
 import { REPO_ROOT } from '../../src/scripts/test/core/repo_root.mjs'
 
-const pathSrc = join(REPO_ROOT, 'path', 'src')
-const gitSh = join(pathSrc, 'git.sh')
+const gitShPath = join(REPO_ROOT, 'path', 'src', 'git.sh')
+const gitPs1Path = join(REPO_ROOT, 'path', 'src', 'git.ps1')
+
+/** 应被拒绝的分支名（Git ref 规则 + apostrophe）。 */
+const INVALID_BRANCH_NAMES = [
+	'',
+	'@',
+	'a?b',
+	'a*b',
+	'a[b',
+	'a\\b',
+	'a:b',
+	'a~b',
+	'a^b',
+	'a..b',
+	'a b',
+	'a\tb',
+	'/abs',
+	'trail/',
+	'a//b',
+	'.hidden',
+	'feat/.hidden',
+	'ends.',
+	'foo.lock',
+	'a/foo.lock',
+	'a@{b',
+	"a'b",
+]
+
+/** 应被接受的分支名。 */
+const VALID_BRANCH_NAMES = ['lava', 'master', 'feature/foo']
 
 /**
  * 在 bash 中跑一段脚本，返回 { code, stdout, stderr }。
@@ -17,13 +46,12 @@ const gitSh = join(pathSrc, 'git.sh')
  * @returns {Promise<{ code: number, stdout: string, stderr: string }>} 返回 bash 执行结果
  */
 async function runBash(script) {
-	const command = new Deno.Command('bash', {
+	const { code, stdout, stderr } = await new Deno.Command('bash', {
 		args: ['-c', script],
 		cwd: REPO_ROOT,
 		stdout: 'piped',
 		stderr: 'piped',
-	})
-	const { code, stdout, stderr } = await command.output()
+	}).output()
 	return {
 		code,
 		stdout: new TextDecoder().decode(stdout),
@@ -31,29 +59,75 @@ async function runBash(script) {
 	}
 }
 
+/**
+ * 在 pwsh 中跑一段脚本（仅校验函数，不 dot-source 整文件以免触发安装副作用）。
+ * @param {string} script PowerShell 源码
+ * @returns {Promise<{ code: number, stdout: string, stderr: string }>} 执行结果
+ */
+async function runPwsh(script) {
+	const shell = Deno.build.os === 'windows' ? 'powershell' : 'pwsh'
+	const { code, stdout, stderr } = await new Deno.Command(shell, {
+		args: ['-NoProfile', '-NonInteractive', '-Command', script],
+		cwd: REPO_ROOT,
+		stdout: 'piped',
+		stderr: 'piped',
+	}).output()
+	return {
+		code,
+		stdout: new TextDecoder().decode(stdout),
+		stderr: new TextDecoder().decode(stderr),
+	}
+}
+
+/**
+ * 从 git.ps1 抽出 git_valid_branch_name 函数体供隔离测试。
+ * @returns {Promise<string>} 函数源码（script: 前缀已去掉）
+ */
+async function extractPsValidBranchFn() {
+	const src = await Deno.readTextFile(gitPs1Path)
+	const start = src.indexOf('function script:git_valid_branch_name($Branch) {')
+	if (start < 0) throw new Error('git_valid_branch_name not found in git.ps1')
+	let depth = 0
+	let end = -1
+	for (let i = start; i < src.length; i++) {
+		if (src[i] === '{') depth++
+		else if (src[i] === '}') {
+			depth--
+			if (depth === 0) {
+				end = i + 1
+				break
+			}
+		}
+	}
+	if (end < 0) throw new Error('git_valid_branch_name brace mismatch in git.ps1')
+	return src.slice(start, end).replace('function script:git_valid_branch_name', 'function git_valid_branch_name')
+}
+
 Deno.test('git.sh parses under bash -n', async () => {
-	const result = await runBash(`bash -n ${JSON.stringify(gitSh)}`)
+	const result = await runBash(`bash -n ${JSON.stringify(gitShPath)}`)
 	assertEquals(result.code, 0, result.stderr || result.stdout)
 })
 
 Deno.test('git_valid_branch_name accepts normal branch names like lava', async () => {
+	const names = VALID_BRANCH_NAMES.map(n => JSON.stringify(n)).join(' ')
 	const result = await runBash(`
 		set -e
 		# shellcheck source=/dev/null
-		. ${JSON.stringify(gitSh)}
-		git_valid_branch_name lava
-		git_valid_branch_name master
-		git_valid_branch_name feature/foo
+		. ${JSON.stringify(gitShPath)}
+		for name in ${names}; do
+			git_valid_branch_name "$name"
+		done
 		echo ok
 	`)
 	assertEquals(result.code, 0, result.stderr || result.stdout)
 	assertEquals(result.stdout.trim(), 'ok')
 })
 
-Deno.test('git_valid_branch_name rejects glob and ref-unsafe fragments', async () => {
+Deno.test('git_valid_branch_name rejects glob and ref-unsafe fragments (bash)', async () => {
+	const rejects = INVALID_BRANCH_NAMES.map(n => `reject ${JSON.stringify(n)}`).join('\n')
 	const result = await runBash(`
 		set -e
-		. ${JSON.stringify(gitSh)}
+		. ${JSON.stringify(gitShPath)}
 		reject() {
 			local name="$1"
 			if git_valid_branch_name "$name"; then
@@ -61,31 +135,49 @@ Deno.test('git_valid_branch_name rejects glob and ref-unsafe fragments', async (
 				exit 1
 			fi
 		}
-		reject ''
-		reject '@'
-		reject 'a?b'
-		reject 'a*b'
-		reject 'a[b'
-		reject 'a\\\\b'
-		reject 'a:b'
-		reject 'a~b'
-		reject 'a^b'
-		reject 'a..b'
-		reject 'a b'
-		reject $'a\\tb'
-		reject '/abs'
-		reject 'trail/'
-		reject "a'b"
+		${rejects}
 		echo ok
 	`)
 	assertEquals(result.code, 0, result.stderr || result.stdout)
 	assertEquals(result.stdout.trim(), 'ok')
 })
 
+Deno.test('git_valid_branch_name bash and PowerShell agree', async () => {
+	const psFn = await extractPsValidBranchFn()
+	const allNames = [...VALID_BRANCH_NAMES, ...INVALID_BRANCH_NAMES]
+	const bashList = allNames.map(n => JSON.stringify(n)).join(' ')
+	const bash = await runBash(`
+		set -e
+		. ${JSON.stringify(gitShPath)}
+		for name in ${bashList}; do
+			if git_valid_branch_name "$name"; then echo "1:$name"; else echo "0:$name"; fi
+		done
+	`)
+	assertEquals(bash.code, 0, bash.stderr || bash.stdout)
+
+	const psNames = allNames.map(n => {
+		const escaped = n.replace(/'/g, "''")
+		return `'${escaped}'`
+	}).join(', ')
+	const ps = await runPwsh(`
+${psFn}
+$names = @(${psNames})
+foreach ($name in $names) {
+  $ok = if (git_valid_branch_name $name) { '1' } else { '0' }
+  Write-Output ("$ok:$name")
+}
+`)
+	assertEquals(ps.code, 0, ps.stderr || ps.stdout)
+
+	const bashLines = bash.stdout.trim().split(/\r?\n/).filter(Boolean)
+	const psLines = ps.stdout.trim().split(/\r?\n/).filter(Boolean)
+	assertEquals(psLines, bashLines)
+})
+
 Deno.test('sourcing git.sh defines git_remote_branch_status', async () => {
 	const result = await runBash(`
 		set -e
-		. ${JSON.stringify(gitSh)}
+		. ${JSON.stringify(gitShPath)}
 		type git_remote_branch_status >/dev/null
 		echo ok
 	`)

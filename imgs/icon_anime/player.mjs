@@ -103,8 +103,9 @@ export const consumeStdin = (carry, chunk, sink = {}) => {
 		}
 		if (cursor + 1 >= text.length) break
 		if (text[cursor + 1] !== '[') {
-			// Bare ESC (not CSI): key or Alt-prefix. Confirm before consuming.
-			sink.onEsc?.()
+			// Bare ESC (not CSI): only ESC-ESC counts as ESC key / hold.
+			// ESC + other char (e.g. Alt+x) consumes ESC as Alt prefix — no onEsc.
+			if (text[cursor + 1] === '\x1b') sink.onEsc?.()
 			cursor++
 			continue
 		}

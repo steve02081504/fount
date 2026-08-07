@@ -14,11 +14,11 @@ const FREQUENCY = 10
  * @returns {Promise<boolean>} 是否可继续（无 Permissions API 时视为 true）
  */
 const ensureAccelerometerPermission = async () => {
-	const perms = globalThis.navigator?.permissions
-	if (!perms?.query) return true
+	const permissions = globalThis.navigator?.permissions
+	if (!permissions?.query) return true
 	try {
-		const status = await perms.query({
-			name: /** @type {PermissionName} */ 'accelerometer',
+		const status = await permissions.query({
+			name: /** @type {PermissionName} */ ('accelerometer'),
 		})
 		return status.state !== 'denied'
 	}
@@ -32,11 +32,11 @@ const ensureAccelerometerPermission = async () => {
  * @returns {Promise<boolean>} 是否 granted / 无需请求
  */
 const ensureDeviceMotionPermission = async () => {
-	const DME = globalThis.DeviceMotionEvent
-	const req = DME && /** @type {{ requestPermission?: () => Promise<string> }} */ DME.requestPermission
-	if (typeof req !== 'function') return true
+	const deviceMotionEvent = globalThis.DeviceMotionEvent
+	const requestPermission = deviceMotionEvent && /** @type {{ requestPermission?: () => Promise<string> }} */ (deviceMotionEvent).requestPermission
+	if (typeof requestPermission !== 'function') return true
 	try {
-		return await req.call(DME) === 'granted'
+		return await requestPermission.call(deviceMotionEvent) === 'granted'
 	}
 	catch {
 		return false
@@ -45,48 +45,77 @@ const ensureDeviceMotionPermission = async () => {
 
 /**
  * 从三轴对象取有限数值。
- * @param {{ x?: number | null, y?: number | null, z?: number | null } | null | undefined} v 矢量
+ * @param {{ x?: number | null, y?: number | null, z?: number | null } | null | undefined} vector 矢量
  * @returns {[number, number, number] | null} 三轴
  */
-const xyz = (v) => {
-	if (!v) return null
-	const x = +v.x, y = +v.y, z = +v.z
+const xyz = (vector) => {
+	if (!vector) return null
+	const x = +vector.x, y = +vector.y, z = +vector.z
 	if (![x, y, z].every(Number.isFinite)) return null
 	return [x, y, z]
 }
 
 /**
  * GravitySensor（Chromium）。
+ * 等首次 reading / error 再决定成败，避免 start 成功但无读数时挡住 DeviceMotion 回落。
  * @param {(ax: number, ay: number, az: number) => void} onSample 回调
  * @returns {Promise<(() => void) | null>} stop；不可用则 null
  */
 const startGravitySensor = async (onSample) => {
-	const Ctor = /** @type {undefined | (new (opts?: { frequency?: number }) => {
+	const GravitySensorCtor = /** @type {undefined | (new (opts?: { frequency?: number }) => {
 		x: number, y: number, z: number,
 		start: () => void, stop: () => void,
 		addEventListener: (type: string, fn: (ev: Event) => void) => void,
 		removeEventListener: (type: string, fn: (ev: Event) => void) => void,
-	})} */ globalThis.GravitySensor
-	if (typeof Ctor !== 'function') return null
+	})} */ (globalThis.GravitySensor)
+	if (typeof GravitySensorCtor !== 'function') return null
 	if (!await ensureAccelerometerPermission()) return null
 	try {
-		const sensor = new Ctor({ frequency: FREQUENCY })
-		/**
-		 *
-		 */
-		const onReading = () => {
-			const v = xyz(sensor)
-			if (v) onSample(v[0], v[1], v[2])
-		}
-		sensor.addEventListener('reading', onReading)
-		sensor.start()
-		return () => {
-			sensor.removeEventListener('reading', onReading)
-			try {
-				sensor.stop()
+		const sensor = new GravitySensorCtor({ frequency: FREQUENCY })
+		return await new Promise((resolve) => {
+			let settled = false
+			/**
+			 * 持续 reading：推送样本；首次成功时 resolve 清理函数。
+			 * @returns {void}
+			 */
+			const onReading = () => {
+				const axes = xyz(sensor)
+				if (axes) onSample(axes[0], axes[1], axes[2])
+				if (settled) return
+				settled = true
+				resolve(() => {
+					sensor.removeEventListener('reading', onReading)
+					sensor.removeEventListener('error', onError)
+					try {
+						sensor.stop()
+					}
+					catch { /* already stopped */ }
+				})
 			}
-			catch { /* already stopped */ }
-		}
+			/**
+			 * 启动失败：卸监听并 resolve null，交给 DeviceMotion 回落。
+			 * @returns {void}
+			 */
+			const onError = () => {
+				if (settled) return
+				settled = true
+				sensor.removeEventListener('reading', onReading)
+				sensor.removeEventListener('error', onError)
+				try {
+					sensor.stop()
+				}
+				catch { /* already stopped */ }
+				resolve(null)
+			}
+			sensor.addEventListener('reading', onReading)
+			sensor.addEventListener('error', onError)
+			try {
+				sensor.start()
+			}
+			catch {
+				onError()
+			}
+		})
 	}
 	catch {
 		return null
@@ -102,16 +131,16 @@ const startGravitySensor = async (onSample) => {
 const startDeviceMotion = async (onSample) => {
 	if (!globalThis.DeviceMotionEvent) return null
 	if (!await ensureDeviceMotionPermission()) return null
-	const iosAxes = typeof /** @type {{ requestPermission?: unknown }} */ globalThis.DeviceMotionEvent.requestPermission === 'function'
+	const iosAxes = typeof /** @type {{ requestPermission?: unknown }} */ (globalThis.DeviceMotionEvent).requestPermission === 'function'
 	/**
 	 * @param {DeviceMotionEvent} event 运动事件
 	 * @returns {void}
 	 */
 	const onMotion = (event) => {
-		const v = xyz(event.accelerationIncludingGravity)
-		if (!v) return
+		const axes = xyz(event.accelerationIncludingGravity)
+		if (!axes) return
 		// iOS: negate x/y to match Android / GravitySensor accelerometer frame
-		onSample(iosAxes ? -v[0] : v[0], iosAxes ? -v[1] : v[1], v[2])
+		onSample(iosAxes ? -axes[0] : axes[0], iosAxes ? -axes[1] : axes[1], axes[2])
 	}
 	globalThis.addEventListener('devicemotion', onMotion)
 	return () => globalThis.removeEventListener('devicemotion', onMotion)
@@ -123,27 +152,27 @@ const startDeviceMotion = async (onSample) => {
  */
 export const start = (onSample) => {
 	/** @type {{ stop: (() => void) | null, dead: boolean }} */
-	const ctl = { stop: null, dead: false }
+	const control = { stop: null, dead: false }
 	void (async () => {
-		const stopGs = await startGravitySensor(onSample)
-		if (ctl.dead) {
-			stopGs?.()
+		const stopGravitySensor = await startGravitySensor(onSample)
+		if (control.dead) {
+			stopGravitySensor?.()
 			return
 		}
-		if (stopGs) {
-			ctl.stop = stopGs
+		if (stopGravitySensor) {
+			control.stop = stopGravitySensor
 			return
 		}
-		const stopDm = await startDeviceMotion(onSample)
-		if (ctl.dead) {
-			stopDm?.()
+		const stopDeviceMotion = await startDeviceMotion(onSample)
+		if (control.dead) {
+			stopDeviceMotion?.()
 			return
 		}
-		ctl.stop = stopDm
+		control.stop = stopDeviceMotion
 	})()
 	return () => {
-		ctl.dead = true
-		ctl.stop?.()
-		ctl.stop = null
+		control.dead = true
+		control.stop?.()
+		control.stop = null
 	}
 }
