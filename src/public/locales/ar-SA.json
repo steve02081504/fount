@@ -359,8 +359,9 @@
 				"switchingToBranch": "جارٍ التبديل إلى الفرع «${branch}»…",
 				"removedNoUpdate": "تمت إزالة `.noupdate`؛ استُعيدت التحديثات التلقائية.",
 				"pinningToCommit": "جارٍ التثبيت على الالتزام `${ref}` وإنشاء `.noupdate`…",
+				"pinningToPullRequest": "جارٍ التثبيت على طلب السحب #${pr} وإنشاء `.noupdate`…",
 				"createdNoUpdate": "تم إنشاء `.noupdate`؛ عُلِّقت التحديثات التلقائية.",
-				"unknownTarget": "تعذّر التعرف على «${target}»: ليس فرعًا معروفًا ولا التزامًا."
+				"unknownTarget": "تعذّر التعرف على «${target}»: ليس فرعًا معروفًا، ولا التزامًا، ولا طلب سحب."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "تم إنشاء اختصار سطح المكتب في `${path}`",

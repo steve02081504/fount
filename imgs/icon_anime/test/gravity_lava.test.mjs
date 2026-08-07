@@ -19,14 +19,23 @@ import {
 import { rainEdgeWeights, pickRainEdge } from '../scene.mjs'
 
 Deno.test('gravity: mapSensorToScreen upright phone → screen down', () => {
-	const m = mapSensorToScreen(0, -9.81, 0)
-	assertEquals(m !== null, true)
-	assertAlmostEquals(m.gx, 0, 0.05)
-	assertAlmostEquals(m.gy, 1, 0.05)
+	// Accelerometer-style: upright y≈+g (Android / GravitySensor / DeviceMotion)
+	const mappedGravity = mapSensorToScreen(0, 9.81, 0)
+	assertEquals(mappedGravity !== null, true)
+	assertAlmostEquals(mappedGravity.gx, 0, 0.05)
+	assertAlmostEquals(mappedGravity.gy, 1, 0.05)
+})
+
+Deno.test('gravity: mapSensorToScreen tilt on +x → screen gx opposite', () => {
+	// sx = -ax: device +x (right) maps to screen left
+	const mappedGravity = mapSensorToScreen(9.81, 0, 0)
+	assertEquals(mappedGravity !== null, true)
+	assertAlmostEquals(mappedGravity.gx, -1, 0.05)
+	assertAlmostEquals(mappedGravity.gy, 0, 0.05)
 })
 
 Deno.test('gravity: flat device returns null', () => {
-	assertEquals(mapSensorToScreen(0, 0, -9.81), null)
+	assertEquals(mapSensorToScreen(0, 0, 9.81), null)
 })
 
 Deno.test('rain edges: default down → no bottom, top dominant, sides nonzero', () => {

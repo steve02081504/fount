@@ -57,9 +57,9 @@
 				<!-- SVG Animation Background Container -->
 				<div id="hero-animation-bg"></div>
 
-				<!-- Overlay and Content：入场前视觉与 AT 均不可达（opacity + aria-hidden） -->
+				<!-- Overlay：装饰层始终 aria-hidden。Content：文案完整，仅 CSS opacity 入场（与 feature-section 同）；勿 aria-hidden，否则入场窗口无 h1 -->
 				<div class="hero-overlay bg-opacity-60" aria-hidden="true"></div>
-				<div class="hero-content text-center text-neutral-content" aria-hidden="true">
+				<div class="hero-content text-center text-neutral-content">
 					<div class="max-w-md">
 						<h1 class="mb-5 text-5xl font-bold" data-i18n="installer_wait_screen.hero.title"></h1>
 						<p class="mb-5" data-i18n="installer_wait_screen.hero.description"></p>

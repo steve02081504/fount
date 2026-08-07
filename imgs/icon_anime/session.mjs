@@ -1,6 +1,6 @@
 /**
  * 图标动画会话：动画状态 + TUI 播放。
- * `signal`：用户 Ctrl+C 中止本会话（sticky）；dismiss 不碰它。
+ * `signal`：用户 Ctrl+C / 长按 ESC≥4s 中止本会话（sticky）；dismiss 不碰它。
  * 嵌入宿主时应自行拥有进程退出信号，并把本 `signal` 接到那边（见 log_viewer / server index）。
  */
 import { setTimeout as delay } from 'node:timers/promises'
@@ -20,7 +20,7 @@ const userAc = new AbortController()
 export const signal = userAc.signal
 
 /**
- * 标记用户中止（幂等）。一般由 Ctrl+C 触发；宿主也可显式调用。
+ * 标记用户中止（幂等）。一般由 Ctrl+C / 长按 ESC 触发；宿主也可显式调用。
  * @returns {void}
  */
 export function abort() {
@@ -86,7 +86,7 @@ const haltPlay = async () => {
 }
 
 /**
- * 入场 → 保持直至 Ctrl+C / dismiss。已在播则直接返回。
+ * 入场 → 保持直至 Ctrl+C / 长按 ESC / dismiss。已在播则直接返回。
  * @returns {Promise<void>}
  */
 export async function start() {

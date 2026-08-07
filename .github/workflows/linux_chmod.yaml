@@ -28,7 +28,7 @@ jobs:
       - name: Set execute permission for sh files
         run: |
           find . -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -print0 | xargs -0 chmod +x
-          find ./path -type f ! -name 'desktop.ini' ! -iname 'agents.md' -print0 | xargs -0 chmod +x
+          find ./path -maxdepth 1 -type f ! -name 'desktop.ini' ! -iname 'agents.md' -print0 | xargs -0 chmod +x
           chmod -x ./path/desktop.ini
           for agentsManifestPath in ./path/AGENTS.md ./path/agents.md; do
             [ -f "$agentsManifestPath" ] && chmod -x "$agentsManifestPath"

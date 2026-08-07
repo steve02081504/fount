@@ -359,8 +359,9 @@
 				"switchingToBranch": "ブランチ「${branch}」に切り替えています…",
 				"removedNoUpdate": "`.noupdate` を削除しました。自動更新を再開します。",
 				"pinningToCommit": "コミット `${ref}` に固定し、`.noupdate` を作成しています…",
+				"pinningToPullRequest": "プルリクエスト #${pr} に固定し、`.noupdate` を作成しています…",
 				"createdNoUpdate": "`.noupdate` を作成しました。自動更新を一時停止しました。",
-				"unknownTarget": "「${target}」を識別できません：既知のブランチでもコミットでもありません。"
+				"unknownTarget": "「${target}」を識別できません：既知のブランチ、コミット、プルリクエストのいずれでもありません。"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "`${path}` にデスクトップ ショートカットが作成されました",

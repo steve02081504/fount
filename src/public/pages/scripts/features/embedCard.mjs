@@ -1,5 +1,6 @@
 import { escapeHtml } from '../lib/escapeHtml.mjs'
 import { memoizePromise } from '../lib/memo.mjs'
+import { isSafeHtmlUrl } from '../lib/sanitizeHtml.mjs'
 
 const TITLE_DISPLAY_MAX = 120
 const DESC_DISPLAY_MAX = 200
@@ -15,14 +16,6 @@ function truncateText(text, maxLen) {
 	if (!value) return ''
 	if (value.length <= maxLen) return value
 	return `${value.slice(0, maxLen - 1)}…`
-}
-
-/**
- * @param {string} value 属性值
- * @returns {string} 转义后的属性值
- */
-function escapeAttr(value) {
-	return escapeHtml(value)
 }
 
 /**
@@ -106,14 +99,15 @@ export const unfurl = memoizePromise(url => url, fetchUnfurl, { max: 128, ttlMs:
 export function renderEmbedCardHtml(embed) {
 	if (!embed?.url) return ''
 	const url = String(embed.url)
+	if (!isSafeHtmlUrl(url)) return ''
 	const title = truncateText(embed.title || url, TITLE_DISPLAY_MAX)
 	const description = truncateText(embed.description || '', DESC_DISPLAY_MAX)
 	const siteName = truncateText(embed.siteName || '', 80)
 	const image = String(embed.image || '').trim()
-	const imageHtml = image
-		? `<img class="fount-embed-card-thumb" src="${escapeAttr(image)}" alt="" loading="lazy" decoding="async" />`
+	const imageHtml = image && isSafeHtmlUrl(image)
+		? `<img class="fount-embed-card-thumb" src="${escapeHtml(image)}" alt="" loading="lazy" decoding="async" />`
 		: ''
-	const noImageClass = image ? '' : ' fount-embed-card-no-image'
+	const noImageClass = imageHtml ? '' : ' fount-embed-card-no-image'
 	const descHtml = description
 		? `<div class="fount-embed-card-desc">${escapeHtml(description)}</div>`
 		: ''
@@ -122,7 +116,7 @@ export function renderEmbedCardHtml(embed) {
 		: ''
 	return `\
 <article class="fount-embed-card${noImageClass}">
-	<a class="fount-embed-card-link" href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">
+	<a class="fount-embed-card-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">
 		${imageHtml}
 		<div class="fount-embed-card-body">
 			${siteHtml}
@@ -140,31 +134,32 @@ export function renderEmbedCardHtml(embed) {
 export function renderEmbedChipHtml(embed) {
 	if (!embed?.url) return ''
 	const url = String(embed.url)
+	if (!isSafeHtmlUrl(url)) return ''
 	let hostname = ''
 	try { hostname = new URL(url).hostname } catch { /* ignore */ }
 	const title = truncateText(embed.title || hostname || url, TITLE_DISPLAY_MAX)
 	const siteName = truncateText(embed.siteName || hostname, 40)
 	const favicon = hostname
-		? `<img class="fount-embed-chip-favicon" src="${escapeAttr(`https://${hostname}/favicon.ico`)}" alt="" loading="lazy" decoding="async" onerror="this.remove()" />`
+		? `<img class="fount-embed-chip-favicon" src="${escapeHtml(`https://${hostname}/favicon.ico`)}" alt="" loading="lazy" decoding="async" onerror="this.remove()" />`
 		: ''
 	const siteHtml = siteName
 		? `<span class="fount-embed-chip-site">${escapeHtml(siteName)}</span>`
 		: ''
 	return `\
-<a class="fount-embed-chip" href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">
+<a class="fount-embed-chip" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">
 	${favicon}${siteHtml}<span class="fount-embed-chip-title">${escapeHtml(title)}</span>
 </a>`
 }
 
 /**
- * @param {HTMLElement} el 占位链接
+ * @param {HTMLElement} element 占位链接
  * @returns {Promise<void>}
  */
-async function hydrateOne(el) {
-	const mode = el.getAttribute(ATTR)
+async function hydrateOne(element) {
+	const mode = element.getAttribute(ATTR)
 	if (!mode) return
-	el.removeAttribute(ATTR)
-	const url = el.getAttribute('href') || el.href
+	element.removeAttribute(ATTR)
+	const url = element.getAttribute('href') || element.href
 	if (!url) return
 	let meta
 	try {
@@ -175,45 +170,32 @@ async function hydrateOne(el) {
 	}
 	if (!meta) return
 
+	const html = mode === 'card' ? renderEmbedCardHtml(meta) : mode === 'chip' ? renderEmbedChipHtml(meta) : ''
+	if (!html) return
+	const wrap = document.createElement('div')
+	wrap.innerHTML = html
+	const replacement = wrap.firstElementChild
 	if (mode === 'card') {
-		const html = renderEmbedCardHtml(meta)
-		if (!html) return
-		const wrap = document.createElement('div')
-		wrap.innerHTML = html
-		const card = wrap.firstElementChild
-		if (!card) return
-		const parent = el.parentElement
-		if (parent?.tagName === 'P' && [...parent.childNodes].every(n =>
-			n === el || (n.nodeType === Node.TEXT_NODE && !n.textContent?.trim()),
+		const parent = element.parentElement
+		if (parent?.tagName === 'P' && [...parent.childNodes].every(childNode =>
+			childNode === element || (childNode.nodeType === Node.TEXT_NODE && !childNode.textContent?.trim()),
 		))
-			parent.replaceWith(card)
+			parent.replaceWith(replacement)
 		else
-			el.replaceWith(card)
+			element.replaceWith(replacement)
 		return
 	}
-
-	if (mode === 'chip') {
-		const html = renderEmbedChipHtml(meta)
-		if (!html) return
-		const wrap = document.createElement('div')
-		wrap.innerHTML = html
-		const chip = wrap.firstElementChild
-		if (chip) el.replaceWith(chip)
-	}
+	element.replaceWith(replacement)
 }
 
 /**
- * @param {ParentNode | Node} root 扫描根
+ * @param {ParentNode} root 扫描根
  * @returns {void}
  */
 function hydrateIn(root) {
-	/** @type {Element[]} */
-	const list = []
-	if (root instanceof Element && root.hasAttribute?.(ATTR)) list.push(root)
-	if (root.querySelectorAll)
-		list.push(...root.querySelectorAll(`[${ATTR}]`))
-	for (const el of list)
-		if (el instanceof HTMLElement) void hydrateOne(el)
+	const list = root instanceof Element && root.hasAttribute(ATTR) ? [root] : []
+	list.push(...root.querySelectorAll(`[${ATTR}]`))
+	for (const element of list) void hydrateOne(/** @type {HTMLElement} */ element)
 }
 
 let observerStarted = false
@@ -223,7 +205,7 @@ let observerStarted = false
  * @returns {void}
  */
 export function ensureEmbedHydrator() {
-	if (observerStarted || typeof document === 'undefined') return
+	if (observerStarted) return
 	observerStarted = true
 	hydrateIn(document.body)
 	new MutationObserver(records => {
@@ -232,7 +214,6 @@ export function ensureEmbedHydrator() {
 				if (node.nodeType !== Node.ELEMENT_NODE && node.nodeType !== Node.DOCUMENT_FRAGMENT_NODE) continue
 				hydrateIn(/** @type {ParentNode} */node)
 			}
-
 	}).observe(document.body, { childList: true, subtree: true })
 }
 

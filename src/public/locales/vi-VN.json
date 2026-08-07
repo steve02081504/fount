@@ -359,8 +359,9 @@
 				"switchingToBranch": "Đang chuyển sang nhánh «${branch}»…",
 				"removedNoUpdate": "Đã xóa `.noupdate`; cập nhật tự động đã được khôi phục.",
 				"pinningToCommit": "Đang ghim vào commit `${ref}` và tạo `.noupdate`…",
+				"pinningToPullRequest": "Đang ghim vào pull request #${pr} và tạo `.noupdate`…",
 				"createdNoUpdate": "Đã tạo `.noupdate`; cập nhật tự động đã tạm dừng.",
-				"unknownTarget": "Không thể nhận dạng «${target}»: không phải nhánh hoặc commit đã biết."
+				"unknownTarget": "Không thể nhận dạng «${target}»: không phải nhánh, commit hoặc pull request đã biết."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Lối tắt trên màn hình được tạo tại `${path}`",

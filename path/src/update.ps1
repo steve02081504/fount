@@ -21,7 +21,7 @@ function script:fount_switch_to_branch($Target) {
 	}
 }
 
-# Explicit target: branch → track tip & clear .noupdate; commit → detach & create .noupdate.
+# Explicit target: PR → detach at head & .noupdate; branch → track tip & clear .noupdate; commit → detach & .noupdate.
 function script:fount_update_to_ref($Target) {
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
 		Write-Host (Get-I18n -key 'git.notInstalledSkippingPull')
@@ -38,6 +38,24 @@ function script:fount_update_to_ref($Target) {
 	}
 
 	invoke_repo_git config core.autocrlf false
+
+	# GitHub pull request tip — pin like a commit (re-run the same command to refresh).
+	$prNumber = git_parse_pr_number $Target
+	if ($prNumber) {
+		Write-Host (Get-I18n -key 'update.pinningToPullRequest' -params @{ pr = $prNumber })
+		git_fetch_pull_request $prNumber
+		if ($LastExitCode -ne 0) {
+			Write-Warning (Get-I18n -key 'git.fetchFailed')
+			Write-Warning (Get-I18n -key 'git.fetchFailedSkippingUpdate')
+			return
+		}
+		git_detach_to_ref "origin/pr/$prNumber"
+		if ($LastExitCode -ne 0) { return }
+		New-Item -Path "$FOUNT_DIR/.noupdate" -ItemType File -Force | Out-Null
+		Write-Host (Get-I18n -key 'update.createdNoUpdate')
+		deno_upgrade
+		return
+	}
 
 	# Known locally / already tracked — refresh that one tip, no ls-remote.
 	if ((git_ref_exists "origin/$Target") -or (git_ref_exists "refs/heads/$Target")) {

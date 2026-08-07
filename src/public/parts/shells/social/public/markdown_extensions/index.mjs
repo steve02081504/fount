@@ -18,8 +18,6 @@ const HASHTAG_RE = /#([\p{L}\p{N}_-]{2,32})/gu
 function remarkSocialDialect() {
 	return tree => {
 		visit(tree, 'text', (node, index, parent) => {
-			if (typeof node.value !== 'string' || !parent || typeof index !== 'number') return
-
 			let value = expandChannelLinksInText(node.value)
 			value = value
 				.replace(/@\[([\da-f]{128})\]/giu, '[$1](/parts/shells:social/#profile;$1)')

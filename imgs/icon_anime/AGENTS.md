@@ -19,7 +19,7 @@ Process-wide singleton used by `fount logo`, the CLI log viewer, and the foregro
 | `intro` | Enter animation, then background `hold` (no park) |
 | `start` / `dismiss` | log_viewer while waiting for the server (`start` no-op if already running; `dismiss` when connected); server `dismiss`es when `init` returns `started` |
 | `farewell` | On `on_shutdown` (safe mid-intro, e.g. `already_running`) |
-| `signal` / `abort` | User abort of this icon session (Ctrl+C). `dismiss` does not touch it |
+| `signal` / `abort` | User abort of this icon session (Ctrl+C or hold Esc ≥4s). `dismiss` does not touch it |
 
 Hosts own process-exit signaling and must wire `icon.signal` into it (log_viewer and server do). Non-TTY / no VT is gated only in `player.mjs` — session APIs stay callable (play paths no-op). On the alternate screen, `player` `block`/`unblock`s the global virtual console so console output is deferred; frame paint writes the native `targetStream` so the animation itself is not deferred.
 
@@ -31,7 +31,7 @@ fount logo watch   # deno run --watch
 fount test icon_anime --no-parallel
 ```
 
-Controls: Ctrl+C exits (icon teardown, then quit). Left quick-click → ripple; left hold/drag → cool spotlight (ambient dims). Right-drag → stroke wind; right long-still → tornado vortex (can suspend rain and lift free-liquid puddles). Alt-screen (`1049h`/`1049l`) restores prior scrollback on exit.
+Controls: Ctrl+C or hold Esc ≥4s exits (icon teardown, then quit). Left quick-click → ripple; left hold/drag → cool spotlight (ambient dims). Right-drag → stroke wind; right long-still → tornado vortex (can suspend rain and lift free-liquid puddles). Alt-screen (`1049h`/`1049l`) restores prior scrollback on exit.
 
 ## Modules
 
@@ -39,7 +39,8 @@ Controls: Ctrl+C exits (icon teardown, then quit). Left quick-click → ripple; 
 | --- | --- |
 | `index.mjs` | CLI entry + public re-exports |
 | `session.mjs` | Singleton session API; starts/stops device gravity |
-| `gravity.mjs` | Termux `termux-sensor` via `node:child_process`; continuous unit vector `{gx,gy,mag}` |
+| `gravity.mjs` | Gravity **processing** (smooth unit vector `{gx,gy,mag}`); loads acquire backend |
+| `gravity_acquire/` | Signal **acquisition**: `browser` (GravitySensor → DeviceMotionEvent) / `termux` / `none` |
 | `icon.mjs` | Packed silhouette, pillars, body growth order |
 | `scene.mjs` | Anim state, materials, rain edges, pool leak, enter/hold/exit, resize |
 | `compose.mjs` | Frame paint + ANSI; lava palette; pointer torch/ripples |
@@ -77,5 +78,5 @@ Open-stage: ungrown base columns do not splash — rain falls through until it h
 - Terrain is **pedestal-anchored**; ungrown base keeps `HORIZON` until `POOL`/`SLOPE_*` overwrite. Resize shifts retained dynamics with the icon.
 - Gravity is a continuous unit vector everywhere (particles + grid). Depth = projection on ĝ; neighbor transfer uses weights `max(0, d̂·ĝ)`.
 - Four edges hold fractional roles `sink/source/wrap` from `n̂·ĝ` (sum to 1). Lava onset is **exposure work** `exposure[e] = max(0, exposure[e] + n̂·ĝ)` with decay when flipped (≥ `LAVA_ONSET_EXPOSURE`); 45° → two edges each need ~13·√2 s.
-- Termux: `gravity.mjs` → `termux-sensor`; path CLI installs `termux-api` on `fount logo` / `log` / `server` when missing.
+- Gravity acquire: `document` → browser APIs; Termux → `termux-sensor` (pretty JSON indent=2, `parseSensorStdout`); else no-op. path CLI installs `termux-api` on `fount logo` / `log` / `server` when missing.
 - Rain edges weighted by `source`; side wrap by `wrap`. Meltdown absorb records absorb-time ĝ; regurgitate when `ĝ·absorbDir` drops.
