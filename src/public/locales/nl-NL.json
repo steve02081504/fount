@@ -363,6 +363,26 @@
 				"createdNoUpdate": "`.noupdate` aangemaakt; automatische updates gepauzeerd.",
 				"unknownTarget": "Kan '${target}' niet herkennen: geen bekende branch, commit of pull request."
 			},
+			"version": {
+				"branch": {
+					"title": "Branch: ${branch}",
+					"detached": "Losgekoppelde HEAD"
+				},
+				"commit": "Commit: `${ref}`",
+				"remote": "Remote: `${ref}`",
+				"status": {
+					"title": "Status: ${status}",
+					"upToDate": "Bijgewerkt",
+					"behind": "Achter op de remote branch",
+					"ahead": "Voor op de remote branch",
+					"diverged": "Lokale en remote branches zijn uiteengelopen",
+					"detachedNoCompare": "Losgekoppelde HEAD, geen vergelijking met de remote branch",
+					"fetchFailed": "Kan remotestatus niet ophalen"
+				},
+				"autoUpdatePaused": "Automatische updates gepauzeerd (`.noupdate` bestaat)",
+				"noRepo": "Git-repository niet gevonden",
+				"noGit": "Git is niet geïnstalleerd"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "Snelkoppeling op het bureaublad gemaakt op `${path}`",
 				"startMenuShortcutCreated": "Snelkoppeling naar startmenu gemaakt op `${path}`",
@@ -1948,6 +1968,7 @@
 				"aria-label": "Groepen en navigatie"
 			},
 			"operationFailed": "Bewerking mislukt: ${error}",
+			"warmCharCacheFailed": "Voorladen van personagecache mislukt: ${error}",
 			"shareGroupFailed": "Kan groepslink niet delen: ${error}",
 			"replyInline": {
 				"title": "Antwoord"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "Laden mislukt: ${error}",
+				"rebindFailed": "Opnieuw koppelen van federatieruimte mislukt: ${error}",
 				"subtitle": "Beheer verbindingen tussen apparaten; laat in de meeste gevallen de standaardwaarden staan",
 				"title": "Federatieve P2P-instellingen",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "Plein",
 		"description": "Open P2P-socialfeed, volgen en bestandsdeling",
 		"bootstrapFailed": "Initialisatie van sociale interface mislukt: ${error}",
+		"connectNodeFailed": "Verbinding met knooppunt mislukt: ${error}",
+		"dwellFailed": "Voorkeursgegevens bijwerken op basis van kijktijd mislukt: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "Plein"

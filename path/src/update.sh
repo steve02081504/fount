@@ -11,7 +11,7 @@ fount_resolve_upstream() {
 		if [ -z "$had_upstream" ]; then
 			print_i18n_yellow 'git.noUpstreamBranch' 'branch' "$branch" 'remote' "$remoteBranch" >&2
 		fi
-		invoke_repo_git branch --set-upstream-to "$remoteBranch" "$branch" >/dev/null
+		git_track_origin_branch "$branch" "$remoteBranch" || return 1
 		currentBranch="$branch"
 		return 0
 	fi

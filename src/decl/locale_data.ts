@@ -346,6 +346,26 @@ export type LocaleData = {
 				createdNoUpdate: string
 				unknownTarget: string
 			}
+			version: {
+				branch: {
+					title: string
+					detached: string
+				}
+				commit: string
+				remote: string
+				status: {
+					title: string
+					upToDate: string
+					behind: string
+					ahead: string
+					diverged: string
+					detachedNoCompare: string
+					fetchFailed: string
+				}
+				autoUpdatePaused: string
+				noRepo: string
+				noGit: string
+			}
 			shortcut: {
 				desktopShortcutCreated: string
 				startMenuShortcutCreated: string
@@ -1916,6 +1936,7 @@ export type LocaleData = {
 				'aria-label': string
 			}
 			operationFailed: string
+			warmCharCacheFailed: string
 			shareGroupFailed: string
 			replyInline: {
 				title: string
@@ -2132,6 +2153,7 @@ export type LocaleData = {
 			}
 			federation: {
 				loadFailed: string
+				rebindFailed: string
 				subtitle: string
 				title: string
 				tooltip: {
@@ -4013,6 +4035,8 @@ export type LocaleData = {
 		title: string
 		description: string
 		bootstrapFailed: string
+		connectNodeFailed: string
+		dwellFailed: string
 		home_function_buttons: {
 			main: {
 				title: string
@@ -5906,6 +5930,7 @@ export type LocaleKeyParams = {
 	'chat.hub.fed.repairJoinSnapshotFailed': { error: string | number }
 	'chat.hub.fed.repairJoinSnapshotOk': { channels: string | number }
 	'chat.hub.federation.loadFailed': { error: string | number }
+	'chat.hub.federation.rebindFailed': { error: string | number }
 	'chat.hub.files.loadFailed': { error: string | number }
 	'chat.hub.files.renameFolderPrompt': { name: string | number }
 	'chat.hub.folder.renamePrompt': { name: string | number }
@@ -5976,6 +6001,7 @@ export type LocaleKeyParams = {
 	'chat.hub.vote.createFailed': { error: string | number }
 	'chat.hub.vote.deadline': { date: string | number }
 	'chat.hub.vote.total': { total: string | number }
+	'chat.hub.warmCharCacheFailed': { error: string | number }
 	'chat.message.view.logprobsMetricsFooter': { speed: string | number; time: string | number; tokens: string | number; ttft: string | number }
 	'chat.message.view.logprobsTopLogprobsMeta': { token: string | number }
 	'chat.message.view.share.success': { provider: string | number; sponsorLink: string | number }
@@ -6048,6 +6074,10 @@ export type LocaleKeyParams = {
 	'fountConsole.path.update.pinningToPullRequest': { pr: string | number }
 	'fountConsole.path.update.switchingToBranch': { branch: string | number }
 	'fountConsole.path.update.unknownTarget': { target: string | number }
+	'fountConsole.path.version.branch.title': { branch: string | number }
+	'fountConsole.path.version.commit': { ref: string | number }
+	'fountConsole.path.version.remote': { ref: string | number }
+	'fountConsole.path.version.status.title': { status: string | number }
 	'fountConsole.route.setLanguagePreference': { preferredLanguages: string | number; username: string | number }
 	'fountConsole.server.localUrl': { url: string | number }
 	'fountConsole.server.mdns.bonjourFailed': { error: string | number }
@@ -6190,9 +6220,11 @@ export type LocaleKeyParams = {
 	'social.actions.repostFailed': { error: string | number }
 	'social.actions.saveFailed': { error: string | number }
 	'social.bootstrapFailed': { error: string | number }
+	'social.connectNodeFailed': { error: string | number }
 	'social.drafts.deleteFailed': { error: string | number }
 	'social.drafts.loadFailed': { error: string | number }
 	'social.drafts.saveFailed': { error: string | number }
+	'social.dwellFailed': { error: string | number }
 	'social.feed.repostedBy': { author: string | number }
 	'social.feed.trending.postCount.textContent': { n: string | number }
 	'social.feed.trending.postCount.title': { n: string | number }

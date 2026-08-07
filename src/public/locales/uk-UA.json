@@ -363,6 +363,26 @@
 				"createdNoUpdate": "Створено `.noupdate`; автоматичні оновлення призупинено.",
 				"unknownTarget": "Неможливо розпізнати «${target}»: це не відома гілка, коміт або pull request."
 			},
+			"version": {
+				"branch": {
+					"title": "Гілка: ${branch}",
+					"detached": "Від'єднаний HEAD"
+				},
+				"commit": "Коміт: `${ref}`",
+				"remote": "Віддалений: `${ref}`",
+				"status": {
+					"title": "Статус: ${status}",
+					"upToDate": "Актуально",
+					"behind": "Відстає від віддаленого",
+					"ahead": "Випереджає віддалений",
+					"diverged": "Розійшовся з віддаленим",
+					"detachedNoCompare": "Від'єднаний HEAD, порівняння з віддаленим неможливе",
+					"fetchFailed": "Не вдалося отримати стан віддаленого репозиторію"
+				},
+				"autoUpdatePaused": "Автооновлення призупинено (існує `.noupdate`)",
+				"noRepo": "Репозиторій Git не знайдено",
+				"noGit": "Git не встановлено"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "Ярлик на робочому столі створено в `${path}`",
 				"startMenuShortcutCreated": "Ярлик меню «Пуск» створено в `${path}`",
@@ -1948,6 +1968,7 @@
 				"aria-label": "Групи та навігація"
 			},
 			"operationFailed": "Помилка операції: ${error}",
+			"warmCharCacheFailed": "Не вдалося розігріти кеш персонажів: ${error}",
 			"shareGroupFailed": "Не вдалося поділитися посиланням на групу: ${error}",
 			"replyInline": {
 				"title": "Відповісти"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "Помилка завантаження: ${error}",
+				"rebindFailed": "Не вдалося переприв’язати кімнату федерації: ${error}",
 				"subtitle": "Контроль з'єднань між пристроями; у більшості випадків залишайте значення за замовчуванням",
 				"title": "Об'єднані налаштування P2P",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "Стрічка",
 		"description": "P2P відкриті оновлення в соціальних мережах, підписка та обмін файлами",
 		"bootstrapFailed": "Помилка ініціалізації соціального інтерфейсу: ${error}",
+		"connectNodeFailed": "Не вдалося підключитися до вузла: ${error}",
+		"dwellFailed": "Не вдалося оновити дані про вподобання за часом перегляду: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "Стрічка"

@@ -363,6 +363,26 @@
 				"createdNoUpdate": "`.noupdate` बनाया गया; स्वचालित अपडेट रोक दिए गए।",
 				"unknownTarget": "'${target}' को पहचाना नहीं जा सका: यह कोई ज्ञात शाखा, कमिट या पुल अनुरोध नहीं है।"
 			},
+			"version": {
+				"branch": {
+					"title": "शाखा: ${branch}",
+					"detached": "अलग HEAD"
+				},
+				"commit": "कमिट: `${ref}`",
+				"remote": "रिमोट: `${ref}`",
+				"status": {
+					"title": "स्थिति: ${status}",
+					"upToDate": "नवीनतम",
+					"behind": "रिमोट से पीछे",
+					"ahead": "रिमोट से आगे",
+					"diverged": "रिमोट से विचलित",
+					"detachedNoCompare": "अलग HEAD, रिमोट से तुलना नहीं",
+					"fetchFailed": "रिमोट स्थिति प्राप्त नहीं कर सके"
+				},
+				"autoUpdatePaused": "स्वचालित अपडेट रोक दिए गए (`.noupdate` मौजूद है)",
+				"noRepo": "Git रिपॉजिटरी नहीं मिली",
+				"noGit": "Git स्थापित नहीं है"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "`${path}` पर डेस्कटॉप शॉर्टकट बनाया गया",
 				"startMenuShortcutCreated": "`${path}` पर प्रारंभ मेनू शॉर्टकट बनाया गया",
@@ -1948,6 +1968,7 @@
 				"aria-label": "समूह और नेविगेशन"
 			},
 			"operationFailed": "ऑपरेशन विफल: ${error}",
+			"warmCharCacheFailed": "कैरेक्टर कैश वार्म-अप विफल: ${error}",
 			"shareGroupFailed": "समूह लिंक साझा करने में विफल: ${error}",
 			"replyInline": {
 				"title": "उत्तर"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "लोडिंग विफल: ${error}",
+				"rebindFailed": "फ़ेडरेशन रूम रीबाइंड करने में विफल: ${error}",
 				"subtitle": "क्रॉस-डिवाइस कनेक्शन नियंत्रित करें; अधिकांश मामलों में डिफ़ॉल्ट को छोड़ दें",
 				"title": "फ़ेडरेटेड P2P सेटिंग्स",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "फ़ीड",
 		"description": "P2P सोशल पोस्ट, फ़ॉलो और फ़ाइल शेयरिंग",
 		"bootstrapFailed": "सामाजिक इंटरफ़ेस आरंभीकरण विफल: ${error}",
+		"connectNodeFailed": "नोड से कनेक्ट करने में विफल: ${error}",
+		"dwellFailed": "देखने के समय के आधार पर प्राथमिकता डेटा अपडेट विफल: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "फ़ीड"

@@ -363,6 +363,26 @@
 				"createdNoUpdate": "`.noupdate` créé ; mises à jour automatiques suspendues.",
 				"unknownTarget": "Impossible d'identifier « ${target} » : ni branche connue, ni commit, ni pull request."
 			},
+			"version": {
+				"branch": {
+					"title": "Branche : ${branch}",
+					"detached": "HEAD détaché"
+				},
+				"commit": "Commit : `${ref}`",
+				"remote": "Distant : `${ref}`",
+				"status": {
+					"title": "État : ${status}",
+					"upToDate": "À jour",
+					"behind": "En retard sur le distant",
+					"ahead": "En avance sur le distant",
+					"diverged": "Divergé du distant",
+					"detachedNoCompare": "HEAD détaché, pas de comparaison avec le distant",
+					"fetchFailed": "Impossible de récupérer l'état du distant"
+				},
+				"autoUpdatePaused": "Mises à jour automatiques suspendues (`.noupdate` présent)",
+				"noRepo": "Dépôt Git introuvable",
+				"noGit": "Git n'est pas installé"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "Raccourci sur le bureau créé à `${path}`",
 				"startMenuShortcutCreated": "Raccourci du menu Démarrer créé à `${path}`",
@@ -1948,6 +1968,7 @@
 				"aria-label": "Groupes et navigation"
 			},
 			"operationFailed": "Échec de l'opération : ${error}",
+			"warmCharCacheFailed": "Échec du préchargement du cache des personnages : ${error}",
 			"shareGroupFailed": "Échec du partage du lien du groupe : ${error}",
 			"replyInline": {
 				"title": "Répondre"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "Échec du chargement : ${error}",
+				"rebindFailed": "Échec de la reconnexion de la salle de fédération : ${error}",
 				"subtitle": "Contrôler les connexions entre appareils ; laissez les valeurs par défaut dans la plupart des cas",
 				"title": "Paramètres P2P fédérés",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "Social",
 		"description": "Fil social P2P ouvert, abonnements et partage de fichiers",
 		"bootstrapFailed": "Échec d'initialisation de l'interface sociale : ${error}",
+		"connectNodeFailed": "Échec de la connexion au nœud : ${error}",
+		"dwellFailed": "Échec de la mise à jour des préférences selon le temps de visionnage : ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "Social"

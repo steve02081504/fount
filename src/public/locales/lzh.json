@@ -363,6 +363,26 @@
 				"createdNoUpdate": "已立 `.noupdate` 檔，自動更新暫止。",
 				"unknownTarget": "未能辨識「${target}」：非已知分支、提交或拉取請求。"
 			},
+			"version": {
+				"branch": {
+					"title": "分支：${branch}",
+					"detached": "HEAD 已離"
+				},
+				"commit": "提交：`${ref}`",
+				"remote": "遠端：`${ref}`",
+				"status": {
+					"title": "態：${status}",
+					"upToDate": "已為最新",
+					"behind": "遜於遠端",
+					"ahead": "先於遠端",
+					"diverged": "與遠端歧",
+					"detachedNoCompare": "HEAD 已離，未與遠端較",
+					"fetchFailed": "未能察遠端態"
+				},
+				"autoUpdatePaused": "自動更新暫止（有 `.noupdate`）",
+				"noRepo": "未尋得 Git 倉",
+				"noGit": "未裝 Git"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "桌面快捷已建於 `${path}`",
 				"startMenuShortcutCreated": "開始綱目快捷已建於 `${path}`",
@@ -1948,6 +1968,7 @@
 				"aria-label": "群與導覽"
 			},
 			"operationFailed": "未竟其功：${error}",
+			"warmCharCacheFailed": "角色緩存預熱未遂：${error}",
 			"shareGroupFailed": "分享群鏈接未遂：${error}",
 			"replyInline": {
 				"title": "回復"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "取錄有失：${error}",
+				"rebindFailed": "諸邦房間重新綁定未遂：${error}",
 				"subtitle": "掌跨器連繫；大抵守常制即可",
 				"title": "諸邦 P2P 樞機",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "廣場",
 		"description": "P2P 開放社交言、關注與文卷分享",
 		"bootstrapFailed": "社交界面初設未遂：${error}",
+		"connectNodeFailed": "連接節點未遂：${error}",
+		"dwellFailed": "依觀看時長更新偏好未遂：${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "廣場"

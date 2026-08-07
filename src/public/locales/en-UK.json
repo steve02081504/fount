@@ -358,6 +358,26 @@
 				"createdNoUpdate": "Created `.noupdate`; automatic updates paused.",
 				"unknownTarget": "Unrecognised target '${target}': not a known branch, commit, or pull request."
 			},
+			"version": {
+				"branch": {
+					"title": "Branch: ${branch}",
+					"detached": "Detached HEAD"
+				},
+				"commit": "Commit: `${ref}`",
+				"remote": "Remote: `${ref}`",
+				"status": {
+					"title": "Status: ${status}",
+					"upToDate": "Up to date",
+					"behind": "Behind remote",
+					"ahead": "Ahead of remote",
+					"diverged": "Diverged from remote",
+					"detachedNoCompare": "Detached HEAD; not comparing with remote",
+					"fetchFailed": "Unable to fetch remote status"
+				},
+				"autoUpdatePaused": "Automatic updates paused (`.noupdate` exists)",
+				"noRepo": "Git repository not found",
+				"noGit": "Git is not installed"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "Desktop shortcut created at `${path}`",
 				"startMenuShortcutCreated": "Start menu shortcut created at `${path}`",
@@ -1943,6 +1963,7 @@
 				"aria-label": "Groups and navigation"
 			},
 			"operationFailed": "Operation failed: ${error}",
+			"warmCharCacheFailed": "Couldn't warm up the character cache: ${error}",
 			"shareGroupFailed": "Failed to share group link: ${error}",
 			"replyInline": {
 				"title": "Reply"
@@ -2155,6 +2176,7 @@
 			},
 			"federation": {
 				"loadFailed": "Couldn't load: ${error}",
+				"rebindFailed": "Couldn't rebind the federation room: ${error}",
 				"subtitle": "Control cross-device connections — defaults are fine for most people",
 				"title": "Federated P2P settings",
 				"tooltip": {
@@ -4036,6 +4058,8 @@
 		"title": "Square",
 		"description": "P2P open social posts, following and file sharing",
 		"bootstrapFailed": "Social interface initialization failed: ${error}",
+		"connectNodeFailed": "Couldn't connect to node: ${error}",
+		"dwellFailed": "Couldn't update taste data from watch time: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "Square"

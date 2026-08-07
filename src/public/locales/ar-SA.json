@@ -363,6 +363,26 @@
 				"createdNoUpdate": "تم إنشاء `.noupdate`؛ عُلِّقت التحديثات التلقائية.",
 				"unknownTarget": "تعذّر التعرف على «${target}»: ليس فرعًا معروفًا، ولا التزامًا، ولا طلب سحب."
 			},
+			"version": {
+				"branch": {
+					"title": "الفرع: ${branch}",
+					"detached": "HEAD منفصل"
+				},
+				"commit": "الالتزام: `${ref}`",
+				"remote": "البعيد: `${ref}`",
+				"status": {
+					"title": "الحالة: ${status}",
+					"upToDate": "محدّث",
+					"behind": "متأخر عن البعيد",
+					"ahead": "متقدّم على البعيد",
+					"diverged": "متباعد عن البعيد",
+					"detachedNoCompare": "HEAD منفصل، لا يمكن المقارنة مع البعيد",
+					"fetchFailed": "تعذّر جلب حالة البعيد"
+				},
+				"autoUpdatePaused": "تم إيقاف التحديثات التلقائية (يوجد `.noupdate`)",
+				"noRepo": "لم يتم العثور على مستودع Git",
+				"noGit": "لم يتم تثبيت Git"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "تم إنشاء اختصار سطح المكتب في `${path}`",
 				"startMenuShortcutCreated": "تم إنشاء اختصار قائمة ابدأ في `${path}`",
@@ -1948,6 +1968,7 @@
 				"aria-label": "المجموعات والتنقل"
 			},
 			"operationFailed": "فشلت العملية: ${error}",
+			"warmCharCacheFailed": "فشل تسخين ذاكرة التخزين المؤقت للشخصيات: ${error}",
 			"shareGroupFailed": "فشلت مشاركة رابط المجموعة: ${error}",
 			"replyInline": {
 				"title": "رد"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "فشل التحميل: ${error}",
+				"rebindFailed": "فشلت إعادة ربط غرفة الاتحاد: ${error}",
 				"subtitle": "التحكم في الاتصالات عبر الأجهزة؛ ترك الإعدادات الافتراضية في معظم الحالات",
 				"title": "إعدادات الاتحاد P2P",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "الساحة",
 		"description": "منشورات P2P مفتوحة ومتابعة ومشاركة ملفات",
 		"bootstrapFailed": "فشل تهيئة واجهة التواصل: ${error}",
+		"connectNodeFailed": "فشل الاتصال بالعقدة: ${error}",
+		"dwellFailed": "فشل تحديث بيانات التفضيلات حسب مدة المشاهدة: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "الساحة"

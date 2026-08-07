@@ -363,6 +363,26 @@
 				"createdNoUpdate": "`.noupdate` erstellt; automatische Updates pausiert.",
 				"unknownTarget": "'${target}' kann nicht erkannt werden: kein bekannter Branch, Commit oder Pull Request."
 			},
+			"version": {
+				"branch": {
+					"title": "Branch: ${branch}",
+					"detached": "Abgetrennter HEAD"
+				},
+				"commit": "Commit: `${ref}`",
+				"remote": "Remote: `${ref}`",
+				"status": {
+					"title": "Status: ${status}",
+					"upToDate": "Auf dem neuesten Stand",
+					"behind": "Hinter Remote zurück",
+					"ahead": "Remote voraus",
+					"diverged": "Von Remote abgewichen",
+					"detachedNoCompare": "Abgetrennter HEAD, kein Vergleich mit Remote",
+					"fetchFailed": "Remote-Status konnte nicht abgerufen werden"
+				},
+				"autoUpdatePaused": "Automatische Updates pausiert (`.noupdate` vorhanden)",
+				"noRepo": "Git-Repository nicht gefunden",
+				"noGit": "Git ist nicht installiert"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "Desktop-Verknüpfung erstellt unter `${path}`",
 				"startMenuShortcutCreated": "Startmenü-Verknüpfung erstellt unter `${path}`",
@@ -1948,6 +1968,7 @@
 				"aria-label": "Gruppen und Navigation"
 			},
 			"operationFailed": "Vorgang fehlgeschlagen: ${error}",
+			"warmCharCacheFailed": "Charakter-Cache konnte nicht vorgewärmt werden: ${error}",
 			"shareGroupFailed": "Gruppenlink konnte nicht geteilt werden: ${error}",
 			"replyInline": {
 				"title": "Antwort"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "Laden fehlgeschlagen: ${error}",
+				"rebindFailed": "Föderationsraum konnte nicht neu gebunden werden: ${error}",
 				"subtitle": "Steuern Sie geräteübergreifende Verbindungen. Behalten Sie in den meisten Fällen die Standardeinstellungen bei",
 				"title": "Föderierte P2P-Einstellungen",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "Plaza",
 		"description": "P2P-Social: Feeds, Follows und Dateifreigabe",
 		"bootstrapFailed": "Social-Oberfläche konnte nicht initialisiert werden: ${error}",
+		"connectNodeFailed": "Verbindung zum Knoten fehlgeschlagen: ${error}",
+		"dwellFailed": "Vorlieben konnten anhand der Wiedergabezeit nicht aktualisiert werden: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "Plaza"

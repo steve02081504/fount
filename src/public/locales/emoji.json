@@ -363,6 +363,26 @@
 				"createdNoUpdate": "✨ `.noupdate` ⏸️⏫",
 				"unknownTarget": "❓ '${target}' 🚫🌿🚫📌🚫🔀"
 			},
+			"version": {
+				"branch": {
+					"title": "🌳 ${branch}",
+					"detached": "HEAD 🔓"
+				},
+				"commit": "📌 `${ref}`",
+				"remote": "☁️ `${ref}`",
+				"status": {
+					"title": "📊 ${status}",
+					"upToDate": "👍💯",
+					"behind": "☁️⬆️🏠",
+					"ahead": "🏠⬆️☁️",
+					"diverged": "🔀",
+					"detachedNoCompare": "HEAD 🔓 ⏭️☁️",
+					"fetchFailed": "❌☁️📥"
+				},
+				"autoUpdatePaused": "⏸️⏫ (`.noupdate`)",
+				"noRepo": "❓ 🐙🐱",
+				"noGit": "❌ 🐙🐱"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "🖥️✨ `${path}`",
 				"startMenuShortcutCreated": "🏁✨ `${path}`",
@@ -1948,6 +1968,7 @@
 				"aria-label": "👥🧭"
 			},
 			"operationFailed": "⚙️❌：${error}",
+			"warmCharCacheFailed": "🎭🗄️🔥❌：${error}",
 			"shareGroupFailed": "📤👥🔗❌：${error}",
 			"replyInline": {
 				"title": "💬↩️"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "📥❌：${error}",
+				"rebindFailed": "🔄🌐🏠❌：${error}",
 				"subtitle": "🖥️🔗🎛️ · 👌🔧⭐",
 				"title": "🌐🔗⚙️",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "🏛️",
 		"description": "🔗🌍 🏛️📰 ➕ 👀 ➕ 📁🔗",
 		"bootstrapFailed": "🏛️🚀❌: ${error}",
+		"connectNodeFailed": "🔗🌐❌：${error}",
+		"dwellFailed": "👀⏱️⭐❤️❌：${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "🏛️"
