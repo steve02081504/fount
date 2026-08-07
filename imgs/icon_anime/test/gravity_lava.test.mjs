@@ -8,7 +8,7 @@ import {
 	createWorld, addMelt, setMat, stepFluid, stepThermal, stepBoundary,
 	stepParticles, spawnParticle, MAT, LIQ_DRAW, T_MAX, T_LIQUIDUS, T_SOLIDUS,
 	LAVA_ONSET_EXPOSURE, rhoOf, viscOf, SUBSTANCE, totalMelt, applyGravityToWorld,
-	neighborCoord, regurgitateTemp, clearMaterials, EDGE_BOTTOM, EDGE_LEFT,
+	neighborCoord, regurgitateTemp, clearMaterials, EDGE_TOP, EDGE_BOTTOM, EDGE_LEFT,
 	pressureAt, liquidPressureAt, hydraulicPhi, gravityDepth,
 	totalWorldWater, addLiquid, labelAirRegions, totalSealedGas,
 } from '../fluid/index.mjs'
@@ -58,6 +58,17 @@ Deno.test('rain edges: pure left gravity → right edge dominates', () => {
 	assertEquals(left.w, 0)
 })
 
+Deno.test('rain edges: inverted gravity → no bottom rain (composition ground)', () => {
+	// gy<0 makes the screen bottom a physical sky; raining from there looks like
+	// the pedestal spurting upward. Composition bottom never rains — wait for lava.
+	const edges = rainEdgeWeights(0, -1)
+	const bot = edges.find(e => e.ny > 0)
+	const top = edges.find(e => e.ny < 0)
+	assertEquals(bot.w, 0)
+	assertEquals(top.w, 0)
+	assertEquals(edges.reduce((s, e) => s + e.w, 0), 0)
+})
+
 Deno.test('rain edges: pickRainEdge respects weights', () => {
 	const edges = rainEdgeWeights(0, 1)
 	const picks = { top: 0, left: 0, right: 0, bottom: 0 }
@@ -70,6 +81,30 @@ Deno.test('rain edges: pickRainEdge respects weights', () => {
 	}
 	assertEquals(picks.bottom, 0)
 	assertGreater(picks.top, picks.left)
+})
+
+Deno.test('lava: inverted gravity — quiet then onset on new down edge (top)', () => {
+	const world = createWorld({ width: 10, height: 10, margin: 0, bottomExtra: 0 })
+	clearMaterials(world)
+	world.gravity = { gx: 0, gy: -1, mag: BASE_PARTICLE_G }
+	applyGravityToWorld(world, world.gravity)
+	const edges = rainEdgeWeights(0, -1)
+	assertEquals(edges.find(e => e.ny > 0).w, 0)
+	for (let i = 0; i < LAVA_ONSET_EXPOSURE - 2; i++)
+		stepBoundary(world)
+	assertLess(totalMelt(world), 0.01)
+	for (let i = 0; i < 4; i++)
+		stepBoundary(world)
+	assertGreater(totalMelt(world), 0.1)
+	const W = world.worldW
+	let topMelt = 0
+	let botMelt = 0
+	for (let x = 0; x < W; x++) {
+		topMelt += world.melt[x]
+		botMelt += world.melt[(world.worldH - 1) * W + x]
+	}
+	assertGreater(topMelt, botMelt)
+	assertGreater(world.boundary.exposure[EDGE_TOP], LAVA_ONSET_EXPOSURE - 1)
 })
 
 Deno.test('particles: vector gravity displaces in g direction', () => {

@@ -360,6 +360,9 @@ Deno.test('createEscHold: abort after continuous ESC ≥ 4s; gap resets', async 
 	for (let t = 100; t < ESC_HOLD_MS; t += 100)
 		assertEquals(hold.note(t), false)
 	assertEquals(hold.note(ESC_HOLD_MS), true)
+	// Once tripped, further repeats must not re-fire (would abort farewell mid-exit).
+	assertEquals(hold.note(ESC_HOLD_MS + 50), false)
+	assertEquals(hold.note(ESC_HOLD_MS + 200), false)
 	// Gap beyond ESC_HOLD_GAP_MS restarts the hold clock
 	const again = createEscHold()
 	assertEquals(again.note(0), false)
@@ -369,6 +372,23 @@ Deno.test('createEscHold: abort after continuous ESC ≥ 4s; gap resets', async 
 	for (let t = 100; t < ESC_HOLD_MS; t += 100)
 		assertEquals(again.note(restart + t), false)
 	assertEquals(again.note(restart + ESC_HOLD_MS), true)
+	assertEquals(again.note(restart + ESC_HOLD_MS + 100), false)
+})
+
+Deno.test('createEscHold: reset re-arms after a trip', async () => {
+	const { createEscHold, ESC_HOLD_MS } = await import('../player.mjs')
+	const hold = createEscHold()
+	assertEquals(hold.note(0), false)
+	for (let t = 100; t < ESC_HOLD_MS; t += 100)
+		assertEquals(hold.note(t), false)
+	assertEquals(hold.note(ESC_HOLD_MS), true)
+	assertEquals(hold.note(ESC_HOLD_MS + 10), false)
+	hold.reset()
+	const t0 = 50_000
+	assertEquals(hold.note(t0), false)
+	for (let t = 100; t < ESC_HOLD_MS; t += 100)
+		assertEquals(hold.note(t0 + t), false)
+	assertEquals(hold.note(t0 + ESC_HOLD_MS), true)
 })
 
 Deno.test('wind gesture: stroke speed + clockwise vortex + release clear', async () => {
