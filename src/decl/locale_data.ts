@@ -1933,7 +1933,6 @@ export type LocaleData = {
 			ariaClose: {
 				'aria-label': string
 			}
-			close: string
 			serverBar: {
 				'aria-label': string
 			}
