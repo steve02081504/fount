@@ -62,7 +62,7 @@ export const mapSensorToScreen = (ax, ay, az) => {
  * @param {unknown} data 解析后的对象
  * @returns {[number, number, number] | null} 三轴
  */
-const valuesFromSensorJson = (data) => {
+export const valuesFromSensorJson = (data) => {
 	if (!data || typeof data !== 'object') return null
 	const obj = /** @type {Record<string, unknown>} */ data
 	for (const key of Object.keys(obj)) {
@@ -77,6 +77,38 @@ const valuesFromSensorJson = (data) => {
 			return [x, y, z]
 	}
 	return null
+}
+
+/**
+ * 从 termux-sensor stdout 缓冲抽出完整样本。
+ * SensorAPI 以 indent=2 的 pretty JSON + "\\n" 流式写出，不是单行 NDJSON；
+ * 不可按行 parse（半行会被丢弃，重力永远停在默认值）。
+ * @param {string} buf 累积缓冲
+ * @returns {{ samples: [number, number, number][], rest: string }} 样本与残余
+ */
+export const parseSensorStdout = (buf) => {
+	/** @type {[number, number, number][]} */
+	const samples = []
+	let i = 0
+	while (i < buf.length) {
+		const open = buf.indexOf('{', i)
+		if (open < 0) return { samples, rest: '' }
+		let parsed = false
+		for (let end = open + 2; end <= buf.length; end++) {
+			if (buf[end - 1] !== '}') continue
+			const chunk = buf.slice(open, end)
+			try {
+				const vals = valuesFromSensorJson(JSON.parse(chunk))
+				if (vals) samples.push(vals)
+				i = end
+				parsed = true
+				break
+			}
+			catch { /* incomplete or nested — try longer slice */ }
+		}
+		if (!parsed) return { samples, rest: buf.slice(open) }
+	}
+	return { samples, rest: buf.slice(i) }
 }
 
 /** @type {import('node:child_process').ChildProcess | null} */
@@ -132,57 +164,13 @@ const applySample = (ax, ay, az) => {
 }
 
 /**
- * 解析单条 termux-sensor JSON 并写入 rawTarget。
- * @param {string} chunk JSON 文本
- * @returns {void}
- */
-const emitSensorJson = (chunk) => {
-	try {
-		const vals = valuesFromSensorJson(JSON.parse(chunk))
-		if (vals) applySample(vals[0], vals[1], vals[2])
-	}
-	catch { /* malformed record */ }
-}
-
-/**
- * 处理 stdout 缓冲：先按行（NDJSON），再对残余缓冲尝试完整 JSON 对象。
- * termux-sensor 连续模式为对象流，可能带换行也可能粘连。
+ * 消化 stdout 缓冲中的完整传感器 JSON。
  * @returns {void}
  */
 const drainStdout = () => {
-	let lineEnd
-	while ((lineEnd = stdoutBuf.indexOf('\n')) >= 0) {
-		const line = stdoutBuf.slice(0, lineEnd).trim()
-		stdoutBuf = stdoutBuf.slice(lineEnd + 1)
-		if (line) emitSensorJson(line)
-	}
-
-	let i = 0
-	while (i < stdoutBuf.length) {
-		const open = stdoutBuf.indexOf('{', i)
-		if (open < 0) {
-			stdoutBuf = stdoutBuf.slice(i)
-			return
-		}
-		let parsed = false
-		for (let end = open + 2; end <= stdoutBuf.length; end++) {
-			if (stdoutBuf[end - 1] !== '}') continue
-			const chunk = stdoutBuf.slice(open, end)
-			try {
-				JSON.parse(chunk)
-				emitSensorJson(chunk)
-				i = end
-				parsed = true
-				break
-			}
-			catch { /* incomplete or nested — try longer slice */ }
-		}
-		if (!parsed) {
-			stdoutBuf = stdoutBuf.slice(open)
-			return
-		}
-	}
-	stdoutBuf = stdoutBuf.slice(i)
+	const { samples, rest } = parseSensorStdout(stdoutBuf)
+	stdoutBuf = rest
+	for (const [ax, ay, az] of samples) applySample(ax, ay, az)
 }
 
 /**

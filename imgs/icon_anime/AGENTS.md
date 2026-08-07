@@ -77,5 +77,5 @@ Open-stage: ungrown base columns do not splash — rain falls through until it h
 - Terrain is **pedestal-anchored**; ungrown base keeps `HORIZON` until `POOL`/`SLOPE_*` overwrite. Resize shifts retained dynamics with the icon.
 - Gravity is a continuous unit vector everywhere (particles + grid). Depth = projection on ĝ; neighbor transfer uses weights `max(0, d̂·ĝ)`.
 - Four edges hold fractional roles `sink/source/wrap` from `n̂·ĝ` (sum to 1). Lava onset is **exposure work** `exposure[e] = max(0, exposure[e] + n̂·ĝ)` with decay when flipped (≥ `LAVA_ONSET_EXPOSURE`); 45° → two edges each need ~13·√2 s.
-- Termux: `gravity.mjs` → `termux-sensor`; path CLI installs `termux-api` on `fount logo` / `log` / `server` when missing.
+- Termux: `gravity.mjs` → `termux-sensor`; SensorAPI streams **pretty JSON (indent=2)**, parse via `parseSensorStdout` (never line-NDJSON). path CLI installs `termux-api` on `fount logo` / `log` / `server` when missing.
 - Rain edges weighted by `source`; side wrap by `wrap`. Meltdown absorb records absorb-time ĝ; regurgitate when `ĝ·absorbDir` drops.

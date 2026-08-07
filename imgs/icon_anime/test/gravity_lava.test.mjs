@@ -14,7 +14,7 @@ import {
 } from '../fluid/index.mjs'
 import {
 	mapSensorToScreen, defaultGravity,
-	BASE_PARTICLE_G,
+	BASE_PARTICLE_G, parseSensorStdout, valuesFromSensorJson,
 } from '../gravity.mjs'
 import { rainEdgeWeights, pickRainEdge } from '../scene.mjs'
 
@@ -27,6 +27,38 @@ Deno.test('gravity: mapSensorToScreen upright phone → screen down', () => {
 
 Deno.test('gravity: flat device returns null', () => {
 	assertEquals(mapSensorToScreen(0, 0, -9.81), null)
+})
+
+Deno.test('gravity: pretty-printed termux-sensor stream (indent=2)', () => {
+	// SensorAPI: sensorReadout.toString(INDENTATION) + "\n"
+	const chunk = `{
+  "BMI160 Gravity": {
+    "values": [
+      0.5,
+      -9.7,
+      1.2
+    ]
+  }
+}
+`
+	const { samples, rest } = parseSensorStdout(chunk + chunk.slice(0, 20))
+	assertEquals(samples.length, 1)
+	assertAlmostEquals(samples[0][0], 0.5, 1e-9)
+	assertAlmostEquals(samples[0][1], -9.7, 1e-9)
+	assertAlmostEquals(samples[0][2], 1.2, 1e-9)
+	assertEquals(rest.startsWith('{'), true)
+	const again = parseSensorStdout(rest + chunk.slice(20))
+	assertEquals(again.samples.length, 1)
+	assertEquals(again.rest, '')
+})
+
+Deno.test('gravity: compact + concatenated sensor objects', () => {
+	const a = '{"Gravity":{"values":[1,2,3]}}'
+	const b = '{"accelerometer":{"values":[4,5,6]}}'
+	const { samples, rest } = parseSensorStdout(a + b)
+	assertEquals(samples, [[1, 2, 3], [4, 5, 6]])
+	assertEquals(rest, '')
+	assertEquals(valuesFromSensorJson({ empty: { values: [1] } }), null)
 })
 
 Deno.test('rain edges: default down → no bottom, top dominant, sides nonzero', () => {
