@@ -53,28 +53,37 @@ export const ESC_HOLD_GAP_MS = 500
 
 /**
  * ESC 长按计时：靠终端键重复确认仍在按住；无松开事件。
+ * 触发一次后保持闩锁，避免退场动画播放期间键重复再次 abort。
  * @param {number} [holdMs] 触发中止的持续时长
  * @param {number} [gapMs] 允许的最大重复间隔
- * @returns {{ note: (now: number) => boolean, reset: () => void }} note 在达到 holdMs 时返回 true
+ * @returns {{ note: (now: number) => boolean, reset: () => void }} note 在达到 holdMs 时返回 true（仅一次）
  */
 export function createEscHold(holdMs = ESC_HOLD_MS, gapMs = ESC_HOLD_GAP_MS) {
 	/** @type {number | null} */
 	let start = null
 	let last = 0
+	let fired = false
 	return {
 		/**
 		 * @param {number} now 单调时钟（ms）
-		 * @returns {boolean} 是否已连续按住满 holdMs
+		 * @returns {boolean} 是否刚达到 holdMs（已触发过则恒 false）
 		 */
 		note(now) {
+			if (fired) return false
 			if (start == null || now - last > gapMs) start = now
 			last = now
-			return now - start >= holdMs
+			if (now - start < holdMs) return false
+			fired = true
+			return true
 		},
-		/** @returns {void} */
+		/**
+		 * 清除 start、last、fired，重新允许一次触发。
+		 * @returns {void}
+		 */
 		reset() {
 			start = null
 			last = 0
+			fired = false
 		},
 	}
 }
@@ -200,6 +209,18 @@ export function start({ onResize, onPointer, onUserAbort } = {}) {
 	process.stdin.setRawMode(true)
 	process.stdin.resume()
 	const escHold = createEscHold()
+	/** 首次用户中止后闩上，避免 farewell 退场被 ESC 重复 / 连按 Ctrl+C 掐断。 */
+	let userAbortArmed = true
+	/**
+	 * 触发一次用户中止（幂等）。
+	 * @returns {void}
+	 */
+	const tripUserAbort = () => {
+		if (!userAbortArmed) return
+		userAbortArmed = false
+		abort()
+		onUserAbort?.()
+	}
 	/**
 	 * Ctrl+C / 长按 ESC 中止；SGR 鼠标 → onPointer。
 	 * @param {Buffer} buf stdin 块
@@ -207,16 +228,11 @@ export function start({ onResize, onPointer, onUserAbort } = {}) {
 	 */
 	onData = (buf) => {
 		stdinCarry = consumeStdin(stdinCarry, buf, {
-			/** Ctrl+C：中止播放并通知会话。 */
-			abort: () => {
-				abort()
-				onUserAbort?.()
-			},
+			abort: tripUserAbort,
 			/** ESC 键重复：连续按住满 ESC_HOLD_MS 则中止。 */
 			onEsc: () => {
 				if (!escHold.note(performance.now())) return
-				abort()
-				onUserAbort?.()
+				tripUserAbort()
 			},
 			onPointer,
 		})

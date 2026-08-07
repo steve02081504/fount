@@ -27,7 +27,7 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 - Weighted ortho neighbors: `w = max(0, d̂·ĝ)` down / `d̂·(−ĝ)` up. Settle / buoyancy / bubbles / soil / free-surface follow these.
 - Edge roles (`edgeRoles`): for outward normal n̂, `sink=max(0,n̂·ĝ)`, `source=max(0,−n̂·ĝ)`, `wrap=1−|n̂·ĝ|`.
 - Exposure work: each tick `exposure[e] = max(0, exposure[e] + n̂_e·ĝ)`. Lava when `exposure[e] ≥ LAVA_ONSET_EXPOSURE` (312 under pure down = 13s@24fps). At 45°, two edges each accumulate cos45/frame → onset ≈ 13·√2 s.
-- Rain spawn uses `source` weights (gravity-down edge never rains). Side wrap uses `wrap`; particles pick wrap vs out with `hash01`.
+- Rain spawn uses `source` weights (gravity-down edge never rains). Composition bottom is never a rain sky (pedestal/lava edge) — inverted ĝ yields no rain there, then lava on the sink edge after exposure. Side wrap uses `wrap`; particles pick wrap vs out with `hash01`.
 - Absorb on source-weighted edges records `absorbGx/Gy`; regurgitate when `ĝ·absorbDir < threshold`, ejecting on current source edges.
 
 ## Terrain
@@ -62,7 +62,7 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 - `liqVx`/`liqVy`: EMA from mass transfers each `stepLiquid` — drives free-liquid glyphs.
 - Communicating vessels: relax `φ = P/(ρg) - depth` along the liquid graph (BFS from lowest-φ surface — no teleport across disconnected air).
 - `POOL` retains fill and spills/leaks; `BODY` is splash-only barrier; pillars are not materials.
-- Soil: absorb diminishes as cell wets (`soilAbsorbFactor`); rain hits sink only `SOIL_HIT_ABSORB_FRAC`. Seepage slow enough for surface puddles. Sideways share + prefer below (gravity-weighted); air below → underside `condense`; Matthew transfer between condensation cells; `COND_DRAW` / `COND_DRIP` thresholds. Heating evaporates moisture before melt.
+- Soil: absorb diminishes as cell wets (`soilAbsorbFactor`); rain hits sink only `SOIL_HIT_ABSORB_FRAC`. Seepage slow enough for surface puddles. Sideways share + prefer below (gravity-weighted); air below → underside `condense`; Matthew along ĝ⊥; `COND_DRAW` / `COND_DRIP` thresholds. When ĝ leaves an open underside, condense reabsorbs into moisture (excess spills to ortho air). Compose drips via `condenseDripSource` (gravity-up soil), not screen-Y. Heating evaporates moisture before melt.
 - Material rebuild clears labels only; `releaseNonSoilWater` dumps moisture/condense from non-soil into free liquid so `POOL` overwrite does not erase water.
 - `exit` stops when the icon is gone — no rain/liquid drain wait.
 

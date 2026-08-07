@@ -5,8 +5,9 @@
  */
 
 import {
-	MAT, LIQ_DRAW, COND_DRAW, BUBBLE_MIN_CELLS,
-	isLiquidBarrier, isSoilMat, waterChar, liquidChar, dripChar, lavaChar,
+	MAT, LIQ_DRAW, BUBBLE_MIN_CELLS,
+	isLiquidBarrier, waterChar, liquidChar, dripChar, lavaChar,
+	condenseDripSource,
 } from './fluid/index.mjs'
 import { sampleLight, RIPPLE_SPEED, RIPPLE_WIDTH, torchEase } from './gesture/light.mjs'
 import { ICON_W, ICON_BODY_H, PILLARS, BODY_DIST, maxBodyD } from './icon.mjs'
@@ -477,9 +478,9 @@ export const composeFrame = (state) => {
 					fg[i] = FG_BUBBLE
 				}
 				else {
-					const above = vy > 0 ? (vy - 1) * W + wx : -1
-					if (above >= 0 && isSoilMat(mat[above]) && condense[above] >= COND_DRAW) {
-						ch[i] = dripChar(condense[above], wx + frame)
+					const dripSoil = condenseDripSource(world, wx, vy)
+					if (dripSoil >= 0) {
+						ch[i] = dripChar(condense[dripSoil], wx + frame)
 						fg[i] = FG_SPLASH
 					}
 					else if (solid[wi] && vy === surface[wx]) {

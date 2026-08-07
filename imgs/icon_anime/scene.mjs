@@ -526,6 +526,8 @@ const onParticleHit = (world, x, y, m, particle, wet, state) => {
 
 /**
  * 四边出雨权重（source 角色）。导出供测试。
+ * 组成底边（地形/岩浆侧）永不作出雨天：倒置时 ĝ 穿入底边会把雨从基座往上喷，
+ * 应静等 sink 边曝露后出岩浆，而不是底边冒雨。
  * @param {number} gx 单位重力 x
  * @param {number} gy 单位重力 y
  * @returns {{ nx: number, ny: number, w: number }[]} 边权重
@@ -542,9 +544,10 @@ export const rainEdgeWeights = (gx, gy) => {
 		// source = max(0, −n̂·ĝ); sink edge never rains
 		e.w = Math.max(0, -dot)
 	}
+	// Pedestal / lava edge of the composition — never a rain sky.
+	edges[1].w = 0
 	// Side edges get a small base so left/right can randomly rain under default g.
-	const top = edges.find(e => e.ny < 0)
-	if (top && top.w > 0.5) {
+	if (edges[0].w > 0.5) {
 		edges[2].w = Math.max(edges[2].w, 0.12)
 		edges[3].w = Math.max(edges[3].w, 0.12)
 	}
