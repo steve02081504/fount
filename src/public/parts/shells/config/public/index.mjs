@@ -5,7 +5,7 @@ import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { initTranslations, i18nElement, geti18n, confirmI18n, console } from '/scripts/i18n/index.mjs'
 import { createJsonEditor } from '/scripts/components/jsonEditor.mjs'
-import { getPartDetails } from '/scripts/api/parts.mjs'
+import { getPartDetails } from '/scripts/endpoints/parts.mjs'
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'

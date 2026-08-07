@@ -168,7 +168,7 @@ export function extractI18nRefsFromSource(text) {
 		promptText: 'string',
 		promptTextArea: 'string',
 		confirmAction: 'string',
-		handleUIError: 'string',
+		handleError: 'string',
 	}
 	for (const [name, binding] of Object.entries(apis)) {
 		const re = new RegExp(`\\b${name}\\s*\\(\\s*(["'\`])([^"'\`]+)\\1`, 'g')

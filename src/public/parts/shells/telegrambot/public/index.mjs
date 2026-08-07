@@ -3,7 +3,7 @@
  */
 import { initTranslations, geti18n, promptI18n, confirmI18n } from '/scripts/i18n/index.mjs'
 import { createJsonEditor } from '/scripts/components/jsonEditor.mjs'
-import { getPartList } from '/scripts/api/parts.mjs'
+import { getPartList } from '/scripts/endpoints/parts.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'
 import { showToast, showToastI18n } from '/scripts/features/toast.mjs'
 import { createSearchableDropdown } from '/scripts/components/search.mjs'

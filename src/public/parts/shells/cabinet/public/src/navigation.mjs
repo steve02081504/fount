@@ -3,7 +3,7 @@
  */
 import { confirmAction, promptText } from '/scripts/features/promptDialog.mjs'
 
-import { api, unlockHeaders } from './api.mjs'
+import { listCabinets, listEntries, listRemoteCabinets, listRemoteEntries, deleteCabinet, patchCabinet, unlockHeaders } from './endpoints.mjs'
 import { promptUnlock } from './entryActions.mjs'
 import { renderEntries, renderStatus } from './entryGrid.mjs'
 import { renderRemoteEntityBar } from './remoteBrowse.mjs'
@@ -40,7 +40,7 @@ export function locationHashFor(cabinetId, parentId = null) {
  * @returns {Promise<void>}
  */
 export async function refreshCabinets() {
-	const data = await api('GET', '/cabinets')
+	const data = await listCabinets()
 	cabinetStore.cabinets = data.cabinets || []
 	cabinetStore.cabinets.sort((a, b) => {
 		if (a.type !== b.type) return a.type === 'personal' ? -1 : 1
@@ -95,13 +95,13 @@ async function cabinetContext(cabinet) {
 	if (action === 'rename') {
 		const name = await promptText('cabinet.renamePrompt', cabinet.name)
 		if (!name) return
-		await api('PATCH', `/cabinets/${encodeURIComponent(cabinet.cabinet_id)}`, { name })
+		await patchCabinet(cabinet.cabinet_id, { name })
 		await refreshCabinets()
 	}
 	else if (action === 'delete') {
 		if (!await confirmAction('cabinet.confirmDeleteCabinet')) return
 		const wasCurrent = cabinetStore.currentCabinetId === cabinet.cabinet_id
-		await api('DELETE', `/cabinets/${encodeURIComponent(cabinet.cabinet_id)}`)
+		await deleteCabinet(cabinet.cabinet_id)
 		await refreshCabinets()
 		if (wasCurrent) {
 			const next = cabinetStore.cabinets[0]?.cabinet_id
@@ -115,7 +115,7 @@ async function cabinetContext(cabinet) {
 			cabinet.visibility?.visibility || 'private',
 		)
 		if (!visibility) return
-		await api('PATCH', `/cabinets/${encodeURIComponent(cabinet.cabinet_id)}`, { visibility: { visibility } })
+		await patchCabinet(cabinet.cabinet_id, { visibility: { visibility } })
 		await refreshCabinets()
 	}
 }
@@ -146,16 +146,8 @@ export async function refreshEntries() {
 	if (currentParentId) query.set('parent_id', currentParentId)
 	if (showHidden) query.set('show_hidden', '1')
 	const data = remoteEntityHash
-		? await api(
-			'GET',
-			`/remote/${encodeURIComponent(remoteEntityHash)}/cabinets/${encodeURIComponent(currentCabinetId)}/index?${query}`,
-		)
-		: await api(
-			'GET',
-			`/cabinets/${encodeURIComponent(currentCabinetId)}/index?${query}`,
-			null,
-			unlockHeaders(currentUnlockToken()),
-		)
+		? await listRemoteEntries(remoteEntityHash, currentCabinetId, query)
+		: await listEntries(currentCabinetId, query, unlockHeaders(currentUnlockToken()))
 	cabinetStore.currentCabinet = data.cabinet
 	cabinetStore.folderTrail = data.folder_trail || []
 	await renderBreadcrumb()
@@ -281,7 +273,7 @@ export async function bootFromHash() {
 		const parts = hash.slice(5).split('/')
 		const entityHash = parts[0].toLowerCase()
 		setBrowseMode(entityHash)
-		const data = await api('GET', `/remote/${encodeURIComponent(entityHash)}/cabinets`)
+		const data = await listRemoteCabinets(entityHash)
 		cabinetStore.cabinets = data.cabinets || []
 		renderCabinetList()
 		const cabinetId = parts[1] || cabinetStore.cabinets[0]?.cabinet_id

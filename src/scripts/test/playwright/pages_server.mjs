@@ -73,7 +73,7 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
 	// 测试框架浏览器侧脚本（pages/scripts 未覆盖的路径）
 	app.use('/fount/scripts/test', express.static(path.join(projectRoot, 'src', 'scripts', 'test')))
 
-	app.get('/fount/data/comments.json', async (_req, res) => {
+	app.get('/fount/data/comments.json', async (req, res) => {
 		try {
 			const response = await fetch(GITHUB_PAGES_COMMENTS_URL, {
 				signal: AbortSignal.timeout(8000),
@@ -104,7 +104,7 @@ export function createPagesApp(projectRoot = REPO_ROOT) {
 	})
 
 	for (const filePath of hooked_version_files)
-		app.get(`/fount/${filePath}`, async (_req, res) => {
+		app.get(`/fount/${filePath}`, async (req, res) => {
 			const body = await getHookedVersionFileContent(filePath)
 			res.type('application/javascript').send(body)
 		})
