@@ -68,21 +68,15 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 			listGroupPlugins(groupId),
 		])
 
-		const charlist = Array.isArray(initial?.charlist) ? initial.charlist : []
-		const pluginlist = activePlugins
-		const freqMap = initial?.frequency_data || {}
-		const worldname = initial?.worldname || ''
-		const personaname = initial?.personaname || ''
-		const availablePlugins = allPlugins.filter(p => !pluginlist.includes(p))
 		await mountTemplate(host, 'hub/config/panel_host', {
 			phase: 'panel',
-			charlist,
-			pluginlist,
-			freqMap,
+			charlist: Array.isArray(initial?.charlist) ? initial.charlist : [],
+			pluginlist: activePlugins,
+			freqMap: initial?.frequency_data || {},
 			canEditWorldPlugins,
-			personaOptions: await buildSelectOptions(personas, personaname),
-			worldOptions: await buildSelectOptions(worlds, worldname),
-			availablePlugins,
+			personaOptions: await buildSelectOptions(personas, initial?.personaname || ''),
+			worldOptions: await buildSelectOptions(worlds, initial?.worldname || ''),
+			availablePlugins: allPlugins.filter(p => !activePlugins.includes(p)),
 		})
 
 		document.getElementById('character-chat-persona')?.addEventListener('change', async (changeEvent) => {

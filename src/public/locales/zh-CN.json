@@ -1965,7 +1965,6 @@
 			"ariaClose": {
 				"aria-label": "关闭"
 			},
-			"close": "关闭",
 			"serverBar": {
 				"aria-label": "群组与导航"
 			},

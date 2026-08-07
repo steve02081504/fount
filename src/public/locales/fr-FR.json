@@ -1965,7 +1965,6 @@
 			"ariaClose": {
 				"aria-label": "Fermer"
 			},
-			"close": "Fermer",
 			"serverBar": {
 				"aria-label": "Groupes et navigation"
 			},

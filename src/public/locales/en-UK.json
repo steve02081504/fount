@@ -1960,7 +1960,6 @@
 			"ariaClose": {
 				"aria-label": "Close"
 			},
-			"close": "Close",
 			"serverBar": {
 				"aria-label": "Groups and navigation"
 			},

@@ -1965,7 +1965,6 @@
 			"ariaClose": {
 				"aria-label": "閉じる"
 			},
-			"close": "閉じる",
 			"serverBar": {
 				"aria-label": "グループとナビゲーション"
 			},

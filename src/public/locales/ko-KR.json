@@ -1965,7 +1965,6 @@
 			"ariaClose": {
 				"aria-label": "닫기"
 			},
-			"close": "닫기",
 			"serverBar": {
 				"aria-label": "그룹 및 탐색"
 			},

@@ -1965,7 +1965,6 @@
 			"ariaClose": {
 				"aria-label": "Sluiten"
 			},
-			"close": "Sluiten",
 			"serverBar": {
 				"aria-label": "Groepen en navigatie"
 			},
