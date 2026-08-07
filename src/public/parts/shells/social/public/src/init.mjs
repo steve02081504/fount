@@ -146,7 +146,12 @@ function connectFeedWebSocket(attempt = 0) {
 export async function bootstrap() {
 	socialGate.markPending()
 	try {
-		await loadAliases().catch(handleError('social.bootstrapFailed'))
+		try {
+			await loadAliases()
+		}
+		catch (error) {
+			handleError('social.bootstrapFailed', {}, error)
+		}
 		document.getElementById('postButton')?.addEventListener('click', () => { void afterPublishPost() })
 		document.getElementById('composeNavButton')?.addEventListener('click', () => {
 			void focusComposer({ switchToFeed: true })

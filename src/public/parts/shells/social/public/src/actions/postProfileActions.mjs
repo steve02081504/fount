@@ -17,6 +17,7 @@ import { state } from '../state.mjs'
 
 import { closePostMoreMenus, copyTextToClipboard, flashCopiedLabel, shareOrCopyPostLink } from './shared.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 /**
  * @param {HTMLElement} target 点击目标元素
@@ -47,12 +48,11 @@ export async function handlePostProfileActionsClick(target) {
 		const author = card?.dataset.authorEntity
 		if (postId && author) {
 			closePostMoreMenus()
-			void getProfilePosts(author, { limit: 50 }).then(async data => {
-				const item = (data.items || []).find(row => row.postId === postId)
-				const revisions = item?.post?.revisions || []
-				const lines = revisions.map((rev, idx) => `#${idx + 1} ${rev.text || ''}`).join('\n---\n')
-				await showText(lines || geti18n('social.post.editHistoryEmpty'), 'social.post.editHistory')
-			})
+			const data = await getProfilePosts(author, { limit: 50 })
+			const item = (data.items || []).find(row => row.postId === postId)
+			const revisions = item?.post?.revisions || []
+			const lines = revisions.map((rev, idx) => `#${idx + 1} ${rev.text || ''}`).join('\n---\n')
+			await showText(lines || geti18n('social.post.editHistoryEmpty'), 'social.post.editHistory')
 		}
 		return true
 	}
@@ -113,15 +113,22 @@ export async function handlePostProfileActionsClick(target) {
 			closePostMoreMenus()
 			const card = downloadHtmlButton.closest('.post-card')
 			const fallbackText = decodeURIComponent(card?.dataset.postText || '')
+			let content
 			try {
 				const data = await getPost(parsed.entityHash, parsed.postId)
-				const content = data?.item?.post?.content || data?.post?.content || {
+				content = data?.item?.post?.content || data?.post?.content || {
 					text: fallbackText,
 				}
+			}
+			catch (error) {
+				handleError('social.post.loadFailed', {}, error)
+				return true
+			}
+			try {
 				await downloadPostHtml(content)
 			}
 			catch {
-				await downloadPostHtml({ text: fallbackText })
+				/* 媒体失败已在 exportHtml 内 handleError；勿再导出残缺 HTML */
 			}
 		}
 		return true

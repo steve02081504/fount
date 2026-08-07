@@ -2,6 +2,7 @@
 import { socialRequest } from './client.mjs'
 
 /**
+ * 话题帖子流分页。
  * @param {string} tag 标签（不含 `#`）
  * @param {{ limit?: number, cursor?: string }} [options] 分页
  * @returns {Promise<{ items: object[], nextCursor: string | null }>} 话题帖子页
@@ -13,6 +14,7 @@ export function getTopicPosts(tag, { limit = 30, cursor } = {}) {
 }
 
 /**
+ * 关注或取消关注话题。
  * @param {string} tag 标签
  * @param {boolean} follow 关注 / 取消关注
  * @returns {Promise<object>} 写入结果
@@ -22,6 +24,7 @@ export function followTopic(tag, follow) {
 }
 
 /**
+ * 已关注话题列表。
  * @returns {Promise<{ tags: string[] }>} 已关注话题
  */
 export function getFollowedTopics() {

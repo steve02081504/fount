@@ -4119,6 +4119,7 @@
 		},
 		"settings": {
 			"title": "社交设置",
+			"loadFailed": "加载设置失败：${error}",
 			"back": {
 				"aria-label": "返回资料"
 			},
@@ -4286,6 +4287,7 @@
 					"tip": "刷新动态"
 				}
 			},
+			"loadFailed": "动态加载失败：${error}",
 			"newPosts": "有新动态，点击查看",
 			"tabsLabel": {
 				"aria-label": "信息流排序"
@@ -4311,6 +4313,7 @@
 		},
 		"explore": {
 			"accounts": "推荐账户",
+			"loadFailed": "探索页加载失败：${error}",
 			"posts": "最新帖子",
 			"mediaOnly": "仅含媒体"
 		},
@@ -4427,6 +4430,7 @@
 			},
 			"empty": "暂无短视频",
 			"emptyHint": "关注的人或公开广场里还没有带视频的帖子。发一条视频动态试试？",
+			"loadFailed": "短视频加载失败：${error}",
 			"compose": "去发视频",
 			"back": {
 				"aria-label": "返回动态"
@@ -4508,6 +4512,7 @@
 			"trustScore": "信任 ${score}",
 			"viewTitle": "搜索",
 			"loading": "搜索中…",
+			"loadFailed": "搜索失败：${error}",
 			"sortRecent": "最新",
 			"sortPopular": "热门",
 			"scopeLocal": "本机",
@@ -4607,6 +4612,7 @@
 			"loading": "加载中…",
 			"notFound": "帖子不存在或不可见",
 			"loadFailed": "加载失败，请稍后重试",
+			"exportMediaFailed": "导出媒体失败：${error}",
 			"detailTitle": "帖子",
 			"back": "返回"
 		},
@@ -4672,7 +4678,8 @@
 			"placeholder": "写一条回复…",
 			"submit": "回复",
 			"empty": "还没有回复",
-			"emptyHint": "来写第一条，开启讨论"
+			"emptyHint": "来写第一条，开启讨论",
+			"loadFailed": "加载回复失败：${error}"
 		},
 		"repost": {
 			"placeholder": "添加转发评论（可选）…",

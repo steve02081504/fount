@@ -31,12 +31,13 @@ export function putTranslationPrefs(prefs) {
 }
 
 /**
- * @param {string} q 查询词
+ * 经 Chat 多跳搜实体。
+ * @param {string} query 查询词
  * @param {number} [limit=20] 数量
  * @returns {Promise<{ entities: object[] }>} 实体搜索结果
  */
-export function searchChatEntities(q, limit = 20) {
-	return chatRequest(`/entities/search?q=${encodeURIComponent(q)}&limit=${limit}`)
+export function searchChatEntities(query, limit = 20) {
+	return chatRequest(`/entities/search?q=${encodeURIComponent(query)}&limit=${limit}`)
 }
 
 /**

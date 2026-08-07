@@ -65,11 +65,17 @@ export async function loadTopicView(tag) {
 		followButton.dataset.tag = normalizedTag
 		followButton.className = 'btn btn-primary btn-sm'
 		paintTopicFollowButton(followButton, false)
-		getFollowedTopics().then(data => {
-			const tags = (data.tags || []).map(t => t.toLowerCase())
-			const isFollowed = tags.includes(normalizedTag.toLowerCase())
-			paintTopicFollowButton(followButton, isFollowed)
-		}).catch(handleError('social.bootstrapFailed'))
+		void (async () => {
+			try {
+				const data = await getFollowedTopics()
+				const tags = (data.tags || []).map(topicTag => topicTag.toLowerCase())
+				const isFollowed = tags.includes(normalizedTag.toLowerCase())
+				paintTopicFollowButton(followButton, isFollowed)
+			}
+			catch (error) {
+				handleError('social.bootstrapFailed', {}, error)
+			}
+		})()
 	}
 
 	await loadTopicPosts(normalizedTag, false)
@@ -89,7 +95,16 @@ async function loadTopicPosts(tag, append = false) {
 
 	const cursor = append ? view.dataset.topicCursor || '' : ''
 
-	const data = await getTopicPosts(tag, { limit: 30, cursor }).catch(() => ({ items: [] }))
+	let data
+	try {
+		data = await getTopicPosts(tag, { limit: 30, cursor })
+	}
+	catch (error) {
+		handleError('social.bootstrapFailed', {}, error)
+		if (!append)
+			await mountEmptyState(list, { titleKey: 'social.topic.empty', modClass: ' empty-state--hint' })
+		return
+	}
 	if (gen !== topicGeneration) return
 
 	const items = data.items || []
@@ -98,7 +113,14 @@ async function loadTopicPosts(tag, append = false) {
 		return
 	}
 
-	const cards = await Promise.all(items.map(item => buildPostCard(item).catch(() => null)))
+	const cards = await Promise.all(items.map(async item => {
+		try {
+			return await buildPostCard(item)
+		}
+		catch {
+			return null
+		}
+	}))
 	if (gen !== topicGeneration) return
 
 	if (!append) list.replaceChildren(...cards.filter(Boolean))

@@ -35,7 +35,7 @@ function connectNodesFromShare(entityHash, sharerNodeHash) {
 	const self = String(state.viewerNodeHash || '').toLowerCase()
 	for (const targetNodeHash of targets) {
 		if (!targetNodeHash || targetNodeHash === self) continue
-		connectFederationNode(targetNodeHash).catch(error => handleError('social.connectNodeFailed', {}, error))
+		connectFederationNode(targetNodeHash).catch(handleError('social.connectNodeFailed'))
 	}
 }
 

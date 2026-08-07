@@ -11,28 +11,20 @@ export function emojiPackItemUrl(entityHash, packId) {
 }
 
 /**
+ * 已关注作者的可用 emoji 包。
  * @returns {Promise<object[]>} 已关注作者的可用包
  */
 export async function getAvailableEmojiPacks() {
-	try {
-		const data = await socialRequest('/emoji-packs/available')
-		return Array.isArray(data.packs) ? data.packs : []
-	}
-	catch {
-		return []
-	}
+	const data = await socialRequest('/emoji-packs/available')
+	return data.packs
 }
 
 /**
+ * 发现可关注作者的 emoji 包 offers。
  * @param {number} [limit=48] 数量
  * @returns {Promise<object[]>} 可发现的 offers
  */
 export async function discoverEmojiPacks(limit = 48) {
-	try {
-		const data = await socialRequest(`/emoji-packs/discover?limit=${encodeURIComponent(limit)}`)
-		return data.offers || []
-	}
-	catch {
-		return []
-	}
+	const data = await socialRequest(`/emoji-packs/discover?limit=${encodeURIComponent(limit)}`)
+	return data.offers
 }

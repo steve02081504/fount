@@ -2,13 +2,12 @@
 import { socialRequest } from './client.mjs'
 
 /**
+ * 首页信息流分页。
  * @param {{ limit?: number, cursor?: string, ranking?: 'latest' | 'for_you' }} [options] 分页与排序
  * @returns {Promise<{ items: object[], nextCursor: string | null }>} feed 页
  */
-export function getFeed({ limit = 30, cursor, ranking } = {}) {
-	const rankingQuery = ranking === 'for_you' ? '&ranking=for_you' : ''
-	const cursorQuery = cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''
-	return socialRequest(`/feed?limit=${limit}${rankingQuery}${cursorQuery}`)
+export function getFeed({ limit = 50, cursor, ranking } = {}) {
+	return socialRequest(`/feed?limit=${limit}${ranking === 'for_you' ? '&ranking=for_you' : ''}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`)
 }
 
 /**
@@ -20,6 +19,7 @@ export function syncFeed() {
 }
 
 /**
+ * 推荐关注账户。
  * @param {number} [limit=5] 数量
  * @returns {Promise<{ accounts: object[] }>} 推荐关注账户
  */
@@ -28,6 +28,7 @@ export function getExploreAccounts(limit = 5) {
 }
 
 /**
+ * 热门话题。
  * @param {{ scope?: 'nearby' | 'local', limit?: number }} [options] 范围与数量
  * @returns {Promise<{ tags: { tag: string, count: number }[] }>} 热门话题
  */
@@ -36,10 +37,10 @@ export function getTrendingHashtags({ scope = 'nearby', limit = 12 } = {}) {
 }
 
 /**
+ * 短视频竖屏流分页。
  * @param {{ limit?: number, cursor?: string }} [options] 分页
  * @returns {Promise<{ items: object[], nextCursor: string | null }>} 短视频 feed 页
  */
 export function getVideosFeed({ limit = 20, cursor } = {}) {
-	const cursorQuery = cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''
-	return socialRequest(`/videos/feed?limit=${limit}${cursorQuery}`)
+	return socialRequest(`/videos/feed?limit=${limit}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ''}`)
 }

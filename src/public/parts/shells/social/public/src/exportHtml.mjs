@@ -8,6 +8,7 @@ import {
 } from '/scripts/features/markdown/standaloneDocument.mjs'
 import { arrayBufferToBase64 } from '/scripts/lib/base64.mjs'
 import { fetchMediaRef } from '/scripts/endpoints/p2p/evfsMedia.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 /**
  * @param {object[] | undefined} mediaRefs 媒体引用
@@ -16,15 +17,17 @@ import { fetchMediaRef } from '/scripts/endpoints/p2p/evfsMedia.mjs'
 async function resolveMediaRefAttachments(mediaRefs) {
 	if (!mediaRefs?.length) return []
 	const files = []
-	for (const ref of mediaRefs)
+	for (const ref of mediaRefs) 
 		try {
 			const name = ref.name || ref.path?.split('/').pop() || 'media'
 			const { buffer, mimeType } = await fetchMediaRef(ref)
 			files.push({ name, mime_type: String(ref.mimeType || mimeType), buffer: arrayBufferToBase64(buffer) })
 		}
-		catch {
-			continue
+		catch (error) {
+			handleError('social.post.exportMediaFailed', {}, error)
+			throw error
 		}
+	
 	return files
 }
 

@@ -7,6 +7,7 @@ import { authorLabel, entityHandle, formatTimeHtml, mountMarkdown, rememberEntit
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { renderSuggestedAccountRows } from '../lib/suggestedAccounts.mjs'
 import { renderTemplate } from '/scripts/features/template.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { state } from '../state.mjs'
 
 let exploreToolbarBound = false
@@ -58,10 +59,18 @@ export async function loadExplore() {
 	if (mediaInput instanceof HTMLInputElement)
 		mediaInput.checked = state.exploreMediaOnly
 
-	const [accounts, posts] = await Promise.all([
-		getExploreAccounts(20),
-		getExplorePosts({ limit: 20, mediaOnly: state.exploreMediaOnly }),
-	])
+	let accounts
+	let posts
+	try {
+		;[accounts, posts] = await Promise.all([
+			getExploreAccounts(20),
+			getExplorePosts({ limit: 20, mediaOnly: state.exploreMediaOnly }),
+		])
+	}
+	catch (error) {
+		handleError('social.explore.loadFailed', {}, error)
+		return
+	}
 
 	const accountList = document.getElementById('exploreAccountList')
 	const postList = document.getElementById('explorePostList')

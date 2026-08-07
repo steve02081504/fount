@@ -340,12 +340,17 @@ export async function appendCarePostInboxRow(username, recipientEntityHash, auth
 	await socialInboxStore(username, recipient).append(notification)
 	pushFeedUpdate(username, { type: 'notification', notification })
 	const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
-	notifyUser(username, {
-		title: 'care_post',
-		body: String(textSnippet || 'care_post'),
-		url: '/parts/shells:social/',
-		tag: `social:care_post:${recipient}`,
-	}).catch(handleError)
+	try {
+		await notifyUser(username, {
+			title: 'care_post',
+			body: String(textSnippet || 'care_post'),
+			url: '/parts/shells:social/',
+			tag: `social:care_post:${recipient}`,
+		})
+	}
+	catch (error) {
+		handleError(error)
+	}
 }
 
 /**
@@ -428,12 +433,17 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
 		await socialInboxStore(username, recipient).append(notification)
 		pushFeedUpdate(username, { type: 'notification', notification })
 		const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
-		notifyUser(username, {
-			title: row.type,
-			body: String(snippet || row.type || ''),
-			url: '/parts/shells:social/',
-			tag: `social:${row.type}:${recipient}`,
-		}).catch(handleError)
+		try {
+			await notifyUser(username, {
+				title: row.type,
+				body: String(snippet || row.type || ''),
+				url: '/parts/shells:social/',
+				tag: `social:${row.type}:${recipient}`,
+			})
+		}
+		catch (error) {
+			handleError(error)
+		}
 	}
 }
 

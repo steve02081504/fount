@@ -41,6 +41,7 @@ export const state = {
 }
 
 /**
+ * 读取当前观看者（operator）entityHash。
  * @returns {string | null} 当前观看者（operator）entityHash
  */
 export function viewerEntityHash() {

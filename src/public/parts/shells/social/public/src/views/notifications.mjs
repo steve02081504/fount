@@ -19,7 +19,13 @@ let notificationsLoading = false
 export async function ensureNotificationsSeenAt() {
 	if (Number.isFinite(state.notificationsSeenAt))
 		return state.notificationsSeenAt
-	const data = await getNotificationsSeen().catch(() => ({ seenAt: 0 }))
+	let data
+	try {
+		data = await getNotificationsSeen()
+	}
+	catch {
+		data = { seenAt: 0 }
+	}
 	state.notificationsSeenAt = Number(data.seenAt) || 0
 	return state.notificationsSeenAt
 }
@@ -116,9 +122,17 @@ function notificationAvatarsHtml(row) {
  * @returns {Promise<void>}
  */
 export async function updateNotificationBadge() {
-	const unread = Number.isFinite(badgeUnreadCount)
-		? badgeUnreadCount
-		: Number((await getNotifications({ limit: 1 }).catch(() => ({ unreadCount: 0 }))).unreadCount) || 0
+	let unread
+	if (Number.isFinite(badgeUnreadCount))
+		unread = badgeUnreadCount
+	else 
+		try {
+			unread = Number((await getNotifications({ limit: 1 })).unreadCount) || 0
+		}
+		catch {
+			unread = 0
+		}
+	
 	badgeUnreadCount = null
 	const label = unread > 99 ? '99+' : String(unread)
 	for (const badgeId of ['notificationsBadge', 'mobileNotificationsBadge']) {

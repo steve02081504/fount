@@ -133,7 +133,8 @@ export async function publishPost() {
 	const draftId = state.activeDraftId
 	await createPost(body)
 	if (draftId)
-		await deleteDraft(draftId).catch(() => { })
+		try { await deleteDraft(draftId) }
+		catch { /* 可选清理：草稿删除失败不影响已发帖 */ }
 	await clearComposer()
 	if (isScheduled)
 		showToastI18n('success', 'social.composer.scheduleSuccess')

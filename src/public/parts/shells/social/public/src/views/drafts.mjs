@@ -1,3 +1,4 @@
+import { handleError } from '../../../../../scripts/features/errorHandlers.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { escapeHtml } from '../../../../../scripts/lib/escapeHtml.mjs'
 import { deleteDraft, getDrafts } from '../endpoints/drafts.mjs'
@@ -11,7 +12,14 @@ import { buildEmptyState } from '../lib/emptyState.mjs'
 export async function loadDrafts() {
 	const panel = document.getElementById('draftsPanel')
 	if (!panel) return
-	const data = await getDrafts()
+	let data
+	try {
+		data = await getDrafts()
+	}
+	catch (error) {
+		handleError('social.drafts.loadFailed', {}, error)
+		return
+	}
 	const drafts = Array.isArray(data.drafts) ? data.drafts : []
 	if (!drafts.length) {
 		panel.replaceChildren(await buildEmptyState({

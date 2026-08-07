@@ -2,6 +2,7 @@
 import { socialRequest } from './client.mjs'
 
 /**
+ * 上报帖子停留时长信号（本机个性化，不联邦）。
  * @param {object} body 停留信号 body（entries[] 或单条字段）
  * @returns {Promise<void>}
  */

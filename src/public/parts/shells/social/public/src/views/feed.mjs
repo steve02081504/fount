@@ -10,6 +10,7 @@ import { state } from '../state.mjs'
 import { renderTemplate } from '/scripts/features/template.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 /** @type {(() => void) | null} */
 let unbindDwell = null
@@ -92,17 +93,23 @@ function scheduleFeedPrefetch() {
 	if (state.feedPrefetchInFlight) return
 	const gen = feedGeneration
 	state.feedPrefetchInFlight = (async () => {
-		const data = await getFeed({ cursor, ranking: state.feedRanking }).catch(() => null)
-		if (feedGeneration !== gen) return
-		if (!data || state.feedCursor !== cursor) return
-		state.feedPrefetch = {
-			cursor,
-			items: data.items || [],
-			nextCursor: data.nextCursor || null,
+		try {
+			const data = await getFeed({ cursor, ranking: state.feedRanking })
+			if (feedGeneration !== gen) return
+			if (!data || state.feedCursor !== cursor) return
+			state.feedPrefetch = {
+				cursor,
+				items: data.items || [],
+				nextCursor: data.nextCursor || null,
+			}
 		}
-	})().finally(() => {
-		state.feedPrefetchInFlight = null
-	})
+		catch {
+			/* 预取失败可忽略，下次滚动再拉 */
+		}
+		finally {
+			state.feedPrefetchInFlight = null
+		}
+	})()
 }
 
 /**
@@ -151,7 +158,13 @@ export async function loadSuggestedAccounts() {
 	const aside = document.getElementById('asideSuggested')
 	const list = document.getElementById('asideSuggestedList')
 	if (!aside || !list) return
-	const data = await getExploreAccounts(5).catch(() => ({ accounts: [] }))
+	let data
+	try {
+		data = await getExploreAccounts(5)
+	}
+	catch {
+		data = { accounts: [] }
+	}
 	const accounts = (data.accounts || []).filter(
 		row => row.entityHash !== state.viewerEntityHash,
 	)
@@ -205,18 +218,29 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 		await paint(trendingCache)
 
 	if (!trendingInFlight)
-		trendingInFlight = getTrendingHashtags({ scope: 'nearby' })
-			.then(data => {
+		trendingInFlight = (async () => {
+			try {
+				const data = await getTrendingHashtags({ scope: 'nearby' })
 				trendingCache = data.tags || []
 				return trendingCache
-			})
-			.catch(() => trendingCache)
-			.finally(() => {
+			}
+			catch {
+				return trendingCache
+			}
+			finally {
 				trendingInFlight = null
-			})
+			}
+		})()
 	const nearbyPromise = trendingInFlight
 	const localPromise = !trendingCache?.length
-		? getTrendingHashtags({ scope: 'local' }).catch(() => ({ tags: [] }))
+		? (async () => {
+			try {
+				return await getTrendingHashtags({ scope: 'local' })
+			}
+			catch {
+				return { tags: [] }
+			}
+		})()
 		: null
 
 	const nearbyTags = await nearbyPromise
@@ -358,7 +382,14 @@ export async function loadFeed(append = false) {
 	}
 	else {
 		const cursor = append && state.feedCursor ? state.feedCursor : undefined
-		const data = await getFeed({ cursor, ranking: state.feedRanking })
+		let data
+		try {
+			data = await getFeed({ cursor, ranking: state.feedRanking })
+		}
+		catch (error) {
+			handleError('social.feed.loadFailed', {}, error)
+			return
+		}
 		if (feedGeneration !== gen) return
 		items = data.items || []
 		nextCursor = data.nextCursor || null

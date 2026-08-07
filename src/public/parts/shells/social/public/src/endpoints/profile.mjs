@@ -2,6 +2,7 @@
 import { socialRequest } from './client.mjs'
 
 /**
+ * 读取实体资料与社交 meta。
  * @param {string} entityHash 实体
  * @returns {Promise<{ profile: object, socialMeta: object, isFollowing: boolean, postCount: number, followingCount: number, followerCount: number }>} 资料
  */
@@ -10,6 +11,7 @@ export function getProfile(entityHash) {
 }
 
 /**
+ * 资料页帖子流分页。
  * @param {string} entityHash owner
  * @param {{ limit?: number, cursor?: string }} [options] 分页
  * @returns {Promise<{ items: object[], nextCursor: string | null }>} 帖子页
@@ -20,6 +22,7 @@ export function getProfilePosts(entityHash, { limit = 30, cursor } = {}) {
 }
 
 /**
+ * 资料页点赞列表。
  * @param {string} entityHash owner
  * @returns {Promise<{ items: object[] }>} 点赞帖列表
  */
@@ -28,6 +31,7 @@ export function getProfileLikes(entityHash) {
 }
 
 /**
+ * 单帖回复列表。
  * @param {string} entityHash 作者
  * @param {string} postId 帖 id
  * @returns {Promise<{ replies: object[] }>} 回复列表
@@ -37,6 +41,7 @@ export function getProfileReplies(entityHash, postId) {
 }
 
 /**
+ * 粉丝列表。
  * @param {string} entityHash 实体
  * @returns {Promise<{ followers: object[] }>} 粉丝列表
  */
@@ -45,6 +50,7 @@ export function getProfileFollowers(entityHash) {
 }
 
 /**
+ * 关注列表。
  * @param {string} entityHash 实体
  * @returns {Promise<{ following: object[] }>} 关注列表
  */
@@ -53,6 +59,7 @@ export function getProfileFollowing(entityHash) {
 }
 
 /**
+ * 更新本机资料隐私 meta。
  * @param {{ hideFromDiscovery?: boolean }} body meta 更新
  * @returns {Promise<object>} 更新后的 meta
  */
@@ -61,6 +68,7 @@ export function updateProfileMeta(body) {
 }
 
 /**
+ * 读取屏蔽词条目。
  * @returns {Promise<{ entries: object[] }>} 屏蔽词条目
  */
 export function getMutedKeywords() {
@@ -68,6 +76,7 @@ export function getMutedKeywords() {
 }
 
 /**
+ * 写入屏蔽词条目。
  * @param {object[]} entries 屏蔽词条目
  * @returns {Promise<{ entries: object[] }>} 服务端保存后的条目
  */

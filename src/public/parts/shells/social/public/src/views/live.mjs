@@ -25,7 +25,14 @@ const liveFeed = createSnapCursorFeed({
 	 * @param {string | null} cursor 游标
 	 * @returns {Promise<object | null>} 分页结果
 	 */
-	fetchPage: cursor => getLiveFeed({ scope: liveScope, cursor }).catch(() => null),
+	fetchPage: async cursor => {
+		try {
+			return await getLiveFeed({ scope: liveScope, cursor })
+		}
+		catch {
+			return null
+		}
+	},
 	/**
 	 * @param {HTMLElement} container 容器
 	 * @param {object[]} items 条目
@@ -129,7 +136,13 @@ export async function loadLiveView(targetEntityHash, targetLiveId) {
 
 	ensureLiveScopeTabs()
 
-	const data = await getLiveFeed({ scope: liveScope }).catch(() => ({ items: [], nextCursor: null }))
+	let data
+	try {
+		data = await getLiveFeed({ scope: liveScope })
+	}
+	catch {
+		data = { items: [], nextCursor: null }
+	}
 	const items = data.items || []
 
 	if (!items.length) {

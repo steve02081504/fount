@@ -31,7 +31,14 @@ const videoFeed = createSnapCursorFeed({
  * @param {string | null} cursor 游标
  * @returns {Promise<object | null>} 分页结果
  */
-	fetchPage: cursor => getVideosFeed({ limit: 20, cursor }).catch(() => null),
+	fetchPage: async cursor => {
+		try {
+			return await getVideosFeed({ limit: 20, cursor })
+		}
+		catch {
+			return null
+		}
+	},
 	/**
 	 * @param {HTMLElement} container 容器
 	 * @param {object[]} items 条目
@@ -89,7 +96,16 @@ export async function loadVideoView(options = {}) {
 	const focusEntityHash = String(options.focusEntityHash || '').toLowerCase()
 	const focusPostId = String(options.focusPostId || '')
 
-	const data = await getVideosFeed({ limit: 20 }).catch(() => ({ items: [], nextCursor: null }))
+	let data
+	try {
+		data = await getVideosFeed({ limit: 20 })
+	}
+	catch (error) {
+		handleError('social.video.loadFailed', {}, error)
+		container.appendChild(await buildVideoEmptySlide())
+		view?.focus({ preventScroll: true })
+		return
+	}
 	let items = [...data.items || []]
 
 	if (focusEntityHash && focusPostId) {
@@ -103,7 +119,13 @@ export async function loadVideoView(options = {}) {
 			items = [focused, ...items]
 		}
 		else if (existingIndex < 0) {
-			const focused = await getPost(focusEntityHash, focusPostId).catch(() => null)
+			let focused
+			try {
+				focused = await getPost(focusEntityHash, focusPostId)
+			}
+			catch {
+				focused = null
+			}
 			if (focused?.item) items = [focused.item, ...items]
 		}
 	}
@@ -322,7 +344,7 @@ async function loadSlideReplies(slide) {
 	if (cached) return cached
 	const { entityHash, postId } = slide.dataset
 	if (!entityHash || !postId) return []
-	const data = await getProfileReplies(entityHash, postId).catch(() => ({ replies: [] }))
+	const data = await getProfileReplies(entityHash, postId)
 	const replies = data.replies || []
 	slideRepliesCache.set(slide, replies)
 	return replies
@@ -335,8 +357,14 @@ async function loadSlideReplies(slide) {
 async function ensureCommentTicker(slide) {
 	if (slide.dataset.tickerLoaded) return
 	slide.dataset.tickerLoaded = '1'
-	const replies = await loadSlideReplies(slide)
-	renderCommentTicker(slide, replies)
+	try {
+		const replies = await loadSlideReplies(slide)
+		renderCommentTicker(slide, replies)
+	}
+	catch (error) {
+		delete slide.dataset.tickerLoaded
+		handleError('social.replies.loadFailed', {}, error)
+	}
 }
 
 /**
@@ -355,12 +383,18 @@ async function setVideoRepliesOpen(slide, open, options = {}) {
 	}
 	panel.classList.remove('hidden')
 	ticker?.classList.add('is-dimmed')
-	if (!panel.dataset.loaded) {
-		const replies = await loadSlideReplies(slide)
-		panel.dataset.loaded = '1'
-		await renderRepliesPanel(panel, replies)
-		renderCommentTicker(slide, replies)
-	}
+	if (!panel.dataset.loaded) 
+		try {
+			const replies = await loadSlideReplies(slide)
+			panel.dataset.loaded = '1'
+			await renderRepliesPanel(panel, replies)
+			renderCommentTicker(slide, replies)
+		}
+		catch (error) {
+			handleError('social.replies.loadFailed', {}, error)
+			return
+		}
+	
 	if (options.focusReplyId) focusReplyInPanel(panel, options.focusReplyId)
 }
 
@@ -523,14 +557,21 @@ function buildVideoSlide(item) {
 	video?.addEventListener('pause', () => {
 		if (!dwellStart || !slide.dataset.postId) return
 		const watchMs = Date.now() - dwellStart
-		sendDwellSignal({
-			entries: [{
-				entityHash: slide.dataset.entityHash,
-				postId: slide.dataset.postId,
-				watchMs,
-				watchRatio: video.duration ? watchMs / (video.duration * 1000) : 0,
-			}],
-		}).catch(error => handleError('social.dwellFailed', {}, error))
+		void (async () => {
+			try {
+				await sendDwellSignal({
+					entries: [{
+						entityHash: slide.dataset.entityHash,
+						postId: slide.dataset.postId,
+						watchMs,
+						watchRatio: video.duration ? watchMs / (video.duration * 1000) : 0,
+					}],
+				})
+			}
+			catch (error) {
+				handleError('social.dwellFailed', {}, error)
+			}
+		})()
 		dwellStart = null
 	})
 

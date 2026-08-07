@@ -2,6 +2,7 @@
 import { socialRequest } from './client.mjs'
 
 /**
+ * 读取本机品味画像。
  * @returns {Promise<{ tags: object[], privacy: object }>} 品味画像
  */
 export function getTaste() {
@@ -9,6 +10,7 @@ export function getTaste() {
 }
 
 /**
+ * 更新品味隐私开关。
  * @param {{ publishPreferences?: boolean, publishReactions?: boolean }} privacy 隐私设置
  * @returns {Promise<object>} 写入结果
  */
@@ -17,6 +19,7 @@ export function putTastePrivacy(privacy) {
 }
 
 /**
+ * 触发品味标签重建。
  * @returns {Promise<object>} 重建结果
  */
 export function rebuildTaste() {
@@ -24,6 +27,7 @@ export function rebuildTaste() {
 }
 
 /**
+ * 重命名品味标签本地展示名。
  * @param {string} tagHash 标签 hash
  * @param {string} label 展示名
  * @param {string} locale 语言
