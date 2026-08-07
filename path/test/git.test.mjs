@@ -2,8 +2,9 @@
  * path CLI git helpers — bash 可解析性与分支名校验。
  */
 /* global Deno */
-import { assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 import { join } from 'node:path'
+
+import { assertEquals, assertStringIncludes } from 'jsr:@std/assert'
 
 import { REPO_ROOT } from '../../src/scripts/test/core/repo_root.mjs'
 
@@ -13,7 +14,7 @@ const gitSh = join(pathSrc, 'git.sh')
 /**
  * 在 bash 中跑一段脚本，返回 { code, stdout, stderr }。
  * @param {string} script bash 源码
- * @returns {Promise<{ code: number, stdout: string, stderr: string }>}
+ * @returns {Promise<{ code: number, stdout: string, stderr: string }>} 返回 bash 执行结果
  */
 async function runBash(script) {
 	const command = new Deno.Command('bash', {

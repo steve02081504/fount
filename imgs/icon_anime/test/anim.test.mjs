@@ -326,7 +326,12 @@ Deno.test('consumeStdin: bare ESC fires onEsc; CSI does not', async () => {
 	 * @returns {Uint8Array} 编码结果
 	 */
 	const encode = (ascii) => Uint8Array.from(ascii, c => c.charCodeAt(0))
-	const handlers = { onEsc: () => { esc++ } }
+	const handlers = {
+		/**
+		 * @returns {void}
+		 */
+		onEsc: () => { esc++ },
+	}
 	// Lone ESC stays in carry until a following byte proves it is not CSI
 	let carry = consumeStdin('', encode('\x1b'), handlers)
 	assertEquals(carry, '\x1b')
