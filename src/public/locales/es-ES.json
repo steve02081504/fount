@@ -4354,6 +4354,7 @@
 			"searchEmpty": "No hay colección coincidente",
 			"folderEmpty": "Esta carpeta está vacía",
 			"emptyHint": "Haz clic en el marcador cuando navegue por las noticias para guardarlas aquí.",
+			"loadFailed": "No se pudieron cargar las publicaciones guardadas: ${error}",
 			"search": {
 				"placeholder": "Buscar favoritos…"
 			}

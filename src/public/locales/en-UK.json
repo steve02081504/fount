@@ -4351,6 +4351,7 @@
 			"searchEmpty": "No matching saves",
 			"folderEmpty": "This folder is empty",
 			"emptyHint": "Tap the bookmark while browsing to save posts here",
+			"loadFailed": "Failed to load saved posts: ${error}",
 			"search": {
 				"placeholder": "Search favourites…"
 			}

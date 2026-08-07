@@ -4354,6 +4354,7 @@
 			"searchEmpty": "Aucune collection correspondante",
 			"folderEmpty": "Ce dossier est vide",
 			"emptyHint": "Cliquez sur le signet lorsque vous parcourez les actualités pour l'enregistrer ici",
+			"loadFailed": "Impossible de charger les favoris : ${error}",
 			"search": {
 				"placeholder": "Rechercher des favoris…"
 			}

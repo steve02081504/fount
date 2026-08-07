@@ -4354,6 +4354,7 @@
 			"searchEmpty": "Keine passende Sammlung",
 			"folderEmpty": "Dieser Ordner ist leer",
 			"emptyHint": "Tippen Sie beim Durchstöbern auf das Lesezeichen, um Beiträge hier zu speichern.",
+			"loadFailed": "Gespeicherte Beiträge konnten nicht geladen werden: ${error}",
 			"search": {
 				"placeholder": "Favoriten suchen…"
 			}
@@ -4670,7 +4671,7 @@
 			"placeholder": "Antwort schreiben …",
 			"submit": "Antwort",
 			"empty": "Noch keine Antwort",
-			"emptyHint": "Schreiben Sie den ersten Beitrag und starten Sie die Diskussion",
+			"emptyHint": "Schreiben Sie die erste Antwort und starten Sie die Diskussion",
 			"loadFailed": "Antworten konnten nicht geladen werden: ${error}"
 		},
 		"repost": {

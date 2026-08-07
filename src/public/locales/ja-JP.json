@@ -4354,6 +4354,7 @@
 			"searchEmpty": "一致するコレクションがありません",
 			"folderEmpty": "このフォルダは空です",
 			"emptyHint": "ニュースを閲覧するときにブックマークをクリックしてここに保存します",
+			"loadFailed": "保存済み投稿の読み込みに失敗しました：${error}",
 			"search": {
 				"placeholder": "お気に入りを検索…"
 			}

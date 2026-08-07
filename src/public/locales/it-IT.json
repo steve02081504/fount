@@ -4354,6 +4354,7 @@
 			"searchEmpty": "Nessun salvataggio corrispondente",
 			"folderEmpty": "Questa cartella è vuota",
 			"emptyHint": "Tocca il segnalibro durante la navigazione per salvare i post qui",
+			"loadFailed": "Impossibile caricare i post salvati: ${error}",
 			"search": {
 				"placeholder": "Cerca preferiti..."
 			}

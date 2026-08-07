@@ -4354,6 +4354,7 @@
 			"searchEmpty": "일치하는 컬렉션이 없습니다.",
 			"folderEmpty": "이 폴더는 비어 있습니다.",
 			"emptyHint": "뉴스를 탐색할 때 북마크를 클릭하면 여기에 저장됩니다.",
+			"loadFailed": "저장된 게시물을 불러오지 못했습니다: ${error}",
 			"search": {
 				"placeholder": "즐겨찾기 검색…"
 			}

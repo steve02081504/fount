@@ -5,6 +5,7 @@ import { formatActionKey } from '../lib/actionKey.mjs'
 import { renderAvatarHtml } from '../lib/display.mjs'
 import { buildEmptyState } from '../lib/emptyState.mjs'
 import { runWrite } from '../lib/socialWrite.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { state } from '../state.mjs'
 
@@ -62,7 +63,8 @@ export async function openSaveModal(entityHash, postId, button) {
 	try {
 		savedData = await getSavedPosts()
 	}
-	catch {
+	catch (error) {
+		handleError('social.saved.loadFailed', {}, error)
 		savedData = { folders: {} }
 	}
 	state.savedFoldersCache = savedData.folders || {}

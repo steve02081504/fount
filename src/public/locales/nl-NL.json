@@ -4354,6 +4354,7 @@
 			"searchEmpty": "Geen bijpassende collectie",
 			"folderEmpty": "Deze map is leeg",
 			"emptyHint": "Tik op het bladwijzericoon tijdens het browsen om berichten hier op te slaan",
+			"loadFailed": "Opgeslagen berichten laden mislukt: ${error}",
 			"search": {
 				"placeholder": "Favorieten zoeken…"
 			}
@@ -4670,7 +4671,7 @@
 			"placeholder": "Schrijf een antwoord…",
 			"submit": "Antwoord",
 			"empty": "Nog geen antwoord",
-			"emptyHint": "Laten we het eerste artikel schrijven en de discussie starten",
+			"emptyHint": "Schrijf de eerste reactie en start de discussie",
 			"loadFailed": "Reacties laden mislukt: ${error}"
 		},
 		"repost": {

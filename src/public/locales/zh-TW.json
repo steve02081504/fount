@@ -4353,6 +4353,7 @@
 			"searchEmpty": "沒有匹配的收藏",
 			"folderEmpty": "此資料夾為空",
 			"emptyHint": "瀏覽動態時點書籤即可收藏到這裡",
+			"loadFailed": "無法載入收藏：${error}",
 			"search": {
 				"placeholder": "搜尋收藏…"
 			}

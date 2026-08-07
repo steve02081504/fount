@@ -4362,6 +4362,7 @@
 			"searchEmpty": "没有匹配的收藏",
 			"folderEmpty": "此文件夹为空",
 			"emptyHint": "浏览动态时点书签即可收藏到这里",
+			"loadFailed": "收藏加载失败：${error}",
 			"search": {
 				"placeholder": "搜索收藏…"
 			}
