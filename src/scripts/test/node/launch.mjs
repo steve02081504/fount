@@ -548,7 +548,6 @@ async function launchNodeOnce(options = {}) {
 
 		await finishListenHold()
 
-		const denoBin = Deno.execPath()
 		let captureEnabled = false
 		let startupOutput = ''
 		let capturedOutput = ''
@@ -568,7 +567,7 @@ async function launchNodeOnce(options = {}) {
 		}
 
 		// stderr 始终 pipe：否则 EADDRINUSE 走 inherit 进不了 startupOutput，换口重试无法识别。
-		child = spawn(denoBin, workerArgs, {
+		child = spawn(Deno.execPath(), workerArgs, {
 			cwd: REPO_ROOT,
 			stdio: ['ignore', 'pipe', 'pipe'],
 			env: {

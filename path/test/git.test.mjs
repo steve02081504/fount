@@ -261,6 +261,7 @@ const INVALID_PR_TARGETS = [
 	'pr/0x1',
 	'pr/12/3',
 	'pr/12a',
+	'pr/١', // Unicode digit — must stay rejected (ASCII [0-9] only)
 	'pull/',
 	'#',
 	'#abc',

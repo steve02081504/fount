@@ -78,16 +78,16 @@ function script:git_fetch_remote_branch($Branch) {
 # Return PR number if target names a GitHub pull request (pr/N, pull/N, #N, or github.com/…/pull/N URL); else $null.
 function script:git_parse_pr_number($Target) {
 	if ([string]::IsNullOrEmpty($Target)) { return $null }
-	if ($Target -match '^(?i)pr/(\d+)$') { return $Matches[1] }
-	if ($Target -match '^(?i)pull/(\d+)$') { return $Matches[1] }
-	if ($Target -match '^#(\d+)$') { return $Matches[1] }
-	if ($Target -match '^https?://github\.com/[^/]+/[^/]+/pull/(\d+)(?:[/?#].*)?$') { return $Matches[1] }
+	if ($Target -match '^(?i)pr/([0-9]+)$') { return $Matches[1] }
+	if ($Target -match '^(?i)pull/([0-9]+)$') { return $Matches[1] }
+	if ($Target -match '^#([0-9]+)$') { return $Matches[1] }
+	if ($Target -match '^https?://github\.com/[^/]+/[^/]+/pull/([0-9]+)(?:[/?#].*)?$') { return $Matches[1] }
 	return $null
 }
 
 # One-shot map of GitHub pull/<n>/head into origin/pr/<n> (does not widen remote.origin.fetch).
 function script:git_fetch_pull_request($Pr) {
-	if ($Pr -notmatch '^\d+$') {
+	if ($Pr -notmatch '^[0-9]+$') {
 		$global:LastExitCode = 1
 		return
 	}

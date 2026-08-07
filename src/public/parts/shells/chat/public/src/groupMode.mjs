@@ -24,12 +24,11 @@ export function attachOffscreenEmbedGuard(root) {
 
 	const observer = new IntersectionObserver(
 		(entries) => {
-			for (const entry of entries) {
+			for (const entry of entries)
 				if (entry.isIntersecting)
 					entry.target.querySelectorAll('iframe[data-suspended-src],video[data-suspended-src]').forEach(resume)
 				else
 					entry.target.querySelectorAll('iframe[src],video[src]').forEach(suspend)
-			}
 		},
 		{ root: null, rootMargin: '120px 0px', threshold: 0 },
 	)
@@ -45,13 +44,23 @@ export function attachOffscreenEmbedGuard(root) {
  */
 export function attachUntrustedMarkdownOffscreenGuard(bubble, { onReveal }) {
 	const observer = new IntersectionObserver(
-		(entries) => {
+		async (entries) => {
 			for (const entry of entries) {
 				if (entry.isIntersecting) continue
-				if (bubble.dataset.mdHydrated !== '1' || bubble.querySelector('.markdown-reveal-button')) continue
+				if (
+					bubble.dataset.mdHydrated !== '1'
+					|| bubble.dataset.mdMounting === '1'
+					|| bubble.querySelector('.markdown-reveal-button')
+				) continue
+				bubble.dataset.mdMounting = '1'
 				bubble.dataset.mdStash = bubble.innerHTML
 				bubble.replaceChildren()
-				void mountMdRevealButton(bubble, onReveal)
+				try {
+					await mountMdRevealButton(bubble, onReveal)
+				}
+				finally {
+					delete bubble.dataset.mdMounting
+				}
 			}
 		},
 		{ root: null, rootMargin: '80px 0px', threshold: 0 },

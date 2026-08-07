@@ -1,5 +1,6 @@
 import { escapeHtml } from '../lib/escapeHtml.mjs'
 import { memoizePromise } from '../lib/memo.mjs'
+import { isSafeHtmlUrl } from '../lib/sanitizeHtml.mjs'
 
 const TITLE_DISPLAY_MAX = 120
 const DESC_DISPLAY_MAX = 200
@@ -98,14 +99,15 @@ export const unfurl = memoizePromise(url => url, fetchUnfurl, { max: 128, ttlMs:
 export function renderEmbedCardHtml(embed) {
 	if (!embed?.url) return ''
 	const url = String(embed.url)
+	if (!isSafeHtmlUrl(url)) return ''
 	const title = truncateText(embed.title || url, TITLE_DISPLAY_MAX)
 	const description = truncateText(embed.description || '', DESC_DISPLAY_MAX)
 	const siteName = truncateText(embed.siteName || '', 80)
 	const image = String(embed.image || '').trim()
-	const imageHtml = image
+	const imageHtml = image && isSafeHtmlUrl(image)
 		? `<img class="fount-embed-card-thumb" src="${escapeHtml(image)}" alt="" loading="lazy" decoding="async" />`
 		: ''
-	const noImageClass = image ? '' : ' fount-embed-card-no-image'
+	const noImageClass = imageHtml ? '' : ' fount-embed-card-no-image'
 	const descHtml = description
 		? `<div class="fount-embed-card-desc">${escapeHtml(description)}</div>`
 		: ''
@@ -132,6 +134,7 @@ export function renderEmbedCardHtml(embed) {
 export function renderEmbedChipHtml(embed) {
 	if (!embed?.url) return ''
 	const url = String(embed.url)
+	if (!isSafeHtmlUrl(url)) return ''
 	let hostname = ''
 	try { hostname = new URL(url).hostname } catch { /* ignore */ }
 	const title = truncateText(embed.title || hostname || url, TITLE_DISPLAY_MAX)
@@ -149,14 +152,14 @@ export function renderEmbedChipHtml(embed) {
 }
 
 /**
- * @param {HTMLElement} el 占位链接
+ * @param {HTMLElement} element 占位链接
  * @returns {Promise<void>}
  */
-async function hydrateOne(el) {
-	const mode = el.getAttribute(ATTR)
+async function hydrateOne(element) {
+	const mode = element.getAttribute(ATTR)
 	if (!mode) return
-	el.removeAttribute(ATTR)
-	const url = el.getAttribute('href') || el.href
+	element.removeAttribute(ATTR)
+	const url = element.getAttribute('href') || element.href
 	if (!url) return
 	let meta
 	try {
@@ -173,16 +176,16 @@ async function hydrateOne(el) {
 	wrap.innerHTML = html
 	const replacement = wrap.firstElementChild
 	if (mode === 'card') {
-		const parent = el.parentElement
-		if (parent?.tagName === 'P' && [...parent.childNodes].every(n =>
-			n === el || (n.nodeType === Node.TEXT_NODE && !n.textContent?.trim()),
+		const parent = element.parentElement
+		if (parent?.tagName === 'P' && [...parent.childNodes].every(childNode =>
+			childNode === element || (childNode.nodeType === Node.TEXT_NODE && !childNode.textContent?.trim()),
 		))
 			parent.replaceWith(replacement)
 		else
-			el.replaceWith(replacement)
+			element.replaceWith(replacement)
 		return
 	}
-	el.replaceWith(replacement)
+	element.replaceWith(replacement)
 }
 
 /**
@@ -192,7 +195,7 @@ async function hydrateOne(el) {
 function hydrateIn(root) {
 	const list = root instanceof Element && root.hasAttribute(ATTR) ? [root] : []
 	list.push(...root.querySelectorAll(`[${ATTR}]`))
-	for (const el of list) void hydrateOne(/** @type {HTMLElement} */ el)
+	for (const element of list) void hydrateOne(/** @type {HTMLElement} */ element)
 }
 
 let observerStarted = false
