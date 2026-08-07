@@ -775,6 +775,7 @@
 		"title": "Home",
 		"description": "The heart of your fount experience. Here, manage the denizens of your imagination—characters, worlds, and personas. Your stories begin and branch from this central nexus.",
 		"sidebarTitle": "Details",
+		"closeSidebar": "Close sidebar",
 		"itemDescription": "Select an item to view details.",
 		"noDescription": "No description available.",
 		"filterInput": {
@@ -4185,10 +4186,7 @@
 			"mentionSuggest": {
 				"aria-label": "Mention suggestions"
 			},
-			"mediaButton": {
-				"title": "Add media",
-				"aria-label": "Add media"
-			},
+			"mediaButton": "Add media",
 			"pollButton": {
 				"title": "Start a poll",
 				"aria-label": "Start a poll"
@@ -4711,14 +4709,8 @@
 			"title": "Items",
 			"aria-label": "Items"
 		},
-		"openCabinets": {
-			"title": "Open file cabinet list",
-			"aria-label": "Open file cabinet list"
-		},
-		"closeCabinets": {
-			"title": "Close",
-			"aria-label": "Close"
-		},
+		"openCabinets": "Open file cabinet list",
+		"closeCabinets": "Close",
 		"bootstrapFailed": "File cabinet initialization failed: ${error}",
 		"home_function_buttons": {
 			"main": {

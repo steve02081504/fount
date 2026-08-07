@@ -1,6 +1,4 @@
-import { CHAT_API_CLIENT_PREFIX } from './apiPaths.mjs'
-
-const ALIASES_API = `${CHAT_API_CLIENT_PREFIX}/aliases`
+import { getAliases, putAliases as putAliasesApi } from '../src/endpoints/prefs.mjs'
 
 /** @type {{ entities: Record<string, string>, groups: Record<string, string> } | null} */
 let cache = null
@@ -15,32 +13,13 @@ function normEntity(entityHash) {
 }
 
 /**
- * @param {object} doc 别名档
- * @returns {Promise<{ entities: Record<string, string>, groups: Record<string, string> }>} 写入后的别名档
- */
-async function putAliases(doc) {
-	const response = await fetch(ALIASES_API, {
-		method: 'PUT',
-		credentials: 'include',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(doc),
-	})
-	const data = await response.json()
-	if (!response.ok) throw new Error(data.error || 'save aliases failed')
-	return { entities: data.entities || {}, groups: data.groups || {} }
-}
-
-/**
  * 拉取整档别名并填充内存缓存（幂等，并发共享同一请求）。
  * @returns {Promise<{ entities: Record<string, string>, groups: Record<string, string> }>} 别名档
  */
 export async function loadAliases() {
 	if (cache) return cache
 	loadPromise ??= (async () => {
-		const response = await fetch(ALIASES_API, { credentials: 'include' })
-		const data = await response.json()
-		if (!response.ok) throw new Error(data.error || 'load aliases failed')
-		cache = { entities: data.entities || {}, groups: data.groups || {} }
+		cache = await getAliases()
 		return cache
 	})()
 	try {
@@ -95,7 +74,7 @@ export async function setEntityAlias(entityHash, name) {
 	const value = String(name || '').trim()
 	if (value) entities[key] = value
 	else delete entities[key]
-	cache = await putAliases({ entities, groups: current.groups })
+	cache = await putAliasesApi({ entities, groups: current.groups })
 }
 
 /**
@@ -111,5 +90,5 @@ export async function setGroupAlias(groupId, name) {
 	const value = String(name || '').trim()
 	if (value) groups[key] = value
 	else delete groups[key]
-	cache = await putAliases({ entities: current.entities, groups })
+	cache = await putAliasesApi({ entities: current.entities, groups })
 }

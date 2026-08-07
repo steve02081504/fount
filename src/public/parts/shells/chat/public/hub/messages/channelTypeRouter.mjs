@@ -1,7 +1,7 @@
 /**
  * 非 text 频道（list / streaming）加载路由。
  */
-import { getStreamingChannelAuth } from '../../src/api/groupCore.mjs'
+import { getStreamingChannelAuth } from '../../src/endpoints/groupCore.mjs'
 import { refreshChannelPinsBar } from '../banners.mjs'
 import { renderListChannel, renderStreamingChannel, renderCodecsAvStreamingChannel } from '../channels.mjs'
 import { store } from '../core/state.mjs'

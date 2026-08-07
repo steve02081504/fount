@@ -1,6 +1,6 @@
 import {
 	getChannelViewLog,
-} from '../../src/api/groupChannel.mjs'
+} from '../../src/endpoints/groupChannel.mjs'
 import { eventIdsEqual, normalizeEventId } from '../../src/lib/eventId.mjs'
 import { store } from '../core/state.mjs'
 import { attachLastCharMessageSwipe, updateHideCharNames } from '../gestures/chatGestures.mjs'
@@ -24,12 +24,18 @@ import {
 	bindMessageSurface,
 	createMessageSurfacePipeline,
 } from './messageSurface.mjs'
+import { revokeGroupFileBlobUrlsForChannel } from './render/file.mjs'
 
-/** @returns {void} */
+/**
+ * 销毁当前聊天频道的虚拟列表与相关 Blob URL。
+ * @returns {void}
+ */
 export function destroyChannelVirtualList() {
+	const channelKey = store.messages.channelPipelineKey
 	store.messages.channelMessagePipeline?.destroy()
 	store.messages.channelMessagePipeline = null
 	store.messages.channelPipelineKey = null
+	revokeGroupFileBlobUrlsForChannel(channelKey)
 }
 
 /** @type {Promise<number> | null} */
@@ -104,6 +110,10 @@ async function doLoadOlderMessages() {
  */
 export function initChannelVirtualList(container) {
 	destroyChannelVirtualList()
+	const groupId = store.context.currentGroupId
+	const channelId = store.context.currentChannelId
+	if (groupId && channelId)
+		store.messages.channelPipelineKey = `${groupId}:${channelId}`
 	store.messages.channelMessagePipeline = createMessageSurfacePipeline({
 		container,
 		loadMoreTop: loadOlderMessages,

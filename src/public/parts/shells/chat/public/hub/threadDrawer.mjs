@@ -8,8 +8,8 @@ import {
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { createChannelThread, getChannelViewLog, sendGroupMessage } from '../src/api/groupChannel.mjs'
-import { getGroupState } from '../src/api/groupCore.mjs'
+import { createChannelThread, getChannelViewLog, sendGroupMessage } from '../src/endpoints/groupChannel.mjs'
+import { getGroupState } from '../src/endpoints/groupCore.mjs'
 import { hubEmptyWaveIcon } from '../src/lib/emojiSvg.mjs'
 import { applyChannelDisplayChain } from '../src/ui/channelDisplay.mjs'
 

@@ -8,7 +8,7 @@ import {
 	renderMarkdownAsStandaloneDocument,
 } from '../../../../../scripts/features/markdown/standaloneDocument.mjs'
 import { arrayBufferToBase64 } from '../../../../../scripts/lib/base64.mjs'
-import { entityFileUrl } from '../../shared/evfsMedia.mjs'
+import { fetchEvfsFile } from '/scripts/endpoints/p2p/evfsMedia.mjs'
 import { groupEntityHash } from '../../shared/groupEntityHash.mjs'
 import { store } from '../core/state.mjs'
 
@@ -26,14 +26,15 @@ async function resolveGroupFileAttachments(groupId, files) {
 	for (const file of files) {
 		const id = String(file?.fileId || '').trim()
 		if (!id) continue
-		const plainR = await fetch(entityFileUrl(entityHash, `chat/${id}`), { credentials: 'include' })
-		if (!plainR.ok) continue
-		const mime = String(file.mime_type || plainR.headers.get('Content-Type') || 'application/octet-stream')
-		out.push({
-			name: file.name || id,
-			mime_type: mime,
-			buffer: arrayBufferToBase64(await plainR.arrayBuffer()),
-		})
+		try {
+			const { buffer, mimeType } = await fetchEvfsFile(entityHash, `chat/${id}`)
+			out.push({
+				name: file.name || id,
+				mime_type: String(file.mime_type || mimeType || 'application/octet-stream'),
+				buffer: arrayBufferToBase64(buffer),
+			})
+		}
+		catch { /* skip missing attachment */ }
 	}
 	return out
 }

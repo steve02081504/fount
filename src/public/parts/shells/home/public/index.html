@@ -75,13 +75,15 @@
 		</div>
 
 		<!-- Sidebar (drawer-side) -->
-		<div class="drawer-side" data-view-transition-name="sidebar">
-			<label for="drawer-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
+		<aside class="drawer-side" data-view-transition-name="sidebar">
+			<label for="drawer-toggle" class="drawer-overlay">
+				<span class="sr-only" data-i18n="home.closeSidebar"></span>
+			</label>
 			<div class="drawer-content sidebar-content p-4 w-80 min-h-full bg-base-300/90 sm:bg-base-300/30 text-base-content border-l-2 border-base-content flex flex-col">
 				<h2 class="text-xl mt-4 lg:mt-2 mb-2" data-i18n="home.sidebarTitle"></h2>
 				<article id="item-description" class="markdown-body" data-i18n="home.itemDescription"></article>
 			</div>
-		</div>
+		</aside>
 	</div>
 
 	<script type="module" src="./index.mjs"></script>

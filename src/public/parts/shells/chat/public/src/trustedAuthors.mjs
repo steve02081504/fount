@@ -5,6 +5,8 @@
  * 【数据结构】TRUST_EXPIRES_NEVER、{ pubKeyHash, expiresAt } 记录。
  * 【关联】trustAuthorDialog.mjs、hub/social Markdown 两档渲染；默认可信 = 本人 / 本机 char 实体（nodeHash 前缀）/ 观看者声明的主人。
  */
+import { getTrustedAuthors, putTrustedAuthors } from './endpoints/prefs.mjs'
+
 const TRUSTED_AUTHORS_DB_NAME = 'fount_chat_security'
 const TRUSTED_AUTHORS_STORE = 'trustedAuthors'
 
@@ -36,9 +38,7 @@ function normalizePubKeyHash(pubKeyHash) {
  */
 export async function syncTrustedAuthorsFromShell() {
 	try {
-		const response = await fetch('/api/parts/shells:chat/trusted-authors', { credentials: 'include' })
-		if (!response.ok) return
-		const data = await response.json()
+		const data = await getTrustedAuthors()
 		const hashes = Array.isArray(data.hashes) ? data.hashes : []
 		shellTrustedPubKeyHashes = new Set(hashes.map(normalizePubKeyHash).filter(Boolean))
 		const database = await openTrustedAuthorsDatabase()
@@ -95,12 +95,7 @@ async function pushTrustedAuthorsToShell() {
 		/** @returns {void} */
 		request.onerror = () => reject(request.error)
 	})
-	await fetch('/api/parts/shells:chat/trusted-authors', {
-		method: 'PUT',
-		credentials: 'include',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ hashes: activePubKeyHashes }),
-	})
+	await putTrustedAuthors({ hashes: activePubKeyHashes })
 	shellTrustedPubKeyHashes = new Set(activePubKeyHashes)
 }
 

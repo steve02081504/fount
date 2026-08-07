@@ -780,6 +780,7 @@
 		"title": "Início",
 		"description": "O coração da sua experiência com o fount. Aqui, faça a gestão dos habitantes da sua imaginação – personagens, mundos e personas. As suas histórias começam e ramificam-se a partir deste nexo central.",
 		"sidebarTitle": "Detalhes",
+		"closeSidebar": "Fechar barra lateral",
 		"itemDescription": "Selecione um item aqui para ver os detalhes.",
 		"noDescription": "Sem descrição.",
 		"filterInput": {
@@ -1753,7 +1754,7 @@
 				"suppressEveryone": "Ignore @todos e @aqui",
 				"suppressRoles": "Ignorar grupo de funções @",
 				"mute": "Silenciar",
-				"muteOff": "Encerramento",
+				"muteOff": "Desativar",
 				"mute1h": "1 hora",
 				"mute8h": "8 horas",
 				"muteForever": "Até ser ligado manualmente",
@@ -1913,7 +1914,7 @@
 			"typing": "${names} está digitando...",
 			"charsHeader": "Papel",
 			"settingsModalTitle": "Configurar",
-			"modalClose": "Encerramento",
+			"modalClose": "Fechar",
 			"cancel": "Cancelar",
 			"bookmarkLocal": "Local",
 			"groupsSection": "Grupo",
@@ -1962,7 +1963,7 @@
 				"aria-label": "Ponta do garfo DAG"
 			},
 			"ariaClose": {
-				"aria-label": "Encerramento"
+				"aria-label": "Fechar"
 			},
 			"serverBar": {
 				"aria-label": "Grupos e navegação"
@@ -4188,10 +4189,7 @@
 			"mentionSuggest": {
 				"aria-label": "Sugestões de menção"
 			},
-			"mediaButton": {
-				"title": "Adicionar media",
-				"aria-label": "Adicionar media"
-			},
+			"mediaButton": "Adicionar media",
 			"pollButton": {
 				"title": "Iniciar uma votação",
 				"aria-label": "Iniciar uma votação"
@@ -4537,7 +4535,7 @@
 		},
 		"dialog": {
 			"close": {
-				"aria-label": "Encerramento"
+				"aria-label": "Fechar"
 			}
 		},
 		"actions": {
@@ -4714,14 +4712,8 @@
 			"title": "Lista de itens",
 			"aria-label": "Lista de itens"
 		},
-		"openCabinets": {
-			"title": "Abrir lista de armários",
-			"aria-label": "Abrir lista de armários"
-		},
-		"closeCabinets": {
-			"title": "Encerramento",
-			"aria-label": "Encerramento"
-		},
+		"openCabinets": "Abrir lista de armários",
+		"closeCabinets": "Fechar",
 		"bootstrapFailed": "Falha na inicialização do armário: ${error}",
 		"home_function_buttons": {
 			"main": {
@@ -5671,7 +5663,7 @@
 			"save": "Guardar",
 			"delete": "Eliminar",
 			"confirm": "Confirmar",
-			"close": "Encerramento",
+			"close": "Fechar",
 			"translate": {
 				"label": "Tradução:",
 				"showOriginal": "Mostrar original",

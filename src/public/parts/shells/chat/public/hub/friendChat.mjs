@@ -12,11 +12,11 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
 import { buildCharFriendBinding, buildUserFriendBinding, normalizeFriendBinding } from '../shared/friendBinding.mjs'
-import { getFederationSettings } from '../src/api/federationSettings.mjs'
-import { getGroupState } from '../src/api/groupCore.mjs'
-import { createDirectMessageByPubKeys } from '../src/api/groupDm.mjs'
-import { setGroupFriendBinding } from '../src/api/groupFriendBinding.mjs'
-import { handleUIError, toError } from '../src/ui/errors.mjs'
+import { getFederationSettings } from '../src/endpoints/federationSettings.mjs'
+import { addGroupChar, createFriendGroup, getGroupState, listGroupChars } from '../src/endpoints/groupCore.mjs'
+import { createDirectMessageByPubKeys } from '../src/endpoints/groupDm.mjs'
+import { setGroupFriendBinding } from '../src/endpoints/groupFriendBinding.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { getCharDetails, renderCharInfoCardActive } from './charCard.mjs'
 import { store } from './core/state.mjs'
@@ -33,25 +33,6 @@ let enterFriendChatAbort = null
 
 /** @type {Promise<void>} 串行化 resolveFriendGroupId，避免并发重复建群 */
 let resolveFriendGroupChain = Promise.resolve()
-
-/**
- * @param {string} url fetch URL
- * @param {RequestInit} [init] fetch 选项
- * @param {AbortSignal} [signal] 取消信号
- * @returns {Promise<Response>} HTTP 响应
- */
-async function chatRuntimeFetch(url, init = {}, signal) {
-	if (signal?.aborted)
-		throw new DOMException('Aborted', 'AbortError')
-	try {
-		return await fetch(url, { credentials: 'include', ...init, signal })
-	}
-	catch (error) {
-		if (signal?.aborted || error?.name === 'AbortError') throw error
-		const err = toError(error)
-		throw new Error(`fetch ${url}: ${err.message}`, { cause: err })
-	}
-}
 
 /**
  * @param {import('../shared/friendBinding.mjs').FriendBinding | null} a 绑定 A
@@ -71,7 +52,7 @@ function friendBindingsEqual(a, b) {
  * @returns {void}
  */
 function throwIfAborted(signal) {
-	if (signal.aborted)
+	if (signal?.aborted)
 		throw new DOMException('Aborted', 'AbortError')
 }
 
@@ -107,31 +88,26 @@ async function findExistingFriendGroup(binding) {
  * 确保群上已挂载角色 part。
  * @param {string} groupId 群 ID
  * @param {string} charname 角色名
- * @param {AbortSignal} signal 取消信号
+ * @param {AbortSignal} [signal] 取消信号
  * @returns {Promise<void>}
  */
 async function ensureCharOnGroup(groupId, charname, signal) {
-	const base = `/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}`
-	const cr = await chatRuntimeFetch(`${base}/chars`, {}, signal)
-	if (!cr.ok) throw new Error(`GET chars HTTP ${cr.status}`)
-	const chars = await cr.json()
-	if (Array.isArray(chars) && chars.includes(charname)) return
-	const add = await chatRuntimeFetch(`${base}/char`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ charname, deferGreeting: true }),
-	}, signal)
-	if (!add.ok) throw new Error(`POST char HTTP ${add.status}`)
+	throwIfAborted(signal)
+	const chars = await listGroupChars(groupId, signal)
+	throwIfAborted(signal)
+	if (chars.includes(charname)) return
+	await addGroupChar(groupId, { charname, deferGreeting: true }, signal)
+	throwIfAborted(signal)
 }
 
 /**
  * 解析或新建好友群 ID（角色需 addchar；用户 DM 由调用方传入 groupId）。
  * @param {import('../shared/friendBinding.mjs').FriendBinding} binding 绑定
- * @param {{ groupId?: string, forceNew?: boolean }} options 选项
- * @param {AbortSignal} signal 取消信号
+ * @param {{ groupId?: string, forceNew?: boolean, signal?: AbortSignal }} options 选项
  * @returns {Promise<string|null>} 群 ID；失败为 null
  */
-async function resolveFriendGroupId(binding, options, signal) {
+async function resolveFriendGroupId(binding, options) {
+	const { signal } = options
 	let groupId = options.forceNew ? undefined : options.groupId
 	if (groupId) {
 		if (binding.charname)
@@ -145,17 +121,13 @@ async function resolveFriendGroupId(binding, options, signal) {
 	if (!groupId && !options.forceNew)
 		groupId = await findExistingFriendGroup(binding)
 
+	throwIfAborted(signal)
 	if (!groupId) {
-		const r = await chatRuntimeFetch('/api/parts/shells:chat/groups', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				friendBinding: binding,
-				...options.forceNew ? { forceNew: true } : {},
-			}),
+		const payload = await createFriendGroup({
+			friendBinding: binding,
+			...options.forceNew ? { forceNew: true } : {},
 		}, signal)
-		if (!r.ok) throw new Error(`POST groups HTTP ${r.status}`)
-		const payload = await r.json()
+		throwIfAborted(signal)
 		groupId = payload.groupId
 	}
 
@@ -288,7 +260,7 @@ export async function enterFriendChat(options = {}) {
 
 		throwIfAborted(signal)
 		const groupId = await enqueueResolveFriendGroup(
-			() => resolveFriendGroupId(binding, options, signal),
+			() => resolveFriendGroupId(binding, { ...options, signal }),
 			signal,
 		)
 		if (!groupId) return
@@ -298,7 +270,7 @@ export async function enterFriendChat(options = {}) {
 	}
 	catch (error) {
 		if (signal.aborted) return
-		const err = handleUIError(error, 'chat.hub.createChatFailed')
+		const err = handleError('chat.hub.createChatFailed')(error)
 		await mountTemplate(document.getElementById('messages'), 'hub/empty/error', {
 			i18nKey: 'chat.hub.createChatFailed',
 			errorMessage: err.message,

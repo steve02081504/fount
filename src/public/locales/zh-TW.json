@@ -779,6 +779,7 @@
 		"title": "首頁",
 		"description": "這裡是您 fount 體驗的起點。無論是鮮活的角色、宏偉的世界，還是獨特的身分，您想像國度中的一切盡在掌握。所有故事，將從這裡開始。",
 		"sidebarTitle": "詳情",
+		"closeSidebar": "關閉側邊欄",
 		"itemDescription": "在此處選擇一個項目以檢視詳細資訊。",
 		"noDescription": "無描述資訊",
 		"filterInput": {
@@ -4187,10 +4188,7 @@
 			"mentionSuggest": {
 				"aria-label": "提及建議"
 			},
-			"mediaButton": {
-				"title": "新增媒體",
-				"aria-label": "新增媒體"
-			},
+			"mediaButton": "新增媒體",
 			"pollButton": {
 				"title": "發起投票",
 				"aria-label": "發起投票"
@@ -4713,14 +4711,8 @@
 			"title": "內容列表",
 			"aria-label": "內容列表"
 		},
-		"openCabinets": {
-			"title": "開啟文件櫃列表",
-			"aria-label": "開啟文件櫃列表"
-		},
-		"closeCabinets": {
-			"title": "關閉",
-			"aria-label": "關閉"
-		},
+		"openCabinets": "開啟文件櫃列表",
+		"closeCabinets": "關閉",
 		"bootstrapFailed": "文件櫃初始化失敗：${error}",
 		"home_function_buttons": {
 			"main": {

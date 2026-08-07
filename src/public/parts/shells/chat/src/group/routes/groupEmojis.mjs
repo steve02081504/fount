@@ -2,6 +2,7 @@
  * group/routes/groupEmojis.mjs — 群表情包 REST + 内容端点。
  */
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 
 import { applySafeContentHeaders } from '../../../../../../../scripts/http_content.mjs'
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
@@ -78,11 +79,11 @@ async function sendEmojiContentResponse(req, res, username, groupId, emojiId, pa
  */
 async function replicateAfterUpload(username, groupId, entry) {
 	const slot = await ensureFederationRoom(username, groupId)
-	void replicateGroupEmojiManifestToUserRoom(username, groupId, entry).catch(() => { })
+	replicateGroupEmojiManifestToUserRoom(username, groupId, entry).catch(handleError)
 	if (slot?.replicateGroupEmojiManifest)
-		void slot.replicateGroupEmojiManifest(entry).catch(() => { })
+		slot.replicateGroupEmojiManifest(entry).catch(handleError)
 	if (slot?.replicateGroupEmoji)
-		void slot.replicateGroupEmoji(entry.emojiId, entry.packId).catch(() => { })
+		slot.replicateGroupEmoji(entry.emojiId, entry.packId).catch(handleError)
 }
 
 /**

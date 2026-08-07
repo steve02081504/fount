@@ -3,6 +3,8 @@
  */
 import { parseEmojiToken } from '../shared/inlineTokenSyntax.mjs'
 
+import { addEmojiCollectionPack } from './endpoints/emoji.mjs'
+
 /**
  * 将 pack 加入收藏。
  * @param {string} packId 表情包 ID
@@ -11,16 +13,7 @@ import { parseEmojiToken } from '../shared/inlineTokenSyntax.mjs'
 export async function addPackToCollection(packId) {
 	const id = String(packId || '').trim()
 	if (!id) throw new Error('packId required')
-	const response = await fetch('/api/parts/shells:chat/emoji-usage/collection/packs', {
-		method: 'POST',
-		credentials: 'include',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ packId: id }),
-	})
-	if (!response.ok) {
-		const data = await response.json().catch(() => ({}))
-		throw new Error(data.error || 'collection failed')
-	}
+	await addEmojiCollectionPack(id)
 	return { packId: id }
 }
 

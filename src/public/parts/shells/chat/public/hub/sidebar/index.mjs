@@ -3,8 +3,8 @@
  * 【职责】群侧栏协调入口：组装频道树 / 成员 / 信息卡，驱动 selectGroup / selectChannel。
  */
 import { mountTemplate } from '../../../../../scripts/features/template.mjs'
-import { getGroupState } from '../../src/api/groupCore.mjs'
-import { handleUIError } from '../../src/ui/errors.mjs'
+import { getGroupState } from '../../src/endpoints/groupCore.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import {
 	setPinsBookmarksWrapVisible,
 	updateStatusBanners,
@@ -141,7 +141,7 @@ export async function selectGroup(groupId, presetChannelId = null) {
 	catch (error) {
 		setPinsBookmarksWrapVisible(false)
 		updateStatusBanners()
-		const err = handleUIError(error, 'chat.hub.load.groupFailed')
+		const err = handleError('chat.hub.load.groupFailed')(error)
 		await mountTemplate(document.getElementById('messages'), 'hub/empty/error', {
 			i18nKey: 'chat.hub.load.groupFailed',
 			errorMessage: err.message,

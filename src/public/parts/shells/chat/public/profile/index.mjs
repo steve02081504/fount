@@ -1,15 +1,16 @@
 /**
  * 【文件】public/profile/index.mjs
  * 【职责】实体资料独立页：按 URL 中 entityHash 拉取并渲染多语言简介、链接与编辑入口。
- * 【原理】getProfile + 模板 profile/*；onLanguageChange 刷新；可跳转 Hub profileEdit；挂载主人设置面板。
+ * 【原理】getEntityProfile + 模板 profile/*；onLanguageChange 刷新；可跳转 Hub profileEdit；挂载主人设置面板。
  * 【数据结构】currentEntityHash、currentProfile；localized 各 locale 字段。
- * 【关联】profile/src/endpoints.mjs、ownerSettingsPanel.mjs；hub/entityProfile.mjs、profileEdit.mjs。
+ * 【关联】src/endpoints/entities.mjs、ownerSettingsPanel.mjs；hub/entityProfile.mjs、profileEdit.mjs。
  */
 import { onServerEvent } from '../../../scripts/endpoints/server_events.mjs'
 import {
 	renderTemplate,
 	usingTemplates,
 } from '../../../scripts/features/template.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { showToastI18n } from '../../../scripts/features/toast.mjs'
 import { initTranslations, onLanguageChange } from '../../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../../scripts/theme/index.mjs'
@@ -20,10 +21,12 @@ import {
 	paintEntityProfileCard,
 } from '../shared/entityProfileCard.mjs'
 import { avatarInitial } from '../shared/hashAvatar.mjs'
+import { getEntityProfile } from '../src/endpoints/entities.mjs'
+import { getGroupList, getGroupState } from '../src/endpoints/groupCore.mjs'
+import { getViewer } from '../src/endpoints/viewer.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { initProfileOwnerSettings } from './ownerSettingsPanel.mjs'
-import { getProfile } from './src/endpoints.mjs'
 
 let currentEntityHash = null
 let currentProfile = null
@@ -91,9 +94,7 @@ async function init() {
 	})
 
 	try {
-		const resp = await fetch('/api/parts/shells:chat/viewer', { credentials: 'include' })
-		if (!resp.ok) throw new Error(`viewer ${resp.status}`)
-		const data = await resp.json()
+		const data = await getViewer()
 		if (!data.viewerEntityHash) {
 			showToastI18n(
 				'error',
@@ -105,8 +106,7 @@ async function init() {
 		await loadProfile(currentEntityHash)
 	}
 	catch (error) {
-		console.error('Failed to get current user:', error)
-		showToastI18n('error', 'chat.profile.errors.fetchUserFailed')
+		handleError('chat.profile.errors.fetchUserFailed')(error)
 	}
 
 	document.getElementById('profile-edit-button')?.addEventListener('click', () => {
@@ -133,15 +133,14 @@ async function init() {
  */
 async function loadProfile(entityHash) {
 	try {
-		const response = await getProfile(entityHash)
+		const response = await getEntityProfile(entityHash)
 		if (response.profile) {
 			currentProfile = response.profile
 			await renderProfile(currentProfile)
 		}
 	}
 	catch (error) {
-		console.error('Failed to load profile:', error)
-		showToastI18n('error', 'chat.profile.errors.loadFailed')
+		handleError('chat.profile.errors.loadFailed')(error)
 	}
 }
 
@@ -181,14 +180,7 @@ async function renderProfile(profile) {
  */
 async function loadUserGroups() {
 	try {
-		const response = await fetch('/api/parts/shells:chat/groups', {
-			credentials: 'include',
-		})
-		if (!response.ok) return
-		const data = await response.json()
-		if (!Array.isArray(data)) return
-
-		const groups = data
+		const groups = await getGroupList()
 		const container = document.getElementById('profile-groups')
 		const noGroups = document.getElementById('no-groups')
 
@@ -215,7 +207,7 @@ async function loadUserGroups() {
 
 	}
 	catch (error) {
-		console.error('Failed to load groups:', error)
+		handleError('chat.profile.errors.operationFailed')(error)
 	}
 }
 
@@ -224,26 +216,15 @@ async function loadUserGroups() {
  */
 async function loadUserChannels() {
 	try {
-		const response = await fetch('/api/parts/shells:chat/groups', {
-			credentials: 'include',
-		})
-		if (!response.ok) return
-		const data = await response.json()
-		if (!Array.isArray(data)) return
-
-		const groups = data
+		const groups = await getGroupList()
 		const allChannels = []
 
 		for (const group of groups)
 			try {
-				const stateRes = await fetch(`/api/parts/shells:chat/groups/${group.groupId}/state`, {
-					credentials: 'include',
-				})
-				if (!stateRes.ok) continue
-				const stateData = await stateRes.json()
-				if (!stateData.meta?.channels) continue
+				const state = await getGroupState(group.groupId)
+				if (!state.channels) continue
 
-				for (const [channelId, channel] of Object.entries(stateData.meta.channels))
+				for (const [channelId, channel] of Object.entries(state.channels))
 					allChannels.push({
 						channelId,
 						name: channel.name || channelId,
@@ -254,8 +235,9 @@ async function loadUserChannels() {
 						defaultChannelId: group.defaultChannelId,
 					})
 			}
-			catch { /* skip group */ }
-
+			catch (error) {
+				handleError('chat.profile.errors.operationFailed')(error)
+			}
 
 		const container = document.getElementById('profile-channels')
 		const noChannels = document.getElementById('no-channels')
@@ -280,7 +262,7 @@ async function loadUserChannels() {
 
 	}
 	catch (error) {
-		console.error('Failed to load channels:', error)
+		handleError('chat.profile.errors.operationFailed')(error)
 	}
 }
 

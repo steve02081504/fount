@@ -780,6 +780,7 @@
 		"title": "Trang chủ",
 		"description": "Đây là điểm khởi đầu cho trải nghiệm fount của bạn. Dù là những nhân vật sống động, thế giới rộng lớn hay danh tính độc đáo, mọi thứ trong vương quốc tưởng tượng đều nằm trong tay bạn. Mọi câu chuyện sẽ bắt đầu từ đây.",
 		"sidebarTitle": "Chi tiết",
+		"closeSidebar": "Đóng thanh bên",
 		"itemDescription": "Chọn một mục ở đây để xem chi tiết.",
 		"noDescription": "Không có mô tả.",
 		"filterInput": {
@@ -1962,7 +1963,7 @@
 				"aria-label": "Đầu nĩa DAG"
 			},
 			"ariaClose": {
-				"aria-label": "đóng cửa"
+				"aria-label": "Đóng"
 			},
 			"serverBar": {
 				"aria-label": "Nhóm và điều hướng"
@@ -4188,10 +4189,7 @@
 			"mentionSuggest": {
 				"aria-label": "Gợi ý nhắc đến"
 			},
-			"mediaButton": {
-				"title": "Thêm phương tiện",
-				"aria-label": "Thêm phương tiện"
-			},
+			"mediaButton": "Thêm phương tiện",
 			"pollButton": {
 				"title": "Bắt đầu bỏ phiếu",
 				"aria-label": "Bắt đầu bỏ phiếu"
@@ -4714,14 +4712,8 @@
 			"title": "Danh sách mục",
 			"aria-label": "Danh sách mục"
 		},
-		"openCabinets": {
-			"title": "Mở danh sách tủ hồ sơ",
-			"aria-label": "Mở danh sách tủ hồ sơ"
-		},
-		"closeCabinets": {
-			"title": "đóng cửa",
-			"aria-label": "đóng cửa"
-		},
+		"openCabinets": "Mở danh sách tủ hồ sơ",
+		"closeCabinets": "Đóng",
 		"bootstrapFailed": "Khởi tạo nội dung tệp không thành công: ${error}",
 		"home_function_buttons": {
 			"main": {

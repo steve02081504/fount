@@ -1,7 +1,7 @@
 /** Hub 群发现主内容页。 */
 import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
-import { fetchDiscoveryIndex, refreshDiscoveryGossip } from '../src/api/discoveryApi.mjs'
-import { handleUIError } from '../src/ui/errors.mjs'
+import { fetchDiscoveryIndex, refreshDiscoveryGossip } from '../src/endpoints/discovery.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { setPinsBookmarksWrapVisible, updateStatusBanners } from './banners.mjs'
@@ -59,7 +59,7 @@ async function loadDiscoveryEntries(root) {
 	}
 	catch (error) {
 		if (generation !== loadGeneration || !root.isConnected) return
-		handleUIError(error, 'chat.hub.discovery.loadFailed')
+		handleError('chat.hub.discovery.loadFailed')(error)
 		await mountTemplate(grid, 'hub/empty/error', {
 			i18nKey: 'chat.hub.discovery.loadFailed',
 			errorMessage: error.message,
@@ -104,7 +104,7 @@ export async function activateDiscoveryView() {
 		const target = event.target instanceof Element ? event.target.closest('[data-group-id]') : null
 		const groupId = target?.getAttribute('data-group-id')
 		if (!groupId) return
-		void selectGroup(groupId).catch(error => handleUIError(error, 'chat.hub.load.groupFailed'))
+		void selectGroup(groupId).catch(handleError('chat.hub.load.groupFailed'))
 	})
 
 	const { disableComposer, refreshHubHeaderButtons } = await import('./messages/composerController.mjs')

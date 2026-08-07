@@ -780,6 +780,7 @@
 		"title": "الصفحة الرئيسية",
 		"description": "قلب تجربتك النابضة. هنا، قم بإدارة سكان خيالك - الشخصيات والعوالم والشخصيات. تبدأ قصصك وتتفرع من هذه الرابطة المركزية.",
 		"sidebarTitle": "التفاصيل",
+		"closeSidebar": "إغلاق الشريط الجانبي",
 		"itemDescription": "اختر عنصرًا هنا لعرض التفاصيل.",
 		"noDescription": "لا يوجد وصف",
 		"filterInput": {
@@ -4188,10 +4189,7 @@
 			"mentionSuggest": {
 				"aria-label": "اقتراحات الإشارة"
 			},
-			"mediaButton": {
-				"title": "أضف الوسائط",
-				"aria-label": "أضف الوسائط"
-			},
+			"mediaButton": "أضف الوسائط",
 			"pollButton": {
 				"title": "الشروع في التصويت",
 				"aria-label": "الشروع في التصويت"
@@ -4714,14 +4712,8 @@
 			"title": "قائمة العناصر",
 			"aria-label": "قائمة العناصر"
 		},
-		"openCabinets": {
-			"title": "فتح قائمة خزانة الملفات",
-			"aria-label": "فتح قائمة خزانة الملفات"
-		},
-		"closeCabinets": {
-			"title": "إغلاق",
-			"aria-label": "إغلاق"
-		},
+		"openCabinets": "فتح قائمة خزانة الملفات",
+		"closeCabinets": "إغلاق",
 		"bootstrapFailed": "فشلت تهيئة خزانة الملفات: ${error}",
 		"home_function_buttons": {
 			"main": {

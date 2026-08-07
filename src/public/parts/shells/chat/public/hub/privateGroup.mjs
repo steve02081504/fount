@@ -9,7 +9,8 @@ import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { buildCharFriendBinding } from '../shared/friendBinding.mjs'
-import { setGroupFriendBinding, unbindFriendGroup } from '../src/api/groupFriendBinding.mjs'
+import { deleteSession } from '../src/endpoints/groupCore.mjs'
+import { setGroupFriendBinding, unbindFriendGroup } from '../src/endpoints/groupFriendBinding.mjs'
 
 import { mountChatConfigPanel } from './chatConfig.mjs'
 import { openOverlayModal, closeOverlayModal } from './core/overlayModal.mjs'
@@ -132,15 +133,7 @@ export async function openGroupSettingsModal(groupId) {
 	document.getElementById('character-chat-delete')?.addEventListener('click', async () => {
 		if (!confirmI18n('chat.hub.deleteSessionConfirm', { name: charname })) return
 		try {
-			const response = await fetch(
-				`/api/parts/shells:chat/sessions/${encodeURIComponent(groupId)}`,
-				{ method: 'DELETE', credentials: 'include' },
-			)
-			if (!response.ok) {
-				const data = await response.json().catch(() => ({}))
-				throw new Error(data.error || 'Session delete failed')
-			}
-			await response.json()
+			await deleteSession(groupId)
 			showToastI18n('success', 'chat.hub.session.deleted')
 			setTimeout(async () => {
 				closeOverlayModal()

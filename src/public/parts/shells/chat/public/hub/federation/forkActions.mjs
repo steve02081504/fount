@@ -3,13 +3,13 @@
  * 【职责】DAG 分叉治理 UI：绑定顶栏分叉按钮，执行分支、合并、封锁对立叉与刷新分叉横幅。
  * 【原理】监听 `#fork-branch-button` 等控件，配合 `banners.refreshDagForkBanner` 提示当前治理状态；分叉/合并成功后调用 `loadMessages` 重建频道视图以反映新 DAG 尖。
  * 【数据结构】store 当前群/频道上下文与 WS 连接状态；见模块内变量 JSDoc。
- * 【关联】../../../../../scripts/i18n、../../../../../scripts/toast、../../src/api/groupGovernance、../banners、../core/state、../messages/messages。
+ * 【关联】../../../../../scripts/i18n、../../../../../scripts/toast、../../src/endpoints/groupGovernance、../banners、../core/state、../messages/messages。
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
-import { getGroupState } from '../../src/api/groupCore.mjs'
-import { blockOpposingForkBranch, forkGroupAsNew, mergeDagTips, setGovernanceBranch } from '../../src/api/groupGovernance.mjs'
-import { handleUIError } from '../../src/ui/errors.mjs'
+import { getGroupState } from '../../src/endpoints/groupCore.mjs'
+import { blockOpposingForkBranch, forkGroupAsNew, mergeDagTips, setGovernanceBranch } from '../../src/endpoints/groupGovernance.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { refreshDagForkBanner, selectedForkTipId } from '../banners.mjs'
 import { store, setState } from '../core/state.mjs'
 import { loadMessages } from '../messages/messages.mjs'
@@ -31,7 +31,7 @@ export function wireForkActions() {
 			showToastI18n('success', 'chat.hub.applyBranchOk')
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.applyBranchFailed')
+			handleError('chat.hub.applyBranchFailed')(error)
 		}
 		finally {
 			if (branchButton) branchButton.disabled = false
@@ -50,7 +50,7 @@ export function wireForkActions() {
 			showToastI18n('success', 'chat.hub.autoBranchOk')
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.autoBranchFailed')
+			handleError('chat.hub.autoBranchFailed')(error)
 		}
 		finally {
 			if (autoBranchButton) autoBranchButton.disabled = false
@@ -81,7 +81,7 @@ export function wireForkActions() {
 			location.reload()
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.forkSplit.failed')
+			handleError('chat.hub.forkSplit.failed')(error)
 		}
 		finally {
 			if (submitButton) submitButton.disabled = false
@@ -103,7 +103,7 @@ export function wireForkActions() {
 			showToastI18n('success', 'chat.hub.block.opposingOk', { count: blocked.length })
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.block.opposingFailed')
+			handleError('chat.hub.block.opposingFailed')(error)
 		}
 		finally {
 			if (blockOpposingButton) blockOpposingButton.disabled = false
@@ -122,7 +122,7 @@ export function wireForkActions() {
 			showToastI18n('success', 'chat.hub.mergeDagOk')
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.mergeDagFailed')
+			handleError('chat.hub.mergeDagFailed')(error)
 		}
 		finally {
 			if (mergeButton) mergeButton.disabled = false

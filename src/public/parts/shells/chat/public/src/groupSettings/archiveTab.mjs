@@ -2,8 +2,8 @@ import { appendTemplate, mountTemplate } from '../../../../../../scripts/feature
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { importChannelArchiveFile } from '../api/channelArchive.mjs'
-import { handleUIError } from '../ui/errors.mjs'
+import { deleteArchiveBefore, getArchiveSummary, importChannelArchiveFile } from '../endpoints/channelArchive.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { formatArchiveBytes } from './shared.mjs'
 
@@ -15,11 +15,7 @@ export async function renderArchiveStoragePanel(context) {
 	let archiveRowsHtml = ''
 	if (canManageArchive)
 		try {
-			const resp = await fetch(
-				`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/archive/summary`,
-				{ credentials: 'include' },
-			)
-			const data = await resp.json()
+			const data = await getArchiveSummary(context.groupId)
 			const files = Array.isArray(data.files) ? data.files : []
 			if (files.length)
 				archiveRowsHtml = `<div class="overflow-x-auto"><table class="table table-sm">
@@ -53,7 +49,7 @@ export async function renderArchiveStoragePanel(context) {
 				window.location.href = `/parts/shells:chat/hub/#group:${encodeURIComponent(context.groupId)}:${encodeURIComponent(result.channelId)}`
 			}
 			catch (error) {
-				handleUIError(error, 'chat.group.settings.page.channelArchive.importFailed')
+				handleError('chat.group.settings.page.channelArchive.importFailed')(error)
 			}
 		})
 	}
@@ -67,12 +63,7 @@ export async function renderArchiveStoragePanel(context) {
 		const deleteArchiveButton = document.getElementById('archive-delete-button')
 		if (deleteArchiveButton instanceof HTMLButtonElement) deleteArchiveButton.disabled = true
 		try {
-			const resp = await fetch(
-				`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/archive?before=${encodeURIComponent(raw)}`,
-				{ method: 'DELETE', credentials: 'include' },
-			)
-			const data = await resp.json()
-			if (!resp.ok) throw new Error(data.error || resp.statusText)
+			const data = await deleteArchiveBefore(context.groupId, raw)
 			showToastI18n('success', 'chat.group.settings.archive.delete.ok', {
 				files: String(data.deletedFiles ?? 0),
 			})

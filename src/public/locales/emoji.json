@@ -780,6 +780,7 @@
 		"title": "🏠",
 		"description": "❤️🏛️🎭🌍🧑‍🎨",
 		"sidebarTitle": "ℹ️",
+		"closeSidebar": "✖️ℹ️",
 		"itemDescription": "👆➡️ℹ️",
 		"noDescription": "🤷‍♂️",
 		"filterInput": {
@@ -4188,10 +4189,7 @@
 			"mentionSuggest": {
 				"aria-label": "@️⃣💡"
 			},
-			"mediaButton": {
-				"title": "➕🖼️",
-				"aria-label": "➕🖼️"
-			},
+			"mediaButton": "➕🖼️",
 			"pollButton": {
 				"title": "➕🗳️",
 				"aria-label": "➕🗳️"
@@ -4714,14 +4712,8 @@
 			"title": "📄📋",
 			"aria-label": "📄📋"
 		},
-		"openCabinets": {
-			"title": "📂🗄️📋",
-			"aria-label": "📂🗄️📋"
-		},
-		"closeCabinets": {
-			"title": "✖️",
-			"aria-label": "✖️"
-		},
+		"openCabinets": "📂🗄️📋",
+		"closeCabinets": "✖️",
 		"bootstrapFailed": "🗄️🚀❌：${error}",
 		"home_function_buttons": {
 			"main": {

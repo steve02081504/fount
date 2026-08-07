@@ -6,13 +6,89 @@ import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	renderTemplateAsHtmlString,
 } from '../../../../../../scripts/features/template.mjs'
+import { onElementRemoved } from '../../../../../../scripts/lib/onElementRemoved.mjs'
 import { fetchGroupFileAsBlobUrl } from '../../../src/groupFileBlob.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { store } from '../../core/state.mjs'
 
 import { getMessageText } from './text.mjs'
 
 const LAZY_MEDIA_BYTES = 2 * 1024 * 1024
+
+/** @type {Map<string, string>} blobUrl → `${groupId}:${channelId}` */
+const trackedBlobUrls = new Map()
+
+/**
+ * @returns {string | null} 当前群+频道键；缺任一侧则为 null
+ */
+function currentChannelBlobKey() {
+	const groupId = store.context.currentGroupId
+	const channelId = store.context.currentChannelId
+	return groupId && channelId ? `${groupId}:${channelId}` : null
+}
+
+/**
+ * @param {string} url Blob URL
+ * @returns {void}
+ */
+function revokeTrackedBlobUrl(url) {
+	if (!trackedBlobUrls.delete(url)) return
+	URL.revokeObjectURL(url)
+}
+
+/**
+ * 将 `blob:` src 的生命周期绑到媒体节点移除。
+ * @param {ParentNode} root 扫描根
+ * @returns {void}
+ */
+function bindBlobUrlCleanup(root) {
+	if (!root?.querySelectorAll) return
+	for (const el of root.querySelectorAll('[src^="blob:"]')) {
+		if (el.dataset.blobUrlTracked === '1') continue
+		const url = el.getAttribute('src')
+		if (!url || !trackedBlobUrls.has(url)) continue
+		el.dataset.blobUrlTracked = '1'
+		onElementRemoved(el, () => revokeTrackedBlobUrl(url))
+	}
+}
+
+/**
+ * 释放指定频道虚列表相关的群文件 Blob URL（其它频道的 URL 保留）。
+ * @param {string | null | undefined} channelKey `${groupId}:${channelId}`；缺省则无操作
+ * @returns {void}
+ */
+export function revokeGroupFileBlobUrlsForChannel(channelKey) {
+	if (!channelKey) return
+	for (const [url, key] of trackedBlobUrls) {
+		if (key !== channelKey) continue
+		trackedBlobUrls.delete(url)
+		URL.revokeObjectURL(url)
+	}
+}
+
+/**
+ * @param {string} groupId 群 ID
+ * @param {string} fileId 文件 ID
+ * @returns {Promise<string | null>} Blob URL；失败已 toast 时为 null
+ */
+async function loadGroupFileBlobUrl(groupId, fileId) {
+	const ownerKey = currentChannelBlobKey()
+	try {
+		const url = await fetchGroupFileAsBlobUrl(groupId, fileId)
+		const liveKey = store.messages.channelPipelineKey || currentChannelBlobKey()
+		if (!ownerKey || liveKey !== ownerKey) {
+			URL.revokeObjectURL(url)
+			return null
+		}
+		trackedBlobUrls.set(url, ownerKey)
+		return url
+	}
+	catch (error) {
+		handleError('chat.hub.file.loadFailed')(error)
+		return null
+	}
+}
 
 /**
  * @param {string} groupId 群 ID
@@ -25,7 +101,7 @@ const LAZY_MEDIA_BYTES = 2 * 1024 * 1024
 async function renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt) {
 	const fileName = escapeHtml(meta.name || id)
 	if (mime.startsWith('image/')) {
-		const blobUrl = await fetchGroupFileAsBlobUrl(groupId, id)
+		const blobUrl = await loadGroupFileBlobUrl(groupId, id)
 		if (!blobUrl)
 			return renderTemplateAsHtmlString('hub/messages/media_error', {})
 		return renderTemplateAsHtmlString('hub/messages/inline_image', {
@@ -43,7 +119,7 @@ async function renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt) {
 				fileName,
 				mimeType: escapeHtml(mime),
 			})
-		const blobUrl = await fetchGroupFileAsBlobUrl(groupId, id)
+		const blobUrl = await loadGroupFileBlobUrl(groupId, id)
 		if (!blobUrl)
 			return renderTemplateAsHtmlString('hub/messages/media_error', {})
 		if (mime.startsWith('video/'))
@@ -93,6 +169,7 @@ export async function renderMessageFileIdsHtml(message) {
  * @returns {void}
  */
 export function wireMessageMediaPlaceholders(container) {
+	bindBlobUrlCleanup(container)
 	if (container.dataset.mediaPlaceholdersWired === '1') return
 	container.dataset.mediaPlaceholdersWired = '1'
 	container.addEventListener('click', async event => {
@@ -104,7 +181,7 @@ export function wireMessageMediaPlaceholders(container) {
 		event.preventDefault()
 		event.stopPropagation()
 		const mime = String(placeholder.getAttribute('data-mime') || '')
-		const blobUrl = await fetchGroupFileAsBlobUrl(groupId, fileId)
+		const blobUrl = await loadGroupFileBlobUrl(groupId, fileId)
 		if (!blobUrl) {
 			placeholder.replaceWith(
 				await createDocumentFragmentFromHtmlStringNoScriptActivation(
@@ -113,17 +190,28 @@ export function wireMessageMediaPlaceholders(container) {
 			)
 			return
 		}
-		const src = escapeHtml(blobUrl)
-		const html = mime.startsWith('video/')
-			? await renderTemplateAsHtmlString('hub/messages/inline_video', { src })
-			: mime.startsWith('audio/')
-				? await renderTemplateAsHtmlString('hub/messages/inline_audio', { src })
-				: await renderTemplateAsHtmlString('hub/messages/inline_image', {
-					fileName: escapeHtml(placeholder.querySelector('.truncate')?.textContent || fileId),
-					src,
-				})
-		const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(html)
-		const node = frag.firstElementChild
-		if (node) placeholder.replaceWith(node)
+		try {
+			const src = escapeHtml(blobUrl)
+			const html = mime.startsWith('video/')
+				? await renderTemplateAsHtmlString('hub/messages/inline_video', { src })
+				: mime.startsWith('audio/')
+					? await renderTemplateAsHtmlString('hub/messages/inline_audio', { src })
+					: await renderTemplateAsHtmlString('hub/messages/inline_image', {
+						fileName: escapeHtml(placeholder.querySelector('.truncate')?.textContent || fileId),
+						src,
+					})
+			const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(html)
+			const node = frag.firstElementChild
+			if (!node) {
+				revokeTrackedBlobUrl(blobUrl)
+				return
+			}
+			placeholder.replaceWith(node)
+			bindBlobUrlCleanup(node.parentElement)
+		}
+		catch (error) {
+			revokeTrackedBlobUrl(blobUrl)
+			handleError('chat.hub.file.loadFailed')(error)
+		}
 	})
 }

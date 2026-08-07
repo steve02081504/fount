@@ -748,6 +748,7 @@ export type LocaleData = {
 		title: string
 		description: string
 		sidebarTitle: string
+		closeSidebar: string
 		itemDescription: string
 		noDescription: string
 		filterInput: {
@@ -4162,10 +4163,7 @@ export type LocaleData = {
 			mentionSuggest: {
 				'aria-label': string
 			}
-			mediaButton: {
-				title: string
-				'aria-label': string
-			}
+			mediaButton: string
 			pollButton: {
 				title: string
 				'aria-label': string
@@ -4694,14 +4692,8 @@ export type LocaleData = {
 			title: string
 			'aria-label': string
 		}
-		openCabinets: {
-			title: string
-			'aria-label': string
-		}
-		closeCabinets: {
-			title: string
-			'aria-label': string
-		}
+		openCabinets: string
+		closeCabinets: string
 		bootstrapFailed: string
 		home_function_buttons: {
 			main: {

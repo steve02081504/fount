@@ -1,3 +1,4 @@
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { mountTemplate } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
@@ -6,7 +7,8 @@ import { authorDisplayLabel } from '../../hub/core/domUtils.mjs'
 import { aliasForEntity } from '../../shared/aliases.mjs'
 import { avatarInitial } from '../../shared/hashAvatar.mjs'
 import { disambiguateLabels, resolveDisplayName } from '../../shared/nameResolve.mjs'
-import { unbanMember } from '../api/groupGovernance.mjs'
+import { unbanMember } from '../endpoints/groupGovernance.mjs'
+import { kickMember as kickMemberRequest } from '../endpoints/members.mjs'
 import { memberDisplaysAsAdmin } from '../memberDisplay.mjs'
 
 /**
@@ -20,13 +22,14 @@ async function kickMember(context, username) {
 		if (!confirmI18n('chat.group.settings.page.kick.selfNodeWarning', { name: username })) return
 
 	if (!confirmI18n('chat.group.settings.page.kick.confirm', { name: username })) return
-	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/members/${encodeURIComponent(username)}/kick`, {
-		method: 'POST',
-		credentials: 'include'
-	})
-	if (!resp.ok) throw new Error(resp.statusText)
-	showToastI18n('success', 'chat.group.settings.page.kick.success')
-	await context.reload(context.groupId)
+	try {
+		await kickMemberRequest(context.groupId, username)
+		showToastI18n('success', 'chat.group.settings.page.kick.success')
+		await context.reload(context.groupId)
+	}
+	catch (error) {
+		handleError('chat.group.settings.page.kick.failed')(error)
+	}
 }
 
 /**
@@ -39,13 +42,15 @@ async function banMember(context, username) {
 	const picked = await pickBanScope({ displayName: username })
 	if (!picked) return
 	try {
-		const { banMemberWithScope } = await import('../api/groupBan.mjs')
-		await banMemberWithScope(context.groupId, username, picked)
+		const { banMemberWithScope } = await import('../endpoints/groupBan.mjs')
+		const result = await banMemberWithScope(context.groupId, username, picked)
 		showToastI18n('success', 'chat.group.settings.page.banSuccess')
+		if (result.reputationSlash && result.reputationSlash.ok === false)
+			handleError('chat.group.settings.page.banFailed')(new Error(result.reputationSlash.error || 'reputation slash failed'))
 		await context.reload(context.groupId)
 	}
 	catch (error) {
-		showToastI18n('error', 'chat.group.settings.page.banFailed', { error: error.message })
+		handleError('chat.group.settings.page.banFailed')(error)
 	}
 }
 
@@ -62,7 +67,7 @@ async function unbanMemberAction(context, username) {
 		await context.reload(context.groupId)
 	}
 	catch (error) {
-		showToastI18n('error', 'chat.group.settings.page.unbanFailed', { error: error.message })
+		handleError('chat.group.settings.page.unbanFailed')(error)
 	}
 }
 

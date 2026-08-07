@@ -1,6 +1,8 @@
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { mountTemplate, renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n, promptI18n } from '../../../../../../scripts/i18n/index.mjs'
+import { createRole, deleteRole as deleteRoleRequest, updateRolePermission as updateRolePermissionRequest } from '../endpoints/roles.mjs'
 
 import { ALL_PERMISSIONS } from './constants.mjs'
 
@@ -63,18 +65,14 @@ export async function renderPermissionSettings(context) {
  * @returns {Promise<void>}
  */
 async function updateRolePermission(context, roleId, permission, enabled) {
-	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/roles/${encodeURIComponent(roleId)}/permissions`, {
-		method: 'PUT',
-		headers: { 'Content-Type': 'application/json' },
-		credentials: 'include',
-		body: JSON.stringify({ permission, enabled })
-	})
-	if (!resp.ok) {
-		showToastI18n('error', 'chat.group.settings.page.permissionUpdateFailed', { error: resp.statusText })
-		await context.reload(context.groupId)
-		return
+	try {
+		await updateRolePermissionRequest(context.groupId, roleId, permission, enabled)
+		showToastI18n('success', 'chat.group.settings.page.permissionUpdated')
 	}
-	showToastI18n('success', 'chat.group.settings.page.permissionUpdated')
+	catch (error) {
+		handleError('chat.group.settings.page.permissionUpdateFailed')(error)
+		await context.reload(context.groupId)
+	}
 }
 
 /**
@@ -84,30 +82,27 @@ async function updateRolePermission(context, roleId, permission, enabled) {
  */
 async function deleteRole(context, roleId) {
 	if (!confirmI18n('chat.group.settings.page.delete.roleConfirm')) return
-	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/roles/${encodeURIComponent(roleId)}`, {
-		method: 'DELETE',
-		credentials: 'include'
-	})
-	if (!resp.ok) throw new Error(resp.statusText)
-	showToastI18n('success', 'chat.group.settings.page.delete.roleSuccess')
-	await context.reload(context.groupId)
+	try {
+		await deleteRoleRequest(context.groupId, roleId)
+		showToastI18n('success', 'chat.group.settings.page.delete.roleSuccess')
+		await context.reload(context.groupId)
+	}
+	catch (error) {
+		handleError('chat.group.settings.page.delete.roleFailed')(error)
+	}
 }
 
-/** @param {import('./state.mjs').GroupSettingsContext} context @returns {void} */
-function showCreateRoleModal(context) {
+/** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
+async function showCreateRoleModal(context) {
 	const name = promptI18n('chat.group.settings.page.create.rolePrompt')
 	if (!name?.trim()) return
 
-	fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/roles`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		credentials: 'include',
-		body: JSON.stringify({ name: name.trim() })
-	}).then(r => r.json().then(async data => {
-		if (r.ok) {
-			showToastI18n('success', 'chat.group.settings.page.create.roleSuccess')
-			await context.reload(context.groupId)
-		} else
-			showToastI18n('error', 'chat.group.settings.page.create.roleFailed', { error: data.error || '' })
-	})).catch(error => showToastI18n('error', 'chat.group.settings.page.create.roleFailed', { error: error.message }))
+	try {
+		await createRole(context.groupId, name.trim())
+		showToastI18n('success', 'chat.group.settings.page.create.roleSuccess')
+		await context.reload(context.groupId)
+	}
+	catch (error) {
+		handleError('chat.group.settings.page.create.roleFailed')(error)
+	}
 }
