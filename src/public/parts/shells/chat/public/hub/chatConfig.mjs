@@ -147,11 +147,11 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 		}
 
 		host.querySelectorAll('.character-chat-freq-slider').forEach(slider => {
-			slider.addEventListener('input', async (inputEvent) => {
-				const row = inputEvent.target.closest('.character-chat-freq-row')
+			slider.addEventListener('change', async (changeEvent) => {
+				const row = changeEvent.target.closest('.character-chat-freq-row')
 				const charname = row?.dataset?.char
 				if (!charname) return
-				const frequency = Number(inputEvent.target.value) / 100
+				const frequency = Number(changeEvent.target.value) / 100
 				try {
 					await setGroupCharFrequency(groupId, charname, frequency)
 				}
