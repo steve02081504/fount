@@ -206,7 +206,9 @@ export async function unlockAchievement(partpath, achievementId) {
 			body: JSON.stringify({ partpath, id: achievementId }),
 		})
 		if (!response.ok) {
-			const data = await response.json().catch(() => ({}))
+			let data = {}
+			try { data = await response.json() }
+			catch { /* non-JSON body */ }
 			throw Object.assign(new Error(`API request failed with status ${response.status}`), data, { response })
 		}
 	}

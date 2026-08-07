@@ -25,10 +25,12 @@ export async function getRegistry(name, { nocache = false } = {}) {
 
 	if (!nocache) {
 		registryFetchCache.set(name, fetchPromise)
-		fetchPromise.catch(() => {
+		try { await fetchPromise }
+		catch (error) {
 			if (registryFetchCache.get(name) === fetchPromise)
 				registryFetchCache.delete(name)
-		})
+			throw error
+		}
 	}
 	return fetchPromise
 }

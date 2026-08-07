@@ -5,7 +5,9 @@
  */
 async function parseJsonResponse(response) {
 	if (!response.ok) {
-		const data = await response.json().catch(() => ({}))
+		let data = {}
+		try { data = await response.json() }
+		catch { /* non-JSON body */ }
 		throw Object.assign(new Error(`API request failed with status ${response.status}`), data, { response })
 	}
 	return response.json()
@@ -30,8 +32,7 @@ export async function ping(with_cache = false) {
  */
 export async function hosturl_in_local_ip() {
 	try {
-		const data = await ping(true)
-		return data.hosturl_in_local_ip
+		return (await ping(true)).hosturl_in_local_ip
 	}
 	catch {
 		return window.location.origin
@@ -197,8 +198,7 @@ export async function authenticate() {
  */
 export async function getUserSetting(key) {
 	const response = await fetch(`/api/getusersetting?key=${encodeURIComponent(key)}`)
-	const { value } = await parseJsonResponse(response)
-	return value
+	return (await parseJsonResponse(response)).value
 }
 
 /**
