@@ -30,9 +30,9 @@ Deno.test('gravity_acquire: pretty-printed termux-sensor stream (indent=2)', () 
 })
 
 Deno.test('gravity_acquire: compact + concatenated sensor objects', () => {
-	const a = '{"Gravity":{"values":[1,2,3]}}'
-	const b = '{"accelerometer":{"values":[4,5,6]}}'
-	const { samples, rest } = parseSensorStdout(a + b)
+	const firstPayload = '{"Gravity":{"values":[1,2,3]}}'
+	const secondPayload = '{"accelerometer":{"values":[4,5,6]}}'
+	const { samples, rest } = parseSensorStdout(firstPayload + secondPayload)
 	assertEquals(samples, [[1, 2, 3], [4, 5, 6]])
 	assertEquals(rest, '')
 })

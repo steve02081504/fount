@@ -18,17 +18,16 @@ const LATEST_CACHE_MS = 24 * 60 * 60 * 1000
 const RELEASES_LATEST = 'https://api.github.com/repos/koalaman/shellcheck/releases/latest'
 
 /**
- * @param {string} a 版本
- * @param {string} b 版本
- * @returns {number} a 小于 b 为负；相等为 0；a 大于 b 为正
+ * @param {string} versionA 版本
+ * @param {string} versionB 版本
+ * @returns {number} versionA 小于 versionB 为负；相等为 0；versionA 大于 versionB 为正
  */
-export function compareVersions(a, b) {
-	const pa = a.replace(/^v/i, '').split('.').map(n => Number(n) || 0)
-	const pb = b.replace(/^v/i, '').split('.').map(n => Number(n) || 0)
-	const len = Math.max(pa.length, pb.length)
-	for (let i = 0; i < len; i++) {
-		const d = (pa[i] || 0) - (pb[i] || 0)
-		if (d) return d
+export function compareVersions(versionA, versionB) {
+	const segmentsA = versionA.replace(/^v/i, '').split('.').map(segment => Number(segment) || 0)
+	const segmentsB = versionB.replace(/^v/i, '').split('.').map(segment => Number(segment) || 0)
+	for (let index = 0; index < Math.max(segmentsA.length, segmentsB.length); index++) {
+		const difference = (segmentsA[index] || 0) - (segmentsB[index] || 0)
+		if (difference) return difference
 	}
 	return 0
 }

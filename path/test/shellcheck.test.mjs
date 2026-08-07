@@ -16,20 +16,20 @@ const pathRoot = join(REPO_ROOT, 'path')
 
 /**
  * 递归收集 path 下全部 .sh。
- * @param {string} dir 目录
+ * @param {string} directory 目录
  * @returns {Promise<string[]>} 绝对路径
  */
-async function collectShFiles(dir) {
+async function collectShFiles(directory) {
 	/** @type {string[]} */
-	const out = []
-	for await (const entry of Deno.readDir(dir)) {
-		const full = join(dir, entry.name)
-		if (entry.isDirectory)
-			out.push(...await collectShFiles(full))
-		else if (entry.isFile && entry.name.endsWith('.sh'))
-			out.push(full)
+	const shellFiles = []
+	for await (const directoryEntry of Deno.readDir(directory)) {
+		const filePath = join(directory, directoryEntry.name)
+		if (directoryEntry.isDirectory)
+			shellFiles.push(...await collectShFiles(filePath))
+		else if (directoryEntry.isFile && directoryEntry.name.endsWith('.sh'))
+			shellFiles.push(filePath)
 	}
-	return out
+	return shellFiles
 }
 
 /**
@@ -47,18 +47,18 @@ async function prepareCheckPaths(files) {
 	let tempRoot = null
 
 	for (const file of files) {
-		const rel = relative(REPO_ROOT, file).replaceAll('\\', '/')
+		const relativePath = relative(REPO_ROOT, file).replaceAll('\\', '/')
 		if (!/[^\u0000-\u007f]/.test(basename(file))) {
 			checkPaths.push(file)
-			labels.set(file, rel)
+			labels.set(file, relativePath)
 			continue
 		}
 		if (!tempRoot)
 			tempRoot = await mkdtemp(join(tmpdir(), 'fount-shellcheck-'))
-		const safe = join(tempRoot, `${checkPaths.length}.sh`)
-		await copyFile(file, safe)
-		checkPaths.push(safe)
-		labels.set(safe, rel)
+		const temporaryPath = join(tempRoot, `${checkPaths.length}.sh`)
+		await copyFile(file, temporaryPath)
+		checkPaths.push(temporaryPath)
+		labels.set(temporaryPath, relativePath)
 	}
 
 	return {

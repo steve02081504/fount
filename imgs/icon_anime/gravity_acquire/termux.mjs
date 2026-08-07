@@ -70,7 +70,7 @@ export const start = (onSample) => {
 	/** @type {import('node:child_process').ChildProcess | null} */
 	let child = null
 	/** @type {string} */
-	let stdoutBuf = ''
+	let stdoutBuffer = ''
 	let sensorIndex = 0
 	let dead = false
 
@@ -79,8 +79,8 @@ export const start = (onSample) => {
 	 * @returns {void}
 	 */
 	const drainStdout = () => {
-		const { samples, rest } = parseSensorStdout(stdoutBuf)
-		stdoutBuf = rest
+		const { samples, rest } = parseSensorStdout(stdoutBuffer)
+		stdoutBuffer = rest
 		for (const [ax, ay, az] of samples) onSample(ax, ay, az)
 	}
 
@@ -118,10 +118,10 @@ export const start = (onSample) => {
 			child = null
 			return
 		}
-		stdoutBuf = ''
+		stdoutBuffer = ''
 		child.stdout?.setEncoding('utf8')
 		child.stdout?.on('data', (chunk) => {
-			stdoutBuf += chunk
+			stdoutBuffer += chunk
 			drainStdout()
 		})
 		child.on('exit', (code) => {
@@ -141,6 +141,6 @@ export const start = (onSample) => {
 	return () => {
 		dead = true
 		killChild()
-		stdoutBuf = ''
+		stdoutBuffer = ''
 	}
 }

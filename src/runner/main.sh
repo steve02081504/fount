@@ -343,7 +343,7 @@ else
 	fi
 	find "$FOUNT_DIR" -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -exec chmod +x {} +
 	find "$FOUNT_DIR/path" -maxdepth 1 -type f ! -name 'desktop.ini' ! -iname 'agents.md' -exec chmod +x {} +
-	chmod -x "$FOUNT_DIR/path/desktop.ini" 2>/dev/null || true
+	[ -f "$FOUNT_DIR/path/desktop.ini" ] && chmod -x "$FOUNT_DIR/path/desktop.ini"
 	for agentsManifestPath in "$FOUNT_DIR/path/AGENTS.md" "$FOUNT_DIR/path/agents.md"; do
 		[ -f "$agentsManifestPath" ] && chmod -x "$agentsManifestPath"
 	done

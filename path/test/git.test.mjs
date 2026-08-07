@@ -25,6 +25,7 @@ const INVALID_BRANCH_NAMES = [
 	'a..b',
 	'a b',
 	'a\tb',
+	'a\u0001b',
 	'/abs',
 	'trail/',
 	'a//b',
@@ -65,8 +66,7 @@ async function runBash(script) {
  * @returns {Promise<{ code: number, stdout: string, stderr: string }>} 执行结果
  */
 async function runPwsh(script) {
-	const shell = Deno.build.os === 'windows' ? 'powershell' : 'pwsh'
-	const { code, stdout, stderr } = await new Deno.Command(shell, {
+	const { code, stdout, stderr } = await new Deno.Command(Deno.build.os === 'windows' ? 'powershell' : 'pwsh', {
 		args: ['-NoProfile', '-NonInteractive', '-Command', script],
 		cwd: REPO_ROOT,
 		stdout: 'piped',
@@ -90,25 +90,25 @@ async function extractPsValidBranchFn() {
 	let depth = 0
 	let end = -1
 	let inSingle = false
-	for (let i = start; i < src.length; i++) {
-		const ch = src[i]
+	for (let characterIndex = start; characterIndex < src.length; characterIndex++) {
+		const character = src[characterIndex]
 		if (inSingle) {
-			if (ch === '\'' && src[i + 1] === '\'') {
-				i++
+			if (character === '\'' && src[characterIndex + 1] === '\'') {
+				characterIndex++
 				continue
 			}
-			if (ch === '\'') inSingle = false
+			if (character === '\'') inSingle = false
 			continue
 		}
-		if (ch === '\'') {
+		if (character === '\'') {
 			inSingle = true
 			continue
 		}
-		if (ch === '{') depth++
-		else if (ch === '}') {
+		if (character === '{') depth++
+		else if (character === '}') {
 			depth--
 			if (depth === 0) {
-				end = i + 1
+				end = characterIndex + 1
 				break
 			}
 		}
@@ -123,12 +123,11 @@ Deno.test('git.sh parses under bash -n', async () => {
 })
 
 Deno.test('git_valid_branch_name accepts normal branch names like lava', async () => {
-	const names = VALID_BRANCH_NAMES.map(n => JSON.stringify(n)).join(' ')
 	const result = await runBash(`
 		set -e
 		# shellcheck source=/dev/null
 		. ${JSON.stringify(gitShPath)}
-		for name in ${names}; do
+		for name in ${VALID_BRANCH_NAMES.map(branchName => JSON.stringify(branchName)).join(' ')}; do
 			git_valid_branch_name "$name"
 		done
 		echo ok
@@ -138,7 +137,6 @@ Deno.test('git_valid_branch_name accepts normal branch names like lava', async (
 })
 
 Deno.test('git_valid_branch_name rejects glob and ref-unsafe fragments (bash)', async () => {
-	const rejects = INVALID_BRANCH_NAMES.map(n => `reject ${JSON.stringify(n)}`).join('\n')
 	const result = await runBash(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
@@ -149,7 +147,7 @@ Deno.test('git_valid_branch_name rejects glob and ref-unsafe fragments (bash)', 
 				exit 1
 			fi
 		}
-		${rejects}
+		${INVALID_BRANCH_NAMES.map(branchName => `reject ${JSON.stringify(branchName)}`).join('\n')}
 		echo ok
 	`)
 	assertEquals(result.code, 0, result.stderr || result.stdout)
@@ -157,43 +155,66 @@ Deno.test('git_valid_branch_name rejects glob and ref-unsafe fragments (bash)', 
 })
 
 Deno.test('git_valid_branch_name bash and PowerShell agree', async () => {
-	const psFn = await extractPsValidBranchFn()
 	const allNames = [...VALID_BRANCH_NAMES, ...INVALID_BRANCH_NAMES]
 	/**
 	 * @param {string} value 任意字符串
 	 * @returns {string} base64
 	 */
-	const b64 = (value) => btoa(String.fromCharCode(...new TextEncoder().encode(value)))
-	const encoded = allNames.map(b64)
+	const encodeBase64 = (value) => btoa(String.fromCharCode(...new TextEncoder().encode(value)))
+	const encoded = allNames.map(encodeBase64)
 
 	const bash = await runBash(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
 		decode() { printf '%s' "$1" | base64 -d; }
-		for b64 in ${encoded.map(e => JSON.stringify(e)).join(' ')}; do
+		for b64 in ${encoded.map(encodedName => JSON.stringify(encodedName)).join(' ')}; do
 			name=$(decode "$b64")
 			if git_valid_branch_name "$name"; then echo 1; else echo 0; fi
 		done
 	`)
 	assertEquals(bash.code, 0, bash.stderr || bash.stdout)
 
-	const psB64List = encoded.map(e => `'${e}'`).join(', ')
-	const ps = await runPwsh(`
-${psFn}
-$encoded = @(${psB64List})
+	const powerShellResult = await runPwsh(`
+${await extractPsValidBranchFn()}
+$encoded = @(${encoded.map(encodedName => `'${encodedName}'`).join(', ')})
 foreach ($b64 in $encoded) {
   $name = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64))
   $ok = if (git_valid_branch_name $name) { '1' } else { '0' }
   Write-Output $ok
 }
 `)
-	assertEquals(ps.code, 0, ps.stderr || ps.stdout)
+	assertEquals(powerShellResult.code, 0, powerShellResult.stderr || powerShellResult.stdout)
 
 	const bashVerdicts = bash.stdout.trim().split(/\r?\n/).filter(Boolean)
-	const psVerdicts = ps.stdout.trim().split(/\r?\n/).filter(Boolean)
+	const psVerdicts = powerShellResult.stdout.trim().split(/\r?\n/).filter(Boolean)
 	assertEquals(psVerdicts.length, allNames.length)
 	assertEquals(bashVerdicts.length, allNames.length)
 	assertEquals(psVerdicts, bashVerdicts)
+})
+
+Deno.test('git_valid_branch_name rejects control characters (bash and PowerShell)', async () => {
+	const controlBranch = 'a\u0001b'
+	const bash = await runBash(`
+		set -e
+		. ${JSON.stringify(gitShPath)}
+		if git_valid_branch_name ${JSON.stringify(controlBranch)}; then
+			echo accepted >&2
+			exit 1
+		fi
+		echo ok
+	`)
+	assertEquals(bash.code, 0, bash.stderr || bash.stdout)
+	assertEquals(bash.stdout.trim(), 'ok')
+
+	const encodeBase64 = (value) => btoa(String.fromCharCode(...new TextEncoder().encode(value)))
+	const powerShellResult = await runPwsh(`
+${await extractPsValidBranchFn()}
+$name = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${encodeBase64(controlBranch)}'))
+if (git_valid_branch_name $name) { Write-Error 'accepted'; exit 1 }
+Write-Output ok
+`)
+	assertEquals(powerShellResult.code, 0, powerShellResult.stderr || powerShellResult.stdout)
+	assertEquals(powerShellResult.stdout.trim(), 'ok')
 })
 
 Deno.test('sourcing git.sh defines git_remote_branch_status', async () => {

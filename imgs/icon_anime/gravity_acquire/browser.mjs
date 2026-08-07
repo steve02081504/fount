@@ -57,11 +57,12 @@ const xyz = (vector) => {
 
 /**
  * GravitySensor（Chromium）。
- * 等首次 reading / error 再决定成败，避免 start 成功但无读数时挡住 DeviceMotion 回落。
+ * 等首次 reading / error / abort 再决定成败，避免 start 成功但无读数时挡住 DeviceMotion 回落。
  * @param {(ax: number, ay: number, az: number) => void} onSample 回调
+ * @param {AbortSignal} [signal] 会话停止时中止等待
  * @returns {Promise<(() => void) | null>} stop；不可用则 null
  */
-const startGravitySensor = async (onSample) => {
+const startGravitySensor = async (onSample, signal) => {
 	const GravitySensorCtor = /** @type {undefined | (new (opts?: { frequency?: number }) => {
 		x: number, y: number, z: number,
 		start: () => void, stop: () => void,
@@ -69,11 +70,36 @@ const startGravitySensor = async (onSample) => {
 		removeEventListener: (type: string, fn: (ev: Event) => void) => void,
 	})} */ globalThis.GravitySensor
 	if (typeof GravitySensorCtor !== 'function') return null
+	if (signal?.aborted) return null
 	if (!await ensureAccelerometerPermission()) return null
+	if (signal?.aborted) return null
 	try {
 		const sensor = new GravitySensorCtor({ frequency: FREQUENCY })
 		return await new Promise((resolve) => {
 			let settled = false
+			/**
+			 * 卸监听并停传感器。
+			 * @returns {void}
+			 */
+			const detach = () => {
+				signal?.removeEventListener('abort', onAbort)
+				sensor.removeEventListener('reading', onReading)
+				sensor.removeEventListener('error', onError)
+				try {
+					sensor.stop()
+				}
+				catch { /* already stopped */ }
+			}
+			/**
+			 * 会话 abort：清理并 resolve null。
+			 * @returns {void}
+			 */
+			const onAbort = () => {
+				if (settled) return
+				settled = true
+				detach()
+				resolve(null)
+			}
 			/**
 			 * 持续 reading：推送样本；首次成功时 resolve 清理函数。
 			 * @returns {void}
@@ -83,6 +109,7 @@ const startGravitySensor = async (onSample) => {
 				if (axes) onSample(axes[0], axes[1], axes[2])
 				if (settled) return
 				settled = true
+				signal?.removeEventListener('abort', onAbort)
 				resolve(() => {
 					sensor.removeEventListener('reading', onReading)
 					sensor.removeEventListener('error', onError)
@@ -99,16 +126,16 @@ const startGravitySensor = async (onSample) => {
 			const onError = () => {
 				if (settled) return
 				settled = true
-				sensor.removeEventListener('reading', onReading)
-				sensor.removeEventListener('error', onError)
-				try {
-					sensor.stop()
-				}
-				catch { /* already stopped */ }
+				detach()
 				resolve(null)
 			}
 			sensor.addEventListener('reading', onReading)
 			sensor.addEventListener('error', onError)
+			signal?.addEventListener('abort', onAbort, { once: true })
+			if (signal?.aborted) {
+				onAbort()
+				return
+			}
 			try {
 				sensor.start()
 			}
@@ -151,11 +178,12 @@ const startDeviceMotion = async (onSample) => {
  * @returns {() => void} stop
  */
 export const start = (onSample) => {
-	/** @type {{ stop: (() => void) | null, dead: boolean }} */
-	const control = { stop: null, dead: false }
+	/** @type {{ stop: (() => void) | null }} */
+	const control = { stop: null }
+	const abortController = new AbortController()
 	void (async () => {
-		const stopGravitySensor = await startGravitySensor(onSample)
-		if (control.dead) {
+		const stopGravitySensor = await startGravitySensor(onSample, abortController.signal)
+		if (abortController.signal.aborted) {
 			stopGravitySensor?.()
 			return
 		}
@@ -164,14 +192,14 @@ export const start = (onSample) => {
 			return
 		}
 		const stopDeviceMotion = await startDeviceMotion(onSample)
-		if (control.dead) {
+		if (abortController.signal.aborted) {
 			stopDeviceMotion?.()
 			return
 		}
 		control.stop = stopDeviceMotion
 	})()
 	return () => {
-		control.dead = true
+		abortController.abort()
 		control.stop?.()
 		control.stop = null
 	}
