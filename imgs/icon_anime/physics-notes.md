@@ -60,7 +60,9 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 
 - `liquidPressureAt = P_air(surface) + RHO_G·depth`. Submerged orifices: Torricelli `∝ √(ΔP/ρg)`. Free-surface sheets equalize by fill level only. Sealed gas with `P > liquid P` blocks invasion and can push liquid away.
 - Melt shares `transport.mjs` with per-cell viscosity; buoyancy swaps along weighted down when the downslope neighbor is lighter.
-- `liqVx`/`liqVy`: EMA from mass transfers each `stepLiquid` — drives free-liquid glyphs.
+- `liqVx`/`liqVy` / `meltVx`/`meltVy`: EMA from mass transfers — drive shared rain-style glyphs (`waterChar` / `lavaChar`). Melts use the same alphabet; viscosity only slows Stokes flux.
+- Condensed-phase `stepPhaseTransport` settles **deep→shallow** along ĝ (no shallow→deep cascade that teleports melt to the floor in one tick).
+- Buoyancy swaps only between occupied condensed cells (convection); free-fall into empty air is transport, so lava viscosity can lag water.
 - Communicating vessels: relax `φ = P/(ρg) - depth` along the liquid graph (BFS from lowest-φ surface — no teleport across disconnected air).
 - `POOL` retains fill and spills/leaks; `BODY` is splash-only barrier; pillars are not materials.
 - Soil: absorb diminishes as cell wets (`soilAbsorbFactor`); rain hits sink only `SOIL_HIT_ABSORB_FRAC`. Seepage slow enough for surface puddles. Sideways share + prefer below (gravity-weighted); air below → underside `condense`; Matthew along ĝ⊥; `COND_DRAW` glyphs / full dump at `COND_DRIP` / `COND_WEEP_FRAC` weep below drip so split films cannot trap mass forever. When ĝ leaves an open underside, condense reabsorbs into moisture (excess spills to ortho air). Compose drips via `condenseDripSource` (gravity-up soil), not screen-Y. Heating evaporates moisture before melt.

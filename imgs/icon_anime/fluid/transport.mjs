@@ -9,7 +9,7 @@ import { pressureAt } from './gas.mjs'
 import { MAT, LIQ_DRAW, LIQ_FULL, T_AMB, P_ATM, isLiquidBarrier } from './mat.mjs'
 import {
 	scratch, inWorld, markAirIfDrawCrossed,
-	gravityDownWeights, strongestDown,
+	gravityDownWeights, strongestDown, gravityDepth,
 } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
@@ -146,62 +146,87 @@ export const stepPhaseTransport = (world, phase) => {
 	const strongDown = strongestDown(world)
 	const mark = phase.markDirty ?? markAirIfDrawCrossed
 
-	// --- Settle along gravity-weighted down neighbors ---
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) {
-			const cell = y * W + x
-			if (mass[cell] <= 0.02) continue
-			if (isLiquidBarrier(world.mat[cell]) && world.mat[cell] !== MAT.AIR) {
-				const before = mass[cell]
-				phase.onBarrier?.(world, cell, before)
-				continue
-			}
-			const visc = phase.viscAt(world, cell)
-			const rhoSrc = phase.rhoAt(world, cell)
-			const pSrc = pressureAt(world, x, y) + rhoSrc * mass[cell]
+	// Deep → shallow along ĝ so mass cannot cascade through the whole column in one tick
+	// (y↑ scan under default ĝ teleported melt to the floor — pools with no fall trail).
+	const order = scratch(world, 'phaseOrder', n, Int32Array)
+	const span = world.gravityDepthSpan || 1
+	const depthBuckets = Math.max(W, H) + 2
+	const dCounts = scratch(world, 'phaseDepthCounts', depthBuckets, Int32Array)
+	dCounts.fill(0)
+	for (let cell = 0; cell < n; cell++) {
+		const d = gravityDepth(world, cell % W, (cell / W) | 0)
+		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
+		dCounts[b]++
+	}
+	let run = 0
+	for (let b = depthBuckets - 1; b >= 0; b--) {
+		const c = dCounts[b]
+		dCounts[b] = run
+		run += c
+	}
+	for (let cell = 0; cell < n; cell++) {
+		const d = gravityDepth(world, cell % W, (cell / W) | 0)
+		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
+		order[dCounts[b]++] = cell
+	}
 
-			for (let i = 0; i < down.n; i++) {
-				const dx = down.dx[i]
-				const dy = down.dy[i]
-				const w = down.w[i]
-				const nb = neighborCoord(world, x, y, dx, dy)
-				const crossed = nb.wrappedFrac > 0 || nb.outFrac > 0
-				let dstMass = 0
-				let room = LIQ_FULL
-				let pDst = P_ATM
-				if (!crossed) {
-					const target = nb.y * W + nb.x
-					if (!phase.canEnter(world, nb.x, nb.y, target)) continue
+	// --- Settle along gravity-weighted down neighbors ---
+	for (let si = 0; si < n; si++) {
+		const cell = order[si]
+		const x = cell % W
+		const y = (cell / W) | 0
+		if (mass[cell] <= 0.02) continue
+		if (isLiquidBarrier(world.mat[cell]) && world.mat[cell] !== MAT.AIR) {
+			const before = mass[cell]
+			phase.onBarrier?.(world, cell, before)
+			continue
+		}
+		const visc = phase.viscAt(world, cell)
+		const rhoSrc = phase.rhoAt(world, cell)
+		const pSrc = pressureAt(world, x, y) + rhoSrc * mass[cell]
+
+		for (let i = 0; i < down.n; i++) {
+			const dx = down.dx[i]
+			const dy = down.dy[i]
+			const w = down.w[i]
+			const nb = neighborCoord(world, x, y, dx, dy)
+			const crossed = nb.wrappedFrac > 0 || nb.outFrac > 0
+			let dstMass = 0
+			let room = LIQ_FULL
+			let pDst = P_ATM
+			if (!crossed) {
+				const target = nb.y * W + nb.x
+				if (!phase.canEnter(world, nb.x, nb.y, target)) continue
+				dstMass = mass[target]
+				room = LIQ_FULL - dstMass
+				if (room <= 0) continue
+				pDst = pressureAt(world, nb.x, nb.y) + phase.rhoAt(world, target) * dstMass
+			}
+			else if (nb.wrappedFrac > 0) {
+				const target = nb.y * W + nb.x
+				if (phase.canEnter(world, nb.x, nb.y, target)) {
 					dstMass = mass[target]
 					room = LIQ_FULL - dstMass
-					if (room <= 0) continue
 					pDst = pressureAt(world, nb.x, nb.y) + phase.rhoAt(world, target) * dstMass
 				}
-				else if (nb.wrappedFrac > 0) {
-					const target = nb.y * W + nb.x
-					if (phase.canEnter(world, nb.x, nb.y, target)) {
-						dstMass = mass[target]
-						room = LIQ_FULL - dstMass
-						pDst = pressureAt(world, nb.x, nb.y) + phase.rhoAt(world, target) * dstMass
-					}
-					else if (nb.outFrac <= 0) continue
-					// else: wrap target blocked — treat remaining outFrac as ambient sink
-				}
 				else if (nb.outFrac <= 0) continue
-				// pure out: pDst stays P_ATM, room stays LIQ_FULL — never index OOB cells
-
-				let move = pressureMove(pSrc, pDst, mass[cell] * w, room, visc)
-				if (move < 0.01 && !crossed && dstMass < mass[cell]) {
-					const gain = viscGain(visc)
-					if (gain > 0)
-						move = Math.min(mass[cell] * 0.5 * w, room, (mass[cell] - dstMass) * 0.5 * w) * gain
-				}
-				if (move <= 0.01 && crossed && nb.outFrac > 0)
-					move = mass[cell] * w
-				if (move <= 0.01) continue
-				transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, mark)
+				// else: wrap target blocked — treat remaining outFrac as ambient sink
 			}
+			else if (nb.outFrac <= 0) continue
+			// pure out: pDst stays P_ATM, room stays LIQ_FULL — never index OOB cells
+
+			let move = pressureMove(pSrc, pDst, mass[cell] * w, room, visc)
+			if (move < 0.01 && !crossed && dstMass < mass[cell]) {
+				const gain = viscGain(visc)
+				if (gain > 0)
+					move = Math.min(mass[cell] * 0.5 * w, room, (mass[cell] - dstMass) * 0.5 * w) * gain
+			}
+			if (move <= 0.01 && crossed && nb.outFrac > 0)
+				move = mass[cell] * w
+			if (move <= 0.01) continue
+			transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, mark)
 		}
+	}
 
 	// --- Side sheet perpendicular to strongest down ---
 	let sideA = { dx: -1, dy: 0 }

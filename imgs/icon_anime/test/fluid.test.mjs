@@ -10,8 +10,9 @@ import {
 	totalWorldWater, P_ATM, ATM_HYDRO,
 	clearMaterials, idx, RHO_G, RHO_AIR,
 	COND_DRIP, COND_DRAW, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQ_DRAW,
-	waterChar, liquidChar, pickWaterGlyph, FALL_HEAVY,
+	waterChar, liquidChar, lavaChar, pickWaterGlyph, FALL_HEAVY,
 	WATER_STILL, WATER_FALL, WATER_HIGH_L, WATER_HIGH_R, WATER_LOW_DL, WATER_LOW_DR,
+	addMelt, T_MAX, viscOf, rhoOf, SUBSTANCE, viscGain,
 	globalWindAt, windShear, gasVelocityAt, dynamicPressure,
 	staticPressureAt, spawnParticle, liftLiquidByWind, verticalGasDrag, GAS_DRAG, GAS_DRAG_Y,
 	applyGravityToWorld, PARTICLE_GRAVITY, condenseDripSource,
@@ -583,6 +584,108 @@ Deno.test('fluid: waterChar uses liquid velocity, not wind-scale slant on still 
 	// Low momentum diagonal (slow crawl)
 	assert(WATER_LOW_DR.includes(waterChar(0.3, 0, 0.12, 0.2)))
 	assert(WATER_LOW_DL.includes(waterChar(0.3, 0, -0.12, 0.2)))
+})
+
+/**
+ * 竖直落柱：顶部落入，底部 SEAL 接住；关岩浆边，避免汇边抹质量。
+ * @param {'water' | 'lava'} kind 相
+ * @returns {{
+ *   step: () => void,
+ *   midFallGlyphs: () => string[],
+ *   comY: () => number,
+ * }} 探测句柄
+ */
+const freeFallColumn = (kind) => {
+	const world = createWorld({ width: 8, height: 22, margin: 0, bottomExtra: 0 })
+	clearMaterials(world)
+	applyGravityToWorld(world, { gx: 0, gy: 1, mag: PARTICLE_GRAVITY })
+	for (let x = 0; x < world.worldW; x++)
+		setMat(world, x, world.worldH - 1, MAT.SEAL)
+	if (kind === 'lava') addMelt(world, 4, 2, 1, T_MAX)
+	else addLiquid(world, 4, 2, 1)
+	/**
+	 * 关曝露，避免底边岩浆注入。
+	 * @returns {void}
+	 */
+	const disarmLavaEdge = () => {
+		world.boundary.exposure.fill(0)
+	}
+	return {
+		/**
+		 * 推进一步。
+		 * @returns {void}
+		 */
+		step: () => {
+			stepFluid(world, { forceWind: 0 })
+			disarmLavaEdge()
+		},
+		/**
+		 * 半空（远离源与底）可绘熔岩/水字形。
+		 * @returns {string[]} 字形
+		 */
+		midFallGlyphs: () => {
+			const glyphs = []
+			for (let y = 5; y <= 12; y++) {
+				const i = idx(world, 4, y)
+				const amt = kind === 'lava' ? world.melt[i] : world.liq[i]
+				if (amt < LIQ_DRAW * 0.4) continue
+				const vx = kind === 'lava' ? world.meltVx[i] : world.liqVx[i]
+				const vy = kind === 'lava' ? world.meltVy[i] : world.liqVy[i]
+				const ch = kind === 'lava'
+					? lavaChar(amt, world.temp[i], y, vx, vy, true)
+					: liquidChar(amt, y, true, vx, vy)
+				glyphs.push(ch)
+			}
+			return glyphs
+		},
+		/**
+		 * 质量加权行心（沿下落方向更深 = 更大）。
+		 * @returns {number} 质心行
+		 */
+		comY: () => {
+			let mass = 0
+			let moment = 0
+			for (let y = 0; y < world.worldH; y++)
+				for (let x = 0; x < world.worldW; x++) {
+					const i = idx(world, x, y)
+					const amt = kind === 'lava' ? world.melt[i] : world.liq[i]
+					if (amt <= 1e-8) continue
+					mass += amt
+					moment += amt * y
+				}
+			return mass > 0 ? moment / mass : 0
+		},
+	}
+}
+
+Deno.test('fluid: falling lava shows rain-style motion glyphs', () => {
+	const col = freeFallColumn('lava')
+	let sawFall = false
+	for (let t = 0; t < 30; t++) {
+		col.step()
+		const glyphs = col.midFallGlyphs()
+		if (!glyphs.length) continue
+		if (glyphs.some(ch => WATER_FALL.includes(ch) || WATER_HIGH_L.includes(ch) || WATER_HIGH_R.includes(ch)
+			|| WATER_LOW_DL.includes(ch) || WATER_LOW_DR.includes(ch) || ch === '-')) {
+			sawFall = true
+			break
+		}
+	}
+	assert(sawFall, 'falling lava must use rain/motion glyphs, not only still pools')
+})
+
+Deno.test('fluid: water falls the same drop faster than lava', () => {
+	assertGreater(viscOf(rhoOf(SUBSTANCE.ROCK, T_MAX)), viscOf(rhoOf(SUBSTANCE.WATER, 0)))
+	assertLess(viscGain(viscOf(rhoOf(SUBSTANCE.ROCK, T_MAX))), viscGain(viscOf(rhoOf(SUBSTANCE.WATER, 0))))
+	const water = freeFallColumn('water')
+	const lava = freeFallColumn('lava')
+	const steps = 12
+	for (let t = 0; t < steps; t++) {
+		water.step()
+		lava.step()
+	}
+	assertGreater(water.comY(), lava.comY() + 1.5,
+		`after ${steps} ticks water COM ${water.comY()} should lead lava ${lava.comY()}`)
 })
 
 Deno.test('fluid: standing liquid velocity stays low so glyphs are still marks', () => {

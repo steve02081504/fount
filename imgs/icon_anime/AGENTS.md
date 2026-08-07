@@ -55,7 +55,7 @@ Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then qui
 
 ## Material standard
 
-Icon + terrain write the material grid. Free liquid / lava glyphs come from amount × liquid velocity (`waterChar` / `lavaChar`), never from gas wind.
+Icon + terrain write the material grid. Free liquid / lava glyphs share the rain motion alphabet (`waterChar` / `lavaChar` ← amount × velocity); lava is slower via higher `viscOf`, not a separate block charset. Never from gas wind.
 
 | Glyph / mat | Behavior |
 | --- | --- |

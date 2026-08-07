@@ -685,10 +685,13 @@ const stepBuoyancy = (world) => {
 			const b = belowY * W + belowX
 			if (swapMark[b] === gen) continue
 			if (isLiquidBarrier(mat[a]) || isLiquidBarrier(mat[b])) continue
+			// Free-fall into empty air is Stokes transport (visc); buoyancy is convection only.
+			const occupiedA = melt[a] >= 0.05 || liq[a] >= 0.05
+			const occupiedB = melt[b] >= 0.05 || liq[b] >= 0.05
+			if (!occupiedA || !occupiedB) continue
 			const rhoA = cellRho(world, a)
 			const rhoB = cellRho(world, b)
 			if (rhoB + 0.04 >= rhoA) continue
-			if (melt[a] < 0.05 && melt[b] < 0.05 && liq[a] < 0.05 && liq[b] < 0.05) continue
 			const ma = melt[a]
 			const mb = melt[b]
 			const ta = temp[a]

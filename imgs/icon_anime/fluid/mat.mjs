@@ -132,14 +132,17 @@ export const rhoOf = (substance, temp) => {
 
 /**
  * 密度 → 粘滞 [0, 1+]；越高越稠。
+ * 水走低粘滞；岩/熔岩再热也高于水，保证熔岩 Stokes 增益更小、下落更慢。
  * @param {number} rho 密度
  * @returns {number} 粘滞
  */
 export const viscOf = (rho) => {
 	if (rho <= RHO_AIR * 2) return 0
 	if (rho <= RHO_G) return 0.05
-	const t = (rho - RHO_LAVA_HOT) / (RHO_ROCK - RHO_LAVA_HOT)
-	return Math.min(1.2, Math.max(0.05, t * t))
+	const t = Math.min(1, Math.max(0, (rho - RHO_LAVA_HOT) / (RHO_ROCK - RHO_LAVA_HOT)))
+	/** 最热熔岩粘滞下限（> 水）。 */
+	const hot = 0.38
+	return Math.min(1.2, hot + (1.05 - hot) * t * t)
 }
 
 /**

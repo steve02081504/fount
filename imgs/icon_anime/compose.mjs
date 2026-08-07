@@ -7,7 +7,7 @@
 import {
 	MAT, LIQ_DRAW, BUBBLE_MIN_CELLS,
 	isLiquidBarrier, waterChar, liquidChar, dripChar, lavaChar,
-	condenseDripSource,
+	condenseDripSource, strongestDown,
 } from './fluid/index.mjs'
 import { sampleLight, RIPPLE_SPEED, RIPPLE_WIDTH, torchEase } from './gesture/light.mjs'
 import { ICON_W, ICON_BODY_H, PILLARS, BODY_DIST, maxBodyD } from './icon.mjs'
@@ -407,6 +407,25 @@ export const composeFrame = (state) => {
 	const { solid, surface, surfaceChar, outline } = terrain
 	const { worldW: W, worldH: H } = world
 	const cells = width * height
+	const gDown = strongestDown(world)
+
+	/**
+	 * 重力下格无支撑 → 下落字形提示。
+	 * @param {number} wx 世界列
+	 * @param {number} wy 世界行
+	 * @returns {boolean} 是否下落
+	 */
+	const unsupportedDown = (wx, wy) => {
+		if (gDown.w <= 0) return false
+		const bx = wx + gDown.dx
+		const by = wy + gDown.dy
+		if (bx < 0 || by < 0 || bx >= W || by >= H) return true
+		const bi = by * W + bx
+		return !isLiquidBarrier(mat[bi])
+			&& mat[bi] !== MAT.POOL
+			&& liq[bi] < LIQ_DRAW
+			&& melt[bi] < LIQ_DRAW
+	}
 
 	if (!state.frameCh || state.frameCh.length !== cells) {
 		state.frameCh = Array(cells)
@@ -448,19 +467,13 @@ export const composeFrame = (state) => {
 				fg[i] = FG_AT
 			}
 			else if (melt[wi] >= LIQ_DRAW) {
-				ch[i] = lavaChar(melt[wi], temp[wi], wx + vy + frame, meltVx[wi], meltVy[wi])
+				const { gx, gy } = world.gravity
+				ch[i] = lavaChar(melt[wi], temp[wi], wx + vy + frame, meltVx[wi], meltVy[wi], unsupportedDown(wx, vy), gx, gy)
 				fg[i] = lavaFg(temp[wi])
 			}
 			else if (liq[wi] >= LIQ_DRAW) {
-				const by = vy + 1
-				const bi = by * W + wx
-				const falling = by >= H || (
-					!isLiquidBarrier(mat[bi])
-					&& mat[bi] !== MAT.POOL
-					&& liq[bi] < LIQ_DRAW
-					&& melt[bi] < LIQ_DRAW
-				)
-				ch[i] = liquidChar(liq[wi], wx + vy + frame, falling, liqVx[wi], liqVy[wi])
+				const { gx, gy } = world.gravity
+				ch[i] = liquidChar(liq[wi], wx + vy + frame, unsupportedDown(wx, vy), liqVx[wi], liqVy[wi], gx, gy)
 				fg[i] = FG_SPLASH
 			}
 			else {
