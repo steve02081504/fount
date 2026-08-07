@@ -1,3 +1,4 @@
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import {
 	loadPersonalBlockEntries,
@@ -126,7 +127,7 @@ export function registerEntityEndpoints(router) {
 		if (!await isWritableLocalEntityForUser(replicaUsername, entityHash))
 			return res.status(403).json({ error: 'Permission denied' })
 		const { lastSeenAt } = await recordHeartbeat(replicaUsername, entityHash)
-		void pollOwnedEntityProfileUpdates(replicaUsername).catch(() => { })
+		pollOwnedEntityProfileUpdates(replicaUsername).catch(handleError)
 		const profile = await getProfile(entityHash, replicaUsername, { skipPresentation: true })
 		res.status(200).json({
 			lastSeenAt,

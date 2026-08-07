@@ -3,11 +3,18 @@
  * 【职责】切换频道：composer、草稿、消息加载、群 WS。
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
-import { updateChannelListItems } from '../../src/api/groupChannel.mjs'
-import { getGroupState } from '../../src/api/groupCore.mjs'
+import { updateChannelListItems } from '../../src/endpoints/groupChannel.mjs'
+import { getGroupState } from '../../src/endpoints/groupCore.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { createFileHandlers } from '../../src/ui/groupFileUpload.mjs'
 import { updateStatusBanners } from '../banners.mjs'
+import {
+	refreshCallButtonActiveForCurrentChannel,
+	refreshCallStatusBadge,
+} from '../call.mjs'
 import { channelTypeIconHtml } from '../channels.mjs'
+import { loadDraft } from '../composerDraft.mjs'
+import { clearReplyTarget } from '../composerReply.mjs'
 import { warmCharEntityHashCache } from '../core/domUtils.mjs'
 import { store, setState } from '../core/state.mjs'
 import { updateHash } from '../core/urlHash.mjs'
@@ -42,10 +49,10 @@ export async function selectChannel(channelId) {
 	if (isPrivateChatActive())
 		store.privateGroup.channelId = channelId
 	updateHash(store.context.currentGroupId, channelId)
-	void import('../composerReply.mjs').then(({ clearReplyTarget }) => clearReplyTarget())
+	clearReplyTarget()
 	const { showHubMainPane } = await import('../hubPane.mjs')
 	showHubMainPane()
-	void warmCharEntityHashCache()
+	warmCharEntityHashCache().catch(handleError('chat.hub.warmCharCacheFailed'))
 	const { renderHubChannelSidebar } = await import('./index.mjs')
 	await renderHubChannelSidebar(store.context.currentState)
 	if (store.context.currentGroupId)
@@ -75,18 +82,14 @@ export async function selectChannel(channelId) {
 		/** @returns {object | null} 当前群 state（读取文件加密模式） */
 		getCurrentState: () => store.context.currentState,
 	})
-	void import('../composerDraft.mjs').then(({ loadDraft }) => {
-		loadDraft(store.context.currentGroupId, channelId)
-	})
+	loadDraft(store.context.currentGroupId, channelId)
 	await loadMessages()
 	if (store.context.currentGroupId && store.context.currentChannelId && channelType === 'text')
 		connectGroupWebSocket(store.context.currentGroupId, store.context.currentChannelId)
 	updateStatusBanners()
-	void refreshPinsBookmarks()
-	void import('../call.mjs').then(m => {
-		m.refreshCallButtonActiveForCurrentChannel()
-		void m.refreshCallStatusBadge()
-	})
+	refreshPinsBookmarks().catch(handleError('chat.hub.operationFailed'))
+	refreshCallButtonActiveForCurrentChannel()
+	refreshCallStatusBadge().catch(handleError('chat.hub.operationFailed'))
 }
 
 /**

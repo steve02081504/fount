@@ -1,13 +1,13 @@
 /**
  * 【文件】public/src/ui/reactionHandlers.mjs
- * 【职责】群消息表情回应 toggle：POST/DELETE 频道 reaction API 并 handleUIError。
- * 【原理】createReactionHandlers({ groupId, channelId }) 返回 toggleReaction；groupPath 拼 REST。
+ * 【职责】群消息表情回应 toggle：POST/DELETE 频道 reaction API 并 handleError。
+ * 【原理】createReactionHandlers({ groupId, channelId }) 返回 toggleReaction。
  * 【数据结构】targetEventId、emoji、remove 布尔、targetPubKeyHash 可选。
- * 【关联】groupClient.mjs、channelDisplay.mjs、errors.mjs。
+ * 【关联】groupChannel.mjs、channelDisplay.mjs、errorHandlers.mjs。
  */
-import { groupPath } from '../api/groupClient.mjs'
+import { deleteReaction, putReaction } from '../endpoints/groupChannel.mjs'
 
-import { handleUIError } from './errors.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 /**
  * 创建群消息表情回应处理函数集。
@@ -27,34 +27,13 @@ export function createReactionHandlers(channelScope) {
 	 */
 	const toggleReaction = async (targetEventId, emoji, remove, targetPubKeyHash) => {
 		try {
-			const url = `/api/parts/shells:chat/groups/${groupPath(groupId, 'channels', channelId, 'reactions')}`
-			if (remove) {
-				const response = await fetch(url, {
-					method: 'DELETE',
-					headers: { 'Content-Type': 'application/json' },
-					credentials: 'include',
-					body: JSON.stringify({
-						targetEventId,
-						emoji,
-						...targetPubKeyHash ? { targetPubKeyHash } : {},
-					}),
-				})
-				if (!response.ok)
-					return handleUIError(new Error(`toggleReaction HTTP ${response.status}`), 'chat.hub.reactionFailed')
-			}
-			else {
-				const response = await fetch(url, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					credentials: 'include',
-					body: JSON.stringify({ targetEventId, emoji }),
-				})
-				if (!response.ok)
-					handleUIError(new Error(`toggleReaction HTTP ${response.status}`), 'chat.hub.reactionFailed')
-			}
+			if (remove)
+				await deleteReaction(groupId, channelId, targetEventId, emoji, targetPubKeyHash)
+			else
+				await putReaction(groupId, channelId, targetEventId, emoji)
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.reactionFailed')
+			handleError('chat.hub.reactionFailed')(error)
 		}
 	}
 

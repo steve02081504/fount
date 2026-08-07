@@ -5,6 +5,8 @@ import { sanitizePermissiveHtml } from '/scripts/lib/sanitizeHtml.mjs'
 
 import { formatHashShort, formatEntityAtId } from '../shared/entityHash.mjs'
 import { formatEntityMentionToken, formatRoleMentionToken } from '../shared/inlineTokenSyntax.mjs'
+import { suggestMentions } from '../src/endpoints/mentions.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { store } from './core/state.mjs'
 
@@ -103,15 +105,7 @@ export function attachHubMentionAutocomplete(textarea) {
 			hide()
 			return
 		}
-		const response = await fetch(
-			`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/mentions/suggest?q=${encodeURIComponent(query)}&limit=12`,
-			{ credentials: 'include' },
-		)
-		if (!response.ok) {
-			hide()
-			return
-		}
-		const data = await response.json()
+		const data = await suggestMentions(groupId, query, 12)
 		render(data.suggestions || [])
 	}
 
@@ -194,7 +188,10 @@ export function attachHubMentionAutocomplete(textarea) {
 			return
 		}
 		mentionRange = { start: mention.start, end: mention.end }
-		void fetchSuggestions(mention.query).catch(() => hide())
+		fetchSuggestions(mention.query).catch(error => {
+			handleError('chat.hub.operationFailed')(error)
+			hide()
+		})
 	}
 
 	panel.addEventListener('mousedown', event => {

@@ -5,6 +5,7 @@
  * 【数据结构】signPayload 为已验签 DAG 行；catchUp 返回 tipsCollected、wantIds、eventsFilled 等统计；listFederationPeers 返回 selfNodeHash、peers 名册。
  * 【关联】room.mjs、acl.mjs、pendingRelay.mjs、gossip.mjs、archiveHandshake.mjs、peerPool.mjs、dagDependencies.mjs、registry.mjs；DAG 读写在 scripts/p2p 与 dag/ 层。
  */
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonlStream } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
@@ -143,8 +144,7 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 		// 单飞 ensureFederationRoom 把房间建起来（按 (username,groupId,partitionId) 经 inflight 去重）。
 		slot = getFederationPartitionSlot(username, groupId, outboundPartition) ?? null
 		if (!slot)
-			void ensureFederationRoom(username, groupId, { channelId })
-				.catch(error => console.error('federation: background room ensure failed', error))
+			ensureFederationRoom(username, groupId, { channelId }).catch(handleError)
 	}
 	if (!slot) return
 
@@ -241,7 +241,7 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 		pickTargetPeerIds,
 	})
 
-	void syncMissingArchiveMonths(username, groupId, slot).catch(console.error)
+	syncMissingArchiveMonths(username, groupId, slot).catch(handleError)
 
 	// 补齐要把 DAG 缺口补到“无悬挂父引用”为止：远端 tip 本地缺失 ∪ 本地事件 prev_event_ids 指向的本地缺失父（有叶无链）。
 	// 关键：延迟桶（pending_ingest / quarantine）里的事件同样引用尚缺的父，但它们并不在 events.jsonl 中，
@@ -331,9 +331,9 @@ async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 		wantIdsRateLimited,
 		stalePeersPruned: getStalePeerPruneCount(groupId) - stalePeersAtStart,
 	}
-	void maybeRequestBootstrapAfterCatchup(username, groupId, stats, slot)
+	maybeRequestBootstrapAfterCatchup(username, groupId, stats, slot).catch(handleError)
 	if (localArchive.checkpoint?.local_tips_hash)
-		void markGroupOnlineSynced(username, groupId, localArchive.checkpoint.local_tips_hash).catch(console.error)
+		markGroupOnlineSynced(username, groupId, localArchive.checkpoint.local_tips_hash).catch(handleError)
 	try {
 		const { releasePendingIngestEvents, releaseQuarantinedEvents } = await import('../dag/remoteIngest.mjs')
 		await releaseQuarantinedEvents(username, groupId)

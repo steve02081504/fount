@@ -1,12 +1,23 @@
 /**
  * Chat shell 表情包容器（`registries.emoji`）。
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { primaryLocale, loadPreferredLangs } from '/scripts/i18n/index.mjs'
 import { resolveEmojiItemLabels, resolvePackPresentation } from '/scripts/features/emoji/packPresentation.mjs'
 
+import { CHAT_API_CLIENT_PREFIX } from '../shared/apiPaths.mjs'
 import { formatEmojiToken, tokenForSelection } from '../shared/inlineTokenSyntax.mjs'
+import {
+	addEmojiCollectionPack,
+	discoverEmojiPacks,
+	getEmojiUsage,
+	getGroupPreview,
+	listEmojiPacks,
+	recordEmojiUsage,
+	removeEmojiCollectionPack,
+} from '../src/endpoints/emoji.mjs'
 
-const CHAT_API = '/api/parts/shells:chat'
+const CHAT_API = CHAT_API_CLIENT_PREFIX
 
 /**
  * 包表情内容 URL（经 chat API 代理）。
@@ -23,9 +34,7 @@ export function packEmojiContentUrl(packId, emojiId) {
  * @returns {Promise<object>} emoji-usage 载荷
  */
 async function fetchEmojiUsage() {
-	const r = await fetch(`${CHAT_API}/emoji-usage`, { credentials: 'include' })
-	if (!r.ok) return { log: [], lastUsedAtByPack: {}, collection: { packIds: [], emojiIds: [] } }
-	return r.json()
+	return getEmojiUsage()
 }
 
 /**
@@ -35,11 +44,7 @@ async function fetchEmojiUsage() {
  * @returns {Promise<object[]>} 原始包清单
  */
 async function fetchAvailablePacks(context = {}) {
-	const q = context.groupId ? `?groupId=${encodeURIComponent(context.groupId)}` : ''
-	const r = await fetch(`${CHAT_API}/emoji-packs${q}`, { credentials: 'include' })
-	if (!r.ok) return []
-	const data = await r.json()
-	return Array.isArray(data.packs) ? data.packs : []
+	return listEmojiPacks(context.groupId)
 }
 
 /**
@@ -80,40 +85,46 @@ export default {
 	 * @returns {Promise<object[]>} 带展示字段与条目的包列表
 	 */
 	async listPacks(context = {}) {
-		const locales = loadPreferredLangs().length ? loadPreferredLangs() : [primaryLocale()]
-		const packs = await fetchAvailablePacks(context)
-		return packs.map(pack => {
-			const presentation = resolvePackPresentation(pack, locales, pack.infoDefaults || {})
-			const items = (pack.items || pack.entries || []).map(entry => {
-				const labels = resolveEmojiItemLabels(entry, locales)
-				const packId = pack.packId
-				const emojiId = entry.emojiId
+		try {
+			const locales = loadPreferredLangs().length ? loadPreferredLangs() : [primaryLocale()]
+			const packs = await fetchAvailablePacks(context)
+			return packs.map(pack => {
+				const presentation = resolvePackPresentation(pack, locales, pack.infoDefaults || {})
+				const items = (pack.items || pack.entries || []).map(entry => {
+					const labels = resolveEmojiItemLabels(entry, locales)
+					const packId = pack.packId
+					const emojiId = entry.emojiId
+					return {
+						kind: 'pack',
+						packId,
+						emojiId,
+						emojiRef: formatEmojiToken(packId, emojiId),
+						name: labels.name,
+						alt: labels.alt,
+						label: labels.name,
+						previewUrl: packEmojiContentUrl(packId, emojiId),
+						animated: !!entry.animated,
+					}
+				})
 				return {
-					kind: 'pack',
-					packId,
-					emojiId,
-					emojiRef: formatEmojiToken(packId, emojiId),
-					name: labels.name,
-					alt: labels.alt,
-					label: labels.name,
-					previewUrl: packEmojiContentUrl(packId, emojiId),
-					animated: !!entry.animated,
+					packId: pack.packId,
+					source: pack.source || { kind: 'group', id: pack.groupId || pack.packId },
+					groupId: pack.groupId,
+					joinedAt: pack.joinedAt,
+					defaultEmojiPackId: pack.defaultEmojiPackId,
+					isDefault: isDefaultGroupPack(pack),
+					localized: pack.localized,
+					infoDefaults: pack.infoDefaults,
+					name: presentation.name,
+					avatar: presentation.avatar,
+					items,
 				}
 			})
-			return {
-				packId: pack.packId,
-				source: pack.source || { kind: 'group', id: pack.groupId || pack.packId },
-				groupId: pack.groupId,
-				joinedAt: pack.joinedAt,
-				defaultEmojiPackId: pack.defaultEmojiPackId,
-				isDefault: isDefaultGroupPack(pack),
-				localized: pack.localized,
-				infoDefaults: pack.infoDefaults,
-				name: presentation.name,
-				avatar: presentation.avatar,
-				items,
-			}
-		})
+		}
+		catch (error) {
+			handleError('chat.hub.operationFailed')(error)
+			return []
+		}
 	},
 
 	packContentUrl: packEmojiContentUrl,
@@ -126,9 +137,13 @@ export default {
 	async packSourcePreview(pack) {
 		const groupId = pack?.source?.kind === 'group' ? pack.source.id : pack?.groupId
 		if (!groupId) return null
-		const r = await fetch(`${CHAT_API}/groups/${encodeURIComponent(groupId)}/preview`, { credentials: 'include' })
-		if (!r.ok) return { kind: 'group', groupId, pack }
-		return { kind: 'group', groupId, pack, preview: await r.json() }
+		try {
+			const preview = await getGroupPreview(groupId)
+			return { kind: 'group', groupId, pack, preview }
+		}
+		catch {
+			return { kind: 'group', groupId, pack }
+		}
 	},
 
 	/**
@@ -137,29 +152,31 @@ export default {
 	 * @returns {Promise<object[]>} 公开群包 offers
 	 */
 	async discoverPacks(options = {}) {
-		const locales = loadPreferredLangs().length ? loadPreferredLangs() : [primaryLocale()]
-		const r = await fetch(`${CHAT_API}/emoji-packs/discover?limit=${encodeURIComponent(options.limit || 48)}`, {
-			credentials: 'include',
-		})
-		if (!r.ok) return []
-		const data = await r.json()
-		return (data.offers || []).map(offer => {
-			const presentation = resolvePackPresentation(offer, locales, offer.infoDefaults || {})
-			return {
-				packId: offer.packId,
-				source: { kind: 'group', id: offer.sourceId },
-				groupId: offer.sourceId,
-				localized: offer.localized,
-				infoDefaults: offer.infoDefaults,
-				itemCount: offer.itemCount,
-				joinPolicy: offer.joinPolicy,
-				name: presentation.name,
-				avatar: presentation.avatar,
-				description: presentation.description,
-				tags: presentation.tags,
-				links: presentation.links,
-			}
-		})
+		try {
+			const locales = loadPreferredLangs().length ? loadPreferredLangs() : [primaryLocale()]
+			const offers = await discoverEmojiPacks(options.limit || 48)
+			return offers.map(offer => {
+				const presentation = resolvePackPresentation(offer, locales, offer.infoDefaults || {})
+				return {
+					packId: offer.packId,
+					source: { kind: 'group', id: offer.sourceId },
+					groupId: offer.sourceId,
+					localized: offer.localized,
+					infoDefaults: offer.infoDefaults,
+					itemCount: offer.itemCount,
+					joinPolicy: offer.joinPolicy,
+					name: presentation.name,
+					avatar: presentation.avatar,
+					description: presentation.description,
+					tags: presentation.tags,
+					links: presentation.links,
+				}
+			})
+		}
+		catch (error) {
+			handleError('chat.hub.operationFailed')(error)
+			return []
+		}
 	},
 
 	usage: {
@@ -168,8 +185,14 @@ export default {
 		 * @returns {Promise<{ log: object[], lastUsedAtByPack: object }>} 最近使用日志与包级时间戳
 		 */
 		async load() {
-			const state = await fetchEmojiUsage()
-			return { log: state.log || [], lastUsedAtByPack: state.lastUsedAtByPack || {} }
+			try {
+				const state = await fetchEmojiUsage()
+				return { log: state.log || [], lastUsedAtByPack: state.lastUsedAtByPack || {} }
+			}
+			catch (error) {
+				handleError('chat.hub.operationFailed')(error)
+				return { log: [], lastUsedAtByPack: {} }
+			}
 		},
 		/**
 		 * 记录一次 emoji 使用。
@@ -177,12 +200,7 @@ export default {
 		 * @returns {Promise<void>}
 		 */
 		async record(item) {
-			await fetch(`${CHAT_API}/emoji-usage/record`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(item),
-			})
+			await recordEmojiUsage(item)
 		},
 	},
 
@@ -192,8 +210,14 @@ export default {
 		 * @returns {Promise<{ packIds: string[], emojiIds: string[] }>} 用户收藏的包与表情
 		 */
 		async list() {
-			const state = await fetchEmojiUsage()
-			return state.collection || { packIds: [], emojiIds: [] }
+			try {
+				const state = await fetchEmojiUsage()
+				return state.collection || { packIds: [], emojiIds: [] }
+			}
+			catch (error) {
+				handleError('chat.hub.operationFailed')(error)
+				return { packIds: [], emojiIds: [] }
+			}
 		},
 		/**
 		 * 将包加入收藏。
@@ -201,15 +225,7 @@ export default {
 		 * @returns {Promise<{ packIds: string[], emojiIds: string[] }>} 更新后收藏
 		 */
 		async add(packId) {
-			const r = await fetch(`${CHAT_API}/emoji-usage/collection/packs`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ packId }),
-			})
-			if (!r.ok) throw new Error(await r.text() || r.statusText)
-			const data = await r.json().catch(() => ({}))
-			return data.collection || data
+			return addEmojiCollectionPack(packId)
 		},
 		/**
 		 * 从收藏移除包。
@@ -217,13 +233,7 @@ export default {
 		 * @returns {Promise<{ packIds: string[], emojiIds: string[] }>} 更新后收藏
 		 */
 		async remove(packId) {
-			const r = await fetch(`${CHAT_API}/emoji-usage/collection/packs/${encodeURIComponent(packId)}`, {
-				method: 'DELETE',
-				credentials: 'include',
-			})
-			if (!r.ok) throw new Error(await r.text() || r.statusText)
-			const data = await r.json().catch(() => ({}))
-			return data.collection || data
+			return removeEmojiCollectionPack(packId)
 		},
 	},
 

@@ -2,13 +2,15 @@
  * 【文件】public/hub/memberContextMenu.mjs
  * 【职责】成员列表项右键菜单：查看资料、私信、踢出、封禁（含 `banScopePicker`）等成员操作。
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { isCared, setCared } from '../shared/care.mjs'
 import { promptText } from '/scripts/features/promptDialog.mjs'
-import { getGroupState } from '../src/api/groupCore.mjs'
+import { getGroupState } from '../src/endpoints/groupCore.mjs'
+import { kickMember } from '../src/endpoints/members.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 
 import { refreshAliasDependentUi } from './aliasUi.mjs'
@@ -94,9 +96,7 @@ export async function showMemberContextMenu(event, memberElement) {
 			const cared = await isCared(entityHash)
 			await setCared(entityHash, !cared)
 			showToastI18n('success', cared ? 'chat.hub.member.context.careRemoved' : 'chat.hub.member.context.careAdded')
-		})().catch(error => {
-			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
-		})
+		})().catch(handleError('chat.hub.operationFailed'))
 		closeOnce()
 	})
 	menu.querySelector('.member-menu-alias')?.addEventListener('click', () => {
@@ -112,9 +112,7 @@ export async function showMemberContextMenu(event, memberElement) {
 			showToastI18n('success', 'chat.hub.member.context.aliasSaved')
 			store.context.currentState = await getGroupState(store.context.currentGroupId)
 			await refreshAliasDependentUi()
-		})().catch(error => {
-			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
-		})
+		})().catch(handleError('chat.hub.operationFailed'))
 		closeOnce()
 	})
 	menu.querySelector('.member-menu-dm')?.addEventListener('click', () => {
@@ -124,9 +122,7 @@ export async function showMemberContextMenu(event, memberElement) {
 				dismissMemberContextMenu()
 				await dispatchFriendChat(entity)
 			}
-		})().catch(error => {
-			showToastI18n('error', 'chat.hub.profilePopup.dm.failed', { error: error.message })
-		})
+		})().catch(handleError('chat.hub.profilePopup.dm.failed'))
 		closeOnce()
 	})
 	menu.querySelector('.member-menu-kick')?.addEventListener('click', async () => {
@@ -134,34 +130,32 @@ export async function showMemberContextMenu(event, memberElement) {
 			if (!confirmI18n('chat.hub.member.context.kickSelfNodeWarning', { name: displayName })) return
 
 		if (!confirmI18n('chat.group.settings.page.kick.confirm', { name: displayName })) return
-		const groupId = store.context.currentGroupId
-		const resp = await fetch(
-			`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/members/${encodeURIComponent(memberKey)}/kick`,
-			{ method: 'POST', credentials: 'include' },
-		)
-		if (!resp.ok) {
-			const data = await resp.json().catch(() => ({}))
-			showToastI18n('error', 'chat.hub.operationFailed', { error: data.error || resp.statusText })
-			return
+		try {
+			await kickMember(store.context.currentGroupId, memberKey)
+			showToastI18n('success', 'chat.group.settings.page.kick.success')
+			store.context.currentState = await getGroupState(store.context.currentGroupId)
+			await renderMemberList(store.context.currentState)
+			closeOnce()
 		}
-		showToastI18n('success', 'chat.group.settings.page.kick.success')
-		store.context.currentState = await getGroupState(store.context.currentGroupId)
-		void renderMemberList(store.context.currentState)
-		closeOnce()
+		catch (error) {
+			handleError('chat.group.settings.page.kick.failed')(error)
+		}
 	})
 	menu.querySelector('.member-menu-ban')?.addEventListener('click', async () => {
 		if (!confirmI18n('chat.group.settings.page.banConfirm', { name: displayName })) return
 		const picked = await pickBanScope({ displayName })
 		if (!picked) return
-		const { banMemberWithScope } = await import('../src/api/groupBan.mjs')
+		const { banMemberWithScope } = await import('../src/endpoints/groupBan.mjs')
 		try {
-			await banMemberWithScope(store.context.currentGroupId, memberKey, picked)
+			const result = await banMemberWithScope(store.context.currentGroupId, memberKey, picked)
 			showToastI18n('success', 'chat.group.settings.page.banSuccess')
+			if (result.reputationSlash && result.reputationSlash.ok === false)
+				handleError('chat.group.settings.page.banFailed')(new Error(result.reputationSlash.error || 'reputation slash failed'))
 			store.context.currentState = await getGroupState(store.context.currentGroupId)
-			void renderMemberList(store.context.currentState)
+			await renderMemberList(store.context.currentState)
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+			handleError('chat.group.settings.page.banFailed')(error)
 		}
 		closeOnce()
 	})
@@ -172,10 +166,10 @@ export async function showMemberContextMenu(event, memberElement) {
 			await postPersonalBlock(entityHash, true)
 			showToastI18n('success', 'chat.hub.member.context.personalBlockSuccess')
 			store.context.currentState = await getGroupState(store.context.currentGroupId)
-			void renderMemberList(store.context.currentState)
+			await renderMemberList(store.context.currentState)
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+			handleError('chat.hub.operationFailed')(error)
 		}
 		closeOnce()
 	})

@@ -11,7 +11,7 @@ import { aliasForEntity } from '../shared/aliases.mjs'
 import { normalizeChannelMessage } from '../shared/channelContent.mjs'
 import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
-import { sendGroupMessage } from '../src/api/groupChannel.mjs'
+import { sendGroupMessage } from '../src/endpoints/groupChannel.mjs'
 import { syncTrustedAuthorsFromShell } from '../src/trustedAuthors.mjs'
 
 import { applyProfileAvatarToHost } from './core/avatarCover.mjs'

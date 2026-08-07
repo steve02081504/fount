@@ -7,7 +7,7 @@ import { createChatShellJsonNamespace } from './helpers.mjs'
 export function createPrivateStateMethods(apiContext) {
 	return {
 		/**
-		 * @returns {{ list: Function, set: Function }} 书签
+		 * @returns {{ list: Function, set: Function, add: Function, remove: Function }} 书签
 		 */
 		get bookmarks() {
 			const ns = createChatShellJsonNamespace(apiContext, 'bookmarks', stored => ({
@@ -24,6 +24,49 @@ export function createPrivateStateMethods(apiContext) {
 				 */
 				async set(entries) {
 					return ns.set({ entries: Array.isArray(entries) ? entries : [] })
+				},
+				/**
+				 * 原子追加（同群同事件去重）。
+				 * @param {object} entry 书签条目
+				 * @returns {Promise<{ entries: object[], added: boolean }>} 写入后列表与是否新增
+				 */
+				async add(entry) {
+					const groupId = entry.groupId
+					const eventId = entry.eventId
+					let added = true
+					const next = await ns.update(({ entries }) => {
+						if (entries.some(bookmark => bookmark.groupId === groupId && bookmark.eventId === eventId)) {
+							added = false
+							return { entries }
+						}
+						entries.push(entry)
+						return { entries }
+					})
+					return { entries: next.entries, added }
+				},
+				/**
+				 * 原子删除（eventId 优先，回落 href）。
+				 * @param {{ groupId?: string, eventId?: string, href?: string }} entry 匹配条件
+				 * @returns {Promise<{ entries: object[], removed: boolean }>} 写入后列表与是否删除
+				 */
+				async remove(entry) {
+					const groupId = entry.groupId
+					const eventId = entry.eventId
+					const href = entry.href
+					let removed = true
+					const next = await ns.update(({ entries }) => {
+						const filtered = entries.filter(bookmark => {
+							if (eventId) return !(bookmark.groupId === groupId && bookmark.eventId === eventId)
+							if (href) return bookmark.href !== href
+							return true
+						})
+						if (filtered.length === entries.length) {
+							removed = false
+							return { entries }
+						}
+						return { entries: filtered }
+					})
+					return { entries: next.entries, removed }
 				},
 			}
 		},

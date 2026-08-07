@@ -11,7 +11,7 @@ import { normalizeHex64, HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p
 import { bytesToHex } from '../shared/digest.mjs'
 import { formatDmRunUri } from '../shared/runUri.mjs'
 
-import { putFederationSettings } from './api/federationSettings.mjs'
+import { putFederationSettings } from './endpoints/federationSettings.mjs'
 import { dmLinkSignableBytes } from '/parts/shells:chat/shared/dmLinkSignature.mjs'
 import { sign } from './lib/signer.mjs'
 

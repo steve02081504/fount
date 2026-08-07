@@ -13,7 +13,7 @@ import {
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { createVirtualList } from '../../../../scripts/lib/virtualList.mjs'
 
-import { fetchGroupAuditLog } from './api/groupCore.mjs'
+import { fetchGroupAuditLog } from './endpoints/groupCore.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 

@@ -1,6 +1,6 @@
 import { activateSection } from '../../settings/nav.mjs'
-import { getGroupState } from '../api/groupCore.mjs'
 import { initAuditLogPanel } from '../auditLogPanel.mjs'
+import { getGroupState } from '../endpoints/groupCore.mjs'
 import { resolveViewerSettingsCapabilities } from '../groupViewerPermissions.mjs'
 
 import { renderArchiveStoragePanel } from './archiveTab.mjs'

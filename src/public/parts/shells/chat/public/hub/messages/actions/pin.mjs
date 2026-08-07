@@ -3,8 +3,8 @@
  * 【职责】频道消息置顶 / 取消置顶。
  */
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
-import { pinMessage, unpinMessage } from '../../../src/api/groupChannel.mjs'
-import { getGroupState } from '../../../src/api/groupCore.mjs'
+import { pinMessage, unpinMessage } from '../../../src/endpoints/groupChannel.mjs'
+import { getGroupState } from '../../../src/endpoints/groupCore.mjs'
 import { isDagEventId } from '../../../src/lib/eventId.mjs'
 import { store } from '../../core/state.mjs'
 

@@ -11,7 +11,7 @@ import {
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { createGroup, getGroupList } from '../api/groupCore.mjs'
+import { createGroup, getGroupList } from '../endpoints/groupCore.mjs'
 import { PENDING_INVITE_STORAGE_KEY } from '../pendingInviteStorage.mjs'
 
 /** 按需注入群组 UI 样式表（幂等）。 */

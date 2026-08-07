@@ -2,6 +2,8 @@
  * 【文件】public/hub/messages/render/translation.mjs
  * 【职责】消息列表自动翻译挂载。
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { getTranslationPrefs } from '../../../src/endpoints/prefs.mjs'
 
 /**
  * 自动翻译：拉取偏好后，对需要翻译的消息 mount 译文块。
@@ -11,9 +13,7 @@
 export async function autoTranslateMessages(container) {
 	if (!(container instanceof HTMLElement)) return
 	try {
-		const response = await fetch('/api/parts/shells:chat/translation-prefs', { credentials: 'include' })
-		if (!response.ok) return
-		const data = await response.json()
+		const data = await getTranslationPrefs()
 		const prefs = data?.prefs || data || {}
 		if (!prefs.autoTranslate) return
 
@@ -40,8 +40,12 @@ export async function autoTranslateMessages(container) {
 					translatedText: translated,
 				})
 			}
-			catch { /* 翻译失败静默跳过 */ }
+			catch (error) {
+				handleError('chat.hub.translateFailed')(error)
+			}
 		}
 	}
-	catch { /* 偏好拉取失败或端点未就绪 */ }
+	catch (error) {
+		handleError('chat.hub.operationFailed')(error)
+	}
 }

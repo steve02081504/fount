@@ -780,6 +780,7 @@
 		"title": "होम",
 		"description": "आपके मूल अनुभव का हृदय. यहां, अपनी कल्पना के निवासियों-पात्रों, दुनियाओं और व्यक्तित्वों को प्रबंधित करें। आपकी कहानियाँ इसी केंद्रीय गठजोड़ से शुरू होती हैं और शाखाबद्ध होती हैं।",
 		"sidebarTitle": "विवरण",
+		"closeSidebar": "साइडबार बंद करें",
 		"itemDescription": "विवरण देखने के लिए यहाँ एक आइटम चुनें।",
 		"noDescription": "कोई विवरण नहीं।",
 		"filterInput": {
@@ -4188,10 +4189,7 @@
 			"mentionSuggest": {
 				"aria-label": "मेंशन सुझाव"
 			},
-			"mediaButton": {
-				"title": "मीडिया जोड़ें",
-				"aria-label": "मीडिया जोड़ें"
-			},
+			"mediaButton": "मीडिया जोड़ें",
 			"pollButton": {
 				"title": "मतदान शुरू करें",
 				"aria-label": "मतदान शुरू करें"
@@ -4714,14 +4712,8 @@
 			"title": "आइटम सूची",
 			"aria-label": "आइटम सूची"
 		},
-		"openCabinets": {
-			"title": "फ़ाइल कैबिनेट सूची खोलें",
-			"aria-label": "फ़ाइल कैबिनेट सूची खोलें"
-		},
-		"closeCabinets": {
-			"title": "बंद करें",
-			"aria-label": "बंद करें"
-		},
+		"openCabinets": "फ़ाइल कैबिनेट सूची खोलें",
+		"closeCabinets": "बंद करें",
 		"bootstrapFailed": "फ़ाइल कैबिनेट आरंभीकरण विफल: ${error}",
 		"home_function_buttons": {
 			"main": {

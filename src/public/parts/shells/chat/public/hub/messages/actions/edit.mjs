@@ -3,7 +3,7 @@
  * 【职责】频道消息内联编辑。
  */
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
-import { editChannelMessage } from '../../../src/api/groupChannel.mjs'
+import { editChannelMessage } from '../../../src/endpoints/groupChannel.mjs'
 import { findContextMessage } from '../messageActionsState.mjs'
 import {
 	appendEditArea,

@@ -1,9 +1,10 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
 import { parseEmojiToken } from '../../shared/inlineTokenSyntax.mjs'
+import { addDenylistEntry } from '../../src/endpoints/p2p.mjs'
 import { addPackToCollection, saveStickerFromMessage } from '../../src/saveStickerFromMessage.mjs'
 import { showTrustAuthorDialog } from '../../src/trustAuthorDialog.mjs'
-import { handleUIError } from '../../src/ui/errors.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { store } from '../core/state.mjs'
 
 /**
@@ -38,7 +39,7 @@ export async function handleMessageBubbleClick(event) {
 			showToastI18n('success', 'chat.hub.save.emojiOk')
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.save.emojiFailed')
+			handleError('chat.hub.save.emojiFailed')(error)
 		}
 		return true
 	}
@@ -54,7 +55,7 @@ export async function handleMessageBubbleClick(event) {
 			showToastI18n('success', 'chat.hub.save.stickerOk')
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.save.stickerFailed')
+			handleError('chat.hub.save.stickerFailed')(error)
 		}
 		return true
 	}
@@ -62,25 +63,15 @@ export async function handleMessageBubbleClick(event) {
 	if (blockAuthorButton?.dataset?.blockPub && store.context.currentGroupId) {
 		if (!confirmI18n('chat.hub.block.confirm')) return true
 		try {
-			const response = await fetch('/api/p2p/denylist', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				credentials: 'include',
-				body: JSON.stringify({
-					scope: 'subject',
-					value: blockAuthorButton.dataset.blockPub,
-					groupId: store.context.currentGroupId,
-				}),
+			await addDenylistEntry({
+				scope: 'subject',
+				value: blockAuthorButton.dataset.blockPub,
+				groupId: store.context.currentGroupId,
 			})
-			if (!response.ok) {
-				const data = await response.json().catch(() => ({}))
-				handleUIError(new Error(data.error || response.statusText), 'chat.hub.operationFailed')
-				return true
-			}
 			showToastI18n('success', 'chat.hub.block.ok')
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.operationFailed')
+			handleError('chat.hub.operationFailed')(error)
 		}
 		return true
 	}

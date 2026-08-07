@@ -5,7 +5,7 @@
  * 模板经 `createEntityProfileCardElement` 加载，不污染全局 `usingTemplates`。
  */
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
-import { fetchEntityProfileApi, cachedProfileFromApi } from '../src/entityProfileApi.mjs'
+import { cachedProfileFromApi, getEntityProfile } from '../src/endpoints/entities.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
 import { isEntityHash128 } from './entityHash.mjs'
@@ -59,7 +59,7 @@ export function dismissEntityProfilePopup() {
  */
 async function paintSharedPopup(popup, entity) {
 	const entityHash = entity.entityHash
-	const data = entityHash ? await fetchEntityProfileApi(entityHash).catch(() => null) : null
+	const data = entityHash ? await getEntityProfile(entityHash).catch(() => null) : null
 	const profile = data?.profile ? cachedProfileFromApi(data.profile, entityHash) : null
 	const name = aliasForEntity(entityHash) || profile?.name || entity.displayName || '?'
 	await paintEntityProfileCard(popup, profile || { name }, {
@@ -74,7 +74,7 @@ async function paintSharedPopup(popup, entity) {
 		ownerName = aliasForEntity(ownerEntityHash)
 		if (!ownerName)
 			try {
-				const ownerData = await fetchEntityProfileApi(ownerEntityHash)
+				const ownerData = await getEntityProfile(ownerEntityHash)
 				ownerName = ownerData?.profile?.name || null
 			}
 			catch { /* miss */ }

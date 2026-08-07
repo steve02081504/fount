@@ -54,24 +54,29 @@ export function saveDraft(groupId, channelId, draft) {
 export function loadDraft(groupId, channelId) {
 	if (!groupId || !channelId) return
 	try {
+		const input = document.getElementById('message-input')
+		if (input instanceof HTMLTextAreaElement) input.value = ''
+		const contentWarningInput = document.getElementById('content-warning')
+		if (contentWarningInput instanceof HTMLInputElement) contentWarningInput.value = ''
+		const sensitiveMediaInput = document.getElementById('sensitive-media')
+		if (sensitiveMediaInput instanceof HTMLInputElement) sensitiveMediaInput.checked = false
+		const composerExtras = document.getElementById('composer-extras')
+		if (composerExtras) composerExtras.hidden = true
+
 		const raw = localStorage.getItem(draftKey(groupId, channelId))
 		if (!raw) return
 		const draft = JSON.parse(raw)
-		const input = document.getElementById('message-input')
 		if (input instanceof HTMLTextAreaElement && draft.text) {
 			input.value = draft.text
 			input.dispatchEvent(new Event('input', { bubbles: true }))
 		}
-		const cw = document.getElementById('content-warning')
-		if (cw instanceof HTMLInputElement && draft.content_warning)
-			cw.value = draft.content_warning
-		const sm = document.getElementById('sensitive-media')
-		if (sm instanceof HTMLInputElement && draft.sensitive_media)
-			sm.checked = true
-		if (draft.content_warning || draft.sensitive_media) {
-			const extras = document.getElementById('composer-extras')
-			if (extras) extras.hidden = false
-		}
+		if (contentWarningInput instanceof HTMLInputElement && draft.content_warning)
+			contentWarningInput.value = draft.content_warning
+		if (sensitiveMediaInput instanceof HTMLInputElement && draft.sensitive_media)
+			sensitiveMediaInput.checked = true
+		if (draft.content_warning || draft.sensitive_media)
+			if (composerExtras) composerExtras.hidden = false
+
 	}
 	catch { /* JSON 解析失败忽略 */ }
 }
@@ -105,12 +110,12 @@ export function wireDraftAutoSave(getCtx) {
 	 */
 	const readFields = () => {
 		const input = document.getElementById('message-input')
-		const cw = document.getElementById('content-warning')
-		const sm = document.getElementById('sensitive-media')
+		const contentWarningInput = document.getElementById('content-warning')
+		const sensitiveMediaInput = document.getElementById('sensitive-media')
 		return {
 			text: input instanceof HTMLTextAreaElement ? input.value : '',
-			content_warning: cw instanceof HTMLInputElement ? cw.value.trim() : '',
-			sensitive_media: sm instanceof HTMLInputElement ? sm.checked : false,
+			content_warning: contentWarningInput instanceof HTMLInputElement ? contentWarningInput.value.trim() : '',
+			sensitive_media: sensitiveMediaInput instanceof HTMLInputElement ? sensitiveMediaInput.checked : false,
 		}
 	}
 

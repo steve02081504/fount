@@ -3,13 +3,13 @@ import { usingTemplates } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { postFederationTuning } from '../api/groupFederation.mjs'
-import { rotateGroupKey, submitOwnerSuccession } from '../api/groupGovernance.mjs'
+import { putGroupMeta, putGroupSettings, removeGroup } from '../endpoints/groupCore.mjs'
+import { postFederationTuning } from '../endpoints/groupFederation.mjs'
+import { rotateGroupKey, submitOwnerSuccession } from '../endpoints/groupGovernance.mjs'
 
 import { collectFederationTuningPatch } from './federationTab.mjs'
 import { collectIceServersFromDom, wireIceServersEditor } from './iceTab.mjs'
 import { wireInvitePanel } from './inviteTab.mjs'
-import { readApiError } from './shared.mjs'
 
 /** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
 export async function showOwnerSuccessionModal(context) {
@@ -67,69 +67,57 @@ export async function saveGroupSettings(context) {
 		showToastI18n('error', 'chat.group.settings.page.governanceDenied')
 		return
 	}
-	const metaResponse = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/meta`, {
-		method: 'PUT',
-		headers: { 'Content-Type': 'application/json' },
-		credentials: 'include',
-		body: JSON.stringify({
-			name: document.getElementById('group-name').value.trim(),
-			description: document.getElementById('group-description').value.trim(),
-		})
+	await putGroupMeta(context.groupId, {
+		name: document.getElementById('group-name').value.trim(),
+		description: document.getElementById('group-description').value.trim(),
 	})
-	if (!metaResponse.ok) throw new Error(await readApiError(metaResponse))
 
 	const gossipTtl = Number.parseInt(document.getElementById('gossip-ttl').value, 10)
-	const settingsResponse = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/settings`, {
-		method: 'PUT',
-		headers: { 'Content-Type': 'application/json' },
-		credentials: 'include',
-		body: JSON.stringify({
-			joinPolicy: document.getElementById('join-policy').value,
-			powDifficulty: Number.parseInt(document.getElementById('pow-difficulty').value, 10) || 4,
-			streamGeneratingIdleMs: Number.parseInt(document.getElementById('stream-generating-idle-ms').value, 10) || 150000,
-			autoReplyFrequency: Math.max(0, Number.parseInt(document.getElementById('auto-reply-frequency')?.value, 10) || 0),
-			maxDagPayloadBytes: Number.parseInt(document.getElementById('max-dag-payload-bytes').value, 10) || 262144,
-			batterySaver: !!document.getElementById('battery-saver')?.checked,
-			trustedPeerSlots: Number.parseInt(document.getElementById('trusted-peer-slots')?.value, 10) || 8,
-			explorePeerSlots: Number.parseInt(document.getElementById('explore-peer-slots')?.value, 10) || 4,
-			maxPeers: Number.parseInt(document.getElementById('max-peers')?.value, 10) || 24,
-			gossipTtl: Number.isFinite(gossipTtl) ? gossipTtl : 2,
-			wantIdsBudget: Number.parseInt(document.getElementById('want-ids-budget')?.value, 10) || 16,
-			hlcMaxSkewMs: Number.parseInt(document.getElementById('hlc-max-skew-ms')?.value, 10) || 3_600_000,
-			streamingSfuWss: document.getElementById('streaming-sfu-wss')?.value?.trim() || null,
-			messageContentRetentionMs: Number.parseInt(
-				document.getElementById('message-content-retention-ms')?.value,
-				10,
-			) || 0,
-			eventRetentionDepth: Number.parseInt(document.getElementById('event-retention-depth')?.value, 10) || 200_000,
-			eventRetentionMs: Number.parseInt(document.getElementById('event-retention-ms')?.value, 10) || 0,
-			compactTriggerEventDepth: Number.parseInt(document.getElementById('compact-trigger-event-depth')?.value, 10) || 100_000,
-			messageRateLimitPerMin: Math.max(1, Math.min(120,
-				Number.parseInt(document.getElementById('message-rate-limit-per-min')?.value, 10) || 10)),
-			autoReplyTokenBucketEnabled: !!document.getElementById('auto-reply-token-bucket-enabled')?.checked,
-			autoReplyTokenBurst: Math.max(1, Math.min(12,
-				Number.parseInt(document.getElementById('auto-reply-token-burst')?.value, 10) || 2)),
-			autoReplyTokenRefillPerMessage: Math.max(0.1, Math.min(5,
-				Number.parseFloat(document.getElementById('auto-reply-token-refill')?.value) || 0.5)),
-			fileCeMode: String(document.getElementById('file-ce-mode')?.value || 'convergent') === 'random'
-				? 'random'
-				: 'convergent',
-			iceServers: collectIceServersFromDom(),
-			discoveryPublic: !!document.getElementById('discovery-public')?.checked,
-			discoveryTitle: document.getElementById('discovery-title')?.value?.trim() || null,
-			discoveryBlurb: document.getElementById('discovery-blurb')?.value?.trim() || null,
-			autoChannelGc: !!document.getElementById('auto-channel-gc')?.checked,
-			hotLatestMessageCount: Math.max(0, Number.parseInt(
-				document.getElementById('hot-latest-message-count')?.value,
-				10,
-			) || 50),
-			pinContextMessageCount: Math.max(0, Number.parseInt(
-				document.getElementById('pin-context-message-count')?.value,
-				10,
-			) || 30),
-		})
+	await putGroupSettings(context.groupId, {
+		joinPolicy: document.getElementById('join-policy').value,
+		powDifficulty: Number.parseInt(document.getElementById('pow-difficulty').value, 10) || 4,
+		streamGeneratingIdleMs: Number.parseInt(document.getElementById('stream-generating-idle-ms').value, 10) || 150000,
+		autoReplyFrequency: Math.max(0, Number.parseInt(document.getElementById('auto-reply-frequency')?.value, 10) || 0),
+		maxDagPayloadBytes: Number.parseInt(document.getElementById('max-dag-payload-bytes').value, 10) || 262144,
+		batterySaver: !!document.getElementById('battery-saver')?.checked,
+		trustedPeerSlots: Number.parseInt(document.getElementById('trusted-peer-slots')?.value, 10) || 8,
+		explorePeerSlots: Number.parseInt(document.getElementById('explore-peer-slots')?.value, 10) || 4,
+		maxPeers: Number.parseInt(document.getElementById('max-peers')?.value, 10) || 24,
+		gossipTtl: Number.isFinite(gossipTtl) ? gossipTtl : 2,
+		wantIdsBudget: Number.parseInt(document.getElementById('want-ids-budget')?.value, 10) || 16,
+		hlcMaxSkewMs: Number.parseInt(document.getElementById('hlc-max-skew-ms')?.value, 10) || 3_600_000,
+		streamingSfuWss: document.getElementById('streaming-sfu-wss')?.value?.trim() || null,
+		messageContentRetentionMs: Number.parseInt(
+			document.getElementById('message-content-retention-ms')?.value,
+			10,
+		) || 0,
+		eventRetentionDepth: Number.parseInt(document.getElementById('event-retention-depth')?.value, 10) || 200_000,
+		eventRetentionMs: Number.parseInt(document.getElementById('event-retention-ms')?.value, 10) || 0,
+		compactTriggerEventDepth: Number.parseInt(document.getElementById('compact-trigger-event-depth')?.value, 10) || 100_000,
+		messageRateLimitPerMin: Math.max(1, Math.min(120,
+			Number.parseInt(document.getElementById('message-rate-limit-per-min')?.value, 10) || 10)),
+		autoReplyTokenBucketEnabled: !!document.getElementById('auto-reply-token-bucket-enabled')?.checked,
+		autoReplyTokenBurst: Math.max(1, Math.min(12,
+			Number.parseInt(document.getElementById('auto-reply-token-burst')?.value, 10) || 2)),
+		autoReplyTokenRefillPerMessage: Math.max(0.1, Math.min(5,
+			Number.parseFloat(document.getElementById('auto-reply-token-refill')?.value) || 0.5)),
+		fileCeMode: String(document.getElementById('file-ce-mode')?.value || 'convergent') === 'random'
+			? 'random'
+			: 'convergent',
+		iceServers: collectIceServersFromDom(),
+		discoveryPublic: !!document.getElementById('discovery-public')?.checked,
+		discoveryTitle: document.getElementById('discovery-title')?.value?.trim() || null,
+		discoveryBlurb: document.getElementById('discovery-blurb')?.value?.trim() || null,
+		autoChannelGc: !!document.getElementById('auto-channel-gc')?.checked,
+		hotLatestMessageCount: Math.max(0, Number.parseInt(
+			document.getElementById('hot-latest-message-count')?.value,
+			10,
+		) || 50),
+		pinContextMessageCount: Math.max(0, Number.parseInt(
+			document.getElementById('pin-context-message-count')?.value,
+			10,
+		) || 30),
 	})
-	if (!settingsResponse.ok) throw new Error(await readApiError(settingsResponse))
 
 	const partitionElement = document.getElementById('federation-partition-count')
 	if (partitionElement) {
@@ -149,12 +137,7 @@ export async function deleteGroup(context) {
 		return
 	}
 	if (!confirmI18n('chat.group.settings.page.delete.confirm')) return
-	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}`, {
-		method: 'DELETE',
-		credentials: 'include'
-	})
-	const data = await resp.json()
-	if (!resp.ok) throw new Error(data.error)
+	await removeGroup(context.groupId)
 	showToastI18n('success', 'chat.group.settings.page.delete.success')
 	window.location.href = '/parts/shells:chat/hub/'
 }

@@ -7,7 +7,7 @@
  */
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { renderTemplate } from '/scripts/features/template.mjs'
-import { entityFileUrl, fetchEvfsFile } from '/parts/shells:chat/shared/evfsMedia.mjs'
+import { entityFileUrl, fetchEvfsFile } from '/scripts/endpoints/p2p/evfsMedia.mjs'
 import { parseEvfsRef } from './lib/evfsRef.mjs'
 import { arrayBufferToBase64 } from './lib/federationUpload.mjs'
 import { processTimeStampForId } from './lib/timestampId.mjs'
@@ -111,7 +111,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 	const evfsRef = typeof file.buffer === 'string' ? parseEvfsRef(file.buffer) : null
 	if (evfsRef && isPreviewable) {
 		file = { ...file }
-		file.buffer = arrayBufferToBase64(await fetchEvfsFile(evfsRef.entityHash, evfsRef.logicalPath))
+		file.buffer = arrayBufferToBase64((await fetchEvfsFile(evfsRef.entityHash, evfsRef.logicalPath)).buffer)
 	}
 
 	const previewContainer = attachmentElement.querySelector('.preview-container')

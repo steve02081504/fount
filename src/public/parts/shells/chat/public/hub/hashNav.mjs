@@ -5,7 +5,7 @@
  * 【数据结构】hash 片段约定见 core/urlHash（`#group:groupId:channelId`、`#friends`）。
  * 【关联】init、core/urlHash、sidebar、friendBindings、friendChat、mode、serverBar。
  */
-import { handleUIError } from '../src/ui/errors.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { store } from './core/state.mjs'
 import { DISCOVERY_HASH, FRIENDS_HASH, INBOX_HASH, isFriendsHash, parseHash } from './core/urlHash.mjs'
@@ -72,7 +72,7 @@ async function navigateFromHashInner() {
 		if (eventId) await scrollToAndHighlightEventId(eventId)
 	}
 	catch (error) {
-		handleUIError(error, 'chat.hub.load.groupFailed')
+		handleError('chat.hub.load.groupFailed')(error)
 	}
 }
 

@@ -22,8 +22,8 @@ import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import {
 	cachedProfileFromApi,
-	fetchEntityProfileApi,
-} from '../src/entityProfileApi.mjs'
+	getEntityProfile,
+} from '../src/endpoints/entities.mjs'
 
 import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
 import {
@@ -45,7 +45,7 @@ const loadProfileCached = memoizePromise(
 		const entityHash = sep === -1 ? cacheKey : cacheKey.slice(0, sep)
 		const groupId = sep === -1 ? undefined : cacheKey.slice(sep + 1)
 		try {
-			const data = await fetchEntityProfileApi(entityHash, groupId)
+			const data = await getEntityProfile(entityHash, groupId)
 			return cachedProfileFromApi(data?.profile, entityHash)
 		}
 		catch {
@@ -109,7 +109,7 @@ export async function fetchUserProfile(entityHash, options = {}) {
 	const cacheKey = options.groupId ? `${key}:${options.groupId}` : key
 	if (options.bypassCache)
 		try {
-			const data = await fetchEntityProfileApi(key, options.groupId)
+			const data = await getEntityProfile(key, options.groupId)
 			return cachedProfileFromApi(data?.profile, key)
 		}
 		catch {

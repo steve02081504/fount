@@ -5,9 +5,9 @@
 import { openDialogFromTemplate } from '../../../../../scripts/features/dialog.mjs'
 import { usingTemplates } from '../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
-import { createChannel } from '../../src/api/groupChannel.mjs'
-import { getGroupState } from '../../src/api/groupCore.mjs'
-import { handleUIError } from '../../src/ui/errors.mjs'
+import { createChannel } from '../../src/endpoints/groupChannel.mjs'
+import { getGroupState } from '../../src/endpoints/groupCore.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { store, setState } from '../core/state.mjs'
 
 import { selectChannel } from './selectChannel.mjs'
@@ -44,7 +44,7 @@ export async function showCreateChannelModal() {
 					showToastI18n('success', 'chat.hub.newChannel.success')
 				}
 				catch (error) {
-					handleUIError(error, 'chat.hub.newChannel.failed')
+					handleError('chat.hub.newChannel.failed')(error)
 				}
 			})
 		},

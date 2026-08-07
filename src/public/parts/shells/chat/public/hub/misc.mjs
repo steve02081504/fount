@@ -3,11 +3,17 @@
  * 【职责】Hub 杂项初始化：浏览器通知权限、成就钩子，以及将 char/world part 拖入群组的导入逻辑。
  * 【原理】`setupMisc` 在 `init` 末尾注册拖放区与通知按钮；`setupPartDragDrop` 高亮可放置区域；拖入 part 可能触发群状态变更后刷新消息。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../../../../scripts/toast、../src/achievements、../src/api/groupClient、core/state。
+ * 【关联】../../../../scripts/toast、../src/achievements、../src/endpoints/groupCore、core/state。
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { initializeAchievements } from '../src/achievements.mjs'
-import { groupRequest } from '../src/api/groupClient.mjs'
+import {
+	addGroupChar,
+	addGroupPlugin,
+	setGroupPersona,
+	setGroupWorld,
+} from '../src/endpoints/groupCore.mjs'
 
 import { store } from './core/state.mjs'
 
@@ -36,19 +42,19 @@ export function setupPartDragDrop() {
 		try {
 			switch (partType) {
 				case 'chars':
-					await groupRequest(groupId, 'char', 'POST', { charname: partName })
+					await addGroupChar(groupId, { charname: partName })
 					showToastI18n('success', 'chat.dragAndDrop.charAdded', { partName })
 					break
 				case 'personas':
-					await groupRequest(groupId, 'persona', 'PUT', { personaname: partName })
+					await setGroupPersona(groupId, partName)
 					showToastI18n('success', 'chat.dragAndDrop.personaSet', { partName })
 					break
 				case 'worlds':
-					await groupRequest(groupId, 'world', 'PUT', { worldname: partName, channelId })
+					await setGroupWorld(groupId, partName, channelId)
 					showToastI18n('success', 'chat.dragAndDrop.worldSet', { partName })
 					break
 				case 'plugins':
-					await groupRequest(groupId, 'plugin', 'POST', { pluginname: partName })
+					await addGroupPlugin(groupId, partName)
 					showToastI18n('success', 'chat.dragAndDrop.pluginAdded', { partName })
 					break
 				default:
@@ -56,7 +62,7 @@ export function setupPartDragDrop() {
 			}
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.dragAndDrop.errorAddingPart', { partName, error: error.message })
+			handleError('chat.dragAndDrop.errorAddingPart', { partName })(error)
 		}
 	})
 }

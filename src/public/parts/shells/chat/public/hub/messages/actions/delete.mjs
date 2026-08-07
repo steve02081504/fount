@@ -4,7 +4,7 @@
  */
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
-import { deleteChannelMessage } from '../../../src/api/groupChannel.mjs'
+import { deleteChannelMessage } from '../../../src/endpoints/groupChannel.mjs'
 import { enqueueDeletion } from '../messageActionsState.mjs'
 import { shouldConfirmDelete } from '../messageActionsUi.mjs'
 import { getMessageText } from '../render/text.mjs'

@@ -2,10 +2,10 @@
  * 【文件】public/hub/gestures/chatGestures.mjs
  * 【职责】移动端/触控聊天手势：末条角色消息左右滑动切换时间轴分支，桌面端显示箭头按钮。
  * 【原理】在 `#messages` 上事件委托 touch；桌面箭头仍挂末条角色消息。群/频道 ID 直接读 store。
- * 【关联】scripts/template、src/api/groupChannel、core/state
+ * 【关联】scripts/template、src/endpoints/groupChannel、core/state
  */
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
-import { modifyBranch } from '../../src/api/groupChannel.mjs'
+import { modifyBranch } from '../../src/endpoints/groupChannel.mjs'
 import { store } from '../core/state.mjs'
 
 const CHAT_SWIPE_THRESHOLD = 50

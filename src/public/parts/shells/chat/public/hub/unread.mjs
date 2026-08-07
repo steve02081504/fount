@@ -1,9 +1,16 @@
 /**
  * 【文件】hub/unread.mjs — 未读 badge 与 read-marker 同步。
  */
-import { putChannelReadMarker } from '../src/api/groupChannel.mjs'
+import { putChannelReadMarker } from '../src/endpoints/groupChannel.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { store } from './core/state.mjs'
+
+/** serverBar 静态 import 会与 unread 成环；惰性刷新 chrome。 @returns {Promise<void>} */
+async function refreshServerBar() {
+	const { renderServerBar } = await import('./serverBar.mjs')
+	await renderServerBar()
+}
 
 /**
  * @param {number} count 未读数
@@ -96,10 +103,10 @@ export async function markCurrentChannelRead() {
 		delete group.channelUnread[channelId]
 		group.unreadCount = sumChannelUnread(group.channelUnread)
 	}
-	void import('./serverBar.mjs').then(({ renderServerBar }) => renderServerBar())
-	void import('./sidebar/index.mjs').then(({ renderHubChannelSidebar }) => {
-		if (store.context.currentState) void renderHubChannelSidebar(store.context.currentState)
-	})
+	refreshServerBar().catch(handleError('chat.hub.operationFailed'))
+	import('./sidebar/index.mjs').then(async ({ renderHubChannelSidebar }) => {
+		if (store.context.currentState) await renderHubChannelSidebar(store.context.currentState)
+	}).catch(handleError('chat.hub.operationFailed'))
 }
 
 /**
@@ -108,9 +115,9 @@ export async function markCurrentChannelRead() {
  * @returns {void}
  */
 export function handleReadMarkerWire(wireMessage) {
-	void import('./memberReadMarkers.mjs').then(({ applyMemberReadMarkerWire }) => {
+	import('./memberReadMarkers.mjs').then(({ applyMemberReadMarkerWire }) => {
 		applyMemberReadMarkerWire(wireMessage)
-	})
+	}).catch(handleError('chat.hub.operationFailed'))
 	const viewerName = store.viewer.username
 	if (!wireMessage?.readMarker || wireMessage.username !== viewerName) return
 	const { groupId, channelId, readMarker } = wireMessage
@@ -128,7 +135,7 @@ export function handleReadMarkerWire(wireMessage) {
 		store.messages.readMarker = readMarker
 		store.messages.firstUnreadEventId = null
 	}
-	void import('./serverBar.mjs').then(({ renderServerBar }) => renderServerBar())
+	refreshServerBar().catch(handleError('chat.hub.operationFailed'))
 }
 
 /**
@@ -144,5 +151,5 @@ export function bumpChannelUnread(groupId, channelId) {
 	group.channelUnread ??= {}
 	group.channelUnread[channelId] = (Number(group.channelUnread[channelId]) || 0) + 1
 	group.unreadCount = (Number(group.unreadCount) || 0) + 1
-	void import('./serverBar.mjs').then(({ renderServerBar }) => renderServerBar())
+	refreshServerBar().catch(handleError('chat.hub.operationFailed'))
 }

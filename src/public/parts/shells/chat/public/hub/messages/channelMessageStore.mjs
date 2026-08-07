@@ -4,7 +4,7 @@
 import { compareHex64Asc } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { mergeChannelMessagesForDisplay } from '../../shared/messageMerge.mjs'
-import { getChannelViewLogByEventIds } from '../../src/api/groupChannel.mjs'
+import { getChannelViewLogByEventIds } from '../../src/endpoints/groupChannel.mjs'
 import { normalizeEventId } from '../../src/lib/eventId.mjs'
 import { applyChannelDisplayChain } from '../../src/ui/channelDisplay.mjs'
 import { store } from '../core/state.mjs'

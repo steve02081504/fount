@@ -9,7 +9,7 @@ import { renderTemplate, usingTemplates } from '../../../scripts/features/templa
 import { closeOverlayModal, openOverlayModal } from '../hub/core/overlayModal.mjs'
 
 import { addTrustedAuthor, TRUST_EXPIRES_NEVER } from './trustedAuthors.mjs'
-import { handleUIError } from './ui/errors.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 const COOLDOWN_SECONDS = 5
 const SECOND_CONFIRM_TIMEOUT_MS = 3000
@@ -159,7 +159,7 @@ export function showTrustAuthorDialog(authorPubKeyHash, authorDisplayName = '') 
 					}
 					catch (error) {
 						cleanup()
-						handleUIError(error, 'chat.hub.operationFailed')
+						handleError('chat.hub.operationFailed')(error)
 						resolve(false)
 					}
 				})
@@ -178,7 +178,7 @@ export function showTrustAuthorDialog(authorPubKeyHash, authorDisplayName = '') 
 			}
 			catch (error) {
 				cleanup()
-				handleUIError(error, 'chat.hub.operationFailed')
+				handleError('chat.hub.operationFailed')(error)
 				resolve(false)
 			}
 		})()

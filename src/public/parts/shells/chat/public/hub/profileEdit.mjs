@@ -3,19 +3,23 @@
  * 【职责】Hub 内资料编辑模态：头像/横幅上传、昵称/简介/标签/链接表单与提交；SFW 双槽编辑。
  * 【原理】`openHubProfileEdit` 弹出编辑对话框并绑定保存/取消；编辑模式 toggle 切换基线 / sfw_* 字段槽，打开时按查看者 `user.sfw` 初始化。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../profile/src/endpoints、../src/entityProfileApi、../src/profileLocaleEditor、core/state、presence。
+ * 【关联】../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../src/endpoints/entities、../src/profileLocaleEditor、core/state、presence。
  */
 import { getUserSetting } from '/scripts/endpoints/base.mjs'
 import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n, primaryLocale } from '../../../../scripts/i18n/index.mjs'
-import { rebuildProfileFromPart, uploadEntityFile } from '../profile/src/endpoints.mjs'
 import {
 	configureEntityProfileCard,
 	paintEntityProfileCard,
 } from '../shared/entityProfileCard.mjs'
 import { ensureLocaleEntry, renameLocaleEntry } from '../shared/profileLocaleState.mjs'
-import { updateEntityProfileApi } from '../src/entityProfileApi.mjs'
+import {
+	getEntityProfile,
+	rebuildProfileFromPart,
+	updateEntityProfile,
+	uploadEntityFile,
+} from '../src/endpoints/entities.mjs'
 import {
 	normalizeProfileLinks,
 	normalizeProfileTag,
@@ -25,7 +29,7 @@ import {
 	renderLocaleTabs,
 	renderTagsEditor,
 } from '../src/profileLocaleEditor.mjs'
-import { handleUIError } from '../src/ui/errors.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
 import { store } from './core/state.mjs'
@@ -694,7 +698,7 @@ async function handleResetFromPart() {
 		await onSavedCallback?.()
 	}
 	catch (error) {
-		handleUIError(error, 'chat.hub.profileEdit.resetFrom.partFailed')
+		handleError('chat.hub.profileEdit.resetFrom.partFailed')(error)
 	}
 }
 
@@ -786,7 +790,7 @@ async function handleSaveProfile() {
 			banner,
 			sfw_banner,
 		}
-		const result = await updateEntityProfileApi(editingEntityHash, updates, groupId)
+		const result = await updateEntityProfile(editingEntityHash, updates, groupId)
 		const queued = !!(result?.queued || avatarQueued || bannerQueued)
 		if (!queued && !result?.profile) throw new Error(result?.error || 'update failed')
 		editDialog.close()
@@ -797,7 +801,7 @@ async function handleSaveProfile() {
 		await onSavedCallback?.()
 	}
 	catch (error) {
-		handleUIError(error, 'chat.profile.errors.saveFailed')
+		handleError('chat.profile.errors.saveFailed')(error)
 	}
 }
 
@@ -807,10 +811,16 @@ async function handleSaveProfile() {
  * @returns {Promise<void>}
  */
 export async function openHubProfileEdit(entityHash, options = {}) {
-	const { fetchEntityProfileApi: fetchApi } = await import('../src/entityProfileApi.mjs')
 	const groupId = store.context.currentGroupId || undefined
 	const dialog = await ensureEditDialog()
-	const data = await fetchApi(entityHash, groupId)
+	let data
+	try {
+		data = await getEntityProfile(entityHash, groupId)
+	}
+	catch (error) {
+		handleError('chat.profile.errors.loadFailed')(error)
+		return
+	}
 	if (!data?.profile) {
 		showToastI18n('error', 'chat.profile.errors.loadFailed')
 		return

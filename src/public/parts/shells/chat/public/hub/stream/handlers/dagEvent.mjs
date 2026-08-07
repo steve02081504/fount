@@ -2,7 +2,7 @@
  * 【文件】public/hub/stream/handlers/dagEvent.mjs
  * 【职责】WS `dag_event`（频道结构 / 编辑删除 / overlay）。
  */
-import { getGroupState } from '../../../src/api/groupCore.mjs'
+import { getGroupState } from '../../../src/endpoints/groupCore.mjs'
 import { store } from '../../core/state.mjs'
 import {
 	dispatchChannelMessageDelete,

@@ -5,8 +5,8 @@
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { geti18n } from '../../../../../../scripts/i18n/index.mjs'
 import { chatExtensionOf, normalizeChannelMessage } from '../../../shared/channelContent.mjs'
-import { sendGroupMessage } from '../../../src/api/groupChannel.mjs'
-import { getGroupState } from '../../../src/api/groupCore.mjs'
+import { sendGroupMessage } from '../../../src/endpoints/groupChannel.mjs'
+import { getGroupState } from '../../../src/endpoints/groupCore.mjs'
 import { store } from '../../core/state.mjs'
 
 /**

@@ -13,13 +13,16 @@ import { pubKeyHash } from 'npm:@steve02081504/fount-p2p/crypto'
 import { generateKeyRotationNonce, deriveNextFileMasterKey } from 'npm:@steve02081504/fount-p2p/crypto/key'
 import { verifyOwnerSuccessionThreshold } from 'npm:@steve02081504/fount-p2p/governance/owner_succession_ballot'
 import { addDenylistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer } from 'npm:@steve02081504/fount-p2p/node/denylist'
+import { applyVolatileSlashAlert, buildUnverifiedSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { appendKeyRotateEvent } from '../../chat/dag/channelOperations.mjs'
 import { adminPubKeyHashes } from '../../chat/dag/groupMaterializedState.mjs'
+import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
+import { publishVolatileToFederation } from '../../chat/federation/index.mjs'
 import { invalidateFederationRoomCache } from '../../chat/federation/room.mjs'
 import { mintRoomSecret } from '../../chat/federation/roomCredentials.mjs'
 import { getCurrentFileMasterKey, appendFileMasterKey } from '../../chat/file_keys/store.mjs'
@@ -30,7 +33,10 @@ import {
 	unbanTargetsFromMember,
 } from '../../chat/governance/banRules.mjs'
 import { signOwnerSuccessionAsLocalAdmin } from '../../chat/governance/ownerSuccessionSign.mjs'
+import { broadcastEvent } from '../../chat/ws/groupWsBroadcast.mjs'
+import { groupWsRoomKeyForReplica } from '../../chat/ws/groupWsRooms.mjs'
 import {
+	canGovSlash,
 	canInChannel,
 	governanceChannelId,
 	resolveActiveMemberKey,
@@ -277,28 +283,21 @@ export function registerGovernanceRoutes(router, authenticate) {
 			return res.status(200).json({})
 		}
 
-		const resolvedTargetKey = resolveActiveMemberKey(state, targetMemberKey)
-		if (!resolvedTargetKey)
-			throw httpError(404, 'Member not found')
-		const resolvedMember = state.members[resolvedTargetKey]
-		const requiredPermission = action === 'ban' ? PERMISSIONS.BAN_MEMBERS : PERMISSIONS.KICK_MEMBERS
-		const callerEntity = String(member?.entityHash || '').trim().toLowerCase()
-		const ownerEntity = String(resolvedMember?.ownerEntityHash || '').trim().toLowerCase()
-		const isOwnerKickOwnAgent = action === 'kick'
-			&& resolvedMember?.memberKind === 'agent'
-			&& !!(ownerEntity && callerEntity === ownerEntity)
-		const isAdminKickAgent = action === 'kick'
-			&& resolvedMember?.memberKind === 'agent'
-			&& hasPermission(member, PERMISSIONS.ADMIN, state.roles, governanceChannel, state.channelPermissions)
-		const canModerate = action === 'kick' && resolvedMember?.memberKind === 'agent'
-			? isOwnerKickOwnAgent || isAdminKickAgent
-			: hasPermission(member, requiredPermission, state.roles, governanceChannel, state.channelPermissions)
-		if (!canModerate)
-			throw httpError(403, 'No permission to moderate members')
-		if (resolvedTargetKey === memberKey && resolvedMember?.memberKind !== 'agent')
-			throw httpError(400, 'Cannot moderate yourself')
-
 		if (action === 'ban') {
+			const resolvedTargetKey = resolveMemberKey(state, targetMemberKey)
+			if (!resolvedTargetKey)
+				throw httpError(404, 'Member not found')
+			const resolvedMember = state.members[resolvedTargetKey]
+			if (!hasPermission(member, PERMISSIONS.BAN_MEMBERS, state.roles, governanceChannel, state.channelPermissions))
+				throw httpError(403, 'No permission to moderate members')
+			if (resolvedTargetKey === memberKey && resolvedMember?.memberKind !== 'agent')
+				throw httpError(400, 'Cannot moderate yourself')
+			// 已封禁：幂等返回，避免重试再追加 member_ban / 再扣声誉
+			if (resolvedMember?.status === 'banned')
+				return res.status(200).json({ banned: true, reputationSlash: { ok: true, alreadyBanned: true } })
+			if (resolvedMember?.status !== 'active')
+				throw httpError(404, 'Member not found')
+
 			const banScope = req.body?.banScope?.trim().toLowerCase()
 			if (!isBanScope(banScope))
 				throw httpError(400, 'banScope must be entity or node')
@@ -309,7 +308,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 			catch (error) {
 				throw httpError(400, error.message)
 			}
-			await appendSignedLocalEvent(username, groupId, {
+			const banEvent = await appendSignedLocalEvent(username, groupId, {
 				type: 'member_ban',
 				timestamp: Date.now(),
 				content: banContent,
@@ -317,8 +316,47 @@ export function registerGovernanceRoutes(router, authenticate) {
 			await rotateRoomSecretAfterModeration(username, groupId)
 			await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banContent))
 			await addDenylistFromBanContent(banContent, groupId)
-			return res.status(200).json({})
+
+			/** @type {{ ok: boolean, error?: string, banEventId?: string }} */
+			let reputationSlash = { ok: true, banEventId: banEvent.id }
+			try {
+				if (!canGovSlash(state, member))
+					throw new Error('ADMIN or MANAGE_ROLES required')
+				const { sender } = await resolveLocalEventSigner(username, groupId)
+				const alert = buildUnverifiedSlashAlert(
+					sender,
+					{ targetPubKeyHash: resolvedTargetKey, claim: 1 },
+					state.groupSettings || {},
+				)
+				// 用 ban 事件 id 锚定 alert，重试同一 ban 时 volatile 侧可按 banEventId 去重
+				alert.banEventId = banEvent.id
+				await applyVolatileSlashAlert(alert)
+				broadcastEvent(groupWsRoomKeyForReplica(groupId), alert)
+				await publishVolatileToFederation(groupId, alert)
+			}
+			catch (error) {
+				reputationSlash = { ok: false, error: error.message, banEventId: banEvent.id }
+			}
+			return res.status(200).json({ banned: true, reputationSlash })
 		}
+
+		const resolvedTargetKey = resolveActiveMemberKey(state, targetMemberKey)
+		if (!resolvedTargetKey)
+			throw httpError(404, 'Member not found')
+		const resolvedMember = state.members[resolvedTargetKey]
+		const callerEntity = String(member?.entityHash || '').trim().toLowerCase()
+		const ownerEntity = String(resolvedMember?.ownerEntityHash || '').trim().toLowerCase()
+		const isOwnerKickOwnAgent = resolvedMember?.memberKind === 'agent'
+			&& !!(ownerEntity && callerEntity === ownerEntity)
+		const isAdminKickAgent = resolvedMember?.memberKind === 'agent'
+			&& hasPermission(member, PERMISSIONS.ADMIN, state.roles, governanceChannel, state.channelPermissions)
+		const canModerate = resolvedMember?.memberKind === 'agent'
+			? isOwnerKickOwnAgent || isAdminKickAgent
+			: hasPermission(member, PERMISSIONS.KICK_MEMBERS, state.roles, governanceChannel, state.channelPermissions)
+		if (!canModerate)
+			throw httpError(403, 'No permission to moderate members')
+		if (resolvedTargetKey === memberKey && resolvedMember?.memberKind !== 'agent')
+			throw httpError(400, 'Cannot moderate yourself')
 
 		const content = { targetMemberKey: resolvedTargetKey }
 

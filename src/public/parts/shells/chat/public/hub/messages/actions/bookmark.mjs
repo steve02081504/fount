@@ -3,7 +3,7 @@
  * 【职责】频道消息书签。
  */
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
-import { addChatBookmark } from '../../../src/api/groupBookmarks.mjs'
+import { addChatBookmark } from '../../../src/endpoints/groupBookmarks.mjs'
 import { refreshPinsBookmarks } from '../../pinsBookmarks.mjs'
 import { getMessageText } from '../render/text.mjs'
 

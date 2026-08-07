@@ -1,6 +1,6 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
-import { castChannelVote, createChannelVote } from '../../src/api/groupChannel.mjs'
-import { handleUIError } from '../../src/ui/errors.mjs'
+import { castChannelVote, createChannelVote } from '../../src/endpoints/groupChannel.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { store } from '../core/state.mjs'
 import { loadMessages } from '../messages/messages.mjs'
 import { getActiveThreadChannelId } from '../threadDrawer.mjs'
@@ -42,7 +42,7 @@ export function wireVoteEvents() {
 			await loadMessages()
 		}
 		catch (err) {
-			handleUIError(err, 'chat.hub.vote.createFailed')
+			handleError('chat.hub.vote.createFailed')(err)
 		}
 	})
 }

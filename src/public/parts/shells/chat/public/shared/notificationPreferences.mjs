@@ -1,31 +1,18 @@
-import { CHAT_API_CLIENT_PREFIX } from './apiPaths.mjs'
-
-const NOTIFY_PREFS_API = `${CHAT_API_CLIENT_PREFIX}/notify-prefs`
+import { getNotificationPreferences, putNotificationPreferences } from '../src/endpoints/prefs.mjs'
 
 /**
  * @returns {Promise<Record<string, object>>} 整档通知偏好
  */
-export async function loadNotificationPreferences() {
-	const response = await fetch(NOTIFY_PREFS_API, { credentials: 'include' })
-	const data = await response.json()
-	if (!response.ok) throw new Error(data.error || 'load notification preferences failed')
-	return data.prefs || {}
+export function loadNotificationPreferences() {
+	return getNotificationPreferences()
 }
 
 /**
  * @param {Record<string, object>} prefs 整档通知偏好
  * @returns {Promise<Record<string, object>>} 写入后的整档偏好
  */
-export async function saveNotificationPreferences(prefs) {
-	const response = await fetch(NOTIFY_PREFS_API, {
-		method: 'PUT',
-		credentials: 'include',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ prefs }),
-	})
-	const data = await response.json()
-	if (!response.ok) throw new Error(data.error || 'save notification preferences failed')
-	return data.prefs || {}
+export function saveNotificationPreferences(prefs) {
+	return putNotificationPreferences(prefs)
 }
 
 /**

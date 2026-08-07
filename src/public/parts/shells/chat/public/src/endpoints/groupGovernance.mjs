@@ -1,9 +1,10 @@
 /**
- * 【文件】public/src/api/groupGovernance.mjs
+ * 【文件】public/src/endpoints/groupGovernance.mjs
  * 【职责】群治理 API：fork、封对立分支、声誉、群主继任、轮换群钥、合并 DAG tips。
  * 【关联】groupClient.mjs；groupBan、审计与 Hub 管理 UI。
  */
-import { groupFetch, groupPath } from './groupClient.mjs'
+import { chatFetch, groupFetch, groupPath } from './groupClient.mjs'
+import { addDenylistEntry } from './p2p.mjs'
 
 /**
  * 将现有群 fork 为新群。
@@ -30,22 +31,11 @@ export async function blockOpposingForkBranch(groupId, acceptedTipId) {
 
 /**
  * 追加用户级拉黑（`denylist.json`）。
- * @param {string|{ scope: string, value: string, groupId?: string }} entry 主体或 `{ scope, value }`
- * @param {string} [groupId] 来源群 ID（`entry` 为字符串时使用）
+ * @param {{ scope: string, value: string, groupId?: string }} entry 拉黑条目
  * @returns {Promise<void>}
  */
-export async function blockUser(entry, groupId) {
-	const body = entry?.scope
-		? { scope: entry.scope, value: entry.value, groupId: entry.groupId || groupId }
-		: { scope: 'subject', value: entry, groupId }
-	const response = await fetch('/api/p2p/denylist', {
-		method: 'POST',
-		credentials: 'include',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(body),
-	})
-	const data = await response.json()
-	if (!response.ok) throw new Error(data.error || 'denylist failed')
+export async function blockUser(entry) {
+	await addDenylistEntry(entry)
 }
 
 /**
@@ -71,12 +61,7 @@ export async function setGovernanceBranch(groupId, tipId) {
  * @returns {Promise<object>} `{ reputation }`
  */
 export async function getGroupReputation() {
-	const response = await fetch('/api/parts/shells:chat/reputation', { credentials: 'include' })
-	if (!response.ok) {
-		const data = await response.json().catch(() => ({}))
-		throw new Error(data.error || `HTTP ${response.status}`)
-	}
-	return response.json()
+	return chatFetch('/reputation')
 }
 
 /**

@@ -10,6 +10,7 @@ import {
 	renderTemplateAsHtmlString,
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
+import { getPartDetails } from '/scripts/endpoints/parts.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { createEntityProfileCardElement } from '../shared/entityProfileCard.mjs'
 import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
@@ -36,9 +37,7 @@ let charInfoCardRenderGeneration = 0
  */
 export async function getCharDetails(name) {
 	try {
-		const resp = await fetch(`/api/getdetails/chars/${encodeURIComponent(name)}`, { credentials: 'include' })
-		if (!resp.ok) return null
-		return await resp.json()
+		return await getPartDetails(`chars/${name}`)
 	}
 	catch {
 		return null

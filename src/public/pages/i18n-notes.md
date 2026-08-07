@@ -20,4 +20,6 @@ Use `data-i18n` / `setElementI18n` (swap the key to retarget) — not one-shot `
 
 Icon-only controls: locale `{ title, aria-label }` ([locale-edits.md](../locales/locale-edits.md)); string keys on icon parents wipe children.
 
+**Icon / empty `<label>` controls** (DaisyUI drawer toggle/overlay, file-upload chrome): axe forbids `aria-label` on bare `<label>`, and `role="button"` on `<label>` fails `aria-allowed-role`. Do **not** put `{ aria-label }` objects on the `<label>`. Use a **string** key on a child `<span class="sr-only" data-i18n="…">`; keep `{ title, aria-label }` for real `<button>`s. Drawer overlay + panel must sit inside one landmark (`aside.drawer-side`) so sr-only text does not trip `region`.
+
 Setting `data-i18n` (or inserting markup that has it) is enough — body MutationObserver runs `i18nElement`; do not call it again. Use `setElementI18n` only when the key is unchanged but interpolation params change.

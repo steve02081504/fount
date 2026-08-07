@@ -2,11 +2,11 @@
  * 【文件】public/hub/sidebar/groupMembership.mjs
  * 【职责】选群时的入群判定、自动 join、联邦 catch-up。
  */
-import { getGroupState, joinGroup } from '../../src/api/groupCore.mjs'
-import { federationCatchUp } from '../../src/api/groupFederation.mjs'
+import { getGroupState, joinGroup } from '../../src/endpoints/groupCore.mjs'
+import { federationCatchUp } from '../../src/endpoints/groupFederation.mjs'
 import { broadcastHubGroupJoined } from '../../src/hubBroadcast.mjs'
 import { resolvePowForJoin } from '../../src/powJoin.mjs'
-import { handleUIError } from '../../src/ui/errors.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import {
 	setPinsBookmarksWrapVisible,
 	setSyncBanner,
@@ -36,8 +36,7 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
 		catchup = await federationCatchUp(groupId, { waitMs: options.waitMs ?? 1400 })
 	}
 	catch (error) {
-		const catchupError = handleUIError(error, 'chat.hub.sync.failed').message
-		setSyncBanner(true, { i18nKey: 'chat.hub.sync.failed', params: { error: catchupError } })
+		setSyncBanner(true, { i18nKey: 'chat.hub.sync.failed', params: { error: handleError('chat.hub.sync.failed')(error).message } })
 		return
 	}
 

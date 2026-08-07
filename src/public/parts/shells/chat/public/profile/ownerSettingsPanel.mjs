@@ -3,8 +3,11 @@
  * 【职责】资料页「我的主人」设置：为当前 operator 实体声明 / 清除 ownerEntityHash。
  * 【原理】读 viewer + profile；PUT /entities/owner；本地 agent 列表作快捷选择；保存前高风险确认。
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { mountTemplate } from '../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../scripts/features/toast.mjs'
+import { getEntityProfile, setEntityOwner } from '../src/endpoints/entities.mjs'
+import { getViewer } from '../src/endpoints/viewer.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { showOwnerConfirmDialog } from './ownerConfirmDialog.mjs'
@@ -21,23 +24,6 @@ function normalizeOwnerInput(raw) {
 }
 
 /**
- * @param {string | null} ownerEntityHash 主人 hash；null 清除
- * @returns {Promise<void>}
- */
-async function putOwner(ownerEntityHash) {
-	const res = await fetch('/api/parts/shells:chat/entities/owner', {
-		method: 'PUT',
-		credentials: 'include',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ ownerEntityHash }),
-	})
-	if (!res.ok) {
-		const data = await res.json().catch(() => ({}))
-		throw new Error(data.error || res.statusText)
-	}
-}
-
-/**
  * 在个人资料页挂载「我的主人」面板。
  * @returns {Promise<void>}
  */
@@ -50,24 +36,17 @@ export async function initProfileOwnerSettings() {
 	let agents = []
 	let ownerEntityHash = ''
 	try {
-		const viewerRes = await fetch('/api/parts/shells:chat/viewer', { credentials: 'include' })
-		if (!viewerRes.ok) throw new Error(`viewer ${viewerRes.status}`)
-		const viewer = await viewerRes.json()
+		const viewer = await getViewer()
 		viewerEntityHash = viewer.viewerEntityHash || null
 		agents = Array.isArray(viewer.agents) ? viewer.agents : []
 		ownerEntityHash = String(viewer.profile?.ownerEntityHash || '').trim().toLowerCase()
 		if (viewerEntityHash && !ownerEntityHash) {
-			const profileRes = await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(viewerEntityHash)}`, {
-				credentials: 'include',
-			})
-			if (profileRes.ok) {
-				const data = await profileRes.json()
-				ownerEntityHash = String(data.profile?.ownerEntityHash || '').trim().toLowerCase()
-			}
+			const data = await getEntityProfile(viewerEntityHash)
+			ownerEntityHash = String(data.profile?.ownerEntityHash || '').trim().toLowerCase()
 		}
 	}
 	catch (error) {
-		showToastI18n('error', 'chat.profile.owner.saveFailed', { error: error?.message || String(error) })
+		handleError('chat.profile.errors.fetchUserFailed')(error)
 		return
 	}
 
@@ -103,23 +82,27 @@ export async function initProfileOwnerSettings() {
 			}
 			const confirmed = await showOwnerConfirmDialog(next)
 			if (!confirmed) return
-			await putOwner(next)
+			await setEntityOwner(next)
 			showToastI18n('success', 'chat.profile.owner.saved')
 			await initProfileOwnerSettings()
 		}
-		catch (e) {
-			showToastI18n('error', 'chat.profile.owner.saveFailed', { error: e?.message || String(e) })
+		catch (error) {
+			if (error?.message === 'invalid ownerEntityHash') {
+				showToastI18n('error', 'chat.profile.owner.saveFailed', { error: error.message })
+				return
+			}
+			handleError('chat.profile.owner.saveFailed')(error)
 		}
 	})
 
 	document.getElementById('profile-owner-clear')?.addEventListener('click', async () => {
 		try {
-			await putOwner(null)
+			await setEntityOwner(null)
 			showToastI18n('success', 'chat.profile.owner.cleared')
 			await initProfileOwnerSettings()
 		}
-		catch (e) {
-			showToastI18n('error', 'chat.profile.owner.saveFailed', { error: e?.message || String(e) })
+		catch (error) {
+			handleError('chat.profile.owner.saveFailed')(error)
 		}
 	})
 }

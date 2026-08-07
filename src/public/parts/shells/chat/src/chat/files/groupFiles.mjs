@@ -7,6 +7,7 @@
  */
 import { Buffer } from 'node:buffer'
 
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { base64ToBytes } from 'npm:@steve02081504/fount-p2p/core/bytes_codec'
 import { BLOB_STORAGE_LOCATOR_RE, isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
@@ -364,7 +365,7 @@ export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
 			for (const [hash, bytes] of Object.entries(fetched))
 				await putCiphertextBlob(username, hash, bytes).catch(() => { })
 			for (const [hash, bytes] of Object.entries(fetched))
-				void replicateChunkToFederation(username, groupId, hash, bytes, { requiredAcks: 0 }).catch(() => { })
+				replicateChunkToFederation(username, groupId, hash, bytes, { requiredAcks: 0 }).catch(handleError)
 			for (const hash of Object.keys(fetched))
 				if (fileId) await updateDownloadChunkState(username, groupId, fileId, hash, 'done').catch(() => { })
 			for (const hash of missing)
@@ -486,7 +487,7 @@ export async function getDecryptedChunk(username, groupId, storageLocator, conte
 		raw = await resolveCiphertextRaw(username, groupId, storageLocator)
 	}
 	catch (e) {
-		if (blamePeerKey) void penalizeChunkStorageFailure(blamePeerKey).catch(() => { })
+		if (blamePeerKey) penalizeChunkStorageFailure(blamePeerKey).catch(handleError)
 		throw e
 	}
 	let plain = null
@@ -508,10 +509,10 @@ export async function getDecryptedChunk(username, groupId, storageLocator, conte
 	else
 		plain = decryptConvergentCiphertext(raw, contentHash)
 	if (!plain) {
-		if (blamePeerKey) void penalizeChunkStorageFailure(blamePeerKey).catch(() => { })
+		if (blamePeerKey) penalizeChunkStorageFailure(blamePeerKey).catch(handleError)
 		throw new Error('convergent blob decrypt failed')
 	}
-	void cachePlaintextFile(username, contentHash, plain).catch(() => { })
+	cachePlaintextFile(username, contentHash, plain).catch(handleError)
 	return new Uint8Array(plain)
 }
 

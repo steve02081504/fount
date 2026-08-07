@@ -3,10 +3,10 @@ import {
 	mountTemplate,
 } from '../../../../../scripts/features/template.mjs'
 import { applyMessageEditToRow } from '../../shared/messageMerge.mjs'
-import { getChannelViewLog } from '../../src/api/groupChannel.mjs'
+import { getChannelViewLog } from '../../src/endpoints/groupChannel.mjs'
 import { hubEmptyWaveIcon } from '../../src/lib/emojiSvg.mjs'
 import { eventIdsEqual } from '../../src/lib/eventId.mjs'
-import { handleUIError } from '../../src/ui/errors.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { refreshChannelPinsBar } from '../banners.mjs'
 import { store } from '../core/state.mjs'
 import {
@@ -300,7 +300,6 @@ export async function loadMessages() {
 			refreshChannelView()
 			await refreshReactionPerms()
 			initChannelVirtualList(container)
-			store.messages.channelPipelineKey = pipelineKey
 		}
 		else
 			await mountTemplate(container, 'hub/empty/loading', {})
@@ -338,24 +337,24 @@ export async function loadMessages() {
 
 		if (store.messages.channelMessagePipeline)
 			await store.messages.channelMessagePipeline.refresh()
-		else {
+		else
 			initChannelVirtualList(container)
-			store.messages.channelPipelineKey = pipelineKey
-		}
-		if (softReload)
-			store.messages.channelPipelineKey = pipelineKey
 		updateLastMessageId()
 		// 有未读时滚到分割线；打开频道即标已读（badge 清零），分割线锚点保留到下次 load
 		if (!softReload && !store.messages.firstUnreadEventId) scrollToBottom()
-		await markCurrentChannelRead().catch(() => { })
-		refreshChannelPinsBar()
+		await markCurrentChannelRead().catch(handleError('chat.hub.operationFailed'))
+		refreshChannelPinsBar().catch(handleError('chat.hub.operationFailed'))
 		saveChannelViewCache()
-		void import('../memberReadMarkers.mjs').then(({ fetchMemberReadMarkers }) => {
-			void fetchMemberReadMarkers(groupId, channelId)
-		})
+		try {
+			const { fetchMemberReadMarkers } = await import('../memberReadMarkers.mjs')
+			await fetchMemberReadMarkers(groupId, channelId)
+		}
+		catch (error) {
+			handleError('chat.hub.operationFailed')(error)
+		}
 	}
 	catch (err) {
-		const error = handleUIError(err, 'chat.hub.load.messagesFailed')
+		const error = handleError('chat.hub.load.messagesFailed')(err)
 		await mountTemplate(container, 'hub/empty/error', {
 			i18nKey: 'chat.hub.load.messagesFailed',
 			errorMessage: error.message,

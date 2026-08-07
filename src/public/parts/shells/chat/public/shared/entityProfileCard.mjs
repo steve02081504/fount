@@ -5,7 +5,7 @@
  * bio 只吃 markdown 源，本机安全/可信两档渲染后挂载，不信任对端 HTML、也不对源做 escapeHtml。
  * 悬停 / 点击弹层 / 嵌入页共用 `hub/profile_popup` 模板与 `paintEntityProfileCard`，勿另起视觉壳。
  */
-import { createDOMFromHtmlString } from '/scripts/features/template.mjs'
+import { withTemplates, renderTemplate } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
@@ -16,10 +16,6 @@ import { entityHashLabel, formatEntityAtId, isEntityHash128 } from './entityHash
 import { displayProfileAvatar, entityProfilePattern, isAvatarImageUrl } from './hashAvatar.mjs'
 import { safeProfileLink } from './safeProfileLink.mjs'
 import { mountTrustedMarkdown } from './trustedMarkdown.mjs'
-
-const PROFILE_POPUP_TEMPLATE_URL = '/parts/shells:chat/src/templates/hub/profile_popup.html'
-/** @type {string | null} */
-let cachedProfilePopupTemplateHtml = null
 
 const ENTITY_PROFILE_CARD_STYLESHEET = '/parts/shells:chat/shared/entityProfileCard.css'
 const ENTITY_PROFILE_BANNER_STYLESHEET = '/parts/shells:chat/shared/entityProfileBanner.css'
@@ -108,12 +104,7 @@ export function normalizeEntityProfile(profile, entityHash) {
  */
 export async function createEntityProfileCardElement(mode = 'popup') {
 	ensureEntityProfileCardStyles()
-	if (!cachedProfilePopupTemplateHtml) {
-		const response = await fetch(PROFILE_POPUP_TEMPLATE_URL)
-		if (!response.ok) throw new Error(`profile_popup template HTTP ${response.status}`)
-		cachedProfilePopupTemplateHtml = await response.text()
-	}
-	const root = createDOMFromHtmlString(cachedProfilePopupTemplateHtml)
+	const root = await withTemplates('/parts/shells:chat/src/templates', () => renderTemplate('hub/profile_popup', {}))
 	if (!(root instanceof HTMLElement)) throw new Error('profile_popup template root missing')
 	configureEntityProfileCard(root, mode)
 	return root
