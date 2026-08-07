@@ -5480,7 +5480,8 @@
 		"locked": "अनलॉक नहीं किया गया",
 		"toast_title": "उपलब्धियाँ खुलीं!",
 		"error": {
-			"load_failed": "उपलब्धियाँ लोड करने में विफल: ${message}"
+			"load_failed": "उपलब्धियाँ लोड करने में विफल: ${message}",
+			"unlock_failed": "解锁成就失败：${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

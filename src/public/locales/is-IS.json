@@ -5480,7 +5480,8 @@
 		"locked": "Ekki ólæst",
 		"toast_title": "Afrek opnuð!",
 		"error": {
-			"load_failed": "Mistókst að hlaða afrekum: ${message}"
+			"load_failed": "Mistókst að hlaða afrekum: ${message}",
+			"unlock_failed": "解锁成就失败：${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

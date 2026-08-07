@@ -5480,7 +5480,8 @@
 		"locked": "ロックが解除されていません",
 		"toast_title": "実績のロックが解除されました！",
 		"error": {
-			"load_failed": "実績の読み込みに失敗しました: ${message}"
+			"load_failed": "実績の読み込みに失敗しました: ${message}",
+			"unlock_failed": "解锁成就失败：${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

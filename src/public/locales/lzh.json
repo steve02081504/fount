@@ -5480,7 +5480,8 @@
 		"locked": "尚未功成",
 		"toast_title": "功成！",
 		"error": {
-			"load_failed": "誊录功绩不成：${message}"
+			"load_failed": "誊录功绩不成：${message}",
+			"unlock_failed": "解锁成就失败：${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

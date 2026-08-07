@@ -5480,7 +5480,8 @@
 		"locked": "غير مقفلة",
 		"toast_title": "الإنجازات مقفلة!",
 		"error": {
-			"load_failed": "فشل تحميل الإنجازات: ${message}"
+			"load_failed": "فشل تحميل الإنجازات: ${message}",
+			"unlock_failed": "解锁成就失败：${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {
