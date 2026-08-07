@@ -780,6 +780,7 @@
 		"title": "Accueil",
 		"description": "Le cœur de votre expérience de fount. Ici, gérez les habitants de votre imagination : personnages, mondes et personnages. Vos histoires commencent et partent de ce lien central.",
 		"sidebarTitle": "Détails",
+		"closeSidebar": "Close sidebar",
 		"itemDescription": "Sélectionnez un élément pour en voir les détails.",
 		"noDescription": "Aucune description disponible.",
 		"filterInput": {
@@ -1964,6 +1965,7 @@
 			"ariaClose": {
 				"aria-label": "Fermer"
 			},
+			"close": "Fermer",
 			"serverBar": {
 				"aria-label": "Groupes et navigation"
 			},
@@ -4188,10 +4190,7 @@
 			"mentionSuggest": {
 				"aria-label": "Suggestions de mention"
 			},
-			"mediaButton": {
-				"title": "Ajouter un média",
-				"aria-label": "Ajouter un média"
-			},
+			"mediaButton": "Ajouter un média",
 			"pollButton": {
 				"title": "Créer un sondage",
 				"aria-label": "Créer un sondage"
@@ -4714,14 +4713,8 @@
 			"title": "Liste des éléments",
 			"aria-label": "Liste des éléments"
 		},
-		"openCabinets": {
-			"title": "Ouvrir la liste des armoires",
-			"aria-label": "Ouvrir la liste des armoires"
-		},
-		"closeCabinets": {
-			"title": "Fermer",
-			"aria-label": "Fermer"
-		},
+		"openCabinets": "Ouvrir la liste des armoires",
+		"closeCabinets": "Fermer",
 		"bootstrapFailed": "Échec de l'initialisation de l'armoire : ${error}",
 		"home_function_buttons": {
 			"main": {

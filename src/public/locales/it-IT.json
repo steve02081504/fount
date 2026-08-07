@@ -780,6 +780,7 @@
 		"title": "Home",
 		"description": "Il cuore della tua esperienza di fount. Qui, gestisci gli abitanti della tua immaginazione: personaggi, mondi e personaggi. Le tue storie iniziano e si diramano da questo nesso centrale.",
 		"sidebarTitle": "Dettagli",
+		"closeSidebar": "Close sidebar",
 		"itemDescription": "Seleziona un elemento per visualizzarne i dettagli.",
 		"noDescription": "Nessuna descrizione disponibile.",
 		"filterInput": {
@@ -1964,6 +1965,7 @@
 			"ariaClose": {
 				"aria-label": "Vicino"
 			},
+			"close": "Vicino",
 			"serverBar": {
 				"aria-label": "Gruppi e navigazione"
 			},
@@ -4188,10 +4190,7 @@
 			"mentionSuggest": {
 				"aria-label": "Suggerimenti menzione"
 			},
-			"mediaButton": {
-				"title": "Aggiungi contenuti multimediali",
-				"aria-label": "Aggiungi contenuti multimediali"
-			},
+			"mediaButton": "Aggiungi contenuti multimediali",
 			"pollButton": {
 				"title": "Avviare una votazione",
 				"aria-label": "Initiate a vote"
@@ -4714,14 +4713,8 @@
 			"title": "Elenco elementi",
 			"aria-label": "Elenco elementi"
 		},
-		"openCabinets": {
-			"title": "Apri l'elenco degli schedari",
-			"aria-label": "Apri l'elenco degli schedari"
-		},
-		"closeCabinets": {
-			"title": "Vicino",
-			"aria-label": "Vicino"
-		},
+		"openCabinets": "Apri l'elenco degli schedari",
+		"closeCabinets": "Vicino",
 		"bootstrapFailed": "Inizializzazione schedario non riuscita: ${error}",
 		"home_function_buttons": {
 			"main": {

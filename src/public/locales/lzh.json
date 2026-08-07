@@ -780,6 +780,7 @@
 		"title": "門戶",
 		"description": "此乃泉源之中樞，君之奇思妙想，化為人物、世界、身份，皆由此生發。",
 		"sidebarTitle": "詳覽",
+		"closeSidebar": "Close sidebar",
 		"itemDescription": "請擇一物以觀其詳。",
 		"noDescription": "無述",
 		"filterInput": {
@@ -1964,6 +1965,7 @@
 			"ariaClose": {
 				"aria-label": "闔"
 			},
+			"close": "闔",
 			"serverBar": {
 				"aria-label": "群與導覽"
 			},
@@ -4188,10 +4190,7 @@
 			"mentionSuggest": {
 				"aria-label": "呼名候選"
 			},
-			"mediaButton": {
-				"title": "添媒體",
-				"aria-label": "添媒體"
-			},
+			"mediaButton": "添媒體",
 			"pollButton": {
 				"title": "發起投票",
 				"aria-label": "發起投票"
@@ -4714,14 +4713,8 @@
 			"title": "卷目",
 			"aria-label": "卷目"
 		},
-		"openCabinets": {
-			"title": "啟藏經閣名錄",
-			"aria-label": "啟藏經閣名錄"
-		},
-		"closeCabinets": {
-			"title": "闔",
-			"aria-label": "闔"
-		},
+		"openCabinets": "啟藏經閣名錄",
+		"closeCabinets": "闔",
 		"bootstrapFailed": "藏經閣初始化未遂：${error}",
 		"home_function_buttons": {
 			"main": {

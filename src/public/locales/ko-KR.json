@@ -780,6 +780,7 @@
 		"title": "홈",
 		"description": "fount 체험의 핵심입니다. 여기에서 캐릭터, 세계, 페르소나 등 상상 속 인물을 관리하세요. 여러분의 이야기는 이 중심 연결점에서 시작되고 분기됩니다.",
 		"sidebarTitle": "세부 정보",
+		"closeSidebar": "Close sidebar",
 		"itemDescription": "자세한 내용을 보려면 여기에서 항목을 선택하세요.",
 		"noDescription": "설명이 없습니다.",
 		"filterInput": {
@@ -1964,6 +1965,7 @@
 			"ariaClose": {
 				"aria-label": "폐쇄"
 			},
+			"close": "폐쇄",
 			"serverBar": {
 				"aria-label": "그룹 및 탐색"
 			},
@@ -4188,10 +4190,7 @@
 			"mentionSuggest": {
 				"aria-label": "멘션 제안"
 			},
-			"mediaButton": {
-				"title": "미디어 추가",
-				"aria-label": "미디어 추가"
-			},
+			"mediaButton": "미디어 추가",
 			"pollButton": {
 				"title": "투표 시작",
 				"aria-label": "투표 시작"
@@ -4714,14 +4713,8 @@
 			"title": "항목 목록",
 			"aria-label": "항목 목록"
 		},
-		"openCabinets": {
-			"title": "파일 캐비닛 목록 열기",
-			"aria-label": "파일 캐비닛 목록 열기"
-		},
-		"closeCabinets": {
-			"title": "폐쇄",
-			"aria-label": "폐쇄"
-		},
+		"openCabinets": "파일 캐비닛 목록 열기",
+		"closeCabinets": "폐쇄",
 		"bootstrapFailed": "파일 캐비닛 초기화 실패: ${error}",
 		"home_function_buttons": {
 			"main": {

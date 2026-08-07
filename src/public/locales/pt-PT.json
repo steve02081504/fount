@@ -780,6 +780,7 @@
 		"title": "Início",
 		"description": "O coração da sua experiência com o fount. Aqui, faça a gestão dos habitantes da sua imaginação – personagens, mundos e personas. As suas histórias começam e ramificam-se a partir deste nexo central.",
 		"sidebarTitle": "Detalhes",
+		"closeSidebar": "Close sidebar",
 		"itemDescription": "Selecione um item aqui para ver os detalhes.",
 		"noDescription": "Sem descrição.",
 		"filterInput": {
@@ -1964,6 +1965,7 @@
 			"ariaClose": {
 				"aria-label": "Encerramento"
 			},
+			"close": "Encerramento",
 			"serverBar": {
 				"aria-label": "Grupos e navegação"
 			},
@@ -4188,10 +4190,7 @@
 			"mentionSuggest": {
 				"aria-label": "Sugestões de menção"
 			},
-			"mediaButton": {
-				"title": "Adicionar media",
-				"aria-label": "Adicionar media"
-			},
+			"mediaButton": "Adicionar media",
 			"pollButton": {
 				"title": "Iniciar uma votação",
 				"aria-label": "Iniciar uma votação"
@@ -4714,14 +4713,8 @@
 			"title": "Lista de itens",
 			"aria-label": "Lista de itens"
 		},
-		"openCabinets": {
-			"title": "Abrir lista de armários",
-			"aria-label": "Abrir lista de armários"
-		},
-		"closeCabinets": {
-			"title": "Encerramento",
-			"aria-label": "Encerramento"
-		},
+		"openCabinets": "Abrir lista de armários",
+		"closeCabinets": "Encerramento",
 		"bootstrapFailed": "Falha na inicialização do armário: ${error}",
 		"home_function_buttons": {
 			"main": {

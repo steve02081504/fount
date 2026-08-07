@@ -780,6 +780,7 @@
 		"title": "Forsíða",
 		"description": "Hjarta upplifunar þinnar. Hér skaltu stjórna þegnum ímyndunarafls þíns – persónur, heima og persónur. Sögur þínar byrja og greinast frá þessu miðlæga samhengi.",
 		"sidebarTitle": "Nánar",
+		"closeSidebar": "Close sidebar",
 		"itemDescription": "Veldu atriði hér til að sjá nánari upplýsingar.",
 		"noDescription": "Engin lýsing",
 		"filterInput": {
@@ -1964,6 +1965,7 @@
 			"ariaClose": {
 				"aria-label": "Loka"
 			},
+			"close": "Loka",
 			"serverBar": {
 				"aria-label": "Hópar og leiðsögn"
 			},
@@ -4188,10 +4190,7 @@
 			"mentionSuggest": {
 				"aria-label": "Tillögur að mentíunum"
 			},
-			"mediaButton": {
-				"title": "Bættu við miðli",
-				"aria-label": "Bættu við miðli"
-			},
+			"mediaButton": "Bættu við miðli",
 			"pollButton": {
 				"title": "Hefja atkvæðagreiðslu",
 				"aria-label": "Hefja atkvæðagreiðslu"
@@ -4714,14 +4713,8 @@
 			"title": "Atriðalisti",
 			"aria-label": "Atriðalisti"
 		},
-		"openCabinets": {
-			"title": "Opnaðu skjalaskápalista",
-			"aria-label": "Opnaðu skjalaskápalista"
-		},
-		"closeCabinets": {
-			"title": "Loka",
-			"aria-label": "Loka"
-		},
+		"openCabinets": "Opnaðu skjalaskápalista",
+		"closeCabinets": "Loka",
 		"bootstrapFailed": "Frumstilling skjalaskáps mistókst: ${error}",
 		"home_function_buttons": {
 			"main": {

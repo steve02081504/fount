@@ -780,6 +780,7 @@
 		"title": "Startpagina",
 		"description": "Het hart van uw font-ervaring. Beheer hier de bewoners van je verbeelding: personages, werelden en persona's. Jouw verhalen beginnen en vertakken zich vanuit dit centrale knooppunt.",
 		"sidebarTitle": "Details",
+		"closeSidebar": "Close sidebar",
 		"itemDescription": "Selecteer hier een item om de details te bekijken.",
 		"noDescription": "Geen beschrijving",
 		"filterInput": {
@@ -1964,6 +1965,7 @@
 			"ariaClose": {
 				"aria-label": "Sluiten"
 			},
+			"close": "Sluiten",
 			"serverBar": {
 				"aria-label": "Groepen en navigatie"
 			},
@@ -4188,10 +4190,7 @@
 			"mentionSuggest": {
 				"aria-label": "Vermeldingssuggesties"
 			},
-			"mediaButton": {
-				"title": "Media toevoegen",
-				"aria-label": "Media toevoegen"
-			},
+			"mediaButton": "Media toevoegen",
 			"pollButton": {
 				"title": "Start een stemming",
 				"aria-label": "Start een stemming"
@@ -4714,14 +4713,8 @@
 			"title": "Items",
 			"aria-label": "Items"
 		},
-		"openCabinets": {
-			"title": "Archiefkastlijst openen",
-			"aria-label": "Archiefkastlijst openen"
-		},
-		"closeCabinets": {
-			"title": "Sluiten",
-			"aria-label": "Sluiten"
-		},
+		"openCabinets": "Archiefkastlijst openen",
+		"closeCabinets": "Sluiten",
 		"bootstrapFailed": "Initialisatie van Cabinet mislukt: ${error}",
 		"home_function_buttons": {
 			"main": {

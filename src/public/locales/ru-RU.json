@@ -780,6 +780,7 @@
 		"title": "Главная",
 		"description": "Сердце вашего опыта работы С fount. Здесь управляйте обитателями своего воображения — персонажами, мирами и личностями. Ваши истории начинаются и разветвляются из этой центральной точки.",
 		"sidebarTitle": "Подробности",
+		"closeSidebar": "Close sidebar",
 		"itemDescription": "Выберите элемент для просмотра подробностей.",
 		"noDescription": "Описание отсутствует.",
 		"filterInput": {
@@ -1964,6 +1965,7 @@
 			"ariaClose": {
 				"aria-label": "Закрыть"
 			},
+			"close": "Закрыть",
 			"serverBar": {
 				"aria-label": "Группы и навигация"
 			},
@@ -4188,10 +4190,7 @@
 			"mentionSuggest": {
 				"aria-label": "Подсказки упоминаний"
 			},
-			"mediaButton": {
-				"title": "Добавить медиа",
-				"aria-label": "Добавить медиа"
-			},
+			"mediaButton": "Добавить медиа",
 			"pollButton": {
 				"title": "Создать опрос",
 				"aria-label": "Создать опрос"
@@ -4714,14 +4713,8 @@
 			"title": "Список элементов",
 			"aria-label": "Список элементов"
 		},
-		"openCabinets": {
-			"title": "Открыть список шкафов",
-			"aria-label": "Открыть список шкафов"
-		},
-		"closeCabinets": {
-			"title": "Закрыть",
-			"aria-label": "Закрыть"
-		},
+		"openCabinets": "Открыть список шкафов",
+		"closeCabinets": "Закрыть",
 		"bootstrapFailed": "Не удалось инициализировать файловый шкаф: ${error}",
 		"home_function_buttons": {
 			"main": {

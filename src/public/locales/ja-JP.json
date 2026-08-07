@@ -780,6 +780,7 @@
 		"title": "ホーム",
 		"description": "あなたのfount体験の中心。ここでは、想像の世界の住人であるキャラクター、世界、ペルソナを管理します。あなたの物語は、この中心的なつながりから始まり、分岐していきます。",
 		"sidebarTitle": "詳細",
+		"closeSidebar": "Close sidebar",
 		"itemDescription": "項目を選択すると、ここに詳細が表示されます。",
 		"noDescription": "説明はありません。",
 		"filterInput": {
@@ -1964,6 +1965,7 @@
 			"ariaClose": {
 				"aria-label": "閉じる"
 			},
+			"close": "閉じる",
 			"serverBar": {
 				"aria-label": "グループとナビゲーション"
 			},
@@ -4188,10 +4190,7 @@
 			"mentionSuggest": {
 				"aria-label": "メンション候補"
 			},
-			"mediaButton": {
-				"title": "メディアを追加",
-				"aria-label": "メディアを追加"
-			},
+			"mediaButton": "メディアを追加",
 			"pollButton": {
 				"title": "投票を作成",
 				"aria-label": "投票を作成"
@@ -4714,14 +4713,8 @@
 			"title": "項目一覧",
 			"aria-label": "項目一覧"
 		},
-		"openCabinets": {
-			"title": "ファイルキャビネットリストを開く",
-			"aria-label": "ファイルキャビネットリストを開く"
-		},
-		"closeCabinets": {
-			"title": "閉じる",
-			"aria-label": "閉じる"
-		},
+		"openCabinets": "ファイルキャビネットリストを開く",
+		"closeCabinets": "閉じる",
 		"bootstrapFailed": "ファイル キャビネットの初期化に失敗しました: ${error}",
 		"home_function_buttons": {
 			"main": {
