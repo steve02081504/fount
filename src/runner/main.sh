@@ -340,11 +340,13 @@ else
 		xattr -dr com.apple.quarantine "$FOUNT_DIR" 2>/dev/null || true
 	fi
 	find "$FOUNT_DIR" -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -exec chmod +x {} +
-	find "$FOUNT_DIR/path" -type f ! -name 'desktop.ini' ! -iname 'agents.md' -exec chmod +x {} +
+	find "$FOUNT_DIR/path" -maxdepth 1 -type f ! -name 'desktop.ini' ! -iname 'agents.md' -exec chmod +x {} +
 	chmod -x "$FOUNT_DIR/path/desktop.ini" 2>/dev/null || true
 	for agentsManifestPath in "$FOUNT_DIR/path/AGENTS.md" "$FOUNT_DIR/path/agents.md"; do
 		[ -f "$agentsManifestPath" ] && chmod -x "$agentsManifestPath"
 	done
+	[ -f "$FOUNT_DIR/gradlew" ] && chmod +x "$FOUNT_DIR/gradlew"
+	[ -f "$FOUNT_DIR/gradlew.bat" ] && chmod +x "$FOUNT_DIR/gradlew.bat"
 	write_taskbar_progress 70
 
 	echo -e "${C_GREEN}fount installation complete.${C_RESET}"
