@@ -5480,7 +5480,7 @@
 		"toast_title": "成就已解鎖！",
 		"error": {
 			"load_failed": "載入成就失敗：${message}",
-			"unlock_failed": "解锁成就失败：${error}"
+			"unlock_failed": "解鎖成就失敗：${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

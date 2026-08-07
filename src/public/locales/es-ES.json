@@ -5481,7 +5481,7 @@
 		"toast_title": "¡Logros desbloqueados!",
 		"error": {
 			"load_failed": "No se pudieron cargar los logros: ${message}",
-			"unlock_failed": "解锁成就失败：${error}"
+			"unlock_failed": "No se pudo desbloquear el logro: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

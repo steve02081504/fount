@@ -5481,7 +5481,7 @@
 		"toast_title": "Достижения разблокированы!",
 		"error": {
 			"load_failed": "Не удалось загрузить достижения: `${message}",
-			"unlock_failed": "解锁成就失败：${error}"
+			"unlock_failed": "Не удалось разблокировать достижение: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

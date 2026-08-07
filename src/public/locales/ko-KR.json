@@ -5481,7 +5481,7 @@
 		"toast_title": "업적 잠금 해제!",
 		"error": {
 			"load_failed": "업적을 로드하지 못했습니다: ${message}",
-			"unlock_failed": "解锁成就失败：${error}"
+			"unlock_failed": "업적을 잠금 해제하지 못했습니다: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

@@ -5481,7 +5481,7 @@
 		"toast_title": "उपलब्धियाँ खुलीं!",
 		"error": {
 			"load_failed": "उपलब्धियाँ लोड करने में विफल: ${message}",
-			"unlock_failed": "解锁成就失败：${error}"
+			"unlock_failed": "उपलब्धि अनलॉक करने में विफल: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

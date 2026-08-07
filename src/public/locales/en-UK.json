@@ -5478,7 +5478,7 @@
 		"toast_title": "Achievements unlocked!",
 		"error": {
 			"load_failed": "Failed to load achievements: ${message}",
-			"unlock_failed": "解锁成就失败：${error}"
+			"unlock_failed": "Failed to unlock achievement: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

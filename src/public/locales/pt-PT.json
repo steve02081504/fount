@@ -5481,7 +5481,7 @@
 		"toast_title": "Conquistas desbloqueadas!",
 		"error": {
 			"load_failed": "Falha ao carregar conquistas: ${message}",
-			"unlock_failed": "解锁成就失败：${error}"
+			"unlock_failed": "Falha ao desbloquear a conquista: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

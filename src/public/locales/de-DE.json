@@ -5481,7 +5481,7 @@
 		"toast_title": "Erfolge freigeschaltet!",
 		"error": {
 			"load_failed": "Erfolge konnten nicht geladen werden: ${message}",
-			"unlock_failed": "解锁成就失败：${error}"
+			"unlock_failed": "Erfolg konnte nicht freigeschaltet werden: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

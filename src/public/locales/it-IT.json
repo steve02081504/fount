@@ -5481,7 +5481,7 @@
 		"toast_title": "Obiettivi sbloccati!",
 		"error": {
 			"load_failed": "Impossibile caricare gli obiettivi: ${message}",
-			"unlock_failed": "解锁成就失败：${error}"
+			"unlock_failed": "Impossibile sbloccare l'obiettivo: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

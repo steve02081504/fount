@@ -5481,7 +5481,7 @@
 		"toast_title": "Succès débloqués !",
 		"error": {
 			"load_failed": "Échec du chargement des succès : ${message}",
-			"unlock_failed": "解锁成就失败：${error}"
+			"unlock_failed": "Échec du déblocage du succès : ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

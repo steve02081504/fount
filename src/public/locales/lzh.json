@@ -5481,7 +5481,7 @@
 		"toast_title": "功成！",
 		"error": {
 			"load_failed": "誊录功绩不成：${message}",
-			"unlock_failed": "解锁成就失败：${error}"
+			"unlock_failed": "启功勋不成：${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {
