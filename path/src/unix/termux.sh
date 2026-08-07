@@ -8,4 +8,3 @@ termux_ensure_sensor_api() {
 	require packages
 	install_package "termux-sensor" "termux-api" || true
 }
-

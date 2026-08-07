@@ -619,9 +619,10 @@ const stepMelt = (world) => {
 		vy: world.meltVy,
 		viscAt: meltVisc,
 		/**
-		 *
-		 * @param w
-		 * @param cell
+		 * 熔岩密度（随温度）。
+		 * @param {FluidWorld} w 世界
+		 * @param {number} cell 格索引
+		 * @returns {number} 密度
 		 */
 		rhoAt: (w, cell) => rhoOf(SUBSTANCE.ROCK, w.temp[cell]),
 		canEnter: meltCanEnter,
