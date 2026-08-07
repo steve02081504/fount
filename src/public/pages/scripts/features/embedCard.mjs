@@ -18,14 +18,6 @@ function truncateText(text, maxLen) {
 }
 
 /**
- * @param {string} value 属性值
- * @returns {string} 转义后的属性值
- */
-function escapeAttr(value) {
-	return escapeHtml(value)
-}
-
-/**
  * @param {Document} doc 解析后的文档
  * @param {{ property?: string, name?: string }} spec meta 选择器
  * @returns {string | undefined} content
@@ -111,7 +103,7 @@ export function renderEmbedCardHtml(embed) {
 	const siteName = truncateText(embed.siteName || '', 80)
 	const image = String(embed.image || '').trim()
 	const imageHtml = image
-		? `<img class="fount-embed-card-thumb" src="${escapeAttr(image)}" alt="" loading="lazy" decoding="async" />`
+		? `<img class="fount-embed-card-thumb" src="${escapeHtml(image)}" alt="" loading="lazy" decoding="async" />`
 		: ''
 	const noImageClass = image ? '' : ' fount-embed-card-no-image'
 	const descHtml = description
@@ -122,7 +114,7 @@ export function renderEmbedCardHtml(embed) {
 		: ''
 	return `\
 <article class="fount-embed-card${noImageClass}">
-	<a class="fount-embed-card-link" href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">
+	<a class="fount-embed-card-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">
 		${imageHtml}
 		<div class="fount-embed-card-body">
 			${siteHtml}
@@ -145,13 +137,13 @@ export function renderEmbedChipHtml(embed) {
 	const title = truncateText(embed.title || hostname || url, TITLE_DISPLAY_MAX)
 	const siteName = truncateText(embed.siteName || hostname, 40)
 	const favicon = hostname
-		? `<img class="fount-embed-chip-favicon" src="${escapeAttr(`https://${hostname}/favicon.ico`)}" alt="" loading="lazy" decoding="async" onerror="this.remove()" />`
+		? `<img class="fount-embed-chip-favicon" src="${escapeHtml(`https://${hostname}/favicon.ico`)}" alt="" loading="lazy" decoding="async" onerror="this.remove()" />`
 		: ''
 	const siteHtml = siteName
 		? `<span class="fount-embed-chip-site">${escapeHtml(siteName)}</span>`
 		: ''
 	return `\
-<a class="fount-embed-chip" href="${escapeAttr(url)}" target="_blank" rel="noopener noreferrer">
+<a class="fount-embed-chip" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">
 	${favicon}${siteHtml}<span class="fount-embed-chip-title">${escapeHtml(title)}</span>
 </a>`
 }
@@ -175,45 +167,32 @@ async function hydrateOne(el) {
 	}
 	if (!meta) return
 
+	const html = mode === 'card' ? renderEmbedCardHtml(meta) : mode === 'chip' ? renderEmbedChipHtml(meta) : ''
+	if (!html) return
+	const wrap = document.createElement('div')
+	wrap.innerHTML = html
+	const replacement = wrap.firstElementChild
 	if (mode === 'card') {
-		const html = renderEmbedCardHtml(meta)
-		if (!html) return
-		const wrap = document.createElement('div')
-		wrap.innerHTML = html
-		const card = wrap.firstElementChild
-		if (!card) return
 		const parent = el.parentElement
 		if (parent?.tagName === 'P' && [...parent.childNodes].every(n =>
 			n === el || (n.nodeType === Node.TEXT_NODE && !n.textContent?.trim()),
 		))
-			parent.replaceWith(card)
+			parent.replaceWith(replacement)
 		else
-			el.replaceWith(card)
+			el.replaceWith(replacement)
 		return
 	}
-
-	if (mode === 'chip') {
-		const html = renderEmbedChipHtml(meta)
-		if (!html) return
-		const wrap = document.createElement('div')
-		wrap.innerHTML = html
-		const chip = wrap.firstElementChild
-		if (chip) el.replaceWith(chip)
-	}
+	el.replaceWith(replacement)
 }
 
 /**
- * @param {ParentNode | Node} root 扫描根
+ * @param {ParentNode} root 扫描根
  * @returns {void}
  */
 function hydrateIn(root) {
-	/** @type {Element[]} */
-	const list = []
-	if (root instanceof Element && root.hasAttribute?.(ATTR)) list.push(root)
-	if (root.querySelectorAll)
-		list.push(...root.querySelectorAll(`[${ATTR}]`))
-	for (const el of list)
-		if (el instanceof HTMLElement) void hydrateOne(el)
+	const list = root instanceof Element && root.hasAttribute(ATTR) ? [root] : []
+	list.push(...root.querySelectorAll(`[${ATTR}]`))
+	for (const el of list) void hydrateOne(/** @type {HTMLElement} */ el)
 }
 
 let observerStarted = false
@@ -223,7 +202,7 @@ let observerStarted = false
  * @returns {void}
  */
 export function ensureEmbedHydrator() {
-	if (observerStarted || typeof document === 'undefined') return
+	if (observerStarted) return
 	observerStarted = true
 	hydrateIn(document.body)
 	new MutationObserver(records => {
@@ -232,7 +211,6 @@ export function ensureEmbedHydrator() {
 				if (node.nodeType !== Node.ELEMENT_NODE && node.nodeType !== Node.DOCUMENT_FRAGMENT_NODE) continue
 				hydrateIn(/** @type {ParentNode} */node)
 			}
-
 	}).observe(document.body, { childList: true, subtree: true })
 }
 

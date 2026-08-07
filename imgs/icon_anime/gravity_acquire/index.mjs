@@ -9,7 +9,7 @@
  * @returns {Promise<typeof import('./none.mjs')>} 采集模块
  */
 export const loadAcquire = async () => {
-	if (typeof globalThis.document !== 'undefined')
+	if (globalThis.document)
 		return import('./browser.mjs')
 	const { in_termux } = await import('../../../src/scripts/env.mjs')
 	if (in_termux) return import('./termux.mjs')

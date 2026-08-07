@@ -548,7 +548,7 @@ async function launchNodeOnce(options = {}) {
 
 		await finishListenHold()
 
-		const denoBin = typeof Deno !== 'undefined' ? Deno.execPath() : 'deno'
+		const denoBin = Deno.execPath()
 		let captureEnabled = false
 		let startupOutput = ''
 		let capturedOutput = ''

@@ -15,7 +15,6 @@ const EMOJI_CONTENT_API = '/api/parts/shells:chat/emoji-content'
 function remarkChatDialect() {
 	return tree => {
 		visit(tree, 'text', node => {
-			if (typeof node.value !== 'string') return
 			let value = node.value
 			if (value.includes('#['))
 				value = expandChannelLinksInText(value)
@@ -35,7 +34,6 @@ function remarkChatDialect() {
  * @returns {void}
  */
 function initEmojiHydration() {
-	if (typeof IntersectionObserver === 'undefined') return
 	const observer = new IntersectionObserver(entries => {
 		for (const entry of entries) {
 			if (!entry.isIntersecting) continue
