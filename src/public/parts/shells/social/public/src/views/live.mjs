@@ -254,28 +254,34 @@ function ensureLiveConnected(slide, mode) {
 	const finalAvUrl = federated
 		? `${buildSocialLiveAvWsUrl(entityHash, liveId)}?proxy=1&bridgeOrigin=${encodeURIComponent(slide.dataset.bridgeOrigin || '')}&watchSecret=${encodeURIComponent(slide.dataset.watchSecret || '')}`
 		: buildSocialLiveAvWsUrl(entityHash, liveId)
-	void joinAvRelayRoom({
-		wsUrl: finalAvUrl,
-		asPublisher: false,
-		canvas: audioOnly ? null : canvas,
-		mode,
-		/** @param {{ video?: boolean, audio?: boolean }} meta 发布者媒体能力 */
-		onPublishMeta: meta => {
-			if (!meta?.video && meta?.audio && voiceHost instanceof HTMLElement) {
-				canvas?.classList.add('hidden')
-				void mountLiveVoiceRing(voiceHost, entityHash, () => conn.avSession?.getAudioLevels?.() || [])
+	void (async () => {
+		try {
+			const session = await joinAvRelayRoom({
+				wsUrl: finalAvUrl,
+				asPublisher: false,
+				canvas: audioOnly ? null : canvas,
+				mode,
+				/** @param {{ video?: boolean, audio?: boolean }} meta 发布者媒体能力 */
+				onPublishMeta: meta => {
+					if (!meta?.video && meta?.audio && voiceHost instanceof HTMLElement) {
+						canvas?.classList.add('hidden')
+						void mountLiveVoiceRing(voiceHost, entityHash, () => conn.avSession?.getAudioLevels?.() || [])
+					}
+				},
+			})
+			const current = slideConnections.get(slide)
+			if (!current || current !== conn) {
+				session.close()
+				return
 			}
-		},
-	}).then(session => {
-		const current = slideConnections.get(slide)
-		if (!current || current !== conn) {
-			session.close()
-			return
+			conn.avSession = session
+			if (mode === 'full' || session.getMode?.() === 'full')
+				slide.querySelector('.live-placeholder')?.classList.add('hidden')
 		}
-		conn.avSession = session
-		if (mode === 'full' || session.getMode?.() === 'full')
-			slide.querySelector('.live-placeholder')?.classList.add('hidden')
-	}).catch(() => { /* keep placeholder */ })
+		catch {
+			/* keep placeholder */
+		}
+	})()
 }
 
 /**
