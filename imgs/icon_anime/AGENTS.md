@@ -19,7 +19,7 @@ Process-wide singleton used by `fount logo`, the CLI log viewer, and the foregro
 | `intro` | Enter animation, then background `hold` (no park) |
 | `start` / `dismiss` | log_viewer while waiting for the server (`start` no-op if already running; `dismiss` when connected); server `dismiss`es when `init` returns `started` |
 | `farewell` | On `on_shutdown` (safe mid-intro, e.g. `already_running`) |
-| `signal` / `abort` | User abort of this icon session (Ctrl+C or hold Esc ≥4s). `dismiss` does not touch it |
+| `signal` / `abort` | User abort of this icon session (Ctrl+C or hold Esc ≥4s, one-shot). `dismiss` does not touch it. Further ESC repeats / Ctrl+C are ignored until the next `player.start` so farewell exit can finish. |
 
 Hosts own process-exit signaling and must wire `icon.signal` into it (log_viewer and server do). Non-TTY / no VT is gated only in `player.mjs` — session APIs stay callable (play paths no-op). On the alternate screen, `player` `block`/`unblock`s the global virtual console so console output is deferred; frame paint writes the native `targetStream` so the animation itself is not deferred.
 
@@ -31,7 +31,7 @@ fount logo watch   # deno run --watch
 fount test icon_anime --no-parallel
 ```
 
-Controls: Ctrl+C or hold Esc ≥4s exits (icon teardown, then quit). Left quick-click → ripple; left hold/drag → cool spotlight (ambient dims). Right-drag → stroke wind; right long-still → tornado vortex (can suspend rain and lift free-liquid puddles). Alt-screen (`1049h`/`1049l`) restores prior scrollback on exit.
+Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then quit). Left quick-click → ripple; left hold/drag → cool spotlight (ambient dims). Right-drag → stroke wind; right long-still → tornado vortex (can suspend rain and lift free-liquid puddles). Alt-screen (`1049h`/`1049l`) restores prior scrollback on exit.
 
 ## Modules
 
@@ -75,8 +75,10 @@ Open-stage: ungrown base columns do not splash — rain falls through until it h
 - **One pressure language** / **one density language** — see [physics-notes.md](physics-notes.md). Do not invent parallel hydro models.
 - **Viscosity ladder** is the sole branch knob: `≤ VISC_INERTIAL` → inertial gas velocity; `< VISC_SOLID` → Stokes mass flux; `≥ VISC_SOLID` → frozen.
 - Water mass = `liq + moisture + condense + particles` (`totalWorldWater`); melt is separate. Closed transfers conserve; intentional sinks are world-edge / down-edge wipe / BODY impact. Particle expiry deposits back.
+- Soil condense hangs on the gravity-down face; when ĝ leaves that open underside it reabsorbs into moisture. Drip glyphs follow `condenseDripSource` (ĝ), not screen-down.
 - Terrain is **pedestal-anchored**; ungrown base keeps `HORIZON` until `POOL`/`SLOPE_*` overwrite. Resize shifts retained dynamics with the icon.
 - Gravity is a continuous unit vector everywhere (particles + grid). Depth = projection on ĝ; neighbor transfer uses weights `max(0, d̂·ĝ)`.
 - Four edges hold fractional roles `sink/source/wrap` from `n̂·ĝ` (sum to 1). Lava onset is **exposure work** `exposure[e] = max(0, exposure[e] + n̂·ĝ)` with decay when flipped (≥ `LAVA_ONSET_EXPOSURE`); 45° → two edges each need ~13·√2 s.
 - Gravity acquire: `document` → browser APIs; Termux → `termux-sensor` (pretty JSON indent=2, `parseSensorStdout`); else no-op. path CLI installs `termux-api` on `fount logo` / `log` / `server` when missing.
 - Rain edges weighted by `source`; side wrap by `wrap`. Meltdown absorb records absorb-time ĝ; regurgitate when `ĝ·absorbDir` drops.
+- Composition bottom (pedestal / lava edge) never rains — even when inverted ĝ makes it a physical sky; quiet until sink-edge exposure yields lava.

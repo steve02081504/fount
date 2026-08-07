@@ -36,7 +36,7 @@ Playwright and `[i18n:missing]` miss these cases:
 Rules:
 
 - Element binding (`data-i18n`, `setElementI18n`): the key must exist; objects need ≥1 applicator (`placeholder`, `title`, `label`, `value`, `alt`, `aria-label`, `textContent`, `innerHTML`, `dataset`). Prefer `.main` for “string plus sibling messages” clusters.
-- String binding (`showToastI18n`, `confirmI18n`, `handleError`, …) and `path/fount.{ps1,sh}` `Get-I18n` / `get_i18n`: must resolve to a string (or tip array). Raw `geti18n` may return objects (e.g. `util.zxcvbn`); only missing keys fail. `handleError('key')` is factory form — first arg is the i18n key.
+- String binding (`showToastI18n`, `confirmI18n`, …) and `path/fount.{ps1,sh}` `Get-I18n` / `get_i18n`: must resolve to a string (or tip array). Raw `geti18n` may return objects (e.g. `util.zxcvbn`); only missing keys fail. `handleError('key')` is scanned only when imported from frontend `features/errorHandlers.mjs` (factory; first arg is the i18n key) — not backend `scripts/errorHandlers.mjs` where the first arg is the error.
 - Static keys only (`a.b.c`); skip template interpolations. Rewrite suffixes include `.sh` (shared `walk.mjs` / `reshape_i18n_keys.py`).
 
 ## Agent docs language

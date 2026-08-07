@@ -375,7 +375,7 @@
 					"upToDate": "Atualizado",
 					"behind": "Atrasado em relação ao remoto",
 					"ahead": "À frente do remoto",
-					"diverged": "Divergido do remoto",
+					"diverged": "Os ramos local e remoto divergiram.",
 					"detachedNoCompare": "HEAD desanexado, sem comparação com o remoto",
 					"fetchFailed": "Não foi possível obter o estado do remoto"
 				},
@@ -5504,7 +5504,8 @@
 		"locked": "Não desbloqueado",
 		"toast_title": "Conquistas desbloqueadas!",
 		"error": {
-			"load_failed": "Falha ao carregar conquistas: ${message}"
+			"load_failed": "Falha ao carregar conquistas: ${message}",
+			"unlock_failed": "Falha ao desbloquear a conquista: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

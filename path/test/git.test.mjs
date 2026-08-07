@@ -343,15 +343,16 @@ foreach ($base64Name in $encoded) {
  * git_checkout_branch 必须补上该 head 的 fetch refspec（非 *）并建好 @{u}。
  */
 Deno.test('git_checkout_branch tracks one-shot origin ref under single-branch fetch', async () => {
+	const allHeadsFetchRe = String.raw`^(\+)?refs/heads/\*:refs/remotes/origin/\*$`
 	const result = await runBash(`
 		set -euo pipefail
-		TMP=$(mktemp -d)
-		cleanup() { rm -rf "$TMP"; }
+		temporaryDirectory=$(mktemp -d)
+		cleanup() { rm -rf "$temporaryDirectory"; }
 		trap cleanup EXIT
 
-		git init --bare -b master "$TMP/remote.git" >/dev/null
-		git clone "$TMP/remote.git" "$TMP/seed" >/dev/null 2>&1
-		cd "$TMP/seed"
+		git init --bare -b master "$temporaryDirectory/remote.git" >/dev/null
+		git clone "$temporaryDirectory/remote.git" "$temporaryDirectory/seed" >/dev/null 2>&1
+		cd "$temporaryDirectory/seed"
 		git config user.email t@t
 		git config user.name t
 		echo master > f.txt
@@ -362,12 +363,12 @@ Deno.test('git_checkout_branch tracks one-shot origin ref under single-branch fe
 		git add f.txt && git commit -m lava >/dev/null
 		git push origin lava >/dev/null
 
-		git clone --single-branch --branch master "$TMP/remote.git" "$TMP/clone" >/dev/null 2>&1
-		cd "$TMP/clone"
+		git clone --single-branch --branch master "$temporaryDirectory/remote.git" "$temporaryDirectory/clone" >/dev/null 2>&1
+		cd "$temporaryDirectory/clone"
 		git config user.email t@t
 		git config user.name t
 
-		FOUNT_DIR="$TMP/clone"
+		FOUNT_DIR="$temporaryDirectory/clone"
 		print_i18n_yellow() { :; }
 		print_i18n_green() { :; }
 		. ${JSON.stringify(gitShPath)}
@@ -383,14 +384,14 @@ Deno.test('git_checkout_branch tracks one-shot origin ref under single-branch fe
 		upstream=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}')
 		[ "$upstream" = 'origin/lava' ] || { echo "upstream=$upstream" >&2; exit 1; }
 		fetch_specs=$(git config --get-all remote.origin.fetch)
-		printf '%s\n' "$fetch_specs" | grep -qE '^(\\+)?refs/heads/\\*:refs/remotes/origin/\\*$' && {
+		printf '%s\\n' "$fetch_specs" | grep -qE ${JSON.stringify(allHeadsFetchRe)} && {
 			echo "fetch widened to all heads:" >&2
-			printf '%s\n' "$fetch_specs" >&2
+			printf '%s\\n' "$fetch_specs" >&2
 			exit 1
 		}
-		printf '%s\n' "$fetch_specs" | grep -qxF '+refs/heads/lava:refs/remotes/origin/lava' || {
+		printf '%s\\n' "$fetch_specs" | grep -qxF '+refs/heads/lava:refs/remotes/origin/lava' || {
 			echo "lava refspec missing:" >&2
-			printf '%s\n' "$fetch_specs" >&2
+			printf '%s\\n' "$fetch_specs" >&2
 			exit 1
 		}
 		echo ok
@@ -405,58 +406,58 @@ Deno.test('git_checkout_branch tracks one-shot origin ref under single-branch fe
 Deno.test('fount_show_version reports branch sha and freshness', async () => {
 	const result = await runBash(`
 		set -euo pipefail
-		TMP=$(mktemp -d)
-		cleanup() { rm -rf "$TMP"; }
+		temporaryDirectory=$(mktemp -d)
+		cleanup() { rm -rf "$temporaryDirectory"; }
 		trap cleanup EXIT
 
-		git init --bare -b master "$TMP/remote.git" >/dev/null
-		git clone "$TMP/remote.git" "$TMP/seed" >/dev/null 2>&1
-		cd "$TMP/seed"
+		git init --bare -b master "$temporaryDirectory/remote.git" >/dev/null
+		git clone "$temporaryDirectory/remote.git" "$temporaryDirectory/seed" >/dev/null 2>&1
+		cd "$temporaryDirectory/seed"
 		git config user.email t@t
 		git config user.name t
 		echo v1 > f.txt
 		git add f.txt && git commit -m v1 >/dev/null
 		git push origin master >/dev/null
 
-		git clone "$TMP/remote.git" "$TMP/clone" >/dev/null 2>&1
-		cd "$TMP/clone"
+		git clone "$temporaryDirectory/remote.git" "$temporaryDirectory/clone" >/dev/null 2>&1
+		cd "$temporaryDirectory/clone"
 		git config user.email t@t
 		git config user.name t
 
-		FOUNT_DIR="$TMP/clone"
+		FOUNT_DIR="$temporaryDirectory/clone"
 		get_i18n() { printf '%s' "$1"; shift; while [ $# -gt 0 ]; do printf ' %s=%s' "$1" "$2"; shift 2; done; printf '\\n'; }
 		print_i18n_green() { get_i18n "$@"; }
 		print_i18n_yellow() { get_i18n "$@" >&2; }
 		. ${JSON.stringify(gitShPath)}
 
-		sha=$(git rev-parse HEAD)
-		out=$(fount_show_version)
-		printf '%s\\n' "$out" | grep -qxF "version.branch.title branch=master" || { echo "branch line:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
-		printf '%s\\n' "$out" | grep -qxF "version.commit ref=$sha" || { echo "commit line:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
-		printf '%s\\n' "$out" | grep -qxF "version.status.title status=version.status.upToDate" || { echo "expected upToDate:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
+		commitHash=$(git rev-parse HEAD)
+		output=$(fount_show_version)
+		printf '%s\\n' "$output" | grep -qxF "version.branch.title branch=master" || { echo "branch line:" >&2; printf '%s\\n' "$output" >&2; exit 1; }
+		printf '%s\\n' "$output" | grep -qxF "version.commit ref=$commitHash" || { echo "commit line:" >&2; printf '%s\\n' "$output" >&2; exit 1; }
+		printf '%s\\n' "$output" | grep -qxF "version.status.title status=version.status.upToDate" || { echo "expected upToDate:" >&2; printf '%s\\n' "$output" >&2; exit 1; }
 
-		cd "$TMP/seed"
+		cd "$temporaryDirectory/seed"
 		echo v2 > f.txt
 		git add f.txt && git commit -m v2 >/dev/null
 		git push origin master >/dev/null
 
-		cd "$TMP/clone"
-		out=$(fount_show_version 2>&1)
-		printf '%s\\n' "$out" | grep -qxF "version.status.title status=version.status.behind" || { echo "expected behind:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
+		cd "$temporaryDirectory/clone"
+		output=$(fount_show_version 2>&1)
+		printf '%s\\n' "$output" | grep -qxF "version.status.title status=version.status.behind" || { echo "expected behind:" >&2; printf '%s\\n' "$output" >&2; exit 1; }
 
 		git checkout --detach HEAD >/dev/null 2>&1
 		: >"$FOUNT_DIR/.noupdate"
-		out=$(fount_show_version)
-		printf '%s\\n' "$out" | grep -qxF "version.branch.title branch=version.branch.detached" || { echo "expected detached:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
-		printf '%s\\n' "$out" | grep -qxF "version.autoUpdatePaused" || { echo "expected autoUpdatePaused:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
-		printf '%s\\n' "$out" | grep -qxF "version.status.title status=version.status.detachedNoCompare" || { echo "expected detachedNoCompare:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
+		output=$(fount_show_version)
+		printf '%s\\n' "$output" | grep -qxF "version.branch.title branch=version.branch.detached" || { echo "expected detached:" >&2; printf '%s\\n' "$output" >&2; exit 1; }
+		printf '%s\\n' "$output" | grep -qxF "version.autoUpdatePaused" || { echo "expected autoUpdatePaused:" >&2; printf '%s\\n' "$output" >&2; exit 1; }
+		printf '%s\\n' "$output" | grep -qxF "version.status.title status=version.status.detachedNoCompare" || { echo "expected detachedNoCompare:" >&2; printf '%s\\n' "$output" >&2; exit 1; }
 		echo ok
 	`)
 	assertEquals(result.code, 0, result.stderr || result.stdout)
 	assertEquals(result.stdout.trim(), 'ok')
 })
 
-/** BCP 47 → POSIX LANG fixtures (Android/Termux). */
+/** BCP 47 → POSIX LANG 用例（Android/Termux）。 */
 const ANDROID_LOCALE_TO_LANG = [
 	['zh-Hans-CN', 'zh_CN.UTF-8'],
 	['zh-CN', 'zh_CN.UTF-8'],
@@ -464,6 +465,7 @@ const ANDROID_LOCALE_TO_LANG = [
 	['en-US', 'en_US.UTF-8'],
 	['ja-JP', 'ja_JP.UTF-8'],
 	['en', 'en.UTF-8'],
+	['th-TH-u-nu-thai', 'th_TH.UTF-8'],
 ]
 
 Deno.test('android_locale_to_lang normalizes BCP47 script tags for Termux LANG', async () => {
@@ -471,8 +473,8 @@ Deno.test('android_locale_to_lang normalizes BCP47 script tags for Termux LANG',
 		set -e
 		. ${JSON.stringify(termuxShPath)}
 		${ANDROID_LOCALE_TO_LANG.map(([tag, want]) => `
-			got=$(android_locale_to_lang ${JSON.stringify(tag)})
-			[ "$got" = ${JSON.stringify(want)} ] || { echo "mismatch:${tag}:$got" >&2; exit 1; }
+			actualLang=$(android_locale_to_lang ${JSON.stringify(tag)})
+			[ "$actualLang" = ${JSON.stringify(want)} ] || { echo "mismatch:${tag}:$actualLang" >&2; exit 1; }
 		`).join('')}
 		echo ok
 	`)

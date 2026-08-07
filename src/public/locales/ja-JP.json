@@ -4064,7 +4064,7 @@
 		"description": "P2P オープンソーシャル・フォロー・ファイル共有",
 		"bootstrapFailed": "ソーシャル インターフェイスの初期化に失敗しました: ${error}",
 		"connectNodeFailed": "ノードへの接続に失敗しました：${error}",
-		"dwellFailed": "視聴時間に基づくおすすめデータの更新に失敗しました：${error}",
+		"dwellFailed": "閲覧滞在時間に基づくおすすめデータの更新に失敗しました：${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "広場"
@@ -5504,7 +5504,8 @@
 		"locked": "ロックが解除されていません",
 		"toast_title": "実績のロックが解除されました！",
 		"error": {
-			"load_failed": "実績の読み込みに失敗しました: ${message}"
+			"load_failed": "実績の読み込みに失敗しました: ${message}",
+			"unlock_failed": "実績の解除に失敗しました: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

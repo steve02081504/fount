@@ -19,7 +19,12 @@ async function refreshEntries() {
  */
 export async function finalizeRecovery(cabinetId, recoveryToken) {
 	if (!recoveryToken) return
-	await finalizeDelete(recoveryToken, { cabinetId }).catch(handleError('cabinet.bootstrapFailed'))
+	try {
+		await finalizeDelete(recoveryToken, { cabinetId })
+	}
+	catch (error) {
+		handleError('cabinet.bootstrapFailed', {}, error)
+	}
 }
 
 /**
@@ -101,37 +106,39 @@ export function makeDeleteHistory(ids, initialToken, cabinetId, unlock = current
 }
 
 /**
- * @param {{ entryId: string, before: object, after: object, label?: string, cabinetId: string }} opts 选项
+ * @param {{ entryId: string, before: object, after: object, label?: string, cabinetId: string, unlock?: string }} opts 选项
  * @returns {import('./commandHistory.mjs').HistoryEntry} 历史
  */
-export function makePatchHistory({ entryId, before, after, label = 'patch', cabinetId }) {
+export function makePatchHistory({ entryId, before, after, label = 'patch', cabinetId, unlock = currentUnlockToken() }) {
+	const unlockToken = unlock
 	return {
 		label,
 		/** 撤销 PATCH：写回修改前快照。 */
 		async undo() {
-			await patchEntry(entryId, before, { cabinetId })
+			await patchEntry(entryId, before, { cabinetId, unlock: unlockToken })
 			await refreshEntries()
 		},
 		/** 重做 PATCH：应用修改后快照。 */
 		async redo() {
-			await patchEntry(entryId, after, { cabinetId })
+			await patchEntry(entryId, after, { cabinetId, unlock: unlockToken })
 			await refreshEntries()
 		},
 	}
 }
 
 /**
- * @param {{ entryIds: string[], fromParent: string | null, toParent: string | null, label?: string, cabinetId: string }} opts 选项
+ * @param {{ entryIds: string[], fromParent: string | null, toParent: string | null, label?: string, cabinetId: string, unlock?: string }} opts 选项
  * @returns {import('./commandHistory.mjs').HistoryEntry} 历史
  */
-export function makeMoveHistory({ entryIds, fromParent, toParent, label = 'cut', cabinetId }) {
+export function makeMoveHistory({ entryIds, fromParent, toParent, label = 'cut', cabinetId, unlock = currentUnlockToken() }) {
+	const unlockToken = unlock
 	/**
 	 * @param {string | null} parentId 父
 	 * @returns {Promise<void>}
 	 */
 	async function moveAll(parentId) {
 		for (const entryId of entryIds)
-			await patchEntry(entryId, { parent_id: parentId }, { cabinetId })
+			await patchEntry(entryId, { parent_id: parentId }, { cabinetId, unlock: unlockToken })
 		await refreshEntries()
 	}
 	return {

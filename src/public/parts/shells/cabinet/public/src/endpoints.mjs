@@ -65,7 +65,7 @@ function cabinetRequest(method, subpath, body, opts = {}) {
 		method,
 		`/cabinets/${encodeURIComponent(id)}${subpath}`,
 		body,
-		unlockHeaders(opts.unlock !== undefined ? opts.unlock : currentUnlockToken()),
+		unlockHeaders(Object.hasOwn(opts, 'unlock') ? opts.unlock : currentUnlockToken()),
 	)
 }
 

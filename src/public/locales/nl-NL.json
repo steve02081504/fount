@@ -366,17 +366,17 @@
 			"version": {
 				"branch": {
 					"title": "Branch: ${branch}",
-					"detached": "Losgekoppeld HEAD"
+					"detached": "Losgekoppelde HEAD"
 				},
 				"commit": "Commit: `${ref}`",
 				"remote": "Remote: `${ref}`",
 				"status": {
 					"title": "Status: ${status}",
 					"upToDate": "Bijgewerkt",
-					"behind": "Achter op remote",
-					"ahead": "Voor op remote",
-					"diverged": "Uit elkaar gelopen met remote",
-					"detachedNoCompare": "Losgekoppeld HEAD, geen vergelijking met remote",
+					"behind": "Achter op de remote branch",
+					"ahead": "Voor op de remote branch",
+					"diverged": "Lokale en remote branches zijn uiteengelopen",
+					"detachedNoCompare": "Losgekoppelde HEAD, geen vergelijking met de remote branch",
 					"fetchFailed": "Kan remotestatus niet ophalen"
 				},
 				"autoUpdatePaused": "Automatische updates gepauzeerd (`.noupdate` bestaat)",
@@ -5504,7 +5504,8 @@
 		"locked": "Niet ontgrendeld",
 		"toast_title": "Prestaties ontgrendeld!",
 		"error": {
-			"load_failed": "Kan prestaties niet laden: ${message}"
+			"load_failed": "Kan prestaties niet laden: ${message}",
+			"unlock_failed": "Kan prestatie niet ontgrendelen: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {
