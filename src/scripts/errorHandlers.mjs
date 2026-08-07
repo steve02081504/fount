@@ -12,8 +12,7 @@ import { sentry_enabled } from './sentry_state.mjs'
  */
 function toError(error) {
 	if (error instanceof Error) return error
-	if (Object(error?.message) instanceof String) return new Error(error.message)
-	return new Error(String(error))
+	return new Error(String(error?.message ?? error))
 }
 
 /**
