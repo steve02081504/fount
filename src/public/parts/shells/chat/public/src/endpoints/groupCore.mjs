@@ -70,7 +70,7 @@ export async function joinGroup(groupId, inviteCode = null, dmLinkProof = null, 
 	const json = {
 		inviteCode: inviteCode || undefined,
 		pow: pow || undefined,
-		...dmLinkProof || {},
+		...dmLinkProof,
 	}
 	if (fedBootstrap?.roomSecret) {
 		json.roomSecret = fedBootstrap.roomSecret
