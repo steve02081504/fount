@@ -24,6 +24,7 @@ export const signal = userAc.signal
  * @returns {void}
  */
 export function abort() {
+	stopGravity()
 	userAc.abort()
 }
 

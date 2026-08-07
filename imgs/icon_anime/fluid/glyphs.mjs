@@ -2,7 +2,7 @@
  * 由水量 × 液体速度（非气体风）驱动的水 / 水滴字形集。
  */
 
-import { COND_DRAW, COND_DRIP } from './mat.mjs'
+import { COND_DRAW, COND_DRIP, SUBSTANCE, VISC_SOLID, rhoOf, viscOf } from './mat.mjs'
 
 /** 垂直下落 / 水流达到此量时优先使用密竖条字形。 */
 export const FALL_HEAVY = 0.5
@@ -31,7 +31,6 @@ export const WATER_FALL = ['|', '¦', '‖', '⁞', '⁚', '⁝', '.']
 export const WATER_STILL = ['‥', '…', '~', '⁓', '–']
 /** 高粘滞熔岩块状。 */
 export const LAVA_THICK = ['█', '▓', '▒', '░', '#', '%', '*']
-/** 低粘滞熔岩沿用水的流动集。 */
 
 /**
  * 熔岩字形：高粘滞块状，低粘滞复用流动水字形。
@@ -43,9 +42,9 @@ export const LAVA_THICK = ['█', '▓', '▒', '░', '#', '%', '*']
  * @returns {string} 字形
  */
 export const lavaChar = (amount, temp, phase = 0, vx = 0, vy = 0) => {
-	const thick = 1 - Math.min(1, Math.max(0, temp))
-	if (thick > 0.55)
-		return pickWaterGlyph(LAVA_THICK, amount * (0.4 + thick * 0.6), phase, true)
+	const visc = viscOf(rhoOf(SUBSTANCE.ROCK, temp))
+	if (visc >= VISC_SOLID)
+		return pickWaterGlyph(LAVA_THICK, amount * (0.4 + Math.min(1, visc) * 0.6), phase, true)
 	return waterChar(amount, phase, vx, vy)
 }
 

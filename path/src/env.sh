@@ -29,12 +29,12 @@ in_container() { in_docker || in_termux; }
 # Termux ships a weak default LANG; use the Android system locale for the whole CLI
 # (i18n + git/bash messages), not only inside run().
 if [ "$IN_TERMUX" -eq 1 ]; then
-	_termux_lang=$(getprop persist.sys.locale 2>/dev/null || true)
-	if [ -n "$_termux_lang" ]; then
-		LANG="$_termux_lang.UTF-8"
+	termux_lang=$(getprop persist.sys.locale 2>/dev/null || true)
+	if [ -n "$termux_lang" ]; then
+		LANG="$termux_lang.UTF-8"
 		export LANG
 	fi
-	unset _termux_lang
+	unset termux_lang
 fi
 
 # Installer data paths (exported for packages.sh / deno.sh / uninstall hooks)

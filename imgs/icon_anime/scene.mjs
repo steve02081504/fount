@@ -6,7 +6,7 @@ import { composeFrame, renderBuffers } from './compose.mjs'
 import {
 	MAT, LIQ_DRAW, createWorld, clearMaterials, clearDynamics, setMat, addLiquid, addMoisture, addMelt,
 	spawnParticle, queueSplash, stepFluid, labelAirRegions, stepLiquid, stepThermal,
-	windProfileAt, idx, inWorld, isLiquidBarrier, releaseNonSoilWater,
+	windShear, globalWindAt, idx, inWorld, isLiquidBarrier, releaseNonSoilWater,
 	soilAbsorbFactor, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, scratch, applyGravityToWorld, T_AMB,
 } from './fluid/index.mjs'
 import { createLightGesture, tickLightGesture } from './gesture/light.mjs'
@@ -116,6 +116,54 @@ export const createAnimState = (opts = {}) => {
 }
 
 /**
+ * BFS 从保留格向新暴露土壤格传播温度衰减。
+ * @param {FluidWorld} world 流体世界
+ * @param {boolean[]} addedSolid 新暴露格掩码
+ * @returns {void}
+ */
+const seedTempIntoAddedCells = (world, addedSolid) => {
+	const W = world.worldW
+	const queue = []
+	for (let i = 0; i < addedSolid.length; i++) {
+		if (!addedSolid[i]) continue
+		const x = i % W
+		const y = (i / W) | 0
+		let best = T_AMB
+		for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+			const nx = x + ox
+			const ny = y + oy
+			if (!inWorld(world, nx, ny)) continue
+			const ni = ny * W + nx
+			if (addedSolid[ni]) continue
+			best = Math.max(best, world.temp[ni], world.melt[ni] >= 0.05 ? world.temp[ni] : T_AMB)
+		}
+		if (best > T_AMB + 0.05) {
+			world.temp[i] = best * 0.85
+			queue.push(i)
+		}
+	}
+	for (let qi = 0; qi < queue.length; qi++) {
+		const i = queue[qi]
+		const x = i % W
+		const y = (i / W) | 0
+		const t0 = world.temp[i]
+		if (t0 < 0.2) continue
+		const next = t0 * 0.7
+		for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+			const nx = x + ox
+			const ny = y + oy
+			if (!inWorld(world, nx, ny)) continue
+			const ni = ny * W + nx
+			if (!addedSolid[ni]) continue
+			if (next > world.temp[ni] + 0.02) {
+				world.temp[ni] = next
+				queue.push(ni)
+			}
+		}
+	}
+}
+
+/**
  * 围绕图标调整尺寸，保留既有地形/动力学，仅为新暴露区域生成地形。
  * 新土壤初始为雨饱和并短暂沉降。
  * @param {AnimState} state 动画状态
@@ -149,7 +197,7 @@ export const resizeAnimState = (state, { width, height }) => {
 			const moist = old.moisture[oi]
 			const cond = old.condense[oi]
 			const cellTemp = old.temp[oi]
-			if (amt < 0.05 && meltAmt < 0.05 && moist < 0.02 && cond < 0.02) continue
+			if (amt < 0.05 && meltAmt < 0.05 && moist < 0.02 && cond < 0.02 && cellTemp <= T_AMB + 0.02) continue
 			const nx = (x + shiftX) | 0
 			const ny = (y + shiftY) | 0
 			if (!inWorld(newWorld, nx, ny)) continue
@@ -167,49 +215,7 @@ export const resizeAnimState = (state, { width, height }) => {
 			}
 		}
 
-	// Seed new cells from retained melt boundary (BFS temp decay).
-	{
-		const W = newWorld.worldW
-		const H = newWorld.worldH
-		const queue = []
-		for (let i = 0; i < addedSolid.length; i++) {
-			if (!addedSolid[i]) continue
-			const x = i % W
-			const y = (i / W) | 0
-			let best = T_AMB
-			for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-				const nx = x + ox
-				const ny = y + oy
-				if (!inWorld(newWorld, nx, ny)) continue
-				const ni = ny * W + nx
-				if (addedSolid[ni]) continue
-				best = Math.max(best, newWorld.temp[ni], newWorld.melt[ni] >= 0.05 ? newWorld.temp[ni] : T_AMB)
-			}
-			if (best > T_AMB + 0.05) {
-				newWorld.temp[i] = best * 0.85
-				queue.push(i)
-			}
-		}
-		for (let qi = 0; qi < queue.length; qi++) {
-			const i = queue[qi]
-			const x = i % W
-			const y = (i / W) | 0
-			const t0 = newWorld.temp[i]
-			if (t0 < 0.2) continue
-			for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-				const nx = x + ox
-				const ny = y + oy
-				if (!inWorld(newWorld, nx, ny)) continue
-				const ni = ny * W + nx
-				if (!addedSolid[ni]) continue
-				const next = t0 * 0.7
-				if (next > newWorld.temp[ni] + 0.02) {
-					newWorld.temp[ni] = next
-					queue.push(ni)
-				}
-			}
-		}
-	}
+	seedTempIntoAddedCells(newWorld, addedSolid)
 
 	const src = old.particles
 	for (let i = 0; i < src.count; i++) {
@@ -537,7 +543,8 @@ export const rainEdgeWeights = (gx, gy) => {
 		e.w = Math.max(0, -dot)
 	}
 	// Side edges get a small base so left/right can randomly rain under default g.
-	if (edges[0].w > 0.5) {
+	const top = edges.find(e => e.ny < 0)
+	if (top && top.w > 0.5) {
 		edges[2].w = Math.max(edges[2].w, 0.12)
 		edges[3].w = Math.max(edges[3].w, 0.12)
 	}
@@ -575,7 +582,8 @@ const spawnRain = (state) => {
 	const edges = rainEdgeWeights(g.gx, g.gy)
 	const unlock = Math.min(1, frame / Math.max(18, Math.max(width, height) * 0.55))
 	const budget = Math.max(1, Math.floor(1 + unlock * 2.5))
-	const skyWind = windProfileAt(0, world.worldH, frame, seed)
+	const depthSpan = world.gravityDepthSpan || Math.max(world.worldW, world.worldH)
+	const skyWind = globalWindAt(frame, seed) * windShear(0, depthSpan)
 
 	for (let i = 0; i < budget; i++) {
 		if (hash01(frame, i + 17) > 0.4 + unlock * 0.4) continue
@@ -586,29 +594,21 @@ const spawnRain = (state) => {
 			? Math.max(1, Math.floor(width * unlock))
 			: Math.max(1, Math.floor(height * unlock))
 		const along = (hash01(frame * 3, i) * span) | 0
+		const alongJitter = hash01(frame, i + 2) * 0.8
+		const alongAxisIsX = edge.ny !== 0
+		const spanOrigin = alongAxisIsX
+			? world.ox + Math.floor((width - span) / 2)
+			: Math.floor((height - span) / 2)
+		const normalJitter = hash01(frame, i + 9) * 1.5
 		let x
 		let y
-		if (edge.ny < 0) {
-			// top
-			const x0 = world.ox + Math.floor((width - span) / 2)
-			x = x0 + along + hash01(frame, i + 2) * 0.8
-			y = -hash01(frame, i + 9) * 1.5
-		}
-		else if (edge.ny > 0) {
-			// bottom — should have w=0 under normal g
-			const x0 = world.ox + Math.floor((width - span) / 2)
-			x = x0 + along
-			y = world.worldH + hash01(frame, i + 9) * 1.5
-		}
-		else if (edge.nx < 0) {
-			x = -hash01(frame, i + 9) * 1.5
-			const y0 = Math.floor((height - span) / 2)
-			y = y0 + along + hash01(frame, i + 2) * 0.8
+		if (alongAxisIsX) {
+			x = spanOrigin + along + alongJitter
+			y = edge.ny < 0 ? -normalJitter : world.worldH + normalJitter
 		}
 		else {
-			x = world.worldW + hash01(frame, i + 9) * 1.5
-			const y0 = Math.floor((height - span) / 2)
-			y = y0 + along + hash01(frame, i + 2) * 0.8
+			x = edge.nx < 0 ? -normalJitter : world.worldW + normalJitter
+			y = spanOrigin + along + alongJitter
 		}
 
 		const heavy = hash01(frame, i + 11) > 0.45

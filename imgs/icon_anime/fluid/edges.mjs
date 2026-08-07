@@ -13,17 +13,11 @@ import { hash01 } from '../hash.mjs'
 
 /** 边：0 上、1 下、2 左、3 右。 */
 export const EDGE_TOP = 0
-/**
- *
- */
+/** 下边（屏幕向下时 y = H−1）。 */
 export const EDGE_BOTTOM = 1
-/**
- *
- */
+/** 左边（x = 0）。 */
 export const EDGE_LEFT = 2
-/**
- *
- */
+/** 右边（x = W−1）。 */
 export const EDGE_RIGHT = 3
 
 /** 四边外向法线。 */
@@ -106,73 +100,20 @@ export const edgeUpness = (world, x, y) => {
 }
 
 /**
- * 兼容旧 API：是否在重力下边（sink > 0.5）。
+ * 将坐标按世界尺寸取模环绕（两轴均归一化）。
  * @param {FluidWorld} world 世界
  * @param {number} x 列
  * @param {number} y 行
- * @returns {boolean} 下边
- */
-export const onDownEdge = (world, x, y) => edgeDownness(world, x, y) > 0.5
-
-/**
- * 兼容旧 API：是否在重力上边（source > 0.5）。
- * @param {FluidWorld} world 世界
- * @param {number} x 列
- * @param {number} y 行
- * @returns {boolean} 上边
- */
-export const onUpEdge = (world, x, y) => edgeUpness(world, x, y) > 0.5
-
-/**
- * 将坐标按指定边环绕。
- * @param {FluidWorld} world 世界
- * @param {number} x 列
- * @param {number} y 行
- * @param {number} edge 边索引
+ * @param {number} edge 穿过的边（保留签名兼容）
  * @returns {{ x: number, y: number }} 环绕后
  */
 export const wrapAcrossEdge = (world, x, y, edge) => {
 	const W = world.worldW
 	const H = world.worldH
-	if (edge === EDGE_LEFT || edge === EDGE_RIGHT) {
-		let nx = x % W
-		if (nx < 0) nx += W
-		return { x: nx, y }
-	}
+	let nx = x % W
+	if (nx < 0) nx += W
 	let ny = y % H
 	if (ny < 0) ny += H
-	return { x, y: ny }
-}
-
-/**
- * 将垂直于重力的坐标取模环绕（兼容旧调用）。
- * @param {FluidWorld} world 世界
- * @param {number} x 列
- * @param {number} y 行
- * @returns {{ x: number, y: number }} 环绕后坐标
- */
-export const wrapSide = (world, x, y) => {
-	const roles = edgeRoles(world)
-	const W = world.worldW
-	const H = world.worldH
-	let nx = x
-	let ny = y
-	if (nx < 0 || nx >= W) {
-		const edge = nx < 0 ? EDGE_LEFT : EDGE_RIGHT
-		if (roles[edge].wrap > 0.15) {
-			const w = wrapAcrossEdge(world, nx, ny, edge)
-			nx = w.x
-			ny = w.y
-		}
-	}
-	if (ny < 0 || ny >= H) {
-		const edge = ny < 0 ? EDGE_TOP : EDGE_BOTTOM
-		if (roles[edge].wrap > 0.15) {
-			const w = wrapAcrossEdge(world, nx, ny, edge)
-			nx = w.x
-			ny = w.y
-		}
-	}
 	return { x: nx, y: ny }
 }
 
@@ -218,7 +159,12 @@ export const neighborCoord = (world, x, y, dx, dy, discretePickSalt) => {
 			const w = wrapAcrossEdge(world, nx, ny, crossed)
 			return { x: w.x, y: w.y, wrapped: true, out: false, wrappedFrac: wrap, outFrac }
 		}
-		return { x: nx, y: ny, wrapped: false, out: true, wrappedFrac: wrap, outFrac }
+		const sink = roles[crossed].sink
+		return {
+			x: nx, y: ny, wrapped: false,
+			out: sink > 0.001,
+			wrappedFrac: wrap, outFrac,
+		}
 	}
 
 	if (wrap >= 0.999) {
@@ -233,18 +179,3 @@ export const neighborCoord = (world, x, y, dx, dy, discretePickSalt) => {
 	return { x: w.x, y: w.y, wrapped: true, out: false, wrappedFrac: wrap, outFrac }
 }
 
-/**
- * 兼容旧 API：量化轴角色（由最大 sink 边推断）。
- * @param {FluidWorld} world 世界
- * @returns {{ downAxis: 0|1, downSign: 1|-1, wrapAxis: 0|1 }} 角色
- */
-export const boundaryAxes = (world) => {
-	const roles = edgeRoles(world)
-	let best = EDGE_BOTTOM
-	for (let e = 0; e < 4; e++)
-		if (roles[e].sink > roles[best].sink) best = e
-	if (best === EDGE_TOP) return { downAxis: 1, downSign: -1, wrapAxis: 0 }
-	if (best === EDGE_BOTTOM) return { downAxis: 1, downSign: 1, wrapAxis: 0 }
-	if (best === EDGE_LEFT) return { downAxis: 0, downSign: -1, wrapAxis: 1 }
-	return { downAxis: 0, downSign: 1, wrapAxis: 1 }
-}

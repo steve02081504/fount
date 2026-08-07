@@ -46,9 +46,9 @@ function script:git_fetch_origin {
 # 0 = branch exists on origin, 1 = confirmed absent, 2 = network/other error.
 # Only call when a named ref is unknown locally — avoid on the plain-update happy path.
 function script:git_remote_branch_status($Branch) {
-	$out = invoke_repo_git ls-remote --heads origin "refs/heads/$Branch" 2>$null
+	$output = invoke_repo_git ls-remote --heads origin "refs/heads/$Branch" 2>$null
 	if ($LastExitCode -ne 0) { return 2 }
-	if ($out) { return 0 }
+	if ($output) { return 0 }
 	return 1
 }
 

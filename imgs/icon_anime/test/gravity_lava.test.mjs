@@ -13,14 +13,10 @@ import {
 	totalWorldWater, addLiquid, labelAirRegions, totalSealedGas,
 } from '../fluid/index.mjs'
 import {
-	mapSensorToScreen, setGravityTarget, tickGravity, defaultGravity,
+	mapSensorToScreen, defaultGravity,
 	BASE_PARTICLE_G,
 } from '../gravity.mjs'
 import { rainEdgeWeights, pickRainEdge } from '../scene.mjs'
-
-// Re-export edge indices if not on index — local fallbacks.
-const BOTTOM = EDGE_BOTTOM
-const LEFT = EDGE_LEFT
 
 Deno.test('gravity: mapSensorToScreen upright phone → screen down', () => {
 	const m = mapSensorToScreen(0, -9.81, 0)
@@ -69,11 +65,7 @@ Deno.test('rain edges: pickRainEdge respects weights', () => {
 
 Deno.test('particles: vector gravity displaces in g direction', () => {
 	const world = createWorld({ width: 20, height: 16, margin: 2, bottomExtra: 2 })
-	setGravityTarget({ gx: 1, gy: 0, mag: BASE_PARTICLE_G })
-	applyGravityToWorld(world, tickGravity())
-	world.gravity.gx = 1
-	world.gravity.gy = 0
-	world.gravity.mag = 0.12
+	applyGravityToWorld(world, { gx: 1, gy: 0, mag: BASE_PARTICLE_G })
 	spawnParticle(world, 5, 5, 0, 0, 50, 0.4)
 	const x0 = world.particles.x[0]
 	stepParticles(world, () => { /* no hit */ })
@@ -84,7 +76,7 @@ Deno.test('lava: onset after LAVA_ONSET_EXPOSURE on down edge', () => {
 	const world = createWorld({ width: 12, height: 10, margin: 1, bottomExtra: 1 })
 	clearMaterials(world)
 	world.gravity = defaultGravity()
-	world.boundary.exposure[BOTTOM] = LAVA_ONSET_EXPOSURE - 1
+	world.boundary.exposure[EDGE_BOTTOM] = LAVA_ONSET_EXPOSURE - 1
 	stepBoundary(world)
 	// One more frame of exposure accumulates; still need >= threshold at start of inject check.
 	// After step, exposure is LAVA_ONSET_EXPOSURE; lava should be on.
@@ -92,10 +84,10 @@ Deno.test('lava: onset after LAVA_ONSET_EXPOSURE on down edge', () => {
 	const world2 = createWorld({ width: 12, height: 10, margin: 1, bottomExtra: 1 })
 	clearMaterials(world2)
 	world2.gravity = defaultGravity()
-	world2.boundary.exposure[BOTTOM] = LAVA_ONSET_EXPOSURE - 2
+	world2.boundary.exposure[EDGE_BOTTOM] = LAVA_ONSET_EXPOSURE - 2
 	stepBoundary(world2)
 	// exposure becomes LAVA_ONSET_EXPOSURE-1 — below threshold, no lava
-	assertEquals(totalMelt(world2) < 0.01, true)
+	assertLess(totalMelt(world2), 0.01)
 })
 
 Deno.test('lava: 45° accumulates exposure on two edges; onset ≈ 312·√2', () => {
@@ -107,20 +99,20 @@ Deno.test('lava: 45° accumulates exposure on two edges; onset ≈ 312·√2', (
 	const need = LAVA_ONSET_EXPOSURE / s
 	for (let i = 0; i < (need | 0) - 2; i++)
 		stepBoundary(world)
-	assertEquals(totalMelt(world) < 0.01, true)
+	assertLess(totalMelt(world), 0.01)
 	for (let i = 0; i < 6; i++)
 		stepBoundary(world)
 	assertGreater(totalMelt(world), 0.1)
 	// Both bottom and left should have been sourcing lava.
-	assertGreater(world.boundary.exposure[BOTTOM], LAVA_ONSET_EXPOSURE - 1)
-	assertGreater(world.boundary.exposure[LEFT], LAVA_ONSET_EXPOSURE - 1)
+	assertGreater(world.boundary.exposure[EDGE_BOTTOM], LAVA_ONSET_EXPOSURE - 1)
+	assertGreater(world.boundary.exposure[EDGE_LEFT], LAVA_ONSET_EXPOSURE - 1)
 })
 
 Deno.test('lava: down-edge melt clamped to T_MAX', () => {
 	const world = createWorld({ width: 8, height: 8, margin: 0, bottomExtra: 0 })
 	clearMaterials(world)
 	world.gravity = defaultGravity()
-	world.boundary.exposure[BOTTOM] = LAVA_ONSET_EXPOSURE
+	world.boundary.exposure[EDGE_BOTTOM] = LAVA_ONSET_EXPOSURE
 	stepBoundary(world)
 	const W = world.worldW
 	const H = world.worldH
@@ -143,7 +135,7 @@ Deno.test('thermal: dry hot soil melts; cool melt solidifies', () => {
 
 	world.temp[3 * 6 + 2] = T_SOLIDUS - 0.1
 	stepThermal(world)
-	assertEquals(world.melt[3 * 6 + 2] < LIQ_DRAW, true)
+	assertLess(world.melt[3 * 6 + 2], LIQ_DRAW)
 	assertEquals(world.mat[3 * 6 + 2] === MAT.SOLID || world.mat[3 * 6 + 2] === MAT.HORIZON, true)
 })
 
@@ -156,7 +148,7 @@ Deno.test('thermal: soil moisture evaporates before melt', () => {
 	stepThermal(world)
 	assertEquals(world.mat[2 * 4 + 1] === MAT.SOLID || world.mat[2 * 4 + 1] === MAT.HORIZON, true)
 	assertLess(world.moisture[2 * 4 + 1], 0.8)
-	assertEquals(world.melt[2 * 4 + 1] < LIQ_DRAW, true)
+	assertLess(world.melt[2 * 4 + 1], LIQ_DRAW)
 })
 
 Deno.test('boundary: up-edge absorb and regurgitate conserves units+heat', () => {
@@ -174,7 +166,12 @@ Deno.test('boundary: up-edge absorb and regurgitate conserves units+heat', () =>
 	let guard = 0
 	while (world.boundary.regurgitating && guard++ < 200)
 		stepBoundary(world)
-	assertAlmostEquals(world.boundary.regurgitatedUnits || units, units, 0.15)
+	assertEquals(world.boundary.regurgitating, false)
+	assertAlmostEquals(totalMelt(world), units, 0.15)
+	let worldHeat = 0
+	for (let i = 0; i < world.melt.length; i++)
+		worldHeat += world.melt[i] * world.temp[i]
+	assertAlmostEquals(worldHeat, heat, 0.15)
 	assertGreater(heat, 0)
 })
 
@@ -206,7 +203,7 @@ Deno.test('buoyancy: hot melt rises above cold melt', () => {
 		stepFluid(world, { forceWind: 0 })
 	const upper = world.temp[2 * 4 + 1]
 	const lower = world.temp[3 * 4 + 1]
-	assertEquals(upper + 0.05 >= lower || world.melt[2 * 4 + 1] < 0.1, true)
+	assertGreater(upper + 0.05, lower)
 })
 
 Deno.test('regurgitateTemp: rises then falls from lastTemp', () => {

@@ -17,6 +17,7 @@ import {
 import { labelAirRegions, pressureAt, gasUxAt } from './gas.mjs'
 import {
 	MAT, P_ATM, RHO_G, LIQ_DRAW, LIQ_FULL, isLiquidBarrier,
+	SUBSTANCE, rhoOf, viscOf,
 } from './mat.mjs'
 import { stepSoil } from './soil.mjs'
 import { meltVisc, cellRho } from './thermal.mjs'
@@ -27,6 +28,7 @@ import {
 	scratch, idx, inWorld,
 	markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
 	gravityDepth, gravityDownWeights, gravityUpWeights,
+	strongestUp, strongestDown,
 } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
@@ -35,6 +37,8 @@ import {
 const WIND_SHEET = 0.12
 /** 每边每帧风驱液膜质量上限。 */
 const WIND_SHEET_CAP = 0.18
+/** 水相粘滞（viscOf(rhoOf(WATER))）。 */
+const WATER_VISC = viscOf(rhoOf(SUBSTANCE.WATER, 0))
 
 /**
  * 自由液体能否进入 `(x, y)`。
@@ -77,16 +81,13 @@ export const liquidPressureAt = (world, x, y) => {
 	if (L < LIQ_DRAW && !isLiquidBarrier(world.mat[cell]))
 		return pressureAt(world, x, y)
 
-	const up = gravityUpWeights(world)
+	const up = strongestUp(world)
 	let sx = x
 	let sy = y
 	for (;;) {
-		if (up.n <= 0) break
-		let best = 0
-		for (let i = 1; i < up.n; i++)
-			if (up.w[i] > up.w[best]) best = i
-		const nx = sx + up.dx[best]
-		const ny = sy + up.dy[best]
+		if (up.w <= 0) break
+		const nx = sx + up.dx
+		const ny = sy + up.dy
 		if (!inWorld(world, nx, ny)) break
 		const above = idx(world, nx, ny)
 		if (isLiquidBarrier(world.mat[above])) break
@@ -97,12 +98,9 @@ export const liquidPressureAt = (world, x, y) => {
 
 	let airX = sx
 	let airY = sy
-	if (up.n > 0) {
-		let best = 0
-		for (let i = 1; i < up.n; i++)
-			if (up.w[i] > up.w[best]) best = i
-		airX = sx + up.dx[best]
-		airY = sy + up.dy[best]
+	if (up.w > 0) {
+		airX = sx + up.dx
+		airY = sy + up.dy
 	}
 	const airP = inWorld(world, airX, airY) && !isLiquidBarrier(world.mat[idx(world, airX, airY)])
 		? pressureAt(world, airX, airY)
@@ -117,10 +115,85 @@ export const liquidPressureAt = (world, x, y) => {
  * @returns {void}
  */
 const fillPressureByDepth = (world, cache) => {
-	const { worldW: W, worldH: H } = world
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++)
-			cache[y * W + x] = liquidPressureAt(world, x, y)
+	const { worldW: W, worldH: H, mat, liq } = world
+	const n = W * H
+	const span = world.gravityDepthSpan || 1
+	const depthBuckets = Math.max(W, H) + 2
+	const dCounts = scratch(world, 'liqPFCounts', depthBuckets, Int32Array)
+	dCounts.fill(0)
+	const order = scratch(world, 'liqPFOrder', n, Int32Array)
+	for (let cell = 0; cell < n; cell++) {
+		const d = gravityDepth(world, cell % W, (cell / W) | 0)
+		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
+		dCounts[b]++
+	}
+	let run = 0
+	for (let b = 0; b < depthBuckets; b++) {
+		const c = dCounts[b]
+		dCounts[b] = run
+		run += c
+	}
+	for (let cell = 0; cell < n; cell++) {
+		const d = gravityDepth(world, cell % W, (cell / W) | 0)
+		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
+		order[dCounts[b]++] = cell
+	}
+
+	const up = gravityUpWeights(world)
+	for (let si = 0; si < n; si++) {
+		const cell = order[si]
+		const x = cell % W
+		const y = (cell / W) | 0
+		const L = liq[cell]
+		if (L < LIQ_DRAW && !isLiquidBarrier(mat[cell])) {
+			cache[cell] = pressureAt(world, x, y)
+			continue
+		}
+		if (isLiquidBarrier(mat[cell])) {
+			cache[cell] = pressureAt(world, x, y)
+			continue
+		}
+
+		let bestAbove = -1
+		let bestW = -1
+		for (let i = 0; i < up.n; i++) {
+			const ax = x + up.dx[i]
+			const ay = y + up.dy[i]
+			if (!inWorld(world, ax, ay)) continue
+			const above = ay * W + ax
+			if (!isLiquidBarrier(mat[above]) && liq[above] >= LIQ_DRAW) 
+				if (up.w[i] > bestW) {
+					bestW = up.w[i]
+					bestAbove = above
+				}
+			
+		}
+
+		if (bestAbove < 0) {
+			const strong = strongestUp(world)
+			let airX = x
+			let airY = y
+			if (strong.w > 0) {
+				airX = x + strong.dx
+				airY = y + strong.dy
+			}
+			const airP = inWorld(world, airX, airY) && !isLiquidBarrier(mat[idx(world, airX, airY)])
+				? pressureAt(world, airX, airY)
+				: pressureAt(world, x, y)
+			const surfDepth = gravityDepth(world, x, y)
+			cache[cell] = columnDepthPressure(airP, gravityDepth(world, x, y), surfDepth, L)
+		}
+		else {
+			const ax = bestAbove % W
+			const ay = (bestAbove / W) | 0
+			const pAbove = cache[bestAbove]
+			const dAbove = gravityDepth(world, ax, ay)
+			const dHere = gravityDepth(world, x, y)
+			const fillAbove = Math.min(1, Math.max(liq[bestAbove], LIQ_DRAW))
+			const fillHere = Math.min(1, Math.max(L, LIQ_DRAW))
+			cache[cell] = pAbove + RHO_G * (dHere - dAbove) + RHO_G * (fillHere - fillAbove)
+		}
+	}
 }
 
 /**
@@ -132,25 +205,73 @@ const fillPressureByDepth = (world, cache) => {
  * @returns {void}
  */
 const refreshGravityLine = (world, x0, y0, cache) => {
-	const { worldW: W, worldH: H, gravity } = world
-	const gx = gravity.gx
-	const gy = gravity.gy
-	// Walk both ways along ĝ through the grid.
-	const steps = Math.max(W, H) * 2
-	for (const sense of [1, -1]) {
+	const { worldW: W, worldH: H, mat, liq } = world
+	const up = strongestUp(world)
+	const down = strongestDown(world)
+
+	let sx = x0
+	let sy = y0
+	for (;;) {
+		if (!inWorld(world, sx, sy)) break
+		const cell = sy * W + sx
+		if (isLiquidBarrier(mat[cell]) || liq[cell] < LIQ_DRAW) break
+		if (up.w <= 0) break
+		const nx = sx + up.dx
+		const ny = sy + up.dy
+		if (!inWorld(world, nx, ny)) break
+		const above = ny * W + nx
+		if (isLiquidBarrier(mat[above]) || liq[above] < LIQ_DRAW) break
+		sx = nx
+		sy = ny
+	}
+
+	let airX = sx
+	let airY = sy
+	if (up.w > 0) {
+		airX = sx + up.dx
+		airY = sy + up.dy
+	}
+	const airP = inWorld(world, airX, airY) && !isLiquidBarrier(mat[idx(world, airX, airY)])
+		? pressureAt(world, airX, airY)
+		: pressureAt(world, sx, sy)
+	const surfDepth = gravityDepth(world, sx, sy)
+
+	if (inWorld(world, x0, y0)) {
+		const cell0 = y0 * W + x0
+		const L0 = liq[cell0]
+		if (L0 < LIQ_DRAW && !isLiquidBarrier(mat[cell0]))
+			cache[cell0] = pressureAt(world, x0, y0)
+		else if (!isLiquidBarrier(mat[cell0]))
+			cache[cell0] = columnDepthPressure(airP, gravityDepth(world, x0, y0), surfDepth, L0)
+	}
+
+	const steps = Math.max(W, H)
+	for (const dir of [
+		...down.w > 0 ? [{ dx: down.dx, dy: down.dy }] : [],
+		...up.w > 0 ? [{ dx: up.dx, dy: up.dy }] : [],
+	]) {
 		let x = x0
 		let y = y0
 		for (let s = 0; s < steps; s++) {
-			x += gx * sense
-			y += gy * sense
-			const cx = Math.round(x)
-			const cy = Math.round(y)
-			if (!inWorld(world, cx, cy)) break
-			cache[cy * W + cx] = liquidPressureAt(world, cx, cy)
+			x += dir.dx
+			y += dir.dy
+			if (!inWorld(world, x, y)) break
+			const cell = y * W + x
+			if (isLiquidBarrier(mat[cell]) || liq[cell] < LIQ_DRAW) {
+				if (liq[cell] < LIQ_DRAW && !isLiquidBarrier(mat[cell]))
+					cache[cell] = pressureAt(world, x, y)
+				break
+			}
+			const prev = cache[(y - dir.dy) * W + (x - dir.dx)]
+			const dPrev = gravityDepth(world, x - dir.dx, y - dir.dy)
+			const dHere = gravityDepth(world, x, y)
+			const Lprev = liq[(y - dir.dy) * W + (x - dir.dx)]
+			const Lhere = liq[cell]
+			const fillPrev = Math.min(1, Math.max(Lprev, LIQ_DRAW))
+			const fillHere = Math.min(1, Math.max(Lhere, LIQ_DRAW))
+			cache[cell] = prev + RHO_G * (dHere - dPrev) + RHO_G * (fillHere - fillPrev)
 		}
 	}
-	if (inWorld(world, x0, y0))
-		cache[y0 * W + x0] = liquidPressureAt(world, x0, y0)
 }
 
 /**
@@ -252,12 +373,9 @@ export const stepLiquid = (world) => {
 		return pCache[y * W + x]
 	}
 
-	const down = gravityDownWeights(world)
-	let bestDown = 0
-	for (let i = 1; i < down.n; i++)
-		if (down.w[i] > down.w[bestDown]) bestDown = i
-	const ddx = down.n > 0 ? down.dx[bestDown] : 0
-	const ddy = down.n > 0 ? down.dy[bestDown] : 1
+	const down = strongestDown(world)
+	const ddx = down.w > 0 ? down.dx : 0
+	const ddy = down.w > 0 ? down.dy : 1
 
 	// --- Gravity settle: deep-first so cascades land ---
 	const order = scratch(world, 'liqSettleOrder', n, Int32Array)
@@ -303,7 +421,7 @@ export const stepLiquid = (world) => {
 			if (liq[below] < LIQ_FULL && !poolRetainBlocks(world, cell, below)) {
 				const pDst = pAt(nx, ny)
 				const room = LIQ_FULL - liq[below]
-				let move = pressureMove(pSrc, pDst, liq[cell], room)
+				let move = pressureMove(pSrc, pDst, liq[cell], room, WATER_VISC)
 				if (move < 0.01 && liq[below] < liq[cell] && pDst < pSrc + RHO_G * 0.85)
 					move = Math.min(liq[cell], room, Math.max(0.08, (liq[cell] - liq[below]) * 0.85))
 				if (move > 0) {
@@ -327,7 +445,7 @@ export const stepLiquid = (world) => {
 			const neighbor = sy * W + sx
 			if (liq[neighbor] >= liq[cell] || poolRetainBlocks(world, cell, neighbor)) continue
 			const pN = liquidPressureAt(world, sx, sy)
-			let m = pressureMove(pSrc, pN, liq[cell] * 0.5, LIQ_FULL - liq[neighbor])
+			let m = pressureMove(pSrc, pN, liq[cell] * 0.5, LIQ_FULL - liq[neighbor], WATER_VISC)
 			if (m <= 0.01)
 				m = Math.min(liq[cell] * 0.5, (liq[cell] - liq[neighbor]) * 0.5, LIQ_FULL - liq[neighbor])
 			if (m <= 0.01) continue
@@ -342,6 +460,7 @@ export const stepLiquid = (world) => {
 	const sideDirs = ddx === 0
 		? [{ dx: -1, dy: 0 }, { dx: 1, dy: 0 }]
 		: [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }]
+	const strongUp = strongestUp(world)
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
@@ -361,8 +480,8 @@ export const stepLiquid = (world) => {
 							const pDst = pAt(nb.x, nb.y)
 							const room = LIQ_FULL - liq[neighbor]
 							let move = freeSurface && liq[neighbor] < LIQ_DRAW
-								? sheetMove(liq[cell], liq[neighbor], room)
-								: pressureMove(pSrc, pDst, liq[cell], room)
+								? sheetMove(liq[cell], liq[neighbor], room, WATER_VISC)
+								: pressureMove(pSrc, pDst, liq[cell], room, WATER_VISC)
 							move *= nb.wrappedFrac
 							if (move > 0) {
 								transfer(world, liq, flowX, flowY, cell, neighbor, dx, dy, move)
@@ -395,30 +514,26 @@ export const stepLiquid = (world) => {
 				const room = LIQ_FULL - liq[neighbor]
 				let move = 0
 				if (freeSurface && liq[neighbor] < LIQ_DRAW)
-					move = sheetMove(liq[cell], liq[neighbor], room)
+					move = sheetMove(liq[cell], liq[neighbor], room, WATER_VISC)
 				else {
 					if (pDst >= pSrc - 0.02 && liq[neighbor] >= liq[cell] - 0.02) continue
-					move = pressureMove(pSrc, pDst, liq[cell], room)
+					move = pressureMove(pSrc, pDst, liq[cell], room, WATER_VISC)
 					if (move < 0.01 && liq[neighbor] < liq[cell] - 0.02)
 						move = Math.min((liq[cell] - liq[neighbor]) * 0.25, room)
 				}
 
 				if (freeSurface && liq[cell] >= LIQ_DRAW) {
-					const up = gravityUpWeights(world)
 					let ux = 0
 					let uy = 0
-					if (up.n > 0) {
-						let best = 0
-						for (let k = 1; k < up.n; k++)
-							if (up.w[k] > up.w[best]) best = k
-						const ax = x + up.dx[best]
-						const ay = y + up.dy[best]
+					if (strongUp.w > 0) {
+						const ax = x + strongUp.dx
+						const ay = y + strongUp.dy
 						if (inWorld(world, ax, ay)) {
 							ux = world.gasUx[ay * W + ax]
 							uy = world.gasUy[ay * W + ax]
 						}
 					}
-					else 
+					else
 						ux = gasUxAt(world, x, y)
 					
 					const windAlong = ux * dx + uy * dy
@@ -459,19 +574,16 @@ export const stepLiquid = (world) => {
 				if (push < 0.02) continue
 				const tx = nx + dx
 				const ty = ny + dy
-				if (canOccupy(world, tx, ty) && liq[idx(world, tx, ty)] < LIQ_FULL) {
-					const target = idx(world, tx, ty)
+				const target = idx(world, tx, ty)
+				if (canOccupy(world, tx, ty) && liq[target] < LIQ_FULL) 
 					transfer(world, liq, flowX, flowY, neighbor, target, tx - nx, ty - ny, push)
-				}
-				else if (down.n > 0) {
-					let best = 0
-					for (let k = 1; k < down.n; k++)
-						if (down.w[k] > down.w[best]) best = k
-					const bx = nx + down.dx[best]
-					const by = ny + down.dy[best]
+				
+				else if (down.w > 0) {
+					const bx = nx + down.dx
+					const by = ny + down.dy
 					if (canOccupy(world, bx, by)) {
-						const target = idx(world, bx, by)
-						transfer(world, liq, flowX, flowY, neighbor, target, down.dx[best], down.dy[best], push)
+						const below = idx(world, bx, by)
+						transfer(world, liq, flowX, flowY, neighbor, below, down.dx, down.dy, push)
 					}
 				}
 			}
@@ -506,6 +618,7 @@ const stepMelt = (world) => {
 		vx: world.meltVx,
 		vy: world.meltVy,
 		viscAt: meltVisc,
+		rhoAt: (w, cell) => rhoOf(SUBSTANCE.ROCK, w.temp[cell]),
 		canEnter: meltCanEnter,
 		onTransfer: meltTempOnTransfer,
 		markDirty: markAirIfMeltDrawCrossed,
@@ -521,39 +634,75 @@ const stepMelt = (world) => {
  */
 const stepBuoyancy = (world) => {
 	const { worldW: W, worldH: H, melt, liq, temp, mat } = world
+	const n = W * H
 	const down = gravityDownWeights(world)
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) 
-			for (let i = 0; i < down.n; i++) {
-				if (down.w[i] < 0.5) continue
-				const belowX = x + down.dx[i]
-				const belowY = y + down.dy[i]
-				if (!inWorld(world, belowX, belowY)) continue
-				const a = y * W + x
-				const b = belowY * W + belowX
-				if (isLiquidBarrier(mat[a]) || isLiquidBarrier(mat[b])) continue
-				const rhoA = cellRho(world, a)
-				const rhoB = cellRho(world, b)
-				if (rhoB + 0.04 >= rhoA) continue
-				if (melt[a] < 0.05 && melt[b] < 0.05 && liq[a] < 0.05 && liq[b] < 0.05) continue
-				const ma = melt[a]
-				const mb = melt[b]
-				const ta = temp[a]
-				const tb = temp[b]
-				const la = liq[a]
-				const lb = liq[b]
-				melt[a] = mb
-				melt[b] = ma
-				temp[a] = tb
-				temp[b] = ta
-				liq[a] = lb
-				liq[b] = la
-				markAirIfMeltDrawCrossed(world, ma, melt[a])
-				markAirIfMeltDrawCrossed(world, mb, melt[b])
-				markAirIfDrawCrossed(world, la, liq[a])
-				markAirIfDrawCrossed(world, lb, liq[b])
-			}
-		
+	const order = scratch(world, 'buoyOrder', n, Int32Array)
+	const span = world.gravityDepthSpan || 1
+	const depthBuckets = Math.max(W, H) + 2
+	const dCounts = scratch(world, 'buoyCounts', depthBuckets, Int32Array)
+	dCounts.fill(0)
+	for (let cell = 0; cell < n; cell++) {
+		const d = gravityDepth(world, cell % W, (cell / W) | 0)
+		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
+		dCounts[b]++
+	}
+	let run = 0
+	for (let b = depthBuckets - 1; b >= 0; b--) {
+		const c = dCounts[b]
+		dCounts[b] = run
+		run += c
+	}
+	for (let cell = 0; cell < n; cell++) {
+		const d = gravityDepth(world, cell % W, (cell / W) | 0)
+		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
+		order[dCounts[b]++] = cell
+	}
+
+	const swapMark = scratch(world, 'buoyMark', n, Int32Array)
+	let gen = (/** @type {number} */ world.scratch.buoyGen | 0) + 1
+	if (gen >= 0x7fffffff) {
+		swapMark.fill(0)
+		gen = 1
+	}
+	world.scratch.buoyGen = gen
+
+	for (let si = 0; si < n; si++) {
+		const a = order[si]
+		const x = a % W
+		const y = (a / W) | 0
+		if (swapMark[a] === gen) continue
+		for (let i = 0; i < down.n; i++) {
+			if (down.w[i] < 0.5) continue
+			const belowX = x + down.dx[i]
+			const belowY = y + down.dy[i]
+			if (!inWorld(world, belowX, belowY)) continue
+			const b = belowY * W + belowX
+			if (swapMark[b] === gen) continue
+			if (isLiquidBarrier(mat[a]) || isLiquidBarrier(mat[b])) continue
+			const rhoA = cellRho(world, a)
+			const rhoB = cellRho(world, b)
+			if (rhoB + 0.04 >= rhoA) continue
+			if (melt[a] < 0.05 && melt[b] < 0.05 && liq[a] < 0.05 && liq[b] < 0.05) continue
+			const ma = melt[a]
+			const mb = melt[b]
+			const ta = temp[a]
+			const tb = temp[b]
+			const la = liq[a]
+			const lb = liq[b]
+			melt[a] = mb
+			melt[b] = ma
+			temp[a] = tb
+			temp[b] = ta
+			liq[a] = lb
+			liq[b] = la
+			swapMark[a] = gen
+			swapMark[b] = gen
+			markAirIfMeltDrawCrossed(world, ma, melt[a])
+			markAirIfMeltDrawCrossed(world, mb, melt[b])
+			markAirIfDrawCrossed(world, la, liq[a])
+			markAirIfDrawCrossed(world, lb, liq[b])
+		}
+	}
 }
 
 

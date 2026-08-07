@@ -14,7 +14,7 @@ import {
 	P_ATM, RHO_AIR, ATM_HYDRO, GAS_DP_DRIVE, LIQ_DRAW, isBlockMat,
 } from './mat.mjs'
 import {
-	scratch, idx, inWorld, gravityDepth, gravityUpWeights,
+	scratch, idx, inWorld, gravityDepth, strongestUp,
 } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
@@ -80,9 +80,8 @@ export const isAirCell = (world, cell) =>
  * @returns {void}
  */
 export const fillBlocked = (world, blocked) => {
-	const { mat, liq, melt } = world
 	for (let cell = 0; cell < blocked.length; cell++)
-		blocked[cell] = isBlockMat(mat[cell]) || liq[cell] >= LIQ_DRAW || melt[cell] >= LIQ_DRAW ? 1 : 0
+		blocked[cell] = isAirCell(world, cell) ? 0 : 1
 }
 
 /**
@@ -138,12 +137,13 @@ export const labelAirRegions = (world) => {
 	/** @type {{ x: number, y: number }[]} */
 	const borderSeeds = []
 	for (let x = 0; x < W; x++) borderSeeds.push({ x, y: 0 })
-	for (let y = 1; y < H; y++) {
+	for (let y = 1; y < H - 1; y++) {
 		borderSeeds.push({ x: 0, y })
 		borderSeeds.push({ x: W - 1, y })
 	}
+	for (let x = 0; x < W; x++) borderSeeds.push({ x, y: H - 1 })
 
-	const { components } = labelComponents(world, {
+	const { components, seedComponentId } = labelComponents(world, {
 		/**
 		 * 泛洪时是否接受该格为空气分量成员。
 		 * @param {FluidWorld} w 流体世界
@@ -171,7 +171,7 @@ export const labelAirRegions = (world) => {
 	for (let id = 1; id < components.length; id++) {
 		const stats = components[id]
 		if (!stats || stats.cells <= 0) continue
-		const openToAtm = id === 1
+		const openToAtm = seedComponentId > 0 && id === seedComponentId
 		const region = takeRegion(regionPool, id, openToAtm)
 		region.airCells = stats.cells
 		region.sumY = stats.sumDepth
@@ -242,18 +242,14 @@ export const labelAirRegions = (world) => {
  * @returns {number} 压力
  */
 const pressureAlongUp = (world, x, y, depth) => {
-	const up = gravityUpWeights(world)
+	const up = strongestUp(world)
+	if (up.w <= 0) return openHydroPressure(depth)
 	let cx = x
 	let cy = y
 	const maxSteps = Math.max(world.worldW, world.worldH)
 	for (let step = 0; step < maxSteps; step++) {
-		if (up.n <= 0) break
-		// Follow strongest uphill weight; ties prefer first listed.
-		let best = 0
-		for (let i = 1; i < up.n; i++)
-			if (up.w[i] > up.w[best]) best = i
-		cx += up.dx[best]
-		cy += up.dy[best]
+		cx += up.dx
+		cy += up.dy
 		if (!inWorld(world, cx, cy)) break
 		const above = idx(world, cx, cy)
 		if (isBlockMat(world.mat[above])) break
@@ -280,10 +276,11 @@ const pressureAlongUp = (world, x, y, depth) => {
  * @returns {number} 压力
  */
 export const pressureAt = (world, x, y) => {
-	const depth = inWorld(world, x, y)
-		? gravityDepth(world, x, y)
-		: gravityDepth(world, Math.max(0, x), Math.max(0, y))
-	if (!inWorld(world, x, y)) return openHydroPressure(Math.max(0, depth))
+	if (!inWorld(world, x, y)) {
+		const depth = gravityDepth(world, Math.max(0, x), Math.max(0, y))
+		return openHydroPressure(Math.max(0, depth))
+	}
+	const depth = gravityDepth(world, x, y)
 	const cell = idx(world, x, y)
 	const rid = world.regionId[cell]
 	if (rid) {
@@ -324,21 +321,10 @@ export const globalWindAt = (time, seed = 0) => {
  * @param {number} depthSpan 世界深度跨度
  * @returns {number} 切变
  */
-const windShear = (depth, depthSpan) => {
+export const windShear = (depth, depthSpan) => {
 	const alt = 1 - Math.min(1, Math.max(0, depth / Math.max(1, depthSpan)))
 	return 0.28 + 0.72 * alt ** WIND_SHEAR_POWER
 }
-
-/**
- * 高度切变风：高处强、近地弱。返回沿 ĝ⊥ 的标量（兼容旧调用方用 y）。
- * @param {number} y 世界行（兼容：按默认重力当作深度）
- * @param {number} worldH 世界高度
- * @param {number} time 帧
- * @param {number} [seed=0] 场景种子
- * @returns {number} 风速标量
- */
-export const windProfileAt = (y, worldH, time, seed = 0) =>
-	globalWindAt(time, seed) * windShear(y, worldH - 1)
 
 /**
  * 在世界点采样气体速度（最近格）。

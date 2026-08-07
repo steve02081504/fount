@@ -110,7 +110,7 @@ export class StreamRenderer {
 		const html = await renderMarkdownAsString(text, this.#markdownCache, {
 			allowDangerousHtml: this.#allowDangerousHtml,
 		})
-		this.#bodyElement.replaceChildren(/** @type {DocumentFragment} */ scrubHtmlActivePayload(html))
+		this.#bodyElement.replaceChildren(scrubHtmlActivePayload(html))
 		if (text.trim())
 			this.#bodyElement.parentElement
 				?.querySelector('.streaming-skeleton')

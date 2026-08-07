@@ -97,10 +97,10 @@ export const VISC_SOLID = 0.92
 export const VISC_INERTIAL = 0.02
 /** 蒸汽泡最小可见气区格数。 */
 export const BUBBLE_MIN_CELLS = 2
+/** 气泡浮升所需邻接熔岩格数下限。 */
+export const BUBBLE_MIN_MELT_CONTACT = 2
 /** 下边曝露积分达到此值后涌岩浆（默认向下 13s × 24fps = 312）。 */
 export const LAVA_ONSET_EXPOSURE = 312
-/** @deprecated 使用 LAVA_ONSET_EXPOSURE */
-export const LAVA_ONSET_FRAMES = LAVA_ONSET_EXPOSURE
 
 /**
  * 物质种类（密度曲线索引）。
@@ -119,10 +119,9 @@ export const SUBSTANCE = {
  * @returns {number} rho
  */
 export const rhoOf = (substance, temp) => {
-	const t = Math.min(1, Math.max(0, temp))
 	if (substance === SUBSTANCE.AIR) return RHO_AIR
 	if (substance === SUBSTANCE.WATER) return RHO_G
-	// Rock / lava continuum: hot → light.
+	const t = Math.min(1, Math.max(0, temp))
 	return RHO_LAVA_HOT + (RHO_ROCK - RHO_LAVA_HOT) * (1 - t)
 }
 

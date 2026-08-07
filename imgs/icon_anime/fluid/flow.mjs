@@ -27,7 +27,7 @@ export const SHEET_GAIN = 0.25
 export const viscGain = (visc) => {
 	if (visc >= VISC_SOLID) return 0
 	if (visc <= VISC_INERTIAL) return 1
-	return Math.max(0, 1 - visc)
+	return Math.max(0, (VISC_SOLID - visc) / (VISC_SOLID - VISC_INERTIAL))
 }
 
 /**
@@ -51,10 +51,10 @@ export const hydraulicPhi = (pressure, depth) => pressure / RHO_G - depth
  * @param {number} pDst 目标压强
  * @param {number} srcLiq 可用质量
  * @param {number} dstRoom 目标剩余容量
- * @param {number} [visc=0.05] 源粘滞
+ * @param {number} visc 源粘滞
  * @returns {number} 转移量
  */
-export const pressureMove = (pSrc, pDst, srcLiq, dstRoom, visc = 0.05) => {
+export const pressureMove = (pSrc, pDst, srcLiq, dstRoom, visc) => {
 	const gain = viscGain(visc)
 	if (gain <= 0) return 0
 	const head = (pSrc - pDst) / RHO_G
@@ -67,10 +67,10 @@ export const pressureMove = (pSrc, pDst, srcLiq, dstRoom, visc = 0.05) => {
  * @param {number} srcLiq 源填充
  * @param {number} dstLiq 目标填充
  * @param {number} dstRoom 剩余容量
- * @param {number} [visc=0.05] 源粘滞
+ * @param {number} visc 源粘滞
  * @returns {number} 转移量
  */
-export const sheetMove = (srcLiq, dstLiq, dstRoom, visc = 0.05) => {
+export const sheetMove = (srcLiq, dstLiq, dstRoom, visc) => {
 	const gain = viscGain(visc)
 	if (gain <= 0) return 0
 	if (srcLiq <= dstLiq + 0.02 || dstRoom <= 0) return 0

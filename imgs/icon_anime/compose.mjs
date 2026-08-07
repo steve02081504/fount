@@ -4,7 +4,10 @@
  * 和/或点击涟漪（明亮扩散环，无环境变暗）。
  */
 
-import { MAT, LIQ_DRAW, COND_DRAW, isLiquidBarrier, isSoilMat, waterChar, liquidChar, dripChar, lavaChar } from './fluid/index.mjs'
+import {
+	MAT, LIQ_DRAW, COND_DRAW, BUBBLE_MIN_CELLS,
+	isLiquidBarrier, isSoilMat, waterChar, liquidChar, dripChar, lavaChar,
+} from './fluid/index.mjs'
 import { sampleLight, RIPPLE_SPEED, RIPPLE_WIDTH, torchEase } from './gesture/light.mjs'
 import { ICON_W, ICON_BODY_H, PILLARS, BODY_DIST, maxBodyD } from './icon.mjs'
 
@@ -29,30 +32,31 @@ const LAVA_RGB = [
 	[255, 210, 70],
 	[255, 230, 100],
 ]
-const FG_LAVA = LAVA_RGB.map(([r, g, b]) => `\x1b[38;2;${r};${g};${b}m`)
 const FG_BUBBLE = '\x1b[38;2;40;20;15m'
 
-/** 各调色板条目的基准 RGB（真彩提亮目标）。 */
-const FG_RGB = {
-	[FG_AT]: [28, 28, 34],
-	[FG_COL]: [70, 235, 255],
-	[FG_SPLASH]: [0, 195, 210],
-	[FG_TERRAIN]: [105, 105, 115],
-	[FG_BUBBLE]: [40, 20, 15],
-}
-for (let i = 0; i < FG_LAVA.length; i++)
-	FG_RGB[FG_LAVA[i]] = LAVA_RGB[i]
+/** SGR 缓存键：null / 未知前景。 */
+const FG_ID_UNKNOWN = 4
 
-/** SGR 缓存键的调色板 id（null / 未知 → 4）。 */
-const FG_ID = new Map([
-	[FG_AT, 0],
-	[FG_COL, 1],
-	[FG_SPLASH, 2],
-	[FG_TERRAIN, 3],
-	[FG_BUBBLE, 5],
-])
-for (let i = 0; i < FG_LAVA.length; i++)
-	FG_ID.set(FG_LAVA[i], 6 + i)
+/** 调色板源表 [sgr, rgb, id]；id 4 保留给 null/未知。 */
+const FG_PALETTE = [
+	[FG_AT, [28, 28, 34], 0],
+	[FG_COL, [70, 235, 255], 1],
+	[FG_SPLASH, [0, 195, 210], 2],
+	[FG_TERRAIN, [105, 105, 115], 3],
+	[FG_BUBBLE, [40, 20, 15], 5],
+	...LAVA_RGB.map((rgb, i) => [`\x1b[38;2;${rgb[0]};${rgb[1]};${rgb[2]}m`, rgb, 6 + i]),
+]
+
+/** 各调色板条目的基准 RGB（真彩提亮目标）。 */
+const FG_RGB = /** @type {Record<string, number[]>} */ ({})
+/** SGR 缓存键的调色板 id。 */
+const FG_ID = new Map()
+for (const [sgr, rgb, id] of FG_PALETTE) {
+	FG_RGB[sgr] = rgb
+	FG_ID.set(sgr, id)
+}
+
+const FG_LAVA = FG_PALETTE.filter(([, , id]) => id >= 6).map(([sgr]) => sgr)
 
 /**
  * 温度 → 熔岩前景 SGR。
@@ -144,7 +148,7 @@ const litSgr = (f, lift, ambient) => {
 	const qLift = liftQ / (LIFT_Q - 1)
 	const ambQ = ambient <= 0 ? 0 : Math.min(AMBIENT_Q - 1, (ambient * (AMBIENT_Q - 1) + 0.5) | 0)
 	const qAmb = ambQ / (AMBIENT_Q - 1)
-	const fgId = f == null ? 4 : FG_ID.get(f) ?? 4
+	const fgId = f == null ? FG_ID_UNKNOWN : FG_ID.get(f) ?? FG_ID_UNKNOWN
 	const wantBg = f == null ? qLift >= 0.04 : qLift > 0.08
 	if (f == null && !wantBg) return null
 	const key = (ambQ << 12) | (fgId << 7) | (liftQ << 1) | (wantBg ? 1 : 0)
@@ -461,7 +465,7 @@ export const composeFrame = (state) => {
 			else {
 				const rid = regionId[wi]
 				const region = rid ? regions[rid] : null
-				const bubble = region && !region.openToAtm && region.airCells >= 2
+				const bubble = region && !region.openToAtm && region.airCells >= BUBBLE_MIN_CELLS
 					&& (
 						(wx > 0 && melt[vy * W + wx - 1] >= LIQ_DRAW)
 						|| (wx + 1 < W && melt[vy * W + wx + 1] >= LIQ_DRAW)

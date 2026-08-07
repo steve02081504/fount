@@ -4,12 +4,12 @@
  */
 
 import {
-	MAT, LIQ_DRAW, LIQ_FULL,
-	T_AMB, T_SOLIDUS, T_LIQUIDUS, T_BOIL, T_MAX,
+	MAT, LIQ_DRAW,
+	T_AMB, T_SOLIDUS, T_LIQUIDUS, T_BOIL,
 	SUBSTANCE, rhoOf, viscOf,
 	isSoilMat,
 } from './mat.mjs'
-import { scratch, markAirIfDrawCrossed, markAirIfMeltDrawCrossed, gravityUpWeights, inWorld } from './world.mjs'
+import { scratch, markAirIfDrawCrossed, markAirIfMeltDrawCrossed, gravityUpWeights, strongestUp, inWorld } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
 
@@ -62,23 +62,33 @@ export const stepThermal = (world) => {
 			}
 			let acc = temp[cell]
 			let w = 1
-			const neighbors = [
-				x > 0 ? cell - 1 : -1,
-				x + 1 < W ? cell + 1 : -1,
-				y > 0 ? cell - W : -1,
-				y + 1 < H ? cell + W : -1,
-			]
-			for (const ni of neighbors) {
-				if (ni < 0) continue
+			if (x > 0) {
+				const ni = cell - 1
 				const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
-				if (!nMass) continue
-				acc += temp[ni] * CONDUCT
-				w += CONDUCT
+				if (nMass) { acc += temp[ni] * CONDUCT; w += CONDUCT }
+			}
+			if (x + 1 < W) {
+				const ni = cell + 1
+				const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
+				if (nMass) { acc += temp[ni] * CONDUCT; w += CONDUCT }
+			}
+			if (y > 0) {
+				const ni = cell - W
+				const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
+				if (nMass) { acc += temp[ni] * CONDUCT; w += CONDUCT }
+			}
+			if (y + 1 < H) {
+				const ni = cell + W
+				const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
+				if (nMass) { acc += temp[ni] * CONDUCT; w += CONDUCT }
 			}
 			nextT[cell] = acc / w
 		}
 
-	for (let i = 0; i < n; i++) temp[i] = nextT[i]
+	temp.set(nextT)
+
+	const upW = gravityUpWeights(world)
+	const up = strongestUp(world)
 
 	// --- Flash water on melt; evaporate soil moisture ---
 	for (let y = 0; y < H; y++)
@@ -94,30 +104,32 @@ export const stepThermal = (world) => {
 				injectSteam(world, cell, flash)
 			}
 
-			if (isSoilMat(mat[cell]) && temp[cell] >= T_BOIL && moisture[cell] > 0) {
-				const take = Math.min(EVAP_RATE, moisture[cell], (temp[cell] - T_BOIL + 0.05) * 0.4)
-				if (take > 1e-8) {
-					moisture[cell] -= take
-					temp[cell] = Math.max(T_AMB, temp[cell] - take * LATENT_EVAP)
-					const up = gravityUpWeights(world)
-					let above = cell
-					if (up.n > 0) {
-						let best = 0
-						for (let k = 1; k < up.n; k++)
-							if (up.w[k] > up.w[best]) best = k
-						const ax = x + up.dx[best]
-						const ay = y + up.dy[best]
-						if (inWorld(world, ax, ay)) above = ay * W + ax
+			if (isSoilMat(mat[cell]) && temp[cell] >= T_BOIL) {
+				let latentLoss = 0
+				if (moisture[cell] > 0) {
+					const take = Math.min(EVAP_RATE, moisture[cell], (temp[cell] - T_BOIL + 0.05) * 0.4)
+					if (take > 1e-8) {
+						moisture[cell] -= take
+						latentLoss += take * LATENT_EVAP
+						let above = cell
+						if (up.w > 0) {
+							const ax = x + up.dx
+							const ay = y + up.dy
+							if (inWorld(world, ax, ay)) above = ay * W + ax
+						}
+						injectSteam(world, above, take)
 					}
-					injectSteam(world, above, take)
 				}
-			}
-
-			if (isSoilMat(mat[cell]) && temp[cell] >= T_BOIL && condense[cell] > 0) {
-				const take = Math.min(EVAP_RATE, condense[cell])
-				condense[cell] -= take
-				temp[cell] = Math.max(T_AMB, temp[cell] - take * LATENT_EVAP * 0.5)
-				injectSteam(world, cell, take)
+				if (condense[cell] > 0) {
+					const take = Math.min(EVAP_RATE, condense[cell])
+					if (take > 1e-8) {
+						condense[cell] -= take
+						latentLoss += take * LATENT_EVAP * 0.5
+						injectSteam(world, cell, take)
+					}
+				}
+				if (latentLoss > 0)
+					temp[cell] = Math.max(T_AMB, temp[cell] - latentLoss)
 			}
 		}
 
@@ -128,8 +140,7 @@ export const stepThermal = (world) => {
 
 			if (isSoilMat(mat[cell]) && moisture[cell] < 1e-6 && temp[cell] >= T_LIQUIDUS) {
 				const before = melt[cell]
-				melt[cell] = Math.min(LIQ_FULL, 1)
-				temp[cell] = Math.min(T_MAX, temp[cell])
+				melt[cell] = 1
 				mat[cell] = MAT.AIR
 				moisture[cell] = 0
 				condense[cell] = 0
@@ -151,17 +162,16 @@ export const stepThermal = (world) => {
 		}
 
 	// Horizon refresh: soil surface cells keep HORIZON when open above along −ĝ.
-	const up = gravityUpWeights(world)
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (mat[cell] !== MAT.SOLID && mat[cell] !== MAT.HORIZON) continue
-			let openAbove = up.n <= 0
+			let openAbove = upW.n <= 0
 			if (!openAbove) {
 				openAbove = true
-				for (let i = 0; i < up.n; i++) {
-					const ux = x + up.dx[i]
-					const uy = y + up.dy[i]
+				for (let i = 0; i < upW.n; i++) {
+					const ux = x + upW.dx[i]
+					const uy = y + upW.dy[i]
 					if (ux < 0 || uy < 0 || ux >= W || uy >= H) continue
 					const above = uy * W + ux
 					if (isSoilMat(world.mat[above]) || world.melt[above] >= LIQ_DRAW) {

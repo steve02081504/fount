@@ -2,13 +2,38 @@
  * 熔岩气泡：密闭气区在熔岩中沿 −ĝ 浮升，至自由面破裂。
  */
 
-import { LIQ_DRAW, BUBBLE_MIN_CELLS } from './mat.mjs'
+import { LIQ_DRAW, BUBBLE_MIN_CELLS, BUBBLE_MIN_MELT_CONTACT } from './mat.mjs'
 import { gravityUpWeights, gravityDownWeights, markAirIfMeltDrawCrossed } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
 
 /** 每 N tick 浮升一格。 */
 const BUBBLE_PERIOD = 3
+
+/**
+ * 气区格中沿给定重力轴投影的极值格。
+ * @param {number[]} cells 气区格索引
+ * @param {number} W 世界宽
+ * @param {{ n: number, dx: Int8Array, dy: Int8Array, w: Float32Array }} axis 重力轴权重
+ * @param {boolean} [max=true] true → 最大投影
+ * @returns {number} 极值格索引
+ */
+const extremeCell = (cells, W, axis, max = true) => {
+	let best = cells[0]
+	let bestScore = max ? -Infinity : Infinity
+	for (const cell of cells) {
+		const x = cell % W
+		const y = (cell / W) | 0
+		let score = 0
+		for (let i = 0; i < axis.n; i++)
+			score += axis.w[i] * (axis.dx[i] * x + axis.dy[i] * y)
+		if (max ? score > bestScore : score < bestScore) {
+			bestScore = score
+			best = cell
+		}
+	}
+	return best
+}
 
 /**
  * 推进熔岩内气泡。
@@ -29,15 +54,19 @@ export const stepBubbles = (world) => {
 	const upDx = up.dx[bestUp]
 	const upDy = up.dy[bestUp]
 
+	/** @type {(number[] | undefined)[]} */
+	const buckets = []
+	for (let i = 0; i < W * H; i++) {
+		const id = regionId[i]
+		if (!id) continue
+		;(buckets[id] ??= []).push(i)
+	}
+
 	for (let id = 1; id < regions.length; id++) {
 		const region = regions[id]
 		if (!region || region.openToAtm || region.airCells < BUBBLE_MIN_CELLS) continue
-
-		/** @type {number[]} */
-		const cells = []
-		for (let i = 0; i < W * H; i++)
-			if (regionId[i] === id) cells.push(i)
-		if (!cells.length) continue
+		const cells = buckets[id]
+		if (!cells?.length) continue
 
 		let meltNeighbors = 0
 		for (const cell of cells) {
@@ -50,44 +79,26 @@ export const stepBubbles = (world) => {
 				if (melt[ny * W + nx] >= LIQ_DRAW) meltNeighbors++
 			}
 		}
-		if (meltNeighbors < BUBBLE_MIN_CELLS) continue
+		if (meltNeighbors < BUBBLE_MIN_MELT_CONTACT) continue
 
-		let sumX = 0
-		let sumY = 0
-		for (const cell of cells) {
-			sumX += cell % W
-			sumY += (cell / W) | 0
-		}
-		const cx = (sumX / cells.length) | 0
-		const cy = (sumY / cells.length) | 0
-		const tx = cx + upDx
-		const ty = cy + upDy
+		const shallow = extremeCell(cells, W, up)
+		const tx = (shallow % W) + upDx
+		const ty = ((shallow / W) | 0) + upDy
 		if (tx < 0 || ty < 0 || tx >= W || ty >= H) continue
 		const target = ty * W + tx
 		if (melt[target] < LIQ_DRAW) continue
 
-		let deepest = cells[0]
-		let deepScore = -Infinity
-		for (const cell of cells) {
-			const x = cell % W
-			const y = (cell / W) | 0
-			let score = 0
-			for (let i = 0; i < down.n; i++)
-				score += down.w[i] * (down.dx[i] * x + down.dy[i] * y)
-			if (score > deepScore) {
-				deepScore = score
-				deepest = cell
-			}
-		}
+		const deepest = extremeCell(cells, W, down)
 		const mAmt = melt[target]
 		const mTemp = world.temp[target]
-		const beforeDeep = melt[deepest]
-		melt[target] = 0
-		world.temp[target] = 0
-		markAirIfMeltDrawCrossed(world, mAmt, 0)
+		const deepAmt = melt[deepest]
+		const deepTemp = world.temp[deepest]
+		melt[target] = deepAmt
+		world.temp[target] = deepTemp
+		markAirIfMeltDrawCrossed(world, mAmt, deepAmt)
 		melt[deepest] = mAmt
 		world.temp[deepest] = mTemp
-		markAirIfMeltDrawCrossed(world, beforeDeep, mAmt)
+		markAirIfMeltDrawCrossed(world, deepAmt, mAmt)
 		world.airDirty = true
 		world.gasGeomDirty = true
 	}

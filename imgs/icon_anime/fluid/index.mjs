@@ -21,8 +21,8 @@ export {
 	COND_DRAW, COND_DRIP, COND_MATTHEW_RATE, COND_MATTHEW_NOISE,
 	LIQ_DRAW, LIQ_FULL,
 	T_AMB, T_SOLIDUS, T_LIQUIDUS, T_BOIL, T_MAX,
-	RHO_ROCK, RHO_LAVA_HOT, VISC_SOLID, VISC_INERTIAL, BUBBLE_MIN_CELLS,
-	LAVA_ONSET_EXPOSURE, LAVA_ONSET_FRAMES,
+	RHO_ROCK, RHO_LAVA_HOT, VISC_SOLID, VISC_INERTIAL, BUBBLE_MIN_CELLS, BUBBLE_MIN_MELT_CONTACT,
+	LAVA_ONSET_EXPOSURE,
 	SUBSTANCE, rhoOf, viscOf, isViscSolid,
 	isSoilMat, isBlockMat, isLiquidBarrier, soilAbsorbFactor,
 } from './mat.mjs'
@@ -46,13 +46,13 @@ export {
 	floodClear, floodPush, markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
 	clearDynamics, clearMaterials, releaseNonSoilWater,
 	setMat, addMoisture, addLiquid, addMelt, totalGridWater, totalWorldWater, totalMelt,
-	gravityDepth, gravityDownStep, gravityDownWeights, gravityUpWeights, applyGravityToWorld,
+	gravityDepth, gravityDownWeights, gravityUpWeights, strongestUp, strongestDown, applyGravityToWorld,
 } from './world.mjs'
 
 /** 气相区域、压力与风速。 */
 export {
 	WIND_BASE, WIND_GUST, WIND_SHEAR_POWER, GAS_BLEND, GAS_NOZZLE, GAS_SPEED_MAX,
-	isAirCell, fillBlocked, labelAirRegions, pressureAt, globalWindAt, windProfileAt,
+	isAirCell, fillBlocked, labelAirRegions, pressureAt, globalWindAt, windShear,
 	gasVelocityAt, gasUxAt, dynamicPressure, staticPressureAt, stepGas, totalSealedGas,
 } from './gas.mjs'
 
@@ -62,13 +62,14 @@ export { stepSoil } from './soil.mjs'
 /** 热力与相变。 */
 export { stepThermal, cellRho, meltVisc } from './thermal.mjs'
 
-/** 边界角色。 */
+/** 分数边角色与邻格环绕。 */
 export {
-	boundaryAxes, wrapSide, neighborCoord, onDownEdge, onUpEdge,
-	edgeRoles, edgeDownness, edgeUpness,
+	neighborCoord, edgeRoles, edgeDownness, edgeUpness,
 	EDGE_TOP, EDGE_BOTTOM, EDGE_LEFT, EDGE_RIGHT,
-	regurgitateTemp, stepBoundary,
-} from './boundary.mjs'
+} from './edges.mjs'
+
+/** 边界曝露、岩浆与回吐。 */
+export { regurgitateTemp, stepBoundary } from './boundary.mjs'
 
 /** 气泡。 */
 export { stepBubbles } from './bubbles.mjs'
@@ -79,7 +80,7 @@ export { liquidPressureAt, stepLiquid } from './liquid.mjs'
 /** 粒子雨与风抬升。 */
 export {
 	GAS_DRAG, GAS_DRAG_Y, GAS_DRAG_Y_BOOST_FROM, GAS_DRAG_Y_BOOST_SPAN,
-	WIND_LIFT_UY, WIND_LIFT_RATE, WIND_LIFT_MAX, WIND_HOLD_LIFE, GRAVITY,
+	WIND_LIFT_UY, WIND_LIFT_RATE, WIND_LIFT_MAX, WIND_HOLD_LIFE,
 	verticalGasDrag, createParticlePool, clearParticlePool, totalParticleWater,
 	spawnParticle, queueSplash, depositParticleMass, stepParticles, liftLiquidByWind,
 } from './particles.mjs'

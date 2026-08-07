@@ -7,7 +7,7 @@
 
 import { neighborCoord } from './edges.mjs'
 import { MAT, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
-import { markAirIfDrawCrossed, gravityUpWeights, inWorld } from './world.mjs'
+import { markAirIfDrawCrossed, strongestUp, inWorld } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
  * @typedef {{
@@ -37,8 +37,8 @@ export const WIND_HOLD_LIFE = 36
 
 const MAX_SPEED = 1.15
 const PARTICLE_CAP = 1200
-/** 兼容旧名：默认粒子重力模长。 */
-export const GRAVITY = 0.12
+/** 默认粒子重力模长（兼容旧测试/外部引用）。 */
+export const PARTICLE_GRAVITY = 0.12
 
 /**
  * 分配空粒子 SoA 池。
@@ -280,9 +280,8 @@ export const stepParticles = (world, onHit, state) => {
 		if (ny < 0 || ny >= H) {
 			const nb = neighborCoord(world, px | 0, py | 0, 0, ny < 0 ? -1 : 1, (life | 0) + i + 17)
 			if (nb.wrapped) ny = nb.y + (ny - Math.floor(ny))
-			else if (nb.out && ny >= H) 
+			else if (nb.out)
 				continue
-			
 		}
 
 		if (nx < 0 || nx >= W || ny >= H)
@@ -337,12 +336,11 @@ export const stepParticles = (world, onHit, state) => {
  */
 export const liftLiquidByWind = (world) => {
 	// After stepGas: skip full-grid scoop when no cell has strong updraft against ĝ.
-	const up = world.maxUpdraft
-	if (up === up && up > WIND_LIFT_UY) return 0
+	if (Number.isFinite(world.maxUpdraft) && world.maxUpdraft > WIND_LIFT_UY) return 0
 
 	const { worldW: W, worldH: H, mat, liq, gasUx, gasUy, particles, gravity } = world
 	let lifted = 0
-	const upW = gravityUpWeights(world)
+	const upW = strongestUp(world)
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
@@ -353,12 +351,9 @@ export const liftLiquidByWind = (world) => {
 			let guy = gasUy[i]
 			let spawnX = x + 0.5
 			let spawnY = y - 0.15
-			if (upW.n > 0) {
-				let best = 0
-				for (let k = 1; k < upW.n; k++)
-					if (upW.w[k] > upW.w[best]) best = k
-				const ax = x + upW.dx[best]
-				const ay = y + upW.dy[best]
+			if (upW.w > 0) {
+				const ax = x + upW.dx
+				const ay = y + upW.dy
 				if (inWorld(world, ax, ay) && mat[ay * W + ax] === MAT.AIR && liq[ay * W + ax] < LIQ_DRAW) {
 					gux = gasUx[ay * W + ax]
 					guy = gasUy[ay * W + ax]

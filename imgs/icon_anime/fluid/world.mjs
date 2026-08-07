@@ -4,7 +4,7 @@
 
 import { defaultGravity } from '../gravity.mjs'
 
-import { MAT, SOIL_CAP, LIQ_FULL, LIQ_DRAW, T_AMB, isSoilMat, isLiquidBarrier } from './mat.mjs'
+import { MAT, SOIL_CAP, LIQ_FULL, LIQ_DRAW, isSoilMat, isLiquidBarrier } from './mat.mjs'
 import { createParticlePool, clearParticlePool, totalParticleWater } from './particles.mjs'
 
 /** @typedef {import('../gravity.mjs').GravityState} GravityState */
@@ -29,7 +29,7 @@ import { createParticlePool, clearParticlePool, totalParticleWater } from './par
  *   gravityDepth0: number,
  *   gravityDepthSpan: number,
  *   boundary: {
- *     absorbedUnits: number, absorbedHeat: number, lastTemp: number,
+ *     absorbedUnits: number, absorbedHeat: number,
  *     regurgitating: boolean, regurgitatedUnits: number, regurgitatedHeat: number,
  *     regurgitatePhase: number,
  *     exposure: Float32Array,
@@ -82,20 +82,45 @@ const recomputeGravityDepthBasis = (world) => {
 	const { gx, gy } = world.gravity
 	const W = world.worldW
 	const H = world.worldH
-	const corners = [
-		0 * gx + 0 * gy,
-		(W - 1) * gx + 0 * gy,
-		0 * gx + (H - 1) * gy,
-		(W - 1) * gx + (H - 1) * gy,
-	]
-	let min = corners[0]
-	let max = corners[0]
-	for (let i = 1; i < 4; i++) {
-		if (corners[i] < min) min = corners[i]
-		if (corners[i] > max) max = corners[i]
-	}
-	world.gravityDepth0 = min
-	world.gravityDepthSpan = Math.max(1e-6, max - min)
+	const d0 = 0
+	const d1 = (W - 1) * gx
+	const d2 = (H - 1) * gy
+	const d3 = d1 + d2
+	world.gravityDepth0 = Math.min(d0, d1, d2, d3)
+	world.gravityDepthSpan = Math.max(1e-6, Math.max(d0, d1, d2, d3) - world.gravityDepth0)
+}
+
+/**
+ * 分配边界状态块。
+ * @returns {FluidWorld['boundary']} 边界
+ */
+const createBoundary = () => ({
+	absorbedUnits: 0,
+	absorbedHeat: 0,
+	regurgitating: false,
+	regurgitatedUnits: 0,
+	regurgitatedHeat: 0,
+	regurgitatePhase: 0,
+	exposure: new Float32Array(4),
+	absorbGx: 0,
+	absorbGy: 1,
+})
+
+/**
+ * 重置边界动力学（保留 exposure 缓冲）。
+ * @param {FluidWorld['boundary']} boundary 边界
+ * @returns {void}
+ */
+const resetBoundary = (boundary) => {
+	boundary.absorbedUnits = 0
+	boundary.absorbedHeat = 0
+	boundary.regurgitating = false
+	boundary.regurgitatedUnits = 0
+	boundary.regurgitatedHeat = 0
+	boundary.regurgitatePhase = 0
+	boundary.exposure.fill(0)
+	boundary.absorbGx = 0
+	boundary.absorbGy = 1
 }
 
 /**
@@ -134,18 +159,7 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 		gravity: defaultGravity(),
 		gravityDepth0: 0,
 		gravityDepthSpan: Math.max(worldW, worldH),
-		boundary: {
-			absorbedUnits: 0,
-			absorbedHeat: 0,
-			lastTemp: T_AMB,
-			regurgitating: false,
-			regurgitatedUnits: 0,
-			regurgitatedHeat: 0,
-			regurgitatePhase: 0,
-			exposure: new Float32Array(4),
-			absorbGx: 0,
-			absorbGy: 1,
-		},
+		boundary: createBoundary(),
 		scratch: {},
 		floodQ: [],
 	}
@@ -253,16 +267,7 @@ export const clearDynamics = (world) => {
 	world.airDirty = true
 	world.gasGeomDirty = true
 	world.maxUpdraft = NaN
-	world.boundary.absorbedUnits = 0
-	world.boundary.absorbedHeat = 0
-	world.boundary.lastTemp = T_AMB
-	world.boundary.regurgitating = false
-	world.boundary.regurgitatedUnits = 0
-	world.boundary.regurgitatedHeat = 0
-	world.boundary.regurgitatePhase = 0
-	world.boundary.exposure.fill(0)
-	world.boundary.absorbGx = 0
-	world.boundary.absorbGy = 1
+	resetBoundary(world.boundary)
 }
 
 /**
@@ -429,10 +434,9 @@ export const addLiquid = (world, x, y, amt) => {
 export const addMelt = (world, x, y, amt, temp) => {
 	if (amt <= 0) return 0
 	const i = y * world.worldW + x
-	if (isLiquidBarrier(world.mat[i]) && world.mat[i] !== MAT.AIR) 
-		// Soil barriers melt via thermal — do not overwrite POOL/BODY/SEAL.
-		if (world.mat[i] !== MAT.SOLID && world.mat[i] !== MAT.HORIZON) return 0
-	
+	const m = world.mat[i]
+	if (m !== MAT.AIR && m !== MAT.SOLID && m !== MAT.HORIZON) return 0
+
 	const before = world.melt[i]
 	const room = LIQ_FULL - before
 	const take = Math.min(amt, room)
@@ -477,18 +481,52 @@ export const gravityDownWeights = (world) => fillGravityWeights(world, DOWN_W, 1
  */
 export const gravityUpWeights = (world) => fillGravityWeights(world, UP_W, -1)
 
+/** 复用的最强上/下邻格（勿长期持有；勿同时保留 up/down 引用）。 */
+const STRONG_UP = { dx: 0, dy: 0, w: 0 }
+const STRONG_DOWN = { dx: 0, dy: 0, w: 0 }
+
 /**
- * 兼容旧调用：取最强下向邻格偏移（默认重力 → {0,1}）。
+ * 最强上向邻格方向与权重。
  * @param {FluidWorld} world 世界
- * @returns {{ dx: number, dy: number }} 偏移
+ * @returns {{ dx: number, dy: number, w: number }} 最强上向
  */
-export const gravityDownStep = (world) => {
+export const strongestUp = (world) => {
+	const up = gravityUpWeights(world)
+	if (up.n <= 0) {
+		STRONG_UP.dx = 0
+		STRONG_UP.dy = 0
+		STRONG_UP.w = 0
+		return STRONG_UP
+	}
+	let best = 0
+	for (let i = 1; i < up.n; i++)
+		if (up.w[i] > up.w[best]) best = i
+	STRONG_UP.dx = up.dx[best]
+	STRONG_UP.dy = up.dy[best]
+	STRONG_UP.w = up.w[best]
+	return STRONG_UP
+}
+
+/**
+ * 最强下向邻格方向与权重。
+ * @param {FluidWorld} world 世界
+ * @returns {{ dx: number, dy: number, w: number }} 最强下向
+ */
+export const strongestDown = (world) => {
 	const down = gravityDownWeights(world)
-	if (down.n <= 0) return { dx: 0, dy: 1 }
+	if (down.n <= 0) {
+		STRONG_DOWN.dx = 0
+		STRONG_DOWN.dy = 0
+		STRONG_DOWN.w = 0
+		return STRONG_DOWN
+	}
 	let best = 0
 	for (let i = 1; i < down.n; i++)
 		if (down.w[i] > down.w[best]) best = i
-	return { dx: down.dx[best], dy: down.dy[best] }
+	STRONG_DOWN.dx = down.dx[best]
+	STRONG_DOWN.dy = down.dy[best]
+	STRONG_DOWN.w = down.w[best]
+	return STRONG_DOWN
 }
 
 /**

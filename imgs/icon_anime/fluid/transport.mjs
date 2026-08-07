@@ -4,12 +4,12 @@
  */
 
 import { neighborCoord } from './edges.mjs'
-import { pressureMove, sheetMove, applyTransfer } from './flow.mjs'
+import { pressureMove, sheetMove, applyTransfer, viscGain } from './flow.mjs'
 import { pressureAt } from './gas.mjs'
-import { MAT, RHO_G, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
+import { MAT, LIQ_DRAW, LIQ_FULL, T_AMB, isLiquidBarrier } from './mat.mjs'
 import {
 	scratch, inWorld, markAirIfDrawCrossed,
-	gravityDownWeights,
+	gravityDownWeights, strongestDown,
 } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
@@ -20,8 +20,10 @@ import {
  *   vx: Float32Array,
  *   vy: Float32Array,
  *   viscAt: (world: FluidWorld, cell: number) => number,
+ *   rhoAt: (world: FluidWorld, cell: number) => number,
  *   canEnter: (world: FluidWorld, x: number, y: number, cell: number) => boolean,
  *   onTransfer?: (world: FluidWorld, src: number, dst: number, moved: number, beforeSrc: number, beforeDst: number) => void,
+ *   onBarrier?: (world: FluidWorld, cell: number, before: number) => void,
  *   markDirty?: (world: FluidWorld, before: number, after: number) => void,
  *   flowScratchX: string,
  *   flowScratchY: string,
@@ -60,6 +62,73 @@ export const meltCanEnter = (world, _x, _y, cell) => {
 }
 
 /**
+ * 按 neighborCoord 分数合约转移质量（含环绕与出界汇）。
+ * @param {FluidWorld} world 世界
+ * @param {PhaseDesc} phase 相描述
+ * @param {Float32Array} flowX 水平流
+ * @param {Float32Array} flowY 垂直流
+ * @param {number} W 宽
+ * @param {number} cell 源索引
+ * @param {number} x 源列
+ * @param {number} y 源行
+ * @param {number} dx 方向列偏移
+ * @param {number} dy 方向行偏移
+ * @param {number} move 待移质量
+ * @param {(world: FluidWorld, before: number, after: number) => void} mark 脏标记
+ * @returns {void}
+ */
+const transferNeighbor = (world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, mark) => {
+	if (move <= 1e-8) return
+	const mass = phase.mass
+	const nb = neighborCoord(world, x, y, dx, dy)
+	const crossed = nb.wrappedFrac > 0 || nb.outFrac > 0
+
+	/**
+	 * 向格内目标转移。
+	 * @param {number} tx 目标列
+	 * @param {number} ty 目标行
+	 * @param {number} amount 质量
+	 * @returns {void}
+	 */
+	const toCell = (tx, ty, amount) => {
+		if (amount <= 1e-8) return
+		const target = ty * W + tx
+		if (!phase.canEnter(world, tx, ty, target)) return
+		const room = LIQ_FULL - mass[target]
+		if (room <= 0) return
+		const before = mass[cell]
+		const beforeT = mass[target]
+		const moved = applyTransfer(mass, flowX, flowY, cell, target, tx - x, ty - y, Math.min(amount, room))
+		if (moved > 0) {
+			phase.onTransfer?.(world, cell, target, moved, before, beforeT)
+			mark(world, before, mass[cell])
+			mark(world, beforeT, mass[target])
+		}
+	}
+
+	/**
+	 * 出界汇：质量离开网格。
+	 * @param {number} amount 质量
+	 * @returns {void}
+	 */
+	const sink = (amount) => {
+		if (amount <= 1e-8) return
+		const before = mass[cell]
+		mass[cell] -= amount
+		flowX[cell] += dx * amount
+		flowY[cell] += dy * amount
+		mark(world, before, mass[cell])
+	}
+
+	if (!crossed) {
+		toCell(nb.x, nb.y, move)
+		return
+	}
+	if (nb.wrappedFrac > 0) toCell(nb.x, nb.y, move * nb.wrappedFrac)
+	if (nb.outFrac > 0) sink(move * nb.outFrac)
+}
+
+/**
  * 推进一凝聚相：沿重力加权沉降 + 垂直方向侧向液膜。
  * @param {FluidWorld} world 世界
  * @param {PhaseDesc} phase 相描述
@@ -74,6 +143,7 @@ export const stepPhaseTransport = (world, phase) => {
 	flowX.fill(0)
 	flowY.fill(0)
 	const down = gravityDownWeights(world)
+	const strongDown = strongestDown(world)
 	const mark = phase.markDirty ?? markAirIfDrawCrossed
 
 	// --- Settle along gravity-weighted down neighbors ---
@@ -82,55 +152,56 @@ export const stepPhaseTransport = (world, phase) => {
 			const cell = y * W + x
 			if (mass[cell] <= 0.02) continue
 			if (isLiquidBarrier(world.mat[cell]) && world.mat[cell] !== MAT.AIR) {
-				if (phase.mass === world.liq) {
-					const before = mass[cell]
-					mass[cell] = 0
-					mark(world, before, 0)
-				}
+				const before = mass[cell]
+				phase.onBarrier?.(world, cell, before)
 				continue
 			}
 			const visc = phase.viscAt(world, cell)
-			const pSrc = pressureAt(world, x, y) + RHO_G * mass[cell]
+			const rhoSrc = phase.rhoAt(world, cell)
+			const pSrc = pressureAt(world, x, y) + rhoSrc * mass[cell]
 
 			for (let i = 0; i < down.n; i++) {
 				const dx = down.dx[i]
 				const dy = down.dy[i]
 				const w = down.w[i]
 				const nb = neighborCoord(world, x, y, dx, dy)
-				if (nb.out) continue
-				const tx = nb.x
-				const ty = nb.y
-				if (!phase.canEnter(world, tx, ty, ty * W + tx)) continue
-				const target = ty * W + tx
-				const room = LIQ_FULL - mass[target]
-				if (room <= 0) continue
-				const pDst = pressureAt(world, tx, ty) + RHO_G * mass[target]
-				let move = pressureMove(pSrc, pDst, mass[cell] * w, room, visc)
-				if (move < 0.01 && mass[target] < mass[cell])
-					move = Math.min(mass[cell] * 0.5 * w, room, (mass[cell] - mass[target]) * 0.5 * w) * (1 - Math.min(1, visc))
-				if (move <= 0.01) continue
-				const before = mass[cell]
-				const beforeT = mass[target]
-				const moved = applyTransfer(mass, flowX, flowY, cell, target, tx - x, ty - y, move)
-				if (moved > 0) {
-					phase.onTransfer?.(world, cell, target, moved, before, beforeT)
-					mark(world, before, mass[cell])
-					mark(world, beforeT, mass[target])
+				const crossed = nb.wrappedFrac > 0 || nb.outFrac > 0
+				const target = nb.y * W + nb.x
+				let dstMass = 0
+				let room = LIQ_FULL
+				if (!crossed) {
+					if (!phase.canEnter(world, nb.x, nb.y, target)) continue
+					dstMass = mass[target]
+					room = LIQ_FULL - dstMass
+					if (room <= 0) continue
 				}
+				else if (nb.wrappedFrac > 0 && phase.canEnter(world, nb.x, nb.y, target)) {
+					dstMass = mass[target]
+					room = LIQ_FULL - dstMass
+				}
+				else if (nb.outFrac <= 0) continue
+
+				const rhoDst = phase.rhoAt(world, target)
+				const pDst = pressureAt(world, nb.x, nb.y) + rhoDst * dstMass
+				let move = pressureMove(pSrc, pDst, mass[cell] * w, room, visc)
+				if (move < 0.01 && !crossed && dstMass < mass[cell]) {
+					const gain = viscGain(visc)
+					if (gain > 0)
+						move = Math.min(mass[cell] * 0.5 * w, room, (mass[cell] - dstMass) * 0.5 * w) * gain
+				}
+				if (move <= 0.01 && crossed && nb.outFrac > 0)
+					move = mass[cell] * w
+				if (move <= 0.01) continue
+				transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, mark)
 			}
 		}
 
 	// --- Side sheet perpendicular to strongest down ---
 	let sideA = { dx: -1, dy: 0 }
 	let sideB = { dx: 1, dy: 0 }
-	if (down.n > 0) {
-		let best = 0
-		for (let i = 1; i < down.n; i++)
-			if (down.w[i] > down.w[best]) best = i
-		if (down.dx[best] !== 0) {
-			sideA = { dx: 0, dy: -1 }
-			sideB = { dx: 0, dy: 1 }
-		}
+	if (strongDown.w > 0 && strongDown.dx !== 0) {
+		sideA = { dx: 0, dy: -1 }
+		sideB = { dx: 0, dy: 1 }
 	}
 
 	for (let y = 0; y < H; y++)
@@ -140,19 +211,19 @@ export const stepPhaseTransport = (world, phase) => {
 			const visc = phase.viscAt(world, cell)
 			for (const side of [sideA, sideB]) {
 				const nb = neighborCoord(world, x, y, side.dx, side.dy)
-				if (nb.out) continue
-				const target = nb.y * W + nb.x
-				if (!phase.canEnter(world, nb.x, nb.y, target)) continue
-				const room = LIQ_FULL - mass[target]
-				const move = sheetMove(mass[cell], mass[target], room, visc)
-				if (move <= 0) continue
-				const before = mass[cell]
-				const beforeT = mass[target]
-				const moved = applyTransfer(mass, flowX, flowY, cell, target, nb.x - x, nb.y - y, move)
-				if (moved > 0) {
-					phase.onTransfer?.(world, cell, target, moved, before, beforeT)
-					mark(world, before, mass[cell])
-					mark(world, beforeT, mass[target])
+				const crossed = nb.wrappedFrac > 0 || nb.outFrac > 0
+				if (!crossed) {
+					const target = nb.y * W + nb.x
+					if (!phase.canEnter(world, nb.x, nb.y, target)) continue
+					const room = LIQ_FULL - mass[target]
+					const move = sheetMove(mass[cell], mass[target], room, visc)
+					if (move <= 0) continue
+					transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, side.dx, side.dy, move, mark)
+				}
+				else {
+					const move = sheetMove(mass[cell], 0, LIQ_FULL, visc)
+					if (move <= 0) continue
+					transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, side.dx, side.dy, move, mark)
 				}
 			}
 		}
@@ -187,5 +258,5 @@ export const meltTempOnTransfer = (world, src, dst, moved, beforeSrc, _beforeDst
 	world.temp[dst] = prevMass > 0
 		? (world.temp[dst] * prevMass + heat) / destMass
 		: tSrc
-	if (world.melt[src] <= 1e-8) world.temp[src] = 0
+	if (world.melt[src] <= 1e-8) world.temp[src] = T_AMB
 }

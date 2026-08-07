@@ -48,7 +48,8 @@ const takeStats = (pool, id) => {
  * @returns {{
  *   components: (ComponentStats | undefined)[],
  *   nextId: number,
- * }} 分量表与下一可用 id
+ *   seedComponentId: number,
+ * }} 分量表、下一可用 id、边界播种分量 id（0 = 无）
  */
 export const labelComponents = (world, opts) => {
 	const { worldW: W, worldH: H } = world
@@ -60,6 +61,7 @@ export const labelComponents = (world, opts) => {
 	/** @type {(ComponentStats | undefined)[]} */
 	const components = []
 	let next = opts.startId ?? 1
+	let seedComponentId = 0
 
 	/**
 	 * 若仍为未标注且可接受，播种入该分量。
@@ -95,6 +97,22 @@ export const labelComponents = (world, opts) => {
 	}
 
 	/**
+	 * 完成分量：深度均值、登记非空、空统计回池。
+	 * @param {number} id 分量 id
+	 * @param {ComponentStats} stats 统计
+	 * @returns {ComponentStats | null} 非空分量，或 null
+	 */
+	const finish = (id, stats) => {
+		stats.depthMean = stats.cells > 0 ? stats.sumDepth / stats.cells : 0
+		if (stats.cells > 0) {
+			components[id] = stats
+			return stats
+		}
+		pool.push(stats)
+		return null
+	}
+
+	/**
 	 * 从单点启动一个新分量。
 	 * @param {number} x 列
 	 * @param {number} y 行
@@ -108,9 +126,7 @@ export const labelComponents = (world, opts) => {
 		floodClear(world)
 		seed(x, y, id, stats)
 		flood(id, stats)
-		stats.depthMean = stats.cells > 0 ? stats.sumDepth / stats.cells : 0
-		components[id] = stats
-		return stats
+		return finish(id, stats)
 	}
 
 	if (opts.seedCells?.length) {
@@ -120,16 +136,14 @@ export const labelComponents = (world, opts) => {
 		for (const { x, y } of opts.seedCells)
 			seed(x, y, id, stats)
 		flood(id, stats)
-		stats.depthMean = stats.cells > 0 ? stats.sumDepth / stats.cells : 0
-		if (stats.cells > 0) components[id] = stats
-		else pool.push(stats)
+		if (finish(id, stats)) seedComponentId = id
 	}
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++)
 			startAt(x, y)
 
-	return { components, nextId: next }
+	return { components, nextId: next, seedComponentId }
 }
 
 /**

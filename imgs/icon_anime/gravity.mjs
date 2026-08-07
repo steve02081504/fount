@@ -64,13 +64,17 @@ export const mapSensorToScreen = (ax, ay, az) => {
  */
 const valuesFromSensorJson = (data) => {
 	if (!data || typeof data !== 'object') return null
-	const obj = /** @type {Record<string, unknown>} */ data
+	const obj = /** @type {Record<string, unknown>} */ (data)
 	for (const key of Object.keys(obj)) {
 		const entry = obj[key]
 		if (!entry || typeof entry !== 'object') continue
-		const values = /** @type {{ values?: unknown }} */ entry.values
-		if (Array.isArray(values) && values.length >= 3)
-			return [+values[0], +values[1], +values[2]]
+		const values = (/** @type {{ values?: unknown }} */ (entry)).values
+		if (!Array.isArray(values) || values.length < 3) continue
+		const x = +values[0]
+		const y = +values[1]
+		const z = +values[2]
+		if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z))
+			return [x, y, z]
 	}
 	return null
 }
@@ -128,43 +132,57 @@ const applySample = (ax, ay, az) => {
 }
 
 /**
- * 处理 stdout 缓冲中的 JSON 块。
+ * 解析单条 termux-sensor JSON 并写入 rawTarget。
+ * @param {string} chunk JSON 文本
+ * @returns {void}
+ */
+const emitSensorJson = (chunk) => {
+	try {
+		const vals = valuesFromSensorJson(JSON.parse(chunk))
+		if (vals) applySample(vals[0], vals[1], vals[2])
+	}
+	catch { /* malformed record */ }
+}
+
+/**
+ * 处理 stdout 缓冲：先按行（NDJSON），再对残余缓冲尝试完整 JSON 对象。
+ * termux-sensor 连续模式为对象流，可能带换行也可能粘连。
  * @returns {void}
  */
 const drainStdout = () => {
-	let start = 0
-	while (start < stdoutBuf.length) {
-		const open = stdoutBuf.indexOf('{', start)
+	let lineEnd
+	while ((lineEnd = stdoutBuf.indexOf('\n')) >= 0) {
+		const line = stdoutBuf.slice(0, lineEnd).trim()
+		stdoutBuf = stdoutBuf.slice(lineEnd + 1)
+		if (line) emitSensorJson(line)
+	}
+
+	let i = 0
+	while (i < stdoutBuf.length) {
+		const open = stdoutBuf.indexOf('{', i)
 		if (open < 0) {
-			stdoutBuf = ''
+			stdoutBuf = stdoutBuf.slice(i)
 			return
 		}
-		let depth = 0
-		let end = -1
-		for (let i = open; i < stdoutBuf.length; i++) {
-			const c = stdoutBuf[i]
-			if (c === '{') depth++
-			else if (c === '}') {
-				depth--
-				if (depth === 0) {
-					end = i + 1
-					break
-				}
+		let parsed = false
+		for (let end = open + 2; end <= stdoutBuf.length; end++) {
+			if (stdoutBuf[end - 1] !== '}') continue
+			const chunk = stdoutBuf.slice(open, end)
+			try {
+				JSON.parse(chunk)
+				emitSensorJson(chunk)
+				i = end
+				parsed = true
+				break
 			}
+			catch { /* incomplete or nested — try longer slice */ }
 		}
-		if (end < 0) {
+		if (!parsed) {
 			stdoutBuf = stdoutBuf.slice(open)
 			return
 		}
-		const chunk = stdoutBuf.slice(open, end)
-		start = end
-		try {
-			const vals = valuesFromSensorJson(JSON.parse(chunk))
-			if (vals) applySample(vals[0], vals[1], vals[2])
-		}
-		catch { /* incomplete / garbage */ }
 	}
-	stdoutBuf = stdoutBuf.slice(start)
+	stdoutBuf = stdoutBuf.slice(i)
 }
 
 /**
@@ -192,7 +210,7 @@ const spawnSensor = (name) => {
 	})
 	child.on('exit', (code) => {
 		child = null
-		if (code && code !== 0 && sensorIndex + 1 < SENSOR_NAMES.length) {
+		if (code !== 0 && sensorIndex + 1 < SENSOR_NAMES.length) {
 			sensorIndex++
 			spawnSensor(SENSOR_NAMES[sensorIndex])
 		}
