@@ -105,27 +105,28 @@ Deno.test('exit: ends when icon gone without draining rain wait', () => {
 	assert(frames < 90 + maxBodyD + maxPillarH * 2 + (ICON_BASE_X1 - ICON_BASE_X0))
 })
 
-Deno.test('lava: solidify bakes into terrain surface/outline (not orphan land)', () => {
+Deno.test('lava: solidify is land (same occupancy buffer as terrain)', () => {
 	const state = createAnimState({ width: 60, height: 30, seed: 17 })
 	for (const _ of enter(state));
 	const spot = airAboveLandAwayFromIcon(state)
 	const { world, terrain, width, height } = state
+	assertEquals(terrain.solid, world.land)
 	addMelt(world, spot.x, spot.y, 1, T_SOLIDUS - 0.05)
-	assertEquals(terrain.solid[spot.cell], 0)
+	assertEquals(world.land[spot.cell], 0)
 
 	const gen = hold(state)
 	const frame = gen.next().value
 	gen.return?.()
 
 	assertEquals(isSoilMat(world.mat[spot.cell]), true)
-	assertEquals(terrain.solid[spot.cell], 1)
+	assertEquals(world.land[spot.cell], 1)
 	assertEquals(terrain.surface[spot.x], spot.y)
 	assertEquals(world.melt[spot.cell] < LIQ_DRAW, true)
 
 	const lines = plainLines(frame, width, height)
 	const vx = spot.x - world.ox
 	const glyph = lines[spot.y][vx]
-	assertEquals(glyph === ' ', false, `solidified land should draw, got ${JSON.stringify(glyph)}`)
+	assertEquals(glyph === ' ', false, `land should draw, got ${JSON.stringify(glyph)}`)
 })
 
 Deno.test('exit: keeps solidified land and beads until final blank', () => {
@@ -138,7 +139,7 @@ Deno.test('exit: keeps solidified land and beads until final blank', () => {
 	gen.next()
 	gen.return?.()
 
-	assertEquals(terrain.solid[spot.cell], 1)
+	assertEquals(world.land[spot.cell], 1)
 	addMoisture(world, spot.x, spot.y, 0.55)
 	world.condense[spot.cell] = 0.45
 	const dripY = spot.y + 1
@@ -153,10 +154,9 @@ Deno.test('exit: keeps solidified land and beads until final blank', () => {
 	let frames = 0
 	for (const frame of exit(state)) {
 		frames++
-		// 退场冻结流体：凝固土地与水珠应原样保留到清屏前
 		if (state.baseBot > 0 || state.pillars > 0 || state.bodyReach >= 0) {
-			assertEquals(terrain.solid[spot.cell], 1, `land solid lost at frame ${frames}`)
-			assertEquals(isSoilMat(world.mat[spot.cell]), true, `land mat lost at frame ${frames}`)
+			assertEquals(world.land[spot.cell], 1, `land lost at frame ${frames}`)
+			assertEquals(isSoilMat(world.mat[spot.cell]), true, `soil mat lost at frame ${frames}`)
 			assertEquals(
 				world.moisture[spot.cell] + world.condense[spot.cell],
 				water0,

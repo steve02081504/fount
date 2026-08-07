@@ -131,7 +131,7 @@ Deno.test('terrain: outlineChar marks cave walls; interior solid is null', () =>
 	assertEquals(outlineChar(solid, 1, 3, width, 5, surface), TERRAIN_CH.WALL)
 })
 
-Deno.test('terrain: refreshTerrainGeometry raises surface and outlines new crust', () => {
+Deno.test('terrain: refreshTerrainGeometry follows land occupancy', () => {
 	const { terrain } = makeTerrain(7, 40, 24)
 	const { solid, surface, worldW: W, worldH: H } = terrain
 	const x = Math.min(W - 2, terrain.footX0 - 4)

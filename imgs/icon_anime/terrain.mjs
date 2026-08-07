@@ -3,7 +3,7 @@
  * 地表锚定在图标基座（两端落地），向外行走并约束坡度/平台/悬崖；
  * 地下用噪声空腔、元胞自动机清理及注入连通模板（U 形管、颈口）。
  *
- * `solid` 为扁平 Uint8Array，索引 `y * W + x`（与流体网格同布局）。
+ * 土地占位写入 `world.land`（`terrain.solid` 同缓冲），索引 `y * W + x`。
  */
 
 import { hash01, fbm2, ORTHO_DX, ORTHO_DY } from './hash.mjs'
@@ -34,6 +34,8 @@ export const TERRAIN_CH = {
  *   ox: number,
  *   baseY: number,
  * }} TerrainData
+ *
+ * `solid` ≡ 对应世界的 `land`——占位只有这一份；`surface`/`outline` 由其派生。
  *
  * @typedef {{
  *   type: 'u_tube' | 'chamber' | 'neck',
@@ -109,7 +111,8 @@ export function generateTerrain(world, {
 		footX0, footX1, viewH, viewW, ox, H,
 	})
 
-	const solid = new Uint8Array(W * H)
+	const solid = world.land
+	solid.fill(0)
 	for (let x = 0; x < W; x++) {
 		const top = surface[x]
 		for (let y = top; y < H; y++)
@@ -151,7 +154,8 @@ export function resizeTerrain(previous, world, opts) {
 	const dx = footX0 - previous.footX0
 	const dy = baseY - previous.baseY
 	const surface = new Int16Array(W)
-	const solid = new Uint8Array(W * H)
+	const solid = world.land
+	solid.fill(0)
 	const addedSolid = new Uint8Array(W * H)
 	const minY = Math.max(2, iconOy + 12)
 	const maxY = H - 3
@@ -706,7 +710,7 @@ function buildOutline(solid, surface, W, H) {
 }
 
 /**
- * 由 `solid` 重算每列地表行、地表字符与轮廓（熔岩凝固 / 土壤熔化后调用）。
+ * 由土地占位 `solid`（即 `world.land`）重算地表行、地表字符与轮廓。
  * 空列 `surface = H`（界外哨兵，不绘制地表）。
  * @param {TerrainData} terrain 地形（原地更新）
  * @returns {void}

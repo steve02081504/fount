@@ -142,6 +142,7 @@ export const stepThermal = (world) => {
 				const before = melt[cell]
 				melt[cell] = 1
 				mat[cell] = MAT.AIR
+				world.land[cell] = 0
 				moisture[cell] = 0
 				condense[cell] = 0
 				world.airDirty = true
@@ -156,6 +157,7 @@ export const stepThermal = (world) => {
 				melt[cell] = 0
 				markAirIfMeltDrawCrossed(world, amount, 0)
 				mat[cell] = MAT.SOLID
+				world.land[cell] = 1
 				moisture[cell] = 0
 				world.airDirty = true
 				world.gasGeomDirty = true

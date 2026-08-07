@@ -8,7 +8,6 @@ import {
 	spawnParticle, queueSplash, stepFluid, labelAirRegions, stepLiquid, stepThermal,
 	windShear, globalWindAt, idx, inWorld, isLiquidBarrier, releaseNonSoilWater,
 	soilAbsorbFactor, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, scratch, applyGravityToWorld, T_AMB,
-	isSoilMat,
 } from './fluid/index.mjs'
 import { createLightGesture, tickLightGesture } from './gesture/light.mjs'
 import { createWindGesture, tickWindGesture, fillWindDrive } from './gesture/wind.mjs'
@@ -249,12 +248,12 @@ export const resizeAnimState = (state, { width, height }) => {
 			stepThermal(newWorld)
 			stepLiquid(newWorld)
 		}
-	syncTerrainFromSoil(state)
+	refreshLandGeometry(state)
 	return state
 }
 
 /**
- * 在地表格打 HORIZON，地形填充其余为 SOLID。
+ * 按 `world.land`（= terrain.solid）给暴露土地打 HORIZON / SOLID。
  * @param {AnimState} state 动画状态
  * @returns {void}
  */
@@ -313,30 +312,14 @@ const clearIconMats = (world) => {
 }
 
 /**
- * 熔岩凝固 / 土壤熔化后把 `mat` 写回 `terrain.solid`，并重算地表与轮廓。
- * POOL/BODY/SLOPE 下的 solid 位保留（图标盖住的地壳）；仅 AIR↔土壤翻转。
+ * 土地占位变更后重算地表 / 轮廓（占位本身由相变直接写 `world.land`）。
  * @param {AnimState} state 动画状态
  * @returns {void}
  */
-const syncTerrainFromSoil = (state) => {
-	const { world, terrain } = state
-	if (!world.soilGeomDirty) return
-	world.soilGeomDirty = false
-	const { mat } = world
-	const { solid } = terrain
-	let changed = false
-	for (let i = 0; i < solid.length; i++) {
-		if (isSoilMat(mat[i])) {
-			if (solid[i]) continue
-			solid[i] = 1
-			changed = true
-		}
-		else if (mat[i] === MAT.AIR && solid[i]) {
-			solid[i] = 0
-			changed = true
-		}
-	}
-	if (changed) refreshTerrainGeometry(terrain)
+const refreshLandGeometry = (state) => {
+	if (!state.world.soilGeomDirty) return
+	state.world.soilGeomDirty = false
+	refreshTerrainGeometry(state.terrain)
 }
 
 /**
@@ -363,7 +346,7 @@ const matStageKey = (state) =>
 	state.baseBot | (state.baseTop << 6) | ((state.bodyReach + 1) << 12) | (state.bodyMinD << 20) | (+state.softBase << 28)
 
 /**
- * 打包阶段键变化时重建图标材质；土壤由 terrain.solid 补回（含凝固熔岩）。
+ * 打包阶段键变化时重建图标材质；土地占位不改，只按 land 补回土壤 mat。
  * @param {AnimState} state 动画状态
  * @returns {void}
  */
@@ -716,7 +699,7 @@ const simFrame = (state) => {
 	opts.driveUx = driveUx
 	opts.driveUy = driveUy
 	stepFluid(world, opts)
-	syncTerrainFromSoil(state)
+	refreshLandGeometry(state)
 	const { iconOx, iconOy } = state
 	for (const ly of ICON_BASE_ROWS) {
 		const y = iconOy + ly

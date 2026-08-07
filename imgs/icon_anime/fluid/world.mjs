@@ -12,7 +12,8 @@ import { createParticlePool, clearParticlePool, totalParticleWater } from './par
 /** @typedef {{
  *   viewW: number, viewH: number, worldW: number, worldH: number,
  *   margin: number, ox: number, oy: number,
- *   mat: Uint8Array, liq: Float32Array, melt: Float32Array, temp: Float32Array,
+ *   mat: Uint8Array, land: Uint8Array,
+ *   liq: Float32Array, melt: Float32Array, temp: Float32Array,
  *   moisture: Float32Array, condense: Float32Array,
  *   gasUx: Float32Array, gasUy: Float32Array,
  *   liqVx: Float32Array, liqVy: Float32Array,
@@ -137,6 +138,7 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 	const world = {
 		viewW: width, viewH: height, worldW, worldH, margin, ox: margin, oy: 0,
 		mat: new Uint8Array(size),
+		land: new Uint8Array(size),
 		liq: new Float32Array(size),
 		melt: new Float32Array(size),
 		temp: new Float32Array(size),
@@ -452,8 +454,13 @@ export const addMelt = (world, x, y, amt, temp) => {
 		world.liq[i] = 0
 		markAirIfDrawCrossed(world, wBefore, 0)
 	}
-	if (world.mat[i] === MAT.SOLID || world.mat[i] === MAT.HORIZON)
+	if (world.mat[i] === MAT.SOLID || world.mat[i] === MAT.HORIZON) {
 		world.mat[i] = MAT.AIR
+		if (world.land[i]) {
+			world.land[i] = 0
+			world.soilGeomDirty = true
+		}
+	}
 	markAirIfMeltDrawCrossed(world, before, world.melt[i])
 	return take
 }

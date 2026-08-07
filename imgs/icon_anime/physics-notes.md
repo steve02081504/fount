@@ -16,8 +16,8 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 - Air labels double-buffer `regionId` via `scratch.prevRegionId`; regions pooled + id-indexed; Boyle overlap = packed-key Map (sealed only).
 - Liquid settle orders cells deep→shallow by projected depth (counting-sort buckets). Pressure cache refresh walks a gravity line (DDA) after transfers.
 - Hydraulic equalize: SoA scratch; generation stamp on `liqHydroVisit` (no whole-grid `dist.fill`); surfaces contiguous by component (no `Map`).
-- Material rebuild keyed by packed `matKey`; hold frames skip it. Rebuild clears only icon mats (`BODY`/`POOL`/`SLOPE_*`), then re-applies `terrain.solid` soil. `BODY` cells are parallel `Uint8Array`s (`x`/`y`/`d`). Particles are SoA pools.
-- Melt↔soil flips set `soilGeomDirty`; `syncTerrainFromSoil` updates `terrain.solid` and refreshes surface/outline so compose edges match new crust.
+- Material rebuild keyed by packed `matKey`; hold frames skip it. Rebuild clears only icon mats (`BODY`/`POOL`/`SLOPE_*`), then paints soil mats from `world.land`. `BODY` cells are parallel `Uint8Array`s (`x`/`y`/`d`). Particles are SoA pools.
+- Land occupancy is one buffer: `world.land` ≡ `terrain.solid`. Melt↔soil writes it directly; `soilGeomDirty` only refreshes derived `surface`/`outline`.
 - Compose: one pass over view cells; ANSI joins same-SGR runs; torch quantizes lift + caches truecolor SGR; ripple-only frames skip `sampleLight` outside ring pads. Player `paint` homes cursor only (`\x1b[H`) — full viewport, no Erase display.
 - Pointer wind: fill `driveUx`/`driveUy` only while right button down; clear previous dirty rect only; stroke segments pooled.
 
