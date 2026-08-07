@@ -15,7 +15,7 @@ const CHAT_BASE = '/api/parts/shells:chat'
 async function request(base, path, options = {}) {
 	const response = await fetch(`${base}${path}`, {
 		credentials: 'include',
-		headers: { 'Content-Type': 'application/json', ...options.headers || {} },
+		headers: { 'Content-Type': 'application/json', ...options.headers },
 		...options,
 	})
 	if (!response.ok) throw new Error(await response.text())
