@@ -3,10 +3,10 @@ import {
 	mountTemplate,
 } from '../../../../../scripts/features/template.mjs'
 import { applyMessageEditToRow } from '../../shared/messageMerge.mjs'
-import { getChannelViewLog } from '../../src/api/groupChannel.mjs'
+import { getChannelViewLog } from '../../src/endpoints/groupChannel.mjs'
 import { hubEmptyWaveIcon } from '../../src/lib/emojiSvg.mjs'
 import { eventIdsEqual } from '../../src/lib/eventId.mjs'
-import { handleUIError } from '../../src/ui/errors.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { refreshChannelPinsBar } from '../banners.mjs'
 import { store } from '../core/state.mjs'
 import {
@@ -347,15 +347,15 @@ export async function loadMessages() {
 		updateLastMessageId()
 		// 有未读时滚到分割线；打开频道即标已读（badge 清零），分割线锚点保留到下次 load
 		if (!softReload && !store.messages.firstUnreadEventId) scrollToBottom()
-		await markCurrentChannelRead().catch(() => { })
+		await markCurrentChannelRead().catch(handleError('chat.hub.operationFailed'))
 		refreshChannelPinsBar()
 		saveChannelViewCache()
-		void import('../memberReadMarkers.mjs').then(({ fetchMemberReadMarkers }) => {
-			void fetchMemberReadMarkers(groupId, channelId)
-		})
+		import('../memberReadMarkers.mjs').then(({ fetchMemberReadMarkers }) => {
+			fetchMemberReadMarkers(groupId, channelId).catch(handleError('chat.hub.operationFailed'))
+		}).catch(handleError('chat.hub.operationFailed'))
 	}
 	catch (err) {
-		const error = handleUIError(err, 'chat.hub.load.messagesFailed')
+		const error = handleError('chat.hub.load.messagesFailed')(err)
 		await mountTemplate(container, 'hub/empty/error', {
 			i18nKey: 'chat.hub.load.messagesFailed',
 			errorMessage: error.message,

@@ -7,6 +7,7 @@
  */
 import { renderTemplate, renderTemplateAsHtmlString, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { postEntityHeartbeat, setEntityStatus } from '../src/endpoints/entities.mjs'
 
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { store } from './core/state.mjs'
@@ -59,10 +60,7 @@ export async function applyMyStatusUI(status, customStatus = '') {
  */
 export async function sendHeartbeat(entityHash) {
 	if (!entityHash) return
-	await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/heartbeat`, {
-		method: 'POST',
-		credentials: 'include',
-	})
+	await postEntityHeartbeat(entityHash)
 }
 
 /**
@@ -73,17 +71,12 @@ export async function sendHeartbeat(entityHash) {
 export async function setMyStatus(status, options = {}) {
 	const entityHash = store.viewer.viewerEntityHash
 	if (!entityHash) return
-	const resp = await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/status`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		credentials: 'include',
-		body: JSON.stringify({ status }),
-	})
-	if (!resp.ok) {
-		if (!options.silent) {
-			const data = await resp.json().catch(() => ({}))
-			showToastI18n('error', 'chat.hub.operationFailed', { error: data.error || resp.statusText })
-		}
+	try {
+		await setEntityStatus(entityHash, status)
+	}
+	catch (error) {
+		if (!options.silent)
+			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
 		return
 	}
 	if (MANUAL_STATUSES.includes(status))

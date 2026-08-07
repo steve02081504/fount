@@ -1,6 +1,6 @@
 import {
 	getChannelViewLog,
-} from '../../src/api/groupChannel.mjs'
+} from '../../src/endpoints/groupChannel.mjs'
 import { eventIdsEqual, normalizeEventId } from '../../src/lib/eventId.mjs'
 import { store } from '../core/state.mjs'
 import { attachLastCharMessageSwipe, updateHideCharNames } from '../gestures/chatGestures.mjs'

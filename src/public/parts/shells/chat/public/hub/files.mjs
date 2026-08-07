@@ -1,8 +1,9 @@
 /**
  * Hub 群文件面板：列出当前成员 role 可访问的共享柜；管理者可绑定新柜。
  */
-import { getGroupState } from '../src/api/groupCore.mjs'
-import { handleUIError } from '../src/ui/errors.mjs'
+import { getGroupState } from '../src/endpoints/groupCore.mjs'
+import { bindGroupCabinet } from '../src/endpoints/groupFiles.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { store } from './core/state.mjs'
 
@@ -41,11 +42,11 @@ export function wireFilesDrawerToggle() {
 		const open = toggle instanceof HTMLInputElement && toggle.checked
 		setFilesDrawerOpen(open)
 		if (open && store.context.currentGroupId)
-			void refreshFilesDrawer({
+			refreshFilesDrawer({
 				groupId: store.context.currentGroupId,
 				state: store.context.currentState,
 				viewer: store.context.currentState?.viewer,
-			}).catch(handleUIError)
+			}).catch(handleError('chat.hub.files.loadFailed'))
 	})
 }
 
@@ -121,7 +122,7 @@ export async function refreshFilesDrawer(drawer) {
 			addBtn.setAttribute('data-i18n', 'chat.hub.files.bindCabinet')
 			addBtn.textContent = '添加文件柜'
 			addBtn.addEventListener('click', () => {
-				void bindCabinetFlow(drawer.groupId, state).then(() => refreshFilesDrawer(drawer)).catch(handleUIError)
+				bindCabinetFlow(drawer.groupId, state).then(() => refreshFilesDrawer(drawer)).catch(handleError('chat.hub.files.loadFailed'))
 			})
 			actions.appendChild(addBtn)
 		}
@@ -141,16 +142,10 @@ async function bindCabinetFlow(groupId, state) {
 	if (!roleId) return
 	const access = window.prompt('访问级别 rw / ro', 'rw')
 	if (!access) return
-	const response = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/cabinets/bind`, {
-		method: 'POST',
-		credentials: 'include',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			cabinet_id: cabinetId.trim(),
-			role_access: { [roleId.trim()]: access.trim() === 'ro' ? 'ro' : 'rw' },
-		}),
+	await bindGroupCabinet(groupId, {
+		cabinet_id: cabinetId.trim(),
+		role_access: { [roleId.trim()]: access.trim() === 'ro' ? 'ro' : 'rw' },
 	})
-	if (!response.ok) throw new Error(await response.text())
 }
 
 /**
@@ -163,7 +158,7 @@ export function wireFilesDrawer(drawer) {
 	const toggle = document.getElementById('files-drawer-toggle')
 	toggle?.addEventListener('change', () => {
 		if (isFilesDrawerOpen())
-			void refreshFilesDrawer(drawer).catch(handleUIError)
+			refreshFilesDrawer(drawer).catch(handleError('chat.hub.files.loadFailed'))
 	})
 }
 

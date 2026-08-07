@@ -19,7 +19,7 @@ import {
 	profileDescriptionText as sharedProfileDescriptionText,
 } from '../shared/entityProfileCard.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
-import { fetchEntityProfileApi, cachedProfileFromApi } from '../src/entityProfileApi.mjs'
+import { cachedProfileFromApi, getEntityProfile } from '../src/endpoints/entities.mjs'
 
 import { refreshAliasDependentUi } from './aliasUi.mjs'
 import { store } from './core/state.mjs'
@@ -48,7 +48,7 @@ export async function loadEntityProfile(entityHash, options = {}) {
 		const cached = await fetchUserProfile(entityHash, { groupId: options.groupId })
 		if (cached) return cached
 	}
-	const data = await fetchEntityProfileApi(entityHash, options.groupId || store.context.currentGroupId)
+	const data = await getEntityProfile(entityHash, options.groupId || store.context.currentGroupId)
 	if (!data?.profile) return null
 	return cachedProfileFromApi(data.profile, entityHash)
 }

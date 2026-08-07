@@ -4,6 +4,7 @@
  * 【API】GET …/groups/:id/channels/:cid/member-read-markers → `{ markers: { [entityHash]: { seq, eventId } } }`
  */
 import { geti18n } from '../../../../scripts/i18n/index.mjs'
+import { getMemberReadMarkers } from '../src/endpoints/groupChannel.mjs'
 import { hubDeliveryReadIcon } from '../src/lib/emojiSvg.mjs'
 
 import { store } from './core/state.mjs'
@@ -29,12 +30,7 @@ function cacheKey(groupId, channelId) {
  */
 export async function fetchMemberReadMarkers(groupId, channelId) {
 	try {
-		const response = await fetch(
-			`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/member-read-markers`,
-			{ credentials: 'include' },
-		)
-		if (!response.ok) return {}
-		const { markers = {} } = await response.json()
+		const { markers = {} } = await getMemberReadMarkers(groupId, channelId)
 		markersCache.set(cacheKey(groupId, channelId), markers)
 		paintOwnDeliveryStatuses()
 		return markers

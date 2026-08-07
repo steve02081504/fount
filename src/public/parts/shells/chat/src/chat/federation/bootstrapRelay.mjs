@@ -3,6 +3,7 @@
  */
 import { randomUUID } from 'node:crypto'
 
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { decryptUtf8ForMember, encryptUtf8ForMember } from 'npm:@steve02081504/fount-p2p/crypto/key'
 
@@ -142,18 +143,18 @@ export async function applyFedBootstrapResponse(username, groupId, response) {
 			const { clearFederationBootstrap } = await import('./bootstrapStore.mjs')
 			clearFederationBootstrap(username, groupId)
 		}
-		void catchUpGroupFromPeers(username, groupId, {
+		catchUpGroupFromPeers(username, groupId, {
 			waitMs: 2000,
 			extraWantIds: creds.settingsEventId ? [creds.settingsEventId] : undefined,
-		})
+		}).catch(handleError)
 		return true
 	}
 
 	invalidateFederationRoomCache(username, groupId)
-	void catchUpGroupFromPeers(username, groupId, {
+	catchUpGroupFromPeers(username, groupId, {
 		waitMs: 2000,
 		extraWantIds: creds.settingsEventId ? [creds.settingsEventId] : undefined,
-	})
+	}).catch(handleError)
 	return true
 }
 

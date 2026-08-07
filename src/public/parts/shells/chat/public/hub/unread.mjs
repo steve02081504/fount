@@ -1,9 +1,14 @@
 /**
  * 【文件】hub/unread.mjs — 未读 badge 与 read-marker 同步。
  */
-import { putChannelReadMarker } from '../src/api/groupChannel.mjs'
+import { putChannelReadMarker } from '../src/endpoints/groupChannel.mjs'
 
 import { store } from './core/state.mjs'
+
+/** serverBar 静态 import 会与 unread 成环；惰性刷新 chrome。 @returns {void} */
+const refreshServerBar = () => {
+	import('./serverBar.mjs').then(({ renderServerBar }) => renderServerBar())
+}
 
 /**
  * @param {number} count 未读数
@@ -96,9 +101,9 @@ export async function markCurrentChannelRead() {
 		delete group.channelUnread[channelId]
 		group.unreadCount = sumChannelUnread(group.channelUnread)
 	}
-	void import('./serverBar.mjs').then(({ renderServerBar }) => renderServerBar())
-	void import('./sidebar/index.mjs').then(({ renderHubChannelSidebar }) => {
-		if (store.context.currentState) void renderHubChannelSidebar(store.context.currentState)
+	refreshServerBar()
+	import('./sidebar/index.mjs').then(({ renderHubChannelSidebar }) => {
+		if (store.context.currentState) renderHubChannelSidebar(store.context.currentState)
 	})
 }
 
@@ -108,7 +113,7 @@ export async function markCurrentChannelRead() {
  * @returns {void}
  */
 export function handleReadMarkerWire(wireMessage) {
-	void import('./memberReadMarkers.mjs').then(({ applyMemberReadMarkerWire }) => {
+	import('./memberReadMarkers.mjs').then(({ applyMemberReadMarkerWire }) => {
 		applyMemberReadMarkerWire(wireMessage)
 	})
 	const viewerName = store.viewer.username
@@ -128,7 +133,7 @@ export function handleReadMarkerWire(wireMessage) {
 		store.messages.readMarker = readMarker
 		store.messages.firstUnreadEventId = null
 	}
-	void import('./serverBar.mjs').then(({ renderServerBar }) => renderServerBar())
+	refreshServerBar()
 }
 
 /**
@@ -144,5 +149,5 @@ export function bumpChannelUnread(groupId, channelId) {
 	group.channelUnread ??= {}
 	group.channelUnread[channelId] = (Number(group.channelUnread[channelId]) || 0) + 1
 	group.unreadCount = (Number(group.unreadCount) || 0) + 1
-	void import('./serverBar.mjs').then(({ renderServerBar }) => renderServerBar())
+	refreshServerBar()
 }

@@ -3,9 +3,9 @@
  * 【职责】群组侧栏项与顶栏群组菜单：离开群、邀请、联邦入口、文件夹操作等上下文动作。
  * 【原理】`showGroupContextMenu` / `showGroupHeaderMenu` 弹出单例菜单层并处理 dismiss；离开或删除群后清空消息区；本模块不渲染气泡。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../../../../scripts/i18n、../../../../scripts/parts、../../../../scripts/template、../../../../scripts/toast、../src/api/groupCore、groupClient、../src/inviteQr、chat、core/domUtils。
+ * 【关联】../../../../scripts/i18n、../../../../scripts/parts、../../../../scripts/template、../../../../scripts/toast、../src/endpoints/groupCore、../src/inviteQr、chat、core/domUtils。
  */
-import { getPartList } from '../../../../scripts/api/parts.mjs'
+import { getPartList } from '../../../../scripts/endpoints/parts.mjs'
 import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
 import {
 	renderTemplate,
@@ -16,10 +16,9 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { aliasForGroup, setGroupAlias } from '../shared/aliases.mjs'
 import { promptText } from '/scripts/features/promptDialog.mjs'
-import { groupRequest } from '../src/api/groupClient.mjs'
-import { createGroupInvite, leaveGroups } from '../src/api/groupCore.mjs'
+import { addGroupChar, createGroupInvite, leaveGroups } from '../src/endpoints/groupCore.mjs'
 import { buildInviteJoinShareUrl } from '../src/inviteQr.mjs'
-import { handleUIError } from '../src/ui/errors.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { groupDisplayName } from './core/domUtils.mjs'
@@ -148,7 +147,7 @@ function runLeaveGroupsInBackground(groupIds) {
 		catch (error) {
 			clearGroupsLeaving(ids)
 			await renderServerBar()
-			handleUIError(error, 'chat.hub.load.groupFailed')
+			handleError('chat.hub.load.groupFailed')(error)
 			const { loadGroups } = await import('./serverBar.mjs')
 			await loadGroups()
 		}
@@ -227,7 +226,7 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 			showToastI18n('success', 'chat.hub.group.context.inviteCopied')
 		}
 		catch (err) {
-			handleUIError(err, 'chat.hub.shareGroupFailed')
+			handleError('chat.hub.shareGroupFailed')(err)
 		}
 	})
 
@@ -334,12 +333,12 @@ async function showAddCharDialog(groupId) {
 				const charname = sel instanceof HTMLSelectElement ? sel.value.trim() : ''
 				if (!charname) return
 				try {
-					await groupRequest(groupId, 'char', 'POST', { charname })
+					await addGroupChar(groupId, { charname })
 					showToastI18n('success', 'chat.dragAndDrop.charAdded', { partName: charname })
 					closeModal()
 				}
 				catch (err) {
-					handleUIError(err, 'chat.hub.operationFailed')
+					handleError('chat.hub.operationFailed')(err)
 				}
 			})
 		},

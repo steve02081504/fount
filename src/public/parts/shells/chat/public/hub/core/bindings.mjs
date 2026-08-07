@@ -1,7 +1,9 @@
 /**
  * Hub 横幅与固定 DOM 节点的声明式绑定（订阅 store / watchState）。
  */
-import { getGroupState } from '../../src/api/groupCore.mjs'
+import { syncArchive } from '../../src/endpoints/channelArchive.mjs'
+import { getGroupState } from '../../src/endpoints/groupCore.mjs'
+import { dismissShunBanner } from '../../src/endpoints/groupFederation.mjs'
 
 import { store, setState, watchState } from './state.mjs'
 
@@ -218,10 +220,7 @@ export function wireHubBannerBindings() {
 	document.getElementById('archive-sync-button')?.addEventListener('click', () => {
 		const groupId = store.context.currentGroupId
 		if (!groupId) return
-		void fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/archive/sync`, {
-			method: 'POST',
-			credentials: 'include',
-		}).then(async () => {
+		void syncArchive(groupId).then(async () => {
 			setState('context.currentState', await getGroupState(groupId))
 			refreshBoundBanners()
 		}).catch(console.error)
@@ -229,12 +228,7 @@ export function wireHubBannerBindings() {
 	document.getElementById('shun-keep-history-button')?.addEventListener('click', () => {
 		const groupId = store.context.currentGroupId
 		if (!groupId) return
-		void fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/federation/shun-dismiss`, {
-			method: 'POST',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: '{}',
-		}).then(async () => {
+		void dismissShunBanner(groupId).then(async () => {
 			setState('context.currentState', await getGroupState(groupId))
 			refreshBoundBanners()
 		}).catch(console.error)

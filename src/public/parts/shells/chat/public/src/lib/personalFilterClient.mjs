@@ -1,4 +1,5 @@
 import { filterSetsFromPersonalListEntries, isAuthorFilteredByPersonalSets } from '../../shared/personalFilter.mjs'
+import { getPersonalLists } from '../endpoints/prefs.mjs'
 
 const EMPTY = filterSetsFromPersonalListEntries([])
 
@@ -14,9 +15,12 @@ export function normalizePersonalFilterResponse(raw = { entries: [] }) {
  * @returns {Promise<ReturnType<typeof filterSetsFromPersonalListEntries>>} 过滤集
  */
 export async function fetchPersonalFilterSets() {
-	const resp = await fetch('/api/parts/shells:chat/personal-lists', { credentials: 'include' })
-	if (!resp.ok) return EMPTY
-	return normalizePersonalFilterResponse(await resp.json())
+	try {
+		return normalizePersonalFilterResponse(await getPersonalLists())
+	}
+	catch {
+		return EMPTY
+	}
 }
 
 /**

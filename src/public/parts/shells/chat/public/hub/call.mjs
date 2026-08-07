@@ -8,6 +8,7 @@ import { geti18n, setElementI18n } from '../../../../scripts/i18n/index.mjs'
 import { buildChatCallWsUrl } from '../shared/avRelayClient.mjs'
 import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
+import { getCallStatus } from '../src/endpoints/groupChannel.mjs'
 import { iconifyImg, iconifyUrl } from '../src/lib/emojiSvg.mjs'
 
 import { joinCodecsAvRoom, leaveCodecsAvRoom } from './codecsAv.mjs'
@@ -517,12 +518,7 @@ export async function refreshCallStatusBadge() {
 		return
 	}
 	try {
-		const res = await fetch(
-			`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/call-status`,
-			{ credentials: 'include' },
-		)
-		if (!res.ok) return
-		const data = await res.json()
+		const data = await getCallStatus(groupId, channelId)
 		updateCallBadge(data.active ? data.peerCount || 0 : 0)
 	}
 	catch { /* ignore */ }

@@ -3,18 +3,25 @@
  * 【职责】群文件分块上传与解密预览处理器工厂（挂到 Hub 实例）。
  * 【原理】createFileHandlers(hub) 返回选文件、进度、chunk POST；CHUNK_UPLOAD_MAX_BYTES 对齐联邦上限。
  * 【数据结构】hub { groupId, state }、上传进度、file meta。
- * 【关联】federationUpload.mjs、groupFileBlob.mjs、errors.mjs。
+ * 【关联】federationUpload.mjs、groupFileBlob.mjs、errorHandlers.mjs。
  */
 import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { sha256HexFromBlob } from '../../shared/digest.mjs'
-import { entityFileUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
+import { fetchEvfsFile } from '/scripts/endpoints/p2p/evfsMedia.mjs'
 import { groupEntityHash } from '../../shared/groupEntityHash.mjs'
+import {
+	createGroupFileEvent,
+	getGroupFileMeta,
+	probeChunkHave,
+	resumeGroupFileDownload,
+	uploadOrRegisterChunk,
+} from '../endpoints/groupFiles.mjs'
 import { fetchGroupFileAsBlobUrl } from '../groupFileBlob.mjs'
 import { convergentChunkHashes } from '../lib/convergentChunk.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { arrayBufferToBase64, FEDERATION_CHUNK_MAX_BYTES } from '../lib/federationUpload.mjs'
 
-import { handleUIError } from './errors.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 /**
  * 单块上传明文上限（与联邦 chunk 上限对齐）。
@@ -97,42 +104,11 @@ async function uploadEncryptedChunk(groupId, partFileId, plainB64, byteLength, c
 			...channelField,
 			...modeField,
 		}
-	const haveResponse = await fetch(
-		`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/chunks/have`,
-		{
-			method: 'POST',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(haveBody),
-		},
-	)
-	if (!haveResponse.ok) throw new Error(`chunk have HTTP ${haveResponse.status}`)
-	const probe = await haveResponse.json()
-	if (ceMode !== 'random' && probe?.have && probe.storageLocator) {
-		const registerResponse = await fetch(
-			`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/chunks`,
-			{
-				method: 'POST',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ fileId: partFileId, data: plainB64, registerOnly: true, ...channelField, ...modeField }),
-			},
-		)
-		if (!registerResponse.ok) throw new Error(`chunk register HTTP ${registerResponse.status}`)
-		return await registerResponse.json()
-	}
+	const probe = await probeChunkHave(groupId, haveBody)
+	if (ceMode !== 'random' && probe?.have && probe.storageLocator)
+		return uploadOrRegisterChunk(groupId, { fileId: partFileId, data: plainB64, registerOnly: true, ...channelField, ...modeField })
 
-	const uploadResponse = await fetch(
-		`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/chunks`,
-		{
-			method: 'POST',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ fileId: partFileId, data: plainB64, ...channelField, ...modeField }),
-		},
-	)
-	if (!uploadResponse.ok) throw new Error(`chunk HTTP ${uploadResponse.status}`)
-	return await uploadResponse.json()
+	return uploadOrRegisterChunk(groupId, { fileId: partFileId, data: plainB64, ...channelField, ...modeField })
 }
 
 /**
@@ -217,17 +193,7 @@ export function createFileHandlers(hub) {
 				manifestBody.key_generation = parts[0]?.key_generation
 			}
 
-			const fileEventResponse = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(manifestBody),
-			})
-			if (!fileEventResponse.ok) {
-				progress.fail()
-				handleUIError(new Error(`uploadGroupFile files HTTP ${fileEventResponse.status}`), 'chat.hub.file.uploadFailed')
-				return
-			}
+			await createGroupFileEvent(groupId, manifestBody)
 			progress.set(100, 'chat.hub.file.uploaded')
 			showToastI18n('success', skippedAny ? 'chat.hub.file.skippedDedup' : 'chat.hub.file.uploaded')
 			progress.done()
@@ -235,7 +201,7 @@ export function createFileHandlers(hub) {
 		}
 		catch (error) {
 			progress.fail()
-			handleUIError(error, 'chat.hub.file.uploadFailed')
+			handleError('chat.hub.file.uploadFailed')(error)
 		}
 	}
 
@@ -286,36 +252,25 @@ export function createFileHandlers(hub) {
 	 */
 	const downloadGroupFile = async (fileId, fileName) => {
 		try {
-			const metaResponse = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files/${encodeURIComponent(fileId)}/meta`)
-			if (!metaResponse.ok) {
-				handleUIError(new Error(`downloadGroupFile meta HTTP ${metaResponse.status}`), 'chat.hub.file.downloadFailed')
-				return
-			}
-			const meta = await metaResponse.json()
+			const meta = await getGroupFileMeta(groupId, fileId)
 			const hasParts = Array.isArray(meta.parts) && meta.parts.length
 			if (!meta.contentHash || (!hasParts && !meta.storageLocator)) {
-				handleUIError(new Error('downloadGroupFile: missing blob meta'), 'chat.hub.file.noKey')
+				handleError('chat.hub.file.noKey')(new Error('downloadGroupFile: missing blob meta'))
 				return
 			}
-			if (hasParts)
-				await fetch(
-					`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/files/${encodeURIComponent(fileId)}/download-resume`,
-					{
-						method: 'POST',
-						credentials: 'include',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({}),
-					},
-				).catch(() => { })
+			if (hasParts) await resumeGroupFileDownload(groupId, fileId).catch(() => { })
 
 			const fileIdForEvfs = String(meta?.fileId || '').trim()
 			const entityHash = groupEntityHash(groupId)
-			const plainResponse = await fetch(entityFileUrl(entityHash, `chat/${fileIdForEvfs}`), { credentials: 'include' })
-			if (!plainResponse.ok) {
-				handleUIError(new Error('downloadGroupFile decrypt failed'), 'chat.hub.file.downloadFailed')
+			let plain
+			try {
+				const { buffer } = await fetchEvfsFile(entityHash, `chat/${fileIdForEvfs}`)
+				plain = new Uint8Array(buffer)
+			}
+			catch (error) {
+				handleError('chat.hub.file.downloadFailed')(error)
 				return
 			}
-			const plain = new Uint8Array(await plainResponse.arrayBuffer())
 
 			const { createWriteStream } = await import('https://esm.sh/streamsaver@2.0.6')
 			const fileStream = createWriteStream(
@@ -338,7 +293,7 @@ export function createFileHandlers(hub) {
 			}
 		}
 		catch (error) {
-			handleUIError(error, 'chat.hub.file.downloadFailed')
+			handleError('chat.hub.file.downloadFailed')(error)
 		}
 	}
 
@@ -350,7 +305,7 @@ export function createFileHandlers(hub) {
 	 */
 	const fetchGroupFileAsBlob = (fileId, mimeType) =>
 		fetchGroupFileAsBlobUrl(groupId, fileId).catch(error => {
-			handleUIError(error, 'chat.hub.file.loadFailed')
+			handleError('chat.hub.file.loadFailed')(error)
 			return null
 		})
 

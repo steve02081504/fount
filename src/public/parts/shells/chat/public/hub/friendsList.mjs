@@ -7,7 +7,7 @@
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
-import { getAllCachedPartDetails, getPartList } from '../../../../scripts/api/parts.mjs'
+import { getAllCachedPartDetails, getPartList } from '../../../../scripts/endpoints/parts.mjs'
 import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../scripts/i18n/index.mjs'
@@ -17,6 +17,9 @@ import { formatEntityAtId, isEntityHash128 } from '../shared/entityHash.mjs'
 import { bindEntityProfileHoverAnchor } from '../shared/entityProfileHoverCard.mjs'
 import { displayProfileAvatar, listAvatarTemplateFields } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
+import { searchEntities } from '../src/endpoints/entities.mjs'
+import { deleteSession } from '../src/endpoints/groupCore.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { promptText } from '/scripts/features/promptDialog.mjs'
 
 import { getCharDetails } from './charCard.mjs'
@@ -203,14 +206,7 @@ async function deleteFriendSession(friend) {
 	const name = friend.charname || friend.displayName || friend.groupId
 	if (!confirmI18n('chat.hub.deleteSessionConfirm', { name })) return
 	try {
-		const r = await fetch(
-			`/api/parts/shells:chat/sessions/${encodeURIComponent(friend.groupId)}`,
-			{ method: 'DELETE', credentials: 'include' },
-		)
-		if (!r.ok) {
-			const data = await r.json().catch(() => ({}))
-			throw new Error(data.error || `HTTP ${r.status}`)
-		}
+		await deleteSession(friend.groupId)
 		showToastI18n('success', 'chat.hub.session.deleted')
 		if (store.privateGroup.groupId === friend.groupId) {
 			const { clearPrivateGroupState } = await import('./privateGroup.mjs')
@@ -453,7 +449,8 @@ async function appendFriendsSearchHit(hit, resultsHost) {
 				return
 			}
 			if (hit.handle || hit.name)
-				await setEntityAlias(hit.entityHash, hit.alias || hit.handle || hit.name).catch(() => { })
+				await setEntityAlias(hit.entityHash, hit.alias || hit.handle || hit.name)
+					.catch(handleError('chat.hub.operationFailed'))
 			await dispatchFriendChat({
 				type: 'user',
 				displayName: hit.label,
@@ -486,17 +483,14 @@ async function runFriendsEntitySearch(input, resultsHost) {
 		return
 	}
 
-	const [localChars, response] = await Promise.all([
+	const [localChars, data] = await Promise.all([
 		searchLocalChars(q),
-		fetch(`/api/parts/shells:chat/entities/search?q=${encodeURIComponent(q)}`, {
-			credentials: 'include',
+		searchEntities(q).catch(error => {
+			showToastI18n('error', 'chat.hub.createChatFailed', { error: error.message })
+			return null
 		}),
 	])
-	const data = await response.json().catch(() => ({}))
-	if (!response.ok) {
-		showToastI18n('error', 'chat.hub.createChatFailed', { error: data.error || `HTTP ${response.status}` })
-		return
-	}
+	if (!data) return
 
 	const seenChars = new Set(localChars.map(h => h.charname))
 	/** @type {FriendsSearchHit[]} */

@@ -6,7 +6,7 @@ import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, ins
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
-import { handleUIError } from '../src/ui/errors.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { groupDisplayName } from './core/domUtils.mjs'
 import { store } from './core/state.mjs'
@@ -151,7 +151,7 @@ async function loadInboxPage(generation = loadGeneration) {
 	}
 	catch (error) {
 		if (generation !== loadGeneration) return
-		handleUIError(error, 'chat.hub.inbox.loadFailed')
+		handleError('chat.hub.inbox.loadFailed')(error)
 		if (host && !host.querySelector('.inbox-row')) await mountTemplate(host, 'hub/empty/error', {
 			i18nKey: 'chat.hub.inbox.loadFailed',
 			errorMessage: error.message,
@@ -181,7 +181,7 @@ function wireInboxRowClicks(host) {
 			setPendingScrollTarget(eventId, groupId, channelId)
 			await selectGroup(groupId, channelId)
 			await scrollToMessageEventId(eventId)
-		})().catch(error => handleUIError(error, 'chat.hub.inbox.jumpFailed'))
+		})().catch(handleError('chat.hub.inbox.jumpFailed'))
 	})
 }
 
@@ -273,7 +273,7 @@ export async function activateInboxView() {
 		await markInboxSeen()
 	}
 	catch (error) {
-		handleUIError(error, 'chat.hub.inbox.markSeenFailed')
+		handleError('chat.hub.inbox.markSeenFailed')(error)
 	}
 }
 

@@ -1,19 +1,4 @@
 /**
- * @param {Response} response HTTP 响应
- * @returns {Promise<string>} 错误文案
- */
-export async function readApiError(response) {
-	const text = await response.text()
-	try {
-		const data = JSON.parse(text)
-		return String(data.error || text)
-	}
-	catch {
-		return text || `HTTP ${response.status}`
-	}
-}
-
-/**
  * 从 `#settings:<groupId>` 解析群组 ID（与 hub `urlHash` 一致支持 encode）。
  * @returns {string | null} 群组 ID；hash 不匹配时为 null
  */

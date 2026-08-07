@@ -1,12 +1,11 @@
 /**
- * Hub 跨群 inbox：API、badge 与 WS 增量。
+ * Hub 跨群 inbox：badge 与 WS 增量（HTTP 在 endpoints/inbox）。
  */
-import { handleUIError } from '../src/ui/errors.mjs'
+import { fetchInboxPage as fetchInboxPageApi, markInboxSeen as markInboxSeenApi } from '../src/endpoints/inbox.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { store } from './core/state.mjs'
 import { formatUnreadLabel } from './unread.mjs'
-
-const INBOX_API = '/api/parts/shells:chat/inbox'
 
 /** @type {number | null} */
 let badgeUnreadCount = null
@@ -17,15 +16,8 @@ let badgeUnreadCount = null
  * @param {string} [options.cursor] 游标
  * @returns {Promise<{ items: object[], nextCursor: string | null, unreadCount: number }>} 分页结果
  */
-export async function fetchInboxPage(options = {}) {
-	const params = new URLSearchParams()
-	if (options.limit) params.set('limit', String(options.limit))
-	if (options.cursor) params.set('cursor', String(options.cursor))
-	if (options.kinds?.length) params.set('kinds', options.kinds.join(','))
-	const query = params.toString()
-	const response = await fetch(`${INBOX_API}${query ? `?${query}` : ''}`, { credentials: 'include' })
-	if (!response.ok) throw new Error(`inbox ${response.status}`)
-	return response.json()
+export function fetchInboxPage(options = {}) {
+	return fetchInboxPageApi(options)
 }
 
 /**
@@ -33,13 +25,7 @@ export async function fetchInboxPage(options = {}) {
  * @returns {Promise<number>} 写入的 seenAt
  */
 export async function markInboxSeen(at = Date.now()) {
-	const response = await fetch(`${INBOX_API}/seen`, {
-		method: 'PUT',
-		credentials: 'include',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ at }),
-	})
-	if (!response.ok) throw new Error(`inbox seen ${response.status}`)
+	await markInboxSeenApi(at)
 	badgeUnreadCount = 0
 	await updateInboxBadge()
 	return at
@@ -54,7 +40,7 @@ export async function updateInboxBadge() {
 		unread = Number((await fetchInboxPage({ limit: 1 })).unreadCount) || 0
 	}
 	catch (error) {
-		handleUIError(error, 'chat.hub.inbox.badgeFetchFailed')
+		handleError('chat.hub.inbox.badgeFetchFailed')(error)
 		return
 	}
 	badgeUnreadCount = null

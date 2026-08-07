@@ -1,5 +1,6 @@
 import { mountTemplate } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
+import { getChannelPermissions, putChannelPermissions } from '../endpoints/channelPerms.mjs'
 
 import { ALL_PERMISSIONS } from './constants.mjs'
 
@@ -13,43 +14,6 @@ function channelPermTriState(allow, deny, perm) {
 	if (deny?.[perm]) return 'deny'
 	if (allow?.[perm]) return 'allow'
 	return 'neutral'
-}
-
-/**
- * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文
- * @param {string} channelId 频道 ID
- * @returns {Promise<Record<string, { allow?: Record<string, boolean>, deny?: Record<string, boolean> }>>} 各角色频道权限
- */
-async function fetchChannelPermissions(context, channelId) {
-	const resp = await fetch(
-		`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/channels/${encodeURIComponent(channelId)}/permissions`,
-		{ credentials: 'include' },
-	)
-	const data = await resp.json()
-	if (!resp.ok) throw new Error(data.error || resp.statusText)
-	return data.permissions || {}
-}
-
-/**
- * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文
- * @param {string} channelId 频道 ID
- * @param {string} roleId 角色 ID
- * @param {Record<string, boolean>} allow 允许位图
- * @param {Record<string, boolean>} deny 拒绝位图
- * @returns {Promise<void>}
- */
-async function putChannelPermissions(context, channelId, roleId, allow, deny) {
-	const resp = await fetch(
-		`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/channels/${encodeURIComponent(channelId)}/permissions`,
-		{
-			method: 'PUT',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ roleId, allow, deny }),
-		},
-	)
-	const data = await resp.json()
-	if (!resp.ok) throw new Error(data.error || resp.statusText)
 }
 
 /** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
@@ -79,7 +43,7 @@ export async function renderChannelPermissionsPanel(context) {
 
 	let permissions = {}
 	try {
-		permissions = await fetchChannelPermissions(context, context.selectedChannelPermsId)
+		permissions = await getChannelPermissions(context.groupId, context.selectedChannelPermsId)
 	}
 	catch (error) {
 		showToastI18n('error', 'chat.group.settings.page.channelPerms.updateFailed', { error: error.message })
@@ -123,7 +87,7 @@ export async function renderChannelPermissionsPanel(context) {
 			const roleId = sel instanceof HTMLSelectElement ? sel.value : ''
 			if (!roleId || !context.selectedChannelPermsId) return
 			try {
-				await putChannelPermissions(context, context.selectedChannelPermsId, roleId, {}, {})
+				await putChannelPermissions(context.groupId, context.selectedChannelPermsId, roleId, {}, {})
 				showToastI18n('success', 'chat.group.settings.page.channelPerms.updated')
 				await renderChannelPermissionsPanel(context)
 			}
@@ -135,7 +99,7 @@ export async function renderChannelPermissionsPanel(context) {
 		const removeRoleOverrideButton = event.target.closest('[data-action="remove-role-override"]')
 		if (removeRoleOverrideButton?.dataset.roleId && context.selectedChannelPermsId) {
 			try {
-				await putChannelPermissions(context, context.selectedChannelPermsId, removeRoleOverrideButton.dataset.roleId, {}, {})
+				await putChannelPermissions(context.groupId, context.selectedChannelPermsId, removeRoleOverrideButton.dataset.roleId, {}, {})
 				showToastI18n('success', 'chat.group.settings.page.channelPerms.updated')
 				await renderChannelPermissionsPanel(context)
 			}
@@ -152,7 +116,7 @@ export async function renderChannelPermissionsPanel(context) {
 		const perm = group.getAttribute('data-perm')
 		const nextState = channelPermStateButton.getAttribute('data-state')
 		if (!roleId || !perm || !nextState) return
-		const current = await fetchChannelPermissions(context, context.selectedChannelPermsId)
+		const current = await getChannelPermissions(context.groupId, context.selectedChannelPermsId)
 		const allow = { ...current[roleId]?.allow }
 		const deny = { ...current[roleId]?.deny }
 		delete allow[perm]
@@ -160,7 +124,7 @@ export async function renderChannelPermissionsPanel(context) {
 		if (nextState === 'allow') allow[perm] = true
 		else if (nextState === 'deny') deny[perm] = true
 		try {
-			await putChannelPermissions(context, context.selectedChannelPermsId, roleId, allow, deny)
+			await putChannelPermissions(context.groupId, context.selectedChannelPermsId, roleId, allow, deny)
 			showToastI18n('success', 'chat.group.settings.page.channelPerms.updated')
 			await renderChannelPermissionsPanel(context)
 		}

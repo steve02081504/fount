@@ -4,8 +4,8 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { setElementI18n } from '../../../../scripts/i18n/index.mjs'
-import { searchAllChatGroups, searchGroupChannelMessages } from '../src/api/groupChannel.mjs'
-import { handleUIError } from '../src/ui/errors.mjs'
+import { searchAllChatGroups, searchGroupChannelMessages } from '../src/endpoints/groupChannel.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { bindDismissOnDocumentInteraction } from '/scripts/components/contextMenuDismiss.mjs'
 import { store } from './core/state.mjs'
@@ -172,7 +172,7 @@ export async function runHubMessageSearch(query) {
 		renderSearchResults(items, 'group')
 	}
 	catch (error) {
-		handleUIError(error, 'chat.hub.search.failed')
+		handleError('chat.hub.search.failed')(error)
 		hideSearchResults()
 	}
 }

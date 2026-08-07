@@ -3,7 +3,7 @@
  * 【职责】跨壳人物卡悬浮层：与点击弹层共用 profile_popup + paintEntityProfileCard。
  * 【原理】单例卡 + 单队列串行绘制；与点击弹层共用 `profile_popup` 全量模板。Hub 操作按钮经 `options.wireActions` 可选挂载。
  */
-import { cachedProfileFromApi, fetchEntityProfileApi } from '../src/entityProfileApi.mjs'
+import { cachedProfileFromApi, getEntityProfile } from '../src/endpoints/entities.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
 import { isEntityHash128 } from './entityHash.mjs'
@@ -162,7 +162,7 @@ async function paintHoverCard(generation, anchor, options) {
 		: options.loadProfile
 			? await options.loadProfile()
 			: isEntityHash128(entityHash)
-				? await fetchEntityProfileApi(entityHash, options.groupId)
+				? await getEntityProfile(entityHash, options.groupId)
 					.then(data => cachedProfileFromApi(data?.profile, entityHash))
 					.catch(() => null)
 				: null
@@ -188,7 +188,7 @@ async function paintHoverCard(generation, anchor, options) {
 		ownerName = aliasForEntity(ownerEntityHash)
 		if (!ownerName)
 			try {
-				const ownerData = await fetchEntityProfileApi(ownerEntityHash)
+				const ownerData = await getEntityProfile(ownerEntityHash)
 				if (!isCurrentShow(generation)) return
 				ownerName = ownerData?.profile?.name || null
 			}

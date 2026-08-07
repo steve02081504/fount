@@ -3,6 +3,7 @@
  */
 import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { getTranslationPrefs, putTranslationPrefs } from '../src/endpoints/prefs.mjs'
 
 import { closeOverlayModal } from './core/overlayModal.mjs'
 
@@ -14,8 +15,7 @@ import { closeOverlayModal } from './core/overlayModal.mjs'
  */
 export async function mountTranslationPrefsPanel(panel, footer) {
 	usingTemplates('/parts/shells:chat/src/templates')
-	const response = await fetch('/api/parts/shells:chat/translation-prefs', { credentials: 'include' })
-	const data = response.ok ? await response.json() : { prefs: { autoTranslate: false } }
+	const data = await getTranslationPrefs().catch(() => ({ prefs: { autoTranslate: false } }))
 	const prefs = data.prefs || { autoTranslate: false }
 	const root = await renderTemplate('hub/prefs/translation', {
 		autoTranslateChecked: prefs.autoTranslate ? 'checked' : '',
@@ -29,13 +29,7 @@ export async function mountTranslationPrefsPanel(panel, footer) {
 	footer.querySelector('[data-action="save"]')?.addEventListener('click', () => {
 		const checked = panel.querySelector('#auto-translate') instanceof HTMLInputElement
 			&& /** @type {HTMLInputElement} */ panel.querySelector('#auto-translate').checked
-		void fetch('/api/parts/shells:chat/translation-prefs', {
-			method: 'PUT',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ prefs: { ...prefs, autoTranslate: checked } }),
-		}).then(res => {
-			if (!res.ok) throw new Error(String(res.status))
+		void putTranslationPrefs({ prefs: { ...prefs, autoTranslate: checked } }).then(() => {
 			showToastI18n('success', 'chat.hub.translationPrefs.saved')
 			closeOverlayModal()
 		}).catch(error => {

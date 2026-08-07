@@ -8,6 +8,8 @@
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { renderTemplateAsHtmlString } from '../../../../scripts/features/template.mjs'
+import { getDagTips } from '../src/endpoints/groupCore.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { refreshBoundBanners } from './core/bindings.mjs'
@@ -55,11 +57,7 @@ export async function refreshDagForkBanner() {
 		store.federation.dagTips = []
 		return
 	}
-	const response = await fetch(
-		`/api/parts/shells:chat/groups/${encodeURIComponent(store.context.currentGroupId)}/dag/tips`,
-		{ credentials: 'include' },
-	)
-	const data = await response.json()
+	const data = await getDagTips(store.context.currentGroupId)
 	const tips = Array.isArray(data.tips) ? data.tips : []
 	store.federation.dagTips = tips
 	const governanceFork = !!data.governanceFork || !!store.context.currentState?.governanceFork
@@ -168,6 +166,6 @@ export function updateStatusBanners() {
 	refreshGshBufferBanner()
 	refreshQuarantineBanner()
 	refreshLocalViewBanner()
-	void refreshChannelPinsBar()
-	void refreshDagForkBanner().then(() => refreshLocalViewBanner())
+	refreshChannelPinsBar().catch(handleError('chat.hub.operationFailed'))
+	refreshDagForkBanner().then(refreshLocalViewBanner).catch(handleError('chat.hub.operationFailed'))
 }

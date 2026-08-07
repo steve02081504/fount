@@ -3,7 +3,7 @@
  * 【职责】时间线步进与重新生成。
  */
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
-import { deleteChannelMessage, modifyBranch, triggerChannelReply } from '../../../src/api/groupChannel.mjs'
+import { deleteChannelMessage, modifyBranch, triggerChannelReply } from '../../../src/endpoints/groupChannel.mjs'
 
 /**
  * @param {HTMLElement} button 被点击按钮

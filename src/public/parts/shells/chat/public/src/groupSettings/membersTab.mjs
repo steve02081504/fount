@@ -6,7 +6,8 @@ import { authorDisplayLabel } from '../../hub/core/domUtils.mjs'
 import { aliasForEntity } from '../../shared/aliases.mjs'
 import { avatarInitial } from '../../shared/hashAvatar.mjs'
 import { disambiguateLabels, resolveDisplayName } from '../../shared/nameResolve.mjs'
-import { unbanMember } from '../api/groupGovernance.mjs'
+import { unbanMember } from '../endpoints/groupGovernance.mjs'
+import { kickMember as kickMemberRequest } from '../endpoints/members.mjs'
 import { memberDisplaysAsAdmin } from '../memberDisplay.mjs'
 
 /**
@@ -20,11 +21,7 @@ async function kickMember(context, username) {
 		if (!confirmI18n('chat.group.settings.page.kick.selfNodeWarning', { name: username })) return
 
 	if (!confirmI18n('chat.group.settings.page.kick.confirm', { name: username })) return
-	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/members/${encodeURIComponent(username)}/kick`, {
-		method: 'POST',
-		credentials: 'include'
-	})
-	if (!resp.ok) throw new Error(resp.statusText)
+	await kickMemberRequest(context.groupId, username)
 	showToastI18n('success', 'chat.group.settings.page.kick.success')
 	await context.reload(context.groupId)
 }
@@ -39,7 +36,7 @@ async function banMember(context, username) {
 	const picked = await pickBanScope({ displayName: username })
 	if (!picked) return
 	try {
-		const { banMemberWithScope } = await import('../api/groupBan.mjs')
+		const { banMemberWithScope } = await import('../endpoints/groupBan.mjs')
 		await banMemberWithScope(context.groupId, username, picked)
 		showToastI18n('success', 'chat.group.settings.page.banSuccess')
 		await context.reload(context.groupId)

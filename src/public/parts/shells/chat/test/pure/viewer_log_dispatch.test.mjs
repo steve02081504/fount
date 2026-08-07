@@ -19,7 +19,7 @@ const baseLog = [
 Deno.test('applyWorldChatLogView uses GetChatLogForViewer', async () => {
 	const filtered = [baseLog[0]]
 	/** @type {(req: object, viewer: object) => Promise<object[]>} */
-	const getForViewer = async (_req, viewer) => {
+	const getForViewer = async (req, viewer) => {
 		assertEquals(viewer.kind, 'char')
 		return filtered
 	}

@@ -3,6 +3,7 @@
  * 列表本体由 Social relationships API 写入；纯转换在 `shared/personalFilter.mjs`。
  * Social 前端不引用本模块（走自有 feed/profile 后端过滤）。
  */
+import { postRelationshipBlock } from '../src/endpoints/social.mjs'
 import {
 	fetchPersonalFilterSets,
 	isPersonallyFiltered,
@@ -52,16 +53,7 @@ export function invalidateHubPersonalFilter() {
  */
 export async function postPersonalBlock(targetEntityHash, block) {
 	if (!store.viewer.operatorEntityHash) throw new Error('viewer entity required')
-	const resp = await fetch('/api/parts/shells:social/relationships/block', {
-		method: 'POST',
-		credentials: 'include',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ entityHash: targetEntityHash, block }),
-	})
-	if (!resp.ok) {
-		const data = await resp.json().catch(() => ({}))
-		throw new Error(data.error || resp.statusText)
-	}
+	await postRelationshipBlock(targetEntityHash, block)
 	invalidateHubPersonalFilter()
 	await loadHubPersonalFilter()
 }

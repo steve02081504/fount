@@ -3,13 +3,15 @@
  * 【职责】左侧服务器栏：渲染用户群组列表、文件夹分组，并从 API 加载/缓存 `store.sidebar.groups`。
  * 【原理】`renderServerBar` 填充 `#server-list`；支持拖拽排序与群组入口点击（委托给 `sidebar.selectGroup`）。
  * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
- * 【关联】../../../../scripts/template、../src/api/groupBookmarks、groupCore、core/domUtils、core/state、friendBindings、groupContextMenu、sidebar
+ * 【关联】../../../../scripts/template、../src/endpoints/groupBookmarks、groupCore、core/domUtils、core/state、friendBindings、groupContextMenu、sidebar
  */
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { aliasForGroup } from '../shared/aliases.mjs'
 import { isGroupMutedInSidebar, loadNotificationPreferences } from '../shared/notificationPreferences.mjs'
-import { getChatBookmarks, saveChatBookmarks } from '../src/api/groupBookmarks.mjs'
-import { getGroupList } from '../src/api/groupCore.mjs'
+import { getGroupFolders, putGroupFolders } from '../src/endpoints/folders.mjs'
+import { getChatBookmarks, saveChatBookmarks } from '../src/endpoints/groupBookmarks.mjs'
+import { getGroupList } from '../src/endpoints/groupCore.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { avatarColor, avatarInitial, groupDisplayName } from './core/domUtils.mjs'
@@ -33,12 +35,8 @@ import { formatUnreadBadgeHtml } from './unread.mjs'
  * @returns {Promise<void>} 无
  */
 export async function persistGroupFolders() {
-	await fetch('/api/parts/shells:chat/group-folders', {
-		method: 'PUT',
-		credentials: 'include',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ folders: store.sidebar.groupFoldersState.folders }),
-	}).catch(() => { })
+	await putGroupFolders({ folders: store.sidebar.groupFoldersState.folders })
+		.catch(handleError('chat.hub.operationFailed'))
 }
 
 /**
@@ -218,9 +216,10 @@ export async function renderServerBar() {
 
 /** 拉取群组列表与文件夹布局并刷新服务器栏。 @returns {Promise<void>} */
 export async function loadGroups() {
-	const groupListPromise = getGroupList()
-	const foldersResponse = await fetch('/api/parts/shells:chat/group-folders', { credentials: 'include' })
-	const groupList = await groupListPromise
+	const [groupList, foldersPayload] = await Promise.all([
+		getGroupList(),
+		getGroupFolders().catch(() => null),
+	])
 	store.sidebar.groups = groupList.sort(
 		(left, right) => new Date(right.lastMessageTime || 0) - new Date(left.lastMessageTime || 0),
 	)
@@ -232,9 +231,8 @@ export async function loadGroups() {
 		)
 		if (liveBookmarks.length !== bookmarks.length) await saveChatBookmarks(liveBookmarks)
 	}
-	if (foldersResponse.ok) {
-		const payload = await foldersResponse.json()
-		const rawFolders = Array.isArray(payload.folders) ? payload.folders : []
+	if (foldersPayload) {
+		const rawFolders = Array.isArray(foldersPayload.folders) ? foldersPayload.folders : []
 		store.sidebar.groupFoldersState = {
 			folders: rawFolders.map((folder, folderIndex) => ({
 				id: String(folder.id || '').trim() || `folder-${folderIndex}`,

@@ -6,23 +6,21 @@
 import { usingTemplates } from '../../../../scripts/features/template.mjs'
 import { initTranslations } from '../../../../scripts/i18n/index.mjs'
 import { loadAliases } from '../shared/aliases.mjs'
-import { handleUIError } from '../src/ui/errors.mjs'
+import { getViewer } from '../src/endpoints/viewer.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { whoami } from '/scripts/endpoints/base.mjs'
 
 import { store } from './core/state.mjs'
 import { parseHash } from './core/urlHash.mjs'
 
 /** @returns {Promise<void>} 拉取 viewer 到 store（顶栏详情由 init.mjs 补全） */
 async function loadViewerIdentity() {
-	const [viewerResp, whoamiResp] = await Promise.all([
-		fetch('/api/parts/shells:chat/viewer', { credentials: 'include' }),
-		fetch('/api/whoami', { credentials: 'include' }),
+	const [data, who] = await Promise.all([
+		getViewer().catch(() => null),
+		whoami().catch(() => null),
 	])
-	if (whoamiResp.ok) {
-		const whoami = await whoamiResp.json()
-		store.viewer.username = whoami.username || null
-	}
-	if (!viewerResp.ok) return
-	const data = await viewerResp.json()
+	if (who?.username) store.viewer.username = who.username || null
+	if (!data) return
 	store.viewer.nodeHash = data.nodeHash || null
 	store.viewer.operatorEntityHash = data.viewerEntityHash || null
 	store.viewer.viewerEntityHash = data.viewerEntityHash || null
@@ -49,7 +47,7 @@ async function navigateHubFromLocation() {
 			applied = await applyChatRunUri(runUri)
 		}
 		catch (e) {
-			handleUIError(e, 'chat.hub.load.groupFailed')
+			handleError('chat.hub.load.groupFailed')(e)
 		}
 		if (applied?.groupId) {
 			groupId = applied.groupId
@@ -97,14 +95,14 @@ export async function initCore() {
 	const { setHubPane } = await import('./hubPane.mjs')
 	setHubPane('nav')
 	await loadViewerIdentity()
-	await loadAliases().catch(() => { })
+	await loadAliases().catch(handleError('chat.hub.operationFailed'))
 	try {
 		const { loadGroups } = await import('./serverBar.mjs')
 		await loadGroups()
 	}
 	catch (error) {
 		store.sidebar.groups = []
-		handleUIError(error, 'chat.hub.load.groupFailed')
+		handleError('chat.hub.load.groupFailed')(error)
 	}
 	await navigateHubFromLocation()
 }

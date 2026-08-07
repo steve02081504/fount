@@ -5,6 +5,7 @@
  * 【数据结构】Record<string, boolean> 权限表；stateJson.viewerMemberPubKeyHash。
  * 【关联】Hub composer、reactionHandlers；后端 groups/:id/state。
  */
+import { getViewerPermissions } from './endpoints/groupCore.mjs'
 
 /**
  * @param {object} stateJson `/groups/:id/state` 的 JSON
@@ -26,12 +27,7 @@ export async function fetchViewerChannelPermissions(stateJson, groupId, channelI
 	const pubKeyHash = stateJson?.viewerMemberPubKeyHash
 	if (!pubKeyHash) return {}
 	const ch = channelId || governanceChannelIdFromState(stateJson)
-	const response = await fetch(
-		`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/permissions?pubKeyHash=${encodeURIComponent(pubKeyHash)}&channelId=${encodeURIComponent(ch)}`,
-		{ credentials: 'include' },
-	)
-	if (!response.ok) return {}
-	return response.json()
+	return getViewerPermissions(groupId, pubKeyHash, ch).catch(() => ({}))
 }
 
 /**

@@ -3,14 +3,22 @@
  * 【职责】群组/频道聊天配置面板：挂载到设置浮层或内嵌区，编辑频道与生成相关选项。
  * 【原理】`mountChatConfigPanel` 将配置表单模板注入指定容器（常由 `chat.openGroupSettingsModal` 调用）；配置变更可能触发重新生成或刷新消息；本模块只负责表单 UI 与保存回调。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../../../../scripts/parts、../../../../scripts/template、../../../../scripts/toast、../src/api/groupCore、groupClient、groupChannel、core/domUtils、core/overlayModal、core/state。
+ * 【关联】../../../../scripts/parts、../../../../scripts/template、../../../../scripts/toast、../src/endpoints/groupCore、groupChannel、core/domUtils、core/overlayModal、core/state。
  */
-import { getPartList } from '../../../../scripts/api/parts.mjs'
+import { getPartList } from '../../../../scripts/endpoints/parts.mjs'
 import { mountTemplate, renderTemplateAsHtmlString } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { triggerChannelReply } from '../src/api/groupChannel.mjs'
-import { groupRequest } from '../src/api/groupClient.mjs'
-import { getGroupChatConfig } from '../src/api/groupCore.mjs'
+import { triggerChannelReply } from '../src/endpoints/groupChannel.mjs'
+import {
+	addGroupPlugin,
+	getGroupChatConfig,
+	listGroupPlugins,
+	removeGroupChar,
+	removeGroupPlugin,
+	setGroupCharFrequency,
+	setGroupPersona,
+	setGroupWorld,
+} from '../src/endpoints/groupCore.mjs'
 
 import { showOverlayNotice } from './core/overlayModal.mjs'
 import { store } from './core/state.mjs'
@@ -57,7 +65,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 			getPartList('worlds').catch(() => []),
 			getPartList('personas').catch(() => []),
 			getPartList('plugins').catch(() => []),
-			groupRequest(groupId, 'plugins', 'GET').catch(() => []),
+			listGroupPlugins(groupId).catch(() => []),
 		])
 
 		const charlist = Array.isArray(initial?.charlist) ? initial.charlist : []
@@ -80,7 +88,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 		document.getElementById('character-chat-persona')?.addEventListener('change', async (changeEvent) => {
 			const v = changeEvent.target.value || null
 			try {
-				await groupRequest(groupId, 'persona', 'PUT', { personaname: v })
+				await setGroupPersona(groupId, v)
 				const { invalidateUserProfileCache } = await import('./presence.mjs')
 				const { refreshViewerHubPresentation } = await import('./init.mjs')
 				const { renderMemberList } = await import('./sidebar/index.mjs')
@@ -100,7 +108,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 			document.getElementById('character-chat-world')?.addEventListener('change', async (changeEvent) => {
 				const v = changeEvent.target.value || null
 				try {
-					await groupRequest(groupId, 'world', 'PUT', { worldname: v, channelId })
+					await setGroupWorld(groupId, v, channelId)
 					showOverlayNotice('success', '', 'chat.hub.config.saved')
 				}
 				catch (err) {
@@ -113,7 +121,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 				const pluginname = sel?.value
 				if (!pluginname) return
 				try {
-					await groupRequest(groupId, 'plugin', 'POST', { pluginname })
+					await addGroupPlugin(groupId, pluginname)
 					await mountChatConfigPanel(groupId, channelId, options)
 					showOverlayNotice('success', '', 'chat.hub.config.saved')
 				}
@@ -127,7 +135,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 					const pluginname = removePluginButton.dataset.plugin
 					if (!pluginname) return
 					try {
-						await groupRequest(groupId, `plugin/${encodeURIComponent(pluginname)}`, 'DELETE')
+						await removeGroupPlugin(groupId, pluginname)
 						await mountChatConfigPanel(groupId, channelId, options)
 						showOverlayNotice('success', '', 'chat.hub.config.saved')
 					}
@@ -145,7 +153,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 				if (!charname) return
 				const frequency = Number(inputEvent.target.value) / 100
 				try {
-					await groupRequest(groupId, `char/${encodeURIComponent(charname)}/frequency`, 'PUT', { frequency })
+					await setGroupCharFrequency(groupId, charname, frequency)
 				}
 				catch (err) {
 					showToastI18n('error', 'chat.hub.config.saveFailed', { error: err.message })
@@ -172,7 +180,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 				const charname = removeCharButton.dataset.char
 				if (!charname) return
 				try {
-					await groupRequest(groupId, `char/${encodeURIComponent(charname)}`, 'DELETE')
+					await removeGroupChar(groupId, charname)
 					await mountChatConfigPanel(groupId, channelId, options)
 					showOverlayNotice('success', '', 'chat.hub.config.saved')
 				}

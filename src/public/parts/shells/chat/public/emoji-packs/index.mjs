@@ -7,6 +7,8 @@ import { discoverEmojiPackOffers } from '/scripts/features/emoji/discover.mjs'
 import { showEmojiPackPreview } from '/scripts/components/emojiPackPreview.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
+import { joinGroup } from '../src/endpoints/groupCore.mjs'
+import { postRelationshipFollow } from '../src/endpoints/social.mjs'
 
 applyTheme()
 await initTranslations()
@@ -14,9 +16,6 @@ await initTranslations()
 const statusEl = document.getElementById('emoji-packs-status')
 const gridEl = document.getElementById('emoji-packs-grid')
 const emptyEl = document.getElementById('emoji-packs-empty')
-
-const CHAT_API = '/api/parts/shells:chat'
-const SOCIAL_API = '/api/parts/shells:social'
 
 /**
  * @param {HTMLElement} actions 操作区
@@ -91,21 +90,15 @@ function renderOfferCard(offer) {
 
 	if (sourceKind === 'group' && sourceId) {
 		/** @returns {Promise<void>} 加入来源群 */
-		const joinGroup = async () => {
-			const r = await fetch(`${CHAT_API}/groups/${encodeURIComponent(sourceId)}/join`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: '{}',
-			})
-			if (!r.ok) throw new Error(await r.text() || r.statusText)
+		const joinSourceGroup = async () => {
+			await joinGroup(sourceId)
 			window.location.href = `/parts/shells:chat/hub/#group:${encodeURIComponent(sourceId)}:default`
 		}
 		addActionButton(actions, {
 			i18nKey: 'chat.emojiPacks.joinGroup',
 			fallback: 'Join',
 			className: 'btn btn-primary btn-sm',
-			onClick: joinGroup,
+			onClick: joinSourceGroup,
 		})
 	}
 	else if (sourceKind === 'entity' && sourceId) {
@@ -113,13 +106,7 @@ function renderOfferCard(offer) {
 		let followBtn
 		/** @returns {Promise<void>} 关注作者 */
 		const followAuthor = async () => {
-			const r = await fetch(`${SOCIAL_API}/relationships/follow`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ entityHash: sourceId, follow: true }),
-			})
-			if (!r.ok) throw new Error(await r.text() || r.statusText)
+			await postRelationshipFollow(sourceId, true)
 			showToastI18n('success', 'chat.emoji.followSuccess')
 			followBtn.disabled = true
 			followBtn.dataset.i18n = 'chat.emoji.alreadyFollowing'

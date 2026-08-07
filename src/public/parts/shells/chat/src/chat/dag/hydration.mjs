@@ -15,6 +15,7 @@ import { Buffer } from 'node:buffer'
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
@@ -221,7 +222,7 @@ export function hydrateWireFiles(username, groupId, state, wireFiles) {
 			 */
 			get() {
 				if (bufferCache) return bufferCache
-				void ensureBuffer().catch(() => { })
+				ensureBuffer().catch(handleError)
 				return bufferCache ?? Buffer.alloc(0)
 			},
 		})

@@ -251,7 +251,7 @@ export function resumeActiveStreamBuffers() {
 	for (const streamId of [...volatileStreams.keys()])
 		void (async () => {
 			try {
-				const { getStreamBufferChunks } = await import('../../src/api/groupChannel.mjs')
+				const { getStreamBufferChunks } = await import('../../src/endpoints/groupChannel.mjs')
 				const chunks = await getStreamBufferChunks(groupId, channelId, streamId)
 				for (const chunk of chunks)
 					await appendStreamSlices(streamId, Number(chunk.chunkSeq ?? 0), chunk.slices || [], channelId)

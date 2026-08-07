@@ -4,9 +4,19 @@
 import { primaryLocale, loadPreferredLangs } from '/scripts/i18n/index.mjs'
 import { resolveEmojiItemLabels, resolvePackPresentation } from '/scripts/features/emoji/packPresentation.mjs'
 
+import { CHAT_API_CLIENT_PREFIX } from '../shared/apiPaths.mjs'
 import { formatEmojiToken, tokenForSelection } from '../shared/inlineTokenSyntax.mjs'
+import {
+	addEmojiCollectionPack,
+	discoverEmojiPacks,
+	getEmojiUsage,
+	getGroupPreview,
+	listEmojiPacks,
+	recordEmojiUsage,
+	removeEmojiCollectionPack,
+} from '../src/endpoints/emoji.mjs'
 
-const CHAT_API = '/api/parts/shells:chat'
+const CHAT_API = CHAT_API_CLIENT_PREFIX
 
 /**
  * 包表情内容 URL（经 chat API 代理）。
@@ -23,9 +33,7 @@ export function packEmojiContentUrl(packId, emojiId) {
  * @returns {Promise<object>} emoji-usage 载荷
  */
 async function fetchEmojiUsage() {
-	const r = await fetch(`${CHAT_API}/emoji-usage`, { credentials: 'include' })
-	if (!r.ok) return { log: [], lastUsedAtByPack: {}, collection: { packIds: [], emojiIds: [] } }
-	return r.json()
+	return getEmojiUsage()
 }
 
 /**
@@ -35,11 +43,7 @@ async function fetchEmojiUsage() {
  * @returns {Promise<object[]>} 原始包清单
  */
 async function fetchAvailablePacks(context = {}) {
-	const q = context.groupId ? `?groupId=${encodeURIComponent(context.groupId)}` : ''
-	const r = await fetch(`${CHAT_API}/emoji-packs${q}`, { credentials: 'include' })
-	if (!r.ok) return []
-	const data = await r.json()
-	return Array.isArray(data.packs) ? data.packs : []
+	return listEmojiPacks(context.groupId)
 }
 
 /**
@@ -126,9 +130,13 @@ export default {
 	async packSourcePreview(pack) {
 		const groupId = pack?.source?.kind === 'group' ? pack.source.id : pack?.groupId
 		if (!groupId) return null
-		const r = await fetch(`${CHAT_API}/groups/${encodeURIComponent(groupId)}/preview`, { credentials: 'include' })
-		if (!r.ok) return { kind: 'group', groupId, pack }
-		return { kind: 'group', groupId, pack, preview: await r.json() }
+		try {
+			const preview = await getGroupPreview(groupId)
+			return { kind: 'group', groupId, pack, preview }
+		}
+		catch {
+			return { kind: 'group', groupId, pack }
+		}
 	},
 
 	/**
@@ -138,12 +146,8 @@ export default {
 	 */
 	async discoverPacks(options = {}) {
 		const locales = loadPreferredLangs().length ? loadPreferredLangs() : [primaryLocale()]
-		const r = await fetch(`${CHAT_API}/emoji-packs/discover?limit=${encodeURIComponent(options.limit || 48)}`, {
-			credentials: 'include',
-		})
-		if (!r.ok) return []
-		const data = await r.json()
-		return (data.offers || []).map(offer => {
+		const offers = await discoverEmojiPacks(options.limit || 48)
+		return offers.map(offer => {
 			const presentation = resolvePackPresentation(offer, locales, offer.infoDefaults || {})
 			return {
 				packId: offer.packId,
@@ -177,12 +181,7 @@ export default {
 		 * @returns {Promise<void>}
 		 */
 		async record(item) {
-			await fetch(`${CHAT_API}/emoji-usage/record`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(item),
-			})
+			await recordEmojiUsage(item)
 		},
 	},
 
@@ -201,15 +200,7 @@ export default {
 		 * @returns {Promise<{ packIds: string[], emojiIds: string[] }>} 更新后收藏
 		 */
 		async add(packId) {
-			const r = await fetch(`${CHAT_API}/emoji-usage/collection/packs`, {
-				method: 'POST',
-				credentials: 'include',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ packId }),
-			})
-			if (!r.ok) throw new Error(await r.text() || r.statusText)
-			const data = await r.json().catch(() => ({}))
-			return data.collection || data
+			return addEmojiCollectionPack(packId)
 		},
 		/**
 		 * 从收藏移除包。
@@ -217,13 +208,7 @@ export default {
 		 * @returns {Promise<{ packIds: string[], emojiIds: string[] }>} 更新后收藏
 		 */
 		async remove(packId) {
-			const r = await fetch(`${CHAT_API}/emoji-usage/collection/packs/${encodeURIComponent(packId)}`, {
-				method: 'DELETE',
-				credentials: 'include',
-			})
-			if (!r.ok) throw new Error(await r.text() || r.statusText)
-			const data = await r.json().catch(() => ({}))
-			return data.collection || data
+			return removeEmojiCollectionPack(packId)
 		},
 	},
 

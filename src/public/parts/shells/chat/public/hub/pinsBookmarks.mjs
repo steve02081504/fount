@@ -3,12 +3,12 @@
  * 【职责】置顶消息与聊天书签：拉取列表、取消置顶/删除书签，渲染到顶栏搜索框左侧的两个弹出面板。
  * 【原理】`refreshPinsBookmarks` 更新 `#pins-wrap`/`#bookmarks-wrap` 面板内条目与按钮计数徽标，配合 `banners.setPinsBookmarksWrapVisible` 控制按钮可见性；`wirePinsBookmarksPanels` 负责按钮的展开/收起交互。条目摘要依赖 `pinPreview`；点击可跳转到对应消息事件。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../../../../scripts/template、../src/api/groupBookmarks、banners、core/domUtils、core/state、sidebar、messages/messages、messages/pinPreview。
+ * 【关联】../../../../scripts/template、../src/endpoints/groupBookmarks、banners、core/domUtils、core/state、sidebar、messages/messages、messages/pinPreview。
  */
 import { mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
-import { getChatBookmarks, removeChatBookmark } from '../src/api/groupBookmarks.mjs'
-import { unpinMessage } from '../src/api/groupChannel.mjs'
-import { getGroupState } from '../src/api/groupCore.mjs'
+import { getChatBookmarks, removeChatBookmark } from '../src/endpoints/groupBookmarks.mjs'
+import { unpinMessage } from '../src/endpoints/groupChannel.mjs'
+import { getGroupState } from '../src/endpoints/groupCore.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { setPinsBookmarksWrapVisible, refreshChannelPinsBar } from './banners.mjs'

@@ -8,7 +8,8 @@ import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { isCared, setCared } from '../shared/care.mjs'
 import { promptText } from '/scripts/features/promptDialog.mjs'
-import { getGroupState } from '../src/api/groupCore.mjs'
+import { getGroupState } from '../src/endpoints/groupCore.mjs'
+import { kickMember } from '../src/endpoints/members.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 
 import { refreshAliasDependentUi } from './aliasUi.mjs'
@@ -134,26 +135,22 @@ export async function showMemberContextMenu(event, memberElement) {
 			if (!confirmI18n('chat.hub.member.context.kickSelfNodeWarning', { name: displayName })) return
 
 		if (!confirmI18n('chat.group.settings.page.kick.confirm', { name: displayName })) return
-		const groupId = store.context.currentGroupId
-		const resp = await fetch(
-			`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/members/${encodeURIComponent(memberKey)}/kick`,
-			{ method: 'POST', credentials: 'include' },
-		)
-		if (!resp.ok) {
-			const data = await resp.json().catch(() => ({}))
-			showToastI18n('error', 'chat.hub.operationFailed', { error: data.error || resp.statusText })
-			return
+		try {
+			await kickMember(store.context.currentGroupId, memberKey)
+			showToastI18n('success', 'chat.group.settings.page.kick.success')
+			store.context.currentState = await getGroupState(store.context.currentGroupId)
+			void renderMemberList(store.context.currentState)
+			closeOnce()
 		}
-		showToastI18n('success', 'chat.group.settings.page.kick.success')
-		store.context.currentState = await getGroupState(store.context.currentGroupId)
-		void renderMemberList(store.context.currentState)
-		closeOnce()
+		catch (error) {
+			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+		}
 	})
 	menu.querySelector('.member-menu-ban')?.addEventListener('click', async () => {
 		if (!confirmI18n('chat.group.settings.page.banConfirm', { name: displayName })) return
 		const picked = await pickBanScope({ displayName })
 		if (!picked) return
-		const { banMemberWithScope } = await import('../src/api/groupBan.mjs')
+		const { banMemberWithScope } = await import('../src/endpoints/groupBan.mjs')
 		try {
 			await banMemberWithScope(store.context.currentGroupId, memberKey, picked)
 			showToastI18n('success', 'chat.group.settings.page.banSuccess')

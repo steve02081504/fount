@@ -8,6 +8,8 @@
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
 
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
+
 import { channelMessage, normalizeChannelMessage } from '../../../public/shared/channelContent.mjs'
 import { commitChannelMessageEvent } from '../channel/messageCommit.mjs'
 import { replicateChunkToFederation } from '../federation/chunks.mjs'
@@ -34,7 +36,7 @@ async function storeContentRef(username, groupId, text) {
 	const storage = getStorageForGroup(username, state.groupSettings, { groupId })
 	const { storageLocator } = await storage.putChunk(groupId, hash, buffer)
 	if (storage.storagePeerId === 'federation_swarm')
-		void replicateChunkToFederation(username, groupId, hash, buffer).catch(() => { })
+		replicateChunkToFederation(username, groupId, hash, buffer).catch(handleError)
 	return {
 		contentHash: hash,
 		alg: 'sha256',

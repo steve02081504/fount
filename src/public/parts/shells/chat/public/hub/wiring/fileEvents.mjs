@@ -1,4 +1,5 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { store } from '../core/state.mjs'
 import { isFilesDrawerOpen, refreshFilesDrawer, setFilesDrawerOpen, wireFilesDrawerToggle } from '../files.mjs'
 
@@ -18,8 +19,7 @@ export function wireFileEvents() {
 			await addFilesFromEvent({ target: { files } })
 		}
 		catch (err) {
-			const { handleUIError } = await import('../../src/ui/errors.mjs')
-			handleUIError(err, 'chat.hub.send.imageFailed')
+			handleError('chat.hub.send.imageFailed')(err)
 		}
 	})
 
@@ -31,13 +31,11 @@ export function wireFileEvents() {
 		const open = !isFilesDrawerOpen()
 		setFilesDrawerOpen(open)
 		if (open)
-			void refreshFilesDrawer({
+			refreshFilesDrawer({
 				groupId: store.context.currentGroupId,
 				state: store.context.currentState,
 				viewer: store.context.currentState?.viewer,
-			}).catch(err => {
-				void import('../../src/ui/errors.mjs').then(({ handleUIError }) => handleUIError(err))
-			})
+			}).catch(handleError('chat.hub.files.loadFailed'))
 	})
 
 	wireFilesDrawerToggle()

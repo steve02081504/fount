@@ -1,5 +1,5 @@
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { handleUIError } from '../src/ui/errors.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 /**
  * 统一 Hub 操作：toast + 可选 reload。
@@ -15,7 +15,7 @@ export async function runHubAction(action, options = {}) {
 		return true
 	}
 	catch (error) {
-		handleUIError(error, options.errorKey || 'chat.hub.message.action.failed')
+		handleError(options.errorKey || 'chat.hub.message.action.failed')(error)
 		return false
 	}
 }
