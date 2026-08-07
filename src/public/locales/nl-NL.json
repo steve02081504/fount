@@ -4322,7 +4322,8 @@
 			"post_note": "${author} heeft informatie aan je bericht toegevoegd",
 			"live_started": "${author} is begonnen met livestreamen",
 			"view": "Bekijken",
-			"markAllRead": "Markeer alles als gelezen"
+			"markAllRead": "Markeer alles als gelezen",
+			"loadFailed": "Melding laden mislukt: ${error}"
 		},
 		"saved": {
 			"all": "Alle",
@@ -4373,6 +4374,7 @@
 		},
 		"profile": {
 			"edit": "Profiel bewerken",
+			"loadFailed": "Kan gegevens niet laden: ${error}",
 			"viewPosts": "Bekijk sociale profielen",
 			"settingsBtn": {
 				"aria-label": "sociale instellingen"
@@ -4440,6 +4442,8 @@
 		},
 		"live": {
 			"empty": "Nog geen live-uitzending",
+			"loadFailed": "Live-uitzending kan niet worden geladen: ${error}",
+			"joinFailed": "Verbinding met live-uitzending mislukt: ${error}",
 			"viewers": "${n} mensen keken",
 			"likes": "${n} Vind ik leuk",
 			"local": "Lokaal",

@@ -4322,7 +4322,8 @@
 			"post_note": "${author} bætti upplýsingum við færsluna þína",
 			"live_started": "${author} hóf streymi í beinni",
 			"view": "Athugaðu",
-			"markAllRead": "Merktu allt sem lesið"
+			"markAllRead": "Merktu allt sem lesið",
+			"loadFailed": "Hleðsla tilkynninga mistókst: ${error}"
 		},
 		"saved": {
 			"all": "Allt",
@@ -4373,6 +4374,7 @@
 		},
 		"profile": {
 			"edit": "Breyta prófíl",
+			"loadFailed": "Mistókst að hlaða gögnum: ${error}",
 			"viewPosts": "Skoða félagslega prófíla",
 			"settingsBtn": {
 				"aria-label": "Samfélagsstillingar"
@@ -4440,6 +4442,8 @@
 		},
 		"live": {
 			"empty": "Engin bein útsending ennþá",
+			"loadFailed": "Ekki tókst að hlaða beinni útsendingu: ${error}",
+			"joinFailed": "Tenging í beinni útsendingu mistókst: ${error}",
 			"viewers": "${n} manns horfðu á",
 			"likes": "${n} Líkar við",
 			"local": "Staðvært",

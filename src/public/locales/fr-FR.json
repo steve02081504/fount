@@ -4322,7 +4322,8 @@
 			"post_note": "${author} a ajouté des informations à votre message",
 			"live_started": "${author} a commencé la diffusion en direct",
 			"view": "Voir",
-			"markAllRead": "Marquer tout comme lu"
+			"markAllRead": "Marquer tout comme lu",
+			"loadFailed": "Échec du chargement de la notification : ${error}"
 		},
 		"saved": {
 			"all": "Tout",
@@ -4373,6 +4374,7 @@
 		},
 		"profile": {
 			"edit": "Modifier le profil",
+			"loadFailed": "Échec du chargement des données : ${error}",
 			"viewPosts": "Afficher les profils sociaux",
 			"settingsBtn": {
 				"aria-label": "Paramètres sociaux"
@@ -4440,6 +4442,8 @@
 		},
 		"live": {
 			"empty": "Pas encore de diffusion en direct",
+			"loadFailed": "Échec du chargement de la diffusion en direct : ${error}",
+			"joinFailed": "Échec de la connexion à la diffusion en direct : ${error}",
 			"viewers": "${n} personnes ont regardé",
 			"likes": "${n} J'aime",
 			"local": "cet appareil",

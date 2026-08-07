@@ -4322,7 +4322,8 @@
 			"post_note": "${author} adicionou informações à sua postagem",
 			"live_started": "${author} iniciou a transmissão ao vivo",
 			"view": "Ver",
-			"markAllRead": "Marcar tudo como lido"
+			"markAllRead": "Marcar tudo como lido",
+			"loadFailed": "Falha no carregamento da notificação: ${error}"
 		},
 		"saved": {
 			"all": "Tudo",
@@ -4373,6 +4374,7 @@
 		},
 		"profile": {
 			"edit": "Editar profile",
+			"loadFailed": "Falha ao carregar dados: ${error}",
 			"viewPosts": "Ver perfis sociais",
 			"settingsBtn": {
 				"aria-label": "Definições sociais"
@@ -4440,6 +4442,8 @@
 		},
 		"live": {
 			"empty": "Ainda sem live broadcast",
+			"loadFailed": "Falha ao carregar transmissão ao vivo: ${error}",
+			"joinFailed": "Falha na conexão de transmissão ao vivo: ${error}",
 			"viewers": "${n} pessoas assistiram",
 			"likes": "${n} Curtir",
 			"local": "Máquina local",

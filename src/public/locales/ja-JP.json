@@ -4322,7 +4322,8 @@
 			"post_note": "${author} が投稿に情報を追加しました",
 			"live_started": "${author} がライブ ストリーミングを開始しました",
 			"view": "チェック",
-			"markAllRead": "すべて既読としてマークする"
+			"markAllRead": "すべて既読としてマークする",
+			"loadFailed": "通知の読み込みに失敗しました: ${error}"
 		},
 		"saved": {
 			"all": "すべて",
@@ -4373,6 +4374,7 @@
 		},
 		"profile": {
 			"edit": "プロフィールの編集",
+			"loadFailed": "データのロードに失敗しました: ${error}",
 			"viewPosts": "ソーシャルプロフィールを表示する",
 			"settingsBtn": {
 				"aria-label": "ソーシャル設定"
@@ -4440,6 +4442,8 @@
 		},
 		"live": {
 			"empty": "まだ生放送はありません",
+			"loadFailed": "ライブ ブロードキャストの読み込みに失敗しました: ${error}",
+			"joinFailed": "ライブ ブロードキャスト接続に失敗しました: ${error}",
 			"viewers": "${n} 人が視聴しました",
 			"likes": "${n} の「いいね！」",
 			"local": "ローカルマシン",

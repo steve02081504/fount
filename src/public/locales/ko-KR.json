@@ -4322,7 +4322,8 @@
 			"post_note": "${author}님이 게시물에 메시지를 추가했습니다.",
 			"live_started": "${author}님이 실시간 스트리밍을 시작했습니다.",
 			"view": "확인",
-			"markAllRead": "모두 읽음으로 표시"
+			"markAllRead": "모두 읽음으로 표시",
+			"loadFailed": "알림 로드 실패: ${error}"
 		},
 		"saved": {
 			"all": "전체",
@@ -4373,6 +4374,7 @@
 		},
 		"profile": {
 			"edit": "프로필 편집",
+			"loadFailed": "데이터를 로드하지 못했습니다: ${error}",
 			"viewPosts": "소셜 프로필 보기",
 			"settingsBtn": {
 				"aria-label": "소셜 설정"
@@ -4440,6 +4442,8 @@
 		},
 		"live": {
 			"empty": "아직 라이브 방송이 없습니다",
+			"loadFailed": "실시간 방송을 로드하지 못했습니다: ${error}",
+			"joinFailed": "실시간 방송 연결 실패: ${error}",
 			"viewers": "${n}명이 시청했습니다.",
 			"likes": "${n} 좋아요",
 			"local": "이 기기",

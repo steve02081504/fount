@@ -4322,7 +4322,8 @@
 			"post_note": "${author} ha aggiunto una nota al tuo post",
 			"live_started": "${author} ha avviato il live streaming",
 			"view": "Visualizzazione",
-			"markAllRead": "Segna tutto come letto"
+			"markAllRead": "Segna tutto come letto",
+			"loadFailed": "Caricamento della notifica non riuscito: ${error}"
 		},
 		"saved": {
 			"all": "Tutto",
@@ -4373,6 +4374,7 @@
 		},
 		"profile": {
 			"edit": "Modifica profilo",
+			"loadFailed": "Impossibile caricare i dati: ${error}",
 			"viewPosts": "Visualizza i profili social",
 			"settingsBtn": {
 				"aria-label": "Impostazioni sociali"
@@ -4440,6 +4442,8 @@
 		},
 		"live": {
 			"empty": "Nessuna trasmissione in diretta ancora",
+			"loadFailed": "Impossibile caricare la trasmissione in diretta: ${error}",
+			"joinFailed": "Connessione alla trasmissione in diretta non riuscita: ${error}",
 			"viewers": "${n} persone hanno guardato",
 			"likes": "${n} Mi piace",
 			"local": "Questo dispositivo",

@@ -4322,7 +4322,8 @@
 			"post_note": "${author} đã thêm thông tin vào bài đăng của bạn",
 			"live_started": "${author} đã bắt đầu phát trực tiếp",
 			"view": "Kiểm tra",
-			"markAllRead": "Đánh dấu tất cả là đã đọc"
+			"markAllRead": "Đánh dấu tất cả là đã đọc",
+			"loadFailed": "Tải thông báo không thành công: ${error}"
 		},
 		"saved": {
 			"all": "tất cả",
@@ -4373,6 +4374,7 @@
 		},
 		"profile": {
 			"edit": "Chỉnh sửa hồ sơ",
+			"loadFailed": "Không tải được dữ liệu: ${error}",
 			"viewPosts": "Xem hồ sơ xã hội",
 			"settingsBtn": {
 				"aria-label": "Cài đặt mạng xã hội"
@@ -4440,6 +4442,8 @@
 		},
 		"live": {
 			"empty": "Chưa có phát sóng trực tiếp",
+			"loadFailed": "Không tải được chương trình phát sóng trực tiếp: ${error}",
+			"joinFailed": "Kết nối phát sóng trực tiếp không thành công: ${error}",
 			"viewers": "${n} người đã xem",
 			"likes": "${n} Thích",
 			"local": "máy cục bộ",

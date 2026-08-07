@@ -4297,6 +4297,7 @@ export type LocaleData = {
 			live_started: string
 			view: string
 			markAllRead: string
+			loadFailed: string
 		}
 		saved: {
 			all: string
@@ -4349,6 +4350,7 @@ export type LocaleData = {
 		}
 		profile: {
 			edit: string
+			loadFailed: string
 			viewPosts: string
 			settingsBtn: {
 				'aria-label': string
@@ -4416,6 +4418,8 @@ export type LocaleData = {
 		}
 		live: {
 			empty: string
+			loadFailed: string
+			joinFailed: string
 			viewers: string
 			likes: string
 			local: string
@@ -6245,7 +6249,9 @@ export type LocaleKeyParams = {
 	'social.inbox.aggregated.likeTwo': { author1: string | number; author2: string | number }
 	'social.inbox.aggregated.repost': { author1: string | number; author2: string | number; count: string | number }
 	'social.inbox.aggregated.repostTwo': { author1: string | number; author2: string | number }
+	'social.live.joinFailed': { error: string | number }
 	'social.live.likes': { n: string | number }
+	'social.live.loadFailed': { error: string | number }
 	'social.live.postEndedStats': { duration: string | number; likes: string | number; viewers: string | number }
 	'social.live.viewers': { n: string | number }
 	'social.notes.more': { n: string | number }
@@ -6253,6 +6259,7 @@ export type LocaleKeyParams = {
 	'social.notifications.follow': { author: string | number }
 	'social.notifications.like': { author: string | number }
 	'social.notifications.live_started': { author: string | number }
+	'social.notifications.loadFailed': { error: string | number }
 	'social.notifications.mention': { author: string | number }
 	'social.notifications.poll_closed': { author: string | number }
 	'social.notifications.post_note': { author: string | number }
@@ -6261,6 +6268,7 @@ export type LocaleKeyParams = {
 	'social.poll.deadline': { deadline: string | number }
 	'social.post.exportMediaFailed': { error: string | number }
 	'social.profile.cabinetsFailed': { error: string | number }
+	'social.profile.loadFailed': { error: string | number }
 	'social.replies.loadFailed': { error: string | number }
 	'social.reply.context': { author: string | number }
 	'social.search.loadFailed': { error: string | number }
