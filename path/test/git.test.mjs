@@ -89,9 +89,23 @@ async function extractPsValidBranchFn() {
 	if (start < 0) throw new Error('git_valid_branch_name not found in git.ps1')
 	let depth = 0
 	let end = -1
+	let inSingle = false
 	for (let i = start; i < src.length; i++) {
-		if (src[i] === '{') depth++
-		else if (src[i] === '}') {
+		const ch = src[i]
+		if (inSingle) {
+			if (ch === "'" && src[i + 1] === "'") {
+				i++
+				continue
+			}
+			if (ch === "'") inSingle = false
+			continue
+		}
+		if (ch === "'") {
+			inSingle = true
+			continue
+		}
+		if (ch === '{') depth++
+		else if (ch === '}') {
 			depth--
 			if (depth === 0) {
 				end = i + 1
