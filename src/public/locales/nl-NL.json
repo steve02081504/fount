@@ -359,8 +359,9 @@
 				"switchingToBranch": "Schakelen naar branch '${branch}'…",
 				"removedNoUpdate": "`.noupdate` verwijderd; automatische updates hervat.",
 				"pinningToCommit": "Vastzetten op commit `${ref}` en `.noupdate` aanmaken…",
+				"pinningToPullRequest": "Vastzetten op pull request #${pr} en `.noupdate` aanmaken…",
 				"createdNoUpdate": "`.noupdate` aangemaakt; automatische updates gepauzeerd.",
-				"unknownTarget": "Kan '${target}' niet herkennen: geen bekende branch of commit."
+				"unknownTarget": "Kan '${target}' niet herkennen: geen bekende branch, commit of pull request."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Snelkoppeling op het bureaublad gemaakt op `${path}`",

@@ -359,8 +359,9 @@
 				"switchingToBranch": "Wechsle zu Branch '${branch}' …",
 				"removedNoUpdate": "`.noupdate` entfernt; automatische Updates wieder aktiv.",
 				"pinningToCommit": "Commit `${ref}` wird festgesetzt und `.noupdate` erstellt …",
+				"pinningToPullRequest": "Pull Request #${pr} wird festgesetzt und `.noupdate` erstellt …",
 				"createdNoUpdate": "`.noupdate` erstellt; automatische Updates pausiert.",
-				"unknownTarget": "'${target}' kann nicht erkannt werden: kein bekannter Branch oder Commit."
+				"unknownTarget": "'${target}' kann nicht erkannt werden: kein bekannter Branch, Commit oder Pull Request."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Desktop-Verknüpfung erstellt unter `${path}`",

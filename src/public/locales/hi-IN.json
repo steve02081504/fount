@@ -359,8 +359,9 @@
 				"switchingToBranch": "शाखा '${branch}' पर स्विच किया जा रहा है…",
 				"removedNoUpdate": "`.noupdate` हटाया गया; स्वचालित अपडेट फिर से शुरू हो गए।",
 				"pinningToCommit": "कमिट `${ref}` पर पिन किया जा रहा है और `.noupdate` बनाया जा रहा है…",
+				"pinningToPullRequest": "पुल अनुरोध #${pr} पर पिन किया जा रहा है और `.noupdate` बनाया जा रहा है…",
 				"createdNoUpdate": "`.noupdate` बनाया गया; स्वचालित अपडेट रोक दिए गए।",
-				"unknownTarget": "'${target}' को पहचाना नहीं जा सका: यह कोई ज्ञात शाखा या कमिट नहीं है।"
+				"unknownTarget": "'${target}' को पहचाना नहीं जा सका: यह कोई ज्ञात शाखा, कमिट या पुल अनुरोध नहीं है।"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "`${path}` पर डेस्कटॉप शॉर्टकट बनाया गया",

@@ -359,8 +359,9 @@
 				"switchingToBranch": "Перемикання на гілку «${branch}»…",
 				"removedNoUpdate": "`.noupdate` видалено; автоматичні оновлення відновлено.",
 				"pinningToCommit": "Закріплення на коміті `${ref}` і створення `.noupdate`…",
+				"pinningToPullRequest": "Закріплення на pull request #${pr} і створення `.noupdate`…",
 				"createdNoUpdate": "Створено `.noupdate`; автоматичні оновлення призупинено.",
-				"unknownTarget": "Неможливо розпізнати «${target}»: це не відома гілка і не коміт."
+				"unknownTarget": "Неможливо розпізнати «${target}»: це не відома гілка, коміт або pull request."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Ярлик на робочому столі створено в `${path}`",
