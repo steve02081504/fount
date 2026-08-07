@@ -5504,7 +5504,8 @@
 		"locked": "Chưa mở khóa",
 		"toast_title": "Thành tích đã được mở khóa!",
 		"error": {
-			"load_failed": "Không tải được thành tích: ${message}"
+			"load_failed": "Không tải được thành tích: ${message}",
+			"unlock_failed": "Không mở khóa được thành tích: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

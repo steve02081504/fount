@@ -1,5 +1,5 @@
-import { authenticate } from '../scripts/api/base.mjs'
-import { runPart } from '../scripts/api/parts.mjs'
+import { authenticate } from '../scripts/endpoints/base.mjs'
+import { runPart } from '../scripts/endpoints/parts.mjs'
 import { initTranslations, console } from '../scripts/i18n/index.mjs'
 import { applyTheme } from '../scripts/theme/index.mjs'
 

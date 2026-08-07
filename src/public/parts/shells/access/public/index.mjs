@@ -3,7 +3,7 @@
  */
 import qrcode from 'https://esm.sh/qrcode-generator'
 
-import { hosturl_in_local_ip, ping } from '../../scripts/api/base.mjs'
+import { hosturl_in_local_ip, ping } from '../../scripts/endpoints/base.mjs'
 import { showToast, showToastI18n } from '../../scripts/features/toast.mjs'
 import {
 	redirectToLoginInfo,

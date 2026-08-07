@@ -3,7 +3,7 @@
  */
 import { setElementI18n } from '/scripts/i18n/index.mjs'
 
-import { cabinetApi } from './api.mjs'
+import { patchEntry } from './endpoints.mjs'
 import { formatStamp, selectedEntries } from './entryGrid.mjs'
 import { refreshEntries } from './navigation.mjs'
 import { makePatchHistory } from './recoveryHistory.mjs'
@@ -78,7 +78,7 @@ export async function saveProps() {
 	const password = document.getElementById('propFolderPassword').value
 	if (entry.kind === 'folder' && password)
 		patch.set_password = password
-	await cabinetApi('PATCH', `/entries/${encodeURIComponent(entry.id)}`, patch)
+	await patchEntry(entry.id, patch)
 	document.getElementById('propsDialog').close()
 	await refreshEntries()
 	if (!password)

@@ -1,3 +1,5 @@
+import { initPasswordStrengthMeter } from '../scripts/components/passwordStrength.mjs'
+import { createPOWCaptcha } from '../scripts/components/POWcaptcha.mjs'
 import {
 	ping,
 	generateVerificationCode,
@@ -5,10 +7,8 @@ import {
 	register,
 	webauthnLoginBegin,
 	webauthnLoginComplete,
-} from '../scripts/api/base.mjs'
-import { getAnyDefaultPart } from '../scripts/api/parts.mjs'
-import { initPasswordStrengthMeter } from '../scripts/components/passwordStrength.mjs'
-import { createPOWCaptcha } from '../scripts/components/POWcaptcha.mjs'
+} from '../scripts/endpoints/base.mjs'
+import { getAnyDefaultPart } from '../scripts/endpoints/parts.mjs'
 import { showToast } from '../scripts/features/toast.mjs'
 import { retrieveAndDecryptCredentials, redirectToLoginInfo } from '../scripts/host/credentialManager.mjs'
 import { initTranslations, console, savePreferredLangs, onLanguageChange } from '../scripts/i18n/index.mjs'

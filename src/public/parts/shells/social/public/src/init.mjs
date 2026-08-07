@@ -1,5 +1,5 @@
-import { onServerEvent } from '../../../../scripts/api/server_events.mjs'
 import { wireEmojiPickerButton } from '../../../../scripts/components/emojiPicker.mjs'
+import { onServerEvent } from '../../../../scripts/endpoints/server_events.mjs'
 import { createReadyGate } from '/scripts/test/ready_gate.mjs'
 import { loadAliases } from '/parts/shells:chat/shared/aliases.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'

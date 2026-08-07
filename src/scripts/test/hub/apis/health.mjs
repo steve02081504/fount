@@ -8,7 +8,7 @@ import { Router } from 'npm:express'
  */
 export function createHealthRouter() {
 	const router = Router()
-	router.get('/health', (_req, res) => {
+	router.get('/health', (req, res) => {
 		res.json({ ok: true })
 	})
 	return router

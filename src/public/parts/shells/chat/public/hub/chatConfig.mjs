@@ -5,7 +5,7 @@
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/parts、../../../../scripts/template、../../../../scripts/toast、../src/api/groupCore、groupClient、groupChannel、core/domUtils、core/overlayModal、core/state。
  */
-import { getPartList } from '../../../../scripts/api/parts.mjs'
+import { getPartList } from '../../../../scripts/endpoints/parts.mjs'
 import { mountTemplate, renderTemplateAsHtmlString } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { triggerChannelReply } from '../src/api/groupChannel.mjs'

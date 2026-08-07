@@ -7,7 +7,7 @@
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
-import { getAllCachedPartDetails, getPartList } from '../../../../scripts/api/parts.mjs'
+import { getAllCachedPartDetails, getPartList } from '../../../../scripts/endpoints/parts.mjs'
 import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../scripts/i18n/index.mjs'

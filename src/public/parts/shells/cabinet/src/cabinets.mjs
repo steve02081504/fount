@@ -1,5 +1,7 @@
 import { randomUUID } from 'node:crypto'
 
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
+
 import { normalizeVisibilitySpec } from '../../social/src/lib/visibilitySpec.mjs'
 
 import { normalizeIndex } from './entryModel.mjs'
@@ -25,7 +27,7 @@ export async function loadCabinets(username, entityHash) {
  */
 export async function saveCabinets(username, entityHash, cabinets) {
 	await writeJsonFile(cabinetsListPath(username, entityHash), { cabinets })
-	await publishCabinetLists(username, entityHash, cabinets).catch(() => { })
+	await publishCabinetLists(username, entityHash, cabinets).catch(handleError)
 }
 
 /**
@@ -162,5 +164,5 @@ export async function savePersonalIndex(username, entityHash, cabinetId, index) 
 	await writeJsonFile(cabinetIndexPath(username, entityHash, cabinetId), normalized)
 	const cabinet = await getCabinet(username, entityHash, cabinetId)
 	if (cabinet?.type === 'personal')
-		await publishCabinetIndex(username, entityHash, cabinet, normalized).catch(() => { })
+		await publishCabinetIndex(username, entityHash, cabinet, normalized).catch(handleError)
 }

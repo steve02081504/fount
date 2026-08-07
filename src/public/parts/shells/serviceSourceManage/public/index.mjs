@@ -3,8 +3,8 @@
  */
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
-import { unlockAchievement, getPartList, getPartBranches, getAllDefaultParts, getAnyPreferredDefaultPart, setDefaultPart, unsetDefaultPart } from '../../scripts/api/parts.mjs'
 import { createJsonEditor } from '../../scripts/components/jsonEditor.mjs'
+import { unlockAchievement, getPartList, getPartBranches, getAllDefaultParts, getAnyPreferredDefaultPart, setDefaultPart, unsetDefaultPart } from '../../scripts/endpoints/parts.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/features/template.mjs'
 import { showToast, showToastI18n } from '../../scripts/features/toast.mjs'
 import { initTranslations, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n/index.mjs'

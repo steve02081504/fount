@@ -5,9 +5,9 @@ import { promptText } from '/scripts/features/promptDialog.mjs'
 
 import { matchCabinetShortcut } from '../shared/keyboard.mjs'
 
-import { api } from './api.mjs'
 import { runCommand } from './commands.mjs'
 import { hideContextMenu, showContextMenu } from './contextMenu.mjs'
+import { createCabinet } from './endpoints.mjs'
 import { uploadFiles } from './entryActions.mjs'
 import { refreshCabinets, openCabinet, refreshEntries } from './navigation.mjs'
 import { saveProps } from './properties.mjs'
@@ -20,16 +20,16 @@ export function wireBootstrap() {
 	/**
 	 * @returns {Promise<void>} 创建个人柜并打开
 	 */
-	const createCabinet = async () => {
+	const onCreateCabinet = async () => {
 		const name = await promptText('cabinet.new.cabinetPrompt')
 		if (!name) return
 		const visibility = await promptText('cabinet.visibilityPrompt', 'private') || 'private'
-		const { cabinet } = await api('POST', '/cabinets', { name, visibility: { visibility }, type: 'personal' })
+		const { cabinet } = await createCabinet({ name, visibility: { visibility }, type: 'personal' })
 		await refreshCabinets()
 		if (cabinet?.cabinet_id) await openCabinet(cabinet.cabinet_id)
 	}
 	for (const el of document.querySelectorAll('[data-action="new-cabinet"]'))
-		el.onclick = createCabinet
+		el.onclick = onCreateCabinet
 	/**
 	 * @param {Event} event 文件/文件夹选择变更
 	 * @returns {Promise<void>}

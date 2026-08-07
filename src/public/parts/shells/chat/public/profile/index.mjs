@@ -5,7 +5,7 @@
  * 【数据结构】currentEntityHash、currentProfile；localized 各 locale 字段。
  * 【关联】profile/src/endpoints.mjs、ownerSettingsPanel.mjs；hub/entityProfile.mjs、profileEdit.mjs。
  */
-import { onServerEvent } from '../../../scripts/api/server_events.mjs'
+import { onServerEvent } from '../../../scripts/endpoints/server_events.mjs'
 import {
 	renderTemplate,
 	usingTemplates,

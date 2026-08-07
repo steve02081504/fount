@@ -2,9 +2,9 @@ import { applyTheme } from '/scripts/theme/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { initTranslations } from '/scripts/i18n/index.mjs'
 import { mountTemplate, renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
-import { onServerEvent } from '/scripts/api/server_events.mjs'
+import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
 
-import { ping } from '/scripts/api/base.mjs'
+import { ping } from '/scripts/endpoints/base.mjs'
 import { getAutoUpdateEnabled, getSystemInfo, postRestart } from './src/endpoints.mjs'
 
 applyTheme()

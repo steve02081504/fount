@@ -8,6 +8,7 @@
  * - 不要在 `runPart` / `loadPart` 里偷偷 `replace(/:/g, '/')`：会掩盖调用方 bug，且与
  *   「规整是调用者职责」不一致。
  */
+import { handleError } from '../features/errorHandlers.mjs'
 
 /**
  * 运行部件。
@@ -195,12 +196,23 @@ export async function getPartBranches(nocache = false) {
  * 解锁成就。
  * @param {string} partpath - 部件路径。
  * @param {string} achievementId - 成就 ID。
- * @returns {Promise<Response>} - 服务器响应。
+ * @returns {Promise<void>}
  */
-export function unlockAchievement(partpath, achievementId) {
-	return fetch('/api/parts/shells:achievements/unlock', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ partpath, id: achievementId }),
-	}).catch(() => { /* Fail silently */ })
+export async function unlockAchievement(partpath, achievementId) {
+	try {
+		const response = await fetch('/api/parts/shells:achievements/unlock', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ partpath, id: achievementId }),
+		})
+		if (!response.ok) {
+			let data = {}
+			try { data = await response.json() }
+			catch { /* non-JSON body */ }
+			throw Object.assign(new Error(`API request failed with status ${response.status}`), data, { response })
+		}
+	}
+	catch (error) {
+		handleError('achievements.error.unlock_failed', {}, error)
+	}
 }

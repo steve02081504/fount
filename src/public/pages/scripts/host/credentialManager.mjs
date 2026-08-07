@@ -5,7 +5,7 @@
  */
 import CryptoJS from 'https://esm.sh/crypto-js'
 
-import { ping } from '../api/base.mjs'
+import { ping } from '../endpoints/base.mjs'
 
 import { downloadFromCatbox, uploadToCatbox } from './catbox.mjs'
 

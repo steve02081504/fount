@@ -1,4 +1,4 @@
-import { importRegistryModules } from '../../api/registries.mjs'
+import { importRegistryModules } from '../../endpoints/registries.mjs'
 
 /** @type {Promise<{ remarkPlugins: unknown[], rehypePlugins: unknown[], css: string, inits: Array<() => void>, version: string }> | null} */
 let loadPromise = null

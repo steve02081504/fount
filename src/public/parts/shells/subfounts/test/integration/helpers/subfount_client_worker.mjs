@@ -69,9 +69,11 @@ if (hostNodeHashHint) {
 	await markStage('link-warmup')
 	for (let attempt = 0; attempt < 90; attempt++) {
 		if (getLink(hostNodeHashHint)) break
-		void ensureLinkToNode(hostNodeHashHint).catch(() => null)
+		void ensureLinkToNode(hostNodeHashHint).catch(() => { })
 		await sleep(1000)
 	}
+	if (!getLink(hostNodeHashHint))
+		console.warn('subfount worker: no link to host after warmup', hostNodeHashHint)
 }
 await markStage('link-ready')
 

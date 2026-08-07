@@ -4,7 +4,7 @@ import { geti18n, initTranslations } from '/scripts/i18n/index.mjs'
 import { createVirtualList } from '/scripts/lib/virtualList.mjs'
 import { attachLogWire } from 'https://esm.sh/@steve02081504/virtual-console/wire/client'
 
-import { ping } from '/scripts/api/base.mjs'
+import { ping } from '/scripts/endpoints/base.mjs'
 import { createLogsWs, openSource } from './endpoints.mjs'
 import { renderLogItem, createLogToolbar, entryMatchesFilter } from './log.mjs'
 import { initRepl, mountReplPanel } from './repl/index.mjs'

@@ -1,5 +1,5 @@
-import { getPartBranches, getPartDetails } from '../api/parts.mjs'
-import { onServerEvent } from '../api/server_events.mjs'
+import { getPartBranches, getPartDetails } from '../endpoints/parts.mjs'
+import { onServerEvent } from '../endpoints/server_events.mjs'
 import { geti18n } from '../i18n/index.mjs'
 
 /**

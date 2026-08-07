@@ -5504,7 +5504,8 @@
 		"locked": "Не розблоковано",
 		"toast_title": "Досягнення розблоковано!",
 		"error": {
-			"load_failed": "Не вдалося завантажити досягнення: ${message}"
+			"load_failed": "Не вдалося завантажити досягнення: ${message}",
+			"unlock_failed": "Не вдалося розблокувати досягнення: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

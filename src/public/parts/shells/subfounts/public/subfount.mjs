@@ -512,9 +512,11 @@ async function connectViaP2P() {
 			const { getLink, ensureLinkToNode } = await import('npm:@steve02081504/fount-p2p/transport/link_registry')
 			for (let attempt = 0; attempt < 30; attempt++) {
 				if (getLink(hostNodeHashHint)) break
-				void ensureLinkToNode(hostNodeHashHint).catch(() => null)
+				void ensureLinkToNode(hostNodeHashHint).catch(() => { })
 				await new Promise(resolve => setTimeout(resolve, 1000))
 			}
+			if (!getLink(hostNodeHashHint))
+				console.warn('subfount: no link to host after warmup', hostNodeHashHint)
 		}
 
 		room = p2p.createGroupLinkSet({

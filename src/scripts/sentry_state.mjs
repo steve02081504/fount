@@ -1,5 +1,6 @@
 /**
  * Sentry 启用状态与初始化的独立模块。
+ * 错误汇报见 `fount/scripts/errorHandlers.mjs`。
  */
 import * as Sentry from 'npm:@sentry/deno'
 

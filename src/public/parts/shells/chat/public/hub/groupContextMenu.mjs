@@ -5,7 +5,7 @@
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/i18n、../../../../scripts/parts、../../../../scripts/template、../../../../scripts/toast、../src/api/groupCore、groupClient、../src/inviteQr、chat、core/domUtils。
  */
-import { getPartList } from '../../../../scripts/api/parts.mjs'
+import { getPartList } from '../../../../scripts/endpoints/parts.mjs'
 import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
 import {
 	renderTemplate,

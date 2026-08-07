@@ -5485,6 +5485,7 @@ export type LocaleData = {
 		toast_title: string
 		error: {
 			load_failed: string
+			unlock_failed: string
 		}
 		achievements: {
 			open_achievements_page: {
@@ -5786,6 +5787,7 @@ export type LocaleKey = Paths<LocaleData>
  */
 export type LocaleKeyParams = {
 	'achievements.error.load_failed': { message: string | number }
+	'achievements.error.unlock_failed': { error: string | number }
 	'achievements.unlocked_on': { date: string | number }
 	'auth.error.accountLockedRetry': { timeLeft: string | number }
 	'badges_maker.copy_error': { error: string | number }

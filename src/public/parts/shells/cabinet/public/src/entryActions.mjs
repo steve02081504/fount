@@ -5,8 +5,19 @@ import { confirmAction, promptText } from '/scripts/features/promptDialog.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { arrayBufferToBase64, blobToBase64 } from '/scripts/lib/base64.mjs'
 
-import { api, cabinetApi, triggerDownload, unlockHeaders } from './api.mjs'
 import { writeClipboard } from './clipboard.mjs'
+import {
+	copyEntries,
+	createEntry,
+	downloadZip,
+	getViewer,
+	patchEntry,
+	resolveEntry,
+	triggerDownload,
+	unlockCabinet,
+	unlockHeaders,
+	uploadPreview,
+} from './endpoints.mjs'
 import { renderEntries, selectedEntries } from './entryGrid.mjs'
 import { openCabinet, refreshEntries } from './navigation.mjs'
 import {
@@ -44,7 +55,7 @@ export async function promptUnlock(folderId) {
 		submit.onclick = async () => {
 			try {
 				const password = document.getElementById('unlockPassword').value
-				const result = await cabinetApi('POST', '/unlock', { folder_id: folderId, password }, { unlock: undefined })
+				const result = await unlockCabinet({ folder_id: folderId, password })
 				cabinetStore.unlockTokens.set(folderId, result.unlock_token)
 				dialog.close()
 				await refreshEntries()
@@ -72,7 +83,7 @@ export async function onEntryOpen(entry) {
 	}
 	if (entry.kind === 'link') {
 		if (remoteEntityHash) return
-		const resolved = await cabinetApi('GET', `/entries/${encodeURIComponent(entry.id)}/resolve`)
+		const resolved = await resolveEntry(entry.id)
 		if (!resolved.ok) {
 			showToastI18n('warning', 'cabinet.brokenLink', { reason: resolved.reason })
 			entry._broken = true
@@ -116,7 +127,7 @@ export async function downloadEntry(entry, cabinetId = cabinetStore.currentCabin
 		)
 		return
 	}
-	const entity = ownerEntityHash || (await api('GET', '/viewer')).viewer_entity_hash
+	const entity = ownerEntityHash || (await getViewer()).viewer_entity_hash
 	triggerDownload(
 		`/api/parts/shells:chat/entities/${encodeURIComponent(entity)}/files/${entry.evfs_path.split('/').map(encodeURIComponent).join('/')}`,
 		entry.name,
@@ -137,7 +148,7 @@ export async function uploadFiles(files) {
 		try {
 			const previewBlob = await generateUploadPreview(file)
 			if (previewBlob) {
-				const uploaded = await cabinetApi('POST', '/preview', {
+				const uploaded = await uploadPreview({
 					plaintext_base64: await blobToBase64(previewBlob),
 					name: `preview.${previewBlob.type.includes('avif') ? 'avif' : 'webp'}`,
 					mime_type: previewBlob.type,
@@ -146,7 +157,7 @@ export async function uploadFiles(files) {
 			}
 		}
 		catch { /* 预览失败不阻断上传 */ }
-		const { entry } = await cabinetApi('POST', '/entries', {
+		const { entry } = await createEntry({
 			plaintext_base64: arrayBufferToBase64(await file.arrayBuffer()),
 			name: file.name,
 			mime_type: file.type || 'application/octet-stream',
@@ -167,7 +178,7 @@ export async function createFolder() {
 	if (!canWrite()) return
 	const name = await promptText('cabinet.new.folderPrompt')
 	if (!name) return
-	const { entry } = await cabinetApi('POST', '/entries', {
+	const { entry } = await createEntry({
 		kind: 'folder',
 		name,
 		parent_id: cabinetStore.currentParentId,
@@ -210,7 +221,7 @@ export async function pasteClipboard(asLinks = false) {
 		const sourceParent = clip.source_parent_id ?? null
 		const movedIds = [...clip.entry_ids]
 		for (const id of movedIds)
-			await cabinetApi('PATCH', `/entries/${encodeURIComponent(id)}`, { parent_id: targetParent })
+			await patchEntry(id, { parent_id: targetParent })
 		writeClipboard(null)
 		cabinetStore.clipboard = null
 		await refreshEntries()
@@ -224,7 +235,7 @@ export async function pasteClipboard(asLinks = false) {
 	}
 
 	const sourceUnlock = clip.source_parent_id ? cabinetStore.unlockTokens.get(clip.source_parent_id) : undefined
-	const created = await api('POST', `/cabinets/${encodeURIComponent(clip.cabinet_id)}/entries/copy`, {
+	const created = await copyEntries(clip.cabinet_id, {
 		entry_ids: clip.entry_ids,
 		target_parent_id: cabinetStore.currentParentId,
 		target_cabinet_id: cabinetStore.currentCabinetId,
@@ -287,7 +298,7 @@ export async function renameSelection() {
 	if (!entry) return
 	const name = await promptText('cabinet.renamePrompt', entry.name)
 	if (!name || name === entry.name) return
-	await cabinetApi('PATCH', `/entries/${encodeURIComponent(entry.id)}`, { name })
+	await patchEntry(entry.id, { name })
 	await refreshEntries()
 	await cabinetStore.history.push(makePatchHistory({
 		entryId: entry.id,
@@ -322,7 +333,7 @@ export async function deleteSelection() {
  */
 export async function downloadFolder(folderId, name) {
 	const query = folderId ? `folder_id=${encodeURIComponent(folderId)}` : ''
-	const blob = await cabinetApi('GET', `/zip?${query}`, null, folderId
+	const blob = await downloadZip(query, folderId
 		? { unlock: cabinetStore.unlockTokens.get(folderId) }
 		: {})
 	const url = URL.createObjectURL(blob)

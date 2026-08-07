@@ -143,7 +143,7 @@ export function registerEndpoints(router) {
 	/** 已认证用户通用 no-CORS 中转：双向流式；见 src/server/no_cors.mjs */
 	router.all('/api/no-cors', authenticate, handleNoCors)
 
-	router.get('/api/notify/vapid-public-key', cors(), async (_req, res) => {
+	router.get('/api/notify/vapid-public-key', cors(), async (req, res) => {
 		res.status(200).json({ publicKey: await getVapidPublicKey() })
 	})
 	router.post('/api/notify/push-subscribe', authenticate, async (req, res) => {

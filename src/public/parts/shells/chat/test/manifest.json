@@ -12,7 +12,7 @@
 		],
 		"shellLiveCommon": [
 			"src/server/{registries.mjs,parts_loader.mjs}",
-			"src/public/pages/scripts/api/registries.mjs",
+			"src/public/pages/scripts/endpoints/registries.mjs",
 			"src/public/pages/scripts/features/markdown/extensions.mjs",
 			"src/public/pages/scripts/components/emojiPicker.mjs"
 		],
@@ -21,7 +21,7 @@
 			"deno.json",
 			"src/server/p2p_server/**",
 			"src/server/{registries.mjs,parts_loader.mjs}",
-			"src/public/pages/scripts/api/registries.mjs",
+			"src/public/pages/scripts/endpoints/registries.mjs",
 			"src/public/pages/scripts/features/markdown/**",
 			"src/public/pages/scripts/lib/sanitizeHtml.mjs",
 			"src/public/parts/shells/chat/public/src/trustedAuthors.mjs",
@@ -32,7 +32,7 @@
 			"src/scripts/search/**",
 			"src/server/p2p_server/**",
 			"src/server/{registries.mjs,parts_loader.mjs}",
-			"src/public/pages/scripts/api/registries.mjs",
+			"src/public/pages/scripts/endpoints/registries.mjs",
 			"src/public/pages/scripts/features/markdown/extensions.mjs",
 			"src/public/pages/scripts/components/emojiPicker.mjs"
 		],
