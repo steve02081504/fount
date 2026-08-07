@@ -373,7 +373,7 @@
 				"status": {
 					"title": "상태: ${status}",
 					"upToDate": "최신 상태",
-					"behind": "원격보다 뒤쳐짐",
+					"behind": "원격보다 뒤처짐",
 					"ahead": "원격보다 앞섬",
 					"diverged": "원격과 분기됨",
 					"detachedNoCompare": "HEAD 분리 상태, 원격과 비교 불가",
@@ -4064,7 +4064,7 @@
 		"description": "P2P 공개 소셜 업데이트, 팔로우 및 파일 공유",
 		"bootstrapFailed": "소셜 인터페이스 초기화 실패: ${error}",
 		"connectNodeFailed": "노드 연결 실패: ${error}",
-		"dwellFailed": "시청 시간 기반 취향 데이터 업데이트 실패: ${error}",
+		"dwellFailed": "체류 시간 기반 취향 데이터 업데이트 실패: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "정사각형"
@@ -5504,7 +5504,8 @@
 		"locked": "잠금 해제되지 않음",
 		"toast_title": "업적 잠금 해제!",
 		"error": {
-			"load_failed": "업적을 로드하지 못했습니다: ${message}"
+			"load_failed": "업적을 로드하지 못했습니다: ${message}",
+			"unlock_failed": "업적을 잠금 해제하지 못했습니다: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

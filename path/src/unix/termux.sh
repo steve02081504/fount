@@ -20,52 +20,55 @@ android_getprop() {
 
 # Android system locale tag (BCP 47), first of a comma-separated list. Echoes nothing on failure.
 android_system_locale_tag() {
-	local tag lang country variant
-	tag=$(android_getprop persist.sys.locale || true)
-	if [ -z "$tag" ]; then
-		lang=$(android_getprop persist.sys.language || true)
-		if [ -n "$lang" ]; then
-			country=$(android_getprop persist.sys.country || true)
+	local localeTag localeLanguage region variant
+	localeTag=$(android_getprop persist.sys.locale || true)
+	if [ -z "$localeTag" ]; then
+		localeLanguage=$(android_getprop persist.sys.language || true)
+		if [ -n "$localeLanguage" ]; then
+			region=$(android_getprop persist.sys.country || true)
 			variant=$(android_getprop persist.sys.localevar || true)
-			tag="$lang"
-			[ -n "$country" ] && tag="$tag-$country"
-			[ -n "$variant" ] && tag="$tag-$variant"
+			localeTag="$localeLanguage"
+			[ -n "$region" ] && localeTag="$localeTag-$region"
+			[ -n "$variant" ] && localeTag="$localeTag-$variant"
 		fi
 	fi
-	if [ -z "$tag" ]; then
-		tag=$(android_getprop ro.product.locale || true)
+	if [ -z "$localeTag" ]; then
+		localeTag=$(android_getprop ro.product.locale || true)
 	fi
-	if [ -z "$tag" ]; then
-		lang=$(android_getprop ro.product.locale.language || true)
-		country=$(android_getprop ro.product.locale.region || true)
-		if [ -n "$lang" ]; then
-			tag="$lang"
-			[ -n "$country" ] && tag="$tag-$country"
+	if [ -z "$localeTag" ]; then
+		localeLanguage=$(android_getprop ro.product.locale.language || true)
+		region=$(android_getprop ro.product.locale.region || true)
+		if [ -n "$localeLanguage" ]; then
+			localeTag="$localeLanguage"
+			[ -n "$region" ] && localeTag="$localeTag-$region"
 		fi
 	fi
-	if [ -z "$tag" ] && command -v settings >/dev/null 2>&1; then
-		tag=$(settings get system system_locales 2>/dev/null || true)
-		[ "$tag" = "null" ] && tag=
+	if [ -z "$localeTag" ] && command -v settings >/dev/null 2>&1; then
+		localeTag=$(settings get system system_locales 2>/dev/null || true)
+		[ "$localeTag" = "null" ] && localeTag=
 	fi
-	tag="${tag%%,*}"
-	tag=$(printf '%s' "$tag" | tr -d '[:space:]')
-	[ -n "$tag" ] || return 1
-	printf '%s\n' "$tag"
+	localeTag="${localeTag%%,*}"
+	localeTag=$(printf '%s' "$localeTag" | tr -d '[:space:]')
+	[ -n "$localeTag" ] || return 1
+	printf '%s\n' "$localeTag"
 }
 
 # BCP 47 → POSIX LANG (zh-Hans-CN → zh_CN.UTF-8; en → en.UTF-8).
 android_locale_to_lang() {
-	local tag="${1//_/-}" language="" region="" part
+	local localeTag="${1//_/-}" language="" region="" part
 	local IFS='-'
 	# shellcheck disable=SC2086 # intentional IFS split on -
-	set -- $tag
+	set -- $localeTag
 	language="${1:-}"
 	[ -n "$language" ] || return 1
-	shift || true
+	shift
 	for part in "$@"; do
 		case "$part" in
+		[A-Za-z]) break ;; # singleton extension (u/t/x/…) — stop
 		[A-Za-z][A-Za-z][A-Za-z][A-Za-z]) ;; # script (Hans/Hant/Latn) — skip
-		[A-Za-z][A-Za-z] | [0-9][0-9][0-9]) region="$part" ;;
+		[A-Za-z][A-Za-z] | [0-9][0-9][0-9])
+			[ -z "$region" ] && region="$part"
+			;;
 		esac
 	done
 	if [ -n "$region" ]; then
@@ -77,16 +80,16 @@ android_locale_to_lang() {
 
 # Termux default LANG is weak; apply Android system locale for CLI i18n / gettext.
 termux_apply_android_lang() {
-	local tag lang
+	local localeTag localeLanguage
 	[[ ${IN_TERMUX:-0} -eq 1 ]] || return 0
-	tag=$(android_system_locale_tag || true)
-	[ -n "$tag" ] || return 0
-	lang=$(android_locale_to_lang "$tag") || return 0
-	[ -n "$lang" ] || return 0
-	LANG="$lang"
-	export LANG
-	# Drop LC_ALL so LANG wins for gettext; fount i18n reads LANG first either way.
+	# Drop LC_ALL so LANG wins for gettext; do this before probe so early returns leave LANG usable.
 	unset LC_ALL
+	localeTag=$(android_system_locale_tag || true)
+	[ -n "$localeTag" ] || return 0
+	localeLanguage=$(android_locale_to_lang "$localeTag") || return 0
+	[ -n "$localeLanguage" ] || return 0
+	LANG="$localeLanguage"
+	export LANG
 }
 
 # Ensure termux-sensor CLI (pkg termux-api); tracked for uninstall. Soft-fail if missing.
