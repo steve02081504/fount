@@ -364,6 +364,7 @@ export type LocaleData = {
 				localBranchAhead: string
 				branchesDiverged: string
 				notOnBranch: string
+				upstreamGoneFallbackMaster: string
 				noUpstreamBranch: string
 				dirtyWorkingDirectory: string
 				notInstalled: string
@@ -6025,6 +6026,7 @@ export type LocaleKeyParams = {
 	'fountConsole.path.git.backupSavedTo': { path: string | number }
 	'fountConsole.path.git.noUpstreamBranch': { branch: string | number; remote: string | number }
 	'fountConsole.path.git.remoteRefUnavailable': { ref: string | number }
+	'fountConsole.path.git.upstreamGoneFallbackMaster': { branch: string | number }
 	'fountConsole.path.install.packageFailed': { package: string | number }
 	'fountConsole.path.install.permissionDeniedAsRoot': { path: string | number }
 	'fountConsole.path.install.permissionDeniedNotRoot': { path: string | number }
