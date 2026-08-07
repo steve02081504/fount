@@ -165,7 +165,7 @@ const seedTempIntoAddedCells = (world, addedSolid) => {
 
 /**
  * 围绕图标调整尺寸，保留既有地形/动力学，仅为新暴露区域生成地形。
- * 新土壤初始为雨饱和并短暂沉降。
+ * 新土壤保持干燥（预灌 SOIL_CAP 会在倒置 ĝ 下喷泉）；仅对新增土做热力/液体沉降。
  * @param {AnimState} state 动画状态
  * @param {{ width: number, height: number }} size 新视口尺寸
  * @returns {AnimState} 同一状态，原地 resize
@@ -527,7 +527,8 @@ const onParticleHit = (world, x, y, m, particle, wet, state) => {
 /**
  * 四边出雨权重（source 角色）。导出供测试。
  * 组成底边（地形/岩浆侧）永不作出雨天：倒置时 ĝ 穿入底边会把雨从基座往上喷，
- * 应静等 sink 边曝露后出岩浆，而不是底边冒雨。
+ * 应静等 sink 边曝露后出岩浆。手持倒置总带侧倾；若只清底边、留侧雨，
+ * Infinity `rainUntil` 会把地里的水浇成无尽泉。
  * @param {number} gx 单位重力 x
  * @param {number} gy 单位重力 y
  * @returns {{ nx: number, ny: number, w: number }[]} 边权重
@@ -543,6 +544,11 @@ export const rainEdgeWeights = (gx, gy) => {
 		const dot = e.nx * gx + e.ny * gy
 		// source = max(0, −n̂·ĝ); sink edge never rains
 		e.w = Math.max(0, -dot)
+	}
+	// Bottom is a physical sky (ĝ into pedestal) → full quiet until lava.
+	if (edges[1].w > 0) {
+		for (const e of edges) e.w = 0
+		return edges
 	}
 	// Pedestal / lava edge of the composition — never a rain sky.
 	edges[1].w = 0

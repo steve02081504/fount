@@ -88,6 +88,16 @@ Deno.test('rain edges: inverted gravity → no bottom rain (composition ground)'
 	assertEquals(edges.reduce((weightSum, edge) => weightSum + edge.w, 0), 0)
 })
 
+Deno.test('rain edges: tilted invert stays fully quiet (no side rain mint)', () => {
+	// Handheld upside-down always has some gx. Side rain + Infinity rainUntil
+	// would mint water forever while waiting for lava.
+	for (const [gx, gy] of [[0.25, -Math.sqrt(1 - 0.25 ** 2)], [-0.4, -Math.sqrt(1 - 0.4 ** 2)], [0.05, -0.999]]) {
+		const edges = rainEdgeWeights(gx, gy)
+		assertEquals(edges.reduce((weightSum, edge) => weightSum + edge.w, 0), 0,
+			`expected quiet rain at gx=${gx} gy=${gy}`)
+	}
+})
+
 Deno.test('rain edges: pickRainEdge respects weights', () => {
 	const edges = rainEdgeWeights(0, 1)
 	const picks = { top: 0, left: 0, right: 0, bottom: 0 }
@@ -191,6 +201,80 @@ Deno.test('soil: inverted dry land with no drip stays free of free liquid (lava 
 		assertAlmostEquals(totalGridWater(world), 0, 1e-9)
 	}
 	assertLess(maxFree, 0.05)
+})
+
+/**
+ * 回字浸水土：外框 SOLID，内院 AIR，湿度灌满。
+ * @param {import('../fluid/world.mjs').FluidWorld} world 世界
+ * @returns {number} 土壤格数
+ */
+const paintSoakedRing = (world) => {
+	clearMaterials(world)
+	for (let y = 4; y <= world.worldH - 2; y++)
+		for (let x = 2; x <= world.worldW - 3; x++)
+			setMat(world, x, y, MAT.SOLID)
+	for (let y = 7; y <= world.worldH - 5; y++)
+		for (let x = 5; x <= world.worldW - 6; x++)
+			setMat(world, x, y, MAT.AIR)
+	let soil = 0
+	for (let i = 0; i < world.mat.length; i++)
+		if (world.mat[i] === MAT.SOLID || world.mat[i] === MAT.HORIZON) {
+			world.moisture[i] = 1
+			soil++
+		}
+	return soil
+}
+
+Deno.test('soil: soaked 回 terrain under invert does not mint water (lava off)', () => {
+	const world = createWorld({ width: 18, height: 16, margin: 0, bottomExtra: 0 })
+	paintSoakedRing(world)
+	const water0 = totalWorldWater(world)
+	assertGreater(water0, 20)
+	applyGravityToWorld(world, { gx: 0, gy: -1, mag: BASE_PARTICLE_G })
+	let maxWater = water0
+	for (let stepIndex = 0; stepIndex < 160; stepIndex++) {
+		stepFluid(world, { forceWind: 0 })
+		disableLava(world)
+		maxWater = Math.max(maxWater, totalWorldWater(world))
+	}
+	assertLess(maxWater, water0 + 1e-3)
+})
+
+Deno.test('soil: tilted invert + rain weights must not mint on soaked 回', () => {
+	// Reproduces Termux handheld upside-down: slight gx, Infinity rainUntil.
+	const world = createWorld({ width: 18, height: 16, margin: 0, bottomExtra: 0 })
+	paintSoakedRing(world)
+	const water0 = totalWorldWater(world)
+	const gx = 0.3
+	const gy = -Math.sqrt(1 - gx * gx)
+	applyGravityToWorld(world, { gx, gy, mag: BASE_PARTICLE_G })
+	let maxWater = water0
+	for (let stepIndex = 0; stepIndex < 120; stepIndex++) {
+		const edges = rainEdgeWeights(gx, gy)
+		const rainBudget = edges.reduce((weightSum, edge) => weightSum + edge.w, 0)
+		if (rainBudget > 0)
+			for (let i = 0; i < 3; i++)
+				spawnParticle(world, world.worldW / 2, 1, gx * 0.4, gy * 0.4, 40, 0.4)
+		stepFluid(world, { forceWind: 0 })
+		disableLava(world)
+		maxWater = Math.max(maxWater, totalWorldWater(world))
+	}
+	assertLess(maxWater, water0 + 0.5)
+})
+
+Deno.test('lava: soaked 回 under invert still yields finite top melt', () => {
+	const world = createWorld({ width: 18, height: 16, margin: 0, bottomExtra: 0 })
+	paintSoakedRing(world)
+	applyGravityToWorld(world, { gx: 0.2, gy: -Math.sqrt(1 - 0.2 ** 2), mag: BASE_PARTICLE_G })
+	for (let stepIndex = 0; stepIndex < LAVA_ONSET_EXPOSURE + 20; stepIndex++)
+		stepFluid(world, { forceWind: 0 })
+	const melt = totalMelt(world)
+	assert(Number.isFinite(melt), `melt must be finite, got ${melt}`)
+	assertGreater(melt, 0.1)
+	assertGreater(world.boundary.exposure[EDGE_TOP], LAVA_ONSET_EXPOSURE - 1)
+	let topMelt = 0
+	for (let column = 0; column < world.worldW; column++) topMelt += world.melt[column]
+	assertGreater(topMelt, 0.05)
 })
 
 Deno.test('particles: vector gravity displaces in g direction', () => {

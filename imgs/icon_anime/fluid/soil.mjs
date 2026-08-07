@@ -5,6 +5,7 @@
  * 凝结膜挂在重力下沿；ĝ 转离开放下沿时收回水分。由 `stepLiquid` 在水力均衡前调用。
  */
 
+import { ORTHO_DX, ORTHO_DY } from '../hash.mjs'
 import {
 	MAT, SOIL_CAP,
 	SOIL_ABSORB_RATE, SOIL_SIDE_FRAC, SOIL_DOWN_FRAC, SOIL_CONDENSE_FRAC,
@@ -40,14 +41,6 @@ const soilQueues = {
 	feedAmt: new Float32Array(0),
 	feedN: 0,
 }
-
-/** 正交邻格，用于收回后溢流。 */
-const ORTHOGONAL_OFFSETS = [
-	[1, 0],
-	[-1, 0],
-	[0, 1],
-	[0, -1],
-]
 
 /**
  * 将 `moisture[cell]` 钳在 `[0, SOIL_CAP]`。
@@ -166,9 +159,9 @@ const spillToAir = (world, x, y, amount, down) => {
 		}
 	let rest = amount - written
 	if (rest <= 1e-8) return written
-	for (const [offsetX, offsetY] of ORTHOGONAL_OFFSETS) {
-		const neighborX = x + offsetX
-		const neighborY = y + offsetY
+	for (let i = 0; i < 4; i++) {
+		const neighborX = x + ORTHO_DX[i]
+		const neighborY = y + ORTHO_DY[i]
 		if (!inWorld(world, neighborX, neighborY)) continue
 		if (world.mat[neighborY * world.worldW + neighborX] !== MAT.AIR) continue
 		const got = addLiquid(world, neighborX, neighborY, rest)
