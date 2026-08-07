@@ -34,7 +34,7 @@ const INVALID_BRANCH_NAMES = [
 	'foo.lock',
 	'a/foo.lock',
 	'a@{b',
-	"a'b",
+	'a\'b',
 ]
 
 /** 应被接受的分支名。 */
@@ -93,14 +93,14 @@ async function extractPsValidBranchFn() {
 	for (let i = start; i < src.length; i++) {
 		const ch = src[i]
 		if (inSingle) {
-			if (ch === "'" && src[i + 1] === "'") {
+			if (ch === '\'' && src[i + 1] === '\'') {
 				i++
 				continue
 			}
-			if (ch === "'") inSingle = false
+			if (ch === '\'') inSingle = false
 			continue
 		}
-		if (ch === "'") {
+		if (ch === '\'') {
 			inSingle = true
 			continue
 		}
@@ -159,33 +159,41 @@ Deno.test('git_valid_branch_name rejects glob and ref-unsafe fragments (bash)', 
 Deno.test('git_valid_branch_name bash and PowerShell agree', async () => {
 	const psFn = await extractPsValidBranchFn()
 	const allNames = [...VALID_BRANCH_NAMES, ...INVALID_BRANCH_NAMES]
-	const bashList = allNames.map(n => JSON.stringify(n)).join(' ')
+	/**
+	 * @param {string} value 任意字符串
+	 * @returns {string} base64
+	 */
+	const b64 = (value) => btoa(String.fromCharCode(...new TextEncoder().encode(value)))
+	const encoded = allNames.map(b64)
+
 	const bash = await runBash(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
-		for name in ${bashList}; do
-			if git_valid_branch_name "$name"; then echo "1:$name"; else echo "0:$name"; fi
+		decode() { printf '%s' "$1" | base64 -d; }
+		for b64 in ${encoded.map(e => JSON.stringify(e)).join(' ')}; do
+			name=$(decode "$b64")
+			if git_valid_branch_name "$name"; then echo 1; else echo 0; fi
 		done
 	`)
 	assertEquals(bash.code, 0, bash.stderr || bash.stdout)
 
-	const psNames = allNames.map(n => {
-		const escaped = n.replace(/'/g, "''")
-		return `'${escaped}'`
-	}).join(', ')
+	const psB64List = encoded.map(e => `'${e}'`).join(', ')
 	const ps = await runPwsh(`
 ${psFn}
-$names = @(${psNames})
-foreach ($name in $names) {
+$encoded = @(${psB64List})
+foreach ($b64 in $encoded) {
+  $name = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64))
   $ok = if (git_valid_branch_name $name) { '1' } else { '0' }
-  Write-Output ("$ok:$name")
+  Write-Output $ok
 }
 `)
 	assertEquals(ps.code, 0, ps.stderr || ps.stdout)
 
-	const bashLines = bash.stdout.trim().split(/\r?\n/).filter(Boolean)
-	const psLines = ps.stdout.trim().split(/\r?\n/).filter(Boolean)
-	assertEquals(psLines, bashLines)
+	const bashVerdicts = bash.stdout.trim().split(/\r?\n/).filter(Boolean)
+	const psVerdicts = ps.stdout.trim().split(/\r?\n/).filter(Boolean)
+	assertEquals(psVerdicts.length, allNames.length)
+	assertEquals(bashVerdicts.length, allNames.length)
+	assertEquals(psVerdicts, bashVerdicts)
 })
 
 Deno.test('sourcing git.sh defines git_remote_branch_status', async () => {

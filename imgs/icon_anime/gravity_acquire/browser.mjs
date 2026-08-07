@@ -18,7 +18,7 @@ const ensureAccelerometerPermission = async () => {
 	if (!permissions?.query) return true
 	try {
 		const status = await permissions.query({
-			name: /** @type {PermissionName} */ ('accelerometer'),
+			name: /** @type {PermissionName} */ 'accelerometer',
 		})
 		return status.state !== 'denied'
 	}
@@ -33,7 +33,7 @@ const ensureAccelerometerPermission = async () => {
  */
 const ensureDeviceMotionPermission = async () => {
 	const deviceMotionEvent = globalThis.DeviceMotionEvent
-	const requestPermission = deviceMotionEvent && /** @type {{ requestPermission?: () => Promise<string> }} */ (deviceMotionEvent).requestPermission
+	const requestPermission = deviceMotionEvent && /** @type {{ requestPermission?: () => Promise<string> }} */ deviceMotionEvent.requestPermission
 	if (typeof requestPermission !== 'function') return true
 	try {
 		return await requestPermission.call(deviceMotionEvent) === 'granted'
@@ -67,7 +67,7 @@ const startGravitySensor = async (onSample) => {
 		start: () => void, stop: () => void,
 		addEventListener: (type: string, fn: (ev: Event) => void) => void,
 		removeEventListener: (type: string, fn: (ev: Event) => void) => void,
-	})} */ (globalThis.GravitySensor)
+	})} */ globalThis.GravitySensor
 	if (typeof GravitySensorCtor !== 'function') return null
 	if (!await ensureAccelerometerPermission()) return null
 	try {
@@ -131,7 +131,7 @@ const startGravitySensor = async (onSample) => {
 const startDeviceMotion = async (onSample) => {
 	if (!globalThis.DeviceMotionEvent) return null
 	if (!await ensureDeviceMotionPermission()) return null
-	const iosAxes = typeof /** @type {{ requestPermission?: unknown }} */ (globalThis.DeviceMotionEvent).requestPermission === 'function'
+	const iosAxes = typeof /** @type {{ requestPermission?: unknown }} */ globalThis.DeviceMotionEvent.requestPermission === 'function'
 	/**
 	 * @param {DeviceMotionEvent} event 运动事件
 	 * @returns {void}
