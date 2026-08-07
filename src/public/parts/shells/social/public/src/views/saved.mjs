@@ -1,7 +1,7 @@
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
+import { addSavedPost, getSavedPosts } from '../endpoints/saved.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
 import { renderAvatarHtml } from '../lib/display.mjs'
 import { buildEmptyState } from '../lib/emptyState.mjs'
 import { runWrite } from '../lib/socialWrite.mjs'
@@ -58,7 +58,7 @@ export async function openSaveModal(entityHash, postId, button) {
 	select.innerHTML = '<option value="" data-i18n="social.saved.unfiled"></option>'
 	if (modal instanceof HTMLDialogElement) modal.showModal()
 	else modal.classList.remove('hidden')
-	const savedData = await socialApi('/saved-posts').catch(() => ({ folders: {} }))
+	const savedData = await getSavedPosts().catch(() => ({ folders: {} }))
 	state.savedFoldersCache = savedData.folders || {}
 	for (const [folderId, folder] of Object.entries(state.savedFoldersCache)) {
 		const option = document.createElement('option')
@@ -79,14 +79,11 @@ export async function confirmSaveModal() {
 	const restoreKey = button.dataset.i18n || 'social.actions.save'
 	button.dataset.i18n = 'social.actions.saved'
 	try {
-		await runWrite('save', () => socialApi('/saved-posts/add', {
-			method: 'POST',
-			body: JSON.stringify({
-				entityHash: state.pendingSave.entityHash,
-				postId: state.pendingSave.postId,
-				folderId: folderId || undefined,
-			}),
-		}))
+		await runWrite('save', () => addSavedPost(
+			state.pendingSave.entityHash,
+			state.pendingSave.postId,
+			folderId || undefined,
+		))
 		closeSaveModal()
 	}
 	catch {
@@ -397,7 +394,7 @@ export async function renderSavedPanel() {
  */
 export async function loadSaved() {
 	bindSavedSearch()
-	const data = await socialApi('/saved-posts')
+	const data = await getSavedPosts()
 	savedCache = data
 	state.savedFoldersCache = data.folders || {}
 	await renderSavedPanel()

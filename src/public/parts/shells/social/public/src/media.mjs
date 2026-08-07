@@ -1,7 +1,7 @@
 /**
  * Social 媒体附件：EVFS 存储（中立层上传）。
  */
-import { uploadEvfsAttachment } from '/parts/shells:chat/shared/evfsMedia.mjs'
+import { uploadEvfsAttachment } from '/scripts/endpoints/p2p/evfsMedia.mjs'
 
 const SOCIAL_ATTACHMENT_PREFIX = 'shells/social/attachments'
 

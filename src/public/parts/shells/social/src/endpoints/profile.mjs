@@ -10,7 +10,7 @@ import { routeEntityHash, socialJson } from './shared.mjs'
  */
 export function registerProfileRoutes(router) {
 	// 静态段必须在 :entityHash 之前，否则 muted-keywords 会被当成 entityHash → 400
-	router.get('/api/parts/shells\\:social/profile/muted-keywords', authenticate, socialJson((_req, { client }) =>
+	router.get('/api/parts/shells\\:social/profile/muted-keywords', authenticate, socialJson((req, { client }) =>
 		client.mutedKeywords.list()))
 
 	router.put('/api/parts/shells\\:social/profile/muted-keywords', authenticate, socialJson((req, { client }) =>

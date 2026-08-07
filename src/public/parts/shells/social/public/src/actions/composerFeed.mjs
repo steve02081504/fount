@@ -5,7 +5,7 @@ import {
 	setComposerContentWarningOpen,
 	syncGroupRefInComposer,
 } from '../composer.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
+import { syncFeed } from '../endpoints/feed.mjs'
 import { state } from '../state.mjs'
 import { loadFeed, setFeedRanking, updateFeedSearchChrome } from '../views/feed.mjs'
 import { markNotificationsSeen, setNotificationFilter } from '../views/notifications.mjs'
@@ -33,7 +33,7 @@ export async function handleComposerFeedClick(target) {
 		const searchInput = document.getElementById('feedSearchInput')
 		if (searchInput instanceof HTMLInputElement) searchInput.value = ''
 		state.feedCursor = null
-		await socialApi('/feed/sync', { method: 'POST' })
+		await syncFeed()
 		await loadFeed(false)
 		updateFeedSearchChrome()
 	}

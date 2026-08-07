@@ -2,8 +2,10 @@ import { parseEntityHash } from 'https://esm.sh/@steve02081504/fount-p2p/core/en
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { parseSocialRunUri } from '../shared/runUri.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { publishPost } from './composer.mjs'
+import { connectFederationNode } from './endpoints/p2p.mjs'
 import { state } from './state.mjs'
 import { activateView, currentMainView, MAIN_NAV_VIEWS } from './viewChrome.mjs'
 import { loadDrafts } from './views/drafts.mjs'
@@ -33,12 +35,7 @@ function connectNodesFromShare(entityHash, sharerNodeHash) {
 	const self = String(state.viewerNodeHash || '').toLowerCase()
 	for (const targetNodeHash of targets) {
 		if (!targetNodeHash || targetNodeHash === self) continue
-		void fetch('/api/p2p/federation/connect-node', {
-			method: 'POST',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ targetNodeHash }),
-		}).catch(() => { })
+		connectFederationNode(targetNodeHash).catch(error => handleError('social.connectNodeFailed', {}, error))
 	}
 }
 

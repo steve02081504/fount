@@ -15,7 +15,7 @@
 			"src/server/p2p_server/**",
 			"src/scripts/search/**",
 			"src/server/registries.mjs",
-			"src/public/pages/scripts/api/registries.mjs",
+			"src/public/pages/scripts/endpoints/registries.mjs",
 			"src/public/pages/scripts/components/emojiPicker.mjs",
 			"src/public/pages/scripts/features/markdown/extensions.mjs"
 		],
@@ -26,7 +26,7 @@
 			"src/server/p2p_server/**",
 			"src/scripts/search/**",
 			"src/server/registries.mjs",
-			"src/public/pages/scripts/api/registries.mjs",
+			"src/public/pages/scripts/endpoints/registries.mjs",
 			"src/public/pages/scripts/components/emojiPicker.mjs",
 			"src/public/pages/scripts/features/markdown/extensions.mjs"
 		],
@@ -52,7 +52,7 @@
 			"src/public/parts/shells/chat/public/markdown_extensions/**",
 			"src/public/parts/shells/chat/src/group/{groupPreview,emojiContentResolve}.mjs",
 			"src/server/registries.mjs",
-			"src/public/pages/scripts/api/registries.mjs",
+			"src/public/pages/scripts/endpoints/registries.mjs",
 			"src/public/pages/scripts/components/emojiPicker.mjs"
 		],
 		"liveCrossShellEmoji": [
@@ -60,7 +60,7 @@
 		],
 		"wsExtra": [
 			"src/server/registries.mjs",
-			"src/public/pages/scripts/api/registries.mjs"
+			"src/public/pages/scripts/endpoints/registries.mjs"
 		],
 		"frontendShared": [
 			"src/public/parts/shells/social/test/frontend/{fixtures.mjs,run.mjs,phases.mjs,playwright.config.mjs}",
@@ -70,7 +70,7 @@
 			"src/public/parts/shells/social/public/src/init.mjs",
 			"src/public/parts/shells/social/public/src/state.mjs",
 			"src/public/parts/shells/social/public/src/gate.mjs",
-			"src/public/parts/shells/social/public/src/lib/apiClient.mjs",
+			"src/public/parts/shells/social/public/src/endpoints/**",
 			"src/public/parts/shells/social/public/src/lib/socialWrite.mjs",
 			"src/scripts/test/playwright/**",
 			"src/public/pages/scripts/test/ready_gate.mjs",

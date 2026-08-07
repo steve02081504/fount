@@ -4,9 +4,7 @@
 import { isEntityHash128 } from '/parts/shells:chat/shared/entityHash.mjs'
 import { wireEntityProfileHover } from '/parts/shells:chat/shared/entityProfileHoverCard.mjs'
 
-import { state } from '../state.mjs'
-
-import { viewerEntityHash } from './apiClient.mjs'
+import { state, viewerEntityHash } from '../state.mjs'
 
 const PROFILE_HOVER_SELECTOR = [
 	'a.author-name',

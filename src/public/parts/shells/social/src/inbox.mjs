@@ -3,6 +3,7 @@
  */
 import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 import { createJsonlInboxStore } from 'fount/public/parts/shells/chat/src/chat/lib/jsonlInboxStore.mjs'
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
@@ -339,12 +340,12 @@ export async function appendCarePostInboxRow(username, recipientEntityHash, auth
 	await socialInboxStore(username, recipient).append(notification)
 	pushFeedUpdate(username, { type: 'notification', notification })
 	const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
-	void notifyUser(username, {
+	notifyUser(username, {
 		title: 'care_post',
 		body: String(textSnippet || 'care_post'),
 		url: '/parts/shells:social/',
 		tag: `social:care_post:${recipient}`,
-	})
+	}).catch(handleError)
 }
 
 /**
@@ -427,12 +428,12 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
 		await socialInboxStore(username, recipient).append(notification)
 		pushFeedUpdate(username, { type: 'notification', notification })
 		const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
-		void notifyUser(username, {
+		notifyUser(username, {
 			title: row.type,
 			body: String(snippet || row.type || ''),
 			url: '/parts/shells:social/',
 			tag: `social:${row.type}:${recipient}`,
-		})
+		}).catch(handleError)
 	}
 }
 

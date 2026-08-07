@@ -1,7 +1,8 @@
-import { mountTranslationBlock, requestTranslation, resolveTargetLang } from '/scripts/features/translate.mjs'
+import { mountTranslationBlock, resolveTargetLang } from '/scripts/features/translate.mjs'
 import { refreshQuotePreview } from '../composer.mjs'
+import { dislikePost, likePost, repostPost, translatePost } from '../endpoints/posts.mjs'
+import { getProfileReplies } from '../endpoints/profile.mjs'
 import { parseActionKey, queryByActionKey } from '../lib/actionKey.mjs'
-import { SOCIAL_API, socialApi } from '../lib/apiClient.mjs'
 import { submitReply } from '../lib/replies.mjs'
 import {
 	applyDislikeButtonOptimistic,
@@ -38,10 +39,7 @@ export async function handlePostEngagementClick(target) {
 			const card = dislikeButton.closest('.post-card, .reply')
 			if (!disliked && card instanceof HTMLElement) clearLikeOnCard(card)
 			try {
-				await runWrite('dislike', () => socialApi(`/posts/${entityHash}/${postId}/dislike`, {
-					method: 'POST',
-					body: JSON.stringify({ dislike: !disliked }),
-				}))
+				await runWrite('dislike', () => dislikePost(entityHash, postId, !disliked))
 			}
 			catch {
 				rollbackDislikeButton(dislikeButton, snapshot)
@@ -59,10 +57,7 @@ export async function handlePostEngagementClick(target) {
 			const card = likeButton.closest('.post-card, .reply')
 			if (!liked && card instanceof HTMLElement) clearDislikeOnCard(card)
 			try {
-				await runWrite('like', () => socialApi(`/posts/${entityHash}/${postId}/like`, {
-					method: 'POST',
-					body: JSON.stringify({ like: !liked }),
-				}))
+				await runWrite('like', () => likePost(entityHash, postId, !liked))
 			}
 			catch {
 				rollbackLikeButton(likeButton, snapshot)
@@ -86,10 +81,7 @@ export async function handlePostEngagementClick(target) {
 			const card = submitRepostButton.closest('.post-card, .reply')
 			const prevRepost = card ? bumpRepostCount(card, 1) : 0
 			try {
-				const data = await runWrite('repost', () => socialApi(`/posts/${entityHash}/${postId}/repost`, {
-					method: 'POST',
-					body: JSON.stringify({ comment }),
-				}))
+				const data = await runWrite('repost', () => repostPost(entityHash, postId, comment))
 				if (textarea) textarea.value = ''
 				panel?.classList.add('hidden')
 				if (data?.item)
@@ -128,7 +120,7 @@ export async function handlePostEngagementClick(target) {
 				return false
 			}
 			// 先加载再显示，避免测试/用户在 replaceChildren 前写入被清掉的 textarea
-			const data = await socialApi(`/profile/${entityHash}/replies/${postId}`)
+			const data = await getProfileReplies(entityHash, postId)
 			await renderRepliesPanel(panel, data.replies || [])
 			panel.dataset.loaded = '1'
 			panel.classList.remove('hidden')
@@ -148,7 +140,7 @@ export async function handlePostEngagementClick(target) {
 			try {
 				await runWrite('reply', () => submitReply(entityHash, postId, text))
 				textarea.value = ''
-				const data = await socialApi(`/profile/${entityHash}/replies/${postId}`)
+				const data = await getProfileReplies(entityHash, postId)
 				const replies = data.replies || []
 				await renderRepliesPanel(panel, replies)
 				panel.dataset.loaded = '1'
@@ -168,11 +160,7 @@ export async function handlePostEngagementClick(target) {
 		const card = translateButton.closest('.post-card')
 		if (!cardBody || !card) return false
 		const text = decodeURIComponent(card.dataset.postText || '')
-		const translated = await requestTranslation(
-			`${SOCIAL_API}/translate`,
-			text,
-			resolveTargetLang(),
-		)
+		const translated = await translatePost(text, resolveTargetLang())
 		mountTranslationBlock(cardBody, {
 			originalText: text,
 			translatedText: translated,

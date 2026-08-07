@@ -1,7 +1,8 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
+import { getExplorePosts } from '../endpoints/explore.mjs'
+import { getExploreAccounts } from '../endpoints/feed.mjs'
 import { authorLabel, entityHandle, formatTimeHtml, mountMarkdown, rememberEntityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { renderSuggestedAccountRows } from '../lib/suggestedAccounts.mjs'
@@ -57,10 +58,9 @@ export async function loadExplore() {
 	if (mediaInput instanceof HTMLInputElement)
 		mediaInput.checked = state.exploreMediaOnly
 
-	const mediaQuery = state.exploreMediaOnly ? '&mediaOnly=true' : ''
 	const [accounts, posts] = await Promise.all([
-		socialApi('/explore?limit=20'),
-		socialApi(`/explore/posts?limit=20${mediaQuery}`),
+		getExploreAccounts(20),
+		getExplorePosts({ limit: 20, mediaOnly: state.exploreMediaOnly }),
 	])
 
 	const accountList = document.getElementById('exploreAccountList')

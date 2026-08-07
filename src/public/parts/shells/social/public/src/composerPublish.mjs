@@ -6,7 +6,8 @@ import {
 	clearComposer,
 	refreshMediaPreview,
 } from './composerState.mjs'
-import { socialApi } from './lib/apiClient.mjs'
+import { deleteDraft, saveDraft } from './endpoints/drafts.mjs'
+import { createPost } from './endpoints/posts.mjs'
 import { uploadMedia } from './media.mjs'
 import { state } from './state.mjs'
 import { readVisibilityPicker } from './visibilityPicker.mjs'
@@ -112,7 +113,7 @@ export async function saveComposerDraft() {
 	const body = buildPostBody(uploadedRefs)
 	if (state.activeDraftId)
 		body.draftId = state.activeDraftId
-	const row = await socialApi('/drafts', { method: 'POST', body: JSON.stringify(body) })
+	const row = await saveDraft(body)
 	state.activeDraftId = row.draftId
 	showToastI18n('success', 'social.drafts.saved')
 	return row
@@ -130,9 +131,9 @@ export async function publishPost() {
 	const body = buildPostBody(uploadedRefs)
 	const isScheduled = !!body.publishAt
 	const draftId = state.activeDraftId
-	await socialApi('/posts', { method: 'POST', body: JSON.stringify(body) })
+	await createPost(body)
 	if (draftId)
-		await socialApi(`/drafts/${encodeURIComponent(draftId)}`, { method: 'DELETE' }).catch(() => { })
+		await deleteDraft(draftId).catch(() => { })
 	await clearComposer()
 	if (isScheduled)
 		showToastI18n('success', 'social.composer.scheduleSuccess')

@@ -31,7 +31,7 @@ export function registerPostsRoutes(router) {
 		return { event: post.event }
 	}))
 
-	router.get('/api/parts/shells\\:social/posts/scheduled', authenticate, socialJson(async (_req, { client }) => ({
+	router.get('/api/parts/shells\\:social/posts/scheduled', authenticate, socialJson(async (req, { client }) => ({
 		items: await client.listScheduledPosts(),
 	})))
 

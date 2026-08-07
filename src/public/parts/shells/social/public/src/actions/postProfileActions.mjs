@@ -1,7 +1,8 @@
 import { formatSocialShareHttpsUrl } from '../../shared/protocolUrl.mjs'
+import { addPostNote, deletePost, editPost, getPost, getPostNotes, votePostNote } from '../endpoints/posts.mjs'
+import { getProfilePosts } from '../endpoints/profile.mjs'
 import { downloadPostHtml } from '../exportHtml.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
 import { promptText, promptTextArea, showText } from '../lib/dialog.mjs'
 import { handlePollVoteClick } from '../lib/pollUi.mjs'
 import {
@@ -33,10 +34,7 @@ export async function handlePostProfileActionsClick(target) {
 			const current = decodeURIComponent(card?.dataset.postText || '')
 			const next = await promptText('social.post.editPrompt', current)
 			if (next == null || next === current) return true
-			await runWrite('edit', () => socialApi(
-				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/edit`,
-				{ method: 'POST', body: JSON.stringify({ text: next }) },
-			))
+			await runWrite('edit', () => editPost(parsed.entityHash, parsed.postId, next))
 			await refreshVisiblePosts()
 		}
 		return true
@@ -49,7 +47,7 @@ export async function handlePostProfileActionsClick(target) {
 		const author = card?.dataset.authorEntity
 		if (postId && author) {
 			closePostMoreMenus()
-			void socialApi(`/profile/${encodeURIComponent(author)}/posts?limit=50`).then(async data => {
+			void getProfilePosts(author, { limit: 50 }).then(async data => {
 				const item = (data.items || []).find(row => row.postId === postId)
 				const revisions = item?.post?.revisions || []
 				const lines = revisions.map((rev, idx) => `#${idx + 1} ${rev.text || ''}`).join('\n---\n')
@@ -66,10 +64,7 @@ export async function handlePostProfileActionsClick(target) {
 			closePostMoreMenus()
 			const text = await promptTextArea('social.notes.prompt')
 			if (!text?.trim()) return true
-			await runWrite('addNote', () => socialApi(
-				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/notes`,
-				{ method: 'POST', body: JSON.stringify({ text: text.trim() }) },
-			))
+			await runWrite('addNote', () => addPostNote(parsed.entityHash, parsed.postId, text.trim()))
 			await refreshVisiblePosts()
 		}
 		return true
@@ -81,10 +76,7 @@ export async function handlePostProfileActionsClick(target) {
 		const noteId = noteVoteButton.dataset.noteId
 		if (parsed && noteId) {
 			const helpful = noteVoteButton.dataset.helpful !== '0'
-			await runWrite('noteVote', () => socialApi(
-				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/notes/${encodeURIComponent(noteId)}/vote`,
-				{ method: 'POST', body: JSON.stringify({ helpful }) },
-			))
+			await runWrite('noteVote', () => votePostNote(parsed.entityHash, parsed.postId, noteId, helpful))
 			await refreshVisiblePosts()
 		}
 		return true
@@ -94,9 +86,7 @@ export async function handlePostProfileActionsClick(target) {
 	if (noteMoreButton instanceof HTMLElement && noteMoreButton.dataset.noteMore) {
 		const parsed = parseActionKey(noteMoreButton.dataset.noteMore)
 		if (parsed) {
-			const data = await socialApi(
-				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/notes`,
-			)
+			const data = await getPostNotes(parsed.entityHash, parsed.postId)
 			await showText((data.notes || []).map(note =>
 				`[${note.score >= 0 ? '+' : ''}${note.score}] ${note.text || ''}`).join('\n---\n')
 				|| geti18n('social.notes.empty'), 'social.notes.listTitle')
@@ -124,9 +114,7 @@ export async function handlePostProfileActionsClick(target) {
 			const card = downloadHtmlButton.closest('.post-card')
 			const fallbackText = decodeURIComponent(card?.dataset.postText || '')
 			try {
-				const data = await socialApi(
-					`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}`,
-				)
+				const data = await getPost(parsed.entityHash, parsed.postId)
 				const content = data?.item?.post?.content || data?.post?.content || {
 					text: fallbackText,
 				}
@@ -166,10 +154,7 @@ export async function handlePostProfileActionsClick(target) {
 		const entityHash = deleteButton.dataset.deleteEntity
 			|| state.viewerEntityHash
 		try {
-			await runWrite('delete', () => socialApi('/posts', {
-				method: 'DELETE',
-				body: JSON.stringify({ postId, entityHash }),
-			}))
+			await runWrite('delete', () => deletePost(postId, entityHash))
 		}
 		catch {
 			state.suppressedFeedPostIds.delete(postId)

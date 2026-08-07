@@ -3,7 +3,9 @@ import { appendTemplate, renderTemplate } from '/scripts/features/template.mjs'
 import { initTranslations, primaryLocale } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
-import { chatApi, socialApi } from '../lib/apiClient.mjs'
+import { getTranslationPrefs, putTranslationPrefs } from '../endpoints/chatBridge.mjs'
+import { getMutedKeywords, getProfile, putMutedKeywords, updateProfileMeta } from '../endpoints/profile.mjs'
+import { getTaste, putTastePrivacy, rebuildTaste, renameTasteTag } from '../endpoints/taste.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { runWrite } from '../lib/socialWrite.mjs'
 import { state } from '../state.mjs'
@@ -58,10 +60,7 @@ async function renderMutedKeywordsSection(panel, entries) {
 	 * @returns {Promise<object[]>} 服务端条目
 	 */
 	async function persist(next) {
-		const data = await runWrite('mutedKeywords', () => socialApi('/profile/muted-keywords', {
-			method: 'PUT',
-			body: JSON.stringify({ entries: next }),
-		}))
+		const data = await runWrite('mutedKeywords', () => putMutedKeywords(next))
 		const saved = data?.entries || next
 		await paintChips(saved)
 		return saved
@@ -101,7 +100,7 @@ async function renderMutedKeywordsSection(panel, entries) {
  * @returns {Promise<void>}
  */
 async function renderTranslationPrefsSection(panel) {
-	const data = await chatApi('/translation-prefs').catch(() => ({ prefs: { autoTranslate: false } }))
+	const data = await getTranslationPrefs().catch(() => ({ prefs: { autoTranslate: false } }))
 	const prefs = data?.prefs || { autoTranslate: false }
 	const section = await renderTemplate('settings_toggle_card', {
 		titleKey: 'social.settings.autoTranslateTitle',
@@ -113,10 +112,7 @@ async function renderTranslationPrefsSection(panel) {
 	panel.appendChild(section)
 	section.querySelector('#socialAutoTranslate')?.addEventListener('change', event => {
 		const checked = event.target instanceof HTMLInputElement && event.target.checked
-		void runWrite('translationPrefs', () => chatApi('/translation-prefs', {
-			method: 'PUT',
-			body: JSON.stringify({ prefs: { ...prefs, autoTranslate: checked } }),
-		}))
+		void runWrite('translationPrefs', () => putTranslationPrefs({ ...prefs, autoTranslate: checked }))
 	})
 }
 
@@ -136,10 +132,7 @@ async function renderPrivacySection(panel, socialMeta) {
 	panel.appendChild(section)
 	section.querySelector('#exploreProtectedInput')?.addEventListener('change', async event => {
 		const checked = event.target instanceof HTMLInputElement && event.target.checked
-		await socialApi('/profile/meta', {
-			method: 'POST',
-			body: JSON.stringify({ hideFromDiscovery: checked }),
-		})
+		await updateProfileMeta({ hideFromDiscovery: checked })
 		state.profileSocialMeta = {
 			...state.profileSocialMeta,
 			hideFromDiscovery: checked,
@@ -169,21 +162,16 @@ async function renderTasteSection(panel, data) {
 	function persistPrivacy() {
 		const prefs = section.querySelector('#tastePublishPreferences')
 		const reactions = section.querySelector('#tastePublishReactions')
-		return runWrite('tastePrivacy', () => socialApi('/taste', {
-			method: 'PUT',
-			body: JSON.stringify({
-				privacy: {
-					publishPreferences: prefs instanceof HTMLInputElement ? prefs.checked : true,
-					publishReactions: reactions instanceof HTMLInputElement ? reactions.checked : true,
-				},
-			}),
+		return runWrite('tastePrivacy', () => putTastePrivacy({
+			publishPreferences: prefs instanceof HTMLInputElement ? prefs.checked : true,
+			publishReactions: reactions instanceof HTMLInputElement ? reactions.checked : true,
 		}))
 	}
 
 	section.querySelector('#tastePublishPreferences')?.addEventListener('change', () => { void persistPrivacy() })
 	section.querySelector('#tastePublishReactions')?.addEventListener('change', () => { void persistPrivacy() })
 	section.querySelector('#tasteRebuildButton')?.addEventListener('click', () => {
-		void runWrite('tasteRebuild', () => socialApi('/taste/rebuild', { method: 'POST' }))
+		void runWrite('tasteRebuild', () => rebuildTaste())
 			.then(() => loadSettings())
 	})
 
@@ -210,10 +198,8 @@ async function renderTasteSection(panel, data) {
 			const input = form.querySelector('input')
 			const label = input instanceof HTMLInputElement ? input.value.trim() : ''
 			if (!tagHash || !label) return
-			void runWrite('tasteName', () => socialApi('/taste/names', {
-				method: 'POST',
-				body: JSON.stringify({ tagHash, label, locale: primaryLocale() }),
-			})).then(() => loadSettings())
+			void runWrite('tasteName', () => renameTasteTag(tagHash, label, primaryLocale()))
+				.then(() => loadSettings())
 		})
 }
 
@@ -241,10 +227,10 @@ export async function loadSettings() {
 	const panel = document.getElementById('settingsPanel')
 	if (!panel) return
 	const [taste, muted, profile] = await Promise.all([
-		socialApi('/taste').catch(() => ({ tags: [], privacy: {} })),
-		socialApi('/profile/muted-keywords').catch(() => ({ entries: [] })),
+		getTaste().catch(() => ({ tags: [], privacy: {} })),
+		getMutedKeywords().catch(() => ({ entries: [] })),
 		state.viewerEntityHash
-			? socialApi(`/profile/${state.viewerEntityHash}`).catch(() => ({}))
+			? getProfile(state.viewerEntityHash).catch(() => ({}))
 			: Promise.resolve({}),
 	])
 	const socialMeta = profile.socialMeta || state.profileSocialMeta || {}

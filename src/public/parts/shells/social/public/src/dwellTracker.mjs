@@ -1,4 +1,4 @@
-import { socialApi } from './lib/apiClient.mjs'
+import { sendDwellSignal } from './endpoints/signals.mjs'
 /**
  * Feed 停留时长采集（本地隐私信号，不联邦）。
  */
@@ -155,5 +155,5 @@ export async function sendDwellBeacon(entries) {
 		const blob = new Blob([body], { type: 'application/json' })
 		if (navigator.sendBeacon(url, blob)) return
 	}
-	await socialApi('/signals/dwell', { method: 'POST', body }).catch(() => null)
+	await sendDwellSignal({ entries }).catch(() => null)
 }

@@ -9,7 +9,7 @@ import { socialJson } from './shared.mjs'
  * @returns {void}
  */
 export function registerSavedRoutes(router) {
-	router.get('/api/parts/shells\\:social/saved-posts', authenticate, socialJson((_req, { client }) => client.saved.list()))
+	router.get('/api/parts/shells\\:social/saved-posts', authenticate, socialJson((req, { client }) => client.saved.list()))
 
 	router.get('/api/parts/shells\\:social/saved-posts/search', authenticate, socialJson((req, { client }) => {
 		const q = String(req.query?.q || '')

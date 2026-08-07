@@ -7,7 +7,7 @@ import {
 	renderMarkdownAsStandaloneDocument,
 } from '/scripts/features/markdown/standaloneDocument.mjs'
 import { arrayBufferToBase64 } from '/scripts/lib/base64.mjs'
-import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
+import { fetchMediaRef } from '/scripts/endpoints/p2p/evfsMedia.mjs'
 
 /**
  * @param {object[] | undefined} mediaRefs 媒体引用
@@ -16,23 +16,15 @@ import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 async function resolveMediaRefAttachments(mediaRefs) {
 	if (!mediaRefs?.length) return []
 	const files = []
-	for (const ref of mediaRefs) {
-		let url
+	for (const ref of mediaRefs)
 		try {
-			url = mediaRefUrl(ref)
+			const name = ref.name || ref.path?.split('/').pop() || 'media'
+			const { buffer, mimeType } = await fetchMediaRef(ref)
+			files.push({ name, mime_type: String(ref.mimeType || mimeType), buffer: arrayBufferToBase64(buffer) })
 		}
 		catch {
 			continue
 		}
-		const res = await fetch(url, { credentials: 'include' })
-		if (!res.ok) continue
-		const mime = String(ref.mimeType || res.headers.get('Content-Type') || 'application/octet-stream')
-		files.push({
-			name: ref.name || ref.path?.split('/').pop() || 'media',
-			mime_type: mime,
-			buffer: arrayBufferToBase64(await res.arrayBuffer()),
-		})
-	}
 	return files
 }
 

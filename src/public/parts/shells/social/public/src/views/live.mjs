@@ -1,5 +1,6 @@
 import { buildSocialLiveAvWsUrl } from '../../shared/liveAvWsUrl.mjs'
-import { chatApi, socialApi } from '../lib/apiClient.mjs'
+import { getChatEntity } from '../endpoints/chatBridge.mjs'
+import { getLiveFeed, inviteLiveLink, startLive, stopLive } from '../endpoints/live.mjs'
 import { entityAvatarUrl, renderAvatarHtml } from '../lib/display.mjs'
 import { playHeartAnim } from '../lib/heartAnim.mjs'
 import { createSnapCursorFeed } from '../lib/snapCursorFeed.mjs'
@@ -24,9 +25,7 @@ const liveFeed = createSnapCursorFeed({
 	 * @param {string | null} cursor 游标
 	 * @returns {Promise<object | null>} 分页结果
 	 */
-	fetchPage: cursor => socialApi(
-		`/live/feed?limit=20&scope=${encodeURIComponent(liveScope)}&cursor=${encodeURIComponent(cursor || '')}`,
-	).catch(() => null),
+	fetchPage: cursor => getLiveFeed({ scope: liveScope, cursor }).catch(() => null),
 	/**
 	 * @param {HTMLElement} container 容器
 	 * @param {object[]} items 条目
@@ -56,7 +55,7 @@ const voiceRingMounts = new WeakMap()
  */
 async function fetchEntityProfile(entityHash) {
 	try {
-		const data = await chatApi(`/entities/${encodeURIComponent(entityHash)}`)
+		const data = await getChatEntity(entityHash)
 		return data?.profile || data || null
 	}
 	catch { return null }
@@ -130,9 +129,7 @@ export async function loadLiveView(targetEntityHash, targetLiveId) {
 
 	ensureLiveScopeTabs()
 
-	const data = await socialApi(
-		`/live/feed?limit=20&scope=${encodeURIComponent(liveScope)}`,
-	).catch(() => ({ items: [], nextCursor: null }))
+	const data = await getLiveFeed({ scope: liveScope }).catch(() => ({ items: [], nextCursor: null }))
 	const items = data.items || []
 
 	if (!items.length) {
@@ -546,10 +543,7 @@ export function initLiveBroadcastView() {
 		try {
 			const title = document.getElementById('liveTitleInput')?.value?.trim() || ''
 			const mediaKind = mediaModeSelect?.value || 'av'
-			const data = await socialApi('/live/start', {
-				method: 'POST',
-				body: JSON.stringify({ title, bridgeOrigin: location.origin, mediaKind }),
-			})
+			const data = await startLive({ title, bridgeOrigin: location.origin, mediaKind })
 			activeLiveId = data.liveId
 			viewerEntityHash = data.entityHash
 			startBtn.classList.add('hidden')
@@ -603,7 +597,7 @@ export function initLiveBroadcastView() {
 			voiceRingHost?.classList.add('hidden')
 			previewCanvas?.classList.remove('hidden')
 			whipPanel?.classList.add('hidden')
-			await socialApi('/live/stop', { method: 'POST', body: JSON.stringify({ liveId: activeLiveId }) })
+			await stopLive(activeLiveId)
 			activeLiveId = null
 			viewerEntityHash = null
 			stopBtn.classList.add('hidden')
@@ -625,10 +619,7 @@ export function initLiveBroadcastView() {
 			return
 		}
 		try {
-			const result = await socialApi(`/live/${activeLiveId}/link/invite`, {
-				method: 'POST',
-				body: JSON.stringify({ peerEntityHash, peerLiveId, bridgeOrigin: location.origin }),
-			})
+			const result = await inviteLiveLink(activeLiveId, { peerEntityHash, peerLiveId, bridgeOrigin: location.origin })
 			if (statusEl)
 				statusEl.dataset.i18n = result.status === 'linked'
 					? 'social.live.link.linked'

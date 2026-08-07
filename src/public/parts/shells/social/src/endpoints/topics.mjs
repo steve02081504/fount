@@ -15,7 +15,7 @@ export function registerTopicsRoutes(router) {
 		return client.followTopic(tag, req.body?.follow !== false)
 	}))
 
-	router.get('/api/parts/shells\\:social/topics/followed', authenticate, socialJson((_req, { client }) =>
+	router.get('/api/parts/shells\\:social/topics/followed', authenticate, socialJson((req, { client }) =>
 		client.followedTopics()))
 
 	router.get('/api/parts/shells\\:social/topics/:tag/posts', authenticate, socialJson(async (req, { client }) => {

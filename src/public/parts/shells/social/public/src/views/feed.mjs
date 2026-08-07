@@ -1,6 +1,6 @@
 import { formatSocialTopicHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { bindDwellTracker } from '../dwellTracker.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
+import { getExploreAccounts, getFeed, getTrendingHashtags } from '../endpoints/feed.mjs'
 import { entityHandle } from '../lib/display.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
@@ -92,9 +92,7 @@ function scheduleFeedPrefetch() {
 	if (state.feedPrefetchInFlight) return
 	const gen = feedGeneration
 	state.feedPrefetchInFlight = (async () => {
-		const data = await socialApi(
-			`/feed?limit=30${feedRankingQuery()}&cursor=${encodeURIComponent(cursor)}`,
-		).catch(() => null)
+		const data = await getFeed({ cursor, ranking: state.feedRanking }).catch(() => null)
 		if (feedGeneration !== gen) return
 		if (!data || state.feedCursor !== cursor) return
 		state.feedPrefetch = {
@@ -153,7 +151,7 @@ export async function loadSuggestedAccounts() {
 	const aside = document.getElementById('asideSuggested')
 	const list = document.getElementById('asideSuggestedList')
 	if (!aside || !list) return
-	const data = await socialApi('/explore?limit=5').catch(() => ({ accounts: [] }))
+	const data = await getExploreAccounts(5).catch(() => ({ accounts: [] }))
 	const accounts = (data.accounts || []).filter(
 		row => row.entityHash !== state.viewerEntityHash,
 	)
@@ -207,7 +205,7 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 		await paint(trendingCache)
 
 	if (!trendingInFlight)
-		trendingInFlight = socialApi('/hashtags/trending?limit=12&scope=nearby')
+		trendingInFlight = getTrendingHashtags({ scope: 'nearby' })
 			.then(data => {
 				trendingCache = data.tags || []
 				return trendingCache
@@ -218,7 +216,7 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 			})
 	const nearbyPromise = trendingInFlight
 	const localPromise = !trendingCache?.length
-		? socialApi('/hashtags/trending?limit=12&scope=local').catch(() => ({ tags: [] }))
+		? getTrendingHashtags({ scope: 'local' }).catch(() => ({ tags: [] }))
 		: null
 
 	const nearbyTags = await nearbyPromise
@@ -276,13 +274,6 @@ export async function prependFeedItem(item, options = {}) {
 	finally {
 		pendingFeedInserts.delete(insertKey)
 	}
-}
-
-/**
- * @returns {string} feed ranking query 片段
- */
-function feedRankingQuery() {
-	return state.feedRanking === 'for_you' ? '&ranking=for_you' : ''
 }
 
 /**
@@ -366,10 +357,8 @@ export async function loadFeed(append = false) {
 		state.feedPrefetch = null
 	}
 	else {
-		const cursorQuery = append && state.feedCursor
-			? `&cursor=${encodeURIComponent(state.feedCursor)}`
-			: ''
-		const data = await socialApi(`/feed?limit=30${feedRankingQuery()}${cursorQuery}`)
+		const cursor = append && state.feedCursor ? state.feedCursor : undefined
+		const data = await getFeed({ cursor, ranking: state.feedRanking })
 		if (feedGeneration !== gen) return
 		items = data.items || []
 		nextCursor = data.nextCursor || null

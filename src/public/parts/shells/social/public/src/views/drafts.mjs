@@ -1,6 +1,6 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { escapeHtml } from '../../../../../scripts/lib/escapeHtml.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
+import { deleteDraft, getDrafts } from '../endpoints/drafts.mjs'
 import { formatTimeHtml } from '../lib/display.mjs'
 import { buildEmptyState } from '../lib/emptyState.mjs'
 
@@ -11,7 +11,7 @@ import { buildEmptyState } from '../lib/emptyState.mjs'
 export async function loadDrafts() {
 	const panel = document.getElementById('draftsPanel')
 	if (!panel) return
-	const data = await socialApi('/drafts')
+	const data = await getDrafts()
 	const drafts = Array.isArray(data.drafts) ? data.drafts : []
 	if (!drafts.length) {
 		panel.replaceChildren(await buildEmptyState({
@@ -47,7 +47,7 @@ export async function loadDrafts() {
  */
 export async function removeDraft(draftId) {
 	try {
-		await socialApi(`/drafts/${encodeURIComponent(draftId)}`, { method: 'DELETE' })
+		await deleteDraft(draftId)
 		await loadDrafts()
 		showToastI18n('success', 'social.drafts.deleted')
 	}

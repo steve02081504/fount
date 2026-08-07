@@ -1,5 +1,6 @@
+import { getPost } from '../endpoints/posts.mjs'
+import { getProfile, getProfileReplies } from '../endpoints/profile.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
 import { rememberEntityHandle } from '../lib/display.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state } from '../state.mjs'
@@ -30,7 +31,7 @@ export async function loadPostDetail(entityHash, postId) {
 
 	let data
 	try {
-		data = await socialApi(`/posts/${owner}/${id}`)
+		data = await getPost(owner, id)
 	}
 	catch (error) {
 		const msg = String(error?.message || '')
@@ -43,7 +44,7 @@ export async function loadPostDetail(entityHash, postId) {
 		return
 	}
 
-	const profileData = await socialApi(`/profile/${owner}`).catch(() => null)
+	const profileData = await getProfile(owner).catch(() => null)
 	rememberEntityHandle(owner, profileData?.profile || data.item.authorProfile)
 
 	const card = await buildPostCard(data.item, { openDetail: false })
@@ -70,7 +71,7 @@ export async function loadPostDetail(entityHash, postId) {
 	const { bindFeedVideoAutoplay } = await import('../lib/videoAutoplay.mjs')
 	bindFeedVideoAutoplay(card)
 
-	const repliesData = await socialApi(`/profile/${owner}/replies/${id}`).catch(() => ({ replies: [] }))
+	const repliesData = await getProfileReplies(owner, id).catch(() => ({ replies: [] }))
 	await renderRepliesPanel(repliesHost, repliesData.replies || [])
 	repliesHost.dataset.loaded = '1'
 	repliesHost.classList.remove('hidden')

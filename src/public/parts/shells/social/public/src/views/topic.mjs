@@ -1,5 +1,6 @@
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { followTopic, getFollowedTopics, getTopicPosts } from '../endpoints/topics.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { activateView } from '../viewChrome.mjs'
@@ -31,10 +32,7 @@ export function initTopicView() {
 		if (!tag) return
 		const isFollowed = followButton.dataset.followed === 'true'
 		try {
-			await socialApi('/topics/follow', {
-				method: 'POST',
-				body: JSON.stringify({ tag, follow: !isFollowed }),
-			})
+			await followTopic(tag, !isFollowed)
 			paintTopicFollowButton(followButton, !isFollowed)
 		}
 		catch { /* ignore */ }
@@ -67,11 +65,11 @@ export async function loadTopicView(tag) {
 		followButton.dataset.tag = normalizedTag
 		followButton.className = 'btn btn-primary btn-sm'
 		paintTopicFollowButton(followButton, false)
-		socialApi('/topics/followed').then(data => {
+		getFollowedTopics().then(data => {
 			const tags = (data.tags || []).map(t => t.toLowerCase())
 			const isFollowed = tags.includes(normalizedTag.toLowerCase())
 			paintTopicFollowButton(followButton, isFollowed)
-		}).catch(() => { })
+		}).catch(handleError('social.bootstrapFailed'))
 	}
 
 	await loadTopicPosts(normalizedTag, false)
@@ -90,10 +88,8 @@ async function loadTopicPosts(tag, append = false) {
 	if (!list) return
 
 	const cursor = append ? view.dataset.topicCursor || '' : ''
-	const params = new URLSearchParams({ limit: '30' })
-	if (cursor) params.set('cursor', cursor)
 
-	const data = await socialApi(`/topics/${encodeURIComponent(tag)}/posts?${params}`).catch(() => ({ items: [] }))
+	const data = await getTopicPosts(tag, { limit: 30, cursor }).catch(() => ({ items: [] }))
 	if (gen !== topicGeneration) return
 
 	const items = data.items || []
