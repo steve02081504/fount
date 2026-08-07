@@ -4330,6 +4330,7 @@ export type LocaleData = {
 			searchEmpty: string
 			folderEmpty: string
 			emptyHint: string
+			loadFailed: string
 			search: {
 				placeholder: string
 			}
@@ -6271,6 +6272,7 @@ export type LocaleKeyParams = {
 	'social.profile.loadFailed': { error: string | number }
 	'social.replies.loadFailed': { error: string | number }
 	'social.reply.context': { author: string | number }
+	'social.saved.loadFailed': { error: string | number }
 	'social.search.loadFailed': { error: string | number }
 	'social.search.trustScore': { score: string | number }
 	'social.settings.loadFailed': { error: string | number }
