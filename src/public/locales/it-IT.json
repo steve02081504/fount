@@ -780,7 +780,7 @@
 		"title": "Home",
 		"description": "Il cuore della tua esperienza di fount. Qui, gestisci gli abitanti della tua immaginazione: personaggi, mondi e personaggi. Le tue storie iniziano e si diramano da questo nesso centrale.",
 		"sidebarTitle": "Dettagli",
-		"closeSidebar": "Close sidebar",
+		"closeSidebar": "Chiudi barra laterale",
 		"itemDescription": "Seleziona un elemento per visualizzarne i dettagli.",
 		"noDescription": "Nessuna descrizione disponibile.",
 		"filterInput": {
@@ -1754,7 +1754,7 @@
 				"suppressEveryone": "Ignora @tutti e @qui",
 				"suppressRoles": "Ignora il gruppo di ruoli @",
 				"mute": "muto",
-				"muteOff": "Vicino",
+				"muteOff": "Disattiva",
 				"mute1h": "1 ora",
 				"mute8h": "8 ore",
 				"muteForever": "fino all'accensione manuale",
@@ -1914,7 +1914,7 @@
 			"typing": "${names} sta scrivendo...",
 			"charsHeader": "Ruolo",
 			"settingsModalTitle": "Impostazioni",
-			"modalClose": "Vicino",
+			"modalClose": "Chiudi",
 			"cancel": "Annulla",
 			"bookmarkLocal": "locale",
 			"groupsSection": "gruppo",
@@ -1963,9 +1963,9 @@
 				"aria-label": "Punta della forcella DAG"
 			},
 			"ariaClose": {
-				"aria-label": "Vicino"
+				"aria-label": "Chiudi"
 			},
-			"close": "Vicino",
+			"close": "Chiudi",
 			"serverBar": {
 				"aria-label": "Gruppi e navigazione"
 			},
@@ -4536,7 +4536,7 @@
 		},
 		"dialog": {
 			"close": {
-				"aria-label": "Vicino"
+				"aria-label": "Chiudi"
 			}
 		},
 		"actions": {
@@ -4714,7 +4714,7 @@
 			"aria-label": "Elenco elementi"
 		},
 		"openCabinets": "Apri l'elenco degli schedari",
-		"closeCabinets": "Vicino",
+		"closeCabinets": "Chiudi",
 		"bootstrapFailed": "Inizializzazione schedario non riuscita: ${error}",
 		"home_function_buttons": {
 			"main": {
@@ -5664,7 +5664,7 @@
 			"save": "Salva",
 			"delete": "Eliminare",
 			"confirm": "Confermare",
-			"close": "Vicino",
+			"close": "Chiudi",
 			"translate": {
 				"label": "Traduzione:",
 				"showOriginal": "Mostra originale",

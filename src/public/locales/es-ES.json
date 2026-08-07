@@ -780,7 +780,7 @@
 		"title": "Inicio",
 		"description": "El corazón de tu experiencia en fount. Aquí, gestiona los habitantes de tu imaginación: personajes, mundos y personas. Tus historias comienzan y se ramifican a partir de este nexo central.",
 		"sidebarTitle": "Detalles",
-		"closeSidebar": "Close sidebar",
+		"closeSidebar": "Cerrar panel lateral",
 		"itemDescription": "Selecciona un elemento para ver los detalles.",
 		"noDescription": "Sin descripción.",
 		"filterInput": {
@@ -4713,7 +4713,7 @@
 			"title": "Lista de elementos",
 			"aria-label": "Lista de elementos"
 		},
-		"openCabinets": "Abrir lista de archivoes",
+		"openCabinets": "Abrir lista de archivadores",
 		"closeCabinets": "Cerrar",
 		"bootstrapFailed": "Error al inicializar el archivo: ${error}",
 		"home_function_buttons": {

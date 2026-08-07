@@ -780,7 +780,7 @@
 		"title": "홈",
 		"description": "fount 체험의 핵심입니다. 여기에서 캐릭터, 세계, 페르소나 등 상상 속 인물을 관리하세요. 여러분의 이야기는 이 중심 연결점에서 시작되고 분기됩니다.",
 		"sidebarTitle": "세부 정보",
-		"closeSidebar": "Close sidebar",
+		"closeSidebar": "사이드바 닫기",
 		"itemDescription": "자세한 내용을 보려면 여기에서 항목을 선택하세요.",
 		"noDescription": "설명이 없습니다.",
 		"filterInput": {
@@ -1754,7 +1754,7 @@
 				"suppressEveryone": "@everyone 및 @here 무시",
 				"suppressRoles": "역할 그룹 @ 무시",
 				"mute": "음소거",
-				"muteOff": "폐쇄",
+				"muteOff": "끄기",
 				"mute1h": "1시간",
 				"mute8h": "8시간",
 				"muteForever": "수동으로 켜질 때까지",
@@ -1914,7 +1914,7 @@
 			"typing": "${names}님이 입력 중입니다...",
 			"charsHeader": "역할",
 			"settingsModalTitle": "설정",
-			"modalClose": "폐쇄",
+			"modalClose": "닫기",
 			"cancel": "취소",
 			"bookmarkLocal": "로컬",
 			"groupsSection": "그룹",
@@ -1963,9 +1963,9 @@
 				"aria-label": "DAG 포크 팁"
 			},
 			"ariaClose": {
-				"aria-label": "폐쇄"
+				"aria-label": "닫기"
 			},
-			"close": "폐쇄",
+			"close": "닫기",
 			"serverBar": {
 				"aria-label": "그룹 및 탐색"
 			},
@@ -3097,7 +3097,7 @@
 			"upload": "스티커 업로드",
 			"install": "설치",
 			"uninstall": "제거",
-			"close": "폐쇄",
+			"close": "닫기",
 			"cancel": "취소",
 			"installed": "설치됨",
 			"myPacks": "내 스티커 팩",
@@ -4536,7 +4536,7 @@
 		},
 		"dialog": {
 			"close": {
-				"aria-label": "폐쇄"
+				"aria-label": "닫기"
 			}
 		},
 		"actions": {
@@ -4714,7 +4714,7 @@
 			"aria-label": "항목 목록"
 		},
 		"openCabinets": "파일 캐비닛 목록 열기",
-		"closeCabinets": "폐쇄",
+		"closeCabinets": "닫기",
 		"bootstrapFailed": "파일 캐비닛 초기화 실패: ${error}",
 		"home_function_buttons": {
 			"main": {
@@ -5664,7 +5664,7 @@
 			"save": "저장",
 			"delete": "삭제",
 			"confirm": "확인",
-			"close": "폐쇄",
+			"close": "닫기",
 			"translate": {
 				"label": "번역:",
 				"showOriginal": "원문 보기",

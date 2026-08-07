@@ -780,7 +780,7 @@
 		"title": "Accueil",
 		"description": "Le cœur de votre expérience de fount. Ici, gérez les habitants de votre imagination : personnages, mondes et personnages. Vos histoires commencent et partent de ce lien central.",
 		"sidebarTitle": "Détails",
-		"closeSidebar": "Close sidebar",
+		"closeSidebar": "Fermer le panneau latéral",
 		"itemDescription": "Sélectionnez un élément pour en voir les détails.",
 		"noDescription": "Aucune description disponible.",
 		"filterInput": {

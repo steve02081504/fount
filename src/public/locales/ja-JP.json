@@ -780,7 +780,7 @@
 		"title": "ホーム",
 		"description": "あなたのfount体験の中心。ここでは、想像の世界の住人であるキャラクター、世界、ペルソナを管理します。あなたの物語は、この中心的なつながりから始まり、分岐していきます。",
 		"sidebarTitle": "詳細",
-		"closeSidebar": "Close sidebar",
+		"closeSidebar": "サイドバーを閉じる",
 		"itemDescription": "項目を選択すると、ここに詳細が表示されます。",
 		"noDescription": "説明はありません。",
 		"filterInput": {

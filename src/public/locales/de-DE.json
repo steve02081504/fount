@@ -780,7 +780,7 @@
 		"title": "Startseite",
 		"description": "Das Herzstück Ihres fount-Erlebnisses. Verwalten Sie hier die Bewohner Ihrer Fantasie – Charaktere, Welten und Personas. Ihre Geschichten beginnen und verzweigen sich in diesem zentralen Zusammenhang.",
 		"sidebarTitle": "Details",
-		"closeSidebar": "Close sidebar",
+		"closeSidebar": "Seitenleiste schließen",
 		"itemDescription": "Wählen Sie ein Element aus, um Details anzuzeigen.",
 		"noDescription": "Keine Beschreibung verfügbar",
 		"filterInput": {
@@ -4713,7 +4713,7 @@
 			"title": "Einträge",
 			"aria-label": "Einträge"
 		},
-		"openCabinets": "Cabinetliste öffnen",
+		"openCabinets": "Aktenschrankliste öffnen",
 		"closeCabinets": "Schließen",
 		"bootstrapFailed": "Die Initialisierung des Archivs ist fehlgeschlagen: ${error}",
 		"home_function_buttons": {

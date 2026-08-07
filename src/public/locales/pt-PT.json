@@ -780,7 +780,7 @@
 		"title": "Início",
 		"description": "O coração da sua experiência com o fount. Aqui, faça a gestão dos habitantes da sua imaginação – personagens, mundos e personas. As suas histórias começam e ramificam-se a partir deste nexo central.",
 		"sidebarTitle": "Detalhes",
-		"closeSidebar": "Close sidebar",
+		"closeSidebar": "Fechar barra lateral",
 		"itemDescription": "Selecione um item aqui para ver os detalhes.",
 		"noDescription": "Sem descrição.",
 		"filterInput": {
@@ -1754,7 +1754,7 @@
 				"suppressEveryone": "Ignore @todos e @aqui",
 				"suppressRoles": "Ignorar grupo de funções @",
 				"mute": "Silenciar",
-				"muteOff": "Encerramento",
+				"muteOff": "Desativar",
 				"mute1h": "1 hora",
 				"mute8h": "8 horas",
 				"muteForever": "Até ser ligado manualmente",
@@ -1914,7 +1914,7 @@
 			"typing": "${names} está digitando...",
 			"charsHeader": "Papel",
 			"settingsModalTitle": "Configurar",
-			"modalClose": "Encerramento",
+			"modalClose": "Fechar",
 			"cancel": "Cancelar",
 			"bookmarkLocal": "Local",
 			"groupsSection": "Grupo",
@@ -1963,9 +1963,9 @@
 				"aria-label": "Ponta do garfo DAG"
 			},
 			"ariaClose": {
-				"aria-label": "Encerramento"
+				"aria-label": "Fechar"
 			},
-			"close": "Encerramento",
+			"close": "Fechar",
 			"serverBar": {
 				"aria-label": "Grupos e navegação"
 			},
@@ -4536,7 +4536,7 @@
 		},
 		"dialog": {
 			"close": {
-				"aria-label": "Encerramento"
+				"aria-label": "Fechar"
 			}
 		},
 		"actions": {
@@ -4714,7 +4714,7 @@
 			"aria-label": "Lista de itens"
 		},
 		"openCabinets": "Abrir lista de armários",
-		"closeCabinets": "Encerramento",
+		"closeCabinets": "Fechar",
 		"bootstrapFailed": "Falha na inicialização do armário: ${error}",
 		"home_function_buttons": {
 			"main": {
@@ -5664,7 +5664,7 @@
 			"save": "Guardar",
 			"delete": "Eliminar",
 			"confirm": "Confirmar",
-			"close": "Encerramento",
+			"close": "Fechar",
 			"translate": {
 				"label": "Tradução:",
 				"showOriginal": "Mostrar original",
