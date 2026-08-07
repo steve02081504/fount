@@ -9,11 +9,12 @@ import {
 	stepFluid, labelAirRegions, pressureAt, liquidPressureAt, totalSealedGas, totalGridWater,
 	totalWorldWater, P_ATM, ATM_HYDRO,
 	clearMaterials, idx, RHO_G, RHO_AIR,
-	COND_DRIP, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQ_DRAW,
+	COND_DRIP, COND_DRAW, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQ_DRAW,
 	waterChar, liquidChar, pickWaterGlyph, FALL_HEAVY,
 	WATER_STILL, WATER_FALL, WATER_HIGH_L, WATER_HIGH_R, WATER_LOW_DL, WATER_LOW_DR,
 	globalWindAt, windShear, gasVelocityAt, dynamicPressure,
 	staticPressureAt, spawnParticle, liftLiquidByWind, verticalGasDrag, GAS_DRAG, GAS_DRAG_Y,
+	applyGravityToWorld, PARTICLE_GRAVITY, condenseDripSource,
 } from '../fluid/index.mjs'
 
 /**
@@ -402,6 +403,122 @@ Deno.test('fluid: soil ceiling condenses then drips into air below', () => {
 	}
 	assert(sawCondense || world.liq[idx(world, 5, 5)] > 0.05 || world.liq[idx(world, 5, 6)] > 0.05 || world.liq[idx(world, 5, 7)] > 0.05)
 	assertAlmostEquals(totalGridWater(world), before, 1e-3)
+})
+
+Deno.test('fluid: soil condense retracts when gravity leaves the open underside', () => {
+	const world = createWorld({ width: 12, height: 12, margin: 1, bottomExtra: 1 })
+	clearMaterials(world)
+	// Horizontal soil slab: air below, solid/seal above and around — flip to up removes underside air.
+	for (let x = 3; x <= 7; x++) {
+		setMat(world, x, 4, MAT.SOLID)
+		setMat(world, x, 3, MAT.SEAL)
+	}
+	world.condense[idx(world, 5, 4)] = 0.7
+	world.moisture[idx(world, 5, 4)] = 0.2
+	const water0 = totalGridWater(world)
+	applyGravityToWorld(world, { gx: 0, gy: -1, mag: PARTICLE_GRAVITY })
+	for (let stepIndex = 0; stepIndex < 3; stepIndex++) stepSoil(world)
+	assertLess(world.condense[idx(world, 5, 4)], 0.05)
+	assertGreater(world.moisture[idx(world, 5, 4)], 0.2)
+	assertAlmostEquals(totalGridWater(world), water0, 1e-3)
+})
+
+Deno.test('fluid: soil condense / drip follow sideways gravity', () => {
+	const world = createWorld({ width: 14, height: 12, margin: 1, bottomExtra: 1 })
+	clearMaterials(world)
+	// Vertical soil wall with air on the left; gravity pulls left.
+	for (let y = 3; y <= 8; y++) {
+		setMat(world, 7, y, MAT.SOLID)
+		setMat(world, 10, y, MAT.SEAL)
+	}
+	addMoisture(world, 7, 5, 1)
+	applyGravityToWorld(world, { gx: -1, gy: 0, mag: PARTICLE_GRAVITY })
+	const before = totalGridWater(world)
+	let sawCondenseOrDrip = false
+	for (let stepIndex = 0; stepIndex < 120; stepIndex++) {
+		stepSoil(world)
+		if (world.condense[idx(world, 7, 5)] >= COND_DRAW * 0.5) sawCondenseOrDrip = true
+		if (world.liq[idx(world, 6, 5)] > 0.05) sawCondenseOrDrip = true
+	}
+	assert(sawCondenseOrDrip)
+	// Must not keep forming / dripping on the old screen-down face.
+	assertAlmostEquals(world.liq[idx(world, 7, 6)], 0, 0.05)
+	assertGreater(world.liq[idx(world, 6, 5)], 0.05)
+	assertAlmostEquals(totalGridWater(world), before, 1e-3)
+})
+
+Deno.test('fluid: condense drip glyph follows gravity, not screen-down', () => {
+	const world = createWorld({ width: 10, height: 10, margin: 0, bottomExtra: 0 })
+	clearMaterials(world)
+	setMat(world, 5, 5, MAT.SOLID)
+	world.condense[idx(world, 5, 5)] = COND_DRAW + 0.1
+	// Default down: drip shows on cell below soil.
+	assertEquals(condenseDripSource(world, 5, 6), idx(world, 5, 5))
+	assertEquals(condenseDripSource(world, 4, 5), -1)
+	// Sideways: drip on the gravity-down neighbor, not screen-below.
+	applyGravityToWorld(world, { gx: -1, gy: 0, mag: PARTICLE_GRAVITY })
+	assertEquals(condenseDripSource(world, 4, 5), idx(world, 5, 5))
+	assertEquals(condenseDripSource(world, 5, 6), -1)
+})
+
+Deno.test('fluid: soil condense uses weak gravity-projection face', () => {
+	// ĝ mostly +x with weak +y (w_y < 0.5) — only the weak face is open air.
+	const gx = 0.92
+	const gy = Math.sqrt(1 - gx * gx)
+	assertLess(gy, 0.5)
+
+	const world = createWorld({ width: 12, height: 12, margin: 1, bottomExtra: 1 })
+	clearMaterials(world)
+	setMat(world, 5, 5, MAT.SOLID)
+	// Seal every ortho face except weak-down (5,6) so reclaim only triggers after ĝ flips.
+	setMat(world, 6, 5, MAT.SEAL)
+	setMat(world, 4, 5, MAT.SEAL)
+	setMat(world, 5, 4, MAT.SEAL)
+	applyGravityToWorld(world, { gx, gy, mag: PARTICLE_GRAVITY })
+
+	world.condense[idx(world, 5, 5)] = COND_DRAW + 0.1
+	assertEquals(condenseDripSource(world, 5, 6), idx(world, 5, 5))
+
+	world.condense[idx(world, 5, 5)] = COND_DRIP
+	const water0 = totalGridWater(world)
+	stepSoil(world)
+	assertGreater(world.liq[idx(world, 5, 6)], 0.05)
+	assertAlmostEquals(world.liq[idx(world, 6, 5)], 0, 1e-6)
+	assertAlmostEquals(totalGridWater(world), water0, 1e-3)
+
+	// Still hanging on the weak open underside — no reclaim yet.
+	world.condense[idx(world, 5, 5)] = 0.6
+	world.moisture[idx(world, 5, 5)] = 0.2
+	world.liq[idx(world, 5, 6)] = 0
+	const hangWater = totalGridWater(world)
+	stepSoil(world)
+	assertGreater(world.condense[idx(world, 5, 5)], 0.5)
+	assertAlmostEquals(totalGridWater(world), hangWater, 1e-3)
+
+	// Flip ĝ away from the weak face → sealed downs → reclaim into moisture.
+	applyGravityToWorld(world, { gx: -gx, gy: -gy, mag: PARTICLE_GRAVITY })
+	stepSoil(world)
+	assertLess(world.condense[idx(world, 5, 5)], 0.05)
+	assertGreater(world.moisture[idx(world, 5, 5)], 0.2)
+	assertAlmostEquals(totalGridWater(world), hangWater, 1e-3)
+})
+
+Deno.test('fluid: condense reclaim keeps unsunk mass for later ticks', () => {
+	const world = createWorld({ width: 8, height: 8, margin: 0, bottomExtra: 0 })
+	clearMaterials(world)
+	// Soil fully sealed — reclaim cannot spill; rest must stay in condense.
+	for (let y = 2; y <= 4; y++)
+		for (let x = 2; x <= 4; x++)
+			setMat(world, x, y, MAT.SEAL)
+	setMat(world, 3, 3, MAT.SOLID)
+	world.moisture[idx(world, 3, 3)] = SOIL_CAP
+	world.condense[idx(world, 3, 3)] = 0.55
+	applyGravityToWorld(world, { gx: 0, gy: -1, mag: PARTICLE_GRAVITY })
+	const water0 = totalGridWater(world)
+	stepSoil(world)
+	assertAlmostEquals(world.moisture[idx(world, 3, 3)], SOIL_CAP, 1e-6)
+	assertAlmostEquals(world.condense[idx(world, 3, 3)], 0.55, 1e-6)
+	assertAlmostEquals(totalGridWater(world), water0, 1e-6)
 })
 
 Deno.test('fluid: condensation Matthew effect amplifies the lead with noise', () => {

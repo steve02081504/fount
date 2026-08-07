@@ -5516,7 +5516,8 @@
 		"locked": "未解锁",
 		"toast_title": "成就已解锁！",
 		"error": {
-			"load_failed": "加载成就失败：${message}"
+			"load_failed": "加载成就失败：${message}",
+			"unlock_failed": "解锁成就失败：${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

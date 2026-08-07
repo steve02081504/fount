@@ -98,6 +98,28 @@ Deno.test('extractI18nRefsFromSource skips data-i18n literals', () => {
 	assertEquals(refs.map(r => r.key), ['chat.hub.send.main'])
 })
 
+Deno.test('handleError first-arg key only when imported from frontend features/errorHandlers', () => {
+	const frontend = `
+import { handleError } from '/scripts/features/errorHandlers.mjs'
+handleError('cabinet.bootstrapFailed')
+.catch(handleError('chat.hub.send.failed'))
+`
+	assertEquals(
+		extractI18nRefsFromSource(frontend).filter(r => r.binding === 'string').map(r => r.key),
+		['cabinet.bootstrapFailed', 'chat.hub.send.failed'],
+	)
+
+	const backend = `
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
+handleError('not.an.i18n.key')
+await work().catch(handleError)
+`
+	assertEquals(
+		extractI18nRefsFromSource(backend).filter(r => r.key === 'not.an.i18n.key'),
+		[],
+	)
+})
+
 Deno.test('I18N_REWRITE_SUFFIXES includes shell scripts', () => {
 	assert(I18N_REWRITE_SUFFIXES.includes('.sh'))
 	assert(I18N_REWRITE_SUFFIXES.includes('.ps1'))

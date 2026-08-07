@@ -344,22 +344,23 @@ function script:fount_upgrade {
 
 # $Kind = version.status.* suffix; $Warn = Write-Warning instead of Write-Host.
 function script:fount_print_version_status($Kind, [switch]$Warn) {
-	$statusText = Get-I18n -key "version.status.$Kind"
-	$line = Get-I18n -key 'version.status.title' -params @{ status = $statusText }
-	if ($Warn) { Write-Warning $line }
-	else { Write-Host $line }
+	if ($Warn) {
+		Write-Warning (Get-I18n -key 'version.status.title' -params @{ status = (Get-I18n -key "version.status.$Kind") })
+	}
+	else {
+		Write-Host (Get-I18n -key 'version.status.title' -params @{ status = (Get-I18n -key "version.status.$Kind") })
+	}
 }
 
 # $Branch = branch name, or HEAD for detached.
 function script:fount_print_version_branch($Branch) {
-	$text = $Branch
-	if ($text -eq 'HEAD') {
-		$text = Get-I18n -key 'version.branch.detached'
+	if ($Branch -eq 'HEAD') {
+		$Branch = Get-I18n -key 'version.branch.detached'
 	}
-	Write-Host (Get-I18n -key 'version.branch.title' -params @{ branch = $text })
+	Write-Host (Get-I18n -key 'version.branch.title' -params @{ branch = $Branch })
 }
 
-# Print branch, HEAD sha, and whether the current branch tip matches origin.
+# Print branch, HEAD commit, and whether the current branch tip matches origin.
 function script:fount_show_version {
 	$global:LastExitCode = 0
 	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
@@ -375,15 +376,15 @@ function script:fount_show_version {
 
 	$branch = invoke_repo_git rev-parse --abbrev-ref HEAD 2>$null
 	if ($LastExitCode -ne 0 -or -not $branch) { $branch = 'HEAD' }
-	$sha = invoke_repo_git rev-parse HEAD 2>$null
-	if ($LastExitCode -ne 0 -or -not $sha) {
+	$commitHash = invoke_repo_git rev-parse HEAD 2>$null
+	if ($LastExitCode -ne 0 -or -not $commitHash) {
 		Write-Warning (Get-I18n -key 'version.noRepo')
 		$global:LastExitCode = 1
 		return
 	}
 
 	fount_print_version_branch $branch
-	Write-Host (Get-I18n -key 'version.commit' -params @{ ref = $sha })
+	Write-Host (Get-I18n -key 'version.commit' -params @{ ref = $commitHash })
 
 	if (Test-Path -LiteralPath "$FOUNT_DIR/.noupdate") {
 		Write-Host (Get-I18n -key 'version.autoUpdatePaused')
@@ -401,15 +402,15 @@ function script:fount_show_version {
 		$global:LastExitCode = 1
 		return
 	}
-	$remoteSha = invoke_repo_git rev-parse "origin/$branch" 2>$null
-	if ($LastExitCode -ne 0 -or -not $remoteSha) {
+	$remoteCommitHash = invoke_repo_git rev-parse "origin/$branch" 2>$null
+	if ($LastExitCode -ne 0 -or -not $remoteCommitHash) {
 		fount_print_version_status fetchFailed -Warn
 		$global:LastExitCode = 1
 		return
 	}
-	Write-Host (Get-I18n -key 'version.remote' -params @{ ref = $remoteSha })
+	Write-Host (Get-I18n -key 'version.remote' -params @{ ref = $remoteCommitHash })
 
-	if ($sha -eq $remoteSha) {
+	if ($commitHash -eq $remoteCommitHash) {
 		fount_print_version_status upToDate
 		$global:LastExitCode = 0
 		return
@@ -420,10 +421,10 @@ function script:fount_show_version {
 		$global:LastExitCode = 0
 		return
 	}
-	if ($mergeBase -eq $sha) {
+	if ($mergeBase -eq $commitHash) {
 		fount_print_version_status behind -Warn
 	}
-	elseif ($mergeBase -eq $remoteSha) {
+	elseif ($mergeBase -eq $remoteCommitHash) {
 		fount_print_version_status ahead
 	}
 	else {

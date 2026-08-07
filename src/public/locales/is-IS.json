@@ -373,9 +373,9 @@
 				"status": {
 					"title": "Staða: ${status}",
 					"upToDate": "Uppfært",
-					"behind": "Á eftir fjarlægu",
-					"ahead": "Á undan fjarlægu",
-					"diverged": "Greinist frá fjarlægu",
+					"behind": "Á eftir fjarlægri grein",
+					"ahead": "Á undan fjarlægri grein",
+					"diverged": "Staðbundin og fjarlæg grein hafa skilist að",
 					"detachedNoCompare": "Aðskilið HEAD, ekki borið saman við fjarlægt",
 					"fetchFailed": "Gat ekki sótt fjarlægt ástand"
 				},
@@ -5504,7 +5504,8 @@
 		"locked": "Ekki ólæst",
 		"toast_title": "Afrek opnuð!",
 		"error": {
-			"load_failed": "Mistókst að hlaða afrekum: ${message}"
+			"load_failed": "Mistókst að hlaða afrekum: ${message}",
+			"unlock_failed": "Mistókst að opna afrek: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

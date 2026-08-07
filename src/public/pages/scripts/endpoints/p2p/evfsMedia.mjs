@@ -4,9 +4,7 @@
  */
 import { entityFileUrl, mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 
-/**
- *
- */
+/** 再导出 EVFS 文件 URL / mediaRef URL 纯函数（实现见 chat shared）。 */
 export { entityFileUrl, mediaRefUrl }
 
 const CHAT_SHELL_API_PREFIX = '/api/parts/shells:chat'

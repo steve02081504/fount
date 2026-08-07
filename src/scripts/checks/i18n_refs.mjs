@@ -168,8 +168,11 @@ export function extractI18nRefsFromSource(text) {
 		promptText: 'string',
 		promptTextArea: 'string',
 		confirmAction: 'string',
-		handleError: 'string',
 	}
+	// 仅前端 features/errorHandlers 的工厂形式：首参是 i18n key；后端 scripts/errorHandlers 首参是 error。
+	if (/\bimport\s*\{[^}]*\bhandleError\b[^}]*\}\s*from\s*['"][^'"]*features\/errorHandlers\.mjs['"]/.test(text))
+		apis.handleError = 'string'
+
 	for (const [name, binding] of Object.entries(apis)) {
 		const re = new RegExp(`\\b${name}\\s*\\(\\s*(["'\`])([^"'\`]+)\\1`, 'g')
 		for (const match of text.matchAll(re)) {

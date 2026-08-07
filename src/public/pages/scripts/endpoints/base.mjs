@@ -1,12 +1,14 @@
 /**
- * 解析 JSON：`response.ok` 为 false 则 reject 并附带响应体。
+ * 解析 JSON：`response.ok` 为 false 则抛错并附带响应体。
  * @param {Response} response - fetch 响应。
  * @returns {Promise<object>} 解析后的 JSON 对象。
  */
-async function finishAuthenticatedJsonMutation(response) {
+async function parseJsonResponse(response) {
 	if (!response.ok) {
-		const data = await response.json().catch(() => ({}))
-		return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), data, { response }))
+		let data = {}
+		try { data = await response.json() }
+		catch { /* non-JSON body */ }
+		throw Object.assign(new Error(`API request failed with status ${response.status}`), data, { response })
 	}
 	return response.json()
 }
@@ -21,8 +23,7 @@ export async function ping(with_cache = false) {
 		credentials: 'omit',
 		cache: with_cache ? 'default' : 'no-cache',
 	})
-	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => ({})), { response }))
-	return response.json()
+	return parseJsonResponse(response)
 }
 
 /**
@@ -30,7 +31,12 @@ export async function ping(with_cache = false) {
  * @returns {Promise<string>} - 本地 IP 中的主机 URL。
  */
 export async function hosturl_in_local_ip() {
-	return ping(true).then(data => data.hosturl_in_local_ip).catch(() => window.location.origin)
+	try {
+		return (await ping(true)).hosturl_in_local_ip
+	}
+	catch {
+		return window.location.origin
+	}
 }
 
 /**
@@ -39,8 +45,7 @@ export async function hosturl_in_local_ip() {
  */
 export async function getPoWChallenge() {
 	const response = await fetch('/api/pow/challenge', { method: 'POST' })
-	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => ({})), { response }))
-	return response.json()
+	return parseJsonResponse(response)
 }
 
 /**
@@ -55,8 +60,7 @@ export async function redeemPoWToken(token, solutions) {
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ token, solutions }),
 	})
-	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => ({})), { response }))
-	return response.json()
+	return parseJsonResponse(response)
 }
 
 /**
@@ -68,8 +72,7 @@ export async function getLocaleData(preferred) {
 	const url = new URL(window.location.origin + '/api/getlocaledata')
 	if (preferred) url.searchParams.set('preferred', preferred.join(','))
 	const response = await fetch(url)
-	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => ({})), { response }))
-	return response.json()
+	return parseJsonResponse(response)
 }
 
 /**
@@ -78,8 +81,7 @@ export async function getLocaleData(preferred) {
  */
 export async function getAvailableLocales() {
 	const response = await fetch('/api/getavailablelocales')
-	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => ({})), { response }))
-	return response.json()
+	return parseJsonResponse(response)
 }
 
 /**
@@ -103,8 +105,7 @@ export async function whoami() {
 	const response = await fetch('/api/whoami', {
 		headers: { Accept: 'application/json' },
 	})
-	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => ({})), { response }))
-	return response.json()
+	return parseJsonResponse(response)
 }
 
 /**
@@ -197,9 +198,7 @@ export async function authenticate() {
  */
 export async function getUserSetting(key) {
 	const response = await fetch(`/api/getusersetting?key=${encodeURIComponent(key)}`)
-	if (!response.ok) return Promise.reject(Object.assign(new Error(`API request failed with status ${response.status}`), await response.json().catch(() => ({})), { response }))
-	const { value } = await response.json()
-	return value
+	return (await parseJsonResponse(response)).value
 }
 
 /**
@@ -227,7 +226,7 @@ export async function logout() {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 	})
-	return finishAuthenticatedJsonMutation(response)
+	return parseJsonResponse(response)
 }
 
 /**
@@ -236,7 +235,7 @@ export async function logout() {
  */
 export async function getApiKeys() {
 	const response = await fetch('/api/apikey/list')
-	return finishAuthenticatedJsonMutation(response)
+	return parseJsonResponse(response)
 }
 
 /**
@@ -250,7 +249,7 @@ export async function createApiKey(description) {
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ description }),
 	})
-	return finishAuthenticatedJsonMutation(response)
+	return parseJsonResponse(response)
 }
 
 /**
@@ -265,7 +264,7 @@ export async function revokeApiKey(jti, password) {
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ jti, password }),
 	})
-	return finishAuthenticatedJsonMutation(response)
+	return parseJsonResponse(response)
 }
 
 /**
@@ -280,4 +279,3 @@ export async function verifyApiKey(apiKey) {
 		body: JSON.stringify({ apiKey }),
 	})
 }
-
