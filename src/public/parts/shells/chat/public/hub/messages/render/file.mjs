@@ -7,12 +7,28 @@ import {
 	renderTemplateAsHtmlString,
 } from '../../../../../../scripts/features/template.mjs'
 import { fetchGroupFileAsBlobUrl } from '../../../src/groupFileBlob.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { store } from '../../core/state.mjs'
 
 import { getMessageText } from './text.mjs'
 
 const LAZY_MEDIA_BYTES = 2 * 1024 * 1024
+
+/**
+ * @param {string} groupId 群 ID
+ * @param {string} fileId 文件 ID
+ * @returns {Promise<string | null>} Blob URL；失败已 toast 时为 null
+ */
+async function loadGroupFileBlobUrl(groupId, fileId) {
+	try {
+		return await fetchGroupFileAsBlobUrl(groupId, fileId)
+	}
+	catch (error) {
+		handleError('chat.hub.file.loadFailed')(error)
+		return null
+	}
+}
 
 /**
  * @param {string} groupId 群 ID
@@ -25,7 +41,7 @@ const LAZY_MEDIA_BYTES = 2 * 1024 * 1024
 async function renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt) {
 	const fileName = escapeHtml(meta.name || id)
 	if (mime.startsWith('image/')) {
-		const blobUrl = await fetchGroupFileAsBlobUrl(groupId, id)
+		const blobUrl = await loadGroupFileBlobUrl(groupId, id)
 		if (!blobUrl)
 			return renderTemplateAsHtmlString('hub/messages/media_error', {})
 		return renderTemplateAsHtmlString('hub/messages/inline_image', {
@@ -43,7 +59,7 @@ async function renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt) {
 				fileName,
 				mimeType: escapeHtml(mime),
 			})
-		const blobUrl = await fetchGroupFileAsBlobUrl(groupId, id)
+		const blobUrl = await loadGroupFileBlobUrl(groupId, id)
 		if (!blobUrl)
 			return renderTemplateAsHtmlString('hub/messages/media_error', {})
 		if (mime.startsWith('video/'))
@@ -104,7 +120,7 @@ export function wireMessageMediaPlaceholders(container) {
 		event.preventDefault()
 		event.stopPropagation()
 		const mime = String(placeholder.getAttribute('data-mime') || '')
-		const blobUrl = await fetchGroupFileAsBlobUrl(groupId, fileId)
+		const blobUrl = await loadGroupFileBlobUrl(groupId, fileId)
 		if (!blobUrl) {
 			placeholder.replaceWith(
 				await createDocumentFragmentFromHtmlStringNoScriptActivation(

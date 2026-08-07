@@ -1,3 +1,4 @@
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { mountTemplate, renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n, promptI18n } from '../../../../../../scripts/i18n/index.mjs'
@@ -69,7 +70,7 @@ async function updateRolePermission(context, roleId, permission, enabled) {
 		showToastI18n('success', 'chat.group.settings.page.permissionUpdated')
 	}
 	catch (error) {
-		showToastI18n('error', 'chat.group.settings.page.permissionUpdateFailed', { error: error.message })
+		handleError('chat.group.settings.page.permissionUpdateFailed')(error)
 		await context.reload(context.groupId)
 	}
 }
@@ -81,18 +82,27 @@ async function updateRolePermission(context, roleId, permission, enabled) {
  */
 async function deleteRole(context, roleId) {
 	if (!confirmI18n('chat.group.settings.page.delete.roleConfirm')) return
-	await deleteRoleRequest(context.groupId, roleId)
-	showToastI18n('success', 'chat.group.settings.page.delete.roleSuccess')
-	await context.reload(context.groupId)
+	try {
+		await deleteRoleRequest(context.groupId, roleId)
+		showToastI18n('success', 'chat.group.settings.page.delete.roleSuccess')
+		await context.reload(context.groupId)
+	}
+	catch (error) {
+		handleError('chat.group.settings.page.delete.roleFailed')(error)
+	}
 }
 
-/** @param {import('./state.mjs').GroupSettingsContext} context @returns {void} */
-function showCreateRoleModal(context) {
+/** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
+async function showCreateRoleModal(context) {
 	const name = promptI18n('chat.group.settings.page.create.rolePrompt')
 	if (!name?.trim()) return
 
-	createRole(context.groupId, name.trim()).then(async () => {
+	try {
+		await createRole(context.groupId, name.trim())
 		showToastI18n('success', 'chat.group.settings.page.create.roleSuccess')
 		await context.reload(context.groupId)
-	}).catch(error => showToastI18n('error', 'chat.group.settings.page.create.roleFailed', { error: error.message }))
+	}
+	catch (error) {
+		handleError('chat.group.settings.page.create.roleFailed')(error)
+	}
 }

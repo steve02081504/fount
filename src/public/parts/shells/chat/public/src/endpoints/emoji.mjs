@@ -7,13 +7,8 @@ import { chatFetch, groupFetch, groupPath } from './groupClient.mjs'
 /**
  * @returns {Promise<object>} emoji-usage 载荷
  */
-export async function getEmojiUsage() {
-	try {
-		return await chatFetch('/emoji-usage')
-	}
-	catch {
-		return { log: [], lastUsedAtByPack: {}, collection: { packIds: [], emojiIds: [] } }
-	}
+export function getEmojiUsage() {
+	return chatFetch('/emoji-usage')
 }
 
 /**
@@ -22,13 +17,8 @@ export async function getEmojiUsage() {
  */
 export async function listEmojiPacks(groupId) {
 	const q = groupId ? `?groupId=${encodeURIComponent(groupId)}` : ''
-	try {
-		const data = await chatFetch(`/emoji-packs${q}`)
-		return Array.isArray(data.packs) ? data.packs : []
-	}
-	catch {
-		return []
-	}
+	const data = await chatFetch(`/emoji-packs${q}`)
+	return Array.isArray(data.packs) ? data.packs : []
 }
 
 /**
@@ -44,13 +34,8 @@ export function getGroupPreview(groupId) {
  * @returns {Promise<object[]>} offers
  */
 export async function discoverEmojiPacks(limit = 48) {
-	try {
-		const data = await chatFetch(`/emoji-packs/discover?limit=${encodeURIComponent(limit)}`)
-		return data.offers || []
-	}
-	catch {
-		return []
-	}
+	const data = await chatFetch(`/emoji-packs/discover?limit=${encodeURIComponent(limit)}`)
+	return data.offers || []
 }
 
 /**

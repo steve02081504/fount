@@ -348,11 +348,15 @@ export async function loadMessages() {
 		// 有未读时滚到分割线；打开频道即标已读（badge 清零），分割线锚点保留到下次 load
 		if (!softReload && !store.messages.firstUnreadEventId) scrollToBottom()
 		await markCurrentChannelRead().catch(handleError('chat.hub.operationFailed'))
-		refreshChannelPinsBar()
+		refreshChannelPinsBar().catch(handleError('chat.hub.operationFailed'))
 		saveChannelViewCache()
-		import('../memberReadMarkers.mjs').then(({ fetchMemberReadMarkers }) => {
-			fetchMemberReadMarkers(groupId, channelId).catch(handleError('chat.hub.operationFailed'))
-		}).catch(handleError('chat.hub.operationFailed'))
+		try {
+			const { fetchMemberReadMarkers } = await import('../memberReadMarkers.mjs')
+			await fetchMemberReadMarkers(groupId, channelId)
+		}
+		catch (error) {
+			handleError('chat.hub.operationFailed')(error)
+		}
 	}
 	catch (err) {
 		const error = handleError('chat.hub.load.messagesFailed')(err)

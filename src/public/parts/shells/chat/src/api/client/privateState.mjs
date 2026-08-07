@@ -25,6 +25,40 @@ export function createPrivateStateMethods(apiContext) {
 				async set(entries) {
 					return ns.set({ entries: Array.isArray(entries) ? entries : [] })
 				},
+				/**
+				 * 原子追加（同群同事件去重）。
+				 * @param {object} entry 书签条目
+				 * @returns {Promise<{ entries: object[], added: boolean }>} 写入后列表与是否新增
+				 */
+				async add(entry) {
+					const { entries } = await ns.list()
+					const groupId = String(entry?.groupId || '')
+					const eventId = String(entry?.eventId || '')
+					if (groupId && eventId && entries.some(bookmark => bookmark?.groupId === groupId && bookmark?.eventId === eventId))
+						return { entries, added: false }
+					entries.push(entry)
+					const next = await ns.set({ entries })
+					return { entries: next.entries, added: true }
+				},
+				/**
+				 * 原子删除（eventId 优先，回落 href）。
+				 * @param {{ groupId?: string, eventId?: string, href?: string }} entry 匹配条件
+				 * @returns {Promise<{ entries: object[], removed: boolean }>} 写入后列表与是否删除
+				 */
+				async remove(entry) {
+					const { entries } = await ns.list()
+					const groupId = String(entry?.groupId || '')
+					const eventId = String(entry?.eventId || '')
+					const href = String(entry?.href || '')
+					const next = entries.filter(bookmark => {
+						if (eventId) return !(String(bookmark?.groupId || '') === groupId && String(bookmark?.eventId || '') === eventId)
+						if (href) return String(bookmark?.href || '') !== href
+						return true
+					})
+					if (next.length === entries.length) return { entries, removed: false }
+					const saved = await ns.set({ entries: next })
+					return { entries: saved.entries, removed: true }
+				},
 			}
 		},
 		/**

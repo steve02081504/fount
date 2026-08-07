@@ -486,7 +486,7 @@ async function runFriendsEntitySearch(input, resultsHost) {
 	const [localChars, data] = await Promise.all([
 		searchLocalChars(q),
 		searchEntities(q).catch(error => {
-			showToastI18n('error', 'chat.hub.createChatFailed', { error: error.message })
+			handleError('chat.hub.createChatFailed')(error)
 			return null
 		}),
 	])

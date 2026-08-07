@@ -22,6 +22,7 @@ export async function putAliases(doc) {
 }
 
 /**
+ * 列出关心的实体。
  * @returns {Promise<string[]>} cared entityHashes
  */
 export async function listCaredEntities() {
@@ -57,6 +58,7 @@ export async function putNotificationPreferences(prefs) {
 }
 
 /**
+ * 读取翻译偏好。
  * @returns {Promise<object>} translation prefs
  */
 export function getTranslationPrefs() {
@@ -72,6 +74,7 @@ export function putTranslationPrefs(body) {
 }
 
 /**
+ * 读取信任作者列表。
  * @returns {Promise<any>} trusted authors
  */
 export function getTrustedAuthors() {
@@ -87,6 +90,7 @@ export function putTrustedAuthors(body) {
 }
 
 /**
+ * 读取个人名单（拉黑/隐藏等）。
  * @returns {Promise<any>} personal lists
  */
 export function getPersonalLists() {

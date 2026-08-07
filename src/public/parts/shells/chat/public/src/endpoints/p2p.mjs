@@ -1,6 +1,6 @@
 /**
  * 【文件】public/src/endpoints/p2p.mjs
- * 【职责】浏览器侧 P2P / 联邦节点 REST（非 chat shell 前缀，仍归 chat Hub 使用面）。
+ * 【职责】浏览器侧 P2P REST（denylist / 联邦连接；联邦设置见 federationSettings.mjs）。
  */
 
 /**
@@ -10,11 +10,14 @@
  */
 async function p2pFetch(path, options = {}) {
 	const { json, ...init } = options
+	const headers = json
+		? { 'Content-Type': 'application/json', ...init.headers }
+		: init.headers
 	const response = await fetch(`/api/p2p${path}`, {
-		credentials: 'include',
-		headers: json ? { 'Content-Type': 'application/json', ...init.headers } : init.headers,
-		body: json ? JSON.stringify(json) : init.body,
 		...init,
+		credentials: 'include',
+		headers,
+		body: json ? JSON.stringify(json) : init.body,
 	})
 	if (!response.ok) {
 		const data = await response.json().catch(() => ({}))
@@ -24,23 +27,6 @@ async function p2pFetch(path, options = {}) {
 	const text = await response.text()
 	if (!text) return null
 	return JSON.parse(text)
-}
-
-/**
- * 读取本节点联邦设置。
- * @returns {Promise<object>} 设置 JSON
- */
-export function getFederationSettings() {
-	return p2pFetch('/federation')
-}
-
-/**
- * 更新本节点联邦设置。
- * @param {object} body 请求体
- * @returns {Promise<object>} 服务端响应
- */
-export function putFederationSettings(body) {
-	return p2pFetch('/federation', { method: 'PUT', json: body })
 }
 
 /**

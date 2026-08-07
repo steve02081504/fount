@@ -1,7 +1,7 @@
 /**
  * Hub 跨群 inbox：badge 与 WS 增量（HTTP 在 endpoints/inbox）。
  */
-import { fetchInboxPage as fetchInboxPageApi, markInboxSeen as markInboxSeenApi } from '../src/endpoints/inbox.mjs'
+import { fetchInboxPage, markInboxSeen as markInboxSeenApi } from '../src/endpoints/inbox.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { store } from './core/state.mjs'
@@ -9,16 +9,6 @@ import { formatUnreadLabel } from './unread.mjs'
 
 /** @type {number | null} */
 let badgeUnreadCount = null
-
-/**
- * @param {object} options 分页参数
- * @param {number} [options.limit] 条数
- * @param {string} [options.cursor] 游标
- * @returns {Promise<{ items: object[], nextCursor: string | null, unreadCount: number }>} 分页结果
- */
-export function fetchInboxPage(options = {}) {
-	return fetchInboxPageApi(options)
-}
 
 /**
  * @param {number} [at] 已读水位毫秒

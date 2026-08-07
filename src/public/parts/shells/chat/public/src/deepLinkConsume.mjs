@@ -17,6 +17,7 @@ import { getViewer } from './endpoints/viewer.mjs'
 import { broadcastHubGroupJoined } from './hubBroadcast.mjs'
 import { PENDING_INVITE_STORAGE_KEY } from './pendingInviteStorage.mjs'
 import { resolvePowForJoin } from './powJoin.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 /**
  * 从当前页 query 解析 `fount://run/…` 深链（`run` 参数）。
@@ -74,7 +75,7 @@ export async function applyChatRunUri(raw) {
 	const join = parseJoinRunUri(raw)
 	if (join) {
 		const groupState = await getGroupState(join.groupId).catch(() => null)
-		const viewer = await getViewer().catch(() => ({}))
+		const viewer = await getViewer().catch(error => { handleError('chat.hub.operationFailed')(error); return {} })
 		const pow = await resolvePowForJoin(join.groupId, groupState, viewer.nodeHash || '')
 		await joinGroup(join.groupId, join.inviteCode, null, pow,
 			join.roomSecret || join.introducerPubKeyHash || join.introducerNodeHash

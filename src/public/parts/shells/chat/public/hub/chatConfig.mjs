@@ -6,8 +6,8 @@
  * 【关联】../../../../scripts/parts、../../../../scripts/template、../../../../scripts/toast、../src/endpoints/groupCore、groupChannel、core/domUtils、core/overlayModal、core/state。
  */
 import { getPartList } from '../../../../scripts/endpoints/parts.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { mountTemplate, renderTemplateAsHtmlString } from '../../../../scripts/features/template.mjs'
-import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { triggerChannelReply } from '../src/endpoints/groupChannel.mjs'
 import {
 	addGroupPlugin,
@@ -99,8 +99,8 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 					await renderMemberList(store.context.currentState)
 				showOverlayNotice('success', '', 'chat.hub.config.saved')
 			}
-			catch (err) {
-				showOverlayNotice('error', err.message)
+			catch (error) {
+				handleError('chat.hub.config.saveFailed')(error)
 			}
 		})
 
@@ -111,8 +111,8 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 					await setGroupWorld(groupId, v, channelId)
 					showOverlayNotice('success', '', 'chat.hub.config.saved')
 				}
-				catch (err) {
-					showOverlayNotice('error', err.message)
+				catch (error) {
+					handleError('chat.hub.config.saveFailed')(error)
 				}
 			})
 
@@ -125,8 +125,8 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 					await mountChatConfigPanel(groupId, channelId, options)
 					showOverlayNotice('success', '', 'chat.hub.config.saved')
 				}
-				catch (err) {
-					showOverlayNotice('error', err.message)
+				catch (error) {
+					handleError('chat.hub.config.saveFailed')(error)
 				}
 			})
 
@@ -139,8 +139,8 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 						await mountChatConfigPanel(groupId, channelId, options)
 						showOverlayNotice('success', '', 'chat.hub.config.saved')
 					}
-					catch (err) {
-						showOverlayNotice('error', err.message)
+					catch (error) {
+						handleError('chat.hub.config.saveFailed')(error)
 					}
 				})
 			})
@@ -155,8 +155,8 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 				try {
 					await setGroupCharFrequency(groupId, charname, frequency)
 				}
-				catch (err) {
-					showToastI18n('error', 'chat.hub.config.saveFailed', { error: err.message })
+				catch (error) {
+					handleError('chat.hub.config.saveFailed')(error)
 				}
 			})
 		})
@@ -169,8 +169,8 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 					await triggerChannelReply(groupId, channelId, charname)
 					showOverlayNotice('success', '', 'chat.hub.config.saved')
 				}
-				catch (err) {
-					showOverlayNotice('error', err.message)
+				catch (error) {
+					handleError('chat.hub.config.saveFailed')(error)
 				}
 			})
 		})
@@ -184,8 +184,8 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 					await mountChatConfigPanel(groupId, channelId, options)
 					showOverlayNotice('success', '', 'chat.hub.config.saved')
 				}
-				catch (err) {
-					showOverlayNotice('error', err.message)
+				catch (error) {
+					handleError('chat.hub.config.saveFailed')(error)
 				}
 			})
 		})

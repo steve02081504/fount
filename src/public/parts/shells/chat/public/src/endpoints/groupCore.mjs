@@ -10,6 +10,7 @@ import { CHAT_LEAVE_BATCH_MAX } from '../lib/batchLimits.mjs'
 import { chatFetch, groupFetch, groupPath } from './groupClient.mjs'
 
 /**
+ * 拉取群 initial-data（聊天配置快照）。
  * @param {string} groupId 群 ID
  * @returns {Promise<object>} initial-data 载荷
  */
@@ -89,15 +90,13 @@ export async function joinGroup(groupId, inviteCode = null, dmLinkProof = null, 
  * @returns {Promise<{ ok: string[], failed: { groupId: string, error: string }[] }>} 成功与失败列表
  */
 export async function leaveGroups(groupIds) {
-	const ids = [...new Set(
-		(Array.isArray(groupIds) ? groupIds : [groupIds]).map(id => String(id ?? '').trim()).filter(Boolean),
-	)]
+	const ids = Array.isArray(groupIds) ? groupIds : [groupIds]
 	/** @type {string[]} */
 	const ok = []
 	/** @type {{ groupId: string, error: string }[]} */
 	const failed = []
-	for (let i = 0; i < ids.length; i += CHAT_LEAVE_BATCH_MAX) {
-		const chunk = ids.slice(i, i + CHAT_LEAVE_BATCH_MAX)
+	for (let offset = 0; offset < ids.length; offset += CHAT_LEAVE_BATCH_MAX) {
+		const chunk = ids.slice(offset, offset + CHAT_LEAVE_BATCH_MAX)
 		const part = await groupFetch('leave', { method: 'POST', json: { groupIds: chunk } })
 		ok.push(...part.ok || [])
 		failed.push(...part.failed || [])
@@ -163,11 +162,11 @@ export async function fetchGroupAuditLog(groupId, options = {}) {
 /**
  * 分页拉取成员列表。
  * @param {string} groupId 群 ID
- * @param {number} pageIdx 页码（从 0 起）
+ * @param {number} pageIndex 页码（从 0 起）
  * @returns {Promise<{ members: object[], membersRoot: string|null, membersPagesCount: number }>} 成员页数据
  */
-export async function getMembersPage(groupId, pageIdx) {
-	const data = await groupFetch(groupPath(groupId, 'members', 'page', Math.max(0, pageIdx)), { method: 'GET' })
+export async function getMembersPage(groupId, pageIndex) {
+	const data = await groupFetch(groupPath(groupId, 'members', 'page', pageIndex), { method: 'GET' })
 	return {
 		members: data.members,
 		membersRoot: data.membersRoot ?? null,
@@ -188,19 +187,21 @@ export async function deleteGroupFile(groupId, fileId) {
 /**
  * 创建好友绑定群（角色私聊 / 强制新建）。
  * @param {object} body POST body（含 friendBinding、可选 forceNew）
+ * @param {AbortSignal} [signal] 取消信号
  * @returns {Promise<{ groupId: string }>} 新群
  */
-export async function createFriendGroup(body) {
-	return groupFetch('', { method: 'POST', json: body })
+export async function createFriendGroup(body, signal) {
+	return groupFetch('', { method: 'POST', json: body, signal })
 }
 
 /**
  * 列出群上已挂载的角色 part 名。
  * @param {string} groupId 群 ID
+ * @param {AbortSignal} [signal] 取消信号
  * @returns {Promise<string[]>} charname 列表
  */
-export async function listGroupChars(groupId) {
-	const chars = await groupFetch(groupPath(groupId, 'chars'), { method: 'GET' })
+export async function listGroupChars(groupId, signal) {
+	const chars = await groupFetch(groupPath(groupId, 'chars'), { method: 'GET', signal })
 	return Array.isArray(chars) ? chars : []
 }
 
@@ -208,10 +209,11 @@ export async function listGroupChars(groupId) {
  * 向群添加角色 part。
  * @param {string} groupId 群 ID
  * @param {{ charname: string, deferGreeting?: boolean }} body 请求体
+ * @param {AbortSignal} [signal] 取消信号
  * @returns {Promise<any>} 响应
  */
-export async function addGroupChar(groupId, body) {
-	return groupFetch(groupPath(groupId, 'char'), { method: 'POST', json: body })
+export async function addGroupChar(groupId, body, signal) {
+	return groupFetch(groupPath(groupId, 'char'), { method: 'POST', json: body, signal })
 }
 
 /**

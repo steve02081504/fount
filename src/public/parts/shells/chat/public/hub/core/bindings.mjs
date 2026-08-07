@@ -1,6 +1,7 @@
 /**
  * Hub 横幅与固定 DOM 节点的声明式绑定（订阅 store / watchState）。
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { syncArchive } from '../../src/endpoints/channelArchive.mjs'
 import { getGroupState } from '../../src/endpoints/groupCore.mjs'
 import { dismissShunBanner } from '../../src/endpoints/groupFederation.mjs'
@@ -217,28 +218,40 @@ export function wireHubBannerBindings() {
 	watchState('context.currentGroupId', refreshBoundBanners)
 	watchState('context.currentChannelId', refreshBoundBanners)
 	watchState('context.currentState', refreshBoundBanners)
-	document.getElementById('archive-sync-button')?.addEventListener('click', () => {
+	document.getElementById('archive-sync-button')?.addEventListener('click', async () => {
 		const groupId = store.context.currentGroupId
 		if (!groupId) return
-		void syncArchive(groupId).then(async () => {
+		try {
+			await syncArchive(groupId)
 			setState('context.currentState', await getGroupState(groupId))
 			refreshBoundBanners()
-		}).catch(console.error)
+		}
+		catch (error) {
+			handleError('chat.hub.operationFailed')(error)
+		}
 	})
-	document.getElementById('shun-keep-history-button')?.addEventListener('click', () => {
+	document.getElementById('shun-keep-history-button')?.addEventListener('click', async () => {
 		const groupId = store.context.currentGroupId
 		if (!groupId) return
-		void dismissShunBanner(groupId).then(async () => {
+		try {
+			await dismissShunBanner(groupId)
 			setState('context.currentState', await getGroupState(groupId))
 			refreshBoundBanners()
-		}).catch(console.error)
+		}
+		catch (error) {
+			handleError('chat.hub.operationFailed')(error)
+		}
 	})
-	document.getElementById('shun-leave-button')?.addEventListener('click', () => {
+	document.getElementById('shun-leave-button')?.addEventListener('click', async () => {
 		const groupId = store.context.currentGroupId
 		if (!groupId) return
-		void import('../groupContextMenu.mjs').then(({ leaveGroupsOptimistic }) =>
-			leaveGroupsOptimistic([groupId]),
-		).catch(console.error)
+		try {
+			const { leaveGroupsOptimistic } = await import('../groupContextMenu.mjs')
+			await leaveGroupsOptimistic([groupId])
+		}
+		catch (error) {
+			handleError('chat.hub.operationFailed')(error)
+		}
 	})
 	refreshBoundBanners()
 }

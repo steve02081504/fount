@@ -52,7 +52,7 @@ function friendBindingsEqual(a, b) {
  * @returns {void}
  */
 function throwIfAborted(signal) {
-	if (signal.aborted)
+	if (signal?.aborted)
 		throw new DOMException('Aborted', 'AbortError')
 }
 
@@ -88,25 +88,30 @@ async function findExistingFriendGroup(binding) {
  * 确保群上已挂载角色 part。
  * @param {string} groupId 群 ID
  * @param {string} charname 角色名
+ * @param {AbortSignal} [signal] 取消信号
  * @returns {Promise<void>}
  */
-async function ensureCharOnGroup(groupId, charname) {
-	const chars = await listGroupChars(groupId)
+async function ensureCharOnGroup(groupId, charname, signal) {
+	throwIfAborted(signal)
+	const chars = await listGroupChars(groupId, signal)
+	throwIfAborted(signal)
 	if (chars.includes(charname)) return
-	await addGroupChar(groupId, { charname, deferGreeting: true })
+	await addGroupChar(groupId, { charname, deferGreeting: true }, signal)
+	throwIfAborted(signal)
 }
 
 /**
  * 解析或新建好友群 ID（角色需 addchar；用户 DM 由调用方传入 groupId）。
  * @param {import('../shared/friendBinding.mjs').FriendBinding} binding 绑定
- * @param {{ groupId?: string, forceNew?: boolean }} options 选项
+ * @param {{ groupId?: string, forceNew?: boolean, signal?: AbortSignal }} options 选项
  * @returns {Promise<string|null>} 群 ID；失败为 null
  */
 async function resolveFriendGroupId(binding, options) {
+	const { signal } = options
 	let groupId = options.forceNew ? undefined : options.groupId
 	if (groupId) {
 		if (binding.charname)
-			await ensureCharOnGroup(groupId, binding.charname)
+			await ensureCharOnGroup(groupId, binding.charname, signal)
 		return groupId
 	}
 	if (!groupId && !options.forceNew) {
@@ -116,16 +121,18 @@ async function resolveFriendGroupId(binding, options) {
 	if (!groupId && !options.forceNew)
 		groupId = await findExistingFriendGroup(binding)
 
+	throwIfAborted(signal)
 	if (!groupId) {
 		const payload = await createFriendGroup({
 			friendBinding: binding,
 			...options.forceNew ? { forceNew: true } : {},
-		})
+		}, signal)
+		throwIfAborted(signal)
 		groupId = payload.groupId
 	}
 
 	if (binding.charname)
-		await ensureCharOnGroup(groupId, binding.charname)
+		await ensureCharOnGroup(groupId, binding.charname, signal)
 
 	return groupId
 }
@@ -253,7 +260,7 @@ export async function enterFriendChat(options = {}) {
 
 		throwIfAborted(signal)
 		const groupId = await enqueueResolveFriendGroup(
-			() => resolveFriendGroupId(binding, options),
+			() => resolveFriendGroupId(binding, { ...options, signal }),
 			signal,
 		)
 		if (!groupId) return

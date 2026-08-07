@@ -105,13 +105,8 @@ export function attachHubMentionAutocomplete(textarea) {
 			hide()
 			return
 		}
-		try {
-			const data = await suggestMentions(groupId, query, 12)
-			render(data.suggestions || [])
-		}
-		catch {
-			hide()
-		}
+		const data = await suggestMentions(groupId, query, 12)
+		render(data.suggestions || [])
 	}
 
 	/**

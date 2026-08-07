@@ -10,16 +10,10 @@ import { groupEntityHash } from '../shared/groupEntityHash.mjs'
  * 获取并解密群文件，返回 Blob URL（供 Hub 内联渲染）。
  * @param {string} groupId 群 ID
  * @param {string} fileId 文件 ID
- * @returns {Promise<string | null>} Blob URL；失败时为 null
+ * @returns {Promise<string>} Blob URL
  */
 export async function fetchGroupFileAsBlobUrl(groupId, fileId) {
 	const entityHash = groupEntityHash(groupId)
-	const logicalPath = `chat/${fileId}`
-	try {
-		const { buffer, mimeType } = await fetchEvfsFile(entityHash, logicalPath)
-		return URL.createObjectURL(new Blob([buffer], { type: mimeType }))
-	}
-	catch {
-		return null
-	}
+	const { buffer, mimeType } = await fetchEvfsFile(entityHash, `chat/${fileId}`)
+	return URL.createObjectURL(new Blob([buffer], { type: mimeType }))
 }

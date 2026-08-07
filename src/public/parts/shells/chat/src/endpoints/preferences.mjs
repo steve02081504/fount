@@ -26,6 +26,14 @@ export function registerPrefsRoutes(router) {
 		const { client } = await chatClientFromReq(req)
 		res.status(200).json(await client.bookmarks.set(req.body.entries || []))
 	})
+	router.post(`${CHAT_API_PREFIX}/bookmarks`, authenticate, async (req, res) => {
+		const { client } = await chatClientFromReq(req)
+		res.status(200).json(await client.bookmarks.add(req.body.entry || {}))
+	})
+	router.delete(`${CHAT_API_PREFIX}/bookmarks`, authenticate, async (req, res) => {
+		const { client } = await chatClientFromReq(req)
+		res.status(200).json(await client.bookmarks.remove(req.body.entry || {}))
+	})
 
 	router.get(`${CHAT_API_PREFIX}/group-folders`, authenticate, async (req, res) => {
 		const { client } = await chatClientFromReq(req)

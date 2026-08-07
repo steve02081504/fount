@@ -1,29 +1,21 @@
 /**
  * 【文件】public/src/endpoints/groupBan.mjs
- * 【职责】按范围封禁成员：DAG 声誉 + 服务端 blocklist/peers 同步。
- * 【原理】校验 targetPubKeyHash 为 hex64 后调用 ban 端点，可选 postReputationSlash。
- * 【数据结构】groupId、targetPubKeyHash、scope 选项。
- * 【关联】groupClient.mjs、groupGovernance.mjs、fount-p2p/core/hexIds。
+ * 【职责】按范围封禁成员：服务端原子合并 member_ban + 声誉扣减。
+ * 【原理】信任本机 Hub 传入的 targetPubKeyHash / banScope；一次 POST ban，服务端返回部分成功状态。
+ * 【关联】groupClient.mjs；后端 group/routes/governance.mjs。
  */
-import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
-
 import { groupFetch, groupPath } from './groupClient.mjs'
-import { postReputationSlash } from './groupGovernance.mjs'
 
 /**
  * 按范围封禁成员（群内 DAG + 声誉 + 服务端同步 blocklist/peers）。
  * @param {string} groupId 群 ID
  * @param {string} targetPubKeyHash 目标成员 pubKeyHash
  * @param {{ banScope: 'entity'|'node' }} options 封禁范围
- * @returns {Promise<void>}
+ * @returns {Promise<{ banned: true, reputationSlash: { ok: boolean, error?: string, alreadyBanned?: boolean, banEventId?: string } }>} 封禁结果；声誉失败时 banned 仍为 true
  */
 export async function banMemberWithScope(groupId, targetPubKeyHash, options) {
-	const target = String(targetPubKeyHash || '').trim().toLowerCase()
-	if (!isHex64(target)) throw new Error('invalid target')
-	const banScope = String(options?.banScope || '').trim().toLowerCase()
-	await groupFetch(groupPath(groupId, 'members', target, 'ban'), {
+	return groupFetch(groupPath(groupId, 'members', targetPubKeyHash, 'ban'), {
 		method: 'POST',
-		json: { banScope },
+		json: { banScope: options.banScope },
 	})
-	await postReputationSlash(groupId, { targetPubKeyHash: target, claim: 1, verified: false })
 }

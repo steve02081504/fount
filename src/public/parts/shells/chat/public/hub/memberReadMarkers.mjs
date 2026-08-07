@@ -6,6 +6,7 @@
 import { geti18n } from '../../../../scripts/i18n/index.mjs'
 import { getMemberReadMarkers } from '../src/endpoints/groupChannel.mjs'
 import { hubDeliveryReadIcon } from '../src/lib/emojiSvg.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { store } from './core/state.mjs'
 
@@ -35,7 +36,10 @@ export async function fetchMemberReadMarkers(groupId, channelId) {
 		paintOwnDeliveryStatuses()
 		return markers
 	}
-	catch { return {} }
+	catch (error) {
+		handleError('chat.hub.operationFailed')(error)
+		return {}
+	}
 }
 
 /**

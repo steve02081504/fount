@@ -2,6 +2,7 @@
  * 【文件】public/hub/messages/render/translation.mjs
  * 【职责】消息列表自动翻译挂载。
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { getTranslationPrefs } from '../../../src/endpoints/prefs.mjs'
 
 /**
@@ -39,8 +40,12 @@ export async function autoTranslateMessages(container) {
 					translatedText: translated,
 				})
 			}
-			catch { /* skip one row */ }
+			catch (error) {
+				handleError('chat.hub.translateFailed')(error)
+			}
 		}
 	}
-	catch { /* prefs unavailable */ }
+	catch (error) {
+		handleError('chat.hub.operationFailed')(error)
+	}
 }

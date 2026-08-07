@@ -3,6 +3,7 @@
  * 【职责】资料页「我的主人」设置：为当前 operator 实体声明 / 清除 ownerEntityHash。
  * 【原理】读 viewer + profile；PUT /entities/owner；本地 agent 列表作快捷选择；保存前高风险确认。
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { mountTemplate } from '../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../scripts/features/toast.mjs'
 import { getEntityProfile, setEntityOwner } from '../src/endpoints/entities.mjs'
@@ -45,7 +46,7 @@ export async function initProfileOwnerSettings() {
 		}
 	}
 	catch (error) {
-		showToastI18n('error', 'chat.profile.owner.saveFailed', { error: error?.message || String(error) })
+		handleError('chat.profile.errors.fetchUserFailed')(error)
 		return
 	}
 
@@ -85,8 +86,12 @@ export async function initProfileOwnerSettings() {
 			showToastI18n('success', 'chat.profile.owner.saved')
 			await initProfileOwnerSettings()
 		}
-		catch (e) {
-			showToastI18n('error', 'chat.profile.owner.saveFailed', { error: e?.message || String(e) })
+		catch (error) {
+			if (error?.message === 'invalid ownerEntityHash') {
+				showToastI18n('error', 'chat.profile.owner.saveFailed', { error: error.message })
+				return
+			}
+			handleError('chat.profile.owner.saveFailed')(error)
 		}
 	})
 
@@ -96,8 +101,8 @@ export async function initProfileOwnerSettings() {
 			showToastI18n('success', 'chat.profile.owner.cleared')
 			await initProfileOwnerSettings()
 		}
-		catch (e) {
-			showToastI18n('error', 'chat.profile.owner.saveFailed', { error: e?.message || String(e) })
+		catch (error) {
+			handleError('chat.profile.owner.saveFailed')(error)
 		}
 	})
 }

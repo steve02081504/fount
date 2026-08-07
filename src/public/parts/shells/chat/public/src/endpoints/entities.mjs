@@ -19,24 +19,26 @@ export function localeQueryString(groupId) {
 }
 
 /**
+ * 读取实体资料。
  * @param {string} entityHash 128 位 entityHash
  * @param {string} [groupId] 群 ID
  * @returns {Promise<{ profile: object }>} 资料 JSON
  */
 export async function getEntityProfile(entityHash, groupId) {
-	const qs = localeQueryString(groupId)
-	return chatFetch(`/entities/${encodeURIComponent(entityHash)}${qs ? `?${qs}` : ''}`)
+	const queryString = localeQueryString(groupId)
+	return chatFetch(`/entities/${encodeURIComponent(entityHash)}${queryString ? `?${queryString}` : ''}`)
 }
 
 /**
+ * 更新实体资料。
  * @param {string} entityHash 128 位 entityHash
  * @param {object} updates 更新内容
  * @param {string} [groupId] 群 ID
  * @returns {Promise<object>} 更新后的资料 JSON（或代理写入时的 `{ queued: true, ... }`）
  */
 export async function updateEntityProfile(entityHash, updates, groupId) {
-	const qs = localeQueryString(groupId)
-	return chatFetch(`/entities/${encodeURIComponent(entityHash)}${qs ? `?${qs}` : ''}`, {
+	const queryString = localeQueryString(groupId)
+	return chatFetch(`/entities/${encodeURIComponent(entityHash)}${queryString ? `?${queryString}` : ''}`, {
 		method: 'PUT',
 		json: { ...updates, ...groupId ? { groupId } : {} },
 	})
@@ -83,13 +85,13 @@ export function setEntityOwner(ownerEntityHash) {
 
 /**
  * 网络实体搜索（handle / 展示名）。
- * @param {string} q 查询词
- * @param {{ limit?: number }} [opts] 选项
+ * @param {string} query 查询词
+ * @param {{ limit?: number }} [options] 选项
  * @returns {Promise<{ entities: object[] }>} 命中列表
  */
-export function searchEntities(q, opts = {}) {
-	const params = new URLSearchParams({ q })
-	if (opts.limit) params.set('limit', String(opts.limit))
+export function searchEntities(query, options = {}) {
+	const params = new URLSearchParams({ q: query })
+	if (options.limit) params.set('limit', String(options.limit))
 	return chatFetch(`/entities/search?${params}`)
 }
 

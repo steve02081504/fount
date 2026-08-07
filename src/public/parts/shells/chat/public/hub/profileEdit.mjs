@@ -813,7 +813,14 @@ async function handleSaveProfile() {
 export async function openHubProfileEdit(entityHash, options = {}) {
 	const groupId = store.context.currentGroupId || undefined
 	const dialog = await ensureEditDialog()
-	const data = await getEntityProfile(entityHash, groupId)
+	let data
+	try {
+		data = await getEntityProfile(entityHash, groupId)
+	}
+	catch (error) {
+		handleError('chat.profile.errors.loadFailed')(error)
+		return
+	}
 	if (!data?.profile) {
 		showToastI18n('error', 'chat.profile.errors.loadFailed')
 		return

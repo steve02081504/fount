@@ -1,8 +1,6 @@
 import { filterSetsFromPersonalListEntries, isAuthorFilteredByPersonalSets } from '../../shared/personalFilter.mjs'
 import { getPersonalLists } from '../endpoints/prefs.mjs'
 
-const EMPTY = filterSetsFromPersonalListEntries([])
-
 /**
  * @param {{ entries?: Array<{ scope?: string, kind?: string, value?: string }> }} [raw] API 响应
  * @returns {ReturnType<typeof filterSetsFromPersonalListEntries>} 规范化过滤集
@@ -15,12 +13,7 @@ export function normalizePersonalFilterResponse(raw = { entries: [] }) {
  * @returns {Promise<ReturnType<typeof filterSetsFromPersonalListEntries>>} 过滤集
  */
 export async function fetchPersonalFilterSets() {
-	try {
-		return normalizePersonalFilterResponse(await getPersonalLists())
-	}
-	catch {
-		return EMPTY
-	}
+	return normalizePersonalFilterResponse(await getPersonalLists())
 }
 
 /**

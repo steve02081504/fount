@@ -25,11 +25,14 @@ export function groupPath(groupId, ...segments) {
  */
 export async function chatFetch(path, options = {}) {
 	const { json, ...init } = options
+	const headers = json
+		? { 'Content-Type': 'application/json', ...init.headers }
+		: init.headers
 	const response = await fetch(`${CHAT_API_CLIENT_PREFIX}${path}`, {
-		credentials: 'include',
-		headers: json ? { 'Content-Type': 'application/json', ...init.headers } : init.headers,
-		body: json ? JSON.stringify(json) : init.body,
 		...init,
+		credentials: 'include',
+		headers,
+		body: json ? JSON.stringify(json) : init.body,
 	})
 	if (!response.ok) {
 		const data = await response.json().catch(() => ({}))

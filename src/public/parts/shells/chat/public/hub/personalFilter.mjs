@@ -3,6 +3,7 @@
  * 列表本体由 Social relationships API 写入；纯转换在 `shared/personalFilter.mjs`。
  * Social 前端不引用本模块（走自有 feed/profile 后端过滤）。
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { postRelationshipBlock } from '../src/endpoints/social.mjs'
 import {
 	fetchPersonalFilterSets,
@@ -19,8 +20,15 @@ let cachedFilter = null
  * @returns {Promise<ReturnType<typeof normalizePersonalFilterResponse>>} 过滤集
  */
 export async function loadHubPersonalFilter() {
-	cachedFilter = await fetchPersonalFilterSets()
-	return cachedFilter
+	try {
+		cachedFilter = await fetchPersonalFilterSets()
+		return cachedFilter
+	}
+	catch (error) {
+		handleError('chat.hub.operationFailed')(error)
+		cachedFilter = normalizePersonalFilterResponse()
+		return cachedFilter
+	}
 }
 
 /**

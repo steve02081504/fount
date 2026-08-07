@@ -15,17 +15,17 @@ import { parseHash } from './core/urlHash.mjs'
 
 /** @returns {Promise<void>} 拉取 viewer 到 store（顶栏详情由 init.mjs 补全） */
 async function loadViewerIdentity() {
-	const [data, who] = await Promise.all([
-		getViewer().catch(() => null),
-		whoami().catch(() => null),
+	const [viewer, identity] = await Promise.all([
+		getViewer().catch(error => { handleError('chat.hub.operationFailed')(error); return null }),
+		whoami().catch(error => { handleError('chat.hub.operationFailed')(error); return null }),
 	])
-	if (who?.username) store.viewer.username = who.username || null
-	if (!data) return
-	store.viewer.nodeHash = data.nodeHash || null
-	store.viewer.operatorEntityHash = data.viewerEntityHash || null
-	store.viewer.viewerEntityHash = data.viewerEntityHash || null
-	store.viewer.ownerEntityHash = String(data.profile?.ownerEntityHash || '').trim().toLowerCase() || null
-	store.viewer.agents = data.agents || []
+	if (identity?.username) store.viewer.username = identity.username
+	if (!viewer) return
+	store.viewer.nodeHash = viewer.nodeHash || null
+	store.viewer.operatorEntityHash = viewer.viewerEntityHash || null
+	store.viewer.viewerEntityHash = viewer.viewerEntityHash || null
+	store.viewer.ownerEntityHash = String(viewer.profile?.ownerEntityHash || '').trim().toLowerCase() || null
+	store.viewer.agents = viewer.agents || []
 	const { ingestAgentEntityHashList } = await import('./core/domUtils.mjs')
 	ingestAgentEntityHashList(store.viewer.agents)
 }

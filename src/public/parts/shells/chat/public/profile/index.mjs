@@ -10,6 +10,7 @@ import {
 	renderTemplate,
 	usingTemplates,
 } from '../../../scripts/features/template.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { showToastI18n } from '../../../scripts/features/toast.mjs'
 import { initTranslations, onLanguageChange } from '../../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../../scripts/theme/index.mjs'
@@ -105,8 +106,7 @@ async function init() {
 		await loadProfile(currentEntityHash)
 	}
 	catch (error) {
-		console.error('Failed to get current user:', error)
-		showToastI18n('error', 'chat.profile.errors.fetchUserFailed')
+		handleError('chat.profile.errors.fetchUserFailed')(error)
 	}
 
 	document.getElementById('profile-edit-button')?.addEventListener('click', () => {
@@ -140,8 +140,7 @@ async function loadProfile(entityHash) {
 		}
 	}
 	catch (error) {
-		console.error('Failed to load profile:', error)
-		showToastI18n('error', 'chat.profile.errors.loadFailed')
+		handleError('chat.profile.errors.loadFailed')(error)
 	}
 }
 
@@ -208,7 +207,7 @@ async function loadUserGroups() {
 
 	}
 	catch (error) {
-		console.error('Failed to load groups:', error)
+		handleError('chat.profile.errors.operationFailed')(error)
 	}
 }
 
@@ -236,8 +235,9 @@ async function loadUserChannels() {
 						defaultChannelId: group.defaultChannelId,
 					})
 			}
-			catch { /* skip group */ }
-
+			catch (error) {
+				handleError('chat.profile.errors.operationFailed')(error)
+			}
 
 		const container = document.getElementById('profile-channels')
 		const noChannels = document.getElementById('no-channels')
@@ -262,7 +262,7 @@ async function loadUserChannels() {
 
 	}
 	catch (error) {
-		console.error('Failed to load channels:', error)
+		handleError('chat.profile.errors.operationFailed')(error)
 	}
 }
 

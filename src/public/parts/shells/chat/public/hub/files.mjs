@@ -121,8 +121,14 @@ export async function refreshFilesDrawer(drawer) {
 			addBtn.className = 'btn btn-primary btn-sm'
 			addBtn.setAttribute('data-i18n', 'chat.hub.files.bindCabinet')
 			addBtn.textContent = '添加文件柜'
-			addBtn.addEventListener('click', () => {
-				bindCabinetFlow(drawer.groupId, state).then(() => refreshFilesDrawer(drawer)).catch(handleError('chat.hub.files.loadFailed'))
+			addBtn.addEventListener('click', async () => {
+				try {
+					await bindCabinetFlow(drawer.groupId, state)
+					await refreshFilesDrawer(drawer)
+				}
+				catch (error) {
+					handleError('chat.hub.files.loadFailed')(error)
+				}
 			})
 			actions.appendChild(addBtn)
 		}

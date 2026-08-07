@@ -1,3 +1,4 @@
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { promptText } from '../../../../../../scripts/features/promptDialog.mjs'
 import { mountTemplate } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
@@ -44,7 +45,10 @@ async function renderGroupEmojis(context) {
 	const container = document.getElementById('group-emojis-container')
 	if (!container || !context.groupId) return
 	const channelId = context.state?.groupSettings?.defaultChannelId || 'default'
-	const packsPayload = await listGroupEmojiPacks(context.groupId).catch(() => [])
+	const packsPayload = await listGroupEmojiPacks(context.groupId).catch(error => {
+		handleError('chat.hub.group.emojisLoadFailed')(error)
+		return []
+	})
 
 	const packIds = packsPayload.map(p => p.packId).filter(Boolean)
 	if (!packIds.includes(context.groupId)) packIds.unshift(context.groupId)
@@ -53,7 +57,10 @@ async function renderGroupEmojis(context) {
 
 	const [canManage, packDetail] = await Promise.all([
 		viewerCanManageMessages(context.state, context.groupId, channelId).catch(() => false),
-		getGroupEmojiPack(context.groupId, activePackId).catch(() => null),
+		getGroupEmojiPack(context.groupId, activePackId).catch(error => {
+			handleError('chat.hub.group.emojisLoadFailed')(error)
+			return null
+		}),
 	])
 
 	const entries = Array.isArray(packDetail?.items) ? packDetail.items : []
@@ -103,8 +110,8 @@ ${del}
 					if (context.state?.groupSettings)
 						context.state.groupSettings.defaultEmojiPackId = packId || null
 				}
-				catch {
-					showToastI18n('error', 'chat.group.settings.page.defaultEmojiPack.failed')
+				catch (error) {
+					handleError('chat.group.settings.page.defaultEmojiPack.failed')(error)
 					defaultSelect.value = previousValue
 				}
 			})
@@ -128,7 +135,7 @@ ${del}
 				await ensureGroupEmojisPanel(context)
 			}
 			catch (error) {
-				showToastI18n('error', 'chat.group.settings.page.emojis.create.packFailed', { error: error.message })
+				handleError('chat.group.settings.page.emojis.create.packFailed')(error)
 			}
 		})
 
@@ -145,7 +152,7 @@ ${del}
 				await ensureGroupEmojisPanel(context)
 			}
 			catch (error) {
-				showToastI18n('error', 'chat.group.settings.page.emojis.uploadFailed', { error: error.message })
+				handleError('chat.group.settings.page.emojis.uploadFailed')(error)
 			}
 		})
 
@@ -161,7 +168,7 @@ ${del}
 				await ensureGroupEmojisPanel(context)
 			}
 			catch (error) {
-				showToastI18n('error', 'chat.group.settings.page.emojis.deleteFailed', { error: error.message })
+				handleError('chat.group.settings.page.emojis.deleteFailed')(error)
 			}
 		})
 	})

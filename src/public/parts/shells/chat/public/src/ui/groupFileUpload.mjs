@@ -258,7 +258,7 @@ export function createFileHandlers(hub) {
 				handleError('chat.hub.file.noKey')(new Error('downloadGroupFile: missing blob meta'))
 				return
 			}
-			if (hasParts) await resumeGroupFileDownload(groupId, fileId).catch(() => { })
+			if (hasParts) await resumeGroupFileDownload(groupId, fileId)
 
 			const fileIdForEvfs = String(meta?.fileId || '').trim()
 			const entityHash = groupEntityHash(groupId)

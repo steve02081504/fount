@@ -54,24 +54,29 @@ export function saveDraft(groupId, channelId, draft) {
 export function loadDraft(groupId, channelId) {
 	if (!groupId || !channelId) return
 	try {
+		const input = document.getElementById('message-input')
+		if (input instanceof HTMLTextAreaElement) input.value = ''
+		const cw = document.getElementById('content-warning')
+		if (cw instanceof HTMLInputElement) cw.value = ''
+		const sm = document.getElementById('sensitive-media')
+		if (sm instanceof HTMLInputElement) sm.checked = false
+		const extras = document.getElementById('composer-extras')
+		if (extras) extras.hidden = true
+
 		const raw = localStorage.getItem(draftKey(groupId, channelId))
 		if (!raw) return
 		const draft = JSON.parse(raw)
-		const input = document.getElementById('message-input')
 		if (input instanceof HTMLTextAreaElement && draft.text) {
 			input.value = draft.text
 			input.dispatchEvent(new Event('input', { bubbles: true }))
 		}
-		const cw = document.getElementById('content-warning')
 		if (cw instanceof HTMLInputElement && draft.content_warning)
 			cw.value = draft.content_warning
-		const sm = document.getElementById('sensitive-media')
 		if (sm instanceof HTMLInputElement && draft.sensitive_media)
 			sm.checked = true
-		if (draft.content_warning || draft.sensitive_media) {
-			const extras = document.getElementById('composer-extras')
+		if (draft.content_warning || draft.sensitive_media) 
 			if (extras) extras.hidden = false
-		}
+		
 	}
 	catch { /* JSON 解析失败忽略 */ }
 }

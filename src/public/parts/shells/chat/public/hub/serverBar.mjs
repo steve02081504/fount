@@ -218,7 +218,7 @@ export async function renderServerBar() {
 export async function loadGroups() {
 	const [groupList, foldersPayload] = await Promise.all([
 		getGroupList(),
-		getGroupFolders().catch(() => null),
+		getGroupFolders().catch(error => { handleError('chat.hub.operationFailed')(error); return null }),
 	])
 	store.sidebar.groups = groupList.sort(
 		(left, right) => new Date(right.lastMessageTime || 0) - new Date(left.lastMessageTime || 0),
@@ -232,7 +232,7 @@ export async function loadGroups() {
 		if (liveBookmarks.length !== bookmarks.length) await saveChatBookmarks(liveBookmarks)
 	}
 	if (foldersPayload) {
-		const rawFolders = Array.isArray(foldersPayload.folders) ? foldersPayload.folders : []
+		const rawFolders = foldersPayload.folders
 		store.sidebar.groupFoldersState = {
 			folders: rawFolders.map((folder, folderIndex) => ({
 				id: String(folder.id || '').trim() || `folder-${folderIndex}`,

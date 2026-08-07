@@ -6,6 +6,7 @@ import { initTranslations, geti18n } from '/scripts/i18n/index.mjs'
 import { discoverEmojiPackOffers } from '/scripts/features/emoji/discover.mjs'
 import { showEmojiPackPreview } from '/scripts/components/emojiPackPreview.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { joinGroup } from '../src/endpoints/groupCore.mjs'
 import { postRelationshipFollow } from '../src/endpoints/social.mjs'
@@ -29,9 +30,7 @@ function addActionButton(actions, { i18nKey, fallback, className, onClick }) {
 	button.dataset.i18n = i18nKey
 	button.textContent = geti18n(i18nKey) || fallback
 	button.addEventListener('click', () => {
-		void Promise.resolve(onClick()).catch(error => {
-			showToastI18n('error', 'chat.emoji.previewActionFailed', { error: error.message || String(error) })
-		})
+		void Promise.resolve(onClick()).catch(handleError('chat.emoji.previewActionFailed'))
 	})
 	actions.appendChild(button)
 	return button

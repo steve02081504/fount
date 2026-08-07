@@ -5,6 +5,7 @@
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/toast、../src/achievements、../src/endpoints/groupCore、core/state。
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { initializeAchievements } from '../src/achievements.mjs'
 import {
@@ -61,7 +62,7 @@ export function setupPartDragDrop() {
 			}
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.dragAndDrop.errorAddingPart', { partName, error: error.message })
+			handleError('chat.dragAndDrop.errorAddingPart', { partName })(error)
 		}
 	})
 }

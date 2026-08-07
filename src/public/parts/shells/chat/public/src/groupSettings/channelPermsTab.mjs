@@ -1,3 +1,4 @@
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { mountTemplate } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { getChannelPermissions, putChannelPermissions } from '../endpoints/channelPerms.mjs'
@@ -46,7 +47,7 @@ export async function renderChannelPermissionsPanel(context) {
 		permissions = await getChannelPermissions(context.groupId, context.selectedChannelPermsId)
 	}
 	catch (error) {
-		showToastI18n('error', 'chat.group.settings.page.channelPerms.updateFailed', { error: error.message })
+		handleError('chat.group.settings.page.channelPerms.updateFailed')(error)
 	}
 
 	const overrideRoleIds = Object.keys(permissions)
@@ -92,7 +93,7 @@ export async function renderChannelPermissionsPanel(context) {
 				await renderChannelPermissionsPanel(context)
 			}
 			catch (error) {
-				showToastI18n('error', 'chat.group.settings.page.channelPerms.updateFailed', { error: error.message })
+				handleError('chat.group.settings.page.channelPerms.updateFailed')(error)
 			}
 			return
 		}
@@ -104,7 +105,7 @@ export async function renderChannelPermissionsPanel(context) {
 				await renderChannelPermissionsPanel(context)
 			}
 			catch (error) {
-				showToastI18n('error', 'chat.group.settings.page.channelPerms.updateFailed', { error: error.message })
+				handleError('chat.group.settings.page.channelPerms.updateFailed')(error)
 			}
 			return
 		}
@@ -116,20 +117,20 @@ export async function renderChannelPermissionsPanel(context) {
 		const perm = group.getAttribute('data-perm')
 		const nextState = channelPermStateButton.getAttribute('data-state')
 		if (!roleId || !perm || !nextState) return
-		const current = await getChannelPermissions(context.groupId, context.selectedChannelPermsId)
-		const allow = { ...current[roleId]?.allow }
-		const deny = { ...current[roleId]?.deny }
-		delete allow[perm]
-		delete deny[perm]
-		if (nextState === 'allow') allow[perm] = true
-		else if (nextState === 'deny') deny[perm] = true
 		try {
+			const current = await getChannelPermissions(context.groupId, context.selectedChannelPermsId)
+			const allow = { ...current[roleId]?.allow }
+			const deny = { ...current[roleId]?.deny }
+			delete allow[perm]
+			delete deny[perm]
+			if (nextState === 'allow') allow[perm] = true
+			else if (nextState === 'deny') deny[perm] = true
 			await putChannelPermissions(context.groupId, context.selectedChannelPermsId, roleId, allow, deny)
 			showToastI18n('success', 'chat.group.settings.page.channelPerms.updated')
 			await renderChannelPermissionsPanel(context)
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.group.settings.page.channelPerms.updateFailed', { error: error.message })
+			handleError('chat.group.settings.page.channelPerms.updateFailed')(error)
 		}
 	}, { signal })
 }

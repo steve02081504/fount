@@ -36,8 +36,7 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
 		catchup = await federationCatchUp(groupId, { waitMs: options.waitMs ?? 1400 })
 	}
 	catch (error) {
-		const catchupError = handleError('chat.hub.sync.failed')(error).message
-		setSyncBanner(true, { i18nKey: 'chat.hub.sync.failed', params: { error: catchupError } })
+		setSyncBanner(true, { i18nKey: 'chat.hub.sync.failed', params: { error: handleError('chat.hub.sync.failed')(error).message } })
 		return
 	}
 

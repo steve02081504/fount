@@ -5,6 +5,7 @@
  * 【数据结构】Record<string, boolean> 权限表；stateJson.viewerMemberPubKeyHash。
  * 【关联】Hub composer、reactionHandlers；后端 groups/:id/state。
  */
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { getViewerPermissions } from './endpoints/groupCore.mjs'
 
 /**
@@ -27,7 +28,10 @@ export async function fetchViewerChannelPermissions(stateJson, groupId, channelI
 	const pubKeyHash = stateJson?.viewerMemberPubKeyHash
 	if (!pubKeyHash) return {}
 	const ch = channelId || governanceChannelIdFromState(stateJson)
-	return getViewerPermissions(groupId, pubKeyHash, ch).catch(() => ({}))
+	return getViewerPermissions(groupId, pubKeyHash, ch).catch(error => {
+		handleError('chat.hub.operationFailed')(error)
+		return {}
+	})
 }
 
 /**

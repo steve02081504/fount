@@ -10,6 +10,7 @@ import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { getCallStatus } from '../src/endpoints/groupChannel.mjs'
 import { iconifyImg, iconifyUrl } from '../src/lib/emojiSvg.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { joinCodecsAvRoom, leaveCodecsAvRoom } from './codecsAv.mjs'
 import { store } from './core/state.mjs'
@@ -521,7 +522,9 @@ export async function refreshCallStatusBadge() {
 		const data = await getCallStatus(groupId, channelId)
 		updateCallBadge(data.active ? data.peerCount || 0 : 0)
 	}
-	catch { /* ignore */ }
+	catch (error) {
+		handleError('chat.hub.operationFailed')(error)
+	}
 }
 
 /**
