@@ -31,7 +31,7 @@ fi
 # shellcheck disable=SC1091
 . "$FOUNT_SRC/load.sh"
 
-require i18n terminal temp_guard env packages profile
+require env i18n terminal temp_guard packages profile
 load_installed_packages
 ensure_fount_path
 

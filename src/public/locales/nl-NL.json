@@ -381,6 +381,7 @@
 				"localBranchAhead": "De lokale vestiging loopt voor op de externe vestiging. Geen updates vereist.",
 				"branchesDiverged": "De lokale en afgelegen vestigingen zijn gesplitst. Geforceerde update wordt uitgevoerd...",
 				"notOnBranch": "Niet op het filiaal, schakel over naar 'master'...",
+				"upstreamGoneFallbackMaster": "Externe branch '${branch}' is verwijderd; volg nu master…",
 				"noUpstreamBranch": "Waarschuwing: geen upstream-branch voor '${branch}', gebruik '${remote}'.",
 				"dirtyWorkingDirectory": "Waarschuwing: de werkmap is niet schoon. Stash of commit uw wijzigingen voordat u deze bijwerkt.",
 				"notInstalled": "Git is niet geïnstalleerd, probeert te installeren...",

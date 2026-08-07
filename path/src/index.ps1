@@ -28,7 +28,7 @@ if ($env:OSTYPE -match '^(msys|cygwin)') {
 $script:FountCallerErrorActionPreference = $ErrorActionPreference
 $ErrorActionPreference = 'Continue'
 try {
-	require i18n terminal temp_guard env
+	require env i18n terminal temp_guard
 
 	check_temp_guard $args[0]
 

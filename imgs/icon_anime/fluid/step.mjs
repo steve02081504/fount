@@ -1,14 +1,17 @@
 /**
- * 单 tick 流体编排：空气标记 → 气体 → 风抬升 → 粒子 → 液体。
+ * 单 tick 流体编排：空气标记 → 气体 → 风抬升 → 热力 → 粒子 → 液体 → 气泡 → 边界。
  *
  * 场景 / 测试调用此函数（或各子步）。
  * `labelAirRegions` 仅在 `world.airDirty`（材质 / LIQ_DRAW 占用变化）时运行。
  * `stepLiquid` 在粒子 / 抬升再次弄脏自由液体拓扑时于 tick 中途重新标记。
  */
 
+import { stepBoundary } from './boundary.mjs'
+import { stepBubbles } from './bubbles.mjs'
 import { labelAirRegions, stepGas } from './gas.mjs'
 import { stepLiquid } from './liquid.mjs'
 import { liftLiquidByWind, stepParticles } from './particles.mjs'
+import { stepThermal } from './thermal.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
 
@@ -34,7 +37,10 @@ export const stepFluid = (world, opts = {}) => {
 	if (world.airDirty) labelAirRegions(world)
 	stepGas(world, opts)
 	liftLiquidByWind(world)
+	stepThermal(world)
 	opts.beforeParticles?.()
 	stepParticles(world, opts.onHit ?? NOOP_HIT, opts.state)
 	stepLiquid(world)
+	stepBubbles(world)
+	stepBoundary(world)
 }

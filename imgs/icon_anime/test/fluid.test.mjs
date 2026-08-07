@@ -12,7 +12,7 @@ import {
 	COND_DRIP, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQ_DRAW,
 	waterChar, liquidChar, pickWaterGlyph, FALL_HEAVY,
 	WATER_STILL, WATER_FALL, WATER_HIGH_L, WATER_HIGH_R, WATER_LOW_DL, WATER_LOW_DR,
-	globalWindAt, windProfileAt, gasVelocityAt, dynamicPressure,
+	globalWindAt, windShear, gasVelocityAt, dynamicPressure,
 	staticPressureAt, spawnParticle, liftLiquidByWind, verticalGasDrag, GAS_DRAG, GAS_DRAG_Y,
 } from '../fluid/index.mjs'
 
@@ -538,8 +538,9 @@ Deno.test('fluid: wind shear is stronger aloft than near ground', () => {
 	const H = 40
 	const t = 20
 	const seed = 7
-	const aloft = Math.abs(windProfileAt(2, H, t, seed))
-	const nearGround = Math.abs(windProfileAt(H - 3, H, t, seed))
+	const depthSpan = H - 1
+	const aloft = Math.abs(globalWindAt(t, seed) * windShear(2, depthSpan))
+	const nearGround = Math.abs(globalWindAt(t, seed) * windShear(H - 3, depthSpan))
 	assertGreater(aloft, nearGround)
 	assertGreater(aloft / Math.max(1e-6, nearGround), 1.3)
 })

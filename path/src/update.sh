@@ -1,6 +1,45 @@
 #!/usr/bin/env bash
 # fount self-update via git + deno upgrade
 
+# Refresh origin/<branch> only. On failure, ls-remote to tell deleted vs network.
+# Sets remoteBranch=origin/<branch> on success. Falls back to master when branch is gone.
+fount_resolve_upstream() {
+	local branch="$1" remote_status had_upstream
+	had_upstream=$(invoke_repo_git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null) || had_upstream=
+	if git_fetch_remote_branch "$branch"; then
+		remoteBranch="origin/$branch"
+		if [ -z "$had_upstream" ]; then
+			print_i18n_yellow 'git.noUpstreamBranch' 'branch' "$branch" 'remote' "$remoteBranch" >&2
+		fi
+		invoke_repo_git branch --set-upstream-to "$remoteBranch" "$branch" >/dev/null
+		currentBranch="$branch"
+		return 0
+	fi
+
+	git_remote_branch_status "$branch"
+	remote_status=$?
+	if [ "$remote_status" -eq 2 ] || [ "$remote_status" -eq 0 ]; then
+		# Network error, or exists but fetch failed — never treat as deleted.
+		print_i18n_yellow 'git.fetchFailed' >&2
+		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
+		return 1
+	fi
+
+	if [ "$branch" = "master" ]; then
+		print_i18n_yellow 'git.remoteRefUnavailable' 'ref' 'origin/master' >&2
+		return 1
+	fi
+	get_i18n 'git.upstreamGoneFallbackMaster' 'branch' "$branch"
+	if ! git_fetch_remote_branch master; then
+		print_i18n_yellow 'git.fetchFailed' >&2
+		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
+		return 1
+	fi
+	git_checkout_branch master origin/master || return 1
+	currentBranch=master
+	remoteBranch=origin/master
+}
+
 fount_upgrade() {
 	install_package "git" "git" || return 0
 	if git config --global --get-all safe.directory | grep -q -xF "$FOUNT_DIR"; then : else
@@ -24,45 +63,27 @@ fount_upgrade() {
 	invoke_repo_git config core.autocrlf false
 	local has_head=0
 	if git_ref_exists HEAD; then has_head=1; fi
-	if ! invoke_repo_git fetch origin; then
-		print_i18n_yellow 'git.fetchFailed' >&2
-		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
-		return 1
+
+	local currentBranch remoteBranch
+	currentBranch=$(invoke_repo_git rev-parse --abbrev-ref HEAD 2>/dev/null) || currentBranch=HEAD
+	if [ "$currentBranch" = "HEAD" ]; then
+		get_i18n 'git.notOnBranch'
+		if ! git_fetch_remote_branch master; then
+			print_i18n_yellow 'git.fetchFailed' >&2
+			print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
+			return 1
+		fi
+		git_sync_to_ref origin/master || return 1
+		invoke_repo_git checkout master
+		currentBranch=master
+		remoteBranch=origin/master
+	else
+		fount_resolve_upstream "$currentBranch" || return 1
 	fi
+
 	if [ "$has_head" -eq 0 ] && ! git_ref_exists HEAD; then
 		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
 		return 1
-	fi
-
-	local currentBranch
-	currentBranch=$(invoke_repo_git rev-parse --abbrev-ref HEAD 2>/dev/null) || currentBranch=HEAD
-	if [ "$currentBranch" = "HEAD" ]; then
-		if ! git_ref_exists origin/master; then
-			print_i18n_yellow 'git.remoteRefUnavailable' 'ref' 'origin/master' >&2
-			return 1
-		fi
-		get_i18n 'git.notOnBranch'
-		git_sync_to_ref origin/master || return 1
-		invoke_repo_git checkout master
-		currentBranch=$(invoke_repo_git rev-parse --abbrev-ref HEAD)
-	fi
-
-	if ! git_ref_exists HEAD; then
-		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
-		return 1
-	fi
-
-	local remoteBranch candidateRemote
-	remoteBranch=$(invoke_repo_git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
-	if [ -z "$remoteBranch" ]; then
-		candidateRemote="origin/$currentBranch"
-		if ! git_ref_exists "$candidateRemote"; then
-			print_i18n_yellow 'git.remoteRefUnavailable' 'ref' "$candidateRemote" >&2
-			return 1
-		fi
-		print_i18n_yellow 'git.noUpstreamBranch' 'branch' "$currentBranch" 'remote' "$candidateRemote" >&2
-		invoke_repo_git branch --set-upstream-to "$candidateRemote" "$currentBranch"
-		remoteBranch="$candidateRemote"
 	fi
 	if ! git_ref_exists "$remoteBranch"; then
 		print_i18n_yellow 'git.remoteRefUnavailable' 'ref' "$remoteBranch" >&2
@@ -112,9 +133,21 @@ update_fount_and_deno() {
 	deno_upgrade
 }
 
+# Switch to a remote branch tip (one-shot fetch; does not widen remote.origin.fetch).
+fount_switch_to_branch() {
+	local target="$1"
+	get_i18n 'update.switchingToBranch' 'branch' "$target"
+	git_fetch_remote_branch "$target" || return 1
+	git_checkout_branch "$target" "origin/$target" || return 1
+	if [ -f "$FOUNT_DIR/.noupdate" ]; then
+		rm -f "$FOUNT_DIR/.noupdate"
+		get_i18n 'update.removedNoUpdate'
+	fi
+}
+
 # Explicit target: branch → track tip & clear .noupdate; commit → detach & create .noupdate.
 fount_update_to_ref() {
-	local target="$1" remote_ref commit
+	local target="$1" commit remote_status
 	install_package "git" "git" || return 0
 	if git config --global --get-all safe.directory | grep -q -xF "$FOUNT_DIR"; then : else
 		git config --global --add safe.directory "$FOUNT_DIR"
@@ -127,23 +160,17 @@ fount_update_to_ref() {
 	fi
 
 	invoke_repo_git config core.autocrlf false
-	if ! invoke_repo_git fetch origin; then
-		print_i18n_yellow 'git.fetchFailed' >&2
-		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
-		return 1
-	fi
-	# Shallow / odd tips: also ask origin for the named ref or object.
-	invoke_repo_git fetch origin "$target" 2>/dev/null || true
 
-	remote_ref="origin/$target"
-	if git_ref_exists "$remote_ref" || git_ref_exists "refs/heads/$target"; then
-		get_i18n 'update.switchingToBranch' 'branch' "$target"
-		if git_ref_exists "$remote_ref"; then
-			git_checkout_branch "$target" "$remote_ref" || return 1
-		else
-			git_backup_uncommitted || return 1
-			invoke_repo_git checkout "$target" || return 1
+	# Known locally / already tracked — refresh that one tip, no ls-remote.
+	if git_ref_exists "origin/$target" || git_ref_exists "refs/heads/$target"; then
+		if git_ref_exists "origin/$target"; then
+			fount_switch_to_branch "$target" || return 1
+			deno_upgrade
+			return
 		fi
+		get_i18n 'update.switchingToBranch' 'branch' "$target"
+		git_backup_uncommitted || return 1
+		invoke_repo_git checkout "$target" || return 1
 		if [ -f "$FOUNT_DIR/.noupdate" ]; then
 			rm -f "$FOUNT_DIR/.noupdate"
 			get_i18n 'update.removedNoUpdate'
@@ -153,6 +180,22 @@ fount_update_to_ref() {
 		return
 	fi
 
+	# Unknown named target — ask origin once, then one-shot fetch if it is a branch.
+	git_remote_branch_status "$target"
+	remote_status=$?
+	if [ "$remote_status" -eq 2 ]; then
+		print_i18n_yellow 'git.fetchFailed' >&2
+		print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
+		return 1
+	fi
+	if [ "$remote_status" -eq 0 ]; then
+		fount_switch_to_branch "$target" || return 1
+		deno_upgrade
+		return
+	fi
+
+	# Bare ref → FETCH_HEAD; enough to resolve a commit/tag object.
+	invoke_repo_git fetch origin "$target" 2>/dev/null || true
 	commit=$(invoke_repo_git rev-parse --verify "${target}^{commit}" 2>/dev/null) || {
 		print_i18n_yellow 'update.unknownTarget' 'target' "$target" >&2
 		return 1

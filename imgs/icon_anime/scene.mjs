@@ -4,13 +4,14 @@
 
 import { composeFrame, renderBuffers } from './compose.mjs'
 import {
-	MAT, LIQ_DRAW, createWorld, clearMaterials, clearDynamics, setMat, addLiquid, addMoisture,
-	spawnParticle, queueSplash, stepFluid, labelAirRegions, stepLiquid,
-	windProfileAt, idx, inWorld, isLiquidBarrier, releaseNonSoilWater,
-	soilAbsorbFactor, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, scratch,
+	MAT, LIQ_DRAW, createWorld, clearMaterials, clearDynamics, setMat, addLiquid, addMoisture, addMelt,
+	spawnParticle, queueSplash, stepFluid, labelAirRegions, stepLiquid, stepThermal,
+	windShear, globalWindAt, idx, inWorld, isLiquidBarrier, releaseNonSoilWater,
+	soilAbsorbFactor, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, scratch, applyGravityToWorld, T_AMB,
 } from './fluid/index.mjs'
 import { createLightGesture, tickLightGesture } from './gesture/light.mjs'
 import { createWindGesture, tickWindGesture, fillWindDrive } from './gesture/wind.mjs'
+import { tickGravity } from './gravity.mjs'
 import { hash01 } from './hash.mjs'
 import {
 	ICON_W, ICON_H, ICON_BASE_ROWS, ICON_BASE_X0, ICON_BASE_X1,
@@ -115,6 +116,54 @@ export const createAnimState = (opts = {}) => {
 }
 
 /**
+ * BFS 从保留格向新暴露土壤格传播温度衰减。
+ * @param {FluidWorld} world 流体世界
+ * @param {boolean[]} addedSolid 新暴露格掩码
+ * @returns {void}
+ */
+const seedTempIntoAddedCells = (world, addedSolid) => {
+	const W = world.worldW
+	const queue = []
+	for (let i = 0; i < addedSolid.length; i++) {
+		if (!addedSolid[i]) continue
+		const x = i % W
+		const y = (i / W) | 0
+		let best = T_AMB
+		for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+			const nx = x + ox
+			const ny = y + oy
+			if (!inWorld(world, nx, ny)) continue
+			const ni = ny * W + nx
+			if (addedSolid[ni]) continue
+			best = Math.max(best, world.temp[ni], world.melt[ni] >= 0.05 ? world.temp[ni] : T_AMB)
+		}
+		if (best > T_AMB + 0.05) {
+			world.temp[i] = best * 0.85
+			queue.push(i)
+		}
+	}
+	for (let qi = 0; qi < queue.length; qi++) {
+		const i = queue[qi]
+		const x = i % W
+		const y = (i / W) | 0
+		const t0 = world.temp[i]
+		if (t0 < 0.2) continue
+		const next = t0 * 0.7
+		for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+			const nx = x + ox
+			const ny = y + oy
+			if (!inWorld(world, nx, ny)) continue
+			const ni = ny * W + nx
+			if (!addedSolid[ni]) continue
+			if (next > world.temp[ni] + 0.02) {
+				world.temp[ni] = next
+				queue.push(ni)
+			}
+		}
+	}
+}
+
+/**
  * 围绕图标调整尺寸，保留既有地形/动力学，仅为新暴露区域生成地形。
  * 新土壤初始为雨饱和并短暂沉降。
  * @param {AnimState} state 动画状态
@@ -144,20 +193,29 @@ export const resizeAnimState = (state, { width, height }) => {
 		for (let x = 0; x < old.worldW; x++) {
 			const oi = y * old.worldW + x
 			const amt = old.liq[oi]
+			const meltAmt = old.melt[oi]
 			const moist = old.moisture[oi]
 			const cond = old.condense[oi]
-			if (amt < 0.05 && moist < 0.02 && cond < 0.02) continue
+			const cellTemp = old.temp[oi]
+			if (amt < 0.05 && meltAmt < 0.05 && moist < 0.02 && cond < 0.02 && cellTemp <= T_AMB + 0.02) continue
 			const nx = (x + shiftX) | 0
 			const ny = (y + shiftY) | 0
 			if (!inWorld(newWorld, nx, ny)) continue
 			if (amt >= 0.05 && !terrain.solid[ny * newWorld.worldW + nx])
 				addLiquid(newWorld, nx, ny, amt)
+			if (meltAmt >= 0.05)
+				addMelt(newWorld, nx, ny, meltAmt, cellTemp)
+			else if (cellTemp > T_AMB + 0.02)
+				newWorld.temp[idx(newWorld, nx, ny)] = Math.max(newWorld.temp[idx(newWorld, nx, ny)], cellTemp)
 			if ((moist > 0.02 || cond > 0.02) && terrain.solid[ny * newWorld.worldW + nx]) {
 				const ni = idx(newWorld, nx, ny)
 				newWorld.moisture[ni] = Math.min(SOIL_CAP, newWorld.moisture[ni] + moist)
 				newWorld.condense[ni] += cond
+				newWorld.temp[ni] = Math.max(newWorld.temp[ni], cellTemp)
 			}
 		}
+
+	seedTempIntoAddedCells(newWorld, addedSolid)
 
 	const src = old.particles
 	for (let i = 0; i < src.count; i++) {
@@ -187,6 +245,7 @@ export const resizeAnimState = (state, { width, height }) => {
 	if (hasAddedSoil)
 		for (let tick = 0; tick < RESIZE_WEATHER_TICKS; tick++) {
 			labelAirRegions(newWorld)
+			stepThermal(newWorld)
 			stepLiquid(newWorld)
 		}
 	return state
@@ -466,7 +525,52 @@ const onParticleHit = (world, x, y, m, particle, wet, state) => {
 }
 
 /**
- * 降雨活跃时，在逐渐变宽的中心带生成雨粒子。
+ * 四边出雨权重（source 角色）。导出供测试。
+ * @param {number} gx 单位重力 x
+ * @param {number} gy 单位重力 y
+ * @returns {{ nx: number, ny: number, w: number }[]} 边权重
+ */
+export const rainEdgeWeights = (gx, gy) => {
+	const edges = [
+		{ nx: 0, ny: -1, w: 0 }, // top
+		{ nx: 0, ny: 1, w: 0 }, // bottom
+		{ nx: -1, ny: 0, w: 0 }, // left
+		{ nx: 1, ny: 0, w: 0 }, // right
+	]
+	for (const e of edges) {
+		const dot = e.nx * gx + e.ny * gy
+		// source = max(0, −n̂·ĝ); sink edge never rains
+		e.w = Math.max(0, -dot)
+	}
+	// Side edges get a small base so left/right can randomly rain under default g.
+	const top = edges.find(e => e.ny < 0)
+	if (top && top.w > 0.5) {
+		edges[2].w = Math.max(edges[2].w, 0.12)
+		edges[3].w = Math.max(edges[3].w, 0.12)
+	}
+	return edges
+}
+
+/**
+ * 按权重随机选边。
+ * @param {{ nx: number, ny: number, w: number }[]} edges 边
+ * @param {number} u [0,1) 随机
+ * @returns {{ nx: number, ny: number, w: number }} 选中边
+ */
+export const pickRainEdge = (edges, u) => {
+	let sum = 0
+	for (const e of edges) sum += e.w
+	if (sum <= 1e-8) return edges[0]
+	let t = u * sum
+	for (const e of edges) {
+		t -= e.w
+		if (t <= 0) return e
+	}
+	return edges[0]
+}
+
+/**
+ * 降雨活跃时，从重力「天空」边（及随机侧边）生成雨粒子。
  * @param {AnimState} state 动画状态
  * @returns {void}
  */
@@ -474,20 +578,45 @@ const spawnRain = (state) => {
 	const { world, frame, rainUntil, width, height, seed } = state
 	if (frame > rainUntil) return
 
-	const unlock = Math.min(1, frame / Math.max(18, height * 0.55))
-	const cols = Math.max(1, Math.floor(width * unlock))
-	const x0 = world.ox + Math.floor((width - cols) / 2)
+	const g = world.gravity
+	const edges = rainEdgeWeights(g.gx, g.gy)
+	const unlock = Math.min(1, frame / Math.max(18, Math.max(width, height) * 0.55))
 	const budget = Math.max(1, Math.floor(1 + unlock * 2.5))
-	const skyWind = windProfileAt(0, world.worldH, frame, seed)
+	const depthSpan = world.gravityDepthSpan || Math.max(world.worldW, world.worldH)
+	const skyWind = globalWindAt(frame, seed) * windShear(0, depthSpan)
 
 	for (let i = 0; i < budget; i++) {
 		if (hash01(frame, i + 17) > 0.4 + unlock * 0.4) continue
-		const lx = (hash01(frame * 3, i) * cols) | 0
-		const x = x0 + lx + hash01(frame, i + 2) * 0.8
+		const edge = pickRainEdge(edges, hash01(frame, i + 3))
+		if (edge.w <= 0) continue
+
+		const span = edge.ny !== 0
+			? Math.max(1, Math.floor(width * unlock))
+			: Math.max(1, Math.floor(height * unlock))
+		const along = (hash01(frame * 3, i) * span) | 0
+		const alongJitter = hash01(frame, i + 2) * 0.8
+		const alongAxisIsX = edge.ny !== 0
+		const spanOrigin = alongAxisIsX
+			? world.ox + Math.floor((width - span) / 2)
+			: Math.floor((height - span) / 2)
+		const normalJitter = hash01(frame, i + 9) * 1.5
+		let x
+		let y
+		if (alongAxisIsX) {
+			x = spanOrigin + along + alongJitter
+			y = edge.ny < 0 ? -normalJitter : world.worldH + normalJitter
+		}
+		else {
+			x = edge.nx < 0 ? -normalJitter : world.worldW + normalJitter
+			y = spanOrigin + along + alongJitter
+		}
+
 		const heavy = hash01(frame, i + 11) > 0.45
-		spawnParticle(world, x, -hash01(frame, i + 9) * 1.5,
-			skyWind * 0.55 + (hash01(frame, i) - 0.5) * 0.04,
-			0.35 + hash01(x | 0, 1) * 0.4,
+		const speed = 0.35 + hash01((x | 0) + (y | 0), 1) * 0.4
+		const jitter = (hash01(frame, i) - 0.5) * 0.04
+		spawnParticle(world, x, y,
+			g.gx * speed + skyWind * 0.25 * (1 - Math.abs(g.gx)) + jitter,
+			g.gy * speed + (Math.abs(g.gy) < 0.2 ? 0.2 : 0),
 			70,
 			heavy ? 0.55 + hash01(frame, i + 13) * 0.45 : 0.12 + hash01(frame, i + 13) * 0.32,
 		)
@@ -503,6 +632,7 @@ const simFrame = (state) => {
 	rebuildMaterials(state)
 	tickWindGesture(state.wind)
 	tickLightGesture(state.light)
+	applyGravityToWorld(state.world, tickGravity())
 	const { world } = state
 	/** @type {Float32Array | undefined} */
 	let driveUx

@@ -376,6 +376,7 @@
 				"localBranchAhead": "The local branch is ahead of the remote branch. No updates required.",
 				"branchesDiverged": "The local and remote branches have been forked. Forced update in progress...",
 				"notOnBranch": "Not on the branch, switch to 'master'...",
+				"upstreamGoneFallbackMaster": "Remote branch '${branch}' has been deleted; tracking master instead…",
 				"noUpstreamBranch": "Warning: No upstream branch configured for branch '${branch}', use '${remote}'.",
 				"dirtyWorkingDirectory": "Warning: The working directory is not clean. Please stage or commit your changes before updating.",
 				"notInstalled": "Git is not installed, trying to install...",

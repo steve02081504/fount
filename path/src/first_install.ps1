@@ -7,7 +7,7 @@
 			if (Get-Command git -ErrorAction Ignore) {
 				invoke_repo_git config core.autocrlf false
 				$hasHead = git_ref_exists
-				invoke_repo_git fetch origin 2>$null
+				git_fetch_origin 2>$null
 				$fetchOk = ($LastExitCode -eq 0)
 				if ((git_ref_exists 'origin/master') -and ($hasHead -or $fetchOk)) {
 					git_sync_to_ref 'origin/master'

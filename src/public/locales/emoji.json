@@ -381,6 +381,7 @@
 				"localBranchAhead": "🏠🌳 > ☁️🌳 ✅",
 				"branchesDiverged": "🔀 🌳 ‼️ ➡️ 💪🔄",
 				"notOnBranch": "🤷‍♂️🌳 ➡️ 'master'",
+				"upstreamGoneFallbackMaster": "🗑️ ☁️🌳 '${branch}' ➡️ 🔗 'master'",
 				"noUpstreamBranch": "⚠️ branch '${branch}' no upstream, using '${remote}'",
 				"dirtyWorkingDirectory": "⚠️ 📁💩",
 				"notInstalled": "❓ 🐙🐱 ➡️ 📥",

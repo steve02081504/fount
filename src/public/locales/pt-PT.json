@@ -381,6 +381,7 @@
 				"localBranchAhead": "A filial local está à frente da filial remota. Não são necessárias atualizações.",
 				"branchesDiverged": "As filiais locais e remotas foram bifurcadas. Atualização forçada em andamento...",
 				"notOnBranch": "Fora do branch, mude para 'master'...",
+				"upstreamGoneFallbackMaster": "O ramo remoto «${branch}» foi eliminado; a seguir master em alternativa…",
 				"noUpstreamBranch": "Aviso: sem ramo upstream configurado para '${branch}', a usar '${remote}'.",
 				"dirtyWorkingDirectory": "Aviso: o diretório de trabalho não está limpo. Prepare ou confirme suas alterações antes de atualizar.",
 				"notInstalled": "Git não está instalado, tentando instalar...",

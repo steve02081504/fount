@@ -381,6 +381,7 @@
 				"localBranchAhead": "Chi nhánh địa phương đi trước chi nhánh từ xa. Không cần cập nhật.",
 				"branchesDiverged": "Các chi nhánh địa phương và từ xa đã được phân nhánh. Đang cập nhật bắt buộc...",
 				"notOnBranch": "Không ở trên nhánh, chuyển sang 'master'...",
+				"upstreamGoneFallbackMaster": "Nhánh từ xa '${branch}' đã bị xóa; đang theo dõi master thay thế…",
 				"noUpstreamBranch": "Cảnh báo: Không có nhánh ngược dòng nào được định cấu hình cho nhánh '${branch}', hãy sử dụng '${remote}'.",
 				"dirtyWorkingDirectory": "Cảnh báo: Thư mục làm việc không sạch sẽ. Vui lòng stage hoặc commit các thay đổi của bạn trước khi cập nhật.",
 				"notInstalled": "Git chưa được cài đặt, đang cố gắng cài đặt...",
