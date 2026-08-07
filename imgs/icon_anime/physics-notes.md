@@ -16,7 +16,8 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 - Air labels double-buffer `regionId` via `scratch.prevRegionId`; regions pooled + id-indexed; Boyle overlap = packed-key Map (sealed only).
 - Liquid settle orders cells deep→shallow by projected depth (counting-sort buckets). Pressure cache refresh walks a gravity line (DDA) after transfers.
 - Hydraulic equalize: SoA scratch; generation stamp on `liqHydroVisit` (no whole-grid `dist.fill`); surfaces contiguous by component (no `Map`).
-- Material rebuild keyed by packed `matKey`; hold frames skip it. `BODY` cells are parallel `Uint8Array`s (`x`/`y`/`d`). Particles are SoA pools.
+- Material rebuild keyed by packed `matKey`; hold frames skip it. Rebuild clears only icon mats (`BODY`/`POOL`/`SLOPE_*`), then re-applies `terrain.solid` soil. `BODY` cells are parallel `Uint8Array`s (`x`/`y`/`d`). Particles are SoA pools.
+- Melt↔soil flips set `soilGeomDirty`; `syncTerrainFromSoil` updates `terrain.solid` and refreshes surface/outline so compose edges match new crust.
 - Compose: one pass over view cells; ANSI joins same-SGR runs; torch quantizes lift + caches truecolor SGR; ripple-only frames skip `sampleLight` outside ring pads. Player `paint` homes cursor only (`\x1b[H`) — full viewport, no Erase display.
 - Pointer wind: fill `driveUx`/`driveUy` only while right button down; clear previous dirty rect only; stroke segments pooled.
 
@@ -64,7 +65,7 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 - `POOL` retains fill and spills/leaks; `BODY` is splash-only barrier; pillars are not materials.
 - Soil: absorb diminishes as cell wets (`soilAbsorbFactor`); rain hits sink only `SOIL_HIT_ABSORB_FRAC`. Seepage slow enough for surface puddles. Sideways share + prefer below (gravity-weighted); air below → underside `condense`; Matthew along ĝ⊥; `COND_DRAW` / `COND_DRIP` thresholds. When ĝ leaves an open underside, condense reabsorbs into moisture (excess spills to ortho air). Compose drips via `condenseDripSource` (gravity-up soil), not screen-Y. Heating evaporates moisture before melt.
 - Material rebuild clears labels only; `releaseNonSoilWater` dumps moisture/condense from non-soil into free liquid so `POOL` overwrite does not erase water.
-- `exit` stops when the icon is gone — no rain/liquid drain wait.
+- `exit` freezes fluid (compose-only icon teardown) so solidified land / beads stay until the final blank; then `clearDynamics`.
 
 ## Pointer light
 

@@ -4,10 +4,11 @@
 
 import { composeFrame, renderBuffers } from './compose.mjs'
 import {
-	MAT, LIQ_DRAW, createWorld, clearMaterials, clearDynamics, setMat, addLiquid, addMoisture, addMelt,
+	MAT, LIQ_DRAW, createWorld, clearDynamics, setMat, addLiquid, addMoisture, addMelt,
 	spawnParticle, queueSplash, stepFluid, labelAirRegions, stepLiquid, stepThermal,
 	windShear, globalWindAt, idx, inWorld, isLiquidBarrier, releaseNonSoilWater,
 	soilAbsorbFactor, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, scratch, applyGravityToWorld, T_AMB,
+	isSoilMat,
 } from './fluid/index.mjs'
 import { createLightGesture, tickLightGesture } from './gesture/light.mjs'
 import { createWindGesture, tickWindGesture, fillWindDrive } from './gesture/wind.mjs'
@@ -18,7 +19,7 @@ import {
 	BODY, maxBodyD, maxPillarH,
 } from './icon.mjs'
 import { terminalSize } from './player.mjs'
-import { generateTerrain, resizeTerrain } from './terrain.mjs'
+import { generateTerrain, resizeTerrain, refreshTerrainGeometry } from './terrain.mjs'
 
 /** @typedef {ReturnType<typeof createAnimState>} AnimState */
 /** @typedef {ReturnType<typeof createWorld>} FluidWorld */
@@ -248,6 +249,7 @@ export const resizeAnimState = (state, { width, height }) => {
 			stepThermal(newWorld)
 			stepLiquid(newWorld)
 		}
+	syncTerrainFromSoil(state)
 	return state
 }
 
@@ -292,6 +294,52 @@ const paintBaseMats = (state) => {
 }
 
 /**
+ * 仅清除图标材质（BODY / POOL / SLOPE），保留土壤与 SEAL。
+ * @param {FluidWorld} world 流体世界
+ * @returns {void}
+ */
+const clearIconMats = (world) => {
+	const { mat } = world
+	let touched = false
+	for (let i = 0; i < mat.length; i++) {
+		const m = mat[i]
+		if (m !== MAT.BODY && m !== MAT.POOL && m !== MAT.SLOPE_L && m !== MAT.SLOPE_R) continue
+		mat[i] = MAT.AIR
+		touched = true
+	}
+	if (!touched) return
+	world.airDirty = true
+	world.gasGeomDirty = true
+}
+
+/**
+ * 熔岩凝固 / 土壤熔化后把 `mat` 写回 `terrain.solid`，并重算地表与轮廓。
+ * POOL/BODY/SLOPE 下的 solid 位保留（图标盖住的地壳）；仅 AIR↔土壤翻转。
+ * @param {AnimState} state 动画状态
+ * @returns {void}
+ */
+const syncTerrainFromSoil = (state) => {
+	const { world, terrain } = state
+	if (!world.soilGeomDirty) return
+	world.soilGeomDirty = false
+	const { mat } = world
+	const { solid } = terrain
+	let changed = false
+	for (let i = 0; i < solid.length; i++) {
+		if (isSoilMat(mat[i])) {
+			if (solid[i]) continue
+			solid[i] = 1
+			changed = true
+		}
+		else if (mat[i] === MAT.AIR && solid[i]) {
+			solid[i] = 0
+			changed = true
+		}
+	}
+	if (changed) refreshTerrainGeometry(terrain)
+}
+
+/**
  * 在 [bodyMinD, bodyReach] 范围内将体素格绘制为 BODY。
  * @param {AnimState} state 动画状态
  * @returns {void}
@@ -315,7 +363,7 @@ const matStageKey = (state) =>
 	state.baseBot | (state.baseTop << 6) | ((state.bodyReach + 1) << 12) | (state.bodyMinD << 20) | (+state.softBase << 28)
 
 /**
- * 打包阶段键变化时重建材质网格。
+ * 打包阶段键变化时重建图标材质；土壤由 terrain.solid 补回（含凝固熔岩）。
  * @param {AnimState} state 动画状态
  * @returns {void}
  */
@@ -323,7 +371,7 @@ const rebuildMaterials = (state) => {
 	const key = matStageKey(state)
 	if (state.matKey === key) return
 	state.matKey = key
-	clearMaterials(state.world)
+	clearIconMats(state.world)
 	applyTerrain(state)
 	if (state.baseBot > 0 || state.baseTop > 0) paintBaseMats(state)
 	paintBodyMats(state)
@@ -668,6 +716,7 @@ const simFrame = (state) => {
 	opts.driveUx = driveUx
 	opts.driveUy = driveUy
 	stepFluid(world, opts)
+	syncTerrainFromSoil(state)
 	const { iconOx, iconOy } = state
 	for (const ly of ICON_BASE_ROWS) {
 		const y = iconOy + ly
@@ -684,16 +733,21 @@ const simFrame = (state) => {
 }
 
 /**
- * 显示一帧的软边标志，然后推进帧计数。
+ * 写软边标志并产出一帧；`simulate` 为 false 时只合成（退场冻结流体）。
  * @param {AnimState} state 动画状态
  * @param {SoftOpts} [soft] 软边选项
+ * @param {boolean} [simulate=true] 是否推进流体
  * @returns {Generator<string, void, unknown>} 一帧 ANSI
  */
-function* show(state, soft = {}) {
+function* show(state, soft = {}, simulate = true) {
 	state.softBase = !!soft.softBase
 	state.softPillars = !!soft.softPillars
 	state.softBody = !!soft.softBody
-	yield simFrame(state)
+	if (simulate) yield simFrame(state)
+	else {
+		rebuildMaterials(state)
+		yield composeFrame(state)
+	}
 	state.frame++
 }
 
@@ -739,7 +793,7 @@ export function* hold(state = createAnimState()) {
 }
 
 /**
- * 拆解体 → 柱 → 底座，然后清空动力学。
+ * 拆解体 → 柱 → 底座；背景（地形 / 水珠 / 熔岩）冻结为退场前画面。
  * @param {AnimState} [state] 动画状态
  * @returns {Generator<string, void, unknown>} 退场帧
  */
@@ -751,7 +805,7 @@ export function* exit(state = createAnimState()) {
 		const reach = state.bodyReach
 		for (let gone = 0; gone <= reach + 1; gone++) {
 			state.bodyMinD = gone
-			yield* show(state, { softBody: gone <= reach })
+			yield* show(state, { softBody: gone <= reach }, false)
 		}
 		state.bodyReach = -1
 		state.bodyMinD = 0
@@ -762,11 +816,11 @@ export function* exit(state = createAnimState()) {
 		for (let g = from; g >= 0; g--) {
 			state.pillars = g
 			if (g > 0) {
-				yield* show(state, { softPillars: true })
-				yield* show(state, { softPillars: false })
+				yield* show(state, { softPillars: true }, false)
+				yield* show(state, { softPillars: false }, false)
 			}
 			else
-				yield* show(state)
+				yield* show(state, {}, false)
 		}
 	}
 
@@ -774,7 +828,7 @@ export function* exit(state = createAnimState()) {
 		const from = Math.max(state.baseBot, state.baseTop)
 		for (let n = from; n >= 1; n--) {
 			state.baseBot = state.baseTop = n
-			yield* show(state, { softBase: n < BASE_WIDTH })
+			yield* show(state, { softBase: n < BASE_WIDTH }, false)
 		}
 		state.baseBot = state.baseTop = 0
 	}

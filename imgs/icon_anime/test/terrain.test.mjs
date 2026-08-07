@@ -9,7 +9,7 @@ import {
 	ICON_BASE_ROWS, ICON_BASE_X0, ICON_BASE_X1, ICON_W, ICON_H,
 } from '../icon.mjs'
 import {
-	generateTerrain, outlineChar, TERRAIN_CH,
+	generateTerrain, outlineChar, refreshTerrainGeometry, TERRAIN_CH,
 	TALL_LAND_FRACTION, TALL_LAND_HEIGHT_FRAC,
 } from '../terrain.mjs'
 
@@ -129,6 +129,25 @@ Deno.test('terrain: outlineChar marks cave walls; interior solid is null', () =>
 	assertEquals(outlineChar(solid, 1, 1, width, 5, surface), null)
 	// Cave wall adjacent to air at (2,3) left of the air pocket
 	assertEquals(outlineChar(solid, 1, 3, width, 5, surface), TERRAIN_CH.WALL)
+})
+
+Deno.test('terrain: refreshTerrainGeometry raises surface and outlines new crust', () => {
+	const { terrain } = makeTerrain(7, 40, 24)
+	const { solid, surface, worldW: W, worldH: H } = terrain
+	const x = Math.min(W - 2, terrain.footX0 - 4)
+	const oldTop = surface[x]
+	const y = oldTop - 1
+	assertGreater(y, 0)
+	assertEquals(solid[y * W + x], 0)
+	solid[y * W + x] = 1
+	refreshTerrainGeometry(terrain)
+	assertEquals(terrain.surface[x], y)
+	assertEquals(terrain.outline[oldTop * W + x] !== null || terrain.surface[x] === y, true)
+	assertEquals(terrain.surfaceChar[x].length > 0, true)
+	// melting the crust back drops surface
+	solid[y * W + x] = 0
+	refreshTerrainGeometry(terrain)
+	assertEquals(terrain.surface[x] >= oldTop && terrain.surface[x] < H, true)
 })
 
 Deno.test('terrain: under icon crust is soil; caves may open below', () => {

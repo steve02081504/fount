@@ -4,12 +4,54 @@
 /* global Deno */
 import { assert, assertEquals, assertGreater } from 'jsr:@std/assert'
 
-import { MAT, addLiquid, spawnParticle, idx } from '../fluid/index.mjs'
+import {
+	MAT, LIQ_DRAW, T_SOLIDUS, addLiquid, addMelt, addMoisture, spawnParticle, idx,
+	isSoilMat,
+} from '../fluid/index.mjs'
 import {
 	createAnimState, resizeAnimState, enter, hold, exit, renderGrid,
 	ICON_W, ICON_H, ICON_PACK_H, ICON_BASE_ROWS, ICON_BASE_X0, ICON_BASE_X1,
 	maxBodyD, maxPillarH,
 } from '../index.mjs'
+
+/**
+ * 剥掉 ANSI，得到纯字符网格。
+ * @param {string} frame ANSI 帧
+ * @param {number} width 列数
+ * @param {number} height 行数
+ * @returns {string[]} 每行纯文本
+ */
+const plainLines = (frame, width, height) => {
+	const lines = frame.split('\n')
+	assertEquals(lines.length, height)
+	return lines.map(line => {
+		const plain = line.replace(/\x1b\[[\d;]*m/g, '')
+		assertEquals(plain.length, width)
+		return plain
+	})
+}
+
+/**
+ * 在图标外侧找一列「地表上一格空气」，用于堆凝固熔岩。
+ * @param {ReturnType<typeof createAnimState>} state 动画状态
+ * @returns {{ x: number, y: number, cell: number }} 世界坐标与扁平索引
+ */
+const airAboveLandAwayFromIcon = (state) => {
+	const { terrain, world, iconOx } = state
+	const W = world.worldW
+	for (const x of [terrain.footX0 - 6, terrain.footX1 + 5, world.ox + 4]) {
+		if (x < 1 || x >= W - 1) continue
+		if (x >= iconOx - 1 && x < iconOx + ICON_W + 1) continue
+		const surfaceY = terrain.surface[x]
+		const y = surfaceY - 1
+		if (y < 1) continue
+		const cell = y * W + x
+		if (terrain.solid[cell] || world.mat[cell] !== MAT.AIR) continue
+		if (!terrain.solid[surfaceY * W + x]) continue
+		return { x, y, cell }
+	}
+	throw new Error('no air-above-land cell')
+}
 
 Deno.test('layout: ICON_W matches packed bitmap', () => {
 	assertEquals(ICON_W, 42)
@@ -61,6 +103,73 @@ Deno.test('exit: ends when icon gone without draining rain wait', () => {
 	assertEquals(lines[0].replace(/\x1b\[[\d;]*m/g, '').length, state.width)
 	// exit must be shorter than old 90-frame drain budget
 	assert(frames < 90 + maxBodyD + maxPillarH * 2 + (ICON_BASE_X1 - ICON_BASE_X0))
+})
+
+Deno.test('lava: solidify bakes into terrain surface/outline (not orphan land)', () => {
+	const state = createAnimState({ width: 60, height: 30, seed: 17 })
+	for (const _ of enter(state));
+	const spot = airAboveLandAwayFromIcon(state)
+	const { world, terrain, width, height } = state
+	addMelt(world, spot.x, spot.y, 1, T_SOLIDUS - 0.05)
+	assertEquals(terrain.solid[spot.cell], 0)
+
+	const gen = hold(state)
+	const frame = gen.next().value
+	gen.return?.()
+
+	assertEquals(isSoilMat(world.mat[spot.cell]), true)
+	assertEquals(terrain.solid[spot.cell], 1)
+	assertEquals(terrain.surface[spot.x], spot.y)
+	assertEquals(world.melt[spot.cell] < LIQ_DRAW, true)
+
+	const lines = plainLines(frame, width, height)
+	const vx = spot.x - world.ox
+	const glyph = lines[spot.y][vx]
+	assertEquals(glyph === ' ', false, `solidified land should draw, got ${JSON.stringify(glyph)}`)
+})
+
+Deno.test('exit: keeps solidified land and beads until final blank', () => {
+	const state = createAnimState({ width: 60, height: 30, seed: 19 })
+	for (const _ of enter(state));
+	const spot = airAboveLandAwayFromIcon(state)
+	const { world, terrain, width, height } = state
+	addMelt(world, spot.x, spot.y, 1, T_SOLIDUS - 0.05)
+	const gen = hold(state)
+	gen.next()
+	gen.return?.()
+
+	assertEquals(terrain.solid[spot.cell], 1)
+	addMoisture(world, spot.x, spot.y, 0.55)
+	world.condense[spot.cell] = 0.45
+	const dripY = spot.y + 1
+	const dripCell = dripY * world.worldW + spot.x
+	if (dripY < world.worldH && world.mat[dripCell] === MAT.AIR)
+		addLiquid(world, spot.x, dripY, 0.4)
+
+	const water0 = world.moisture[spot.cell] + world.condense[spot.cell]
+	assertGreater(water0, 0.5)
+
+	let lastLandFrame = ''
+	let frames = 0
+	for (const frame of exit(state)) {
+		frames++
+		// 退场冻结流体：凝固土地与水珠应原样保留到清屏前
+		if (state.baseBot > 0 || state.pillars > 0 || state.bodyReach >= 0) {
+			assertEquals(terrain.solid[spot.cell], 1, `land solid lost at frame ${frames}`)
+			assertEquals(isSoilMat(world.mat[spot.cell]), true, `land mat lost at frame ${frames}`)
+			assertEquals(
+				world.moisture[spot.cell] + world.condense[spot.cell],
+				water0,
+				`soil water changed at frame ${frames}`,
+			)
+			lastLandFrame = frame
+		}
+	}
+	assertGreater(frames, 5)
+	assertEquals(lastLandFrame.length > 0, true)
+	const lines = plainLines(lastLandFrame, width, height)
+	const vx = spot.x - world.ox
+	assertEquals(lines[spot.y][vx] === ' ', false, 'land glyph missing on last icon frame')
 })
 
 Deno.test('hold: yields at least one frame', () => {

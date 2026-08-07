@@ -706,6 +706,27 @@ function buildOutline(solid, surface, W, H) {
 }
 
 /**
+ * 由 `solid` 重算每列地表行、地表字符与轮廓（熔岩凝固 / 土壤熔化后调用）。
+ * 空列 `surface = H`（界外哨兵，不绘制地表）。
+ * @param {TerrainData} terrain 地形（原地更新）
+ * @returns {void}
+ */
+export function refreshTerrainGeometry(terrain) {
+	const { solid, worldW: W, worldH: H, surface } = terrain
+	for (let x = 0; x < W; x++) {
+		let top = H
+		for (let y = 0; y < H; y++)
+			if (solid[y * W + x]) {
+				top = y
+				break
+			}
+		surface[x] = top
+	}
+	terrain.surfaceChar = buildSurfaceChars(surface, W)
+	terrain.outline = buildOutline(solid, surface, W, H)
+}
+
+/**
  * 固体格可见轮廓（邻空气）字符。
  * 内部固体返回 null（不绘制）。
  * @param {Uint8Array} solid 扁平固体掩码

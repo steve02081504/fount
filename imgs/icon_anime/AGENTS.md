@@ -42,7 +42,7 @@ Controls: Ctrl+C or hold Esc ≥4s exits (teardown plays farewell exit, then qui
 | `gravity.mjs` | Gravity **processing** (smooth unit vector `{gx,gy,mag}`); loads acquire backend |
 | `gravity_acquire/` | Signal **acquisition**: `browser` (GravitySensor → DeviceMotionEvent) / `termux` / `none` |
 | `icon.mjs` | Packed silhouette, pillars, body growth order |
-| `scene.mjs` | Anim state, materials, rain edges, pool leak, enter/hold/exit, resize |
+| `scene.mjs` | Anim state, materials, rain edges, pool leak, enter/hold/exit (exit freezes fluid), resize |
 | `compose.mjs` | Frame paint + ANSI; lava palette; pointer torch/ripples |
 | `player.mjs` | TUI singleton: `canUseTui`, play/loop, mouse, alt-screen, console block |
 | `terminal.mjs` | `canUseTui` (TTY + ANSI); consumed only by `player.mjs` |
@@ -76,7 +76,7 @@ Open-stage: ungrown base columns do not splash — rain falls through until it h
 - **Viscosity ladder** is the sole branch knob: `≤ VISC_INERTIAL` → inertial gas velocity; `< VISC_SOLID` → Stokes mass flux; `≥ VISC_SOLID` → frozen.
 - Water mass = `liq + moisture + condense + particles` (`totalWorldWater`); melt is separate. Closed transfers conserve; intentional sinks are world-edge / down-edge wipe / BODY impact. Particle expiry deposits back.
 - Soil condense hangs on the gravity-down face; when ĝ leaves that open underside it reabsorbs into moisture. Drip glyphs follow `condenseDripSource` (ĝ), not screen-down.
-- Terrain is **pedestal-anchored**; ungrown base keeps `HORIZON` until `POOL`/`SLOPE_*` overwrite. Resize shifts retained dynamics with the icon. New/expanded soil stays dry (no ambient `SOIL_CAP` fill — that would spring under inverted ĝ).
+- Terrain is **pedestal-anchored**; ungrown base keeps `HORIZON` until `POOL`/`SLOPE_*` overwrite. Resize shifts retained dynamics with the icon. New/expanded soil stays dry (no ambient `SOIL_CAP` fill — that would spring under inverted ĝ). Melt solidify/melt updates `terrain.solid` + outline so new crust shares edges with old land.
 - Gravity is a continuous unit vector everywhere (particles + grid). Depth = projection on ĝ; neighbor transfer uses weights `max(0, d̂·ĝ)`.
 - Four edges hold fractional roles `sink/source/wrap` from `n̂·ĝ` (sum to 1). Lava onset is **exposure work** `exposure[e] = max(0, exposure[e] + n̂·ĝ)` with decay when flipped (≥ `LAVA_ONSET_EXPOSURE`); 45° → two edges each need ~13·√2 s. Condensed-phase edge sinks must not read OOB cells (ambient `P_ATM`) — otherwise melt goes `NaN` and `max(NaN, inject)` never recovers.
 - Gravity acquire: `document` → browser APIs; Termux → `termux-sensor` (pretty JSON indent=2, `parseSensorStdout`); else no-op. path CLI installs `termux-api` on `fount logo` / `log` / `server` when missing. Termux stop **must** `termux-sensor -c` *before* killing the stream CLI — SensorAPI only unregisters while `outputWriter` is alive; kill-first leaves listeners stuck in Termux:API (force-stop both apps to recover). Upstream: [termux-api#902](https://github.com/termux/termux-api/issues/902).

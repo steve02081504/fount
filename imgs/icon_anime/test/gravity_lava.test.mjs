@@ -345,11 +345,14 @@ Deno.test('thermal: dry hot soil melts; cool melt solidifies', () => {
 	stepThermal(world)
 	assertGreater(world.melt[3 * 6 + 2], 0.5)
 	assertEquals(world.mat[3 * 6 + 2], MAT.AIR)
+	assertEquals(world.soilGeomDirty, true)
 
+	world.soilGeomDirty = false
 	world.temp[3 * 6 + 2] = T_SOLIDUS - 0.1
 	stepThermal(world)
 	assertLess(world.melt[3 * 6 + 2], LIQ_DRAW)
 	assertEquals(world.mat[3 * 6 + 2] === MAT.SOLID || world.mat[3 * 6 + 2] === MAT.HORIZON, true)
+	assertEquals(world.soilGeomDirty, true)
 })
 
 Deno.test('thermal: soil moisture evaporates before melt', () => {
