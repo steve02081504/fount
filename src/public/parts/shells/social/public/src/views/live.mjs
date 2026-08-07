@@ -7,6 +7,7 @@ import { createSnapCursorFeed } from '../lib/snapCursorFeed.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 import { activateView } from '../viewChrome.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { joinAvRelayRoom } from '/parts/shells:chat/shared/avRelayClient.mjs'
 import { mountVoiceRing } from '/parts/shells:chat/shared/voiceRing.mjs'
 import { themeColorForEntity } from '/parts/shells:chat/shared/themeColor.mjs'
@@ -29,7 +30,8 @@ const liveFeed = createSnapCursorFeed({
 		try {
 			return await getLiveFeed({ scope: liveScope, cursor })
 		}
-		catch {
+		catch (error) {
+			handleError('social.live.loadFailed', {}, error)
 			return null
 		}
 	},
@@ -140,7 +142,8 @@ export async function loadLiveView(targetEntityHash, targetLiveId) {
 	try {
 		data = await getLiveFeed({ scope: liveScope })
 	}
-	catch {
+	catch (error) {
+		handleError('social.live.loadFailed', {}, error)
 		data = { items: [], nextCursor: null }
 	}
 	const items = data.items || []
@@ -269,8 +272,7 @@ function ensureLiveConnected(slide, mode) {
 					}
 				},
 			})
-			const current = slideConnections.get(slide)
-			if (!current || current !== conn) {
+			if (slideConnections.get(slide) !== conn) {
 				session.close()
 				return
 			}
@@ -278,8 +280,8 @@ function ensureLiveConnected(slide, mode) {
 			if (mode === 'full' || session.getMode?.() === 'full')
 				slide.querySelector('.live-placeholder')?.classList.add('hidden')
 		}
-		catch {
-			/* keep placeholder */
+		catch (error) {
+			handleError('social.live.joinFailed', {}, error)
 		}
 	})()
 }

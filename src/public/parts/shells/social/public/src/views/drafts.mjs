@@ -12,15 +12,14 @@ import { buildEmptyState } from '../lib/emptyState.mjs'
 export async function loadDrafts() {
 	const panel = document.getElementById('draftsPanel')
 	if (!panel) return
-	let data
+	let drafts
 	try {
-		data = await getDrafts()
+		;({ drafts } = await getDrafts())
 	}
 	catch (error) {
 		handleError('social.drafts.loadFailed', {}, error)
 		return
 	}
-	const drafts = Array.isArray(data.drafts) ? data.drafts : []
 	if (!drafts.length) {
 		panel.replaceChildren(await buildEmptyState({
 			modClass: ' empty-state--saved empty-state--compact',

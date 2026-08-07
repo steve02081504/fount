@@ -4319,7 +4319,8 @@
 			"post_note": "${author} added a note to your post",
 			"live_started": "${author} started live streaming",
 			"view": "View",
-			"markAllRead": "Mark all as read"
+			"markAllRead": "Mark all as read",
+			"loadFailed": "Failed to load notifications: ${error}"
 		},
 		"saved": {
 			"all": "All",
@@ -4370,6 +4371,7 @@
 		},
 		"profile": {
 			"edit": "Edit profile",
+			"loadFailed": "Failed to load profile: ${error}",
 			"viewPosts": "View social profiles",
 			"settingsBtn": {
 				"aria-label": "Social settings"
@@ -4437,6 +4439,8 @@
 		},
 		"live": {
 			"empty": "No live broadcast yet",
+			"loadFailed": "Failed to load live feed: ${error}",
+			"joinFailed": "Failed to join live stream: ${error}",
 			"viewers": "${n} people watched",
 			"likes": "${n} Like",
 			"local": "This device",

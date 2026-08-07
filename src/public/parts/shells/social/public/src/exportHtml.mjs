@@ -19,9 +19,12 @@ async function resolveMediaRefAttachments(mediaRefs) {
 	const files = []
 	for (const ref of mediaRefs) 
 		try {
-			const name = ref.name || ref.path?.split('/').pop() || 'media'
 			const { buffer, mimeType } = await fetchMediaRef(ref)
-			files.push({ name, mime_type: String(ref.mimeType || mimeType), buffer: arrayBufferToBase64(buffer) })
+			files.push({
+				name: ref.name || ref.path?.split('/').pop() || 'media',
+				mime_type: String(ref.mimeType || mimeType),
+				buffer: arrayBufferToBase64(buffer),
+			})
 		}
 		catch (error) {
 			handleError('social.post.exportMediaFailed', {}, error)

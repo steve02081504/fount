@@ -311,6 +311,24 @@ export function setNotificationsSeenAt(username, entityHash, at) {
 }
 
 /**
+ * Web Push 触达（不阻塞 inbox 写路径）。
+ * @param {string} username replica
+ * @param {{ title: string, body: string, url: string, tag: string }} payload 通知载荷
+ * @returns {void}
+ */
+function scheduleNotifyUser(username, payload) {
+	void (async () => {
+		try {
+			const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
+			await notifyUser(username, payload)
+		}
+		catch (error) {
+			handleError(error)
+		}
+	})()
+}
+
+/**
  * operator 特别关心作者的新帖：写 care_post inbox 行并触达。
  * @param {string} username replica
  * @param {string} recipientEntityHash 收件人（operator）
@@ -339,18 +357,12 @@ export async function appendCarePostInboxRow(username, recipientEntityHash, auth
 	}
 	await socialInboxStore(username, recipient).append(notification)
 	pushFeedUpdate(username, { type: 'notification', notification })
-	const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
-	try {
-		await notifyUser(username, {
-			title: 'care_post',
-			body: String(textSnippet || 'care_post'),
-			url: '/parts/shells:social/',
-			tag: `social:care_post:${recipient}`,
-		})
-	}
-	catch (error) {
-		handleError(error)
-	}
+	scheduleNotifyUser(username, {
+		title: 'care_post',
+		body: String(textSnippet || 'care_post'),
+		url: '/parts/shells:social/',
+		tag: `social:care_post:${recipient}`,
+	})
 }
 
 /**
@@ -432,18 +444,12 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
 		}
 		await socialInboxStore(username, recipient).append(notification)
 		pushFeedUpdate(username, { type: 'notification', notification })
-		const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
-		try {
-			await notifyUser(username, {
-				title: row.type,
-				body: String(snippet || row.type || ''),
-				url: '/parts/shells:social/',
-				tag: `social:${row.type}:${recipient}`,
-			})
-		}
-		catch (error) {
-			handleError(error)
-		}
+		scheduleNotifyUser(username, {
+			title: row.type,
+			body: String(snippet || row.type || ''),
+			url: '/parts/shells:social/',
+			tag: `social:${row.type}:${recipient}`,
+		})
 	}
 }
 

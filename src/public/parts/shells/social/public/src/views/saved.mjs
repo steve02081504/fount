@@ -58,14 +58,13 @@ export async function openSaveModal(entityHash, postId, button) {
 	select.innerHTML = '<option value="" data-i18n="social.saved.unfiled"></option>'
 	if (modal instanceof HTMLDialogElement) modal.showModal()
 	else modal.classList.remove('hidden')
-	const savedData = await (async () => {
-		try {
-			return await getSavedPosts()
-		}
-		catch {
-			return { folders: {} }
-		}
-	})()
+	let savedData
+	try {
+		savedData = await getSavedPosts()
+	}
+	catch {
+		savedData = { folders: {} }
+	}
 	state.savedFoldersCache = savedData.folders || {}
 	for (const [folderId, folder] of Object.entries(state.savedFoldersCache)) {
 		const option = document.createElement('option')

@@ -4666,7 +4666,7 @@
 			"placeholder": "Escribe una respuesta…",
 			"submit": "responder",
 			"empty": "Aún no hay respuesta",
-			"emptyHint": "Escribamos el primer artículo y comencemos la discusión.",
+			"emptyHint": "Escribamos la primera respuesta y comencemos la discusión.",
 			"loadFailed": "No se pudieron cargar las respuestas: ${error}"
 		},
 		"repost": {

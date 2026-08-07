@@ -4666,7 +4666,7 @@
 			"placeholder": "Skrifaðu svar…",
 			"submit": "Svara",
 			"empty": "Ekkert svar ennþá",
-			"emptyHint": "Við skulum skrifa fyrstu greinina og hefja umræðuna",
+			"emptyHint": "Við skulum skrifa fyrsta svarið og hefja umræðuna",
 			"loadFailed": "Ekki tókst að hlaða svörum: ${error}"
 		},
 		"repost": {

@@ -67,9 +67,9 @@ export async function loadTopicView(tag) {
 		paintTopicFollowButton(followButton, false)
 		void (async () => {
 			try {
-				const data = await getFollowedTopics()
-				const tags = (data.tags || []).map(topicTag => topicTag.toLowerCase())
-				const isFollowed = tags.includes(normalizedTag.toLowerCase())
+				const isFollowed = (await getFollowedTopics()).tags
+					.map(topicTag => topicTag.toLowerCase())
+					.includes(normalizedTag.toLowerCase())
 				paintTopicFollowButton(followButton, isFollowed)
 			}
 			catch (error) {

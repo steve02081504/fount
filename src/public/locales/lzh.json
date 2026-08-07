@@ -4322,7 +4322,8 @@
 			"post_note": "${author} 為君言補訊",
 			"live_started": "${author} 開現影",
 			"view": "查看",
-			"markAllRead": "全部標為已讀"
+			"markAllRead": "全部標為已讀",
+			"loadFailed": "告示取錄有失：${error}"
 		},
 		"saved": {
 			"all": "全部",
@@ -4373,6 +4374,7 @@
 		},
 		"profile": {
 			"edit": "修簿牒",
+			"loadFailed": "簿牒取錄有失：${error}",
 			"viewPosts": "查看社交主頁",
 			"settingsBtn": {
 				"aria-label": "社交樞機"
@@ -4440,6 +4442,8 @@
 		},
 		"live": {
 			"empty": "暫無現影",
+			"loadFailed": "直播取錄有失：${error}",
+			"joinFailed": "直播連線未遂：${error}",
 			"viewers": "${n} 人觀看",
 			"likes": "${n} 讚",
 			"local": "本機",

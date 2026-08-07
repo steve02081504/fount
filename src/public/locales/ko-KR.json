@@ -4602,7 +4602,7 @@
 			"loading": "불러오는 중…",
 			"notFound": "게시물이 존재하지 않거나 표시되지 않습니다.",
 			"loadFailed": "불러오지 못했습니다. 나중에 다시 시도해 주세요.",
-			"exportMediaFailed": "미디어를보내지 못했습니다: ${error}",
+			"exportMediaFailed": "미디어 내보내기에 실패했습니다: ${error}",
 			"detailTitle": "게시",
 			"back": "돌아가기"
 		},
@@ -4666,7 +4666,7 @@
 			"placeholder": "답장을 쓰세요…",
 			"submit": "답글",
 			"empty": "아직 답장이 없습니다",
-			"emptyHint": "첫 번째 기사를 작성하고 토론을 시작하겠습니다",
+			"emptyHint": "첫 답글을 작성해 토론을 시작하세요.",
 			"loadFailed": "답글을 불러오지 못했습니다: ${error}"
 		},
 		"repost": {

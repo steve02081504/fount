@@ -35,7 +35,8 @@ const videoFeed = createSnapCursorFeed({
 		try {
 			return await getVideosFeed({ limit: 20, cursor })
 		}
-		catch {
+		catch (error) {
+			handleError('social.video.loadFailed', {}, error)
 			return null
 		}
 	},
@@ -391,6 +392,7 @@ async function setVideoRepliesOpen(slide, open, options = {}) {
 			renderCommentTicker(slide, replies)
 		}
 		catch (error) {
+			closeVideoReplies(slide)
 			handleError('social.replies.loadFailed', {}, error)
 			return
 		}

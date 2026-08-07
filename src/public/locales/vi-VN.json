@@ -4666,7 +4666,7 @@
 			"placeholder": "Viết thư trả lời…",
 			"submit": "Trả lời",
 			"empty": "Chưa có trả lời",
-			"emptyHint": "Hãy viết bài đầu tiên và bắt đầu thảo luận",
+			"emptyHint": "Hãy viết bình luận đầu tiên và bắt đầu thảo luận",
 			"loadFailed": "Không tải được bình luận: ${error}"
 		},
 		"repost": {

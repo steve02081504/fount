@@ -1,5 +1,6 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { getNotifications, getNotificationsSeen, putNotificationsSeen } from '../endpoints/notifications.mjs'
 import { authorLabel, formatTimeHtml, renderAvatarHtml } from '../lib/display.mjs'
@@ -19,15 +20,15 @@ let notificationsLoading = false
 export async function ensureNotificationsSeenAt() {
 	if (Number.isFinite(state.notificationsSeenAt))
 		return state.notificationsSeenAt
-	let data
 	try {
-		data = await getNotificationsSeen()
+		const data = await getNotificationsSeen()
+		state.notificationsSeenAt = Number(data.seenAt) || 0
+		return state.notificationsSeenAt
 	}
-	catch {
-		data = { seenAt: 0 }
+	catch (error) {
+		handleError('social.notifications.loadFailed', {}, error)
+		return 0
 	}
-	state.notificationsSeenAt = Number(data.seenAt) || 0
-	return state.notificationsSeenAt
 }
 
 /**
@@ -129,7 +130,8 @@ export async function updateNotificationBadge() {
 		try {
 			unread = Number((await getNotifications({ limit: 1 })).unreadCount) || 0
 		}
-		catch {
+		catch (error) {
+			handleError('social.notifications.loadFailed', {}, error)
 			unread = 0
 		}
 	

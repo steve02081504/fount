@@ -50,7 +50,8 @@ export async function loadPostDetail(entityHash, postId) {
 	try {
 		profileData = await getProfile(owner)
 	}
-	catch {
+	catch (error) {
+		handleError('social.profile.loadFailed', {}, error)
 		profileData = null
 	}
 	rememberEntityHandle(owner, profileData?.profile || data.item.authorProfile)

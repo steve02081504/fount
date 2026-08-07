@@ -231,7 +231,6 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 				trendingInFlight = null
 			}
 		})()
-	const nearbyPromise = trendingInFlight
 	const localPromise = !trendingCache?.length
 		? (async () => {
 			try {
@@ -243,7 +242,7 @@ export async function loadTrendingHashtags(containerId = 'feedTrending') {
 		})()
 		: null
 
-	const nearbyTags = await nearbyPromise
+	const nearbyTags = await trendingInFlight
 	if (nearbyTags?.length) {
 		await paint(nearbyTags)
 		return

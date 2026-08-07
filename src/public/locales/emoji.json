@@ -4322,7 +4322,8 @@
 			"post_note": "${author} ➕👀📝📄",
 			"live_started": "${author} 📡▶️",
 			"view": "👀",
-			"markAllRead": "✅👀📬"
+			"markAllRead": "✅👀📬",
+			"loadFailed": "🔔📥❌ · ${error}"
 		},
 		"saved": {
 			"all": "📋",
@@ -4373,6 +4374,7 @@
 		},
 		"profile": {
 			"edit": "✏️👤",
+			"loadFailed": "👤📥❌ · ${error}",
 			"viewPosts": "👀🏛️👤",
 			"settingsBtn": {
 				"aria-label": "🏛️⚙️"
@@ -4440,6 +4442,8 @@
 		},
 		"live": {
 			"empty": "📡📭",
+			"loadFailed": "📡📥❌ · ${error}",
+			"joinFailed": "📡🔗❌ · ${error}",
 			"viewers": "👀${n}",
 			"likes": "👍${n}",
 			"local": "💻",

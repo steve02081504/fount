@@ -1,6 +1,5 @@
 import { formatSocialShareHttpsUrl } from '../../shared/protocolUrl.mjs'
 import { addPostNote, deletePost, editPost, getPost, getPostNotes, votePostNote } from '../endpoints/posts.mjs'
-import { getProfilePosts } from '../endpoints/profile.mjs'
 import { downloadPostHtml } from '../exportHtml.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
 import { promptText, promptTextArea, showText } from '../lib/dialog.mjs'
@@ -48,11 +47,15 @@ export async function handlePostProfileActionsClick(target) {
 		const author = card?.dataset.authorEntity
 		if (postId && author) {
 			closePostMoreMenus()
-			const data = await getProfilePosts(author, { limit: 50 })
-			const item = (data.items || []).find(row => row.postId === postId)
-			const revisions = item?.post?.revisions || []
-			const lines = revisions.map((rev, idx) => `#${idx + 1} ${rev.text || ''}`).join('\n---\n')
-			await showText(lines || geti18n('social.post.editHistoryEmpty'), 'social.post.editHistory')
+			try {
+				const { item } = await getPost(author, postId)
+				const revisions = item?.post?.revisions || []
+				const lines = revisions.map((rev, index) => `#${index + 1} ${rev.text || ''}`).join('\n---\n')
+				await showText(lines || geti18n('social.post.editHistoryEmpty'), 'social.post.editHistory')
+			}
+			catch (error) {
+				handleError('social.post.loadFailed', {}, error)
+			}
 		}
 		return true
 	}
@@ -85,12 +88,18 @@ export async function handlePostProfileActionsClick(target) {
 	const noteMoreButton = target.closest('[data-note-more]')
 	if (noteMoreButton instanceof HTMLElement && noteMoreButton.dataset.noteMore) {
 		const parsed = parseActionKey(noteMoreButton.dataset.noteMore)
-		if (parsed) {
-			const data = await getPostNotes(parsed.entityHash, parsed.postId)
-			await showText((data.notes || []).map(note =>
-				`[${note.score >= 0 ? '+' : ''}${note.score}] ${note.text || ''}`).join('\n---\n')
-				|| geti18n('social.notes.empty'), 'social.notes.listTitle')
-		}
+		if (parsed) 
+			try {
+				const data = await getPostNotes(parsed.entityHash, parsed.postId)
+				await showText((data.notes || []).map(note =>
+					`[${note.score >= 0 ? '+' : ''}${note.score}] ${note.text || ''}`).join('\n---\n')
+					|| geti18n('social.notes.empty'), 'social.notes.listTitle')
+			}
+			catch (error) {
+				handleError('social.post.loadFailed', {}, error)
+				return true
+			}
+		
 		return true
 	}
 
@@ -111,14 +120,9 @@ export async function handlePostProfileActionsClick(target) {
 		const parsed = parseActionKey(downloadHtmlButton.dataset.downloadHtml)
 		if (parsed) {
 			closePostMoreMenus()
-			const card = downloadHtmlButton.closest('.post-card')
-			const fallbackText = decodeURIComponent(card?.dataset.postText || '')
 			let content
 			try {
-				const data = await getPost(parsed.entityHash, parsed.postId)
-				content = data?.item?.post?.content || data?.post?.content || {
-					text: fallbackText,
-				}
+				content = (await getPost(parsed.entityHash, parsed.postId)).item.post.content
 			}
 			catch (error) {
 				handleError('social.post.loadFailed', {}, error)
@@ -128,7 +132,7 @@ export async function handlePostProfileActionsClick(target) {
 				await downloadPostHtml(content)
 			}
 			catch {
-				/* 媒体失败已在 exportHtml 内 handleError；勿再导出残缺 HTML */
+				/* 媒体失败已在 exportHtml 内 handleError */
 			}
 		}
 		return true
