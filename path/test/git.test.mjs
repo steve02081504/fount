@@ -42,6 +42,13 @@ const INVALID_BRANCH_NAMES = [
 const VALID_BRANCH_NAMES = ['lava', 'master', 'feature/foo']
 
 /**
+ * 将任意字符串编成 base64，便于经 shell 往返时保留控制字符。
+ * @param {string} value 任意字符串
+ * @returns {string} base64
+ */
+const encodeBase64 = (value) => btoa(String.fromCharCode(...new TextEncoder().encode(value)))
+
+/**
  * 在 bash 中跑一段脚本，返回 { code, stdout, stderr }。
  * @param {string} script bash 源码
  * @returns {Promise<{ code: number, stdout: string, stderr: string }>} 返回 bash 执行结果
@@ -137,9 +144,11 @@ Deno.test('git_valid_branch_name accepts normal branch names like lava', async (
 })
 
 Deno.test('git_valid_branch_name rejects glob and ref-unsafe fragments (bash)', async () => {
+	const encoded = INVALID_BRANCH_NAMES.map(encodeBase64)
 	const result = await runBash(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
+		decode() { printf '%s' "$1" | base64 -d; }
 		reject() {
 			local name="$1"
 			if git_valid_branch_name "$name"; then
@@ -147,7 +156,9 @@ Deno.test('git_valid_branch_name rejects glob and ref-unsafe fragments (bash)', 
 				exit 1
 			fi
 		}
-		${INVALID_BRANCH_NAMES.map(branchName => `reject ${JSON.stringify(branchName)}`).join('\n')}
+		for b64 in ${encoded.map(encodedName => JSON.stringify(encodedName)).join(' ')}; do
+			reject "$(decode "$b64")"
+		done
 		echo ok
 	`)
 	assertEquals(result.code, 0, result.stderr || result.stdout)
@@ -156,11 +167,6 @@ Deno.test('git_valid_branch_name rejects glob and ref-unsafe fragments (bash)', 
 
 Deno.test('git_valid_branch_name bash and PowerShell agree', async () => {
 	const allNames = [...VALID_BRANCH_NAMES, ...INVALID_BRANCH_NAMES]
-	/**
-	 * @param {string} value 任意字符串
-	 * @returns {string} base64
-	 */
-	const encodeBase64 = (value) => btoa(String.fromCharCode(...new TextEncoder().encode(value)))
 	const encoded = allNames.map(encodeBase64)
 
 	const bash = await runBash(`
@@ -194,10 +200,12 @@ foreach ($b64 in $encoded) {
 
 Deno.test('git_valid_branch_name rejects control characters (bash and PowerShell)', async () => {
 	const controlBranch = 'a\u0001b'
+	const b64 = encodeBase64(controlBranch)
 	const bash = await runBash(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
-		if git_valid_branch_name ${JSON.stringify(controlBranch)}; then
+		name=$(printf '%s' ${JSON.stringify(b64)} | base64 -d)
+		if git_valid_branch_name "$name"; then
 			echo accepted >&2
 			exit 1
 		fi
@@ -206,10 +214,9 @@ Deno.test('git_valid_branch_name rejects control characters (bash and PowerShell
 	assertEquals(bash.code, 0, bash.stderr || bash.stdout)
 	assertEquals(bash.stdout.trim(), 'ok')
 
-	const encodeBase64 = (value) => btoa(String.fromCharCode(...new TextEncoder().encode(value)))
 	const powerShellResult = await runPwsh(`
 ${await extractPsValidBranchFn()}
-$name = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${encodeBase64(controlBranch)}'))
+$name = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${b64}'))
 if (git_valid_branch_name $name) { Write-Error 'accepted'; exit 1 }
 Write-Output ok
 `)
