@@ -129,6 +129,41 @@ function script:git_sync_to_ref($Ref) {
 	invoke_repo_git reset --hard $Ref
 }
 
+# Ensure remote.origin.fetch maps refs/heads/<Branch> → origin/<Branch>.
+# Adds a single-branch refspec only — never expands to refs/heads/*.
+function script:git_ensure_origin_fetch_branch($RemoteBranch) {
+	if (-not (git_valid_branch_name $RemoteBranch)) {
+		$global:LastExitCode = 1
+		return
+	}
+	$specs = @(invoke_repo_git config --get-all remote.origin.fetch 2>$null)
+	if ($LastExitCode -ne 0) { $specs = @() }
+	foreach ($spec in $specs) {
+		if ($spec -match '^\+?refs/heads/\*:refs/remotes/origin/\*$') { return }
+		if ($spec -eq "+refs/heads/${RemoteBranch}:refs/remotes/origin/${RemoteBranch}") { return }
+		if ($spec -eq "refs/heads/${RemoteBranch}:refs/remotes/origin/${RemoteBranch}") { return }
+	}
+	invoke_repo_git config --add remote.origin.fetch "+refs/heads/${RemoteBranch}:refs/remotes/origin/${RemoteBranch}"
+}
+
+# Point local branch at origin/<name> without requiring a prior wildcard fetch refspec.
+# `git branch --set-upstream-to` rejects one-shot remote-tracking refs under single-branch clones;
+# add the one head to remote.origin.fetch (not *) then set branch.*.remote / merge.
+function script:git_track_origin_branch($Branch, $OriginRef = $null) {
+	if (-not $OriginRef) { $OriginRef = "origin/$Branch" }
+	if ($OriginRef -notlike 'origin/*') {
+		Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $OriginRef })
+		$global:LastExitCode = 1
+		return
+	}
+	$remoteBranch = $OriginRef.Substring('origin/'.Length)
+	git_ensure_origin_fetch_branch $remoteBranch
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git config "branch.$Branch.remote" origin
+	if ($LastExitCode -ne 0) { return }
+	invoke_repo_git config "branch.$Branch.merge" "refs/heads/$remoteBranch"
+}
+
 # Switch/create local branch at StartPoint (default origin/<Branch>). Does not move other branches.
 function script:git_checkout_branch($Branch, $StartPoint = $null) {
 	if (-not $StartPoint) { $StartPoint = "origin/$Branch" }
@@ -143,7 +178,7 @@ function script:git_checkout_branch($Branch, $StartPoint = $null) {
 	invoke_repo_git checkout -B $Branch $StartPoint
 	if ($LastExitCode -ne 0) { return }
 	if ($StartPoint -like 'origin/*') {
-		invoke_repo_git branch --set-upstream-to $StartPoint $Branch
+		git_track_origin_branch $Branch $StartPoint
 	}
 }
 
@@ -170,7 +205,8 @@ function script:fount_resolve_upstream($Branch) {
 		if (-not $hadUpstream) {
 			Write-Warning (Get-I18n -key 'git.noUpstreamBranch' -params @{ branch = $Branch; remote = $script:remoteBranch })
 		}
-		invoke_repo_git branch --set-upstream-to $script:remoteBranch $Branch | Out-Null
+		git_track_origin_branch $Branch $script:remoteBranch
+		if ($LastExitCode -ne 0) { return }
 		$script:currentBranch = $Branch
 		$global:LastExitCode = 0
 		return
@@ -304,4 +340,94 @@ function script:fount_upgrade {
 		Write-Host (Get-I18n -key 'git.alreadyUpToDate')
 		if ($status) { Write-Warning (Get-I18n -key 'git.dirtyWorkingDirectory') }
 	}
+}
+
+# $Kind = version.status.* suffix; $Warn = Write-Warning instead of Write-Host.
+function script:fount_print_version_status($Kind, [switch]$Warn) {
+	$statusText = Get-I18n -key "version.status.$Kind"
+	$line = Get-I18n -key 'version.status.title' -params @{ status = $statusText }
+	if ($Warn) { Write-Warning $line }
+	else { Write-Host $line }
+}
+
+# $Branch = branch name, or HEAD for detached.
+function script:fount_print_version_branch($Branch) {
+	$text = $Branch
+	if ($text -eq 'HEAD') {
+		$text = Get-I18n -key 'version.branch.detached'
+	}
+	Write-Host (Get-I18n -key 'version.branch.title' -params @{ branch = $text })
+}
+
+# Print branch, HEAD sha, and whether the current branch tip matches origin.
+function script:fount_show_version {
+	$global:LastExitCode = 0
+	if (!(Get-Command git -ErrorAction SilentlyContinue)) {
+		Write-Warning (Get-I18n -key 'version.noGit')
+		$global:LastExitCode = 1
+		return
+	}
+	if (!(Test-Path -LiteralPath "$FOUNT_DIR/.git")) {
+		Write-Warning (Get-I18n -key 'version.noRepo')
+		$global:LastExitCode = 1
+		return
+	}
+
+	$branch = invoke_repo_git rev-parse --abbrev-ref HEAD 2>$null
+	if ($LastExitCode -ne 0 -or -not $branch) { $branch = 'HEAD' }
+	$sha = invoke_repo_git rev-parse HEAD 2>$null
+	if ($LastExitCode -ne 0 -or -not $sha) {
+		Write-Warning (Get-I18n -key 'version.noRepo')
+		$global:LastExitCode = 1
+		return
+	}
+
+	fount_print_version_branch $branch
+	Write-Host (Get-I18n -key 'version.commit' -params @{ ref = $sha })
+
+	if (Test-Path -LiteralPath "$FOUNT_DIR/.noupdate") {
+		Write-Host (Get-I18n -key 'version.autoUpdatePaused')
+	}
+
+	if ($branch -eq 'HEAD') {
+		fount_print_version_status detachedNoCompare
+		$global:LastExitCode = 0
+		return
+	}
+
+	git_fetch_remote_branch $branch
+	if ($LastExitCode -ne 0) {
+		fount_print_version_status fetchFailed -Warn
+		$global:LastExitCode = 1
+		return
+	}
+	$remoteSha = invoke_repo_git rev-parse "origin/$branch" 2>$null
+	if ($LastExitCode -ne 0 -or -not $remoteSha) {
+		fount_print_version_status fetchFailed -Warn
+		$global:LastExitCode = 1
+		return
+	}
+	Write-Host (Get-I18n -key 'version.remote' -params @{ ref = $remoteSha })
+
+	if ($sha -eq $remoteSha) {
+		fount_print_version_status upToDate
+		$global:LastExitCode = 0
+		return
+	}
+	$mergeBase = invoke_repo_git merge-base HEAD "origin/$branch" 2>$null
+	if ($LastExitCode -ne 0 -or -not $mergeBase) {
+		fount_print_version_status diverged -Warn
+		$global:LastExitCode = 0
+		return
+	}
+	if ($mergeBase -eq $sha) {
+		fount_print_version_status behind -Warn
+	}
+	elseif ($mergeBase -eq $remoteSha) {
+		fount_print_version_status ahead
+	}
+	else {
+		fount_print_version_status diverged -Warn
+	}
+	$global:LastExitCode = 0
 }

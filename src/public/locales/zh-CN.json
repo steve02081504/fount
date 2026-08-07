@@ -363,6 +363,26 @@
 				"createdNoUpdate": "已创建 `.noupdate`，自动更新已暂停。",
 				"unknownTarget": "无法识别「${target}」：不是已知分支、提交或拉取请求。"
 			},
+			"version": {
+				"branch": {
+					"title": "分支：${branch}",
+					"detached": "HEAD 已分离"
+				},
+				"commit": "提交：`${ref}`",
+				"remote": "远程：`${ref}`",
+				"status": {
+					"title": "状态：${status}",
+					"upToDate": "已是最新",
+					"behind": "落后于远程",
+					"ahead": "领先于远程",
+					"diverged": "与远程已分叉",
+					"detachedNoCompare": "HEAD 已分离，无法与远程比较",
+					"fetchFailed": "无法获取远程状态"
+				},
+				"autoUpdatePaused": "自动更新已暂停（存在 `.noupdate`）",
+				"noRepo": "未找到 Git 仓库",
+				"noGit": "未安装 Git"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "已在 `${path}` 创建桌面快捷方式",
 				"startMenuShortcutCreated": "已在 `${path}` 创建开始菜单快捷方式",
@@ -1948,6 +1968,7 @@
 				"aria-label": "群组与导航"
 			},
 			"operationFailed": "操作失败：${error}",
+			"warmCharCacheFailed": "角色缓存预热失败：${error}",
 			"shareGroupFailed": "分享群链接失败：${error}",
 			"replyInline": {
 				"title": "回复"
@@ -2164,6 +2185,7 @@
 			},
 			"federation": {
 				"loadFailed": "加载失败：${error}",
+				"rebindFailed": "联邦房间重新绑定失败：${error}",
 				"subtitle": "控制跨设备连接；大多数情况下保持默认即可",
 				"title": "联邦 P2P 设置",
 				"tooltip": {
@@ -4045,6 +4067,8 @@
 		"title": "广场",
 		"description": "P2P 开放社交动态、关注与文件分享",
 		"bootstrapFailed": "社交界面初始化失败：${error}",
+		"connectNodeFailed": "连接节点失败：${error}",
+		"dwellFailed": "观看时长偏好更新失败：${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "广场"

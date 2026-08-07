@@ -6,7 +6,7 @@
  */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
-import { onServerEvent } from './scripts/api/server_events.mjs'
+import { onServerEvent } from './scripts/endpoints/server_events.mjs'
 
 let skipBreadcrumb = false
 if (!globalThis.fount?.test?.enabled) try {

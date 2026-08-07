@@ -363,6 +363,26 @@
 				"createdNoUpdate": "`.noupdate` criado; atualizações automáticas pausadas.",
 				"unknownTarget": "Não foi possível identificar «${target}»: não é um ramo conhecido, um commit nem uma pull request."
 			},
+			"version": {
+				"branch": {
+					"title": "Ramo: ${branch}",
+					"detached": "HEAD desanexado"
+				},
+				"commit": "Commit: `${ref}`",
+				"remote": "Remoto: `${ref}`",
+				"status": {
+					"title": "Estado: ${status}",
+					"upToDate": "Atualizado",
+					"behind": "Atrasado em relação ao remoto",
+					"ahead": "À frente do remoto",
+					"diverged": "Divergido do remoto",
+					"detachedNoCompare": "HEAD desanexado, sem comparação com o remoto",
+					"fetchFailed": "Não foi possível obter o estado do remoto"
+				},
+				"autoUpdatePaused": "Atualizações automáticas pausadas (`.noupdate` existe)",
+				"noRepo": "Repositório Git não encontrado",
+				"noGit": "Git não está instalado"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "Atalho na área de trabalho criado em `${path}`",
 				"startMenuShortcutCreated": "Atalho do menu Iniciar criado em `${path}`",
@@ -1948,6 +1968,7 @@
 				"aria-label": "Grupos e navegação"
 			},
 			"operationFailed": "Falha na operação: ${error}",
+			"warmCharCacheFailed": "Falha ao pré-aquecer a cache de personagens: ${error}",
 			"shareGroupFailed": "Falha ao share group link: ${error}",
 			"replyInline": {
 				"title": "Responder"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "Falha no carregamento: ${error}",
+				"rebindFailed": "Falha ao religar a sala da federação: ${error}",
 				"subtitle": "Controlar conexões entre dispositivos; deixe os padrões na maioria dos casos",
 				"title": "Definições P2P federadas",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "Praça",
 		"description": "Publicações sociais abertas P2P, seguir e partilha de ficheiros",
 		"bootstrapFailed": "Falha na inicialização da interface social: ${error}",
+		"connectNodeFailed": "Falha ao ligar ao nó: ${error}",
+		"dwellFailed": "Falha ao atualizar preferências com base no tempo de visualização: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "Praça"

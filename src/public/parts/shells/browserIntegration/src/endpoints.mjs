@@ -40,7 +40,7 @@ export function setEndpoints(router) {
 		}
 	})
 
-	router.get('/virtual_files/parts/shells\\:browserIntegration/script.meta.js', async (_req, res) => {
+	router.get('/virtual_files/parts/shells\\:browserIntegration/script.meta.js', async (req, res) => {
 		const scriptPublicPath = path.join(import.meta.dirname, '..', 'public')
 		const publicScriptPath = path.join(scriptPublicPath, 'script.user.js')
 		const content = await fs.promises.readFile(publicScriptPath, 'utf-8')

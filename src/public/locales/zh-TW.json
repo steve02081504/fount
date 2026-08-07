@@ -362,6 +362,26 @@
 				"createdNoUpdate": "已建立 `.noupdate`，自動更新已暫停。",
 				"unknownTarget": "無法識別「${target}」：不是已知分支、提交或拉取請求。"
 			},
+			"version": {
+				"branch": {
+					"title": "分支：${branch}",
+					"detached": "HEAD 已分離"
+				},
+				"commit": "提交：`${ref}`",
+				"remote": "遠端：`${ref}`",
+				"status": {
+					"title": "狀態：${status}",
+					"upToDate": "已是最新",
+					"behind": "落後於遠端",
+					"ahead": "領先於遠端",
+					"diverged": "與遠端已分叉",
+					"detachedNoCompare": "HEAD 已分離，無法與遠端比較",
+					"fetchFailed": "無法取得遠端狀態"
+				},
+				"autoUpdatePaused": "自動更新已暫停（存在 `.noupdate`）",
+				"noRepo": "找不到 Git 儲存庫",
+				"noGit": "未安裝 Git"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "已在 `${path}` 建立桌面捷徑",
 				"startMenuShortcutCreated": "已在 `${path}` 建立開始選單捷徑",
@@ -1947,6 +1967,7 @@
 				"aria-label": "群組與導覽"
 			},
 			"operationFailed": "操作失敗：${error}",
+			"warmCharCacheFailed": "角色快取預熱失敗：${error}",
 			"shareGroupFailed": "分享群連結失敗：${error}",
 			"replyInline": {
 				"title": "回覆"
@@ -2159,6 +2180,7 @@
 			},
 			"federation": {
 				"loadFailed": "載入失敗：${error}",
+				"rebindFailed": "聯邦房間重新綁定失敗：${error}",
 				"subtitle": "控制跨裝置連線；大多數情況下保持預設即可",
 				"title": "聯邦 P2P 設定",
 				"tooltip": {
@@ -4040,6 +4062,8 @@
 		"title": "廣場",
 		"description": "P2P 開放社交動態、關注與檔案分享",
 		"bootstrapFailed": "社交介面初始化失敗：${error}",
+		"connectNodeFailed": "連接節點失敗：${error}",
+		"dwellFailed": "觀看時長偏好更新失敗：${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "廣場"

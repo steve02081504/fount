@@ -2,8 +2,8 @@
  * 主页 shell 的客户端逻辑。
  */
 
-import { getUserSetting } from '../../../scripts/api/base.mjs'
-import { unlockAchievement, getAllDefaultParts, getPartBranches } from '../../../scripts/api/parts.mjs'
+import { getUserSetting } from '../../../scripts/endpoints/base.mjs'
+import { unlockAchievement, getAllDefaultParts, getPartBranches } from '../../../scripts/endpoints/parts.mjs'
 import { showToast } from '../../../scripts/features/toast.mjs'
 import { applyUrlParamsTransferStrategy } from '../../../scripts/host/urlDataTransfer.mjs'
 import { initTranslations, console } from '../../../scripts/i18n/index.mjs'

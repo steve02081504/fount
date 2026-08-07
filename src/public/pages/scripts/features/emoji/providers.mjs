@@ -1,7 +1,7 @@
 /**
  * 聚合 registries.emoji 全部 provider。
  */
-import { importRegistryModules } from '../../api/registries.mjs'
+import { importRegistryModules } from '../../endpoints/registries.mjs'
 
 /**
  * @returns {Promise<object[]>} 全部可用 emoji provider
