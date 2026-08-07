@@ -20,8 +20,9 @@ git_valid_branch_name() {
 	local branch="$1"
 	[[ -n "$branch" && "$branch" != @ ]] || return 1
 	case "$branch" in
-	*'?'*|*'*'*|*'['*|*'\\'*|*':'*|*'~'*|*'^'*|*'..'*|*[[:space:]]*|/'*|*'/' ) return 1 ;;
+	*\?*|*\**|*\[*|*\\*|*:*|*~*|*^*|*..*|*[[:space:]]*|/*|*/) return 1 ;;
 	esac
+	[[ "$branch" != *"'"* ]] || return 1
 	return 0
 }
 

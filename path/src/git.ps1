@@ -43,9 +43,18 @@ function script:git_fetch_origin {
 	invoke_repo_git fetch origin --prune
 }
 
+# Reject glob metacharacters and other ref-unsafe fragments for single-branch fetch.
+function script:git_valid_branch_name($Branch) {
+	if ([string]::IsNullOrEmpty($Branch) -or $Branch -eq '@') { return $false }
+	if ($Branch -match '[\?\*\[\\:~^\s'']|\.\.') { return $false }
+	if ($Branch.StartsWith('/') -or $Branch.EndsWith('/')) { return $false }
+	return $true
+}
+
 # 0 = branch exists on origin, 1 = confirmed absent, 2 = network/other error.
 # Only call when a named ref is unknown locally — avoid on the plain-update happy path.
 function script:git_remote_branch_status($Branch) {
+	if (-not (git_valid_branch_name $Branch)) { return 2 }
 	$output = invoke_repo_git ls-remote --heads origin "refs/heads/$Branch" 2>$null
 	if ($LastExitCode -ne 0) { return 2 }
 	if ($output) { return 0 }
@@ -54,6 +63,10 @@ function script:git_remote_branch_status($Branch) {
 
 # One-shot map of a single head into origin/<branch> (does not change remote.origin.fetch).
 function script:git_fetch_remote_branch($Branch) {
+	if (-not (git_valid_branch_name $Branch)) {
+		$global:LastExitCode = 1
+		return
+	}
 	invoke_repo_git fetch origin --prune "+refs/heads/${Branch}:refs/remotes/origin/${Branch}"
 }
 

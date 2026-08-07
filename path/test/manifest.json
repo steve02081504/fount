@@ -1,0 +1,24 @@
+{
+	"id": "path",
+	"suites": [
+		{
+			"name": "git",
+			"run": [
+				"deno",
+				"run",
+				"--allow-scripts",
+				"--allow-all",
+				"-c",
+				"./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./path/test/"
+			],
+			"triggers": [
+				"path/src/git.{sh,ps1}",
+				"path/src/update.{sh,ps1}",
+				"path/test/**",
+				"src/scripts/test/deno/serial.mjs"
+			]
+		}
+	]
+}

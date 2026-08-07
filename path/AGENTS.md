@@ -26,6 +26,7 @@ Same logic is isomorphic across `foo.{ps1,sh}`; platform-only code under `path/s
 - `fount update <branch>` checks out that branch and removes `.noupdate`; unknown names `ls-remote` once then the same one-shot fetch.
 - `fount update <sha>` detaches at that commit and creates `.noupdate`.
 - If the current upstream is confirmed gone on origin (not a network error), fall back to tracking `master`.
+- `git_valid_branch_name` gates one-shot fetch/ls-remote. In bash `case` patterns, escape glob chars (`*\?*`, `*\**`) — do **not** quote them as `*'?'*` / `/'*|*'/'`; a dangling `'` makes `bash -n path/src/git.sh` fail and every sourced function vanish (`git_remote_branch_status: command not found`). Regression: `fount test path:git --no-parallel`.
 
 ## Termux
 

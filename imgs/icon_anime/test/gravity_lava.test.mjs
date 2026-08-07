@@ -14,19 +14,21 @@ import {
 } from '../fluid/index.mjs'
 import {
 	mapSensorToScreen, defaultGravity,
-	BASE_PARTICLE_G, parseSensorStdout, valuesFromSensorJson,
+	BASE_PARTICLE_G,
 } from '../gravity.mjs'
+import { parseSensorStdout, valuesFromSensorJson } from '../gravity_acquire/termux.mjs'
 import { rainEdgeWeights, pickRainEdge } from '../scene.mjs'
 
 Deno.test('gravity: mapSensorToScreen upright phone → screen down', () => {
-	const m = mapSensorToScreen(0, -9.81, 0)
+	// Accelerometer-style: upright y≈+g (Android / GravitySensor / DeviceMotion)
+	const m = mapSensorToScreen(0, 9.81, 0)
 	assertEquals(m !== null, true)
 	assertAlmostEquals(m.gx, 0, 0.05)
 	assertAlmostEquals(m.gy, 1, 0.05)
 })
 
 Deno.test('gravity: flat device returns null', () => {
-	assertEquals(mapSensorToScreen(0, 0, -9.81), null)
+	assertEquals(mapSensorToScreen(0, 0, 9.81), null)
 })
 
 Deno.test('gravity: pretty-printed termux-sensor stream (indent=2)', () => {

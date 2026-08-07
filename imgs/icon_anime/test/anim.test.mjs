@@ -318,6 +318,50 @@ Deno.test('consumeStdin: SGR left/right press/drag/release + Ctrl+C', async () =
 	assertEquals(aborted, true)
 })
 
+Deno.test('consumeStdin: bare ESC fires onEsc; CSI does not', async () => {
+	const { consumeStdin } = await import('../player.mjs')
+	let esc = 0
+	/**
+	 * @param {string} ascii ASCII 字符串
+	 * @returns {Uint8Array} 编码结果
+	 */
+	const encode = (ascii) => Uint8Array.from(ascii, c => c.charCodeAt(0))
+	const handlers = { onEsc: () => { esc++ } }
+	// Lone ESC stays in carry until a following byte proves it is not CSI
+	let carry = consumeStdin('', encode('\x1b'), handlers)
+	assertEquals(carry, '\x1b')
+	assertEquals(esc, 0)
+	carry = consumeStdin(carry, encode('\x1b'), handlers)
+	assertEquals(carry, '\x1b')
+	assertEquals(esc, 1)
+	// Mouse CSI must not count as ESC
+	carry = consumeStdin(carry, encode('[<0;1;1M'), handlers)
+	assertEquals(carry, '')
+	assertEquals(esc, 1)
+	// ESC then non-`[` → ESC key + leftover byte consumed as non-CSI
+	carry = consumeStdin('', encode('\x1bx'), handlers)
+	assertEquals(carry, '')
+	assertEquals(esc, 2)
+})
+
+Deno.test('createEscHold: abort after continuous ESC ≥ 4s; gap resets', async () => {
+	const { createEscHold, ESC_HOLD_MS, ESC_HOLD_GAP_MS } = await import('../player.mjs')
+	const hold = createEscHold()
+	assertEquals(hold.note(0), false)
+	for (let t = 100; t < ESC_HOLD_MS; t += 100)
+		assertEquals(hold.note(t), false)
+	assertEquals(hold.note(ESC_HOLD_MS), true)
+	// Gap beyond ESC_HOLD_GAP_MS restarts the hold clock
+	const again = createEscHold()
+	assertEquals(again.note(0), false)
+	assertEquals(again.note(100), false)
+	const restart = 100 + ESC_HOLD_GAP_MS + 1
+	assertEquals(again.note(restart), false)
+	for (let t = 100; t < ESC_HOLD_MS; t += 100)
+		assertEquals(again.note(restart + t), false)
+	assertEquals(again.note(restart + ESC_HOLD_MS), true)
+})
+
 Deno.test('wind gesture: stroke speed + clockwise vortex + release clear', async () => {
 	const {
 		createWindGesture, windPointer, tickWindGesture, fillWindDrive,
