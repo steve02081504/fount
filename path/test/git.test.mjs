@@ -10,6 +10,7 @@ import { REPO_ROOT } from '../../src/scripts/test/core/repo_root.mjs'
 
 const gitShPath = join(REPO_ROOT, 'path', 'src', 'git.sh')
 const gitPs1Path = join(REPO_ROOT, 'path', 'src', 'git.ps1')
+const termuxShPath = join(REPO_ROOT, 'path', 'src', 'unix', 'termux.sh')
 
 /** 应被拒绝的分支名（Git ref 规则 + apostrophe）。 */
 const INVALID_BRANCH_NAMES = [
@@ -335,4 +336,166 @@ foreach ($base64Name in $encoded) {
 	assertEquals(psVerdicts.length, allTargets.length)
 	assertEquals(bashVerdicts.length, allTargets.length)
 	assertEquals(psVerdicts, bashVerdicts)
+})
+
+/**
+ * 单分支 clone + one-shot fetch 场景：`branch --set-upstream-to` 会 fatal；
+ * git_checkout_branch 必须补上该 head 的 fetch refspec（非 *）并建好 @{u}。
+ */
+Deno.test('git_checkout_branch tracks one-shot origin ref under single-branch fetch', async () => {
+	const result = await runBash(`
+		set -euo pipefail
+		TMP=$(mktemp -d)
+		cleanup() { rm -rf "$TMP"; }
+		trap cleanup EXIT
+
+		git init --bare -b master "$TMP/remote.git" >/dev/null
+		git clone "$TMP/remote.git" "$TMP/seed" >/dev/null 2>&1
+		cd "$TMP/seed"
+		git config user.email t@t
+		git config user.name t
+		echo master > f.txt
+		git add f.txt && git commit -m master >/dev/null
+		git push origin master >/dev/null
+		git checkout -b lava >/dev/null 2>&1
+		echo lava > f.txt
+		git add f.txt && git commit -m lava >/dev/null
+		git push origin lava >/dev/null
+
+		git clone --single-branch --branch master "$TMP/remote.git" "$TMP/clone" >/dev/null 2>&1
+		cd "$TMP/clone"
+		git config user.email t@t
+		git config user.name t
+
+		FOUNT_DIR="$TMP/clone"
+		print_i18n_yellow() { :; }
+		print_i18n_green() { :; }
+		. ${JSON.stringify(gitShPath)}
+
+		git_fetch_remote_branch lava
+		# Reproduce: raw --set-upstream-to must fail on this clone shape.
+		if git branch --set-upstream-to origin/lava lava >/dev/null 2>&1; then
+			echo 'expected set-upstream-to to fail' >&2
+			exit 1
+		fi
+
+		git_checkout_branch lava origin/lava
+		upstream=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}')
+		[ "$upstream" = 'origin/lava' ] || { echo "upstream=$upstream" >&2; exit 1; }
+		fetch_specs=$(git config --get-all remote.origin.fetch)
+		printf '%s\n' "$fetch_specs" | grep -qE '^(\\+)?refs/heads/\\*:refs/remotes/origin/\\*$' && {
+			echo "fetch widened to all heads:" >&2
+			printf '%s\n' "$fetch_specs" >&2
+			exit 1
+		}
+		printf '%s\n' "$fetch_specs" | grep -qxF '+refs/heads/lava:refs/remotes/origin/lava' || {
+			echo "lava refspec missing:" >&2
+			printf '%s\n' "$fetch_specs" >&2
+			exit 1
+		}
+		echo ok
+	`)
+	assertEquals(result.code, 0, result.stderr || result.stdout)
+	assertEquals(result.stdout.trim(), 'ok')
+})
+
+/**
+ * fount_show_version：本地 tip / 落后 / 分离 HEAD 状态键。
+ */
+Deno.test('fount_show_version reports branch sha and freshness', async () => {
+	const result = await runBash(`
+		set -euo pipefail
+		TMP=$(mktemp -d)
+		cleanup() { rm -rf "$TMP"; }
+		trap cleanup EXIT
+
+		git init --bare -b master "$TMP/remote.git" >/dev/null
+		git clone "$TMP/remote.git" "$TMP/seed" >/dev/null 2>&1
+		cd "$TMP/seed"
+		git config user.email t@t
+		git config user.name t
+		echo v1 > f.txt
+		git add f.txt && git commit -m v1 >/dev/null
+		git push origin master >/dev/null
+
+		git clone "$TMP/remote.git" "$TMP/clone" >/dev/null 2>&1
+		cd "$TMP/clone"
+		git config user.email t@t
+		git config user.name t
+
+		FOUNT_DIR="$TMP/clone"
+		get_i18n() { printf '%s' "$1"; shift; while [ $# -gt 0 ]; do printf ' %s=%s' "$1" "$2"; shift 2; done; printf '\\n'; }
+		print_i18n_green() { get_i18n "$@"; }
+		print_i18n_yellow() { get_i18n "$@" >&2; }
+		. ${JSON.stringify(gitShPath)}
+
+		sha=$(git rev-parse HEAD)
+		out=$(fount_show_version)
+		printf '%s\\n' "$out" | grep -qxF "version.branch.title branch=master" || { echo "branch line:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
+		printf '%s\\n' "$out" | grep -qxF "version.commit ref=$sha" || { echo "commit line:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
+		printf '%s\\n' "$out" | grep -qxF "version.status.title status=version.status.upToDate" || { echo "expected upToDate:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
+
+		cd "$TMP/seed"
+		echo v2 > f.txt
+		git add f.txt && git commit -m v2 >/dev/null
+		git push origin master >/dev/null
+
+		cd "$TMP/clone"
+		out=$(fount_show_version 2>&1)
+		printf '%s\\n' "$out" | grep -qxF "version.status.title status=version.status.behind" || { echo "expected behind:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
+
+		git checkout --detach HEAD >/dev/null 2>&1
+		: >"$FOUNT_DIR/.noupdate"
+		out=$(fount_show_version)
+		printf '%s\\n' "$out" | grep -qxF "version.branch.title branch=version.branch.detached" || { echo "expected detached:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
+		printf '%s\\n' "$out" | grep -qxF "version.autoUpdatePaused" || { echo "expected autoUpdatePaused:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
+		printf '%s\\n' "$out" | grep -qxF "version.status.title status=version.status.detachedNoCompare" || { echo "expected detachedNoCompare:" >&2; printf '%s\\n' "$out" >&2; exit 1; }
+		echo ok
+	`)
+	assertEquals(result.code, 0, result.stderr || result.stdout)
+	assertEquals(result.stdout.trim(), 'ok')
+})
+
+/** BCP 47 → POSIX LANG fixtures (Android/Termux). */
+const ANDROID_LOCALE_TO_LANG = [
+	['zh-Hans-CN', 'zh_CN.UTF-8'],
+	['zh-CN', 'zh_CN.UTF-8'],
+	['zh_CN', 'zh_CN.UTF-8'],
+	['en-US', 'en_US.UTF-8'],
+	['ja-JP', 'ja_JP.UTF-8'],
+	['en', 'en.UTF-8'],
+]
+
+Deno.test('android_locale_to_lang normalizes BCP47 script tags for Termux LANG', async () => {
+	const result = await runBash(`
+		set -e
+		. ${JSON.stringify(termuxShPath)}
+		${ANDROID_LOCALE_TO_LANG.map(([tag, want]) => `
+			got=$(android_locale_to_lang ${JSON.stringify(tag)})
+			[ "$got" = ${JSON.stringify(want)} ] || { echo "mismatch:${tag}:$got" >&2; exit 1; }
+		`).join('')}
+		echo ok
+	`)
+	assertEquals(result.code, 0, result.stderr || result.stdout)
+	assertEquals(result.stdout.trim(), 'ok')
+})
+
+Deno.test('android_locale_to_lang feeds get_system_locales toward zh-CN', async () => {
+	const i18nShPath = join(REPO_ROOT, 'path', 'src', 'i18n.sh')
+	const result = await runBash(`
+		set -e
+		FOUNT_DIR=${JSON.stringify(REPO_ROOT)}
+		. ${JSON.stringify(termuxShPath)}
+		. ${JSON.stringify(i18nShPath)}
+		LANG=$(android_locale_to_lang 'zh-Hans-CN')
+		export LANG
+		unset LC_ALL
+		system_locales=$(get_system_locales)
+		available_locales=$(get_available_locales)
+		best=$(get_best_locale "$system_locales" "$available_locales")
+		[ "$best" = 'zh-CN' ] || { echo "best=$best system=$system_locales" >&2; exit 1; }
+		echo ok
+	`)
+	assertEquals(result.code, 0, result.stderr || result.stdout)
+	assertEquals(result.stdout.trim(), 'ok')
 })

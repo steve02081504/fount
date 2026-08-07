@@ -363,6 +363,26 @@
 				"createdNoUpdate": "`.noupdate` búið til; sjálfvirkar uppfærslur í bið.",
 				"unknownTarget": "Get ekki borið kennsl á '${target}': ekki þekkt grein, commit né pull request."
 			},
+			"version": {
+				"branch": {
+					"title": "Grein: ${branch}",
+					"detached": "Aðskilið HEAD"
+				},
+				"commit": "Commit: `${ref}`",
+				"remote": "Fjarlægt: `${ref}`",
+				"status": {
+					"title": "Staða: ${status}",
+					"upToDate": "Uppfært",
+					"behind": "Á eftir fjarlægu",
+					"ahead": "Á undan fjarlægu",
+					"diverged": "Greinist frá fjarlægu",
+					"detachedNoCompare": "Aðskilið HEAD, ekki borið saman við fjarlægt",
+					"fetchFailed": "Gat ekki sótt fjarlægt ástand"
+				},
+				"autoUpdatePaused": "Sjálfvirkar uppfærslur í bið (`.noupdate` er til)",
+				"noRepo": "Git geymsla fannst ekki",
+				"noGit": "Git er ekki uppsett"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "Flýtileið á skjáborði búin til á `${path}`",
 				"startMenuShortcutCreated": "Flýtileið fyrir upphafsvalmynd búin til á `${path}`",
@@ -1948,6 +1968,7 @@
 				"aria-label": "Hópar og leiðsögn"
 			},
 			"operationFailed": "Aðgerð mistókst: ${error}",
+			"warmCharCacheFailed": "Forhleðsla skyndiminnis persónu mistókst: ${error}",
 			"shareGroupFailed": "Mistókst að deila hóptengli: ${error}",
 			"replyInline": {
 				"title": "Svara"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "Mistókst að hlaða: ${error}",
+				"rebindFailed": "Endurtenging sambandsherbergis mistókst: ${error}",
 				"subtitle": "Stjórna tengingum milli tækja; yfirgefa vanskil í flestum tilfellum",
 				"title": "Sambands-P2P-stillingar",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "Torg",
 		"description": "P2P opin samfélagsfærslur, fylgni og skráadeiling",
 		"bootstrapFailed": "Frumstilling samfélagsviðmóts mistókst: ${error}",
+		"connectNodeFailed": "Tenging við hnút mistókst: ${error}",
+		"dwellFailed": "Uppfærsla óskagagna út frá áhorfstíma mistókst: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "Torg"

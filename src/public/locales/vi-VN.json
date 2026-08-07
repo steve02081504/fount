@@ -363,6 +363,26 @@
 				"createdNoUpdate": "Đã tạo `.noupdate`; cập nhật tự động đã tạm dừng.",
 				"unknownTarget": "Không thể nhận dạng «${target}»: không phải nhánh, commit hoặc pull request đã biết."
 			},
+			"version": {
+				"branch": {
+					"title": "Nhánh: ${branch}",
+					"detached": "HEAD tách rời"
+				},
+				"commit": "Commit: `${ref}`",
+				"remote": "Remote: `${ref}`",
+				"status": {
+					"title": "Trạng thái: ${status}",
+					"upToDate": "Đã cập nhật",
+					"behind": "Chậm hơn remote",
+					"ahead": "Đi trước remote",
+					"diverged": "Phân nhánh với remote",
+					"detachedNoCompare": "HEAD tách rời, không so sánh với remote",
+					"fetchFailed": "Không thể lấy trạng thái remote"
+				},
+				"autoUpdatePaused": "Đã tạm dừng cập nhật tự động (có `.noupdate`)",
+				"noRepo": "Không tìm thấy kho Git",
+				"noGit": "Git chưa được cài đặt"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "Lối tắt trên màn hình được tạo tại `${path}`",
 				"startMenuShortcutCreated": "Phím tắt menu bắt đầu được tạo tại `${path}`",
@@ -1948,6 +1968,7 @@
 				"aria-label": "Nhóm và điều hướng"
 			},
 			"operationFailed": "Thao tác không thành công: ${error}",
+			"warmCharCacheFailed": "Không thể làm nóng bộ nhớ đệm nhân vật: ${error}",
 			"shareGroupFailed": "Không chia sẻ được liên kết nhóm: ${error}",
 			"replyInline": {
 				"title": "hồi đáp"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "Tải không thành công: ${error}",
+				"rebindFailed": "Không thể liên kết lại phòng liên đoàn: ${error}",
 				"subtitle": "Kiểm soát kết nối thiết bị chéo; để mặc định trong hầu hết các trường hợp",
 				"title": "Cài đặt P2P liên kết",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "Quảng trường",
 		"description": "P2P mở cập nhật xã hội, theo dõi và chia sẻ tệp",
 		"bootstrapFailed": "Khởi tạo giao diện xã hội không thành công: ${error}",
+		"connectNodeFailed": "Không thể kết nối tới nút: ${error}",
+		"dwellFailed": "Không thể cập nhật dữ liệu sở thích theo thời gian xem: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "Quảng trường"

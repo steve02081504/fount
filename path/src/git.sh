@@ -113,6 +113,43 @@ git_sync_to_ref() {
 	invoke_repo_git reset --hard "$ref"
 }
 
+# Ensure remote.origin.fetch maps refs/heads/<branch> → origin/<branch>.
+# Adds a single-branch refspec only — never expands to refs/heads/*.
+git_ensure_origin_fetch_branch() {
+	local remote_branch="$1" specs
+	git_valid_branch_name "$remote_branch" || return 1
+	specs=$(invoke_repo_git config --get-all remote.origin.fetch 2>/dev/null) || specs=
+	if printf '%s\n' "$specs" | grep -qE '^(\+)?refs/heads/\*:refs/remotes/origin/\*$'; then
+		return 0
+	fi
+	if printf '%s\n' "$specs" | grep -qxF "+refs/heads/${remote_branch}:refs/remotes/origin/${remote_branch}"; then
+		return 0
+	fi
+	if printf '%s\n' "$specs" | grep -qxF "refs/heads/${remote_branch}:refs/remotes/origin/${remote_branch}"; then
+		return 0
+	fi
+	invoke_repo_git config --add remote.origin.fetch "+refs/heads/${remote_branch}:refs/remotes/origin/${remote_branch}"
+}
+
+# Point local branch at origin/<name> without requiring a prior wildcard fetch refspec.
+# `git branch --set-upstream-to` rejects one-shot remote-tracking refs under single-branch clones;
+# add the one head to remote.origin.fetch (not *) then set branch.*.remote / merge.
+git_track_origin_branch() {
+	local branch="$1"
+	local origin_ref="${2:-origin/$branch}"
+	local remote_branch
+	case "$origin_ref" in
+	origin/*) remote_branch="${origin_ref#origin/}" ;;
+	*)
+		print_i18n_yellow 'git.remoteRefUnavailable' 'ref' "$origin_ref" >&2
+		return 1
+		;;
+	esac
+	git_ensure_origin_fetch_branch "$remote_branch" || return 1
+	invoke_repo_git config "branch.${branch}.remote" origin || return 1
+	invoke_repo_git config "branch.${branch}.merge" "refs/heads/${remote_branch}"
+}
+
 # Switch/create local branch at start_point (default origin/<branch>). Does not move other branches.
 git_checkout_branch() {
 	local branch="$1"
@@ -125,7 +162,7 @@ git_checkout_branch() {
 	invoke_repo_git clean -fd || return 1
 	invoke_repo_git checkout -B "$branch" "$start_point" || return 1
 	case "$start_point" in
-	origin/*) invoke_repo_git branch --set-upstream-to "$start_point" "$branch" >/dev/null ;;
+	origin/*) git_track_origin_branch "$branch" "$start_point" || return 1 ;;
 	esac
 }
 
@@ -166,6 +203,83 @@ git_reset_and_clean() {
 	fi
 	if git_sync_to_ref origin/master; then
 		invoke_repo_git gc --aggressive --prune=now --force
+	fi
+}
+
+# $1 = version.status.* suffix; $2 = green|yellow| (default plain stdout).
+fount_print_version_status() {
+	local text color="${2:-}"
+	text=$(get_i18n "version.status.$1")
+	case "$color" in
+	green) print_i18n_green 'version.status.title' 'status' "$text" ;;
+	yellow) print_i18n_yellow 'version.status.title' 'status' "$text" >&2 ;;
+	*) get_i18n 'version.status.title' 'status' "$text" ;;
+	esac
+}
+
+# $1 = branch name, or HEAD for detached.
+fount_print_version_branch() {
+	local text="$1"
+	if [ "$text" = "HEAD" ]; then
+		text=$(get_i18n 'version.branch.detached')
+	fi
+	get_i18n 'version.branch.title' 'branch' "$text"
+}
+
+# Print branch, HEAD sha, and whether the current branch tip matches origin.
+fount_show_version() {
+	local branch sha remote_sha merge_base
+	if ! command -v git &>/dev/null; then
+		print_i18n_yellow 'version.noGit' >&2
+		return 1
+	fi
+	if [ ! -d "$FOUNT_DIR/.git" ]; then
+		print_i18n_yellow 'version.noRepo' >&2
+		return 1
+	fi
+
+	branch=$(invoke_repo_git rev-parse --abbrev-ref HEAD 2>/dev/null) || branch=HEAD
+	sha=$(invoke_repo_git rev-parse HEAD 2>/dev/null) || {
+		print_i18n_yellow 'version.noRepo' >&2
+		return 1
+	}
+
+	fount_print_version_branch "$branch"
+	get_i18n 'version.commit' 'ref' "$sha"
+
+	if [ -f "$FOUNT_DIR/.noupdate" ]; then
+		get_i18n 'version.autoUpdatePaused'
+	fi
+
+	if [ "$branch" = "HEAD" ]; then
+		fount_print_version_status detachedNoCompare
+		return 0
+	fi
+
+	if ! git_fetch_remote_branch "$branch"; then
+		fount_print_version_status fetchFailed yellow
+		return 1
+	fi
+	remote_sha=$(invoke_repo_git rev-parse "origin/$branch" 2>/dev/null) || {
+		fount_print_version_status fetchFailed yellow
+		return 1
+	}
+	get_i18n 'version.remote' 'ref' "$remote_sha"
+
+	if [ "$sha" = "$remote_sha" ]; then
+		fount_print_version_status upToDate green
+		return 0
+	fi
+	merge_base=$(invoke_repo_git merge-base HEAD "origin/$branch" 2>/dev/null) || {
+		fount_print_version_status diverged yellow
+		return 0
+	}
+	if [ "$merge_base" = "$sha" ]; then
+		fount_print_version_status behind yellow
+	elif [ "$merge_base" = "$remote_sha" ]; then
+		fount_print_version_status ahead
+	else
+		fount_print_version_status diverged yellow
 	fi
 }
 

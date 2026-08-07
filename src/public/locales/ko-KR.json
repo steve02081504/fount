@@ -363,6 +363,26 @@
 				"createdNoUpdate": "`.noupdate`를 생성했습니다. 자동 업데이트가 일시 중지되었습니다.",
 				"unknownTarget": "'${target}'을(를) 식별할 수 없습니다: 알려진 브랜치, 커밋 또는 풀 리퀘스트가 아닙니다."
 			},
+			"version": {
+				"branch": {
+					"title": "브랜치: ${branch}",
+					"detached": "HEAD 분리됨"
+				},
+				"commit": "커밋: `${ref}`",
+				"remote": "원격: `${ref}`",
+				"status": {
+					"title": "상태: ${status}",
+					"upToDate": "최신 상태",
+					"behind": "원격보다 뒤쳐짐",
+					"ahead": "원격보다 앞섬",
+					"diverged": "원격과 분기됨",
+					"detachedNoCompare": "HEAD 분리 상태, 원격과 비교 불가",
+					"fetchFailed": "원격 상태를 가져올 수 없음"
+				},
+				"autoUpdatePaused": "자동 업데이트 일시 중지됨 (`.noupdate` 존재)",
+				"noRepo": "Git 저장소를 찾을 수 없음",
+				"noGit": "Git이 설치되지 않음"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "`${path}`에 바탕화면 바로가기가 생성되었습니다.",
 				"startMenuShortcutCreated": "`${path}`에 시작 메뉴 바로가기가 생성되었습니다.",
@@ -1948,6 +1968,7 @@
 				"aria-label": "그룹 및 탐색"
 			},
 			"operationFailed": "작업 실패: ${error}",
+			"warmCharCacheFailed": "캐릭터 캐시 준비 실패: ${error}",
 			"shareGroupFailed": "그룹 링크 공유 실패: ${error}",
 			"replyInline": {
 				"title": "답글"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "불러오기 실패: ${error}",
+				"rebindFailed": "연합 룸 리바인딩 실패: ${error}",
 				"subtitle": "교차 장치 연결을 제어합니다. 대부분의 경우 기본값을 그대로 둡니다.",
 				"title": "연합 P2P 설정",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "정사각형",
 		"description": "P2P 공개 소셜 업데이트, 팔로우 및 파일 공유",
 		"bootstrapFailed": "소셜 인터페이스 초기화 실패: ${error}",
+		"connectNodeFailed": "노드 연결 실패: ${error}",
+		"dwellFailed": "시청 시간 기반 취향 데이터 업데이트 실패: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "정사각형"

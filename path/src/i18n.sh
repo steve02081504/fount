@@ -2,17 +2,25 @@
 # --- Internationalization ---
 
 get_system_locales() {
-	local locales=()
-	if [ -n "$LANG" ]; then locales+=("$(echo "$LANG" | cut -d. -f1 | sed 's/_/-/')"); fi
+	local locales=() entry
+	if [ -n "$LANG" ]; then
+		entry=$(echo "$LANG" | cut -d. -f1 | sed 's/_/-/')
+		[ -n "$entry" ] && locales+=("$entry")
+	fi
 	if [ -n "$LANGUAGE" ]; then
 		IFS=':' read -r -a lang_array <<<"$LANGUAGE"
 		for lang in "${lang_array[@]}"; do
-			locales+=("$(echo "$lang" | cut -d. -f1 | sed 's/_/-/')")
+			entry=$(echo "$lang" | cut -d. -f1 | sed 's/_/-/')
+			[ -n "$entry" ] && locales+=("$entry")
 		done
 	fi
-	if [ -n "$LC_ALL" ]; then locales+=("$(echo "$LC_ALL" | cut -d. -f1 | sed 's/_/-/')"); fi
+	if [ -n "$LC_ALL" ]; then
+		entry=$(echo "$LC_ALL" | cut -d. -f1 | sed 's/_/-/')
+		[ -n "$entry" ] && locales+=("$entry")
+	fi
 	if command -v locale >/dev/null; then
-		locales+=("$(locale -uU 2>/dev/null | cut -d. -f1 | sed 's/_/-/')")
+		entry=$(locale -uU 2>/dev/null | cut -d. -f1 | sed 's/_/-/')
+		[ -n "$entry" ] && locales+=("$entry")
 	fi
 	locales+=("en-UK")
 	# shellcheck disable=SC2207
@@ -38,6 +46,7 @@ get_best_locale() {
 	local available_locales=($available_locales_str)
 
 	for preferred in "${preferred_locales[@]}"; do
+		[ -n "$preferred" ] || continue
 		for available in "${available_locales[@]}"; do
 			if [ "$preferred" = "$available" ]; then
 				echo "$preferred"
@@ -47,8 +56,10 @@ get_best_locale() {
 	done
 
 	for preferred in "${preferred_locales[@]}"; do
+		[ -n "$preferred" ] || continue
 		local prefix
 		prefix=$(echo "$preferred" | cut -d- -f1)
+		[ -n "$prefix" ] || continue
 		for available in "${available_locales[@]}"; do
 			if [[ "$available" == "$prefix"* ]]; then
 				echo "$available"
@@ -99,6 +110,7 @@ i18n_format_param_value() {
 		path)   printf '\033[36m%s\033[0m' "$param_value" ; return ;;
 		ref)    printf '\033[34m%s\033[0m' "$param_value" ; return ;;
 		branch) printf '\033[33m%s\033[0m' "$param_value" ; return ;;
+		status) printf '\033[33m%s\033[0m' "$param_value" ; return ;;
 		target) printf '\033[34m%s\033[0m' "$param_value" ; return ;;
 		esac
 	fi
