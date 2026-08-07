@@ -1,6 +1,6 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { loadDraftIntoComposer, saveComposerDraft } from '../composer.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
+import { getDraft } from '../endpoints/drafts.mjs'
 import { focusComposer, switchView } from '../navigation.mjs'
 import { state } from '../state.mjs'
 import { removeDraft } from '../views/drafts.mjs'
@@ -26,7 +26,7 @@ export async function handleDraftsClick(target) {
 	if (openBtn instanceof HTMLElement && openBtn.dataset.openDraft) {
 		const draftId = openBtn.dataset.openDraft
 		try {
-			const row = await socialApi(`/drafts/${encodeURIComponent(draftId)}`)
+			const row = await getDraft(draftId)
 			await switchView('feed')
 			await loadDraftIntoComposer(row)
 			await focusComposer()

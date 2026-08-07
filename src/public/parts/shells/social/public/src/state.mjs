@@ -39,3 +39,11 @@ export const state = {
 	/** 收件箱 Tab：`all` | `mention` | `reply` | `like` | `follow` | `repost` */
 	notificationsFilter: 'all',
 }
+
+/**
+ * 读取当前观看者（operator）entityHash。
+ * @returns {string | null} 当前观看者（operator）entityHash
+ */
+export function viewerEntityHash() {
+	return state.viewerEntityHash
+}

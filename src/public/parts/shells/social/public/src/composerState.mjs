@@ -2,7 +2,8 @@ import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { groupRefLabel, renderGroupRefBlockHtml } from '../shared/groupRef.mjs'
 import { clearCwSensitive } from '/parts/shells:chat/shared/composerAttachmentFields.mjs'
 
-import { chatApi, socialApi } from './lib/apiClient.mjs'
+import { getOwnAlbums } from './endpoints/albums.mjs'
+import { getChatGroups } from './endpoints/chatBridge.mjs'
 import { renderQuoteBlockHtml } from './lib/display.mjs'
 import { renderMediaPreview } from './mediaRender.mjs'
 import { state } from './state.mjs'
@@ -97,7 +98,7 @@ export async function loadAlbumPickerOptions() {
 	if (!(select instanceof HTMLSelectElement)) return
 	select.replaceChildren()
 	try {
-		const data = await socialApi('/albums')
+		const data = await getOwnAlbums()
 		const albums = (data.albums || []).filter(album => !album.virtual)
 		if (!albums.length) {
 			field?.classList.add('hidden')
@@ -169,7 +170,7 @@ export async function loadGroupPickerOptions() {
 	if (!select) return
 	select.innerHTML = '<option value="" data-i18n="social.groupRef.pick"></option>'
 	try {
-		const rows = await chatApi('/groups/')
+		const rows = await getChatGroups()
 		const groups = Array.isArray(rows) ? rows : []
 		if (!groups.length) {
 			field?.classList.add('hidden')

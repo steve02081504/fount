@@ -1,5 +1,7 @@
 import { randomUUID } from 'node:crypto'
 
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
+
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { primaryLocaleForUser } from '../../../../../../../scripts/locale.mjs'
 import { resolveSocialEntity } from '../../federation/hosting.mjs'
@@ -52,7 +54,7 @@ export function createPostsMethods(apiContext) {
 				: null
 			if (row) {
 				const { pullPostReactions } = await import('../../federation/reaction/pull.mjs')
-				void pullPostReactions(apiContext.username, owner, String(id)).catch(() => null)
+				pullPostReactions(apiContext.username, owner, String(id)).catch(handleError)
 			}
 			return createPost(apiContext, owner, id, { content, event: row || null })
 		},

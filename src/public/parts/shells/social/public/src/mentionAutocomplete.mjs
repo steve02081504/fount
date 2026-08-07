@@ -6,8 +6,8 @@ import { formatEntityMentionToken } from '/parts/shells:chat/shared/inlineTokenS
 import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
 import { formatEntityAtId, formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 import { sanitizePermissiveHtml } from '/scripts/lib/sanitizeHtml.mjs'
+import { suggestMentions } from './endpoints/mentions.mjs'
 
-const API = '/api/parts/shells:social/mentions/suggest'
 let mentionListboxSeq = 0
 
 /**
@@ -98,12 +98,7 @@ export function attachMentionAutocomplete(textarea) {
 	 * @returns {Promise<void>}
 	 */
 	async function fetchSuggestions(query) {
-		const response = await fetch(`${API}?q=${encodeURIComponent(query)}&limit=12`, { credentials: 'include' })
-		if (!response.ok) {
-			hide()
-			return
-		}
-		const data = await response.json()
+		const data = await suggestMentions(query, 12)
 		render(data.suggestions || [])
 	}
 

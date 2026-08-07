@@ -16,9 +16,7 @@ import { renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { formatSocialPostHref } from '../../shared/runUri.mjs'
-import { state } from '../state.mjs'
-
-import { viewerEntityHash } from './apiClient.mjs'
+import { state, viewerEntityHash } from '../state.mjs'
 
 /** 重导出实体 at-id 格式化函数。 */
 export { formatEntityAtId }

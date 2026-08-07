@@ -4115,6 +4115,7 @@
 		},
 		"settings": {
 			"title": "Samfélagsstillingar",
+			"loadFailed": "Ekki tókst að hlaða stillingum: ${error}",
 			"back": {
 				"aria-label": "Til baka í prófíl"
 			},
@@ -4280,6 +4281,7 @@
 					"tip": "Endurnýjaðu fréttir"
 				}
 			},
+			"loadFailed": "Ekki tókst að hlaða straumi: ${error}",
 			"newPosts": "Það eru nýjar fréttir, smelltu til að skoða",
 			"tabsLabel": {
 				"aria-label": "Röðun straums"
@@ -4305,6 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Mælt er með reikningi",
+			"loadFailed": "Ekki tókst að hlaða Kanna: ${error}",
 			"posts": "Nýjustu færslur",
 			"mediaOnly": "Eingöngu fjölmiðla"
 		},
@@ -4319,7 +4322,8 @@
 			"post_note": "${author} bætti upplýsingum við færsluna þína",
 			"live_started": "${author} hóf streymi í beinni",
 			"view": "Athugaðu",
-			"markAllRead": "Merktu allt sem lesið"
+			"markAllRead": "Merktu allt sem lesið",
+			"loadFailed": "Hleðsla tilkynninga mistókst: ${error}"
 		},
 		"saved": {
 			"all": "Allt",
@@ -4350,6 +4354,7 @@
 			"searchEmpty": "Ekkert samsvarandi safn",
 			"folderEmpty": "Þessi mappa er tóm",
 			"emptyHint": "Smelltu á bókamerkið þegar þú skoðar fréttirnar til að vista þær hér",
+			"loadFailed": "Mistókst að hlaða vistuðum færslum: ${error}",
 			"search": {
 				"placeholder": "Leita í eftirlæti..."
 			}
@@ -4370,6 +4375,7 @@
 		},
 		"profile": {
 			"edit": "Breyta prófíl",
+			"loadFailed": "Mistókst að hlaða gögnum: ${error}",
 			"viewPosts": "Skoða félagslega prófíla",
 			"settingsBtn": {
 				"aria-label": "Samfélagsstillingar"
@@ -4419,6 +4425,7 @@
 			},
 			"empty": "Ekkert stutt myndband ennþá",
 			"emptyHint": "Það eru engar færslur með myndböndum á eftirfarandi fólki eða opinberum torgum. Prófaðu að birta myndbandsuppfærslu?",
+			"loadFailed": "Ekki tókst að hlaða stuttum myndböndum: ${error}",
 			"compose": "Farðu að setja inn myndband",
 			"back": {
 				"aria-label": "Fara aftur í fréttir"
@@ -4436,6 +4443,8 @@
 		},
 		"live": {
 			"empty": "Engin bein útsending ennþá",
+			"loadFailed": "Ekki tókst að hlaða beinni útsendingu: ${error}",
+			"joinFailed": "Mistókst að tengjast beinni útsendingu: ${error}",
 			"viewers": "${n} manns horfðu á",
 			"likes": "${n} Líkar við",
 			"local": "Staðvært",
@@ -4498,6 +4507,7 @@
 			"trustScore": "Treystu ${score}",
 			"viewTitle": "Leita",
 			"loading": "Leitar…",
+			"loadFailed": "Leit mistókst: ${error}",
 			"sortRecent": "Nýjast",
 			"sortPopular": "Vinsælt",
 			"scopeLocal": "Staðvært",
@@ -4597,6 +4607,7 @@
 			"loading": "Hleður…",
 			"notFound": "Færsla er ekki til eða er ekki sýnileg",
 			"loadFailed": "Mistókst að hlaða, vinsamlegast reyndu aftur síðar",
+			"exportMediaFailed": "Ekki tókst að flytja út fjölmiðil: ${error}",
 			"detailTitle": "Færsla",
 			"back": "Til baka"
 		},
@@ -4660,7 +4671,8 @@
 			"placeholder": "Skrifaðu svar…",
 			"submit": "Svara",
 			"empty": "Ekkert svar ennþá",
-			"emptyHint": "Við skulum skrifa fyrstu greinina og hefja umræðuna"
+			"emptyHint": "Við skulum skrifa fyrsta svarið og hefja umræðuna",
+			"loadFailed": "Ekki tókst að hlaða svörum: ${error}"
 		},
 		"repost": {
 			"placeholder": "Bæta við endurtíst athugasemd (valfrjálst)...",

@@ -2,8 +2,11 @@ import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 import { appendTemplate, renderTemplate } from '/scripts/features/template.mjs'
 import { initTranslations, primaryLocale } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
-import { chatApi, socialApi } from '../lib/apiClient.mjs'
+import { getTranslationPrefs, putTranslationPrefs } from '../endpoints/chatBridge.mjs'
+import { getMutedKeywords, getProfile, putMutedKeywords, updateProfileMeta } from '../endpoints/profile.mjs'
+import { getTaste, putTastePrivacy, rebuildTaste, renameTasteTag } from '../endpoints/taste.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { runWrite } from '../lib/socialWrite.mjs'
 import { state } from '../state.mjs'
@@ -58,10 +61,7 @@ async function renderMutedKeywordsSection(panel, entries) {
 	 * @returns {Promise<object[]>} 服务端条目
 	 */
 	async function persist(next) {
-		const data = await runWrite('mutedKeywords', () => socialApi('/profile/muted-keywords', {
-			method: 'PUT',
-			body: JSON.stringify({ entries: next }),
-		}))
+		const data = await runWrite('mutedKeywords', () => putMutedKeywords(next))
 		const saved = data?.entries || next
 		await paintChips(saved)
 		return saved
@@ -69,39 +69,51 @@ async function renderMutedKeywordsSection(panel, entries) {
 
 	section.querySelector('#mutedKeywordForm')?.addEventListener('submit', event => {
 		event.preventDefault()
-		const input = section.querySelector('#mutedKeywordInput')
-		const matchTags = section.querySelector('#mutedKeywordMatchTags')
-		const pattern = input instanceof HTMLInputElement ? input.value.trim().toLowerCase() : ''
-		if (!pattern) return
-		const next = [
-			...entries.filter(entry => entry.pattern !== pattern),
-			{
-				pattern,
-				matchTags: matchTags instanceof HTMLInputElement ? matchTags.checked : true,
-			},
-		]
-		void persist(next).then(saved => {
-			entries.splice(0, entries.length, ...saved)
-			if (input instanceof HTMLInputElement) input.value = ''
-		})
+		void (async () => {
+			try {
+				const input = section.querySelector('#mutedKeywordInput')
+				const matchTags = section.querySelector('#mutedKeywordMatchTags')
+				const pattern = input instanceof HTMLInputElement ? input.value.trim().toLowerCase() : ''
+				if (!pattern) return
+				const next = [
+					...entries.filter(entry => entry.pattern !== pattern),
+					{
+						pattern,
+						matchTags: matchTags instanceof HTMLInputElement ? matchTags.checked : true,
+					},
+				]
+				const saved = await persist(next)
+				entries.splice(0, entries.length, ...saved)
+				if (input instanceof HTMLInputElement) input.value = ''
+			}
+			catch {
+				/* runWrite 已 toast */
+			}
+		})()
 	})
 
 	chips.addEventListener('click', event => {
-		const chip = event.target instanceof Element ? event.target.closest('.muted-keyword-chip') : null
-		if (!(chip instanceof HTMLElement) || !chip.dataset.pattern) return
-		const next = entries.filter(entry => entry.pattern !== chip.dataset.pattern)
-		void persist(next).then(saved => {
-			entries.splice(0, entries.length, ...saved)
-		})
+		void (async () => {
+			try {
+				const chip = event.target instanceof Element ? event.target.closest('.muted-keyword-chip') : null
+				if (!(chip instanceof HTMLElement) || !chip.dataset.pattern) return
+				const next = entries.filter(entry => entry.pattern !== chip.dataset.pattern)
+				const saved = await persist(next)
+				entries.splice(0, entries.length, ...saved)
+			}
+			catch {
+				/* runWrite 已 toast */
+			}
+		})()
 	})
 }
 
 /**
  * @param {HTMLElement} panel 面板
+ * @param {{ prefs: { autoTranslate: boolean } }} data 已成功加载的翻译偏好
  * @returns {Promise<void>}
  */
-async function renderTranslationPrefsSection(panel) {
-	const data = await chatApi('/translation-prefs').catch(() => ({ prefs: { autoTranslate: false } }))
+async function renderTranslationPrefsSection(panel, data) {
 	const prefs = data?.prefs || { autoTranslate: false }
 	const section = await renderTemplate('settings_toggle_card', {
 		titleKey: 'social.settings.autoTranslateTitle',
@@ -112,11 +124,15 @@ async function renderTranslationPrefsSection(panel) {
 	})
 	panel.appendChild(section)
 	section.querySelector('#socialAutoTranslate')?.addEventListener('change', event => {
-		const checked = event.target instanceof HTMLInputElement && event.target.checked
-		void runWrite('translationPrefs', () => chatApi('/translation-prefs', {
-			method: 'PUT',
-			body: JSON.stringify({ prefs: { ...prefs, autoTranslate: checked } }),
-		}))
+		void (async () => {
+			try {
+				const checked = event.target instanceof HTMLInputElement && event.target.checked
+				await runWrite('translationPrefs', () => putTranslationPrefs({ ...prefs, autoTranslate: checked }))
+			}
+			catch {
+				/* runWrite 已 toast */
+			}
+		})()
 	})
 }
 
@@ -135,14 +151,16 @@ async function renderPrivacySection(panel, socialMeta) {
 	})
 	panel.appendChild(section)
 	section.querySelector('#exploreProtectedInput')?.addEventListener('change', async event => {
-		const checked = event.target instanceof HTMLInputElement && event.target.checked
-		await socialApi('/profile/meta', {
-			method: 'POST',
-			body: JSON.stringify({ hideFromDiscovery: checked }),
-		})
-		state.profileSocialMeta = {
-			...state.profileSocialMeta,
-			hideFromDiscovery: checked,
+		try {
+			const checked = event.target instanceof HTMLInputElement && event.target.checked
+			await updateProfileMeta({ hideFromDiscovery: checked })
+			state.profileSocialMeta = {
+				...state.profileSocialMeta,
+				hideFromDiscovery: checked,
+			}
+		}
+		catch (error) {
+			handleError('social.settings.loadFailed', {}, error)
 		}
 	})
 }
@@ -169,22 +187,42 @@ async function renderTasteSection(panel, data) {
 	function persistPrivacy() {
 		const prefs = section.querySelector('#tastePublishPreferences')
 		const reactions = section.querySelector('#tastePublishReactions')
-		return runWrite('tastePrivacy', () => socialApi('/taste', {
-			method: 'PUT',
-			body: JSON.stringify({
-				privacy: {
-					publishPreferences: prefs instanceof HTMLInputElement ? prefs.checked : true,
-					publishReactions: reactions instanceof HTMLInputElement ? reactions.checked : true,
-				},
-			}),
+		return runWrite('tastePrivacy', () => putTastePrivacy({
+			publishPreferences: prefs instanceof HTMLInputElement ? prefs.checked : true,
+			publishReactions: reactions instanceof HTMLInputElement ? reactions.checked : true,
 		}))
 	}
 
-	section.querySelector('#tastePublishPreferences')?.addEventListener('change', () => { void persistPrivacy() })
-	section.querySelector('#tastePublishReactions')?.addEventListener('change', () => { void persistPrivacy() })
+	section.querySelector('#tastePublishPreferences')?.addEventListener('change', () => {
+		void (async () => {
+			try {
+				await persistPrivacy()
+			}
+			catch {
+				/* runWrite 已 toast */
+			}
+		})()
+	})
+	section.querySelector('#tastePublishReactions')?.addEventListener('change', () => {
+		void (async () => {
+			try {
+				await persistPrivacy()
+			}
+			catch {
+				/* runWrite 已 toast */
+			}
+		})()
+	})
 	section.querySelector('#tasteRebuildButton')?.addEventListener('click', () => {
-		void runWrite('tasteRebuild', () => socialApi('/taste/rebuild', { method: 'POST' }))
-			.then(() => loadSettings())
+		void (async () => {
+			try {
+				await runWrite('tasteRebuild', () => rebuildTaste())
+				await loadSettings()
+			}
+			catch {
+				/* runWrite 已 toast */
+			}
+		})()
 	})
 
 	const list = section.querySelector('[data-taste-list]')
@@ -206,14 +244,19 @@ async function renderTasteSection(panel, data) {
 	for (const form of list.querySelectorAll('.taste-rename-form'))
 		form.addEventListener('submit', event => {
 			event.preventDefault()
-			const tagHash = form.getAttribute('data-tag-hash')
-			const input = form.querySelector('input')
-			const label = input instanceof HTMLInputElement ? input.value.trim() : ''
-			if (!tagHash || !label) return
-			void runWrite('tasteName', () => socialApi('/taste/names', {
-				method: 'POST',
-				body: JSON.stringify({ tagHash, label, locale: primaryLocale() }),
-			})).then(() => loadSettings())
+			void (async () => {
+				try {
+					const tagHash = form.getAttribute('data-tag-hash')
+					const input = form.querySelector('input')
+					const label = input instanceof HTMLInputElement ? input.value.trim() : ''
+					if (!tagHash || !label) return
+					await runWrite('tasteName', () => renameTasteTag(tagHash, label, primaryLocale()))
+					await loadSettings()
+				}
+				catch {
+					/* runWrite 已 toast */
+				}
+			})()
 		})
 }
 
@@ -226,10 +269,15 @@ async function renderSafetySection(panel) {
 	panel.appendChild(section)
 	await renderBlocklist(section.querySelector('#blocklistSection'))
 	section.addEventListener('click', async event => {
-		const target = event.target
-		if (!(target instanceof HTMLElement)) return
-		const { handleProfileNavClick } = await import('../actions/profileNavActions.mjs')
-		await handleProfileNavClick(target)
+		try {
+			const target = event.target
+			if (!(target instanceof HTMLElement)) return
+			const { handleProfileNavClick } = await import('../actions/profileNavActions.mjs')
+			await handleProfileNavClick(target)
+		}
+		catch (error) {
+			handleError('social.settings.loadFailed', {}, error)
+		}
 	})
 }
 
@@ -240,13 +288,24 @@ async function renderSafetySection(panel) {
 export async function loadSettings() {
 	const panel = document.getElementById('settingsPanel')
 	if (!panel) return
-	const [taste, muted, profile] = await Promise.all([
-		socialApi('/taste').catch(() => ({ tags: [], privacy: {} })),
-		socialApi('/profile/muted-keywords').catch(() => ({ entries: [] })),
-		state.viewerEntityHash
-			? socialApi(`/profile/${state.viewerEntityHash}`).catch(() => ({}))
-			: Promise.resolve({}),
-	])
+	let taste
+	let muted
+	let profile
+	let translation
+	try {
+		;[taste, muted, profile, translation] = await Promise.all([
+			getTaste(),
+			getMutedKeywords(),
+			state.viewerEntityHash
+				? getProfile(state.viewerEntityHash)
+				: Promise.resolve({}),
+			getTranslationPrefs(),
+		])
+	}
+	catch (error) {
+		handleError('social.settings.loadFailed', {}, error)
+		return
+	}
 	const socialMeta = profile.socialMeta || state.profileSocialMeta || {}
 	state.profileSocialMeta = socialMeta
 	const mutedEntries = [...muted.entries || []]
@@ -255,7 +314,7 @@ export async function loadSettings() {
 	await renderPrivacySection(panel, socialMeta)
 	await renderTasteSection(panel, taste)
 	await renderMutedKeywordsSection(panel, mutedEntries)
-	await renderTranslationPrefsSection(panel)
+	await renderTranslationPrefsSection(panel, translation)
 	await renderSafetySection(panel)
 	await initTranslations()
 }

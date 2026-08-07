@@ -4087,6 +4087,7 @@ export type LocaleData = {
 		}
 		settings: {
 			title: string
+			loadFailed: string
 			back: {
 				'aria-label': string
 			}
@@ -4254,6 +4255,7 @@ export type LocaleData = {
 					tip: string
 				}
 			}
+			loadFailed: string
 			newPosts: string
 			tabsLabel: {
 				'aria-label': string
@@ -4279,6 +4281,7 @@ export type LocaleData = {
 		}
 		explore: {
 			accounts: string
+			loadFailed: string
 			posts: string
 			mediaOnly: string
 		}
@@ -4294,6 +4297,7 @@ export type LocaleData = {
 			live_started: string
 			view: string
 			markAllRead: string
+			loadFailed: string
 		}
 		saved: {
 			all: string
@@ -4326,6 +4330,7 @@ export type LocaleData = {
 			searchEmpty: string
 			folderEmpty: string
 			emptyHint: string
+			loadFailed: string
 			search: {
 				placeholder: string
 			}
@@ -4346,6 +4351,7 @@ export type LocaleData = {
 		}
 		profile: {
 			edit: string
+			loadFailed: string
 			viewPosts: string
 			settingsBtn: {
 				'aria-label': string
@@ -4395,6 +4401,7 @@ export type LocaleData = {
 			}
 			empty: string
 			emptyHint: string
+			loadFailed: string
 			compose: string
 			back: {
 				'aria-label': string
@@ -4412,6 +4419,8 @@ export type LocaleData = {
 		}
 		live: {
 			empty: string
+			loadFailed: string
+			joinFailed: string
 			viewers: string
 			likes: string
 			local: string
@@ -4476,6 +4485,7 @@ export type LocaleData = {
 			trustScore: string
 			viewTitle: string
 			loading: string
+			loadFailed: string
 			sortRecent: string
 			sortPopular: string
 			scopeLocal: string
@@ -4575,6 +4585,7 @@ export type LocaleData = {
 			loading: string
 			notFound: string
 			loadFailed: string
+			exportMediaFailed: string
 			detailTitle: string
 			back: string
 		}
@@ -4641,6 +4652,7 @@ export type LocaleData = {
 			submit: string
 			empty: string
 			emptyHint: string
+			loadFailed: string
 		}
 		repost: {
 			placeholder: string
@@ -6227,6 +6239,8 @@ export type LocaleKeyParams = {
 	'social.drafts.loadFailed': { error: string | number }
 	'social.drafts.saveFailed': { error: string | number }
 	'social.dwellFailed': { error: string | number }
+	'social.explore.loadFailed': { error: string | number }
+	'social.feed.loadFailed': { error: string | number }
 	'social.feed.repostedBy': { author: string | number }
 	'social.feed.trending.postCount.textContent': { n: string | number }
 	'social.feed.trending.postCount.title': { n: string | number }
@@ -6236,7 +6250,9 @@ export type LocaleKeyParams = {
 	'social.inbox.aggregated.likeTwo': { author1: string | number; author2: string | number }
 	'social.inbox.aggregated.repost': { author1: string | number; author2: string | number; count: string | number }
 	'social.inbox.aggregated.repostTwo': { author1: string | number; author2: string | number }
+	'social.live.joinFailed': { error: string | number }
 	'social.live.likes': { n: string | number }
+	'social.live.loadFailed': { error: string | number }
 	'social.live.postEndedStats': { duration: string | number; likes: string | number; viewers: string | number }
 	'social.live.viewers': { n: string | number }
 	'social.notes.more': { n: string | number }
@@ -6244,18 +6260,26 @@ export type LocaleKeyParams = {
 	'social.notifications.follow': { author: string | number }
 	'social.notifications.like': { author: string | number }
 	'social.notifications.live_started': { author: string | number }
+	'social.notifications.loadFailed': { error: string | number }
 	'social.notifications.mention': { author: string | number }
 	'social.notifications.poll_closed': { author: string | number }
 	'social.notifications.post_note': { author: string | number }
 	'social.notifications.reply': { author: string | number }
 	'social.notifications.repost': { author: string | number }
 	'social.poll.deadline': { deadline: string | number }
+	'social.post.exportMediaFailed': { error: string | number }
 	'social.profile.cabinetsFailed': { error: string | number }
+	'social.profile.loadFailed': { error: string | number }
+	'social.replies.loadFailed': { error: string | number }
 	'social.reply.context': { author: string | number }
+	'social.saved.loadFailed': { error: string | number }
+	'social.search.loadFailed': { error: string | number }
 	'social.search.trustScore': { score: string | number }
+	'social.settings.loadFailed': { error: string | number }
 	'social.settings.taste.weight': { weight: string | number }
 	'social.time.hoursAgo': { n: string | number }
 	'social.time.minutesAgo': { n: string | number }
+	'social.video.loadFailed': { error: string | number }
 	'subfounts.codeExecution.executionFailed': { message: string | number }
 	'subfounts.codeExecution.hostOption': { id: string | number }
 	'subfounts.codeExecution.subfountOption': { deviceId: string | number; id: string | number }

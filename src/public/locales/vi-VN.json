@@ -4115,6 +4115,7 @@
 		},
 		"settings": {
 			"title": "Cài đặt mạng xã hội",
+			"loadFailed": "Không tải được cài đặt: ${error}",
 			"back": {
 				"aria-label": "Quay lại hồ sơ"
 			},
@@ -4280,6 +4281,7 @@
 					"tip": "Làm mới tin tức"
 				}
 			},
+			"loadFailed": "Không tải được bảng tin: ${error}",
 			"newPosts": "Có tin mới, bấm vào để xem",
 			"tabsLabel": {
 				"aria-label": "Sắp xếp bảng tin"
@@ -4305,6 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Tài khoản được đề xuất",
+			"loadFailed": "Không tải được trang khám phá: ${error}",
 			"posts": "bài viết mới nhất",
 			"mediaOnly": "chỉ phương tiện truyền thông"
 		},
@@ -4319,7 +4322,8 @@
 			"post_note": "${author} đã thêm thông tin vào bài đăng của bạn",
 			"live_started": "${author} đã bắt đầu phát trực tiếp",
 			"view": "Kiểm tra",
-			"markAllRead": "Đánh dấu tất cả là đã đọc"
+			"markAllRead": "Đánh dấu tất cả là đã đọc",
+			"loadFailed": "Không tải được thông báo: ${error}"
 		},
 		"saved": {
 			"all": "tất cả",
@@ -4350,6 +4354,7 @@
 			"searchEmpty": "Không có bộ sưu tập phù hợp",
 			"folderEmpty": "Thư mục này trống",
 			"emptyHint": "Bấm vào dấu trang khi duyệt tin để lưu vào đây",
+			"loadFailed": "Không tải được bài đã lưu: ${error}",
 			"search": {
 				"placeholder": "Tìm kiếm yêu thích…"
 			}
@@ -4365,11 +4370,12 @@
 			},
 			"empty": "Bản nháp trống",
 			"saveFailed": "Không thể lưu bản nháp: ${error}",
-			"loadFailed": "Không mở được bản nháp: ${error}",
+			"loadFailed": "Không tải được bản nháp: ${error}",
 			"deleteFailed": "Không thể xóa bản nháp: ${error}"
 		},
 		"profile": {
 			"edit": "Chỉnh sửa hồ sơ",
+			"loadFailed": "Không tải được hồ sơ: ${error}",
 			"viewPosts": "Xem hồ sơ xã hội",
 			"settingsBtn": {
 				"aria-label": "Cài đặt mạng xã hội"
@@ -4419,6 +4425,7 @@
 			},
 			"empty": "Chưa có video ngắn",
 			"emptyHint": "Không có bài đăng nào có video trong những người sau đây hoặc các ô công khai. Hãy thử đăng một bản cập nhật video?",
+			"loadFailed": "Không tải được video ngắn: ${error}",
 			"compose": "Đi đăng một video",
 			"back": {
 				"aria-label": "Quay lại tin tức"
@@ -4436,6 +4443,8 @@
 		},
 		"live": {
 			"empty": "Chưa có phát sóng trực tiếp",
+			"loadFailed": "Không tải được phát trực tiếp: ${error}",
+			"joinFailed": "Không thể kết nối phát trực tiếp: ${error}",
 			"viewers": "${n} người đã xem",
 			"likes": "${n} Thích",
 			"local": "máy cục bộ",
@@ -4498,6 +4507,7 @@
 			"trustScore": "Tin tưởng ${score}",
 			"viewTitle": "tìm kiếm",
 			"loading": "Đang tìm kiếm…",
+			"loadFailed": "Không tải được tìm kiếm: ${error}",
 			"sortRecent": "cập nhật",
 			"sortPopular": "Phổ biến",
 			"scopeLocal": "máy cục bộ",
@@ -4597,6 +4607,7 @@
 			"loading": "đang tải…",
 			"notFound": "Bài đăng không tồn tại hoặc không hiển thị",
 			"loadFailed": "Tải không thành công, vui lòng thử lại sau",
+			"exportMediaFailed": "Không xuất được phương tiện: ${error}",
 			"detailTitle": "Bưu kiện",
 			"back": "Quay lại"
 		},
@@ -4660,7 +4671,8 @@
 			"placeholder": "Viết thư trả lời…",
 			"submit": "Trả lời",
 			"empty": "Chưa có trả lời",
-			"emptyHint": "Hãy viết bài đầu tiên và bắt đầu thảo luận"
+			"emptyHint": "Hãy viết bình luận đầu tiên và bắt đầu thảo luận",
+			"loadFailed": "Không tải được trả lời: ${error}"
 		},
 		"repost": {
 			"placeholder": "Thêm bình luận tweet lại (tùy chọn)…",

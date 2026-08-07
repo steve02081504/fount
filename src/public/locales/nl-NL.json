@@ -4115,6 +4115,7 @@
 		},
 		"settings": {
 			"title": "Sociale instellingen",
+			"loadFailed": "Instellingen laden mislukt: ${error}",
 			"back": {
 				"aria-label": "Terug naar profiel"
 			},
@@ -4280,6 +4281,7 @@
 					"tip": "Nieuws vernieuwen"
 				}
 			},
+			"loadFailed": "Feed laden mislukt: ${error}",
 			"newPosts": "Er is nieuw nieuws, klik om te bekijken",
 			"tabsLabel": {
 				"aria-label": "Feed sorteren"
@@ -4305,6 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Aanbevolen account",
+			"loadFailed": "Ontdekken laden mislukt: ${error}",
 			"posts": "laatste berichten",
 			"mediaOnly": "alleen media"
 		},
@@ -4319,7 +4322,8 @@
 			"post_note": "${author} heeft informatie aan je bericht toegevoegd",
 			"live_started": "${author} is begonnen met livestreamen",
 			"view": "Bekijken",
-			"markAllRead": "Markeer alles als gelezen"
+			"markAllRead": "Markeer alles als gelezen",
+			"loadFailed": "Meldingen laden mislukt: ${error}"
 		},
 		"saved": {
 			"all": "Alle",
@@ -4350,6 +4354,7 @@
 			"searchEmpty": "Geen bijpassende collectie",
 			"folderEmpty": "Deze map is leeg",
 			"emptyHint": "Tik op het bladwijzericoon tijdens het browsen om berichten hier op te slaan",
+			"loadFailed": "Opgeslagen berichten laden mislukt: ${error}",
 			"search": {
 				"placeholder": "Favorieten zoeken…"
 			}
@@ -4370,6 +4375,7 @@
 		},
 		"profile": {
 			"edit": "Profiel bewerken",
+			"loadFailed": "Kan gegevens niet laden: ${error}",
 			"viewPosts": "Bekijk sociale profielen",
 			"settingsBtn": {
 				"aria-label": "sociale instellingen"
@@ -4419,6 +4425,7 @@
 			},
 			"empty": "Nog geen korte video",
 			"emptyHint": "Er zijn geen berichten met video's van de volgende mensen of openbare pleinen. Probeer een video-update te plaatsen?",
+			"loadFailed": "Korte video’s laden mislukt: ${error}",
 			"compose": "Ga een filmpje posten",
 			"back": {
 				"aria-label": "Terug naar nieuws"
@@ -4436,6 +4443,8 @@
 		},
 		"live": {
 			"empty": "Nog geen live-uitzending",
+			"loadFailed": "Live-uitzending laden mislukt: ${error}",
+			"joinFailed": "Verbinding met live-uitzending mislukt: ${error}",
 			"viewers": "${n} mensen keken",
 			"likes": "${n} Vind ik leuk",
 			"local": "Lokaal",
@@ -4498,6 +4507,7 @@
 			"trustScore": "Vertrouw ${score}",
 			"viewTitle": "Zoeken",
 			"loading": "Zoeken…",
+			"loadFailed": "Zoeken mislukt: ${error}",
 			"sortRecent": "Nieuwste",
 			"sortPopular": "Populair",
 			"scopeLocal": "Lokaal",
@@ -4597,6 +4607,7 @@
 			"loading": "Laden…",
 			"notFound": "Bericht bestaat niet of is niet zichtbaar",
 			"loadFailed": "Laden mislukt. Probeer het later opnieuw",
+			"exportMediaFailed": "Media exporteren mislukt: ${error}",
 			"detailTitle": "Bericht",
 			"back": "Terug"
 		},
@@ -4660,7 +4671,8 @@
 			"placeholder": "Schrijf een antwoord…",
 			"submit": "Antwoord",
 			"empty": "Nog geen antwoord",
-			"emptyHint": "Laten we het eerste artikel schrijven en de discussie starten"
+			"emptyHint": "Schrijf de eerste reactie en start de discussie",
+			"loadFailed": "Reacties laden mislukt: ${error}"
 		},
 		"repost": {
 			"placeholder": "Retweet-opmerking toevoegen (optioneel)…",

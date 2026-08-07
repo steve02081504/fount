@@ -2,7 +2,7 @@ import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { aliasForEntity, setEntityAlias } from '/parts/shells:chat/shared/aliases.mjs'
 import { setCared } from '/parts/shells:chat/shared/care.mjs'
 import { formatChatDmFromSocial } from '../../shared/runUri.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
+import { block, follow, hide, mute } from '../endpoints/relationships.mjs'
 import { promptText } from '../lib/dialog.mjs'
 import {
 	purgeFeedShownAuthor,
@@ -96,10 +96,7 @@ export async function handleProfileNavClick(target) {
 		followButton.dataset.i18n = wasFollowing ? 'social.actions.follow' : 'social.actions.following'
 		followButton.dataset.isFollowing = wasFollowing ? '0' : '1'
 		try {
-			await runWrite('follow', () => socialApi('/relationships/follow', {
-				method: 'POST',
-				body: JSON.stringify({ entityHash, follow: !wasFollowing }),
-			}))
+			await runWrite('follow', () => follow(entityHash, !wasFollowing))
 			if (state.profileEntityHash === entityHash)
 				await loadProfileFor(entityHash)
 			else
@@ -148,29 +145,21 @@ export async function handleProfileNavClick(target) {
 			: blockButton.dataset.hide ? 'hide'
 				: 'mute'
 		const entityHash = blockButton.dataset[kind]
+		const write = kind === 'block' ? block : kind === 'hide' ? hide : mute
 		if (entityHash)
-			await optimisticAuthorFilter(entityHash, () => socialApi(`/relationships/${kind}`, {
-				method: 'POST',
-				body: JSON.stringify({ entityHash, [kind]: true }),
-			}), kind)
+			await optimisticAuthorFilter(entityHash, () => write(entityHash, true), kind)
 	}
 
 	const unblockButton = target.closest('[data-unblock]')
 	if (unblockButton instanceof HTMLElement && unblockButton.dataset.unblock) {
-		await socialApi('/relationships/block', {
-			method: 'POST',
-			body: JSON.stringify({ entityHash: unblockButton.dataset.unblock, block: false }),
-		})
+		await block(unblockButton.dataset.unblock, false)
 		const section = document.getElementById('blocklistSection')
 		if (section) await renderBlocklist(section)
 	}
 
 	const unhideButton = target.closest('[data-unhide]')
 	if (unhideButton instanceof HTMLElement && unhideButton.dataset.unhide) {
-		await socialApi('/relationships/hide', {
-			method: 'POST',
-			body: JSON.stringify({ entityHash: unhideButton.dataset.unhide, hide: false }),
-		})
+		await hide(unhideButton.dataset.unhide, false)
 		const section = document.getElementById('blocklistSection')
 		if (section) await renderBlocklist(section)
 	}

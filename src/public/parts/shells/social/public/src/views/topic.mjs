@@ -1,5 +1,6 @@
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { followTopic, getFollowedTopics, getTopicPosts } from '../endpoints/topics.mjs'
 import { mountEmptyState } from '../lib/emptyState.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { activateView } from '../viewChrome.mjs'
@@ -31,10 +32,7 @@ export function initTopicView() {
 		if (!tag) return
 		const isFollowed = followButton.dataset.followed === 'true'
 		try {
-			await socialApi('/topics/follow', {
-				method: 'POST',
-				body: JSON.stringify({ tag, follow: !isFollowed }),
-			})
+			await followTopic(tag, !isFollowed)
 			paintTopicFollowButton(followButton, !isFollowed)
 		}
 		catch { /* ignore */ }
@@ -67,11 +65,17 @@ export async function loadTopicView(tag) {
 		followButton.dataset.tag = normalizedTag
 		followButton.className = 'btn btn-primary btn-sm'
 		paintTopicFollowButton(followButton, false)
-		socialApi('/topics/followed').then(data => {
-			const tags = (data.tags || []).map(t => t.toLowerCase())
-			const isFollowed = tags.includes(normalizedTag.toLowerCase())
-			paintTopicFollowButton(followButton, isFollowed)
-		}).catch(() => { })
+		void (async () => {
+			try {
+				const isFollowed = (await getFollowedTopics()).tags
+					.map(topicTag => topicTag.toLowerCase())
+					.includes(normalizedTag.toLowerCase())
+				paintTopicFollowButton(followButton, isFollowed)
+			}
+			catch (error) {
+				handleError('social.bootstrapFailed', {}, error)
+			}
+		})()
 	}
 
 	await loadTopicPosts(normalizedTag, false)
@@ -90,10 +94,17 @@ async function loadTopicPosts(tag, append = false) {
 	if (!list) return
 
 	const cursor = append ? view.dataset.topicCursor || '' : ''
-	const params = new URLSearchParams({ limit: '30' })
-	if (cursor) params.set('cursor', cursor)
 
-	const data = await socialApi(`/topics/${encodeURIComponent(tag)}/posts?${params}`).catch(() => ({ items: [] }))
+	let data
+	try {
+		data = await getTopicPosts(tag, { limit: 30, cursor })
+	}
+	catch (error) {
+		handleError('social.bootstrapFailed', {}, error)
+		if (!append)
+			await mountEmptyState(list, { titleKey: 'social.topic.empty', modClass: ' empty-state--hint' })
+		return
+	}
 	if (gen !== topicGeneration) return
 
 	const items = data.items || []
@@ -102,7 +113,14 @@ async function loadTopicPosts(tag, append = false) {
 		return
 	}
 
-	const cards = await Promise.all(items.map(item => buildPostCard(item).catch(() => null)))
+	const cards = await Promise.all(items.map(async item => {
+		try {
+			return await buildPostCard(item)
+		}
+		catch {
+			return null
+		}
+	}))
 	if (gen !== topicGeneration) return
 
 	if (!append) list.replaceChildren(...cards.filter(Boolean))

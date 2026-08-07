@@ -1,6 +1,6 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
-import { socialApi } from './apiClient.mjs'
+import { pollVote } from '../endpoints/posts.mjs'
 
 /**
  * @param {object} poll poll 态
@@ -48,10 +48,7 @@ export async function handlePollVoteClick(target) {
 	if (!actionKey || !Number.isInteger(choice)) return false
 	const [entityHash, postId] = actionKey.split(':')
 	if (!entityHash || !postId) return false
-	await socialApi(`/posts/${encodeURIComponent(entityHash)}/${encodeURIComponent(postId)}/poll-vote`, {
-		method: 'POST',
-		body: JSON.stringify({ choices: [choice] }),
-	})
+	await pollVote(entityHash, postId, [choice])
 	const { refreshVisiblePosts } = await import('../navigation.mjs')
 	await refreshVisiblePosts()
 	return true

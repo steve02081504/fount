@@ -1,5 +1,6 @@
-import { socialApi, viewerEntityHash } from '../lib/apiClient.mjs'
+import { createAlbum, deleteAlbum, getAlbumDetail, getEntityAlbums, updateAlbum } from '../endpoints/albums.mjs'
 import { buildPostCard } from '../postCard.mjs'
+import { viewerEntityHash } from '../state.mjs'
 import { bindVisibilityPicker, readVisibilityPicker, renderVisibilityPickerHtml, visibilityDisplay } from '../visibilityPicker.mjs'
 import { openDialogFromTemplate } from '/scripts/features/dialog.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -29,7 +30,7 @@ function renderAlbumCoverHtml(coverMediaRef, displayName) {
  * @returns {Promise<void>}
  */
 export async function renderProfileAlbums(entityHash, container) {
-	const data = await socialApi(`/albums/${entityHash}`)
+	const data = await getEntityAlbums(entityHash)
 	const albums = data.albums || []
 	const isSelf = viewerEntityHash() === entityHash
 	container.replaceChildren()
@@ -87,7 +88,7 @@ export async function renderProfileAlbums(entityHash, container) {
  * @returns {Promise<void>}
  */
 export async function openAlbumDetail(entityHash, albumId, backContainer = null) {
-	const detail = await socialApi(`/albums/${entityHash}/${albumId}`)
+	const detail = await getAlbumDetail(entityHash, albumId)
 	const album = detail.album
 	const items = detail.items || []
 	const isSelf = viewerEntityHash() === entityHash
@@ -118,11 +119,11 @@ export async function openAlbumDetail(entityHash, albumId, backContainer = null)
 		void openEditAlbumDialog(album, () => openAlbumDetail(entityHash, albumId, panel))
 	})
 	header.querySelector('[data-album-delete-links]')?.addEventListener('click', async () => {
-		await socialApi(`/albums/${albumId}?deletePosts=0`, { method: 'DELETE' })
+		await deleteAlbum(albumId, false)
 		await renderProfileAlbums(entityHash, panel)
 	})
 	header.querySelector('[data-album-delete-posts]')?.addEventListener('click', async () => {
-		await socialApi(`/albums/${albumId}?deletePosts=1`, { method: 'DELETE' })
+		await deleteAlbum(albumId, true)
 		await renderProfileAlbums(entityHash, panel)
 	})
 	panel.appendChild(header)
@@ -157,13 +158,10 @@ async function openCreateAlbumDialog(onDone) {
 		const name = /** @type {HTMLInputElement} */dialog.querySelector('[data-album-name]')?.value?.trim()
 		const description = /** @type {HTMLTextAreaElement} */dialog.querySelector('[data-album-description]')?.value?.trim() || ''
 		if (!name) return
-		await socialApi('/albums', {
-			method: 'POST',
-			body: JSON.stringify({
-				name,
-				description,
-				...readVisibilityPicker(dialog),
-			}),
+		await createAlbum({
+			name,
+			description,
+			...readVisibilityPicker(dialog),
 		})
 		dialog.close()
 		await onDone()
@@ -198,13 +196,10 @@ async function openEditAlbumDialog(album, onDone) {
 		const name = /** @type {HTMLInputElement} */dialog.querySelector('[data-album-name]')?.value?.trim()
 		const description = /** @type {HTMLTextAreaElement} */dialog.querySelector('[data-album-description]')?.value?.trim() || ''
 		if (!name) return
-		await socialApi(`/albums/${album.albumId}/update`, {
-			method: 'POST',
-			body: JSON.stringify({
-				name,
-				description,
-				...readVisibilityPicker(dialog),
-			}),
+		await updateAlbum(album.albumId, {
+			name,
+			description,
+			...readVisibilityPicker(dialog),
 		})
 		dialog.close()
 		await onDone()

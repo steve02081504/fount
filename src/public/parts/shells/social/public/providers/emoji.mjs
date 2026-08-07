@@ -5,7 +5,11 @@ import { primaryLocale, loadPreferredLangs } from '/scripts/i18n/index.mjs'
 import { resolveEmojiItemLabels, resolvePackPresentation } from '/scripts/features/emoji/packPresentation.mjs'
 import { entityFileUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 import { formatEmojiToken } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
-import { SOCIAL_API } from '../src/lib/apiClient.mjs'
+import {
+	discoverEmojiPacks,
+	emojiPackItemUrl,
+	getAvailableEmojiPacks,
+} from '../src/endpoints/emoji.mjs'
 
 /**
  * @param {object} item pack item
@@ -16,18 +20,7 @@ function itemPreviewUrl(item, entityHash) {
 	if (item.vaultPath && entityHash)
 		return entityFileUrl(entityHash, item.vaultPath)
 	if (item.previewUrl) return item.previewUrl
-	return `${SOCIAL_API}/emoji-packs/${encodeURIComponent(entityHash)}/${encodeURIComponent(item.packId || '')}`
-}
-
-/**
- * @param {object} [_context] picker 上下文（未用）
- * @returns {Promise<object[]>} 可用作者包
- */
-async function fetchAvailablePacks(_context = {}) {
-	const r = await fetch(`${SOCIAL_API}/emoji-packs/available`, { credentials: 'include' })
-	if (!r.ok) return []
-	const data = await r.json()
-	return Array.isArray(data.packs) ? data.packs : []
+	return emojiPackItemUrl(entityHash, item.packId || '')
 }
 
 /**
@@ -41,8 +34,9 @@ export default {
 	 * @returns {Promise<object[]>} 规范化 pack 列表
 	 */
 	async listPacks(context = {}) {
+		void context
 		const locales = loadPreferredLangs().length ? loadPreferredLangs() : [primaryLocale()]
-		const packs = await fetchAvailablePacks(context)
+		const packs = await getAvailableEmojiPacks()
 		return packs.map(pack => {
 			const entityHash = pack.entityHash || pack.source?.id
 			const presentation = resolvePackPresentation(pack, locales, pack.infoDefaults || {})
@@ -109,12 +103,8 @@ export default {
 	 */
 	async discoverPacks(options = {}) {
 		const locales = loadPreferredLangs().length ? loadPreferredLangs() : [primaryLocale()]
-		const r = await fetch(`${SOCIAL_API}/emoji-packs/discover?limit=${encodeURIComponent(options.limit || 48)}`, {
-			credentials: 'include',
-		})
-		if (!r.ok) return []
-		const data = await r.json()
-		return (data.offers || []).map(offer => {
+		const offers = await discoverEmojiPacks(options.limit || 48)
+		return offers.map(offer => {
 			const entityHash = offer.sourceId
 			const presentation = resolvePackPresentation(offer, locales, offer.infoDefaults || {})
 			return {

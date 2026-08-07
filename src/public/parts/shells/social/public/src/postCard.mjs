@@ -5,7 +5,6 @@ import { formatSocialPostHref, formatSocialProfileHref } from '../shared/runUri.
 
 import { formatActionKey } from './lib/actionKey.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { viewerEntityHash } from './lib/apiClient.mjs'
 import {
 	authorLabel,
 	entityHandle,
@@ -19,6 +18,7 @@ import { renderEngagementBarHtml } from './lib/engagementBar.mjs'
 import { playHeartAnim } from './lib/heartAnim.mjs'
 import { renderPollHtml } from './lib/pollUi.mjs'
 import { renderMediaHtml } from './mediaRender.mjs'
+import { viewerEntityHash } from './state.mjs'
 
 /**
  * @param {object} liveRef 直播引用
@@ -352,14 +352,11 @@ function bindPostDetailMediaLike(card, entityHash, postId) {
 		likeInFlight = true
 		try {
 			const { applyLikeButtonOptimistic, rollbackLikeButton, runWrite } = await import('./lib/socialWrite.mjs')
-			const { socialApi } = await import('./lib/apiClient.mjs')
+			const { likePost } = await import('./endpoints/posts.mjs')
 			const snapshot = applyLikeButtonOptimistic(likeButton, true)
 			showPostMediaHeart(media)
 			try {
-				await runWrite('like', () => socialApi(`/posts/${entityHash}/${postId}/like`, {
-					method: 'POST',
-					body: JSON.stringify({ like: true }),
-				}))
+				await runWrite('like', () => likePost(entityHash, postId, true))
 			}
 			catch {
 				rollbackLikeButton(likeButton, snapshot)

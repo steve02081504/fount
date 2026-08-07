@@ -2,8 +2,10 @@ import { parseEntityHash } from 'https://esm.sh/@steve02081504/fount-p2p/core/en
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { parseSocialRunUri } from '../shared/runUri.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { publishPost } from './composer.mjs'
+import { connectFederationNode } from './endpoints/p2p.mjs'
 import { state } from './state.mjs'
 import { activateView, currentMainView, MAIN_NAV_VIEWS } from './viewChrome.mjs'
 import { loadDrafts } from './views/drafts.mjs'
@@ -23,9 +25,9 @@ import { loadVideoView } from './views/video.mjs'
  * 打开分享帖时主动连分享者 / 作者节点（跳过本机）。
  * @param {string} entityHash 作者 entityHash
  * @param {string} [sharerNodeHash] 分享者 nodeHash
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function connectNodesFromShare(entityHash, sharerNodeHash) {
+async function connectNodesFromShare(entityHash, sharerNodeHash) {
 	const targets = new Set()
 	if (isHex64(sharerNodeHash)) targets.add(String(sharerNodeHash).toLowerCase())
 	const parsed = parseEntityHash(entityHash)
@@ -33,12 +35,12 @@ function connectNodesFromShare(entityHash, sharerNodeHash) {
 	const self = String(state.viewerNodeHash || '').toLowerCase()
 	for (const targetNodeHash of targets) {
 		if (!targetNodeHash || targetNodeHash === self) continue
-		void fetch('/api/p2p/federation/connect-node', {
-			method: 'POST',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ targetNodeHash }),
-		}).catch(() => { })
+		try {
+			await connectFederationNode(targetNodeHash)
+		}
+		catch (error) {
+			handleError('social.connectNodeFailed', {}, error)
+		}
 	}
 }
 
@@ -179,7 +181,7 @@ export async function applyIncomingNavigation() {
 		return true
 	}
 	if (hashParsed?.subcommand === 'post' && hashParsed.entityHash && hashParsed.postId) {
-		connectNodesFromShare(hashParsed.entityHash, hashParsed.sharerNodeHash)
+		void connectNodesFromShare(hashParsed.entityHash, hashParsed.sharerNodeHash)
 		await loadPostDetail(hashParsed.entityHash.toLowerCase(), hashParsed.postId)
 		return true
 	}

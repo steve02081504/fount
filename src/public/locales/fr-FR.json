@@ -4115,6 +4115,7 @@
 		},
 		"settings": {
 			"title": "Paramètres sociaux",
+			"loadFailed": "Impossible de charger les paramètres : ${error}",
 			"back": {
 				"aria-label": "Retour"
 			},
@@ -4280,6 +4281,7 @@
 					"tip": "Actualiser le fil"
 				}
 			},
+			"loadFailed": "Impossible de charger le fil : ${error}",
 			"newPosts": "Nouvelles publications — cliquez pour voir",
 			"tabsLabel": {
 				"aria-label": "Tri du fil"
@@ -4305,6 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Comptes suggérés",
+			"loadFailed": "Impossible de charger Explorer : ${error}",
 			"posts": "Publications récentes",
 			"mediaOnly": "Médias uniquement"
 		},
@@ -4319,7 +4322,8 @@
 			"post_note": "${author} a ajouté des informations à votre message",
 			"live_started": "${author} a commencé la diffusion en direct",
 			"view": "Voir",
-			"markAllRead": "Marquer tout comme lu"
+			"markAllRead": "Marquer tout comme lu",
+			"loadFailed": "Impossible de charger les notifications : ${error}"
 		},
 		"saved": {
 			"all": "Tout",
@@ -4350,6 +4354,7 @@
 			"searchEmpty": "Aucune collection correspondante",
 			"folderEmpty": "Ce dossier est vide",
 			"emptyHint": "Cliquez sur le signet lorsque vous parcourez les actualités pour l'enregistrer ici",
+			"loadFailed": "Impossible de charger les favoris : ${error}",
 			"search": {
 				"placeholder": "Rechercher des favoris…"
 			}
@@ -4370,6 +4375,7 @@
 		},
 		"profile": {
 			"edit": "Modifier le profil",
+			"loadFailed": "Impossible de charger le profil : ${error}",
 			"viewPosts": "Afficher les profils sociaux",
 			"settingsBtn": {
 				"aria-label": "Paramètres sociaux"
@@ -4419,6 +4425,7 @@
 			},
 			"empty": "Pas encore de courte vidéo",
 			"emptyHint": "Il n'y a pas de messages contenant des vidéos dans les personnes ou sur les places publiques suivantes. Essayez de publier une mise à jour vidéo ?",
+			"loadFailed": "Impossible de charger les courtes vidéos : ${error}",
 			"compose": "Allez poster une vidéo",
 			"back": {
 				"aria-label": "Retour aux actualités"
@@ -4436,6 +4443,8 @@
 		},
 		"live": {
 			"empty": "Pas encore de diffusion en direct",
+			"loadFailed": "Impossible de charger le direct : ${error}",
+			"joinFailed": "Impossible de se connecter au direct : ${error}",
 			"viewers": "${n} personnes ont regardé",
 			"likes": "${n} J'aime",
 			"local": "cet appareil",
@@ -4498,6 +4507,7 @@
 			"trustScore": "Faites confiance à ${score}",
 			"viewTitle": "Recherche",
 			"loading": "Recherche…",
+			"loadFailed": "Échec de la recherche : ${error}",
 			"sortRecent": "Récent",
 			"sortPopular": "Populaire",
 			"scopeLocal": "Cet appareil",
@@ -4597,6 +4607,7 @@
 			"loading": "Chargement…",
 			"notFound": "Le message n'existe pas ou n'est pas visible",
 			"loadFailed": "Échec du chargement, veuillez réessayer plus tard",
+			"exportMediaFailed": "Impossible d’exporter les médias : ${error}",
 			"detailTitle": "Publication",
 			"back": "Retour"
 		},
@@ -4660,7 +4671,8 @@
 			"placeholder": "Écrivez une réponse…",
 			"submit": "Répondre",
 			"empty": "Pas encore de réponse",
-			"emptyHint": "Soyez le premier à répondre et lancez la discussion"
+			"emptyHint": "Soyez le premier à répondre et lancez la discussion",
+			"loadFailed": "Impossible de charger les réponses : ${error}"
 		},
 		"repost": {
 			"placeholder": "Ajouter un commentaire (facultatif)…",

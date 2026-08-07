@@ -4115,6 +4115,7 @@
 		},
 		"settings": {
 			"title": "Ajustes sociales",
+			"loadFailed": "No se pudieron cargar los ajustes: ${error}",
 			"back": {
 				"aria-label": "Información de devolución"
 			},
@@ -4280,6 +4281,7 @@
 					"tip": "Actualizar noticias"
 				}
 			},
+			"loadFailed": "No se pudo cargar el feed: ${error}",
 			"newPosts": "Hay mensajes nuevos, haz clic para ver",
 			"tabsLabel": {
 				"aria-label": "Orden del feed"
@@ -4305,6 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Cuenta recomendada",
+			"loadFailed": "No se pudo cargar Explorar: ${error}",
 			"posts": "últimas publicaciones",
 			"mediaOnly": "solo medios"
 		},
@@ -4319,7 +4322,8 @@
 			"post_note": "${author} información agregada a tu publicación",
 			"live_started": "${author} comenzó la transmisión en vivo",
 			"view": "Controlar",
-			"markAllRead": "Marcar todo como leído"
+			"markAllRead": "Marcar todo como leído",
+			"loadFailed": "No se pudieron cargar las notificaciones: ${error}"
 		},
 		"saved": {
 			"all": "todo",
@@ -4350,6 +4354,7 @@
 			"searchEmpty": "No hay colección coincidente",
 			"folderEmpty": "Esta carpeta está vacía",
 			"emptyHint": "Haz clic en el marcador cuando navegue por las noticias para guardarlas aquí.",
+			"loadFailed": "No se pudieron cargar las publicaciones guardadas: ${error}",
 			"search": {
 				"placeholder": "Buscar favoritos…"
 			}
@@ -4370,6 +4375,7 @@
 		},
 		"profile": {
 			"edit": "Editar perfil",
+			"loadFailed": "No se pudo cargar el perfil: ${error}",
 			"viewPosts": "Ver perfiles sociales",
 			"settingsBtn": {
 				"aria-label": "Ajustes sociales"
@@ -4419,6 +4425,7 @@
 			},
 			"empty": "Aún no hay vídeo corto",
 			"emptyHint": "No hay publicaciones con videos en las siguientes personas o plazas públicas. ¿Intentas publicar una actualización en vídeo?",
+			"loadFailed": "No se pudieron cargar los vídeos cortos: ${error}",
 			"compose": "Ve a publicar un video",
 			"back": {
 				"aria-label": "Volver a noticias"
@@ -4436,6 +4443,8 @@
 		},
 		"live": {
 			"empty": "Aún no hay transmisión en vivo",
+			"loadFailed": "No se pudo cargar la transmisión en vivo: ${error}",
+			"joinFailed": "No se pudo conectar a la transmisión en vivo: ${error}",
 			"viewers": "${n} personas vieron",
 			"likes": "${n} me gusta",
 			"local": "local",
@@ -4498,6 +4507,7 @@
 			"trustScore": "Confianza ${score}",
 			"viewTitle": "buscar",
 			"loading": "Búsqueda…",
+			"loadFailed": "La búsqueda falló: ${error}",
 			"sortRecent": "Recientes",
 			"sortPopular": "Popular",
 			"scopeLocal": "local",
@@ -4597,6 +4607,7 @@
 			"loading": "cargando…",
 			"notFound": "La publicación no existe o no es visible",
 			"loadFailed": "Error al cargar, inténtelo de nuevo más tarde",
+			"exportMediaFailed": "No se pudo exportar el contenido multimedia: ${error}",
 			"detailTitle": "Correo",
 			"back": "Volver"
 		},
@@ -4660,7 +4671,8 @@
 			"placeholder": "Escribe una respuesta…",
 			"submit": "responder",
 			"empty": "Aún no hay respuesta",
-			"emptyHint": "Escribamos el primer artículo y comencemos la discusión."
+			"emptyHint": "Escribamos la primera respuesta y comencemos la discusión.",
+			"loadFailed": "No se pudieron cargar las respuestas: ${error}"
 		},
 		"repost": {
 			"placeholder": "Añadir comentario retuiteado (opcional)…",

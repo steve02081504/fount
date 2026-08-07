@@ -1,4 +1,4 @@
-import { socialApi } from './apiClient.mjs'
+import { createPost } from '../endpoints/posts.mjs'
 import { primaryLocale } from '/scripts/i18n/index.mjs'
 
 /**
@@ -9,13 +9,10 @@ import { primaryLocale } from '/scripts/i18n/index.mjs'
  * @returns {Promise<void>}
  */
 export async function submitReply(entityHash, postId, text) {
-	await socialApi('/posts', {
-		method: 'POST',
-		body: JSON.stringify({
-			text,
-			replyTo: { entityHash, postId },
-			visibility: 'public',
-			locale: document.getElementById('postLocale')?.value.trim() || primaryLocale(),
-		}),
+	await createPost({
+		text,
+		replyTo: { entityHash, postId },
+		visibility: 'public',
+		locale: document.getElementById('postLocale')?.value.trim() || primaryLocale(),
 	})
 }

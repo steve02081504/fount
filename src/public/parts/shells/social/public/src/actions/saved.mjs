@@ -1,5 +1,10 @@
+import {
+	createSavedFolder,
+	deleteSavedFolder,
+	removeSavedPost,
+	renameSavedFolder,
+} from '../endpoints/saved.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
 import { confirmAction, promptText } from '../lib/dialog.mjs'
 import { loadSaved, openSaveModal, setSavedFilter } from '../views/saved.mjs'
 
@@ -19,10 +24,7 @@ export async function handleSavedClick(target) {
 	if (renameFolderButton instanceof HTMLElement && renameFolderButton.dataset.renameFolder) {
 		const name = await promptText('social.saved.renameFolderPrompt')
 		if (!name) return
-		await socialApi('/saved-posts/folders/rename', {
-			method: 'POST',
-			body: JSON.stringify({ folderId: renameFolderButton.dataset.renameFolder, name }),
-		})
+		await renameSavedFolder(renameFolderButton.dataset.renameFolder, name)
 		await loadSaved()
 		return
 	}
@@ -30,10 +32,7 @@ export async function handleSavedClick(target) {
 	const deleteFolderButton = target.closest('[data-delete-folder]')
 	if (deleteFolderButton instanceof HTMLElement && deleteFolderButton.dataset.deleteFolder) {
 		if (!await confirmAction('social.saved.deleteFolderConfirm')) return
-		await socialApi('/saved-posts/folders/delete', {
-			method: 'POST',
-			body: JSON.stringify({ folderId: deleteFolderButton.dataset.deleteFolder }),
-		})
+		await deleteSavedFolder(deleteFolderButton.dataset.deleteFolder)
 		await loadSaved()
 		return
 	}
@@ -41,7 +40,7 @@ export async function handleSavedClick(target) {
 	if (target.closest('#createFolderButton')) {
 		const name = await promptText('social.saved.createFolderPrompt')
 		if (!name) return
-		await socialApi('/saved-posts/folders', { method: 'POST', body: JSON.stringify({ name }) })
+		await createSavedFolder(name)
 		await loadSaved()
 		return
 	}
@@ -60,14 +59,7 @@ export async function handleSavedClick(target) {
 		if (parsed) {
 			const { entityHash, postId } = parsed
 			const folderId = removeSavedButton.dataset.savedFolder || undefined
-			await socialApi('/saved-posts/remove', {
-				method: 'POST',
-				body: JSON.stringify({
-					entityHash,
-					postId,
-					...folderId ? { folderId } : {},
-				}),
-			})
+			await removeSavedPost(entityHash, postId, folderId)
 			await loadSaved()
 		}
 	}
