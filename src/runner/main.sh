@@ -22,6 +22,7 @@ write_taskbar_progress() {
 		printf "\033]9;4;3\007"
 	fi
 }
+# shellcheck disable=SC2329 # cleanup中有调用
 write_taskbar_progress_clear() { taskbar_progress_enabled && printf "\033]9;4;0\007" || true; }
 write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;100\007" || true; }
 
@@ -63,6 +64,7 @@ if [[ -d "/data/data/com.termux" ]]; then
 fi
 
 # 确保在脚本退出时，状态服务器进程能被清理，并清除任务栏进度
+# shellcheck disable=SC2329 # trap中有调用
 cleanup() {
 	if [[ -n "$STATUS_SERVER_PID" ]]; then
 		kill "$STATUS_SERVER_PID" 2>/dev/null

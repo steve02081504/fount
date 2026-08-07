@@ -14,10 +14,10 @@
 				"./path/test/"
 			],
 			"triggers": [
-				"path/src/git.{sh,ps1}",
-				"path/src/update.{sh,ps1}",
+				"path/**/*.{sh,ps1}",
 				"path/test/**",
-				"src/scripts/test/deno/serial.mjs"
+				"src/scripts/test/deno/serial.mjs",
+				"src/scripts/test/core/{repo_root,paths}.mjs"
 			]
 		}
 	]
