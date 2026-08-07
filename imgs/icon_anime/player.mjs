@@ -58,7 +58,8 @@ export const ESC_HOLD_GAP_MS = 500
  * @returns {{ note: (now: number) => boolean, reset: () => void }} note 在达到 holdMs 时返回 true
  */
 export function createEscHold(holdMs = ESC_HOLD_MS, gapMs = ESC_HOLD_GAP_MS) {
-	let start = 0
+	/** @type {number | null} */
+	let start = null
 	let last = 0
 	return {
 		/**
@@ -66,13 +67,14 @@ export function createEscHold(holdMs = ESC_HOLD_MS, gapMs = ESC_HOLD_GAP_MS) {
 		 * @returns {boolean} 是否已连续按住满 holdMs
 		 */
 		note(now) {
-			if (!start || now - last > gapMs) start = now
+			if (start == null || now - last > gapMs) start = now
 			last = now
 			return now - start >= holdMs
 		},
 		/** @returns {void} */
 		reset() {
-			start = last = 0
+			start = null
+			last = 0
 		},
 	}
 }
