@@ -16,15 +16,13 @@ import { closeOverlayModal } from './core/overlayModal.mjs'
  */
 export async function mountTranslationPrefsPanel(panel, footer) {
 	usingTemplates('/parts/shells:chat/src/templates')
-	let data
+	let prefs = { autoTranslate: false }
 	try {
-		data = await getTranslationPrefs()
+		prefs = (await getTranslationPrefs()).prefs || prefs
 	}
 	catch (error) {
 		handleError('chat.hub.operationFailed')(error)
-		data = { prefs: { autoTranslate: false } }
 	}
-	const prefs = data.prefs || { autoTranslate: false }
 	const root = await renderTemplate('hub/prefs/translation', {
 		autoTranslateChecked: prefs.autoTranslate ? 'checked' : '',
 	})

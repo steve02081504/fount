@@ -26,7 +26,10 @@ import {
 } from './messageSurface.mjs'
 import { revokeAllGroupFileBlobUrls } from './render/file.mjs'
 
-/** @returns {void} */
+/**
+ * 销毁当前聊天频道的虚拟列表与相关 Blob URL。
+ * @returns {void}
+ */
 export function destroyChannelVirtualList() {
 	store.messages.channelMessagePipeline?.destroy()
 	store.messages.channelMessagePipeline = null

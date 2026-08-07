@@ -187,6 +187,6 @@ export function wireMessageMediaPlaceholders(container) {
 			return
 		}
 		placeholder.replaceWith(node)
-		bindBlobUrlCleanup(node)
+		bindBlobUrlCleanup(node.parentElement)
 	})
 }

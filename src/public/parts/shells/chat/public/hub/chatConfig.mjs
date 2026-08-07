@@ -65,14 +65,11 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 			getPartList('worlds').catch(() => []),
 			getPartList('personas').catch(() => []),
 			getPartList('plugins').catch(() => []),
-			listGroupPlugins(groupId).catch(error => {
-				handleError('chat.hub.operationFailed')(error)
-				return []
-			}),
+			listGroupPlugins(groupId),
 		])
 
 		const charlist = Array.isArray(initial?.charlist) ? initial.charlist : []
-		const pluginlist = Array.isArray(activePlugins) ? activePlugins : Array.isArray(initial?.pluginlist) ? initial.pluginlist : []
+		const pluginlist = Array.isArray(activePlugins) ? activePlugins : []
 		const freqMap = initial?.frequency_data || {}
 		const worldname = initial?.worldname || ''
 		const personaname = initial?.personaname || ''

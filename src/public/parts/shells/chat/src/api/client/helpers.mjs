@@ -38,7 +38,7 @@ export function createShellJsonNamespace(username, shell, entityHash, dataName, 
 		async update(mutator) {
 			const { loadEntityShellData, assignEntityShellData } = await import('../../../../../../../server/setting_loader.mjs')
 			const current = shape(loadEntityShellData(username, shell, entityHash, dataName) || {})
-			const next = shape(mutator(current) || {})
+			const next = shape(mutator(current))
 			assignEntityShellData(username, shell, entityHash, dataName, next)
 			return next
 		},
