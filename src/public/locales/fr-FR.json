@@ -4115,7 +4115,7 @@
 		},
 		"settings": {
 			"title": "Paramètres sociaux",
-			"loadFailed": "Échec du chargement des paramètres : ${error}",
+			"loadFailed": "Impossible de charger les paramètres : ${error}",
 			"back": {
 				"aria-label": "Retour"
 			},
@@ -4281,7 +4281,7 @@
 					"tip": "Actualiser le fil"
 				}
 			},
-			"loadFailed": "Échec du chargement dynamique : ${error}",
+			"loadFailed": "Impossible de charger le fil : ${error}",
 			"newPosts": "Nouvelles publications — cliquez pour voir",
 			"tabsLabel": {
 				"aria-label": "Tri du fil"
@@ -4307,7 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Comptes suggérés",
-			"loadFailed": "La page d'exploration n'a pas pu se charger : ${error}",
+			"loadFailed": "Impossible de charger Explorer : ${error}",
 			"posts": "Publications récentes",
 			"mediaOnly": "Médias uniquement"
 		},
@@ -4422,7 +4422,7 @@
 			},
 			"empty": "Pas encore de courte vidéo",
 			"emptyHint": "Il n'y a pas de messages contenant des vidéos dans les personnes ou sur les places publiques suivantes. Essayez de publier une mise à jour vidéo ?",
-			"loadFailed": "Échec du chargement de la courte vidéo : ${error}",
+			"loadFailed": "Impossible de charger les courtes vidéos : ${error}",
 			"compose": "Allez poster une vidéo",
 			"back": {
 				"aria-label": "Retour aux actualités"
@@ -4602,7 +4602,7 @@
 			"loading": "Chargement…",
 			"notFound": "Le message n'existe pas ou n'est pas visible",
 			"loadFailed": "Échec du chargement, veuillez réessayer plus tard",
-			"exportMediaFailed": "Échec de l'exportation du média : ${error}",
+			"exportMediaFailed": "Impossible d’exporter les médias : ${error}",
 			"detailTitle": "Publication",
 			"back": "Retour"
 		},
@@ -4667,7 +4667,7 @@
 			"submit": "Répondre",
 			"empty": "Pas encore de réponse",
 			"emptyHint": "Soyez le premier à répondre et lancez la discussion",
-			"loadFailed": "Échec du chargement de la réponse : ${error}"
+			"loadFailed": "Impossible de charger les réponses : ${error}"
 		},
 		"repost": {
 			"placeholder": "Ajouter un commentaire (facultatif)…",

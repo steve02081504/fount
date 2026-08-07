@@ -4115,7 +4115,7 @@
 		},
 		"settings": {
 			"title": "Samfélagsstillingar",
-			"loadFailed": "Mistókst að hlaða stillingum: ${error}",
+			"loadFailed": "Ekki tókst að hlaða stillingum: ${error}",
 			"back": {
 				"aria-label": "Til baka í prófíl"
 			},
@@ -4281,7 +4281,7 @@
 					"tip": "Endurnýjaðu fréttir"
 				}
 			},
-			"loadFailed": "Kvik hleðsla mistókst: ${error}",
+			"loadFailed": "Ekki tókst að hlaða straumi: ${error}",
 			"newPosts": "Það eru nýjar fréttir, smelltu til að skoða",
 			"tabsLabel": {
 				"aria-label": "Röðun straums"
@@ -4307,7 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Mælt er með reikningi",
-			"loadFailed": "Ekki tókst að hlaða könnunarsíðunni: ${error}",
+			"loadFailed": "Ekki tókst að hlaða könnunarsíðu: ${error}",
 			"posts": "Nýjustu færslur",
 			"mediaOnly": "Eingöngu fjölmiðla"
 		},
@@ -4422,7 +4422,7 @@
 			},
 			"empty": "Ekkert stutt myndband ennþá",
 			"emptyHint": "Það eru engar færslur með myndböndum á eftirfarandi fólki eða opinberum torgum. Prófaðu að birta myndbandsuppfærslu?",
-			"loadFailed": "Hleðsla stutt myndbands mistókst: ${error}",
+			"loadFailed": "Ekki tókst að hlaða stuttum myndböndum: ${error}",
 			"compose": "Farðu að setja inn myndband",
 			"back": {
 				"aria-label": "Fara aftur í fréttir"
@@ -4602,7 +4602,7 @@
 			"loading": "Hleður…",
 			"notFound": "Færsla er ekki til eða er ekki sýnileg",
 			"loadFailed": "Mistókst að hlaða, vinsamlegast reyndu aftur síðar",
-			"exportMediaFailed": "Mistókst að flytja út efni: ${error}",
+			"exportMediaFailed": "Ekki tókst að flytja út efni: ${error}",
 			"detailTitle": "Færsla",
 			"back": "Til baka"
 		},
@@ -4667,7 +4667,7 @@
 			"submit": "Svara",
 			"empty": "Ekkert svar ennþá",
 			"emptyHint": "Við skulum skrifa fyrstu greinina og hefja umræðuna",
-			"loadFailed": "Mistókst að hlaða svari: ${error}"
+			"loadFailed": "Ekki tókst að hlaða svörum: ${error}"
 		},
 		"repost": {
 			"placeholder": "Bæta við endurtíst athugasemd (valfrjálst)...",

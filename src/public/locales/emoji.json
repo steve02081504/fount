@@ -4115,7 +4115,7 @@
 		},
 		"settings": {
 			"title": "🏛️⚙️",
-			"loadFailed": "加载设置失败：${error}",
+			"loadFailed": "⚙️📥❌ · ${error}",
 			"back": {
 				"aria-label": "🔙👤"
 			},
@@ -4281,7 +4281,7 @@
 					"tip": "🔄📰"
 				}
 			},
-			"loadFailed": "动态加载失败：${error}",
+			"loadFailed": "📰📥❌ · ${error}",
 			"newPosts": "🆕📰 · 👆👀",
 			"tabsLabel": {
 				"aria-label": "📰🔀"
@@ -4307,7 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "⭐👤",
-			"loadFailed": "探索页加载失败：${error}",
+			"loadFailed": "🔭📥❌ · ${error}",
 			"posts": "🆕📄",
 			"mediaOnly": "🖼️🔒"
 		},
@@ -4422,7 +4422,7 @@
 			},
 			"empty": "🎬📭",
 			"emptyHint": "➕👀/🏛️🌍 🎬📰📭 · 📤🎬❓",
-			"loadFailed": "短视频加载失败：${error}",
+			"loadFailed": "🎬📥❌ · ${error}",
 			"compose": "➡️📤🎬",
 			"back": {
 				"aria-label": "🔙📰"
@@ -4502,7 +4502,7 @@
 			"trustScore": "🤝${score}",
 			"viewTitle": "🔍",
 			"loading": "🔍…",
-			"loadFailed": "搜索失败：${error}",
+			"loadFailed": "🔍❌ · ${error}",
 			"sortRecent": "🆕",
 			"sortPopular": "🔥",
 			"scopeLocal": "💻",
@@ -4602,7 +4602,7 @@
 			"loading": "📥…",
 			"notFound": "📄🚫👀",
 			"loadFailed": "📥❌ · 🔁⏳",
-			"exportMediaFailed": "导出媒体失败：${error}",
+			"exportMediaFailed": "📤🖼️❌ · ${error}",
 			"detailTitle": "📄",
 			"back": "🔙"
 		},
@@ -4667,7 +4667,7 @@
 			"submit": "💬↩️",
 			"empty": "💬📭",
 			"emptyHint": "✍️1️⃣ · ▶️🗣️",
-			"loadFailed": "加载回复失败：${error}"
+			"loadFailed": "💬📥❌ · ${error}"
 		},
 		"repost": {
 			"placeholder": "➕↪️💬（🔘）…",

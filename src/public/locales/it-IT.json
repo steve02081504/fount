@@ -4281,7 +4281,7 @@
 					"tip": "Aggiorna notizie"
 				}
 			},
-			"loadFailed": "Caricamento dinamico non riuscito: ${error}",
+			"loadFailed": "Impossibile caricare il feed: ${error}",
 			"newPosts": "Ci sono nuove novità, clicca per vedere",
 			"tabsLabel": {
 				"aria-label": "Ordinamento del feed"
@@ -4307,7 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Account suggeriti",
-			"loadFailed": "Impossibile caricare la pagina di esplorazione: ${error}",
+			"loadFailed": "Impossibile caricare Esplora: ${error}",
 			"posts": "Ultimi post",
 			"mediaOnly": "Solo media"
 		},
@@ -4422,7 +4422,7 @@
 			},
 			"empty": "Nessun breve video ancora",
 			"emptyHint": "Non ci sono post con video nelle seguenti persone o piazze pubbliche. Prova a postare un video di aggiornamento?",
-			"loadFailed": "Caricamento breve video non riuscito: ${error}",
+			"loadFailed": "Impossibile caricare i video brevi: ${error}",
 			"compose": "Vai a postare un video",
 			"back": {
 				"aria-label": "Torna al feed"
@@ -4602,7 +4602,7 @@
 			"loading": "Caricamento…",
 			"notFound": "Il post non esiste o non è visibile",
 			"loadFailed": "Caricamento non riuscito, riprova più tardi",
-			"exportMediaFailed": "Impossibile esportare il supporto: ${error}",
+			"exportMediaFailed": "Impossibile esportare i contenuti multimediali: ${error}",
 			"detailTitle": "Inviare",
 			"back": "Indietro"
 		},
@@ -4667,7 +4667,7 @@
 			"submit": "Rispondere",
 			"empty": "Nessuna risposta ancora",
 			"emptyHint": "Sii il primo a rispondere",
-			"loadFailed": "Impossibile caricare la risposta: ${error}"
+			"loadFailed": "Impossibile caricare le risposte: ${error}"
 		},
 		"repost": {
 			"placeholder": "Aggiungi un commento di ripubblicazione (facoltativo)…",

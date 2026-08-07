@@ -4115,7 +4115,7 @@
 		},
 		"settings": {
 			"title": "소셜 설정",
-			"loadFailed": "설정을 로드하지 못했습니다: ${error}",
+			"loadFailed": "설정을 불러오지 못했습니다: ${error}",
 			"back": {
 				"aria-label": "프로필로 돌아가기"
 			},
@@ -4281,7 +4281,7 @@
 					"tip": "뉴스 새로고침"
 				}
 			},
-			"loadFailed": "동적 로드 실패: ${error}",
+			"loadFailed": "피드를 불러오지 못했습니다: ${error}",
 			"newPosts": "새로운 소식이 있습니다. 보려면 클릭하세요.",
 			"tabsLabel": {
 				"aria-label": "피드 정렬"
@@ -4307,7 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "추천 계정",
-			"loadFailed": "탐색 페이지를 로드하지 못했습니다: ${error}",
+			"loadFailed": "탐색 페이지를 불러오지 못했습니다: ${error}",
 			"posts": "최신 게시물",
 			"mediaOnly": "미디어 전용"
 		},
@@ -4422,7 +4422,7 @@
 			},
 			"empty": "아직 짧은 동영상이 없습니다.",
 			"emptyHint": "다음 사용자 또는 공개 광장에는 동영상이 포함된 게시물이 없습니다. 동영상 업데이트를 게시해 보시겠습니까?",
-			"loadFailed": "짧은 동영상을 로드하지 못했습니다: ${error}",
+			"loadFailed": "짧은 동영상을 불러오지 못했습니다: ${error}",
 			"compose": "동영상 게시하러 가기",
 			"back": {
 				"aria-label": "뉴스로 돌아가기"
@@ -4502,7 +4502,7 @@
 			"trustScore": "${score} 신뢰",
 			"viewTitle": "찾다",
 			"loading": "수색…",
-			"loadFailed": "검색 실패: ${error}",
+			"loadFailed": "검색에 실패했습니다: ${error}",
 			"sortRecent": "최신",
 			"sortPopular": "인기 있는",
 			"scopeLocal": "이 기기",
@@ -4602,7 +4602,7 @@
 			"loading": "불러오는 중…",
 			"notFound": "게시물이 존재하지 않거나 표시되지 않습니다.",
 			"loadFailed": "불러오지 못했습니다. 나중에 다시 시도해 주세요.",
-			"exportMediaFailed": "미디어 내보내기 실패: ${error}",
+			"exportMediaFailed": "미디어를보내지 못했습니다: ${error}",
 			"detailTitle": "게시",
 			"back": "돌아가기"
 		},
@@ -4667,7 +4667,7 @@
 			"submit": "답글",
 			"empty": "아직 답장이 없습니다",
 			"emptyHint": "첫 번째 기사를 작성하고 토론을 시작하겠습니다",
-			"loadFailed": "답글을 로드하지 못했습니다: ${error}"
+			"loadFailed": "답글을 불러오지 못했습니다: ${error}"
 		},
 		"repost": {
 			"placeholder": "리트윗 댓글 추가(선택)…",

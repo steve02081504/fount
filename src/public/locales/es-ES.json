@@ -4115,7 +4115,7 @@
 		},
 		"settings": {
 			"title": "Ajustes sociales",
-			"loadFailed": "No se pudo cargar la configuración: ${error}",
+			"loadFailed": "No se pudieron cargar los ajustes: ${error}",
 			"back": {
 				"aria-label": "Información de devolución"
 			},
@@ -4281,7 +4281,7 @@
 					"tip": "Actualizar noticias"
 				}
 			},
-			"loadFailed": "Error en la carga dinámica: ${error}",
+			"loadFailed": "No se pudo cargar el feed: ${error}",
 			"newPosts": "Hay mensajes nuevos, haz clic para ver",
 			"tabsLabel": {
 				"aria-label": "Orden del feed"
@@ -4307,7 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Cuenta recomendada",
-			"loadFailed": "La página de exploración no pudo cargarse: ${error}",
+			"loadFailed": "No se pudo cargar Explorar: ${error}",
 			"posts": "últimas publicaciones",
 			"mediaOnly": "solo medios"
 		},
@@ -4422,7 +4422,7 @@
 			},
 			"empty": "Aún no hay vídeo corto",
 			"emptyHint": "No hay publicaciones con videos en las siguientes personas o plazas públicas. ¿Intentas publicar una actualización en vídeo?",
-			"loadFailed": "Error al cargar el vídeo corto: ${error}",
+			"loadFailed": "No se pudieron cargar los vídeos cortos: ${error}",
 			"compose": "Ve a publicar un video",
 			"back": {
 				"aria-label": "Volver a noticias"
@@ -4602,7 +4602,7 @@
 			"loading": "cargando…",
 			"notFound": "La publicación no existe o no es visible",
 			"loadFailed": "Error al cargar, inténtelo de nuevo más tarde",
-			"exportMediaFailed": "No se pudo exportar el medio: ${error}",
+			"exportMediaFailed": "No se pudo exportar el contenido multimedia: ${error}",
 			"detailTitle": "Correo",
 			"back": "Volver"
 		},
@@ -4667,7 +4667,7 @@
 			"submit": "responder",
 			"empty": "Aún no hay respuesta",
 			"emptyHint": "Escribamos el primer artículo y comencemos la discusión.",
-			"loadFailed": "No se pudo cargar la respuesta: ${error}"
+			"loadFailed": "No se pudieron cargar las respuestas: ${error}"
 		},
 		"repost": {
 			"placeholder": "Añadir comentario retuiteado (opcional)…",

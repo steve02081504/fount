@@ -4281,7 +4281,7 @@
 					"tip": "Nachrichten aktualisieren"
 				}
 			},
-			"loadFailed": "Dynamisches Laden fehlgeschlagen: ${error}",
+			"loadFailed": "Feed konnte nicht geladen werden: ${error}",
 			"newPosts": "Neue Beiträge – zum Anzeigen tippen",
 			"tabsLabel": {
 				"aria-label": "Feed-Sortierung"
@@ -4307,7 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Empfohlene Konten",
-			"loadFailed": "Die Erkundungsseite konnte nicht geladen werden: ${error}",
+			"loadFailed": "Entdecken konnte nicht geladen werden: ${error}",
 			"posts": "Neueste Beiträge",
 			"mediaOnly": "Nur Medien"
 		},
@@ -4422,7 +4422,7 @@
 			},
 			"empty": "Noch kein kurzes Video",
 			"emptyHint": "Bei den Personen, denen Sie folgen, und auf der Plaza gibt es noch keine Beiträge mit Videos. Wie wäre es mit einem Video-Beitrag?",
-			"loadFailed": "Das Laden des kurzen Videos ist fehlgeschlagen: ${error}",
+			"loadFailed": "Kurzvideos konnten nicht geladen werden: ${error}",
 			"compose": "Postet ein Video",
 			"back": {
 				"aria-label": "Zurück zu den Nachrichten"
@@ -4667,7 +4667,7 @@
 			"submit": "Antwort",
 			"empty": "Noch keine Antwort",
 			"emptyHint": "Schreiben Sie den ersten Beitrag und starten Sie die Diskussion",
-			"loadFailed": "Antwort konnte nicht geladen werden: ${error}"
+			"loadFailed": "Antworten konnten nicht geladen werden: ${error}"
 		},
 		"repost": {
 			"placeholder": "Retweet-Kommentar hinzufügen (optional)…",

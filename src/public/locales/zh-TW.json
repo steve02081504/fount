@@ -4114,7 +4114,7 @@
 		},
 		"settings": {
 			"title": "社交設定",
-			"loadFailed": "載入設定失敗：${error}",
+			"loadFailed": "無法載入設定：${error}",
 			"back": {
 				"aria-label": "返回資料"
 			},
@@ -4280,7 +4280,7 @@
 					"tip": "重新整理動態"
 				}
 			},
-			"loadFailed": "動態載入失敗：${error}",
+			"loadFailed": "無法載入動態：${error}",
 			"newPosts": "有新動態，點選檢視",
 			"tabsLabel": {
 				"aria-label": "動態排序"
@@ -4306,7 +4306,7 @@
 		},
 		"explore": {
 			"accounts": "推薦賬戶",
-			"loadFailed": "探索頁載入失敗：${error}",
+			"loadFailed": "無法載入探索頁：${error}",
 			"posts": "最新帖子",
 			"mediaOnly": "僅含媒體"
 		},
@@ -4421,7 +4421,7 @@
 			},
 			"empty": "暫無短影片",
 			"emptyHint": "關注的人或公開廣場裡還沒有帶影片的帖子。發一條影片動態試試？",
-			"loadFailed": "短影片載入失敗：${error}",
+			"loadFailed": "無法載入短影片：${error}",
 			"compose": "去發影片",
 			"back": {
 				"aria-label": "返回動態"
@@ -4666,7 +4666,7 @@
 			"submit": "回覆",
 			"empty": "還沒有回覆",
 			"emptyHint": "來寫第一條，開啟討論",
-			"loadFailed": "載入回復失敗：${error}"
+			"loadFailed": "無法載入回覆：${error}"
 		},
 		"repost": {
 			"placeholder": "新增轉發評論（可選）…",
