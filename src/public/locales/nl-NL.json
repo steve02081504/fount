@@ -4323,7 +4323,7 @@
 			"live_started": "${author} is begonnen met livestreamen",
 			"view": "Bekijken",
 			"markAllRead": "Markeer alles als gelezen",
-			"loadFailed": "Melding laden mislukt: ${error}"
+			"loadFailed": "Meldingen laden mislukt: ${error}"
 		},
 		"saved": {
 			"all": "Alle",

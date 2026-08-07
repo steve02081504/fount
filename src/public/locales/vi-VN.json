@@ -4323,7 +4323,7 @@
 			"live_started": "${author} đã bắt đầu phát trực tiếp",
 			"view": "Kiểm tra",
 			"markAllRead": "Đánh dấu tất cả là đã đọc",
-			"loadFailed": "Tải thông báo không thành công: ${error}"
+			"loadFailed": "Không tải được thông báo: ${error}"
 		},
 		"saved": {
 			"all": "tất cả",
@@ -4354,7 +4354,7 @@
 			"searchEmpty": "Không có bộ sưu tập phù hợp",
 			"folderEmpty": "Thư mục này trống",
 			"emptyHint": "Bấm vào dấu trang khi duyệt tin để lưu vào đây",
-			"loadFailed": "Tải bài đã lưu không thành công: ${error}",
+			"loadFailed": "Không tải được bài đã lưu: ${error}",
 			"search": {
 				"placeholder": "Tìm kiếm yêu thích…"
 			}
@@ -4370,7 +4370,7 @@
 			},
 			"empty": "Bản nháp trống",
 			"saveFailed": "Không thể lưu bản nháp: ${error}",
-			"loadFailed": "Không mở được bản nháp: ${error}",
+			"loadFailed": "Không tải được bản nháp: ${error}",
 			"deleteFailed": "Không thể xóa bản nháp: ${error}"
 		},
 		"profile": {
@@ -4507,7 +4507,7 @@
 			"trustScore": "Tin tưởng ${score}",
 			"viewTitle": "tìm kiếm",
 			"loading": "Đang tìm kiếm…",
-			"loadFailed": "Tìm kiếm thất bại: ${error}",
+			"loadFailed": "Không tải được tìm kiếm: ${error}",
 			"sortRecent": "cập nhật",
 			"sortPopular": "Phổ biến",
 			"scopeLocal": "máy cục bộ",
@@ -4672,7 +4672,7 @@
 			"submit": "Trả lời",
 			"empty": "Chưa có trả lời",
 			"emptyHint": "Hãy viết bình luận đầu tiên và bắt đầu thảo luận",
-			"loadFailed": "Không tải được bình luận: ${error}"
+			"loadFailed": "Không tải được trả lời: ${error}"
 		},
 		"repost": {
 			"placeholder": "Thêm bình luận tweet lại (tùy chọn)…",

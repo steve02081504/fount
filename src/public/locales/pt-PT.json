@@ -4323,7 +4323,7 @@
 			"live_started": "${author} iniciou a transmissão ao vivo",
 			"view": "Ver",
 			"markAllRead": "Marcar tudo como lido",
-			"loadFailed": "Falha ao carregar notificações: ${error}"
+			"loadFailed": "Não foi possível carregar as notificações: ${error}"
 		},
 		"saved": {
 			"all": "Tudo",
@@ -4354,7 +4354,7 @@
 			"searchEmpty": "Nenhuma coleção correspondente",
 			"folderEmpty": "Esta pasta está vazia",
 			"emptyHint": "Clique no marcador ao navegar pelas notícias para salvá-las aqui",
-			"loadFailed": "Falha ao carregar publicações guardadas: ${error}",
+			"loadFailed": "Não foi possível carregar as publicações guardadas: ${error}",
 			"search": {
 				"placeholder": "Pesquisar favourites…"
 			}
@@ -4370,12 +4370,12 @@
 			},
 			"empty": "O rascunho está vazio",
 			"saveFailed": "Falha ao save draft: ${error}",
-			"loadFailed": "Falha ao open draft: ${error}",
+			"loadFailed": "Não foi possível carregar o rascunho: ${error}",
 			"deleteFailed": "Falha ao delete draft: ${error}"
 		},
 		"profile": {
 			"edit": "Editar profile",
-			"loadFailed": "Falha ao carregar perfil: ${error}",
+			"loadFailed": "Não foi possível carregar o perfil: ${error}",
 			"viewPosts": "Ver perfis sociais",
 			"settingsBtn": {
 				"aria-label": "Definições sociais"
@@ -4443,8 +4443,8 @@
 		},
 		"live": {
 			"empty": "Ainda sem live broadcast",
-			"loadFailed": "Falha ao carregar transmissão ao vivo: ${error}",
-			"joinFailed": "Falha ao ligar à transmissão em direto: ${error}",
+			"loadFailed": "Não foi possível carregar a transmissão ao vivo: ${error}",
+			"joinFailed": "Falha ao ligar à transmissão ao vivo: ${error}",
 			"viewers": "${n} pessoas assistiram",
 			"likes": "${n} Curtir",
 			"local": "Máquina local",
@@ -4507,7 +4507,7 @@
 			"trustScore": "Confie em ${score}",
 			"viewTitle": "Procurar",
 			"loading": "Procurando…",
-			"loadFailed": "A pesquisa falhou: ${error}",
+			"loadFailed": "Não foi possível carregar a pesquisa: ${error}",
 			"sortRecent": "Atualizado",
 			"sortPopular": "Popular",
 			"scopeLocal": "Máquina local",
