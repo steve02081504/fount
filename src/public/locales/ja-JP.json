@@ -4115,6 +4115,7 @@
 		},
 		"settings": {
 			"title": "ソーシャル設定",
+			"loadFailed": "設定の読み込みに失敗しました：${error}",
 			"back": {
 				"aria-label": "プロフィールに戻る"
 			},
@@ -4280,6 +4281,7 @@
 					"tip": "ニュースを更新"
 				}
 			},
+			"loadFailed": "フィードの読み込みに失敗しました：${error}",
 			"newPosts": "新しいニュースがあります。クリックしてご覧ください",
 			"tabsLabel": {
 				"aria-label": "フィードの並び替え"
@@ -4305,6 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "推奨アカウント",
+			"loadFailed": "探索ページの読み込みに失敗しました：${error}",
 			"posts": "最新の投稿",
 			"mediaOnly": "メディアのみ"
 		},
@@ -4319,7 +4322,8 @@
 			"post_note": "${author} が投稿に情報を追加しました",
 			"live_started": "${author} がライブ ストリーミングを開始しました",
 			"view": "チェック",
-			"markAllRead": "すべて既読としてマークする"
+			"markAllRead": "すべて既読としてマークする",
+			"loadFailed": "通知の読み込みに失敗しました：${error}"
 		},
 		"saved": {
 			"all": "すべて",
@@ -4350,6 +4354,7 @@
 			"searchEmpty": "一致するコレクションがありません",
 			"folderEmpty": "このフォルダは空です",
 			"emptyHint": "ニュースを閲覧するときにブックマークをクリックしてここに保存します",
+			"loadFailed": "保存済み投稿の読み込みに失敗しました：${error}",
 			"search": {
 				"placeholder": "お気に入りを検索…"
 			}
@@ -4370,6 +4375,7 @@
 		},
 		"profile": {
 			"edit": "プロフィールの編集",
+			"loadFailed": "プロフィールの読み込みに失敗しました：${error}",
 			"viewPosts": "ソーシャルプロフィールを表示する",
 			"settingsBtn": {
 				"aria-label": "ソーシャル設定"
@@ -4419,6 +4425,7 @@
 			},
 			"empty": "ショート動画はまだありません",
 			"emptyHint": "以下の人や広場には動画付きの投稿はありません。動画更新を投稿してみてはいかがでしょうか？",
+			"loadFailed": "ショート動画の読み込みに失敗しました：${error}",
 			"compose": "動画を投稿してみよう",
 			"back": {
 				"aria-label": "ニュースに戻る"
@@ -4436,6 +4443,8 @@
 		},
 		"live": {
 			"empty": "まだ生放送はありません",
+			"loadFailed": "ライブ配信の読み込みに失敗しました：${error}",
+			"joinFailed": "ライブ配信への接続に失敗しました：${error}",
 			"viewers": "${n} 人が視聴しました",
 			"likes": "${n} の「いいね！」",
 			"local": "ローカルマシン",
@@ -4498,6 +4507,7 @@
 			"trustScore": "${score}を信頼する",
 			"viewTitle": "検索",
 			"loading": "検索中…",
+			"loadFailed": "検索に失敗しました：${error}",
 			"sortRecent": "最新の",
 			"sortPopular": "人気のある",
 			"scopeLocal": "ローカルマシン",
@@ -4597,6 +4607,7 @@
 			"loading": "読み込み中…",
 			"notFound": "投稿が存在しないか、表示されません",
 			"loadFailed": "読み込みに失敗しました。後でもう一度お試しください",
+			"exportMediaFailed": "メディアの書き出しに失敗しました：${error}",
 			"detailTitle": "役職",
 			"back": "戻る"
 		},
@@ -4660,7 +4671,8 @@
 			"placeholder": "返信を書いてください…",
 			"submit": "返事",
 			"empty": "まだ返事はありません",
-			"emptyHint": "最初の記事を書いてディスカッションを始めましょう"
+			"emptyHint": "最初の返信を書いてディスカッションを始めましょう",
+			"loadFailed": "返信の読み込みに失敗しました：${error}"
 		},
 		"repost": {
 			"placeholder": "リツイートコメントを追加（オプション）…",

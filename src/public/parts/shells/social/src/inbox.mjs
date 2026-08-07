@@ -3,6 +3,7 @@
  */
 import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 import { createJsonlInboxStore } from 'fount/public/parts/shells/chat/src/chat/lib/jsonlInboxStore.mjs'
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
@@ -310,6 +311,24 @@ export function setNotificationsSeenAt(username, entityHash, at) {
 }
 
 /**
+ * Web Push 触达（不阻塞 inbox 写路径）。
+ * @param {string} username replica
+ * @param {{ title: string, body: string, url: string, tag: string }} payload 通知载荷
+ * @returns {void}
+ */
+function scheduleNotifyUser(username, payload) {
+	void (async () => {
+		try {
+			const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
+			await notifyUser(username, payload)
+		}
+		catch (error) {
+			handleError(error)
+		}
+	})()
+}
+
+/**
  * operator 特别关心作者的新帖：写 care_post inbox 行并触达。
  * @param {string} username replica
  * @param {string} recipientEntityHash 收件人（operator）
@@ -338,8 +357,7 @@ export async function appendCarePostInboxRow(username, recipientEntityHash, auth
 	}
 	await socialInboxStore(username, recipient).append(notification)
 	pushFeedUpdate(username, { type: 'notification', notification })
-	const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
-	void notifyUser(username, {
+	scheduleNotifyUser(username, {
 		title: 'care_post',
 		body: String(textSnippet || 'care_post'),
 		url: '/parts/shells:social/',
@@ -426,8 +444,7 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
 		}
 		await socialInboxStore(username, recipient).append(notification)
 		pushFeedUpdate(username, { type: 'notification', notification })
-		const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
-		void notifyUser(username, {
+		scheduleNotifyUser(username, {
 			title: row.type,
 			body: String(snippet || row.type || ''),
 			url: '/parts/shells:social/',

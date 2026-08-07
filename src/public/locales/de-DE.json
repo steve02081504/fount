@@ -4115,6 +4115,7 @@
 		},
 		"settings": {
 			"title": "Social-Einstellungen",
+			"loadFailed": "Einstellungen konnten nicht geladen werden: ${error}",
 			"back": {
 				"aria-label": "Zurück zum Profil"
 			},
@@ -4280,6 +4281,7 @@
 					"tip": "Nachrichten aktualisieren"
 				}
 			},
+			"loadFailed": "Feed konnte nicht geladen werden: ${error}",
 			"newPosts": "Neue Beiträge – zum Anzeigen tippen",
 			"tabsLabel": {
 				"aria-label": "Feed-Sortierung"
@@ -4305,6 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Empfohlene Konten",
+			"loadFailed": "Entdecken konnte nicht geladen werden: ${error}",
 			"posts": "Neueste Beiträge",
 			"mediaOnly": "Nur Medien"
 		},
@@ -4319,7 +4322,8 @@
 			"post_note": "${author} hat eine Community-Notiz zu Ihrem Beitrag hinzugefügt",
 			"live_started": "${author} hat mit dem Live-Streaming begonnen",
 			"view": "Anzeigen",
-			"markAllRead": "Alle als gelesen markieren"
+			"markAllRead": "Alle als gelesen markieren",
+			"loadFailed": "Benachrichtigungen konnten nicht geladen werden: ${error}"
 		},
 		"saved": {
 			"all": "Alle",
@@ -4350,6 +4354,7 @@
 			"searchEmpty": "Keine passende Sammlung",
 			"folderEmpty": "Dieser Ordner ist leer",
 			"emptyHint": "Tippen Sie beim Durchstöbern auf das Lesezeichen, um Beiträge hier zu speichern.",
+			"loadFailed": "Gespeicherte Beiträge konnten nicht geladen werden: ${error}",
 			"search": {
 				"placeholder": "Favoriten suchen…"
 			}
@@ -4370,6 +4375,7 @@
 		},
 		"profile": {
 			"edit": "Profil bearbeiten",
+			"loadFailed": "Profil konnte nicht geladen werden: ${error}",
 			"viewPosts": "Social-Profil anzeigen",
 			"settingsBtn": {
 				"aria-label": "Social-Einstellungen"
@@ -4419,6 +4425,7 @@
 			},
 			"empty": "Noch kein kurzes Video",
 			"emptyHint": "Bei den Personen, denen Sie folgen, und auf der Plaza gibt es noch keine Beiträge mit Videos. Wie wäre es mit einem Video-Beitrag?",
+			"loadFailed": "Kurzvideos konnten nicht geladen werden: ${error}",
 			"compose": "Postet ein Video",
 			"back": {
 				"aria-label": "Zurück zu den Nachrichten"
@@ -4436,6 +4443,8 @@
 		},
 		"live": {
 			"empty": "Noch keine Live-Übertragung",
+			"loadFailed": "Live-Übertragung konnte nicht geladen werden: ${error}",
+			"joinFailed": "Verbindung zur Live-Übertragung fehlgeschlagen: ${error}",
 			"viewers": "${n} Leute haben zugesehen",
 			"likes": "${n} Gefällt mir",
 			"local": "Lokal",
@@ -4498,6 +4507,7 @@
 			"trustScore": "Vertrauen ${score}",
 			"viewTitle": "Suchen",
 			"loading": "Suche...",
+			"loadFailed": "Suche fehlgeschlagen: ${error}",
 			"sortRecent": "Neueste",
 			"sortPopular": "Beliebt",
 			"scopeLocal": "Lokal",
@@ -4597,6 +4607,7 @@
 			"loading": "Laden…",
 			"notFound": "Beitrag existiert nicht oder ist nicht sichtbar",
 			"loadFailed": "Der Ladevorgang ist fehlgeschlagen. Bitte versuchen Sie es später noch einmal",
+			"exportMediaFailed": "Medien konnten nicht exportiert werden: ${error}",
 			"detailTitle": "Post",
 			"back": "Zurück"
 		},
@@ -4660,7 +4671,8 @@
 			"placeholder": "Antwort schreiben …",
 			"submit": "Antwort",
 			"empty": "Noch keine Antwort",
-			"emptyHint": "Schreiben Sie den ersten Beitrag und starten Sie die Diskussion"
+			"emptyHint": "Schreiben Sie die erste Antwort und starten Sie die Diskussion",
+			"loadFailed": "Antworten konnten nicht geladen werden: ${error}"
 		},
 		"repost": {
 			"placeholder": "Retweet-Kommentar hinzufügen (optional)…",

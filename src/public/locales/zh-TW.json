@@ -4114,6 +4114,7 @@
 		},
 		"settings": {
 			"title": "社交設定",
+			"loadFailed": "無法載入設定：${error}",
 			"back": {
 				"aria-label": "返回資料"
 			},
@@ -4279,6 +4280,7 @@
 					"tip": "重新整理動態"
 				}
 			},
+			"loadFailed": "無法載入動態：${error}",
 			"newPosts": "有新動態，點選檢視",
 			"tabsLabel": {
 				"aria-label": "動態排序"
@@ -4304,6 +4306,7 @@
 		},
 		"explore": {
 			"accounts": "推薦賬戶",
+			"loadFailed": "無法載入探索頁：${error}",
 			"posts": "最新帖子",
 			"mediaOnly": "僅含媒體"
 		},
@@ -4318,7 +4321,8 @@
 			"post_note": "${author} 為你的帖子補充了資訊",
 			"live_started": "${author} 開始直播了",
 			"view": "檢視",
-			"markAllRead": "全部標為已讀"
+			"markAllRead": "全部標為已讀",
+			"loadFailed": "無法載入通知：${error}"
 		},
 		"saved": {
 			"all": "全部",
@@ -4349,6 +4353,7 @@
 			"searchEmpty": "沒有匹配的收藏",
 			"folderEmpty": "此資料夾為空",
 			"emptyHint": "瀏覽動態時點書籤即可收藏到這裡",
+			"loadFailed": "無法載入收藏：${error}",
 			"search": {
 				"placeholder": "搜尋收藏…"
 			}
@@ -4369,6 +4374,7 @@
 		},
 		"profile": {
 			"edit": "編輯資料",
+			"loadFailed": "無法載入個人資料：${error}",
 			"viewPosts": "檢視社交主頁",
 			"settingsBtn": {
 				"aria-label": "社交設定"
@@ -4418,6 +4424,7 @@
 			},
 			"empty": "暫無短影片",
 			"emptyHint": "關注的人或公開廣場裡還沒有帶影片的帖子。發一條影片動態試試？",
+			"loadFailed": "無法載入短影片：${error}",
 			"compose": "去發影片",
 			"back": {
 				"aria-label": "返回動態"
@@ -4435,6 +4442,8 @@
 		},
 		"live": {
 			"empty": "暫無直播",
+			"loadFailed": "無法載入直播：${error}",
+			"joinFailed": "無法連接直播：${error}",
 			"viewers": "${n} 人觀看",
 			"likes": "${n} 贊",
 			"local": "本機",
@@ -4497,6 +4506,7 @@
 			"trustScore": "信任 ${score}",
 			"viewTitle": "搜尋",
 			"loading": "搜尋中…",
+			"loadFailed": "搜尋失敗：${error}",
 			"sortRecent": "最新",
 			"sortPopular": "熱門",
 			"scopeLocal": "本機",
@@ -4596,6 +4606,7 @@
 			"loading": "載入中…",
 			"notFound": "帖子不存在或不可見",
 			"loadFailed": "載入失敗，請稍後重試",
+			"exportMediaFailed": "匯出媒體失敗：${error}",
 			"detailTitle": "帖子",
 			"back": "返回"
 		},
@@ -4659,7 +4670,8 @@
 			"placeholder": "寫一條回覆…",
 			"submit": "回覆",
 			"empty": "還沒有回覆",
-			"emptyHint": "來寫第一條，開啟討論"
+			"emptyHint": "來寫第一條，開啟討論",
+			"loadFailed": "無法載入回覆：${error}"
 		},
 		"repost": {
 			"placeholder": "新增轉發評論（可選）…",

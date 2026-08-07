@@ -4115,6 +4115,7 @@
 		},
 		"settings": {
 			"title": "🏛️⚙️",
+			"loadFailed": "⚙️📥❌ · ${error}",
 			"back": {
 				"aria-label": "🔙👤"
 			},
@@ -4280,6 +4281,7 @@
 					"tip": "🔄📰"
 				}
 			},
+			"loadFailed": "📰📥❌ · ${error}",
 			"newPosts": "🆕📰 · 👆👀",
 			"tabsLabel": {
 				"aria-label": "📰🔀"
@@ -4305,6 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "⭐👤",
+			"loadFailed": "🔭📥❌ · ${error}",
 			"posts": "🆕📄",
 			"mediaOnly": "🖼️🔒"
 		},
@@ -4319,7 +4322,8 @@
 			"post_note": "${author} ➕👀📝📄",
 			"live_started": "${author} 📡▶️",
 			"view": "👀",
-			"markAllRead": "✅👀📬"
+			"markAllRead": "✅👀📬",
+			"loadFailed": "🔔📥❌ · ${error}"
 		},
 		"saved": {
 			"all": "📋",
@@ -4350,6 +4354,7 @@
 			"searchEmpty": "🔍⭐📭",
 			"folderEmpty": "📁📭",
 			"emptyHint": "👀📰 ➡️ 🔖 ➡️ ⭐",
+			"loadFailed": "⭐📥❌ · ${error}",
 			"search": {
 				"placeholder": "🔍⭐…"
 			}
@@ -4370,6 +4375,7 @@
 		},
 		"profile": {
 			"edit": "✏️👤",
+			"loadFailed": "👤📥❌ · ${error}",
 			"viewPosts": "👀🏛️👤",
 			"settingsBtn": {
 				"aria-label": "🏛️⚙️"
@@ -4419,6 +4425,7 @@
 			},
 			"empty": "🎬📭",
 			"emptyHint": "➕👀/🏛️🌍 🎬📰📭 · 📤🎬❓",
+			"loadFailed": "🎬📥❌ · ${error}",
 			"compose": "➡️📤🎬",
 			"back": {
 				"aria-label": "🔙📰"
@@ -4436,6 +4443,8 @@
 		},
 		"live": {
 			"empty": "📡📭",
+			"loadFailed": "📡📥❌ · ${error}",
+			"joinFailed": "📡🔗❌ · ${error}",
 			"viewers": "👀${n}",
 			"likes": "👍${n}",
 			"local": "💻",
@@ -4498,6 +4507,7 @@
 			"trustScore": "🤝${score}",
 			"viewTitle": "🔍",
 			"loading": "🔍…",
+			"loadFailed": "🔍❌ · ${error}",
 			"sortRecent": "🆕",
 			"sortPopular": "🔥",
 			"scopeLocal": "💻",
@@ -4597,6 +4607,7 @@
 			"loading": "📥…",
 			"notFound": "📄🚫👀",
 			"loadFailed": "📥❌ · 🔁⏳",
+			"exportMediaFailed": "📤🖼️❌ · ${error}",
 			"detailTitle": "📄",
 			"back": "🔙"
 		},
@@ -4660,7 +4671,8 @@
 			"placeholder": "✍️💬…",
 			"submit": "💬↩️",
 			"empty": "💬📭",
-			"emptyHint": "✍️1️⃣ · ▶️🗣️"
+			"emptyHint": "✍️1️⃣ · ▶️🗣️",
+			"loadFailed": "💬📥❌ · ${error}"
 		},
 		"repost": {
 			"placeholder": "➕↪️💬（🔘）…",

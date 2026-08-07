@@ -3,6 +3,7 @@ import { onServerEvent } from '../../../../scripts/endpoints/server_events.mjs'
 import { createReadyGate } from '/scripts/test/ready_gate.mjs'
 import { loadAliases } from '/parts/shells:chat/shared/aliases.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { groupRefLabel } from '../shared/groupRef.mjs'
 
 import { closePostMoreMenus } from './actions/shared.mjs'
@@ -16,8 +17,8 @@ import {
 	setPendingGroupRef,
 	syncGroupRefInComposer,
 } from './composer.mjs'
+import { getChatViewer } from './endpoints/chatBridge.mjs'
 import { SOCIAL_GATE } from './gate.mjs'
-import { chatApi } from './lib/apiClient.mjs'
 import { renderAvatarHtml, rememberEntityHandle } from './lib/display.mjs'
 import { wireSocialProfileHover } from './lib/profileHover.mjs'
 import { bindMediaCarousel } from './mediaRender.mjs'
@@ -45,7 +46,7 @@ const FEED_WS_RECONNECT_MAX_MS = 30_000
  */
 async function refreshSocialAfterSfwChange() {
 	try {
-		const viewer = await chatApi('/viewer')
+		const viewer = await getChatViewer()
 		state.viewerDisplayName = viewer.profile?.name || state.viewerDisplayName
 		state.viewerProfile = viewer.profile
 			? {
@@ -145,7 +146,12 @@ function connectFeedWebSocket(attempt = 0) {
 export async function bootstrap() {
 	socialGate.markPending()
 	try {
-		await loadAliases().catch(() => { })
+		try {
+			await loadAliases()
+		}
+		catch (error) {
+			handleError('social.bootstrapFailed', {}, error)
+		}
 		document.getElementById('postButton')?.addEventListener('click', () => { void afterPublishPost() })
 		document.getElementById('composeNavButton')?.addEventListener('click', () => {
 			void focusComposer({ switchToFeed: true })
@@ -222,7 +228,7 @@ export async function bootstrap() {
 		await loadAlbumPickerOptions()
 		await updateNotificationBadge()
 
-		const viewer = await chatApi('/viewer')
+		const viewer = await getChatViewer()
 		state.viewerEntityHash = viewer.viewerEntityHash ?? null
 		state.viewerNodeHash = viewer.nodeHash ?? null
 		state.viewerDisplayName = viewer.profile?.name || null

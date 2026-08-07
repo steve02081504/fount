@@ -9,7 +9,7 @@ import { socialJson } from './shared.mjs'
  * @returns {void}
  */
 export function registerDraftsRoutes(router) {
-	router.get('/api/parts/shells\\:social/drafts', authenticate, socialJson((_req, { client }) => client.drafts.list()))
+	router.get('/api/parts/shells\\:social/drafts', authenticate, socialJson((req, { client }) => client.drafts.list()))
 
 	router.get('/api/parts/shells\\:social/drafts/:draftId', authenticate, socialJson(async (req, { client }) => {
 		const draftId = String(req.params.draftId || '').trim()

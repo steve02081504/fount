@@ -19,7 +19,7 @@ export function registerFeedRoutes(router) {
 		})
 	}))
 
-	router.post('/api/parts/shells\\:social/feed/sync', authenticate, socialJson((_req, { client }) =>
+	router.post('/api/parts/shells\\:social/feed/sync', authenticate, socialJson((req, { client }) =>
 		client.syncFollowing()))
 
 	router.ws('/ws/parts/shells\\:social/feed', authenticate, async (ws, req) => {

@@ -1,3 +1,5 @@
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
+
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { primaryLocaleForUser } from '../../../../../../scripts/locale.mjs'
 import { buildRepostFeedItem, withDecryptedPostContent } from '../feed/buildItem.mjs'
@@ -216,7 +218,7 @@ export function createPost(apiContext, entityHash, postId, snapshot = null) {
 		async notes() {
 			const { summarizeNotes } = await import('../federation/note/index.mjs')
 			const { pullPostNotes } = await import('../federation/note/pull.mjs')
-			await pullPostNotes(apiContext.username, owner, id).catch(() => null)
+			await pullPostNotes(apiContext.username, owner, id).catch(handleError)
 			return summarizeNotes(apiContext.username, owner, id)
 		},
 		/**

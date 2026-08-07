@@ -2,6 +2,7 @@
  * 反应图信任加权 Jaccard 聚类 → 本地口味 tag。
  * 点踩为负向证据；所有计数信任加权；禁止裸全局计数。
  */
+import { handleError } from 'fount/scripts/errorHandlers.mjs'
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
@@ -239,7 +240,7 @@ async function pullRecentReactionPosts(username, actor) {
 	for (const row of targets) {
 		if (seen.has(row.key)) continue
 		seen.add(row.key)
-		await pullPostReactions(username, row.author, row.postId).catch(() => null)
+		await pullPostReactions(username, row.author, row.postId).catch(handleError)
 		pulled++
 		if (pulled >= REACTION_PULL_ON_REBUILD) break
 	}
@@ -274,7 +275,7 @@ async function discoverAndGossipMerges(username, actor, store, stats) {
 				return draft
 			})
 			if (store.privacy.publishPreferences !== false)
-				await gossipTagMergeClaim(username, claim).catch(() => null)
+				await gossipTagMergeClaim(username, claim).catch(handleError)
 		}
 
 }

@@ -1,5 +1,7 @@
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
-import { chatApi, socialApi, viewerEntityHash } from '../lib/apiClient.mjs'
+import { listRemoteCabinets } from '../endpoints/cabinetBridge.mjs'
+import { getPersonalLists } from '../endpoints/chatBridge.mjs'
+import { getProfile, getProfileFollowers, getProfileFollowing, getProfileLikes, getProfilePosts } from '../endpoints/profile.mjs'
 import { authorLabel, entityHandle, rememberEntityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
 import { appendTemplate, renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
@@ -15,7 +17,7 @@ import { mountEmptyState } from '../lib/emptyState.mjs'
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
 import { bindFeedVideoAutoplay } from '../lib/videoAutoplay.mjs'
 import { buildPostCard } from '../postCard.mjs'
-import { state } from '../state.mjs'
+import { state, viewerEntityHash } from '../state.mjs'
 
 import { renderProfileAlbums } from './albums.mjs'
 
@@ -42,7 +44,7 @@ function loadedTabsFor(entityHash) {
  */
 export async function renderBlocklist(container) {
 	if (!(container instanceof HTMLElement)) return
-	const data = await chatApi('/personal-lists')
+	const data = await getPersonalLists()
 	const entries = data.entries || []
 	const sections = [
 		{ kind: 'block', titleKey: 'social.settings.blocklist.title', action: 'unblock', labelKey: 'social.settings.blocklist.unblock' },
@@ -116,10 +118,9 @@ function bindProfilePostsInfiniteScroll(entityHash, container) {
  * @returns {Promise<void>}
  */
 export async function renderProfilePosts(entityHash, container, highlightPostId = null, append = false) {
-	const cursorQuery = append && state.profilePostsCursor
-		? `&cursor=${encodeURIComponent(state.profilePostsCursor)}`
-		: ''
-	const data = await socialApi(`/profile/${entityHash}/posts?limit=30${cursorQuery}`)
+	const data = await getProfilePosts(entityHash, {
+		cursor: append ? state.profilePostsCursor : null,
+	})
 	if (!append) container.replaceChildren()
 	const items = data.items || []
 	state.profilePostsCursor = data.nextCursor || null
@@ -147,7 +148,7 @@ export async function renderProfilePosts(entityHash, container, highlightPostId 
  * @returns {Promise<void>}
  */
 export async function renderProfileLikes(entityHash, container) {
-	const data = await socialApi(`/profile/${entityHash}/likes`)
+	const data = await getProfileLikes(entityHash)
 	container.replaceChildren()
 	const items = data.items || []
 	if (!items.length) {
@@ -200,10 +201,9 @@ export async function openProfileRelationshipList(entityHash, kind) {
 	const list = dialog.querySelector('#profileRelationshipList')
 	if (!(list instanceof HTMLElement)) return
 	await mountEmptyState(list, { titleKey: 'social.post.loading', modClass: ' empty-state--plain' })
-	const path = kind === 'followers'
-		? `/profile/${entityHash}/followers`
-		: `/profile/${entityHash}/following`
-	const data = await socialApi(path)
+	const data = kind === 'followers'
+		? await getProfileFollowers(entityHash)
+		: await getProfileFollowing(entityHash)
 	const rows = kind === 'followers' ? data.followers || [] : data.following || []
 	await fillRelationshipRows(
 		list,
@@ -291,7 +291,7 @@ async function mountProfileEntityCard(host, entityHash, profile) {
 	if (ownerEntityHash) {
 		let ownerName = null
 		try {
-			const ownerData = await socialApi(`/profile/${ownerEntityHash}`)
+			const ownerData = await getProfile(ownerEntityHash)
 			ownerName = authorLabel(ownerEntityHash, ownerData.profile)
 		}
 		catch { /* remote miss */ }
@@ -310,7 +310,7 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 	state.profileEntityHash = entityHash
 	state.profilePostsCursor = null
 	profileLoadedTabs.delete(entityHash)
-	const data = await socialApi(`/profile/${entityHash}`)
+	const data = await getProfile(entityHash)
 	const viewer = viewerEntityHash()
 	const isSelf = viewer && entityHash === viewer
 	const container = document.getElementById('profileView')
@@ -360,11 +360,7 @@ async function renderProfileCabinets(entityHash, container) {
 	if (!container) return
 	container.replaceChildren()
 	try {
-		const response = await fetch(`/api/parts/shells:cabinet/remote/${encodeURIComponent(entityHash)}/cabinets`, {
-			credentials: 'include',
-		})
-		if (!response.ok) throw new Error(await response.text())
-		const data = await response.json()
+		const data = await listRemoteCabinets(entityHash)
 		const cabinets = data.cabinets || []
 		if (!cabinets.length) {
 			await mountEmptyState(container, { titleKey: 'social.profile.cabinetsEmpty', modClass: ' empty-state--plain' })
