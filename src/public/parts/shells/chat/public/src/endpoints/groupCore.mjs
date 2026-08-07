@@ -201,8 +201,7 @@ export async function createFriendGroup(body, signal) {
  * @returns {Promise<string[]>} charname 列表
  */
 export async function listGroupChars(groupId, signal) {
-	const chars = await groupFetch(groupPath(groupId, 'chars'), { method: 'GET', signal })
-	return Array.isArray(chars) ? chars : []
+	return groupFetch(groupPath(groupId, 'chars'), { method: 'GET', signal })
 }
 
 /**

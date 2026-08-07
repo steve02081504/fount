@@ -65,7 +65,10 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 			getPartList('worlds').catch(() => []),
 			getPartList('personas').catch(() => []),
 			getPartList('plugins').catch(() => []),
-			listGroupPlugins(groupId).catch(() => []),
+			listGroupPlugins(groupId).catch(error => {
+				handleError('chat.hub.operationFailed')(error)
+				return []
+			}),
 		])
 
 		const charlist = Array.isArray(initial?.charlist) ? initial.charlist : []

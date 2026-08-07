@@ -30,7 +30,7 @@ function addActionButton(actions, { i18nKey, fallback, className, onClick }) {
 	button.dataset.i18n = i18nKey
 	button.textContent = geti18n(i18nKey) || fallback
 	button.addEventListener('click', () => {
-		void Promise.resolve(onClick()).catch(handleError('chat.emoji.previewActionFailed'))
+		void Promise.resolve().then(() => onClick()).catch(handleError('chat.emoji.previewActionFailed'))
 	})
 	actions.appendChild(button)
 	return button

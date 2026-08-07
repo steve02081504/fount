@@ -53,14 +53,14 @@ Deno.test('agent bookmarks isolated from operator ChatClient', async () => {
 		href: '#group:g1:default',
 	})
 	assertEquals(added.added, true)
-	const dup = await operatorClient.bookmarks.add({
+	const duplicate = await operatorClient.bookmarks.add({
 		groupId: 'g1',
 		eventId: 'ab'.repeat(32),
 		title: 't2',
 		href: '#group:g1:default',
 	})
-	assertEquals(dup.added, false)
-	assertEquals(dup.entries.filter(row => row.eventId === 'ab'.repeat(32)).length, 1)
+	assertEquals(duplicate.added, false)
+	assertEquals(duplicate.entries.filter(row => row.eventId === 'ab'.repeat(32)).length, 1)
 	const removed = await operatorClient.bookmarks.remove({ groupId: 'g1', eventId: 'ab'.repeat(32) })
 	assertEquals(removed.removed, true)
 	assertEquals(removed.entries.some(row => row.eventId === 'ab'.repeat(32)), false)

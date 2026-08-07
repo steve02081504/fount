@@ -16,10 +16,14 @@ import { closeOverlayModal } from './core/overlayModal.mjs'
  */
 export async function mountTranslationPrefsPanel(panel, footer) {
 	usingTemplates('/parts/shells:chat/src/templates')
-	const data = await getTranslationPrefs().catch(error => {
+	let data
+	try {
+		data = await getTranslationPrefs()
+	}
+	catch (error) {
 		handleError('chat.hub.operationFailed')(error)
-		return { prefs: { autoTranslate: false } }
-	})
+		data = { prefs: { autoTranslate: false } }
+	}
 	const prefs = data.prefs || { autoTranslate: false }
 	const root = await renderTemplate('hub/prefs/translation', {
 		autoTranslateChecked: prefs.autoTranslate ? 'checked' : '',
@@ -31,10 +35,14 @@ export async function mountTranslationPrefsPanel(panel, footer) {
 
 	footer.querySelector('[data-action="close"]')?.addEventListener('click', () => closeOverlayModal())
 	footer.querySelector('[data-action="save"]')?.addEventListener('click', async () => {
-		const checked = panel.querySelector('#auto-translate') instanceof HTMLInputElement
-			&& /** @type {HTMLInputElement} */ panel.querySelector('#auto-translate').checked
 		try {
-			await putTranslationPrefs({ prefs: { ...prefs, autoTranslate: checked } })
+			await putTranslationPrefs({
+				prefs: {
+					...prefs,
+					autoTranslate: panel.querySelector('#auto-translate') instanceof HTMLInputElement
+						&& /** @type {HTMLInputElement} */ panel.querySelector('#auto-translate').checked,
+				},
+			})
 			showToastI18n('success', 'chat.hub.translationPrefs.saved')
 			closeOverlayModal()
 		}

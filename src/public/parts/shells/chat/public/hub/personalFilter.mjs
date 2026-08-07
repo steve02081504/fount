@@ -26,8 +26,7 @@ export async function loadHubPersonalFilter() {
 	}
 	catch (error) {
 		handleError('chat.hub.operationFailed')(error)
-		cachedFilter = normalizePersonalFilterResponse()
-		return cachedFilter
+		return cachedFilter || normalizePersonalFilterResponse()
 	}
 }
 

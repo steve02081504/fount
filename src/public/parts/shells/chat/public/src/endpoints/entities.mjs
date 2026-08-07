@@ -25,8 +25,7 @@ export function localeQueryString(groupId) {
  * @returns {Promise<{ profile: object }>} 资料 JSON
  */
 export async function getEntityProfile(entityHash, groupId) {
-	const queryString = localeQueryString(groupId)
-	return chatFetch(`/entities/${encodeURIComponent(entityHash)}${queryString ? `?${queryString}` : ''}`)
+	return chatFetch(`/entities/${encodeURIComponent(entityHash)}${localeQueryString(groupId) ? `?${localeQueryString(groupId)}` : ''}`)
 }
 
 /**
@@ -37,8 +36,7 @@ export async function getEntityProfile(entityHash, groupId) {
  * @returns {Promise<object>} 更新后的资料 JSON（或代理写入时的 `{ queued: true, ... }`）
  */
 export async function updateEntityProfile(entityHash, updates, groupId) {
-	const queryString = localeQueryString(groupId)
-	return chatFetch(`/entities/${encodeURIComponent(entityHash)}${queryString ? `?${queryString}` : ''}`, {
+	return chatFetch(`/entities/${encodeURIComponent(entityHash)}${localeQueryString(groupId) ? `?${localeQueryString(groupId)}` : ''}`, {
 		method: 'PUT',
 		json: { ...updates, ...groupId ? { groupId } : {} },
 	})

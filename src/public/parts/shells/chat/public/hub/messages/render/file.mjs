@@ -6,6 +6,7 @@ import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	renderTemplateAsHtmlString,
 } from '../../../../../../scripts/features/template.mjs'
+import { onElementRemoved } from '../../../../../../scripts/lib/onElementRemoved.mjs'
 import { fetchGroupFileAsBlobUrl } from '../../../src/groupFileBlob.mjs'
 import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -15,6 +16,44 @@ import { getMessageText } from './text.mjs'
 
 const LAZY_MEDIA_BYTES = 2 * 1024 * 1024
 
+/** @type {Set<string>} */
+const trackedBlobUrls = new Set()
+
+/**
+ * @param {string} url Blob URL
+ * @returns {void}
+ */
+function revokeTrackedBlobUrl(url) {
+	if (!trackedBlobUrls.delete(url)) return
+	URL.revokeObjectURL(url)
+}
+
+/**
+ * 将 `blob:` src 的生命周期绑到媒体节点移除。
+ * @param {ParentNode} root 扫描根
+ * @returns {void}
+ */
+function bindBlobUrlCleanup(root) {
+	if (!root?.querySelectorAll) return
+	for (const el of root.querySelectorAll('[src^="blob:"]')) {
+		if (el.dataset.blobUrlTracked === '1') continue
+		const url = el.getAttribute('src')
+		if (!url || !trackedBlobUrls.has(url)) continue
+		el.dataset.blobUrlTracked = '1'
+		onElementRemoved(el, () => revokeTrackedBlobUrl(url))
+	}
+}
+
+/**
+ * 释放尚未/已无法绑定到 DOM 的全部群文件 Blob URL（频道虚列表销毁时调用）。
+ * @returns {void}
+ */
+export function revokeAllGroupFileBlobUrls() {
+	for (const url of trackedBlobUrls)
+		URL.revokeObjectURL(url)
+	trackedBlobUrls.clear()
+}
+
 /**
  * @param {string} groupId 群 ID
  * @param {string} fileId 文件 ID
@@ -22,7 +61,9 @@ const LAZY_MEDIA_BYTES = 2 * 1024 * 1024
  */
 async function loadGroupFileBlobUrl(groupId, fileId) {
 	try {
-		return await fetchGroupFileAsBlobUrl(groupId, fileId)
+		const url = await fetchGroupFileAsBlobUrl(groupId, fileId)
+		trackedBlobUrls.add(url)
+		return url
 	}
 	catch (error) {
 		handleError('chat.hub.file.loadFailed')(error)
@@ -109,6 +150,7 @@ export async function renderMessageFileIdsHtml(message) {
  * @returns {void}
  */
 export function wireMessageMediaPlaceholders(container) {
+	bindBlobUrlCleanup(container)
 	if (container.dataset.mediaPlaceholdersWired === '1') return
 	container.dataset.mediaPlaceholdersWired = '1'
 	container.addEventListener('click', async event => {
@@ -140,6 +182,11 @@ export function wireMessageMediaPlaceholders(container) {
 				})
 		const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(html)
 		const node = frag.firstElementChild
-		if (node) placeholder.replaceWith(node)
+		if (!node) {
+			revokeTrackedBlobUrl(blobUrl)
+			return
+		}
+		placeholder.replaceWith(node)
+		bindBlobUrlCleanup(node)
 	})
 }

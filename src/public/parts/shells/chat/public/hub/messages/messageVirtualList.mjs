@@ -24,12 +24,14 @@ import {
 	bindMessageSurface,
 	createMessageSurfacePipeline,
 } from './messageSurface.mjs'
+import { revokeAllGroupFileBlobUrls } from './render/file.mjs'
 
 /** @returns {void} */
 export function destroyChannelVirtualList() {
 	store.messages.channelMessagePipeline?.destroy()
 	store.messages.channelMessagePipeline = null
 	store.messages.channelPipelineKey = null
+	revokeAllGroupFileBlobUrls()
 }
 
 /** @type {Promise<number> | null} */
