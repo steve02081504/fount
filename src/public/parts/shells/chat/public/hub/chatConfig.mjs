@@ -69,7 +69,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', optio
 		])
 
 		const charlist = Array.isArray(initial?.charlist) ? initial.charlist : []
-		const pluginlist = Array.isArray(activePlugins) ? activePlugins : []
+		const pluginlist = activePlugins
 		const freqMap = initial?.frequency_data || {}
 		const worldname = initial?.worldname || ''
 		const personaname = initial?.personaname || ''

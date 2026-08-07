@@ -300,7 +300,6 @@ export async function loadMessages() {
 			refreshChannelView()
 			await refreshReactionPerms()
 			initChannelVirtualList(container)
-			store.messages.channelPipelineKey = pipelineKey
 		}
 		else
 			await mountTemplate(container, 'hub/empty/loading', {})
@@ -338,12 +337,8 @@ export async function loadMessages() {
 
 		if (store.messages.channelMessagePipeline)
 			await store.messages.channelMessagePipeline.refresh()
-		else {
+		else
 			initChannelVirtualList(container)
-			store.messages.channelPipelineKey = pipelineKey
-		}
-		if (softReload)
-			store.messages.channelPipelineKey = pipelineKey
 		updateLastMessageId()
 		// 有未读时滚到分割线；打开频道即标已读（badge 清零），分割线锚点保留到下次 load
 		if (!softReload && !store.messages.firstUnreadEventId) scrollToBottom()
