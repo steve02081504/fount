@@ -37,14 +37,10 @@ function initEmojiHydration() {
 	const observer = new IntersectionObserver(entries => {
 		for (const entry of entries) {
 			if (!entry.isIntersecting) continue
-			const img = entry.target
-			if (!(img instanceof HTMLImageElement)) continue
-			if (!img.classList.contains('fount-emoji')) continue
+			const img = /** @type {HTMLImageElement} */ entry.target
 			if (img.dataset.emojiHydrated === '1') continue
 			img.dataset.emojiHydrated = '1'
 			if (img.complete && img.naturalWidth > 0) continue
-			const src = img.getAttribute('src')
-			if (!src) continue
 			img.addEventListener('error', () => {
 				img.classList.add('fount-emoji--failed')
 			}, { once: true })
@@ -62,13 +58,12 @@ function initEmojiHydration() {
 	}
 
 	scan()
-	const mo = new MutationObserver(mutations => {
+	new MutationObserver(mutations => {
 		for (const mutation of mutations)
 			for (const node of mutation.addedNodes)
 				if (node instanceof HTMLElement)
 					scan(node)
-	})
-	mo.observe(document.body, { childList: true, subtree: true })
+	}).observe(document.body, { childList: true, subtree: true })
 }
 
 /** @type {import('npm:unified').Plugin[]} */
