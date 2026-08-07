@@ -9,7 +9,7 @@ import { ORTHO_DX, ORTHO_DY } from '../hash.mjs'
 import {
 	MAT, SOIL_CAP,
 	SOIL_ABSORB_RATE, SOIL_SIDE_FRAC, SOIL_DOWN_FRAC, SOIL_CONDENSE_FRAC,
-	COND_DRAW, COND_DRIP, COND_MATTHEW_RATE, COND_MATTHEW_NOISE,
+	COND_DRAW, COND_DRIP, COND_WEEP_FRAC, COND_MATTHEW_RATE, COND_MATTHEW_NOISE,
 	isSoilMat, isLiquidBarrier, soilAbsorbFactor,
 } from './mat.mjs'
 import {
@@ -357,7 +357,7 @@ export const stepSoil = (world) => {
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
-			if (!isSoilMat(mat[cell]) || condense[cell] < COND_DRIP) continue
+			if (!isSoilMat(mat[cell]) || condense[cell] <= 1e-8) continue
 			let weightSum = 0
 			for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
 				const belowX = x + down.dx[offsetIndex]
@@ -367,7 +367,9 @@ export const stepSoil = (world) => {
 				weightSum += down.w[offsetIndex]
 			}
 			if (weightSum <= 1e-8) continue
-			const amount = condense[cell]
+			const held = condense[cell]
+			const amount = held >= COND_DRIP ? held : held * COND_WEEP_FRAC
+			if (amount <= 1e-8) continue
 			let written = 0
 			for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
 				const belowX = x + down.dx[offsetIndex]
@@ -376,7 +378,7 @@ export const stepSoil = (world) => {
 				if (mat[belowY * W + belowX] !== MAT.AIR) continue
 				written += addLiquid(world, belowX, belowY, amount * (down.w[offsetIndex] / weightSum))
 			}
-			condense[cell] = amount - written
+			condense[cell] = held - written
 		}
 
 	// ĝ 转离开放下沿 → 悬挂凝结收回（回潮，满则溢到邻接空气；溢不完留在 condense）。

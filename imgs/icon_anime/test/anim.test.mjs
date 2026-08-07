@@ -129,11 +129,11 @@ Deno.test('lava: solidify is land (same occupancy buffer as terrain)', () => {
 	assertEquals(glyph === ' ', false, `land should draw, got ${JSON.stringify(glyph)}`)
 })
 
-Deno.test('exit: keeps solidified land and beads until final blank', () => {
+Deno.test('exit: keeps solidified land while fluid keeps simulating', () => {
 	const state = createAnimState({ width: 60, height: 30, seed: 19 })
 	for (const _ of enter(state));
 	const spot = airAboveLandAwayFromIcon(state)
-	const { world, terrain, width, height } = state
+	const { world, width, height } = state
 	addMelt(world, spot.x, spot.y, 1, T_SOLIDUS - 0.05)
 	const gen = hold(state)
 	gen.next()
@@ -142,30 +142,24 @@ Deno.test('exit: keeps solidified land and beads until final blank', () => {
 	assertEquals(world.land[spot.cell], 1)
 	addMoisture(world, spot.x, spot.y, 0.55)
 	world.condense[spot.cell] = 0.45
-	const dripY = spot.y + 1
-	const dripCell = dripY * world.worldW + spot.x
-	if (dripY < world.worldH && world.mat[dripCell] === MAT.AIR)
-		addLiquid(world, spot.x, dripY, 0.4)
-
-	const water0 = world.moisture[spot.cell] + world.condense[spot.cell]
-	assertGreater(water0, 0.5)
+	spawnParticle(world, world.ox + 8, 3, 0, 0.4, 80, 0.3)
+	const y0 = world.particles.y[0]
 
 	let lastLandFrame = ''
 	let frames = 0
+	let particleMoved = false
 	for (const frame of exit(state)) {
 		frames++
 		if (state.baseBot > 0 || state.pillars > 0 || state.bodyReach >= 0) {
 			assertEquals(world.land[spot.cell], 1, `land lost at frame ${frames}`)
 			assertEquals(isSoilMat(world.mat[spot.cell]), true, `soil mat lost at frame ${frames}`)
-			assertEquals(
-				world.moisture[spot.cell] + world.condense[spot.cell],
-				water0,
-				`soil water changed at frame ${frames}`,
-			)
+			if (world.particles.count > 0 && world.particles.y[0] !== y0)
+				particleMoved = true
 			lastLandFrame = frame
 		}
 	}
 	assertGreater(frames, 5)
+	assertEquals(particleMoved, true, 'exit must keep stepping particles')
 	assertEquals(lastLandFrame.length > 0, true)
 	const lines = plainLines(lastLandFrame, width, height)
 	const vx = spot.x - world.ox

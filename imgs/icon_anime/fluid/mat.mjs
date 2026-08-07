@@ -63,8 +63,13 @@ export const SOIL_DOWN_FRAC = 0.06
 export const SOIL_CONDENSE_FRAC = 0.06
 /** 凝结量中绘制成悬挂水滴的部分。 */
 export const COND_DRAW = 0.35
-/** 凝结量中滴入下方自由液体的部分。 */
+/** 凝结量 ≥ 此值时整滴落下。 */
 export const COND_DRIP = 0.85
+/**
+ * 低于 COND_DRIP 的悬挂膜每 tick 渗出比例。
+ * 否则 Matthew 把质量拆到多格、每格都卡在阈值下，碗状土地永远漏不干。
+ */
+export const COND_WEEP_FRAC = 0.08
 /** 相邻凝结格之间的 Matthew 侧向传递速率。 */
 export const COND_MATTHEW_RATE = 0.22
 /** 打破凝结平局的噪声幅度（配对质量的比例）。 */

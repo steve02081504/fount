@@ -486,3 +486,47 @@ Deno.test('gravity: sealed gas conserved under tilt', () => {
 	labelAirRegions(world)
 	assertAlmostEquals(totalSealedGas(world), g0, 0.05)
 })
+
+/**
+ * 悬空 U 形土地碗：两侧立壁 + 底，顶口敞开；腔内灌满游离水。
+ * @param {import('../fluid/world.mjs').FluidWorld} world 世界
+ * @returns {number} 初始总水量
+ */
+const paintLandBowlFullOfWater = (world) => {
+	clearMaterials(world)
+	for (let y = 4; y <= 9; y++) {
+		setMat(world, 4, y, MAT.SOLID)
+		setMat(world, 10, y, MAT.SOLID)
+	}
+	for (let x = 4; x <= 10; x++)
+		setMat(world, x, 9, MAT.SOLID)
+	for (let y = 5; y <= 8; y++)
+		for (let x = 5; x <= 9; x++)
+			addLiquid(world, x, y, 1)
+	return totalWorldWater(world)
+}
+
+Deno.test('gravity: land bowl drains under every cardinal ĝ', () => {
+	// 碗口朝上；四种正交重力都应把水送到汇边（含土壤凝结滴落），总水量归零。
+	const dirs = [
+		[0, 1],
+		[0, -1],
+		[-1, 0],
+		[1, 0],
+	]
+	for (const [gx, gy] of dirs) {
+		const world = createWorld({ width: 16, height: 14, margin: 0, bottomExtra: 0 })
+		const water0 = paintLandBowlFullOfWater(world)
+		assertGreater(water0, 15)
+		applyGravityToWorld(world, { gx, gy, mag: BASE_PARTICLE_G })
+		for (let stepIndex = 0; stepIndex < 900; stepIndex++) {
+			stepFluid(world, { forceWind: 0 })
+			disableLava(world)
+		}
+		assertLess(
+			totalWorldWater(world),
+			0.05,
+			`bowl should empty under gx=${gx} gy=${gy}, left ${totalWorldWater(world)}`,
+		)
+	}
+})

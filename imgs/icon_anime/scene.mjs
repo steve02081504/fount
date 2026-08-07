@@ -716,21 +716,16 @@ const simFrame = (state) => {
 }
 
 /**
- * 写软边标志并产出一帧；`simulate` 为 false 时只合成（退场冻结流体）。
+ * 写软边标志，推进一帧模拟并合成。
  * @param {AnimState} state 动画状态
  * @param {SoftOpts} [soft] 软边选项
- * @param {boolean} [simulate=true] 是否推进流体
  * @returns {Generator<string, void, unknown>} 一帧 ANSI
  */
-function* show(state, soft = {}, simulate = true) {
+function* show(state, soft = {}) {
 	state.softBase = !!soft.softBase
 	state.softPillars = !!soft.softPillars
 	state.softBody = !!soft.softBody
-	if (simulate) yield simFrame(state)
-	else {
-		rebuildMaterials(state)
-		yield composeFrame(state)
-	}
+	yield simFrame(state)
 	state.frame++
 }
 
@@ -776,7 +771,7 @@ export function* hold(state = createAnimState()) {
 }
 
 /**
- * 拆解体 → 柱 → 底座；背景（地形 / 水珠 / 熔岩）冻结为退场前画面。
+ * 拆解体 → 柱 → 底座；流体继续模拟（土地占位由 `world.land` 保留）。
  * @param {AnimState} [state] 动画状态
  * @returns {Generator<string, void, unknown>} 退场帧
  */
@@ -788,7 +783,7 @@ export function* exit(state = createAnimState()) {
 		const reach = state.bodyReach
 		for (let gone = 0; gone <= reach + 1; gone++) {
 			state.bodyMinD = gone
-			yield* show(state, { softBody: gone <= reach }, false)
+			yield* show(state, { softBody: gone <= reach })
 		}
 		state.bodyReach = -1
 		state.bodyMinD = 0
@@ -799,11 +794,11 @@ export function* exit(state = createAnimState()) {
 		for (let g = from; g >= 0; g--) {
 			state.pillars = g
 			if (g > 0) {
-				yield* show(state, { softPillars: true }, false)
-				yield* show(state, { softPillars: false }, false)
+				yield* show(state, { softPillars: true })
+				yield* show(state, { softPillars: false })
 			}
 			else
-				yield* show(state, {}, false)
+				yield* show(state)
 		}
 	}
 
@@ -811,7 +806,7 @@ export function* exit(state = createAnimState()) {
 		const from = Math.max(state.baseBot, state.baseTop)
 		for (let n = from; n >= 1; n--) {
 			state.baseBot = state.baseTop = n
-			yield* show(state, { softBase: n < BASE_WIDTH }, false)
+			yield* show(state, { softBase: n < BASE_WIDTH })
 		}
 		state.baseBot = state.baseTop = 0
 	}

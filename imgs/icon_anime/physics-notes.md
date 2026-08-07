@@ -63,9 +63,9 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 - `liqVx`/`liqVy`: EMA from mass transfers each `stepLiquid` — drives free-liquid glyphs.
 - Communicating vessels: relax `φ = P/(ρg) - depth` along the liquid graph (BFS from lowest-φ surface — no teleport across disconnected air).
 - `POOL` retains fill and spills/leaks; `BODY` is splash-only barrier; pillars are not materials.
-- Soil: absorb diminishes as cell wets (`soilAbsorbFactor`); rain hits sink only `SOIL_HIT_ABSORB_FRAC`. Seepage slow enough for surface puddles. Sideways share + prefer below (gravity-weighted); air below → underside `condense`; Matthew along ĝ⊥; `COND_DRAW` / `COND_DRIP` thresholds. When ĝ leaves an open underside, condense reabsorbs into moisture (excess spills to ortho air). Compose drips via `condenseDripSource` (gravity-up soil), not screen-Y. Heating evaporates moisture before melt.
+- Soil: absorb diminishes as cell wets (`soilAbsorbFactor`); rain hits sink only `SOIL_HIT_ABSORB_FRAC`. Seepage slow enough for surface puddles. Sideways share + prefer below (gravity-weighted); air below → underside `condense`; Matthew along ĝ⊥; `COND_DRAW` glyphs / full dump at `COND_DRIP` / `COND_WEEP_FRAC` weep below drip so split films cannot trap mass forever. When ĝ leaves an open underside, condense reabsorbs into moisture (excess spills to ortho air). Compose drips via `condenseDripSource` (gravity-up soil), not screen-Y. Heating evaporates moisture before melt.
 - Material rebuild clears labels only; `releaseNonSoilWater` dumps moisture/condense from non-soil into free liquid so `POOL` overwrite does not erase water.
-- `exit` freezes fluid (compose-only icon teardown) so solidified land / beads stay until the final blank; then `clearDynamics`.
+- `exit` keeps stepping fluid while the icon tears down (`world.land` holds solidified soil); then `clearDynamics` + blank.
 
 ## Pointer light
 
