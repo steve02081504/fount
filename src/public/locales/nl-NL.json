@@ -4115,6 +4115,7 @@
 		},
 		"settings": {
 			"title": "Sociale instellingen",
+			"loadFailed": "Kan instellingen niet laden: ${error}",
 			"back": {
 				"aria-label": "Terug naar profiel"
 			},
@@ -4280,6 +4281,7 @@
 					"tip": "Nieuws vernieuwen"
 				}
 			},
+			"loadFailed": "Dynamisch laden mislukt: ${error}",
 			"newPosts": "Er is nieuw nieuws, klik om te bekijken",
 			"tabsLabel": {
 				"aria-label": "Feed sorteren"
@@ -4305,6 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Aanbevolen account",
+			"loadFailed": "De verkenningspagina kan niet worden geladen: ${error}",
 			"posts": "laatste berichten",
 			"mediaOnly": "alleen media"
 		},
@@ -4419,6 +4422,7 @@
 			},
 			"empty": "Nog geen korte video",
 			"emptyHint": "Er zijn geen berichten met video's van de volgende mensen of openbare pleinen. Probeer een video-update te plaatsen?",
+			"loadFailed": "Laden van korte video mislukt: ${error}",
 			"compose": "Ga een filmpje posten",
 			"back": {
 				"aria-label": "Terug naar nieuws"
@@ -4498,6 +4502,7 @@
 			"trustScore": "Vertrouw ${score}",
 			"viewTitle": "Zoeken",
 			"loading": "Zoeken…",
+			"loadFailed": "Zoeken mislukt: ${error}",
 			"sortRecent": "Nieuwste",
 			"sortPopular": "Populair",
 			"scopeLocal": "Lokaal",
@@ -4597,6 +4602,7 @@
 			"loading": "Laden…",
 			"notFound": "Bericht bestaat niet of is niet zichtbaar",
 			"loadFailed": "Laden mislukt. Probeer het later opnieuw",
+			"exportMediaFailed": "Kan media niet exporteren: ${error}",
 			"detailTitle": "Bericht",
 			"back": "Terug"
 		},
@@ -4660,7 +4666,8 @@
 			"placeholder": "Schrijf een antwoord…",
 			"submit": "Antwoord",
 			"empty": "Nog geen antwoord",
-			"emptyHint": "Laten we het eerste artikel schrijven en de discussie starten"
+			"emptyHint": "Laten we het eerste artikel schrijven en de discussie starten",
+			"loadFailed": "Kan antwoord niet laden: ${error}"
 		},
 		"repost": {
 			"placeholder": "Retweet-opmerking toevoegen (optioneel)…",

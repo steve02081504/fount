@@ -4115,6 +4115,7 @@
 		},
 		"settings": {
 			"title": "社交樞機",
+			"loadFailed": "加载设置失败：${error}",
 			"back": {
 				"aria-label": "返簿牒"
 			},
@@ -4280,6 +4281,7 @@
 					"tip": "重覽言"
 				}
 			},
+			"loadFailed": "动态加载失败：${error}",
 			"newPosts": "有新言，觸以披閱",
 			"tabsLabel": {
 				"aria-label": "言序"
@@ -4305,6 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "薦客",
+			"loadFailed": "探索页加载失败：${error}",
 			"posts": "新近言",
 			"mediaOnly": "僅含媒體"
 		},
@@ -4419,6 +4422,7 @@
 			},
 			"empty": "暫無短影",
 			"emptyHint": "所關注者或公開廣場裡尚無帶影之言。發一則影信試試？",
+			"loadFailed": "短视频加载失败：${error}",
 			"compose": "去發留影",
 			"back": {
 				"aria-label": "返言"
@@ -4498,6 +4502,7 @@
 			"trustScore": "信任 ${score}",
 			"viewTitle": "尋蹤",
 			"loading": "方尋蹤…",
+			"loadFailed": "搜索失败：${error}",
 			"sortRecent": "最新",
 			"sortPopular": "熱門",
 			"scopeLocal": "本機",
@@ -4597,6 +4602,7 @@
 			"loading": "方取錄…",
 			"notFound": "言不見或不可見",
 			"loadFailed": "取錄有失，祈少候復試",
+			"exportMediaFailed": "导出媒体失败：${error}",
 			"detailTitle": "言",
 			"back": "返"
 		},
@@ -4660,7 +4666,8 @@
 			"placeholder": "寫一條回復…",
 			"submit": "回復",
 			"empty": "尚無回復",
-			"emptyHint": "書第一則，啟議論"
+			"emptyHint": "書第一則，啟議論",
+			"loadFailed": "加载回复失败：${error}"
 		},
 		"repost": {
 			"placeholder": "添轉述評語（可選）…",

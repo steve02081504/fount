@@ -4115,6 +4115,7 @@
 		},
 		"settings": {
 			"title": "Definições sociais",
+			"loadFailed": "Falha ao carregar configurações: ${error}",
 			"back": {
 				"aria-label": "Voltar ao perfil"
 			},
@@ -4280,6 +4281,7 @@
 					"tip": "Atualizar news"
 				}
 			},
+			"loadFailed": "Falha no carregamento dinâmico: ${error}",
 			"newPosts": "Há novidades, clique para ver",
 			"tabsLabel": {
 				"aria-label": "Ordenação do feed"
@@ -4305,6 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Conta recomendada",
+			"loadFailed": "A página de exploração falhou ao carregar: ${error}",
 			"posts": "Últimas postagens",
 			"mediaOnly": "Apenas mídia"
 		},
@@ -4419,6 +4422,7 @@
 			},
 			"empty": "Ainda sem short video",
 			"emptyHint": "Não há postagens com vídeos nas seguintes pessoas ou praças públicas. Tente postar uma atualização em vídeo?",
+			"loadFailed": "Falha no carregamento do vídeo curto: ${error}",
 			"compose": "Vá postar um vídeo",
 			"back": {
 				"aria-label": "Voltar a feed"
@@ -4498,6 +4502,7 @@
 			"trustScore": "Confie em ${score}",
 			"viewTitle": "Procurar",
 			"loading": "Procurando…",
+			"loadFailed": "Falha na pesquisa: ${error}",
 			"sortRecent": "Atualizado",
 			"sortPopular": "Popular",
 			"scopeLocal": "Máquina local",
@@ -4597,6 +4602,7 @@
 			"loading": "A carregar…",
 			"notFound": "A postagem não existe ou não está visível",
 			"loadFailed": "Falha ao carregar, tente novamente mais tarde",
+			"exportMediaFailed": "Falha ao exportar mídia: ${error}",
 			"detailTitle": "Publicação",
 			"back": "Voltar"
 		},
@@ -4660,7 +4666,8 @@
 			"placeholder": "Escreva uma resposta…",
 			"submit": "Responder",
 			"empty": "Ainda sem replies",
-			"emptyHint": "Vamos escrever o primeiro artigo e iniciar a discussão"
+			"emptyHint": "Vamos escrever o primeiro artigo e iniciar a discussão",
+			"loadFailed": "Falha ao carregar a resposta: ${error}"
 		},
 		"repost": {
 			"placeholder": "Adicionar um comentário de reenvio (opcional)…",

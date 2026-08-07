@@ -4110,6 +4110,7 @@
 		},
 		"settings": {
 			"title": "social settings",
+			"loadFailed": "Failed to load settings: ${error}",
 			"back": {
 				"aria-label": "Back to settings"
 			},
@@ -4277,6 +4278,7 @@
 					"tip": "Refresh news"
 				}
 			},
+			"loadFailed": "Dynamic loading failed: ${error}",
 			"newPosts": "There is new news, click to view",
 			"tabsLabel": {
 				"aria-label": "Feed sort order"
@@ -4302,6 +4304,7 @@
 		},
 		"explore": {
 			"accounts": "Suggested accounts",
+			"loadFailed": "The exploration page failed to load: ${error}",
 			"posts": "Latest posts",
 			"mediaOnly": "Media only"
 		},
@@ -4416,6 +4419,7 @@
 			},
 			"empty": "No short video yet",
 			"emptyHint": "There are no posts with videos in the following people or public squares. Try posting a video update?",
+			"loadFailed": "Short video loading failed: ${error}",
 			"compose": "Go post a video",
 			"back": {
 				"aria-label": "Back to feed"
@@ -4495,6 +4499,7 @@
 			"trustScore": "Trust ${score}",
 			"viewTitle": "Search",
 			"loading": "Searching…",
+			"loadFailed": "Search failed: ${error}",
 			"sortRecent": "Latest",
 			"sortPopular": "Popular",
 			"scopeLocal": "This device",
@@ -4594,6 +4599,7 @@
 			"loading": "Loading…",
 			"notFound": "Post not found or not visible",
 			"loadFailed": "Couldn't load — try again later",
+			"exportMediaFailed": "Failed to export media: ${error}",
 			"detailTitle": "Post",
 			"back": "Back"
 		},
@@ -4657,7 +4663,8 @@
 			"placeholder": "Write a reply…",
 			"submit": "Reply",
 			"empty": "No replies yet",
-			"emptyHint": "Be the first to reply"
+			"emptyHint": "Be the first to reply",
+			"loadFailed": "Failed to load reply: ${error}"
 		},
 		"repost": {
 			"placeholder": "Add a repost comment (optional)…",

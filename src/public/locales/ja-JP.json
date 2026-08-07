@@ -4115,6 +4115,7 @@
 		},
 		"settings": {
 			"title": "ソーシャル設定",
+			"loadFailed": "設定のロードに失敗しました: ${error}",
 			"back": {
 				"aria-label": "プロフィールに戻る"
 			},
@@ -4280,6 +4281,7 @@
 					"tip": "ニュースを更新"
 				}
 			},
+			"loadFailed": "動的読み込みに失敗しました: ${error}",
 			"newPosts": "新しいニュースがあります。クリックしてご覧ください",
 			"tabsLabel": {
 				"aria-label": "フィードの並び替え"
@@ -4305,6 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "推奨アカウント",
+			"loadFailed": "探索ページの読み込みに失敗しました: ${error}",
 			"posts": "最新の投稿",
 			"mediaOnly": "メディアのみ"
 		},
@@ -4419,6 +4422,7 @@
 			},
 			"empty": "ショート動画はまだありません",
 			"emptyHint": "以下の人や広場には動画付きの投稿はありません。動画更新を投稿してみてはいかがでしょうか？",
+			"loadFailed": "短いビデオの読み込みに失敗しました: ${error}",
 			"compose": "動画を投稿してみよう",
 			"back": {
 				"aria-label": "ニュースに戻る"
@@ -4498,6 +4502,7 @@
 			"trustScore": "${score}を信頼する",
 			"viewTitle": "検索",
 			"loading": "検索中…",
+			"loadFailed": "検索に失敗しました: ${error}",
 			"sortRecent": "最新の",
 			"sortPopular": "人気のある",
 			"scopeLocal": "ローカルマシン",
@@ -4597,6 +4602,7 @@
 			"loading": "読み込み中…",
 			"notFound": "投稿が存在しないか、表示されません",
 			"loadFailed": "読み込みに失敗しました。後でもう一度お試しください",
+			"exportMediaFailed": "メディアのエクスポートに失敗しました: ${error}",
 			"detailTitle": "役職",
 			"back": "戻る"
 		},
@@ -4660,7 +4666,8 @@
 			"placeholder": "返信を書いてください…",
 			"submit": "返事",
 			"empty": "まだ返事はありません",
-			"emptyHint": "最初の記事を書いてディスカッションを始めましょう"
+			"emptyHint": "最初の記事を書いてディスカッションを始めましょう",
+			"loadFailed": "応答を読み込めませんでした: ${error}"
 		},
 		"repost": {
 			"placeholder": "リツイートコメントを追加（オプション）…",
