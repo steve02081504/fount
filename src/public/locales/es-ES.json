@@ -363,6 +363,26 @@
 				"createdNoUpdate": "Se creó `.noupdate`; actualizaciones automáticas suspendidas.",
 				"unknownTarget": "No se puede identificar «${target}»: no es una rama conocida, un commit ni una pull request."
 			},
+			"version": {
+				"branch": {
+					"title": "Rama: ${branch}",
+					"detached": "HEAD separado"
+				},
+				"commit": "Commit: `${ref}`",
+				"remote": "Remoto: `${ref}`",
+				"status": {
+					"title": "Estado: ${status}",
+					"upToDate": "Actualizado",
+					"behind": "Por detrás del remoto",
+					"ahead": "Por delante del remoto",
+					"diverged": "Divergido del remoto",
+					"detachedNoCompare": "HEAD separado, sin comparación con el remoto",
+					"fetchFailed": "No se pudo obtener el estado del remoto"
+				},
+				"autoUpdatePaused": "Actualizaciones automáticas en pausa (existe `.noupdate`)",
+				"noRepo": "Repositorio Git no encontrado",
+				"noGit": "Git no está instalado"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "Acceso directo de escritorio creado en `${path}`",
 				"startMenuShortcutCreated": "Acceso directo al menú Inicio creado en `${path}`",
@@ -1948,6 +1968,7 @@
 				"aria-label": "Grupos y navegación"
 			},
 			"operationFailed": "Operación fallida: ${error}",
+			"warmCharCacheFailed": "No se pudo precalentar la caché de personajes: ${error}",
 			"shareGroupFailed": "No se pudo compartir el enlace del grupo: ${error}",
 			"replyInline": {
 				"title": "responder"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "Error al cargar: ${error}",
+				"rebindFailed": "No se pudo volver a vincular la sala de federación: ${error}",
 				"subtitle": "Controlar conexiones entre dispositivos; Deje los valores predeterminados en la mayoría de los casos.",
 				"title": "Configuración de P2P federado",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "Plaza",
 		"description": "Social P2P abierto: publicaciones, seguimientos y archivos compartidos",
 		"bootstrapFailed": "La inicialización de la interfaz social falló: ${error}",
+		"connectNodeFailed": "No se pudo conectar al nodo: ${error}",
+		"dwellFailed": "No se pudieron actualizar las preferencias según el tiempo de visualización: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "Plaza"

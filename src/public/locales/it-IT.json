@@ -363,6 +363,26 @@
 				"createdNoUpdate": "Creato `.noupdate`; aggiornamenti automatici sospesi.",
 				"unknownTarget": "Impossibile identificare «${target}»: non è un ramo noto, un commit né una pull request."
 			},
+			"version": {
+				"branch": {
+					"title": "Ramo: ${branch}",
+					"detached": "HEAD scollegato"
+				},
+				"commit": "Commit: `${ref}`",
+				"remote": "Remoto: `${ref}`",
+				"status": {
+					"title": "Stato: ${status}",
+					"upToDate": "Aggiornato",
+					"behind": "Indietro rispetto al remoto",
+					"ahead": "Avanti rispetto al remoto",
+					"diverged": "Divergente dal remoto",
+					"detachedNoCompare": "HEAD scollegato, nessun confronto con il remoto",
+					"fetchFailed": "Impossibile recuperare lo stato del remoto"
+				},
+				"autoUpdatePaused": "Aggiornamenti automatici sospesi (`.noupdate` presente)",
+				"noRepo": "Repository Git non trovato",
+				"noGit": "Git non è installato"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "Collegamento sul desktop creato in `${path}`",
 				"startMenuShortcutCreated": "Collegamento al menu Start creato in `${path}`",
@@ -1948,6 +1968,7 @@
 				"aria-label": "Gruppi e navigazione"
 			},
 			"operationFailed": "Operazione non riuscita: ${error}",
+			"warmCharCacheFailed": "Precaricamento della cache dei personaggi non riuscito: ${error}",
 			"shareGroupFailed": "Impossibile condividere il collegamento al gruppo: ${error}",
 			"replyInline": {
 				"title": "Rispondere"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "Impossibile caricare: ${error}",
+				"rebindFailed": "Ricollegamento della stanza federata non riuscito: ${error}",
 				"subtitle": "Controlla le connessioni tra dispositivi: le impostazioni predefinite vanno bene per la maggior parte delle persone",
 				"title": "Impostazioni P2P federate",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "piazza",
 		"description": "P2P apre aggiornamenti social, follower e condivisione di file",
 		"bootstrapFailed": "Inizializzazione dell'interfaccia social non riuscita: ${error}",
+		"connectNodeFailed": "Connessione al nodo non riuscita: ${error}",
+		"dwellFailed": "Aggiornamento delle preferenze in base al tempo di visualizzazione non riuscito: ${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "piazza"

@@ -363,6 +363,26 @@
 				"createdNoUpdate": "`.noupdate` を作成しました。自動更新を一時停止しました。",
 				"unknownTarget": "「${target}」を識別できません：既知のブランチ、コミット、プルリクエストのいずれでもありません。"
 			},
+			"version": {
+				"branch": {
+					"title": "ブランチ: ${branch}",
+					"detached": "detached HEAD"
+				},
+				"commit": "コミット: `${ref}`",
+				"remote": "リモート: `${ref}`",
+				"status": {
+					"title": "状態: ${status}",
+					"upToDate": "最新",
+					"behind": "リモートより遅れています",
+					"ahead": "リモートより進んでいます",
+					"diverged": "リモートと分岐しています",
+					"detachedNoCompare": "detached HEAD のためリモートと比較できません",
+					"fetchFailed": "リモートの状態を取得できません"
+				},
+				"autoUpdatePaused": "自動更新を一時停止中（`.noupdate` あり）",
+				"noRepo": "Git リポジトリが見つかりません",
+				"noGit": "Git がインストールされていません"
+			},
 			"shortcut": {
 				"desktopShortcutCreated": "`${path}` にデスクトップ ショートカットが作成されました",
 				"startMenuShortcutCreated": "`${path}` にスタート メニューのショートカットが作成されました",
@@ -1948,6 +1968,7 @@
 				"aria-label": "グループとナビゲーション"
 			},
 			"operationFailed": "操作が失敗しました: ${error}",
+			"warmCharCacheFailed": "キャラクターキャッシュのウォームアップに失敗しました：${error}",
 			"shareGroupFailed": "グループリンクを共有できませんでした: ${error}",
 			"replyInline": {
 				"title": "返事"
@@ -2160,6 +2181,7 @@
 			},
 			"federation": {
 				"loadFailed": "読み込みに失敗しました: ${error}",
+				"rebindFailed": "フェデレーションルームの再バインドに失敗しました：${error}",
 				"subtitle": "クロスデバイス接続を制御します。ほとんどの場合はデフォルトのままにします",
 				"title": "フェデレーション P2P 設定",
 				"tooltip": {
@@ -4041,6 +4063,8 @@
 		"title": "広場",
 		"description": "P2P オープンソーシャル・フォロー・ファイル共有",
 		"bootstrapFailed": "ソーシャル インターフェイスの初期化に失敗しました: ${error}",
+		"connectNodeFailed": "ノードへの接続に失敗しました：${error}",
+		"dwellFailed": "閲覧滞在時間に基づくおすすめデータの更新に失敗しました：${error}",
 		"home_function_buttons": {
 			"main": {
 				"title": "広場"
