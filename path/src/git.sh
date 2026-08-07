@@ -51,6 +51,31 @@ git_fetch_remote_branch() {
 	invoke_repo_git fetch origin --prune "+refs/heads/${branch}:refs/remotes/origin/${branch}"
 }
 
+# Echo PR number if target names a GitHub pull request (pr/N, pull/N, #N, or …/pull/N URL); else return 1.
+git_parse_pr_number() {
+	local target="$1" number=
+	[[ -n "$target" ]] || return 1
+	if [[ "$target" =~ ^[Pp][Rr]/([0-9]+)$ ]]; then
+		number="${BASH_REMATCH[1]}"
+	elif [[ "$target" =~ ^[Pp][Uu][Ll][Ll]/([0-9]+)$ ]]; then
+		number="${BASH_REMATCH[1]}"
+	elif [[ "$target" =~ ^#([0-9]+)$ ]]; then
+		number="${BASH_REMATCH[1]}"
+	elif [[ "$target" =~ ^https?://([^/]+/)+pull/([0-9]+)([/?#].*)?$ ]]; then
+		number="${BASH_REMATCH[2]}"
+	else
+		return 1
+	fi
+	printf '%s\n' "$number"
+}
+
+# One-shot map of GitHub pull/<n>/head into origin/pr/<n> (does not widen remote.origin.fetch).
+git_fetch_pull_request() {
+	local pr="$1"
+	[[ "$pr" =~ ^[0-9]+$ ]] || return 1
+	invoke_repo_git fetch origin --prune "+refs/pull/${pr}/head:refs/remotes/origin/pr/${pr}"
+}
+
 git_backup_uncommitted() {
 	command -v git &>/dev/null || return 0
 	[ -d "$FOUNT_DIR/.git" ] || return 0

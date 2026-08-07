@@ -87,13 +87,15 @@ async function runPwsh(script) {
 }
 
 /**
- * 从 git.ps1 抽出 git_valid_branch_name 函数体供隔离测试。
- * @returns {Promise<string>} 函数源码（script: 前缀已去掉）
+ * 从 git.ps1 抽出指定 `function script:NAME` 供隔离测试（去掉 script: 前缀）。
+ * @param {string} functionName 函数名（不含 script:）
+ * @returns {Promise<string>} 可在 pwsh 中直接执行的函数源码
  */
-async function extractPsValidBranchFn() {
+async function extractPsScriptFn(functionName) {
 	const src = await Deno.readTextFile(gitPs1Path)
-	const start = src.indexOf('function script:git_valid_branch_name($Branch) {')
-	if (start < 0) throw new Error('git_valid_branch_name not found in git.ps1')
+	const needle = `function script:${functionName}(`
+	const start = src.indexOf(needle)
+	if (start < 0) throw new Error(`${functionName} not found in git.ps1`)
 	let depth = 0
 	let end = -1
 	let inSingle = false
@@ -120,9 +122,20 @@ async function extractPsValidBranchFn() {
 			}
 		}
 	}
-	if (end < 0) throw new Error('git_valid_branch_name brace mismatch in git.ps1')
-	return src.slice(start, end).replace('function script:git_valid_branch_name', 'function git_valid_branch_name')
+	if (end < 0) throw new Error(`${functionName} brace mismatch in git.ps1`)
+	return src.slice(start, end).replace(`function script:${functionName}`, `function ${functionName}`)
 }
+
+/**
+ * @returns {Promise<string>} git_valid_branch_name 源码
+ */
+const extractPsValidBranchFn = () => extractPsScriptFn('git_valid_branch_name')
+
+/**
+ * @returns {Promise<string>} git_parse_pr_number 源码
+ */
+const extractPsParsePrFn = () => extractPsScriptFn('git_parse_pr_number')
+
 
 Deno.test('git.sh parses under bash -n', async () => {
 	const result = await runBash(`bash -n ${JSON.stringify(gitShPath)}`)
@@ -233,4 +246,100 @@ Deno.test('sourcing git.sh defines git_remote_branch_status', async () => {
 	`)
 	assertEquals(result.code, 0, result.stderr || result.stdout)
 	assertStringIncludes(result.stdout, 'ok')
+})
+
+/** Accepted PR target forms → expected number. */
+const VALID_PR_TARGETS = [
+	['pr/42', '42'],
+	['PR/7', '7'],
+	['pull/99', '99'],
+	['Pull/1', '1'],
+	['#123', '123'],
+	['https://github.com/steve02081504/fount/pull/580', '580'],
+	['https://github.com/steve02081504/fount/pull/580/files', '580'],
+	['http://github.com/o/r/pull/3?x=1', '3'],
+]
+
+/** Rejected PR target forms. */
+const INVALID_PR_TARGETS = [
+	'',
+	'pr/',
+	'pr/0x1',
+	'pr/12/3',
+	'pr/12a',
+	'pull/',
+	'#',
+	'#abc',
+	'42',
+	'branch',
+	'https://github.com/o/r/issues/1',
+]
+
+Deno.test('git_parse_pr_number accepts pr/N pull/N #N and GitHub URLs (bash)', async () => {
+	const result = await runBash(`
+		set -e
+		. ${JSON.stringify(gitShPath)}
+		${VALID_PR_TARGETS.map(([target, number]) => `
+			got=$(git_parse_pr_number ${JSON.stringify(target)})
+			[ "$got" = ${JSON.stringify(number)} ] || { echo "mismatch:${target}:$got" >&2; exit 1; }
+		`).join('')}
+		echo ok
+	`)
+	assertEquals(result.code, 0, result.stderr || result.stdout)
+	assertEquals(result.stdout.trim(), 'ok')
+})
+
+Deno.test('git_parse_pr_number rejects non-PR targets (bash)', async () => {
+	const encoded = INVALID_PR_TARGETS.map(encodeBase64)
+	const result = await runBash(`
+		set -e
+		. ${JSON.stringify(gitShPath)}
+		decode() { printf '%s' "$1" | base64 -d; }
+		for b64 in ${encoded.map(encodedName => JSON.stringify(encodedName)).join(' ')}; do
+			name=$(decode "$b64")
+			if git_parse_pr_number "$name" >/dev/null; then
+				echo "accepted:$name" >&2
+				exit 1
+			fi
+		done
+		echo ok
+	`)
+	assertEquals(result.code, 0, result.stderr || result.stdout)
+	assertEquals(result.stdout.trim(), 'ok')
+})
+
+Deno.test('git_parse_pr_number bash and PowerShell agree', async () => {
+	const allTargets = [
+		...VALID_PR_TARGETS.map(([target]) => target),
+		...INVALID_PR_TARGETS,
+	]
+	const encoded = allTargets.map(encodeBase64)
+
+	const bash = await runBash(`
+		set -e
+		. ${JSON.stringify(gitShPath)}
+		decode() { printf '%s' "$1" | base64 -d; }
+		for b64 in ${encoded.map(encodedName => JSON.stringify(encodedName)).join(' ')}; do
+			name=$(decode "$b64")
+			if out=$(git_parse_pr_number "$name"); then echo "1:$out"; else echo 0; fi
+		done
+	`)
+	assertEquals(bash.code, 0, bash.stderr || bash.stdout)
+
+	const powerShellResult = await runPwsh(`
+${await extractPsParsePrFn()}
+$encoded = @(${encoded.map(encodedName => `'${encodedName}'`).join(', ')})
+foreach ($b64 in $encoded) {
+  $name = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64))
+  $got = git_parse_pr_number $name
+  if ($null -ne $got -and $got -ne '') { Write-Output ("1:" + $got) } else { Write-Output '0' }
+}
+`)
+	assertEquals(powerShellResult.code, 0, powerShellResult.stderr || powerShellResult.stdout)
+
+	const bashVerdicts = bash.stdout.trim().split(/\r?\n/).filter(Boolean)
+	const psVerdicts = powerShellResult.stdout.trim().split(/\r?\n/).filter(Boolean)
+	assertEquals(psVerdicts.length, allTargets.length)
+	assertEquals(bashVerdicts.length, allTargets.length)
+	assertEquals(psVerdicts, bashVerdicts)
 })

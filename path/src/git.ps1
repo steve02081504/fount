@@ -75,6 +75,25 @@ function script:git_fetch_remote_branch($Branch) {
 	invoke_repo_git fetch origin --prune "+refs/heads/${Branch}:refs/remotes/origin/${Branch}"
 }
 
+# Return PR number if target names a GitHub pull request (pr/N, pull/N, #N, or …/pull/N URL); else $null.
+function script:git_parse_pr_number($Target) {
+	if ([string]::IsNullOrEmpty($Target)) { return $null }
+	if ($Target -match '^(?i)pr/(\d+)$') { return $Matches[1] }
+	if ($Target -match '^(?i)pull/(\d+)$') { return $Matches[1] }
+	if ($Target -match '^#(\d+)$') { return $Matches[1] }
+	if ($Target -match '^https?://(?:[^/]+/)+pull/(\d+)(?:[/?#].*)?$') { return $Matches[1] }
+	return $null
+}
+
+# One-shot map of GitHub pull/<n>/head into origin/pr/<n> (does not widen remote.origin.fetch).
+function script:git_fetch_pull_request($Pr) {
+	if ($Pr -notmatch '^\d+$') {
+		$global:LastExitCode = 1
+		return
+	}
+	invoke_repo_git fetch origin --prune "+refs/pull/${Pr}/head:refs/remotes/origin/pr/${Pr}"
+}
+
 function script:git_backup_uncommitted {
 	$global:LastExitCode = 0
 	if (-not (Get-Command git -ErrorAction SilentlyContinue)) { return }

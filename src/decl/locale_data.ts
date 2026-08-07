@@ -342,6 +342,7 @@ export type LocaleData = {
 				switchingToBranch: string
 				removedNoUpdate: string
 				pinningToCommit: string
+				pinningToPullRequest: string
 				createdNoUpdate: string
 				unknownTarget: string
 			}
@@ -6044,6 +6045,7 @@ export type LocaleKeyParams = {
 	'fountConsole.path.terminalKeybindings.wtPatchFailed': { message: string | number; path: string | number }
 	'fountConsole.path.terminalKeybindings.wtRemoved': { path: string | number }
 	'fountConsole.path.update.pinningToCommit': { ref: string | number }
+	'fountConsole.path.update.pinningToPullRequest': { pr: string | number }
 	'fountConsole.path.update.switchingToBranch': { branch: string | number }
 	'fountConsole.path.update.unknownTarget': { target: string | number }
 	'fountConsole.route.setLanguagePreference': { preferredLanguages: string | number; username: string | number }
