@@ -5,8 +5,9 @@
  * 粒子是储水器，非质量泄漏。
  */
 
+import { neighborCoord } from './edges.mjs'
 import { MAT, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
-import { markAirIfDrawCrossed } from './world.mjs'
+import { markAirIfDrawCrossed, strongestUp, inWorld } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
  * @typedef {{
@@ -34,9 +35,10 @@ export const WIND_LIFT_MAX = 0.4
 /** 强上升气流中液滴寿命的软刷新。 */
 export const WIND_HOLD_LIFE = 36
 
-const GRAVITY = 0.12
-const MAX_VY = 1.15
+const MAX_SPEED = 1.15
 const PARTICLE_CAP = 1200
+/** 默认粒子重力模长（兼容旧测试/外部引用）。 */
+export const PARTICLE_GRAVITY = 0.12
 
 /**
  * 分配空粒子 SoA 池。
@@ -243,22 +245,46 @@ export const stepParticles = (world, onHit, state) => {
 			const dragY = verticalGasDrag(gux, guy)
 			pvx += (gux - pvx) * GAS_DRAG
 			pvy += (guy - pvy) * dragY
+			const alongG = gux * world.gravity.gx + guy * world.gravity.gy
 			// Held in a strong updraft: keep the droplet alive for orbiting.
-			if (guy < WIND_LIFT_UY && speed2 > 1)
+			if (alongG < WIND_LIFT_UY && speed2 > 1)
 				life = Math.max(life, Math.min(WIND_HOLD_LIFE, life + 1))
 		}
-		pvy = Math.min(MAX_VY, pvy + GRAVITY)
+		const g = world.gravity
+		pvx += g.gx * g.mag
+		pvy += g.gy * g.mag
+		// Cap only the gravity-aligned component (old MAX_VY) — preserve tangential orbit speed.
+		const along = pvx * g.gx + pvy * g.gy
+		if (along > MAX_SPEED) {
+			const excess = along - MAX_SPEED
+			pvx -= g.gx * excess
+			pvy -= g.gy * excess
+		}
 
 		if (life <= 0) {
 			depositParticleMass(world, px, py, amt)
 			continue
 		}
 
-		const nx = px + pvx
-		const ny = py + pvy
+		let nx = px + pvx
+		let ny = py + pvy
+
+		// Side wrap when leaving edges with wrap role.
+		if (nx < 0 || nx >= W) {
+			const nb = neighborCoord(world, px | 0, py | 0, nx < 0 ? -1 : 1, 0, (life | 0) + i)
+			if (nb.wrapped) nx = nb.x + (nx - Math.floor(nx))
+			else if (nb.out) 
+				continue
+			
+		}
+		if (ny < 0 || ny >= H) {
+			const nb = neighborCoord(world, px | 0, py | 0, 0, ny < 0 ? -1 : 1, (life | 0) + i + 17)
+			if (nb.wrapped) ny = nb.y + (ny - Math.floor(ny))
+			else if (nb.out)
+				continue
+		}
 
 		if (nx < 0 || nx >= W || ny >= H)
-			// World-edge sink — mass leaves the domain intentionally.
 			continue
 
 		if (ny < 0) {
@@ -277,7 +303,7 @@ export const stepParticles = (world, onHit, state) => {
 
 		const cell = cy * W + cx
 		const m = mat[cell]
-		const wet = liq[cell] >= LIQ_DRAW
+		const wet = liq[cell] >= LIQ_DRAW || world.melt[cell] >= LIQ_DRAW
 
 		if (m === MAT.AIR && !wet) {
 			live.x[write] = nx
@@ -309,33 +335,42 @@ export const stepParticles = (world, onHit, state) => {
  * @returns {number} 抬升总质量
  */
 export const liftLiquidByWind = (world) => {
-	// After stepGas: skip full-grid scoop when no cell has strong updraft.
-	// NaN (gas not stepped) → always scan so direct gasUy fixtures still work.
-	const up = world.maxUpdraft
-	if (up === up && up > WIND_LIFT_UY) return 0
+	// After stepGas: skip full-grid scoop when no cell has strong updraft against ĝ.
+	// maxUpdraft = most negative gas·ĝ (strongest anti-gravity); NaN → do not skip.
+	const { maxUpdraft } = world
+	if (maxUpdraft > WIND_LIFT_UY) return 0
 
-	const { worldW: W, worldH: H, mat, liq, gasUx, gasUy, particles } = world
+	const { worldW: W, worldH: H, mat, liq, gasUx, gasUy, particles, gravity } = world
 	let lifted = 0
+	const upW = strongestUp(world)
 
-	for (let y = 1; y < H; y++)
+	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const i = y * W + x
 			if (mat[i] !== MAT.AIR || liq[i] < LIQ_DRAW) continue
 
-			const above = i - W
-			// Prefer air above; fall back to this cell's gas if somehow present.
-			let gux = gasUx[above]
-			let guy = gasUy[above]
-			if (mat[above] !== MAT.AIR || liq[above] >= LIQ_DRAW) {
-				gux = gasUx[i]
-				guy = gasUy[i]
+			let gux = gasUx[i]
+			let guy = gasUy[i]
+			let spawnX = x + 0.5
+			let spawnY = y - 0.15
+			if (upW.w > 0) {
+				const ax = x + upW.dx
+				const ay = y + upW.dy
+				if (inWorld(world, ax, ay) && mat[ay * W + ax] === MAT.AIR && liq[ay * W + ax] < LIQ_DRAW) {
+					gux = gasUx[ay * W + ax]
+					guy = gasUy[ay * W + ax]
+					spawnX = ax + 0.5
+					spawnY = ay + 0.5
+				}
 			}
-			if (guy > WIND_LIFT_UY) continue
+			// Updraft = velocity against gravity.
+			const alongG = gux * gravity.gx + guy * gravity.gy
+			if (alongG > WIND_LIFT_UY) continue
 
 			const scoop = Math.min(
 				WIND_LIFT_MAX,
 				liq[i],
-				(WIND_LIFT_UY - guy) * WIND_LIFT_RATE - guy * 0.08,
+				(WIND_LIFT_UY - alongG) * WIND_LIFT_RATE - alongG * 0.08,
 			)
 			if (scoop < 0.04) continue
 			if (particles.count >= particles.x.length) return lifted
@@ -343,13 +378,12 @@ export const liftLiquidByWind = (world) => {
 			const before = liq[i]
 			liq[i] -= scoop
 			markAirIfDrawCrossed(world, before, liq[i])
-			const spawnY = mat[above] === MAT.AIR && liq[above] < LIQ_DRAW ? y - 0.35 : y - 0.15
 			pushParticle(
 				particles,
-				x + 0.5,
+				spawnX,
 				spawnY,
-				gux * 0.85,
-				Math.min(-0.35, guy * 0.9),
+				gux * 0.85 - gravity.gx * 0.35,
+				guy * 0.85 - gravity.gy * 0.35,
 				WIND_HOLD_LIFE,
 				scoop,
 			)

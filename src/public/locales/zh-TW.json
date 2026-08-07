@@ -380,6 +380,7 @@
 				"localBranchAhead": "本機分支領先於遠端分支。無需更新。",
 				"branchesDiverged": "本機和遠端分支已分歧。強制更新中...",
 				"notOnBranch": "不在分支上，切換到 'master'...",
+				"upstreamGoneFallbackMaster": "遠端分支「${branch}」已在遠端刪除，改為追蹤 master…",
 				"noUpstreamBranch": "警告：沒有為分支 '${branch}' 設定上游分支，使用 '${remote}'。",
 				"dirtyWorkingDirectory": "警告：工作目錄有未提交的變更。請在更新前暫存或提交。",
 				"notInstalled": "未安裝 Git，正在嘗試安裝...",

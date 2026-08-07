@@ -381,6 +381,7 @@
 				"localBranchAhead": "本地分支已先於遠端，無需更",
 				"branchesDiverged": "本地與遠端分支已分歧，強行更之...",
 				"notOnBranch": "非在支上，今切至 'master'...",
+				"upstreamGoneFallbackMaster": "遠端分支 '${branch}' 既刪，今改蹤 master…",
 				"noUpstreamBranch": "警：未為分支 '${branch}' 置上遊分支，用 '${remote}'。",
 				"dirtyWorkingDirectory": "案牘勞形，未及整理。宜先封存或呈貢，方可續行。",
 				"notInstalled": "Git 未裝，嘗試置之...",

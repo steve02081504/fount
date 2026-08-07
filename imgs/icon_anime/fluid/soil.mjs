@@ -13,6 +13,7 @@ import {
 } from './mat.mjs'
 import {
 	scratch, growScratch, addLiquid, markAirIfDrawCrossed,
+	gravityDownWeights, gravityUpWeights, strongestDown, inWorld,
 } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
@@ -97,22 +98,37 @@ export const stepSoil = (world) => {
 	const n = W * H
 	world.soilStep = (world.soilStep + 1) | 0
 	const step = world.soilStep
+	const up = gravityUpWeights(world)
+	const down = gravityDownWeights(world)
+	const strongDown = strongestDown(world)
+	let sideA = { dx: -1, dy: 0 }
+	let sideB = { dx: 1, dy: 0 }
+	if (strongDown.w > 0 && strongDown.dx !== 0) {
+		sideA = { dx: 0, dy: -1 }
+		sideB = { dx: 0, dy: 1 }
+	}
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
-			if (!isSoilMat(mat[cell]) || y === 0) continue
-			const above = (y - 1) * W + x
-			if (isLiquidBarrier(mat[above]) || liq[above] <= 0) continue
-			const room = SOIL_CAP - moisture[cell]
-			if (room <= 0) continue
-			const rate = SOIL_ABSORB_RATE * soilAbsorbFactor(moisture[cell])
-			if (rate <= 1e-8) continue
-			const before = liq[above]
-			const take = Math.min(before, room, rate)
-			liq[above] -= take
-			moisture[cell] += take
-			markAirIfDrawCrossed(world, before, liq[above])
+			if (!isSoilMat(mat[cell])) continue
+			for (let i = 0; i < up.n; i++) {
+				if (up.w[i] < 0.5) continue
+				const ax = x + up.dx[i]
+				const ay = y + up.dy[i]
+				if (!inWorld(world, ax, ay)) continue
+				const above = ay * W + ax
+				if (isLiquidBarrier(mat[above]) || liq[above] <= 0) continue
+				const room = SOIL_CAP - moisture[cell]
+				if (room <= 0) continue
+				const rate = SOIL_ABSORB_RATE * soilAbsorbFactor(moisture[cell]) * up.w[i]
+				if (rate <= 1e-8) continue
+				const before = liq[above]
+				const take = Math.min(before, room, rate)
+				liq[above] -= take
+				moisture[cell] += take
+				markAirIfDrawCrossed(world, before, liq[above])
+			}
 		}
 
 	/** @type {SoilQueues} */
@@ -132,30 +148,35 @@ export const stepSoil = (world) => {
 			const moistureAmount = moisture[cell]
 			if (moistureAmount <= 1e-8) continue
 
-			if (y + 1 < H) {
-				const below = (y + 1) * W + x
+			for (let i = 0; i < down.n; i++) {
+				const bx = x + down.dx[i]
+				const by = y + down.dy[i]
+				if (!inWorld(world, bx, by)) continue
+				const below = by * W + bx
+				const w = down.w[i]
 				if (isSoilMat(mat[below])) {
-					const take = Math.min(moistureAmount * SOIL_DOWN_FRAC, Math.max(0, SOIL_CAP - moisture[below]))
+					const take = Math.min(moistureAmount * SOIL_DOWN_FRAC * w, Math.max(0, SOIL_CAP - moisture[below]))
 					if (take > 1e-8) pushMove(world, queues, cell, below, take)
 				}
 				else if (mat[below] === MAT.AIR) {
-					const take = moistureAmount * SOIL_CONDENSE_FRAC
+					const take = moistureAmount * SOIL_CONDENSE_FRAC * w
 					if (take > 1e-8) pushFeed(world, queues, cell, take)
 				}
 			}
 
-			const left = x > 0 && isSoilMat(mat[cell - 1]) ? cell - 1 : -1
-			const right = x + 1 < W && isSoilMat(mat[cell + 1]) ? cell + 1 : -1
-			const sideCount = (left >= 0 ? 1 : 0) + (right >= 0 ? 1 : 0)
-			if (sideCount) {
-				const each = (moistureAmount * SOIL_SIDE_FRAC) / sideCount
-				if (left >= 0) {
-					const take = Math.min(each, Math.max(0, SOIL_CAP - moisture[left]))
-					if (take > 1e-8) pushMove(world, queues, cell, left, take)
-				}
-				if (right >= 0) {
-					const take = Math.min(each, Math.max(0, SOIL_CAP - moisture[right]))
-					if (take > 1e-8) pushMove(world, queues, cell, right, take)
+			const sideNeighbors = []
+			for (const side of [sideA, sideB]) {
+				const sx = x + side.dx
+				const sy = y + side.dy
+				if (!inWorld(world, sx, sy)) continue
+				const neighbor = sy * W + sx
+				if (isSoilMat(mat[neighbor])) sideNeighbors.push(neighbor)
+			}
+			if (sideNeighbors.length) {
+				const each = (moistureAmount * SOIL_SIDE_FRAC) / sideNeighbors.length
+				for (const neighbor of sideNeighbors) {
+					const take = Math.min(each, Math.max(0, SOIL_CAP - moisture[neighbor]))
+					if (take > 1e-8) pushMove(world, queues, cell, neighbor, take)
 				}
 			}
 		}
@@ -245,14 +266,21 @@ export const stepSoil = (world) => {
 			condense[rich] += take
 		}
 
-	for (let y = 0; y < H - 1; y++)
+	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (!isSoilMat(mat[cell]) || condense[cell] < COND_DRIP) continue
-			const below = (y + 1) * W + x
-			if (mat[below] !== MAT.AIR) continue
-			const amount = condense[cell]
-			const added = addLiquid(world, x, y + 1, amount)
-			condense[cell] = amount - added
+			for (let i = 0; i < down.n; i++) {
+				if (down.w[i] < 0.5) continue
+				const bx = x + down.dx[i]
+				const by = y + down.dy[i]
+				if (!inWorld(world, bx, by)) continue
+				const below = by * W + bx
+				if (mat[below] !== MAT.AIR) continue
+				const amount = condense[cell]
+				const added = addLiquid(world, bx, by, amount)
+				condense[cell] = amount - added
+				break
+			}
 		}
 }

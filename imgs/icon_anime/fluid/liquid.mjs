@@ -3,23 +3,32 @@
  *
  * P = P_air(表面) + RHO_G·深度。孔口/重力/浸没排气口用
  * Torricelli √(ΔP/ρg)。自由面液膜仅均衡填充。连通容器沿液体图松弛
- * φ = P/(ρg)−y（不瞬移）。P 高于液体的密闭气体阻挡侵入并推开邻液。
- * 自由面受风切变液膜。土壤渗流见 `soil.mjs`（本文件末尾调用）。
+ * φ = P/(ρg)−depth（不瞬移）。P 高于液体的密闭气体阻挡侵入并推开邻液。
+ * 熔岩经 `transport.mjs` 共用核。土壤渗流见 `soil.mjs`。
  */
 
 import { ORTHO_DX, ORTHO_DY } from '../hash.mjs'
 
+import { neighborCoord } from './edges.mjs'
+import { equilibrateHydraulic } from './equilibrate.mjs'
 import {
-	pressureMove, sheetMove, applyTransfer, hydraulicPhi, P_FLOW_GAIN,
+	pressureMove, sheetMove, applyTransfer, P_FLOW_GAIN,
 } from './flow.mjs'
 import { labelAirRegions, pressureAt, gasUxAt } from './gas.mjs'
 import {
 	MAT, P_ATM, RHO_G, LIQ_DRAW, LIQ_FULL, isLiquidBarrier,
+	SUBSTANCE, rhoOf, viscOf,
 } from './mat.mjs'
 import { stepSoil } from './soil.mjs'
+import { meltVisc, cellRho } from './thermal.mjs'
 import {
-	scratch, growScratch, idx, inWorld,
-	floodClear, floodPush, markAirIfDrawCrossed,
+	stepPhaseTransport, meltCanEnter, meltTempOnTransfer,
+} from './transport.mjs'
+import {
+	scratch, idx, inWorld,
+	markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
+	gravityDepth, gravityDownWeights, gravityUpWeights,
+	strongestUp, strongestDown,
 } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
@@ -28,6 +37,8 @@ import {
 const WIND_SHEET = 0.12
 /** 每边每帧风驱液膜质量上限。 */
 const WIND_SHEET_CAP = 0.18
+/** 水相粘滞（viscOf(rhoOf(WATER))）。 */
+const WATER_VISC = viscOf(rhoOf(SUBSTANCE.WATER, 0))
 
 /**
  * 自由液体能否进入 `(x, y)`。
@@ -47,19 +58,17 @@ const canOccupy = (world, x, y) => {
 
 /**
  * 静压深度：P_air(表面) + RHO_G·(深度 + 部分填充)。
- * `liquidPressureAt` 与列压缓存共用。
  * @param {number} airP 自由面行的空气压
- * @param {number} y 当前行
- * @param {number} surf 自由面行
+ * @param {number} depth 当前深度
+ * @param {number} surfDepth 自由面深度
  * @param {number} amount 格内液体填充
  * @returns {number} 该格静压
  */
-const columnDepthPressure = (airP, y, surf, amount) =>
-	airP + RHO_G * ((y - surf) + Math.min(1, Math.max(amount, LIQ_DRAW)))
+const columnDepthPressure = (airP, depth, surfDepth, amount) =>
+	airP + RHO_G * ((depth - surfDepth) + Math.min(1, Math.max(amount, LIQ_DRAW)))
 
 /**
  * `(x, y)` 处液体静压。
- * 空气/干格 → 气体 `pressureAt`。湿格 → P_air(自由面) + RHO_G·深度。
  * @param {FluidWorld} world 流体世界
  * @param {number} x 列
  * @param {number} y 行
@@ -72,58 +81,220 @@ export const liquidPressureAt = (world, x, y) => {
 	if (L < LIQ_DRAW && !isLiquidBarrier(world.mat[cell]))
 		return pressureAt(world, x, y)
 
-	let surf = y
-	while (surf > 0) {
-		const above = idx(world, x, surf - 1)
+	const up = strongestUp(world)
+	let sx = x
+	let sy = y
+	for (;;) {
+		if (up.w <= 0) break
+		const nx = sx + up.dx
+		const ny = sy + up.dy
+		if (!inWorld(world, nx, ny)) break
+		const above = idx(world, nx, ny)
 		if (isLiquidBarrier(world.mat[above])) break
 		if (world.liq[above] < LIQ_DRAW) break
-		surf--
+		sx = nx
+		sy = ny
 	}
 
-	const airY = surf > 0 && !isLiquidBarrier(world.mat[idx(world, x, surf - 1)]) ? surf - 1 : surf
-	const airP = pressureAt(world, x, airY)
-	return columnDepthPressure(airP, y, surf, L)
+	let airX = sx
+	let airY = sy
+	if (up.w > 0) {
+		airX = sx + up.dx
+		airY = sy + up.dy
+	}
+	const airP = inWorld(world, airX, airY) && !isLiquidBarrier(world.mat[idx(world, airX, airY)])
+		? pressureAt(world, airX, airY)
+		: pressureAt(world, sx, sy)
+	return columnDepthPressure(airP, gravityDepth(world, x, y), gravityDepth(world, sx, sy), L)
 }
 
 /**
- * 填充单列压力缓存（与 `liquidPressureAt` 一致）。
+ * 填充整网液体压力缓存。
  * @param {FluidWorld} world 流体世界
- * @param {number} x 列
  * @param {Float32Array} cache 压力缓冲
+ * @returns {void}
  */
-const fillColumnPressure = (world, x, cache) => {
+const fillPressureByDepth = (world, cache) => {
 	const { worldW: W, worldH: H, mat, liq } = world
-	let y = 0
-	while (y < H) {
-		const cell = y * W + x
+	const n = W * H
+	const span = world.gravityDepthSpan || 1
+	const depthBuckets = Math.max(W, H) + 2
+	const dCounts = scratch(world, 'liqPFCounts', depthBuckets, Int32Array)
+	dCounts.fill(0)
+	const order = scratch(world, 'liqPFOrder', n, Int32Array)
+	for (let cell = 0; cell < n; cell++) {
+		const d = gravityDepth(world, cell % W, (cell / W) | 0)
+		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
+		dCounts[b]++
+	}
+	let run = 0
+	for (let b = 0; b < depthBuckets; b++) {
+		const c = dCounts[b]
+		dCounts[b] = run
+		run += c
+	}
+	for (let cell = 0; cell < n; cell++) {
+		const d = gravityDepth(world, cell % W, (cell / W) | 0)
+		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
+		order[dCounts[b]++] = cell
+	}
+
+	const up = gravityUpWeights(world)
+	for (let si = 0; si < n; si++) {
+		const cell = order[si]
+		const x = cell % W
+		const y = (cell / W) | 0
 		const L = liq[cell]
 		if (L < LIQ_DRAW && !isLiquidBarrier(mat[cell])) {
 			cache[cell] = pressureAt(world, x, y)
-			y++
 			continue
 		}
-		const surf = y
-		const airY = surf > 0 && !isLiquidBarrier(mat[(surf - 1) * W + x]) ? surf - 1 : surf
-		const airP = pressureAt(world, x, airY)
-		while (y < H) {
-			const ci = y * W + x
-			const Li = liq[ci]
-			if (Li < LIQ_DRAW && !isLiquidBarrier(mat[ci])) break
-			cache[ci] = columnDepthPressure(airP, y, surf, Li)
-			y++
+		if (isLiquidBarrier(mat[cell])) {
+			cache[cell] = pressureAt(world, x, y)
+			continue
+		}
+
+		let bestAbove = -1
+		let bestW = -1
+		for (let i = 0; i < up.n; i++) {
+			const ax = x + up.dx[i]
+			const ay = y + up.dy[i]
+			if (!inWorld(world, ax, ay)) continue
+			const above = ay * W + ax
+			if (!isLiquidBarrier(mat[above]) && liq[above] >= LIQ_DRAW) 
+				if (up.w[i] > bestW) {
+					bestW = up.w[i]
+					bestAbove = above
+				}
+			
+		}
+
+		if (bestAbove < 0) {
+			const strong = strongestUp(world)
+			let airX = x
+			let airY = y
+			if (strong.w > 0) {
+				airX = x + strong.dx
+				airY = y + strong.dy
+			}
+			const airP = inWorld(world, airX, airY) && !isLiquidBarrier(mat[idx(world, airX, airY)])
+				? pressureAt(world, airX, airY)
+				: pressureAt(world, x, y)
+			const surfDepth = gravityDepth(world, x, y)
+			cache[cell] = columnDepthPressure(airP, gravityDepth(world, x, y), surfDepth, L)
+		}
+		else {
+			const ax = bestAbove % W
+			const ay = (bestAbove / W) | 0
+			const pAbove = cache[bestAbove]
+			const dAbove = gravityDepth(world, ax, ay)
+			const dHere = gravityDepth(world, x, y)
+			const fillAbove = Math.min(1, Math.max(liq[bestAbove], LIQ_DRAW))
+			const fillHere = Math.min(1, Math.max(L, LIQ_DRAW))
+			cache[cell] = pAbove + RHO_G * (dHere - dAbove) + RHO_G * (fillHere - fillAbove)
 		}
 	}
 }
 
 /**
- * 自由面格？（上方为空气/阻挡，或世界顶）。
+ * 沿 ĝ 的 DDA 重力线刷新压力（增量）。
+ * @param {FluidWorld} world 世界
+ * @param {number} x0 起点列
+ * @param {number} y0 起点行
+ * @param {Float32Array} cache 压力缓存
+ * @returns {void}
+ */
+const refreshGravityLine = (world, x0, y0, cache) => {
+	const { worldW: W, worldH: H, mat, liq } = world
+	const up = strongestUp(world)
+	const down = strongestDown(world)
+
+	let sx = x0
+	let sy = y0
+	for (;;) {
+		if (!inWorld(world, sx, sy)) break
+		const cell = sy * W + sx
+		if (isLiquidBarrier(mat[cell]) || liq[cell] < LIQ_DRAW) break
+		if (up.w <= 0) break
+		const nx = sx + up.dx
+		const ny = sy + up.dy
+		if (!inWorld(world, nx, ny)) break
+		const above = ny * W + nx
+		if (isLiquidBarrier(mat[above]) || liq[above] < LIQ_DRAW) break
+		sx = nx
+		sy = ny
+	}
+
+	let airX = sx
+	let airY = sy
+	if (up.w > 0) {
+		airX = sx + up.dx
+		airY = sy + up.dy
+	}
+	const airP = inWorld(world, airX, airY) && !isLiquidBarrier(mat[idx(world, airX, airY)])
+		? pressureAt(world, airX, airY)
+		: pressureAt(world, sx, sy)
+	const surfDepth = gravityDepth(world, sx, sy)
+
+	if (inWorld(world, x0, y0)) {
+		const cell0 = y0 * W + x0
+		const L0 = liq[cell0]
+		if (L0 < LIQ_DRAW && !isLiquidBarrier(mat[cell0]))
+			cache[cell0] = pressureAt(world, x0, y0)
+		else if (!isLiquidBarrier(mat[cell0]))
+			cache[cell0] = columnDepthPressure(airP, gravityDepth(world, x0, y0), surfDepth, L0)
+	}
+
+	const steps = Math.max(W, H)
+	for (const dir of [
+		...down.w > 0 ? [{ dx: down.dx, dy: down.dy }] : [],
+		...up.w > 0 ? [{ dx: up.dx, dy: up.dy }] : [],
+	]) {
+		let x = x0
+		let y = y0
+		for (let s = 0; s < steps; s++) {
+			x += dir.dx
+			y += dir.dy
+			if (!inWorld(world, x, y)) break
+			const cell = y * W + x
+			if (isLiquidBarrier(mat[cell]) || liq[cell] < LIQ_DRAW) {
+				if (liq[cell] < LIQ_DRAW && !isLiquidBarrier(mat[cell]))
+					cache[cell] = pressureAt(world, x, y)
+				break
+			}
+			const prev = cache[(y - dir.dy) * W + (x - dir.dx)]
+			const dPrev = gravityDepth(world, x - dir.dx, y - dir.dy)
+			const dHere = gravityDepth(world, x, y)
+			const Lprev = liq[(y - dir.dy) * W + (x - dir.dx)]
+			const Lhere = liq[cell]
+			const fillPrev = Math.min(1, Math.max(Lprev, LIQ_DRAW))
+			const fillHere = Math.min(1, Math.max(Lhere, LIQ_DRAW))
+			cache[cell] = prev + RHO_G * (dHere - dPrev) + RHO_G * (fillHere - fillPrev)
+		}
+	}
+}
+
+/**
+ * 自由面格？（所有上向加权邻格皆非液 / 出界）。
  * @param {FluidWorld} world 流体世界
  * @param {number} cell 扁平索引
+ * @param {number} x 列
  * @param {number} y 行
  * @returns {boolean} 液体上方是否为空气
  */
-const isFreeSurface = (world, cell, y) =>
-	y === 0 || isLiquidBarrier(world.mat[cell - world.worldW]) || world.liq[cell - world.worldW] < LIQ_DRAW
+const isFreeSurface = (world, cell, x, y) => {
+	const up = gravityUpWeights(world)
+	if (up.n <= 0) return true
+	for (let i = 0; i < up.n; i++) {
+		const ux = x + up.dx[i]
+		const uy = y + up.dy[i]
+		if (!inWorld(world, ux, uy)) continue
+		const above = uy * world.worldW + ux
+		if (!isLiquidBarrier(world.mat[above]) && world.liq[above] >= LIQ_DRAW)
+			return false
+	}
+	return true
+}
 
 /**
  * POOL 保留：近满前不泄，除非流入另一 POOL。
@@ -175,195 +346,7 @@ const transfer = (world, liq, flowX, flowY, src, dst, dx, dy, move) => {
 }
 
 /**
- * 将一自由面样本压入复用 SoA 暂存（分量保持连续）。
- * @param {FluidWorld} world 流体世界
- * @param {number} x 列
- * @param {number} y 行
- * @param {number} component 连通分量 id
- * @param {number} pressure 面上方空气压
- * @param {{
- *   x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, n: number,
- * }} surf 自由面 SoA
- */
-const pushSurface = (world, x, y, component, pressure, surf) => {
-	const n = surf.n
-	if (n >= surf.x.length) {
-		surf.x = growScratch(world, 'liqSurfX', n + 1, Int32Array)
-		surf.y = growScratch(world, 'liqSurfY', n + 1, Int32Array)
-		surf.c = growScratch(world, 'liqSurfC', n + 1, Int32Array)
-		surf.p = growScratch(world, 'liqSurfP', n + 1, Float32Array)
-	}
-	surf.x[n] = x
-	surf.y[n] = y
-	surf.c[n] = component
-	surf.p[n] = pressure
-	surf.n = n + 1
-}
-
-/**
- * 标注连通液体分量；自由面存为 SoA（按分量分组）。
- * @param {FluidWorld} world 流体世界
- * @returns {{
- *   surf: { x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, n: number },
- *   componentOf: Int32Array,
- * }} 自由面样本与每格分量 id
- */
-const labelLiquidComponents = (world) => {
-	const { worldW: W, worldH: H, mat, liq } = world
-	const n = W * H
-	const componentOf = scratch(world, 'liqComp', n, Int32Array)
-	componentOf.fill(0)
-	const surf = {
-		x: growScratch(world, 'liqSurfX', 64, Int32Array),
-		y: growScratch(world, 'liqSurfY', 64, Int32Array),
-		c: growScratch(world, 'liqSurfC', 64, Int32Array),
-		p: growScratch(world, 'liqSurfP', 64, Float32Array),
-		n: 0,
-	}
-	let next = 1
-
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) {
-			const cell = y * W + x
-			if (componentOf[cell] || liq[cell] < LIQ_DRAW || isLiquidBarrier(mat[cell])) continue
-			const id = next++
-			floodClear(world)
-			floodPush(world, x, y)
-			componentOf[cell] = id
-			for (let qi = 0; qi < world.floodQ.length; qi += 2) {
-				const cx = world.floodQ[qi]
-				const cy = world.floodQ[qi + 1]
-				const aboveY = cy - 1
-				if (aboveY < 0)
-					pushSurface(world, cx, cy, id, pressureAt(world, cx, 0), surf)
-				else {
-					const above = aboveY * W + cx
-					if (!isLiquidBarrier(mat[above]) && liq[above] < LIQ_DRAW)
-						pushSurface(world, cx, cy, id, pressureAt(world, cx, aboveY), surf)
-				}
-				for (let o = 0; o < 4; o++) {
-					const nx = cx + ORTHO_DX[o]
-					const ny = cy + ORTHO_DY[o]
-					if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
-					const neighbor = ny * W + nx
-					if (componentOf[neighbor] || liq[neighbor] < LIQ_DRAW || isLiquidBarrier(mat[neighbor])) continue
-					componentOf[neighbor] = id
-					floodPush(world, nx, ny)
-				}
-			}
-		}
-
-	return { surf, componentOf }
-}
-
-/**
- * 沿液体图的路径尊重水力均衡：从最低 φ 自由面 BFS，
- * 格向更接近汇点的邻格推细流。
- * 自由面为 SoA；BFS 用代次戳（无需整网 `dist.fill`）。
- * @param {FluidWorld} world 流体世界
- * @param {Float32Array} flowX 流累加器
- * @param {Float32Array} flowY 流累加器
- */
-const equalizeHydraulicAlongGraph = (world, flowX, flowY) => {
-	const { surf, componentOf } = labelLiquidComponents(world)
-	const { worldW: W, worldH: H, liq } = world
-	const n = W * H
-	const dist = scratch(world, 'liqHydroDist', n, Int32Array)
-	const visit = scratch(world, 'liqHydroVisit', n, Int32Array)
-	let gen = (/** @type {number} */ world.scratch.liqHydroGen | 0) + 1
-	if (gen >= 0x7fffffff) {
-		visit.fill(0)
-		gen = 1
-	}
-	world.scratch.liqHydroGen = gen
-
-	const { x: sx, y: sy, c: sc, p: sp, n: surfN } = surf
-	let i = 0
-	while (i < surfN) {
-		const comp = sc[i]
-		const start = i
-		while (i < surfN && sc[i] === comp) i++
-		const end = i
-		if (end - start < 2) continue
-
-		let sink = start
-		let sinkPhi = hydraulicPhi(sp[start], sy[start])
-		for (let k = start + 1; k < end; k++) {
-			const phi = hydraulicPhi(sp[k], sy[k])
-			if (phi < sinkPhi) {
-				sinkPhi = phi
-				sink = k
-			}
-		}
-
-		let need = false
-		for (let k = start; k < end; k++) {
-			if (k === sink) continue
-			if (hydraulicPhi(sp[k], sy[k]) - sinkPhi > 0.35) {
-				need = true
-				break
-			}
-		}
-		if (!need) continue
-
-		floodClear(world)
-		const sinkCell = sy[sink] * W + sx[sink]
-		visit[sinkCell] = gen
-		dist[sinkCell] = 0
-		floodPush(world, sx[sink], sy[sink])
-		for (let qi = 0; qi < world.floodQ.length; qi += 2) {
-			const cx = world.floodQ[qi]
-			const cy = world.floodQ[qi + 1]
-			const d0 = dist[cy * W + cx]
-			for (let o = 0; o < 4; o++) {
-				const nx = cx + ORTHO_DX[o]
-				const ny = cy + ORTHO_DY[o]
-				if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
-				const neighbor = ny * W + nx
-				if (componentOf[neighbor] !== comp || visit[neighbor] === gen) continue
-				visit[neighbor] = gen
-				dist[neighbor] = d0 + 1
-				floodPush(world, nx, ny)
-			}
-		}
-
-		for (let k = start; k < end; k++) {
-			if (k === sink) continue
-			const phi = hydraulicPhi(sp[k], sy[k])
-			const delta = phi - sinkPhi
-			if (delta <= 0.35) continue
-			const cell = sy[k] * W + sx[k]
-			if (visit[cell] !== gen || liq[cell] < 0.05) continue
-			let bestNeighbor = -1
-			let bestD = dist[cell]
-			let bestDx = 0
-			let bestDy = 0
-			const x0 = sx[k]
-			const y0 = sy[k]
-			for (let o = 0; o < 4; o++) {
-				const dx = ORTHO_DX[o]
-				const dy = ORTHO_DY[o]
-				const nx = x0 + dx
-				const ny = y0 + dy
-				if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
-				const neighbor = ny * W + nx
-				if (componentOf[neighbor] !== comp || visit[neighbor] !== gen || dist[neighbor] >= bestD) continue
-				if (liq[neighbor] >= LIQ_FULL - 1e-6) continue
-				bestD = dist[neighbor]
-				bestNeighbor = neighbor
-				bestDx = dx
-				bestDy = dy
-			}
-			if (bestNeighbor < 0) continue
-			const move = Math.min(0.12, liq[cell] * 0.35, delta * 0.08)
-			transfer(world, liq, flowX, flowY, cell, bestNeighbor, bestDx, bestDy, move)
-		}
-	}
-}
-
-/**
- * 液体步进：压驱沉降、风驱液膜、土壤、图水力均衡。
- * 仅当粒子/抬升弄脏自由液体拓扑时重标空气。
+ * 液体步进：压驱沉降、风驱液膜、土壤、图水力均衡、熔岩输运。
  * @param {FluidWorld} world 流体世界
  */
 export const stepLiquid = (world) => {
@@ -373,13 +356,11 @@ export const stepLiquid = (world) => {
 	const n = W * H
 	const flowX = scratch(world, 'liqFlowX', n, Float32Array)
 	const flowY = scratch(world, 'liqFlowY', n, Float32Array)
-	const colDirty = scratch(world, 'liqColDirty', W, Uint8Array)
 	flowX.fill(0)
 	flowY.fill(0)
-	colDirty.fill(0)
 
 	const pCache = scratch(world, 'liqP', n, Float32Array)
-	for (let x = 0; x < W; x++) fillColumnPressure(world, x, pCache)
+	fillPressureByDepth(world, pCache)
 
 	/**
 	 * 缓存压力（O(1)）；网格外回退气体静压。
@@ -392,124 +373,185 @@ export const stepLiquid = (world) => {
 		return pCache[y * W + x]
 	}
 
-	// --- Vertical settle: column-major; refresh a column only after it transfers ---
-	for (let x = 0; x < W; x++)
-		for (let y = H - 2; y >= 0; y--) {
-			const cell = y * W + x
-			if (liq[cell] <= 0) continue
-			if (isLiquidBarrier(mat[cell])) {
-				const before = liq[cell]
-				liq[cell] = 0
-				markAirIfDrawCrossed(world, before, 0)
-				continue
-			}
-			const below = cell + W
-			if (isLiquidBarrier(mat[below]) || liq[below] >= LIQ_FULL) continue
-			if (poolRetainBlocks(world, cell, below)) continue
+	const down = strongestDown(world)
+	const ddx = down.w > 0 ? down.dx : 0
+	const ddy = down.w > 0 ? down.dy : 1
 
-			const pSrc = pAt(x, y)
-			const pDst = pAt(x, y + 1)
-			const room = LIQ_FULL - liq[below]
-			let move = pressureMove(pSrc, pDst, liq[cell], room)
-			// Near-equal stacked fills: still drain residual head into emptier below
-			// when destination gas is not strongly over-pressured.
-			if (move < 0.01 && liq[below] < liq[cell] && pDst < pSrc + RHO_G * 0.85)
-				move = Math.min(liq[cell], room, Math.max(0.08, (liq[cell] - liq[below]) * 0.85))
-			if (move > 0) {
-				transfer(world, liq, flowX, flowY, cell, below, 0, 1, move)
-				fillColumnPressure(world, x, pCache)
-				continue
-			}
+	// --- Gravity settle: deep-first so cascades land ---
+	const order = scratch(world, 'liqSettleOrder', n, Int32Array)
+	const depthBuckets = Math.max(W, H) + 2
+	const dCounts = scratch(world, 'liqSettleCounts', depthBuckets + 1, Int32Array)
+	dCounts.fill(0)
+	const span = world.gravityDepthSpan || 1
+	for (let cell = 0; cell < n; cell++) {
+		const d = gravityDepth(world, cell % W, (cell / W) | 0)
+		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
+		dCounts[b]++
+	}
+	// Prefix so higher depth buckets come first (deep → shallow).
+	let run = 0
+	for (let b = depthBuckets - 1; b >= 0; b--) {
+		const c = dCounts[b]
+		dCounts[b] = run
+		run += c
+	}
+	for (let cell = 0; cell < n; cell++) {
+		const d = gravityDepth(world, cell % W, (cell / W) | 0)
+		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
+		order[dCounts[b]++] = cell
+	}
 
-			// Diagonal settle into emptier down-slope when blocked straight down.
-			const dir = (x + y) & 1 ? 1 : -1
-			let didDiag = false
-			for (let pass = 0; pass < 2; pass++) {
-				const dx = pass === 0 ? dir : -dir
-				const nx = x + dx
-				const ny = y + 1
-				if (!canOccupy(world, nx, ny)) continue
-				const neighbor = ny * W + nx
-				if (liq[neighbor] >= liq[cell] || poolRetainBlocks(world, cell, neighbor)) continue
-				const pN = liquidPressureAt(world, nx, ny)
-				let m = pressureMove(pSrc, pN, liq[cell] * 0.5, LIQ_FULL - liq[neighbor])
-				if (m <= 0.01)
-					m = Math.min(liq[cell] * 0.5, (liq[cell] - liq[neighbor]) * 0.5, LIQ_FULL - liq[neighbor])
-				if (m <= 0.01) continue
-				transfer(world, liq, flowX, flowY, cell, neighbor, dx, 1, m)
-				fillColumnPressure(world, x, pCache)
-				fillColumnPressure(world, nx, pCache)
-				didDiag = true
-				break
-			}
-			if (didDiag) continue
+	for (let si = 0; si < n; si++) {
+		const cell = order[si]
+		const x = cell % W
+		const y = (cell / W) | 0
+		if (liq[cell] <= 0) continue
+		if (isLiquidBarrier(mat[cell])) {
+			const before = liq[cell]
+			liq[cell] = 0
+			markAirIfDrawCrossed(world, before, 0)
+			continue
 		}
+		const pSrc = pAt(x, y)
+		const nx = x + ddx
+		const ny = y + ddy
+		let did = false
+		if (canOccupy(world, nx, ny)) {
+			const below = ny * W + nx
+			if (liq[below] < LIQ_FULL && !poolRetainBlocks(world, cell, below)) {
+				const pDst = pAt(nx, ny)
+				const room = LIQ_FULL - liq[below]
+				let move = pressureMove(pSrc, pDst, liq[cell], room, WATER_VISC)
+				if (move < 0.01 && liq[below] < liq[cell] && pDst < pSrc + RHO_G * 0.85)
+					move = Math.min(liq[cell], room, Math.max(0.08, (liq[cell] - liq[below]) * 0.85))
+				if (move > 0) {
+					transfer(world, liq, flowX, flowY, cell, below, ddx, ddy, move)
+					refreshGravityLine(world, x, y, pCache)
+					did = true
+				}
+			}
+		}
+		if (did) continue
 
-	// Vertical transfers already refreshed dirty columns — no second full WH fill.
+		// Diagonal when straight down blocked.
+		if (canOccupy(world, nx, ny) && liq[ny * W + nx] < LIQ_FULL) continue
+		const dir = (x + y) & 1 ? 1 : -1
+		const sideA = ddx === 0 ? { dx: dir, dy: ddy } : { dx: ddx, dy: dir }
+		const sideB = { dx: ddx === 0 ? -dir : ddx, dy: ddx === 0 ? ddy : -dir }
+		for (const side of [sideA, sideB]) {
+			const sx = x + side.dx
+			const sy = y + side.dy
+			if (!canOccupy(world, sx, sy)) continue
+			const neighbor = sy * W + sx
+			if (liq[neighbor] >= liq[cell] || poolRetainBlocks(world, cell, neighbor)) continue
+			const pN = liquidPressureAt(world, sx, sy)
+			let m = pressureMove(pSrc, pN, liq[cell] * 0.5, LIQ_FULL - liq[neighbor], WATER_VISC)
+			if (m <= 0.01)
+				m = Math.min(liq[cell] * 0.5, (liq[cell] - liq[neighbor]) * 0.5, LIQ_FULL - liq[neighbor])
+			if (m <= 0.01) continue
+			transfer(world, liq, flowX, flowY, cell, neighbor, side.dx, side.dy, m)
+			refreshGravityLine(world, x, y, pCache)
+			refreshGravityLine(world, sx, sy, pCache)
+			break
+		}
+	}
 
-	// --- Horizontal: free-surface sheet / submerged orifice / edge vent / wind ---
+	// --- Lateral: free-surface sheet / orifice / edge (perpendicular to ĝ) ---
+	const sideDirs = ddx === 0
+		? [{ dx: -1, dy: 0 }, { dx: 1, dy: 0 }]
+		: [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }]
+	const strongUp = strongestUp(world)
+
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (liq[cell] <= 0.05 || isLiquidBarrier(mat[cell])) continue
 			const pSrc = pAt(x, y)
-			const freeSurface = isFreeSurface(world, cell, y)
+			const freeSurface = isFreeSurface(world, cell, x, y)
 
-			for (let pass = 0; pass < 2; pass++) {
-				const dx = pass === 0 ? -1 : 1
+			for (const { dx, dy } of sideDirs) {
 				const nx = x + dx
-				if (nx < 0 || nx >= W) {
-					const before = liq[cell]
-					const move = freeSurface
-						? before * 0.25
-						: Math.min(
-							before,
-							Math.max(before * 0.2, Math.sqrt(Math.max(0, (pSrc - pressureAt(world, x, y)) / RHO_G)) * P_FLOW_GAIN),
-						)
-					liq[cell] -= move
-					flowX[cell] += dx * move
-					markAirIfDrawCrossed(world, before, liq[cell])
-					colDirty[x] = 1
+				const ny = y + dy
+				if (nx < 0 || nx >= W || ny < 0 || ny >= H) {
+					const nb = neighborCoord(world, x, y, dx, dy)
+					if (nb.wrapped && nb.wrappedFrac > 0.5) {
+						const neighbor = nb.y * W + nb.x
+						if (!isLiquidBarrier(mat[neighbor])) {
+							const pDst = pAt(nb.x, nb.y)
+							const room = LIQ_FULL - liq[neighbor]
+							let move = freeSurface && liq[neighbor] < LIQ_DRAW
+								? sheetMove(liq[cell], liq[neighbor], room, WATER_VISC)
+								: pressureMove(pSrc, pDst, liq[cell], room, WATER_VISC)
+							move *= nb.wrappedFrac
+							if (move > 0) {
+								transfer(world, liq, flowX, flowY, cell, neighbor, dx, dy, move)
+								refreshGravityLine(world, x, y, pCache)
+							}
+						}
+					}
+					else {
+						const before = liq[cell]
+						const outFrac = nb.outFrac || 1
+						const move = (freeSurface
+							? before * 0.25
+							: Math.min(
+								before,
+								Math.max(before * 0.2, Math.sqrt(Math.max(0, (pSrc - pressureAt(world, x, y)) / RHO_G)) * P_FLOW_GAIN),
+							)) * outFrac
+						liq[cell] -= move
+						flowX[cell] += dx * move
+						flowY[cell] += dy * move
+						markAirIfDrawCrossed(world, before, liq[cell])
+					}
 					continue
 				}
-				const neighbor = cell + dx
+				const neighbor = ny * W + nx
 				if (isLiquidBarrier(mat[neighbor])) continue
 				if (poolRetainBlocks(world, cell, neighbor) && mat[neighbor] === MAT.AIR) continue
 				if (sealedGasBlocks(world, neighbor, pSrc)) continue
 
-				const pDst = pAt(nx, y)
+				const pDst = pAt(nx, ny)
 				const room = LIQ_FULL - liq[neighbor]
 				let move = 0
 				if (freeSurface && liq[neighbor] < LIQ_DRAW)
-					move = sheetMove(liq[cell], liq[neighbor], room)
+					move = sheetMove(liq[cell], liq[neighbor], room, WATER_VISC)
 				else {
 					if (pDst >= pSrc - 0.02 && liq[neighbor] >= liq[cell] - 0.02) continue
-					move = pressureMove(pSrc, pDst, liq[cell], room)
+					move = pressureMove(pSrc, pDst, liq[cell], room, WATER_VISC)
 					if (move < 0.01 && liq[neighbor] < liq[cell] - 0.02)
 						move = Math.min((liq[cell] - liq[neighbor]) * 0.25, room)
 				}
 
-				// Wind shear on free-surface sheets — gas ux pushes mass downwind.
 				if (freeSurface && liq[cell] >= LIQ_DRAW) {
-					const ux = gasUxAt(world, x, y > 0 ? y - 1 : y)
-					if (ux * dx > 0.15) {
-						const wind = Math.min(WIND_SHEET_CAP, Math.abs(ux) * WIND_SHEET, liq[cell] * 0.2, room)
+					let ux = 0
+					let uy = 0
+					if (strongUp.w > 0) {
+						const ax = x + strongUp.dx
+						const ay = y + strongUp.dy
+						if (inWorld(world, ax, ay)) {
+							ux = world.gasUx[ay * W + ax]
+							uy = world.gasUy[ay * W + ax]
+						}
+					}
+					else
+						ux = gasUxAt(world, x, y)
+					
+					const windAlong = ux * dx + uy * dy
+					if (windAlong > 0.15) {
+						const wind = Math.min(WIND_SHEET_CAP, windAlong * WIND_SHEET, liq[cell] * 0.2, room)
 						move = Math.max(move, wind)
 					}
 				}
 
 				if (move > 0) {
-					transfer(world, liq, flowX, flowY, cell, neighbor, dx, 0, move)
-					colDirty[x] = 1
-					colDirty[nx] = 1
+					transfer(world, liq, flowX, flowY, cell, neighbor, dx, dy, move)
+					refreshGravityLine(world, x, y, pCache)
+					refreshGravityLine(world, nx, ny, pCache)
 				}
 			}
 		}
 
-	for (let x = 0; x < W; x++)
-		if (colDirty[x]) fillColumnPressure(world, x, pCache)
-
-	// --- Sealed gas pushes adjacent free liquid away (down preferred, else sideways) ---
+	// --- Sealed gas pushes adjacent free liquid away ---
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
@@ -531,36 +573,142 @@ export const stepLiquid = (world) => {
 				const push = Math.min(0.2, liq[neighbor] * 0.35, (gasP - lP) * 0.15)
 				if (push < 0.02) continue
 				const tx = nx + dx
-				const ty = ny + (dy === 0 ? 1 : dy)
-				if (canOccupy(world, tx, ty) && liq[idx(world, tx, ty)] < LIQ_FULL) {
-					const target = idx(world, tx, ty)
+				const ty = ny + dy
+				const target = idx(world, tx, ty)
+				if (canOccupy(world, tx, ty) && liq[target] < LIQ_FULL) 
 					transfer(world, liq, flowX, flowY, neighbor, target, tx - nx, ty - ny, push)
-				}
-				else if (dy === 0 && ny + 1 < H && canOccupy(world, nx, ny + 1)) {
-					const target = idx(world, nx, ny + 1)
-					transfer(world, liq, flowX, flowY, neighbor, target, 0, 1, push)
+				
+				else if (down.w > 0) {
+					const bx = nx + down.dx
+					const by = ny + down.dy
+					if (canOccupy(world, bx, by)) {
+						const below = idx(world, bx, by)
+						transfer(world, liq, flowX, flowY, neighbor, below, down.dx, down.dy, push)
+					}
 				}
 			}
 		}
 
 	stepSoil(world)
-	equalizeHydraulicAlongGraph(world, flowX, flowY)
-
-	for (let x = 0; x < W; x++) {
-		const cell = (H - 1) * W + x
-		const before = liq[cell]
-		liq[cell] = 0
-		markAirIfDrawCrossed(world, before, 0)
-	}
+	equilibrateHydraulic(world, flowX, flowY, 1)
+	stepMelt(world)
+	stepBuoyancy(world)
 
 	for (let i = 0; i < n; i++) {
 		const m = liq[i]
 		if (m < 1e-6) {
 			liqVx[i] = 0
 			liqVy[i] = 0
-			continue
 		}
-		liqVx[i] = liqVx[i] * 0.35 + (flowX[i] / m) * 0.65
-		liqVy[i] = liqVy[i] * 0.35 + (flowY[i] / m) * 0.65
+		else {
+			liqVx[i] = liqVx[i] * 0.35 + (flowX[i] / m) * 0.65
+			liqVy[i] = liqVy[i] * 0.35 + (flowY[i] / m) * 0.65
+		}
 	}
 }
+
+/**
+ * 熔岩输运（共用凝聚相核）。
+ * @param {FluidWorld} world 世界
+ * @returns {void}
+ */
+const stepMelt = (world) => {
+	stepPhaseTransport(world, {
+		mass: world.melt,
+		vx: world.meltVx,
+		vy: world.meltVy,
+		viscAt: meltVisc,
+		/**
+		 * 熔岩密度（随温度）。
+		 * @param {FluidWorld} w 世界
+		 * @param {number} cell 格索引
+		 * @returns {number} 密度
+		 */
+		rhoAt: (w, cell) => rhoOf(SUBSTANCE.ROCK, w.temp[cell]),
+		canEnter: meltCanEnter,
+		onTransfer: meltTempOnTransfer,
+		markDirty: markAirIfMeltDrawCrossed,
+		flowScratchX: 'meltFlowX',
+		flowScratchY: 'meltFlowY',
+	})
+}
+
+/**
+ * 沿重力：下方更轻则与上方交换（对流 / 气泡）。
+ * @param {FluidWorld} world 世界
+ * @returns {void}
+ */
+const stepBuoyancy = (world) => {
+	const { worldW: W, worldH: H, melt, liq, temp, mat } = world
+	const n = W * H
+	const down = gravityDownWeights(world)
+	const order = scratch(world, 'buoyOrder', n, Int32Array)
+	const span = world.gravityDepthSpan || 1
+	const depthBuckets = Math.max(W, H) + 2
+	const dCounts = scratch(world, 'buoyCounts', depthBuckets, Int32Array)
+	dCounts.fill(0)
+	for (let cell = 0; cell < n; cell++) {
+		const d = gravityDepth(world, cell % W, (cell / W) | 0)
+		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
+		dCounts[b]++
+	}
+	let run = 0
+	for (let b = depthBuckets - 1; b >= 0; b--) {
+		const c = dCounts[b]
+		dCounts[b] = run
+		run += c
+	}
+	for (let cell = 0; cell < n; cell++) {
+		const d = gravityDepth(world, cell % W, (cell / W) | 0)
+		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
+		order[dCounts[b]++] = cell
+	}
+
+	const swapMark = scratch(world, 'buoyMark', n, Int32Array)
+	let gen = (/** @type {number} */ world.scratch.buoyGen | 0) + 1
+	if (gen >= 0x7fffffff) {
+		swapMark.fill(0)
+		gen = 1
+	}
+	world.scratch.buoyGen = gen
+
+	for (let si = 0; si < n; si++) {
+		const a = order[si]
+		const x = a % W
+		const y = (a / W) | 0
+		if (swapMark[a] === gen) continue
+		for (let i = 0; i < down.n; i++) {
+			if (down.w[i] < 0.5) continue
+			const belowX = x + down.dx[i]
+			const belowY = y + down.dy[i]
+			if (!inWorld(world, belowX, belowY)) continue
+			const b = belowY * W + belowX
+			if (swapMark[b] === gen) continue
+			if (isLiquidBarrier(mat[a]) || isLiquidBarrier(mat[b])) continue
+			const rhoA = cellRho(world, a)
+			const rhoB = cellRho(world, b)
+			if (rhoB + 0.04 >= rhoA) continue
+			if (melt[a] < 0.05 && melt[b] < 0.05 && liq[a] < 0.05 && liq[b] < 0.05) continue
+			const ma = melt[a]
+			const mb = melt[b]
+			const ta = temp[a]
+			const tb = temp[b]
+			const la = liq[a]
+			const lb = liq[b]
+			melt[a] = mb
+			melt[b] = ma
+			temp[a] = tb
+			temp[b] = ta
+			liq[a] = lb
+			liq[b] = la
+			swapMark[a] = gen
+			swapMark[b] = gen
+			markAirIfMeltDrawCrossed(world, ma, melt[a])
+			markAirIfMeltDrawCrossed(world, mb, melt[b])
+			markAirIfDrawCrossed(world, la, liq[a])
+			markAirIfDrawCrossed(world, lb, liq[b])
+		}
+	}
+}
+
+

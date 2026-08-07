@@ -2,17 +2,20 @@
  * 气区（Boyle）、全局风、气体速度场。
  * 调用方须在 `stepGas` / 压力查询前先执行 `labelAirRegions`。
  *
- * 开放空气：P = P_ATM + ATM_HYDRO·y；密闭：等温 Boyle 均值 + ATM_HYDRO·(y−yMean)。
+ * 开放空气：P = P_ATM + ATM_HYDRO·depth；密闭：等温 Boyle 均值 + ATM_HYDRO·(depth−depthMean)。
  * 速度：风切变 + 喷嘴连续性 + 邻格静压 ΔP（Bernoulli 反馈）。
  * 不做 2D ∇·u=0 投影——指针涡旋/上升气流为有意源项。
  */
 
 import { hash01, fbm1d } from '../hash.mjs'
 
+import { clearLabels, labelComponents, recycleComponents } from './components.mjs'
 import {
 	P_ATM, RHO_AIR, ATM_HYDRO, GAS_DP_DRIVE, LIQ_DRAW, isBlockMat,
 } from './mat.mjs'
-import { scratch, idx, inWorld, floodClear, floodPush } from './world.mjs'
+import {
+	scratch, idx, inWorld, gravityDepth, strongestUp,
+} from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
  * @typedef {{
@@ -45,20 +48,21 @@ export const GAS_SPEED_MAX = 5
 const GAS_UNIT_PER_CELL = 1
 
 /**
- * 开放空气在行 `y` 的静水压（y↓ → P↑）。
- * @param {number} y 世界行
+ * 开放空气在重力深度 `depth` 的静水压（向下 → P↑）。
+ * @param {number} depth 重力深度
  * @returns {number} 压力
  */
-const openHydroPressure = (y) => P_ATM + ATM_HYDRO * y
+const openHydroPressure = (depth) => P_ATM + ATM_HYDRO * depth
 
 /**
- * 密闭腔在 Boyle 均值附近的行 `y` 静水压。
+ * 密闭腔在 Boyle 均值附近的静水压。
  * @param {AirRegion} region 密闭腔区
- * @param {number} y 世界行
+ * @param {number} depth 当前深度
+ * @param {number} depthMean 区平均深度
  * @returns {number} 压力
  */
-const sealedHydroPressure = (region, y) =>
-	Math.max(0.05, region.pressure + ATM_HYDRO * (y - region.yMean))
+const sealedHydroPressure = (region, depth, depthMean) =>
+	Math.max(0.05, region.pressure + ATM_HYDRO * (depth - depthMean))
 
 /**
  * 格是否为气区泛洪/气体占据意义上的空气格。
@@ -66,7 +70,8 @@ const sealedHydroPressure = (region, y) =>
  * @param {number} cell 扁平索引
  * @returns {boolean} 空气格
  */
-export const isAirCell = (world, cell) => !isBlockMat(world.mat[cell]) && world.liq[cell] < LIQ_DRAW
+export const isAirCell = (world, cell) =>
+	!isBlockMat(world.mat[cell]) && world.liq[cell] < LIQ_DRAW && world.melt[cell] < LIQ_DRAW
 
 /**
  * 填充阻挡掩码：气体不可占据处为 1。
@@ -75,9 +80,8 @@ export const isAirCell = (world, cell) => !isBlockMat(world.mat[cell]) && world.
  * @returns {void}
  */
 export const fillBlocked = (world, blocked) => {
-	const { mat, liq } = world
 	for (let cell = 0; cell < blocked.length; cell++)
-		blocked[cell] = isBlockMat(mat[cell]) || liq[cell] >= LIQ_DRAW ? 1 : 0
+		blocked[cell] = isAirCell(world, cell) ? 0 : 1
 }
 
 /**
@@ -104,7 +108,7 @@ const takeRegion = (pool, id, openToAtm) => {
 
 /**
  * 标注气区，拓扑变化时守恒传递气体质量。
- * 对大气开放区取 P = P_ATM；密闭区用 Boyle 均值 + yMean。
+ * 对大气开放区取 P = P_ATM；密闭区用 Boyle 均值 + depthMean。
  * 经 `scratch.prevRegionId` 双缓冲 `regionId`。
  * 气区为稠密 id 索引数组（`regions[id]`；槽 0 未用）。
  * @param {FluidWorld} world 流体世界
@@ -114,12 +118,10 @@ export const labelAirRegions = (world) => {
 	const { worldW: W, worldH: H } = world
 	const n = W * H
 	const oldId = world.regionId
-	const regionId = scratch(world, 'prevRegionId', n, Int32Array)
-	regionId.fill(0)
+	const regionId = clearLabels(world, 'prevRegionId', n)
 
 	const oldRegions = world.regions
 	const regionPool = /** @type {AirRegion[]} */ world.scratch.regionPool ??= []
-	// Snapshot Boyle mass before pooling — objects may be reused for nextRegions.
 	const oldGas = scratch(world, 'oldRegionGas', Math.max(oldRegions.length, 1), Float32Array)
 	oldGas.fill(0)
 	for (let id = 1; id < oldRegions.length; id++) {
@@ -131,74 +133,57 @@ export const labelAirRegions = (world) => {
 
 	/** @type {(AirRegion | undefined)[]} */
 	const nextRegions = []
-	let next = 1
-	floodClear(world)
 
-	/**
-	 * 若仍为未标注空气，将泛洪格播种入该区。
-	 * @param {number} x 列
-	 * @param {number} y 行
-	 * @param {number} id 区 id
-	 * @param {AirRegion} region 气区
-	 * @returns {void}
-	 */
-	const seed = (x, y, id, region) => {
-		if (x < 0 || y < 0 || x >= W || y >= H) return
-		const cell = y * W + x
-		if (regionId[cell] || !isAirCell(world, cell)) return
-		regionId[cell] = id
-		region.airCells++
-		region.sumY += y
-		floodPush(world, x, y)
+	/** @type {{ x: number, y: number }[]} */
+	const borderSeeds = []
+	for (let x = 0; x < W; x++) borderSeeds.push({ x, y: 0 })
+	for (let y = 1; y < H - 1; y++) {
+		borderSeeds.push({ x: 0, y })
+		borderSeeds.push({ x: W - 1, y })
 	}
+	for (let x = 0; x < W; x++) borderSeeds.push({ x, y: H - 1 })
 
-	/**
-	 * 从队列 BFS 扩展直至耗尽。
-	 * @param {number} id 区 id
-	 * @param {AirRegion} region 气区
-	 * @returns {void}
-	 */
-	const flood = (id, region) => {
-		for (let qi = 0; qi < world.floodQ.length; qi += 2) {
-			const x = world.floodQ[qi]
-			const y = world.floodQ[qi + 1]
-			seed(x - 1, y, id, region)
-			seed(x + 1, y, id, region)
-			seed(x, y - 1, id, region)
-			seed(x, y + 1, id, region)
+	const { components, seedComponentId } = labelComponents(world, {
+		/**
+		 * 泛洪时是否接受该格为空气分量成员。
+		 * @param {FluidWorld} w 流体世界
+		 * @param {number} cell 扁平索引
+		 * @returns {boolean} 空气格
+		 */
+		accept: (w, cell) => isAirCell(w, cell),
+		labels: regionId,
+		poolKey: 'airCompPool',
+		seedCells: borderSeeds,
+		/**
+		 * 每格累加重力深度供分量均值。
+		 * @param {FluidWorld} w 流体世界
+		 * @param {number} _cell 扁平索引
+		 * @param {number} x 列
+		 * @param {number} y 行
+		 * @param {number} _id 分量 id
+		 * @param {{ sumDepth: number }} stats 分量统计
+		 */
+		onCell: (w, _cell, x, y, _id, stats) => {
+			stats.sumDepth += gravityDepth(w, x, y)
+		},
+	})
+
+	for (let id = 1; id < components.length; id++) {
+		const stats = components[id]
+		if (!stats || stats.cells <= 0) continue
+		const openToAtm = seedComponentId > 0 && id === seedComponentId
+		const region = takeRegion(regionPool, id, openToAtm)
+		region.airCells = stats.cells
+		region.sumY = stats.sumDepth
+		region.yMean = stats.depthMean
+		if (openToAtm) {
+			region.gasAmount = region.airCells * GAS_UNIT_PER_CELL * P_ATM
+			region.pressure = P_ATM
 		}
+		nextRegions[id] = region
 	}
+	recycleComponents(world, components, 'airCompPool')
 
-	const openId = next++
-	const openRegion = takeRegion(regionPool, openId, true)
-	for (let x = 0; x < W; x++) seed(x, 0, openId, openRegion)
-	for (let y = 1; y < H; y++) {
-		seed(0, y, openId, openRegion)
-		seed(W - 1, y, openId, openRegion)
-	}
-	flood(openId, openRegion)
-	if (openRegion.airCells > 0) {
-		openRegion.yMean = openRegion.sumY / openRegion.airCells
-		openRegion.gasAmount = openRegion.airCells * GAS_UNIT_PER_CELL * P_ATM
-		openRegion.pressure = P_ATM
-		nextRegions[openId] = openRegion
-	}
-	else regionPool.push(openRegion)
-
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) {
-			const cell = y * W + x
-			if (regionId[cell] || !isAirCell(world, cell)) continue
-			const id = next++
-			const region = takeRegion(regionPool, id, false)
-			floodClear(world)
-			seed(x, y, id, region)
-			flood(id, region)
-			region.yMean = region.airCells > 0 ? region.sumY / region.airCells : 0
-			nextRegions[id] = region
-		}
-
-	// Open region already reset to ATM above; Boyle overlap only for sealed cavities.
 	let hasSealed = false
 	for (let id = 1; id < nextRegions.length; id++) {
 		const region = nextRegions[id]
@@ -249,9 +234,41 @@ export const labelAirRegions = (world) => {
 }
 
 /**
+ * 沿 −ĝ 走线查找上覆气区压力。
+ * @param {FluidWorld} world 世界
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} depth 当前深度
+ * @returns {number} 压力
+ */
+const pressureAlongUp = (world, x, y, depth) => {
+	const up = strongestUp(world)
+	if (up.w <= 0) return openHydroPressure(depth)
+	let cx = x
+	let cy = y
+	const maxSteps = Math.max(world.worldW, world.worldH)
+	for (let step = 0; step < maxSteps; step++) {
+		cx += up.dx
+		cy += up.dy
+		if (!inWorld(world, cx, cy)) break
+		const above = idx(world, cx, cy)
+		if (isBlockMat(world.mat[above])) break
+		const aboveRid = world.regionId[above]
+		if (aboveRid) {
+			const region = world.regions[aboveRid]
+			const d = gravityDepth(world, cx, cy)
+			return region.openToAtm
+				? openHydroPressure(d)
+				: sealedHydroPressure(region, d, region.yMean)
+		}
+	}
+	return openHydroPressure(depth)
+}
+
+/**
  * 格的热力学/静压气体压力（无动态 Bernoulli 项）。
- * 开放空气：P_ATM + ATM_HYDRO·y。
- * 密闭：Boyle 均值 + ATM_HYDRO·(y − yMean)，使区平均保持 Boyle。
+ * 开放空气：P_ATM + ATM_HYDRO·depth。
+ * 密闭：Boyle 均值 + ATM_HYDRO·(depth − depthMean)，使区平均保持 Boyle。
  * 液体格用上覆空气（或大气压）。
  * @param {FluidWorld} world 流体世界
  * @param {number} x 列
@@ -259,27 +276,24 @@ export const labelAirRegions = (world) => {
  * @returns {number} 压力
  */
 export const pressureAt = (world, x, y) => {
-	if (!inWorld(world, x, y)) return openHydroPressure(Math.max(0, y))
+	if (!inWorld(world, x, y)) {
+		const depth = gravityDepth(world, Math.max(0, x), Math.max(0, y))
+		return openHydroPressure(Math.max(0, depth))
+	}
+	const depth = gravityDepth(world, x, y)
 	const cell = idx(world, x, y)
 	const rid = world.regionId[cell]
 	if (rid) {
 		const region = world.regions[rid]
-		return region.openToAtm ? openHydroPressure(y) : sealedHydroPressure(region, y)
+		return region.openToAtm
+			? openHydroPressure(depth)
+			: sealedHydroPressure(region, depth, region.yMean)
 	}
-	for (let yy = y - 1; yy >= 0; yy--) {
-		const above = idx(world, x, yy)
-		if (isBlockMat(world.mat[above])) break
-		const aboveRid = world.regionId[above]
-		if (aboveRid) {
-			const region = world.regions[aboveRid]
-			return region.openToAtm ? openHydroPressure(yy) : sealedHydroPressure(region, yy)
-		}
-	}
-	return openHydroPressure(y)
+	return pressureAlongUp(world, x, y, depth)
 }
 
 /**
- * 时变全局风标量（正 → 向右）。
+ * 时变全局风标量（正 → 沿 ĝ⊥ 右手法向）。
  * @param {number} time 帧
  * @param {number} [seed=0] 场景种子
  * @returns {number} 风速
@@ -302,26 +316,15 @@ export const globalWindAt = (time, seed = 0) => {
 }
 
 /**
- * 高度切变因子，范围 (0, 1]：高处更强。
- * @param {number} y 世界行
- * @param {number} worldH 世界高度
+ * 高度切变因子，范围 (0, 1]：高处（浅深度）更强。
+ * @param {number} depth 重力深度
+ * @param {number} depthSpan 世界深度跨度
  * @returns {number} 切变
  */
-const windShear = (y, worldH) => {
-	const alt = 1 - Math.min(1, Math.max(0, y / Math.max(1, worldH - 1)))
+export const windShear = (depth, depthSpan) => {
+	const alt = 1 - Math.min(1, Math.max(0, depth / Math.max(1, depthSpan)))
 	return 0.28 + 0.72 * alt ** WIND_SHEAR_POWER
 }
-
-/**
- * 高度切变风：高处强、近地弱。
- * @param {number} y 世界行
- * @param {number} worldH 世界高度
- * @param {number} time 帧
- * @param {number} [seed=0] 场景种子
- * @returns {number} 水平风速
- */
-export const windProfileAt = (y, worldH, time, seed = 0) =>
-	globalWindAt(time, seed) * windShear(y, worldH)
 
 /**
  * 在世界点采样气体速度（最近格）。
@@ -438,7 +441,7 @@ export const stepGas = (world, opts = {}) => {
 	const driveUy = opts.driveUy
 	world.gasTime = time + 1
 
-	const { worldW: W, worldH: H, regionId, regions } = world
+	const { worldW: W, worldH: H, regionId, regions, gravity } = world
 	const n = W * H
 	const gasUx = world.gasUx
 	const gasUy = world.gasUy
@@ -448,7 +451,6 @@ export const stepGas = (world, opts = {}) => {
 	const vertSpan = scratch(world, 'gasVertSpan', n, Uint16Array)
 	const horizSpan = scratch(world, 'gasHorizSpan', n, Uint16Array)
 	const staticP = scratch(world, 'gasStaticP', n, Float32Array)
-	// No nextU*.fill(0) — blocked cells are zeroed in the velocity pass below.
 
 	if (world.gasGeomDirty) {
 		fillBlocked(world, blocked)
@@ -456,13 +458,14 @@ export const stepGas = (world, opts = {}) => {
 		world.gasGeomDirty = false
 	}
 
-	// Cache synoptic wind once per tick — shear only varies by row.
 	const wind0 = forced !== undefined ? forced : globalWindAt(time, seed)
+	// Wind direction ⊥ ĝ (clockwise: (gy, −gx) so default g↓ → wind +x).
+	const px = gravity.gy
+	const py = -gravity.gx
+	const depthSpan = world.gravityDepthSpan || Math.max(W, H)
 	let maxUpdraft = 0
 
-	// Static pressure field from current velocity (Bernoulli) for ΔP drive.
-	for (let y = 0; y < H; y++) {
-		const openHydro = openHydroPressure(y)
+	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (blocked[cell]) {
@@ -471,15 +474,14 @@ export const stepGas = (world, opts = {}) => {
 			}
 			const rid = regionId[cell]
 			const region = rid ? regions[rid] : null
+			const depth = gravityDepth(world, x, y)
 			const thermo = !region || region.openToAtm
-				? openHydro
-				: sealedHydroPressure(region, y)
+				? openHydroPressure(depth)
+				: sealedHydroPressure(region, depth, region.yMean)
 			staticP[cell] = Math.max(0.05, thermo - dynamicPressure(gasUx[cell], gasUy[cell]))
 		}
-	}
 
-	for (let y = 0; y < H; y++) {
-		const drive = wind0 * windShear(y, H)
+	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (blocked[cell]) {
@@ -494,8 +496,10 @@ export const stepGas = (world, opts = {}) => {
 				? Math.abs(driveUx[cell]) + Math.abs(driveUy[cell])
 				: 0
 
-			let tx = open ? drive : 0
-			let ty = 0
+			const depth = gravityDepth(world, x, y)
+			const drive = wind0 * windShear(depth, depthSpan)
+			let tx = open ? drive * px : 0
+			let ty = open ? drive * py : 0
 			if (driveUx) {
 				tx += driveUx[cell]
 				ty += driveUy[cell]
@@ -506,14 +510,12 @@ export const stepGas = (world, opts = {}) => {
 			const openU = y > 0 && !blocked[cell - W]
 			const openD = y + 1 < H && !blocked[cell + W]
 
-			// Flow toward lower static P: accel along (dx,dy) ∝ (pSelf − pNeighbor).
 			const p0 = staticP[cell]
 			if (openL) tx += -1 * (p0 - staticP[cell - 1]) * GAS_DP_DRIVE
 			if (openR) tx += (p0 - staticP[cell + 1]) * GAS_DP_DRIVE
 			if (openU) ty += -1 * (p0 - staticP[cell - W]) * GAS_DP_DRIVE
 			if (openD) ty += (p0 - staticP[cell + W]) * GAS_DP_DRIVE
 
-			// Continuity (A·v) through duct throats.
 			const span = vertSpan[cell]
 			if (span <= 4) {
 				const wide = Math.max(span, openL ? vertSpan[cell - 1] : span, openR ? vertSpan[cell + 1] : span)
@@ -545,7 +547,6 @@ export const stepGas = (world, opts = {}) => {
 			ux = ux * 0.65 + (sumUx / count) * 0.35
 			uy = uy * 0.65 + (sumUy / count) * 0.35
 
-			// Sealed cavities damp bulk motion unless local drive keeps them alive.
 			if (!open && localDrive <= 0.05) {
 				ux *= 0.85
 				uy *= 0.85
@@ -555,11 +556,11 @@ export const stepGas = (world, opts = {}) => {
 			const outUy = Math.max(-GAS_SPEED_MAX, Math.min(GAS_SPEED_MAX, uy))
 			nextUx[cell] = outUx
 			nextUy[cell] = outUy
-			if (outUy < maxUpdraft) maxUpdraft = outUy
+			// Updraft = velocity against gravity (negative along ĝ).
+			const alongG = outUx * gravity.gx + outUy * gravity.gy
+			if (alongG < maxUpdraft) maxUpdraft = alongG
 		}
-	}
 
-	// Swap velocity buffers — avoid O(WH) .set copy.
 	world.scratch.gasNextUx = gasUx
 	world.scratch.gasNextUy = gasUy
 	world.gasUx = nextUx

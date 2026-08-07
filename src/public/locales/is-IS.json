@@ -381,6 +381,7 @@
 				"localBranchAhead": "Sveitarfélagið er á undan fjarútibúinu. Engar uppfærslur nauðsynlegar.",
 				"branchesDiverged": "Staðbundnum og afskekktum útibúum hefur verið flokkað. Þvinguð uppfærsla í gangi...",
 				"notOnBranch": "Ekki á útibúinu, skiptu yfir í „meistara“...",
+				"upstreamGoneFallbackMaster": "Fjarri greinin „${branch}“ var eytt; fylgist með master í staðinn…",
 				"noUpstreamBranch": "Viðvörun: Engin uppstreymisgrein stillt fyrir grein '${branch}', nota '${remote}'.",
 				"dirtyWorkingDirectory": "Viðvörun: Vinnuskráin er ekki hrein. Vinsamlegast vistaðu (commit) eða geymdu (stash) breytingar þínar áður en þú uppfærir.",
 				"notInstalled": "Git er ekki uppsett, er að reyna að setja upp...",
