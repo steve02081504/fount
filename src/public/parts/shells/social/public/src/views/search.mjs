@@ -1,5 +1,7 @@
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
-import { chatApi, socialApi } from '../lib/apiClient.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
+import { searchChatEntities } from '../endpoints/chatBridge.mjs'
+import { searchSocial } from '../endpoints/search.mjs'
 import { appendEmptyState, mountEmptyState } from '../lib/emptyState.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state } from '../state.mjs'
@@ -118,7 +120,15 @@ export async function runSearchView() {
 	if (tag) baseParams.set('tag', tag.replace(/^#/, ''))
 
 	const tagOnly = isTagOnlySearch(q, tag)
-	const data = await socialApi(`/search?${baseParams}`).catch(() => ({ items: [] }))
+	let data
+	try {
+		data = await searchSocial(baseParams)
+	}
+	catch (error) {
+		handleError('social.search.loadFailed', {}, error)
+		await showSearchHint(list, 'social.search.loadFailed')
+		return
+	}
 	if (gen !== searchGeneration) return
 
 	const items = data.items || []
@@ -144,7 +154,14 @@ export async function runSearchView() {
 	if (!items.length)
 		await appendEmptyState(list, { titleKey: 'social.search.empty', modClass: ' empty-state--hint' })
 	else {
-		const cards = await Promise.all(items.map(item => buildPostCard(item).catch(() => null)))
+		const cards = await Promise.all(items.map(async item => {
+			try {
+				return await buildPostCard(item)
+			}
+			catch {
+				return null
+			}
+		}))
 		if (gen !== searchGeneration) return
 		for (const card of cards) if (card) list.appendChild(card)
 	}
@@ -160,10 +177,24 @@ export async function runSearchView() {
 			onLoad: async () => {
 				const p2 = new URLSearchParams(baseParams)
 				p2.set('cursor', cursor)
-				const d2 = await socialApi(`/search?${p2}`).catch(() => ({ items: [] }))
+				let d2
+				try {
+					d2 = await searchSocial(p2)
+				}
+				catch (error) {
+					handleError('social.search.loadFailed', {}, error)
+					return
+				}
 				if (gen !== searchGeneration) return
 				cursor = d2.nextCursor || null
-				const c2 = await Promise.all((d2.items || []).map(item => buildPostCard(item).catch(() => null)))
+				const c2 = await Promise.all((d2.items || []).map(async item => {
+					try {
+						return await buildPostCard(item)
+					}
+					catch {
+						return null
+					}
+				}))
 				for (const card of c2) if (card) insertBeforeScrollSentinel(list, card)
 			},
 		})
@@ -171,8 +202,13 @@ export async function runSearchView() {
 
 	// 实体搜索可能走网络；不阻塞帖子区。纯 hashtag / 侧栏 tag 不跑用户区。
 	if (!usersHost) return
-	const entityData = await chatApi(`/entities/search?q=${encodeURIComponent(q)}&limit=20`)
-		.catch(() => ({ entities: [] }))
+	let entityData
+	try {
+		entityData = await searchChatEntities(q, 20)
+	}
+	catch {
+		entityData = { entities: [] }
+	}
 	if (gen !== searchGeneration) return
 	const entities = entityData.entities || []
 	if (!entities.length)

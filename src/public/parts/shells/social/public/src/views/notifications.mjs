@@ -1,7 +1,8 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel, insertBeforeScrollSentinel } from '/scripts/lib/infiniteScroll.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
+import { getNotifications, getNotificationsSeen, putNotificationsSeen } from '../endpoints/notifications.mjs'
 import { authorLabel, formatTimeHtml, renderAvatarHtml } from '../lib/display.mjs'
 import { buildEmptyState } from '../lib/emptyState.mjs'
 import { state } from '../state.mjs'
@@ -19,9 +20,15 @@ let notificationsLoading = false
 export async function ensureNotificationsSeenAt() {
 	if (Number.isFinite(state.notificationsSeenAt))
 		return state.notificationsSeenAt
-	const data = await socialApi('/notifications/seen').catch(() => ({ seenAt: 0 }))
-	state.notificationsSeenAt = Number(data.seenAt) || 0
-	return state.notificationsSeenAt
+	try {
+		const data = await getNotificationsSeen()
+		state.notificationsSeenAt = Number(data.seenAt) || 0
+		return state.notificationsSeenAt
+	}
+	catch (error) {
+		handleError('social.notifications.loadFailed', {}, error)
+		return 0
+	}
 }
 
 /**
@@ -38,10 +45,7 @@ export function getNotificationsSeenAt() {
  * @returns {Promise<void>}
  */
 export async function markNotificationsSeen(at = Date.now()) {
-	await socialApi('/notifications/seen', {
-		method: 'PUT',
-		body: JSON.stringify({ at }),
-	})
+	await putNotificationsSeen(at)
 	state.notificationsSeenAt = at
 	badgeUnreadCount = 0
 	await updateNotificationBadge()
@@ -62,15 +66,6 @@ function notificationIconClass(type) {
 	if (type === 'post_note') return 'icon-note'
 	if (type === 'live_started') return 'icon-live'
 	return 'icon-bell'
-}
-
-/**
- * @returns {string} types 查询参数
- */
-function notificationsTypesQuery() {
-	const filter = state.notificationsFilter
-	if (!filter || filter === 'all') return ''
-	return `&types=${encodeURIComponent(filter)}`
 }
 
 /**
@@ -128,9 +123,18 @@ function notificationAvatarsHtml(row) {
  * @returns {Promise<void>}
  */
 export async function updateNotificationBadge() {
-	const unread = Number.isFinite(badgeUnreadCount)
-		? badgeUnreadCount
-		: Number((await socialApi('/notifications?limit=1').catch(() => ({ unreadCount: 0 }))).unreadCount) || 0
+	let unread
+	if (Number.isFinite(badgeUnreadCount))
+		unread = badgeUnreadCount
+	else 
+		try {
+			unread = Number((await getNotifications({ limit: 1 })).unreadCount) || 0
+		}
+		catch (error) {
+			handleError('social.notifications.loadFailed', {}, error)
+			unread = 0
+		}
+	
 	badgeUnreadCount = null
 	const label = unread > 99 ? '99+' : String(unread)
 	for (const badgeId of ['notificationsBadge', 'mobileNotificationsBadge']) {
@@ -338,10 +342,10 @@ export async function loadNotifications(append = false) {
 	try {
 		await ensureNotificationsSeenAt()
 		syncNotificationFilterTabs()
-		const cursorQuery = append && state.notificationsCursor
-			? `&cursor=${encodeURIComponent(state.notificationsCursor)}`
-			: ''
-		const data = await socialApi(`/notifications?limit=40${cursorQuery}${notificationsTypesQuery()}`)
+		const data = await getNotifications({
+			cursor: append ? state.notificationsCursor : null,
+			types: state.notificationsFilter,
+		})
 		const container = document.getElementById('notificationsView')
 		const toolbar = document.getElementById('notificationsToolbar')
 		const seenAt = getNotificationsSeenAt()

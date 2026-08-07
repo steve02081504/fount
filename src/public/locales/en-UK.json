@@ -4110,6 +4110,7 @@
 		},
 		"settings": {
 			"title": "social settings",
+			"loadFailed": "Couldn't load settings: ${error}",
 			"back": {
 				"aria-label": "Back to settings"
 			},
@@ -4277,6 +4278,7 @@
 					"tip": "Refresh news"
 				}
 			},
+			"loadFailed": "Couldn't load feed: ${error}",
 			"newPosts": "There is new news, click to view",
 			"tabsLabel": {
 				"aria-label": "Feed sort order"
@@ -4302,6 +4304,7 @@
 		},
 		"explore": {
 			"accounts": "Suggested accounts",
+			"loadFailed": "Couldn't load Explore: ${error}",
 			"posts": "Latest posts",
 			"mediaOnly": "Media only"
 		},
@@ -4316,7 +4319,8 @@
 			"post_note": "${author} added a note to your post",
 			"live_started": "${author} started live streaming",
 			"view": "View",
-			"markAllRead": "Mark all as read"
+			"markAllRead": "Mark all as read",
+			"loadFailed": "Failed to load notifications: ${error}"
 		},
 		"saved": {
 			"all": "All",
@@ -4347,6 +4351,7 @@
 			"searchEmpty": "No matching saves",
 			"folderEmpty": "This folder is empty",
 			"emptyHint": "Tap the bookmark while browsing to save posts here",
+			"loadFailed": "Failed to load saved posts: ${error}",
 			"search": {
 				"placeholder": "Search favourites…"
 			}
@@ -4367,6 +4372,7 @@
 		},
 		"profile": {
 			"edit": "Edit profile",
+			"loadFailed": "Failed to load profile: ${error}",
 			"viewPosts": "View social profiles",
 			"settingsBtn": {
 				"aria-label": "Social settings"
@@ -4416,6 +4422,7 @@
 			},
 			"empty": "No short video yet",
 			"emptyHint": "There are no posts with videos in the following people or public squares. Try posting a video update?",
+			"loadFailed": "Couldn't load short videos: ${error}",
 			"compose": "Go post a video",
 			"back": {
 				"aria-label": "Back to feed"
@@ -4433,6 +4440,8 @@
 		},
 		"live": {
 			"empty": "No live broadcast yet",
+			"loadFailed": "Failed to load live feed: ${error}",
+			"joinFailed": "Failed to join live stream: ${error}",
 			"viewers": "${n} people watched",
 			"likes": "${n} Like",
 			"local": "This device",
@@ -4495,6 +4504,7 @@
 			"trustScore": "Trust ${score}",
 			"viewTitle": "Search",
 			"loading": "Searching…",
+			"loadFailed": "Search failed: ${error}",
 			"sortRecent": "Latest",
 			"sortPopular": "Popular",
 			"scopeLocal": "This device",
@@ -4594,6 +4604,7 @@
 			"loading": "Loading…",
 			"notFound": "Post not found or not visible",
 			"loadFailed": "Couldn't load — try again later",
+			"exportMediaFailed": "Couldn't export media: ${error}",
 			"detailTitle": "Post",
 			"back": "Back"
 		},
@@ -4657,7 +4668,8 @@
 			"placeholder": "Write a reply…",
 			"submit": "Reply",
 			"empty": "No replies yet",
-			"emptyHint": "Be the first to reply"
+			"emptyHint": "Be the first to reply",
+			"loadFailed": "Couldn't load replies: ${error}"
 		},
 		"repost": {
 			"placeholder": "Add a repost comment (optional)…",

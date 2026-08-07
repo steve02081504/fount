@@ -20,7 +20,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 - **mediaRefs.url**: same scheme whitelist as Markdown untrusted sanitize (`isSafeHtmlUrl`). EVFS/file GET: `applySafeContentHeaders` (`nosniff`; only image/audio/video may inline).
 - **New timeline event types**: register in both `SOCIAL_TIMELINE_REDUCERS` and `SOCIAL_TIMELINE_EVENT_TYPES` (`federation/namespace.mjs`).
 - **part_query**: register/unregister in Load/Unload (`federation/partQuery.mjs`); handlers in `trending|search|discover|live/network.mjs`.
-- **Cross-shell chat HTTP**: viewer / personal-lists / entities/search / translation-prefs via `/api/parts/shells:chat/…`. Live nodes need `loadParts: ['shells/social', 'shells/chat']`.
+- **Cross-shell chat HTTP**: viewer / personal-lists / entities/search / translation-prefs via chat shell APIs — frontend uses named functions in `public/src/endpoints/chatBridge.mjs` (not path-string clients). Live nodes need `loadParts: ['shells/social', 'shells/chat']`.
 - **Share URL**: chat `wrapProtocolHttpsUrl`. `public/shared/*` is Deno-pure-importable (no `/parts/` or `/scripts/` URL imports). UI under `public/src/` may use `/scripts/*` and `/parts/…` freely.
 - Types: `src/decl/socialAPI.ts`; overview: `public/llms.txt`.
 
@@ -30,7 +30,8 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 - **`.hidden`**: from `/base.css` (`display: none !important`) — do not re-declare in shell CSS.
 - Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder`. Prefer `renderTemplate` / `mountTemplate`. Dialogs: `/scripts/features/promptDialog.mjs`.
 - **@-mention autocomplete**: keep `<textarea>` as implicit textbox; only `aria-controls` + `aria-activedescendant` (+ `aria-autocomplete`). Do not set `role="combobox"` / `aria-expanded` on textarea.
-- HTTP: `endpoints/shared.mjs` `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.
+- Background fire-and-forget: never `.catch(() => {})` / `.catch(() => null)`. Report fount faults with `.catch(handleError('social.…'))`. User mistakes: `showToastI18n`. No need to wrap floating promises in `void`.
+- **Frontend HTTP**: named functions only in `public/src/endpoints/*.mjs`. Do not use path-string `socialApi` / `chatApi` / `apiClient`. Backend: `endpoints/shared.mjs` `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.
 - Hash routing / search / replies / own-write feed traps: [ui-details.md](ui-details.md).
 - Avatars/names/@id: chat `entityAvatar.mjs` / `resolveDisplayName` / `formatEntityAtId`. Profile: `rememberEntityHandle` before posts. Hover: `lib/profileHover.mjs`.
 - Bio/post Markdown: chat `shared/trustedMarkdown.mjs`. Trusted: self / local-char / declared master / trust list. Remote self-declared `ownerEntityHash` does not elevate. Explore snippets use `mountMarkdown` (not `escapeHtml`).

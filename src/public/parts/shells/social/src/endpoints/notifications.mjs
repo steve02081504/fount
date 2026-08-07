@@ -16,7 +16,7 @@ export function registerNotificationRoutes(router) {
 			types: req.query.types,
 		})))
 
-	router.get('/api/parts/shells\\:social/notifications/seen', authenticate, socialJson(async (_req, { client }) => ({
+	router.get('/api/parts/shells\\:social/notifications/seen', authenticate, socialJson(async (req, { client }) => ({
 		seenAt: await client.notificationsSeenAt(),
 		viewerEntityHash: client.entityHash,
 	})))

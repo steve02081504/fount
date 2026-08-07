@@ -16,7 +16,7 @@ export function registerTasteRoutes(router) {
 	router.put('/api/parts/shells\\:social/taste', authenticate, socialJson((req, { client }) =>
 		client.taste.update(req.body || {})))
 
-	router.post('/api/parts/shells\\:social/taste/rebuild', authenticate, socialJson((_req, { client }) =>
+	router.post('/api/parts/shells\\:social/taste/rebuild', authenticate, socialJson((req, { client }) =>
 		client.taste.rebuild()))
 
 	router.post('/api/parts/shells\\:social/taste/names', authenticate, socialJson(async (req, { username, client }) => {

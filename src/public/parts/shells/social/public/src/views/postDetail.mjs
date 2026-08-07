@@ -1,9 +1,12 @@
+import { getPost } from '../endpoints/posts.mjs'
+import { getProfile, getProfileReplies } from '../endpoints/profile.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
 import { rememberEntityHandle } from '../lib/display.mjs'
+import { mountEmptyState } from '../lib/emptyState.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state } from '../state.mjs'
 import { activateView } from '../viewChrome.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 
 import { renderRepliesPanel } from './replies.mjs'
 
@@ -30,7 +33,7 @@ export async function loadPostDetail(entityHash, postId) {
 
 	let data
 	try {
-		data = await socialApi(`/posts/${owner}/${id}`)
+		data = await getPost(owner, id)
 	}
 	catch (error) {
 		const msg = String(error?.message || '')
@@ -43,7 +46,14 @@ export async function loadPostDetail(entityHash, postId) {
 		return
 	}
 
-	const profileData = await socialApi(`/profile/${owner}`).catch(() => null)
+	let profileData
+	try {
+		profileData = await getProfile(owner)
+	}
+	catch (error) {
+		handleError('social.profile.loadFailed', {}, error)
+		profileData = null
+	}
 	rememberEntityHandle(owner, profileData?.profile || data.item.authorProfile)
 
 	const card = await buildPostCard(data.item, { openDetail: false })
@@ -70,10 +80,19 @@ export async function loadPostDetail(entityHash, postId) {
 	const { bindFeedVideoAutoplay } = await import('../lib/videoAutoplay.mjs')
 	bindFeedVideoAutoplay(card)
 
-	const repliesData = await socialApi(`/profile/${owner}/replies/${id}`).catch(() => ({ replies: [] }))
-	await renderRepliesPanel(repliesHost, repliesData.replies || [])
-	repliesHost.dataset.loaded = '1'
-	repliesHost.classList.remove('hidden')
+	try {
+		const repliesData = await getProfileReplies(owner, id)
+		await renderRepliesPanel(repliesHost, repliesData.replies || [])
+		repliesHost.dataset.loaded = '1'
+		repliesHost.classList.remove('hidden')
+	}
+	catch (error) {
+		handleError('social.replies.loadFailed', {}, error)
+		await mountEmptyState(repliesHost, {
+			titleKey: 'social.replies.loadFailed',
+			modClass: ' empty-state--replies',
+		})
+	}
 	// 详情页默认展开回复，隐藏卡片内嵌的折叠面板触发依赖
 	card.querySelector(`[data-replies-for="${CSS.escape(actionKey)}"]`)?.remove()
 }

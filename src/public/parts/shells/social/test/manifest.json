@@ -70,7 +70,7 @@
 			"src/public/parts/shells/social/public/src/init.mjs",
 			"src/public/parts/shells/social/public/src/state.mjs",
 			"src/public/parts/shells/social/public/src/gate.mjs",
-			"src/public/parts/shells/social/public/src/lib/apiClient.mjs",
+			"src/public/parts/shells/social/public/src/endpoints/**",
 			"src/public/parts/shells/social/public/src/lib/socialWrite.mjs",
 			"src/scripts/test/playwright/**",
 			"src/public/pages/scripts/test/ready_gate.mjs",

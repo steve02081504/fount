@@ -1,7 +1,10 @@
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { flashCopiedLabel, shareOrCopyPostLink } from '../actions/shared.mjs'
+import { getVideosFeed } from '../endpoints/feed.mjs'
+import { getPost, likePost } from '../endpoints/posts.mjs'
+import { getProfileReplies } from '../endpoints/profile.mjs'
+import { sendDwellSignal } from '../endpoints/signals.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
 import { authorLabel, entityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { buildEmptyState } from '../lib/emptyState.mjs'
 import { playHeartAnim } from '../lib/heartAnim.mjs'
@@ -10,6 +13,7 @@ import { runWrite } from '../lib/socialWrite.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
 import { renderRepliesPanel } from './replies.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 
@@ -27,9 +31,15 @@ const videoFeed = createSnapCursorFeed({
  * @param {string | null} cursor 游标
  * @returns {Promise<object | null>} 分页结果
  */
-	fetchPage: cursor => socialApi(
-		`/videos/feed?limit=20&cursor=${encodeURIComponent(cursor || '')}`,
-	).catch(() => null),
+	fetchPage: async cursor => {
+		try {
+			return await getVideosFeed({ limit: 20, cursor })
+		}
+		catch (error) {
+			handleError('social.video.loadFailed', {}, error)
+			return null
+		}
+	},
 	/**
 	 * @param {HTMLElement} container 容器
 	 * @param {object[]} items 条目
@@ -87,7 +97,16 @@ export async function loadVideoView(options = {}) {
 	const focusEntityHash = String(options.focusEntityHash || '').toLowerCase()
 	const focusPostId = String(options.focusPostId || '')
 
-	const data = await socialApi('/videos/feed?limit=20').catch(() => ({ items: [], nextCursor: null }))
+	let data
+	try {
+		data = await getVideosFeed({ limit: 20 })
+	}
+	catch (error) {
+		handleError('social.video.loadFailed', {}, error)
+		container.appendChild(await buildVideoEmptySlide())
+		view?.focus({ preventScroll: true })
+		return
+	}
 	let items = [...data.items || []]
 
 	if (focusEntityHash && focusPostId) {
@@ -101,7 +120,13 @@ export async function loadVideoView(options = {}) {
 			items = [focused, ...items]
 		}
 		else if (existingIndex < 0) {
-			const focused = await socialApi(`/posts/${focusEntityHash}/${focusPostId}`).catch(() => null)
+			let focused
+			try {
+				focused = await getPost(focusEntityHash, focusPostId)
+			}
+			catch {
+				focused = null
+			}
 			if (focused?.item) items = [focused.item, ...items]
 		}
 	}
@@ -320,7 +345,7 @@ async function loadSlideReplies(slide) {
 	if (cached) return cached
 	const { entityHash, postId } = slide.dataset
 	if (!entityHash || !postId) return []
-	const data = await socialApi(`/profile/${entityHash}/replies/${postId}`).catch(() => ({ replies: [] }))
+	const data = await getProfileReplies(entityHash, postId)
 	const replies = data.replies || []
 	slideRepliesCache.set(slide, replies)
 	return replies
@@ -333,8 +358,14 @@ async function loadSlideReplies(slide) {
 async function ensureCommentTicker(slide) {
 	if (slide.dataset.tickerLoaded) return
 	slide.dataset.tickerLoaded = '1'
-	const replies = await loadSlideReplies(slide)
-	renderCommentTicker(slide, replies)
+	try {
+		const replies = await loadSlideReplies(slide)
+		renderCommentTicker(slide, replies)
+	}
+	catch (error) {
+		delete slide.dataset.tickerLoaded
+		handleError('social.replies.loadFailed', {}, error)
+	}
 }
 
 /**
@@ -353,12 +384,19 @@ async function setVideoRepliesOpen(slide, open, options = {}) {
 	}
 	panel.classList.remove('hidden')
 	ticker?.classList.add('is-dimmed')
-	if (!panel.dataset.loaded) {
-		const replies = await loadSlideReplies(slide)
-		panel.dataset.loaded = '1'
-		await renderRepliesPanel(panel, replies)
-		renderCommentTicker(slide, replies)
-	}
+	if (!panel.dataset.loaded) 
+		try {
+			const replies = await loadSlideReplies(slide)
+			panel.dataset.loaded = '1'
+			await renderRepliesPanel(panel, replies)
+			renderCommentTicker(slide, replies)
+		}
+		catch (error) {
+			closeVideoReplies(slide)
+			handleError('social.replies.loadFailed', {}, error)
+			return
+		}
+	
 	if (options.focusReplyId) focusReplyInPanel(panel, options.focusReplyId)
 }
 
@@ -521,15 +559,21 @@ function buildVideoSlide(item) {
 	video?.addEventListener('pause', () => {
 		if (!dwellStart || !slide.dataset.postId) return
 		const watchMs = Date.now() - dwellStart
-		void socialApi('/signals/dwell', {
-			method: 'POST',
-			body: JSON.stringify({
-				entityHash: slide.dataset.entityHash,
-				postId: slide.dataset.postId,
-				watchMs,
-				watchRatio: video.duration ? watchMs / (video.duration * 1000) : 0,
-			}),
-		}).catch(() => { })
+		void (async () => {
+			try {
+				await sendDwellSignal({
+					entries: [{
+						entityHash: slide.dataset.entityHash,
+						postId: slide.dataset.postId,
+						watchMs,
+						watchRatio: video.duration ? watchMs / (video.duration * 1000) : 0,
+					}],
+				})
+			}
+			catch (error) {
+				handleError('social.dwellFailed', {}, error)
+			}
+		})()
 		dwellStart = null
 	})
 
@@ -594,9 +638,7 @@ async function doVideoLike(slide) {
 	if (!entityHash || !postId) return
 	const btn = slide.querySelector('.video-like-btn')
 	if (btn?.classList.contains('is-active')) return
-	await runWrite('like', () =>
-		socialApi(`/posts/${entityHash}/${postId}/like`, { method: 'POST' }),
-	)
+	await runWrite('like', () => likePost(entityHash, postId, true))
 	btn?.classList.add('is-active')
 	if (btn) btn.dataset.i18n = 'social.actions.unlike'
 	const countEl = slide.querySelector('.video-like-count')

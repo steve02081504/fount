@@ -4115,6 +4115,7 @@
 		},
 		"settings": {
 			"title": "Definições sociais",
+			"loadFailed": "Não foi possível carregar as definições: ${error}",
 			"back": {
 				"aria-label": "Voltar ao perfil"
 			},
@@ -4280,6 +4281,7 @@
 					"tip": "Atualizar news"
 				}
 			},
+			"loadFailed": "Não foi possível carregar o feed: ${error}",
 			"newPosts": "Há novidades, clique para ver",
 			"tabsLabel": {
 				"aria-label": "Ordenação do feed"
@@ -4305,6 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Conta recomendada",
+			"loadFailed": "Não foi possível carregar Explorar: ${error}",
 			"posts": "Últimas postagens",
 			"mediaOnly": "Apenas mídia"
 		},
@@ -4319,7 +4322,8 @@
 			"post_note": "${author} adicionou informações à sua postagem",
 			"live_started": "${author} iniciou a transmissão ao vivo",
 			"view": "Ver",
-			"markAllRead": "Marcar tudo como lido"
+			"markAllRead": "Marcar tudo como lido",
+			"loadFailed": "Não foi possível carregar as notificações: ${error}"
 		},
 		"saved": {
 			"all": "Tudo",
@@ -4350,6 +4354,7 @@
 			"searchEmpty": "Nenhuma coleção correspondente",
 			"folderEmpty": "Esta pasta está vazia",
 			"emptyHint": "Clique no marcador ao navegar pelas notícias para salvá-las aqui",
+			"loadFailed": "Não foi possível carregar as publicações guardadas: ${error}",
 			"search": {
 				"placeholder": "Pesquisar favourites…"
 			}
@@ -4365,11 +4370,12 @@
 			},
 			"empty": "O rascunho está vazio",
 			"saveFailed": "Falha ao save draft: ${error}",
-			"loadFailed": "Falha ao open draft: ${error}",
+			"loadFailed": "Não foi possível carregar o rascunho: ${error}",
 			"deleteFailed": "Falha ao delete draft: ${error}"
 		},
 		"profile": {
 			"edit": "Editar profile",
+			"loadFailed": "Não foi possível carregar o perfil: ${error}",
 			"viewPosts": "Ver perfis sociais",
 			"settingsBtn": {
 				"aria-label": "Definições sociais"
@@ -4419,6 +4425,7 @@
 			},
 			"empty": "Ainda sem short video",
 			"emptyHint": "Não há postagens com vídeos nas seguintes pessoas ou praças públicas. Tente postar uma atualização em vídeo?",
+			"loadFailed": "Não foi possível carregar os vídeos curtos: ${error}",
 			"compose": "Vá postar um vídeo",
 			"back": {
 				"aria-label": "Voltar a feed"
@@ -4436,6 +4443,8 @@
 		},
 		"live": {
 			"empty": "Ainda sem live broadcast",
+			"loadFailed": "Não foi possível carregar a transmissão ao vivo: ${error}",
+			"joinFailed": "Falha ao ligar à transmissão ao vivo: ${error}",
 			"viewers": "${n} pessoas assistiram",
 			"likes": "${n} Curtir",
 			"local": "Máquina local",
@@ -4498,6 +4507,7 @@
 			"trustScore": "Confie em ${score}",
 			"viewTitle": "Procurar",
 			"loading": "Procurando…",
+			"loadFailed": "Não foi possível carregar a pesquisa: ${error}",
 			"sortRecent": "Atualizado",
 			"sortPopular": "Popular",
 			"scopeLocal": "Máquina local",
@@ -4597,6 +4607,7 @@
 			"loading": "A carregar…",
 			"notFound": "A postagem não existe ou não está visível",
 			"loadFailed": "Falha ao carregar, tente novamente mais tarde",
+			"exportMediaFailed": "Não foi possível exportar os conteúdos multimédia: ${error}",
 			"detailTitle": "Publicação",
 			"back": "Voltar"
 		},
@@ -4660,7 +4671,8 @@
 			"placeholder": "Escreva uma resposta…",
 			"submit": "Responder",
 			"empty": "Ainda sem replies",
-			"emptyHint": "Vamos escrever o primeiro artigo e iniciar a discussão"
+			"emptyHint": "Escreva a primeira resposta e inicie a discussão",
+			"loadFailed": "Não foi possível carregar as respostas: ${error}"
 		},
 		"repost": {
 			"placeholder": "Adicionar um comentário de reenvio (opcional)…",
