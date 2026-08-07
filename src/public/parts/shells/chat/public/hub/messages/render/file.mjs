@@ -211,7 +211,7 @@ export function wireMessageMediaPlaceholders(container) {
 		}
 		catch (error) {
 			revokeTrackedBlobUrl(blobUrl)
-			handleError('chat.hub.file.loadFailed', {}, error)
+			handleError('chat.hub.file.loadFailed')(error)
 		}
 	})
 }
