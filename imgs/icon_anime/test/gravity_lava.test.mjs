@@ -40,10 +40,10 @@ Deno.test('gravity: flat device returns null', () => {
 
 Deno.test('rain edges: default down → no bottom, top dominant, sides nonzero', () => {
 	const edges = rainEdgeWeights(0, 1)
-	const top = edges.find(e => e.ny < 0)
-	const bot = edges.find(e => e.ny > 0)
-	const left = edges.find(e => e.nx < 0)
-	const right = edges.find(e => e.nx > 0)
+	const top = edges.find(edge => edge.ny < 0)
+	const bot = edges.find(edge => edge.ny > 0)
+	const left = edges.find(edge => edge.nx < 0)
+	const right = edges.find(edge => edge.nx > 0)
 	assertGreater(top.w, 0.5)
 	assertEquals(bot.w, 0)
 	assertGreater(left.w, 0)
@@ -52,8 +52,8 @@ Deno.test('rain edges: default down → no bottom, top dominant, sides nonzero',
 
 Deno.test('rain edges: pure left gravity → right edge dominates', () => {
 	const edges = rainEdgeWeights(-1, 0)
-	const right = edges.find(e => e.nx > 0)
-	const left = edges.find(e => e.nx < 0)
+	const right = edges.find(edge => edge.nx > 0)
+	const left = edges.find(edge => edge.nx < 0)
 	assertGreater(right.w, left.w)
 	assertEquals(left.w, 0)
 })
@@ -62,21 +62,19 @@ Deno.test('rain edges: inverted gravity → no bottom rain (composition ground)'
 	// gy<0 makes the screen bottom a physical sky; raining from there looks like
 	// the pedestal spurting upward. Composition bottom never rains — wait for lava.
 	const edges = rainEdgeWeights(0, -1)
-	const bot = edges.find(e => e.ny > 0)
-	const top = edges.find(e => e.ny < 0)
-	assertEquals(bot.w, 0)
-	assertEquals(top.w, 0)
-	assertEquals(edges.reduce((s, e) => s + e.w, 0), 0)
+	assertEquals(edges.find(edge => edge.ny > 0).w, 0)
+	assertEquals(edges.find(edge => edge.ny < 0).w, 0)
+	assertEquals(edges.reduce((weightSum, edge) => weightSum + edge.w, 0), 0)
 })
 
 Deno.test('rain edges: pickRainEdge respects weights', () => {
 	const edges = rainEdgeWeights(0, 1)
 	const picks = { top: 0, left: 0, right: 0, bottom: 0 }
-	for (let i = 0; i < 200; i++) {
-		const e = pickRainEdge(edges, i / 200)
-		if (e.ny < 0) picks.top++
-		else if (e.ny > 0) picks.bottom++
-		else if (e.nx < 0) picks.left++
+	for (let stepIndex = 0; stepIndex < 200; stepIndex++) {
+		const edge = pickRainEdge(edges, stepIndex / 200)
+		if (edge.ny < 0) picks.top++
+		else if (edge.ny > 0) picks.bottom++
+		else if (edge.nx < 0) picks.left++
 		else picks.right++
 	}
 	assertEquals(picks.bottom, 0)
@@ -86,24 +84,23 @@ Deno.test('rain edges: pickRainEdge respects weights', () => {
 Deno.test('lava: inverted gravity — quiet then onset on new down edge (top)', () => {
 	const world = createWorld({ width: 10, height: 10, margin: 0, bottomExtra: 0 })
 	clearMaterials(world)
-	world.gravity = { gx: 0, gy: -1, mag: BASE_PARTICLE_G }
-	applyGravityToWorld(world, world.gravity)
+	applyGravityToWorld(world, { gx: 0, gy: -1, mag: BASE_PARTICLE_G })
 	const edges = rainEdgeWeights(0, -1)
-	assertEquals(edges.find(e => e.ny > 0).w, 0)
-	for (let i = 0; i < LAVA_ONSET_EXPOSURE - 2; i++)
+	assertEquals(edges.find(edge => edge.ny > 0).w, 0)
+	for (let stepIndex = 0; stepIndex < LAVA_ONSET_EXPOSURE - 2; stepIndex++)
 		stepBoundary(world)
 	assertLess(totalMelt(world), 0.01)
-	for (let i = 0; i < 4; i++)
+	for (let stepIndex = 0; stepIndex < 4; stepIndex++)
 		stepBoundary(world)
 	assertGreater(totalMelt(world), 0.1)
-	const W = world.worldW
+	const worldWidth = world.worldW
 	let topMelt = 0
-	let botMelt = 0
-	for (let x = 0; x < W; x++) {
-		topMelt += world.melt[x]
-		botMelt += world.melt[(world.worldH - 1) * W + x]
+	let bottomMelt = 0
+	for (let column = 0; column < worldWidth; column++) {
+		topMelt += world.melt[column]
+		bottomMelt += world.melt[(world.worldH - 1) * worldWidth + column]
 	}
-	assertGreater(topMelt, botMelt)
+	assertGreater(topMelt, bottomMelt)
 	assertGreater(world.boundary.exposure[EDGE_TOP], LAVA_ONSET_EXPOSURE - 1)
 })
 
@@ -137,14 +134,13 @@ Deno.test('lava: onset after LAVA_ONSET_EXPOSURE on down edge', () => {
 Deno.test('lava: 45° accumulates exposure on two edges; onset ≈ 312·√2', () => {
 	const world = createWorld({ width: 10, height: 10, margin: 0, bottomExtra: 0 })
 	clearMaterials(world)
-	const s = Math.SQRT1_2
-	world.gravity = { gx: -s, gy: s, mag: BASE_PARTICLE_G }
-	applyGravityToWorld(world, world.gravity)
-	const need = LAVA_ONSET_EXPOSURE / s
-	for (let i = 0; i < (need | 0) - 2; i++)
+	const invSqrt2 = Math.SQRT1_2
+	applyGravityToWorld(world, { gx: -invSqrt2, gy: invSqrt2, mag: BASE_PARTICLE_G })
+	const need = LAVA_ONSET_EXPOSURE / invSqrt2
+	for (let stepIndex = 0; stepIndex < (need | 0) - 2; stepIndex++)
 		stepBoundary(world)
 	assertLess(totalMelt(world), 0.01)
-	for (let i = 0; i < 6; i++)
+	for (let stepIndex = 0; stepIndex < 6; stepIndex++)
 		stepBoundary(world)
 	assertGreater(totalMelt(world), 0.1)
 	// Both bottom and left should have been sourcing lava.
@@ -158,10 +154,10 @@ Deno.test('lava: down-edge melt clamped to T_MAX', () => {
 	world.gravity = defaultGravity()
 	world.boundary.exposure[EDGE_BOTTOM] = LAVA_ONSET_EXPOSURE
 	stepBoundary(world)
-	const W = world.worldW
-	const H = world.worldH
-	for (let x = 0; x < W; x++) {
-		const cell = (H - 1) * W + x
+	const worldWidth = world.worldW
+	const worldHeight = world.worldH
+	for (let column = 0; column < worldWidth; column++) {
+		const cell = (worldHeight - 1) * worldWidth + column
 		if (world.melt[cell] > 0.02)
 			assertAlmostEquals(world.temp[cell], T_MAX, 1e-6)
 	}
@@ -221,8 +217,7 @@ Deno.test('boundary: up-edge absorb and regurgitate conserves units+heat', () =>
 
 Deno.test('boundary: side wrap preserves same-row neighbor', () => {
 	const world = createWorld({ width: 10, height: 8, margin: 0, bottomExtra: 0 })
-	world.gravity = defaultGravity()
-	applyGravityToWorld(world, world.gravity)
+	applyGravityToWorld(world, defaultGravity())
 	const nb = neighborCoord(world, 0, 3, -1, 0)
 	assertEquals(nb.wrapped, true)
 	assertEquals(nb.x, world.worldW - 1)

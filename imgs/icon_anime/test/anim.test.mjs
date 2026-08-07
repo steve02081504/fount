@@ -379,16 +379,16 @@ Deno.test('createEscHold: reset re-arms after a trip', async () => {
 	const { createEscHold, ESC_HOLD_MS } = await import('../player.mjs')
 	const hold = createEscHold()
 	assertEquals(hold.note(0), false)
-	for (let t = 100; t < ESC_HOLD_MS; t += 100)
-		assertEquals(hold.note(t), false)
+	for (let elapsedMs = 100; elapsedMs < ESC_HOLD_MS; elapsedMs += 100)
+		assertEquals(hold.note(elapsedMs), false)
 	assertEquals(hold.note(ESC_HOLD_MS), true)
 	assertEquals(hold.note(ESC_HOLD_MS + 10), false)
 	hold.reset()
-	const t0 = 50_000
-	assertEquals(hold.note(t0), false)
-	for (let t = 100; t < ESC_HOLD_MS; t += 100)
-		assertEquals(hold.note(t0 + t), false)
-	assertEquals(hold.note(t0 + ESC_HOLD_MS), true)
+	const resetTimestamp = 50_000
+	assertEquals(hold.note(resetTimestamp), false)
+	for (let elapsedMs = 100; elapsedMs < ESC_HOLD_MS; elapsedMs += 100)
+		assertEquals(hold.note(resetTimestamp + elapsedMs), false)
+	assertEquals(hold.note(resetTimestamp + ESC_HOLD_MS), true)
 })
 
 Deno.test('wind gesture: stroke speed + clockwise vortex + release clear', async () => {

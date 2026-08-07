@@ -42,7 +42,7 @@ const soilQueues = {
 }
 
 /** 正交邻格，用于收回后溢流。 */
-const ORTHO = [
+const ORTHOGONAL_OFFSETS = [
 	[1, 0],
 	[-1, 0],
 	[0, 1],
@@ -105,14 +105,13 @@ const pushFeed = (world, queues, from, amount) => {
  * @returns {number} 土壤格索引，无则 -1
  */
 export const condenseDripSource = (world, x, y) => {
-	const { mat, condense, worldW: W } = world
+	const { mat, condense, worldW } = world
 	const up = gravityUpWeights(world)
-	for (let i = 0; i < up.n; i++) {
-		if (up.w[i] < 0.5) continue
-		const sx = x + up.dx[i]
-		const sy = y + up.dy[i]
-		if (!inWorld(world, sx, sy)) continue
-		const soil = sy * W + sx
+	for (let offsetIndex = 0; offsetIndex < up.n; offsetIndex++) {
+		const soilX = x + up.dx[offsetIndex]
+		const soilY = y + up.dy[offsetIndex]
+		if (!inWorld(world, soilX, soilY)) continue
+		const soil = soilY * worldW + soilX
 		if (isSoilMat(mat[soil]) && condense[soil] >= COND_DRAW) return soil
 	}
 	return -1
@@ -127,19 +126,18 @@ export const condenseDripSource = (world, x, y) => {
  * @returns {boolean} 是否开放
  */
 const hasOpenUnderside = (world, x, y, down) => {
-	const { mat, worldW: W } = world
-	for (let i = 0; i < down.n; i++) {
-		if (down.w[i] < 0.5) continue
-		const bx = x + down.dx[i]
-		const by = y + down.dy[i]
-		if (!inWorld(world, bx, by)) continue
-		if (mat[by * W + bx] === MAT.AIR) return true
+	const { mat, worldW } = world
+	for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
+		const belowX = x + down.dx[offsetIndex]
+		const belowY = y + down.dy[offsetIndex]
+		if (!inWorld(world, belowX, belowY)) continue
+		if (mat[belowY * worldW + belowX] === MAT.AIR) return true
 	}
 	return false
 }
 
 /**
- * 将多余质量溢到邻接空气（先下向，再任意正交）。
+ * 将多余质量溢到邻接空气（按下向权重分配，再任意正交）。
  * @param {FluidWorld} world 世界
  * @param {number} x 列
  * @param {number} y 行
@@ -149,22 +147,36 @@ const hasOpenUnderside = (world, x, y, down) => {
  */
 const spillToAir = (world, x, y, amount, down) => {
 	if (amount <= 1e-8) return 0
-	for (let i = 0; i < down.n; i++) {
-		if (down.w[i] < 0.5) continue
-		const bx = x + down.dx[i]
-		const by = y + down.dy[i]
-		if (!inWorld(world, bx, by)) continue
-		if (world.mat[by * world.worldW + bx] !== MAT.AIR) continue
-		return addLiquid(world, bx, by, amount)
+	let written = 0
+	let weightSum = 0
+	for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
+		const belowX = x + down.dx[offsetIndex]
+		const belowY = y + down.dy[offsetIndex]
+		if (!inWorld(world, belowX, belowY)) continue
+		if (world.mat[belowY * world.worldW + belowX] !== MAT.AIR) continue
+		weightSum += down.w[offsetIndex]
 	}
-	for (const [dx, dy] of ORTHO) {
-		const nx = x + dx
-		const ny = y + dy
-		if (!inWorld(world, nx, ny)) continue
-		if (world.mat[ny * world.worldW + nx] !== MAT.AIR) continue
-		return addLiquid(world, nx, ny, amount)
+	if (weightSum > 1e-8)
+		for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
+			const belowX = x + down.dx[offsetIndex]
+			const belowY = y + down.dy[offsetIndex]
+			if (!inWorld(world, belowX, belowY)) continue
+			if (world.mat[belowY * world.worldW + belowX] !== MAT.AIR) continue
+			written += addLiquid(world, belowX, belowY, amount * (down.w[offsetIndex] / weightSum))
+		}
+	let rest = amount - written
+	if (rest <= 1e-8) return written
+	for (const [offsetX, offsetY] of ORTHOGONAL_OFFSETS) {
+		const neighborX = x + offsetX
+		const neighborY = y + offsetY
+		if (!inWorld(world, neighborX, neighborY)) continue
+		if (world.mat[neighborY * world.worldW + neighborX] !== MAT.AIR) continue
+		const got = addLiquid(world, neighborX, neighborY, rest)
+		written += got
+		rest -= got
+		if (rest <= 1e-8) break
 	}
-	return 0
+	return written
 }
 
 /**
@@ -353,32 +365,39 @@ export const stepSoil = (world) => {
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (!isSoilMat(mat[cell]) || condense[cell] < COND_DRIP) continue
-			for (let i = 0; i < down.n; i++) {
-				if (down.w[i] < 0.5) continue
-				const bx = x + down.dx[i]
-				const by = y + down.dy[i]
-				if (!inWorld(world, bx, by)) continue
-				const below = by * W + bx
-				if (mat[below] !== MAT.AIR) continue
-				const amount = condense[cell]
-				const added = addLiquid(world, bx, by, amount)
-				condense[cell] = amount - added
-				break
+			let weightSum = 0
+			for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
+				const belowX = x + down.dx[offsetIndex]
+				const belowY = y + down.dy[offsetIndex]
+				if (!inWorld(world, belowX, belowY)) continue
+				if (mat[belowY * W + belowX] !== MAT.AIR) continue
+				weightSum += down.w[offsetIndex]
 			}
+			if (weightSum <= 1e-8) continue
+			const amount = condense[cell]
+			let written = 0
+			for (let offsetIndex = 0; offsetIndex < down.n; offsetIndex++) {
+				const belowX = x + down.dx[offsetIndex]
+				const belowY = y + down.dy[offsetIndex]
+				if (!inWorld(world, belowX, belowY)) continue
+				if (mat[belowY * W + belowX] !== MAT.AIR) continue
+				written += addLiquid(world, belowX, belowY, amount * (down.w[offsetIndex] / weightSum))
+			}
+			condense[cell] = amount - written
 		}
 
-	// ĝ 转离开放下沿 → 悬挂凝结收回（回潮，满则溢到邻接空气）。
+	// ĝ 转离开放下沿 → 悬挂凝结收回（回潮，满则溢到邻接空气；溢不完留在 condense）。
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (!isSoilMat(mat[cell]) || condense[cell] <= 1e-8) continue
 			if (hasOpenUnderside(world, x, y, down)) continue
 			const back = condense[cell]
-			condense[cell] = 0
 			const room = Math.max(0, SOIL_CAP - moisture[cell])
 			const toMoist = Math.min(back, room)
 			moisture[cell] += toMoist
 			const rest = back - toMoist
-			if (rest > 1e-8) spillToAir(world, x, y, rest, down)
+			const spilled = rest > 1e-8 ? spillToAir(world, x, y, rest, down) : 0
+			condense[cell] = rest - spilled
 		}
 }

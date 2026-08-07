@@ -417,7 +417,7 @@ Deno.test('fluid: soil condense retracts when gravity leaves the open underside'
 	world.moisture[idx(world, 5, 4)] = 0.2
 	const water0 = totalGridWater(world)
 	applyGravityToWorld(world, { gx: 0, gy: -1, mag: PARTICLE_GRAVITY })
-	for (let i = 0; i < 3; i++) stepSoil(world)
+	for (let stepIndex = 0; stepIndex < 3; stepIndex++) stepSoil(world)
 	assertLess(world.condense[idx(world, 5, 4)], 0.05)
 	assertGreater(world.moisture[idx(world, 5, 4)], 0.2)
 	assertAlmostEquals(totalGridWater(world), water0, 1e-3)
@@ -434,15 +434,16 @@ Deno.test('fluid: soil condense / drip follow sideways gravity', () => {
 	addMoisture(world, 7, 5, 1)
 	applyGravityToWorld(world, { gx: -1, gy: 0, mag: PARTICLE_GRAVITY })
 	const before = totalGridWater(world)
-	let saw = false
-	for (let i = 0; i < 50; i++) {
+	let sawCondenseOrDrip = false
+	for (let stepIndex = 0; stepIndex < 120; stepIndex++) {
 		stepSoil(world)
-		if (world.condense[idx(world, 7, 5)] >= COND_DRAW * 0.5) saw = true
-		if (world.liq[idx(world, 6, 5)] > 0.05) saw = true
+		if (world.condense[idx(world, 7, 5)] >= COND_DRAW * 0.5) sawCondenseOrDrip = true
+		if (world.liq[idx(world, 6, 5)] > 0.05) sawCondenseOrDrip = true
 	}
-	assert(saw)
+	assert(sawCondenseOrDrip)
 	// Must not keep forming / dripping on the old screen-down face.
-	assertLess(world.liq[idx(world, 7, 6)], world.liq[idx(world, 6, 5)] + 0.2)
+	assertAlmostEquals(world.liq[idx(world, 7, 6)], 0, 0.05)
+	assertGreater(world.liq[idx(world, 6, 5)], 0.05)
 	assertAlmostEquals(totalGridWater(world), before, 1e-3)
 })
 
@@ -458,6 +459,66 @@ Deno.test('fluid: condense drip glyph follows gravity, not screen-down', () => {
 	applyGravityToWorld(world, { gx: -1, gy: 0, mag: PARTICLE_GRAVITY })
 	assertEquals(condenseDripSource(world, 4, 5), idx(world, 5, 5))
 	assertEquals(condenseDripSource(world, 5, 6), -1)
+})
+
+Deno.test('fluid: soil condense uses weak gravity-projection face', () => {
+	// ĝ mostly +x with weak +y (w_y < 0.5) — only the weak face is open air.
+	const gx = 0.92
+	const gy = Math.sqrt(1 - gx * gx)
+	assertLess(gy, 0.5)
+
+	const world = createWorld({ width: 12, height: 12, margin: 1, bottomExtra: 1 })
+	clearMaterials(world)
+	setMat(world, 5, 5, MAT.SOLID)
+	// Seal every ortho face except weak-down (5,6) so reclaim only triggers after ĝ flips.
+	setMat(world, 6, 5, MAT.SEAL)
+	setMat(world, 4, 5, MAT.SEAL)
+	setMat(world, 5, 4, MAT.SEAL)
+	applyGravityToWorld(world, { gx, gy, mag: PARTICLE_GRAVITY })
+
+	world.condense[idx(world, 5, 5)] = COND_DRAW + 0.1
+	assertEquals(condenseDripSource(world, 5, 6), idx(world, 5, 5))
+
+	world.condense[idx(world, 5, 5)] = COND_DRIP
+	const water0 = totalGridWater(world)
+	stepSoil(world)
+	assertGreater(world.liq[idx(world, 5, 6)], 0.05)
+	assertAlmostEquals(world.liq[idx(world, 6, 5)], 0, 1e-6)
+	assertAlmostEquals(totalGridWater(world), water0, 1e-3)
+
+	// Still hanging on the weak open underside — no reclaim yet.
+	world.condense[idx(world, 5, 5)] = 0.6
+	world.moisture[idx(world, 5, 5)] = 0.2
+	world.liq[idx(world, 5, 6)] = 0
+	const hangWater = totalGridWater(world)
+	stepSoil(world)
+	assertGreater(world.condense[idx(world, 5, 5)], 0.5)
+	assertAlmostEquals(totalGridWater(world), hangWater, 1e-3)
+
+	// Flip ĝ away from the weak face → sealed downs → reclaim into moisture.
+	applyGravityToWorld(world, { gx: -gx, gy: -gy, mag: PARTICLE_GRAVITY })
+	stepSoil(world)
+	assertLess(world.condense[idx(world, 5, 5)], 0.05)
+	assertGreater(world.moisture[idx(world, 5, 5)], 0.2)
+	assertAlmostEquals(totalGridWater(world), hangWater, 1e-3)
+})
+
+Deno.test('fluid: condense reclaim keeps unsunk mass for later ticks', () => {
+	const world = createWorld({ width: 8, height: 8, margin: 0, bottomExtra: 0 })
+	clearMaterials(world)
+	// Soil fully sealed — reclaim cannot spill; rest must stay in condense.
+	for (let y = 2; y <= 4; y++)
+		for (let x = 2; x <= 4; x++)
+			setMat(world, x, y, MAT.SEAL)
+	setMat(world, 3, 3, MAT.SOLID)
+	world.moisture[idx(world, 3, 3)] = SOIL_CAP
+	world.condense[idx(world, 3, 3)] = 0.55
+	applyGravityToWorld(world, { gx: 0, gy: -1, mag: PARTICLE_GRAVITY })
+	const water0 = totalGridWater(world)
+	stepSoil(world)
+	assertAlmostEquals(world.moisture[idx(world, 3, 3)], SOIL_CAP, 1e-6)
+	assertAlmostEquals(world.condense[idx(world, 3, 3)], 0.55, 1e-6)
+	assertAlmostEquals(totalGridWater(world), water0, 1e-6)
 })
 
 Deno.test('fluid: condensation Matthew effect amplifies the lead with noise', () => {

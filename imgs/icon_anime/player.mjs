@@ -76,7 +76,10 @@ export function createEscHold(holdMs = ESC_HOLD_MS, gapMs = ESC_HOLD_GAP_MS) {
 			fired = true
 			return true
 		},
-		/** @returns {void} */
+		/**
+		 * 清除 start、last、fired，重新允许一次触发。
+		 * @returns {void}
+		 */
 		reset() {
 			start = null
 			last = 0

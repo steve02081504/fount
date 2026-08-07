@@ -547,8 +547,7 @@ export const rainEdgeWeights = (gx, gy) => {
 	// Pedestal / lava edge of the composition — never a rain sky.
 	edges[1].w = 0
 	// Side edges get a small base so left/right can randomly rain under default g.
-	const top = edges[0]
-	if (top.w > 0.5) {
+	if (edges[0].w > 0.5) {
 		edges[2].w = Math.max(edges[2].w, 0.12)
 		edges[3].w = Math.max(edges[3].w, 0.12)
 	}
