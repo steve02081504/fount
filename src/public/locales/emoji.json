@@ -5504,7 +5504,8 @@
 		"locked": "🔒",
 		"toast_title": "🎉🏆❗",
 		"error": {
-			"load_failed": "🏆❌: ${message}"
+			"load_failed": "🏆❌: ${message}",
+			"unlock_failed": "🔓❌: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

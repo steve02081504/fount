@@ -5504,7 +5504,8 @@
 		"locked": "Non débloqué",
 		"toast_title": "Succès débloqués !",
 		"error": {
-			"load_failed": "Échec du chargement des succès : ${message}"
+			"load_failed": "Échec du chargement des succès : ${message}",
+			"unlock_failed": "Échec du déblocage du succès : ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

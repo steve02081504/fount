@@ -44,17 +44,14 @@ export function registerP2pEndpoints(router) {
 	})
 
 	router.get('/api/p2p/network', authenticate, async (req, res) => {
-		void getUserByReq(req)
 		res.status(200).json(loadNetwork())
 	})
 
 	router.get('/api/p2p/denylist', authenticate, async (req, res) => {
-		void getUserByReq(req)
 		res.status(200).json(loadDenylist())
 	})
 
 	router.post('/api/p2p/denylist', authenticate, async (req, res) => {
-		void getUserByReq(req)
 		const body = req.body || {}
 		const scope = String(body.scope || '').trim().toLowerCase()
 		const value = String(body.value || '').trim()
@@ -69,7 +66,6 @@ export function registerP2pEndpoints(router) {
 	})
 
 	router.get('/api/p2p/mailbox/summary', authenticate, async (req, res) => {
-		void getUserByReq(req)
 		const { countMailboxPending } = await import('npm:@steve02081504/fount-p2p/mailbox/store')
 		const pendingCount = await countMailboxPending()
 		res.status(200).json({ pendingCount })

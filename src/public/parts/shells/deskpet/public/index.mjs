@@ -6,8 +6,8 @@ import { applyTheme } from '/scripts/theme/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { createSearchableDropdown } from '/scripts/components/search.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
-import { onServerEvent } from '/scripts/api/server_events.mjs'
-import { getPartList } from '/scripts/api/parts.mjs'
+import { onServerEvent } from '/scripts/endpoints/server_events.mjs'
+import { getPartList } from '/scripts/endpoints/parts.mjs'
 
 import {
 	getRunningPetList,

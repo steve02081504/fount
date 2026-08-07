@@ -5504,7 +5504,8 @@
 		"locked": "Nicht entsperrt",
 		"toast_title": "Erfolge freigeschaltet!",
 		"error": {
-			"load_failed": "Erfolge konnten nicht geladen werden: ${message}"
+			"load_failed": "Erfolge konnten nicht geladen werden: ${message}",
+			"unlock_failed": "Erfolg konnte nicht freigeschaltet werden: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

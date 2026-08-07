@@ -1,7 +1,7 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
-import { unlockAchievement, setDefaultPart, unsetDefaultPart, getAllDefaultParts } from '../../../scripts/api/parts.mjs'
 import { getFiltersFromString, compileFilter, makeSearchable } from '../../../scripts/components/search.mjs'
+import { unlockAchievement, setDefaultPart, unsetDefaultPart, getAllDefaultParts } from '../../../scripts/endpoints/parts.mjs'
 import { renderMarkdown } from '../../../scripts/features/markdown/index.mjs'
 import { mountTemplate, renderTemplate, usingTemplates } from '../../../scripts/features/template.mjs'
 import { geti18n, console } from '../../../scripts/i18n/index.mjs'

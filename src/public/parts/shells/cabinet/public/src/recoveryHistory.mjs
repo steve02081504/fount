@@ -1,7 +1,9 @@
 /**
  * 可恢复删除 / 创建 / 补丁 的撤销历史工厂。
  */
-import { cabinetApi } from './api.mjs'
+import { handleError } from '/scripts/features/errorHandlers.mjs'
+
+import { deleteEntries, finalizeDelete, patchEntry, restoreEntries } from './endpoints.mjs'
 import { currentUnlockToken } from './state.mjs'
 
 /** @returns {Promise<void>} */
@@ -17,9 +19,12 @@ async function refreshEntries() {
  */
 export async function finalizeRecovery(cabinetId, recoveryToken) {
 	if (!recoveryToken) return
-	await cabinetApi('POST', '/entries/finalize-delete', { recovery_token: recoveryToken }, {
-		cabinetId, unlock: undefined,
-	}).catch(() => { })
+	try {
+		await finalizeDelete(recoveryToken, { cabinetId })
+	}
+	catch (error) {
+		handleError('cabinet.bootstrapFailed', {}, error)
+	}
 }
 
 /**
@@ -29,7 +34,7 @@ export async function finalizeRecovery(cabinetId, recoveryToken) {
  * @returns {Promise<{ deleted: string[], recovery_token?: string }>} 删除结果
  */
 export async function recoverableDelete(cabinetId, entryIds, unlock) {
-	return cabinetApi('DELETE', '/entries', { entry_ids: entryIds, recoverable: true }, { cabinetId, unlock })
+	return deleteEntries(entryIds, { cabinetId, unlock })
 }
 
 /**
@@ -39,7 +44,7 @@ export async function recoverableDelete(cabinetId, entryIds, unlock) {
  * @returns {Promise<void>}
  */
 export async function restoreRecovery(cabinetId, recoveryToken, unlock) {
-	await cabinetApi('POST', '/entries/restore', { recovery_token: recoveryToken }, { cabinetId, unlock })
+	await restoreEntries(recoveryToken, { cabinetId, unlock })
 }
 
 /**
@@ -101,38 +106,39 @@ export function makeDeleteHistory(ids, initialToken, cabinetId, unlock = current
 }
 
 /**
- * @param {{ entryId: string, before: object, after: object, label?: string, cabinetId: string }} opts 选项
+ * @param {{ entryId: string, before: object, after: object, label?: string, cabinetId: string, unlock?: string }} opts 选项
  * @returns {import('./commandHistory.mjs').HistoryEntry} 历史
  */
-export function makePatchHistory({ entryId, before, after, label = 'patch', cabinetId }) {
-	const path = `/entries/${encodeURIComponent(entryId)}`
+export function makePatchHistory({ entryId, before, after, label = 'patch', cabinetId, unlock = currentUnlockToken() }) {
+	const unlockToken = unlock
 	return {
 		label,
 		/** 撤销 PATCH：写回修改前快照。 */
 		async undo() {
-			await cabinetApi('PATCH', path, before, { cabinetId })
+			await patchEntry(entryId, before, { cabinetId, unlock: unlockToken })
 			await refreshEntries()
 		},
 		/** 重做 PATCH：应用修改后快照。 */
 		async redo() {
-			await cabinetApi('PATCH', path, after, { cabinetId })
+			await patchEntry(entryId, after, { cabinetId, unlock: unlockToken })
 			await refreshEntries()
 		},
 	}
 }
 
 /**
- * @param {{ entryIds: string[], fromParent: string | null, toParent: string | null, label?: string, cabinetId: string }} opts 选项
+ * @param {{ entryIds: string[], fromParent: string | null, toParent: string | null, label?: string, cabinetId: string, unlock?: string }} opts 选项
  * @returns {import('./commandHistory.mjs').HistoryEntry} 历史
  */
-export function makeMoveHistory({ entryIds, fromParent, toParent, label = 'cut', cabinetId }) {
+export function makeMoveHistory({ entryIds, fromParent, toParent, label = 'cut', cabinetId, unlock = currentUnlockToken() }) {
+	const unlockToken = unlock
 	/**
 	 * @param {string | null} parentId 父
 	 * @returns {Promise<void>}
 	 */
 	async function moveAll(parentId) {
 		for (const entryId of entryIds)
-			await cabinetApi('PATCH', `/entries/${encodeURIComponent(entryId)}`, { parent_id: parentId }, { cabinetId })
+			await patchEntry(entryId, { parent_id: parentId }, { cabinetId, unlock: unlockToken })
 		await refreshEntries()
 	}
 	return {

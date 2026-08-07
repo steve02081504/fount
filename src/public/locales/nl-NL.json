@@ -5504,7 +5504,8 @@
 		"locked": "Niet ontgrendeld",
 		"toast_title": "Prestaties ontgrendeld!",
 		"error": {
-			"load_failed": "Kan prestaties niet laden: ${message}"
+			"load_failed": "Kan prestaties niet laden: ${message}",
+			"unlock_failed": "Kan prestatie niet ontgrendelen: ${error}"
 		},
 		"achievements": {
 			"open_achievements_page": {

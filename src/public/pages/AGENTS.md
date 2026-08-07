@@ -13,10 +13,15 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 
 ## API & Communication
 
-- **`endpoints.mjs`**: Core auth/system APIs (`login`, `register`, `whoami`, `getUserSetting`, etc.).
+- **Global HTTP lives in `scripts/endpoints/`** (`base.mjs`, `parts.mjs`, `registries.mjs`, `server_events.mjs`, `p2p/evfsMedia.mjs`). Import via `/scripts/endpoints/…`. **Named functions only** — no path-string clients. Shell-local REST belongs in that shell’s `public/src/endpoints.mjs` / `endpoints/*` (see shells AGENTS).
+- **No client-side timeouts on backend links.** Do not wrap local `/api/*` (or same-origin backend) `fetch` / WS with `AbortSignal.timeout`, artificial deadlines, or “give up if slow” logic. If the backend hangs or times out, that is a backend bug — fix the server, do not add frontend complexity to paper over it. UI supersession abort (e.g. user navigated away / started a newer enter) is fine; do not pass that signal into backend fetch just to simulate a timeout.
+- **`endpoints/base.mjs`**: Core auth/system APIs (`login`, `register`, `whoami`, `getUserSetting`, etc.).
+- **`endpoints/parts.mjs`**: `runPart`, `loadPart`, `getPartList`, `getPartDetails`, `setDefaultPart`.
+- **`endpoints/server_events.mjs`**: `onServerEvent` — server-sent event bus.
+- **`endpoints/registries.mjs`**: `GET /api/registries/:name` + dynamic `import()`.
+- **`endpoints/p2p/evfsMedia.mjs`**: EVFS GET/PUT (`fetchEvfsFile`, `fetchMediaRef`, `uploadEvfsFile`, `uploadEvfsAttachment`). Pure URL helpers stay Deno-pure in chat `shared/evfsMedia.mjs` (`entityFileUrl`, `mediaRefUrl`).
 - **`debug_log.mjs`**: `debugLog(name, data)` → `debug_logs/`.
-- **`parts.mjs`**: `runPart`, `loadPart`, `getPartList`, `setDefaultPart`.
-- **`server_events.mjs`**: `onServerEvent` — server-sent event bus.
+- **HTML templates**: use `renderTemplate` / `mountTemplate` / `withTemplates` — never `fetch(…html)`.
 
 ## UI & Theming
 
@@ -32,6 +37,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 - **`contentReveal.mjs`**: `wrapSensitiveMediaHtml`, `wrapContentWarningHtml`, `bindContentReveal`.
 - **`translate.mjs`**: `mountTranslationBlock`, `requestTranslation`, `resolveTargetLang` (-> `primaryLocale()`).
 - **`toast.mjs`**: `showToast`, `showToastI18n`.
+- **`errorHandlers.mjs`**: `handleError(i18nKey, toastParams?)` returns a `.catch` closure (toast + console + Sentry). Immediate form: `handleError(i18nKey, toastParams, error)`. **Only for fount faults** — user mistakes use `showToastI18n` directly. Backend twin: `fount/scripts/errorHandlers.mjs` (`handleError(error, ...extras)`).
 
 ## Rendering & Content
 
@@ -40,7 +46,6 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 - **`markdown/standaloneDocument.mjs`**: `renderMarkdownAsStandaloneDocument` / `wrapStandaloneMarkdownDocument` — offline full HTML for Chat/Social download/share/drag. Filenames from document `<title>` via `fileNameFromHtmlTitle` / `downloadHtmlDocument`.
 - **`sanitizeHtml.mjs`**: `sanitizePermissiveHtml` — rich displayName HTML minus script / `style` / `on*` / dangerous URLs. `scrubHtmlActivePayload(string|root)` — string → `<template>` scrub → `DocumentFragment`; DOM root → in-place; strips `on*` / all `srcset` / unsafe URLs (keeps `style`). Prefer the string path over live-`innerHTML` then scrub. `isSafeHtmlUrl` rejects `javascript:` / `data:` / protocol-relative `//…` and `/\…`.
 - **`embedCard.mjs`**: `ALL /api/no-cors?url=` + OG parse; `MutationObserver` hydration; session LRU. Proxy details: [markdown-notes.md](markdown-notes.md#no-cors-proxy).
-- **`registries.mjs`**: `GET /api/registries/:name` + dynamic `import()`.
 - **`emojiPicker.mjs`**: Shared emoji picker (click inserts token; Hub long-press/right-click sends sticker). Section headers / Alt·right-click on the rail open `emojiPackPreview`. Floating placement in `components/floatingPanel.mjs`. Hub mounts via `mountDockedEmojiPicker`.
 - **`emojiPackPreview.mjs`**: Pack preview card (info + join/follow/favorite); `showEmojiPackPreview(anchor, { pack, provider, available })`.
 - **`i18n.mjs`**: Sole public entry. Call `initTranslations()` early. Switch UI language with **`setLanguage(string[])`** (writes preferredLangs + reloads via platform `i18n/base.mjs`). Raw bundle without applying: **`loadLocaleData(string[])`** (fount → `/api/getlocaledata`; Pages → static `locales/*.json`). Prefer these over ad-hoc fetch. `data-i18n`, `geti18n`, `setElementI18n`, `primaryLocale()` (preferredLangs[0] → `main_locale`, default `en-UK`). Use for content locale / translation target — do not hardcode `zh-CN` or bare `navigator.language`. Missing keys → `console.warn('[i18n:missing] …')`; Playwright fixtures hard-fail on that prefix. Locale map slices: `matchLocale` / `getBestLocale` / `pickLocalizedSlice` (`i18n/locale_match.mjs`, same as backend). Params / placeholders: [i18n-notes.md](i18n-notes.md).
@@ -59,4 +64,4 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 
 ## P2P (Browser)
 
-Import via `esm.sh`. Shared primitives live in `shells/chat/public/shared/` (`/parts/shells:chat/shared/…`). Entity HTTP: `/api/parts/shells:chat/{viewer,entities…}`; network: `/api/p2p/{network,denylist,mailbox,federation}`.
+Import via `esm.sh`. Shared primitives live in `shells/chat/public/shared/` (`/parts/shells:chat/shared/…`). EVFS URL helpers (`entityFileUrl` / `mediaRefUrl`) stay Deno-pure in chat `shared/evfsMedia.mjs`; browser fetch/upload is `/scripts/endpoints/p2p/evfsMedia.mjs`. Entity HTTP: `/api/parts/shells:chat/{viewer,entities…}`; network: `/api/p2p/{network,denylist,mailbox,federation}`.

@@ -2,7 +2,7 @@ import { confirmI18n, initTranslations, promptI18n } from '/scripts/i18n/index.m
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { makeSearchable } from '/scripts/components/search.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
-import { unlockAchievement } from '/scripts/api/parts.mjs'
+import { unlockAchievement } from '/scripts/endpoints/parts.mjs'
 import {
 	applyTheme,
 	builtin_themes,
