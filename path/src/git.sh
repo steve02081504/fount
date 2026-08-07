@@ -226,9 +226,9 @@ fount_print_version_branch() {
 	get_i18n 'version.branch.title' 'branch' "$text"
 }
 
-# Print branch, HEAD sha, and whether the current branch tip matches origin.
+# Print branch, HEAD commit, and whether the current branch tip matches origin.
 fount_show_version() {
-	local branch sha remote_sha merge_base
+	local branch commit_hash remote_commit_hash merge_base
 	if ! command -v git &>/dev/null; then
 		print_i18n_yellow 'version.noGit' >&2
 		return 1
@@ -239,13 +239,13 @@ fount_show_version() {
 	fi
 
 	branch=$(invoke_repo_git rev-parse --abbrev-ref HEAD 2>/dev/null) || branch=HEAD
-	sha=$(invoke_repo_git rev-parse HEAD 2>/dev/null) || {
+	commit_hash=$(invoke_repo_git rev-parse HEAD 2>/dev/null) || {
 		print_i18n_yellow 'version.noRepo' >&2
 		return 1
 	}
 
 	fount_print_version_branch "$branch"
-	get_i18n 'version.commit' 'ref' "$sha"
+	get_i18n 'version.commit' 'ref' "$commit_hash"
 
 	if [ -f "$FOUNT_DIR/.noupdate" ]; then
 		get_i18n 'version.autoUpdatePaused'
@@ -260,13 +260,13 @@ fount_show_version() {
 		fount_print_version_status fetchFailed yellow
 		return 1
 	fi
-	remote_sha=$(invoke_repo_git rev-parse "origin/$branch" 2>/dev/null) || {
+	remote_commit_hash=$(invoke_repo_git rev-parse "origin/$branch" 2>/dev/null) || {
 		fount_print_version_status fetchFailed yellow
 		return 1
 	}
-	get_i18n 'version.remote' 'ref' "$remote_sha"
+	get_i18n 'version.remote' 'ref' "$remote_commit_hash"
 
-	if [ "$sha" = "$remote_sha" ]; then
+	if [ "$commit_hash" = "$remote_commit_hash" ]; then
 		fount_print_version_status upToDate green
 		return 0
 	fi
@@ -274,9 +274,9 @@ fount_show_version() {
 		fount_print_version_status diverged yellow
 		return 0
 	}
-	if [ "$merge_base" = "$sha" ]; then
+	if [ "$merge_base" = "$commit_hash" ]; then
 		fount_print_version_status behind yellow
-	elif [ "$merge_base" = "$remote_sha" ]; then
+	elif [ "$merge_base" = "$remote_commit_hash" ]; then
 		fount_print_version_status ahead
 	else
 		fount_print_version_status diverged yellow
