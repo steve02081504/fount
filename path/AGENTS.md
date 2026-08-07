@@ -35,7 +35,7 @@ Same logic is isomorphic across `foo.{ps1,sh}`; platform-only code under `path/s
 
 ## Termux
 
-- `unix/termux.sh`: locale + sensor. `env.sh` on Termux `require unix/termux` then `termux_apply_android_lang` (before i18n) — Android locale chain (`persist.sys.locale` → language/country → `ro.product.locale` → `settings`) via `getprop` / `/system/bin/getprop`, BCP 47 → `zh_CN.UTF-8`, sets `LANG`, unsets `LC_ALL`.
+- `unix/termux.sh`: locale + sensor. `env.sh` on Termux `require unix/termux` then `termux_apply_android_lang` (before i18n) — Android locale chain (`persist.sys.locale` → language/country → `ro.product.locale` → `settings`) via `getprop` / `/system/bin/getprop`, BCP 47 → `zh_CN.UTF-8`, sets `LANG`, unsets `LC_ALL`. `android_locale_to_lang` stops at singleton extensions (`u`/`t`/`x`/…) and keeps the first region only — otherwise `th-TH-u-nu-thai` becomes `th_nu.UTF-8`. Regression in `path/test/git.test.mjs` (`ANDROID_LOCALE_TO_LANG`).
 - `termux_ensure_sensor_api` installs `termux-api` for `termux-sensor` when missing on `fount logo` / `log` / `server`; tracked in `auto_installed_system_packages` for uninstall. Logo gravity details: [imgs/icon_anime/AGENTS.md](../imgs/icon_anime/AGENTS.md).
 
 ## CI smoke

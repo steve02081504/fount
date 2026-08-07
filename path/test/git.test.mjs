@@ -465,6 +465,7 @@ const ANDROID_LOCALE_TO_LANG = [
 	['en-US', 'en_US.UTF-8'],
 	['ja-JP', 'ja_JP.UTF-8'],
 	['en', 'en.UTF-8'],
+	['th-TH-u-nu-thai', 'th_TH.UTF-8'],
 ]
 
 Deno.test('android_locale_to_lang normalizes BCP47 script tags for Termux LANG', async () => {

@@ -64,8 +64,11 @@ android_locale_to_lang() {
 	shift
 	for part in "$@"; do
 		case "$part" in
+		[A-Za-z]) break ;; # singleton extension (u/t/x/…) — stop
 		[A-Za-z][A-Za-z][A-Za-z][A-Za-z]) ;; # script (Hans/Hant/Latn) — skip
-		[A-Za-z][A-Za-z] | [0-9][0-9][0-9]) region="$part" ;;
+		[A-Za-z][A-Za-z] | [0-9][0-9][0-9])
+			[ -z "$region" ] && region="$part"
+			;;
 		esac
 	done
 	if [ -n "$region" ]; then
