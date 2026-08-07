@@ -4307,7 +4307,7 @@
 		},
 		"explore": {
 			"accounts": "Mælt er með reikningi",
-			"loadFailed": "Ekki tókst að hlaða könnunarsíðu: ${error}",
+			"loadFailed": "Ekki tókst að hlaða Kanna: ${error}",
 			"posts": "Nýjustu færslur",
 			"mediaOnly": "Eingöngu fjölmiðla"
 		},
@@ -4607,7 +4607,7 @@
 			"loading": "Hleður…",
 			"notFound": "Færsla er ekki til eða er ekki sýnileg",
 			"loadFailed": "Mistókst að hlaða, vinsamlegast reyndu aftur síðar",
-			"exportMediaFailed": "Ekki tókst að flytja út efni: ${error}",
+			"exportMediaFailed": "Ekki tókst að flytja út fjölmiðil: ${error}",
 			"detailTitle": "Færsla",
 			"back": "Til baka"
 		},

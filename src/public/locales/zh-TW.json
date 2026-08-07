@@ -4374,7 +4374,7 @@
 		},
 		"profile": {
 			"edit": "編輯資料",
-			"loadFailed": "無法載入資料：${error}",
+			"loadFailed": "無法載入個人資料：${error}",
 			"viewPosts": "檢視社交主頁",
 			"settingsBtn": {
 				"aria-label": "社交設定"

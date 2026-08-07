@@ -4375,7 +4375,7 @@
 		},
 		"profile": {
 			"edit": "Chỉnh sửa hồ sơ",
-			"loadFailed": "Không tải được dữ liệu: ${error}",
+			"loadFailed": "Không tải được hồ sơ: ${error}",
 			"viewPosts": "Xem hồ sơ xã hội",
 			"settingsBtn": {
 				"aria-label": "Cài đặt mạng xã hội"
