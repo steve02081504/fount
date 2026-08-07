@@ -157,7 +157,6 @@ Deno.test('git_valid_branch_name accepts normal branch names like lava', async (
 })
 
 Deno.test('git_valid_branch_name rejects glob and ref-unsafe fragments (bash)', async () => {
-	const encoded = INVALID_BRANCH_NAMES.map(encodeBase64)
 	const result = await runBash(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
@@ -169,8 +168,8 @@ Deno.test('git_valid_branch_name rejects glob and ref-unsafe fragments (bash)', 
 				exit 1
 			fi
 		}
-		for b64 in ${encoded.map(encodedName => JSON.stringify(encodedName)).join(' ')}; do
-			reject "$(decode "$b64")"
+		for base64Name in ${INVALID_BRANCH_NAMES.map(encodeBase64).map(base64Name => JSON.stringify(base64Name)).join(' ')}; do
+			reject "$(decode "$base64Name")"
 		done
 		echo ok
 	`)
@@ -186,19 +185,17 @@ Deno.test('git_valid_branch_name bash and PowerShell agree', async () => {
 		set -e
 		. ${JSON.stringify(gitShPath)}
 		decode() { printf '%s' "$1" | base64 -d; }
-		for b64 in ${encoded.map(encodedName => JSON.stringify(encodedName)).join(' ')}; do
-			name=$(decode "$b64")
-			if git_valid_branch_name "$name"; then echo 1; else echo 0; fi
+		for base64Name in ${encoded.map(base64Name => JSON.stringify(base64Name)).join(' ')}; do
+			if git_valid_branch_name "$(decode "$base64Name")"; then echo 1; else echo 0; fi
 		done
 	`)
 	assertEquals(bash.code, 0, bash.stderr || bash.stdout)
 
 	const powerShellResult = await runPwsh(`
 ${await extractPsValidBranchFn()}
-$encoded = @(${encoded.map(encodedName => `'${encodedName}'`).join(', ')})
-foreach ($b64 in $encoded) {
-  $name = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64))
-  $ok = if (git_valid_branch_name $name) { '1' } else { '0' }
+$encoded = @(${encoded.map(base64Name => `'${base64Name}'`).join(', ')})
+foreach ($base64Name in $encoded) {
+  $ok = if (git_valid_branch_name ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($base64Name)))) { '1' } else { '0' }
   Write-Output $ok
 }
 `)
@@ -212,13 +209,11 @@ foreach ($b64 in $encoded) {
 })
 
 Deno.test('git_valid_branch_name rejects control characters (bash and PowerShell)', async () => {
-	const controlBranch = 'a\u0001b'
-	const b64 = encodeBase64(controlBranch)
+	const base64Name = encodeBase64('a\u0001b')
 	const bash = await runBash(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
-		name=$(printf '%s' ${JSON.stringify(b64)} | base64 -d)
-		if git_valid_branch_name "$name"; then
+		if git_valid_branch_name "$(printf '%s' ${JSON.stringify(base64Name)} | base64 -d)"; then
 			echo accepted >&2
 			exit 1
 		fi
@@ -229,8 +224,7 @@ Deno.test('git_valid_branch_name rejects control characters (bash and PowerShell
 
 	const powerShellResult = await runPwsh(`
 ${await extractPsValidBranchFn()}
-$name = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${b64}'))
-if (git_valid_branch_name $name) { Write-Error 'accepted'; exit 1 }
+if (git_valid_branch_name ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${base64Name}')))) { Write-Error 'accepted'; exit 1 }
 Write-Output ok
 `)
 	assertEquals(powerShellResult.code, 0, powerShellResult.stderr || powerShellResult.stdout)
@@ -248,7 +242,7 @@ Deno.test('sourcing git.sh defines git_remote_branch_status', async () => {
 	assertStringIncludes(result.stdout, 'ok')
 })
 
-/** Accepted PR target forms → expected number. */
+/** 合法的 PR 目标形式，对应期望的编号。 */
 const VALID_PR_TARGETS = [
 	['pr/42', '42'],
 	['PR/7', '7'],
@@ -260,7 +254,7 @@ const VALID_PR_TARGETS = [
 	['http://github.com/o/r/pull/3?x=1', '3'],
 ]
 
-/** Rejected PR target forms. */
+/** 被拒绝的 PR 目标形式。 */
 const INVALID_PR_TARGETS = [
 	'',
 	'pr/',
@@ -273,6 +267,8 @@ const INVALID_PR_TARGETS = [
 	'42',
 	'branch',
 	'https://github.com/o/r/issues/1',
+	'https://gitlab.com/o/r/pull/1',
+	'https://github.com/o/pull/1',
 ]
 
 Deno.test('git_parse_pr_number accepts pr/N pull/N #N and GitHub URLs (bash)', async () => {
@@ -290,15 +286,13 @@ Deno.test('git_parse_pr_number accepts pr/N pull/N #N and GitHub URLs (bash)', a
 })
 
 Deno.test('git_parse_pr_number rejects non-PR targets (bash)', async () => {
-	const encoded = INVALID_PR_TARGETS.map(encodeBase64)
 	const result = await runBash(`
 		set -e
 		. ${JSON.stringify(gitShPath)}
 		decode() { printf '%s' "$1" | base64 -d; }
-		for b64 in ${encoded.map(encodedName => JSON.stringify(encodedName)).join(' ')}; do
-			name=$(decode "$b64")
-			if git_parse_pr_number "$name" >/dev/null; then
-				echo "accepted:$name" >&2
+		for base64Name in ${INVALID_PR_TARGETS.map(encodeBase64).map(base64Name => JSON.stringify(base64Name)).join(' ')}; do
+			if git_parse_pr_number "$(decode "$base64Name")" >/dev/null; then
+				echo "accepted:$(decode "$base64Name")" >&2
 				exit 1
 			fi
 		done
@@ -319,19 +313,17 @@ Deno.test('git_parse_pr_number bash and PowerShell agree', async () => {
 		set -e
 		. ${JSON.stringify(gitShPath)}
 		decode() { printf '%s' "$1" | base64 -d; }
-		for b64 in ${encoded.map(encodedName => JSON.stringify(encodedName)).join(' ')}; do
-			name=$(decode "$b64")
-			if out=$(git_parse_pr_number "$name"); then echo "1:$out"; else echo 0; fi
+		for base64Name in ${encoded.map(base64Name => JSON.stringify(base64Name)).join(' ')}; do
+			if out=$(git_parse_pr_number "$(decode "$base64Name")"); then echo "1:$out"; else echo 0; fi
 		done
 	`)
 	assertEquals(bash.code, 0, bash.stderr || bash.stdout)
 
 	const powerShellResult = await runPwsh(`
 ${await extractPsParsePrFn()}
-$encoded = @(${encoded.map(encodedName => `'${encodedName}'`).join(', ')})
-foreach ($b64 in $encoded) {
-  $name = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64))
-  $got = git_parse_pr_number $name
+$encoded = @(${encoded.map(base64Name => `'${base64Name}'`).join(', ')})
+foreach ($base64Name in $encoded) {
+  $got = git_parse_pr_number ([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($base64Name)))
   if ($null -ne $got -and $got -ne '') { Write-Output ("1:" + $got) } else { Write-Output '0' }
 }
 `)

@@ -359,7 +359,7 @@
 				"switchingToBranch": "Mudando para o ramo «${branch}»…",
 				"removedNoUpdate": "`.noupdate` removido; atualizações automáticas reativadas.",
 				"pinningToCommit": "Fixando ao commit `${ref}` e criando `.noupdate`…",
-				"pinningToPullRequest": "Fixando à pull request #${pr} e criando `.noupdate`…",
+				"pinningToPullRequest": "Fixando a pull request #${pr} e criando `.noupdate`…",
 				"createdNoUpdate": "`.noupdate` criado; atualizações automáticas pausadas.",
 				"unknownTarget": "Não foi possível identificar «${target}»: não é um ramo conhecido, um commit nem uma pull request."
 			},

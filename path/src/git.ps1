@@ -75,13 +75,13 @@ function script:git_fetch_remote_branch($Branch) {
 	invoke_repo_git fetch origin --prune "+refs/heads/${Branch}:refs/remotes/origin/${Branch}"
 }
 
-# Return PR number if target names a GitHub pull request (pr/N, pull/N, #N, or …/pull/N URL); else $null.
+# Return PR number if target names a GitHub pull request (pr/N, pull/N, #N, or github.com/…/pull/N URL); else $null.
 function script:git_parse_pr_number($Target) {
 	if ([string]::IsNullOrEmpty($Target)) { return $null }
 	if ($Target -match '^(?i)pr/(\d+)$') { return $Matches[1] }
 	if ($Target -match '^(?i)pull/(\d+)$') { return $Matches[1] }
 	if ($Target -match '^#(\d+)$') { return $Matches[1] }
-	if ($Target -match '^https?://(?:[^/]+/)+pull/(\d+)(?:[/?#].*)?$') { return $Matches[1] }
+	if ($Target -match '^https?://github\.com/[^/]+/[^/]+/pull/(\d+)(?:[/?#].*)?$') { return $Matches[1] }
 	return $null
 }
 

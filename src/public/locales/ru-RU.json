@@ -361,7 +361,7 @@
 				"pinningToCommit": "Закрепление на коммите `${ref}` и создание `.noupdate`…",
 				"pinningToPullRequest": "Закрепление на pull request #${pr} и создание `.noupdate`…",
 				"createdNoUpdate": "Создан `.noupdate`; автоматические обновления приостановлены.",
-				"unknownTarget": "Не удалось распознать «${target}»: это не известная ветка, коммит или pull request."
+				"unknownTarget": "Не удалось распознать «${target}»: это неизвестная ветка, коммит или pull request."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Ярлык на рабочем столе создан по адресу `${path}`.",
