@@ -359,8 +359,9 @@
 				"switchingToBranch": "🔀🌿 '${branch}'…",
 				"removedNoUpdate": "🗑️ `.noupdate` ➡️ ▶️⏫",
 				"pinningToCommit": "📌 `${ref}` ➕ `.noupdate`…",
+				"pinningToPullRequest": "📌 PR#${pr} ➕ `.noupdate`…",
 				"createdNoUpdate": "✨ `.noupdate` ⏸️⏫",
-				"unknownTarget": "❓ '${target}' 🚫🌿🚫📌"
+				"unknownTarget": "❓ '${target}' 🚫🌿🚫📌🚫🔀"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "🖥️✨ `${path}`",

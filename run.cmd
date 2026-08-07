@@ -2,9 +2,8 @@
 @echo off
 goto Batch
 "'
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
-SH_EXEC=$(command -v sh)
-"$SH_EXEC" "$SCRIPT_DIR/run.sh" "$@"
+SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)
+exec "$(command -v sh || echo /bin/sh)" "$SCRIPT_DIR/run.sh" "$@"
 exit $?
 
 :Batch

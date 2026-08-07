@@ -359,8 +359,9 @@
 				"switchingToBranch": "Passaggio al ramo «${branch}»…",
 				"removedNoUpdate": "Rimosso `.noupdate`; aggiornamenti automatici ripristinati.",
 				"pinningToCommit": "Fissaggio al commit `${ref}` e creazione di `.noupdate`…",
+				"pinningToPullRequest": "Fissaggio alla pull request #${pr} e creazione di `.noupdate`…",
 				"createdNoUpdate": "Creato `.noupdate`; aggiornamenti automatici sospesi.",
-				"unknownTarget": "Impossibile identificare «${target}»: non è un ramo noto né un commit."
+				"unknownTarget": "Impossibile identificare «${target}»: non è un ramo noto, un commit né una pull request."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Collegamento sul desktop creato in `${path}`",

@@ -43,9 +43,23 @@ function script:git_fetch_origin {
 	invoke_repo_git fetch origin --prune
 }
 
+# Reject glob metacharacters and other ref-unsafe fragments for single-branch fetch.
+# Aligns with git check-ref-format rules for refs/heads/<name> (plus apostrophe).
+function script:git_valid_branch_name($Branch) {
+	if ([string]::IsNullOrEmpty($Branch) -or $Branch -eq '@') { return $false }
+	if ($Branch -match '[\?\*\[\\:~^\s'']|\.\.|@{|//|[\x00-\x1F\x7F]') { return $false }
+	if ($Branch.StartsWith('/') -or $Branch.EndsWith('/')) { return $false }
+	foreach ($part in $Branch.Split('/')) {
+		if ([string]::IsNullOrEmpty($part)) { return $false }
+		if ($part.StartsWith('.') -or $part.EndsWith('.') -or $part.EndsWith('.lock')) { return $false }
+	}
+	return $true
+}
+
 # 0 = branch exists on origin, 1 = confirmed absent, 2 = network/other error.
 # Only call when a named ref is unknown locally — avoid on the plain-update happy path.
 function script:git_remote_branch_status($Branch) {
+	if (-not (git_valid_branch_name $Branch)) { return 2 }
 	$output = invoke_repo_git ls-remote --heads origin "refs/heads/$Branch" 2>$null
 	if ($LastExitCode -ne 0) { return 2 }
 	if ($output) { return 0 }
@@ -54,7 +68,30 @@ function script:git_remote_branch_status($Branch) {
 
 # One-shot map of a single head into origin/<branch> (does not change remote.origin.fetch).
 function script:git_fetch_remote_branch($Branch) {
+	if (-not (git_valid_branch_name $Branch)) {
+		$global:LastExitCode = 1
+		return
+	}
 	invoke_repo_git fetch origin --prune "+refs/heads/${Branch}:refs/remotes/origin/${Branch}"
+}
+
+# Return PR number if target names a GitHub pull request (pr/N, pull/N, #N, or github.com/…/pull/N URL); else $null.
+function script:git_parse_pr_number($Target) {
+	if ([string]::IsNullOrEmpty($Target)) { return $null }
+	if ($Target -match '^(?i)pr/([0-9]+)$') { return $Matches[1] }
+	if ($Target -match '^(?i)pull/([0-9]+)$') { return $Matches[1] }
+	if ($Target -match '^#([0-9]+)$') { return $Matches[1] }
+	if ($Target -match '^https?://github\.com/[^/]+/[^/]+/pull/([0-9]+)(?:[/?#].*)?$') { return $Matches[1] }
+	return $null
+}
+
+# One-shot map of GitHub pull/<n>/head into origin/pr/<n> (does not widen remote.origin.fetch).
+function script:git_fetch_pull_request($Pr) {
+	if ($Pr -notmatch '^[0-9]+$') {
+		$global:LastExitCode = 1
+		return
+	}
+	invoke_repo_git fetch origin --prune "+refs/pull/${Pr}/head:refs/remotes/origin/pr/${Pr}"
 }
 
 function script:git_backup_uncommitted {

@@ -145,9 +145,9 @@ fount_switch_to_branch() {
 	fi
 }
 
-# Explicit target: branch → track tip & clear .noupdate; commit → detach & create .noupdate.
+# Explicit target: PR → detach at head & .noupdate; branch → track tip & clear .noupdate; commit → detach & .noupdate.
 fount_update_to_ref() {
-	local target="$1" commit remote_status
+	local target="$1" commit remote_status pr_number
 	install_package "git" "git" || return 0
 	if git config --global --get-all safe.directory | grep -q -xF "$FOUNT_DIR"; then : else
 		git config --global --add safe.directory "$FOUNT_DIR"
@@ -160,6 +160,21 @@ fount_update_to_ref() {
 	fi
 
 	invoke_repo_git config core.autocrlf false
+
+	# GitHub pull request tip — pin like a commit (re-run the same command to refresh).
+	if pr_number=$(git_parse_pr_number "$target"); then
+		get_i18n 'update.pinningToPullRequest' 'pr' "$pr_number"
+		if ! git_fetch_pull_request "$pr_number"; then
+			print_i18n_yellow 'git.fetchFailed' >&2
+			print_i18n_yellow 'git.fetchFailedSkippingUpdate' >&2
+			return 1
+		fi
+		git_detach_to_ref "origin/pr/$pr_number" || return 1
+		: >"$FOUNT_DIR/.noupdate"
+		get_i18n 'update.createdNoUpdate'
+		deno_upgrade
+		return
+	fi
 
 	# Known locally / already tracked — refresh that one tip, no ls-remote.
 	if git_ref_exists "origin/$target" || git_ref_exists "refs/heads/$target"; then

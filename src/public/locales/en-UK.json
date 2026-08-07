@@ -354,8 +354,9 @@
 				"switchingToBranch": "Switching to branch '${branch}'…",
 				"removedNoUpdate": "Removed `.noupdate`; automatic updates resumed.",
 				"pinningToCommit": "Pinning to commit `${ref}` and creating `.noupdate`…",
+				"pinningToPullRequest": "Pinning to pull request #${pr} and creating `.noupdate`…",
 				"createdNoUpdate": "Created `.noupdate`; automatic updates paused.",
-				"unknownTarget": "Unrecognised target '${target}': not a known branch or commit."
+				"unknownTarget": "Unrecognised target '${target}': not a known branch, commit, or pull request."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Desktop shortcut created at `${path}`",

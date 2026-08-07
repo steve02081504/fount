@@ -359,8 +359,9 @@
 				"switchingToBranch": "Cambiando a la rama «${branch}»…",
 				"removedNoUpdate": "Se eliminó `.noupdate`; actualizaciones automáticas reactivadas.",
 				"pinningToCommit": "Fijando al commit `${ref}` y creando `.noupdate`…",
+				"pinningToPullRequest": "Fijando a la pull request #${pr} y creando `.noupdate`…",
 				"createdNoUpdate": "Se creó `.noupdate`; actualizaciones automáticas suspendidas.",
-				"unknownTarget": "No se puede identificar «${target}»: no es una rama conocida ni un commit."
+				"unknownTarget": "No se puede identificar «${target}»: no es una rama conocida, un commit ni una pull request."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Acceso directo de escritorio creado en `${path}`",

@@ -359,8 +359,9 @@
 				"switchingToBranch": "正在切换到分支「${branch}」…",
 				"removedNoUpdate": "已删除 `.noupdate`，自动更新已恢复。",
 				"pinningToCommit": "正在固定到提交 `${ref}`，并创建 `.noupdate`…",
+				"pinningToPullRequest": "正在固定到拉取请求 #${pr}，并创建 `.noupdate`…",
 				"createdNoUpdate": "已创建 `.noupdate`，自动更新已暂停。",
-				"unknownTarget": "无法识别「${target}」：不是已知分支，也不是提交。"
+				"unknownTarget": "无法识别「${target}」：不是已知分支、提交或拉取请求。"
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "已在 `${path}` 创建桌面快捷方式",

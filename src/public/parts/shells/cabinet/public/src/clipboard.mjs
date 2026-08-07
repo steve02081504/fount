@@ -5,16 +5,14 @@
 const STORAGE_KEY = 'fount-cabinet-clipboard'
 const CHANNEL_NAME = 'fount-cabinet-clipboard'
 
-/** @type {BroadcastChannel | null} */
-let channel = null
+/** @type {BroadcastChannel | undefined} */
+let channel
 
 /**
- * @returns {BroadcastChannel | null} 频道；不支持时为 null
+ * @returns {BroadcastChannel} 懒创建频道
  */
 function getChannel() {
-	if (typeof BroadcastChannel === 'undefined') return null
-	if (!channel) channel = new BroadcastChannel(CHANNEL_NAME)
-	return channel
+	return channel ??= new BroadcastChannel(CHANNEL_NAME)
 }
 
 /**
@@ -50,7 +48,7 @@ export function readClipboard() {
 export function writeClipboard(value) {
 	if (!value) {
 		sessionStorage.removeItem(STORAGE_KEY)
-		getChannel()?.postMessage({ type: 'clear' })
+		getChannel().postMessage({ type: 'clear' })
 		return
 	}
 	const payload = {
@@ -61,7 +59,7 @@ export function writeClipboard(value) {
 		at: value.at || Date.now(),
 	}
 	sessionStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
-	getChannel()?.postMessage({ type: 'set', payload })
+	getChannel().postMessage({ type: 'set', payload })
 }
 
 /**
@@ -78,7 +76,7 @@ export function subscribeClipboard(listener) {
 		listener(readClipboard())
 	}
 	window.addEventListener('storage', onStorage)
-	const ch = getChannel()
+	const broadcast = getChannel()
 	/**
 	 * @param {MessageEvent} event 消息
 	 * @returns {void}
@@ -87,9 +85,9 @@ export function subscribeClipboard(listener) {
 		if (event.data?.type === 'clear') listener(null)
 		else if (event.data?.type === 'set') listener(event.data.payload || null)
 	}
-	ch?.addEventListener('message', onMessage)
+	broadcast.addEventListener('message', onMessage)
 	return () => {
 		window.removeEventListener('storage', onStorage)
-		ch?.removeEventListener('message', onMessage)
+		broadcast.removeEventListener('message', onMessage)
 	}
 }

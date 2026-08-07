@@ -16,12 +16,21 @@ git_fetch_origin() {
 }
 
 # Reject glob metacharacters and other ref-unsafe fragments for single-branch fetch.
+# Aligns with git check-ref-format rules for refs/heads/<name> (plus apostrophe).
 git_valid_branch_name() {
-	local branch="$1"
+	local branch="$1" part
 	[[ -n "$branch" && "$branch" != @ ]] || return 1
 	case "$branch" in
-	*'?'*|*'*'*|*'['*|*'\\'*|*':'*|*'~'*|*'^'*|*'..'*|*[[:space:]]*|/'*|*'/' ) return 1 ;;
+	*\?*|*\**|*\[*|*\\*|*:*|*~*|*^*|*..*|*[[:cntrl:]]*|*[[:space:]]*|*"'"*) return 1 ;;
 	esac
+	[[ "$branch" != *'@{'* ]] || return 1
+	[[ "$branch" != /* && "$branch" != */ && "$branch" != *//* ]] || return 1
+	local IFS='/'
+	# shellcheck disable=SC2086 # intentional IFS split on /
+	for part in $branch; do
+		[[ -n "$part" && "$part" != .* && "$part" != *.lock ]] || return 1
+		[[ "$part" != *. ]] || return 1
+	done
 	return 0
 }
 
@@ -40,6 +49,31 @@ git_fetch_remote_branch() {
 	local branch="$1"
 	git_valid_branch_name "$branch" || return 1
 	invoke_repo_git fetch origin --prune "+refs/heads/${branch}:refs/remotes/origin/${branch}"
+}
+
+# Echo PR number if target names a GitHub pull request (pr/N, pull/N, #N, or github.com/…/pull/N URL); else return 1.
+git_parse_pr_number() {
+	local target="$1" number=
+	[[ -n "$target" ]] || return 1
+	if [[ "$target" =~ ^[Pp][Rr]/([0-9]+)$ ]]; then
+		number="${BASH_REMATCH[1]}"
+	elif [[ "$target" =~ ^[Pp][Uu][Ll][Ll]/([0-9]+)$ ]]; then
+		number="${BASH_REMATCH[1]}"
+	elif [[ "$target" =~ ^#([0-9]+)$ ]]; then
+		number="${BASH_REMATCH[1]}"
+	elif [[ "$target" =~ ^https?://github\.com/[^/]+/[^/]+/pull/([0-9]+)([/?#].*)?$ ]]; then
+		number="${BASH_REMATCH[1]}"
+	else
+		return 1
+	fi
+	printf '%s\n' "$number"
+}
+
+# One-shot map of GitHub pull/<n>/head into origin/pr/<n> (does not widen remote.origin.fetch).
+git_fetch_pull_request() {
+	local pr="$1"
+	[[ "$pr" =~ ^[0-9]+$ ]] || return 1
+	invoke_repo_git fetch origin --prune "+refs/pull/${pr}/head:refs/remotes/origin/pr/${pr}"
 }
 
 git_backup_uncommitted() {

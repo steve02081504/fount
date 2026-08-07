@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
+SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd -P)
 
 # 1. 如果参数为空，则用默认参数打开 fount
 if [ "$#" -eq 0 ]; then

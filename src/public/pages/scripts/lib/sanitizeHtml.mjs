@@ -139,22 +139,13 @@ export function sanitizeHtmlTree(root) {
 }
 
 /**
- * 消毒 HTML 字符串；无 document 时退化为剥尖括号（测试外路径不应发生）。
+ * 消毒 HTML 字符串（需要 document / template）。
  * @param {string | null | undefined} html 原文（可含安全标签）
  * @returns {string} 消毒后 HTML
  */
 export function sanitizePermissiveHtml(html) {
 	const raw = String(html ?? '')
 	if (!raw) return ''
-	if (typeof document === 'undefined')
-		return raw.replace(/[<>&"']/g, ch => ({
-			'<': '&lt;',
-			'>': '&gt;',
-			'&': '&amp;',
-			'"': '&quot;',
-			'\'': '&#39;',
-		})[ch])
-
 	const content = parseHtmlInTemplate(raw)
 	sanitizeHtmlTree(content)
 	const holder = document.createElement('div')

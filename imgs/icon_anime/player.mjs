@@ -1,5 +1,5 @@
 /**
- * ASCII 动画播放器 — 循环播放、Ctrl+C 中止、TUI、终端缩放、
+ * ASCII 动画播放器 — 循环播放、Ctrl+C / 长按 ESC 中止、TUI、终端缩放、
  * SGR 鼠标（左/右键按下 / 拖拽 / 释放 → onPointer）。
  * 终端可用性只在此层判断；无进程生命周期，由 session 管理。
  */
@@ -46,12 +46,45 @@ const MOUSE_OFF = '\x1b[?1006l\x1b[?1002l\x1b[?1000l'
  * @typedef {{ x: number, y: number, left?: boolean, right?: boolean }} PointerEvent
  */
 
+/** 连续 ESC（键重复）达到此时长则中止。 */
+export const ESC_HOLD_MS = 4000
+/** ESC 重复间隔超过此时长则重新计时（视为松开）。 */
+export const ESC_HOLD_GAP_MS = 500
+
 /**
- * 将一块 stdin 数据喂入 SGR 鼠标 / Ctrl+C 解析器。
+ * ESC 长按计时：靠终端键重复确认仍在按住；无松开事件。
+ * @param {number} [holdMs] 触发中止的持续时长
+ * @param {number} [gapMs] 允许的最大重复间隔
+ * @returns {{ note: (now: number) => boolean, reset: () => void }} note 在达到 holdMs 时返回 true
+ */
+export function createEscHold(holdMs = ESC_HOLD_MS, gapMs = ESC_HOLD_GAP_MS) {
+	/** @type {number | null} */
+	let start = null
+	let last = 0
+	return {
+		/**
+		 * @param {number} now 单调时钟（ms）
+		 * @returns {boolean} 是否已连续按住满 holdMs
+		 */
+		note(now) {
+			if (start == null || now - last > gapMs) start = now
+			last = now
+			return now - start >= holdMs
+		},
+		/** @returns {void} */
+		reset() {
+			start = null
+			last = 0
+		},
+	}
+}
+
+/**
+ * 将一块 stdin 数据喂入 SGR 鼠标 / Ctrl+C / ESC 解析器。
  * 末尾不完整的 CSI 作为 carry 缓冲返回。
  * @param {string} carry 先前不完整字节（latin1）
  * @param {Buffer | Uint8Array} chunk stdin 块
- * @param {{ abort?: () => void, onPointer?: (pointerEvent: PointerEvent) => void }} sink Ctrl+C + 指针接收器
+ * @param {{ abort?: () => void, onPointer?: (pointerEvent: PointerEvent) => void, onEsc?: () => void }} sink Ctrl+C / ESC / 指针接收器
  * @returns {string} 新 carry
  */
 export const consumeStdin = (carry, chunk, sink = {}) => {
@@ -70,6 +103,9 @@ export const consumeStdin = (carry, chunk, sink = {}) => {
 		}
 		if (cursor + 1 >= text.length) break
 		if (text[cursor + 1] !== '[') {
+			// Bare ESC (not CSI): only ESC-ESC counts as ESC key / hold.
+			// ESC + other char (e.g. Alt+x) consumes ESC as Alt prefix — no onEsc.
+			if (text[cursor + 1] === '\x1b') sink.onEsc?.()
 			cursor++
 			continue
 		}
@@ -163,8 +199,9 @@ export function start({ onResize, onPointer, onUserAbort } = {}) {
 
 	process.stdin.setRawMode(true)
 	process.stdin.resume()
+	const escHold = createEscHold()
 	/**
-	 * Ctrl+C 中止；SGR 鼠标 → onPointer。
+	 * Ctrl+C / 长按 ESC 中止；SGR 鼠标 → onPointer。
 	 * @param {Buffer} buf stdin 块
 	 * @returns {void}
 	 */
@@ -172,6 +209,12 @@ export function start({ onResize, onPointer, onUserAbort } = {}) {
 		stdinCarry = consumeStdin(stdinCarry, buf, {
 			/** Ctrl+C：中止播放并通知会话。 */
 			abort: () => {
+				abort()
+				onUserAbort?.()
+			},
+			/** ESC 键重复：连续按住满 ESC_HOLD_MS 则中止。 */
+			onEsc: () => {
+				if (!escHold.note(performance.now())) return
 				abort()
 				onUserAbort?.()
 			},

@@ -359,8 +359,9 @@
 				"switchingToBranch": "Skiptir yfir á grein '${branch}'…",
 				"removedNoUpdate": "`.noupdate` fjarlægt; sjálfvirkar uppfærslur hafnar aftur.",
 				"pinningToCommit": "Festir á commit `${ref}` og býr til `.noupdate`…",
+				"pinningToPullRequest": "Festir á pull request #${pr} og býr til `.noupdate`…",
 				"createdNoUpdate": "`.noupdate` búið til; sjálfvirkar uppfærslur í bið.",
-				"unknownTarget": "Get ekki borið kennsl á '${target}': ekki þekkt grein né commit."
+				"unknownTarget": "Get ekki borið kennsl á '${target}': ekki þekkt grein, commit né pull request."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Flýtileið á skjáborði búin til á `${path}`",

@@ -12,9 +12,8 @@ const ANALYZE_SCRIPT = join(dirname(fileURLToPath(import.meta.url)), 'tools/anal
  * @param {string} snapshotPath 快照绝对路径
  */
 export function scheduleHeapSnapshotAnalysis(snapshotPath) {
-	const deno = typeof Deno !== 'undefined' ? Deno.execPath() : 'deno'
 	const reportPath = `${snapshotPath}.analysis.txt`
-	spawn(deno, [
+	spawn(Deno.execPath(), [
 		'run', '--allow-read', '--allow-write',
 		'--v8-flags=--max-old-space-size=12288',
 		'-c', join(REPO_ROOT, 'deno.json'),

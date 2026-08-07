@@ -1,6 +1,5 @@
 /**
- * 【文件】public/hub/messages/render/embed.mjs
- * 【职责】消息气泡离屏 embed / 未信任 Markdown 守卫。
+ * 消息气泡离屏 embed / 未信任 Markdown 守卫。
  */
 import {
 	attachOffscreenEmbedGuard,
@@ -16,8 +15,7 @@ const embedGuardDisposers = new WeakMap()
  * @returns {void}
  */
 export function disposeEmbedGuard(bubble) {
-	const prev = embedGuardDisposers.get(bubble)
-	if (prev) prev()
+	embedGuardDisposers.get(bubble)?.()
 	embedGuardDisposers.delete(bubble)
 }
 
@@ -43,14 +41,12 @@ export function wireBubbleOffscreenGuards(bubble, trusted, onUntrustedReveal) {
 }
 
 /**
- * §17：离屏时挂起 iframe/video src，减轻后台嵌入。
+ * 离屏时挂起 iframe/video src，减轻后台嵌入。
  * @param {HTMLElement} container 消息列表根
  * @returns {void}
  */
 export function wireMessageEmbedGuards(container) {
-	if (!(container instanceof HTMLElement)) return
 	for (const bubble of container.querySelectorAll('.message-content')) {
-		if (!(bubble instanceof HTMLElement)) continue
 		disposeEmbedGuard(bubble)
 		embedGuardDisposers.set(bubble, attachOffscreenEmbedGuard(bubble))
 	}

@@ -359,8 +359,9 @@
 				"switchingToBranch": "Basculement vers la branche « ${branch} »…",
 				"removedNoUpdate": "`.noupdate` supprimé ; mises à jour automatiques réactivées.",
 				"pinningToCommit": "Fixation au commit `${ref}` et création de `.noupdate`…",
+				"pinningToPullRequest": "Fixation sur la pull request n° ${pr} et création de `.noupdate`…",
 				"createdNoUpdate": "`.noupdate` créé ; mises à jour automatiques suspendues.",
-				"unknownTarget": "Impossible d'identifier « ${target} » : ni branche connue ni commit."
+				"unknownTarget": "Impossible d'identifier « ${target} » : ni branche connue, ni commit, ni pull request."
 			},
 			"shortcut": {
 				"desktopShortcutCreated": "Raccourci sur le bureau créé à `${path}`",

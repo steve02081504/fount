@@ -5,7 +5,7 @@ test.describe('GitHub Pages smoke', () => {
 		await page.goto(`${baseUrl}/`, { waitUntil: 'domcontentloaded' })
 		await expect(page).toHaveURL(/\/wait\/install\/?/, { timeout: 30_000 })
 		await expect(page.locator('#launchButton')).toBeVisible({ timeout: 30_000 })
-		// 等 hero 入场结束（产品侧入场前 aria-hidden，结束后才对 AT 开放）
+		// 等 hero 视觉入场结束（h1 入场前即可 AT 可达；此处断言产品动画落定）
 		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
 	})
 

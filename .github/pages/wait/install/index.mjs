@@ -101,8 +101,6 @@ async function playHeroAnimation() {
 	const applyFinalState = () => {
 		heroOverlay.classList.add('visible-after-intro')
 		heroContent.classList.add('visible-after-intro')
-		heroOverlay.removeAttribute('aria-hidden')
-		heroContent.removeAttribute('aria-hidden')
 		heroElement.classList.add('bg-image-loaded')
 		heroAnimationBg.remove()
 		document.body.classList.remove('scroll-lock')

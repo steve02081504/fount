@@ -22,6 +22,7 @@ write_taskbar_progress() {
 		printf "\033]9;4;3\007"
 	fi
 }
+# shellcheck disable=SC2329 # cleanup中有调用
 write_taskbar_progress_clear() { taskbar_progress_enabled && printf "\033]9;4;0\007" || true; }
 write_taskbar_progress_error() { taskbar_progress_enabled && printf "\033]9;4;2;100\007" || true; }
 
@@ -63,6 +64,7 @@ if [[ -d "/data/data/com.termux" ]]; then
 fi
 
 # 确保在脚本退出时，状态服务器进程能被清理，并清除任务栏进度
+# shellcheck disable=SC2329 # trap中有调用
 cleanup() {
 	if [[ -n "$STATUS_SERVER_PID" ]]; then
 		kill "$STATUS_SERVER_PID" 2>/dev/null
@@ -340,11 +342,13 @@ else
 		xattr -dr com.apple.quarantine "$FOUNT_DIR" 2>/dev/null || true
 	fi
 	find "$FOUNT_DIR" -type f \( -name "*.sh" -o -name "*.ps1" -o -name "*.fish" -o -name "*.zsh" -o -name "*.bat" \) -exec chmod +x {} +
-	find "$FOUNT_DIR/path" -type f ! -name 'desktop.ini' ! -iname 'agents.md' -exec chmod +x {} +
-	chmod -x "$FOUNT_DIR/path/desktop.ini" 2>/dev/null || true
+	find "$FOUNT_DIR/path" -maxdepth 1 -type f ! -name 'desktop.ini' ! -iname 'agents.md' -exec chmod +x {} +
+	[ -f "$FOUNT_DIR/path/desktop.ini" ] && chmod -x "$FOUNT_DIR/path/desktop.ini"
 	for agentsManifestPath in "$FOUNT_DIR/path/AGENTS.md" "$FOUNT_DIR/path/agents.md"; do
 		[ -f "$agentsManifestPath" ] && chmod -x "$agentsManifestPath"
 	done
+	[ -f "$FOUNT_DIR/gradlew" ] && chmod +x "$FOUNT_DIR/gradlew"
+	[ -f "$FOUNT_DIR/gradlew.bat" ] && chmod +x "$FOUNT_DIR/gradlew.bat"
 	write_taskbar_progress 70
 
 	echo -e "${C_GREEN}fount installation complete.${C_RESET}"
