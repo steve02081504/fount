@@ -4323,7 +4323,7 @@
 			"live_started": "${author} hat mit dem Live-Streaming begonnen",
 			"view": "Anzeigen",
 			"markAllRead": "Alle als gelesen markieren",
-			"loadFailed": "Das Laden der Benachrichtigung ist fehlgeschlagen: ${error}"
+			"loadFailed": "Benachrichtigungen konnten nicht geladen werden: ${error}"
 		},
 		"saved": {
 			"all": "Alle",
@@ -4374,7 +4374,7 @@
 		},
 		"profile": {
 			"edit": "Profil bearbeiten",
-			"loadFailed": "Daten konnten nicht geladen werden: ${error}",
+			"loadFailed": "Profil konnte nicht geladen werden: ${error}",
 			"viewPosts": "Social-Profil anzeigen",
 			"settingsBtn": {
 				"aria-label": "Social-Einstellungen"
@@ -4443,7 +4443,7 @@
 		"live": {
 			"empty": "Noch keine Live-Übertragung",
 			"loadFailed": "Live-Übertragung konnte nicht geladen werden: ${error}",
-			"joinFailed": "Liveübertragungsverbindung fehlgeschlagen: ${error}",
+			"joinFailed": "Verbindung zur Live-Übertragung fehlgeschlagen: ${error}",
 			"viewers": "${n} Leute haben zugesehen",
 			"likes": "${n} Gefällt mir",
 			"local": "Lokal",

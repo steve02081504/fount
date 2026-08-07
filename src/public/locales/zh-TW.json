@@ -4322,7 +4322,7 @@
 			"live_started": "${author} 開始直播了",
 			"view": "檢視",
 			"markAllRead": "全部標為已讀",
-			"loadFailed": "通知載入失敗：${error}"
+			"loadFailed": "無法載入通知：${error}"
 		},
 		"saved": {
 			"all": "全部",
@@ -4373,7 +4373,7 @@
 		},
 		"profile": {
 			"edit": "編輯資料",
-			"loadFailed": "載入資料失敗：${error}",
+			"loadFailed": "無法載入資料：${error}",
 			"viewPosts": "檢視社交主頁",
 			"settingsBtn": {
 				"aria-label": "社交設定"
@@ -4441,8 +4441,8 @@
 		},
 		"live": {
 			"empty": "暫無直播",
-			"loadFailed": "直播載入失敗：${error}",
-			"joinFailed": "直播連線失敗：${error}",
+			"loadFailed": "無法載入直播：${error}",
+			"joinFailed": "無法連接直播：${error}",
 			"viewers": "${n} 人觀看",
 			"likes": "${n} 贊",
 			"local": "本機",

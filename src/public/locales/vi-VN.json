@@ -4442,8 +4442,8 @@
 		},
 		"live": {
 			"empty": "Chưa có phát sóng trực tiếp",
-			"loadFailed": "Không tải được chương trình phát sóng trực tiếp: ${error}",
-			"joinFailed": "Kết nối phát sóng trực tiếp không thành công: ${error}",
+			"loadFailed": "Không tải được phát trực tiếp: ${error}",
+			"joinFailed": "Không thể kết nối phát trực tiếp: ${error}",
 			"viewers": "${n} người đã xem",
 			"likes": "${n} Thích",
 			"local": "máy cục bộ",

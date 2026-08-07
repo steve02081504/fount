@@ -4442,7 +4442,7 @@
 		},
 		"live": {
 			"empty": "Nog geen live-uitzending",
-			"loadFailed": "Live-uitzending kan niet worden geladen: ${error}",
+			"loadFailed": "Live-uitzending laden mislukt: ${error}",
 			"joinFailed": "Verbinding met live-uitzending mislukt: ${error}",
 			"viewers": "${n} mensen keken",
 			"likes": "${n} Vind ik leuk",

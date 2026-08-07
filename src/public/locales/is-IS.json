@@ -4443,7 +4443,7 @@
 		"live": {
 			"empty": "Engin bein útsending ennþá",
 			"loadFailed": "Ekki tókst að hlaða beinni útsendingu: ${error}",
-			"joinFailed": "Tenging í beinni útsendingu mistókst: ${error}",
+			"joinFailed": "Mistókst að tengjast beinni útsendingu: ${error}",
 			"viewers": "${n} manns horfðu á",
 			"likes": "${n} Líkar við",
 			"local": "Staðvært",
