@@ -178,7 +178,7 @@ Deno.test('resizeAnimState: preserves terrain and weathers only newly exposed so
 			if (!fromOld && state.terrain.solid[i] && state.world.moisture[i] > 0)
 				wetAddedSoil++
 		}
-	assertGreater(wetAddedSoil, 0)
+	assertEquals(wetAddedSoil, 0)
 })
 
 Deno.test('renderGrid: fixed height/width', () => {

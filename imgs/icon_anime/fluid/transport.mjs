@@ -6,7 +6,7 @@
 import { neighborCoord } from './edges.mjs'
 import { pressureMove, sheetMove, applyTransfer, viscGain } from './flow.mjs'
 import { pressureAt } from './gas.mjs'
-import { MAT, LIQ_DRAW, LIQ_FULL, T_AMB, isLiquidBarrier } from './mat.mjs'
+import { MAT, LIQ_DRAW, LIQ_FULL, T_AMB, P_ATM, isLiquidBarrier } from './mat.mjs'
 import {
 	scratch, inWorld, markAirIfDrawCrossed,
 	gravityDownWeights, strongestDown,
@@ -166,23 +166,30 @@ export const stepPhaseTransport = (world, phase) => {
 				const w = down.w[i]
 				const nb = neighborCoord(world, x, y, dx, dy)
 				const crossed = nb.wrappedFrac > 0 || nb.outFrac > 0
-				const target = nb.y * W + nb.x
 				let dstMass = 0
 				let room = LIQ_FULL
+				let pDst = P_ATM
 				if (!crossed) {
+					const target = nb.y * W + nb.x
 					if (!phase.canEnter(world, nb.x, nb.y, target)) continue
 					dstMass = mass[target]
 					room = LIQ_FULL - dstMass
 					if (room <= 0) continue
+					pDst = pressureAt(world, nb.x, nb.y) + phase.rhoAt(world, target) * dstMass
 				}
-				else if (nb.wrappedFrac > 0 && phase.canEnter(world, nb.x, nb.y, target)) {
-					dstMass = mass[target]
-					room = LIQ_FULL - dstMass
+				else if (nb.wrappedFrac > 0) {
+					const target = nb.y * W + nb.x
+					if (phase.canEnter(world, nb.x, nb.y, target)) {
+						dstMass = mass[target]
+						room = LIQ_FULL - dstMass
+						pDst = pressureAt(world, nb.x, nb.y) + phase.rhoAt(world, target) * dstMass
+					}
+					else if (nb.outFrac <= 0) continue
+					// else: wrap target blocked — treat remaining outFrac as ambient sink
 				}
 				else if (nb.outFrac <= 0) continue
+				// pure out: pDst stays P_ATM, room stays LIQ_FULL — never index OOB cells
 
-				const rhoDst = phase.rhoAt(world, target)
-				const pDst = pressureAt(world, nb.x, nb.y) + rhoDst * dstMass
 				let move = pressureMove(pSrc, pDst, mass[cell] * w, room, visc)
 				if (move < 0.01 && !crossed && dstMass < mass[cell]) {
 					const gain = viscGain(visc)

@@ -108,8 +108,8 @@ const stepEdgeExchange = (world, roles) => {
 					world.airDirty = true
 					world.gasGeomDirty = true
 				}
-				const before = melt[cell]
-				melt[cell] = Math.min(LIQ_FULL, Math.max(melt[cell], inject))
+				const before = Number.isFinite(melt[cell]) ? melt[cell] : 0
+				melt[cell] = Math.min(LIQ_FULL, Math.max(before, inject))
 				temp[cell] = T_MAX
 				markAirIfMeltDrawCrossed(world, before, melt[cell])
 			}

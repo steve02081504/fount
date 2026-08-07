@@ -2,21 +2,42 @@
  * 重力 / 出雨边 / 岩浆边界 / 热力相变 测试。
  */
 /* global Deno */
-import { assertAlmostEquals, assertEquals, assertGreater, assertLess } from 'jsr:@std/assert'
+import { assert, assertAlmostEquals, assertEquals, assertGreater, assertLess } from 'jsr:@std/assert'
 
 import {
-	createWorld, addMelt, setMat, stepFluid, stepThermal, stepBoundary,
+	createWorld, addMelt, setMat, stepFluid, stepThermal, stepBoundary, stepSoil,
 	stepParticles, spawnParticle, MAT, LIQ_DRAW, T_MAX, T_LIQUIDUS, T_SOLIDUS,
 	LAVA_ONSET_EXPOSURE, rhoOf, viscOf, SUBSTANCE, totalMelt, applyGravityToWorld,
 	neighborCoord, regurgitateTemp, clearMaterials, EDGE_TOP, EDGE_BOTTOM, EDGE_LEFT,
-	pressureAt, liquidPressureAt, hydraulicPhi, gravityDepth,
-	totalWorldWater, addLiquid, labelAirRegions, totalSealedGas,
+	pressureAt, liquidPressureAt, hydraulicPhi, gravityDepth, idx,
+	totalWorldWater, totalGridWater, addLiquid, labelAirRegions, totalSealedGas,
 } from '../fluid/index.mjs'
 import {
 	mapSensorToScreen, defaultGravity,
 	BASE_PARTICLE_G,
 } from '../gravity.mjs'
 import { rainEdgeWeights, pickRainEdge } from '../scene.mjs'
+
+/**
+ * 关闭底层岩浆：清曝露与熔岩，避免汇边注岩浆 / 抹水干扰水量。
+ * @param {import('../fluid/world.mjs').FluidWorld} world 世界
+ */
+const disableLava = (world) => {
+	world.boundary.exposure.fill(0)
+	world.melt.fill(0)
+	world.temp.fill(0)
+}
+
+/**
+ * 游离液体总量。
+ * @param {import('../fluid/world.mjs').FluidWorld} world 世界
+ * @returns {number} 总量
+ */
+const totalFreeLiquid = (world) => {
+	let sum = 0
+	for (let i = 0; i < world.liq.length; i++) sum += world.liq[i]
+	return sum
+}
 
 Deno.test('gravity: mapSensorToScreen upright phone → screen down', () => {
 	// Accelerometer-style: upright y≈+g (Android / GravitySensor / DeviceMotion)
@@ -102,6 +123,74 @@ Deno.test('lava: inverted gravity — quiet then onset on new down edge (top)', 
 	}
 	assertGreater(topMelt, bottomMelt)
 	assertGreater(world.boundary.exposure[EDGE_TOP], LAVA_ONSET_EXPOSURE - 1)
+})
+
+Deno.test('lava: inverted gravity — stepFluid keeps finite melt after onset', () => {
+	// Real-time path includes melt transport; OOB sink must not NaN the field.
+	const world = createWorld({ width: 10, height: 10, margin: 0, bottomExtra: 0 })
+	clearMaterials(world)
+	applyGravityToWorld(world, { gx: 0, gy: -1, mag: BASE_PARTICLE_G })
+	for (let stepIndex = 0; stepIndex < LAVA_ONSET_EXPOSURE + 8; stepIndex++)
+		stepFluid(world, { forceWind: 0 })
+	const melt = totalMelt(world)
+	assert(Number.isFinite(melt), `melt must be finite, got ${melt}`)
+	assertGreater(melt, 0.1)
+	assertGreater(world.boundary.exposure[EDGE_TOP], LAVA_ONSET_EXPOSURE - 1)
+	let topMelt = 0
+	for (let column = 0; column < world.worldW; column++) topMelt += world.melt[column]
+	assertGreater(topMelt, 0.05)
+})
+
+Deno.test('soil: inverted land does not mint water beyond dripped input (lava off)', () => {
+	// Dry slab + known drip → flip ĝ; free liquid that leaves the soil ≤ dripped mass.
+	const world = createWorld({ width: 14, height: 12, margin: 0, bottomExtra: 0 })
+	clearMaterials(world)
+	for (let x = 3; x <= 10; x++)
+		for (let y = 8; y <= 11; y++)
+			setMat(world, x, y, MAT.SOLID)
+
+	let dripped = 0
+	for (let x = 3; x <= 10; x++)
+		dripped += addLiquid(world, x, 7, 0.85)
+	for (let stepIndex = 0; stepIndex < 40; stepIndex++) stepSoil(world)
+	assertGreater(totalGridWater(world) - totalFreeLiquid(world), 1)
+
+	applyGravityToWorld(world, { gx: 0, gy: -1, mag: BASE_PARTICLE_G })
+	let maxFree = 0
+	let maxPoured = 0
+	for (let stepIndex = 0; stepIndex < 120; stepIndex++) {
+		stepSoil(world)
+		disableLava(world)
+		const free = totalFreeLiquid(world)
+		maxFree = Math.max(maxFree, free)
+		let poured = 0
+		for (let y = 0; y < 8; y++)
+			for (let x = 0; x < world.worldW; x++)
+				poured += world.liq[idx(world, x, y)]
+		maxPoured = Math.max(maxPoured, poured)
+		assertAlmostEquals(totalGridWater(world), dripped, 1e-3)
+	}
+	assertLess(maxFree, dripped + 1e-3)
+	assertLess(maxPoured, dripped + 1e-3)
+})
+
+Deno.test('soil: inverted dry land with no drip stays free of free liquid (lava off)', () => {
+	// No rain / drip input → flipping must not spout free liquid (land does not mint water).
+	const world = createWorld({ width: 14, height: 12, margin: 0, bottomExtra: 0 })
+	clearMaterials(world)
+	for (let x = 3; x <= 10; x++)
+		for (let y = 8; y <= 11; y++)
+			setMat(world, x, y, MAT.SOLID)
+	assertAlmostEquals(totalGridWater(world), 0, 1e-9)
+	applyGravityToWorld(world, { gx: 0, gy: -1, mag: BASE_PARTICLE_G })
+	let maxFree = 0
+	for (let stepIndex = 0; stepIndex < 80; stepIndex++) {
+		stepSoil(world)
+		disableLava(world)
+		maxFree = Math.max(maxFree, totalFreeLiquid(world))
+		assertAlmostEquals(totalGridWater(world), 0, 1e-9)
+	}
+	assertLess(maxFree, 0.05)
 })
 
 Deno.test('particles: vector gravity displaces in g direction', () => {

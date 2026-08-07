@@ -24,9 +24,9 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 
 - Continuous `world.gravity = { gx, gy, mag }` (unit + particle accel). No 4-axis quantize.
 - `gravityDepth = x·gx + y·gy − depth0` (depth0 = min of four corners → non-negative). Default ĝ=(0,1) ⇒ depth = y.
-- Weighted ortho neighbors: `w = max(0, d̂·ĝ)` down / `d̂·(−ĝ)` up. Settle / buoyancy / bubbles / soil / free-surface follow these.
+- Weighted ortho neighbors: `w = max(0, d̂·ĝ)` down / `d̂·(−ĝ)` up. Settle / buoyancy / bubbles / soil / free-surface follow these. Edge out sinks use ambient pressure — do not `rhoAt`/`pressureAt` on OOB coordinates.
 - Edge roles (`edgeRoles`): for outward normal n̂, `sink=max(0,n̂·ĝ)`, `source=max(0,−n̂·ĝ)`, `wrap=1−|n̂·ĝ|`.
-- Exposure work: each tick `exposure[e] = max(0, exposure[e] + n̂_e·ĝ)`. Lava when `exposure[e] ≥ LAVA_ONSET_EXPOSURE` (312 under pure down = 13s@24fps). At 45°, two edges each accumulate cos45/frame → onset ≈ 13·√2 s.
+- Exposure work: each tick `exposure[e] = max(0, exposure[e] + n̂_e·ĝ)`. Lava when `exposure[e] ≥ LAVA_ONSET_EXPOSURE` (312 under pure down = 13s@24fps). At 45°, two edges each accumulate cos45/frame → onset ≈ 13·√2 s. Condensed-phase transport never indexes OOB sink cells (outFrac uses ambient `P_ATM`); NaN there would permanently poison melt inject via `max(NaN, inject)`.
 - Rain spawn uses `source` weights (gravity-down edge never rains). Composition bottom is never a rain sky (pedestal/lava edge) — inverted ĝ yields no rain there, then lava on the sink edge after exposure. Side wrap uses `wrap`; particles pick wrap vs out with `hash01`.
 - Absorb on source-weighted edges records `absorbGx/Gy`; regurgitate when `ĝ·absorbDir < threshold`, ejecting on current source edges.
 
@@ -35,7 +35,7 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 - Pedestal-anchored: flat under icon base, land shoulders on both outer ends, free walk outward.
 - Under icon: crust at surface/`baseY` is soil; deeper cells may be caves.
 - ≥30% of view columns have land thickness ≥ ¼ screen height (`TALL_LAND_FRACTION` / `TALL_LAND_HEIGHT_FRAC`).
-- Resize is pedestal-relative: retained cells + dynamics (incl. `melt`/`temp`) shift with the icon; shrink crops; expand generates only exposed cells from the persistent seed. New soil starts saturated; temps BFS-decay from retained melt. `RESIZE_WEATHER_TICKS` includes thermal + liquid settle.
+- Resize is pedestal-relative: retained cells + dynamics (incl. `melt`/`temp`) shift with the icon; shrink crops; expand generates only exposed cells from the persistent seed. New soil starts dry (wet fill would spring under inverted ĝ); temps BFS-decay from retained melt. `RESIZE_WEATHER_TICKS` includes thermal + liquid settle.
 
 ## Pressure / density / viscosity ladder
 

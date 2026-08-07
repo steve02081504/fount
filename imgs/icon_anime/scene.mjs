@@ -239,8 +239,8 @@ export const resizeAnimState = (state, { width, height }) => {
 	let hasAddedSoil = false
 	for (let i = 0; i < addedSolid.length; i++) {
 		if (!addedSolid[i] || (newWorld.mat[i] !== MAT.HORIZON && newWorld.mat[i] !== MAT.SOLID)) continue
-		newWorld.moisture[i] = SOIL_CAP
 		hasAddedSoil = true
+		break
 	}
 	if (hasAddedSoil)
 		for (let tick = 0; tick < RESIZE_WEATHER_TICKS; tick++) {
