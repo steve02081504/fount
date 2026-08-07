@@ -80,7 +80,7 @@ export { liquidPressureAt, stepLiquid } from './liquid.mjs'
 /** 粒子雨与风抬升。 */
 export {
 	GAS_DRAG, GAS_DRAG_Y, GAS_DRAG_Y_BOOST_FROM, GAS_DRAG_Y_BOOST_SPAN,
-	WIND_LIFT_UY, WIND_LIFT_RATE, WIND_LIFT_MAX, WIND_HOLD_LIFE,
+	WIND_LIFT_UY, WIND_LIFT_RATE, WIND_LIFT_MAX, WIND_HOLD_LIFE, PARTICLE_GRAVITY,
 	verticalGasDrag, createParticlePool, clearParticlePool, totalParticleWater,
 	spawnParticle, queueSplash, depositParticleMass, stepParticles, liftLiquidByWind,
 } from './particles.mjs'

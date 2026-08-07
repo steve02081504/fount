@@ -64,11 +64,11 @@ export const mapSensorToScreen = (ax, ay, az) => {
  */
 const valuesFromSensorJson = (data) => {
 	if (!data || typeof data !== 'object') return null
-	const obj = /** @type {Record<string, unknown>} */ (data)
+	const obj = /** @type {Record<string, unknown>} */ data
 	for (const key of Object.keys(obj)) {
 		const entry = obj[key]
 		if (!entry || typeof entry !== 'object') continue
-		const values = (/** @type {{ values?: unknown }} */ (entry)).values
+		const values = /** @type {{ values?: unknown }} */ entry.values
 		if (!Array.isArray(values) || values.length < 3) continue
 		const x = +values[0]
 		const y = +values[1]

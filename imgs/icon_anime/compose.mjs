@@ -48,7 +48,7 @@ const FG_PALETTE = [
 ]
 
 /** 各调色板条目的基准 RGB（真彩提亮目标）。 */
-const FG_RGB = /** @type {Record<string, number[]>} */ ({})
+const FG_RGB = /** @type {Record<string, number[]>} */ {}
 /** SGR 缓存键的调色板 id。 */
 const FG_ID = new Map()
 for (const [sgr, rgb, id] of FG_PALETTE) {

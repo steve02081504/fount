@@ -618,6 +618,11 @@ const stepMelt = (world) => {
 		vx: world.meltVx,
 		vy: world.meltVy,
 		viscAt: meltVisc,
+		/**
+		 *
+		 * @param w
+		 * @param cell
+		 */
 		rhoAt: (w, cell) => rhoOf(SUBSTANCE.ROCK, w.temp[cell]),
 		canEnter: meltCanEnter,
 		onTransfer: meltTempOnTransfer,

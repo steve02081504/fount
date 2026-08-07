@@ -336,7 +336,9 @@ export const stepParticles = (world, onHit, state) => {
  */
 export const liftLiquidByWind = (world) => {
 	// After stepGas: skip full-grid scoop when no cell has strong updraft against ĝ.
-	if (Number.isFinite(world.maxUpdraft) && world.maxUpdraft > WIND_LIFT_UY) return 0
+	// maxUpdraft = most negative gas·ĝ (strongest anti-gravity); NaN → do not skip.
+	const { maxUpdraft } = world
+	if (maxUpdraft > WIND_LIFT_UY) return 0
 
 	const { worldW: W, worldH: H, mat, liq, gasUx, gasUy, particles, gravity } = world
 	let lifted = 0
