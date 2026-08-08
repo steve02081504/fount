@@ -14,7 +14,7 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 
 - Terrain `solid`/`outline` and fluid grids: flat `y * W + x` (no row arrays). Outline glyphs are precomputed; compose only blits.
 - World scratch on `world.scratch` (typed arrays reused). BFS: `floodQ` is `Int32Array` + `floodLen` (`floodClear` / `floodPush`) via shared `components.mjs`.
-- Hot-path geometry returns module-local reused shells (`neighborCoord`, `wrapAcrossEdge`, `cellStepUnit`, `gasVelocityAt`, weight buffers) — copy fields if holding across another call. Eight-neighbor physical unit vectors are precomputed (`NEIGH8_UX`/`UY`).
+- Hot-path geometry returns module-local reused shells (`neighborCoord`, `cellStepUnit`, `gasVelocityAt`, weight buffers) — copy fields if holding across another call. Eight-neighbor physical unit vectors are precomputed (`NEIGH8_UX`/`UY`).
 - Gas nozzle spans / blocked mask rebuild only when `gasGeomDirty`; velocity buffers swap with scratch (no per-tick `.set`). Blocked cells zeroed in the velocity pass — no `nextU*.fill(0)`. Nozzle spans are O(WH) column/row runs — do not re-walk per cell. Pass1 writes `staticP` + `gasShear`; pass2 reuses shear (no second depth walk). Border seeds are packed `Int32Array` pairs.
 - Air labels double-buffer `regionId` via `scratch.prevRegionId`; regions pooled + id-indexed; Boyle overlap = packed-key Map (sealed only).
 - Liquid settle orders cells deep→shallow by projected depth (counting-sort buckets). Shared `fillCellDepths` / `buildDepthOrder` across pressure fill, water settle, melt transport, buoyancy. Pressure cache: dirty seeds coalesce and flush lazily on next `pAt` (DDA lines, or full `fillPressureByDepth` past a seed threshold).
@@ -53,7 +53,7 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 - Open air: region mean `P_ATM`; cell `pressureAt = P_ATM + ATM_HYDRO·depth`.
 - Sealed: Boyle mean `≈ gasAmount / airCells` plus hydrostatic `ATM_HYDRO·(depth − depthMean)` so spatial average stays Boyle; mass transfers by cell overlap on topology split/merge. Evaporation injects steam into the local region.
 - Keep `RHO_AIR ≪ RHO_G` so Bernoulli dynamic head does not rival liquid depth (`RHO_AIR` ~ `ATM_HYDRO`).
-- Shared structure: `components.mjs` labels; `equilibrate.mjs` is one operator with mobility=∞ (Boyle) vs finite (φ graph relax); `transport.mjs` is the condensed-phase settle+sheet kernel (melt parameterized by per-cell visc).
+- Shared structure: `components.mjs` labels air + liquid; `liquid/hydraulic.mjs` relaxes φ on the liquid graph; Boyle sealed-gas pressure lives in `gas.mjs`. `liquid/transport.mjs` is the Stokes settle+sheet kernel for melt (per-cell visc). Free water keeps a hydrostatic column in `liquid/pressure.mjs` + specialized settle/sheet/wind/gas-push in `liquid/water.mjs`.
 
 ## Gas / wind
 
@@ -64,7 +64,7 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 ## Liquid / melt / soil
 
 - `liquidPressureAt = P_air(surface) + RHO_G·depth`. Submerged orifices: Torricelli `∝ √(ΔP/ρg)`. Free-surface sheets equalize by fill level only. Sealed gas with `P > liquid P` blocks invasion and can push liquid away.
-- Melt shares `transport.mjs` with per-cell viscosity; buoyancy swaps along weighted down when the downslope neighbor is lighter.
+- Melt uses `transport.mjs` with per-cell viscosity; buoyancy swaps along weighted down when the downslope neighbor is lighter.
 - `liqVx`/`liqVy` / `meltVx`/`meltVy`: EMA from mass transfers — drive shared rain-style glyphs (`waterChar` / `lavaChar`). Melts use the same alphabet; viscosity only slows Stokes flux.
 - Condensed-phase `stepPhaseTransport` settles **deep→shallow** along ĝ (no shallow→deep cascade that teleports melt to the floor in one tick).
 - Buoyancy swaps only between occupied condensed cells (convection); free-fall into empty air is transport, so lava viscosity can lag water.

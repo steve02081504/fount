@@ -30,7 +30,7 @@ export const meltVisc = (world, cell) =>
  * @param {number} cell 索引
  * @returns {boolean} 可进
  */
-export const meltCanEnter = (world, cell) => {
+const meltCanEnter = (world, cell) => {
 	const m = world.mat[cell]
 	if (m === MAT.SOLID || m === MAT.HORIZON) return false
 	if (isLiquidBarrier(m) && m !== MAT.AIR) return false
@@ -46,7 +46,7 @@ export const meltCanEnter = (world, cell) => {
  * @param {number} beforeSrc 源前质量
  * @returns {void}
  */
-export const meltTempOnTransfer = (world, src, dst, moved, beforeSrc) => {
+const meltTempOnTransfer = (world, src, dst, moved, beforeSrc) => {
 	const tSrc = world.temp[src]
 	const heat = tSrc * moved
 	const destMass = world.melt[dst]

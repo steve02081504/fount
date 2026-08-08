@@ -1,18 +1,19 @@
 /**
  * 液体步进编排：水 → 土壤 → 水力均衡 → 熔岩 → 浮力。
  *
- * 水 / 熔岩是凝聚相的两种特化；共用核见 `transport.mjs`。
- * 表面张力：自由面薄层对干邻减速（`ST_DRY_FRAC`），湿湿仍走 sheetMove。
+ * 水相：静压柱特化（`pressure.mjs` + `water.mjs`）。
+ * 熔岩：粘滞 Stokes 共用核（`transport.mjs`）。
  */
 
 import { stepSoil } from '../soil.mjs'
-import { equilibrateHydraulic } from './equilibrate.mjs'
-import { stepLava, stepBuoyancy } from './lava.mjs'
-import { stepWater, commitWaterVelocity, liquidPressureAt } from './water.mjs'
+import { equilibrateHydraulic } from './hydraulic.mjs'
+import { stepLava, stepBuoyancy, meltVisc } from './lava.mjs'
+import { liquidPressureAt } from './pressure.mjs'
+import { stepWater, commitWaterVelocity, WATER_VISC } from './water.mjs'
 
 /** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
 
-export { liquidPressureAt }
+export { liquidPressureAt, meltVisc, stepLava, WATER_VISC }
 
 /**
  * 推进自由水 + 熔岩一个 tick。

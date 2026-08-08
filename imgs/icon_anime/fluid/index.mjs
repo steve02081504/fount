@@ -46,9 +46,12 @@ export {
 	floodClear, floodPush, markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
 	clearDynamics, clearMaterials, releaseNonSoilWater,
 	setMat, addMoisture, addLiquid, addMelt, totalGridWater, totalWorldWater, totalMelt,
-	CELL_ASPECT, gravityDepth, gravityDownWeights, gravityUpWeights, gravitySideWeights,
+	gravityDepth, gravityDownWeights, gravityUpWeights, gravitySideWeights,
 	gravitySettleWeights, strongestUp, strongestDown, applyGravityToWorld, impartLiquidMomentum,
 } from './world.mjs'
+
+/** 视觉格纵横比（邻接 û / 渲染半径；不参与静水深标定）。 */
+export { CELL_ASPECT } from '../hash.mjs'
 
 /** 气相区域、压力与风速。 */
 export {
@@ -76,13 +79,7 @@ export { regurgitateTemp, stepBoundary } from './boundary.mjs'
 export { stepBubbles } from './bubbles.mjs'
 
 /** 自由液体静压与步进。 */
-export { liquidPressureAt, stepLiquid } from './liquid/index.mjs'
-
-/** 熔岩粘滞与输运特化。 */
-export { meltVisc, stepLava } from './liquid/lava.mjs'
-
-/** 水相粘滞。 */
-export { WATER_VISC } from './liquid/water.mjs'
+export { liquidPressureAt, stepLiquid, meltVisc, stepLava, WATER_VISC } from './liquid/index.mjs'
 
 /** 粒子池。 */
 export {

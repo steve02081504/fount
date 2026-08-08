@@ -2,8 +2,7 @@
  * 动画场景：状态、阶段、入场/保持/退场。
  */
 
-import { composeFrame } from '../compose/frame.mjs'
-import { renderBuffers } from '../compose/render.mjs'
+import { composeFrame, renderBuffers } from '../compose/index.mjs'
 import { MAT, LIQ_DRAW, SOIL_CAP, T_AMB } from '../fluid/mat.mjs'
 import {
 	createWorld, clearDynamics, addLiquid, addMelt,
@@ -94,7 +93,7 @@ export const createAnimState = (opts = {}) => {
 	const seed = opts.seed ?? (Math.random() * 1e9 | 0)
 	const world = createWorld({ width, height, margin: VIEW_MARGIN, bottomExtra: BOTTOM_EXTRA })
 	const { iconOx, iconOy, terrain } = placeIcon(world, width, height, seed)
-	return {
+	const state = {
 		width, height, seed,
 		world, iconOx, iconOy, terrain,
 		baseBot: 0,
@@ -113,6 +112,17 @@ export const createAnimState = (opts = {}) => {
 		frameCh: null,
 		frameFg: null,
 	}
+	state.fluidOpts = {
+		time: 0,
+		seed: 0,
+		driveUx: undefined,
+		driveUy: undefined,
+		onHit: onParticleHit,
+		state,
+		/** @returns {void} 粒子积分前每 tick 降雨 */
+		beforeParticles: () => spawnRain(state),
+	}
+	return state
 }
 
 /**
@@ -268,16 +278,7 @@ const simFrame = (state) => {
 		driveUy = scratch(world, 'windDriveUy', n, Float32Array)
 		fillWindDrive(state.wind, world, driveUx, driveUy)
 	}
-	const opts = state.fluidOpts ??= {
-		time: 0,
-		seed: 0,
-		driveUx: undefined,
-		driveUy: undefined,
-		onHit: onParticleHit,
-		state,
-		/** @returns {void} 粒子积分前每 tick 降雨 */
-		beforeParticles: () => spawnRain(state),
-	}
+	const opts = state.fluidOpts
 	opts.time = state.frame
 	opts.seed = state.seed
 	opts.driveUx = driveUx

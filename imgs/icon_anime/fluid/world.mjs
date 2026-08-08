@@ -8,11 +8,6 @@ import { NEIGH8_DX, NEIGH8_DY, NEIGH8_UX, NEIGH8_UY, ORTHO_DX, ORTHO_DY } from '
 import { MAT, SOIL_CAP, LIQ_FULL, LIQ_DRAW, isSoilMat, isLiquidBarrier } from './mat.mjs'
 import { createParticlePool, clearParticlePool, totalParticleWater } from './particle_pool.mjs'
 
-/**
- *
- */
-export { CELL_ASPECT } from '../hash.mjs'
-
 /** @typedef {import('../gravity.mjs').GravityState} GravityState */
 
 /** @typedef {{

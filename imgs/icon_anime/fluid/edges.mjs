@@ -99,29 +99,6 @@ export const edgeUpness = (world, x, y) => {
 	return u
 }
 
-/** `wrapAcrossEdge` 复用结果（勿长期持有）。 */
-const WRAP_XY = { x: 0, y: 0 }
-
-/**
- * 将坐标按世界尺寸取模环绕（两轴均归一化）。
- * @param {FluidWorld} world 世界
- * @param {number} x 列
- * @param {number} y 行
- * @param {number} [_edge] 穿过的边（保留签名兼容）
- * @returns {{ x: number, y: number }} 环绕后（复用缓冲）
- */
-export const wrapAcrossEdge = (world, x, y, _edge) => {
-	const W = world.worldW
-	const H = world.worldH
-	let nx = x % W
-	if (nx < 0) nx += W
-	let ny = y % H
-	if (ny < 0) ny += H
-	WRAP_XY.x = nx
-	WRAP_XY.y = ny
-	return WRAP_XY
-}
-
 /**
  * @typedef {{
  *   x: number, y: number,

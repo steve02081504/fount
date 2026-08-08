@@ -1,13 +1,15 @@
 /**
- * 分量内势能均衡：同一算子的两个极限。
- *   mobility = ∞  → 一次取均值（Boyle / 开放 Dirichlet）
- *   mobility 有限 → 沿液体图最低-φ BFS 松弛
+ * 液体连通分量内的液压势 φ 松弛（连通器）。
+ * φ = P/(ρg) − depth；沿液体图从最低-φ 自由面 BFS 松弛，无瞬移。
+ *
+ * Boyle 密闭气压在 `gas.mjs`；本文件只管液体 φ。
  */
 
 import { ORTHO_DX, ORTHO_DY } from '../../hash.mjs'
+import { clearLabels, labelComponents, recycleComponents } from '../components.mjs'
 import { hydraulicPhi, applyTransfer } from '../flow.mjs'
 import { pressureAt } from '../gas.mjs'
-import { P_ATM, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from '../mat.mjs'
+import { LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from '../mat.mjs'
 import {
 	scratch, growScratch, floodClear, floodPush, gravityDepth,
 	gravityUpWeights, strongestUp, inWorld,
@@ -15,21 +17,6 @@ import {
 } from '../world.mjs'
 
 /** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
-
-/**
- * 密闭气区 Boyle 均值（mobility = ∞）。
- * @param {FluidWorld} world 世界
- * @param {import('./gas.mjs').AirRegion} region 气区
- * @returns {void}
- */
-export const equilibrateSealedBoyle = (world, region) => {
-	if (region.openToAtm) {
-		region.pressure = P_ATM
-		return
-	}
-	region.pressure = Math.max(0.05, Math.min(8,
-		region.gasAmount / Math.max(0.25, region.airCells)))
-}
 
 /**
  * 将一自由面样本压入复用 SoA 暂存。
@@ -91,10 +78,8 @@ const LIQ_COMP_OUT = {
  * }} 自由面样本与每格分量 id（复用壳）
  */
 export const labelLiquidComponents = (world) => {
-	const { worldW: W, worldH: H, mat, liq } = world
-	const n = W * H
-	const componentOf = scratch(world, 'liqComp', n, Int32Array)
-	componentOf.fill(0)
+	const W = world.worldW
+	const componentOf = clearLabels(world, 'liqComp', W * world.worldH)
 	const surf = SURF_SOA
 	surf.x = growScratch(world, 'liqSurfX', 64, Int32Array)
 	surf.y = growScratch(world, 'liqSurfY', 64, Int32Array)
@@ -102,60 +87,41 @@ export const labelLiquidComponents = (world) => {
 	surf.p = growScratch(world, 'liqSurfP', 64, Float32Array)
 	surf.phi = growScratch(world, 'liqSurfPhi', 64, Float32Array)
 	surf.n = 0
-	let next = 1
 
 	const upW = gravityUpWeights(world)
 	const up = strongestUp(world)
-	const upDx = up.dx
-	const upDy = up.dy
-	const upWgt = up.w
 
-	for (let y = 0; y < H; y++)
-		for (let x = 0; x < W; x++) {
-			const cell = y * W + x
-			if (componentOf[cell] || liq[cell] < LIQ_DRAW || isLiquidBarrier(mat[cell])) continue
-			const id = next++
-			floodClear(world)
-			floodPush(world, x, y)
-			componentOf[cell] = id
-			for (let qi = 0; qi < world.floodLen; qi += 2) {
-				const cx = world.floodQ[qi]
-				const cy = world.floodQ[qi + 1]
-				let isSurf = upW.n <= 0
-				if (!isSurf) {
-					isSurf = true
-					for (let o = 0; o < upW.n; o++) {
-						const ax = cx + upW.dx[o]
-						const ay = cy + upW.dy[o]
-						if (!inWorld(world, ax, ay)) continue
-						const above = ay * W + ax
-						if (!isLiquidBarrier(mat[above]) && liq[above] >= LIQ_DRAW) {
-							isSurf = false
-							break
-						}
+	const { components } = labelComponents(world, {
+		accept: (w, cell) => w.liq[cell] >= LIQ_DRAW && !isLiquidBarrier(w.mat[cell]),
+		labels: componentOf,
+		poolKey: 'liqComponentPool',
+		onCell: (w, cell, x, y, id) => {
+			let isSurf = upW.n <= 0
+			if (!isSurf) {
+				isSurf = true
+				for (let o = 0; o < upW.n; o++) {
+					const ax = x + upW.dx[o]
+					const ay = y + upW.dy[o]
+					if (!inWorld(w, ax, ay)) continue
+					const above = ay * W + ax
+					if (!isLiquidBarrier(w.mat[above]) && w.liq[above] >= LIQ_DRAW) {
+						isSurf = false
+						break
 					}
-				}
-				if (isSurf) {
-					let airP = pressureAt(world, cx, cy)
-					if (upWgt > 0) {
-						const ax = cx + upDx
-						const ay = cy + upDy
-						if (inWorld(world, ax, ay) && !isLiquidBarrier(mat[ay * W + ax]))
-							airP = pressureAt(world, ax, ay)
-					}
-					pushSurface(world, cx, cy, id, airP, hydraulicPhi(airP, gravityDepth(world, cx, cy)), surf)
-				}
-				for (let o = 0; o < 4; o++) {
-					const nx = cx + ORTHO_DX[o]
-					const ny = cy + ORTHO_DY[o]
-					if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
-					const neighbor = ny * W + nx
-					if (componentOf[neighbor] || liq[neighbor] < LIQ_DRAW || isLiquidBarrier(mat[neighbor])) continue
-					componentOf[neighbor] = id
-					floodPush(world, nx, ny)
 				}
 			}
-		}
+			if (!isSurf) return
+			let airP = pressureAt(w, x, y)
+			if (up.w > 0) {
+				const ax = x + up.dx
+				const ay = y + up.dy
+				if (inWorld(w, ax, ay) && !isLiquidBarrier(w.mat[ay * W + ax]))
+					airP = pressureAt(w, ax, ay)
+			}
+			pushSurface(w, x, y, id, airP, hydraulicPhi(airP, gravityDepth(w, x, y)), surf)
+		},
+	})
+	recycleComponents(world, components, 'liqComponentPool')
 
 	LIQ_COMP_OUT.surf = surf
 	LIQ_COMP_OUT.componentOf = componentOf
@@ -289,7 +255,6 @@ const relaxComponent = (world, flowX, flowY, liq, componentOf, dist, visit, gen,
  * @returns {void}
  */
 export const equilibrateHydraulic = (world, flowX, flowY, mobility = 1) => {
-	if (!(mobility > 0) || !Number.isFinite(mobility)) return
 	const { surf, componentOf } = labelLiquidComponents(world)
 	const { n: surfN, c: sc, phi } = surf
 	if (surfN < 2) return

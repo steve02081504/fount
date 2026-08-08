@@ -1,8 +1,8 @@
 /**
- * 自由水相：静压柱、重力沉降、侧向液膜、风驱与密闭气体推挤。
+ * 自由水相：静压驱动沉降、侧向液膜、风驱与密闭气体推挤。
  *
- * P = P_air(表面) + RHO_G·深度。孔口/重力用 Torricelli √(ΔP/ρg)。
- * 自由面液膜仅均衡填充。密闭超压气体阻挡侵入并可推开邻液。
+ * 静压柱见 `pressure.mjs`。熔岩等粘滞 Stokes 相走 `transport.mjs`；
+ * 水相因静压柱 / POOL 保留 / 密闭气推挤，保留本文件特化。
  */
 
 import { ORTHO_DX, ORTHO_DY } from '../../hash.mjs'
@@ -16,11 +16,12 @@ import {
 	SUBSTANCE, rhoOf, viscOf,
 } from '../mat.mjs'
 import {
-	scratch, growScratch, idx, inWorld,
+	scratch, idx, inWorld,
 	markAirIfDrawCrossed,
-	gravityDepth, gravityUpWeights, gravitySettleWeights, gravitySideWeights,
-	strongestUp, strongestDown, fillCellDepths, buildDepthOrder,
+	gravitySettleWeights, gravitySideWeights,
+	buildDepthOrder,
 } from '../world.mjs'
+import { beginLiquidPressure } from './pressure.mjs'
 
 /** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
 
@@ -30,12 +31,6 @@ const WIND_SHEET = 0.12
 const WIND_SHEET_CAP = 0.18
 /** 水相粘滞（viscOf(rhoOf(WATER))）。 */
 export const WATER_VISC = viscOf(rhoOf(SUBSTANCE.WATER, 0))
-/** 脏压强种子过多时直接全网重填。 */
-const P_DIRTY_FULL_THRESH = 48
-
-/** 压强行走用的上/下向快照（与 `STRONG_*` 分离，避免 `pressureAt` 中途覆盖）。 */
-const UP_LINE = { dx: 0, dy: 0, w: 0 }
-const DOWN_LINE = { dx: 0, dy: 0, w: 0 }
 
 /**
  * 自由液体能否进入 `(x, y)`。
@@ -51,200 +46,6 @@ const canOccupy = (world, x, y) => {
 	if (isLiquidBarrier(m)) return false
 	if (m === MAT.POOL) return world.liq[cell] < LIQ_FULL
 	return true
-}
-
-/**
- * 静压深度：P_air(表面) + RHO_G·(深度 + 部分填充)。
- * @param {number} airP 自由面行的空气压
- * @param {number} depth 当前深度
- * @param {number} surfDepth 自由面深度
- * @param {number} amount 格内液体填充
- * @returns {number} 该格静压
- */
-const columnDepthPressure = (airP, depth, surfDepth, amount) =>
-	airP + RHO_G * ((depth - surfDepth) + Math.min(1, Math.max(amount, LIQ_DRAW)))
-
-/**
- * `(x, y)` 处液体静压。
- * @param {FluidWorld} world 流体世界
- * @param {number} x 列
- * @param {number} y 行
- * @returns {number} `(x, y)` 液体压力
- */
-export const liquidPressureAt = (world, x, y) => {
-	if (!inWorld(world, x, y)) return pressureAt(world, x, Math.max(0, y))
-	const cell = idx(world, x, y)
-	const L = world.liq[cell]
-	if (L < LIQ_DRAW && !isLiquidBarrier(world.mat[cell]))
-		return pressureAt(world, x, y)
-
-	const up = strongestUp(world)
-	let sx = x
-	let sy = y
-	for (;;) {
-		if (up.w <= 0) break
-		const nx = sx + up.dx
-		const ny = sy + up.dy
-		if (!inWorld(world, nx, ny)) break
-		const above = idx(world, nx, ny)
-		if (isLiquidBarrier(world.mat[above])) break
-		if (world.liq[above] < LIQ_DRAW) break
-		sx = nx
-		sy = ny
-	}
-
-	let airX = sx
-	let airY = sy
-	if (up.w > 0) {
-		airX = sx + up.dx
-		airY = sy + up.dy
-	}
-	const airP = inWorld(world, airX, airY) && !isLiquidBarrier(world.mat[idx(world, airX, airY)])
-		? pressureAt(world, airX, airY)
-		: pressureAt(world, sx, sy)
-	return columnDepthPressure(airP, gravityDepth(world, x, y), gravityDepth(world, sx, sy), L)
-}
-
-/**
- * 填充整网液体压力缓存。
- * @param {FluidWorld} world 流体世界
- * @param {Float32Array} cache 压力缓冲
- * @param {Float32Array} depth 每格深度
- * @param {Int32Array} order 浅→深序
- * @param {{ dx: number[], dy: number[], w: number[], n: number }} up 上向权重
- * @param {{ dx: number, dy: number, w: number }} strongUp 最强上向
- * @returns {void}
- */
-const fillPressureByDepth = (world, cache, depth, order, up, strongUp) => {
-	const { worldW: W, mat, liq } = world
-	const n = order.length
-
-	for (let si = 0; si < n; si++) {
-		const cell = order[si]
-		const x = cell % W
-		const y = (cell / W) | 0
-		const L = liq[cell]
-		if (L < LIQ_DRAW || isLiquidBarrier(mat[cell])) {
-			cache[cell] = pressureAt(world, x, y)
-			continue
-		}
-
-		let bestAbove = -1
-		let bestW = -1
-		for (let i = 0; i < up.n; i++) {
-			const ax = x + up.dx[i]
-			const ay = y + up.dy[i]
-			if (!inWorld(world, ax, ay)) continue
-			const above = ay * W + ax
-			if (!isLiquidBarrier(mat[above]) && liq[above] >= LIQ_DRAW)
-				if (up.w[i] > bestW) {
-					bestW = up.w[i]
-					bestAbove = above
-				}
-		}
-
-		if (bestAbove < 0) {
-			let airX = x
-			let airY = y
-			if (strongUp.w > 0) {
-				airX = x + strongUp.dx
-				airY = y + strongUp.dy
-			}
-			const airP = inWorld(world, airX, airY) && !isLiquidBarrier(mat[idx(world, airX, airY)])
-				? pressureAt(world, airX, airY)
-				: pressureAt(world, x, y)
-			const dHere = depth[cell]
-			cache[cell] = columnDepthPressure(airP, dHere, dHere, L)
-		}
-		else {
-			const dAbove = depth[bestAbove]
-			const dHere = depth[cell]
-			const fillAbove = Math.min(1, Math.max(liq[bestAbove], LIQ_DRAW))
-			const fillHere = Math.min(1, Math.max(L, LIQ_DRAW))
-			cache[cell] = cache[bestAbove] + RHO_G * (dHere - dAbove) + RHO_G * (fillHere - fillAbove)
-		}
-	}
-}
-
-/**
- * 沿 ĝ 的 DDA 重力线刷新压力（增量）。
- * @param {FluidWorld} world 世界
- * @param {number} x0 起点列
- * @param {number} y0 起点行
- * @param {Float32Array} cache 压力缓存
- * @param {Float32Array} depth 深度场
- * @param {{ dx: number, dy: number, w: number }} up 最强上向
- * @param {{ dx: number, dy: number, w: number }} down 最强下向
- * @returns {void}
- */
-const refreshGravityLine = (world, x0, y0, cache, depth, up, down) => {
-	const { worldW: W, worldH: H, mat, liq } = world
-
-	let sx = x0
-	let sy = y0
-	for (;;) {
-		if (!inWorld(world, sx, sy)) break
-		const cell = sy * W + sx
-		if (isLiquidBarrier(mat[cell]) || liq[cell] < LIQ_DRAW) break
-		if (up.w <= 0) break
-		const nx = sx + up.dx
-		const ny = sy + up.dy
-		if (!inWorld(world, nx, ny)) break
-		const above = ny * W + nx
-		if (isLiquidBarrier(mat[above]) || liq[above] < LIQ_DRAW) break
-		sx = nx
-		sy = ny
-	}
-
-	let airX = sx
-	let airY = sy
-	if (up.w > 0) {
-		airX = sx + up.dx
-		airY = sy + up.dy
-	}
-	const airP = inWorld(world, airX, airY) && !isLiquidBarrier(mat[idx(world, airX, airY)])
-		? pressureAt(world, airX, airY)
-		: pressureAt(world, sx, sy)
-	const surfDepth = depth[sy * W + sx]
-
-	if (inWorld(world, x0, y0)) {
-		const cell0 = y0 * W + x0
-		const L0 = liq[cell0]
-		if (L0 < LIQ_DRAW && !isLiquidBarrier(mat[cell0]))
-			cache[cell0] = pressureAt(world, x0, y0)
-		else if (!isLiquidBarrier(mat[cell0]))
-			cache[cell0] = columnDepthPressure(airP, depth[cell0], surfDepth, L0)
-	}
-
-	const steps = Math.max(W, H)
-	/**
-	 * 沿单向 DDA 传播静压。
-	 * @param {number} dx 列步
-	 * @param {number} dy 行步
-	 * @returns {void}
-	 */
-	const walk = (dx, dy) => {
-		let x = x0
-		let y = y0
-		for (let s = 0; s < steps; s++) {
-			x += dx
-			y += dy
-			if (!inWorld(world, x, y)) break
-			const cell = y * W + x
-			if (isLiquidBarrier(mat[cell]) || liq[cell] < LIQ_DRAW) {
-				if (liq[cell] < LIQ_DRAW && !isLiquidBarrier(mat[cell]))
-					cache[cell] = pressureAt(world, x, y)
-				break
-			}
-			const prevCell = (y - dy) * W + (x - dx)
-			const prev = cache[prevCell]
-			const fillPrev = Math.min(1, Math.max(liq[prevCell], LIQ_DRAW))
-			const fillHere = Math.min(1, Math.max(liq[cell], LIQ_DRAW))
-			cache[cell] = prev + RHO_G * (depth[cell] - depth[prevCell]) + RHO_G * (fillHere - fillPrev)
-		}
-	}
-	if (down.w > 0) walk(down.dx, down.dy)
-	if (up.w > 0) walk(up.dx, up.dy)
 }
 
 /**
@@ -342,81 +143,7 @@ export const stepWater = (world) => {
 	flowX.fill(0)
 	flowY.fill(0)
 
-	const depth = fillCellDepths(world)
-	const upW = gravityUpWeights(world)
-	const strongUp = strongestUp(world)
-	const strongUpDx = strongUp.dx
-	const strongUpDy = strongUp.dy
-	const strongUpW = strongUp.w
-	const strongDown = strongestDown(world)
-	const strongDownDx = strongDown.dx
-	const strongDownDy = strongDown.dy
-	const strongDownW = strongDown.w
-	UP_LINE.dx = strongUpDx
-	UP_LINE.dy = strongUpDy
-	UP_LINE.w = strongUpW
-	DOWN_LINE.dx = strongDownDx
-	DOWN_LINE.dy = strongDownDy
-	DOWN_LINE.w = strongDownW
-
-	const pfOrder = buildDepthOrder(world, 'liqPFOrder', 'liqPFCounts', false, depth)
-	const pCache = scratch(world, 'liqP', n, Float32Array)
-	fillPressureByDepth(world, pCache, depth, pfOrder, upW, UP_LINE)
-
-	let dirtyX = growScratch(world, 'liqPDirtyX', 64, Int32Array)
-	let dirtyY = growScratch(world, 'liqPDirtyY', 64, Int32Array)
-	let dirtyN = 0
-	let fullRefill = false
-
-	/**
-	 * 标记压强脏种子（读前惰性刷新，合并同批转移）。
-	 * @param {number} x 列
-	 * @param {number} y 行
-	 * @returns {void}
-	 */
-	const markPDirty = (x, y) => {
-		if (fullRefill) return
-		if (dirtyN >= P_DIRTY_FULL_THRESH) {
-			fullRefill = true
-			return
-		}
-		if (dirtyN >= dirtyX.length) {
-			dirtyX = growScratch(world, 'liqPDirtyX', dirtyN + 1, Int32Array)
-			dirtyY = growScratch(world, 'liqPDirtyY', dirtyN + 1, Int32Array)
-		}
-		dirtyX[dirtyN] = x
-		dirtyY[dirtyN] = y
-		dirtyN++
-	}
-
-	/**
-	 * 冲刷脏压强：种子少走 DDA，多则全网重填。
-	 * @returns {void}
-	 */
-	const flushP = () => {
-		if (fullRefill) {
-			fillPressureByDepth(world, pCache, depth, pfOrder, upW, UP_LINE)
-			fullRefill = false
-			dirtyN = 0
-			return
-		}
-		for (let i = 0; i < dirtyN; i++)
-			refreshGravityLine(world, dirtyX[i], dirtyY[i], pCache, depth, UP_LINE, DOWN_LINE)
-		dirtyN = 0
-	}
-
-	/**
-	 * 缓存压力（O(1)）；网格外回退气体静压。读前冲刷脏种子。
-	 * @param {number} x 列
-	 * @param {number} y 行
-	 * @returns {number} 缓存的液/气压力
-	 */
-	const pAt = (x, y) => {
-		if (dirtyN || fullRefill) flushP()
-		if (x < 0 || y < 0 || x >= W || y >= H) return pressureAt(world, x, Math.max(0, y))
-		return pCache[y * W + x]
-	}
-
+	const { pAt, markDirty, depth, upWeights, strongUp, strongDown } = beginLiquidPressure(world)
 	const downW = gravitySettleWeights(world)
 	const sides = gravitySideWeights(world)
 	const order = buildDepthOrder(world, 'liqSettleOrder', 'liqSettleCounts', true, depth)
@@ -450,19 +177,19 @@ export const stepWater = (world) => {
 				move = Math.min(liq[cell] * w, room, Math.max(0.08, (liq[cell] - liq[below]) * 0.85 * w))
 			if (move <= 0) continue
 			transfer(world, liq, flowX, flowY, cell, below, ddx, ddy, move)
-			markPDirty(x, y)
+			markDirty(x, y)
 			did = true
 			if (liq[cell] <= 0.02) break
 		}
 		if (did) continue
 
 		// Blocked below: diagonal crawl along strongest down × side (stair-step).
-		if (strongDownW <= 0) continue
+		if (strongDown.w <= 0) continue
 		const dir = (x + y) & 1 ? 1 : -1
-		const crawl0dx = strongDownDx === 0 ? dir : strongDownDx
-		const crawl0dy = strongDownDx === 0 ? strongDownDy : dir
-		const crawl1dx = strongDownDx === 0 ? -dir : strongDownDx
-		const crawl1dy = strongDownDx === 0 ? strongDownDy : -dir
+		const crawl0dx = strongDown.dx === 0 ? dir : strongDown.dx
+		const crawl0dy = strongDown.dx === 0 ? strongDown.dy : dir
+		const crawl1dx = strongDown.dx === 0 ? -dir : strongDown.dx
+		const crawl1dy = strongDown.dx === 0 ? strongDown.dy : -dir
 		for (let ci = 0; ci < 2; ci++) {
 			const dx = ci === 0 ? crawl0dx : crawl1dx
 			const dy = ci === 0 ? crawl0dy : crawl1dy
@@ -477,8 +204,8 @@ export const stepWater = (world) => {
 				m = Math.min(liq[cell] * 0.5, (liq[cell] - liq[neighbor]) * 0.5, LIQ_FULL - liq[neighbor])
 			if (m <= 0.01) continue
 			transfer(world, liq, flowX, flowY, cell, neighbor, dx, dy, m)
-			markPDirty(x, y)
-			markPDirty(sx, sy)
+			markDirty(x, y)
+			markDirty(sx, sy)
 			break
 		}
 	}
@@ -488,7 +215,7 @@ export const stepWater = (world) => {
 			const cell = y * W + x
 			if (liq[cell] <= 0.05 || isLiquidBarrier(mat[cell])) continue
 			const pSrc = pAt(x, y)
-			const freeSurface = isFreeSurface(world, x, y, upW)
+			const freeSurface = isFreeSurface(world, x, y, upWeights)
 
 			for (let s = 0; s < sides.n; s++) {
 				const dx = sides.dx[s]
@@ -497,23 +224,18 @@ export const stepWater = (world) => {
 				const ny = y + dy
 				if (nx < 0 || nx >= W || ny < 0 || ny >= H) {
 					const nb = neighborCoord(world, x, y, dx, dy)
-					const wrapped = nb.wrapped
-					const wrappedFrac = nb.wrappedFrac
-					const nbX = nb.x
-					const nbY = nb.y
-					const outFrac = nb.outFrac || 1
-					if (wrapped && wrappedFrac > 0.5) {
-						const neighbor = nbY * W + nbX
+					if (nb.wrapped && nb.wrappedFrac > 0.5) {
+						const neighbor = nb.y * W + nb.x
 						if (!isLiquidBarrier(mat[neighbor])) {
-							const pDst = pAt(nbX, nbY)
+							const pDst = pAt(nb.x, nb.y)
 							const room = LIQ_FULL - liq[neighbor]
 							let move = freeSurface && liq[neighbor] < LIQ_DRAW
 								? sheetMove(liq[cell], liq[neighbor], room, WATER_VISC) * ST_DRY_FRAC
 								: pressureMove(pSrc, pDst, liq[cell], room, WATER_VISC)
-							move *= wrappedFrac
+							move *= nb.wrappedFrac
 							if (move > 0) {
 								transfer(world, liq, flowX, flowY, cell, neighbor, dx, dy, move)
-								markPDirty(x, y)
+								markDirty(x, y)
 							}
 						}
 					}
@@ -524,7 +246,7 @@ export const stepWater = (world) => {
 							: Math.min(
 								before,
 								Math.max(before * 0.2, Math.sqrt(Math.max(0, (pSrc - pressureAt(world, x, y)) / RHO_G)) * P_FLOW_GAIN),
-							)) * outFrac
+							)) * (nb.outFrac || 1)
 						liq[cell] -= move
 						flowX[cell] += dx * move
 						flowY[cell] += dy * move
@@ -552,9 +274,9 @@ export const stepWater = (world) => {
 				if (freeSurface && liq[cell] >= LIQ_DRAW) {
 					let ux = 0
 					let uy = 0
-					if (strongUpW > 0) {
-						const ax = x + strongUpDx
-						const ay = y + strongUpDy
+					if (strongUp.w > 0) {
+						const ax = x + strongUp.dx
+						const ay = y + strongUp.dy
 						if (inWorld(world, ax, ay)) {
 							ux = world.gasUx[ay * W + ax]
 							uy = world.gasUy[ay * W + ax]
@@ -572,8 +294,8 @@ export const stepWater = (world) => {
 
 				if (move > 0) {
 					transfer(world, liq, flowX, flowY, cell, neighbor, dx, dy, move)
-					markPDirty(x, y)
-					markPDirty(nx, ny)
+					markDirty(x, y)
+					markDirty(nx, ny)
 				}
 			}
 		}
@@ -603,12 +325,12 @@ export const stepWater = (world) => {
 				const target = idx(world, tx, ty)
 				if (canOccupy(world, tx, ty) && liq[target] < LIQ_FULL)
 					transfer(world, liq, flowX, flowY, neighbor, target, tx - nx, ty - ny, push)
-				else if (strongDownW > 0) {
-					const bx = nx + strongDownDx
-					const by = ny + strongDownDy
+				else if (strongDown.w > 0) {
+					const bx = nx + strongDown.dx
+					const by = ny + strongDown.dy
 					if (canOccupy(world, bx, by)) {
 						const below = idx(world, bx, by)
-						transfer(world, liq, flowX, flowY, neighbor, below, strongDownDx, strongDownDy, push)
+						transfer(world, liq, flowX, flowY, neighbor, below, strongDown.dx, strongDown.dy, push)
 					}
 				}
 			}
