@@ -60,27 +60,48 @@ const pushSurface = (world, x, y, component, pressure, phi, surf) => {
 	surf.n = n + 1
 }
 
+/** 自由面 SoA 壳（typed 缓冲挂在 world.scratch）。 */
+const SURF_SOA = {
+	/** @type {Int32Array} */
+	x: new Int32Array(0),
+	/** @type {Int32Array} */
+	y: new Int32Array(0),
+	/** @type {Int32Array} */
+	c: new Int32Array(0),
+	/** @type {Float32Array} */
+	p: new Float32Array(0),
+	/** @type {Float32Array} */
+	phi: new Float32Array(0),
+	n: 0,
+}
+
+/** `labelLiquidComponents` 返回壳。 */
+const LIQ_COMP_OUT = {
+	surf: SURF_SOA,
+	/** @type {Int32Array | null} */
+	componentOf: null,
+}
+
 /**
  * 标注连通液体分量；自由面存为 SoA（含预计算 φ）。
  * @param {FluidWorld} world 流体世界
  * @returns {{
  *   surf: { x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, phi: Float32Array, n: number },
  *   componentOf: Int32Array,
- * }} 自由面样本与每格分量 id
+ * }} 自由面样本与每格分量 id（复用壳）
  */
 export const labelLiquidComponents = (world) => {
 	const { worldW: W, worldH: H, mat, liq } = world
 	const n = W * H
 	const componentOf = scratch(world, 'liqComp', n, Int32Array)
 	componentOf.fill(0)
-	const surf = {
-		x: growScratch(world, 'liqSurfX', 64, Int32Array),
-		y: growScratch(world, 'liqSurfY', 64, Int32Array),
-		c: growScratch(world, 'liqSurfC', 64, Int32Array),
-		p: growScratch(world, 'liqSurfP', 64, Float32Array),
-		phi: growScratch(world, 'liqSurfPhi', 64, Float32Array),
-		n: 0,
-	}
+	const surf = SURF_SOA
+	surf.x = growScratch(world, 'liqSurfX', 64, Int32Array)
+	surf.y = growScratch(world, 'liqSurfY', 64, Int32Array)
+	surf.c = growScratch(world, 'liqSurfC', 64, Int32Array)
+	surf.p = growScratch(world, 'liqSurfP', 64, Float32Array)
+	surf.phi = growScratch(world, 'liqSurfPhi', 64, Float32Array)
+	surf.n = 0
 	let next = 1
 
 	const upW = gravityUpWeights(world)
@@ -97,7 +118,7 @@ export const labelLiquidComponents = (world) => {
 			floodClear(world)
 			floodPush(world, x, y)
 			componentOf[cell] = id
-			for (let qi = 0; qi < world.floodQ.length; qi += 2) {
+			for (let qi = 0; qi < world.floodLen; qi += 2) {
 				const cx = world.floodQ[qi]
 				const cy = world.floodQ[qi + 1]
 				let isSurf = upW.n <= 0
@@ -136,7 +157,9 @@ export const labelLiquidComponents = (world) => {
 			}
 		}
 
-	return { surf, componentOf }
+	LIQ_COMP_OUT.surf = surf
+	LIQ_COMP_OUT.componentOf = componentOf
+	return LIQ_COMP_OUT
 }
 
 /**
@@ -180,7 +203,7 @@ const buildDistField = (world, componentOf, dist, visit, gen, comp, sink, surf) 
 	visit[sinkCell] = gen
 	dist[sinkCell] = 0
 	floodPush(world, sx[sink], sy[sink])
-	for (let qi = 0; qi < world.floodQ.length; qi += 2) {
+	for (let qi = 0; qi < world.floodLen; qi += 2) {
 		const cx = world.floodQ[qi]
 		const cy = world.floodQ[qi + 1]
 		const d0 = dist[cy * W + cx]

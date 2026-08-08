@@ -99,39 +99,73 @@ export const edgeUpness = (world, x, y) => {
 	return u
 }
 
+/** `wrapAcrossEdge` 复用结果（勿长期持有）。 */
+const WRAP_XY = { x: 0, y: 0 }
+
 /**
  * 将坐标按世界尺寸取模环绕（两轴均归一化）。
  * @param {FluidWorld} world 世界
  * @param {number} x 列
  * @param {number} y 行
- * @param {number} edge 穿过的边（保留签名兼容）
- * @returns {{ x: number, y: number }} 环绕后
+ * @param {number} [_edge] 穿过的边（保留签名兼容）
+ * @returns {{ x: number, y: number }} 环绕后（复用缓冲）
  */
-export const wrapAcrossEdge = (world, x, y, edge) => {
+export const wrapAcrossEdge = (world, x, y, _edge) => {
 	const W = world.worldW
 	const H = world.worldH
 	let nx = x % W
 	if (nx < 0) nx += W
 	let ny = y % H
 	if (ny < 0) ny += H
-	return { x: nx, y: ny }
+	WRAP_XY.x = nx
+	WRAP_XY.y = ny
+	return WRAP_XY
+}
+
+/**
+ * @typedef {{
+ *   x: number, y: number,
+ *   wrapped: boolean, out: boolean,
+ *   wrappedFrac: number, outFrac: number,
+ * }} NeighborCoord
+ */
+
+/** `neighborCoord` 复用结果（勿嵌套调用 / 勿跨 tick 持有）。 */
+const NEIGHBOR = {
+	x: 0, y: 0,
+	wrapped: false, out: false,
+	wrappedFrac: 0, outFrac: 0,
+}
+
+/**
+ * 就地取模环绕，写入 `outX/outY` 字段到 NEIGHBOR。
+ * @param {number} W 宽
+ * @param {number} H 高
+ * @param {number} x 列
+ * @param {number} y 行
+ * @returns {void}
+ */
+const setWrappedXY = (W, H, x, y) => {
+	let nx = x % W
+	if (nx < 0) nx += W
+	let ny = y % H
+	if (ny < 0) ny += H
+	NEIGHBOR.x = nx
+	NEIGHBOR.y = ny
 }
 
 /**
  * 邻格坐标：按 wrap 权重分数拆分环绕与出界。
  * `wrappedFrac` = 该边 wrap 权重；`outFrac` = 1 − wrap（出界汇份额）。
  * 离散选择（粒子）：`discretePickSalt` 非空时用 hash 按 wrap 概率二选一。
+ * 返回模块内复用对象。
  * @param {FluidWorld} world 世界
  * @param {number} x 列
  * @param {number} y 行
  * @param {number} dx 偏移
  * @param {number} dy 偏移
  * @param {number} [discretePickSalt] 粒子离散选择盐值
- * @returns {{
- *   x: number, y: number,
- *   wrapped: boolean, out: boolean,
- *   wrappedFrac: number, outFrac: number,
- * }} 结果
+ * @returns {NeighborCoord} 结果
  */
 export const neighborCoord = (world, x, y, dx, dy, discretePickSalt) => {
 	const roles = edgeRoles(world)
@@ -147,8 +181,15 @@ export const neighborCoord = (world, x, y, dx, dy, discretePickSalt) => {
 	else if (ny < 0) crossed = EDGE_TOP
 	else if (ny >= H) crossed = EDGE_BOTTOM
 
-	if (crossed === null)
-		return { x: nx, y: ny, wrapped: false, out: false, wrappedFrac: 0, outFrac: 0 }
+	if (crossed === null) {
+		NEIGHBOR.x = nx
+		NEIGHBOR.y = ny
+		NEIGHBOR.wrapped = false
+		NEIGHBOR.out = false
+		NEIGHBOR.wrappedFrac = 0
+		NEIGHBOR.outFrac = 0
+		return NEIGHBOR
+	}
 
 	const wrap = roles[crossed].wrap
 	const outFrac = 1 - wrap
@@ -156,26 +197,45 @@ export const neighborCoord = (world, x, y, dx, dy, discretePickSalt) => {
 	if (discretePickSalt !== undefined) {
 		const pick = hash01((x | 0) + (y | 0) * 97, discretePickSalt | 0)
 		if (pick < wrap) {
-			const w = wrapAcrossEdge(world, nx, ny, crossed)
-			return { x: w.x, y: w.y, wrapped: true, out: false, wrappedFrac: wrap, outFrac }
+			setWrappedXY(W, H, nx, ny)
+			NEIGHBOR.wrapped = true
+			NEIGHBOR.out = false
+			NEIGHBOR.wrappedFrac = wrap
+			NEIGHBOR.outFrac = outFrac
+			return NEIGHBOR
 		}
-		const sink = roles[crossed].sink
-		return {
-			x: nx, y: ny, wrapped: false,
-			out: sink > 0.001,
-			wrappedFrac: wrap, outFrac,
-		}
+		NEIGHBOR.x = nx
+		NEIGHBOR.y = ny
+		NEIGHBOR.wrapped = false
+		NEIGHBOR.out = roles[crossed].sink > 0.001
+		NEIGHBOR.wrappedFrac = wrap
+		NEIGHBOR.outFrac = outFrac
+		return NEIGHBOR
 	}
 
 	if (wrap >= 0.999) {
-		const w = wrapAcrossEdge(world, nx, ny, crossed)
-		return { x: w.x, y: w.y, wrapped: true, out: false, wrappedFrac: 1, outFrac: 0 }
+		setWrappedXY(W, H, nx, ny)
+		NEIGHBOR.wrapped = true
+		NEIGHBOR.out = false
+		NEIGHBOR.wrappedFrac = 1
+		NEIGHBOR.outFrac = 0
+		return NEIGHBOR
 	}
-	if (wrap <= 0.001)
-		return { x: nx, y: ny, wrapped: false, out: true, wrappedFrac: 0, outFrac: 1 }
+	if (wrap <= 0.001) {
+		NEIGHBOR.x = nx
+		NEIGHBOR.y = ny
+		NEIGHBOR.wrapped = false
+		NEIGHBOR.out = true
+		NEIGHBOR.wrappedFrac = 0
+		NEIGHBOR.outFrac = 1
+		return NEIGHBOR
+	}
 
 	// Fractional: report wrapped target + fractions; caller splits mass.
-	const w = wrapAcrossEdge(world, nx, ny, crossed)
-	return { x: w.x, y: w.y, wrapped: true, out: false, wrappedFrac: wrap, outFrac }
+	setWrappedXY(W, H, nx, ny)
+	NEIGHBOR.wrapped = true
+	NEIGHBOR.out = false
+	NEIGHBOR.wrappedFrac = wrap
+	NEIGHBOR.outFrac = outFrac
+	return NEIGHBOR
 }
-

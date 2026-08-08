@@ -20,6 +20,10 @@ import {
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld */
 
+/** ⊥ĝ 侧向渗流方向（复用）。 */
+const SIDE_A = { dx: -1, dy: 0 }
+const SIDE_B = { dx: 1, dy: 0 }
+
 /**
  * 渗流队列 scratch（预分配 typed array，按 tick 复用）。
  * @typedef {object} SoilQueues
@@ -185,12 +189,20 @@ export const stepSoil = (world) => {
 	const up = gravityUpWeights(world)
 	const down = gravityDownWeights(world)
 	const strongDown = strongestDown(world)
-	let sideA = { dx: -1, dy: 0 }
-	let sideB = { dx: 1, dy: 0 }
 	if (strongDown.w > 0 && strongDown.dx !== 0) {
-		sideA = { dx: 0, dy: -1 }
-		sideB = { dx: 0, dy: 1 }
+		SIDE_A.dx = 0
+		SIDE_A.dy = -1
+		SIDE_B.dx = 0
+		SIDE_B.dy = 1
 	}
+	else {
+		SIDE_A.dx = -1
+		SIDE_A.dy = 0
+		SIDE_B.dx = 1
+		SIDE_B.dy = 0
+	}
+	const sideA = SIDE_A
+	const sideB = SIDE_B
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {

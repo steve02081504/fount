@@ -58,29 +58,40 @@ export const meltTempOnTransfer = (world, src, dst, moved, beforeSrc) => {
 }
 
 /**
+ * 熔岩密度（随温度）。
+ * @param {FluidWorld} w 世界
+ * @param {number} cell 格索引
+ * @returns {number} 密度
+ */
+const meltRhoAt = (w, cell) => rhoOf(SUBSTANCE.ROCK, w.temp[cell])
+
+/** 熔岩相描述符（每 tick 只改场指针，不重建对象）。 */
+const MELT_PHASE = {
+	/** @type {Float32Array | null} */
+	mass: null,
+	/** @type {Float32Array | null} */
+	vx: null,
+	/** @type {Float32Array | null} */
+	vy: null,
+	viscAt: meltVisc,
+	rhoAt: meltRhoAt,
+	canEnter: meltCanEnter,
+	onTransfer: meltTempOnTransfer,
+	markDirty: markAirIfMeltDrawCrossed,
+	flowScratchX: 'meltFlowX',
+	flowScratchY: 'meltFlowY',
+}
+
+/**
  * 熔岩输运（共用凝聚相核）。
  * @param {FluidWorld} world 世界
  * @returns {void}
  */
 export const stepLava = (world) => {
-	stepPhaseTransport(world, {
-		mass: world.melt,
-		vx: world.meltVx,
-		vy: world.meltVy,
-		viscAt: meltVisc,
-		/**
-		 * 熔岩密度（随温度）。
-		 * @param {FluidWorld} w 世界
-		 * @param {number} cell 格索引
-		 * @returns {number} 密度
-		 */
-		rhoAt: (w, cell) => rhoOf(SUBSTANCE.ROCK, w.temp[cell]),
-		canEnter: meltCanEnter,
-		onTransfer: meltTempOnTransfer,
-		markDirty: markAirIfMeltDrawCrossed,
-		flowScratchX: 'meltFlowX',
-		flowScratchY: 'meltFlowY',
-	})
+	MELT_PHASE.mass = world.melt
+	MELT_PHASE.vx = world.meltVx
+	MELT_PHASE.vy = world.meltVy
+	stepPhaseTransport(world, MELT_PHASE)
 }
 
 /**

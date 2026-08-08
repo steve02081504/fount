@@ -90,7 +90,7 @@ export const labelComponents = (world, opts) => {
 	 * @returns {void}
 	 */
 	const flood = (id, stats) => {
-		for (let qi = 0; qi < world.floodQ.length; qi += 2) {
+		for (let qi = 0; qi < world.floodLen; qi += 2) {
 			const x = world.floodQ[qi]
 			const y = world.floodQ[qi + 1]
 			for (let o = 0; o < 4; o++)

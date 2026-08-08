@@ -31,15 +31,35 @@ export const CELL_ASPECT = 2
  */
 export const cellStepLen = (dx, dy) => Math.hypot(dx, dy * CELL_ASPECT)
 
+/** 八邻物理单位方向 ux（与 NEIGH8_DX 同序；启动时填好）。 */
+export const NEIGH8_UX = new Float64Array(8)
+/** 八邻物理单位方向 uy（与 NEIGH8_DY 同序）。 */
+export const NEIGH8_UY = new Float64Array(8)
+/** 八邻物理步长。 */
+export const NEIGH8_LEN = new Float64Array(8)
+for (let c = 0; c < 8; c++) {
+	const len = cellStepLen(NEIGH8_DX[c], NEIGH8_DY[c])
+	NEIGH8_LEN[c] = len
+	NEIGH8_UX[c] = NEIGH8_DX[c] / len
+	NEIGH8_UY[c] = NEIGH8_DY[c] * CELL_ASPECT / len
+}
+
+/** `cellStepUnit` 复用结果（勿长期持有；热路径请用 NEIGH8_UX/UY）。 */
+const STEP_UNIT = { ux: 0, uy: 0, len: 0 }
+
 /**
  * 格步在物理平面上的单位方向（与设备 ĝ 同一视觉度量）。
+ * 返回模块内复用对象；固定八邻请用 `NEIGH8_UX`/`NEIGH8_UY`。
  * @param {number} dx 列步
  * @param {number} dy 行步
  * @returns {{ ux: number, uy: number, len: number }} 单位向量与长度
  */
 export const cellStepUnit = (dx, dy) => {
 	const len = cellStepLen(dx, dy)
-	return { ux: dx / len, uy: (dy * CELL_ASPECT) / len, len }
+	STEP_UNIT.ux = dx / len
+	STEP_UNIT.uy = dy * CELL_ASPECT / len
+	STEP_UNIT.len = len
+	return STEP_UNIT
 }
 
 /**

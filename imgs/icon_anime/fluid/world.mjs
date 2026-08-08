@@ -3,7 +3,7 @@
  */
 
 import { defaultGravity } from '../gravity.mjs'
-import { cellStepUnit, NEIGH8_DX, NEIGH8_DY, ORTHO_DX, ORTHO_DY } from '../hash.mjs'
+import { NEIGH8_DX, NEIGH8_DY, NEIGH8_UX, NEIGH8_UY, ORTHO_DX, ORTHO_DY } from '../hash.mjs'
 
 import { MAT, SOIL_CAP, LIQ_FULL, LIQ_DRAW, isSoilMat, isLiquidBarrier } from './mat.mjs'
 import { createParticlePool, clearParticlePool, totalParticleWater } from './particle_pool.mjs'
@@ -44,7 +44,8 @@ export { CELL_ASPECT } from '../hash.mjs'
  *     absorbGx: number, absorbGy: number,
  *   },
  *   scratch: Record<string, unknown>,
- *   floodQ: number[],
+ *   floodQ: Int32Array,
+ *   floodLen: number,
  * }} FluidWorld
  */
 
@@ -80,7 +81,7 @@ const DIAG_TILT_MIN = 0.28
 
 /**
  * 用当前重力填充下/上向加权邻格缓冲。
- * 权重 = 物理单位步向 · ĝ（`cellStepUnit` / CELL_ASPECT）；可选对角。
+ * 权重 = 物理单位步向 · ĝ（预计算 `NEIGH8_UX/UY`）；可选对角。
  * @param {FluidWorld} world 世界
  * @param {{ dx: number[], dy: number[], w: number[], n: number }} out 输出
  * @param {number} sense +1 向下，-1 向上
@@ -96,14 +97,11 @@ const fillGravityWeights = (world, out, sense, diagonals = false) => {
 	out.n = 0
 	const nCand = tilted ? 8 : 4
 	for (let c = 0; c < nCand; c++) {
-		const dx = NEIGH8_DX[c]
-		const dy = NEIGH8_DY[c]
-		const { ux, uy } = cellStepUnit(dx, dy)
-		const dot = ux * gx + uy * gy
+		const dot = NEIGH8_UX[c] * gx + NEIGH8_UY[c] * gy
 		if (dot <= 1e-6) continue
 		const i = out.n++
-		out.dx[i] = dx
-		out.dy[i] = dy
+		out.dx[i] = NEIGH8_DX[c]
+		out.dy[i] = NEIGH8_DY[c]
 		out.w[i] = dot
 	}
 	return out
@@ -200,7 +198,8 @@ export const createWorld = ({ width, height, margin = 24, bottomExtra = 4 } = {}
 		gravityDepthSpan: Math.max(worldW, worldH),
 		boundary: createBoundary(),
 		scratch: {},
-		floodQ: [],
+		floodQ: new Int32Array(256),
+		floodLen: 0,
 	}
 	recomputeGravityDepthBasis(world)
 	return world
@@ -243,12 +242,12 @@ export const growScratch = (world, key, need, Ctor) => {
 }
 
 /**
- * 清空 BFS 泛洪队列。
+ * 清空 BFS 泛洪队列（保留容量）。
  * @param {FluidWorld} world 世界
  * @returns {void}
  */
 export const floodClear = (world) => {
-	world.floodQ.length = 0
+	world.floodLen = 0
 }
 
 /**
@@ -259,7 +258,16 @@ export const floodClear = (world) => {
  * @returns {void}
  */
 export const floodPush = (world, x, y) => {
-	world.floodQ.push(x, y)
+	let q = world.floodQ
+	const len = world.floodLen
+	if (len + 2 > q.length) {
+		const next = new Int32Array(Math.max(len + 2, q.length * 2))
+		next.set(q)
+		world.floodQ = q = next
+	}
+	q[len] = x
+	q[len + 1] = y
+	world.floodLen = len + 2
 }
 
 /**
@@ -689,7 +697,9 @@ export const applyGravityToWorld = (world, g) => {
 	const prev = world.gravity
 	const dot = prev.gx * g.gx + prev.gy * g.gy
 	const flipped = dot < GRAVITY_DIRTY_DOT
-	world.gravity = { gx: g.gx, gy: g.gy, mag: g.mag }
+	world.gravity.gx = g.gx
+	world.gravity.gy = g.gy
+	world.gravity.mag = g.mag
 	recomputeGravityDepthBasis(world)
 	if (flipped) {
 		world.airDirty = true

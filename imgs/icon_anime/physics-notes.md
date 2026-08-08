@@ -13,11 +13,13 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 ## Layout / allocation
 
 - Terrain `solid`/`outline` and fluid grids: flat `y * W + x` (no row arrays). Outline glyphs are precomputed; compose only blits.
-- World scratch on `world.scratch` (typed arrays reused). BFS: reused `floodQ` (`floodClear` / `floodPush`) via shared `components.mjs`.
+- World scratch on `world.scratch` (typed arrays reused). BFS: `floodQ` is `Int32Array` + `floodLen` (`floodClear` / `floodPush`) via shared `components.mjs`.
+- Hot-path geometry returns module-local reused shells (`neighborCoord`, `wrapAcrossEdge`, `cellStepUnit`, `gasVelocityAt`, weight buffers) — copy fields if holding across another call. Eight-neighbor physical unit vectors are precomputed (`NEIGH8_UX`/`UY`).
 - Gas nozzle spans / blocked mask rebuild only when `gasGeomDirty`; velocity buffers swap with scratch (no per-tick `.set`). Blocked cells zeroed in the velocity pass — no `nextU*.fill(0)`. Nozzle spans are O(WH) column/row runs — do not re-walk per cell. Pass1 writes `staticP` + `gasShear`; pass2 reuses shear (no second depth walk). Border seeds are packed `Int32Array` pairs.
 - Air labels double-buffer `regionId` via `scratch.prevRegionId`; regions pooled + id-indexed; Boyle overlap = packed-key Map (sealed only).
 - Liquid settle orders cells deep→shallow by projected depth (counting-sort buckets). Shared `fillCellDepths` / `buildDepthOrder` across pressure fill, water settle, melt transport, buoyancy. Pressure cache: dirty seeds coalesce and flush lazily on next `pAt` (DDA lines, or full `fillPressureByDepth` past a seed threshold).
 - Hydraulic equalize: SoA scratch with precomputed surface φ; generation stamp on `liqHydroVisit` (no whole-grid `dist.fill`); surfaces contiguous by component (no `Map`); skip when `<2` surface samples.
+- Melt transport reuses one `PhaseDesc` shell; bubble rise tracks per-region extrema in typed scratch (no per-region JS cell lists).
 - Material rebuild keyed by packed `matKey`; hold frames skip it. Rebuild clears only icon mats (`BODY`/`POOL`/`SLOPE_*`), then paints soil mats from `world.land`. `BODY` cells are parallel `Uint8Array`s (`x`/`y`/`d`). Particles are SoA pools.
 - Land occupancy is one buffer: `world.land` ≡ `terrain.solid`. Melt↔soil writes it directly; `soilGeomDirty` only refreshes derived `surface`/`outline`.
 - Compose: one pass over view cells; ANSI joins same-SGR runs; torch quantizes lift + caches truecolor SGR; ripple-only frames skip `sampleLight` outside ring pads. Player `paint` homes cursor only (`\x1b[H`) — full viewport, no Erase display.

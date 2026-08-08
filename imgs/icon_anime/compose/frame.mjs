@@ -38,9 +38,10 @@ export const composeFrame = (state) => {
 		world, width, height, iconOx, iconOy, softPillars, softBody,
 		bodyReach, bodyMinD, pillars, frame, terrain, light,
 	} = state
-	const { ox, mat, liq, melt, temp, particles, condense, liqVx, liqVy, meltVx, meltVy, regionId, regions } = world
+	const { ox, mat, liq, melt, temp, particles, condense, liqVx, liqVy, meltVx, meltVy, regionId, regions, gravity } = world
 	const { solid, surface, surfaceChar, outline } = terrain
 	const { worldW: W, worldH: H } = world
+	const { gx, gy } = gravity
 	const cells = width * height
 	const gDown = strongestDown(world)
 	const gUp = gravityUpWeights(world)
@@ -103,12 +104,10 @@ export const composeFrame = (state) => {
 				fg[i] = FG_AT
 			}
 			else if (melt[wi] >= LIQ_DRAW) {
-				const { gx, gy } = world.gravity
 				ch[i] = lavaChar(melt[wi], wx + vy + frame, meltVx[wi], meltVy[wi], unsupportedDown(wx, vy), gx, gy)
 				fg[i] = lavaFg(temp[wi])
 			}
 			else if (liq[wi] >= LIQ_DRAW) {
-				const { gx, gy } = world.gravity
 				ch[i] = liquidChar(liq[wi], wx + vy + frame, unsupportedDown(wx, vy), liqVx[wi], liqVy[wi], gx, gy)
 				fg[i] = FG_SPLASH
 			}

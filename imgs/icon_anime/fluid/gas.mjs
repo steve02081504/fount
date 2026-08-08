@@ -340,8 +340,11 @@ export const windShear = (depth, depthSpan) => {
 	return 0.28 + 0.72 * alt ** WIND_SHEAR_POWER
 }
 
+/** 气体速度采样复用结果。 */
+const GAS_VEL = { ux: 0, uy: 0 }
+
 /**
- * 在世界点采样气体速度（最近格）。
+ * 在世界点采样气体速度（最近格）。返回复用对象。
  * @param {FluidWorld} world 流体世界
  * @param {number} x 列
  * @param {number} y 行
@@ -350,9 +353,15 @@ export const windShear = (depth, depthSpan) => {
 export const gasVelocityAt = (world, x, y) => {
 	const cx = x | 0
 	const cy = y | 0
-	if (!inWorld(world, cx, cy)) return { ux: 0, uy: 0 }
+	if (!inWorld(world, cx, cy)) {
+		GAS_VEL.ux = 0
+		GAS_VEL.uy = 0
+		return GAS_VEL
+	}
 	const cell = idx(world, cx, cy)
-	return { ux: world.gasUx[cell], uy: world.gasUy[cell] }
+	GAS_VEL.ux = world.gasUx[cell]
+	GAS_VEL.uy = world.gasUy[cell]
+	return GAS_VEL
 }
 
 /**
@@ -447,12 +456,12 @@ const fillGasSpans = (blocked, W, H, outVert, outHoriz) => {
  * }} [opts] 驱动选项
  * @returns {void}
  */
-export const stepGas = (world, opts = {}) => {
-	const time = opts.time ?? world.gasTime
-	const seed = opts.seed ?? 0
-	const forced = opts.forceWind
-	const driveUx = opts.driveUx
-	const driveUy = opts.driveUy
+export const stepGas = (world, opts) => {
+	const time = opts?.time ?? world.gasTime
+	const seed = opts?.seed ?? 0
+	const forced = opts?.forceWind
+	const driveUx = opts?.driveUx
+	const driveUy = opts?.driveUy
 	world.gasTime = time + 1
 
 	const { worldW: W, worldH: H, regionId, regions, gravity } = world

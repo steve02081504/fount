@@ -33,6 +33,10 @@ export const WATER_VISC = viscOf(rhoOf(SUBSTANCE.WATER, 0))
 /** 脏压强种子过多时直接全网重填。 */
 const P_DIRTY_FULL_THRESH = 48
 
+/** 压强行走用的上/下向快照（与 `STRONG_*` 分离，避免 `pressureAt` 中途覆盖）。 */
+const UP_LINE = { dx: 0, dy: 0, w: 0 }
+const DOWN_LINE = { dx: 0, dy: 0, w: 0 }
+
 /**
  * 自由液体能否进入 `(x, y)`。
  * @param {FluidWorld} world 流体世界
@@ -314,11 +318,19 @@ const transfer = (world, liq, flowX, flowY, src, dst, dx, dy, move) => {
 	return m
 }
 
+/** 复用的水流返回壳（缓冲本身在 world.scratch）。 */
+const WATER_FLOW = {
+	/** @type {Float32Array | null} */
+	flowX: null,
+	/** @type {Float32Array | null} */
+	flowY: null,
+}
+
 /**
  * 水相质量输运（沉降 / 侧膜 / 风 / 气体推挤）。
  * 流场写入 `liqFlowX` / `liqFlowY` scratch，供后续水力均衡与速度合成。
  * @param {FluidWorld} world 流体世界
- * @returns {{ flowX: Float32Array, flowY: Float32Array }} 本 tick 水流缓冲
+ * @returns {{ flowX: Float32Array, flowY: Float32Array }} 本 tick 水流缓冲（复用壳）
  */
 export const stepWater = (world) => {
 	const { worldW: W, worldH: H, mat, liq } = world
@@ -340,12 +352,16 @@ export const stepWater = (world) => {
 	const strongDownDx = strongDown.dx
 	const strongDownDy = strongDown.dy
 	const strongDownW = strongDown.w
-	const upStrong = { dx: strongUpDx, dy: strongUpDy, w: strongUpW }
-	const downStrong = { dx: strongDownDx, dy: strongDownDy, w: strongDownW }
+	UP_LINE.dx = strongUpDx
+	UP_LINE.dy = strongUpDy
+	UP_LINE.w = strongUpW
+	DOWN_LINE.dx = strongDownDx
+	DOWN_LINE.dy = strongDownDy
+	DOWN_LINE.w = strongDownW
 
 	const pfOrder = buildDepthOrder(world, 'liqPFOrder', 'liqPFCounts', false, depth)
 	const pCache = scratch(world, 'liqP', n, Float32Array)
-	fillPressureByDepth(world, pCache, depth, pfOrder, upW, upStrong)
+	fillPressureByDepth(world, pCache, depth, pfOrder, upW, UP_LINE)
 
 	let dirtyX = growScratch(world, 'liqPDirtyX', 64, Int32Array)
 	let dirtyY = growScratch(world, 'liqPDirtyY', 64, Int32Array)
@@ -379,13 +395,13 @@ export const stepWater = (world) => {
 	 */
 	const flushP = () => {
 		if (fullRefill) {
-			fillPressureByDepth(world, pCache, depth, pfOrder, upW, upStrong)
+			fillPressureByDepth(world, pCache, depth, pfOrder, upW, UP_LINE)
 			fullRefill = false
 			dirtyN = 0
 			return
 		}
 		for (let i = 0; i < dirtyN; i++)
-			refreshGravityLine(world, dirtyX[i], dirtyY[i], pCache, depth, upStrong, downStrong)
+			refreshGravityLine(world, dirtyX[i], dirtyY[i], pCache, depth, UP_LINE, DOWN_LINE)
 		dirtyN = 0
 	}
 
@@ -481,15 +497,20 @@ export const stepWater = (world) => {
 				const ny = y + dy
 				if (nx < 0 || nx >= W || ny < 0 || ny >= H) {
 					const nb = neighborCoord(world, x, y, dx, dy)
-					if (nb.wrapped && nb.wrappedFrac > 0.5) {
-						const neighbor = nb.y * W + nb.x
+					const wrapped = nb.wrapped
+					const wrappedFrac = nb.wrappedFrac
+					const nbX = nb.x
+					const nbY = nb.y
+					const outFrac = nb.outFrac || 1
+					if (wrapped && wrappedFrac > 0.5) {
+						const neighbor = nbY * W + nbX
 						if (!isLiquidBarrier(mat[neighbor])) {
-							const pDst = pAt(nb.x, nb.y)
+							const pDst = pAt(nbX, nbY)
 							const room = LIQ_FULL - liq[neighbor]
 							let move = freeSurface && liq[neighbor] < LIQ_DRAW
 								? sheetMove(liq[cell], liq[neighbor], room, WATER_VISC) * ST_DRY_FRAC
 								: pressureMove(pSrc, pDst, liq[cell], room, WATER_VISC)
-							move *= nb.wrappedFrac
+							move *= wrappedFrac
 							if (move > 0) {
 								transfer(world, liq, flowX, flowY, cell, neighbor, dx, dy, move)
 								markPDirty(x, y)
@@ -498,7 +519,6 @@ export const stepWater = (world) => {
 					}
 					else {
 						const before = liq[cell]
-						const outFrac = nb.outFrac || 1
 						const move = (freeSurface
 							? before * 0.25
 							: Math.min(
@@ -594,7 +614,9 @@ export const stepWater = (world) => {
 			}
 		}
 
-	return { flowX, flowY }
+	WATER_FLOW.flowX = flowX
+	WATER_FLOW.flowY = flowY
+	return WATER_FLOW
 }
 
 /**
