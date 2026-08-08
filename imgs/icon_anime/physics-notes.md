@@ -23,8 +23,9 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 - Material rebuild keyed by packed `matKey`; hold frames skip it. Rebuild clears only icon mats (`BODY`/`POOL`/`SLOPE_*`), then paints soil mats from `world.land`. `BODY` cells are parallel `Uint8Array`s (`x`/`y`/`d`). Particles are SoA pools.
 - Land occupancy is one buffer: `world.land` ≡ `terrain.solid`. Melt↔soil writes it directly; `soilGeomDirty` only refreshes derived `surface`/`outline`.
 - Soil drip + hanging reabsorb share underside air weight helpers (`undersideAirWeightSum` / `distributeToUndersideAir`).
-- Thermal conduction swaps `temp` ↔ `thermNextT` (no WH `.set` copy). Flash/evap/melt share one WH pass; horizon refresh stays after (needs final mats). `strongestUp/Down` accept optional precomputed weights.
-- Compose: one pass over view cells; ANSI joins same-SGR runs; torch quantizes lift + caches truecolor SGR; ripple-only frames skip `sampleLight` outside ring pads. Player `paint` homes cursor only (`\x1b[H`) — full viewport, no Erase display.
+- Thermal: conduction writes `thermNextT`; advection reuses `temp` as output (`temp.set(nextT)` then patch air) — no third `thermAdvT`. Flash/evap/melt share one WH pass; horizon refresh stays after (needs final mats). `strongestUp/Down` accept optional precomputed weights.
+- Compose: one pass over view cells; ANSI joins same-SGR runs; torch quantizes lift + caches truecolor SGR; ripple-only frames skip `sampleLight` outside ring pads. Drip glyphs via `prepareDripSources` (soil-sparse gen stamp → O(1) `dripFrom`). Player `paint` homes cursor only (`\x1b[H`) — full viewport, no Erase display.
+- Hot-path shells: `RAIN_EDGES`, `PRESSURE_CTX` (`pAt`/`markDirty` stable), melt/liquid `SURF_SOA`, `buildDepthOrders` out-pair, per-`poolKey` component lists, sealed-gas `overlapMap.clear()`.
 - Pointer wind: fill `driveUx`/`driveUy` only while right button down; clear previous dirty rect only; stroke segments pooled.
 
 ## Gravity & boundaries

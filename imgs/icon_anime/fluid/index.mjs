@@ -64,7 +64,7 @@ export {
 } from './gas.mjs'
 
 /** 土壤湿度 / 凝结 / 滴落。 */
-export { stepSoil, condenseDripSource } from './soil.mjs'
+export { stepSoil, condenseDripSource, prepareDripSources } from './soil.mjs'
 
 /** 热力与相变。 */
 export { stepThermal, cellRho } from './thermal.mjs'

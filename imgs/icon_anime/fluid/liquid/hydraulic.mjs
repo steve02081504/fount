@@ -62,11 +62,137 @@ const SURF_SOA = {
 	n: 0,
 }
 
+/** 熔岩自由面 SoA 壳。 */
+const MELT_SURF_SOA = {
+	/** @type {Int32Array} */
+	x: new Int32Array(0),
+	/** @type {Int32Array} */
+	y: new Int32Array(0),
+	/** @type {Int32Array} */
+	c: new Int32Array(0),
+	/** @type {Float32Array} */
+	p: new Float32Array(0),
+	/** @type {Float32Array} */
+	phi: new Float32Array(0),
+	n: 0,
+}
+
 /** `labelLiquidComponents` 返回壳。 */
 const LIQ_COMP_OUT = {
 	surf: SURF_SOA,
 	/** @type {Int32Array | null} */
 	componentOf: null,
+}
+
+/** `labelMeltComponents` 返回壳。 */
+const MELT_COMP_OUT = {
+	surf: MELT_SURF_SOA,
+	/** @type {Int32Array | null} */
+	componentOf: null,
+}
+
+/** 液体分量标注上下文（accept/onCell 读此，避免每 tick 新闭包）。 */
+const LIQ_LABEL_CTX = {
+	/** @type {FluidWorld | null} */
+	world: null,
+	/** @type {{ dx: number[], dy: number[], w: number[], n: number } | null} */
+	upW: null,
+	/** @type {{ dx: number, dy: number, w: number } | null} */
+	up: null,
+	/** @type {Float32Array | null} */
+	depth: null,
+	surf: SURF_SOA,
+	W: 0,
+}
+
+/**
+ * @param {FluidWorld} world 世界
+ * @param {number} cell 索引
+ * @returns {boolean} 可标注液体
+ */
+const acceptLiquidCell = (world, cell) =>
+	world.liq[cell] >= LIQ_DRAW && !isLiquidBarrier(world.mat[cell])
+
+/**
+ * @param {FluidWorld} world 世界
+ * @param {number} cell 索引
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} id 分量 id
+ * @returns {void}
+ */
+const onLiquidCell = (world, cell, x, y, id) => {
+	const ctx = LIQ_LABEL_CTX
+	const upW = /** @type {{ dx: number[], dy: number[], w: number[], n: number }} */ (ctx.upW)
+	if (!isLiquidFreeSurface(world, x, y, upW)) return
+	const up = /** @type {{ dx: number, dy: number, w: number }} */ (ctx.up)
+	const depth = /** @type {Float32Array} */ (ctx.depth)
+	const W = ctx.W
+	let airP = pressureAt(world, x, y)
+	if (up.w > 0) {
+		const ax = x + up.dx
+		const ay = y + up.dy
+		if (inWorld(world, ax, ay) && !isLiquidBarrier(world.mat[ay * W + ax]))
+			airP = pressureAt(world, ax, ay)
+	}
+	pushSurface(world, x, y, id, airP, hydraulicPhi(airP, depth[cell]), ctx.surf)
+}
+
+/** 熔岩分量标注上下文。 */
+const MELT_LABEL_CTX = {
+	/** @type {{ dx: number[], dy: number[], w: number[], n: number } | null} */
+	upW: null,
+	/** @type {{ dx: number, dy: number, w: number } | null} */
+	up: null,
+	/** @type {Float32Array | null} */
+	depth: null,
+	surf: MELT_SURF_SOA,
+	W: 0,
+}
+
+/**
+ * @param {FluidWorld} world 世界
+ * @param {number} cell 索引
+ * @returns {boolean} 可标注熔岩
+ */
+const acceptMeltCell = (world, cell) =>
+	world.melt[cell] >= LIQ_DRAW && !isLiquidBarrier(world.mat[cell])
+
+/**
+ * @param {FluidWorld} world 世界
+ * @param {number} cell 索引
+ * @param {number} x 列
+ * @param {number} y 行
+ * @param {number} id 分量 id
+ * @returns {void}
+ */
+const onMeltCell = (world, cell, x, y, id) => {
+	const ctx = MELT_LABEL_CTX
+	const upW = /** @type {{ dx: number[], dy: number[], w: number[], n: number }} */ (ctx.upW)
+	const W = ctx.W
+	let free = true
+	for (let i = 0; i < upW.n; i++) {
+		const ax = x + upW.dx[i]
+		const ay = y + upW.dy[i]
+		if (!inWorld(world, ax, ay)) continue
+		const above = ay * W + ax
+		if (!isLiquidBarrier(world.mat[above]) && world.melt[above] >= LIQ_DRAW) {
+			free = false
+			break
+		}
+	}
+	if (!free) return
+	const up = /** @type {{ dx: number, dy: number, w: number }} */ (ctx.up)
+	const depth = /** @type {Float32Array} */ (ctx.depth)
+	const surf = ctx.surf
+	let airP = pressureAt(world, x, y)
+	if (up.w > 0) {
+		const ax = x + up.dx
+		const ay = y + up.dy
+		if (inWorld(world, ax, ay) && !isLiquidBarrier(world.mat[ay * W + ax]))
+			airP = pressureAt(world, ax, ay)
+	}
+	pushSurface(world, x, y, id, airP, hydraulicPhi(airP, depth[cell]), surf)
 }
 
 /**
@@ -92,36 +218,17 @@ export const labelLiquidComponents = (world) => {
 	const up = strongestUp(world, upW)
 	const depth = fillCellDepths(world)
 
+	LIQ_LABEL_CTX.upW = upW
+	LIQ_LABEL_CTX.up = up
+	LIQ_LABEL_CTX.depth = depth
+	LIQ_LABEL_CTX.surf = surf
+	LIQ_LABEL_CTX.W = W
+
 	const { components } = labelComponents(world, {
-		/**
-		 * 是否为连通液体分量成员。
-		 * @param {FluidWorld} world 流体世界
-		 * @param {number} cell 扁平索引
-		 * @returns {boolean} 可标注
-		 */
-		accept: (world, cell) => world.liq[cell] >= LIQ_DRAW && !isLiquidBarrier(world.mat[cell]),
+		accept: acceptLiquidCell,
 		labels: componentOf,
 		poolKey: 'liqComponentPool',
-		/**
-		 * 标注格时收集自由面样本。
-		 * @param {FluidWorld} world 流体世界
-		 * @param {number} cell 扁平索引
-		 * @param {number} x 列
-		 * @param {number} y 行
-		 * @param {number} id 分量 id
-		 * @returns {void}
-		 */
-		onCell: (world, cell, x, y, id) => {
-			if (!isLiquidFreeSurface(world, x, y, upW)) return
-			let airP = pressureAt(world, x, y)
-			if (up.w > 0) {
-				const ax = x + up.dx
-				const ay = y + up.dy
-				if (inWorld(world, ax, ay) && !isLiquidBarrier(world.mat[ay * W + ax]))
-					airP = pressureAt(world, ax, ay)
-			}
-			pushSurface(world, x, y, id, airP, hydraulicPhi(airP, depth[cell]), surf)
-		},
+		onCell: onLiquidCell,
 	})
 	recycleComponents(world, components, 'liqComponentPool')
 
@@ -311,75 +418,34 @@ export const equilibrateHydraulic = (world, flowX, flowY, mobility = 1) => {
 export const labelMeltComponents = (world) => {
 	const W = world.worldW
 	const componentOf = clearLabels(world, 'meltComp', W * world.worldH)
-	const surf = {
-		x: growScratch(world, 'meltSurfX', 64, Int32Array),
-		y: growScratch(world, 'meltSurfY', 64, Int32Array),
-		c: growScratch(world, 'meltSurfC', 64, Int32Array),
-		p: growScratch(world, 'meltSurfP', 64, Float32Array),
-		phi: growScratch(world, 'meltSurfPhi', 64, Float32Array),
-		n: 0,
-	}
+	const surf = MELT_SURF_SOA
+	surf.x = growScratch(world, 'meltSurfX', 64, Int32Array)
+	surf.y = growScratch(world, 'meltSurfY', 64, Int32Array)
+	surf.c = growScratch(world, 'meltSurfC', 64, Int32Array)
+	surf.p = growScratch(world, 'meltSurfP', 64, Float32Array)
+	surf.phi = growScratch(world, 'meltSurfPhi', 64, Float32Array)
+	surf.n = 0
 
 	const upW = gravityUpWeights(world)
 	const up = strongestUp(world, upW)
 	const depth = fillCellDepths(world)
 
+	MELT_LABEL_CTX.upW = upW
+	MELT_LABEL_CTX.up = up
+	MELT_LABEL_CTX.depth = depth
+	MELT_LABEL_CTX.surf = surf
+	MELT_LABEL_CTX.W = W
+
 	const { components } = labelComponents(world, {
-		/**
-		 * @param {FluidWorld} world 世界
-		 * @param {number} cell 索引
-		 * @returns {boolean} 熔岩格
-		 */
-		accept: (world, cell) => world.melt[cell] >= LIQ_DRAW && !isLiquidBarrier(world.mat[cell]),
+		accept: acceptMeltCell,
 		labels: componentOf,
 		poolKey: 'meltComponentPool',
-		/**
-		 * @param {FluidWorld} world 世界
-		 * @param {number} cell 索引
-		 * @param {number} x 列
-		 * @param {number} y 行
-		 * @param {number} id 分量
-		 * @returns {void}
-		 */
-		onCell: (world, cell, x, y, id) => {
-			// Melt free surface: no condensed melt above along −ĝ.
-			let free = true
-			for (let i = 0; i < upW.n; i++) {
-				const ax = x + upW.dx[i]
-				const ay = y + upW.dy[i]
-				if (!inWorld(world, ax, ay)) continue
-				const above = ay * W + ax
-				if (!isLiquidBarrier(world.mat[above]) && world.melt[above] >= LIQ_DRAW) {
-					free = false
-					break
-				}
-			}
-			if (!free) return
-			let airP = pressureAt(world, x, y)
-			if (up.w > 0) {
-				const ax = x + up.dx
-				const ay = y + up.dy
-				if (inWorld(world, ax, ay) && !isLiquidBarrier(world.mat[ay * W + ax]))
-					airP = pressureAt(world, ax, ay)
-			}
-			const n = surf.n
-			if (n >= surf.x.length) {
-				surf.x = growScratch(world, 'meltSurfX', n + 1, Int32Array)
-				surf.y = growScratch(world, 'meltSurfY', n + 1, Int32Array)
-				surf.c = growScratch(world, 'meltSurfC', n + 1, Int32Array)
-				surf.p = growScratch(world, 'meltSurfP', n + 1, Float32Array)
-				surf.phi = growScratch(world, 'meltSurfPhi', n + 1, Float32Array)
-			}
-			surf.x[n] = x
-			surf.y[n] = y
-			surf.c[n] = id
-			surf.p[n] = airP
-			surf.phi[n] = hydraulicPhi(airP, depth[cell])
-			surf.n = n + 1
-		},
+		onCell: onMeltCell,
 	})
 	recycleComponents(world, components, 'meltComponentPool')
-	return { surf, componentOf }
+	MELT_COMP_OUT.surf = surf
+	MELT_COMP_OUT.componentOf = componentOf
+	return MELT_COMP_OUT
 }
 
 /**

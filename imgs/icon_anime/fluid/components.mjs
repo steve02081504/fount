@@ -33,6 +33,14 @@ const takeStats = (pool, id) => {
 	return stats
 }
 
+/** `labelComponents` 返回壳。 */
+const LABEL_OUT = {
+	/** @type {(ComponentStats | undefined)[]} */
+	components: /** @type {(ComponentStats | undefined)[]} */ ([]),
+	nextId: 1,
+	seedComponentId: 0,
+}
+
 /**
  * 正交连通分量标注。
  * `labels` 写分量 id（0 = 未接受 / 未标注）；分量 id 从 1 起稠密。
@@ -60,8 +68,12 @@ export const labelComponents = (world, opts) => {
 	const onCell = opts.onCell
 	const poolKey = opts.poolKey ?? 'componentPool'
 	const pool = /** @type {ComponentStats[]} */ world.scratch[poolKey] ??= []
+	const listKey = `${poolKey}List`
 	/** @type {(ComponentStats | undefined)[]} */
-	const components = []
+	const components = /** @type {(ComponentStats | undefined)[]} */ (
+		world.scratch[listKey] ??= []
+	)
+	components.length = 0
 	let next = opts.startId ?? 1
 	let seedComponentId = 0
 
@@ -156,7 +168,10 @@ export const labelComponents = (world, opts) => {
 		for (let x = 0; x < W; x++)
 			startAt(x, y)
 
-	return { components, nextId: next, seedComponentId }
+	LABEL_OUT.components = components
+	LABEL_OUT.nextId = next
+	LABEL_OUT.seedComponentId = seedComponentId
+	return LABEL_OUT
 }
 
 /**

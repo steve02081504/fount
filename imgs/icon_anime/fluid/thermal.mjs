@@ -51,6 +51,25 @@ const injectSteam = (world, cell, steamMass) => {
 }
 
 /**
+ * 邻格传导权重（0 = 不计入）。
+ * @param {Uint8Array} mat 材质
+ * @param {Float32Array} melt 熔岩
+ * @param {Float32Array} liq 液体
+ * @param {number} ni 邻格
+ * @param {boolean} hasMass 本格有凝聚相质量
+ * @returns {number} 传导系数
+ */
+const neighborConduct = (mat, melt, liq, ni, hasMass) => {
+	const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
+	if (hasMass) {
+		// Mass thermal capacity ≫ air: ignore ambient air neighbors so
+		// soil melt / lava heat is not quenched in one tick.
+		return nMass ? CONDUCT : 0
+	}
+	return nMass || mat[ni] === MAT.AIR ? AIR_CONDUCT : 0
+}
+
+/**
  * 热力步进：传导 → 空气平流 → 蒸发 / 闪蒸 → 熔化 / 凝固。
  * @param {FluidWorld} world 流体世界
  * @returns {void}
@@ -73,35 +92,30 @@ export const stepThermal = (world) => {
 			}
 			let acc = prevT[cell]
 			let w = 1
-			/**
-			 * @param {number} ni 邻格
-			 * @returns {void}
-			 */
-			const accum = (ni) => {
-				const nMass = melt[ni] > 0.02 || isSoilMat(mat[ni]) || liq[ni] > 0.02
-				const nAir = !nMass && mat[ni] === MAT.AIR
-				if (hasMass) {
-					// Mass thermal capacity ≫ air: ignore ambient air neighbors so
-					// soil melt / lava heat is not quenched in one tick.
-					if (nMass) { acc += prevT[ni] * CONDUCT; w += CONDUCT }
-				}
-				else if (nMass || nAir) {
-					acc += prevT[ni] * AIR_CONDUCT
-					w += AIR_CONDUCT
-				}
+			if (x > 0) {
+				const c = neighborConduct(mat, melt, liq, cell - 1, hasMass)
+				if (c) { acc += prevT[cell - 1] * c; w += c }
 			}
-			if (x > 0) accum(cell - 1)
-			if (x + 1 < W) accum(cell + 1)
-			if (y > 0) accum(cell - W)
-			if (y + 1 < H) accum(cell + W)
+			if (x + 1 < W) {
+				const c = neighborConduct(mat, melt, liq, cell + 1, hasMass)
+				if (c) { acc += prevT[cell + 1] * c; w += c }
+			}
+			if (y > 0) {
+				const c = neighborConduct(mat, melt, liq, cell - W, hasMass)
+				if (c) { acc += prevT[cell - W] * c; w += c }
+			}
+			if (y + 1 < H) {
+				const c = neighborConduct(mat, melt, liq, cell + W, hasMass)
+				if (c) { acc += prevT[cell + W] * c; w += c }
+			}
 			nextT[cell] = acc / w
 		}
 
 	// --- Air temperature advection by gas velocity ---
+	// Reuse prevT as advect output (drop dedicated thermAdvT); read conduction from nextT.
 	const gasUx = world.gasUx
 	const gasUy = world.gasUy
-	const advT = scratch(world, 'thermAdvT', n, Float32Array)
-	advT.set(nextT)
+	prevT.set(nextT)
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
@@ -119,12 +133,11 @@ export const stepThermal = (world) => {
 			if (mat[src] !== MAT.AIR && melt[src] <= 0.02 && !isSoilMat(mat[src]) && liq[src] <= 0.02)
 				continue
 			const speed = Math.min(1, Math.hypot(ux, uy) * 0.35)
-			advT[cell] = nextT[cell] + (nextT[src] - nextT[cell]) * AIR_ADVECT * speed
+			prevT[cell] = nextT[cell] + (nextT[src] - nextT[cell]) * AIR_ADVECT * speed
 		}
 
-	world.scratch.thermNextT = prevT
-	world.temp = advT
-	const temp = advT
+	// world.temp stays prevT; thermNextT keeps nextT for the next tick.
+	const temp = prevT
 
 	const upW = gravityUpWeights(world)
 	const up = strongestUp(world, upW)

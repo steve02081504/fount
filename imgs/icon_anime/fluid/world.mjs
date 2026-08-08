@@ -637,6 +637,14 @@ export const fillCellDepths = (world) => {
 const depthBucket = (d, scale, depthBuckets) =>
 	Math.min(depthBuckets - 1, Math.max(0, (d * scale) | 0))
 
+/** 深度序返回壳。 */
+const DEPTH_ORDERS_OUT = {
+	/** @type {Int32Array | null} */
+	shallow: null,
+	/** @type {Int32Array | null} */
+	deep: null,
+}
+
 /**
  * 按投影深度 counting-sort 同时产出浅→深与深→浅序（共享一次分桶计数）。
  * 同一重力基下复用，避免 tick 内多次 O(WH) 重排。
@@ -645,7 +653,7 @@ const depthBucket = (d, scale, depthBuckets) =>
  * @param {string} deepKey 深→浅 order scratch 键
  * @param {string} countsKey 桶计数 scratch 键
  * @param {Float32Array} [depth] 已有深度场；缺省则 `fillCellDepths`
- * @returns {{ shallow: Int32Array, deep: Int32Array }} 两序
+ * @returns {{ shallow: Int32Array, deep: Int32Array }} 两序（复用壳）
  */
 export const buildDepthOrders = (world, shallowKey, deepKey, countsKey, depth) => {
 	const { worldW: W, worldH: H, gravity: { gx, gy }, gravityDepth0 } = world
@@ -661,8 +669,11 @@ export const buildDepthOrders = (world, shallowKey, deepKey, countsKey, depth) =
 		&& basis.gx === gx && basis.gy === gy && basis.depth0 === gravityDepth0
 		&& basis.W === W && basis.H === H
 		&& basis.shallowKey === shallowKey && basis.deepKey === deepKey
-	)
-		return { shallow, deep }
+	) {
+		DEPTH_ORDERS_OUT.shallow = shallow
+		DEPTH_ORDERS_OUT.deep = deep
+		return DEPTH_ORDERS_OUT
+	}
 
 	const depthBuckets = Math.max(W, H) + 2
 	const dCounts = scratch(world, countsKey, depthBuckets, Int32Array)
@@ -705,7 +716,9 @@ export const buildDepthOrders = (world, shallowKey, deepKey, countsKey, depth) =
 		basis.shallowKey = shallowKey
 		basis.deepKey = deepKey
 	}
-	return { shallow, deep }
+	DEPTH_ORDERS_OUT.shallow = shallow
+	DEPTH_ORDERS_OUT.deep = deep
+	return DEPTH_ORDERS_OUT
 }
 
 /**

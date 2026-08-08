@@ -244,7 +244,8 @@ export const labelAirRegions = (world) => {
 
 	if (hasSealed) {
 		/** @type {Map<number, number>} */
-		const overlap = new Map()
+		const overlap = /** @type {Map<number, number>} */ (world.scratch.sealedOverlapMap ??= new Map())
+		overlap.clear()
 		const oldTotal = scratch(world, 'oldRegionTotal', Math.max(oldRegions.length, 1), Float32Array)
 		oldTotal.fill(0)
 		for (let cell = 0; cell < n; cell++) {

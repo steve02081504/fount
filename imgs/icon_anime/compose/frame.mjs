@@ -6,7 +6,7 @@ import { waterChar, liquidChar, dripChar, lavaChar } from '../fluid/glyphs.mjs'
 import {
 	MAT, LIQ_DRAW, BUBBLE_MIN_CELLS, isLiquidBarrier,
 } from '../fluid/mat.mjs'
-import { condenseDripSource } from '../fluid/soil.mjs'
+import { prepareDripSources } from '../fluid/soil.mjs'
 import { strongestDown, gravityUpWeights } from '../fluid/world.mjs'
 import { ICON_W, ICON_BODY_H, PILLARS, BODY_DIST, maxBodyD } from '../icon.mjs'
 
@@ -45,6 +45,7 @@ export const composeFrame = (state) => {
 	const cells = width * height
 	const gDown = strongestDown(world)
 	const gUp = gravityUpWeights(world)
+	const { dripFrom, dripGen, epoch: dripEpoch } = prepareDripSources(world, gUp)
 
 	/**
 	 * 重力下格无支撑 → 下落字形提示。
@@ -126,7 +127,7 @@ export const composeFrame = (state) => {
 					fg[i] = FG_BUBBLE
 				}
 				else {
-					const dripSoil = condenseDripSource(world, wx, vy, gUp)
+					const dripSoil = dripGen[wi] === dripEpoch ? dripFrom[wi] : -1
 					if (dripSoil >= 0) {
 						ch[i] = dripChar(condense[dripSoil], wx + frame)
 						fg[i] = FG_SPLASH

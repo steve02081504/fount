@@ -22,6 +22,104 @@ const UP_LINE = { dx: 0, dy: 0, w: 0 }
 const DOWN_LINE = { dx: 0, dy: 0, w: 0 }
 
 /**
+ * 本 tick 压力查询上下文（复用壳；`pAt`/`markDirty` 为稳定函数）。
+ * @type {{
+ *   world: FluidWorld | null,
+ *   cache: Float32Array | null,
+ *   depth: Float32Array | null,
+ *   order: Int32Array | null,
+ *   deepOrder: Int32Array | null,
+ *   upWeights: { dx: number[], dy: number[], w: number[], n: number } | null,
+ *   strongUp: { dx: number, dy: number, w: number } | null,
+ *   strongDown: { dx: number, dy: number, w: number } | null,
+ *   dirtyX: Int32Array | null,
+ *   dirtyY: Int32Array | null,
+ *   dirtyN: number,
+ *   fullRefill: boolean,
+ *   W: number,
+ *   H: number,
+ *   pAt: (x: number, y: number) => number,
+ *   markDirty: (x: number, y: number) => void,
+ * }}
+ */
+const PRESSURE_CTX = {
+	world: null,
+	cache: null,
+	depth: null,
+	order: null,
+	deepOrder: null,
+	upWeights: null,
+	strongUp: null,
+	strongDown: null,
+	dirtyX: null,
+	dirtyY: null,
+	dirtyN: 0,
+	fullRefill: false,
+	W: 0,
+	H: 0,
+	/**
+	 * @param {number} x 列
+	 * @param {number} y 行
+	 * @returns {void}
+	 */
+	markDirty(x, y) {
+		if (PRESSURE_CTX.fullRefill) return
+		if (PRESSURE_CTX.dirtyN >= P_DIRTY_FULL_THRESH) {
+			PRESSURE_CTX.fullRefill = true
+			return
+		}
+		let dirtyX = /** @type {Int32Array} */ (PRESSURE_CTX.dirtyX)
+		let dirtyY = /** @type {Int32Array} */ (PRESSURE_CTX.dirtyY)
+		const world = /** @type {FluidWorld} */ (PRESSURE_CTX.world)
+		if (PRESSURE_CTX.dirtyN >= dirtyX.length) {
+			dirtyX = growScratch(world, 'liqPDirtyX', PRESSURE_CTX.dirtyN + 1, Int32Array)
+			dirtyY = growScratch(world, 'liqPDirtyY', PRESSURE_CTX.dirtyN + 1, Int32Array)
+			PRESSURE_CTX.dirtyX = dirtyX
+			PRESSURE_CTX.dirtyY = dirtyY
+		}
+		dirtyX[PRESSURE_CTX.dirtyN] = x
+		dirtyY[PRESSURE_CTX.dirtyN] = y
+		PRESSURE_CTX.dirtyN++
+	},
+	/**
+	 * @param {number} x 列
+	 * @param {number} y 行
+	 * @returns {number} 缓存的液/气压力
+	 */
+	pAt(x, y) {
+		if (PRESSURE_CTX.dirtyN || PRESSURE_CTX.fullRefill) flushPressure()
+		const { W, H } = PRESSURE_CTX
+		if (x < 0 || y < 0 || x >= W || y >= H)
+			return pressureAt(/** @type {FluidWorld} */ (PRESSURE_CTX.world), x, Math.max(0, y))
+		return /** @type {Float32Array} */ (PRESSURE_CTX.cache)[y * W + x]
+	},
+}
+
+/**
+ * 冲刷脏种子到压力缓存。
+ * @returns {void}
+ */
+const flushPressure = () => {
+	const ctx = PRESSURE_CTX
+	const world = /** @type {FluidWorld} */ (ctx.world)
+	const cache = /** @type {Float32Array} */ (ctx.cache)
+	const depth = /** @type {Float32Array} */ (ctx.depth)
+	const order = /** @type {Int32Array} */ (ctx.order)
+	const upWeights = /** @type {{ dx: number[], dy: number[], w: number[], n: number }} */ (ctx.upWeights)
+	if (ctx.fullRefill) {
+		fillPressureByDepth(world, cache, depth, order, upWeights, UP_LINE)
+		ctx.fullRefill = false
+		ctx.dirtyN = 0
+		return
+	}
+	const dirtyX = /** @type {Int32Array} */ (ctx.dirtyX)
+	const dirtyY = /** @type {Int32Array} */ (ctx.dirtyY)
+	for (let i = 0; i < ctx.dirtyN; i++)
+		refreshGravityLine(world, dirtyX[i], dirtyY[i], cache, depth, UP_LINE, DOWN_LINE)
+	ctx.dirtyN = 0
+}
+
+/**
  * 格对静压柱的有效填充贡献（按密度归一到 RHO_G 压头）。
  * @param {FluidWorld} world 世界
  * @param {number} cell 索引
@@ -274,7 +372,7 @@ const refreshGravityLine = (world, x0, y0, cache, depth, up, down) => {
  *   upWeights: { dx: number[], dy: number[], w: number[], n: number },
  *   strongUp: { dx: number, dy: number, w: number },
  *   strongDown: { dx: number, dy: number, w: number },
- * }} 压力 API 与重力快照
+ * }} 压力 API 与重力快照（复用壳）
  */
 export const beginLiquidPressure = (world) => {
 	const { worldW: W, worldH: H } = world
@@ -296,56 +394,19 @@ export const beginLiquidPressure = (world) => {
 	const cache = scratch(world, 'liqP', n, Float32Array)
 	fillPressureByDepth(world, cache, depth, order, upWeights, UP_LINE)
 
-	let dirtyX = growScratch(world, 'liqPDirtyX', 64, Int32Array)
-	let dirtyY = growScratch(world, 'liqPDirtyY', 64, Int32Array)
-	let dirtyN = 0
-	let fullRefill = false
-
-	/**
-	 * @param {number} x 列
-	 * @param {number} y 行
-	 * @returns {void}
-	 */
-	const markDirty = (x, y) => {
-		if (fullRefill) return
-		if (dirtyN >= P_DIRTY_FULL_THRESH) {
-			fullRefill = true
-			return
-		}
-		if (dirtyN >= dirtyX.length) {
-			dirtyX = growScratch(world, 'liqPDirtyX', dirtyN + 1, Int32Array)
-			dirtyY = growScratch(world, 'liqPDirtyY', dirtyN + 1, Int32Array)
-		}
-		dirtyX[dirtyN] = x
-		dirtyY[dirtyN] = y
-		dirtyN++
-	}
-
-	/**
-	 *
-	 */
-	const flush = () => {
-		if (fullRefill) {
-			fillPressureByDepth(world, cache, depth, order, upWeights, UP_LINE)
-			fullRefill = false
-			dirtyN = 0
-			return
-		}
-		for (let i = 0; i < dirtyN; i++)
-			refreshGravityLine(world, dirtyX[i], dirtyY[i], cache, depth, UP_LINE, DOWN_LINE)
-		dirtyN = 0
-	}
-
-	/**
-	 * @param {number} x 列
-	 * @param {number} y 行
-	 * @returns {number} 缓存的液/气压力
-	 */
-	const pAt = (x, y) => {
-		if (dirtyN || fullRefill) flush()
-		if (x < 0 || y < 0 || x >= W || y >= H) return pressureAt(world, x, Math.max(0, y))
-		return cache[y * W + x]
-	}
-
-	return { pAt, markDirty, depth, deepOrder, upWeights, strongUp, strongDown }
+	PRESSURE_CTX.world = world
+	PRESSURE_CTX.cache = cache
+	PRESSURE_CTX.depth = depth
+	PRESSURE_CTX.order = order
+	PRESSURE_CTX.deepOrder = deepOrder
+	PRESSURE_CTX.upWeights = upWeights
+	PRESSURE_CTX.strongUp = strongUp
+	PRESSURE_CTX.strongDown = strongDown
+	PRESSURE_CTX.dirtyX = growScratch(world, 'liqPDirtyX', 64, Int32Array)
+	PRESSURE_CTX.dirtyY = growScratch(world, 'liqPDirtyY', 64, Int32Array)
+	PRESSURE_CTX.dirtyN = 0
+	PRESSURE_CTX.fullRefill = false
+	PRESSURE_CTX.W = W
+	PRESSURE_CTX.H = H
+	return PRESSURE_CTX
 }

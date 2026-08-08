@@ -6,25 +6,28 @@ import { spawnParticle } from '../fluid/particles.mjs'
 import { globalWindAt, windShear } from '../fluid/gas.mjs'
 import { hash01 } from '../hash.mjs'
 
+/** 四边出雨权重壳（原地写 w，勿跨调用持有）。 */
+const RAIN_EDGES = [
+	{ nx: 0, ny: -1, w: 0 }, // top
+	{ nx: 0, ny: 1, w: 0 }, // bottom
+	{ nx: -1, ny: 0, w: 0 }, // left
+	{ nx: 1, ny: 0, w: 0 }, // right
+]
+
 /**
  * 四边出雨权重（source 角色）。导出供测试。
  * @param {number} gx 单位重力 x
  * @param {number} gy 单位重力 y
- * @returns {{ nx: number, ny: number, w: number }[]} 边权重
+ * @returns {{ nx: number, ny: number, w: number }[]} 边权重（模块壳）
  */
 export const rainEdgeWeights = (gx, gy) => {
-	const edges = [
-		{ nx: 0, ny: -1, w: 0 }, // top
-		{ nx: 0, ny: 1, w: 0 }, // bottom
-		{ nx: -1, ny: 0, w: 0 }, // left
-		{ nx: 1, ny: 0, w: 0 }, // right
-	]
-	for (const e of edges) {
-		const dot = e.nx * gx + e.ny * gy
-		e.w = Math.max(0, -dot)
+	const edges = RAIN_EDGES
+	for (let i = 0; i < 4; i++) {
+		const e = edges[i]
+		e.w = Math.max(0, -(e.nx * gx + e.ny * gy))
 	}
 	if (edges[1].w > 0) {
-		for (const e of edges) e.w = 0
+		for (let i = 0; i < 4; i++) edges[i].w = 0
 		return edges
 	}
 	edges[1].w = 0

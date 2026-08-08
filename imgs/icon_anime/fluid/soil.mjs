@@ -116,6 +116,46 @@ export const condenseDripSource = (world, x, y, up = gravityUpWeights(world)) =>
 }
 
 /**
+ * 预填悬挂凝结源（稀疏：仅扫描有 COND_DRAW 的土壤）。
+ * compose 读 `dripFrom[cell]`，当 `dripGen[cell] === epoch` 时有效。
+ * @param {FluidWorld} world 世界
+ * @param {{ dx: number[], dy: number[], w: number[], n: number }} [up] 上向权重
+ * @returns {{ dripFrom: Int32Array, dripGen: Int32Array, epoch: number }} 滴落表
+ */
+export const prepareDripSources = (world, up = gravityUpWeights(world)) => {
+	const { worldW: W, worldH: H, mat, condense } = world
+	const n = W * H
+	const dripFrom = scratch(world, 'dripFrom', n, Int32Array)
+	const dripGen = scratch(world, 'dripGen', n, Int32Array)
+	const dripPri = scratch(world, 'dripPri', n, Uint8Array)
+	let epoch = (/** @type {number} */ (world.scratch.dripEpoch) | 0) + 1
+	if (epoch >= 0x7fffffff) {
+		dripGen.fill(0)
+		epoch = 1
+	}
+	world.scratch.dripEpoch = epoch
+
+	// Match condenseDripSource: lower up-offset index wins.
+	for (let y = 0; y < H; y++)
+		for (let x = 0; x < W; x++) {
+			const soil = y * W + x
+			if (!isSoilMat(mat[soil]) || condense[soil] < COND_DRAW) continue
+			for (let oi = 0; oi < up.n; oi++) {
+				const ax = x - up.dx[oi]
+				const ay = y - up.dy[oi]
+				if (!inWorld(world, ax, ay)) continue
+				const air = ay * W + ax
+				if (mat[air] !== MAT.AIR) continue
+				if (dripGen[air] === epoch && dripPri[air] <= oi) continue
+				dripFrom[air] = soil
+				dripGen[air] = epoch
+				dripPri[air] = oi
+			}
+		}
+	return { dripFrom, dripGen, epoch }
+}
+
+/**
  * 下向开放空气邻格的权重和（无则 0）。
  * @param {FluidWorld} world 世界
  * @param {number} x 列
@@ -275,22 +315,36 @@ export const stepSoil = (world) => {
 			let side0 = -1
 			let side1 = -1
 			let sideN = 0
-			for (const side of [sideA, sideB]) {
-				const sx = x + side.dx
-				const sy = y + side.dy
-				if (!inWorld(world, sx, sy)) continue
-				const neighbor = sy * W + sx
-				if (!isSoilMat(mat[neighbor])) continue
-				if (sideN === 0) side0 = neighbor
-				else side1 = neighbor
-				sideN++
+			{
+				const sx = x + sideA.dx
+				const sy = y + sideA.dy
+				if (inWorld(world, sx, sy)) {
+					const neighbor = sy * W + sx
+					if (isSoilMat(mat[neighbor])) {
+						side0 = neighbor
+						sideN = 1
+					}
+				}
+			}
+			{
+				const sx = x + sideB.dx
+				const sy = y + sideB.dy
+				if (inWorld(world, sx, sy)) {
+					const neighbor = sy * W + sx
+					if (isSoilMat(mat[neighbor])) {
+						if (sideN === 0) side0 = neighbor
+						else side1 = neighbor
+						sideN++
+					}
+				}
 			}
 			if (sideN) {
 				const each = (moistureAmount * SOIL_SIDE_FRAC) / sideN
-				for (let si = 0; si < sideN; si++) {
-					const neighbor = si === 0 ? side0 : side1
-					const take = Math.min(each, Math.max(0, SOIL_CAP - moisture[neighbor]))
-					if (take > 1e-8) pushMove(world, queues, cell, neighbor, take)
+				const take0 = Math.min(each, Math.max(0, SOIL_CAP - moisture[side0]))
+				if (take0 > 1e-8) pushMove(world, queues, cell, side0, take0)
+				if (sideN > 1) {
+					const take1 = Math.min(each, Math.max(0, SOIL_CAP - moisture[side1]))
+					if (take1 > 1e-8) pushMove(world, queues, cell, side1, take1)
 				}
 			}
 		}
