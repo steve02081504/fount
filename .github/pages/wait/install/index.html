@@ -294,6 +294,22 @@
 		</div>
 	</footer>
 
+	<dialog id="utm-welcome-dialog" class="modal">
+		<div class="modal-box utm-welcome-box max-w-md border border-base-content/10 bg-base-100 text-center shadow-2xl">
+			<div class="mx-auto mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-primary/10 ring-1 ring-primary/20" aria-hidden="true">
+				<img src="https://steve02081504.github.io/fount/imgs/icon.svg" alt="" class="h-8 w-8" width="32" height="32" />
+			</div>
+			<h2 class="text-2xl font-bold tracking-wide" data-i18n="installer_wait_screen.utm_welcome.title"></h2>
+			<p id="utm-welcome-message" class="utm-welcome-message py-4 text-base leading-relaxed text-base-content/80"></p>
+			<div class="modal-action mt-2 justify-center">
+				<form method="dialog">
+					<button class="btn btn-primary min-w-40" data-i18n="installer_wait_screen.utm_welcome.dismiss"></button>
+				</form>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop backdrop-blur-sm"><button type="submit" data-i18n="util.common.close"></button></form>
+	</dialog>
+
 	<script type="module" src="index.mjs"></script>
 
 </body>

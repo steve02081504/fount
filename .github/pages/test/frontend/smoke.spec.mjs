@@ -9,6 +9,11 @@ test.describe('GitHub Pages smoke', () => {
 		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
 	})
 
+	test('root redirect keeps search and hash', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/?utm_source=linux.sb&rid=smoke1#welcome`, { waitUntil: 'domcontentloaded' })
+		await expect(page).toHaveURL(/\/wait\/install\/\?utm_source=linux\.sb&rid=smoke1#welcome/, { timeout: 30_000 })
+	})
+
 	test('install wait screen loads base + test watch', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/wait/install/`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#launchButton')).toBeVisible({ timeout: 30_000 })
@@ -17,6 +22,13 @@ test.describe('GitHub Pages smoke', () => {
 		}).toBe(true)
 		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('h1').first()).toBeAttached()
+	})
+
+	test('utm_source shows welcome dialog after hero intro', async ({ page, baseUrl }) => {
+		await page.goto(`${baseUrl}/wait/install/?utm_source=linux.sb`, { waitUntil: 'domcontentloaded' })
+		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#utm-welcome-dialog')).toBeVisible({ timeout: 5_000 })
+		await expect(page.locator('#utm-welcome-message')).toContainText('linux.sb')
 	})
 
 	test('protocol shows offline dialog; badges render', async ({ page, baseUrl }) => {

@@ -21,7 +21,9 @@
 	<link rel="stylesheet" href="./base.css" type="text/css" />
 	<script type="module">
 		// load 后再跳，给跨文档 VT 留下 old snapshot（未就绪瞬跳容易被 skip）
-		(f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(() => { location.href = './wait/install/' })
+		(f => document.readyState === 'complete' ? f() : window.addEventListener('load', f))(() => {
+			location.href = './wait/install/' + location.search + location.hash
+		})
 	</script>
 </head>
 
