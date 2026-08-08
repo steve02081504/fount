@@ -5,6 +5,7 @@ import {
 	loadPersonalHideEntries,
 } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
+import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 
 import { registerEntityFileEndpoints } from './filesEndpoints.mjs'
@@ -114,10 +115,10 @@ export function registerEntityEndpoints(router) {
 		const entityHash = req.params[0].toLowerCase()
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!isEntityHash128(entityHash))
-			return res.status(400).json({ error: 'invalid entityHash' })
+			throw httpError(400, 'invalid entityHash')
 		const groupId = String(req.query?.groupId || '').trim() || undefined
 		if (!await canReadEntityStats(replicaUsername, operatorEntityHash, entityHash, groupId))
-			return res.status(403).json({ error: 'Permission denied' })
+			throw httpError(403, 'Permission denied')
 		res.status(200).json({ stats: await getStats(entityHash) })
 	})
 
@@ -125,7 +126,7 @@ export function registerEntityEndpoints(router) {
 		const entityHash = req.params[0].toLowerCase()
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!await isWritableLocalEntityForUser(replicaUsername, entityHash))
-			return res.status(403).json({ error: 'Permission denied' })
+			throw httpError(403, 'Permission denied')
 		const { lastSeenAt } = await recordHeartbeat(replicaUsername, entityHash)
 		pollOwnedEntityProfileUpdates(replicaUsername).catch(handleError)
 		const profile = await getProfile(entityHash, replicaUsername, { skipPresentation: true })
@@ -139,7 +140,7 @@ export function registerEntityEndpoints(router) {
 		const entityHash = req.params[0].toLowerCase()
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!await isWritableLocalEntityForUser(replicaUsername, entityHash))
-			return res.status(403).json({ error: 'Permission denied' })
+			throw httpError(403, 'Permission denied')
 		const updated = await updateStatus(replicaUsername, entityHash, req.body.status, req.body.customStatus)
 		res.status(200).json({
 			status: updated.status,
@@ -177,7 +178,7 @@ export function registerEntityEndpoints(router) {
 		const entityHash = req.params[0].toLowerCase()
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!operatorEntityHash)
-			return res.status(400).json({ error: 'operator identity not configured' })
+			throw httpError(400, 'operator identity not configured')
 		const groupId = String(req.body?.groupId || req.query?.groupId || '').trim() || undefined
 		const locales = localesFromRequest(req, replicaUsername)
 		try {
@@ -194,7 +195,7 @@ export function registerEntityEndpoints(router) {
 		}
 		catch (error) {
 			if (error?.status === 403 || /Permission denied|not declared owner/i.test(String(error?.message || '')))
-				return res.status(403).json({ error: error.message || 'Permission denied' })
+				throw httpError(403, error.message || 'Permission denied')
 			throw error
 		}
 	})
@@ -203,16 +204,15 @@ export function registerEntityEndpoints(router) {
 		const entityHash = req.params[0].toLowerCase()
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!operatorEntityHash)
-			return res.status(400).json({ error: 'operator identity not configured' })
-		if (!isWritableLocalEntityForUser(replicaUsername, entityHash))
-			return res.status(403).json({ error: 'entity not writable on this replica' })
+			throw httpError(400, 'operator identity not configured')
+		if (!await isWritableLocalEntityForUser(replicaUsername, entityHash))
+			throw httpError(403, 'entity not writable on this replica')
 		const { resolveAgentCharPartName } = await import('./member.mjs')
 		if (!resolveAgentCharPartName(replicaUsername, entityHash))
-			return res.status(400).json({ error: 'rebuild-from-part is only for local agents' })
+			throw httpError(400, 'rebuild-from-part is only for local agents')
 		const { syncAgentProfileFromCharPart } = await import('../profile/syncFromCharPart.mjs')
-		const stored = await syncAgentProfileFromCharPart(replicaUsername, entityHash, { force: true })
-		if (!stored)
-			return res.status(400).json({ error: 'rebuild failed' })
+		if (!await syncAgentProfileFromCharPart(replicaUsername, entityHash, { force: true }))
+			throw httpError(400, 'rebuild failed')
 		const locales = localesFromRequest(req, replicaUsername)
 		const groupId = String(req.query?.groupId || '').trim() || undefined
 		const profile = await getProfile(entityHash, replicaUsername, { groupId, locales })
@@ -222,11 +222,10 @@ export function registerEntityEndpoints(router) {
 	router.put(`${CHAT_PREFIX}/entities/owner`, authenticate, async (req, res) => {
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!operatorEntityHash)
-			return res.status(400).json({ error: 'operator identity not configured' })
-		const raw = req.body?.ownerEntityHash
-		const ownerEntityHash = raw ? String(raw).trim().toLowerCase() : null
+			throw httpError(400, 'operator identity not configured')
+		const ownerEntityHash = req.body?.ownerEntityHash ? String(req.body.ownerEntityHash).trim().toLowerCase() : null
 		if (ownerEntityHash && !isEntityHash128(ownerEntityHash))
-			return res.status(400).json({ error: 'invalid ownerEntityHash' })
+			throw httpError(400, 'invalid ownerEntityHash')
 		const row = await setEntityOwner(replicaUsername, operatorEntityHash, ownerEntityHash)
 		res.status(200).json({
 			entityHash: operatorEntityHash,

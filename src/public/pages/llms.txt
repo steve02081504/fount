@@ -191,9 +191,9 @@ fount 是一个 AI Agent 框架，本文档描述 Web 服务器提供的基础 A
 
 ---
 
-## P2P 用户级（identity / profile）
+## P2P 服务器级
 
-服务器级路由，与 shell Load 无关；数据在 `{userDict}/settings/federation.json` 与 `{userDict}/entities/{entityHash}/`。
+服务器级路由，与 shell Load 无关。
 
 ### GET/PUT /api/p2p/federation
 - 认证：需要
@@ -203,9 +203,7 @@ fount 是一个 AI Agent 框架，本文档描述 Web 服务器提供的基础 A
 - 认证：需要
 - 用途：节点网络图、节点 denylist、mailbox 积压摘要。
 
-实体面（viewer / profile / EVFS / personal-lists / 密钥 rotate·revoke）在 chat shell：`/api/parts/shells:chat/{viewer,entities…}`。见 `shells/chat/public/llms.txt`。
-
-Social/Mailbox 联邦 fanout 经 Chat shell 注册的 `TrustGraphProvider`；Chat 未 Load 时 explore 仅本地结果。
+实体面（viewer / profile / EVFS / personal-lists / 密钥 rotate·revoke）在 chat shell：`/api/parts/shells:chat/viewer`、`/api/parts/shells:chat/entities/*`。
 
 ---
 

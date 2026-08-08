@@ -62,20 +62,20 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 		const entityHash = String(req.params.entityHash || '').toLowerCase()
 		const logicalPath = parseEvfsLogicalPath(readWildcardPath(req.params.logicalPath))
 		if (!isEntityHash128(entityHash) || !logicalPath)
-			return res.status(400).json({ error: 'invalid path' })
+			throw httpError(400, 'invalid path')
 
 		const { username } = getUserByReq(req)
 		const manifest = await loadFileManifest(entityHash, logicalPath)
 		if (!manifest)
-			return res.status(404).json({ error: 'not found' })
+			throw httpError(404, 'not found')
 		if (!await canReadManifest(username, entityHash, manifest))
-			return res.status(403).json({ error: 'Permission denied' })
+			throw httpError(403, 'Permission denied')
 
 		if (String(req.query?.manifest || '') === '1')
 			return res.status(200).json({ manifest })
 
 		const plain = await readManifestPlaintextStream(username, manifest, { username })
-		if (!plain) return res.status(404).json({ error: 'chunk unavailable' })
+		if (!plain) throw httpError(404, 'chunk unavailable')
 		applySafeContentHeaders(res, {
 			mimeType: manifest.mimeType,
 			filename: logicalPath.split('/').pop() || 'file',
@@ -88,11 +88,11 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 		const entityHash = String(req.params.entityHash || '').toLowerCase()
 		const logicalPath = parseEvfsLogicalPath(readWildcardPath(req.params.logicalPath))
 		if (!isEntityHash128(entityHash) || !logicalPath)
-			return res.status(400).end()
+			throw httpError(400, 'invalid path')
 		const { username } = getUserByReq(req)
 		const manifest = await loadFileManifest(entityHash, logicalPath)
 		if (!manifest || !await canReadManifest(username, entityHash, manifest))
-			return res.status(404).end()
+			throw httpError(404, 'not found')
 		applySafeContentHeaders(res, {
 			mimeType: manifest.mimeType,
 			filename: logicalPath.split('/').pop() || 'file',
@@ -105,20 +105,20 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 		const entityHash = String(req.params.entityHash || '').toLowerCase()
 		const logicalPath = parseEvfsLogicalPath(readWildcardPath(req.params.logicalPath))
 		if (!isEntityHash128(entityHash) || !logicalPath)
-			return res.status(400).json({ error: 'invalid path' })
+			throw httpError(400, 'invalid path')
 
 		const { username } = getUserByReq(req)
 		if (!await canWriteManifestPath(username, entityHash, logicalPath))
-			return res.status(403).json({ error: 'Permission denied' })
+			throw httpError(403, 'Permission denied')
 
 		const contentType = String(req.headers['content-type'] || '').toLowerCase()
 		if (!contentType.startsWith('application/octet-stream'))
-			return res.status(415).json({ error: 'require application/octet-stream' })
+			throw httpError(415, 'require application/octet-stream')
 		const contentLength = Number(req.headers['content-length'] || 0)
 		if (!Number.isFinite(contentLength) || contentLength <= 0)
-			return res.status(400).json({ error: 'content-length required' })
+			throw httpError(400, 'content-length required')
 		if (contentLength > MAX_EVFS_UPLOAD_BYTES)
-			return res.status(413).json({ error: 'file too large' })
+			throw httpError(413, 'file too large')
 
 		const manifest = await putFileManifestFromStream({
 			ownerEntityHash: entityHash,

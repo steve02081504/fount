@@ -1,25 +1,27 @@
-# achievements shell 支持的 Web 端点说明
+# achievements shell Web API
 
-本 shell 提供成就来源列表与解锁/锁定操作。
+成就来源列表与解锁 / 锁定。
+
+路径前缀：`/api/parts/shells:achievements`。均需登录。
 
 ---
 
-## 提供的页面
+## 页面
 
 ### GET /parts/shells:achievements/
-- 用途：成就系统页面，用于查看所有可用的成就、已解锁的成就状态，以及手动解锁或锁定成就。显示各 part 的成就定义和完成情况。
+- 用途：成就查看与手动解锁 / 锁定。
 
 ---
 
-## 成就
+## API
 
 ### GET /api/parts/shells:achievements/sources
-- 用途：获取成就来源列表（含各 part 的成就定义及已解锁状态等）。
+- 用途：成就来源列表（定义与已解锁状态）。
 
 ### POST /api/parts/shells:achievements/unlock
-- Body：JSON。`partpath`（字符串，必填），如 `shells/achievements`。`id`（字符串，必填），成就 ID，与 sources 中该 part 下的成就 id 一致。
-- 用途：解锁指定 part 的指定成就。
+- Body：`partpath`、`id`（均必填）
+- 用途：解锁指定成就。
 
 ### POST /api/parts/shells:achievements/lock
-- Body：JSON。`partpath`（字符串，必填）、`id`（字符串，必填），成就 ID。`reason`（字符串，可选），如 `relock_by_clicking`。
-- 用途：锁定（撤销）指定成就。
+- Body：`partpath`、`id`（必填），`reason`（可选）
+- 用途：锁定（撤销）成就。
