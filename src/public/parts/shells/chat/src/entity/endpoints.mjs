@@ -153,13 +153,12 @@ export function registerEntityEndpoints(router) {
 		const entityHash = req.params[0].toLowerCase()
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		const groupId = String(req.query?.groupId || '').trim() || undefined
-		const forceRemote = req.query?.forceRemote === '1' || req.query?.refresh === '1'
 		const locales = localesFromRequest(req, replicaUsername)
 		const profile = await getProfile(entityHash, replicaUsername, {
 			groupId,
 			locales,
 			fetchRemote: true,
-			forceRemote,
+			forceRemote: req.query?.forceRemote === '1' || req.query?.refresh === '1',
 		})
 		let groupMemberEntityHash = null
 		if (groupId)

@@ -9,6 +9,7 @@ import { createIntegrationBoot } from '../harness.mjs'
 
 const { ensureServer, username } = createIntegrationBoot({
 	username: 'remote-profile-timeout-user',
+	p2p: false,
 	minP2pNode: true,
 })
 

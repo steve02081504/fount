@@ -247,16 +247,13 @@ export function computeEffectiveStatus(profile, viewerEntityHash, options = {}) 
 export async function fetchAndCacheRemoteProfile(replicaUsername, entityHash, options = {}) {
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed || isWritableLocalEntity(parsed.entityHash)) return null
-	const now = Date.now()
-	const negUntil = remoteProfileNegativeCache.get(parsed.entityHash) || 0
-	if (negUntil > now) return null
+	if ((remoteProfileNegativeCache.get(parsed.entityHash) || 0) > Date.now()) return null
 
-	const timeoutMs = options.timeoutMs ?? REMOTE_PROFILE_FETCH_TIMEOUT_MS
 	let plain
 	try {
 		plain = await raceTimeout(
 			readRemoteProfilePlain(replicaUsername, parsed.entityHash, PUBLIC_PROFILE_PATH, options.readPlain),
-			timeoutMs,
+			options.timeoutMs ?? REMOTE_PROFILE_FETCH_TIMEOUT_MS,
 			'remote profile fetch timeout',
 		)
 	}

@@ -158,6 +158,7 @@ async function reconcileTrendingTags(username, oldText, newText) {
 }
 
 /**
+ * 生成帖子的搜索索引字段。
  * @param {string} ownerEntityHash 作者
  * @param {string} postId 帖 ID
  * @param {object} [content] 帖正文

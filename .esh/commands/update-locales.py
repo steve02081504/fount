@@ -509,7 +509,7 @@ I18N_ELEMENT_APPLICATOR_KEYS = frozenset({
 })
 
 # 同步过程中无法自动对齐的类型不匹配（脚本结束时 exit 1）
-_type_mismatch_errors: list[str] = []
+type_mismatch_errors: list[str] = []
 
 
 def single_applicator_key(value):
@@ -524,7 +524,7 @@ def report_type_mismatch(path, lang_a, val_a, lang_b, val_b):
 	"""记录并打印类型不匹配（不再仅警告跳过）。"""
 	msg = f"类型不匹配 @ '{path}'. {lang_a}: {type(val_a).__name__}, {lang_b}: {type(val_b).__name__}"
 	print(f"  - 错误: {msg}。无法自动同步。")
-	_type_mismatch_errors.append(msg)
+	type_mismatch_errors.append(msg)
 
 
 def normalize_string_vs_applicator_object(parent_dict_a, parent_dict_b, key, lang_a, lang_b, path):
@@ -1654,8 +1654,7 @@ def self_test_normalize_applicator() -> int:
 # --- 主逻辑 (重构后) ---
 def main():
 	"""主执行函数"""
-	global _type_mismatch_errors
-	_type_mismatch_errors = []
+	type_mismatch_errors.clear()
 
 	ensure_allowed_to_run()
 	load_supported_google_codes()
@@ -1693,8 +1692,8 @@ def main():
 
 	print("\n脚本执行完毕。" + ("（翻译中途熔断）" if is_translation_aborted() else ""))
 
-	if _type_mismatch_errors:
-		unique = list(dict.fromkeys(_type_mismatch_errors))
+	if type_mismatch_errors:
+		unique = list(dict.fromkeys(type_mismatch_errors))
 		print(f"\n发现 {len(unique)} 处类型不匹配（无法自动同步），请用 update_locale_data 对齐结构后重跑。", file=sys.stderr)
 		for msg in unique[:20]:
 			print(f"  - {msg}", file=sys.stderr)

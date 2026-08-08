@@ -29,8 +29,7 @@ export async function getEntityProfile(entityHash, groupId, options = {}) {
 	const params = new URLSearchParams()
 	if (groupId) params.set('groupId', groupId)
 	if (options.forceRemote) params.set('forceRemote', '1')
-	const qs = params.toString()
-	return chatFetch(`/entities/${encodeURIComponent(entityHash)}${qs ? `?${qs}` : ''}`)
+	return chatFetch(`/entities/${encodeURIComponent(entityHash)}${params.size ? `?${params}` : ''}`)
 }
 
 /**

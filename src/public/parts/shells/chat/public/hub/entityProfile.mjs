@@ -181,16 +181,10 @@ export async function wireEntityProfileCardActions(root, entity, options = {}) {
 					})
 					return
 				}
-				let peerPub = pubKeyHex
-				if (!isHex64(peerPub) && isEntityHash128(entityHash)) {
-					const fresh = await getEntityProfile(entityHash, store.context.currentGroupId, { forceRemote: true })
-						.catch(() => null)
-					peerPub = String(fresh?.profile?.activePubKeyHex || '').trim().toLowerCase()
-				}
 				await dispatchFriendChat({
 					type: 'user',
 					displayName: entity.displayName || profile?.name,
-					pubKeyHex: isHex64(peerPub) ? peerPub : null,
+					pubKeyHex: isHex64(pubKeyHex) ? pubKeyHex : null,
 					entityHash,
 				})
 			})().catch(error => {

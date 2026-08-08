@@ -11,7 +11,7 @@ import { matchGlob } from './trigger_filter.mjs'
 
 /**
  * 未命中任何文件的 trigger（硬错误：fount test 直接 exit 1）。
- * @typedef {object} TriggerWarning
+ * @typedef {object} DeadTrigger
  * @property {string} manifestId manifest id
  * @property {string} suiteName suite 名
  * @property {string} [subtestName] 子测试名（suite 级 trigger 时省略）
@@ -52,9 +52,9 @@ export function triggerPatternMatchesAny(pattern, repoFiles) {
  * 命中结果由 runner 视为硬错误：有任一条则 `fount test` exit 1、不调度套件。
  * @param {SuiteDef[]} suites 全部 suite
  * @param {string[]} repoFiles 仓库文件列表
- * @returns {TriggerWarning[]} 未命中任何文件的 trigger
+ * @returns {DeadTrigger[]} 未命中任何文件的 trigger
  */
-export function findDeadTriggerWarnings(suites, repoFiles) {
+export function findDeadTriggers(suites, repoFiles) {
 	/** @type {Map<string, boolean>} */
 	const matchCache = new Map()
 	/**
@@ -71,17 +71,17 @@ export function findDeadTriggerWarnings(suites, repoFiles) {
 		return hit
 	}
 
-	/** @type {TriggerWarning[]} */
-	const warnings = []
+	/** @type {DeadTrigger[]} */
+	const dead = []
 	for (const suite of suites) {
 		for (const pattern of suite.triggers) {
 			if (!pattern || matches(pattern)) continue
-			warnings.push({ manifestId: suite.manifestId, suiteName: suite.name, pattern })
+			dead.push({ manifestId: suite.manifestId, suiteName: suite.name, pattern })
 		}
 		for (const subtest of suite.subtests ?? [])
 			for (const pattern of subtest.triggers) {
 				if (!pattern || matches(pattern)) continue
-				warnings.push({
+				dead.push({
 					manifestId: suite.manifestId,
 					suiteName: suite.name,
 					subtestName: subtest.name,
@@ -90,15 +90,15 @@ export function findDeadTriggerWarnings(suites, repoFiles) {
 			}
 
 	}
-	return warnings
+	return dead
 }
 
 /**
  * 审计仓库 trigger 覆盖率（列出死 trigger）。
  * @param {string} repoRoot 仓库根
  * @param {SuiteDef[]} suites 全部 suite
- * @returns {Promise<TriggerWarning[]>} 未命中任何文件的 trigger
+ * @returns {Promise<DeadTrigger[]>} 未命中任何文件的 trigger
  */
 export async function auditTriggerCoverage(repoRoot, suites) {
-	return findDeadTriggerWarnings(suites, await listRepoFiles(repoRoot))
+	return findDeadTriggers(suites, await listRepoFiles(repoRoot))
 }

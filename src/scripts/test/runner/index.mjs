@@ -236,17 +236,17 @@ function formatRunningSuiteMessage({ manifestId, name, heavy, expected, speculat
 
 /**
  * 将未命中任何文件的 trigger 打到控制台（硬错误）。
- * @param {import('../core/trigger_audit.mjs').TriggerWarning[]} warnings 死 trigger
+ * @param {import('../core/trigger_audit.mjs').DeadTrigger[]} deadTriggers 死 trigger
  */
-function logDeadTriggers(warnings) {
-	if (!warnings.length) return
-	for (const warning of warnings) {
-		const scope = warning.subtestName
-			? `${warning.manifestId}:${warning.suiteName}:${warning.subtestName}`
-			: `${warning.manifestId}:${warning.suiteName}`
-		console.errorI18n('fountConsole.test.triggerNoMatch', { scope, pattern: warning.pattern })
+function logDeadTriggers(deadTriggers) {
+	if (!deadTriggers.length) return
+	for (const dead of deadTriggers) {
+		const scope = dead.subtestName
+			? `${dead.manifestId}:${dead.suiteName}:${dead.subtestName}`
+			: `${dead.manifestId}:${dead.suiteName}`
+		console.errorI18n('fountConsole.test.triggerNoMatch', { scope, pattern: dead.pattern })
 	}
-	console.errorI18n('fountConsole.test.triggerNoMatchSummary', { count: warnings.length })
+	console.errorI18n('fountConsole.test.triggerNoMatchSummary', { count: deadTriggers.length })
 }
 
 /**

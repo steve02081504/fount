@@ -216,8 +216,7 @@ Deno.test('all locale JSON trees match zh-CN value kinds on shared paths', async
 	/** @type {string[]} */
 	const failures = []
 	for (const fileName of localeFiles) {
-		const data = JSON.parse(await readFile(join(localesDir, fileName), 'utf8'))
-		for (const issue of scanLocaleTreeShape(zhCn, data))
+		for (const issue of scanLocaleTreeShape(zhCn, JSON.parse(await readFile(join(localesDir, fileName), 'utf8'))))
 			failures.push(`${fileName}: [${issue.kind}] ${issue.path}: ${issue.message}`)
 	}
 	assertEquals(failures, [], failures.join('\n'))

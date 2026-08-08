@@ -4503,7 +4503,7 @@
 			},
 			"submit": "buscar",
 			"clear": {
-				"aria-label": "Claro"
+				"aria-label": "Borrar búsqueda"
 			},
 			"empty": "No hay publicaciones coincidentes",
 			"tooShort": "Introduce al menos 2 caracteres",

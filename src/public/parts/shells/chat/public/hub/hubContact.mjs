@@ -31,8 +31,7 @@ export async function applyHubContactQuery(contactRaw) {
 		return true
 	}
 
-	const nodeHash = store.viewer.nodeHash
-	if (nodeHash) {
+	if (store.viewer.nodeHash) {
 		const friends = await loadFriendsList()
 		for (const friend of friends) {
 			if (!friend.charname) continue
@@ -58,8 +57,9 @@ export async function applyHubContactQuery(contactRaw) {
 	catch { /* 无已有群则继续 */ }
 
 	await setMode('friends')
-	const data = await getEntityProfile(entityHash).catch(() => null)
-	const profile = data?.profile ? cachedProfileFromApi(data.profile, entityHash) : null
+	const profile = await getEntityProfile(entityHash)
+		.then(data => data?.profile ? cachedProfileFromApi(data.profile, entityHash) : null)
+		.catch(() => null)
 	const pubKeyHex = String(profile?.activePubKeyHex || '').trim().toLowerCase()
 	const displayName = profile?.name || entityHashLabel(entityHash)
 

@@ -4503,7 +4503,7 @@
 			},
 			"submit": "Ricerca",
 			"clear": {
-				"aria-label": "Chiaro"
+				"aria-label": "Cancella ricerca"
 			},
 			"empty": "Nessun post corrispondente",
 			"tooShort": "Inserisci almeno 2 caratteri",

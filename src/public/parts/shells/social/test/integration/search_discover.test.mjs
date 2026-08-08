@@ -93,8 +93,7 @@ Deno.test('trending display prunes phantoms and keeps live tags', async () => {
 		},
 	}, { fanout: false })
 
-	const indexDir = paths.socialSearchIndexPath(username)
-	await mkdir(indexDir, { recursive: true })
+	await mkdir(paths.socialSearchIndexPath(username), { recursive: true })
 	await writeFile(paths.socialTrendingIndexPath(username), `${JSON.stringify({
 		phantomfeedlist: 9,
 		phantomplug: 7,

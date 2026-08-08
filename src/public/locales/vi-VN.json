@@ -4503,7 +4503,7 @@
 			},
 			"submit": "Tìm kiếm",
 			"clear": {
-				"aria-label": "Thông thoáng"
+				"aria-label": "Xóa tìm kiếm"
 			},
 			"empty": "Không có bài viết phù hợp",
 			"tooShort": "Vui lòng nhập ít nhất 2 ký tự",

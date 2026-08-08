@@ -4503,7 +4503,7 @@
 			},
 			"submit": "Zoeken",
 			"clear": {
-				"aria-label": "Duidelijk"
+				"aria-label": "Zoekopdracht wissen"
 			},
 			"empty": "Geen overeenkomende berichten",
 			"tooShort": "Voer minimaal 2 tekens in",
