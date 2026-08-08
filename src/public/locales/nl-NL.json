@@ -560,9 +560,9 @@
 			]
 		},
 		"utm_welcome": {
-			"title": "Kom van ver",
-			"message": "Welkom gasten van `${source}`!\nWe hebben hier geen thee of snacks, alleen een groet :)",
-			"dismiss": "Bedankt, blijf winkelen"
+			"title": "Van ver",
+			"message": "Welkom, bezoekers van `${source}`!\nGeen thee of koekjes hier — alleen een vriendelijke groet :)",
+			"dismiss": "Bedankt, ik kijk even rond"
 		},
 		"footer": {
 			"ready_text": "Klaar om je reis te beginnen?",

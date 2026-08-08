@@ -560,9 +560,9 @@
 			]
 		},
 		"utm_welcome": {
-			"title": "Đến từ xa",
-			"message": "Chào mừng các vị khách từ `${source}`!\nChúng tôi không có trà hay đồ ăn nhẹ ở đây, chỉ là lời chào thôi :)",
-			"dismiss": "Cảm ơn bạn, tiếp tục mua sắm"
+			"title": "Từ xa đến",
+			"message": "Chào mừng khách từ `${source}`!\nỞ đây không có trà hay bánh — chỉ là lời chào thôi :)",
+			"dismiss": "Cảm ơn, tôi xem quanh"
 		},
 		"footer": {
 			"ready_text": "Sẵn sàng bắt đầu hành trình của bạn?",

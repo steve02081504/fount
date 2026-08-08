@@ -560,9 +560,9 @@
 			]
 		},
 		"utm_welcome": {
-			"title": "远道而来",
-			"message": "欢迎从 `${source}` 来的客人！\n我们这里没有茶和点心，只有一句问候 :)",
-			"dismiss": "谢谢，继续逛逛"
+			"title": "遠道而來",
+			"message": "歡迎 `${source}` 來客！\n此處無茶無點，僅致一問 :)",
+			"dismiss": "多謝，且隨意徜徉"
 		},
 		"footer": {
 			"ready_text": "啟程？",

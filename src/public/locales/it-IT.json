@@ -560,9 +560,9 @@
 			]
 		},
 		"utm_welcome": {
-			"title": "Vieni da lontano",
-			"message": "Benvenuti ospiti da `${source}`!\nNon abbiamo tè o snack qui, solo un saluto :)",
-			"dismiss": "Grazie, continua a fare acquisti"
+			"title": "Da lontano",
+			"message": "Benvenuti, ospiti da `${source}`!\nQui non c'è tè né dolci — solo un saluto :)",
+			"dismiss": "Grazie, do un'occhiata in giro"
 		},
 		"footer": {
 			"ready_text": "Pronto per iniziare il tuo viaggio?",

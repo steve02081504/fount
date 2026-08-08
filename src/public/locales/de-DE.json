@@ -560,9 +560,9 @@
 			]
 		},
 		"utm_welcome": {
-			"title": "Komm aus der Ferne",
-			"message": "Willkommene Gäste von „${source}“!\nWir haben hier keinen Tee oder Snacks, nur eine Begrüßung :)",
-			"dismiss": "Vielen Dank, kaufen Sie weiter ein"
+			"title": "Von weit her",
+			"message": "Willkommen, Gäste von `${source}`!\nTee und Snacks haben wir leider nicht — nur einen herzlichen Gruß :)",
+			"dismiss": "Danke, ich schaue mich um"
 		},
 		"footer": {
 			"ready_text": "Bereit, Ihre Reise zu beginnen?",

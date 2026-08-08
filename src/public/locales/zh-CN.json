@@ -561,8 +561,8 @@
 		},
 		"utm_welcome": {
 			"title": "远道而来",
-			"message": "欢迎从 `${source}` 来的客人！\n我们这里没有茶和点心，只有一句问候 :)",
-			"dismiss": "谢谢，继续逛逛"
+			"message": "欢迎从 `${source}` 来的朋友！\n茶点没备，只好献上几句问候 :)",
+			"dismiss": "好，随便逛逛"
 		},
 		"footer": {
 			"ready_text": "准备好开始您的旅程了吗？",

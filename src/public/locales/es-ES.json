@@ -560,9 +560,9 @@
 			]
 		},
 		"utm_welcome": {
-			"title": "venir de lejos",
-			"message": "¡Bienvenidos invitados de `${source}`!\nAquí no tenemos té ni snacks, solo un saludo :)",
-			"dismiss": "Gracias, sigue comprando"
+			"title": "Desde lejos",
+			"message": "¡Bienvenidos, visitantes de `${source}`!\nNo tenemos té ni bocadillos — solo un saludo :)",
+			"dismiss": "Gracias, echaré un vistazo"
 		},
 		"footer": {
 			"ready_text": "¿Listo para empezar tu aventura?",

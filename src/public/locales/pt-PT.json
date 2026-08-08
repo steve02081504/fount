@@ -560,9 +560,9 @@
 			]
 		},
 		"utm_welcome": {
-			"title": "Venha de longe",
-			"message": "Bem-vindos convidados de `${source}`!\nAqui não temos chá nem petiscos, apenas uma saudação :)",
-			"dismiss": "Obrigado, continue comprando"
+			"title": "De longe",
+			"message": "Bem-vindos, visitantes de `${source}`!\nNão temos chá nem petiscos — apenas um cumprimento :)",
+			"dismiss": "Obrigado, vou dar uma vista de olhos"
 		},
 		"footer": {
 			"ready_text": "Pronto para começar a sua jornada?",

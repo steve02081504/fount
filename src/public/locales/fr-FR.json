@@ -560,9 +560,9 @@
 			]
 		},
 		"utm_welcome": {
-			"title": "Viens de loin",
-			"message": "Bienvenue aux invités de `${source}` !\nNous ne prenons pas de thé ni de collations ici, juste un salut :)",
-			"dismiss": "Merci, continuez vos achats"
+			"title": "De loin",
+			"message": "Bienvenue, visiteurs venus de `${source}` !\nPas de thé ni de gâteaux ici — juste un petit salut :)",
+			"dismiss": "Merci, je jette un œil"
 		},
 		"footer": {
 			"ready_text": "Prêt à commencer votre voyage ?",

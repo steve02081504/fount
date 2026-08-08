@@ -560,9 +560,9 @@
 			]
 		},
 		"utm_welcome": {
-			"title": "Come from afar",
-			"message": "Welcome guests from `${source}`!\nWe don't have tea or snacks here, just a greeting :)",
-			"dismiss": "Thank you, keep shopping"
+			"title": "From afar",
+			"message": "Welcome, visitors from `${source}`!\nWe've no tea or biscuits on offer — just a friendly hello :)",
+			"dismiss": "Thanks, I'll have a look around"
 		},
 		"footer": {
 			"ready_text": "Ready to start your journey?",
