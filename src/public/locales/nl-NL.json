@@ -559,6 +559,11 @@
 				"runner"
 			]
 		},
+		"utm_welcome": {
+			"title": "Kom van ver",
+			"message": "Welkom gasten van `${source}`!\nWe hebben hier geen thee of snacks, alleen een groet :)",
+			"dismiss": "Bedankt, blijf winkelen"
+		},
 		"footer": {
 			"ready_text": "Klaar om je reis te beginnen?",
 			"wait_text": "Een ogenblik geduld...",

@@ -559,6 +559,11 @@
 				"runtime"
 			]
 		},
+		"utm_welcome": {
+			"title": "Venha de longe",
+			"message": "Bem-vindos convidados de `${source}`!\nAqui não temos chá nem petiscos, apenas uma saudação :)",
+			"dismiss": "Obrigado, continue comprando"
+		},
 		"footer": {
 			"ready_text": "Pronto para começar a sua jornada?",
 			"wait_text": "Aguarde um momento...",

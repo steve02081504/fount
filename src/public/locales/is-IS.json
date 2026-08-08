@@ -559,6 +559,11 @@
 				"keyrsluforrit"
 			]
 		},
+		"utm_welcome": {
+			"title": "Komdu úr fjarska",
+			"message": "Velkomnir gestir frá `${source}`!\nVið erum ekki með te eða snakk hérna, bara kveðja :)",
+			"dismiss": "Þakka þér, haltu áfram að versla"
+		},
 		"footer": {
 			"ready_text": "Tilbúin(n) að hefja ferðalagið?",
 			"wait_text": "Vinsamlegast bíðið augnablik...",

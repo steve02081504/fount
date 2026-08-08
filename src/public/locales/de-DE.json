@@ -559,6 +559,11 @@
 				"Laufzeitumgebung"
 			]
 		},
+		"utm_welcome": {
+			"title": "Komm aus der Ferne",
+			"message": "Willkommene Gäste von „${source}“!\nWir haben hier keinen Tee oder Snacks, nur eine Begrüßung :)",
+			"dismiss": "Vielen Dank, kaufen Sie weiter ein"
+		},
 		"footer": {
 			"ready_text": "Bereit, Ihre Reise zu beginnen?",
 			"wait_text": "Bitte warten Sie einen Moment...",

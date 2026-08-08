@@ -559,6 +559,11 @@
 				"entorno de ejecución"
 			]
 		},
+		"utm_welcome": {
+			"title": "venir de lejos",
+			"message": "¡Bienvenidos invitados de `${source}`!\nAquí no tenemos té ni snacks, solo un saludo :)",
+			"dismiss": "Gracias, sigue comprando"
+		},
 		"footer": {
 			"ready_text": "¿Listo para empezar tu aventura?",
 			"wait_text": "Espera un momento...",

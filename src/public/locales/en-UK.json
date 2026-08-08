@@ -559,6 +559,11 @@
 				"runtime"
 			]
 		},
+		"utm_welcome": {
+			"title": "Come from afar",
+			"message": "Welcome guests from `${source}`!\nWe don't have tea or snacks here, just a greeting :)",
+			"dismiss": "Thank you, keep shopping"
+		},
 		"footer": {
 			"ready_text": "Ready to start your journey?",
 			"wait_text": "Please wait a moment...",
