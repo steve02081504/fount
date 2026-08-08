@@ -29,17 +29,20 @@ const MAT_FLAGS = new Uint8Array([
 /** 大气参考压强（天空 / 开放区域均值）。 */
 export const P_ATM = 1
 
-/** 液体密度 × 重力 — 静水压头与液压势 φ。 */
+/** 液体密度 × 重力 — 静水压头与液压势 φ（每物理长度单位）。 */
 export const RHO_G = 1
 
 /**
  * 气体密度，用于动态 / 伯努利压强 ½ρu²。
- * 与 ATM_HYDRO 同量级（g≈1 时每格 ρ_air·g），使动压头远小于液柱。
+ * 与 ATM_HYDRO 同量级（g≈1 时每物理长度 ρ_air·g），使动压头远小于液柱。
  */
 export const RHO_AIR = 0.02
 
-/** 开放空气 / 密封腔体每向下一行的静水压升（y↓ → P↑）；≈ RHO_AIR · g。 */
+/** 开放空气 / 密封腔体每向下一格（沿 ĝ）的静水压升；≈ RHO_AIR · g。 */
 export const ATM_HYDRO = 0.018
+
+/** 自由面铺展到干邻的 sheet 倍率（<1 → 聚珠；湿湿仍满 sheetMove）。 */
+export const ST_DRY_FRAC = 0.4
 
 /**
  * 邻格静压差 ΔP 驱动气体速度（格/ tick 每 ΔP）。

@@ -19,7 +19,7 @@ export {
 	SOIL_CAP, SOIL_ABSORB_RATE, SOIL_ABSORB_EXPO, SOIL_HIT_ABSORB_FRAC,
 	SOIL_SIDE_FRAC, SOIL_DOWN_FRAC, SOIL_CONDENSE_FRAC,
 	COND_DRAW, COND_DRIP, COND_WEEP_FRAC, COND_MATTHEW_RATE, COND_MATTHEW_NOISE,
-	LIQ_DRAW, LIQ_FULL,
+	LIQ_DRAW, LIQ_FULL, ST_DRY_FRAC,
 	T_AMB, T_SOLIDUS, T_LIQUIDUS, T_BOIL, T_MAX,
 	RHO_ROCK, RHO_LAVA_HOT, VISC_SOLID, VISC_INERTIAL, BUBBLE_MIN_CELLS, BUBBLE_MIN_MELT_CONTACT,
 	LAVA_ONSET_EXPOSURE,
@@ -46,7 +46,8 @@ export {
 	floodClear, floodPush, markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
 	clearDynamics, clearMaterials, releaseNonSoilWater,
 	setMat, addMoisture, addLiquid, addMelt, totalGridWater, totalWorldWater, totalMelt,
-	gravityDepth, gravityDownWeights, gravityUpWeights, strongestUp, strongestDown, applyGravityToWorld,
+	CELL_ASPECT, gravityDepth, gravityDownWeights, gravityUpWeights, gravitySideWeights,
+	gravitySettleWeights, strongestUp, strongestDown, applyGravityToWorld, impartLiquidMomentum,
 } from './world.mjs'
 
 /** 气相区域、压力与风速。 */

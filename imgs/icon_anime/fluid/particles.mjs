@@ -8,7 +8,7 @@
 import { neighborCoord } from './edges.mjs'
 import { MAT, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from './mat.mjs'
 import { pushParticle } from './particle_pool.mjs'
-import { markAirIfDrawCrossed, strongestUp, inWorld } from './world.mjs'
+import { markAirIfDrawCrossed, strongestUp, inWorld, impartLiquidMomentum } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
  * @typedef {import('./particle_pool.mjs').ParticlePool} ParticlePool
@@ -79,14 +79,16 @@ export const verticalGasDrag = (gux, guy) => {
 }
 
 /**
- * 尝试存入一格；返回已存增量。
+ * 尝试存入一格；返回已存增量。携带入射动量。
  * @param {FluidWorld} world 流体世界
  * @param {number} px 列
  * @param {number} py 行
  * @param {number} left 剩余质量
+ * @param {number} vx 入射 vx
+ * @param {number} vy 入射 vy
  * @returns {number} 已存
  */
-const tryDepositCell = (world, px, py, left) => {
+const tryDepositCell = (world, px, py, left, vx, vy) => {
 	const { worldW: W, worldH: H, mat, liq } = world
 	if (px < 0 || py < 0 || px >= W || py >= H) return 0
 	const i = py * W + px
@@ -97,31 +99,35 @@ const tryDepositCell = (world, px, py, left) => {
 	const take = Math.min(left, room)
 	const before = liq[i]
 	liq[i] += take
+	impartLiquidMomentum(world, i, before, take, vx, vy)
 	markAirIfDrawCrossed(world, before, liq[i])
 	return take
 }
 
 /**
  * 将粒子质量存入 `(x, y)` 附近网格。优先 AIR / POOL；
- * 无处落地时在世界边缘_sink。返回已沉积（或_sink）质量。
+ * 无处落地时在世界边缘 sink。返回已沉积（或 sink）质量。
+ * 入射速度写入 `liqVx`/`liqVy`（质量加权），供字形与后续 EMA。
  * @param {FluidWorld} world 流体世界
  * @param {number} x 列
  * @param {number} y 行
  * @param {number} amt 水质量
+ * @param {number} [vx=0] 入射 vx
+ * @param {number} [vy=0] 入射 vy
  * @returns {number} 已计入质量
  */
-export const depositParticleMass = (world, x, y, amt) => {
+export const depositParticleMass = (world, x, y, amt, vx = 0, vy = 0) => {
 	if (amt <= 0) return 0
 	const { worldW: W, worldH: H } = world
 	const cx = Math.max(0, Math.min(W - 1, x | 0))
 	const cy = Math.max(0, Math.min(H - 1, y | 0))
 
 	let left = amt
-	left -= tryDepositCell(world, cx, cy, left)
-	if (left > 1e-8 && cy + 1 < H) left -= tryDepositCell(world, cx, cy + 1, left)
-	if (left > 1e-8 && cy > 0) left -= tryDepositCell(world, cx, cy - 1, left)
-	if (left > 1e-8) left -= tryDepositCell(world, cx - 1, cy, left)
-	if (left > 1e-8) left -= tryDepositCell(world, cx + 1, cy, left)
+	left -= tryDepositCell(world, cx, cy, left, vx, vy)
+	if (left > 1e-8 && cy + 1 < H) left -= tryDepositCell(world, cx, cy + 1, left, vx, vy)
+	if (left > 1e-8 && cy > 0) left -= tryDepositCell(world, cx, cy - 1, left, vx, vy)
+	if (left > 1e-8) left -= tryDepositCell(world, cx - 1, cy, left, vx, vy)
+	if (left > 1e-8) left -= tryDepositCell(world, cx + 1, cy, left, vx, vy)
 	// Remainder leaves through world edge / impermeable bed — intentional sink.
 	return amt
 }
@@ -157,7 +163,7 @@ export const stepParticles = (world, onHit, state) => {
 		live.amt[dst] = pending.amt[pi]
 	}
 	for (; pi < pending.count; pi++)
-		depositParticleMass(world, pending.x[pi], pending.y[pi], pending.amt[pi])
+		depositParticleMass(world, pending.x[pi], pending.y[pi], pending.amt[pi], pending.vx[pi], pending.vy[pi])
 	pending.count = 0
 
 	let write = 0
@@ -198,7 +204,7 @@ export const stepParticles = (world, onHit, state) => {
 		}
 
 		if (life <= 0) {
-			depositParticleMass(world, px, py, amt)
+			depositParticleMass(world, px, py, amt, pvx, pvy)
 			continue
 		}
 

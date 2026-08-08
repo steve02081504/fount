@@ -13,13 +13,13 @@ import {
 } from '../flow.mjs'
 import { labelAirRegions, pressureAt, gasUxAt } from '../gas.mjs'
 import {
-	MAT, P_ATM, RHO_G, LIQ_DRAW, LIQ_FULL, isLiquidBarrier,
+	MAT, P_ATM, RHO_G, LIQ_DRAW, LIQ_FULL, ST_DRY_FRAC, isLiquidBarrier,
 	SUBSTANCE, rhoOf, viscOf,
 } from '../mat.mjs'
 import {
 	scratch, idx, inWorld,
 	markAirIfDrawCrossed,
-	gravityDepth, gravityUpWeights,
+	gravityDepth, gravityUpWeights, gravitySettleWeights, gravitySideWeights,
 	strongestUp, strongestDown,
 } from '../world.mjs'
 
@@ -366,9 +366,8 @@ export const stepWater = (world) => {
 		return pCache[y * W + x]
 	}
 
-	const down = strongestDown(world)
-	const ddx = down.w > 0 ? down.dx : 0
-	const ddy = down.w > 0 ? down.dy : 1
+	const downW = gravitySettleWeights(world)
+	const sides = gravitySideWeights(world)
 
 	const order = scratch(world, 'liqSettleOrder', n, Int32Array)
 	const depthBuckets = Math.max(W, H) + 2
@@ -404,33 +403,39 @@ export const stepWater = (world) => {
 			continue
 		}
 		const pSrc = pAt(x, y)
-		const nx = x + ddx
-		const ny = y + ddy
 		let did = false
-		if (canOccupy(world, nx, ny)) {
+		for (let di = 0; di < downW.n; di++) {
+			const ddx = downW.dx[di]
+			const ddy = downW.dy[di]
+			const w = downW.w[di]
+			const nx = x + ddx
+			const ny = y + ddy
+			if (!canOccupy(world, nx, ny)) continue
 			const below = ny * W + nx
-			if (liq[below] < LIQ_FULL && !poolRetainBlocks(world, cell, below)) {
-				const pDst = pAt(nx, ny)
-				const room = LIQ_FULL - liq[below]
-				let move = pressureMove(pSrc, pDst, liq[cell], room, WATER_VISC)
-				if (move < 0.01 && liq[below] < liq[cell] && pDst < pSrc + RHO_G * 0.85)
-					move = Math.min(liq[cell], room, Math.max(0.08, (liq[cell] - liq[below]) * 0.85))
-				if (move > 0) {
-					transfer(world, liq, flowX, flowY, cell, below, ddx, ddy, move)
-					refreshGravityLine(world, x, y, pCache)
-					did = true
-				}
-			}
+			if (liq[below] >= LIQ_FULL || poolRetainBlocks(world, cell, below)) continue
+			const pDst = pAt(nx, ny)
+			const room = LIQ_FULL - liq[below]
+			let move = pressureMove(pSrc, pDst, liq[cell] * w, room, WATER_VISC)
+			if (move < 0.01 && liq[below] < liq[cell] && pDst < pSrc + RHO_G * 0.85)
+				move = Math.min(liq[cell] * w, room, Math.max(0.08, (liq[cell] - liq[below]) * 0.85 * w))
+			if (move <= 0) continue
+			transfer(world, liq, flowX, flowY, cell, below, ddx, ddy, move)
+			refreshGravityLine(world, x, y, pCache)
+			did = true
+			if (liq[cell] <= 0.02) break
 		}
 		if (did) continue
 
-		if (canOccupy(world, nx, ny) && liq[ny * W + nx] < LIQ_FULL) continue
+		// Blocked below: diagonal crawl along strongest down × side (stair-step).
+		const strong = strongestDown(world)
+		if (strong.w <= 0) continue
 		const dir = (x + y) & 1 ? 1 : -1
-		const sideA = ddx === 0 ? { dx: dir, dy: ddy } : { dx: ddx, dy: dir }
-		const sideB = { dx: ddx === 0 ? -dir : ddx, dy: ddx === 0 ? ddy : -dir }
-		for (const side of [sideA, sideB]) {
-			const sx = x + side.dx
-			const sy = y + side.dy
+		const crawls = strong.dx === 0
+			? [{ dx: dir, dy: strong.dy }, { dx: -dir, dy: strong.dy }]
+			: [{ dx: strong.dx, dy: dir }, { dx: strong.dx, dy: -dir }]
+		for (const { dx, dy } of crawls) {
+			const sx = x + dx
+			const sy = y + dy
 			if (!canOccupy(world, sx, sy)) continue
 			const neighbor = sy * W + sx
 			if (liq[neighbor] >= liq[cell] || poolRetainBlocks(world, cell, neighbor)) continue
@@ -439,17 +444,15 @@ export const stepWater = (world) => {
 			if (m <= 0.01)
 				m = Math.min(liq[cell] * 0.5, (liq[cell] - liq[neighbor]) * 0.5, LIQ_FULL - liq[neighbor])
 			if (m <= 0.01) continue
-			transfer(world, liq, flowX, flowY, cell, neighbor, side.dx, side.dy, m)
+			transfer(world, liq, flowX, flowY, cell, neighbor, dx, dy, m)
 			refreshGravityLine(world, x, y, pCache)
 			refreshGravityLine(world, sx, sy, pCache)
 			break
 		}
 	}
 
-	const sideDirs = ddx === 0
-		? [{ dx: -1, dy: 0 }, { dx: 1, dy: 0 }]
-		: [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }]
 	const strongUp = strongestUp(world)
+	const down = strongestDown(world)
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
@@ -458,7 +461,9 @@ export const stepWater = (world) => {
 			const pSrc = pAt(x, y)
 			const freeSurface = isFreeSurface(world, cell, x, y)
 
-			for (const { dx, dy } of sideDirs) {
+			for (let s = 0; s < sides.n; s++) {
+				const dx = sides.dx[s]
+				const dy = sides.dy[s]
 				const nx = x + dx
 				const ny = y + dy
 				if (nx < 0 || nx >= W || ny < 0 || ny >= H) {
@@ -469,7 +474,7 @@ export const stepWater = (world) => {
 							const pDst = pAt(nb.x, nb.y)
 							const room = LIQ_FULL - liq[neighbor]
 							let move = freeSurface && liq[neighbor] < LIQ_DRAW
-								? sheetMove(liq[cell], liq[neighbor], room, WATER_VISC)
+								? sheetMove(liq[cell], liq[neighbor], room, WATER_VISC) * ST_DRY_FRAC
 								: pressureMove(pSrc, pDst, liq[cell], room, WATER_VISC)
 							move *= nb.wrappedFrac
 							if (move > 0) {
@@ -503,7 +508,7 @@ export const stepWater = (world) => {
 				const room = LIQ_FULL - liq[neighbor]
 				let move = 0
 				if (freeSurface && liq[neighbor] < LIQ_DRAW)
-					move = sheetMove(liq[cell], liq[neighbor], room, WATER_VISC)
+					move = sheetMove(liq[cell], liq[neighbor], room, WATER_VISC) * ST_DRY_FRAC
 				else {
 					if (pDst >= pSrc - 0.02 && liq[neighbor] >= liq[cell] - 0.02) continue
 					move = pressureMove(pSrc, pDst, liq[cell], room, WATER_VISC)

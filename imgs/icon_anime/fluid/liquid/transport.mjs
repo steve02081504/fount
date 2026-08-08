@@ -6,10 +6,10 @@
 import { neighborCoord } from '../edges.mjs'
 import { pressureMove, sheetMove, applyTransfer, viscGain } from '../flow.mjs'
 import { pressureAt } from '../gas.mjs'
-import { MAT, LIQ_DRAW, LIQ_FULL, P_ATM, isLiquidBarrier } from '../mat.mjs'
+import { MAT, LIQ_DRAW, LIQ_FULL, P_ATM, ST_DRY_FRAC, isLiquidBarrier } from '../mat.mjs'
 import {
 	scratch, markAirIfDrawCrossed,
-	gravityDownWeights, strongestDown, gravityDepth,
+	gravityDepth, gravitySideWeights, gravitySettleWeights,
 } from '../world.mjs'
 
 /** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
@@ -111,8 +111,7 @@ export const stepPhaseTransport = (world, phase) => {
 	const flowY = scratch(world, phase.flowScratchY, n, Float32Array)
 	flowX.fill(0)
 	flowY.fill(0)
-	const down = gravityDownWeights(world)
-	const strongDown = strongestDown(world)
+	const down = gravitySettleWeights(world)
 	const mark = phase.markDirty ?? markAirIfDrawCrossed
 
 	// Deep → shallow along ĝ so mass cannot cascade through the whole column in one tick
@@ -195,34 +194,32 @@ export const stepPhaseTransport = (world, phase) => {
 		}
 	}
 
-	// --- Side sheet perpendicular to strongest down ---
-	let sideA = { dx: -1, dy: 0 }
-	let sideB = { dx: 1, dy: 0 }
-	if (strongDown.w > 0 && strongDown.dx !== 0) {
-		sideA = { dx: 0, dy: -1 }
-		sideB = { dx: 0, dy: 1 }
-	}
+	// --- Side sheet perpendicular to ĝ ---
+	const sides = gravitySideWeights(world)
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (mass[cell] < LIQ_DRAW) continue
 			const visc = phase.viscAt(world, cell)
-			for (const side of [sideA, sideB]) {
-				const nb = neighborCoord(world, x, y, side.dx, side.dy)
+			for (let si = 0; si < sides.n; si++) {
+				const dx = sides.dx[si]
+				const dy = sides.dy[si]
+				const nb = neighborCoord(world, x, y, dx, dy)
 				const crossed = nb.wrappedFrac > 0 || nb.outFrac > 0
 				if (!crossed) {
 					const target = nb.y * W + nb.x
 					if (!phase.canEnter(world, target)) continue
 					const room = LIQ_FULL - mass[target]
-					const move = sheetMove(mass[cell], mass[target], room, visc)
+					const dry = mass[target] < LIQ_DRAW
+					const move = sheetMove(mass[cell], mass[target], room, visc) * (dry ? ST_DRY_FRAC : 1)
 					if (move <= 0) continue
-					transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, side.dx, side.dy, move, mark)
+					transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, mark)
 				}
 				else {
-					const move = sheetMove(mass[cell], 0, LIQ_FULL, visc)
+					const move = sheetMove(mass[cell], 0, LIQ_FULL, visc) * ST_DRY_FRAC
 					if (move <= 0) continue
-					transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, side.dx, side.dy, move, mark)
+					transferNeighbor(world, phase, flowX, flowY, W, cell, x, y, dx, dy, move, mark)
 				}
 			}
 		}

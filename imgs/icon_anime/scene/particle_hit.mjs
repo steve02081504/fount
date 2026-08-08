@@ -3,7 +3,7 @@
  */
 
 import { MAT, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, isLiquidBarrier } from '../fluid/mat.mjs'
-import { addLiquid, addMoisture, idx } from '../fluid/world.mjs'
+import { addLiquid, addMoisture, idx, impartLiquidMomentum } from '../fluid/world.mjs'
 import { queueSplash } from '../fluid/particles.mjs'
 import { hash01 } from '../hash.mjs'
 import { ICON_BASE_ROWS } from '../icon.mjs'
@@ -26,7 +26,10 @@ export const onParticleHit = (world, x, y, m, particle, wet, state) => {
 	const { frame } = state
 
 	if (m === MAT.POOL) {
-		addLiquid(world, x, y, 0.15)
+		const i = idx(world, x, y)
+		const before = world.liq[i]
+		const stored = addLiquid(world, x, y, 0.15)
+		impartLiquidMomentum(world, i, before, stored, particle.vx, particle.vy)
 		if (hash01(x, frame) > 0.3)
 			leakPool(world, state, x, y, 0.08)
 		return
@@ -57,8 +60,12 @@ export const onParticleHit = (world, x, y, m, particle, wet, state) => {
 		const hit = 0.18
 		const stored = addMoisture(world, x, y, hit * SOIL_HIT_ABSORB_FRAC * soilAbsorbFactor(world.moisture[i]))
 		const rest = hit - stored
-		if (rest > 0 && y > 0 && !isLiquidBarrier(world.mat[idx(world, x, y - 1)]))
-			addLiquid(world, x, y - 1, rest)
+		if (rest > 0 && y > 0 && !isLiquidBarrier(world.mat[idx(world, x, y - 1)])) {
+			const ai = idx(world, x, y - 1)
+			const before = world.liq[ai]
+			const put = addLiquid(world, x, y - 1, rest)
+			impartLiquidMomentum(world, ai, before, put, particle.vx * 0.5, particle.vy * 0.35)
+		}
 		const wetSoil = world.moisture[i] > 0.15
 		queueSplash(world, x, y - 0.25,
 			(hash01(x, frame) - 0.5) * (wetSoil ? 0.45 : 0.3),
@@ -87,7 +94,10 @@ export const onParticleHit = (world, x, y, m, particle, wet, state) => {
 	}
 
 	if (wet) {
-		addLiquid(world, x, y, 0.2)
+		const i = idx(world, x, y)
+		const before = world.liq[i]
+		const stored = addLiquid(world, x, y, 0.2)
+		impartLiquidMomentum(world, i, before, stored, particle.vx, particle.vy)
 		const local = y - state.iconOy
 		if (ICON_BASE_ROWS.some(br => Math.abs(br - local) <= 1))
 			leakPool(world, state, x, y, 0.1)

@@ -7,7 +7,7 @@ import { assert, assertAlmostEquals, assertEquals, assertGreater, assertLess } f
 import {
 	MAT, createWorld, setMat, addLiquid, addMoisture, stepLiquid, stepSoil, stepGas, stepParticles,
 	stepFluid, labelAirRegions, pressureAt, liquidPressureAt, totalSealedGas, totalGridWater,
-	totalWorldWater, P_ATM, ATM_HYDRO,
+	totalWorldWater, P_ATM, ATM_HYDRO, CELL_ASPECT, gravityDepth, gravityDownWeights,
 	clearMaterials, idx, RHO_G, RHO_AIR,
 	COND_DRIP, COND_DRAW, SOIL_CAP, SOIL_HIT_ABSORB_FRAC, soilAbsorbFactor, LIQ_DRAW,
 	waterChar, liquidChar, lavaChar, pickWaterGlyph, FALL_HEAVY,
@@ -15,7 +15,8 @@ import {
 	addMelt, T_MAX, viscOf, rhoOf, SUBSTANCE, viscGain,
 	globalWindAt, windShear, gasVelocityAt, dynamicPressure,
 	staticPressureAt, spawnParticle, liftLiquidByWind, verticalGasDrag, GAS_DRAG, GAS_DRAG_Y,
-	applyGravityToWorld, PARTICLE_GRAVITY, condenseDripSource,
+	applyGravityToWorld, PARTICLE_GRAVITY, condenseDripSource, depositParticleMass,
+	gravitySettleWeights, ST_DRY_FRAC,
 } from '../fluid/index.mjs'
 
 /**
@@ -1024,6 +1025,49 @@ Deno.test('fluid: particle life expiry deposits mass into the grid', () => {
 	assertEquals(world.particles.count, 0)
 	assertAlmostEquals(totalWorldWater(world), before, 1e-5)
 	assertGreater(totalGridWater(world), 0.5)
+})
+
+Deno.test('fluid: cell aspect shapes diagonal settle weights, not depth', () => {
+	const world = createWorld({ width: 8, height: 8, margin: 0, bottomExtra: 0 })
+	assertEquals(CELL_ASPECT, 2)
+	assertAlmostEquals(gravityDepth(world, 0, 3) - gravityDepth(world, 0, 1), 2, 1e-9)
+	const s = Math.SQRT1_2
+	applyGravityToWorld(world, { gx: s, gy: s, mag: PARTICLE_GRAVITY })
+	const down = gravitySettleWeights(world)
+	assertGreater(down.n, 2)
+	let best = 0
+	for (let i = 1; i < down.n; i++)
+		if (down.w[i] > down.w[best]) best = i
+	assertEquals(Math.abs(down.dx[best]), 1)
+	assertEquals(Math.abs(down.dy[best]), 1)
+	// Ortho face weights stay for soil / free-surface semantics.
+	const faces = gravityDownWeights(world)
+	for (let i = 0; i < faces.n; i++)
+		assertEquals(faces.dx[i] === 0 || faces.dy[i] === 0, true)
+})
+
+Deno.test('fluid: particle deposit imparts liquid momentum', () => {
+	const world = createWorld({ width: 12, height: 10, margin: 0, bottomExtra: 0 })
+	clearMaterials(world)
+	depositParticleMass(world, 5, 5, 0.4, 0.8, -0.3)
+	const i = idx(world, 5, 5)
+	assertGreater(world.liq[i], 0.35)
+	assertGreater(world.liqVx[i], 0.5)
+	assertLess(world.liqVy[i], -0.1)
+})
+
+Deno.test('fluid: free-surface sheet wets dry neighbors slower (surface tension)', () => {
+	const world = createWorld({ width: 14, height: 10, margin: 0, bottomExtra: 0 })
+	clearMaterials(world)
+	for (let x = 3; x <= 9; x++)
+		setMat(world, x, 8, MAT.SEAL)
+	addLiquid(world, 6, 7, 1)
+	stepLiquid(world)
+	const dryTook = world.liq[idx(world, 5, 7)] + world.liq[idx(world, 7, 7)]
+	// Full sheet both sides ≈ 0.5; dry frac keeps first-tick wetting well below that.
+	assertGreater(dryTook, 0.05)
+	assertLess(dryTook, 0.25 * ST_DRY_FRAC * 2 + 0.08)
+	assertGreater(world.liq[idx(world, 6, 7)], 0.55)
 })
 
 Deno.test('fluid: stepFluid runs gas then liquid in one tick', () => {

@@ -3,9 +3,12 @@
  */
 
 import { defaultGravity } from '../gravity.mjs'
+import { CELL_ASPECT, cellStepUnit, NEIGH8_DX, NEIGH8_DY, ORTHO_DX, ORTHO_DY } from '../hash.mjs'
 
 import { MAT, SOIL_CAP, LIQ_FULL, LIQ_DRAW, isSoilMat, isLiquidBarrier } from './mat.mjs'
 import { createParticlePool, clearParticlePool, totalParticleWater } from './particle_pool.mjs'
+
+export { CELL_ASPECT } from '../hash.mjs'
 
 /** @typedef {import('../gravity.mjs').GravityState} GravityState */
 
@@ -45,27 +48,55 @@ import { createParticlePool, clearParticlePool, totalParticleWater } from './par
 /** 重力方向点积变化超过此值时标脏空气几何。 */
 const GRAVITY_DIRTY_DOT = 0.92
 
-/** 复用的加权邻格缓冲（向下）。 */
-const DOWN_W = { dx: [0, 0, 0, 0], dy: [0, 0, 0, 0], w: [0, 0, 0, 0], n: 0 }
-/** 复用的加权邻格缓冲（向上）。 */
-const UP_W = { dx: [0, 0, 0, 0], dy: [0, 0, 0, 0], w: [0, 0, 0, 0], n: 0 }
+/** 复用的加权邻格缓冲（向下，正交）。 */
+const DOWN_W = {
+	dx: [0, 0, 0, 0, 0, 0, 0, 0],
+	dy: [0, 0, 0, 0, 0, 0, 0, 0],
+	w: [0, 0, 0, 0, 0, 0, 0, 0],
+	n: 0,
+}
+/** 复用的加权邻格缓冲（向上，正交）。 */
+const UP_W = {
+	dx: [0, 0, 0, 0, 0, 0, 0, 0],
+	dy: [0, 0, 0, 0, 0, 0, 0, 0],
+	w: [0, 0, 0, 0, 0, 0, 0, 0],
+	n: 0,
+}
+/** 沉降用下向（可含对角）。 */
+const SETTLE_DOWN_W = {
+	dx: [0, 0, 0, 0, 0, 0, 0, 0],
+	dy: [0, 0, 0, 0, 0, 0, 0, 0],
+	w: [0, 0, 0, 0, 0, 0, 0, 0],
+	n: 0,
+}
+/** 复用的侧向（⊥ĝ）加权正交邻格。 */
+const SIDE_W = { dx: [0, 0, 0, 0], dy: [0, 0, 0, 0], w: [0, 0, 0, 0], n: 0 }
+
+/** |gx|、|gy| 均超过此值时启用对角邻接（避免纯轴向下虚假斜流）。 */
+const DIAG_TILT_MIN = 0.28
 
 /**
  * 用当前重力填充下/上向加权邻格缓冲。
+ * 权重 = 物理单位步向 · ĝ（`cellStepUnit` / CELL_ASPECT）；可选对角。
  * @param {FluidWorld} world 世界
  * @param {{ dx: number[], dy: number[], w: number[], n: number }} out 输出
  * @param {number} sense +1 向下，-1 向上
+ * @param {boolean} [diagonals=false] 是否在倾斜时加入对角
  * @returns {{ dx: number[], dy: number[], w: number[], n: number }} out
  */
-const fillGravityWeights = (world, out, sense) => {
+const fillGravityWeights = (world, out, sense, diagonals = false) => {
 	const gx = world.gravity.gx * sense
 	const gy = world.gravity.gy * sense
+	const tilted = diagonals
+		&& gx * gx > DIAG_TILT_MIN * DIAG_TILT_MIN
+		&& gy * gy > DIAG_TILT_MIN * DIAG_TILT_MIN
 	out.n = 0
-	const candidates = [
-		[1, 0], [-1, 0], [0, 1], [0, -1],
-	]
-	for (const [dx, dy] of candidates) {
-		const dot = dx * gx + dy * gy
+	const nCand = tilted ? 8 : 4
+	for (let c = 0; c < nCand; c++) {
+		const dx = NEIGH8_DX[c]
+		const dy = NEIGH8_DY[c]
+		const { ux, uy } = cellStepUnit(dx, dy)
+		const dot = ux * gx + uy * gy
 		if (dot <= 1e-6) continue
 		const i = out.n++
 		out.dx[i] = dx
@@ -77,6 +108,7 @@ const fillGravityWeights = (world, out, sense) => {
 
 /**
  * 预算投影深度原点与跨度（四角最小值 → depth0，使深度非负）。
+ * 深度在格点步长空间（与 RHO_G / ATM_HYDRO 标定一致）；视觉纵横比只进邻接 û。
  * @param {FluidWorld} world 世界
  * @returns {void}
  */
@@ -467,6 +499,7 @@ export const addMelt = (world, x, y, amt, temp) => {
 
 /**
  * 重力投影深度（沿 ĝ 增大；默认 ĝ=(0,1) 时等于 y）。
+ * 格点步长空间 — 静水 / Torricelli 标定；视觉 CELL_ASPECT 只影响邻接 û 与渲染半径。
  * @param {FluidWorld} world 世界
  * @param {number} x 列
  * @param {number} y 行
@@ -476,19 +509,64 @@ export const gravityDepth = (world, x, y) =>
 	x * world.gravity.gx + y * world.gravity.gy - world.gravityDepth0
 
 /**
- * 沿重力向下的加权正交邻格（w = max(0, d̂·ĝ)）。
- * 返回复用缓冲，勿长期持有。
+ * 沿重力向下的正交邻格（土壤底面 / 自由面 / 气泡）。w = û_phys·ĝ。
  * @param {FluidWorld} world 世界
  * @returns {{ dx: number[], dy: number[], w: number[], n: number }} 加权邻格
  */
-export const gravityDownWeights = (world) => fillGravityWeights(world, DOWN_W, 1)
+export const gravityDownWeights = (world) => fillGravityWeights(world, DOWN_W, 1, false)
 
 /**
- * 沿重力向上的加权正交邻格（w = max(0, d̂·(−ĝ))）。
+ * 凝聚相沉降邻格：正交 + 倾斜时对角（同一 pressureMove 语言）。
  * @param {FluidWorld} world 世界
  * @returns {{ dx: number[], dy: number[], w: number[], n: number }} 加权邻格
  */
-export const gravityUpWeights = (world) => fillGravityWeights(world, UP_W, -1)
+export const gravitySettleWeights = (world) => fillGravityWeights(world, SETTLE_DOWN_W, 1, true)
+
+/**
+ * 沿重力向上的正交邻格（w = û_phys·(−ĝ)）。
+ * @param {FluidWorld} world 世界
+ * @returns {{ dx: number[], dy: number[], w: number[], n: number }} 加权邻格
+ */
+export const gravityUpWeights = (world) => fillGravityWeights(world, UP_W, -1, false)
+
+/**
+ * 垂直于 ĝ 的侧向正交邻格（液膜 / 表面张力）。w = |d̂ × ĝ|（二维叉积模）。
+ * @param {FluidWorld} world 世界
+ * @returns {{ dx: number[], dy: number[], w: number[], n: number }} 加权邻格
+ */
+export const gravitySideWeights = (world) => {
+	const { gx, gy } = world.gravity
+	SIDE_W.n = 0
+	for (let o = 0; o < 4; o++) {
+		const dx = ORTHO_DX[o]
+		const dy = ORTHO_DY[o]
+		const cross = Math.abs(dx * gy - dy * gx)
+		if (cross <= 1e-6) continue
+		const i = SIDE_W.n++
+		SIDE_W.dx[i] = dx
+		SIDE_W.dy[i] = dy
+		SIDE_W.w[i] = cross
+	}
+	return SIDE_W
+}
+
+/**
+ * 将动量按质量加权并入格内液体速度（沉积 / 撞击）。
+ * @param {FluidWorld} world 世界
+ * @param {number} cell 扁平索引
+ * @param {number} massBefore 并入前液体质量
+ * @param {number} added 并入质量
+ * @param {number} vx 入射 vx
+ * @param {number} vy 入射 vy
+ * @returns {void}
+ */
+export const impartLiquidMomentum = (world, cell, massBefore, added, vx, vy) => {
+	if (added <= 1e-8) return
+	const m1 = massBefore + added
+	if (m1 <= 1e-8) return
+	world.liqVx[cell] = (world.liqVx[cell] * massBefore + vx * added) / m1
+	world.liqVy[cell] = (world.liqVy[cell] * massBefore + vy * added) / m1
+}
 
 /** 复用的最强上/下邻格（勿长期持有；勿同时保留 up/down 引用）。 */
 const STRONG_UP = { dx: 0, dy: 0, w: 0 }

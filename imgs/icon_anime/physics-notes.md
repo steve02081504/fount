@@ -6,6 +6,8 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 
 `stepFluid`: label-if-dirty → gas → lift → thermal → rain inject → particles → liquid → bubbles → boundary.
 
+`stepLiquid`: water → soil → hydraulic φ → lava → buoyancy → commit liqV.
+
 `labelAirRegions` runs only when `world.airDirty` (mat change or free-liquid/melt crossing `LIQ_DRAW`). `stepLiquid` may re-label mid-tick if particles/lift dirty topology again. Set `airDirty` / `gasGeomDirty` together on occupancy flips — not on every liquid mass move. Skip Boyle overlap when there are no sealed regions.
 
 ## Layout / allocation
@@ -24,8 +26,9 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 ## Gravity & boundaries
 
 - Continuous `world.gravity = { gx, gy, mag }` (unit + particle accel). No 4-axis quantize.
-- `gravityDepth = x·gx + y·gy − depth0` (depth0 = min of four corners → non-negative). Default ĝ=(0,1) ⇒ depth = y.
-- Weighted ortho neighbors: `w = max(0, d̂·ĝ)` down / `d̂·(−ĝ)` up. Settle / buoyancy / bubbles / soil / free-surface follow these. Edge out sinks use ambient pressure — do not `rhoAt`/`pressureAt` on OOB coordinates.
+- `gravityDepth = x·gx + y·gy − depth0` (cell-step space; depth0 = min of four corners). Default ĝ=(0,1) ⇒ depth = y. Visual `CELL_ASPECT` does **not** rescale depth (keeps RHO_G / ATM_HYDRO calibration) — it shapes neighbor û via `cellStepUnit` and torch/vortex radii.
+- Face weights (`gravityDownWeights` / `Up`): ortho only, `w = û_phys·ĝ` — soil underside / free-surface / bubbles.
+- Settle weights (`gravitySettleWeights`): ortho + diagonals when both |gx|,|gy| ≳ 0.28 — condensed-phase Torricelli. Side sheets: `gravitySideWeights` (⊥ĝ ortho). Edge out sinks use ambient pressure — do not `rhoAt`/`pressureAt` on OOB coordinates.
 - Edge roles (`edgeRoles`): for outward normal n̂, `sink=max(0,n̂·ĝ)`, `source=max(0,−n̂·ĝ)`, `wrap=1−|n̂·ĝ|`.
 - Exposure work: each tick `exposure[e] = max(0, exposure[e] + n̂_e·ĝ)`. Lava when `exposure[e] ≥ LAVA_ONSET_EXPOSURE` (312 under pure down = 13s@24fps). At 45°, two edges each accumulate cos45/frame → onset ≈ 13·√2 s. Condensed-phase transport never indexes OOB sink cells (outFrac uses ambient `P_ATM`); NaN there would permanently poison melt inject via `max(NaN, inject)`.
 - Rain spawn uses `source` weights (gravity-down edge never rains). Composition bottom is never a rain sky (pedestal/lava edge). If bottom would be a source (`gy < 0`), **all** rain weights are zero — side rain under slight handheld tilt must not mint water while waiting for lava. Then lava on the sink edge after exposure. Side wrap uses `wrap`; particles pick wrap vs out with `hash01`.
@@ -63,7 +66,9 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 - `liqVx`/`liqVy` / `meltVx`/`meltVy`: EMA from mass transfers — drive shared rain-style glyphs (`waterChar` / `lavaChar`). Melts use the same alphabet; viscosity only slows Stokes flux.
 - Condensed-phase `stepPhaseTransport` settles **deep→shallow** along ĝ (no shallow→deep cascade that teleports melt to the floor in one tick).
 - Buoyancy swaps only between occupied condensed cells (convection); free-fall into empty air is transport, so lava viscosity can lag water.
-- Communicating vessels: relax `φ = P/(ρg) - depth` along the liquid graph (BFS from lowest-φ surface — no teleport across disconnected air).
+- Communicating vessels: relax `φ = P/(ρg) - depth` along the liquid graph (ortho BFS from lowest-φ surface — no teleport across disconnected air; diagonals stay out of the φ graph so platform puddles cannot siphon off a corner).
+- Free-surface tension: sheet onto dry neighbors scaled by `ST_DRY_FRAC` (wet–wet full `sheetMove`) — beading without fighting φ.
+- Particle deposit / wet hits write incident `vx,vy` into `liqVx`/`liqVy` via `impartLiquidMomentum` (mass-weighted); `commitWaterVelocity` EMA keeps a fraction.
 - `POOL` retains fill and spills/leaks; `BODY` is splash-only barrier; pillars are not materials.
 - Soil: absorb diminishes as cell wets (`soilAbsorbFactor`); rain hits sink only `SOIL_HIT_ABSORB_FRAC`. Seepage slow enough for surface puddles. Sideways share + prefer below (gravity-weighted); air below → underside `condense`; Matthew along ĝ⊥; `COND_DRAW` glyphs / full dump at `COND_DRIP` / `COND_WEEP_FRAC` weep below drip so split films cannot trap mass forever. When ĝ leaves an open underside, condense reabsorbs into moisture (excess spills to ortho air). Compose drips via `condenseDripSource` (gravity-up soil), not screen-Y. Heating evaporates moisture before melt.
 - Material rebuild clears labels only; `releaseNonSoilWater` dumps moisture/condense from non-soil into free liquid so `POOL` overwrite does not erase water.
@@ -71,4 +76,4 @@ Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid,
 
 ## Pointer light
 
-Left: after `TORCH_DELAY` frames of hold, `torchBlend` eases over `TORCH_FADE` (ambient dim + quadratic radial falloff; cell aspect `hypot(dx, 2·dy)`). Release fades out (no ripple); re-press mid fade-out resumes without re-waiting delay. Faster release before arm → expanding ripple ring, no ambient dim.
+Left: after `TORCH_DELAY` frames of hold, `torchBlend` eases over `TORCH_FADE` (ambient dim + quadratic radial falloff; cell aspect `hypot(dx, CELL_ASPECT·dy)`). Release fades out (no ripple); re-press mid fade-out resumes without re-waiting delay. Faster release before arm → expanding ripple ring, no ambient dim.
