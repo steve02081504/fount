@@ -2,11 +2,15 @@
 
 Day-to-day map / hosting: [AGENTS.md](AGENTS.md). Read this when changing fluid, gravity, terrain, or frame paint.
 
+## `fluid/` layout
+
+`mat`, `flow`, `components`, `world/` (`create` / `cells` / `depth`), `particle_pool`, `edges`, `boundary`, `thermal` (`cellRho` / `meltVisc`), `bubbles`, `gas/` (`regions` / `pressure` / `velocity`), `liquid/` (`index` orchestration, `pressure` hydrostatic column, `water`, `lava`, `transport` Stokes kernel, `hydraulic` φ relax), `soil`, `particles`, `step` (`stepFluid`, `stepResizeWeather`), `glyphs`. Production deep-links these files; `fluid/index.mjs` is the test/public barrel.
+
 ## Tick order
 
 `stepFluid`: label-if-dirty → gas → lift → thermal → rain inject → particles → liquid → bubbles → boundary.
 
-`stepLiquid`: water → soil → commit liqV → hydraulic φ（独立流缓冲）→ lava → melt hydraulic φ → buoyancy.
+`stepLiquid`: water → soil → commit liqV → hydraulic φ (own flow scratch) → lava → melt hydraulic φ → buoyancy.
 
 `labelAirRegions` runs only when `world.airDirty` (mat change or condensed fill crossing `LIQ_DRAW`). Occupancy is `cellFill = liq+melt`; `isCondensed` / `cellRoom` enforce volume exclusivity. `stepLiquid` re-labels at entry if particles/lift dirtied topology again (not inside `water.mjs`). Set `airDirty` / `gasGeomDirty` together on occupancy flips — not on every liquid mass move. Skip Boyle overlap when there are no sealed regions.
 

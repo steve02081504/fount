@@ -27,12 +27,10 @@ Deeper UI (profile card, module layout, unread/inbox/aliases, cabinet bind perms
 
 - CSS: page-local, no `hub-` prefix. Ready-gate: `HUB_GATE` / `fount:hub-*`. Layout: `body[data-layout-pane]` / `body[data-surface]`. Mobile (`≤768px`): `body[data-layout-pane=nav|main]` via `hubPane.mjs`.
 - **`fount.user.send`**: Hub bootstrap registers `globalThis.fount.user.send(string | chatLogEntry)` → current channel. Normalize in `shared/fountUserSend.mjs` (Deno-pure — no `/scripts/*` imports there).
-- Errors: `handleError('chat.hub.…')` → `.catch` closure (toast + console + Sentry) for fount faults. User mistakes: `showToastI18n`. Impl: `/scripts/features/errorHandlers.mjs`.
-- Floating promises: call directly; no need for `void`. Use `return void sideEffect()` only when the side effect's return value is not `undefined`.
-- Prefer `renderTemplate` / `mountTemplate`. Modals: `openDialogFromTemplate` (`modal-box` only). Cross-shell shared modules: `withTemplates`, never bare `usingTemplates`. Prefer DaisyUI; context menus via `/scripts/components/positionContextMenu.mjs`; prompts via `/scripts/features/promptDialog.mjs`.
-- **HTTP**: named functions in `../src/endpoints/*.mjs` only — no UI `fetch` of shell REST (`share.mjs` Litterbox is the sole non-endpoint exception). Global whoami/getdetails/EVFS → `/scripts/endpoints/`.
-- State: `core/state.mjs` — import exported bindings; heavy modules use call-site `await import()`.
-- No hardcoded user-visible strings; `data-i18n` / `setElementI18n` + `zh-CN.json`.
+- Errors: `handleError('chat.hub.…')` for fount faults; user mistakes: `showToastI18n`. Floating promises: call directly (no `void`); `return void sideEffect()` only when the side effect returns non-`undefined`.
+- Prefer `renderTemplate` / `mountTemplate` / `openDialogFromTemplate`; cross-shell shared modules use `withTemplates`. DaisyUI + shared `promptDialog` / `positionContextMenu`.
+- **HTTP**: named functions in `../src/endpoints/*.mjs` only (`share.mjs` Litterbox is the sole non-endpoint exception). Global whoami/getdetails/EVFS → `/scripts/endpoints/`.
+- State: `core/state.mjs`. No hardcoded user-visible strings; `data-i18n` / `setElementI18n` + `zh-CN.json`.
 - **@-mention autocomplete**: on `<textarea>` use only `aria-controls` / `aria-activedescendant`; do not add `role="combobox"` / `aria-expanded`.
 
 ## Files / messages / archive

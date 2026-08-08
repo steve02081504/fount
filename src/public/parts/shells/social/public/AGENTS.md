@@ -13,7 +13,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 
 - **Local trust**: Social UI, `/api/parts/shells:social/...`, local timeline append. **Untrusted**: `part_timeline_put`, `part_invoke` — ingress `timeline/sync.mjs`, `discover/rpc.mjs`; outbound filter `timeline/federationExport.mjs`.
 - **Write auth** (`federation/write_auth.mjs`): key history chain; genesis via recovery-signed `social_meta` / gen0 rotate / EVFS `profile.json` attestation.
-- **Push admission**: `part_timeline_put` **and** `social_post_notify` accept follows-union ∪ shared group members ∪ **follow/unfollow whose target is a local entity** (so the followed party mirrors the follower timeline and `followsOwner` works on pull export). Pull already follow-filters. Denylist/reputation still apply.
+- **Push admission**: `part_timeline_put` **and** `social_post_notify` accept follows-union ∪ shared group members ∪ follow/unfollow targeting a local entity. Pull already follow-filters. Denylist/reputation still apply.
 - **Identity**: HTTP always operator via `SocialClient`. Agents: in-process `getSocialClient(username, agentEntityHash)`. No Web API identity switch.
 - **Personal block/hide**: public block → `personal_block.json` + reputation; private hide → `personal_hide.json`. Group kick/ban = node `denylist.json` (separate). Chat personal-lists HTTP: `GET …/personal-lists`.
 - **Visibility**: `socialMeta.hideFromDiscovery` ≠ post `content.visibility`. Tiers: `public` / `unlisted` / `followers`+`followers_since` / `selected`+`private` / optional `except`. Feed decrypt failure: `post.decryptView.failed`. `contentWarning` collapses body+media+poll; `sensitiveMedia` blurs media only.
@@ -26,17 +26,12 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 
 ## UI conventions
 
-- CSS: page-local, no `social-` prefix. Prefer DaisyUI; custom chrome uses `.surface` (not `.card`). Empty states: `alert alert-ghost` + `.empty-state` via `emptyState.mjs`. Ready-gate: `SOCIAL_GATE` / `fount:social-*`.
-- **`.hidden`**: from `/base.css` (`display: none !important`) — do not re-declare in shell CSS.
-- Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder`. Prefer `renderTemplate` / `mountTemplate`. Dialogs: `/scripts/features/promptDialog.mjs`.
-- **@-mention autocomplete**: keep `<textarea>` as implicit textbox; only `aria-controls` + `aria-activedescendant` (+ `aria-autocomplete`). Do not set `role="combobox"` / `aria-expanded` on textarea.
-- Background fire-and-forget: never `.catch(() => {})` / `.catch(() => null)`. Report fount faults with `.catch(handleError('social.…'))`. User mistakes: `showToastI18n`. No need to wrap floating promises in `void`.
-- **Frontend HTTP**: named functions only in `public/src/endpoints/*.mjs`. Do not use path-string `socialApi` / `chatApi` / `apiClient`. Backend: `endpoints/shared.mjs` `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.
-- Hash routing / search / replies / own-write feed traps: [ui-details.md](ui-details.md).
-- Avatars/names/@id: chat `entityAvatar.mjs` / `resolveDisplayName` / `formatEntityAtId`. Profile: `rememberEntityHandle` before posts. Hover: `lib/profileHover.mjs`.
-- Bio/post Markdown: chat `shared/trustedMarkdown.mjs`. Trusted: self / local-char / declared master / trust list. Remote self-declared `ownerEntityHash` does not elevate. Explore snippets use `mountMarkdown` (not `escapeHtml`).
-- Hashtags: `src/lib/hashtags.mjs` skips fenced/inline code; `trending.json` is a flat tag→count map. Trending aside: nearby aggregation only — paint cache/local first, then `scope=nearby`.
-- Browser imports of chat: absolute `/parts/shells:chat/...` URLs.
+- CSS: page-local, no `social-` prefix. DaisyUI; custom chrome uses `.surface` (not `.card`). Empty states via `emptyState.mjs`. Ready-gate: `SOCIAL_GATE` / `fount:social-*`. Do not re-declare `.hidden` (from `/base.css`).
+- Prefer `data-i18n` / `setElementI18n` / `renderTemplate` / `promptDialog`. **@-mention**: `aria-controls` + `aria-activedescendant` only — no `role="combobox"` on `<textarea>`.
+- Fire-and-forget: `.catch(handleError('social.…'))` for fount faults; `showToastI18n` for user mistakes — never empty `.catch`.
+- **Frontend HTTP**: named functions in `public/src/endpoints/*.mjs` only. Backend: `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.
+- Hash routing / search / replies / own-write: [ui-details.md](ui-details.md). Avatars/names: chat `entityAvatar` / `resolveDisplayName` / `formatEntityAtId`. Bio/post Markdown: chat `shared/trustedMarkdown.mjs` (remote self-declared `ownerEntityHash` does not elevate).
+- Hashtags: `src/lib/hashtags.mjs`; trending aside paints cache/local first, then `scope=nearby`. Browser imports of chat: absolute `/parts/shells:chat/...` URLs.
 
 ## Identity / private state
 

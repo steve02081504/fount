@@ -27,16 +27,8 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 
 ## i18n refs (`i18n_refs`)
 
-Playwright and `[i18n:missing]` miss these cases:
-
-- The key **exists** as an object, so the missing-key warning never fires.
-- `translateSingularElement` only writes known applicator fields (`textContent`, `title`, …). Binding `data-i18n="….leave"` to a `{ main, confirm, … }` cluster leaves the control empty.
-- CLI scripts use keys relative to `fountConsole.path` (e.g. `remove.removingFount`). Reshape rewrites full paths and historically skipped `.sh`, so stale relative keys never failed the old checks.
-
-Rules:
-
-- Element binding (`data-i18n`, `setElementI18n`): the key must exist; objects need ≥1 applicator (`placeholder`, `title`, `label`, `value`, `alt`, `aria-label`, `textContent`, `innerHTML`, `dataset`). Prefer `.main` for “string plus sibling messages” clusters.
-- String binding (`showToastI18n`, `confirmI18n`, …) and `path/fount.{ps1,sh}` `Get-I18n` / `get_i18n`: must resolve to a string (or tip array). Raw `geti18n` may return objects (e.g. `util.zxcvbn`); only missing keys fail. `handleError('key')` is scanned only when imported from frontend `features/errorHandlers.mjs` (factory; first arg is the i18n key) — not backend `scripts/errorHandlers.mjs` where the first arg is the error.
+- Element binding (`data-i18n`, `setElementI18n`): the key must exist; objects need ≥1 applicator (`placeholder`, `title`, `label`, `value`, `alt`, `aria-label`, `textContent`, `innerHTML`, `dataset`). Prefer `.main` for “string plus sibling messages” clusters — binding an object key without an applicator leaves the control empty (Playwright `[i18n:missing]` does not catch this).
+- String binding (`showToastI18n`, `confirmI18n`, …) and `path/fount.{ps1,sh}` `Get-I18n` / `get_i18n`: must resolve to a string (or tip array). Raw `geti18n` may return objects (e.g. `util.zxcvbn`); only missing keys fail. `handleError('key')` is scanned only when imported from frontend `features/errorHandlers.mjs` (first arg is the i18n key) — not backend `scripts/errorHandlers.mjs` (first arg is the error).
 - Static keys only (`a.b.c`); skip template interpolations. Rewrite suffixes include `.sh` (shared `walk.mjs` / `reshape_i18n_keys.py`).
 
 ## Agent docs language
