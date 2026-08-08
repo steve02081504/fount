@@ -1994,7 +1994,9 @@
 				"unsavedHint": "Als je het venster sluit, worden niet-opgeslagen wijzigingen verwijderd",
 				"tagsLabel": "Label",
 				"tagAdd": "Toevoegen aan",
-				"tagRemove": "Label verwijderen",
+				"tagRemove": {
+					"aria-label": "Label verwijderen"
+				},
 				"linksLabel": "Link",
 				"handleLabel": "Aangepaste ID",
 				"handleHint": "Kan worden doorzocht door andere knooppunten in het netwerk; Uniciteit is niet gegarandeerd, en conflicten zullen worden ondubbelzinnig gemaakt volgens de vertrouwenslijst.",
@@ -2041,7 +2043,9 @@
 					"name": {
 						"placeholder": "Toon tekst"
 					},
-					"remove": "Koppeling verwijderen",
+					"remove": {
+						"aria-label": "Koppeling verwijderen"
+					},
 					"url": {
 						"placeholder": "https://… of bron://…"
 					}
@@ -2063,7 +2067,6 @@
 				"dm": {
 					"char": "Privé chatten met een personage",
 					"failed": "Kan privébericht niet openen: ${error}",
-					"fed": "Federaal privébericht",
 					"user": "Stuur een privébericht"
 				}
 			},
@@ -4168,7 +4171,9 @@
 		},
 		"composer": {
 			"placeholder": "Waar denk je aan? Markdown (fount-dialect) wordt ondersteund — typ @ om te vermelden",
-			"locale": "inhoud taal",
+			"locale": {
+				"aria-label": "Taal van de inhoud"
+			},
 			"aria-label": "Een bericht schrijven",
 			"publish": "Plaatsen",
 			"saveDraft": "Concept opslaan",
@@ -4332,7 +4337,9 @@
 			},
 			"createFolderPrompt": "Mapnaam",
 			"pickFolderTitle": "Toevoegen aan favorieten",
-			"folderSelect": "favoriete map",
+			"folderSelect": {
+				"aria-label": "favoriete map"
+			},
 			"confirm": "Bevestigen",
 			"cancel": "Annuleren",
 			"remove": {
@@ -4495,7 +4502,9 @@
 				"aria-label": "Zoeken"
 			},
 			"submit": "Zoeken",
-			"clear": "Duidelijk",
+			"clear": {
+				"aria-label": "Zoekopdracht wissen"
+			},
 			"empty": "Geen overeenkomende berichten",
 			"tooShort": "Voer minimaal 2 tekens in",
 			"usersTitle": "Gebruiker",
@@ -4642,7 +4651,9 @@
 			"linking": "Chatgroep commit",
 			"clear": "Ontkoppel",
 			"pick": "Chatgroep/kanaal commit…",
-			"select": "Maak verbinding met een chatgroep of kanaal"
+			"select": {
+				"aria-label": "Maak verbinding met een chatgroep of kanaal"
+			}
 		},
 		"inbox": {
 			"filtersLabel": {

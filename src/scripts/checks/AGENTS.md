@@ -12,9 +12,10 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 | --- | --- |
 | `html_meta` | HTML meta / landmarks / `drawer-toggle` / aside ARIA |
 | `info` | parts `locales.json` / `achievements_registry.json` info + remote icon URL |
-| `i18n_keys` | locale key structure (below) |
+| `i18n_keys` | locale key structure + shared-path value kinds vs zh-CN (below) |
 | `i18n_refs` | `data-i18n` / `setElementI18n` objects need a DOM applicator; string APIs + `path/fount.{ps1,sh}` keys must resolve to strings |
 | `reshape_i18n_keys` | `.esh/commands/reshape_i18n_keys.py --self-test` |
+| `update_locales` | `.esh/commands/update-locales.py --self-test` (string↔single-applicator normalize) |
 | `agents_md_english` | `AGENTS.md` + linked `.md` English-only; non-`AGENTS.md` under `docs/` |
 | `jsdoc_no_english` | JSDoc summaries: Chinese (CJK required; pure English flagged) |
 
@@ -23,6 +24,7 @@ Manifest: `src/scripts/checks/test/manifest.json` (`checks`). Run: `fount test c
 - No `Suffix` / `Prefix` affix keys.
 - No ≥4 flat camelCase siblings sharing a prefix.
 - No `xxx1`-style numbered keys.
+- Every non-`zh-CN` locale must match `zh-CN` **value kinds** on shared paths (`string` vs `{ "aria-label": … }` etc. fails — UI would bind wrong). Fix with `update_locale_data` (see [locale-edits.md](../../public/locales/docs/locale-edits.md)); `update-locales.py` auto-wraps string↔single DOM applicator and **exits 1** on remaining type mismatches.
 - Prefix-nest **writeback** only via `.esh/commands/reshape_i18n_keys.py` (JS `JSON.stringify` reorders numeric keys like `404`). Root [AGENTS.md](../../../AGENTS.md) I18n covers day-to-day locale edits.
 
 ## i18n refs (`i18n_refs`)

@@ -186,6 +186,23 @@ export async function showProfilePopup(entity) {
 
 	popup.querySelector('[data-profile-popup-close]')?.addEventListener('click', () => dismissProfilePopup())
 
+	// 远端 EVFS 可能要等超时：先用入参 stub 填名字/字母头像，避免空壳卡死感
+	const stubName = String(entity.displayName || '').trim() || entityHashLabel(entity.entityHash) || '?'
+	if (entity.entityHash) popup.dataset.entityHash = entity.entityHash
+	const nameElement = popup.querySelector('[data-entity-profile-name]')
+	if (nameElement) nameElement.textContent = stubName
+	const avatarElement = popup.querySelector('[data-entity-profile-avatar]')
+	if (avatarElement instanceof HTMLElement) {
+		const { applyProfileAvatarToHost } = await import('./core/avatarCover.mjs')
+		await applyProfileAvatarToHost(avatarElement, {
+			seed: entity.entityHash || stubName,
+			label: stubName,
+			avatar: null,
+			emojiFontSize: '30px',
+			letterClass: 'avatar-letter',
+		})
+	}
+
 	await paintProfilePopup(popup, entity)
 }
 

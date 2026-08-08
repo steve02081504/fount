@@ -45,7 +45,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 ## Manifest fields
 
-- **`triggers`**: glob match on changed files via `npm:picomatch` (braces `{a,b}`, `dot: true`). Default ignores docs/metadata; override via **`triggerFilter`**: [trigger-filter.md](docs/trigger-filter.md). Watch scope = code the suite runs — not shared runners (`serial.mjs`/`boot.mjs` only on `pure`/`integration`/`testkit`). Federation: only `fed_core` watches `federation/**`.
+- **`triggers`**: glob match on changed files via `npm:picomatch` (braces `{a,b}`, `dot: true`). Default ignores docs/metadata; override via **`triggerFilter`**: [trigger-filter.md](docs/trigger-filter.md). Watch scope = code the suite runs — not shared runners (`serial.mjs`/`boot.mjs` only on `pure`/`integration`/`testkit`). Federation: only `fed_core` watches `federation/**`. **Dead triggers** (glob matches zero repo files) → `fount test` prints them and **exits 1 before any suite runs** — fix or remove the path; do not ship stale globs.
 - **`dependsOn`**: plan pulls transitive deps. Imperfect wave = hard fails + one-level dependents (noisy re-runs but does not expand dependents); stale `unknown` → outdated wave.
 - **`subtests`**: `{ name, triggers|trigger, spec? }`. When splitting a frontend god-file, update that subtest's `triggers`. Runtime filter: `FOUNT_TEST_SUBTESTS`. Suite-level `noisy` only marks subtests when **no** file failed.
 - **Live layering**: use smoke → e2e gates; do not jump straight to full e2e. Details: [domain-harness.md](docs/domain-harness.md#live-layering).

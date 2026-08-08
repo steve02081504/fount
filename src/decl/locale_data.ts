@@ -2035,7 +2035,6 @@ export type LocaleData = {
 				dm: {
 					char: string
 					failed: string
-					fed: string
 					user: string
 				}
 			}

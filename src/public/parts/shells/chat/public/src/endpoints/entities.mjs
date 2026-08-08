@@ -22,10 +22,14 @@ export function localeQueryString(groupId) {
  * 读取实体资料。
  * @param {string} entityHash 128 位 entityHash
  * @param {string} [groupId] 群 ID
+ * @param {{ forceRemote?: boolean }} [options] `forceRemote` 跳过远端负缓存再拉
  * @returns {Promise<{ profile: object }>} 资料 JSON
  */
-export async function getEntityProfile(entityHash, groupId) {
-	return chatFetch(`/entities/${encodeURIComponent(entityHash)}${localeQueryString(groupId) ? `?${localeQueryString(groupId)}` : ''}`)
+export async function getEntityProfile(entityHash, groupId, options = {}) {
+	const params = new URLSearchParams()
+	if (groupId) params.set('groupId', groupId)
+	if (options.forceRemote) params.set('forceRemote', '1')
+	return chatFetch(`/entities/${encodeURIComponent(entityHash)}${params.size ? `?${params}` : ''}`)
 }
 
 /**
