@@ -559,6 +559,11 @@
 				"Laufzeitumgebung"
 			]
 		},
+		"utm_welcome": {
+			"title": "Von weit her",
+			"message": "Willkommen, Gäste von `${source}`!\nTee und Snacks haben wir leider nicht — nur einen herzlichen Gruß :)",
+			"dismiss": "Danke, ich schaue mich um"
+		},
 		"footer": {
 			"ready_text": "Bereit, Ihre Reise zu beginnen?",
 			"wait_text": "Bitte warten Sie einen Moment...",

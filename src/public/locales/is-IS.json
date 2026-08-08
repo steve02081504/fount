@@ -559,6 +559,11 @@
 				"keyrsluforrit"
 			]
 		},
+		"utm_welcome": {
+			"title": "Langt að koma",
+			"message": "Velkomin, gestir frá `${source}`!\nEnginn te eða snarl hér — bara kveðja :)",
+			"dismiss": "Takk, ég skoða aðeins"
+		},
 		"footer": {
 			"ready_text": "Tilbúin(n) að hefja ferðalagið?",
 			"wait_text": "Vinsamlegast bíðið augnablik...",

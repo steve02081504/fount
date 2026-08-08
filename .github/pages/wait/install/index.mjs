@@ -6,7 +6,7 @@ import { makeSearchable } from '../../scripts/components/search.mjs'
 import { renderTemplate, usingTemplates } from '../../scripts/features/template.mjs'
 import { showToastI18n } from '../../scripts/features/toast.mjs'
 import { waitForFountService, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
-import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange } from '../../scripts/i18n/index.mjs'
+import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange, setElementI18n } from '../../scripts/i18n/index.mjs'
 import { escapeHtml } from '../../scripts/lib/escapeHtml.mjs'
 import { viewTransition } from '../../scripts/lib/viewTransition.mjs'
 import {
@@ -45,6 +45,8 @@ const starThankYouEl = document.getElementById('star-thank-you')
 const testimonialsBlock = document.getElementById('testimonials-block')
 const testimonialCurrent = document.getElementById('testimonial-current')
 const testimonialNext = document.getElementById('testimonial-next')
+const utmWelcomeDialog = document.getElementById('utm-welcome-dialog')
+const utmWelcomeMessage = document.getElementById('utm-welcome-message')
 
 /**
  * 从指定 URL 获取 JSON 数据。
@@ -157,6 +159,19 @@ async function playHeroAnimation() {
 		console.error('Hero animation failed:', error)
 		await showFinalState()
 	}
+}
+
+/**
+ * 若 URL 带 utm_source，在 hero 入场结束后弹出欢迎对话框。
+ * @returns {void}
+ */
+function maybeShowUtmWelcome() {
+	const source = new URLSearchParams(location.search).get('utm_source')?.trim()
+	if (!source) return
+	setElementI18n(utmWelcomeMessage, 'installer_wait_screen.utm_welcome.message', {
+		source: escapeHtml(source),
+	})
+	utmWelcomeDialog.showModal()
 }
 
 /**
@@ -700,6 +715,7 @@ async function main() {
 		initTranslations('installer_wait_screen'),
 		playHeroAnimation()
 	])
+	maybeShowUtmWelcome()
 
 	adjectiveRotator = createRotatingText(rotatingAdjectiveEl, [], 2500)
 	nounRotator = createRotatingText(rotatingNounEl, [], 2500)

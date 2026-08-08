@@ -558,6 +558,11 @@
 				"執行器"
 			]
 		},
+		"utm_welcome": {
+			"title": "遠道而來",
+			"message": "歡迎從 `${source}` 來的朋友！\n茶點沒備，只好獻上幾句問候 :)",
+			"dismiss": "好，隨便逛逛"
+		},
 		"footer": {
 			"ready_text": "準備好開始您的旅程了嗎？",
 			"wait_text": "請稍候片刻...",

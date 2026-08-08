@@ -260,3 +260,39 @@ body.scroll-lock {
 .shaking {
 	animation: shake 0.5s ease-in-out infinite;
 }
+
+/* UTM welcome：入场 + 来源标签（i18n 插入的 code，原子类够不着） */
+.utm-welcome-box {
+	background-image: radial-gradient(120% 80% at 50% -10%, color-mix(in oklab, var(--color-primary) 16%, transparent), transparent 55%);
+}
+
+#utm-welcome-dialog[open] .utm-welcome-box {
+	animation: utm-welcome-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes utm-welcome-in {
+	from {
+		opacity: 0;
+		transform: translateY(1rem) scale(0.96);
+	}
+
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+.utm-welcome-message code {
+	display: inline-block;
+	padding: 0.1em 0.45em;
+	border-radius: 0.4em;
+	font-weight: 600;
+	color: var(--color-primary);
+	background: color-mix(in oklab, var(--color-primary) 12%, var(--color-base-200));
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#utm-welcome-dialog[open] .utm-welcome-box {
+		animation: none;
+	}
+}
