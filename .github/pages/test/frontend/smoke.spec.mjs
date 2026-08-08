@@ -11,7 +11,7 @@ test.describe('GitHub Pages smoke', () => {
 
 	test('root redirect keeps search and hash', async ({ page, baseUrl }) => {
 		await page.goto(`${baseUrl}/?utm_source=linux.sb&rid=smoke1#welcome`, { waitUntil: 'domcontentloaded' })
-		await expect(page).toHaveURL(/\/wait\/install\/\?utm_source=linux\.sb&rid=smoke1#welcome/, { timeout: 30_000 })
+		await expect(page).toHaveURL(/\/wait\/install\/\?utm_source=linux\.sb&rid=smoke1#welcome$/, { timeout: 30_000 })
 	})
 
 	test('install wait screen loads base + test watch', async ({ page, baseUrl }) => {
@@ -25,10 +25,21 @@ test.describe('GitHub Pages smoke', () => {
 	})
 
 	test('utm_source shows welcome dialog after hero intro', async ({ page, baseUrl }) => {
-		await page.goto(`${baseUrl}/wait/install/?utm_source=linux.sb`, { waitUntil: 'domcontentloaded' })
-		await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
-		await expect(page.locator('#utm-welcome-dialog')).toBeVisible({ timeout: 5_000 })
-		await expect(page.locator('#utm-welcome-message')).toContainText('linux.sb')
+		const dialog = page.locator('#utm-welcome-dialog')
+		const openWelcome = async () => {
+			await page.goto(`${baseUrl}/wait/install/?utm_source=linux.sb`, { waitUntil: 'domcontentloaded' })
+			await expect(page.locator('.hero-content.visible-after-intro')).toBeVisible({ timeout: 30_000 })
+			await expect(dialog).toBeVisible({ timeout: 5_000 })
+			await expect(page.locator('#utm-welcome-message')).toContainText('linux.sb')
+		}
+
+		await openWelcome()
+		await dialog.locator('.modal-action button').click()
+		await expect(dialog).toBeHidden()
+
+		await openWelcome()
+		await dialog.locator('.modal-backdrop button').click()
+		await expect(dialog).toBeHidden()
 	})
 
 	test('protocol shows offline dialog; badges render', async ({ page, baseUrl }) => {
