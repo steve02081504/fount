@@ -14,7 +14,7 @@ import {
 	P_ATM, RHO_AIR, ATM_HYDRO, GAS_DP_DRIVE, LIQ_DRAW, isBlockMat,
 } from './mat.mjs'
 import {
-	scratch, idx, inWorld, gravityDepth, strongestUp,
+	scratch, idx, inWorld, gravityDepth, strongestUp, fillCellDepths,
 } from './world.mjs'
 
 /** @typedef {import('./world.mjs').FluidWorld} FluidWorld
@@ -134,14 +134,27 @@ export const labelAirRegions = (world) => {
 	/** @type {(AirRegion | undefined)[]} */
 	const nextRegions = []
 
-	/** @type {{ x: number, y: number }[]} */
-	const borderSeeds = []
-	for (let x = 0; x < W; x++) borderSeeds.push({ x, y: 0 })
-	for (let y = 1; y < H - 1; y++) {
-		borderSeeds.push({ x: 0, y })
-		borderSeeds.push({ x: W - 1, y })
+	const borderCap = 2 * (W + Math.max(0, H - 2))
+	const borderPairs = scratch(world, 'airBorderPairs', Math.max(2, borderCap * 2), Int32Array)
+	let borderN = 0
+	for (let x = 0; x < W; x++) {
+		borderPairs[borderN * 2] = x
+		borderPairs[borderN * 2 + 1] = 0
+		borderN++
 	}
-	for (let x = 0; x < W; x++) borderSeeds.push({ x, y: H - 1 })
+	for (let y = 1; y < H - 1; y++) {
+		borderPairs[borderN * 2] = 0
+		borderPairs[borderN * 2 + 1] = y
+		borderN++
+		borderPairs[borderN * 2] = W - 1
+		borderPairs[borderN * 2 + 1] = y
+		borderN++
+	}
+	for (let x = 0; x < W; x++) {
+		borderPairs[borderN * 2] = x
+		borderPairs[borderN * 2 + 1] = H - 1
+		borderN++
+	}
 
 	const { components, seedComponentId } = labelComponents(world, {
 		/**
@@ -153,7 +166,8 @@ export const labelAirRegions = (world) => {
 		accept: (w, cell) => isAirCell(w, cell),
 		labels: regionId,
 		poolKey: 'airCompPool',
-		seedCells: borderSeeds,
+		seedPairs: borderPairs,
+		seedPairCount: borderN,
 		/**
 		 * 每格累加重力深度供分量均值。
 		 * @param {FluidWorld} w 流体世界
@@ -463,6 +477,8 @@ export const stepGas = (world, opts = {}) => {
 	const px = gravity.gy
 	const py = -gravity.gx
 	const depthSpan = world.gravityDepthSpan || Math.max(W, H)
+	const depth = fillCellDepths(world)
+	const shear = scratch(world, 'gasShear', n, Float32Array)
 	let maxUpdraft = 0
 
 	for (let y = 0; y < H; y++)
@@ -470,14 +486,16 @@ export const stepGas = (world, opts = {}) => {
 			const cell = y * W + x
 			if (blocked[cell]) {
 				staticP[cell] = 0
+				shear[cell] = 0
 				continue
 			}
 			const rid = regionId[cell]
 			const region = rid ? regions[rid] : null
-			const depth = gravityDepth(world, x, y)
+			const d = depth[cell]
+			shear[cell] = windShear(d, depthSpan)
 			const thermo = !region || region.openToAtm
-				? openHydroPressure(depth)
-				: sealedHydroPressure(region, depth, region.yMean)
+				? openHydroPressure(d)
+				: sealedHydroPressure(region, d, region.yMean)
 			staticP[cell] = Math.max(0.05, thermo - dynamicPressure(gasUx[cell], gasUy[cell]))
 		}
 
@@ -496,8 +514,7 @@ export const stepGas = (world, opts = {}) => {
 				? Math.abs(driveUx[cell]) + Math.abs(driveUy[cell])
 				: 0
 
-			const depth = gravityDepth(world, x, y)
-			const drive = wind0 * windShear(depth, depthSpan)
+			const drive = wind0 * shear[cell]
 			let tx = open ? drive * px : 0
 			let ty = open ? drive * py : 0
 			if (driveUx) {

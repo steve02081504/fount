@@ -3,11 +3,14 @@
  */
 
 import { defaultGravity } from '../gravity.mjs'
-import { CELL_ASPECT, cellStepUnit, NEIGH8_DX, NEIGH8_DY, ORTHO_DX, ORTHO_DY } from '../hash.mjs'
+import { cellStepUnit, NEIGH8_DX, NEIGH8_DY, ORTHO_DX, ORTHO_DY } from '../hash.mjs'
 
 import { MAT, SOIL_CAP, LIQ_FULL, LIQ_DRAW, isSoilMat, isLiquidBarrier } from './mat.mjs'
 import { createParticlePool, clearParticlePool, totalParticleWater } from './particle_pool.mjs'
 
+/**
+ *
+ */
 export { CELL_ASPECT } from '../hash.mjs'
 
 /** @typedef {import('../gravity.mjs').GravityState} GravityState */
@@ -507,6 +510,66 @@ export const addMelt = (world, x, y, amt, temp) => {
  */
 export const gravityDepth = (world, x, y) =>
 	x * world.gravity.gx + y * world.gravity.gy - world.gravityDepth0
+
+/**
+ * 填充每格重力深度 scratch（同行共享 `y·gy − depth0`）。
+ * @param {FluidWorld} world 世界
+ * @returns {Float32Array} 长度 WH 的深度场
+ */
+export const fillCellDepths = (world) => {
+	const { worldW: W, worldH: H, gravity: { gx, gy }, gravityDepth0 } = world
+	const n = W * H
+	const depth = scratch(world, 'cellDepth', n, Float32Array)
+	for (let y = 0; y < H; y++) {
+		const row = y * W
+		const base = y * gy - gravityDepth0
+		for (let x = 0; x < W; x++)
+			depth[row + x] = x * gx + base
+	}
+	return depth
+}
+
+/**
+ * 按投影深度 counting-sort 填满网格序（浅→深或深→浅）。
+ * @param {FluidWorld} world 世界
+ * @param {string} orderKey order scratch 键
+ * @param {string} countsKey 桶计数 scratch 键
+ * @param {boolean} reverse true = 深→浅
+ * @param {Float32Array} [depth] 已有深度场；缺省则 `fillCellDepths`
+ * @returns {Int32Array} 长度 WH 的格序
+ */
+export const buildDepthOrder = (world, orderKey, countsKey, reverse, depth) => {
+	const { worldW: W, worldH: H } = world
+	const n = W * H
+	const d = depth || fillCellDepths(world)
+	const order = scratch(world, orderKey, n, Int32Array)
+	const depthBuckets = Math.max(W, H) + 2
+	const dCounts = scratch(world, countsKey, depthBuckets, Int32Array)
+	dCounts.fill(0)
+	const scale = (depthBuckets - 1) / (world.gravityDepthSpan || 1)
+	for (let cell = 0; cell < n; cell++) {
+		const b = Math.min(depthBuckets - 1, Math.max(0, (d[cell] * scale) | 0))
+		dCounts[b]++
+	}
+	let run = 0
+	if (reverse)
+		for (let b = depthBuckets - 1; b >= 0; b--) {
+			const c = dCounts[b]
+			dCounts[b] = run
+			run += c
+		}
+	else
+		for (let b = 0; b < depthBuckets; b++) {
+			const c = dCounts[b]
+			dCounts[b] = run
+			run += c
+		}
+	for (let cell = 0; cell < n; cell++) {
+		const b = Math.min(depthBuckets - 1, Math.max(0, (d[cell] * scale) | 0))
+		order[dCounts[b]++] = cell
+	}
+	return order
+}
 
 /**
  * 沿重力向下的正交邻格（土壤底面 / 自由面 / 气泡）。w = û_phys·ĝ。

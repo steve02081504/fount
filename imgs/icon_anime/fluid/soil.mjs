@@ -6,6 +6,7 @@
  */
 
 import { ORTHO_DX, ORTHO_DY } from '../hash.mjs'
+
 import {
 	MAT, SOIL_CAP,
 	SOIL_ABSORB_RATE, SOIL_SIDE_FRAC, SOIL_DOWN_FRAC, SOIL_CONDENSE_FRAC,
@@ -95,11 +96,11 @@ const pushFeed = (world, queues, from, amount) => {
  * @param {FluidWorld} world 世界
  * @param {number} x 列
  * @param {number} y 行
+ * @param {{ dx: number[], dy: number[], w: number[], n: number }} [up] 上向权重（复用）
  * @returns {number} 土壤格索引，无则 -1
  */
-export const condenseDripSource = (world, x, y) => {
+export const condenseDripSource = (world, x, y, up = gravityUpWeights(world)) => {
 	const { mat, condense, worldW } = world
-	const up = gravityUpWeights(world)
 	for (let offsetIndex = 0; offsetIndex < up.n; offsetIndex++) {
 		const soilX = x + up.dx[offsetIndex]
 		const soilY = y + up.dy[offsetIndex]
@@ -247,17 +248,23 @@ export const stepSoil = (world) => {
 				}
 			}
 
-			const sideNeighbors = []
+			let side0 = -1
+			let side1 = -1
+			let sideN = 0
 			for (const side of [sideA, sideB]) {
 				const sx = x + side.dx
 				const sy = y + side.dy
 				if (!inWorld(world, sx, sy)) continue
 				const neighbor = sy * W + sx
-				if (isSoilMat(mat[neighbor])) sideNeighbors.push(neighbor)
+				if (!isSoilMat(mat[neighbor])) continue
+				if (sideN === 0) side0 = neighbor
+				else side1 = neighbor
+				sideN++
 			}
-			if (sideNeighbors.length) {
-				const each = (moistureAmount * SOIL_SIDE_FRAC) / sideNeighbors.length
-				for (const neighbor of sideNeighbors) {
+			if (sideN) {
+				const each = (moistureAmount * SOIL_SIDE_FRAC) / sideN
+				for (let si = 0; si < sideN; si++) {
+					const neighbor = si === 0 ? side0 : side1
 					const take = Math.min(each, Math.max(0, SOIL_CAP - moisture[neighbor]))
 					if (take > 1e-8) pushMove(world, queues, cell, neighbor, take)
 				}

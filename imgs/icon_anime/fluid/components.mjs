@@ -42,6 +42,8 @@ const takeStats = (pool, id) => {
  *   labels: Int32Array,
  *   onCell?: (world: FluidWorld, cell: number, x: number, y: number, id: number, stats: ComponentStats) => void,
  *   seedCells?: { x: number, y: number }[],
+ *   seedPairs?: Int32Array,
+ *   seedPairCount?: number,
  *   startId?: number,
  *   poolKey?: string,
  * }} opts 选项
@@ -129,7 +131,18 @@ export const labelComponents = (world, opts) => {
 		return finish(id, stats)
 	}
 
-	if (opts.seedCells?.length) {
+	const seedPairCount = opts.seedPairCount | 0
+	if (seedPairCount > 0 && opts.seedPairs) {
+		const id = next++
+		const stats = takeStats(pool, id)
+		floodClear(world)
+		const pairs = opts.seedPairs
+		for (let i = 0; i < seedPairCount; i++)
+			seed(pairs[i * 2], pairs[i * 2 + 1], id, stats)
+		flood(id, stats)
+		if (finish(id, stats)) seedComponentId = id
+	}
+	else if (opts.seedCells?.length) {
 		const id = next++
 		const stats = takeStats(pool, id)
 		floodClear(world)

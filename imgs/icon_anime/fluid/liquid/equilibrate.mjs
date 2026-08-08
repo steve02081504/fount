@@ -5,7 +5,6 @@
  */
 
 import { ORTHO_DX, ORTHO_DY } from '../../hash.mjs'
-
 import { hydraulicPhi, applyTransfer } from '../flow.mjs'
 import { pressureAt } from '../gas.mjs'
 import { P_ATM, LIQ_DRAW, LIQ_FULL, isLiquidBarrier } from '../mat.mjs'
@@ -39,30 +38,33 @@ export const equilibrateSealedBoyle = (world, region) => {
  * @param {number} y 行
  * @param {number} component 连通分量 id
  * @param {number} pressure 面上方空气压
+ * @param {number} phi 液压势
  * @param {{
- *   x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, n: number,
+ *   x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, phi: Float32Array, n: number,
  * }} surf 自由面 SoA
  */
-const pushSurface = (world, x, y, component, pressure, surf) => {
+const pushSurface = (world, x, y, component, pressure, phi, surf) => {
 	const n = surf.n
 	if (n >= surf.x.length) {
 		surf.x = growScratch(world, 'liqSurfX', n + 1, Int32Array)
 		surf.y = growScratch(world, 'liqSurfY', n + 1, Int32Array)
 		surf.c = growScratch(world, 'liqSurfC', n + 1, Int32Array)
 		surf.p = growScratch(world, 'liqSurfP', n + 1, Float32Array)
+		surf.phi = growScratch(world, 'liqSurfPhi', n + 1, Float32Array)
 	}
 	surf.x[n] = x
 	surf.y[n] = y
 	surf.c[n] = component
 	surf.p[n] = pressure
+	surf.phi[n] = phi
 	surf.n = n + 1
 }
 
 /**
- * 标注连通液体分量；自由面存为 SoA。
+ * 标注连通液体分量；自由面存为 SoA（含预计算 φ）。
  * @param {FluidWorld} world 流体世界
  * @returns {{
- *   surf: { x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, n: number },
+ *   surf: { x: Int32Array, y: Int32Array, c: Int32Array, p: Float32Array, phi: Float32Array, n: number },
  *   componentOf: Int32Array,
  * }} 自由面样本与每格分量 id
  */
@@ -76,12 +78,16 @@ export const labelLiquidComponents = (world) => {
 		y: growScratch(world, 'liqSurfY', 64, Int32Array),
 		c: growScratch(world, 'liqSurfC', 64, Int32Array),
 		p: growScratch(world, 'liqSurfP', 64, Float32Array),
+		phi: growScratch(world, 'liqSurfPhi', 64, Float32Array),
 		n: 0,
 	}
 	let next = 1
 
 	const upW = gravityUpWeights(world)
 	const up = strongestUp(world)
+	const upDx = up.dx
+	const upDy = up.dy
+	const upWgt = up.w
 
 	for (let y = 0; y < H; y++)
 		for (let x = 0; x < W; x++) {
@@ -110,13 +116,13 @@ export const labelLiquidComponents = (world) => {
 				}
 				if (isSurf) {
 					let airP = pressureAt(world, cx, cy)
-					if (up.w > 0) {
-						const ax = cx + up.dx
-						const ay = cy + up.dy
+					if (upWgt > 0) {
+						const ax = cx + upDx
+						const ay = cy + upDy
 						if (inWorld(world, ax, ay) && !isLiquidBarrier(mat[ay * W + ax]))
 							airP = pressureAt(world, ax, ay)
 					}
-					pushSurface(world, cx, cy, id, airP, surf)
+					pushSurface(world, cx, cy, id, airP, hydraulicPhi(airP, gravityDepth(world, cx, cy)), surf)
 				}
 				for (let o = 0; o < 4; o++) {
 					const nx = cx + ORTHO_DX[o]
@@ -135,20 +141,19 @@ export const labelLiquidComponents = (world) => {
 
 /**
  * 分量内自由面样本的最低 φ 汇点索引。
- * @param {{ x: Int32Array, y: Int32Array, p: Float32Array }} surf 自由面 SoA
- * @param {FluidWorld} world 世界
+ * @param {{ phi: Float32Array }} surf 自由面 SoA
  * @param {number} start 分量起始
  * @param {number} end 分量结束（不含）
  * @returns {number} 汇点索引
  */
-const sinkOfComponent = (surf, world, start, end) => {
-	const { x: sx, y: sy, p: sp } = surf
+const sinkOfComponent = (surf, start, end) => {
+	const { phi } = surf
 	let sink = start
-	let sinkPhi = hydraulicPhi(sp[start], gravityDepth(world, sx[start], sy[start]))
+	let sinkPhi = phi[start]
 	for (let k = start + 1; k < end; k++) {
-		const phi = hydraulicPhi(sp[k], gravityDepth(world, sx[k], sy[k]))
-		if (phi < sinkPhi) {
-			sinkPhi = phi
+		const p = phi[k]
+		if (p < sinkPhi) {
+			sinkPhi = p
 			sink = k
 		}
 	}
@@ -165,12 +170,11 @@ const sinkOfComponent = (surf, world, start, end) => {
  * @param {number} comp 分量 id
  * @param {number} sink 汇点索引
  * @param {{ x: Int32Array, y: Int32Array }} surf 自由面 SoA
- * @returns {number} sinkPhi
+ * @returns {void}
  */
 const buildDistField = (world, componentOf, dist, visit, gen, comp, sink, surf) => {
 	const { worldW: W, worldH: H } = world
-	const { x: sx, y: sy, p: sp } = surf
-	const sinkPhi = hydraulicPhi(sp[sink], gravityDepth(world, sx[sink], sy[sink]))
+	const { x: sx, y: sy } = surf
 	floodClear(world)
 	const sinkCell = sy[sink] * W + sx[sink]
 	visit[sinkCell] = gen
@@ -191,7 +195,6 @@ const buildDistField = (world, componentOf, dist, visit, gen, comp, sink, surf) 
 			floodPush(world, nx, ny)
 		}
 	}
-	return sinkPhi
 }
 
 /**
@@ -210,16 +213,15 @@ const buildDistField = (world, componentOf, dist, visit, gen, comp, sink, surf) 
  * @param {number} sink 汇点索引
  * @param {number} sinkPhi 汇点势
  * @param {number} mobility 迁移率
- * @param {{ x: Int32Array, y: Int32Array, p: Float32Array }} surf 自由面 SoA
+ * @param {{ x: Int32Array, y: Int32Array, phi: Float32Array }} surf 自由面 SoA
  * @returns {void}
  */
 const relaxComponent = (world, flowX, flowY, liq, componentOf, dist, visit, gen, comp, start, end, sink, sinkPhi, mobility, surf) => {
-	const { worldW: W } = world
-	const { x: sx, y: sy, p: sp } = surf
+	const { worldW: W, worldH: H } = world
+	const { x: sx, y: sy, phi } = surf
 	for (let k = start; k < end; k++) {
 		if (k === sink) continue
-		const phi = hydraulicPhi(sp[k], gravityDepth(world, sx[k], sy[k]))
-		const delta = phi - sinkPhi
+		const delta = phi[k] - sinkPhi
 		if (delta <= 0.35) continue
 		const cell = sy[k] * W + sx[k]
 		if (visit[cell] !== gen || liq[cell] < 0.05) continue
@@ -234,7 +236,7 @@ const relaxComponent = (world, flowX, flowY, liq, componentOf, dist, visit, gen,
 			const dy = ORTHO_DY[o]
 			const nx = x0 + dx
 			const ny = y0 + dy
-			if (nx < 0 || ny < 0 || nx >= W || ny >= world.worldH) continue
+			if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue
 			const neighbor = ny * W + nx
 			if (componentOf[neighbor] !== comp || visit[neighbor] !== gen || dist[neighbor] >= bestD) continue
 			if (liq[neighbor] >= LIQ_FULL - 1e-6) continue
@@ -266,8 +268,11 @@ const relaxComponent = (world, flowX, flowY, liq, componentOf, dist, visit, gen,
 export const equilibrateHydraulic = (world, flowX, flowY, mobility = 1) => {
 	if (!(mobility > 0) || !Number.isFinite(mobility)) return
 	const { surf, componentOf } = labelLiquidComponents(world)
-	const { worldW: W, worldH: H, liq } = world
-	const n = W * H
+	const { n: surfN, c: sc, phi } = surf
+	if (surfN < 2) return
+
+	const { worldW: W, liq } = world
+	const n = W * world.worldH
 	const dist = scratch(world, 'liqHydroDist', n, Int32Array)
 	const visit = scratch(world, 'liqHydroVisit', n, Int32Array)
 	let gen = (/** @type {number} */ world.scratch.liqHydroGen | 0) + 1
@@ -277,7 +282,6 @@ export const equilibrateHydraulic = (world, flowX, flowY, mobility = 1) => {
 	}
 	world.scratch.liqHydroGen = gen
 
-	const { x: sx, y: sy, c: sc, p: sp, n: surfN } = surf
 	let i = 0
 	while (i < surfN) {
 		const comp = sc[i]
@@ -286,20 +290,20 @@ export const equilibrateHydraulic = (world, flowX, flowY, mobility = 1) => {
 		const end = i
 		if (end - start < 2) continue
 
-		const sink = sinkOfComponent(surf, world, start, end)
-		const sinkPhi = hydraulicPhi(sp[sink], gravityDepth(world, sx[sink], sy[sink]))
+		const sink = sinkOfComponent(surf, start, end)
+		const sinkPhi = phi[sink]
 
 		let need = false
 		for (let k = start; k < end; k++) {
 			if (k === sink) continue
-			if (hydraulicPhi(sp[k], gravityDepth(world, sx[k], sy[k])) - sinkPhi > 0.35) {
+			if (phi[k] - sinkPhi > 0.35) {
 				need = true
 				break
 			}
 		}
 		if (!need) continue
 
-		const builtPhi = buildDistField(world, componentOf, dist, visit, gen, comp, sink, surf)
-		relaxComponent(world, flowX, flowY, liq, componentOf, dist, visit, gen, comp, start, end, sink, builtPhi, mobility, surf)
+		buildDistField(world, componentOf, dist, visit, gen, comp, sink, surf)
+		relaxComponent(world, flowX, flowY, liq, componentOf, dist, visit, gen, comp, start, end, sink, sinkPhi, mobility, surf)
 	}
 }

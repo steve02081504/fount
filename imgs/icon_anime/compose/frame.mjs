@@ -2,13 +2,14 @@
  * 从场景状态绘制一帧到复用缓冲并渲染 ANSI。
  */
 
+import { waterChar, liquidChar, dripChar, lavaChar } from '../fluid/glyphs.mjs'
 import {
 	MAT, LIQ_DRAW, BUBBLE_MIN_CELLS, isLiquidBarrier,
 } from '../fluid/mat.mjs'
-import { waterChar, liquidChar, dripChar, lavaChar } from '../fluid/glyphs.mjs'
 import { condenseDripSource } from '../fluid/soil.mjs'
-import { strongestDown } from '../fluid/world.mjs'
+import { strongestDown, gravityUpWeights } from '../fluid/world.mjs'
 import { ICON_W, ICON_BODY_H, PILLARS, BODY_DIST, maxBodyD } from '../icon.mjs'
+
 import {
 	FG_AT, FG_COL, FG_SPLASH, FG_TERRAIN, FG_BUBBLE, lavaFg,
 } from './palette.mjs'
@@ -42,6 +43,7 @@ export const composeFrame = (state) => {
 	const { worldW: W, worldH: H } = world
 	const cells = width * height
 	const gDown = strongestDown(world)
+	const gUp = gravityUpWeights(world)
 
 	/**
 	 * 重力下格无支撑 → 下落字形提示。
@@ -125,7 +127,7 @@ export const composeFrame = (state) => {
 					fg[i] = FG_BUBBLE
 				}
 				else {
-					const dripSoil = condenseDripSource(world, wx, vy)
+					const dripSoil = condenseDripSource(world, wx, vy, gUp)
 					if (dripSoil >= 0) {
 						ch[i] = dripChar(condense[dripSoil], wx + frame)
 						fg[i] = FG_SPLASH

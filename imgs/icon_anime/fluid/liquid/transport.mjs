@@ -9,7 +9,7 @@ import { pressureAt } from '../gas.mjs'
 import { MAT, LIQ_DRAW, LIQ_FULL, P_ATM, ST_DRY_FRAC, isLiquidBarrier } from '../mat.mjs'
 import {
 	scratch, markAirIfDrawCrossed,
-	gravityDepth, gravitySideWeights, gravitySettleWeights,
+	gravitySideWeights, gravitySettleWeights, buildDepthOrder,
 } from '../world.mjs'
 
 /** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
@@ -114,28 +114,12 @@ export const stepPhaseTransport = (world, phase) => {
 	const down = gravitySettleWeights(world)
 	const mark = phase.markDirty ?? markAirIfDrawCrossed
 
-	// Deep → shallow along ĝ so mass cannot cascade through the whole column in one tick
-	// (y↑ scan under default ĝ teleported melt to the floor — pools with no fall trail).
-	const order = scratch(world, 'phaseOrder', n, Int32Array)
-	const span = world.gravityDepthSpan || 1
-	const depthBuckets = Math.max(W, H) + 2
-	const dCounts = scratch(world, 'phaseDepthCounts', depthBuckets, Int32Array)
-	dCounts.fill(0)
+	const order = buildDepthOrder(world, 'phaseOrder', 'phaseDepthCounts', true)
+
+	const viscBuf = scratch(world, 'phaseVisc', n, Float32Array)
 	for (let cell = 0; cell < n; cell++) {
-		const d = gravityDepth(world, cell % W, (cell / W) | 0)
-		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
-		dCounts[b]++
-	}
-	let run = 0
-	for (let b = depthBuckets - 1; b >= 0; b--) {
-		const c = dCounts[b]
-		dCounts[b] = run
-		run += c
-	}
-	for (let cell = 0; cell < n; cell++) {
-		const d = gravityDepth(world, cell % W, (cell / W) | 0)
-		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
-		order[dCounts[b]++] = cell
+		if (mass[cell] <= 0) continue
+		viscBuf[cell] = phase.viscAt(world, cell)
 	}
 
 	// --- Settle along gravity-weighted down neighbors ---
@@ -149,7 +133,7 @@ export const stepPhaseTransport = (world, phase) => {
 			phase.onBarrier?.(world, cell, before)
 			continue
 		}
-		const visc = phase.viscAt(world, cell)
+		const visc = viscBuf[cell]
 		const rhoSrc = phase.rhoAt(world, cell)
 		const pSrc = pressureAt(world, x, y) + rhoSrc * mass[cell]
 
@@ -201,7 +185,7 @@ export const stepPhaseTransport = (world, phase) => {
 		for (let x = 0; x < W; x++) {
 			const cell = y * W + x
 			if (mass[cell] < LIQ_DRAW) continue
-			const visc = phase.viscAt(world, cell)
+			const visc = viscBuf[cell]
 			for (let si = 0; si < sides.n; si++) {
 				const dx = sides.dx[si]
 				const dy = sides.dy[si]

@@ -3,13 +3,14 @@
  * 沉降 / 侧膜走共用凝聚相核 `transport.mjs`。
  */
 
-import { MAT, LIQ_DRAW, T_AMB, SUBSTANCE, rhoOf, viscOf, isLiquidBarrier } from '../mat.mjs'
+import { MAT, T_AMB, SUBSTANCE, rhoOf, viscOf, isLiquidBarrier } from '../mat.mjs'
 import { cellRho } from '../thermal.mjs'
 import {
 	scratch, inWorld,
 	markAirIfDrawCrossed, markAirIfMeltDrawCrossed,
-	gravityDepth, gravityDownWeights,
+	gravityDownWeights, buildDepthOrder,
 } from '../world.mjs'
+
 import { stepPhaseTransport } from './transport.mjs'
 
 /** @typedef {import('../world.mjs').FluidWorld} FluidWorld */
@@ -92,27 +93,7 @@ export const stepBuoyancy = (world) => {
 	const { worldW: W, worldH: H, melt, liq, temp, mat } = world
 	const n = W * H
 	const down = gravityDownWeights(world)
-	const order = scratch(world, 'buoyOrder', n, Int32Array)
-	const span = world.gravityDepthSpan || 1
-	const depthBuckets = Math.max(W, H) + 2
-	const dCounts = scratch(world, 'buoyCounts', depthBuckets, Int32Array)
-	dCounts.fill(0)
-	for (let cell = 0; cell < n; cell++) {
-		const d = gravityDepth(world, cell % W, (cell / W) | 0)
-		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
-		dCounts[b]++
-	}
-	let run = 0
-	for (let b = depthBuckets - 1; b >= 0; b--) {
-		const c = dCounts[b]
-		dCounts[b] = run
-		run += c
-	}
-	for (let cell = 0; cell < n; cell++) {
-		const d = gravityDepth(world, cell % W, (cell / W) | 0)
-		const b = Math.min(depthBuckets - 1, Math.max(0, ((d / span) * (depthBuckets - 1)) | 0))
-		order[dCounts[b]++] = cell
-	}
+	const order = buildDepthOrder(world, 'buoyOrder', 'buoyCounts', true)
 
 	const swapMark = scratch(world, 'buoyMark', n, Int32Array)
 	let gen = (/** @type {number} */ world.scratch.buoyGen | 0) + 1
